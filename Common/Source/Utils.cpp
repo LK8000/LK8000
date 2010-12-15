@@ -154,7 +154,7 @@ const TCHAR szRegistrySafetyAltitudeMode[]=  TEXT("SafetyAltitudeMode");
 const TCHAR szRegistryAltitudeUnitsValue[] = TEXT("Altitude");
 const TCHAR szRegistryCircleZoom[]= TEXT("CircleZoom");
 const TCHAR szRegistryClipAlt[]= TEXT("ClipAlt");
-const TCHAR szRegistryDisplayText[] = TEXT("DisplayText");
+const TCHAR szRegistryDisplayText[] = TEXT("DisplayText2");
 const TCHAR szRegistryDisplayUpValue[] = TEXT("DisplayUp");
 const TCHAR szRegistryDistanceUnitsValue[] = TEXT("Distance");
 const TCHAR szRegistryDrawTerrain[]= TEXT("DrawTerrain");
@@ -620,15 +620,7 @@ void ReadRegistrySettings(void)
 
   Temp=0;
   GetFromRegistry(szRegistryDisplayText,&Temp);
-  switch(Temp)
-    {
-    case 0 : DisplayTextType = DISPLAYNAME; break;
-    case 1 : DisplayTextType = DISPLAYNUMBER;break;
-    case 2 : DisplayTextType = DISPLAYFIRSTFIVE; break;
-    case 3 : DisplayTextType = DISPLAYNONE;break;
-    case 4 : DisplayTextType = DISPLAYFIRSTTHREE; break;
-    case 5 : DisplayTextType = DISPLAYNAMEIFINTASK; break;
-    }
+  DisplayTextType=Temp;
 
   Temp=AltitudeMode;
   if(GetFromRegistry(szRegistryAltMode,&Temp)==ERROR_SUCCESS)

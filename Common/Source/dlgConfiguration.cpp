@@ -1713,16 +1713,28 @@ static void setVariables(void) {
     dfe = (DataFieldEnum*)wp->GetDataField();
 	// LKTOKEN  _@M454_ = "Names" 
     dfe->addEnumText(gettext(TEXT("_@M454_")));
+
 	// LKTOKEN  _@M488_ = "Numbers" 
     dfe->addEnumText(gettext(TEXT("_@M488_")));
-	// LKTOKEN  _@M302_ = "First 5" 
-    dfe->addEnumText(gettext(TEXT("_@M302_")));
-	// LKTOKEN  _@M479_ = "None" 
-    dfe->addEnumText(gettext(TEXT("_@M479_")));
-	// LKTOKEN  _@M301_ = "First 3" 
-    dfe->addEnumText(gettext(TEXT("_@M301_")));
+
 	// LKTOKEN  _@M453_ = "Names in task" 
     dfe->addEnumText(gettext(TEXT("_@M453_")));
+
+	// LKTOKEN  _@M301_ = "First 3" 
+    dfe->addEnumText(gettext(TEXT("_@M301_")));
+
+	// LKTOKEN  _@M302_ = "First 5" 
+    dfe->addEnumText(gettext(TEXT("_@M302_")));
+
+	// LKTOKEN  _@M838_ = "First 8" 
+    dfe->addEnumText(gettext(TEXT("_@M838_")));
+	// LKTOKEN  _@M839_ = "First 10" 
+    dfe->addEnumText(gettext(TEXT("_@M839_")));
+	// LKTOKEN  _@M840_ = "First 12" 
+    dfe->addEnumText(gettext(TEXT("_@M840_")));
+
+	// LKTOKEN  _@M479_ = "None" 
+    dfe->addEnumText(gettext(TEXT("_@M479_")));
     dfe->Set(DisplayTextType);
     wp->RefreshDisplay();
   }
@@ -4743,13 +4755,6 @@ void dlgConfigurationShowModal(void){
 	changed=true;
     }
 
-/* BUGFIX 100429 REMOVE
-    if (GPSAltitudeOffset != (wp->GetDataField()->GetAsInteger())) {
-      GPSAltitudeOffset = (wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryGpsAltitudeOffset, (DWORD)(GPSAltitudeOffset));
-      changed = true;
-    }
-*/
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUseGeoidSeparation"));

@@ -1,3 +1,16 @@
+# LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
+# MASTER UPDATED:  101215
+#
+# This file is loaded on startup and all messages are stored internally.
+# If you are translating these messages, try to respect sizes.
+# The first _@Mn_  are the indexes, and you cannot change them!
+#
+# Please note that ENG_MSG.TXT is the english master language for LK8000
+# and it should always exist. Do not change ENG_MSG.TXT.
+#
+# All lines that are empty, or starting with a # , are ignored.
+# DEVELOPERS ADDING MESSAGES HERE SHOULD REQUEST A NUMBERING SLOT TO PAOLO
+
 _@M1_ " Diff"
 _@M2_ " Dist"
 _@M3_ " GS"
@@ -835,3 +848,7 @@ _@M834_ "circling"
 _@M835_ "cruise"
 _@M836_ "final glide"
 _@M837_ "out of Terrain bound"
+_@M838_ "First 8"
+_@M839_ "First 10"
+_@M840_ "First 12"
+

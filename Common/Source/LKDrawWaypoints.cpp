@@ -80,6 +80,8 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
   TCHAR sAltUnit[LKSIZEBUFFERUNIT];
   TextInBoxMode_t TextDisplayMode;
 
+  static int resizer[10]={ 20,20,20,3,5,8,10,12,0 };
+
 
   // if pan mode, show full names
   int pDisplayTextType = DisplayTextType;
@@ -96,44 +98,44 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 
   if (MapScale <=20) for(i=0;i<NumberOfWayPoints;i++) {
 
-    if (WayPointList[i].Visible == FALSE )	continue; 
+	if (WayPointList[i].Visible == FALSE )	continue; 
 
-    #ifdef USEISLANDABLE
-    if (WayPointCalc[i].IsAirport) {
-    #else
-    if ((WayPointList[i].Flags & AIRPORT) == AIRPORT) {
-    #endif
-	if (WayPointList[i].Reachable == FALSE)	{ 
-		SelectObject(hDCTemp,hBmpAirportUnReachable);
-	} else {
-		SelectObject(hDCTemp,hBmpAirportReachable);
-		if ( arrivalcutoff < (int)(WayPointList[i].AltArivalAGL)) {
-			arrivalcutoff = (int)(WayPointList[i].AltArivalAGL);
-			bestwp=i; foundairport++;
-		}
-	}
-    } else {
 	#ifdef USEISLANDABLE
-	if ( WayPointCalc[i].IsOutlanding ) {
+	if (WayPointCalc[i].IsAirport) {
 	#else
-	if ( (WayPointList[i].Flags & LANDPOINT) == LANDPOINT) {
+	if ((WayPointList[i].Flags & AIRPORT) == AIRPORT) {
 	#endif
-		// outlanding
-		if (WayPointList[i].Reachable == FALSE)
-			SelectObject(hDCTemp,hBmpFieldUnReachable);
-		else { 
-			SelectObject(hDCTemp,hBmpFieldReachable);
-			// get the outlanding as bestwp only if no other choice
-			if (foundairport == 0) { 
-				// do not set arrivalcutoff: any next reachable airport is better than an outlanding
-				if ( arrivalcutoff < (int)(WayPointList[i].AltArivalAGL)) bestwp=i;  
+		if (WayPointList[i].Reachable == FALSE)	{ 
+			SelectObject(hDCTemp,hBmpAirportUnReachable);
+		} else {
+			SelectObject(hDCTemp,hBmpAirportReachable);
+			if ( arrivalcutoff < (int)(WayPointList[i].AltArivalAGL)) {
+				arrivalcutoff = (int)(WayPointList[i].AltArivalAGL);
+				bestwp=i; foundairport++;
 			}
 		}
-	} else continue; // do not draw icons for normal turnpoints here
-    }
+	} else {
+		#ifdef USEISLANDABLE
+		if ( WayPointCalc[i].IsOutlanding ) {
+		#else
+		if ( (WayPointList[i].Flags & LANDPOINT) == LANDPOINT) {
+		#endif
+			// outlanding
+			if (WayPointList[i].Reachable == FALSE)
+				SelectObject(hDCTemp,hBmpFieldUnReachable);
+			else { 
+				SelectObject(hDCTemp,hBmpFieldReachable);
+				// get the outlanding as bestwp only if no other choice
+				if (foundairport == 0) { 
+					// do not set arrivalcutoff: any next reachable airport is better than an outlanding
+					if ( arrivalcutoff < (int)(WayPointList[i].AltArivalAGL)) bestwp=i;  
+				}
+			}
+		} else continue; // do not draw icons for normal turnpoints here
+	}
 
-    DrawBitmapX(hdc, WayPointList[i].Screen.x-NIBLSCALE(10), WayPointList[i].Screen.y-NIBLSCALE(10), 20,20, hDCTemp,0,0,SRCPAINT);
-    DrawBitmapX(hdc, WayPointList[i].Screen.x-NIBLSCALE(10), WayPointList[i].Screen.y-NIBLSCALE(10), 20,20, hDCTemp,20,0,SRCAND);
+	DrawBitmapX(hdc, WayPointList[i].Screen.x-NIBLSCALE(10), WayPointList[i].Screen.y-NIBLSCALE(10), 20,20, hDCTemp,0,0,SRCPAINT);
+	DrawBitmapX(hdc, WayPointList[i].Screen.x-NIBLSCALE(10), WayPointList[i].Screen.y-NIBLSCALE(10), 20,20, hDCTemp,20,0,SRCAND);
 
   } // for all waypoints
 
@@ -278,7 +280,81 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 
 	      switch(pDisplayTextType) {
 
-	      case DISPLAYNAMEIFINTASK:  // TODO CHECK IT
+	     case DISPLAYNAME:
+	     case DISPLAYFIRSTTHREE:
+	     case DISPLAYFIRSTFIVE:
+	     case DISPLAYFIRST8:
+	     case DISPLAYFIRST10:
+	     case DISPLAYFIRST12:
+
+		dowrite = (DeclutterLabels<MAPLABELS_ONLYTOPO) || intask || islandable;  // 100711
+		if ( (islandable && !isairport) && MapScale >=10 ) dowrite=0; // FIX then no need to go further
+
+		// 101215 
+		if (DisplayTextType == DISPLAYNAME) {
+			_tcscpy(Buffer2,WayPointList[i].Name);
+		} else {
+			_tcsncpy(Buffer2, WayPointList[i].Name, resizer[DisplayTextType]);
+			Buffer2[resizer[DisplayTextType]] = '\0';
+		}
+		// ConvToUpper(Buffer2); 
+
+		if (draw_alt) {
+		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
+			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
+		  		wsprintf(Buffer, TEXT("%s:%d"), Buffer2, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
+			else
+		  		wsprintf(Buffer, TEXT("%s:%d%s"), Buffer2, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), sAltUnit);
+		  } else 
+			wsprintf(Buffer, TEXT("%s:%d"), Buffer2, (int)WayPointCalc[i].GR);
+
+
+		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
+			  TextDisplayMode.AsFlag.Border = 1;
+			  TextDisplayMode.AsFlag.WhiteBold = 0;
+		  } else
+		  	TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
+		  	TextDisplayMode.AsFlag.Color=TEXTWHITE; 
+		} else {
+			//wsprintf(Buffer, TEXT("%s"),Buffer2);
+			_tcscpy(Buffer,Buffer2);
+			if (islandable && isairport) {
+				TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
+				TextDisplayMode.AsFlag.Color=TEXTWHITE; 
+			}
+		}
+				  
+		break;
+	      case DISPLAYNUMBER:
+		dowrite = (DeclutterLabels<MAPLABELS_ONLYTOPO) || intask || islandable;  // 100620
+		if ( (islandable && !isairport) && MapScale >=10 ) dowrite=0; // FIX then no need to go further
+
+		if (draw_alt) {
+		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
+			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
+		  		wsprintf(Buffer, TEXT("%d:%d"), WayPointList[i].Number, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
+			else
+		  		wsprintf(Buffer, TEXT("%d:%d%s"), WayPointList[i].Number, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), sAltUnit);
+		  } else
+		  	wsprintf(Buffer, TEXT("%d:%d"), WayPointList[i].Number, (int)(WayPointCalc[i].GR));
+		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
+			  TextDisplayMode.AsFlag.Border = 1;
+			  TextDisplayMode.AsFlag.WhiteBold = 0;
+		  } else
+		  	TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
+	      		TextDisplayMode.AsFlag.Color=TEXTWHITE; 
+		} else {
+		  wsprintf(Buffer, TEXT("%d"),WayPointList[i].Number);
+		  if (islandable && isairport) {
+		    TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
+	      		TextDisplayMode.AsFlag.Color=TEXTWHITE; 
+		  }
+		}
+		break;
+				  
+				  
+
+	      case DISPLAYNAMEIFINTASK: 
 		dowrite = intask;
 		if (intask) {
 		  if (draw_alt) {
@@ -316,144 +392,10 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		    }
 		  }
 		}
-			#if 100910 
 			else {
 		  		wsprintf(Buffer, TEXT(" "));
 				dowrite=true;
 			}
-			#endif
-		break;
-
-	      case DISPLAYNAME:
-		dowrite = (DeclutterLabels<MAPLABELS_ONLYTOPO) || intask || islandable;  // 100711
-		if ( (islandable && !isairport) && MapScale >=10 ) dowrite=0; // FIX then no need to go further
-
-		if (draw_alt) {
-		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
-			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
-		  		wsprintf(Buffer, TEXT("%s:%d"), WayPointList[i].Name, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
-			else
-		  		wsprintf(Buffer, TEXT("%s:%d%s"), WayPointList[i].Name, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), sAltUnit);
-		  } else 
-		  	wsprintf(Buffer, TEXT("%s:%d"), WayPointList[i].Name, (int)WayPointCalc[i].GR);
-
-		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
-			  TextDisplayMode.AsFlag.Border = 1;
-			  TextDisplayMode.AsFlag.WhiteBold = 0;
-		  } else
-		  	TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
-		  	TextDisplayMode.AsFlag.Color=TEXTWHITE; 
-		} else {
-		  wsprintf(Buffer, TEXT("%s"),WayPointList[i].Name);
-		  if (islandable && isairport) {
-		    TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
-		    TextDisplayMode.AsFlag.Color=TEXTWHITE; 
-		  }
-		}
-				  
-		break;
-	      case DISPLAYNUMBER:
-		dowrite = (DeclutterLabels<MAPLABELS_ONLYTOPO) || intask || islandable;  // 100620
-		if ( (islandable && !isairport) && MapScale >=10 ) dowrite=0; // FIX then no need to go further
-
-		if (draw_alt) {
-		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
-			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
-		  		wsprintf(Buffer, TEXT("%d:%d"), WayPointList[i].Number, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
-			else
-		  		wsprintf(Buffer, TEXT("%d:%d%s"), WayPointList[i].Number, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), sAltUnit);
-		  } else
-		  	wsprintf(Buffer, TEXT("%d:%d"), WayPointList[i].Number, (int)(WayPointCalc[i].GR));
-		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
-			  TextDisplayMode.AsFlag.Border = 1;
-			  TextDisplayMode.AsFlag.WhiteBold = 0;
-		  } else
-		  	TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
-	      		TextDisplayMode.AsFlag.Color=TEXTWHITE; 
-		} else {
-		  wsprintf(Buffer, TEXT("%d"),WayPointList[i].Number);
-		  if (islandable && isairport) {
-		    TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
-	      		TextDisplayMode.AsFlag.Color=TEXTWHITE; 
-		  }
-		}
-		break;
-	      case DISPLAYFIRSTFIVE:
-		dowrite = (DeclutterLabels<MAPLABELS_ONLYTOPO) || intask || islandable;  // 100711
-		_tcsncpy(Buffer2, WayPointList[i].Name, 5);
-		Buffer2[5] = '\0';
-		if (draw_alt) {
-		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
-			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
-			  wsprintf(Buffer, TEXT("%s:%d"),
-				   Buffer2, 
-				   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
-			else
-			  wsprintf(Buffer, TEXT("%s:%d%s"),
-				   Buffer2, 
-				   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), 
-				   sAltUnit);
-		  } else
-			  wsprintf(Buffer, TEXT("%s:%d"),
-				   Buffer2, 
-				   (int)(WayPointCalc[i].GR) );
-
-		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
-			  TextDisplayMode.AsFlag.Border = 1;
-			  TextDisplayMode.AsFlag.WhiteBold = 0;
-		  } else
-		  	TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
-	      		TextDisplayMode.AsFlag.Color=TEXTWHITE; 
-		}
-		else {
-		  wsprintf(Buffer, TEXT("%s"),Buffer2);
-		  if (islandable && isairport) {
-		    TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
-	      	    TextDisplayMode.AsFlag.Color=TEXTWHITE; 
-		  }
-
-		}
-				  
-		break;
-	      case DISPLAYFIRSTTHREE:
-		dowrite = (DeclutterLabels<MAPLABELS_ONLYTOPO) || intask || islandable;  // 100711
-		_tcsncpy(Buffer2, WayPointList[i].Name, 3);
-		Buffer2[3] = '\0';
-		if (draw_alt) {
-		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
-			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
-			  wsprintf(Buffer, TEXT("%s:%d"),
-				   Buffer2, 
-				   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
-			else
-			  wsprintf(Buffer, TEXT("%s:%d%s"),
-				   Buffer2, 
-				   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), 
-				   sAltUnit);
-
-
-		  } else
-			  wsprintf(Buffer, TEXT("%s:%d"),
-				   Buffer2, 
-				   (int)(WayPointCalc[i].GR) );
-
-		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
-			  TextDisplayMode.AsFlag.Border = 1;
-			  TextDisplayMode.AsFlag.WhiteBold = 0;
-		  } else
-		  	TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
-	      	    	TextDisplayMode.AsFlag.Color=TEXTWHITE; 
-		}
-		else {
-		  wsprintf(Buffer, TEXT("%s"),Buffer2);
-		  if (islandable && isairport) {
-		    TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
-	      	    TextDisplayMode.AsFlag.Color=TEXTWHITE; 
-		  }
-
-		}
-				  
-				  
 		break;
 	      case DISPLAYNONE:
 		dowrite = (DeclutterLabels<MAPLABELS_ONLYTOPO) || intask || islandable;  // 100711
@@ -478,13 +420,10 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 	      	    TextDisplayMode.AsFlag.Color=TEXTWHITE; 
 		}
 		else {
-			#if 100910
 		  	wsprintf(Buffer, TEXT(" "));
-			#else
-		  Buffer[0]= '\0';
-		  dowrite=false;
-			#endif
 		}
+		break;
+
 	      default:
 #if (WINDOWSPC<1)
 		ASSERT(0);
