@@ -1,0 +1,18 @@
+<PMML>
+<WndForm Name="frmWindSettingRegular" Type="Dialog" X=5 Y=5 Width=230 Height=220 Caption="_@M818_" Popup=1 Font=2 >
+<WndButton Caption="_@M161_" X=10 Y=150 Width=100  Height=40 Font=2 OnClickNotify="OnCancelClicked"/>
+<WndButton Caption="_@M583_" X=120 Y=-999 Width=100  Height=40 Font=2 OnClickNotify="OnCloseClicked"/>
+<WndProperty Name="prpSpeed" Caption="_@M627_" X=10 Y=2 Width=210 Height=40 CaptionWidth=74 Font=1 Help="_@H610_">
+<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Step=1 OnDataAccess="OnWindSpeedData"/>
+</WndProperty>
+<WndProperty Name="prpDirection" Caption="_@M237_" X=10 Y=-997  Width=210 Height=40 CaptionWidth=74 Font=1 Help="_@H611_">
+<DataField name="" DataType="double" DisplayFormat="%.0f°" EditFormat="%.0f" Min=0 Max=355 Step=5 OnDataAccess="OnWindDirectionData"/>
+</WndProperty>
+<WndProperty Name="prpAutoWind" Caption="_@M114_" X=10 Y=-997 Width=210 Height=25 CaptionWidth=74 Font=2 Help="_@H612_">
+<DataField name="" DataType="enum" Min=0 Max=50 Step=1/>
+</WndProperty>
+<WndProperty Name="prpTrailDrift" Caption="_@M739_" X=10 Y=-1  Width=210 Height=25 CaptionWidth=74 Font=2 Help="_@H613_">
+<DataField name="" DataType="boolean"/>
+</WndProperty>
+</WndForm>    
+</PMML>

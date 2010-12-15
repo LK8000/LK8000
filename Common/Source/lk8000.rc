@@ -1,0 +1,294 @@
+//Microsoft eMbedded Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "newres.h"
+
+#undef APSTUDIO_READONLY_SYMBOLS
+
+// Neutral (Default) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEUD)
+#ifdef _WIN32
+#ifndef WINDOWSPC
+#ifndef _MINGW32_
+LANGUAGE LANG_NEUTRAL, SUBLANG_DEFAULT
+#endif
+#endif
+#pragma code_page(1252)
+#endif //_WIN32
+
+//
+// WAVE
+//
+
+IDR_WAV_DRIP            WAVE    DISCARDABLE	"../Data/Sounds/LKbeep-drip.wav"
+IDR_WAV_GREEN           WAVE    DISCARDABLE	"../Data/Sounds/LK_GREEN.WAV"
+IDR_WAV_RED             WAVE    DISCARDABLE	"../Data/Sounds/LK_RED.WAV"
+IDR_WAV_CLICK		WAVE	DISCARDABLE	"../Data/Sounds/LK_CLICKM.WAV"
+IDR_WAV_HIGHCLICK	WAVE	DISCARDABLE	"../Data/Sounds/LK_CLICKH.WAV"
+IDR_WAV_OVERTONE0	WAVE	DISCARDABLE	"../Data/Sounds/LK_S0.WAV"
+IDR_WAV_OVERTONE1	WAVE	DISCARDABLE	"../Data/Sounds/LK_S1.WAV"
+IDR_WAV_OVERTONE2	WAVE	DISCARDABLE	"../Data/Sounds/LK_S2.WAV"
+IDR_WAV_OVERTONE3	WAVE	DISCARDABLE	"../Data/Sounds/LK_S3.WAV"
+IDR_WAV_OVERTONE4	WAVE	DISCARDABLE	"../Data/Sounds/LK_S4d.WAV"
+IDR_WAV_OVERTONE5	WAVE	DISCARDABLE	"../Data/Sounds/LK_S5.WAV"
+IDR_WAV_OVERTONE6	WAVE	DISCARDABLE	"../Data/Sounds/LK_S6.WAV"
+IDR_WAV_OVERTONE7	WAVE	DISCARDABLE	"../Data/Sounds/LK_S6b.WAV"
+IDR_WAV_OVERTONE8	WAVE	DISCARDABLE	"../Data/Sounds/LK_S7.WAV"
+IDR_WAV_TONE1		WAVE	DISCARDABLE	"../Data/Sounds/LK_T1.WAV"
+IDR_WAV_TONE2		WAVE	DISCARDABLE	"../Data/Sounds/LK_T2.WAV"
+IDR_WAV_TONE3		WAVE	DISCARDABLE	"../Data/Sounds/LK_T3.WAV"
+IDR_WAV_TONE4		WAVE	DISCARDABLE	"../Data/Sounds/LK_T4.WAV"
+IDR_WAV_TONE5		WAVE	DISCARDABLE	"../Data/Sounds/LK_T5.WAV"
+IDR_WAV_TONE7		WAVE	DISCARDABLE	"../Data/Sounds/LK_T8.WAV"
+IDR_WAV_BTONE2		WAVE	DISCARDABLE	"../Data/Sounds/LK_B2b.wav"
+IDR_WAV_BTONE4		WAVE	DISCARDABLE	"../Data/Sounds/LK_B4.wav"
+IDR_WAV_BTONE5		WAVE	DISCARDABLE	"../Data/Sounds/LK_B5.wav"
+IDR_WAV_BTONE6		WAVE	DISCARDABLE	"../Data/Sounds/LK_B5b.wav"
+IDR_WAV_BELL		WAVE	DISCARDABLE	"../Data/Sounds/bell.wav"
+IDR_WAV_TONEUP		WAVE	DISCARDABLE	"../Data/Sounds/LK_TONEUP.WAV"
+IDR_WAV_TONEDOWN	WAVE	DISCARDABLE	"../Data/Sounds/LK_TONEDOWN.WAV"
+IDR_WAV_WARNING		WAVE	DISCARDABLE	"../Data/Sounds/LK_WARNING.WAV"
+
+//
+// Icon
+//
+
+#endif    // Neutral (Default) resources
+
+
+//
+// CEUX
+// Added by Paolo Ventafridda 090702
+
+HI_RES_AWARE CEUX MOVEABLE PURE
+BEGIN
+    0x0001
+END
+
+
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+#ifndef WINDOWSPC
+#ifndef _MINGW32_
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#endif
+#endif
+#pragma code_page(1252)
+#endif //_WIN32
+
+//
+// Accelerator
+//
+
+IDC_XCSOAR ACCELERATORS DISCARDABLE 
+BEGIN
+    "Q",            IDOK,                   VIRTKEY, CONTROL, NOINVERT
+END
+
+
+//
+// Bitmap
+//
+
+IDB_ABORT               BITMAP  DISCARDABLE     "../Data/Bitmaps/abort.bmp"
+IDB_LOGGER              BITMAP  DISCARDABLE     "../Data/Bitmaps/logging.bmp"
+IDB_LOGGEROFF           BITMAP  DISCARDABLE     "../Data/Bitmaps/loggingoff.bmp"
+IDB_FLARMTRAFFIC        BITMAP  DISCARDABLE     "../Data/Bitmaps/flarmtra.bmp"
+IDB_AIRSPACE3           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace3.bmp"
+IDB_AIRSPACE4           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace4.bmp"
+IDB_AIRSPACE5           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace5.bmp"
+IDB_CLIMBSMALL          BITMAP  DISCARDABLE     "../Data/Bitmaps/climb_12.bmp"
+IDB_CLIMBSMALLINV       BITMAP  DISCARDABLE     "../Data/Bitmaps/climb_12inv.bmp"
+IDB_THERMALSOURCE       BITMAP  DISCARDABLE     "../Data/Bitmaps/thermalsource.bmp"
+IDB_AIRSPACE6           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace6.bmp"
+IDB_AIRSPACE7           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace7.bmp"
+IDB_TARGET              BITMAP  DISCARDABLE     "../Data/Bitmaps/target.bmp"
+IDB_ABOVETERRAIN        BITMAP  DISCARDABLE     "../Data/Bitmaps/aboveterrain.bmp"
+IDB_TEAMMATE_POS        BITMAP  DISCARDABLE     "../Data/Bitmaps/TeammatePosition.bmp"
+IDB_SCROLLBARTOP        BITMAP  DISCARDABLE     "../Data/Bitmaps/scrollbarTop.bmp"
+IDB_SCROLLBARMID        BITMAP  DISCARDABLE     "../Data/Bitmaps/scrollbarMid.bmp"
+IDB_SCROLLBARBOT        BITMAP  DISCARDABLE     "../Data/Bitmaps/scrollbarBot.bmp"
+IDB_SCROLLBARFILL       BITMAP  DISCARDABLE     "../Data/Bitmaps/scrollbarFill.bmp"
+
+//
+// XMLDIALOG
+//
+
+IDR_XML_AIRSPACE        XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgAirspace.xml"
+IDR_XML_AIRSPACECOLOURS XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgAirspaceColours.xml"
+IDR_XML_AIRSPACEPATTERNS XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgAirspacePatterns.xml"
+IDR_XML_ANALYSIS        XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgAnalysis.xml"
+IDR_XML_BASICSETTINGS   XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgBasicSettings.xml"
+IDR_XML_BASICSETTINGS_L   XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgBasicSettings_L.xml"
+IDR_XML_CHECKLIST       XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgChecklist.xml"
+IDR_XML_CONFIGURATION   XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgConfiguration.xml"
+IDR_XML_FONTEDIT        XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgFontEdit.xml"
+IDR_XML_LOGGERREPLAY    XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgLoggerReplay.xml"
+IDR_XML_STARTUP         XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgStartup.xml"
+IDR_XML_FLYSIM         XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgFlySim.xml"
+IDR_XML_FLYSIM_L         XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgFlySim_L.xml"
+IDR_XML_STATUS          XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgStatus.xml"
+IDR_XML_TASKCALCULATOR  XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgTaskCalculator.xml"
+IDR_XML_TASKOVERVIEW    XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgTaskOverview.xml"
+IDR_XML_TASKWAYPOINT    XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgTaskWaypoint.xml"
+IDR_XML_WAYPOINTDETAILS XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgWayPointDetails.xml"
+IDR_XML_WAYPOINTSELECT  XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgWayPointSelect.xml"
+IDR_XML_WAYPOINTQUICK  XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgWayQuick.xml"
+IDR_XML_WINDSETTINGS    XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgWindSettings.xml"
+IDR_XML_STARTTASK       XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgStartTask.xml"
+IDR_XML_TIMEGATES       XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgTimeGates.xml"
+IDR_XML_TOPOLOGY       XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgTopology.xml"
+IDR_XML_CUSTOMKEYS       XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgCustomKeys.xml"
+IDR_XML_FILESELECT      XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgFileSelect.xml"
+IDR_XML_WAYPOINTTERRAIN XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgWaypointOutOfTerrain.xml"
+IDR_XML_AIRSPACEWARNING XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgAirspaceWarning.xml"
+IDR_XML_HELP            XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgHelp.xml"
+IDR_XML_TEXTENTRY       XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgTextEntry.xml"
+IDR_XML_TEXTENTRY_T     XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgTextEntry_T.xml"
+IDR_XML_TEXTENTRY_KEYBOARD XMLDIALOG DISCARDABLE "..\\Data\\Dialogs\\dlgTextEntry_Keyboard.xml"
+IDR_XML_TEXTENTRY_KEYBOARD_L XMLDIALOG DISCARDABLE "..\\Data\\Dialogs\\dlgTextEntry_Keyboard_L.xml"
+IDR_XML_NUMBERENTRY_KEYBOARD XMLDIALOG DISCARDABLE "..\\Data\\Dialogs\\dlgNumberEntry_Keyboard.xml"
+IDR_XML_NUMBERENTRY_KEYBOARD_L XMLDIALOG DISCARDABLE "..\\Data\\Dialogs\\dlgNumberEntry_Keyboard_L.xml"
+IDR_XML_TEAMCODE        XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgTeamCode.xml"
+IDR_XML_TEAMCODE_L      XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgTeamCode_L.xml"
+IDR_XML_STARTPOINT      XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgStartPoint.xml"
+IDR_XML_WAYPOINTEDIT    XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgWaypointEdit.xml"
+IDR_XML_WEATHER         XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgWeather.xml"
+IDR_XML_AIRSPACESELECT  XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgAirspaceSelect.xml"
+IDR_XML_TARGET          XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgTarget.xml"
+IDR_XML_TASKRULES       XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgTaskRules.xml"
+IDR_XML_AIRSPACEDETAILS XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgAirspaceDetails.xml"
+IDR_XML_LKTRAFFICDETAILS XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgLKTraffic.xml"
+
+IDR_XML_CHECKLIST_L     XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgChecklist_L.xml"
+IDR_XML_WAYPOINTDETAILS_L XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgWayPointDetails_L.xml"
+IDR_XML_ANALYSIS_L      XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgAnalysis_L.xml"
+IDR_XML_HELP_L          XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgHelp_L.xml"
+IDR_XML_AIRSPACE_L      XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgAirspace_L.xml"
+IDR_XML_AIRSPACECOLOURS_L XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgAirspaceColours_L.xml"
+IDR_XML_AIRSPACEPATTERNS_L XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgAirspacePatterns_L.xml"
+IDR_XML_STARTPOINT_L    XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgStartPoint_L.xml"
+IDR_XML_CONFIGURATION_L XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgConfiguration_L.xml"
+IDR_XML_WAYPOINTSELECT_L XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgWayPointSelect_L.xml"
+IDR_XML_TASKOVERVIEW_L  XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgTaskOverview_L.xml"
+IDR_XML_TASKWAYPOINT_L  XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgTaskWaypoint_L.xml"
+IDR_XML_STARTUP_L       XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgStartup_L.xml"
+IDR_XML_WAYPOINTEDIT_L  XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgWaypointEdit_L.xml"
+IDR_XML_AIRSPACESELECT_L XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgAirspaceSelect_L.xml"
+IDR_XML_TARGET_L        XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgTarget_L.xml"
+IDR_XML_WEATHER_L       XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgWeather_L.xml"
+IDR_XML_COMBOPICKER_L   XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgComboPicker_L.xml"
+IDR_XML_COMBOPICKER     XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgComboPicker.xml"
+IDR_XML_PROFILES     XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgProfiles.xml"
+
+
+IDR_RASTER_EGM96S       RASTERDATA DISCARDABLE  "../Data/Bitmaps/egm96s.dem"
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_APP_TITLE           "LK8000"
+    IDC_XCSOAR              "XCSOAR"
+END
+
+#endif    // English (U.S.) resources
+
+
+// English (U.K.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
+#ifdef _WIN32
+#ifndef WINDOWSPC
+#ifndef _MINGW32_
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+#endif
+#endif
+#pragma code_page(1252)
+#endif //_WIN32
+
+
+//
+// Bitmap
+//
+
+IDB_LANDABLE            BITMAP  DISCARDABLE     "../Data/Bitmaps/Landable.bmp"
+IDB_REACHABLE           BITMAP  DISCARDABLE     "../Data/Bitmaps/Reachable.bmp"
+IDB_TURNPOINT           BITMAP  DISCARDABLE     "../Data/Bitmaps/Turnpoint.bmp"
+IDB_INVTURNPOINT        BITMAP  DISCARDABLE     "../Data/Bitmaps/InvTurnpoint.bmp"
+IDB_SMALL               BITMAP  DISCARDABLE     "../Data/Bitmaps/small.bmp"
+IDB_INVSMALL            BITMAP  DISCARDABLE     "../Data/Bitmaps/InvSmall.bmp"
+IDB_CRUISE              BITMAP  DISCARDABLE     "../Data/Bitmaps/cruise.bmp"
+IDB_CRUISEPARA          BITMAP  DISCARDABLE     "../Data/Bitmaps/cruisepara.bmp"
+IDB_CLIMB               BITMAP  DISCARDABLE     "../Data/Bitmaps/climb.bmp"
+IDB_CLIMBPARA           BITMAP  DISCARDABLE     "../Data/Bitmaps/climbpara.bmp"
+IDB_FINALGLIDE          BITMAP  DISCARDABLE     "../Data/Bitmaps/finalgli.bmp"
+IDB_FINALGLIDEPARA      BITMAP  DISCARDABLE     "../Data/Bitmaps/finalglipara.bmp"
+IDB_AUTOMCREADY         BITMAP  DISCARDABLE     "../Data/Bitmaps/automcre.bmp"
+IDB_TOWN                BITMAP  DISCARDABLE     "../Data/Bitmaps/town.bmp"
+IDB_LKSMALLTOWN         BITMAP  DISCARDABLE     "../Data/Bitmaps/smalltown.bmp"
+IDB_LKVERYSMALLTOWN     BITMAP  DISCARDABLE     "../Data/Bitmaps/verysmalltown.bmp"
+IDB_MARK                BITMAP  DISCARDABLE     "../Data/Bitmaps/mark.bmp"
+IDB_TERRAINWARNING      BITMAP  DISCARDABLE     "../Data/Bitmaps/terrainw.bmp"
+IDB_PEAKHIGH            BITMAP  DISCARDABLE     "../Data/Bitmaps/peakhigh.bmp"
+IDB_PEAKLOW             BITMAP  DISCARDABLE     "../Data/Bitmaps/peaklow.bmp"
+IDB_MAPSCALE_A          BITMAP  DISCARDABLE     "../Data/Bitmaps/MapScale_A.bmp"
+IDB_UNIT_KM             BITMAP  DISCARDABLE     "../Data/Bitmaps/UnitKm.bmp"
+IDB_UNIT_SM             BITMAP  DISCARDABLE     "../Data/Bitmaps/UnitSm.bmp"
+IDB_UNIT_NM             BITMAP  DISCARDABLE     "../Data/Bitmaps/UnitNm.bmp"
+IDB_UNIT_M              BITMAP  DISCARDABLE     "../Data/Bitmaps/UnitM.bmp"
+IDB_UNIT_FT             BITMAP  DISCARDABLE     "../Data/Bitmaps/UnitFt.bmp"
+IDB_UNIT_MS             BITMAP  DISCARDABLE     "../Data/Bitmaps/UnitMpSec.bmp"
+IDB_AIRPORT_REACHABLE   BITMAP  DISCARDABLE     "../Data/Bitmaps/LandableAirport.bmp"
+IDB_AIRPORT_UNREACHABLE BITMAP  DISCARDABLE     "../Data/Bitmaps/UnreachableAirport.bmp"
+IDB_OUTFILED_REACHABLE  BITMAP  DISCARDABLE     "../Data/Bitmaps/LandableField.bmp"
+IDB_OUTFILED_UNREACHABLE BITMAP  DISCARDABLE    "../Data/Bitmaps/UnreachableField.bmp"
+IDB_UNIT_KT             BITMAP  DISCARDABLE     "../Data/Bitmaps/UnitKt.bmp"
+IDB_UNIT_FL             BITMAP  DISCARDABLE     "../Data/Bitmaps/UnitFL.bmp"
+IDB_UNIT_DegK           BITMAP  DISCARDABLE     "../Data/Bitmaps/UnitDegKelvin.bmp"
+IDB_UNIT_DegC           BITMAP  DISCARDABLE     "../Data/Bitmaps/UnitDegCelcius.bmp"
+IDB_UNIT_DegF           BITMAP  DISCARDABLE     "../Data/Bitmaps/UnitDegFahrenheit.bmp"
+IDB_UNIT_FPM            BITMAP  DISCARDABLE     "../Data/Bitmaps/UnitFeetPerMinute.bmp"
+IDB_UNIT_KMH            BITMAP  DISCARDABLE     "../Data/Bitmaps/UnitKMH.bmp"
+IDB_UNIT_MPH            BITMAP  DISCARDABLE     "../Data/Bitmaps/UnitMPH.bmp"
+
+#endif    // English (U.K.) resources
+
+
+// English (Australia) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENA)
+#ifdef _WIN32
+#ifndef WINDOWSPC
+#ifndef _MINGW32_
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_AUS
+#endif
+#endif
+#pragma code_page(1252)
+#endif //_WIN32
+
+
+//
+// Icon
+//
+
+IDI_XCSOARSWIFT         ICON    DISCARDABLE     "../Data/Bitmaps/LKicon.ico"
+
+//
+// Bitmap
+//
+
+IDB_AIRSPACE0           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace0.bmp"
+IDB_AIRSPACE1           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace1.bmp"
+IDB_AIRSPACE2           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace2.bmp"
+IDB_SWIFT               BITMAP  DISCARDABLE     "../Data/Bitmaps/LKstartup.bmp" 	// 124x85
+IDB_GPSSTATUS1          BITMAP  DISCARDABLE     "../Data/Bitmaps/20x20_gpslost_1.bmp"
+IDB_GPSSTATUS2          BITMAP  DISCARDABLE     "../Data/Bitmaps/20x20_gpslost_2.bmp"
+
+#endif    // English (Australia) resources

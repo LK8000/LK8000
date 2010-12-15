@@ -1,0 +1,25 @@
+<PMML>
+<WndForm Name="frmWaypointEditUTM" Type="Dialog" X=0 Y=0 Width=320 Height=240 Caption="_@M798_" Font=2 >
+<WndButton   Caption="_@M186_"    X=2 Y=2 Width=60  Height=22 Font=2 OnClickNotify="OnCloseClicked"/>
+<WndButton Name="cmdName" Caption="_@M452_" X=70 Y=0 Width=230  Height=28 Font=2 Tag=4 />
+<WndButton Name="cmdComment" Caption="_@M191_" X=70 Y=-1 Width=230  Height=28 Font=2 Tag=4 />
+<WndProperty Name="prpUTMzoneN" Caption="_@M830_" X=2 Y=70 Width=115 Height=28 CaptionWidth=75 Font=2 >
+<DataField name="" DataType="enum" Min=0 Max=1 Step=1/>
+</WndProperty>
+<WndProperty Name="prpUTMzoneC" Caption=" " X=110 Y=70 Width=65 Height=28 CaptionWidth=10 Font=2 >
+<DataField name="" DataType="double" DisplayFormat="%.0fd" EditFormat="%.0f" Min=0 Max=179 Step=1/>
+</WndProperty>
+<WndProperty Name="prpUTMeast" Caption="E/N " X=2 Y=100 Width=115 Height=28 CaptionWidth=75 Font=2 >
+<DataField name="" DataType="enum" Min=0 Max=1 Step=1/>
+</WndProperty>
+<WndProperty Name="prpUTMnorth" Caption=" " X=110 Y=100 Width=65 Height=28 CaptionWidth=10 Font=2 >
+<DataField name="" DataType="double" DisplayFormat="%.0fd" EditFormat="%.0f" Min=0 Max=89 Step=1/>
+</WndProperty>
+<WndProperty Name="prpAltitude" Caption="_@M89_" X=2 Y=-1 Width=180 Height=28 CaptionWidth=90 Font=2 >
+<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=30000 Step=5/>
+</WndProperty>
+<WndProperty Name="prpFlags" Caption="_@M752_"      X=2 Y=-1   Width=298 Height=28 CaptionWidth=90 Font=2 >
+<DataField name="" DataType="enum" Min=0 Max=10 Step=1 />
+</WndProperty>
+</WndForm>    
+</PMML>

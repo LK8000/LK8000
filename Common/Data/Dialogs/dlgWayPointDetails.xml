@@ -1,0 +1,41 @@
+<PMML>
+<WndForm Name="frmWayPointInfo" Type="Dialog" X=0 Y=0 Width=320 Height=240 Caption="_@M796_" Font=2 >
+<WndButton Name="cmdNext"  Caption="_@M460_" X=3 Y=78 Width=65  Height=45 Font=2 OnClickNotify="OnNextClicked" Tag=1 />
+<WndButton Name="cmdPrev"  Caption="_@M6_" X=3 Y=126 Width=65  Height=45 Font=2 OnClickNotify="OnPrevClicked" Tag=0/>
+<WndButton Name="cmdClose" Caption="_@M186_" X=3 Y=174 Width=65  Height=45 Font=2 Tag=3 />
+<WndFrame Name="frmInfos" X=70 Y=0 Width=246 Height=222 Font=2>
+
+<WndProperty Name="prpLatitude"  Caption="Lat/Lon"      X=2 Y=2 Width=160 Height=22 CaptionWidth=60 Font=2 ReadOnly=1 />
+<WndProperty Name="prpLongitude" Caption=""            X=145 Y=2 Width=117 Height=22 CaptionWidth=5 Font=2 ReadOnly=1 />
+<WndProperty Name="prpAltitude"  Caption="_@M255_"     X=2 Y=-1 Width=260 Height=22 CaptionWidth=150 Font=2 ReadOnly=1 />
+<WndProperty Name="prpSunset"    Caption="_@M671_"        X=2 Y=-1 Width=260 Height=22 CaptionWidth=150 Font=2 ReadOnly=1 />
+<WndProperty Name="prpDistance"  Caption="_@M245_"      X=2 Y=-1 Width=260 Height=22 CaptionWidth=150 Font=2 ReadOnly=1 />
+<WndProperty Name="prpBearing"   Caption="_@M138_"       X=2 Y=-1 Width=260 Height=22 CaptionWidth=150 Font=2 ReadOnly=1 />
+<WndProperty Name="prpMc0"       Caption="_@M83_" X=2 Y=-1 Width=260 Height=22 CaptionWidth=150 Font=2 ReadOnly=1 />
+<WndProperty Name="prpMc2"       Caption="_@M84_" X=2 Y=-1 Width=260 Height=22 CaptionWidth=150 Font=2 ReadOnly=1 />
+<WndProperty Name="prpWpComment" Caption=""       X=2 Y=-1  Width=260 Height=64 CaptionWidth=5 Font=2 ReadOnly=1 MultiLine=1 />
+</WndFrame>
+<WndListFrame Name=frmDetails X=70 Y=0 Width=246 Height=222 Font=3 
+OnListInfo="OnDetailsListInfo">
+<WndOwnerDrawFrame Name=frmDetailsEntry X=2 Y=2 Width=235 Height=18 Font=3  OnPaint="OnPaintDetailsListItem"/>
+</WndListFrame>
+<WndFrame Name="frmCommands" X=70 Y=0 Width=246 Height=222 Font=2 Visible=0>
+
+<WndButton Name="cmdGoto"        Caption="_@M236_" X=50 Y=4 Width=150  Height=40 Font=2 />
+<WndButton Name="cmdReplace"     Caption="_@M555_"       X=50 Y=48 Width=150  Height=40 Font=2 />
+<WndButton Name="cmdInserInTask" Caption="_@M358_"        X=50 Y=92 Width=150  Height=40 Font=2 />
+<WndButton Name="cmdAppendInTask" Caption="_@M95_"       X=50 Y=136 Width=150  Height=40 Font=2 />
+<WndButton Name="cmdRemoveFromTask" Caption="_@M552_"   X=50 Y=180 Width=150  Height=40 Font=2 />
+</WndFrame>
+<WndOwnerDrawFrame Name="frmImage" X=70 Y=0 Width=246 Height=222 Font=2 Visible=0>
+</WndOwnerDrawFrame>
+<WndFrame Name="frmSpecial" X=70 Y=0 Width=246 Height=222 Font=2 Visible=0>
+
+<WndButton Name="cmdSetAlternate1"   Caption="_@M602_"  X=50 Y=4 Width=150  Height=40 Font=2 />
+<WndButton Name="cmdSetAlternate2"   Caption="_@M603_"  X=50 Y=48 Width=150  Height=40 Font=2 />
+<WndButton Name="cmdNewHome"         Caption="_@M605_"     X=50 Y=92 Width=150  Height=40 Font=2 />
+<WndButton Name="cmdTeamCode"        Caption="_@M604_"        X=50 Y=136 Width=150  Height=40 Font=2 />
+<WndButton Name="cmdClearAlternates"  Caption="_@M177_"  X=50 Y=180 Width=150  Height=40 Font=2 />
+</WndFrame>
+</WndForm>    
+</PMML>

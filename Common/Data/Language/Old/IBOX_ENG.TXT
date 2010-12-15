@@ -1,0 +1,398 @@
+#
+# INFOBOXES
+#
+
+@0
+[Altitude QNH]
+This is the height above mean sea level reported by the GPS or by the Baro sensor (if pressure altitude is available and if it is selected to be used). 
+It is the altitude really used internally for all calculations. GPS altitude and Baro altitude infoboxes are available too; one of those two values is used in the QNH altitude. 
+USE THIS ALTITUDE as main reference, since this is the one being used by LK8000.
+Touchscreen/PC only: in simulation mode, this value is adjustable with the up/down arrow keys and the right/left arrow keys also cause the glider to turn.
+
+@1
+[Altitude AGL
+This is the navigation altitude minus the terrain height obtained from the terrain file.  The value is coloured red when the glider is below the terrain safety clearance height.
+
+@2
+[Thermal last 30 sec]
+Climb rate during last 30 seconds, based of the reported GPS altitude, or vario if available.
+
+@3
+[Bearing]
+True bearing of the next waypoint.  For AAT tasks, this is the true bearing to the target within the AAT sector.
+
+@4
+[L/D 20\" ]
+Instantaneous glide ratio, given by the ground speed divided by the vertical speed (GPS speed) over the last 20 seconds.  Negative values indicate climbing cruise. If the vertical speed is close to zero, the displayed value is '---'.
+
+@5
+[L/D Th]
+The distance from the top of the last thermal, divided by the altitude lost since the top of the last thermal.  
+Negative values indicate climbing cruise (height gain since leaving the last thermal).  
+If the vertical speed is close to zero, the displayed value is '---'.
+Attention: doing zig zag or turning back will result in wrong values! Use L/D Average instead.
+
+@6
+[Speed ground]
+Ground speed measured by the GPS.  If this infobox is active in simulation mode, pressing the up and down arrows adjusts the speed, and left and right turn the glider.
+
+@7
+[Last Thermal Average]
+Total altitude gain/loss in the last thermal divided by the time spent circling.
+
+@8
+
+[Last Thermal Gain]
+Total altitude gain/loss in the last thermal.
+
+@9
+[Last Thermal Time]
+Time spent circling in the last thermal.
+
+@10
+[MacCready Setting]
+The current MacCready setting.  This infobox also shows whether MacCready is manual or auto.  
+(Touchscreen/PC only) Also used to adjust the MacCready Setting if the infobox is active, by using the up/down cursor keys.
+
+@11
+[Next Distance]
+The distance to the currently selected waypoint. For AAT tasks, this is the distance to the target within the AAT sector.
+
+@12
+[Next Altitude Arrival]
+Arrival altitude at the next waypoint altitude, calculated for current MC, does NOT use safetyMC and does not use safety altitude if it is not a landing point, unless configured to do so.
+
+@13
+[Next Altitude Required]
+Altitude required to reach the next turn point, with current MC.
+
+@14
+[Next Waypoint]
+The name of the currently selected turn point.  When this infobox is active, using the up/down cursor keys selects the next/previous waypoint in the task.  
+(Touchscreen/PC only) Pressing the enter cursor key brings up the waypoint details.
+
+@15
+[Final Altitude Arrival]
+Arrival altitude at the final task turn point relative to the safety arrival altitude.
+
+@16
+[Final Altitude Required]
+Altitude required to finish the task.
+
+@17
+[Speed Task Average]
+Average cross country speed while on current task, compensated for altitude.
+
+@18
+[Final Distance]
+Distance to finish around remaining turn points.
+
+@19
+[Final L/D]
+Do NOT use this value, it's here only for compatibility issue with old versions.
+Use Final EFF instead.
+
+@20
+[Terrain Elevation]
+This is the elevation of the terrain above mean sea level, obtained from the terrain file at the current GPS location.
+
+@21
+[Thermal Average]
+Altitude gained/lost in the current thermal, divided by time spent thermaling.
+
+@22
+[Thermal Gain]
+The altitude gained/lost in the current thermal.
+
+@23
+[Track]
+Magnetic track reported by the GPS.  (Touchscreen/PC only) If this infobox is active in simulation mode, pressing the up and down  arrows adjusts the track.
+
+@24
+[Vario]
+Instantaneous vertical speed, as reported by the GPS, or the intelligent vario total energy vario value if connected to one.
+
+@25
+[Wind Speed]
+Wind speed estimated by LK8000 with TrueWind or while circling . 
+
+@26
+[Wind Bearing]
+Wind bearing estimated by LK8000, either with TrueWind or while circling. 
+
+@27
+[AA Time]
+Assigned Area Task time remaining.  Goes red when time remaining has expired.
+
+@28
+[AA Distance Max]
+Assigned Area Task maximum distance possible for remainder of task.
+
+@29
+[AA Distance Min]
+Assigned Area Task minimum distance possible for remainder of task.
+
+@30
+[AA Speed Max]
+Assigned Area Task average speed achievable if flying maximum possible distance remaining in minimum AAT time.
+
+@31
+[AA Speed Min]
+Assigned Area Task average speed achievable if flying minimum possible distance remaining in minimum AAT time.
+
+@32
+[Airspeed IAS]
+Indicated Airspeed reported by a supported external intelligent vario.
+If no sensor is available, it is estimated using current wind and air density at current altitude. In this case it is entitled eIAS .
+
+@33
+[Barometric Altitude]
+This is the barometric altitude obtained from a GPS equipped with pressure sensor, or a supported external intelligent vario. 
+If you have selected Use Baro Altitude in system config menu 5, then this altitude is also shown as QNH altitude, and used internally for all calculations. 
+
+@34
+[Speed MacReady]
+The MacCready equivalent speed. This is NOT the Speed to Fly as intended for Dolphin or Sollfahr speed. 
+
+@35
+[Percentage climb]
+Percentage of time spent in climb mode.  These statistics are reset upon starting the task.
+
+@36
+[Time of flight]
+Time elapsed since takeoff was detected.
+
+@37
+[G load]
+Magnitude of G loading reported by a supported external intelligent vario.  This value is negative for pitch-down manoeuvres.
+
+@38
+[Next L/D]
+Do NOT use this value, it's here only for compatibility issue with old versions.
+Use NEXT EFF instead.
+
+@39
+[Time local]
+GPS time expressed in local time zone.
+
+@40
+[Time UTC]
+GPS time expressed in UTC.
+
+@41
+[Task Time To Go]
+Estimated time required to complete task, assuming performance of ideal MacCready cruise/climb cycle.
+
+@42
+[Next Time To Go]
+Estimated time required to reach next waypoint, assuming performance of ideal MacCready cruise/climb cycle.
+
+@43
+[Speed To Fly, or Speed Dolphin or Sollfarh]
+The instantaneous MacCready speed-to-fly, making use of Netto vario calculations to determine dolphin cruise speed in the glider's current bearing.  
+In cruise flight mode, this speed-to-fly is calculated for maintaining altitude.  
+In final glide mode, this speed-to-fly is calculated for descent.  
+In climb mode, this switches to the speed for minimum sink at the current load factor (if an accelerometer is connected).
+
+@44
+[Netto Vario]
+Instantaneous vertical speed of air-mass, equal to vario value less the glider's estimated sink rate.  
+Best used if airspeed, accelerometers and vario are connected, otherwise calculations are based on GPS measurements and wind estimates.
+
+@45
+[Task Arrival Time]
+Estimated arrival local time at task completion, assuming performance of ideal MacCready cruise/climb cycle.
+
+@46
+[Next Arrival Time]
+Estimated arrival local time at next waypoint, assuming performance of ideal MacCready cruise/climb cycle.
+
+@47
+[Bearing Difference]
+The difference between the glider's track bearing, to the bearing of the next waypoint, or for AAT tasks, to the bearing to the target within the AAT sector.  
+GPS navigation is based on the track bearing across the ground, and this track bearing may differ from the glider's heading when there is wind present.  
+Chevrons point to the direction the glider needs to alter course to correct the bearing difference, that is, so that the glider's course made good is pointing directly at the next waypoint.  
+This bearing takes into account the curvature of the Earth.
+
+@48
+[Outside Air Temperature]
+Outside air temperature measured by a probe if supported by a connected intelligent variometer.
+
+@49
+[Relative Humidity]
+Relative humidity of the air in percent as measured by a probe if supported by a connected intelligent variometer.
+
+@50
+[Forecast Temperature]
+Forecast temperature of the ground at the home airfield, used in estimating convection height and cloud base in conjunction with outside air temperature and relative humidity probe.  
+(Touchscreen/PC only) Pressing the up/down cursor keys adjusts this forecast temperature.
+
+@51
+[AA Distance Tgt]
+Assigned Area Task distance around target points for remainder of task.
+
+@52
+[AA Speed Tgt]
+Assigned Area Task average speed achievable around target points remaining in minimum AAT time.
+
+@53
+[L/D vario]
+Instantaneous glide ratio, given by the indicated airspeed divided by the total energy vertical speed, when connected to an intelligent variometer.  
+Negative values indicate climbing cruise. If the total energy vario speed is close to zero, the displayed value is '---'.
+
+@54
+[Airspeed TAS]
+True Airspeed reported by a supported external intelligent vario.
+If no sensor is available, it is estimated using current wind and air density at current altitude. In this case it is entitled eTAS .
+
+@55
+[Own Team Code]
+The current Team code for this aircraft.  Use this to report to other team members. 
+
+@56
+[Team Bearing]
+The bearing to the team aircraft location at the last team code report. 
+
+@57
+[Team Bearing Diff]
+The relative bearing to the team aircraft location at the last reported team code. 
+
+@58
+[Team range]
+The range to the team aircraft location at the last reported team code. 
+
+@59
+[Speed Task Instantaneous]
+Instantaneous cross country speed while on current task, compensated for altitude.
+
+@60
+[Distance Home]
+Distance to home waypoint (if defined).
+
+@61
+[Speed Task Achieved]
+Achieved cross country speed while on current task, compensated for altitude.Normally this is used as first choice.
+
+@62
+[AA Delta Time]
+Difference between estimated task time and AAT minimum time.  Colored red if negative (expected arrival too early), or blue if in sector and can turn now with estimated arrival time greater than AAT time plus 5 minutes.
+
+@63
+[Thermal All]
+Time-average climb rate in all thermals.
+
+@65
+[Battery]
+On PDA and PNA systems, this gives the percent battery capacity available. If ending with a C it means that battery is under charge, if ending with a D it means that battery is discharging
+
+@66
+[Final Efficiency]
+Efficiency required to the arrival height above the final waypoint. Classic value to use!
+
+@67
+@68
+[Alternate efficiency]
+Glide ratio to the arrival height above the selected alternate waypoint.  This is not adjusted for total energy.
+Over 200 nothing is shown, between 100 and 200 an integer number is shown, between 1 and 99 a decimal value is shown.
+
+@69
+[BestAlternate]
+Automatic search for the best landing option available.
+
+@70
+[QFE]
+Automatic QFE. This altitude value is using GPS altitude or Barometric Altitude if available and if selected, and it is constantly reset to 0 on ground BEFORE taking off. 
+After takeoff, it is no more reset automatically even if on ground. 
+Changing QFE does not affect QNH altitudes. QFE is NOT used for calculations, it is only as a reference for the pilot.
+
+@71
+[Average efficiency]
+The distance made in the configured period of time , divided by the altitude lost since then.  
+Negative values are shown as oo (infin) and indicate climbing cruise (height gain). Over 200 of LD the value is shown as oo .
+You can configure the period of averaging in the Special config menu. 
+Suggested values for this configuration are 60, 90 or 120: lower values will be closed to Instant efficiency, and higher values will be closed to Efficiency from last thermal.
+Notice that the distance is NOT the straight line between you old and current position: it's exactly the distance you have made even in a zigzag glide.
+This value is not calculated while circling. 
+
+@72
+[Next Efficiency required]
+The required glide ratio to reach the next waypoint, given by the distance to next waypoint divided by the height required to arrive at the SAFETY ARRIVAL ALTITUDE.
+Over 199 and below 1 , no value is shown.
+This is a pure geometric calculation, equal to Garmin, Naviter and most of common other instruments.
+
+@73
+[Flight Level]
+Altitude Flight Level indicator. FL is expressed in hundreds of feets. 
+This indicator uses current altitude which is NOT necessarily barometric, and in any case non necessarily calculated on the standard atmosphere.
+In other words, it is not accurate and can be wrong even of some hundreds feet!
+So use it as an approximated indicator.
+Caution, no warranty!
+
+@74
+[Task Distance Covered]
+Distance covered up to now, from the current task. You need a valid start to make it account!
+
+@75
+[Alternate arrival]
+Arrival altitude difference over alternate. Press ENTER or RETURN after selecting the infobox in order to pull up its relative waypoint menu.
+
+@76
+[Alternate arrival]
+Arrival altitude difference over alternate. Press ENTER or RETURN after selecting the infobox in order to pull up its relative waypoint menu.
+
+@77
+[Alternate arrival]
+Arrival altitude difference over alternate. Press ENTER or RETURN after selecting the infobox in order to pull up its relative waypoint menu.
+
+@78
+[Home Radial]
+Radial to home waypoint, if available.
+
+@79
+[Airspace Distance]
+CURRENTLY NOT AVAILABLE. Distance to the nearest Airspace. Even if airspace is not appearing on the map, disabled or acknowldged already, distance remains. 
+If 0, you are inside an airspace, use Nearest Airspace menu to know more about it.
+
+@80
+[Ext.Batt.Bank ]
+External device battery bank in use, if available
+
+@81
+[Ext.Batt1.Voltage]
+External device battery bank 1 voltage, if available
+
+@82
+[Ext.Batt1.Voltage]
+External device battery bank 2 voltage, if available
+
+@83
+[Odometer]
+The distance made since TAKEOFF, calculated each second, also while circling. This value is reset to zero at Take Off, and cannot be reset in any other way. This value is calculated just like if you were driving a car on a flat surface!
+
+@84
+[Altern QNH]
+QNH altitude with units inverted: if you are using meters, than it will be in feet, if you are using feet than it will be in meters. 
+
+@85
+[Altern AltAGL]
+Altitude above ground level with units inverted: if you are using meters, than it will be in feet, if you are using feet than it will be in meters. 
+
+@86
+[GPS Altitude]
+This is the altitude reported from the GPS. Depending on your GPS device it can be quite accurate or very wrong sometimes. 
+Expecially if you are using a car navigator gps, the reported altitude can be very wrong during thermalling. 
+If you have no Baro Altitude available, or you havent selected it inside config menu 5, then this GPS altitude is going to be used internally for all calculations. 
+QNH altitude can use either GPS or Baro altitude. 
+Normally you should use as main infobox the QNH altitude, because it will always tell you what is being used internally.
+
+@87
+[MacCready Equivalent]
+This is the current real McCready you are using based on current average air speed. This value cannot be changed, and it is averaged on the same amount of time of AverageLD. 
+If you have no AirSpeed probe, Estimated Airspeed will be used. See the manual for more informations.
+
+@88
+@89
+No help available on this item!
+
+@9999
+No help available on this item!

@@ -1,0 +1,572 @@
+/*
+   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+   Released under GNU/GPL License v.2
+   See CREDITS.TXT file for authors and copyrights
+
+   $Id: LKDrawCommon.cpp,v 1.1 2010/12/11 14:07:24 root Exp root $
+*/
+
+#include "StdAfx.h"
+#include "options.h"
+#include "Cpustats.h"
+#include "XCSoar.h"
+#include "Utils2.h"
+#include "compatibility.h"
+#include "MapWindow.h"
+#include "Units.h"
+#include "McReady.h"
+#include "externs.h"
+#include "InputEvents.h"
+#include <windows.h>
+#include <math.h>
+#include <tchar.h>
+#include "InfoBoxLayout.h"
+#include "Logger.h"
+#include "Process.h"
+#include "RasterTerrain.h" // 091109
+#include "LKUtils.h"
+#include "LKMapWindow.h"
+
+
+#if (WINDOWSPC>0)
+#include <wingdi.h>
+#endif
+
+extern void DrawGlideCircle(HDC hdc, POINT Orig, RECT rc );
+extern void MapWaypointLabelAdd(TCHAR *Name, int X, int Y, TextInBoxMode_t Mode, int AltArivalAGL, bool inTask, 
+	bool isLandable, bool isAirport, bool isExcluded, int index);
+extern int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 );
+
+extern void DrawMapSpace(HDC hdc, RECT rc);
+extern void DrawNearest(HDC hdc, RECT rc);
+extern void DrawNearestTurnpoint(HDC hdc, RECT rc);
+extern void DrawCommon(HDC hdc, RECT rc);
+extern void DrawWelcome8000(HDC hdc, RECT rc);
+#ifdef CPUSTATS
+extern void DrawCpuStats(HDC hdc, RECT rc);
+#endif
+#ifdef DRAWDEBUG
+extern void DrawDebug(HDC hdc, RECT rc);
+#endif
+
+extern void WriteInfo(HDC hdc, bool *showunit, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle, 
+				short *columnvalue, short *columntitle, short *row1, short *row2, short *row3);
+
+extern int PDABatteryPercent;
+extern int PDABatteryTemperature;
+extern int MapWaypointLabelListCount;
+extern void ConvToUpper(TCHAR *str);
+
+typedef struct{
+  TCHAR Name[NAME_SIZE+1];
+  POINT Pos;
+  TextInBoxMode_t Mode;
+  int AltArivalAGL;
+  bool inTask;
+  bool isLandable; // VENTA5
+  bool isAirport; // VENTA5
+  bool isExcluded;
+  int  index;
+}MapWaypointLabel_t;
+
+
+extern MapWaypointLabel_t MapWaypointLabelList[];
+
+
+void MapWindow::DrawCommon(HDC hdc, RECT rc) {
+
+  SIZE WPTextSize, DSTextSize, BETextSize, RETextSize, AATextSize, HLTextSize, MITextSize;
+  TCHAR Buffer[LKSIZEBUFFERLARGE];
+  static RECT s_sortBox[6]; 
+  static TCHAR Buffer1[MAXCOMMON][MAXCOMMONNUMPAGES][24], Buffer2[MAXCOMMON][MAXCOMMONNUMPAGES][10], Buffer3[MAXCOMMON][MAXCOMMONNUMPAGES][10];
+  static TCHAR Buffer4[MAXCOMMON][MAXCOMMONNUMPAGES][12], Buffer5[MAXCOMMON][MAXCOMMONNUMPAGES][12];
+  static short maxnlname;
+  char text[LKSIZETEXT];
+  short i, k, iRaw, wlen, rli=0, curpage, drawn_items_onpage;
+  double Value;
+  COLORREF rcolor;
+
+
+  static short Column0, Column1, Column2, Column3, Column4, Column5;
+  static POINT p1, p2;
+  static short rawspace;
+  // Printable area for live nearest values
+  static short left,right,bottom;
+  // one for each mapspace, no matter if 0 and 1 are unused
+
+  // Vertical and horizontal spaces
+  #define INTERRAW	1
+  #define HEADRAW	NIBLSCALE(6)	
+  RECT invsel;
+
+  static bool doinit=true;
+  
+  if (doinit) {
+
+  // Set screen borders to avoid writing on extreme pixels
+  if ( ScreenSize < (ScreenSize_t)sslandscape ) {
+	// Portrait mode has tight horizontal margins...
+	left=rc.left+NIBLSCALE(1);
+	right=rc.right-NIBLSCALE(1);
+  	bottom=rc.bottom-BottomSize-NIBLSCALE(2);
+	maxnlname=MAXNLNAME-5; // 7 chars max, 8 sized
+  	_stprintf(Buffer,TEXT("MAKSJSMM"));  
+  } else {
+	left=rc.left+NIBLSCALE(5);
+	right=rc.right-NIBLSCALE(5);
+  	bottom=rc.bottom-BottomSize;
+	maxnlname=MAXNLNAME-3; // 9 chars, sized 10 100213
+  	_stprintf(Buffer,TEXT("ABCDEFGHMx")); 
+  }
+
+  SelectObject(hdc, LK8InfoBigFont); // Text font for Nearest  was LK8Title
+  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &WPTextSize);
+
+  // Size distance
+  _stprintf(Buffer,TEXT("000.0")); 
+  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &DSTextSize);
+
+  // Bearing
+  _stprintf(Buffer,TEXT("<<123")); 
+  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &BETextSize);
+
+  // reqE
+  _stprintf(Buffer,TEXT("5299")); 
+  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &RETextSize);
+
+  // Altitude Arrival
+  _stprintf(Buffer,TEXT("+9999")); 
+  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &AATextSize);
+
+  SelectObject(hdc, LK8InfoNormalFont);
+  _stprintf(Buffer,TEXT("MMMM")); 
+  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &HLTextSize);
+
+  SelectObject(hdc, LK8PanelMediumFont);
+  _stprintf(Buffer,TEXT("1.1"));
+  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &MITextSize);
+
+  short afterwpname=left+WPTextSize.cx+NIBLSCALE(5);
+  short intercolumn=(right-afterwpname- DSTextSize.cx-BETextSize.cx-RETextSize.cx-AATextSize.cx)/3; 
+
+  Column0=MITextSize.cx+LEFTLIMITER+NIBLSCALE(5);
+  Column1=left;							// WP align left
+  Column2=afterwpname+DSTextSize.cx;						// DS align right
+  Column3=Column2+intercolumn+BETextSize.cx;			// BE align right
+  Column4=Column3+intercolumn+RETextSize.cx;			// RE align right
+  Column5=Column4+intercolumn+AATextSize.cx;			// AA align right
+
+
+  if ( ScreenSize < (ScreenSize_t)sslandscape ) {
+  	TopSize=rc.top+HEADRAW*2+HLTextSize.cy;
+  	p1.x=0; p1.y=TopSize; p2.x=rc.right; p2.y=p1.y;
+  	TopSize+=HEADRAW;
+  	CommonNumraws=(bottom - TopSize) / (WPTextSize.cy+(INTERRAW*2));
+  	if (CommonNumraws>MAXCOMMON) CommonNumraws=MAXCOMMON;
+  	rawspace=(WPTextSize.cy+INTERRAW);
+  } else {
+  	TopSize=rc.top+HEADRAW*2+HLTextSize.cy;
+  	p1.x=0; p1.y=TopSize; p2.x=rc.right; p2.y=p1.y;
+  	TopSize+=HEADRAW/2;
+  	CommonNumraws=(bottom - TopSize) / (WPTextSize.cy+INTERRAW);
+  	if (CommonNumraws>MAXCOMMON) CommonNumraws=MAXCOMMON;
+  	rawspace=(WPTextSize.cy+INTERRAW);
+  }
+
+#define INTERBOX intercolumn/2
+
+  // Wpname
+  s_sortBox[0].left=0;
+  if ( ScreenSize < (ScreenSize_t)sslandscape ) s_sortBox[0].right=left+WPTextSize.cx-NIBLSCALE(2);
+  else s_sortBox[0].right=left+WPTextSize.cx-NIBLSCALE(10);
+  s_sortBox[0].top=0;
+  s_sortBox[0].bottom=p1.y;
+  SortBoxX[0]=s_sortBox[0].right;
+
+  // Distance
+  if ( ScreenSize < (ScreenSize_t)sslandscape ) s_sortBox[1].left=Column1+afterwpname-INTERBOX;
+  else s_sortBox[1].left=Column1+afterwpname-INTERBOX-NIBLSCALE(2);
+  s_sortBox[1].right=Column2+INTERBOX;
+  s_sortBox[1].top=0;
+  s_sortBox[1].bottom=p1.y;
+  SortBoxX[1]=s_sortBox[1].right;
+
+  // Bearing
+  s_sortBox[2].left=Column2+INTERBOX;
+  s_sortBox[2].right=Column3+INTERBOX;
+  s_sortBox[2].top=0;
+  s_sortBox[2].bottom=p1.y;
+  SortBoxX[2]=s_sortBox[2].right;
+
+  // reqE
+  s_sortBox[3].left=Column3+INTERBOX;
+  s_sortBox[3].right=Column4+INTERBOX;
+  s_sortBox[3].top=0;
+  s_sortBox[3].bottom=p1.y;
+  SortBoxX[3]=s_sortBox[3].right;
+
+  // AltArr
+  s_sortBox[4].left=Column4+INTERBOX;
+  s_sortBox[4].right=Column5+INTERBOX;
+  s_sortBox[4].top=0;
+  s_sortBox[4].bottom=p1.y;
+  SortBoxX[4]=s_sortBox[4].right;
+
+  SortBoxY=p1.y;
+
+  // Caution: could be wrong? no..
+  //CommonNumpages=(short)ceil( (float)MAXCOMMON / (float)CommonNumraws );
+  CommonNumpages=roundupdivision(MAXCOMMON, CommonNumraws);
+  if (CommonNumpages>MAXCOMMONNUMPAGES) CommonNumpages=MAXCOMMONNUMPAGES; 
+  else if (CommonNumpages<1) CommonNumpages=1;
+
+  // set the initial highlighted item to the first, in each MapSpace
+  SelectedRaw[MSM_COMMON]=0; 
+  SelectedPage[MSM_COMMON]=0;
+
+  doinit=false;
+  return;
+  } // doinit
+
+  int *pNumber;
+  int *pIndex;
+  switch(MapSpaceMode) {
+	case MSM_COMMON:
+			pNumber=&CommonNumber;
+			pIndex=CommonIndex;
+			break;
+	case MSM_RECENT:
+	default:
+			pNumber=&RecentNumber;
+			pIndex=RecentIndex;
+			break;
+	
+  }
+
+
+  // calculate again real number of pages
+  CommonNumpages=roundupdivision(*pNumber, CommonNumraws);
+  if (CommonNumpages>MAXCOMMONNUMPAGES) CommonNumpages=MAXCOMMONNUMPAGES;
+  else if (CommonNumpages<1) CommonNumpages=1;
+  // current page in use by current mapspacemode
+  curpage=SelectedPage[MapSpaceMode];
+  if (curpage<0||curpage>=MAXCOMMONNUMPAGES) {
+	DoStatusMessage(_T("ERR-092 current page invalid!")); // TODO FIX this to happen
+	// immediate action to resolve this problem, take it back to normality
+	SelectedPage[MapSpaceMode]=0;
+	LKevent=LKEVENT_NONE;
+	return;
+  }
+  // list changed, and we are now over the real new size> resetting
+  if (curpage>=CommonNumpages) curpage=0; 
+
+  // synthetic event handler . Remember to always clear events!
+  switch (LKevent) {
+	case LKEVENT_NONE:
+		break;
+	case LKEVENT_ENTER:
+		// i=CommonIndex[SelectedRaw[MapSpaceMode] + (curpage*CommonNumraws)]; OLD
+		i=pIndex[SelectedRaw[MapSpaceMode] + (curpage*CommonNumraws)];
+
+		if ( !ValidWayPoint(i)) {
+			// dont say error if empty list and an enter was pressed
+			if (*pNumber) 
+				DoStatusMessage(_T("ERR-018 Invalid selection"));
+			break;
+		}
+		SelectedWaypoint=i;
+		LastDoCommon = GPS_INFO.Time+NEARESTONHOLD; //@ 101003
+		PopupWaypointDetails();
+		LastDoCommon = 0; //@ 101003
+		SetModeType(LKMODE_MAP, MP_MOVING);
+//		LKevent=LKEVENT_NONE;
+		return;
+		break;
+	case LKEVENT_DOWN:
+		if (++SelectedRaw[MapSpaceMode] >=CommonNumraws) SelectedRaw[MapSpaceMode]=0;
+		LastDoCommon=GPS_INFO.Time+PAGINGTIMEOUT-1.0; //@ 101003
+		// Event to be cleared at the end
+		break;
+	case LKEVENT_UP:
+		if (--SelectedRaw[MapSpaceMode] <0) SelectedRaw[MapSpaceMode]=CommonNumraws-1;
+		LastDoCommon=GPS_INFO.Time+PAGINGTIMEOUT-1.0; //@ 101003
+		break;
+	case LKEVENT_PAGEUP:
+		LKevent=LKEVENT_NONE;
+		break;
+	case LKEVENT_PAGEDOWN:
+		LKevent=LKEVENT_NONE;
+		break;
+	case LKEVENT_NEWRUN:
+		for (i=0; i<MAXCOMMON; i++) {
+			for (k=0; k<MAXCOMMONNUMPAGES; k++) {
+				_stprintf(Buffer1[i][k],_T("------------")); // 12 chars
+				_stprintf(Buffer2[i][k],_T("----"));
+				_stprintf(Buffer3[i][k],_T("----"));
+				_stprintf(Buffer4[i][k],_T("----"));
+				_stprintf(Buffer5[i][k],_T("----"));
+			}
+		}
+		break;
+	case LKEVENT_NEWPAGE:
+		break;
+	default:
+		LKevent=LKEVENT_NONE;
+		break;
+  }
+
+  // Draw Headline
+
+  if (INVERTCOLORS)
+	_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p1, p2, RGB_GREEN, rc);
+  else
+	_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p1, p2, RGB_DARKGREEN, rc);
+
+  SelectObject(hdc, LK8InfoNormalFont); // Heading line
+
+  if ( ScreenSize < (ScreenSize_t)sslandscape ) { // portrait mode
+	_stprintf(Buffer,TEXT("%d.%d"),ModeIndex,CURTYPE+1);
+	SelectObject(hdc, LK8PanelMediumFont);
+	LKWriteText(hdc, Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+	SelectObject(hdc, LK8InfoNormalFont);
+
+	if (MapSpaceMode == MSM_COMMON )
+  		_stprintf(Buffer,TEXT("COMN %d/%d"),  curpage+1, CommonNumpages); 
+	else
+  		_stprintf(Buffer,TEXT("HIST %d/%d"), curpage+1, CommonNumpages); 
+	LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+
+
+	 _stprintf(Buffer,TEXT("Dist")); 
+	// always sorted manually here!
+	LKWriteText(hdc, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+
+	_stprintf(Buffer,TEXT("Dir")); 
+	LKWriteText(hdc, Buffer, Column3, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+
+	_stprintf(Buffer,TEXT("rEff")); 
+	LKWriteText(hdc, Buffer, Column4, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+
+	_stprintf(Buffer,TEXT("AltA")); 
+	LKWriteText(hdc, Buffer, Column5, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+
+
+  } else {
+
+	_stprintf(Buffer,TEXT("%d.%d"),ModeIndex,CURTYPE+1);
+	SelectObject(hdc, LK8PanelMediumFont);
+	LKWriteText(hdc, Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+	SelectObject(hdc, LK8InfoNormalFont);
+
+	if ( (ScreenSize == (ScreenSize_t)ss640x480) || (ScreenSize == (ScreenSize_t)ss320x240) || ScreenSize == ss896x672 ) {
+		if (MapSpaceMode == MSM_COMMON )
+			_stprintf(Buffer,TEXT("COMN %d/%d"), curpage+1,CommonNumpages); 
+		else
+			_stprintf(Buffer,TEXT("HIST %d/%d"),  curpage+1,CommonNumpages); 
+		LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+
+		_stprintf(Buffer,TEXT("Dist")); 
+		LKWriteText(hdc, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+
+		_stprintf(Buffer,TEXT("Dir")); 
+		LKWriteText(hdc, Buffer, Column3, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+
+		_stprintf(Buffer,TEXT("rEff")); 
+		LKWriteText(hdc, Buffer, Column4, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+
+		_stprintf(Buffer,TEXT("Arriv")); 
+		LKWriteText(hdc, Buffer, Column5, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+	} else {
+		if (MapSpaceMode==MSM_COMMON)
+			_stprintf(Buffer,TEXT("COMN %d/%d"), curpage+1,CommonNumpages); 
+		else
+			_stprintf(Buffer,TEXT("HIST %d/%d"), curpage+1,CommonNumpages); 
+		LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+
+		_stprintf(Buffer,TEXT("Distance")); 
+		LKWriteText(hdc, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+
+		_stprintf(Buffer,TEXT("Direction")); 
+		LKWriteText(hdc, Buffer, Column3, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+
+		_stprintf(Buffer,TEXT("ReqEff")); 
+		LKWriteText(hdc, Buffer, Column4, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+
+		_stprintf(Buffer,TEXT("AltArr")); 
+		LKWriteText(hdc, Buffer, Column5, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
+	}
+	
+
+  } // landscape mode
+
+
+  SelectObject(hdc, LK8InfoBigFont); // Text font for Nearest
+
+  // try to reduce conflicts, as task thread could change it while we are using it here.
+  // so we copy it and clear it here once forever in this run
+  bool ndr;
+  switch (MapSpaceMode) {
+	case MSM_COMMON:
+  		ndr=CommonDataReady;
+  		CommonDataReady=false;
+		break;
+	case MSM_RECENT:
+  		ndr=RecentDataReady;
+  		RecentDataReady=false;
+		break;
+	default:
+		ndr=false;
+		break;
+   }
+
+  // numraws always <= MAXNEAREST 
+  for (i=0, drawn_items_onpage=0; i<CommonNumraws; i++) {
+	iRaw=TopSize+(rawspace*i);
+	short curraw=(curpage*CommonNumraws)+i;
+	if (curraw>=MAXCOMMON) break;
+	rli=pIndex[curraw];
+
+
+	if (!ndr) goto KeepOldValues;
+	if ( ValidWayPoint(rli) ) {
+
+		wlen=wcslen(WayPointList[rli].Name);
+		if (wlen>maxnlname) {
+			_tcsncpy(Buffer, WayPointList[rli].Name, maxnlname); Buffer[maxnlname]='\0';
+		}
+		else {
+			_tcsncpy(Buffer, WayPointList[rli].Name, wlen); Buffer[wlen]='\0';
+		}
+		ConvToUpper(Buffer); // 100213 FIX UPPERCASE DRAWNEAREST
+		_tcscpy(Buffer1[i][curpage],Buffer); 
+
+		// Distance
+		Value=WayPointCalc[rli].Distance*DISTANCEMODIFY;
+         	_stprintf(Buffer2[i][curpage],TEXT("%0.1lf"),Value);
+
+		// relative bearing
+
+		if (DisplayMode != dmCircling) {
+			Value = WayPointCalc[rli].Bearing -  GPS_INFO.TrackBearing;
+
+			if (Value < -180.0)
+				Value += 360.0;
+			else
+				if (Value > 180.0)
+					Value -= 360.0;
+
+#ifndef __MINGW32__
+			if (Value > 1)
+				_stprintf(Buffer3[i][curpage], TEXT("%2.0f°»"), Value);
+			else
+				if (Value < -1)
+					_stprintf(Buffer3[i][curpage], TEXT("«%2.0f°"), -Value);
+				else
+					_tcscpy(Buffer3[i][curpage], TEXT("«»"));
+#else
+			if (Value > 1)
+				_stprintf(Buffer3[i][curpage], TEXT("%2.0fÂ°Â»"), Value);
+			else
+				if (Value < -1)
+					_stprintf(Buffer3[i][curpage], TEXT("Â«%2.0fÂ°"), -Value);
+				else
+					_tcscpy(Buffer3[i][curpage], TEXT("Â«Â»"));
+#endif
+		} else
+			_stprintf(Buffer3[i][curpage], TEXT("%2.0fÂ°"), WayPointCalc[rli].Bearing);
+
+		// Requested GR
+		Value=WayPointCalc[rli].GR;
+		if (Value<1 || Value>=MAXEFFICIENCYSHOW) 
+			_stprintf(Buffer4[i][curpage],_T("---"));
+		else {
+			if (Value>99) sprintf(text,"%.0f",Value);
+			else sprintf(text,"%.1f",Value);
+			_stprintf(Buffer4[i][curpage],_T("%S"),text);
+		}
+
+		// arrival altitude
+		Value=ALTITUDEMODIFY*WayPointCalc[rli].AltArriv[AltArrivMode];
+		if (Value <-9999 ||  Value >9999 )
+			strcpy(text,"---");
+		else
+			sprintf(text,"%+.0f",Value);
+		wsprintf(Buffer5[i][curpage], TEXT("%S"),text);
+
+	} else {
+		// Invalid waypoint, fill in all empty data and maybe break loop
+		_stprintf(Buffer1[i][curpage],_T("------------"));
+		_stprintf(Buffer2[i][curpage],_T("---"));
+		_stprintf(Buffer3[i][curpage],_T("---"));
+		_stprintf(Buffer4[i][curpage],_T("---"));
+		_stprintf(Buffer5[i][curpage],_T("---"));
+	}
+
+
+KeepOldValues:
+
+	if ( ValidWayPoint(rli) ) {
+  		SelectObject(hdc, LK8InfoBigFont); // Text font for Nearest
+		drawn_items_onpage++;
+		// Common turnpoints are mixed, so we must be sure that reachable is checked only against a landable
+		if ((WayPointCalc[rli].VGR == 3 )|| ( WayPointCalc[rli].IsLandable && !WayPointList[rli].Reachable)) // 091205
+			rcolor=RGB_LIGHTRED;
+		else
+			rcolor=RGB_WHITE;
+	} else 
+			rcolor=RGB_GREY;
+			//TextDisplayMode.AsFlag.Color = TEXTGREY;
+
+	LKWriteText(hdc, Buffer1[i][curpage], Column1, iRaw , 0, WTMODE_NORMAL, WTALIGN_LEFT, rcolor, false);
+	
+	// set again correct font
+  	SelectObject(hdc, LK8InfoBigFont); // Text font for Nearest
+	LKWriteText(hdc, Buffer2[i][curpage], Column2, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+
+	LKWriteText(hdc, Buffer3[i][curpage], Column3, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+
+	LKWriteText(hdc, Buffer4[i][curpage], Column4, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+
+	LKWriteText(hdc, Buffer5[i][curpage], Column5, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
+
+  }  // for
+
+
+  // clear flag, and don't outbox
+  if (LKevent==LKEVENT_NEWRUN || LKevent==LKEVENT_NEWPAGE ) {
+		LKevent=LKEVENT_NONE;
+		return;
+  }
+
+  // BOXOUT SELECTED ITEM
+    if (drawn_items_onpage>0) { 
+
+	if (SelectedRaw[MapSpaceMode] <0 || SelectedRaw[MapSpaceMode]>(CommonNumraws-1)) {
+		LKevent=LKEVENT_NONE;
+		return;
+	}
+	// avoid boxing and selecting nonexistent items
+	// selectedraw starts from 0, drawnitems from 1...
+	// In this case we set the first one, or last one, assuming we are rotating forward or backward
+	if (SelectedRaw[MapSpaceMode] >= drawn_items_onpage) {
+		if (LKevent==LKEVENT_DOWN) SelectedRaw[MapSpaceMode]=0;
+		else 
+		// up from top to bottom, bottom empty, look for the last valid one (ie first going back from bottom)
+		if (LKevent==LKEVENT_UP) SelectedRaw[MapSpaceMode]=drawn_items_onpage-1;
+		else {
+			DoStatusMessage(_T("Cant find valid raw"));
+			SelectedRaw[MapSpaceMode]=0;
+		}
+	}
+	invsel.left=left;
+	invsel.right=right;
+	invsel.top=TopSize+(rawspace*SelectedRaw[MapSpaceMode])+NIBLSCALE(2);
+	invsel.bottom=TopSize+(rawspace*(SelectedRaw[MapSpaceMode]+1))-NIBLSCALE(1);
+	InvertRect(hdc,&invsel);
+  } 
+
+  LKevent=LKEVENT_NONE;
+  return;
+}
+
+

@@ -1,0 +1,14 @@
+#!/bin/sh
+start=`date`
+make clean
+make TARGET=PPC2002
+make clean
+make TARGET=PPC2003
+make clean
+make TARGET=PNA
+make clean
+make TARGET=PC
+
+echo "DONE -----------"
+echo "started $start"
+echo "ended `date`"
