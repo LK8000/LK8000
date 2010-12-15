@@ -913,7 +913,7 @@ long tnow;
 #endif
 	  tpassed = tnow;
 	  #ifndef DISABLEAUDIO
-          if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_BELL"));
+          if (EnableSoundModes) LKSound(_T("LK_BELL.WAV"));
           #endif
 
 	  ShowMenu();

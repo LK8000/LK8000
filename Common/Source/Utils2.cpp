@@ -858,7 +858,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		// If in mapspacemode process ENTER 
 		if ( (keytime>=(VKSHORTCLICK*2)) && dontdrawthemap) {
 			#ifndef DISABLEAUDIO
-			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_BELL"));
+			if (EnableSoundModes) LKSound(_T("LK_BELL.WAV"));
 			#endif
 			LKevent=LKEVENT_ENTER;
 			MapWindow::RefreshMap();
@@ -3747,7 +3747,7 @@ bool CustomKeyHandler(const int key) {
 	// Only used for aircraft icon
 	case ckToggleInfobox:
 		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_BELL"));
+		if (EnableSoundModes) LKSound(_T("LK_BELL.WAV"));
 		#endif
 		MapWindow::RequestToggleFullScreen();
 		return true;

@@ -1183,7 +1183,7 @@ void InputEvents::eventScreenModes(const TCHAR *misc) {
 				if (!(NewMap && Look8000)) {
 					EnableAuxiliaryInfo = false;
 					#ifndef DISABLEAUDIO
-					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_BELL"));
+					if (EnableSoundModes) LKSound(_T("LK_BELL.WAV"));
 					#endif 
 				} else {
 					#ifndef DISABLEAUDIO
@@ -1210,7 +1210,7 @@ void InputEvents::eventScreenModes(const TCHAR *misc) {
 				MapWindow::RequestToggleFullScreen();		    
 				if (!(NewMap && Look8000)) {
 					#ifndef DISABLEAUDIO  
-					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_BELL"));
+					if (EnableSoundModes) LKSound(_T("LK_BELL.WAV"));
 					#endif
 				} else {
 					#ifndef DISABLEAUDIO  
@@ -1244,7 +1244,7 @@ void InputEvents::eventScreenModes(const TCHAR *misc) {
 			MapWindow::RequestToggleFullScreen();
 			if (!(NewMap && Look8000)) {
 				#ifndef DISABLEAUDIO  
-				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_BELL"));
+				if (EnableSoundModes) LKSound(_T("LK_BELL.WAV"));
 				#endif
 			} else {
 				#ifndef DISABLEAUDIO  
