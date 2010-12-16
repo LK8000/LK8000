@@ -471,6 +471,7 @@ bool MapLock=false;
 bool UseMapLock=false;
 bool ActiveMap=true;
 short GlideBarMode=0;
+short OverlaySize=0;
 short ArrivalValue=0;
 short NewMapDeclutter=0;
 short Shading=1;

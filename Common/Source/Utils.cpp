@@ -287,6 +287,7 @@ const TCHAR szRegistryLKTopoZoomCat100[]= TEXT("LKTopoZoomCat100");
 const TCHAR szRegistryLKTopoZoomCat110[]= TEXT("LKTopoZoomCat110");
 #endif
 const TCHAR szRegistryLKMaxLabels[]= TEXT("LKMaxLabels");
+const TCHAR szRegistryOverlaySize[]= TEXT("OverlaySize");
 const TCHAR szRegistryPGGateIntervalTime[]= TEXT("PGGateIntervalTime");
 const TCHAR szRegistryPGStartOut[]= TEXT("PGStartOut");
 
@@ -1019,6 +1020,10 @@ void ReadRegistrySettings(void)
   Temp = (DeclutterMode_t)dmMedium;  // 100724
   GetFromRegistry(szRegistryDeclutterMode,&Temp); 
   DeclutterMode = Temp;
+
+  Temp = 0; // full size overlay by default
+  GetFromRegistry(szRegistryOverlaySize,&Temp); 
+  OverlaySize = Temp;
 
   Temp = 0;
   GetFromRegistry(szRegistryGpsAltitudeOffset,&Temp); 

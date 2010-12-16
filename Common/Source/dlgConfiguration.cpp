@@ -2929,6 +2929,19 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpOverlaySize"));
+  if (wp) {
+    DataFieldEnum* dfe;
+    dfe = (DataFieldEnum*)wp->GetDataField();
+	// LKTOKEN  _@M842_ = "Big font " 
+    dfe->addEnumText(gettext(TEXT("_@M842_")));
+	// LKTOKEN  _@M843_ = "Small font " 
+    dfe->addEnumText(gettext(TEXT("_@M843_")));
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->Set(OverlaySize);
+    wp->RefreshDisplay();
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpGlideBarMode"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -4718,6 +4731,16 @@ void dlgConfigurationShowModal(void){
 	(wp->GetDataField()->GetAsInteger());
       SetToRegistry(szRegistryMapBox,
 		    (DWORD)(MapBox));
+      changed = true;
+    }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpOverlaySize"));
+  if (wp) {
+    if (OverlaySize != wp->GetDataField()->GetAsInteger() ) {
+      OverlaySize = wp->GetDataField()->GetAsInteger();
+      SetToRegistry(szRegistryOverlaySize,
+		    (DWORD)(OverlaySize));
       changed = true;
     }
   }

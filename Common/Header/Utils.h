@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: Utils.h,v 8.2 2009/06/24 10:06:16 root Exp root $
+   $Id: Utils.h,v 8.3 2010/12/16 14:44:47 root Exp root $
 */
 
 #if !defined(AFX_UTILS_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
@@ -95,6 +95,7 @@ extern const TCHAR szRegistryIphoneGestures[];
 extern const TCHAR szRegistryPollingMode[];
 extern const TCHAR szRegistryLKVarioBar[];
 extern const TCHAR szRegistryUseMapLock[]; // VENTA9
+extern const TCHAR szRegistryOverlaySize[];
 extern const TCHAR szRegistryActiveMap[]; 
 extern const TCHAR szRegistryCheckSum[]; 
 extern const TCHAR szRegistryBestWarning[];

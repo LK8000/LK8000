@@ -95,6 +95,8 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   bool redwarning; // 091203
   int gatechrono=0;
 
+  HFONT *bigFont;
+
   short leftmargin=0;
 
   static bool doinit=true;
@@ -154,13 +156,18 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 	flipflopcount=0;
   }
 
+  if (OverlaySize==0)
+	bigFont=(HFONT *)LK8BigFont;
+  else
+	bigFont=(HFONT *)LK8TargetFont;
+
   if (doinit) {
 #if LKDRAW_OPTIMIZE
 	TCHAR Tdummy[]=_T("T");
 	#ifndef OLDSPLITTER
 	int iconsize;
 	#endif
-	SelectObject(hdc, LK8BigFont); 
+	SelectObject(hdc, bigFont); 
 	GetTextExtentPoint(hdc, Tdummy, _tcslen(Tdummy), &TextSize);
 	ySizeLK8BigFont = TextSize.cy;
 
@@ -570,7 +577,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 			#else
 			LKFormatValue(LK_BRGDIFF, false, BufferValue, BufferUnit, BufferTitle);
 			#endif
-			SelectObject(hdc, LK8BigFont);
+			SelectObject(hdc, bigFont);
 			#if NEWPNAV
 			if (ScreenLandscape)
 				LKWriteText(hdc, BufferValue, (rc.right+rc.left)/2, rc.top+ NIBLSCALE(15), 0, WTMODE_OUTLINED, WTALIGN_CENTER, overcolor, true);
@@ -584,7 +591,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		// Draw efficiency required and altitude arrival for destination waypoint
 		// For paragliders, average efficiency and arrival destination
 
-		SelectObject(hdc, LK8BigFont); // use this font for big values
+		SelectObject(hdc, bigFont); // use this font for big values
 
 		if ( !ISPARAGLIDER ) { // 091110
 			#if OVERTARGET
@@ -696,7 +703,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   if ( ISPARAGLIDER ) {
 
 	if (UseGates()&&ActiveWayPoint==0) {
-		SelectObject(hdc, LK8BigFont); // use this font for big values
+		SelectObject(hdc, bigFont); // use this font for big values
 
 		if (HaveGates()) {
 			Units::TimeToTextDown(BufferValue,gatechrono ); 
@@ -714,7 +721,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		}
 
 	} else {
-		SelectObject(hdc, LK8BigFont); // use this font for big values
+		SelectObject(hdc, bigFont); // use this font for big values
 	  	if (DisplayMode == dmCircling)
 			LKFormatValue(LK_TC_30S, false, BufferValue, BufferUnit, BufferTitle);
 		else
@@ -830,7 +837,7 @@ drawOverlay:
 
   } else
   if (McOverlay && Look8000>lxcNoOverlay && (ISGLIDER || ISPARAGLIDER)) {
-	SelectObject(hdc, LK8BigFont); 
+	SelectObject(hdc, bigFont); 
 	LKFormatValue(LK_MC, false, BufferValue, BufferUnit, BufferTitle);
 	// rcy=(rc.bottom + rc.top)/2 -ySizeLK8BigFont-NIBLSCALE(10)-ySizeLK8BigFont; VERTICAL CENTERED
 	rcy=yrightoffset -ySizeLK8BigFont-ySizeLK8BigFont;
@@ -842,7 +849,7 @@ drawOverlay:
 
   if ( (Look8000==(Look8000_t)lxcAdvanced) ) {
 
-	SelectObject(hdc, LK8BigFont); 
+	SelectObject(hdc, bigFont); 
 	if (ISPARAGLIDER) {
 		LKFormatValue(LK_HNAV, false, BufferValue, BufferUnit, BufferTitle); // 091115
 	} else {
@@ -876,7 +883,7 @@ drawOverlay:
 	if (ISPARAGLIDER || LKVarioBar) { // 100213
 		//LKFormatValue(LK_HGPS, false, BufferValue, BufferUnit, BufferTitle);
 		LKFormatValue(LK_VARIO, false, BufferValue, BufferUnit, BufferTitle); // 091115
-		SelectObject(hdc, LK8BigFont); 
+		SelectObject(hdc, bigFont); 
 		GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
 		rcy+=TextSize.cy;
 		LKWriteText(hdc, BufferValue, rcx,rcy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
@@ -887,7 +894,7 @@ drawOverlay:
 	}
 
 	LKFormatValue(LK_GNDSPEED, false, BufferValue, BufferUnit, BufferTitle);
-	SelectObject(hdc, LK8BigFont); 
+	SelectObject(hdc, bigFont); 
 	GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
 	rcy+=TextSize.cy;
 	LKWriteText(hdc, BufferValue, rcx,rcy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);

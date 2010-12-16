@@ -1,5 +1,5 @@
 # LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  101215
+# MASTER UPDATED:  101216
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -851,4 +851,6 @@ _@M837_ "out of Terrain bound"
 _@M838_ "First 8"
 _@M839_ "First 10"
 _@M840_ "First 12"
-
+_@M841_ "Font size "
+_@M842_ "Big font "
+_@M843_ "Small font "

@@ -409,8 +409,8 @@ LK specific fonts cannot be customized.
 
 @193
 Draw overlay values on moving map.
-Half mode will paint destination waypoint and distance on upper left, and more informations on the right (MC, requested efficiency and arrival altitude difference for gliders).
-Full mode will also paint clock and left values. See the manual.
+[Half mode] show destination waypoint and distance, and other values on the right (MC, requested efficiency and arrival altitude difference for gliders).
+[Full mode] will add also left overlays values and the clock, if enabled. See the manual.
 
 @194
 This determines whether the the glide terrain range is calculated and drawn as a line on the map area:
@@ -591,7 +591,11 @@ This option defines how waypoints outside the terrain range are handled: the use
 or they can be always included or excluded.
 
 @237
-Show clock in full overlay mode
+Working only in Landscape and Full Overlay mode: localtime clock is shown.
+In portrait mode or Half overlay mode, no clock is displayed.
+
+@238
+Size of overlay fonts.
 
 #
 # BASIC SETTINGS
