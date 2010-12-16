@@ -165,7 +165,11 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 	    isairport=((WayPointList[i].Flags & AIRPORT) == AIRPORT);
 	    islandpoint=((WayPointList[i].Flags & LANDPOINT) == LANDPOINT);
 
+	#if FIXISLANDABLE
+	islandable=WayPointCalc[i].IsLandable;
+	#else
 	    if (isairport || islandpoint) islandable=true; else islandable=false;
+	#endif
 
  	    // always in range if MapScale <=10  since no zoom in waypoints is documented and .Zoom is always 0. 
 	    irange = WaypointInRange(i); 
