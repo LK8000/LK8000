@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: Terrain.cpp,v 8.5 2010/12/12 23:16:52 root Exp root $
+   $Id: Terrain.cpp,v 8.6 2010/12/17 02:02:27 root Exp root $
 */
 
 // omaplibdemo.cpp : Defines the entry point for the application.
@@ -1195,6 +1195,8 @@ public:
      // StartupStore(_T(" vistop=%d visbot=%d  Y0=%d Y1=%d origy=%d \n"),rect_visible.top, rect_visible.bottom,Y0,Y1,orig.y); REMOVE
  
     #if FIX_MAPSIZE
+    // Entering thermal mode still creates problems as many months ago.
+    // No time to fix this for the 2.0. Sadly, disabling FIX MAPSIZE.
     if (ReducedMapSize()) { 
 	// StartupStore(_T(" .. MapScale=%f\n"),MapWindow::MapScale); REMOVE
 	int resbottom;

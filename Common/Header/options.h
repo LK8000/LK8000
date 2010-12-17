@@ -227,7 +227,7 @@
 //
 #define FIX_RELOADCONFIG	1	// Applied: 101020 expires 110201
 #define MATFIX1			1	// Applied: 101030 expires 110201
-#define FIX_MAPSIZE		1	// Applied: 101214 expires 110201
+// #define FIX_MAPSIZE		1	// Applied: 101214 expires 110201
 // #define FIXGDI			// todo
 #define FIXDC			1
 #define FIXISLANDABLE		1	// Applied: 101215 expire 110201
