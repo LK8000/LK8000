@@ -1847,11 +1847,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   StartupLogFreeRamAndStorage();
 
   // PRELOAD ANYTHING HERE
-  LKRun(_T("PRELOAD_00.EXE"),1,0);
-  LKRun(_T("PRELOAD_05.EXE"),1,5000);
-  LKRun(_T("PRELOAD_30.EXE"),1,30000);
-  LKRun(_T("PRELOAD_60.EXE"),1,60000);
-  LKRun(_T("PRELOAD_99.EXE"),1,INFINITE);
+  LKRunStartEnd(true);
   // END OF PRELOAD, PROGRAM GO!
 
   #ifdef PNA 
@@ -3296,6 +3292,7 @@ void Shutdown(void) {
   LKSound(_T("LK_DISCONNECT.WAV")); Sleep(500); // real WAV length is 410+ms
   if (!GlobalRunning) { // shutdown on startup clicking on the X
 	StartupStore(_T(". Quick shutdown requested before terminating startup%s"),NEWLINE);
+	LKRunStartEnd(false);
 	exit(0);
   }
 
@@ -3532,11 +3529,7 @@ void Shutdown(void) {
   }
   #endif
   StartupStore(TEXT(". Finished shutdown%s"),NEWLINE);
-  LKRun(_T("ENDLOAD_00.EXE"),1,0);
-  LKRun(_T("ENDLOAD_05.EXE"),1,5000);
-  LKRun(_T("ENDLOAD_30.EXE"),1,30000);
-  LKRun(_T("ENDLOAD_60.EXE"),1,60000);
-  LKRun(_T("ENDLOAD_99.EXE"),1,INFINITE);
+  LKRunStartEnd(false);
   // quitting PC version while menus are up will not terminate correctly. this is a workaround
   #if (WINDOWSPC>0)
   StartupStore(TEXT(". Program terminated%s"),NEWLINE); 
@@ -5348,7 +5341,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
       } else {
         invalid = (ActiveWayPoint<=0);
 	// LKTOKEN  _@M803_ = "Waypoint\nPrevious" 
-        ReplaceInString(OutBuffer, TEXT("$(WaypointPrevious)"), gettext(TEXT("_@M803_")), Size);
+        ReplaceInString(OutBuffer, TEXT("$(WaypointPrevious)"), gettext(TEXT("_@M803_")), Size); 
 	if (--items<=0) goto label_ret; // 100517
       }
     }

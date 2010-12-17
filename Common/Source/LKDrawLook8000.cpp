@@ -285,7 +285,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 				break;
 			case (ScreenSize_t)ss896x672:
 				_tcscpy(StartGateNameFS,_T("Start "));
-				tlenFullScreen=10;
+				tlenFullScreen=9;
 				break;
 			default:
 				_tcscpy(StartGateNameFS,_T("Start "));

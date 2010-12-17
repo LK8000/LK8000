@@ -388,3 +388,22 @@ TCHAR * GetSizeSuffix(void) {
 }
 
 
+void LKRunStartEnd(bool start) {
+  if (start) {
+	LKRun(_T("PRELOAD_00.EXE"),1,0);
+	LKRun(_T("PRELOAD_05.EXE"),1,5000);
+	LKRun(_T("PRELOAD_30.EXE"),1,30000);
+	LKRun(_T("PRELOAD_60.EXE"),1,60000);
+	LKRun(_T("PRELOAD_99.EXE"),1,INFINITE);
+  } else {
+	LKRun(_T("ENDLOAD_00.EXE"),1,0);
+	LKRun(_T("ENDLOAD_05.EXE"),1,5000);
+	LKRun(_T("ENDLOAD_30.EXE"),1,30000);
+	LKRun(_T("ENDLOAD_60.EXE"),1,60000);
+	LKRun(_T("ENDLOAD_99.EXE"),1,INFINITE);
+
+  }
+}
+
+
+

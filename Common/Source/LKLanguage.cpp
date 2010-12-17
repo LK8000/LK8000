@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: LKLanguage.cpp,v 1.2 2010/12/10 21:50:08 root Exp root $
+   $Id: LKLanguage.cpp,v 1.3 2010/12/17 15:19:03 root Exp root $
  */
 
 #include "StdAfx.h"
@@ -337,7 +337,7 @@ bool LKLoadMessages(void) {
   TCHAR sFile[MAX_PATH];
   TCHAR sPath[MAX_PATH];
   TCHAR suffix[20];
-  int i;
+  unsigned int i, j;
   #if DEBUG_GETTEXT
   int maxsize=0;
   #endif
@@ -377,11 +377,12 @@ bool LKLoadMessages(void) {
   TCHAR sTmp[300];
   char snum[5];
   TCHAR scapt[MAX_MESSAGE_SIZE+1];
+  TCHAR scaptraw[MAX_MESSAGE_SIZE+1];
 
   short mnumber=0;
   while ( ReadString(hFile,299,sTmp) ) {
 
-	int slen=_tcslen(sTmp); // includes cr or lf or both
+	unsigned int slen=_tcslen(sTmp); // includes cr or lf or both
 	if (slen<9) continue;
 	if ( (sTmp[0]!='_') || (sTmp[1]!='@') || (sTmp[2]!='M') ) {
 		#if DEBUG_GETTEXT
@@ -441,7 +442,35 @@ bool LKLoadMessages(void) {
 	if (newlen>maxsize) maxsize=newlen;
         #endif
 
-	_tcscpy(scapt,&sTmp[start+1]);
+	// transcode special charcaters while loading from file
+	TCHAR tcode;
+	bool donetcode;
+	_tcscpy(scaptraw,&sTmp[start+1]);
+	for (i=0, j=0; i<_tcslen(scaptraw); i++) {
+		donetcode=false;
+		if (scaptraw[i] == '\\') {
+			if ( (i+1) <_tcslen(scaptraw)) {
+				switch(scaptraw[i+1]) {
+					case 'n':
+						tcode='\n';
+						break;
+					case 'r':
+						tcode='\r';
+						break;
+					default:
+						tcode=' ';
+						break;
+				}
+				scapt[j++]=tcode;
+				i++;
+				donetcode=true;
+			}
+		}
+		if (!donetcode) {
+			scapt[j++]=scaptraw[i];
+		}
+	}
+	scapt[j]='\0';
 
 	if (LKMessagesIndex[inumber]!= -1) {
 		StartupStore(_T("... INVALID LANGUAGE MESSAGE INDEX <%d> duplicated!\n"),inumber);

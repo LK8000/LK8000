@@ -57,6 +57,7 @@ bool	CustomKeyHandler(const int key);
 void	SetMapScales(void);
 bool	LoadModelFromProfile(void);
 TCHAR*  GetSizeSuffix(void);
+void	LKRunStartEnd(bool);
 
 void	InitNewMap();
 void	InitAircraftCategory();

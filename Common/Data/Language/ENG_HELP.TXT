@@ -86,7 +86,8 @@ Defines the brightness (whiteness) of the terrain rendering.  This controls the 
 Defines the color ramp used in terrain rendering.
 
 @120
-Enable or disable moving map shade effect.
+Enable or disable moving map shade/slope effect. You can also enable/disable shading from the Screen View menu buttons.
+However, if you disable shading here it will be disabled forever, and you will not be able to enable it from Screen View.
 
 @121
 If NO TERRAIN is used, this is the color to be used as a background. Note that some colors are suitable for no topology use, 
