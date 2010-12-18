@@ -116,6 +116,9 @@ IDB_SCROLLBARTOP        BITMAP  DISCARDABLE     "../Data/Bitmaps/scrollbarTop.bm
 IDB_SCROLLBARMID        BITMAP  DISCARDABLE     "../Data/Bitmaps/scrollbarMid.bmp"
 IDB_SCROLLBARBOT        BITMAP  DISCARDABLE     "../Data/Bitmaps/scrollbarBot.bmp"
 IDB_SCROLLBARFILL       BITMAP  DISCARDABLE     "../Data/Bitmaps/scrollbarFill.bmp"
+IDB_DLGBUTTONLEFT32     BITMAP  DISCARDABLE     "../Data/Bitmaps/DialogButtonLeft32x32.bmp"
+IDB_DLGBUTTONRIGHT32    BITMAP  DISCARDABLE     "../Data/Bitmaps/DialogButtonRight32x32.bmp"
+
 
 //
 // XMLDIALOG

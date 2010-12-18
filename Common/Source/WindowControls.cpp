@@ -1423,7 +1423,6 @@ void WindowControl::Destroy(void){
   ReleaseDC(mHWnd, mHdc);
   #if FIXDC
   if (sHdc!=NULL) {
-	//StartupStore(_T(".... Delete sHdc\n")); // REMOVE
 	DeleteDC(sHdc);
 	sHdc=NULL;
   }
@@ -2938,10 +2937,8 @@ void WndButton::Paint(HDC hDC){
 
 
 
-#ifndef FIXDC
 HBITMAP WndProperty::hBmpLeft32=NULL;
 HBITMAP WndProperty::hBmpRight32=NULL;
-#endif
 
 int     WndProperty::InstCount=0;
 
@@ -3064,12 +3061,10 @@ WndProperty::WndProperty(WindowControl *Parent,
   SetForeColor(GetOwner()->GetForeColor());
   SetBackColor(GetOwner()->GetBackColor());
 
-  #ifndef FIXDC
   if (InstCount == 0){
     hBmpLeft32 = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_DLGBUTTONLEFT32));
     hBmpRight32 = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_DLGBUTTONRIGHT32));
   }
-  #endif
   InstCount++;
 
   mDownDown = false;
@@ -3084,12 +3079,10 @@ WndProperty::~WndProperty(void){
 void WndProperty::Destroy(void){
 
   InstCount--;
-  #ifndef FIXDC
   if (InstCount == 0){
     DeleteObject(hBmpLeft32);
     DeleteObject(hBmpRight32);
   }
-  #endif
 
   if (mDataField != NULL){
     if (!mDataField->Unuse()) {
@@ -3462,9 +3455,7 @@ void WndProperty::Paint(HDC hDC){
   RECT r;
   SIZE tsize;
   POINT org;
-  #ifndef FIXDC
   HBITMAP oldBmp;
-  #endif
   
 
   if (!GetVisible()) return;
@@ -3506,10 +3497,7 @@ void WndProperty::Paint(HDC hDC){
 
   ExtTextOut(hDC, org.x, org.y, ETO_OPAQUE, NULL, mCaption, _tcslen(mCaption), NULL);
 
-  // this is not working as it should. icon buttons for left and right are never seleted.
-  // All of this should be either fixed or removed.
-
-  #ifndef FIXDC // 101206
+  // these are button left and right icons for waypoint select, for example
   if (mDialogStyle) // can't but dlgComboPicker here b/c it calls paint when combopicker closes too
   {     // so it calls dlgCombopicker on the click/focus handlers for the wndproperty & label
 	// opening a window, each subwindow goes here once
@@ -3518,7 +3506,6 @@ void WndProperty::Paint(HDC hDC){
   {
 	if (GetFocused() && !GetReadOnly()) {
 
-		// THIS IS NEVER HAPPENING
 		oldBmp = (HBITMAP)SelectObject(GetTempDeviceContext(), hBmpLeft32);
 
 		if (mDownDown)
@@ -3553,7 +3540,6 @@ void WndProperty::Paint(HDC hDC){
 		SelectObject(GetTempDeviceContext(), oldBmp);
 	}
   }
-#endif
   SelectObject(hDC, oldFont);
 }
 

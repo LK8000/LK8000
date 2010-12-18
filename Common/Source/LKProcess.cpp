@@ -1102,7 +1102,12 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				value = DerivedDrawInfo.WindBearing;
 				valid=true;
 				if (value==360) value=0;
-				_stprintf(BufferValue,TEXT("%1.0f")_T(DEG)_T("/%1.0f"), value, SPEEDMODIFY*DerivedDrawInfo.WindSpeed );
+				if (HideUnits)
+					_stprintf(BufferValue,TEXT("%1.0f/%1.0f"), 
+						value, SPEEDMODIFY*DerivedDrawInfo.WindSpeed );
+				else
+					_stprintf(BufferValue,TEXT("%1.0f")_T(DEG)_T("/%1.0f"), 
+						value, SPEEDMODIFY*DerivedDrawInfo.WindSpeed );
 			} else {
 				_stprintf(BufferValue,TEXT("--/--"));
 			}

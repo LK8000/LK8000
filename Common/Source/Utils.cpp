@@ -1071,6 +1071,7 @@ void ReadRegistrySettings(void)
   MapBox = Temp;
 
   if ((ScreenSize == (ScreenSize_t)ss240x320) ||
+      (ScreenSize == (ScreenSize_t)ss272x480) ||
       (ScreenSize == (ScreenSize_t)ss320x240) )
 	Temp=1;
   else
