@@ -6,8 +6,8 @@
    $Id: Defines.h,v 8.2 2010/12/15 12:27:55 root Exp root $
 */
 
-#ifndef XCSOAR_DEFINES_H
-#define XCSOAR_DEFINES_H
+#ifndef LK8000_DEFINES_H
+#define LK8000_DEFINES_H
 
 // The StartupStore line separator, normally CRLF but previously it was only LF
 #define SNEWLINE        "\r\n"
@@ -168,15 +168,17 @@
 
 #endif
 
-// Optimization preprocessing for LK8000:  We want ALL landables within range.
+// Optimization preprocessing for LK8000:  We want ALL landables within dst range.
+// Distance is in Km possibly GREATER THAN DSTRANGETURNPOINT but not needed really.
 #define MAXRANGELANDABLE        500
-// Distance is in Km GREATER THAN DSTRANGETURNPOINT !
 #define DSTRANGELANDABLE        150
-// Same for nearest turnpoints 
+// Same for nearest turnpoints . Since tps are much more than landables, lets try to reduce the number
+// by selecting only those within 75km. It is critical that the number of found tps within 75km is
+// below 500 !
 #define MAXRANGETURNPOINT	500
-// We tune it as well as 3 times the distance we want: 25km + 25km margin
-#define DSTRANGETURNPOINT	50
-// Nearest calculations are made on this sized list * 2
+#define DSTRANGETURNPOINT	75
+
+// Nearest calculations are made on this list
 // if we enlarge, resize also MAXNUMPAGES
 #define MAXNEAREST		50
 // Commons are both 1 page of commons and HISTORY as well! HISTORY is sized MAXCOMMON!

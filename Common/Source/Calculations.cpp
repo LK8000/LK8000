@@ -730,11 +730,11 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		if ( (Basic->Time - LastRangeLandableTime) <0 ) LastRangeLandableTime=0;
 	}
 
-	// Update search list only every 10 minutes, no need to do it earlier
+	// Update search list only every x minutes :
 	// At 180kmh in 10 minutes we do 30km so DSTRANGETURNPOINT to include in the nearest TP &co. 
 	// should account 25km more than what we really want for range search each second 
-	// We do it assuming LK8000 is in use, always
 	// Only if no data available, force action every 3 seconds
+	// We are updating every 3 minutes, which makes it good also for GA 
 	#if 0
 	if (  (RangeLandableNumber<=0 && RangeTurnpointNumber<=0 && (Basic->Time > (LastRangeLandableTime + 3.0))) ||
 	      (Basic->Time > (LastRangeLandableTime + 300.0)) ) {   // TODO FIX EXPERIMENT TEST 090928 every 5 minutes
@@ -4064,7 +4064,17 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	return;
   }
   #endif
-  // we call DoAutoMacCready even with no task for EqMc
+  /*
+  // 101219 NO NEED
+  if ( AutoMcMode==1 ) {
+	if (av_thermal>0) mc_new = av_thermal;
+	MACCREADY = LowPassFilter(MACCREADY,mc_new,0.15);
+	UnlockTaskData();
+	return;
+  }
+  */
+
+  // otherwise, if AutoMc for finalglide or "both", return if no goto
   if (!ValidTaskPoint(ActiveWayPoint)) {
 	UnlockTaskData();
 	return;

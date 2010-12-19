@@ -278,7 +278,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 		LastDoCommon = GPS_INFO.Time+NEARESTONHOLD; //@ 101003
 		PopupWaypointDetails();
 		LastDoCommon = 0; //@ 101003
-		SetModeType(LKMODE_MAP, MP_MOVING);
+		// SetModeType(LKMODE_MAP, MP_MOVING); Experimental OFF 101219
 //		LKevent=LKEVENT_NONE;
 		return;
 		break;

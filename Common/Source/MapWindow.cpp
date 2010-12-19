@@ -2989,6 +2989,7 @@ bool MapWindow::RenderTimeAvailable() {
 void MapWindow::DrawThermalEstimate(HDC hdc, const RECT rc) {
   POINT screen;
   HPEN oldPen;
+  /*
   #if NOSIM
   static short counter=0;
   #else
@@ -2996,6 +2997,7 @@ void MapWindow::DrawThermalEstimate(HDC hdc, const RECT rc) {
   static short counter=0;
   #endif
   #endif
+  */
   if (!EnableThermalLocator) return;
 
   if (DisplayMode == dmCircling) {
@@ -3013,6 +3015,7 @@ void MapWindow::DrawThermalEstimate(HDC hdc, const RECT rc) {
 			Circle(hdc, screen.x, screen.y, (int)(100*ResMapScaleOverDistanceModify)+NIBLSCALE(2), rc); //@ 101101
 			Circle(hdc, screen.x, screen.y, (int)(100*ResMapScaleOverDistanceModify), rc); //@ 101101
 		}
+/* 101219 This would display circles around the simulated thermal, but people is confused.
 		#if NOSIM
 		if (SIMMODE && (ThLatitude>1 && ThLongitude>1)) { // there's a thermal to show
 			if ((counter==5 || counter==6|| counter==7)) {
@@ -3038,6 +3041,7 @@ void MapWindow::DrawThermalEstimate(HDC hdc, const RECT rc) {
 		}
 		#endif
 		#endif
+ */
 		SelectObject(hdc,oldPen);
 	}
   } else {

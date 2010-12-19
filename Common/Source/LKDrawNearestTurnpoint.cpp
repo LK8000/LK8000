@@ -261,7 +261,7 @@ void MapWindow::DrawNearestTurnpoint(HDC hdc, RECT rc) {
 		LastDoNearestTp = GPS_INFO.Time + NEARESTONHOLD; 
 		PopupWaypointDetails();
 		LastDoNearestTp = 0; //@ 101003
-		SetModeType(LKMODE_MAP,MP_MOVING);
+		// SetModeType(LKMODE_MAP,MP_MOVING); Experimental OFF 101219
 		LKevent=LKEVENT_NONE; 
 		#ifndef LKOBJ
   		DeleteObject(sortbrush);

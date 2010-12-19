@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: Utils.cpp,v 8.16 2010/12/13 00:03:56 root Exp root $
+   $Id: Utils.cpp,v 8.17 2010/12/19 16:42:53 root Exp root $
 */
 
 #include "StdAfx.h"
@@ -5036,7 +5036,13 @@ WinPilotPolarInternal WinPilotPolars[] =
   {TEXT("Jantar Std 48-2"), 375, 150, 100, -0.73, 120, -0.95, 150, -1.60, 10.66},
   {TEXT("Mini Nimbus"), 345, 155, 100, -0.69, 120, -0.92, 150, -1.45, 9.86},
   {TEXT("Pegase 101A"), 344, 120, 85.0, -0.62, 105, -0.75, 175, -2.54, 10.5},
+
+  {TEXT("SZD-30 Pirat"), 340,0,75,-0.7,83,-0.739,150,-2.46,13.8},
+  {TEXT("SZD-48-3 Jantar 3"),  326,150,95,-0.66,180,-2.24,220,-3.85,10.66},
+  {TEXT("SZD-51-1 Junior"), 333,0,70,-0.58,130,-1.6,180,-3.6,12.51},
+  {TEXT("SZD-9bis 1E Bocian"), 540,0,70,-0.83,90,-1.00,140,-2.53,20},
   }; //   0-x
+  // 101219 Total: 112
   // 101212 Total: 108
 
 

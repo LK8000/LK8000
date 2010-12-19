@@ -347,11 +347,13 @@ void GotoWaypoint(const int wpnum) {
 	MB_YESNO|MB_ICONQUESTION) == IDYES) {
 		LockTaskData();
 		FlyDirectTo(wpnum);
+		OvertargetMode=OVT_TASK;
 		UnlockTaskData();
         }
   } else {
 	LockTaskData();
 	FlyDirectTo(wpnum);
+	OvertargetMode=OVT_TASK;
 	UnlockTaskData();
   }
 }

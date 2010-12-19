@@ -24,30 +24,45 @@ static WndButton *buttonComment = NULL;
 static void UpdateButtons(void) {
   TCHAR text[MAX_PATH];
   if (buttonName) {
-    if (_tcslen(global_wpt->Name)<=0) {
-	// LKTOKEN  _@M451_ = "Name" 
-      _stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M451_")),
-	// LKTOKEN  _@M7_ = "(blank)" 
-                gettext(TEXT("_@M7_")));
-    } else {
-	// LKTOKEN  _@M451_ = "Name" 
-      _stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M451_")),
-                global_wpt->Name);
-    }
-    buttonName->SetCaption(text);
+	if (_tcslen(global_wpt->Name)<=0) {
+		// LKTOKEN  _@M451_ = "Name" 
+		_stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M451_")),
+		// LKTOKEN  _@M7_ = "(blank)" 
+		gettext(TEXT("_@M7_")));
+	} else {
+		// LKTOKEN  _@M451_ = "Name" 
+		_stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M451_")),
+		global_wpt->Name);
+	}
+	buttonName->SetCaption(text);
   }
   if (buttonComment) {
-    if (_tcslen(global_wpt->Comment)<=0) {
-	// LKTOKEN  _@M190_ = "Comment" 
-      _stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M190_")),
-	// LKTOKEN  _@M7_ = "(blank)" 
-                gettext(TEXT("_@M7_")));
-    } else {
-	// LKTOKEN  _@M190_ = "Comment" 
-      _stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M190_")),
-                global_wpt->Comment);
-    }
-    buttonComment->SetCaption(text);
+	#if CUPCOM
+	//@ 101219
+	if ((global_wpt->Comment==NULL) || (_tcslen(global_wpt->Comment)<=0) ) {
+		// LKTOKEN  _@M190_ = "Comment" 
+		_stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M190_")),
+		// LKTOKEN  _@M7_ = "(blank)" 
+		gettext(TEXT("_@M7_")));
+	} else {
+		// LKTOKEN  _@M190_ = "Comment" 
+		_stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M190_")),
+		global_wpt->Comment);
+	}
+	#else
+	// 101219 this was crashing since forgot CUPCOM!
+	if (_tcslen(global_wpt->Comment)<=0) {
+		// LKTOKEN  _@M190_ = "Comment" 
+		_stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M190_")),
+		// LKTOKEN  _@M7_ = "(blank)" 
+		gettext(TEXT("_@M7_")));
+	} else {
+		// LKTOKEN  _@M190_ = "Comment" 
+		_stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M190_")),
+		global_wpt->Comment);
+	}
+	#endif
+	buttonComment->SetCaption(text);
   }
 }
 
@@ -63,14 +78,36 @@ static void OnNameClicked(WindowControl *Sender) {
 
 static void OnCommentClicked(WindowControl *Sender) {
 	(void)Sender;
+  #if CUPCOM
   if (buttonComment) {
-    dlgTextEntryShowModal(global_wpt->Comment, COMMENT_SIZE);
+	//@ 101219
+	TCHAR comment[COMMENT_SIZE*2];
+	if (global_wpt->Comment != NULL)
+		_tcscpy(comment,global_wpt->Comment);
+	else
+		_tcscpy(comment,_T(""));
+	dlgTextEntryShowModal(comment, COMMENT_SIZE);
+
+	// in any case free the space
+	if (global_wpt->Comment != NULL) free(global_wpt->Comment);
+	if (_tcslen(comment)>0) {
+		// do we have a new comment?
+		global_wpt->Comment = (TCHAR*)malloc((_tcslen(comment)+2)*sizeof(TCHAR));
+		if (global_wpt->Comment == NULL) {
+			StartupStore(_T("------ Wp Edit new comment malloc failed for comment <%s>! Memory problem!%s"),comment,NEWLINE);
+		} else {
+			_tcscpy(global_wpt->Comment,comment);
+		}
+	}
   }
+  #else
+  if (buttonComment) {
+	dlgTextEntryShowModal(global_wpt->Comment, COMMENT_SIZE);
+  }
+  #endif
   UpdateButtons();
 }
 
-//
-// 
 
 static void SetUnits(void) {
   WndProperty* wp;

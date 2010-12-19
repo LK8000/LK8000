@@ -281,7 +281,7 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 		LastDoNearest = GPS_INFO.Time+NEARESTONHOLD; //@ 101003
 		PopupWaypointDetails();
 		LastDoNearest = 0; //@ 101003
-		SetModeType(LKMODE_MAP,MP_MOVING);
+		// SetModeType(LKMODE_MAP,MP_MOVING); EXperimental OFF 101219
 		LKevent=LKEVENT_NONE; 
 		#ifndef LKOBJ
   		DeleteObject(sortbrush);
@@ -522,6 +522,8 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 					_tcscpy(Buffer3[i][curpage], TEXT("«»"));
 #endif
 		} else
+			_stprintf(Buffer3[i][curpage], TEXT("%2.0f°"), WayPointCalc[rli].Bearing); // 101219
+
 		Value=WayPointCalc[rli].GR;
 		if (Value<1 || Value>=MAXEFFICIENCYSHOW) 
 			_stprintf(Buffer4[i][curpage],_T("---"));

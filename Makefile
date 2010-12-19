@@ -398,6 +398,7 @@ OBJS	:=\
 	$(SRC)/LKDrawCommon.o 		$(SRC)/LKDrawNearestTurnpoint.o\
 	$(SRC)/LKDrawInfoPage.o		$(SRC)/LKDrawWaypoints.o\
 	$(SRC)/LKDrawTraffic.o		$(SRC)/LKSimulator.o\
+	$(SRC)/LKBestAlternate.o \
 	$(SRC)/MapWindow.o 		$(SRC)/MapWindow2.o \
 	$(SRC)/MapWindow3.o 		$(SRC)/Utils2.o \
 	$(SRC)/McReady.o 		$(SRC)/Message.o \
