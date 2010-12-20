@@ -2572,7 +2572,9 @@ bool CheckLanguageDir() {
   TCHAR srcfile[MAX_PATH];
   LocalPath(srcdir, _T(LKD_LANGUAGE));
   _stprintf(srcfile,TEXT("%s\\_LANGUAGE"),srcdir);
-  if (  GetFileAttributes(srcfile) == 0xffffffff ) return false;
+  if (  GetFileAttributes(srcfile) == 0xffffffff ) {
+	return false;
+  }
 
   LocalPath(srcdir, _T(LKD_LANGUAGE));
   _stprintf(srcfile,TEXT("%s\\ENG_MSG.TXT"),srcdir);

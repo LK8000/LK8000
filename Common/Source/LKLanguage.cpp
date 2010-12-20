@@ -270,12 +270,14 @@ void LKReadLanguageFile() {
 	doinit=false;
   }
 
-
+  bool english=false;
   TCHAR szFile1[MAX_PATH] = TEXT("\0");
   _tcscpy(LKLangSuffix,_T(""));
   GetRegistryString(szRegistryLanguageFile, szFile1, MAX_PATH);
+  tryeng:
   if (_tcslen(szFile1)==0) {
 	_tcscpy(szFile1,_T("%LOCAL_PATH%\\\\_Language\\ENGLISH.LNG"));
+	english=true;
   }
   ExpandLocalPath(szFile1);
   // SetRegistryString(szRegistryLanguageFile, TEXT("\0")); // ?
@@ -284,6 +286,20 @@ void LKReadLanguageFile() {
   hLangFile = INVALID_HANDLE_VALUE;
   hLangFile = CreateFile(szFile1, GENERIC_READ,0,NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,NULL);
   if( hLangFile == INVALID_HANDLE_VALUE) {
+	if (english) {
+		StartupStore(_T("--- CRITIC, NO ENGLISH LANGUAGE FILES!%s"),NEWLINE);
+		// critic point, no default language! BIG PROBLEM here!
+		for (unsigned short i=0; i<MAX_MESSAGES; i++) {
+			LKMessages[i]=NULL;
+			LKMessagesIndex[i]=-1;
+		}
+		return;
+		
+	} else {
+		StartupStore(_T("--- NO LANGUAGE FILE FOUND <%s>, retrying with ENGlish!%s"),szFile1,NEWLINE);
+		_tcscpy(szFile1,_T(""));
+		goto tryeng;
+	}
 	return;
   }
 

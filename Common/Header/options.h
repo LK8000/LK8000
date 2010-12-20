@@ -231,6 +231,7 @@
 // #define FIXGDI			// todo
 #define FIXDC			1
 #define FIXISLANDABLE		1	// Applied: 101215 expire 110201
+#define FIXNOLOADXML		1	// do not load xml from filesystem with tokenized XML
 
 // Will speed up Range search, and also BestAlternate search
 #define UNSORTEDRANGE		1	// 101120

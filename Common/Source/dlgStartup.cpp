@@ -12,6 +12,12 @@
 #include "externs.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
+#include "MapWindow.h"
+
+extern HFONT MapWindowFont;
+extern HFONT TitleWindowFont;
+extern HFONT InfoWindowFont;
+extern void Shutdown(void);
 
 static WndForm *wf=NULL;
 static WndOwnerDrawFrame *wSplash=NULL;
@@ -19,6 +25,56 @@ static WndOwnerDrawFrame *wSplash=NULL;
 static HBITMAP hSplash;
 #endif
 extern HINSTANCE hInst;
+
+// lines are: 0 - 9
+// fsize 0 small 1 normal 2 big
+void RawWrite(TCHAR *text, int line, short fsize) { 
+   HDC hDC = GetWindowDC(hWndMainWindow);
+   HFONT oldfont=(HFONT)SelectObject(hDC,MapWindowFont);
+   switch(fsize) {
+	case 0:
+		oldfont=(HFONT)SelectObject(hDC,TitleWindowFont);
+		break;
+	case 1:
+		break;
+	case 2:
+		oldfont=(HFONT)SelectObject(hDC,InfoWindowFont);
+		break;
+   }
+   SetBkMode(hDC,TRANSPARENT);
+   SIZE tsize;
+   GetTextExtentPoint(hDC, text, _tcslen(text), &tsize);
+   int y;
+   switch (line) {
+	case 0:
+		y=tsize.cy;
+		break;
+	case 1:
+		y=(tsize.cy*2);
+		break;
+	case 2:
+		y=(tsize.cy*3);
+		break;
+	case 7:
+		y=ScreenSizeY-(tsize.cy*2);
+		break;
+	case 8:
+		y=ScreenSizeY-(tsize.cy*1);
+		break;
+	case 9:
+		y=ScreenSizeY;
+		break;
+	default:
+		y=0;
+		break;
+   }
+
+
+   MapWindow::LKWriteText(hDC,text,ScreenSizeX/2,y,0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_AMBER,false);
+   SelectObject(hDC,oldfont);
+   ReleaseDC(hWndMainWindow, hDC);
+}
+
 
 static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 
@@ -171,6 +227,7 @@ void dlgStartupShowModal(void){
   #endif
 
   char filename[MAX_PATH];
+  strcpy(filename,"");
   if (RUN_MODE==RUN_WELCOME) {
 	if (!InfoBoxLayout::landscape) {
 		LocalPathS(filename, TEXT("dlgFlySim_L.xml"));
@@ -180,7 +237,9 @@ void dlgStartupShowModal(void){
 		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_FLYSIM"));
 	}
 	#if LKSTARTUP
-	if (!wf) return false;
+	if (!wf) {
+		return false;
+	}
 	#else
 	if (!wf) return;
 	#endif
@@ -334,17 +393,29 @@ void dlgStartupShowModal(void){
   if  (!CheckDataDir()) {
 	TCHAR mydir[MAX_PATH];
 	TCHAR mes[MAX_PATH];
+
+	_stprintf(mes,_T("%s v%s.%s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE));
+	RawWrite(mes,1,1);
 	LocalPath(mydir,_T(LKD_SYSTEM));
 	_stprintf(mes,_T("%s"),mydir);
-	MessageBoxX(hWndMainWindow, mes, _T("Install PROBLEM!"), MB_OK|MB_ICONQUESTION);
-	extern void Shutdown(void);
+	RawWrite(_T("Directory or configuration files missing"),8,1);
+	RawWrite(mes,9,0);
+	MessageBoxX(hWndMainWindow, _T("Check Installation"), _T("FATAL ERROR 001"), MB_OK|MB_ICONQUESTION);
 	Shutdown();
   }
 
   if  (!CheckLanguageDir()) {
+	TCHAR mydir[MAX_PATH];
+	TCHAR mes[MAX_PATH];
 	StartupStore(_T("... CHECK LANGUAGE DIRECTORY FAILED!%s"),NEWLINE);
-	MessageBoxX(hWndMainWindow, TEXT("Check LK8000/_Language directory and files!"), TEXT("INSTALL PROBLEM"), MB_OK|MB_ICONQUESTION);
-	extern void Shutdown(void);
+
+	_stprintf(mes,_T("%s v%s.%s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE));
+	RawWrite(mes,1,1);
+	LocalPath(mydir,_T(LKD_LANGUAGE));
+	_stprintf(mes,_T("%s"),mydir);
+	RawWrite(_T("Directory or configuration files missing"),8,1);
+	RawWrite(mes,9,0);
+	MessageBoxX(hWndMainWindow, _T("Check Language Install"), _T("FATAL ERROR 002"), MB_OK|MB_ICONQUESTION);
 	Shutdown();
   }
   wf->ShowModal();
@@ -365,7 +436,6 @@ void dlgStartupShowModal(void){
 	// LKTOKEN  _@M198_ = "Confirm Exit?" 
 		gettext(TEXT("_@M198_")), 
 		TEXT("LK8000"), MB_YESNO|MB_ICONQUESTION) == IDYES) {
-		extern void Shutdown(void);
 		Shutdown();
 	} else
 		RUN_MODE=RUN_WELCOME;

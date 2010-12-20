@@ -4396,6 +4396,7 @@ void LocalPath(TCHAR* buffer, const TCHAR* file, int loc) {
 #else
 	// get the MyDocuments directory
 	SHGetSpecialFolderPath(hWndMainWindow, buffer, loc, false);
+
 	_tcscat(buffer,TEXT("\\"));
 	_tcscat(buffer,TEXT(XCSDATADIR));
 #endif

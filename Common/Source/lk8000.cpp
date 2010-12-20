@@ -1902,13 +1902,16 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 
   CreateDirectoryIfAbsent(TEXT(""));  // RLD make sure the LocalPath folder actually exists
   CreateDirectoryIfAbsent(TEXT(LKD_LOGS));
-  CreateDirectoryIfAbsent(TEXT(LKD_SYSTEM));
+  // CreateDirectoryIfAbsent(TEXT(LKD_SYSTEM));
   CreateDirectoryIfAbsent(TEXT(LKD_CONF));
   CreateDirectoryIfAbsent(TEXT(LKD_TASKS));
-  CreateDirectoryIfAbsent(TEXT(LKD_AIRSPACES));
-  CreateDirectoryIfAbsent(TEXT(LKD_POLARS));
+  // CreateDirectoryIfAbsent(TEXT(LKD_AIRSPACES));
+  // CreateDirectoryIfAbsent(TEXT(LKD_POLARS));
   CreateDirectoryIfAbsent(TEXT(LKD_MAPS));
   CreateDirectoryIfAbsent(TEXT(LKD_WAYPOINTS));
+  // CreateDirectoryIfAbsent(TEXT(LKD_LANGUAGE));
+  // CreateDirectoryIfAbsent(TEXT(LKD_SOUNDS));
+  // CreateDirectoryIfAbsent(TEXT(LKD_BITMAPS));
 
   XCSoarGetOpts(lpCmdLine);
 
@@ -2655,33 +2658,6 @@ void InitialiseFontsHardCoded(RECT rc,
     GlobalEllipse=1.1f; // to be checked, TODO but unused, now
   }
 
-
-/* VENTA5 TEST automatic fallback for 320x240,640x480 and unusual resolutions  091120 REMOVE 
-//  THESE RESOLUTIONS ARE *NOT* MANAGED FOR PDA here
-  // Fallback for any other resolution
-  else if (InfoBoxLayout::landscape) {
-
-    propGetFontSettingsFromString(TEXT("28,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
-    propGetFontSettingsFromString(TEXT("16,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
-    propGetFontSettingsFromString(TEXT("16,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont);
-    propGetFontSettingsFromString(TEXT("14,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardCDIWindowLogFont);
-    propGetFontSettingsFromString(TEXT("13,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont);
-    propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);
-    propGetFontSettingsFromString(TEXT("18,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
-    propGetFontSettingsFromString(TEXT("14,0,0,0,500,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont);
-  }
-  else { // portrait
-
-    propGetFontSettingsFromString(TEXT("28,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
-    propGetFontSettingsFromString(TEXT("16,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
-    propGetFontSettingsFromString(TEXT("16,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont);
-    propGetFontSettingsFromString(TEXT("28,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardCDIWindowLogFont);
-    propGetFontSettingsFromString(TEXT("14,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont);
-    propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);
-    propGetFontSettingsFromString(TEXT("18,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
-    propGetFontSettingsFromString(TEXT("16,0,0,0,500,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont);
-  }
-*/
 
 #endif // not WindowsPC or RealThing
 
