@@ -3504,7 +3504,7 @@ BOOL ReadString(HANDLE hFile, int Max, TCHAR *String)
 
   ASSERT(Max<sizeof(sTmp));
 
-  if (Max >= (int)(sizeof(sTmp)))  // 100207 fixed signed unsigned (int)
+  if (Max >= (int)(sizeof(sTmp)))  
     return(FALSE);
 
   dwFilePos = SetFilePointer(hFile, 0, NULL, FILE_CURRENT);
@@ -5740,23 +5740,3 @@ void ExtTextOutClip(HDC hDC, int x, int y, TCHAR *text, int width) {
 }
 
 
-/* 
-empty 252 kg
-ballast 160kg
-max auw 525 kg
-Calculated
->LS6 numbers at 33.8 kg/m2
->speed km/h  sink m/s
->80         0.589
->90         0.6
->100        0.658
->110        0.733
->120        0.854
->130        0.984
->140        1.131
->150        1.313
->160        1.510
->170        1.741
->180        1.965
->190        2.209
-*/

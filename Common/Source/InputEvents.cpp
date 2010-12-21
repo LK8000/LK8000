@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-  $Id: InputEvents.cpp,v 8.9 2010/12/11 00:57:46 root Exp root $
+  $Id: InputEvents.cpp,v 8.10 2010/12/21 20:19:25 root Exp root $
 */
 
 
@@ -165,12 +165,12 @@ void InputEvents::readFile() {
   if (_tcslen(szFile1)>0) {
 	fp=_tfopen(szFile1, TEXT("rt"));
   }
+  TCHAR xcifile[MAX_PATH];
   if (fp == NULL) {
 	// no special XCI in engineering, or nonexistent file.. go ahead with language check
 
 	if ( _tcslen(LKLangSuffix)<3) return;
 	TCHAR xcipath[MAX_PATH];
-	TCHAR xcifile[MAX_PATH];
 	LocalPath(xcipath,_T(LKD_LANGUAGE));
 	_stprintf(xcifile,_T("%s\\%s_MENU.TXT"), xcipath,LKLangSuffix);
 	fp=_tfopen(xcifile, TEXT("rt"));
@@ -180,6 +180,21 @@ void InputEvents::readFile() {
 	} else
 		StartupStore(_T(". Loaded language menu <%s>\n"),xcifile);
   }
+  #define XCIUTF	1
+  #if XCIUTF
+  // 101221
+  fclose(fp);
+  HANDLE hXCI;
+  hXCI = INVALID_HANDLE_VALUE;
+  hXCI = CreateFile(xcifile, GENERIC_READ,0,NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,NULL);
+  if( hXCI == INVALID_HANDLE_VALUE) {
+	#if ALPHADEBUG
+	StartupStore(_T("... Invalid open HELP FILE <%s>%s"),xcifile,NEWLINE);
+	#endif
+	return;
+  }
+  short filetype=FileIsUTF16(hXCI);
+  #endif
 
 
   // TODO code - Safer sizes, strings etc - use C++ (can scanf restrict length?)
@@ -203,13 +218,22 @@ void InputEvents::readFile() {
   int line = 0;
 
   /* Read from the file */
-  while (
-	 _fgetts(buffer, 2048, fp)
-	 // TODO code: What about \r - as in \r\n ?
-	 // TODO code: Note that ^# does not allow # in key - might be required (probably not)
-	 //		Better way is to separate the check for # and the scanf 
-	 && ((found = _stscanf(buffer, TEXT("%[^#=]=%[^\r\n][\r\n]"), key, value)) != EOF)
-	 ) {
+  // TODO code: What about \r - as in \r\n ?
+  // TODO code: Note that ^# does not allow # in key - might be required (probably not)
+  //		Better way is to separate the check for # and the scanf 
+
+  #if XCIUTF
+  // minimal changing for UTF-16 (BE/LE) support 
+  while ( ReadUString(hXCI,2047,buffer,filetype) &&
+	   ((found = _stscanf(buffer, TEXT("%[^#=]=%[^\r\n][\r\n]"), key, value)) != EOF)
+	) {
+
+  #else
+  while ( _fgetts(buffer, 2048, fp) && 
+	   ((found = _stscanf(buffer, TEXT("%[^#=]=%[^\r\n][\r\n]"), key, value)) != EOF)
+	) {
+  #endif
+
     line++;
 
     // experimental: if the first line is "#CLEAR" then the whole default config is cleared
@@ -404,7 +428,11 @@ void InputEvents::readFile() {
   ContractLocalPath(szFile1);
   SetRegistryString(szRegistryInputFile, szFile1);
 
+  #if XCIUTF
+  CloseHandle(hXCI);
+  #else
   fclose(fp);
+  #endif
 
 }
 

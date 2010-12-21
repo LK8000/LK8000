@@ -567,7 +567,8 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			//
 			// VIRTUAL CENTER KEY HANDLING
 			//
-			// long press on center navbox currently used only for test purposes
+			// long press on center navbox 
+			// Activate following choices for testing and experimenting. Always disable for real usage.
 #if (0)
 			// Output NMEA to device
 			if (keytime>1000) {
@@ -589,18 +590,29 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			}
 #endif
 #if (0)	// TESTKEY
-			#if (LK_CACHECALC && LK_CACHECALC_MCA_STAT)
 			// Print a message on the screen for debugging purposes
 			TCHAR mbuf[100];
 			if (keytime>1000) {
-				_stprintf(mbuf,_T("Cache MCA %d/%d F=%d"), 
-				Cache_Hits_MCA, Cache_Calls_MCA, Cache_False_MCA );
+				// _stprintf(mbuf,_T("Cache MCA %d/%d F=%d"), Cache_Hits_MCA, Cache_Calls_MCA, Cache_False_MCA );
+				char *point;
+				point=(char*)&mbuf;
+				*point++='A';
+				*point++='\0';
+				*point++='B';
+				*point++='\0';
+				*point++=0x06;
+				*point++=0x01;
+				*point++='C';
+				*point++='\0';
+				*point++='\0';
+				*point++='\0';
+				//mbuf[1]=0xc4;
+				//mbuf[1]=0x86;
 				Message::Lock();
 				Message::AddMessage(20000, 3, mbuf);
 				Message::Unlock();
 				return 0;
 			}
-			#endif
 #endif
 
 #if (0)

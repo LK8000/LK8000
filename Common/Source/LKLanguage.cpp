@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: LKLanguage.cpp,v 1.3 2010/12/17 15:19:03 root Exp root $
+   $Id: LKLanguage.cpp,v 1.4 2010/12/20 23:35:24 root Exp root $
  */
 
 #include "StdAfx.h"
@@ -115,9 +115,11 @@ TCHAR *LKgethelptext(const TCHAR *TextIn) {
 		return (sHelp);
 	}
 
+	short filetype=FileIsUTF16(hHelpFile);
+
 	// search for beginning of code index   @000
 	bool found=false;
-	while ( ReadString(hHelpFile,READLINE_LENGTH-1,sTmp) ) {
+	while ( ReadUString(hHelpFile,READLINE_LENGTH-1,sTmp,filetype) ) {
 		int slen=_tcslen(sTmp); // includes cr or lf or both
 		if (slen<3|| slen>8) {
 			#if DEBUG_GETTEXT
@@ -165,7 +167,7 @@ TCHAR *LKgethelptext(const TCHAR *TextIn) {
 	// now load the help text for this index
 	_tcscpy(sHelp,_T(""));
 	int hlen=0;
-	while ( ReadString(hHelpFile,READLINE_LENGTH-1,sTmp) ) {
+	while ( ReadUString(hHelpFile,READLINE_LENGTH-1,sTmp,filetype) ) {
 
 		int slen=_tcslen(sTmp); // including cr or lf or both
 		if (slen==0 || sTmp[0]=='#') continue;
@@ -302,11 +304,12 @@ void LKReadLanguageFile() {
 	}
 	return;
   }
+  short filetype=FileIsUTF16(hLangFile);
 
   bool found=false;
   TCHAR sTmp[200];
   TCHAR mylang[30];
-  while ( ReadString(hLangFile,199,sTmp) ) {
+  while ( ReadUString(hLangFile,199,sTmp,filetype) ) {
 	if (_tcslen(sTmp)<3) continue;
 	if ((sTmp[0]=='L')&&(sTmp[1]=='=')) {
 		_tcscpy(mylang,&sTmp[2]);
@@ -389,6 +392,8 @@ bool LKLoadMessages(void) {
 	StartupStore(_T(". Language Load file: <%s>%s"),sFile,NEWLINE);
   }
 
+  short filetype=FileIsUTF16(hFile);
+
   // search for beginning of code index   @000
   TCHAR sTmp[300];
   char snum[5];
@@ -396,13 +401,13 @@ bool LKLoadMessages(void) {
   TCHAR scaptraw[MAX_MESSAGE_SIZE+1];
 
   short mnumber=0;
-  while ( ReadString(hFile,299,sTmp) ) {
+  while ( ReadUString(hFile,299,sTmp,filetype) ) {
 
 	unsigned int slen=_tcslen(sTmp); // includes cr or lf or both
 	if (slen<9) continue;
 	if ( (sTmp[0]!='_') || (sTmp[1]!='@') || (sTmp[2]!='M') ) {
 		#if DEBUG_GETTEXT
-		StartupStore(_T(".... MSG_ENG missing _@M\n"));
+		StartupStore(_T(".... MSG_ENG missing _@M line <%s>\n"),sTmp);
 		#endif
 		continue;
 	}
@@ -513,6 +518,70 @@ bool LKLoadMessages(void) {
   return true;
 
 
+}
+
+
+
+// return -1  if file is UTF16-LE
+// return  0  if file is not UTF16
+// return  1  if file is UTF16-BE
+// If error, 0 is returned assuming the calling function will perform its own checks in any case
+// UTF-32 is not even considered, and BOM is required for UTF16. 
+
+#define DEBUG_UTF16	1
+short FileIsUTF16(HANDLE hFile) {	// 101221
+
+  DWORD dwNumBytesRead=0;
+  char buffer[10];
+
+  if (hFile == INVALID_HANDLE_VALUE) {
+	#if DEBUG_UTF16
+	StartupStore(_T("... Invalid hFile, No UTF16\n"));
+	#endif
+	return(0);
+  }
+  SetFilePointer(hFile, 0, NULL, FILE_BEGIN);
+
+  // file is empty?
+  if (ReadFile(hFile, buffer, sizeof(buffer)-1, &dwNumBytesRead, (OVERLAPPED *)NULL) == 0) {
+	#if DEBUG_UTF16
+	StartupStore(_T("... Readfile 0, empty? No UTF16\n"));
+	#endif
+	return(0);
+  }
+  SetFilePointer(hFile, 0, NULL, FILE_BEGIN);
+
+  #if DEBUG_UTF16
+  buffer[dwNumBytesRead-1]='\0';
+  StartupStore(_T("UTFcheck <%S>\n"),buffer);
+  #endif
+
+
+  // 0xff 0xfe 0x30 0x00 0x00 0x00  the minimum UTF16 begin string!
+  if (dwNumBytesRead<6) {
+	#if DEBUG_UTF16
+	StartupStore(_T("... Short (%d) header line, no UTF16\n"),dwNumBytesRead);
+	#endif
+	return(0);
+  }
+
+  if ( (buffer[0]==(char)0xff) && (buffer[1]==(char)0xfe) ) {
+	#if DEBUG_UTF16
+	StartupStore(_T("... UTF-16 LE\n"));
+	#endif
+	return(-1);
+  }
+  if ( (buffer[0]==(char)0xfe) && (buffer[1]==(char)0xff) ) {
+	#if DEBUG_UTF16
+	StartupStore(_T("... UTF-16 BE\n"));
+	#endif
+	return(1);
+  }
+
+  #if DEBUG_UTF16
+  StartupStore(_T("... No encoding , no UTF16\n"));
+  #endif
+  return(0);
 }
 
 

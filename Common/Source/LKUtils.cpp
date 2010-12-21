@@ -408,4 +408,56 @@ void LKRunStartEnd(bool start) {
 }
 
 
+// 101221 lets try to use UTF-16 directly
+// filetype 1 BE  -1 LE  
+BOOL ReadUString(HANDLE hFile, int Max, TCHAR *String, short filetype)
+{
+  if (filetype==0)
+  return ( ReadString(hFile, Max, String));
+
+  DWORD dwNumBytesRead=0;
+  DWORD dwTotalNumBytesRead=0;
+  char  FileBuffer[READLINE_LENGTH+1];
+  DWORD dwFilePos;
+
+  String[0] = '\0';
+
+  dwFilePos = SetFilePointer(hFile, 0, NULL, FILE_CURRENT);
+
+  if (hFile == INVALID_HANDLE_VALUE)
+	return(FALSE);
+
+  if (ReadFile(hFile, FileBuffer, sizeof(FileBuffer), &dwNumBytesRead, (OVERLAPPED *)NULL) == 0)
+	return(FALSE);
+
+  int i = 0;
+  int j = 1;
+  if (filetype==1) j=0;  // do not skip leading 0 for Big Endians
+
+  char c;
+  char *pointer=(char *)&String[0];
+  while(i<Max && j<(int)dwNumBytesRead){
+	c = FileBuffer[j++];
+	dwTotalNumBytesRead++;
+
+	if(c == '\n') break;
+	*pointer++=c;
+	i++;
+  }
+  *pointer++='\0';
+  *pointer='\0';
+  if (filetype==1) {
+	for (char *repoint=(char *)&String[0]; repoint<=(pointer-2); repoint+=2) {
+		c = *repoint;
+		*repoint = *(repoint+1);
+		*(repoint+1)= c;
+	}
+  }
+
+  SetFilePointer(hFile, dwFilePos+j, NULL, FILE_BEGIN);
+
+  return (dwTotalNumBytesRead>0);
+
+}
+
 
