@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: LKCalculations.cpp,v 1.25 2010/12/11 13:56:45 root Exp root $
+   $Id: LKCalculations.cpp,v 1.26 2010/12/22 01:07:44 root Exp root $
 */
 
 #include "StdAfx.h"
@@ -130,11 +130,11 @@ void DoNearestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypo
   }
 }
 
-
+// Partially rewritten on december 2010 to make use of unsorted data from Range
 // CAREFUL> SortedLandablexxx sized MAXNEAREST!!
 // 101218 RangeLandables &C. are UNSORTED, careful
 // This function is called with no map painted, and we have plenty of CPU time to spend!
-// THIS IS ABOUT NEAREST LANDABLES (AIRPORTS AND LANDABLES), NOT TURNPOINTS
+// #define DEBUG_DONEAREST	1
 void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
    int i,k,l;
@@ -142,7 +142,9 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    double wp_bearing, wp_distance, wp_value;
    double sortedValue[MAXNEAREST+1];
    int *p_sortedIndex;
+   int *p_rangeIndex;
    int dstSortedIndex[MAXNEAREST+1];
+   int sortedRangeIndex[MAXNEAREST+1];
 
    // careful, consider MapSpaceMode could change while running!
    short curmapspace=MapSpaceMode;
@@ -167,91 +169,141 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	return;
    }
 
+   // This is done also at startup from InitModeTable
    for (i=0; i<MAXNEAREST;i++) {
-	SortedLandableIndex[i]=-1;
 	SortedAirportIndex[i]=-1;
+	SortedLandableIndex[i]=-1;
+        SortedTurnpointIndex[i]=-1;
+	sortedRangeIndex[i]=-1;
 	sortedValue[i]=99999; 
 	dstSortedIndex[i]=-1;
    }
-  
-   // Sort by distance in SortedLandableIndex
-   // We sample twice as much as needed values. 
-   // OLD: MAXNEAREST should really be the real number of displayed values and not a constant
-   // NEW 101218: we run through the whole 500 range elements
-   #if UNSORTEDRANGE
-   for (i=0, inserted=0; i<MAXRANGELANDABLE; i++) { // BUGFIX 101218
-   #else
-   for (i=0, inserted=0; i<MAXNEAREST*2; i++) { // was 1.5 FIX 090925
+
+   // what are we looking at? we shall sort only that data
+   switch (curmapspace) {
+	case MSM_LANDABLE:
+		p_rangeIndex=RangeLandableIndex;
+   		p_sortedIndex=SortedLandableIndex;
+		break;
+	case MSM_AIRPORTS:
+		p_rangeIndex=RangeAirportIndex;
+   		p_sortedIndex=SortedAirportIndex;
+		break;
+	case MSM_NEARTPS:
+		p_rangeIndex=RangeTurnpointIndex;
+   		p_sortedIndex=SortedTurnpointIndex;
+		break;
+	default:
+		p_rangeIndex=RangeLandableIndex;
+   		p_sortedIndex=SortedLandableIndex;
+		break;
+   }
+
+   // Range index is unsorted, we need to sort it by distance, because these are called "nearest"
+   // we may have up to 500 (maxrangelandables) items to sort, but it is very unlikely.
+   // normally we have only a few dozen airports in range 150km, and maybe 300 tps in range 75km
+
+   #if DEBUG_DONEAREST
+   StartupStore(_T(".. SORTING nearest\n"));
    #endif
+   for (i=0, inserted=0; i<MAXRANGELANDABLE; i++) { 
 
-	switch (curmapspace) {
-		case MSM_LANDABLE:
-			p_sortedIndex=SortedLandableIndex;
-			wp_index=RangeLandableIndex[i];
-			break;
-		case MSM_AIRPORTS:
-			p_sortedIndex=SortedAirportIndex;
-			wp_index=RangeAirportIndex[i];
-			break;
-		default:
-			p_sortedIndex=SortedLandableIndex;
-			wp_index=RangeLandableIndex[i];
-			break;
-	}
-
-
+	wp_index=*(p_rangeIndex+i);
 	if (wp_index <0) {
-		// we should be at the end and could break out, however we do a failsafe forward
 		continue;
 	}
+   	#if DEBUG_DONEAREST
+	StartupStore(_T("wp_index=%d  <%s>\n"),wp_index, WayPointList[wp_index].Name);
+	#endif
 
 	DistanceBearing(Basic->Latitude , Basic->Longitude , WayPointList[wp_index].Latitude,
 		WayPointList[wp_index].Longitude, &wp_distance, &wp_bearing);
 
-	// DISTANCE AND BEARING CALCULATED FOR WAYPOINT
+	// since we have them calculated, lets save these values 
 	WayPointCalc[wp_index].Distance = wp_distance;
 	WayPointCalc[wp_index].Bearing  = wp_bearing;
 
-	if (SortedMode[curmapspace] == 0) goto AlfaSortNearest;
+	wp_value=wp_distance;
 
+	for (k=0; k< MAXNEAREST; k++)  {
+		// if wp is closer than this one or this one isn't filled and not replacing with same
+		if ( ((wp_value < sortedValue[k])	
+		|| (sortedRangeIndex[k]== -1))
+		&& (sortedRangeIndex[k] != wp_index) )
+		{
+			// ok, got new closer waypoint, put it into the slot.
+			for (l=MAXNEAREST-1; l>k; l--) {
+				if (l>0) {
+					sortedValue[l] = sortedValue[l-1];
+					sortedRangeIndex[l] = sortedRangeIndex[l-1];
+				}
+			}
+			sortedValue[k] = wp_value;
+			sortedRangeIndex[k] = wp_index;
+
+			k=MAXNEAREST;
+			inserted++;
+			break;
+		}
+	} // for k
+   } // for i 
+
+   // All MAXNEAREST inserted values are updated
+   #if DEBUG_DONEAREST
+   StartupStore(_T("Sorted nearest are %d:\n"), inserted);
+   #endif
+   for (i=0; i<MAXNEAREST; i++) {
+	sortedValue[i]=99999;  // we need to reset it  to use it again!
+	wp_index=sortedRangeIndex[i];
+	if (wp_index<0) continue; // just for safety
+  	#if DEBUG_DONEAREST
+	StartupStore(_T("(%d) wp n.%d <%s>\n"),i,wp_index,WayPointList[wp_index].Name);
+   	#endif
+	DoNearestAlternate(Basic,Calculated,wp_index);
+   }
+
+   // Range[..]Index is now sorted inside sortedRangeIndex 
+   if (SortedMode[curmapspace] == 0 ) goto go_alfasort;
+   if (SortedMode[curmapspace] == 1 ) goto go_directsort;
+
+   // now the list is already sorted by distance and all values are updated 
+   for (i=0; i<MAXNEAREST; i++) { 
+
+	wp_index=sortedRangeIndex[i];
+	if (wp_index <0) continue; // break is also ok
 
 	// we calculate DoNearestAlternate only if really needed here, since we do it for MAXNEAREST*2
 	// which is TWICE what we really need. 
 	switch (SortedMode[curmapspace]) {
-		// wp name, should not happen
-		case 0:
-		case 1:
-			wp_value=wp_distance;
-			// requires later DoNearestAlternate!
-			break;
 		case 2:
 			if (DisplayMode == dmCircling) {
-				wp_value=wp_bearing; // 100328
+				wp_value=WayPointCalc[wp_index].Bearing;
 				break;
 			}
-			wp_value = wp_bearing -  GPS_INFO.TrackBearing;
+			wp_value = WayPointCalc[wp_index].Bearing -  GPS_INFO.TrackBearing;
 			if (wp_value < -180.0) wp_value += 360.0;
 			else
 				if (wp_value > 180.0) wp_value -= 360.0;
 			if (wp_value<0) wp_value*=-1;
-			// requires later DoNearestAlternate!
 			break;
 		case 3:
-			DoNearestAlternate(Basic,Calculated,wp_index); 
 			wp_value=WayPointCalc[wp_index].GR;
 			break;
 		case 4:
-			DoNearestAlternate(Basic,Calculated,wp_index); 
 			wp_value=WayPointCalc[wp_index].AltArriv[AltArrivMode];
 			// we sort lowest is better, so in this case we invert sign since higher is better
 			wp_value*=-1;
 			break;
 		default:
-			wp_value=wp_distance;
+			wp_value=WayPointCalc[wp_index].Distance;
 			break;
 	}
+  	#if DEBUG_DONEAREST
+	StartupStore(_T("... sort item %d <%d = %s>  by value=%f\n"),i,wp_index,WayPointList[wp_index].Name, wp_value);
+   	#endif
 
-	// insert sorted value for Landfields and Airports
+	// Now sort by chosen field. Data is already sorted by distance ..
+	// Yes I know, we dont need to sort by distance again. 
 	for (k=0; k< MAXNEAREST; k++)  {
 		// if wp is closer than this one or this one isn't filled and not replacing with same
 		if ( ((wp_value < sortedValue[k])	
@@ -268,58 +320,31 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 			sortedValue[k] = wp_value;
 			p_sortedIndex[k] = wp_index;
 
-			// Distance and eventually name sorted still need DoNearest to be done
-			if (SortedMode[curmapspace]<3) DoNearestAlternate(Basic,Calculated,wp_index);
+			k=MAXNEAREST*2; 
 
-			k=MAXNEAREST*2; // should not be needed
-
-			// update number of items inserted so far 
-			inserted++;
 			break;
 		}
 	} // for k
-
-	continue;
-
-AlfaSortNearest:
-
-	// First we get the distance sorting
-	wp_value=wp_distance;
-	for (k=0; k< MAXNEAREST; k++)  {
-		if ( ( (wp_value < sortedValue[k]) || (dstSortedIndex[k]== -1) )
-			&& (dstSortedIndex[k] != wp_index) )
-		{
-			// ok, got new closer waypoint, put it into the slot.
-			for (l=MAXNEAREST-1; l>k; l--) {
-				if (l>0) {
-					sortedValue[l] = sortedValue[l-1];
-					dstSortedIndex[l] = dstSortedIndex[l-1];
-				}
-			}
-			sortedValue[k] = wp_value;
-			dstSortedIndex[k] = wp_index;
-
-			k=MAXNEAREST*2; // should not be needed
-
-			// update number of items inserted so far
-			inserted++;
-			break;
-		}
-	} // for k
-
 
    } // for i
 
+   go_directsort:
+   if (SortedMode[curmapspace] == 1 ) {
+	for (i=0; i<MAXNEAREST; i++) {
+		p_sortedIndex[i] = sortedRangeIndex[i];
+	}
+   }
+
+   go_alfasort:
    // Out of sorting mode, we still need to sort by name for alfa mode. We have sorted by distance for alfa, already.
    // So we shall be sorting nearest items, by alfa.
    if (SortedMode[curmapspace] == 0 ) {
 
 	for (i=0; i<MAXNEAREST; i++) {
-		wp_index=dstSortedIndex[i];
+		wp_index=sortedRangeIndex[i];
 		if (wp_index<0) {
 			// There are less than 25 or whatever items available for sorting, no problems
-			// DoStatusMessage(_T("DBG-198 sorting nearest"));
-			break; // should be impossible
+			break; 
 		}
 		for (k=0; k< MAXNEAREST; k++)  {
 			// if unfilled position or filled with not the same item already
@@ -332,11 +357,7 @@ AlfaSortNearest:
 					}
 				}
 				p_sortedIndex[k] = wp_index;
-				// Distance and eventually name sorted still need DoNearest to be done
-				if (SortedMode[curmapspace]<3) DoNearestAlternate(Basic,Calculated,wp_index);
-				k=MAXNEAREST*2; // should not be needed
-				// update number of items inserted so far 
-				inserted++;
+				k=MAXNEAREST; 
 			}
 		} // for k
 	} // for i
@@ -351,6 +372,7 @@ AlfaSortNearest:
    return;
 }
 
+// This was updated in december 2010
 // REDUCE WAYPOINTLIST TO THOSE IN RANGE, ROUGHLY SORTED BY DISTANCE
 // Keep an updated list of in-range landable waypoints.
 // Attention: since this list is sorted only periodically, calling functions must sort data themselves.
@@ -906,192 +928,6 @@ void DoCommon(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 } 
 
 
-// Nearest turnpoints
-// Running every n seconds ONLY when the nearest page is active and we are not drawing map.
-// This is measured to take 10ms cpu on a HP314
-// 120kmh = 33.3m/s     5s = 167m  consider altitude loss, assuming -5m/s * 5 = -25m QNH
-// So we calculate new values every 5 seconds.
-void DoNearestTurnpoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
-{
-   int i,k,l;
-   int wp_index, inserted;
-   double wp_bearing, wp_distance, wp_value=-1;
-
-   double sortedValue[MAXNEARTURNPOINT+1];
-   int *p_sortedIndex;
-   int dstSortedIndex[MAXNEARTURNPOINT+1];
-
-   static double LastRunTime=0;
-
-/*
-   static bool DoInit=true;
-   if (DoInit) {
-	DoInit=false;
-   }
-*/
-
-   if (  LastRunTime > Basic->Time ) LastRunTime=Basic->Time;
-   if (  (Basic->Time < (LastRunTime+NEARESTUPDATETIME)) && !LKForceDoNearestTurnpoint) {
-	return;
-   }
-   if (  LastDoNearestTp > Basic->Time ) LastDoNearestTp=Basic->Time;
-   if ( Basic->Time < (LastDoNearestTp+PAGINGTIMEOUT)) {
-	return;
-   }
-   LastDoNearestTp = 0;
-
-   LKForceDoNearestTurnpoint=false;
-
-   if (!WayPointList) return;
-   if ( RangeTurnpointNumber==0) {
-	return;
-   }
-
-   // This is done also at startup from InitModeTable
-   for (i=0; i<MAXNEARTURNPOINT;i++) {
-	SortedTurnpointIndex[i]=-1;
-	sortedValue[i]=99999; 
-	dstSortedIndex[i]=-1;
-   }
-
-   #if UNSORTEDRANGE
-   // Hey remember this list is unsorted now!!
-   for (i=0, inserted=0; i<MAXRANGETURNPOINT; i++) { // 101218 BUGFIX
-   #else
-   for (i=0, inserted=0; i<MAXNEARTURNPOINT*2; i++) {
-   #endif
-
-	p_sortedIndex=SortedTurnpointIndex;
-	wp_index=RangeTurnpointIndex[i];
-
-	if (wp_index <0) {
-		continue;
-	}
-
-	DistanceBearing(Basic->Latitude , Basic->Longitude , WayPointList[wp_index].Latitude,
-		WayPointList[wp_index].Longitude, &wp_distance, &wp_bearing);
-
-
-	WayPointCalc[wp_index].Distance = wp_distance;
-	WayPointCalc[wp_index].Bearing  = wp_bearing;
-
-	if (SortedMode[MSM_NEARTPS] == 0 ) goto AlfaSort; 
-
-	switch (SortedMode[MSM_NEARTPS]) {
-		case 0:
-		case 1:
-			wp_value=wp_distance;
-			break;
-		case 2:
-			if (DisplayMode == dmCircling) {
-				wp_value=wp_bearing; // 100328
-				break;
-			}
-			wp_value = wp_bearing -  GPS_INFO.TrackBearing;
-			if (wp_value < -180.0) wp_value += 360.0;
-			else
-				if (wp_value > 180.0) wp_value -= 360.0;
-			if (wp_value<0) wp_value*=-1;
-			break;
-		case 3:
-			DoNearestAlternate(Basic,Calculated,wp_index); 
-			wp_value=WayPointCalc[wp_index].GR;
-			break;
-		case 4:
-			DoNearestAlternate(Basic,Calculated,wp_index); 
-			wp_value=WayPointCalc[wp_index].AltArriv[AltArrivMode];
-			wp_value*=-1;
-			break;
-		default:
-			wp_value=wp_distance;
-			break;
-	}
-
-	for (k=0; k< MAXNEARTURNPOINT; k++)  {
-		if ( ((wp_value < sortedValue[k])	
-		|| (p_sortedIndex[k]== -1))
-		&& (p_sortedIndex[k] != wp_index) )
-		{
-			for (l=MAXNEARTURNPOINT-1; l>k; l--) {
-				if (l>0) {
-					sortedValue[l] = sortedValue[l-1];
-					p_sortedIndex[l] = p_sortedIndex[l-1];
-				}
-			}
-			sortedValue[k] = wp_value;
-			p_sortedIndex[k] = wp_index;
-
-			if (SortedMode[MapSpaceMode]<3) DoNearestAlternate(Basic,Calculated,wp_index);
-
-			k=MAXNEARTURNPOINT*2; // should not be needed
-
-			inserted++;
-			break;
-		}
-	} // for k
-	continue;
-
-
-AlfaSort:
-	wp_value=wp_distance;
-	for (k=0; k< MAXNEARTURNPOINT; k++)  {
-		if ( ((wp_value < sortedValue[k])	
-		|| (dstSortedIndex[k]== -1))
-		&& (dstSortedIndex[k] != wp_index) )
-		{
-			for (l=MAXNEARTURNPOINT-1; l>k; l--) {
-				if (l>0) {
-					sortedValue[l] = sortedValue[l-1];
-					dstSortedIndex[l] = dstSortedIndex[l-1];
-				}
-			}
-			sortedValue[k] = wp_value;
-			dstSortedIndex[k] = wp_index;
-
-			k=MAXNEARTURNPOINT*2; // should not be needed
-
-			inserted++;
-			break;
-		}
-	} // for k
-
-
-   } // for i
-
-   if (SortedMode[MSM_NEARTPS] == 0 ) {
-
-   	p_sortedIndex=SortedTurnpointIndex;
-
-	for (i=0; i< MAXNEARTURNPOINT; i++) {
-
-		wp_index=dstSortedIndex[i];
-		if (wp_index<0) {
-			break;  // should be impossible
-		}
-
-		for (k=0; k< MAXNEARTURNPOINT; k++)  {
-			if ( (p_sortedIndex[k] < 0 ) || (p_sortedIndex[k] != wp_index) ) {
-				if ( p_sortedIndex[k]>=0 ) 
-					if ( wcscmp( WayPointList[wp_index].Name, WayPointList[p_sortedIndex[k]].Name) >0) continue;
-				for (l=MAXNEARTURNPOINT-1; l>k; l--) {
-					if (l>0) {
-						p_sortedIndex[l] = p_sortedIndex[l-1];
-					}
-				}
-				p_sortedIndex[k] = wp_index;
-				if (SortedMode[MapSpaceMode]<3) DoNearestAlternate(Basic,Calculated,wp_index);
-				k=MAXNEARTURNPOINT*2; // should not be needed
-			}
-		} // for k
-	} // for i
-   }
-
-   NearestTurnpointDataReady=true;
-   LastRunTime=Basic->Time;
-   SortedTurnpointNumber= inserted>MAXNEARTURNPOINT ? MAXNEARTURNPOINT : inserted;
-
-   return;
-}
 
 // AverageLD return 0 if invalid, or 999 if too high...
 // This function will return bestld if too high, and last valid average if invalid because on ground or circling

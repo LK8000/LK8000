@@ -395,7 +395,7 @@ OBJS	:=\
 	$(SRC)/InputEvents.o 		$(SRC)/leastsqs.o \
 	$(SRC)/Logger.o 		$(SRC)/LKMapWindow.o \
 	$(SRC)/LKDrawLook8000.o 	$(SRC)/LKDrawNearest.o\
-	$(SRC)/LKDrawCommon.o 		$(SRC)/LKDrawNearestTurnpoint.o\
+	$(SRC)/LKDrawCommon.o 		\
 	$(SRC)/LKDrawInfoPage.o		$(SRC)/LKDrawWaypoints.o\
 	$(SRC)/LKDrawTraffic.o		$(SRC)/LKSimulator.o\
 	$(SRC)/LKBestAlternate.o \

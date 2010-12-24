@@ -84,7 +84,7 @@
 #define LKNAME		"XCSoar"
 #define LKFORK		"LK8000"
 #define LKVERSION	"1"
-#define LKRELEASE	"99e"
+#define LKRELEASE	"99f"
 
 #define REGKEYNAME	"Software\\COOL\\LK8000"
 #define XCSDATADIR	"LK8000"
@@ -183,7 +183,6 @@
 #define MAXNEAREST		50
 // Commons are both 1 page of commons and HISTORY as well! HISTORY is sized MAXCOMMON!
 #define MAXCOMMON		50
-#define MAXNEARTURNPOINT	50
 #define MAXTRAFFIC		FLARM_MAX_TRAFFIC
 
 // Max number of pages in mapspacemode. 
@@ -192,7 +191,6 @@
 // It only matters dimensional space, so you can enlarge at a memory cost. 
 // If it is too low, visible waypoints will be limited to this number automatically.
 #define MAXNUMPAGES		9	// the nearest
-#define MAXTURNPOINTNUMPAGES	9
 #define MAXCOMMONNUMPAGES	9
 #define MAXTRAFFICNUMPAGES	9
 
@@ -203,7 +201,7 @@
 // If a user has pressed up or down in nearest/common/etc pages, let this time pass
 // before a DoCommon DoNearest etc. are performed again, in order to avoid selection on
 // screen changes (for example, if sorted by direction..).
-#define PAGINGTIMEOUT		3.0	// seconds, double
+#define PAGINGTIMEOUT		2.0	// seconds, double
 
 // Nearest hold time: when asking for example waypoint details, put the nearest on hold for..
 #define	NEARESTONHOLD		60.0	// seconds, double

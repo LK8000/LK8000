@@ -528,7 +528,7 @@ bool LKLoadMessages(void) {
 // If error, 0 is returned assuming the calling function will perform its own checks in any case
 // UTF-32 is not even considered, and BOM is required for UTF16. 
 
-#define DEBUG_UTF16	1
+// #define DEBUG_UTF16	1
 short FileIsUTF16(HANDLE hFile) {	// 101221
 
   DWORD dwNumBytesRead=0;

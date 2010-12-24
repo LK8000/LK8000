@@ -1139,6 +1139,7 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	switch(MapSpaceMode) {
 		case MSM_LANDABLE:
 		case MSM_AIRPORTS:
+		case MSM_NEARTPS: // 101222
 			DoNearest(Basic,Calculated);
 			break;
 		case MSM_COMMON:
@@ -1147,9 +1148,11 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 		case MSM_RECENT:
 			DoRecent(Basic,Calculated);
 			break;
+/* 101222 REMOVE
 		case MSM_NEARTPS:
 			DoNearestTurnpoint(Basic,Calculated);
 			break;
+*/
 	}
   }
 

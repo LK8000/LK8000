@@ -314,11 +314,14 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
 		break;
 	case MSM_LANDABLE:
 	case MSM_AIRPORTS:
+	case MSM_NEARTPS:
 		DrawNearest(hdc, rc);
 		break;
+/* 101222 REMOVE
 	case MSM_NEARTPS:
 		DrawNearestTurnpoint(hdc, rc);
 		break;
+*/
 	case MSM_COMMON:
 	case MSM_RECENT:
 		DrawCommon(hdc, rc);

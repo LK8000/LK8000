@@ -658,12 +658,14 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			switch(MapSpaceMode) {
 				case MSM_LANDABLE:
 				case MSM_AIRPORTS:
+				case MSM_NEARTPS:
 							SortedMode[MapSpaceMode]=j;
 							LKForceDoNearest=true;
 							#ifndef DISABLEAUDIO
 							if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 							#endif
 							break;
+/* 101222 UNIFY NEAREST
 				case MSM_NEARTPS:
 							SortedMode[MapSpaceMode]=j;
 							LKForceDoNearestTurnpoint=true;
@@ -671,6 +673,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 							if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 							#endif
 							break;
+*/
 				case MSM_TRAFFIC:
 							SortedMode[MapSpaceMode]=j;
 							// force immediate resorting
@@ -706,6 +709,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		switch(MapSpaceMode) {
 			case MSM_LANDABLE:
 			case MSM_AIRPORTS:
+			case MSM_NEARTPS:
 						LKForceDoNearest=true;
 						numpages=Numpages; // TODO adopt Numpages[MapSpaceMode]
 						break;
@@ -718,10 +722,13 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 						LKForceDoRecent=true;
 						numpages=CommonNumpages;
 						break;
+/* REMOVE 101222
 			case MSM_NEARTPS:
-						LKForceDoNearestTurnpoint=true;
+						// LKForceDoNearestTurnpoint=true; 101222
+						LKForceDoNearest=true;
 						numpages=TurnpointNumpages;
 						break;
+*/
 			case MSM_TRAFFIC:
 						numpages=TrafficNumpages;
 						break;
@@ -2699,7 +2706,7 @@ void InitModeTable() {
 	// set all sorting type to distance (default) even for unconventional modes just to be sure
 	for (i=0; i<=MSM_TOP; i++) SortedMode[i]=1;
 
-	for (i=0; i<MAXNEARTURNPOINT;i++) 
+	for (i=0; i<MAXNEAREST;i++) 
 		SortedTurnpointIndex[i]=-1;
 
 	for (i=0; i<MAXNEAREST;i++) {
@@ -2877,7 +2884,7 @@ void SelectMapSpace(short i) {
 	LKForceDoNearest=false;
 	LKForceDoCommon=false;
 	LKForceDoRecent=false;
-	LKForceDoNearestTurnpoint=false;
+	// LKForceDoNearestTurnpoint=false; 101222
 	// Particular care not to leave pending events
 	LKevent=LKEVENT_NONE;
 
@@ -2903,7 +2910,8 @@ void SelectMapSpace(short i) {
 			SelectedRaw[MapSpaceMode]=0;
 			break;
 		case MSM_NEARTPS:
-			LKForceDoNearestTurnpoint=true;
+			//LKForceDoNearestTurnpoint=true; 101222
+			LKForceDoNearest=true;
 			LKevent=LKEVENT_NEWRUN;
 			SelectedPage[MapSpaceMode]=0;
 			SelectedRaw[MapSpaceMode]=0;

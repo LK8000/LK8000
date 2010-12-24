@@ -117,7 +117,7 @@ extern int  SortedAirportIndex[];
 extern int  SortedTurnpointIndex[];
 
 extern int  SortedNumber;
-extern int  SortedTurnpointNumber;
+// extern int  SortedTurnpointNumber; 101222
 extern int  CommonIndex[];
 extern int  CommonNumber;
 extern int  RecentIndex[];
@@ -201,7 +201,7 @@ extern bool PGZoomTrigger;
 extern double  LastZoomTrigger;
 extern double  LastDoTraffic;
 extern double LastDoNearest;
-extern double LastDoNearestTp;
+// extern double LastDoNearestTp;
 extern double LastDoCommon;
 extern double  CruiseMapScale;
 extern double  ClimbMapScale;
@@ -299,8 +299,8 @@ extern short Numraws;
 extern short Numpages;
 extern short CommonNumraws;
 extern short CommonNumpages;
-extern short TurnpointNumraws;
-extern short TurnpointNumpages;
+// extern short TurnpointNumraws; 101222
+// extern short TurnpointNumpages;
 extern short TrafficNumpages;
 extern short ModeIndex;
 
@@ -308,11 +308,11 @@ extern short ModeIndex;
 extern bool NearestDataReady;
 extern bool CommonDataReady;
 extern bool RecentDataReady;
-extern bool NearestTurnpointDataReady;
+// extern bool NearestTurnpointDataReady; 101222
 extern bool LKForceDoNearest;
 extern bool LKForceDoCommon;
 extern bool LKForceDoRecent;
-extern bool LKForceDoNearestTurnpoint;
+// extern bool LKForceDoNearestTurnpoint; 101222
 extern short LKevent;
 extern bool LKForceComPortReset;
 

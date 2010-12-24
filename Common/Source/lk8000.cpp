@@ -586,11 +586,11 @@ short SelectedPage[MSM_TOP+1];
 // number of raws in mapspacemode screen
 short Numraws;
 short CommonNumraws;
-short TurnpointNumraws;
+// short TurnpointNumraws; 101222 REMOVE
 // number of pages in mapspacemode depending on MAXNEAREST and Numraws
 short Numpages;
 short CommonNumpages;
-short TurnpointNumpages;
+// short TurnpointNumpages; 101222 REMOVE
 short TrafficNumpages;
 //  mapspace sort mode: 0 wp name  1 distance  2 bearing  3 reff  4 altarr
 //  UNUSED on MSM_COMMON etc. however it is dimensioned on mapspacemodes
@@ -615,7 +615,7 @@ double  LastZoomTrigger=0;
 // traffic DoTraffic interval, also reset during key up and down to prevent wrong selections
 double  LastDoTraffic=0;
 double  LastDoNearest=0;
-double  LastDoNearestTp=0;
+// double  LastDoNearestTp=0; 101222
 double  LastDoCommon=0;
 // double  LastDoTarget=0; unused 
 
@@ -675,11 +675,11 @@ double SinkRadius=0;
 bool NearestDataReady=false;
 bool CommonDataReady=false;
 bool RecentDataReady=false;
-bool NearestTurnpointDataReady=false;
+// bool NearestTurnpointDataReady=false; 101222
 bool LKForceDoNearest=false;
 bool LKForceDoCommon=false;
 bool LKForceDoRecent=false;
-bool LKForceDoNearestTurnpoint=false;
+//bool LKForceDoNearestTurnpoint=false; 101222
 short LKevent=LKEVENT_NONE;
 bool LKForceComPortReset=false; // 100214
 ldrotary_s rotaryLD;
@@ -698,11 +698,11 @@ int  RangeTurnpointNumber=0;
 // Also in DoNearestTurnpoint for MSM_NEARTPS 
 int  SortedLandableIndex[MAXNEAREST+1];
 int  SortedAirportIndex[MAXNEAREST+1];
-int  SortedTurnpointIndex[MAXNEARTURNPOINT+1];
+int  SortedTurnpointIndex[MAXNEAREST+1];
 // Real number of NEAREST items contained in array after removing duplicates, or not enough to fill MAXNEAREST/MAX..
 int  SortedNumber=0;
 // as above, for nearest turnpoints
-int  SortedTurnpointNumber=0;
+// int  SortedTurnpointNumber=0; 101222
 
 // Commons are Home, best alternate, alternate1, 2, and task waypoints , all up to MAXCOMMON.
 // It is reset when changing wp file
@@ -1220,11 +1220,11 @@ void SettingsLeave() {
 		RangeTurnpointNumber=0;
 		CommonNumber=0;
 		SortedNumber=0;
-		SortedTurnpointNumber=0;
+		// SortedTurnpointNumber=0; 101222
 		LKForceDoCommon=true;
 		LKForceDoNearest=true;
 		LKForceDoRecent=true;
-		LKForceDoNearestTurnpoint=true;
+		// LKForceDoNearestTurnpoint=true; 101222
 	}
 	InputEvents::eventTaskLoad(_T(LKF_DEFAULTASK)); //@ BUGFIX 101020
   } 
@@ -1262,7 +1262,7 @@ void SettingsLeave() {
 		LKForceDoCommon=true;
 		LKForceDoNearest=true;
 		LKForceDoRecent=true;
-		LKForceDoNearestTurnpoint=true;
+		// LKForceDoNearestTurnpoint=true; 101222
 	}
 
 	RasterTerrain::ServiceFullReload(GPS_INFO.Latitude, GPS_INFO.Longitude);

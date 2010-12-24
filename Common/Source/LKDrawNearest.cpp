@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: LKDrawNearest.cpp,v 1.1 2010/12/11 14:56:01 root Exp root $
+   $Id: LKDrawNearest.cpp,v 1.2 2010/12/24 12:45:49 root Exp root $
 */
 
 #include "StdAfx.h"
@@ -80,20 +80,23 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
   static RECT s_sortBox[6]; 
   static TCHAR Buffer1[MAXNEAREST][MAXNUMPAGES][24], Buffer2[MAXNEAREST][MAXNUMPAGES][10], Buffer3[MAXNEAREST][MAXNUMPAGES][10];
   static TCHAR Buffer4[MAXNEAREST][MAXNUMPAGES][12], Buffer5[MAXNEAREST][MAXNUMPAGES][12];
-  static short maxnlname;
+  static short s_maxnlname;
   char text[30];
   short i, k, iRaw, wlen, rli=0, curpage, drawn_items_onpage;
-  double Value;
+  double value;
   COLORREF rcolor;
 
   // column0 starts after writing 1:2 (ModeIndex:CURTYPE+1) with a different font..
   static short Column0;
   static short Column1, Column2, Column3, Column4, Column5;
   static POINT p1, p2;
-  static short rawspace;
+  static short s_rawspace;
   // Printable area for live nearest values
   static short left,right,bottom;
   // one for each mapspace, no matter if 0 and 1 are unused
+
+  // we lock to current mapspace for this drawing
+  short curmapspace=MapSpaceMode; 
 
   // Vertical and horizontal spaces
   #define INTERRAW	1
@@ -126,13 +129,13 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 	left=rc.left+NIBLSCALE(1);
 	right=rc.right-NIBLSCALE(1);
   	bottom=rc.bottom-BottomSize-NIBLSCALE(2);
-	maxnlname=MAXNLNAME-5; // 7 chars max, 8 sized
+	s_maxnlname=MAXNLNAME-5; // 7 chars max, 8 sized
   	_stprintf(Buffer,TEXT("MAKSJSMM"));  
   } else {
 	left=rc.left+NIBLSCALE(5);
 	right=rc.right-NIBLSCALE(5);
   	bottom=rc.bottom-BottomSize;
-	maxnlname=MAXNLNAME-3; // 9 chars, sized 10
+	s_maxnlname=MAXNLNAME-3; // 9 chars, sized 10
   	_stprintf(Buffer,TEXT("ABCDEFGHMx")); 
   }
 
@@ -163,7 +166,6 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
   _stprintf(Buffer,TEXT("1.1")); 
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &MITextSize);
 
-  //short intercolumn=(right-left-WPTextSize.cx-DSTextSize.cx-BETextSize.cx-RETextSize.cx-AATextSize.cx)/3; // era 4 FIX
   short afterwpname=left+WPTextSize.cx+NIBLSCALE(5);
   short intercolumn=(right-afterwpname- DSTextSize.cx-BETextSize.cx-RETextSize.cx-AATextSize.cx)/3; 
 
@@ -184,16 +186,14 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
   	TopSize+=HEADRAW;
   	Numraws=(bottom - TopSize) / (WPTextSize.cy+(INTERRAW*2));
   	if (Numraws>MAXNEAREST) Numraws=MAXNEAREST;
-  	rawspace=(WPTextSize.cy+INTERRAW);
+  	s_rawspace=(WPTextSize.cy+INTERRAW);
   } else {
-  	//TopSize=rc.top+HEADRAW+HLTextSize.cy;
   	TopSize=rc.top+HEADRAW*2+HLTextSize.cy;
   	p1.x=0; p1.y=TopSize; p2.x=rc.right; p2.y=p1.y;
-//  	TopSize+=(WPTextSize.cy/4);
   	TopSize+=HEADRAW/2;
   	Numraws=(bottom - TopSize) / (WPTextSize.cy+INTERRAW);
   	if (Numraws>MAXNEAREST) Numraws=MAXNEAREST;
-  	rawspace=(WPTextSize.cy+INTERRAW);
+  	s_rawspace=(WPTextSize.cy+INTERRAW);
   }
 
 #define INTERBOX intercolumn/2
@@ -225,7 +225,6 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
   SortBoxX[3]=s_sortBox[3].right;
 
   s_sortBox[4].left=Column4+INTERBOX;
-  //s_sortBox[4].right=Column5+INTERBOX;
   s_sortBox[4].right=rc.right-1;
   s_sortBox[4].top=2;
   s_sortBox[4].bottom=p1.y;
@@ -251,10 +250,10 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
   if (Numpages>MAXNUMPAGES) Numpages=MAXNUMPAGES;
   else if (Numpages<1) Numpages=1;
 
-  curpage=SelectedPage[MapSpaceMode];
+  curpage=SelectedPage[curmapspace];
   if (curpage<0||curpage>=MAXNUMPAGES) { // TODO also >Numpages
 	DoStatusMessage(_T("ERR-091 curpage invalid!")); 
-	SelectedPage[MapSpaceMode]=0;
+	SelectedPage[curmapspace]=0;
 	LKevent=LKEVENT_NONE;
 	#ifndef LKOBJ
   	DeleteObject(sortbrush);
@@ -267,10 +266,25 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 		break;
 	case LKEVENT_ENTER:
 		LKevent=LKEVENT_NONE;
-		if (MapSpaceMode==MSM_LANDABLE) 
-			i=SortedLandableIndex[SelectedRaw[MapSpaceMode]+(curpage*Numraws)];
+		switch(curmapspace) {
+			case MSM_LANDABLE:
+				i=SortedLandableIndex[SelectedRaw[curmapspace]+(curpage*Numraws)];
+				break;
+			case MSM_AIRPORTS:
+				i=SortedAirportIndex[SelectedRaw[curmapspace] + (curpage*Numraws)];
+				break;
+			case MSM_NEARTPS:
+			default:
+				i=SortedTurnpointIndex[SelectedRaw[curmapspace] + (curpage*Numraws)];
+				break;
+		}
+
+/* REMOVE 101222
+		if (curmapspace==MSM_LANDABLE) 
+			i=SortedLandableIndex[SelectedRaw[curmapspace]+(curpage*Numraws)];
 		else
-			i=SortedAirportIndex[SelectedRaw[MapSpaceMode] + (curpage*Numraws)];
+			i=SortedAirportIndex[SelectedRaw[curmapspace] + (curpage*Numraws)];
+*/	
 
 		if ( !ValidWayPoint(i)) {
 			if (SortedNumber>0)
@@ -289,11 +303,11 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 		return;
 		break;
 	case LKEVENT_DOWN:
-		if (++SelectedRaw[MapSpaceMode] >=Numraws) SelectedRaw[MapSpaceMode]=0;
+		if (++SelectedRaw[curmapspace] >=Numraws) SelectedRaw[curmapspace]=0;
 		LastDoNearest=GPS_INFO.Time+PAGINGTIMEOUT-1.0; //@ 101003
 		break;
 	case LKEVENT_UP:
-		if (--SelectedRaw[MapSpaceMode] <0) SelectedRaw[MapSpaceMode]=Numraws-1;
+		if (--SelectedRaw[curmapspace] <0) SelectedRaw[curmapspace]=Numraws-1;
 		LastDoNearest=GPS_INFO.Time+PAGINGTIMEOUT-1.0; //@ 101003
 		break;
 	case LKEVENT_PAGEUP:
@@ -327,7 +341,7 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 
   SelectObject(hdc, LK8InfoNormalFont); // Heading line
 
-  short cursortbox=SortedMode[MapSpaceMode];
+  short cursortbox=SortedMode[curmapspace];
 
   if ( ScreenSize < (ScreenSize_t)sslandscape ) { // portrait mode
 	FillRect(hdc,&s_sortBox[cursortbox], sortbrush); 
@@ -338,10 +352,26 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 	LKWriteText(hdc, Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0,  WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
   	SelectObject(hdc, LK8InfoNormalFont); 
 
-	if (MapSpaceMode==MSM_LANDABLE) 
+	switch(curmapspace) {
+		case MSM_LANDABLE:
+ 			_stprintf(Buffer,TEXT("LND %d/%d"),  curpage+1,Numpages); 
+			break;
+		case MSM_AIRPORTS:
+ 	 		_stprintf(Buffer,TEXT("APT %d/%d"),  curpage+1, Numpages); 
+			break;
+		case MSM_NEARTPS:
+		default:
+ 	 		_stprintf(Buffer,TEXT("TPS %d/%d"),  curpage+1, Numpages); 
+			break;
+	}
+
+/* 101222
+	if (curmapspace==MSM_LANDABLE) 
  		_stprintf(Buffer,TEXT("LND %d/%d"),  curpage+1,Numpages); 
  	else
  	 	_stprintf(Buffer,TEXT("APT %d/%d"),  curpage+1, Numpages); 
+*/
+
 	if (cursortbox == 0)
 		LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
 	else
@@ -384,10 +414,24 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 		LKWriteText(hdc, Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
   		SelectObject(hdc, LK8InfoNormalFont); 
 
-		if (MapSpaceMode==MSM_LANDABLE) 
+		switch(curmapspace) {
+			case MSM_LANDABLE:
+				_stprintf(Buffer,TEXT("LNDB %d/%d"),  curpage+1,Numpages); 
+				break;
+			case MSM_AIRPORTS:
+				_stprintf(Buffer,TEXT("APTS %d/%d"),  curpage+1, Numpages); 
+				break;
+			case MSM_NEARTPS:
+			default:
+				_stprintf(Buffer,TEXT("TPS %d/%d"),  curpage+1, Numpages); 
+				break;
+		}
+/* 101222 REMOVE
+		if (curmapspace==MSM_LANDABLE) 
 			_stprintf(Buffer,TEXT("LNDB %d/%d"), curpage+1,Numpages); 
 		else
 			_stprintf(Buffer,TEXT("APTS %d/%d"), curpage+1, Numpages); 
+*/
 		if (cursortbox==0)
 			LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
 		else
@@ -422,10 +466,24 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 		LKWriteText(hdc, Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
   		SelectObject(hdc, LK8InfoNormalFont); 
 
-		if (MapSpaceMode==MSM_LANDABLE) 
+		switch(curmapspace) {
+			case MSM_LANDABLE:
+				_stprintf(Buffer,TEXT("LNDB %d/%d"),  curpage+1,Numpages); 
+				break;
+			case MSM_AIRPORTS:
+				_stprintf(Buffer,TEXT("APTS %d/%d"),  curpage+1, Numpages); 
+				break;
+			case MSM_NEARTPS:
+			default:
+				_stprintf(Buffer,TEXT("TPS %d/%d"),  curpage+1, Numpages); 
+				break;
+		}
+/* 101222 REMOVE
+		if (curmapspace==MSM_LANDABLE) 
 			_stprintf(Buffer,TEXT("LNDB %d/%d"),  curpage+1,Numpages); 
 		else
 			_stprintf(Buffer,TEXT("APTS %d/%d"), curpage+1, Numpages); 
+*/
 		if (cursortbox==0)
 			LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
 		else
@@ -465,16 +523,34 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
   bool ndr=NearestDataReady;
   NearestDataReady=false;
 
+  int *psortedindex;
+  switch(curmapspace) {
+	case MSM_LANDABLE:
+		psortedindex=SortedLandableIndex;
+		break;
+	case MSM_AIRPORTS:
+		psortedindex=SortedAirportIndex;
+		break;
+	case MSM_NEARTPS:
+	default:
+		psortedindex=SortedTurnpointIndex;
+		break;
+  }
+	
   for (i=0, drawn_items_onpage=0; i<Numraws; i++) {
-	iRaw=TopSize+(rawspace*i);
+	iRaw=TopSize+(s_rawspace*i);
 	short curraw=(curpage*Numraws)+i;
 	if (curraw>=MAXNEAREST) break;
-	if (MapSpaceMode==MSM_LANDABLE) {
+
+	rli=*(psortedindex+curraw);
+
+/* REMOVE 101222
+	if (curmapspace==MSM_LANDABLE) {
 		rli=SortedLandableIndex[curraw];
 	} else {
 		rli=SortedAirportIndex[curraw];
 	}
-
+*/
 
 	if (!ndr) {
 		goto KeepOldValues;
@@ -482,65 +558,63 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 	if ( ValidWayPoint(rli) ) {
 
 		wlen=wcslen(WayPointList[rli].Name);
-		if (wlen>maxnlname) {
-			_tcsncpy(Buffer, WayPointList[rli].Name, maxnlname); Buffer[maxnlname]='\0';
+		if (wlen>s_maxnlname) {
+			_tcsncpy(Buffer, WayPointList[rli].Name, s_maxnlname); Buffer[s_maxnlname]='\0';
 		}
 		else {
 			_tcsncpy(Buffer, WayPointList[rli].Name, wlen); Buffer[wlen]='\0';
 		}
-		ConvToUpper(Buffer); // 100213 FIX UPPERCASE DRAWNEAREST
+		ConvToUpper(Buffer);
 		_tcscpy(Buffer1[i][curpage],Buffer); 
 
-		Value=WayPointCalc[rli].Distance*DISTANCEMODIFY;
-         	_stprintf(Buffer2[i][curpage],TEXT("%0.1lf"),Value);
+		value=WayPointCalc[rli].Distance*DISTANCEMODIFY;
+         	_stprintf(Buffer2[i][curpage],TEXT("%0.1lf"),value);
 
 
 		if (DisplayMode != dmCircling) {
-			Value = WayPointCalc[rli].Bearing -  GPS_INFO.TrackBearing;
+			value = WayPointCalc[rli].Bearing -  GPS_INFO.TrackBearing;
 
-			if (Value < -180.0)
-				Value += 360.0;
+			if (value < -180.0)
+				value += 360.0;
 			else
-				if (Value > 180.0)
-					Value -= 360.0;
+				if (value > 180.0)
+					value -= 360.0;
 
 #ifndef __MINGW32__
-			if (Value > 1)
-				_stprintf(Buffer3[i][curpage], TEXT("%2.0f°»"), Value);
+			if (value > 1)
+				_stprintf(Buffer3[i][curpage], TEXT("%2.0f°»"), value);
 			else
-				if (Value < -1)
-					_stprintf(Buffer3[i][curpage], TEXT("«%2.0f°"), -Value);
+				if (value < -1)
+					_stprintf(Buffer3[i][curpage], TEXT("«%2.0f°"), -value);
 				else
 					_tcscpy(Buffer3[i][curpage], TEXT("«»"));
 #else
-			if (Value > 1)
-				_stprintf(Buffer3[i][curpage], TEXT("%2.0fÂ°Â»"), Value);
+			if (value > 1)
+				_stprintf(Buffer3[i][curpage], TEXT("%2.0fÂ°Â»"), value);
 			else
-				if (Value < -1)
-					_stprintf(Buffer3[i][curpage], TEXT("Â«%2.0fÂ°"), -Value);
+				if (value < -1)
+					_stprintf(Buffer3[i][curpage], TEXT("Â«%2.0fÂ°"), -value);
 				else
 					_tcscpy(Buffer3[i][curpage], TEXT("Â«Â»"));
 #endif
 		} else
 			_stprintf(Buffer3[i][curpage], TEXT("%2.0fÂ°"), WayPointCalc[rli].Bearing); // 101219
 
-		Value=WayPointCalc[rli].GR;
-		if (Value<1 || Value>=MAXEFFICIENCYSHOW) 
+		value=WayPointCalc[rli].GR;
+		if (value<1 || value>=MAXEFFICIENCYSHOW) 
 			_stprintf(Buffer4[i][curpage],_T("---"));
 		else {
-			if (Value>99) sprintf(text,"%.0f",Value);
-			else sprintf(text,"%.1f",Value);
+			if (value>99) sprintf(text,"%.0f",value);
+			else sprintf(text,"%.1f",value);
 			_stprintf(Buffer4[i][curpage],_T("%S"),text);
 		}
 
-//* TESTFIX 091005 REMOVE
-		Value=ALTITUDEMODIFY*WayPointCalc[rli].AltArriv[AltArrivMode];
-		if (Value <-9999 ||  Value >9999 )
+		value=ALTITUDEMODIFY*WayPointCalc[rli].AltArriv[AltArrivMode];
+		if (value <-9999 ||  value >9999 )
 			strcpy(text,"---");
 		else
-			sprintf(text,"%+.0f",Value);
+			sprintf(text,"%+.0f",value);
 		wsprintf(Buffer5[i][curpage], TEXT("%S"),text);
-//*/
 
 	} else {
 		_stprintf(Buffer1[i][curpage],_T("------------"));
@@ -557,7 +631,15 @@ KeepOldValues:
 
 		drawn_items_onpage++;
 
-		if ( ((WayPointList[rli].Flags & AIRPORT) == AIRPORT) ) // BUGFIX old  rli and not i
+		if (WayPointCalc[rli].IsOutlanding) {
+			rcolor=RGB_LIGHTYELLOW;
+  			SelectObject(hdc, LK8InfoBigItalicFont); 
+		} else {
+			rcolor=RGB_WHITE;
+  			SelectObject(hdc, LK8InfoBigFont); 
+		}
+/* REMOVE 101222
+		if ( ((WayPointList[rli].Flags & AIRPORT) == AIRPORT) ) 
 		{
 			rcolor=RGB_WHITE;
   			SelectObject(hdc, LK8InfoBigFont); // Text font for Nearest
@@ -565,10 +647,12 @@ KeepOldValues:
 			rcolor=RGB_LIGHTYELLOW;
   			SelectObject(hdc, LK8InfoBigItalicFont); // Text font for Nearest
 		}
-		if ((WayPointCalc[rli].VGR == 3 )|| (!WayPointList[rli].Reachable)) // 091205
+*/
+		if ((WayPointCalc[rli].VGR == 3 )|| (!WayPointList[rli].Reachable)) 
 			rcolor=RGB_LIGHTRED;
-	} else 
-			rcolor=RGB_GREY;
+	} else {
+		rcolor=RGB_GREY;
+	}
 
 	LKWriteText(hdc, Buffer1[i][curpage], Column1, iRaw , 0, WTMODE_NORMAL, WTALIGN_LEFT, rcolor, false);
 	
@@ -594,27 +678,27 @@ KeepOldValues:
 
   if (drawn_items_onpage>0) {
 
-	if (SelectedRaw[MapSpaceMode] <0 || SelectedRaw[MapSpaceMode]>(Numraws-1)) {
+	if (SelectedRaw[curmapspace] <0 || SelectedRaw[curmapspace]>(Numraws-1)) {
 		#ifndef LKOBJ
   		DeleteObject(sortbrush); 
 		#endif
 		return;
 	}
-	if (SelectedRaw[MapSpaceMode] >= drawn_items_onpage) {
-		if (LKevent==LKEVENT_DOWN) SelectedRaw[MapSpaceMode]=0;
+	if (SelectedRaw[curmapspace] >= drawn_items_onpage) {
+		if (LKevent==LKEVENT_DOWN) SelectedRaw[curmapspace]=0;
 		else 
-		if (LKevent==LKEVENT_UP) SelectedRaw[MapSpaceMode]=drawn_items_onpage-1;
+		if (LKevent==LKEVENT_UP) SelectedRaw[curmapspace]=drawn_items_onpage-1;
 		else {
 			DoStatusMessage(_T("Cant find valid raw"));
-			SelectedRaw[MapSpaceMode]=0;
+			SelectedRaw[curmapspace]=0;
 		}
 	}
 
 	
 	invsel.left=left;
 	invsel.right=right;
-	invsel.top=TopSize+(rawspace*SelectedRaw[MapSpaceMode])+NIBLSCALE(2);
-	invsel.bottom=TopSize+(rawspace*(SelectedRaw[MapSpaceMode]+1))-NIBLSCALE(1);
+	invsel.top=TopSize+(s_rawspace*SelectedRaw[curmapspace])+NIBLSCALE(2);
+	invsel.bottom=TopSize+(s_rawspace*(SelectedRaw[curmapspace]+1))-NIBLSCALE(1);
 	InvertRect(hdc,&invsel);
 
   } 
