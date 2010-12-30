@@ -279,7 +279,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 		PopupWaypointDetails();
 		LastDoCommon = 0; //@ 101003
 		// SetModeType(LKMODE_MAP, MP_MOVING); Experimental OFF 101219
-//		LKevent=LKEVENT_NONE;
+		LKevent=LKEVENT_NONE;
 		return;
 		break;
 	case LKEVENT_DOWN:

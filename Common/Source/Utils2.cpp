@@ -2737,11 +2737,15 @@ void SetModeType(short modeindex, short modetype) {
 void NextModeType() {
 
 	UnselectMapSpace( ModeTable[ModeIndex][CURTYPE] );
+redo:
 	if ( CURTYPE >= ModeTableTop[ModeIndex] ) {
 		// point to first
 		CURTYPE=0; 
 	} else {
 		CURTYPE++;
+	}
+	if (ISPARAGLIDER) {
+		if (CURTYPE == IM_TRI) goto redo;
 	}
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 }
@@ -2750,11 +2754,16 @@ void NextModeType() {
 void PreviousModeType() {
 // usare ifcircling per decidere se 0 o 1
 	UnselectMapSpace( ModeTable[ModeIndex][CURTYPE] );
-	if ( CURTYPE <= 0 ) 
+redo:
+	if ( CURTYPE <= 0 ) {
 		// point to last
 		CURTYPE=ModeTableTop[ModeIndex]; 
-	else
+	} else {
 		CURTYPE--;
+	}
+	if (ISPARAGLIDER) {
+		if (CURTYPE == IM_TRI) goto redo;
+	}
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 }
 

@@ -340,7 +340,6 @@ DLGS	:=\
 	$(SRC)/dlgStatistics.o \
 	$(SRC)/dlgStatus.o \
 	$(SRC)/dlgStatusSystem.o \
-	$(SRC)/dlgStatusTask.o \
 	$(SRC)/dlgTarget.o \
 	$(SRC)/dlgTaskCalculator.o \
 	$(SRC)/dlgTaskOverview.o \

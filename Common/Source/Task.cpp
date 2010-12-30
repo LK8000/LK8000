@@ -812,7 +812,7 @@ void guiStartLogger(bool noAsk) {
 		return;
 	}
 	TCHAR TaskMessage[1024];
-	_tcscpy(TaskMessage,TEXT("Start Logger With Declaration\r\n"));
+	_tcscpy(TaskMessage,TEXT("Start Logger With Declaration\r\n")); // FIXV2
 	for(i=0;i<MAXTASKPOINTS;i++)
 	{
 		if(Task[i].Index == -1)

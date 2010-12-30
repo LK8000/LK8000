@@ -787,13 +787,13 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
   TCHAR text[80];
   SetBkMode(hdc, OPAQUE);
 
-  _stprintf(text,TEXT("Weight %.0f kg"), 
+  _stprintf(text,TEXT("Weight %.0f kg"),  // FIXV2
 	    GlidePolar::GetAUW());
   ExtTextOut(hdc, rc.left+IBLSCALE(30), 
 	     rc.bottom-IBLSCALE(55), 
 	     ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 
-  _stprintf(text,TEXT("Wing loading %.1f kg/m2"), 
+  _stprintf(text,TEXT("Wing loading %.1f kg/m2"),  // FIXV2
 	    GlidePolar::WingLoading);
   ExtTextOut(hdc, rc.left+IBLSCALE(30), 
 	     rc.bottom-IBLSCALE(40), 
@@ -1554,43 +1554,43 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
 
   switch (page) {
   case ANALYSIS_PAGE_BAROGRAPH:
-    SetCalcCaption(TEXT("Settings"));
+    SetCalcCaption(TEXT("Settings")); // FIXV2
     Statistics::RenderBarograph(hDC, rcgfx);
     break;
   case ANALYSIS_PAGE_CLIMB:
-    SetCalcCaption(TEXT("Task calc"));
+    SetCalcCaption(TEXT("Task calc")); // FIXV2
     Statistics::RenderClimb(hDC, rcgfx);
     break;
   case ANALYSIS_PAGE_WIND:
-    SetCalcCaption(TEXT("Set wind"));
+    SetCalcCaption(TEXT("Set wind")); // FIXV2
     Statistics::RenderWind(hDC, rcgfx);
     break;
   case ANALYSIS_PAGE_POLAR:
-    SetCalcCaption(TEXT("Settings"));
+    SetCalcCaption(TEXT("Settings")); // FIXV2
     Statistics::RenderGlidePolar(hDC, rcgfx);
     break;
   case ANALYSIS_PAGE_TEMPTRACE:
-    SetCalcCaption(TEXT("Settings"));
+    SetCalcCaption(TEXT("Settings")); // FIXV2
     Statistics::RenderTemperature(hDC, rcgfx);
     break;
   case ANALYSIS_PAGE_TASK:
-    SetCalcCaption(TEXT("Task calc"));
+    SetCalcCaption(TEXT("Task calc")); // FIXV2
     LockTaskData();
     Statistics::RenderTask(hDC, rcgfx, false);
     UnlockTaskData();
     break;
   case ANALYSIS_PAGE_OLC:
-    SetCalcCaption(TEXT("Optimise"));
+    SetCalcCaption(TEXT("Optimise")); // FIXV2
     LockTaskData();
     Statistics::RenderTask(hDC, rcgfx, true);
     UnlockTaskData();
     break;
   case ANALYSIS_PAGE_AIRSPACE:
-    SetCalcCaption(TEXT("Warnings"));
+    SetCalcCaption(TEXT("Warnings")); // FIXV2
     Statistics::RenderAirspace(hDC, rcgfx);
     break;
   case ANALYSIS_PAGE_TASK_SPEED:
-    SetCalcCaption(TEXT("Task calc"));
+    SetCalcCaption(TEXT("Task calc")); // FIXV2
     LockTaskData();
     Statistics::RenderSpeed(hDC, rcgfx);
     UnlockTaskData();
@@ -1689,7 +1689,7 @@ static void Update(void){
       wInfo->SetCaption(sTmp);
     break;
     case ANALYSIS_PAGE_POLAR:
-      _stprintf(sTmp, TEXT("%s: %s (Mass %3.0f kg)"), 
+      _stprintf(sTmp, TEXT("%s: %s (Mass %3.0f kg)"),  // FIXV2
 	// LKTOKEN  _@M93_ = "Analysis" 
                 gettext(TEXT("_@M93_")),
 	// LKTOKEN  _@M325_ = "Glide Polar" 

@@ -1194,7 +1194,7 @@ void MapWindow::Event_ScaleZoom(int vswitch) {
   static int nslow=0;
 
   if (isAutoZoom()) {
-	DoStatusMessage(_T("Autozoom OFF"));
+	DoStatusMessage(_T("Autozoom OFF")); // FIXV2
 	AutoZoom=0;
   }
 
@@ -2457,7 +2457,8 @@ savecodesize1:
 						// match only center screen
 						if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(12)) && 
 						      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(12)) ) {
-							DoStatusMessage(_T("Current position updated"));
+							// LKTOKEN  _@M204_ = "Current position updated" 
+							DoStatusMessage(gettext(TEXT("_@M204_")));
 							GPS_INFO.Latitude=PanLatitude;
 							GPS_INFO.Longitude=PanLongitude;
 							break;
@@ -2470,7 +2471,7 @@ savecodesize1:
 					// match only center screen
 					if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(5)) && 
 					      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(5)) ) {
-						DoStatusMessage(_T("Current position updated"));
+						DoStatusMessage(_T("Current position updated")); 
 						GPS_INFO.Latitude=PanLatitude;
 						GPS_INFO.Longitude=PanLongitude;
 						break;
@@ -3101,7 +3102,7 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 		else
 			Event_SetZoom(7.0);
 		Message::Lock(); // 091211
-	        Message::AddMessage(1000, 3, _T("LANDSCAPE ZOOM for 20\""));
+	        Message::AddMessage(1000, 3, _T("LANDSCAPE ZOOM for 20\"")); // FIXV2
 		Message::Unlock();
       		#ifndef DISABLEAUDIO
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_TONEUP"));
@@ -3115,7 +3116,7 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 			alreadyTriggered=false;
 			PGZoomTrigger=false;
 			Message::Lock(); // 091211
-	        	Message::AddMessage(1500, 3, _T("BACK TO NORMAL ZOOM"));
+	        	Message::AddMessage(1500, 3, _T("BACK TO NORMAL ZOOM")); // FIXV2
 			Message::Unlock();
       			#ifndef DISABLEAUDIO
 			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_TONEDOWN"));

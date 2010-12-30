@@ -35,15 +35,15 @@ static void OnTargetClicked(WindowControl * Sender) {
 	return;
   }
   if ( GPS_INFO.FLARM_Traffic[SelectedTraffic].ID <1 ) {
-	DoStatusMessage(_T("SORRY TARGET JUST DISAPPEARED"));
+	DoStatusMessage(_T("SORRY TARGET JUST DISAPPEARED")); // FIXV2
 	return;
   }
 
   if ( LKTraffic[SelectedTraffic].Locked ) {
 #if 0
 	if (MessageBoxX(hWndMapWindow,
-		_T("UNLOCK current target?"),
-		_T("Target selection"),
+		_T("UNLOCK current target?"), // FIXV2
+		_T("Target selection"), // FIXV2
 	MB_YESNO|MB_ICONQUESTION) == IDYES) {
 
 #endif
@@ -56,7 +56,7 @@ static void OnTargetClicked(WindowControl * Sender) {
 	WayPointList[RESWP_FLARMTARGET].Longitude  = RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_FLARMTARGET].Altitude   = RESWP_INVALIDNUMBER;
 	_tcscpy(WayPointList[RESWP_FLARMTARGET].Name,_T(RESWP_FLARMTARGET_NAME) );
-	DoStatusMessage(_T("TARGET RELEASED"));
+	DoStatusMessage(_T("TARGET RELEASED")); // FIXV2
 	wf->SetModalResult(mrOK);
 	return;
   }
@@ -68,7 +68,7 @@ static void OnTargetClicked(WindowControl * Sender) {
 #endif
 	// one more check for existance
 	if ( GPS_INFO.FLARM_Traffic[SelectedTraffic].ID <1 ) {
-		DoStatusMessage(_T("TARGET DISAPPEARED!"));
+		DoStatusMessage(_T("TARGET DISAPPEARED!")); // FIXV2
 		return;
 	}
 

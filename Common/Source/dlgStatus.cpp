@@ -259,7 +259,7 @@ static void UpdateValuesSystem() {
 	// LKTOKEN  _@M827_ = "Yes" 
       wp->SetText(gettext(TEXT("_@M827_")));
     } else {
-      wp->SetText(gettext(TEXT("No")));
+      wp->SetText(gettext(TEXT("No"))); // FIXV2
     }
     wp->RefreshDisplay();
   }

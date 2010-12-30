@@ -53,6 +53,7 @@ static int lastHeading=0;
 
 static int NumberOfAirspaces = 0;
 
+// FIXV2
 static const TCHAR *TypeFilter[] = {TEXT("*"), 
 				    TEXT("Other"),
 				    TEXT("Restricted areas"),

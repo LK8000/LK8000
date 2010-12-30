@@ -54,7 +54,7 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
   if (wf) {
 
     TCHAR fullcaption[100];
-    _stprintf(fullcaption,TEXT("Help: %s"), Caption);
+    _stprintf(fullcaption,TEXT("Help: %s"), Caption); // FIXV2
 
     wf->SetCaption(fullcaption);
 

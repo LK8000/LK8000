@@ -79,7 +79,8 @@ void LKSimulator(void) {
 		UnlockFlightData();
 		return;
 	}
-	if (CALCULATED_INFO.TerrainValid) ALTITUDE= CALCULATED_INFO.TerrainAlt;
+	if (ALTITUDE==0)
+		if (CALCULATED_INFO.TerrainValid) ALTITUDE= CALCULATED_INFO.TerrainAlt;
 	doinit=false;
   }
  

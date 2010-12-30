@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: MapWindow2.cpp,v 8.15 2010/12/12 14:27:14 root Exp root $
+   $Id: MapWindow2.cpp,v 8.16 2010/12/26 22:05:15 root Exp root $
 */
 
 #include "StdAfx.h"
@@ -513,6 +513,7 @@ void MapWindow::ScanVisibility(rectObj *bounds_active) {
     const WAYPOINT *we = WayPointList+NumberOfWayPoints;
     while (wv<we) {
       // TODO code: optimise waypoint visibility
+	// 101226 we may use RangeWaypoint list
       wv->FarVisible = ((wv->Longitude> bounds.minx) &&
 			(wv->Longitude< bounds.maxx) &&
 			(wv->Latitude> bounds.miny) &&
@@ -1835,6 +1836,7 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/, 
                              const bool ScaleChangeFeedback)
 {
+  static short terrainwarning=0;
 
 
   if ((Appearance.MapScale == apMsDefault) || NewMap){
@@ -1870,8 +1872,16 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 
     _tcscpy(Scale2,TEXT(""));
 
-    if (!CALCULATED_INFO.TerrainValid)
-	_tcscat(Scale2,TEXT(" TERRAIN!"));
+    // warn about missing terrain
+    if (!CALCULATED_INFO.TerrainValid) {
+	if (terrainwarning < 120) {
+		_tcscat(Scale2,TEXT(" TERRAIN?"));
+		terrainwarning++;
+	} else  {
+		_tcscat(Scale2,TEXT(" T?"));
+		terrainwarning=120;
+	}
+    } else terrainwarning=0;
 
     if (AutoZoom) {
       _tcscat(Scale2,TEXT(" AZM"));
@@ -1977,10 +1987,12 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     LKWriteText(hDC, Scale, rc.right-NIBLSCALE(11)-tsize.cx, End.y+NIBLSCALE(3), 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true); 
 
     GetTextExtentPoint(hDC, Scale2, _tcslen(Scale2), &tsize);
+    COLORREF mapscalecolor=OverColorRef;
     if (!CALCULATED_INFO.TerrainValid) 
-      LKWriteText(hDC, Scale2, rc.right-NIBLSCALE(11)-tsize.cx, End.y+NIBLSCALE(3)+tsize.cy, 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_RED, true); 
-    else
-      LKWriteText(hDC, Scale2, rc.right-NIBLSCALE(11)-tsize.cx, End.y+NIBLSCALE(3)+tsize.cy, 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true); 
+	if (terrainwarning>0 && terrainwarning<120) mapscalecolor=RGB_RED;
+		
+    LKWriteText(hDC, Scale2, rc.right-NIBLSCALE(11)-tsize.cx, End.y+NIBLSCALE(3)+tsize.cy, 
+	0, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true); 
 
 
     #ifdef DRAWLOAD

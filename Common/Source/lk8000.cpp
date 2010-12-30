@@ -3708,7 +3708,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       ASSERT(hWnd==hWndMainWindow);
       if(ForceShutdown || ((hWnd==hWndMainWindow) && 
          (MessageBoxX(hWndMainWindow,
-                      TEXT("Confirm Exit?"),
+		// LKTOKEN  _@M198_ = "Confirm Exit?"
+               	gettext(TEXT("_@M198_")),
                       TEXT("LK8000"),
                       MB_YESNO|MB_ICONQUESTION) == IDYES))) 
 #endif
@@ -4678,8 +4679,18 @@ void PopupAnalysis()
 
 void PopupWaypointDetails()
 {
-  if (dlgWayQuickShowModal()) {
-	dlgWayPointDetailsShowModal();
+  // Quick is returning  0 for cancel or error, 1 for details, 2 for goto, 3 and 4 for alternates
+  short ret= dlgWayQuickShowModal();
+  StartupStore(_T("... Quick ret=%d\n"),ret);
+  switch(ret) {
+	case 1:
+		dlgWayPointDetailsShowModal();
+		break;
+	case 2:
+		SetModeType(LKMODE_MAP,MP_MOVING);
+		break;
+	default:
+		break;
   }
 }
 
@@ -5337,7 +5348,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   if (_tcsstr(OutBuffer, TEXT("$(AdvanceArmed)"))) {
     switch (AutoAdvance) {
     case 0:
-      ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), TEXT("(manual)"), Size);
+      ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), TEXT("(manual)"), Size); // FIXV2
       invalid = true;
       break;
     case 1:
@@ -5631,7 +5642,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   if (_tcsstr(OutBuffer, TEXT("$(VisualGlideToggleName)"))) {
     switch(VisualGlide) {
     case 0:
-      ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), TEXT("ON"), Size);
+      ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), TEXT("ON"), Size); // FIXV2
       break;
     case 1:
 	if (ExtendedVisualGlide)
@@ -5640,7 +5651,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 		ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), TEXT("OFF"), Size);
       break;
     case 2:
-      ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), TEXT("OFF"), Size);
+      ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), TEXT("OFF"), Size); // FIXV2
       break;
     }
 	if (--items<=0) goto label_ret; // 100517

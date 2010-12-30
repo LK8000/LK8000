@@ -1132,9 +1132,9 @@ void InputEvents::eventActiveMap(const TCHAR *misc) {
     ActiveMap=true;
   else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (ActiveMap)
-      DoStatusMessage(TEXT("ActiveMap ON"));
+      DoStatusMessage(TEXT("ActiveMap ON")); // FIXV2
     if (!ActiveMap) 
-      DoStatusMessage(TEXT("ActiveMap OFF"));
+      DoStatusMessage(TEXT("ActiveMap OFF")); // FIXV2
   }  
 }
 
@@ -1164,11 +1164,11 @@ void InputEvents::eventScreenModes(const TCHAR *misc) {
     }
   } else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (MapWindow::IsMapFullScreen()) 
-      DoStatusMessage(TEXT("Screen Mode Full"));
+      DoStatusMessage(TEXT("Screen Mode Full")); // FIXV2
     else if (EnableAuxiliaryInfo)
-      DoStatusMessage(TEXT("Screen Mode Auxiliary"));
+      DoStatusMessage(TEXT("Screen Mode Auxiliary")); // FIXV2
     else 
-      DoStatusMessage(TEXT("Screen Mode Normal"));
+      DoStatusMessage(TEXT("Screen Mode Normal")); // FIXV2
   } else if (_tcscmp(misc, TEXT("togglebiginfo")) == 0) {
     InfoBoxLayout::fullscreen = !InfoBoxLayout::fullscreen;
   } else {
@@ -1326,9 +1326,9 @@ void InputEvents::eventZoom(const TCHAR* misc) {
     MapWindow::Event_AutoZoom(0);
   else if (_tcscmp(misc, TEXT("auto show")) == 0) {
     if (MapWindow::isAutoZoom())
-      DoStatusMessage(TEXT("AutoZoom ON"));
+      DoStatusMessage(TEXT("AutoZoom ON")); // FIXV2
     else
-      DoStatusMessage(TEXT("AutoZoom OFF"));
+      DoStatusMessage(TEXT("AutoZoom OFF")); // FIXV2
   }
   else if (_tcscmp(misc, TEXT("slowout")) == 0)
     MapWindow::Event_ScaleZoom(-4);
@@ -1407,9 +1407,9 @@ else if (_tcscmp(misc, TEXT("down")) == 0)
     MapWindow::Event_PanCursor(-1,0);
   else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (MapWindow::isPan())
-      DoStatusMessage(TEXT("Pan mode ON"));
+      DoStatusMessage(TEXT("Pan mode ON")); // FIXV2
     else
-      DoStatusMessage(TEXT("Pan mode OFF"));
+      DoStatusMessage(TEXT("Pan mode OFF")); // FIXV2
   }
 
 }
@@ -1751,9 +1751,9 @@ void InputEvents::eventMacCready(const TCHAR *misc) {
     MacCreadyProcessing(-2);
   } else if (_tcscmp(misc, TEXT("auto show")) == 0) {
     if (CALCULATED_INFO.AutoMacCready) {
-      DoStatusMessage(TEXT("Auto MacCready ON"));
+      DoStatusMessage(TEXT("Auto MacCready ON")); // FIXV2
     } else {
-      DoStatusMessage(TEXT("Auto MacCready OFF"));
+      DoStatusMessage(TEXT("Auto MacCready OFF")); // FIXV2
     }
   } else if (_tcscmp(misc, TEXT("show")) == 0) {
     TCHAR Temp[100];
@@ -2518,9 +2518,9 @@ void InputEvents::eventLogger(const TCHAR *misc) {
     return;
   } else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (LoggerActive) {
-      DoStatusMessage(TEXT("Logger ON"));
+      DoStatusMessage(TEXT("Logger ON")); // FIXV2
     } else {
-      DoStatusMessage(TEXT("Logger OFF"));
+      DoStatusMessage(TEXT("Logger OFF")); // FIXV2
     }
   } else if (_tcsncmp(misc, TEXT("note"), 4)==0) {
     // add note to logger file if available..

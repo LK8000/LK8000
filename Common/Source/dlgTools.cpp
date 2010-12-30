@@ -125,7 +125,7 @@ int WINAPI MessageBoxX(HWND hWnd, LPCTSTR lpText, LPCTSTR lpCaption, UINT uType)
                                           0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IDYES);
     ButtonCount++;
-    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), gettext(TEXT("No")), 
+    wButtons[ButtonCount] = new WndButton(wf, TEXT(""), gettext(TEXT("No")),  // FIXV2
                                           0, y, w, h, OnButtonClick);
     wButtons[ButtonCount]->SetTag(IDNO);
     ButtonCount++;

@@ -270,7 +270,7 @@ void dlgAirspaceShowModal(bool coloredit){
   // now retrieve back the properties...
   if (changed) {
     StoreRegistry();
-    DoStatusMessage(TEXT("Configuration saved"));
+    DoStatusMessage(TEXT("Configuration saved")); // FIXV2
   };
 
   delete wf;

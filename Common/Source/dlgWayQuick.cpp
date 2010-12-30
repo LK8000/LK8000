@@ -24,7 +24,7 @@ static WndForm *wf=NULL;
 #define WPLSEL WayPointList[SelectedWaypoint]
 
 
-bool needDetails;
+short retStatus;
 
 static void OnCancelClicked(WindowControl * Sender){
 (void)Sender;
@@ -38,6 +38,9 @@ static void OnSetAlt1Clicked(WindowControl * Sender){
   SetToRegistry(szRegistryAlternate1, Alternate1);
   RefreshTask();
   UnlockTaskData();
+  if (ValidWayPoint(Alternate1))
+  	DoStatusMessage(_T("Altern.1="),WayPointList[Alternate1].Name);
+  retStatus=3;
   wf->SetModalResult(mrOK);
 }
 
@@ -48,18 +51,22 @@ static void OnSetAlt2Clicked(WindowControl * Sender){
   SetToRegistry(szRegistryAlternate2, Alternate2);
   RefreshTask();
   UnlockTaskData();
+  if (ValidWayPoint(Alternate2))
+  	DoStatusMessage(_T("Altern.2="),WayPointList[Alternate2].Name);
+  retStatus=4;
   wf->SetModalResult(mrOK);
 }
 
 static void OnGotoClicked(WindowControl * Sender){
   (void)Sender;
   GotoWaypoint(SelectedWaypoint);
+  retStatus=2;
   wf->SetModalResult(mrOK);
 }
 
 static void OnDetailsClicked(WindowControl * Sender){
   (void)Sender;
-  needDetails=true;
+  retStatus=1;
   wf->SetModalResult(mrOK);
 }
 
@@ -71,8 +78,8 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(NULL)
 };
 
-// Will return true if details needed
-bool dlgWayQuickShowModal(void){
+// Will return 0 if cancel or error, 1 if details needed, 2 if goto, 3 if alt1, 4 if alt2
+short dlgWayQuickShowModal(void){
 
   wf = NULL;
 
@@ -82,7 +89,7 @@ bool dlgWayQuickShowModal(void){
   LocalPathS(filename, TEXT("dlgWayQuick.xml"));
   wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_WAYPOINTQUICK"));
 
-  if (!wf) return false;
+  if (!wf) return 0;
 
   ASSERT(wf!=NULL);
 
@@ -92,7 +99,7 @@ bool dlgWayQuickShowModal(void){
   ((WndButton *)wf->FindByName(TEXT("cmdDetails"))) ->SetOnClickNotify(OnDetailsClicked);
   ((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetOnClickNotify(OnCancelClicked);
 
-  needDetails=false;
+  retStatus=0;
   if (WPLSEL.Format == LKW_CUP) {
         TCHAR ttmp[50];
         // and it is landable
@@ -134,6 +141,6 @@ bool dlgWayQuickShowModal(void){
 
   wf = NULL;
 
-  return needDetails;
+  return retStatus;
 
 }

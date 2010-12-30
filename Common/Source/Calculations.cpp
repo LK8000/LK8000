@@ -358,7 +358,7 @@ void AnnounceWayPointSwitch(DERIVED_INFO *Calculated, bool do_advance) {
              Units::GetTaskSpeedName());
 
     TCHAR TempAll[120];
-    _stprintf(TempAll, TEXT("\r\nAltitude: %s\r\nSpeed:%s\r\nTime: %s"), TempAlt, TempSpeed, TempTime);
+    _stprintf(TempAll, TEXT("\r\nAltitude: %s\r\nSpeed:%s\r\nTime: %s"), TempAlt, TempSpeed, TempTime); // FIXV2
 
 	// LKTOKEN  _@M692_ = "Task Start" 
     DoStatusMessage(gettext(TEXT("_@M692_")), TempAll);
@@ -2733,25 +2733,25 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
 			}
 			// now check for special alerts on countdown, only on current armed start
 			if (gatetimediff==3600 && ((PGGateIntervalTime>=70)||ActiveGate==0) ) { 
-				DoStatusMessage(_T("FIRST GATE OPEN IN 1 HOUR"));
+				DoStatusMessage(_T("FIRST GATE OPEN IN 1 HOUR")); // FIXV2
 				if (EnableSoundModes) {
 					LKSound(_T("LK_DINGDONG.WAV"));
 				}
 			}
 			if (gatetimediff==1800 && ((PGGateIntervalTime>=45)||ActiveGate==0) ) { 
-				DoStatusMessage(_T("FIRST GATE OPEN IN 30 MINUTES"));
+				DoStatusMessage(_T("FIRST GATE OPEN IN 30 MINUTES")); // FIXV2
 				if (EnableSoundModes) {
 					LKSound(_T("LK_DINGDONG.WAV"));
 				}
 			}
 			if (gatetimediff==600 && ((PGGateIntervalTime>=15)||ActiveGate==0) ) { // 10 minutes to go
-				DoStatusMessage(_T("10 MINUTES TO GO"));
+				DoStatusMessage(_T("10 MINUTES TO GO")); // FIXV2
 				if (EnableSoundModes) {
 					LKSound(_T("LK_HITONE.WAV"));
 				}
 			}
 			if (gatetimediff==300 && ((PGGateIntervalTime>=10)||ActiveGate==0)) { // 5 minutes to go
-				DoStatusMessage(_T("5 MINUTES TO GO"));
+				DoStatusMessage(_T("5 MINUTES TO GO")); // FIXV2
 				if (EnableSoundModes) {
 					LKSound(_T("LK_HITONE.WAV"));
 				}
