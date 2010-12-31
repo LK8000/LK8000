@@ -405,7 +405,8 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
   LKWriteText(hdc, Buffer, middlex, contenttop+(textSize.cy*1) , 0, WTMODE_OUTLINED, WTALIGN_CENTER,RGB_AMBER, false);
 
 
-  _stprintf(Buffer,TEXT("Click on center screen to begin")); // FIXV2
+  _stprintf(Buffer,TEXT("Click on center screen to begin")); // REMOVE FIXV2
+  _stprintf(Buffer,gettext(TEXT("_@M874_"))); // Click on center screen to begin
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
   LKWriteText(hdc, Buffer, middlex, ((rc.bottom-rc.top)-textSize.cy)/2 , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_SWHITE, false);
 

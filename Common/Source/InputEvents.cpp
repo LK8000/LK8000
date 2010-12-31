@@ -1132,9 +1132,13 @@ void InputEvents::eventActiveMap(const TCHAR *misc) {
     ActiveMap=true;
   else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (ActiveMap)
-      DoStatusMessage(TEXT("ActiveMap ON")); // FIXV2
+      // DoStatusMessage(TEXT("ActiveMap ON")); // REMOVE FIXV2
+	// 854 ActiveMap ON
+      DoStatusMessage(gettext(TEXT("_@M854_")));
     if (!ActiveMap) 
-      DoStatusMessage(TEXT("ActiveMap OFF")); // FIXV2
+      // DoStatusMessage(TEXT("ActiveMap OFF")); // REMOVE FIXV2
+	// 855 ActiveMap OFF
+      DoStatusMessage(gettext(TEXT("_@M855_")));
   }  
 }
 
@@ -1162,13 +1166,13 @@ void InputEvents::eventScreenModes(const TCHAR *misc) {
     } else {
       MapWindow::RequestOnFullScreen();
     }
-  } else if (_tcscmp(misc, TEXT("show")) == 0) {
+  } else if (_tcscmp(misc, TEXT("show")) == 0) { // not used
     if (MapWindow::IsMapFullScreen()) 
-      DoStatusMessage(TEXT("Screen Mode Full")); // FIXV2
+      DoStatusMessage(TEXT("Screen Mode Full")); 
     else if (EnableAuxiliaryInfo)
-      DoStatusMessage(TEXT("Screen Mode Auxiliary")); // FIXV2
+      DoStatusMessage(TEXT("Screen Mode Auxiliary")); 
     else 
-      DoStatusMessage(TEXT("Screen Mode Normal")); // FIXV2
+      DoStatusMessage(TEXT("Screen Mode Normal")); 
   } else if (_tcscmp(misc, TEXT("togglebiginfo")) == 0) {
     InfoBoxLayout::fullscreen = !InfoBoxLayout::fullscreen;
   } else {
@@ -1326,9 +1330,13 @@ void InputEvents::eventZoom(const TCHAR* misc) {
     MapWindow::Event_AutoZoom(0);
   else if (_tcscmp(misc, TEXT("auto show")) == 0) {
     if (MapWindow::isAutoZoom())
-      DoStatusMessage(TEXT("AutoZoom ON")); // FIXV2
+      // DoStatusMessage(TEXT("AutoZoom ON")); // REMOVE FIXV2
+	// 856 AutoZoom ON
+      DoStatusMessage(gettext(TEXT("_@M856_")));
     else
-      DoStatusMessage(TEXT("AutoZoom OFF")); // FIXV2
+      // DoStatusMessage(TEXT("AutoZoom OFF")); // REMOVER FIXV2
+	// 857 AutoZoom OFF
+      DoStatusMessage(gettext(TEXT("_@M857_")));
   }
   else if (_tcscmp(misc, TEXT("slowout")) == 0)
     MapWindow::Event_ScaleZoom(-4);
@@ -1407,9 +1415,11 @@ else if (_tcscmp(misc, TEXT("down")) == 0)
     MapWindow::Event_PanCursor(-1,0);
   else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (MapWindow::isPan())
-      DoStatusMessage(TEXT("Pan mode ON")); // FIXV2
+      // DoStatusMessage(TEXT("Pan mode ON")); // REMOVE FIXV2
+      DoStatusMessage(gettext(TEXT("_@M858_"))); // Pan mode ON
     else
-      DoStatusMessage(TEXT("Pan mode OFF")); // FIXV2
+      // DoStatusMessage(TEXT("Pan mode OFF")); // REMOVE FIXV2
+      DoStatusMessage(gettext(TEXT("_@M859_"))); // Pan mode OFF
   }
 
 }
@@ -1751,9 +1761,11 @@ void InputEvents::eventMacCready(const TCHAR *misc) {
     MacCreadyProcessing(-2);
   } else if (_tcscmp(misc, TEXT("auto show")) == 0) {
     if (CALCULATED_INFO.AutoMacCready) {
-      DoStatusMessage(TEXT("Auto MacCready ON")); // FIXV2
+      // DoStatusMessage(TEXT("Auto MacCready ON")); // REMOVE FIXV2
+      DoStatusMessage(gettext(TEXT("_@M860_"))); // Auto MacCready ON
     } else {
-      DoStatusMessage(TEXT("Auto MacCready OFF")); // FIXV2
+      // DoStatusMessage(TEXT("Auto MacCready OFF")); // REMOVE FIXV2
+      DoStatusMessage(gettext(TEXT("_@M861_"))); // Auto MacCready OFF
     }
   } else if (_tcscmp(misc, TEXT("show")) == 0) {
     TCHAR Temp[100];
@@ -2173,7 +2185,7 @@ void InputEvents::eventCalcWind(const TCHAR *misc) {
   if (reswp<98) _stprintf(ttmp,_T("TrueWind! Quality: fair"));
   if (reswp>=98) _stprintf(ttmp,_T("TrueWind! Quality: good"));
 #else
-  _stprintf(ttmp,_T("TrueWind! Quality: %d%%"),resw);
+  _stprintf(ttmp,_T("TrueWind! %s: %d%%"),gettext(TEXT("_@M866_")),resw); // Quality
 #endif
 
   if (MessageBoxX(hWndMapWindow, mbuf, ttmp, MB_YESNO|MB_ICONQUESTION) == IDYES) {
@@ -2267,7 +2279,18 @@ void InputEvents::eventService(const TCHAR *misc) {
 	_stprintf(TempSpeed, TEXT("%.0f %s"), CALCULATED_INFO.TaskStartSpeed*TASKSPEEDMODIFY, Units::GetTaskSpeedName());
 
 	TCHAR TempAll[120];
-	_stprintf(TempAll, TEXT("\r\nAltitude: %s\r\nSpeed:%s\r\nTime: %s"), TempAlt, TempSpeed, TempTime);
+	// _stprintf(TempAll, TEXT("\r\nAltitude: %s\r\nSpeed:%s\r\nTime: %s"), TempAlt, TempSpeed, TempTime); REMOVE FIXV2
+	_stprintf(TempAll, TEXT("\r\n%s: %s\r\n%s:%s\r\n%s: %s"),
+		// Altitude
+		gettext(TEXT("_@M89_")),
+		TempAlt,
+		// Speed
+		gettext(TEXT("_@M632_")),
+		TempSpeed,
+		// Time
+		gettext(TEXT("_@M720_")),
+		TempTime);
+
 
 	// ALWAYS issue DoStatusMessage BEFORE sounds, if possible.
 	// LKTOKEN  _@M692_ = "Task Start" 
@@ -2290,8 +2313,20 @@ void InputEvents::eventService(const TCHAR *misc) {
 
 	TCHAR TempAll[180];
 
-	_stprintf(TempAll, TEXT("\r\nAltitude: %s\r\nSpeed:%s\r\nTime: %s\r\nTask Speed: %s"), 
-	TempAlt, TempSpeed, TempTime, TempTskSpeed);
+	//_stprintf(TempAll, TEXT("\r\nAltitude: %s\r\nSpeed:%s\r\nTime: %s\r\nTask Speed: %s"),  REMOVE FIXV2
+	_stprintf(TempAll, TEXT("\r\n%s: %s\r\n%s:%s\r\n%s: %s\r\n%s: %s"),
+	// Altitude
+	gettext(TEXT("_@M89_")),
+	TempAlt, 
+	// Speed
+	gettext(TEXT("_@M632_")),
+	TempSpeed, 
+	// Time
+	gettext(TEXT("_@M720_")),
+	TempTime, 
+	// task speed
+	gettext(TEXT("_@M697_")),
+	TempTskSpeed);
 
 	// LKTOKEN  _@M687_ = "Task Finish" 
 	DoStatusMessage(gettext(TEXT("_@M687_")), TempAll);
@@ -2313,9 +2348,9 @@ void InputEvents::eventService(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("ORBITER")) == 0) {
 	Orbiter=!Orbiter;
 	if (Orbiter)
-		DoStatusMessage(TEXT("ORBITER ON"));
+		DoStatusMessage(gettext(TEXT("_@M867_"))); // ORBITER ON
 	else
-		DoStatusMessage(TEXT("ORBITER OFF"));
+		DoStatusMessage(gettext(TEXT("_@M868_"))); // ORBITER OFF
 	return;
   }
 
@@ -2511,16 +2546,20 @@ void InputEvents::eventLogger(const TCHAR *misc) {
   } else if (_tcscmp(misc, TEXT("nmea")) == 0) {
     EnableLogNMEA = !EnableLogNMEA;
     if (EnableLogNMEA) {
-      DoStatusMessage(TEXT("NMEA Log ON"));
+      // DoStatusMessage(TEXT("NMEA Log ON"));
+      DoStatusMessage(gettext(TEXT("_@M864_"))); // NMEA Log ON
     } else {
-      DoStatusMessage(TEXT("NMEA Log OFF"));
+      // DoStatusMessage(TEXT("NMEA Log OFF"));
+      DoStatusMessage(gettext(TEXT("_@M865_"))); // NMEA Log OFF
     }
     return;
   } else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (LoggerActive) {
-      DoStatusMessage(TEXT("Logger ON")); // FIXV2
+      // DoStatusMessage(TEXT("Logger ON")); // REMOVE FIXV2
+      DoStatusMessage(gettext(TEXT("_@M862_"))); // Logger ON
     } else {
-      DoStatusMessage(TEXT("Logger OFF")); // FIXV2
+      // DoStatusMessage(TEXT("Logger OFF")); // REMOVE FIXV2
+      DoStatusMessage(gettext(TEXT("_@M863_"))); // Logger OFF
     }
   } else if (_tcsncmp(misc, TEXT("note"), 4)==0) {
     // add note to logger file if available..
@@ -2615,19 +2654,25 @@ void InputEvents::eventNearestAirspaceDetails(const TCHAR *misc) {
       && (CALCULATED_INFO.NavAltitude >= AirspaceArea[i].Base.Altitude)) {
 
     _stprintf(text,
-              TEXT("Inside airspace: %s\r\n%s\r\nExit: %s\r\nBearing %d")
-	      TEXT(DEG)TEXT("\r\n"), 
+              // TEXT("Inside airspace: %s\r\n%s\r\nExit: %s\r\nBearing %d") TEXT(DEG)TEXT("\r\n"),  REMOVE FIXV2
+              TEXT("%s: %s\r\n%s\r\n%s: %s\r\n%s %d") TEXT(DEG)TEXT("\r\n"), 
+		gettext(TEXT("_@M869_")), // Inside airspace
               szTitleBuffer, 
               szMessageBuffer,
+		gettext(TEXT("_@M870_")), // Exit
               DistanceText,
+		gettext(TEXT("_@M138_")), // Bearing
               (int)nearestbearing);
   } else {
     _stprintf(text,
-	      TEXT("Nearest airspace: %s\r\n%s\r\nDistance: %s\r\nBearing %d")
-	      TEXT(DEG)TEXT("\r\n"), 
+	      // TEXT("Nearest airspace: %s\r\n%s\r\nDistance: %s\r\nBearing %d") TEXT(DEG)TEXT("\r\n"),  REMOVE FIXV2
+	      TEXT("%s: %s\r\n%s\r\n%s: %s\r\n%s %d") TEXT(DEG)TEXT("\r\n"), 
+		gettext(TEXT("_@M871_")), // Nearest airspace
 	      szTitleBuffer, 
 	      szMessageBuffer,
+		gettext(TEXT("_@M245_")), // Distance
 	      DistanceText,
+		gettext(TEXT("_@M138_")), // Bearing
 	      (int)nearestbearing);
   }
     

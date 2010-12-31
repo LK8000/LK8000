@@ -5348,11 +5348,13 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   if (_tcsstr(OutBuffer, TEXT("$(AdvanceArmed)"))) {
     switch (AutoAdvance) {
     case 0:
-      ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), TEXT("(manual)"), Size); // FIXV2
+      // ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), TEXT("(manual)"), Size); // REMOVE FIXV2
+      ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), gettext(TEXT("_@M892_")), Size); // (manual)
       invalid = true;
       break;
     case 1:
-      ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), TEXT("(auto)"), Size);
+      // ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), TEXT("(auto)"), Size); // REMOVE FIXV2
+      ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), gettext(TEXT("_@M893_")), Size); // (auto)
       invalid = true;
       break;
     case 2:
@@ -5613,7 +5615,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   }
 
   if (_tcsstr(OutBuffer, TEXT("$(LoggerActive)"))) {
-	CondReplaceInString(LoggerActive, OutBuffer, TEXT("$(LoggerActive)"), TEXT("Stop"), TEXT("Start"), Size);
+	CondReplaceInString(LoggerActive, OutBuffer, TEXT("$(LoggerActive)"), gettext(TEXT("_@M670_")), gettext(TEXT("_@M657_")), Size); // Stop Start
 	if (--items<=0) goto label_ret; // 100517
   }
 
@@ -5642,16 +5644,16 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   if (_tcsstr(OutBuffer, TEXT("$(VisualGlideToggleName)"))) {
     switch(VisualGlide) {
     case 0:
-      ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), TEXT("ON"), Size); // FIXV2
+      ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), gettext(TEXT("_@M894_")), Size); // ON
       break;
     case 1:
 	if (ExtendedVisualGlide)
 		ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), TEXT("Moving"), Size);
 	else
-		ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), TEXT("OFF"), Size);
+      		ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), gettext(TEXT("_@M491_")), Size); // OFF
       break;
     case 2:
-      ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), TEXT("OFF"), Size); // FIXV2
+      ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), gettext(TEXT("_@M491_")), Size); // OFF
       break;
     }
 	if (--items<=0) goto label_ret; // 100517
@@ -5661,43 +5663,43 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   if (_tcsstr(OutBuffer, TEXT("$(AirSpaceToggleName)"))) {
     switch(OnAirSpace) {
     case 0:
-      ReplaceInString(OutBuffer, TEXT("$(AirSpaceToggleName)"), TEXT("ON"), Size);
+      ReplaceInString(OutBuffer, TEXT("$(AirSpaceToggleName)"), gettext(TEXT("_@894_")), Size); // ON
       break;
     case 1:
-      ReplaceInString(OutBuffer, TEXT("$(AirSpaceToggleName)"), TEXT("OFF"), Size);
+      ReplaceInString(OutBuffer, TEXT("$(AirSpaceToggleName)"), gettext(TEXT("_@491_")), Size); // OFF
       break;
     }
 	if (--items<=0) goto label_ret; // 100517
   }
   if (_tcsstr(OutBuffer, TEXT("$(SHADING)"))) {
     if ( Shading )
-      ReplaceInString(OutBuffer, TEXT("$(SHADING)"), TEXT("OFF"), Size);
+      ReplaceInString(OutBuffer, TEXT("$(SHADING)"), gettext(TEXT("_@M491_")), Size); // OFF
     else
-      ReplaceInString(OutBuffer, TEXT("$(SHADING)"), TEXT("ON"), Size);
+      ReplaceInString(OutBuffer, TEXT("$(SHADING)"), gettext(TEXT("_@M894_")), Size); // ON
 	if (--items<=0) goto label_ret;
   }
 
   if (_tcsstr(OutBuffer, TEXT("$(PanModeStatus)"))) {
     if ( MapWindow::isPan() )
-      ReplaceInString(OutBuffer, TEXT("$(PanModeStatus)"), TEXT("OFF"), Size);
+      ReplaceInString(OutBuffer, TEXT("$(PanModeStatus)"), gettext(TEXT("_@M491_")), Size); // OFF
     else
-      ReplaceInString(OutBuffer, TEXT("$(PanModeStatus)"), TEXT("ON"), Size);
+      ReplaceInString(OutBuffer, TEXT("$(PanModeStatus)"), gettext(TEXT("_@M894_")), Size); // ON
 	if (--items<=0) goto label_ret; // 100517
   }
 
   if (_tcsstr(OutBuffer, TEXT("$(EnableSoundModes)"))) {
     if (EnableSoundModes)
-      ReplaceInString(OutBuffer, TEXT("$(EnableSoundModes)"), TEXT("OFF"), Size);
+      ReplaceInString(OutBuffer, TEXT("$(EnableSoundModes)"), gettext(TEXT("_@M491_")), Size);
     else
-      ReplaceInString(OutBuffer, TEXT("$(EnableSoundModes)"), TEXT("ON"), Size);
+      ReplaceInString(OutBuffer, TEXT("$(EnableSoundModes)"), gettext(TEXT("_@M894_")), Size);
 	if (--items<=0) goto label_ret; // 100517
   }
 
   if (_tcsstr(OutBuffer, TEXT("$(ActiveMap)"))) {
     if (ActiveMap)
-      ReplaceInString(OutBuffer, TEXT("$(ActiveMap)"), TEXT("OFF"), Size);
+      ReplaceInString(OutBuffer, TEXT("$(ActiveMap)"), gettext(TEXT("_@M491_")), Size);
     else
-      ReplaceInString(OutBuffer, TEXT("$(ActiveMap)"), TEXT("ON"), Size);
+      ReplaceInString(OutBuffer, TEXT("$(ActiveMap)"), gettext(TEXT("_@M894_")), Size);
 	if (--items<=0) goto label_ret; // 100517
   }
 
@@ -5709,17 +5711,17 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   }
   if (_tcsstr(OutBuffer, TEXT("$(OVERLAY"))) {
 	if (Look8000==(Look8000_t)lxcNoOverlay)
-		ReplaceInString(OutBuffer, TEXT("$(OVERLAY)"), TEXT("ON"), Size);
+		ReplaceInString(OutBuffer, TEXT("$(OVERLAY)"), gettext(TEXT("_@M894_")), Size);
 	else
-		ReplaceInString(OutBuffer, TEXT("$(OVERLAY)"), TEXT("OFF"), Size);
+		ReplaceInString(OutBuffer, TEXT("$(OVERLAY)"), gettext(TEXT("_@M491_")), Size);
 	if (--items<=0) goto label_ret; 
   }
 #if ORBITER
   if (_tcsstr(OutBuffer, TEXT("$(Orbiter"))) {
 	if (!Orbiter)
-		ReplaceInString(OutBuffer, TEXT("$(Orbiter)"), TEXT("ON"), Size);
+		ReplaceInString(OutBuffer, TEXT("$(Orbiter)"), gettext(TEXT("_@M894_")), Size);
 	else
-		ReplaceInString(OutBuffer, TEXT("$(Orbiter)"), TEXT("OFF"), Size);
+		ReplaceInString(OutBuffer, TEXT("$(Orbiter)"), gettext(TEXT("_@M491_")), Size);
 
 	if (!EnableThermalLocator) invalid = true;
 	if (--items<=0) goto label_ret; 

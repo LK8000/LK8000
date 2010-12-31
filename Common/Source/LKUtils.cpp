@@ -410,14 +410,15 @@ void LKRunStartEnd(bool start) {
 
 // 101221 lets try to use UTF-16 directly
 // filetype 1 BE  -1 LE  
+// This is reading char string and returning tchar. We need to double the Max size.
 BOOL ReadUString(HANDLE hFile, int Max, TCHAR *String, short filetype)
 {
   if (filetype==0)
-  return ( ReadString(hFile, Max, String));
+  return ( ReadString(hFile, Max, String)); // Ansi string, no-wide chars
 
   DWORD dwNumBytesRead=0;
   DWORD dwTotalNumBytesRead=0;
-  char  FileBuffer[READLINE_LENGTH+1];
+  char  FileBuffer[(READLINE_LENGTH*2)+2];
   DWORD dwFilePos;
 
   String[0] = '\0';
@@ -427,7 +428,7 @@ BOOL ReadUString(HANDLE hFile, int Max, TCHAR *String, short filetype)
   if (hFile == INVALID_HANDLE_VALUE)
 	return(FALSE);
 
-  if (ReadFile(hFile, FileBuffer, sizeof(FileBuffer), &dwNumBytesRead, (OVERLAPPED *)NULL) == 0)
+  if (ReadFile(hFile, FileBuffer, sizeof(FileBuffer)-2, &dwNumBytesRead, (OVERLAPPED *)NULL) == 0)
 	return(FALSE);
 
   int i = 0;
@@ -436,7 +437,8 @@ BOOL ReadUString(HANDLE hFile, int Max, TCHAR *String, short filetype)
 
   char c;
   char *pointer=(char *)&String[0];
-  while(i<Max && j<(int)dwNumBytesRead){
+  // each character is a wide character here, so we read twice as much
+  while(i<(Max*2) && j<(int)dwNumBytesRead){
 	c = FileBuffer[j++];
 	dwTotalNumBytesRead++;
 
@@ -444,14 +446,19 @@ BOOL ReadUString(HANDLE hFile, int Max, TCHAR *String, short filetype)
 	*pointer++=c;
 	i++;
   }
+  // close the tstring
   *pointer++='\0';
   *pointer='\0';
+
   if (filetype==1) {
-	for (char *repoint=(char *)&String[0]; repoint<=(pointer-2); repoint+=2) {
+	char *repoint;
+	for (repoint=(char *)&String[0]; repoint<=(pointer-2); repoint+=2) {
 		c = *repoint;
 		*repoint = *(repoint+1);
 		*(repoint+1)= c;
 	}
+	*repoint = (char)'\0';
+	*(repoint+1) = (char)'\0';
   }
 
   SetFilePointer(hFile, dwFilePos+j, NULL, FILE_BEGIN);

@@ -566,8 +566,8 @@ static void OnLoadClicked(WindowControl * Sender, WndListFrame::ListInfo_t *List
   int file_index = dfe->GetAsInteger();
   if (file_index>0) {
 	if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
-		// _stprintf(file_name, TEXT("Clear old task and load '%s' ?"), dfe->GetAsString()); 101229
-		_stprintf(file_name, TEXT("%s '%s' ?"), TEXT("Clear old task and load"), dfe->GetAsString()); // FIXV2
+		// _stprintf(file_name, TEXT("Clear old task and load '%s' ?"), dfe->GetAsString()); REMOVE FIXV2 101229
+		_stprintf(file_name, TEXT("%s '%s' ?"), gettext(TEXT("_@M891_")), dfe->GetAsString()); // Clear old task and load
 		if(MessageBoxX(hWndMapWindow, file_name, _T(" "), MB_YESNO|MB_ICONQUESTION) == IDNO) {
 			return;
 		}

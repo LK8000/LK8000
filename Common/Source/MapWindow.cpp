@@ -1194,7 +1194,8 @@ void MapWindow::Event_ScaleZoom(int vswitch) {
   static int nslow=0;
 
   if (isAutoZoom()) {
-	DoStatusMessage(_T("Autozoom OFF")); // FIXV2
+	// DoStatusMessage(_T("Autozoom OFF")); // REMOVE FIXV2
+	DoStatusMessage(gettext(TEXT("_@M857_"))); // AutoZoom OFF
 	AutoZoom=0;
   }
 
@@ -3102,7 +3103,8 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 		else
 			Event_SetZoom(7.0);
 		Message::Lock(); // 091211
-	        Message::AddMessage(1000, 3, _T("LANDSCAPE ZOOM for 20\"")); // FIXV2
+	        // Message::AddMessage(1000, 3, _T("LANDSCAPE ZOOM for 20\"")); // REMOVE FIXV2
+	        Message::AddMessage(1000, 3, gettext(TEXT("_@M872_"))); // LANDSCAPE ZOOM FOR 20s
 		Message::Unlock();
       		#ifndef DISABLEAUDIO
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_TONEUP"));
@@ -3116,7 +3118,8 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 			alreadyTriggered=false;
 			PGZoomTrigger=false;
 			Message::Lock(); // 091211
-	        	Message::AddMessage(1500, 3, _T("BACK TO NORMAL ZOOM")); // FIXV2
+	        	// Message::AddMessage(1500, 3, _T("BACK TO NORMAL ZOOM")); // REMOVE FIXV2
+	        	Message::AddMessage(1500, 3, gettext(TEXT("_@M873_"))); // BACK TO NORMAL ZOOM
 			Message::Unlock();
       			#ifndef DISABLEAUDIO
 			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_TONEDOWN"));

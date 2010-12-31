@@ -854,7 +854,9 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 			StartupStore(_T("------ NMEAParser:RMC Receiving an invalid or null DATE from GPS%s"),NEWLINE);
 			StartupStore(_T("------ NMEAParser: Date received is y=%d m=%d d=%d%s"),gy,gm,gd,NEWLINE); // 100422
 			StartupStore(_T("------ This message will NOT be repeated.%s"),NEWLINE);
-			DoStatusMessage(_T("WARNING: GPS IS SENDING INVALID DATE, AND PROBABLY WRONG TIME")); // FIXV2
+			// DoStatusMessage(_T("WARNING: GPS IS SENDING INVALID DATE, AND PROBABLY WRONG TIME")); // REMOVE FIXV2
+			// LKTOKEN 875  WARNING: GPS IS SENDING INVALID DATE, AND PROBABLY WRONG TIME")); 
+			DoStatusMessage(gettext(TEXT("_@M875_")));
 			logbaddate=false;
 		}
 	}

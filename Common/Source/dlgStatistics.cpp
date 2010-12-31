@@ -787,13 +787,15 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
   TCHAR text[80];
   SetBkMode(hdc, OPAQUE);
 
-  _stprintf(text,TEXT("Weight %.0f kg"),  // FIXV2
+  _stprintf(text,TEXT("%s %.0f kg"),  
+	gettext(TEXT("_@M814_")), // Weight
 	    GlidePolar::GetAUW());
   ExtTextOut(hdc, rc.left+IBLSCALE(30), 
 	     rc.bottom-IBLSCALE(55), 
 	     ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 
-  _stprintf(text,TEXT("Wing loading %.1f kg/m2"),  // FIXV2
+  _stprintf(text,TEXT("%s %.1f kg/m2"),  
+	gettext(TEXT("_@M821_")), // Wing load
 	    GlidePolar::WingLoading);
   ExtTextOut(hdc, rc.left+IBLSCALE(30), 
 	     rc.bottom-IBLSCALE(40), 
@@ -1554,43 +1556,43 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
 
   switch (page) {
   case ANALYSIS_PAGE_BAROGRAPH:
-    SetCalcCaption(TEXT("Settings")); // FIXV2
+    SetCalcCaption(gettext(TEXT("_@M885_"))); // Settings
     Statistics::RenderBarograph(hDC, rcgfx);
     break;
   case ANALYSIS_PAGE_CLIMB:
-    SetCalcCaption(TEXT("Task calc")); // FIXV2
+    SetCalcCaption(gettext(TEXT("_@M886_"))); // Task calc
     Statistics::RenderClimb(hDC, rcgfx);
     break;
   case ANALYSIS_PAGE_WIND:
-    SetCalcCaption(TEXT("Set wind")); // FIXV2
+    SetCalcCaption(gettext(TEXT("_@M887_"))); // Set wind
     Statistics::RenderWind(hDC, rcgfx);
     break;
   case ANALYSIS_PAGE_POLAR:
-    SetCalcCaption(TEXT("Settings")); // FIXV2
+    SetCalcCaption(gettext(TEXT("_@M885_"))); // Settings
     Statistics::RenderGlidePolar(hDC, rcgfx);
     break;
   case ANALYSIS_PAGE_TEMPTRACE:
-    SetCalcCaption(TEXT("Settings")); // FIXV2
+    SetCalcCaption(gettext(TEXT("_@M885_"))); // Settings
     Statistics::RenderTemperature(hDC, rcgfx);
     break;
   case ANALYSIS_PAGE_TASK:
-    SetCalcCaption(TEXT("Task calc")); // FIXV2
+    SetCalcCaption(gettext(TEXT("_@M886_"))); // Task calc
     LockTaskData();
     Statistics::RenderTask(hDC, rcgfx, false);
     UnlockTaskData();
     break;
   case ANALYSIS_PAGE_OLC:
-    SetCalcCaption(TEXT("Optimise")); // FIXV2
+    SetCalcCaption(gettext(TEXT("_@M504_"))); // Optimise
     LockTaskData();
     Statistics::RenderTask(hDC, rcgfx, true);
     UnlockTaskData();
     break;
   case ANALYSIS_PAGE_AIRSPACE:
-    SetCalcCaption(TEXT("Warnings")); // FIXV2
+    SetCalcCaption(gettext(TEXT("_@M888_"))); // Warnings
     Statistics::RenderAirspace(hDC, rcgfx);
     break;
   case ANALYSIS_PAGE_TASK_SPEED:
-    SetCalcCaption(TEXT("Task calc")); // FIXV2
+    SetCalcCaption(gettext(TEXT("_@M886_"))); // Task calc
     LockTaskData();
     Statistics::RenderSpeed(hDC, rcgfx);
     UnlockTaskData();
@@ -1689,11 +1691,12 @@ static void Update(void){
       wInfo->SetCaption(sTmp);
     break;
     case ANALYSIS_PAGE_POLAR:
-      _stprintf(sTmp, TEXT("%s: %s (Mass %3.0f kg)"),  // FIXV2
+      _stprintf(sTmp, TEXT("%s: %s (%s %3.0f kg)"), 
 	// LKTOKEN  _@M93_ = "Analysis" 
                 gettext(TEXT("_@M93_")),
 	// LKTOKEN  _@M325_ = "Glide Polar" 
                 gettext(TEXT("_@M325_")),
+                gettext(TEXT("_@M889_")), // Mass
                 GlidePolar::GetAUW());
       wf->SetCaption(sTmp);
       if (InfoBoxLayout::landscape) {
