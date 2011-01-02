@@ -665,15 +665,6 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 							if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 							#endif
 							break;
-/* 101222 UNIFY NEAREST
-				case MSM_NEARTPS:
-							SortedMode[MapSpaceMode]=j;
-							LKForceDoNearestTurnpoint=true;
-							#ifndef DISABLEAUDIO
-							if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-							#endif
-							break;
-*/
 				case MSM_TRAFFIC:
 							SortedMode[MapSpaceMode]=j;
 							// force immediate resorting
@@ -722,13 +713,6 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 						LKForceDoRecent=true;
 						numpages=CommonNumpages;
 						break;
-/* REMOVE 101222
-			case MSM_NEARTPS:
-						// LKForceDoNearestTurnpoint=true; 101222
-						LKForceDoNearest=true;
-						numpages=TurnpointNumpages;
-						break;
-*/
 			case MSM_TRAFFIC:
 						numpages=TrafficNumpages;
 						break;
@@ -2893,13 +2877,13 @@ void SelectMapSpace(short i) {
 	LKForceDoNearest=false;
 	LKForceDoCommon=false;
 	LKForceDoRecent=false;
-	// LKForceDoNearestTurnpoint=false; 101222
 	// Particular care not to leave pending events
 	LKevent=LKEVENT_NONE;
 
 	switch(i) {
 		case MSM_LANDABLE:
 		case MSM_AIRPORTS:
+		case MSM_NEARTPS:
 			// force DoNearest to run at once
 			LKForceDoNearest=true;
 			LKevent=LKEVENT_NEWRUN;
@@ -2914,13 +2898,6 @@ void SelectMapSpace(short i) {
 			break;
 		case MSM_RECENT:
 			LKForceDoRecent=true;
-			LKevent=LKEVENT_NEWRUN;
-			SelectedPage[MapSpaceMode]=0;
-			SelectedRaw[MapSpaceMode]=0;
-			break;
-		case MSM_NEARTPS:
-			//LKForceDoNearestTurnpoint=true; 101222
-			LKForceDoNearest=true;
 			LKevent=LKEVENT_NEWRUN;
 			SelectedPage[MapSpaceMode]=0;
 			SelectedRaw[MapSpaceMode]=0;

@@ -18,6 +18,12 @@
 
 #include "dlgTools.h"
 
+// 110102 Note from paolo
+// the entire airspace warning system in xcsoar 5.2.4 which is still in use within lk8000 should be trashed.
+// The fake mechanism of message queues here does not work, and it is also shared between two different threads.
+// TODO ASAP entirely with a more simple approach.
+// This system may still cause crashes, despite my attempts to fix here and there possible conflicts.
+// Sadly we cannot simply disable airspace warnings right now.
 
 extern HWND   hWndMainWindow;
 extern HWND   hWndMapWindow;
@@ -626,23 +632,24 @@ bool dlgAirspaceWarningShowDlg(bool Force){
   wAirspaceList->ResetList();
 
   if (!fDialogOpen) {
+    fDialogOpen = true;
     #ifndef DISABLEAUDIO
     if (EnableSoundModes) LKSound(_T("LK_AIRSPACE.WAV")); // 100819
     #endif
-    fDialogOpen = true;
     HWND oldFocusHwnd = GetFocus();
     wf->ShowModal();
     if (oldFocusHwnd) {
       SetFocus(oldFocusHwnd);
     }
 
-    fDialogOpen = false;
 
     // JMW need to deselect everything on new reopening of dialog
     SelectedID = -1;
     SelectedIdx = -1;
     FocusedID = -1;
     FocusedIdx = -1;
+
+    fDialogOpen = false;
 
     //    SetFocus(hWndMapWindow);
     // JMW why do this? --- not necessary?

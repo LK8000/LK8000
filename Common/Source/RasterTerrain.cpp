@@ -518,7 +518,7 @@ void RasterTerrain::OpenTerrain(void)
   terrain_initialised = false;
 
   StartupStore(TEXT(". Loading Terrain... %s"),NEWLINE);
-  CreateProgressDialog(TEXT("Loading Terrain File..."));
+  CreateProgressDialog(gettext(TEXT("_@M900_"))); // Loading Terrain File...
   SetProgressStepSize(2);
 
   TCHAR  szFile[MAX_PATH] = TEXT("\0");
@@ -864,7 +864,7 @@ void RasterTerrain::ServiceFullReload(double lat, double lon) {
 
   Lock();
   if (TerrainMap) {
-    CreateProgressDialog(TEXT("Loading terrain tiles..."));
+    CreateProgressDialog(gettext(TEXT("_@M901_"))); // Loading terrain tiles...
 #if NEWTERRAIN
 	StartupStore(_T(". Loading terrain tiles...%s"),NEWLINE);
 #endif

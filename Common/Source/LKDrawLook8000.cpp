@@ -798,21 +798,26 @@ drawOverlay:
 		if (gatechrono>0) {
 			// IsInSector works reversed!
 			if (PGStartOut && CALCULATED_INFO.IsInSector) {
-				_tcscpy(BufferValue,_T("WRONG inSIDE"));
+				// LKTOKEN  _@M923_ = "WRONG inSIDE"
+				_tcscpy(BufferValue,gettext(TEXT("_@M923_")));
 			} else {
 				if (!PGStartOut && !CALCULATED_INFO.IsInSector) {
-					_tcscpy(BufferValue,_T("WRONG outSIDE"));
+					// LKTOKEN  _@M924_ = "WRONG outSIDE"
+					_tcscpy(BufferValue,gettext(TEXT("_@M924_")));
 				} else {
-					_tcscpy(BufferValue,_T("countdown"));
+					// LKTOKEN  _@M921_ = "countdown"
+					_tcscpy(BufferValue,gettext(TEXT("_@M921_")));
 				}
 			}
 			if (!CALCULATED_INFO.Flying) {
-				_tcscpy(BufferValue,_T("NOT FLYING")); // 101112
+				// LKTOKEN  _@M922_ = "NOT FLYING"
+				_tcscpy(BufferValue,gettext(TEXT("_@M922_")));
 			}
 		} else {
 			// gate is open
 			if ( (ActiveGate<(PGNumberOfGates-1)) && (gatechrono<-300)) {
-					_tcscpy(BufferValue,_T("GATE OPEN"));
+				// LKTOKEN  _@M314_ = "GATE OPEN" 
+				_tcscpy(BufferValue,gettext(TEXT("_@M314_")));
 			} else {
 				if ( ActiveGate>=(PGNumberOfGates-1) )  {
 					Units::TimeToText(BufferTitle,GateTime(ActiveGate+1)); 
@@ -822,16 +827,17 @@ drawOverlay:
 						Units::TimeToText(BufferTitle,GateTime(ActiveGate+1)); 
 						_stprintf(BufferValue,_T("NEXT %s"),BufferTitle);
 					} else {
-	// LKTOKEN  _@M314_ = "GATE OPEN" 
+						// LKTOKEN  _@M314_ = "GATE OPEN" 
 						_tcscpy(BufferValue,gettext(TEXT("_@M314_")));
 					}
 				}
-	// LKTOKEN  _@M314_ = "GATE OPEN" 
+				// LKTOKEN  _@M314_ = "GATE OPEN" 
 				_tcscpy(BufferValue,gettext(TEXT("_@M314_")));
 			}
 		}
 	} else {
-		_tcscpy(BufferValue,_T("NO TSK START"));
+		// LKTOKEN  _@M925_ = "NO TSK START"
+		_tcscpy(BufferValue,gettext(TEXT("_@M925_")));
 	}
 	LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, distcolor, true);
 
@@ -1633,7 +1639,7 @@ EndOfNavboxes:
   //
   SelectObject(hdc, LK8TargetFont);
 
-  if (Look8000 == lxcNoOverlay) goto afterWind; // 100930
+  if (Look8000 == lxcNoOverlay || ISCAR ) goto afterWind; // 100930
 
   LKFormatValue(LK_WIND, false, BufferValue, BufferUnit, BufferTitle);
   rcy=ySizeLK8TargetFont;

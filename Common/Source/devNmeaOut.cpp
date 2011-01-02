@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id$
+   $Id: devNmeaOut.cpp,v 8.2 2011/01/02 00:32:55 root Exp root $
 */
 
 #include "StdAfx.h"
@@ -13,8 +13,6 @@
 #include "Utils.h"
 #include "Parser.h"
 #include "Port.h"
-
-#include "devVega.h"
 
 
 BOOL nmoParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){

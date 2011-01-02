@@ -302,7 +302,6 @@ ifeq ($(CONFIG_PC),n)
 endif
 
 DEVS	:=\
-	$(SRC)/devAltairPro.o \
 	$(SRC)/devBorgeltB50.o \
 	$(SRC)/devCAI302.o \
 	$(SRC)/devCaiGpsNav.o \
@@ -316,7 +315,6 @@ DEVS	:=\
 	$(SRC)/devLX.o \
 	$(SRC)/devNmeaOut.o \
 	$(SRC)/devPosiGraph.o \
-	$(SRC)/devVega.o \
 	$(SRC)/devVolkslogger.o \
 	$(SRC)/devXCOM760.o \
 	$(SRC)/devZander.o \

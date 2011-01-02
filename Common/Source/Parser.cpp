@@ -14,7 +14,6 @@
 #include "Utils.h"
 #include "Utils2.h"
 #include "externs.h"
-#include "VarioSound.h"
 #include "Logger.h"
 #ifndef NOFLARMGAUGE
 #include "GaugeFLARM.h"

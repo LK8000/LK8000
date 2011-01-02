@@ -83,7 +83,7 @@ BOOL devHasBaroSource(void) {
   }
 }
 
-
+// LK need to fix the problem of dual baro sources
 BOOL devGetBaroAltitude(double *Value){
   // hack, just return GPS_INFO->BaroAltitude
   if (Value == NULL)
@@ -91,14 +91,6 @@ BOOL devGetBaroAltitude(double *Value){
   if (GPS_INFO.BaroAltitudeAvailable)
     *Value = GPS_INFO.BaroAltitude;
   return(TRUE);
-
-  // ToDo
-  // more than one baro source may be available
-  // eg Altair (w. Logger) and intelligent vario
-  // - which source should be used?
-  // - whats happen if primary source fails
-  // - plausibility check? against second baro? or GPS alt?
-  // - whats happen if the diference is too big?
 
 }
 
@@ -631,6 +623,7 @@ BOOL devLinkTimeout(PDeviceDescriptor_t d)
 }
 
 
+#if !110101
 BOOL devPutVoice(PDeviceDescriptor_t d, TCHAR *Sentence)
 {
   BOOL result = FALSE;
@@ -651,6 +644,7 @@ BOOL devPutVoice(PDeviceDescriptor_t d, TCHAR *Sentence)
 
   return FALSE;
 }
+#endif
 
 BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl)
 {
@@ -854,6 +848,7 @@ void VarioWriteSettings(void)
   }
 }
 
+#if !110101
 PDeviceDescriptor_t devVarioFindVega(void)
 {
   for (int i = 0; i < NUMDEV; i++)
@@ -861,6 +856,7 @@ PDeviceDescriptor_t devVarioFindVega(void)
       return &DeviceList[i];
   return NULL;
 }
+#endif
 
 
 BOOL devPutVolume(PDeviceDescriptor_t d, int Volume)

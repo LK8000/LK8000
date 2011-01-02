@@ -23,7 +23,6 @@
 #include "Waypointparser.h"
 #include "Dialogs.h"
 #include "externs.h"
-#include "VarioSound.h"
 #include "InputEvents.h"
 // #include <assert.h>
 #include <windows.h>
@@ -411,13 +410,6 @@ bool MapWindow::Event_InteriorAirspaceDetails(double lon, double lat) {
       }
       if (inside) {
 	dlgAirspaceDetails(i, -1);
-
-	/*
-	  DisplayAirspaceWarning(AirspaceCircle[i].Type , 
-	  AirspaceCircle[i].Name , 
-	  AirspaceCircle[i].Base, 
-	  AirspaceCircle[i].Top );
-	*/
         found = true;
       }
     }
@@ -430,13 +422,6 @@ bool MapWindow::Event_InteriorAirspaceDetails(double lon, double lat) {
       }
       if (inside) {
 	dlgAirspaceDetails(-1, i);
-
-	/*
-	  DisplayAirspaceWarning(AirspaceArea[i].Type , 
-	  AirspaceArea[i].Name , 
-	  AirspaceArea[i].Base, 
-	  AirspaceArea[i].Top );
-	*/
         found = true;
       }
     }
@@ -1383,11 +1368,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 
   switch (uMsg)
     {
-      /* JMW THIS IS BAD!  Now done with GCE_AIRSPACE
-	 case WM_USER+1:
-	 dlgAirspaceWarningShowDlg(false);
-	 return(0);
-      */
     case WM_ERASEBKGND:
       // JMW trying to reduce flickering
       /*
@@ -5294,6 +5274,7 @@ bool MapWindow::PointVisible(const POINT &P)
 }
 
 
+#if 0  // THIS IS NOT USED ANYMORE 110102
 void MapWindow::DisplayAirspaceWarning(int Type, TCHAR *Name , 
                                        AIRSPACE_ALT Base, AIRSPACE_ALT Top )
 {
@@ -5304,7 +5285,7 @@ void MapWindow::DisplayAirspaceWarning(int Type, TCHAR *Name ,
 
   DoStatusMessage(TEXT("Airspace Query"), szMessageBuffer);
 }
-
+#endif
 
 // RETURNS Longitude, Latitude!
 

@@ -437,8 +437,9 @@ BOOL ReadUString(HANDLE hFile, int Max, TCHAR *String, short filetype)
 
   char c;
   char *pointer=(char *)&String[0];
+
   // each character is a wide character here, so we read twice as much
-  while(i<(Max*2) && j<(int)dwNumBytesRead){
+  while(i<((Max*2)-2) && j<(int)dwNumBytesRead){ 
 	c = FileBuffer[j++];
 	dwTotalNumBytesRead++;
 
@@ -446,20 +447,24 @@ BOOL ReadUString(HANDLE hFile, int Max, TCHAR *String, short filetype)
 	*pointer++=c;
 	i++;
   }
-  // close the tstring
-  *pointer++='\0';
-  *pointer='\0';
+  *pointer++ = '\0';
+  *pointer++ = '\0';
+  
+  // There is a bug here, and/or in the LKLanguage calling function.
+  // Careful checking translations using UTF-16 BE
 
-  if (filetype==1) {
+  String[dwTotalNumBytesRead]='\0';
+  String[Max-1]='\0';
+
+  if (filetype==1 && dwTotalNumBytesRead>0) {
 	char *repoint;
 	for (repoint=(char *)&String[0]; repoint<=(pointer-2); repoint+=2) {
 		c = *repoint;
 		*repoint = *(repoint+1);
 		*(repoint+1)= c;
 	}
-	*repoint = (char)'\0';
-	*(repoint+1) = (char)'\0';
   }
+  // String[dwTotalNumBytesRead/2]='\0';
 
   SetFilePointer(hFile, dwFilePos+j, NULL, FILE_BEGIN);
 

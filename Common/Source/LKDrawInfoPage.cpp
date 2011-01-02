@@ -269,25 +269,25 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 	SelectObject(hdc, LK8PanelMediumFont);
 	switch(curtype) {
 		case IM_THERMAL:
-			wsprintf(Buffer,_T("%d.%d Thermal"),ModeIndex, curtype+1);
+			wsprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, gettext(TEXT("_@M905_"))); // Thermal
 			break;
 		case IM_CRUISE:
-			wsprintf(Buffer,_T("%d.%d Cruise"),ModeIndex, curtype+1); 
+			wsprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, gettext(TEXT("_@M906_"))); // Cruise
 			break;
 		case IM_TASK:
-			wsprintf(Buffer,_T("%d.%d Task"),ModeIndex, curtype+1);
+			wsprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, gettext(TEXT("_@M907_"))); // Task
 			break;
 		case IM_AUX:
-			wsprintf(Buffer,_T("%d.%d Custom"),ModeIndex, curtype+1);
+			wsprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, gettext(TEXT("_@M908_"))); // Custom
 			break;
 		case IM_TRI:
-			wsprintf(Buffer,_T("%d.%d Turn"), ModeIndex, curtype+1);
+			wsprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, gettext(TEXT("_@M909_"))); // Turn
 			break;
 		case IM_TRF+IM_TOP:
-			wsprintf(Buffer,_T("%d.%d Target"), ModeIndex, IM_TRF+1);
+			wsprintf(Buffer,_T("%d.%d %s"), ModeIndex, IM_TRF+1, gettext(TEXT("_@M910_"))); // Target
 			break;
 		case IM_TARGET+IM_TOP:
-			wsprintf(Buffer,_T("%d.%d Sight"), ModeIndex, IM_TARGET+1);
+			wsprintf(Buffer,_T("%d.%d %s"), ModeIndex, IM_TARGET+1, gettext(TEXT("_@M911_"))); // Sight
 			break;
 		default:
 			wsprintf(Buffer,_T("error"));
@@ -307,16 +307,16 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 				if ( index >=0 ) {
 					_tcscpy(Buffer, WayPointList[index].Name);
 				} else {
-					wsprintf(Buffer,_T("[no dest]"));
+					wsprintf(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
 					icolor=RGB_AMBER;
 				}
 			} else {
-				wsprintf(Buffer,_T("[no dest]"));
+				wsprintf(Buffer,gettext(TEXT("_@M912_"))); // [no dest]
 				icolor=RGB_AMBER;
 			}
 			break;
 		case IM_TRI:
-			wsprintf(Buffer,_T("Experimental"));
+			wsprintf(Buffer,gettext(TEXT("_@M913_"))); // Experimental
 			break;
 		case IM_TRF+IM_TOP:
 		case IM_TARGET+IM_TOP:
@@ -340,7 +340,7 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 				}
 
 			} else {
-				_stprintf(Buffer,_T("[no target]"));
+				_stprintf(Buffer,gettext(TEXT("_@M914_"))); // [no target]
 				icolor=RGB_AMBER;
 			}
 
@@ -898,7 +898,7 @@ label_TRI:
 	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
 #endif
 
-        wsprintf(BufferTitle, TEXT("NOT FOR IFR USAGE"));
+        wsprintf(BufferTitle, gettext(TEXT("_@M915_"))); // NOT FOR IFR USAGE
 	SelectObject(hdc, LK8PanelSmallFont);
 	LKWriteText(hdc, BufferTitle, qcolumn[8],qrow[12], 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_ORANGE, false);
 

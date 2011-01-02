@@ -386,7 +386,7 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &headerSize);
   LKWriteText(hdc, Buffer, middlex, (headerSize.cy/2)+NIBLSCALE(2) , 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_SWHITE, false);
 
-  _stprintf(Buffer,TEXT("Tactical Flight Computer"));
+  _stprintf(Buffer,gettext(TEXT("_@M904_"))); // Tactical Flight Computer
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
   SelectObject(hdc, LK8MediumFont);
   LKWriteText(hdc, Buffer, middlex, (headerSize.cy/2)+(textSize.cy/2)+NIBLSCALE(4)+1 , 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_SWHITE, false);
@@ -844,9 +844,9 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
 }
 
 
+#ifdef DRAWLKSTATUS
 // LK Status message
 void MapWindow::DrawLKStatus(HDC hdc, RECT rc) {
-#ifdef DRAWLKSTATUS
 
   TextInBoxMode_t TextDisplayMode;
   TCHAR Buffer[LKSIZEBUFFERLARGE];
@@ -885,9 +885,9 @@ void MapWindow::DrawLKStatus(HDC hdc, RECT rc) {
   TextInBox(hdc, Buffer, middlex, 200 , 0, TextDisplayMode, false);
 
   //SelectObject(hdc, oldfont);
-#endif
   return;
 }
+#endif
 
 
 // invertable is used coped with LKTextBlack: if both are active, then text is forced reversed

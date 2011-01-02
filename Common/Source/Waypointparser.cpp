@@ -305,7 +305,7 @@ void ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 
   HWND hProgress;
 
-  hProgress = CreateProgressDialog(TEXT("Loading Waypoints File..."));
+  hProgress = CreateProgressDialog(gettext(TEXT("_@M903_"))); // Loading Waypoints File...
 
   fSize = zzip_file_size(fp);
 
@@ -394,7 +394,7 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 
   HWND hProgress;
 
-  hProgress = CreateProgressDialog(TEXT("Loading Waypoints File..."));
+  hProgress = CreateProgressDialog(gettext(TEXT("_@M903_"))); // Loading Waypoints File...
 
   fSize = zzip_file_size(fp);
 

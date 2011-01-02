@@ -615,7 +615,7 @@ void AlertBestAlternate(short soundmode) {
 				#ifndef DISABLEAUDIO
 				PlayResource(TEXT("IDR_WAV_RED"));
 				#endif
-				wsprintf(mbuf,_T("BestAlternate: WARNING, NO LANDINGS"));
+				wsprintf(mbuf,_T("BestAlternate: %s"), gettext(TEXT("_@M916_"))); // WARNING, NO LANDINGS
 				// Do NOT disturb the pilot for 5 minutes with useless further messages
 				LastAlertTime += 180.0;
 				Message::Lock(); // 091211

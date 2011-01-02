@@ -3174,6 +3174,7 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  #if !110101
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppAveNeedle"));
   if (wp) {
     wp->GetDataField()->Set(Appearance.GaugeVarioAveNeedle);
@@ -3215,6 +3216,7 @@ static void setVariables(void) {
     wp->GetDataField()->Set(Appearance.GaugeVarioBallast);
     wp->RefreshDisplay();
   }
+  #endif // REMOVABLE GAUGEVARIO
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoBlank"));
   if (wp) {
@@ -5012,17 +5014,6 @@ void dlgConfigurationShowModal(void){
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppAveNeedle"));
-  if (wp) {
-    if ((int)(Appearance.GaugeVarioAveNeedle) != 
-	wp->GetDataField()->GetAsInteger()) {
-      Appearance.GaugeVarioAveNeedle = 
-        (wp->GetDataField()->GetAsInteger() != 0);
-      SetToRegistry(szRegistryAppAveNeedle,Appearance.GaugeVarioAveNeedle);
-      changed = true;
-    }
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxColors"));
   if (wp) {
     if ((int)(Appearance.InfoBoxColors) != 
@@ -5030,6 +5021,18 @@ void dlgConfigurationShowModal(void){
       Appearance.InfoBoxColors = (wp->GetDataField()->GetAsInteger() != 0);
       SetToRegistry(szRegistryAppInfoBoxColors,Appearance.InfoBoxColors);
       requirerestart = true;
+      changed = true;
+    }
+  }
+
+  #if !110101
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAppAveNeedle"));
+  if (wp) {
+    if ((int)(Appearance.GaugeVarioAveNeedle) != 
+	wp->GetDataField()->GetAsInteger()) {
+      Appearance.GaugeVarioAveNeedle = 
+        (wp->GetDataField()->GetAsInteger() != 0);
+      SetToRegistry(szRegistryAppAveNeedle,Appearance.GaugeVarioAveNeedle);
       changed = true;
     }
   }
@@ -5090,6 +5093,7 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
+  #endif // REMOVABLE
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoBlank"));
   if (wp) {

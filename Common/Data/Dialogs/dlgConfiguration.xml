@@ -42,10 +42,10 @@
 <DataField name="" DataType="enum"  Min=0 Max=50 Step=1/>
 </WndProperty>
 <WndProperty Name="prpClipAltitude" Caption="_@M183_"      X=2 Y=-1   Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H109_">
-<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=20000 Step=100/>
+<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=20000 Step=10/>
 </WndProperty>
 <WndProperty Name="prpAltWarningMargin" Caption="_@M425_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H110_">
-<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=20000 Step=100/>
+<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=20000 Step=10/>
 </WndProperty>
 <WndProperty Name="prpAirspaceWarnings" Caption="_@M792_" X=2 Y=-1   Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H111_">
 <DataField name="" DataType="boolean"/>
@@ -398,7 +398,7 @@
 <WndProperty Name="prpUnitsTaskSpeed" Caption="_@M691_" X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H174_">
 <DataField name="" DataType="enum"  Min=0 Max=50 Step=1/>
 </WndProperty>
-<WndProperty Name="prpUnitsLatLon" Caption="Lat/Lon " X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H175_">
+<WndProperty Name="prpUnitsLatLon" Caption="_@M917_" X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H175_">
 <DataField name="" DataType="enum"  Min=0 Max=50 Step=1/>
 </WndProperty>
 <WndProperty Name="prpPressureHg" Caption="_@M531_" X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H176_">

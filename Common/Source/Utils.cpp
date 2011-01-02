@@ -31,7 +31,6 @@
 #include "Units.h"
 #include "Calculations.h"
 #include "GaugeFLARM.h"
-#include "VegaVoice.h"
 #include "McReady.h"
 #include "NavFunctions.h"
 #include "WaveThread.h"
@@ -2535,7 +2534,7 @@ void CalculateNewPolarCoef(void)
 
   CalculateNewPolarCoef();
   MessageBoxX(NULL, 
-              TEXT("Error loading Polar file!\r\nUse LS8 Polar."),
+              gettext(TEXT("_@M920_")), // Error loading Polar file!\r\nUse LS8 Polar.
 	// LKTOKEN  _@M791_ = "Warning" 
               gettext(TEXT("_@M791_")),
               MB_OK|MB_ICONERROR);
@@ -3316,7 +3315,7 @@ void ReadFileRegistryString(HANDLE hFile, TCHAR *instring) {
       tempFile[i]= 0;
     }
     ReadString(hFile, MAX_PATH, tempFile);
-    tempFile[_tcslen(tempFile)]= 0;
+    tempFile[_tcslen(tempFile)]= 0; // 110101  this is useless
     SetRegistryString(instring, tempFile);
 }
 

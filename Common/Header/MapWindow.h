@@ -495,7 +495,7 @@ class MapWindow {
 
   static DWORD fpsTime0;
 
-  static void DisplayAirspaceWarning(int Type, TCHAR *Name , AIRSPACE_ALT Base, AIRSPACE_ALT Top );
+  // static void DisplayAirspaceWarning(int Type, TCHAR *Name , AIRSPACE_ALT Base, AIRSPACE_ALT Top ); REMOVE 110102
 
   static void UpdateMapScale();
   static void CalculateOrigin(const RECT rc, POINT *Orig);

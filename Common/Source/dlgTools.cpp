@@ -678,7 +678,7 @@ void LoadChildsFromXML(WindowControl *Parent,
         }
         if (_tcsicmp(DataType, TEXT("boolean"))==0){
           W->SetDataField(
-            new DataFieldBoolean(EditFormat, DisplayFmt, false, TEXT("ON"), TEXT("OFF"),
+            new DataFieldBoolean(EditFormat, DisplayFmt, false, gettext(TEXT("_@M894_")), gettext(TEXT("_@M491_")), // ON OFF
               (DataField::DataAccessCallback_t) CallBackLookup(LookUpTable, OnDataAccess))
           );
         }

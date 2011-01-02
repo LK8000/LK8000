@@ -42,15 +42,12 @@
 #endif
 
 #include "Terrain.h"
-#include "VarioSound.h"
 #include "device.h"
 
 #include "devCAI302.h"
 #include "devCaiGpsNav.h"
 #include "devEW.h"
-#include "devAltairPro.h"
 #include "devGeneric.h"
-#include "devVega.h"
 #include "devNmeaOut.h"
 #include "devPosiGraph.h"
 #include "devBorgeltB50.h"
@@ -835,7 +832,6 @@ bool goInitDevice=false;
 
 #include "GaugeCDI.h"
 #include "GaugeFLARM.h"
-#include "GaugeVario.h"
 
 // Battery status for SIMULATOR mode
 //	30% reminder, 20% exit, 30 second reminders on warnings
@@ -1221,6 +1217,7 @@ void SettingsLeave() {
 		CommonNumber=0;
 		SortedNumber=0;
 		// SortedTurnpointNumber=0; 101222
+		LastRangeLandableTime=0; // 110102
 		LKForceDoCommon=true;
 		LKForceDoNearest=true;
 		LKForceDoRecent=true;
@@ -1733,7 +1730,7 @@ void PreloadInitialisation(bool ask) {
     RestoreRegistry();
     ReadRegistrySettings();
 
-    CreateProgressDialog(TEXT("Initialising"));
+    CreateProgressDialog(gettext(TEXT("Initialising..."))); 
   }
 
   // Interface (before interface)
@@ -2151,8 +2148,10 @@ CreateProgressDialog(TEXT("ERROR UNKNOWN RESOLUTION!"));
   genRegister(); // MUST BE FIRST
   cai302Register();
   ewRegister();
+  #if !110101
   atrRegister();
   vgaRegister();
+  #endif
   caiGpsNavRegister();
   nmoRegister();
   pgRegister();
@@ -2449,7 +2448,11 @@ void InitialiseFontsHardCoded(RECT rc,
     // propGetFontSettingsFromString(TEXT("18,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont); 091120
     propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
     // propGetFontSettingsFromString(TEXT("16,0,0,0,500,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont); 091120
-    propGetFontSettingsFromString(TEXT("20,0,0,0,700,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont); 
+#if WINDOWSPC>0
+    propGetFontSettingsFromString(TEXT("20,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont); 
+#else
+    propGetFontSettingsFromString(TEXT("20,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont); 
+#endif
     if (Appearance.InfoBoxGeom == 5) {
       GlobalEllipse=1.32f; // We don't use vario gauge in landscape geo5 anymore.. but doesn't hurt.
     }
@@ -5393,7 +5396,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	// LKTOKEN  _@M539_ = "RESTART" 
 			gettext(TEXT("_@M539_")), Size);
       } else {
-        ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), TEXT("(auto)"), Size);
+        ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), gettext(TEXT("_@M893_")), Size); // (auto)
         invalid = true;
       }
       // TODO bug: no need to arm finish
@@ -5663,10 +5666,10 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   if (_tcsstr(OutBuffer, TEXT("$(AirSpaceToggleName)"))) {
     switch(OnAirSpace) {
     case 0:
-      ReplaceInString(OutBuffer, TEXT("$(AirSpaceToggleName)"), gettext(TEXT("_@894_")), Size); // ON
+      ReplaceInString(OutBuffer, TEXT("$(AirSpaceToggleName)"), gettext(TEXT("_@M894_")), Size); // ON
       break;
     case 1:
-      ReplaceInString(OutBuffer, TEXT("$(AirSpaceToggleName)"), gettext(TEXT("_@491_")), Size); // OFF
+      ReplaceInString(OutBuffer, TEXT("$(AirSpaceToggleName)"), gettext(TEXT("_@M491_")), Size); // OFF
       break;
     }
 	if (--items<=0) goto label_ret; // 100517
@@ -5766,18 +5769,19 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   if (_tcsstr(OutBuffer, TEXT("$(FinalForceToggleActionName)"))) {
     CondReplaceInString(ForceFinalGlide, OutBuffer, 
                         TEXT("$(FinalForceToggleActionName)"), 
-                        TEXT("Unforce"), 
-                        TEXT("Force"), Size);
+                        gettext(TEXT("_@M896_")), // Unforce
+                        gettext(TEXT("_@M895_")), // Force
+			Size);
     if (AutoForceFinalGlide) {
       invalid = true;
     }
 	if (--items<=0) goto label_ret; // 100517
   }
 
-  CondReplaceInString(MapWindow::IsMapFullScreen(), OutBuffer, TEXT("$(FullScreenToggleActionName)"), TEXT("ON"), TEXT("OFF"), Size);
-  CondReplaceInString(MapWindow::isAutoZoom(), OutBuffer, TEXT("$(ZoomAutoToggleActionName)"), TEXT("Manual"), TEXT("Auto"), Size);
-  CondReplaceInString(EnableTopology, OutBuffer, TEXT("$(TopologyToggleActionName)"), TEXT("OFF"), TEXT("ON"), Size);
-  CondReplaceInString(EnableTerrain, OutBuffer, TEXT("$(TerrainToggleActionName)"), TEXT("OFF"), TEXT("ON"), Size);
+  CondReplaceInString(MapWindow::IsMapFullScreen(), OutBuffer, TEXT("$(FullScreenToggleActionName)"), gettext(TEXT("_@M894_")), gettext(TEXT("_@M491_")), Size);
+  CondReplaceInString(MapWindow::isAutoZoom(), OutBuffer, TEXT("$(ZoomAutoToggleActionName)"), gettext(TEXT("_@M418_")), gettext(TEXT("_@M897_")), Size);
+  CondReplaceInString(EnableTopology, OutBuffer, TEXT("$(TopologyToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
+  CondReplaceInString(EnableTerrain, OutBuffer, TEXT("$(TerrainToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
 
   if (_tcsstr(OutBuffer, TEXT("$(MapLabelsToggleActionName)"))) {
     switch(MapWindow::DeclutterLabels) {
@@ -5794,18 +5798,18 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     case MAPLABELS_ONLYTOPO:
 	//#endif
       ReplaceInString(OutBuffer, TEXT("$(MapLabelsToggleActionName)"), 
-                      TEXT("ALL OFF"), Size);
+                      gettext(TEXT("_@M898_")), Size);
       break;
     case MAPLABELS_ALLOFF:
       ReplaceInString(OutBuffer, TEXT("$(MapLabelsToggleActionName)"), 
-                      TEXT("ALL ON"), Size);
+                      gettext(TEXT("_@M899_")), Size);
       break;
     }
 	if (--items<=0) goto label_ret; // 100517
   }
 
-  CondReplaceInString(CALCULATED_INFO.AutoMacCready != 0, OutBuffer, TEXT("$(MacCreadyToggleActionName)"), TEXT("Manual"), TEXT("Auto"), Size);
-  CondReplaceInString(EnableAuxiliaryInfo, OutBuffer, TEXT("$(AuxInfoToggleActionName)"), TEXT("OFF"), TEXT("ON"), Size);
+  CondReplaceInString(CALCULATED_INFO.AutoMacCready != 0, OutBuffer, TEXT("$(MacCreadyToggleActionName)"), gettext(TEXT("_@M418_")), gettext(TEXT("_@M897_")), Size);
+  CondReplaceInString(EnableAuxiliaryInfo, OutBuffer, TEXT("$(AuxInfoToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
 
   CondReplaceInString(UserForceDisplayMode == dmCircling, OutBuffer, TEXT("$(DispModeClimbShortIndicator)"), TEXT("_"), TEXT(""), Size);
   CondReplaceInString(UserForceDisplayMode == dmCruise, OutBuffer, TEXT("$(DispModeCruiseShortIndicator)"), TEXT("_"), TEXT(""), Size);
@@ -5827,7 +5831,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
       ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), gettext(TEXT("_@M184_")), Size);
       break;
     case 1:
-      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), TEXT("Auto"), Size);
+      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), gettext(TEXT("_@M897_")), Size); // Auto
       break;
     case 2:
 	// LKTOKEN  _@M139_ = "Below" 

@@ -14,6 +14,7 @@
 #include "MapWindow.h"
 #include "Calculations.h"
 #include "Calculations2.h"
+#include "LKMapWindow.h"
 #include "Dialogs.h"
 
 #include "Process.h"
@@ -35,7 +36,6 @@
 #include "externs.h"
 #include "Units.h"
 
-#define ISPARAGLIDER	(AircraftCategory == (AircraftCategory_t)umParaglider)
 #define IASMS		CALCULATED_INFO.IndicatedAirspeedEstimated
 #define IAS		CALCULATED_INFO.IndicatedAirspeedEstimated*TOKPH
 #define BEARING		GPS_INFO.TrackBearing
@@ -83,10 +83,17 @@ void LKSimulator(void) {
 		if (CALCULATED_INFO.TerrainValid) ALTITUDE= CALCULATED_INFO.TerrainAlt;
 	doinit=false;
   }
+
+
+  if (ISGAAIRCRAFT) {
+	// todo: fuel consumption, engine efficiency etc.
+  }
+
+  if (ISPARAGLIDER || ISGLIDER) {
  
-  // SetBallast is calculating sinkratecache for values starting from 4 to MAXSPEED, in m/s .
-  // ONLY during flight, we will sink in the air
-  if (FLYING && (IASMS>3) && (IASMS<MAXSPEED) ) {
+    // SetBallast is calculating sinkratecache for values starting from 4 to MAXSPEED, in m/s .
+    // ONLY during flight, we will sink in the air
+    if (FLYING && (IASMS>3) && (IASMS<MAXSPEED) ) {
 
 	double sinkias=-1*(GlidePolar::sinkratecache[(int)IASMS]);
 	if (sinkias>10) sinkias=10; // set a limiter for sink rate
@@ -169,7 +176,8 @@ void LKSimulator(void) {
 	} else landedwarn=true;
 	#endif
 		
-  } 
+    } 
+  } // Glider/Paragliders
 
   if (FLYING) {
 	// simple stall at 1 G

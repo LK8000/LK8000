@@ -24,7 +24,6 @@
 #include "Waypointparser.h"
 #include "Dialogs.h"
 #include "externs.h"
-#include "VarioSound.h"
 #include "InputEvents.h"
 #include <windows.h>
 #include <math.h>
@@ -36,7 +35,6 @@
 #include "Terrain.h"
 #include "RasterTerrain.h"
 
-#include "GaugeVarioAltA.h"
 #include "GaugeCDI.h"
 #include "GaugeFLARM.h"
 #include "InfoBoxLayout.h"

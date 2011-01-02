@@ -35,9 +35,6 @@
 #include "ThermalLocator.h"
 #include "windanalyser.h"
 #include "Atmosphere.h"
-#ifdef VEGAVOICE
-#include "VegaVoice.h"
-#endif
 #include "OnLineContest.h"
 #include "AATDistance.h"
 #include "NavFunctions.h" // used for team code
@@ -57,9 +54,6 @@ WindAnalyser *windanalyser = NULL;
 OLCOptimizer olc;
 AATDistance aatdistance;
 static DERIVED_INFO Finish_Derived_Info;
-#ifdef VEGAVOICE
-static VegaVoice vegavoice;
-#endif
 static ThermalLocator thermallocator;
 #define D_AUTOWIND_CIRCLING 1
 #define D_AUTOWIND_ZIGZAG 2
@@ -4928,7 +4922,7 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	}
   } else {
 	// detect landing
-	if (time_in_flight==0) { 
+	if (time_in_flight==0 && !ISCAR) { 
 		// have been stationary for a minute
 		InputEvents::processGlideComputer(GCE_LANDING);
 

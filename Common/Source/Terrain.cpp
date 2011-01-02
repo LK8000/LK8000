@@ -17,7 +17,6 @@
 #include "STScreenBuffer.h"
 #include "externs.h"
 #include "Utils.h"
-#include "VarioSound.h"
 #include "InfoBoxLayout.h"
 #include "Sizes.h"
 #include "options.h"
@@ -1824,7 +1823,7 @@ void DrawSpotHeights(const HDC hdc) {
 
 void OpenTopology() {
   StartupStore(TEXT(". OpenTopology%s"),NEWLINE);
-  CreateProgressDialog(TEXT("Loading Topology File..."));
+  CreateProgressDialog(gettext(TEXT("_@M902_"))); // Loading Topology File...
 
   // Start off by getting the names and paths
   static TCHAR  szOrigFile[MAX_PATH] = TEXT("\0");

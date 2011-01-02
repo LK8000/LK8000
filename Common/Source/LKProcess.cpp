@@ -1876,10 +1876,14 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		// B69
 		case LK_BESTALTERN_GR:
 			wsprintf(BufferValue,_T(NULLMEDIUM));
-			if (lktitle)
-				_stprintf(BufferTitle, TEXT("Atn%d.E"), lkindex-LK_ALTERNATESGR+1);
-			else
+			if (lktitle) {
+				if (lkindex==LK_BESTALTERN_GR) 
+					_stprintf(BufferTitle, TEXT("Batn"));
+				else
+					_stprintf(BufferTitle, TEXT("Atn%d.E"), lkindex-LK_ALTERNATESGR+1);
+			} else {
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			}
 			switch(lkindex) {
 				case LK_ALTERN1_GR:
 					index=Alternate1;
@@ -1950,10 +1954,14 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		// B77
 		case LK_BESTALTERN_ARRIV:
 			wsprintf(BufferValue,_T(NULLMEDIUM));
-			if (lktitle)
-				_stprintf(BufferTitle, TEXT("Atn%dArr"), lkindex-LK_ALTERNATESARRIV+1);
-			else
+			if (lktitle) {
+				if (lkindex==LK_BESTALTERN_ARRIV) 
+					_stprintf(BufferTitle, TEXT("BatnArr"));
+				else
+					_stprintf(BufferTitle, TEXT("Atn%dArr"), lkindex-LK_ALTERNATESARRIV+1);
+			} else {
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			}
 			switch(lkindex) {
 				case LK_ALTERN1_ARRIV:
 					index=Alternate1;

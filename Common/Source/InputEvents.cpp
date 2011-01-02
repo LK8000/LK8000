@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-  $Id: InputEvents.cpp,v 8.10 2010/12/21 20:19:25 root Exp root $
+  $Id: InputEvents.cpp,v 8.11 2011/01/01 23:21:36 root Exp root $
 */
 
 
@@ -1385,9 +1385,6 @@ void InputEvents::eventZoom(const TCHAR* misc) {
 //	down	Pan down
 //	left	Pan left
 //	right	Pan right
-//	TODO feature: n,n	Go that direction - +/- 
-//	TODO feature: ???	Go to particular point
-//	TODO feature: ???	Go to waypoint (eg: next, named)
 void InputEvents::eventPan(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("toggle")) == 0)
     MapWindow::Event_Pan(-1);
@@ -1894,153 +1891,6 @@ void InputEvents::eventSendNMEAPort2(const TCHAR *misc) {
   }
 }
 
-// AdjustVarioFilter
-// When connected to the Vega variometer, this adjusts
-// the filter time constant
-//     slow/medium/fast
-// The following arguments can be used for diagnostics purposes
-//     statistics:
-//     diagnostics:
-//     psraw:
-//     switch:
-// The following arguments can be used to trigger demo modes:
-//     climbdemo:
-//     stfdemo:
-// Other arguments control vario setup:
-//     save: saves the vario configuration to nonvolatile memory on the instrument
-//     zero: Zero's the airspeed indicator's offset
-//
-void InputEvents::eventAdjustVarioFilter(const TCHAR *misc) {
-  static int naccel=0;
-  if (_tcscmp(misc, TEXT("slow")) == 0) {
-    VarioWriteNMEA(TEXT("PDVSC,S,VarioTimeConstant,3"));
-    return;
-  }
-  if (_tcscmp(misc, TEXT("medium")) == 0) {
-    VarioWriteNMEA(TEXT("PDVSC,S,VarioTimeConstant,2"));
-    return;
-  }
-  if (_tcscmp(misc, TEXT("fast")) == 0) {
-    VarioWriteNMEA(TEXT("PDVSC,S,VarioTimeConstant,1"));
-    return;
-  }
-  if (_tcscmp(misc, TEXT("statistics"))==0) {
-    VarioWriteNMEA(TEXT("PDVSC,S,Diagnostics,1"));
-    jmw_demo=0;
-    return;
-  }
-  if (_tcscmp(misc, TEXT("diagnostics"))==0) {
-    VarioWriteNMEA(TEXT("PDVSC,S,Diagnostics,2"));
-    jmw_demo=0;
-    return;
-  }
-  if (_tcscmp(misc, TEXT("psraw"))==0) {
-    VarioWriteNMEA(TEXT("PDVSC,S,Diagnostics,3"));
-    return;
-  }
-  if (_tcscmp(misc, TEXT("switch"))==0) {
-    VarioWriteNMEA(TEXT("PDVSC,S,Diagnostics,4"));
-    return;
-  }
-  if (_tcscmp(misc, TEXT("democlimb"))==0) {
-    VarioWriteNMEA(TEXT("PDVSC,S,DemoMode,0"));
-    VarioWriteNMEA(TEXT("PDVSC,S,DemoMode,2"));
-    jmw_demo=2;
-    return;
-  }
-  if (_tcscmp(misc, TEXT("demostf"))==0) {
-    VarioWriteNMEA(TEXT("PDVSC,S,DemoMode,0"));
-    VarioWriteNMEA(TEXT("PDVSC,S,DemoMode,1"));
-    jmw_demo=1;
-    return;
-  }
-  if (_tcscmp(misc, TEXT("accel")) == 0) {
-    switch(naccel) {
-    case 0:
-      VarioWriteNMEA(TEXT("PDVSC,R,AccelerometerSlopeX"));
-      break;
-    case 1:
-      VarioWriteNMEA(TEXT("PDVSC,R,AccelerometerSlopeY"));
-      break;
-    case 2:
-      VarioWriteNMEA(TEXT("PDVSC,R,AccelerometerOffsetX"));
-      break;
-    case 3:
-      VarioWriteNMEA(TEXT("PDVSC,R,AccelerometerOffsetY"));
-      break;
-    default:
-      naccel=0;
-      break;
-    }
-    naccel++;
-    if (naccel>3) {
-      naccel=0;
-    }
-    return;
-  }
-#ifdef VEGAVOICE
-  if (_tcscmp(misc, TEXT("xdemo")) == 0) {
-    dlgVegaDemoShowModal();
-    return;
-  }
-#endif
-  if (_tcscmp(misc, TEXT("zero"))==0) {
-    if (!CALCULATED_INFO.Flying) {
-      VarioWriteNMEA(TEXT("PDVSC,S,ZeroASI,1"));
-    }
-    // zero, no mixing
-    return;
-  }
-  if (_tcscmp(misc, TEXT("save"))==0) {
-    VarioWriteNMEA(TEXT("PDVSC,S,StoreToEeprom,2"));
-    return;
-  }
-
-  // accel calibration
-  if (!CALCULATED_INFO.Flying) {
-    if (_tcscmp(misc, TEXT("X1"))==0) {
-      VarioWriteNMEA(TEXT("PDVSC,S,CalibrateAccel,1"));
-      return;
-    }
-    if (_tcscmp(misc, TEXT("X2"))==0) {
-      VarioWriteNMEA(TEXT("PDVSC,S,CalibrateAccel,2"));
-      return;
-    }
-    if (_tcscmp(misc, TEXT("X3"))==0) {
-      VarioWriteNMEA(TEXT("PDVSC,S,CalibrateAccel,3"));
-      return;
-    }
-    if (_tcscmp(misc, TEXT("X4"))==0) {
-      VarioWriteNMEA(TEXT("PDVSC,S,CalibrateAccel,4"));
-      return;
-    }
-    if (_tcscmp(misc, TEXT("X5"))==0) {
-      VarioWriteNMEA(TEXT("PDVSC,S,CalibrateAccel,5"));
-      return;
-    }
-  }
-}
-
-
-// Adjust audio deadband of internal vario sounds
-// +: increases deadband
-// -: decreases deadband
-void InputEvents::eventAudioDeadband(const TCHAR *misc) {
-  if (_tcscmp(misc, TEXT("+"))) {
-    SoundDeadband++;
-  }
-  if (_tcscmp(misc, TEXT("-"))) {
-    SoundDeadband--;
-  }
-  SoundDeadband = min(40,max(SoundDeadband,0));
-  /*
-  VarioSound_SetVdead(SoundDeadband);
-  */
-  SaveSoundSettings(); // save to registry
-
-  // TODO feature: send to vario if available
-
-}
 
 // AdjustWaypoint
 // Adjusts the active waypoint of the task  
@@ -3312,45 +3162,3 @@ void InputEvents::eventOrientation(const TCHAR *misc){
 }
 
 
-
-
-
-
-// JMW TODO enhancement: have all inputevents return bool, indicating whether
-// the button should after processing be hilit or not.
-// this allows the buttons to indicate whether things are enabled/disabled
-// SDP TODO enhancement: maybe instead do conditional processing ?
-//     I like this idea; if one returns false, then don't execute the
-//     remaining events.
-
-// JMW TODO enhancement: make sure when we change things here we also set registry values...
-// or maybe have special tag "save" which indicates it should be saved (notice that
-// the wind adjustment uses this already, see in Process.cpp)
-
-/* Recently done
-
-eventTaskLoad		- Load tasks from a file (misc = filename)
-eventTaskSave		- Save tasks to a file (misc = filename)
-eventProfileLoad		- Load profile from a file (misc = filename)
-eventProfileSave		- Save profile to a file (misc = filename)
-
-*/
-
-/* TODO feature: - new events
-
-eventPanWaypoint		                - Set pan to a waypoint
-- Waypoint could be "next", "first", "last", "previous", or named
-- Note: wrong name - probably just part of eventPan
-eventPressure		- Increase, Decrease, show, Set pressure value
-eventDeclare			- (JMW separate from internal logger)
-eventAirspaceDisplay	- all, below nnn, below me, auto nnn
-eventAirspaceWarnings- on, off, time nn, ack nn
-eventTerrain			- see MapWindow::Event_Terrain
-eventCompass			- on, off, cruise on, crusie off, climb on, climb off
-eventVario			- on, off // JMW what does this do?
-eventOrientation		- north, track,  ???
-eventTerrainRange	        - on, off (might be part of eventTerrain)
-eventSounds			- Include Task and Modes sounds along with Vario
-- Include master nn, deadband nn, netto trigger mph/kts/...
-
-*/
