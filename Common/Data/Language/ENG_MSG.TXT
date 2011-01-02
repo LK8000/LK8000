@@ -1,5 +1,5 @@
 # LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  110101
+# MASTER UPDATED:  110102
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -925,3 +925,8 @@ _@M917_ "Lat/Lon "
 _@M918_ "Lat/Lon"
 _@M919_ "LatLon"
 _@M920_ "Error loading Polar file!"
+_@M921_ "countdown"
+_@M922_ "NOT FLYING"
+_@M923_ "WRONG inSIDE"
+_@M924_ "WRONG outSIDE"
+_@M925_ "NO TSK START"
