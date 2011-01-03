@@ -1132,11 +1132,9 @@ void InputEvents::eventActiveMap(const TCHAR *misc) {
     ActiveMap=true;
   else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (ActiveMap)
-      // DoStatusMessage(TEXT("ActiveMap ON")); // REMOVE FIXV2
 	// 854 ActiveMap ON
       DoStatusMessage(gettext(TEXT("_@M854_")));
     if (!ActiveMap) 
-      // DoStatusMessage(TEXT("ActiveMap OFF")); // REMOVE FIXV2
 	// 855 ActiveMap OFF
       DoStatusMessage(gettext(TEXT("_@M855_")));
   }  
@@ -1330,11 +1328,9 @@ void InputEvents::eventZoom(const TCHAR* misc) {
     MapWindow::Event_AutoZoom(0);
   else if (_tcscmp(misc, TEXT("auto show")) == 0) {
     if (MapWindow::isAutoZoom())
-      // DoStatusMessage(TEXT("AutoZoom ON")); // REMOVE FIXV2
 	// 856 AutoZoom ON
       DoStatusMessage(gettext(TEXT("_@M856_")));
     else
-      // DoStatusMessage(TEXT("AutoZoom OFF")); // REMOVER FIXV2
 	// 857 AutoZoom OFF
       DoStatusMessage(gettext(TEXT("_@M857_")));
   }
@@ -1412,10 +1408,8 @@ else if (_tcscmp(misc, TEXT("down")) == 0)
     MapWindow::Event_PanCursor(-1,0);
   else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (MapWindow::isPan())
-      // DoStatusMessage(TEXT("Pan mode ON")); // REMOVE FIXV2
       DoStatusMessage(gettext(TEXT("_@M858_"))); // Pan mode ON
     else
-      // DoStatusMessage(TEXT("Pan mode OFF")); // REMOVE FIXV2
       DoStatusMessage(gettext(TEXT("_@M859_"))); // Pan mode OFF
   }
 
@@ -1730,6 +1724,17 @@ void InputEvents::eventGotoLookup(const TCHAR *misc) {
 //    The argument is the text to be displayed.
 //    No punctuation characters are allowed.
 void InputEvents::eventStatusMessage(const TCHAR *misc) {
+  // 110102 shorthack to handle lktokens and any character
+  if (_tcslen(misc)>4) {
+	if (misc[0]=='Z' && misc[1]=='Y' && misc[2]=='X') {
+		TCHAR nmisc[10];
+		_tcscpy(nmisc,_T("_@M"));
+		_tcscat(nmisc,&misc[3]);
+		_tcscat(nmisc,_T("_"));
+		DoStatusMessage(LKGetText(nmisc));
+		return;
+	}
+  } 
   DoStatusMessage(misc);
 }
 
@@ -1758,10 +1763,8 @@ void InputEvents::eventMacCready(const TCHAR *misc) {
     MacCreadyProcessing(-2);
   } else if (_tcscmp(misc, TEXT("auto show")) == 0) {
     if (CALCULATED_INFO.AutoMacCready) {
-      // DoStatusMessage(TEXT("Auto MacCready ON")); // REMOVE FIXV2
       DoStatusMessage(gettext(TEXT("_@M860_"))); // Auto MacCready ON
     } else {
-      // DoStatusMessage(TEXT("Auto MacCready OFF")); // REMOVE FIXV2
       DoStatusMessage(gettext(TEXT("_@M861_"))); // Auto MacCready OFF
     }
   } else if (_tcscmp(misc, TEXT("show")) == 0) {
@@ -2405,10 +2408,8 @@ void InputEvents::eventLogger(const TCHAR *misc) {
     return;
   } else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (LoggerActive) {
-      // DoStatusMessage(TEXT("Logger ON")); // REMOVE FIXV2
       DoStatusMessage(gettext(TEXT("_@M862_"))); // Logger ON
     } else {
-      // DoStatusMessage(TEXT("Logger OFF")); // REMOVE FIXV2
       DoStatusMessage(gettext(TEXT("_@M863_"))); // Logger OFF
     }
   } else if (_tcsncmp(misc, TEXT("note"), 4)==0) {

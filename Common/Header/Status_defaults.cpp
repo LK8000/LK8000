@@ -1,5 +1,5 @@
 /* AUTOMATICALLY GENERATED FILE - DO NOT EDIT BY HAND - see Common/Data/Status/xcs2cpp.pl */
-
+/* LK8000 WILL NOT USE STATUS, SO THIS FILE IS EDITED BY HAND UNTIL A FINAL FIX */
 _init_Status(StatusMessageData_Size);
 StatusMessageData[StatusMessageData_Size].key = TEXT("DEFAULT");
 StatusMessageData[StatusMessageData_Size].sound = TEXT("IDR_WAV_DRIP");

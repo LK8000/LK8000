@@ -1,6 +1,6 @@
 #CLEAR
 # DEFAULT.XCI for LK8000 by Paolo Ventafridda
-# Release 4M , 101122
+# Release 4M , 110103
 # 
 # This is the default .XCI file configured internally.
 # It controls all events from soft buttons and hardware keys.
@@ -51,22 +51,22 @@ mode=default
 type=gce
 data=ARM_READY
 event=Beep 1
-event=StatusMessage In sector, arm advance when ready
+event=StatusMessage ZYX926
 
 mode=default
 type=gce
 data=GPS_CONNECTION_WAIT
-event=StatusMessage Waiting for GPS Connection
+event=StatusMessage ZYX927
 
 mode=default
 type=gce
 data=COMMPORT_RESTART
-event=StatusMessage Restarting Comm Ports
+event=StatusMessage ZYX928
 
 mode=default
 type=gce
 data=GPS_FIX_WAIT
-event=StatusMessage Waiting for GPS Fix
+event=StatusMessage ZYX929
 
 mode=default
 type=gce
@@ -82,28 +82,28 @@ mode=default
 type=gce
 data=TAKEOFF
 event=AutoLogger start
-event=StatusMessage Takeoff
+event=StatusMessage ZYX930
 
 mode=default
 type=gce
 data=LANDING
-event=StatusMessage Landing
+event=StatusMessage ZYX931
 event=AutoLogger stop
 
 mode=default
 type=gce
 data=FLIGHTMODE_FINALGLIDE_ABOVE
-event=StatusMessage Above Final Glide
+event=StatusMessage ZYX932
 
 mode=default
 type=gce
 data=FLIGHTMODE_FINALGLIDE_BELOW
-event=StatusMessage Below Final Glide
+event=StatusMessage ZYX933
 
 mode=default
 type=gce
 data=FLIGHTMODE_FINALGLIDE_TERRAIN
-event=StatusMessage Final Glide Through Terrain
+event=StatusMessage ZYX934
 
 
 # ------------
@@ -988,7 +988,7 @@ location=5
 mode=Config2
 type=key
 data=7
-event=StatusMessage Marks cleared
+event=StatusMessage ZYX935
 event=MarkLocation reset
 label=Clear\nMarks 
 location=6
