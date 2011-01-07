@@ -1043,7 +1043,7 @@ SCREEN_INFO Data_Options[] = {
 	  // 82 
 	  {ugNone,            TEXT("Ext.Batt.2 Voltage"), TEXT("xBat2"), new InfoBoxFormatter(TEXT("%2.1fV")), NoProcessing, 49, 26},
 	  // 83 
-	  {ugDistance,            TEXT("Odometer"), TEXT("Odom"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 49, 26},
+	  {ugDistance,            TEXT("Odometer"), TEXT("Odo"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 49, 26},
           // 84 
 	  {ugInvAltitude,        TEXT("Altern QNH"), TEXT("aAlt"), new InfoBoxFormatter(TEXT("%2.0f")), AltitudeProcessing, 1, 33},
 	  // 85
@@ -2118,7 +2118,7 @@ CreateProgressDialog(TEXT("ERROR UNKNOWN RESOLUTION!"));
   RasterTerrain::ServiceFullReload(GPS_INFO.Latitude, 
                                    GPS_INFO.Longitude);
 
-  CreateProgressDialog(TEXT("Scanning weather forecast"));
+  // CreateProgressDialog(TEXT("Scanning weather forecast"));
   StartupStore(TEXT(". RASP load%s"),NEWLINE);
   RASP.Scan(GPS_INFO.Latitude, GPS_INFO.Longitude);
 
@@ -2340,15 +2340,10 @@ ATOM MyRegisterClass(HINSTANCE hInstance, LPTSTR szWindowClass)
 
 
 void ApplyClearType(LOGFONT *logfont) {
-  logfont->lfQuality = ANTIALIASED_QUALITY;
-  if (0) {
-    logfont->lfQuality = CLEARTYPE_COMPAT_QUALITY; // VENTA TODO FIX HERE. WHY NOT LANDSCAPE? cleartype is not native, but better than nothing!
-#ifndef NOCLEARTYPE
-  if (!InfoBoxLayout::landscape) {
-    logfont->lfQuality = CLEARTYPE_COMPAT_QUALITY; // VENTA TODO FIX HERE. WHY NOT LANDSCAPE? cleartype is not native, but better than nothing!
-  }
-#endif
-  }
+  // logfont->lfQuality = ANTIALIASED_QUALITY; // fixed 110106
+
+  // this has to be checked on PPC and old 2002 CE devices: using ANTIALIASED quality could be better
+  logfont->lfQuality = CLEARTYPE_COMPAT_QUALITY; // 110106 TEST
 }
 
 bool IsNullLogFont(LOGFONT logfont) {
@@ -2439,19 +2434,19 @@ void InitialiseFontsHardCoded(RECT rc,
 
    // If you set a font here for a specific resolution, no automatic font generation is used.
   if (ScreenSize==(ScreenSize_t)ss480x272) { // WQVGA  e.g. MIO
-    propGetFontSettingsFromString(TEXT("34,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // 28 091120
-    propGetFontSettingsFromString(TEXT("14,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont); // 16 091120
-    propGetFontSettingsFromString(TEXT("28,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont); 
-    propGetFontSettingsFromString(TEXT("15,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardCDIWindowLogFont);
-    propGetFontSettingsFromString(TEXT("16,0,0,0,700,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); // 100709
-    propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);//  (RLD is this used?)
-    // propGetFontSettingsFromString(TEXT("18,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont); 091120
-    propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
-    // propGetFontSettingsFromString(TEXT("16,0,0,0,500,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont); 091120
+    propGetFontSettingsFromString(TEXT("34,0,0,0,800,0,0,0,0,0,0,4,2,TahomaBD"), ptrhardInfoWindowLogFont); // 28 091120
+    propGetFontSettingsFromString(TEXT("14,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardTitleWindowLogFont); // 16 091120
+    propGetFontSettingsFromString(TEXT("28,0,0,0,400,1,0,0,0,0,0,4,2,Tahoma"), ptrhardTitleSmallWindowLogFont); 
+    propGetFontSettingsFromString(TEXT("15,0,0,0,400,0,0,0,0,0,0,4,2,TahomaBD"), ptrhardCDIWindowLogFont);
+    propGetFontSettingsFromString(TEXT("16,0,0,0,700,1,0,0,0,0,0,4,2,Tahoma"), ptrhardMapLabelLogFont); // 100709
+    propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardStatisticsLogFont);//  (RLD is this used?)
+    // propGetFontSettingsFromString(TEXT("18,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapWindowLogFont); 091120
+    propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapWindowLogFont);
+    // propGetFontSettingsFromString(TEXT("16,0,0,0,500,0,0,0,0,0,0,4,2,TahomaBD"), ptrhardMapWindowBoldLogFont); 091120
 #if WINDOWSPC>0
-    propGetFontSettingsFromString(TEXT("20,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont); 
+    propGetFontSettingsFromString(TEXT("19,0,0,0,500,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapWindowBoldLogFont); 
 #else
-    propGetFontSettingsFromString(TEXT("20,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont); 
+    propGetFontSettingsFromString(TEXT("19,0,0,0,500,0,0,0,0,0,0,6,2,Tahoma"), ptrhardMapWindowBoldLogFont); 
 #endif
     if (Appearance.InfoBoxGeom == 5) {
       GlobalEllipse=1.32f; // We don't use vario gauge in landscape geo5 anymore.. but doesn't hurt.
@@ -2610,8 +2605,8 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("14,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardCDIWindowLogFont);
     propGetFontSettingsFromString(TEXT("16,0,0,0,600,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); // 100819
     propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);//  (RLD is this used?)
-    propGetFontSettingsFromString(TEXT("18,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
-    propGetFontSettingsFromString(TEXT("13,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont);
+    propGetFontSettingsFromString(TEXT("18,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
     GlobalEllipse=1.1f; // to be checked, TODO
   }
   else if (ScreenSize==(ScreenSize_t)ss240x320) { // also applies for fake VGA where all values are doubled stretched
@@ -2619,10 +2614,10 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("12,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
     propGetFontSettingsFromString(TEXT("21,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont);
     propGetFontSettingsFromString(TEXT("12,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardCDIWindowLogFont);
-    propGetFontSettingsFromString(TEXT("12,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); // RLD 16 works well too
+    propGetFontSettingsFromString(TEXT("13,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); // RLD 16 works well too
     propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);//  (RLD is this used?)
-    propGetFontSettingsFromString(TEXT("16,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
-    propGetFontSettingsFromString(TEXT("15,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont);
+    propGetFontSettingsFromString(TEXT("15,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
+    propGetFontSettingsFromString(TEXT("16,0,0,0,500,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont);
     GlobalEllipse=1.1f; // to be checked, TODO
   }
   else if (ScreenSize==(ScreenSize_t)ss272x480) { 
@@ -2630,10 +2625,10 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("12,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
     propGetFontSettingsFromString(TEXT("21,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont);
     propGetFontSettingsFromString(TEXT("12,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCDIWindowLogFont);
-    propGetFontSettingsFromString(TEXT("12,0,0,0,600,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); 
+    propGetFontSettingsFromString(TEXT("15,0,0,0,600,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); 
     propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);
     propGetFontSettingsFromString(TEXT("18,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
-    propGetFontSettingsFromString(TEXT("18,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
+    propGetFontSettingsFromString(TEXT("18,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
     GlobalEllipse=1.1f; 
   }
   else if (ScreenSize==(ScreenSize_t)ss480x640) { // real VGA, not fake VGA
@@ -2788,7 +2783,7 @@ void InitialiseFontsAuto(RECT rc,
   logfont.lfHeight = (int)(FontHeight/TITLEFONTHEIGHTRATIO);
   logfont.lfWidth =  (int)(FontWidth/TITLEFONTWIDTHRATIO);
   logfont.lfWeight = FW_BOLD;
-  //  ApplyClearType(&logfont);
+    ApplyClearType(&logfont); // 110106
   // RLD this was the only auto font to not have "ApplyClearType()".  It does not apply to very small fonts
   // we now apply ApplyClearType to all fonts in CreateOneFont(). 
 
@@ -2805,7 +2800,7 @@ void InitialiseFontsAuto(RECT rc,
   logfont.lfHeight = (int)(FontHeight*CDIFONTHEIGHTRATIO);
   logfont.lfWidth =  (int)(FontWidth*CDIFONTWIDTHRATIO);
   logfont.lfWeight = FW_MEDIUM;
-//  ApplyClearType(&logfont);
+  ApplyClearType(&logfont); // 110106
 
 //  propGetFontSettings(TEXT("CDIWindowFont"), &logfont);
 //  CDIWindowFont = CreateFontIndirect (&logfont);
@@ -2820,7 +2815,7 @@ void InitialiseFontsAuto(RECT rc,
   logfont.lfWidth =  (int)(FontWidth*MAPFONTWIDTHRATIO);
   logfont.lfWeight = FW_MEDIUM;
   logfont.lfItalic = TRUE; 
-//  ApplyClearType(&logfont);
+  ApplyClearType(&logfont); // 110106
 
 //  propGetFontSettings(TEXT("MapLabelFont"), &logfont);
 //  MapLabelFont = CreateFontIndirect (&logfont);
@@ -2835,7 +2830,7 @@ void InitialiseFontsAuto(RECT rc,
   logfont.lfHeight = (int)(FontHeight*STATISTICSFONTHEIGHTRATIO);
   logfont.lfWidth =  (int)(FontWidth*STATISTICSFONTWIDTHRATIO);
   logfont.lfWeight = FW_MEDIUM;
-//  ApplyClearType(&logfont);
+  ApplyClearType(&logfont); // 110106
 
 //  propGetFontSettings(TEXT("StatisticsFont"), &logfont);
 //  StatisticsFont = CreateFontIndirect (&logfont);
@@ -2848,7 +2843,7 @@ void InitialiseFontsAuto(RECT rc,
   logfont.lfHeight = (int)(FontHeight*MAPFONTHEIGHTRATIO*1.3);
   logfont.lfWidth =  (int)(FontWidth*MAPFONTWIDTHRATIO*1.3);
   logfont.lfWeight = FW_MEDIUM;
-//  ApplyClearType(&logfont);
+  ApplyClearType(&logfont); // 110106
 
 //  propGetFontSettings(TEXT("MapWindowFont"), &logfont);
 //  MapWindowFont = CreateFontIndirect (&logfont);
@@ -2862,6 +2857,7 @@ void InitialiseFontsAuto(RECT rc,
   _tcscpy(logfont.lfFaceName, _T("Tahoma"));
   logfont.lfWeight = FW_BOLD;
   logfont.lfWidth =  0; // JMW (int)(FontWidth*MAPFONTWIDTHRATIO*1.3) +2;
+  ApplyClearType(&logfont); // 110106 missing
 
 //  propGetFontSettings(TEXT("MapWindowBoldFont"), &logfont);
 //  MapWindowBoldFont = CreateFontIndirect (&logfont);
@@ -2875,6 +2871,7 @@ void InitialiseFontsAuto(RECT rc,
   logfont.lfHeight = IBLSCALE(20);
   logfont.lfWidth =  IBLSCALE(8);
   logfont.lfWeight = FW_MEDIUM;
+  ApplyClearType(&logfont); // 110106 missing
   
   memcpy ((void *)ptrautoTitleSmallWindowLogFont, &logfont, sizeof (LOGFONT));
 }

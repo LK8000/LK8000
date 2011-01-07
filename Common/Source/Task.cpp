@@ -813,7 +813,8 @@ void guiStartLogger(bool noAsk) {
 	}
 	TCHAR TaskMessage[1024];
 	// _tcscpy(TaskMessage,TEXT("Start Logger With Declaration\r\n")); // REMOVE FIXV2
-	_tcscpy(TaskMessage,gettext(TEXT("_@M876_\r\n"))); // Start Logger With Declaration\r\n")); 
+	_tcscpy(TaskMessage,gettext(TEXT("_@M876_"))); // Start Logger With Declaration\r\n")); 
+	_tcscat(TaskMessage,_T("\r\n"));
 	for(i=0;i<MAXTASKPOINTS;i++)
 	{
 		if(Task[i].Index == -1)
@@ -824,7 +825,11 @@ void guiStartLogger(bool noAsk) {
 			break;
 		}
 		_tcscat(TaskMessage,WayPointList[ Task[i].Index ].Name);
-		_tcscat(TaskMessage,TEXT("\r\n"));
+		_tcscat(TaskMessage,TEXT(" - "));
+		if (i==1) {
+			_tcscat(TaskMessage,TEXT("\r\n ..."));
+			break;
+		}
 	}
 
 	// LKTOKEN  _@M637_ = "Start Logger" 

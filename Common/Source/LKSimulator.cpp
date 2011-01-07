@@ -183,7 +183,7 @@ void LKSimulator(void) {
 	// simple stall at 1 G
 	if (!landing && (IAS<=STALLSPEED && IASMS>3)) {
 		if (stallwarn) {
-			DoStatusMessage(_T("STALLING"));
+			// DoStatusMessage(_T("STALLING")); // OK, people do not like stalling.
 			stallwarn=false;
 		}
 		#if 0 // DO NOT SIMULATE STALLING NOW

@@ -79,6 +79,7 @@ void LKObjects_Create() {
 
   LKPen_Grey_N1 = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(1),RGB_GREY);
   LKPen_Grey_N2 = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(2),RGB_GREY);
+  LKPen_GABRG = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(3),RGB_MAGENTA);
 
 
 }
@@ -129,6 +130,7 @@ void LKObjects_Delete() {
   DeleteObject(LKPen_Grey_N1);
   DeleteObject(LKPen_Grey_N2);
   DeleteObject(LKPen_Petrol_C2);
+  DeleteObject(LKPen_GABRG);
 
 
 }

@@ -168,9 +168,13 @@ void DrawHSI(HDC hdc, POINT Orig, RECT rc )
 	short rad=(rc.right/2) - (rcx/10);
 	short rcy= rad;
 
-	if ( DisplayOrientation != TRACKUP)
+	if ( DisplayOrientation == NORTHSMART || 
+		DisplayOrientation == NORTHTRACK ||
+		DisplayOrientation == NORTHUP ||
+		DisplayMode == dmCircling
+		)
 	{
-		return; //Only for Trackup mapss
+		return; //Only for Trackup and compatible modes
 	}
 
 

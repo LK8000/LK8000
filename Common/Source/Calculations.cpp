@@ -944,7 +944,7 @@ void InitCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   // DeleteCalculationsPersist(); 
 
   // WARNING USING m/s 
-  if ( ISPARAGLIDER ) {
+  if ( ISPARAGLIDER || ISCAR ) {
 	TakeOffSpeedThreshold=1.39; // paragliders can takeoff at 5kmh ground with some head wind!
   } else {
 	TakeOffSpeedThreshold=11.12; // 40kmh

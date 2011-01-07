@@ -526,7 +526,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 			if (lktitle)
-				wsprintf(BufferTitle, TEXT("Odomet"),text);
+				wsprintf(BufferTitle, TEXT("Odo"),text);
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;

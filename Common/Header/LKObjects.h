@@ -48,7 +48,7 @@ extern	HPEN	LKPen_Blue_N1;
 extern	HPEN	LKPen_Grey_N1;
 extern	HPEN	LKPen_Grey_N2;
 extern	HPEN	LKPen_Petrol_C2;
-
+extern	HPEN	LKPen_GABRG;
 
 #endif
 //#endif

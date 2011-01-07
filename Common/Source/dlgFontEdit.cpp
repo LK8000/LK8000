@@ -91,7 +91,8 @@ static void RedrawSampleFont(void)
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontTrueType"));
   if(wp) {
     if ( wp->GetDataField()->GetAsBoolean() ) {
-      NewLogFont.lfQuality = ANTIALIASED_QUALITY;
+      // NewLogFont.lfQuality = ANTIALIASED_QUALITY; 110106
+      NewLogFont.lfQuality = CLEARTYPE_COMPAT_QUALITY; // 110106
     }
     else {
       NewLogFont.lfQuality = NONANTIALIASED_QUALITY;
@@ -114,7 +115,7 @@ static void RedrawSampleFont(void)
   if(wp) {
     if (GetObjectType(NewFont) == OBJ_FONT) {
       wp->SetFont(NewFont);
-      wp->SetCaption(TEXT("Sample Text 123"));
+      wp->SetCaption(TEXT("<AbCdEfGh1234>"));
       wp->SetVisible(false);
       wp->SetVisible(true);
       wp->RefreshDisplay();
@@ -268,7 +269,7 @@ void InitGUI(const TCHAR * FontDescription)
     dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->addEnumText(TEXT("Tahoma"));
     dfe->addEnumText(TEXT("TahomaBD"));
-    dfe->addEnumText(TEXT("DejaVu Sans Condensed"));
+    // dfe->addEnumText(TEXT("DejaVu Sans Condensed"));
     // RLD ToDo code: add more font faces, and validate their availabiliy
   }
 
@@ -374,7 +375,8 @@ void LoadGUI()
     dfb = (DataFieldBoolean*)wp->GetDataField();
     if (dfb)
     {
-      dfb->Set(NewLogFont.lfQuality == ANTIALIASED_QUALITY);
+      // dfb->Set(NewLogFont.lfQuality == ANTIALIASED_QUALITY); 110106
+      dfb->Set(NewLogFont.lfQuality == CLEARTYPE_COMPAT_QUALITY);
     }
     wp->RefreshDisplay();
   }

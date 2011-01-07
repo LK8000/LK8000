@@ -4528,7 +4528,8 @@ void propGetFontSettingsFromString(TCHAR *Buffer1, LOGFONT* lplf)
   // CLEARTYPE_COMPAT_QUALITY 6
 
   if ((pToken = strtok_r(NULL, TEXT(","), &pWClast)) == NULL) return;
-  lfTmp.lfQuality = (unsigned char)_tcstol(pToken, NULL, 10);
+  lfTmp.lfQuality = (unsigned char)_tcstol(pToken, NULL, 10); 
+  // lfTmp.lfQuality = CLEARTYPE_COMPAT_QUALITY; // 110106 FIX TEST
 
   if ((pToken = strtok_r(NULL, TEXT(","), &pWClast)) == NULL) return;
   lfTmp.lfPitchAndFamily = (unsigned char)_tcstol(pToken, NULL, 10);

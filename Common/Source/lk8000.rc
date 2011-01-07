@@ -173,6 +173,7 @@ IDR_XML_LKTRAFFICDETAILS XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgLKTraffi
 IDR_XML_CHECKLIST_L     XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgChecklist_L.xml"
 IDR_XML_WAYPOINTDETAILS_L XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgWayPointDetails_L.xml"
 IDR_XML_ANALYSIS_L      XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgAnalysis_L.xml"
+IDR_XML_AIRSPACEWARNING_L XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgAirspaceWarning_L.xml"
 IDR_XML_HELP_L          XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgHelp_L.xml"
 IDR_XML_AIRSPACE_L      XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgAirspace_L.xml"
 IDR_XML_AIRSPACECOLOURS_L XMLDIALOG DISCARDABLE   "..\\Data\\Dialogs\\dlgAirspaceColours_L.xml"

@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: LKDrawLook8000.cpp,v 1.10 2010/12/11 14:42:56 root Exp root $
+   $Id: LKDrawLook8000.cpp,v 1.11 2011/01/06 01:20:11 root Exp root $
 */
 
 #include "StdAfx.h"
@@ -471,7 +471,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 			if (CorrectSide() ) {
 				distcolor=overcolor;
 			} else {
-				distcolor=RGB_RED;
+				distcolor=RGB_AMBER;
 			}
 		 	LKFormatValue(LK_START_DIST, false, BufferValue, BufferUnit, BufferTitle);
 		 } else {
@@ -577,12 +577,18 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 			#else
 			LKFormatValue(LK_BRGDIFF, false, BufferValue, BufferUnit, BufferTitle);
 			#endif
+
+
 			SelectObject(hdc, bigFont);
 			#if NEWPNAV
-			if (ScreenLandscape)
-				LKWriteText(hdc, BufferValue, (rc.right+rc.left)/2, rc.top+ NIBLSCALE(15), 0, WTMODE_OUTLINED, WTALIGN_CENTER, overcolor, true);
-			else
-				LKWriteText(hdc, BufferValue, ((rc.right+rc.left)/3)*2, rc.top+ NIBLSCALE(15), 0, WTMODE_OUTLINED, WTALIGN_CENTER, overcolor, true);
+			if (!ISGAAIRCRAFT) {
+				if (ScreenLandscape)
+					LKWriteText(hdc, BufferValue, (rc.right+rc.left)/2, rc.top+ NIBLSCALE(15), 0, 
+						WTMODE_OUTLINED, WTALIGN_CENTER, overcolor, true);
+				else
+					LKWriteText(hdc, BufferValue, ((rc.right+rc.left)/3)*2, rc.top+ NIBLSCALE(15), 0, 
+						WTMODE_OUTLINED, WTALIGN_CENTER, overcolor, true);
+			}
 			#else
 			LKWriteText(hdc, BufferValue, (rc.right+rc.left)/2, rc.top+ NIBLSCALE(15), 0, WTMODE_OUTLINED, WTALIGN_CENTER, overcolor, true);
 			#endif
@@ -593,7 +599,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
 		SelectObject(hdc, bigFont); // use this font for big values
 
-		if ( !ISPARAGLIDER ) { // 091110
+		if ( ISGLIDER) {
 			#if OVERTARGET
 			switch (OvertargetMode) {
 				case OVT_TASK:
@@ -633,7 +639,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 			rcy=yrightoffset -TextSize.cy; // 101112
 			rcx=rc.right-NIBLSCALE(10);
 			if (redwarning)  // 091203
-				LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_RED, true);
+				LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_AMBER, true);
 			else
 				LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
 
@@ -673,7 +679,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 			#endif
 			if (redwarning) 
 				LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, 
-					WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_RED, true);
+					WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_AMBER, true);
 			else
 				LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, 
 					WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
@@ -715,7 +721,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 			Value=WayPointCalc[Task[0].Index].NextETE-gatechrono;
 			Units::TimeToTextDown(BufferValue, (int)Value);
 			if (Value<=0) 
-				LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_RED, true);
+				LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_AMBER, true);
 			else
 				LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 		}
@@ -768,7 +774,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
 		#endif
 		if (redwarning)
-			LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_RED, true);
+			LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_AMBER, true);
 		else
 			LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 
@@ -899,14 +905,17 @@ drawOverlay:
 		}
 	}
 
-	LKFormatValue(LK_GNDSPEED, false, BufferValue, BufferUnit, BufferTitle);
-	SelectObject(hdc, bigFont); 
-	GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
-	rcy+=TextSize.cy;
-	LKWriteText(hdc, BufferValue, rcx,rcy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
-	if (!HideUnits) {
-		SelectObject(hdc, LKMAPFONT);  // FIXFONT
-		LKWriteText(hdc, BufferUnit, rcx+TextSize.cx+NIBLSCALE(2),rcy+(TextSize.cy/3), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
+	if (!ISGAAIRCRAFT && !ISCAR) {
+		LKFormatValue(LK_GNDSPEED, false, BufferValue, BufferUnit, BufferTitle);
+		SelectObject(hdc, bigFont); 
+		GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
+		rcy+=TextSize.cy;
+		LKWriteText(hdc, BufferValue, rcx,rcy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
+		if (!HideUnits) {
+			SelectObject(hdc, LKMAPFONT);  
+			LKWriteText(hdc, BufferUnit, rcx+TextSize.cx+NIBLSCALE(2),rcy+(TextSize.cy/3), 0, 
+				WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
+		}
 	}
 
 	LKFormatValue(LK_TIME_LOCALSEC, false, BufferValue, BufferUnit, BufferTitle);
@@ -924,13 +933,15 @@ drawOverlay:
 		#endif
 	} else {
 		if (OverlayClock || (ISPARAGLIDER && UseGates()) ) {
-		if (MapWindow::IsMapFullScreen() ) {
-			SelectObject(hdc, LK8TargetFont); 
-			LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(30),rc.top+NIBLSCALE(1), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
-		} else {
-			SelectObject(hdc, LK8MediumFont); 
-			LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(28),rc.top+NIBLSCALE(1), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
-		}
+			if (MapWindow::IsMapFullScreen() ) {
+				SelectObject(hdc, LK8TargetFont); 
+				LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(30),rc.top+NIBLSCALE(1), 0, 
+					WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
+			} else {
+				SelectObject(hdc, LK8MediumFont); 
+				LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(28),rc.top+NIBLSCALE(1), 0, 
+					WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
+			}
 		}
 	}
 
@@ -1639,15 +1650,26 @@ EndOfNavboxes:
   //
   SelectObject(hdc, LK8TargetFont);
 
-  if (Look8000 == lxcNoOverlay || ISCAR ) goto afterWind; // 100930
+  if (Look8000 == lxcNoOverlay) goto afterWind; // 100930
 
-  LKFormatValue(LK_WIND, false, BufferValue, BufferUnit, BufferTitle);
+  if (ISCAR || ISGAAIRCRAFT) {
+	if (!HideUnits) {
+		LKFormatValue(LK_GNDSPEED, false, BufferValue, BufferUnit, BufferTitle);
+		_stprintf(Buffer,_T("%s %s"),BufferValue,BufferUnit);
+	} else {
+		LKFormatValue(LK_GNDSPEED, false, Buffer, BufferUnit, BufferTitle);
+	}
+  } else {
+	LKFormatValue(LK_WIND, false, Buffer, BufferUnit, BufferTitle);
+  }
+
   rcy=ySizeLK8TargetFont;
  
   if (DrawBottom)
-  	LKWriteText(hdc, BufferValue, rc.left+NIBLSCALE(5)+leftmargin, rc.bottom - BottomSize- rcy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
+  	LKWriteText(hdc, Buffer, rc.left+NIBLSCALE(5)+leftmargin, rc.bottom - BottomSize- rcy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
   else
-  	LKWriteText(hdc, BufferValue, rc.left+NIBLSCALE(5)+leftmargin, rc.bottom - rcy-NIBLSCALE(5), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
+  	LKWriteText(hdc, Buffer, rc.left+NIBLSCALE(5)+leftmargin, rc.bottom - rcy-NIBLSCALE(5), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
+
 
 afterWind:
 

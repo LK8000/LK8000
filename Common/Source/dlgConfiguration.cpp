@@ -4744,6 +4744,7 @@ void dlgConfigurationShowModal(void){
       SetToRegistry(szRegistryOverlaySize,
 		    (DWORD)(OverlaySize));
       changed = true;
+      requirerestart = true;
     }
   }
 

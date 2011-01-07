@@ -671,11 +671,12 @@ int dlgAirspaceWarningInit(void){
 //    hActiveWindow = GetActiveWindow();
 
     char filename[MAX_PATH];
-    LocalPathS(filename, TEXT("dlgAirspaceWarning.xml"));
-    wf = dlgLoadFromXML(CallBackTable,		        
-                        filename,
-		        hWndMainWindow,
-		        TEXT("IDR_XML_AIRSPACEWARNING"));
+    LocalPathS(filename, TEXT("dlgAirspaceWarning.xml")); // unused, removable
+
+  if (!InfoBoxLayout::landscape)
+	wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_AIRSPACEWARNING_L"));
+  else
+	wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_AIRSPACEWARNING"));
 
     if (wf) {
 
@@ -716,6 +717,8 @@ int dlgAirspaceWarningDeInit(void){
 
   if (wf)
     wf->SetVisible(false);
+
+  // 110106  missing delete brush objects here. Minor malis.
 
   AirspaceWarnListRemoveNotifier(AirspaceWarningNotify);
 

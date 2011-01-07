@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: MapWindow.cpp,v 8.28 2010/12/12 13:50:25 root Exp root $
+   $Id: MapWindow.cpp,v 8.29 2011/01/06 02:07:52 root Exp root $
 */
 
 #include "StdAfx.h"
@@ -1225,8 +1225,6 @@ void MapWindow::Event_ScaleZoom(int vswitch) {
 
     RefreshMap();
 
-    //    DrawMapScale(hdcScreen, MapRect, true);
-    // JMW this is bad, happening from wrong thread.
   }
 }
 
@@ -1234,12 +1232,6 @@ void MapWindow::Event_ScaleZoom(int vswitch) {
 int MapWindow::GetMapResolutionFactor(void) { // TESTFIX 091017 CHECKFIX
   static int retglider=NIBLSCALE(30);
   //static int retpara=IBLSCALE(30);
-/*
-  if (ISPARAGLIDER)
-	return IBLSCALE(3); // 091017 30 TESTFIX QUIQUI
-  else
-	return IBLSCALE(30);
-*/
   //if (ISPARAGLIDER) return retpara; else return retglider;
 
   return retglider;
@@ -1606,7 +1598,11 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hpWindThick = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(4), RGB(255,220,220));
 
 	#if LKOBJ
-      hpBearing = LKPen_Black_N2;
+      if (ISGAAIRCRAFT)
+	hpBearing = LKPen_GABRG;
+      else
+	hpBearing = LKPen_Black_N2;
+
       hpBestCruiseTrack = LKPen_Blue_N1;
 	#else
       hpBearing = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_BLACK);

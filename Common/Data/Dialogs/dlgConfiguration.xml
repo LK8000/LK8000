@@ -304,7 +304,7 @@
 <WndProperty Name="prpHandicap" Caption="_@M334_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H151_">
 <DataField name="" DataType="double" DisplayFormat="%.0f %%" EditFormat="%.0f" Min=50 Max=150 Step=1/>
 </WndProperty>
-<WndProperty Name="prpBallastSecsToEmpty" Caption="_@M126_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@152_">
+<WndProperty Name="prpBallastSecsToEmpty" Caption="_@M126_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H152_">
 <DataField name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min=10 Max=900 Step=10/>
 </WndProperty>
 </WndFrame>

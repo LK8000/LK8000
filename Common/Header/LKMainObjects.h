@@ -47,6 +47,7 @@ HPEN	LKPen_Blue_N1;
 HPEN	LKPen_Grey_N1;
 HPEN	LKPen_Grey_N2;
 HPEN	LKPen_Petrol_C2;
+HPEN	LKPen_GABRG;
 
 
 #endif

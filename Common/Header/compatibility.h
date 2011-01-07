@@ -62,6 +62,10 @@
 	#elif (WIN32_PLATFORM_PSPC == 400)
 	// Pocket PC 2003
 #include <assert.h>
+	// 110106 apply cleartype on CE 5 as well
+	#ifndef NOCLEARTYPE
+	#define NOCLEARTYPE
+	#endif
 
 
 	#else
@@ -69,6 +73,10 @@
 #include <assert.h>
 		
 	// NOT EXPLICITLY SUPPORTED
+	// 110106 apply cleartype on CE 5 as well
+	#ifndef NOCLEARTYPE
+	#define NOCLEARTYPE
+	#endif
 
 	#endif
 

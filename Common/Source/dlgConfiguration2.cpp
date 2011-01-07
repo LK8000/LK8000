@@ -29,12 +29,12 @@ void OnInfoBoxHelp(WindowControl * Sender){
 
   switch (config_page) {
   case 15:
-	// LKTOKEN  _@M834_ = "circling" 
-    _tcscpy(mode,gettext(TEXT("_@M834_")));
-    break;
-  case 16:
 	// LKTOKEN  _@M835_ = "cruise" 
     _tcscpy(mode,gettext(TEXT("_@M835_")));
+    break;
+  case 16:
+	// LKTOKEN  _@M834_ = "circling" 
+    _tcscpy(mode,gettext(TEXT("_@M834_")));
     break;
   case 17:
 	// LKTOKEN  _@M836_ = "final glide" 

@@ -1520,25 +1520,25 @@ void InitNewMap()
 		break;
   }
 
-  logfontTarget.lfQuality = ANTIALIASED_QUALITY; 
-  logfontBig.lfQuality = ANTIALIASED_QUALITY; 
-  logfontValue.lfQuality = ANTIALIASED_QUALITY; 
-  logfontTitle.lfQuality = ANTIALIASED_QUALITY; 
-  logfontMap.lfQuality = ANTIALIASED_QUALITY; 
-  logfontTitleNavbox.lfQuality = ANTIALIASED_QUALITY; 
-  logfontUnit.lfQuality = ANTIALIASED_QUALITY; 
-  logfontMedium.lfQuality = ANTIALIASED_QUALITY; 
-  logfontSmall.lfQuality = ANTIALIASED_QUALITY; 
-  logfontInfoBig.lfQuality = ANTIALIASED_QUALITY; 
-  logfontInfoBigItalic.lfQuality = ANTIALIASED_QUALITY; 
-  logfontInfoNormal.lfQuality = ANTIALIASED_QUALITY; 
-  logfontInfoSmall.lfQuality = ANTIALIASED_QUALITY; 
-  logfontSymbol.lfQuality = ANTIALIASED_QUALITY; 
+  logfontTarget.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
+  logfontBig.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
+  logfontValue.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
+  logfontTitle.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
+  logfontMap.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
+  logfontTitleNavbox.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
+  logfontUnit.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
+  logfontMedium.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
+  logfontSmall.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
+  logfontInfoBig.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
+  logfontInfoBigItalic.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
+  logfontInfoNormal.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
+  logfontInfoSmall.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
+  logfontSymbol.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
   logfontSymbol.lfCharSet = SYMBOL_CHARSET; // careful
-  logfontPanelBig.lfQuality= ANTIALIASED_QUALITY;
-  logfontPanelMedium.lfQuality= ANTIALIASED_QUALITY;
-  logfontPanelSmall.lfQuality= ANTIALIASED_QUALITY;
-  logfontPanelUnit.lfQuality= ANTIALIASED_QUALITY;
+  logfontPanelBig.lfQuality= CLEARTYPE_COMPAT_QUALITY;
+  logfontPanelMedium.lfQuality= CLEARTYPE_COMPAT_QUALITY;
+  logfontPanelSmall.lfQuality= CLEARTYPE_COMPAT_QUALITY;
+  logfontPanelUnit.lfQuality= CLEARTYPE_COMPAT_QUALITY;
 
   LK8TargetFont	= CreateFontIndirect (&logfontTarget); 
   LK8BigFont	= CreateFontIndirect (&logfontBig);
@@ -1634,9 +1634,9 @@ void InitAircraftCategory()
 	case (AircraftCategory_t)umGAaircraft:
 	case (AircraftCategory_t)umCar:
 
-		MapWindow::RequestMapScale = 5; 
-		MapWindow::MapScale = 5;
-		MapWindow::MapScaleOverDistanceModify = 5/DISTANCEMODIFY;
+		MapWindow::RequestMapScale = 4; 
+		MapWindow::MapScale = 4;
+		MapWindow::MapScaleOverDistanceModify = 4/DISTANCEMODIFY;
 		break;
 
 	case (AircraftCategory_t)umParaglider:
@@ -3870,7 +3870,7 @@ void SetMapScales() {
 	}
   } else {
 	CruiseMapScale = MapWindow::RequestMapScale*2;
-	ClimbMapScale = MapWindow::RequestMapScale/20;
+	ClimbMapScale = MapWindow::RequestMapScale/30; // 110104
   }
 
 }

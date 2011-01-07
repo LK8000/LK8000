@@ -1180,6 +1180,11 @@ public:
     if (epx> min(ixs,iys)/4) { 
       do_shading = false;
     } 
+    #ifndef WINDOWSPC
+    else {
+	if (MapWindow::MapScale>12) do_shading=false;
+    }
+    #endif
 
     POINT orig = MapWindow::GetOrigScreen();
     rect_visible.left = max((long)MapWindow::MapRectBig.left,

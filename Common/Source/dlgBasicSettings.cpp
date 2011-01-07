@@ -265,7 +265,7 @@ void dlgBasicSettingsShowModal(void){
 
 
   char filename[MAX_PATH];
-  LocalPathS(filename, TEXT("dlgBasicSettings.xml"));
+  LocalPathS(filename, TEXT("dlgBasicSettings.xml")); // no worry missing _L, it is unused anyway
   if (!InfoBoxLayout::landscape) 
 	wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_BASICSETTINGS_L"));
   else
