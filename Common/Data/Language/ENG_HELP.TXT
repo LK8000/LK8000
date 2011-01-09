@@ -609,7 +609,7 @@ Press DUMP BALLAST button to toggle countdown of the ballast volume according to
 ystem configuration.
 
 @301
-Wing loading for this glider. It depends on your weight, on additional equipments installed, etc. Ballast is accounted separately. 
+Wing loading for this glider. It depends on your weight, on additional equipments installed, etc.
 You should set Wing Loading with no ballast first.
 This value is NOT saved, and it is reset at each startup to the wing loading calculated for your polar. 
 Normally, but not always, your polar has considered a 70kg weight pilot. If you are not sure, leave the default wing loading. 
