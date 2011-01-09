@@ -603,8 +603,10 @@ Size of overlay fonts.
 #
 
 @300
-Ballast of the glider.  Increase this value if the pilot/cockpit load is greater than the reference pilot weight of the glide polar 
-(typically 75kg).  Press ENTER on this field to toggle count-down of the ballast volume according to the dump rate specified in the configuration settings.
+Specifies how much of the water ballast is loaded in the glider.
+The total volume of the water ballast is defined in a glider polar data.
+Press DUMP BALLAST button to toggle countdown of the ballast volume according to the dump rate specified in s
+ystem configuration.
 
 @301
 Wing loading for this glider. It depends on your weight, on additional equipments installed, etc. Ballast is accounted separately. 
@@ -819,6 +821,9 @@ Type of the finish.
 [Cylinder]: The task is finished when the glider enters the cylinder.  The cylinder radius is set via the 'Finish radius' property.
 [FAI Sector]: Defines a 90 degree sector.  The task is finished when the glider crosses the sector lines.  The radius of the sector is set via the 'Finish radius' property.
 
+@H514
+Radius of the finish cylinder or half length of the finish line.
+
 #
 # TIME GATES
 #
@@ -951,8 +956,8 @@ USE THIS ALTITUDE as main reference, since this is the one being used by LK8000.
 Touchscreen/PC only: in simulation mode, this value is adjustable with the up/down arrow keys and the right/left arrow keys also cause the glider to turn.
 
 @801
-[Altitude AGL
-This is the navigation altitude minus the terrain height obtained from the terrain file.  The value is coloured red when the glider is below the terrain safety clearance height.
+[Altitude AGL]
+This is the navigation altitude minus the terrain height obtained from the terrain file.  
 
 @802
 [Thermal last 30 sec]

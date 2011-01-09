@@ -4777,7 +4777,13 @@ void dlgConfigurationShowModal(void){
     ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY)*1000.0);  
     if ( ((int)GPSAltitudeOffset) != ival ) {
 	GPSAltitudeOffset = ival;
-	SetToRegistry(szRegistryGpsAltitudeOffset, (DWORD)(GPSAltitudeOffset));
+	int sword;
+	if (GPSAltitudeOffset<0) {
+		sword=(int) ( (GPSAltitudeOffset*(-1)) +9999999);
+	} else {
+		sword=(int) GPSAltitudeOffset;
+	}
+	SetToRegistry(szRegistryGpsAltitudeOffset, (DWORD)(sword));
 	changed=true;
     }
 

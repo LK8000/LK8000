@@ -760,7 +760,7 @@ void ReadRegistrySettings(void)
   // alternate can be -1 , signed!!
   Temp = Alternate1;
   if (GetFromRegistry(szRegistryAlternate1,&Temp)==ERROR_SUCCESS) {
-    Alternate1 = (signed) Temp;
+    Alternate1 = (signed int) Temp;
     OnAlternate1=true;
   } else {
     Alternate1 = -1;
@@ -769,7 +769,7 @@ void ReadRegistrySettings(void)
 
   Temp = Alternate2;
   if (GetFromRegistry(szRegistryAlternate2,&Temp)==ERROR_SUCCESS) {
-    Alternate2 = (signed) Temp; // 100429
+    Alternate2 = (signed int) Temp; // 100429
     OnAlternate2=true;
   } else {
     Alternate2 = -1;
@@ -1027,7 +1027,13 @@ void ReadRegistrySettings(void)
   Temp = 0;
   GetFromRegistry(szRegistryGpsAltitudeOffset,&Temp); 
   // USE SIGNED CASTINGO CONVERSION FOR SIGNED VALUES IN THE REGISTRY!!
-  GPSAltitudeOffset = (signed)Temp;
+  if (Temp>9999999) {
+	int sword;
+	sword=(Temp-9999999)*-1;
+	GPSAltitudeOffset = sword;
+  } else {
+	GPSAltitudeOffset = Temp;
+  }
 
   Temp = 1;
   GetFromRegistry(szRegistryUseGeoidSeparation,&Temp); 
