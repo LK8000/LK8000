@@ -246,11 +246,17 @@ HBRUSH hBrushSelected;
 HBRUSH hBrushUnselected;
 HBRUSH hBrushButton;
 COLORREF ColorSelected = RGB(0xC0,0xC0,0xC0);
-COLORREF ColorUnselected = RGB(0xFF,0xFF,0xFF);
-COLORREF ColorWarning = RGB(0xFF,0x00,0x00);
-COLORREF ColorOK = RGB(0x00,0x00,0xFF);
-COLORREF ColorButton = RGB(0xA0,0xE0,0xA0);
-//COLORREF ColorButton = RGB_BUTTONS; // 091230
+COLORREF ColorUnselected = RGB_WHITE;
+COLORREF ColorWarning = RGB_RED;
+COLORREF ColorOK = RGB_BLUE;
+//COLORREF ColorButton = RGB_BUTTONS;  // TEST 110109
+//COLORREF ColorButton = RGB(133,255,163); // ligher green 0
+//COLORREF ColorButton = RGB(158,255,182); // very lcd 1
+// COLORREF ColorButton = RGB(158,231,255); // azure 2
+// COLORREF ColorButton = RGB(158,255,231); // azure 3
+//COLORREF ColorButton = RGB(158,181,255); // indacto 4
+// COLORREF ColorButton = RGB(138,255,173); // nice light green
+COLORREF ColorButton = RGB(157,185,200);
 
 // Display Gobals
 HFONT                                   InfoWindowFont;
@@ -3561,8 +3567,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return (LRESULT)hBrushUnselected;
       case 4:
 	// black on light green
+        SetTextColor((HDC)wParam, RGB_BLACK); // 110109
 	SetBkColor((HDC)wParam, ColorButton);
-        SetTextColor((HDC)wParam, RGB(0x00,0x00,0x00));
 	return (LRESULT)hBrushButton;
       case 5:
 	// grey on light green

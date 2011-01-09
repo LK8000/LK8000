@@ -5,8 +5,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#define MAXSAFETYSPEED 55	// m/s
-#define MAXSPEED	75	// m/s NOT kmh!!
+#define MAXSAFETYSPEED  100	// 360kmh
+#define MAXSPEED	100	// 360kmh = 100ms
 
 class GlidePolar {
  public:

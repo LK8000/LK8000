@@ -54,6 +54,8 @@ TCHAR *LKgethelptext(const TCHAR *TextIn) {
   static TCHAR sTmp[MAX_HELP+1];
   static TCHAR sHelp[MAX_HELP+1];
 
+  bool foundnotfound=false;
+
   if (TextIn == NULL) return (TCHAR *)TextIn;
   short tlen=_tcslen(TextIn);
   if (tlen<5 || tlen>8) return (TCHAR *)TextIn;
@@ -152,13 +154,24 @@ TCHAR *LKgethelptext(const TCHAR *TextIn) {
 				found=true;
 				break;
 			} else {
-				#if DEBUG_GETTEXT
-				StartupStore(_T("... found wrong index: %s not %s\n"),&sTmp[1],sNum);
-				#endif
+				// this one should be the very last line in the help file
+				if ( _tcscmp(&sTmp[1],_T("9999")) == 0 ) {
+					foundnotfound=true;
+					#if DEBUG_GETTEXT
+					StartupStore(_T("... found NOTFOUND index: %s\n"),&sTmp[1]);
+					#endif
+					// warning this means that placing 9999 not at the end of HELP file will
+					// make all other messages ignored! always check HELP file to have 9999 at the end
+					break;
+				} else {
+					#if DEBUG_GETTEXT
+					StartupStore(_T("... found wrong index: %s not %s\n"),&sTmp[1],sNum);
+					#endif
+				}
 			}
 		}
 	}
-	if (!found) {
+	if (!found && !foundnotfound) {
 		#if DEBUG_GETTEXT
 		StartupStore(_T("... index <%s> not found in help file <%s>\n"),sNum,sFile);
 		#endif
