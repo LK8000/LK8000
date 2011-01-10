@@ -518,8 +518,10 @@ void dlgWayPointDetailsShowModal(void){
 				  CALCULATED_INFO.WindSpeed, 
 				  CALCULATED_INFO.WindBearing, 
 				  0, 0, true,
-				  0)-SAFETYALTITUDEARRIVAL-
-    WayPointList[SelectedWaypoint].Altitude;
+				  0)- WayPointList[SelectedWaypoint].Altitude;
+
+  if (SafetyAltitudeMode==1 || WayPointCalc[SelectedWaypoint].IsLandable) 
+	alt-=SAFETYALTITUDEARRIVAL;
 
   _stprintf(sTmp, TEXT("%.0f %s"), alt*ALTITUDEMODIFY,
 	    Units::GetAltitudeName());
@@ -529,6 +531,7 @@ void dlgWayPointDetailsShowModal(void){
 
   // alt reqd at safety mc
 
+  // this is unused in fact
   alt = CALCULATED_INFO.NavAltitude - 
     GlidePolar::MacCreadyAltitude(GlidePolar::AbortSafetyMacCready(),
 				  distance,
@@ -541,9 +544,10 @@ void dlgWayPointDetailsShowModal(void){
 
   wp = ((WndProperty *)wf->FindByName(TEXT("prpMc1")));
   if (wp) wp->SetText(sTmp);
+  //
+
 
   // alt reqd at current mc
-
   alt = CALCULATED_INFO.NavAltitude - 
     GlidePolar::MacCreadyAltitude(MACCREADY,
 				  distance,
@@ -551,8 +555,11 @@ void dlgWayPointDetailsShowModal(void){
 				  CALCULATED_INFO.WindSpeed, 
 				  CALCULATED_INFO.WindBearing, 
 				  0, 0, true,
-				  0)-SAFETYALTITUDEARRIVAL-
+				  0)-
     WayPointList[SelectedWaypoint].Altitude;
+
+  if (SafetyAltitudeMode==1 || WayPointCalc[SelectedWaypoint].IsLandable) 
+	alt-=SAFETYALTITUDEARRIVAL;
 
   _stprintf(sTmp, TEXT("%.0f %s"), alt*ALTITUDEMODIFY,
 	    Units::GetAltitudeName());

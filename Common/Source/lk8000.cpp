@@ -251,12 +251,12 @@ COLORREF ColorWarning = RGB_RED;
 COLORREF ColorOK = RGB_BLUE;
 //COLORREF ColorButton = RGB_BUTTONS;  // TEST 110109
 //COLORREF ColorButton = RGB(133,255,163); // ligher green 0
-//COLORREF ColorButton = RGB(158,255,182); // very lcd 1
+COLORREF ColorButton = RGB(158,255,182); // very lcd 1
 // COLORREF ColorButton = RGB(158,231,255); // azure 2
 // COLORREF ColorButton = RGB(158,255,231); // azure 3
-//COLORREF ColorButton = RGB(158,181,255); // indacto 4
+// COLORREF ColorButton = RGB(158,181,255); // indigo 4
 // COLORREF ColorButton = RGB(138,255,173); // nice light green
-COLORREF ColorButton = RGB(157,185,200);
+// COLORREF ColorButton = RGB(157,185,200); // this is the startup buttons color
 
 // Display Gobals
 HFONT                                   InfoWindowFont;

@@ -160,7 +160,7 @@ The height above terrain that the glider should arrive at for a safe landing. Do
 @134
 Apply safety altitude to landing points only, or also to turnpoints. If only to landables, then arrival altitude over turnpoints will NOT consider any extra margin.
 [Landables only] add extra altitude to landables only. This is the default.
-[Landables and turnpoints] Apply extra altitude for all waypoints.">
+[Landables and turnpoints] Apply extra altitude for all waypoints."
 
 @135
 The height above terrain that the glider must clear during final glide, and to pass obstacles. A good value is 50m
