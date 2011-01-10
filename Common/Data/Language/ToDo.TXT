@@ -1,0 +1,5 @@
+Things to be fixed in LK languages files/tokens:
+
+H864 is missing, old issue from xcs. Check if we really need this infobox.
+
+

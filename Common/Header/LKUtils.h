@@ -66,7 +66,8 @@
 // task line color, originally darg green
 #define RGB_DGREEN1	RGB(0,120,0)
 // buttons
-#define RGB_BUTTGREEN	RGB(0xA0,0xE0,0xA0)
+// #define RGB_BUTTGREEN	RGB(0xA0,0xE0,0xA0) // 1.22b button green 
+#define RGB_BUTTGREEN	RGB(160,255,190); // 2.0 button green
 
 // LK8000 colors
 #define RGB_LGREEN1	RGB(0xa9,0xda,0xc3)

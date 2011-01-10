@@ -249,14 +249,16 @@ COLORREF ColorSelected = RGB(0xC0,0xC0,0xC0);
 COLORREF ColorUnselected = RGB_WHITE;
 COLORREF ColorWarning = RGB_RED;
 COLORREF ColorOK = RGB_BLUE;
-//COLORREF ColorButton = RGB_BUTTONS;  // TEST 110109
-//COLORREF ColorButton = RGB(133,255,163); // ligher green 0
-COLORREF ColorButton = RGB(158,255,182); // very lcd 1
-// COLORREF ColorButton = RGB(158,231,255); // azure 2
-// COLORREF ColorButton = RGB(158,255,231); // azure 3
-// COLORREF ColorButton = RGB(158,181,255); // indigo 4
-// COLORREF ColorButton = RGB(138,255,173); // nice light green
-// COLORREF ColorButton = RGB(157,185,200); // this is the startup buttons color
+/* Possible alternative colors for buttons:
+	//COLORREF ColorButton = RGB(133,255,163); // ligher green 0
+	//COLORREF ColorButton = RGB(158,231,255); // azure 2
+	// COLORREF ColorButton = RGB(158,255,231); // azure 3
+	// COLORREF ColorButton = RGB(158,181,255); // indigo 4
+	// COLORREF ColorButton = RGB(138,255,173); // nice light green
+	// COLORREF ColorButton = RGB(157,185,200); // light blue grey
+	// COLORREF ColorButton = RGB(37,77,116); // dirty blue
+ */
+COLORREF ColorButton = RGB_BUTTONS;  
 
 // Display Gobals
 HFONT                                   InfoWindowFont;
@@ -3567,7 +3569,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return (LRESULT)hBrushUnselected;
       case 4:
 	// black on light green
-        SetTextColor((HDC)wParam, RGB_BLACK); // 110109
+        SetTextColor((HDC)wParam, RGB_BLACK); 
 	SetBkColor((HDC)wParam, ColorButton);
 	return (LRESULT)hBrushButton;
       case 5:

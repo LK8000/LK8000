@@ -778,43 +778,42 @@ void ButtonLabel::CreateButtonLabels(RECT rc) {
 	ButtonLabelGeometry = 0; 
 
   for (i=0; i<NUMBUTTONLABELS; i++) {
-#ifdef PNA 
- if (GlobalModelType == MODELTYPE_PNA_HP31X )
-    hWndButtonWindow[i] =
-      CreateWindowEx( WS_EX_CLIENTEDGE,
-		   TEXT("STATIC"), TEXT("\0"),
-		   WS_CHILD|WS_TABSTOP
-		   |SS_CENTER|SS_NOTIFY
-		   |WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_BORDER,
-		   rc.left, rc.top, 
-		   buttonWidth, buttonHeight,
-		   hWndMainWindow, NULL, hInst, NULL);
- else
-    hWndButtonWindow[i] =
-      CreateWindow(
-		   TEXT("STATIC"), TEXT("\0"),
-		   /*WS_VISIBLE|*/ WS_CHILD|WS_TABSTOP
-		   |SS_CENTER|SS_NOTIFY
-		   |WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_BORDER,
-		   rc.left, rc.top, 
-		   // TODO code: need to have these passed in too as
-		   // some buttons may actually be a different shape.
-		   buttonWidth, buttonHeight,
-		   hWndMainWindow, NULL, hInst, NULL);
 
-#else
-    hWndButtonWindow[i] =
-      CreateWindow(
-		   TEXT("STATIC"), TEXT("\0"),
-		   /*WS_VISIBLE|*/ WS_CHILD|WS_TABSTOP
-		   |SS_CENTER|SS_NOTIFY
-		   |WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_BORDER,
-		   rc.left, rc.top, 
-		   // TODO code: need to have these passed in too as
-		   // some buttons may actually be a different shape.
-		   buttonWidth, buttonHeight,
-		   hWndMainWindow, NULL, hInst, NULL);
-#endif
+  #if (WINDOWSPC>0)
+
+  hWndButtonWindow[i] = CreateWindow(
+	TEXT("STATIC"), TEXT("\0"),
+	WS_CHILD|WS_TABSTOP
+	|SS_CENTER|SS_NOTIFY
+	|WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_BORDER,
+	rc.left, rc.top, 
+	buttonWidth, buttonHeight, hWndMainWindow, NULL, hInst, NULL);
+
+   #else
+
+   switch(ScreenSize) {
+	case ss800x480:
+		hWndButtonWindow[i] = CreateWindowEx( WS_EX_OVERLAPPEDWINDOW,
+			TEXT("STATIC"), TEXT("\0"),
+			WS_CHILD|WS_TABSTOP
+			|SS_CENTER|SS_NOTIFY
+			|WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_BORDER|WS_SIZEBOX,
+			rc.left, rc.top, 
+			buttonWidth, buttonHeight, hWndMainWindow, NULL, hInst, NULL);
+			break;
+	default:
+		hWndButtonWindow[i] = CreateWindow(
+			TEXT("STATIC"), TEXT("\0"),
+			WS_CHILD|WS_TABSTOP
+			|SS_CENTER|SS_NOTIFY
+			|WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_BORDER,
+			rc.left, rc.top, 
+			buttonWidth, buttonHeight, hWndMainWindow, NULL, hInst, NULL);
+			break;
+    }
+
+    #endif
+
 
     GetButtonPosition(i, rc, &x, &y, &xsize, &ysize);
 

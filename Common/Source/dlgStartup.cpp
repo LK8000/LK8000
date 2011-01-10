@@ -302,6 +302,15 @@ void dlgStartupShowModal(void){
 				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetHeight(IBLSCALE(38));
 				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetTop(IBLSCALE(197));
 				break;
+			case ss640x480:
+			case ss320x240:
+				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetLeft(IBLSCALE(93)+PROFWIDTH);
+				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetWidth(IBLSCALE(73)+PROFWIDTH/6);
+				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetLeft(IBLSCALE(166)+PROFWIDTH*2);
+				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetWidth(IBLSCALE(60)+PROFWIDTH/5);
+				((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetLeft(IBLSCALE(228)+PROFWIDTH*3);
+				((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetWidth(IBLSCALE(88));
+				break;
 			default:
 				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetLeft(IBLSCALE(93)+PROFWIDTH);
 				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetWidth(IBLSCALE(73)+PROFWIDTH/6);
