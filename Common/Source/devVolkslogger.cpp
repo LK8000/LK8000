@@ -155,15 +155,15 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl){
     break;
   case 1: // line
     vl.declaration.task.startpoint.oztyp = VLAPI_DATA::DCLWPT::OZTYP_LINE;
-    vl.declaration.task.startpoint.lw = min(1500,StartRadius*2);
+    vl.declaration.task.startpoint.lw = StartRadius * 2;
     vl.declaration.task.startpoint.rs = 0;
     vl.declaration.task.startpoint.rz = 0;
     break;
   case 2: // fai sector
     vl.declaration.task.startpoint.oztyp = VLAPI_DATA::DCLWPT::OZTYP_CYLSKT;
-    vl.declaration.task.startpoint.lw = min(1500,StartRadius);
+    vl.declaration.task.startpoint.lw = min(15000,StartRadius);
     vl.declaration.task.startpoint.rz = 0;
-    vl.declaration.task.startpoint.rs = min(1500,StartRadius);
+    vl.declaration.task.startpoint.rs = min(15000,StartRadius);
     break;
   }
   vl.declaration.task.startpoint.ws = 360;
@@ -174,14 +174,14 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl){
     switch (SectorType) {
     case 0: // cylinder
       vl.declaration.task.turnpoints[i].oztyp = VLAPI_DATA::DCLWPT::OZTYP_CYLSKT;
-      vl.declaration.task.turnpoints[i].rz = SectorRadius;
+      vl.declaration.task.turnpoints[i].rz = min(1500,SectorRadius);
       vl.declaration.task.turnpoints[i].rs = 0;
       vl.declaration.task.turnpoints[i].lw = 0;
       break;
     case 1: // sector
       vl.declaration.task.turnpoints[i].oztyp = VLAPI_DATA::DCLWPT::OZTYP_CYLSKT;
       vl.declaration.task.turnpoints[i].rz = 0;
-      vl.declaration.task.turnpoints[i].rs = 15000;
+      vl.declaration.task.turnpoints[i].rs = min(15000,SectorRadius);
       vl.declaration.task.turnpoints[i].lw = 0;
       break;
     case 2: // German DAe 0.5/10
@@ -211,9 +211,9 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl){
     break;
   case 2: // fai sector
     vl.declaration.task.finishpoint.oztyp = VLAPI_DATA::DCLWPT::OZTYP_CYLSKT;
-    vl.declaration.task.finishpoint.lw = min(1500,FinishRadius);
+    vl.declaration.task.finishpoint.lw = min(15000,FinishRadius);
     vl.declaration.task.finishpoint.rz = 0;
-    vl.declaration.task.finishpoint.rs = min(1500,FinishRadius);
+    vl.declaration.task.finishpoint.rs = min(15000,FinishRadius);
     break;
   }
   vl.declaration.task.finishpoint.ws = 360;

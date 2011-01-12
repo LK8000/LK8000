@@ -181,6 +181,15 @@ BOOL EWMicroRecorderDeclare(PDeviceDescriptor_t d, Declaration_t *decl)
 
   d->Com->WriteString(TEXT("\x18"));         // start to upload file
   d->Com->WriteString(user_data);
+
+  TCHAR EWRecord[128];
+  _stprintf(EWRecord, TEXT("Pilot Name:     %s\r\n"), decl->PilotName);
+  d->Com->WriteString(EWRecord);
+  _stprintf(EWRecord, TEXT("Aircraft Type:  %s\r\n"), decl->AircraftType);
+  d->Com->WriteString(EWRecord);
+  _stprintf(EWRecord, TEXT("Aircraft ID:    %s\r\n"), decl->AircraftRego);
+  d->Com->WriteString(EWRecord);
+
   d->Com->WriteString(TEXT("Description:      Declaration\r\n"));
 
   for (int i = 0; i < 11; i++) {

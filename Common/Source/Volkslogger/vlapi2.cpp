@@ -899,16 +899,23 @@ void VLAPI_DATA::DCLWPT::put(lpb p) {
   if(oztyp == OZTYP_LINE) {
     // find two integer numbers between 1 and 15 the product of which
     // is just lower or equal the linewidth
-    int w1 = 0;
-    int w2 = 0;
+    int w1Best = 0;
+    int w2Best = 0;
     for(int i=1;i<=15;i++) {
-      if(lw%i==0 && lw/i <= 15) {
-        w1 = i;
-        w2 = lw/i;
-        break;
+      if(lw/i <= 15000) {
+        int w1 = i;
+        int w2 = max(lw/i/1000, 1);
+        
+        if(w1Best == 0 || (w1*w2 > w1Best*w2Best && w1*w2*1000 <= lw)) {
+          w1Best = w1;
+          w2Best = w2;
+        }
+        
+        if((lw/1000)%i==0)
+          break;
       }
     }
-    p[14] = (w1<<4) + w2;
+    p[14] = (w1Best<<4) + w2Best;
   }
   else {
     p[14] = (rz / 100) + ( (rs/1000) << 4 );
