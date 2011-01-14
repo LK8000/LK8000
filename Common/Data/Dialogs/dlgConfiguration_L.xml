@@ -492,19 +492,19 @@
 <WndProperty Name="prpOverlayClock" Caption="_@M615_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H237_">
 <DataField name="" DataType="boolean" />
 </WndProperty>
-<WndProperty Name="prpFinalGlideTerrain" Caption="_@M326_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H198_">
+<WndProperty Name="prpFinalGlideTerrain" Caption="_@M326_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H194_">
 <DataField name="" DataType="enum" Min=0 Max=2 Step=1/>
 </WndProperty>
-<WndProperty Name="prpGlideBarMode" Caption="_@M324_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H194_">
+<WndProperty Name="prpGlideBarMode" Caption="_@M324_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H195_">
 <DataField name="" DataType="enum" Min=0 Max=50 Step=1/>
 </WndProperty>
-<WndProperty Name="prpLKVarioBar" Caption="_@M785_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H195_">
+<WndProperty Name="prpLKVarioBar" Caption="_@M785_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H196_">
 <DataField name="" DataType="enum" Min=0 Max=1 Step=1/>
 </WndProperty>
-<WndProperty Name="prpThermalBar" Caption="_@M712_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H196_">
+<WndProperty Name="prpThermalBar" Caption="_@M712_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H197_">
 <DataField name="" DataType="boolean" />
 </WndProperty>
-<WndProperty Name="prpTrackBar" Caption="_@M736_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H197_">
+<WndProperty Name="prpTrackBar" Caption="_@M736_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H198_">
 <DataField name="" DataType="boolean" />
 </WndProperty>
 <WndProperty Name="prpEnableFLARMMap" Caption="_@M280_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H199_">
