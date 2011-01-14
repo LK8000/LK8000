@@ -1631,6 +1631,12 @@ void CalculateOrbiter(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	return;  // no thermal center available
   }
 
+  double thtime = Basic->Time - Calculated->ClimbStartTime;
+  // we need a valid thermal center to work on. Assuming 2 minutes is enough to sample the air around.
+  if (thtime<120) return;
+  // after 1500ft thermal gain, autodisable
+  if (Calculated->ThermalGain>500) return;
+
   // StartupStore(_T("*** Tlat=%f Tlon=%f R=%f W=%f  TurnRate=%f \n"), LKTH_LAT, LKTH_LON, LKTH_R, LKTH_W, LK_TURNRATE);
   // StartupStore(_T("*** CalcHeading=%f Track=%f TurnRate=%f Bank=%f \n"), LK_HEADING, LK_MYTRACK,  LK_TURNRATE, LK_BANKING);
 
