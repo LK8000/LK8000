@@ -1,0 +1,295 @@
+
+
+LK8000 Version 2.0  (January, 15th 2011)  -  Changes from version 1.22b (August 20th, 2010)
+
+
+NEW FEATURES
+
+. New startup screen management, for all resolutions. User can also customize startup bitmaps. 
+
+. SIM mode and FLY mode are now unified in the same executable, with a new startup screen for selection.
+
+. Language support. Preconfigured with English, French, German, Swedish, Polish, Italian, Serbian, Spanish, Portuguese
+  Czech..  Full help translated.  
+
+. New PORTRAIT mode for LK8000 supporting new navboxes in ALL portrait resolutions, including 272x480.
+
+. New MULTITARGET OVERLAYS 
+
+. New PROFILES menu  allowing renaming and creation of new profiles. Menu Config 3/3 Profiles. Very good!
+
+. NEW thermal Orbiter, for better thermal centering. See manual.
+  Configurable in Glider menu 5 inside system config
+  Enable/Disable also with Info 2/2 Embedded Flight Simulator
+  
+. New FLIGHT SIMULATOR,  SIM mode menu, new simulator for thermals and navigation . 
+
+. New Last Thermal virtual waypoint, appearing as THERMAL in 2.3 TPS pages, and also available as multitarget
+
+. New modality: CAR mode and GA Aircraft.
+  Car mode will not enter thermalling, and after "takeoff"  landing will be delayed to 15 minutes with no movements.
+  GA General Aviation is still preliminar, with only a new HSI band.
+
+. New SHADING option for terrain colors in config menu and also in screen view! It is now possible
+  to activate and deactivate shading in real time. 
+
+. NEW parity configuration in port setup, 7 or 8 bit, near Baudrate. This is solving communication problems for some devices.
+  Normally we use 8 bit, which is needed for binary communications with devices that accept a task declaration.
+  Some PNA require 7 bit communications, though, otherwise the infamous "NO DATA RX" from GPS is pending.
+
+. NEW NMEA Checksum flag Enable/Disable in port setup. Normally it should be left Enabled.
+
+. The welcome page of LK, where you need to click on center screen, will automatically timeout after 2 seconds,
+  starting from when a valid GPS signal is detected (for simulator, 2 seconds in total since the gps is simulated).
+
+. CLUB Version mode: if a file called "CLUB" is found inside LK8000 directory, then no profiles can be overwritten and no
+  waypoints can be edited or deleted.
+
+. Waypoint details page is now replaced by a quick selection page for Goto, Set alternates, get full details.
+  Big buttons, usable in flight.
+
+. Missing terrain warnings
+  When terrain is not available, the map scale line will be RED colored with a TERRAIN? shown.
+  This is to indicate that ground altitude is not available, and thus all obstacales cannot be
+  calculated. In mountainous areas this of course can be critical. 
+  After about 2 minutes, this warning will auto-disable: no more RED indication and only a T?
+  is shown to remind the problem. Pilot may not have configured terrain at all, or he might be
+  flying in an area not covered by current terrain map, thus no reason to continue showing RED alert.
+  However, if terrain is back available and then back no more available - for example because entering 
+  again the covered area and the back out of it - then LK8000 will raise the 2 minutes warning again.
+  When no terrain is available, the HAGL value is also showing --- .
+
+. Airfields will be decluttered too on the map, finally. No more screen cluttered of airfield boxes and big names.
+  This was a problem in some areas, like Germany, where a lot of airports are close to each other.
+
+
+. More checks and warnings on startup when lk8000 directories and files are not found
+
+. Map Overlays can be configured with Big or Small fonts
+
+. Map waypoint labels can can be limited to 8, 10 or 12 characters long also, in config 3 "Labels"
+
+. Map Overlay Clock configurable on/off . If off, Distance to destination is printed in place. Default is OFF.
+
+. Waypoint engine accelerated  220% . 
+
+. NORTH SMART is now working also for portrait mode, shifting aircarft position left and right.
+
+. NEW While flying, QNH selection is with no decimals. Numbers are repeated 100 times to make it easier to set them.
+  Even in turbulence it is now easy to change QNH.
+
+. NEW  AutoQNH will not only use homewaypoint but any known waypoint closer than 2km away from current position, as a reference altitude to use when calculating qnh. No need to have a valid home waypoint for the automagic QNH.
+
+. NEW Screen View menu has a new OVERLAY toggle
+
+. NEW support for Ilec SN10 . This instrument is sending Wind estimation with a confidence value.
+  LK is using both, and the pilot should disable auto wind calculation while circling or zigzaggin,
+  and not use truewind. Otherwise he will be spending much time looking at two instruments giving 
+  out numbers. The suggestions by Ilec about asking the pilot what to use are irrealistic, because
+  Ilec is sending out the wind once a second!
+  Supported: wind setting, all NMEA sentences coming from a GPS through Ilec, baro altitude, vario and QNH setup.
+  NOT supported: polar changes.
+
+. Higher resolution for all PC versions,  and for some PDA/PNA versions
+
+. Optimized loading of CUP waypoints, saving a lot of memory. Comments can now be almost twice larger than before. Previously
+  a comment could only be max 150 chars, now it can be 250.  It is now possible to load many thousands waypoints with no problems.
+  The previous border limit to 4000 is no more necessary (tested with over 14000 wps on a MIO400).
+
+. Since the waypoint internal structure has changed, also the task file format has changed. The old format from version 1.20 is no 
+  more valid. Version 2.0 has a new task format, and cannot load old tasks.
+
+. Added experimental drawing of a circle around the thermal center during thermalling. This circle has a diameter
+  of 200m (650ft), which is optimal for a tight turn of 18 degrees per second (20 seconds for a full turn).
+  For paragliders, the diameter is 100m.
+
+. On task finish, the following values are printed on screen (like for task start):
+	Altitude, Speed, Time, Task speed achieved
+
+. New menu button Nav by (HBAR or HGPS)
+
+  Multitargets
+
+. New multitarget destination for Team code
+. New multitarget destination for Home
+. New multitarget destination for FLARM target, available when FLARM is connected
+. New multi target overlays: task, alternate1, alternate2, bestalternate
+
+  Custom Keys
+
+. New custom key "Team Code"
+. New custom key "Multitarget menu" as an alternative to multitarget rotating
+. New customkeys : screen corner top left and top right
+. New customkey "Panorama trigger": zoom out 20 seconds trigger on/off
+. New customkey "Multitarget rotate" to change target on overlays
+. New customkey Toggle Baro altitude ON/OFF
+. New customkey Basic Setup
+
+
+  Moving map and Overlays
+
+. When terrain is not available a red painted TERRAIN! appears on the map, to remind pilot that
+  obstacles are not computed!
+. New terrain colors: "LKoogle" for lowlands and mountains, Alps low and Alps high with high contrast
+. New overlay colors, in addition to old ones: greys, amber, etc.
+. New option for map orientation in menu 3 "NorthUp above". Will set North up when map scale is over a chosen value.
+. Sun shade is now painted according to sun position during the day. This is only approximated, no real calculations
+  on sun azimuth. Sun is now rotating from East to West (south or north depending on emisphere) instead of being 
+  in a fixed position.  Rotation is made from -60degrees to 0 (N or S) between 7am and 12am, to the east.
+  At 12am sun is presumed to be 0 degrees N or S.
+  Then it is rotating from 0 to 60 during 12am-18  , to the west.
+  Time is local time. Daylight saving is not calculated, everything is only approximated.
+  At all effects, you will see the shades from sun shining from east in the morning, and west in late afternoon.
+  For simulations, between h21 and 7am in SIM mode time will be shifted 12h, so for example at 11pm localtime
+  we shall assume it is 11am. Because there is no sun in the night, of course.
+  ATTENTION: sun shade is painted only when wind speed is set lower than 6kmh (3.2knots).
+  In other words, we are assuming that sun will prevail over a wind of 5kmh on a mountain.
+  Otherwise, sun won't be used for shading, and only wind will be used. We cannot mix them.
+  
+  
+  Infoboxes
+
+. New infobox "eqMC" for Equivalent MacCready
+. New AutoMC mode "MacCready Equivalent" for automatic setting during flight
+
+  System
+. New autoinstall system 1.2, improved expecially for PNA devices
+
+New polars
+
+Mini Nimbus
+Jantar Std 48-2
+Pegase 101A 
+SZD-30 Pirat
+SZD-48-3 Jantar std 3  
+SZD-51-1 Junior
+SZD-9bis 1E 
+
+
+CHANGES
+
+. Default landscape mode size for PC is 800x480
+. Default mode for portrait -first start- is with no glide bar, no vario and half overlays.
+. IBOX mode has no more LK8000 overlays and thus no lk8000 look.
+  In other words, IBOX mode is now "traditional vintage XCSoar".
+. RED color changed to AMBER (dark yellow) to accomplish FAR/JAR rules
+  
+. When AutoZoom is active, manually zoom in and out will force Autozoom OFF
+. In case of problems with BARO altitude on/off, after 10 times the warning message is disabled automatically
+
+  Moving map
+  
+. Terrain styles improved (mountains, lowlands, and almost all of them).
+. Improved terrain rendering and shadowing
+. Map with no terrain by default is now painted with light green (LCD green) color.
+  Previously it was painted blue
+. Optimized (faster) map drawing when a lot of small towns (topology items) are drawn.
+  
+  Menus
+
+. Paraglider have no TRI 1.5
+. Basic Settings menu changed, enlarged to make it more usable during flight.
+. Wind Settings menu changed, enlarged to make it more usable during flight.
+. Wind setting window has a Cancel button now
+. Custom keys menu "Top right" is now Read-Only for paragliders.
+. MC Overlay configuration in config system 13 Appearance moved to Engineering menu, and forced on.
+. Inverse B/W color configuration was misleading. ON and OFF were inverted.
+. Enlarged and moved down the button for DUMP/STOP BALLAST in Basic Setup
+. Waypoints Out of Range in Config Menu 1 moved to engineering, default "include".
+  This was needed because we must be sure that changing terrain will not affect the list of already loaded waypoint,
+  to avoid a preemptive task abort.
+  
+. Statute miles Sm changed to Mi 
+. LD AVR is now decimal up to 99
+. Airspace  warning and clipping altitude configuration, changed step size from 100 to 10.
+. HP314 SIM link will no more be created on the desktop, since we have no more SIM version
+
+. During thermalling, gliding mode will show TC30S (thermal value of last 30 seconds) in place of current glide ratio,
+  on overlays position left. Glide ratio was not calculated during thermals, and showing --- .
+. Paragliders UTM button will work when the pilot has started the task (valid start) and only one start gate is available.
+  In this case, no reason to allow a task reset, because there is no other timegate available. So UTM will work.
+. Start Gates message set to NOT FLYING on overlay when actually not flying, because the calculations are stopped
+  and start gates require running calculations to work correctly.
+. Airspace Warning window is now a window on the map, and not fullscreen
+
+. Logger time steps moved to Engineering. Default time step for cruise and circling in the logger is set to 1 second
+. Logger Replay can now go up to x1000 speed, instead of x10. Over 10x calculations and statistics will be wrong or incomplete.
+
+. Fixed alignement problem of unit in all infopages
+. Fixed problem with nearest pages, updating values while moving up and down a selection. When moving a selection
+  now these values are no more updated (Nearest, Common and History pages)
+. Fixed Team Code page, cleaned up a lot, and showing the Team Reference waypoint on top
+. Waypoint's details are now showing  Team Ref. button, instead of misleading Teamcode.
+. Fixed minor alignement problems with navboxes units in all resolutions , and enlarged some fonts
+. MC overlay and wind no more shown if overlays are disabled. 
+. Wind setting page has no more "SAVE" button: CLOSE is enough to do the save
+. ToboBack button is available when vario gauge is enabled, even if terrain is enabled. This is because vario gauge is
+  using the topo background too..
+. CHECK SAFETY ALTITUDE warning message is not issued when paragliding mode is enabled.
+. Bigger 320x240 overlays fonts
+. Bigger 320x240 bottom bar to improve key touch
+. Bigger 480x272 overlays fonts
+. Compass icon now outlined better
+. Abbreviated ballast LITERS to L
+. Changed terrain glide range line's color from black to thinner black and green
+
+
+BUG FIXES
+
+  Critical:
+  
+. Critical bug in Common page: leaving common page ON for a long time (1-2 hours) would saturate system resources.
+  Crash or locks could happen.
+. Critical bug when using margins for task start. At task start the computer may lock.
+. Bugfix possible problem with airspace warnings leading to possible crashes.
+
+  Important but not critical:
+  
+. Bugfix bluetooth problem on some device, resulting in rx failure, disconnections, missing data, etc.
+  (HX4700 had this problem also)
+. Bugfix PNA not installing correctly Tahoma bold fonts on some devices
+. Fixed crashing bug loading DAT or COMPEgps waypoints with no comments or too long comments
+. Fixed bug not showing anymore Markers! Since LKMAPS appeared..
+. Bugfix Serial line Polling mode was not working correctly. Some devices such as Windows Mobile 6.5 may require this setting.
+. Bugfix creating a new waypoint when no waypoint files were configured resulted in sw crash
+. Bugfix CAI302 problem with ballast, and missing TrueAirspeed (by Mat)
+. Bugfix Volkslogger task declaration
+. Bugfix EW MIcrorecorder task declaration
+. Bugfix edit/new waypoint using CUP format when longitude or latitude was negative (like W and S), resulting in no more waypoints!
+. Bugfix Start Max Height and Start Max Speed not working correctly when using Margins.
+. Bugfix history waypoints for negative longitudes and latitudes not saved correctly
+. Bugfix some airspace files were not accepted due to very long comment lines
+. Bugfix reading winpilot polars, empty lines were not allowed resulting in polar not correctly loaded
+
+  Minor problems:
+
+. Fixed limitation to 194kmh for max manouvering speed, now following correctly user's settings.
+. Bugfix GPS Altitude Offset not saved when negative
+. Fixed bug not showing correctly imperial units for mapscale
+. Fixed wind display in LK: would not show wind below 1m/s .. oooops it should have been "below 1kmh or 1knot".. 
+. Bugfix Start Gates, distance to start could be negative
+. Bugfix when changing an LKMAP file in configuration, task was lost.
+. Bugfix some topoback colors were appearing white instead of black, or black instead of white.
+. Bugfix some MC calculations were accepting impossible values over plane limits.
+. Bugfix glide range line must not appear if terrain is not available
+. Bugfix HAGL, HGND etc. should display --- if terrain is not available
+. Bugfix terrain shading function was assuming flying in southern emisphere, were sun shines from North.
+  In the norhern emisphere, sun of course shines from South!
+. Bugfix wing loading in Basic setup sometimes was refusing to set the desired value
+. Bugfix AutoZoom: after passing a turnpoint, a very low level zoom was set. Now it is setting the zoom scale used when
+  AutoZoom was last switched on.
+. Bugfix Basic Settings changing wing loading was not updating correctly the internal polar calcualtions. Not always.
+. Bugfix dumping ballast was not updating internal polar when all ballast was dumped
+. Bugfix saving .CUP waypoint after wp edit and change type (airfield, turnpoint..)
+. Bugfix paraglider's timegates, required task restart when changing start time from menu dialogue (not from system config)
+  Now task restart is no more needed
+. Bugfix logger replay stopping replay crossing 00:00 UTC.
+. Bugfix icons for turnpoints were not painted when using in system config menu 3 "Map Display" Labels=None or Names in task.
+. Bugfix waypoint details for CUP waypoints, not showing RW len in feet if this unit was selected.
+  (Notice: since runway len is in meters or feet, the Altitude Units selected in system config Menu 9 will be used to decide
+  which one to use, NOT the distance unit. )
+. Bugfix wind values and map scale's overlay colors were not inverted correctly on the map
+ 
+
+... and many other minor changes/fixes, expecially in menu dialogs.
+
