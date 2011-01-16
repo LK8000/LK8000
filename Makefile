@@ -477,7 +477,7 @@ LK8000-$(TARGET).exe: LK8000-$(TARGET)-ns.exe
 	$(Q)$(STRIP) $< -o $@
 	$(Q)$(SIZE) $@
 	./buildnumber
-	/usr/bin/rm LK8000-$(TARGET)-ns.exe
+	$(RM) LK8000-$(TARGET)-ns.exe
 
 LK8000-$(TARGET)-ns.exe: $(OBJS)
 	@$(NQ)echo "  LINK    $@"
