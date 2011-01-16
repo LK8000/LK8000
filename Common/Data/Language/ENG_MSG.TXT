@@ -940,4 +940,7 @@ _@M932_ "Above Final Glide"
 _@M933_ "Below Final Glide"
 _@M934_ "Final Glide Through Terrain"
 _@M935_ "Marks cleared"
-
+_@M936_ "Competition Class"
+_@M937_ "Competition Class: "
+_@M938_ "Competition ID"
+_@M939_ "Competition ID: "

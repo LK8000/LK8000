@@ -549,6 +549,8 @@
 <WndButton Name="cmdPilotName" Caption="_@M525_" X=2 Y=-1 Width=-246  Height=22 Font=2 />
 <WndButton Name="cmdAircraftType" Caption="_@M60_" X=2 Y=-1 Width=-246  Height=22 Font=2 />
 <WndButton Name="cmdAircraftRego" Caption="_@M56_" X=2 Y=-1 Width=-246  Height=22 Font=2 />
+<WndButton Name="cmdCompetitionClass" Caption="_@M937_" X=2 Y=-1 Width=-246  Height=22 Font=2 />
+<WndButton Name="cmdCompetitionID" Caption="_@M939_" X=2 Y=-1 Width=-246  Height=22 Font=2 />
 <WndButton Name="cmdLoggerID" Caption="_@M406_" X=2 Y=-1 Width=-246  Height=22 Font=2 />
 <WndProperty Name="prpLoggerShortName" Caption="_@M611_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H207_">
 <DataField name="" DataType="boolean"/>
