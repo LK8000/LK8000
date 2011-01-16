@@ -185,6 +185,8 @@ BOOL EWMicroRecorderDeclare(PDeviceDescriptor_t d, Declaration_t *decl)
   TCHAR EWRecord[128];
   _stprintf(EWRecord, TEXT("Pilot Name:     %s\r\n"), decl->PilotName);
   d->Com->WriteString(EWRecord);
+  _stprintf(EWRecord, TEXT("Competition ID: %s\r\n"), decl->CompetitionID);
+  d->Com->WriteString(EWRecord);
   _stprintf(EWRecord, TEXT("Aircraft Type:  %s\r\n"), decl->AircraftType);
   d->Com->WriteString(EWRecord);
   _stprintf(EWRecord, TEXT("Aircraft ID:    %s\r\n"), decl->AircraftRego);

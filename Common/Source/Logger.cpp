@@ -703,8 +703,9 @@ void LoggerHeader(void)
   TCHAR PilotName[100];
   TCHAR AircraftType[100];
   TCHAR AircraftRego[100];
-
-
+  TCHAR CompetitionClass[100];
+  TCHAR CompetitionID[100];
+  
   // Flight recorder ID number MUST go first..
   sprintf(temp,
 	  "AXCS%C%C%C\r\n",
@@ -732,6 +733,14 @@ void LoggerHeader(void)
   // Example: D-7176
   GetRegistryString(szRegistryAircraftRego, AircraftRego, 100);
   sprintf(temp,"HFGIDGLIDERID:%S\r\n", AircraftRego);
+  IGCWriteRecord(temp);
+
+  GetRegistryString(szRegistryCompetitionClass, CompetitionClass, 100);
+  sprintf(temp,"HFCCLCOMPETITIONCLASS:%S\r\n", CompetitionClass);
+  IGCWriteRecord(temp);
+
+  GetRegistryString(szRegistryCompetitionID, CompetitionID, 100);
+  sprintf(temp,"HFCIDCOMPETITIONID:%S\r\n", CompetitionID);
   IGCWriteRecord(temp);
 
   // sprintf(temp,"HFFTYFR TYPE:XCSOAR,XCSOAR %S\r\n", XCSoar_Version); // TESTFIX 091001
@@ -908,7 +917,9 @@ void LoggerDeviceDeclare() {
   GetRegistryString(szRegistryPilotName, Decl.PilotName, 64);
   GetRegistryString(szRegistryAircraftType, Decl.AircraftType, 32);
   GetRegistryString(szRegistryAircraftRego, Decl.AircraftRego, 32);
-
+  GetRegistryString(szRegistryCompetitionClass, Decl.CompetitionClass, 32);
+  GetRegistryString(szRegistryCompetitionID, Decl.CompetitionID, 32);
+  
   for (i = 0; i < MAXTASKPOINTS; i++) {
     if (Task[i].Index == -1)
       break;

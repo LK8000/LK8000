@@ -115,10 +115,18 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl){
     strncpy(vl.declaration.flightinfo.pilot, temp, 64);
 
     sprintf(temp, "%S", decl->AircraftRego);
-    strncpy(vl.declaration.flightinfo.competitionid, temp, 3);
-    vl.declaration.flightinfo.competitionid[3]='\0'; // BUGFIX 100331
+    strncpy(vl.declaration.flightinfo.gliderid, temp, 7);
+    vl.declaration.flightinfo.gliderid[7]='\0'; 
 
     sprintf(temp, "%S", decl->AircraftType);
+    strncpy(vl.declaration.flightinfo.glidertype, temp, 12);
+    vl.declaration.flightinfo.glidertype[12]='\0'; 
+
+    sprintf(temp, "%S", decl->CompetitionID);
+    strncpy(vl.declaration.flightinfo.competitionid, temp, 3);
+    vl.declaration.flightinfo.competitionid[3]='\0'; // BUGFIX 100331
+ 
+    sprintf(temp, "%S", decl->CompetitionClass);
     strncpy(vl.declaration.flightinfo.competitionclass, temp, 12);
     vl.declaration.flightinfo.competitionclass[12]='\0'; // BUGFIX 100331
 

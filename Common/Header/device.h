@@ -21,6 +21,8 @@ typedef struct Declaration {
   WCHAR PilotName[64];
   WCHAR AircraftType[32];
   WCHAR AircraftRego[32];
+  WCHAR CompetitionClass[32];
+  WCHAR CompetitionID[32];
   int num_waypoints;
   const WAYPOINT *waypoint[MAXTASKPOINTS];
 } Declaration_t;
