@@ -735,6 +735,7 @@ void LoggerHeader(void)
   sprintf(temp,"HFGIDGLIDERID:%S\r\n", AircraftRego);
   IGCWriteRecord(temp);
 
+  // 110117 TOCHECK: maybe a 8 char limit is needed. 
   GetRegistryString(szRegistryCompetitionClass, CompetitionClass, 100);
   sprintf(temp,"HFCCLCOMPETITIONCLASS:%S\r\n", CompetitionClass);
   IGCWriteRecord(temp);
@@ -743,7 +744,7 @@ void LoggerHeader(void)
   sprintf(temp,"HFCIDCOMPETITIONID:%S\r\n", CompetitionID);
   IGCWriteRecord(temp);
 
-  // sprintf(temp,"HFFTYFR TYPE:XCSOAR,XCSOAR %S\r\n", XCSoar_Version); // TESTFIX 091001
+  // until LK is using xcsoar G signature, we keep XCSOAR as main logger type
   sprintf(temp,"HFFTYFRTYPE:XCSOAR,%s\r\n", LKFORK);
   IGCWriteRecord(temp);
 
