@@ -793,10 +793,10 @@ void InsertRecentList(int newwp) {
     int i,j;
     int TmpIndex[MAXCOMMON+1];
     unsigned int TmpChecksum[MAXCOMMON+1];
-    TCHAR buffer[100];
 
-    wsprintf(buffer,_T(". Insert WP=%d into recent waypoints%s"),newwp,NEWLINE);
-    StartupStore(buffer);
+    // TCHAR buffer[100];
+    // wsprintf(buffer,_T(". Insert WP=%d into recent waypoints%s"),newwp,NEWLINE);
+    // StartupStore(buffer);
 
     // j holding number of valid recents, excluded the new one to be put in position 0
     for (i=0,j=0; i<RecentNumber; i++) {

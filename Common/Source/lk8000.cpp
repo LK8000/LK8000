@@ -591,11 +591,8 @@ short SelectedPage[MSM_TOP+1];
 // number of raws in mapspacemode screen
 short Numraws;
 short CommonNumraws;
-// short TurnpointNumraws; 101222 REMOVE
-// number of pages in mapspacemode depending on MAXNEAREST and Numraws
 short Numpages;
 short CommonNumpages;
-// short TurnpointNumpages; 101222 REMOVE
 short TrafficNumpages;
 //  mapspace sort mode: 0 wp name  1 distance  2 bearing  3 reff  4 altarr
 //  UNUSED on MSM_COMMON etc. however it is dimensioned on mapspacemodes
@@ -4043,14 +4040,16 @@ void DisplayText(void)
     //
     switch (DisplayType[i]) {
     case 14: // Next waypoint
-      
       if (theactive != -1){
         int index;
         index = Task[theactive].Index;
-        if (index>=0) {
-          InfoBoxes[i]->
-            SetComment(WayPointList[index].Comment);
-        }
+        if (ValidWayPoint(index)) { 
+		if (WayPointList[index].Comment == NULL)
+			InfoBoxes[i]-> SetComment(_T(""));
+		else
+			InfoBoxes[i]-> SetComment(WayPointList[index].Comment);
+        }  else
+		InfoBoxes[i]->SetComment(TEXT(""));
         break;
       }
       InfoBoxes[i]->SetComment(TEXT(""));
@@ -4689,7 +4688,7 @@ void PopupWaypointDetails()
 {
   // Quick is returning  0 for cancel or error, 1 for details, 2 for goto, 3 and 4 for alternates
   short ret= dlgWayQuickShowModal();
-  StartupStore(_T("... Quick ret=%d\n"),ret);
+  // StartupStore(_T("... Quick ret=%d\n"),ret);
   switch(ret) {
 	case 1:
 		dlgWayPointDetailsShowModal();
@@ -5356,12 +5355,10 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   if (_tcsstr(OutBuffer, TEXT("$(AdvanceArmed)"))) {
     switch (AutoAdvance) {
     case 0:
-      // ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), TEXT("(manual)"), Size); // REMOVE FIXV2
       ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), gettext(TEXT("_@M892_")), Size); // (manual)
       invalid = true;
       break;
     case 1:
-      // ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), TEXT("(auto)"), Size); // REMOVE FIXV2
       ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), gettext(TEXT("_@M893_")), Size); // (auto)
       invalid = true;
       break;
