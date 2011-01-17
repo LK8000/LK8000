@@ -683,13 +683,15 @@ void FormatterAATTime::AssignValue(int i) {
     SecsToDisplayTime((int)(CALCULATED_INFO.LKTaskETE));
     Valid = ValidTaskPoint(ActiveWayPoint) 
       && (CALCULATED_INFO.LKTaskETE< 0.9*ERROR_TIME) && CALCULATED_INFO.LKTaskETE>0;
-
+    /* This is crashing the old navboxes, somewhere in old navboxes we should fix the Valid true return values
+       that is not considering a single goto as a task. This does not happen in lk mode so no problems
     if (!Valid) {
 	 if ( (WayPointCalc[Task[ActiveWayPoint].Index].NextETE > 0) && !ValidTaskPoint(1)) {
 		SecsToDisplayTime((int)(WayPointCalc[Task[ActiveWayPoint].Index].NextETE));
 		Valid=true;
 	}
     }
+    */
 
 #endif
     break;

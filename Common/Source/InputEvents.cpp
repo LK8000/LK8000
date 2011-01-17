@@ -1924,10 +1924,8 @@ void InputEvents::eventAbortTask(const TCHAR *misc) {
 	// LKTOKEN  _@M178_ = "Clear task" 
 		gettext(TEXT("_@M178_")), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
-
-		LockTaskData();
+		// clear task is locking taskdata already
 		ClearTask();
-		UnlockTaskData();
 	}
   } else {
 	MessageBoxX(hWndMapWindow, 
