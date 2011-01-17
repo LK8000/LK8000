@@ -78,6 +78,8 @@ extern const TCHAR szRegistryTeamcodeRefWaypoint[];
 extern const TCHAR szRegistryPilotName[];        
 extern const TCHAR szRegistryAircraftType[];        
 extern const TCHAR szRegistryAircraftRego[];        
+extern const TCHAR szRegistryCompetitionClass[];        
+extern const TCHAR szRegistryCompetitionID[];  
 extern const TCHAR szRegistryLoggerID[];        
 extern const TCHAR szRegistryLoggerShort[];        
 extern const TCHAR szRegistryNettoSpeed[];        

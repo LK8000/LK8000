@@ -950,7 +950,13 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl){
 
   _stprintf(Buffer,TEXT("PFLAC,S,GLIDERTYPE,%s"),decl->AircraftType);
   if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
-
+  
+  _stprintf(Buffer,TEXT("PFLAC,S,COMPID,%s"),decl->CompetitionID);
+  if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
+  
+  _stprintf(Buffer,TEXT("PFLAC,S,COMPCLASS,%s"),decl->CompetitionClass);
+  if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
+  
   _stprintf(Buffer,TEXT("PFLAC,S,NEWTASK,Task"));
   if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
 
