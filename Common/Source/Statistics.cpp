@@ -687,6 +687,7 @@ void Statistics::RenderWind(HDC hdc, RECT rc)
 
     StyleLine(hdc, wv[1], wv[3], STYLE_MEDIUMBLACK);
 
+
   }
 
   DrawXLabel(hdc, rc, TEXT("w"));
