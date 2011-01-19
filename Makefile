@@ -482,7 +482,7 @@ cxx-flags	=$(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_$(dirtarget)) $(TARGET
 
 ####### targets
 
-.PHONY: FORCE all clean cleani
+.PHONY: FORCE all clean cleani tags
 
 all:	$(OUTPUTS)
 
@@ -492,6 +492,10 @@ clean: cleani
 
 cleani:
 	find . $(IGNORE) \( -name '*.i' \) -type f -print | xargs -r $(RM)
+
+tags:
+	$(Q)etags --declarations --output=TAGS `find . -name *\\\.[ch] -or -name *\\\.cpp`
+	$(Q)ebrowse -s `find . -name *\\\.[ch] -or -name *\\\.cpp`
 
 
 #
