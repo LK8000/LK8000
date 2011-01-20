@@ -1,6 +1,8 @@
 #
 SRC=Common/Source
 HDR=Common/Header
+BIN=Bin/$(TARGET)
+
 #
 PROFILE		:= 
 OPTIMIZE	:=-O2
@@ -141,20 +143,9 @@ CONFIG_PC	:=y
 endif
 
 ######## output files
-# FIX
-#OUTPUTS 	:= LK8000SIM-$(TARGET).exe LK8000-$(TARGET).exe
+
 OUTPUTS 	:= LK8000-$(TARGET).exe
-#OUTPUTS 	:= LK8000SIM-$(TARGET).exe
-ifeq ($(CONFIG_PNA),y)
-#OUTPUTS 	:= LK8000SIM-$(TARGET).exe LK8000-$(TARGET).exe
-#OUTPUTS 	:= LK8000SIM-$(TARGET).exe
-OUTPUTS 	:= LK8000-$(TARGET).exe
-endif
-ifeq ($(CONFIG_PC),y)
-#OUTPUTS 	:= LK8000SIM-$(TARGET).exe LK8000-$(TARGET).exe
-#OUTPUTS 	:= LK8000SIM-$(TARGET).exe
-OUTPUTS 	:= LK8000-$(TARGET).exe
-endif
+
 ######## tools
 
 EXE		:=$(findstring .exe,$(MAKE))
@@ -168,6 +159,7 @@ SYNCE_PCP	:=synce-pcp
 SYNCE_PRM	:=synce-prm
 CE_VERSION	:=0x0$(CE_MAJOR)$(CE_MINOR)
 ARFLAGS		:=r
+MKDIR           :=mkdir -p
 
 ######## windows definitions
 
@@ -295,72 +287,72 @@ NQ		:=
 endif
 endif
 
-####### sources
-
 ifeq ($(CONFIG_PC),n)
 #CPPFLAGS_Common_Source_ :=-Werror
 endif
 
+####### sources
+
 DEVS	:=\
-	$(SRC)/devBorgeltB50.o \
-	$(SRC)/devCAI302.o \
-	$(SRC)/devCaiGpsNav.o \
-	$(SRC)/devCondor.o \
-	$(SRC)/devEW.o \
-	$(SRC)/devEWMicroRecorder.o \
-	$(SRC)/devFlymasterF1.o \
-	$(SRC)/devCompeo.o \
-	$(SRC)/devDigifly.o \
-	$(SRC)/devGeneric.o \
-	$(SRC)/devLX.o \
-	$(SRC)/devNmeaOut.o \
-	$(SRC)/devPosiGraph.o \
-	$(SRC)/devVolkslogger.o \
-	$(SRC)/devXCOM760.o \
-	$(SRC)/devZander.o \
-	$(SRC)/devIlec.o
+	$(SRC)/devBorgeltB50.cpp \
+	$(SRC)/devCAI302.cpp \
+	$(SRC)/devCaiGpsNav.cpp \
+	$(SRC)/devCondor.cpp \
+	$(SRC)/devEW.cpp \
+	$(SRC)/devEWMicroRecorder.cpp \
+	$(SRC)/devFlymasterF1.cpp \
+	$(SRC)/devCompeo.cpp \
+	$(SRC)/devDigifly.cpp \
+	$(SRC)/devGeneric.cpp \
+	$(SRC)/devLX.cpp \
+	$(SRC)/devNmeaOut.cpp \
+	$(SRC)/devPosiGraph.cpp \
+	$(SRC)/devVolkslogger.cpp \
+	$(SRC)/devXCOM760.cpp \
+	$(SRC)/devZander.cpp \
+	$(SRC)/devIlec.cpp
 
 DLGS	:=\
-	$(SRC)/dlgAirspace.o \
-	$(SRC)/dlgAirspaceColours.o \
-	$(SRC)/dlgAirspaceDetails.o \
-	$(SRC)/dlgAirspacePatterns.o \
-	$(SRC)/dlgAirspaceSelect.o \
-	$(SRC)/dlgAirspaceWarning.o \
+	$(SRC)/dlgAirspace.cpp \
+	$(SRC)/dlgAirspaceColours.cpp \
+	$(SRC)/dlgAirspaceDetails.cpp \
+	$(SRC)/dlgAirspacePatterns.cpp \
+	$(SRC)/dlgAirspaceSelect.cpp \
+	$(SRC)/dlgAirspaceWarning.cpp \
 	$(SRC)/dlgBasicSettings.cpp \
-	$(SRC)/dlgChecklist.o \
-	$(SRC)/dlgConfiguration.o \
-	$(SRC)/dlgConfiguration2.o \
-	$(SRC)/dlgHelp.o \
-	$(SRC)/dlgLoggerReplay.o \
-	$(SRC)/dlgStartPoint.o \
-	$(SRC)/dlgStartup.o \
-	$(SRC)/dlgStatistics.o \
-	$(SRC)/dlgStatus.o \
-	$(SRC)/dlgStatusSystem.o \
-	$(SRC)/dlgTarget.o \
-	$(SRC)/dlgTaskCalculator.o \
-	$(SRC)/dlgTaskOverview.o \
-	$(SRC)/dlgTaskRules.o \
-	$(SRC)/dlgTimeGates.o \
-	$(SRC)/dlgTopology.o \
-	$(SRC)/dlgTaskWaypoint.o \
-	$(SRC)/dlgTeamCode.o \
-	$(SRC)/dlgTextEntry.o \
-	$(SRC)/dlgTextEntry_Keyboard.o \
-	$(SRC)/dlgTools.o \
-	$(SRC)/dlgWayPointDetails.o \
-	$(SRC)/dlgWayQuick.o \
-	$(SRC)/dlgWaypointEdit.o \
-	$(SRC)/dlgWayPointSelect.o \
-	$(SRC)/dlgWaypointOutOfTerrain.o \
-	$(SRC)/dlgWeather.o \
-	$(SRC)/dlgWindSettings.o \
-	$(SRC)/dlgStartTask.o \
-	$(SRC)/dlgFontEdit.o \
-	$(SRC)/dlgLKTraffic.o \
-	$(SRC)/dlgCustomKeys.o \
-	$(SRC)/dlgProfiles.o \
+	$(SRC)/dlgChecklist.cpp \
+	$(SRC)/dlgConfiguration.cpp \
+	$(SRC)/dlgConfiguration2.cpp \
+	$(SRC)/dlgHelp.cpp \
+	$(SRC)/dlgLoggerReplay.cpp \
+	$(SRC)/dlgStartPoint.cpp \
+	$(SRC)/dlgStartup.cpp \
+	$(SRC)/dlgStatistics.cpp \
+	$(SRC)/dlgStatus.cpp \
+	$(SRC)/dlgStatusSystem.cpp \
+	$(SRC)/dlgTarget.cpp \
+	$(SRC)/dlgTaskCalculator.cpp \
+	$(SRC)/dlgTaskOverview.cpp \
+	$(SRC)/dlgTaskRules.cpp \
+	$(SRC)/dlgTimeGates.cpp \
+	$(SRC)/dlgTopology.cpp \
+	$(SRC)/dlgTaskWaypoint.cpp \
+	$(SRC)/dlgTeamCode.cpp \
+	$(SRC)/dlgTextEntry.cpp \
+	$(SRC)/dlgTextEntry_Keyboard.cpp \
+	$(SRC)/dlgTools.cpp \
+	$(SRC)/dlgWayPointDetails.cpp \
+	$(SRC)/dlgWayQuick.cpp \
+	$(SRC)/dlgWaypointEdit.cpp \
+	$(SRC)/dlgWayPointSelect.cpp \
+	$(SRC)/dlgWaypointOutOfTerrain.cpp \
+	$(SRC)/dlgWeather.cpp \
+	$(SRC)/dlgWindSettings.cpp \
+	$(SRC)/dlgStartTask.cpp \
+	$(SRC)/dlgFontEdit.cpp \
+	$(SRC)/dlgLKTraffic.cpp \
+	$(SRC)/dlgCustomKeys.cpp \
+	$(SRC)/dlgProfiles.cpp \
 
 VOLKS	:=\
 	$(SRC)/Volkslogger/dbbconv.cpp \
@@ -371,64 +363,62 @@ VOLKS	:=\
 	$(SRC)/Volkslogger/vlconv.cpp \
 	$(SRC)/Volkslogger/vlutils.cpp
 
-#	$(SRC)/dlgConfigurationVario.o \
-#	$(SRC)/dlgVoice.o \
-#	$(SRC)/dlgVegaDemo.o \
-#	$(SRC)/dlgFlarmTraffic.o \
-#	$(SRC)/dlgSwitches.o \
-#	$(SRC)/dlgBrightness.o \
+#	$(SRC)/dlgConfigurationVario.cpp \
+#	$(SRC)/dlgVoice.cpp \
+#	$(SRC)/dlgVegaDemo.cpp \
+#	$(SRC)/dlgFlarmTraffic.cpp \
+#	$(SRC)/dlgSwitches.cpp \
+#	$(SRC)/dlgBrightness.cpp \
 
-OBJS	:=\
-	$(SRC)/AATDistance.o 		$(SRC)/AirfieldDetails.o \
-	$(SRC)/Airspace.o 		$(SRC)/AirspaceColourDlg.o \
-	$(SRC)/AirspaceWarning.o 	$(SRC)/Atmosphere.o \
-	$(SRC)/Calculations.o 		$(SRC)/Calculations2.o \
-	$(SRC)/ClimbAverageCalculator.o $(SRC)/LKCalculations.o \
-	$(SRC)/ConditionMonitor.o 	$(SRC)/device.o \
-	$(SRC)/Dialogs.o 		$(SRC)/LKProcess.o \
-	$(SRC)/FlarmIdFile.o 		$(SRC)/FlarmCalculations.o \
-	$(SRC)/Geoid.o \
-	$(SRC)/InfoBox.o 		$(SRC)/InfoBoxLayout.o \
-	$(SRC)/InputEvents.o 		$(SRC)/leastsqs.o \
-	$(SRC)/Logger.o 		$(SRC)/LKMapWindow.o \
-	$(SRC)/LKDrawLook8000.o 	$(SRC)/LKDrawNearest.o\
-	$(SRC)/LKDrawCommon.o 		\
-	$(SRC)/LKDrawInfoPage.o		$(SRC)/LKDrawWaypoints.o\
-	$(SRC)/LKDrawTraffic.o		$(SRC)/LKSimulator.o\
-	$(SRC)/LKBestAlternate.o \
-	$(SRC)/MapWindow.o 		$(SRC)/MapWindow2.o \
-	$(SRC)/MapWindow3.o 		$(SRC)/Utils2.o \
-	$(SRC)/McReady.o 		$(SRC)/Message.o \
-	$(SRC)/NavFunctions.o		$(SRC)/OnLineContest.o \
-	$(SRC)/Parser.o			$(SRC)/Port.o \
-	$(SRC)/Process.o 		$(SRC)/dlgComboPicker.o \
-	$(SRC)/RasterTerrain.o		$(SRC)/rscalc.o \
-	$(SRC)/StdAfx.o			$(SRC)/STScreenBuffer.o \
-	$(SRC)/Task.o			$(SRC)/TeamCodeCalculation.o \
-	$(SRC)/Terrain.o		$(SRC)/ThermalLocator.o \
-	$(SRC)/Topology.o		$(SRC)/units.o \
-	$(SRC)/Utils.o			$(SRC)/Utm.o \
-	$(SRC)/VOIMAGE.o		$(SRC)/LKObjects.o \
-	$(SRC)/Waypointparser.o  	$(SRC)/LKUtils.o \
-	$(SRC)/LKLanguage.o		$(SRC)/LKGeneralAviation.o \
-	$(SRC)/windanalyser.o		$(SRC)/windmeasurementlist.o \
-	$(SRC)/windstore.o 		$(SRC)/WindowControls.o \
-	$(SRC)/WindZigZag.o 		$(SRC)/xmlParser.o \
+SRC_FILES :=\
+	$(SRC)/AATDistance.cpp 		$(SRC)/AirfieldDetails.cpp \
+	$(SRC)/Airspace.cpp 		$(SRC)/AirspaceColourDlg.cpp \
+	$(SRC)/AirspaceWarning.cpp 	$(SRC)/Atmosphere.cpp \
+	$(SRC)/Calculations.cpp 	$(SRC)/Calculations2.cpp \
+	$(SRC)/ClimbAverageCalculator.cpp $(SRC)/LKCalculations.cpp \
+	$(SRC)/ConditionMonitor.cpp 	$(SRC)/device.cpp \
+	$(SRC)/Dialogs.cpp 		$(SRC)/LKProcess.cpp \
+	$(SRC)/FlarmIdFile.cpp 		$(SRC)/FlarmCalculations.cpp \
+	$(SRC)/Geoid.cpp \
+	$(SRC)/InfoBox.cpp 		$(SRC)/InfoBoxLayout.cpp \
+	$(SRC)/InputEvents.cpp 		$(SRC)/leastsqs.cpp \
+	$(SRC)/Logger.cpp 		$(SRC)/LKMapWindow.cpp \
+	$(SRC)/LKDrawLook8000.cpp 	$(SRC)/LKDrawNearest.cpp\
+	$(SRC)/LKDrawCommon.cpp 	\
+	$(SRC)/LKDrawInfoPage.cpp	$(SRC)/LKDrawWaypoints.cpp\
+	$(SRC)/LKDrawTraffic.cpp	$(SRC)/LKSimulator.cpp\
+	$(SRC)/LKBestAlternate.cpp \
+	$(SRC)/MapWindow.cpp 		$(SRC)/MapWindow2.cpp \
+	$(SRC)/MapWindow3.cpp 		$(SRC)/Utils2.cpp \
+	$(SRC)/McReady.cpp 		$(SRC)/Message.cpp \
+	$(SRC)/NavFunctions.cpp		$(SRC)/OnLineContest.cpp \
+	$(SRC)/Parser.cpp		$(SRC)/Port.cpp \
+	$(SRC)/Process.cpp 		$(SRC)/dlgComboPicker.cpp \
+	$(SRC)/RasterTerrain.cpp	$(SRC)/rscalc.cpp \
+	$(SRC)/StdAfx.cpp		$(SRC)/STScreenBuffer.cpp \
+	$(SRC)/Task.cpp			$(SRC)/TeamCodeCalculation.cpp \
+	$(SRC)/Terrain.cpp		$(SRC)/ThermalLocator.cpp \
+	$(SRC)/Topology.cpp		$(SRC)/units.cpp \
+	$(SRC)/Utils.cpp		$(SRC)/Utm.cpp \
+	$(SRC)/VOIMAGE.cpp		$(SRC)/LKObjects.cpp \
+	$(SRC)/Waypointparser.cpp  	$(SRC)/LKUtils.cpp \
+	$(SRC)/LKLanguage.cpp		$(SRC)/LKGeneralAviation.cpp \
+	$(SRC)/windanalyser.cpp		$(SRC)/windmeasurementlist.cpp \
+	$(SRC)/windstore.cpp 		$(SRC)/WindowControls.cpp \
+	$(SRC)/WindZigZag.cpp 		$(SRC)/xmlParser.cpp \
 	\
-	$(SRC)/mapbits.o \
-	$(SRC)/maperror.o 		$(SRC)/mapprimitive.o \
-	$(SRC)/mapsearch.o		$(SRC)/mapshape.o \
-	$(SRC)/maptree.o                $(SRC)/mapxbase.o \
+	$(SRC)/mapbits.cpp \
+	$(SRC)/maperror.cpp 		$(SRC)/mapprimitive.cpp \
+	$(SRC)/mapsearch.cpp		$(SRC)/mapshape.cpp \
+	$(SRC)/maptree.cpp              $(SRC)/mapxbase.cpp \
 	\
-	$(SRC)/lk8000.o \
+	$(SRC)/lk8000.cpp \
 	$(DEVS) \
-	$(DLGS:.cpp=.o) \
-	$(VOLKS:.cpp=.o) \
-	$(SRC)/lk8000.rsc \
-	$(SRC)/jasper.a \
-	$(SRC)/zzip.a \
-	$(SRC)/compat.a
+	$(DLGS) \
+	$(VOLKS)
 
+
+####### libraries
 
 ZZIPSRC	:=$(SRC)/zzip
 ZZIP	:=\
@@ -465,12 +455,64 @@ JASPER	:=\
 
 COMPATSRC:=$(SRC)/wcecompat
 COMPAT	:=\
-	$(COMPATSRC)/errno.cpp 		$(COMPATSRC)/string_extras.c \
+	$(COMPATSRC)/errno.cpp 		$(COMPATSRC)/string_extras.cpp \
 	$(COMPATSRC)/ts_string.cpp 	$(COMPATSRC)/wtoi.c
+
+
+####### compilation outputs
+
+OBJS 	:=\
+	$(patsubst $(SRC)%.cpp,$(BIN)%.o,$(SRC_FILES)) \
+	$(BIN)/jasper.a \
+	$(BIN)/zzip.a \
+	$(BIN)/compat.a \
+	$(BIN)/lk8000.rsc
+
+IGNORE	:= \( -name .git \) -prune -o
+
+
+####### dependency handling
+
+DEPFILE		=$(dir $@).$(notdir $@).d
+DEPFLAGS	=-Wp,-MD,$(DEPFILE)
+dirtarget	=$(subst \\,_,$(subst /,_,$(dir $@)))
+cc-flags	=$(DEPFLAGS) $(CFLAGS) $(CPPFLAGS) $(CPPFLAGS_$(dirtarget)) $(TARGET_ARCH)
+cxx-flags	=$(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_$(dirtarget)) $(TARGET_ARCH)
+
+
+####### targets
+
+.PHONY: FORCE all clean cleani tags
 
 all:	$(OUTPUTS)
 
-####### products
+clean: cleani
+	find . $(IGNORE) \( -name '*.[oa]' -o -name '*.rsc' -o -name '.*.d' \) -type f -print | xargs -r $(RM)
+	$(RM) LK8000-$(TARGET)-ns.exe 
+
+cleani:
+	find . $(IGNORE) \( -name '*.i' \) -type f -print | xargs -r $(RM)
+
+tags:
+	$(Q)etags --declarations --output=TAGS `find . -name *\\\.[ch] -or -name *\\\.cpp`
+	$(Q)ebrowse -s `find . -name *\\\.[ch] -or -name *\\\.cpp`
+
+
+#
+# Useful debugging targets - make preprocessed versions of the source
+#
+%.i: %.cpp FORCE
+	$(CXX) $(cxx-flags) -E $(OUTPUT_OPTION) $<
+
+%.i: %.c FORCE
+	$(CC) $(cc-flags) -E $(OUTPUT_OPTION) $<
+
+%.s: %.cpp FORCE
+	$(CXX) $(cxx-flags) -S $(OUTPUT_OPTION) $<
+
+
+
+####### rules
 
 LK8000-$(TARGET).exe: LK8000-$(TARGET)-ns.exe
 	@$(NQ)echo "  STRIP   $@"
@@ -483,98 +525,45 @@ LK8000-$(TARGET)-ns.exe: $(OBJS)
 	@$(NQ)echo "  LINK    $@"
 	$(Q)$(CC) $(LDFLAGS) $(TARGET_ARCH) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
-
-#
-# Create libraries for zzip, jasper and compatibility stuff
-#
-$(SRC)/zzip.a: $(patsubst %.cpp,%.o,$(ZZIP:.c=.o))
+$(BIN)/zzip.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(ZZIP)) $(patsubst $(SRC)%.c,$(BIN)%.o,$(ZZIP))
 	@$(NQ)echo "  AR      $@"
 	$(Q)$(AR) $(ARFLAGS) $@ $^
 
-$(SRC)/jasper.a: $(patsubst %.cpp,%.o,$(JASPER:.c=.o))
+$(BIN)/jasper.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(JASPER)) $(patsubst $(SRC)%.c,$(BIN)%.o,$(JASPER))
 	@$(NQ)echo "  AR      $@"
 	$(Q)$(AR) $(ARFLAGS) $@ $^
 
-$(SRC)/compat.a: $(patsubst %.cpp,%.o,$(COMPAT:.c=.o))
+$(BIN)/compat.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(COMPAT)) $(patsubst $(SRC)%.c,$(BIN)%.o,$(COMPAT))
 	@$(NQ)echo "  AR      $@"
 	$(Q)$(AR) $(ARFLAGS) $@ $^
 
-####### shared objects
-#
-# Tell make how to create a compiled resource object (rsc)
-#
-%.rsc: %.rc
-	@sed -e 's,[Bb]itmaps\\\\,Bitmaps/,g' \
-	    -e 's,lk8000.ICO,lk8000.ico,g' \
-	    -e 's,\.\.\\\\Data\\\\Dialogs\\\\,../Data/Dialogs/,g' \
-	    -e 's,small\.bmp,Small.bmp,g' \
-		< $< > $<.tmp
-	@$(NQ)echo "  WINDRES $@"
-	$(Q)$(WINDRES) $(WINDRESFLAGS) $<.tmp $@
-	@$(RM) $<.tmp
-
-####### dependency handling
-
-DEPFILE		=$(dir $@).$(notdir $@).d
-DEPFLAGS	=-Wp,-MD,$(DEPFILE)
-dirtarget	=$(subst \\,_,$(subst /,_,$(dir $@)))
-cc-flags	=$(DEPFLAGS) $(CFLAGS) $(CPPFLAGS) $(CPPFLAGS_$(dirtarget)) $(TARGET_ARCH)
-cxx-flags	=$(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_$(dirtarget)) $(TARGET_ARCH)
-
-#
-# Useful debugging targets - make preprocessed versions of the source
-#
-%.i: %.cpp FORCE
-	$(CXX) $(cxx-flags) -E $(OUTPUT_OPTION) $<
-
-%.s: %.cpp FORCE
-	$(CXX) $(cxx-flags) -S $(OUTPUT_OPTION) $<
-
-%.i: %.c FORCE
-	$(CC) $(cc-flags) -E $(OUTPUT_OPTION) $<
-
-####### build rules
-
-#
-# Provide our own rules for building...
-#
-%.o: %.c
+$(BIN)/%.o: $(SRC)/%.c
 	@$(NQ)echo "  CC      $@"
+	$(Q)$(MKDIR) $(dir $@)
 	$(Q)$(CC) $(cc-flags) -c $(OUTPUT_OPTION) $<
 	@sed -i '1s,^[^ :]*,$@,' $(DEPFILE)
 
-%.o: %.cpp
+$(BIN)/%.o: $(SRC)/%.cpp
 	@$(NQ)echo "  CXX     $@"
+	$(Q)$(MKDIR) $(dir $@)
 	$(Q)$(CXX) $(cxx-flags) -c $(OUTPUT_OPTION) $<
 	@sed -i '1s,^[^ :]*,$@,' $(DEPFILE)
 
-%.os: %.c
-	@$(NQ)echo "  CC      $@"
-	$(Q)$(CC) $(cc-flags) -D_SIM_ -c $(OUTPUT_OPTION) $<
-	@sed -i '1s,^[^ :]*,$@,' $(DEPFILE)
+$(BIN)/%.rsc: $(SRC)/%.rc
+	@echo "$@: $< " `sed -nr 's|^.*"\.\./(Data[^"]+)".*$$|Common/\1|gp' $<` > $(DEPFILE)
+	@$(NQ)echo "  WINDRES $@"
+	$(Q)$(WINDRES) $(WINDRESFLAGS) $< $@
 
-%.os: %.cpp
-	@$(NQ)echo "  CXX     $@"
-	$(Q)$(CXX) $(cxx-flags) -D_SIM_ -c $(OUTPUT_OPTION) $<
-	@sed -i '1s,^[^ :]*,$@,' $(DEPFILE)
 
-IGNORE	:= \( -name .svn -o -name CVS -o -name .git \) -prune -o
 
-clean: cleani FORCE
-	find . $(IGNORE) \( -name '*.[oa]' -o -name '*.rsc' -o -name '*.os' -o -name '.*.d' \) \
-	-type f -print | xargs -r $(RM)
-	$(RM) LK8000-$(TARGET)-ns.exe 
+####### include depends files
 
-cleani: FORCE
-	find . $(IGNORE) \( -name '*.i' \) \
-		-type f -print | xargs -r $(RM)
-
-.PHONY: FORCE
-
-ifneq ($(wildcard $(SRC)/.*.d),)
-include $(wildcard $(SRC)/.*.d)
+ifneq ($(wildcard $(BIN)/.*.d),)
+include $(wildcard $(BIN)/.*.d)
 endif
-ifneq ($(wildcard $(SRC)/*/.*.d),)
-include $(wildcard $(SRC)/*/.*.d)
+ifneq ($(wildcard $(BIN)/*/.*.d),)
+include $(wildcard $(BIN)/*/.*.d)
 endif
-
+ifneq ($(wildcard $(BIN)/.*.rsc),)
+include $(wildcard $(BIN)/.*.d)
+endif

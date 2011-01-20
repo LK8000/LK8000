@@ -1,7 +1,9 @@
 *.[oadv]
 *.rsc
+*~
 RCS
 UNUSED
 TMP
 TEST
-
+TAGS
+BROWSE
