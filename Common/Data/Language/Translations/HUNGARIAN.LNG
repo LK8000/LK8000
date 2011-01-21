@@ -1,0 +1,20 @@
+# Language HUNGARIAN
+# LK8000
+# 
+# Author: Kalman Rozsahegyi, 2011.01.21. rkalman@hansaaut.hu
+#
+# Megjegyzések (Notes):
+#   - Pár technikai dolgot nem fordítottam le (mint Truewind, VisualGlide, Zoom, Orbiter, stb.) 
+#     egyrészt nem találtam frappáns kifejezést, másrészt túl hosszú sem lehet a fordított szöveg, de várom a jó javaslatokat
+#   - Amikor a fordítás készült, néhány a programban lévõ cimkének nem volt megfelelõje a nyelvi fájlban,
+#     így ezek továbbra is angol nyelvûek maradtak, ez reméljük módosul még Paolo által.
+#   - A Multitarget funkciók prefixei a matrica képeken (overlays) fixek, ezeket szintén nem tudtam fordítani. 
+#     Ez valószínûleg elég zavaró lesz ha ígymarad a következõ verziókban is. (pl. T>,L>,H>,stb. jelzései a Feladat>,Leszállóhely>,HazaiReptér>)
+#   - A súgó szövegek esetében is várok javaslatokat, ha valami túl bonyolultra sikerült.
+#
+#
+# Updated: January 2011
+
+R=1
+L=HUN
+
