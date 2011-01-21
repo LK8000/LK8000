@@ -13,6 +13,12 @@
 #define SNEWLINE        "\r\n"
 #define NEWLINE         _T(SNEWLINE)
 
+#ifdef PPC2002
+#define LKFONT_QUALITY	ANTIALIASED_QUALITY
+#else
+#define LKFONT_QUALITY	CLEARTYPE_COMPAT_QUALITY
+#endif
+
 /* 
  * General defines for LK8000
  */

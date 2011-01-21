@@ -2345,10 +2345,10 @@ ATOM MyRegisterClass(HINSTANCE hInstance, LPTSTR szWindowClass)
 
 
 void ApplyClearType(LOGFONT *logfont) {
-  // logfont->lfQuality = ANTIALIASED_QUALITY; // fixed 110106
 
   // this has to be checked on PPC and old 2002 CE devices: using ANTIALIASED quality could be better
-  logfont->lfQuality = CLEARTYPE_COMPAT_QUALITY; // 110106 TEST
+  // 110120  .. and in fact on ppc2002 no cleartype available
+  logfont->lfQuality = LKFONT_QUALITY;
 }
 
 bool IsNullLogFont(LOGFONT logfont) {
