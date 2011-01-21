@@ -1520,25 +1520,25 @@ void InitNewMap()
 		break;
   }
 
-  logfontTarget.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
-  logfontBig.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
-  logfontValue.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
-  logfontTitle.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
-  logfontMap.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
-  logfontTitleNavbox.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
-  logfontUnit.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
-  logfontMedium.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
-  logfontSmall.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
-  logfontInfoBig.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
-  logfontInfoBigItalic.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
-  logfontInfoNormal.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
-  logfontInfoSmall.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
-  logfontSymbol.lfQuality = CLEARTYPE_COMPAT_QUALITY; 
+  logfontTarget.lfQuality = LKFONT_QUALITY; 
+  logfontBig.lfQuality = LKFONT_QUALITY; 
+  logfontValue.lfQuality = LKFONT_QUALITY; 
+  logfontTitle.lfQuality = LKFONT_QUALITY; 
+  logfontMap.lfQuality = LKFONT_QUALITY; 
+  logfontTitleNavbox.lfQuality = LKFONT_QUALITY; 
+  logfontUnit.lfQuality = LKFONT_QUALITY; 
+  logfontMedium.lfQuality = LKFONT_QUALITY; 
+  logfontSmall.lfQuality = LKFONT_QUALITY; 
+  logfontInfoBig.lfQuality = LKFONT_QUALITY; 
+  logfontInfoBigItalic.lfQuality = LKFONT_QUALITY; 
+  logfontInfoNormal.lfQuality = LKFONT_QUALITY; 
+  logfontInfoSmall.lfQuality = LKFONT_QUALITY; 
+  logfontSymbol.lfQuality = LKFONT_QUALITY; 
   logfontSymbol.lfCharSet = SYMBOL_CHARSET; // careful
-  logfontPanelBig.lfQuality= CLEARTYPE_COMPAT_QUALITY;
-  logfontPanelMedium.lfQuality= CLEARTYPE_COMPAT_QUALITY;
-  logfontPanelSmall.lfQuality= CLEARTYPE_COMPAT_QUALITY;
-  logfontPanelUnit.lfQuality= CLEARTYPE_COMPAT_QUALITY;
+  logfontPanelBig.lfQuality= LKFONT_QUALITY;
+  logfontPanelMedium.lfQuality= LKFONT_QUALITY;
+  logfontPanelSmall.lfQuality= LKFONT_QUALITY;
+  logfontPanelUnit.lfQuality= LKFONT_QUALITY;
 
   LK8TargetFont	= CreateFontIndirect (&logfontTarget); 
   LK8BigFont	= CreateFontIndirect (&logfontBig);

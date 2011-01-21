@@ -91,8 +91,7 @@ static void RedrawSampleFont(void)
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontTrueType"));
   if(wp) {
     if ( wp->GetDataField()->GetAsBoolean() ) {
-      // NewLogFont.lfQuality = ANTIALIASED_QUALITY; 110106
-      NewLogFont.lfQuality = CLEARTYPE_COMPAT_QUALITY; // 110106
+      NewLogFont.lfQuality = LKFONT_QUALITY;
     }
     else {
       NewLogFont.lfQuality = NONANTIALIASED_QUALITY;
@@ -375,8 +374,7 @@ void LoadGUI()
     dfb = (DataFieldBoolean*)wp->GetDataField();
     if (dfb)
     {
-      // dfb->Set(NewLogFont.lfQuality == ANTIALIASED_QUALITY); 110106
-      dfb->Set(NewLogFont.lfQuality == CLEARTYPE_COMPAT_QUALITY);
+      dfb->Set(NewLogFont.lfQuality == LKFONT_QUALITY);
     }
     wp->RefreshDisplay();
   }
