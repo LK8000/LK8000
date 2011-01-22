@@ -3158,7 +3158,8 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->addEnumText(gettext(TEXT("ON")));
+	// LKTOKEN  _@M894_ = "ON" 
+    dfe->addEnumText(gettext(TEXT("_@M894_")));
 	// LKTOKEN  _@M491_ = "OFF" 
     dfe->addEnumText(gettext(TEXT("_@M491_")));
     dfe->Set(Appearance.InverseInfoBox);
