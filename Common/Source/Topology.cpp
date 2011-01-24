@@ -464,7 +464,7 @@ bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
 
 	TCHAR Temp[100];
 	int size = MultiByteToWideChar(CP_ACP, 0, label, -1, Temp, 100) - 1;			//ANSI to UNICODE
-	if (size == 0) return false;													//Do not waste time with null labels
+	if (size <= 0) return false;													//Do not waste time with null labels
 
 	SetBkMode(hDC,TRANSPARENT);
 
