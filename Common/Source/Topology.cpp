@@ -463,7 +463,9 @@ bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
 #endif
 
 	TCHAR Temp[100];
-	wsprintf(Temp,TEXT("%S"),label);
+	int size = MultiByteToWideChar(CP_ACP, 0, label, -1, Temp, 100) - 1;			//ANSI to UNICODE
+	if (size == 0) return false;													//Do not waste time with null labels
+
 	SetBkMode(hDC,TRANSPARENT);
 
 	#ifndef LK8000_OPTIMIZE
@@ -479,8 +481,6 @@ bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
 			wsprintf(Temp,TEXT("%d"),int(dTemp));
 	}
 	#endif
-
-	int size = _tcslen(Temp);
 
 	SIZE tsize;
 	RECT brect;
@@ -510,7 +510,7 @@ bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
 
 
 void XShapeLabel::setlabel(const char* src) {
-  if (src && 
+  if (src[0] && 												//Null label condition fixed
       (strcmp(src,"UNK") != 0) &&
       (strcmp(src,"RAILWAY STATION") != 0) &&
       (strcmp(src,"RAILROAD STATION") != 0)
