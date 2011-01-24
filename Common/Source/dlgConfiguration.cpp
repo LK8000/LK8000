@@ -879,7 +879,12 @@ static void OnLoggerIDClicked(WindowControl *Sender) {
 
 static void OnAirspaceColoursClicked(WindowControl * Sender){
 	(void)Sender;
-  dlgAirspaceShowModal(true);
+	bool retval;
+	retval = dlgAirspaceShowModal(true);
+	if (retval) {
+		requirerestart = true;
+		changed = true;
+	}
 }
 
 #if LKTOPO
@@ -901,7 +906,12 @@ static void OnSetCustomKeysClicked(WindowControl * Sender){
 
 static void OnAirspaceModeClicked(WindowControl * Sender){
 	(void)Sender;
-  dlgAirspaceShowModal(false);
+	bool retval;
+	retval = dlgAirspaceShowModal(false);
+	if (retval) {
+		requirerestart = true;
+		changed = true;
+	}
 }
 
 static void OnNextClicked(WindowControl * Sender){

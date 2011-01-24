@@ -188,6 +188,9 @@ static void getAirspaceType(TCHAR *buf, int Type){
     case CLASSF:
       _tcscpy(buf, TEXT("F"));
       return;
+    case CLASSG:
+      _tcscpy(buf, TEXT("G"));
+      return;
     case NOGLIDER:
       _tcscpy(buf, TEXT("NoGld"));
       return;

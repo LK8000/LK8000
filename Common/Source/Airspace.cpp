@@ -81,7 +81,7 @@ static const int k_nLtDB	= 6;
 static const int k_nLtDA	= 7;
 static const int k_nLtDC	= 8;
 
-static const int k_nAreaCount = 12;
+static const int k_nAreaCount = 13;
 static const TCHAR* k_strAreaStart[k_nAreaCount] = {
 					_T("R"),  
 					_T("Q"), 
@@ -94,7 +94,8 @@ static const TCHAR* k_strAreaStart[k_nAreaCount] = {
 					_T("GP"), 
 					_T("W"), 
 					_T("E"), 
-					_T("F")
+					_T("F"),
+					_T("G")
 };
 static const int k_nAreaType[k_nAreaCount] = {
 					RESTRICT, 
@@ -108,7 +109,8 @@ static const int k_nAreaType[k_nAreaCount] = {
 					NOGLIDER, 
 					WAVE, 
 					CLASSE, 
-					CLASSF};
+					CLASSF,
+					CLASSG};
 
 /////////////////////////////
 
@@ -2355,6 +2357,8 @@ void DumpAirspaceFile(void){
         _ftprintf(fp, TEXT("Class E")); break;
       case CLASSF:
         _ftprintf(fp, TEXT("Class F")); break;
+      case CLASSG:
+        _ftprintf(fp, TEXT("Class G")); break;
       case NOGLIDER:
         _ftprintf(fp, TEXT("No Glider")); break;
       case CTR:
@@ -2423,6 +2427,8 @@ void DumpAirspaceFile(void){
         _ftprintf(fp, TEXT("Class E")); break;
       case CLASSF:
         _ftprintf(fp, TEXT("Class F")); break;
+      case CLASSG:
+        _ftprintf(fp, TEXT("Class G")); break;
       case NOGLIDER:
         _ftprintf(fp, TEXT("No Glider")); break;
       case CTR:

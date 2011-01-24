@@ -23,7 +23,8 @@
 #define AATASK				11
 #define CLASSE				12
 #define CLASSF				13
-#define AIRSPACECLASSCOUNT              14
+#define CLASSG				14
+#define AIRSPACECLASSCOUNT              15
 
 #define ALLON 0
 #define CLIP 1

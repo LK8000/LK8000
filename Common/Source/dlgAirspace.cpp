@@ -59,6 +59,9 @@ static void OnAirspacePaintListItem(WindowControl * Sender, HDC hDC){
     case CLASSF: 
       _tcscpy(label, TEXT("Class F"));
       break;
+    case CLASSG: 
+      _tcscpy(label, TEXT("Class G"));
+      break;
     case PROHIBITED: 
 	// LKTOKEN  _@M536_ = "Prohibited areas" 
       _tcscpy(label, gettext(TEXT("_@M536_")));
@@ -226,7 +229,7 @@ static CallBackTableEntry_t CallBackTable[]={
 };
 
 
-void dlgAirspaceShowModal(bool coloredit){
+bool dlgAirspaceShowModal(bool coloredit){
 
   colormode = coloredit;
 
@@ -247,7 +250,7 @@ void dlgAirspaceShowModal(bool coloredit){
                         hWndMainWindow,
                         TEXT("IDR_XML_AIRSPACE"));
   }
-  if (!wf) return;
+  if (!wf) return false;
 
   ASSERT(wf!=NULL);
 
@@ -278,5 +281,6 @@ void dlgAirspaceShowModal(bool coloredit){
 
   wf = NULL;
 
+  return changed;
 }
 

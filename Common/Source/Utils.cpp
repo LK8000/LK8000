@@ -3377,6 +3377,8 @@ void FormatWarningString(int Type, TCHAR *Name , AIRSPACE_ALT Base, AIRSPACE_ALT
       _tcscpy(szTitleBuffer,TEXT("Class E")); break;
     case CLASSF:			
       _tcscpy(szTitleBuffer,TEXT("Class F")); break;
+    case CLASSG:			
+      _tcscpy(szTitleBuffer,TEXT("Class G")); break;
     case NOGLIDER:		
 	// LKTOKEN  _@M464_ = "No Glider" 
       _tcscpy(szTitleBuffer,gettext(TEXT("_@M464_"))); break;

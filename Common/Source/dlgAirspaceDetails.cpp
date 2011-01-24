@@ -154,6 +154,8 @@ static void SetValues(void) {
       wp->SetText(TEXT("Class E")); break;
     case CLASSF:
       wp->SetText(TEXT("Class F")); break;
+    case CLASSG:
+      wp->SetText(TEXT("Class G")); break;
     case NOGLIDER:
 	// LKTOKEN  _@M464_ = "No Glider" 
       wp->SetText(gettext(TEXT("_@M464_"))); break;

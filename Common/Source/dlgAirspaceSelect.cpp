@@ -69,6 +69,7 @@ static const TCHAR *TypeFilter[] = {TEXT("*"),
 				    TEXT("AAT"),
 				    TEXT("Class E"),
 				    TEXT("Class F"),
+				    TEXT("Class G"),
 };
 
 static int TypeFilterIdx=0;
