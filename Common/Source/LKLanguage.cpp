@@ -39,7 +39,7 @@
 #define LKD_LANGUAGE	"_Language"
 #define MAX_HELP	1024	// complete help including several lines, and also for each single line
 
-#define MAX_MESSAGES		950 // dynamically allocated
+#define MAX_MESSAGES		1210 // dynamically allocated
 #define MAX_MESSAGE_SIZE	150 // just for setting a limit
 
 bool LKLoadMessages(void);

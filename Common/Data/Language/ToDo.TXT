@@ -2,3 +2,4 @@ Things to be fixed in LK languages files/tokens:
 
 - H864 is missing, old issue from xcs. Check if we really need this infobox.
 - New Logger fields: _@M936_ - _@M939_
+- New fields: _@M1001_ - _@M1200_ for calculated values and infobox abbrev. translations

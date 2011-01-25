@@ -850,220 +850,8 @@ DWORD BatteryWarningTime = 0;
 
 char dedicated[]="Dedicated to my father Vittorio";
 
-// Groups:
-//   Altitude 0,1,20,33
-//   Aircraft info 3,6,23,32,37,47,54
-//   LD 4,5,19,38,53, 66    VENTA-ADDON added 66 for GR final
-//   Vario 2,7,8,9,21,22,24,44
-//   Wind 25,26,48,49,50
-//   Mcready 10,34,35,43
-//   Nav 11,12,13,15,16,17,18,27,28,29,30,31
-//   Waypoint 14,36,39,40,41,42,45,46
-SCREEN_INFO Data_Options[] = {
-          // 0
-	  {ugAltitude,        TEXT("Altitude QNH"), TEXT("Alt"), new InfoBoxFormatter(TEXT("%2.0f")), AltitudeProcessing, 1, 33},
-	  // 1
-	  {ugAltitude,        TEXT("Altitude AGL"), TEXT("HAGL"), new FormatterLowWarning(TEXT("%2.0f"),0.0), NoProcessing, 20, 0},
-	  // 2
-	  {ugVerticalSpeed,   TEXT("Thermal last 30 sec"), TEXT("TC.30\""), new FormatterLowWarning(TEXT("%-2.1f"),0.0), NoProcessing, 7, 44},
-	  // 3
-#ifdef FIVV
-	  {ugNone,            TEXT("Bearing"), TEXT("Brg"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)), NoProcessing, 6, 54},
-#else
-	  {ugNone,            TEXT("Bearing"), TEXT("Brg"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)TEXT("T")), NoProcessing, 6, 54},
-#endif
-	  // 4
-	  {ugNone,            TEXT("Eff.last 20 sec"), TEXT("E.20\""), new InfoBoxFormatter(TEXT("%2.0f")), PopupBugsBallast, 5, 38},
-	  // 5
-	  {ugNone,            TEXT("Eff.cruise last therm"), TEXT("E.Cru"), new InfoBoxFormatter(TEXT("%2.0f")), PopupBugsBallast, 19, 4},
-	  // 6
-	  {ugHorizontalSpeed, TEXT("Speed ground"), TEXT("GS"), new InfoBoxFormatter(TEXT("%2.0f")), SpeedProcessing, 23, 3},
-	  // 7
-	  {ugVerticalSpeed,   TEXT("Thermal Average Last"), TEXT("TL.Avg"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 8, 2},
-	  // 8
-	  {ugAltitude,        TEXT("Thermal Gain Last"), TEXT("TL.Gain"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 9, 7},
-	  // 9
-	  {ugNone,            TEXT("Thermal Time Last"), TEXT("TL.Time"), new FormatterTime(TEXT("%04.0f")), NoProcessing, 21, 8},
-	  // 10
-	  {ugVerticalSpeed,   TEXT("MacCready Setting"), TEXT("MCready"), new InfoBoxFormatter(TEXT("%2.1f")), MacCreadyProcessing, 34, 43},
-	  // 11
-	  {ugDistance,        TEXT("Next Distance"), TEXT("Dist"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 12, 31},
-	  // 12
-	  {ugAltitude,        TEXT("Next Alt.Arrival"), TEXT("NxtArr"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 13, 11},
-	  // 13
-	  {ugAltitude,        TEXT("Next Alt.Required"), TEXT("NxtAltR"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 15, 12},
-	  // 14
-	  {ugNone,            TEXT("Next Waypoint"), TEXT("Next"), new FormatterWaypoint(TEXT("\0")), NextUpDown, 36, 46},
-	  // 15
-	  {ugAltitude,        TEXT("Task Alt.Arrival"), TEXT("TskArr"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 16, 13},
-	  // 16
-	  {ugAltitude,        TEXT("Task Alt.Required"), TEXT("TskAltR"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 17, 15},
-	  // 17
-	  {ugTaskSpeed, TEXT("Task Speed Average"), TEXT("TskSpAv"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 18, 16},
-	  // 18
-	  {ugDistance,        TEXT("Task Distance"), TEXT("TskDis"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 27, 17},
-	  // 19	              old Final LD, obsoleted
-	  {ugNone,            TEXT("_Reserved 1"), TEXT("OLD fLD"), new InfoBoxFormatter(TEXT("%1.0f")), NoProcessing, 38, 5},
-	  // 20
-	  {ugAltitude,        TEXT("Terrain Elevation"), TEXT("Gnd"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 33, 1},
-	  // 21
-	  {ugVerticalSpeed,   TEXT("Thermal Average"), TEXT("TC.Avg"), new FormatterLowWarning(TEXT("%-2.1f"),0.0), NoProcessing, 22, 9},
-	  // 22
-	  {ugAltitude,        TEXT("Thermal Gain"), TEXT("TC.Gain"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 24, 21},
-	  // 23
-#ifdef FIVV
-	  {ugNone,            TEXT("Track"), TEXT("Track"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)), DirectionProcessing, 32, 6},
-#else
-	  {ugNone,            TEXT("Track"), TEXT("Track"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)TEXT("T")), DirectionProcessing, 32, 6},
-#endif
-	  // 24
-	  {ugVerticalSpeed,   TEXT("Vario"), TEXT("Vario"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 44, 22},
-	  // 25
-	  {ugWindSpeed,       TEXT("Wind Speed"), TEXT("WindV"), new InfoBoxFormatter(TEXT("%2.0f")), WindSpeedProcessing, 26, 50},
-	  // 26
-#ifdef FIVV
-	  {ugNone,            TEXT("Wind Bearing"), TEXT("WindB"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)), WindDirectionProcessing, 48, 25},
-#else
-	  {ugNone,            TEXT("Wind Bearing"), TEXT("WindB"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)TEXT("T")), WindDirectionProcessing, 48, 25},
-#endif
-	  // 27
-	  {ugNone,            TEXT("AA Time"), TEXT("AATime"), new FormatterAATTime(TEXT("%2.0f")), NoProcessing, 28, 18},
-	  // 28
-	  {ugDistance,        TEXT("AA Distance Max"), TEXT("AADmax"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 29, 27},
-	  // 29
-	  {ugDistance,        TEXT("AA Distance Min"), TEXT("AADmin"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 30, 28},
-	  // 30
-	  {ugTaskSpeed, TEXT("AA Speed Max"), TEXT("AAVmax"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 31, 29},
-	  // 31
-	  {ugTaskSpeed, TEXT("AA Speed Min"), TEXT("AAVmin"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 51, 30},
-	  // 32
-	  {ugHorizontalSpeed, TEXT("Airspeed IAS"), TEXT("IAS"), new InfoBoxFormatter(TEXT("%2.0f")), AirspeedProcessing, 37, 23},
-	  // 33
-	  {ugAltitude,        TEXT("Altitude BARO"), TEXT("HBAR"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 0, 20},
-	  // 34
-	  {ugHorizontalSpeed, TEXT("Speed MacReady"), TEXT("SpMc"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 35, 10},
-	  // 35
-	  {ugNone,            TEXT("Percentage climb"), TEXT("%Climb"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 43, 34},
-	  // 36
-	  {ugNone,            TEXT("Time of flight"), TEXT("FlyTime"), new FormatterTime(TEXT("%04.0f")), NoProcessing, 39, 14},
-	  // 37
-	  {ugNone,            TEXT("G load"), TEXT("G"), new InfoBoxFormatter(TEXT("%2.2f")), AccelerometerProcessing, 47, 32},
-	  // 38
-	  {ugNone,            TEXT("_Reserved 2"), TEXT("OLD nLD"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 53, 19},
-	  // 39
-	  {ugNone,            TEXT("Time local"), TEXT("Time"), new FormatterTime(TEXT("%04.0f")), NoProcessing, 40, 36},
-	  // 40
-	  {ugNone,            TEXT("Time UTC"), TEXT("UTC"), new FormatterTime(TEXT("%04.0f")), NoProcessing, 41, 39},
-	  // 41
-	  {ugNone,            TEXT("Task Time To Go"), TEXT("TskETE"), new FormatterAATTime(TEXT("%04.0f")), NoProcessing, 42, 40},
-	  // 42
-	  {ugNone,            TEXT("Next Time To Go"), TEXT("NextETE"), new FormatterAATTime(TEXT("%04.0f")), NoProcessing, 45, 41},
-	  // 43
-	  {ugHorizontalSpeed, TEXT("Speed To Fly"), TEXT("STF"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 10, 35},
-	  // 44
-	  {ugVerticalSpeed,   TEXT("Netto Vario"), TEXT("Netto"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 2, 24},
-	  // 45
-	  {ugNone,            TEXT("Task Arrival Time"), TEXT("TskETA"), new FormatterAATTime(TEXT("%04.0f")), NoProcessing, 46, 42},
-	  // 46
-	  {ugNone,            TEXT("Next Arrival Time"), TEXT("NextETA"), new FormatterTime(TEXT("%04.0f")), NoProcessing, 14, 45},
-	  // 47
-	  {ugNone,            TEXT("Bearing Difference"), TEXT("To"), new FormatterDiffBearing(TEXT("")), NoProcessing, 54, 37},
-	  // 48
-	  {ugNone,            TEXT("Outside Air Temperature"), TEXT("OAT"), new InfoBoxFormatter(TEXT("%2.1f")TEXT(DEG)), NoProcessing, 49, 26},
-	  // 49
-	  {ugNone,            TEXT("Relative Humidity"), TEXT("RelHum"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 50, 48},
-	  // 50
-	  {ugNone,            TEXT("Forecast Temperature"), TEXT("MaxTemp"), new InfoBoxFormatter(TEXT("%2.1f")TEXT(DEG)), ForecastTemperatureProcessing, 49, 25},
-	  // 51
-	  {ugDistance,        TEXT("AA Distance Tgt"), TEXT("AADtgt"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 52, 31},
-	  // 52
-	  {ugTaskSpeed, TEXT("AA Speed Tgt"), TEXT("AAVtgt"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 11, 51},
-	  // 53
-	  {ugNone,            TEXT("L/D vario"), TEXT("L/D vario"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 4, 38},
-	  // 54
-	  {ugHorizontalSpeed, TEXT("Airspeed TAS"), TEXT("TAS"), new InfoBoxFormatter(TEXT("%2.0f")), AirspeedProcessing, 3, 47},
-	  // 55
-	  {ugNone,            TEXT("Team Code"), TEXT("TeamCode"), new FormatterTeamCode(TEXT("\0")), TeamCodeProcessing, 56, 54},
-	  // 56
-#ifdef FIVV
-	  {ugNone,            TEXT("Team Bearing"), TEXT("TmBrng"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)), NoProcessing, 57, 55},
-#else
-	  {ugNone,            TEXT("Team Bearing"), TEXT("TmBrng"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)TEXT("T")), NoProcessing, 57, 55},
-#endif
-	  // 57
-	  {ugNone,            TEXT("Team Bearing Diff"), TEXT("TeamBd"), new FormatterDiffTeamBearing(TEXT("")), NoProcessing, 58, 56},	  
-	  // 58
-	  {ugNone,            TEXT("Team Range"), TEXT("TeamDis"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 55, 57},
-          // 59
-	  {ugTaskSpeed, TEXT("Task Speed Instantaneous"), TEXT("TskSpI"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 18, 16},
-          // 60
-	  {ugDistance, TEXT("Home Distance"), TEXT("HomeDis"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 18, 16},
-	  // 61
-	  {ugTaskSpeed, TEXT("Task Speed"), TEXT("TskSp"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 18, 16},
-          // 62
-	  {ugNone,            TEXT("AA Delta Time"), TEXT("AAdT"), new FormatterAATTime(TEXT("%2.0f")), NoProcessing, 28, 18},
-          // 63
-	  {ugVerticalSpeed,   TEXT("Thermal All"), TEXT("Th.All"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 8, 2},
-          // 64
-	  {ugVerticalSpeed,   TEXT("Distance Vario"), TEXT("DVario"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 8, 2},
-	  // 65
-#ifndef GNAV
-	  {ugNone,            TEXT("Battery Percent"), TEXT("Battery"), new InfoBoxFormatter(TEXT("%2.0f%%")), NoProcessing, 49, 26},
-#else
-	  {ugNone,            TEXT("Battery Voltage"), TEXT("Batt"), new InfoBoxFormatter(TEXT("%2.1fV")), NoProcessing, 49, 26},
-#endif
-	  // 66 
-	  {ugNone,            TEXT("Task Req.Efficiency"), TEXT("TskReqE"), new InfoBoxFormatter(TEXT("%1.1f")), NoProcessing, 38, 5},
-
-	  // 67 
-	  {ugNone,            TEXT("Alternate1 Req.Efficiency"), TEXT("Atn1.E"), new FormatterAlternate(TEXT("\0")), Alternate1Processing, 36, 46},
-	  // 68 Alternate 2
-	  {ugNone,            TEXT("Alternate2 Req.Efficiency"), TEXT("Atn2.E"), new FormatterAlternate(TEXT("\0")), Alternate2Processing, 36, 46},
-	  // 69
-	  {ugNone,            TEXT("BestAltern Req.Efficiency"), TEXT("BAtn.E"), new FormatterAlternate(TEXT("\0")), BestAlternateProcessing, 36, 46},
-          // 70
-	  {ugAltitude,        TEXT("Altitude QFE"), TEXT("QFE"), new InfoBoxFormatter(TEXT("%2.0f")), QFEAltitudeProcessing, 1, 33},
-          // 71 
-	  {ugNone,            TEXT("Average Efficiency"), TEXT("E.Avg"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 19, 4},
-	  // 72  
-	  {ugNone,            TEXT("Next Req.Efficiency"), TEXT("Req.E"), new InfoBoxFormatter(TEXT("%1.1f")), NoProcessing, 38, 5},
-	  // 73  
-	  {ugNone,            TEXT("Flight Level"), TEXT("FL"), new InfoBoxFormatter(TEXT("%1.1f")), NoProcessing, 38, 5},
-	  // 74  
-	  {ugDistance,            TEXT("Task Covered distance"), TEXT("TskCov"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 38, 5},
-	  // 75 
-	  {ugAltitude,            TEXT("Alternate1 Arrival"), TEXT("Atn1Arr"), new FormatterAlternate(TEXT("%2.0f")), Alternate1Processing, 36, 46},
-	  // 76
-	  {ugAltitude,            TEXT("Alternate2 Arrival"), TEXT("Atn2Arr"), new FormatterAlternate(TEXT("%2.0f")), Alternate2Processing, 36, 46},
-	  // 77
-	  {ugAltitude,            TEXT("BestAlternate Arrival"), TEXT("BAtnArr"), new FormatterAlternate(TEXT("%2.0f")), BestAlternateProcessing, 36, 46},
-	  // 78
-	  {ugNone,            TEXT("Home Radial"), TEXT("Radial"), new InfoBoxFormatter(TEXT("%.0f")TEXT(DEG)), NoProcessing, 6, 54},
-	  // 79 
-	  {ugDistance,            TEXT("Airspace Distance"), TEXT("AirSpace"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 38, 5},
-	  // 80 
-	  {ugNone,            TEXT("Ext.Batt.Bank"), TEXT("xBnk#"), new InfoBoxFormatter(TEXT("%1.0f")), NoProcessing, 38, 5},
-	  // 81 
-	  {ugNone,            TEXT("Ext.Batt.1 Voltage"), TEXT("xBat1"), new InfoBoxFormatter(TEXT("%2.1fV")), NoProcessing, 49, 26},
-	  // 82 
-	  {ugNone,            TEXT("Ext.Batt.2 Voltage"), TEXT("xBat2"), new InfoBoxFormatter(TEXT("%2.1fV")), NoProcessing, 49, 26},
-	  // 83 
-	  {ugDistance,            TEXT("Odometer"), TEXT("Odo"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 49, 26},
-          // 84 
-	  {ugInvAltitude,        TEXT("Altern QNH"), TEXT("aAlt"), new InfoBoxFormatter(TEXT("%2.0f")), AltitudeProcessing, 1, 33},
-	  // 85
-	  {ugInvAltitude,        TEXT("Altern AGL"), TEXT("aHAGL"), new FormatterLowWarning(TEXT("%2.0f"),0.0), NoProcessing, 20, 0},
-          // 86 
-	  {ugAltitude,        TEXT("Altitude GPS"), TEXT("HGPS"), new InfoBoxFormatter(TEXT("%2.0f")), AltitudeProcessing, 1, 33},
-          // 87 
-	  {ugVerticalSpeed,   TEXT("MacCready Equivalent"), TEXT("eqMC"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 34, 43},
-	  // 88 // 
-	  {ugNone,   TEXT("_Experimental1"), TEXT("Exp1"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2},
-	  // 89 // 
-	  {ugNone,   TEXT("_Experimental2"), TEXT("Exp2"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2},
-	};
-// counting from 0 so add 1 !
-const int NUMSELECTSTRINGS = 90; 
+SCREEN_INFO Data_Options[100];
+int NUMSELECTSTRINGS = 0;
 
 
 CRITICAL_SECTION  CritSec_FlightData;
@@ -1114,6 +902,253 @@ void                                                    PopUpSelect(int i);
 void                                            DebugStore(char *Str);
 #endif
 
+bool SetDataOption( int index,
+					UnitGroup_t UnitGroup,
+					TCHAR *Description,
+					TCHAR *Title,
+					InfoBoxFormatter *Formatter,
+					void (*Process)(int UpDown),
+					char next_screen,
+					char prev_screen)
+{
+	SCREEN_INFO tag;
+	if (index>100) return false;		//TODO define max
+
+	tag.UnitGroup = UnitGroup;
+	_tcsncpy(tag.Description, gettext(Description), DESCRIPTION_SIZE);
+	_tcsncpy(tag.Title, gettext(Title), TITLE_SIZE);
+	tag.Formatter = Formatter;
+	tag.Process = Process;
+	tag.next_screen = next_screen;
+	tag.prev_screen = prev_screen;
+
+	memcpy(&Data_Options[index], &tag, sizeof(SCREEN_INFO));
+	if (NUMSELECTSTRINGS<=index) NUMSELECTSTRINGS=index+1;				//No. of items = max index+1
+
+#ifdef DEBUG
+	DebugStore(TEXT("Add data option #%d %s%s"),index,tag.Description,NEWLINE);
+#endif
+	return true;
+}
+
+
+
+void FillDataOptions()
+{
+	// Groups:
+	//   Altitude 0,1,20,33
+	//   Aircraft info 3,6,23,32,37,47,54
+	//   LD 4,5,19,38,53, 66    VENTA-ADDON added 66 for GR final
+	//   Vario 2,7,8,9,21,22,24,44
+	//   Wind 25,26,48,49,50
+	//   Mcready 10,34,35,43
+	//   Nav 11,12,13,15,16,17,18,27,28,29,30,31
+	//   Waypoint 14,36,39,40,41,42,45,46
+
+	// LKTOKEN  _@M1001_ = "Altitude QNH", _@M1002_ = "Alt"
+	SetDataOption(0, ugAltitude,		TEXT("_@M1001_"), TEXT("_@M1002_"), new InfoBoxFormatter(TEXT("%2.0f")), AltitudeProcessing, 1, 33);
+	// LKTOKEN  _@M1003_ = "Altitude AGL", _@M1004_ = "HAGL"
+	SetDataOption(1, ugAltitude,		TEXT("_@M1003_"), TEXT("_@M1004_"), new FormatterLowWarning(TEXT("%2.0f"),0.0), NoProcessing, 20, 0);
+	// LKTOKEN  _@M1005_ = "Thermal last 30 sec", _@M1006_ = "TC.30\""
+	SetDataOption(2, ugVerticalSpeed,	TEXT("_@M1005_"), TEXT("_@M1006_"), new FormatterLowWarning(TEXT("%-2.1f"),0.0), NoProcessing, 7, 44);
+	// LKTOKEN  _@M1007_ = "Bearing", _@M1008_ = "Brg"
+#ifdef FIVV
+	SetDataOption(3, ugNone,			TEXT("_@M1007_"), TEXT("_@M1008_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)), NoProcessing, 6, 54);
+#else
+	SetDataOption((3, ugNone,			TEXT("_@M1007_"), TEXT("_@M1008_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)TEXT("T")), NoProcessing, 6, 54);
+#endif
+	// LKTOKEN  _@M1009_ = "Eff.last 20 sec", _@M1010_ = "E.20\""
+	SetDataOption(4, ugNone,			TEXT("_@M1009_"), TEXT("_@M1010_"), new InfoBoxFormatter(TEXT("%2.0f")), PopupBugsBallast, 5, 38);
+	// LKTOKEN  _@M1011_ = "Eff.cruise last therm", _@M1012_ = "E.Cru"
+	SetDataOption(5, ugNone,            TEXT("_@M1011_"), TEXT("_@M1012_"), new InfoBoxFormatter(TEXT("%2.0f")), PopupBugsBallast, 19, 4);
+	// LKTOKEN  _@M1013_ = "Speed ground", _@M1014_ = "GS"
+	SetDataOption(6, ugHorizontalSpeed, TEXT("_@M1013_"), TEXT("_@M1014_"), new InfoBoxFormatter(TEXT("%2.0f")), SpeedProcessing, 23, 3);
+	// LKTOKEN  _@M1015_ = "Thermal Average Last", _@M1016_ = "TL.Avg"
+	SetDataOption(7, ugVerticalSpeed,   TEXT("_@M1015_"), TEXT("_@M1016_"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 8, 2);
+	// LKTOKEN  _@M1017_ = "Thermal Gain Last", _@M1018_ = "TL.Gain"
+	SetDataOption(8, ugAltitude,        TEXT("_@M1017_"), TEXT("_@M1018_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 9, 7);
+	// LKTOKEN  _@M1019_ = "Thermal Time Last", _@M1020_ = "TL.Time"
+	SetDataOption(9, ugNone,            TEXT("_@M1019_"), TEXT("_@M1020_"), new FormatterTime(TEXT("%04.0f")), NoProcessing, 21, 8);
+	// LKTOKEN  _@M1021_ = "MacCready Setting", _@M1022_ = "MCready"
+	SetDataOption(10, ugVerticalSpeed,  TEXT("_@M1021_"), TEXT("_@M1022_"), new InfoBoxFormatter(TEXT("%2.1f")), MacCreadyProcessing, 34, 43);
+	// LKTOKEN  _@M1023_ = "Next Distance", _@M1024_ = "Dist"
+	SetDataOption(11, ugDistance,       TEXT("_@M1023_"), TEXT("_@M1024_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 12, 31);
+	// LKTOKEN  _@M1025_ = "Next Alt.Arrival", _@M1026_ = "NxtArr"
+	SetDataOption(12, ugAltitude,       TEXT("_@M1025_"), TEXT("_@M1026_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 13, 11);
+	// LKTOKEN  _@M1027_ = "Next Alt.Required", _@M1028_ = "NxtAltR"
+	SetDataOption(13, ugAltitude,       TEXT("_@M1027_"), TEXT("_@M1028_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 15, 12);
+	// LKTOKEN  _@M1029_ = "Next Waypoint", _@M1030_ = "Next"
+	SetDataOption(14, ugNone,           TEXT("_@M1029_"), TEXT("_@M1030_"), new FormatterWaypoint(TEXT("\0")), NextUpDown, 36, 46);
+	// LKTOKEN  _@M1031_ = "Task Alt.Arrival", _@M1032_ = "TskArr"
+	SetDataOption(15, ugAltitude,       TEXT("_@M1031_"), TEXT("_@M1032_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 16, 13);
+	// LKTOKEN  _@M1033_ = "Task Alt.Required", _@M1034_ = "TskAltR"
+	SetDataOption(16, ugAltitude,       TEXT("_@M1033_"), TEXT("_@M1034_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 17, 15);
+	// LKTOKEN  _@M1035_ = "Task Speed Average", _@M1036_ = "TskSpAv"
+	SetDataOption(17, ugTaskSpeed,		TEXT("_@M1035_"), TEXT("_@M1036_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 18, 16);
+	// LKTOKEN  _@M1037_ = "Task Distance", _@M1038_ = "TskDis"
+	SetDataOption(18, ugDistance,       TEXT("_@M1037_"), TEXT("_@M1038_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 27, 17);
+	// LKTOKEN  _@M1039_ = "_Reserved 1", _@M1040_ = "OLD fLD"
+	SetDataOption(19, ugNone,           TEXT("_@M1039_"), TEXT("_@M1040_"), new InfoBoxFormatter(TEXT("%1.0f")), NoProcessing, 38, 5);
+	// LKTOKEN  _@M1041_ = "Terrain Elevation", _@M1042_ = "Gnd"
+	SetDataOption(20, ugAltitude,       TEXT("_@M1041_"), TEXT("_@M1042_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 33, 1);
+	// LKTOKEN  _@M1043_ = "Thermal Average", _@M1044_ = "TC.Avg"
+	SetDataOption(21, ugVerticalSpeed,  TEXT("_@M1043_"), TEXT("_@M1044_"), new FormatterLowWarning(TEXT("%-2.1f"),0.0), NoProcessing, 22, 9);
+	// LKTOKEN  _@M1045_ = "Thermal Gain", _@M1046_ = "TC.Gain"
+	SetDataOption(22, ugAltitude,       TEXT("_@M1045_"), TEXT("_@M1046_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 24, 21);
+	// LKTOKEN  _@M1047_ = "Track", _@M1048_ = "Track"
+#ifdef FIVV
+	SetDataOption(23, ugNone,           TEXT("_@M1047_"), TEXT("_@M1048_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)), DirectionProcessing, 32, 6);
+#else
+	SetDataOption(23, ugNone,           TEXT("_@M1047_"), TEXT("_@M1048_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)TEXT("T")), DirectionProcessing, 32, 6);
+#endif
+	// LKTOKEN  _@M1049_ = "Vario", _@M1050_ = "Vario"
+	SetDataOption(24, ugVerticalSpeed,  TEXT("_@M1049_"), TEXT("_@M1050_"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 44, 22);
+	// LKTOKEN  _@M1051_ = "Wind Speed", _@M1052_ = "WindV"
+	SetDataOption(25, ugWindSpeed,      TEXT("_@M1051_"), TEXT("_@M1052_"), new InfoBoxFormatter(TEXT("%2.0f")), WindSpeedProcessing, 26, 50);
+	// LKTOKEN  _@M1053_ = "Wind Bearing", _@M1054_ = "WindB"
+#ifdef FIVV
+	SetDataOption(26, ugNone,           TEXT("_@M1053_"), TEXT("_@M1054_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)), WindDirectionProcessing, 48, 25);
+#else
+	SetDataOption(26, ugNone,           TEXT("_@M1053_"), TEXT("_@M1054_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)TEXT("T")), WindDirectionProcessing, 48, 25);
+#endif
+	// LKTOKEN  _@M1055_ = "AA Time", _@M1056_ = "AATime"
+	SetDataOption(27, ugNone,           TEXT("_@M1055_"), TEXT("_@M1056_"), new FormatterAATTime(TEXT("%2.0f")), NoProcessing, 28, 18);
+	// LKTOKEN  _@M1057_ = "AA Distance Max", _@M1058_ = "AADmax"
+	SetDataOption(28, ugDistance,       TEXT("_@M1057_"), TEXT("_@M1058_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 29, 27);
+	// LKTOKEN  _@M1059_ = "AA Distance Min", _@M1060_ = "AADmin"
+	SetDataOption(29, ugDistance,       TEXT("_@M1059_"), TEXT("_@M1060_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 30, 28);
+	// LKTOKEN  _@M1061_ = "AA Speed Max", _@M1062_ = "AAVmax"
+	SetDataOption(30, ugTaskSpeed,      TEXT("_@M1061_"), TEXT("_@M1062_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 31, 29);
+	// LKTOKEN  _@M1063_ = "AA Speed Min", _@M1064_ = "AAVmin"
+	SetDataOption(31, ugTaskSpeed,      TEXT("_@M1063_"), TEXT("_@M1064_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 51, 30);
+	// LKTOKEN  _@M1065_ = "Airspeed IAS", _@M1066_ = "IAS"
+	SetDataOption(32, ugHorizontalSpeed,TEXT("_@M1065_"), TEXT("_@M1066_"), new InfoBoxFormatter(TEXT("%2.0f")), AirspeedProcessing, 37, 23);
+	// LKTOKEN  _@M1067_ = "Altitude BARO", _@M1068_ = "HBAR"
+	SetDataOption(33, ugAltitude,       TEXT("_@M1067_"), TEXT("_@M1068_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 0, 20);
+	// LKTOKEN  _@M1069_ = "Speed MacReady", _@M1070_ = "SpMc"
+	SetDataOption(34, ugHorizontalSpeed,TEXT("_@M1069_"), TEXT("_@M1070_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 35, 10);
+	// LKTOKEN  _@M1071_ = "Percentage clim", _@M1072_ = "%Climb"
+	SetDataOption(35, ugNone,           TEXT("_@M1071_"), TEXT("_@M1072_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 43, 34);
+	// LKTOKEN  _@M1073_ = "Time of flight", _@M1074_ = "FlyTime"
+	SetDataOption(36, ugNone,           TEXT("_@M1073_"), TEXT("_@M1074_"), new FormatterTime(TEXT("%04.0f")), NoProcessing, 39, 14);
+	// LKTOKEN  _@M1075_ = "G load", _@M1076_ = "G"
+	SetDataOption(37, ugNone,           TEXT("_@M1075_"), TEXT("_@M1076_"), new InfoBoxFormatter(TEXT("%2.2f")), AccelerometerProcessing, 47, 32);
+	// LKTOKEN  _@M1077_ = "_Reserved 2", _@M1078_ = "OLD nLD"
+	SetDataOption(38, ugNone,           TEXT("_@M1077_"), TEXT("_@M1078_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 53, 19);
+	// LKTOKEN  _@M1079_ = "Time local", _@M1080_ = "Time"
+	SetDataOption(39, ugNone,           TEXT("_@M1079_"), TEXT("_@M1080_"), new FormatterTime(TEXT("%04.0f")), NoProcessing, 40, 36);
+	// LKTOKEN  _@M1081_ = "Time UTC", _@M1082_ = "UTC"
+	SetDataOption(40, ugNone,           TEXT("_@M1081_"), TEXT("_@M1082_"), new FormatterTime(TEXT("%04.0f")), NoProcessing, 41, 39);
+	// LKTOKEN  _@M1083_ = "Task Time To Go", _@M1084_ = "TskETE"
+	SetDataOption(41, ugNone,           TEXT("_@M1083_"), TEXT("_@M1084_"), new FormatterAATTime(TEXT("%04.0f")), NoProcessing, 42, 40);
+	// LKTOKEN  _@M1085_ = "Next Time To Go", _@M1086_ = "NextETE"
+	SetDataOption(42, ugNone,           TEXT("_@M1085_"), TEXT("_@M1086_"), new FormatterAATTime(TEXT("%04.0f")), NoProcessing, 45, 41);
+	// LKTOKEN  _@M1087_ = "Speed To Fly", _@M1088_ = "STF"
+	SetDataOption(43, ugHorizontalSpeed,TEXT("_@M1087_"), TEXT("_@M1088_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 10, 35);
+	// LKTOKEN  _@M1089_ = "Netto Vario", _@M1090_ = "Netto"
+	SetDataOption(44, ugVerticalSpeed,  TEXT("_@M1089_"), TEXT("_@M1090_"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 2, 24);
+	// LKTOKEN  _@M1091_ = "Task Arrival Time", _@M1092_ = "TskETA"
+	SetDataOption(45, ugNone,           TEXT("_@M1091_"), TEXT("_@M1092_"), new FormatterAATTime(TEXT("%04.0f")), NoProcessing, 46, 42);
+	// LKTOKEN  _@M1093_ = "Next Arrival Time", _@M1094_ = "NextETA"
+	SetDataOption(46, ugNone,           TEXT("_@M1093_"), TEXT("_@M1094_"), new FormatterTime(TEXT("%04.0f")), NoProcessing, 14, 45);
+	// LKTOKEN  _@M1095_ = "Bearing Difference", _@M1096_ = "To"
+	SetDataOption(47, ugNone,           TEXT("_@M1095_"), TEXT("_@M1096_"), new FormatterDiffBearing(TEXT("")), NoProcessing, 54, 37);
+	// LKTOKEN  _@M1097_ = "Outside Air Temperature", _@M1098_ = "OAT"
+	SetDataOption(48, ugNone,           TEXT("_@M1097_"), TEXT("_@M1098_"), new InfoBoxFormatter(TEXT("%2.1f")TEXT(DEG)), NoProcessing, 49, 26);
+	// LKTOKEN  _@M1099_ = "Relative Humidity", _@M1100_ = "RelHum"
+	SetDataOption(49, ugNone,           TEXT("_@M1099_"), TEXT("_@M1100_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 50, 48);
+	// LKTOKEN  _@M1101_ = "Forecast Temperature", _@M1102_ = "MaxTemp"
+	SetDataOption(50, ugNone,           TEXT("_@M1101_"), TEXT("_@M1102_"), new InfoBoxFormatter(TEXT("%2.1f")TEXT(DEG)), ForecastTemperatureProcessing, 49, 25);
+	// LKTOKEN  _@M1103_ = "AA Distance Tg", _@M1104_ = "AADtgt"
+	SetDataOption(51, ugDistance,       TEXT("_@M1103_"), TEXT("_@M1104_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 52, 31);
+	// LKTOKEN  _@M1105_ = "AA Speed Tg", _@M1106_ = "AAVtgt"
+	SetDataOption(52, ugTaskSpeed, TEXT("_@M1105_"), TEXT("_@M1106_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 11, 51);
+	// LKTOKEN  _@M1107_ = "L/D vario", _@M1108_ = "L/D vario"
+	SetDataOption(53, ugNone,           TEXT("_@M1107_"), TEXT("_@M1108_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 4, 38);
+	// LKTOKEN  _@M1109_ = "Airspeed TAS", _@M1110_ = "TAS"
+	SetDataOption(54, ugHorizontalSpeed,TEXT("_@M1109_"), TEXT("_@M1110_"), new InfoBoxFormatter(TEXT("%2.0f")), AirspeedProcessing, 3, 47);
+	// LKTOKEN  _@M1111_ = "Team Code", _@M1112_ = "TeamCode"
+	SetDataOption(55, ugNone,           TEXT("_@M1111_"), TEXT("_@M1112_"), new FormatterTeamCode(TEXT("\0")), TeamCodeProcessing, 56, 54);
+	// LKTOKEN  _@M1113_ = "Team Bearing", _@M1114_ = "TmBrng"
+#ifdef FIVV
+	SetDataOption(56, ugNone,           TEXT("_@M1113_"), TEXT("_@M1114_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)), NoProcessing, 57, 55);
+#else
+	SetDataOption(56, ugNone,           TEXT("_@M1113_"), TEXT("_@M1114_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)TEXT("T")), NoProcessing, 57, 55);
+#endif
+	// LKTOKEN  _@M1115_ = "Team Bearing Diff", _@M1116_ = "TeamBd"
+	SetDataOption(57, ugNone,           TEXT("_@M1115_"), TEXT("_@M1116_"), new FormatterDiffTeamBearing(TEXT("")), NoProcessing, 58, 56);
+	// LKTOKEN  _@M1117_ = "Team Range", _@M1118_ = "TeamDis"
+	SetDataOption(58, ugNone,           TEXT("_@M1117_"), TEXT("_@M1118_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 55, 57);
+	// LKTOKEN  _@M1119_ = "Task Speed Instantaneous", _@M1120_ = "TskSpI"
+	SetDataOption(59, ugTaskSpeed,      TEXT("_@M1119_"), TEXT("_@M1120_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 18, 16);
+	// LKTOKEN  _@M1121_ = "Home Distance", _@M1122_ = "HomeDis"
+	SetDataOption(60, ugDistance,       TEXT("_@M1121_"), TEXT("_@M1122_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 18, 16);
+	// LKTOKEN  _@M1123_ = "Task Speed", _@M1124_ = "TskSp"
+	SetDataOption(61, ugTaskSpeed,      TEXT("_@M1123_"), TEXT("_@M1124_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 18, 16);
+	// LKTOKEN  _@M1125_ = "AA Delta Time", _@M1126_ = "AAdT"
+	SetDataOption(62, ugNone,           TEXT("_@M1125_"), TEXT("_@M1126_"), new FormatterAATTime(TEXT("%2.0f")), NoProcessing, 28, 18);
+	// LKTOKEN  _@M1127_ = "Thermal All", _@M1128_ = "Th.All"
+	SetDataOption(63, ugVerticalSpeed,  TEXT("_@M1127_"), TEXT("_@M1128_"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 8, 2);
+	// LKTOKEN  _@M1129_ = "Distance Vario", _@M1130_ = "DVario"
+	SetDataOption(64, ugVerticalSpeed,  TEXT("_@M1129_"), TEXT("_@M1130_"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 8, 2);
+#ifndef GNAV
+	// LKTOKEN  _@M1131_ = "Battery Percent", _@M1132_ = "Battery"
+	SetDataOption(65, ugNone,           TEXT("_@M1131_"), TEXT("_@M1132_"), new InfoBoxFormatter(TEXT("%2.0f%%")), NoProcessing, 49, 26);
+#else
+	// LKTOKEN  _@M1181_ = "Battery Voltage", _@M1182_ = "Batt"
+	SetDataOption(65, ugNone,           TEXT("_@M1181_"), TEXT("_@M1182_"), new InfoBoxFormatter(TEXT("%2.1fV")), NoProcessing, 49, 26);
+#endif
+	// LKTOKEN  _@M1133_ = "Task Req.Efficiency", _@M1134_ = "TskReqE"
+	SetDataOption(66, ugNone,           TEXT("_@M1133_"), TEXT("_@M1134_"), new InfoBoxFormatter(TEXT("%1.1f")), NoProcessing, 38, 5);
+	// LKTOKEN  _@M1135_ = "Alternate1 Req.Efficiency", _@M1136_ = "Atn1.E"
+	SetDataOption(67, ugNone,           TEXT("_@M1135_"), TEXT("_@M1136_"), new FormatterAlternate(TEXT("\0")), Alternate1Processing, 36, 46);
+	// LKTOKEN  _@M1137_ = "Alternate2 Req.Efficiency", _@M1138_ = "Atn2.E"
+	SetDataOption(68, ugNone,           TEXT("_@M1137_"), TEXT("_@M1138_"), new FormatterAlternate(TEXT("\0")), Alternate2Processing, 36, 46);
+	// LKTOKEN  _@M1139_ = "BestAltern Req.Efficiency", _@M1140_ = "BAtn.E"
+	SetDataOption(69, ugNone,           TEXT("_@M1139_"), TEXT("_@M1140_"), new FormatterAlternate(TEXT("\0")), BestAlternateProcessing, 36, 46);
+	// LKTOKEN  _@M1141_ = "Altitude QFE", _@M1142_ = "QFE"
+	SetDataOption(70, ugAltitude,       TEXT("_@M1141_"), TEXT("_@M1142_"), new InfoBoxFormatter(TEXT("%2.0f")), QFEAltitudeProcessing, 1, 33);
+	// LKTOKEN  _@M1143_ = "Average Efficiency", _@M1144_ = "E.Avg"
+	SetDataOption(71, ugNone,           TEXT("_@M1143_"), TEXT("_@M1144_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 19, 4);
+	// LKTOKEN  _@M1145_ = "Next Req.Efficiency", _@M1146_ = "Req.E"
+	SetDataOption(72, ugNone,           TEXT("_@M1145_"), TEXT("_@M1146_"), new InfoBoxFormatter(TEXT("%1.1f")), NoProcessing, 38, 5);
+	// LKTOKEN  _@M1147_ = "Flight Level", _@M1148_ = "FL"
+	SetDataOption(73, ugNone,           TEXT("_@M1147_"), TEXT("_@M1148_"), new InfoBoxFormatter(TEXT("%1.1f")), NoProcessing, 38, 5);
+	// LKTOKEN  _@M1149_ = "Task Covered distance", _@M1150_ = "TskCov"
+	SetDataOption(74, ugDistance,       TEXT("_@M1149_"), TEXT("_@M1150_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 38, 5);
+	// LKTOKEN  _@M1151_ = "Alternate1 Arrival", _@M1152_ = "Atn1Arr"
+	SetDataOption(75, ugAltitude,       TEXT("_@M1151_"), TEXT("_@M1152_"), new FormatterAlternate(TEXT("%2.0f")), Alternate1Processing, 36, 46);
+	// LKTOKEN  _@M1153_ = "Alternate2 Arrival", _@M1154_ = "Atn2Arr"
+	SetDataOption(76, ugAltitude,       TEXT("_@M1153_"), TEXT("_@M1154_"), new FormatterAlternate(TEXT("%2.0f")), Alternate2Processing, 36, 46);
+	// LKTOKEN  _@M1155_ = "BestAlternate Arrival", _@M1156_ = "BAtnArr"
+	SetDataOption(77, ugAltitude,       TEXT("_@M1155_"), TEXT("_@M1156_"), new FormatterAlternate(TEXT("%2.0f")), BestAlternateProcessing, 36, 46);
+	// LKTOKEN  _@M1157_ = "Home Radial", _@M1158_ = "Radial"
+	SetDataOption(78, ugNone,           TEXT("_@M1157_"), TEXT("_@M1158_"), new InfoBoxFormatter(TEXT("%.0f")TEXT(DEG)), NoProcessing, 6, 54);
+	// LKTOKEN  _@M1159_ = "Airspace Distance", _@M1160_ = "AirSpace"
+	SetDataOption(79, ugDistance,       TEXT("_@M1159_"), TEXT("_@M1160_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 38, 5);
+	// LKTOKEN  _@M1161_ = "Ext.Batt.Bank", _@M1162_ = "xBnk#"
+	SetDataOption(80, ugNone,           TEXT("_@M1161_"), TEXT("_@M1162_"), new InfoBoxFormatter(TEXT("%1.0f")), NoProcessing, 38, 5);
+	// LKTOKEN  _@M1163_ = "Ext.Batt.1 Voltage", _@M1164_ = "xBat1"
+	SetDataOption(81, ugNone,           TEXT("_@M1163_"), TEXT("_@M1164_"), new InfoBoxFormatter(TEXT("%2.1fV")), NoProcessing, 49, 26);
+	// LKTOKEN  _@M1165_ = "Ext.Batt.2 Voltage", _@M1166_ = "xBat2"
+	SetDataOption(82, ugNone,           TEXT("_@M1165_"), TEXT("_@M1166_"), new InfoBoxFormatter(TEXT("%2.1fV")), NoProcessing, 49, 26);
+	// LKTOKEN  _@M1167_ = "Odometer", _@M1168_ = "Odo"
+	SetDataOption(83, ugDistance,       TEXT("_@M1167_"), TEXT("_@M1168_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 49, 26);
+	// LKTOKEN  _@M1169_ = "Altern QNH", _@M1170_ = "aAlt"
+	SetDataOption(84, ugInvAltitude,    TEXT("_@M1169_"), TEXT("_@M1170_"), new InfoBoxFormatter(TEXT("%2.0f")), AltitudeProcessing, 1, 33);
+	// LKTOKEN  _@M1171_ = "Altern AGL", _@M1172_ = "aHAGL"
+	SetDataOption(85, ugInvAltitude,    TEXT("_@M1171_"), TEXT("_@M1172_"), new FormatterLowWarning(TEXT("%2.0f"),0.0), NoProcessing, 20, 0);
+	// LKTOKEN  _@M1173_ = "Altitude GPS", _@M1174_ = "HGPS"
+	SetDataOption(86, ugAltitude,       TEXT("_@M1173_"), TEXT("_@M1174_"), new InfoBoxFormatter(TEXT("%2.0f")), AltitudeProcessing, 1, 33);
+	// LKTOKEN  _@M1175_ = "MacCready Equivalent", _@M1176_ = "eqMC"
+	SetDataOption(87, ugVerticalSpeed,  TEXT("_@M1175_"), TEXT("_@M1176_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 34, 43);
+	// LKTOKEN  _@M1177_ = "_Experimental1", _@M1178_ = "Exp1"
+	SetDataOption(88, ugNone,           TEXT("_@M1177_"), TEXT("_@M1178_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// LKTOKEN  _@M1179_ = "_Experimental2", _@M1180_ = "Exp2"
+	SetDataOption(89, ugNone,           TEXT("_@M1179_"), TEXT("_@M1180_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// LKTOKEN  _@M1181_ = "Battery Voltage", _@M1182_ = "Batt"
+
+}
 
 void TriggerGPSUpdate()
 {
@@ -1716,6 +1751,7 @@ void PreloadInitialisation(bool ask) {
   SetToRegistry(TEXT("LKV"), 3);
 
   LKReadLanguageFile();
+  FillDataOptions();
 
   // Registery (early)
 
@@ -3925,22 +3961,28 @@ void DisplayText(void)
 	} else {
 		switch(DisplayType[i]) {
 			case 67:
-				InfoBoxes[i]->SetTitle(TEXT("Alt1.GR"));
+				// LKTOKEN  _@M1135_ = "Alternate1 Req.Efficiency", _@M1136_ = "Atn1.E"
+				InfoBoxes[i]->SetTitle(gettext(TEXT("_@M1136_")));
 				break;
 			case 68:
-				InfoBoxes[i]->SetTitle(TEXT("Alt2.GR"));
+				// LKTOKEN  _@M1137_ = "Alternate2 Req.Efficiency", _@M1138_ = "Atn2.E"
+				InfoBoxes[i]->SetTitle(gettext(TEXT("_@M1138_")));
 				break;
 			case 69:
-				InfoBoxes[i]->SetTitle(TEXT("BAlt.GR"));
+				// LKTOKEN  _@M1139_ = "BestAltern Req.Efficiency", _@M1140_ = "BAtn.E"
+				InfoBoxes[i]->SetTitle(gettext(TEXT("_@M1140_")));
 				break;
 			case 75:
-				InfoBoxes[i]->SetTitle(TEXT("Alt1.Arr"));
+				// LKTOKEN  _@M1151_ = "Alternate1 Arrival", _@M1152_ = "Atn1Arr"
+				InfoBoxes[i]->SetTitle(gettext(TEXT("_@M1152_")));
 				break;
 			case 76:
-				InfoBoxes[i]->SetTitle(TEXT("Alt2.Arr"));
+				// LKTOKEN  _@M1153_ = "Alternate2 Arrival", _@M1154_ = "Atn2Arr"
+				InfoBoxes[i]->SetTitle(gettext(TEXT("_@M1154_")));
 				break;
 			case 77:
-				InfoBoxes[i]->SetTitle(TEXT("BAlt.Arr"));
+				// LKTOKEN  _@M1155_ = "BestAlternate Arrival", _@M1156_ = "BAtnArr"
+				InfoBoxes[i]->SetTitle(gettext(TEXT("_@M1156_")));
 				break;
 			default:
 				InfoBoxes[i]->SetTitle(TEXT("ERR234"));
@@ -4008,7 +4050,8 @@ void DisplayText(void)
 	InfoBoxes[i]->
 	  SetValue(Data_Options[47].Formatter->Render(&color));
       }else{
-	InfoBoxes[i]->SetTitle(TEXT("Next"));
+	// LKTOKEN _@M1030_ "Next"
+	InfoBoxes[i]->SetTitle(gettext(TEXT("_@M1030_")));
 	InfoBoxes[i]->SetValue(TEXT("---"));
 	InfoBoxes[i]->SetColor(-1);
       }
@@ -4061,9 +4104,11 @@ void DisplayText(void)
 
     case 10:
       if (CALCULATED_INFO.AutoMacCready)
-	InfoBoxes[i]->SetComment(TEXT("AUTO"));
+		// LKTOKEN _@M1184_ "AutMC"
+		InfoBoxes[i]->SetComment(gettext(TEXT("_@M1184_")));
       else
-	InfoBoxes[i]->SetComment(TEXT("MANUAL"));
+		// LKTOKEN _@M1183_ "ManMC"
+		InfoBoxes[i]->SetComment(gettext(TEXT("_@M1183_")));
       break;
     case 0: // GPS Alt
       Units::FormatAlternateUserAltitude(GPS_INFO.Altitude, 
@@ -4099,9 +4144,11 @@ void DisplayText(void)
       break;
     case 43:
       if (EnableBlockSTF) {
-	InfoBoxes[i]->SetComment(TEXT("BLOCK"));
+		// LKTOKEN _@M1195_ "BLOCK"
+		InfoBoxes[i]->SetComment(gettext(TEXT("_@M1195_")));
       } else {
-	InfoBoxes[i]->SetComment(TEXT("DOLPHIN"));
+		// LKTOKEN _@M1196_ "DOLPHIN"
+		InfoBoxes[i]->SetComment(gettext(TEXT("_@M1196_")));
       }
       break;
     case 55: // own team code      
@@ -5274,7 +5321,12 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   if (_tcsstr(OutBuffer, TEXT("$(MacCreadyMode)"))) { // 091214
 
 	TCHAR tbuf[10];
-	_stprintf(tbuf,_T("%s"), CALCULATED_INFO.AutoMacCready ? _T("Auto") : _T("Man") );
+	if (CALCULATED_INFO.AutoMacCready) 
+		// LKTOKEN _@M1198_ "Auto"
+		_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1198_")));
+	else
+		// LKTOKEN _@M1197_ "Man"
+		_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1197_")));
 	ReplaceInString(OutBuffer, TEXT("$(MacCreadyMode)"), tbuf, Size);
 	if (--items<=0) goto label_ret; // 100517
   }
@@ -5555,12 +5607,15 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   }
   if (_tcsstr(OutBuffer, TEXT("$(TOGGLEHBAR)"))) {
 	if (!GPS_INFO.BaroAltitudeAvailable) {
-		ReplaceInString(OutBuffer, TEXT("$(TOGGLEHBAR)"), TEXT("HBAR"), Size);
+		// LKTOKEN _@M1068_ "HBAR"
+		ReplaceInString(OutBuffer, TEXT("$(TOGGLEHBAR)"), gettext(TEXT("_@M1068_")), Size);
 	} else {
 		if (EnableNavBaroAltitude)
-			ReplaceInString(OutBuffer, TEXT("$(TOGGLEHBAR)"), TEXT("HGPS"), Size);
+			// LKTOKEN _@M1174_ "HGPS"
+			ReplaceInString(OutBuffer, TEXT("$(TOGGLEHBAR)"), gettext(TEXT("_@M1174_")), Size);
 		else
-			ReplaceInString(OutBuffer, TEXT("$(TOGGLEHBAR)"), TEXT("HBAR"), Size);
+			// LKTOKEN _@M1068_ "HBAR"
+			ReplaceInString(OutBuffer, TEXT("$(TOGGLEHBAR)"), gettext(TEXT("_@M1068_")), Size);
 	}
 	if (--items<=0) goto label_ret; // 100517
   }
@@ -5821,7 +5876,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 #if 0
   CondReplaceInString(AltitudeMode == ALLON, OutBuffer, TEXT("$(AirspaceModeAllShortIndicator)"), TEXT("|"), TEXT(""), Size);
 
-  CondReplaceInString(AltitudeMode == CLIP,  OutBuffer, TEXT("$(AirspaceModeClipShortIndicator)"), TEXT("(×)"), TEXT(""), Size);
+  CondReplaceInString(AltitudeMode == CLIP,  OutBuffer, TEXT("$(AirspaceModeClipShortIndicator)"), TEXT("(ï¿½)"), TEXT(""), Size);
   CondReplaceInString(AltitudeMode == AUTO,  OutBuffer, TEXT("$(AirspaceModeAutoShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
   CondReplaceInString(AltitudeMode == ALLBELOW, OutBuffer, TEXT("$(AirspaceModeBelowShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
   CondReplaceInString(AltitudeMode == ALLOFF, OutBuffer, TEXT("$(AirspaceModeAllOffIndicator)"), TEXT("(*)"), TEXT(""), Size);

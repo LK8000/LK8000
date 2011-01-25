@@ -1217,7 +1217,8 @@ Drawbottom:
   			wsprintf(BufferUnit, TEXT(""));
 			#if NOSIM
 			if (SIMMODE) {
-				wsprintf(BufferTitle, TEXT("Sat"));
+				// LKTOKEN _@M1199_ "Sat"
+				wsprintf(BufferTitle, gettext(TEXT("_@M1199_")));
 				wsprintf(BufferValue,TEXT("SIM"));
 			} else {
 				Value=GPS_INFO.SatellitesUsed;
@@ -1229,17 +1230,21 @@ Drawbottom:
 
 				}
 				if (nmeaParser1.activeGPS == true)
-					wsprintf(BufferTitle, TEXT("Sat:A"));
+					// LKTOKEN _@M1199_ "Sat"
+					wsprintf(BufferTitle, TEXT("%s:A"), gettext(TEXT("_@M1199_")));
 				else {
 					if (nmeaParser2.activeGPS == true)
-						wsprintf(BufferTitle, TEXT("Sat:B"));
+						// LKTOKEN _@M1199_ "Sat"
+						wsprintf(BufferTitle, TEXT("%s:B"), gettext(TEXT("_@M1199_")));
 					else
-						wsprintf(BufferTitle, TEXT("Sat:?"));
+						// LKTOKEN _@M1199_ "Sat"
+						wsprintf(BufferTitle, TEXT("%s:?"), gettext(TEXT("_@M1199_")));
 				}
 			}
 			#else
 			#ifdef _SIM_ 
-  			wsprintf(BufferTitle, TEXT("Sat"));
+			// LKTOKEN _@M1199_ "Sat"
+  			wsprintf(BufferTitle, gettext(TEXT("_@M1199_")));
 			wsprintf(BufferValue,TEXT("SIM"));
 			#else
 			Value=GPS_INFO.SatellitesUsed;
@@ -1251,12 +1256,15 @@ Drawbottom:
 
 			}
 			if (nmeaParser1.activeGPS == true)
-				wsprintf(BufferTitle, TEXT("Sat:A"));
+				// LKTOKEN _@M1199_ "Sat"
+				wsprintf(BufferTitle, TEXT("%s:A"), gettext(TEXT("_@M1199_")));
 			else {
 				if (nmeaParser2.activeGPS == true)
-					wsprintf(BufferTitle, TEXT("Sat:B"));
+					// LKTOKEN _@M1199_ "Sat"
+					wsprintf(BufferTitle, TEXT("%s:B"), gettext(TEXT("_@M1199_")));
 				else
-					wsprintf(BufferTitle, TEXT("Sat:?"));
+					// LKTOKEN _@M1199_ "Sat"
+					wsprintf(BufferTitle, TEXT("%s:?"), gettext(TEXT("_@M1199_")));
 			}
 
 			#endif
@@ -1275,7 +1283,8 @@ Drawbottom:
 			wsprintf(BufferValue, TEXT("%S"),text);
 		}
   		showunit=false;
-  		wsprintf(BufferTitle, TEXT("SAT"));
+		// LKTOKEN _@M1199_ "Sat"
+  		wsprintf(BufferTitle, gettext(TEXT("_@M1199_")));
 		#endif
 		break;
 	case BM_ALT:
@@ -1355,12 +1364,15 @@ Drawbottom:
 		showunit=LKFormatValue(LK_TASK_DISTCOV, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_SYS:
-  		wsprintf(BufferTitle, TEXT("HBAR"));
+		// LKTOKEN _@M1068_ "HBAR"
+  		wsprintf(BufferTitle, gettext(TEXT("_@M1068_")));
 		if (GPS_INFO.BaroAltitudeAvailable) {
 			if (EnableNavBaroAltitude)
-				wsprintf(BufferValue,TEXT("ON"));
+				// LKTOKEN _@M894_ "ON"
+				wsprintf(BufferValue,gettext(TEXT("_@M894_")));
 			else
-				wsprintf(BufferValue,TEXT("OFF"));
+				// LKTOKEN _@M491_ "OFF"
+				wsprintf(BufferValue,gettext(TEXT("_@M491_")));
 		} else
 			wsprintf(BufferValue,TEXT("---"));
   		showunit=false;
@@ -1460,7 +1472,8 @@ Drawbottom:
 			wsprintf(BufferUnit, TEXT(""));
 			showunit=false;
 		}
- 		wsprintf(BufferTitle, TEXT("Start"),text);
+ 		// LKTOKEN _@M1200_ "Start"
+		wsprintf(BufferTitle, gettext(TEXT("_@M1200_")));
 		break;
 	case BM_SYS:
 		showunit=LKFormatValue(LK_EMPTY, true, BufferValue, BufferUnit, BufferTitle); // 100221

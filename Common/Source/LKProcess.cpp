@@ -74,7 +74,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			Units::TimeToTextS(BufferValue, (int)DetectCurrentTime());
 			valid=true;
 			if (lktitle)
-				_stprintf(BufferTitle,TEXT("Time"));
+				// LKTOKEN  _@M1079_ = "Time local", _@M1080_ = "Time"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1080_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
@@ -84,7 +85,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			Units::TimeToText(BufferValue, (int)DetectCurrentTime());
 			valid=true;
 			if (lktitle)
-				_stprintf(BufferTitle,TEXT("Time"));
+				// LKTOKEN  _@M1079_ = "Time local", _@M1080_ = "Time"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1080_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
@@ -95,7 +97,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			Units::TimeToText(BufferValue,(int) GPS_INFO.Time);
 			valid=true;
 			if (lktitle)
-				_stprintf(BufferTitle,TEXT("UTC"));
+				// LKTOKEN  _@M1081_ = "Time UTC", _@M1082_ = "UTC"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1082_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
@@ -105,7 +108,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_BRG:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("Brg"));
+				// LKTOKEN  _@M1007_ = "Bearing", _@M1008_ = "Brg"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1008_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
@@ -116,11 +120,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 					valid=true;
 #ifndef __MINGW32__
 					if (value > 1)
-						_stprintf(BufferValue, TEXT("%2.0f°"), value);
+						_stprintf(BufferValue, TEXT("%2.0fï¿½"), value);
 					else if (value < -1)
-						_stprintf(BufferValue, TEXT("%2.0f°"), -value);
+						_stprintf(BufferValue, TEXT("%2.0fï¿½"), -value);
 						else
-							_tcscpy(BufferValue, TEXT("0°"));
+							_tcscpy(BufferValue, TEXT("0ï¿½"));
 #else
 					if (value > 1)
 						_stprintf(BufferValue, TEXT("%2.0fÂ°"), value);
@@ -137,7 +141,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_HOMERADIAL:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("Radl"));
+				// LKTOKEN  _@M1157_ = "Home Radial", _@M1158_ = "Radial"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1158_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
@@ -148,11 +153,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 					valid=true;
 #ifndef __MINGW32__
 					if (value > 1)
-						_stprintf(BufferValue, TEXT("%2.0f°"), value);
+						_stprintf(BufferValue, TEXT("%2.0fï¿½"), value);
 					else if (value < -1)
-						_stprintf(BufferValue, TEXT("%2.0f°"), -value);
+						_stprintf(BufferValue, TEXT("%2.0fï¿½"), -value);
 						else
-							_tcscpy(BufferValue, TEXT("0°"));
+							_tcscpy(BufferValue, TEXT("0ï¿½"));
 #else
 					if (value > 1)
 						_stprintf(BufferValue, TEXT("%2.0fÂ°"), value);
@@ -169,7 +174,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_BRGDIFF:
 			wsprintf(BufferValue,_T(NULLMEDIUM)); // 091221
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("To"));
+				// LKTOKEN  _@M1095_ = "Bearing Difference", _@M1096_ = "To"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1096_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
@@ -186,11 +192,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 								value -= 360.0;
 #ifndef __MINGW32__
 						if (value > 1)
-							_stprintf(BufferValue, TEXT("%2.0f°»"), value);
+							_stprintf(BufferValue, TEXT("%2.0fï¿½ï¿½"), value);
 						else if (value < -1)
-							_stprintf(BufferValue, TEXT("«%2.0f°"), -value);
+							_stprintf(BufferValue, TEXT("ï¿½%2.0fï¿½"), -value);
 							else
-								_tcscpy(BufferValue, TEXT("«»"));
+								_tcscpy(BufferValue, TEXT("ï¿½ï¿½"));
 #else
 						if (value > 1)
 						_stprintf(BufferValue, TEXT("%2.0fÂ°Â»"), value);
@@ -207,7 +213,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		// B151 UNUSED
 		case LK_ALT1_BRGDIFF:
 			wsprintf(BufferValue,_T(NULLMEDIUM)); 
-			_stprintf(BufferTitle, TEXT("To"));
+			// LKTOKEN  _@M1095_ = "Bearing Difference", _@M1096_ = "To"
+			_stprintf(BufferTitle, gettext(TEXT("_@M1096_")));
 			if ( ValidWayPoint(Alternate1) != false ) {
 				index = Alternate1;
 				if (index>=0) {
@@ -222,11 +229,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 								value -= 360.0;
 #ifndef __MINGW32__
 						if (value > 1)
-							_stprintf(BufferValue, TEXT("%2.0f°»"), value);
+							_stprintf(BufferValue, TEXT("%2.0fï¿½ï¿½"), value);
 						else if (value < -1)
-							_stprintf(BufferValue, TEXT("«%2.0f°"), -value);
+							_stprintf(BufferValue, TEXT("ï¿½%2.0fï¿½"), -value);
 							else
-								_tcscpy(BufferValue, TEXT("«»"));
+								_tcscpy(BufferValue, TEXT("ï¿½ï¿½"));
 #else
 						if (value > 1)
 						_stprintf(BufferValue, TEXT("%2.0fÂ°Â»"), value);
@@ -243,7 +250,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		// B152 UNUSED
 		case LK_ALT2_BRGDIFF:
 			wsprintf(BufferValue,_T(NULLMEDIUM)); 
-			_stprintf(BufferTitle, TEXT("To"));
+			// LKTOKEN  _@M1095_ = "Bearing Difference", _@M1096_ = "To"
+			_stprintf(BufferTitle, gettext(TEXT("_@M1096_")));
 			if ( ValidWayPoint(Alternate2) != false ) {
 				index = Alternate2;
 				if (index>=0) {
@@ -258,11 +266,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 								value -= 360.0;
 #ifndef __MINGW32__
 						if (value > 1)
-							_stprintf(BufferValue, TEXT("%2.0f°»"), value);
+							_stprintf(BufferValue, TEXT("%2.0fï¿½ï¿½"), value);
 						else if (value < -1)
-							_stprintf(BufferValue, TEXT("«%2.0f°"), -value);
+							_stprintf(BufferValue, TEXT("ï¿½%2.0fï¿½"), -value);
 							else
-								_tcscpy(BufferValue, TEXT("«»"));
+								_tcscpy(BufferValue, TEXT("ï¿½ï¿½"));
 #else
 						if (value > 1)
 						_stprintf(BufferValue, TEXT("%2.0fÂ°Â»"), value);
@@ -279,7 +287,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		// B153 UNUSED
 		case LK_BALT_BRGDIFF:
 			wsprintf(BufferValue,_T(NULLMEDIUM)); 
-			_stprintf(BufferTitle, TEXT("To"));
+			// LKTOKEN  _@M1095_ = "Bearing Difference", _@M1096_ = "To"
+			_stprintf(BufferTitle, gettext(TEXT("_@M1096_")));
 			if ( ValidWayPoint(BestAlternate) != false ) {
 				index = BestAlternate;
 				if (index>=0) {
@@ -294,11 +303,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 								value -= 360.0;
 #ifndef __MINGW32__
 						if (value > 1)
-							_stprintf(BufferValue, TEXT("%2.0f°»"), value);
+							_stprintf(BufferValue, TEXT("%2.0fï¿½ï¿½"), value);
 						else if (value < -1)
-							_stprintf(BufferValue, TEXT("«%2.0f°"), -value);
+							_stprintf(BufferValue, TEXT("ï¿½%2.0fï¿½"), -value);
 							else
-								_tcscpy(BufferValue, TEXT("«»"));
+								_tcscpy(BufferValue, TEXT("ï¿½ï¿½"));
 #else
 						if (value > 1)
 						_stprintf(BufferValue, TEXT("%2.0fÂ°Â»"), value);
@@ -315,7 +324,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		// B155 UNUSED
 		case LK_LASTTHERMAL_BRGDIFF:
 			wsprintf(BufferValue,_T(NULLMEDIUM)); 
-			_stprintf(BufferTitle, TEXT("To"));
+			// LKTOKEN  _@M1095_ = "Bearing Difference", _@M1096_ = "To"
+			_stprintf(BufferTitle, gettext(TEXT("_@M1096_")));
 			if ( ValidResWayPoint(RESWP_LASTTHERMAL) != false ) {
 				index = RESWP_LASTTHERMAL;
 				if (index>=0) {
@@ -330,11 +340,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 								value -= 360.0;
 #ifndef __MINGW32__
 						if (value > 1)
-							_stprintf(BufferValue, TEXT("%2.0f°»"), value);
+							_stprintf(BufferValue, TEXT("%2.0fï¿½ï¿½"), value);
 						else if (value < -1)
-							_stprintf(BufferValue, TEXT("«%2.0f°"), -value);
+							_stprintf(BufferValue, TEXT("ï¿½%2.0fï¿½"), -value);
 							else
-								_tcscpy(BufferValue, TEXT("«»"));
+								_tcscpy(BufferValue, TEXT("ï¿½ï¿½"));
 #else
 						if (value > 1)
 						_stprintf(BufferValue, TEXT("%2.0fÂ°Â»"), value);
@@ -369,7 +379,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 			if (lktitle)
-				_tcscpy(BufferTitle, _T("Dis"));
+				// LKTOKEN  _@M1023_ = "Next Distance", _@M1024_ = "Dist"
+				_tcscpy(BufferTitle, gettext(TEXT("_@M1024_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
@@ -483,7 +494,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			}
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
-			_tcscpy(BufferTitle, _T("StDis"));
+			// LKTOKEN  _@M1192_ = "StDis"
+			_tcscpy(BufferTitle, gettext(TEXT("_@M1192_")));
 			break;
 
 
@@ -506,7 +518,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 			if (lktitle)
-				wsprintf(BufferTitle, TEXT("Home"),text);
+				// LKTOKEN  _@M1121_ = "Home Distance", _@M1122_ = "HomeDis"
+				wsprintf(BufferTitle, gettext(TEXT("_@M1122_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
@@ -526,7 +539,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 			if (lktitle)
-				wsprintf(BufferTitle, TEXT("Odo"),text);
+				// LKTOKEN  _@M1167_ = "Odometer", _@M1168_ = "Odo"
+				wsprintf(BufferTitle, gettext(TEXT("_@M1168_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
@@ -628,9 +642,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_NEXT_GR:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("Req.E"));
+				// LKTOKEN  _@M1145_ = "Next Req.Efficiency", _@M1146_ = "Req.E"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1146_")));
 			else
-				_stprintf(BufferTitle, TEXT("Req.E"));
+				// LKTOKEN  _@M1145_ = "Next Req.Efficiency", _@M1146_ = "Req.E"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1146_")));
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
@@ -651,7 +667,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_LD_AVR:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("E.Avg"));
+				// LKTOKEN  _@M1143_ = "Average Efficiency", _@M1144_ = "E.Avg"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1144_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if (DisplayMode != dmCircling) {
@@ -679,7 +696,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_NEXT_ALTDIFF:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("NxtArr"));
+				// LKTOKEN  _@M1025_ = "Next Alt.Arrival", _@M1026_ = "NxtArr"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1026_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
@@ -701,7 +719,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_NEXT_ALTREQ:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("NexAltR"));
+				// LKTOKEN  _@M1027_ = "Next Alt.Required", _@M1028_ = "NxtAltR"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1028_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
@@ -720,7 +739,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		// B05
 		case LK_LD_CRUISE:
 			if (lktitle)
-                       		_stprintf(BufferTitle, TEXT("E.Th"));
+				// LKTOKEN  _@M1011_ = "Eff.cruise last therm", _@M1012_ = "E.Cru"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1012_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			value=DerivedDrawInfo.CruiseLD;
@@ -740,7 +760,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_LD_INST:
                         wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
-                        	_stprintf(BufferTitle, TEXT("E.20\""));
+				// LKTOKEN  _@M1009_ = "Eff.last 20 sec", _@M1010_ = "E.20\""
+				_stprintf(BufferTitle, gettext(TEXT("_@M1010_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			value=CALCULATED_INFO.LD;
@@ -759,7 +780,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		// B00
 		case LK_HNAV:
 			if (lktitle)
-                        	_stprintf(BufferTitle, TEXT("Alt"));
+				// LKTOKEN  _@M1001_ = "Altitude QNH", _@M1002_ = "Alt", 
+				_stprintf(BufferTitle, gettext(TEXT("_@M1002_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			value=ALTITUDEMODIFY*DerivedDrawInfo.NavAltitude;
@@ -772,7 +794,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		// B01		AltAgl HAGL 100318
 		case LK_HAGL:
 			if (lktitle)
-                        	_stprintf(BufferTitle, TEXT("HAGL"));
+				// LKTOKEN  _@M1003_ = "Altitude AGL", _@M1004_ = "HAGL"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1004_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
@@ -805,7 +828,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		// B86
 		case LK_HGPS:
 			if (lktitle)
-                        	_stprintf(BufferTitle, TEXT("HGPS"));
+				// LKTOKEN  _@M1173_ = "Altitude GPS", _@M1174_ = "HGPS"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1174_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if (GPS_INFO.NAVWarning || (GPS_INFO.SatellitesUsed == 0)) {
@@ -841,7 +865,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			}
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			if (lktitle)
-				wsprintf(BufferTitle, TEXT("Gnd"),text);
+				// LKTOKEN  _@M1041_ = "Terrain Elevation", _@M1042_ = "Gnd"
+				wsprintf(BufferTitle, gettext(TEXT("_@M1042_")));
 			else 
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
@@ -851,18 +876,19 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue,_T(NULLLONG));
 			//_stprintf(BufferUnit,TEXT(""));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("Trk"));
+				// LKTOKEN  _@M1047_ = "Track", _@M1048_ = "Track"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1048_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			value = GPS_INFO.TrackBearing;
 			valid=true;
 #ifndef __MINGW32__
 			if (value > 1)
-				_stprintf(BufferValue, TEXT("%2.0f°"), value);
+				_stprintf(BufferValue, TEXT("%2.0fï¿½"), value);
 			else if (value < -1)
-				_stprintf(BufferValue, TEXT("%2.0f°"), -value);
+				_stprintf(BufferValue, TEXT("%2.0fï¿½"), -value);
 				else
-					_tcscpy(BufferValue, TEXT("0°"));
+					_tcscpy(BufferValue, TEXT("0ï¿½"));
 #else
 			if (value > 1)
 				_stprintf(BufferValue, TEXT("%2.0fÂ°"), value);
@@ -883,7 +909,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
 			if (lktitle)
-				wsprintf(BufferTitle, TEXT("GS"));
+				// LKTOKEN  _@M1013_ = "Speed ground", _@M1014_ = "GS"
+				wsprintf(BufferTitle, gettext(TEXT("_@M1014_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
@@ -893,7 +920,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_IAS:
 			if (GPS_INFO.AirspeedAvailable) {
 				if (lktitle)
-					wsprintf(BufferTitle, TEXT("IAS"));
+					// LKTOKEN  _@M1065_ = "Airspeed IAS", _@M1066_ = "IAS"
+					wsprintf(BufferTitle, gettext(TEXT("_@M1066_")));
 				else
 					_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 				value=SPEEDMODIFY*DrawInfo.IndicatedAirspeed;
@@ -901,7 +929,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				sprintf(text,"%d",(int)value);
 				wsprintf(BufferValue, TEXT("%S"),text);
 			} else {
-				wsprintf(BufferTitle, TEXT("eIAS"));
+				// LKTOKEN  _@M1065_ = "Airspeed IAS", _@M1066_ = "IAS"
+				wsprintf(BufferTitle, TEXT("e%s"), gettext(TEXT("_@M1066_")));
 				value=SPEEDMODIFY*DerivedDrawInfo.IndicatedAirspeedEstimated;
 				if (value<0||value>999) value=0; else valid=true;
 				sprintf(text,"%d",(int)value);
@@ -925,7 +954,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 
 		// B87  100908
 		case LK_EQMC:
-			wsprintf(BufferTitle, TEXT("eqMC"));
+			// LKTOKEN  _@M1175_ = "MacCready Equivalent", _@M1176_ = "eqMC"
+			wsprintf(BufferTitle, gettext(TEXT("_@M1176_")));
 			if ( CALCULATED_INFO.Circling == TRUE || CALCULATED_INFO.EqMc<0 || CALCULATED_INFO.OnGround == TRUE) {
 				wsprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
@@ -950,7 +980,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_TAS:
 			if (GPS_INFO.AirspeedAvailable) {
 				if (lktitle)
-					wsprintf(BufferTitle, TEXT("TAS"));
+					// LKTOKEN  _@M1109_ = "Airspeed TAS", _@M1110_ = "TAS"
+					wsprintf(BufferTitle, gettext(TEXT("_@M1110_")));
 				else
 					_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 				value=SPEEDMODIFY*DrawInfo.TrueAirspeed;
@@ -962,7 +993,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				}
 				wsprintf(BufferValue, TEXT("%S"),text);
 			} else {
-				wsprintf(BufferTitle, TEXT("eTAS"));
+				// LKTOKEN  _@M1109_ = "Airspeed TAS", _@M1110_ = "TAS"
+				wsprintf(BufferTitle, TEXT("e%s"), gettext(TEXT("_@M1110_")));
 				value=SPEEDMODIFY*DerivedDrawInfo.TrueAirspeedEstimated;
 				if (value<0||value>999) {
 					sprintf(text,"%s",NULLMEDIUM);
@@ -984,7 +1016,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			} else
 				wsprintf(BufferValue,_T("----"));
 			if (lktitle)
-				wsprintf(BufferTitle, TEXT("TmCode"));
+				// LKTOKEN  _@M1111_ = "Team Code", _@M1112_ = "TeamCode"
+				wsprintf(BufferTitle, gettext(TEXT("_@M1112_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
@@ -993,7 +1026,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_TEAM_BRG:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("TmBrg"));
+				// LKTOKEN  _@M1113_ = "Team Bearing", _@M1114_ = "TmBrng"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1114_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
@@ -1014,7 +1048,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue,_T(NULLLONG));
 
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("TmBd"));
+				// LKTOKEN  _@M1115_ = "Team Bearing Diff", _@M1116_ = "TeamBd"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1116_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
@@ -1051,7 +1086,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 			if (lktitle)
-				_tcscpy(BufferTitle, _T("TmDis"));
+				// LKTOKEN  _@M1117_ = "Team Range", _@M1118_ = "TeamDis"
+				_tcscpy(BufferTitle, gettext(TEXT("_@M1118_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
@@ -1065,7 +1101,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
 			if (lktitle)
-				wsprintf(BufferTitle, TEXT("SpMC"));
+				// LKTOKEN  _@M1069_ = "Speed MacReady", _@M1070_ = "SpMc"
+				wsprintf(BufferTitle, gettext(TEXT("_@M1070_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
@@ -1085,9 +1122,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		// B73
 		case LK_FL:
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("FL"));
+				// LKTOKEN  _@M1147_ = "Flight Level", _@M1148_ = "FL"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1148_")));
 			else
-				_stprintf(BufferTitle, TEXT("FL"));
+				// LKTOKEN  _@M1147_ = "Flight Level", _@M1148_ = "FL"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1148_")));
 			value=(TOFEET*DerivedDrawInfo.NavAltitude)/100.0;
 			valid=true;
 			sprintf(text,"%d",(int)value);
@@ -1097,7 +1136,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 
 		// B131
 		case LK_WIND:
-			_stprintf(BufferTitle, TEXT("Wind"));
+			// LKTOKEN  _@M1185_ = "Wind"
+			_stprintf(BufferTitle, gettext(TEXT("_@M1185_")));
 			if (DerivedDrawInfo.WindSpeed*SPEEDMODIFY>=1) {
 				value = DerivedDrawInfo.WindBearing;
 				valid=true;
@@ -1154,7 +1194,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),Units::GetVerticalSpeedName());
 			if (lktitle)
-				wsprintf(BufferTitle, TEXT("TL.Avg"),text);
+				// LKTOKEN  _@M1015_ = "Thermal Average Last", _@M1016_ = "TL.Avg"
+				wsprintf(BufferTitle, gettext(TEXT("_@M1016_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
@@ -1171,7 +1212,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			if (lktitle)
-				wsprintf(BufferTitle, TEXT("TL.Gain"),text);
+				// LKTOKEN  _@M1017_ = "Thermal Gain Last", _@M1018_ = "TL.Gain"
+				wsprintf(BufferTitle, gettext(TEXT("_@M1018_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
@@ -1189,7 +1231,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),Units::GetVerticalSpeedName());
 			if (lktitle)
-				wsprintf(BufferTitle, TEXT("TC.Avg"),text);
+				// LKTOKEN  _@M1043_ = "Thermal Average", _@M1044_ = "TC.Avg"
+				wsprintf(BufferTitle, gettext(TEXT("_@M1044_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
@@ -1204,12 +1247,14 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			//if (!ValidTaskPoint(ActiveWayPoint) && ((AutoMcMode==0) || (AutoMcMode==2))) {
 			if (!CALCULATED_INFO.AutoMacCready) {
 				if (lktitle)
-					wsprintf(BufferTitle, TEXT("ManMC"));
+					// LKTOKEN  _@M1183_ = "ManMC"
+					wsprintf(BufferTitle, gettext(TEXT("_@M1183_")));
 				else
 					_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			} else {
 				if (lktitle)
-					wsprintf(BufferTitle, TEXT("AutMC"));
+					// LKTOKEN  _@M1184_ = "AutMC"
+					wsprintf(BufferTitle, gettext(TEXT("_@M1184_")));
 				else
 					_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			}
@@ -1229,7 +1274,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),Units::GetVerticalSpeedName());
 			if (lktitle)
-				wsprintf(BufferTitle, TEXT("TC.30\""));
+				// LKTOKEN  _@M1005_ = "Thermal last 30 sec", _@M1006_ = "TC.30\""
+				wsprintf(BufferTitle, gettext(TEXT("_@M1006_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
@@ -1246,7 +1292,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			if (lktitle)
-				wsprintf(BufferTitle, TEXT("TC.Gain"),text);
+				// LKTOKEN  _@M1045_ = "Thermal Gain", _@M1046_ = "TC.Gain"
+				wsprintf(BufferTitle, gettext(TEXT("_@M1046_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
@@ -1267,10 +1314,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),Units::GetVerticalSpeedName());
 			if (lktitle)
-				wsprintf(BufferTitle, TEXT("Th.All"));
+				// LKTOKEN  _@M1127_ = "Thermal All", _@M1128_ = "Th.All"
+				wsprintf(BufferTitle, gettext(TEXT("_@M1128_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-                	break;
+			break;
 
 		// B24
 		case LK_VARIO:
@@ -1283,7 +1331,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			_stprintf(BufferValue,varformat,value);
 			wsprintf(BufferUnit, TEXT("%s"),Units::GetVerticalSpeedName());
 			if (lktitle)
-				wsprintf(BufferTitle, TEXT("Vario"));
+				// LKTOKEN  _@M1049_ = "Vario", _@M1050_ = "Vario"
+				wsprintf(BufferTitle, gettext(TEXT("_@M1050_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
@@ -1292,7 +1341,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_FIN_ALTDIFF:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("TskArr"));
+				// LKTOKEN  _@M1031_ = "Task Alt.Arrival", _@M1032_ = "TskArr"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1032_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
@@ -1312,7 +1362,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_FIN_ALTREQ:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("TskAltR"));
+				// LKTOKEN  _@M1033_ = "Task Alt.Required", _@M1034_ = "TskAltR"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1034_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
@@ -1352,7 +1403,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 			if (lktitle)
-				_tcscpy(BufferTitle, _T("TskDis"));
+				// LKTOKEN  _@M1037_ = "Task Distance", _@M1038_ = "TskDis"
+				_tcscpy(BufferTitle, gettext(TEXT("_@M1038_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
@@ -1369,7 +1421,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 			if (lktitle)
-				wsprintf(BufferTitle, TEXT("TskCov"),text);
+				// LKTOKEN  _@M1149_ = "Task Covered distance", _@M1150_ = "TskCov"
+				wsprintf(BufferTitle, gettext(TEXT("_@M1150_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
@@ -1377,7 +1430,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		// B79
 		case LK_AIRSPACEDIST:
 			if (lktitle)
-				wsprintf(BufferTitle, TEXT("Arspace"),text);
+				// LKTOKEN  _@M1159_ = "Airspace Distance", _@M1160_ = "AirSpace"
+				wsprintf(BufferTitle, gettext(TEXT("_@M1160_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
@@ -1398,7 +1452,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_FIN_GR:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("TskReqE"));
+				// LKTOKEN  _@M1133_ = "Task Req.Efficiency", _@M1134_ = "TskReqE"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1134_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
@@ -1425,7 +1480,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue,_T(NULLLONG));
 			//_stprintf(BufferUnit,TEXT(""));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("OLDfLD"));
+				// LKTOKEN  _@M1039_ = "_Reserved 1", _@M1040_ = "OLD fLD"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1040_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
@@ -1452,7 +1508,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_NEXT_LD:
 			wsprintf(BufferValue,_T(NULLMEDIUM)); // 091221
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("OLDNexLD"));
+				// LKTOKEN  _@M1077_ = "_Reserved 2", _@M1078_ = "OLD nLD"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1078_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
@@ -1508,7 +1565,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_SPEEDTASK_INST:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("TskSpI"));
+				// LKTOKEN  _@M1119_ = "Task Speed Instantaneous", _@M1120_ = "TskSpI"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1120_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			value=0;
@@ -1527,7 +1585,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_SPEEDTASK_ACH:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("TskSp"));
+				// LKTOKEN  _@M1123_ = "Task Speed", _@M1124_ = "TskSp"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1124_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			value=0;
@@ -1546,7 +1605,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_SPEEDTASK_AVG:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("TskSpAv"));
+				// LKTOKEN  _@M1035_ = "Task Speed Average", _@M1036_ = "TskSpAv"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1036_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			value=0;
@@ -1566,9 +1626,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_FIN_ALTDIFF0:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("TskArr0"));
+				// LKTOKEN  _@M1191_ = "TskArr0"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1191_")));
 			else
-				_stprintf(BufferTitle, TEXT("TskArrMc0"));
+				// LKTOKEN  _@M1191_ = "TskArr0"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1191_")));
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
@@ -1588,7 +1650,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_LKFIN_ETE:
 			wsprintf(BufferValue,_T(NULLTIME)); // 091222
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("TskETE"));
+				// LKTOKEN  _@M1083_ = "Task Time To Go", _@M1084_ = "TskETE"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1084_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[LK_FIN_ETE].Title );
 
@@ -1618,7 +1681,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_NEXT_ETE:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("NexETE"));
+				// LKTOKEN  _@M1085_ = "Next Time To Go", _@M1086_ = "NextETE"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1086_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
@@ -1642,7 +1706,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_FIN_ETA:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("TskETA"));
+				// LKTOKEN  _@M1091_ = "Task Arrival Time", _@M1092_ = "TskETA"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1092_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
@@ -1661,7 +1726,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_NEXT_ETA:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("NexETA"));
+				// LKTOKEN  _@M1093_ = "Next Arrival Time", _@M1094_ = "NextETA"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1094_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
@@ -1680,7 +1746,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_TIMEFLIGHT:
 			wsprintf(BufferValue,_T(NULLTIME));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("FlyTm"));
+				// LKTOKEN  _@M1073_ = "Time of flight", _@M1074_ = "FlyTime"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1074_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
@@ -1697,7 +1764,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_TL_TIME:
 			wsprintf(BufferValue,_T(NULLTIME));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("TL.Time"));
+				// LKTOKEN  _@M1019_ = "Thermal Time Last", _@M1020_ = "TL.Time"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1020_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
@@ -1755,12 +1823,13 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				value=GPS_INFO.Gload;
 				_stprintf(BufferValue,TEXT("%+.1f"), value);
 				valid=true;
-				_tcscpy(BufferTitle,_T("G"));
+				// LKTOKEN  _@M1075_ = "G load", _@M1076_ = "G"
+				_tcscpy(BufferTitle, gettext(TEXT("_@M1076_")));
 			} else {
 				value=CALCULATED_INFO.Gload;
 				_stprintf(BufferValue,TEXT("%+.1f"), value);
 				valid=true;
-				_tcscpy(BufferTitle,_T("eG"));
+				_stprintf(BufferTitle, TEXT("e%s"), gettext(TEXT("_@M1076_")));
 			}
 			break;
 
@@ -1832,9 +1901,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_LKFIN_ETE:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("TskETE"));
+				// LKTOKEN  _@M1083_ = "Task Time To Go", _@M1084_ = "TskETE"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1084_")));
 			else
-				_stprintf(BufferTitle, TEXT("TskETE"));
+				// LKTOKEN  _@M1083_ = "Task Time To Go", _@M1084_ = "TskETE"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1084_")));
 
 			if ( (ValidTaskPoint(ActiveWayPoint) != false) && (CALCULATED_INFO.LKTaskETE< 0.9*ERROR_TIME)) {
 				if (CALCULATED_INFO.LKTaskETE > 0) {
@@ -1853,9 +1924,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_NEXT_ALTDIFF0:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)
-				_stprintf(BufferTitle, TEXT("ArrMc0"));
+				// LKTOKEN  _@M1190_ = "ArrMc0"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1190_")));
 			else
-				_stprintf(BufferTitle, TEXT("ArrMc0"));
+				// LKTOKEN  _@M1190_ = "ArrMc0"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1190_")));
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
@@ -1877,10 +1950,24 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_BESTALTERN_GR:
 			wsprintf(BufferValue,_T(NULLMEDIUM));
 			if (lktitle) {
-				if (lkindex==LK_BESTALTERN_GR) 
-					_stprintf(BufferTitle, TEXT("Batn"));
-				else
-					_stprintf(BufferTitle, TEXT("Atn%d.E"), lkindex-LK_ALTERNATESGR+1);
+				switch (lkindex) {
+					case LK_BESTALTERN_GR:
+						// LKTOKEN  _@M1139_ = "BestAltern Req.Efficiency", _@M1140_ = "BAtn.E"
+						_stprintf(BufferTitle, gettext(TEXT("_@M1140_")));
+						break;
+					case LK_ALTERN1_GR:
+						// LKTOKEN  _@M1135_ = "Alternate1 Req.Efficiency", _@M1136_ = "Atn1.E"
+						_stprintf(BufferTitle, gettext(TEXT("_@M1136_")));
+						break;
+					case LK_ALTERN2_GR:
+						// LKTOKEN  _@M1137_ = "Alternate2 Req.Efficiency", _@M1138_ = "Atn2.E"
+						_stprintf(BufferTitle, gettext(TEXT("_@M1138_")));
+						break;
+
+					default:
+						_stprintf(BufferTitle, TEXT("Atn%d.E"), lkindex-LK_ALTERNATESGR+1);
+						break;
+				}//sw
 			} else {
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			}
@@ -1955,10 +2042,23 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_BESTALTERN_ARRIV:
 			wsprintf(BufferValue,_T(NULLMEDIUM));
 			if (lktitle) {
-				if (lkindex==LK_BESTALTERN_ARRIV) 
-					_stprintf(BufferTitle, TEXT("BatnArr"));
-				else
-					_stprintf(BufferTitle, TEXT("Atn%dArr"), lkindex-LK_ALTERNATESARRIV+1);
+				switch (lkindex) {
+					case LK_BESTALTERN_ARRIV:
+						// LKTOKEN  _@M1155_ = "BestAlternate Arrival", _@M1156_ = "BAtnArr"
+						_stprintf(BufferTitle, gettext(TEXT("_@M1156_")));
+						break;
+					case LK_ALTERN1_ARRIV:
+						// LKTOKEN  _@M1151_ = "Alternate1 Arrival", _@M1152_ = "Atn1Arr"
+						_stprintf(BufferTitle, gettext(TEXT("_@M1152_")));
+						break;
+					case LK_ALTERN2_ARRIV:
+						// LKTOKEN  _@M1153_ = "Alternate2 Arrival", _@M1154_ = "Atn2Arr"
+						_stprintf(BufferTitle, gettext(TEXT("_@M1154_")));
+						break;
+					default:
+						_stprintf(BufferTitle, TEXT("Atn%dArr"), lkindex-LK_ALTERNATESARRIV+1);
+						break;
+				} //sw
 			} else {
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			}
@@ -2070,7 +2170,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		// B84  100126
 		case LK_AQNH:
 			if (lktitle)
-                        	_stprintf(BufferTitle, TEXT("aAlt"));
+				// LKTOKEN  _@M1169_ = "Altern QNH", _@M1170_ = "aAlt"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1170_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if (ALTITUDEMODIFY==TOMETER)
@@ -2086,7 +2187,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		// B85  100126
 		case LK_AALTAGL:
 			if (lktitle)
-                        	_stprintf(BufferTitle, TEXT("aHAGL"));
+				// LKTOKEN  _@M1171_ = "Altern AGL", _@M1172_ = "aHAGL"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1172_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if (!CALCULATED_INFO.TerrainValid) { //@ 101013
@@ -2125,7 +2227,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			}
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
-			wsprintf(BufferTitle, TEXT("Dist"),text);
+			// LKTOKEN  _@M1023_ = "Next Distance", _@M1024_ = "Dist"
+			wsprintf(BufferTitle, gettext(TEXT("_@M1024_")),text);
 			break;
 
 		// B137
@@ -2154,7 +2257,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				}
 			}
 			wsprintf(BufferUnit, TEXT(""));
-			wsprintf(BufferTitle, TEXT("To"),text);
+			// LKTOKEN  _@M1095_ = "Bearing Difference", _@M1096_ = "To"
+			_stprintf(BufferTitle, gettext(TEXT("_@M1096_")));
 			break;
 
 		// B138
@@ -2176,7 +2280,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				}
 			}
 			wsprintf(BufferUnit, TEXT(""));
-			wsprintf(BufferTitle, TEXT("Brg"),text);
+			// LKTOKEN  _@M1007_ = "Bearing", _@M1008_ = "Brg"
+			wsprintf(BufferTitle, TEXT("_@M1008_"),text);
 			break;
 
 		// B139
@@ -2194,7 +2299,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			}
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
-			wsprintf(BufferTitle, TEXT("GS"));
+			// LKTOKEN  _@M1013_ = "Speed ground", _@M1014_ = "GS"
+			wsprintf(BufferTitle, gettext(TEXT("_@M1014_")));
 			break;
 
 		// B140
@@ -2210,7 +2316,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 					sprintf(text,"%d",(int)value);
 				}
 			}
-                       	_stprintf(BufferTitle, TEXT("Alt"));
+			// LKTOKEN  _@M1001_ = "Altitude QNH", _@M1002_ = "Alt", 
+			_stprintf(BufferTitle, TEXT("_@M1002_"));
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
@@ -2230,7 +2337,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 					sprintf(text,"%+d",(int)value);
 				}
 			}
-                       	_stprintf(BufferTitle, TEXT("RelAlt"));
+			// LKTOKEN  _@M1193_ = "RelAlt"
+			_stprintf(BufferTitle, gettext(TEXT("_@M1193_")));
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
@@ -2253,7 +2361,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 					wsprintf(BufferUnit, TEXT("%s"),Units::GetVerticalSpeedName());
 				}
 			}
-			_tcscpy(BufferTitle, TEXT("Var"));
+			// LKTOKEN  _@M1194_ = "Var"
+			_tcscpy(BufferTitle, gettext(TEXT("_@M1194_")));
 			break;
 
 		// B143
@@ -2274,13 +2383,15 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 					wsprintf(BufferUnit, TEXT("%s"),Units::GetVerticalSpeedName());
 				}
 			}
-			_tcscpy(BufferTitle, TEXT("Var30"));
+			// LKTOKEN  _@M1189_ = "Var30"
+			_tcscpy(BufferTitle, gettext(TEXT("_@M1189_")));
 			break;
 
 		// B144
 		case LK_TARGET_ALTARRIV:
 			wsprintf(BufferValue,_T(NULLLONG));
-			_stprintf(BufferTitle, TEXT("Arr"));
+			// LKTOKEN  _@M1188_ = "Arr"
+			_stprintf(BufferTitle, gettext(TEXT("_@M1188_")));
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					strcpy(text,NULLMEDIUM);
 					wsprintf(BufferValue, TEXT("%S"),text);
@@ -2306,7 +2417,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		// B145
 		case LK_TARGET_GR:
 			wsprintf(BufferValue,_T(NULLLONG));
-			_stprintf(BufferTitle, TEXT("ReqE"));
+			// LKTOKEN  _@M1187_ = "ReqE"
+			_stprintf(BufferTitle, gettext(TEXT("_@M1187_")));
 			_tcscpy(BufferUnit,_T(""));
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					strcpy(text,NULLMEDIUM);
@@ -2330,7 +2442,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 
 		// B146
 		case LK_TARGET_EIAS:
-			_stprintf(BufferTitle, TEXT("eIAS"));
+			// LKTOKEN  _@M1186_ = "eIAS"
+			_stprintf(BufferTitle, gettext(TEXT("_@M1186_")));
 			_tcscpy(BufferUnit,_T(""));
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					strcpy(text,NULLMEDIUM);
@@ -2434,11 +2547,11 @@ void MapWindow::LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *
 				value -= 360.0;
 #ifndef __MINGW32__
 		if (value > 1)
-			_stprintf(BufferValue, TEXT("%2.0f°»"), value);
+			_stprintf(BufferValue, TEXT("%2.0fï¿½ï¿½"), value);
 		else if (value < -1)
-			_stprintf(BufferValue, TEXT("«%2.0f°"), -value);
+			_stprintf(BufferValue, TEXT("ï¿½%2.0fï¿½"), -value);
 		else
-			_tcscpy(BufferValue, TEXT("«»"));
+			_tcscpy(BufferValue, TEXT("ï¿½ï¿½"));
 #else
 		if (value > 1)
 			_stprintf(BufferValue, TEXT("%2.0fÂ°Â»"), value);
