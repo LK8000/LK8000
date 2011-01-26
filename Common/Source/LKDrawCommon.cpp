@@ -331,23 +331,29 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 	SelectObject(hdc, LK8InfoNormalFont);
 
 	if (MapSpaceMode == MSM_COMMON )
-  		_stprintf(Buffer,TEXT("COMN %d/%d"),  curpage+1, CommonNumpages); 
+		// LKTOKEN _@M1309_ "COMN"
+  		_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1309_")), curpage+1, CommonNumpages); 
 	else
-  		_stprintf(Buffer,TEXT("HIST %d/%d"), curpage+1, CommonNumpages); 
+		// LKTOKEN _@M1310_ "HIST"
+  		_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1310_")), curpage+1, CommonNumpages); 
 	LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
 
-	 _stprintf(Buffer,TEXT("Dist")); 
+	// LKTOKEN _@M1300_ "Dist"
+	 _stprintf(Buffer,gettext(TEXT("_@M1300_"))); 
 	// always sorted manually here!
 	LKWriteText(hdc, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-	_stprintf(Buffer,TEXT("Dir")); 
+	// LKTOKEN _@M1301_ "Dir"
+	_stprintf(Buffer,gettext(TEXT("_@M1301_"))); 
 	LKWriteText(hdc, Buffer, Column3, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-	_stprintf(Buffer,TEXT("rEff")); 
+	// LKTOKEN _@M1302_ "rEff"
+	_stprintf(Buffer,gettext(TEXT("_@M1302_"))); 
 	LKWriteText(hdc, Buffer, Column4, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-	_stprintf(Buffer,TEXT("AltA")); 
+	// LKTOKEN _@M1303_ "AltA"
+	_stprintf(Buffer,gettext(TEXT("_@M1303_"))); 
 	LKWriteText(hdc, Buffer, Column5, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
 
@@ -360,39 +366,51 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 
 	if ( (ScreenSize == (ScreenSize_t)ss640x480) || (ScreenSize == (ScreenSize_t)ss320x240) || ScreenSize == ss896x672 ) {
 		if (MapSpaceMode == MSM_COMMON )
-			_stprintf(Buffer,TEXT("COMN %d/%d"), curpage+1,CommonNumpages); 
+			// LKTOKEN _@M1309_ "COMN"
+			_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1309_")), curpage+1,CommonNumpages); 
 		else
-			_stprintf(Buffer,TEXT("HIST %d/%d"),  curpage+1,CommonNumpages); 
+			// LKTOKEN _@M1310_ "HIST"
+			_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1310_")), curpage+1,CommonNumpages); 
 		LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
-		_stprintf(Buffer,TEXT("Dist")); 
+		// LKTOKEN _@M1300_ "Dist"
+		_stprintf(Buffer,gettext(TEXT("_@M1300_"))); 
 		LKWriteText(hdc, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer,TEXT("Dir")); 
+		// LKTOKEN _@M1301_ "Dir"
+		_stprintf(Buffer,gettext(TEXT("_@M1301_"))); 
 		LKWriteText(hdc, Buffer, Column3, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer,TEXT("rEff")); 
+		// LKTOKEN _@M1302_ "rEff"
+		_stprintf(Buffer,gettext(TEXT("_@M1302_"))); 
 		LKWriteText(hdc, Buffer, Column4, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer,TEXT("Arriv")); 
+		// LKTOKEN _@M1308_ "Arriv"
+		_stprintf(Buffer,gettext(TEXT("_@M1308_"))); 
 		LKWriteText(hdc, Buffer, Column5, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 	} else {
 		if (MapSpaceMode==MSM_COMMON)
-			_stprintf(Buffer,TEXT("COMN %d/%d"), curpage+1,CommonNumpages); 
+			// LKTOKEN _@M1309_ "COMN"
+			_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1309_")), curpage+1,CommonNumpages); 
 		else
-			_stprintf(Buffer,TEXT("HIST %d/%d"), curpage+1,CommonNumpages); 
+			// LKTOKEN _@M1310_ "HIST"
+			_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1310_")), curpage+1,CommonNumpages); 
 		LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
-		_stprintf(Buffer,TEXT("Distance")); 
+		// LKTOKEN _@M1304_ "Distance"
+		_stprintf(Buffer,gettext(TEXT("_@M1304_"))); 
 		LKWriteText(hdc, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer,TEXT("Direction")); 
+		// LKTOKEN _@M1305_ "Direction"
+		_stprintf(Buffer,gettext(TEXT("_@M1305_"))); 
 		LKWriteText(hdc, Buffer, Column3, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer,TEXT("ReqEff")); 
+		// LKTOKEN _@M1306_ "ReqEff"
+		_stprintf(Buffer,gettext(TEXT("_@M1306_"))); 
 		LKWriteText(hdc, Buffer, Column4, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer,TEXT("AltArr")); 
+		// LKTOKEN _@M1307_ "AltArr"
+		_stprintf(Buffer,gettext(TEXT("_@M1307_"))); 
 		LKWriteText(hdc, Buffer, Column5, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 	}
 	
@@ -457,12 +475,12 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 
 #ifndef __MINGW32__
 			if (Value > 1)
-				_stprintf(Buffer3[i][curpage], TEXT("%2.0f°»"), Value);
+				_stprintf(Buffer3[i][curpage], TEXT("%2.0f\xB0\xBB"), Value);
 			else
 				if (Value < -1)
-					_stprintf(Buffer3[i][curpage], TEXT("«%2.0f°"), -Value);
+					_stprintf(Buffer3[i][curpage], TEXT("\xAB%2.0f\xB0"), -Value);
 				else
-					_tcscpy(Buffer3[i][curpage], TEXT("«»"));
+					_tcscpy(Buffer3[i][curpage], TEXT("\xAB\xBB"));
 #else
 			if (Value > 1)
 				_stprintf(Buffer3[i][curpage], TEXT("%2.0fÂ°Â»"), Value);
