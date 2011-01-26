@@ -1,5 +1,5 @@
 # LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  110102
+# MASTER UPDATED:  110126
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -945,16 +945,20 @@ _@M937_ "Competition Class: "
 _@M938_ "Competition ID"
 _@M939_ "Competition ID: "
 
+#
+# Infoboxes in Description / Tile order. 
+# In titles use maximum 7 characters
+#
 _@M1001_ "Altitude QNH"
 _@M1002_ "Alt"
 _@M1003_ "Altitude AGL"
 _@M1004_ "HAGL"
 _@M1005_ "Thermal last 30 sec"
-_@M1006_ "TC.30\""
+_@M1006_ "TC.30s"
 _@M1007_ "Bearing"
 _@M1008_ "Brg"
 _@M1009_ "Eff.last 20 sec"
-_@M1010_ "E.20\""
+_@M1010_ "E.20s"
 _@M1011_ "Eff.cruise last therm"
 _@M1012_ "E.Cru"
 _@M1013_ "Speed ground"
@@ -1052,11 +1056,11 @@ _@M1104_ "AADtgt"
 _@M1105_ "AA Speed Tg"
 _@M1106_ "AAVtgt"
 _@M1107_ "L/D vario"
-_@M1108_ "L/D vario"
+_@M1108_ "L/D var"
 _@M1109_ "Airspeed TAS"
 _@M1110_ "TAS"
 _@M1111_ "Team Code"
-_@M1112_ "TeamCode"
+_@M1112_ "TeamCod"
 _@M1113_ "Team Bearing"
 _@M1114_ "TmBrng"
 _@M1115_ "Team Bearing Diff"
@@ -1104,7 +1108,7 @@ _@M1156_ "BAtnArr"
 _@M1157_ "Home Radial"
 _@M1158_ "Radial"
 _@M1159_ "Airspace Distance"
-_@M1160_ "AirSpace"
+_@M1160_ "ArSpace"
 _@M1161_ "Ext.Batt.Bank"
 _@M1162_ "xBnk#"
 _@M1163_ "Ext.Batt.1 Voltage"
@@ -1127,6 +1131,8 @@ _@M1179_ "_Experimental2"
 _@M1180_ "Exp2"
 _@M1181_ "Battery Voltage"
 _@M1182_ "Batt"
+
+# LK Info pages infobox titles, maximum 7 chars
 _@M1183_ "ManMC"
 _@M1184_ "AutMC"
 _@M1185_ "Wind"
@@ -1141,11 +1147,75 @@ _@M1193_ "RelAlt"
 _@M1194_ "Var"
 _@M1195_ "BLOCK"
 _@M1196_ "DOLPHIN"
-_@M1197_ "Man"
-_@M1198_ "Auto"
+_@M1197_ "Bank"
+_@M1198_ ""
 _@M1199_ "Sat"
 _@M1200_ "Start"
 
+# McCready mode $(MacCreadyMode) in menu macros, use 3-4 chrs maximum!
+_@M1201_ "Man"
+_@M1202_ "Auto"
+# Map label modes $(MapLabelsToggleActionName) in menu macros
+_@M1203_ "WPTS"
+_@M1204_ "TOPO"
+# $(VisualGlideToggleName) if extended VisualGlide is enabled
+_@M1205_ "Moving"
 
+# Startup / Shutdown dialog texts
+_@M1206_ "Initialising..."
+_@M1207_ "ERROR UNKNOWN RESOLUTION!"
+_@M1208_ "ERROR NO DIRECTORY:"
+_@M1209_ "CHECK INSTALLATION!"
+_@M1210_ "PARAGLIDING MODE"
+_@M1211_ "SIMULATION"
+_@M1212_ "AUTOMATIC BACKLIGHT CONTROL"
+_@M1213_ "NO BACKLIGHT CONTROL"
+_@M1214_ "AUTOMATIC SOUND LEVEL CONTROL"
+_@M1215_ "NO SOUND LEVEL CONTROL"
+_@M1216_ "Scanning weather forecast"
+_@M1217_ "Starting devices"
+_@M1218_ "Initialising display"
+_@M1219_ "Shutdown, please wait..."
+_@M1220_ "Shutdown, saving logs..."
+_@M1221_ "Shutdown, saving profile..."
+_@M1222_ "Shutdown, saving task..."
+
+# LK info page headers, try to use the same or less number of chars here,
+# or test it with different screen reolutions and landscape/portrait mode too!
+_@M1300_ "Dist"
+_@M1301_ "Dir"
+_@M1302_ "rEff"
+_@M1303_ "AltA"
+_@M1304_ "Distance"
+_@M1305_ "Direction"
+_@M1306_ "ReqEff"
+_@M1307_ "AltArr"
+_@M1308_ "Arriv"
+_@M1309_ "COMN"
+_@M1310_ "HIST"
+_@M1311_ "LND"
+_@M1312_ "LNDB"
+_@M1313_ "APT"
+_@M1314_ "APTS"
+_@M1315_ "TPS"
+
+# Reserved waypoint names, comments
+_@M1316_ "TAKEOFF"
+_@M1317_ "THERMAL"
+_@M1318_ "TEAMMATE"
+_@M1319_ "TARGET"
+_@M1320_ "LAST GOOD THERMAL"
+_@M1321_ "TEAM MATE"
+_@M1322_ "FLARM TARGET"
+
+# Overlay multitarget prefixes, maximum 2chars!
+_@M1323_ "T>"
+_@M1324_ "B>"
+_@M1325_ "1>"
+_@M1326_ "2>"
+_@M1327_ "H>"
+_@M1328_ "L>"
+_@M1329_ "M"
+_@M1330_ "F>"
 
 

@@ -120,11 +120,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 					valid=true;
 #ifndef __MINGW32__
 					if (value > 1)
-						_stprintf(BufferValue, TEXT("%2.0f�"), value);
+						_stprintf(BufferValue, TEXT("%2.0f\xB0"), value);			//Source editor encoding problem fixed
 					else if (value < -1)
-						_stprintf(BufferValue, TEXT("%2.0f�"), -value);
+						_stprintf(BufferValue, TEXT("%2.0f\xB0"), -value);
 						else
-							_tcscpy(BufferValue, TEXT("0�"));
+							_tcscpy(BufferValue, TEXT("0\xB0"));
 #else
 					if (value > 1)
 						_stprintf(BufferValue, TEXT("%2.0f°"), value);
@@ -153,11 +153,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 					valid=true;
 #ifndef __MINGW32__
 					if (value > 1)
-						_stprintf(BufferValue, TEXT("%2.0f�"), value);
+						_stprintf(BufferValue, TEXT("%2.0f\xB0"), value);
 					else if (value < -1)
-						_stprintf(BufferValue, TEXT("%2.0f�"), -value);
+						_stprintf(BufferValue, TEXT("%2.0f\xB0"), -value);
 						else
-							_tcscpy(BufferValue, TEXT("0�"));
+							_tcscpy(BufferValue, TEXT("0\xB0"));
 #else
 					if (value > 1)
 						_stprintf(BufferValue, TEXT("%2.0f°"), value);
@@ -192,11 +192,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 								value -= 360.0;
 #ifndef __MINGW32__
 						if (value > 1)
-							_stprintf(BufferValue, TEXT("%2.0f��"), value);
+							_stprintf(BufferValue, TEXT("%2.0f\xB0\xBB"), value);
 						else if (value < -1)
-							_stprintf(BufferValue, TEXT("�%2.0f�"), -value);
+							_stprintf(BufferValue, TEXT("\xAB%2.0f\xB0"), -value);
 							else
-								_tcscpy(BufferValue, TEXT("��"));
+								_tcscpy(BufferValue, TEXT("\xAB\xBB"));
 #else
 						if (value > 1)
 						_stprintf(BufferValue, TEXT("%2.0f°»"), value);
@@ -884,11 +884,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			valid=true;
 #ifndef __MINGW32__
 			if (value > 1)
-				_stprintf(BufferValue, TEXT("%2.0f�"), value);
+				_stprintf(BufferValue, TEXT("%2.0f\xB0"), value);
 			else if (value < -1)
-				_stprintf(BufferValue, TEXT("%2.0f�"), -value);
+				_stprintf(BufferValue, TEXT("%2.0f\xB0"), -value);
 				else
-					_tcscpy(BufferValue, TEXT("0�"));
+					_tcscpy(BufferValue, TEXT("0\xB0"));
 #else
 			if (value > 1)
 				_stprintf(BufferValue, TEXT("%2.0f°"), value);
@@ -2547,11 +2547,11 @@ void MapWindow::LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *
 				value -= 360.0;
 #ifndef __MINGW32__
 		if (value > 1)
-			_stprintf(BufferValue, TEXT("%2.0f��"), value);
+			_stprintf(BufferValue, TEXT("%2.0f\xB0\xBB"), value);
 		else if (value < -1)
-			_stprintf(BufferValue, TEXT("�%2.0f�"), -value);
+			_stprintf(BufferValue, TEXT("\xAB%2.0f\xB0"), -value);
 		else
-			_tcscpy(BufferValue, TEXT("��"));
+			_tcscpy(BufferValue, TEXT("\xAB\xBB"));
 #else
 		if (value > 1)
 			_stprintf(BufferValue, TEXT("%2.0f°»"), value);

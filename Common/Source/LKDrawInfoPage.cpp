@@ -853,7 +853,8 @@ label_TRI:
 	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[6],&qrow[7],&qrow[5]);
 
 	_stprintf(BufferValue,_T("%.0f°"),CALCULATED_INFO.BankAngle);
-	_stprintf(BufferTitle,_T("Bank"));
+	// LKTOKEN _@M1197_ "Bank"
+	_stprintf(BufferTitle, gettext(TEXT("_@M1197_")));
 	_stprintf(BufferUnit,_T(""));
 	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
 
@@ -881,7 +882,8 @@ label_TRI:
 	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[6],&qrow[7],&qrow[5]);
 
 	_stprintf(BufferValue,_T("%.0f°"),CALCULATED_INFO.BankAngle);
-	_stprintf(BufferTitle,_T("Bank"));
+	// LKTOKEN _@M1197_ "Bank"
+	_stprintf(BufferTitle, gettext(TEXT("_@M1197_")));
 	_stprintf(BufferUnit,_T(""));
 	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[3],&qrow[4],&qrow[2]);
 

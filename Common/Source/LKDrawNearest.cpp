@@ -354,14 +354,17 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 
 	switch(curmapspace) {
 		case MSM_LANDABLE:
- 			_stprintf(Buffer,TEXT("LND %d/%d"),  curpage+1,Numpages); 
+			// LKTOKEN _@M1311_ "LND"
+ 			_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1311_")), curpage+1,Numpages); 
 			break;
 		case MSM_AIRPORTS:
- 	 		_stprintf(Buffer,TEXT("APT %d/%d"),  curpage+1, Numpages); 
+ 	 		// LKTOKEN _@M1313_ "APT"
+			_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1313_")), curpage+1, Numpages); 
 			break;
 		case MSM_NEARTPS:
 		default:
- 	 		_stprintf(Buffer,TEXT("TPS %d/%d"),  curpage+1, Numpages); 
+			// LKTOKEN _@M1315_ "TPS"
+ 	 		_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1315_")), curpage+1, Numpages); 
 			break;
 	}
 
@@ -377,25 +380,29 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 	else
 		LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
-	 _stprintf(Buffer,TEXT("Dist")); 
+	// LKTOKEN _@M1300_ "Dist"
+	_stprintf(Buffer,gettext(TEXT("_@M1300_"))); 
 	if (cursortbox==1)
 		LKWriteText(hdc, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
 		LKWriteText(hdc, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-	_stprintf(Buffer,TEXT("Dir")); 
+	// LKTOKEN _@M1301_ "Dir"
+	_stprintf(Buffer,gettext(TEXT("_@M1301_"))); 
 	if (cursortbox==2)
 		LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
 		LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-	_stprintf(Buffer,TEXT("rEff")); 
+	// LKTOKEN _@M1302_ "rEff"
+	_stprintf(Buffer,gettext(TEXT("_@M1302_"))); 
 	if (cursortbox==3)
 		LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
 		LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-	_stprintf(Buffer,TEXT("AltA")); 
+	// LKTOKEN _@M1303_ "AltA"
+	_stprintf(Buffer,gettext(TEXT("_@M1303_"))); 
 	if (cursortbox==4)
 		LKWriteText(hdc, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
@@ -416,14 +423,17 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 
 		switch(curmapspace) {
 			case MSM_LANDABLE:
-				_stprintf(Buffer,TEXT("LNDB %d/%d"),  curpage+1,Numpages); 
+				// LKTOKEN _@M1312_ "LNDB"
+				_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1312_")), curpage+1,Numpages); 
 				break;
 			case MSM_AIRPORTS:
-				_stprintf(Buffer,TEXT("APTS %d/%d"),  curpage+1, Numpages); 
+				// LKTOKEN _@M1314_ "APTS"
+				_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1314_")), curpage+1, Numpages); 
 				break;
 			case MSM_NEARTPS:
 			default:
-				_stprintf(Buffer,TEXT("TPS %d/%d"),  curpage+1, Numpages); 
+				// LKTOKEN _@M1315_ "TPS"
+				_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1315_")), curpage+1, Numpages); 
 				break;
 		}
 /* 101222 REMOVE
@@ -437,25 +447,29 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 		else
 			LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
-		_stprintf(Buffer,TEXT("Dist")); 
+		// LKTOKEN _@M1300_ "Dist"
+		_stprintf(Buffer,gettext(TEXT("_@M1300_"))); 
 		if (cursortbox==1)
 			LKWriteText(hdc, Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer,TEXT("Dir")); 
+		// LKTOKEN _@M1301_ "Dir"
+		_stprintf(Buffer,gettext(TEXT("_@M1301_"))); 
 		if (cursortbox==2)
 			LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer,TEXT("rEff")); 
+		// LKTOKEN _@M1302_ "rEff"
+		_stprintf(Buffer,gettext(TEXT("_@M1302_"))); 
 		if (cursortbox==3)
 			LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer,TEXT("Arriv")); 
+		// LKTOKEN _@M1308_ "Arriv"
+		_stprintf(Buffer,gettext(TEXT("_@M1308_"))); 
 		if (cursortbox==4)
 			LKWriteText(hdc, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
@@ -468,14 +482,17 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 
 		switch(curmapspace) {
 			case MSM_LANDABLE:
-				_stprintf(Buffer,TEXT("LNDB %d/%d"),  curpage+1,Numpages); 
+				// LKTOKEN _@M1312_ "LNDB"
+				_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1312_")), curpage+1,Numpages); 
 				break;
 			case MSM_AIRPORTS:
-				_stprintf(Buffer,TEXT("APTS %d/%d"),  curpage+1, Numpages); 
+				// LKTOKEN _@M1314_ "APTS"
+				_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1314_")), curpage+1, Numpages); 
 				break;
 			case MSM_NEARTPS:
 			default:
-				_stprintf(Buffer,TEXT("TPS %d/%d"),  curpage+1, Numpages); 
+				// LKTOKEN _@M1315_ "TPS"
+				_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1315_")), curpage+1, Numpages); 
 				break;
 		}
 /* 101222 REMOVE
@@ -489,25 +506,29 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 		else
 			LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
-		_stprintf(Buffer,TEXT("Distance")); 
+		// LKTOKEN _@M1304_ "Distance"
+		_stprintf(Buffer,gettext(TEXT("_@M1304_"))); 
 		if (cursortbox==1)
 			LKWriteText(hdc, Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer,TEXT("Direction")); 
+		// LKTOKEN _@M1305_ "Direction"
+		_stprintf(Buffer,gettext(TEXT("_@M1305_"))); 
 		if (cursortbox==2)
 			LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer,TEXT("ReqEff")); 
+		// LKTOKEN _@M1306_ "ReqEff"
+		_stprintf(Buffer,gettext(TEXT("_@M1306_"))); 
 		if (cursortbox==3)
 			LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer,TEXT("AltArr")); 
+		// LKTOKEN _@M1307_ "AltArr"
+		_stprintf(Buffer,gettext(TEXT("_@M1307_"))); 
 		if (cursortbox==4)
 			LKWriteText(hdc, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
@@ -582,12 +603,12 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 
 #ifndef __MINGW32__
 			if (value > 1)
-				_stprintf(Buffer3[i][curpage], TEXT("%2.0f°»"), value);
+				_stprintf(Buffer3[i][curpage], TEXT("%2.0fï¿½ï¿½"), value);
 			else
 				if (value < -1)
-					_stprintf(Buffer3[i][curpage], TEXT("«%2.0f°"), -value);
+					_stprintf(Buffer3[i][curpage], TEXT("ï¿½%2.0fï¿½"), -value);
 				else
-					_tcscpy(Buffer3[i][curpage], TEXT("«»"));
+					_tcscpy(Buffer3[i][curpage], TEXT("ï¿½ï¿½"));
 #else
 			if (value > 1)
 				_stprintf(Buffer3[i][curpage], TEXT("%2.0fÂ°Â»"), value);

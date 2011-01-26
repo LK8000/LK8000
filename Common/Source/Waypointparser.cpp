@@ -351,8 +351,8 @@ void ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 
 	if (ParseWayPointString(Temp2String, new_waypoint)) {
 
-		if ( (_tcscmp(new_waypoint->Name, _T(RESWP_TAKEOFF_NAME))==0) && (new_waypoint->Number==RESWP_ID)) {
-			StartupStore(_T("... FOUND TAKEOFF INSIDE WAYPOINTS FILE%s"),NEWLINE);
+		if ( (_tcscmp(new_waypoint->Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint->Number==RESWP_ID)) {
+			StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
 			Sleep(1000); // REMOVE TODO 
 			memcpy(WayPointList,new_waypoint,sizeof(WAYPOINT));
 			continue;
@@ -503,8 +503,8 @@ goto_inloop:
 	if ( fileformat == LKW_DAT || fileformat== LKW_XCW ) {
 		if (ParseWayPointString(nTemp2String, new_waypoint)) {
 
-			if ( (_tcscmp(new_waypoint->Name, _T(RESWP_TAKEOFF_NAME))==0) && (new_waypoint->Number==RESWP_ID)) {
-				StartupStore(_T("... FOUND TAKEOFF INSIDE WAYPOINTS FILE%s"),NEWLINE);
+			if ( (_tcscmp(new_waypoint->Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint->Number==RESWP_ID)) {
+				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
 				Sleep(1000); // REMOVE TODO 
 				memcpy(WayPointList,new_waypoint,sizeof(WAYPOINT));
 				continue;
@@ -524,8 +524,8 @@ goto_inloop:
 			break;
 		}
 		if (ParseCUPWayPointString(nTemp2String, new_waypoint)) {
-			if ( (_tcscmp(new_waypoint->Name, _T(RESWP_TAKEOFF_NAME))==0) && (new_waypoint->Number==RESWP_ID)) {
-				StartupStore(_T("... FOUND TAKEOFF INSIDE WAYPOINTS FILE%s"),NEWLINE);
+			if ( (_tcscmp(new_waypoint->Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint->Number==RESWP_ID)) {
+				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
 				Sleep(1000); // REMOVE TODO 
 				memcpy(WayPointList,new_waypoint,sizeof(WAYPOINT));
 				continue;
@@ -542,8 +542,8 @@ goto_inloop:
 	}
 	if ( fileformat == LKW_COMPE ) {
 		if (ParseCOMPEWayPointString(nTemp2String, new_waypoint)) {
-			if ( (_tcscmp(new_waypoint->Name, _T(RESWP_TAKEOFF_NAME))==0) && (new_waypoint->Number==RESWP_ID)) {
-				StartupStore(_T("... FOUND TAKEOFF INSIDE WAYPOINTS FILE%s"),NEWLINE);
+			if ( (_tcscmp(new_waypoint->Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint->Number==RESWP_ID)) {
+				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
 				Sleep(1000); // REMOVE TODO 
 				memcpy(WayPointList,new_waypoint,sizeof(WAYPOINT));
 				continue;
@@ -1872,7 +1872,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_TAKEOFF].Longitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_TAKEOFF].Altitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_TAKEOFF].Flags=TURNPOINT;
-	_tcscpy(WayPointList[RESWP_TAKEOFF].Name,_T(RESWP_TAKEOFF_NAME) ); // 100227
+	_tcscpy(WayPointList[RESWP_TAKEOFF].Name, gettext(TEXT(RESWP_TAKEOFF_NAME)) ); // 100227
 	#if CUPCOM
 	if ( WayPointList[RESWP_TAKEOFF].Comment == NULL) {
 		WayPointList[RESWP_TAKEOFF].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
@@ -1898,11 +1898,12 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_LASTTHERMAL].Longitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_LASTTHERMAL].Altitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_LASTTHERMAL].Flags=TURNPOINT;
-	_tcscpy(WayPointList[RESWP_LASTTHERMAL].Name,_T(RESWP_LASTTHERMAL_NAME) );
+	_tcscpy(WayPointList[RESWP_LASTTHERMAL].Name, gettext(TEXT(RESWP_LASTTHERMAL_NAME)) );
 	#if CUPCOM
 	WayPointList[RESWP_LASTTHERMAL].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
 	#endif
-	_tcscpy(WayPointList[RESWP_LASTTHERMAL].Comment,_T("LAST GOOD THERMAL"));
+	// LKTOKEN _@M1320_ "LAST GOOD THERMAL"
+	_tcscpy(WayPointList[RESWP_LASTTHERMAL].Comment, gettext(TEXT("_@M1320_")));		
 	WayPointList[RESWP_LASTTHERMAL].Zoom=0;
 	WayPointList[RESWP_LASTTHERMAL].Reachable=FALSE;
 	WayPointList[RESWP_LASTTHERMAL].AltArivalAGL=0.0;
@@ -1923,11 +1924,12 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_TEAMMATE].Longitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_TEAMMATE].Altitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_TEAMMATE].Flags=TURNPOINT;
-	_tcscpy(WayPointList[RESWP_TEAMMATE].Name,_T(RESWP_TEAMMATE_NAME) );
+	_tcscpy(WayPointList[RESWP_TEAMMATE].Name, gettext(TEXT(RESWP_TEAMMATE_NAME)) );
 	#if CUPCOM
 	WayPointList[RESWP_TEAMMATE].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
 	#endif
-	_tcscpy(WayPointList[RESWP_TEAMMATE].Comment,_T("TEAM MATE"));
+	// LKTOKEN _@M1321_ "TEAM MATE"
+	_tcscpy(WayPointList[RESWP_TEAMMATE].Comment, gettext(TEXT("_@M1321_")));
 	WayPointList[RESWP_TEAMMATE].Zoom=0;
 	WayPointList[RESWP_TEAMMATE].Reachable=FALSE;
 	WayPointList[RESWP_TEAMMATE].AltArivalAGL=0.0;
@@ -1948,11 +1950,12 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_FLARMTARGET].Longitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_FLARMTARGET].Altitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_FLARMTARGET].Flags=TURNPOINT;
-	_tcscpy(WayPointList[RESWP_FLARMTARGET].Name,_T(RESWP_FLARMTARGET_NAME) );
+	_tcscpy(WayPointList[RESWP_FLARMTARGET].Name, gettext(TEXT(RESWP_FLARMTARGET_NAME)) );
 	#if CUPCOM
 	WayPointList[RESWP_FLARMTARGET].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
 	#endif
-	_tcscpy(WayPointList[RESWP_FLARMTARGET].Comment,_T("FLARM TARGET"));
+	// LKTOKEN _@M1322_ "FLARM TARGET"
+	_tcscpy(WayPointList[RESWP_FLARMTARGET].Comment, gettext(TEXT("_@M1322_")));
 	WayPointList[RESWP_FLARMTARGET].Zoom=0;
 	WayPointList[RESWP_FLARMTARGET].Reachable=FALSE;
 	WayPointList[RESWP_FLARMTARGET].AltArivalAGL=0.0;

@@ -850,7 +850,8 @@ DWORD BatteryWarningTime = 0;
 
 char dedicated[]="Dedicated to my father Vittorio";
 
-SCREEN_INFO Data_Options[100];
+#define NUMSELECTSTRING_MAX			100
+SCREEN_INFO Data_Options[NUMSELECTSTRING_MAX];
 int NUMSELECTSTRINGS = 0;
 
 
@@ -912,7 +913,7 @@ bool SetDataOption( int index,
 					char prev_screen)
 {
 	SCREEN_INFO tag;
-	if (index>100) return false;		//TODO define max
+	if (index>=NUMSELECTSTRING_MAX) return false;
 
 	tag.UnitGroup = UnitGroup;
 	_tcsncpy(tag.Description, gettext(Description), DESCRIPTION_SIZE);
@@ -1147,6 +1148,8 @@ void FillDataOptions()
 	// LKTOKEN  _@M1179_ = "_Experimental2", _@M1180_ = "Exp2"
 	SetDataOption(89, ugNone,           TEXT("_@M1179_"), TEXT("_@M1180_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
 	// LKTOKEN  _@M1181_ = "Battery Voltage", _@M1182_ = "Batt"
+
+	//Before adding new items, consider changing NUMSELECTSTRING_MAX
 
 }
 
@@ -1771,7 +1774,8 @@ void PreloadInitialisation(bool ask) {
     RestoreRegistry();
     ReadRegistrySettings();
 
-    CreateProgressDialog(gettext(TEXT("Initialising..."))); 
+    // LKTOKEN _@M1206_ "Initialising..."
+	CreateProgressDialog(gettext(TEXT("_@M1206_"))); 
   }
 
   // Interface (before interface)
@@ -2087,7 +2091,8 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 
 
 if (ScreenSize==0) {
-CreateProgressDialog(TEXT("ERROR UNKNOWN RESOLUTION!"));
+// LKTOKENS _@M1207_ "ERROR UNKNOWN RESOLUTION!"
+CreateProgressDialog(gettext(TEXT("_@M1207_")));
  Sleep(3000);
 }
 #ifdef PNA // VENTA-ADDON 
@@ -2103,7 +2108,8 @@ CreateProgressDialog(TEXT("ERROR UNKNOWN RESOLUTION!"));
   LocalPath(sTmpA,_T(""));
 #if defined(FIVV) && ( !defined(WINDOWSPC) || WINDOWSPC==0 )
   if ( !datadir ) {
-    CreateProgressDialog(TEXT("ERROR NO DIRECTORY:"));
+	// LKTOKEN _@M1208_ "ERROR NO DIRECTORY:"
+    CreateProgressDialog(gettext(TEXT("_@M1208_")));
     Sleep(3000);
   }
 #endif
@@ -2112,7 +2118,8 @@ CreateProgressDialog(TEXT("ERROR UNKNOWN RESOLUTION!"));
 #if defined(FIVV) && ( !defined(WINDOWSPC) || WINDOWSPC==0 )
   if ( !datadir ) {
     Sleep(3000);
-    CreateProgressDialog(TEXT("CHECK INSTALLATION!"));
+    // LKTOKEN _@M1209_ "CHECK INSTALLATION!"
+	CreateProgressDialog(gettext(TEXT("_@M1209_")));
     Sleep(3000);
   }
 #endif
@@ -2120,27 +2127,34 @@ CreateProgressDialog(TEXT("ERROR UNKNOWN RESOLUTION!"));
 
 // TODO until startup graphics are settled, no need to delay PC start
   if ( AircraftCategory == (AircraftCategory_t)umParaglider )
-	CreateProgressDialog(TEXT("PARAGLIDING MODE")); 
+	// LKTOKEN _@M1210_ "PARAGLIDING MODE"
+	CreateProgressDialog(gettext(TEXT("_@M1210_"))); 
 #if NOSIM
-  if (SIMMODE) CreateProgressDialog(TEXT("SIMULATION")); 
+	// LKTOKEN _@M1211_ "SIMULATION"
+  if (SIMMODE) CreateProgressDialog(gettext(TEXT("_@M1211_"))); 
 #else
 #ifdef _SIM_  
-  CreateProgressDialog(TEXT("SIMULATION")); 
+	// LKTOKEN _@M1211_ "SIMULATION"
+  CreateProgressDialog(gettext(TEXT("_@M1211_"))); 
 #endif
 #endif
 
 
 #ifdef PNA
   if ( SetBacklight() == true ) 
-	CreateProgressDialog(TEXT("AUTOMATIC BACKLIGHT CONTROL"));
+	// LKTOKEN _@M1212_ "AUTOMATIC BACKLIGHT CONTROL"
+	CreateProgressDialog(gettext(TEXT("_@M1212_")));
   else
-	CreateProgressDialog(TEXT("NO BACKLIGHT CONTROL"));
+	// LKTOKEN _@M1213_ "NO BACKLIGHT CONTROL"
+	CreateProgressDialog(gettext(TEXT("_@M1213_")));
 
   // this should work ok for all pdas as well
   if ( SetSoundVolume() == true ) 
-	CreateProgressDialog(TEXT("AUTOMATIC SOUND LEVEL CONTROL"));
+	// LKTOKEN _@M1214_ "AUTOMATIC SOUND LEVEL CONTROL"
+	CreateProgressDialog(gettext(TEXT("_@M1214_")));
   else
-	CreateProgressDialog(TEXT("NO SOUND LEVEL CONTROL"));
+	// LKTOKENS _@M1215_ "NO SOUND LEVEL CONTROL"
+	CreateProgressDialog(gettext(TEXT("_@M1215_")));
 #endif
 
   RasterTerrain::OpenTerrain();
@@ -2159,7 +2173,8 @@ CreateProgressDialog(TEXT("ERROR UNKNOWN RESOLUTION!"));
   RasterTerrain::ServiceFullReload(GPS_INFO.Latitude, 
                                    GPS_INFO.Longitude);
 
-  // CreateProgressDialog(TEXT("Scanning weather forecast"));
+  // LKTOKEN _@M1216_ "Scanning weather forecast"  
+  // CreateProgressDialog(gettext(TEXT("_@M1216_")));
   StartupStore(TEXT(". RASP load%s"),NEWLINE);
   RASP.Scan(GPS_INFO.Latitude, GPS_INFO.Longitude);
 
@@ -2184,7 +2199,8 @@ CreateProgressDialog(TEXT("ERROR UNKNOWN RESOLUTION!"));
 
   // ... register all supported devices
   // IMPORTANT: ADD NEW ONES TO BOTTOM OF THIS LIST
-  CreateProgressDialog(TEXT("Starting devices"));
+  // LKTOKEN _@M1217_ "Starting devices"
+  CreateProgressDialog(gettext(TEXT("_@M1217_")));
   StartupStore(TEXT(". Register serial devices%s"),NEWLINE);
   genRegister(); // MUST BE FIRST
   cai302Register();
@@ -2245,8 +2261,8 @@ CreateProgressDialog(TEXT("ERROR UNKNOWN RESOLUTION!"));
   CreateProgressDialog(TEXT("Bluetooth dialup SMS"));
   bsms.Initialise();
 #endif
-
-  CreateProgressDialog(TEXT("Initialising display"));
+  // LKTOKEN _@M1218_ "Initialising display"
+  CreateProgressDialog(gettext(TEXT("_@M1218_")));
 
   // just about done....
 
@@ -3312,8 +3328,8 @@ void Shutdown(void) {
 	LKRunStartEnd(false);
 	exit(0);
   }
-
-  CreateProgressDialog(TEXT("Shutdown, please wait..."));
+  // LKTOKEN _@M1219_ "Shutdown, please wait..."
+  CreateProgressDialog(gettext(TEXT("_@M1219_")));
 
   StartupStore(TEXT(". Entering shutdown...%s"),NEWLINE);
   StartupLogFreeRamAndStorage();
@@ -3326,11 +3342,13 @@ void Shutdown(void) {
   StartupStore(TEXT(". AirspaceWarnListDeInit%s"),NEWLINE);
   AirspaceWarnListDeInit();
 
-  CreateProgressDialog(TEXT("Shutdown, saving logs..."));
+  // LKTOKEN _@M1220_ "Shutdown, saving logs..."
+  CreateProgressDialog(gettext(TEXT("_@M1220_")));
   // stop logger
   guiStopLogger(true);
 
-  CreateProgressDialog(TEXT("Shutdown, saving profile..."));
+  // LKTOKEN _@M1221_ "Shutdown, saving profile..."
+  CreateProgressDialog(gettext(TEXT("_@M1221_")));
   // Save settings
   StoreRegistry();
 
@@ -3352,7 +3370,8 @@ void Shutdown(void) {
 #endif
 
   // Stop drawing
-  CreateProgressDialog(TEXT("Shutdown, please wait..."));
+  // LKTOKEN _@M1219_ "Shutdown, please wait..."
+  CreateProgressDialog(gettext(TEXT("_@M1219_")));
   
   StartupStore(TEXT(". CloseDrawingThread%s"),NEWLINE);
   // 100526 this is creating problem in SIM mode when quit is called from X button, and we are in waypoint details
@@ -3368,8 +3387,8 @@ void Shutdown(void) {
   #endif
 
   // Clear data
-
-  CreateProgressDialog(TEXT("Shutdown, saving task..."));
+  // LKTOKEN _@M1222_ "Shutdown, saving task..."
+  CreateProgressDialog(gettext(TEXT("_@M1222_")));
   StartupStore(TEXT(". Save default task%s"),NEWLINE);
   LockTaskData();
   #ifndef NOTASKABORT
@@ -3388,7 +3407,8 @@ void Shutdown(void) {
   CloseWayPoints();
   UnlockTaskData();
 
-  CreateProgressDialog(TEXT("Shutdown, please wait..."));
+  // LKTOKEN _@M1219_ "Shutdown, please wait..."
+  CreateProgressDialog(gettext(TEXT("_@M1219_")));
   StartupStore(TEXT(". CloseTerrainTopology%s"),NEWLINE);
 
   RASP.Close();
@@ -5322,11 +5342,11 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
 	TCHAR tbuf[10];
 	if (CALCULATED_INFO.AutoMacCready) 
-		// LKTOKEN _@M1198_ "Auto"
-		_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1198_")));
+		// LKTOKEN _@M1202_ "Auto"
+		_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1202_")));
 	else
-		// LKTOKEN _@M1197_ "Man"
-		_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1197_")));
+		// LKTOKEN _@M1201_ "Man"
+		_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1201_")));
 	ReplaceInString(OutBuffer, TEXT("$(MacCreadyMode)"), tbuf, Size);
 	if (--items<=0) goto label_ret; // 100517
   }
@@ -5708,7 +5728,8 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
       break;
     case 1:
 	if (ExtendedVisualGlide)
-		ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), TEXT("Moving"), Size);
+		// LKTOKEN _@M1205_ "Moving"
+		ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), gettext(TEXT("_@M1205_")), Size);
 	else
       		ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), gettext(TEXT("_@M491_")), Size); // OFF
       break;
@@ -5844,13 +5865,15 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     switch(MapWindow::DeclutterLabels) {
     case MAPLABELS_ALLON:
 	//#if LKTOPO
+		// LKTOKEN _@M1203_ "WPTS"
       ReplaceInString(OutBuffer, TEXT("$(MapLabelsToggleActionName)"), 
-                      TEXT("WPTS"), Size);
+                      gettext(TEXT("_@M1203_")), Size);
 
       break;
     case MAPLABELS_ONLYWPS:
+		// LKTOKEN _@M1204_ "TOPO"
       ReplaceInString(OutBuffer, TEXT("$(MapLabelsToggleActionName)"), 
-                      TEXT("TOPO"), Size);
+                      gettext(TEXT("_@M1204_")), Size);
       break;
     case MAPLABELS_ONLYTOPO:
 	//#endif
