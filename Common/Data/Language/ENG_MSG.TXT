@@ -1218,4 +1218,10 @@ _@M1328_ "L>"
 _@M1329_ "M"
 _@M1330_ "F>"
 
+# LK traffic page headers, try to use the same or less number of chars here,
+# or test it with different screen reolutions and landscape/portrait mode too!
+_@M1331_ "TRF"
+_@M1332_ "Var"
+_@M1333_ "Vario"
+_@M1334_ "Alt"
 

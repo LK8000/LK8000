@@ -300,31 +300,36 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 	LKWriteText(hdc, Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0,  WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
   	SelectObject(hdc, LK8InfoNormalFont); 
 
- 		_stprintf(Buffer,TEXT("TRF %d/%d"),  curpage+1,TrafficNumpages); 
+ 		// LKTOKEN _@M1331_ "TRF"
+		_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1331_")), curpage+1,TrafficNumpages); 
 	if (cursortbox==0)
  		LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
 	else
  		LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
-	 _stprintf(Buffer,TEXT("Dist")); 
+	// LKTOKEN _@M1300_ "Dist"
+	 _stprintf(Buffer, gettext(TEXT("_@M1300_"))); 
 	if (cursortbox==1)
 		LKWriteText(hdc, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
 		LKWriteText(hdc, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-	_stprintf(Buffer,TEXT("Dir")); 
+	// LKTOKEN _@M1301_ "Dir"
+	_stprintf(Buffer, gettext(TEXT("_@M1301_"))); 
 	if (cursortbox==2)
 		LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
 		LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-	_stprintf(Buffer,TEXT("Var")); 
+	// LKTOKEN _@M1332_ "Var"
+	_stprintf(Buffer, gettext(TEXT("_@M1332_"))); 
 	if (cursortbox==3)
 		LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
 		LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-	_stprintf(Buffer,TEXT("Alt")); 
+	// LKTOKEN _@M1334_ "Alt"
+	_stprintf(Buffer, gettext(TEXT("_@M1334_"))); 
 	if (cursortbox==4)
 		LKWriteText(hdc, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
@@ -341,31 +346,36 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 		LKWriteText(hdc, Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
   		SelectObject(hdc, LK8InfoNormalFont); 
 
-		_stprintf(Buffer,TEXT("TRF %d/%d"), curpage+1, TrafficNumpages); 
+ 		// LKTOKEN _@M1331_ "TRF"
+		_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1331_")), curpage+1,TrafficNumpages); 
 		if (cursortbox==0)
 			LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
-		_stprintf(Buffer,TEXT("Dist")); 
+		// LKTOKEN _@M1300_ "Dist"
+		 _stprintf(Buffer, gettext(TEXT("_@M1300_"))); 
 		if (cursortbox==1)
 			LKWriteText(hdc, Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer,TEXT("Dir")); 
+		// LKTOKEN _@M1301_ "Dir"
+		_stprintf(Buffer, gettext(TEXT("_@M1301_"))); 
 		if (cursortbox==2)
 			LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer,TEXT("Var")); 
+		// LKTOKEN _@M1332_ "Var"
+		_stprintf(Buffer, gettext(TEXT("_@M1332_"))); 
 		if (cursortbox==3)
 			LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer,TEXT("Alt")); 
+		// LKTOKEN _@M1334_ "Alt"
+		_stprintf(Buffer, gettext(TEXT("_@M1334_"))); 
 		if (cursortbox==4)
 			LKWriteText(hdc, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
@@ -376,31 +386,36 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 		LKWriteText(hdc, Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
   		SelectObject(hdc, LK8InfoNormalFont); 
 
-		_stprintf(Buffer,TEXT("TRF %d/%d"),  curpage+1,TrafficNumpages); 
+ 		// LKTOKEN _@M1331_ "TRF"
+		_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1331_")), curpage+1,TrafficNumpages); 
 		if (cursortbox==0)
 			LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
-		_stprintf(Buffer,TEXT("Distance")); 
+		// LKTOKEN _@M1304_ "Distance"
+		_stprintf(Buffer, gettext(TEXT("_@M1304_"))); 
 		if (cursortbox==1)
 			LKWriteText(hdc, Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer,TEXT("Direction")); 
+		// LKTOKEN _@M1305_ "Direction"
+		_stprintf(Buffer, gettext(TEXT("_@M1305_"))); 
 		if (cursortbox==2)
 			LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer,TEXT("Vario")); 
+		// LKTOKEN _@M1333_ "Vario"
+		_stprintf(Buffer, gettext(TEXT("_@M1333_"))); 
 		if (cursortbox==3)
 			LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer,TEXT("Alt")); 
+		// LKTOKEN _@M1334_ "Alt"
+		_stprintf(Buffer, gettext(TEXT("_@M1334_"))); 
 		if (cursortbox==4)
 			LKWriteText(hdc, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
@@ -489,12 +504,12 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
 #ifndef __MINGW32__
 			if (value > 1)
-				_stprintf(Buffer3[i][curpage], TEXT("%2.0f°»"), value);
+				_stprintf(Buffer3[i][curpage], TEXT("%2.0f\xB0\xBB"), value);
 			else
 				if (value < -1)
-					_stprintf(Buffer3[i][curpage], TEXT("«%2.0f°"), -value);
+					_stprintf(Buffer3[i][curpage], TEXT("\xAB%2.0f\xB0"), -value);
 				else
-					_tcscpy(Buffer3[i][curpage], TEXT("«»"));
+					_tcscpy(Buffer3[i][curpage], TEXT("\xAB\xBB"));
 #else
 			if (value > 1)
 				_stprintf(Buffer3[i][curpage], TEXT("%2.0fÂ°Â»"), value);
