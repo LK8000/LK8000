@@ -142,8 +142,10 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl){
     }
   }
 
-  if (err != VLA_ERR_NOERR)
+  if (err != VLA_ERR_NOERR) {
+    CloseProgressDialog();
     return FALSE;
+  }
 
   int i;
   for (i = 0; i < decl->num_waypoints; i++)
