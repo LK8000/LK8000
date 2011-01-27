@@ -105,7 +105,8 @@ BOOL CSTScreenBuffer::CreateBitmap(int nWidth, int nHeight)
   HDC hDC = ::GetDC(NULL);
   if (!hDC) FailStore(_T("A001 GetDC")); // 100101
   ASSERT(hDC);
-  m_hBitmap = CreateDIBSection(hDC, (const BITMAPINFO*)dibInfo, DIB_RGB_COLORS, (void**)&m_pBuffer, NULL, 0);
+  BGRColor **pBuffer = &m_pBuffer;
+  m_hBitmap = CreateDIBSection(hDC, (const BITMAPINFO*)dibInfo, DIB_RGB_COLORS, (void**)pBuffer, NULL, 0);
   ::ReleaseDC(NULL, hDC);
   if (!m_hBitmap) FailStore(_T("A002 hBitmap"));
   ASSERT(m_hBitmap);

@@ -26,7 +26,7 @@ typedef struct{
   double Distance;
   double Direction;
   int    DirectionErr;
-  int    Type;
+  unsigned int Type;
   unsigned int FourChars;
 } AirspaceSelectInfo_t;
 
@@ -38,17 +38,17 @@ static WndListFrame *wAirspaceList=NULL;
 static WndOwnerDrawFrame *wAirspaceListEntry = NULL;
 
 static TCHAR NameFilter[] = TEXT("*ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_");
-static int NameFilterIdx=0;
+static unsigned NameFilterIdx=0;
 
 static double DistanceFilter[] = {0.0, 25.0, 50.0, 75.0, 100.0, 150.0, 
                                   250.0, 500.0, 1000.0};
-static int DistanceFilterIdx=0;
+static unsigned DistanceFilterIdx=0;
 
 #define DirHDG -1
 
 static int DirectionFilter[] = {0, DirHDG, 360, 30, 60, 90, 120, 150, 
                                 180, 210, 240, 270, 300, 330};
-static int DirectionFilterIdx=0;
+static unsigned DirectionFilterIdx=0;
 static int lastHeading=0;
 
 static int NumberOfAirspaces = 0;
@@ -72,7 +72,7 @@ static const TCHAR *TypeFilter[] = {TEXT("*"),
 				    TEXT("Class G"),
 };
 
-static int TypeFilterIdx=0;
+static unsigned TypeFilterIdx=0;
 
 static int UpLimit=0;
 static int LowLimit=0;
@@ -409,13 +409,14 @@ static void OnFilterName(DataField *Sender, DataField::DataAccessKind_t Mode){
       UpdateList();
     break;
     case DataField::daDec:
-      NameFilterIdx--;
-      if (NameFilterIdx < 0) {
+      if (NameFilterIdx == 0) {
 	siz=sizeof(NameFilter[0]);
 	if (siz==0) FailStore(_T("Division by zero onFilterName A"));
         if (siz>0) // 100101
 		NameFilterIdx = sizeof(NameFilter)/sizeof(NameFilter[0])-1;
       }
+      else
+        NameFilterIdx--;
       FilterMode(true);
       UpdateList();
     break;
@@ -449,9 +450,10 @@ static void OnFilterDistance(DataField *Sender,
       UpdateList();
     break;
     case DataField::daDec:
-      DistanceFilterIdx--;
-      if (DistanceFilterIdx < 0)
+      if (DistanceFilterIdx == 0)
         DistanceFilterIdx = sizeof(DistanceFilter)/sizeof(DistanceFilter[0])-1;
+      else
+        DistanceFilterIdx--;
       FilterMode(false);
       UpdateList();
     break;
@@ -508,9 +510,10 @@ static void OnFilterDirection(DataField *Sender,
       UpdateList();
     break;
     case DataField::daDec:
-      DirectionFilterIdx--;
-      if (DirectionFilterIdx < 0)
+      if (DirectionFilterIdx == 0)
         DirectionFilterIdx = sizeof(DirectionFilter)/sizeof(DirectionFilter[0])-1;
+      else
+        DirectionFilterIdx--;
       FilterMode(false);
       UpdateList();
     break;
@@ -541,9 +544,10 @@ static void OnFilterType(DataField *Sender,
       UpdateList();
     break;
     case DataField::daDec:
-      TypeFilterIdx--;
-      if (TypeFilterIdx < 0)
+      if (TypeFilterIdx == 0)
         TypeFilterIdx = sizeof(TypeFilter)/sizeof(TypeFilter[0])-1;
+      else
+        TypeFilterIdx--;
       FilterMode(false);
       UpdateList();
     break;
@@ -716,7 +720,7 @@ static int OnTimerNotify(WindowControl * Sender) {
 static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
 
   WndProperty* wp;
-  int NewIndex = TypeFilterIdx;
+  unsigned NewIndex = TypeFilterIdx;
 
   (void)lParam;
   (void)Sender;

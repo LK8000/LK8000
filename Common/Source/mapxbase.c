@@ -522,7 +522,7 @@ static char *msDBFReadAttribute(DBFHandle psDBF, int hEntity, int iField )
     /* -------------------------------------------------------------------- */
     /*	Extract the requested field.					    */
     /* -------------------------------------------------------------------- */
-    strncpy( psDBF->pszStringField, pabyRec+psDBF->panFieldOffset[iField], psDBF->panFieldSize[iField] );
+    strncpy( psDBF->pszStringField, (char *)pabyRec+psDBF->panFieldOffset[iField], psDBF->panFieldSize[iField] );
     psDBF->pszStringField[psDBF->panFieldSize[iField]] = '\0';
 
     /*

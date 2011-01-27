@@ -879,7 +879,7 @@ long convert_gcs(int igcfile_version, FILE *Ausgabedatei, lpb bin_puffer, int oo
 			igcfix.pressure_alt = pressure2altitude(igcfix.press);
 
                         //JMWTODO			strftime(igcfix.time,sizeof(igcfix.time),"%H%M%S",&realtime);
-			fprintf(Ausgabedatei,"B%06s%02u%05u%c%03u%05u%c%c%05ld%05ld%03u",
+			fprintf(Ausgabedatei,"B%6s%02u%05u%c%03u%05u%c%c%05ld%05ld%03u",
 			      igcfix.time,
 			      igcfix.latdeg, igcfix.latmin,
 			      ((igcfix.lat<0) ? 'S':'N'),
@@ -915,10 +915,10 @@ long convert_gcs(int igcfile_version, FILE *Ausgabedatei, lpb bin_puffer, int oo
 			Untertyp = (p2[0]);
 			switch (Untertyp) {
 			case FLDEPEV : //JMWTODO strftime(igcfix.time,sizeof(igcfix.time),"%H%M%S",&realtime);
-				       fprintf(Ausgabedatei,"E%06sPEVEVENTBUTTON PRESSED\n",igcfix.time);
+				       fprintf(Ausgabedatei,"E%6sPEVEVENTBUTTON PRESSED\n",igcfix.time);
 				       break;
 			case FLDETKF : //JMWTODO strftime(igcfix.time,sizeof(igcfix.time),"%H%M%S",&realtime);
-				       fprintf(Ausgabedatei,"LGCSTKF%06sTAKEOFF DETECTED\n",igcfix.time);
+				       fprintf(Ausgabedatei,"LGCSTKF%6sTAKEOFF DETECTED\n",igcfix.time);
 				       break;
 			};
 			break;

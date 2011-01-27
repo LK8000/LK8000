@@ -87,6 +87,11 @@
 
 #define	JP2_VALIDATELEN	(JAS_MIN(JP2_JP_LEN + 16, JAS_STREAM_MAXPUTBACK))
 
+// Magick sequence for GeoJP2 box
+static unsigned char msi_uuid2[16] =
+        {0xb1,0x4b,0xf8,0xbd,0x08,0x3d,0x4b,0x43,
+         0xa5,0xae,0x8c,0xd7,0xd5,0xa6,0xce,0x03};
+
 static jp2_dec_t *jp2_dec_create(void);
 static void jp2_dec_destroy(jp2_dec_t *dec);
 static int jp2_getcs(jp2_colr_t *colr);
