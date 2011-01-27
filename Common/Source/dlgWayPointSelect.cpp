@@ -498,6 +498,8 @@ static void OnFilterDistance(DataField *Sender, DataField::DataAccessKind_t Mode
       FilterMode(false);
       UpdateList();
     break;
+  case DataField::daSpecial:
+    break;
   }
 
   if (DistanceFilterIdx == 0)
@@ -557,6 +559,8 @@ static void OnFilterDirection(DataField *Sender, DataField::DataAccessKind_t Mod
       FilterMode(false);
       UpdateList();
     break;
+  case DataField::daSpecial:
+    break;
   }
 
   SetDirectionData(Sender);
@@ -588,6 +592,8 @@ static void OnFilterType(DataField *Sender, DataField::DataAccessKind_t Mode){
         TypeFilterIdx = sizeof(TypeFilter)/sizeof(TypeFilter[0])-1;
       FilterMode(false);
       UpdateList();
+    break;
+  case DataField::daSpecial:
     break;
   }
 

@@ -366,6 +366,10 @@ static void OnAATEnabled(DataField *Sender, DataField::DataAccessKind_t Mode) {
       GetWaypointValues();
       SetWaypointValues();
     break;
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
+    break;
   }
 }
 

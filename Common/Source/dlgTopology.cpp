@@ -32,10 +32,14 @@ static WndForm *wf=NULL;
 
 static void OnTopoActiveData(DataField *Sender, DataField::DataAccessKind_t Mode){
   switch(Mode){
-    case DataField::daGet:
+  case DataField::daGet:
     break;
-    case DataField::daPut:
-    case DataField::daChange:
+  case DataField::daPut:
+  case DataField::daChange:
+    break;
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
     break;
   }
 }

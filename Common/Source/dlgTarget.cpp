@@ -419,6 +419,10 @@ static void OnRangeData(DataField *Sender, DataField::DataAccessKind_t Mode) {
         // done by timer now        RefreshCalculator();
       }
     break;
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
+    break;
   }
 }
 
@@ -465,6 +469,10 @@ static void OnRadialData(DataField *Sender, DataField::DataAccessKind_t Mode) {
         // done by timer now        RefreshCalculator();
       }
     break;
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
+    break;
   }
 }
 
@@ -491,6 +499,7 @@ static void OnLockedData(DataField *Sender, DataField::DataAccessKind_t Mode) {
     break;
     case DataField::daPut: 
     case DataField::daChange:
+      {
       bool lockedthis = Sender->GetAsBoolean();
       if (ValidTaskPoint(target_point)) {
         if (Task[target_point].AATTargetLocked != 
@@ -500,6 +509,11 @@ static void OnLockedData(DataField *Sender, DataField::DataAccessKind_t Mode) {
           Task[target_point].AATTargetLocked = lockedthis;
         }
       }
+      }
+    break;
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
     break;
   }
 }
@@ -517,6 +531,10 @@ static void OnTaskPointData(DataField *Sender, DataField::DataAccessKind_t Mode)
       if (target_point != old_target_point) {
         RefreshTargetPoint();
       }
+    break;
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
     break;
   }
 }

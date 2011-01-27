@@ -108,6 +108,10 @@ static void OnAltitudeData(DataField *Sender, DataField::DataAccessKind_t Mode){
 	}
 	#endif
 	break;
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
+    break;
   }
 }
 
@@ -186,6 +190,9 @@ static void OnBallastData(DataField *Sender, DataField::DataAccessKind_t Mode){
       SetBallast(true);
     }
     break;
+  case DataField::daInc:
+  case DataField::daDec:
+    break;
   }
 }
 
@@ -207,6 +214,10 @@ static void OnBugsData(DataField *Sender, DataField::DataAccessKind_t Mode){
         devPutBugs(devB(), BUGS);
       }
     break;
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
+    break;
   }
 
 }
@@ -225,6 +236,10 @@ static void OnWingLoadingData(DataField *Sender, DataField::DataAccessKind_t Mod
 			WeightOffset(lastRead);  
 		}
 		break;
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
+    break;
   }
 }
 
@@ -243,6 +258,10 @@ static void OnTempData(DataField *Sender, DataField::DataAccessKind_t Mode){
         lastRead = Sender->GetAsFloat();
         CuSonde::setForecastTemperature(Sender->GetAsFloat());
       }
+    break;
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
     break;
   }
 }

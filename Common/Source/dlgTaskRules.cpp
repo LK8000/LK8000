@@ -38,6 +38,10 @@ static void OnRulesActiveData(DataField *Sender,
     case DataField::daChange:
       // TODO enhancement: hide/show fields as appropriate
     break;
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
+    break;
   }
 }
 

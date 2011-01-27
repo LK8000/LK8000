@@ -420,6 +420,8 @@ static void OnFilterName(DataField *Sender, DataField::DataAccessKind_t Mode){
       FilterMode(true);
       UpdateList();
     break;
+  case DataField::daSpecial:
+    break;
   }
 
   _stprintf(sTmp, TEXT("%c*"), NameFilter[NameFilterIdx]);
@@ -456,6 +458,8 @@ static void OnFilterDistance(DataField *Sender,
         DistanceFilterIdx--;
       FilterMode(false);
       UpdateList();
+    break;
+  case DataField::daSpecial:
     break;
   }
 
@@ -517,6 +521,8 @@ static void OnFilterDirection(DataField *Sender,
       FilterMode(false);
       UpdateList();
     break;
+  case DataField::daSpecial:
+    break;
   }
 
   SetDirectionData(Sender);
@@ -550,6 +556,8 @@ static void OnFilterType(DataField *Sender,
         TypeFilterIdx--;
       FilterMode(false);
       UpdateList();
+    break;
+  case DataField::daSpecial:
     break;
   }
 
