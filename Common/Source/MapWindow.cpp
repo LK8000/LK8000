@@ -111,6 +111,8 @@ const COLORRAMP snail_colors[] = {
 };
 
 
+MapWindow::Zoom MapWindow::zoom;
+MapWindow::Mode MapWindow::mode;
 DisplayMode_t UserForceDisplayMode = dmNone;
 DisplayMode_t DisplayMode = dmCruise;
 
