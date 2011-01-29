@@ -53,6 +53,10 @@ static void OnRateData(DataField *Sender, DataField::DataAccessKind_t Mode){
     case DataField::daChange:
       ReplayLogger::TimeScale = Sender->GetAsFloat();
     break;
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
+    break;
   }
 
 }

@@ -160,6 +160,9 @@ SYNCE_PRM	:=synce-prm
 CE_VERSION	:=0x0$(CE_MAJOR)$(CE_MINOR)
 ARFLAGS		:=r
 MKDIR           :=mkdir -p
+FIND            :=find
+ETAGS           :=etags
+EBROWSE         :=ebrowse
 
 ######## windows definitions
 
@@ -198,7 +201,7 @@ CPPFLAGS	+= -DNDEBUG -DFIVV
 #CPPFLAGS	+= -Wchar-subscripts -Wformat -Winit-self -Wimplicit -Wmissing-braces -Wparentheses -Wreturn-type 
 #CPPFLAGS	+= -Wunused-label -Wunused-variable -Wunused-value -Wuninitialized 
 
-CPPFLAGS	+= -Wall -Wno-write-strings -Wno-char-subscripts -Wno-switch
+CPPFLAGS	+= -Wall -Wno-write-strings -Wno-char-subscripts
 #CPPFLAGS	+= -Wall -Wno-non-virtual-dtor 
 #CPPFLAGS	+= -Wno-char-subscripts -Wno-switch
 
@@ -487,15 +490,18 @@ cxx-flags	=$(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_$(dirtarget)) $(TARGET
 all:	$(OUTPUTS)
 
 clean: cleani
-	find . $(IGNORE) \( -name '*.[oa]' -o -name '*.rsc' -o -name '.*.d' \) -type f -print | xargs -r $(RM)
-	$(RM) LK8000-$(TARGET)-ns.exe 
+	@$(NQ)echo "  CLEAN   $(BIN)"
+	$(Q)$(FIND) $(BIN) $(IGNORE) \( -name '*.[oa]' -o -name '*.rsc' -o -name '.*.d' \) -type f -print | xargs -r $(RM)
+	$(Q)$(RM) LK8000-$(TARGET)-ns.exe 
 
 cleani:
-	find . $(IGNORE) \( -name '*.i' \) -type f -print | xargs -r $(RM)
+	@$(NQ)echo "  CLEANI"
+	$(Q)$(FIND) . $(IGNORE) \( -name '*.i' \) -type f -print | xargs -r $(RM)
 
 tags:
-	$(Q)etags --declarations --output=TAGS `find . -name *\\\.[ch] -or -name *\\\.cpp`
-	$(Q)ebrowse -s `find . -name *\\\.[ch] -or -name *\\\.cpp`
+	@$(NQ)echo "  TAGS"
+	$(Q)$(ETAGS) --declarations --output=TAGS `find . -name *\\\.[ch] -or -name *\\\.cpp`
+	$(Q)$(EBROWSE) -s `find . -name *\\\.[ch] -or -name *\\\.cpp`
 
 
 #

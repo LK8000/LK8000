@@ -39,6 +39,10 @@ static void OnCustomKeysActiveData(DataField *Sender, DataField::DataAccessKind_
     case DataField::daPut:
     case DataField::daChange:
     break;
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
+    break;
   }
 }
 

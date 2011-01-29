@@ -139,7 +139,11 @@ static void OnFontNameData(DataField *Sender, DataField::DataAccessKind_t Mode){
 
     case DataField::daChange:
       RedrawSampleFont();
+    break;
 
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
     break;
   }
 }
@@ -155,6 +159,10 @@ static void OnFontWeightData(DataField *Sender, DataField::DataAccessKind_t Mode
       RedrawSampleFont();
 
     break;
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
+    break;
   }
 }
 static void OnFontHeightData(DataField *Sender, DataField::DataAccessKind_t Mode){
@@ -169,6 +177,10 @@ static void OnFontHeightData(DataField *Sender, DataField::DataAccessKind_t Mode
       RedrawSampleFont();
 
     break;
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
+    break;
   }
 }
 static void OnFontItalicData(DataField *Sender, DataField::DataAccessKind_t Mode){
@@ -182,6 +194,10 @@ static void OnFontItalicData(DataField *Sender, DataField::DataAccessKind_t Mode
     case DataField::daChange:
       RedrawSampleFont();
 
+    break;
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
     break;
   }
 }
@@ -198,6 +214,10 @@ static void OnFontTrueTypeData(DataField *Sender, DataField::DataAccessKind_t Mo
       RedrawSampleFont();
 
     break;
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
+    break;
   }
 }
 static void OnFontPitchAndFamilyData(DataField *Sender, DataField::DataAccessKind_t Mode){
@@ -211,6 +231,10 @@ static void OnFontPitchAndFamilyData(DataField *Sender, DataField::DataAccessKin
     case DataField::daChange:
       RedrawSampleFont();
 
+    break;
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
     break;
   }
 }

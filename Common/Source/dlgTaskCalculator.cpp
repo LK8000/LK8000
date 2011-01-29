@@ -238,6 +238,9 @@ static void OnMacCreadyData(DataField *Sender,
     MACCREADY = Sender->GetAsFloat()/LIFTMODIFY;
     RefreshCalculator();
     break;
+  case DataField::daInc:
+  case DataField::daDec:
+    break;
   }
 }
 
@@ -259,6 +262,9 @@ static void OnRangeData(DataField *Sender, DataField::DataAccessKind_t Mode){
       AdjustAATTargets(Range);
       RefreshCalculator();
     }
+    break;
+  case DataField::daInc:
+  case DataField::daDec:
     break;
   }
 }
@@ -283,6 +289,9 @@ static void OnCruiseEfficiencyData(DataField *Sender, DataField::DataAccessKind_
     if (fabs(cruise_efficiency-clast)>0.01) {
       RefreshCalculator();
     }
+    break;
+  case DataField::daInc:
+  case DataField::daDec:
     break;
   }
 }

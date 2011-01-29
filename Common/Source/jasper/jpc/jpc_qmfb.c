@@ -103,11 +103,11 @@
 \******************************************************************************/
 
 #if ( defined(_MSC_VER) || defined(WIN32) || defined(__INTEL_COMPILER) || defined(__ICC) )
-  #pragma message("QMFB: BATCH_SIZE = 256")
+//  #pragma message("QMFB: BATCH_SIZE = 256")
   #define JPC_BATCH_SIZE 128
   //#define JPC_BATCH_SIZE 256
 #else
-  #pragma message("QMFB: BATCH_SIZE = 128")
+//  #pragma message("QMFB: BATCH_SIZE = 128")
   #define JPC_BATCH_SIZE 128
 #endif
 

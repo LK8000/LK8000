@@ -38,6 +38,10 @@ static void OnDisplayItemData(DataField *Sender,
     case DataField::daChange:
       RasterTerrain::render_weather = Sender->GetAsInteger();
     break;
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
+    break;
   }
 }
 
@@ -82,6 +86,10 @@ static void OnTimeData(DataField *Sender,
     case DataField::daPut: 
     case DataField::daChange:
       RASPSetTime(Sender);
+    break;
+  case DataField::daInc:
+  case DataField::daDec:
+  case DataField::daSpecial:
     break;
   }
 

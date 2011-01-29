@@ -776,7 +776,8 @@ static double CalculateAngle(TCHAR *temp)
   Degrees = (double)_tcstol(temp, &Stop, 10);
   Mins = (double)StrToDouble(Colon, &Stop);
   if (*Stop == ':') {
-    Mins += ((double)_tcstol(++Stop, &Stop, 10)/60.0);
+    Stop++;
+    Mins += ((double)_tcstol(Stop, &Stop, 10)/60.0);
   }
 
   Degrees += (Mins/60);

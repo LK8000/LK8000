@@ -116,7 +116,7 @@ void VLA_XFR::set_databaud(int32 db) {
 // send command to VOLKSLOGGER
 //
 int16 VLA_XFR::sendcommand(byte cmd, byte param1, byte param2) {
-  int16       	i;
+  word       	i;
   byte	        c=255;
   const int16   d = 2;  //Verzögerungszeit 2ms
   byte 		cmdarray[8];

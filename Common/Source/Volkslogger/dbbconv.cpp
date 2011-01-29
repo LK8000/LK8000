@@ -103,7 +103,7 @@ void DBB::add_fdf(int feldkennung,int feldlaenge, void *quelle) {
 // and return it's position in the memory array
 //
 int16 DBB::fdf_findfield(byte id) {
- int16 i;
+ word i;
  int16 ii;
   ii = -1;
   for(i=0; i<sizeof(fdf);) {
