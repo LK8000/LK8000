@@ -20,6 +20,7 @@
 #include "Defines.h" // VENTA3
 
 #include "Utils.h"
+#include "Utils2.h"
 
 // #include "resource.h"
 #include "externs.h"

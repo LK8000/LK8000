@@ -13,6 +13,7 @@
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 #include "MapWindow.h"
+#include "Utils2.h"
 
 extern HFONT MapWindowFont;
 extern HFONT TitleWindowFont;

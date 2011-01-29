@@ -14,6 +14,7 @@
 //#include "Statistics.h"
 #include "externs.h"
 #include "Dialogs.h"
+#include "Utils2.h"
 //#include "Logger.h"
 //#include "McReady.h"
 //#include "dlgTools.h"

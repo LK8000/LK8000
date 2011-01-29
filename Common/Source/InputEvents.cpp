@@ -11,6 +11,7 @@
 #include "XCSoar.h"
 #include "InputEvents.h"
 #include "Utils.h"
+#include "Utils2.h"
 #include "Dialogs.h"
 #include "Terrain.h"
 #include "compatibility.h"

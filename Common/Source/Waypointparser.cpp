@@ -14,6 +14,7 @@
 // #include "resource.h"
 #include "options.h"
 #include "Utils.h"
+#include "Utils2.h"
 #include "LKUtils.h"
 #include "WindowControls.h"
 #include "MapWindow.h"

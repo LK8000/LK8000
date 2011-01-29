@@ -18,6 +18,7 @@
 #include "McReady.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
+#include "Utils2.h"
 
 extern void SettingsEnter();
 extern void SettingsLeave();

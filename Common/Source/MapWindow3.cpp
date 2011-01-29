@@ -19,6 +19,7 @@
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
 #include "buildnumber.h"
+#include "Utils2.h"
 #if LKOBJ
 #include "LKObjects.h"
 #endif

@@ -9,6 +9,7 @@
 #include "StdAfx.h"
 #include "externs.h"
 #include "Units.h"
+#include "Utils2.h"
 #include "InputEvents.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"

@@ -588,6 +588,7 @@ static void ShowFontEditButtons(bool bVisible) {
   if (wp) {
     wp->SetVisible(bVisible);
   }
+
   wp = (WndProperty*)wf->FindByName(TEXT("cmdMapWindowFont"));
   if (wp) {
     wp->SetVisible(bVisible);
@@ -5117,6 +5118,7 @@ void dlgConfigurationShowModal(void){
   DeleteObject (TempCDIWindowFont); 
   DeleteObject (TempMapLabelFont);
   DeleteObject (TempStatisticsFont);
+
 
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppStatusMessageAlignment"));

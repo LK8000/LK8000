@@ -13,6 +13,7 @@
 #include "externs.h"
 #include "FlarmIdFile.h"
 #include "Utils.h"
+#include "Utils2.h"
 
 FlarmIdFile::FlarmIdFile(void)
 {

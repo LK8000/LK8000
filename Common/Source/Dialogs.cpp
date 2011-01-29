@@ -19,6 +19,7 @@
 #include "Logger.h"
 #include "resource.h"
 #include "Utils.h"
+#include "Utils2.h"
 #include "externs.h"
 #include "Port.h"
 #include "AirfieldDetails.h"

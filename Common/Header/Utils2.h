@@ -14,6 +14,8 @@
 #endif
 #endif
 
+#include "MapWindow.h"
+
 // These are used by LK functions, there is no overflow check so caution
 // generic text buffer
 #define LKSIZETEXT		50
@@ -379,18 +381,8 @@ extern short ModeTableTop[LKMODE_TOP+1];
 #define LK_EMPTY		254		//
 #define LK_ERROR		255		//
 
-// Altitude arrival calculation types
-#define ALTA_MC		0	// Altitude arrival at current MC
-#define ALTA_MC0	1	// Altitude arrival at MC=0
-#define ALTA_SMC	2	// Altitude arrival at safety MC
-#define ALTA_AVEFF	3	// Altitude arrival at current average efficiency
-#define ALTA_TOP	3
-#define ALTA_SIZE	4
-
 // GetMacCready
 #define GMC_DEFAULT	0	// default behaviour
-
-
 
 // Wind Calculator result codes
 #define WCALC_INVALID_DATA	0
@@ -440,10 +432,6 @@ extern short ModeTableTop[LKMODE_TOP+1];
 #define LKW_GARMIN	6
 #define LKW_LK8000	7	// mixed format
 #define LKW_VIRTUAL	8	// temporary, cannot save them
-
-#define CUPSIZE_COUNTRY	10
-#define CUPSIZE_CODE	15
-#define CUPSIZE_FREQ	15
 
 // ComPort diagnostics: ComPortStatus, requires COMDIAG flag in options
 #define CPS_UNUSED	0	// init to zero at startup
