@@ -598,6 +598,9 @@ class MapWindow {
   static int TargetDrag_State;
   static double TargetDrag_Latitude;
   static double TargetDrag_Longitude;
+ 
+  // include declaration for alpha blended drawing
+  #include "MapWindowA.h"
 };
 
 void PolygonRotateShift(POINT* poly, int n, int x, int y, 

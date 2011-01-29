@@ -1700,44 +1700,46 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
   
   bool found = false;
 
-  if (AirspaceCircle) {
-    // draw without border
-    for(i=0;i<NumberOfAirspaceCircles;i++) {
-      if (AirspaceCircle[i].Visible==2) {
-	if (!found) {
-	  ClearAirSpace(true);
-	  found = true;
-	}
-        // this color is used as the black bit
-        SetTextColor(hDCTemp,
-                     Colours[iAirspaceColour[AirspaceCircle[i].Type]]);
-        // get brush, can be solid or a 1bpp bitmap
-        SelectObject(hDCTemp,
-                     hAirspaceBrushes[iAirspaceBrush[AirspaceCircle[i].Type]]);
-        Circle(hDCTemp,
-               AirspaceCircle[i].Screen.x ,
-               AirspaceCircle[i].Screen.y ,
-               AirspaceCircle[i].ScreenR ,rc, true, true);
+  if (GetAirSpaceFillType() != asp_fill_none) {
+    if (AirspaceCircle) {
+      // draw without border
+      for(i=0;i<NumberOfAirspaceCircles;i++) {
+        if (AirspaceCircle[i].Visible==2) {
+	  if (!found) {
+            ClearAirSpace(true);
+            found = true;
+          }
+          // this color is used as the black bit
+          SetTextColor(hDCTemp,
+                       Colours[iAirspaceColour[AirspaceCircle[i].Type]]);
+          // get brush, can be solid or a 1bpp bitmap
+          SelectObject(hDCTemp,
+                       hAirspaceBrushes[iAirspaceBrush[AirspaceCircle[i].Type]]);
+          Circle(hDCTemp,
+                 AirspaceCircle[i].Screen.x ,
+                 AirspaceCircle[i].Screen.y ,
+                 AirspaceCircle[i].ScreenR ,rc, true, true);
+        }
       }
     }
-  }
 
-  if (AirspaceArea) {
-    for(i=0;i<NumberOfAirspaceAreas;i++) {
-      if(AirspaceArea[i].Visible ==2) {
-	if (!found) {
-	  ClearAirSpace(true);
-	  found = true;
-	}
-        // this color is used as the black bit
-        SetTextColor(hDCTemp, 
-                     Colours[iAirspaceColour[AirspaceArea[i].Type]]);
-        SelectObject(hDCTemp,
-                     hAirspaceBrushes[iAirspaceBrush[AirspaceArea[i].Type]]);         
-        ClipPolygon(hDCTemp,
-                    AirspaceScreenPoint+AirspaceArea[i].FirstPoint,
-                    AirspaceArea[i].NumPoints, rc, true);
-      }      
+    if (AirspaceArea) {
+      for(i=0;i<NumberOfAirspaceAreas;i++) {
+        if(AirspaceArea[i].Visible ==2) {
+          if (!found) {
+            ClearAirSpace(true);
+            found = true;
+          }
+          // this color is used as the black bit
+          SetTextColor(hDCTemp, 
+                       Colours[iAirspaceColour[AirspaceArea[i].Type]]);
+          SelectObject(hDCTemp,
+                       hAirspaceBrushes[iAirspaceBrush[AirspaceArea[i].Type]]);         
+          ClipPolygon(hDCTemp,
+                      AirspaceScreenPoint+AirspaceArea[i].FirstPoint,
+                      AirspaceArea[i].NumPoints, rc, true);
+        }      
+      }
     }
   }
   

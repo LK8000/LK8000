@@ -1,5 +1,5 @@
 # LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  110126
+# MASTER UPDATED:  110129
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -944,6 +944,11 @@ _@M936_ "Competition Class"
 _@M937_ "Competition Class: "
 _@M938_ "Competition ID"
 _@M939_ "Competition ID: "
+_@M940_ "Filling "
+_@M941_ "Outlines only"
+_@M942_ "Patterns"
+_@M943_ "Semi-Transparent"
+_@M944_ "Opacity "
 
 #
 # Infoboxes in Description / Tile order. 

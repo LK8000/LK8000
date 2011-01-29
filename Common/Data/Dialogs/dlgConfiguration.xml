@@ -59,6 +59,12 @@
 <WndProperty Name="prpAirspaceOutline" Caption="_@M771_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H114_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>
+<WndProperty Name="prpAirspaceFillType" Caption="_@M940_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H890_">
+<DataField name="" DataType="enum" OnDataAccess="OnAirspaceFillType"/>
+</WndProperty>
+<WndProperty Name="prpAirspaceOpacity" Caption="_@M944_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H891_">
+<DataField name="" DataType="enum"/>
+</WndProperty>
 </WndFrame>
 <WndFrame Name="frmTerrain" X=70 Y=0 Width=-246 Height=222 Font=2>
 <WndProperty Name="prpEnableTerrain" Caption="_@M705_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H115_">

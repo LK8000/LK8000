@@ -501,8 +501,25 @@ static void OnDeviceBData(DataField *Sender, DataField::DataAccessKind_t Mode){
   }
 
 }
+  
+static void OnAirspaceFillType(DataField *Sender, DataField::DataAccessKind_t Mode){
+  WndProperty* wp;
 
-
+  switch(Mode){
+    case DataField::daGet:
+    break;
+    case DataField::daPut:
+    case DataField::daChange:
+      wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceOpacity"));
+      if (wp)
+        wp->SetVisible(Sender->GetAsInteger() == MapWindow::asp_fill_ablend);
+    break;
+	default: 
+		StartupStore(_T("........... DBG-908%s"),NEWLINE); 
+		break;
+  }
+}
+ 
 static void ResetFonts(bool bUseCustom) {
 // resest fonts when UseCustomFonts is turned off
 
@@ -1338,6 +1355,8 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnSetTopologyClicked),
   #endif
   DeclareCallBackEntry(OnSetCustomKeysClicked),
+  
+  DeclareCallBackEntry(OnAirspaceFillType),
   DeclareCallBackEntry(NULL)
 };
 
@@ -1668,7 +1687,42 @@ static void setVariables(void) {
     dfe->Set(AltitudeMode);
     wp->RefreshDisplay();
   }
-  // 
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceFillType"));
+  if (wp) {
+    DataFieldEnum* dfe;
+    dfe = (DataFieldEnum*)wp->GetDataField();
+	// TODOasp: transl 
+    dfe->addEnumText(gettext(TEXT("_@M941_")));
+    dfe->addEnumText(gettext(TEXT("_@M942_")));
+    if (MapWindow::AlphaBlendSupported())
+      dfe->addEnumText(gettext(TEXT("_@M943_")));
+    dfe->Set(MapWindow::GetAirSpaceFillType());
+    wp->RefreshDisplay();
+  }
+  
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceOpacity"));
+  if (wp) {
+    wp->SetVisible(true);
+    DataFieldEnum* dfe;
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->addEnumText(TEXT("0 %"));
+    dfe->addEnumText(TEXT("10 %"));
+    dfe->addEnumText(TEXT("20 %"));
+    dfe->addEnumText(TEXT("30 %"));
+    dfe->addEnumText(TEXT("40 %"));
+    dfe->addEnumText(TEXT("50 %"));
+    dfe->addEnumText(TEXT("60 %"));
+    dfe->addEnumText(TEXT("70 %"));
+    dfe->addEnumText(TEXT("80 %"));
+    dfe->addEnumText(TEXT("90 %"));
+    dfe->addEnumText(TEXT("100 %"));
+    dfe->Set(MapWindow::GetAirSpaceOpacity() / 10);
+    
+    wp->SetVisible(MapWindow::GetAirSpaceFillType() == MapWindow::asp_fill_ablend);
+    wp->RefreshDisplay();
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyAltitudeMode"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -3888,10 +3942,27 @@ void dlgConfigurationShowModal(void){
     }
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceFillType"));
+  if (wp) {
+    if (MapWindow::GetAirSpaceFillType() != wp->GetDataField()->GetAsInteger()) {
+      MapWindow::SetAirSpaceFillType(wp->GetDataField()->GetAsInteger());
+      SetToRegistry(szRegistryAirspaceFillType, MapWindow::GetAirSpaceFillType());
+      changed = true;
+    }
+  }
+  
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceOpacity"));
+  if (wp) {
+    if (MapWindow::GetAirSpaceOpacity() != wp->GetDataField()->GetAsInteger()) {
+      MapWindow::SetAirSpaceOpacity(wp->GetDataField()->GetAsInteger() * 10);
+      SetToRegistry(szRegistryAirspaceOpacity, MapWindow::GetAirSpaceOpacity());
+      changed = true;
+    }
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceOutline"));
   if (wp) {
-    if (MapWindow::bAirspaceBlackOutline != 
-	wp->GetDataField()->GetAsBoolean()) {
+    if (MapWindow::bAirspaceBlackOutline != wp->GetDataField()->GetAsBoolean()) {
       MapWindow::bAirspaceBlackOutline = wp->GetDataField()->GetAsBoolean();
       SetToRegistry(szRegistryAirspaceBlackOutline,
 		    MapWindow::bAirspaceBlackOutline);
@@ -3901,8 +3972,7 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoZoom"));
   if (wp) {
-    if (MapWindow::AutoZoom != 
-	wp->GetDataField()->GetAsBoolean()) {
+    if (MapWindow::AutoZoom != wp->GetDataField()->GetAsBoolean()) {
       MapWindow::AutoZoom = wp->GetDataField()->GetAsBoolean();
       SetToRegistry(szRegistryAutoZoom,
 		    MapWindow::AutoZoom);
