@@ -659,11 +659,10 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl)
   LockComm();
   if ((d != NULL) && (d->Declare != NULL))
     result = d->Declare(d, decl);
-
-  if ((d != NULL) && NMEAParser::PortIsFlarm(d->Port)) {
+  else if ((d != NULL) && NMEAParser::PortIsFlarm(d->Port)) {
     result |= FlarmDeclare(d, decl);
   }
-
+  
   UnlockComm();
 
   return result;
