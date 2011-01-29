@@ -1873,55 +1873,70 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     // warn about missing terrain
     if (!CALCULATED_INFO.TerrainValid) {
 	if (terrainwarning < 120) {
-		_tcscat(Scale2,TEXT(" TERRAIN?"));
+		// LKTOKEN _@M1335_ " TERRAIN?"
+		_tcscat(Scale2, gettext(TEXT("_@M1335_")));
 		terrainwarning++;
 	} else  {
-		_tcscat(Scale2,TEXT(" T?"));
+		// LKTOKEN _@M1336_ " T?"
+		_tcscat(Scale2, gettext(TEXT("_@M1336_")));
 		terrainwarning=120;
 	}
     } else terrainwarning=0;
 
     if (AutoZoom) {
-      _tcscat(Scale2,TEXT(" AZM"));
+		// LKTOKEN _@M1337_ " AZM"
+      _tcscat(Scale2, gettext(TEXT("_@M1337_")));
     }
     if (EnablePan) {
-      _tcscat(Scale2,TEXT(" PAN"));
+		// LKTOKEN _@M1338_ " PAN"
+      _tcscat(Scale2, gettext(TEXT("_@M1338_")));
     }
     if (EnableAuxiliaryInfo) {
-      _tcscat(Scale2,TEXT(" iAUX"));
+		// LKTOKEN _@M1339_ " iAUX"
+      _tcscat(Scale2, gettext(TEXT("_@M1339_")));
     }
 
     if (DrawBottom) {
 	switch(BottomMode) {
 		case BM_TRM:
-      			_tcscat(Scale2,TEXT(" TRM0"));
+				// LKTOKEN _@M1340_ " TRM0"
+      			_tcscat(Scale2, gettext(TEXT("_@M1340_")));
 			break;
 		case BM_CRU:
-      			_tcscat(Scale2,TEXT(" NAV1"));
+				// LKTOKEN _@M1341_ " NAV1"
+      			_tcscat(Scale2, gettext(TEXT("_@M1341_")));
 			break;
 		case BM_HGH:
-      			_tcscat(Scale2,TEXT(" ALT2"));
+				// LKTOKEN _@M1342_ " ALT2"
+      			_tcscat(Scale2, gettext(TEXT("_@M1342_")));
 			break;
 		case BM_AUX:
-      			_tcscat(Scale2,TEXT(" STA3"));
+				// LKTOKEN _@M1343_ " STA3"
+      			_tcscat(Scale2, gettext(TEXT("_@M1343_")));
 			break;
 		case BM_TSK:
-      			_tcscat(Scale2,TEXT(" TSK4"));
+				// LKTOKEN _@M1344_ " TSK4"
+      			_tcscat(Scale2, gettext(TEXT("_@M1344_")));
 			break;
 		case BM_ALT:
-      			_tcscat(Scale2,TEXT(" ATN5"));
+				// LKTOKEN _@M1345_ " ATN5"
+      			_tcscat(Scale2, gettext(TEXT("_@M1345_")));
 			break;
 		case BM_SYS:
-      			_tcscat(Scale2,TEXT(" SYS6"));
+				// LKTOKEN _@M1346_ " SYS6"
+      			_tcscat(Scale2, gettext(TEXT("_@M1346_")));
 			break;
 		case BM_CUS2:
-      			_tcscat(Scale2,TEXT(" CRU7"));
+				// LKTOKEN _@M1347_ " CRU7"
+      			_tcscat(Scale2, gettext(TEXT("_@M1347_")));
 			break;
 		case BM_CUS3:
-      			_tcscat(Scale2,TEXT(" FIN8"));
+				// LKTOKEN _@M1348_ " FIN8"
+      			_tcscat(Scale2, gettext(TEXT("_@M1348_")));
 			break;
 		case BM_CUS:
-      			_tcscat(Scale2,TEXT(" AUX9"));
+				// LKTOKEN _@M1349_ " AUX9"
+      			_tcscat(Scale2, gettext(TEXT("_@M1349_")));
 			break;
 		default:
 			break;
@@ -1929,10 +1944,12 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     }
 
     if (ReplayLogger::IsEnabled()) {
-      _tcscat(Scale2,TEXT(" REPLAY"));
+		// LKTOKEN _@M1350_ " REPLAY"
+      _tcscat(Scale2, gettext(TEXT("_@M1350_")));
     }
     if (BallastTimerActive) {
-      _stprintf(TEMP,TEXT(" BALLAST %3.0fL"), WEIGHTS[2]*BALLAST);
+		// LKTOKEN _@M1351_ " BALLAST"
+      _stprintf(TEMP,TEXT("%s %3.0fL"), gettext(TEXT("_@M1351_")), WEIGHTS[2]*BALLAST);
       _tcscat(Scale2, TEMP);
     }
 
