@@ -14,6 +14,7 @@
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 #include "Cpustats.h"
+#include "Utils2.h"
 
 #ifdef FLARMNET
 #include "FlarmIdFile.h"

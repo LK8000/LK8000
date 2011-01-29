@@ -240,3 +240,15 @@
 #define RXTIMEOUT	10
 
 #define SIMMODE	(RUN_MODE==RUN_SIM)
+
+#define CUPSIZE_COUNTRY	10
+#define CUPSIZE_CODE	15
+#define CUPSIZE_FREQ	15
+
+// Altitude arrival calculation types
+#define ALTA_MC		0	// Altitude arrival at current MC
+#define ALTA_MC0	1	// Altitude arrival at MC=0
+#define ALTA_SMC	2	// Altitude arrival at safety MC
+#define ALTA_AVEFF	3	// Altitude arrival at current average efficiency
+#define ALTA_TOP	3
+#define ALTA_SIZE	4

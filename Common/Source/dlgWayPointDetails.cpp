@@ -18,6 +18,7 @@
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 #include "Units.h"
+#include "Utils2.h"
 
 extern void DrawJPG(HDC hdc, RECT rc);
 

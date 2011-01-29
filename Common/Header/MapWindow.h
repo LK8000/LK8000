@@ -17,7 +17,6 @@
 #include "Sizes.h"
 #include "Utils.h"
 #include "XCSoar.h"
-#include "Utils2.h"
 #include "Airspace.h"
 #include "Parser.h"
 #include "Calculations.h"

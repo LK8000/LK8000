@@ -9,6 +9,7 @@
 #include "StdAfx.h"
 #include "XCSoar.h"
 #include "Utils.h"
+#include "Utils2.h"
 #include "dlgTools.h"
 #include "externs.h"
 #include "InfoBoxLayout.h"
