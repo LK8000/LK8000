@@ -1340,6 +1340,17 @@ If you have no AirSpeed probe, Estimated Airspeed will be used. See the manual f
 @889
 No help available on this item!
 
+@890
+[Airspace area filling]
+Airspace area can be denoted by outlines only, pattern filling, or semi-transparent colors.
+[Outlines only] there will be only lines on airspace area borders 
+[Pattern] airspace area will be filled with selected pattern of selected color
+[Semi-Transparent] airspace area will be filled with selected solid semi-transparent color (opacity of the color can be set in 'Opacity' item)
+
+@891
+[Opacity of semi-transparent airspace]
+Defines how much transparent (->0%) / opaque (->100%) will be airspace area filled with solid semi-transparent color.
+
 @9999
 No help available on this item!
 

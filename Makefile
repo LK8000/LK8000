@@ -392,7 +392,8 @@ SRC_FILES :=\
 	$(SRC)/LKDrawTraffic.cpp	$(SRC)/LKSimulator.cpp\
 	$(SRC)/LKBestAlternate.cpp \
 	$(SRC)/MapWindow.cpp 		$(SRC)/MapWindow2.cpp \
-	$(SRC)/MapWindow3.cpp 		$(SRC)/Utils2.cpp \
+	$(SRC)/MapWindow3.cpp 		$(SRC)/MapWindowA.cpp \
+	$(SRC)/Utils2.cpp \
 	$(SRC)/McReady.cpp 		$(SRC)/Message.cpp \
 	$(SRC)/NavFunctions.cpp		$(SRC)/OnLineContest.cpp \
 	$(SRC)/Parser.cpp		$(SRC)/Port.cpp \

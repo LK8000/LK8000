@@ -1420,7 +1420,9 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hdcDrawWindow = CreateCompatibleDC(hdcScreen);
       hDCTemp = CreateCompatibleDC(hdcDrawWindow);
       hDCMask = CreateCompatibleDC(hdcDrawWindow);
-
+    
+      AlphaBlendInit();
+    
       #if LKOBJ
       hBackgroundBrush = LKBrush_White;
       hInvBackgroundBrush[0] = LKBrush_White;
@@ -1723,6 +1725,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       DeleteDC(hDCMask);
       DeleteObject(hDrawBitMap);
       DeleteObject(hMaskBitMap);
+      AlphaBlendDestroy();
 
       DeleteObject(hTurnPoint);
       DeleteObject(hSmall);
@@ -3240,7 +3243,14 @@ QuickRedraw: // 100318 speedup redraw
 		SelectObject(hdcDrawWindow, hfOld);
 		goto QuickRedraw;
 	}
-  if ( OnAirSpace >0 ) DrawAirSpace(hdc, rc); // VENTA3 default is true, always true at startup no regsave
+  
+  if (OnAirSpace > 0)  // VENTA3 default is true, always true at startup no regsave 
+  {
+    if (GetAirSpaceFillType() == asp_fill_ablend)
+      DrawTptAirSpace(hdc, rc);
+    else
+      DrawAirSpace(hdc, rc);
+  }
 
  	if (DONTDRAWTHEMAP) { // 100319
 		SelectObject(hdcDrawWindow, hfOld);

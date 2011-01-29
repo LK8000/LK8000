@@ -147,6 +147,8 @@ const TCHAR *szRegistryAirspacePriority[] = {  TEXT("AirspacePriority0"),
 
 const TCHAR szRegistryAirspaceWarning[]= TEXT("AirspaceWarn");
 const TCHAR szRegistryAirspaceBlackOutline[]= TEXT("AirspaceBlackOutline");
+const TCHAR szRegistryAirspaceFillType[]= TEXT("AirspaceFillType");
+const TCHAR szRegistryAirspaceOpacity[]= TEXT("AirspaceOpacity");
 const TCHAR szRegistryAltMargin[]=	   TEXT("AltMargin");
 const TCHAR szRegistryAltMode[]=  TEXT("AltitudeMode");
 const TCHAR szRegistrySafetyAltitudeMode[]=  TEXT("SafetyAltitudeMode");
@@ -706,6 +708,14 @@ void ReadRegistrySettings(void)
       }
 
     }
+
+  Temp = MapWindow::GetAirSpaceFillType();
+  if(GetFromRegistry(szRegistryAirspaceFillType,&Temp) == ERROR_SUCCESS)
+    MapWindow::SetAirSpaceFillType(Temp);
+
+  Temp = MapWindow::GetAirSpaceOpacity();
+  if(GetFromRegistry(szRegistryAirspaceOpacity,&Temp) == ERROR_SUCCESS)
+    MapWindow::SetAirSpaceOpacity(Temp);
 
   Temp = MapWindow::bAirspaceBlackOutline;
   GetFromRegistry(szRegistryAirspaceBlackOutline,&Temp);

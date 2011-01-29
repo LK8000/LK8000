@@ -67,6 +67,8 @@ extern const TCHAR szRegistryFinishLine[];
 extern const TCHAR szRegistryFinishRadius[];
 extern const TCHAR szRegistryAirspaceWarning[];
 extern const TCHAR szRegistryAirspaceBlackOutline[];
+extern const TCHAR szRegistryAirspaceFillType[];
+extern const TCHAR szRegistryAirspaceOpacity[];
 extern const TCHAR szRegistryWarningTime[];
 extern const TCHAR szRegistryAcknowledgementTime[];
 extern const TCHAR szRegistryCircleZoom[];
