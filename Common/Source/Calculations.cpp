@@ -84,7 +84,7 @@ bool BallastTimerActive = false;
 
 #define THERMAL_TIME_MIN 45.0
 double CRUISE_EFFICIENCY = 1.0;
-#define MAPMODE8000    MapWindow::IsMapFullScreen()&&NewMap&&Look8000&&!MapWindow::EnablePan&&MapSpaceMode==MSM_MAP
+#define MAPMODE8000    MapWindow::IsMapFullScreen()&&NewMap&&Look8000&&!MapWindow::mode.AnyPan()&&MapSpaceMode==MSM_MAP
 
 
 static double SpeedHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -1129,7 +1129,7 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   if ( OnBestAlternate == true ) DoAlternates(Basic, Calculated,BestAlternate); 
 
   // Calculate nearest landing when needed
-  if ( MapWindow::IsMapFullScreen() && !MapWindow::EnablePan && NewMap && Look8000 && DrawBottom && (MapSpaceMode>MSM_MAP) ) {
+  if ( MapWindow::IsMapFullScreen() && !MapWindow::mode.AnyPan() && NewMap && Look8000 && DrawBottom && (MapSpaceMode>MSM_MAP) ) {
 	switch(MapSpaceMode) {
 		case MSM_LANDABLE:
 		case MSM_AIRPORTS:

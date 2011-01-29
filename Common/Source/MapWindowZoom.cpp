@@ -12,6 +12,7 @@
 
 
 MapWindow::Zoom::Zoom():
+  _inited(false),
   _autoZoom(false), _circleZoom(false), _bigZoom(true),
   _scale(0), _requestedScale(&_modeScale[SCALE_CRUISE]),
   _scaleOverDistanceModify(0),
@@ -160,7 +161,8 @@ void MapWindow::Zoom::Reset()
   _requestedScale = &_modeScale[SCALE_CRUISE];
   _scale = *_requestedScale;
   _scaleOverDistanceModify = *_requestedScale / DISTANCEMODIFY;
-  
+
+  _inited = true;
   SwitchMode();
 }
 
@@ -170,9 +172,12 @@ void MapWindow::Zoom::Reset()
  */
 void MapWindow::Zoom::SwitchMode()
 {
+  if(!_inited)
+    return;
+  
   if((mode._mode & Mode::MODE_TARGET_PAN) && !(mode._lastMode & Mode::MODE_TARGET_PAN)) {
     // TARGET_PAN enabled
-    _requestedScale = &_modeScale[SCALE_OTHER];
+    _requestedScale = &_modeScale[SCALE_TARGET_PAN];
     CalculateTargetPanZoom();
     zoom._bigZoom = true;
   }
@@ -180,12 +185,13 @@ void MapWindow::Zoom::SwitchMode()
     // do not change zoom for other mode changes while in TARGET_PAN mode
     return;
   }
-  else if((mode._mode & Mode::MODE_PAN) && !(mode._lastMode & Mode::MODE_PAN)) {
-    // PAN enabled - use current map scale
-    _modeScale[SCALE_OTHER] = *_requestedScale;
-    _requestedScale = &_modeScale[SCALE_OTHER];
-  }
   else if(mode._mode & Mode::MODE_PAN) {
+    if(!(mode._lastMode & Mode::MODE_PAN))
+      // PAN enabled - use current map scale if PAN enabled
+      _modeScale[SCALE_PAN] = *_requestedScale;
+    
+    _requestedScale = &_modeScale[SCALE_PAN];
+    
     // do not change zoom for other mode changes while in PAN mode
     return;
   }

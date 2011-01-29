@@ -67,12 +67,6 @@
 #define TEXTLIGHTGREY 15
 #define TEXTLIGHTORANGE 16
 
-typedef enum {dmNone, dmCircling, dmCruise, dmFinalGlide} DisplayMode_t;
-
-extern DisplayMode_t UserForceDisplayMode;
-extern DisplayMode_t DisplayMode;
-
-
 // VENTA3 note> probably it would be a good idea to separate static WP data to dynamic values,
 // by moving things like Reachable, AltArival , etc to WPCALC
 // Currently at 5.2.2 the whole structure is saved into the task file, so everytime we 
@@ -200,13 +194,15 @@ public:
       SCALE_CIRCLING,           /**< @brief Zoom for thermalling mode when CirclingZoom is enabled */
       SCALE_PANORAMA,           /**< @brief Panorama 20 seconds zoom */
       SCALE_AUTO_ZOOM,          /**< @brief AutoZoom zoom */
-      SCALE_OTHER,              /**< @brief Zoom user for other purposes like i.e. PAN */
+      SCALE_PAN,                /**< @brief PAN zoom */
+      SCALE_TARGET_PAN,         /**< @brief TARGET_PAN zoom */
       
       SCALE_NUM                 /**< @brief DO NOT USE THAT */
     };
     
     friend class MapWindow;
-    
+
+    bool _inited;                                 /**< @brief Object inited flag */
     bool _autoZoom;                               /**< @brief Stores information if AutoZoom is enabled */
     bool _circleZoom;                             /**< @brief Stores information if CirclingZoom is enabled */
     bool _bigZoom;                                /**< @brief Stores information if BigZoom was done and special refresh is needed */
@@ -220,8 +216,13 @@ public:
     double _drawScale;
     double _invDrawScale;
     
+    double RequestedScale() const        { return *_requestedScale; }
+    void RequestedScale(double value)    { *_requestedScale = value; }
     void CalculateTargetPanZoom();
     void CalculateAutoZoom();
+    double ResScaleOverDistanceModify() const { return _resScaleOverDistanceModify; }
+    double DrawScale() const             { return _drawScale; }
+    double InvDrawScale() const          { return _invDrawScale; }
     
   public:
     Zoom();
@@ -358,20 +359,13 @@ public:
   static DWORD timestamp_newdata;
   static bool RequestFullScreen;
   static bool LandableReachable;
-  static void ModifyMapScale();
-  static double ResMapScaleOverDistanceModify; // speedup
 
  public:
-
-  // These two values were private.. moved to public VNT 090621
-  static double MapScaleOverDistanceModify; // speedup
-  static double RequestMapScale;
   static Zoom zoom;
   static Mode mode;
 
   static RECT MapRect;
   static RECT MapRectBig;
-  static double MapScale;
   static bool ForceVisibilityScan;
 
   static bool MapDirty;
@@ -384,9 +378,6 @@ public:
   static void RequestFastRefresh();
 
   static void UpdateTimeStats(bool start);
-
-  static bool isAutoZoom();
-  static bool isPan();
 
   // Drawing primitives
   static void DrawDashLine(HDC , const int , const POINT , const POINT , 
@@ -432,11 +423,8 @@ public:
   static bool IsMapFullScreen();
 
   // input events or reused code
-  static void Event_SetZoom(double value);
-  static void Event_ScaleZoom(int vswitch);
   static void Event_Pan(int vswitch);
   static void Event_TerrainTopology(int vswitch);
-  static void Event_AutoZoom(int vswitch);
   static void Event_PanCursor(int dx, int dy);
   static bool Event_InteriorAirspaceDetails(double lon, double lat);
   static bool Event_NearestWaypointDetails(double lon, double lat, double range, bool pan);
@@ -445,8 +433,6 @@ public:
 			 DERIVED_INFO *derived_info);
   static rectObj CalculateScreenBounds(double scale);
   static void ScanVisibility(rectObj *bounds_active);
-
-  static void SwitchZoomClimb(void);
 
  private:
   static void CalculateScreenPositions(POINT Orig, RECT rc, 
@@ -561,13 +547,10 @@ public:
   static HANDLE hDrawThread;
   static double DisplayAngle;
   static double DisplayAircraftAngle;
-  static double DrawScale;
-  static double InvDrawScale;
   
  public:
   static void RefreshMap(); // set public VENTA
   static HANDLE hRenderEvent;
-  static bool EnablePan; // sorry need this public for virtual keys
 
   static rectObj screenbounds_latlon;
   
@@ -578,11 +561,11 @@ public:
 
   static bool WaypointInRange(int i);
 
-  static bool SetTargetPan(bool dopan, int task_index);
+  static void SetTargetPan(bool dopan, int task_index);
 
   static double GetPanLatitude() { return PanLatitude; }
   static double GetPanLongitude() { return PanLongitude; }
-  static double GetInvDrawScale() { return InvDrawScale; }
+  static double GetInvDrawScale() { return zoom.InvDrawScale(); }
   static double GetDisplayAngle() { return DisplayAngle; }
   #if AUTORIENT
   static void SetAutoOrientation(bool doreset);
@@ -645,7 +628,6 @@ public:
 
   // static void DisplayAirspaceWarning(int Type, TCHAR *Name , AIRSPACE_ALT Base, AIRSPACE_ALT Top ); REMOVE 110102
 
-  static void UpdateMapScale();
   static void CalculateOrigin(const RECT rc, POINT *Orig);
 
 
@@ -715,21 +697,17 @@ public:
   static HBITMAP hBmpUnitFt;
   static HBITMAP hBmpUnitMpS;
 
-  static bool TargetPan;
   static double TargetZoomDistance;
   static int TargetPanIndex; 
   static void ClearAirSpace(bool fill);
 
  public:
-  static bool isTargetPan(void);
-  static bool AutoZoom;
   #if TOPOFASTLABEL
   static bool checkLabelBlock(RECT *rc);
   #else
   static bool checkLabelBlock(RECT rc);
   #endif
   static bool RenderTimeAvailable();
-  static bool BigZoom;
   static int SnailWidthScale; 
   static int WindArrowStyle;
   static bool TargetDragged(double *longitude, double *latitude);

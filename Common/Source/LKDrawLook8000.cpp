@@ -146,7 +146,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   redwarning=false;
   oldfont = (HFONT)SelectObject(hdc, LKINFOFONT); // FIXFONT
 
-  if ( IsMapFullScreen() && !EnablePan )
+  if ( IsMapFullScreen() && !mode.AnyPan() )
 	DrawBottom=true; // TODO maybe also !TargetPan
   else
 	DrawBottom=false;
@@ -363,7 +363,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
   // First we draw flight related values such as instant efficiency, altitude, new infoboxes etc.
 
-  if (MapWindow::IsMapFullScreen() && LKVarioBar && !EnablePan) { // 091214 Vario non available in pan mode
+  if (MapWindow::IsMapFullScreen() && LKVarioBar && !mode.AnyPan()) { // 091214 Vario non available in pan mode
 	leftmargin=(LKVarioSize+NIBLSCALE(3)); // VARIOWIDTH + middle separator right extension
 	tlen-=2; // 091115
 	
@@ -391,7 +391,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 	if ( index >=0 ) {
 	// in overtarget mode, we print the name even when no target. 
   #endif
-		if (DisplayMode != dmCircling) {
+		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
 			rcx=rc.left+leftmargin+NIBLSCALE(1);
 			rcy=rc.top+NIBLSCALE(1);
 		} else {
@@ -543,7 +543,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		}
 
 		// DIFF Bearing value displayed only when not circling
-	  	if (DisplayMode != dmCircling) {
+	  	if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
 			#if OVERTARGET
 			switch (OvertargetMode) {
 				case OVT_TASK:
@@ -728,7 +728,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
 	} else {
 		SelectObject(hdc, bigFont); // use this font for big values
-	  	if (DisplayMode == dmCircling)
+	  	if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
 			LKFormatValue(LK_TC_30S, false, BufferValue, BufferUnit, BufferTitle);
 		else
 			LKFormatValue(LK_LD_AVR, false, BufferValue, BufferUnit, BufferTitle);
@@ -865,13 +865,13 @@ drawOverlay:
 	if (ISPARAGLIDER) {
 		LKFormatValue(LK_HNAV, false, BufferValue, BufferUnit, BufferTitle); // 091115
 	} else {
-		if (DisplayMode == dmCircling)
+		if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
 			LKFormatValue(LK_TC_30S, false, BufferValue, BufferUnit, BufferTitle);
 		else
 			LKFormatValue(LK_LD_AVR, false, BufferValue, BufferUnit, BufferTitle);
 	}
 	GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
-	if (!EnablePan) // 091214
+	if (!mode.AnyPan()) // 091214
 		rcx=rc.left+NIBLSCALE(10)+leftmargin+GlideBarOffset;   // 091115
 	else
 		rcx=rc.left+NIBLSCALE(10)+leftmargin;   // 091115
@@ -1020,13 +1020,13 @@ Drawbottom:
   static short OldBottomMode=BM_FIRST;
   bool showunit=false;
 
-  if ( (DisplayMode == dmCircling) && !wascircling) {
+  if ( MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && !wascircling) {
 	// switch to thermal mode
 	OldBottomMode=BottomMode;
 	BottomMode=BM_TRM;
 	wascircling=true;
   }
-  if ( (DisplayMode != dmCircling) && wascircling) {
+  if ( !MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && wascircling) {
 	// back to cruise mode
 	BottomMode=OldBottomMode;
 	wascircling=false;
@@ -1041,7 +1041,7 @@ Drawbottom:
 
   switch(BottomMode) {
 	case BM_TRM:
-		index=GetInfoboxIndex(1,dmCircling);
+		index=GetInfoboxIndex(1,MapWindow::Mode::MODE_FLY_CIRCLING);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1074,13 +1074,13 @@ Drawbottom:
 		break;
 
 	case BM_CUS2:
-		index=GetInfoboxIndex(1,dmCruise);
+		index=GetInfoboxIndex(1,MapWindow::Mode::MODE_FLY_CRUISE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
 		
 	case BM_CUS3:
-		index=GetInfoboxIndex(1,dmFinalGlide);
+		index=GetInfoboxIndex(1,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1113,7 +1113,7 @@ Drawbottom:
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
-		index=GetInfoboxIndex(2,dmCircling);
+		index=GetInfoboxIndex(2,MapWindow::Mode::MODE_FLY_CIRCLING);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1154,13 +1154,13 @@ Drawbottom:
 		BufferTitle[7]='\0';
 		break;
 	case BM_CUS2:
-		index=GetInfoboxIndex(2,dmCruise);
+		index=GetInfoboxIndex(2,MapWindow::Mode::MODE_FLY_CRUISE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
 		
 	case BM_CUS3:
-		index=GetInfoboxIndex(2,dmFinalGlide);
+		index=GetInfoboxIndex(2,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1194,7 +1194,7 @@ Drawbottom:
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
-		index=GetInfoboxIndex(3,dmCircling);
+		index=GetInfoboxIndex(3,MapWindow::Mode::MODE_FLY_CIRCLING);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1306,13 +1306,13 @@ Drawbottom:
 		BufferTitle[7]='\0';
 		break;
 	case BM_CUS2:
-		index=GetInfoboxIndex(3,dmCruise);
+		index=GetInfoboxIndex(3,MapWindow::Mode::MODE_FLY_CRUISE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
 		
 	case BM_CUS3:
-		index=GetInfoboxIndex(3,dmFinalGlide);
+		index=GetInfoboxIndex(3,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1346,7 +1346,7 @@ Drawbottom:
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
-		index=GetInfoboxIndex(4,dmCircling);
+		index=GetInfoboxIndex(4,MapWindow::Mode::MODE_FLY_CIRCLING);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1397,13 +1397,13 @@ Drawbottom:
 		BufferTitle[7]='\0';
 		break;
 	case BM_CUS2:
-		index=GetInfoboxIndex(4,dmCruise);
+		index=GetInfoboxIndex(4,MapWindow::Mode::MODE_FLY_CRUISE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
 		
 	case BM_CUS3:
-		index=GetInfoboxIndex(4,dmFinalGlide);
+		index=GetInfoboxIndex(4,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1447,7 +1447,7 @@ Drawbottom:
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
-		index=GetInfoboxIndex(5,dmCircling);
+		index=GetInfoboxIndex(5,MapWindow::Mode::MODE_FLY_CIRCLING);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1498,13 +1498,13 @@ Drawbottom:
 		BufferTitle[7]='\0';
 		break;
 	case BM_CUS2:
-		index=GetInfoboxIndex(5,dmCruise);
+		index=GetInfoboxIndex(5,MapWindow::Mode::MODE_FLY_CRUISE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
 		
 	case BM_CUS3:
-		index=GetInfoboxIndex(5,dmFinalGlide);
+		index=GetInfoboxIndex(5,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1549,7 +1549,7 @@ Drawbottom:
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
-		index=GetInfoboxIndex(6,dmCircling);
+		index=GetInfoboxIndex(6,MapWindow::Mode::MODE_FLY_CIRCLING);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1592,13 +1592,13 @@ Drawbottom:
 		BufferTitle[7]='\0';
 		break;
 	case BM_CUS2:
-		index=GetInfoboxIndex(6,dmCruise);
+		index=GetInfoboxIndex(6,MapWindow::Mode::MODE_FLY_CRUISE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
 		
 	case BM_CUS3:
-		index=GetInfoboxIndex(6,dmFinalGlide);
+		index=GetInfoboxIndex(6,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;

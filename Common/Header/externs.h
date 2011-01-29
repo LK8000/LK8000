@@ -203,8 +203,6 @@ extern double  LastDoTraffic;
 extern double LastDoNearest;
 // extern double LastDoNearestTp;
 extern double LastDoCommon;
-extern double  CruiseMapScale;
-extern double  ClimbMapScale;
 extern int LKwdlgConfig;
 extern double NmeaTime;
 extern int NmeaHours, NmeaMinutes, NmeaSeconds;
@@ -457,7 +455,6 @@ extern bool AutoForceFinalGlide;
 extern bool bAirspaceBlackOutline;
 extern int TrailActive;
 extern int VisualGlide; // VENTA3
-extern bool CircleZoom;
 extern bool EnableTopology;
 extern bool EnableTerrain;
 extern int FinalGlideTerrain;

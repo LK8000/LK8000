@@ -62,7 +62,6 @@ TCHAR*  GetSizeSuffix(void);
 void	LKRunStartEnd(bool);
 
 void	InitNewMap();
-void	InitAircraftCategory();
 void	InitScreenSize();
 void	InitLK8000();
 void	LockMap();
@@ -84,7 +83,7 @@ void	SoundModeIndex();
 void	SelectMapSpace(short i);
 void	UnselectMapSpace(short i);
 int	GetInfoboxType(int i);
-int	GetInfoboxIndex(int i, short dmMode);
+int	GetInfoboxIndex(int i, MapWindow::Mode::TModeFly dmMode);
 double	GetMacCready(int wpindex, short wpmode);
 void	unicodetoascii(TCHAR *text, int tsize, char *atext);
 

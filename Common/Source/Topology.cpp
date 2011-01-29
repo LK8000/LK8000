@@ -120,10 +120,10 @@ Topology::~Topology() {
 bool Topology::CheckScale(void) {
   #if LKTOPO
   if (scaleCategory==10)
-	return (MapWindow::MapScale <= scaleDefaultThreshold);
+    return (MapWindow::zoom.Scale() <= scaleDefaultThreshold);
   else
   #endif
-  return (MapWindow::MapScale <= scaleThreshold);
+  return (MapWindow::zoom.Scale() <= scaleThreshold);
 }
 
 void Topology::TriggerIfScaleNowVisible(void) {
@@ -214,14 +214,14 @@ void Topology::Paint(HDC hdc, RECT rc) {
   bool nolabels=false;
   if (scaleCategory==10) {
 	// for water areas, use scaleDefault
-	if ( MapWindow::MapScale>scaleDefaultThreshold) {
+	if ( MapWindow::zoom.Scale()>scaleDefaultThreshold) {
 		return;
 	}
 	// since we just checked category 10, if we are over scale we set nolabels
-	if ( MapWindow::MapScale>scaleThreshold) nolabels=true;
+	if ( MapWindow::zoom.Scale()>scaleThreshold) nolabels=true;
   } else 
   #endif
-  if (MapWindow::MapScale > scaleThreshold) return;
+  if (MapWindow::zoom.Scale() > scaleThreshold) return;
 
   // TODO code: only draw inside screen!
   // this will save time with rendering pixmaps especially
@@ -246,13 +246,13 @@ void Topology::Paint(HDC hdc, RECT rc) {
   // != 5 and != 10
   if (scaleCategory>10) { 
 #endif
-  if (MapWindow::MapScale>0.25*scaleThreshold) {
+  if (MapWindow::zoom.Scale()>0.25*scaleThreshold) {
     iskip = 2;
   } 
-  if (MapWindow::MapScale>0.5*scaleThreshold) {
+  if (MapWindow::zoom.Scale()>0.5*scaleThreshold) {
     iskip = 3;
   }
-  if (MapWindow::MapScale>0.75*scaleThreshold) {
+  if (MapWindow::zoom.Scale()>0.75*scaleThreshold) {
     iskip = 4;
   }
 #if LKTOPO
@@ -285,7 +285,7 @@ void Topology::Paint(HDC hdc, RECT rc) {
 	#if 101016
 	// -------------------------- NOT PRINTING ICONS ---------------------------------------------
 	bool dobitmap=false;
-	if (scaleCategory<90 || (MapWindow::MapScale<2)) dobitmap=true;
+	if (scaleCategory<90 || (MapWindow::zoom.Scale()<2)) dobitmap=true;
 	// first a latlon overlap check, only approximated because of fastcosine in latlon2screen
 	if (checkVisible(*shape, screenRect))
 		for (int tt = 0; tt < shape->numlines; tt++) {

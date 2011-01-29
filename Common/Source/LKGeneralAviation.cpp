@@ -172,7 +172,7 @@ void DrawHSI(HDC hdc, POINT Orig, RECT rc )
 	if ( DisplayOrientation == NORTHSMART || 
 		DisplayOrientation == NORTHTRACK ||
 		DisplayOrientation == NORTHUP ||
-		DisplayMode == dmCircling
+		MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)
 		)
 	{
 		return; //Only for Trackup and compatible modes
