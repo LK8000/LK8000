@@ -185,6 +185,7 @@
 // topology optimization routines
 #define TOPOFAST	1
 #define TOPOFASTLABEL	1
+#define TOPOFASTCACHE	1
 #endif
 #endif
 

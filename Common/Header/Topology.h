@@ -80,7 +80,6 @@ class Topology {
   virtual XShape* addShape(const int i);
   
  protected:
-
   void flushCache();
 
   bool append;
@@ -90,6 +89,14 @@ class Topology {
   HBITMAP hBitmap;
   shapefileObj shpfile;
   bool shapefileopen;
+#ifdef TOPOFASTCACHE
+  virtual bool isTopoLabelClass() { return false; }
+  void initCache();
+  int cache_mode;
+  XShape **shps;
+  rectObj* shpBounds;
+  rectObj lastBounds;
+#endif
  
 };
 
@@ -114,7 +121,9 @@ class TopologyLabel: public Topology {
   virtual XShape* addShape(const int i);
   void setField(int i);
   int field;
-
+#ifdef TOPOFASTCACHE
+  virtual bool isTopoLabelClass() { return true; }
+#endif
 };
 
 void ClipPolygon(HDC hdc, POINT *ptin, unsigned int n, 

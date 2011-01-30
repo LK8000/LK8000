@@ -127,18 +127,17 @@ void SetTopologyBounds(const RECT rcin, const bool force) {
 
     // we will make sure we update at least one cache per call
     // to make sure eventually everything gets refreshed
-
-    int total_shapes_visible = 0;
-    for (int z=0; z<MAXTOPOLOGY; z++) {
-      if (TopoStore[z]) {
-	rta = MapWindow::RenderTimeAvailable() || force || !sneaked;
-	if (TopoStore[z]->triggerUpdateCache) {
-	  sneaked = true;
+	int total_shapes_visible = 0;
+	for (int z=0; z<MAXTOPOLOGY; z++) {
+		if (TopoStore[z]) {
+			rta = MapWindow::RenderTimeAvailable() || force || !sneaked;
+			if (TopoStore[z]->triggerUpdateCache) {
+				sneaked = true;
+			}
+			TopoStore[z]->updateCache(bounds_active, !rta);
+			total_shapes_visible += TopoStore[z]->shapes_visible_count;
+		}
 	}
-	TopoStore[z]->updateCache(bounds_active, !rta);
-	total_shapes_visible += TopoStore[z]->shapes_visible_count;
-      }
-    }
 #ifdef DEBUG_GRAPHICS
     DebugStore("%d # shapes\n", total_shapes_visible);
 #endif
@@ -2079,6 +2078,7 @@ void OpenTopology() {
                                        ShapeField);
           TopoStore[numtopo] = newtopol;
         }
+		TopoStore[numtopo]->Open();
         if (ShapeIcon!=0) 
           TopoStore[numtopo]->loadBitmap(ShapeIcon);
         

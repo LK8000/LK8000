@@ -48,8 +48,15 @@ Topology::Topology(const char* shpname, COLORREF thecolor, bool doappend) {
   shapefileopen = false;
   triggerUpdateCache = false;
   scaleThreshold = 0;
-  shpCache= NULL;
+  shpCache = NULL;
   hBitmap = NULL;
+
+#ifdef TOPOFASTCACHE
+  shpBounds = NULL;
+  shps = NULL;
+  cache_mode = 0;
+  lastBounds.minx = lastBounds.miny = lastBounds.maxx = lastBounds.maxy = 0;
+#endif
 
   in_scale = false;
 
@@ -57,9 +64,98 @@ Topology::Topology(const char* shpname, COLORREF thecolor, bool doappend) {
   strcpy( filename, shpname ); 
   hPen = (HPEN)CreatePen(PS_SOLID, 1, thecolor);
   hbBrush=(HBRUSH)CreateSolidBrush(thecolor);
-  Open();
 }
 
+
+#ifdef TOPOFASTCACHE
+void Topology::initCache()
+{
+  //Selecting caching scenarios based on available memory and topo size
+  // Unfortunatelly I don't find a suitable algorithm to estimate the loaded
+  // shapefile's memory footprint so we never choose mode2. KR
+  long free_size = CheckFreeRam();
+  long bounds_size = sizeof(rectObj)*shpfile.numshapes;
+  //long pshps_size = sizeof(XShape*)*shpfile.numshapes + sizeof(XShape)*shpfile.numshapes;
+  //if (isTopoLabelClass()) pshps_size += (40 * shpfile.numshapes); // Estimate label mem
+  //StartupStore(_T(". Topology sizes shps:%d b:%ldk p:%ldk f:%ldk%s"), shpfile.numshapes, bounds_size/1024, pshps_size/1024, free_size/1024, NEWLINE);
+  //StartupStore(_T(". filesize %d, nRecords %d, nMaxRecords %d, nPartMax %d%s"), shpfile.hSHP->nFileSize, shpfile.hSHP->nRecords, shpfile.hSHP->nMaxRecords, shpfile.hSHP->nPartMax, NEWLINE);
+
+  //Cache mode selection based on available memory
+  cache_mode = 0;
+  free_size -= 10000*1024;		// Safe: if we don't have enough memory we use mode0
+  if (free_size>bounds_size) cache_mode = 1;
+
+  shpBounds = NULL;
+  shps = NULL;
+
+  for (int i=0; i<shpfile.numshapes; i++) shpCache[i] = NULL;
+
+  switch (cache_mode) {
+	default:
+	case 0:
+		// Original
+		#ifdef DEBUG_TFC
+		StartupStore(_T("Topology cache using mode 0%s"), NEWLINE);
+		#endif
+		break;
+
+	case 1:
+		// Using bounds array in memory
+		#ifdef DEBUG_TFC
+		StartupStore(_T(". Topology cache using mode 1%s"), NEWLINE);
+		#endif
+		shpBounds = (rectObj*)malloc(sizeof(rectObj)*shpfile.numshapes);
+		if (shpBounds == NULL) {
+			//Fallback to mode 0
+			StartupStore(_T("------ WARN Topology,  malloc failed shpBounds, fallback to mode0%s"), NEWLINE);
+			cache_mode = 0;
+			break;
+		}
+		// Get bounds for each shape from shapefile
+		rectObj *prect;
+		int retval;
+		for (int i=0; i<shpfile.numshapes; i++) {
+			prect = &shpBounds[i];
+			retval = msSHPReadBounds(shpfile.hSHP, i, prect);
+			if (retval) {
+				StartupStore(_T("------ WARN Topology, shape bounds reading failed, fallback to mode0%s"), NEWLINE);
+				// Cleanup
+				free(shpBounds);
+				shpBounds=NULL;
+				cache_mode = 0;
+				break;
+			}
+		}//for
+		break;
+
+	case 2:
+		// Using shape array in memory
+		#ifdef DEBUG_TFC
+		StartupStore(_T(". Topology cache using mode 2%s"), NEWLINE);
+		#endif
+		shpBounds = NULL;
+		shps = (XShape**)malloc(sizeof(XShape*)*shpfile.numshapes);
+		if (shps == NULL) {
+			//Fallback to mode 0
+			StartupStore(_T("------ WARN Topology,  malloc failed shps, fallback to mode0%s"), NEWLINE);
+			cache_mode = 0;
+			break;
+		}
+		// Load all shapes to shps
+		for (int i=0; i<shpfile.numshapes; i++) {
+			if ( (shps[i] = addShape(i)) == NULL ) {
+				StartupStore(_T("------ WARN Topology,  addShape failed for shps[%d], fallback to mode0%s"), i, NEWLINE);
+				// Cleanup
+				for (int j=0; j<i; j++) delete(shps[i]);
+				free(shps);
+				shps=NULL;
+				cache_mode = 0;
+				break;
+			}
+		}
+  } //sw
+}
+#endif
 
 void Topology::Open() {
 
@@ -84,14 +180,20 @@ void Topology::Open() {
 
   scaleThreshold = 1000.0;
   shpCache = (XShape**)malloc(sizeof(XShape*)*shpfile.numshapes);
-  if (shpCache) {
-    shapefileopen = true;
-    for (int i=0; i<shpfile.numshapes; i++) {
-      shpCache[i] = NULL;
-    }
-  } else {
+  if (shpCache == NULL) {
 	StartupStore(_T("------ ERR Topology,  malloc failed shpCache%s"), NEWLINE);
+	return;
   }
+
+#ifdef TOPOFASTCACHE
+	initCache();
+#else
+  for (int i=0; i<shpfile.numshapes; i++) {
+	shpCache[i] = NULL;
+  }
+#endif
+
+  shapefileopen = true;
 }
 
 
@@ -101,6 +203,17 @@ void Topology::Close() {
       flushCache();
       free(shpCache); shpCache = NULL;
     }
+#ifdef TOPOFASTCACHE
+    if (shpBounds) {
+      free(shpBounds); shpBounds = NULL;
+    }
+    if (shps) {
+	  for (int i=0; i<shpfile.numshapes; i++) {
+		if (shps[i]) delete shps[i];
+	  }
+      free(shps); shps = NULL;
+    }
+#endif
     msSHPCloseFile(&shpfile);
     shapefileopen = false;  // added sgi
   }
@@ -131,10 +244,33 @@ void Topology::TriggerIfScaleNowVisible(void) {
 }
 
 void Topology::flushCache() {
+#ifdef DEBUG_TFC
+  StartupStore(TEXT("---flushCache() starts%s"),NEWLINE);
+  int starttick = GetTickCount();
+#endif
+#ifdef TOPOFASTCACHE
+  switch (cache_mode) {
+	case 0:  // Original
+	case 1:  // Bounds array in memory
+		for (int i=0; i<shpfile.numshapes; i++) {
+			removeShape(i);
+		}
+		break;
+	case 2:  // Shapes in memory
+		for (int i=0; i<shpfile.numshapes; i++) {
+			shpCache[i] = NULL;
+		}
+		break;
+  }//sw		
+#else
   for (int i=0; i<shpfile.numshapes; i++) {
     removeShape(i);
   }
+#endif
   shapes_visible_count = 0;
+#ifdef DEBUG_TFC
+  StartupStore(TEXT("   flushCache() ends (%dms)%s"),GetTickCount()-starttick,NEWLINE);
+#endif
 }
 
 void Topology::updateCache(rectObj thebounds, bool purgeonly) {
@@ -155,7 +291,115 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
   if (purgeonly) return;
 
   triggerUpdateCache = false;
- 
+
+#ifdef DEBUG_TFC
+#ifdef TOPOFASTCACHE
+  StartupStore(TEXT("---UpdateCache() starts, mode%d%s"),cache_mode,NEWLINE);
+#else
+  StartupStore(TEXT("---UpdateCache() starts, original code%s"),NEWLINE);
+#endif
+  int starttick = GetTickCount();
+#endif
+
+#ifdef TOPOFASTCACHE
+  if(msRectOverlap(&shpfile.bounds, &thebounds) != MS_TRUE) {
+    // this happens if entire shape is out of range
+    // so clear buffer.
+    flushCache();
+    return;
+  }
+
+  bool smaller = false;
+  bool bigger = false;
+  int shapes_loaded = 0;
+  shapes_visible_count = 0;
+  switch (cache_mode) {
+	case 0: // Original code plus one special case
+		smaller = (msRectContained(&thebounds, &lastBounds) == MS_TRUE);
+		if (smaller) { //Special case, search inside, we don't need to load additional shapes, just remove
+			shapes_visible_count = 0;
+			for (int i=0; i<shpfile.numshapes; i++) {
+				if (shpCache[i]) {
+					if(msRectOverlap(&(shpCache[i]->shape.bounds), &thebounds) != MS_TRUE) {
+						removeShape(i);
+					} else shapes_visible_count++;
+				}
+			}//for
+		} else { 
+			//In this case we have to run the original algoritm
+			msSHPWhichShapes(&shpfile, thebounds, 0);
+			shapes_visible_count = 0;
+			for (int i=0; i<shpfile.numshapes; i++) {
+				if (msGetBit(shpfile.status, i)) {
+					if (shpCache[i]==NULL) {
+						// shape is now in range, and wasn't before
+						shpCache[i] = addShape(i);
+						shapes_loaded++;
+					}
+					shapes_visible_count++;
+				} else {
+					removeShape(i);
+				}
+			}//for
+		}
+		break;
+
+	case 1:  // Bounds array in memory
+		bigger = (msRectContained(&lastBounds, &thebounds) == MS_TRUE);
+		smaller = (msRectContained(&thebounds, &lastBounds) == MS_TRUE);
+		if (smaller) { //Search inside, we don't need to load additional shapes, just remove
+			for (int i=0; i<shpfile.numshapes; i++) {
+				if (shpCache[i]==NULL) continue;
+				if(msRectOverlap(&shpBounds[i], &thebounds) != MS_TRUE) {
+					removeShape(i);
+				} else shapes_visible_count++;
+			}//for
+		} else 
+		if (bigger) { //We don't need to remove shapes, just load, so skip loaded ones
+			for (int i=0; i<shpfile.numshapes; i++) {
+				if (shpCache[i]) continue;
+				if(msRectOverlap(&shpBounds[i], &thebounds) == MS_TRUE) {
+					// shape is now in range, and wasn't before
+					shpCache[i] = addShape(i);
+					shapes_loaded++;
+				}
+			}//for
+			shapes_visible_count+=shapes_loaded;
+		} else {
+			//Otherwise we have to search the all array
+			for (int i=0; i<shpfile.numshapes; i++) {
+				if(msRectOverlap(&shpBounds[i], &thebounds) == MS_TRUE) {
+					if (shpCache[i]==NULL) {
+						// shape is now in range, and wasn't before
+						shpCache[i] = addShape(i);
+						shapes_loaded++;
+					}
+					shapes_visible_count++;
+				} else {
+					removeShape(i);
+				}
+			}//for
+		}
+		break;
+
+	case 2: // All shapes in memory	
+		XShape *pshp;
+		shapes_visible_count = 0;
+		for (int i=0; i<shpfile.numshapes; i++) {
+			pshp = shps[i];
+			if(msRectOverlap(&(pshp->shape.bounds), &thebounds) == MS_TRUE) {
+				shpCache[i] = pshp;
+				shapes_visible_count++;
+			} else {
+				shpCache[i] = NULL;
+			}
+		}//for
+		break;
+  }//sw
+
+	lastBounds = thebounds;
+#else
+
   msSHPWhichShapes(&shpfile, thebounds, 0);
   if (!shpfile.status) {
     // this happens if entire shape is out of range
@@ -179,6 +423,11 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
       removeShape(i);
     }
   }
+#endif
+
+#ifdef DEBUG_TFC
+  StartupStore(TEXT("   UpdateCache() ends, shps_visible=%d (%dms)%s"),shapes_visible_count,GetTickCount()-starttick,NEWLINE);
+#endif
 }
 
 
@@ -207,220 +456,215 @@ bool Topology::checkVisible(shapeObj& shape, rectObj &screenRect) {
 // Paint a single topology element
 
 void Topology::Paint(HDC hdc, RECT rc) {
-
-  if (!shapefileopen) return;
-
-  #if LKTOPO
-  bool nolabels=false;
-  if (scaleCategory==10) {
-	// for water areas, use scaleDefault
-	if ( MapWindow::MapScale>scaleDefaultThreshold) {
-		return;
-	}
-	// since we just checked category 10, if we are over scale we set nolabels
-	if ( MapWindow::MapScale>scaleThreshold) nolabels=true;
-  } else 
-  #endif
-  if (MapWindow::MapScale > scaleThreshold) return;
-
-  // TODO code: only draw inside screen!
-  // this will save time with rendering pixmaps especially
-  // checkVisible does only check lat lon , not screen pixels..
-  // We need to check also screen.
-
-  HPEN  hpOld;
-  HBRUSH hbOld;
-  HFONT hfOld;
-
-  hpOld = (HPEN)SelectObject(hdc,hPen);
-  hbOld = (HBRUSH)SelectObject(hdc, hbBrush);
-  hfOld = (HFONT)SelectObject(hdc, MapLabelFont);
-
-  // get drawing info
-    
-  int iskip = 1;
-  
-#if LKTOPO
-  // attempt to bugfix 100615 polyline glitch with zoom over 33Km
-  // do not skip points, if drawing coast lines which have a scaleThreshold of 100km!
-  // != 5 and != 10
-  if (scaleCategory>10) { 
-#endif
-  if (MapWindow::MapScale>0.25*scaleThreshold) {
-    iskip = 2;
-  } 
-  if (MapWindow::MapScale>0.5*scaleThreshold) {
-    iskip = 3;
-  }
-  if (MapWindow::MapScale>0.75*scaleThreshold) {
-    iskip = 4;
-  }
-#if LKTOPO
-  }
-#endif
-
-  #if TOPOFASTLABEL
-  // use the already existing screenbounds_latlon, calculated by CalculateScreenPositions in MapWindow2
-  rectObj screenRect = MapWindow::screenbounds_latlon;
-  #else
-  rectObj screenRect = MapWindow::CalculateScreenBounds(0.0);
-  #endif
-
-  static POINT pt[MAXCLIPPOLYGON];
-  bool labelprinted=false;
-
-  for (int ixshp = 0; ixshp < shpfile.numshapes; ixshp++) {
-    
-    XShape *cshape = shpCache[ixshp];
-
-    if (!cshape || cshape->hide) continue;    
-
-    shapeObj *shape = &(cshape->shape);
-
-    switch(shape->type) {
-
-
-      case(MS_SHAPE_POINT):{
-
-	#if 101016
-	// -------------------------- NOT PRINTING ICONS ---------------------------------------------
-	bool dobitmap=false;
-	if (scaleCategory<90 || (MapWindow::MapScale<2)) dobitmap=true;
-	// first a latlon overlap check, only approximated because of fastcosine in latlon2screen
-	if (checkVisible(*shape, screenRect))
-		for (int tt = 0; tt < shape->numlines; tt++) {
-			for (int jj=0; jj< shape->line[tt].numpoints; jj++) {
-				POINT sc;
-				MapWindow::LatLon2Screen(shape->line[tt].point[jj].x, shape->line[tt].point[jj].y, sc);
-				if (dobitmap) {
-					// bugfix 101212 missing case for scaleCategory 0 (markers)
-					if (scaleCategory==0||cshape->renderSpecial(hdc, sc.x, sc.y,labelprinted)) 
-						MapWindow::DrawBitmapIn(hdc, sc, hBitmap);
-				} else {
-					cshape->renderSpecial(hdc, sc.x, sc.y,labelprinted);
-				}
-			}
-		}
-	}
-
-	#else
-	// -------------------------- PRINTING ICONS ---------------------------------------------
-	#if (LKTOPO && TOPOFAST)
-	#if 101016
-	// no bitmaps for small town over a certain zoom level and no bitmap if no label at all levels
-	bool nobitmap=false, noiconwithnolabel=false;
-	if (scaleCategory==90 || scaleCategory==100) {
-		noiconwithnolabel=true;
-		if (MapWindow::MapScale>4) nobitmap=true;
-	}
-	#else
-	// do not print bitmaps for small town over a certain zoom level
-	bool nobitmap=false;
-	if (scaleCategory==90 && (MapWindow::MapScale>4))
-		nobitmap=true;
-	else 
-	if (scaleCategory==100 && (MapWindow::MapScale>4)) nobitmap=true;
-	#endif
-	#endif
-
-	//#if TOPOFASTLABEL
-	if (checkVisible(*shape, screenRect))
-		for (int tt = 0; tt < shape->numlines; tt++) {
-			for (int jj=0; jj< shape->line[tt].numpoints; jj++) {
-				POINT sc;
-				MapWindow::LatLon2Screen(shape->line[tt].point[jj].x, shape->line[tt].point[jj].y, sc);
 	
-				#if (LKTOPO && TOPOFAST)
-				if (!nobitmap)
-				#endif
-				#if 101016
-				// only paint icon if label is printed too
-				if (noiconwithnolabel) {
-					if (cshape->renderSpecial(hdc, sc.x, sc.y,labelprinted))
-						MapWindow::DrawBitmapIn(hdc, sc, hBitmap);
-				} else {
-					MapWindow::DrawBitmapIn(hdc, sc, hBitmap);
-					cshape->renderSpecial(hdc, sc.x, sc.y,labelprinted);
-				}
-				#else
-				MapWindow::DrawBitmapIn(hdc, sc, hBitmap);
-				cshape->renderSpecial(hdc, sc.x, sc.y);
-				#endif
-			}
-		}
-
-	}
-	#endif // Use optimized point icons 1.23e
-	break;
-
-    case(MS_SHAPE_LINE):
-
-      if (checkVisible(*shape, screenRect))
-        for (int tt = 0; tt < shape->numlines; tt ++) {
-          
-          int minx = rc.right;
-          int miny = rc.bottom;
-          int msize = min(shape->line[tt].numpoints, MAXCLIPPOLYGON);
-
-	  MapWindow::LatLon2Screen(shape->line[tt].point,
-				   pt, msize, 1);
-          for (int jj=0; jj< msize; jj++) {
-            if (pt[jj].x<=minx) {
-              minx = pt[jj].x;
-              miny = pt[jj].y;
-            }
-	  }
-
-          ClipPolygon(hdc, pt, msize, rc, false);
-          cshape->renderSpecial(hdc,minx,miny,labelprinted);
-        }
-      break;
-      
-    case(MS_SHAPE_POLYGON):
-
+	if (!shapefileopen) return;
+	
 	#if LKTOPO
-	// if it's a water area (nolabels), print shape up to defaultShape, but print
-	// labels only up to custom label levels
-	if ( nolabels ) {
-		if (checkVisible(*shape, screenRect)) {
-			for (int tt = 0; tt < shape->numlines; tt ++) {
-				int minx = rc.right;
-				int miny = rc.bottom;
-				int msize = min(shape->line[tt].numpoints/iskip, MAXCLIPPOLYGON);
-				MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize*iskip, iskip);
-				for (int jj=0; jj< msize; jj++) {
-					if (pt[jj].x<=minx) {
-						minx = pt[jj].x;
-						miny = pt[jj].y;
-					}
-				}
-				ClipPolygon(hdc,pt, msize, rc, true);
-			}
+	bool nolabels=false;
+	if (scaleCategory==10) {
+		// for water areas, use scaleDefault
+		if ( MapWindow::MapScale>scaleDefaultThreshold) {
+			return;
 		}
+		// since we just checked category 10, if we are over scale we set nolabels
+		if ( MapWindow::MapScale>scaleThreshold) nolabels=true;
 	} else 
 	#endif
-	if (checkVisible(*shape, screenRect)) {
-		for (int tt = 0; tt < shape->numlines; tt ++) {
-			int minx = rc.right;
-			int miny = rc.bottom;
-			int msize = min(shape->line[tt].numpoints/iskip, MAXCLIPPOLYGON);
-			MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize*iskip, iskip);
-			for (int jj=0; jj< msize; jj++) {
-				if (pt[jj].x<=minx) {
-					minx = pt[jj].x;
-					miny = pt[jj].y;
-				}
-			}
-			ClipPolygon(hdc,pt, msize, rc, true);
-			cshape->renderSpecial(hdc,minx,miny,labelprinted);          
-		}
+	if (MapWindow::MapScale > scaleThreshold) return;
+	
+	// TODO code: only draw inside screen!
+	// this will save time with rendering pixmaps especially
+	// checkVisible does only check lat lon , not screen pixels..
+	// We need to check also screen.
+	
+	HPEN  hpOld;
+	HBRUSH hbOld;
+	HFONT hfOld;
+	
+	hpOld = (HPEN)SelectObject(hdc,hPen);
+	hbOld = (HBRUSH)SelectObject(hdc, hbBrush);
+	hfOld = (HFONT)SelectObject(hdc, MapLabelFont);
+	
+	// get drawing info
+		
+	int iskip = 1;
+	
+	#if LKTOPO
+	// attempt to bugfix 100615 polyline glitch with zoom over 33Km
+	// do not skip points, if drawing coast lines which have a scaleThreshold of 100km!
+	// != 5 and != 10
+	if (scaleCategory>10) { 
+	#endif
+	if (MapWindow::MapScale>0.25*scaleThreshold) {
+		iskip = 2;
+	} 
+	if (MapWindow::MapScale>0.5*scaleThreshold) {
+		iskip = 3;
 	}
-	break;
-      
-    default:
-      break;
-    }
-  }
+	if (MapWindow::MapScale>0.75*scaleThreshold) {
+		iskip = 4;
+	}
+	#if LKTOPO
+	}
+	#endif
+	
+	#if TOPOFASTLABEL
+	// use the already existing screenbounds_latlon, calculated by CalculateScreenPositions in MapWindow2
+	rectObj screenRect = MapWindow::screenbounds_latlon;
+	#else
+	rectObj screenRect = MapWindow::CalculateScreenBounds(0.0);
+	#endif
+	
+	static POINT pt[MAXCLIPPOLYGON];
+	bool labelprinted=false;
+	
+	for (int ixshp = 0; ixshp < shpfile.numshapes; ixshp++) {
+		
+		XShape *cshape = shpCache[ixshp];
+		if (!cshape || cshape->hide) continue;
+		shapeObj *shape = &(cshape->shape);
+
+		switch(shape->type) {
+			case(MS_SHAPE_POINT):{
+				#if 101016
+				// -------------------------- NOT PRINTING ICONS ---------------------------------------------
+				bool dobitmap=false;
+				if (scaleCategory<90 || (MapWindow::MapScale<2)) dobitmap=true;
+				// first a latlon overlap check, only approximated because of fastcosine in latlon2screen
+				if (checkVisible(*shape, screenRect)) {
+					for (int tt = 0; tt < shape->numlines; tt++) {
+						for (int jj=0; jj< shape->line[tt].numpoints; jj++) {
+							POINT sc;
+							MapWindow::LatLon2Screen(shape->line[tt].point[jj].x, shape->line[tt].point[jj].y, sc);
+							if (dobitmap) {
+								// bugfix 101212 missing case for scaleCategory 0 (markers)
+								if (scaleCategory==0||cshape->renderSpecial(hdc, sc.x, sc.y,labelprinted)) 
+									MapWindow::DrawBitmapIn(hdc, sc, hBitmap);
+							} else {
+								cshape->renderSpecial(hdc, sc.x, sc.y,labelprinted);
+							}
+						}
+					}
+				}
+				}
+			
+				#else
+				// -------------------------- PRINTING ICONS ---------------------------------------------
+				#if (LKTOPO && TOPOFAST)
+				#if 101016
+				// no bitmaps for small town over a certain zoom level and no bitmap if no label at all levels
+				bool nobitmap=false, noiconwithnolabel=false;
+				if (scaleCategory==90 || scaleCategory==100) {
+					noiconwithnolabel=true;
+					if (MapWindow::MapScale>4) nobitmap=true;
+				}
+				#else
+				// do not print bitmaps for small town over a certain zoom level
+				bool nobitmap=false;
+				if (scaleCategory==90 && (MapWindow::MapScale>4))
+					nobitmap=true;
+				else 
+				if (scaleCategory==100 && (MapWindow::MapScale>4)) nobitmap=true;
+				#endif
+				#endif
+			
+				//#if TOPOFASTLABEL
+				if (checkVisible(*shape, screenRect)) {
+					for (int tt = 0; tt < shape->numlines; tt++) {
+						for (int jj=0; jj< shape->line[tt].numpoints; jj++) {
+							POINT sc;
+							MapWindow::LatLon2Screen(shape->line[tt].point[jj].x, shape->line[tt].point[jj].y, sc);
+				
+							#if (LKTOPO && TOPOFAST)
+							if (!nobitmap)
+							#endif
+							#if 101016
+							// only paint icon if label is printed too
+							if (noiconwithnolabel) {
+								if (cshape->renderSpecial(hdc, sc.x, sc.y,labelprinted))
+									MapWindow::DrawBitmapIn(hdc, sc, hBitmap);
+							} else {
+								MapWindow::DrawBitmapIn(hdc, sc, hBitmap);
+								cshape->renderSpecial(hdc, sc.x, sc.y,labelprinted);
+							}
+							#else
+							MapWindow::DrawBitmapIn(hdc, sc, hBitmap);
+							cshape->renderSpecial(hdc, sc.x, sc.y);
+							#endif
+						}
+					}
+				}
+				}
+				#endif // Use optimized point icons 1.23e
+				break;
+		
+			case(MS_SHAPE_LINE):
+				if (checkVisible(*shape, screenRect)) {
+					for (int tt = 0; tt < shape->numlines; tt ++) {
+					
+					int minx = rc.right;
+					int miny = rc.bottom;
+					int msize = min(shape->line[tt].numpoints, MAXCLIPPOLYGON);
+				
+				MapWindow::LatLon2Screen(shape->line[tt].point,
+							pt, msize, 1);
+					for (int jj=0; jj< msize; jj++) {
+						if (pt[jj].x<=minx) {
+						minx = pt[jj].x;
+						miny = pt[jj].y;
+						}
+				}
+				
+					ClipPolygon(hdc, pt, msize, rc, false);
+					cshape->renderSpecial(hdc,minx,miny,labelprinted);
+					}
+				}
+				break;
+				
+			case(MS_SHAPE_POLYGON):
+				#if LKTOPO
+				// if it's a water area (nolabels), print shape up to defaultShape, but print
+				// labels only up to custom label levels
+				if ( nolabels ) {
+					if (checkVisible(*shape, screenRect)) {
+						for (int tt = 0; tt < shape->numlines; tt ++) {
+							int minx = rc.right;
+							int miny = rc.bottom;
+							int msize = min(shape->line[tt].numpoints/iskip, MAXCLIPPOLYGON);
+							MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize*iskip, iskip);
+							for (int jj=0; jj< msize; jj++) {
+								if (pt[jj].x<=minx) {
+									minx = pt[jj].x;
+									miny = pt[jj].y;
+								}
+							}
+							ClipPolygon(hdc,pt, msize, rc, true);
+						}
+					}
+				} else 
+				#endif
+				if (checkVisible(*shape, screenRect)) {
+					for (int tt = 0; tt < shape->numlines; tt ++) {
+						int minx = rc.right;
+						int miny = rc.bottom;
+						int msize = min(shape->line[tt].numpoints/iskip, MAXCLIPPOLYGON);
+						MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize*iskip, iskip);
+						for (int jj=0; jj< msize; jj++) {
+							if (pt[jj].x<=minx) {
+								minx = pt[jj].x;
+								miny = pt[jj].y;
+							}
+						}
+						ClipPolygon(hdc,pt, msize, rc, true);
+						cshape->renderSpecial(hdc,minx,miny,labelprinted);          
+					}
+				}
+				break;
+				
+			default:
+				break;
+		}//sw
+  }//for each shape
         
   SelectObject(hdc, hbOld);
   SelectObject(hdc, hpOld);
