@@ -270,7 +270,7 @@ public:
       MODE_FLY_NONE        = 0x0000,
       MODE_FLY_CRUISE      = 0x0001,
       MODE_FLY_CIRCLING    = 0x0002,
-      MODE_FLY_FINAL_GLIDE = 0x0003
+      MODE_FLY_FINAL_GLIDE = 0x0004
     };
     static const unsigned FLY_MASK = 0x00FF;
     
