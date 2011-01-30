@@ -1,5 +1,15 @@
 Things to be fixed in LK languages files/tokens:
 
+  HLP FIELDS
+  ----------
+
 - H864 is missing, old issue from xcs. Check if we really need this infobox.
-- New Logger fields: _@M936_ - _@M939_
-- New fields: _@M1001_ - _@M1400_ for calculated values and infobox abbrev. translations, see details in ENG_MSG
+- New 890 and 891     
+
+  NEW MSG TOKENS
+  --------------
+
+- New Logger fields: _@M936_ - _@M939_  
+- New Airspace filling: _@M940 to  _@M944
+- New fields: _@M1001_ - _@M1400_ for calculated values and infobox abbrev. translations, 
+  see details in ENG_MSG

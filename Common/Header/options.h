@@ -242,6 +242,10 @@
 
 #define GASUPPORT		1	// oren's GA work
 
+#define ABLEND			1	// Alpha Blending for airspaces and probably for many other 
+					// usages. Use AlphaBlendAvailable() to check, because the
+					// function is inside coredll
+
 /*
  * Put here debug defines, so that other developers can activate them if needed.
 
