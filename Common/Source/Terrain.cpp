@@ -2078,7 +2078,9 @@ void OpenTopology() {
                                        ShapeField);
           TopoStore[numtopo] = newtopol;
         }
+		#ifdef TOPOFASTCACHE
 		TopoStore[numtopo]->Open();
+		#endif
         if (ShapeIcon!=0) 
           TopoStore[numtopo]->loadBitmap(ShapeIcon);
         

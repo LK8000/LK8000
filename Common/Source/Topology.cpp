@@ -64,6 +64,10 @@ Topology::Topology(const char* shpname, COLORREF thecolor, bool doappend) {
   strcpy( filename, shpname ); 
   hPen = (HPEN)CreatePen(PS_SOLID, 1, thecolor);
   hbBrush=(HBRUSH)CreateSolidBrush(thecolor);
+#ifdef TOPOFASTCACHE
+#else
+  Open();
+#endif
 }
 
 
@@ -679,6 +683,7 @@ TopologyLabel::TopologyLabel(const char* shpname, COLORREF thecolor, int field1)
   //sjt 02nov05 - enabled label fields
   setField(max(0,field1)); 
   // JMW this is causing XCSoar to crash on my system!
+  // Placing the base class constructor inside this function will crash LK on my PNAs
 };
 
 TopologyLabel::~TopologyLabel()
