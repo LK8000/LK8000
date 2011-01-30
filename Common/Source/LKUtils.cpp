@@ -79,14 +79,16 @@ void LKBatteryManager() {
 	// StartupStore(_T("... first run, last percent=0\n"));
 	if (PDABatteryPercent <=50) {
 		last_time=GPS_INFO.Time;
-		_stprintf(mbuf,_T("BATTERY LEVEL %d%%"),PDABatteryPercent);
+		// LKTOKEN _@M1352_ "BATTERY LEVEL"
+		_stprintf(mbuf,_T("%s %d%%"), gettext(TEXT("_@M1352_")), PDABatteryPercent);
 		DoStatusMessage(mbuf);
 		warn50=false;
 	}
 	// special case, pdabattery is 0...
 	if (PDABatteryPercent <1) {
 		StartupStore(_T("... LK Battery Manager disabled, low battery %s"),NEWLINE);
-		DoStatusMessage(_T("BATTERY MANAGER DISABLED"));
+		// LKTOKEN _@M1353_ "BATTERY MANAGER DISABLED"
+		DoStatusMessage(gettext(TEXT("_@M1353_")));
 		invalid=true;
 		return;
 	} else
@@ -158,7 +160,8 @@ void LKBatteryManager() {
 
   // Time to give a message to the user, if necessary
   if (PDABatteryPercent <=5) {
-	_stprintf(mbuf,_T("BATTERY LEVEL %d%% CRITIC!"),PDABatteryPercent);
+	// LKTOKEN _@M1354_ "BATTERY LEVEL CRITIC!"
+	_stprintf(mbuf,_T("%d%% %s"), gettext(TEXT("_@M1354_")), PDABatteryPercent);
 	DoStatusMessage(mbuf);
 	#ifndef DISABLEAUDIO
         PlayResource(TEXT("IDR_WAV_RED"));
@@ -170,7 +173,8 @@ void LKBatteryManager() {
 	return;
   }
   if (PDABatteryPercent <=10) {
-	_stprintf(mbuf,_T("BATTERY LEVEL %d%% VERY LOW!"),PDABatteryPercent);
+	// LKTOKEN _@M1355_ "BATTERY LEVEL VERY LOW!"
+	_stprintf(mbuf,_T("%d%% %s"), gettext(TEXT("_@M1355_")), PDABatteryPercent);
 	DoStatusMessage(mbuf);
 	// repeat after 2 minutes, forced
 	last_time=GPS_INFO.Time-(60*3);
@@ -178,7 +182,8 @@ void LKBatteryManager() {
 	return;
   }
   if (PDABatteryPercent <=20) {
-	_stprintf(mbuf,_T("BATTERY LEVEL %d%% LOW!"),PDABatteryPercent);
+	// LKTOKEN _@M1356_ "BATTERY LEVEL LOW!"
+	_stprintf(mbuf,_T("%d%% %s"), gettext(TEXT("_@M1356_")), PDABatteryPercent);
 	DoStatusMessage(mbuf);
 	last_time=GPS_INFO.Time;
 	last_percent=PDABatteryPercent;
@@ -187,7 +192,8 @@ void LKBatteryManager() {
 
   if (PDABatteryPercent <=30) {
 	if (warn33) {
-		_stprintf(mbuf,_T("BATTERY LEVEL %d%%"),PDABatteryPercent);
+		// LKTOKEN _@M1352_ "BATTERY LEVEL"
+		_stprintf(mbuf, _T("%s %d%%"), gettext(TEXT("_@M1352_")), PDABatteryPercent);
 		DoStatusMessage(mbuf);
 		warn33=false;
 	}
@@ -198,7 +204,8 @@ void LKBatteryManager() {
   // DISABLED
   if (PDABatteryPercent <=50) {
 	if (warn50) {
-		_stprintf(mbuf,_T("BATTERY LEVEL %d%%"),PDABatteryPercent);
+		// LKTOKEN _@M1352_ "BATTERY LEVEL"
+		_stprintf(mbuf, _T("%s %d%%"), gettext(TEXT("_@M1352_")), PDABatteryPercent);
 	//	DoStatusMessage(mbuf);
 		warn50=false;
 	}
@@ -218,7 +225,8 @@ bool GiveBatteryWarnings(int numwarn)
   if (toomany) return false;
 
   if (numwarn>MAXBATTWARN) {
-	DoStatusMessage(_T("BATTERY WARNINGS DISABLED"));
+	// LKTOKEN _@M1357_ "BATTERY WARNINGS DISABLED"
+	DoStatusMessage(gettext(TEXT("_@M1357_")));
 	StartupStore(_T("... Too many battery warnings, disabling Battery Manager%s"),NEWLINE);
 	toomany=true;
 	return false;

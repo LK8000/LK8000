@@ -1185,6 +1185,10 @@ _@M1220_ "Shutdown, saving logs..."
 _@M1221_ "Shutdown, saving profile..."
 _@M1222_ "Shutdown, saving task..."
 
+# Topology options reset msgbox
+_@M1223_ "Topology reset to default values"
+
+
 # LK info page headers, try to use the same or less number of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!
 _@M1300_ "Dist"
@@ -1229,4 +1233,31 @@ _@M1331_ "TRF"
 _@M1332_ "Var"
 _@M1333_ "Vario"
 _@M1334_ "Alt"
+
+# Mapwindow texts
+_@M1335_ " TERRAIN?"
+_@M1336_ " T?"
+_@M1337_ " AZM"
+_@M1338_ " PAN"
+_@M1339_ " iAUX"
+_@M1340_ " TRM0"
+_@M1341_ " NAV1"
+_@M1342_ " ALT2"
+_@M1343_ " STA3"
+_@M1344_ " TSK4"
+_@M1345_ " ATN5"
+_@M1346_ " SYS6"
+_@M1347_ " CRU7"
+_@M1348_ " FIN8"
+_@M1349_ " AUX9"
+_@M1350_ " REPLAY"
+_@M1351_ " BALLAST"
+
+# LKUtils
+_@M1352_ "BATTERY LEVEL"
+_@M1353_ "BATTERY MANAGER DISABLED"
+_@M1354_ "BATTERY LEVEL CRITIC!"
+_@M1355_ "BATTERY LEVEL VERY LOW!"
+_@M1356_ "BATTERY LEVEL LOW!"
+_@M1357_ "BATTERY WARNINGS DISABLED"
 

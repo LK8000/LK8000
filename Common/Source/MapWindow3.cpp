@@ -405,7 +405,7 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
   LKWriteText(hdc, Buffer, middlex, contenttop+(textSize.cy*1) , 0, WTMODE_OUTLINED, WTALIGN_CENTER,RGB_AMBER, false);
 
 
-  _stprintf(Buffer,TEXT("Click on center screen to begin")); // REMOVE FIXV2
+  //_stprintf(Buffer,TEXT("Click on center screen to begin")); // REMOVE FIXV2
   _stprintf(Buffer,gettext(TEXT("_@M874_"))); // Click on center screen to begin
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
   LKWriteText(hdc, Buffer, middlex, ((rc.bottom-rc.top)-textSize.cy)/2 , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_SWHITE, false);
@@ -454,7 +454,8 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
   if (WarningHomeDir) {
 	TCHAR nopath[MAX_PATH];
 	LocalPath(nopath,_T(""));
-	MessageBoxX(hWndMapWindow, nopath, _T("CHECK INSTALLATION!"), MB_OK|MB_ICONEXCLAMATION);
+	// LKTOKEN _@M1209_ "CHECK INSTALLATION!"
+	MessageBoxX(hWndMapWindow, nopath, gettext(TEXT("_@M1209_")), MB_OK|MB_ICONEXCLAMATION);
 	WarningHomeDir=false;
   }
 #if ( !defined(WINDOWSPC) || WINDOWSPC==0 )
@@ -813,9 +814,9 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   int bankindy=Start.y+radius/2;
 #ifndef __MINGW32__
   if (beta > 1)
-	_stprintf(Buffer, TEXT("%2.0f°"), beta);
+	_stprintf(Buffer, TEXT("%2.0f\xB0"), beta);
   else if (beta < -1)
-	_stprintf(Buffer, TEXT("%2.0f°"), -beta);
+	_stprintf(Buffer, TEXT("%2.0f\xB0"), -beta);
   else
 	_tcscpy(Buffer, TEXT("--"));
 #else

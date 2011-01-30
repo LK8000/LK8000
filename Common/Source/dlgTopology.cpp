@@ -177,8 +177,9 @@ static void OnResetTopologyClicked(WindowControl * Sender){
   ChangeZoomTopology(1,1,4);
   setVariables();
 
+  //LKTOKEN _@M1223_ "Topology reset to default values"
   MessageBoxX (hWndMainWindow, 
-		 TEXT("Topology reset to default values"), 
+		 gettext(TEXT("_@M1223_")), 
 		 TEXT(""), MB_OK);
 }
 
