@@ -756,9 +756,9 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryAutoWind,&Temp);
   AutoWindMode = Temp;
 
-  Temp  = CircleZoom;
+  Temp  = MapWindow::zoom.CircleZoom();
   GetFromRegistry(szRegistryCircleZoom,&Temp);
-  CircleZoom = (Temp == 1);
+  MapWindow::zoom.CircleZoom(Temp == 1);
 
   Temp  = WindUpdateMode;
   GetFromRegistry(szRegistryWindUpdateMode,&Temp);
@@ -1362,7 +1362,7 @@ void ReadRegistrySettings(void)
 
   Temp = 0;
   GetFromRegistry(szRegistryAutoZoom,&Temp);
-  MapWindow::AutoZoom = (Temp == 1);
+  MapWindow::zoom.AutoZoom(Temp == 1);
 
   Temp = MenuTimeoutMax;
   GetFromRegistry(szRegistryMenuTimeout,&Temp);

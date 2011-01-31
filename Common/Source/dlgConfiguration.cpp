@@ -1790,7 +1790,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoZoom"));
   if (wp) {
-    wp->GetDataField()->Set(MapWindow::AutoZoom);
+    wp->GetDataField()->Set(MapWindow::zoom.AutoZoom());
     wp->RefreshDisplay();
   }
 
@@ -1905,7 +1905,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpCirclingZoom"));
   if (wp) {
-    wp->GetDataField()->Set(CircleZoom);
+    wp->GetDataField()->Set(MapWindow::zoom.CircleZoom());
     wp->RefreshDisplay();
   }
 
@@ -3823,8 +3823,8 @@ void dlgConfigurationShowModal(void){
       PGCruiseZoom = wp->GetDataField()->GetAsInteger();
       SetToRegistry(szRegistryPGCruiseZoom, PGCruiseZoom);
       changed = true;
-	InitAircraftCategory(); // 100512
-        requirerestart=true;
+      MapWindow::zoom.Reset();
+      requirerestart=true;
     }
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGClimbZoom"));
@@ -3833,8 +3833,8 @@ void dlgConfigurationShowModal(void){
       PGClimbZoom = wp->GetDataField()->GetAsInteger();
       SetToRegistry(szRegistryPGClimbZoom, PGClimbZoom);
       changed = true;
-	SetMapScales(); // 100512
-        requirerestart=true; 
+      MapWindow::zoom.Reset();
+      requirerestart=true; 
     }
   }
 
@@ -4013,10 +4013,11 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoZoom"));
   if (wp) {
-    if (MapWindow::AutoZoom != wp->GetDataField()->GetAsBoolean()) {
-      MapWindow::AutoZoom = wp->GetDataField()->GetAsBoolean();
+    if (MapWindow::zoom.AutoZoom() != 
+	wp->GetDataField()->GetAsBoolean()) {
+      MapWindow::zoom.AutoZoom(wp->GetDataField()->GetAsBoolean());
       SetToRegistry(szRegistryAutoZoom,
-		    MapWindow::AutoZoom);
+		    MapWindow::zoom.AutoZoom());
       changed = true;
     }
   }
@@ -4114,9 +4115,9 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpCirclingZoom"));
   if (wp) {
-    if (CircleZoom != wp->GetDataField()->GetAsBoolean()) {
-      CircleZoom = wp->GetDataField()->GetAsBoolean();
-      SetToRegistry(szRegistryCircleZoom, CircleZoom);
+    if (MapWindow::zoom.CircleZoom() != wp->GetDataField()->GetAsBoolean()) {
+      MapWindow::zoom.CircleZoom(wp->GetDataField()->GetAsBoolean());
+      SetToRegistry(szRegistryCircleZoom, MapWindow::zoom.CircleZoom());
       changed = true;
     }
   }

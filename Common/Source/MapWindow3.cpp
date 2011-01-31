@@ -141,18 +141,17 @@ void MapWindow::DrawGlideCircle(HDC hdc, POINT Orig, RECT rc )
     /*
      * TRACKUP, NORTHUP, NORTHCIRCLE, TRACKCIRCLE, NORTHTRACK
      */
-	if ( ((DisplayOrientation == TRACKUP) || (DisplayOrientation == NORTHCIRCLE) || (DisplayOrientation == TRACKCIRCLE))
-		&& (DisplayMode != dmCircling) ) {
-
+      if ( (( DisplayOrientation == TRACKUP) || (DisplayOrientation == NORTHCIRCLE) || (DisplayOrientation == TRACKCIRCLE))
+           && (!mode.Is(MapWindow::Mode::MODE_CIRCLING)) ) {
 		if ( VisualGlide == 1 ) {
-			tmp = i*gunit*cruise*ResMapScaleOverDistanceModify;
+			tmp = i*gunit*cruise*zoom.ResScaleOverDistanceModify();
 			DrawArc(hdc, Orig.x, Orig.y,(int)tmp, rc, 315, 45);
 		} else {
-			tmp = i*gunit*cruise*ResMapScaleOverDistanceModify;
+			tmp = i*gunit*cruise*zoom.ResScaleOverDistanceModify();
 			DrawArc(hdc, Orig.x, Orig.y,(int)tmp, rc, 330+spread, 30+spread);
 		}
 	} else {
-		tmp = i*gunit*cruise*ResMapScaleOverDistanceModify;
+		tmp = i*gunit*cruise*zoom.ResScaleOverDistanceModify();
 		Circle(hdc, Orig.x,Orig.y,(int)tmp, rc, true, false);
 	}
 
@@ -208,16 +207,16 @@ void MapWindow::DrawHeading(HDC hdc, POINT Orig, RECT rc ) {
 
    if (GPS_INFO.NAVWarning) return; // 100214
 
-   if (MapScale>5 || (DisplayMode == dmCircling)) return;
+   if (zoom.Scale()>5 || mode.Is(MapWindow::Mode::MODE_CIRCLING)) return;
    POINT p2;
 
    #if 0
    if ( !( DisplayOrientation == TRACKUP || DisplayOrientation == NORTHCIRCLE || DisplayOrientation == TRACKCIRCLE )) return;
-   double tmp = 12000*ResMapScaleOverDistanceModify;
+   double tmp = 12000*zoom.ResScaleOverDistanceModify();
    p2.x=Orig.x;
    p2.y=Orig.y-(int)tmp;
    #else
-   double tmp = 12000*ResMapScaleOverDistanceModify;
+   double tmp = 12000*zoom.ResScaleOverDistanceModify();
    if ( !( DisplayOrientation == TRACKUP || DisplayOrientation == NORTHCIRCLE || DisplayOrientation == TRACKCIRCLE )) {
 	double trackbearing = DrawInfo.TrackBearing;
 	p2.y= Orig.y - (int)(tmp*fastcosine(trackbearing));

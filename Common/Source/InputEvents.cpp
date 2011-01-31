@@ -1322,13 +1322,13 @@ void InputEvents::eventZoom(const TCHAR* misc) {
   float zoom;
 
   if (_tcscmp(misc, TEXT("auto toggle")) == 0)
-    MapWindow::Event_AutoZoom(-1);
+    MapWindow::zoom.EventAutoZoom(-1);
   else if (_tcscmp(misc, TEXT("auto on")) == 0)
-    MapWindow::Event_AutoZoom(1);
+    MapWindow::zoom.EventAutoZoom(1);
   else if (_tcscmp(misc, TEXT("auto off")) == 0)
-    MapWindow::Event_AutoZoom(0);
+    MapWindow::zoom.EventAutoZoom(0);
   else if (_tcscmp(misc, TEXT("auto show")) == 0) {
-    if (MapWindow::isAutoZoom())
+    if (MapWindow::zoom.AutoZoom())
 	// 856 AutoZoom ON
       DoStatusMessage(gettext(TEXT("_@M856_")));
     else
@@ -1336,35 +1336,35 @@ void InputEvents::eventZoom(const TCHAR* misc) {
       DoStatusMessage(gettext(TEXT("_@M857_")));
   }
   else if (_tcscmp(misc, TEXT("slowout")) == 0)
-    MapWindow::Event_ScaleZoom(-4);
+    MapWindow::zoom.EventScaleZoom(-4);
   else if (_tcscmp(misc, TEXT("slowin")) == 0)
-    MapWindow::Event_ScaleZoom(4);
+    MapWindow::zoom.EventScaleZoom(4);
   else if (_tcscmp(misc, TEXT("out")) == 0)
-    MapWindow::Event_ScaleZoom(-1);
+    MapWindow::zoom.EventScaleZoom(-1);
   else if (_tcscmp(misc, TEXT("in")) == 0)
-    MapWindow::Event_ScaleZoom(1);
+    MapWindow::zoom.EventScaleZoom(1);
   else if (_tcscmp(misc, TEXT("-")) == 0)
-    MapWindow::Event_ScaleZoom(-1);
+    MapWindow::zoom.EventScaleZoom(-1);
   else if (_tcscmp(misc, TEXT("+")) == 0)
-    MapWindow::Event_ScaleZoom(1);
+    MapWindow::zoom.EventScaleZoom(1);
   else if (_tcscmp(misc, TEXT("--")) == 0)
-    MapWindow::Event_ScaleZoom(-2);
+    MapWindow::zoom.EventScaleZoom(-2);
   else if (_tcscmp(misc, TEXT("++")) == 0) 
-    MapWindow::Event_ScaleZoom(2);
+    MapWindow::zoom.EventScaleZoom(2);
   else if (_stscanf(misc, TEXT("%f"), &zoom) == 1)
-    MapWindow::Event_SetZoom((double)zoom);
+    MapWindow::zoom.EventSetZoom((double)zoom);
 
   else if (_tcscmp(misc, TEXT("circlezoom toggle")) == 0) {
-    CircleZoom = !CircleZoom;
-    MapWindow::SwitchZoomClimb();
+    MapWindow::zoom.CircleZoom(!MapWindow::zoom.CircleZoom());
+    MapWindow::zoom.SwitchMode();
   } else if (_tcscmp(misc, TEXT("circlezoom on")) == 0) {
-    CircleZoom = true;
-    MapWindow::SwitchZoomClimb();
+    MapWindow::zoom.CircleZoom(true);
+    MapWindow::zoom.SwitchMode();
   } else if (_tcscmp(misc, TEXT("circlezoom off")) == 0) {
-    CircleZoom = false;
-    MapWindow::SwitchZoomClimb();
+    MapWindow::zoom.CircleZoom(false);
+    MapWindow::zoom.SwitchMode();
   } else if (_tcscmp(misc, TEXT("circlezoom show")) == 0) {
-    if (CircleZoom)
+    if (MapWindow::zoom.CircleZoom())
 	// LKTOKEN  _@M173_ = "Circling Zoom ON" 
       DoStatusMessage(gettext(TEXT("_@M173_")));
     else
@@ -1394,9 +1394,9 @@ void InputEvents::eventPan(const TCHAR *misc) {
 
 #if defined(PNA) || defined(FIVV)   // VENTA-ADDON  let pan mode scroll wheel zooming with HP31X. VENTA-TODO: make it different for other PNAs
  else if (_tcscmp(misc, TEXT("up")) == 0)
-			MapWindow::Event_ScaleZoom(1);
+			MapWindow::zoom.EventScaleZoom(1);
 else if (_tcscmp(misc, TEXT("down")) == 0)
-			MapWindow::Event_ScaleZoom(-1); // fixed v58
+			MapWindow::zoom.EventScaleZoom(-1); // fixed v58
 #else
   else if (_tcscmp(misc, TEXT("up")) == 0)
     MapWindow::Event_PanCursor(0,1);
@@ -1408,7 +1408,7 @@ else if (_tcscmp(misc, TEXT("down")) == 0)
   else if (_tcscmp(misc, TEXT("right")) == 0)
     MapWindow::Event_PanCursor(-1,0);
   else if (_tcscmp(misc, TEXT("show")) == 0) {
-    if (MapWindow::isPan())
+    if (MapWindow::mode.AnyPan())
       DoStatusMessage(gettext(TEXT("_@M858_"))); // Pan mode ON
     else
       DoStatusMessage(gettext(TEXT("_@M859_"))); // Pan mode OFF
@@ -3036,16 +3036,16 @@ void InputEvents::eventMoveGlider(const TCHAR *misc) {
 void InputEvents::eventUserDisplayModeForce(const TCHAR *misc){
 
   if (_tcscmp(misc, TEXT("unforce")) == 0){
-    UserForceDisplayMode = dmNone;
+    MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_NONE);
   }
   else if (_tcscmp(misc, TEXT("forceclimb")) == 0){
-    UserForceDisplayMode = dmCircling;
+    MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CIRCLING);
   }
   else if (_tcscmp(misc, TEXT("forcecruise")) == 0){
-    UserForceDisplayMode = dmCruise;
+    MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CRUISE);
   }
   else if (_tcscmp(misc, TEXT("forcefinal")) == 0){
-    UserForceDisplayMode = dmFinalGlide;
+    MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
   }
   else if (_tcscmp(misc, TEXT("show")) == 0){
     // DoStatusMessage(TEXT("Map labels ON")); 091211 ?????

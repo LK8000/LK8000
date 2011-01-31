@@ -669,7 +669,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   #endif
 
   #if 100303
-  if (MapWindow::MapScale <2.34) { // <3km map zoom
+  if (MapWindow::zoom.Scale() <2.34) { // <3km map zoom
 	usecolors=true;
   }
   #endif
@@ -679,7 +679,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   double traildrift_lat = 0.0;
   double traildrift_lon = 0.0;
   
-  if (EnableTrailDrift && (DisplayMode == dmCircling)) {
+  if (EnableTrailDrift && MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
     double tlat1, tlon1;
     
     FindLatitudeLongitude(DrawInfo.Latitude, 
@@ -706,7 +706,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 	// scan only recently for lift magnitude
 	num_trail_max = TRAILSIZE/TRAILSHRINK;
   }
-  if ((DisplayMode == dmCircling)) {
+  if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
 	num_trail_max /= TRAILSHRINK;
   }
 
@@ -744,7 +744,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 
   // Constants for speedups
 
-  const bool display_circling = DisplayMode == dmCircling;
+  const bool display_circling = MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING);
   const double display_time = DrawInfo.Time;
 
   // expand bounds so in strong winds the appropriate snail points are
@@ -765,7 +765,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   const int sint = ISINETABLE[deg];
   const int xxs = Orig_Screen.x*1024-512;
   const int yys = Orig_Screen.y*1024+512;
-  const double mDrawScale = DrawScale;
+  const double mDrawScale = zoom.DrawScale();
   const double mPanLongitude = PanLongitude;
   const double mPanLatitude = PanLatitude;
 
@@ -775,7 +775,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   if (display_circling) {
 	nearby=NIBLSCALE(1);
   } else {
-  	if (MapWindow::MapScale <=1)
+  	if (MapWindow::zoom.Scale() <=1)
 		nearby=NIBLSCALE(1); 
 	else
 		nearby=NIBLSCALE(2);
@@ -962,7 +962,7 @@ void MapWindow::SetAutoOrientation(bool doreset) {
   }
 
   // 1.4 because of correction if mapscale reported on screen in MapWindow2
-  if ((MapScale*1.4) >= AutoOrientScale) {
+  if (MapWindow::zoom.Scale() * 1.4 >= AutoOrientScale) {
 	// DisplayOrientation=NORTHSMART; // better to keep the glider centered on low zoom levels
 	DisplayOrientation=NORTHUP;
   } else {

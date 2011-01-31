@@ -1125,8 +1125,8 @@ public:
 
     unsigned int rfact=1;
 
-    if (MapWindow::BigZoom) {
-      MapWindow::BigZoom = false;
+    if (MapWindow::zoom.BigZoom()) {
+      MapWindow::zoom.BigZoom(false);
       if (!RasterTerrain::IsDirectAccess()) {
         // first time displaying this data, so do it at half resolution
         // to avoid too many cache misses

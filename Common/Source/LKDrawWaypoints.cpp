@@ -96,7 +96,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
   bool isairport;
   bool islandpoint;
 
-  if (MapScale <=20) for(i=0;i<NumberOfWayPoints;i++) {
+  if (MapWindow::zoom.Scale() <=20) for(i=0;i<NumberOfWayPoints;i++) {
 
 	if (WayPointList[i].Visible == FALSE )	continue; 
 
@@ -174,7 +174,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
  	    // always in range if MapScale <=10  since no zoom in waypoints is documented and .Zoom is always 0. 
 	    irange = WaypointInRange(i); 
 
-	    if(MapScale > 20) { 
+	    if(MapWindow::zoom.Scale() > 20) { 
 	      SelectObject(hDCTemp,hInvSmall);
 	      irange=false;
 	      goto NiklausWirth; // with compliments
@@ -240,7 +240,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		  }
 		}
 	    } else { // waypoint is an ordinary turnpoint
-	      if(MapScale > 4) {
+	      if(MapWindow::zoom.Scale() > 4) {
 		if (BlackScreen) 
 			SelectObject(hDCTemp,hInvSmall);
 		else
@@ -292,7 +292,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 	     case DISPLAYFIRST12:
 
 		dowrite = (DeclutterLabels<MAPLABELS_ONLYTOPO) || intask || islandable;  // 100711
-		if ( (islandable && !isairport) && MapScale >=10 ) dowrite=0; // FIX then no need to go further
+		if ( (islandable && !isairport) && MapWindow::zoom.Scale() >=10 ) dowrite=0; // FIX then no need to go further
 
 		// 101215 
 		if (DisplayTextType == DISPLAYNAME) {
@@ -331,7 +331,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		break;
 	      case DISPLAYNUMBER:
 		dowrite = (DeclutterLabels<MAPLABELS_ONLYTOPO) || intask || islandable;  // 100620
-		if ( (islandable && !isairport) && MapScale >=10 ) dowrite=0; // FIX then no need to go further
+		if ( (islandable && !isairport) && MapWindow::zoom.Scale() >=10 ) dowrite=0; // FIX then no need to go further
 
 		if (draw_alt) {
 		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
@@ -437,7 +437,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 	      } // end intask/irange/dowrite
 
 		#if MOREDECLUTTER
-		if (MapScale<20 && islandable && dowrite) {
+		if (MapWindow::zoom.Scale()<20 && islandable && dowrite) {
 			TextInBox(hdc, Buffer, WayPointList[i].Screen.x+5, WayPointList[i].Screen.y, 0, TextDisplayMode, true); 
 			dowrite=false; // do not pass it along
 		}
@@ -516,7 +516,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
     if (!E->inTask && !E->isLandable ) {
 
       if ( TextInBox(hdc, E->Name, E->Pos.x, E->Pos.y, 0, E->Mode, true) == true) {
-	if(MapScale > 4) {
+	if(MapWindow::zoom.Scale() > 4) {
 		if (BlackScreen) // 091109
 	 		 SelectObject(hDCTemp,hInvSmall);
 		else

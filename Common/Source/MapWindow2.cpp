@@ -126,7 +126,7 @@ double MapWindow::findMapScaleBarSize(const RECT rc) {
   int range = rc.bottom-rc.top;
 //  int nbars = 0;
 //  int nscale = 1;
-  double pixelsize = MapScale/GetMapResolutionFactor(); // km/pixel
+  double pixelsize = zoom.Scale()/GetMapResolutionFactor(); // km/pixel
   
   // find largest bar size that will fit in display
 
@@ -608,7 +608,7 @@ void MapWindow::CalculateScreenPositionsAirspaceCircle(AIRSPACE_CIRCLE &circ) {
         LatLon2Screen(circ.Longitude, 
                       circ.Latitude, 
                       circ.Screen);
-        circ.ScreenR = iround(circ.Radius*ResMapScaleOverDistanceModify);
+        circ.ScreenR = iround(circ.Radius*zoom.ResScaleOverDistanceModify());
       }
     }
   }
@@ -681,7 +681,7 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
 
   Orig_Screen = Orig;
 
-  if (!EnablePan) {
+  if (!mode.AnyPan()) {
   
     if (GliderCenter 
         && DerivedDrawInfo.Circling 
@@ -829,7 +829,7 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
         LatLon2Screen(Task[i].AATFinishLon, Task[i].AATFinishLat, Task[i].AATFinish);
       }
       if (AATEnabled && (((int)i==ActiveWayPoint) || 
-			 (TargetPan && ((int)i==TargetPanIndex)))) {
+			 (mode.Is(Mode::MODE_TARGET_PAN) && ((int)i==TargetPanIndex)))) {
 
 	for (int j=0; j<MAXISOLINES; j++) {
 	  if (TaskStats[i].IsoLine_valid[j]) {
@@ -848,31 +848,29 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
 
 
 // JMW to be used for target preview
-bool MapWindow::SetTargetPan(bool do_pan, int target_point) {
+void MapWindow::SetTargetPan(bool do_pan, int target_point)
+{
   static double old_latitude;
   static double old_longitude;
-  static bool old_pan=false;
   static bool old_fullscreen=false;
 
-  if (!TargetPan || (TargetPanIndex != target_point)) {
+  if (!mode.Is(Mode::MODE_TARGET_PAN) || (TargetPanIndex != target_point)) {
     TargetDrag_State = 0;
   }
 
   TargetPanIndex = target_point;
 
-  if (do_pan && !TargetPan) {
+  if (do_pan && !mode.Is(Mode::MODE_TARGET_PAN)) {
     old_latitude = PanLatitude;
     old_longitude = PanLongitude;
-    old_pan = EnablePan;
-    EnablePan = true;
-    TargetPan = do_pan;
+    mode.Special(do_pan ? Mode::MODE_SPECIAL_TARGET_PAN : Mode::MODE_SPECIAL_PAN, true);
     old_fullscreen = RequestFullScreen;
     if (RequestFullScreen) {
       RequestFullScreen = false;
     }
-    SwitchZoomClimb();
+    zoom.SwitchMode();
   }
-  if (do_pan) {
+  if(do_pan) {
     LockTaskData();
     if (ValidTaskPoint(target_point)) {
       PanLongitude = WayPointList[Task[target_point].Index].Longitude;
@@ -892,19 +890,18 @@ bool MapWindow::SetTargetPan(bool do_pan, int target_point) {
       }
     }
     UnlockTaskData();
-  } else if (TargetPan) {
+  }
+  else if (mode.Is(Mode::MODE_TARGET_PAN)) {
     PanLongitude = old_longitude;
     PanLatitude = old_latitude;
-    EnablePan = old_pan;
-    TargetPan = do_pan;
-    if (old_fullscreen) {
+    mode.Special(Mode::MODE_SPECIAL_TARGET_PAN, do_pan);
+    if (old_fullscreen)
       RequestFullScreen = true;
-    }
-    SwitchZoomClimb();
+    zoom.SwitchMode();
   }
-  TargetPan = do_pan;
-  return old_pan;
-};
+  mode.Special(Mode::MODE_SPECIAL_TARGET_PAN, do_pan);
+}
+
 
 // Draw bearing line to target
 void MapWindow::DrawGreatCircle(HDC hdc,
@@ -938,7 +935,7 @@ void MapWindow::DrawTrailFromTask(HDC hdc, const RECT rc,
 				  const double TrailFirstTime) {
   static POINT ptin[MAXCLIPPOLYGON];
 
-  if((TrailActive!=3) || (DisplayMode == dmCircling) || (TrailFirstTime<0))
+  if((TrailActive!=3) || mode.Is(Mode::MODE_CIRCLING) || (TrailFirstTime<0))
     return;
 
   const double mTrailFirstTime = TrailFirstTime - DerivedDrawInfo.TakeOffTime;
@@ -1065,7 +1062,7 @@ void MapWindow::DrawProjectedTrack(HDC hdc, const RECT rc, const POINT Orig) {
     // too short to have valid data
   }
   POINT pt[2] = {{0,-75},{0,-400}};
-  if (TargetPan) {
+  if (mode.Is(Mode::MODE_TARGET_PAN)) {
     double screen_range = GetApproxScreenRange();
     double flow = 0.4;
     double fhigh = 1.5;
@@ -1146,7 +1143,7 @@ void MapWindow::DrawThermalBand(HDC hDC, const RECT rc)
   POINT GliderBand[5] = { {0,0},{23,0},{22,0},{24,0},{0,0} };
   
   if ((DerivedDrawInfo.TaskAltitudeDifference>50)
-      &&(DisplayMode == dmFinalGlide)) {
+      &&(mode.Is(Mode::MODE_FINAL_GLIDE))) {
     return;
   }
 
@@ -1885,11 +1882,11 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 	}
     } else terrainwarning=0;
 
-    if (AutoZoom) {
+    if (zoom.AutoZoom()) {
 		// LKTOKEN _@M1337_ " AZM"
       _tcscat(Scale2, gettext(TEXT("_@M1337_")));
     }
-    if (EnablePan) {
+    if (mode.AnyPan()) {
 		// LKTOKEN _@M1338_ " PAN"
       _tcscat(Scale2, gettext(TEXT("_@M1338_")));
     }
@@ -1963,12 +1960,12 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     }
 
     _tcscpy(Scale,TEXT(""));
-    double mapScale=MapScale*1.4; // FIX 091117
+    double mapScale=zoom.Scale()*1.4; // FIX 091117
     if (ISPARAGLIDER) {
 	if ((mapScale) <1.0) {
 		_stprintf(Scale,TEXT("%1.2f"),mapScale);
 	}
-	else if((MapScale*3) <3) {
+	else if((mapScale*3) <3) {
 		_stprintf(Scale,TEXT("%1.1f"),mapScale);
 	}
 	else {

@@ -464,7 +464,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 
 		// relative bearing
 
-		if (DisplayMode != dmCircling) {
+		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
 			Value = WayPointCalc[rli].Bearing -  GPS_INFO.TrackBearing;
 
 			if (Value < -180.0)

@@ -403,9 +403,9 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 #define VKTIMELONG 1500
 #if LKPMODE
-#define DONTDRAWTHEMAP NewMap&&Look8000&&!MapWindow::EnablePan&&MapSpaceMode!=1
+#define DONTDRAWTHEMAP NewMap&&Look8000&&!MapWindow::mode.AnyPan()&&MapSpaceMode!=1
 #else
-#define DONTDRAWTHEMAP MapWindow::IsMapFullScreen()&&NewMap&&Look8000&&!MapWindow::EnablePan&&MapSpaceMode!=1
+#define DONTDRAWTHEMAP MapWindow::IsMapFullScreen()&&NewMap&&Look8000&&!MapWindow::mode.AnyPan()&&MapSpaceMode!=1
 #endif
 
 	#if 100228
@@ -472,7 +472,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 	// Handle fullscreen 8000 mode 
 	// sound clicks require some attention here
-	if (NewMap &&  DrawBottom && !MapWindow::EnablePan && vkmode==LKGESTURE_NONE) { 
+	if (NewMap &&  DrawBottom && !MapWindow::mode.AnyPan() && vkmode==LKGESTURE_NONE) { 
 		//
 		// CLICKS on NAVBOXES, any MapSpaceMode ok
 		//
@@ -480,7 +480,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 			if ( UseMapLock ) {
 				if (MapLock==false) {
-					if (!MapWindow::EnablePan ) LockMap();
+					if (!MapWindow::mode.AnyPan()) LockMap();
 					MapWindow::RefreshMap();
 					return 0;
 				}
@@ -496,7 +496,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				DoStatusMessage(buf);
 				#endif
 				if (  (BottomMode+1) >BM_LAST ) {
-					if ( DisplayMode == dmCircling)
+					if ( MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
 						BottomMode=BM_TRM;
 					else
 						BottomMode=BM_FIRST;
@@ -524,7 +524,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				DoStatusMessage(buf);
 				#endif
 				if ((BottomMode-1) == BM_TRM) {
-					if (DisplayMode != dmCircling) BottomMode=BM_LAST;
+					if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) BottomMode=BM_LAST;
 					else {
 						BottomMode=BM_TRM;
 						/*
@@ -539,7 +539,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				}
 				else if ((BottomMode-1)<0) {
 					BottomMode=BM_LAST;
-				} else if ( ((BottomMode-1)==BM_FIRST)&& (DisplayMode!=dmCircling)) {
+				} else if ( ((BottomMode-1)==BM_FIRST)&& !MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
 					/*
 					#ifndef DISABLEAUDIO
                                        	if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
@@ -877,14 +877,14 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 #if NOSIM
 		if (SIMMODE) {
-			if ( MapWindow::EnablePan  && ISPARAGLIDER) return 99; // 091221 return impossible value
+			if ( MapWindow::mode.AnyPan() && ISPARAGLIDER) return 99; // 091221 return impossible value
 			else return 0;
 		} else {
 			return 0;
 		}
 #else
 #if _SIM_
-		if ( MapWindow::EnablePan  && ISPARAGLIDER) return 99; // 091221 return impossible value
+		if ( MapWindow::mode.AnyPan() && ISPARAGLIDER) return 99; // 091221 return impossible value
 			else return 0;
 #else
 		// if we want to emulate a return key, return 13;
@@ -1625,77 +1625,6 @@ void InitScreenSize() {
 
 }
 
-void InitAircraftCategory()
-{
-
- switch (AircraftCategory) {
-
-	case (AircraftCategory_t)umGlider:
-	case (AircraftCategory_t)umGAaircraft:
-	case (AircraftCategory_t)umCar:
-
-		MapWindow::RequestMapScale = 4; 
-		MapWindow::MapScale = 4;
-		MapWindow::MapScaleOverDistanceModify = 4/DISTANCEMODIFY;
-		break;
-
-	case (AircraftCategory_t)umParaglider:
-		TCHAR buf[100];
-		wsprintf(buf,_T(". PGCruiseZoom set to %d%s"),PGCruiseZoom,NEWLINE); // 091119
-		StartupStore(buf);
-		switch(PGCruiseZoom) { // 091108
-			case 0:
-				MapWindow::RequestMapScale = 0.10;  // 088
-				MapWindow::MapScale = 0.10;
-				break;
-			case 1:
-				MapWindow::RequestMapScale = 0.12;  // 117
-				MapWindow::MapScale = 0.12;
-				break;
-			case 2:
-				MapWindow::RequestMapScale = 0.14;  // 205
-				MapWindow::MapScale = 0.14;
-				break;
-			case 3:
-				MapWindow::RequestMapScale = 0.16;  // 293
-				MapWindow::MapScale = 0.16;
-				break;
-			case 4:
-				MapWindow::RequestMapScale = 0.18; 
-				MapWindow::MapScale = 0.18;
-				break;
-			case 5:
-				MapWindow::RequestMapScale = 0.20; 
-				MapWindow::MapScale = 0.20;
-				break;
-			case 6:
-				MapWindow::RequestMapScale = 0.23; 
-				MapWindow::MapScale = 0.23;
-				break;
-			case 7:
-				MapWindow::RequestMapScale = 0.25; 
-				MapWindow::MapScale = 0.25;
-				break;
-			case 8:
-			default:
-				MapWindow::RequestMapScale = 0.3; 
-				MapWindow::MapScale = 0.3;
-				break;
-		}
-		MapWindow::MapScaleOverDistanceModify = MapWindow::RequestMapScale/DISTANCEMODIFY;
-				
-		break;
-
-	default:
-		// make it an evident problem
-		MapWindow::RequestMapScale = 50;
-		MapWindow::MapScale = 50;
-		MapWindow::MapScaleOverDistanceModify = 50/DISTANCEMODIFY;
-		break;
- }
-
-
-}
 
 // Requires restart if activated from config menu
 void InitLK8000() 
@@ -2922,14 +2851,14 @@ int GetInfoboxType(int i) {
 	if (i<=8)
 		retval = (InfoType[i-1] >> 24) & 0xff; // auxiliary
 	else {
-		switch ( DisplayMode ) {
-			case dmCruise:
+		switch ( MapWindow::mode.Fly() ) {
+			case MapWindow::Mode::MODE_FLY_CRUISE:
 				retval = (InfoType[i-9] >> 8) & 0xff;
 				break;
-			case dmFinalGlide:
+			case MapWindow::Mode::MODE_FLY_FINAL_GLIDE:
 				retval = (InfoType[i-9] >> 16) & 0xff;
 				break;
-			case dmCircling:
+			case MapWindow::Mode::MODE_FLY_CIRCLING:
 				retval = (InfoType[i-9]) & 0xff; 
 				break;
 			default:
@@ -2945,18 +2874,18 @@ int GetInfoboxType(int i) {
 // Returns the LKProcess index value for configured infobox (0-8) for dmCruise, dmFinalGlide, Auxiliary, dmCircling
 // The function name is really stupid...
 // dmMode is an enum, we simply use for commodity
-int GetInfoboxIndex(int i, short dmMode) {
+int GetInfoboxIndex(int i, MapWindow::Mode::TModeFly dmMode) {
 	int retval = 0;
 	if (i<0||i>8) return LK_ERROR;
 
 	switch(dmMode) {
-		case dmCruise:
+		case MapWindow::Mode::MODE_FLY_CRUISE:
 			retval = (InfoType[i-1] >> 8) & 0xff;
 			break;
-		case dmFinalGlide:
+		case MapWindow::Mode::MODE_FLY_FINAL_GLIDE:
 			retval = (InfoType[i-1] >> 16) & 0xff;
 			break;
-		case dmCircling:
+		case MapWindow::Mode::MODE_FLY_CIRCLING:
 			retval = (InfoType[i-1]) & 0xff; 
 			break;
 		default:
@@ -3843,37 +3772,6 @@ bool CustomKeyHandler(const int key) {
 
 }
 
-// set Climb and Cruis MapScale accordingly to PGClimbZoom, everytime it changes.
-// Needed to avoid software restart to bypass doinit in MapWindow
-void SetMapScales() {
-
-  if (ISPARAGLIDER) {
-	CruiseMapScale = MapWindow::RequestMapScale;
-
-	switch(PGClimbZoom) {
-		case 0:
-			ClimbMapScale = 0.05;
-			break;
-		case 1:
-			ClimbMapScale = 0.07;
-			break;
-		case 2:
-			ClimbMapScale = 0.09;
-			break;
-		case 3:
-			ClimbMapScale = 0.14;
-			break;
-		case 4:
-		default:
-			ClimbMapScale = 0.03;
-			break;
-	}
-  } else {
-	CruiseMapScale = MapWindow::RequestMapScale*2;
-	ClimbMapScale = MapWindow::RequestMapScale/30; // 110104
-  }
-
-}
 
 #ifdef PNA
 bool LoadModelFromProfile()
