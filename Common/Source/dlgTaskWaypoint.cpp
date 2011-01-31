@@ -137,7 +137,8 @@ static void SetValues(bool first=false) {
     if (first) {
 	// LKTOKEN  _@M418_ = "Manual" 
       dfe->addEnumText(gettext(TEXT("_@M418_")));
-      dfe->addEnumText(gettext(TEXT("Auto")));
+	// LKTOKEN _@M897_ "Auto"
+      dfe->addEnumText(gettext(TEXT("_@M897_")));
 	// LKTOKEN  _@M97_ = "Arm" 
       dfe->addEnumText(gettext(TEXT("_@M97_")));
 	// LKTOKEN  _@M96_ = "Arm start" 

@@ -159,12 +159,14 @@ void dlgTeamCodeShowModal(void)
       if (!wf) return;
     }
 
-  TCHAR sTmp[30];
+  TCHAR sTmp[32];
   if( WayPointList && ValidWayPoint(TeamCodeRefWaypoint)) {
-	_tcscpy(sTmp,_T("Team Ref.: "));
+	// LKTOKEN _@M1230_ "Team Ref.: "
+	_tcsncpy(sTmp, gettext(TEXT("_@M1230_")), 20);
 	_tcsncat(sTmp, WayPointList[TeamCodeRefWaypoint].Name,10);
   } else {
-	_tcscpy(sTmp,_T("Team code: SET REF!"));
+	// LKTOKEN _@M1231_ "Team code: SET REF!"
+	_tcsncpy(sTmp, gettext(TEXT("_@M1231_")), 30);
   }
   wf->SetCaption(sTmp);
 

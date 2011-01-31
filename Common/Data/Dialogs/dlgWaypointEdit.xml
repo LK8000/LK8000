@@ -3,7 +3,7 @@
 <WndButton   Caption="_@M186_"    X=2 Y=2 Width=60  Height=22 Font=2 OnClickNotify="OnCloseClicked"/>
 <WndButton Name="cmdName" Caption="_@M452_" X=70 Y=0 Width=230  Height=28 Font=2 Tag=4 />
 <WndButton Name="cmdComment" Caption="_@M191_" X=70 Y=-1 Width=230  Height=28 Font=2 Tag=4 />
-<WndProperty Name="prpLongitudeSign" Caption="Longitude" X=2 Y=70 Width=115 Height=28 CaptionWidth=75 Font=2 >
+<WndProperty Name="prpLongitudeSign" Caption="_@M1235_" X=2 Y=70 Width=115 Height=28 CaptionWidth=75 Font=2 >
 <DataField name="" DataType="enum" Min=0 Max=1 Step=1/>
 </WndProperty>
 <WndProperty Name="prpLongitudeD" Caption=" " X=110 Y=70 Width=65 Height=28 CaptionWidth=10 Font=2 >
@@ -21,7 +21,7 @@
 <WndProperty Name="prpLongitudemmm" Caption=" " X=235 Y=70 Width=85 Height=28 CaptionWidth=10 Font=2 >
 <DataField name="" DataType="double" DisplayFormat="%.0f" EditFormat="%.0f" Min=0 Max=999 Step=1/>
 </WndProperty>
-<WndProperty Name="prpLatitudeSign" Caption="Latitude" X=2 Y=100 Width=115 Height=28 CaptionWidth=75 Font=2 >
+<WndProperty Name="prpLatitudeSign" Caption="_@M1233_" X=2 Y=100 Width=115 Height=28 CaptionWidth=75 Font=2 >
 <DataField name="" DataType="enum" Min=0 Max=1 Step=1/>
 </WndProperty>
 <WndProperty Name="prpLatitudeD" Caption=" " X=110 Y=100 Width=65 Height=28 CaptionWidth=10 Font=2 >
