@@ -1,5 +1,5 @@
 # LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  110129
+# MASTER UPDATED:  110131
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -1187,6 +1187,30 @@ _@M1222_ "Shutdown, saving task..."
 
 # Topology options reset msgbox
 _@M1223_ "Topology reset to default values"
+
+# Waypoint filters 1229 no more than 3 chrs!
+_@M1224_ "Airport"
+_@M1225_ "Landable"
+_@M1226_ "Turnpoint"
+_@M1227_ "File 1"
+_@M1228_ "File 2"
+_@M1229_ "HDG"
+
+# TeamCode dialog captions
+_@M1230_ "Team Ref.: "
+_@M1231_ "Team code: SET REF!"
+
+# Waypoint edit dialog (same or less chars!)
+_@M1232_ "Lat"
+_@M1233_ "Latitude"
+_@M1234_ "Lon"
+_@M1235_ "Longitude"
+
+# Waypoint list flags (Home,Airport,Landable,Turnpoint) 1chr!
+_@M1236_ "H"
+_@M1237_ "A"
+_@M1238_ "L"
+_@M1239_ "T"
 
 
 # LK info page headers, try to use the same or less number of chars here,

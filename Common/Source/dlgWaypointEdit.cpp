@@ -327,9 +327,12 @@ static void SetValues(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->addEnumText(TEXT("Turnpoint"));
-    dfe->addEnumText(TEXT("Airport"));
-    dfe->addEnumText(TEXT("Landpoint"));
+	// LKTOKEN _@M1226_ "Turnpoint"
+    dfe->addEnumText(gettext(TEXT("_@M1226_")));
+	// LKTOKEN _@M1224_ "Airport"
+    dfe->addEnumText(gettext(TEXT("_@M1224_")));
+	// LKTOKEN _@M1225_ "Landable"
+    dfe->addEnumText(gettext(TEXT("_@M1225_")));
     dfe->Set(0);
     if ((global_wpt->Flags & LANDPOINT)==LANDPOINT) {
       dfe->Set(2);

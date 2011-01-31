@@ -45,13 +45,12 @@ static double DistanceFilter[] = {0.0, 25.0, 50.0, 75.0, 100.0, 150.0, 250.0, 50
 static unsigned DistanceFilterIdx=0;
 
 #define DirHDG -1
-
 static int DirectionFilter[] = {0, DirHDG, 360, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330};
 static unsigned DirectionFilterIdx=0;
 static int lastHeading=0;
 
-static const TCHAR *TypeFilter[] = {TEXT("*"), TEXT("Airport"), TEXT("Landable"), 
-				    TEXT("Turnpoint"), TEXT("File 1"), TEXT("File 2")};
+#define TYPEFILTERSNUM	6
+static const TCHAR *TypeFilter[TYPEFILTERSNUM];
 static unsigned TypeFilterIdx=0;
 
 static int UpLimit=0;
@@ -514,7 +513,7 @@ static void OnFilterDistance(DataField *Sender, DataField::DataAccessKind_t Mode
 
 static void SetDirectionData(DataField *Sender){
 
-  TCHAR sTmp[12];
+  TCHAR sTmp[20];
 
   if (Sender == NULL){
     Sender = wpDirection->GetDataField();
@@ -526,7 +525,8 @@ static void SetDirectionData(DataField *Sender){
     int a = iround(CALCULATED_INFO.Heading);
     if (a <=0)
       a += 360;
-    _stprintf(sTmp, TEXT("HDG(%d")TEXT(DEG)TEXT(")"), a);
+	//LKTOKEN _@M1229_ "HDG"
+    _stprintf(sTmp, TEXT("%s(%d%s)"), gettext(TEXT("_@M1229_")), a, TEXT(DEG));
   }else
     _stprintf(sTmp, TEXT("%d")TEXT(DEG), DirectionFilter[DirectionFilterIdx]);
 
@@ -581,15 +581,13 @@ static void OnFilterType(DataField *Sender, DataField::DataAccessKind_t Mode){
     break;
     case DataField::daInc:
       TypeFilterIdx++;
-      if (TypeFilterIdx > (signed)(sizeof(TypeFilter)/sizeof(TypeFilter[0])-1))
+      if (TypeFilterIdx >= TYPEFILTERSNUM)
         TypeFilterIdx = 0;
       FilterMode(false);
       UpdateList();
     break;
     case DataField::daDec:
-      TypeFilterIdx--;
-      if (TypeFilterIdx < 0)
-        TypeFilterIdx = sizeof(TypeFilter)/sizeof(TypeFilter[0])-1;
+      if (TypeFilterIdx) TypeFilterIdx--; else TypeFilterIdx = TYPEFILTERSNUM-1;
       FilterMode(false);
       UpdateList();
     break;
@@ -666,20 +664,25 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
     sTmp[2] = '\0';
 
     if (WayPointList[WayPointSelectInfo[i].Index].Flags & HOME){
-      sTmp[0] = 'H';
+		// LKTOKEN _@M1236_ "H"
+      sTmp[0] = gettext(TEXT("_@M1236_"))[0];
     }else
     if (WayPointList[WayPointSelectInfo[i].Index].Flags & AIRPORT){
-      sTmp[0] = 'A';
+		// LKTOKEN _@M1237_ "A"
+      sTmp[0] = gettext(TEXT("_@M1237_"))[0];
     }else
     if (WayPointList[WayPointSelectInfo[i].Index].Flags & LANDPOINT){
-      sTmp[0] = 'L';
+		// LKTOKEN _@M1238_ "L"
+      sTmp[0] = gettext(TEXT("_@M1238_"))[0];
     }
 
     if (WayPointList[WayPointSelectInfo[i].Index].Flags & TURNPOINT){
       if (sTmp[0] == '\0')
-        sTmp[0] = 'T';
+		// LKTOKEN _@M1239_ "T"
+        sTmp[0] = gettext(TEXT("_@M1239_"))[0];
       else
-        sTmp[1] = 'T';
+		// LKTOKEN _@M1239_ "T"
+        sTmp[1] = gettext(TEXT("_@M1239_"))[0];
     }
 
     // left justified
@@ -797,6 +800,20 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
   UpLimit = 0;
   LowLimit = 0;
   ItemIndex = -1;
+	//Manual fillup, do not change indexes!
+	//If you add more items don't forget to change TYPEFILTERSNUM and UpdateList() also
+	TypeFilter[0] = gettext(TEXT("*"));
+	// LKTOKEN _@M1224_ "Airport"
+	TypeFilter[1] = gettext(TEXT("_@M1224_"));
+	// LKTOKEN _@M1225_ "Landable"
+	TypeFilter[2] = gettext(TEXT("_@M1225_"));
+	// LKTOKEN _@M1226_ "Turnpoint"
+	TypeFilter[3] = gettext(TEXT("_@M1226_"));
+	// LKTOKEN _@M1227_ "File 1"
+	TypeFilter[4] = gettext(TEXT("_@M1227_"));
+	// LKTOKEN _@M1228_ "File 2"
+	TypeFilter[5] = gettext(TEXT("_@M1228_"));
+
 
   if (lon==0.0 && lat==90.0) {
     Latitude = GPS_INFO.Latitude;
