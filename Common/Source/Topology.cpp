@@ -758,24 +758,40 @@ bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
 
 
 void XShapeLabel::setlabel(const char* src) {
-  if (src[0] && 												//Null label condition fixed
-      (strcmp(src,"UNK") != 0) &&
-      (strcmp(src,"RAILWAY STATION") != 0) &&
-      (strcmp(src,"RAILROAD STATION") != 0)
-      ) {
-    if (label) free(label);
-    label = (char*)malloc(strlen(src)+1);
-    if (label) {
-      strcpy(label,src);
-    }
-    hide=false;
-  } else {
-    if (label) {
-      free(label);
-      label= NULL;
-    }
-    hide=true;
+  // Case1 : NULL or not informative label, we show the shape without label
+  if ( 
+      (src == NULL) ||
+      (strcmp(src,"NULL") == 0) ||
+      (strcmp(src,"UNK") == 0)
+     ) {
+	if (label) {
+		free(label);
+		label= NULL;
+	}
+	hide=false;
+	return;
   }
+
+  // Case2 : shapes that do not contain any useful information, we HIDE the shape and the label
+  if (
+      (strcmp(src,"RAILWAY STATION") == 0) ||
+      (strcmp(src,"RAILROAD STATION") == 0)
+     ) {
+	if (label) {
+		free(label);
+		label= NULL;
+	}
+	hide=true;
+	return;
+  }
+
+  // Any other case : we display shape and its label as well
+  if (label) free(label);
+  label = (char*)malloc(strlen(src)+1);
+  if (label) {
+	strcpy(label,src);
+  }
+  hide=false;
 }
 
 
