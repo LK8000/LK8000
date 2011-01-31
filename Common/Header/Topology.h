@@ -90,6 +90,13 @@ class Topology {
   HBITMAP hBitmap;
   shapefileObj shpfile;
   bool shapefileopen;
+#ifdef TOPOFASTCACHE
+  void initCache();
+  int cache_mode;
+  XShape **shps;
+  rectObj* shpBounds;
+  rectObj lastBounds;
+#endif
  
 };
 

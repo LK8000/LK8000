@@ -51,6 +51,13 @@ Topology::Topology(const char* shpname, COLORREF thecolor, bool doappend) {
   shpCache= NULL;
   hBitmap = NULL;
 
+#ifdef TOPOFASTCACHE
+  shpBounds = NULL;
+  shps = NULL;
+  cache_mode = 0;
+  lastBounds.minx = lastBounds.miny = lastBounds.maxx = lastBounds.maxy = 0;
+#endif
+
   in_scale = false;
 
   // filename aleady points to _MAPS subdirectory!
@@ -60,6 +67,95 @@ Topology::Topology(const char* shpname, COLORREF thecolor, bool doappend) {
   Open();
 }
 
+
+#ifdef TOPOFASTCACHE
+void Topology::initCache()
+{
+  //Selecting caching scenarios based on available memory and topo size
+  // Unfortunatelly I don't find a suitable algorithm to estimate the loaded
+  // shapefile's memory footprint so we never choose mode2. KR
+  long free_size = CheckFreeRam();
+  long bounds_size = sizeof(rectObj)*shpfile.numshapes;
+
+  //Cache mode selection based on available memory
+  cache_mode = 0;
+  free_size -= 10000*1024;		// Safe: if we don't have enough memory we use mode0
+  if (free_size>bounds_size) cache_mode = 1;
+
+  // TESTING ONLY, mode override
+  //cache_mode = 2;
+
+  shpBounds = NULL;
+  shps = NULL;
+
+  for (int i=0; i<shpfile.numshapes; i++) shpCache[i] = NULL;
+
+  switch (cache_mode) {
+	default:
+	case 0:
+		// Original
+		#ifdef DEBUG_TFC
+		StartupStore(_T("Topology cache using mode 0%s"), NEWLINE);
+		#endif
+		break;
+
+	case 1:
+		// Using bounds array in memory
+		#ifdef DEBUG_TFC
+		StartupStore(_T(". Topology cache using mode 1%s"), NEWLINE);
+		#endif
+		shpBounds = (rectObj*)malloc(sizeof(rectObj)*shpfile.numshapes);
+		if (shpBounds == NULL) {
+			//Fallback to mode 0
+			StartupStore(_T("------ WARN Topology,  malloc failed shpBounds, fallback to mode0%s"), NEWLINE);
+			cache_mode = 0;
+			break;
+		}
+		// Get bounds for each shape from shapefile
+		rectObj *prect;
+		int retval;
+		for (int i=0; i<shpfile.numshapes; i++) {
+			prect = &shpBounds[i];
+			retval = msSHPReadBounds(shpfile.hSHP, i, prect);
+			if (retval) {
+				StartupStore(_T("------ WARN Topology, shape bounds reading failed, fallback to mode0%s"), NEWLINE);
+				// Cleanup
+				free(shpBounds);
+				shpBounds=NULL;
+				cache_mode = 0;
+				break;
+			}
+		}//for
+		break;
+
+	case 2:
+		// Using shape array in memory
+		#ifdef DEBUG_TFC
+		StartupStore(_T(". Topology cache using mode 2%s"), NEWLINE);
+		#endif
+		shpBounds = NULL;
+		shps = (XShape**)malloc(sizeof(XShape*)*shpfile.numshapes);
+		if (shps == NULL) {
+			//Fallback to mode 0
+			StartupStore(_T("------ WARN Topology,  malloc failed shps, fallback to mode0%s"), NEWLINE);
+			cache_mode = 0;
+			break;
+		}
+		// Load all shapes to shps
+		for (int i=0; i<shpfile.numshapes; i++) {
+			if ( (shps[i] = addShape(i)) == NULL ) {
+				StartupStore(_T("------ WARN Topology,  addShape failed for shps[%d], fallback to mode0%s"), i, NEWLINE);
+				// Cleanup
+				for (int j=0; j<i; j++) delete(shps[i]);
+				free(shps);
+				shps=NULL;
+				cache_mode = 0;
+				break;
+			}
+		}
+  } //sw
+}
+#endif
 
 void Topology::Open() {
 
@@ -86,9 +182,13 @@ void Topology::Open() {
   shpCache = (XShape**)malloc(sizeof(XShape*)*shpfile.numshapes);
   if (shpCache) {
     shapefileopen = true;
+#ifdef TOPOFASTCACHE
+	initCache();
+#else
     for (int i=0; i<shpfile.numshapes; i++) {
       shpCache[i] = NULL;
     }
+#endif
   } else {
 	StartupStore(_T("------ ERR Topology,  malloc failed shpCache%s"), NEWLINE);
   }
@@ -101,6 +201,17 @@ void Topology::Close() {
       flushCache();
       free(shpCache); shpCache = NULL;
     }
+#ifdef TOPOFASTCACHE
+    if (shpBounds) {
+      free(shpBounds); shpBounds = NULL;
+    }
+    if (shps) {
+	  for (int i=0; i<shpfile.numshapes; i++) {
+		if (shps[i]) delete shps[i];
+	  }
+      free(shps); shps = NULL;
+    }
+#endif
     msSHPCloseFile(&shpfile);
     shapefileopen = false;  // added sgi
   }
@@ -131,10 +242,33 @@ void Topology::TriggerIfScaleNowVisible(void) {
 }
 
 void Topology::flushCache() {
+#ifdef DEBUG_TFC
+  StartupStore(TEXT("---flushCache() starts%s"),NEWLINE);
+  int starttick = GetTickCount();
+#endif
+#ifdef TOPOFASTCACHE
+  switch (cache_mode) {
+	case 0:  // Original
+	case 1:  // Bounds array in memory
+		for (int i=0; i<shpfile.numshapes; i++) {
+			removeShape(i);
+		}
+		break;
+	case 2:  // Shapes in memory
+		for (int i=0; i<shpfile.numshapes; i++) {
+			shpCache[i] = NULL;
+		}
+		break;
+  }//sw		
+#else
   for (int i=0; i<shpfile.numshapes; i++) {
     removeShape(i);
   }
+#endif
   shapes_visible_count = 0;
+#ifdef DEBUG_TFC
+  StartupStore(TEXT("   flushCache() ends (%dms)%s"),GetTickCount()-starttick,NEWLINE);
+#endif
 }
 
 void Topology::updateCache(rectObj thebounds, bool purgeonly) {
@@ -155,7 +289,115 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
   if (purgeonly) return;
 
   triggerUpdateCache = false;
- 
+
+#ifdef DEBUG_TFC
+#ifdef TOPOFASTCACHE
+  StartupStore(TEXT("---UpdateCache() starts, mode%d%s"),cache_mode,NEWLINE);
+#else
+  StartupStore(TEXT("---UpdateCache() starts, original code%s"),NEWLINE);
+#endif
+  int starttick = GetTickCount();
+#endif
+
+#ifdef TOPOFASTCACHE
+  if(msRectOverlap(&shpfile.bounds, &thebounds) != MS_TRUE) {
+    // this happens if entire shape is out of range
+    // so clear buffer.
+    flushCache();
+    return;
+  }
+
+  bool smaller = false;
+  bool bigger = false;
+  int shapes_loaded = 0;
+  shapes_visible_count = 0;
+  switch (cache_mode) {
+	case 0: // Original code plus one special case
+		smaller = (msRectContained(&thebounds, &lastBounds) == MS_TRUE);
+		if (smaller) { //Special case, search inside, we don't need to load additional shapes, just remove
+			shapes_visible_count = 0;
+			for (int i=0; i<shpfile.numshapes; i++) {
+				if (shpCache[i]) {
+					if(msRectOverlap(&(shpCache[i]->shape.bounds), &thebounds) != MS_TRUE) {
+						removeShape(i);
+					} else shapes_visible_count++;
+				}
+			}//for
+		} else { 
+			//In this case we have to run the original algoritm
+			msSHPWhichShapes(&shpfile, thebounds, 0);
+			shapes_visible_count = 0;
+			for (int i=0; i<shpfile.numshapes; i++) {
+				if (msGetBit(shpfile.status, i)) {
+					if (shpCache[i]==NULL) {
+						// shape is now in range, and wasn't before
+						shpCache[i] = addShape(i);
+						shapes_loaded++;
+					}
+					shapes_visible_count++;
+				} else {
+					removeShape(i);
+				}
+			}//for
+		}
+		break;
+
+	case 1:  // Bounds array in memory
+		bigger = (msRectContained(&lastBounds, &thebounds) == MS_TRUE);
+		smaller = (msRectContained(&thebounds, &lastBounds) == MS_TRUE);
+		if (smaller) { //Search inside, we don't need to load additional shapes, just remove
+			for (int i=0; i<shpfile.numshapes; i++) {
+				if (shpCache[i]==NULL) continue;
+				if(msRectOverlap(&shpBounds[i], &thebounds) != MS_TRUE) {
+					removeShape(i);
+				} else shapes_visible_count++;
+			}//for
+		} else 
+		if (bigger) { //We don't need to remove shapes, just load, so skip loaded ones
+			for (int i=0; i<shpfile.numshapes; i++) {
+				if (shpCache[i]) continue;
+				if(msRectOverlap(&shpBounds[i], &thebounds) == MS_TRUE) {
+					// shape is now in range, and wasn't before
+					shpCache[i] = addShape(i);
+					shapes_loaded++;
+				}
+			}//for
+			shapes_visible_count+=shapes_loaded;
+		} else {
+			//Otherwise we have to search the all array
+			for (int i=0; i<shpfile.numshapes; i++) {
+				if(msRectOverlap(&shpBounds[i], &thebounds) == MS_TRUE) {
+					if (shpCache[i]==NULL) {
+						// shape is now in range, and wasn't before
+						shpCache[i] = addShape(i);
+						shapes_loaded++;
+					}
+					shapes_visible_count++;
+				} else {
+					removeShape(i);
+				}
+			}//for
+		}
+		break;
+
+	case 2: // All shapes in memory	
+		XShape *pshp;
+		shapes_visible_count = 0;
+		for (int i=0; i<shpfile.numshapes; i++) {
+			pshp = shps[i];
+			if(msRectOverlap(&(pshp->shape.bounds), &thebounds) == MS_TRUE) {
+				shpCache[i] = pshp;
+				shapes_visible_count++;
+			} else {
+				shpCache[i] = NULL;
+			}
+		}//for
+		break;
+  }//sw
+
+	lastBounds = thebounds;
+#else
+
   msSHPWhichShapes(&shpfile, thebounds, 0);
   if (!shpfile.status) {
     // this happens if entire shape is out of range
@@ -179,6 +421,11 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
       removeShape(i);
     }
   }
+#endif
+
+#ifdef DEBUG_TFC
+  StartupStore(TEXT("   UpdateCache() ends, shps_visible=%d (%dms)%s"),shapes_visible_count,GetTickCount()-starttick,NEWLINE);
+#endif
 }
 
 
@@ -435,6 +682,7 @@ TopologyLabel::TopologyLabel(const char* shpname, COLORREF thecolor, int field1)
   //sjt 02nov05 - enabled label fields
   setField(max(0,field1)); 
   // JMW this is causing XCSoar to crash on my system!
+  // If you place the base class constructor inside the function body, then the compiled exe will crash on PNAs
 };
 
 TopologyLabel::~TopologyLabel()
