@@ -48,15 +48,6 @@ BOOL PGParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
 }
 
 
-BOOL PGDeclare(PDeviceDescriptor_t d, Declaration_t *decl){
-
-  (void)d;
-  (void)decl;
-
-  return(TRUE);
-}
-
-
 BOOL PGIsLogger(PDeviceDescriptor_t d){
   (void)d;
   return(TRUE);
@@ -90,7 +81,7 @@ BOOL pgInstall(PDeviceDescriptor_t d){
   d->Close = NULL;
   d->Init = NULL;
   d->LinkTimeout = PGLinkTimeout;
-  d->Declare = PGDeclare;
+  d->Declare = NULL;
   d->IsLogger = PGIsLogger;
   d->IsGPSSource = PGIsGPSSource;
   d->IsBaroSource = PGIsBaroSource;
