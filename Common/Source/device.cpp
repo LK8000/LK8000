@@ -71,7 +71,7 @@ DeviceDescriptor_t *pDevSecondaryBaroSource=NULL;
 
 int DeviceRegisterCount = 0;
 
-static BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl);
+static BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[]);
 
 
 // This function is used to determine whether a generic
@@ -647,7 +647,7 @@ BOOL devPutVoice(PDeviceDescriptor_t d, TCHAR *Sentence)
 }
 #endif
 
-BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl)
+BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
 {
   BOOL result = FALSE;
 
@@ -659,9 +659,9 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl)
     return TRUE;
   LockComm();
   if ((d != NULL) && (d->Declare != NULL))
-    result = d->Declare(d, decl);
+    result = d->Declare(d, decl, errBufferLen, errBuffer);
   else if ((d != NULL) && NMEAParser::PortIsFlarm(d->Port)) {
-    result |= FlarmDeclare(d, decl);
+    result |= FlarmDeclare(d, decl, errBufferLen, errBuffer);
   }
   
   UnlockComm();
@@ -934,7 +934,8 @@ FlarmDeclareSetGet(PDeviceDescriptor_t d, TCHAR *Buffer) {
 };
 
 
-BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl){
+BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
+{
   BOOL result = TRUE;
 
   TCHAR Buffer[256];

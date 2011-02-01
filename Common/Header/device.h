@@ -43,7 +43,7 @@ typedef	struct DeviceDescriptor_t{
   BOOL (*Close)(DeviceDescriptor_t *d);
   BOOL (*Init)(DeviceDescriptor_t	*d);
   BOOL (*LinkTimeout)(DeviceDescriptor_t *d);
-  BOOL (*Declare)(DeviceDescriptor_t *d, Declaration_t *decl);
+  BOOL (*Declare)(DeviceDescriptor_t *d, Declaration_t *decl, unsigned errorBuffLen, TCHAR errBuffer[]);
   BOOL (*IsLogger)(DeviceDescriptor_t	*d);
   BOOL (*IsGPSSource)(DeviceDescriptor_t *d);
   BOOL (*IsBaroSource)(DeviceDescriptor_t *d);
@@ -101,7 +101,7 @@ BOOL devOpen(PDeviceDescriptor_t d,	int	Port);
 BOOL devClose(PDeviceDescriptor_t	d);
 BOOL devInit(PDeviceDescriptor_t d);
 BOOL devLinkTimeout(PDeviceDescriptor_t	d);
-BOOL devDeclare(PDeviceDescriptor_t	d, Declaration_t *decl);
+BOOL devDeclare(PDeviceDescriptor_t	d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[]);
 BOOL devIsLogger(PDeviceDescriptor_t d);
 BOOL devIsGPSSource(PDeviceDescriptor_t	d);
 BOOL devIsBaroSource(PDeviceDescriptor_t d);

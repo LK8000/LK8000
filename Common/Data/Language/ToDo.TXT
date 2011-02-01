@@ -15,3 +15,4 @@ Things to be fixed in LK languages files/tokens:
 - New bar opacity M950
 - New fields: _@M1001_ - _@M1400_ for calculated values and infobox abbrev. translations, 
   see details in ENG_MSG
+- New Logger declarations Error Handling fields: _@M1400_ - _@M1429_

@@ -89,8 +89,8 @@ static int nturnpoints = 0;
 BOOL VLDeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp);
 
 
-BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl){
-
+BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
+{
 	// LKTOKEN  _@M193_ = "Comms with Volkslogger" 
   CreateProgressDialog(gettext(TEXT("_@M193_")));
 

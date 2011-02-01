@@ -162,7 +162,7 @@ static void EWMicroRecorderWriteWayPoint(PDeviceDescriptor_t d,
 }
 
 
-BOOL EWMicroRecorderDeclare(PDeviceDescriptor_t d, Declaration_t *decl)
+BOOL EWMicroRecorderDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
 {
   const WAYPOINT *wp;
   nDeclErrorCode = 0;

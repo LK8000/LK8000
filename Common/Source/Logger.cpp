@@ -895,16 +895,28 @@ static bool LoggerDeclare(PDeviceDescriptor_t dev, Declaration_t *decl)
 	// LKTOKEN  _@M221_ = "Declare Task?" 
   if (MessageBoxX(hWndMapWindow, gettext(TEXT("_@M221_")),
                   dev->Name, MB_YESNO| MB_ICONQUESTION) == IDYES) {
-    if (devDeclare(dev, decl)) {
-	// LKTOKEN  _@M686_ = "Task Declared!" 
+    const unsigned ERROR_BUFFER_LEN = 64;
+    TCHAR errorBuffer[ERROR_BUFFER_LEN] = { '\0' };
+    if (devDeclare(dev, decl, ERROR_BUFFER_LEN, errorBuffer)) {
+      // LKTOKEN  _@M686_ = "Task Declared!" 
       MessageBoxX(hWndMapWindow, gettext(TEXT("_@M686_")),
                   dev->Name, MB_OK| MB_ICONINFORMATION);
       DeclaredToDevice = true;
-    } else {
-      MessageBoxX(hWndMapWindow,
-	// LKTOKEN  _@M265_ = "Error! Task NOT declared!" 
-                  gettext(TEXT("_@M265_")),
-                  dev->Name, MB_OK| MB_ICONERROR);
+    }
+    else {
+      TCHAR buffer[2*ERROR_BUFFER_LEN];
+
+      if(errorBuffer[0] == '\0')
+        // LKTOKEN  _@M1410_ = "Unknown error!!!" 
+        _sntprintf(errorBuffer, ERROR_BUFFER_LEN, gettext(_T("_@M1410")));
+      else 
+        // do it just to be sure
+        errorBuffer[ERROR_BUFFER_LEN - 1] = '\0';
+      
+      // LKTOKEN  _@M265_ = "Error! Task NOT declared!" 
+      _sntprintf(buffer, 2*ERROR_BUFFER_LEN, _T("%s\n%s"), gettext(_T("_@M265_")), errorBuffer);
+      MessageBoxX(hWndMapWindow, buffer, dev->Name, MB_OK| MB_ICONERROR);
+      
       DeclaredToDevice = false;
     }
   }

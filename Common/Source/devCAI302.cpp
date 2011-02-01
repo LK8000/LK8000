@@ -272,8 +272,8 @@ static int nDeclErrorCode;
 BOOL cai302DeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp);
 
 
-BOOL cai302Declare(PDeviceDescriptor_t d, Declaration_t *decl){
-
+BOOL cai302Declare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
+{
   TCHAR PilotName[25];
   TCHAR GliderType[13];
   TCHAR GliderID[13];
