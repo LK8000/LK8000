@@ -1723,6 +1723,27 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpBarOpacity"));
+  if (wp) {
+    wp->SetVisible(true);
+    DataFieldEnum* dfe;
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->addEnumText(TEXT("0 %"));
+    dfe->addEnumText(TEXT("10 %"));
+    dfe->addEnumText(TEXT("20 %"));
+    dfe->addEnumText(TEXT("30 %"));
+    dfe->addEnumText(TEXT("40 %"));
+    dfe->addEnumText(TEXT("50 %"));
+    dfe->addEnumText(TEXT("60 %"));
+    dfe->addEnumText(TEXT("70 %"));
+    dfe->addEnumText(TEXT("80 %"));
+    dfe->addEnumText(TEXT("90 %"));
+    dfe->addEnumText(TEXT("100 %"));
+    dfe->Set(BarOpacity / 10);
+    wp->SetVisible(MapWindow::AlphaBlendSupported());
+    wp->RefreshDisplay();
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyAltitudeMode"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -3953,9 +3974,18 @@ void dlgConfigurationShowModal(void){
   
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceOpacity"));
   if (wp) {
-    if (MapWindow::GetAirSpaceOpacity() != wp->GetDataField()->GetAsInteger()) {
+    if (MapWindow::GetAirSpaceOpacity() != wp->GetDataField()->GetAsInteger()*10) {
       MapWindow::SetAirSpaceOpacity(wp->GetDataField()->GetAsInteger() * 10);
       SetToRegistry(szRegistryAirspaceOpacity, MapWindow::GetAirSpaceOpacity());
+      changed = true;
+    }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpBarOpacity"));
+  if (wp) {
+    if (BarOpacity != wp->GetDataField()->GetAsInteger()*10 ) {
+	BarOpacity= wp->GetDataField()->GetAsInteger() * 10;
+      SetToRegistry(szRegistryBarOpacity, BarOpacity);
       changed = true;
     }
   }

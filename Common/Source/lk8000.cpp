@@ -477,6 +477,7 @@ bool UseMapLock=false;
 bool ActiveMap=true;
 short GlideBarMode=0;
 short OverlaySize=0;
+short BarOpacity=255; // bottom bar transparency if available, black by default
 short ArrivalValue=0;
 short NewMapDeclutter=0;
 short Shading=1;

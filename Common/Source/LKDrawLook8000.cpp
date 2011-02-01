@@ -999,7 +999,8 @@ Drawbottom:
 	BLENDFUNCTION bs;
 	bs.BlendOp=AC_SRC_OVER;
 	bs.BlendFlags=0;
-	bs.SourceConstantAlpha=125; // 195
+	// A good value is 195
+	bs.SourceConstantAlpha=BarOpacity*255/100;
 	bs.AlphaFormat=0;
 
 	MapWindow::AlphaBlendF(hdc,0,rc.bottom-BottomSize,rc.right,BottomSize,hdc2,0,rc.bottom-BottomSize,rc.right,BottomSize,bs);

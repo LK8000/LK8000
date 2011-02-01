@@ -1351,6 +1351,12 @@ Airspace area can be denoted by outlines only, pattern filling, or semi-transpar
 [Opacity of semi-transparent airspace]
 Defines how much transparent (->0%) / opaque (->100%) will be airspace area filled with solid semi-transparent color.
 
+@900
+[Opacity of bottom-bar]
+Defines how much transparent (->0%) / opaque (->100%) will be the bottom bar area on the map .
+Normally the bar is black or white, and text is white or black on it (you can revert colors).
+
+
 @9999
 No help available on this item!
 

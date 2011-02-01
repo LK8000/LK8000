@@ -464,6 +464,9 @@
 <WndProperty Name="prpHideUnits" Caption="_@M337_"  X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H191_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>
+<WndProperty Name="prpBarOpacity" Caption="_@M950_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H900_">
+<DataField name="" DataType="enum"/>
+</WndProperty>
 </WndFrame>
 <WndFrame Name="frmFonts" X=70 Y=0 Width=-246 Height=222 Font=2>
 <WndProperty Name="prpUseCustomFonts" Caption="_@M208_" X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H192_">
