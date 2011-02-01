@@ -31,5 +31,9 @@ BUGFIX
 
 - Choosing Waypoint Out of Terrain as "ask" would not save correctly the choice inside profile
 
+- Lklanguage problem with incompatible language pack may crash the software on startup
+
+- Waypoint distance overlay did not show on the first line, right corner, in half overlay mode
+ 
 
 
