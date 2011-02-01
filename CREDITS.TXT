@@ -8,8 +8,10 @@
 
   Other developers have also contributed to the LK project so far:
 
-	Mateusz Pusz
 	Oren Cohen
+	Richard Pecl
+	Mateusz Pusz
+	Kalman Rozsahegyi
 
   LK8000 was forked off Xcsoar in year 2009.
   Copyright (C) 2000 - 2010 XCSoar Authors from the 5.2.2/5.2.3 version:

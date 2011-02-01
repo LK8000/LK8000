@@ -1,0 +1,29 @@
+
+
+NEW 
+- Logger fields "Competition Class" and "Competition ID". 
+  Class example> Standard    ID Example> AG
+
+- Airspace Class G
+- Semi-transparent airspace area configuration. This will also fix problems on HTC D2 .
+
+CHANGES
+
+- Faster topology painting when huge topo maps were used.
+
+
+
+
+BUGFIX
+- Altitude Required (AltReqD) flipping two different values, one correct and the other wrong
+
+- Topology labels were not correctly printed using special character sets for some languages
+  They may result truncated.
+
+- Volkslogger declaration possible problem
+
+- Wrong polar for Ventus 2cT
+
+- Some topology/terrain shapes may not be printed (expecially water areas such as small lakes)
+
+- 
