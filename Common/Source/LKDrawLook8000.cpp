@@ -510,7 +510,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 			#endif
 		}
 
-		if (!OverlayClock && ScreenLandscape && (!(ISPARAGLIDER && UseGates())) ) {
+		if ( (!OverlayClock || Look8000==lxcStandard) && ScreenLandscape && (!(ISPARAGLIDER && UseGates())) ) {
 			_stprintf(BufferValue,_T("%s %s"),BufferValue,BufferUnit);
 			if (MapWindow::IsMapFullScreen() ) {
 				SelectObject(hdc, LK8TargetFont); 
@@ -983,7 +983,35 @@ Drawbottom:
 	#endif
   }
 
-  #if ALPHABLENDING  
+#if ABLEND
+  if (MapWindow::AlphaBlendSupported()) {
+	static bool initablend=true;
+	static HDC hdc2;
+	static HBITMAP bitmapnew;
+	if (initablend) {
+		hdc2=CreateCompatibleDC(hdc);
+		bitmapnew=CreateCompatibleBitmap(hdc,rc.right,rc.bottom);
+		initablend=false;
+	}
+	SelectObject(hdc2,bitmapnew); 
+	FillRect(hdc2,&nrc, hB); 
+
+	BLENDFUNCTION bs;
+	bs.BlendOp=AC_SRC_OVER;
+	bs.BlendFlags=0;
+	bs.SourceConstantAlpha=125; // 195
+	bs.AlphaFormat=0;
+
+	MapWindow::AlphaBlendF(hdc,0,rc.bottom-BottomSize,rc.right,BottomSize,hdc2,0,rc.bottom-BottomSize,rc.right,BottomSize,bs);
+
+	// We have no un-init function. Todo!
+	// DeleteObject(hdc2); DeleteObject(bitmapnew);
+	
+  } else {
+	FillRect(hdc,&nrc, hB); 
+  }
+#else
+ #if ALPHABLENDING  
   #if (WINDOWSPC>0)
   HDC hdc2=CreateCompatibleDC(hdc);
   HBITMAP bitmapnew=CreateCompatibleBitmap(hdc,rc.right,rc.bottom);
@@ -1000,7 +1028,7 @@ Drawbottom:
   #else
   FillRect(hdc,&nrc, hB); 
   #endif
-#else
+ #else
   FillRect(hdc,&nrc, hB); 
   #if 0
   #if NEWPNAV
@@ -1012,6 +1040,7 @@ Drawbottom:
   }
   #endif
   #endif
+ #endif
 #endif
 
   // NAVBOXES

@@ -5,7 +5,7 @@
 //#define DEBUG_LKTOPO	1
 
 #if NOSIM
-// #define CPUSTATS	1
+#define CPUSTATS	1
 #else
 #ifdef _SIM_
 //#define CPUSTATS	1

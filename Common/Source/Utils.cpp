@@ -245,7 +245,7 @@ const TCHAR szRegistryUseMapLock[]= TEXT("UseMapLock");
 const TCHAR szRegistryActiveMap[]= TEXT("ActiveMap"); // 100318
 const TCHAR szRegistryBestWarning[]= TEXT("BestWarning");
 const TCHAR szRegistryThermalBar[]= TEXT("ThermalBar");
-const TCHAR szRegistryMcOverlay[]= TEXT("McOverlay");
+const TCHAR szRegistryMcOverlay[]= TEXT("McOverlay2");
 const TCHAR szRegistryTrackBar[]= TEXT("TrackBar");
 const TCHAR szRegistryNewMap[]= TEXT("NewMap");
 const TCHAR szRegistryIphoneGestures[]= TEXT("IphoneGestures");
@@ -1119,13 +1119,9 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryThermalBar,&Temp); 
   ThermalBar=Temp;
 
-  #if 0
   Temp=1;
   GetFromRegistry(szRegistryMcOverlay,&Temp); 
   McOverlay=Temp;
-  #else
-  McOverlay=true;
-  #endif
 
   Temp=1;
   GetFromRegistry(szRegistryTrackBar,&Temp); 

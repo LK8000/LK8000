@@ -55,7 +55,7 @@ static TCHAR nTemp2String[READLINE_LENGTH*2]; // 100205 BUGFIX? NO
 static TCHAR Temp2String[READLINE_LENGTH]; // 091007 TESTFIX shadowing
 #endif
 
-int WaypointsOutOfRange = 1; // include 101020 do not change this
+int WaypointsOutOfRange = 1; // include by default
 static int WaypointOutOfTerrainRangeDontAskAgain = -1;
 
 
@@ -143,17 +143,15 @@ static bool WaypointInTerrainRange(WAYPOINT *List) {
         return false;
       case wpTerrainBoundsYesAll: 
         WaypointOutOfTerrainRangeDontAskAgain = 1;
-        WaypointsOutOfRange = 1;
-        SetToRegistry(szRegistryWaypointsOutOfRange, 
-                      WaypointsOutOfRange);
+        // WaypointsOutOfRange = 1; // this would override user choice in configuration!
+        SetToRegistry(szRegistryWaypointsOutOfRange, WaypointsOutOfRange);
         StoreRegistry();
         return true;
       case mrCancle: 
       case wpTerrainBoundsNoAll: 
         WaypointOutOfTerrainRangeDontAskAgain = 2;
-        WaypointsOutOfRange = 2;
-        SetToRegistry(szRegistryWaypointsOutOfRange, 
-                      WaypointsOutOfRange);
+        // WaypointsOutOfRange = 2; // this would override user choice in configuration!
+        SetToRegistry(szRegistryWaypointsOutOfRange, WaypointsOutOfRange);
         StoreRegistry();
         return false;
       }

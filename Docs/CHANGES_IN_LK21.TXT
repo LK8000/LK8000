@@ -6,12 +6,15 @@ NEW
 
 - Airspace Class G
 - Semi-transparent airspace area configuration. This will also fix problems on HTC D2 .
+  Using semitransparent will slow down a bit other devices, but only a bit.
 
 CHANGES
 
 - Faster topology painting when huge topo maps were used.
+- Waypoint Out of Terrain selection back in configuration page 1
+  Use "exclude" if you are loading big continental waypoint file databases
 
-
+- McCready Overlay choice in Engineering menu 1 is now saved to profile
 
 
 BUGFIX
@@ -26,4 +29,7 @@ BUGFIX
 
 - Some topology/terrain shapes may not be printed (expecially water areas such as small lakes)
 
-- 
+- Choosing Waypoint Out of Terrain as "ask" would not save correctly the choice inside profile
+
+
+
