@@ -736,7 +736,7 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	#if 100227
 	if (  (RangeLandableNumber<=0 && RangeTurnpointNumber<=0 && (Basic->Time > (LastRangeLandableTime + 3.0))) ||
 	      (Basic->Time > (LastRangeLandableTime + 180.0)) ||
-		(!validHomeWaypoint) && (Basic->Time > (LastRangeLandableTime + 15.0)) 
+		((!validHomeWaypoint) && (Basic->Time > (LastRangeLandableTime + 15.0))) 
 	) {  
 
 		if (HomeWaypoint!=-1) validHomeWaypoint=true;

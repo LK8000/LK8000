@@ -153,10 +153,10 @@ void addChecklist(TCHAR* name, TCHAR* details) {
     ChecklistText[nLists] = (TCHAR*)malloc((_tcslen(details)+1)*sizeof(TCHAR));
     _tcscpy(ChecklistTitle[nLists], name);
     if (_tcslen(name)>=MAXTITLE) // 100315 BUGFIX XCSOAR
-    ChecklistTitle[MAXTITLE-1]= 0;
+	  ChecklistTitle[nLists][MAXTITLE-1]= 0;
     _tcscpy(ChecklistText[nLists], details);
     if (_tcslen(details)>=MAXDETAILS) // 100315 BUGFIX XCSOAR
-    ChecklistText[MAXDETAILS-1]= 0;
+	  ChecklistText[nLists][MAXDETAILS-1]= 0;
     nLists++;
   }
 }

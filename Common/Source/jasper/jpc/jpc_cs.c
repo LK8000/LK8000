@@ -900,7 +900,7 @@ static void jpc_qcc_destroyparms(jpc_ms_t *ms)
 static int jpc_qcc_getparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *in)
 {
 	jpc_qcc_t *qcc = &ms->parms.qcc;
-	uint_fast8_t tmp;
+	uint_fast8_t tmp = 0;
 	int len;
 	len = ms->len;
 	if (cstate->numcomps <= 256) {
@@ -964,7 +964,7 @@ static void jpc_qcx_destroycompparms(jpc_qcxcp_t *compparms)
 static int jpc_qcx_getcompparms(jpc_qcxcp_t *compparms, jpc_cstate_t *cstate,
   jas_stream_t *in, uint_fast16_t len)
 {
-	uint_fast8_t tmp;
+	uint_fast8_t tmp = 0;
 	int n;
 	int i;
 
