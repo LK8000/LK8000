@@ -103,6 +103,8 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   static bool flipflop=true;
   static short flipflopcount=0;
 
+  static COLORREF barTextColor=RGB_WHITE; // default bottom bar text color, reversable
+
   #ifdef LKDRAW_OPTIMIZE
   short tlen;
   static int ySizeLK8BigFont;
@@ -983,8 +985,9 @@ Drawbottom:
 	#endif
   }
 
+
 #if ABLEND
-  if (MapWindow::AlphaBlendSupported()) {
+  if (MapWindow::AlphaBlendSupported() && MapSpaceMode==MSM_MAP && BarOpacity<100) {
 	static bool initablend=true;
 	static HDC hdc2;
 	static HBITMAP bitmapnew;
@@ -993,21 +996,30 @@ Drawbottom:
 		bitmapnew=CreateCompatibleBitmap(hdc,rc.right,rc.bottom);
 		initablend=false;
 	}
-	SelectObject(hdc2,bitmapnew); 
-	FillRect(hdc2,&nrc, hB); 
 
-	BLENDFUNCTION bs;
-	bs.BlendOp=AC_SRC_OVER;
-	bs.BlendFlags=0;
-	bs.SourceConstantAlpha=125; // 195
-	bs.AlphaFormat=0;
-
-	MapWindow::AlphaBlendF(hdc,0,rc.bottom-BottomSize,rc.right,BottomSize,hdc2,0,rc.bottom-BottomSize,rc.right,BottomSize,bs);
+	if (BarOpacity==0) {
+		barTextColor=RGB_BLACK;
+	} else {
+		BLENDFUNCTION bs;
+		bs.BlendOp=AC_SRC_OVER;
+		bs.BlendFlags=0;
+		// A good value is 195
+		bs.SourceConstantAlpha=BarOpacity*255/100;
+		bs.AlphaFormat=0;
+		SelectObject(hdc2,bitmapnew); 
+		FillRect(hdc2,&nrc, hB); 
+		MapWindow::AlphaBlendF(hdc,0,rc.bottom-BottomSize,rc.right,BottomSize,hdc2,0,rc.bottom-BottomSize,rc.right,BottomSize,bs);
+		if (BarOpacity>25)
+			barTextColor=RGB_WHITE;
+		else
+			barTextColor=RGB_BLACK;
+	}
 
 	// We have no un-init function. Todo!
 	// DeleteObject(hdc2); DeleteObject(bitmapnew);
 	
   } else {
+	barTextColor=RGB_WHITE;
 	FillRect(hdc,&nrc, hB); 
   }
 #else
@@ -1130,7 +1142,7 @@ Drawbottom:
   } else {
 	#include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
+  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
   #else
   #include "LKMW3include_navbox1.cpp"
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy-TextSize.cy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
@@ -1210,7 +1222,7 @@ Drawbottom:
   } else {
 	#include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
+  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
   #else
   #include "LKMW3include_navbox1.cpp"
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy-TextSize.cy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
@@ -1362,7 +1374,7 @@ Drawbottom:
   } else {
 	#include "LKMW3include_navbox2.cpp"
   }
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
+  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
   #else
   #include "LKMW3include_navbox1.cpp"
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy-TextSize.cy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
@@ -1460,7 +1472,7 @@ Drawbottom:
   #endif
   #endif
   #if NEWPNAV
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
+  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
   #else
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy-TextSize.cy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
   #endif
@@ -1562,7 +1574,7 @@ Drawbottom:
 
   #endif
   #if NEWPNAV
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
+  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
   #else
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(3), rcy-TextSize.cy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
   #endif
@@ -1655,7 +1667,7 @@ Drawbottom:
   #endif
   #endif
   #if NEWPNAV
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
+  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
   #else
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(3), rcy-TextSize.cy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
   #endif

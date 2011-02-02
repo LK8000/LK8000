@@ -189,6 +189,7 @@ extern int PGCruiseZoom;
 extern int LKVarioBar;
 
 extern short OverlaySize;
+extern short BarOpacity;
 
 extern short GestureSize;
 extern bool IphoneGestures;

@@ -100,6 +100,7 @@ extern const TCHAR szRegistryPollingMode[];
 extern const TCHAR szRegistryLKVarioBar[];
 extern const TCHAR szRegistryUseMapLock[]; // VENTA9
 extern const TCHAR szRegistryOverlaySize[];
+extern const TCHAR szRegistryBarOpacity[];
 extern const TCHAR szRegistryActiveMap[]; 
 extern const TCHAR szRegistryCheckSum[]; 
 extern const TCHAR szRegistryBestWarning[];

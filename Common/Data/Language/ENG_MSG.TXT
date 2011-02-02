@@ -949,6 +949,7 @@ _@M941_ "Outlines only"
 _@M942_ "Patterns"
 _@M943_ "Semi-Transparent"
 _@M944_ "Opacity "
+_@M950_ "BottomBar Opacity "
 
 #
 # Infoboxes in Description / Tile order. 
