@@ -1866,7 +1866,7 @@ void StartupLogFreeRamAndStorage() {
   TCHAR buffer[MAX_PATH];
   LocalPath(buffer);
   unsigned long freestorage = FindFreeSpace(buffer);
-  StartupStore(TEXT(". Free ram=%ld  storage=%ld%s"), freeram,freestorage,NEWLINE);
+  StartupStore(TEXT(". Free ram=%ld K  storage=%ld K%s"), freeram,freestorage,NEWLINE);
 }
 
 

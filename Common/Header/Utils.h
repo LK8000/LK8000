@@ -469,6 +469,8 @@ double AirDensityRatio(double altitude);
 double HexStrToDouble(TCHAR *Source, TCHAR **Stop); 
 
 unsigned long CheckFreeRam(void);
+// check maximum allocatable heap block
+unsigned long CheckMaxHeapBlock(void);
 
 const TCHAR *TaskFileName(unsigned bufferLen, TCHAR buffer[]);
 
