@@ -173,7 +173,160 @@ typedef union{
   // bit 4 == center alligned
 
 class MapWindow {
- public:
+public:
+  /** 
+   * @brief Class responsible for handling all Map Zoom activities
+   * 
+   * Zoom class is responsible for:
+   *  - storing Map Zoom state (global and for each of the modes)
+   *  - provide Zoom related calculations
+   */
+  class Zoom {
+  private:
+    // initial fixed zoom factors
+    static const double SCALE_CRUISE_INIT      = 4.0;
+    static const double SCALE_CIRCLING_INIT    = 4.0 / 30;
+    static const double SCALE_PANORAMA_INIT    = 7.0;
+    static const double SCALE_PG_PANORAMA_INIT = 5.0;
+    static const double SCALE_INVALID_INIT     = 50.0;
+    
+    enum TMapScaleType {
+      SCALE_CRUISE,             /**< @brief Basic zoom for flight mode used for:
+                                   - cruise mode when AutoZoom is disabled
+                                   - thermalling mode when CirclingZoom and AutoZoom is disabled
+                                   - restore user zoom when next waypoint with AutoZoom enabled
+                                */
+      SCALE_CIRCLING,           /**< @brief Zoom for thermalling mode when CirclingZoom is enabled */
+      SCALE_PANORAMA,           /**< @brief Panorama 20 seconds zoom */
+      SCALE_AUTO_ZOOM,          /**< @brief AutoZoom zoom */
+      SCALE_PAN,                /**< @brief PAN zoom */
+      SCALE_TARGET_PAN,         /**< @brief TARGET_PAN zoom */
+      
+      SCALE_NUM                 /**< @brief DO NOT USE THAT */
+    };
+    
+    friend class MapWindow;
+    
+    bool _inited;                                 /**< @brief Object inited flag */
+    bool _autoZoom;                               /**< @brief Stores information if AutoZoom is enabled */
+    bool _circleZoom;                             /**< @brief Stores information if CirclingZoom is enabled */
+    bool _bigZoom;                                /**< @brief Stores information if BigZoom was done and special refresh is needed */
+    double _scale;                                /**< @brief Current map scale */
+    double _modeScale[SCALE_NUM];                 /**< @brief Requested scale for each of scale types */
+    double *_requestedScale;                      /**< @brief Requested scale for current scale type */
+    
+    // performance related members
+    double _scaleOverDistanceModify;
+    double _resScaleOverDistanceModify;
+    double _drawScale;
+    double _invDrawScale;
+    
+    double RequestedScale() const        { return *_requestedScale; }
+    void RequestedScale(double value)    { *_requestedScale = value; }
+    void CalculateTargetPanZoom();
+    void CalculateAutoZoom();
+    double ResScaleOverDistanceModify() const { return _resScaleOverDistanceModify; }
+    double DrawScale() const             { return _drawScale; }
+    double InvDrawScale() const          { return _invDrawScale; }
+    
+  public:
+    Zoom();
+    void Reset();
+    
+    void AutoZoom(bool enable)      { _autoZoom = enable; SwitchMode(); }
+    bool AutoZoom() const           { return _autoZoom; }
+    
+    void CircleZoom(bool enable)    { _circleZoom = enable; SwitchMode(); }
+    bool CircleZoom() const         { return _circleZoom; }
+    
+    void BigZoom(bool enable)       { _bigZoom = enable; }
+    bool BigZoom() const            { return _bigZoom; }
+    
+    void SwitchMode();
+    
+    double Scale() const { return _scale; }
+    
+    void EventAutoZoom(int vswitch);
+    void EventSetZoom(double value);
+    void EventScaleZoom(int vswitch);
+    
+    void UpdateMapScale();
+    void ModifyMapScale();
+  };
+  
+
+  /** 
+   * @brief Class responsible for handling Map Display Mode data
+   * 
+   * There are 2 types of map display modes:
+   *  - fly
+   *     - modes representing current flight mode (ie. cruise, circle, final glide)
+   *     - only one of them can be active at a time
+   *  - special
+   *     - modes representing special actions like (PANORAMA, PAN, etc.)
+   *     - none or more than one special state can be enabled at the same time
+   */
+  class Mode {
+  public:
+    /** 
+     * @brief Fly Modes
+     */
+    enum TModeFly {
+      MODE_FLY_NONE        = 0x0000,
+      MODE_FLY_CRUISE      = 0x0001,
+      MODE_FLY_CIRCLING    = 0x0002,
+      MODE_FLY_FINAL_GLIDE = 0x0004
+    };
+    static const unsigned FLY_MASK = 0x00FF;
+    
+    /** 
+     * @brief Special Modes
+     */
+    enum TModeSpecial {
+      MODE_SPECIAL_NONE        = 0x0000,
+      MODE_SPECIAL_PAN         = 0x0100,
+      MODE_SPECIAL_TARGET_PAN  = 0x0200,
+      MODE_SPECIAL_PANORAMA    = 0x0400
+    };
+    static const unsigned SPECIAL_MASK = 0xFF00;
+    
+    /** 
+     * @brief All Display Modes
+     */
+    enum TMode {
+      MODE_NONE        = MODE_FLY_NONE,
+      
+      MODE_CRUISE      = MODE_FLY_CRUISE,
+      MODE_CIRCLING    = MODE_FLY_CIRCLING,
+      MODE_FINAL_GLIDE = MODE_FLY_FINAL_GLIDE,
+      
+      MODE_PAN         = MODE_SPECIAL_PAN,
+      MODE_TARGET_PAN  = MODE_SPECIAL_TARGET_PAN,
+      MODE_PANORAMA    = MODE_SPECIAL_PANORAMA
+    };
+    
+  private:
+    friend class Zoom;
+    unsigned _mode;                    /**< @brief Current Map Display Mode */
+    unsigned _lastMode;                /**< @brief Previous Map Display Mode */
+    TModeFly _userForcedFlyMode;       /**< @brief Fly Mode forced by a user */
+    
+  public:
+    Mode();
+    
+    TModeFly UserForcedMode() const    { return _userForcedFlyMode; }
+    void UserForcedMode(TModeFly mode) { _userForcedFlyMode = mode; }
+    
+    bool Is(TMode mode) const   { return _mode & mode; }
+    void Fly(TModeFly flyMode);
+    TModeFly Fly() const        { return static_cast<TModeFly>(_mode & FLY_MASK); }
+    
+    void Special(TModeSpecial specialMode, bool enable);
+    TModeSpecial Special() const { return static_cast<TModeSpecial>(_mode & SPECIAL_MASK); }
+    
+    bool AnyPan() const { return _mode & (MODE_SPECIAL_PAN | MODE_SPECIAL_TARGET_PAN); }
+  };
+  
 
   static bool IsDisplayRunning();
   static int iAirspaceMode[AIRSPACECLASSCOUNT];
@@ -219,6 +372,8 @@ class MapWindow {
   // These two values were private.. moved to public VNT 090621
   static double MapScaleOverDistanceModify; // speedup
   static double RequestMapScale;
+  static Zoom zoom;
+  static Mode mode;
 
   static RECT MapRect;
   static RECT MapRectBig;
