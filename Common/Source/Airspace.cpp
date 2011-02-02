@@ -1940,7 +1940,7 @@ int FindNearestAirspaceArea(double longitude,
     }
     if(altok) {
       inside = InsideAirspaceArea(longitude, latitude, i);
-      double dist, bearing;
+      double dist, bearing = 0;
       
       dist = RangeAirspaceArea(longitude, latitude, i, &bearing);
 

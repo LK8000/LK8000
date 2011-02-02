@@ -496,7 +496,16 @@ long convert_gcs(int igcfile_version, FILE *Ausgabedatei, lpb bin_puffer, int oo
  float          ftz = 0;
  // Flag, ob ftz aus gültiger Position stammt
  int		tzset = 0;
-
+  
+	// Initialize firsttime structure to fix compiler warning
+	firsttime.tm_sec   = 0;
+	firsttime.tm_hour  = 0;
+	firsttime.tm_min   = 0;
+	firsttime.tm_mday  = 0;
+	firsttime.tm_mon   = 0;
+	firsttime.tm_year  = 0;
+	firsttime.tm_yday  = 0;
+	firsttime.tm_wday  = 0;
 
  // long ggtz = timezone;
 

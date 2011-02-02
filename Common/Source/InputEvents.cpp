@@ -601,7 +601,7 @@ int InputEvents::mode2int(const TCHAR *mode, bool create) {
   if (create) {
     // Keep a copy
     _tcsncpy(mode_map[mode_map_count], mode, MAX_MODE_STRING);
-    mode_map[mode_map_count][MAX_MODE_STRING]='\0'; // BUGFIX 100331
+    mode_map[mode_map_count][MAX_MODE_STRING-1]='\0'; // BUGFIX 100331 AND 110202
     mode_map_count++;
     return mode_map_count - 1;
   }
@@ -619,7 +619,7 @@ void InputEvents::setMode(const TCHAR *mode) {
   ASSERT(mode != NULL);
 
   _tcsncpy(mode_current, mode, MAX_MODE_STRING);
-  mode_current[MAX_MODE_STRING]='\0'; // BUGFIX 100331
+  mode_current[MAX_MODE_STRING-1]='\0'; // BUGFIX 100331 AND 110202
 
   // Mode must already exist to use it here...
   thismode = mode2int(mode,false);
@@ -3115,7 +3115,11 @@ void InputEvents::eventAddWaypoint(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("landable")) == 0) {
     edit_waypoint.Flags += LANDPOINT;
   }
-  edit_waypoint.Comment[0] = 0;
+#if CUPCOM
+  edit_waypoint.Comment = NULL;
+#else
+  edit_waypoint.Comment[0] = '\0';
+#endif
   edit_waypoint.Name[0] = 0;
   edit_waypoint.Details = 0;
   edit_waypoint.Number = NumberOfWayPoints;
