@@ -1352,10 +1352,15 @@ Airspace area can be denoted by outlines only, pattern filling, or semi-transpar
 Defines how much transparent (->0%) / opaque (->100%) will be airspace area filled with solid semi-transparent color.
 
 @900
-[Opacity of bottom-bar]
+[Bottom Bar Opacity]
 Defines how much transparent (->0%) / opaque (->100%) will be the bottom bar area on the map .
-Normally the bar is black or white, and text is white or black on it (you can revert colors).
-
+Normally the bar is black with white text, and can be reverted to white with black text on it.
+Setting <30% opacity the bottom bar will be very transparent, and text color will be forced reversed.
+Some combinations of opacity and reverse colors may not be suitable to navigation, but there are
+infinite combinations to choose from.
+Using 0% or 100%  (full transparency  or full opacity) will speed up the software a bit.
+Another famous 8000 instrument is using 75% opacity.
+Default is 100% (full opacity).
 
 @9999
 No help available on this item!

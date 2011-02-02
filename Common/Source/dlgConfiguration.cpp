@@ -1729,17 +1729,27 @@ static void setVariables(void) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->addEnumText(TEXT("0 %"));
+    dfe->addEnumText(TEXT("5 %"));
     dfe->addEnumText(TEXT("10 %"));
+    dfe->addEnumText(TEXT("15 %"));
     dfe->addEnumText(TEXT("20 %"));
+    dfe->addEnumText(TEXT("25 %"));
     dfe->addEnumText(TEXT("30 %"));
+    dfe->addEnumText(TEXT("35 %"));
     dfe->addEnumText(TEXT("40 %"));
+    dfe->addEnumText(TEXT("45 %"));
     dfe->addEnumText(TEXT("50 %"));
+    dfe->addEnumText(TEXT("55 %"));
     dfe->addEnumText(TEXT("60 %"));
+    dfe->addEnumText(TEXT("65 %"));
     dfe->addEnumText(TEXT("70 %"));
+    dfe->addEnumText(TEXT("75 %"));
     dfe->addEnumText(TEXT("80 %"));
+    dfe->addEnumText(TEXT("85 %"));
     dfe->addEnumText(TEXT("90 %"));
+    dfe->addEnumText(TEXT("95 %"));
     dfe->addEnumText(TEXT("100 %"));
-    dfe->Set(BarOpacity / 10);
+    dfe->Set(BarOpacity / 5);
     wp->SetVisible(MapWindow::AlphaBlendSupported());
     wp->RefreshDisplay();
   }
@@ -3983,8 +3993,8 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpBarOpacity"));
   if (wp) {
-    if (BarOpacity != wp->GetDataField()->GetAsInteger()*10 ) {
-	BarOpacity= wp->GetDataField()->GetAsInteger() * 10;
+    if (BarOpacity != wp->GetDataField()->GetAsInteger()*5 ) {
+	BarOpacity= wp->GetDataField()->GetAsInteger() * 5;
       SetToRegistry(szRegistryBarOpacity, BarOpacity);
       changed = true;
     }
