@@ -2176,10 +2176,8 @@ void ScanAirspaceLine(double *lats, double *lons, double *heights,
     if (!((h_max<=AirspaceCircle[k].Base.Altitude)||
 	  (h_min>=AirspaceCircle[k].Top.Altitude))) {
 
-      // ignore if scan line doesn't intersect bounds
-      if (msRectOverlap(&lineRect, &AirspaceCircle[k].bounds) && 
-	  line_rect_intersection (x1, y1, dx, dy, 
-				  &AirspaceCircle[k].bounds)) {
+      // ignore if scan line doesn't overlap airspace bounds
+      if (msRectOverlap(&lineRect, &AirspaceCircle[k].bounds)) {
 
 	for (i=0; i<AIRSPACE_SCANSIZE_X; i++) {
 	  latitude = lats[i];
@@ -2214,12 +2212,9 @@ void ScanAirspaceLine(double *lats, double *lons, double *heights,
     // ignore if outside scan height
     if (!((h_max<=AirspaceArea[k].Base.Altitude)||
 	  (h_min>=AirspaceArea[k].Top.Altitude))) {
-
-      // ignore if scan line doesn't intersect bounds
-      if (msRectOverlap(&lineRect, &AirspaceArea[k].bounds) && 
-	  line_rect_intersection (x1, y1, dx, dy, 
-				  &AirspaceArea[k].bounds)) {
-
+      
+      // ignore if scan line doesn't overlap airspace bounds
+      if (msRectOverlap(&lineRect, &AirspaceArea[k].bounds) ) {
 	for (i=0; i<AIRSPACE_SCANSIZE_X; i++) {
 	  latitude = lats[i];
 	  longitude = lons[i];
