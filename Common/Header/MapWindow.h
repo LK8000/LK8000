@@ -308,8 +308,12 @@ class MapWindow {
   static void CalculateScreenPositionsAirspaceCircle(AIRSPACE_CIRCLE& circ);
   static void CalculateScreenPositionsAirspaceArea(AIRSPACE_AREA& area);
   static void CalculateScreenPositionsThermalSources();
+  #if MULTICALC
+  static void LKCalculateWaypointReachable(short multicalc_slot, short numslots);
+  #else
   static void CalculateWaypointReachable(void);
   static void CalculateWaypointReachableNew(void);
+  #endif
   
   static bool PointVisible(const POINT &P);
   static bool PointVisible(const double &lon, const double &lat);

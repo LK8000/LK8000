@@ -511,7 +511,7 @@ void MapWindow::ScanVisibility(rectObj *bounds_active) {
     const WAYPOINT *we = WayPointList+NumberOfWayPoints;
     while (wv<we) {
       // TODO code: optimise waypoint visibility
-	// 101226 we may use RangeWaypoint list
+	// TODO 110203 make it happen in 3 steps, with MULTICALC approach
       wv->FarVisible = ((wv->Longitude> bounds.minx) &&
 			(wv->Longitude< bounds.maxx) &&
 			(wv->Latitude> bounds.miny) &&
@@ -772,6 +772,7 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
 
     // only calculate screen coordinates for waypoints that are visible
 
+    // TODO 110203 OPTIMIZE THIS !
     for(i=0;i<NumberOfWayPoints;i++)
       {
         WayPointList[i].Visible = false;

@@ -3055,8 +3055,37 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
   static double savedRequestMapScale=0;
   static double savedMapScaleOverDistanceModify=0;
 
-  // do slow calculations before clearing the screen
-  // to reduce flicker
+  // Calculations are taking time and slow down painting of map, beware
+  #if MULTICALC
+  #define MULTICALC_MINROBIN	5	// minimum split
+  #define MULTICALC_MAXROBIN	20	// max split
+  static short multicalc_slot=0;// -1 (which becomes immediately 0) will force full loading on startup, but this is not good
+				// because currently we are not waiting for ProgramStarted=3
+				// and the first scan is made while still initializing other things
+
+  // TODO assign numslots with a function, based also on available CPU time
+  short numslots=1;
+  if (NumberOfWayPoints>200) {
+	numslots=NumberOfWayPoints/400;
+	// keep numslots optimal
+	if (numslots<MULTICALC_MINROBIN) numslots=MULTICALC_MINROBIN; // seconds for full scan, as this is executed at 1Hz
+	if (numslots>MULTICALC_MAXROBIN) numslots=MULTICALC_MAXROBIN;
+
+	// When waypointnumber has changed, we wont be using an exceeded multicalc_slot, which would crash the sw
+	// In this case, we shall probably continue for the first round to calculate without going from the beginning
+	// but this is not a problem, we are round-robin all the time here.
+	if (++multicalc_slot>numslots) multicalc_slot=1;
+  } else {
+	multicalc_slot=0; // forcing full scan
+  }
+
+  // Here we calculate arrival altitude, GD etc for map waypoints. Splitting with multicalc will result in delayed
+  // updating of visible landables, for example. The nearest pages do this separately, with their own sorting.
+  // Basically we assume -like for nearest- that values will not change that much in the multicalc split time.
+  // Target and tasks are recalculated in real time in any case. Nearest too. 
+  LKCalculateWaypointReachable(multicalc_slot, numslots);
+  #else
+  // -- no multicalc
 #ifdef LK8000_OPTIMIZE
   #ifdef FLIPFLOP
   static bool flipflop=true;
@@ -3070,6 +3099,7 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 #else
   CalculateWaypointReachable();
 #endif
+  #endif // no multicalc 
   CalculateScreenPositionsAirspace();
   CalculateScreenPositionsThermalSources();
   CalculateScreenPositionsGroundline();
