@@ -1801,7 +1801,8 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 	scanstart=0; // including this
 	scanend=NumberOfWayPoints; // will be used -1, so up to this excluded value
 
-	//StartupStore(_T("... multicalc_slot=0 , full scan %d < %d%s"),scanstart,scanend,NEWLINE);
+	//StartupStore(_T("... wps=%d multicalc_slot=0 ignored numslot=%d, full scan %d < %d%s"),NumberOfWayPoints,
+	//	numslots,scanstart,scanend,NEWLINE);
   } else {
 	scanstart=(NumberOfWayPoints/numslots)*(multicalc_slot-1); 
 	if (multicalc_slot==numslots)
@@ -1809,7 +1810,8 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 	else
 		scanend=scanstart+(NumberOfWayPoints/numslots);
 
-	//StartupStore(_T("... multicalc_slot=%d of %d, scan %d < %d%s"),multicalc_slot, numslots,scanstart,scanend,NEWLINE);
+	//StartupStore(_T("... wps=%d multicalc_slot=%d of %d, scan %d < %d%s"),NumberOfWayPoints,
+	//	multicalc_slot, numslots,scanstart,scanend,NEWLINE);
   }
 
   /*
