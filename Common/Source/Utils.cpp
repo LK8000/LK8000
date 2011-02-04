@@ -1037,7 +1037,7 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryOverlaySize,&Temp); 
   OverlaySize = Temp;
 
-  Temp = 255; // black bottom bar by default
+  Temp = 60; // black bottom bar by default
   GetFromRegistry(szRegistryBarOpacity,&Temp); 
   BarOpacity = Temp;
 
