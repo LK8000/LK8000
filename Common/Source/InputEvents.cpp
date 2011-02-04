@@ -1322,13 +1322,29 @@ void InputEvents::eventZoom(const TCHAR* misc) {
   float zoom;
 
   if (_tcscmp(misc, TEXT("auto toggle")) == 0)
+#ifndef MAP_ZOOM
+    MapWindow::Event_AutoZoom(-1);
+#else /* MAP_ZOOM */
     MapWindow::zoom.EventAutoZoom(-1);
+#endif /* MAP_ZOOM */
   else if (_tcscmp(misc, TEXT("auto on")) == 0)
+#ifndef MAP_ZOOM
+    MapWindow::Event_AutoZoom(1);
+#else /* MAP_ZOOM */
     MapWindow::zoom.EventAutoZoom(1);
+#endif /* MAP_ZOOM */
   else if (_tcscmp(misc, TEXT("auto off")) == 0)
+#ifndef MAP_ZOOM
+    MapWindow::Event_AutoZoom(0);
+#else /* MAP_ZOOM */
     MapWindow::zoom.EventAutoZoom(0);
+#endif /* MAP_ZOOM */
   else if (_tcscmp(misc, TEXT("auto show")) == 0) {
+#ifndef MAP_ZOOM
+    if (MapWindow::isAutoZoom())
+#else /* MAP_ZOOM */
     if (MapWindow::zoom.AutoZoom())
+#endif /* MAP_ZOOM */
 	// 856 AutoZoom ON
       DoStatusMessage(gettext(TEXT("_@M856_")));
     else
@@ -1336,35 +1352,90 @@ void InputEvents::eventZoom(const TCHAR* misc) {
       DoStatusMessage(gettext(TEXT("_@M857_")));
   }
   else if (_tcscmp(misc, TEXT("slowout")) == 0)
+#ifndef MAP_ZOOM
+    MapWindow::Event_ScaleZoom(-4);
+#else /* MAP_ZOOM */
     MapWindow::zoom.EventScaleZoom(-4);
+#endif /* MAP_ZOOM */
   else if (_tcscmp(misc, TEXT("slowin")) == 0)
+#ifndef MAP_ZOOM
+    MapWindow::Event_ScaleZoom(4);
+#else /* MAP_ZOOM */
     MapWindow::zoom.EventScaleZoom(4);
+#endif /* MAP_ZOOM */
   else if (_tcscmp(misc, TEXT("out")) == 0)
+#ifndef MAP_ZOOM
+    MapWindow::Event_ScaleZoom(-1);
+#else /* MAP_ZOOM */
     MapWindow::zoom.EventScaleZoom(-1);
+#endif /* MAP_ZOOM */
   else if (_tcscmp(misc, TEXT("in")) == 0)
+#ifndef MAP_ZOOM
+    MapWindow::Event_ScaleZoom(1);
+#else /* MAP_ZOOM */
     MapWindow::zoom.EventScaleZoom(1);
+#endif /* MAP_ZOOM */
   else if (_tcscmp(misc, TEXT("-")) == 0)
+#ifndef MAP_ZOOM
+    MapWindow::Event_ScaleZoom(-1);
+#else /* MAP_ZOOM */
     MapWindow::zoom.EventScaleZoom(-1);
+#endif /* MAP_ZOOM */
   else if (_tcscmp(misc, TEXT("+")) == 0)
+#ifndef MAP_ZOOM
+    MapWindow::Event_ScaleZoom(1);
+#else /* MAP_ZOOM */
     MapWindow::zoom.EventScaleZoom(1);
+#endif /* MAP_ZOOM */
   else if (_tcscmp(misc, TEXT("--")) == 0)
+#ifndef MAP_ZOOM
+    MapWindow::Event_ScaleZoom(-2);
+#else /* MAP_ZOOM */
     MapWindow::zoom.EventScaleZoom(-2);
+#endif /* MAP_ZOOM */
   else if (_tcscmp(misc, TEXT("++")) == 0) 
+#ifndef MAP_ZOOM
+    MapWindow::Event_ScaleZoom(2);
+#else /* MAP_ZOOM */
     MapWindow::zoom.EventScaleZoom(2);
+#endif /* MAP_ZOOM */
   else if (_stscanf(misc, TEXT("%f"), &zoom) == 1)
+#ifndef MAP_ZOOM
+    MapWindow::Event_SetZoom((double)zoom);
+#else /* MAP_ZOOM */
     MapWindow::zoom.EventSetZoom((double)zoom);
+#endif /* MAP_ZOOM */
 
   else if (_tcscmp(misc, TEXT("circlezoom toggle")) == 0) {
+#ifndef MAP_ZOOM
+    CircleZoom = !CircleZoom;
+    MapWindow::SwitchZoomClimb();
+#else /* MAP_ZOOM */
     MapWindow::zoom.CircleZoom(!MapWindow::zoom.CircleZoom());
     MapWindow::zoom.SwitchMode();
+#endif /* MAP_ZOOM */
   } else if (_tcscmp(misc, TEXT("circlezoom on")) == 0) {
+#ifndef MAP_ZOOM
+    CircleZoom = true;
+    MapWindow::SwitchZoomClimb();
+#else /* MAP_ZOOM */
     MapWindow::zoom.CircleZoom(true);
     MapWindow::zoom.SwitchMode();
+#endif /* MAP_ZOOM */
   } else if (_tcscmp(misc, TEXT("circlezoom off")) == 0) {
+#ifndef MAP_ZOOM
+    CircleZoom = false;
+    MapWindow::SwitchZoomClimb();
+#else /* MAP_ZOOM */
     MapWindow::zoom.CircleZoom(false);
     MapWindow::zoom.SwitchMode();
+#endif /* MAP_ZOOM */
   } else if (_tcscmp(misc, TEXT("circlezoom show")) == 0) {
+#ifndef MAP_ZOOM
+    if (CircleZoom)
+#else /* MAP_ZOOM */
     if (MapWindow::zoom.CircleZoom())
+#endif /* MAP_ZOOM */
 	// LKTOKEN  _@M173_ = "Circling Zoom ON" 
       DoStatusMessage(gettext(TEXT("_@M173_")));
     else
@@ -1394,9 +1465,17 @@ void InputEvents::eventPan(const TCHAR *misc) {
 
 #if defined(PNA) || defined(FIVV)   // VENTA-ADDON  let pan mode scroll wheel zooming with HP31X. VENTA-TODO: make it different for other PNAs
  else if (_tcscmp(misc, TEXT("up")) == 0)
+#ifndef MAP_ZOOM
+			MapWindow::Event_ScaleZoom(1);
+#else /* MAP_ZOOM */
 			MapWindow::zoom.EventScaleZoom(1);
+#endif /* MAP_ZOOM */
 else if (_tcscmp(misc, TEXT("down")) == 0)
+#ifndef MAP_ZOOM
+			MapWindow::Event_ScaleZoom(-1); // fixed v58
+#else /* MAP_ZOOM */
 			MapWindow::zoom.EventScaleZoom(-1); // fixed v58
+#endif /* MAP_ZOOM */
 #else
   else if (_tcscmp(misc, TEXT("up")) == 0)
     MapWindow::Event_PanCursor(0,1);
@@ -1408,7 +1487,11 @@ else if (_tcscmp(misc, TEXT("down")) == 0)
   else if (_tcscmp(misc, TEXT("right")) == 0)
     MapWindow::Event_PanCursor(-1,0);
   else if (_tcscmp(misc, TEXT("show")) == 0) {
+#ifndef MAP_ZOOM
+    if (MapWindow::isPan())
+#else /* MAP_ZOOM */
     if (MapWindow::mode.AnyPan())
+#endif /* MAP_ZOOM */
       DoStatusMessage(gettext(TEXT("_@M858_"))); // Pan mode ON
     else
       DoStatusMessage(gettext(TEXT("_@M859_"))); // Pan mode OFF
@@ -3036,16 +3119,32 @@ void InputEvents::eventMoveGlider(const TCHAR *misc) {
 void InputEvents::eventUserDisplayModeForce(const TCHAR *misc){
 
   if (_tcscmp(misc, TEXT("unforce")) == 0){
+#ifndef MAP_ZOOM
+    UserForceDisplayMode = dmNone;
+#else /* MAP_ZOOM */
     MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_NONE);
+#endif /* MAP_ZOOM */
   }
   else if (_tcscmp(misc, TEXT("forceclimb")) == 0){
+#ifndef MAP_ZOOM
+    UserForceDisplayMode = dmCircling;
+#else /* MAP_ZOOM */
     MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CIRCLING);
+#endif /* MAP_ZOOM */
   }
   else if (_tcscmp(misc, TEXT("forcecruise")) == 0){
+#ifndef MAP_ZOOM
+    UserForceDisplayMode = dmCruise;
+#else /* MAP_ZOOM */
     MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CRUISE);
+#endif /* MAP_ZOOM */
   }
   else if (_tcscmp(misc, TEXT("forcefinal")) == 0){
+#ifndef MAP_ZOOM
+    UserForceDisplayMode = dmFinalGlide;
+#else /* MAP_ZOOM */
     MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
+#endif /* MAP_ZOOM */
   }
   else if (_tcscmp(misc, TEXT("show")) == 0){
     // DoStatusMessage(TEXT("Map labels ON")); 091211 ?????

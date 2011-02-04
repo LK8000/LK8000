@@ -231,10 +231,18 @@ Topology::~Topology() {
 bool Topology::CheckScale(void) {
   #if LKTOPO
   if (scaleCategory==10)
+#ifndef MAP_ZOOM
+	return (MapWindow::MapScale <= scaleDefaultThreshold);
+#else /* MAP_ZOOM */
     return (MapWindow::zoom.Scale() <= scaleDefaultThreshold);
+#endif /* MAP_ZOOM */
   else
   #endif
+#ifndef MAP_ZOOM
+  return (MapWindow::MapScale <= scaleThreshold);
+#else /* MAP_ZOOM */
   return (MapWindow::zoom.Scale() <= scaleThreshold);
+#endif /* MAP_ZOOM */
 }
 
 void Topology::TriggerIfScaleNowVisible(void) {
@@ -461,14 +469,26 @@ void Topology::Paint(HDC hdc, RECT rc) {
   bool nolabels=false;
   if (scaleCategory==10) {
 	// for water areas, use scaleDefault
+#ifndef MAP_ZOOM
+	if ( MapWindow::MapScale>scaleDefaultThreshold) {
+#else /* MAP_ZOOM */
 	if ( MapWindow::zoom.Scale()>scaleDefaultThreshold) {
+#endif /* MAP_ZOOM */
 		return;
 	}
 	// since we just checked category 10, if we are over scale we set nolabels
+#ifndef MAP_ZOOM
+	if ( MapWindow::MapScale>scaleThreshold) nolabels=true;
+#else /* MAP_ZOOM */
 	if ( MapWindow::zoom.Scale()>scaleThreshold) nolabels=true;
+#endif /* MAP_ZOOM */
   } else 
   #endif
+#ifndef MAP_ZOOM
+  if (MapWindow::MapScale > scaleThreshold) return;
+#else /* MAP_ZOOM */
   if (MapWindow::zoom.Scale() > scaleThreshold) return;
+#endif /* MAP_ZOOM */
 
   // TODO code: only draw inside screen!
   // this will save time with rendering pixmaps especially
@@ -493,13 +513,25 @@ void Topology::Paint(HDC hdc, RECT rc) {
   // != 5 and != 10
   if (scaleCategory>10) { 
 #endif
+#ifndef MAP_ZOOM
+  if (MapWindow::MapScale>0.25*scaleThreshold) {
+#else /* MAP_ZOOM */
   if (MapWindow::zoom.Scale()>0.25*scaleThreshold) {
+#endif /* MAP_ZOOM */
     iskip = 2;
   } 
+#ifndef MAP_ZOOM
+  if (MapWindow::MapScale>0.5*scaleThreshold) {
+#else /* MAP_ZOOM */
   if (MapWindow::zoom.Scale()>0.5*scaleThreshold) {
+#endif /* MAP_ZOOM */
     iskip = 3;
   }
+#ifndef MAP_ZOOM
+  if (MapWindow::MapScale>0.75*scaleThreshold) {
+#else /* MAP_ZOOM */
   if (MapWindow::zoom.Scale()>0.75*scaleThreshold) {
+#endif /* MAP_ZOOM */
     iskip = 4;
   }
 #if LKTOPO
@@ -532,7 +564,11 @@ void Topology::Paint(HDC hdc, RECT rc) {
 	#if 101016
 	// -------------------------- NOT PRINTING ICONS ---------------------------------------------
 	bool dobitmap=false;
+#ifndef MAP_ZOOM
+	if (scaleCategory<90 || (MapWindow::MapScale<2)) dobitmap=true;
+#else /* MAP_ZOOM */
 	if (scaleCategory<90 || (MapWindow::zoom.Scale()<2)) dobitmap=true;
+#endif /* MAP_ZOOM */
 	// first a latlon overlap check, only approximated because of fastcosine in latlon2screen
 	if (checkVisible(*shape, screenRect))
 		for (int tt = 0; tt < shape->numlines; tt++) {

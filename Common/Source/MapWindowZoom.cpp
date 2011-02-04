@@ -8,6 +8,7 @@
 
 
 #include "StdAfx.h"
+#ifdef MAP_ZOOM
 #include "MapWindow.h"
 #include "externs.h"
 
@@ -363,3 +364,5 @@ void MapWindow::Zoom::ModifyMapScale()
   _invDrawScale = 1.0 / _drawScale;
   _scale = *_requestedScale;
 }
+
+#endif /* MAP_ZOOM */

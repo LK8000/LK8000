@@ -141,17 +141,34 @@ void MapWindow::DrawGlideCircle(HDC hdc, POINT Orig, RECT rc )
     /*
      * TRACKUP, NORTHUP, NORTHCIRCLE, TRACKCIRCLE, NORTHTRACK
      */
-      if ( (( DisplayOrientation == TRACKUP) || (DisplayOrientation == NORTHCIRCLE) || (DisplayOrientation == TRACKCIRCLE))
+	if ( ((DisplayOrientation == TRACKUP) || (DisplayOrientation == NORTHCIRCLE) || (DisplayOrientation == TRACKCIRCLE))
+#ifndef MAP_ZOOM
+		&& (DisplayMode != dmCircling) ) {
+
+#else /* MAP_ZOOM */
            && (!mode.Is(MapWindow::Mode::MODE_CIRCLING)) ) {
+#endif /* MAP_ZOOM */
 		if ( VisualGlide == 1 ) {
+#ifndef MAP_ZOOM
+			tmp = i*gunit*cruise*ResMapScaleOverDistanceModify;
+#else /* MAP_ZOOM */
 			tmp = i*gunit*cruise*zoom.ResScaleOverDistanceModify();
+#endif /* MAP_ZOOM */
 			DrawArc(hdc, Orig.x, Orig.y,(int)tmp, rc, 315, 45);
 		} else {
+#ifndef MAP_ZOOM
+			tmp = i*gunit*cruise*ResMapScaleOverDistanceModify;
+#else /* MAP_ZOOM */
 			tmp = i*gunit*cruise*zoom.ResScaleOverDistanceModify();
+#endif /* MAP_ZOOM */
 			DrawArc(hdc, Orig.x, Orig.y,(int)tmp, rc, 330+spread, 30+spread);
 		}
 	} else {
+#ifndef MAP_ZOOM
+		tmp = i*gunit*cruise*ResMapScaleOverDistanceModify;
+#else /* MAP_ZOOM */
 		tmp = i*gunit*cruise*zoom.ResScaleOverDistanceModify();
+#endif /* MAP_ZOOM */
 		Circle(hdc, Orig.x,Orig.y,(int)tmp, rc, true, false);
 	}
 
@@ -207,16 +224,28 @@ void MapWindow::DrawHeading(HDC hdc, POINT Orig, RECT rc ) {
 
    if (GPS_INFO.NAVWarning) return; // 100214
 
+#ifndef MAP_ZOOM
+   if (MapScale>5 || (DisplayMode == dmCircling)) return;
+#else /* MAP_ZOOM */
    if (zoom.Scale()>5 || mode.Is(MapWindow::Mode::MODE_CIRCLING)) return;
+#endif /* MAP_ZOOM */
    POINT p2;
 
    #if 0
    if ( !( DisplayOrientation == TRACKUP || DisplayOrientation == NORTHCIRCLE || DisplayOrientation == TRACKCIRCLE )) return;
+#ifndef MAP_ZOOM
+   double tmp = 12000*ResMapScaleOverDistanceModify;
+#else /* MAP_ZOOM */
    double tmp = 12000*zoom.ResScaleOverDistanceModify();
+#endif /* MAP_ZOOM */
    p2.x=Orig.x;
    p2.y=Orig.y-(int)tmp;
    #else
+#ifndef MAP_ZOOM
+   double tmp = 12000*ResMapScaleOverDistanceModify;
+#else /* MAP_ZOOM */
    double tmp = 12000*zoom.ResScaleOverDistanceModify();
+#endif /* MAP_ZOOM */
    if ( !( DisplayOrientation == TRACKUP || DisplayOrientation == NORTHCIRCLE || DisplayOrientation == TRACKCIRCLE )) {
 	double trackbearing = DrawInfo.TrackBearing;
 	p2.y= Orig.y - (int)(tmp*fastcosine(trackbearing));

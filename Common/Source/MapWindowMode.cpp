@@ -8,6 +8,7 @@
 
 
 #include "StdAfx.h"
+#ifdef MAP_ZOOM
 #include "MapWindow.h"
 
 
@@ -57,3 +58,5 @@ void MapWindow::Mode::Special(TModeSpecial specialMode, bool enable)
   if(_mode != _lastMode)
     MapWindow::zoom.SwitchMode();
 }
+
+#endif /* MAP_ZOOM */

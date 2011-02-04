@@ -181,7 +181,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
+#ifndef MAP_ZOOM
+					if (DisplayMode != dmCircling)
+#else /* MAP_ZOOM */
 					if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
+#endif /* MAP_ZOOM */
 					{
 						value = WayPointCalc[index].Bearing -  GPS_INFO.TrackBearing;
 						valid=true;
@@ -671,7 +675,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				_stprintf(BufferTitle, gettext(TEXT("_@M1144_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+#ifndef MAP_ZOOM
+			if (DisplayMode != dmCircling) {
+#else /* MAP_ZOOM */
 			if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+#endif /* MAP_ZOOM */
 				value=CALCULATED_INFO.AverageLD;
 				if (value <1 ||  value >=ALTERNATE_MAXVALIDGR ) {
 					strcpy(text,INFINVAL); 
@@ -2538,7 +2546,11 @@ void MapWindow::LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *
   _tcscpy(BufferValue,_T(NULLMEDIUM)); 
   _tcscpy(BufferUnit,_T(""));
   if (index>=0) {
+#ifndef MAP_ZOOM
+	if (DisplayMode != dmCircling) {
+#else /* MAP_ZOOM */
 	if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+#endif /* MAP_ZOOM */
 		value = WayPointCalc[index].Bearing -  GPS_INFO.TrackBearing;
 		if (value < -180.0)
 			value += 360.0;

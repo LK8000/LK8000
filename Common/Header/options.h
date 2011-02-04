@@ -247,6 +247,8 @@
 					// usages. Use AlphaBlendAvailable() to check, because the
 					// function is inside coredll
 
+#define MAP_ZOOM                1       // Applied 110204
+
 /*
  * Put here debug defines, so that other developers can activate them if needed.
 

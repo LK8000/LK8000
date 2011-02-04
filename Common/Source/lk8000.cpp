@@ -765,6 +765,9 @@ SNAIL_POINT SnailTrail[TRAILSIZE];
 int SnailNext = 0;
 
 // user interface settings
+#ifndef MAP_ZOOM
+bool CircleZoom = true;
+#endif /* ! MAP_ZOOM */
 int WindUpdateMode = 0;
 bool EnableTopology = true; // 091105
 bool EnableTerrain = true;  // 091105
@@ -1454,7 +1457,11 @@ void RestartCommPorts() {
 void DefocusInfoBox() {
   FocusOnWindow(InfoFocus,false);
   InfoFocus = -1;
+#ifndef MAP_ZOOM
+  if (MapWindow::isPan() && !MapWindow::isTargetPan()) {
+#else /* MAP_ZOOM */
   if(MapWindow::mode.Is(MapWindow::Mode::MODE_PAN)) {
+#endif /* MAP_ZOOM */
     InputEvents::setMode(TEXT("pan"));
   } else {
     InputEvents::setMode(TEXT("default"));
@@ -1619,16 +1626,49 @@ DWORD CalculationThread (LPVOID lpvoid) {
     }
     
     if (GpsUpdated) {
-      if(DoCalculations(&tmp_GPS_INFO,&tmp_CALCULATED_INFO)) {
+      if(DoCalculations(&tmp_GPS_INFO,&tmp_CALCULATED_INFO)){
+#ifndef MAP_ZOOM
+
+        DisplayMode_t lastDisplayMode = DisplayMode;
+
+#endif /* ! MAP_ZOOM */
         MapWindow::MapDirty = true;
         needcalculationsslow = true;
-        
+
+#ifndef MAP_ZOOM
+        switch (UserForceDisplayMode){
+		case dmCircling:
+			DisplayMode = dmCircling;
+			break;
+		case dmCruise:
+			DisplayMode = dmCruise;
+			break;
+		case dmFinalGlide:
+			DisplayMode = dmFinalGlide;
+			break;
+		case dmNone:
+			if (tmp_CALCULATED_INFO.Circling) {
+				DisplayMode = dmCircling;
+			} else if (tmp_CALCULATED_INFO.FinalGlide){
+				DisplayMode = dmFinalGlide;
+			} else
+				DisplayMode = dmCruise;
+
+			break;
+	}
+
+        if (lastDisplayMode != DisplayMode){
+		MapWindow::SwitchZoomClimb();
+        }
+
+#else /* MAP_ZOOM */
         if (tmp_CALCULATED_INFO.Circling)
           MapWindow::mode.Fly(MapWindow::Mode::MODE_FLY_CIRCLING);
         else if (tmp_CALCULATED_INFO.FinalGlide)
           MapWindow::mode.Fly(MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
         else
           MapWindow::mode.Fly(MapWindow::Mode::MODE_FLY_CRUISE);
+#endif /* MAP_ZOOM */
       }
       InfoBoxesDirty = true;
     }
@@ -2142,7 +2182,11 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   InitLDRotary(&rotaryLD); 
   InitWindRotary(&rotaryWind); // 100103
   // InitNewMap(); was moved in InitInstance 
+#ifndef MAP_ZOOM
+  InitAircraftCategory();
+#else /* MAP_ZOOM */
   MapWindow::zoom.Reset();
+#endif /* MAP_ZOOM */
   InitLK8000();
   ReadAirfieldFile();
   SetHome(false);
@@ -3207,18 +3251,32 @@ int getInfoType(int i) {
   if (EnableAuxiliaryInfo) {
     retval = (InfoType[i] >> 24) & 0xff; // auxiliary
   } else {
+#ifndef MAP_ZOOM
+    if (DisplayMode == dmCircling)
+#else /* MAP_ZOOM */
     switch(MapWindow::mode.Fly()) {
     case MapWindow::Mode::MODE_FLY_CIRCLING:
+#endif /* MAP_ZOOM */
       retval = InfoType[i] & 0xff; // climb
+#ifndef MAP_ZOOM
+    else if (DisplayMode == dmFinalGlide) {
+#else /* MAP_ZOOM */
       break;
     case MapWindow::Mode::MODE_FLY_FINAL_GLIDE:
+#endif /* MAP_ZOOM */
       retval = (InfoType[i] >> 16) & 0xff; //final glide
+#ifndef MAP_ZOOM
+    } else {
+#else /* MAP_ZOOM */
       break;
     case MapWindow::Mode::MODE_FLY_CRUISE:
+#endif /* MAP_ZOOM */
       retval = (InfoType[i] >> 8) & 0xff; // cruise
+#ifdef MAP_ZOOM
       break;
     case MapWindow::Mode::MODE_FLY_NONE:
       break;
+#endif /* MAP_ZOOM */
     }
   }
   return min(NUMSELECTSTRINGS-1,retval);
@@ -3232,21 +3290,35 @@ void setInfoType(int i, char j) {
     InfoType[i] &= 0x00ffffff;
     InfoType[i] += (j<<24);
   } else {
+#ifndef MAP_ZOOM
+    if (DisplayMode == dmCircling) {
+#else /* MAP_ZOOM */
     switch(MapWindow::mode.Fly()) {
     case MapWindow::Mode::MODE_FLY_CIRCLING:
+#endif /* MAP_ZOOM */
       InfoType[i] &= 0xffffff00;
       InfoType[i] += (j);
+#ifndef MAP_ZOOM
+    } else if (DisplayMode == dmFinalGlide) {
+#else /* MAP_ZOOM */
       break;
     case MapWindow::Mode::MODE_FLY_FINAL_GLIDE:
+#endif /* MAP_ZOOM */
       InfoType[i] &= 0xff00ffff;
       InfoType[i] += (j<<16);
+#ifndef MAP_ZOOM
+    } else {
+#else /* MAP_ZOOM */
       break;
     case MapWindow::Mode::MODE_FLY_CRUISE:
+#endif /* MAP_ZOOM */
       InfoType[i] &= 0xffff00ff;
       InfoType[i] += (j<<8);
+#ifdef MAP_ZOOM
       break;
     case MapWindow::Mode::MODE_FLY_NONE:
       break;
+#endif /* MAP_ZOOM */
     }
   }
 }
@@ -4410,7 +4482,11 @@ void CommonProcessTimer()
 
   if (DisplayLocked) {
     if(MenuTimeOut==MenuTimeoutMax) {
+#ifndef MAP_ZOOM
+      if (!MapWindow::isPan()) {
+#else /* MAP_ZOOM */
       if (!MapWindow::mode.AnyPan()) {
+#endif /* MAP_ZOOM */
 	InputEvents::setMode(TEXT("default"));
       }
     }
@@ -5751,7 +5827,11 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   }
 
   if (_tcsstr(OutBuffer, TEXT("$(PanModeStatus)"))) {
+#ifndef MAP_ZOOM
+    if ( MapWindow::isPan() )
+#else /* MAP_ZOOM */
     if ( MapWindow::mode.AnyPan() )
+#endif /* MAP_ZOOM */
       ReplaceInString(OutBuffer, TEXT("$(PanModeStatus)"), gettext(TEXT("_@M491_")), Size); // OFF
     else
       ReplaceInString(OutBuffer, TEXT("$(PanModeStatus)"), gettext(TEXT("_@M894_")), Size); // ON
@@ -5847,7 +5927,11 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   }
 
   CondReplaceInString(MapWindow::IsMapFullScreen(), OutBuffer, TEXT("$(FullScreenToggleActionName)"), gettext(TEXT("_@M894_")), gettext(TEXT("_@M491_")), Size);
+#ifndef MAP_ZOOM
+  CondReplaceInString(MapWindow::isAutoZoom(), OutBuffer, TEXT("$(ZoomAutoToggleActionName)"), gettext(TEXT("_@M418_")), gettext(TEXT("_@M897_")), Size);
+#else /* MAP_ZOOM */
   CondReplaceInString(MapWindow::zoom.AutoZoom(), OutBuffer, TEXT("$(ZoomAutoToggleActionName)"), gettext(TEXT("_@M418_")), gettext(TEXT("_@M897_")), Size);
+#endif /* MAP_ZOOM */
   CondReplaceInString(EnableTopology, OutBuffer, TEXT("$(TopologyToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
   CondReplaceInString(EnableTerrain, OutBuffer, TEXT("$(TerrainToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
 
@@ -5880,6 +5964,13 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
   CondReplaceInString(CALCULATED_INFO.AutoMacCready != 0, OutBuffer, TEXT("$(MacCreadyToggleActionName)"), gettext(TEXT("_@M418_")), gettext(TEXT("_@M897_")), Size);
   CondReplaceInString(EnableAuxiliaryInfo, OutBuffer, TEXT("$(AuxInfoToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
+#ifndef MAP_ZOOM
+
+  CondReplaceInString(UserForceDisplayMode == dmCircling, OutBuffer, TEXT("$(DispModeClimbShortIndicator)"), TEXT("_"), TEXT(""), Size);
+  CondReplaceInString(UserForceDisplayMode == dmCruise, OutBuffer, TEXT("$(DispModeCruiseShortIndicator)"), TEXT("_"), TEXT(""), Size);
+  CondReplaceInString(UserForceDisplayMode == dmNone, OutBuffer, TEXT("$(DispModeAutoShortIndicator)"), TEXT("_"), TEXT(""), Size);
+  CondReplaceInString(UserForceDisplayMode == dmFinalGlide, OutBuffer, TEXT("$(DispModeFinalShortIndicator)"), TEXT("_"), TEXT(""), Size);
+#else /* MAP_ZOOM */
   {
   MapWindow::Mode::TModeFly userForcedMode = MapWindow::mode.UserForcedMode();
   CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_CIRCLING, OutBuffer, TEXT("$(DispModeClimbShortIndicator)"), TEXT("_"), TEXT(""), Size);
@@ -5887,6 +5978,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_NONE, OutBuffer, TEXT("$(DispModeAutoShortIndicator)"), TEXT("_"), TEXT(""), Size);
   CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_FINAL_GLIDE, OutBuffer, TEXT("$(DispModeFinalShortIndicator)"), TEXT("_"), TEXT(""), Size);
   }
+#endif /* MAP_ZOOM */
 
 #if 0
   CondReplaceInString(AltitudeMode == ALLON, OutBuffer, TEXT("$(AirspaceModeAllShortIndicator)"), TEXT("|"), TEXT(""), Size);
