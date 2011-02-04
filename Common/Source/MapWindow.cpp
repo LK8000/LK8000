@@ -3055,8 +3055,23 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
   static double savedRequestMapScale=0;
   static double savedMapScaleOverDistanceModify=0;
 
-  // do slow calculations before clearing the screen
-  // to reduce flicker
+  // Calculations are taking time and slow down painting of map, beware
+  #if MULTICALC
+  static short multicalc_slot=1;// 0 will force full loading on startup, but this is not good
+				// because currently we are not waiting for ProgramStarted=3
+				// and the first scan is made while still initializing other things
+
+  // TODO assign numslots with a function, based also on available CPU time
+  short numslots=1;
+  numslots=NumberOfWayPoints/400;
+  // keep numslots optimal
+  if (numslots<5) numslots=5; // seconds for full scan, as this is executed at 1Hz
+  if (numslots>20) numslots=20;
+ 
+  LKCalculateWaypointReachable(multicalc_slot, numslots);
+  if (++multicalc_slot>numslots) multicalc_slot=1;
+  #else
+  // -- no multicalc
 #ifdef LK8000_OPTIMIZE
   #ifdef FLIPFLOP
   static bool flipflop=true;
@@ -3070,6 +3085,7 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 #else
   CalculateWaypointReachable();
 #endif
+  #endif // no multicalc 
   CalculateScreenPositionsAirspace();
   CalculateScreenPositionsThermalSources();
   CalculateScreenPositionsGroundline();

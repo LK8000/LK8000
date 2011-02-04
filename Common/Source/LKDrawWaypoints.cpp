@@ -98,7 +98,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 
   if (MapScale <=20) for(i=0;i<NumberOfWayPoints;i++) {
 
-	if (WayPointList[i].Visible == FALSE )	continue; 
+	if (WayPointList[i].Visible != TRUE )	continue; // false may not be FALSE?
 
 	#ifdef USEISLANDABLE
 	if (WayPointCalc[i].IsAirport) {
