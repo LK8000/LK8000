@@ -1,16 +1,17 @@
-
+WHATS NEW IN 2.1
 
 NEW 
 - Logger fields "Competition Class" and "Competition ID". 
   Class example> Standard    ID Example> AG
 
 - Airspace Class G
+
 - Semi-transparent airspace area configuration. This will also fix problems on HTC D2 .
   Using semitransparent will slow down a bit other devices, but only a bit.
 
 - Transparent bottom bar, configurable inside system config menu 11 "Appearance".
   Using 0% or 100% opacity will make no impact on drawing speed because alphablending will not 
-  be used in these two cases, and by default 100% is used. 
+  be used in these two cases, and by default 60% is used. 
   Help:
 Defines how much transparent (->0%) / opaque (->100%) will be the bottom bar area on the map .
 Normally the bar is black with white text, and can be reverted to white with black text on it.
@@ -50,5 +51,9 @@ BUGFIX
 
 - Waypoint distance overlay did not show on the first line, right corner, in half overlay mode
  
+- Airspaces filtering too restrictive fixed
+  When an aircraft was inside airspace's boundary and the Anlysis dialog
+  airspaces draw line did not cross that boundary (because airspace is
+  too big) the airspace was not printed in the Analysis Airspace dialog.
 
 
