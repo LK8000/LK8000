@@ -20,6 +20,7 @@
 #include "Defines.h" // VENTA3
 
 #include "Utils.h"
+#include "Utils2.h"
 
 // #include "resource.h"
 #include "externs.h"
@@ -755,9 +756,17 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryAutoWind,&Temp);
   AutoWindMode = Temp;
 
+#ifndef MAP_ZOOM
   Temp  = CircleZoom;
+#else /* MAP_ZOOM */
+  Temp  = MapWindow::zoom.CircleZoom();
+#endif /* MAP_ZOOM */
   GetFromRegistry(szRegistryCircleZoom,&Temp);
+#ifndef MAP_ZOOM
   CircleZoom = (Temp == 1);
+#else /* MAP_ZOOM */
+  MapWindow::zoom.CircleZoom(Temp == 1);
+#endif /* MAP_ZOOM */
 
   Temp  = WindUpdateMode;
   GetFromRegistry(szRegistryWindUpdateMode,&Temp);
@@ -1361,7 +1370,11 @@ void ReadRegistrySettings(void)
 
   Temp = 0;
   GetFromRegistry(szRegistryAutoZoom,&Temp);
+#ifndef MAP_ZOOM
   MapWindow::AutoZoom = (Temp == 1);
+#else /* MAP_ZOOM */
+  MapWindow::zoom.AutoZoom(Temp == 1);
+#endif /* MAP_ZOOM */
 
   Temp = MenuTimeoutMax;
   GetFromRegistry(szRegistryMenuTimeout,&Temp);

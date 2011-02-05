@@ -126,7 +126,11 @@ double MapWindow::findMapScaleBarSize(const RECT rc) {
   int range = rc.bottom-rc.top;
 //  int nbars = 0;
 //  int nscale = 1;
+#ifndef MAP_ZOOM
   double pixelsize = MapScale/GetMapResolutionFactor(); // km/pixel
+#else /* MAP_ZOOM */
+  double pixelsize = zoom.Scale()/GetMapResolutionFactor(); // km/pixel
+#endif /* MAP_ZOOM */
   
   // find largest bar size that will fit in display
 
@@ -608,7 +612,11 @@ void MapWindow::CalculateScreenPositionsAirspaceCircle(AIRSPACE_CIRCLE &circ) {
         LatLon2Screen(circ.Longitude, 
                       circ.Latitude, 
                       circ.Screen);
+#ifndef MAP_ZOOM
         circ.ScreenR = iround(circ.Radius*ResMapScaleOverDistanceModify);
+#else /* MAP_ZOOM */
+        circ.ScreenR = iround(circ.Radius*zoom.ResScaleOverDistanceModify());
+#endif /* MAP_ZOOM */
       }
     }
   }
@@ -681,7 +689,11 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
 
   Orig_Screen = Orig;
 
+#ifndef MAP_ZOOM
   if (!EnablePan) {
+#else /* MAP_ZOOM */
+  if (!mode.AnyPan()) {
+#endif /* MAP_ZOOM */
   
     if (GliderCenter 
         && DerivedDrawInfo.Circling 
@@ -830,7 +842,11 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
         LatLon2Screen(Task[i].AATFinishLon, Task[i].AATFinishLat, Task[i].AATFinish);
       }
       if (AATEnabled && (((int)i==ActiveWayPoint) || 
+#ifndef MAP_ZOOM
 			 (TargetPan && ((int)i==TargetPanIndex)))) {
+#else /* MAP_ZOOM */
+			 (mode.Is(Mode::MODE_TARGET_PAN) && ((int)i==TargetPanIndex)))) {
+#endif /* MAP_ZOOM */
 
 	for (int j=0; j<MAXISOLINES; j++) {
 	  if (TaskStats[i].IsoLine_valid[j]) {
@@ -849,29 +865,52 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
 
 
 // JMW to be used for target preview
+#ifndef MAP_ZOOM
 bool MapWindow::SetTargetPan(bool do_pan, int target_point) {
+#else /* MAP_ZOOM */
+void MapWindow::SetTargetPan(bool do_pan, int target_point)
+{
+#endif /* MAP_ZOOM */
   static double old_latitude;
   static double old_longitude;
+#ifndef MAP_ZOOM
   static bool old_pan=false;
+#endif /* ! MAP_ZOOM */
   static bool old_fullscreen=false;
 
+#ifndef MAP_ZOOM
   if (!TargetPan || (TargetPanIndex != target_point)) {
+#else /* MAP_ZOOM */
+  if (!mode.Is(Mode::MODE_TARGET_PAN) || (TargetPanIndex != target_point)) {
+#endif /* MAP_ZOOM */
     TargetDrag_State = 0;
   }
 
   TargetPanIndex = target_point;
 
+#ifndef MAP_ZOOM
   if (do_pan && !TargetPan) {
+#else /* MAP_ZOOM */
+  if (do_pan && !mode.Is(Mode::MODE_TARGET_PAN)) {
+#endif /* MAP_ZOOM */
     old_latitude = PanLatitude;
     old_longitude = PanLongitude;
+#ifndef MAP_ZOOM
     old_pan = EnablePan;
     EnablePan = true;
     TargetPan = do_pan;
+#else /* MAP_ZOOM */
+    mode.Special(do_pan ? Mode::MODE_SPECIAL_TARGET_PAN : Mode::MODE_SPECIAL_PAN, true);
+#endif /* MAP_ZOOM */
     old_fullscreen = RequestFullScreen;
     if (RequestFullScreen) {
       RequestFullScreen = false;
     }
+#ifndef MAP_ZOOM
     SwitchZoomClimb();
+#else /* MAP_ZOOM */
+    zoom.SwitchMode();
+#endif /* MAP_ZOOM */
   }
   if (do_pan) {
     LockTaskData();
@@ -893,19 +932,40 @@ bool MapWindow::SetTargetPan(bool do_pan, int target_point) {
       }
     }
     UnlockTaskData();
+#ifndef MAP_ZOOM
   } else if (TargetPan) {
+#else /* MAP_ZOOM */
+  }
+  else if (mode.Is(Mode::MODE_TARGET_PAN)) {
+#endif /* MAP_ZOOM */
     PanLongitude = old_longitude;
     PanLatitude = old_latitude;
+#ifndef MAP_ZOOM
     EnablePan = old_pan;
     TargetPan = do_pan;
     if (old_fullscreen) {
+#else /* MAP_ZOOM */
+    mode.Special(Mode::MODE_SPECIAL_TARGET_PAN, do_pan);
+    if (old_fullscreen)
+#endif /* MAP_ZOOM */
       RequestFullScreen = true;
+#ifdef MAP_ZOOM
+    zoom.SwitchMode();
+#endif /* MAP_ZOOM */
     }
+#ifndef MAP_ZOOM
     SwitchZoomClimb();
+#else /* MAP_ZOOM */
+  mode.Special(Mode::MODE_SPECIAL_TARGET_PAN, do_pan);
+#endif /* MAP_ZOOM */
   }
+#ifndef MAP_ZOOM
   TargetPan = do_pan;
   return old_pan;
 };
+#else /* MAP_ZOOM */
+
+#endif /* MAP_ZOOM */
 
 // Draw bearing line to target
 void MapWindow::DrawGreatCircle(HDC hdc,
@@ -939,7 +999,11 @@ void MapWindow::DrawTrailFromTask(HDC hdc, const RECT rc,
 				  const double TrailFirstTime) {
   static POINT ptin[MAXCLIPPOLYGON];
 
+#ifndef MAP_ZOOM
   if((TrailActive!=3) || (DisplayMode == dmCircling) || (TrailFirstTime<0))
+#else /* MAP_ZOOM */
+  if((TrailActive!=3) || mode.Is(Mode::MODE_CIRCLING) || (TrailFirstTime<0))
+#endif /* MAP_ZOOM */
     return;
 
   const double mTrailFirstTime = TrailFirstTime - DerivedDrawInfo.TakeOffTime;
@@ -1066,7 +1130,11 @@ void MapWindow::DrawProjectedTrack(HDC hdc, const RECT rc, const POINT Orig) {
     // too short to have valid data
   }
   POINT pt[2] = {{0,-75},{0,-400}};
+#ifndef MAP_ZOOM
   if (TargetPan) {
+#else /* MAP_ZOOM */
+  if (mode.Is(Mode::MODE_TARGET_PAN)) {
+#endif /* MAP_ZOOM */
     double screen_range = GetApproxScreenRange();
     double flow = 0.4;
     double fhigh = 1.5;
@@ -1147,7 +1215,11 @@ void MapWindow::DrawThermalBand(HDC hDC, const RECT rc)
   POINT GliderBand[5] = { {0,0},{23,0},{22,0},{24,0},{0,0} };
   
   if ((DerivedDrawInfo.TaskAltitudeDifference>50)
+#ifndef MAP_ZOOM
       &&(DisplayMode == dmFinalGlide)) {
+#else /* MAP_ZOOM */
+      &&(mode.Is(Mode::MODE_FINAL_GLIDE))) {
+#endif /* MAP_ZOOM */
     return;
   }
 
@@ -1886,11 +1958,19 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 	}
     } else terrainwarning=0;
 
+#ifndef MAP_ZOOM
     if (AutoZoom) {
+#else /* MAP_ZOOM */
+    if (zoom.AutoZoom()) {
+#endif /* MAP_ZOOM */
 		// LKTOKEN _@M1337_ " AZM"
       _tcscat(Scale2, gettext(TEXT("_@M1337_")));
     }
+#ifndef MAP_ZOOM
     if (EnablePan) {
+#else /* MAP_ZOOM */
+    if (mode.AnyPan()) {
+#endif /* MAP_ZOOM */
 		// LKTOKEN _@M1338_ " PAN"
       _tcscat(Scale2, gettext(TEXT("_@M1338_")));
     }
@@ -1964,12 +2044,20 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     }
 
     _tcscpy(Scale,TEXT(""));
+#ifndef MAP_ZOOM
     double mapScale=MapScale*1.4; // FIX 091117
+#else /* MAP_ZOOM */
+    double mapScale=zoom.Scale()*1.4; // FIX 091117
+#endif /* MAP_ZOOM */
     if (ISPARAGLIDER) {
 	if ((mapScale) <1.0) {
 		_stprintf(Scale,TEXT("%1.2f"),mapScale);
 	}
+#ifndef MAP_ZOOM
 	else if((MapScale*3) <3) {
+#else /* MAP_ZOOM */
+	else if((mapScale*3) <3) {
+#endif /* MAP_ZOOM */
 		_stprintf(Scale,TEXT("%1.1f"),mapScale);
 	}
 	else {

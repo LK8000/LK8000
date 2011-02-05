@@ -96,7 +96,11 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
   bool isairport;
   bool islandpoint;
 
+#ifndef MAP_ZOOM
   if (MapScale <=20) for(i=0;i<NumberOfWayPoints;i++) {
+#else /* MAP_ZOOM */
+  if (MapWindow::zoom.Scale() <=20) for(i=0;i<NumberOfWayPoints;i++) {
+#endif /* MAP_ZOOM */
 
 	if (WayPointList[i].Visible != TRUE )	continue; // false may not be FALSE?
 
@@ -174,7 +178,11 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
  	    // always in range if MapScale <=10  since no zoom in waypoints is documented and .Zoom is always 0. 
 	    irange = WaypointInRange(i); 
 
+#ifndef MAP_ZOOM
 	    if(MapScale > 20) { 
+#else /* MAP_ZOOM */
+	    if(MapWindow::zoom.Scale() > 20) { 
+#endif /* MAP_ZOOM */
 	      SelectObject(hDCTemp,hInvSmall);
 	      irange=false;
 	      goto NiklausWirth; // with compliments
@@ -240,7 +248,11 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		  }
 		}
 	    } else { // waypoint is an ordinary turnpoint
+#ifndef MAP_ZOOM
 	      if(MapScale > 4) {
+#else /* MAP_ZOOM */
+	      if(MapWindow::zoom.Scale() > 4) {
+#endif /* MAP_ZOOM */
 		if (BlackScreen) 
 			SelectObject(hDCTemp,hInvSmall);
 		else
@@ -292,7 +304,11 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 	     case DISPLAYFIRST12:
 
 		dowrite = (DeclutterLabels<MAPLABELS_ONLYTOPO) || intask || islandable;  // 100711
+#ifndef MAP_ZOOM
 		if ( (islandable && !isairport) && MapScale >=10 ) dowrite=0; // FIX then no need to go further
+#else /* MAP_ZOOM */
+		if ( (islandable && !isairport) && MapWindow::zoom.Scale() >=10 ) dowrite=0; // FIX then no need to go further
+#endif /* MAP_ZOOM */
 
 		// 101215 
 		if (DisplayTextType == DISPLAYNAME) {
@@ -331,7 +347,11 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		break;
 	      case DISPLAYNUMBER:
 		dowrite = (DeclutterLabels<MAPLABELS_ONLYTOPO) || intask || islandable;  // 100620
+#ifndef MAP_ZOOM
 		if ( (islandable && !isairport) && MapScale >=10 ) dowrite=0; // FIX then no need to go further
+#else /* MAP_ZOOM */
+		if ( (islandable && !isairport) && MapWindow::zoom.Scale() >=10 ) dowrite=0; // FIX then no need to go further
+#endif /* MAP_ZOOM */
 
 		if (draw_alt) {
 		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
@@ -437,7 +457,11 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 	      } // end intask/irange/dowrite
 
 		#if MOREDECLUTTER
+#ifndef MAP_ZOOM
 		if (MapScale<20 && islandable && dowrite) {
+#else /* MAP_ZOOM */
+		if (MapWindow::zoom.Scale()<20 && islandable && dowrite) {
+#endif /* MAP_ZOOM */
 			TextInBox(hdc, Buffer, WayPointList[i].Screen.x+5, WayPointList[i].Screen.y, 0, TextDisplayMode, true); 
 			dowrite=false; // do not pass it along
 		}
@@ -516,7 +540,11 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
     if (!E->inTask && !E->isLandable ) {
 
       if ( TextInBox(hdc, E->Name, E->Pos.x, E->Pos.y, 0, E->Mode, true) == true) {
+#ifndef MAP_ZOOM
 	if(MapScale > 4) {
+#else /* MAP_ZOOM */
+	if(MapWindow::zoom.Scale() > 4) {
+#endif /* MAP_ZOOM */
 		if (BlackScreen) // 091109
 	 		 SelectObject(hDCTemp,hInvSmall);
 		else

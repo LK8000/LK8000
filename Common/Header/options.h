@@ -250,6 +250,7 @@
 #define MULTICALC		1	// Use multicalc approach, splitting calculation inside MapWindow
 					// thread into multiple instances, 0.5 or 0.33 Hz recommended
 					// Extensive checking required
+#define MAP_ZOOM                1       // Applied 110204
 
 /*
  * Put here debug defines, so that other developers can activate them if needed.

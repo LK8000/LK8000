@@ -669,7 +669,11 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   #endif
 
   #if 100303
+#ifndef MAP_ZOOM
   if (MapWindow::MapScale <2.34) { // <3km map zoom
+#else /* MAP_ZOOM */
+  if (MapWindow::zoom.Scale() <2.34) { // <3km map zoom
+#endif /* MAP_ZOOM */
 	usecolors=true;
   }
   #endif
@@ -679,7 +683,11 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   double traildrift_lat = 0.0;
   double traildrift_lon = 0.0;
   
+#ifndef MAP_ZOOM
   if (EnableTrailDrift && (DisplayMode == dmCircling)) {
+#else /* MAP_ZOOM */
+  if (EnableTrailDrift && MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+#endif /* MAP_ZOOM */
     double tlat1, tlon1;
     
     FindLatitudeLongitude(DrawInfo.Latitude, 
@@ -706,7 +714,11 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 	// scan only recently for lift magnitude
 	num_trail_max = TRAILSIZE/TRAILSHRINK;
   }
+#ifndef MAP_ZOOM
   if ((DisplayMode == dmCircling)) {
+#else /* MAP_ZOOM */
+  if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+#endif /* MAP_ZOOM */
 	num_trail_max /= TRAILSHRINK;
   }
 
@@ -744,7 +756,11 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 
   // Constants for speedups
 
+#ifndef MAP_ZOOM
   const bool display_circling = DisplayMode == dmCircling;
+#else /* MAP_ZOOM */
+  const bool display_circling = MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING);
+#endif /* MAP_ZOOM */
   const double display_time = DrawInfo.Time;
 
   // expand bounds so in strong winds the appropriate snail points are
@@ -765,7 +781,11 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   const int sint = ISINETABLE[deg];
   const int xxs = Orig_Screen.x*1024-512;
   const int yys = Orig_Screen.y*1024+512;
+#ifndef MAP_ZOOM
   const double mDrawScale = DrawScale;
+#else /* MAP_ZOOM */
+  const double mDrawScale = zoom.DrawScale();
+#endif /* MAP_ZOOM */
   const double mPanLongitude = PanLongitude;
   const double mPanLatitude = PanLatitude;
 
@@ -775,7 +795,11 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   if (display_circling) {
 	nearby=NIBLSCALE(1);
   } else {
+#ifndef MAP_ZOOM
   	if (MapWindow::MapScale <=1)
+#else /* MAP_ZOOM */
+  	if (MapWindow::zoom.Scale() <=1)
+#endif /* MAP_ZOOM */
 		nearby=NIBLSCALE(1); 
 	else
 		nearby=NIBLSCALE(2);
@@ -962,7 +986,11 @@ void MapWindow::SetAutoOrientation(bool doreset) {
   }
 
   // 1.4 because of correction if mapscale reported on screen in MapWindow2
+#ifndef MAP_ZOOM
   if ((MapScale*1.4) >= AutoOrientScale) {
+#else /* MAP_ZOOM */
+  if (MapWindow::zoom.Scale() * 1.4 >= AutoOrientScale) {
+#endif /* MAP_ZOOM */
 	// DisplayOrientation=NORTHSMART; // better to keep the glider centered on low zoom levels
 	DisplayOrientation=NORTHUP;
   } else {

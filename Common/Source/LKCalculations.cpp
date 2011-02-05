@@ -276,7 +276,11 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	// which is TWICE what we really need. 
 	switch (SortedMode[curmapspace]) {
 		case 2:
+#ifndef MAP_ZOOM
 			if (DisplayMode == dmCircling) {
+#else /* MAP_ZOOM */
+			if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+#endif /* MAP_ZOOM */
 				wp_value=WayPointCalc[wp_index].Bearing;
 				break;
 			}
@@ -1394,7 +1398,11 @@ bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 			sortvalue=LKTraffic[i].Distance;
 			break;
 		case 2:
+#ifndef MAP_ZOOM
 			if (DisplayMode == dmCircling) {
+#else /* MAP_ZOOM */
+			if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+#endif /* MAP_ZOOM */
 				sortvalue=LKTraffic[i].Bearing;
 				break;
 			}

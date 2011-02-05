@@ -592,7 +592,11 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
          	_stprintf(Buffer2[i][curpage],TEXT("%0.1lf"),value);
 
 
+#ifndef MAP_ZOOM
 		if (DisplayMode != dmCircling) {
+#else /* MAP_ZOOM */
+		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+#endif /* MAP_ZOOM */
 			value = WayPointCalc[rli].Bearing -  GPS_INFO.TrackBearing;
 
 			if (value < -180.0)

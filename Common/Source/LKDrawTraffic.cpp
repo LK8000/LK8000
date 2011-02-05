@@ -493,7 +493,11 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
 		// relative bearing
 
+#ifndef MAP_ZOOM
 		if (DisplayMode != dmCircling) {
+#else /* MAP_ZOOM */
+		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+#endif /* MAP_ZOOM */
 			value = LKTraffic[rli].Bearing -  GPS_INFO.TrackBearing;
 
 			if (value < -180.0)

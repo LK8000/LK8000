@@ -464,7 +464,11 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 
 		// relative bearing
 
+#ifndef MAP_ZOOM
 		if (DisplayMode != dmCircling) {
+#else /* MAP_ZOOM */
+		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+#endif /* MAP_ZOOM */
 			Value = WayPointCalc[rli].Bearing -  GPS_INFO.TrackBearing;
 
 			if (Value < -180.0)

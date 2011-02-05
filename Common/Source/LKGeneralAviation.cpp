@@ -23,6 +23,7 @@
 
 #include "Defines.h"
 #include "Utils.h"
+#include "Utils2.h"
 #include "LKUtils.h"
 #include "LKObjects.h"
 #include "externs.h"
@@ -171,7 +172,11 @@ void DrawHSI(HDC hdc, POINT Orig, RECT rc )
 	if ( DisplayOrientation == NORTHSMART || 
 		DisplayOrientation == NORTHTRACK ||
 		DisplayOrientation == NORTHUP ||
+#ifndef MAP_ZOOM
 		DisplayMode == dmCircling
+#else /* MAP_ZOOM */
+		MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)
+#endif /* MAP_ZOOM */
 		)
 	{
 		return; //Only for Trackup and compatible modes

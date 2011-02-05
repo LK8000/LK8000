@@ -13,6 +13,7 @@
 #include <windows.h>
 #include <tchar.h>
 #include "Utils.h"
+#include "Utils2.h"
 #include "device.h"
 #include "InputEvents.h"
 #include "Parser.h"

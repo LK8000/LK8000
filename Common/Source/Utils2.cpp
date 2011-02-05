@@ -403,9 +403,17 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 #define VKTIMELONG 1500
 #if LKPMODE
+#ifndef MAP_ZOOM
 #define DONTDRAWTHEMAP NewMap&&Look8000&&!MapWindow::EnablePan&&MapSpaceMode!=1
+#else /* MAP_ZOOM */
+#define DONTDRAWTHEMAP NewMap&&Look8000&&!MapWindow::mode.AnyPan()&&MapSpaceMode!=1
+#endif /* MAP_ZOOM */
 #else
+#ifndef MAP_ZOOM
 #define DONTDRAWTHEMAP MapWindow::IsMapFullScreen()&&NewMap&&Look8000&&!MapWindow::EnablePan&&MapSpaceMode!=1
+#else /* MAP_ZOOM */
+#define DONTDRAWTHEMAP MapWindow::IsMapFullScreen()&&NewMap&&Look8000&&!MapWindow::mode.AnyPan()&&MapSpaceMode!=1
+#endif /* MAP_ZOOM */
 #endif
 
 	#if 100228
@@ -472,7 +480,11 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 	// Handle fullscreen 8000 mode 
 	// sound clicks require some attention here
+#ifndef MAP_ZOOM
 	if (NewMap &&  DrawBottom && !MapWindow::EnablePan && vkmode==LKGESTURE_NONE) { 
+#else /* MAP_ZOOM */
+	if (NewMap &&  DrawBottom && !MapWindow::mode.AnyPan() && vkmode==LKGESTURE_NONE) { 
+#endif /* MAP_ZOOM */
 		//
 		// CLICKS on NAVBOXES, any MapSpaceMode ok
 		//
@@ -480,7 +492,11 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 			if ( UseMapLock ) {
 				if (MapLock==false) {
+#ifndef MAP_ZOOM
 					if (!MapWindow::EnablePan ) LockMap();
+#else /* MAP_ZOOM */
+					if (!MapWindow::mode.AnyPan()) LockMap();
+#endif /* MAP_ZOOM */
 					MapWindow::RefreshMap();
 					return 0;
 				}
@@ -496,7 +512,11 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				DoStatusMessage(buf);
 				#endif
 				if (  (BottomMode+1) >BM_LAST ) {
+#ifndef MAP_ZOOM
 					if ( DisplayMode == dmCircling)
+#else /* MAP_ZOOM */
+					if ( MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
+#endif /* MAP_ZOOM */
 						BottomMode=BM_TRM;
 					else
 						BottomMode=BM_FIRST;
@@ -524,7 +544,11 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				DoStatusMessage(buf);
 				#endif
 				if ((BottomMode-1) == BM_TRM) {
+#ifndef MAP_ZOOM
 					if (DisplayMode != dmCircling) BottomMode=BM_LAST;
+#else /* MAP_ZOOM */
+					if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) BottomMode=BM_LAST;
+#endif /* MAP_ZOOM */
 					else {
 						BottomMode=BM_TRM;
 						/*
@@ -539,7 +563,11 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				}
 				else if ((BottomMode-1)<0) {
 					BottomMode=BM_LAST;
+#ifndef MAP_ZOOM
 				} else if ( ((BottomMode-1)==BM_FIRST)&& (DisplayMode!=dmCircling)) {
+#else /* MAP_ZOOM */
+				} else if ( ((BottomMode-1)==BM_FIRST)&& !MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+#endif /* MAP_ZOOM */
 					/*
 					#ifndef DISABLEAUDIO
                                        	if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
@@ -877,14 +905,22 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 #if NOSIM
 		if (SIMMODE) {
+#ifndef MAP_ZOOM
 			if ( MapWindow::EnablePan  && ISPARAGLIDER) return 99; // 091221 return impossible value
+#else /* MAP_ZOOM */
+			if ( MapWindow::mode.AnyPan() && ISPARAGLIDER) return 99; // 091221 return impossible value
+#endif /* MAP_ZOOM */
 			else return 0;
 		} else {
 			return 0;
 		}
 #else
 #if _SIM_
+#ifndef MAP_ZOOM
 		if ( MapWindow::EnablePan  && ISPARAGLIDER) return 99; // 091221 return impossible value
+#else /* MAP_ZOOM */
+		if ( MapWindow::mode.AnyPan() && ISPARAGLIDER) return 99; // 091221 return impossible value
+#endif /* MAP_ZOOM */
 			else return 0;
 #else
 		// if we want to emulate a return key, return 13;
@@ -1625,6 +1661,7 @@ void InitScreenSize() {
 
 }
 
+#ifndef MAP_ZOOM
 void InitAircraftCategory()
 {
 
@@ -1696,6 +1733,7 @@ void InitAircraftCategory()
 
 
 }
+#endif /* ! MAP_ZOOM */
 
 // Requires restart if activated from config menu
 void InitLK8000() 
@@ -2922,14 +2960,27 @@ int GetInfoboxType(int i) {
 	if (i<=8)
 		retval = (InfoType[i-1] >> 24) & 0xff; // auxiliary
 	else {
+#ifndef MAP_ZOOM
 		switch ( DisplayMode ) {
 			case dmCruise:
+#else /* MAP_ZOOM */
+		switch ( MapWindow::mode.Fly() ) {
+			case MapWindow::Mode::MODE_FLY_CRUISE:
+#endif /* MAP_ZOOM */
 				retval = (InfoType[i-9] >> 8) & 0xff;
 				break;
+#ifndef MAP_ZOOM
 			case dmFinalGlide:
+#else /* MAP_ZOOM */
+			case MapWindow::Mode::MODE_FLY_FINAL_GLIDE:
+#endif /* MAP_ZOOM */
 				retval = (InfoType[i-9] >> 16) & 0xff;
 				break;
+#ifndef MAP_ZOOM
 			case dmCircling:
+#else /* MAP_ZOOM */
+			case MapWindow::Mode::MODE_FLY_CIRCLING:
+#endif /* MAP_ZOOM */
 				retval = (InfoType[i-9]) & 0xff; 
 				break;
 			default:
@@ -2945,18 +2996,34 @@ int GetInfoboxType(int i) {
 // Returns the LKProcess index value for configured infobox (0-8) for dmCruise, dmFinalGlide, Auxiliary, dmCircling
 // The function name is really stupid...
 // dmMode is an enum, we simply use for commodity
+#ifndef MAP_ZOOM
 int GetInfoboxIndex(int i, short dmMode) {
+#else /* MAP_ZOOM */
+int GetInfoboxIndex(int i, MapWindow::Mode::TModeFly dmMode) {
+#endif /* MAP_ZOOM */
 	int retval = 0;
 	if (i<0||i>8) return LK_ERROR;
 
 	switch(dmMode) {
+#ifndef MAP_ZOOM
 		case dmCruise:
+#else /* MAP_ZOOM */
+		case MapWindow::Mode::MODE_FLY_CRUISE:
+#endif /* MAP_ZOOM */
 			retval = (InfoType[i-1] >> 8) & 0xff;
 			break;
+#ifndef MAP_ZOOM
 		case dmFinalGlide:
+#else /* MAP_ZOOM */
+		case MapWindow::Mode::MODE_FLY_FINAL_GLIDE:
+#endif /* MAP_ZOOM */
 			retval = (InfoType[i-1] >> 16) & 0xff;
 			break;
+#ifndef MAP_ZOOM
 		case dmCircling:
+#else /* MAP_ZOOM */
+		case MapWindow::Mode::MODE_FLY_CIRCLING:
+#endif /* MAP_ZOOM */
 			retval = (InfoType[i-1]) & 0xff; 
 			break;
 		default:
@@ -3843,6 +3910,7 @@ bool CustomKeyHandler(const int key) {
 
 }
 
+#ifndef MAP_ZOOM
 // set Climb and Cruis MapScale accordingly to PGClimbZoom, everytime it changes.
 // Needed to avoid software restart to bypass doinit in MapWindow
 void SetMapScales() {
@@ -3874,6 +3942,7 @@ void SetMapScales() {
   }
 
 }
+#endif /* ! MAP_ZOOM */
 
 #ifdef PNA
 bool LoadModelFromProfile()
