@@ -470,6 +470,8 @@ double HexStrToDouble(TCHAR *Source, TCHAR **Stop);
 
 unsigned long CheckFreeRam(void);
 
+const TCHAR *TaskFileName(unsigned bufferLen, TCHAR buffer[]);
+
 // LK Utils
 void LKBatteryManager();
 void LKSound(const TCHAR *lpName);

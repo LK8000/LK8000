@@ -55,24 +55,8 @@ static void UpdateFilePointer(void) {
 static void UpdateCaption (void) {
   TCHAR title[MAX_PATH];
   TCHAR name[MAX_PATH] = TEXT("\0");
-  LockTaskData();
-  int len = _tcslen(LastTaskFileName);
-  if (len>0) {
-    int index = 0;
-    TCHAR *src = LastTaskFileName;
-    while ((*src != _T('\0')) && (*src != _T('.'))) {
-      if ((*src == _T('\\')) || (*src == _T('/'))) {
-        index = 0;
-      } else {
-        name[index] = *src;
-        index++;
-      }
-      src++;
-    }
-    name[index]= _T('\0');
-  }
-  UnlockTaskData();
-
+  TaskFileName(MAX_PATH, name);
+  
   if (_tcslen(name)>0) {
     _stprintf(title, TEXT("%s: %s"),
 	// LKTOKEN  _@M688_ = "Task Overview" 

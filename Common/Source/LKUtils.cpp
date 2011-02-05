@@ -34,6 +34,8 @@
 #include "LKMapWindow.h"
 
 
+extern TCHAR LastTaskFileName[MAX_PATH];
+
 extern int PDABatteryPercent;
 extern int PDABatteryStatus;
 extern int PDABatteryFlag;
@@ -481,3 +483,42 @@ BOOL ReadUString(HANDLE hFile, int Max, TCHAR *String, short filetype)
 }
 
 
+/** 
+ * @brief Returns task file name
+ * 
+ * Function obtains task file path and strips the directory part and file
+ * extension from it.
+ * 
+ * @param bufferLen The length of the buffer
+ * @param buffer Buffer for the task file name 
+ * 
+ * @return Buffer with filled data
+ */
+const TCHAR *TaskFileName(unsigned bufferLen, TCHAR buffer[])
+{
+  TCHAR name[MAX_PATH] = { _T('\0') };
+  
+  LockTaskData();
+  int len = _tcslen(LastTaskFileName);
+  if(len > 0) {
+    int index = 0;
+    TCHAR *src = LastTaskFileName;
+    while ((*src != _T('\0')) && (*src != _T('.'))) {
+      if ((*src == _T('\\')) || (*src == _T('/'))) {
+        index = 0;
+      }
+      else {
+        name[index] = *src;
+        index++;
+      }
+      src++;
+    }
+    name[index] = _T('\0');
+  }
+  UnlockTaskData();
+  
+  _sntprintf(buffer, bufferLen, name);
+  buffer[bufferLen - 1] = _T('\0');
+  
+  return buffer;
+}
