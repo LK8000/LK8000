@@ -1,6 +1,7 @@
 WHATS NEW IN 2.1
 
 NEW 
+
 - Logger fields "Competition Class" and "Competition ID". 
   Class example> Standard    ID Example> AG
 
@@ -22,18 +23,67 @@ Using 0% or 100%  (full transparency  or full opacity) will speed up the softwar
 Another famous 8000 instrument is using 75% opacity.
 Default is 100% (full opacity).
 
-  
 
 CHANGES
 
 - Faster topology painting when huge topo maps were used.
+
 - Waypoint Out of Terrain selection back in configuration page 1
   Use "exclude" if you are loading big continental waypoint file databases
 
 - McCready Overlay choice in Engineering menu 1 is now saved to profile
 
+- NEW AUTO ZOOM
+    
+    1. AutoZoom bugs:
+    - Changing zoom in Circling Zoom disables AutoZoom
+    - Changing zoom in PAN mode disables AutoZoom
+    - Enabling AutoZoom in PAN mode disables PAN mode
+    - Panorama Zoom not working when AutoZoom is enabled
+    - Enabling AutoZoom in Panorama Zoom destroys Panorama Zoom behavior
+    - AutoZoom corrupts circling and cruise zoom if waypoint switched during
+      circling mode
+    
+    2. Other bugs:
+    - Changing ZOOM in PAN mode changes fly zoom
+    - Panorama Zoom corrupts fly zoom if fly mode (circling/cruise) change
+     in the meantime
+    - Panorama Zoom changes PAN zoom when expired
+    - Opening TargetPan during Panorama Zoom destroys Panorama Zoom
+    - Pan Mode while Panorama Zoom expiration destroys fly zoom level
+    - PANORAMA zoom does not remember its zoom value
+    
+    New design:
+    1. Provides separate zoom levels for each of the following:
+    - CRUISE
+    - CIRCLING (if CirclingZoom is enabled in SystemSetup)
+    - PANORAMA
+    - AUTO_ZOOM
+    - PAN
+    - TARGET_PAN
+    2. Zoom is switched together with a switch of flight mode, and a zoom
+    for previous mode is always remembered and restored. Exception here is:
+    - AUTO_ZOOM - that when switched on will always calculate the best zoom
+                  for the next waypoint (CRUISE zoom if a waypoint is far away
+                  or calculated zoom if closer)
+    - PAN - that when switched on will init with the the zoom factor of
+            previous mode (current zoom factor)
+    - TARGET_PAN - that when switched on will always calculate the best zoom
+                  for the presentation of the waypoint in subject
+    3. AutoZoom will be turned off on pilot's manual zoom change action only
+    if CRUISE_ZOOM is currently used. That means that a pilot can freely
+    adjust the zoom for circling, panorama or pan without worrying about
+    disabling and then a need to enable AutoZoom.
+    4. Advancing a waypoint to the next one when AutoZoom is enabled will
+    always adjust CRUISE_ZOOM only (even if not active at that moment)
+
+. Very fast loading of big waypoint files at startup
+. Faster response of user interface when using big waypoint files
+. It is now possible to load over 8000 waypoints while still keeping good user interface
+  response
 
 BUGFIX
+
 - Altitude Required (AltReqD) flipping two different values, one correct and the other wrong
 
 - Topology labels were not correctly printed using special character sets for some languages
