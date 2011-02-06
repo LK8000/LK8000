@@ -61,6 +61,7 @@
 #include "devXCOM760.h"
 #include "devCondor.h"
 #include "devIlec.h"
+#include "devDSX.h"
 
 #include "externs.h"
 #include "Units.h"
@@ -2244,6 +2245,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   condorRegister();
   DigiflyRegister(); // 100209
   IlecRegister();
+  DSXRegister();
   // we want to be sure that RestartCommPort works on startup ONLY after all devices are inititalized
   goInitDevice=true; // 100118
 
