@@ -105,7 +105,6 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
   if((err = vl.open(1, 20, 1, 38400L)) != VLA_ERR_NOERR) {
     // LKTOKEN  _@M1411_ = "Device not connected!" 
     _sntprintf(errBuffer, errBufferLen, gettext(_T("_@M1411_")));
-    CloseProgressDialog();
     return FALSE;
   }
   
@@ -116,7 +115,6 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
   if((err = vl.read_info()) != VLA_ERR_NOERR) {
     // LKTOKEN  _@M1414_ = "Device not responsive!" 
     _sntprintf(errBuffer, errBufferLen, gettext(_T("_@M1414_")));
-    CloseProgressDialog();
     return FALSE;
   }
   
@@ -248,8 +246,6 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M1406_")));
   CreateProgressDialog(buffer);
   vl.close(1);
-  
-  CloseProgressDialog();
   
   return err == VLA_ERR_NOERR;
 }

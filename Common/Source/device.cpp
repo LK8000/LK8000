@@ -657,7 +657,20 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
   if (fSimMode)
   #endif
     return TRUE;
+  
+  const unsigned BUFF_LEN = 128;
+  TCHAR buffer[BUFF_LEN];
+
+  // LKTOKEN  _@M1400_ = "Task declaration" 
+  // LKTOKEN  _@M928_ = "Restarting Comm Ports"
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M928_")));
+  CreateProgressDialog(buffer);
   RestartCommPorts();
+  
+  // LKTOKEN  _@M1400_ = "Task declaration"
+  // LKTOKEN  _@M571_ = "START"
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M571_")));
+  CreateProgressDialog(buffer);
   LockComm();
   if ((d != NULL) && (d->Declare != NULL))
     result = d->Declare(d, decl, errBufferLen, errBuffer);
@@ -666,7 +679,9 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
   }
   
   UnlockComm();
-
+  
+  CloseProgressDialog();
+  
   return result;
 }
 
