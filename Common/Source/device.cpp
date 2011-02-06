@@ -657,6 +657,7 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
   if (fSimMode)
   #endif
     return TRUE;
+  RestartCommPorts();
   LockComm();
   if ((d != NULL) && (d->Declare != NULL))
     result = d->Declare(d, decl, errBufferLen, errBuffer);
