@@ -908,7 +908,7 @@ static bool LoggerDeclare(PDeviceDescriptor_t dev, Declaration_t *decl)
 
       if(errorBuffer[0] == '\0')
         // LKTOKEN  _@M1410_ = "Unknown error!!!" 
-        _sntprintf(errorBuffer, ERROR_BUFFER_LEN, gettext(_T("_@M1410")));
+        _sntprintf(errorBuffer, ERROR_BUFFER_LEN, gettext(_T("_@M1410_")));
       else 
         // do it just to be sure
         errorBuffer[ERROR_BUFFER_LEN - 1] = '\0';

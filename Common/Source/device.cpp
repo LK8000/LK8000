@@ -665,7 +665,6 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
   // LKTOKEN  _@M928_ = "Restarting Comm Ports"
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M928_")));
   CreateProgressDialog(buffer);
-  RestartCommPorts();
   
   // LKTOKEN  _@M1400_ = "Task declaration"
   // LKTOKEN  _@M571_ = "START"
