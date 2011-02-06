@@ -16,3 +16,4 @@ Things to be fixed in LK languages files/tokens:
 - New fields: _@M1001_ - _@M1400_ for calculated values and infobox abbrev. translations, 
   see details in ENG_MSG
 - New Logger declarations Error Handling fields: _@M1400_ - _@M1429_
+- _@M193_ to remove

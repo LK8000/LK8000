@@ -91,62 +91,66 @@ BOOL VLDeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp);
 
 BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
 {
-	// LKTOKEN  _@M193_ = "Comms with Volkslogger" 
-  CreateProgressDialog(gettext(TEXT("_@M193_")));
-
   vl.set_device(d);
   nturnpoints = 0;
-
-  int err;
+  
+  const unsigned BUFF_LEN = 128;
+  TCHAR buffer[BUFF_LEN];
+  int err = VLA_ERR_NOERR;
+  
+  // LKTOKEN  _@M1400_ = "Task declaration" 
+  // LKTOKEN  _@M1404_ = "Opening connection" 
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M1404_")));
+  CreateProgressDialog(buffer);
   if((err = vl.open(1, 20, 1, 38400L)) != VLA_ERR_NOERR) {
-    //    _isConnected = false;
-  }
-  else {
-    //    _isConnected = true;
-  }
-
-  if (err == VLA_ERR_NOERR) {
-    if ((err = vl.read_info()) == VLA_ERR_NOERR) {
-      //      vl.read_db_and_declaration();
-    }
-
-    char temp[100];
-    sprintf(temp, "%S", decl->PilotName);
-    strncpy(vl.declaration.flightinfo.pilot, temp, 64);
-
-    sprintf(temp, "%S", decl->AircraftRego);
-    strncpy(vl.declaration.flightinfo.gliderid, temp, 7);
-    vl.declaration.flightinfo.gliderid[7]='\0'; 
-
-    sprintf(temp, "%S", decl->AircraftType);
-    strncpy(vl.declaration.flightinfo.glidertype, temp, 12);
-    vl.declaration.flightinfo.glidertype[12]='\0'; 
-
-    sprintf(temp, "%S", decl->CompetitionID);
-    strncpy(vl.declaration.flightinfo.competitionid, temp, 3);
-    vl.declaration.flightinfo.competitionid[3]='\0'; // BUGFIX 100331
- 
-    sprintf(temp, "%S", decl->CompetitionClass);
-    strncpy(vl.declaration.flightinfo.competitionclass, temp, 12);
-    vl.declaration.flightinfo.competitionclass[12]='\0'; // BUGFIX 100331
-
-    if (ValidWayPoint(HomeWaypoint)) {
-      sprintf(temp, "%S", WayPointList[HomeWaypoint].Name);
-
-      strncpy(vl.declaration.flightinfo.homepoint.name, temp, 6);
-      vl.declaration.flightinfo.homepoint.name[6]='\0'; // BUGFIX 100331
-      vl.declaration.flightinfo.homepoint.lon = 
-        WayPointList[HomeWaypoint].Longitude;
-      vl.declaration.flightinfo.homepoint.lat = 
-        WayPointList[HomeWaypoint].Latitude;
-    }
-  }
-
-  if (err != VLA_ERR_NOERR) {
+    // LKTOKEN  _@M1411_ = "Device not connected!" 
+    _sntprintf(errBuffer, errBufferLen, gettext(_T("_@M1411_")));
     CloseProgressDialog();
     return FALSE;
   }
+  
+  // LKTOKEN  _@M1400_ = "Task declaration" 
+  // LKTOKEN  _@M1405_ = "Testing connection" 
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M1405_")));
+  CreateProgressDialog(buffer);
+  if((err = vl.read_info()) != VLA_ERR_NOERR) {
+    // LKTOKEN  _@M1414_ = "Device not responsive!" 
+    _sntprintf(errBuffer, errBufferLen, gettext(_T("_@M1414_")));
+    CloseProgressDialog();
+    return FALSE;
+  }
+  
+  char temp[100];
+  sprintf(temp, "%S", decl->PilotName);
+  strncpy(vl.declaration.flightinfo.pilot, temp, 64);
 
+  sprintf(temp, "%S", decl->AircraftRego);
+  strncpy(vl.declaration.flightinfo.gliderid, temp, 7);
+  vl.declaration.flightinfo.gliderid[7]='\0'; 
+
+  sprintf(temp, "%S", decl->AircraftType);
+  strncpy(vl.declaration.flightinfo.glidertype, temp, 12);
+  vl.declaration.flightinfo.glidertype[12]='\0'; 
+
+  sprintf(temp, "%S", decl->CompetitionID);
+  strncpy(vl.declaration.flightinfo.competitionid, temp, 3);
+  vl.declaration.flightinfo.competitionid[3]='\0'; // BUGFIX 100331
+ 
+  sprintf(temp, "%S", decl->CompetitionClass);
+  strncpy(vl.declaration.flightinfo.competitionclass, temp, 12);
+  vl.declaration.flightinfo.competitionclass[12]='\0'; // BUGFIX 100331
+  
+  if (ValidWayPoint(HomeWaypoint)) {
+    sprintf(temp, "%S", WayPointList[HomeWaypoint].Name);
+    
+    strncpy(vl.declaration.flightinfo.homepoint.name, temp, 6);
+    vl.declaration.flightinfo.homepoint.name[6]='\0'; // BUGFIX 100331
+    vl.declaration.flightinfo.homepoint.lon = 
+      WayPointList[HomeWaypoint].Longitude;
+    vl.declaration.flightinfo.homepoint.lat = 
+      WayPointList[HomeWaypoint].Latitude;
+  }
+  
   int i;
   for (i = 0; i < decl->num_waypoints; i++)
     VLDeclAddWayPoint(d, decl->waypoint[i]);
@@ -227,16 +231,27 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
     break;
   }
   vl.declaration.task.finishpoint.ws = 360;
-
+  
   UnlockTaskData();
-
-  BOOL ok = (vl.write_db_and_declaration() == VLA_ERR_NOERR);
-
+  
+  // LKTOKEN  _@M1400_ = "Task declaration" 
+  // LKTOKEN  _@M1403_ = "Sending  declaration"
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M1403_")));
+  CreateProgressDialog(buffer);
+  if((err = vl.write_db_and_declaration()) != VLA_ERR_NOERR) {
+    // LKTOKEN  _@M1415_ = "Declaration not accepted!" 
+    _sntprintf(errBuffer, errBufferLen, gettext(_T("_@M1415_")));
+  }
+  
+  // LKTOKEN  _@M1400_ = "Task declaration" 
+  // LKTOKEN  _@M1406_ = "Closing connection" 
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M1406_")));
+  CreateProgressDialog(buffer);
   vl.close(1);
-
+  
   CloseProgressDialog();
   
-  return ok;
+  return err == VLA_ERR_NOERR;
 }
 
 
