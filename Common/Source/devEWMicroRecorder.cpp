@@ -168,17 +168,38 @@ BOOL EWMicroRecorderDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned
   nDeclErrorCode = 0;
 
   // Must have at least two, max 12 waypoints
-  if (decl->num_waypoints < 2 || decl->num_waypoints > 12)
+  if(decl->num_waypoints < 2) {
+    // LKTOKEN  _@M1412_ = "Not enough waypoints!" 
+    _sntprintf(errBuffer, errBufferLen, gettext(_T("_@M1412_")));
     return FALSE;
-
+  }
+  if(decl->num_waypoints > 12) {
+    // LKTOKEN  _@M1413_ = "Too many waypoints!" 
+    _sntprintf(errBuffer, errBufferLen, gettext(_T("_@M1413_")));
+    return FALSE;
+  }
+  
   d->Com->StopRxThread();
 
   d->Com->SetRxTimeout(500);                     // set RX timeout to 500[ms]
+  
+  const unsigned BUFF_LEN = 128;
+  TCHAR buffer[BUFF_LEN];
 
+  // LKTOKEN  _@M1400_ = "Task declaration" 
+  // LKTOKEN  _@M1405_ = "Testing connection" 
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M1405_")));
+  CreateProgressDialog(buffer);
   if (!EWMicroRecorderTryConnect(d)) {
+    // LKTOKEN  _@M1411_ = "Device not connected!" 
+    _sntprintf(errBuffer, errBufferLen, gettext(_T("_@M1411_")));
     return FALSE;
   }
-
+  
+  // LKTOKEN  _@M1400_ = "Task declaration" 
+  // LKTOKEN  _@M1403_ = "Sending  declaration"
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M1403_")));
+  CreateProgressDialog(buffer);
   d->Com->WriteString(TEXT("\x18"));         // start to upload file
   d->Com->WriteString(user_data);
 
@@ -214,8 +235,15 @@ BOOL EWMicroRecorderDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned
 
   if (!ExpectStringWait(d, TEXT("uploaded successfully"))) {
     // error!
+    // LKTOKEN  _@M1415_ = "Declaration not accepted!" 
+    _sntprintf(errBuffer, errBufferLen, gettext(_T("_@M1415_")));
     nDeclErrorCode = 1;
   }
+
+  // LKTOKEN  _@M1400_ = "Task declaration" 
+  // LKTOKEN  _@M1402_ = "Disabling declaration mode" 
+  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M1402_")));
+  CreateProgressDialog(buffer);
   d->Com->WriteString(TEXT("!!\r\n"));         // go back to NMEA mode
 
   d->Com->SetRxTimeout(RXTIMEOUT);                       // clear timeout
