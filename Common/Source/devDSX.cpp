@@ -91,7 +91,9 @@ bool DSXSwitchDeclareMode(PDeviceDescriptor_t d, bool enable, unsigned errBuffer
   {                                                              \
     TCHAR tmpBuffer[(LEN) + 1];                                  \
     _sntprintf(tmpBuffer, (LEN), (STR));                         \
-    tmpBuffer[(LEN)] = '\0';                                     \
+    tmpBuffer[(LEN)] = _T('\0');                                 \
+    if(tmpBuffer[0] == _T('\0'))                                 \
+      _stprintf(tmpBuffer, _T("-"));                             \
     _stprintf(buffer, _T("%s%s\r"), _T(HSTR), tmpBuffer);        \
     d->Com->WriteString(buffer);                                 \
     if(!DSXPromptWait(d, PROMPT_WAIT_CHARS)) {                   \
