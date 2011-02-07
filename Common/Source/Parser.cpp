@@ -40,9 +40,6 @@ FlarmCalculations flarmCalculations;
 
 extern bool EnableCalibration;
 
-#define MAX_NMEA_LEN	90
-#define MAX_NMEA_PARAMS 18
-
 static double EastOrWest(double in, TCHAR EoW);
 static double NorthOrSouth(double in, TCHAR NoS);
 //static double LeftOrRight(double in, TCHAR LoR);
@@ -139,7 +136,7 @@ void NMEAParser::UpdateMonitor(void)
 	nmeaParser1.activeGPS = true;
 	active=1;
   }
- #if 1  	// TODO REMOVE TEST 100214
+ #if 1	// TODO better check if ok
   if (nmeaParser2.activeGPS==true && active==1) {
 	StartupStore(_T("... GPS Update error: port 1 and 2 are active!%s"),NEWLINE);
 	FailStore(_T("... GPS Update error: port 1 and 2 are active!%s"),NEWLINE);
@@ -153,7 +150,7 @@ void NMEAParser::UpdateMonitor(void)
   // Check Port 1 with no serial activity in last seconds
   if ( (LKHearthBeats-ComPortHB[0])>10 ) {
 	#ifdef DEBUGNPM
-	StartupStore(_T("... GPS Port 1 : no activity%s"),NEWLINE);
+	StartupStore(_T("... GPS Port 1 : no activity LKHB=%.0f CBHB=%.0f %s"),LKHearthBeats, ComPortHB[0],NEWLINE);
 	#endif
 	// if this is active and supposed to have a valid fix.., but no HB..
 	if ( (active==1) && (nmeaParser1.gpsValid) ) {
@@ -169,7 +166,7 @@ void NMEAParser::UpdateMonitor(void)
   // now check also port 2
   if ( (LKHearthBeats-ComPortHB[1])>10 ) {
 	#ifdef DEBUGNPM
-	StartupStore(_T("... GPS Port 2 : no activity%s"),NEWLINE);
+	StartupStore(_T("... GPS Port 2 : no activity LKHB=%.0f CBHB=%.0f %s"),LKHearthBeats, ComPortHB[1],NEWLINE);
 	#endif
 	if ( (active==2) && (nmeaParser2.gpsValid) ) {
 		StartupStore(_T("... GPS port 2 no hearthbeats, but still gpsValid: forced invalid%s"),NEWLINE);
@@ -262,10 +259,8 @@ BOOL NMEAParser::ParseNMEAString(int device,
 {
   switch (device) {
   case 0: 
-    ComPortHB[0]=LKHearthBeats; // 100213
     return nmeaParser1.ParseNMEAString_Internal(String, GPS_INFO);
   case 1:
-    ComPortHB[1]=LKHearthBeats; // 100213
     return nmeaParser2.ParseNMEAString_Internal(String, GPS_INFO);
   };
   return FALSE;
@@ -564,15 +559,6 @@ void NMEAParser::TimeSet(NMEA_INFO* GPS_INFO)
 }
 
 bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *GPS_INFO) {
-
-/*
-  if (ThisTime==0) { // 091129
-	StartupStore(_T("...... DEBUG: ThisTime == 0%s"),NEWLINE); // 091129 TODO REMOVE
-  }
-  if (ThisTime==LastTime) {
-	StartupStore(_T("...... DEBUG ThisTime == LastTime%s"),NEWLINE); // 091129 TODO REMOVE
-  }
-*/
 
   // If simulating, we might be in the future already...
   if(ThisTime< LastTime) {

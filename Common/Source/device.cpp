@@ -439,6 +439,7 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *GPS_INFO){
   if ((d != NULL) && 
       (d->fhLogFile != NULL) && 
       (String != NULL) && (_tcslen(String) > 0)) {
+
     char  sTmp[500];  // temp multibyte buffer
     TCHAR *pWC = String;
     char  *pC  = sTmp;
@@ -469,30 +470,32 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *GPS_INFO){
 
   if (EnableLogNMEA) LogNMEA(String); // 091108 force all input to be saved by nmealog!!
 
+  if (portNum>=0 && portNum<=1) {
+	ComPortHB[portNum]=LKHearthBeats;
+  }
+
   // intercept device specific parser routines 
   if (d != NULL){
 
     if (d->pDevPipeTo && d->pDevPipeTo->Com) {
-      // stream pipe, pass nmea to other device (NmeaOut)
-      // TODO code: check TX buffer usage and skip it if buffer is full (outbaudrate < inbaudrate)
-      d->pDevPipeTo->Com->WriteString(String);
+	// stream pipe, pass nmea to other device (NmeaOut)
+	// TODO code: check TX buffer usage and skip it if buffer is full (outbaudrate < inbaudrate)
+	d->pDevPipeTo->Com->WriteString(String);
     }
 
     if (d->ParseNMEA != NULL)
-      if ((d->ParseNMEA)(d, String, GPS_INFO))
-        return(TRUE);
+	if ((d->ParseNMEA)(d, String, GPS_INFO)) {
+		GPSCONNECT  = TRUE;
+		return(TRUE);
+	}
   }
 
-  if(String[0]=='$')  // Additional "if" to find GPS strings
-    {
-
-      if(NMEAParser::ParseNMEAString(portNum, String, GPS_INFO))
-        {
-          GPSCONNECT  = TRUE;
-          return(TRUE);
-        } 
-    }
-
+  if(String[0]=='$') {  // Additional "if" to find GPS strings
+	if(NMEAParser::ParseNMEAString(portNum, String, GPS_INFO)) {
+		GPSCONNECT  = TRUE;
+		return(TRUE);
+	} 
+  }
   return(FALSE);
 
 }

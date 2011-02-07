@@ -8,6 +8,7 @@
 
 #include "StdAfx.h"
 #include "Cpustats.h"
+#include "Sizes.h"
 #include "Port.h"
 #include "externs.h"
 #include "XCSoar.h"
@@ -16,8 +17,6 @@
 
 #include <windows.h>
 #include <tchar.h>
-
-#define COMMDEBUG 0
 
 static void ComPort_StatusMessage(UINT type, const TCHAR *caption, const TCHAR *fmt, ...)
 {
@@ -543,7 +542,6 @@ BOOL ComPort::StopRxThread()
   #endif
 
   if (!fRxThreadTerminated) {
-	//#if COMMDEBUG > 0
 	#if 101122
 	TerminateThread(hReadThread, 0);
 	StartupStore(_T("...... ComPort StopRxThread: RX Thread forced to terminate!%s"),NEWLINE);
@@ -715,7 +713,7 @@ int ComPort::Read(void *Buffer, size_t Size)
 
 
 void ComPort::ProcessChar(char c) {
-  if (bi<(NMEA_BUF_SIZE-1)) {
+  if (bi<(MAX_NMEA_LEN-1)) {
 
 	BuildingString[bi++] = c;
 
