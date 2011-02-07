@@ -870,10 +870,10 @@ void AddDeclaration(double Latitude, double Longitude, TCHAR *ID)
 }
 
 
-// TODO code: make this thread-safe, since it could happen in the middle
-// of the calculations doing LogPoint or something else!
-
+// This is bad, useless, and now removed
 void LoggerNote(const TCHAR *text) {
+  return;
+  /* NOT THREAD SAFE
   if (LoggerActive) {
 
     char fulltext[500];
@@ -881,6 +881,7 @@ void LoggerNote(const TCHAR *text) {
     IGCWriteRecord(fulltext);
 
   }
+  */
 }
 
 
@@ -890,38 +891,49 @@ bool DeclaredToDevice = false;
 static bool LoggerDeclare(PDeviceDescriptor_t dev, Declaration_t *decl)
 {
   if (!devIsLogger(dev))
-    return FALSE;
+	return FALSE;
 
-	// LKTOKEN  _@M221_ = "Declare Task?" 
-  if (MessageBoxX(hWndMapWindow, gettext(TEXT("_@M221_")),
-                  dev->Name, MB_YESNO| MB_ICONQUESTION) == IDYES) {
-    const unsigned ERROR_BUFFER_LEN = 64;
-    TCHAR errorBuffer[ERROR_BUFFER_LEN] = { '\0' };
-    if (devDeclare(dev, decl, ERROR_BUFFER_LEN, errorBuffer)) {
-      // LKTOKEN  _@M686_ = "Task Declared!" 
-      MessageBoxX(hWndMapWindow, gettext(TEXT("_@M686_")),
-                  dev->Name, MB_OK| MB_ICONINFORMATION);
-      DeclaredToDevice = true;
-    }
-    else {
-      TCHAR buffer[2*ERROR_BUFFER_LEN];
+  // If a Flarm is reset while we are here, then it will come up with isFlarm set to false,
+  // and task declaration will fail. The solution is to let devices have a flag for "HaveFlarm".
+  LKDoNotResetComms=true;
 
-      if(errorBuffer[0] == '\0')
-        // LKTOKEN  _@M1410_ = "Unknown error!!!" 
-        _sntprintf(errorBuffer, ERROR_BUFFER_LEN, gettext(_T("_@M1410_")));
-      else 
-        // do it just to be sure
-        errorBuffer[ERROR_BUFFER_LEN - 1] = '\0';
+  // LKTOKEN  _@M221_ = "Declare Task?" 
+  if (MessageBoxX(hWndMapWindow, gettext(TEXT("_@M221_")), 
+	dev->Name, MB_YESNO| MB_ICONQUESTION) == IDYES) {
+
+	const unsigned ERROR_BUFFER_LEN = 64;
+	TCHAR errorBuffer[ERROR_BUFFER_LEN] = { '\0' };
+
+	if (devDeclare(dev, decl, ERROR_BUFFER_LEN, errorBuffer)) {
+		// LKTOKEN  _@M686_ = "Task Declared!" 
+		MessageBoxX(hWndMapWindow, gettext(TEXT("_@M686_")),
+			dev->Name, MB_OK| MB_ICONINFORMATION);
+
+		DeclaredToDevice = true;
+
+	} else {
+
+		TCHAR buffer[2*ERROR_BUFFER_LEN];
+
+		if(errorBuffer[0] == '\0') {
+			// LKTOKEN  _@M1410_ = "Unknown error" 
+			_sntprintf(errorBuffer, ERROR_BUFFER_LEN, gettext(_T("_@M1410_")));
+		} else {
+			// do it just to be sure
+			errorBuffer[ERROR_BUFFER_LEN - 1] = '\0';
+		}
+
+		// LKTOKEN  _@M265_ = "Error! Task NOT declared!" 
+		_sntprintf(buffer, 2*ERROR_BUFFER_LEN, _T("%s\n%s"), gettext(_T("_@M265_")), errorBuffer);
+		MessageBoxX(hWndMapWindow, buffer, dev->Name, MB_OK| MB_ICONERROR);
       
-      // LKTOKEN  _@M265_ = "Error! Task NOT declared!" 
-      _sntprintf(buffer, 2*ERROR_BUFFER_LEN, _T("%s\n%s"), gettext(_T("_@M265_")), errorBuffer);
-      MessageBoxX(hWndMapWindow, buffer, dev->Name, MB_OK| MB_ICONERROR);
-      
-      DeclaredToDevice = false;
-    }
+		DeclaredToDevice = false;
+	}
   }
+  LKDoNotResetComms=false;
   return TRUE;
 }
+
 
 void LoggerDeviceDeclare() {
   bool found_logger = false;

@@ -678,13 +678,12 @@ double SinkRadius=0;
 bool NearestDataReady=false;
 bool CommonDataReady=false;
 bool RecentDataReady=false;
-// bool NearestTurnpointDataReady=false; 101222
 bool LKForceDoNearest=false;
 bool LKForceDoCommon=false;
 bool LKForceDoRecent=false;
-//bool LKForceDoNearestTurnpoint=false; 101222
 short LKevent=LKEVENT_NONE;
-bool LKForceComPortReset=false; // 100214
+bool LKForceComPortReset=false; 
+bool LKDoNotResetComms=false;
 ldrotary_s rotaryLD;
 windrotary_s rotaryWind;
 
@@ -4609,13 +4608,15 @@ int ConnectionProcessTimer(int itimeout) {
 		#endif
 		FullScreen();
 	} else {
-		if (itimeout % 30 == 0) {
+		// restart comm ports on timeouts, but not during managed special communications with devices
+		// that will not provide NMEA stream, for example during a binary conversation for task declaration
+		// or during a restart. Very careful, it shall be set to zero by the same function who
+		// set it to true.
+		if ((itimeout % 30 == 0) && !LKDoNotResetComms) {
 			// no activity for 30/2 seconds (running at 2Hz)
-			#if (1)
 			extGPSCONNECT = FALSE;
 			InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
 			RestartCommPorts();
-			#endif
 
 			#if (EXPERIMENTAL > 0)
 			// if comm port shut down, probably so did bluetooth dialup
@@ -4633,6 +4634,7 @@ int ConnectionProcessTimer(int itimeout) {
   if (LKForceComPortReset) {
 	StartupStore(_T(". ComPort RESET ordered%s"),NEWLINE);
 	LKForceComPortReset=false;
+	LKDoNotResetComms=false;
 	#if NOSIM
 	if (MapSpaceMode != MSM_WELCOME)
 	#endif

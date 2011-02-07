@@ -318,6 +318,7 @@ extern bool LKForceDoRecent;
 // extern bool LKForceDoNearestTurnpoint; 101222
 extern short LKevent;
 extern bool LKForceComPortReset;
+extern bool LKDoNotResetComms;
 
 extern ldrotary_s rotaryLD;
 extern windrotary_s rotaryWind;

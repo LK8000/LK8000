@@ -661,22 +661,23 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
   const unsigned BUFF_LEN = 128;
   TCHAR buffer[BUFF_LEN];
 
-  // LKTOKEN  _@M1400_ = "Task declaration" 
-  // LKTOKEN  _@M928_ = "Restarting Comm Ports"
-  _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M928_")));
-  CreateProgressDialog(buffer);
+  // We must be sure we are not going to attempt task declaration
+  // while a port reset is already in progress. If this happens, a Flarm device will not be Flarm anymore
+  // until a Flarm nmea sentence is parsed again once. 
   
   // LKTOKEN  _@M1400_ = "Task declaration"
   // LKTOKEN  _@M571_ = "START"
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M571_")));
   CreateProgressDialog(buffer);
+
   LockComm();
   if ((d != NULL) && (d->Declare != NULL))
-    result = d->Declare(d, decl, errBufferLen, errBuffer);
-  else if ((d != NULL) && NMEAParser::PortIsFlarm(d->Port)) {
-    result |= FlarmDeclare(d, decl, errBufferLen, errBuffer);
+	result = d->Declare(d, decl, errBufferLen, errBuffer);
+  else {
+	if ((d != NULL) && NMEAParser::PortIsFlarm(d->Port)) {
+		result |= FlarmDeclare(d, decl, errBufferLen, errBuffer);
+	}
   }
-  
   UnlockComm();
   
   CloseProgressDialog();
@@ -954,7 +955,6 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
   BOOL result = TRUE;
 
   TCHAR Buffer[256];
-
   d->Com->StopRxThread();
   d->Com->SetRxTimeout(500);                     // set RX timeout to 500[ms]
 
