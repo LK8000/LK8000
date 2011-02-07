@@ -4581,69 +4581,53 @@ int ConnectionProcessTimer(int itimeout) {
   BOOL navwarning = (BOOL)(GPS_INFO.NAVWarning);
 
   if (gpsconnect && navwarning) {
-    // If GPS connected but no lock, must be in hangar 
-    if (InterfaceTimeoutCheck()) {
-#ifdef GNAV
-      // TODO feature: ask question about shutdown or give warning
-      // then shutdown if no activity.
-      //     Shutdown();
-#endif
-    }
+	if (InterfaceTimeoutCheck()) {
+		// do something when no gps fix since 1 hour.. *see Utils
+	}
   }
 
-  if((gpsconnect == FALSE) && (LastGPSCONNECT == FALSE))
-    {
-      // re-draw screen every five seconds even if no GPS
-      TriggerGPSUpdate();
+  if((gpsconnect == FALSE) && (LastGPSCONNECT == FALSE)) {
+	// re-draw screen every five seconds even if no GPS
+	TriggerGPSUpdate();
       
-      devLinkTimeout(devAll());
+	devLinkTimeout(devAll());
 
-      if(LOCKWAIT == TRUE)
-	{
-	  // gps was waiting for fix, now waiting for connection
-	  LOCKWAIT = FALSE;
+	if(LOCKWAIT == TRUE) {
+		// gps was waiting for fix, now waiting for connection
+		LOCKWAIT = FALSE;
 	}
-      if(!CONNECTWAIT)
-	{
-	  // gps is waiting for connection first time
-	  
-	  extGPSCONNECT = FALSE;
-#ifndef NEWWARNINGS
-          InputEvents::processGlideComputer(GCE_GPS_CONNECTION_WAIT);	// 100210
-#endif
+	if(!CONNECTWAIT) {
+		// gps is waiting for connection first time
+		extGPSCONNECT = FALSE;
+		#ifndef NEWWARNINGS
+		InputEvents::processGlideComputer(GCE_GPS_CONNECTION_WAIT);	// 100210
+		#endif
   
-	  CONNECTWAIT = TRUE;
-#ifndef DISABLEAUDIO
-	if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_GREEN")); // 100404
-
-#endif
-	  FullScreen();
-	    
+		CONNECTWAIT = TRUE;
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_GREEN")); // 100404
+		#endif
+		FullScreen();
 	} else {
+		if (itimeout % 30 == 0) {
+			// no activity for 30/2 seconds (running at 2Hz)
+			#if (1)
+			extGPSCONNECT = FALSE;
+			InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
+			RestartCommPorts();
+			#endif
 
-	if (itimeout % 30 == 0) {
-	  // we've been waiting for connection a long time
+			#if (EXPERIMENTAL > 0)
+			// if comm port shut down, probably so did bluetooth dialup
+			// so restart it here also.
+			bsms.Shutdown();
+			bsms.Initialise();
+			#endif
 	  
-	  // no activity for 30 seconds, so assume PDA has been
-	  // switched off and on again
-	  //
-#if (1)
-	extGPSCONNECT = FALSE;
-	InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
-	RestartCommPorts();
-#endif
-	  
-#if (EXPERIMENTAL > 0)
-	  // if comm port shut down, probably so did bluetooth dialup
-	  // so restart it here also.
-	  bsms.Shutdown();
-	  bsms.Initialise();
-#endif
-	  
-	  itimeout = 0;
+			itimeout = 0;
+		}
 	}
-      }
-    }
+  }
 
   // Force RESET of comm ports on demand
   if (LKForceComPortReset) {
@@ -4652,44 +4636,39 @@ int ConnectionProcessTimer(int itimeout) {
 	#if NOSIM
 	if (MapSpaceMode != MSM_WELCOME)
 	#endif
-	InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
+		InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
+
 	RestartCommPorts();
   }
   
-  if((gpsconnect == TRUE) && (LastGPSCONNECT == FALSE))
-    {
-      itimeout = 0; // reset timeout
+  if((gpsconnect == TRUE) && (LastGPSCONNECT == FALSE)) {
+	itimeout = 0; // reset timeout
       
-      if(CONNECTWAIT)
-	{
-	  TriggerGPSUpdate();
-	  CONNECTWAIT = FALSE;
+	if(CONNECTWAIT) {
+		TriggerGPSUpdate();
+		CONNECTWAIT = FALSE;
 	}
-    }
+  }
   
-  if((gpsconnect == TRUE) && (LastGPSCONNECT == TRUE))
-    {
-      if((navwarning == TRUE) && (LOCKWAIT == FALSE))
-	{
-#ifndef NEWWARNINGS
-	  InputEvents::processGlideComputer(GCE_GPS_FIX_WAIT); // NEWWARNINGS 100209
-#endif
-
-	  TriggerGPSUpdate();
+  if((gpsconnect == TRUE) && (LastGPSCONNECT == TRUE)) {
+	if((navwarning == TRUE) && (LOCKWAIT == FALSE)) {
+		#ifndef NEWWARNINGS
+		InputEvents::processGlideComputer(GCE_GPS_FIX_WAIT); // NEWWARNINGS 100209
+		#endif
+		TriggerGPSUpdate();
 	  
-	  LOCKWAIT = TRUE;
-#ifndef DISABLEAUDIO
-	  if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_GREEN")); // 100404
-#endif
-	  FullScreen();
-	  
+		LOCKWAIT = TRUE;
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_GREEN")); // 100404
+		#endif
+		FullScreen();
+	} else {
+		if((navwarning == FALSE) && (LOCKWAIT == TRUE)) {
+			TriggerGPSUpdate();
+			LOCKWAIT = FALSE;
+		}
 	}
-      else if((navwarning == FALSE) && (LOCKWAIT == TRUE))
-	{
-	  TriggerGPSUpdate();
-	  LOCKWAIT = FALSE;
-	}
-    }
+  }
   
   LastGPSCONNECT = gpsconnect;
   return itimeout;
