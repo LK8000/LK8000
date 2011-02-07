@@ -70,16 +70,6 @@ static void ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt);
 static bool ReadCoords(TCHAR *Text, double *X, double *Y);
 static bool CalculateArc(TCHAR *Text, CGeoPointList *_geopoints, double &CenterX, const double &CenterY, const int &Rotation);
 static bool CalculateSector(TCHAR *Text, list<CGeoPoint> *_geopoints, double &CenterX, const double &CenterY, const int &Rotation);
-static bool line_rect_intersection (const double &x1,
-			     const double &y1,
-			     const double &dx,
-			     const double &dy,
-			     const rectObj &bounds);
-static int line_line_intersection (const double &x1, const double &y1,
-			    const double &dx, const double &dy,
-			    const double &x3, const double &y3,
-			    const double &x4, const double &y4,
-			    double *u);
 static double ScreenCrossTrackError(double lon1, double lat1,
 		     double lon2, double lat2,
 		     double lon3, double lat3,
@@ -1177,74 +1167,6 @@ void AirspaceQnhChangeNotify(double newQNH)
   }
 }
 
-static int line_line_intersection (const double &x1, const double &y1,
-			    const double &dx, const double &dy,
-			    const double &x3, const double &y3,
-			    const double &x4, const double &y4,
-			    double *u) 
-{
-  /*
-  double a = sqr(dx)+sqr(dy);
-  if (a <= 0) {
-    return 0;
-  }
-  */
-  double denom = (y4-y3)*dx-(x4-x3)*dy;
-  if (denom == 0) {
-    // lines are parallel
-    return 0;
-  }
-  double ua = ((x4-x3)*(y1-y3)-(y4-y3)*(x1-x3))/denom; 
-  if ((ua<0) || (ua>1.0)) {
-    // outside first line
-    return 0;
-  } else {
-    double ub = (dx*(y1-y3)-dy*(x1-x3))/denom; 
-    if ((ub<0) || (ub>1.0)) {
-      // outside second line
-      return 0;
-    } else {
-      // inside both lines
-      u[0] = ua;
-      return 1;
-    }
-  }
-}
-
-
-static bool line_rect_intersection (const double &x1,
-			     const double &y1,
-			     const double &dx,
-			     const double &dy,
-			     const rectObj &bounds) 
-{
-  double u;
-
-  // bottom line
-  if (line_line_intersection(x1, y1, dx, dy,
-			     bounds.minx, bounds.miny,
-			     bounds.maxx, bounds.miny,
-			     &u)) return true;
-
-  // left line
-  if (line_line_intersection(x1, y1, dx, dy,
-			     bounds.minx, bounds.miny,
-			     bounds.minx, bounds.maxy,
-			     &u)) return true;
-  
-  // top line
-  if (line_line_intersection(x1, y1, dx, dy,
-			     bounds.minx, bounds.maxy,
-			     bounds.maxx, bounds.maxy,
-			     &u)) return true;
-
-  // right line
-  if (line_line_intersection(x1, y1, dx, dy,
-			     bounds.maxx, bounds.miny,
-			     bounds.maxx, bounds.maxy,
-			     &u)) return true;
-  return false;
-}
 
 void ScanAirspaceLine(double *lats, double *lons, double *heights, 
 		      int airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) 
@@ -1272,7 +1194,7 @@ void ScanAirspaceLine(double *lats, double *lons, double *heights,
 	if ( !((h_max<=(*it)->Base()->Altitude) || (h_min>=(*it)->Top()->Altitude)) ) {
 	  const rectObj &pbounds = (*it)->Bounds();
 	  // ignore if scan line doesn't intersect bounds
-	  if (msRectOverlap(&lineRect, &pbounds) && line_rect_intersection (x1, y1, dx, dy, pbounds)) {
+	  if (msRectOverlap(&lineRect, &pbounds)) {
 		for (i=0; i<AIRSPACE_SCANSIZE_X; i++) {
 			inside = (*it)->Inside(lons[i], lats[i]);
 				if (inside) {
