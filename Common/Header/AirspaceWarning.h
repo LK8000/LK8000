@@ -40,6 +40,15 @@ Copyright_License {
 
 #include "Calculations.h"
 
+#ifdef LKAIRSPACE
+extern void AirspaceWarnListAdd(NMEA_INFO *Basic, DERIVED_INFO *Calculated, 
+                                bool Predicted, CAirspace *airspace,
+                                bool ackDay=false);
+
+extern int LKAirspaceDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated, 
+                                bool Predicted, const CAirspace *airspace,
+                                bool ackDay=false);
+#else
 extern void AirspaceWarnListAdd(NMEA_INFO *Basic, DERIVED_INFO *Calculated, 
                                 bool Predicted, bool IsCircle, int AsIdx,
                                 bool ackDay=false);
@@ -47,8 +56,8 @@ extern void AirspaceWarnListAdd(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 extern int LKAirspaceDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated, 
                                 bool Predicted, bool IsCircle, int AsIdx,
                                 bool ackDay=false);
+#endif
 
 extern void AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-
 
 #endif

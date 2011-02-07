@@ -537,7 +537,8 @@ void MapWindow::ScanVisibility(rectObj *bounds_active) {
 
   // far visibility for airspace
 #ifdef LKAIRSPACE
-  CAirspaceManager::Instance().SetFarVisible( *bounds_active );
+  CAirspaceList::iterator it;
+  for (it = Airspaces.begin(); it != Airspaces.end(); ++it) (*it)->SetFarVisible(bounds_active);
 #else
   if (AirspaceCircle) {
     for (AIRSPACE_CIRCLE* circ = AirspaceCircle;
@@ -1843,32 +1844,30 @@ void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc)
 void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 {
   COLORREF whitecolor = RGB(0xff,0xff,0xff);
-#ifdef LKAIRSPACE
-  CAirspaceList::const_iterator it;
-  const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
-  int airspace_type;
-#else
+#ifndef LKAIRSPACE
   unsigned int i;
 #endif
   bool found = false;
-	
+
   if (GetAirSpaceFillType() != asp_fill_none) {
 #ifdef LKAIRSPACE
-	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
-      if ((*it)->DrawStyle() == adsFilled) {
-		airspace_type = (*it)->Type();
-		if (!found) {
-		  ClearAirSpace(true);
-		  found = true;
-		}
-		// this color is used as the black bit
-		SetTextColor(hDCTemp,
-					  Colours[iAirspaceColour[airspace_type]]);
-		// get brush, can be solid or a 1bpp bitmap
-		SelectObject(hDCTemp,
-					  hAirspaceBrushes[iAirspaceBrush[airspace_type]]);
-		(*it)->Draw(hDCTemp, rc, true);
-	  }
+	CAirspaceList::iterator it;
+	int airspace_type;
+	for (it=Airspaces.begin(); it != Airspaces.end(); ++it) {
+        if ((*it)->Visible() == 2) {
+		  airspace_type = (*it)->Type();
+		  if (!found) {
+            ClearAirSpace(true);
+            found = true;
+          }
+          // this color is used as the black bit
+          SetTextColor(hDCTemp,
+                       Colours[iAirspaceColour[airspace_type]]);
+          // get brush, can be solid or a 1bpp bitmap
+          SelectObject(hDCTemp,
+                       hAirspaceBrushes[iAirspaceBrush[airspace_type]]);
+		  (*it)->Draw(hDCTemp, rc, true);
+        }
 	}//for
 #else
     if (AirspaceCircle) {
@@ -1921,13 +1920,15 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
   }
 
 #ifdef LKAIRSPACE
-	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
-        if ((*it)->DrawStyle()) {
+	CAirspaceList::iterator it;
+	int airspace_type;
+	for (it=Airspaces.begin(); it != Airspaces.end(); ++it) {
+        if ((*it)->Visible()) {
 		  airspace_type = (*it)->Type();
 		  if (!found) {
-			ClearAirSpace(true);
-			found = true;
-		  }
+            ClearAirSpace(true);
+            found = true;
+          }
 		  if (bAirspaceBlackOutline) {
 			SelectObject(hDCTemp, GetStockObject(BLACK_PEN));
 		  } else {

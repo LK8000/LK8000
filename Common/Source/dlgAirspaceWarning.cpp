@@ -396,15 +396,10 @@ static void OnAirspaceListItemPaint(WindowControl * Sender, HDC hDC){
 #endif
 
 #ifdef LKAIRSPACE
-	_tcsncpy(sName, airspace_copy.Name(), sizeof(sName)/sizeof(sName[0]));
-    sName[sizeof(sName)/sizeof(sName[0])-1] = '\0';
-	memcpy(&Base, airspace_copy.Base(), sizeof(Base));
-	memcpy(&Top, airspace_copy.Top(), sizeof(Top));
-	Type = airspace_copy.Type();
-
-	CAirspaceManager::Instance().GetAirspaceAltText(sTop, sizeof(sTop)/sizeof(sTop[0]), &Top); 
-	CAirspaceManager::Instance().GetAirspaceAltText(sBase, sizeof(sBase)/sizeof(sBase[0]), &Base); 
-	_tcsncpy(sType, CAirspaceManager::Instance().GetAirspaceTypeShortText(Type), 4);
+      _tcsncpy(sName, pAS.Airspace->Name(), sizeof(sName)/sizeof(sName[0]));
+	  memcpy(&Base, pAS.Airspace->Base(), sizeof(Base));
+	  memcpy(&Top, pAS.Airspace->Top(), sizeof(Top));
+      Type = pAS.Airspace->Type();
 #else
     if (pAS.IsCircle){
       _tcsncpy(sName, AirspaceCircle[pAS.AirspaceIndex].Name, 
@@ -419,6 +414,7 @@ static void OnAirspaceListItemPaint(WindowControl * Sender, HDC hDC){
       Top  = AirspaceArea[pAS.AirspaceIndex].Top;
       Type = AirspaceArea[pAS.AirspaceIndex].Type;
     }
+#endif
 
     if (_tcslen(sName)>0) // 100324
     sName[sizeof(sName)/sizeof(sName[0])-1] = '\0';

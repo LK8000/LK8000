@@ -41,7 +41,7 @@ Copyright_License {
 /*
 ** Returns MS_TRUE if rectangles a and b overlap
 */
-int msRectOverlap(rectObj *a, rectObj *b)
+int msRectOverlap(const rectObj *a, const rectObj *b)
 {
   if(a->minx > b->maxx) return(MS_FALSE);
   if(a->maxx < b->minx) return(MS_FALSE);
@@ -53,7 +53,7 @@ int msRectOverlap(rectObj *a, rectObj *b)
 /*
 ** Returns MS_TRUE if rectangle a is contained in rectangle b
 */
-int msRectContained(rectObj *a, rectObj *b)
+int msRectContained(const rectObj *a, const rectObj *b)
 {
   if(a->minx >= b->minx && a->maxx <= b->maxx)
     if(a->miny >= b->miny && a->maxy <= b->maxy)

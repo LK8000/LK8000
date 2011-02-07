@@ -742,6 +742,7 @@ TCHAR NearestAirspaceName[NAME_SIZE+1]; // TODO INITIALISE IT!
 int FlarmNetCount=0;
 
 // Airspace Database
+#ifndef LKAIRSPACE
 AIRSPACE_AREA *AirspaceArea = NULL;
 AIRSPACE_POINT *AirspacePoint = NULL;
 POINT *AirspaceScreenPoint = NULL;
@@ -749,6 +750,7 @@ AIRSPACE_CIRCLE *AirspaceCircle = NULL;
 unsigned int NumberOfAirspacePoints = 0;
 unsigned int NumberOfAirspaceAreas = 0;
 unsigned int NumberOfAirspaceCircles = 0;
+#endif
 
 //Airspace Warnings
 int AIRSPACEWARNINGS = TRUE;
@@ -3375,8 +3377,10 @@ void Shutdown(void) {
   LockTaskData();
   Task[0].Index = -1;  ActiveWayPoint = -1; 
   AATEnabled = FALSE;
+#ifndef LKAIRSPACE
   NumberOfAirspacePoints = 0; NumberOfAirspaceAreas = 0; 
   NumberOfAirspaceCircles = 0;
+#endif
   CloseWayPoints();
   UnlockTaskData();
 
@@ -3465,12 +3469,12 @@ void Shutdown(void) {
   DeleteObject(MapWindowBoldFont);
   DeleteObject(StatisticsFont);  
   DeleteObject(TitleSmallWindowFont);
-  
+#ifndef LKAIRSPACE  
   if(AirspaceArea != NULL)   LocalFree((HLOCAL)AirspaceArea);
   if(AirspacePoint != NULL)  LocalFree((HLOCAL)AirspacePoint);
   if(AirspaceScreenPoint != NULL)  LocalFree((HLOCAL)AirspaceScreenPoint);
   if(AirspaceCircle != NULL) LocalFree((HLOCAL)AirspaceCircle);
-
+#endif
   StartupStore(TEXT(". Delete Critical Sections%s"),NEWLINE);
   
   DeleteCriticalSection(&CritSec_EventQueue);

@@ -168,6 +168,8 @@
 
  */
 
+#define LKAIRSPACE		1	// New airspace handling code 
+
 /*
  * Put here debug defines, so that other developers can activate them if needed.
 

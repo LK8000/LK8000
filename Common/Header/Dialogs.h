@@ -6,6 +6,9 @@
 #endif // _MSC_VER > 1000
 
 #include <windows.h>
+#ifdef LKAIRSPACE
+#include "LKAirspace.h"
+#endif
 
 void LKReadLanguageFile(void);
 
@@ -69,7 +72,11 @@ void dlgWeatherShowModal(void);
 void dlgAirspaceSelect(void);
 void dlgTarget(void);
 bool dlgTaskRules(void);
+#ifdef LKAIRSPACE
+void dlgAirspaceDetails(const CAirspace *airspace);
+#else
 void dlgAirspaceDetails(int the_circle, int the_area);
+#endif
 bool dlgAirspaceWarningVisible(void);
 void dlgFlarmTrafficShowModal(void);
 void dlgLKTrafficDetails(int indexid);

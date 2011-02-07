@@ -2910,7 +2910,8 @@ int DrawArc(HDC hdc, long x, long y, int radius, RECT rc,
   return TRUE;
 }
 
-
+#ifndef LKAIRSPACE
+//Not used function!
 void ConvertFlightLevels(void)
 {
   unsigned i;
@@ -2946,6 +2947,7 @@ void ConvertFlightLevels(void)
 	}
     }
 }
+#endif
 
 BOOL PolygonVisible(const POINT *lpPoints, int nCount, RECT rc)
 {

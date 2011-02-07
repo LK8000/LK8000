@@ -42,11 +42,11 @@ typedef struct{
   FILETIME LastWriteSourceFile;
   DWORD    CrcSourceFile;          // not used at the moment
 }BinFileHeader_t;
-
+#ifndef LKAIRSPACE
 static int AirspacePointSize;
-
+#endif
 void DumpAirspaceFile(void);
-
+#ifndef LKAIRSPACE
 static bool StartsWith(TCHAR *Text, const TCHAR *LookFor);
 static bool ReadCoords(TCHAR *Text, double *X, double *Y);
 static void AddAirspaceCircle(AIRSPACE_AREA *Temp, const double aCenterX, const double aCenterY, const double Radius);
@@ -72,9 +72,11 @@ static double CenterX = 0;
 static double CenterY = 0;
 static int LineCount;
 static double lastQNH;
+#endif
 
 int AirspacePriority[AIRSPACECLASSCOUNT];
 
+#ifndef LKAIRSPACE
 static const int k_nLineTypes = 9;
 
 static const int k_nLtAC	= 0;
@@ -117,10 +119,14 @@ static const int k_nAreaType[k_nAreaCount] = {
 					CLASSE, 
 					CLASSF,
 					CLASSG};
+#endif
+#ifdef LKAIRSPACE
+#include <LKAirspace.h>
+#endif
 
 /////////////////////////////
 
-
+#ifndef LKAIRSPACE
 bool CheckAirspacePoint(int Idx){
   if (Idx < 0 || Idx >= AirspacePointSize){
     return false;
@@ -128,14 +134,16 @@ bool CheckAirspacePoint(int Idx){
   }
   return true;
 }
+#endif
 
-
+#ifndef LKAIRSPACE
 bool ValidAirspace(void) {
   return (NumberOfAirspacePoints>0)||(NumberOfAirspaceAreas>0)||(NumberOfAirspaceCircles>0);
 }
+#endif
 
 ///////////////////////////////
-
+#ifndef LKAIRSPACE
 void CloseAirspace() {
 
   AirspaceWarnListClear();
@@ -160,10 +168,11 @@ void CloseAirspace() {
     LocalFree((HLOCAL)AirspaceCircle);
   }
 }
+#endif
 
 // this can now be called multiple times to load several airspaces.
 // to start afresh, call CloseAirspace()
-
+#ifndef LKAIRSPACE
 void ReadAirspace(ZZIP_FILE *fp)
 {
   StartupStore(TEXT(". ReadAirspace%s"),NEWLINE);
@@ -759,8 +768,9 @@ OnError:
   return(false);
 
 }
+#endif
 
-
+#ifndef LKAIRSPACE
 static void AirspaceAGLLookup(AIRSPACE_ALT *Top, AIRSPACE_ALT *Base,
 			      double av_lat, double av_lon) {
   if (((Base->Base == abAGL) || (Top->Base == abAGL))) {
@@ -796,8 +806,8 @@ static void AirspaceAGLLookup(AIRSPACE_ALT *Top, AIRSPACE_ALT *Base,
     RasterTerrain::Unlock();
   }
 }
-
-
+#endif
+#ifndef LKAIRSPACE
 static void AddAirspaceCircle(AIRSPACE_AREA *Temp, 
                               const double aCenterX, 
 			      const double aCenterY, 
@@ -837,7 +847,8 @@ static void AddAirspaceCircle(AIRSPACE_AREA *Temp,
 
     }
 }
-
+#endif
+#ifndef LKAIRSPACE
 static void AddPoint(AIRSPACE_POINT *Temp, unsigned *AreaPointCount)
 {
   AIRSPACE_POINT *NewPoint = NULL;
@@ -879,7 +890,8 @@ static void AddPoint(AIRSPACE_POINT *Temp, unsigned *AreaPointCount)
   NumberOfAirspacePoints++;
 
 }
-
+#endif
+#ifndef LKAIRSPACE
 static void AddArea(AIRSPACE_AREA *Temp)
 {
   AIRSPACE_AREA *NewArea = NULL;
@@ -1077,7 +1089,8 @@ static void ReadAltitude(TCHAR *Text_, AIRSPACE_ALT *Alt)
   }
 
 }
-
+#endif
+#ifndef LKAIRSPACE
 static void CalculateSector(TCHAR *Text)
 {
   double Radius;
@@ -1117,7 +1130,8 @@ static void CalculateSector(TCHAR *Text)
   }
   AddPoint(&TempPoint, &TempArea.NumPoints);
 }
-
+#endif
+#ifndef LKAIRSPACE
 static void CalculateArc(TCHAR *Text)
 {
   double StartLat, StartLon;
@@ -1164,8 +1178,8 @@ static void CalculateArc(TCHAR *Text)
   TempPoint.Longitude = EndLon;
   AddPoint(&TempPoint, &TempArea.NumPoints);
 }
-
-
+#endif
+#ifndef LKAIRSPACE
 static void ScanAirspaceCircleBounds(int i, double bearing) {
   double lat, lon;
   FindLatitudeLongitude(AirspaceCircle[i].Latitude, 
@@ -1247,9 +1261,8 @@ static void FindAirspaceAreaBounds() {
     AirspaceArea[i].WarningLevel = 0; // clear warnings to initialise
   }
 }
-
+#endif
 // ToDo add exception handler to protect parser code against chrashes
-
 void ReadAirspace(void)
 {
   TCHAR szFile1[MAX_PATH] = _T("\0");
@@ -1310,16 +1323,16 @@ void ReadAirspace(void)
   } else {
     StartupStore(TEXT("... No airspace file 1%s"),NEWLINE);
   }
-
+#ifndef LKAIRSPACE
   FindAirspaceAreaBounds();
   FindAirspaceCircleBounds();
-
+#endif
 }
 
 
 
 
-
+#ifndef LKAIRSPACE
 double RangeAirspaceCircle(const double &longitude,
 			   const double &latitude,
 			   int i) {
@@ -1330,7 +1343,7 @@ double RangeAirspaceCircle(const double &longitude,
                   &distance, NULL);
   return distance-AirspaceCircle[i].Radius;
 }
-
+#endif
 
 bool CheckInsideLongitude(double longitude,
                          const double lon_min, const double lon_max) {
@@ -1344,6 +1357,7 @@ bool CheckInsideLongitude(double longitude,
 }
 
 
+#ifndef LKAIRSPACE
 bool InsideAirspaceCircle(const double &longitude,
 			    const double &latitude,
 			    int i) {
@@ -1359,8 +1373,9 @@ bool InsideAirspaceCircle(const double &longitude,
   }
   return false;
 }
+#endif
 
-
+#ifndef LKAIRSPACE
 int FindAirspaceCircle(double Longitude,double Latitude, bool visibleonly)
 {
   unsigned i;
@@ -1399,8 +1414,8 @@ int FindAirspaceCircle(double Longitude,double Latitude, bool visibleonly)
   }
   return -1;
 }
-
-
+#endif
+#ifndef LKAIRSPACE
 BOOL CheckAirspaceAltitude(const double &Base, const double &Top)
 {
   double alt;
@@ -1441,8 +1456,8 @@ BOOL CheckAirspaceAltitude(const double &Base, const double &Top)
     }
   return TRUE;
 }
-
-
+#endif
+#ifndef LKAIRSPACE
 // hack, should be replaced with a data change notifier in the future...
 void AirspaceQnhChangeNotify(double newQNH){
 
@@ -1540,7 +1555,6 @@ wn_PnPoly( AIRSPACE_POINT P, AIRSPACE_POINT* V, int n )
 }
 //===================================================================
 
-
 bool InsideAirspaceArea(const double &longitude,
 			  const double &latitude,
 			  int i) {
@@ -1568,7 +1582,6 @@ bool InsideAirspaceArea(const double &longitude,
   }
   return false;
 }
-
 
 int FindAirspaceArea(double Longitude,double Latitude, bool visibleonly)
 {
@@ -1607,14 +1620,14 @@ int FindAirspaceArea(double Longitude,double Latitude, bool visibleonly)
   // not inside any airspace
   return -1;
 }
-
+#endif
 
 
 
 
 /////////////////////////////////////////////////////////////////////////////////
 
-
+#ifndef LKAIRSPACE
 int FindNearestAirspaceCircle(double longitude, double latitude, 
 			      double *nearestdistance, 
 			      double *nearestbearing,
@@ -1682,8 +1695,7 @@ int FindNearestAirspaceCircle(double longitude, double latitude,
   }
   return ifound;
 }
-
-
+#endif
 
 // this is a slow function
 // adapted from The Aviation Formulary 1.42
@@ -1779,7 +1791,7 @@ double CrossTrackError(double lon1, double lat1,
   return XTD;
 }
 
-
+#ifndef LKAIRSPACE
 void ScreenClosestPoint(const POINT &p1, const POINT &p2, 
 			const POINT &p3, POINT *p4, int offset) {
 
@@ -1812,8 +1824,9 @@ void ScreenClosestPoint(const POINT &p1, const POINT &p2,
     p4->y = p1.y;
   }
 }
+#endif
 
-
+#ifndef LKAIRSPACE
 // this one uses screen coordinates to avoid as many trig functions
 // as possible.. it means it is approximate but for our use it is ok.
 double ScreenCrossTrackError(double lon1, double lat1,
@@ -1835,7 +1848,7 @@ double ScreenCrossTrackError(double lon1, double lat1,
   DistanceBearing(lat3, lon3, *lat4, *lon4, &tmpd, NULL); 
   return tmpd;
 }
-
+#endif
 
 // Calculates projected distance from P3 along line P1-P2
 double ProjectedDistance(double lon1, double lat1,
@@ -1852,7 +1865,7 @@ double ProjectedDistance(double lon1, double lat1,
   return tmpd;
 }
 
-
+#ifndef LKAIRSPACE
 double RangeAirspaceArea(const double &longitude,
 			 const double &latitude,
 			 int i, double *bearing) {
@@ -1888,11 +1901,9 @@ double RangeAirspaceArea(const double &longitude,
   *bearing = nearestbearing;
   return nearestdistance;
 }
+#endif
 
-
-
-
-
+#ifndef LKAIRSPACE
 int FindNearestAirspaceArea(double longitude, 
 			    double latitude, 
 			    double *nearestdistance, 
@@ -1962,10 +1973,10 @@ int FindNearestAirspaceArea(double longitude,
   // not inside any airspace, so return closest one
   return ifound;
 }
+#endif
 
 
-
-
+#ifndef LKAIRSPACE
 ////////////////////////
 //
 // Finds nearest airspace (whether circle or area) to the specified point.
@@ -2030,11 +2041,12 @@ void FindNearestAirspace(double longitude, double latitude,
   }
   return;
 }
+#endif
 
 
 /////////////////////////////
 
-
+#ifndef LKAIRSPACE
 static int _cdecl SortAirspaceAreaCompare(const void *elem1, const void *elem2 )
 {
   if (AirspacePriority[((AIRSPACE_AREA *)elem1)->Type] >
@@ -2061,7 +2073,6 @@ static int _cdecl SortAirspaceCircleCompare(const void *elem1, const void *elem2
   return (0);
 }
 
-
 void SortAirspace(void) {
   StartupStore(TEXT(". SortAirspace%s"),NEWLINE);
 
@@ -2079,10 +2090,12 @@ void SortAirspace(void) {
 	SortAirspaceCircleCompare);
 
 }
+#endif
 
 
 /////////////
 
+#ifndef LKAIRSPACE
 
 int line_line_intersection (const double x1, const double y1,
 			    const double dx, const double dy,
@@ -2150,7 +2163,6 @@ bool line_rect_intersection (const double x1,
 			     &u)) return true;
   return false;
 }
-
 
 void ScanAirspaceLine(double *lats, double *lons, double *heights, 
 		      int airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) 
@@ -2249,7 +2261,7 @@ void ScanAirspaceLine(double *lats, double *lons, double *heights,
     } // within height
   } // finished scanning areas
 }
-
+#endif
 
 #if 0
 // old...

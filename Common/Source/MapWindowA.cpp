@@ -14,6 +14,9 @@
 #include "MapWindow.h"
 #include "externs.h"
 #include "Terrain.h"
+#ifdef LKAIRSPACE
+#include "LKAirspace.h"
+#endif
 
 #include "utils/heapcheck.h"
 
@@ -126,13 +129,29 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   // airspace) we must copy destination bitmap into source bitmap first so that 
   // alpha blending of such areas results in the same pixels as origin pixels 
   // in destination 
-
+#ifndef LKAIRSPACE
   unsigned int i;
-
+#endif
   bool found = false;
 
+  // draw without border
+#ifdef LKAIRSPACE
+	CAirspaceList::iterator it;
+	int airspace_type;
+	for (it=Airspaces.begin(); it != Airspaces.end(); ++it) {
+        if ((*it)->Visible()==2) {
+		  airspace_type = (*it)->Type();
+		  if (!found) {
+			found = true;
+			ClearTptAirSpace(hdc, rc);
+		  }
+		  // set filling brush
+		  SelectObject(hDCTemp, GetAirSpaceSldBrushByClass(airspace_type));
+		  (*it)->Draw(hDCTemp, rc, true);
+        }
+	}//for
+#else
   if (AirspaceCircle) {
-    // draw without border
     for(i = 0; i < NumberOfAirspaceCircles; i++) {
       if (AirspaceCircle[i].Visible == 2) {
         if (!found) {
@@ -167,6 +186,7 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
       }
     }
   }
+#endif
 
   // alpha blending
   if (found)
@@ -178,6 +198,19 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   // we will be drawing directly into given hdc, so store original PEN object
   HPEN hOrigPen = (HPEN) SelectObject(hdc, GetStockObject(WHITE_PEN));
 
+#ifdef LKAIRSPACE
+	for (it=Airspaces.begin(); it != Airspaces.end(); it++) {
+        if ((*it)->Visible()) {
+		  airspace_type = (*it)->Type();
+		  if (bAirspaceBlackOutline) {
+			SelectObject(hdc, GetStockObject(BLACK_PEN));
+		  } else {
+			SelectObject(hdc, hAirspacePens[airspace_type]);
+		  }
+		  (*it)->Draw(hdc, rc, false);
+        }
+	}//for
+#else
   if (AirspaceCircle) {
     for(i = 0; i < NumberOfAirspaceCircles; i++) {
       if (AirspaceCircle[i].Visible) {
@@ -221,7 +254,7 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
       }
     }
   }
-
+#endif
   // restore original PEN
   SelectObject(hdc, hOrigPen);
 } // DrawTptAirSpace()

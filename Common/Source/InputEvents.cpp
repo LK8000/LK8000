@@ -2554,7 +2554,7 @@ void InputEvents::eventNearestAirspaceDetails(const TCHAR *misc) {
 
   // StartHourglassCursor();
 #ifdef LKAIRSPACE
-  CAirspace *found = CAirspaceManager::Instance().FindNearestAirspace(GPS_INFO.Longitude, GPS_INFO.Latitude,
+  const CAirspace *found = FindNearestAirspace(GPS_INFO.Longitude, GPS_INFO.Latitude,
 		      &nearestdistance, &nearestbearing );
   if (found != NULL) {
 	dlgAirspaceDetails(found);

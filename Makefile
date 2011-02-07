@@ -392,6 +392,7 @@ VOLKS	:=\
 #	$(SRC)/dlgBrightness.cpp \
 
 SRC_FILES :=\
+	$(SRC)/LKAirspace.cpp \
 	$(SRC)/AATDistance.cpp 		$(SRC)/AirfieldDetails.cpp \
 	$(SRC)/Airspace.cpp 		$(SRC)/AirspaceColourDlg.cpp \
 	$(SRC)/AirspaceWarning.cpp 	$(SRC)/Atmosphere.cpp \

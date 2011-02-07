@@ -323,6 +323,7 @@ extern bool LKDoNotResetComms;
 extern ldrotary_s rotaryLD;
 extern windrotary_s rotaryWind;
 // airspace data
+#ifndef LKAIRSPACE
 extern AIRSPACE_AREA *AirspaceArea;
 extern AIRSPACE_POINT *AirspacePoint;
 extern POINT *AirspaceScreenPoint;
@@ -330,6 +331,7 @@ extern AIRSPACE_CIRCLE *AirspaceCircle;
 extern unsigned int NumberOfAirspacePoints;
 extern unsigned int NumberOfAirspaceAreas;
 extern unsigned int NumberOfAirspaceCircles;
+#endif
 
 extern short AltArrivMode;
 extern bool GlobalRunning;

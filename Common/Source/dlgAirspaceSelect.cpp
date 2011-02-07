@@ -23,8 +23,12 @@
 
 
 typedef struct{
+#ifdef LKAIRSPACE
+  CAirspace *airspace;
+#else
   int Index_Circle;
   int Index_Area;
+#endif
   double Distance;
   double Direction;
   int    DirectionErr;
@@ -83,7 +87,42 @@ static int ItemIndex = -1;
 
 static AirspaceSelectInfo_t *AirspaceSelectInfo=NULL;
 
+#ifdef LKAIRSPACE
+static void OnAirspaceListEnter(WindowControl * Sender, 
+				WndListFrame::ListInfo_t *ListInfo){
+  (void)Sender; (void)ListInfo;
 
+  if (ItemIndex != -1) {
+
+    if ((UpLimit-LowLimit>0)
+        && (ItemIndex >= 0)  // JMW fixed bug, was >0
+        && (ItemIndex < (UpLimit - LowLimit))) {
+
+      CAirspace *airspace = AirspaceSelectInfo[LowLimit+ItemIndex].airspace;
+      if (airspace) {
+        
+        const TCHAR *Name = airspace->Name();
+        if (Name) {
+		  UINT answer;
+          answer = MessageBoxX(hWndMapWindow,
+			       Name,
+					// LKTOKEN  _@M51_ = "Acknowledge for day?" 
+			       gettext(TEXT("_@M51_")),
+			       MB_YESNOCANCEL|MB_ICONQUESTION);
+		  if (answer == IDYES) {
+			if (airspace) AirspaceWarnListAdd(&GPS_INFO, &CALCULATED_INFO, false, airspace, true);
+          } else if (answer == IDNO) {
+			// this will cancel a daily ack
+			if (airspace) AirspaceWarnListAdd(&GPS_INFO, &CALCULATED_INFO, true, airspace, true);
+		  }
+        }
+      }
+    }
+  } else {
+    wf->SetModalResult(mrCancle);
+  }
+}
+#else
 static void OnAirspaceListEnter(WindowControl * Sender, 
 				WndListFrame::ListInfo_t *ListInfo){
   (void)Sender; (void)ListInfo;
@@ -137,7 +176,7 @@ static void OnAirspaceListEnter(WindowControl * Sender,
     wf->SetModalResult(mrCancle);
   }
 }
-
+#endif
 
 
 static int _cdecl AirspaceNameCompare(const void *elem1, const void *elem2 ){
@@ -202,6 +241,54 @@ static int _cdecl AirspaceDirectionCompare(const void *elem1, const void *elem2 
   return (0);
 }
 
+#ifdef LKAIRSPACE
+static void PrepareData(void){
+
+  TCHAR sTmp[5];
+
+  if (NumberOfAirspaces==0) return;
+
+  AirspaceSelectInfo = (AirspaceSelectInfo_t*)
+    malloc(sizeof(AirspaceSelectInfo_t) * NumberOfAirspaces);
+
+  if (AirspaceSelectInfo==NULL) { // 100101
+	StartupStore(_T("------ Airspace malloc SelectInfo Failed!!%s"), NEWLINE);
+	return;
+  }
+
+  int index=0;
+#ifndef LKAIRSPACE
+  int i;
+#endif
+  double bearing;
+
+  CAirspaceList::const_iterator it;
+  for (it=Airspaces.begin(); it != Airspaces.end(); ++it) {
+    AirspaceSelectInfo[index].airspace = *it;
+
+    AirspaceSelectInfo[index].Distance = DISTANCEMODIFY * (*it)->Range(Longitude, Latitude, bearing);
+	AirspaceSelectInfo[index].Direction = bearing;
+
+    _tcsncpy(sTmp, (*it)->Name(), 4);
+    sTmp[4] = '\0';
+    _tcsupr(sTmp);
+
+    AirspaceSelectInfo[index].FourChars =
+                    (((DWORD)sTmp[0] & 0xff) << 24)
+                  + (((DWORD)sTmp[1] & 0xff) << 16)
+                  + (((DWORD)sTmp[2] & 0xff) << 8)
+                  + (((DWORD)sTmp[3] & 0xff) );
+
+    AirspaceSelectInfo[index].Type = (*it)->Type();
+
+    index++;
+  }
+
+  qsort(AirspaceSelectInfo, UpLimit,
+      sizeof(AirspaceSelectInfo_t), AirspaceNameCompare);
+
+}
+#else
 static void PrepareData(void){
 
   TCHAR sTmp[5];
@@ -273,7 +360,7 @@ static void PrepareData(void){
       sizeof(AirspaceSelectInfo_t), AirspaceNameCompare);
 
 }
-
+#endif
 
 static void UpdateList(void){
 
@@ -581,6 +668,10 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
     int i = LowLimit + DrawListIndex;
 
 // Sleep(100);
+#ifdef LKAIRSPACE
+	TCHAR *Name = NULL;
+	if (AirspaceSelectInfo[i].airspace) Name = (TCHAR*)AirspaceSelectInfo[i].airspace->Name();
+#else
     TCHAR *Name = 0;
     if (AirspaceSelectInfo[i].Index_Circle>=0) {
       Name = AirspaceCircle[AirspaceSelectInfo[i].Index_Circle].Name;
@@ -588,6 +679,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
     if (AirspaceSelectInfo[i].Index_Area>=0) {
       Name = AirspaceArea[AirspaceSelectInfo[i].Index_Area].Name;
     }
+#endif
     if (Name) {
 
       int w0, w1, w2, w3, x1, x2, x3;
@@ -603,7 +695,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
       x1 = w0-w1-w2-w3;
 
       ExtTextOutClip(hDC, 2*InfoBoxLayout::scale, 2*InfoBoxLayout::scale,
-                     Name, x1-InfoBoxLayout::scale*5); 
+                     (TCHAR*)Name, x1-InfoBoxLayout::scale*5); 
       
       sTmp[0] = '\0';
       sTmp[1] = '\0';
@@ -778,9 +870,12 @@ void dlgAirspaceSelect(void) {
   UpLimit = 0;
   LowLimit = 0;
   ItemIndex = -1;
-
+#ifdef LKAIRSPACE
+  NumberOfAirspaces = Airspaces.size();
+#else
   NumberOfAirspaces = NumberOfAirspaceCircles + NumberOfAirspaceAreas;
-
+#endif
+  
   Latitude = GPS_INFO.Latitude;
   Longitude = GPS_INFO.Longitude;
 
