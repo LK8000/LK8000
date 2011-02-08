@@ -4612,8 +4612,9 @@ int ConnectionProcessTimer(int itimeout) {
 		// that will not provide NMEA stream, for example during a binary conversation for task declaration
 		// or during a restart. Very careful, it shall be set to zero by the same function who
 		// set it to true.
-		if ((itimeout % 30 == 0) && !LKDoNotResetComms) {
-			// no activity for 30/2 seconds (running at 2Hz)
+		if ((itimeout % 60 == 0) && !LKDoNotResetComms ) { 
+			// no activity for 60/2 seconds (running at 2Hz), then reset.
+			// This is needed only for virtual com ports..
 			extGPSCONNECT = FALSE;
 			InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
 			RestartCommPorts();

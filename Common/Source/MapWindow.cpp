@@ -4337,6 +4337,7 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
   TCHAR gpswarningtext4[] = TEXT(" GPS: No Data Rx ");
   TCHAR gpswarningtext5[] = TEXT(" GPS is missing ");
   TCHAR gpswarningtext6[] = TEXT(" GPS not connected ");
+  TCHAR gpswarningtext7[] = TEXT(" GPS data error ");
 #endif
   TextInBoxMode_t TextInBoxMode = {2};
 
@@ -4363,18 +4364,28 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
     TextInBoxMode.AsFlag.AlligneCenter = 1;
     TextInBoxMode.AsFlag.WhiteBorder = 1;
     TextInBoxMode.AsFlag.Border = 1;
-    if (ComPortStatus[0]==CPS_OPENKO) 
+    if (ComPortStatus[0]==CPS_OPENKO) {
+	// No Com Port
     	TextInBox(hDC, gpswarningtext3, (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode);
-    else {
+    } else {
     	if (ComPortStatus[0]==CPS_OPENOK) {
 		if ((ComPortRx[0]>0) && !firstrun) {
+			// Gps is missing
     			TextInBox(hDC, gpswarningtext5, (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode);
 			firstrun=false; // 100214
-		} else
+		} else {
+			// No Data Rx
     			TextInBox(hDC, gpswarningtext4, (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode);
-
-	} else 
-    		TextInBox(hDC, gpswarningtext6, (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode); // 100214
+		}
+	} else  {
+		if (ComPortStatus[0]==CPS_EFRAME)  {
+			// Data error
+    			TextInBox(hDC, gpswarningtext7, (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode); // 100214
+		} else {
+			// Not Connected
+    			TextInBox(hDC, gpswarningtext6, (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode); // 100214
+		}
+	}
 
     }
 

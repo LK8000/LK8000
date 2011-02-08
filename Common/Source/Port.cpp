@@ -123,8 +123,8 @@ BOOL ComPort::Initialize(LPCTSTR lpszPortName, DWORD dwPortSpeed)
   PortDCB.BaudRate = dwPortSpeed;       // Current baud 
   PortDCB.fBinary = TRUE;               // Binary mode; no EOF check 
   PortDCB.fParity = TRUE;               // Enable parity checking  
-  PortDCB.fOutxCtsFlow = FALSE;         // No CTS output flow control 
-  PortDCB.fOutxDsrFlow = FALSE;         // No DSR output flow control 
+  PortDCB.fOutxCtsFlow = FALSE;         // CTS output flow control: when TRUE, and CTS off, output suspended
+  PortDCB.fOutxDsrFlow = FALSE;         // DSR output flow control 
   PortDCB.fDtrControl = DTR_CONTROL_ENABLE; 
                                         // DTR flow control type 
   PortDCB.fDsrSensitivity = FALSE;      // DSR sensitivity 
@@ -305,12 +305,30 @@ DWORD ComPort::ReadThread()
 #endif
 
   fRxThreadTerminated = FALSE;
-  
+  DWORD dwErrors=0;
+  COMSTAT comStat;
+  short valid_frames=0;
+
   while ((hPort != INVALID_HANDLE_VALUE) && (!MapWindow::CLOSETHREAD) && (!CloseThread)) 
   {
 	#ifdef CPUSTATS
 	GetThreadTimes( hReadThread, &CreationTime, &ExitTime,&StartKernelTime,&StartUserTime);
 	#endif
+
+	ClearCommError(hPort,&dwErrors,&comStat);
+	if ( dwErrors & CE_FRAME ) {
+		//StartupStore(_T("... Com port %d, dwErrors=%ld FRAME (old status=%d)\n"),
+		//	sportnumber,dwErrors,ComPortStatus[sportnumber]);
+		ComPortStatus[sportnumber]=CPS_EFRAME;
+		ComPortErrRx[sportnumber]++;
+		valid_frames=0;
+	} else {
+		if (++valid_frames>10) { 
+			valid_frames=20; 
+			ComPortStatus[sportnumber]=CPS_OPENOK;
+		}
+	}
+
 	#if (WINDOWSPC>0) || NEWCOMM // 091206
 	// PC version does BUSY WAIT
 	Sleep(50);  // ToDo rewrite the whole driver to use overlaped IO on W2K or higher

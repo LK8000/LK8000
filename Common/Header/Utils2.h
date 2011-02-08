@@ -444,6 +444,7 @@ extern short ModeTableTop[LKMODE_TOP+1];
 #define CPS_CLOSED	1	// closed by CloseAll
 #define CPS_OPENKO	2 	// port could not be open
 #define CPS_OPENOK	3 	// port open ok
+#define CPS_EFRAME	4	// frame errors
 
 // Overtargets Modes
 #define OVT_TASK	0
