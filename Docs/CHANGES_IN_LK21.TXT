@@ -1,4 +1,5 @@
 WHATS NEW IN 2.1
+updated 110208
 
 NEW 
 
@@ -14,14 +15,22 @@ NEW
   Using 0% or 100% opacity will make no impact on drawing speed because alphablending will not 
   be used in these two cases, and by default 60% is used. 
   Help:
-Defines how much transparent (->0%) / opaque (->100%) will be the bottom bar area on the map .
-Normally the bar is black with white text, and can be reverted to white with black text on it.
-Setting <30% opacity the bottom bar will be very transparent, and text color will be forced reversed.
-Some combinations of opacity and reverse colors may not be suitable to navigation, but there are
-infinite combinations to choose from.
-Using 0% or 100%  (full transparency  or full opacity) will speed up the software a bit.
-Another famous 8000 instrument is using 75% opacity.
-Default is 100% (full opacity).
+  Defines how much transparent (->0%) / opaque (->100%) will be the bottom bar area on the map .
+  Normally the bar is black with white text, and can be reverted to white with black text on it.
+  Setting <30% opacity the bottom bar will be very transparent, and text color will be forced reversed.
+  Some combinations of opacity and reverse colors may not be suitable to navigation, but there are
+  infinite combinations to choose from.
+  Using 0% or 100%  (full transparency  or full opacity) will speed up the software a bit.
+  Another famous 8000 instrument is using 75% opacity.
+  Default is 100% (full opacity).
+
+- New device DSX supporting task declaration
+
+- New device Flytec FLYSEN protocol, preliminar support
+
+- New Com message "GPS data error " when using wrong baud rate on a com port
+
+ 
 
 
 CHANGES
@@ -78,9 +87,17 @@ CHANGES
     always adjust CRUISE_ZOOM only (even if not active at that moment)
 
 . Very fast loading of big waypoint files at startup
+
 . Faster response of user interface when using big waypoint files
+
 . It is now possible to load over 8000 waypoints while still keeping good user interface
   response
+
+. Task declaration messages are more detailed
+. Progress and error messages added for EW Microrecorder task declaration
+
+. Automatic com port reset will apply after 30 seconds, previously 15 seconds, when no
+  nmea source feed is found.
 
 BUGFIX
 
@@ -106,4 +123,6 @@ BUGFIX
   airspaces draw line did not cross that boundary (because airspace is
   too big) the airspace was not printed in the Analysis Airspace dialog.
 
+- Various communication problems solved. Sometimes a device after disconnection was no more seen until a 
+  port reset. 
 

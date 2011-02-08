@@ -314,7 +314,7 @@ DEVS	:=\
 	$(SRC)/devXCOM760.cpp \
 	$(SRC)/devZander.cpp \
 	$(SRC)/devIlec.cpp \
-	$(SRC)/devDSX.cpp
+	$(SRC)/devDSX.cpp \
 	$(SRC)/devFlytec.cpp \
 
 DLGS	:=\
