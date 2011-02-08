@@ -272,13 +272,19 @@ static void UpdateValuesSystem() {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpBatt1Volt"));
   if (wp) {
-    _stprintf(Temp,TEXT("%.2f V"),GPS_INFO.ExtBatt1_Voltage);
+	if (GPS_INFO.ExtBatt1_Voltage>=1000)
+		_stprintf(Temp,TEXT("%.0f%%"),GPS_INFO.ExtBatt1_Voltage-1000);
+	else
+		_stprintf(Temp,TEXT("%.2f V"),GPS_INFO.ExtBatt1_Voltage);
     wp->SetText(Temp);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpBatt2Volt"));
   if (wp) {
-    _stprintf(Temp,TEXT("%.2f V"),GPS_INFO.ExtBatt2_Voltage);
+	if (GPS_INFO.ExtBatt1_Voltage>=1000)
+		_stprintf(Temp,TEXT("%.0f%%"),GPS_INFO.ExtBatt2_Voltage-1000);
+	else
+		_stprintf(Temp,TEXT("%.2f V"),GPS_INFO.ExtBatt2_Voltage);
     wp->SetText(Temp);
     wp->RefreshDisplay();
   }

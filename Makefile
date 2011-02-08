@@ -313,6 +313,7 @@ DEVS	:=\
 	$(SRC)/devVolkslogger.cpp \
 	$(SRC)/devXCOM760.cpp \
 	$(SRC)/devZander.cpp \
+	$(SRC)/devFlytec.cpp \
 	$(SRC)/devIlec.cpp
 
 DLGS	:=\
