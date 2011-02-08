@@ -2155,11 +2155,22 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue,_T(NULLMEDIUM));
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			value = (lkindex==LK_EXTBATT1VOLT?GPS_INFO.ExtBatt1_Voltage:GPS_INFO.ExtBatt2_Voltage);
-			if (value>0.0) {
-				_stprintf(BufferValue,TEXT("%0.2fv"), value);
-				valid = true;
+			// hack to display percentage instead of voltage
+			if (value>=1000) {
+				value-=1000;
+				if (value>0.0) {
+					_stprintf(BufferValue,TEXT("%.0f%%"), value);
+					valid = true;
+				} else {
+					valid = false;
+				}
 			} else {
-				valid = false;
+				if (value>0.0) {
+					_stprintf(BufferValue,TEXT("%0.2fv"), value);
+					valid = true;
+				} else {
+					valid = false;
+				}
 			}
 			break;
 

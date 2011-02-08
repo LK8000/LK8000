@@ -315,6 +315,7 @@ DEVS	:=\
 	$(SRC)/devZander.cpp \
 	$(SRC)/devIlec.cpp \
 	$(SRC)/devDSX.cpp
+	$(SRC)/devFlytec.cpp \
 
 DLGS	:=\
 	$(SRC)/dlgAirspace.cpp \

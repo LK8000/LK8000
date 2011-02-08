@@ -1140,6 +1140,10 @@ int index;
   case LK_EXTBATT1VOLT:
 	if (GPS_INFO.ExtBatt1_Voltage >0) {
 		Value=GPS_INFO.ExtBatt1_Voltage;
+		if (Value>=1000) {
+			_tcscpy(Format, _T("%.0f%%")); 
+			Value-=1000;
+		}
 		Valid=true;
 	} else {
 		Valid=false;
@@ -1149,6 +1153,10 @@ int index;
   case LK_EXTBATT2VOLT:
 	if (GPS_INFO.ExtBatt2_Voltage >0) {
 		Value=GPS_INFO.ExtBatt2_Voltage;
+		if (Value>=1000) {
+			_tcscpy(Format, _T("%.0f%%")); 
+			Value-=1000;
+		}
 		Valid=true;
 	} else {
 		Valid=false;
