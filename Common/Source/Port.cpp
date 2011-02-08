@@ -8,6 +8,7 @@
 
 #include "StdAfx.h"
 #include "Cpustats.h"
+#include "Sizes.h"
 #include "Port.h"
 #include "externs.h"
 #include "XCSoar.h"
@@ -16,8 +17,6 @@
 
 #include <windows.h>
 #include <tchar.h>
-
-#define COMMDEBUG 0
 
 static void ComPort_StatusMessage(UINT type, const TCHAR *caption, const TCHAR *fmt, ...)
 {
@@ -124,8 +123,8 @@ BOOL ComPort::Initialize(LPCTSTR lpszPortName, DWORD dwPortSpeed)
   PortDCB.BaudRate = dwPortSpeed;       // Current baud 
   PortDCB.fBinary = TRUE;               // Binary mode; no EOF check 
   PortDCB.fParity = TRUE;               // Enable parity checking  
-  PortDCB.fOutxCtsFlow = FALSE;         // No CTS output flow control 
-  PortDCB.fOutxDsrFlow = FALSE;         // No DSR output flow control 
+  PortDCB.fOutxCtsFlow = FALSE;         // CTS output flow control: when TRUE, and CTS off, output suspended
+  PortDCB.fOutxDsrFlow = FALSE;         // DSR output flow control 
   PortDCB.fDtrControl = DTR_CONTROL_ENABLE; 
                                         // DTR flow control type 
   PortDCB.fDsrSensitivity = FALSE;      // DSR sensitivity 
@@ -306,12 +305,30 @@ DWORD ComPort::ReadThread()
 #endif
 
   fRxThreadTerminated = FALSE;
-  
+  DWORD dwErrors=0;
+  COMSTAT comStat;
+  short valid_frames=0;
+
   while ((hPort != INVALID_HANDLE_VALUE) && (!MapWindow::CLOSETHREAD) && (!CloseThread)) 
   {
 	#ifdef CPUSTATS
 	GetThreadTimes( hReadThread, &CreationTime, &ExitTime,&StartKernelTime,&StartUserTime);
 	#endif
+
+	ClearCommError(hPort,&dwErrors,&comStat);
+	if ( dwErrors & CE_FRAME ) {
+		//StartupStore(_T("... Com port %d, dwErrors=%ld FRAME (old status=%d)\n"),
+		//	sportnumber,dwErrors,ComPortStatus[sportnumber]);
+		ComPortStatus[sportnumber]=CPS_EFRAME;
+		ComPortErrRx[sportnumber]++;
+		valid_frames=0;
+	} else {
+		if (++valid_frames>10) { 
+			valid_frames=20; 
+			ComPortStatus[sportnumber]=CPS_OPENOK;
+		}
+	}
+
 	#if (WINDOWSPC>0) || NEWCOMM // 091206
 	// PC version does BUSY WAIT
 	Sleep(50);  // ToDo rewrite the whole driver to use overlaped IO on W2K or higher
@@ -543,7 +560,6 @@ BOOL ComPort::StopRxThread()
   #endif
 
   if (!fRxThreadTerminated) {
-	//#if COMMDEBUG > 0
 	#if 101122
 	TerminateThread(hReadThread, 0);
 	StartupStore(_T("...... ComPort StopRxThread: RX Thread forced to terminate!%s"),NEWLINE);
@@ -715,7 +731,7 @@ int ComPort::Read(void *Buffer, size_t Size)
 
 
 void ComPort::ProcessChar(char c) {
-  if (bi<(NMEA_BUF_SIZE-1)) {
+  if (bi<(MAX_NMEA_LEN-1)) {
 
 	BuildingString[bi++] = c;
 

@@ -8,8 +8,6 @@
 
 #include <windows.h>
 
-#define NMEA_BUF_SIZE 100
-
 class ComPort {
  public:
 	ComPort(int the_devIdx);
@@ -49,7 +47,7 @@ class ComPort {
 	BOOL CloseThread;
 	BOOL fRxThreadTerminated;
 
-	TCHAR BuildingString[NMEA_BUF_SIZE];
+	TCHAR BuildingString[MAX_NMEA_LEN+1];
 	int bi;
 	int devIdx;
 #ifdef COMDIAG

@@ -20,6 +20,10 @@
 
 #define NUMSNAILCOLORS 15
 
+// arbitrary, for setting a limit
+#define MAX_NMEA_LEN		160
+#define MAX_NMEA_PARAMS		40
+
 // max length of waypoint comment names
 #if CUPSUP
 #define COMMENT_SIZE 250
