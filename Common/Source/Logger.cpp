@@ -1084,14 +1084,11 @@ bool ReplayLogger::ReadPoint(double *Time,
 			     double *Altitude)
 {
   TCHAR buffer[200];
-  bool found=false;
-
-  while (ReadLine(buffer) && !found) {
-    if (ScanBuffer(buffer,Time,Latitude,Longitude,Altitude)) {
-      found = true;
-    }
+  while(ReadLine(buffer)) {
+    if(ScanBuffer(buffer, Time, Latitude, Longitude, Altitude))
+      return true;
   }
-  return found;
+  return false;
 }
 
 
@@ -1269,7 +1266,6 @@ bool ReplayLogger::UpdateInternal(void) {
   static double time=0;
   double deltatimereal;
   static double tthis=0;
-  static double tlast;
 
   bool finished = false;
 
@@ -1282,7 +1278,6 @@ bool ReplayLogger::UpdateInternal(void) {
     time = 0;
     deltatimereal = 0;
     tthis = 0;
-    tlast = tthis;
     cli.Reset();
   }
 
