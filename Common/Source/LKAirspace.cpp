@@ -69,46 +69,12 @@ static bool StartsWith(const TCHAR *Text, const TCHAR *LookFor);
 static void ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt);
 static bool ReadCoords(TCHAR *Text, double *X, double *Y);
 static bool CalculateArc(TCHAR *Text, CGeoPointList *_geopoints, double &CenterX, const double &CenterY, const int &Rotation);
-static bool CalculateSector(TCHAR *Text, list<CGeoPoint> *_geopoints, double &CenterX, const double &CenterY, const int &Rotation);
+static bool CalculateSector(TCHAR *Text, CGeoPointList *_geopoints, double &CenterX, const double &CenterY, const int &Rotation);
 static double ScreenCrossTrackError(double lon1, double lat1,
 		     double lon2, double lat2,
 		     double lon3, double lat3,
 		     double *lon4, double *lat4);
 
-
-
-CGeoPoint::CGeoPoint(const double &latitude, const double &longitude)
-{
-  Latitude = latitude;
-  Longitude = longitude;
-}
-
-
-CAirspace::CAirspace()
-{
-  _name[0] = '\0';
-  _type = 0;
-  _base.Altitude = 0;
-  _base.FL = 0;
-  _base.AGL = 0;
-  _base.Base = abUndef;
-  _top.Altitude = 0;
-  _top.FL = 0;
-  _top.AGL = 0;
-  _top.Base = abUndef;
-  _bounds.maxx = _bounds.maxy = _bounds.minx = _bounds.miny = 0;
-  _farvisible = false;
-  //_ack.AcknowledgedToday = false;
-  //_ack.AcknowledgementTime = 0;
-  _visible = 0;
-  //_warninglevel = 0;
-  _newwarnacknobrush = false;
-
-}
-
-CAirspace::~CAirspace()
-{
-}
 
 void CAirspace::Dump() const
 {
@@ -188,18 +154,16 @@ inline bool CheckInsideLongitude(const double &longitude, const double &lon_min,
 }
 
 
-CAirspace_Circle::CAirspace_Circle(const double &Center_Latitude, const double &Center_Longitude, const double &Airspace_Radius):CAirspace()
+CAirspace_Circle::CAirspace_Circle(const double &Center_Latitude, const double &Center_Longitude, const double &Airspace_Radius):
+		CAirspace(),
+		_latcenter(Center_Latitude),
+		_loncenter(Center_Longitude),
+		_radius(Airspace_Radius)
 {
-	_latcenter = Center_Latitude;
-	_loncenter = Center_Longitude;
-	_radius = Airspace_Radius;
 	CalcBounds();
 	AirspaceAGLLookup(Center_Latitude, Center_Longitude); 
 }
 
-CAirspace_Circle::~CAirspace_Circle()
-{
-}
 
 void CAirspace_Circle::Dump() const
 {
@@ -308,13 +272,9 @@ void CAirspace_Circle::Draw(HDC hDCTemp, const RECT &rc, bool param1) const
 }
 
 
-CAirspace_Area::CAirspace_Area():CAirspace()
-{
-}
-
-CAirspace_Area::~CAirspace_Area()
-{
-}
+//
+// AIRSPACE AREA
+//
 
 void CAirspace_Area::Dump() const
 {
@@ -323,7 +283,7 @@ void CAirspace_Area::Dump() const
   StartupStore(TEXT("CAirspace_Area Dump%s"), NEWLINE);
   CAirspace::Dump();
   for (i = _geopoints.begin(); i != _geopoints.end(); ++i) {
-	StartupStore(TEXT("  Point lat:%lf, lon:%lf%s"), i->Latitude, i->Longitude, NEWLINE);
+	StartupStore(TEXT("  Point lat:%lf, lon:%lf%s"), i->Latitude(), i->Longitude(), NEWLINE);
   }
 }
 
@@ -448,8 +408,8 @@ static bool CheckAirspaceAltitude(const double &Base, const double &Top)
 inline static double
 isLeft( const CGeoPoint &P0, const CGeoPoint &P1, const double &longitude, const double &latitude )
 {
-    return ( (P1.Longitude - P0.Longitude) * (latitude - P0.Latitude)
-            - (longitude - P0.Longitude) * (P1.Latitude - P0.Latitude) );
+    return ( (P1.Longitude() - P0.Longitude()) * (latitude - P0.Latitude())
+            - (longitude - P0.Longitude()) * (P1.Latitude() - P0.Latitude()) );
 }
 
 // wn_PnPoly(): winding number test for a point in a polygon
@@ -465,12 +425,12 @@ int CAirspace_Area::wn_PnPoly( const double &longitude, const double &latitude )
   CGeoPointList::const_iterator itnext = it;
   ++itnext;
   for (int i=0; i<((int)_geopoints.size()-1); ++i, ++it, ++itnext) {
-		if (it->Latitude <= latitude) {         // start y <= P.Latitude
-			if (itnext->Latitude > latitude)      // an upward crossing
+		if (it->Latitude() <= latitude) {         // start y <= P.Latitude
+			if (itnext->Latitude() > latitude)      // an upward crossing
 				if (isLeft( *it, *itnext, longitude, latitude) > 0)  // P left of edge
 					++wn;            // have a valid up intersect
 		} else {                       // start y > P.Latitude (no test needed)
-			if (itnext->Latitude <= latitude)     // a downward crossing
+			if (itnext->Latitude() <= latitude)     // a downward crossing
 				if (isLeft( *it, *itnext, longitude, latitude) < 0)  // P right of edge
 					--wn;            // have a valid down intersect
 		}
@@ -513,10 +473,10 @@ double CAirspace_Area::Range(const double &longitude, const double &latitude, do
   
   for (i=0; i<_geopoints.size()-1; ++i) {
     dist = ScreenCrossTrackError(
-				 it->Longitude,
-				 it->Latitude,
-				 itnext->Longitude,
-				 itnext->Latitude,
+				 it->Longitude(),
+				 it->Latitude(),
+				 itnext->Longitude(),
+				 itnext->Latitude(),
 				 longitude, latitude,
 				 &lon4, &lat4);
     if ((dist<nearestdistance)||(i==0)) {
@@ -546,15 +506,15 @@ void CAirspace_Area::CalcBounds()
 {
   list <CGeoPoint>::iterator it = _geopoints.begin();
   
-  _bounds.minx = it->Longitude;
-  _bounds.maxx = it->Longitude;
-  _bounds.miny = it->Latitude;
-  _bounds.maxy = it->Latitude;
+  _bounds.minx = it->Longitude();
+  _bounds.maxx = it->Longitude();
+  _bounds.miny = it->Latitude();
+  _bounds.maxy = it->Latitude();
   for(it = _geopoints.begin(); it != _geopoints.end(); ++it) {
-	_bounds.minx = min(it->Longitude, _bounds.minx);
-	_bounds.maxx = max(it->Longitude, _bounds.maxx);
-	_bounds.miny = min(it->Latitude, _bounds.miny);
-	_bounds.maxy = max(it->Latitude, _bounds.maxy);
+	_bounds.minx = min(it->Longitude(), _bounds.minx);
+	_bounds.maxx = max(it->Longitude(), _bounds.maxx);
+	_bounds.miny = min(it->Latitude(), _bounds.miny);
+	_bounds.maxy = max(it->Latitude(), _bounds.maxy);
   }
 
   // JMW detect airspace that wraps across 180
@@ -563,7 +523,7 @@ void CAirspace_Area::CalcBounds()
 	_bounds.minx = _bounds.maxx;
 	_bounds.maxx = tmp;
 	for(it = _geopoints.begin(); it != _geopoints.end(); ++it) {
-	  if (it->Longitude<0) it->Longitude += 360;
+	  if (it->Longitude()<0) it->Longitude(it->Longitude() + 360);
 	}
   }
 }
@@ -599,7 +559,7 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
 	CGeoPointList::iterator it;
 	POINTList::iterator itr;
 	for (it = _geopoints.begin(), itr = _screenpoints.begin(); it != _geopoints.end(); ++it, ++itr) {
-        MapWindow::LatLon2Screen(it->Longitude, it->Latitude, *itr);
+        MapWindow::LatLon2Screen(it->Longitude(), it->Latitude(), *itr);
 	}
       }
     }
@@ -844,8 +804,8 @@ static bool CalculateArc(TCHAR *Text, CGeoPointList *_geopoints, double &CenterX
                   &Radius, &StartBearing);
   DistanceBearing(CenterY, CenterX, EndLat, EndLon, 
                   NULL, &EndBearing);
-  newpoint.Latitude = StartLat;
-  newpoint.Longitude = StartLon;
+  newpoint.Latitude(StartLat);
+  newpoint.Longitude(StartLon);
   _geopoints->push_back(newpoint);
   
   while(fabs(EndBearing-StartBearing) > 7.5)
@@ -854,17 +814,17 @@ static bool CalculateArc(TCHAR *Text, CGeoPointList *_geopoints, double &CenterX
 	  if(StartBearing > 360) StartBearing -= 360;
 	  if(StartBearing < 0) StartBearing += 360;
 	  FindLatitudeLongitude(CenterY, CenterX, StartBearing, Radius, &lat, &lon);
-	  newpoint.Latitude = lat;
-	  newpoint.Longitude = lon;
+	  newpoint.Latitude(lat);
+	  newpoint.Longitude(lon);
 	  _geopoints->push_back(newpoint);
   }
-  newpoint.Latitude = EndLat;
-  newpoint.Longitude = EndLon;
+  newpoint.Latitude(EndLat);
+  newpoint.Longitude(EndLon);
   _geopoints->push_back(newpoint);
   return true;
 }
 
-static bool CalculateSector(TCHAR *Text, list<CGeoPoint> *_geopoints, double &CenterX, const double &CenterY, const int &Rotation)
+static bool CalculateSector(TCHAR *Text, CGeoPointList *_geopoints, double &CenterX, const double &CenterY, const int &Rotation)
 {
   double Radius;
   double StartBearing;
@@ -884,15 +844,15 @@ static bool CalculateSector(TCHAR *Text, list<CGeoPoint> *_geopoints, double &Ce
 
 	FindLatitudeLongitude(CenterY, CenterX, StartBearing, Radius, &lat, &lon);
 
-	newpoint.Latitude = lat;
-	newpoint.Longitude = lon;
+	newpoint.Latitude(lat);
+	newpoint.Longitude(lon);
 	_geopoints->push_back(newpoint);
     
 	StartBearing += Rotation *5 ;
   }
   FindLatitudeLongitude(CenterY, CenterX, EndBearing, Radius, &lat, &lon);
-  newpoint.Latitude = lat;
-  newpoint.Longitude = lon;
+  newpoint.Latitude(lat);
+  newpoint.Longitude(lon);
   _geopoints->push_back(newpoint);
   return true;
 }
@@ -1149,6 +1109,8 @@ void ReadAirspace(ZZIP_FILE *fp)
 void CloseAirspace()
 {
   CAirspaceList::iterator it;
+  
+  AirspaceWarnListClear();
   for ( it = Airspaces.begin(); it != Airspaces.end(); ++it) delete *it;
   Airspaces.clear();
   StartupStore(TEXT(". CloseLKAirspace%s"),NEWLINE);

@@ -11,7 +11,14 @@
 #include "externs.h"
 #include "Dialogs.h"
 #include "Utils.h"
+#ifdef LKAIRSPACE
+#include "LKAirspace.h"
+#undef max
+#undef min
+#include <deque>
+#else
 #include "Airspace.h"
+#endif
 #include "device.h"
 
 
@@ -23,7 +30,9 @@
 #define  __finally
 #endif
 
+#ifndef LKAIRSPACE
 #include "simpleList.h"
+#endif
 
 #include "utils/heapcheck.h"
 
@@ -38,9 +47,15 @@ static int static_unique = 1;				//TODO remove this hack
 
 extern int AcknowledgementTime;
 
+#ifdef LKAIRSPACE
+typedef std::deque<AirspaceWarningNotifier_t> AirspaceWarningNotifiersList;
+AirspaceWarningNotifiersList AirspaceWarningNotifiers;
+typedef std::deque<AirspaceInfo_c> AirspaceWarningsList;
+AirspaceWarningsList AirspaceWarnings;
+#else
 List<AirspaceWarningNotifier_t> AirspaceWarningNotifierList;
-
 List<AirspaceInfo_c> AirspaceWarnings;
+#endif
 
 static void LockList(void){
   EnterCriticalSection(&csAirspaceWarnings);
@@ -116,12 +131,28 @@ static bool UpdateAirspaceAckBrush(AirspaceInfo_c *Item, int Force){
   return(res);
 }
 #endif
-
+#ifdef LKAIRSPACE
+void AirspaceWarnListAddNotifier(AirspaceWarningNotifier_t Notifier){
+  AirspaceWarningNotifiers.push_front(Notifier);
+}
+#else
 void AirspaceWarnListAddNotifier(AirspaceWarningNotifier_t Notifier){
   AirspaceWarningNotifierList.push_front(Notifier);
 }
-
-
+#endif
+#ifdef LKAIRSPACE
+void AirspaceWarnListRemoveNotifier(AirspaceWarningNotifier_t Notifier){
+  AirspaceWarningNotifiersList::iterator it = AirspaceWarningNotifiers.begin();
+  
+  while (it != AirspaceWarningNotifiers.end()) {
+    if (*it == Notifier) {
+      it = AirspaceWarningNotifiers.erase(it);
+      continue;
+    }
+    ++it;
+  }
+}
+#else
 void AirspaceWarnListRemoveNotifier(AirspaceWarningNotifier_t Notifier){
   List<AirspaceWarningNotifier_t>::Node* it = AirspaceWarningNotifierList.begin();
   while(it){
@@ -132,7 +163,16 @@ void AirspaceWarnListRemoveNotifier(AirspaceWarningNotifier_t Notifier){
     it = it->next;
   }
 }
-
+#endif
+#ifdef LKAIRSPACE
+bool AirspaceWarnGetItem(unsigned int Index, AirspaceInfo_c &Item){
+  if (Index>=AirspaceWarnings.size()) return false;
+  LockList();
+  Item = AirspaceWarnings[Index];
+  UnLockList();
+  return true;
+}
+#else
 bool AirspaceWarnGetItem(int Index, AirspaceInfo_c &Item){
   bool res = false;
 
@@ -150,7 +190,20 @@ bool AirspaceWarnGetItem(int Index, AirspaceInfo_c &Item){
   }
   return(res);
 }
+#endif
 
+#ifdef LKAIRSPACE
+int AirspaceWarnGetItemCount(void){
+  int res=0;
+  if (!InitDone) {
+    return res;
+  }
+  LockList();
+  res = AirspaceWarnings.size();
+  UnLockList();
+  return(res);
+}
+#else
 int AirspaceWarnGetItemCount(void){
   int res=0;
   if (!InitDone) {
@@ -166,18 +219,26 @@ int AirspaceWarnGetItemCount(void){
   }
   return(res);
 }
-
+#endif
 
 #ifndef LKAIRSPACE
 double RangeAirspaceCircle(const double &longitude, const double &latitude, int i);
 double RangeAirspaceArea(const double &longitude, const double &latitude, int i, double *bearing);
 #endif
 
+#ifdef LKAIRSPACE
+static void AirspaceWarnListDoNotify(AirspaceWarningNotifyAction_t Action, AirspaceInfo_c *AirSpace){
+  for (AirspaceWarningNotifiersList::iterator it = AirspaceWarningNotifiers.begin(); it != AirspaceWarningNotifiers.end(); ++it) {
+    if (*it) (*it)(Action, AirSpace);
+  }
+}
+#else
 static void AirspaceWarnListDoNotify(AirspaceWarningNotifyAction_t Action, AirspaceInfo_c *AirSpace){
   for (List<AirspaceWarningNotifier_t>::Node* it = AirspaceWarningNotifierList.begin(); it; it = it->next ){
     (it->data)(Action, AirSpace);
   }
 }
+#endif
 
 #ifdef LKAIRSPACE
 static void AirspaceWarnListCalcDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance){
@@ -342,50 +403,47 @@ void AirspaceWarnListAdd(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   
   LockList();
   __try{
-    for (List<AirspaceInfo_c>::Node* it = AirspaceWarnings.begin(); 
-         it; it = it->next ) {
-      if ( it->data.Airspace == airspace ) { // check if already in list
-        if ((it->data.Sequence == Sequence) && (it->data.Sequence>=0)
+    for (AirspaceWarningsList::iterator it = AirspaceWarnings.begin(); it != AirspaceWarnings.end(); ++it) {
+      if ( it->Airspace == airspace ) { // check if already in list
+        if ((it->Sequence == Sequence) && (it->Sequence>=0)
 	    && !ackDay){
           // still updated in real pos calculation
 	  // JMW: need to be able to override if ack day
         } else {
 
-          it->data.Sequence = Sequence;
-          it->data.TimeOut = 3;
-          it->data.hDistance = hDistance;
-          it->data.vDistance = vDistance;
-          it->data.Bearing = Bearing;
-          it->data.PredictedEntryTime = EntryTime;
+          it->Sequence = Sequence;
+          it->TimeOut = 3;
+          it->hDistance = hDistance;
+          it->vDistance = vDistance;
+          it->Bearing = Bearing;
+          it->PredictedEntryTime = EntryTime;
 
 
           if (ackDay) {
-	    if (!Predicted) { 
-	      it->data.Acknowledge = 4;
-	    } else {
-	      // code for cancel daily ack
-	      if (it->data.Acknowledge == 4) {
-		it->data.Acknowledge = 0;
-	      }
-	    }
-            it->data.Inside = 0;
-            it->data.Predicted = 0;
+			if (!Predicted) { 
+			  it->Acknowledge = 4;
+			} else {
+			  // code for cancel daily ack
+			  if (it->Acknowledge == 4) {
+				it->Acknowledge = 0;
+			  }
+			}
+            it->Inside = 0;
+            it->Predicted = 0;
           } else {
-	    if (!Predicted) {
-	      it->data.Inside = true;
-	    }
-	    it->data.Predicted = Predicted;
-          }
-
-          if (calcWarnLevel(&it->data))
-            AirspaceWarnListDoNotify(asaWarnLevelIncreased, &it->data);
+			if (!Predicted) {
+			  it->Inside = true;
+			}
+			it->Predicted = Predicted;
+		  }
+          if (calcWarnLevel(&(*it)))
+            AirspaceWarnListDoNotify(asaWarnLevelIncreased, &(*it));
           else
-            AirspaceWarnListDoNotify(asaItemChanged, &it->data);
-
+            AirspaceWarnListDoNotify(asaItemChanged, &(*it));
         }
         
-        it->data.InsideAckTimeOut = AcknowledgementTime / OUTSIDE_CHECK_INTERVAL;
-        it->data.TimeOut = OUTSIDE_CHECK_INTERVAL;
+        it->InsideAckTimeOut = AcknowledgementTime / OUTSIDE_CHECK_INTERVAL;
+        it->TimeOut = OUTSIDE_CHECK_INTERVAL;
 
         FoundInList = true;
         break;
@@ -432,7 +490,7 @@ void AirspaceWarnListAdd(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
       NewAirspaceWarnings = true;
 
-      AirspaceWarnListDoNotify(asaItemAdded, &AirspaceWarnings.begin()->data);
+      AirspaceWarnListDoNotify(asaItemAdded, &(*AirspaceWarnings.begin()));
     }
   }__finally {
     UnLockList();
@@ -581,6 +639,35 @@ static int _cdecl cmp(const void *a, const void *b){
 
 }
 
+#ifdef LKAIRSPACE
+void AirspaceWarnListSort(void){
+
+  unsigned int i, idx=0;
+  AirspaceInfo_c l[20];
+  AirspaceWarningsList::iterator it;
+
+  for (it = AirspaceWarnings.begin(); it != AirspaceWarnings.end(); ++it) {
+    it->LastListIndex = idx;
+    memcpy(&l[idx], &(*it), sizeof(AirspaceInfo_c));
+    idx++;
+    if (idx >= (sizeof(l)/(sizeof(l[0]))))
+      return;
+  }
+
+  if (idx < 1)
+    return;
+
+  qsort(&l[0], idx, sizeof(l[0]), cmp);
+
+  it = AirspaceWarnings.begin();
+
+  for (i=0; i<idx; i++){
+    memcpy(&(*it), &l[i], sizeof(AirspaceInfo_c));
+    ++it;
+  }
+
+}
+#else
 void AirspaceWarnListSort(void){
 
   unsigned int i, idx=0;
@@ -608,6 +695,7 @@ void AirspaceWarnListSort(void){
   }
 
 }
+#endif
 
 // This is called at the end of slow calculation AirspaceWarning function, after tables have been filled up
 #ifdef LKAIRSPACE
@@ -618,44 +706,45 @@ void AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   LockList();
   __try{
-    for (List<AirspaceInfo_c>::Node* it = AirspaceWarnings.begin(); it;){
+    for (AirspaceWarningsList::iterator it = AirspaceWarnings.begin(); it != AirspaceWarnings.end(); ) {
       
-      it->data.TimeOut--;                // age the entry
+      it->TimeOut--;                // age the entry
       
-      if (it->data.TimeOut < 0){
+      if (it->TimeOut < 0){
 	
-        it->data.Predicted = false;
-        it->data.Inside = false;
-        it->data.WarnLevel = 0;
+        it->Predicted = false;
+        it->Inside = false;
+        it->WarnLevel = 0;
 
         int hDistance = 0;
         int vDistance = 0;
         int Bearing = 0;
 
         AirspaceWarnListCalcDistance(Basic, Calculated,
-				     it->data.Airspace, 
+				     it->Airspace, 
 				     &hDistance, &Bearing, &vDistance);
 
-        it->data.hDistance = hDistance; // for all: update data
-        it->data.vDistance = vDistance;
-        it->data.Bearing = Bearing;
-        it->data.TimeOut = OUTSIDE_CHECK_INTERVAL; // retrigger checktimeout
+        it->hDistance = hDistance; // for all: update data
+        it->vDistance = vDistance;
+        it->Bearing = Bearing;
+        it->TimeOut = OUTSIDE_CHECK_INTERVAL; // retrigger checktimeout
 
-        if (calcWarnLevel(&it->data))
-          AirspaceWarnListDoNotify(asaWarnLevelIncreased, &it->data);
+        if (calcWarnLevel(&(*it)))
+          AirspaceWarnListDoNotify(asaWarnLevelIncreased, &(*it));
 
-        UpdateAirspaceAckBrush(&it->data, 0);
+        UpdateAirspaceAckBrush(&(*it), 0);
 
-        if (it->data.Acknowledge == 4){ // whole day achnowledged
-          if (it->data.SortKey > 25000) {
-            it->data.TimeOut = 60; // JMW hardwired why?
+        if (it->Acknowledge == 4){ // whole day achnowledged
+          if (it->SortKey > 25000) {
+            it->TimeOut = 60; // JMW hardwired why?
           }
           continue;
         }
 
         if ((hDistance > 2500) || (abs(vDistance) > 250)){  
 	  // far away remove from warning list
-          AirspaceInfo_c asi = it->data;
+          AirspaceInfo_c asi;
+		  memcpy(&asi, &(*it), sizeof(AirspaceInfo_c));
 
           it = AirspaceWarnings.erase(it);
           UpdateAirspaceAckBrush(&asi, -1);
@@ -666,18 +755,18 @@ void AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
         } else {
           if ((hDistance > 500) || (abs(vDistance) > 100)){   
 	    // close clear inside ack and auto ACK til closer
-            if (it->data.Acknowledge > 2)
-              if (--(it->data.InsideAckTimeOut) < 0){      // timeout the
-                it->data.Acknowledge = 1;
+            if (it->Acknowledge > 2)
+              if (--(it->InsideAckTimeOut) < 0){      // timeout the
+                it->Acknowledge = 1;
               }
 
           } else { // very close, just update ack timer
-            it->data.InsideAckTimeOut = AcknowledgementTime / OUTSIDE_CHECK_INTERVAL;
+            it->InsideAckTimeOut = AcknowledgementTime / OUTSIDE_CHECK_INTERVAL;
 	    // 20sec outside check interval prevent down ACK on circling
           }
         }
 
-        AirspaceWarnListDoNotify(asaItemChanged, &it->data);
+        AirspaceWarnListDoNotify(asaItemChanged, &(*it));
 
       }
 
@@ -706,7 +795,7 @@ void AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       devPutVoice(NULL, szMessageBuffer);
       */
 
-      it = it->next;
+      ++it;
 
     }
 
@@ -841,6 +930,33 @@ void AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *Calculated){
 }
 #endif
 
+#ifdef LKAIRSPACE
+void AirspaceWarnDoAck(int ID, int Ack)
+{
+  LockList();
+  __try{
+    for (AirspaceWarningsList::iterator it = AirspaceWarnings.begin(); it != AirspaceWarnings.end(); ++it ) {
+      if (it->ID == ID){
+
+        if (Ack < it->Acknowledge)   // force data refresh on down ack
+          it->TimeOut=0;
+
+        if (Ack==-1)                      // ack current warnlevel
+          it->Acknowledge = it->WarnLevel;
+        else                              // ack defined warnlevel
+          it->Acknowledge = Ack;
+
+        UpdateAirspaceAckBrush(&(*it), 0);
+
+        AirspaceWarnListDoNotify(asaItemChanged, &(*it));
+
+      }
+    }
+  }__finally{
+    UnLockList();
+  }
+}
+#else
 void AirspaceWarnDoAck(int ID, int Ack){
   LockList();
   __try{
@@ -865,8 +981,27 @@ void AirspaceWarnDoAck(int ID, int Ack){
     UnLockList();
   }
 }
+#endif
 
+#ifdef LKAIRSPACE
+void AirspaceWarnListClear(void){
 
+  if (!InitDone)     // called by airspace parser during init, prevent
+                     // working on unitialized data
+    return;
+
+  LockList();
+  __try{
+    for (AirspaceWarningsList::iterator it = AirspaceWarnings.begin(); it != AirspaceWarnings.end(); ++it ) {
+      UpdateAirspaceAckBrush(&(*it), -1);
+    }
+    AirspaceWarnings.clear();
+    AirspaceWarnListDoNotify(asaClearAll ,NULL);
+  }__finally {
+    UnLockList();
+  }
+}
+#else
 void AirspaceWarnListClear(void){
 
   if (!InitDone)     // called by airspace parser during init, prevent
@@ -884,7 +1019,7 @@ void AirspaceWarnListClear(void){
     UnLockList();
   }
 }
-
+#endif
 
 void AirspaceWarnListInit(void){
   InitializeCriticalSection(&csAirspaceWarnings);
@@ -895,7 +1030,29 @@ void AirspaceWarnListDeInit(void){
   DeleteCriticalSection(&csAirspaceWarnings);
   InitDone = false;
 }
+#ifdef LKAIRSPACE
+int AirspaceWarnFindIndexByID(int ID){
+  int idx=0;
+  int res = -1;
+  if (!InitDone || (ID<0)) {
+    return res;
+  }
 
+  LockList();
+  __try{
+    for (AirspaceWarningsList::iterator it = AirspaceWarnings.begin(); it != AirspaceWarnings.end(); ++it ){
+      if (it->ID == ID){
+        res = idx;
+        break;
+      }
+      idx++;
+    }
+  }__finally {
+    UnLockList();
+  }
+  return(res);
+}
+#else
 int AirspaceWarnFindIndexByID(int ID){
   int idx=0;
   int res = -1;
@@ -917,6 +1074,7 @@ int AirspaceWarnFindIndexByID(int ID){
   }
   return(res);
 }
+#endif
 
 #ifdef LKAIRSPACE
 int LKAirspaceDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated,

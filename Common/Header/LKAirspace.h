@@ -5,12 +5,12 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
- #include "StdAfx.h"
-#include "Airspace.h"
+#include "StdAfx.h"
+#include "Sizes.h"
 #include "mapshape.h"
-#include "options.h"
 
 #ifdef LKAIRSPACE
+#include <tchar.h>
 
 #include <vector>
 #include <list>
@@ -19,16 +19,35 @@ using namespace std;
 #define max(a,b) ((a)>(b)?(a):(b))
 #define min(a,b) ((a)<(b)?(a):(b))
 
+
+typedef enum {abUndef=0, abMSL, abAGL, abFL} AirspaceAltBase_t;
+
+typedef struct _AIRSPACE_ALT
+{
+  double Altitude;
+  double FL;
+  double AGL;
+  AirspaceAltBase_t Base;  
+} AIRSPACE_ALT;
+
 // 
 // HELPER CLASSES
 //
 class CGeoPoint
 {
 public:
-  CGeoPoint(const double &latitude, const double &longitude);
+  CGeoPoint() : _latitude(0.0), _longitude(0.0) {}
+  CGeoPoint(const double &latitude, const double &longitude) : _latitude(latitude), _longitude(longitude) {}
 
-  double Latitude;
-  double Longitude;
+  // Attributes interface
+  double Latitude() const { return _latitude; }
+  void Latitude(const double &latitude) { _latitude = latitude; }
+  double Longitude() const { return _longitude; }
+  void Longitude(const double &longitude) { _longitude = longitude; }
+
+private:
+  double _latitude;
+  double _longitude;
 };
 
 typedef std::list<CGeoPoint> CGeoPointList;
@@ -40,8 +59,18 @@ typedef std::vector<POINT> POINTList;
 class CAirspace 
 {
 public:
-  CAirspace();
-  virtual ~CAirspace();
+  CAirspace() :
+			_name(),
+			_type( 0 ),
+			_base(),
+			_top(),
+			_bounds(),
+			_farvisible(false),
+			_visible(0),
+			_newwarnacknobrush(false)
+			{}
+  virtual ~CAirspace() {}
+
   
   virtual bool Inside(const double &longitude, const double &latitude) const { return false; }
   virtual void SetPoints(CGeoPointList &area_points) {}
@@ -60,14 +89,14 @@ public:
   const AIRSPACE_ALT* Base() const { return &_base; }
   const rectObj& Bounds() const { return _bounds; }
   
-  const unsigned char Visible() const { return _visible; }
-  void Visible(const unsigned char visible) { _visible = visible; } 
+  unsigned char Visible() const { return _visible; }
+  void Visible(unsigned char visible) { _visible = visible; } 
 
-  const int Type() const { return _type; }
-  void Type(const int type) { _type = type; } 
+  int Type() const { return _type; }
+  void Type(int type) { _type = type; } 
   
-  const bool NewWarnAckNoBrush() const { return _newwarnacknobrush; }
-  void NewWarnAckNoBrush(const bool newwarnacknobrush) { _newwarnacknobrush = newwarnacknobrush; }
+  bool NewWarnAckNoBrush() const { return _newwarnacknobrush; }
+  void NewWarnAckNoBrush(bool newwarnacknobrush) { _newwarnacknobrush = newwarnacknobrush; }
 
 
 protected:
@@ -91,8 +120,8 @@ protected:
 //
 class CAirspace_Area: public CAirspace {
 public:
-  CAirspace_Area();
-  virtual ~CAirspace_Area();
+  CAirspace_Area() : CAirspace() {}
+  virtual ~CAirspace_Area() {};
   virtual bool Inside(const double &longitude, const double &latitude) const;
   virtual void SetPoints(CGeoPointList &area_points);
   virtual void Dump() const;
@@ -114,7 +143,7 @@ class CAirspace_Circle: public CAirspace
 {
 public:
   CAirspace_Circle(const double &Center_Latitude, const double &Center_Longitude, const double &Airspace_Radius);
-  virtual ~CAirspace_Circle();
+  virtual ~CAirspace_Circle() {}
   virtual bool Inside(const double &longitude, const double &latitude) const;
   virtual void Dump() const;
   virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify);
@@ -137,7 +166,6 @@ private:
 class AirspaceInfo_c{
 
 public:
-
   int    TimeOut;             // in systicks
   int    InsideAckTimeOut;    // downgrade auto ACK timer
   int    Sequence;            // Sequence nummer is equal for real and predicted calculation
@@ -153,7 +181,6 @@ public:
   int    LastListIndex;       // Last index in List, used to sort items with same sort criteria
   int    ID;                  // Unique ID
   int    WarnLevel;           // WarnLevel 0 far away, 1 prdicted entry, 2 predicted entry and close, 3 inside      
-
 };
 
 typedef enum {asaNull, asaItemAdded, asaItemChanged, asaClearAll, asaItemRemoved, asaWarnLevelIncreased, asaProcessEnd, asaProcessBegin} AirspaceWarningNotifyAction_t;
@@ -161,7 +188,7 @@ typedef void (*AirspaceWarningNotifier_t)(AirspaceWarningNotifyAction_t Action, 
 
 void AirspaceWarnListAddNotifier(AirspaceWarningNotifier_t Notifier);
 void AirspaceWarnListRemoveNotifier(AirspaceWarningNotifier_t Notifier);
-bool AirspaceWarnGetItem(int Index, AirspaceInfo_c &Item);
+bool AirspaceWarnGetItem(unsigned int Index, AirspaceInfo_c &Item);
 int AirspaceWarnGetItemCount(void);
 int dlgAirspaceWarningInit(void);
 int dlgAirspaceWarningDeInit(void);

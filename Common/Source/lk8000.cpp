@@ -3469,7 +3469,9 @@ void Shutdown(void) {
   DeleteObject(MapWindowBoldFont);
   DeleteObject(StatisticsFont);  
   DeleteObject(TitleSmallWindowFont);
-#ifndef LKAIRSPACE  
+#ifdef LKAIRSPACE  
+  CloseAirspace();
+#else
   if(AirspaceArea != NULL)   LocalFree((HLOCAL)AirspaceArea);
   if(AirspacePoint != NULL)  LocalFree((HLOCAL)AirspacePoint);
   if(AirspaceScreenPoint != NULL)  LocalFree((HLOCAL)AirspaceScreenPoint);

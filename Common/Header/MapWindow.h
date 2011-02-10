@@ -471,8 +471,10 @@ class MapWindow {
                                        POINT *Orig_Aircraft);
   static void CalculateScreenPositionsGroundline();
   static void CalculateScreenPositionsAirspace();
+#ifndef LKAIRSPACE
   static void CalculateScreenPositionsAirspaceCircle(AIRSPACE_CIRCLE& circ);
   static void CalculateScreenPositionsAirspaceArea(AIRSPACE_AREA& area);
+#endif
   static void CalculateScreenPositionsThermalSources();
   #if MULTICALC
   static void LKCalculateWaypointReachable(short multicalc_slot, short numslots);

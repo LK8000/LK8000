@@ -17,7 +17,12 @@
 #include <shlobj.h>
 #include <math.h>
 #include "Task.h"
+#include "options.h"
+#ifdef LKAIRSPACE
+#include "LKAirspace.h"
+#else
 #include "Airspace.h"
+#endif
 #include <zzip/lib.h>
 
 

@@ -33,7 +33,7 @@
 #define INSIDE 4
 #define ALLOFF 5
 
-
+#ifndef LKAIRSPACE
 typedef struct _AIRSPACE_ACK
 {
   bool AcknowledgedToday;
@@ -94,8 +94,10 @@ typedef struct _AIRSPACE_CIRCLE
   unsigned char WarningLevel; // 0= no warning, 1= predicted incursion, 2= entered
   bool FarVisible;
 } AIRSPACE_CIRCLE;
+#endif
 
 void ReadAirspace(void);
+
 #ifndef LKAIRSPACE
 int FindAirspaceCircle(double Longditude,double Lattitude,
 		       bool visibleonly=true);
