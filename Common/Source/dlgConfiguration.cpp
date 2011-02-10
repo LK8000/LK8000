@@ -1750,8 +1750,12 @@ static void setVariables(void) {
     dfe->addEnumText(TEXT("90 %"));
     dfe->addEnumText(TEXT("95 %"));
     dfe->addEnumText(TEXT("100 %"));
-    dfe->Set(BarOpacity / 5);
-    wp->SetVisible(MapWindow::AlphaBlendSupported());
+    if (!MapWindow::AlphaBlendSupported()) {
+	dfe->Set(100 / 5);
+	wp->SetReadOnly(!MapWindow::AlphaBlendSupported());
+    } else {
+	dfe->Set(BarOpacity / 5);
+    }
     wp->RefreshDisplay();
   }
 

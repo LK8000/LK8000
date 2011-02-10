@@ -1345,7 +1345,8 @@ No help available on this item!
 Airspace area can be denoted by outlines only, pattern filling, or semi-transparent colors.
 [Outlines only] there will be only lines on airspace area borders 
 [Pattern] airspace area will be filled with selected pattern of selected color
-[Semi-Transparent] airspace area will be filled with selected solid semi-transparent color (opacity of the color can be set in 'Opacity' item)
+[Semi-Transparent] airspace area will be filled with selected solid semi-transparent color (opacity of the color can be set in 'Opacity' item) . 
+Transparency may not be available on some hardware devices.
 
 @891
 [Opacity of semi-transparent airspace]
@@ -1360,7 +1361,9 @@ Some combinations of opacity and reverse colors may not be suitable to navigatio
 infinite combinations to choose from.
 Using 0% or 100%  (full transparency  or full opacity) will speed up the software a bit.
 Another famous 8000 instrument is using 75% opacity.
-Default is 100% (full opacity).
+Default is 60%.
+ATTENTION: some devices do not support opacity control. In this case, opacity has no effect
+and the bottom bar will be always full black or full white.
 
 @9999
 No help available on this item!
