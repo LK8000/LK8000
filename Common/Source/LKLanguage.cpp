@@ -42,7 +42,7 @@
 #define MAX_MESSAGES		1500 // Max number of MSG items
 #define MAX_MESSAGE_SIZE	150 // just for setting a limit
 
-bool LKLoadMessages(void);
+bool LKLoadMessages(bool fillup);
 
 // _@Hnnnn@
 // minimal: _@H1_  maximal: _@H1234_
@@ -346,7 +346,7 @@ void LKReadLanguageFile() {
 
   if (_tcscmp(oldLang,LKLangSuffix)!=0) { 
 
-	if ( !LKLoadMessages() ) {
+	if ( !LKLoadMessages(false) ) { 
 		// force reload of english
 		if (_tcscmp(_T("ENG"),LKLangSuffix) == 0 ) {
 			StartupStore(_T("... CRITICAL, no english langauge available!%s"),NEWLINE);
@@ -355,18 +355,34 @@ void LKReadLanguageFile() {
 			_tcscpy(szFile1,_T("%LOCAL_PATH%\\\\_Language\\ENGLISH.LNG"));
 			SetRegistryString(szRegistryLanguageFile, szFile1); 
 			_tcscpy(LKLangSuffix,_T("ENG"));
-			LKLoadMessages();
+			LKLoadMessages(false);
 		}
-	} else 
+	} else  {
 	  	_tcscpy(oldLang,mylang);
+		// Now overload english messages filling gaps in translations
+		// only if current lang is not english of course: no reason to load it twice
+		if (_tcscmp(_T("ENG"),LKLangSuffix) != 0 ) {
+			_tcscpy(LKLangSuffix,_T("ENG"));
+			LKLoadMessages(true);
+			_tcscpy(LKLangSuffix,oldLang);
+		}
+	}
   }
   CloseHandle(hLangFile);
   return;
 }
 
 
-// Load or reload language messages
-bool LKLoadMessages(void) {
+/**
+ * @brief Load language MSG file into memory
+ *
+ * @param fillup Switch value:
+ *	- false - load from scratch removing anything existing
+ *	-  true - load over existing messages, adding only missing items filling up gaps
+ *
+ * @return @c false if language file problem, in this case english is reloaded from calling function
+ */
+bool LKLoadMessages(bool fillup) {
   TCHAR sFile[MAX_PATH];
   TCHAR sPath[MAX_PATH];
   TCHAR suffix[20];
@@ -376,6 +392,11 @@ bool LKLoadMessages(void) {
   #endif
 
   static bool doinit=true;
+  short mnumber=0;
+
+  #if ALPHADEBUG
+  short fillupstart=0;
+  #endif
 
   if (doinit) {
 	for (i=0; i<MAX_MESSAGES; i++) {
@@ -384,11 +405,29 @@ bool LKLoadMessages(void) {
 	}
 	doinit=false;
   } else {
-	// init data when reloading language files or changing it
-	for (i=0; i<MAX_MESSAGES; i++) {
-		if (LKMessages[i] != NULL) free(LKMessages[i]);
-		LKMessages[i]=NULL;
-		LKMessagesIndex[i]=-1;
+	if (!fillup) {
+		// init data when reloading language files or changing it
+		// but not in fillup mode of course
+		for (i=0; i<MAX_MESSAGES; i++) {
+			if (LKMessages[i] != NULL) free(LKMessages[i]);
+			LKMessages[i]=NULL;
+			LKMessagesIndex[i]=-1;
+		}
+	} else {
+		// in fillup mode we need to add at the bottom of message array
+		for (i=0; i<MAX_MESSAGES; i++) {
+			if (LKMessages[i]!=NULL) ++mnumber;
+		}
+		if (mnumber == MAX_MESSAGES) {
+			#if ALPHADEBUG
+			StartupStore(_T("... Fillup language MSG already full\n"));
+			#endif
+			return false;
+		}
+		#if ALPHADEBUG
+		fillupstart=mnumber;
+		StartupStore(_T("... Fillup language MSG starting from pos.%d\n"),mnumber);
+		#endif
 	}
   }
 
@@ -403,7 +442,10 @@ bool LKLoadMessages(void) {
 	StartupStore(_T("... LoadText Missing Language File: <%s>%s"),sFile,NEWLINE);
 	return false;
   } else {
-	StartupStore(_T(". Language Load file: <%s>%s"),sFile,NEWLINE);
+	if (fillup)
+		StartupStore(_T(". Language fillup load file: <%s>%s"),sFile,NEWLINE);
+	else
+		StartupStore(_T(". Language load file: <%s>%s"),sFile,NEWLINE);
   }
 
   short filetype=FileIsUTF16(hFile);
@@ -414,7 +456,6 @@ bool LKLoadMessages(void) {
   TCHAR scapt[MAX_MESSAGE_SIZE+1];
   TCHAR scaptraw[MAX_MESSAGE_SIZE+1];
 
-  short mnumber=0;
   bool havewarned=false;
   while ( ReadUString(hFile,299,sTmp,filetype) ) {
 
@@ -518,7 +559,11 @@ bool LKLoadMessages(void) {
 	scapt[j]='\0';
 
 	if (LKMessagesIndex[inumber]!= -1) {
-		StartupStore(_T("... INVALID LANGUAGE MESSAGE INDEX <%d> duplicated!\n"),inumber);
+		// only for debugging translations
+		#if ALPHADEBUG
+		if (!fillup)
+			StartupStore(_T("... INVALID LANGUAGE MESSAGE INDEX <%d> duplicated!\n"),inumber);
+		#endif
 		continue;
 	}
 	LKMessagesIndex[inumber]=mnumber;
@@ -531,11 +576,19 @@ bool LKLoadMessages(void) {
 		#endif
 		break;
 	}
-	
+
   }
 
   #if DEBUG_GETTEXT
   StartupStore(_T("... LOADED %d MESSAGES, max size = %d\n"),mnumber-1,maxsize);
+  #endif
+  #if ALPHADEBUG
+  if (fillup) {
+	if ((mnumber-fillupstart-1)>0)
+		StartupStore(_T("... Fillup Loaded %d missing messages\n"),mnumber-fillupstart-1);
+	else 
+		StartupStore(_T("... Fillup no messages to load, translation OK\n"));
+  }
   #endif
 
   CloseHandle(hFile);

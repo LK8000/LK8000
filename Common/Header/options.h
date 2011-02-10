@@ -237,7 +237,6 @@
 // Will speed up Range search, and also BestAlternate search
 #define UNSORTEDRANGE		1	// 101120
 
-#define ALPHADEBUG		1
 
 #define LKOBJ			1
 
@@ -251,6 +250,11 @@
 					// thread into multiple instances, 0.5 or 0.33 Hz recommended
 					// Extensive checking required
 #define MAP_ZOOM                1       // Applied 110204
+
+
+
+#define ALPHADEBUG		1	// DEBUG STARTUPSTORE MESSAGES FOR ALPHA AND BETA VERSIONS 
+					// IN FINAL VERSIONS WILL BE DISABLED
 
 /*
  * Put here debug defines, so that other developers can activate them if needed.
