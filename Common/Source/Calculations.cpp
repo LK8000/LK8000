@@ -756,10 +756,12 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	if ( (OnBestAlternate == true) && (Basic->Time > LastSearchBestTime+BESTALTERNATEINTERVAL) )
 	{
 		LastSearchBestTime = Basic->Time;
-		if (!ISPARAGLIDER) // 091111 disabled search bestalternate for paragliders
+		// if (!ISPARAGLIDER) // disabled search bestalternate for paragliders
+		// 110210 BestAlternate always calculated, eventually for PGs nothing to calculate
+		// Warning is selectable in any case separately
 		SearchBestAlternate(Basic, Calculated);
-		else 
-			OnBestAlternate=false; // 091111 JUST FOR SAFETY PG TOTALLY DISABLED BESTALTERNATE
+		//else 
+		//	OnBestAlternate=false; // 091111 JUST FOR SAFETY PG TOTALLY DISABLED BESTALTERNATE
 	}
 
 

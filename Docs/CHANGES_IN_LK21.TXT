@@ -1,5 +1,5 @@
-WHATS NEW IN 2.1
-updated 110208
+WHATS NEW IN 2.1b
+updated 110210
 
 NEW 
 
@@ -98,6 +98,11 @@ CHANGES
 
 . Automatic com port reset will apply after 30 seconds, previously 15 seconds, when no
   nmea source feed is found.
+
+. BestAlternate is back available also for Paragliders/Hang Gliders. Previously it was not
+  calculated any more, and disabled by rotary multitargets.  
+  Para/Hang gliders disabling BestAlternate Warning inside safety config will also make it
+  disappear from rotary multitarget selection.
 
 BUGFIX
 
