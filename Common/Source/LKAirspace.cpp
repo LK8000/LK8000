@@ -1172,8 +1172,6 @@ void CAirspaceManager::CloseAirspaces()
   for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) delete *it;
   _airspaces.clear();
   _airspaces_near.clear();
-
-  StartupStore(TEXT(". CloseLKAirspace%s"),NEWLINE);
 }
 
 void CAirspaceManager::QnhChangeNotify(const double &newQNH)
@@ -1430,6 +1428,7 @@ void CAirspaceManager::SetFarVisible(const rectObj &bounds_active)
   CAirspaceList::iterator it;
 
   CCriticalSection::CGuard guard(_csairspaces);
+  _airspaces_near.clear();
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
 	farvisible = (*it)->GetFarVisible(bounds_active);
 	if (farvisible) _airspaces_near.push_back(*it);
