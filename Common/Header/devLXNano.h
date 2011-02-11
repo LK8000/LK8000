@@ -20,6 +20,14 @@
 //_________________________________________________________forward_declarations_
 //___________________________________________________________class_declarations_
 
+// #############################################################################
+// *****************************************************************************
+//
+//   DevLXNano
+//
+// *****************************************************************************
+// #############################################################################
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// LX Nano device (parsing LXWPn sentences and declaring tasks).
 ///
@@ -179,6 +187,14 @@ class DevLXNano : public DevLX
 }; // DevLXNano
 
 
+// #############################################################################
+// *****************************************************************************
+//
+//   DevLXNano::Decl
+//
+// *****************************************************************************
+// #############################################################################
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// LX task declaration data.
 /// This data are byte-by-byte sent to device.
@@ -222,6 +238,7 @@ class DevLXNano::Decl
     /// turnpoint type
     enum TpType
     {
+      tp_undef   = 0, ///< turn point will be ignored
       tp_regular = 1,
       tp_landing = 2,
       tp_takeoff = 3,
@@ -233,7 +250,7 @@ class DevLXNano::Decl
     struct Flight // s_flight
     {
       byte flag;          ///< can be empty for Nano
-      uint32_t oo_id;     ///< oficial observer id
+      uint16_t oo_id;     ///< oficial observer id
       char pilot[19];
       char glider[12];
       char reg_num[8];    ///< aircraft registration
@@ -260,7 +277,7 @@ class DevLXNano::Decl
       byte fm;
       byte fy;
 
-      int32_t taskid;
+      int16_t taskid;
       char num_of_tp;
       byte tpt[max_tp_count];     ///< turnpoint type (see @c TpType)
       int32_t lon[max_tp_count];
@@ -272,7 +289,7 @@ class DevLXNano::Decl
 
     Flight   flight;
     Task     task;
-    //unsigned char reserve;
+    //TODO unsigned char reserve;  __attribute__
     byte     crc;
 
     //..........................................................................
@@ -307,6 +324,11 @@ class DevLXNano::Decl
     void ConvertToBE();
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    /// Initializes @c crc member with computed CRC value.
+    ///
+    void CalcCrc();
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Convert data to byte-stream for sending to device.
     ///
     /// \return number of bytes converted
@@ -316,16 +338,19 @@ class DevLXNano::Decl
       void* buf  ///< [out] buffer (large enough for storing all data)
     );
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    /// Initializes @c crc member with computed CRC value.
-    ///
-    void CalcCrc();
-
 } __attribute__ ((packed)); // DevLXNano::Decl
 
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// #############################################################################
+// *****************************************************************************
+//
+//   DevLXNano::Class
+//
+// *****************************************************************************
+// #############################################################################
+
+      //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// LX task declaration data - competition class.
 /// This data are byte-by-byte sent to device.
 ///
@@ -357,6 +382,16 @@ class DevLXNano::Class
     /// Initializes @c crc member with computed CRC value.
     ///
     void CalcCrc();
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    /// Convert data to byte-stream for sending to device.
+    ///
+    /// \return number of bytes converted
+    ///
+    int ToStream
+    (
+      void* buf  ///< [out] buffer (large enough for storing all data)
+    );
 
 } __attribute__ ((packed)); // DevLXNano::Decl
 

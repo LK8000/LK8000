@@ -340,7 +340,7 @@ bool DevBase::ComExpect
 )
 {
 //TODO - delete:
-return(true);
+//return(true);
 
   int ch;
   char* prx = (char*) rxBuf;
@@ -459,12 +459,31 @@ bool PlatfEndian::IsLittle()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// Swap 16bit value into bin-endian format.
+///
+/// @return @p value in bin-endian format
+///
+//static
+uint16_t PlatfEndian::To16BE
+(
+  uint16_t value ///< value to be returned in BE
+)
+{
+  if (IsBE())
+    return(value); // there's no need of conversion on BE platform
+  else
+    return((uint16_t) ((byte*)&value)[1] +
+           (uint16_t)(((byte*)&value)[0] << 8));
+} // To16BE()
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Swap 32bit value into bin-endian format.
 ///
 /// @return @p value in bin-endian format
 ///
 //static
-uint32_t PlatfEndian::ToBE
+uint32_t PlatfEndian::To32BE
 (
   uint32_t value ///< value to be returned in BE
 )
@@ -476,4 +495,4 @@ uint32_t PlatfEndian::ToBE
            (uint32_t)(((byte*)&value)[2] << 8) +
            (uint32_t)(((byte*)&value)[1] << 16) +
            (uint32_t)(((byte*)&value)[0] << 24));
-} // ToBE()
+} // To32BE()

@@ -296,11 +296,34 @@ class PlatfEndian
     static bool IsBE() { return(!little); }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    /// Swap 16bit value into bin-endian format.
+    ///
+    /// @return @p value in bin-endian format
+    ///
+    static uint16_t To16BE
+    (
+      uint16_t value ///< value to be returned in BE
+    );
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    /// Swap 16bit value into bin-endian format.
+    ///
+    /// @return @p value in bin-endian format
+    ///
+    static int16_t To16BE
+    (
+      int16_t value ///< value to be returned in BE
+    )
+    {
+      return((int16_t) To16BE((uint16_t) value));
+    }
+    
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Swap 32bit value into bin-endian format.
     ///
     /// @return @p value in bin-endian format
     ///
-    static uint32_t ToBE
+    static uint32_t To32BE
     (
       uint32_t value ///< value to be returned in BE
     );
@@ -310,12 +333,12 @@ class PlatfEndian
     ///
     /// @return @p value in bin-endian format
     ///
-    static int32_t ToBE
+    static int32_t To32BE
     (
       int32_t value ///< value to be returned in BE
     )
     {
-      return((int32_t) ToBE((uint32_t) value));
+      return((int32_t) To32BE((uint32_t) value));
     }
 
   //----------------------------------------------------------------------------
