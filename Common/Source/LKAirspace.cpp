@@ -1391,7 +1391,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
 
   CAirspaceList::const_iterator it;
   CCriticalSection::CGuard guard(_csairspaces);
-  
+
   for (it=_airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
       if (((((*it)->Base()->Base != abAGL) && (alt >= (*it)->Base()->Altitude))
            || (((*it)->Base()->Base == abAGL) && (agl >= (*it)->Base()->AGL)))
@@ -1428,10 +1428,8 @@ void CAirspaceManager::SetFarVisible(const rectObj &bounds_active)
 {
   bool farvisible;
   CAirspaceList::iterator it;
-  CCriticalSection::CGuard guard(_csairspaces);
 
-  StartupStore(TEXT("Setfarvisible%s"),NEWLINE);
-  
+  CCriticalSection::CGuard guard(_csairspaces);
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
 	farvisible = (*it)->GetFarVisible(bounds_active);
 	if (farvisible) _airspaces_near.push_back(*it);
@@ -1442,24 +1440,30 @@ void CAirspaceManager::SetFarVisible(const rectObj &bounds_active)
 void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify)
 {
   CAirspaceList::iterator it;
-  CCriticalSection::CGuard guard(_csairspaces);
 
+  CCriticalSection::CGuard guard(_csairspaces);
   for (it = _airspaces_near.begin(); it!= _airspaces_near.end(); ++it) {
 	(*it)->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, ResMapScaleOverDistanceModify);
   }
 }
 
+// Passing reference instead
+// CAirspaceList CAirspaceManager::GetAirspacesToDraw() const
+// {
+//   CAirspaceList res;
+//   CAirspaceList::const_iterator it;
+//   CCriticalSection::CGuard guard(_csairspaces);
+// 
+//   for (it = _airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
+// 	if ((*it)->Visible() == 2) res.push_back(*it);
+//   }
+//   return res;
+// }
 
-CAirspaceList CAirspaceManager::GetAirspacesToDraw() const
+const CAirspaceList& CAirspaceManager::GetNearAirspacesRef() const
 {
-  CAirspaceList res;
-  CAirspaceList::const_iterator it;
   CCriticalSection::CGuard guard(_csairspaces);
-
-  for (it = _airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
-	if ((*it)->Visible() == 2) res.push_back(*it);
-  }
-  return res;
+  return _airspaces_near;
 }
 
 CAirspaceList CAirspaceManager::GetAllAirspaces() const

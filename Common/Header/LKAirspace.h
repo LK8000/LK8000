@@ -243,7 +243,7 @@ public:
   //Mapwindow drawing
   void SetFarVisible(const rectObj &bounds_active);
   void CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify);
-  CAirspaceList GetAirspacesToDraw() const;
+  const CAirspaceList& GetNearAirspacesRef() const;
   
   //Attributes
   unsigned int NumberofAirspaces() { CCriticalSection::CGuard guard(_csairspaces); return _airspaces.size(); }

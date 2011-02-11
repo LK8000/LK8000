@@ -130,8 +130,8 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   // alpha blending of such areas results in the same pixels as origin pixels 
   // in destination 
 #ifdef LKAIRSPACE
-  CAirspaceList::iterator it;
-  CAirspaceList airspaces_to_draw = CAirspaceManager::Instance().GetAirspacesToDraw();
+  CAirspaceList::const_iterator it;
+  const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
   int airspace_type;
 #else
   unsigned int i;
@@ -193,7 +193,6 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   // alpha blending
   if (found)
     DoAlphaBlend(hdc, rc, hDCTemp, rc, (255 * GetAirSpaceOpacity()) / 100);
-  
   
   // draw it again, just the outlines
   

@@ -1844,8 +1844,8 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 {
   COLORREF whitecolor = RGB(0xff,0xff,0xff);
 #ifdef LKAIRSPACE
-  CAirspaceList::iterator it;
-  CAirspaceList airspaces_to_draw = CAirspaceManager::Instance().GetAirspacesToDraw();
+  CAirspaceList::const_iterator it;
+  const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
   int airspace_type;
 #else
   unsigned int i;
