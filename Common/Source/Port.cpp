@@ -474,37 +474,45 @@ BOOL ComPort::Close()
   return FALSE;
 }
 
+// writes unmodified data to the port
+bool ComPort::Write(const void *data, size_t length)
+{
+  DWORD written;
+  
+  if (hPort == INVALID_HANDLE_VALUE)
+    return(false);
+   
+  if (!WriteFile(hPort, data, length, &written, NULL) || written != length) {
+    // WriteFile failed, report error
+    #ifdef COMDIAG
+      ComPortErrTx[sportnumber]++;
+      ComPortErrors[sportnumber]++;
+    #endif
+    return(false);
+  }
+  
+  #ifdef COMDIAG
+    ComPortTx[sportnumber] += written;
+  #endif
+  
+  return(true);
+}
 
 // this is used by all functions to send data out
 // it is called internally from thread for each device
 void ComPort::WriteString(const TCHAR *Text)
 {
-   char tmp[512];
-   DWORD written, error;
-
-   if (hPort == INVALID_HANDLE_VALUE)
-     return;
-    
-   int len = _tcslen(Text);
- 
-   len = WideCharToMultiByte(CP_ACP, 0, Text, len + 1, tmp, sizeof(tmp), NULL, NULL);
- 
-   // don't write trailing '\0' to device
-#ifdef COMDIAG
-   if (--len<=0 || !WriteFile(hPort, tmp, len, &written, NULL)) {
-	// WriteFile failed, report error
-	error = GetLastError();
-	ComPortErrTx[sportnumber]++;
-	ComPortErrors[sportnumber]++;
-    } else
-	ComPortTx[sportnumber]+=written;
-#else
-   if (--len<=0 || !WriteFile(hPort, tmp, len, &written, NULL)) 
-     // WriteFile failed, report error
-     error = GetLastError();
-#endif
+  char tmp[512];
+  int len = _tcslen(Text);
+  
+  len = WideCharToMultiByte(CP_ACP, 0, Text, len + 1, tmp, sizeof(tmp), NULL, NULL);
+  
+  // don't write trailing '\0' to device
+  if (--len <= 0)
+    return;
+  
+  Write(tmp, len);
 }
-
 
 // Stop Rx Thread
 // return: TRUE on success, FALSE on error

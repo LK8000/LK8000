@@ -54,6 +54,7 @@
 #include "devVolkslogger.h"
 #include "devEWMicroRecorder.h"
 #include "devLX.h"
+#include "devLXNano.h"
 #include "devZander.h"
 #include "devFlymasterF1.h"
 #include "devCompeo.h"
@@ -2238,7 +2239,8 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   b50Register();
   vlRegister();
   ewMicroRecorderRegister();
-  lxRegister();
+  DevLX::Register();
+  DevLXNano::Register();
   zanderRegister();
   flymasterf1Register();
   CompeoRegister();
