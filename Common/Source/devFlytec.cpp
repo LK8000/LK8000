@@ -13,7 +13,7 @@
 #include "Parser.h"
 #include "Port.h"
 
-#include "devCompeo.h"
+#include "devFlytec.h"
 
 static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 
@@ -196,8 +196,7 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 
   // TAS
   NMEAParser::ExtractParameter(String,ctemp,13);
-  vtas=StrToDouble(ctemp,NULL)/100;
-  vtas*=TOKPH; // FIX TODO
+  vtas=StrToDouble(ctemp,NULL)/10;
   GPS_INFO->IndicatedAirspeed = vtas/AirDensityRatio(GPS_INFO->BaroAltitude);
   GPS_INFO->TrueAirspeed = vtas;
   if (GPS_INFO->IndicatedAirspeed >0) 
@@ -228,8 +227,6 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   // currently unused in LK, but ready for next future
   TriggerVarioUpdate();
   TriggerGPSUpdate();
-
-  //GPS_INFO->NAVWarning=false;
 
   return TRUE;
 }
