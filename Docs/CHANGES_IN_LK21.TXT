@@ -22,7 +22,7 @@ NEW
   infinite combinations to choose from.
   Using 0% or 100%  (full transparency  or full opacity) will speed up the software a bit.
   Another famous 8000 instrument is using 75% opacity.
-  Default is 100% (full opacity).
+  Default is 60%.
 
 - New device DSX supporting task declaration
 
