@@ -129,16 +129,18 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   // airspace) we must copy destination bitmap into source bitmap first so that 
   // alpha blending of such areas results in the same pixels as origin pixels 
   // in destination 
-#ifndef LKAIRSPACE
+#ifdef LKAIRSPACE
+  CAirspaceList::iterator it;
+  CAirspaceList airspaces_to_draw = CAirspaceManager::instance()->GetAirspacesToDraw();
+  int airspace_type;
+#else
   unsigned int i;
 #endif
   bool found = false;
 
   // draw without border
 #ifdef LKAIRSPACE
-	CAirspaceList::iterator it;
-	int airspace_type;
-	for (it=Airspaces.begin(); it != Airspaces.end(); ++it) {
+	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->Visible()==2) {
 		  airspace_type = (*it)->Type();
 		  if (!found) {
@@ -199,7 +201,7 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   HPEN hOrigPen = (HPEN) SelectObject(hdc, GetStockObject(WHITE_PEN));
 
 #ifdef LKAIRSPACE
-	for (it=Airspaces.begin(); it != Airspaces.end(); it++) {
+	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); it++) {
         if ((*it)->Visible()) {
 		  airspace_type = (*it)->Type();
 		  if (bAirspaceBlackOutline) {

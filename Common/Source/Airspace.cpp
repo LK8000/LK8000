@@ -1262,6 +1262,7 @@ static void FindAirspaceAreaBounds() {
   }
 }
 #endif
+#ifndef LKAIRSPACE
 // ToDo add exception handler to protect parser code against chrashes
 void ReadAirspace(void)
 {
@@ -1301,7 +1302,6 @@ void ReadAirspace(void)
   SetRegistryString(szRegistryAdditionalAirspaceFile, TEXT("\0"));
 
   if (fp != NULL){
-
     ReadAirspace(fp);
     zzip_fclose(fp);
 
@@ -1323,12 +1323,10 @@ void ReadAirspace(void)
   } else {
     StartupStore(TEXT("... No airspace file 1%s"),NEWLINE);
   }
-#ifndef LKAIRSPACE
   FindAirspaceAreaBounds();
   FindAirspaceCircleBounds();
-#endif
 }
-
+#endif
 
 
 
@@ -1791,7 +1789,6 @@ double CrossTrackError(double lon1, double lat1,
   return XTD;
 }
 
-#ifndef LKAIRSPACE
 void ScreenClosestPoint(const POINT &p1, const POINT &p2, 
 			const POINT &p3, POINT *p4, int offset) {
 
@@ -1824,7 +1821,6 @@ void ScreenClosestPoint(const POINT &p1, const POINT &p2,
     p4->y = p1.y;
   }
 }
-#endif
 
 #ifndef LKAIRSPACE
 // this one uses screen coordinates to avoid as many trig functions

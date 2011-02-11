@@ -135,7 +135,9 @@ static bool  InFinishSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const in
 static bool  InTurnSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const int i);
 //static void FinalGlideAlert(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void PredictNextPosition(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+#ifndef LKAIRSPACE
 static void AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+#endif
 static void AATStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void ThermalBand(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -701,10 +703,16 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   // See also same redundant check inside AirspaceWarning
 #ifdef LKAIRSPACE
-  if (Airspaces.size() >0) {
+	if (CAirspaceManager::instance()->NumberofAirspaces() > 0) {
+	  if (Basic->Time<= lastTime) {
+		lastTime = Basic->Time-6;
+	  } else {
+		// calculate airspace warnings every 6 seconds
+		CAirspaceManager::instance()->AirspaceWarning( Basic, Calculated);
+	  }
+	}
 #else
   if (NumberOfAirspaceAreas+NumberOfAirspaceCircles >0) {
-#endif
   	if (Basic->Time<= lastTime) {
     lastTime = Basic->Time-6;
  	 } else {
@@ -712,6 +720,7 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
  	   AirspaceWarning(Basic, Calculated);
  	 }
    }
+#endif
 
 
    if (FinalGlideTerrain)
@@ -4172,15 +4181,17 @@ void PredictNextPosition(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
 }
 
-
+#ifndef LKAIRSPACE
 bool GlobalClearAirspaceWarnings = false;
+#endif
 
 // JMW this code is deprecated
 #ifdef LKAIRSPACE
-bool ClearAirspaceWarnings(const bool acknowledge, const bool ack_all_day) {
+bool CAirspaceManager::ClearAirspaceWarnings(const bool acknowledge, const bool ack_all_day)
+{
   if (acknowledge) {
 	// This uses deprecated WarningLevel and Ack members of CAirspace only here, so I deleted it.
-    GlobalClearAirspaceWarnings = true;
+    _GlobalClearAirspaceWarnings = true;
     return Message::Acknowledge(MSG_AIRSPACE);
   }
   return false;
@@ -4219,71 +4230,6 @@ bool ClearAirspaceWarnings(const bool acknowledge, const bool ack_all_day) {
 #endif
 
 #ifdef LKAIRSPACE
-void AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated){
-
-  if(!AIRSPACEWARNINGS)
-      return;
-
-  if ( Airspaces.size() <= 0 ) return;
-  static bool position_is_predicted = false;
-
-  //  LockFlightData(); Not necessary, airspace stuff has its own locking
-
-  if (GlobalClearAirspaceWarnings == true) {
-    GlobalClearAirspaceWarnings = false;
-    Calculated->IsInAirspace = false;
-  }
-
-  position_is_predicted = !position_is_predicted; 
-  // every second time step, do predicted position rather than
-  // current position
-
-  double alt;
-  double agl;
-  double lat;
-  double lon;
-
-  if (position_is_predicted) {
-    alt = Calculated->NextAltitude;
-    agl = Calculated->NextAltitudeAGL;
-    lat = Calculated->NextLatitude;
-    lon = Calculated->NextLongitude;
-  } else {
-    // We may use NavAltitude
-    if (Basic->BaroAltitudeAvailable) {
-      alt = Basic->BaroAltitude;
-    } else {
-      alt = Basic->Altitude;
-    }
-    agl = Calculated->AltitudeAGL;
-    lat = Basic->Latitude;
-    lon = Basic->Longitude;
-  }
-
-  // JMW TODO enhancement: FindAirspaceCircle etc should sort results, return 
-  // the most critical or closest. 
-
-  CAirspaceList::const_iterator it;
-  for (it=Airspaces.begin(); it != Airspaces.end(); ++it) {
-      if (((((*it)->Base()->Base != abAGL) && (alt >= (*it)->Base()->Altitude))
-           || (((*it)->Base()->Base == abAGL) && (agl >= (*it)->Base()->AGL)))
-          && ((((*it)->Top()->Base != abAGL) && (alt < (*it)->Top()->Altitude))
-           || (((*it)->Top()->Base == abAGL) && (agl < (*it)->Top()->AGL)))) {
-	
-        if ((MapWindow::iAirspaceMode[(*it)->Type()] >= 2) &&
-	    (*it)->Inside(lon, lat)) { 
-          AirspaceWarnListAdd(Basic, Calculated, position_is_predicted, *it, false);
-        }
-	  }
-  }
-
-AirspaceWarnListProcess(Basic, Calculated);
-
-  //  UnlockFlightData();  
-
-  NearestAirspaceHDist=0;
-
-}
 #else
 void AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated){
   unsigned int i;
@@ -4847,8 +4793,11 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			_stprintf(qmes,_T("QNH set to %.2f, Altitude %.0f%s"),QNH,fixaltitude,
 			Units::GetUnitName(Units::GetUserAltitudeUnit()));
 		DoStatusMessage(qmes);
-
+#ifdef LKAIRSPACE
+		CAirspaceManager::instance()->QnhChangeNotify(QNH);
+#else
 		AirspaceQnhChangeNotify(QNH);
+#endif
 	}
   }
 }

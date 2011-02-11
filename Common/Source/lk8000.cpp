@@ -1338,9 +1338,15 @@ void SettingsLeave() {
   }
   
   if(AIRSPACEFILECHANGED) {
+#ifdef LKAIRSPACE
+	CAirspaceManager::instance()->CloseAirspaces();
+	CAirspaceManager::instance()->ReadAirspaces();
+	CAirspaceManager::instance()->SortAirspaces();
+#else
 	CloseAirspace();
 	ReadAirspace();
 	SortAirspace();
+#endif
 	MapWindow::ForceVisibilityScan = true;
   }  
   
@@ -2151,10 +2157,13 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   // CreateProgressDialog(gettext(TEXT("_@M1216_")));
   StartupStore(TEXT(". RASP load%s"),NEWLINE);
   RASP.Scan(GPS_INFO.Latitude, GPS_INFO.Longitude);
-
+#ifdef LKAIRSPACE
+  CAirspaceManager::instance()->ReadAirspaces();
+  CAirspaceManager::instance()->SortAirspaces();
+#else
   ReadAirspace();
   SortAirspace();
-
+#endif
   OpenTopology();
   TopologyInitialiseMarks();
 
@@ -2250,9 +2259,10 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   while(!(goCalculationThread)) Sleep(50); // 091119
   #endif
   // Sleep(500); 091119
-
+#ifndef LKAIRSPACE
   StartupStore(TEXT(". AirspaceWarnListInit%s"),NEWLINE);
   AirspaceWarnListInit();
+#endif
   StartupStore(TEXT(". dlgAirspaceWarningInit%s"),NEWLINE);
   dlgAirspaceWarningInit();
 
@@ -3319,9 +3329,11 @@ void Shutdown(void) {
 
   StartupStore(TEXT(". dlgAirspaceWarningDeInit%s"),NEWLINE);
   dlgAirspaceWarningDeInit();
+#ifndef LKAIRSPACE
   StartupStore(TEXT(". AirspaceWarnListDeInit%s"),NEWLINE);
   AirspaceWarnListDeInit();
-
+#endif
+  
   // LKTOKEN _@M1220_ "Shutdown, saving logs..."
   CreateProgressDialog(gettext(TEXT("_@M1220_")));
   // stop logger
@@ -3470,7 +3482,7 @@ void Shutdown(void) {
   DeleteObject(StatisticsFont);  
   DeleteObject(TitleSmallWindowFont);
 #ifdef LKAIRSPACE  
-  CloseAirspace();
+  CAirspaceManager::instance()->CloseAirspaces();
 #else
   if(AirspaceArea != NULL)   LocalFree((HLOCAL)AirspaceArea);
   if(AirspacePoint != NULL)  LocalFree((HLOCAL)AirspacePoint);
@@ -5437,7 +5449,11 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
   if (_tcsstr(OutBuffer, TEXT("$(CheckAirspace)"))) {
-    if (!ValidAirspace()) {
+#ifdef LKAIRSPACE
+	if (!CAirspaceManager::instance()->ValidAirspaces()) {
+#else
+	if (!ValidAirspace()) {
+#endif
       invalid = true;
     }
     ReplaceInString(OutBuffer, TEXT("$(CheckAirspace)"), TEXT(""), Size);

@@ -10,15 +10,19 @@
 #include "mapshape.h"
 
 #ifdef LKAIRSPACE
+#include "Calculations.h"
 #include <tchar.h>
 
 #include <vector>
+#include <deque>
 #include <list>
 using namespace std;
 
 #define max(a,b) ((a)>(b)?(a):(b))
 #define min(a,b) ((a)<(b)?(a):(b))
 
+#define AIRSPACE_SCANSIZE_X 16
+#define AIRSPACE_SCANSIZE_H 16
 
 typedef enum {abUndef=0, abMSL, abAGL, abFL} AirspaceAltBase_t;
 
@@ -53,6 +57,26 @@ private:
 typedef std::list<CGeoPoint> CGeoPointList;
 typedef std::vector<POINT> POINTList;
 
+
+class CCriticalSection
+{
+  CRITICAL_SECTION _criticalSection;
+public:
+  CCriticalSection() { InitializeCriticalSection(&_criticalSection); }
+  ~CCriticalSection() { DeleteCriticalSection(&_criticalSection); }
+  
+  void Lock() { EnterCriticalSection(&_criticalSection); }
+  void UnLock() { LeaveCriticalSection(&_criticalSection); }
+
+public:
+  class CGuard {
+    CCriticalSection &_criticalSection;
+  public:
+    explicit CGuard( CCriticalSection &criticalSection ): _criticalSection(criticalSection) { _criticalSection.Lock(); }
+    ~CGuard() { _criticalSection.UnLock(); }
+  };
+};
+
 // 
 // AIRSPACE BASE CLASS
 //
@@ -79,7 +103,7 @@ public:
   virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const {}
   virtual double Range(const double &longitude, const double &latitude, double &bearing) const { return 0.0; }
   void QnhChangeNotify();
-  void SetFarVisible(rectObj *bounds_active);
+  void SetFarVisible(const rectObj &bounds_active);
   
   // Attributes interface
   void Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top) { _tcsncpy(_name, name, NAME_SIZE); _type = type; memcpy(&_base, &base, sizeof(_base)); memcpy(&_top, &top, sizeof(_top));}
@@ -134,6 +158,14 @@ private:
   POINTList _screenpoints;
   int wn_PnPoly( const double &longitude, const double &latitude ) const;
   void CalcBounds();
+  void ScreenClosestPoint(const POINT &p1, const POINT &p2, 
+			const POINT &p3, POINT *p4, int offset) const;
+  double ScreenCrossTrackError(double lon1, double lat1,
+			double lon2, double lat2,
+			double lon3, double lat3,
+			double *lon4, double *lat4) const;
+			
+
 };
 
 // 
@@ -160,11 +192,13 @@ private:
   void CalcBounds();
 };
 
+// 
+// AIRSPACE MANAGER CLASS
+//
+typedef std::list<CAirspace*> CAirspaceList;
 
-
-//Warning system
+//Warning system 
 class AirspaceInfo_c{
-
 public:
   int    TimeOut;             // in systicks
   int    InsideAckTimeOut;    // downgrade auto ACK timer
@@ -182,52 +216,104 @@ public:
   int    ID;                  // Unique ID
   int    WarnLevel;           // WarnLevel 0 far away, 1 prdicted entry, 2 predicted entry and close, 3 inside      
 };
-
 typedef enum {asaNull, asaItemAdded, asaItemChanged, asaClearAll, asaItemRemoved, asaWarnLevelIncreased, asaProcessEnd, asaProcessBegin} AirspaceWarningNotifyAction_t;
 typedef void (*AirspaceWarningNotifier_t)(AirspaceWarningNotifyAction_t Action, AirspaceInfo_c *AirSpace) ;
+typedef std::deque<AirspaceWarningNotifier_t> AirspaceWarningNotifiersList;
+typedef std::deque<AirspaceInfo_c> AirspaceWarningsList;
 
-void AirspaceWarnListAddNotifier(AirspaceWarningNotifier_t Notifier);
-void AirspaceWarnListRemoveNotifier(AirspaceWarningNotifier_t Notifier);
-bool AirspaceWarnGetItem(unsigned int Index, AirspaceInfo_c &Item);
-int AirspaceWarnGetItemCount(void);
+
+
+class CAirspaceManager
+{
+public:
+  static CAirspaceManager *instance() { 
+	if (_instance == NULL) _instance = new CAirspaceManager();
+	return _instance;
+  }
+
+  //HELPER FUNCTIONS
+  static bool CheckAirspaceAltitude(const double &Base, const double &Top);
+
+  // Upper level interfaces
+  void ReadAirspaces();
+  void CloseAirspaces();
+  void QnhChangeNotify(const double &newQNH);
+  void ScanAirspaceLine(double lats[], double lons[], double heights[], 
+		      int airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]);
+  const CAirspace* FindNearestAirspace(const double &longitude, const double &latitude,
+			 double *nearestdistance, double *nearestbearing, double *height = NULL);
+  void SortAirspaces(void);
+  bool ValidAirspaces(void);
+
+  //Warning system
+  void AirspaceWarning (NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+  void AirspaceWarnListAdd(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
+                         bool Predicted, CAirspace *airspace,
+                         bool ackDay);
+  void AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+  bool ClearAirspaceWarnings(const bool acknowledge, const bool ack_all_day = false);
+  void AirspaceWarnListCalcDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance);
+  //dlgAirspaceWarning
+  int AirspaceWarnGetItemCount();
+  bool AirspaceWarnGetItem(unsigned int Index, AirspaceInfo_c &Item);
+  void AirspaceWarnDoAck(int ID, int Ack);
+  int AirspaceWarnFindIndexByID(int ID);
+  void AirspaceWarnListAddNotifier(AirspaceWarningNotifier_t Notifier);
+  void AirspaceWarnListRemoveNotifier(AirspaceWarningNotifier_t Notifier);
+
+  //Get airspace details (dlgAirspaceDetails)
+  CAirspaceList GetVisibleAirspacesAtPoint(const double &lon, const double &lat);
+  CAirspaceList GetAllAirspaces();
+
+  //Mapwindow drawing
+  void SetFarVisible(const rectObj &bounds_active);
+  void CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify);
+  CAirspaceList GetAirspacesToDraw();
+  
+  //Attributes
+  unsigned int NumberofAirspaces() { CCriticalSection::CGuard guard(_csairspaces); return _airspaces.size(); }
+  bool GlobalClearAirspaceWarnings() const { return _GlobalClearAirspaceWarnings; }
+
+
+private:
+  static CAirspaceManager *_instance;
+  CAirspaceManager() : _GlobalClearAirspaceWarnings(false) {}
+  ~CAirspaceManager() { CloseAirspaces(); _instance = NULL; }
+  
+  // Airspaces data
+  CCriticalSection _csairspaces;
+  CAirspaceList _airspaces;
+  bool _GlobalClearAirspaceWarnings;
+
+  // Warning system data
+  CCriticalSection _cswarnlist;
+  AirspaceWarningNotifiersList _airspaceWarningNotifiers;
+  AirspaceWarningsList _airspaceWarnings;
+  int _static_unique;														//TODO remove this hack
+  bool UpdateAirspaceAckBrush(AirspaceInfo_c *Item, int Force);
+  void AirspaceWarnListDoNotify(AirspaceWarningNotifyAction_t Action, AirspaceInfo_c *AirSpace);
+  bool calcWarnLevel(AirspaceInfo_c *asi);
+  void AirspaceWarnListSort();
+  void AirspaceWarnListClear();
+
+  //Openair parsing functions, internal use
+  void FillAirspacesFromOpenAir(ZZIP_FILE *fp);
+  bool StartsWith(const TCHAR *Text, const TCHAR *LookFor) const;
+  void ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const;
+  bool ReadCoords(TCHAR *Text, double *X, double *Y) const;
+  bool CalculateArc(TCHAR *Text, CGeoPointList *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const;
+  bool CalculateSector(TCHAR *Text, CGeoPointList *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const;
+  
+
+};
+
+
 int dlgAirspaceWarningInit(void);
 int dlgAirspaceWarningDeInit(void);
-void AirspaceWarnListClear(void);
-void AirspaceWarnDoAck(int ID, int Ack);
-int AirspaceWarnFindIndexByID(int ID);
-void AirspaceWarnListInit(void);
-void AirspaceWarnListDeInit(void);
 
 
-// MapWindow interface ...
-//bool dlgAirspaceWarningShowDlg(bool Force);
-
-// double ProjectedDistance(double lon1, double lat1,
-//                          double lon2, double lat2,
-//                          double lon3, double lat3);
-
-bool ValidAirspace(void);
 void ScreenClosestPoint(const POINT &p1, const POINT &p2, 
 			const POINT &p3, POINT *p4, int offset);
-
-
-//
-// Module interface to upper level code
-//
-typedef std::list<CAirspace*> CAirspaceList;
-extern CAirspaceList Airspaces;
-
-void ReadAirspace(ZZIP_FILE *fp);
-void CloseAirspace();
-void AirspaceQnhChangeNotify(double newQNH);
-
-#define AIRSPACE_SCANSIZE_X 16
-#define AIRSPACE_SCANSIZE_H 16
-void ScanAirspaceLine(double *lats, double *lons, double *heights, 
-		      int airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]);
-const CAirspace* FindNearestAirspace(const double &longitude, const double &latitude,
-			 double *nearestdistance, double *nearestbearing, double *height=NULL);
-void SortAirspace(void);
 
 
 #endif /* LKAIRSPACE */

@@ -416,20 +416,15 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat,
 bool MapWindow::Event_InteriorAirspaceDetails(double lon, double lat) {
 #ifndef LKAIRSPACE
   unsigned int i;
+  bool inside;
 #endif
   bool found=false;
-  bool inside;
 #ifdef LKAIRSPACE
+  CAirspaceList reslist = CAirspaceManager::instance()->GetVisibleAirspacesAtPoint(lon, lat);
   CAirspaceList::const_iterator it;
-  for (it = Airspaces.begin(); it != Airspaces.end(); ++it) {
-	inside = false;
-	if ((*it)->Visible()) {
-	  inside = (*it)->Inside(lon, lat);
-	}
-	if (inside) {
-	  dlgAirspaceDetails(*it);
-	  found = true;
-	}
+  for (it = reslist.begin(); it != reslist.end(); ++it) {
+	dlgAirspaceDetails(*it);
+	found = true;
   }
 #else
   if (AirspaceCircle) {

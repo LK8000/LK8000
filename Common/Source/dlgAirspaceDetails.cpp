@@ -44,11 +44,11 @@ static void OnAcknowledgeClicked(WindowControl * Sender){
 			 gettext(TEXT("_@M51_")),
 			 MB_YESNOCANCEL|MB_ICONQUESTION);
     if (answer == IDYES) {
-	  if (airspace) AirspaceWarnListAdd(&GPS_INFO, &CALCULATED_INFO, false, airspace, true);
+	  if (airspace) CAirspaceManager::instance()->AirspaceWarnListAdd(&GPS_INFO, &CALCULATED_INFO, false, airspace, true);
       wf->SetModalResult(mrOK);
     } else if (answer == IDNO) {
       // this will cancel a daily ack
-	  if (airspace) AirspaceWarnListAdd(&GPS_INFO, &CALCULATED_INFO, true, airspace, true);
+	  if (airspace) CAirspaceManager::instance()->AirspaceWarnListAdd(&GPS_INFO, &CALCULATED_INFO, true, airspace, true);
       wf->SetModalResult(mrOK);
     }
   }
