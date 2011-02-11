@@ -14,16 +14,16 @@
 
 #include "device.h"
 
-
-//______________________________________________________________________defines_
-//_____________________________________________________________________typedefs_
-//________________________________________________________external_declarations_
-//_________________________________________________________forward_declarations_
-//___________________________________________________global_storage_definitions_
-//____________________________________________________local_storage_definitions_
-//____________________________________________________________class_definitions_
-
 //___________________________________________________________class_declarations_
+
+
+// #############################################################################
+// *****************************************************************************
+//
+//   DevBase
+//
+// *****************************************************************************
+// #############################################################################
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Base class for all devices.
@@ -203,8 +203,11 @@ class DevBase
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Reads data from COM port and checks if they contain expected data.
-    /// Up to @p waitChars characters is read, then @c false is returned if
+    /// Up to @p checkChars characters is read, then @c false is returned if
     /// expected data stream has not been found.
+    ///
+    /// If @p rxBuf <> @c NULL, all read characters are stored in the buffer.
+    /// It must be large enough to store up to @p checkChars.
     ///
     /// @retval true  expected data received
     /// @retval false error (description in @p errBuf)
@@ -214,15 +217,19 @@ class DevBase
       PDeviceDescriptor_t d,    ///< device descriptor
       const void* expected,     ///< expected data
       int         length,       ///< data length [bytes]
-      int         waitChars,    ///< maximum characters to read
+      int         checkChars,   ///< maximum characters to read and check
+      void*       rxBuf,        ///< [out] received data (up to checkChars)
       unsigned    errBufSize,   ///< error message buffer size
       TCHAR       errBuf[]      ///< [out] error message
     );
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Reads data from COM port and checks if they contain expected character.
-    /// Up to @p waitChars characters is read, then @c false is returned if
+    /// Up to @p checkChars characters is read, then @c false is returned if
     /// expected character has not been found.
+    ///
+    /// If @p rxBuf <> @c NULL, all read characters are stored in the buffer.
+    /// It must be large enough to store up to @p checkChars.
     ///
     /// @retval true  expected data received
     /// @retval false error (description in @p errBuf)
@@ -231,15 +238,19 @@ class DevBase
     (
       PDeviceDescriptor_t d,    ///< device descriptor
       char        expected,     ///< expected character
-      int         waitChars,    ///< maximum characters to read
+      int         checkChars,   ///< maximum characters to read
+      void*       rxBuf,        ///< [out] received data (up to checkChars)
       unsigned    errBufSize,   ///< error message buffer size
       TCHAR       errBuf[]      ///< [out] error message
     );
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Reads data from COM port and checks if they contain expected string.
-    /// Up to @p waitChars characters is read, then @c false is returned if
+    /// Up to @p checkChars characters is read, then @c false is returned if
     /// expected string has not been found.
+    ///
+    /// If @p rxBuf <> @c NULL, all read characters are stored in the buffer.
+    /// It must be large enough to store up to @p checkChars.
     ///
     /// @retval true  expected data received
     /// @retval false error (description in @p errBuf)
@@ -248,17 +259,48 @@ class DevBase
     (
       PDeviceDescriptor_t d,    ///< device descriptor
       const char* expected,     ///< expected string
-      int         waitChars,    ///< maximum characters to read
+      int         checkChars,   ///< maximum characters to read
+      void*       rxBuf,        ///< [out] received data (up to checkChars)
       unsigned    errBufSize,   ///< error message buffer size
       TCHAR       errBuf[]      ///< [out] error message
     );
+
+}; // DevBase
+
+
+// #############################################################################
+// *****************************************************************************
+//
+//   PlatfEndian
+//
+// *****************************************************************************
+// #############################################################################
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// Class for checking platform endianness and converting numbers to specific
+/// format.
+///
+class PlatfEndian
+{
+  //----------------------------------------------------------------------------
+  public:
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    /// Returns @c true if the platform is little-endian.
+    ///
+    static bool IsLE() { return(little);  }
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    /// Returns @c true if the platform is big-endian.
+    ///
+    static bool IsBE() { return(!little); }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Swap 32bit value into bin-endian format.
     ///
     /// @return @p value in bin-endian format
     ///
-    static uint32_t Swap32ToBE
+    static uint32_t ToBE
     (
       uint32_t value ///< value to be returned in BE
     );
@@ -268,16 +310,27 @@ class DevBase
     ///
     /// @return @p value in bin-endian format
     ///
-    static int32_t Swap32ToBE
+    static int32_t ToBE
     (
       int32_t value ///< value to be returned in BE
     )
     {
-      return((int32_t) Swap32ToBE((uint32_t) value));
+      return((int32_t) ToBE((uint32_t) value));
     }
 
+  //----------------------------------------------------------------------------
+  protected:
 
-}; // DevBase
+    /// endianness flag - @c true for little endian
+    static bool little;
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    /// Initialization only function.
+    ///
+    static bool IsLittle();
+
+}; // PlatfEndian
+
 
 //______________________________________________________________________________
 

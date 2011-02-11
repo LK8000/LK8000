@@ -14,6 +14,9 @@
 
 #include "devLX.h"
 
+
+#define LX_SEND_BYTESTREAM 1
+
 //_________________________________________________________forward_declarations_
 //___________________________________________________________class_declarations_
 
@@ -39,7 +42,7 @@ class DevLXNano : public DevLX
 
     /// task declaration structure for device
     class Decl;
-  
+
     /// competition class
     class Class;
 
@@ -136,6 +139,7 @@ class DevLXNano : public DevLX
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Writes task declaration into the device.
+    /// The CRC will be calculated before.
     ///
     /// @retval true  declaration successfully written
     /// @retval false error (description in @p errBuf)
@@ -143,13 +147,14 @@ class DevLXNano : public DevLX
     static bool WriteDecl
     (
       PDeviceDescriptor_t d,   ///< device descriptor
-      const Decl& decl,        ///< task declaration data for device
+      Decl&       decl,        ///< task declaration data for device
       unsigned    errBufSize,  ///< error message buffer size
       TCHAR       errBuf[]     ///< [out] error message
     );
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Writes competition class declaration into the device.
+    /// The CRC will be calculated before.
     ///
     /// @retval true  declaration successfully written
     /// @retval false error (description in @p errBuf)
@@ -157,7 +162,7 @@ class DevLXNano : public DevLX
     static bool WriteClass
     (
       PDeviceDescriptor_t d,    ///< device descriptor
-      const Class& lxClass,     ///< competition class for device
+      Class&       lxClass,     ///< competition class for device
       unsigned     errBufSize,  ///< error message buffer size
       TCHAR        errBuf[]     ///< [out] error message
     );
@@ -221,9 +226,9 @@ class DevLXNano::Decl
       tp_landing = 2,
       tp_takeoff = 3,
     }; // TpType
-    
+
     //..........................................................................
-    
+
     /// LX flight declaration data (should be compatible with Nano, Colibri and Posigraph
     struct Flight // s_flight
     {
@@ -295,12 +300,22 @@ class DevLXNano::Decl
       TpType  type,        ///< waypoint type
       int     idx          ///< waypoint index
     );
-    
+
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Convert multi-byte values into big-endian format.
     ///
     void ConvertToBE();
-    
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    /// Convert data to byte-stream for sending to device.
+    ///
+    /// \return number of bytes converted
+    ///
+    int ToStream
+    (
+      void* buf  ///< [out] buffer (large enough for storing all data)
+    );
+
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Initializes @c crc member with computed CRC value.
     ///
@@ -318,18 +333,18 @@ class DevLXNano::Class
 {
   //----------------------------------------------------------------------------
   public:
-   
+
     /// competition class name
     char  name[9];
     byte  crc;
-  
+
     //..........................................................................
-  
+
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Constructor - sets all data to 0.
     ///
     Class();
-  
+
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Sets the value of @c name member.
     ///
@@ -337,12 +352,12 @@ class DevLXNano::Class
     (
       const TCHAR* text ///< string to be set (will be converted into ASCII)
     );
-  
+
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Initializes @c crc member with computed CRC value.
     ///
     void CalcCrc();
-  
+
 } __attribute__ ((packed)); // DevLXNano::Decl
 
 //______________________________________________________________________________

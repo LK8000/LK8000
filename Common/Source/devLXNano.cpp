@@ -91,6 +91,14 @@ BOOL DevLXNano::Install
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
 
+  StartupStore(_T(". LX Nano installed (platform=%s test=%lu)%s"),
+    PlatfEndian::IsBE() ? _T("be") : _T("le"),
+    PlatfEndian::ToBE(0x01000000), NEWLINE);
+
+  //TODO delete
+  StartupStore(_T("sizeof Flight=%u + Task=%u + crc=%u = Decl=%u %s"),
+    sizeof(Decl::Flight), sizeof(Decl::Task), sizeof(byte), sizeof(Decl), NEWLINE);
+
   return(true);
 } // Install()
 
@@ -125,18 +133,14 @@ BOOL DevLXNano::DeclareTask
 
   if (!FillFlight(*lkDecl, decl, errBufSize, errBuf))
     return(false);
-  
+
   if (!FillTask(*lkDecl, decl, errBufSize, errBuf))
     return(false);
-  
+
   // we will use text-defined class
   decl.flight.cmp_cls = Decl::cls_textdef;
   lxClass.SetName(lkDecl->CompetitionClass);
-  
-  decl.ConvertToBE();
-  decl.CalcCrc();
-  lxClass.CalcCrc();
-  
+
   // stop RX thread
   if (!StopRxThread(d, errBufSize, errBuf))
     return(false);
@@ -190,7 +194,7 @@ bool DevLXNano::StartNMEAMode
 {
   ComWrite(d, PKT_SYN, errBufSize, errBuf);
 
-  if (!ComExpect(d, "$$$", 32, errBufSize, errBuf))
+  if (!ComExpect(d, "$$$", 32, NULL, errBufSize, errBuf))
     return(false);
 
   return(true);
@@ -215,13 +219,13 @@ bool DevLXNano::StartCMDMode
   // to parse all NMEA sequences that are incomming before declaration mode
   // is enabled.
   ComWrite(d, PKT_SYN, errBufSize, errBuf);
-  ComExpect(d, PKT_ACK, 512, errBufSize, errBuf);
+  ComExpect(d, PKT_ACK, 512, NULL, errBufSize, errBuf);
 
   ComWrite(d, PKT_SYN, errBufSize, errBuf);
-  ComExpect(d, PKT_ACK, 512, errBufSize, errBuf);
+  ComExpect(d, PKT_ACK, 512, NULL, errBufSize, errBuf);
 
   ComWrite(d, PKT_SYN, errBufSize, errBuf);
-  if (!ComExpect(d, PKT_ACK, 512, errBufSize, errBuf))
+  if (!ComExpect(d, PKT_ACK, 512, NULL, errBufSize, errBuf))
     return(false);
 
   return(true);
@@ -271,10 +275,10 @@ bool DevLXNano::FillTask
     return(false);
 
   int tpCount = lkDecl.num_waypoints;
-  
+
   Decl::Task& task = decl.task;
-  
-  if (!GPS_INFO.NAVWarning && GPS_INFO.SatellitesUsed > 0 && 
+
+  if (!GPS_INFO.NAVWarning && GPS_INFO.SatellitesUsed > 0 &&
     GPS_INFO.Day >= 1 && GPS_INFO.Day <= 31 && GPS_INFO.Month >= 1 && GPS_INFO.Month <= 12)
   {
     task.di = GPS_INFO.Day;
@@ -285,42 +289,43 @@ bool DevLXNano::FillTask
   { // use system time
     time_t sysTime = time(NULL);
     struct tm* utc = gmtime(&sysTime);
-    
+
     task.di = utc->tm_mday;
     task.mi = utc->tm_mon + 1;
     task.yi = utc->tm_year % 100;
   }
-  
+
   //task.input_time = 0;
-  
+
   task.fd = task.di;
   task.fm = task.mi;
   task.fy = task.yi;
-  
+
   task.taskid = 1;
-  
+
   task.num_of_tp = (char) tpCount;
-  
+
   for (int i = 0; i < tpCount; i++)
   {
     Decl::TpType type;
-    
+
     if (i == 0)
       type = Decl::tp_takeoff;
     else if (i == tpCount - 1)
       type = Decl::tp_landing;
     else
       type = Decl::tp_regular;
-    
+
     decl.SetWaypoint(*lkDecl.waypoint[i], type, i);
   }
-  
+
   return(true);
 } // FillTask()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Writes declaration into the device.
+/// The CRC will be calculated before.
 ///
 /// @retval true  declaration successfully written
 /// @retval false error (description in @p errBuf)
@@ -329,39 +334,62 @@ bool DevLXNano::FillTask
 bool DevLXNano::WriteDecl
 (
   PDeviceDescriptor_t d,   ///< device descriptor
-  const Decl&       decl,  ///< task declaration data for device
+  Decl&       decl,        ///< task declaration data for device
   unsigned    errBufSize,  ///< error message buffer size
   TCHAR       errBuf[]     ///< [out] error message
 )
 {
+  #if (LX_SEND_BYTESTREAM)
+  
+  byte buf[sizeof(Decl)];
+  
+  decl.CalcCrc();
+  
+  int size = decl.ToStream(buf);
+  
+  bool status =      ComWrite(d, PKT_STX, errBufSize, errBuf);
+  status = status && ComWrite(d, PKT_PCWRITE, errBufSize, errBuf);
+  status = status && ComWrite(d, buf, size, errBufSize, errBuf);
+  status = status && ComExpect(d, PKT_ACK, 512, NULL, errBufSize, errBuf);
+  
+  #else
+  
+  decl.ConvertToBE();
+  decl.CalcCrc();
+  
   bool status =      ComWrite(d, PKT_STX, errBufSize, errBuf);
   status = status && ComWrite(d, PKT_PCWRITE, errBufSize, errBuf);
   status = status && ComWrite(d, &decl, sizeof(decl), errBufSize, errBuf);
-  status = status && ComExpect(d, PKT_ACK, 512, errBufSize, errBuf);
-
+  status = status && ComExpect(d, PKT_ACK, 512, NULL, errBufSize, errBuf);
+  
+  #endif
+  
   return(status);
 } // WriteDecl()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Writes competition class declaration into the device.
+/// The CRC will be calculated before.
 ///
 /// @retval true  declaration successfully written
 /// @retval false error (description in @p errBuf)
 ///
-//static 
+//static
 bool DevLXNano::WriteClass
 (
   PDeviceDescriptor_t d,    ///< device descriptor
-  const Class& lxClass,     ///< competition class for device
+  Class&       lxClass,     ///< competition class for device
   unsigned     errBufSize,  ///< error message buffer size
   TCHAR        errBuf[]     ///< [out] error message
 )
 {
+  lxClass.CalcCrc();
+  
   bool status =      ComWrite(d, PKT_STX, errBufSize, errBuf);
   status = status && ComWrite(d, PKT_CCWRITE, errBufSize, errBuf);
   status = status && ComWrite(d, &lxClass, sizeof(lxClass), errBufSize, errBuf);
-  status = status && ComExpect(d, PKT_ACK, 512, errBufSize, errBuf);
+  status = status && ComExpect(d, PKT_ACK, 512, NULL, errBufSize, errBuf);
 
   return(status);
 } // WriteClass()
@@ -370,7 +398,7 @@ bool DevLXNano::WriteClass
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Calculate LX CRC value for the given data.
 ///
-//static 
+//static
 byte DevLXNano::CalcCrc
 (
   int   length, ///< data length
@@ -393,7 +421,7 @@ byte DevLXNano::CalcCrc
         crcVal ^= LX_CRC_POLY;
     }
   }
-  
+
   return(crcVal);
 } // CalcCrc()
 
@@ -466,7 +494,7 @@ void DevLXNano::Decl::SetWaypoint
     task.tpt[idx] = (byte) type;
     task.lon[idx] = (int32_t) (wp.Longitude * 60000);
     task.lat[idx] = (int32_t) (wp.Latitude * 60000);
-  
+
     // set TP name
     SetString((StrId) idx, wp.Name);
 } // SetWaypoint()
@@ -477,16 +505,80 @@ void DevLXNano::Decl::SetWaypoint
 ///
 void DevLXNano::Decl::ConvertToBE()
 {
-  flight.oo_id = Swap32ToBE(flight.oo_id);
-  task.input_time = Swap32ToBE(task.input_time);
-  task.taskid = Swap32ToBE(task.taskid);
-  
+  flight.oo_id = PlatfEndian::ToBE(flight.oo_id);
+  task.input_time = PlatfEndian::ToBE(task.input_time);
+  task.taskid = PlatfEndian::ToBE(task.taskid);
+
   for (int i = 0; i < task.num_of_tp; i++)
   {
-    task.lon[i] = Swap32ToBE(task.lon[i]);
-    task.lat[i] = Swap32ToBE(task.lat[i]);
+    task.lon[i] = PlatfEndian::ToBE(task.lon[i]);
+    task.lat[i] = PlatfEndian::ToBE(task.lat[i]);
   }
 } // ConvertToBE()
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// Convert data to byte-stream for sending to device.
+///
+/// \return number of bytes converted
+///
+int DevLXNano::Decl::ToStream
+(
+  void* buf ///< [out] buffer (large enough for storing all data)
+)
+{
+  uint32_t tmp;
+  byte* dst = (byte*) buf;
+
+  #define LX_ADD_TO_STREAM(var) { memcpy(dst, &var, sizeof(var)); dst += sizeof(var); }
+  LX_ADD_TO_STREAM(flight.flag);
+  tmp = PlatfEndian::ToBE(flight.oo_id);
+  LX_ADD_TO_STREAM(tmp);
+  LX_ADD_TO_STREAM(flight.pilot);
+  LX_ADD_TO_STREAM(flight.glider);
+  LX_ADD_TO_STREAM(flight.reg_num);
+  LX_ADD_TO_STREAM(flight.cmp_num);
+  LX_ADD_TO_STREAM(flight.cmp_cls);
+  LX_ADD_TO_STREAM(flight.observer);
+  LX_ADD_TO_STREAM(flight.gpsdatum);
+  LX_ADD_TO_STREAM(flight.fix_accuracy);
+  LX_ADD_TO_STREAM(flight.gps);
+
+  LX_ADD_TO_STREAM(task.flag);
+  tmp = PlatfEndian::ToBE(task.input_time);
+  LX_ADD_TO_STREAM(tmp);
+  LX_ADD_TO_STREAM(task.di);
+  LX_ADD_TO_STREAM(task.mi);
+  LX_ADD_TO_STREAM(task.yi);
+  LX_ADD_TO_STREAM(task.fd);
+  LX_ADD_TO_STREAM(task.fm);
+  LX_ADD_TO_STREAM(task.fy);
+  tmp = PlatfEndian::ToBE(task.taskid);
+  LX_ADD_TO_STREAM(tmp);
+  LX_ADD_TO_STREAM(task.num_of_tp);
+
+  for (int i = 0; i < task.num_of_tp; i++)
+    LX_ADD_TO_STREAM(task.tpt[i]);
+
+  for (int i = 0; i < task.num_of_tp; i++)
+  {
+    tmp = PlatfEndian::ToBE(task.lon[i]);
+    LX_ADD_TO_STREAM(tmp);
+  }
+
+  for (int i = 0; i < task.num_of_tp; i++)
+  {
+    tmp = PlatfEndian::ToBE(task.lat[i]);
+    LX_ADD_TO_STREAM(tmp);
+  }
+
+  for (int i = 0; i < task.num_of_tp; i++)
+    LX_ADD_TO_STREAM(task.name[i]);
+
+  LX_ADD_TO_STREAM(crc);
+
+  return(dst - (byte*) buf);
+} // ToStream()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

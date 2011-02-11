@@ -11,19 +11,16 @@
 #include "Dialogs.h"
 #include "devBase.h"
 
-//____________________________________________________local_storage_definitions_
-
-static const union 
-{
-  byte      abTest[4];
-  uint32_t  u32Test;
-  
-  bool IsBig() const { return( u32Test == 0x44332211); }
-} platfEndian = {{ 0x44, 0x33, 0x22, 0x11 }};
-
-
 //____________________________________________________________class_definitions_
 
+
+// #############################################################################
+// *****************************************************************************
+//
+//   DevBase
+//
+// *****************************************************************************
+// #############################################################################
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -205,9 +202,9 @@ bool DevBase::StopRxThread
 )
 {
   if (!d->Com->StopRxThread())
-  { //TODO
-    // LKTOKEN  _@M1413_ = "Cannot stop RX thread!"
-    _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1413_")));
+  {
+    // LKTOKEN  _@M951_ = "Cannot stop RX thread!"
+    _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M951_")));
     return(false);
   }
 
@@ -230,9 +227,9 @@ bool DevBase::StartRxThread
 )
 {
   if (!d->Com->StartRxThread())
-  { //TODO
-    // LKTOKEN  _@M1413_ = "Cannot start RX thread!"
-    _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1413_")));
+  {
+    // LKTOKEN  _@M761_ = "Unable to Start RX Thread on Port"
+    _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M761_")));
     return(false);
   }
 
@@ -259,9 +256,9 @@ bool DevBase::SetRxTimeout
   orgTimeout = d->Com->SetRxTimeout(newTimeout);
 
   if (orgTimeout < 0)
-  { //TODO
-    // LKTOKEN  _@M1413_ = "Cannot set COM port pars!"
-    _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1413_")));
+  {
+    // LKTOKEN  _@M759_ = "Unable to Change Settings on Port"
+    _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M759_")));
     return(false);
   }
 
@@ -287,11 +284,14 @@ bool DevBase::ComWrite
 {
   if (!d->Com->Write(data, length))
   {
-    //TODO: better msg: Cannot send data to COM
-    // LKTOKEN  _@M1411_ = "Device not connected!"
-    _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1411_")));
+    // LKTOKEN  _@M952_ = "Cannot write data to Port!"
+    _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M952_")));
+    StartupStore(_T("ComWrite:  ER [%02X] len=%d%s"), ((const unsigned char*) data)[0], length, NEWLINE);
     return(false);
   }
+
+  //TODO: delete
+  StartupStore(_T("ComWrite:  OK [%02X] len=%d%s"), ((const  unsigned char*) data)[0], length, NEWLINE);
 
   return(true);
 } // ComWrite()
@@ -318,8 +318,11 @@ bool DevBase::ComWrite
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Reads data from COM port and checks if they contain expected data.
-/// Up to @p waitChars characters is read, then @c false is returned if
+/// Up to @p checkChars characters is read, then @c false is returned if
 /// expected data stream has not been found.
+///
+/// If @p rxBuf <> @c NULL, all read characters are stored in the buffer.
+/// It must be large enough to store up to @p checkChars.
 ///
 /// @retval true  expected data received
 /// @retval false error (description in @p errBuf)
@@ -330,37 +333,47 @@ bool DevBase::ComExpect
   PDeviceDescriptor_t d,    ///< device descriptor
   const void* expected,     ///< expected data
   int         length,       ///< data length [bytes]
-  int         waitChars,    ///< maximum characters to read
+  int         checkChars,   ///< maximum characters to read and check
+  void*       rxBuf,        ///< [out] received data (up to checkChars)
   unsigned    errBufSize,   ///< error message buffer size
   TCHAR       errBuf[]      ///< [out] error message
 )
 {
 //TODO - delete:
-//return(true);
-  
-  char ch;
-  const char* pe = (const char*) expected;
+return(true);
+
+  int ch;
+  char* prx = (char*) rxBuf;
+  const char* pe  = (const char*) expected;
 
   if (length <= 0)
     return(true);
 
   while ((ch = d->Com->GetChar()) != EOF)
   {
+    if (prx != NULL)
+      *prx++ = ch;
+
     if (ch == *pe)
     {
       if ((++pe - (const char*) expected) == length)
+      {
+        StartupStore(_T("ComExpect: OK [%02X] check=%d%s"), (unsigned) ch, checkChars, NEWLINE);
         return(true);
+      }
     }
     else
       pe = (const char*) expected;
 
-    if (--waitChars <= 0)
+    if (--checkChars <= 0)
       break;
   }
 
-  //TODO: better msg: Device not responding
-  // LKTOKEN  _@M1411_ = "Device not connected!"
-  _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1411_")));
+  //TODO: delete
+  StartupStore(_T("ComExpect: ER [%02X] check=%d%s"), (unsigned) ch, checkChars, NEWLINE);
+
+  // LKTOKEN  _@M1414_ = "Device not responsive!"
+  _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1414_")));
 
   return(false);
 } // ComExpect()
@@ -368,8 +381,11 @@ bool DevBase::ComExpect
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Reads data from COM port and checks if they contain expected character.
-/// Up to @p waitChars characters is read, then @c false is returned if
+/// Up to @p checkChars characters is read, then @c false is returned if
 /// expected character has not been found.
+///
+/// If @p rxBuf <> @c NULL, all read characters are stored in the buffer.
+/// It must be large enough to store up to @p checkChars.
 ///
 /// @retval true  expected data received
 /// @retval false error (description in @p errBuf)
@@ -379,19 +395,23 @@ bool DevBase::ComExpect
 (
   PDeviceDescriptor_t d,    ///< device descriptor
   char        expected,     ///< expected character
-  int         waitChars,    ///< maximum characters to read
+  int         checkChars,   ///< maximum characters to read
+  void*       rxBuf,        ///< [out] received data (up to checkChars)
   unsigned    errBufSize,   ///< error message buffer size
   TCHAR       errBuf[]      ///< [out] error message
 )
 {
-  return(ComExpect(d, &expected, 1, waitChars, errBufSize, errBuf));
+  return(ComExpect(d, &expected, 1, checkChars, rxBuf, errBufSize, errBuf));
 } // ComExpect()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Reads data from COM port and checks if they contain expected string.
-/// Up to @p waitChars characters is read, then @c false is returned if
+/// Up to @p checkChars characters is read, then @c false is returned if
 /// expected string has not been found.
+///
+/// If @p rxBuf <> @c NULL, all read characters are stored in the buffer.
+/// It must be large enough to store up to @p checkChars.
 ///
 /// @retval true  Rx thread started
 /// @retval false error (description in @p errBuf)
@@ -401,14 +421,41 @@ bool DevBase::ComExpect
 (
   PDeviceDescriptor_t d,    ///< device descriptor
   const char* expected,     ///< expected string
-  int         waitChars,    ///< maximum characters to read
+  int         checkChars,   ///< maximum characters to read
+  void*       rxBuf,        ///< [out] received data (up to checkChars)
   unsigned    errBufSize,   ///< error message buffer size
   TCHAR       errBuf[]      ///< [out] error message
 )
 {
   return(ComExpect(
-    d, expected, strlen(expected), waitChars, errBufSize, errBuf));
+    d, expected, strlen(expected), checkChars, rxBuf, errBufSize, errBuf));
 } // ComExpect()
+
+
+
+// #############################################################################
+// *****************************************************************************
+//
+//   PlatfEndian
+//
+// *****************************************************************************
+// #############################################################################
+
+/// endianness flag - @c true for little endian
+//static
+bool PlatfEndian::little = PlatfEndian::IsLittle();
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// Initialization only function.
+///
+//static
+bool PlatfEndian::IsLittle()
+{
+  unsigned int test = 0;
+  ((byte*) &test)[0] = 1;
+  return(test == 1);
+} // IsLittle()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -417,16 +464,16 @@ bool DevBase::ComExpect
 /// @return @p value in bin-endian format
 ///
 //static
-uint32_t DevBase::Swap32ToBE
+uint32_t PlatfEndian::ToBE
 (
   uint32_t value ///< value to be returned in BE
 )
 {
-  if (platfEndian.IsBig())
+  if (IsBE())
     return(value); // there's no need of conversion on BE platform
   else
-    return((uint32_t) ((byte*)&value)[3] + 
-           (uint32_t)(((byte*)&value)[2] << 8) + 
+    return((uint32_t) ((byte*)&value)[3] +
+           (uint32_t)(((byte*)&value)[2] << 8) +
            (uint32_t)(((byte*)&value)[1] << 16) +
            (uint32_t)(((byte*)&value)[0] << 24));
-} // Swap32ToBE()
+} // ToBE()
