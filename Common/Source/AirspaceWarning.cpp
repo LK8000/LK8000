@@ -255,21 +255,21 @@ void CAirspaceManager::AirspaceWarnListCalcDistance(NMEA_INFO *Basic, DERIVED_IN
     alt = (int)Basic->Altitude;
   }
   agl = (int)Calculated->AltitudeAGL;
-
-  _csairspaces.Lock();
-  distance = airspace->Range(Basic->Longitude, Basic->Latitude, fbearing);
-  if (distance < 0) distance = 0;
-  if (airspace->Base()->Base != abAGL) {
-      vDistanceBase = alt - (int)(airspace->Base()->Altitude);
-  } else {
-      vDistanceBase = agl - (int)(airspace->Base()->AGL);
+  if (1) {
+	CCriticalSection::CGuard guard(_csairspaces);
+	distance = airspace->Range(Basic->Longitude, Basic->Latitude, fbearing);
+	if (distance < 0) distance = 0;
+	if (airspace->Base()->Base != abAGL) {
+		vDistanceBase = alt - (int)(airspace->Base()->Altitude);
+	} else {
+		vDistanceBase = agl - (int)(airspace->Base()->AGL);
+	}
+	if (airspace->Top()->Base != abAGL) {
+		vDistanceTop  = alt - (int)(airspace->Top()->Altitude);
+	} else {
+		vDistanceTop  = agl - (int)(airspace->Top()->AGL);
+	}
   }
-  if (airspace->Top()->Base != abAGL) {
-      vDistanceTop  = alt - (int)(airspace->Top()->Altitude);
-  } else {
-      vDistanceTop  = agl - (int)(airspace->Top()->AGL);
-  }
-  _csairspaces.UnLock();
 
   // EntryTime = ToDo
   if (Bearing) *Bearing = (int)fbearing;
@@ -1048,7 +1048,7 @@ int LKAirspaceDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   int   vDistance = 0;
   int   Bearing = 0;
 
-  CAirspaceManager::instance()->AirspaceWarnListCalcDistance(Basic, Calculated, airspace, &hDistance, &Bearing, &vDistance);
+  CAirspaceManager::Instance().AirspaceWarnListCalcDistance(Basic, Calculated, airspace, &hDistance, &Bearing, &vDistance);
 
    //if (vDistance>100||vDistance<-100) return 99999;
    //	else

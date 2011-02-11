@@ -1513,7 +1513,7 @@ void InputEvents::eventTerrainTopology(const TCHAR *misc) {
 void InputEvents::eventClearWarningsOrTerrainTopology(const TCHAR *misc) {
 	(void)misc;
 #ifdef LKAIRSPACE
-  if (CAirspaceManager::instance()->ClearAirspaceWarnings(true,false)) {
+  if (CAirspaceManager::Instance().ClearAirspaceWarnings(true,false)) {
 #else
   if (ClearAirspaceWarnings(true,false)) {
 #endif
@@ -1533,10 +1533,10 @@ void InputEvents::eventClearWarningsOrTerrainTopology(const TCHAR *misc) {
 void InputEvents::eventClearAirspaceWarnings(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("day")) == 0) {
     // JMW clear airspace warnings for entire day (for selected airspace)
-    CAirspaceManager::instance()->ClearAirspaceWarnings(true,true);
+    CAirspaceManager::Instance().ClearAirspaceWarnings(true,true);
   } else {
     // default, clear airspace for short acknowledgement time
-    CAirspaceManager::instance()->ClearAirspaceWarnings(true,false);
+    CAirspaceManager::Instance().ClearAirspaceWarnings(true,false);
   }
 }
 #else
@@ -2554,7 +2554,7 @@ void InputEvents::eventNearestAirspaceDetails(const TCHAR *misc) {
 
   // StartHourglassCursor();
 #ifdef LKAIRSPACE
-  const CAirspace *found = CAirspaceManager::instance()->FindNearestAirspace(GPS_INFO.Longitude, GPS_INFO.Latitude,
+  const CAirspace *found = CAirspaceManager::Instance().FindNearestAirspace(GPS_INFO.Longitude, GPS_INFO.Latitude,
 		      &nearestdistance, &nearestbearing );
   if (found != NULL) {
 	dlgAirspaceDetails(found);

@@ -137,7 +137,7 @@ static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 	QNH = StrToDouble(ctemp,NULL);
 	// StartupStore(_T("... SET QNH= %.1f\n"),QNH);
 #ifdef LKAIRSPACE
-	CAirspaceManager::instance()->QnhChangeNotify(QNH);
+	CAirspaceManager::Instance().QnhChangeNotify(QNH);
 #else
 	AirspaceQnhChangeNotify(QNH);
 #endif

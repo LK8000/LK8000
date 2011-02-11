@@ -1494,7 +1494,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
     }
   }
 #ifdef LKAIRSPACE
-  CAirspaceManager::instance()->ScanAirspaceLine(d_lat, d_lon, d_h, d_airspace);
+  CAirspaceManager::Instance().ScanAirspaceLine(d_lat, d_lon, d_h, d_airspace);
 #else
   ScanAirspaceLine(d_lat, d_lon, d_h, d_airspace);
 #endif
@@ -2296,7 +2296,7 @@ void dlgAnalysisShowModal(void){
 
   MapWindow::RequestFastRefresh();
 #ifdef LKAIRSPACE
-  CAirspaceManager::instance()->ClearAirspaceWarnings(false);
+  CAirspaceManager::Instance().ClearAirspaceWarnings(false);
 #else
   ClearAirspaceWarnings(false); // airspace warning gets refreshed
 #endif

@@ -703,12 +703,12 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   // See also same redundant check inside AirspaceWarning
 #ifdef LKAIRSPACE
-	if (CAirspaceManager::instance()->NumberofAirspaces() > 0) {
+	if (CAirspaceManager::Instance().NumberofAirspaces() > 0) {
 	  if (Basic->Time<= lastTime) {
 		lastTime = Basic->Time-6;
 	  } else {
 		// calculate airspace warnings every 6 seconds
-		CAirspaceManager::instance()->AirspaceWarning( Basic, Calculated);
+		CAirspaceManager::Instance().AirspaceWarning( Basic, Calculated);
 	  }
 	}
 #else
@@ -4794,7 +4794,7 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			Units::GetUnitName(Units::GetUserAltitudeUnit()));
 		DoStatusMessage(qmes);
 #ifdef LKAIRSPACE
-		CAirspaceManager::instance()->QnhChangeNotify(QNH);
+		CAirspaceManager::Instance().QnhChangeNotify(QNH);
 #else
 		AirspaceQnhChangeNotify(QNH);
 #endif

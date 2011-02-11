@@ -537,7 +537,7 @@ void MapWindow::ScanVisibility(rectObj *bounds_active) {
 
   // far visibility for airspace
 #ifdef LKAIRSPACE
-  CAirspaceManager::instance()->SetFarVisible( *bounds_active );
+  CAirspaceManager::Instance().SetFarVisible( *bounds_active );
 #else
   if (AirspaceCircle) {
     for (AIRSPACE_CIRCLE* circ = AirspaceCircle;
@@ -1845,7 +1845,7 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
   COLORREF whitecolor = RGB(0xff,0xff,0xff);
 #ifdef LKAIRSPACE
   CAirspaceList::iterator it;
-  CAirspaceList airspaces_to_draw = CAirspaceManager::instance()->GetAirspacesToDraw();
+  CAirspaceList airspaces_to_draw = CAirspaceManager::Instance().GetAirspacesToDraw();
   int airspace_type;
 #else
   unsigned int i;

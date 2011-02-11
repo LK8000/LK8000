@@ -112,8 +112,8 @@ static void DoAck(int Ack){
   if (Idx < 0)
     Idx = 0;
 #ifdef LKAIRSPACE
-  if (CAirspaceManager::instance()->AirspaceWarnGetItem(Idx, pAS)){
-    CAirspaceManager::instance()->AirspaceWarnDoAck(pAS.ID, Ack);
+  if (CAirspaceManager::Instance().AirspaceWarnGetItem(Idx, pAS)){
+    CAirspaceManager::Instance().AirspaceWarnDoAck(pAS.ID, Ack);
     wAirspaceList->Redraw();
   }
 #else
@@ -389,7 +389,7 @@ static void OnAirspaceListItemPaint(WindowControl * Sender, HDC hDC){
 
     InflateRect(&rc, IBLSCALE(-2), IBLSCALE(-2));
 #ifdef LKAIRSPACE
-    if (!CAirspaceManager::instance()->AirspaceWarnGetItem(i, pAS)) return;
+    if (!CAirspaceManager::Instance().AirspaceWarnGetItem(i, pAS)) return;
 #else
     if (!AirspaceWarnGetItem(i, pAS)) return;
 #endif
@@ -681,7 +681,7 @@ static bool FindFocus() {
 
   FocusedIdx = 0;
 #ifdef LKAIRSPACE
-  FocusedIdx = CAirspaceManager::instance()->AirspaceWarnFindIndexByID(FocusedID);
+  FocusedIdx = CAirspaceManager::Instance().AirspaceWarnFindIndexByID(FocusedID);
 #else
   FocusedIdx = AirspaceWarnFindIndexByID(FocusedID);
 #endif
@@ -695,7 +695,7 @@ static bool FindFocus() {
     }
   }
 #ifdef LKAIRSPACE
-  SelectedIdx = CAirspaceManager::instance()->AirspaceWarnFindIndexByID(SelectedID);
+  SelectedIdx = CAirspaceManager::Instance().AirspaceWarnFindIndexByID(SelectedID);
 #else
   SelectedIdx = AirspaceWarnFindIndexByID(SelectedID);
 #endif
@@ -719,7 +719,7 @@ int UserMsgNotify(WindowControl *Sender, MSG *msg){
   if (actListSizeChange){
     actListSizeChange = false;
 #ifdef LKAIRSPACE
-    Count = CAirspaceManager::instance()->AirspaceWarnGetItemCount();
+    Count = CAirspaceManager::Instance().AirspaceWarnGetItemCount();
 #else
     Count = AirspaceWarnGetItemCount();
 #endif
@@ -858,7 +858,7 @@ bool dlgAirspaceWarningShow(void){
 
 bool dlgAirspaceWarningIsEmpty(void) {
 #ifdef LKAIRSPACE
-    return (CAirspaceManager::instance()->AirspaceWarnGetItemCount() == 0);
+    return (CAirspaceManager::Instance().AirspaceWarnGetItemCount() == 0);
 #else
   return (AirspaceWarnGetItemCount()==0);
 #endif
@@ -879,7 +879,7 @@ bool dlgAirspaceWarningShowDlg(bool Force){
   if (!actShow && !Force)
     return false;
 #ifdef LKAIRSPACE
-    Count = CAirspaceManager::instance()->AirspaceWarnGetItemCount();
+    Count = CAirspaceManager::Instance().AirspaceWarnGetItemCount();
 #else
   Count = AirspaceWarnGetItemCount();
 #endif
@@ -969,7 +969,7 @@ int dlgAirspaceWarningInit(void){
       wAirspaceListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmAirspaceWarningListEntry"));
       wAirspaceListEntry->SetCanFocus(true);
 #ifdef LKAIRSPACE
-      CAirspaceManager::instance()->AirspaceWarnListAddNotifier(AirspaceWarningNotify);
+      CAirspaceManager::Instance().AirspaceWarnListAddNotifier(AirspaceWarningNotify);
 #else
       AirspaceWarnListAddNotifier(AirspaceWarningNotify);
 #endif
@@ -998,7 +998,7 @@ int dlgAirspaceWarningDeInit(void){
 
   // 110106  missing delete brush objects here. Minor malis.
 #ifdef LKAIRSPACE
-  CAirspaceManager::instance()->AirspaceWarnListRemoveNotifier(AirspaceWarningNotify);
+  CAirspaceManager::Instance().AirspaceWarnListRemoveNotifier(AirspaceWarningNotify);
 #else
   AirspaceWarnListRemoveNotifier(AirspaceWarningNotify);
 #endif

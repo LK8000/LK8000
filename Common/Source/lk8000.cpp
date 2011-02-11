@@ -1339,9 +1339,9 @@ void SettingsLeave() {
   
   if(AIRSPACEFILECHANGED) {
 #ifdef LKAIRSPACE
-	CAirspaceManager::instance()->CloseAirspaces();
-	CAirspaceManager::instance()->ReadAirspaces();
-	CAirspaceManager::instance()->SortAirspaces();
+	CAirspaceManager::Instance().CloseAirspaces();
+	CAirspaceManager::Instance().ReadAirspaces();
+	CAirspaceManager::Instance().SortAirspaces();
 #else
 	CloseAirspace();
 	ReadAirspace();
@@ -2158,8 +2158,8 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   StartupStore(TEXT(". RASP load%s"),NEWLINE);
   RASP.Scan(GPS_INFO.Latitude, GPS_INFO.Longitude);
 #ifdef LKAIRSPACE
-  CAirspaceManager::instance()->ReadAirspaces();
-  CAirspaceManager::instance()->SortAirspaces();
+  CAirspaceManager::Instance().ReadAirspaces();
+  CAirspaceManager::Instance().SortAirspaces();
 #else
   ReadAirspace();
   SortAirspace();
@@ -3482,7 +3482,7 @@ void Shutdown(void) {
   DeleteObject(StatisticsFont);  
   DeleteObject(TitleSmallWindowFont);
 #ifdef LKAIRSPACE  
-  CAirspaceManager::instance()->CloseAirspaces();
+  CAirspaceManager::Instance().CloseAirspaces();
 #else
   if(AirspaceArea != NULL)   LocalFree((HLOCAL)AirspaceArea);
   if(AirspacePoint != NULL)  LocalFree((HLOCAL)AirspacePoint);
@@ -5450,7 +5450,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   }
   if (_tcsstr(OutBuffer, TEXT("$(CheckAirspace)"))) {
 #ifdef LKAIRSPACE
-	if (!CAirspaceManager::instance()->ValidAirspaces()) {
+	if (!CAirspaceManager::Instance().ValidAirspaces()) {
 #else
 	if (!ValidAirspace()) {
 #endif

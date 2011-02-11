@@ -63,7 +63,7 @@ static void OnQnhData(DataField *Sender, DataField::DataAccessKind_t Mode){
 		if (CALCULATED_INFO.Flying) QNH=fabs(QNH); 
 		devPutQNH(devAll(), QNH);
 #ifdef LKAIRSPACE
-		CAirspaceManager::instance()->QnhChangeNotify(QNH);
+		CAirspaceManager::Instance().QnhChangeNotify(QNH);
 #else
 		AirspaceQnhChangeNotify(QNH);
 #endif

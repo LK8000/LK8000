@@ -8,16 +8,7 @@
 #include "StdAfx.h"
 #include "LKAirspace.h"
 #include "externs.h"
-// #include "Dialogs.h"
-// #include "Utils.h"
-// #include "XCSoar.h"
-// #include "MapWindow.h"
 #include "RasterTerrain.h"
-// #include <windows.h>
-// #include <commctrl.h>
-// #include <math.h>
-// #include <aygshell.h>
-// #include "mapshape.h"
 // 
 #include <tchar.h>
 #include <ctype.h>
@@ -58,15 +49,16 @@ static const int k_nAreaType[k_nAreaCount] = {
 					CLASSG};
 
 
-CAirspaceManager *CAirspaceManager::_instance = NULL; 
-
 //for Draw()
 extern void ClipPolygon(HDC hdc, POINT *ptin, unsigned int n, 
                  RECT rc, bool fill=true);
 
+CAirspaceManager CAirspaceManager::_instance = CAirspaceManager(CAirspaceManager::_instance);
 
 
-
+//
+// CAIRSPACE CLASEE
+//
 
 void CAirspace::Dump() const
 {
@@ -125,9 +117,9 @@ void CAirspace::QnhChangeNotify()
   if (_base.Base == abFL) _base.Altitude = AltitudeToQNHAltitude((_base.FL * 100)/TOFEET);
 }
 
-void CAirspace::SetFarVisible(const rectObj &bounds_active)
+bool CAirspace::GetFarVisible(const rectObj &bounds_active) const
 {
-  _farvisible = (msRectOverlap(&_bounds, &bounds_active) == MS_TRUE);
+  return (msRectOverlap(&_bounds, &bounds_active) == MS_TRUE);
 	  // These are redundant here, msRectOverlap returns true in that cases also.
 	  //||
 	  //(msRectContained(bounds_active, &_bounds) == MS_TRUE) ||
@@ -145,7 +137,9 @@ inline bool CheckInsideLongitude(const double &longitude, const double &lon_min,
   }
 }
 
-
+//
+// CAIRSPACE_CIRCLE CLASS
+//
 CAirspace_Circle::CAirspace_Circle(const double &Center_Latitude, const double &Center_Longitude, const double &Airspace_Radius):
 		CAirspace(),
 		_latcenter(Center_Latitude),
@@ -225,7 +219,6 @@ void CAirspace_Circle::CalcBounds()
 void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify) 
 {
   _visible = 0;
-  if (!_farvisible) return;
   if (iAirspaceMode[_type]%2 == 1) {
     double basealt;
     double topalt;
@@ -239,7 +232,7 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
     } else {
       topalt = _top.AGL + CALCULATED_INFO.TerrainAlt;
     }
-    if(CAirspaceManager::CheckAirspaceAltitude(basealt, topalt)) {
+    if(CAirspaceManager::Instance().CheckAirspaceAltitude(basealt, topalt)) {
       if (msRectOverlap(&_bounds, &screenbounds_latlon) 
          // || msRectContained(&screenbounds_latlon, &_bounds) is redundant here, msRectOverlap also returns true on containing!
 		 ) {
@@ -265,9 +258,8 @@ void CAirspace_Circle::Draw(HDC hDCTemp, const RECT &rc, bool param1) const
 
 
 //
-// AIRSPACE AREA
+// CAIRSPACE AREA CLASS
 //
-
 void CAirspace_Area::Dump() const
 {
   CGeoPointList::const_iterator i;
@@ -278,9 +270,6 @@ void CAirspace_Area::Dump() const
 	StartupStore(TEXT("  Point lat:%lf, lon:%lf%s"), i->Latitude(), i->Longitude(), NEWLINE);
   }
 }
-
-
-
 
 void CAirspace_Area::ScreenClosestPoint(const POINT &p1, const POINT &p2, 
 			const POINT &p3, POINT *p4, int offset) const
@@ -340,46 +329,6 @@ double CAirspace_Area::ScreenCrossTrackError(double lon1, double lat1,
   return tmpd;
 }
 
-bool CAirspaceManager::CheckAirspaceAltitude(const double &Base, const double &Top)
-{
-  double alt;
-  if (GPS_INFO.BaroAltitudeAvailable) {
-    alt = GPS_INFO.BaroAltitude;
-  } else {
-    alt = GPS_INFO.Altitude;
-  }
-
-  switch (AltitudeMode)
-    {
-    case ALLON : return TRUE;
-		
-    case CLIP : 
-      if(Base < ClipAltitude)
-	return TRUE;
-      else
-	return FALSE;
-
-    case AUTO:
-      if( ( alt > (Base - AltWarningMargin) ) 
-	  && ( alt < (Top + AltWarningMargin) ))
-	return TRUE;
-      else
-	return FALSE;
-
-    case ALLBELOW:
-      if(  (Base - AltWarningMargin) < alt )
-	return  TRUE;
-      else
-	return FALSE;
-    case INSIDE:
-      if( ( alt >= (Base) ) && ( alt < (Top) ))
-	return TRUE;
-      else
-        return FALSE;
-    case ALLOFF : return FALSE;
-    }
-  return TRUE;
-}
 
 ///////////////////////////////////////////////////
 
@@ -525,7 +474,6 @@ void CAirspace_Area::CalcBounds()
 void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify) 
 {
   _visible = 0;
-  if (!_farvisible) return;
   if (iAirspaceMode[_type]%2 == 1) {
     double basealt;
     double topalt;
@@ -539,7 +487,7 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
     } else {
       topalt = _top.AGL + CALCULATED_INFO.TerrainAlt;
     }
-    if(CAirspaceManager::CheckAirspaceAltitude(basealt, topalt)) {
+    if(CAirspaceManager::Instance().CheckAirspaceAltitude(basealt, topalt)) {
       if (msRectOverlap(&_bounds, &screenbounds_latlon) 
          // || msRectContained(&screenbounds_latlon, &_bounds) is redundant here, msRectOverlap also returns true on containing!
 		 ) {
@@ -578,6 +526,47 @@ bool CAirspaceManager::StartsWith(const TCHAR *Text, const TCHAR *LookFor) const
     if (*Text != *LookFor) return FALSE;
     ++Text; ++LookFor;
   }
+}
+
+bool CAirspaceManager::CheckAirspaceAltitude(const double &Base, const double &Top) const
+{
+  double alt;
+  if (GPS_INFO.BaroAltitudeAvailable) {
+    alt = GPS_INFO.BaroAltitude;
+  } else {
+    alt = GPS_INFO.Altitude;
+  }
+
+  switch (AltitudeMode)
+    {
+    case ALLON : return TRUE;
+		
+    case CLIP : 
+      if(Base < ClipAltitude)
+	return TRUE;
+      else
+	return FALSE;
+
+    case AUTO:
+      if( ( alt > (Base - AltWarningMargin) ) 
+	  && ( alt < (Top + AltWarningMargin) ))
+	return TRUE;
+      else
+	return FALSE;
+
+    case ALLBELOW:
+      if(  (Base - AltWarningMargin) < alt )
+	return  TRUE;
+      else
+	return FALSE;
+    case INSIDE:
+      if( ( alt >= (Base) ) && ( alt < (Top) ))
+	return TRUE;
+      else
+        return FALSE;
+    case ALLOFF : return FALSE;
+    }
+  return TRUE;
 }
 
 void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const
@@ -924,9 +913,10 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
 				}
 			  newairspace->Init(Name, Type, Base, Top);
 
-			  _csairspaces.Lock();
-			  _airspaces.push_back(newairspace);
-			  _csairspaces.UnLock();
+			  if (1) {
+				CCriticalSection::CGuard guard(_csairspaces);
+				_airspaces.push_back(newairspace);
+			  }
 			  
 			  Name[0]='\0';
 			  Radius = 0;
@@ -1094,16 +1084,14 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
 		newairspace->SetPoints(points);
 	}
 	newairspace->Init(Name, Type, Base, Top);
-	_csairspaces.Lock();
+	CCriticalSection::CGuard guard(_csairspaces);
 	_airspaces.push_back(newairspace);
-	_csairspaces.UnLock();
   }
 
-  _csairspaces.Lock();
+  CCriticalSection::CGuard guard(_csairspaces);
   StartupStore(TEXT(". Readed %d airspaces%s"), _airspaces.size(), NEWLINE);
 //  list<CAirspace*>::iterator it;
 //  for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) (*it)->Dump();
-  _csairspaces.UnLock();
 }
 
 
@@ -1179,10 +1167,12 @@ void CAirspaceManager::CloseAirspaces()
   CAirspaceList::iterator it;
   
   AirspaceWarnListClear();
-  _csairspaces.Lock();
+  CCriticalSection::CGuard guard(_csairspaces);
+
   for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) delete *it;
   _airspaces.clear();
-  _csairspaces.UnLock();
+  _airspaces_near.clear();
+
   StartupStore(TEXT(". CloseLKAirspace%s"),NEWLINE);
 }
 
@@ -1193,9 +1183,10 @@ void CAirspaceManager::QnhChangeNotify(const double &newQNH)
   
   if ( (newQNH != lastQNH) || first) {
 	CAirspaceList::iterator i;
-	_csairspaces.Lock();
+	CCriticalSection::CGuard guard(_csairspaces);
+
 	for(i= _airspaces.begin(); i != _airspaces.end(); ++i) (*i)->QnhChangeNotify();
-	_csairspaces.UnLock();
+
 	first = false;
     lastQNH = newQNH; 
   }
@@ -1203,7 +1194,7 @@ void CAirspaceManager::QnhChangeNotify(const double &newQNH)
 
 
 void CAirspaceManager::ScanAirspaceLine(double lats[], double lons[], double heights[], 
-		      int airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X])
+		      int airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) const
 {		      
 
   int i,j;
@@ -1223,7 +1214,8 @@ void CAirspaceManager::ScanAirspaceLine(double lats[], double lons[], double hei
   lineRect.maxy = max(y1, y1+dy);
 
   CAirspaceList::const_iterator it;
-  _csairspaces.Lock();
+  CCriticalSection::CGuard guard(_csairspaces);
+
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
 	// ignore if outside scan height
 	if ( !((h_max<=(*it)->Base()->Altitude) || (h_min>=(*it)->Top()->Altitude)) ) {
@@ -1244,7 +1236,6 @@ void CAirspaceManager::ScanAirspaceLine(double lats[], double lons[], double hei
 	  } // if overlaps bounds
 	}//if inside height
   } // for iterator
-  _csairspaces.UnLock();
 }
 
 
@@ -1262,7 +1253,7 @@ void CAirspaceManager::ScanAirspaceLine(double lats[], double lons[], double hei
 // This only searches within a range of 100km of the target
 
 const CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, const double &latitude,
-			 double *nearestdistance, double *nearestbearing, double *height)
+			 double *nearestdistance, double *nearestbearing, double *height) const
 {
   double nearestd = 100000; // 100km
   double nearestb = 0;
@@ -1278,7 +1269,8 @@ const CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, 
   double dist;
 
   CAirspaceList::const_iterator it;
-  _csairspaces.Lock();
+  CCriticalSection::CGuard guard(_csairspaces);
+
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
 	type = (*it)->Type();
 	//TODO check index
@@ -1321,7 +1313,6 @@ const CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, 
       }
     }
   } //for
-  _csairspaces.UnLock();
   
   if (nearestdistance) *nearestdistance = nearestd;
   if (nearestbearing) *nearestbearing = nearestb;
@@ -1348,20 +1339,18 @@ void CAirspaceManager::SortAirspaces(void)
 
 }
 
-bool CAirspaceManager::ValidAirspaces(void)
+bool CAirspaceManager::ValidAirspaces(void) const
 {
-  _csairspaces.Lock();
+  CCriticalSection::CGuard guard(_csairspaces);
   bool res = _airspaces.size()>0;
-  _csairspaces.UnLock();
   return res;
 }
 
 
-void CAirspaceManager::AirspaceWarning (NMEA_INFO *Basic, DERIVED_INFO *Calculated) 
+void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated) 
 {
 
-  if(!AIRSPACEWARNINGS)
-      return;
+  if(!AIRSPACEWARNINGS) return;
 
   if ( NumberofAirspaces() <= 0 ) return;
   static bool position_is_predicted = false;
@@ -1401,15 +1390,15 @@ void CAirspaceManager::AirspaceWarning (NMEA_INFO *Basic, DERIVED_INFO *Calculat
   // the most critical or closest. 
 
   CAirspaceList::const_iterator it;
-  _csairspaces.Lock();
-  for (it=_airspaces.begin(); it != _airspaces.end(); ++it) {
+  CCriticalSection::CGuard guard(_csairspaces);
+  
+  for (it=_airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
       if (((((*it)->Base()->Base != abAGL) && (alt >= (*it)->Base()->Altitude))
            || (((*it)->Base()->Base == abAGL) && (agl >= (*it)->Base()->AGL)))
           && ((((*it)->Top()->Base != abAGL) && (alt < (*it)->Top()->Altitude))
            || (((*it)->Top()->Base == abAGL) && (agl < (*it)->Top()->AGL)))) {
 	
-        if ((MapWindow::iAirspaceMode[(*it)->Type()] >= 2) &&
-	    (*it)->Inside(lon, lat)) { 
+        if ((MapWindow::iAirspaceMode[(*it)->Type()] >= 2) && (*it)->Inside(lon, lat)) { 
           AirspaceWarnListAdd(Basic, Calculated, position_is_predicted, *it, false);
         }
 	  }
@@ -1417,64 +1406,67 @@ void CAirspaceManager::AirspaceWarning (NMEA_INFO *Basic, DERIVED_INFO *Calculat
   AirspaceWarnListProcess(Basic, Calculated);
 
   //  UnlockFlightData();  
-  _csairspaces.UnLock();
 
   NearestAirspaceHDist=0;
 }
 
 
-CAirspaceList CAirspaceManager::GetVisibleAirspacesAtPoint(const double &lon, const double &lat)
+CAirspaceList CAirspaceManager::GetVisibleAirspacesAtPoint(const double &lon, const double &lat) const
 {
   CAirspaceList res;
   CAirspaceList::const_iterator it;
-  _csairspaces.Lock();
+  CCriticalSection::CGuard guard(_csairspaces);
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
 	if ((*it)->Visible()) {
 	  if ((*it)->Inside(lon, lat)) res.push_back(*it);
 	}
   }
-  _csairspaces.UnLock();
   return res;
 }
 
 void CAirspaceManager::SetFarVisible(const rectObj &bounds_active) 
 {
+  bool farvisible;
   CAirspaceList::iterator it;
-  _csairspaces.Lock();
-  for (it = _airspaces.begin(); it != _airspaces.end(); ++it) (*it)->SetFarVisible(bounds_active);
-  _csairspaces.UnLock();
+  CCriticalSection::CGuard guard(_csairspaces);
+
+  StartupStore(TEXT("Setfarvisible%s"),NEWLINE);
+  
+  for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
+	farvisible = (*it)->GetFarVisible(bounds_active);
+	if (farvisible) _airspaces_near.push_back(*it);
+  }
 }
 
 
 void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify)
 {
   CAirspaceList::iterator it;
-  _csairspaces.Lock();
-  for (it = _airspaces.begin(); it!= _airspaces.end(); ++it) {
+  CCriticalSection::CGuard guard(_csairspaces);
+
+  for (it = _airspaces_near.begin(); it!= _airspaces_near.end(); ++it) {
 	(*it)->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, ResMapScaleOverDistanceModify);
   }
-  _csairspaces.UnLock();
 }
 
 
-CAirspaceList CAirspaceManager::GetAirspacesToDraw()
+CAirspaceList CAirspaceManager::GetAirspacesToDraw() const
 {
   CAirspaceList res;
   CAirspaceList::const_iterator it;
-  _csairspaces.Lock();
-  for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
+  CCriticalSection::CGuard guard(_csairspaces);
+
+  for (it = _airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
 	if ((*it)->Visible() == 2) res.push_back(*it);
   }
-  _csairspaces.UnLock();
   return res;
 }
 
-CAirspaceList CAirspaceManager::GetAllAirspaces()
+CAirspaceList CAirspaceManager::GetAllAirspaces() const
 {
   CAirspaceList res;
-  _csairspaces.Lock();
+  CCriticalSection::CGuard guard(_csairspaces);
   res = _airspaces;
-  _csairspaces.UnLock();
   return res;
 }
 

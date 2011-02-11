@@ -216,7 +216,7 @@ LRESULT CALLBACK StatusMsgWndTimerProc(HWND hwnd, UINT message,
     }
     MapWindow::RequestFastRefresh();
 #ifdef LKAIRSPACE
-	CAirspaceManager::instance()->ClearAirspaceWarnings(false);
+	CAirspaceManager::Instance().ClearAirspaceWarnings(false);
 #else
     ClearAirspaceWarnings(false); 
 #endif

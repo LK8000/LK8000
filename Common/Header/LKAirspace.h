@@ -10,6 +10,7 @@
 #include "mapshape.h"
 
 #ifdef LKAIRSPACE
+#include "criticalsection.h"
 #include "Calculations.h"
 #include <tchar.h>
 
@@ -57,26 +58,6 @@ private:
 typedef std::list<CGeoPoint> CGeoPointList;
 typedef std::vector<POINT> POINTList;
 
-
-class CCriticalSection
-{
-  CRITICAL_SECTION _criticalSection;
-public:
-  CCriticalSection() { InitializeCriticalSection(&_criticalSection); }
-  ~CCriticalSection() { DeleteCriticalSection(&_criticalSection); }
-  
-  void Lock() { EnterCriticalSection(&_criticalSection); }
-  void UnLock() { LeaveCriticalSection(&_criticalSection); }
-
-public:
-  class CGuard {
-    CCriticalSection &_criticalSection;
-  public:
-    explicit CGuard( CCriticalSection &criticalSection ): _criticalSection(criticalSection) { _criticalSection.Lock(); }
-    ~CGuard() { _criticalSection.UnLock(); }
-  };
-};
-
 // 
 // AIRSPACE BASE CLASS
 //
@@ -89,7 +70,6 @@ public:
 			_base(),
 			_top(),
 			_bounds(),
-			_farvisible(false),
 			_visible(0),
 			_newwarnacknobrush(false)
 			{}
@@ -103,7 +83,7 @@ public:
   virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const {}
   virtual double Range(const double &longitude, const double &latitude, double &bearing) const { return 0.0; }
   void QnhChangeNotify();
-  void SetFarVisible(const rectObj &bounds_active);
+  bool GetFarVisible(const rectObj &bounds_active) const;
   
   // Attributes interface
   void Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top) { _tcsncpy(_name, name, NAME_SIZE); _type = type; memcpy(&_base, &base, sizeof(_base)); memcpy(&_top, &top, sizeof(_top));}
@@ -129,10 +109,7 @@ protected:
   AIRSPACE_ALT _base;
   AIRSPACE_ALT _top;
   rectObj _bounds;
-  bool _farvisible;
-  //AIRSPACE_ACK _ack;
   unsigned char _visible;
-  //unsigned char _warninglevel; // 0= no warning, 1= predicted incursion, 2= entered
   bool _newwarnacknobrush;
 
   void AirspaceAGLLookup(double av_lat, double av_lon);
@@ -195,10 +172,11 @@ private:
 // 
 // AIRSPACE MANAGER CLASS
 //
-typedef std::list<CAirspace*> CAirspaceList;
+typedef std::deque<CAirspace*> CAirspaceList;
 
 //Warning system 
-class AirspaceInfo_c{
+typedef struct _AirspaceInfo_c
+{
 public:
   int    TimeOut;             // in systicks
   int    InsideAckTimeOut;    // downgrade auto ACK timer
@@ -215,7 +193,7 @@ public:
   int    LastListIndex;       // Last index in List, used to sort items with same sort criteria
   int    ID;                  // Unique ID
   int    WarnLevel;           // WarnLevel 0 far away, 1 prdicted entry, 2 predicted entry and close, 3 inside      
-};
+} AirspaceInfo_c;
 typedef enum {asaNull, asaItemAdded, asaItemChanged, asaClearAll, asaItemRemoved, asaWarnLevelIncreased, asaProcessEnd, asaProcessBegin} AirspaceWarningNotifyAction_t;
 typedef void (*AirspaceWarningNotifier_t)(AirspaceWarningNotifyAction_t Action, AirspaceInfo_c *AirSpace) ;
 typedef std::deque<AirspaceWarningNotifier_t> AirspaceWarningNotifiersList;
@@ -226,24 +204,21 @@ typedef std::deque<AirspaceInfo_c> AirspaceWarningsList;
 class CAirspaceManager
 {
 public:
-  static CAirspaceManager *instance() { 
-	if (_instance == NULL) _instance = new CAirspaceManager();
-	return _instance;
-  }
+  static CAirspaceManager& Instance() { return _instance; }
 
   //HELPER FUNCTIONS
-  static bool CheckAirspaceAltitude(const double &Base, const double &Top);
+  bool CheckAirspaceAltitude(const double &Base, const double &Top) const;
 
   // Upper level interfaces
   void ReadAirspaces();
   void CloseAirspaces();
   void QnhChangeNotify(const double &newQNH);
   void ScanAirspaceLine(double lats[], double lons[], double heights[], 
-		      int airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]);
+		      int airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) const;
   const CAirspace* FindNearestAirspace(const double &longitude, const double &latitude,
-			 double *nearestdistance, double *nearestbearing, double *height = NULL);
+			 double *nearestdistance, double *nearestbearing, double *height = NULL) const;
   void SortAirspaces(void);
-  bool ValidAirspaces(void);
+  bool ValidAirspaces(void) const;
 
   //Warning system
   void AirspaceWarning (NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -262,13 +237,13 @@ public:
   void AirspaceWarnListRemoveNotifier(AirspaceWarningNotifier_t Notifier);
 
   //Get airspace details (dlgAirspaceDetails)
-  CAirspaceList GetVisibleAirspacesAtPoint(const double &lon, const double &lat);
-  CAirspaceList GetAllAirspaces();
+  CAirspaceList GetVisibleAirspacesAtPoint(const double &lon, const double &lat) const;
+  CAirspaceList GetAllAirspaces() const;
 
   //Mapwindow drawing
   void SetFarVisible(const rectObj &bounds_active);
   void CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify);
-  CAirspaceList GetAirspacesToDraw();
+  CAirspaceList GetAirspacesToDraw() const;
   
   //Attributes
   unsigned int NumberofAirspaces() { CCriticalSection::CGuard guard(_csairspaces); return _airspaces.size(); }
@@ -276,17 +251,20 @@ public:
 
 
 private:
-  static CAirspaceManager *_instance;
-  CAirspaceManager() : _GlobalClearAirspaceWarnings(false) {}
-  ~CAirspaceManager() { CloseAirspaces(); _instance = NULL; }
+  static CAirspaceManager _instance;
+  CAirspaceManager(const CAirspaceManager&) : _GlobalClearAirspaceWarnings(false) {}
+  CAirspaceManager& operator=(const CAirspaceManager&);
+  ~CAirspaceManager() { CloseAirspaces(); }
   
   // Airspaces data
-  CCriticalSection _csairspaces;
-  CAirspaceList _airspaces;
+  mutable CCriticalSection _csairspaces;
+  CAirspaceList _airspaces;			//ALL
+  CAirspaceList _airspaces_near;	//Near
   bool _GlobalClearAirspaceWarnings;
+  
 
   // Warning system data
-  CCriticalSection _cswarnlist;
+  mutable CCriticalSection _cswarnlist;
   AirspaceWarningNotifiersList _airspaceWarningNotifiers;
   AirspaceWarningsList _airspaceWarnings;
   int _static_unique;														//TODO remove this hack

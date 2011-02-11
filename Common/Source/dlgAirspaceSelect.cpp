@@ -110,10 +110,10 @@ static void OnAirspaceListEnter(WindowControl * Sender,
 			       gettext(TEXT("_@M51_")),
 			       MB_YESNOCANCEL|MB_ICONQUESTION);
 		  if (answer == IDYES) {
-			if (airspace) CAirspaceManager::instance()->AirspaceWarnListAdd(&GPS_INFO, &CALCULATED_INFO, false, airspace, true);
+			if (airspace) CAirspaceManager::Instance().AirspaceWarnListAdd(&GPS_INFO, &CALCULATED_INFO, false, airspace, true);
           } else if (answer == IDNO) {
 			// this will cancel a daily ack
-			if (airspace) CAirspaceManager::instance()->AirspaceWarnListAdd(&GPS_INFO, &CALCULATED_INFO, true, airspace, true);
+			if (airspace) CAirspaceManager::Instance().AirspaceWarnListAdd(&GPS_INFO, &CALCULATED_INFO, true, airspace, true);
 		  }
         }
       }
@@ -258,7 +258,7 @@ static void PrepareData(void){
 
   int index=0;
   double bearing;
-  CAirspaceList Airspaces = CAirspaceManager::instance()->GetAllAirspaces();
+  CAirspaceList Airspaces = CAirspaceManager::Instance().GetAllAirspaces();
   CAirspaceList::const_iterator it;
   for (it=Airspaces.begin(); it != Airspaces.end(); ++it) {
     AirspaceSelectInfo[index].airspace = *it;
@@ -868,7 +868,7 @@ void dlgAirspaceSelect(void) {
   LowLimit = 0;
   ItemIndex = -1;
 #ifdef LKAIRSPACE
-  NumberOfAirspaces = CAirspaceManager::instance()->NumberofAirspaces();
+  NumberOfAirspaces = CAirspaceManager::Instance().NumberofAirspaces();
 #else
   NumberOfAirspaces = NumberOfAirspaceCircles + NumberOfAirspaceAreas;
 #endif

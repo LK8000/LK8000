@@ -131,7 +131,7 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   // in destination 
 #ifdef LKAIRSPACE
   CAirspaceList::iterator it;
-  CAirspaceList airspaces_to_draw = CAirspaceManager::instance()->GetAirspacesToDraw();
+  CAirspaceList airspaces_to_draw = CAirspaceManager::Instance().GetAirspacesToDraw();
   int airspace_type;
 #else
   unsigned int i;
