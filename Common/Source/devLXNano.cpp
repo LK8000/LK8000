@@ -282,11 +282,13 @@ bool DevLXNano::FillFlight(const Declaration_t& lkDecl, Decl& decl, unsigned err
 //static
 bool DevLXNano::FillTask(const Declaration_t& lkDecl, Decl& decl, unsigned errBufSize, TCHAR errBuf[])
 {
+  // to declared Start, TPs, and Finish we will add Takeoff and Landing,
+  // so maximum NB of declared TPs is Decl::max_wp_count - 2
   if (!CheckWPCount(lkDecl,
-      Decl::min_tp_count, Decl::max_tp_count, errBufSize, errBuf))
+      Decl::min_wp_count - 2, Decl::max_wp_count - 2, errBufSize, errBuf))
     return(false);
 
-  int tpCount = lkDecl.num_waypoints;
+  int wpCount = lkDecl.num_waypoints;
 
   Decl::Task& task = decl.task;
 
@@ -307,29 +309,30 @@ bool DevLXNano::FillTask(const Declaration_t& lkDecl, Decl& decl, unsigned errBu
     task.yi = utc->tm_year % 100;
   }
 
-  //??? from XCSoar (maybe year/month/day?)
-  task.input_time = 0x000002D0;
+  task.input_time = 0;
 
   task.fd = task.di;
   task.fm = task.mi;
   task.fy = task.yi;
 
-  task.taskid = 1;
+  task.taskid = 1; // unused, so default is 1
 
-  task.num_of_tp = (char) tpCount;
+  task.num_of_tp = (char) wpCount - 2; // minus Start and Finish
 
-  for (int i = 0; i < tpCount; i++)
+  // add Start, TPs, and Finish
+  for (int i = 0; i < wpCount; i++)
+    decl.SetWaypoint(lkDecl.waypoint[i], Decl::tp_regular, i + 1);
+
+  // add Home as Takeoff and Landing
+  if (HomeWaypoint >= 0 && ValidWayPoint(HomeWaypoint))
   {
-    Decl::TpType type;
-
-    if (i == 0)
-      type = Decl::tp_takeoff;
-    else if (i == tpCount - 1)
-      type = Decl::tp_landing;
-    else
-      type = Decl::tp_regular;
-
-    decl.SetWaypoint(*lkDecl.waypoint[i], type, i);
+    decl.SetWaypoint(&WayPointList[HomeWaypoint], Decl::tp_takeoff, 0);
+    decl.SetWaypoint(&WayPointList[HomeWaypoint], Decl::tp_landing, wpCount + 1);
+  }
+  else
+  {
+    decl.SetWaypoint(NULL, Decl::tp_takeoff, 0);
+    decl.SetWaypoint(NULL, Decl::tp_landing, wpCount + 1);
   }
 
   return(true);
@@ -452,7 +455,7 @@ void DevLXNano::Decl::SetString(StrId str_id, const TCHAR* text)
   char *output;
   int outSize;
 
-  if (str_id >= 0 && str_id < (int) max_tp_count)
+  if (str_id >= 0 && str_id < (int) max_wp_count)
   {
     output = task.name[str_id]; outSize = sizeof(task.name[0]);
   }
@@ -488,18 +491,38 @@ void DevLXNano::Decl::SetString(StrId str_id, const TCHAR* text)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Sets the waypoint data to the @c task member.
 ///
-/// @param wp    waypoint data
+/// @param wp    waypoint data (if @c NULL, LAT/LON will be set to 0)
 /// @param type  waypoint type
 /// @param idx   waypoint index
 ///
-void DevLXNano::Decl::SetWaypoint(const WAYPOINT &wp, TpType type, int idx)
+void DevLXNano::Decl::SetWaypoint(const WAYPOINT* wp, WpType type, int idx)
 {
+  if (wp != NULL)
+  {
     task.tpt[idx] = (byte) type;
-    task.lon[idx] = (int32_t) (wp.Longitude * 60000);
-    task.lat[idx] = (int32_t) (wp.Latitude * 60000);
+    task.lon[idx] = (int32_t) (wp->Longitude * 60000);
+    task.lat[idx] = (int32_t) (wp->Latitude * 60000);
 
     // set TP name
-    SetString((StrId) idx, wp.Name);
+    SetString((StrId) idx, wp->Name);
+  }
+  else
+  {
+    task.tpt[idx] = (byte) type;
+    task.lon[idx] = 0;
+    task.lat[idx] = 0;
+
+    // set TP name
+    const TCHAR* name;
+    switch (type)
+    {
+      case tp_takeoff: name = _T("TAKEOFF"); break;
+      case tp_landing: name = _T("LANDING"); break;
+      case tp_regular: name = _T("WP");      break;
+      default:         name = _T("");        break;
+    }
+    SetString((StrId) idx, name);
+  }
 } // SetWaypoint()
 
 
@@ -552,22 +575,22 @@ int DevLXNano::Decl::ToStream(void* buf)
   LX_ADD_TO_STREAM(tmpI16);
   LX_ADD_TO_STREAM(task.num_of_tp);
 
-  for (int i = 0; i < max_tp_count; i++)
+  for (int i = 0; i < max_wp_count; i++)
     LX_ADD_TO_STREAM(task.tpt[i]);
 
-  for (int i = 0; i < max_tp_count; i++)
+  for (int i = 0; i < max_wp_count; i++)
   {
     tmp = PlatfEndian::To32BE(task.lon[i]);
     LX_ADD_TO_STREAM(tmp);
   }
 
-  for (int i = 0; i < max_tp_count; i++)
+  for (int i = 0; i < max_wp_count; i++)
   {
     tmp = PlatfEndian::To32BE(task.lat[i]);
     LX_ADD_TO_STREAM(tmp);
   }
 
-  for (int i = 0; i < max_tp_count; i++)
+  for (int i = 0; i < max_wp_count; i++)
     LX_ADD_TO_STREAM(task.name[i]);
 
   crc = DevLXNano::CalcCrc(dst - (byte*) buf, buf);

@@ -103,8 +103,8 @@ class DevLXNano::Decl
     /// class constants
     enum Consts
     {
-      min_tp_count =  2,  ///< minimum turn point count
-      max_tp_count = 12,  ///< maximum turn point count
+      min_wp_count =  4,  ///< minimum waypoint count
+      max_wp_count = 12,  ///< maximum waypoint count
     }; // Consts
 
     /// String member ID (all explicitly defined ids here must have value <0)
@@ -131,14 +131,14 @@ class DevLXNano::Decl
       cls_textdef     = 7, ///< class will be written with PKT_CCWRITE)
     }; // Class
 
-    /// turnpoint type
-    enum TpType
+    /// waypoint type
+    enum WpType
     {
-      tp_undef   = 0, ///< turn point will be ignored
-      tp_regular = 1,
+      tp_undef   = 0, ///< waypoint will be ignored
+      tp_regular = 1, ///< Start, TP, Finish
       tp_landing = 2,
       tp_takeoff = 3,
-    }; // TpType
+    }; // WpType
 
     //..........................................................................
 
@@ -164,21 +164,21 @@ class DevLXNano::Decl
       // auto defined
       byte flag;           ///< can be empty for Nano
       int32_t input_time;  ///< time of declaration (not important, because timestamp before takeoff is used)
-      byte di;
-      byte mi;
-      byte yi;
+      byte di;             ///< day of declaration
+      byte mi;             ///< month of declaration
+      byte yi;             ///< year of declaration
 
       // user defined
-      byte fd;
-      byte fm;
-      byte fy;
+      byte fd;             ///< intended day of flight [local date]
+      byte fm;             ///< intended month of flight [local date]
+      byte fy;             ///< intended  year of flight [local date]
 
-      int16_t taskid;
-      char num_of_tp;
-      byte tpt[max_tp_count];     ///< turnpoint type (see @c TpType)
-      int32_t lon[max_tp_count];
-      int32_t lat[max_tp_count];
-      char name[max_tp_count][9];
+      int16_t taskid;      ///< task number of the day (if unused, default is 1)
+      char num_of_tp;      ///< ! nb of TPs between Start and Finish (not nb of WPs initialized)
+      byte tpt[max_wp_count];     ///< waypoint type (see @c WpType)
+      int32_t lon[max_wp_count];
+      int32_t lat[max_wp_count];
+      char name[max_wp_count][9];
     };
 
     //..........................................................................
@@ -196,7 +196,7 @@ class DevLXNano::Decl
     void SetString(StrId str_id, const TCHAR* text);
 
     /// Sets the waypoint data to the @c task member.
-    void SetWaypoint(const WAYPOINT &wp, TpType type, int idx);
+    void SetWaypoint(const WAYPOINT* wp, WpType type, int idx);
 
     /// Initializes @c crc member with computed CRC value.
     void CalcCrc();
