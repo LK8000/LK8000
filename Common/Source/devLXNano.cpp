@@ -63,6 +63,7 @@ static const char PKT_CCWRITE   = '\xD0';
 /// read Lx class (char LxClass[9] + CRC)
 static const char PKT_CCREAD    = '\xCF';
 
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Registers device into device subsystem.
 ///
@@ -80,14 +81,13 @@ bool DevLXNano::Register()
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Installs device specific handlers.
 ///
+/// @param d  device descriptor to be installed
+///
 /// @retval true  when device has been installed successfully
 /// @retval false device cannot be installed
 ///
 //static
-BOOL DevLXNano::Install
-(
-  PDeviceDescriptor_t d ///< device descriptor to be installed
-)
+BOOL DevLXNano::Install(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
@@ -107,10 +107,6 @@ BOOL DevLXNano::Install
     PlatfEndian::IsBE() ? _T("be") : _T("le"),
     PlatfEndian::To32BE(0x01000000), NEWLINE);
 
-  //TODO delete
-  StartupStore(_T("sizeof Flight=%u + Task=%u + crc=%u = Decl=%u %s"),
-    sizeof(Decl::Flight), sizeof(Decl::Task), sizeof(byte), sizeof(Decl), NEWLINE);
-
   return(true);
 } // Install()
 
@@ -128,17 +124,17 @@ const TCHAR* DevLXNano::GetName()
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Writes declaration into the logger.
 ///
+/// @param d           device descriptor to be installed
+/// @param lkDecl      LK task declaration data
+/// @param errBufSize  error message buffer size
+/// @param errBuf[]    [out] error message
+///
 /// @retval true  declaration has been written successfully
 /// @retval false error during declaration (description in @p errBuf)
 ///
 //static
-BOOL DevLXNano::DeclareTask
-(
-  PDeviceDescriptor_t d, ///< device descriptor to be installed
-  Declaration_t*   lkDecl, ///< LK task declaration data
-  unsigned errBufSize,   ///< error message buffer size
-  TCHAR    errBuf[]      ///< [out] error message
-)
+BOOL DevLXNano::DeclareTask(PDeviceDescriptor_t d,
+  Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[])
 {
   Decl  decl;
   Class lxClass;
@@ -193,21 +189,28 @@ BOOL DevLXNano::DeclareTask
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Starts LX NMEA mode.
 ///
+/// @param d           device descriptor
+/// @param errBufSize  error message buffer size
+/// @param errBuf[]    [out] error message
+///
 /// @retval true  mode successfully set
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevLXNano::StartNMEAMode
-(
-  PDeviceDescriptor_t d, ///< device descriptor
-  unsigned errBufSize,   ///< error message buffer size
-  TCHAR    errBuf[]      ///< [out] error message
-)
+bool DevLXNano::StartNMEAMode(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
 {
   ComWrite(d, PKT_SYN, errBufSize, errBuf);
+  ComExpect(d, PKT_ACK, 10, NULL, errBufSize, errBuf);
 
-  if (!ComExpect(d, "$$$", 32, NULL, errBufSize, errBuf))
-    return(false);
+  ComWrite(d, PKT_SYN, errBufSize, errBuf);
+  ComExpect(d, PKT_ACK, 10, NULL, errBufSize, errBuf);
+
+  ComWrite(d, PKT_SYN, errBufSize, errBuf);
+  ComExpect(d, PKT_ACK, 10, NULL, errBufSize, errBuf);
+
+  // XCSoar:
+  //if (!ComExpect(d, "$$$", 32, NULL, errBufSize, errBuf))
+  //  return(false);
 
   return(true);
 } // StartNMEAMode()
@@ -216,16 +219,15 @@ bool DevLXNano::StartNMEAMode
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Starts LX command mode.
 ///
+/// @param d           device descriptor
+/// @param errBufSize  error message buffer size
+/// @param errBuf[]    [out] error message
+///
 /// @retval true  mode successfully set
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevLXNano::StartCMDMode
-(
-  PDeviceDescriptor_t d, ///< device descriptor
-  unsigned errBufSize,   ///< error message buffer size
-  TCHAR    errBuf[]      ///< [out] error message
-)
+bool DevLXNano::StartCMDMode(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
 {
   // we have to wait longer while enabling declaration phase because we have
   // to parse all NMEA sequences that are incomming before declaration mode
@@ -247,17 +249,16 @@ bool DevLXNano::StartCMDMode
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Fills out decl->Flight data.
 ///
+/// @param lkDecl      LK task declaration data
+/// @param decl        task declaration data for device
+/// @param errBufSize  error message buffer size
+/// @param errBuf[]    [out] error message
+///
 /// @retval true  declaration successfully filled out
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevLXNano::FillFlight
-(
-  const Declaration_t& lkDecl, ///< LK task declaration data
-  Decl&    decl,               ///< task declaration data for device
-  unsigned errBufSize,         ///< error message buffer size
-  TCHAR    errBuf[]            ///< [out] error message
-)
+bool DevLXNano::FillFlight(const Declaration_t& lkDecl, Decl& decl, unsigned errBufSize, TCHAR errBuf[])
 {
   decl.SetString(Decl::fl_pilot, lkDecl.PilotName);
   decl.SetString(Decl::fl_glider, lkDecl.AircraftType);
@@ -270,17 +271,16 @@ bool DevLXNano::FillFlight
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Fills out decl->Task data.
 ///
+/// @param lkDecl      LK task declaration data
+/// @param decl        task declaration data for device
+/// @param errBufSize  error message buffer size
+/// @param errBuf[]    [out] error message
+///
 /// @retval true  declaration successfully filled out
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevLXNano::FillTask
-(
-  const Declaration_t& lkDecl, ///< LK task declaration data
-  Decl&    decl,               ///< task declaration data for device
-  unsigned errBufSize,         ///< error message buffer size
-  TCHAR    errBuf[]            ///< [out] error message
-)
+bool DevLXNano::FillTask(const Declaration_t& lkDecl, Decl& decl, unsigned errBufSize, TCHAR errBuf[])
 {
   if (!CheckWPCount(lkDecl,
       Decl::min_tp_count, Decl::max_tp_count, errBufSize, errBuf))
@@ -340,43 +340,26 @@ bool DevLXNano::FillTask
 /// Writes declaration into the device.
 /// The CRC will be calculated before.
 ///
+/// @param d           device descriptor
+/// @param decl        task declaration data for device
+/// @param errBufSize  error message buffer size
+/// @param errBuf[]    [out] error message
+///
 /// @retval true  declaration successfully written
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevLXNano::WriteDecl
-(
-  PDeviceDescriptor_t d,   ///< device descriptor
-  Decl&       decl,        ///< task declaration data for device
-  unsigned    errBufSize,  ///< error message buffer size
-  TCHAR       errBuf[]     ///< [out] error message
-)
+bool DevLXNano::WriteDecl(PDeviceDescriptor_t d, Decl& decl, unsigned errBufSize, TCHAR errBuf[])
 {
-  #if (LX_SEND_BYTESTREAM)
-  
   byte buf[sizeof(Decl)];
-  
-  decl.CalcCrc();
-  
+
   int size = decl.ToStream(buf);
-  
+
   bool status =      ComWrite(d, PKT_STX, errBufSize, errBuf);
   status = status && ComWrite(d, PKT_PCWRITE, errBufSize, errBuf);
   status = status && ComWrite(d, buf, size, errBufSize, errBuf);
   status = status && ComExpect(d, PKT_ACK, 10, NULL, errBufSize, errBuf);
-  
-  #else
-  
-  decl.ConvertToBE();
-  decl.CalcCrc();
-  
-  bool status =      ComWrite(d, PKT_STX, errBufSize, errBuf);
-  status = status && ComWrite(d, PKT_PCWRITE, errBufSize, errBuf);
-  status = status && ComWrite(d, &decl, sizeof(decl), errBufSize, errBuf);
-  status = status && ComExpect(d, PKT_ACK, 10, NULL, errBufSize, errBuf);
-  
-  #endif
-  
+
   return(status);
 } // WriteDecl()
 
@@ -385,40 +368,26 @@ bool DevLXNano::WriteDecl
 /// Writes competition class declaration into the device.
 /// The CRC will be calculated before.
 ///
+/// @param d           device descriptor
+/// @param lxClass     competition class for device
+/// @param errBufSize  error message buffer size
+/// @param errBuf[]    [out] error message
+///
 /// @retval true  declaration successfully written
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevLXNano::WriteClass
-(
-  PDeviceDescriptor_t d,    ///< device descriptor
-  Class&       lxClass,     ///< competition class for device
-  unsigned     errBufSize,  ///< error message buffer size
-  TCHAR        errBuf[]     ///< [out] error message
-)
+bool DevLXNano::WriteClass(PDeviceDescriptor_t d, Class& lxClass, unsigned errBufSize, TCHAR errBuf[])
 {
-  lxClass.CalcCrc();
-  
-  #if (LX_SEND_BYTESTREAM)
-  
   byte buf[sizeof(Class)];
-  
+
   int size = lxClass.ToStream(buf);
-  
+
   bool status =      ComWrite(d, PKT_STX, errBufSize, errBuf);
   status = status && ComWrite(d, PKT_CCWRITE, errBufSize, errBuf);
   status = status && ComWrite(d, buf, size, errBufSize, errBuf);
   status = status && ComExpect(d, PKT_ACK, 10, NULL, errBufSize, errBuf);
-  
-  #else
-  
-  bool status =      ComWrite(d, PKT_STX, errBufSize, errBuf);
-  status = status && ComWrite(d, PKT_CCWRITE, errBufSize, errBuf);
-  status = status && ComWrite(d, &lxClass, sizeof(lxClass), errBufSize, errBuf);
-  status = status && ComExpect(d, PKT_ACK, 10, NULL, errBufSize, errBuf);
 
-  #endif
-  
   return(status);
 } // WriteClass()
 
@@ -426,12 +395,11 @@ bool DevLXNano::WriteClass
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Calculate LX CRC value for the given data.
 ///
+/// @param length  data length
+/// @param data    data to be CRC calculated on
+///
 //static
-byte DevLXNano::CalcCrc
-(
-  int   length, ///< data length
-  void* data    ///< data to be CRC calculated on
-)
+byte DevLXNano::CalcCrc(int length, void* data)
 {
   byte crcVal = 0xFF;
 
@@ -476,11 +444,10 @@ DevLXNano::Decl::Decl()
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Sets the value of the specified ASCII string member.
 ///
-void DevLXNano::Decl::SetString
-(
-  StrId str_id,     ///< string ID (values >=0 denotes Task.name[] index)
-  const TCHAR* text ///< string to be set (will be converted into ASCII)
-)
+/// @param str_id  string ID (values >=0 denotes Task.name[] index)
+/// @param text    string to be set (will be converted into ASCII)
+///
+void DevLXNano::Decl::SetString(StrId str_id, const TCHAR* text)
 {
   char *output;
   int outSize;
@@ -521,12 +488,11 @@ void DevLXNano::Decl::SetString
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Sets the waypoint data to the @c task member.
 ///
-void DevLXNano::Decl::SetWaypoint
-(
-  const WAYPOINT &wp,  ///< waypoint data
-  TpType  type,        ///< waypoint type
-  int     idx          ///< waypoint index
-)
+/// @param wp    waypoint data
+/// @param type  waypoint type
+/// @param idx   waypoint index
+///
+void DevLXNano::Decl::SetWaypoint(const WAYPOINT &wp, TpType type, int idx)
 {
     task.tpt[idx] = (byte) type;
     task.lon[idx] = (int32_t) (wp.Longitude * 60000);
@@ -535,23 +501,6 @@ void DevLXNano::Decl::SetWaypoint
     // set TP name
     SetString((StrId) idx, wp.Name);
 } // SetWaypoint()
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Convert multi-byte values into big-endian format.
-///
-void DevLXNano::Decl::ConvertToBE()
-{
-  flight.oo_id = PlatfEndian::To16BE(flight.oo_id);
-  task.input_time = PlatfEndian::To32BE(task.input_time);
-  task.taskid = PlatfEndian::To16BE(task.taskid);
-
-  for (int i = 0; i < task.num_of_tp; i++)
-  {
-    task.lon[i] = PlatfEndian::To32BE(task.lon[i]);
-    task.lat[i] = PlatfEndian::To32BE(task.lat[i]);
-  }
-} // ConvertToBE()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -564,14 +513,13 @@ void DevLXNano::Decl::CalcCrc()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Convert data to byte-stream for sending to device.
+/// Convert data to byte-stream for sending to device and calculate CRC.
+///
+/// @param buf  [out] buffer (large enough for storing all data)
 ///
 /// \return number of bytes converted
 ///
-int DevLXNano::Decl::ToStream
-(
-  void* buf ///< [out] buffer (large enough for storing all data)
-)
+int DevLXNano::Decl::ToStream(void* buf)
 {
   uint32_t tmp;
   uint16_t tmpU16;
@@ -622,6 +570,7 @@ int DevLXNano::Decl::ToStream
   for (int i = 0; i < max_tp_count; i++)
     LX_ADD_TO_STREAM(task.name[i]);
 
+  crc = DevLXNano::CalcCrc(dst - (byte*) buf, buf);
   LX_ADD_TO_STREAM(crc);
 
   return(dst - (byte*) buf);
@@ -650,10 +599,9 @@ DevLXNano::Class::Class()
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Sets the value of @c name member.
 ///
-void DevLXNano::Class::SetName
-(
-  const TCHAR* text ///< string to be set (will be converted into ASCII)
-)
+/// @param text  string to be set (will be converted into ASCII)
+///
+void DevLXNano::Class::SetName(const TCHAR* text)
 {
   Wide2Ascii(text, sizeof(name), name);
 } // SetName()
@@ -669,18 +617,19 @@ void DevLXNano::Class::CalcCrc()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Convert data to byte-stream for sending to device.
+/// Convert data to byte-stream for sending to device and calculate CRC.
+///
+/// @param buf  [out] buffer (large enough for storing all data)
 ///
 /// \return number of bytes converted
 ///
-int DevLXNano::Class::ToStream
-(
-  void* buf ///< [out] buffer (large enough for storing all data)
-)
+int DevLXNano::Class::ToStream(void* buf)
 {
   byte* dst = (byte*) buf;
 
   LX_ADD_TO_STREAM(name);
+
+  crc = DevLXNano::CalcCrc(dst - (byte*) buf, buf);
   LX_ADD_TO_STREAM(crc);
 
   return(dst - (byte*) buf);

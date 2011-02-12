@@ -30,14 +30,13 @@ bool DevLX::Register()
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Installs device specific handlers.
 ///
+/// @param d  device descriptor to be installed
+///
 /// @retval true  when device has been installed successfully
 /// @retval false device cannot be installed
 ///
 //static
-BOOL DevLX::Install
-(
-  PDeviceDescriptor_t d ///< device descriptor to be installed
-)
+BOOL DevLX::Install(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
@@ -70,15 +69,14 @@ const TCHAR* DevLX::GetName()
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Parses LXWPn sentences.
 ///
+/// @param d         device descriptor
+/// @param sentence  received NMEA sentence
+/// @param info      GPS info to be updated
+///
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLX::ParseNMEA
-(
-  PDeviceDescriptor_t d, ///< device descriptor
-  TCHAR*       sentence, ///< received NMEA sentence
-  NMEA_INFO*   info      ///< GPS info to be updated
-)
+BOOL DevLX::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
 {
   if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
       return LXWP0(d, sentence + 7, info);
@@ -96,15 +94,14 @@ BOOL DevLX::ParseNMEA
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Parses LXWP0 sentence.
 ///
+/// @param d         device descriptor
+/// @param sentence  received NMEA sentence
+/// @param info      GPS info to be updated
+///
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX::LXWP0
-(
-  PDeviceDescriptor_t d, ///< device descriptor
-  const TCHAR* sentence, ///< received NMEA sentence
-  NMEA_INFO*   info      ///< GPS info to be updated
-)
+bool DevLX::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
   // $LXWP0,logger_stored, airspeed, airaltitude,
   //   v1[0],v1[1],v1[2],v1[3],v1[4],v1[5], hdg, windspeed*CS<CR><LF>
@@ -160,15 +157,14 @@ bool DevLX::LXWP0
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Parses LXWP1 sentence.
 ///
+/// @param d         device descriptor
+/// @param sentence  received NMEA sentence
+/// @param info      GPS info to be updated
+///
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX::LXWP1
-(
-  PDeviceDescriptor_t, ///< device descriptor
-  const TCHAR*,        ///< received NMEA sentence
-  NMEA_INFO*           ///< GPS info to be updated
-)
+bool DevLX::LXWP1(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
 {
   // $LXWP1,serial number,instrument ID, software version, hardware
   //   version,license string,NU*SC<CR><LF>
@@ -187,15 +183,14 @@ bool DevLX::LXWP1
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Parses LXWP2 sentence.
 ///
+/// @param d         device descriptor
+/// @param sentence  received NMEA sentence
+/// @param info      GPS info to be updated
+///
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX::LXWP2
-(
-  PDeviceDescriptor_t,   ///< device descriptor
-  const TCHAR* sentence, ///< received NMEA sentence
-  NMEA_INFO*             ///< GPS info to be updated
-)
+bool DevLX::LXWP2(PDeviceDescriptor_t, const TCHAR* sentence, NMEA_INFO*)
 {
   // $LXWP2,mccready,ballast,bugs,polar_a,polar_b,polar_c, audio volume
   //   *CS<CR><LF>
@@ -223,15 +218,14 @@ bool DevLX::LXWP2
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Parses LXWP3 sentence.
 ///
+/// @param d         device descriptor
+/// @param sentence  received NMEA sentence
+/// @param info      GPS info to be updated
+///
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX::LXWP3
-(
-  PDeviceDescriptor_t, ///< device descriptor
-  const TCHAR*,        ///< received NMEA sentence
-  NMEA_INFO*           ///< GPS info to be updated
-)
+bool DevLX::LXWP3(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
 {
   // $LXWP3,altioffset, scmode, variofil, tefilter, televel, varioavg,
   //   variorange, sctab, sclow, scspeed, SmartDiff,

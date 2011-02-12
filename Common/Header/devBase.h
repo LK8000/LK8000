@@ -59,213 +59,58 @@ class DevBase
 
     //..........................................................................
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    /// Protected only constructor - class should not be instantiatied.
-    ///
+    /// Protected only constructor - class should not be instantiated.
     DevBase() {}
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Converts parameter from NMEA sentence into double.
-    ///
-    /// @retval true the conversion has been successful
-    /// @retval false either string is empty or cannot be converted
-    ///
-    static bool ParToDouble
-    (
-      const TCHAR* sentence, ///< received NMEA sentence
-      unsigned int parIdx,   ///< index of parameter to be extracted (from 0)
-      double*      value     ///< returned value
-    );
+    static bool ParToDouble(
+      const TCHAR* sentence, unsigned int parIdx, double* value);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Constant handler returning always @c true.
-    ///
-    static BOOL GetTrue
-    (
-      PDeviceDescriptor_t d ///< device descriptor (unused)
-    );
+    static BOOL GetTrue(PDeviceDescriptor_t d);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Constant handler returning always @c false.
-    ///
-    static BOOL GetFalse
-    (
-      PDeviceDescriptor_t d ///< device descriptor (unused)
-    );
+    static BOOL GetFalse(PDeviceDescriptor_t d);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Show declaration progress dialog.
-    ///
-    static void ShowProgress
-    (
-      DeclDlg dlgType  ///< message type to be shown
-    );
+    static void ShowProgress(DeclDlg dlgType);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Checks minimum and maximum waypoint count limits.
-    ///
-    /// @retval true  WP count is in limits
-    /// @retval false WP count is outside limits (description in @p errBuf)
-    ///
-    static bool CheckWPCount
-    (
-      const Declaration_t& decl, ///< task declaration data
-      int      minCount,         ///< minimum WP count
-      int      maxCount,         ///< maximum WP count
-      unsigned errBufSize,       ///< error message buffer size
-      TCHAR    errBuf[]          ///< [out] error message
-    );
+   static bool CheckWPCount(const Declaration_t& decl, int minCount, int maxCount, unsigned errBufSize, TCHAR errBuf[]);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Converts TCHAR[] string into ASCII string (writing as much as possible
-    /// characters into @p output).
-    /// Output string will always be terminated by '\0'.
-    ///
-    /// @retval true  all characters copied
-    /// @retval false some characters could not be copied due to buffer size
-    ///
-    static bool Wide2Ascii
-    (
-      const TCHAR* input,  ///< wide character string
-      int        outSize,  ///< output buffer size
-      char*      output    ///< output buffer
-    );
+    /// characters into @p output). Output string will always be terminated by '\0'.
+    static bool Wide2Ascii(const TCHAR* input,  int outSize, char* output);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Stops port Rx thread.
-    ///
-    /// @retval true  Rx thread stopped
-    /// @retval false error (description in @p errBuf)
-    ///
-    static bool StopRxThread
-    (
-      PDeviceDescriptor_t d, ///< device descriptor
-      unsigned errBufSize,   ///< error message buffer size
-      TCHAR    errBuf[]      ///< [out] error message
-    );
+    static bool StopRxThread(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Starts port Rx thread.
-    ///
-    /// @retval true  Rx thread started
-    /// @retval false error (description in @p errBuf)
-    ///
-    static bool StartRxThread
-    (
-      PDeviceDescriptor_t d, ///< device descriptor
-      unsigned errBufSize,   ///< error message buffer size
-      TCHAR    errBuf[]      ///< [out] error message
-    );
+    static bool StartRxThread(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    /// Starts port Rx thread.
-    ///
-    /// @retval true  Rx thread started
-    /// @retval false error (description in @p errBuf)
-    ///
-    static bool SetRxTimeout
-    (
-      PDeviceDescriptor_t d, ///< device descriptor
-      int      newTimeout,   ///< new timeout to be set
-      int&     orgTimeout,   ///< [out] original timeout previously set
-      unsigned errBufSize,   ///< error message buffer size
-      TCHAR    errBuf[]      ///< [out] error message
-    );
+    /// Sets Rx read timeout.
+    static bool SetRxTimeout(PDeviceDescriptor_t d, int newTimeout, int& orgTimeout, unsigned errBufSize, TCHAR errBuf[]);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Writes given data to COM port and checks the result.
-    ///
-    /// @retval true  data written
-    /// @retval false error (description in @p errBuf)
-    ///
-    static bool ComWrite
-    (
-      PDeviceDescriptor_t d,    ///< device descriptor
-      const void* data,         ///< data to be written
-      int         length,       ///< data length [bytes]
-      unsigned    errBufSize,   ///< error message buffer size
-      TCHAR       errBuf[]      ///< [out] error message
-    );
+    static bool ComWrite(PDeviceDescriptor_t d, const void* data, int length, unsigned errBufSize, TCHAR errBuf[]);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Writes given character to COM port and checks the result.
-    ///
-    /// @retval true  data written
-    /// @retval false error (description in @p errBuf)
-    ///
-    static bool ComWrite
-    (
-      PDeviceDescriptor_t d,    ///< device descriptor
-      char        character,    ///< data to be written
-      unsigned    errBufSize,   ///< error message buffer size
-      TCHAR       errBuf[]      ///< [out] error message
-    );
+    static bool ComWrite(PDeviceDescriptor_t d, char character, unsigned errBufSize, TCHAR errBuf[]);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Reads data from COM port and checks if they contain expected data.
-    /// Up to @p checkChars characters is read, then @c false is returned if
-    /// expected data stream has not been found.
-    ///
-    /// If @p rxBuf <> @c NULL, all read characters are stored in the buffer.
-    /// It must be large enough to store up to @p checkChars.
-    ///
-    /// @retval true  expected data received
-    /// @retval false error (description in @p errBuf)
-    ///
-    static bool ComExpect
-    (
-      PDeviceDescriptor_t d,    ///< device descriptor
-      const void* expected,     ///< expected data
-      int         length,       ///< data length [bytes]
-      int         checkChars,   ///< maximum characters to read and check
-      void*       rxBuf,        ///< [out] received data (up to checkChars)
-      unsigned    errBufSize,   ///< error message buffer size
-      TCHAR       errBuf[]      ///< [out] error message
-    );
+    static bool ComExpect(PDeviceDescriptor_t d,
+      const void* expected, int length, int checkChars, void* rxBuf, unsigned errBufSize, TCHAR errBuf[]);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Reads data from COM port and checks if they contain expected character.
-    /// Up to @p checkChars characters is read, then @c false is returned if
-    /// expected character has not been found.
-    ///
-    /// If @p rxBuf <> @c NULL, all read characters are stored in the buffer.
-    /// It must be large enough to store up to @p checkChars.
-    ///
-    /// @retval true  expected data received
-    /// @retval false error (description in @p errBuf)
-    ///
-    static bool ComExpect
-    (
-      PDeviceDescriptor_t d,    ///< device descriptor
-      char        expected,     ///< expected character
-      int         checkChars,   ///< maximum characters to read
-      void*       rxBuf,        ///< [out] received data (up to checkChars)
-      unsigned    errBufSize,   ///< error message buffer size
-      TCHAR       errBuf[]      ///< [out] error message
-    );
+    static bool ComExpect(PDeviceDescriptor_t d,
+      char expected, int checkChars, void* rxBuf, unsigned errBufSize, TCHAR errBuf[]);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Reads data from COM port and checks if they contain expected string.
-    /// Up to @p checkChars characters is read, then @c false is returned if
-    /// expected string has not been found.
-    ///
-    /// If @p rxBuf <> @c NULL, all read characters are stored in the buffer.
-    /// It must be large enough to store up to @p checkChars.
-    ///
-    /// @retval true  expected data received
-    /// @retval false error (description in @p errBuf)
-    ///
-    static bool ComExpect
-    (
-      PDeviceDescriptor_t d,    ///< device descriptor
-      const char* expected,     ///< expected string
-      int         checkChars,   ///< maximum characters to read
-      void*       rxBuf,        ///< [out] received data (up to checkChars)
-      unsigned    errBufSize,   ///< error message buffer size
-      TCHAR       errBuf[]      ///< [out] error message
-    );
+    static bool ComExpect(PDeviceDescriptor_t d,
+      const char* expected, int checkChars, void* rxBuf, unsigned errBufSize, TCHAR errBuf[]);
 
 }; // DevBase
+
 
 
 // #############################################################################
@@ -285,58 +130,26 @@ class PlatfEndian
   //----------------------------------------------------------------------------
   public:
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Returns @c true if the platform is little-endian.
-    ///
     static bool IsLE() { return(little);  }
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Returns @c true if the platform is big-endian.
-    ///
     static bool IsBE() { return(!little); }
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Swap 16bit value into bin-endian format.
-    ///
-    /// @return @p value in bin-endian format
-    ///
-    static uint16_t To16BE
-    (
-      uint16_t value ///< value to be returned in BE
-    );
+    static uint16_t To16BE(uint16_t value);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Swap 16bit value into bin-endian format.
-    ///
-    /// @return @p value in bin-endian format
-    ///
-    static int16_t To16BE
-    (
-      int16_t value ///< value to be returned in BE
-    )
+    static int16_t To16BE(int16_t value)
     {
       return((int16_t) To16BE((uint16_t) value));
     }
-    
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    /// Swap 32bit value into bin-endian format.
-    ///
-    /// @return @p value in bin-endian format
-    ///
-    static uint32_t To32BE
-    (
-      uint32_t value ///< value to be returned in BE
-    );
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Swap 32bit value into bin-endian format.
-    ///
-    /// @return @p value in bin-endian format
-    ///
-    static int32_t To32BE
-    (
-      int32_t value ///< value to be returned in BE
-    )
+    static uint32_t To32BE(uint32_t value);
+
+    /// Swap 32bit value into bin-endian format.
+    static int32_t To32BE(int32_t value)
     {
       return((int32_t) To32BE((uint32_t) value));
     }
@@ -347,9 +160,7 @@ class PlatfEndian
     /// endianness flag - @c true for little endian
     static bool little;
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Initialization only function.
-    ///
     static bool IsLittle();
 
 }; // PlatfEndian

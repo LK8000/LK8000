@@ -12,11 +12,6 @@
 
 //_____________________________________________________________________includes_
 
-//#include <windows.h>
-//#include "Sizes.h"
-//#include "MapWindow.h"
-//#include "device.h"
-
 #include "devBase.h"
 
 //___________________________________________________________class_declarations_
@@ -29,99 +24,36 @@ class DevLX : public DevBase
   //----------------------------------------------------------------------------
   public:
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Registers device into device subsystem.
-    ///
-    /// @retval true  when device has been registered successfully
-    /// @retval false device cannot be registered
-    ///
     static bool Register();
 
 
   //----------------------------------------------------------------------------
   protected:
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    /// Protected only constructor - class should not be instantiatied.
-    ///
+    /// Protected only constructor - class should not be instantiated.
     DevLX() {}
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Installs device specific handlers.
-    ///
-    /// @retval true  when device has been installed successfully
-    /// @retval false device cannot be installed
-    ///
-    static BOOL Install
-    (
-      PDeviceDescriptor_t d ///< device descriptor to be installed
-    );
+    static BOOL Install(PDeviceDescriptor_t d);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Parses LXWPn sentences.
-    ///
-    /// @retval true if the sentence has been parsed
-    ///
-    static BOOL ParseNMEA
-    (
-      PDeviceDescriptor_t d, ///< device descriptor
-      TCHAR*       sentence, ///< received NMEA sentence
-      NMEA_INFO*   info      ///< GPS info to be updated
-    );
+    static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Returns device name (max length is @c DEVNAMESIZE).
-    ///
     static const TCHAR* GetName();
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Parses LXWP0 sentence.
-    ///
-    /// @retval true if the sentence has been parsed
-    ///
-    static bool LXWP0
-    (
-      PDeviceDescriptor_t d, ///< device descriptor
-      const TCHAR* sentence, ///< received NMEA sentence
-      NMEA_INFO*   info      ///< GPS info to be updated
-    );
+    static bool LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Parses LXWP1 sentence.
-    ///
-    /// @retval true if the sentence has been parsed
-    ///
-    static bool LXWP1
-    (
-      PDeviceDescriptor_t d, ///< device descriptor
-      const TCHAR* sentence, ///< received NMEA sentence
-      NMEA_INFO*   info      ///< GPS info to be updated
-    );
+    static bool LXWP1(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Parses LXWP2 sentence.
-    ///
-    /// @retval true if the sentence has been parsed
-    ///
-    static bool LXWP2
-    (
-      PDeviceDescriptor_t d, ///< device descriptor
-      const TCHAR* sentence, ///< received NMEA sentence
-      NMEA_INFO*   info      ///< GPS info to be updated
-    );
+    static bool LXWP2(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Parses LXWP3 sentence.
-    ///
-    /// @retval true if the sentence has been parsed
-    ///
-    static bool LXWP3
-    (
-      PDeviceDescriptor_t d, ///< device descriptor
-      const TCHAR* sentence, ///< received NMEA sentence
-      NMEA_INFO*   info      ///< GPS info to be updated
-    );
-
+    static bool LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
 }; // DevLX
 

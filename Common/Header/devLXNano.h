@@ -14,10 +14,6 @@
 
 #include "devLX.h"
 
-
-#define LX_SEND_BYTESTREAM 1
-
-//_________________________________________________________forward_declarations_
 //___________________________________________________________class_declarations_
 
 // #############################################################################
@@ -36,12 +32,7 @@ class DevLXNano : public DevLX
   //----------------------------------------------------------------------------
   public:
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Registers device into device subsystem.
-    ///
-    /// @retval true  when device has been registered successfully
-    /// @retval false device cannot be registered
-    ///
     static bool Register();
 
 
@@ -56,133 +47,38 @@ class DevLXNano : public DevLX
 
     //..........................................................................
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    /// Protected only constructor - class should not be instantiatied.
-    ///
+    /// Protected only constructor - class should not be instantiated.
     DevLXNano() {}
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Installs device specific handlers.
-    ///
-    /// @retval true  when device has been installed successfully
-    /// @retval false device cannot be installed
-    ///
-    static BOOL Install
-    (
-      PDeviceDescriptor_t d ///< device descriptor to be installed
-    );
+    static BOOL Install(PDeviceDescriptor_t d);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Returns device name (max length is @c DEVNAMESIZE).
-    ///
     static const TCHAR* GetName();
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Writes declaration into the logger.
-    ///
-    /// @retval true  declaration has been written successfully
-    /// @retval false error during declaration (description in @p errBuf)
-    ///
-    static BOOL DeclareTask
-    (
-      PDeviceDescriptor_t   d, ///< device descriptor to be installed
-      Declaration_t*   lkDecl, ///< task declaration data
-      unsigned errBufSize,     ///< error message buffer size
-      TCHAR    errBuf[]        ///< [out] error message
-    );
+    static BOOL DeclareTask(PDeviceDescriptor_t d, Declaration_t* lkDecl, unsigned errBufSize, TCHAR errBuf[]);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Starts LX NMEA mode.
-    ///
-    /// @retval true  mode successfully set
-    /// @retval false error (description in @p errBuf)
-    ///
-    static bool StartNMEAMode
-    (
-      PDeviceDescriptor_t d, ///< device descriptor
-      unsigned errBufSize,   ///< error message buffer size
-      TCHAR    errBuf[]      ///< [out] error message
-    );
+    static bool StartNMEAMode(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Starts LX command mode.
-    ///
-    /// @retval true  mode successfully set
-    /// @retval false error (description in @p errBuf)
-    ///
-    static bool StartCMDMode
-    (
-      PDeviceDescriptor_t d, ///< device descriptor
-      unsigned errBufSize,   ///< error message buffer size
-      TCHAR    errBuf[]      ///< [out] error message
-    );
+    static bool StartCMDMode(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Fills out decl->Flight data.
-    ///
-    /// @retval true  declaration successfully filled out
-    /// @retval false error (description in @p errBuf)
-    ///
-    static bool FillFlight
-    (
-      const Declaration_t& lkDecl, ///< LK task declaration data
-      Decl&    decl,               ///< task declaration data for device
-      unsigned errBufSize,         ///< error message buffer size
-      TCHAR    errBuf[]            ///< [out] error message
-    );
+    static bool FillFlight(const Declaration_t& lkDecl, Decl& decl, unsigned errBufSize, TCHAR errBuf[]);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Fills out decl->Task data.
-    ///
-    /// @retval true  declaration successfully filled out
-    /// @retval false error (description in @p errBuf)
-    ///
-    static bool FillTask
-    (
-      const Declaration_t& lkDecl, ///< LK task declaration data
-      Decl&    decl,               ///< task declaration data for device
-      unsigned errBufSize,         ///< error message buffer size
-      TCHAR    errBuf[]            ///< [out] error message
-    );
+    static bool FillTask(const Declaration_t& lkDecl, Decl& decl, unsigned errBufSize, TCHAR errBuf[]);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Writes task declaration into the device.
-    /// The CRC will be calculated before.
-    ///
-    /// @retval true  declaration successfully written
-    /// @retval false error (description in @p errBuf)
-    ///
-    static bool WriteDecl
-    (
-      PDeviceDescriptor_t d,   ///< device descriptor
-      Decl&       decl,        ///< task declaration data for device
-      unsigned    errBufSize,  ///< error message buffer size
-      TCHAR       errBuf[]     ///< [out] error message
-    );
+    static bool WriteDecl(PDeviceDescriptor_t d, Decl& decl, unsigned errBufSize, TCHAR errBuf[]);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Writes competition class declaration into the device.
-    /// The CRC will be calculated before.
-    ///
-    /// @retval true  declaration successfully written
-    /// @retval false error (description in @p errBuf)
-    ///
-    static bool WriteClass
-    (
-      PDeviceDescriptor_t d,    ///< device descriptor
-      Class&       lxClass,     ///< competition class for device
-      unsigned     errBufSize,  ///< error message buffer size
-      TCHAR        errBuf[]     ///< [out] error message
-    );
+    static bool WriteClass(PDeviceDescriptor_t d, Class& lxClass, unsigned errBufSize, TCHAR errBuf[]);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Calculate LX CRC value for the given data.
-    ///
-    static byte CalcCrc
-    (
-      int   length, ///< data length
-      void* data    ///< data to be CRC calculated on
-    );
+    static byte CalcCrc(int length, void* data);
 
 }; // DevLXNano
 
@@ -232,7 +128,7 @@ class DevLXNano::Decl
       cls_world       = 4,
       cls_double      = 5,
       cls_motor_gl    = 6,
-      cls_textdef     = 7, ///< class is be written by PKT_CCWRITE)
+      cls_textdef     = 7, ///< class will be written with PKT_CCWRITE)
     }; // Class
 
     /// turnpoint type
@@ -260,7 +156,7 @@ class DevLXNano::Decl
       byte gpsdatum;
       byte fix_accuracy;
       char gps[60];
-    } __attribute__ ((packed)); // Flight
+    }; // Flight
 
     /// LX task declaration data
     struct Task // s_task
@@ -283,62 +179,32 @@ class DevLXNano::Decl
       int32_t lon[max_tp_count];
       int32_t lat[max_tp_count];
       char name[max_tp_count][9];
-    } __attribute__ ((packed));
+    };
 
     //..........................................................................
 
     Flight   flight;
     Task     task;
-    //TODO unsigned char reserve;  __attribute__
     byte     crc;
 
     //..........................................................................
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Constructor - sets all data to 0.
-    ///
     Decl();
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Sets the value of the specified ASCII string member.
-    ///
-    void SetString
-    (
-      StrId str_id,     ///< string ID (values >=0 denotes Task.name[] index)
-      const TCHAR* text ///< string to be set (will be converted into ASCII)
-    );
+    void SetString(StrId str_id, const TCHAR* text);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Sets the waypoint data to the @c task member.
-    ///
-    void SetWaypoint
-    (
-      const WAYPOINT &wp,  ///< waypoint data
-      TpType  type,        ///< waypoint type
-      int     idx          ///< waypoint index
-    );
+    void SetWaypoint(const WAYPOINT &wp, TpType type, int idx);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    /// Convert multi-byte values into big-endian format.
-    ///
-    void ConvertToBE();
-
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Initializes @c crc member with computed CRC value.
-    ///
     void CalcCrc();
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Convert data to byte-stream for sending to device.
-    ///
-    /// \return number of bytes converted
-    ///
-    int ToStream
-    (
-      void* buf  ///< [out] buffer (large enough for storing all data)
-    );
+    int ToStream(void* buf);
 
-} __attribute__ ((packed)); // DevLXNano::Decl
+}; // DevLXNano::Decl
 
 
 
@@ -350,7 +216,7 @@ class DevLXNano::Decl
 // *****************************************************************************
 // #############################################################################
 
-      //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// LX task declaration data - competition class.
 /// This data are byte-by-byte sent to device.
 ///
@@ -365,35 +231,19 @@ class DevLXNano::Class
 
     //..........................................................................
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Constructor - sets all data to 0.
-    ///
     Class();
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Sets the value of @c name member.
-    ///
-    void SetName
-    (
-      const TCHAR* text ///< string to be set (will be converted into ASCII)
-    );
+    void SetName(const TCHAR* text);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Initializes @c crc member with computed CRC value.
-    ///
     void CalcCrc();
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /// Convert data to byte-stream for sending to device.
-    ///
-    /// \return number of bytes converted
-    ///
-    int ToStream
-    (
-      void* buf  ///< [out] buffer (large enough for storing all data)
-    );
+    int ToStream(void* buf);
 
-} __attribute__ ((packed)); // DevLXNano::Decl
+}; // DevLXNano::Class
 
 //______________________________________________________________________________
 

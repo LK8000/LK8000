@@ -26,16 +26,15 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Converts parameter from NMEA sentence into double.
 ///
-/// @retval true the conversion has been successful
+/// @param sentence  received NMEA sentence
+/// @param parIdx    index of parameter to be extracted (from 0)
+/// @param value     returned value
+///
+/// @retval true  the conversion has been successful
 /// @retval false either string is empty or cannot be converted
 ///
 //static
-bool DevBase::ParToDouble
-(
-  const TCHAR* sentence, ///< received NMEA sentence
-  unsigned int parIdx,   ///< index of parameter to be extracted (from 0)
-  double*      value     ///< returned value
-)
+bool DevBase::ParToDouble(const TCHAR* sentence, unsigned int parIdx, double* value)
 {
   TCHAR  temp[80];
   TCHAR* stop;
@@ -55,11 +54,10 @@ bool DevBase::ParToDouble
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Constant handler returning always @c true.
 ///
+/// @param d  device descriptor (unused)
+///
 //static
-BOOL DevBase::GetTrue
-(
-  PDeviceDescriptor_t d ///< device descriptor (unused)
-)
+BOOL DevBase::GetTrue(PDeviceDescriptor_t)
 {
   return(true);
 } // GetTrue()
@@ -68,11 +66,10 @@ BOOL DevBase::GetTrue
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Constant handler returning always @c false.
 ///
+/// @param d  device descriptor (unused)
+///
 //static
-BOOL DevBase::GetFalse
-(
-  PDeviceDescriptor_t d ///< device descriptor (unused)
-)
+BOOL DevBase::GetFalse(PDeviceDescriptor_t)
 {
   return(false);
 } // GetFalse()
@@ -81,11 +78,10 @@ BOOL DevBase::GetFalse
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Show declaration progress dialog.
 ///
+/// @param dlgType  message type to be shown
+///
 //static
-void DevBase::ShowProgress
-(
-  DeclDlg dlgType  ///< message type to be shown
-)
+void DevBase::ShowProgress(DeclDlg dlgType)
 {
   const TCHAR* msgId;
 
@@ -119,18 +115,18 @@ void DevBase::ShowProgress
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Checks minimum and maximum waypoint count limits.
 ///
+/// @param decl         task declaration data
+/// @param minCount     minimum WP count
+/// @param maxCount     maximum WP count
+/// @param errBufSize   error message buffer size
+/// @param errBuf[]     [out] error message
+///
 /// @retval true  WP count is in limits
 /// @retval false WP count is outside limits (description in @p errBuf)
 ///
 //static
-bool DevBase::CheckWPCount
-(
-  const Declaration_t& decl, ///< task declaration data
-  int      minCount,         ///< minimum WP count
-  int      maxCount,         ///< maximum WP count
-  unsigned errBufSize,       ///< error message buffer size
-  TCHAR    errBuf[]          ///< [out] error message
-)
+bool DevBase::CheckWPCount(const Declaration_t& decl,
+  int minCount, int maxCount, unsigned errBufSize, TCHAR errBuf[])
 {
   // Must have at least two, max 12 waypoints
   if (decl.num_waypoints < minCount)
@@ -156,16 +152,15 @@ bool DevBase::CheckWPCount
 /// characters into @p output).
 /// Output string will always be terminated by '\0'.
 ///
+/// @param input    wide character string
+/// @param outSize  output buffer size
+/// @param output   output buffer
+///
 /// @retval true  all characters copied
 /// @retval false some characters could not be copied due to buffer size
 ///
 //static
-bool DevBase::Wide2Ascii
-(
-  const TCHAR* input,  ///< wide character string
-  int        outSize,  ///< output buffer size
-  char*      output    ///< output buffer
-)
+bool DevBase::Wide2Ascii(const TCHAR* input, int outSize, char* output)
 {
   char tmp[512];
   int len = _tcslen(input);
@@ -190,16 +185,15 @@ bool DevBase::Wide2Ascii
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Stops port Rx thread.
 ///
+/// @param d           device descriptor
+/// @param errBufSize  error message buffer size
+/// @param errBuf[]    [out] error message
+///
 /// @retval true  Rx thread stopped
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevBase::StopRxThread
-(
-  PDeviceDescriptor_t d, ///< device descriptor
-  unsigned errBufSize,   ///< error message buffer size
-  TCHAR    errBuf[]      ///< [out] error message
-)
+bool DevBase::StopRxThread(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
 {
   if (!d->Com->StopRxThread())
   {
@@ -215,16 +209,15 @@ bool DevBase::StopRxThread
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Starts port Rx thread.
 ///
+/// @param d           device descriptor
+/// @param errBufSize  error message buffer size
+/// @param errBuf[]    [out] error message
+///
 /// @retval true  Rx thread started
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevBase::StartRxThread
-(
-  PDeviceDescriptor_t d, ///< device descriptor
-  unsigned errBufSize,   ///< error message buffer size
-  TCHAR    errBuf[]      ///< [out] error message
-)
+bool DevBase::StartRxThread(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
 {
   if (!d->Com->StartRxThread())
   {
@@ -240,18 +233,18 @@ bool DevBase::StartRxThread
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Starts port Rx thread.
 ///
+/// @param d           device descriptor
+/// @param newTimeout  new timeout to be set
+/// @param orgTimeout  [out] original timeout previously set
+/// @param errBufSize  error message buffer size
+/// @param errBuf[]    [out] error message
+///
 /// @retval true  Rx thread started
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevBase::SetRxTimeout
-(
-  PDeviceDescriptor_t d, ///< device descriptor
-  int      newTimeout,   ///< new timeout to be set
-  int&     orgTimeout,   ///< [out] original timeout previously set
-  unsigned errBufSize,   ///< error message buffer size
-  TCHAR    errBuf[]      ///< [out] error message
-)
+bool DevBase::SetRxTimeout(PDeviceDescriptor_t d,
+  int newTimeout, int& orgTimeout, unsigned errBufSize, TCHAR errBuf[])
 {
   orgTimeout = d->Com->SetRxTimeout(newTimeout);
 
@@ -269,18 +262,17 @@ bool DevBase::SetRxTimeout
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Writes given data to COM port and checks the result.
 ///
+/// @param d           device descriptor
+/// @param data        data to be written
+/// @param length      data length [bytes]
+/// @param errBufSize  error message buffer size
+/// @param errBuf[]    [out] error message
+///
 /// @retval true  data written
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevBase::ComWrite
-(
-  PDeviceDescriptor_t d,    ///< device descriptor
-  const void* data,         ///< data to be written
-  int         length,       ///< data length [bytes]
-  unsigned    errBufSize,   ///< error message buffer size
-  TCHAR       errBuf[]      ///< [out] error message
-)
+bool DevBase::ComWrite(PDeviceDescriptor_t d, const void* data, int length, unsigned errBufSize, TCHAR errBuf[])
 {
   if (!d->Com->Write(data, length))
   {
@@ -300,17 +292,17 @@ bool DevBase::ComWrite
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Writes given character to COM port and checks the result.
 ///
+/// @param d           device descriptor
+/// @param character   data to be written
+/// @param errBufSize  error message buffer size
+/// @param errBuf[]    [out] error message
+///
 /// @retval true  data written
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevBase::ComWrite
-(
-  PDeviceDescriptor_t d,    ///< device descriptor
-  char        character,    ///< data to be written
-  unsigned    errBufSize,   ///< error message buffer size
-  TCHAR       errBuf[]      ///< [out] error message
-)
+bool DevBase::ComWrite(PDeviceDescriptor_t d,
+  char character, unsigned errBufSize, TCHAR errBuf[])
 {
   return(ComWrite(d, &character, 1, errBufSize, errBuf));
 } // ComWrite()
@@ -324,20 +316,20 @@ bool DevBase::ComWrite
 /// If @p rxBuf <> @c NULL, all read characters are stored in the buffer.
 /// It must be large enough to store up to @p checkChars.
 ///
+/// @param d           device descriptor
+/// @param expected    expected data
+/// @param length,     data length [bytes]
+/// @param checkChars  maximum characters to read and check
+/// @param rxBuf       [out] received data (up to checkChars)
+/// @param errBufSize  error message buffer size
+/// @param errBuf[]    [out] error message
+///
 /// @retval true  expected data received
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevBase::ComExpect
-(
-  PDeviceDescriptor_t d,    ///< device descriptor
-  const void* expected,     ///< expected data
-  int         length,       ///< data length [bytes]
-  int         checkChars,   ///< maximum characters to read and check
-  void*       rxBuf,        ///< [out] received data (up to checkChars)
-  unsigned    errBufSize,   ///< error message buffer size
-  TCHAR       errBuf[]      ///< [out] error message
-)
+bool DevBase::ComExpect(PDeviceDescriptor_t d, const void* expected,
+  int length, int checkChars, void* rxBuf, unsigned errBufSize, TCHAR errBuf[])
 {
 //TODO - delete:
 //return(true);
@@ -349,8 +341,12 @@ bool DevBase::ComExpect
   if (length <= 0)
     return(true);
 
+  char prevch = 0;
+
   while ((ch = d->Com->GetChar()) != EOF)
   {
+    prevch = ch;
+
     if (prx != NULL)
       *prx++ = ch;
 
@@ -369,8 +365,13 @@ bool DevBase::ComExpect
       break;
   }
 
+
   //TODO: delete
-  StartupStore(_T("ComExpect: ER [%02X] check=%d%s"), (unsigned) ch, checkChars, NEWLINE);
+  if (prevch == 0)
+    StartupStore(_T("ComExpect: ER [%02X] check=%d%s"), (unsigned) ch, checkChars, NEWLINE);
+  else
+    StartupStore(_T("ComExpect: ER [%02X] check=%d%s"), (unsigned char) prevch, checkChars, NEWLINE);
+
 
   // LKTOKEN  _@M1414_ = "Device not responsive!"
   _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1414_")));
@@ -387,19 +388,19 @@ bool DevBase::ComExpect
 /// If @p rxBuf <> @c NULL, all read characters are stored in the buffer.
 /// It must be large enough to store up to @p checkChars.
 ///
+/// @param d           device descriptor
+/// @param expected    expected character
+/// @param checkChars  maximum characters to read
+/// @param rxBuf       [out] received data (up to checkChars)
+/// @param errBufSize  error message buffer size
+/// @param errBuf[]    [out] error message
+///
 /// @retval true  expected data received
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevBase::ComExpect
-(
-  PDeviceDescriptor_t d,    ///< device descriptor
-  char        expected,     ///< expected character
-  int         checkChars,   ///< maximum characters to read
-  void*       rxBuf,        ///< [out] received data (up to checkChars)
-  unsigned    errBufSize,   ///< error message buffer size
-  TCHAR       errBuf[]      ///< [out] error message
-)
+bool DevBase::ComExpect(PDeviceDescriptor_t d, char expected,
+  int checkChars, void* rxBuf, unsigned errBufSize, TCHAR errBuf[])
 {
   return(ComExpect(d, &expected, 1, checkChars, rxBuf, errBufSize, errBuf));
 } // ComExpect()
@@ -413,19 +414,19 @@ bool DevBase::ComExpect
 /// If @p rxBuf <> @c NULL, all read characters are stored in the buffer.
 /// It must be large enough to store up to @p checkChars.
 ///
+/// @param d            device descriptor
+/// @param expected     expected string
+/// @param checkChars   maximum characters to read
+/// @param rxBuf        [out] received data (up to checkChars)
+/// @param errBufSize   error message buffer size
+/// @param errBuf[]     [out] error message
+///
 /// @retval true  Rx thread started
 /// @retval false error (description in @p errBuf)
 ///
 //static
-bool DevBase::ComExpect
-(
-  PDeviceDescriptor_t d,    ///< device descriptor
-  const char* expected,     ///< expected string
-  int         checkChars,   ///< maximum characters to read
-  void*       rxBuf,        ///< [out] received data (up to checkChars)
-  unsigned    errBufSize,   ///< error message buffer size
-  TCHAR       errBuf[]      ///< [out] error message
-)
+bool DevBase::ComExpect(PDeviceDescriptor_t d, const char* expected,
+  int checkChars, void* rxBuf, unsigned errBufSize, TCHAR errBuf[])
 {
   return(ComExpect(
     d, expected, strlen(expected), checkChars, rxBuf, errBufSize, errBuf));
@@ -461,13 +462,12 @@ bool PlatfEndian::IsLittle()
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Swap 16bit value into bin-endian format.
 ///
+/// @param value  value to be returned in BE
+///
 /// @return @p value in bin-endian format
 ///
 //static
-uint16_t PlatfEndian::To16BE
-(
-  uint16_t value ///< value to be returned in BE
-)
+uint16_t PlatfEndian::To16BE(uint16_t value)
 {
   if (IsBE())
     return(value); // there's no need of conversion on BE platform
@@ -480,13 +480,12 @@ uint16_t PlatfEndian::To16BE
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Swap 32bit value into bin-endian format.
 ///
+/// @param value value to be returned in BE
+///
 /// @return @p value in bin-endian format
 ///
 //static
-uint32_t PlatfEndian::To32BE
-(
-  uint32_t value ///< value to be returned in BE
-)
+uint32_t PlatfEndian::To32BE(uint32_t value)
 {
   if (IsBE())
     return(value); // there's no need of conversion on BE platform
