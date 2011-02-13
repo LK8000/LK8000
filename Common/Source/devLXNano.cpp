@@ -45,7 +45,7 @@ static const char PKT_ACK = '\x06';
 /// not acknowledged (CRC checksum is wrong)
 static const char PKT_NAK = '\x15';
 
-// commands supported by Nano:
+// commands supported by Colibri/Nano:
 
 /// read logger info
 /// (returns "\r\nVersion NANO<version>\r\nSN<sw_serial>,HW<hw_serial>\r\n")
@@ -103,7 +103,8 @@ BOOL DevLXNano::Install(PDeviceDescriptor_t d)
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
 
-  StartupStore(_T(". LX Nano installed (platform=%s test=%lu)%s"),
+  StartupStore(_T(". %s installed (platform=%s test=%lu)%s"),
+    GetName(),
     PlatfEndian::IsBE() ? _T("be") : _T("le"),
     PlatfEndian::To32BE(0x01000000), NEWLINE);
 
@@ -117,7 +118,7 @@ BOOL DevLXNano::Install(PDeviceDescriptor_t d)
 //static
 const TCHAR* DevLXNano::GetName()
 {
-  return(_T("LX Nano"));
+  return(_T("LX Colibri/Nano"));
 } // GetName()
 
 

@@ -9,6 +9,7 @@
 
 #include "StdAfx.h"
 #include "Dialogs.h"
+#include "options.h"
 #include "devBase.h"
 
 //____________________________________________________________class_definitions_
@@ -274,18 +275,23 @@ bool DevBase::SetRxTimeout(PDeviceDescriptor_t d,
 //static
 bool DevBase::ComWrite(PDeviceDescriptor_t d, const void* data, int length, unsigned errBufSize, TCHAR errBuf[])
 {
+  bool res;
+
   if (!d->Com->Write(data, length))
   {
     // LKTOKEN  _@M952_ = "Cannot write data to Port!"
     _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M952_")));
-    StartupStore(_T("ComWrite:  ER [%02X] len=%d%s"), ((const unsigned char*) data)[0], length, NEWLINE);
-    return(false);
+    res = false;
   }
+  else
+    res = true;
 
-  //TODO: delete
-  StartupStore(_T("ComWrite:  OK [%02X] len=%d%s"), ((const  unsigned char*) data)[0], length, NEWLINE);
+  #ifdef DEBUG_DEV_COM
+    StartupStore(_T("ComWrite:  %s [%02X] len=%d%s"),
+      res ? _T("OK") : _T("ER"), ((const unsigned char*) data)[0], length, NEWLINE);
+  #endif
 
-  return(true);
+  return(res);
 } // ComWrite()
 
 
@@ -331,9 +337,6 @@ bool DevBase::ComWrite(PDeviceDescriptor_t d,
 bool DevBase::ComExpect(PDeviceDescriptor_t d, const void* expected,
   int length, int checkChars, void* rxBuf, unsigned errBufSize, TCHAR errBuf[])
 {
-//TODO - delete:
-//return(true);
-
   int ch;
   char* prx = (char*) rxBuf;
   const char* pe  = (const char*) expected;
@@ -354,7 +357,9 @@ bool DevBase::ComExpect(PDeviceDescriptor_t d, const void* expected,
     {
       if ((++pe - (const char*) expected) == length)
       {
-        StartupStore(_T("ComExpect: OK [%02X] check=%d%s"), (unsigned) ch, checkChars, NEWLINE);
+        #ifdef DEBUG_DEV_COM
+          StartupStore(_T("ComExpect: OK [%02X] check=%d%s"), (unsigned) ch, checkChars, NEWLINE);
+        #endif
         return(true);
       }
     }
@@ -365,13 +370,10 @@ bool DevBase::ComExpect(PDeviceDescriptor_t d, const void* expected,
       break;
   }
 
-
-  //TODO: delete
-  if (prevch == 0)
-    StartupStore(_T("ComExpect: ER [%02X] check=%d%s"), (unsigned) ch, checkChars, NEWLINE);
-  else
-    StartupStore(_T("ComExpect: ER [%02X] check=%d%s"), (unsigned char) prevch, checkChars, NEWLINE);
-
+  #ifdef DEBUG_DEV_COM
+    StartupStore(_T("ComExpect: ER [%02X] check=%d%s"),
+      (prevch == 0) ? (unsigned) ch : (unsigned char) prevch, checkChars, NEWLINE);
+  #endif
 
   // LKTOKEN  _@M1414_ = "Device not responsive!"
   _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1414_")));

@@ -91,7 +91,7 @@
 
 // force polling mode
 // #define NEWCOMM 1
-// use configurable polling mode (do not mix with NEWCOMM !! 
+// use configurable polling mode (do not mix with NEWCOMM !!
 // Requires NEWGPS and a value like 1 to be defined
 #define POLLINGMODE 1
 
@@ -220,10 +220,10 @@
 #define ORBITER		1	// thermal orbiter
 
 #define LKSTARTUP	1	// new startup screen
-#define NOSIM		1	// sim and fly in the same executable 
+#define NOSIM		1	// sim and fly in the same executable
 
 // 101020
-// TEMPORARY FIXES THAT REQUIRE EXTENSIVE TESTING - KEEP #ifdef until expiring date 
+// TEMPORARY FIXES THAT REQUIRE EXTENSIVE TESTING - KEEP #ifdef until expiring date
 // When expire date is reached, unnecessary old stuff can be removed, even if commented
 //
 #define FIX_RELOADCONFIG	1	// Applied: 101020 expires 110201
@@ -242,7 +242,7 @@
 
 #define GASUPPORT		1	// oren's GA work
 
-#define ABLEND			1	// Alpha Blending for airspaces and probably for many other 
+#define ABLEND			1	// Alpha Blending for airspaces and probably for many other
 					// usages. Use AlphaBlendAvailable() to check, because the
 					// function is inside coredll
 
@@ -253,17 +253,17 @@
 
 
 
-#define ALPHADEBUG		1	// DEBUG STARTUPSTORE MESSAGES FOR ALPHA AND BETA VERSIONS 
+#define ALPHADEBUG		1	// DEBUG STARTUPSTORE MESSAGES FOR ALPHA AND BETA VERSIONS
 					// IN FINAL VERSIONS WILL BE DISABLED
 
 /*
  * Put here debug defines, so that other developers can activate them if needed.
 
-#define DRAWLOAD		// show cpu load (set by DEBUG mode)
-#define DEBUG_DBLCLK		// show double click is being pressed
-#define VENTA_DEBUG_EVENT	// show key events, actually very few.
-#define VENTA_DEBUG_KEY		// activates scan key codes, so you know what an hardware key is mapped to
-#define DEBUG_ROTARY		// write in DEBUG.TXT located in the same place of .exe , append mode
-#define CPUSTATS		// activate cpu thread profiling stuff also in Cpustat.h
+#define DRAWLOAD          // show cpu load (set by DEBUG mode)
+#define DEBUG_DBLCLK      // show double click is being pressed
+#define VENTA_DEBUG_EVENT // show key events, actually very few.
+#define VENTA_DEBUG_KEY   // activates scan key codes, so you know what an hardware key is mapped to
+#define DEBUG_ROTARY      // write in DEBUG.TXT located in the same place of .exe , append mode
+#define CPUSTATS          // activate cpu thread profiling stuff also in Cpustat.h
+#define DEBUG_DEV_COM     // log device communication through DevBase class methods
  */
-

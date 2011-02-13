@@ -25,7 +25,7 @@
 // #############################################################################
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// LX Nano device (parsing LXWPn sentences and declaring tasks).
+/// LX Colibri/Nano device (parsing LXWPn sentences and declaring tasks).
 ///
 class DevLXNano : public DevLX
 {
@@ -142,7 +142,7 @@ class DevLXNano::Decl
 
     //..........................................................................
 
-    /// LX flight declaration data (should be compatible with Nano, Colibri and Posigraph
+    /// LX flight declaration data (should be compatible with Nano, Colibri and Posigraph)
     struct Flight // s_flight
     {
       byte flag;          ///< can be empty for Nano
