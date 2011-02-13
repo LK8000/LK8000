@@ -129,30 +129,12 @@ static bool UpdateAirspaceAckBrush(AirspaceInfo_c *Item, int Force){
 }
 #endif
 #ifdef LKAIRSPACE
-void CAirspaceManager::AirspaceWarnListAddNotifier(AirspaceWarningNotifier_t Notifier)
-{
-  CCriticalSection::CGuard guard(_cswarnlist);
-  _airspaceWarningNotifiers.push_front(Notifier);
-}
 #else
 void AirspaceWarnListAddNotifier(AirspaceWarningNotifier_t Notifier){
   AirspaceWarningNotifierList.push_front(Notifier);
 }
 #endif
 #ifdef LKAIRSPACE
-void CAirspaceManager::AirspaceWarnListRemoveNotifier(AirspaceWarningNotifier_t Notifier)
-{
-  CCriticalSection::CGuard guard(_cswarnlist);
-
-  AirspaceWarningNotifiersList::iterator it = _airspaceWarningNotifiers.begin();
-  while (it != _airspaceWarningNotifiers.end()) {
-    if (*it == Notifier) {
-      it = _airspaceWarningNotifiers.erase(it);
-      continue;
-    }
-    ++it;
-  }
-}
 #else
 void AirspaceWarnListRemoveNotifier(AirspaceWarningNotifier_t Notifier){
   List<AirspaceWarningNotifier_t>::Node* it = AirspaceWarningNotifierList.begin();
@@ -224,12 +206,6 @@ double RangeAirspaceArea(const double &longitude, const double &latitude, int i,
 #endif
 
 #ifdef LKAIRSPACE
-void CAirspaceManager::AirspaceWarnListDoNotify(AirspaceWarningNotifyAction_t Action, AirspaceInfo_c *AirSpace)
-{
-  for (AirspaceWarningNotifiersList::iterator it = _airspaceWarningNotifiers.begin(); it != _airspaceWarningNotifiers.end(); ++it) {
-    if (*it) (*it)(Action, AirSpace);
-  }
-}
 #else
 static void AirspaceWarnListDoNotify(AirspaceWarningNotifyAction_t Action, AirspaceInfo_c *AirSpace){
   for (List<AirspaceWarningNotifier_t>::Node* it = AirspaceWarningNotifierList.begin(); it; it = it->next ){
@@ -467,9 +443,9 @@ void CAirspaceManager::AirspaceWarnListAdd(NMEA_INFO *Basic, DERIVED_INFO *Calcu
 			it->Predicted = Predicted;
 		  }
           if (calcWarnLevel(&(*it)))
-            AirspaceWarnListDoNotify(asaWarnLevelIncreased, &(*it));
+		  dlgAirspaceWarningNotify(asaWarnLevelIncreased, &(*it));
           else
-            AirspaceWarnListDoNotify(asaItemChanged, &(*it));
+		  dlgAirspaceWarningNotify(asaItemChanged, &(*it));
         }
         
         it->InsideAckTimeOut = AcknowledgementTime / OUTSIDE_CHECK_INTERVAL;
@@ -516,7 +492,7 @@ void CAirspaceManager::AirspaceWarnListAdd(NMEA_INFO *Basic, DERIVED_INFO *Calcu
 
       NewAirspaceWarnings = true;
 
-      AirspaceWarnListDoNotify(asaItemAdded, &(*_airspaceWarnings.begin()));
+	  dlgAirspaceWarningNotify(asaItemAdded, &(*_airspaceWarnings.begin()));
     }
 }
 #else
@@ -750,7 +726,7 @@ void CAirspaceManager::AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *C
         it->TimeOut = OUTSIDE_CHECK_INTERVAL; // retrigger checktimeout
 
         if (calcWarnLevel(&(*it)))
-          AirspaceWarnListDoNotify(asaWarnLevelIncreased, &(*it));
+		  dlgAirspaceWarningNotify(asaWarnLevelIncreased, &(*it));
 
         UpdateAirspaceAckBrush(&(*it), 0);
 
@@ -768,7 +744,7 @@ void CAirspaceManager::AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *C
 
           it = _airspaceWarnings.erase(it);
           UpdateAirspaceAckBrush(&asi, -1);
-          AirspaceWarnListDoNotify(asaItemRemoved, &asi);
+		  dlgAirspaceWarningNotify(asaItemRemoved, &asi);
 
           continue;
 
@@ -785,7 +761,7 @@ void CAirspaceManager::AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *C
 	    // 20sec outside check interval prevent down ACK on circling
           }
         }
-        AirspaceWarnListDoNotify(asaItemChanged, &(*it));
+		dlgAirspaceWarningNotify(asaItemChanged, &(*it));
       }
       ++it;
     }
@@ -795,7 +771,7 @@ void CAirspaceManager::AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *C
     DebugStore("%d # airspace\n", _airspaceWarnings.size());
 #endif
 
-    AirspaceWarnListDoNotify(asaProcessEnd, NULL);
+	dlgAirspaceWarningNotify(asaProcessEnd, NULL);
 }
 #else
 void AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *Calculated){
@@ -925,7 +901,7 @@ void CAirspaceManager::AirspaceWarnDoAck(int ID, int Ack)
 	  else it->Acknowledge = Ack;						// ack defined warnlevel
 
 	  UpdateAirspaceAckBrush(&(*it), 0);
-	  AirspaceWarnListDoNotify(asaItemChanged, &(*it));
+	  dlgAirspaceWarningNotify(asaItemChanged, &(*it));
 	}
   }
 }
@@ -964,7 +940,7 @@ void CAirspaceManager::AirspaceWarnListClear()
 	UpdateAirspaceAckBrush(&(*it), -1);
   }
   _airspaceWarnings.clear();
-  AirspaceWarnListDoNotify(asaClearAll ,NULL);
+  dlgAirspaceWarningNotify(asaClearAll ,NULL);
 }
 #else
 void AirspaceWarnListClear(void){

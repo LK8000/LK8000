@@ -233,8 +233,6 @@ public:
   bool AirspaceWarnGetItem(unsigned int Index, AirspaceInfo_c &Item);
   void AirspaceWarnDoAck(int ID, int Ack);
   int AirspaceWarnFindIndexByID(int ID);
-  void AirspaceWarnListAddNotifier(AirspaceWarningNotifier_t Notifier);
-  void AirspaceWarnListRemoveNotifier(AirspaceWarningNotifier_t Notifier);
 
   //Get airspace details (dlgAirspaceDetails)
   CAirspaceList GetVisibleAirspacesAtPoint(const double &lon, const double &lat) const;
@@ -265,11 +263,9 @@ private:
 
   // Warning system data
   mutable CCriticalSection _cswarnlist;
-  AirspaceWarningNotifiersList _airspaceWarningNotifiers;
   AirspaceWarningsList _airspaceWarnings;
   int _static_unique;														//TODO remove this hack
   bool UpdateAirspaceAckBrush(AirspaceInfo_c *Item, int Force);
-  void AirspaceWarnListDoNotify(AirspaceWarningNotifyAction_t Action, AirspaceInfo_c *AirSpace);
   bool calcWarnLevel(AirspaceInfo_c *asi);
   void AirspaceWarnListSort();
   void AirspaceWarnListClear();
@@ -286,8 +282,11 @@ private:
 };
 
 
+//dlgAirspaceWarning
 int dlgAirspaceWarningInit(void);
 int dlgAirspaceWarningDeInit(void);
+void dlgAirspaceWarningNotify(AirspaceWarningNotifyAction_t Action, 
+                           AirspaceInfo_c *AirSpace);
 
 
 void ScreenClosestPoint(const POINT &p1, const POINT &p2, 

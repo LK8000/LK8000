@@ -59,10 +59,7 @@ static int SelectedID = -1;    // Currently selected airspace ID
 static int SelectedIdx = -1;   // Currently selected airspace List Index
 static bool fDialogOpen = false;
 #ifdef LKAIRSPACE
-CAirspaceList airspaces;
-static HBRUSH hBrushNormal;
-
-//void dlgAirspaceWarningNotify(AirspaceWarningNotifyAction_t Action, CAirspace *Airspace);
+void dlgAirspaceWarningNotify(AirspaceWarningNotifyAction_t Action, AirspaceInfo_c *AirSpace);
 #else
 void AirspaceWarningNotify(AirspaceWarningNotifyAction_t Action, AirspaceInfo_c *AirSpace);
 #endif
@@ -772,38 +769,12 @@ extern bool RequestAirspaceWarningDialog;
 
 // WARNING: this is NOT called from the windows thread!
 #ifdef LKAIRSPACE
-/*void dlgAirspaceWarningNotify(AirspaceWarningNotifyAction_t Action, 
-                           CAirspace *Airspace) {
-
-  if ((Action == asaItemAdded) || (Action == asaWarnLevelIncreased)) {
-    actShow = true;
-  }
-
-  if ((Action == asaItemAdded) || (Action == asaItemRemoved) 
-      || (Action == asaClearAll)) {
-    actListSizeChange = true;
-  }
-
-  if ((Action == asaItemChanged) || (Action == asaWarnLevelIncreased)){
-    actListChange = true;
-  }
-
-  if ((Action == asaProcessEnd) && (actShow || actListSizeChange || actListChange)){
-    if (fDialogOpen) {
-      PostMessage(wf->GetHandle(), WM_USER+1, 0, 0);
-    }
-    else {
-	  if (actShow) RequestAirspaceWarningDialog= true;
-      // JMW this is bad! PostMessage(hWndMapWindow, WM_USER+1, 0, 0);  
-      // (Makes it serviced by the main gui thread, much better)
-    }
-    // sync dialog with MapWindow (event processing etc)
-  }
-
-}*/
+void dlgAirspaceWarningNotify(AirspaceWarningNotifyAction_t Action, 
+                           AirspaceInfo_c *AirSpace) {
 #else
 void AirspaceWarningNotify(AirspaceWarningNotifyAction_t Action, 
                            AirspaceInfo_c *AirSpace) {
+#endif
   (void)AirSpace;
   if ((Action == asaItemAdded) || (Action == asaItemRemoved) 
       || (Action == asaWarnLevelIncreased)) {
@@ -969,7 +940,6 @@ int dlgAirspaceWarningInit(void){
       wAirspaceListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmAirspaceWarningListEntry"));
       wAirspaceListEntry->SetCanFocus(true);
 #ifdef LKAIRSPACE
-      CAirspaceManager::Instance().AirspaceWarnListAddNotifier(AirspaceWarningNotify);
 #else
       AirspaceWarnListAddNotifier(AirspaceWarningNotify);
 #endif
@@ -998,7 +968,6 @@ int dlgAirspaceWarningDeInit(void){
 
   // 110106  missing delete brush objects here. Minor malis.
 #ifdef LKAIRSPACE
-  CAirspaceManager::Instance().AirspaceWarnListRemoveNotifier(AirspaceWarningNotify);
 #else
   AirspaceWarnListRemoveNotifier(AirspaceWarningNotify);
 #endif
