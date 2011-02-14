@@ -454,10 +454,21 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	sizeup=MapWindow::MapRect.bottom-MapWindow::MapRect.top;
 	// do not consider navboxes, they are processed separately
 	// These are coordinates for up down center VKs
+	// yup and ydown are used normally on nearest page item selection, but also for real VK
+	// that currently are almost unused. 
+
 	if (NewMap&&DrawBottom&&MapWindow::IsMapFullScreen()) {
-		yup=(short)((sizeup-BottomSize-TopSize)/2.7)+MapWindow::MapRect.top+TopSize;
-		ydown=(short)(MapWindow::MapRect.bottom-BottomSize-((sizeup-BottomSize)/2.7));
+		// Native LK mode: always fullscreen mode
+		// If long click, we are processing an Enter, and we want a wider valid center area
+		if ( keytime>=(VKSHORTCLICK*2)) { 
+			yup=(short)((sizeup-BottomSize-TopSize)/3.7)+MapWindow::MapRect.top+TopSize;
+			ydown=(short)(MapWindow::MapRect.bottom-BottomSize-((sizeup-BottomSize)/3.7));
+		} else {
+			yup=(short)((sizeup-BottomSize-TopSize)/2.7)+MapWindow::MapRect.top+TopSize;
+			ydown=(short)(MapWindow::MapRect.bottom-BottomSize-((sizeup-BottomSize)/2.7));
+		}
 	} else {
+		// Ibox mode, most likely
 		yup=(short)(sizeup/2.7)+MapWindow::MapRect.top;
 		ydown=(short)(MapWindow::MapRect.bottom-(sizeup/2.7));
 	}
@@ -860,7 +871,9 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	}
 	// no click for already clicked events
 
-	//  Swap white and black colours on LK8000 
+	//  Swap white and black colours on LK8000 : working only with virtual keys on, map mode
+	//  Currently as of 2.1 virtual keys are almost obsoleted, and it is very unlikely that 
+	//  someone will ever use this feature, which is also undocumented!!
 	if (keytime>=VKTIMELONG && !dontdrawthemap) {
 		if (NewMap&&Look8000) {
 			static short oldOutline=OutlinedTp;
