@@ -26,10 +26,8 @@
 #include "Message.h"
 #include "Cpustats.h"
 
-#ifdef FLARM_AVERAGE
 #include "FlarmCalculations.h"
 FlarmCalculations flarmCalculations;
-#endif
 
 #ifdef __MINGW32__
 #ifndef max
@@ -1277,9 +1275,7 @@ void FLARM_EmptySlot(NMEA_INFO *GPS_INFO,int i) {
   GPS_INFO->FLARM_Traffic[i].ClimbRate=0;
   GPS_INFO->FLARM_Traffic[i].Type=0;
   GPS_INFO->FLARM_Traffic[i].Time_Fix=0;
-#ifdef FLARM_AVERAGE
   GPS_INFO->FLARM_Traffic[i].Average30s=0;
-#endif
   GPS_INFO->FLARM_Traffic[i].Locked = false;
   GPS_INFO->FLARM_Traffic[i].UpdateNameFlag = false;
 
@@ -1556,12 +1552,10 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 
 
 
-#ifdef FLARM_AVERAGE
   GPS_INFO->FLARM_Traffic[flarm_slot].Average30s = flarmCalculations.Average30s(
 	  GPS_INFO->FLARM_Traffic[flarm_slot].ID,
 	  GPS_INFO->Time,
 	  GPS_INFO->FLARM_Traffic[flarm_slot].Altitude);
-#endif
 
   TCHAR *name = GPS_INFO->FLARM_Traffic[flarm_slot].Name;
   //TCHAR *cn = GPS_INFO->FLARM_Traffic[flarm_slot].Cn;

@@ -47,9 +47,7 @@ typedef struct _FLARM_TRAFFIC
   bool Locked; // 100120
   // When set true, name has been changed and Cn must be updated
   bool UpdateNameFlag;
-#ifdef FLARM_AVERAGE
   double Average30s;
-#endif
   // These are calculated values, updated only inside an offline copy
   double Distance;
   double Bearing;

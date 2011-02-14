@@ -186,23 +186,11 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
 		if (DrawInfo.FLARM_Traffic[i].Cn && DrawInfo.FLARM_Traffic[i].Cn[0]!=_T('?')) { // 100322
 			_tcscat(lbuffer,DrawInfo.FLARM_Traffic[i].Cn);
 		}
-		#ifdef FLARM_AVERAGE
 		if (DrawInfo.FLARM_Traffic[i].Average30s>=0.1) {
-		#else
-		if (DrawInfo.FLARM_Traffic[i].ClimbRate>=0.1) {
-		#endif
 			if (_tcslen(lbuffer) >0)
-				#ifdef FLARM_AVERAGE
 				_stprintf(lbuffer,_T("%s:%.1f"),lbuffer,LIFTMODIFY*DrawInfo.FLARM_Traffic[i].Average30s);
-				#else
-				_stprintf(lbuffer,_T("%s:%.1f"),lbuffer,LIFTMODIFY*DrawInfo.FLARM_Traffic[i].ClimbRate);
-				#endif
 			else
-				#ifdef FLARM_AVERAGE
 				_stprintf(lbuffer,_T("%.1f"),LIFTMODIFY*DrawInfo.FLARM_Traffic[i].Average30s);
-				#else
-				_stprintf(lbuffer,_T("%.1f"),LIFTMODIFY*DrawInfo.FLARM_Traffic[i].ClimbRate);
-				#endif
 		}
 
 		displaymode.AsFlag.Border=1;

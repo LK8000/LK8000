@@ -6,7 +6,6 @@
 */
 
 #include "options.h"
-#ifdef FLARM_AVERAGE
 #include "FlarmCalculations.h"
 
 FlarmCalculations::FlarmCalculations(void)
@@ -35,4 +34,3 @@ double FlarmCalculations::Average30s(long flarmId, double curTime, double curAlt
   return itemTemp->GetAverage(curTime, curAltitude, 30);
 }
 
-#endif

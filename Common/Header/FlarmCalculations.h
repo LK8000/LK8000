@@ -1,7 +1,6 @@
 #ifndef FLARMCALCULATIONS_H
 #define FLARMCALCULATIONS_H
 
-#ifdef FLARM_AVERAGE
 #include <map>
 #include "Parser.h"
 #include "ClimbAverageCalculator.h"
@@ -17,5 +16,4 @@ private:
   AverageCalculatorMap averageCalculatorMap;
 };
 
-#endif
 #endif
