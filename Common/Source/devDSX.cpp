@@ -209,7 +209,7 @@ bool DSXT1Send(PDeviceDescriptor_t d, const Declaration_t &decl, unsigned errBuf
  */
 inline unsigned long DSXCoord(float gpsCoord)
 {
-  return static_cast<unsigned long>(fabs(gpsCoord) * 1000.0) + 123456;
+  return static_cast<unsigned long>(fabs(gpsCoord) * 100 * 1000.0) + 123456;
 }
 
 
