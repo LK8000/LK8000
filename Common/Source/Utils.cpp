@@ -36,11 +36,9 @@
 #include "NavFunctions.h"
 #include "WaveThread.h"
 
-#ifdef FLARMNET
 #include "FlarmIdFile.h"
 // Warning, this is initialising class, loading flarmnet IDs before anything else in the LK is even started..
 FlarmIdFile file; 
-#endif
 
 #if defined(PNA) || defined(FIVV)
 #include "InfoBoxLayout.h"
@@ -5338,14 +5336,12 @@ TCHAR* LookupFLARMCn(long id) {
       return FLARM_Names[index].Name;
     }
   
-#ifdef FLARMNET
   // try to find flarm from FLARMNet.org File
   FlarmId* flarmId = file.GetFlarmIdItem(id);
   if (flarmId != NULL)
     {
       return flarmId->cn;
     }
-#endif
   return NULL;
 }
 
@@ -5358,7 +5354,6 @@ TCHAR* LookupFLARMDetails(long id) {
       return FLARM_Names[index].Name;
     }
   
-#ifdef FLARMNET
   // try to find flarm from FLARMNet.org File
   FlarmId* flarmId = file.GetFlarmIdItem(id);
   if (flarmId != NULL)
@@ -5366,7 +5361,6 @@ TCHAR* LookupFLARMDetails(long id) {
       // return flarmId->cn;
       return flarmId->reg;
     }
-#endif
   return NULL;
 }
 
@@ -5380,14 +5374,12 @@ int LookupFLARMDetails(TCHAR *cn)
       return FLARM_Names[index].ID;
     }
   
-#ifdef FLARMNET
   // try to find flarm from FLARMNet.org File
   FlarmId* flarmId = file.GetFlarmIdItem(cn);
   if (flarmId != NULL)
     {
       return flarmId->GetId();
     }
-#endif  
   return 0;
 }
 

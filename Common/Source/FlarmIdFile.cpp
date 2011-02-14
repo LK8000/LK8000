@@ -8,7 +8,6 @@
 #include "StdAfx.h"
 #include "XCSoar.h"
 #include "options.h"
-#ifdef FLARMNET
 #include "Flarm.h"
 #include "externs.h"
 #include "FlarmIdFile.h"
@@ -169,4 +168,3 @@ long FlarmId::GetId()
 };
 
 
-#endif

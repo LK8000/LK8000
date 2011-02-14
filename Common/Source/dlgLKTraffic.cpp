@@ -16,10 +16,8 @@
 #include "Cpustats.h"
 #include "Utils2.h"
 
-#ifdef FLARMNET
 #include "FlarmIdFile.h"
 extern FlarmIdFile file; // in Utils
-#endif
 
 static WndForm *wf=NULL;
 static void SetValues(int indexid);

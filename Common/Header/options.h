@@ -71,7 +71,6 @@
 #define IBLSCALE(x) (x)
 #endif
 
-#define FLARMNET	1
 #define FLARM_AVERAGE	1
 
 #ifdef PNA
