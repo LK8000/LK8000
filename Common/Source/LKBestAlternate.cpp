@@ -93,11 +93,7 @@ void SearchBestAlternate(NMEA_INFO *Basic,
   #else
   for (i=0; i<(int)NumberOfWayPoints; i++) {
 
-	#ifdef USEISLANDABLE
 	if (!WayPointCalc[i].IsLandable) {
-	#else
-	if (!(((WayPointList[i].Flags & AIRPORT) == AIRPORT) || ((WayPointList[i].Flags & LANDPOINT) == LANDPOINT))) {
-	#endif
 		continue; // ignore non-landable fields
 	}
    #endif
@@ -172,11 +168,7 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 		}
 
 		if ((scan_airports_slot==0) && 
-			#ifdef USEISLANDABLE
 			(!WayPointCalc[sortApproxIndex[i]].IsAirport))
-			#else
-			((WayPointList[sortApproxIndex[i]].Flags & AIRPORT) != AIRPORT))
-			#endif
 		{
 			// we are in the first scan, looking for airports only
 			continue;
@@ -374,11 +366,7 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 		// at the end of the search no home and no preferred were found.
 
 		if ( curgr < curbestgr ) {
-			#ifdef USEISLANDABLE
 			if ( WayPointCalc[curwp].IsAirport) {
-			#else
-			if ( ( WayPointList[curwp].Flags & AIRPORT) == AIRPORT) {
-			#endif
 				curbestairport=curwp;
 				curbestgr=curgr; // ONLY FOR AIRPORT! NOT FOR OUTLANDINGS!!
 				#ifdef DEBUG_BESTALTERNATE

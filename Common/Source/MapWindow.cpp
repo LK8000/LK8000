@@ -4678,12 +4678,7 @@ void MapWindow::DrawWaypoints(HDC hdc, const RECT rc)
 
 	    if(MapScale > 20) {
 	      SelectObject(hDCTemp,hSmall);
-	    #ifdef USEISLANDABLE
 	    } else if( WayPointCalc[i].IsLandable ) {
-	    #else
-	    } else if( ((WayPointList[i].Flags & AIRPORT) == AIRPORT) 
-		       || ((WayPointList[i].Flags & LANDPOINT) == LANDPOINT) ) {
-	    #endif
 	      islandable = true; // so we can always draw them
 	      if(WayPointList[i].Reachable){
 
@@ -4699,20 +4694,12 @@ void MapWindow::DrawWaypoints(HDC hdc, const RECT rc)
 		  dowrite = true;
 		}
 
-		#ifdef USEISLANDABLE
 		if (WayPointCalc[i].IsAirport)
-		#else
-		if ((WayPointList[i].Flags & AIRPORT) == AIRPORT)
-		#endif
 		  SelectObject(hDCTemp,hBmpAirportReachable);
 		else
 		  SelectObject(hDCTemp,hBmpFieldReachable);
 	      } else {
-		#ifdef USEISLANDABLE
 		if (WayPointCalc[i].IsAirport)
-		#else
-		if ((WayPointList[i].Flags & AIRPORT) == AIRPORT)
-		#endif
 		  SelectObject(hDCTemp,hBmpAirportUnReachable);
 		else
 		  SelectObject(hDCTemp,hBmpFieldUnReachable);

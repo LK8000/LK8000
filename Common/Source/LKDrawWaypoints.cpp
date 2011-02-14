@@ -104,11 +104,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 
 	if (WayPointList[i].Visible != TRUE )	continue; // false may not be FALSE?
 
-	#ifdef USEISLANDABLE
 	if (WayPointCalc[i].IsAirport) {
-	#else
-	if ((WayPointList[i].Flags & AIRPORT) == AIRPORT) {
-	#endif
 		if (WayPointList[i].Reachable == FALSE)	{ 
 			SelectObject(hDCTemp,hBmpAirportUnReachable);
 		} else {
@@ -119,11 +115,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 			}
 		}
 	} else {
-		#ifdef USEISLANDABLE
 		if ( WayPointCalc[i].IsOutlanding ) {
-		#else
-		if ( (WayPointList[i].Flags & LANDPOINT) == LANDPOINT) {
-		#endif
 			// outlanding
 			if (WayPointList[i].Reachable == FALSE)
 				SelectObject(hDCTemp,hBmpFieldUnReachable);

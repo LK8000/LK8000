@@ -82,7 +82,7 @@
 #endif
 
 
-#define DSX
+#define DSX		// only an experimental test feature
 
 #define NEWTRAIL
 
@@ -124,9 +124,6 @@
  #define NOCDIGAUGE	1
  // no instrument thread
  #define NOINSTHREAD	1
-
- // use WaypointCalc.IsLandable &c. in place of WaypointList.Flags
- #define USEISLANDABLE	1
 
  // do calculations in map mode at 0.5hz, instead of 1hz
  #define FLIPFLOP	1
@@ -259,5 +256,6 @@
 #define CPUSTATS          // activate cpu thread profiling stuff also in Cpustat.h
 #define DEBUG_DEV_COM     // log device communication through DevBase class methods
 #define DEBUGNPM	  // port monitor and hearthbeats in Parser
+#define DEBUG_BESTALTERNATE	// full bestalternate messages inside DEBUG.TXT in home directory
  */
 

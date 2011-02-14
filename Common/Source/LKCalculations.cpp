@@ -459,15 +459,11 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	if ( approx_distance > DSTRANGETURNPOINT ) goto LabelLandables;
 
 	// Get only non landables
-	#ifdef USEISLANDABLE
 	if (
 		( (TpFilter==(TpFilter_t)TfNoLandables) && (!WayPointCalc[i].IsLandable ) ) ||
 		( (TpFilter==(TpFilter_t)TfAll) ) ||
 		( (TpFilter==(TpFilter_t)TfTps) && ((WayPointList[i].Flags & TURNPOINT) == TURNPOINT) ) 
 	 ) {
-	#else
-	if (! (((WayPointList[i].Flags & AIRPORT) == AIRPORT) || ((WayPointList[i].Flags & LANDPOINT) == LANDPOINT))) {
-	#endif
 		#if UNSORTEDRANGE
 		if (kt+1<MAXRANGETURNPOINT) { // never mind if we use maxrange-2
 			RangeTurnpointIndex[kt++]=i;
@@ -507,11 +503,7 @@ LabelLandables:
 	if ( approx_distance > DSTRANGELANDABLE ) continue;
 
 	// Skip non landable waypoints that are between DSTRANGETURNPOINT and DSTRANGELANDABLE
-	#ifdef USEISLANDABLE
 	if (!WayPointCalc[i].IsLandable )
-	#else
-	if (!(((WayPointList[i].Flags & AIRPORT) == AIRPORT) || ((WayPointList[i].Flags & LANDPOINT) == LANDPOINT))) 
-	#endif
 		continue; 
 
 	#if UNSORTEDRANGE
@@ -550,11 +542,7 @@ LabelLandables:
 
 
 	// If it's an Airport then we also take it into account separately
-	#ifdef USEISLANDABLE
 	if ( WayPointCalc[i].IsAirport )
-	#else
-	if ( ((WayPointList[i].Flags & AIRPORT) == AIRPORT) )
-	#endif
 	{
 		#if UNSORTEDRANGE
 		if (ka+1<MAXRANGELANDABLE) { // never mind if we use maxrange-2
@@ -1004,11 +992,7 @@ void MapWindow::CalculateWaypointReachableNew(void)
   for(i=0;i<NumberOfWayPoints;i++)
   {
   // #endif
-    #ifdef USEISLANDABLE
     if ( ( ((WayPointCalc[i].AltArriv >=0)||(WayPointList[i].Visible)) && (WayPointCalc[i].IsLandable)) // 100307
-    #else
-    if ((WayPointList[i].Visible && ( ((WayPointList[i].Flags & AIRPORT) == AIRPORT) || ((WayPointList[i].Flags & LANDPOINT) == LANDPOINT) ))
-    #endif
 	|| WaypointInTask(i) ) {
 
 	DistanceBearing(DrawInfo.Latitude, DrawInfo.Longitude, WayPointList[i].Latitude, WayPointList[i].Longitude, &waypointDistance, &waypointBearing);
@@ -1071,11 +1055,7 @@ void MapWindow::CalculateWaypointReachableNew(void)
     if(!WayPointList[i].Visible && WayPointList[i].FarVisible)  {
 	// visible but only at a distance (limit this to 100km radius)
 
-	#ifdef USEISLANDABLE
 	if(  WayPointCalc[i].IsLandable ) {
-	#else
-	if(  ((WayPointList[i].Flags & AIRPORT) == AIRPORT) || ((WayPointList[i].Flags & LANDPOINT) == LANDPOINT) ) {
-	#endif
 
 		DistanceBearing(DrawInfo.Latitude, 
                                 DrawInfo.Longitude, 
