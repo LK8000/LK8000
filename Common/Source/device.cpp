@@ -153,9 +153,7 @@ BOOL devInit(LPTSTR CommandLine){
   int i;
   TCHAR DeviceName[DEVNAMESIZE];
   PDeviceDescriptor_t pDevNmeaOut = NULL;
-#ifdef COMDIAG
   static bool doinit=true;
-#endif
 
   for (i=0; i<NUMDEV; i++){
     DeviceList[i].Port = -1;
@@ -186,7 +184,6 @@ BOOL devInit(LPTSTR CommandLine){
     DeviceList[i].PutFreqStandby = NULL;
     DeviceList[i].IsCondor = devIsFalseReturn;
 
-#ifdef COMDIAG
     ComPortStatus[i]=CPS_UNUSED; // 100210
     ComPortHB[i]=0; // counter
     if (doinit) {
@@ -198,7 +195,6 @@ BOOL devInit(LPTSTR CommandLine){
 
 	doinit=false;
     }
-#endif
   }
 
   pDevPrimaryBaroSource = NULL;
@@ -220,18 +216,12 @@ BOOL devInit(LPTSTR CommandLine){
       ComPort *Com = new ComPort(0);
 
       // remember: Port1 is the port used by device A, port1 may be Com3 or Com1 etc
-#ifdef COMDIAG
 	// this is port 1, so index 0 for us. 
       if (!Com->Initialize(COMMPort[PortIndex1], dwSpeed[SpeedIndex1],Bit1Index,0)) {
 	ComPortStatus[0]=CPS_OPENKO;
         break;
       }
       ComPortStatus[0]=CPS_OPENOK;
-#else
-      if (!Com->Initialize(COMMPort[PortIndex1], dwSpeed[SpeedIndex1])) {
-        break;
-      }
-#endif
 
       DeviceRegister[i].Installer(devA());
 
@@ -274,18 +264,12 @@ BOOL devInit(LPTSTR CommandLine){
     if ((_tcscmp(DeviceRegister[i].Name, DeviceName) == 0) || (i==0)) {
       ComPort *Com = new ComPort(1);
 
-#ifdef COMDIAG
 	// this is port 2, so index 1 for us
       if (!Com->Initialize(COMMPort[PortIndex2], dwSpeed[SpeedIndex2],Bit2Index,1)) { // 100210
 	ComPortStatus[1]=CPS_OPENKO;
         break;
       }
       ComPortStatus[1]=CPS_OPENOK;
-#else
-      if (!Com->Initialize(COMMPort[PortIndex2], dwSpeed[SpeedIndex2])) { // 100210
-        break;
-      }
-#endif
 
       DeviceRegister[i].Installer(devB());
 
@@ -410,9 +394,7 @@ BOOL devCloseAll(void){
   for (i=0; i<NUMDEV; i++){
     devClose(&DeviceList[i]);
     devCloseLog(&DeviceList[i]);
-#ifdef COMDIAG
     ComPortStatus[i]=CPS_CLOSED; // 100210
-#endif
   }
   return(TRUE);
 }

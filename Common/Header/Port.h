@@ -18,11 +18,7 @@ class ComPort {
 	void WriteString(const TCHAR *);
 	void Flush();
 
-#ifdef COMDIAG
 	BOOL Initialize(LPCTSTR, DWORD, DWORD,DWORD);
-#else
-	BOOL Initialize(LPCTSTR, DWORD);
-#endif
 	BOOL Close();
 
 	int SetRxTimeout(int);
@@ -51,9 +47,7 @@ class ComPort {
 	TCHAR BuildingString[MAX_NMEA_LEN+1];
 	int bi;
 	int devIdx;
-#ifdef COMDIAG
 	int sportnumber;
-#endif
 };
 
 #endif

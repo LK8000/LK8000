@@ -4315,48 +4315,27 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
 {
 
 //StartupStore(_T("NAVWarn=%d Sats=%d\n"),DrawInfo.NAVWarning,DrawInfo.SatellitesUsed); REMOVE
-#ifdef NEWWARNINGS
   HFONT oldfont=NULL;
 #ifndef MAP_ZOOM
   if ((MapSpaceMode==MSM_WELCOME)||(MapWindow::isPan()) ) return; // 100210
 #else /* MAP_ZOOM */
   if ((MapSpaceMode==MSM_WELCOME)||(mode.AnyPan()) ) return; // 100210
 #endif /* MAP_ZOOM */
-#endif
 
   if (extGPSCONNECT && !(DrawInfo.NAVWarning) && (DrawInfo.SatellitesUsed != 0)) 
     // nothing to do
     return;
-#ifndef COMDIAG
-  TCHAR gpswarningtext1[] = TEXT(" GPS not connected ");
-#endif
   TCHAR gpswarningtext2[] = TEXT(" GPS: NO VALID FIX ");
-#ifdef COMDIAG
   static bool firstrun=true;
   TCHAR gpswarningtext3[] = TEXT(" GPS: No ComPort ");
   TCHAR gpswarningtext4[] = TEXT(" GPS: No Data Rx ");
   TCHAR gpswarningtext5[] = TEXT(" GPS is missing ");
   TCHAR gpswarningtext6[] = TEXT(" GPS not connected ");
   TCHAR gpswarningtext7[] = TEXT(" GPS data error ");
-#endif
   TextInBoxMode_t TextInBoxMode = {2};
 
   if (!extGPSCONNECT) {
 
-#ifndef NEWWARNINGS
-    SelectObject(hDCTemp,hGPSStatus2);
-    DrawBitmapX(hDC, 
-                rc.left+NIBLSCALE(2),
-                rc.bottom+IBLSCALE(Appearance.GPSStatusOffset.y-22),
-                20, 20,
-                hDCTemp, 
-                0, 0, SRCAND);
-    TextInBox(hDC, gettext(gpswarningtext1), 
-              rc.left+NIBLSCALE(24), 
-              rc.bottom+IBLSCALE(Appearance.GPSStatusOffset.y-19),
-              0, TextInBoxMode);
-#else
-    #ifdef COMDIAG
     oldfont=(HFONT)SelectObject(hDC,LK8TargetFont);   // 100222 
     TextInBoxMode.AsInt=0;
     TextInBoxMode.AsFlag.Color = TEXTWHITE;
@@ -4389,36 +4368,9 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
 
     }
 
-    #else
-    oldfont=(HFONT)SelectObject(hDC,LK8TargetFont);  // 100210
-    TextInBoxMode.AsInt=0;
-    TextInBoxMode.AsFlag.Color = TEXTWHITE;
-    TextInBoxMode.AsFlag.NoSetFont=1;
-    TextInBoxMode.AsFlag.AlligneCenter = 1;
-    TextInBoxMode.AsFlag.WhiteBorder = 1;
-    TextInBoxMode.AsFlag.Border = 1;
-    TextInBox(hDC, gpswarningtext1, (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode);
-    #endif
-#endif
 
   } else
     if (DrawInfo.NAVWarning || (DrawInfo.SatellitesUsed == 0)) {
-#ifndef NEWWARNINGS
-      SelectObject(hDCTemp,hGPSStatus1);
-
-      DrawBitmapX(hDC, 
-                  rc.left+NIBLSCALE(2),
-                  rc.bottom+IBLSCALE(Appearance.GPSStatusOffset.y-22),
-                  20, 20,
-                  hDCTemp, 
-                  0, 0, SRCAND);
-
-      TextInBox(hDC, gettext(gpswarningtext2), 
-                rc.left+NIBLSCALE(24), 
-                rc.bottom+
-                IBLSCALE(Appearance.GPSStatusOffset.y-19),
-                0, TextInBoxMode);
-#else
     oldfont=(HFONT)SelectObject(hDC,LK8TargetFont); // 100210
     TextInBoxMode.AsInt=0;
     TextInBoxMode.AsFlag.Color = TEXTWHITE;
@@ -4430,12 +4382,9 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
               (rc.right-rc.left)/2, 
               (rc.bottom-rc.top)/3,
               0, TextInBoxMode);
-#endif
 
     }
-#ifdef NEWWARNINGS
   SelectObject(hDC,oldfont);
-#endif
 
 }
 

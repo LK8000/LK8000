@@ -344,7 +344,6 @@ extern int time_in_flight;
 extern int time_on_ground;
 extern double TakeOffSpeedThreshold;
 
-#ifdef COMDIAG
 // Com port diagnostic - see Utils2.h
 extern int ComPortStatus[NUMDEV+1];
 extern long ComPortRx[NUMDEV+1];
@@ -352,7 +351,6 @@ extern long ComPortErrRx[NUMDEV+1];
 extern long ComPortTx[NUMDEV+1];
 extern long ComPortErrTx[NUMDEV+1];
 extern long ComPortErrors[NUMDEV+1];
-#endif
 extern double ComPortHB[NUMDEV+1];
 
 // Cpu stats

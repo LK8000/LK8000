@@ -439,7 +439,7 @@ extern short ModeTableTop[LKMODE_TOP+1];
 #define LKW_LK8000	7	// mixed format
 #define LKW_VIRTUAL	8	// temporary, cannot save them
 
-// ComPort diagnostics: ComPortStatus, requires COMDIAG flag in options
+// ComPort diagnostics: ComPortStatus
 #define CPS_UNUSED	0	// init to zero at startup
 #define CPS_CLOSED	1	// closed by CloseAll
 #define CPS_OPENKO	2 	// port could not be open

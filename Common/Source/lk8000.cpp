@@ -376,7 +376,6 @@ BYTE RUN_MODE=RUN_WELCOME;
 
 DWORD EnableFLARMMap = 1;
 
-#ifdef COMDIAG
 // 100210 Comport diagnostics, see Utils2.h
 // Using 0,1, plus +1 for safety 
 int ComPortStatus[NUMDEV+1];
@@ -385,7 +384,6 @@ long ComPortTx[NUMDEV+1];
 long ComPortErrRx[NUMDEV+1];
 long ComPortErrTx[NUMDEV+1];
 long ComPortErrors[NUMDEV+1];
-#endif
 // Com ports hearth beats, based on LKHearthBeats
 double ComPortHB[NUMDEV+1];
 
@@ -3624,14 +3622,12 @@ void Shutdown(void) {
 #endif
 
   StartupLogFreeRamAndStorage();
-  #ifdef COMDIAG
   for (i=0;i<NUMDEV;i++) {
 	if (ComPortStatus[i]!=0) {
 		StartupStore(_T(". ComPort %d: status=%d Rx=%d Tx=%d ErrRx=%d + ErrTx=%d (==%d)%s"), i,
 		ComPortStatus[i], ComPortRx[i],ComPortTx[i], ComPortErrRx[i],ComPortErrTx[i],ComPortErrors[i],NEWLINE);
 	}
   }
-  #endif
   StartupStore(TEXT(". Finished shutdown%s"),NEWLINE);
   LKRunStartEnd(false);
   // quitting PC version while menus are up will not terminate correctly. this is a workaround
@@ -4604,9 +4600,6 @@ int ConnectionProcessTimer(int itimeout) {
 	if(!CONNECTWAIT) {
 		// gps is waiting for connection first time
 		extGPSCONNECT = FALSE;
-		#ifndef NEWWARNINGS
-		InputEvents::processGlideComputer(GCE_GPS_CONNECTION_WAIT);	// 100210
-		#endif
   
 		CONNECTWAIT = TRUE;
 		#ifndef DISABLEAUDIO
@@ -4661,9 +4654,6 @@ int ConnectionProcessTimer(int itimeout) {
   
   if((gpsconnect == TRUE) && (LastGPSCONNECT == TRUE)) {
 	if((navwarning == TRUE) && (LOCKWAIT == FALSE)) {
-		#ifndef NEWWARNINGS
-		InputEvents::processGlideComputer(GCE_GPS_FIX_WAIT); // NEWWARNINGS 100209
-		#endif
 		TriggerGPSUpdate();
 	  
 		LOCKWAIT = TRUE;

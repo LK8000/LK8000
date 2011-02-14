@@ -48,11 +48,7 @@ ComPort::ComPort(int the_dev_idx)
 }
 
 // Initialize is called from device  devInit, and dwPortNumber is passed along new threads
-#ifdef COMDIAG
 BOOL ComPort::Initialize(LPCTSTR lpszPortName, DWORD dwPortSpeed, DWORD dwPortBit, DWORD dwPortNumber)
-#else
-BOOL ComPort::Initialize(LPCTSTR lpszPortName, DWORD dwPortSpeed)
-#endif
 {
   DWORD dwError;
   DCB PortDCB;
@@ -80,11 +76,7 @@ BOOL ComPort::Initialize(LPCTSTR lpszPortName, DWORD dwPortSpeed)
   }
 #endif
 
-#ifdef COMDIAG
   StartupStore(_T(". ComPort %d Initialize <%s> speed=%d bit=%d %s"),dwPortNumber+1,lkPortName,dwPortSpeed,8-dwPortBit,NEWLINE);
-#else
-  StartupStore(_T(". ComPort Initialize <%s>%s"),lkPortName,NEWLINE);
-#endif
 
   hPort = CreateFile(sPortName, // Pointer to the name of the port
                       GENERIC_READ | GENERIC_WRITE,
@@ -98,21 +90,13 @@ BOOL ComPort::Initialize(LPCTSTR lpszPortName, DWORD dwPortSpeed)
 
   if (hPort == INVALID_HANDLE_VALUE) {
 	dwError = GetLastError();
-#ifdef COMDIAG
 	_stprintf(lkbuf,_T("... ComPort %d Init failed, error=%d%s"),dwPortNumber+1,dwError,NEWLINE); // 091117
-#else
-	_stprintf(lkbuf,_T("... ComPort Init failed, error=%d%s"),dwError,NEWLINE); // 091117
-#endif
 	StartupStore(lkbuf);
 	// LKTOKEN  _@M762_ = "Unable to open port" 
 	ComPort_StatusMessage(MB_OK|MB_ICONINFORMATION, NULL, TEXT("%s %s"), gettext(TEXT("_@M762_")), lkPortName);
 	return FALSE;
   }
-#ifdef COMDIAG
   StartupStore(_T(". ComPort %d  <%s> is now open%s"),dwPortNumber+1,lkPortName,NEWLINE);
-#else
-  StartupStore(_T(". ComPort <%s> is now open%s"),lkPortName,NEWLINE); 
-#endif
 
   PortDCB.DCBlength = sizeof(DCB);     
 
@@ -166,11 +150,7 @@ BOOL ComPort::Initialize(LPCTSTR lpszPortName, DWORD dwPortSpeed)
 	// LKTOKEN  _@M759_ = "Unable to Change Settings on Port" 
 	ComPort_StatusMessage(MB_OK, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M759_")), lkPortName);
 	dwError = GetLastError();
-#ifdef COMDIAG
 	_stprintf(lkbuf,_T("... ComPort %d Init <%s> change setting FAILED, error=%d%s"),dwPortNumber+1,lkPortName,dwError,NEWLINE); // 091117
-#else
-	_stprintf(lkbuf,_T("... ComPort Init <%s> change setting FAILED, error=%d%s"),lkPortName,dwError,NEWLINE); // 091117
-#endif
 	StartupStore(lkbuf);
 	return FALSE;
   }
@@ -184,29 +164,16 @@ BOOL ComPort::Initialize(LPCTSTR lpszPortName, DWORD dwPortSpeed)
   // SETRTS: Sends the RTS (request-to-send) signal. 
   EscapeCommFunction(hPort, SETDTR);
   EscapeCommFunction(hPort, SETRTS);
-#ifdef COMDIAG
   sportnumber=dwPortNumber; // 100210
   if (!StartRxThread()){
 	_stprintf(lkbuf,_T("... ComPort %d Init <%s> StartRxThread failed%s"),dwPortNumber+1,lkPortName,NEWLINE);
-#else
-  if (!StartRxThread()){
-	_stprintf(lkbuf,_T("... ComPort Init <%s> StartRxThread failed%s"),lkPortName,NEWLINE);
-#endif
 	StartupStore(lkbuf);
 	if (!CloseHandle(hPort)) {
 		dwError = GetLastError();
-		#ifdef COMDIAG
 		_stprintf(lkbuf,_T("... ComPort %d Init <%s> close failed, error=%d%s"),dwPortNumber+1,lkPortName,dwError,NEWLINE);
-		#else
-		_stprintf(lkbuf,_T("... ComPort Init <%s> close failed, error=%d%s"),lkPortName,dwError,NEWLINE);
-		#endif
 		StartupStore(lkbuf);
 	} else {
-		#ifdef COMDIAG
 		_stprintf(lkbuf,_T("... ComPort %d Init <%s> closed%s"),dwPortNumber+1,lkPortName,NEWLINE);
-		#else
-		_stprintf(lkbuf,_T("... ComPort Init <%s> closed%s"),lkPortName,NEWLINE);
-		#endif
 		StartupStore(lkbuf);
 	}
 	hPort = INVALID_HANDLE_VALUE;
@@ -220,11 +187,7 @@ BOOL ComPort::Initialize(LPCTSTR lpszPortName, DWORD dwPortSpeed)
 	return FALSE;
   }
 
-  #ifdef COMDIAG
   _stprintf(lkbuf,_T(". ComPort %d Init <%s> end OK%s"),dwPortNumber+1,lkPortName,NEWLINE);
-  #else
-  _stprintf(lkbuf,_T(". ComPort Init <%s> end OK%s"),lkPortName,NEWLINE);
-  #endif
   StartupStore(lkbuf);
   return TRUE;
 }
@@ -288,9 +251,7 @@ DWORD ComPort::ReadThread()
 
   // JMW added purging of port on open to prevent overflow
   Flush();
-  #ifdef COMDIAG
   StartupStore(_T(". ReadThread running on port %d%s"),sportnumber+1,NEWLINE);
-  #endif
   
   // Specify a set of events to be monitored for the port.
 
@@ -368,9 +329,7 @@ DWORD ComPort::ReadThread()
 						ProcessChar(inbuf[j]);
 					}
 				}
-				#ifdef COMDIAG
 				ComPortRx[sportnumber]+=dwBytesTransferred; // 100210
-				#endif
 			} else {
 				dwBytesTransferred = 0;
 			}
@@ -388,11 +347,7 @@ DWORD ComPort::ReadThread()
 		  
 			if (CloseThread) {
 				dwBytesTransferred = 0;
-				#ifdef COMDIAG
 				StartupStore(_T(". ComPort %d ReadThread: CloseThread ordered%s"),sportnumber+1,NEWLINE);
-				#else
-				StartupStore(_T(". ComPort ReadThread: CloseThread ordered%s"),NEWLINE);
-				#endif
 			}
 		} while (dwBytesTransferred != 0);
 	}
@@ -416,11 +371,7 @@ DWORD ComPort::ReadThread()
   Flush();      
 
   fRxThreadTerminated = TRUE;
-  #ifdef COMDIAG
   StartupStore(_T(". ComPort %d ReadThread: terminated%s"),sportnumber+1,NEWLINE);
-  #else
-  StartupStore(_T(". ComPort ReadThread: terminated%s"),NEWLINE);
-  #endif
 
   return 0;
 }
@@ -445,11 +396,7 @@ BOOL ComPort::Close()
 	// Close the communication port.
 	if (!CloseHandle(hPort)) {
 		dwError = GetLastError();
-		#ifdef COMDIAG
 		_stprintf(lkbuf,_T("... ComPort %d close failed, error=%d%s"),sportnumber+1,dwError,NEWLINE);
-		#else
-		_stprintf(lkbuf,_T("... ComPort close failed, error=%d%s"),dwError,NEWLINE);
-		#endif
 		StartupStore(lkbuf);
 		return FALSE;
 	} else {
@@ -457,20 +404,12 @@ BOOL ComPort::Close()
 		Sleep(2000); // needed for windows bug
 		#endif
 		hPort = INVALID_HANDLE_VALUE; 
-		#ifdef COMDIAG
 		_stprintf(lkbuf,_T(". ComPort %d closed Ok.%s"),sportnumber+1,NEWLINE);
-		#else
-		_stprintf(lkbuf,_T(". ComPort closed Ok%s"),NEWLINE);
-		#endif
 		StartupStore(lkbuf); // 100210 BUGFIX missing
 		return TRUE;
 	}
   }
-  #ifdef COMDIAG
   StartupStore(_T("... ComPort %d Close failed, invalid handle%s"),sportnumber+1,NEWLINE);
-  #else
-  StartupStore(_T("... ComPort Close failed, invalid handle%s"),NEWLINE);
-  #endif
   return FALSE;
 }
 
@@ -484,16 +423,12 @@ bool ComPort::Write(const void *data, size_t length)
    
   if (!WriteFile(hPort, data, length, &written, NULL) || written != length) {
     // WriteFile failed, report error
-    #ifdef COMDIAG
       ComPortErrTx[sportnumber]++;
       ComPortErrors[sportnumber]++;
-    #endif
     return(false);
   }
   
-  #ifdef COMDIAG
     ComPortTx[sportnumber] += written;
-  #endif
   
   return(true);
 }
@@ -575,21 +510,13 @@ BOOL ComPort::StopRxThread()
 
 	// LKTOKEN  _@M540_ = "RX Thread not Terminated!" 
 	ComPort_StatusMessage(MB_OK, TEXT("Error"), TEXT("%s %s"), sPortName, gettext(TEXT("_@M540_")));
-        #ifdef COMDIAG
 	StartupStore(_T("...... ComPort %d StopRxThread: RX Thread not terminated!%s"),sportnumber+1,NEWLINE);
-	#else
-	StartupStore(_T("...... ComPort StopRxThread: RX Thread not terminated!%s"),NEWLINE);
-	#endif
 
 	#endif
 	//#endif
   } else {
 	CloseHandle(hReadThread);
-	#ifdef COMDIAG
 	StartupStore(_T(". ComPort %d StopRxThread: RX Thread terminated%s"),sportnumber+1,NEWLINE);
-	#else
-	StartupStore(_T(". ComPort StopRxThread: RX Thread terminated%s"),NEWLINE);
-	#endif
   }
 #endif
 

@@ -144,13 +144,6 @@
 
 #endif
 
-// New warning messages for GPS and status events
-#define NEWWARNINGS	1
-// Com Port diagnostics, requires NEWWARNING on
-#ifdef NEWWARNINGS
-#define COMDIAG		1
-#endif
-
 // New port monitor UpdateMonitor
 #define NEWPORTMONITOR 	1
 
@@ -267,3 +260,4 @@
 #define CPUSTATS          // activate cpu thread profiling stuff also in Cpustat.h
 #define DEBUG_DEV_COM     // log device communication through DevBase class methods
  */
+
