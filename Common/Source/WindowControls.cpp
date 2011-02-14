@@ -1250,13 +1250,8 @@ void InitWindowControlModule(void);
 LRESULT CALLBACK WindowControlWndProc(HWND hwnd, UINT uMsg, 
                                       WPARAM wParam, LPARAM lParam);
 
-#ifdef LKCOLOR
 static COLORREF bkColor = RGB_WINBACKGROUND; // PETROL
 static COLORREF fgColor = RGB_WINFOREGROUND; // WHITE
-#else
-static COLORREF bkColor = clWhite; 
-static COLORREF fgColor = clBlack;
-#endif
 int WindowControl::InstCount=0;
 HBRUSH WindowControl::hBrushDefaultBk=NULL;
 #if FIXGDI
@@ -1325,11 +1320,7 @@ WindowControl::WindowControl(WindowControl *Owner,
 	#else
 	hBrushDefaultBk = (HBRUSH)CreateSolidBrush(mColorBack);
 	hPenDefaultBorder = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH, mColorFore); // NIBLSCCALE 1 White
-	 #ifdef LKCOLOR
 	hPenDefaultSelector = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH+2, RGB_LISTHIGHLIGHTCORNER); // NIBS(1)+2, PETROL
-	 #else
-	hPenDefaultSelector = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH+2, mColorFore); 
-	 #endif
 	#endif
   }
   InstCount++;
@@ -1870,11 +1861,7 @@ void WindowControl::Paint(HDC hDC){
     HBRUSH hB = LKBrush_DarkYellow2;
     //HBRUSH hB = LKBrush_LcdDarkGreen;
     #else
-    #ifdef LKCOLOR
     COLORREF ff = RGB_LISTHIGHLIGHTBG;
-    #else
-    COLORREF ff = (GetBackColor()+0x00ffffff*3)/4;
-    #endif
     HBRUSH hB = (HBRUSH)CreateSolidBrush(ff);
     #endif
     rc.left += 0;
@@ -1883,12 +1870,6 @@ void WindowControl::Paint(HDC hDC){
     rc.bottom -= 2;
     FillRect(hDC, &rc, hB);
 
-#ifndef LKCOLOR
-#if (WINDOWSPC>0) 
-  // JMW make it look nice on wine
-    SetBkColor(hDC, ff);
-#endif
-#endif
       #if FIXDC
       #else
       DeleteObject(hB);
@@ -2150,11 +2131,7 @@ WndForm::WndForm(HWND Parent, const TCHAR *Name, const TCHAR *Caption,
   bLButtonDown= false; 
   mhAccelTable = CreateAcceleratorTable(mAccel, sizeof(mAccel)/sizeof(mAccel[0]));
 
-  #ifdef LKCOLOR
-  mColorTitle = RGB_MENUTITLEBG; // 091230 BLACK
-  #else
-  mColorTitle = RGB_YELLOW;
-  #endif
+  mColorTitle = RGB_MENUTITLEBG;
 
   mhTitleFont = GetFont();
 
@@ -2165,11 +2142,7 @@ WndForm::WndForm(HWND Parent, const TCHAR *Name, const TCHAR *Caption,
   #endif
 
   mClientWindow = new WindowControl(this, GetHandle(), TEXT(""), 20, 20, Width, Height);
-  #ifndef LKCOLOR
-  mClientWindow->SetBackColor(GetBackColor());
-  #else
   mClientWindow->SetBackColor(RGB_WINBACKGROUND);
-  #endif
   mClientWindow->SetCanFocus(false);
 
   mClientRect.top=0;
@@ -2510,11 +2483,7 @@ void WndForm::Paint(HDC hDC){
   oldBrush = (HBRUSH) SelectObject(hDC, GetBackBrush());
 
   DrawEdge(hDC, &rcClient, EDGE_RAISED, BF_ADJUST | BF_FLAT | BF_RECT);
-  #ifndef LKCOLOR
-  SetTextColor(hDC, GetForeColor());
-  #else
   SetTextColor(hDC, RGB_MENUTITLEFG);
-  #endif
   SetBkColor(hDC, mColorTitle);
   SetBkMode(hDC, TRANSPARENT);
 
@@ -2527,7 +2496,6 @@ void WndForm::Paint(HDC hDC){
   CopyRect(&mTitleRect, &rcClient);
   mTitleRect.bottom = mTitleRect.top + tsize.cy;
 
-  #ifdef LKCOLOR
   POINT p1, p2;
   p1.x=0; p1.y=mTitleRect.bottom;
   p2.x=mTitleRect.right; p2.y=mTitleRect.bottom;
@@ -2537,9 +2505,6 @@ void WndForm::Paint(HDC hDC){
 		rcClient.top = mTitleRect.bottom+NIBLSCALE(1);
   else
 		rcClient.top = mTitleRect.bottom+NIBLSCALE(1)-1;
-  #else
-  rcClient.top += tsize.cy;
-  #endif
 
   if (mClientWindow && !EqualRect(&mClientRect, &rcClient)){
 
@@ -2735,13 +2700,8 @@ WndButton::WndButton(WindowControl *Parent, const TCHAR *Name, const TCHAR *Capt
   mDefault = false;
   mCanFocus = true;
 
-  #ifdef LKCOLOR
   SetForeColor(RGB_BUTTONFG);
   SetBackColor(GetOwner()->GetBackColor());
-  #else
-  SetForeColor(GetOwner()->GetForeColor());
-  SetBackColor(GetOwner()->GetBackColor());
-  #endif
 
   _tcscpy(mCaption, Caption);
 
@@ -3469,15 +3429,6 @@ void WndProperty::Paint(HDC hDC){
 
   SetTextColor(hDC, GetForeColor());
 
-  #ifndef LKCOLOR
-  #if (WINDOWSPC>0) 
-  // JMW make it look nice on wine
-  if (!GetFocused()) {
-    SetBkColor(hDC, GetBackColor());
-  }
-  #endif
-  #endif
-
   SetBkMode(hDC, TRANSPARENT);
   HFONT oldFont = (HFONT)SelectObject(hDC, GetFont());
 
@@ -3729,13 +3680,8 @@ WndListFrame::WndListFrame(WindowControl *Owner, TCHAR *Name, int X, int Y,
   mCaption[0] = '\0';
   mOnListCallback = OnListCallback;
   mOnListEnterCallback = NULL;
-  #ifdef LKCOLOR
   SetForeColor(RGB_LISTFG);
   SetBackColor(RGB_LISTBG);
-  #else
-  SetForeColor(GetOwner()->GetForeColor());
-  SetBackColor(GetOwner()->GetBackColor());
-  #endif
   mMouseDown = false;
   LastMouseMoveTime=0;
   ScrollbarWidth=-1;
@@ -3935,11 +3881,7 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
   hP = LKPen_Black_N1;
 
   #else	// ------  REMOVABLE 1/1/2011
-  #ifdef LKCOLOR
   hP = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH, RGB_SCROLLBARBORDER);
-  #else
-  hP = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH, GetForeColor());
-  #endif
   #endif // -------- END REMOVABLE
 
   SelectObject(hDC, hP);
@@ -4057,11 +3999,7 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
 	hP3=LKPen_Black_N2;
 
 	#else // ------- REMOVABLE
-	#ifdef LKCOLOR
 	hP3 = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH * 2, RGB_SCROLLBARBOX); 
-	#else
-	hP3 = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH * 2, GetForeColor());
-	#endif
 	#endif // -------- REMOVABLE
 
 	int iBorderOffset = 1;  // set to 1 if BORDERWIDTH >2, else 0

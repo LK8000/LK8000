@@ -352,17 +352,13 @@ void dlgStartupShowModal(void){
 
   #else
   ((WndButton *)wf->FindByName(TEXT("cmdClose"))) ->SetOnClickNotify(OnCloseClicked);
-  #ifdef LKCOLOR
   ((WndButton *)wf->FindByName(TEXT("cmdClose"))) ->SetWidth(ScreenSizeX-NIBLSCALE(6));
-  #endif
   #endif
 
   TCHAR temp[MAX_PATH];
 
-  #ifdef LKCOLOR
   wf->SetHeight(ScreenSizeY);
   wf->SetWidth(ScreenSizeX);
-  #endif
 
   wp = ((WndProperty *)wf->FindByName(TEXT("prpProfile")));
   if (wp) {
@@ -381,13 +377,11 @@ void dlgStartupShowModal(void){
     	wp->SetLeft(0);
     #else
 
-    #ifdef LKCOLOR
     wp->SetHeight(NIBLSCALE(25));
     int xs=ScreenSizeX-NIBLSCALE(2)-(NIBLSCALE(60));
     if (!ScreenLandscape) xs+=NIBLSCALE(20);
     wp->SetWidth(xs);
     wp->SetLeft(( ScreenSizeX-xs)/2);
-    #endif
     #endif
 
     wp->RefreshDisplay();

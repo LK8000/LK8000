@@ -79,14 +79,14 @@
 #define RGB_TASKLINECOL RGB_DGREEN1
 #define RGB_BUTTONS	RGB_BUTTGREEN
 
-// The box title background, originally yellow, used only if LKCOLOR
+// The box title background, originally yellow
 #define RGB_MENUTITLEBG	RGB_BLACK
 #define RGB_MENUTITLEFG RGB_WHITE
 
 // LK new colors for windows
 #define RGB_WINBACKGROUND	RGB_PETROL
 #define RGB_WINFOREGROUND	RGB_WHITE
-// WindowControls, used only with LKCOLOR otherwise WHITE
+// WindowControls,
 #define RGB_LISTHIGHLIGHTBG	RGB(133,255,133)
 #define RGB_LISTHIGHLIGHTCORNER RGB_PETROL
 #define RGB_LISTFG		RGB_BLACK

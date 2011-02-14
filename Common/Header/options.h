@@ -134,9 +134,6 @@
 // Don't load and save wind from registry
 #define NOWINDREGISTRY	1
 
-// New LK colors
-#define LKCOLOR		1
-
 // GetTickCount bugfix
 #define GTCFIX	1
 
