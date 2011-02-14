@@ -588,11 +588,7 @@ BOOL cai_PCAID(TCHAR *String, NMEA_INFO *GPS_INFO){
 
   NMEAParser::ExtractParameter(String,ctemp,1);
   double ps = StrToDouble(ctemp,NULL);
-  #if NEWQNH
   GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(ps);
-  #else
-  GPS_INFO->BaroAltitude = ps;
-  #endif
   GPS_INFO->BaroAltitudeAvailable = TRUE;
 
   return TRUE;
@@ -633,11 +629,7 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
   if (d == pDevPrimaryBaroSource){
 
     GPS_INFO->BaroAltitudeAvailable = TRUE;
-    #if NEWQNH
-    GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(StrToDouble(ctemp, NULL) - 1000); // 100129
-    #else
-    GPS_INFO->BaroAltitude = StrToDouble(ctemp, NULL) - 1000;
-    #endif
+    GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(StrToDouble(ctemp, NULL) - 1000);
 
   }
 

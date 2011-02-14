@@ -79,21 +79,13 @@ static void OnQnhData(DataField *Sender, DataField::DataAccessKind_t Mode){
 
 
 static void OnAltitudeData(DataField *Sender, DataField::DataAccessKind_t Mode){
-  #if NEWQNH
   static double newalt=0;
   WndProperty* wp;
-  #endif
   switch(Mode){
 	case DataField::daGet:
-#ifndef NEWQNH
-	LockFlightData();
-	Sender->Set(Units::ToUserAltitude(GPS_INFO.BaroAltitude));  
-	UnlockFlightData();
-#endif
 	break;
   case DataField::daPut:
   case DataField::daChange:
-	#if NEWQNH
 	newalt = Sender->GetAsFloat();
         QNH=FindQNH(GPS_INFO.BaroAltitude,Units::ToSysAltitude(newalt));  // 100411
 	wp = (WndProperty*)wf->FindByName(TEXT("prpQNH"));
@@ -106,7 +98,6 @@ static void OnAltitudeData(DataField *Sender, DataField::DataAccessKind_t Mode){
 		}
 		wp->RefreshDisplay();
 	}
-	#endif
 	break;
   case DataField::daInc:
   case DataField::daDec:

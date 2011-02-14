@@ -132,11 +132,7 @@ bool DevLX::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 
     if (d == pDevPrimaryBaroSource)
     {
-      #if NEWQNH
         info->BaroAltitude = AltitudeToQNHAltitude(alt); // 100129
-      #else
-        info->BaroAltitude = alt; // ToDo check if QNH correction is needed!
-      #endif
       info->BaroAltitudeAvailable = TRUE;
     }
   }

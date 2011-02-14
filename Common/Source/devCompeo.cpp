@@ -112,11 +112,7 @@ static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   GPS_INFO->Altitude = StrToDouble(ctemp,NULL);
 
   NMEAParser::ExtractParameter(String,ctemp,2);
-  #if NEWQNH
   GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(StrToDouble(ctemp,NULL));
-  #else
-  GPS_INFO->BaroAltitude = StrToDouble(ctemp,NULL);
-  #endif
 
   NMEAParser::ExtractParameter(String,ctemp,4);
   GPS_INFO->Vario = StrToDouble(ctemp,NULL);

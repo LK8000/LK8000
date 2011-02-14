@@ -123,7 +123,6 @@ static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 
 
 
-  #ifdef NEWQNH
   NMEAParser::ExtractParameter(String,ctemp,0);
   altqne = StrToDouble(ctemp,NULL);
   NMEAParser::ExtractParameter(String,ctemp,1);
@@ -144,14 +143,6 @@ static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   }
   GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(altqne);
   GPS_INFO->BaroAltitudeAvailable = TRUE;
-
-  #else
-  // old style xcsoar qnh: set baro altitude and forget qne - quick and very dirty
-  NMEAParser::ExtractParameter(String,ctemp,1);
-  altqnh = StrToDouble(ctemp,NULL);
-  GPS_INFO->BaroAltitude = altqnh;
-  GPS_INFO->BaroAltitudeAvailable = TRUE;
-  #endif
 
 
   NMEAParser::ExtractParameter(String,ctemp,2);

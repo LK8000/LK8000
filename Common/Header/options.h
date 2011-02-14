@@ -90,9 +90,6 @@
 // Use new terrain mode in RasterTerrain
 #define NEWTERRAIN 1
 
-// Use new QNH management
-#define NEWQNH	1
-
 // SeeYou cup waypoint format support
 // Includes also COMPEgps support
 #define CUPSUP	1

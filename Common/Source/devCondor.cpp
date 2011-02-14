@@ -150,11 +150,7 @@ static BOOL cLXWP0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO) {
 
   if (d == pDevPrimaryBaroSource){
     GPS_INFO->BaroAltitudeAvailable = TRUE;
-    #if NEWQNH
-    GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(alt); // 100129 BUGFIX
-    #else
-    GPS_INFO->BaroAltitude = alt;
-    #endif
+    GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(alt);
   }
 
   NMEAParser::ExtractParameter(String,ctemp,3);

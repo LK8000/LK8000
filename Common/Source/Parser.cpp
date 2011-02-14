@@ -1024,9 +1024,7 @@ BOOL NMEAParser::RMZ(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   (void)GPS_INFO;
 
   RMZAltitude = ParseAltitude(params[0], params[1]);
-  #if NEWQNH
-  RMZAltitude = AltitudeToQNHAltitude(RMZAltitude); // 100129 BUGFIX
-  #endif
+  RMZAltitude = AltitudeToQNHAltitude(RMZAltitude);
   RMZAvailable = TRUE;
 
   // if no device declared to have baro, we can use RMZ even if not activeGPS
@@ -1047,9 +1045,7 @@ BOOL NMEAParser::RMA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   (void)GPS_INFO;
 
   RMAAltitude = ParseAltitude(params[0], params[1]);
-  #if NEWQNH	
   RMAAltitude = AltitudeToQNHAltitude(RMAAltitude); 
-  #endif
   RMAAvailable = TRUE;
   GPS_INFO->BaroAltitudeAvailable = true;
 
