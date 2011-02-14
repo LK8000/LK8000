@@ -85,27 +85,6 @@ void NMEAParser::Reset(void) {
   TriggerVarioUpdate();
 }
 
-#ifndef NEWPORTMONITOR
-void NMEAParser::UpdateMonitor(void) 
-{
-  // does anyone have GPS?
-  if (nmeaParser1.gpsValid || nmeaParser2.gpsValid) {
-	if (nmeaParser1.gpsValid && nmeaParser2.gpsValid) {
-		// both valid, just use first
-		nmeaParser2.activeGPS = false;
-		nmeaParser1.activeGPS = true;
-	} else {
-		nmeaParser1.activeGPS = nmeaParser1.gpsValid;
-		nmeaParser2.activeGPS = nmeaParser2.gpsValid;
-	}
-  } else {
-	// assume device 1 is active
-	nmeaParser2.activeGPS = false;
-	nmeaParser1.activeGPS = true;
-  }
-}
-
-#else // NEWPORTMONITOR 100214
 
 //#define DEBUGNPM 1
 // run every 5 seconds, approx.
@@ -251,7 +230,6 @@ void NMEAParser::UpdateMonitor(void)
 
 
 }
-#endif  // NEWPORTMONITOR
 
 
 BOOL NMEAParser::ParseNMEAString(int device,

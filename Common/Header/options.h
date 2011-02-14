@@ -144,9 +144,6 @@
 
 #endif
 
-// New port monitor UpdateMonitor
-#define NEWPORTMONITOR 	1
-
 // New Move Icon on map function
 #define NEWMOVEICON	1
 
