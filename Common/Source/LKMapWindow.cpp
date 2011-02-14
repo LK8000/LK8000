@@ -470,8 +470,14 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
 	oldPen=(HPEN)SelectObject(hDC,whiteThinPen);
   else
 	oldPen=(HPEN)SelectObject(hDC,blackThickPen);
-  oldBrush=(HBRUSH)SelectObject(hDC,hInvBackgroundBrush[BgMapColor]);
+
+  if (LKVarioBar>vBarVarioGR) {
+	oldBrush=(HBRUSH)SelectObject(hDC,GetStockObject(NULL_BRUSH));
+  } else {
+	oldBrush=(HBRUSH)SelectObject(hDC,hInvBackgroundBrush[BgMapColor]);
+  }
   Rectangle(hDC,vrc.left, vrc.top, vrc.right, vrc.bottom);
+
 
   // draw middle separator for 0 scale indicator
   if (BgMapColor>POSCOLOR) 
@@ -517,6 +523,8 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
 	}
   }
 
+  short lkvariobar=LKVarioBar;
+  if (lkvariobar>vBarVarioGR) lkvariobar-=vBarVarioGR;
   short meter=-1;
   if (value>0) {
 
@@ -539,7 +547,7 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
 
 	if (meter>=0) {
 		for (short i=15; i>=meter; i--) {
-			switch (LKVarioBar) {
+			switch (lkvariobar) {
 				case vBarVarioColor:
 					SelectObject(hDC,*positiveBrush[i]);
 					break;
@@ -591,7 +599,7 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
 
 	if (meter>=0) {
 		for (short i=0; i<=meter; i++) {
-			switch (LKVarioBar) {
+			switch (lkvariobar) {
 				case vBarVarioColor:
 					SelectObject(hDC,*negativeBrush[i]);
 					break;

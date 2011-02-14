@@ -2858,6 +2858,7 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpLKVarioBar"));
   if (wp) {
     DataFieldEnum* dfe;
+    TCHAR newtoken[150];
     dfe = (DataFieldEnum*)wp->GetDataField();
 	// LKTOKEN  _@M239_ = "Disabled" 
     dfe->addEnumText(gettext(TEXT("_@M239_")));
@@ -2869,6 +2870,16 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M783_")));
 	// LKTOKEN  _@M781_ = "Vario green+red" 
     dfe->addEnumText(gettext(TEXT("_@M781_")));
+
+    _stprintf(newtoken,_T("%s %s"),gettext(TEXT("_@M953_")),gettext(TEXT("_@M782_")) );
+    dfe->addEnumText(newtoken);
+    _stprintf(newtoken,_T("%s %s"),gettext(TEXT("_@M953_")),gettext(TEXT("_@M780_")) );
+    dfe->addEnumText(newtoken);
+    _stprintf(newtoken,_T("%s %s"),gettext(TEXT("_@M953_")),gettext(TEXT("_@M783_")) );
+    dfe->addEnumText(newtoken);
+    _stprintf(newtoken,_T("%s %s"),gettext(TEXT("_@M953_")),gettext(TEXT("_@M781_")) );
+    dfe->addEnumText(newtoken);
+
     dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(LKVarioBar);
     wp->RefreshDisplay();

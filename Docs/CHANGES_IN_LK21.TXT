@@ -1,5 +1,24 @@
 WHATS NEW IN 2.1b
-updated 110210
+updated 110214
+
+VERSION 2.1x
+------------
+
+NEW
+
+- Task declaration for LX Nano, LX Colibri
+- Transparent Variometer Bar (options selectable inside variometer bar color config)
+
+CHANGES
+
+- Heap space memory check 
+
+BUGFIX
+
+
+
+VERSION 2.1b
+------------
 
 NEW 
 
@@ -29,8 +48,6 @@ NEW
 - New device Flytec FLYSEN protocol, preliminar support
 
 - New Com message "GPS data error " when using wrong baud rate on a com port
-
- 
 
 
 CHANGES
