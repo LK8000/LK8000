@@ -1109,19 +1109,8 @@ public:
     int x, y; 
     int X0 = (unsigned int)(dtquant/2); 
     int Y0 = (unsigned int)(dtquant/2);
-    #if OLDFIX_MAPSIZE
-    int X1;
-    int Y1;
-    X1 = (unsigned int)(X0+dtquant*ixs);
-    if (ReducedMapSize()) {
-	Y1 = (unsigned int)(Y0+dtquant*(iys-BottomSize));
-    } else {
-	Y1 = (unsigned int)(Y0+dtquant*iys);
-    }
-    #else
     int X1 = (unsigned int)(X0+dtquant*ixs);
     int Y1 = (unsigned int)(Y0+dtquant*iys);
-    #endif
 
     unsigned int rfact=1;
 
@@ -1203,33 +1192,11 @@ public:
 
      // StartupStore(_T(" vistop=%d visbot=%d  Y0=%d Y1=%d origy=%d \n"),rect_visible.top, rect_visible.bottom,Y0,Y1,orig.y); REMOVE
  
-    #if FIX_MAPSIZE
-    // Entering thermal mode still creates problems as many months ago.
-    // No time to fix this for the 2.0. Sadly, disabling FIX MAPSIZE.
-    if (ReducedMapSize()) { 
-	// StartupStore(_T(" .. MapScale=%f\n"),MapWindow::MapScale); REMOVE
-	int resbottom;
-	if (do_shading) {
-		resbottom=BottomSize-(epx*dtquant);
-		if (resbottom<0) resbottom=0;
-	} else {
-		resbottom=BottomSize;
-	}
-
-	// StartupStore(_T(" ... Y1-origy  = %d - (resbottom=%d) == %d\n"),Y1-orig.y,resbottom, Y1-orig.y-resbottom); REMOVE
-
-	rect_visible.bottom -= resbottom;
-	FillHeightBuffer(X0-orig.x, Y0-orig.y, X1-orig.x, Y1-orig.y-resbottom);
-    } else {
-	FillHeightBuffer(X0-orig.x, Y0-orig.y, X1-orig.x, Y1-orig.y);
-    }
-    #else
     FillHeightBuffer(X0-orig.x, Y0-orig.y, X1-orig.x, Y1-orig.y);
-    #endif
 
     DisplayMap->Unlock();
 
-    if (RasterTerrain::render_weather) {	// TODO MAPSIZE adjust for  LK weather
+    if (RasterTerrain::render_weather) {
       ScanSpotHeights(X0-orig.x, Y0-orig.y, X1-orig.x, Y1-orig.y);
     }
   }
@@ -1410,17 +1377,7 @@ void Slope(const int sx, const int sy, const int sz) {
   const int iepx = (int)epx;
   const unsigned int cixs=ixs;
 
-  #if NOFIX_MAPSIZE 
-  unsigned int riys;
-  if (ReducedMapSize()) {
-	riys=iys-BottomSize; 
-  } else {
-	riys=iys;
-  }
-  const unsigned int ciys = riys;
-  #else
   const unsigned int ciys = iys;
-  #endif
   
   const unsigned int ixsepx = cixs*epx;
   const unsigned int ixsright = cixs-1-iepx;
@@ -1441,11 +1398,7 @@ void Slope(const int sx, const int sy, const int sz) {
   unsigned short* hBufTop = hBuf+cixs*ciys;
   #endif
 
-  #if NOFIX_MAPSIZE
-  for (unsigned int y = 0; y< riys; y++) {
-  #else
   for (unsigned int y = 0; y< iys; y++) {
-  #endif
 	const int itss_y = ciys-1-y;
 	const int itss_y_ixs = itss_y*cixs;
 	const int yixs = y*cixs;

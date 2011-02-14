@@ -713,14 +713,8 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
         LatLon2Screen(DrawInfo.Longitude, 
                       DrawInfo.Latitude, 
                       *Orig_Aircraft);
-	#if OLDFIX_MAPSIZE
-	// Should use ReducedMapSize() test TODO FIX
-        if ((fabs((double)Orig_Aircraft->x-screen.x)<(rc.right-rc.left)/3)
-            && (fabs((double)Orig_Aircraft->y-(screen.y-BottomSize))<(rc.bottom-rc.top-BottomSize)/3)) {
-	#else
         if ((fabs((double)Orig_Aircraft->x-screen.x)<(rc.right-rc.left)/3)
             && (fabs((double)Orig_Aircraft->y-screen.y)<(rc.bottom-rc.top)/3)) {
-	#endif
           
         } else {
           // out of bounds, center on aircraft

@@ -383,16 +383,6 @@ void ToggleBaroAltitude() {
 	DoStatusMessage(gettext(TEXT("_@M757_")));
 }
 
-#if FIX_MAPSIZE
-bool ReducedMapSize() {
-  if (MapWindow::IsMapFullScreen()) {
-	if (MapWindow::isPan()) return false;
-	return true;
-  } else
-	return false;
-}
-#endif
-
 TCHAR * GetSizeSuffix(void) {
   static TCHAR suffixname[12];
   _stprintf(suffixname,_T("%03dx%03d"),ScreenSizeX,ScreenSizeY);

@@ -102,6 +102,7 @@
 // activate cache on all calculations defined below
 #ifdef LK8000_OPTIMIZE
 
+ // CACHE CALCULATIONS: IT IS IMPERATIVE THAT THIS OPTION CAN BE DISABLED ANYTIME!
  #define LK_CACHECALC 1
  // Notice:  These are only used if above is active!
  // MacCreadyAltitude and its statistics
@@ -209,8 +210,6 @@
 //
 #define FIX_RELOADCONFIG	1	// Applied: 101020 expires 110201
 #define MATFIX1			1	// Applied: 101030 expires 110201
-// #define FIX_MAPSIZE		1	// Applied: 101214 expires 110201
-// #define FIXGDI			// todo
 #define FIXDC			1
 #define FIXISLANDABLE		1	// Applied: 101215 expire 110201
 #define FIXNOLOADXML		1	// do not load xml from filesystem with tokenized XML
@@ -238,14 +237,27 @@
 					// IN FINAL VERSIONS WILL BE DISABLED
 
 /*
+ * Incomplete work, or stuff that never got into production versions but still interesting
+
+#define NEWTRIGGERGPS	  // Parser approach for triggering a quantum data completed
+			  // The idea was correct, since I could verify later that also the real
+			  // LX8000 has the same approach, although simplified!!
+
+#define FIXGDI		  // todo, work for further optimization of GDIs. 
+			  // To check GDI memory leaks, use the freeware GDIView.exe 
+ */
+
+/*
  * Put here debug defines, so that other developers can activate them if needed.
 
 #define DRAWLOAD          // show cpu load (set by DEBUG mode)
 #define DEBUG_DBLCLK      // show double click is being pressed
 #define VENTA_DEBUG_EVENT // show key events, actually very few.
 #define VENTA_DEBUG_KEY   // activates scan key codes, so you know what an hardware key is mapped to
+			  // the HW key scan code is displayed on the screen!
 #define DEBUG_ROTARY      // write in DEBUG.TXT located in the same place of .exe , append mode
 #define CPUSTATS          // activate cpu thread profiling stuff also in Cpustat.h
 #define DEBUG_DEV_COM     // log device communication through DevBase class methods
+#define DEBUGNPM	  // port monitor and hearthbeats in Parser
  */
 
