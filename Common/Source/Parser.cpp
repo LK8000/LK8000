@@ -591,7 +591,6 @@ BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   
   GPS_INFO->NAVWarning = !gpsValid;
   
-#ifdef NEWGPS
   // use valid time with invalid fix
   double glltime = StrToDouble(params[4],NULL);
   if (glltime>0) {
@@ -619,13 +618,6 @@ BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 	#endif
   }
   if (!gpsValid) return FALSE;  // 091108 addon BUGFIX GLL time with no valid signal
-#else
-  if (!gpsValid) return FALSE;  // 091108 addon BUGFIX GLL time with no valid signal
-
-  double ThisTime = TimeModify(StrToDouble(params[4],NULL), GPS_INFO);
-  if (!TimeHasAdvanced(ThisTime, GPS_INFO))
-    return FALSE;
-#endif
   
   double tmplat;
   double tmplon;
@@ -732,11 +724,9 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 
   if (!activeGPS) return TRUE; // 091205 BUGFIX true
 
-#ifdef NEWGPS
   // if no valid fix, we dont get speed either!
   if (gpsValid)
   {
-#endif
 	speed = StrToDouble(params[6], NULL);
 	// speed is in knots, 2 = 3.7kmh
 	if (speed>2.0) {
@@ -752,9 +742,7 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 			return TRUE;
 		}
 	}
-#ifdef NEWGPS
   }
-#endif
   
   GPS_INFO->NAVWarning = !gpsValid;
 
@@ -917,7 +905,6 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 	gpsValid = false;
   }
 
-#ifdef NEWGPS // 091205
   double ggafix = StrToDouble(params[5],NULL);
   if ( ggafix==0 || ggafix>5 ) {
 	#ifdef DEBUG_GPS
@@ -927,7 +914,6 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   } else {
 	gpsValid=true;
   }
-#endif
 
   // don't set any GPS_INFO if not activeGPS!!
   if (!activeGPS) return TRUE;
@@ -938,7 +924,6 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 //  // GPS_INFO->SatellitesUsed = (int)(min(16,StrToDouble(params[6], NULL))); 091205 091208 moved up
 //  GPS_INFO->SatellitesUsed = nSatellites; // 091205
 
-#ifdef NEWGPS  // 091205
   double ggatime=StrToDouble(params[0],NULL);
   // Even with invalid fix, we might still have valid time
   // I assume that 0 is invalid, and I am very sorry for UTC time 00:00 ( missing a second a midnight).
@@ -986,27 +971,6 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 		gpsValid=false;
 	}
   }
-#else
-  if (gpsValid) { // BUGFIX 091108 
-	double ThisTime = TimeModify(StrToDouble(params[0],NULL), GPS_INFO);
-	if (!TimeHasAdvanced(ThisTime, GPS_INFO))
-		return FALSE;
-	double tmplat;
-	double tmplon;
- 
-	// WRONG. Gps will send out the position most of the times even with an invalid fix
-	tmplat = MixedFormatToDegrees(StrToDouble(params[1], NULL));
-	tmplat = NorthOrSouth(tmplat, params[2][0]);
-  
-	tmplon = MixedFormatToDegrees(StrToDouble(params[3], NULL));
-	tmplon = EastOrWest(tmplon,params[4][0]);
-  
-	if (!((tmplat == 0.0) && (tmplon == 0.0))) {
-		GPS_INFO->Latitude = tmplat;
-		GPS_INFO->Longitude = tmplon;
-	} 
-  } // 091108
-#endif
  
   // GGA is marking now triggering end of data, so OK to use baro
   // Even with invalid fix we might have valid baro data of course

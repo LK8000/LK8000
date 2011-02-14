@@ -86,9 +86,6 @@
 
 #define NEWTRAIL
 
-// new nmea parser from december 2009
-#define NEWGPS
-
 // Parser.cpp will show more debug messages about wrong fixes
 // #define DEBUG_GPS
 
