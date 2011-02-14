@@ -684,7 +684,8 @@ bool RasterMapRaw::Open(char* zfilename) {
   }
     
   long nsize = TerrainInfo.Rows*TerrainInfo.Columns;
-  StartupStore(_T(". Terrain size is %ld %s"),(long)nsize*sizeof(short),NEWLINE);
+  StartupStore(_T(". Terrain size is %ld, max hblock %lu %s"),
+    (long)nsize*sizeof(short), CheckMaxHeapBlock(), NEWLINE);
 
   if (CheckFreeRam()>(unsigned long)(nsize*sizeof(short)+5000000)) {
     // make sure there is 5 meg of ram left after allocating space
@@ -692,8 +693,8 @@ bool RasterMapRaw::Open(char* zfilename) {
   } else {
     zzip_fclose(fpTerrain);
 #if NEWTERRAIN
-	FailStore(_T("Load Terrain FAILED: Not enough memory (free=%ld need=%ld+5M)!"),
-		CheckFreeRam(), (unsigned long)(nsize*sizeof(short)));
+    FailStore(_T("Load Terrain FAILED: Not enough memory (free=%ld need=%ld+5M)!"),
+    CheckFreeRam(), (unsigned long)(nsize*sizeof(short)));
 #endif
     TerrainMem = NULL;
     return false;
@@ -701,7 +702,7 @@ bool RasterMapRaw::Open(char* zfilename) {
     
   if (!TerrainMem) {
 #if NEWTERRAIN
-	FailStore(_T("Terrain memory malloc failed! Raster map NOT loaded."));
+    FailStore(_T("Terrain memory malloc failed! Raster map NOT loaded."));
 #endif
     zzip_fclose(fpTerrain);
     terrain_valid = false;
