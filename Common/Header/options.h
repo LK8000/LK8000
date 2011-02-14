@@ -89,12 +89,6 @@
 // new nmea parser from december 2009
 #define NEWGPS
 
-// force polling mode
-// #define NEWCOMM 1
-// use configurable polling mode (do not mix with NEWCOMM !!
-// Requires NEWGPS and a value like 1 to be defined
-#define POLLINGMODE 1
-
 // Parser.cpp will show more debug messages about wrong fixes
 // #define DEBUG_GPS
 

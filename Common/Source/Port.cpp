@@ -144,7 +144,7 @@ BOOL ComPort::Initialize(LPCTSTR lpszPortName, DWORD dwPortSpeed, DWORD dwPortBi
 #if (WINDOWSPC>0) || NEWCOMM // 091206
 	Sleep(2000); // needed for windows bug 101116 not verified
 #endif
-#if POLLINGMODE && !(WINDOWSPC>0)
+#if !(WINDOWSPC>0)
 	if (PollingMode) Sleep(2000);
 #endif
 	// LKTOKEN  _@M759_ = "Unable to Change Settings on Port" 
@@ -180,7 +180,7 @@ BOOL ComPort::Initialize(LPCTSTR lpszPortName, DWORD dwPortSpeed, DWORD dwPortBi
 #if (WINDOWSPC>0) || NEWCOMM // 091206
 	Sleep(2000); // needed for windows bug
 #endif
-#if POLLINGMODE && !(WINDOWSPC>0)
+#if !(WINDOWSPC>0)
 	if (PollingMode) Sleep(2000);
 #endif
 
@@ -261,7 +261,7 @@ DWORD ComPort::ReadThread()
   #if (!defined(WINDOWSPC) || (WINDOWSPC == 0)) && !NEWCOMM
   SetCommMask(hPort, dwMask);
   #endif
-#if POLLINGMODE && (WINDOWSPC<1)
+#if (WINDOWSPC<1)
   if (!PollingMode) SetCommMask(hPort, dwMask);
 #endif
 
@@ -294,11 +294,9 @@ DWORD ComPort::ReadThread()
 	// PC version does BUSY WAIT
 	Sleep(50);  // ToDo rewrite the whole driver to use overlaped IO on W2K or higher
 	#else
-#if POLLINGMODE
 	if (PollingMode)  
 		Sleep(100);
 	else
-#endif
 	// Wait for an event to occur for the port.
 	if (!WaitCommEvent(hPort, &dwCommModemStatus, 0)) {
 		// error reading from port
@@ -311,11 +309,7 @@ DWORD ComPort::ReadThread()
 
 	// #if !defined(WINDOWSPC) || (WINDOWSPC == 0) 091206
 	#if (!defined(WINDOWSPC) || (WINDOWSPC == 0)) && !NEWCOMM
-#if POLLINGMODE
 	if (PollingMode || (dwCommModemStatus & EV_RXFLAG) || (dwCommModemStatus & EV_RXCHAR)) // Do this only for non-PC
-#else
-	if ((dwCommModemStatus & EV_RXFLAG) || (dwCommModemStatus & EV_RXCHAR)) // Do this only for non-PC
-#endif
 	#endif
 	{
 
@@ -358,9 +352,7 @@ DWORD ComPort::ReadThread()
 	// Retrieve modem control-register values.
 	#if (!defined(WINDOWSPC) || (WINDOWSPC == 0)) 
 
-#if POLLINGMODE 
 	if (!PollingMode)
-#endif
 	// this is causing problems on PC BT, apparently. Setting Polling will not call this, but it is a bug
 	GetCommModemStatus(hPort, &dwCommModemStatus);
 
