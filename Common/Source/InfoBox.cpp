@@ -884,20 +884,11 @@ long tnow;
       DoStatusMessage(_T("DBLCLK InfoBox")); // VENTA3 
 #endif
 
-      #ifndef LKPMODE
       ShowMenu(); 
-      #endif
       break;
 #endif
 
     case WM_LBUTTONDOWN:
-
-	#ifdef LKPMODE
-	NextModeIndex();
-	MapWindow::RefreshMap();
-	SoundModeIndex();
-	return(0);
-	#endif
 
       /*
        * VENTA3 SYNTHETIC DOUBLE CLICK ON INFOBOXES

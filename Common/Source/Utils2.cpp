@@ -402,19 +402,11 @@ main(int argc, char *argv[])
 int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 #define VKTIMELONG 1500
-#if LKPMODE
-#ifndef MAP_ZOOM
-#define DONTDRAWTHEMAP NewMap&&Look8000&&!MapWindow::EnablePan&&MapSpaceMode!=1
-#else /* MAP_ZOOM */
-#define DONTDRAWTHEMAP NewMap&&Look8000&&!MapWindow::mode.AnyPan()&&MapSpaceMode!=1
-#endif /* MAP_ZOOM */
-#else
 #ifndef MAP_ZOOM
 #define DONTDRAWTHEMAP MapWindow::IsMapFullScreen()&&NewMap&&Look8000&&!MapWindow::EnablePan&&MapSpaceMode!=1
 #else /* MAP_ZOOM */
 #define DONTDRAWTHEMAP MapWindow::IsMapFullScreen()&&NewMap&&Look8000&&!MapWindow::mode.AnyPan()&&MapSpaceMode!=1
 #endif /* MAP_ZOOM */
-#endif
 
 	#if 100228
 	static int AIRCRAFTMENUSIZE=0;

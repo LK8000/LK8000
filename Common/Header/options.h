@@ -84,8 +84,6 @@
 
 #define NEWTRAIL
 
-// Parser.cpp will show more debug messages about wrong fixes
-// #define DEBUG_GPS
 
 // Use new terrain mode in RasterTerrain
 #define NEWTERRAIN 1
@@ -123,8 +121,6 @@
  // do calculations in map mode at 0.5hz, instead of 1hz
  #define FLIPFLOP	1
 
- // replace old Sutherland Hodgman clipping algo
- // #define LKCLIP		1
 
 #endif
 
@@ -134,8 +130,6 @@
 // New task wp management
 #define NEWTASKWP	1
 
-// New full UTM support INCOMPLETED
-// #define NEWUTM		1
 
 // Don't load and save wind from registry
 #define NOWINDREGISTRY	1
@@ -148,9 +142,6 @@
 
 // WindowControl handling Width and Heigth negative
 #define LKWINCONTROL	1
-
-// new LK portrait mode interface
-// #define LKPMODE	1
 
 // New topology custom, and relative OPTIMIZE options
 #define LKTOPO		1
@@ -237,6 +228,10 @@
 
 #define FIXGDI		  // todo, work for further optimization of GDIs. 
 			  // To check GDI memory leaks, use the freeware GDIView.exe 
+
+#define LKCLIP		  // replace old Sutherland Hodgman clipping algo
+#define NEWUTM		  // New full UTM support INCOMPLETED
+
  */
 
 /*
@@ -250,6 +245,7 @@
 #define DEBUG_ROTARY      // write in DEBUG.TXT located in the same place of .exe , append mode
 #define CPUSTATS          // activate cpu thread profiling stuff also in Cpustat.h
 #define DEBUG_DEV_COM     // log device communication through DevBase class methods
+#define DEBUG_GPS	  //  Parser.cpp will show more debug messages about wrong fixes
 #define DEBUGNPM	  // port monitor and hearthbeats in Parser
 #define DEBUG_BESTALTERNATE	// full bestalternate messages inside DEBUG.TXT in home directory
  */

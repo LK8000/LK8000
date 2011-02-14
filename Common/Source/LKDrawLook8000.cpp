@@ -345,17 +345,10 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   else
 	yrightoffset=((rc.bottom + rc.top)/3)-NIBLSCALE(10);	// 101112
 
-#if LKPMODE
-  if ( MapSpaceMode!= MSM_MAP) {
-	DrawMapSpace(hdc, rc);
-	goto Drawbottom;
-  }
-#else
   if (DrawBottom && MapSpaceMode!= MSM_MAP) {
 	DrawMapSpace(hdc, rc);
 	goto Drawbottom;
   }
-#endif
 
 
   if ( MapWindow::IsMapFullScreen() ) {
@@ -1800,12 +1793,7 @@ EndOfNavboxes:
 
 } // drawbottom
 
-  #ifdef LKPMODE
-  if ( MapSpaceMode != MSM_MAP) goto TheEnd;
-  #else
   if (DrawBottom && MapSpaceMode != MSM_MAP) goto TheEnd;
-  #endif
-
 
   //
   // Draw wind 

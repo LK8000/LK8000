@@ -84,15 +84,6 @@ extern void DrawDebug(HDC hdc, RECT rc );
 
 #define NUMSNAILRAMP 6
 
-#ifdef LKPMODE
-#ifndef MAP_ZOOM
-#define DONTDRAWTHEMAP NewMap&&Look8000&&!EnablePan&&MapSpaceMode!=MSM_MAP
-#define MAPMODE8000    IsMapFullScreen()&&NewMap&&Look8000&&!EnablePan&&MapSpaceMode==MSM_MAP
-#else /* MAP_ZOOM */
-#define DONTDRAWTHEMAP NewMap&&Look8000&&!mode.AnyPan()&&MapSpaceMode!=MSM_MAP
-#define MAPMODE8000    IsMapFullScreen()&&NewMap&&Look8000&&!mode.AnyPan()&&MapSpaceMode==MSM_MAP
-#endif /* MAP_ZOOM */
-#else
 #ifndef MAP_ZOOM
 #define DONTDRAWTHEMAP IsMapFullScreen()&&NewMap&&Look8000&&!EnablePan&&MapSpaceMode!=MSM_MAP
 #define MAPMODE8000    IsMapFullScreen()&&NewMap&&Look8000&&!EnablePan&&MapSpaceMode==MSM_MAP
@@ -100,9 +91,7 @@ extern void DrawDebug(HDC hdc, RECT rc );
 #define DONTDRAWTHEMAP IsMapFullScreen()&&NewMap&&Look8000&&!mode.AnyPan()&&MapSpaceMode!=MSM_MAP
 #define MAPMODE8000    IsMapFullScreen()&&NewMap&&Look8000&&!mode.AnyPan()&&MapSpaceMode==MSM_MAP
 #endif /* MAP_ZOOM */
-#endif
 
-//#define ISPARAGLIDER (AircraftCategory == (AircraftCategory_t)umParaglider) REMOVE
 
 #ifdef OVERTARGET
 extern int GetOvertargetIndex(void);
@@ -1417,13 +1406,8 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
   
   static DWORD dwDownTime= 0L, dwUpTime= 0L, dwInterval= 0L;
 
-  #if LKPMODE
   bool dontdrawthemap=(DONTDRAWTHEMAP);
   bool mapmode8000=(MAPMODE8000);
-  #else
-  bool dontdrawthemap=(DONTDRAWTHEMAP);
-  bool mapmode8000=(MAPMODE8000);
-  #endif
 
   static short navboxesY;
   // Attention... this is duplicated inside Utils2, I am lazy 
