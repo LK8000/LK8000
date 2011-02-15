@@ -186,7 +186,6 @@
 //
 #define FIX_RELOADCONFIG	1	// Applied: 101020 expires 110201
 #define FIXDC			1
-#define FIXISLANDABLE		1	// Applied: 101215 expire 110201
 #define FIXNOLOADXML		1	// do not load xml from filesystem with tokenized XML
 
 // Will speed up Range search, and also BestAlternate search
