@@ -450,8 +450,6 @@ BOOL ComPort::StopRxThread()
 
   CloseThread = TRUE;
 
-  DWORD tm = GetTickCount()+20000l;
-
 // currently NEWCOMM is NOT used
 #if (WINDOWSPC>0) || NEWCOMM  // 091206
   DWORD tm = GetTickCount()+20000l;
