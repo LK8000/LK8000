@@ -11,10 +11,11 @@ NEW
 
 CHANGES
 
-- Heap space memory check 
+- Heap space memory check  (TO USE!)
+- Center area for nearest pages selection is enlarged
 
 BUGFIX
-
+- 2.1b problem with tokens over 999
 
 
 VERSION 2.1b
