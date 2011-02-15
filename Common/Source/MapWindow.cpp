@@ -57,11 +57,7 @@
 #include "LKGeneralAviation.h"
 
 
-#ifdef GTCFIX
 DWORD misc_tick_count=0;
-#else
-int misc_tick_count=0;
-#endif
 
 #ifdef DEBUG
 #define DRAWLOAD
@@ -337,11 +333,7 @@ extern HFONT  TitleSmallWindowFont; // VENTA6
 
 
 #ifdef DRAWLOAD
-#ifdef GTCFIX
 DWORD timestats_av = 0;
-#else
-int timestats_av = 0;
-#endif
 #endif
 
 DWORD MapWindow::timestamp_newdata=0;
@@ -354,11 +346,7 @@ bool timestats_dirty=false;
 
 void MapWindow::UpdateTimeStats(bool start) {
 #ifdef DRAWLOAD
-  #ifdef GTCFIX
   static DWORD tottime=0;
-  #else
-  static long tottime=0;
-  #endif
 #endif
   if (start) {
     timestamp_newdata = ::GetTickCount();

@@ -131,9 +131,6 @@
 // Don't load and save wind from registry
 #define NOWINDREGISTRY	1
 
-// GetTickCount bugfix
-#define GTCFIX	1
-
 // WindowControl handling Width and Heigth negative
 #define LKWINCONTROL	1
 
@@ -170,9 +167,6 @@
 // ew terrain manager, for shading and altitudes ex LKTEST
 #define NEWRASTER	1
 
-
-#define MOREDECLUTTER	1	// will declutter also airfields
-
 #define CUPCOM		1	// CUP comments allocated dynamically
 
 #define ORBITER		1	// thermal orbiter
@@ -184,10 +178,10 @@
 // TEMPORARY FIXES THAT REQUIRE EXTENSIVE TESTING - KEEP #ifdef until expiring date
 // When expire date is reached, unnecessary old stuff can be removed, even if commented
 //
-#define FIXDC			1
+#define FIXDC			1	// expire 110601
 
 // Will speed up Range search, and also BestAlternate search
-#define UNSORTEDRANGE		1	// 101120
+#define UNSORTEDRANGE		1	// 101120 expire 110601
 
 
 #define LKOBJ			1
@@ -200,8 +194,9 @@
 
 #define MULTICALC		1	// Use multicalc approach, splitting calculation inside MapWindow
 					// thread into multiple instances, 0.5 or 0.33 Hz recommended
-					// Extensive checking required
-#define MAP_ZOOM                1       // Applied 110204
+					// Extensive checking required expire 110601
+
+#define MAP_ZOOM                1       // Applied 110204 expire 110601
 
 
 

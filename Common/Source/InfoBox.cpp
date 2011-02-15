@@ -834,13 +834,8 @@ LRESULT CALLBACK InfoBoxWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
   InfoBox *ib;
 
 
-#ifdef GTCFIX
 static DWORD tpassed=0;
 DWORD tnow;
-#else
-static long tpassed=0L;
-long tnow;
-#endif
 
   switch (uMsg){
     

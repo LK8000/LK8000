@@ -891,11 +891,7 @@ inline void TerrainShading(const short illum, BYTE &r, BYTE &g, BYTE &b)
 // 
 // this is for TerrainInfo.StepSize = 0.0025;
 
-#ifdef GTCFIX
 extern DWORD misc_tick_count;
-#else
-extern int misc_tick_count;
-#endif
 
 class TerrainRenderer {
 public:

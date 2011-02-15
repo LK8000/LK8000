@@ -427,11 +427,7 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *GPS_INFO){
     char  *pC  = sTmp;
     //    static DWORD lastFlush = 0;    
    
-#ifdef GTCFIX
     sprintf(pC, "%9ld <", GetTickCount());
-#else 
-    sprintf(pC, "%9d <", (int)GetTickCount());
-#endif
     pC = sTmp + strlen(sTmp);
     
     while (*pWC){

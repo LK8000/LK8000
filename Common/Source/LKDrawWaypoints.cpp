@@ -444,7 +444,6 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 
 	      } // end intask/irange/dowrite
 
-		#if MOREDECLUTTER
 #ifndef MAP_ZOOM
 		if (MapScale<20 && islandable && dowrite) {
 #else /* MAP_ZOOM */
@@ -453,23 +452,6 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 			TextInBox(hdc, Buffer, WayPointList[i].Screen.x+5, WayPointList[i].Screen.y, 0, TextDisplayMode, true); 
 			dowrite=false; // do not pass it along
 		}
-		#else
-	      if (MapScale>=3 && MapScale<10 && islandable && dowrite) { // can't find a better solution for this 
-		if (isairport)
-		  TextInBox(hdc, Buffer, WayPointList[i].Screen.x+5, WayPointList[i].Screen.y, 0, TextDisplayMode, false);
-		else
-		  TextInBox(hdc, Buffer, WayPointList[i].Screen.x+5, WayPointList[i].Screen.y, 0, TextDisplayMode, true);  
-		dowrite=false; // do not pass it along
-	      }
-	      if (MapScale<3 && islandable && dowrite) { // damned irange problems
-		TextInBox(hdc, Buffer, WayPointList[i].Screen.x+5, WayPointList[i].Screen.y, 0, TextDisplayMode, false);  
-		dowrite=false; // do not pass it along
-	      }
-	      if (MapScale>=10 && MapScale<20 && islandable && dowrite) { // damned irange problems
-		TextInBox(hdc, Buffer, WayPointList[i].Screen.x+5, WayPointList[i].Screen.y, 0, TextDisplayMode, true); 
-		dowrite=false; // do not pass it along
-	      }
-		#endif
 
 		// Do not show takeoff for gliders, check TakeOffWayPoint 
 		if (i==RESWP_TAKEOFF) {

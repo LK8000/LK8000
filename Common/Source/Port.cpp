@@ -450,22 +450,14 @@ BOOL ComPort::StopRxThread()
 
   CloseThread = TRUE;
 
-#ifndef GTCFIX // 100510
   DWORD tm = GetTickCount()+20000l;
-#endif
 
 // currently NEWCOMM is NOT used
 #if (WINDOWSPC>0) || NEWCOMM  // 091206
-  #ifdef GTCFIX
   DWORD tm = GetTickCount()+20000l;
   while (!fRxThreadTerminated && ((tm-GetTickCount()) > 0) ) {
 	Sleep(10);
   }
-  #else
-  while (!fRxThreadTerminated && (long)(tm-GetTickCount()) > 0) {
-	Sleep(10);
-  }
-  #endif
   if (!fRxThreadTerminated) {
 	TerminateThread(hReadThread, 0);
   } else {
@@ -481,18 +473,11 @@ BOOL ComPort::StopRxThread()
                                         // documented CE trick to
                                         // cancel the WaitCommEvent
 
-  #ifdef GTCFIX
   int count=0;
   while (!fRxThreadTerminated && (count<2000)){ 
 	Sleep(10);
 	count++;
   }
-
-  #else
-  while (!fRxThreadTerminated && (long)(GetTickCount()-tm) < 1000){
-	Sleep(10);
-  }
-  #endif
 
   if (!fRxThreadTerminated) {
 	#if 101122

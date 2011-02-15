@@ -102,11 +102,7 @@ static bool KeyTimer(bool isdown, DWORD thekey) {
   static DWORD fpsTimeDown= 0;
   static DWORD savedKey=0;
 
-#ifdef GTCFIX
   unsigned int dT = ::GetTickCount()-fpsTimeDown;
-#else
-  int dT = ::GetTickCount()-fpsTimeDown;
-#endif
   if ((dT>2000)&&(thekey==savedKey)) {
     fpsTimeDown = ::GetTickCount();
     savedKey = 0;
@@ -966,11 +962,7 @@ int DataFieldInteger::SpeedUp(bool keyup){
     return 1;
   }
 
-#ifdef GTCFIX
   if ((unsigned long)(GetTickCount()-mTmLastStep) < 200){
-#else
-  if ((long)(GetTickCount()-mTmLastStep) < 200){
-#endif
     mSpeedup++;
 
     if (mSpeedup > 5){
@@ -1105,11 +1097,7 @@ double DataFieldFloat::SpeedUp(bool keyup){
     return 1.0;
   }
 
-#ifdef GTCFIX
   if ((unsigned long)(GetTickCount()-mTmLastStep) < 200){
-#else
-  if ((long)(GetTickCount()-mTmLastStep) < 200){
-#endif
     mSpeedup++;
 
     if (mSpeedup > 5){
@@ -4295,12 +4283,7 @@ void WndListFrame::SelectItemFromScreen(int xPos, int yPos,
 int WndListFrame::OnMouseMove(WPARAM wParam, LPARAM lParam) {  
   static bool bMoving = false;
 
-#ifdef GTCFIX
   if ( (GetTickCount()) >= LastMouseMoveTime )
-#else
-  int dT = GetTickCount()-LastMouseMoveTime;
-  if (dT > -1 && !bMoving) 
-#endif
   {
     bMoving=true;
 

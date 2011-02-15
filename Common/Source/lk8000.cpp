@@ -4849,15 +4849,9 @@ void FailStore(const TCHAR *Str, ...)
 	StartupStore(_T("------ FailStore failed, cannot open <%s>%s"), szFileName, NEWLINE);
 	return;
   }
-#ifdef GTCFIX
   fprintf(stream, "------%s%04d%02d%02d-%02d:%02d:%02d [%09u] FailStore Start, Version %s%s (%s %s) FreeRam=%ld %s",SNEWLINE,
 	GPS_INFO.Year,GPS_INFO.Month,GPS_INFO.Day, GPS_INFO.Hour,GPS_INFO.Minute,GPS_INFO.Second,
 	(unsigned int)GetTickCount(),LKVERSION, LKRELEASE,
-#else
-  fprintf(stream, "------%s%04d%02d%02d-%02d:%02d:%02d [%09d] FailStore Start, Version %s%s (%s %s) FreeRam=%ld %s",SNEWLINE,
-	GPS_INFO.Year,GPS_INFO.Month,GPS_INFO.Day, GPS_INFO.Hour,GPS_INFO.Minute,GPS_INFO.Second,
-	(int)GetTickCount(),LKVERSION, LKRELEASE,
-#endif
 #if NOSIM
 	"",
 #else
