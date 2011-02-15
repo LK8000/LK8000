@@ -23,11 +23,7 @@
 struct BGRColor
 {
 	BGRColor() {}
-	#if MATFIX1
 	BGRColor(byte R, byte G, byte B) : m_B(B), m_G(G), m_R(R) {}
-	#else
-	BGRColor(byte R, byte G, byte B) : m_R(R), m_G(G), m_B(B) {} //@ 101029 MATFIX1
-	#endif
 	byte m_B;
 	byte m_G;
 	byte m_R;

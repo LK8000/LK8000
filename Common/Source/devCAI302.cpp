@@ -117,7 +117,7 @@ static cai302_Gdata_t cai302_Gdata;
 static BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 static BOOL cai_PCAIB(TCHAR *String, NMEA_INFO *GPS_INFO);
 static BOOL cai_PCAID(TCHAR *String, NMEA_INFO *GPS_INFO);
-static BOOL cai302Install(PDeviceDescriptor_t d); //@ 101029 MATFIX1
+static BOOL cai302Install(PDeviceDescriptor_t d); 
 
 static int  MacCreadyUpdateTimeout = 0;
 static int  BugsUpdateTimeout = 0;
@@ -151,7 +151,6 @@ BOOL cai302PutMacCready(PDeviceDescriptor_t d, double MacCready){
 
   TCHAR  szTmp[32];
 
-  // _stprintf(szTmp, TEXT("!g,m%d\r\n"), int(((MacCready * 10) / KNOTSTOMETRESSECONDS) + 0.5)); MATFIX1
   _stprintf(szTmp, TEXT("!g,m%d\r"), int(((MacCready * 10) / KNOTSTOMETRESSECONDS) + 0.5));
 
   d->Com->WriteString(szTmp);
@@ -167,7 +166,6 @@ BOOL cai302PutBugs(PDeviceDescriptor_t d, double Bugs){
 
   TCHAR  szTmp[32];
 
-  // _stprintf(szTmp, TEXT("!g,u%d\r\n"), int((Bugs * 100) + 0.5)); MATFIX1
   _stprintf(szTmp, TEXT("!g,u%d\r"), int((Bugs * 100) + 0.5));
 
   d->Com->WriteString(szTmp);
@@ -183,7 +181,6 @@ BOOL cai302PutBallast(PDeviceDescriptor_t d, double Ballast){
 
   TCHAR  szTmp[32];
 
-  // _stprintf(szTmp, TEXT("!g,b%d\r\n"), int((Ballast * 10) + 0.5)); MATFIX1
   _stprintf(szTmp, TEXT("!g,b%d\r"), int((Ballast * 10) + 0.5));
 
   d->Com->WriteString(szTmp);
@@ -639,7 +636,7 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
   NMEAParser::ExtractParameter(String,ctemp,6);
   GPS_INFO->AirspeedAvailable = TRUE;
   GPS_INFO->TrueAirspeed = (StrToDouble(ctemp,NULL) / 100.0);
-  GPS_INFO->IndicatedAirspeed = GPS_INFO->TrueAirspeed / AirDensityRatio(GPS_INFO->BaroAltitude); // MATFIX
+  GPS_INFO->IndicatedAirspeed = GPS_INFO->TrueAirspeed / AirDensityRatio(GPS_INFO->BaroAltitude);
   
   NMEAParser::ExtractParameter(String,ctemp,7);
   GPS_INFO->VarioAvailable = TRUE;
@@ -654,7 +651,6 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
 
   NMEAParser::ExtractParameter(String,ctemp,11);
   GPS_INFO->Ballast = StrToDouble(ctemp,NULL) / 100.0;
-  // if (BugsUpdateTimeout <= 0) MATFIX
   if (BallastUpdateTimeout <= 0)
     BALLAST = GPS_INFO->Ballast;
   else 

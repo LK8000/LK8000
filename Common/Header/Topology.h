@@ -48,7 +48,7 @@ class Topology {
   Topology(const char* shpname, COLORREF thecolor, bool doappend=false);
   Topology() {};
   
-  virtual ~Topology(); //@ MATFIX1
+  virtual ~Topology();
   
   void Open();
   void Close();
@@ -104,7 +104,7 @@ class Topology {
 class TopologyWriter: public Topology {
  public:
   TopologyWriter(const char *shpname, COLORREF thecolor);
-  virtual ~TopologyWriter(); //@ MATFIX1 
+  virtual ~TopologyWriter();
   
   void addPoint(double x, double y);
   void Reset(void);
@@ -117,7 +117,7 @@ class TopologyWriter: public Topology {
 class TopologyLabel: public Topology {
  public:
   TopologyLabel(const char* shpname, COLORREF thecolor, INT field1);
-  virtual ~TopologyLabel(); //@ MATFIX1
+  virtual ~TopologyLabel();
   virtual XShape* addShape(const int i);
   void setField(int i);
   int field;

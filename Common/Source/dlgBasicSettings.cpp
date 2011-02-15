@@ -111,7 +111,7 @@ static void SetBallast(bool updateDevices) {
   WndProperty* wp;
 
   GlidePolar::SetBallast();
-  if (updateDevices) { //@ MATFIX
+  if (updateDevices) { 
 	devPutBallast(devA(), BALLAST);
 	devPutBallast(devB(), BALLAST);
   }
@@ -139,7 +139,7 @@ static void SetBallast(bool updateDevices) {
 static int OnTimerNotify(WindowControl * Sender) {
   (void)Sender;
   // devices are updates by BallastDump() method when dumping water ballast
-  SetBallast(false); //@ MATFIX
+  SetBallast(false); 
 
   static double altlast = GPS_INFO.BaroAltitude;
   if (fabs(GPS_INFO.BaroAltitude-altlast)>1) {

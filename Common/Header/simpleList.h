@@ -9,11 +9,7 @@ template <class T> class List
 public:
   struct Node 
   {
-    #if MATFIX1
     Node(const T& thedata, Node* next=0):next(next),data(thedata) {}
-    #else
-    Node(const T& thedata, Node* next=0):data(thedata),next(next) {} 
-    #endif
     Node* next;
     T data;
   };

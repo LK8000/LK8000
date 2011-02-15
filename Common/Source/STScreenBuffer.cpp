@@ -38,7 +38,6 @@ struct DIBINFO : public BITMAPINFO
 /////////////////////////////////////////////////////////////////////////////
 // CSTScreenBuffer
 
-#if MATFIX1
 CSTScreenBuffer::CSTScreenBuffer()
 	: memDc(NULL),
 	  m_pBuffer(NULL),
@@ -47,17 +46,6 @@ CSTScreenBuffer::CSTScreenBuffer()
 	  m_pDC(NULL)
 {
 }
-#else
-CSTScreenBuffer::CSTScreenBuffer()
-      : m_hBitmap(NULL),
-	m_pBuffer(NULL),
-	m_pBufferTmp(NULL),
-	m_pDC(NULL),
-	memDc(NULL)
-
-{
-}
-#endif
 
 CSTScreenBuffer::~CSTScreenBuffer()
 {
