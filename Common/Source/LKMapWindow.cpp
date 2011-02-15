@@ -640,7 +640,6 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
 
 }
 
-#ifdef NEWTRAIL
 
 // try not to use colors when over a useless mapscale
 double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
@@ -962,7 +961,6 @@ go_selcolor:
   return TrailFirstTime;
 }
 
-#endif
 
 #if AUTORIENT
 // change dynamically the map orientation mode

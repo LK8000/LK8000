@@ -82,9 +82,6 @@
 
 #define DSX		// only an experimental test feature
 
-#define NEWTRAIL
-
-
 // Use new terrain mode in RasterTerrain
 #define NEWTERRAIN 1
 
@@ -173,7 +170,6 @@
 // ew terrain manager, for shading and altitudes ex LKTEST
 #define NEWRASTER	1
 
-// #define NOIBOX	1	// 101011 not working yet, not time to do it now
 
 #define MOREDECLUTTER	1	// will declutter also airfields
 
@@ -228,6 +224,7 @@
 
 #define LKCLIP		  // replace old Sutherland Hodgman clipping algo
 #define NEWUTM		  // New full UTM support INCOMPLETED
+#define NOIBOX		  // Ibox mode no more available, an important TODO
 
  */
 

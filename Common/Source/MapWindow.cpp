@@ -1560,29 +1560,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hAboveTerrainBrush = CreatePatternBrush((HBITMAP)hAboveTerrainBitmap);
 
 	int iwidth;
-#ifndef NEWTRAIL
-      // normal colours
-      BYTE Red,Green,Blue;
-      int minwidth;
-      minwidth = max(NIBLSCALE(2),IBLSCALE(SnailWidthScale)/16);
-      for (i=0; i<NUMSNAILCOLORS; i++) {
-	short ih = i*200/(NUMSNAILCOLORS-1);
-	ColorRampLookup(ih, 
-			Red, Green, Blue,
-			snail_colors, NUMSNAILRAMP, 6);      
-	if (i<NUMSNAILCOLORS/2) {
-	  iwidth= minwidth;
-	} else {
-	  iwidth = max(minwidth,
-		       (i-NUMSNAILCOLORS/2)
-		       *IBLSCALE(SnailWidthScale)/NUMSNAILCOLORS);
-	}
-
-	hSnailColours[i] = RGB((BYTE)Red,(BYTE)Green,(BYTE)Blue);
-	hSnailPens[i] = (HPEN)CreatePen(PS_SOLID, iwidth, hSnailColours[i]);
-
-      }
-#else
 	iwidth=IBLSCALE(SnailWidthScale);
 	hSnailColours[0] = RGB_BLACK;
 	hSnailColours[1] = RGB_INDIGO;
@@ -1615,7 +1592,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 	hSnailPens[12] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), hSnailColours[12]);
 	hSnailPens[13] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), hSnailColours[13]);
 	hSnailPens[14] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), hSnailColours[14]);
-#endif
 
       /* JMW created all re-used pens here */
 
@@ -3532,12 +3508,8 @@ QuickRedraw: // 100318 speedup redraw
     // trail doesn't work in portrait mode.  No idea why.
 
       double TrailFirstTime = 
-#ifdef NEWTRAIL
 	LKDrawTrail(hdc, Orig_Aircraft, rc);
-#else
-	DrawTrail(hdc, Orig_Aircraft, rc);
-#endif
-      DrawTrailFromTask(hdc, rc, TrailFirstTime);
+        DrawTrailFromTask(hdc, rc, TrailFirstTime);
   }
 
  	if (DONTDRAWTHEMAP) { // 100319
