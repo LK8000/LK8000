@@ -16,7 +16,8 @@ CHANGES
 
 BUGFIX
 - 2.1b problem with tokens over 999
-
+- 2.1b bug DSX coordinates in task declaration (not a Mat's bug! Specs were wrong).
+- 2.1b bug Battery Level warnings would crash the software
 
 VERSION 2.1b
 ------------

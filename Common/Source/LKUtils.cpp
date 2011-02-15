@@ -163,7 +163,7 @@ void LKBatteryManager() {
   // Time to give a message to the user, if necessary
   if (PDABatteryPercent <=5) {
 	// LKTOKEN _@M1354_ "BATTERY LEVEL CRITIC!"
-	_stprintf(mbuf,_T("%d%% %s"), gettext(TEXT("_@M1354_")), PDABatteryPercent);
+	_stprintf(mbuf,_T("%d%% %s"), PDABatteryPercent, gettext(TEXT("_@M1354_")));
 	DoStatusMessage(mbuf);
 	#ifndef DISABLEAUDIO
         PlayResource(TEXT("IDR_WAV_RED"));
@@ -176,7 +176,7 @@ void LKBatteryManager() {
   }
   if (PDABatteryPercent <=10) {
 	// LKTOKEN _@M1355_ "BATTERY LEVEL VERY LOW!"
-	_stprintf(mbuf,_T("%d%% %s"), gettext(TEXT("_@M1355_")), PDABatteryPercent);
+	_stprintf(mbuf,_T("%d%% %s"), PDABatteryPercent, gettext(TEXT("_@M1355_")));
 	DoStatusMessage(mbuf);
 	// repeat after 2 minutes, forced
 	last_time=GPS_INFO.Time-(60*3);
@@ -185,7 +185,7 @@ void LKBatteryManager() {
   }
   if (PDABatteryPercent <=20) {
 	// LKTOKEN _@M1356_ "BATTERY LEVEL LOW!"
-	_stprintf(mbuf,_T("%d%% %s"), gettext(TEXT("_@M1356_")), PDABatteryPercent);
+	_stprintf(mbuf,_T("%d%% %s"), PDABatteryPercent, gettext(TEXT("_@M1356_")));
 	DoStatusMessage(mbuf);
 	last_time=GPS_INFO.Time;
 	last_percent=PDABatteryPercent;
@@ -207,7 +207,7 @@ void LKBatteryManager() {
   if (PDABatteryPercent <=50) {
 	if (warn50) {
 		// LKTOKEN _@M1352_ "BATTERY LEVEL"
-		_stprintf(mbuf, _T("%s %d%%"), gettext(TEXT("_@M1352_")), PDABatteryPercent);
+	//	_stprintf(mbuf, _T("%s %d%%"), gettext(TEXT("_@M1352_")), PDABatteryPercent);
 	//	DoStatusMessage(mbuf);
 		warn50=false;
 	}
