@@ -184,7 +184,6 @@
 // TEMPORARY FIXES THAT REQUIRE EXTENSIVE TESTING - KEEP #ifdef until expiring date
 // When expire date is reached, unnecessary old stuff can be removed, even if commented
 //
-#define FIX_RELOADCONFIG	1	// Applied: 101020 expires 110201
 #define FIXDC			1
 #define FIXNOLOADXML		1	// do not load xml from filesystem with tokenized XML
 

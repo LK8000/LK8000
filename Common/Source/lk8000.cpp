@@ -1225,7 +1225,6 @@ void SettingsLeave() {
 
   MenuActive = false;
 
-#if FIX_RELOADCONFIG
   // 101020 LKmaps contain only topology , so no need to force total reload!
   if(MAPFILECHANGED) {
 	if (LKTopo==0) {
@@ -1271,47 +1270,6 @@ void SettingsLeave() {
 	InputEvents::eventTaskLoad(_T(LKF_DEFAULTASK)); //@ BUGFIX 101020
   } 
 
-#else // old stuff
-  if(MAPFILECHANGED) {
-	TOPOLOGYFILECHANGED = TRUE;
-	AIRSPACEFILECHANGED = TRUE;
-	AIRFIELDFILECHANGED = TRUE;
-	WAYPOINTFILECHANGED = TRUE;
-	TERRAINFILECHANGED = TRUE;
-  }
-    
-  if((WAYPOINTFILECHANGED) || (TERRAINFILECHANGED) || (AIRFIELDFILECHANGED)) {
-	ClearTask();
-	RasterTerrain::CloseTerrain();
-	RasterTerrain::OpenTerrain();
-	ReadWayPoints();
-	InitWayPointCalc();
-	ReadAirfieldFile();
-     
-	if (WAYPOINTFILECHANGED || TERRAINFILECHANGED) {
-		SetHome(WAYPOINTFILECHANGED==TRUE);
-	}
-
-	if (WAYPOINTFILECHANGED) {
-		SaveRecentList();
-		LoadRecentList();
-		RangeLandableNumber=0;
-		RangeAirportNumber=0;
-		RangeTurnpointNumber=0;
-		CommonNumber=0;
-		SortedNumber=0;
-		SortedTurnpointNumber=0;
-		LKForceDoCommon=true;
-		LKForceDoNearest=true;
-		LKForceDoRecent=true;
-		// LKForceDoNearestTurnpoint=true; 101222
-	}
-
-	RasterTerrain::ServiceFullReload(GPS_INFO.Latitude, GPS_INFO.Longitude);
-	MapWindow::ForceVisibilityScan = true;
-  }
-#endif // end old stuff
-  
   if (TOPOLOGYFILECHANGED) {
 	CloseTopology();
 	OpenTopology();
