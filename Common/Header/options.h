@@ -185,7 +185,6 @@
 // When expire date is reached, unnecessary old stuff can be removed, even if commented
 //
 #define FIXDC			1
-#define FIXNOLOADXML		1	// do not load xml from filesystem with tokenized XML
 
 // Will speed up Range search, and also BestAlternate search
 #define UNSORTEDRANGE		1	// 101120

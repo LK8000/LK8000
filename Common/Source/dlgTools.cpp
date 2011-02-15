@@ -415,8 +415,9 @@ WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const char *FileName,
 
   XMLNode xMainNode;
 
-  #ifndef FIXNOLOADXML  // 101220 no more use of dynamic XML with tokenized XML
-  #if (WINDOWSPC>0) //@ 101029
+  #if 0
+  // LK will not load on production versions any XML from the filesystem, by default
+  #if (WINDOWSPC>0)
   if (FileExistsA((char*)FileName))   //sgi use window API cals to check if
                                //file exists, this will supress
                                //CodeGurad warnings on callinf
