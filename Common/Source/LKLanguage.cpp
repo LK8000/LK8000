@@ -408,9 +408,9 @@ bool LKLoadMessages(void) {
 
   short filetype=FileIsUTF16(hFile);
 
-  // search for beginning of code index   @000
+  // search for beginning of code index, in the range _@M1_  _@M9999_ 
   TCHAR sTmp[300];
-  char snum[5];
+  char snum[6];
   TCHAR scapt[MAX_MESSAGE_SIZE+1];
   TCHAR scaptraw[MAX_MESSAGE_SIZE+1];
 
@@ -430,6 +430,7 @@ bool LKLoadMessages(void) {
 	snum[1]=(char)sTmp[4];
 	snum[2]=(char)sTmp[5];
 	snum[3]=(char)sTmp[6];
+	snum[4]=(char)'\0';
 	if (snum[3]=='_') snum[3]='\0';
 	if (snum[2]=='_') snum[2]='\0';
 	if (snum[1]=='_') snum[1]='\0';
@@ -470,6 +471,12 @@ bool LKLoadMessages(void) {
 	if (newlen>MAX_MESSAGE_SIZE) {
 		#if DEBUG_GETTEXT
 		StartupStore(_T(".... MSG_ENG caption too big, len=%d\n"),newlen);
+		#endif
+		continue;
+	}
+	if (newlen==0) {
+        	#if DEBUG_GETTEXT
+		StartupStore(_T(".... MSG_ENG TOKEN # %d : caption is empty, null text.\n"),inumber);
 		#endif
 		continue;
 	}
