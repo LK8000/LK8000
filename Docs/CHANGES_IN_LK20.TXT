@@ -1,4 +1,25 @@
 
+Version 2.0c February, 16 2011
+
+
+- Startup check existing LK8000 folder, and better diagnostics to the user.
+  Added second message to confirm, showing the missing directory.
+  Enlarged Message Box to hold entire path, at least on landscape devices.
+
+- Bugfix loading MSG language with out of range tokens if using 2.1 translations over 2.0
+  Tokens over 999 may not be loaded correctly, depending on memory status.
+
+- Fix bug not showing water all areas with unknown labels. 
+  Labels should not be printed, but the shape should!!
+    
+- Fix bug AltReqd Altitude required flipping between correct and wrong. 
+  In Calculation the infovalue was not using the wp altitude and safety as well.
+
+- Fix language ON missing in inverse infobox configuration dialog
+
+- Fix PPC2002 font antialiasing problem
+
+
 
 LK8000 Version 2.0  (January, 15th 2011)  -  Changes from version 1.22b (August 20th, 2010)
 
