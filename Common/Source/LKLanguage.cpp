@@ -39,7 +39,7 @@
 #define LKD_LANGUAGE	"_Language"
 #define MAX_HELP	1024	// complete help including several lines, and also for each single line
 
-#define MAX_MESSAGES		950 // dynamically allocated
+#define MAX_MESSAGES		1500 // Max number of MSG items
 #define MAX_MESSAGE_SIZE	150 // just for setting a limit
 
 bool LKLoadMessages(void);
@@ -415,6 +415,7 @@ bool LKLoadMessages(void) {
   TCHAR scaptraw[MAX_MESSAGE_SIZE+1];
 
   short mnumber=0;
+  bool havewarned=false;
   while ( ReadUString(hFile,299,sTmp,filetype) ) {
 
 	unsigned int slen=_tcslen(sTmp); // includes cr or lf or both
@@ -437,6 +438,15 @@ bool LKLoadMessages(void) {
 
 	unsigned short inumber;
 	inumber=atoi(snum);
+
+	if (inumber >=MAX_MESSAGES) {
+		if (!havewarned) {
+			StartupStore(_T("...... ERROR LOADING NON-COMPATIBLE MSG FILE!%s"),NEWLINE);
+			havewarned=true;
+		}
+		StartupStore(_T("...... MSG token <%d> over limit!%s"),inumber,NEWLINE);
+		continue;
+	}
 
 	int start=0;
 	for (i=3; i<slen; i++) {
