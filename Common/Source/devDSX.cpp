@@ -207,9 +207,12 @@ bool DSXT1Send(PDeviceDescriptor_t d, const Declaration_t &decl, unsigned errBuf
  * 
  * @return Waypoint coordinate in DSX format
  */
-inline unsigned long DSXCoord(float gpsCoord)
+unsigned long DSXCoord(float gpsCoord)
 {
-  return static_cast<unsigned long>(fabs(gpsCoord) * 100 * 1000.0) + 123456;
+  int deg = static_cast<int>(gpsCoord);
+  float min = (gpsCoord - deg) * 60;
+  float dsxCoord = fabs(deg * 100 + min);
+  return static_cast<unsigned long>(dsxCoord * 1000.0) + 123456;
 }
 
 
