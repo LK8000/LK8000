@@ -59,13 +59,13 @@ int WINAPI MessageBoxX(HWND hWnd, LPCTSTR lpText, LPCTSTR lpCaption, UINT uType)
 
   GetClientRect(hWnd, &rc);
 
-#ifdef ALTAIRSYNC
-  Width = DLGSCALE(220);
-  Height = DLGSCALE(160);
-#else
-  Width = DLGSCALE(200);
-  Height = DLGSCALE(160);
-#endif
+  if (ScreenLandscape) {
+	Width = DLGSCALE(280);
+	Height = DLGSCALE(160);
+  } else {
+	Width = DLGSCALE(230);
+	Height = DLGSCALE(160);
+  }
 
   X = ((rc.right-rc.left) - Width)/2;
   Y = ((rc.bottom-rc.top) - Height)/2;

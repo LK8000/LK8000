@@ -394,6 +394,21 @@ void dlgStartupShowModal(void){
     #endif
   }
 
+  if  (!CheckRootDir()) {
+	TCHAR mydir[MAX_PATH];
+	TCHAR mes[MAX_PATH];
+
+	_stprintf(mes,_T("%s v%s.%s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE));
+	RawWrite(mes,1,1);
+	LocalPath(mydir,_T(""));
+	_stprintf(mes,_T("%s"),mydir);
+	RawWrite(_T("Directory or configuration files missing"),8,1);
+	RawWrite(mes,9,0);
+	MessageBoxX(hWndMainWindow, _T("NO LK8000 DIRECTORY\nCheck Installation!"), _T("FATAL ERROR 000"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(hWndMainWindow, mes, _T("NO LK8000 DIRECTORY"), MB_OK|MB_ICONQUESTION);
+	Shutdown();
+  }
+
   if  (!CheckDataDir()) {
 	TCHAR mydir[MAX_PATH];
 	TCHAR mes[MAX_PATH];
@@ -404,7 +419,8 @@ void dlgStartupShowModal(void){
 	_stprintf(mes,_T("%s"),mydir);
 	RawWrite(_T("Directory or configuration files missing"),8,1);
 	RawWrite(mes,9,0);
-	MessageBoxX(hWndMainWindow, _T("Check Installation"), _T("FATAL ERROR 001"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(hWndMainWindow, _T("NO SYSTEM DIRECTORY\nCheck Installation!"), _T("FATAL ERROR 001"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(hWndMainWindow, mes, _T("NO SYSTEM DIRECTORY"), MB_OK|MB_ICONQUESTION);
 	Shutdown();
   }
 
@@ -419,7 +435,8 @@ void dlgStartupShowModal(void){
 	_stprintf(mes,_T("%s"),mydir);
 	RawWrite(_T("Directory or configuration files missing"),8,1);
 	RawWrite(mes,9,0);
-	MessageBoxX(hWndMainWindow, _T("Check Language Install"), _T("FATAL ERROR 002"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(hWndMainWindow, _T("NO LANGUAGE DIRECTORY\nCheck Language Install"), _T("FATAL ERROR 002"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(hWndMainWindow, mes, _T("NO LANGUAGE DIRECTORY"), MB_OK|MB_ICONQUESTION);
 	Shutdown();
   }
   wf->ShowModal();

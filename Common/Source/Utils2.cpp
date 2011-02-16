@@ -2605,6 +2605,17 @@ short InstallSystem() {
 
 }
 
+
+
+bool CheckRootDir() {
+  TCHAR rootdir[MAX_PATH];
+  LocalPath(rootdir,_T(""));
+  DWORD fattr = GetFileAttributes(rootdir);
+  if ((fattr != 0xFFFFFFFF) && (fattr & FILE_ATTRIBUTE_DIRECTORY)) return true;
+  return false;
+}
+
+
 bool CheckDataDir() {
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
