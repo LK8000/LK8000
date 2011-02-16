@@ -1902,18 +1902,16 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   #endif
   #endif
 
-  CreateDirectoryIfAbsent(TEXT(""));  // RLD make sure the LocalPath folder actually exists
+  // We shall NOT create the LK8000 root folder if not existing
+  // otherwise users will get confused on errors
+  // CreateDirectoryIfAbsent(TEXT("")); 
+
+  // These directories are needed if missing, as LK can run also with no maps and no waypoints..
   CreateDirectoryIfAbsent(TEXT(LKD_LOGS));
-  // CreateDirectoryIfAbsent(TEXT(LKD_SYSTEM));
   CreateDirectoryIfAbsent(TEXT(LKD_CONF));
   CreateDirectoryIfAbsent(TEXT(LKD_TASKS));
-  // CreateDirectoryIfAbsent(TEXT(LKD_AIRSPACES));
-  // CreateDirectoryIfAbsent(TEXT(LKD_POLARS));
   CreateDirectoryIfAbsent(TEXT(LKD_MAPS));
   CreateDirectoryIfAbsent(TEXT(LKD_WAYPOINTS));
-  // CreateDirectoryIfAbsent(TEXT(LKD_LANGUAGE));
-  // CreateDirectoryIfAbsent(TEXT(LKD_SOUNDS));
-  // CreateDirectoryIfAbsent(TEXT(LKD_BITMAPS));
 
   XCSoarGetOpts(lpCmdLine);
 

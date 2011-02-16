@@ -57,6 +57,7 @@ extern TCHAR *	gmfbasename();
 extern int		GetGlobalModelName();
 extern void		SmartGlobalModelType();
 extern short		InstallSystem();
+extern bool		CheckRootDir();
 extern bool		CheckDataDir();
 extern bool		CheckLanguageDir();
 extern bool		CheckRegistryProfile();
