@@ -2178,7 +2178,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_OAT:
 			value=GPS_INFO.OutsideAirTemperature;
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			if (value<1||value>100) {
+			if (value<-50||value>100) {
 				wsprintf(BufferValue, TEXT("---"));
 			} else {
                 	        sprintf(text,"%.0lf",value);

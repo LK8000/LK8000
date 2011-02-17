@@ -2,25 +2,31 @@ WHATS NEW IN 2.1b
 updated 110214
 
 VERSION 2.1x
-------------
+======================================================================================
 
 NEW
 
 - Task declaration for LX Nano, LX Colibri
 - Transparent Variometer Bar (options selectable inside variometer bar color config)
+- New custom device LK8EX1 for external instruments sending baro and vario to LK
 
 CHANGES
 
 - Heap space memory check  (TO USE!)
 - Center area for nearest pages selection is enlarged
+- Startup sequence will issue more detailed messages if directories are missing,
+  pointing the user to the real problem and solution
 
 BUGFIX
 - 2.1b problem with tokens over 999
 - 2.1b bug DSX coordinates in task declaration (not a Mat's bug! Specs were wrong).
 - 2.1b bug Battery Level warnings would crash the software
+- OAT Outside Air Temperature not shown below 1 C degree. Now valid from -50 to 99C
+
+
 
 VERSION 2.1b
-------------
+======================================================================================
 
 NEW 
 

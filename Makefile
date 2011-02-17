@@ -318,6 +318,7 @@ DEVS	:=\
 	$(SRC)/devIlec.cpp \
 	$(SRC)/devDSX.cpp \
 	$(SRC)/devFlytec.cpp \
+	$(SRC)/devLKext1.cpp \
 
 DLGS	:=\
 	$(SRC)/dlgAirspace.cpp \

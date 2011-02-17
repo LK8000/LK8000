@@ -59,6 +59,7 @@
 #include "devFlymasterF1.h"
 #include "devCompeo.h"
 #include "devFlytec.h"
+#include "devLK8EX1.h"
 #include "devDigifly.h"
 #include "devXCOM760.h"
 #include "devCondor.h"
@@ -2177,6 +2178,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   // ... register all supported devices
   // IMPORTANT: ADD NEW ONES TO BOTTOM OF THIS LIST
   // LKTOKEN _@M1217_ "Starting devices"
+  // Please check that the number of devices is not exceeding NUMREGDEV in device.h
   CreateProgressDialog(gettext(TEXT("_@M1217_")));
   StartupStore(TEXT(". Register serial devices%s"),NEWLINE);
   genRegister(); // MUST BE FIRST
@@ -2203,6 +2205,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   IlecRegister();
   DSXRegister();
   FlytecRegister();
+  LK8EX1Register();
   // we want to be sure that RestartCommPort works on startup ONLY after all devices are inititalized
   goInitDevice=true; // 100118
 
