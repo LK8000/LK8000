@@ -7,7 +7,7 @@ BIN=bin/$(TARGET)
 
 #
 PROFILE		:= 
-OPTIMIZE	:=-O0
+OPTIMIZE	:=-O2 -g
 #OPTIMIZE	:=-O3 -funroll-all-loops
 CONFIG_PPC2002	:=n
 CONFIG_PPC2003	:=n
@@ -301,10 +301,10 @@ SRC_FILES :=\
 	$(SRC)/TestContestKMLWrapper.cpp \
 	$(SRC)/ReplayLogger.cpp \
 	$(SRC)/Trace.cpp \
-	$(SRC)/PointGPS.cpp \
 	$(SRC)/TimeStamp.cpp \
 	$(SRC)/Tools.cpp \
-	# $(SRC)/Utils.cpp \
+	$(SRC)/Utils.cpp \
+#	$(SRC)/PointGPS.cpp \
 
 
 ####### compilation outputs
@@ -363,7 +363,7 @@ TestContest-$(TARGET).exe: TestContest-$(TARGET)-ns.exe
 	@$(NQ)echo "  STRIP   $@"
 	$(Q)$(STRIP) $< -o $@
 	$(Q)$(SIZE) $@
-	$(RM) TestContest-$(TARGET)-ns.exe
+#	$(RM) TestContest-$(TARGET)-ns.exe
 
 TestContest-$(TARGET)-ns.exe: $(OBJS)
 	@$(NQ)echo "  LINK    $@"

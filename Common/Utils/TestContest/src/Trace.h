@@ -9,76 +9,166 @@
 #ifndef __TRACE_H__
 #define __TRACE_H__
 
-#include "PointGPS.h"
+#include "Tools.h"
+#include "Utils.h"
 #include <list>
-#include <map>
+#include <set>
 #include <cmath>
+#include <iostream>
 
 
 class CTrace {
 public:
-  class CPointCost {
-    double _areaCost;
-    double _timeCost;
-    const CPointGPS * const _ptr;  // needed to make map key unique
+  class CPoint {
+    friend class CTrace;
+    
+    // data from GPS
+    double _time;
+    double _lat;
+    double _lon;
+    double _alt;
+    
   public:
-    static double Area(const CPointGPS &current, const CPointGPS &prev, const CPointGPS &next)
+    // trace optimisation values
+    double _prevDistance;
+    double _inheritedCost;
+    double _distanceCost;
+    double _timeCost;
+    
+    // list iterators
+    CPoint *_prev;
+    CPoint *_next;
+    
+    CPoint(const CPoint &);              /**< @brief Disallowed */
+    CPoint &operator=(const CPoint &);   /**< @brief Disallowed */
+    
+  public:
+    CPoint(double time, double lat, double lon, double alt, CPoint *prev):
+      _time(time), _lat(lat), _lon(lon), _alt(alt),
+      _prevDistance(prev ? prev->Distance(*this) : 0),
+      _inheritedCost(0), _distanceCost(0), _timeCost(0),
+      _prev(prev), _next(0)
     {
-      double ax = current.Longitude(); double ay = current.Latitude();
-      double bx = prev.Longitude();    double by = prev.Latitude();
-      double cx = next.Longitude();    double cy = next.Latitude();
-      return fabs(ax*(by-cy) + bx*(cy-ay) + cx*(ay-by));
+      if(_prev) {
+        _prev->_next = this;
+        if(_prev->_prev)
+          _prev->AssesCost();
+      }
     }
     
-    CPointCost(const CPointGPS &current, const CPointGPS &prev, const CPointGPS &next):
-      _areaCost(Area(current, prev, next)),
-      _timeCost(next.TimeDelta(current) + current.TimeDelta(prev)),
-      _ptr(&current)
+    ~CPoint()
     {
+      if(_prev)
+        _prev->_next = _next;
+      if(_next)
+        _next->_prev = _prev;
     }
     
-    bool operator==(const CPointCost &ref) const { return _ptr == ref._ptr; }
-    
-    bool operator<(const CPointCost &ref) const
+    void Reduce()
     {
-      if(_areaCost > ref._areaCost)
+      if(!_prev)
+        throw std::runtime_error("Reduce(), _prev");
+      if(!_next)
+        throw std::runtime_error("Reduce(), _next");
+      
+      // set new prevDistance for next point
+      _next->_prevDistance = _prevDistance + _next->_prevDistance - _distanceCost;
+      
+      // asses new costs
+      double cost = (_distanceCost + _inheritedCost) / 2.0;
+      _prev->_inheritedCost += cost;
+      _next->_inheritedCost += cost;
+    }
+    
+    void AssesCost()
+    {
+      if(!_prev)
+        throw std::runtime_error("AssesCost(), _prev");
+      if(!_next)
+        throw std::runtime_error("AssesCost(), _next");
+      
+      _distanceCost = _prevDistance + _next->_prevDistance - _next->Distance(*_prev);
+      _timeCost = TimeDelta(*_prev) + _next->TimeDelta(*this);
+    }
+    
+    bool operator==(const CPoint &ref) const { return _time == ref._time; }
+    
+    bool operator<(const CPoint &ref) const
+    {
+      // double leftCost = _distanceCost + _inheritedCost + _prev->_inheritedCost + _next->_inheritedCost;
+      // double rightCost = ref._distanceCost + ref._inheritedCost + ref._prev->_inheritedCost + ref._next->_inheritedCost;
+      // double leftCost = _distanceCost + _inheritedCost;
+      // double rightCost = ref._distanceCost + ref._inheritedCost;
+      double leftCost = _distanceCost;
+      double rightCost = ref._distanceCost;
+      if(leftCost > rightCost)
         return false;
-      else if(_areaCost < ref._areaCost)
+      else if(leftCost < rightCost)
         return true;
       else if(_timeCost > ref._timeCost)
         return false;
       else if(_timeCost < ref._timeCost)
         return true;
       else
-        return _ptr < ref._ptr;
+        return _time < ref._time;
     }
     
-    friend std::ostream &operator<<(std::ostream &stream, const CPointCost &cost);
+    double Time() const      { return _time; }
+    double Latitude() const  { return _lat; }
+    double Longitude() const { return _lon; }
+    double Altitude() const  { return _alt; }
+    
+    double Distance(const CPoint &ref) const
+    { 
+      double dist;
+      DistanceBearing(ref._lat, ref._lon, _lat, _lon, &dist, 0);
+      return dist;
+    }
+    // double Distance(const CPoint &ref) const
+    // { 
+    //   double dx = fabs(ref._lon - _lon);
+    //   double dy = fabs(ref._lat - _lat);
+    //   return sqrt(dx*dx + dy*dy);
+    // }
+
+    double TimeDelta(const CPoint &ref) const { return _time - ref._time; }
+    
+    CPoint *Next() const { return _next; }
+    
+    friend std::ostream &operator<<(std::ostream &stream, const CPoint &point);
   };
-  typedef std::list<const CPointGPS *> CGPSPointList;
   
 private:
   /**
    * @brief A map of GPS points sorted from the most importand to the least important ones.
    * 
    */
-  typedef std::map<CPointCost, CGPSPointList::iterator> CGPSPointCostMap;
+  typedef std::set<CPoint *, CPtrCmp<CPoint *> > CPointCostSet;
   
   const unsigned _maxSize;
+  unsigned _size;
   unsigned _pointCount;
-  CGPSPointList _pointList;
-  CGPSPointCostMap _pointCostMap;
+  CPointCostSet _pointCostSet;
+  CPoint *_front;
+  CPoint *_back;
+  double _length;
+  
+  CTrace(const CTrace &);              /**< @brief Disallowed */
+  CTrace &operator=(const CTrace &);   /**< @brief Disallowed */
   
 public:
   CTrace(unsigned maxSize);
   ~CTrace();
-
-  const CGPSPointList &List() const { return _pointList; }
   
-  unsigned Size() const { return _pointList.size(); }
+  unsigned Size() const { return _size; }
   unsigned PointCount() const { return _pointCount; }
   
-  void Push(const CPointGPS *point);
+  const CPoint *Front() const { return _front; }
+  
+  void Compress();
+  void Push(double time, double lat, double lon, double alt);
+  
+  void DistanceVerify() const;
   
   friend std::ostream &operator<<(std::ostream &stream, const CTrace &trace);
 };

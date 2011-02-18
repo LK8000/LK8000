@@ -7,92 +7,128 @@
 */
 
 #include "Trace.h"
-#include "Tools.h"
 #include <iostream>
 
 
 CTrace::CTrace(unsigned maxSize):
-  _maxSize(maxSize), _pointCount(0)
+  _maxSize(maxSize), _size(0), _pointCount(0), _front(0), _back(0), _length(0)
 {
 }
 
 
 CTrace::~CTrace()
 {
-  Purge(_pointList);
-}
-
-
-void CTrace::Push(const CPointGPS *point)
-{
-  _pointList.push_front(point);
-  _pointCount++;
-  
-  // first and last point are never a subject of optimization
-  if(_pointList.size() < 3)
-    return;
-  
-  // add previous point to optimization pool
-  CGPSPointList::iterator it=_pointList.begin(), it3=it, it2=++it, it1=++it;
-  _pointCostMap[CPointCost(**it2, **it1, **it3)] = it2;
-  
-  // optimise trace
-  if(_pointList.size() > _maxSize) {
-    
-    // get the worst point
-    CGPSPointCostMap::iterator worst = _pointCostMap.begin();
-    CGPSPointList::iterator it1 = worst->second, it2 = it1, worstIt = it1;
-    
-    // remove the worst point
-    _pointCostMap.erase(worst);
-    
-    // find time neighbors
-    CGPSPointList::iterator preWorstIt = ++it1;
-    CGPSPointList::iterator postWorstIt = --it2;
-    
-    // find previous time neighbor
-    CGPSPointList::iterator prepreWorstIt = ++it1;
-    if(prepreWorstIt != _pointList.end()) { 
-      CGPSPointCostMap::iterator preWorst = _pointCostMap.find(CPointCost(**preWorstIt, **prepreWorstIt, **worstIt));
-      
-      // remove previous neighbor from cost map
-      _pointCostMap.erase(preWorst);
-      
-      // insert previous neighbor to a map with new cost
-      _pointCostMap[CPointCost(**preWorstIt, **prepreWorstIt, **postWorstIt)] = preWorstIt;
-      if(preWorst == _pointCostMap.end()) {
-        std::cerr << "ERROR: preWorst not found!!" << std::endl;
-        return;
-      }
-    }
-    
-    // find next time neighbor
-    CGPSPointList::iterator postpostWorstIt = --it2;
-    if(postpostWorstIt != _pointList.end()) { 
-      CGPSPointCostMap::iterator postWorst = _pointCostMap.find(CPointCost(**postWorstIt, **worstIt, **postpostWorstIt));
-      
-      // remove next neighbor from cost map
-      _pointCostMap.erase(postWorst);
-      
-      // insert next neighbor to a map with new cost
-      _pointCostMap[CPointCost(**postWorstIt, **preWorstIt, **postpostWorstIt)] = postWorstIt;
-      if(postWorst == _pointCostMap.end()) {
-        std::cerr << "ERROR: postWorst not found!!" << std::endl;
-        return;
-      }
-    }
-    
-    // delete the worst point
-    delete *worstIt;
-    _pointList.erase(worstIt);
+  CPoint *point = _front;
+  while(point) {
+    CPoint *next = point->_next;
+    delete point;
+    point = next;
   }
 }
 
 
-std::ostream &operator<<(std::ostream &stream, const CTrace::CPointCost &cost)
+void CTrace::Compress()
 {
-  stream << "Area Cost: " << cost._areaCost * 1000 << std::endl;
-  stream << "Time Cost: " << cost._timeCost << std::endl;
+  while(_size > _maxSize) {
+    // get the worst point
+    CPointCostSet::iterator worstIt = _pointCostSet.begin();
+    CPoint *worst = *worstIt;
+    
+    // remove the worst point from optimization pool
+    std::cout << "*** Reducing: " << TimeToString(worst->_time) << std::endl;
+    _pointCostSet.erase(worstIt);
+    
+    // find time neighbors
+    CPoint *preWorst = worst->_prev;
+    CPoint *postWorst = worst->_next;
+    
+    // find previous time neighbor
+    CPoint *prepreWorst = preWorst->_prev;
+    if(prepreWorst) { 
+      // remove previous neighbor
+      CPointCostSet::iterator preWorstIt = _pointCostSet.find(preWorst);
+      if(preWorstIt == _pointCostSet.end()) {
+        std::cerr << "ERROR: preWorst not found!!" << std::endl;
+        return;
+      }
+      _pointCostSet.erase(preWorstIt);
+    }
+    
+    // find next time neighbor
+    CPoint *postpostWorst = postWorst->_next;
+    if(postpostWorst) { 
+      // remove next neighbor
+      CPointCostSet::iterator postWorstIt = _pointCostSet.find(postWorst);
+      if(postWorstIt == _pointCostSet.end()) {
+        std::cerr << "ERROR: postWorst not found!!" << std::endl;
+        return;
+      }
+      _pointCostSet.erase(postWorstIt);
+    }
+    
+    // reduce and delete current point
+    worst->Reduce();
+    delete worst;
+    _size--;
+    
+    if(prepreWorst) { 
+      // insert next neighbor
+      preWorst->AssesCost();
+      _pointCostSet.insert(preWorst);
+    }
+    if(postpostWorst) { 
+      // insert previous neighbor
+      postWorst->AssesCost();
+      _pointCostSet.insert(postWorst);
+    }
+  }
+}
+
+
+void CTrace::Push(double time, double lat, double lon, double alt)
+{
+  _pointCount++;
+  
+  // add new point to a list
+  _back = new CPoint(time, lat, lon, alt, _back);
+  _length += _back->_prevDistance;
+  _size++;
+  if(!_front)
+    _front = _back;
+  
+  // first and last point are never a subject of optimization
+  if(_size < 3)
+    return;
+  
+  // add previous point to optimization pool
+  _pointCostSet.insert(_back->_prev);
+  
+  // compress the trace
+  // if(_size > _maxSize)
+  //   Compress();
+
+  CPoint *point = _front;
+  while(point) {
+    if(point->_prev) {
+      if(point->_prevDistance - point->Distance(*point->_prev) > 0.001)
+        std::cout << "point->_prevDistance: " << point->_prevDistance << " point->Distance(point->_prev): " << point->Distance(*point->_prev) << std::endl;
+    }
+    point = point->_next;
+  }
+}
+
+
+
+std::ostream &operator<<(std::ostream &stream, const CTrace::CPoint &point)
+{
+  stream << "Time:      " << TimeToString(point._time) << std::endl;
+  stream << "Latitude:  " << CoordToString(point._lat, true) << std::endl;
+  stream << "Longitude: " << CoordToString(point._lon, false) << std::endl;
+  stream << "Altitude:  " << static_cast<unsigned>(point._alt) << "m" << std::endl;
+  stream << "Prev distance:  " << point._prevDistance << std::endl;
+  stream << "Inherited cost: " << point._inheritedCost << std::endl;
+  stream << "Distance Cost:  " << point._distanceCost << std::endl;
+  stream << "Time Cost:      " << point._timeCost << std::endl;
   return stream;
 }
 
@@ -105,16 +141,34 @@ std::ostream &operator<<(std::ostream &stream, const CTrace &trace)
   stream << "-------------" << std::endl;
   stream << "Time ordered:" << std::endl;
   stream << "-------------" << std::endl;
-  for(CTrace::CGPSPointList::const_iterator it=trace._pointList.begin(); it!=trace._pointList.end(); ++it)
-    stream << **it << std::endl;
+  const CTrace::CPoint *point=trace.Front();
+  do {
+    stream << *point << std::endl;
+    point = point->Next();
+  } while(point);
   
   stream << "-------------" << std::endl;
   stream << "Cost ordered:" << std::endl;
   stream << "-------------" << std::endl;
-  for(CTrace::CGPSPointCostMap::const_iterator it=trace._pointCostMap.begin(); it!=trace._pointCostMap.end(); ++it) {
-    stream << it->first;
-    stream << **it->second << std::endl;
+  for(CTrace::CPointCostSet::const_iterator it=trace._pointCostSet.begin(); it!=trace._pointCostSet.end(); ++it) {
+    stream << **it << std::endl;
   }
   
   return stream;
+}
+
+
+void CTrace::DistanceVerify() const
+{
+  CPoint *point = _front;
+  double length = 0;
+  while(point) {
+    length += point->_prevDistance + point->_inheritedCost;
+    point = point->_next;
+  }
+  if(length != _length) {
+    std::cout << "length: " << length << " _length: " << _length << std::endl;
+  }
+  else
+    std::cout << "SUCCESS!!!" << std::endl;
 }

@@ -9,6 +9,7 @@
 #ifndef __POINTGPS_H__
 #define __POINTGPS_H__
 
+#include "Utils.h"
 #include <iosfwd>
 
 
@@ -24,12 +25,12 @@ public:
   double Latitude() const { return _lat; }
   double Longitude() const { return _lon; }
   double Altitude() const { return _alt; }
-  // double Distance(const CPointGPS &ref) const
-  // { 
-  //   double dist;
-  //   DistanceBearing(ref._lat, ref._lon, _lat, _lon, &dist, 0);
-  //   return dist;
-  // }
+  double Distance(const CPointGPS &ref) const
+  { 
+    double dist;
+    DistanceBearing(ref._lat, ref._lon, _lat, _lon, &dist, 0);
+    return dist;
+  }
   double TimeDelta(const CPointGPS &ref) const { return _time - ref._time; }
   
   friend std::ostream &operator<<(std::ostream &stream, const CPointGPS &point);

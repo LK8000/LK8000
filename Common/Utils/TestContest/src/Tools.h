@@ -75,6 +75,14 @@ template<class Seq> void Purge(Seq &container)
 }
 
 
+template<class T>
+struct CPtrCmp {
+  bool operator()(const T &left, const T &right) const { return *left < *right; }
+};
+
+
+
+
 std::string TimeToString(double time);
 std::string CoordToString(double coord, bool latitude);
 
