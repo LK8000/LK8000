@@ -43,7 +43,7 @@ class CTestContest {
   static void GPSHandler(void *user, double time, double latitude, double longitude, double altitude);
   
 public:
-  CTestContest(unsigned handicap, const std::string &igcFile);
+  CTestContest(unsigned handicap, const std::string &igcFile, unsigned algorithm, unsigned traceLimit = 500);
   ~CTestContest();
   void Run();
 };

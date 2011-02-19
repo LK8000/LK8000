@@ -45,13 +45,13 @@ CTestContest::CKMLWrapper::CKMLWrapper(const std::string &path):
   _stream << "    <Style id=\"green_line\">" << std::endl;
   _stream << "      <LineStyle>" << std::endl;
   _stream << "        <color>ff00aa00</color>" << std::endl;
-  _stream << "        <width>5</width>" << std::endl;
+  _stream << "        <width>3</width>" << std::endl;
   _stream << "      </LineStyle>" << std::endl;
   _stream << "    </Style>" << std::endl;
   _stream << "    <Style id=\"yellow_line\">" << std::endl;
   _stream << "      <LineStyle>" << std::endl;
   _stream << "        <color>ff00ffff</color>" << std::endl;
-  _stream << "        <width>5</width>" << std::endl;
+  _stream << "        <width>3</width>" << std::endl;
   _stream << "      </LineStyle>" << std::endl;
   _stream << "    </Style>" << std::endl;
 }
@@ -155,27 +155,27 @@ void CTestContest::CKMLWrapper::Dump(const CTrace &trace) const
   _stream << "      </LineString>" << std::endl;
   _stream << "    </Placemark>" << std::endl;
 
-  point=trace.Front();
-  do {
-    _stream << "      <Placemark>" << std::endl;
-    _stream << "        <visibility>0</visibility>" << std::endl;
-    _stream << "        <description>" << std::endl;
-    _stream << "          <![CDATA[" << std::endl;
-    _stream << "            <b>Longitude:</b> " << CoordToString(point->Longitude(), false) << "<br>" << std::endl;
-    _stream << "            <b>Latitude:</b> " << CoordToString(point->Latitude(), true) << "<br>" << std::endl;
-    _stream << "            <b>Altitude:</b> " << std::setprecision(0) << point->Altitude() << "m" << "<br>" << std::endl;
-    _stream << "            <b>Time:</b> " << TimeToString(point->Time()) << "<br>" << std::endl;
-    _stream << "            <b>Prev distance:</b> " << point->_prevDistance << "m<br>" << std::endl;
-    _stream << "            <b>Inhertited cost:</b> " << point->_inheritedCost << "m<br>" << std::endl;
-    _stream << "            <b>Distance cost:</b> " << point->_distanceCost << "m<br>" << std::endl;
-    _stream << "            <b>Time cost:</b> " << point->_timeCost << std::endl;
-    _stream << "          ]]>"  << std::endl;
-    _stream << "        </description>"  << std::endl;
-    _stream << "        <Point>" << std::endl;
-    _stream << "          <altitudeMode>absolute</altitudeMode>" << std::endl;
-    _stream << "          <coordinates>" << std::setprecision(8) << point->Longitude() << "," << point->Latitude() << "," << point->Altitude() << "</coordinates>" << std::endl;
-    _stream << "        </Point>" << std::endl;
-    _stream << "      </Placemark>" << std::endl;
-    point = point->Next();
-  } while(point);
+  // point=trace.Front();
+  // do {
+  //   _stream << "      <Placemark>" << std::endl;
+  //   _stream << "        <visibility>0</visibility>" << std::endl;
+  //   _stream << "        <description>" << std::endl;
+  //   _stream << "          <![CDATA[" << std::endl;
+  //   _stream << "            <b>Longitude:</b> " << CoordToString(point->Longitude(), false) << "<br>" << std::endl;
+  //   _stream << "            <b>Latitude:</b> " << CoordToString(point->Latitude(), true) << "<br>" << std::endl;
+  //   _stream << "            <b>Altitude:</b> " << std::setprecision(0) << point->Altitude() << "m" << "<br>" << std::endl;
+  //   _stream << "            <b>Time:</b> " << TimeToString(point->Time()) << "<br>" << std::endl;
+  //   _stream << "            <b>Prev distance:</b> " << point->_prevDistance << "m<br>" << std::endl;
+  //   _stream << "            <b>Inhertited cost:</b> " << point->_inheritedCost << "m<br>" << std::endl;
+  //   _stream << "            <b>Distance cost:</b> " << point->_distanceCost << "m<br>" << std::endl;
+  //   _stream << "            <b>Time cost:</b> " << point->_timeCost << std::endl;
+  //   _stream << "          ]]>"  << std::endl;
+  //   _stream << "        </description>"  << std::endl;
+  //   _stream << "        <Point>" << std::endl;
+  //   _stream << "          <altitudeMode>absolute</altitudeMode>" << std::endl;
+  //   _stream << "          <coordinates>" << std::setprecision(8) << point->Longitude() << "," << point->Latitude() << "," << point->Altitude() << "</coordinates>" << std::endl;
+  //   _stream << "        </Point>" << std::endl;
+  //   _stream << "      </Placemark>" << std::endl;
+  //   point = point->Next();
+  // } while(point);
 }

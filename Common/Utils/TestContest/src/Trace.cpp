@@ -9,10 +9,15 @@
 #include "Trace.h"
 #include <iostream>
 
+unsigned CTrace::_maxSize;
+unsigned CTrace::_algorithm;
 
-CTrace::CTrace(unsigned maxSize):
-  _maxSize(maxSize), _size(0), _pointCount(0), _front(0), _back(0), _length(0)
+
+CTrace::CTrace(unsigned maxSize, unsigned algorithm):
+  _size(0), _pointCount(0), _front(0), _back(0), _length(0)
 {
+  _maxSize = maxSize;
+  _algorithm = algorithm;
 }
 
 
@@ -104,17 +109,17 @@ void CTrace::Push(double time, double lat, double lon, double alt)
   _pointCostSet.insert(_back->_prev);
   
   // compress the trace
-  // if(_size > _maxSize)
-  //   Compress();
+  if(_size > _maxSize)
+    Compress();
 
-  CPoint *point = _front;
-  while(point) {
-    if(point->_prev) {
-      if(point->_prevDistance - point->Distance(*point->_prev) > 0.001)
-        std::cout << "point->_prevDistance: " << point->_prevDistance << " point->Distance(point->_prev): " << point->Distance(*point->_prev) << std::endl;
-    }
-    point = point->_next;
-  }
+  // CPoint *point = _front;
+  // while(point) {
+  //   if(point->_prev) {
+  //     if(point->_prevDistance - point->Distance(*point->_prev) > 0.001)
+  //       std::cout << "point->_prevDistance: " << point->_prevDistance << " point->Distance(point->_prev): " << point->Distance(*point->_prev) << std::endl;
+  //   }
+  //   point = point->_next;
+  // }
 }
 
 

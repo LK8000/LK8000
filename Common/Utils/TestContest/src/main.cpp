@@ -20,7 +20,11 @@ int main(int argc, char *argv[])
   }
   
   try {
-    CTestContest test(Convert<unsigned>(argv[1]), argv[2]);
+    //    unsigned algorithm = CTrace::ALGORITHM_TRIANGLES | CTrace::ALGORITHM_TIME_DELTA;
+    unsigned algorithm = CTrace::ALGORITHM_DISTANCE  | CTrace::ALGORITHM_TIME_DELTA;
+    //    unsigned algorithm = CTrace::ALGORITHM_DISTANCE | CTrace::ALGORITHM_INHERITED | CTrace::ALGORITHM_TIME_DELTA;
+    unsigned size = 500;
+    CTestContest test(Convert<unsigned>(argv[1]), argv[2], algorithm, size);
     test.Run();
   }
   catch(const std::exception &ex) {

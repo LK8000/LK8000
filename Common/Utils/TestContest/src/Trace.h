@@ -19,8 +19,21 @@
 
 class CTrace {
 public:
+  enum TAlgorithm {
+    ALGORITHM_DISTANCE                = 0x0001,
+    ALGORITHM_TRIANGLES               = 0x0002,
+
+    ALGORITHM_INHERITED               = 0x0010,
+
+    ALGORITHM_TIME_DELTA              = 0x0100
+  };
+
   class CPoint {
     friend class CTrace;
+    
+    static const unsigned AVG_TASK_TIME  =  3 * 3600; // 3h
+    static const unsigned MAX_TIME_DELTA = 20 * 3600; // 20h
+    static const unsigned DAY_SECONDS    = 24 * 3600; // 24h
     
     // data from GPS
     double _time;
@@ -75,7 +88,13 @@ public:
       _next->_prevDistance = _prevDistance + _next->_prevDistance - _distanceCost;
       
       // asses new costs
-      double cost = (_distanceCost + _inheritedCost) / 2.0;
+      double distanceCost;
+      if(CTrace::_algorithm & ALGORITHM_TRIANGLES)
+        distanceCost = _prevDistance + _next->_prevDistance - _next->Distance(*_prev);
+      else
+        distanceCost = _distanceCost; 
+      
+      double cost = (distanceCost + _inheritedCost) / 2.0;
       _prev->_inheritedCost += cost;
       _next->_inheritedCost += cost;
     }
@@ -87,20 +106,37 @@ public:
       if(!_next)
         throw std::runtime_error("AssesCost(), _next");
       
-      _distanceCost = _prevDistance + _next->_prevDistance - _next->Distance(*_prev);
-      _timeCost = TimeDelta(*_prev) + _next->TimeDelta(*this);
+      if(CTrace::_algorithm & ALGORITHM_TRIANGLES) {
+        double ax = _lon; double ay = _lat;
+        double bx = _prev->_lon;    double by = _prev->_lat;
+        double cx = _next->_lon;    double cy = _next->_lat;
+        _distanceCost = fabs(ax*(by-cy) + bx*(cy-ay) + cx*(ay-by));
+      }
+      else {
+        _distanceCost = _prevDistance + _next->_prevDistance - _next->Distance(*_prev);
+      }
+      _timeCost = TimeDelta(*_prev);// + _next->TimeDelta(*this);
     }
     
     bool operator==(const CPoint &ref) const { return _time == ref._time; }
     
     bool operator<(const CPoint &ref) const
     {
-      // double leftCost = _distanceCost + _inheritedCost + _prev->_inheritedCost + _next->_inheritedCost;
-      // double rightCost = ref._distanceCost + ref._inheritedCost + ref._prev->_inheritedCost + ref._next->_inheritedCost;
-      // double leftCost = _distanceCost + _inheritedCost;
-      // double rightCost = ref._distanceCost + ref._inheritedCost;
-      double leftCost = _distanceCost;
-      double rightCost = ref._distanceCost;
+      double leftCost = 0;
+      double rightCost = 0;
+      
+      leftCost += _distanceCost;
+      rightCost += ref._distanceCost;
+      
+      if(CTrace::_algorithm & ALGORITHM_INHERITED) {
+        leftCost += _inheritedCost;
+        rightCost += ref._inheritedCost;
+      }
+      if(CTrace::_algorithm & ALGORITHM_TIME_DELTA) {
+        leftCost *= _timeCost;
+        rightCost *= ref._timeCost;
+      }
+      
       if(leftCost > rightCost)
         return false;
       else if(leftCost < rightCost)
@@ -130,8 +166,18 @@ public:
     //   double dy = fabs(ref._lat - _lat);
     //   return sqrt(dx*dx + dy*dy);
     // }
-
-    double TimeDelta(const CPoint &ref) const { return _time - ref._time; }
+    
+    double TimeDelta(const CPoint &ref) const
+    {
+      double delta = _time - ref._time;
+      if(delta < 0) {
+        if(delta < -(DAY_SECONDS - MAX_TIME_DELTA))
+          delta += DAY_SECONDS;
+        else
+          std::cerr << "Delta time calculation error: " << delta << std::endl;
+      }
+      return delta;
+    }
     
     CPoint *Next() const { return _next; }
     
@@ -145,7 +191,8 @@ private:
    */
   typedef std::set<CPoint *, CPtrCmp<CPoint *> > CPointCostSet;
   
-  const unsigned _maxSize;
+  static unsigned _maxSize;
+  static unsigned _algorithm;
   unsigned _size;
   unsigned _pointCount;
   CPointCostSet _pointCostSet;
@@ -157,7 +204,7 @@ private:
   CTrace &operator=(const CTrace &);   /**< @brief Disallowed */
   
 public:
-  CTrace(unsigned maxSize);
+  CTrace(unsigned maxSize, unsigned algorithm);
   ~CTrace();
   
   unsigned Size() const { return _size; }

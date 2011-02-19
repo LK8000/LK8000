@@ -4,12 +4,12 @@
 #include <iomanip>
 
 
-CTestContest::CTestContest(unsigned handicap, const std::string &igcFile):
+CTestContest::CTestContest(unsigned handicap, const std::string &igcFile, unsigned algorithm, unsigned traceLimit /* = 500 */):
   _handicap(handicap),
   _igcFile(igcFile),
   _replay(CReplayLogger::Instance()),
   _kml(igcFile + ".kml"),
-  _trace(500)
+  _trace(traceLimit, algorithm)
 {
   std::wstring wname(_igcFile.begin(), _igcFile.end());
   _replay.Filename(wname.c_str());
