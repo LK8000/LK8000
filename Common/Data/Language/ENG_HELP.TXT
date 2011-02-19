@@ -1365,6 +1365,11 @@ Default is 60%.
 ATTENTION: some devices do not support opacity control. In this case, opacity has no effect
 and the bottom bar will be always full black or full white.
 
+@901
+[Font Renderer]
+Anti Aliasing or ClearType Quality. On some devices like old 3850 Anti Aliasing is not working. 
+Also on PNA like MIO400 portrait mode is better visible with Cleartype selected.
+
 @9999
 No help available on this item!
 

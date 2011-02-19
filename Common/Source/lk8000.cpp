@@ -480,6 +480,7 @@ bool ActiveMap=true;
 short GlideBarMode=0;
 short OverlaySize=0;
 short BarOpacity=255; // bottom bar transparency if available, black by default
+short FontRenderer=0;
 short ArrivalValue=0;
 short NewMapDeclutter=0;
 short Shading=1;
@@ -2383,7 +2384,7 @@ void ApplyClearType(LOGFONT *logfont) {
 
   // this has to be checked on PPC and old 2002 CE devices: using ANTIALIASED quality could be better
   // 110120  .. and in fact on ppc2002 no cleartype available
-  logfont->lfQuality = LKFONT_QUALITY;
+  logfont->lfQuality = GetFontRenderer(); //was logfont->lfQuality = LKFONT_QUALITY;
 }
 
 bool IsNullLogFont(LOGFONT logfont) {

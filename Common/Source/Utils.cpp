@@ -291,6 +291,7 @@ const TCHAR szRegistryLKTopoZoomCat110[]= TEXT("LKTopoZoomCat110");
 const TCHAR szRegistryLKMaxLabels[]= TEXT("LKMaxLabels");
 const TCHAR szRegistryOverlaySize[]= TEXT("OverlaySize");
 const TCHAR szRegistryBarOpacity[]= TEXT("BarOpacity");
+const TCHAR szRegistryFontRenderer[]= TEXT("FontRenderer");
 const TCHAR szRegistryPGGateIntervalTime[]= TEXT("PGGateIntervalTime");
 const TCHAR szRegistryPGStartOut[]= TEXT("PGStartOut");
 
@@ -1047,6 +1048,10 @@ void ReadRegistrySettings(void)
   Temp = 60; // black bottom bar by default
   GetFromRegistry(szRegistryBarOpacity,&Temp); 
   BarOpacity = Temp;
+  
+  Temp = 0; 
+  GetFromRegistry(szRegistryFontRenderer,&Temp); 
+  FontRenderer = Temp;
 
   Temp = 0;
   GetFromRegistry(szRegistryGpsAltitudeOffset,&Temp); 

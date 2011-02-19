@@ -1561,25 +1561,25 @@ void InitNewMap()
 		break;
   }
 
-  logfontTarget.lfQuality = LKFONT_QUALITY; 
-  logfontBig.lfQuality = LKFONT_QUALITY; 
-  logfontValue.lfQuality = LKFONT_QUALITY; 
-  logfontTitle.lfQuality = LKFONT_QUALITY; 
-  logfontMap.lfQuality = LKFONT_QUALITY; 
-  logfontTitleNavbox.lfQuality = LKFONT_QUALITY; 
-  logfontUnit.lfQuality = LKFONT_QUALITY; 
-  logfontMedium.lfQuality = LKFONT_QUALITY; 
-  logfontSmall.lfQuality = LKFONT_QUALITY; 
-  logfontInfoBig.lfQuality = LKFONT_QUALITY; 
-  logfontInfoBigItalic.lfQuality = LKFONT_QUALITY; 
-  logfontInfoNormal.lfQuality = LKFONT_QUALITY; 
-  logfontInfoSmall.lfQuality = LKFONT_QUALITY; 
-  logfontSymbol.lfQuality = LKFONT_QUALITY; 
+  logfontTarget.lfQuality = GetFontRenderer(); 
+  logfontBig.lfQuality = GetFontRenderer(); 
+  logfontValue.lfQuality = GetFontRenderer(); 
+  logfontTitle.lfQuality = GetFontRenderer(); 
+  logfontMap.lfQuality = GetFontRenderer(); 
+  logfontTitleNavbox.lfQuality = GetFontRenderer(); 
+  logfontUnit.lfQuality = GetFontRenderer(); 
+  logfontMedium.lfQuality = GetFontRenderer(); 
+  logfontSmall.lfQuality = GetFontRenderer(); 
+  logfontInfoBig.lfQuality = GetFontRenderer(); 
+  logfontInfoBigItalic.lfQuality = GetFontRenderer(); 
+  logfontInfoNormal.lfQuality = GetFontRenderer(); 
+  logfontInfoSmall.lfQuality = GetFontRenderer(); 
+  logfontSymbol.lfQuality = GetFontRenderer(); 
   logfontSymbol.lfCharSet = SYMBOL_CHARSET; // careful
-  logfontPanelBig.lfQuality= LKFONT_QUALITY;
-  logfontPanelMedium.lfQuality= LKFONT_QUALITY;
-  logfontPanelSmall.lfQuality= LKFONT_QUALITY;
-  logfontPanelUnit.lfQuality= LKFONT_QUALITY;
+  logfontPanelBig.lfQuality= GetFontRenderer();
+  logfontPanelMedium.lfQuality= GetFontRenderer();
+  logfontPanelSmall.lfQuality= GetFontRenderer();
+  logfontPanelUnit.lfQuality= GetFontRenderer();
 
   LK8TargetFont	= CreateFontIndirect (&logfontTarget); 
   LK8BigFont	= CreateFontIndirect (&logfontBig);
@@ -4262,6 +4262,16 @@ void ClubForbiddenMsg() {
 	_T("CLUB DEVICE"), 
 	MB_OK|MB_ICONEXCLAMATION);
         return;
+}
+
+int GetFontRenderer() // Karim
+{
+  if (FontRenderer == 0)
+  {
+    return ANTIALIASED_QUALITY;
+  }
+  else return CLEARTYPE_COMPAT_QUALITY;
+
 }
 
 

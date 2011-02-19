@@ -1759,6 +1759,18 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpFontRenderer"));
+  if (wp) {
+    DataFieldEnum* dfe;
+    dfe = (DataFieldEnum*)wp->GetDataField();
+	// LKTOKEN  _@M955_ = "ClearType" 
+    dfe->addEnumText(gettext(TEXT("_@M955_")));
+	// LKTOKEN  _@M956_ = "Anti Aliasing" 
+    dfe->addEnumText(gettext(TEXT("_@M956_")));
+    dfe->Set(FontRenderer);
+    wp->RefreshDisplay();
+  }
+  
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyAltitudeMode"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -4028,6 +4040,17 @@ void dlgConfigurationShowModal(void){
     if (BarOpacity != wp->GetDataField()->GetAsInteger()*5 ) {
 	BarOpacity= wp->GetDataField()->GetAsInteger() * 5;
       SetToRegistry(szRegistryBarOpacity, BarOpacity);
+      changed = true;
+    }
+  }
+  
+  wp = (WndProperty*)wf->FindByName(TEXT("prpFontRenderer"));
+  if (wp) {
+    if (FontRenderer != wp->GetDataField()->GetAsInteger() ) 
+    {
+	    FontRenderer = wp->GetDataField()->GetAsInteger();
+      SetToRegistry(szRegistryFontRenderer, FontRenderer);
+      requirerestart = true;
       changed = true;
     }
   }

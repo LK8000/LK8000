@@ -579,6 +579,9 @@
 <WndProperty Name="prpAutoSoundVolume" Caption="_@M110_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H212_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>
+<WndProperty Name="prpFontRenderer" Caption="_@M954_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H901">
+<DataField name="" DataType="enum"/>
+</WndProperty>
 <WndProperty Name="prpEngineeringMenu" Caption="_@M260_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H213_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>

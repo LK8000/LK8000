@@ -952,6 +952,9 @@ _@M950_ "BottomBar Opacity "
 _@M951_ "Cannot stop RX thread!"
 _@M952_ "Cannot write data to Port!"
 _@M953_ "Transparent"
+_@M954_ "Font Renderer "
+_@M955_ "ClearType"
+_@M956_ "Anti Aliasing"
 
 #
 # Infoboxes in Description / Tile order. 
