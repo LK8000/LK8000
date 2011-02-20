@@ -9,6 +9,7 @@
 #include "Trace.h"
 #include <iostream>
 
+
 unsigned CTrace::_maxSize;
 unsigned CTrace::_algorithm;
 
@@ -40,7 +41,6 @@ void CTrace::Compress()
     CPoint *worst = *worstIt;
     
     // remove the worst point from optimization pool
-    std::cout << "*** Reducing: " << TimeToString(worst->_time) << std::endl;
     _pointCostSet.erase(worstIt);
     
     // find time neighbors
@@ -176,4 +176,69 @@ void CTrace::DistanceVerify() const
   }
   else
     std::cout << "SUCCESS!!!" << std::endl;
+}
+
+
+// void CTrace::Solve()
+// {
+//   typedef std::vector<CPoint *> CSolution;
+//   CSolution solution;
+//   unsigned wpNum;
+  
+//   CPoint *point = _front;
+//   while(point) {
+//     CPoint *nextPoint = point->_next;
+//     while(nextPoint) {
+//       point->_linkSet.insert(CPoint::CLink(*nextPoint, point->Distance(*nextPoint)));
+//       nextPoint = nextPoint->_next;
+//     }
+//     point = point->_next;
+//   }
+
+//   point = _front;
+//   while(point) {
+//     point->_dijkstraWeight = 0;
+//     point = point->_next;
+//   }
+  
+//   if(solution.size() == wpNum) {
+    
+//   }
+// }
+
+
+void CTrace::Solve()
+{
+  CPoint *point = _front;
+  while(point) {
+    point->_pathLength = -1;
+    point->_pathPrevious = 0;
+    point = point->_next;
+  }
+  
+  front->_pathLength = 0;
+  
+  typedef std::set<CPoint *, CDijkstraCmp> CDijkstraSet;
+  CDijkstraSet dijkstra;
+  CPoint *point = _front;
+  while(point) {
+    dijkstra.insert(point);
+    point = point->_next;
+  }
+  while(!dijkstra.empty()) {
+    CDijkstraSet::iterator it = dijkstra.begin();
+    point = *it;
+    if(point->_pathLength == -1)
+      // point inaccessible;
+      break;
+
+    dijkstra.erase(it);
+    
+    CPoint *nextPoint = point->_next;
+    while(nextPoint) {
+      
+      
+      nextPoint = nextPoint->_next;
+    }
+  }
 }

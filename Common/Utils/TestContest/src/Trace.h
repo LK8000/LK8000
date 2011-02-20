@@ -15,6 +15,7 @@
 #include <set>
 #include <cmath>
 #include <iostream>
+#include <limits>
 
 
 class CTrace {
@@ -29,11 +30,47 @@ public:
   };
 
   class CPoint {
+    struct CDijkstraCmp {
+      bool operator()(const CPoint *left, const CPoint *right)
+      {
+        if(left->_pathLength > right->_pathLength)
+          return true;
+        if(left->_pathLength < right->_pathLength)
+          return false;
+        return left->_time < right->_dest._time;
+      }
+    };
+    
+
+    class CLink {
+      friend class CTrace;
+      CPoint &_dest;
+      float _distance;
+    public:
+      CLink(CPoint &dest, double distance):
+        _dest(dest), _distance(distance) {}
+      
+      bool operator==(const CLink &ref) const { return &_dest == &ref._dest; }
+      
+      bool operator<(const CLink &ref) const
+      {
+        if(_distance > ref._distance)
+          return true;
+        else if(_distance < ref._distance)
+          return false;
+        else
+          return _dest._time < ref._dest._time;
+      }
+    };
+    typedef std::set<CLink> CLinkSet;
+    
     friend class CTrace;
     
     static const unsigned AVG_TASK_TIME  =  3 * 3600; // 3h
     static const unsigned MAX_TIME_DELTA = 20 * 3600; // 20h
     static const unsigned DAY_SECONDS    = 24 * 3600; // 24h
+    //    static const float MAX_LINKS_RATIO   = 0.2;
+    static const double DOUBLE_INFINITY  = numeric_limits<double>::max();
     
     // data from GPS
     double _time;
@@ -47,10 +84,14 @@ public:
     double _inheritedCost;
     double _distanceCost;
     double _timeCost;
-    
+
     // list iterators
     CPoint *_prev;
     CPoint *_next;
+    
+    double _pathLength;
+    CPoint *_pathPrevious;
+    //    CLinkSet _linkSet;
     
     CPoint(const CPoint &);              /**< @brief Disallowed */
     CPoint &operator=(const CPoint &);   /**< @brief Disallowed */
@@ -146,7 +187,7 @@ public:
       else if(_timeCost < ref._timeCost)
         return true;
       else
-        return _time < ref._time;
+        return _time > ref._time;
     }
     
     double Time() const      { return _time; }
@@ -216,6 +257,8 @@ public:
   void Push(double time, double lat, double lon, double alt);
   
   void DistanceVerify() const;
+
+  void Solve();
   
   friend std::ostream &operator<<(std::ostream &stream, const CTrace &trace);
 };

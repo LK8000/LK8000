@@ -110,7 +110,8 @@ void CTestContest::Run()
   }
   
   std::cout << std::endl;
-  std::cout << _trace << std::endl;
+  //  std::cout << _trace << std::endl;
   
-  _trace.DistanceVerify();
+  //  _trace.DistanceVerify();
+  _trace.Solve();
 }
