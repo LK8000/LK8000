@@ -112,7 +112,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   static int ySizeLK8TargetFont;
   static short tlenFullScreen;
   static short tlenHalfScreen;
-  #if NEWPNAV
   // position Y of text in navboxes
   static short yRow2Title=0;	// higher row in portrait, unused in landscape
   static short yRow2Value=0;
@@ -120,14 +119,11 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   static short yRow1Title=0;	// lower row in portrait, the only one in landscape
   static short yRow1Value=0;
   static short yRow1Unit=0;
-  #endif
 
   #ifndef OLDSPLITTER
   static int splitoffset;
 
-  #if NEWPNAV
   static int splitoffset2; // second raw, which really is the first from top!
-  #endif
 
   #endif
 
@@ -187,7 +183,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
 	// All these values are fine tuned for font/resolution/screenmode.
 	// there is no speed issue inside doinit. take your time.
-	#if NEWPNAV
 	SelectObject(hdc, LK8TitleNavboxFont); 
 	GetTextExtentPoint(hdc, Tdummy, _tcslen(Tdummy), &TextSize);
 	int syTitle = TextSize.cy;
@@ -230,43 +225,26 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 			yRow1Title =  rc.bottom-(syValue/2) - syTitle;
 			break;
 	}
-	#endif
 	if ( ScreenSize < (ScreenSize_t)sslandscape ) {
 		switch (ScreenSize) {			// portrait fullscreen
 			case (ScreenSize_t)ss240x320:
-				#if NEWPNAV
 				tlenFullScreen=8;
-				#else
-				tlenFullScreen=6;
-				#endif
 				// ST 1/3
 				_tcscpy(StartGateNameFS,_T("ST "));
 				break;
 			default:
 				_tcscpy(StartGateNameFS,_T("ST "));
-				#if NEWPNAV
 				tlenFullScreen=8;
-				#else
-				tlenFullScreen=6;
-				#endif
 				break;
 		}
 		switch (ScreenSize) {			// portrait not fullscreen
 			case (ScreenSize_t)ss240x320:
 				_tcscpy(StartGateNameHS,_T("ST "));
-				#if NEWPNAV
 				tlenHalfScreen=8;
-				#else
-				tlenHalfScreen=6;
-				#endif
 				break;
 			default:
 				_tcscpy(StartGateNameHS,_T("ST "));
-				#if NEWPNAV
 				tlenHalfScreen=8;
-				#else
-				tlenHalfScreen=6;
-				#endif
 				break;
 		}
 	} else  {
@@ -317,7 +295,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 	}
 	
 	#ifndef OLDSPLITTER
-	#if NEWPNAV
 	if (ScreenLandscape) {
 		iconsize=NIBLSCALE(26);
 		splitoffset= ((rc.right-iconsize)-rc.left)/splitter;
@@ -327,10 +304,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		// splitoffset2= (rc.right-rc.left)/splitter;
 		splitoffset2= splitoffset;
 	}
-	#else
-	iconsize=NIBLSCALE(26);
-	splitoffset= ((rc.right-iconsize)-rc.left)/splitter;
-	#endif
 	#endif
 #endif
 	doinit=false; 
@@ -591,7 +564,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
 
 			SelectObject(hdc, bigFont);
-			#if NEWPNAV
 			if (!ISGAAIRCRAFT) {
 				if (ScreenLandscape)
 					LKWriteText(hdc, BufferValue, (rc.right+rc.left)/2, rc.top+ NIBLSCALE(15), 0, 
@@ -600,9 +572,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 					LKWriteText(hdc, BufferValue, ((rc.right+rc.left)/3)*2, rc.top+ NIBLSCALE(15), 0, 
 						WTMODE_OUTLINED, WTALIGN_CENTER, overcolor, true);
 			}
-			#else
-			LKWriteText(hdc, BufferValue, (rc.right+rc.left)/2, rc.top+ NIBLSCALE(15), 0, WTMODE_OUTLINED, WTALIGN_CENTER, overcolor, true);
-			#endif
 		}
 
 		// Draw efficiency required and altitude arrival for destination waypoint
@@ -944,16 +913,7 @@ drawOverlay:
 	LKFormatValue(LK_TIME_LOCALSEC, false, BufferValue, BufferUnit, BufferTitle);
 
 	if ( ScreenSize < (ScreenSize_t)sslandscape ) {
-		#ifndef NEWPNAV	// 101005 Do not display CLOCK in portrait mode anymore
-		if (MapWindow::IsMapFullScreen() ) {
-			// SelectObject(hdc, LK8MediumFont);  091125
-			SelectObject(hdc, LK8ValueFont); 
-			LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(10),rc.top+NIBLSCALE(1), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
-		} else {
-			SelectObject(hdc, LK8MediumFont); 
-			LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(27),rc.top+NIBLSCALE(1), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
-		}
-		#endif
+		// 101005 Do not display CLOCK in portrait mode anymore
 	} else {
 		if (OverlayClock || (ISPARAGLIDER && UseGates()) ) {
 			if (MapWindow::IsMapFullScreen() ) {
@@ -1064,14 +1024,12 @@ Drawbottom:
  #else
   FillRect(hdc,&nrc, hB); 
   #if 0
-  #if NEWPNAV
   if (!ScreenLandscape) {
 	POINT pL, pR;
 	pL.y=pR.y= rc.bottom - (BottomSize/2);
 	pL.x=rc.left; pR.x=rc.right;
 	 _DrawLine(hdc, PS_SOLID, 0, pL, pR, RGB_LIGHTGREEN, rc);
   }
-  #endif
   #endif
  #endif
 #endif
@@ -1177,17 +1135,12 @@ Drawbottom:
   #else
   rcx=rc.left+(splitoffset/2);
   #endif
-  #if NEWPNAV
   if (ScreenLandscape) {
 	#include "LKMW3include_navbox1.cpp"
   } else {
 	#include "LKMW3include_navbox2.cpp"
   }
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
-  #else
-  #include "LKMW3include_navbox1.cpp"
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy-TextSize.cy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
-  #endif
 
   /*
    *   SECOND VALUE
@@ -1221,7 +1174,6 @@ Drawbottom:
 		break;
 
 	case BM_ALT:
-		#if NEWPNAV
 		if (ScreenLandscape) {
 			showunit=LKFormatValue(LK_BESTALTERN_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
 			wcscpy(BufferTitle,_T("<<<"));
@@ -1229,10 +1181,6 @@ Drawbottom:
 			showunit=LKFormatValue(LK_ALTERN1_GR, true, BufferValue, BufferUnit, BufferTitle);
 			BufferTitle[7]='\0';
 		}
-		#else
-		showunit=LKFormatValue(LK_BESTALTERN_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
-		wcscpy(BufferTitle,_T("<<<"));
-		#endif
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(2);
@@ -1269,17 +1217,12 @@ Drawbottom:
   #else
   rcx+=splitoffset;
   #endif
-  #if NEWPNAV
   if (ScreenLandscape) {
 	#include "LKMW3include_navbox1.cpp"
   } else {
 	#include "LKMW3include_navbox2.cpp"
   }
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
-  #else
-  #include "LKMW3include_navbox1.cpp"
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy-TextSize.cy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
-  #endif
 
   /*
    *   THIRD VALUE
@@ -1357,17 +1300,11 @@ Drawbottom:
 		#endif
 		break;
 	case BM_ALT:
-		#if NEWPNAV
 		if (ScreenLandscape)
 			showunit=LKFormatValue(LK_ALTERN1_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
 		else
 			showunit=LKFormatValue(LK_ALTERN2_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
 		BufferTitle[7]='\0';
-		#else
-		showunit=LKFormatValue(LK_ALTERN1_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
-		BufferTitle[7]='\0';
-		// showunit=false; 100221
-		#endif
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(3);
@@ -1404,17 +1341,12 @@ Drawbottom:
   #else
   rcx+=splitoffset;
   #endif
-  #if NEWPNAV
   if (ScreenLandscape) {
 	#include "LKMW3include_navbox1.cpp"
   } else {
 	#include "LKMW3include_navbox2.cpp"
   }
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
-  #else
-  #include "LKMW3include_navbox1.cpp"
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy-TextSize.cy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
-  #endif
 
   /*
    *   FOURTH VALUE
@@ -1459,7 +1391,6 @@ Drawbottom:
   		showunit=false;
 		break;
 	case BM_ALT:
-		#if NEWPNAV
 		if (ScreenLandscape) {
 			showunit=LKFormatValue(LK_ALTERN1_ARRIV, true, BufferValue, BufferUnit, BufferTitle); // 100221
 			wcscpy(BufferTitle,_T("<<<"));
@@ -1467,10 +1398,6 @@ Drawbottom:
 			showunit=LKFormatValue(LK_BESTALTERN_ARRIV, true, BufferValue, BufferUnit, BufferTitle); // 100221
 			wcscpy(BufferTitle,_T(""));
 		}
-		#else
-		showunit=LKFormatValue(LK_ALTERN1_ARRIV, true, BufferValue, BufferUnit, BufferTitle); // 100221
-		wcscpy(BufferTitle,_T("<<<"));
-		#endif
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(4);
@@ -1507,32 +1434,19 @@ Drawbottom:
   #include "LKMW3include_navbox1.cpp"
   #else
 
-  #if NEWPNAV
   if (ScreenLandscape) {
 	rcx+=splitoffset;
   }else {
 	rcx=rc.left+(splitoffset2/2);
   }
   #include "LKMW3include_navbox1.cpp"
-  #else
-  rcx+=splitoffset;
-  #include "LKMW3include_navbox1.cpp"
   #endif
-  #endif
-  #if NEWPNAV
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
-  #else
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy-TextSize.cy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
-  #endif
 
   /*
    *   FIFTH VALUE
    */
-  #if NEWPNAV
   if (ScreenLandscape && (splitter<5)) goto EndOfNavboxes;
-  #else
-  if (splitter<5) goto EndOfNavboxes;
-  #endif
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
@@ -1572,7 +1486,6 @@ Drawbottom:
 		showunit=LKFormatValue(LK_EMPTY, true, BufferValue, BufferUnit, BufferTitle); // 100221
 		break;
 	case BM_ALT:
-		#if NEWPNAV
 		if (ScreenLandscape) {
 			showunit=LKFormatValue(LK_ALTERN2_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
 			BufferTitle[7]='\0';
@@ -1580,10 +1493,6 @@ Drawbottom:
 			showunit=LKFormatValue(LK_ALTERN1_ARRIV, false, BufferValue, BufferUnit, BufferTitle); // 100221
 			wcscpy(BufferTitle,_T(""));
 		}
-		#else
-		showunit=LKFormatValue(LK_ALTERN2_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
-		BufferTitle[7]='\0';
-		#endif
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(5);
@@ -1620,33 +1529,20 @@ Drawbottom:
   #include "LKMW3include_navbox1.cpp"
   #else
 
-  #if NEWPNAV
   if (ScreenLandscape) {
 	rcx+=splitoffset;
   }else {
 	rcx+=splitoffset2;
   }
   #include "LKMW3include_navbox1.cpp"
-  #else
-  rcx+=splitoffset;
-  #include "LKMW3include_navbox1.cpp"
-  #endif
 
   #endif
-  #if NEWPNAV
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
-  #else
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(3), rcy-TextSize.cy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
-  #endif
 
   /*
    *   SIXTH VALUE
    */
-  #if NEWPNAV
   if (ScreenLandscape && (splitter<6)) goto EndOfNavboxes;
-  #else
-  if (splitter<6) goto EndOfNavboxes;
-  #endif
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
@@ -1682,14 +1578,10 @@ Drawbottom:
 		break;
 	case BM_ALT:
 		showunit=LKFormatValue(LK_ALTERN2_ARRIV, true, BufferValue, BufferUnit, BufferTitle); // 100221
-		#if NEWPNAV
 		if (ScreenLandscape)
 			wcscpy(BufferTitle,_T("<<<"));
 		else
 			wcscpy(BufferTitle,_T(""));
-		#else
-		wcscpy(BufferTitle,_T("<<<"));
-		#endif
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(6);
@@ -1726,23 +1618,14 @@ Drawbottom:
   #include "LKMW3include_navbox1.cpp"
   #else
 
-  #if NEWPNAV
   if (ScreenLandscape) {
 	rcx+=splitoffset;
   }else {
 	rcx+=splitoffset2;
   }
   #include "LKMW3include_navbox1.cpp"
-  #else
-  rcx+=splitoffset;
-  #include "LKMW3include_navbox1.cpp"
   #endif
-  #endif
-  #if NEWPNAV
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
-  #else
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(3), rcy-TextSize.cy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
-  #endif
 
   /*
    *    CLEAN UP 

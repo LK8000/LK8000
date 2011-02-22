@@ -1268,11 +1268,7 @@ void InitNewMap()
 	///////////////       Portrait  mode        ////////////////
 
 	case (ScreenSize_t)ss240x320:		// PASSED DEV-1 090701  DEV-2 101005
-		#if NEWPNAV
 		splitter=3;
-		#else
-		splitter=5;
-		#endif
 			#if (WINDOWSPC>0)
 			propGetFontSettingsFromString(TEXT("30,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontBig); // 29 600 101005
 			#else
@@ -1344,13 +1340,8 @@ void InitNewMap()
 		break;
 
 	case (ScreenSize_t)ss272x480:
-		#if NEWPNAV
 		splitter=3;
 		propGetFontSettingsFromString(TEXT("36,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontBig);
-		#else
-		splitter=5;
-		propGetFontSettingsFromString(TEXT("34,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontBig);
-		#endif
 			propGetFontSettingsFromString(TEXT("12,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontSymbol);
 			propGetFontSettingsFromString(TEXT("20,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontMedium);
 			propGetFontSettingsFromString(TEXT("8,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), &logfontSmall);
@@ -1398,11 +1389,7 @@ void InitNewMap()
 // InfoNormal:  Dist Eff ReqE top line
 
 	case (ScreenSize_t)ss480x640:		// PASSED DEV-1 090701 VENTA
-		#if NEWPNAV
 		splitter=3;
-		#else
-		splitter=5;
-		#endif
 		#if (WINDOWSPC>0)
 		propGetFontSettingsFromString(TEXT("60,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontBig);
 		#else
@@ -1461,11 +1448,7 @@ void InitNewMap()
 		break;
 
 	case (ScreenSize_t)ss480x800:		// 100410
-		#if NEWPNAV
 		splitter=3;
-		#else
-		splitter=5;
-		#endif
 		#if (WINDOWSPC>0)
 		propGetFontSettingsFromString(TEXT("62,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontBig);
 		#else

@@ -161,9 +161,6 @@
 // new virtual waypoints
 #define NEWVIRTUALS	1
 
-// new portrait navboxes
-#define NEWPNAV		1
-
 // ew terrain manager, for shading and altitudes ex LKTEST
 #define NEWRASTER	1
 

@@ -1698,24 +1698,9 @@ void MapWindow::DrawCompass(HDC hDC, const RECT rc)
       Arrow[4].x  = 0;
       Arrow[4].y  = -11;
 
-	#if NEWPNAV
 	// no more clock, no need to have different compass position
 	Start.y = rc.top + NIBLSCALE(11); 
 	Start.x = rc.right - NIBLSCALE(11);
-	#else
-	if (InfoBoxLayout::landscape) {
-	      Start.y = rc.top + NIBLSCALE(11); 
-	      Start.x = rc.right - NIBLSCALE(11);
-	} else {
-		if (MapWindow::IsMapFullScreen() && (Look8000==(Look8000_t)lxcAdvanced) ) {
-		      Start.y = rc.top + NIBLSCALE(35); 
-		      Start.x = rc.right - NIBLSCALE(11);
-		} else {
-		      Start.y = rc.top + NIBLSCALE(11);
-		      Start.x = rc.right - NIBLSCALE(11);
-		}
-	}
-	#endif
 
       if (EnableVarioGauge && MapRectBig.right == rc.right) {
         Start.x -= InfoBoxLayout::ControlWidth;

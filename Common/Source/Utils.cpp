@@ -892,7 +892,6 @@ void ReadRegistrySettings(void)
   ExtendedVisualGlide = Temp;
 
   // Do not allow LK8000 mode be disabled. Allow only temporary disabling, and permanent setting for normal/advanced
-  #if NEWPNAV
   if (ScreenLandscape) {
 	Temp = (Look8000_t)lxcAdvanced;  
 	GetFromRegistry(szRegistryLook8000,&Temp);
@@ -903,12 +902,6 @@ void ReadRegistrySettings(void)
 	if (Temp == 0) Temp = (Look8000_t)lxcStandard;
   }
   Look8000 = Temp;
-  #else
-  Temp = (Look8000_t)lxcAdvanced;  
-  GetFromRegistry(szRegistryLook8000,&Temp);
-  if (Temp == 0) Temp = (Look8000_t)lxcAdvanced;  // FIX 091020
-  Look8000 = Temp;
-  #endif
 
   // AltArriv registry disabled 
 #if (0)
@@ -1012,15 +1005,11 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryPollingMode,&Temp);
   PollingMode = Temp;
 
-  #if NEWPNAV
   if (ScreenLandscape)
 	//Temp = (LKVarioBar_t)vBarVarioColor;
 	Temp = (LKVarioBar_t)vBarDisabled;
   else
 	Temp = (LKVarioBar_t)vBarDisabled;
-  #else
-  Temp = (LKVarioBar_t)vBarVarioColor;
-  #endif
   GetFromRegistry(szRegistryLKVarioBar,&Temp);
   LKVarioBar = Temp;
 
@@ -1144,16 +1133,11 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryTrackBar,&Temp); 
   TrackBar=Temp;
 
-  #if NEWPNAV
   if (ScreenLandscape)
 	//Temp = (GlideBarMode_t)gbFinish;
 	Temp = (GlideBarMode_t)gbDisabled;
   else
 	Temp = (GlideBarMode_t)gbDisabled;
-  #else
-  // For most of us flying cross country with long tasks, this is the correct settings.
-  Temp = (GlideBarMode_t)gbFinish;  // 100219
-  #endif
   GetFromRegistry(szRegistryGlideBarMode,&Temp); 
   GlideBarMode = Temp;
 
