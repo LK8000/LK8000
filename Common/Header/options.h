@@ -153,8 +153,6 @@
 #define AUTORIENT	1
 // PC AlphaBlending option, unavailable on PNA and PDA
 // #define ALPHABLENDING	1
-// old splitting system for bottom bar, obsoleted
-// #define OLDSPLITTER   1
 // overtarget new system
 #define OVERTARGET	1
 

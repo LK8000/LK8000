@@ -120,12 +120,10 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   static short yRow1Value=0;
   static short yRow1Unit=0;
 
-  #ifndef OLDSPLITTER
   static int splitoffset;
 
   static int splitoffset2; // second raw, which really is the first from top!
 
-  #endif
 
   #else
   static short tlen; // FIX TODO 100215 no static
@@ -166,9 +164,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   if (doinit) {
 #if LKDRAW_OPTIMIZE
 	TCHAR Tdummy[]=_T("T");
-	#ifndef OLDSPLITTER
 	int iconsize;
-	#endif
 	SelectObject(hdc, bigFont); 
 	GetTextExtentPoint(hdc, Tdummy, _tcslen(Tdummy), &TextSize);
 	ySizeLK8BigFont = TextSize.cy;
@@ -294,7 +290,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		}
 	}
 	
-	#ifndef OLDSPLITTER
 	if (ScreenLandscape) {
 		iconsize=NIBLSCALE(26);
 		splitoffset= ((rc.right-iconsize)-rc.left)/splitter;
@@ -304,7 +299,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		// splitoffset2= (rc.right-rc.left)/splitter;
 		splitoffset2= splitoffset;
 	}
-	#endif
 #endif
 	doinit=false; 
   } // end doinit
@@ -1130,11 +1124,7 @@ Drawbottom:
 		break;
   }
 
-  #if OLDSPLITTER
-  rcx=rc.left+(rc.right/(splitter*2))-NIBLSCALE(5); // FIX make it static in doinit
-  #else
   rcx=rc.left+(splitoffset/2);
-  #endif
   if (ScreenLandscape) {
 	#include "LKMW3include_navbox1.cpp"
   } else {
@@ -1212,11 +1202,7 @@ Drawbottom:
 		break;
   }
 
-  #if OLDSPLITTER
-  rcx+=(rc.right/splitter); 
-  #else
   rcx+=splitoffset;
-  #endif
   if (ScreenLandscape) {
 	#include "LKMW3include_navbox1.cpp"
   } else {
@@ -1336,11 +1322,7 @@ Drawbottom:
 		break;
   }
 
-  #if OLDSPLITTER
-  rcx+=(rc.right/splitter); 
-  #else
   rcx+=splitoffset;
-  #endif
   if (ScreenLandscape) {
 	#include "LKMW3include_navbox1.cpp"
   } else {
@@ -1429,10 +1411,6 @@ Drawbottom:
 		break;
   }
 
-  #if OLDSPLITTER
-  rcx+=(rc.right/splitter); 
-  #include "LKMW3include_navbox1.cpp"
-  #else
 
   if (ScreenLandscape) {
 	rcx+=splitoffset;
@@ -1440,7 +1418,6 @@ Drawbottom:
 	rcx=rc.left+(splitoffset2/2);
   }
   #include "LKMW3include_navbox1.cpp"
-  #endif
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
@@ -1524,10 +1501,6 @@ Drawbottom:
 		break;
   }
 
-  #if OLDSPLITTER
-  rcx+=(rc.right/splitter)-NIBLSCALE(7);  // shorter value
-  #include "LKMW3include_navbox1.cpp"
-  #else
 
   if (ScreenLandscape) {
 	rcx+=splitoffset;
@@ -1536,7 +1509,6 @@ Drawbottom:
   }
   #include "LKMW3include_navbox1.cpp"
 
-  #endif
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
@@ -1613,10 +1585,6 @@ Drawbottom:
 		break;
   }
 
-  #if OLDSPLITTER
-  rcx+=(rc.right/splitter)-NIBLSCALE(11); 
-  #include "LKMW3include_navbox1.cpp"
-  #else
 
   if (ScreenLandscape) {
 	rcx+=splitoffset;
@@ -1624,7 +1592,6 @@ Drawbottom:
 	rcx+=splitoffset2;
   }
   #include "LKMW3include_navbox1.cpp"
-  #endif
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
 
   /*
