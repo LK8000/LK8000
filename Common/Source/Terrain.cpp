@@ -1607,18 +1607,6 @@ void DrawTerrain( const HDC hdc, const RECT rc,
   (void)sunelevation; // TODO feature: sun-based rendering option
   (void)rc;
 
-  #ifdef TERRAIN_OPTIMIZE	// 100319
-  static bool flipflop=false;
-  static bool wasFullScreen=false; // 100320
-  // Handle map geometry changes, forcing calculations
-  if ( (DisplayMode == dmCircling) || MapWindow::EnablePan || (MapWindow::IsMapFullScreen() != wasFullScreen) ) {
-	flipflop=true;
-	wasFullScreen=MapWindow::IsMapFullScreen();
-  } else {
-  	if (flipflop) flipflop=false; else flipflop=true;
-  }
-  #endif
-
   if (!RasterTerrain::isTerrainLoaded()) {
     return;
   }
@@ -1643,23 +1631,6 @@ void DrawTerrain( const HDC hdc, const RECT rc,
   thighlight_b= terrain_highlight[TerrainRamp].b;
   thighlight_h= terrain_highlight[TerrainRamp].h;
 
-#ifdef TERRAIN_OPTIMIZE		
-  static int sx, sy, sz;
-  static int oldsunazimuth=1234567;
-  // Calculate color table only if azimuth changed more than 5deg
-  // if ( flipflop && ( ((int)sunazimuth != oldsunazimuth) || (RasterTerrain::render_weather))) {
-  if ( flipflop && ( ( abs((int)sunazimuth - oldsunazimuth) >5) || (RasterTerrain::render_weather))) {
-	oldsunazimuth=(int)sunazimuth;
-	double fudgeelevation = (10.0+80.0*TerrainBrightness/255.0);
-
-	sx = (int)(255*(fastcosine(fudgeelevation)*fastsine(sunazimuth)));
-	sy = (int)(255*(fastcosine(fudgeelevation)*fastcosine(sunazimuth)));
-	sz = (int)(255*fastsine(fudgeelevation));
-
-	// This is calling ColorRampLookup
-	trenderer->ColorTable();
-  }
-#else
   // step 1: calculate sunlight vector
   int sx, sy, sz;
   double fudgeelevation = (10.0+80.0*TerrainBrightness/255.0);
@@ -1670,12 +1641,8 @@ void DrawTerrain( const HDC hdc, const RECT rc,
 
   trenderer->SetShading();
   trenderer->ColorTable();
-#endif
   // step 2: fill height buffer
 
-  #ifdef TERRAIN_OPTIMIZE
-  if (flipflop)
-  #endif
   trenderer->Height(); 
 
   // step 3: calculate derivatives of height buffer
