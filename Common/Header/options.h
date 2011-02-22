@@ -122,8 +122,6 @@
  #define TOPOFASTCACHE	1
 #endif
 
-// PC AlphaBlending option, unavailable on PNA and PDA
-// #define ALPHABLENDING	1
 // overtarget new system
 #define OVERTARGET	1	
 
@@ -149,10 +147,6 @@
 #define LKOBJ			1	// expire 110401
 
 #define GASUPPORT		1	// oren's GA work
-
-#define ABLEND			1	// Alpha Blending for airspaces and probably for many other
-					// usages. Use AlphaBlendAvailable() to check, because the
-					// function is inside coredll
 
 #define MULTICALC		1	// Use multicalc approach, splitting calculation inside MapWindow
 					// thread into multiple instances, 0.5 or 0.33 Hz recommended

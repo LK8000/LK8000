@@ -29,12 +29,6 @@
 #include "LKObjects.h"
 
 
-#if ALPHABLENDING
-#if (WINDOWSPC>0)
-#include <wingdi.h>
-#endif
-#endif
-
 extern void DrawGlideCircle(HDC hdc, POINT Orig, RECT rc );
 extern void MapWaypointLabelAdd(TCHAR *Name, int X, int Y, TextInBoxMode_t Mode, int AltArivalAGL, bool inTask, 
 	bool isLandable, bool isAirport, bool isExcluded, int index);
@@ -961,7 +955,6 @@ Drawbottom:
   }
 
 
-#if ABLEND
   if (MapWindow::AlphaBlendSupported() && MapSpaceMode==MSM_MAP && BarOpacity<100) {
 	static bool initablend=true;
 	static HDC hdc2;
@@ -997,36 +990,6 @@ Drawbottom:
 	barTextColor=RGB_WHITE;
 	FillRect(hdc,&nrc, hB); 
   }
-#else
- #if ALPHABLENDING  
-  #if (WINDOWSPC>0)
-  HDC hdc2=CreateCompatibleDC(hdc);
-  HBITMAP bitmapnew=CreateCompatibleBitmap(hdc,rc.right,rc.bottom);
-  SelectObject(hdc2,bitmapnew); 
-  FillRect(hdc2,&nrc, hB); 
-
-  BLENDFUNCTION bs;
-  bs.BlendOp=AC_SRC_OVER;
-  bs.BlendFlags=0;
-  bs.SourceConstantAlpha=195;
-  bs.AlphaFormat=0;
-
-  AlphaBlend(hdc,0,rc.bottom-BottomSize,rc.right,BottomSize,hdc2,0,rc.bottom-BottomSize,rc.right,BottomSize,bs);
-  #else
-  FillRect(hdc,&nrc, hB); 
-  #endif
- #else
-  FillRect(hdc,&nrc, hB); 
-  #if 0
-  if (!ScreenLandscape) {
-	POINT pL, pR;
-	pL.y=pR.y= rc.bottom - (BottomSize/2);
-	pL.x=rc.left; pR.x=rc.right;
-	 _DrawLine(hdc, PS_SOLID, 0, pL, pR, RGB_LIGHTGREEN, rc);
-  }
-  #endif
- #endif
-#endif
 
   // NAVBOXES
 
@@ -1605,12 +1568,6 @@ EndOfNavboxes:
   #else
   ;
   #endif
-#if ALPHABLENDING
-  #if (WINDOWSPC>0)
-  DeleteObject(bitmapnew);
-  DeleteDC(hdc2);
-  #endif
-#endif
 
 } // drawbottom
 
