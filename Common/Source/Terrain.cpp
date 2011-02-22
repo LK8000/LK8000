@@ -35,10 +35,8 @@ TopologyWriter *topo_marks = NULL;
 
 bool reset_marks = false;
 
-#ifdef LKSHADING
 BYTE tshadow_r, tshadow_g, tshadow_b, tshadow_h;
 BYTE thighlight_r, thighlight_g, thighlight_b, thighlight_h;
-#endif
 
 bool RectangleIsInside(rectObj r_exterior, rectObj r_interior) {
   if ((r_interior.minx >= r_exterior.minx)&&
@@ -475,7 +473,6 @@ const COLORRAMP weather_colors[6][NUM_COLOR_RAMP_LEVELS] = {
 
 #define NUMRAMPS	13
 
-#ifdef LKSHADING
 // terrain shadowing and highlight relative to type
 // shadow to blue   is 0 0 64
 // highl  to yellow is 255 255 16
@@ -551,7 +548,6 @@ const bool terrain_minalt[NUMRAMPS] = {
 	0,	// YouSee Default
 	1 	// YouSee HiContrast
 };
-#endif
 
 const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = { 
   {
@@ -846,7 +842,6 @@ short TerrainRamp = 0;
 inline void TerrainShading(const short illum, BYTE &r, BYTE &g, BYTE &b)
 {
   char x;
-#ifdef LKSHADING
   if (illum<0) {           // shadow to blue
     x = min(tshadow_h,-illum);
     r = MIX(tshadow_r,r,x);
@@ -859,19 +854,6 @@ inline void TerrainShading(const short illum, BYTE &r, BYTE &g, BYTE &b)
     g = MIX(thighlight_g,g,x);
     b = MIX(thighlight_b,b,x);
   }
-#else
-  if (illum<0) {           // shadow to blue
-    x = min(63,-illum);
-    r = MIX(0,r,x);
-    g = MIX(0,g,x);
-    b = MIX(64,b,x);
-  } else if (illum>0) {    // highlight to yellow
-    x = min(32,illum/2);
-    r = MIX(255,r,x);
-    g = MIX(255,g,x);
-    b = MIX(16,b,x);
-  }
-#endif
 }
 
 
@@ -1086,14 +1068,12 @@ public:
 
   }
 
-  #if LKSHADING
   void SetShading() { 
 	if (is_terrain && Shading && terrain_doshading[TerrainRamp])
 		do_shading=true;
 	else
 		do_shading=false;
   }
-  #endif
 
   void Height() {
 
@@ -1298,9 +1278,7 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 
 	}
   }
-  #if LKSHADING
   if (!terrain_minalt[TerrainRamp]) minalt=0;	//@ 101110
-  #endif
 
   #if NEWRASTER
   // StartupStore(_T("... MinAlt=%d MaxAlt=%d Multiplier=%.3f\n"),minalt,maxalt, (double)((double)maxalt/(double)(maxalt-minalt))); 
@@ -1565,11 +1543,7 @@ void ColorTable() {
 			// height_scale, color_ramp interp_levels  used only for weather
 			// ColorRampLookup is preparing terrain color to pass to TerrainShading for mixing
 			ColorRampLookup(i<<height_scale, r, g, b, color_ramp, NUM_COLOR_RAMP_LEVELS, interp_levels);
-			#if LKSHADING
 			if (do_shading) TerrainShading(mag, r, g, b); //@ 101122
-			#else
-			TerrainShading(mag, r, g, b);
-			#endif
 			colorBuf[i+(mag+64)*256] = BGRColor(r,g,b);
 		}
 		#else
@@ -1590,11 +1564,7 @@ void ColorTable() {
 			// height_scale, color_ramp interp_levels  used only for weather
 			// ColorRampLookup is preparing terrain color to pass to TerrainShading for mixing
 			ColorRampLookup(i<<height_scale, r, g, b, color_ramp, NUM_COLOR_RAMP_LEVELS, interp_levels);
-			#if LKSHADING
 			if (do_shading)TerrainShading(mag, r, g, b);
-			#else
-			TerrainShading(mag, r, g, b);
-			#endif
 		}
 		colorBuf[i+(mag+64)*256] = BGRColor(r,g,b);
 		#endif
@@ -1661,7 +1631,6 @@ void DrawTerrain( const HDC hdc, const RECT rc,
     return;
   }
 
-#ifdef LKSHADING
   // load terrain shading parameters
   // Make them instead dynamically calculated based on previous average terrain illumination
   tshadow_r= terrain_shadow[TerrainRamp].r;
@@ -1673,7 +1642,6 @@ void DrawTerrain( const HDC hdc, const RECT rc,
   thighlight_g= terrain_highlight[TerrainRamp].g;
   thighlight_b= terrain_highlight[TerrainRamp].b;
   thighlight_h= terrain_highlight[TerrainRamp].h;
-#endif
 
 #ifdef TERRAIN_OPTIMIZE		
   static int sx, sy, sz;
@@ -1700,9 +1668,7 @@ void DrawTerrain( const HDC hdc, const RECT rc,
   sy = (int)(255*(fastcosine(fudgeelevation)*fastcosine(sunazimuth)));
   sz = (int)(255*fastsine(fudgeelevation));
 
-  #if LKSHADING
   trenderer->SetShading();
-  #endif
   trenderer->ColorTable();
 #endif
   // step 2: fill height buffer
