@@ -287,8 +287,8 @@ static void OnSetAlternate2Clicked(WindowControl * Sender){
 static void OnClearAlternatesClicked(WindowControl * Sender){
 	(void)Sender;
   LockTaskData();
-  Alternate1 = -1; OnAlternate1=false;
-  Alternate2 = -1; OnAlternate2=false;
+  Alternate1 = -1;
+  Alternate2 = -1;
   SetToRegistry(szRegistryAlternate1, Alternate1);
   SetToRegistry(szRegistryAlternate2, Alternate2);
   RefreshTask();

@@ -753,15 +753,10 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 	// watchout for replay files 
 	if (LastSearchBestTime > Basic->Time ) LastSearchBestTime=Basic->Time-(BESTALTERNATEINTERVAL+10);
-	if ( (OnBestAlternate == true) && (Basic->Time > LastSearchBestTime+BESTALTERNATEINTERVAL) )
+	if ( Basic->Time > LastSearchBestTime+BESTALTERNATEINTERVAL )
 	{
 		LastSearchBestTime = Basic->Time;
-		// if (!ISPARAGLIDER) // disabled search bestalternate for paragliders
-		// 110210 BestAlternate always calculated, eventually for PGs nothing to calculate
-		// Warning is selectable in any case separately
 		SearchBestAlternate(Basic, Calculated);
-		//else 
-		//	OnBestAlternate=false; // 091111 JUST FOR SAFETY PG TOTALLY DISABLED BESTALTERNATE
 	}
 
 
@@ -1130,10 +1125,9 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	DoAutoMacCready(Basic, Calculated); // will set only EqMC 
   }
 
-  // TODO avoid calculating alternates if in MSM_COMMON mode and maybe other too
-  if ( OnAlternate1 == true ) DoAlternates(Basic, Calculated,Alternate1); 
-  if ( OnAlternate2 == true ) DoAlternates(Basic, Calculated,Alternate2); 
-  if ( OnBestAlternate == true ) DoAlternates(Basic, Calculated,BestAlternate); 
+  DoAlternates(Basic, Calculated,Alternate1); 
+  DoAlternates(Basic, Calculated,Alternate2); 
+  DoAlternates(Basic, Calculated,BestAlternate); 
 
   // Calculate nearest landing when needed
 #ifndef MAP_ZOOM

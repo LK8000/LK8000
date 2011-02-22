@@ -2878,9 +2878,6 @@ void MapWindow::CalculateOrientationNormal(void) {
        && (mode.Is(Mode::MODE_CIRCLING)) )
 #endif /* MAP_ZOOM */
       ) {
-#ifndef NEWMOVEICON
-    GliderCenter = true;
-#else
 #ifndef MAP_ZOOM
 	if (DisplayMode == dmCircling)
 #else /* MAP_ZOOM */
@@ -2889,7 +2886,6 @@ void MapWindow::CalculateOrientationNormal(void) {
 		GliderCenter=true;
 	else
 		GliderCenter=false;
-#endif
     
     if (DisplayOrientation == TRACKCIRCLE) {
       DisplayAngle = DerivedDrawInfo.WaypointBearing;
@@ -2961,8 +2957,6 @@ void MapWindow::CalculateOrigin(const RECT rc, POINT *Orig)
 	Orig->x = (rc.left + rc.right)/2;
 	Orig->y = (rc.bottom + rc.top)/2;
   } else {
-	#if NEWMOVEICON
-	#if 100415
 	// automagic northup smart
 	if (DisplayOrientation == NORTHSMART) { 
 		double trackbearing = DrawInfo.TrackBearing;
@@ -3018,14 +3012,6 @@ void MapWindow::CalculateOrigin(const RECT rc, POINT *Orig)
 			Orig->y = ((rc.top - rc.bottom )*GliderScreenPositionY/100)+rc.bottom;
 		}
 	}
-	#else // no 100415
-		Orig->x = ((rc.right - rc.left )*GliderScreenPositionX/100)+rc.left;
-		Orig->y = ((rc.top - rc.bottom )*GliderScreenPositionY/100)+rc.bottom;
-	#endif
-	#else
-	Orig->x = (rc.left + rc.right)/2;
-	Orig->y = ((rc.top - rc.bottom )*GliderScreenPosition/100)+rc.bottom;
-	#endif
   }
 }
 

@@ -782,19 +782,15 @@ void ReadRegistrySettings(void)
   Temp = Alternate1;
   if (GetFromRegistry(szRegistryAlternate1,&Temp)==ERROR_SUCCESS) {
     Alternate1 = (signed int) Temp;
-    OnAlternate1=true;
   } else {
     Alternate1 = -1;
-    OnAlternate1=false;
   }
 
   Temp = Alternate2;
   if (GetFromRegistry(szRegistryAlternate2,&Temp)==ERROR_SUCCESS) {
     Alternate2 = (signed int) Temp; // 100429
-    OnAlternate2=true;
   } else {
     Alternate2 = -1;
-    OnAlternate2=false;
   }
 
 
@@ -1400,9 +1396,7 @@ void ReadRegistrySettings(void)
   Temp = MapWindow::GliderScreenPosition;
   GetFromRegistry(szRegistryGliderScreenPosition,&Temp);
   MapWindow::GliderScreenPosition = (int)Temp;
-  #ifdef NEWMOVEICON
   MapWindow::GliderScreenPositionY = MapWindow::GliderScreenPosition;
-  #endif
 
 
   Temp = BallastSecsToEmpty;

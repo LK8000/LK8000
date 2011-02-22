@@ -1716,14 +1716,6 @@ void InitLK8000()
 	LoadRecentList();
 
 	InitModeTable();
-	// 110210 ON for everybody in anycase
-//	if ( AircraftCategory != (AircraftCategory_t)umParaglider ) {
-		// Normal alternates forced on for LK8000. In MapWindow3 if not valid they WERE reset off
-		// Currently in lk8000 they should be all the times on, calculation time is irrelevant
-		OnAlternate1=true;
-		OnAlternate2=true;
-		OnBestAlternate=true;
-//	}
 
 	// By default, h=v=size/6 and here we set it better
 	switch (ScreenSize) { 

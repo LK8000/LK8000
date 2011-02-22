@@ -1480,58 +1480,28 @@ void FormatterAlternate::AssignValue(int i) {
   LockTaskData();
    switch (i) {
 	case 67:
-		if (OnAlternate1 == false ) { // first run, activate calculations
-			OnAlternate1 = true;	
-        		Value=INVALID_GR;
-		} else {
-			if ( ValidWayPoint(Alternate1) ) Value=WayPointCalc[Alternate1].GR; 
-			else Value=INVALID_GR;
-		}
+		if ( ValidWayPoint(Alternate1) ) Value=WayPointCalc[Alternate1].GR; 
+		else Value=INVALID_GR;
 		break;
 	case 75:
-		if (OnAlternate1 == false ) {
-			OnAlternate1 = true;	
-        		Value=INVALID_DIFF; 
-		} else {
-			if ( ValidWayPoint(Alternate1) ) Value=WayPointCalc[Alternate1].AltArriv[AltArrivMode]; 
-			else Value=INVALID_DIFF;
-		}
+		if ( ValidWayPoint(Alternate1) ) Value=WayPointCalc[Alternate1].AltArriv[AltArrivMode]; 
+		else Value=INVALID_DIFF;
 		break;
 	case 68:
-		if (OnAlternate2 == false ) { 
-			OnAlternate2 = true;	
-        		Value=INVALID_GR;
-		} else {
-			if ( ValidWayPoint(Alternate2) ) Value=WayPointCalc[Alternate2].GR; 
-			else Value=INVALID_GR;
-		}
+		if ( ValidWayPoint(Alternate2) ) Value=WayPointCalc[Alternate2].GR; 
+		else Value=INVALID_GR;
 		break;
 	case 76:
-		if (OnAlternate2 == false ) {
-			OnAlternate2 = true;	
-        		Value=INVALID_DIFF; 
-		} else {
-			if ( ValidWayPoint(Alternate2) ) Value=WayPointCalc[Alternate2].AltArriv[AltArrivMode]; 
-			else Value=INVALID_DIFF;
-		}
+		if ( ValidWayPoint(Alternate2) ) Value=WayPointCalc[Alternate2].AltArriv[AltArrivMode]; 
+		else Value=INVALID_DIFF;
 		break;
 	case 69:
-		if (OnBestAlternate == false ) { // first run, waiting for slowcalculation loop
-			OnBestAlternate = true;		// activate it
-        		Value=INVALID_GR;
-		} else {
-			if ( ValidWayPoint(BestAlternate)) Value=WayPointCalc[BestAlternate].GR;
-			else Value=INVALID_GR;
-		}
+		if ( ValidWayPoint(BestAlternate)) Value=WayPointCalc[BestAlternate].GR;
+		else Value=INVALID_GR;
 		break;
 	case 77:
-		if (OnBestAlternate == false ) { 
-			OnBestAlternate = true;	
-        		Value=INVALID_DIFF;
-		} else {
-			if ( ValidWayPoint(BestAlternate) ) Value=WayPointCalc[BestAlternate].AltArriv[AltArrivMode]; 
-			else Value=INVALID_DIFF;
-		}
+		if ( ValidWayPoint(BestAlternate) ) Value=WayPointCalc[BestAlternate].AltArriv[AltArrivMode]; 
+		else Value=INVALID_DIFF;
 		break;
 	default:
 		Value=66.6; // something evil to notice..

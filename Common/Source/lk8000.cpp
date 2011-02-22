@@ -433,9 +433,6 @@ int Alternate1 = -1; // VENTA3
 int Alternate2 = -1; // VENTA3
 int BestAlternate = -1; // VENTA3
 int ActiveAlternate = -1; // VENTA3
-bool OnBestAlternate=false;
-bool OnAlternate1=false;
-bool OnAlternate2=false;
 
 // Specials
 double GPSAltitudeOffset = 0; // VENTA3
@@ -1614,7 +1611,7 @@ DWORD CalculationThread (LPVOID lpvoid) {
     if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
     if (SIMMODE) {
-	if (needcalculationsslow || ( (OnBestAlternate == true) && (ReplayLogger::IsEnabled()) )) { 
+	if (needcalculationsslow || ( ReplayLogger::IsEnabled() ) ) { 
 		DoCalculationsSlow(&tmp_GPS_INFO,&tmp_CALCULATED_INFO);
 		needcalculationsslow = false;
 	}

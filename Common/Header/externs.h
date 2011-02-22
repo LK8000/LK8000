@@ -97,9 +97,6 @@ extern int Alternate1; // VENTA3
 extern int Alternate2;
 extern int BestAlternate;
 extern int ActiveAlternate;
-extern bool  OnBestAlternate;
-extern bool  OnAlternate1;
-extern bool  OnAlternate2;
 
 extern WAYPOINT *WayPointList;
 extern WPCALC   *WayPointCalc; // VENTA3 additional calculated infos on WPs

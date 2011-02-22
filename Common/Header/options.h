@@ -115,14 +115,11 @@
  // no instrument thread
  #define NOINSTHREAD	1
 
- // do calculations in map mode at 0.5hz, instead of 1hz
+ // obsoleted by MULTICALC. REMOVE WHEN MULTICALC IS PERMANENT
  #define FLIPFLOP	1
 
 
 #endif
-
-// New Move Icon on map function
-#define NEWMOVEICON	1
 
 // New task wp management
 #define NEWTASKWP	1

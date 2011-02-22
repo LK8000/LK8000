@@ -611,10 +611,10 @@ bool DoCommonList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	CommonIndex[CommonNumber++]=HomeWaypoint;
    }
 
-   // Then we insert the alternates, if existing
-   if (OnBestAlternate) InsertCommonList(BestAlternate);
-   if (OnAlternate1) InsertCommonList(Alternate1);
-   if (OnAlternate2) InsertCommonList(Alternate2);
+   // Then we update the alternates in the common list
+   InsertCommonList(BestAlternate);
+   InsertCommonList(Alternate1);
+   InsertCommonList(Alternate2);
 
    // Then we insert active destination and task points
    for (i=0; i< MAXTASKPOINTS; i++) {

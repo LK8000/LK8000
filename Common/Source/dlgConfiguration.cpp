@@ -5234,9 +5234,7 @@ void dlgConfigurationShowModal(void){
       MapWindow::GliderScreenPosition = wp->GetDataField()->GetAsInteger();
       SetToRegistry(szRegistryGliderScreenPosition,
 		    MapWindow::GliderScreenPosition);
-#ifdef NEWMOVEICON
 	MapWindow::GliderScreenPositionY=MapWindow::GliderScreenPosition;
-#endif
       changed = true;
     }
   }
