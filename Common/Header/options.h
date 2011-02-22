@@ -121,10 +121,6 @@
 
 #endif
 
-// New task wp management
-#define NEWTASKWP	1
-
-
 // Don't load and save wind from registry
 #define NOWINDREGISTRY	1
 

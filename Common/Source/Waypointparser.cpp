@@ -1788,8 +1788,6 @@ int FindMatchingWaypoint(WAYPOINT *waypoint) {
   }
   unsigned int i;
 
-#ifdef NEWTASKWP
-
   for (i=NUMRESWP; i<NumberOfWayPoints; i++) {
 
 	// if different name, no match
@@ -1804,24 +1802,6 @@ int FindMatchingWaypoint(WAYPOINT *waypoint) {
 		return i;
 	}
   }
-#else
-  // first scan, lookup by name
-  for (i=0; i<NumberOfWayPoints; i++) {
-	if (_tcscmp(waypoint->Name, WayPointList[i].Name)==0) {
-		return i;
-	}
-  }
-  // second scan, lookup by location
-  for (i=0; i<NumberOfWayPoints; i++) {
-	if ((fabs(waypoint->Latitude-WayPointList[i].Latitude)<1.0e-6) 
-	&& (fabs(waypoint->Longitude-WayPointList[i].Longitude)<1.0e-6) &&
-	(waypoint->Flags == WayPointList[i].Flags) // 100204
-	) {
-		return i;
-	}
-  }
-
-#endif
   
   return -1;
 }

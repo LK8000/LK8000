@@ -756,13 +756,11 @@ bool SaveRecentList() {
    fprintf(fp,"### LK8000 History of Goto Waypoints - DO NOT MODIFY THIS FILE! ###\r\n");
    fprintf(fp,"### WPRECENT FORMAT 01T \r\n");
    for (i=0; i<RecentNumber; i++)  {
-	#ifdef NEWTASKWP
 	if ( !ValidNotResWayPoint(RecentIndex[i])) {
 		StartupStore(_T("---- SaveHistory: invalid wp, maybe file has changed. Aborting.%s"),NEWLINE);
 		break;
 	}
 	if ( WayPointList[RecentIndex[i]].FileNum == -1) continue; // 100219
-	#endif
 	if ( GetWpChecksum(RecentIndex[i]) != RecentChecksum[i] ) {
 		StartupStore(_T("---- SaveHistory: invalid checksum for wp=%d checksum=%d oldchecksum=%d, maybe file has changed. Aborting.%s"),
 		i,GetWpChecksum(RecentIndex[i]), RecentChecksum[i],NEWLINE);

@@ -971,10 +971,8 @@ static int FindOrAddWaypoint(WAYPOINT *read_waypoint) {
 		return false;
 	}
 	memcpy(new_waypoint, read_waypoint, sizeof(WAYPOINT));
-	#ifdef NEWTASKWP
 	// 100229 set no-save flag on
 	new_waypoint->FileNum=-1;
-	#endif
 	waypoint_index = NumberOfWayPoints-1;
   }
   return waypoint_index;
