@@ -676,9 +676,7 @@ bool RasterMapRaw::Open(char* zfilename) {
   dwBytesRead = zzip_fread(&TerrainInfo, 1, sizeof(TERRAIN_INFO), fpTerrain);
     
   if (dwBytesRead != sizeof(TERRAIN_INFO)) {
-#if NEWTERRAIN
 	StartupStore(_T("------ Terrain read first failed, invalid header%s"),NEWLINE);
-#endif
     zzip_fclose(fpTerrain);
     return false;
   }
@@ -692,18 +690,14 @@ bool RasterMapRaw::Open(char* zfilename) {
     TerrainMem = (short*)malloc(sizeof(short)*nsize);
   } else {
     zzip_fclose(fpTerrain);
-#if NEWTERRAIN
     FailStore(_T("Load Terrain FAILED: Not enough memory (free=%ld need=%ld+5M)!"),
     CheckFreeRam(), (unsigned long)(nsize*sizeof(short)));
-#endif
     TerrainMem = NULL;
     return false;
   }
     
   if (!TerrainMem) {
-#if NEWTERRAIN
     FailStore(_T("Terrain memory malloc failed! Raster map NOT loaded."));
-#endif
     zzip_fclose(fpTerrain);
     terrain_valid = false;
   } else {
@@ -717,9 +711,7 @@ bool RasterMapRaw::Open(char* zfilename) {
   }
       
   if (!TerrainInfo.StepSize) {
-#if NEWTERRAIN
 	FailStore(_T("Terrain StepSize failure"));
-#endif
     terrain_valid = false;
     zzip_fclose(fpTerrain);
     Close();
@@ -866,9 +858,7 @@ void RasterTerrain::ServiceFullReload(double lat, double lon) {
   Lock();
   if (TerrainMap) {
     CreateProgressDialog(gettext(TEXT("_@M901_"))); // Loading terrain tiles...
-#if NEWTERRAIN
 	StartupStore(_T(". Loading terrain tiles...%s"),NEWLINE);
-#endif
     TerrainMap->ServiceFullReload(lat, lon);
   }
   Unlock();

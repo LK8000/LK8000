@@ -82,14 +82,12 @@
 
 #define DSX		// only an experimental test feature
 
-// Use new terrain mode in RasterTerrain
-#define NEWTERRAIN 1
-
 // SeeYou cup waypoint format support
 // Includes also COMPEgps support
 #define CUPSUP	1
 
-// activate cache on all calculations defined below
+// -------------------------------------------------------------
+// Activate cache on all calculations defined below:
 #ifdef LK8000_OPTIMIZE
 
  // CACHE CALCULATIONS: IT IS IMPERATIVE THAT THIS OPTION CAN BE DISABLED ANYTIME!
@@ -116,27 +114,25 @@
  #define NOINSTHREAD	1
 
  #define FLIPFLOP	1	// obsoleted by MULTICALC. REMOVE WHEN MULTICALC IS PERMANENT
-
-
 #endif
+// -------------------------------------------------------------
 
 #define NOWINDREGISTRY	1	// Configurable: load and save wind from registry
 
 // New topology OPTIMIZE options
 #ifdef LK8000_OPTIMIZE
-// topology optimization routines
-#define TOPOFAST	1
-#define TOPOFASTLABEL	1
-#define TOPOFASTCACHE	1
+ #define TOPOFAST	1
+ #define TOPOFASTLABEL	1
+ #define TOPOFASTCACHE	1
 #endif
 
 // PC AlphaBlending option, unavailable on PNA and PDA
 // #define ALPHABLENDING	1
 // overtarget new system
-#define OVERTARGET	1
+#define OVERTARGET	1	
 
 // ew terrain manager, for shading and altitudes ex LKTEST
-#define NEWRASTER	1
+#define NEWRASTER	1	// expire 110601
 
 #define CUPCOM		1	// CUP comments allocated dynamically
 
@@ -154,7 +150,7 @@
 #define UNSORTEDRANGE		1	// 101120 expire 110601
 
 
-#define LKOBJ			1
+#define LKOBJ			1	// expire 110401
 
 #define GASUPPORT		1	// oren's GA work
 
