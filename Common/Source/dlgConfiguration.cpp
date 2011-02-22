@@ -1927,11 +1927,7 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M484_")));
 	// LKTOKEN  _@M481_ = "North Smart" 
     dfe->addEnumText(gettext(TEXT("_@M481_"))); // 100417
-    #if AUTORIENT
     dfe->Set(OldDisplayOrientation);
-    #else
-    dfe->Set(DisplayOrientation);
-    #endif
     wp->RefreshDisplay();
   }
 
@@ -2111,13 +2107,11 @@ static void setVariables(void) {
     // if (!ISPARAGLIDER) wp->SetVisible(false); 
     wp->RefreshDisplay();
   }
-  #if AUTORIENT
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoOrientScale"));
   if (wp) {
     wp->GetDataField()->SetAsInteger(AutoOrientScale);
     wp->RefreshDisplay();
   }
-  #endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGNumberOfGates"));
   if (wp) {
@@ -3857,7 +3851,6 @@ void dlgConfigurationShowModal(void){
     }
   }
 
-  #if AUTORIENT
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoOrientScale"));
   if (wp) {
     if ( AutoOrientScale != wp->GetDataField()->GetAsInteger()) {
@@ -3866,7 +3859,6 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
-  #endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGNumberOfGates"));
   if (wp) {
@@ -4169,20 +4161,12 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpOrientation"));
   if (wp) {
-#if AUTORIENT
     if (OldDisplayOrientation != wp->GetDataField()->GetAsInteger()) {
       OldDisplayOrientation = wp->GetDataField()->GetAsInteger();
       SetToRegistry(szRegistryDisplayUpValue,OldDisplayOrientation);
       DisplayOrientation=OldDisplayOrientation;
       changed = true;
     }
-#else
-    if (DisplayOrientation != wp->GetDataField()->GetAsInteger()) {
-      DisplayOrientation = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryDisplayUpValue,DisplayOrientation);
-      changed = true;
-    }
-#endif
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpMenuTimeout"));

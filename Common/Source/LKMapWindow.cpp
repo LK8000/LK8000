@@ -962,7 +962,6 @@ go_selcolor:
 }
 
 
-#if AUTORIENT
 // change dynamically the map orientation mode
 // set true flag for resetting DisplayOrientation mode and return
 void MapWindow::SetAutoOrientation(bool doreset) {
@@ -991,6 +990,5 @@ void MapWindow::SetAutoOrientation(bool doreset) {
 	DisplayOrientation=OldDisplayOrientation;
   }
 }
-#endif
 
 

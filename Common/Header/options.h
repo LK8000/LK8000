@@ -130,8 +130,6 @@
 #define TOPOFASTCACHE	1
 #endif
 
-// auto orientation
-#define AUTORIENT	1
 // PC AlphaBlending option, unavailable on PNA and PDA
 // #define ALPHABLENDING	1
 // overtarget new system

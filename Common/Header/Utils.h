@@ -157,9 +157,7 @@ extern const TCHAR szRegistryBlockSTF[];
 extern const TCHAR szRegistryAutoZoom[];
 extern const TCHAR szRegistryPGCruiseZoom[];
 extern const TCHAR szRegistryPGClimbZoom[];
-#if AUTORIENT
 extern const TCHAR szRegistryAutoOrientScale[];
-#endif
 extern const TCHAR szRegistryPGNumberOfGates[];
 extern const TCHAR szRegistryPGOpenTimeH[];
 extern const TCHAR szRegistryPGOpenTimeM[];

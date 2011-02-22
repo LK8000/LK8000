@@ -625,9 +625,7 @@ class MapWindow {
   static double GetInvDrawScale() { return zoom.InvDrawScale(); }
 #endif /* MAP_ZOOM */
   static double GetDisplayAngle() { return DisplayAngle; }
-  #if AUTORIENT
   static void SetAutoOrientation(bool doreset);
-  #endif
 
  private:
   static HBITMAP 

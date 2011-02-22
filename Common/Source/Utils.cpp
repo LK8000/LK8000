@@ -268,9 +268,7 @@ const TCHAR szRegistryDebounceTimeout[]= TEXT("DebounceTimeout");
 
 const TCHAR szRegistryPGCruiseZoom[]= TEXT("PGCruiseZoom");
 const TCHAR szRegistryPGClimbZoom[]= TEXT("PGClimbZoom");
-#if AUTORIENT
 const TCHAR szRegistryAutoOrientScale[]= TEXT("AutoOrientScale");
-#endif
 const TCHAR szRegistryPGOpenTimeH[]= TEXT("PGOpenTimeH");
 const TCHAR szRegistryPGOpenTimeM[]= TEXT("PGOpenTimeM");
 const TCHAR szRegistryPGNumberOfGates[]= TEXT("PGNumberOfGates");
@@ -922,11 +920,9 @@ void ReadRegistrySettings(void)
   Temp=1;
   GetFromRegistry(szRegistryPGClimbZoom,&Temp);
   PGClimbZoom=Temp;
-  #if AUTORIENT
   Temp=10;
   GetFromRegistry(szRegistryAutoOrientScale,&Temp);
   AutoOrientScale=Temp;
-  #endif
 
   Temp=12;
   GetFromRegistry(szRegistryPGOpenTimeH,&Temp);

@@ -475,10 +475,8 @@ extern bool EnableSoundModes;
 extern int SoundVolume;
 extern int SoundDeadband;
 extern int DisplayOrientation;
-#if AUTORIENT
 extern int OldDisplayOrientation;
 extern int AutoOrientScale;
-#endif
 extern int DisplayTextType;
 extern int AIRSPACEWARNINGS;
 extern int WarningTime;

@@ -3573,9 +3573,7 @@ void MapWindow::RenderMapWindow(  RECT rc)
   
   POINT Orig, Orig_Aircraft;
 
-  #if AUTORIENT
   SetAutoOrientation(false); // false for no reset Old values
-  #endif  
   CalculateOrigin(rc, &Orig);
 
   // this is calculating waypoint visible, and must be executed before rendermapwindowbg which calls   

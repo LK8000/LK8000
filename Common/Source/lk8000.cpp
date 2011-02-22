@@ -306,10 +306,8 @@ int  UseCustomFonts;
 int                                             CurrentInfoType;
 int                                             InfoFocus = 0;
 int                                             DisplayOrientation = TRACKUP;
-#if AUTORIENT
 int                                             OldDisplayOrientation = TRACKUP;
-int AutoOrientScale = 10;
-#endif
+int						AutoOrientScale = 10;
 int                                             DisplayTextType = DISPLAYNONE;
 
 int                                             AltitudeMode = ALLON;
