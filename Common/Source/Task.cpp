@@ -29,16 +29,6 @@ extern bool TargetDialogOpen;
 
 extern AATDistance aatdistance;
 
-#ifndef NOTASKABORT
-static int Task_saved[MAXTASKPOINTS+1];
-static int active_waypoint_saved= -1;
-static bool aat_enabled_saved= false;
-#endif
-
-#ifndef NOTASKABORT
-static void BackupTask(void);
-#endif
-
 void ResetTaskWaypoint(int j) {
   Task[j].Index = -1;
   Task[j].AATTargetOffsetRadius = 0.0;
@@ -56,17 +46,6 @@ void FlyDirectTo(int index) {
     return;
 
   LockTaskData();
-
-  #ifndef NOTASKABORT
-  if (TaskAborted) {
-    // in case we GOTO while already aborted
-    ResumeAbortTask(-1);
-  }
-
-  if (!TaskIsTemporary()) {
-    BackupTask();
-  }
-  #endif
 
   TaskModified = true;
   TargetModified = true;
@@ -1221,9 +1200,6 @@ void ClearTask(void) {
     for (int j=0; j<MAXISOLINES; j++) {
       TaskStats[i].IsoLine_valid[j] = false;
     }
-    #ifndef NOTASKABORT
-    Task_saved[i] = Task[i].Index;
-    #endif
   }
   for (i=0; i<MAXSTARTPOINTS; i++) {
     StartPoints[i].Index = -1;
@@ -1588,9 +1564,6 @@ void CalculateAATIsoLines(void) {
 
 void SaveDefaultTask(void) {
   LockTaskData();
-  #ifndef NOTASKABORT
-  if (!TaskAborted) {
-  #endif
     TCHAR buffer[MAX_PATH];
 #if (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
   LocalPath(buffer,TEXT(LKD_TASKS));
@@ -1606,103 +1579,6 @@ void SaveDefaultTask(void) {
   _tcscat(buffer,_T(LKF_DEFAULTASK)); // 091101
 #endif
     SaveTask(buffer);
-  #ifndef NOTASKABORT
-  }
-  #endif
   UnlockTaskData();
 }
 
-
-#ifndef NOTASKABORT
-bool TaskIsTemporary(void) {
-  bool retval = false;
-
-  // if temporary, no autoMC is used!
-  return false; // 091221 BUGFIX
-  LockTaskData();
-  if (TaskAborted) {
-    retval = true;
-  }
-  if ((Task[0].Index>=0) && (Task[1].Index== -1)
-      && (Task_saved[0] >= 0)) {
-    retval = true;
-  };
-
-  UnlockTaskData();
-  return retval;
-}
-
-
-static void BackupTask(void) {
-  LockTaskData();
-  for (int i=0; i<=MAXTASKPOINTS; i++) {
-    Task_saved[i]= Task[i].Index;
-  }
-  active_waypoint_saved = ActiveWayPoint;
-  if (AATEnabled) {
-    aat_enabled_saved = true;
-  } else {
-    aat_enabled_saved = false;
-  }
-  UnlockTaskData();
-}
-
-
-void ResumeAbortTask(int set) {
-  int i;
-  int active_waypoint_on_entry;
-  bool task_temporary_on_entry = TaskIsTemporary();
-
-  //  LockFlightData();
-  LockTaskData();
-  active_waypoint_on_entry = ActiveWayPoint;
-
-  if (set == 0) {
-    if (task_temporary_on_entry && !TaskAborted) {
-      // no toggle required, we are resuming a temporary goto
-    } else {
-      TaskAborted = !TaskAborted;
-    }
-  } else if (set > 0)
-    TaskAborted = true;
-  else if (set < 0)
-    TaskAborted = false;
-
-  if (task_temporary_on_entry != TaskAborted) {
-    if (TaskAborted) {
-
-      // save current task in backup
-      BackupTask();
-      
-      // force new waypoint to be the closest
-      ActiveWayPoint = -1;
-
-      // force AAT off
-      AATEnabled = false;
-
-      // set MacCready
-      if (!GlidePolar::AbortSafetyUseCurrent)  // 20060520:sgi added
-        MACCREADY = min(MACCREADY,GlidePolar::SafetyMacCready);
-
-    } else {
-      
-      // reload backup task and clear it
-      
-      for (i=0; i<=MAXTASKPOINTS; i++) {
-        Task[i].Index = Task_saved[i];
-	Task_saved[i] = -1;
-      }
-      ActiveWayPoint = active_waypoint_saved;
-      AATEnabled = aat_enabled_saved;
-      
-      RefreshTask();
-    }
-  }
-
-  if (active_waypoint_on_entry != ActiveWayPoint){
-    SelectedWaypoint=Task[ActiveWayPoint].Index;
-  }
-
-  UnlockTaskData();
-}
-#endif

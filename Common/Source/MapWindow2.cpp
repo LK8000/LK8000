@@ -1086,11 +1086,7 @@ void MapWindow::DrawProjectedTrack(HDC hdc, const RECT rc, const POINT Orig) {
   if ((ActiveWayPoint<=0) || !ValidTaskPoint(ActiveWayPoint) || !AATEnabled) { 
     return;
   }
-  #ifndef NOTASKABORT
-  if (DerivedDrawInfo.Circling || TaskIsTemporary()) {
-  #else
   if (DerivedDrawInfo.Circling) {
-  #endif
     // don't display in various modes
     return;
   }

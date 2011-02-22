@@ -357,10 +357,6 @@ DERIVED_INFO  CALCULATED_INFO;
 BOOL GPSCONNECT = FALSE;
 BOOL extGPSCONNECT = FALSE; // this one used by external functions
 
-#ifndef NOTASKABORT
-bool          TaskAborted = false;
-#endif
-
 bool InfoBoxesDirty= false;
 bool DialogActive = false;
 
@@ -3298,11 +3294,6 @@ void Shutdown(void) {
   // LKTOKEN _@M1222_ "Shutdown, saving task..."
   CreateProgressDialog(gettext(TEXT("_@M1222_")));
   StartupStore(TEXT(". Save default task%s"),NEWLINE);
-  LockTaskData();
-  #ifndef NOTASKABORT
-  ResumeAbortTask(-1); // turn off abort if it was on.
-  #endif
-  UnlockTaskData();
   SaveDefaultTask();
 
   StartupStore(TEXT(". Clear task data%s"),NEWLINE);
@@ -5198,31 +5189,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
 
-  #ifndef NOTASKABORT
-  if (TaskAborted) {
-    if (_tcsstr(OutBuffer, TEXT("$(WaypointNext)"))) {
-      // Waypoint\nNext
-      invalid = !ValidTaskPoint(ActiveWayPoint+1);
-      CondReplaceInString(!ValidTaskPoint(ActiveWayPoint+2), 
-                          OutBuffer,
-                          TEXT("$(WaypointNext)"), 
-                          TEXT("Landpoint\nFurthest"), 
-                          TEXT("Landpoint\nNext"), Size);
-	if (--items<=0) goto label_ret; // 100517
-      
-    } else
-    if (_tcsstr(OutBuffer, TEXT("$(WaypointPrevious)"))) {
-      // Waypoint\nNext
-      invalid = !ValidTaskPoint(ActiveWayPoint-1);
-      CondReplaceInString(!ValidTaskPoint(ActiveWayPoint-2), 
-                          OutBuffer,
-                          TEXT("$(WaypointPrevious)"), 
-                          TEXT("Landpoint\nClosest"), 
-                          TEXT("Landpoint\nPrevious"), Size);
-	if (--items<=0) goto label_ret; // 100517
-    }
-  } else {
-  #endif
     if (_tcsstr(OutBuffer, TEXT("$(WaypointNext)"))) {
       // Waypoint\nNext
       invalid = !ValidTaskPoint(ActiveWayPoint+1);
@@ -5258,9 +5224,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
       }
     }
-  #ifndef NOTASKABORT
-  }
-  #endif
 
   if (_tcsstr(OutBuffer, TEXT("$(RealTask)"))) {
 	if (! (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1))) {
@@ -5371,16 +5334,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     ReplaceInString(OutBuffer, TEXT("$(CheckSettingsLockout)"), TEXT(""), Size);
 	if (--items<=0) goto label_ret; // 100517
   }
-  #ifndef NOTASKABORT
-  if (_tcsstr(OutBuffer, TEXT("$(CheckTaskResumed)"))) {
-    if (TaskAborted) {
-      // TODO code: check, does this need to be set with temporary task?
-      invalid = true;
-    }
-    ReplaceInString(OutBuffer, TEXT("$(CheckTaskResumed)"), TEXT(""), Size);
-	if (--items<=0) goto label_ret; // 100517
-  }
-  #endif
   if (_tcsstr(OutBuffer, TEXT("$(CheckTask)"))) {
     if (!ValidTaskPoint(ActiveWayPoint)) {
       invalid = true;
@@ -5659,11 +5612,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   }
   #endif
 
-  #ifndef NOTASKABORT
-  CondReplaceInString(TaskIsTemporary(), 
-		      OutBuffer, TEXT("$(TaskAbortToggleActionName)"), 
-		      TEXT("Resume"), TEXT("Suspend"), Size); // 091125 Abort is now Suspend
-  #endif
 
   if (_tcsstr(OutBuffer, TEXT("$(FinalForceToggleActionName)"))) {
     CondReplaceInString(ForceFinalGlide, OutBuffer, 

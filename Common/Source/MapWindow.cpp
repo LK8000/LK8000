@@ -3350,15 +3350,9 @@ QuickRedraw: // 100318 speedup redraw
   for (short nvi=0; nvi<SCREENVSLOTS; nvi++) nVLabelBlocks[nvi]=0;
   #endif
   
-  #ifndef NOTASKABORT 
-  if (!TaskIsTemporary()) {
-    DrawTaskAAT(hdc, rc);
-  }
-  #else
   if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) { // 100503
 	DrawTaskAAT(hdc, rc);
   }
-  #endif
 
   
  	if (DONTDRAWTHEMAP) { // 100319
@@ -3395,17 +3389,9 @@ QuickRedraw: // 100318 speedup redraw
 
   DrawThermalEstimate(hdc, rc);
  
-  #ifdef NOTASKABORT 
   if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) { // 100503
 	DrawTask(hdc, rc, Orig_Aircraft);
   }
-  #else
-  if (TaskAborted) {
-    DrawAbortedTask(hdc, rc, Orig_Aircraft);
-  } else {
-    DrawTask(hdc, rc, Orig_Aircraft);
-  }
-  #endif
   
   // draw red cross on glide through terrain marker
   if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid) {
@@ -4266,11 +4252,6 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
 
   if (Appearance.FlightModeIcon == apFlightModeIconDefault){
 
-    #ifndef NOTASKABORT
-    if (TaskAborted) {
-      SelectObject(hDCTemp,hAbort);
-    } else {
-    #else
 #ifndef MAP_ZOOM
       if (DisplayMode == dmCircling) {
 #else /* MAP_ZOOM */
@@ -4286,10 +4267,6 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
       } else {
         SelectObject(hDCTemp,hCruise);
       }
-    #endif
-    #ifndef NOTASKABORT
-    }
-    #endif
     // Code already commented as of 12aug05 - redundant? -st
     //          BitBlt(hdc,rc.right-35,5,24,20,
     //                           hDCTemp,20,0,SRCAND);
@@ -4371,14 +4348,7 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
 
     }
 
-    #ifndef NOTASKABORT
-    if (TaskAborted)
-      oldBrush = (HBRUSH)SelectObject(hdc, hBrushFlyingModeAbort);
-    else
-      oldBrush = (HBRUSH)SelectObject(hdc, hbCompass);
-    #else
      oldBrush = (HBRUSH)SelectObject(hdc, hbCompass);
-    #endif
 
     oldPen = (HPEN)SelectObject(hdc, hpCompassBorder);
     Polygon(hdc, Arrow, 3);

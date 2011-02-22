@@ -1031,12 +1031,6 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
       if (ValidTaskPoint(i) && ValidTaskPoint(i-1)) {
         lat1 = WayPointList[Task[i-1].Index].Latitude;
 	lon1 = WayPointList[Task[i-1].Index].Longitude;
-	#ifndef NOTASKABORT
-	if (TaskIsTemporary()) {
-	  lat2 = GPS_INFO.Latitude;
-	  lon2 = GPS_INFO.Longitude;
-	} else {
-	#endif
 		if (!ValidTaskPoint(1) ) {
 		  lat2 = GPS_INFO.Latitude;
 		  lon2 = GPS_INFO.Longitude;
@@ -1044,9 +1038,6 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
 		  lat2 = WayPointList[Task[i].Index].Latitude;
 		  lon2 = WayPointList[Task[i].Index].Longitude;
 		}
-	#ifndef NOTASKABORT
-	}
-	#endif
 	x1 = (lon1-lon_c)*fastcosine(lat1);
 	y1 = (lat1-lat_c);
 	x2 = (lon2-lon_c)*fastcosine(lat2);

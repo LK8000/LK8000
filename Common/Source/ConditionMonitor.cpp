@@ -267,11 +267,7 @@ public:
 protected:
 
   bool CheckCondition(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {    
-    #ifndef NOTASKABORT
-    if (!AATEnabled || !ValidTaskPoint(ActiveWayPoint) || TaskIsTemporary()
-    #else
     if (!AATEnabled || !ValidTaskPoint(ActiveWayPoint) 
-    #endif
         || !(Calculated->ValidStart && !Calculated->ValidFinish)
         || !Calculated->Flying) {
       return false;

@@ -93,9 +93,6 @@
  #define LK_CACHECALC_MCA 60
  // #define LK_CACHECALC_MCA_STAT 1
 
- // do not keep task abort code at all, no taskresume etc.
- // Task abort was already disabled. we are removing only unused code here
- #define NOTASKABORT	1
  #define NOFLARMGAUGE	1
  // Old vario gauge for landscape geometry 6
  #define NOVARIOGAUGE	1

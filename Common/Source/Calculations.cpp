@@ -127,9 +127,6 @@ static void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
 
 static void TerrainHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-#ifndef NOTASKABORT
-static void SortLandableWaypoints(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-#endif
 
 static void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
@@ -151,11 +148,6 @@ extern void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWayp
 int getFinalWaypoint() {
   int i;
   i=max(-1,min(MAXTASKPOINTS,ActiveWayPoint));
-  #ifndef NOTASKABORT
-  if (TaskAborted) {
-    return i;
-  } 
-  #endif
 
   i++;
   LockTaskData();
@@ -195,11 +187,6 @@ static void CheckTransitionFinalGlide(NMEA_INFO *Basic,
 static void CheckForceFinalGlide(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   // Auto Force Final Glide forces final glide mode
   // if above final glide...
-  #ifndef NOTASKABORT
-  if (TaskAborted) {
-    ForceFinalGlide = false;
-  } else {
-  #endif
     if (AutoForceFinalGlide) {
       if (!Calculated->FinalGlide) {
         if (Calculated->TaskAltitudeDifference>120) {
@@ -215,9 +202,6 @@ static void CheckForceFinalGlide(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         }
       }
     }
-  #ifndef NOTASKABORT
-  }
-  #endif
 }
 
 // wp is misleading, this is a task index really!
@@ -239,11 +223,7 @@ double FAIFinishHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int wp) {
     wp_alt = 0;
   }
 
-  #ifndef NOTASKABORT
-  if (!TaskIsTemporary() && (wp==FinalWayPoint)) {
-  #else
   if (wp==FinalWayPoint) {
-  #endif
     if (EnableFAIFinishHeight && !AATEnabled) {
       return max(max(FinishMinHeight/1000, safetyaltitudearrival)+ wp_alt, 
                  Calculated->TaskStartAltitude-1000.0);
@@ -1063,11 +1043,6 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   // Vario(Basic,Calculated); moved up to reduce latency 091201
 
-  #ifndef NOTASKABORT
-  if (TaskAborted) {
-    SortLandableWaypoints(Basic, Calculated);
-  } 
-  #endif
   if (!TargetDialogOpen) {
     // don't calculate these if optimise function being invoked or
     // target is being adjusted
@@ -1105,11 +1080,7 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   BallastDump();
 
-  #ifndef NOTASKABORT
-  if (!TaskIsTemporary()) {
-  #else
   if (ValidTaskPoint(ActiveWayPoint)) {
-  #endif
 	// only if running a real task
 	if (ValidTaskPoint(1)) InSector(Basic, Calculated);
 	DoAutoMacCready(Basic, Calculated);
@@ -1925,11 +1896,7 @@ void DistanceToNext(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
       Calculated->ZoomDistance = Calculated->WaypointDistance;
 
-      #ifndef NOTASKABORT
-      if (AATEnabled && !TaskIsTemporary()
-      #else
       if (AATEnabled
-      #endif
 	  && (ActiveWayPoint>0) && 
           ValidTaskPoint(ActiveWayPoint+1)) {
 
@@ -1949,11 +1916,7 @@ void DistanceToNext(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
         }
 
       } else if ((ActiveWayPoint==0) && (ValidTaskPoint(ActiveWayPoint+1))
-#ifndef NOTASKABORT
-                 && (Calculated->IsInSector) && !TaskIsTemporary()) {
-#else
                  && (Calculated->IsInSector) ) {
-#endif
 
         // JMW set waypoint bearing to start direction if in start sector
 
@@ -3182,9 +3145,6 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
   double TotalTime=0, TotalDistance=0, Vfinal=0;
 
   if (!ValidTaskPoint(ActiveWayPoint)) return;
-  #ifndef NOTASKABORT
-  if (TaskIsTemporary()) return;
-  #endif
   if (Calculated->ValidFinish) return;
   if (!Calculated->Flying) return;
 
@@ -3669,11 +3629,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   double w0lat;
   double w0lon;
   
-  #ifndef NOTASKABORT    
-  if (AATEnabled && (ActiveWayPoint>0) && !TaskIsTemporary() && (ValidTaskPoint(ActiveWayPoint+1))) {
-  #else
   if (AATEnabled && (ActiveWayPoint>0) && (ValidTaskPoint(ActiveWayPoint+1))) {
-  #endif
     w1lat = Task[ActiveWayPoint].AATTargetLat;
     w1lon = Task[ActiveWayPoint].AATTargetLon;
   } else {
@@ -3688,27 +3644,15 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                   &LegToGo, &LegBearing);
 
   if (AATEnabled && (ActiveWayPoint>0) && ValidTaskPoint(ActiveWayPoint+1)
-      #ifndef NOTASKABORT
-      && Calculated->IsInSector && (this_maccready>0.1) && !TaskIsTemporary()) {
-      #else
       && Calculated->IsInSector && (this_maccready>0.1) ) {
-      #endif
     calc_turning_now = true;
   } else {
     calc_turning_now = false;
   }
 
-  #ifndef NOTASKABORT
-  if ((ActiveWayPoint<1) || TaskIsTemporary()) {
-  #else
   if (ActiveWayPoint<1) {
-  #endif
     LegCovered = 0;
-    #ifndef NOTASKABORT
-    if (!TaskIsTemporary() && ValidTaskPoint(ActiveWayPoint+1)) {  // BUGFIX 091221
-    #else
     if (ValidTaskPoint(ActiveWayPoint+1)) {  // BUGFIX 091221
-    #endif
       LegToGo=0;
     }
    } else {
@@ -3754,10 +3698,6 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   // Now add distances for start to previous waypoint
  
-  #ifndef NOTASKABORT 
-  if (!TaskIsTemporary()) {
-  #endif
-
     if (!AATEnabled) {
       for(int i=0;i< ActiveWayPoint-1; i++)
         {
@@ -3782,9 +3722,6 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                                     Basic->Latitude,
                                     ActiveWayPoint);
     }
-  #ifndef NOTASKABORT
-  }
-  #endif 
 
   CheckTransitionFinalGlide(Basic, Calculated);
 
@@ -3810,9 +3747,6 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   double StartBestCruiseTrack = -1; 
 
-  #ifndef NOTASKABORT
-  if (!TaskIsTemporary()) {
-  #endif
     while ((task_index>ActiveWayPoint) && (ValidTaskPoint(task_index))) {
       double this_LegTimeToGo;
       bool this_is_final = (task_index==FinalWayPoint)
@@ -3908,18 +3842,11 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
       
       task_index--;
     }
-  #ifndef NOTASKABORT
-  }
-  #endif
 
 
   // current waypoint, do this last!
 
-  #ifndef NOTASKABORT
-  if (AATEnabled && !TaskIsTemporary() && (ActiveWayPoint>0) && ValidTaskPoint(ActiveWayPoint+1) && Calculated->IsInSector) {
-  #else
   if (AATEnabled && (ActiveWayPoint>0) && ValidTaskPoint(ActiveWayPoint+1) && Calculated->IsInSector) {
-  #endif
 	if (Calculated->WaypointDistance<AATCloseDistance()*3.0) {
 		LegBearing = AATCloseBearing(Basic, Calculated);
 	}
@@ -3956,11 +3883,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   // fix problem of blue arrow wrong in task sector
   if (StartBestCruiseTrack>=0)  // use it only if assigned, workaround
-        #ifndef NOTASKABORT
-	if (Calculated->IsInSector && (ActiveWayPoint==0) && !TaskIsTemporary()) {
-	#else
 	if (Calculated->IsInSector && (ActiveWayPoint==0)) {
-	#endif
 		// set best cruise track to first leg bearing when in start sector
 		Calculated->BestCruiseTrack = StartBestCruiseTrack;
 	} 
