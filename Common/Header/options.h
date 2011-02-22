@@ -119,9 +119,6 @@
  #define TOPOFASTCACHE	1
 #endif
 
-// overtarget new system
-#define OVERTARGET	1	
-
 // ew terrain manager, for shading and altitudes ex LKTEST
 #define NEWRASTER	1	// expire 110601
 

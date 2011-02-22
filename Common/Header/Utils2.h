@@ -91,13 +91,11 @@ void	unicodetoascii(TCHAR *text, int tsize, char *atext);
 
 int ProcessVirtualKey(int x, int y, long keytime, short vkmode);
 
-#if OVERTARGET
 extern int GetOvertargetIndex(void);
 extern void GetOvertargetName(TCHAR *overtargetname);
 extern TCHAR * GetOvertargetHeader(void);
 extern void RotateOvertarget(void);
 extern void ToggleOverlays(void);
-#endif
 extern bool CheckClubVersion(void);
 extern void ClubForbiddenMsg(void);
 

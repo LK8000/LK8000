@@ -333,7 +333,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   if ( Look8000 == (Look8000_t)lxcNoOverlay ) goto drawOverlay;
 
   // PRINT WP TARGET NAME
-  #ifdef OVERTARGET
   if ( ISPARAGLIDER && UseGates() && ActiveWayPoint==0) {
 	// if running a task, use the task index normally
 	if ( ValidTaskPoint(ActiveWayPoint) != false )
@@ -343,12 +342,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   } else {
 	index = GetOvertargetIndex();
   }
-  #else
-  if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-	index = Task[ActiveWayPoint].Index;
-	if ( index >=0 ) {
-	// in overtarget mode, we print the name even when no target. 
-  #endif
 #ifndef MAP_ZOOM
 		if (DisplayMode != dmCircling) {
 #else /* MAP_ZOOM */
@@ -366,9 +359,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		// Waypoint name and distance
 		SelectObject(hdc, LK8TargetFont);
 
-	#if OVERTARGET
 	if ( index >=0 ) {
-	#endif
 		#if 0
 		// Active colours
 		if (WayPointList[index].Reachable) {
@@ -405,7 +396,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
 	 		LKWriteText(hdc,Buffer, rcx+NIBLSCALE(2), rcy,0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
 		} else {
-			#if OVERTARGET
 			TCHAR buffername[LKSIZEBUFFERLARGE];
 			GetOvertargetName(buffername);
 			wlen=wcslen(buffername);
@@ -414,14 +404,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 			} else {
  			 	_tcsncpy(Buffer, buffername, wlen); Buffer[wlen]='\0';
 			}
-			#else
-			wlen=wcslen(WayPointList[index].Name);
- 			if (wlen>tlen) {
- 			 	_tcsncpy(Buffer, WayPointList[index].Name, tlen); Buffer[tlen]='\0';
-			} else {
- 			 	_tcsncpy(Buffer, WayPointList[index].Name, wlen); Buffer[wlen]='\0';
-			}
-			#endif
 
  			 ConvToUpper(Buffer);
 			 LKWriteText(hdc,Buffer, rcx+NIBLSCALE(2), rcy,0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
@@ -436,7 +418,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 			}
 		 	LKFormatValue(LK_START_DIST, false, BufferValue, BufferUnit, BufferTitle);
 		 } else {
-			#if OVERTARGET
 			switch (OvertargetMode) {
 				case OVT_TASK:
 		 			LKFormatValue(LK_NEXT_DIST, false, BufferValue, BufferUnit, BufferTitle);
@@ -466,9 +447,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		 			LKFormatValue(LK_NEXT_DIST, false, BufferValue, BufferUnit, BufferTitle);
 					break;
 			}
-			#else
-		 	LKFormatValue(LK_NEXT_DIST, false, BufferValue, BufferUnit, BufferTitle);
-			#endif
 		}
 
 		if ( (!OverlayClock || Look8000==lxcStandard) && ScreenLandscape && (!(ISPARAGLIDER && UseGates())) ) {
@@ -499,7 +477,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 #else /* MAP_ZOOM */
 	  	if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
 #endif /* MAP_ZOOM */
-			#if OVERTARGET
 			switch (OvertargetMode) {
 				case OVT_TASK:
 		 			LKFormatValue(LK_BRGDIFF, false, BufferValue, BufferUnit, BufferTitle);
@@ -529,10 +506,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		 			LKFormatValue(LK_BRGDIFF, false, BufferValue, BufferUnit, BufferTitle);
 					break;
 			}
-			#else
-			LKFormatValue(LK_BRGDIFF, false, BufferValue, BufferUnit, BufferTitle);
-			#endif
-
 
 			SelectObject(hdc, bigFont);
 			if (!ISGAAIRCRAFT) {
@@ -551,7 +524,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		SelectObject(hdc, bigFont); // use this font for big values
 
 		if ( ISGLIDER) {
-			#if OVERTARGET
 			switch (OvertargetMode) {
 				case OVT_TASK:
 		 			LKFormatValue(LK_NEXT_GR, false, BufferValue, BufferUnit, BufferTitle);
@@ -581,9 +553,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		 			LKFormatValue(LK_NEXT_GR, false, BufferValue, BufferUnit, BufferTitle);
 					break;
 			}
-			#else
-			LKFormatValue(LK_NEXT_GR, false, BufferValue, BufferUnit, BufferTitle);
-			#endif
 
 			GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
 			//	rcy=(rc.bottom + rc.top)/2 -TextSize.cy-NIBLSCALE(10); OLD
@@ -595,7 +564,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 				LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
 
 			// Altitude difference with current MC
-			#if OVERTARGET
 			switch (OvertargetMode) {
 				case OVT_TASK:
 		 			LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
@@ -625,9 +593,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		 			LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit,BufferTitle);
 					break;
 			}
-			#else
-			LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
-			#endif
 			if (redwarning) 
 				LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, 
 					WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_AMBER, true);
@@ -637,7 +602,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		}
 
 	} // index>0
-	#if OVERTARGET
 	// no valid index for current overmode, but we print something nevertheless
 	else {
 		TCHAR buffername[LKSIZEBUFFERLARGE];
@@ -651,10 +615,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
  		ConvToUpper(Buffer);
 		LKWriteText(hdc,Buffer, rcx+NIBLSCALE(2), rcy,0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
 	}
-	#endif
-  #ifndef OVERTARGET
-  } // valid taskpoint
-  #endif
 
   // moved out from task paragliders stuff - this is painted on the right
   if ( ISPARAGLIDER ) {
@@ -695,7 +655,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
 
 		// Altitude difference with current MC
-		#if OVERTARGET
 		switch (OvertargetMode) {
 			case OVT_TASK:
 	 			LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
@@ -725,9 +684,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 	 			LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
 				break;
 		}
-		#else
-		LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
-		#endif
 		if (redwarning)
 			LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_AMBER, true);
 		else

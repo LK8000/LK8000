@@ -89,9 +89,7 @@ extern void DrawDebug(HDC hdc, RECT rc );
 #endif /* MAP_ZOOM */
 
 
-#ifdef OVERTARGET
 extern int GetOvertargetIndex(void);
-#endif
 
 static const COLORREF taskcolor = RGB_TASKLINECOL; // 091216
 static bool ignorenext=false;
@@ -275,11 +273,6 @@ HPEN MapWindow::hpBestCruiseTrack;
 HPEN MapWindow::hpCompass;
 
 HPEN MapWindow::hpThermalCircle;
-/*
-#if OVERTARGET
-HPEN MapWindow::hpOvertarget;
-#endif
-*/
 HPEN MapWindow::hpThermalBand;
 HPEN MapWindow::hpThermalBandGlider;
 HPEN MapWindow::hpFinalGlideAbove;
@@ -1787,11 +1780,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       DeleteObject((HPEN)hpStartFinishThin);
       DeleteObject((HPEN)hpMapScale);
 	#endif
-/*
-#if OVERTARGET
-      DeleteObject((HPEN)hpOvertarget);
-#endif
-*/
       DeleteObject((HPEN)hpThermalBand);
       DeleteObject((HPEN)hpThermalBandGlider);
       DeleteObject((HPEN)hpFinalGlideAbove);
@@ -5263,29 +5251,14 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
 void MapWindow::DrawBearing(HDC hdc, const RECT rc)
 {
 
-  #if OVERTARGET
   int overindex=GetOvertargetIndex();
   if (overindex<0) return;
-/* REMOVE
-  int overindex=-1;
-  if (OvertargetMode >OVT_TASK) overindex=GetOvertargetIndex();
-  if ( (!ValidTaskPoint(ActiveWayPoint)) && (overindex<0)) {
-	return; 
-  }
-*/
-  #else
-  if (!ValidTaskPoint(ActiveWayPoint)) {
-	return; 
-  }
-  LockTaskData();  // protect from external task changes
-  #endif
 
   double startLat = DrawInfo.Latitude;
   double startLon = DrawInfo.Longitude;
   double targetLat;
   double targetLon;
 
-  #if OVERTARGET
   if (overindex>OVT_TASK) {
   	LockTaskData();
 	targetLat = WayPointList[overindex].Latitude;
@@ -5305,7 +5278,6 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
 	return; 
   }
   LockTaskData();
-  #endif
 
   if (AATEnabled && (ActiveWayPoint>0) && ValidTaskPoint(ActiveWayPoint+1)) {
     targetLat = Task[ActiveWayPoint].AATTargetLat;

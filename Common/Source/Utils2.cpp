@@ -3992,7 +3992,6 @@ void CreateRecursiveDirectory(TCHAR *fullpath)
 #endif
 
 
-#if OVERTARGET
 // return current overtarget waypoint index, or -1 if not available
 int GetOvertargetIndex(void) {
   int index;
@@ -4165,7 +4164,6 @@ void RotateOvertarget(void) {
 
 }
 
-#endif
 
 //
 void ToggleOverlays() {

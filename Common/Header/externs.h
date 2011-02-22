@@ -260,9 +260,7 @@ extern double LKTopoZoomCat90;
 extern double LKTopoZoomCat100;
 extern double LKTopoZoomCat110;
 extern int LKMaxLabels;
-#if OVERTARGET
 extern short OvertargetMode;
-#endif
 // Simulator mode Turn rate, degrees per second (positive or negative)
 extern double	SimTurn;
 extern double ThLatitude;

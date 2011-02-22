@@ -659,10 +659,8 @@ double LKTopoZoomCat110=0;
 // max number of topo and wp labels painted on map, defined by default in Utils
 int  LKMaxLabels=0;
 
-#if OVERTARGET
 // current mode of overtarget 0=task 1=alt1, 2=alt2, 3=best alt
 short OvertargetMode=0;
-#endif
 double SimTurn=0;
 double ThLatitude=1;
 double ThLongitude=1;

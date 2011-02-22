@@ -645,9 +645,7 @@ class MapWindow {
   static      HPEN hpBestCruiseTrack;
   static      HPEN hpCompass;
   static	HPEN hpThermalCircle;
-  #if OVERTARGET
   static      HPEN hpOvertarget;
-  #endif
   static      HPEN hpThermalBand;
   static      HPEN hpThermalBandGlider;
   static      HPEN hpFinalGlideAbove;
