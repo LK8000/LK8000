@@ -241,7 +241,6 @@ static void OnNewHomeClicked(WindowControl * Sender){
 	(void)Sender;
   LockTaskData();
   HomeWaypoint = SelectedWaypoint;
-  #if NOSIM
   if (SIMMODE) {
 	GPS_INFO.Latitude = WayPointList[HomeWaypoint].Latitude;
 	GPS_INFO.Longitude = WayPointList[HomeWaypoint].Longitude;
@@ -253,19 +252,6 @@ static void OnNewHomeClicked(WindowControl * Sender){
 		GPS_INFO.Altitude = WayPointList[HomeWaypoint].Altitude;
 	}
   }
-  #else
-  #ifdef _SIM_
-  GPS_INFO.Latitude = WayPointList[HomeWaypoint].Latitude;	// 100213
-  GPS_INFO.Longitude = WayPointList[HomeWaypoint].Longitude;
-  GPS_INFO.Altitude = WayPointList[HomeWaypoint].Altitude;
-  #else
-  if ( GPS_INFO.NAVWarning ) {
-	GPS_INFO.Latitude = WayPointList[HomeWaypoint].Latitude;	// 100213
-	GPS_INFO.Longitude = WayPointList[HomeWaypoint].Longitude;
-	GPS_INFO.Altitude = WayPointList[HomeWaypoint].Altitude;
-  }
-  #endif
-  #endif
   // Update HomeWaypoint
   WpHome_Lat=WayPointList[HomeWaypoint].Latitude; // 100213
   WpHome_Lon=WayPointList[HomeWaypoint].Longitude;

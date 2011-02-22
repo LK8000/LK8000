@@ -54,13 +54,7 @@ BOOL ComPort::Initialize(LPCTSTR lpszPortName, DWORD dwPortSpeed, DWORD dwPortBi
   DCB PortDCB;
   TCHAR lkbuf[100];
   TCHAR lkPortName[10]; // 9 should be enough
-#if NOSIM
   if (SIMMODE) return FALSE;
-#else
-#ifdef _SIM_
-  return FALSE;
-#endif
-#endif
 
 #if (WINDOWSPC>0)
   // Do not use anymore COMn: , use \\.\COMnn  on PC version

@@ -27,15 +27,6 @@
 
 #include "devCAI302.h"
 
-#if NOSIM
-#else
-#ifdef _SIM_
-static BOOL fSimMode = TRUE;
-#else
-static BOOL fSimMode = FALSE;
-#endif
-#endif
-
 #define  CtrlC  0x03
 #define  swap(x)      x = ((((x<<8) & 0xff00) | ((x>>8) & 0x00ff)) & 0xffff)
 
@@ -244,11 +235,7 @@ BOOL cai302Open(PDeviceDescriptor_t d, int Port){
 
 //test();
 
-  #if NOSIM
   if (!SIMMODE) {
-  #else
-  if (!fSimMode){
-  #endif
     d->Com->WriteString(TEXT("\x03"));
     d->Com->WriteString(TEXT("LOG 0\r"));
   }

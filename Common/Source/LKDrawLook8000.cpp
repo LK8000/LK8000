@@ -1313,7 +1313,6 @@ Drawbottom:
 		#if 100221
   		showunit=true;
   			wsprintf(BufferUnit, TEXT(""));
-			#if NOSIM
 			if (SIMMODE) {
 				// LKTOKEN _@M1199_ "Sat"
 				wsprintf(BufferTitle, gettext(TEXT("_@M1199_")));
@@ -1339,34 +1338,6 @@ Drawbottom:
 						wsprintf(BufferTitle, TEXT("%s:?"), gettext(TEXT("_@M1199_")));
 				}
 			}
-			#else
-			#ifdef _SIM_ 
-			// LKTOKEN _@M1199_ "Sat"
-  			wsprintf(BufferTitle, gettext(TEXT("_@M1199_")));
-			wsprintf(BufferValue,TEXT("SIM"));
-			#else
-			Value=GPS_INFO.SatellitesUsed;
-			if (Value<1 || Value>30) {
-				wsprintf(BufferValue,TEXT("---"));
-			} else {
-  				sprintf(text,"%d",(int)Value);
-				wsprintf(BufferValue, TEXT("%S"),text);
-
-			}
-			if (nmeaParser1.activeGPS == true)
-				// LKTOKEN _@M1199_ "Sat"
-				wsprintf(BufferTitle, TEXT("%s:A"), gettext(TEXT("_@M1199_")));
-			else {
-				if (nmeaParser2.activeGPS == true)
-					// LKTOKEN _@M1199_ "Sat"
-					wsprintf(BufferTitle, TEXT("%s:B"), gettext(TEXT("_@M1199_")));
-				else
-					// LKTOKEN _@M1199_ "Sat"
-					wsprintf(BufferTitle, TEXT("%s:?"), gettext(TEXT("_@M1199_")));
-			}
-
-			#endif
-			#endif
 
 		#else
 		Value=GPS_INFO.SatellitesUsed;

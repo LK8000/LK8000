@@ -889,16 +889,8 @@ void                                                    AssignValues(void);
 void                                                    DisplayText(void);
 
 void CommonProcessTimer    (void);
-#if NOSIM
 void SIMProcessTimer(void);
 void ProcessTimer    (void);
-#else
-#ifdef _SIM_
-void SIMProcessTimer(void);
-#else
-void ProcessTimer    (void);
-#endif
-#endif
 void                                                    PopUpSelect(int i);
 
 //HWND CreateRpCommandBar(HWND hwnd);
@@ -1304,17 +1296,9 @@ void SettingsLeave() {
   UnlockTaskData();
   UnlockFlightData();
 
-  #if NOSIM
   if(!SIMMODE && COMPORTCHANGED) {
       RestartCommPorts();
   }
-  #else
-  #ifndef _SIM_
-  if(COMPORTCHANGED) {
-      RestartCommPorts();
-  }
-  #endif
-  #endif
 
   MapWindow::ResumeDrawingThread();
   // allow map and calculations threads to continue on their merry way
@@ -1322,21 +1306,12 @@ void SettingsLeave() {
 
 
 void SystemConfiguration(void) {
-#if NOSIM
   if (!SIMMODE) {
   	if (LockSettingsInFlight && CALCULATED_INFO.Flying) {
 		DoStatusMessage(TEXT("Settings locked in flight"));
 		return;
 	}
   }
-#else
-#ifndef _SIM_
-  if (LockSettingsInFlight && CALCULATED_INFO.Flying) {
-    DoStatusMessage(TEXT("Settings locked in flight"));
-    return;
-  }
-#endif
-#endif
 
   SettingsEnter();
   dlgConfigurationShowModal(); 
@@ -1638,7 +1613,6 @@ DWORD CalculationThread (LPVOID lpvoid) {
 
     if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
-#if NOSIM
     if (SIMMODE) {
 	if (needcalculationsslow || ( (OnBestAlternate == true) && (ReplayLogger::IsEnabled()) )) { 
 		DoCalculationsSlow(&tmp_GPS_INFO,&tmp_CALCULATED_INFO);
@@ -1650,16 +1624,6 @@ DWORD CalculationThread (LPVOID lpvoid) {
 		needcalculationsslow = false;
 	}
     }
-#else
-#if defined(_SIM_)
-    if (needcalculationsslow || ( (OnBestAlternate == true) && (ReplayLogger::IsEnabled()) )) { // VENTA3, needed for BestAlternate SIM
-#else
-    if (needcalculationsslow) {
-#endif
-      DoCalculationsSlow(&tmp_GPS_INFO,&tmp_CALCULATED_INFO);
-      needcalculationsslow = false;
-    }
-#endif
 
     if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
@@ -1781,7 +1745,6 @@ void AfterStartup() {
   int olddelay = StatusMessageData[0].delay_ms;
   StatusMessageData[0].delay_ms = 20000; // 20 seconds
 
-#if NOSIM
   if (SIMMODE) {
 	StartupStore(TEXT(". GCE_STARTUP_SIMULATOR%s"),NEWLINE);
 	InputEvents::processGlideComputer(GCE_STARTUP_SIMULATOR);
@@ -1789,15 +1752,6 @@ void AfterStartup() {
 	StartupStore(TEXT(". GCE_STARTUP_REAL%s"),NEWLINE);
 	InputEvents::processGlideComputer(GCE_STARTUP_REAL);
   }
-#else
-#ifdef _SIM_
-  StartupStore(TEXT(". GCE_STARTUP_SIMULATOR%s"),NEWLINE);
-  InputEvents::processGlideComputer(GCE_STARTUP_SIMULATOR);
-#else
-  StartupStore(TEXT(". GCE_STARTUP_REAL%s"),NEWLINE);
-  InputEvents::processGlideComputer(GCE_STARTUP_REAL);
-#endif
-#endif
   StatusMessageData[0].delay_ms = olddelay; 
 
 #ifdef _INPUTDEBUG_
@@ -1852,14 +1806,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   StartupStore(TEXT(". Starting %s %s build#%d%s"), XCSoar_Version,_T("PC"),BUILDNUMBER,NEWLINE);
   #else
   StartupStore(TEXT(". Starting %s %s build#%d%s"), XCSoar_Version,_T("PDA"),BUILDNUMBER,NEWLINE);
-  #endif
-  #endif
-
-
-  #if NOSIM
-  #else
-  #ifdef _SIM_
-  StartupStore(TEXT(". Running mode Simulator%s"),NEWLINE);
   #endif
   #endif
 
@@ -2033,17 +1979,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   GPS_INFO.Minute = pda_time.wMinute;
   GPS_INFO.Second = pda_time.wSecond;
 
-#if !NOSIM
-#ifdef _SIM_
-  #if _SIM_STARTUPSPEED
-  GPS_INFO.Speed = _SIM_STARTUPSPEED;
-  #endif
-  #if _SIM_STARTUPALTITUDE
-  GPS_INFO.Altitude = _SIM_STARTUPALTITUDE;
-  #endif
-#endif
-#endif
-
 #ifdef DEBUG
   DebugStore("# Start\r\n");
 #endif
@@ -2104,16 +2039,8 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   if ( AircraftCategory == (AircraftCategory_t)umParaglider )
 	// LKTOKEN _@M1210_ "PARAGLIDING MODE"
 	CreateProgressDialog(gettext(TEXT("_@M1210_"))); 
-#if NOSIM
 	// LKTOKEN _@M1211_ "SIMULATION"
   if (SIMMODE) CreateProgressDialog(gettext(TEXT("_@M1211_"))); 
-#else
-#ifdef _SIM_  
-	// LKTOKEN _@M1211_ "SIMULATION"
-  CreateProgressDialog(gettext(TEXT("_@M1211_"))); 
-#endif
-#endif
-
 
 #ifdef PNA
   if ( SetBacklight() == true ) 
@@ -2210,32 +2137,17 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   // we want to be sure that RestartCommPort works on startup ONLY after all devices are inititalized
   goInitDevice=true; // 100118
 
-#if NOSIM
-  if (!NOSIM) {
+  if (!SIMMODE) {
 	StartupStore(TEXT(". RestartCommPorts%s"),NEWLINE);
 	RestartCommPorts();
   }
-#else
-#ifndef _SIM_
-  StartupStore(TEXT(". RestartCommPorts%s"),NEWLINE);
-  RestartCommPorts();
-#endif
-#endif
 // WINDOWSPC _SIM_ devInit called twice missing devA name
 // on PC nonSIM we cannot use devInit here! Generic device is used until next port reset!
-#if NOSIM
 
 #if (WINDOWSPC>0)
   if (SIMMODE) devInit(TEXT(""));      
 #endif
 
-#else
-
-#if ((WINDOWSPC>0) && _SIM_) 
-  devInit(TEXT(""));      
-#endif
-
-#endif
 
   // re-set polar in case devices need the data
   StartupStore(TEXT(". GlidePolar::SetBallast%s"),NEWLINE);
@@ -2753,17 +2665,7 @@ void InitialiseFontsAuto(RECT rc,
 // #if defined(PNA) || defined(FIVV)  // Only for PNA, since we still do not copy Fonts in their Windows memory.
 				      // though we could already do it automatically. 
 // #if defined(PNA) //FIX 090925 QUI
-#if NOSIM
   _tcscpy(logfont.lfFaceName, _T("Tahoma")); 
-#else
-#if defined(PNA) || ((WINDOWSPC>0)&&_REALTHING_&&_SIM_)  // 091118
-//#if (1)
-	_tcscpy(logfont.lfFaceName, _T("Tahoma")); 
-#else
-  _tcscpy(logfont.lfFaceName, _T("DejaVu Sans Condensed"));
-#endif
-#endif
-
 
   logfont.lfPitchAndFamily = VARIABLE_PITCH | FF_DONTCARE  ;
   logfont.lfHeight = iFontHeight;
@@ -2807,15 +2709,6 @@ void InitialiseFontsAuto(RECT rc,
 
 
   // next font..
-
-#if NOSIM
-
-#else
-#if (WINDOWSPC>0)&& (!(_REALTHING_&&_SIM_) )
-  FontHeight= (int)(FontHeight/1.35);
-  FontWidth= (int)(FontWidth/1.35);
-#endif
-#endif
 
   memset ((char *)&logfont, 0, sizeof (logfont));
 
@@ -3750,18 +3643,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	LKHearthBeats++; // 100213
       //      ASSERT(hWnd==hWndMainWindow);
       if (ProgramStarted > psInitInProgress) {
-#if NOSIM
 	if (SIMMODE)
 		SIMProcessTimer();
 	else
 		ProcessTimer();
-#else
-#ifdef _SIM_
-	SIMProcessTimer();
-#else
-	ProcessTimer();
-#endif
-#endif
 	if (ProgramStarted==psFirstDrawDone) {
 	  AfterStartup();
 	  ProgramStarted = psNormalOp;
@@ -4594,9 +4479,7 @@ int ConnectionProcessTimer(int itimeout) {
 	StartupStore(_T(". ComPort RESET ordered%s"),NEWLINE);
 	LKForceComPortReset=false;
 	LKDoNotResetComms=false;
-	#if NOSIM
 	if (MapSpaceMode != MSM_WELCOME)
-	#endif
 		InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
 
 	RestartCommPorts();
@@ -4632,7 +4515,6 @@ int ConnectionProcessTimer(int itimeout) {
   return itimeout;
 }
 
-#if  !_SIM_ || NOSIM
 void ProcessTimer(void)
 {
 
@@ -4676,9 +4558,7 @@ void ProcessTimer(void)
     itimeout = ConnectionProcessTimer(itimeout);
   }
 }
-#endif // end processing of non-simulation mode
 
-#if _SIM_ || NOSIM
 void SIMProcessTimer(void)
 {
 
@@ -4729,7 +4609,6 @@ void SIMProcessTimer(void)
 
   VarioWriteSettings();
 }
-#endif
 
 
 void SwitchToMapWindow(void)
@@ -4854,15 +4733,7 @@ void FailStore(const TCHAR *Str, ...)
   fprintf(stream, "------%s%04d%02d%02d-%02d:%02d:%02d [%09u] FailStore Start, Version %s%s (%s %s) FreeRam=%ld %s",SNEWLINE,
 	GPS_INFO.Year,GPS_INFO.Month,GPS_INFO.Day, GPS_INFO.Hour,GPS_INFO.Minute,GPS_INFO.Second,
 	(unsigned int)GetTickCount(),LKVERSION, LKRELEASE,
-#if NOSIM
 	"",
-#else
-#ifdef _SIM_
-	"SIM",
-#else
-	"",
-#endif
-#endif
 #if WINDOWSPC >0
 	"PC",
 #else
@@ -5175,18 +5046,6 @@ void BlankDisplay(bool doblank) {
       // we don't want the PDA to be completely depleted.
 
       if (BatteryInfo.acStatus==0) {
-#if NOSIM
-
-#else
-#ifdef _SIM_
-        if ((PDABatteryPercent < BATTERY_EXIT) && !ForceShutdown) {
-          StartupStore(TEXT("........ Battery low exit...%s"),NEWLINE);
-          // TODO feature: Warning message on battery shutdown
-	  ForceShutdown = true;
-          SendMessage(hWndMainWindow, WM_CLOSE, 0, 0);
-        } else
-#endif
-#endif
           if (PDABatteryPercent < BATTERY_WARNING) {
             DWORD LocalWarningTime = ::GetTickCount();
             if ((LocalWarningTime - BatteryWarningTime) > BATTERY_REMINDER) {
@@ -5515,17 +5374,9 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
   if (_tcsstr(OutBuffer, TEXT("$(CheckSettingsLockout)"))) {
-#if NOSIM
     if (LockSettingsInFlight && CALCULATED_INFO.Flying) {
       invalid = true;
     }
-#else
-#ifndef _SIM_
-    if (LockSettingsInFlight && CALCULATED_INFO.Flying) {
-      invalid = true;
-    }
-#endif
-#endif
     ReplaceInString(OutBuffer, TEXT("$(CheckSettingsLockout)"), TEXT(""), Size);
 	if (--items<=0) goto label_ret; // 100517
   }
@@ -5578,24 +5429,12 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
   // If it is not SIM mode, it is invalid
   if (_tcsstr(OutBuffer, TEXT("$(OnlyInSim)"))) {
-	#if NOSIM
 	if (!SIMMODE) invalid = true;
-	#else
-	#ifndef _SIM_
-	invalid = true;
-	#endif
-	#endif
 	ReplaceInString(OutBuffer, TEXT("$(OnlyInSim)"), TEXT(""), Size);
 	if (--items<=0) goto label_ret; // 100517
   }
   if (_tcsstr(OutBuffer, TEXT("$(OnlyInFly)"))) {
-	#if NOSIM
 	if (SIMMODE) invalid = true;
-	#else
-	#ifdef _SIM_
-	invalid = true;
-	#endif
-	#endif
 	ReplaceInString(OutBuffer, TEXT("$(OnlyInFly)"), TEXT(""), Size);
 	if (--items<=0) goto label_ret; // 100517
   }
@@ -5671,7 +5510,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
   // This will make the button invisible
   if (_tcsstr(OutBuffer, TEXT("$(SIMONLY"))) {
-	#if NOSIM
 	if (SIMMODE) {
 		TCHAR tbuf[10];
 		_tcscpy(tbuf,_T(""));
@@ -5679,15 +5517,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	} else {
 		_tcscpy(OutBuffer,_T(""));
 	}
-	#else
-	#ifndef _SIM_
-	_tcscpy(OutBuffer,_T(""));
-	#else
-	TCHAR tbuf[10];
-	_tcscpy(tbuf,_T(""));
-	ReplaceInString(OutBuffer, TEXT("$(SIMONLY)"), tbuf, Size);
-	#endif
-	#endif
 	if (--items<=0) goto label_ret;
   }
 

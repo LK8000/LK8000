@@ -1544,19 +1544,11 @@ double GetAzimuth() {
 	int hours = (dd/3600);
 	int mins = (dd/60-hours*60);
 	hours = hours % 24;
-	#if NOSIM
 	if (SIMMODE) {
 		// for those who test the sim mode in the evening..
 		if (hours>21) hours-=12;
 		if (hours<7) hours+=12;
 	}
-	#else
-	#ifdef _SIM_
-	// for those who test the sim mode in the evening..
-	if (hours>21) hours-=12;
-	if (hours<7) hours+=12;
-	#endif
-	#endif
 	double h=(12-(double)hours)-((double)mins/60.0);
 
 	if (h>=0) {

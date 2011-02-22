@@ -2425,20 +2425,10 @@ void InputEvents::eventBallast(const TCHAR *misc) {
 
 
 void InputEvents::eventAutoLogger(const TCHAR *misc) {
-  #if NOSIM
   if (SIMMODE) return;
   if (!DisableAutoLogger) {
     eventLogger(misc);
   }
-  #else
-  #ifdef _SIM_
-  return;	// 100310
-  #else
-  if (!DisableAutoLogger) {
-    eventLogger(misc);
-  }
-  #endif
-  #endif
 }
 
 // Logger

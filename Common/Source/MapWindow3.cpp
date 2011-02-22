@@ -424,13 +424,7 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
   //SelectObject(hdc, LK8InfoBigFont);
   SelectObject(hdc, LK8TitleFont);
   _stprintf(Buffer,TEXT("%s v%s.%s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE));
-#if NOSIM
   if (SIMMODE) _tcscat(Buffer,_T(" (Simulator)"));
-#else
-#ifdef _SIM_
-  _tcscat(Buffer,_T(" (Simulator)"));
-#endif
-#endif
   LKWriteText(hdc, Buffer, middlex, contenttop+(textSize.cy*1) , 0, WTMODE_OUTLINED, WTALIGN_CENTER,RGB_AMBER, false);
 
 

@@ -356,20 +356,11 @@ static void OnSetupDeviceAClicked(WindowControl * Sender){
 
 // this is a hack, devices dont jet support device dependant setup dialogs
 
-#if NOSIM
   if (!SIMMODE) {
 	if ((devA() == NULL) || (_tcscmp(devA()->Name,TEXT("Vega")) != 0)) {
 		return;
 	}
   }
-#else
-#ifndef _SIM_
-    if ((devA() == NULL) ||
-	(_tcscmp(devA()->Name,TEXT("Vega")) != 0)) {
-      return;
-    }
-#endif
-#endif
 
 #ifdef VEGAVOICE
     changed = dlgConfigurationVarioShowModal();
@@ -390,20 +381,11 @@ static void OnSetupDeviceBClicked(WindowControl * Sender){
   #endif
 
 // this is a hack, devices dont jet support device dependant setup dialogs
-#if NOSIM
   if (!SIMMODE) {
 	if ((devB() == NULL) || (_tcscmp(devB()->Name,TEXT("Vega")) != 0)) {
 		return;
 	}
   }
-#else
-#ifndef _SIM_
-    if ((devB() == NULL) ||
-	(_tcscmp(devB()->Name,TEXT("Vega")) != 0)) {
-      return;
-    }
-#endif
-#endif
 #ifdef VEGAVOICE
     changed = dlgConfigurationVarioShowModal();
 #endif

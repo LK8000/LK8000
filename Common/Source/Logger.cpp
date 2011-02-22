@@ -153,7 +153,6 @@ void StopLogger(void) {
     if (LoggerClearFreeSpace()) {
 
 
-#if NOSIM
     if (!SIMMODE && LoggerGActive())
 	{
 	  BOOL bFileValid = true;
@@ -178,33 +177,6 @@ void StopLogger(void) {
 	  GRecordAppendGRecordToFile(bFileValid); 
 	}
 
-#else
-#ifndef _SIM_
-    if (LoggerGActive())
-	{
-	  BOOL bFileValid = true;
-	  TCHAR OldGRecordBuff[MAX_IGC_BUFF];
-
-	  TCHAR NewGRecordBuff[MAX_IGC_BUFF];
-
-	  GRecordFinalizeBuffer();  // buffer is appended w/ each igc file write
-	  GRecordGetDigest(OldGRecordBuff); // read record built by individual file writes
-
-	  // now calc from whats in the igc file on disk
-	  GRecordInit();
-	  GRecordSetFileName(szLoggerFileName);
-	  GRecordLoadFileToBuffer();
-	  GRecordFinalizeBuffer();
-	  GRecordGetDigest(NewGRecordBuff);
-
-	  for (unsigned int i = 0; i < 128; i++)
-	    if (OldGRecordBuff[i] != NewGRecordBuff[i] )
-	      bFileValid = false;
-
-	  GRecordAppendGRecordToFile(bFileValid); 
-	}
-#endif
-#endif
 
       int imCount=0;
       const int imMax=3;
@@ -406,7 +378,6 @@ void LogPoint(double Latitude, double Longitude, double Altitude,
 bool LogFRecordToFile(int SatelliteIDs[], short Hour, short Minute, short Second, bool bAlways)
 { // bAlways forces write when completing header for restart
   // only writes record if constallation has changed unless bAlways set
-#if NOSIM
   if (SIMMODE) return true;
   char szFRecord[MAX_IGC_BUFF];
   static bool bFirst = true;
@@ -468,72 +439,6 @@ bool LogFRecordToFile(int SatelliteIDs[], short Hour, short Minute, short Second
   }
   return bRetVal;
 
-#else
-#if !defined(_SIM_)
-
-  char szFRecord[MAX_IGC_BUFF];
-  static bool bFirst = true;
-  int eof=0;
-  int iNumberSatellites=0;
-  bool bRetVal = false;
-
-  if (bFirst)
-  {
-    bFirst = false;
-    ResetFRecord_Internal();
-  }
-
-
-  sprintf(szFRecord,"F%02d%02d%02d", Hour, Minute, Second);
-  eof=7;
-
-  for (int i=0; i < MAXSATELLITES; i++)
-  {
-    if (SatelliteIDs[i] > 0)
-    {
-      sprintf(szFRecord+eof, "%02d",SatelliteIDs[i]);
-      eof +=2;
-      iNumberSatellites++;
-    }
-  }
-  sprintf(szFRecord+ eof,"\r\n");
-
-  // only write F Record if it has changed since last time
-  // check every 4.5 minutes to see if it's changed.  Transient changes are not tracked.
-  if (!bAlways 
-        && strcmp(szFRecord + 7, szLastFRecord + 7) == 0
-        && strlen(szFRecord) == strlen(szLastFRecord) )
-  { // constellation has not changed 
-      if (iNumberSatellites >=3)
-        bRetVal=true;  // if the last FRecord had 3+ sats, then return true
-                      //  and this causes 5-minute counter to reset
-      else
-        bRetVal=false;  // non-2d fix, don't reset 5-minute counter so
-                        // we keep looking for changed constellations
-  }
-  else
-  { // constellation has changed
-    if (IGCWriteRecord(szFRecord))
-    {
-      strcpy(szLastFRecord, szFRecord);
-      if (iNumberSatellites >=3)
-        bRetVal=true;  // if we log an FRecord with a 3+ sats, then return true
-                      //  and this causes 5-minute counter to reset
-      else
-        bRetVal=false;  // non-2d fix, log it, and don't reset 5-minute counter so
-                        // we keep looking for changed constellations
-    }
-    else
-    {  // IGCwrite failed 
-      bRetVal = false;
-    }
-
-  }
-  return bRetVal;
-#else
-  return true;
-#endif
-#endif
 }
 
 
@@ -604,19 +509,11 @@ void StartLogger(TCHAR *astrAssetNumber)
 #endif
 
 
-#if NOSIM
   if (!SIMMODE) {
 	LinkGRecordDLL();
 	if (LoggerGActive()) GRecordInit();
   }
 
-#else
-#ifndef _SIM_
-  LinkGRecordDLL(); // try to link DLL if it exists
-  if (LoggerGActive())
-    GRecordInit();
-#endif
-#endif
   
   for(i=1;i<99;i++)
     {
@@ -1633,16 +1530,9 @@ bool IGCWriteRecord(char *szIn)
       for (i = 0; (i <= iLen) && (i < MAX_IGC_BUFF); i++)
 	buffer[i] = (TCHAR)charbuffer[i];
 
-#if NOSIM
 	if (!SIMMODE) {
 		if (LoggerGActive()) GRecordAppendRecordToBuffer(pbuffer);
 	}
-#else
-#ifndef _SIM_
-      if (LoggerGActive())
-	GRecordAppendRecordToBuffer(pbuffer);
-#endif
-#endif
 
       FlushFileBuffers(hFile);
       CloseHandle(hFile);

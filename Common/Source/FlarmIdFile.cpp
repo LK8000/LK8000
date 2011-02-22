@@ -21,13 +21,7 @@ FlarmIdFile::FlarmIdFile(void)
   LKSound(_T("LK_CONNECT.WAV"));
 
   TCHAR flarmIdFileName[MAX_PATH] = TEXT("\0");
-#if NOSIM
   if (SIMMODE) return;
-#else
-#ifdef _SIM_
-	return;
-#endif
-#endif
 
   LocalPath(path);
 

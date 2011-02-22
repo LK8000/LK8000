@@ -761,16 +761,8 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 	params[8][2] = '\0';
 	gd = _tcstol(&params[8][0], &Stop, 10); 
 
-#if NOSIM
-	if ( ((gy > 1980) && (gy <2100) ) && (gm != 0) && (gd != 0) ) { 
-#else
-#ifdef _SIM_
 	// SeeYou PC is sending NMEA sentences with RMC date 2072-02-27
-	if ( ((gy > 1980) && (gy <2100) ) && (gm != 0) && (gd != 0) ) { // 100422
-#else
-	if ( ((gy > 2000) && (gy <2020) ) && (gm != 0) && (gd != 0) ) { // 100422
-#endif
-#endif
+	if ( ((gy > 1980) && (gy <2100) ) && (gm != 0) && (gd != 0) ) { 
 		GPS_INFO->Year = gy;
 		GPS_INFO->Month = gm;
 		GPS_INFO->Day = gd;

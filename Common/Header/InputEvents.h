@@ -119,13 +119,7 @@ class InputEvents {
   static void eventService(const TCHAR *misc);
   // -------
 
-#if NOSIM
   static void showErrors();
-#else
-#ifdef _SIM_
-  static void showErrors();
-#endif 
-#endif
 
  private:
   static bool processGlideComputer_real(int);

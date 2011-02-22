@@ -172,7 +172,6 @@
 #define ORBITER		1	// thermal orbiter
 
 #define LKSTARTUP	1	// new startup screen
-#define NOSIM		1	// sim and fly in the same executable
 
 // 101020
 // TEMPORARY FIXES THAT REQUIRE EXTENSIVE TESTING - KEEP #ifdef until expiring date

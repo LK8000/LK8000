@@ -53,16 +53,6 @@ static  DWORD Bit1Index = (BitIndex_t)bit8N1;
 static  DWORD Bit2Index = (BitIndex_t)bit8N1;
 // static  DWORD Bit3Index = (BitIndex_t)bit8N1;
 
-#if NOSIM
-
-#else
-#ifdef _SIM_
-static BOOL fSimMode = TRUE;
-#else
-static BOOL fSimMode = FALSE;
-#endif
-#endif
-
 DeviceRegister_t   DeviceRegister[NUMREGDEV];
 DeviceDescriptor_t DeviceList[NUMDEV];
 
@@ -483,11 +473,7 @@ BOOL devPutMacCready(PDeviceDescriptor_t d, double MacCready)
 {
   BOOL result = TRUE;
 
-  #if NOSIM
   if (SIMMODE)
-  #else
-  if (fSimMode)
-  #endif
     return TRUE;
   LockComm();
   if (d != NULL && d->PutMacCready != NULL)
@@ -501,11 +487,7 @@ BOOL devPutBugs(PDeviceDescriptor_t d, double Bugs)
 {
   BOOL result = TRUE;
 
-  #if NOSIM
   if (SIMMODE)
-  #else
-  if (fSimMode)
-  #endif
     return TRUE;
   LockComm();
   if (d != NULL && d->PutBugs != NULL)
@@ -519,11 +501,7 @@ BOOL devPutBallast(PDeviceDescriptor_t d, double Ballast)
 {
   BOOL result = TRUE;
 
-  #if NOSIM
   if (SIMMODE)
-  #else
-  if (fSimMode)
-  #endif
     return TRUE;
   LockComm();
   if (d != NULL && d->PutBallast != NULL)
@@ -581,11 +559,7 @@ BOOL devLinkTimeout(PDeviceDescriptor_t d)
 {
   BOOL result = FALSE;
 
-  #if NOSIM
   if (SIMMODE)
-  #else
-  if (fSimMode)
-  #endif
     return TRUE;
   LockComm();
   if (d == NULL){
@@ -632,11 +606,7 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
 {
   BOOL result = FALSE;
 
-  #if NOSIM
   if (SIMMODE)
-  #else
-  if (fSimMode)
-  #endif
     return TRUE;
   
   const unsigned BUFF_LEN = 128;
@@ -860,11 +830,7 @@ BOOL devPutVolume(PDeviceDescriptor_t d, int Volume)
 {
   BOOL result = TRUE;
 
-  #if NOSIM
   if (SIMMODE)
-  #else
-  if (fSimMode)
-  #endif
     return TRUE;
   LockComm();
   if (d != NULL && d->PutVolume != NULL)
@@ -878,11 +844,7 @@ BOOL devPutFreqActive(PDeviceDescriptor_t d, double Freq)
 {
   BOOL result = TRUE;
 
-  #if NOSIM
   if (SIMMODE)
-  #else
-  if (fSimMode)
-  #endif
     return TRUE;
   LockComm();
   if (d != NULL && d->PutFreqActive != NULL)
@@ -896,11 +858,7 @@ BOOL devPutFreqStandby(PDeviceDescriptor_t d, double Freq)
 {
   BOOL result = TRUE;
 
-  #if NOSIM
   if (SIMMODE)
-  #else
-  if (fSimMode)
-  #endif
     return TRUE;
   LockComm();
   if (d != NULL && d->PutFreqStandby != NULL)

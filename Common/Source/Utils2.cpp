@@ -908,7 +908,6 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		}
 */
 
-#if NOSIM
 		if (SIMMODE) {
 #ifndef MAP_ZOOM
 			if ( MapWindow::EnablePan  && ISPARAGLIDER) return 99; // 091221 return impossible value
@@ -919,19 +918,6 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		} else {
 			return 0;
 		}
-#else
-#if _SIM_
-#ifndef MAP_ZOOM
-		if ( MapWindow::EnablePan  && ISPARAGLIDER) return 99; // 091221 return impossible value
-#else /* MAP_ZOOM */
-		if ( MapWindow::mode.AnyPan() && ISPARAGLIDER) return 99; // 091221 return impossible value
-#endif /* MAP_ZOOM */
-			else return 0;
-#else
-		// if we want to emulate a return key, return 13;
-		return 0;
-#endif
-#endif
 	}
 	DoStatusMessage(_T("VirtualKey Error")); 
 	return 0;

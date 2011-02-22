@@ -123,7 +123,6 @@ void	TeamCodeProcessing(int UpDown)
 void	AltitudeProcessing(int UpDown)
 {
 #if 0
-  #if NOSIM
   if (SIMMODE) {
 	if(UpDown==1) {
 	  GPS_INFO.Altitude += (100/ALTITUDEMODIFY);
@@ -138,22 +137,6 @@ void	AltitudeProcessing(int UpDown)
 	  DirectionProcessing(1);
 	}
    }
-   #else
-	#ifdef _SIM_
-	if(UpDown==1) {
-	  GPS_INFO.Altitude += (100/ALTITUDEMODIFY);
-	}	else if (UpDown==-1)
-	  {
-	    GPS_INFO.Altitude -= (100/ALTITUDEMODIFY);
-	    if(GPS_INFO.Altitude < 0)
-	      GPS_INFO.Altitude = 0;
-	  } else if (UpDown==-2) {
-	  DirectionProcessing(-1);
-	} else if (UpDown==2) {
-	  DirectionProcessing(1);
-	}
-	#endif
-  #endif
 	return;
 #endif
 }
@@ -207,7 +190,6 @@ void BestAlternateProcessing(int UpDown)
 
 void	SpeedProcessing(int UpDown)
 {
-  #if NOSIM
   if (SIMMODE) {
 		if(UpDown==1)
 			GPS_INFO.Speed += (10/SPEEDMODIFY);
@@ -222,22 +204,6 @@ void	SpeedProcessing(int UpDown)
 			DirectionProcessing(1);
 		}
   } 
-  #else
-	#ifdef _SIM_
-		if(UpDown==1)
-			GPS_INFO.Speed += (10/SPEEDMODIFY);
-		else if (UpDown==-1)
-		{
-			GPS_INFO.Speed -= (10/SPEEDMODIFY);
-			if(GPS_INFO.Speed < 0)
-				GPS_INFO.Speed = 0;
-		} else if (UpDown==-2) {
-			DirectionProcessing(-1);
-		} else if (UpDown==2) {
-			DirectionProcessing(1);
-		}
-	#endif
-  #endif
 	return;
 }
 
@@ -311,7 +277,6 @@ void	WindSpeedProcessing(int UpDown)
 
 void	DirectionProcessing(int UpDown)
 {
-  #if NOSIM
   if (SIMMODE) {
 		if(UpDown==1)
 		{
@@ -331,26 +296,6 @@ void	DirectionProcessing(int UpDown)
 		}
 
   }
-  #else
-	#ifdef _SIM_
-		if(UpDown==1)
-		{
-			GPS_INFO.TrackBearing   += 5;
-			while (GPS_INFO.TrackBearing  >= 360)
-			{
-				GPS_INFO.TrackBearing  -= 360;
-			}
-		}
-		else if (UpDown==-1)
-		{
-			GPS_INFO.TrackBearing  -= 5;
-			while (GPS_INFO.TrackBearing  < 0)
-			{
-				GPS_INFO.TrackBearing  += 360;
-			}
-		}
-	#endif
-  #endif
 	return;
 }
 

@@ -2369,7 +2369,6 @@ Escamotage:
 	// disable picking when in pan mode
 	break; 
       } 
-#if NOSIM
 #ifndef MAP_ZOOM
       else if (SIMMODE && (!TargetPan && (distance>NIBLSCALE(36)))) {
 #else /* MAP_ZOOM */
@@ -2393,24 +2392,6 @@ Escamotage:
 	break;
       }
 
-#else
-#ifdef _SIM_
-      else if (!TargetPan && (distance>NIBLSCALE(36))) {
-	// This drag moves the aircraft (changes speed and direction)
-	double newbearing;
-	double oldbearing = GPS_INFO.TrackBearing;
-	double minspeed = 1.1*GlidePolar::Vminsink;
-	DistanceBearing(Ystart, Xstart, Ylat, Xlat, NULL, &newbearing);
-	if ((fabs(AngleLimit180(newbearing-oldbearing))<30) || (GPS_INFO.Speed<minspeed)) {
-		GPS_INFO.Speed = min(100.0,max(minspeed,distance/3));
-	} 
-	GPS_INFO.TrackBearing = newbearing;
-	TriggerGPSUpdate();
-      
-	break;
-      }
-#endif
-#endif
 #ifndef MAP_ZOOM
       if (!TargetPan) {
 #else /* MAP_ZOOM */
@@ -2511,7 +2492,6 @@ savecodesize1:
 #endif
 			} else {
 				// in pan mode and SIM mode, click to center current position
-				#if NOSIM
 				if (SIMMODE) {
 #ifndef MAP_ZOOM
 					if (EnablePan) {
@@ -2529,20 +2509,6 @@ savecodesize1:
 						}
 					}
 				}
-				#else
-				#if _SIM_
-				if (EnablePan) {
-					// match only center screen
-					if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(5)) && 
-					      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(5)) ) {
-						DoStatusMessage(_T("Current position updated")); 
-						GPS_INFO.Latitude=PanLatitude;
-						GPS_INFO.Longitude=PanLongitude;
-						break;
-					}
-				}
-				#endif
-				#endif
 				// If we are here,  (DCI/2)+30 < dwDownTime < DOUBLECLICKINTERVAL
 				// SO this is a tight interval. DCI should not be set too low. See Defines.h
 				// NO: VKSHORTCLICK-DCI  150-350 ?
@@ -2574,7 +2540,6 @@ savecodesize1:
 				}
 #endif
 			} else {
-				#if NOSIM
 				if (SIMMODE) {
 #ifndef MAP_ZOOM
 					if (EnablePan) {
@@ -2592,20 +2557,6 @@ savecodesize1:
 						}
 					}
 				}
-				#else
-				#if _SIM_
-				if (EnablePan) {
-					// match only center screen
-					if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(5)) && 
-					      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(5)) ) {
-						DoStatusMessage(_T("Current position updated"));
-						GPS_INFO.Latitude=PanLatitude;
-						GPS_INFO.Longitude=PanLongitude;
-						break;
-					}
-				}
-				#endif
-				#endif
 				if (!OnAirSpace) break; // 100119
 				if (Event_InteriorAirspaceDetails(Xstart, Ystart)) {
 					break;
@@ -3097,13 +3048,7 @@ void MapWindow::DrawThermalEstimate(HDC hdc, const RECT rc) {
   POINT screen;
   HPEN oldPen;
   /*
-  #if NOSIM
   static short counter=0;
-  #else
-  #ifdef _SIM_
-  static short counter=0;
-  #endif
-  #endif
   */
   if (!EnableThermalLocator) return;
 
@@ -3140,7 +3085,6 @@ void MapWindow::DrawThermalEstimate(HDC hdc, const RECT rc) {
 #endif /* MAP_ZOOM */
 		}
 /* 101219 This would display circles around the simulated thermal, but people is confused.
-		#if NOSIM
 		if (SIMMODE && (ThLatitude>1 && ThLongitude>1)) { // there's a thermal to show
 			if ((counter==5 || counter==6|| counter==7)) {
 				LatLon2Screen(ThLongitude, ThLatitude, screen);
@@ -3159,28 +3103,6 @@ void MapWindow::DrawThermalEstimate(HDC hdc, const RECT rc) {
 			}
 			if (++counter>=60) counter=0;
 		}
-		#else
-		#ifdef _SIM_	//@ 101104
-		if (ThLatitude>1 && ThLongitude>1) { // there's a thermal to show
-			if (counter==5 || counter==6|| counter==7) {
-				LatLon2Screen(ThLongitude, ThLatitude, screen);
-				SelectObject(hdc, hSnailPens[7]);  
-#ifndef MAP_ZOOM
-				Circle(hdc, screen.x, screen.y, (int)(ThermalRadius*ResMapScaleOverDistanceModify), rc); 
-#else
-				Circle(hdc, screen.x, screen.y, (int)(ThermalRadius*zoom.ResScaleOverDistanceModify()), rc); 
-#endif
-				SelectObject(hdc, hSnailPens[7]); 
-#ifndef MAP_ZOOM
-				Circle(hdc, screen.x, screen.y, (int)((ThermalRadius+SinkRadius)*ResMapScaleOverDistanceModify), rc); 
-#else
-				Circle(hdc, screen.x, screen.y, (int)((ThermalRadius+SinkRadius)*zoom.ResScaleOverDistanceModify()), rc); 
-#endif
-			}
-			if (++counter>=30) counter=0;
-		}
-		#endif
-		#endif
  */
 		SelectObject(hdc,oldPen);
 	}
