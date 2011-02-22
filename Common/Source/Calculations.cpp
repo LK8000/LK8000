@@ -1057,6 +1057,7 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	DoAlternates(Basic,Calculated,RESWP_LASTTHERMAL);  // 100930
 	DoAlternates(Basic,Calculated,RESWP_TEAMMATE);     // 100930
 	DoAlternates(Basic,Calculated,RESWP_FLARMTARGET);  // 101001
+	DoAlternates(Basic,Calculated,HomeWaypoint); 	
   }
 
   // Vario(Basic,Calculated); moved up to reduce latency 091201
