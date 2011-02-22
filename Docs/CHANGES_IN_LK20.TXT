@@ -1,4 +1,9 @@
 
+Version 2.0?
+
+- Bugfix homewaypoint in multitargets not working all the times. Sometimes did not get updated!
+
+
 Version 2.0c February, 16 2011
 
 
