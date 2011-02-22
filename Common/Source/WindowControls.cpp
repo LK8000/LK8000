@@ -1534,7 +1534,6 @@ void WindowControl::AddClient(WindowControl *Client){
   if (Client->mHeight == -888) Client->mHeight=ScreenSizeY;
   #endif
   // Rescale mWidth
-  #if LKWINCONTROL
   if (Client->mWidth<-1) {
 	int i=RescaleWidth(Client->mWidth);
 	Client->mWidth=i;
@@ -1543,7 +1542,6 @@ void WindowControl::AddClient(WindowControl *Client){
 		Client->mWidth, Client->mHeight,
 		SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
   }
-  #endif
 	
 }
 
@@ -3716,42 +3714,6 @@ void WndListFrame::Paint(HDC hDC){
 
 	HDC HdcTemp = CreateCompatibleDC(hDC);
 
-	#if NO_LKWINCONTROL // -----------------------------  100515
-	int ri=mClients[0]->GetWidth();
-	if (ri <-1) {
-		StartupStore(_T("........ rescaling Paint width mClients =%d\n"),ri); // REMOVE
-		mClients[0]->SetWidth(RescaleWidth(ri));
-		StartupStore(_T("........ new rescaled Paint width mClients =%d\n"),mClients[0]->GetWidth()); // REMOVE
-	}
-	HBITMAP BmpMem = CreateCompatibleBitmap(hDC,
-               mClients[0]->GetWidth(),
-               mClients[0]->GetHeight());
-
-	HBITMAP oldBmp = (HBITMAP)SelectObject(HdcTemp, BmpMem);
-
-	for (i=0; i<mListInfo.ItemInViewCount; i++){
- 
-		HFONT oldFont = (HFONT)SelectObject(HdcTemp, mClients[0]->GetFont());
-
-		if (mOnListCallback != NULL){
-			mListInfo.DrawIndex = mListInfo.TopIndex + i;
-			if (mListInfo.DrawIndex == mListInfo.ItemIndex) continue;
-			mOnListCallback(this, &mListInfo);
-		}
-
-		mClients[0]->PaintSelector(true);
-		mClients[0]->Paint(HdcTemp);
-		mClients[0]->PaintSelector(false);
-
-		BitBlt(hDC,
-			mClients[0]->GetLeft(), i*mClients[0]->GetHeight(),
-			mClients[0]->GetWidth(), mClients[0]->GetHeight(),
-			HdcTemp,
-			0,0,
-			SRCCOPY
-		);
-
-	#else  // --------------------------------------
     HBITMAP BmpMem = CreateCompatibleBitmap(hDC,
                mClients[0]->GetWidth(),
                mClients[0]->GetHeight());
@@ -3780,7 +3742,6 @@ void WndListFrame::Paint(HDC hDC){
           0,0,
           SRCCOPY
         );
-	#endif // --------------------------  not LKWINCONTROL
 
       SelectObject(HdcTemp, oldFont);
 
@@ -3832,16 +3793,8 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
 	}
   }
 
-  #if NO_LKWINCONTROL
-  int w;
-  if (GetWidth()<-1) 
-	w = RescaleWidth(GetWidth()) - (ScrollbarWidth);
-  else 
-	w = GetWidth()- (ScrollbarWidth);
-  #else
 
   int w = GetWidth()- (ScrollbarWidth);
-  #endif
   int h = GetHeight() - ScrollbarTop;
 
   #if FIXDC
