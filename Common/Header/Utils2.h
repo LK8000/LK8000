@@ -8,10 +8,8 @@
 #if !defined(LK8000_UTILS2_H_)
 #define LK8000_UTILS2_H_
 
-#if EQMC
 #if !defined(AFX_CALCULATIONS_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
 #include "Calculations.h"
-#endif
 #endif
 
 #include "MapWindow.h"
@@ -43,11 +41,7 @@ void	InsertRotaryBuffer(ifilter_s *buf, int value);
 
 bool	InitLDRotary(ldrotary_s *buf);
 void	InsertLDRotary(ldrotary_s *buf, int distance, int altitude);
-#if EQMC
 double	CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated);
-#else
-int	CalculateLDRotary(ldrotary_s *buf);
-#endif
 
 // TrueWind functions
 void	InitWindRotary(windrotary_s *wbuf);

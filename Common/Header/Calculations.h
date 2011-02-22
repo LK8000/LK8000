@@ -120,9 +120,7 @@ typedef struct _DERIVED_INFO
   double Odometer;
   // Paolo Ventafridda: recalcuated value with no strange assumptions. These values are trustable.
   double LKTaskETE;
-  #if EQMC
   double EqMc; // equivalent MacCready
-  #endif
 
   // JMW moved calculated waypoint info here
 

@@ -130,10 +130,6 @@
 #define TOPOFASTCACHE	1
 #endif
 
-// new terrain shadowing and highlighting
-#define LKSHADING	1
-// equivalent MC
-#define EQMC		1
 // auto orientation
 #define AUTORIENT	1
 // PC AlphaBlending option, unavailable on PNA and PDA

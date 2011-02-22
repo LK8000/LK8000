@@ -1085,11 +1085,7 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   Turning(Basic, Calculated);
   LD(Basic,Calculated);
   CruiseLD(Basic,Calculated);
-  #if EQMC
   Calculated->AverageLD=CalculateLDRotary(&rotaryLD,Calculated); 
-  #else
-  Calculated->AverageLD=CalculateLDRotary(&rotaryLD); // AverageLD
-  #endif
   Average30s(Basic,Calculated);
   AverageThermal(Basic,Calculated);
   AverageClimbRate(Basic,Calculated);
@@ -4066,14 +4062,12 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   double mc_new = MACCREADY;
   static bool first_mc = true;
 
-  #if EQMC
   if ( AutoMcMode==3 ) {
 	if (Calculated->EqMc>=0) 
 		MACCREADY = LowPassFilter(MACCREADY,Calculated->EqMc,0.8);
 	UnlockTaskData();
 	return;
   }
-  #endif
   /*
   // 101219 NO NEED
   if ( AutoMcMode==1 ) {

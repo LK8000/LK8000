@@ -630,10 +630,8 @@ typedef struct {
 typedef struct {
         int     distance[MAXLDROTARYSIZE]; // rotary array with a predefined max capacity
         int     altitude[MAXLDROTARYSIZE]; 
-	#if EQMC
         double     ias[MAXLDROTARYSIZE]; 
         double     totalias;
-	#endif
 	int	totaldistance;
         short   start;          // pointer to current first item in rotarybuf if used
         short   size;           // real size of rotary buffer (0-size)

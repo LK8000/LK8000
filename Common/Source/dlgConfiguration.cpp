@@ -2029,10 +2029,8 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M118_")));
 	// LKTOKEN  _@M148_ = "Both (Fin+Ave)" 
     dfe->addEnumText(gettext(TEXT("_@M148_")));
-    #if EQMC
 	// LKTOKEN  _@M262_ = "Equivalent MC" 
     dfe->addEnumText(gettext(TEXT("_@M262_")));
-    #endif
     wp->GetDataField()->Set(AutoMcMode);
     wp->RefreshDisplay();
   }

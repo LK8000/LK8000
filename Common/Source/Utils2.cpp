@@ -76,14 +76,10 @@ FILE *fp;
 	for (i=0; i<MAXLDROTARYSIZE; i++) {
 		buf->distance[i]=0;
 		buf->altitude[i]=0;
-		#if EQMC
 		buf->ias[i]=0;
-		#endif
 	}
 	buf->totaldistance=0;
-	#if EQMC
 	buf->totalias=0;
-	#endif
 	buf->start=-1;
 	buf->size=bsize;
 	buf->valid=false;
@@ -155,13 +151,10 @@ FILE *fp;
 	// need to fill up buffer before starting to empty it
 	if ( buf->valid == true) {
 		buf->totaldistance-=buf->distance[buf->start];
-		#if EQMC
 		buf->totalias-=buf->ias[buf->start];
-		#endif
 	}
 	buf->totaldistance+=distance;
 	buf->distance[buf->start]=distance;
-	#if EQMC
 	// insert IAS in the rotary buffer, either real or estimated
 	if (GPS_INFO.AirspeedAvailable) {
                 buf->totalias += (int)GPS_INFO.IndicatedAirspeed;
@@ -170,7 +163,6 @@ FILE *fp;
                 buf->totalias += (int)CALCULATED_INFO.IndicatedAirspeedEstimated;
                 buf->ias[buf->start] = (int)CALCULATED_INFO.IndicatedAirspeedEstimated;
 	}
-	#endif
 	buf->altitude[buf->start]=altitude;
 #ifdef DEBUG_ROTARY
 	sprintf(ventabuffer,"insert buf[%d/%d], distance=%d totdist=%d\r\n",buf->start, buf->size-1, distance,buf->totaldistance);
@@ -183,11 +175,7 @@ FILE *fp;
  * returns 0 if invalid, 999 if too high
  * EqMc is negative when no value is available, because recalculated and buffer still not usable
  */
-#if EQMC
 double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
-#else
-int CalculateLDRotary(ldrotary_s *buf ) {
-#endif
 
 	int altdiff;
 	double eff;
@@ -196,10 +184,8 @@ int CalculateLDRotary(ldrotary_s *buf ) {
 	char ventabuffer[200];
 	FILE *fp;
 #endif
-	#if EQMC
 	double averias;
 	double avertas;
-	#endif
 
 	if ( CALCULATED_INFO.Circling == TRUE || CALCULATED_INFO.OnGround == TRUE) {
 #ifdef DEBUG_ROTARY
@@ -207,10 +193,8 @@ int CalculateLDRotary(ldrotary_s *buf ) {
 		if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
 			    {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
 #endif
-		#if EQMC
 		// StartupStore(_T("... Circling or grounded, EqMc -2 (---)\n"));
 		Calculated->EqMc = -1;
-		#endif
 		return(0);
 	}
 
@@ -220,10 +204,8 @@ int CalculateLDRotary(ldrotary_s *buf ) {
 		if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
 			    {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
 #endif
-		#if EQMC
 		// StartupStore(_T("... Invalid buf start, EqMc -2 (---)\n"));
 		Calculated->EqMc = -1;
-		#endif
 		return(0);
 	}
 
@@ -232,10 +214,8 @@ int CalculateLDRotary(ldrotary_s *buf ) {
 
 	if (bc.valid == false ) {
 		if (bc.start==0) {
-			#if EQMC
 			// StartupStore(_T("... bc.valid is false, EqMc -2 (---)\n"));
 			Calculated->EqMc = -1;
-			#endif
 			return(0); // unavailable
 		}
 		bcold=0;
@@ -249,7 +229,6 @@ int CalculateLDRotary(ldrotary_s *buf ) {
 
 	altdiff= bc.altitude[bcold] - bc.altitude[bc.start];
 
-	#if EQMC
 	// StartupStore(_T("... bcold=%d bcstart=%d  old-start=%d\n"), bcold, bc.start, bcold-bc.start); // REMOVE
 	// if ( bc.valid == true ) {
 	// bcsize<=0  should NOT happen, but we check it for safety
@@ -271,7 +250,6 @@ int CalculateLDRotary(ldrotary_s *buf ) {
 		//GlidePolar::sinkratecache[GlidePolar::Vbestld], GlidePolar::Vbestld*TOKPH);
 
 	}
-	#endif
 
 	if (altdiff == 0 ) {
 		return(INVALID_GR); // infinitum
