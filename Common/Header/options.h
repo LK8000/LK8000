@@ -93,9 +93,6 @@
  #define LK_CACHECALC_MCA 60
  // #define LK_CACHECALC_MCA_STAT 1
 
- // Optimize LKDraw functions with doinits (TO IMPROVE!)
- #define LKDRAW_OPTIMIZE		1
-
  // Optimize Terrain drawing, may be faulty and need more tests.
  // #define TERRAIN_OPTIMIZE	1
 

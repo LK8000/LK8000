@@ -99,7 +99,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
   static COLORREF barTextColor=RGB_WHITE; // default bottom bar text color, reversable
 
-  #ifdef LKDRAW_OPTIMIZE
   short tlen;
   static int ySizeLK8BigFont;
   static int ySizeLK8MediumFont;
@@ -119,9 +118,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   static int splitoffset2; // second raw, which really is the first from top!
 
 
-  #else
-  static short tlen; // FIX TODO 100215 no static
-  #endif
 
   // This is going to be the START 1/3  name replacing waypoint name when gates are running
   TCHAR StartGateName[12]; // 100506
@@ -156,7 +152,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 	bigFont=(HFONT *)LK8TargetFont;
 
   if (doinit) {
-#if LKDRAW_OPTIMIZE
 	TCHAR Tdummy[]=_T("T");
 	int iconsize;
 	SelectObject(hdc, bigFont); 
@@ -293,7 +288,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		// splitoffset2= (rc.right-rc.left)/splitter;
 		splitoffset2= splitoffset;
 	}
-#endif
 	doinit=false; 
   } // end doinit
 
@@ -433,7 +427,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 			 LKWriteText(hdc,Buffer, rcx+NIBLSCALE(2), rcy,0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
 		}
 
-		 #ifdef LKDRAW_OPTIMIZE
 		 if (gateinuse>=-1) {
 			// if we are still painting , it means we did not start yet..so we use colors
 			if (CorrectSide() ) {
@@ -489,16 +482,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 			}
 		} else
 			LKWriteText(hdc,BufferValue, rcx+NIBLSCALE(2), rcy+ ySizeLK8TargetFont, 0, WTMODE_OUTLINED, WTALIGN_LEFT, distcolor, true);
-		 #else
-		// WARNING NOT SUPPORTED ANYMORE TODO FIX
-		GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &TextSize);
-		 if (gateinuse>=-1)
-		 	LKFormatValue(LK_START_DIST, false, BufferValue, BufferUnit, BufferTitle);
-		 else
-	 		LKFormatValue(LK_NEXT_DIST, false, BufferValue, BufferUnit, BufferTitle);
-
-	 	LKWriteText(hdc,BufferValue, rcx+NIBLSCALE(2), rcy+TextSize.cy, 0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
-	 	#endif
 
  		GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize2);
 		if (!HideUnits) {
