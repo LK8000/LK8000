@@ -25,11 +25,7 @@
 #define MAX_NMEA_PARAMS		40
 
 // max length of waypoint comment names
-#if CUPSUP
 #define COMMENT_SIZE 250
-#else
-#define COMMENT_SIZE 150
-#endif
 
 #define WAY_POINT_ID_SIZE 20
 

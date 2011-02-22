@@ -4858,9 +4858,7 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			if ((HomeWaypoint!=RESWP_TAKEOFF) && !ISPARAGLIDER) {
 				TakeOffWayPoint=false;
 			}
-			#ifdef CUPSUP
 			WayPointList[RESWP_TAKEOFF].Format = LKW_VIRTUAL; // 100212
-			#endif
 			
 		}
 			

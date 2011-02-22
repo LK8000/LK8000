@@ -103,7 +103,6 @@ typedef struct _WAYPOINT_INFO
   TCHAR *Details;
   bool FarVisible;
   int FileNum; // which file it is in, or -1 to delete
-#ifdef CUPSUP
   // waypoint original format, LKW_DAT CUP etc.
   short Format;
   TCHAR Code[CUPSIZE_CODE+1];
@@ -112,7 +111,6 @@ typedef struct _WAYPOINT_INFO
   int   RunwayDir;
   TCHAR Country[CUPSIZE_COUNTRY+1];
   short Style;
-#endif
 } WAYPOINT;
 
 // This struct is separated from _WAYPOINT_INFO and will not be used in task files.  

@@ -399,7 +399,6 @@ void dlgWayPointDetailsShowModal(void){
            Directory,
            SelectedWaypoint+1);
 
-  #ifdef CUPSUP
   // if SeeYou waypoint
   if (WPLSEL.Format == LKW_CUP) { 
 	TCHAR ttmp[50];
@@ -439,11 +438,6 @@ void dlgWayPointDetailsShowModal(void){
 	_tcscat(sTmp, WayPointList[SelectedWaypoint].Name);
 	wf->SetCaption(sTmp);
   }
-  #else
-  _stprintf(sTmp, TEXT("%s: "), wf->GetCaption());
-  _tcscat(sTmp, WayPointList[SelectedWaypoint].Name);
-  wf->SetCaption(sTmp);
-  #endif
 
   wp = ((WndProperty *)wf->FindByName(TEXT("prpWpComment")));
   #if CUPCOM	// 101112

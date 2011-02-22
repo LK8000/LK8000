@@ -1150,7 +1150,6 @@ static void OnWaypointNewClicked(WindowControl * Sender){
   edit_waypoint.Name[0] = 0;
   edit_waypoint.Details = 0;
   edit_waypoint.Number = NumberOfWayPoints;
-#ifdef CUPSUP
   edit_waypoint.Format = LKW_NEW;	// 100208
   edit_waypoint.RunwayLen = 0;
   edit_waypoint.RunwayDir = -1;
@@ -1158,7 +1157,6 @@ static void OnWaypointNewClicked(WindowControl * Sender){
   edit_waypoint.Code[0]=0;
   edit_waypoint.Freq[0]=0;
   edit_waypoint.Country[0]=0;
-#endif 
   dlgWaypointEditShowModal(&edit_waypoint);
 
   // SeeYou style not correct when new waypoint created
@@ -1195,7 +1193,6 @@ static void OnWaypointEditClicked(WindowControl * Sender){
   }
   res = dlgWayPointSelect();
   if (res != -1){
-	#ifdef CUPSUP
 	#if 0 // 101214 READ ONLY FILES
 	if ( WayPointList[res].Format == LKW_COMPE) {      // 100212
 		MessageBoxX(hWndMapWindow, 
@@ -1220,7 +1217,6 @@ static void OnWaypointEditClicked(WindowControl * Sender){
 		return;
 	}
 
-	#endif
 
     dlgWaypointEditShowModal(&WayPointList[res]);
     waypointneedsave = true;
@@ -1269,7 +1265,6 @@ static void OnWaypointDeleteClicked(WindowControl * Sender){
   }
   res = dlgWayPointSelect();
   if (res > RESWP_END) { // 100212
-	#ifdef CUPSUP
 	#if 0 // 101214 READ ONLY FILES
 	if ( WayPointList[res].Format == LKW_COMPE ) { // 100212
 	// LKTOKEN  _@M716_ = "This waypoint is read-only" 
@@ -1288,7 +1283,6 @@ static void OnWaypointDeleteClicked(WindowControl * Sender){
 				MB_OK|MB_ICONEXCLAMATION);
 			return;
 		} else 
-	#endif
 	// LKTOKEN  _@M229_ = "Delete Waypoint?" 
 	if(MessageBoxX(hWndMapWindow, WayPointList[res].Name, gettext(TEXT("_@M229_")), 
 	MB_YESNO|MB_ICONQUESTION) == IDYES) {
@@ -2441,12 +2435,10 @@ static void setVariables(void) {
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
     _stprintf(tsuf,_T("*%S"),LKS_WP_XCSOAR);
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-#ifdef CUPSUP
     _stprintf(tsuf,_T("*%S"),LKS_WP_CUP);
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
     _stprintf(tsuf,_T("*%S"),LKS_WP_COMPE);
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-#endif
     dfe->Lookup(temptext);
     wp->RefreshDisplay();
   }
@@ -2463,12 +2455,10 @@ static void setVariables(void) {
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
     _stprintf(tsuf,_T("*%S"),LKS_WP_XCSOAR);
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-#ifdef CUPSUP
     _stprintf(tsuf,_T("*%S"),LKS_WP_CUP);
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
     _stprintf(tsuf,_T("*%S"),LKS_WP_COMPE);
     dfe->ScanDirectoryTop(_T(LKD_WAYPOINTS),tsuf);
-#endif
     dfe->Lookup(temptext);
     wp->RefreshDisplay();
   }

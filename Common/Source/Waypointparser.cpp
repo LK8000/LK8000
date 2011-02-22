@@ -39,22 +39,16 @@ TCHAR *strtok_r(TCHAR *s, TCHAR *delim, TCHAR **lasts);
 
 //static void ExtractParameter(TCHAR *Source, TCHAR *Destination, int DesiredFieldNumber);
 static int ParseWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
-#ifdef CUPSUP
 static bool ParseCUPWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
 static bool ParseCOMPEWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
 static double CUPToLat(TCHAR *temp);
 static double CUPToLon(TCHAR *temp);
-#endif
 static double CalculateAngle(TCHAR *temp);
 static int CheckFlags(TCHAR *temp);
 static double ReadAltitude(TCHAR *temp);
 static double ReadLength(TCHAR *temp);
 
-#ifdef CUPSUP
 static TCHAR nTemp2String[READLINE_LENGTH*2]; // 100205 BUGFIX? NO
-#else
-static TCHAR Temp2String[READLINE_LENGTH]; // 091007 TESTFIX shadowing
-#endif
 
 int WaypointsOutOfRange = 1; // include by default
 static int WaypointOutOfTerrainRangeDontAskAgain = -1;
@@ -167,37 +161,6 @@ static bool WaypointInTerrainRange(WAYPOINT *List) {
   }
 }
 
-#ifndef CUPSUP
-static int ParseWayPointError(int LineNumber, TCHAR *FileName, TCHAR *String){
-  TCHAR szTemp[250];
-
-  if (_tcslen(FileName)> 0) {
-    _stprintf(szTemp, 
-              TEXT("%s\r\n%s %s %s %d\r\n%s"),
-	// LKTOKEN  _@M805_ = "Waypointfile Parse Error" 
-              gettext(TEXT("_@M805_")), 
-	// LKTOKEN  _@M285_ = "File" 
-              gettext(TEXT("_@M285_")),
-              FileName,
-	// LKTOKEN  _@M393_ = "Line" 
-              gettext(TEXT("_@M393_")),
-              LineNumber, String);
-  } else {
-    _stprintf(szTemp, 
-              TEXT("%s\r\n%s %s %d\r\n%s"),
-              TEXT("Waypointfile Parse Error"), 
-              TEXT("(Map file)"),
-              TEXT("Line"),
-              LineNumber, String);
-  }
-  MessageBoxX(hWndMainWindow,szTemp,
-	// LKTOKEN  _@M266_ = "Error" 
-              gettext(TEXT("_@M266_")),
-              MB_OK | MB_ICONWARNING);
-  return(1);
-}
-#endif
-
 // VENTA3 added additional WP calculated list
 bool AllocateWaypointList(void) {
   if (!WayPointList) {
@@ -292,95 +255,6 @@ WAYPOINT* GrowWaypointList() {
   // returns the newly created waypoint
 }
 
-#ifndef CUPSUP
-// ------------------ OLD ---------------------
-void ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
-{
-  WAYPOINT *new_waypoint;
-  TCHAR szTemp[100];
-  int nTrigger=10;
-  DWORD fSize, fPos=0;
-  int nLineNumber=0;
-
-  HWND hProgress;
-
-  hProgress = CreateProgressDialog(gettext(TEXT("_@M903_"))); // Loading Waypoints File...
-
-  fSize = zzip_file_size(fp);
-
-  if (fSize == 0) {
-	StartupStore(_T("+++ ReadWayPointFile: FAILED USING %s%s"), CurrentWpFileName,NEWLINE);
-	return;
-  }
-
-  if (!AllocateWaypointList()) {
-	StartupStore(_T("!!!!!! ReadWayPointFile: AllocateWaypointList FAILED%s"),NEWLINE);
-	return;
-  }
-
-  new_waypoint = WayPointList+NumberOfWayPoints;
-
-  // SetFilePointer(hFile,0,NULL,FILE_BEGIN);
-  fPos = 0;
-  nTrigger = (fSize/10);  
-
-  while(ReadString(fp, READLINE_LENGTH, Temp2String)){
-    
-	nLineNumber++;
-	fPos += _tcslen(Temp2String);
-    
-	if (nTrigger < (int)fPos){
-		nTrigger += (fSize/10);
-		StepProgressDialog();
-	}
-    
-	if (_tcsstr(Temp2String, TEXT("**")) == Temp2String) // Look For Comment
-		continue;
-
-	if (_tcsstr(Temp2String, TEXT("*")) == Temp2String)  // Look For SeeYou Comment
-		continue;
-
-	if (Temp2String[0] == '\0')
-		continue;
-
-	new_waypoint->Details = NULL; 
-	#if CUPCOM
-	new_waypoint->Comment = NULL; 
-	#endif
-
-	if (ParseWayPointString(Temp2String, new_waypoint)) {
-
-		if ( (_tcscmp(new_waypoint->Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint->Number==RESWP_ID)) {
-			StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
-			Sleep(1000); // REMOVE TODO 
-			memcpy(WayPointList,new_waypoint,sizeof(WAYPOINT));
-			continue;
-		}
-
-		if (WaypointInTerrainRange(new_waypoint)) { 
-			new_waypoint = GrowWaypointList();
-			if (!new_waypoint) {
-				return; // failed to allocate
-			}
-			new_waypoint++; // we want the next blank one
-		}	
-  	}
-	continue;
-
-	if (ParseWayPointError(nLineNumber, CurrentWpFileName, Temp2String)==1)
-		continue;
-
-	break;
-
-  }
-
-  if (hProgress) {
-	wsprintf(szTemp,TEXT("100%%"));       
-	SetDlgItemText(hProgress,IDC_PROGRESS,szTemp);
-  }
-
-}
-#else
 // returns -1 if error, or the WpFileType 
 int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 {
@@ -570,7 +444,6 @@ goto_inloop:
 
 }
 
-#endif
 
 void WaypointAltitudeFromTerrain(WAYPOINT* Temp) {
   double myalt;
@@ -604,9 +477,7 @@ int ParseWayPointString(TCHAR *String,WAYPOINT *Temp)
 
   Temp->Visible = true; // default all waypoints visible at start
   Temp->FarVisible = true;
-#ifdef CUPSUP
   Temp->Format = LKW_DAT;
-#endif
 
   Temp->FileNum = globalFileNum;
 
@@ -798,7 +669,6 @@ static double CalculateAngle(TCHAR *temp)
 
 #define BUGFIXCUP	1
 
-#ifdef CUPSUP
 static double CUPToLat(TCHAR *temp)
 {
   TCHAR *dot, td;
@@ -949,7 +819,6 @@ static double CUPToLon(TCHAR *temp)
         
   return degrees;
 }
-#endif
 
 
 static int CheckFlags(TCHAR *temp)
@@ -996,7 +865,6 @@ static double ReadAltitude(TCHAR *temp)
   return Altitude;
 }
 
-#ifdef CUPSUP
 static double ReadLength(TCHAR *temp)
 {
   TCHAR *stop;
@@ -1028,7 +896,6 @@ static double ReadLength(TCHAR *temp)
   len = -9999;
   return len;
 }
-#endif
 
 void ReadWayPoints(void)
 {
@@ -1074,11 +941,7 @@ void ReadWayPoints(void)
     if(fp != NULL)
       {
         globalFileNum = 0;
-#ifdef CUPSUP
         WpFileType[1]=ReadWayPointFile(fp, szFile1);
-#else
-        ReadWayPointFile(fp, szFile1);
-#endif
         zzip_fclose(fp);
         fp = 0;
         // read OK, so set the registry to the actual file name
@@ -1119,11 +982,7 @@ void ReadWayPoints(void)
       fp = zzip_fopen(zfilename, "rt");
       if(fp != NULL){
         globalFileNum = 1;
-#ifdef CUPSUP
         WpFileType[2]=ReadWayPointFile(fp, szFile2);
-#else
-        ReadWayPointFile(fp, szFile2);
-#endif
         zzip_fclose(fp);
         fp = NULL;
         // read OK, so set the registry to the actual file name
@@ -1341,7 +1200,6 @@ void WaypointFlagsToString(int FlagsNum,
   }
 }
 
-#ifdef CUPSUP
 void LongitudeToCUPString(double Longitude, 
                                TCHAR *Buffer) {
   TCHAR EW[] = TEXT("WE");
@@ -1389,7 +1247,6 @@ void LatitudeToCUPString(double Latitude,
 
   _stprintf(Buffer, TEXT("%02.0f%02.0f.%03.0f%c"), dd, mm, ss, EW[sign]);
 }
-#endif
 
 void WaypointLongitudeToString(double Longitude,
                                TCHAR *Buffer) {
@@ -1442,40 +1299,6 @@ void WaypointLatitudeToString(double Latitude,
   _stprintf(Buffer, TEXT("%02d:%02d:%02d%c"), dd, mm, ss, EW[sign]);
 }
 
-#ifndef CUPSUP
-
-void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
-  TCHAR Flags[MAX_PATH];
-  TCHAR Latitude[MAX_PATH];
-  TCHAR Longitude[MAX_PATH];
-  TCHAR Comment[MAX_PATH];
-  
-  Flags[0]=0;
-  
-  WaypointLatitudeToString(wpt->Latitude, Latitude);
-  WaypointLongitudeToString(wpt->Longitude, Longitude);
-  WaypointFlagsToString(wpt->Flags, Flags);
-  
-  _stprintf(Comment, wpt->Comment);
-  for (int j=0; j<(int)_tcslen(Comment); j++) {
-    if (Comment[j]==_T('\r')) {
-      Comment[j] = 0;
-    }
-    if (Comment[j]==_T('\n')) {
-      Comment[j] = 0;
-    }
-  }
-  
-  fprintf(fp,"%d,%S,%S,%dM,%S,%S,%S\r\n",
-            wpt->Number,
-            Latitude,
-            Longitude,
-            iround(wpt->Altitude),
-            Flags,
-            wpt->Name,
-            wpt->Comment);  
-}
-#else // CUPSUP
 // globalFileNum will tell us what is the file type we are writing to
 // HEADERs for each format are written inside calling function, not here.
 void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
@@ -1653,7 +1476,6 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
   StartupStore(_T("...... Invalid filemode=%d file=%d wp=%d%s"), filemode,globalFileNum,wpt->Number ,NEWLINE);
 
 }
-#endif
 
 
 // globalFileNum is 0 for file1 and 1 for file2
@@ -1668,7 +1490,6 @@ void WriteWayPointFile(FILE *fp) {
       }
     }
   }
-#ifdef CUPSUP
   // Write specific format header 
   if (globalFileNum>=0 && globalFileNum<2) { // 100208
 	if ( WpFileType[globalFileNum+1] == LKW_CUP ) {
@@ -1682,7 +1503,6 @@ void WriteWayPointFile(FILE *fp) {
 	StartupStore(_T("... WriteWayPointFile: invalid globalFileNum%s"),NEWLINE);
 	return;
   }
-#endif
   for (i=NUMRESWP; i<(int)NumberOfWayPoints; i++) {
     if (WayPointList[i].FileNum == globalFileNum) {
 
@@ -1712,9 +1532,7 @@ void WaypointWriteFiles(void) {
   ExpandLocalPath(szFile1);
 
   #if 0	// 101214 READ ONLY FILES
-  #ifdef CUPSUP
   if (WpFileType[1] == LKW_COMPE) goto goto_file2; // 100212
-  #endif
   #endif
 
   if (_tcslen(szFile1)>0) {
@@ -1740,17 +1558,13 @@ void WaypointWriteFiles(void) {
     fp = NULL;
   } 
   #if 0 // 101214
-  #ifdef CUPSUP
   goto_file2:
-  #endif 
   #endif
   GetRegistryString(szRegistryAdditionalWayPointFile, szFile2, MAX_PATH);
   ExpandLocalPath(szFile2);
 
   #if 0 // 101214 READ ONLY FILES
-  #ifdef CUPSUP
   if (WpFileType[2] == LKW_COMPE) goto goto_endwrite; // 100212
-  #endif
   #endif
   if (_tcslen(szFile2)>0) {
     fp = _tfopen(szFile2, TEXT("wb"));
@@ -1774,9 +1588,7 @@ void WaypointWriteFiles(void) {
     fp = NULL;
   }
   #if 0
-  #ifdef CUPSUP
   goto_endwrite:
-  #endif
   #endif
   UnlockTaskData();
 }
@@ -1981,7 +1793,6 @@ void InitVirtualWaypoints()	// 091102
 
 }
 
-#ifdef CUPSUP
 //#define CUPDEBUG
 bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
 {
@@ -2562,4 +2373,3 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
  return true;
 
  }
-#endif

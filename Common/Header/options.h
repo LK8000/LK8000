@@ -80,11 +80,7 @@
 #endif
 
 
-#define DSX		// only an experimental test feature
 
-// SeeYou cup waypoint format support
-// Includes also COMPEgps support
-#define CUPSUP	1
 
 // -------------------------------------------------------------
 // Activate cache on all calculations defined below:
@@ -182,6 +178,7 @@
 #define LKCLIP		  // replace old Sutherland Hodgman clipping algo
 #define NEWUTM		  // New full UTM support INCOMPLETED
 #define NOIBOX		  // Ibox mode no more available, an important TODO
+#define DSX		  // only an experimental test feature for sms reception
 
  */
 
