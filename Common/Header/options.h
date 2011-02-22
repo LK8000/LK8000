@@ -158,9 +158,6 @@
 // overtarget new system
 #define OVERTARGET	1
 
-// new virtual waypoints
-#define NEWVIRTUALS	1
-
 // ew terrain manager, for shading and altitudes ex LKTEST
 #define NEWRASTER	1
 

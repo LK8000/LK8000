@@ -120,7 +120,6 @@
 #define RESWP_INVALIDNUMBER	1.23	// an invalid number for latitude, longitude, altitude etc.
 #define RESWP_TAKEOFF		0
 #define RESWP_TAKEOFF_NAME		"_@M1316_"			// LKTOKEN _@M1316_ "TAKEOFF"
-#if NEWVIRTUALS
 #define RESWP_LASTTHERMAL	1
 #define RESWP_LASTTHERMAL_NAME	"_@M1317_"			// LKTOKEN _@M1317_ "THERMAL"
 #define RESWP_TEAMMATE		2
@@ -128,9 +127,6 @@
 #define RESWP_FLARMTARGET	3
 #define RESWP_FLARMTARGET_NAME	"_@M1319_"			// LKTOKEN _@M1319_ "TARGET"
 #define RESWP_END		3
-#else
-#define RESWP_END		0
-#endif
 // WayPointList .Number int identifier 
 #define RESWP_ID		9999
 

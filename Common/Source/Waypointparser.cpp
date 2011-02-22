@@ -1891,8 +1891,6 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_TAKEOFF].FileNum=-1;  // 100219  so it cannot be saved
 	WayPointList[RESWP_TAKEOFF].Format= LKW_VIRTUAL;  //@ bugfix 101110
 	
-
-#if NEWVIRTUALS
 	WayPointList[RESWP_LASTTHERMAL].Number=RESWP_LASTTHERMAL+1;
 	WayPointList[RESWP_LASTTHERMAL].Latitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_LASTTHERMAL].Longitude=RESWP_INVALIDNUMBER;
@@ -1970,7 +1968,6 @@ void AddReservedWaypoints()
 	WayPointCalc[RESWP_FLARMTARGET].IsAirport = false;
 	WayPointCalc[RESWP_FLARMTARGET].IsOutlanding = false;
 	WayPointList[RESWP_FLARMTARGET].Format= LKW_VIRTUAL;  //@ bugfix 101110
-#endif
 }
 
 

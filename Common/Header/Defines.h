@@ -218,11 +218,7 @@
 // Position 1 is for testing
 // moving waypoints will have assigned fixed slots and positions
 // LKUtils.h defines contents for RESWP_ 
-#if NEWVIRTUALS
 #define NUMRESWP		4
-#else
-#define NUMRESWP		1
-#endif
 
 // Number of background colors available in MapWindow.h for NON-terrain maps
 #define LKMAXBACKGROUNDS        10
