@@ -594,16 +594,10 @@ typedef enum{
 	// avDistance,
 } ArrivalValue_t;
 
-#if LKTOPO
 #define MAPLABELS_ALLON		0
 #define MAPLABELS_ONLYWPS	1
 #define MAPLABELS_ONLYTOPO	2
 #define MAPLABELS_ALLOFF	3
-#else
-#define MAPLABELS_ALLON		0
-#define MAPLABELS_ONLYTOPO	1
-#define MAPLABELS_ALLOFF	2
-#endif
 
 
 

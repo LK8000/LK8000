@@ -57,10 +57,8 @@ class Topology {
   void Paint(HDC hdc, RECT rc);
 
   double scaleThreshold;
-  #if LKTOPO
   double scaleDefaultThreshold;
   int scaleCategory;
-  #endif
 
   bool CheckScale();
   void TriggerIfScaleNowVisible();

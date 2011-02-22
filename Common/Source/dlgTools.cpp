@@ -618,9 +618,6 @@ void LoadChildsFromXML(WindowControl *Parent,
       Caption[0] = '\0';
       W->SetReadOnly(ReadOnly != 0);
 
-//#if LKTOPO
-//	if (!ReadOnly) {
-//#endif
       if (childNode.nChildNode(TEXT("DataField")) > 0){
 
         TCHAR DataType[32];
@@ -703,9 +700,6 @@ void LoadChildsFromXML(WindowControl *Parent,
         }
 
       }
-//#if LKTOPO
-      //  } // if !ReadOnly
-//#endif
 
     }else
 

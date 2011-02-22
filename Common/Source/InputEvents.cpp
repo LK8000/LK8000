@@ -2969,21 +2969,14 @@ void InputEvents::eventRun(const TCHAR *misc) {
 
 void InputEvents::eventDeclutterLabels(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("toggle")) == 0) {
-	#if LKTOPO
 	MapWindow::DeclutterLabels ++;
 	MapWindow::DeclutterLabels = MapWindow::DeclutterLabels % 4;
-	#else
-	if (MapWindow::DeclutterLabels==MAPLABELS_ALLOFF) MapWindow::DeclutterLabels=MAPLABELS_ALLON;
-		else MapWindow::DeclutterLabels=MAPLABELS_ALLOFF;
-	#endif
   } else if (_tcscmp(misc, TEXT("on")) == 0)
     MapWindow::DeclutterLabels = MAPLABELS_ALLOFF;
   else if (_tcscmp(misc, TEXT("off")) == 0)
     MapWindow::DeclutterLabels = MAPLABELS_ALLON;
-  #if LKTOPO
   else if (_tcscmp(misc, TEXT("mid")) == 0)
     MapWindow::DeclutterLabels = MAPLABELS_ONLYTOPO;
-  #endif
   else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (MapWindow::DeclutterLabels==MAPLABELS_ALLON)
 	// LKTOKEN  _@M422_ = "Map labels ON" 

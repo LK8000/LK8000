@@ -74,9 +74,7 @@ bool dlgAirspaceWarningVisible(void);
 void dlgFlarmTrafficShowModal(void);
 void dlgLKTrafficDetails(int indexid);
 void dlgTimeGatesShowModal(void);
-#if LKTOPO
 void dlgTopologyShowModal(void);
-#endif
 void dlgCustomKeysShowModal(void);
 void dlgProfilesShowModal(void);
 

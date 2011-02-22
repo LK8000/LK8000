@@ -115,27 +115,19 @@
  // no instrument thread
  #define NOINSTHREAD	1
 
- // obsoleted by MULTICALC. REMOVE WHEN MULTICALC IS PERMANENT
- #define FLIPFLOP	1
+ #define FLIPFLOP	1	// obsoleted by MULTICALC. REMOVE WHEN MULTICALC IS PERMANENT
 
 
 #endif
 
-// Don't load and save wind from registry
-#define NOWINDREGISTRY	1
+#define NOWINDREGISTRY	1	// Configurable: load and save wind from registry
 
-// WindowControl handling Width and Heigth negative
-#define LKWINCONTROL	1
-
-// New topology custom, and relative OPTIMIZE options
-#define LKTOPO		1
+// New topology OPTIMIZE options
 #ifdef LK8000_OPTIMIZE
-#ifdef LKTOPO
 // topology optimization routines
 #define TOPOFAST	1
 #define TOPOFASTLABEL	1
 #define TOPOFASTCACHE	1
-#endif
 #endif
 
 // new terrain shadowing and highlighting

@@ -642,7 +642,6 @@ bool	PGStartOut=false;
 // Current assigned gate 
 int ActiveGate=-1;
 
-#if LKTOPO
 // LKMAPS flag for topology: >0 means ON, and indicating how many topo files are loaded
 int  LKTopo=0;
 // This threshold used in Terrain.cpp to distinguish water altitude
@@ -659,7 +658,6 @@ double LKTopoZoomCat80=0;
 double LKTopoZoomCat90=0;
 double LKTopoZoomCat100=0;
 double LKTopoZoomCat110=0;
-#endif
 // max number of topo and wp labels painted on map, defined by default in Utils
 int  LKMaxLabels=0;
 
@@ -5695,7 +5693,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   if (_tcsstr(OutBuffer, TEXT("$(MapLabelsToggleActionName)"))) {
     switch(MapWindow::DeclutterLabels) {
     case MAPLABELS_ALLON:
-	//#if LKTOPO
 		// LKTOKEN _@M1203_ "WPTS"
       ReplaceInString(OutBuffer, TEXT("$(MapLabelsToggleActionName)"), 
                       gettext(TEXT("_@M1203_")), Size);
@@ -5707,7 +5704,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
                       gettext(TEXT("_@M1204_")), Size);
       break;
     case MAPLABELS_ONLYTOPO:
-	//#endif
       ReplaceInString(OutBuffer, TEXT("$(MapLabelsToggleActionName)"), 
                       gettext(TEXT("_@M898_")), Size);
       break;

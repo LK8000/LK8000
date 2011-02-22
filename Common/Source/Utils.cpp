@@ -274,7 +274,6 @@ const TCHAR szRegistryAutoOrientScale[]= TEXT("AutoOrientScale");
 const TCHAR szRegistryPGOpenTimeH[]= TEXT("PGOpenTimeH");
 const TCHAR szRegistryPGOpenTimeM[]= TEXT("PGOpenTimeM");
 const TCHAR szRegistryPGNumberOfGates[]= TEXT("PGNumberOfGates");
-#if LKTOPO
 const TCHAR szRegistryLKTopoZoomCat05[]= TEXT("LKTopoZoomCat05");
 const TCHAR szRegistryLKTopoZoomCat10[]= TEXT("LKTopoZoomCat10");
 const TCHAR szRegistryLKTopoZoomCat20[]= TEXT("LKTopoZoomCat20");
@@ -287,7 +286,6 @@ const TCHAR szRegistryLKTopoZoomCat80[]= TEXT("LKTopoZoomCat80");
 const TCHAR szRegistryLKTopoZoomCat90[]= TEXT("LKTopoZoomCat90");
 const TCHAR szRegistryLKTopoZoomCat100[]= TEXT("LKTopoZoomCat100");
 const TCHAR szRegistryLKTopoZoomCat110[]= TEXT("LKTopoZoomCat110");
-#endif
 const TCHAR szRegistryLKMaxLabels[]= TEXT("LKMaxLabels");
 const TCHAR szRegistryOverlaySize[]= TEXT("OverlaySize");
 const TCHAR szRegistryBarOpacity[]= TEXT("BarOpacity");
@@ -950,7 +948,6 @@ void ReadRegistrySettings(void)
   PGCloseTime=PGOpenTime+(PGGateIntervalTime*PGNumberOfGates*60);
   if (PGCloseTime>86399) PGCloseTime=86399; // 23:59:59
 
-  #if LKTOPO
   Temp=9999;
   GetFromRegistry(szRegistryLKTopoZoomCat05,&Temp);
   LKTopoZoomCat05=Temp;
@@ -987,7 +984,6 @@ void ReadRegistrySettings(void)
   Temp=9999;
   GetFromRegistry(szRegistryLKTopoZoomCat110,&Temp);
   LKTopoZoomCat110=Temp;
-  #endif
 
   Temp=70;
   GetFromRegistry(szRegistryLKMaxLabels,&Temp);

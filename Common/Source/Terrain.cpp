@@ -20,9 +20,7 @@
 #include "InfoBoxLayout.h"
 #include "Sizes.h"
 #include "options.h"
-#if LKTOPO
 #include "Cpustats.h"
-#endif
 
 
 #if NEWRASTER
@@ -264,7 +262,6 @@ void DrawTopology(const HDC hdc, const RECT rc)
 
 }
 
-#if LKTOPO
 
 double ReadZoomTopology(int iCategory) {
 
@@ -379,7 +376,6 @@ void ChangeZoomTopology(int iCategory, double newScale, short cztmode)
 
   UnlockTerrainDataGraphics();
 }
-#endif
 
 #define NUM_COLOR_RAMP_LEVELS 13
 
@@ -1425,7 +1421,6 @@ void Slope(const int sx, const int sy, const int sz) {
 
 		// FIX here Netherland dutch terrain problem
 		// if >=0 then the sea disappears...
-		#if LKTOPO
 		#if NEWRASTER
 		if ((h = *thBuf) != TERRAIN_INVALID ) { 
 			// if (h==0 && LKWaterThreshold==0) { // no LKM coasts, and water altitude
@@ -1437,9 +1432,6 @@ void Slope(const int sx, const int sy, const int sz) {
 		#else
 		// but Buf cannot hold negative values.. so ?? We are never painting water? UHM. never mind
 		if ((h = *thBuf) >LKWaterThreshold ) { 
-		#endif
-		#else
-		if ((h = *thBuf) >0 ) { 
 		#endif
 
 			int p20, p22;
@@ -1789,9 +1781,7 @@ void OpenTopology() {
   static TCHAR  szFile[MAX_PATH] = TEXT("\0");
   static  TCHAR Directory[MAX_PATH] = TEXT("\0");
 
-  #if LKTOPO
   LKTopo=0;
-  #endif
 
   LockTerrainDataGraphics();
 
@@ -1807,11 +1797,7 @@ void OpenTopology() {
   // remove it in case it causes a crash (will restore later)
   SetRegistryString(szRegistryTopologyFile, TEXT("\0"));
 
-#if LKTOPO
   if (1) {
-#else
-  if (_tcslen(szFile)==0) {
-#endif
 
     // file is blank, so look for it in a map file
     static TCHAR  szMapFile[MAX_PATH] = TEXT("\0");
@@ -1855,10 +1841,8 @@ void OpenTopology() {
   TCHAR *Stop;
   int numtopo = 0;
   char ShapeFilename[MAX_PATH];
-  #if LKTOPO
   int shapeIndex=0;
   LKWaterThreshold=0;
-  #endif
 
   while(ReadString(zFile,READLINE_LENGTH,TempString)) {
       
@@ -1886,7 +1870,6 @@ void OpenTopology() {
         PExtractParameter(TempString, ctemp, 1);
         ShapeRange = StrToDouble(ctemp,NULL);
 
-#if LKTOPO
 	// Normally ShapeRange is indicating km threshold for items to be drawn.
 	// If over 5000, we identify an LKmap topology and subtract 5000 to get the type.
 	// 
@@ -1984,7 +1967,6 @@ void OpenTopology() {
 		LKTopo=-1;
 	}
 
-#endif
         
         // Shape icon
         PExtractParameter(TempString, ctemp, 2);
@@ -2036,8 +2018,6 @@ void OpenTopology() {
         if (ShapeIcon!=0) 
           TopoStore[numtopo]->loadBitmap(ShapeIcon);
         
-
-	#if LKTOPO
         TopoStore[numtopo]->scaleCategory = shapeIndex;
         TopoStore[numtopo]->scaleDefaultThreshold = ShapeRange;
 	TopoStore[numtopo]->scaleThreshold = ShapeRange;
@@ -2060,10 +2040,6 @@ void OpenTopology() {
 		TopoStore[numtopo]->scaleThreshold,TopoStore[numtopo]->scaleDefaultThreshold,NEWLINE);
 	#endif
 
-	#else
-        TopoStore[numtopo]->scaleThreshold = ShapeRange;
-	#endif
-        
         numtopo++;
       }
   }
@@ -2074,13 +2050,11 @@ void OpenTopology() {
   // file was OK, so save it
   SetRegistryString(szRegistryTopologyFile, szOrigFile);
 
-  #if LKTOPO
   if (LKTopo>0) {
 	StartupStore(_T(". LKMAPS Advanced Topology file found%s"),NEWLINE);
   } else {
 	LKTopo=0;
   }
-  #endif
 
   UnlockTerrainDataGraphics();
 

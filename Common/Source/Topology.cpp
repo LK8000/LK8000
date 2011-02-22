@@ -229,7 +229,6 @@ Topology::~Topology() {
 
 
 bool Topology::CheckScale(void) {
-  #if LKTOPO
   if (scaleCategory==10)
 #ifndef MAP_ZOOM
 	return (MapWindow::MapScale <= scaleDefaultThreshold);
@@ -237,7 +236,6 @@ bool Topology::CheckScale(void) {
     return (MapWindow::zoom.Scale() <= scaleDefaultThreshold);
 #endif /* MAP_ZOOM */
   else
-  #endif
 #ifndef MAP_ZOOM
   return (MapWindow::MapScale <= scaleThreshold);
 #else /* MAP_ZOOM */
@@ -465,7 +463,6 @@ void Topology::Paint(HDC hdc, RECT rc) {
 
   if (!shapefileopen) return;
 
-  #if LKTOPO
   bool nolabels=false;
   if (scaleCategory==10) {
 	// for water areas, use scaleDefault
@@ -483,7 +480,6 @@ void Topology::Paint(HDC hdc, RECT rc) {
 	if ( MapWindow::zoom.Scale()>scaleThreshold) nolabels=true;
 #endif /* MAP_ZOOM */
   } else 
-  #endif
 #ifndef MAP_ZOOM
   if (MapWindow::MapScale > scaleThreshold) return;
 #else /* MAP_ZOOM */
@@ -507,12 +503,10 @@ void Topology::Paint(HDC hdc, RECT rc) {
     
   int iskip = 1;
   
-#if LKTOPO
   // attempt to bugfix 100615 polyline glitch with zoom over 33Km
   // do not skip points, if drawing coast lines which have a scaleThreshold of 100km!
   // != 5 and != 10
   if (scaleCategory>10) { 
-#endif
 #ifndef MAP_ZOOM
   if (MapWindow::MapScale>0.25*scaleThreshold) {
 #else /* MAP_ZOOM */
@@ -534,9 +528,7 @@ void Topology::Paint(HDC hdc, RECT rc) {
 #endif /* MAP_ZOOM */
     iskip = 4;
   }
-#if LKTOPO
   }
-#endif
 
   #if TOPOFASTLABEL
   // use the already existing screenbounds_latlon, calculated by CalculateScreenPositions in MapWindow2
@@ -588,22 +580,13 @@ void Topology::Paint(HDC hdc, RECT rc) {
 
 	#else
 	// -------------------------- PRINTING ICONS ---------------------------------------------
-	#if (LKTOPO && TOPOFAST)
-	#if 101016
+	#if (TOPOFAST)
 	// no bitmaps for small town over a certain zoom level and no bitmap if no label at all levels
 	bool nobitmap=false, noiconwithnolabel=false;
 	if (scaleCategory==90 || scaleCategory==100) {
 		noiconwithnolabel=true;
 		if (MapWindow::MapScale>4) nobitmap=true;
 	}
-	#else
-	// do not print bitmaps for small town over a certain zoom level
-	bool nobitmap=false;
-	if (scaleCategory==90 && (MapWindow::MapScale>4))
-		nobitmap=true;
-	else 
-	if (scaleCategory==100 && (MapWindow::MapScale>4)) nobitmap=true;
-	#endif
 	#endif
 
 	//#if TOPOFASTLABEL
@@ -613,7 +596,7 @@ void Topology::Paint(HDC hdc, RECT rc) {
 				POINT sc;
 				MapWindow::LatLon2Screen(shape->line[tt].point[jj].x, shape->line[tt].point[jj].y, sc);
 	
-				#if (LKTOPO && TOPOFAST)
+				#if (TOPOFAST)
 				if (!nobitmap)
 				#endif
 				#if 101016
@@ -661,7 +644,6 @@ void Topology::Paint(HDC hdc, RECT rc) {
       
     case(MS_SHAPE_POLYGON):
 
-	#if LKTOPO
 	// if it's a water area (nolabels), print shape up to defaultShape, but print
 	// labels only up to custom label levels
 	if ( nolabels ) {
@@ -681,7 +663,6 @@ void Topology::Paint(HDC hdc, RECT rc) {
 			}
 		}
 	} else 
-	#endif
 	if (checkVisible(*shape, screenRect)) {
 		for (int tt = 0; tt < shape->numlines; tt ++) {
 			int minx = rc.right;
@@ -740,11 +721,7 @@ XShape* TopologyLabel::addShape(const int i) {
 
 // Print topology labels
 bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
-#if LKTOPO
   if (label && ((MapWindow::DeclutterLabels==MAPLABELS_ALLON)||(MapWindow::DeclutterLabels==MAPLABELS_ONLYTOPO))) {
-#else
-  if (label && (MapWindow::DeclutterLabels<MAPLABELS_ALLOFF)) {
-#endif
 
 	TCHAR Temp[100];
 	int size = MultiByteToWideChar(CP_ACP, 0, label, -1, Temp, 100) - 1;			//ANSI to UNICODE

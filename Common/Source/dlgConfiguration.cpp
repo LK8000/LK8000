@@ -887,7 +887,6 @@ static void OnAirspaceColoursClicked(WindowControl * Sender){
 	}
 }
 
-#if LKTOPO
 static void OnSetTopologyClicked(WindowControl * Sender){
 	(void)Sender;
   dlgTopologyShowModal();
@@ -898,7 +897,6 @@ static void OnResetTopologyClicked(WindowControl * Sender){
   dlgTopologyShowModal();
 }
 */
-#endif
 static void OnSetCustomKeysClicked(WindowControl * Sender){
 	(void)Sender;
   dlgCustomKeysShowModal();
@@ -1334,9 +1332,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnEditStatisticsFontClicked),
 
   DeclareCallBackEntry(OnUserLevel),
-  #if LKTOPO
   DeclareCallBackEntry(OnSetTopologyClicked),
-  #endif
   DeclareCallBackEntry(OnSetCustomKeysClicked),
   
   DeclareCallBackEntry(OnAirspaceFillType),

@@ -245,7 +245,6 @@ extern int PGNumberOfGates;
 extern bool PGStartOut;
 extern int ActiveGate;
 
-#if LKTOPO
 extern int LKTopo;
 extern short LKWaterThreshold;
 extern double LKTopoZoomCat05;
@@ -260,7 +259,6 @@ extern double LKTopoZoomCat80;
 extern double LKTopoZoomCat90;
 extern double LKTopoZoomCat100;
 extern double LKTopoZoomCat110;
-#endif
 extern int LKMaxLabels;
 #if OVERTARGET
 extern short OvertargetMode;

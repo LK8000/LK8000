@@ -165,7 +165,6 @@ extern const TCHAR szRegistryPGOpenTimeH[];
 extern const TCHAR szRegistryPGOpenTimeM[];
 extern const TCHAR szRegistryPGGateIntervalTime[];
 extern const TCHAR szRegistryPGStartOut[];
-#if LKTOPO
 extern const TCHAR szRegistryLKTopoZoomCat05[];
 extern const TCHAR szRegistryLKTopoZoomCat10[];
 extern const TCHAR szRegistryLKTopoZoomCat20[];
@@ -178,7 +177,6 @@ extern const TCHAR szRegistryLKTopoZoomCat80[];
 extern const TCHAR szRegistryLKTopoZoomCat90[];
 extern const TCHAR szRegistryLKTopoZoomCat100[];
 extern const TCHAR szRegistryLKTopoZoomCat110[];
-#endif
 extern const TCHAR szRegistryLKMaxLabels[];
 extern const TCHAR szRegistryMenuTimeout[];
 extern const TCHAR szRegistryLockSettingsInFlight[];
