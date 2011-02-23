@@ -46,45 +46,20 @@
 #define BIGDISPLAY
 #endif
 
-// General OPTIMIZATION for LK8000. Needed for all sub optimization definitions
-#define LK8000_OPTIMIZE 	1
-
-#ifdef LK8000_OPTIMIZE
-// NEWIBLSCALE  to be used only for NUMBERS between 0 and MAXIBLSCALE !!!!
-#define NEWIBLSCALE	1
-#endif
-
-#ifdef BIGDISPLAY
-
-#ifdef NEWIBLSCALE
-
-#define IBLSCALE(x) (   (InfoBoxLayout::IntScaleFlag) ? ((x)*InfoBoxLayout::scale) : ((int)((x)*InfoBoxLayout::dscale)))
-#define NIBLSCALE(x) (LKIBLSCALE[x])
-#define MAXIBLSCALE	100
-
-#else
-#define IBLSCALE(x) (   (InfoBoxLayout::IntScaleFlag) ? ((x)*InfoBoxLayout::scale) : ((int)((x)*InfoBoxLayout::dscale)))
-#define NIBLSCALE(x) (   (InfoBoxLayout::IntScaleFlag) ? ((x)*InfoBoxLayout::scale) : ((int)((x)*InfoBoxLayout::dscale)))
-#endif
-
-#else
-#define IBLSCALE(x) (x)
-#endif
-
-
 #ifdef PNA
 #define NOLINETO
 #endif
 
-
-#endif
-
-
+// General OPTIMIZATION for LK8000. Needed for all sub optimization definitions
+#define LK8000_OPTIMIZE 	1
 
 
 // -------------------------------------------------------------
 // Activate cache on all calculations defined below:
 #ifdef LK8000_OPTIMIZE
+
+ // NEWIBLSCALE  to be used only for NUMBERS between 0 and MAXIBLSCALE !!!!
+ #define NEWIBLSCALE	1
 
  // CACHE CALCULATIONS: IT IS IMPERATIVE THAT THIS OPTION CAN BE DISABLED ANYTIME!
  #define LK_CACHECALC 1
@@ -103,6 +78,15 @@
  #define FLIPFLOP	1	// obsoleted by MULTICALC. REMOVE WHEN MULTICALC IS PERMANENT
 #endif
 // -------------------------------------------------------------
+
+#ifdef NEWIBLSCALE
+ #define IBLSCALE(x) (   (InfoBoxLayout::IntScaleFlag) ? ((x)*InfoBoxLayout::scale) : ((int)((x)*InfoBoxLayout::dscale)))
+ #define NIBLSCALE(x) (LKIBLSCALE[x])
+ #define MAXIBLSCALE	100
+#else
+ #define IBLSCALE(x) (   (InfoBoxLayout::IntScaleFlag) ? ((x)*InfoBoxLayout::scale) : ((int)((x)*InfoBoxLayout::dscale)))
+ #define NIBLSCALE(x) (   (InfoBoxLayout::IntScaleFlag) ? ((x)*InfoBoxLayout::scale) : ((int)((x)*InfoBoxLayout::dscale)))
+#endif
 
 #define NOWINDREGISTRY	1	// Configurable: load and save wind from registry
 
@@ -180,3 +164,4 @@
 #define DEBUG_BESTALTERNATE	// full bestalternate messages inside DEBUG.TXT in home directory
  */
 
+#endif
