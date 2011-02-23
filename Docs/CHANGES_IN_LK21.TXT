@@ -1,4 +1,27 @@
-WHATS NEW IN 2.1c
+WHATS NEW IN 2.1d0
+
+
+NEW
+
+- New Setup Setting for FontRenderer.
+  System Page 11 choose from Cleartype/Anti Aliasing mode.
+  On some devices/resolution/orientation sometimes one choice is better than the other.
+
+
+CHANGES
+
+
+
+
+BUGFIX
+
+-  Bugfix Home Waypoint on multitarget not updated when unreachable 
+   and not the same as a task point, or an alternate itself.
+
+
+
+
+
 
 VERSION 2.1c  110218
 ======================================================================================
