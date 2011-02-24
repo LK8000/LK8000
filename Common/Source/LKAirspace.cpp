@@ -218,7 +218,7 @@ void CAirspace_Circle::CalcBounds()
 
 void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify) 
 {
-  _visible = 0;
+  _drawstyle = adsHidden;
   if (iAirspaceMode[_type]%2 == 1) {
     double basealt;
     double topalt;
@@ -239,9 +239,9 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
 
 	if (!_newwarnacknobrush &&
 	    !(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES-1)) {
-	  _visible = 2;
+	  _drawstyle = adsFilled;
 	} else {
-	  _visible = 1;
+	  _drawstyle = adsOutline;
 	}
 
         MapWindow::LatLon2Screen(_loncenter, _latcenter, _screencenter);
@@ -409,6 +409,7 @@ double CAirspace_Area::Range(const double &longitude, const double &latitude, do
   double nearestdistance = dist;
   double nearestbearing = bearing;
   double lon4, lat4;
+  int    wn = 0;    // the winding number counter
   
   CGeoPointList::const_iterator it = _geopoints.begin();
   CGeoPointList::const_iterator itnext = it;
@@ -422,7 +423,18 @@ double CAirspace_Area::Range(const double &longitude, const double &latitude, do
 				 itnext->Latitude(),
 				 longitude, latitude,
 				 &lon4, &lat4);
-    if ((dist<nearestdistance)||(i==0)) {
+	
+	if (it->Latitude() <= latitude) {         // start y <= P.Latitude
+		if (itnext->Latitude() > latitude)      // an upward crossing
+			if (isLeft( *it, *itnext, longitude, latitude) > 0)  // P left of edge
+				++wn;            // have a valid up intersect
+	} else {                       // start y > P.Latitude (no test needed)
+		if (itnext->Latitude() <= latitude)     // a downward crossing
+			if (isLeft( *it, *itnext, longitude, latitude) < 0)  // P right of edge
+				--wn;            // have a valid down intersect
+	}
+
+	if ((dist<nearestdistance)||(i==0)) {
       nearestdistance = dist;
       DistanceBearing(latitude, longitude,
                       lat4, lon4, NULL, 
@@ -432,7 +444,7 @@ double CAirspace_Area::Range(const double &longitude, const double &latitude, do
 	++itnext;
   }
   bearing = nearestbearing;
-  return nearestdistance;
+  if (wn!=0) return -nearestdistance; else return nearestdistance;
 }
 
 void CAirspace_Area::SetPoints(CGeoPointList &Area_Points)
@@ -473,7 +485,7 @@ void CAirspace_Area::CalcBounds()
 
 void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify) 
 {
-  _visible = 0;
+  _drawstyle = adsHidden;
   if (iAirspaceMode[_type]%2 == 1) {
     double basealt;
     double topalt;
@@ -494,9 +506,9 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
 
 	if (!_newwarnacknobrush &&
 	    !(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES-1)) {
-	  _visible = 2;
+	  _drawstyle = adsFilled;
 	} else {
-	  _visible = 1;
+	  _drawstyle = adsOutline;
 	}
 	CGeoPointList::iterator it;
 	POINTList::iterator itr;
@@ -1347,64 +1359,53 @@ bool CAirspaceManager::ValidAirspaces(void) const
 
 void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated) 
 {
+  if(!AIRSPACEWARNINGS) return;				//Airspace warnings disabled in config
 
-  if(!AIRSPACEWARNINGS) return;
+  CCriticalSection::CGuard guard(_csairspaces);
 
-  if ( NumberofAirspaces() <= 0 ) return;
-  static bool position_is_predicted = false;
-
+  if ( _airspaces_near.size() == 0 ) return;
+  
+  //TODO what is this???
   if (_GlobalClearAirspaceWarnings == true) {
     _GlobalClearAirspaceWarnings = false;
     Calculated->IsInAirspace = false;
   }
 
-  position_is_predicted = !position_is_predicted; 
-  // every second time step, do predicted position rather than
-  // current position
+  double alt = Calculated->NextAltitude;
+  double agl = Calculated->NextAltitudeAGL;
+  double lat = Calculated->NextLatitude;
+  double lon = Calculated->NextLongitude;
 
-  double alt;
-  double agl;
-  double lat;
-  double lon;
-
-  if (position_is_predicted) {
-    alt = Calculated->NextAltitude;
-    agl = Calculated->NextAltitudeAGL;
-    lat = Calculated->NextLatitude;
-    lon = Calculated->NextLongitude;
-  } else {
-    // We may use NavAltitude
-    if (Basic->BaroAltitudeAvailable) {
-      alt = Basic->BaroAltitude;
-    } else {
-      alt = Basic->Altitude;
-    }
-    agl = Calculated->AltitudeAGL;
-    lat = Basic->Latitude;
-    lon = Basic->Longitude;
-  }
-
-  // JMW TODO enhancement: FindAirspaceCircle etc should sort results, return 
-  // the most critical or closest. 
-
-  CAirspaceList::const_iterator it;
-  CCriticalSection::CGuard guard(_csairspaces);
-
+  //Check for new airspaces to add
+  CAirspaceList::iterator it;
   for (it=_airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
+	  // Already in warning list
+	  if ((*it)->WarningState() > awsNone) continue;		
+	  
+	  // Check for warnings enabled for this class
+	  if (MapWindow::iAirspaceMode[(*it)->Type()] < 2) continue;
+	  
+	  // Check for altitude
       if (((((*it)->Base()->Base != abAGL) && (alt >= (*it)->Base()->Altitude))
            || (((*it)->Base()->Base == abAGL) && (agl >= (*it)->Base()->AGL)))
           && ((((*it)->Top()->Base != abAGL) && (alt < (*it)->Top()->Altitude))
            || (((*it)->Top()->Base == abAGL) && (agl < (*it)->Top()->AGL)))) {
-	
-        if ((MapWindow::iAirspaceMode[(*it)->Type()] >= 2) && (*it)->Inside(lon, lat)) { 
-          AirspaceWarnListAdd(Basic, Calculated, position_is_predicted, *it, false);
+		// Check for inside
+		if ((*it)->Inside(lon, lat)) {
+		  (*it)->WarningState(awsNew);
+		  CCriticalSection::CGuard guard(_cswarnlist);
+		  _airspaces_warning.push_front(*it);
+		  #ifdef DEBUG_AIRSPACE
+		  StartupStore(TEXT("LKAIRSP: %s added%s"),(*it)->Name(),NEWLINE );
+		  #endif
         }
 	  }
   }
+  
+  //Process warning list
   AirspaceWarnListProcess(Basic, Calculated);
 
-  //  UnlockFlightData();  
-
+  //TODO What is this?
   NearestAirspaceHDist=0;
 }
 
@@ -1415,7 +1416,7 @@ CAirspaceList CAirspaceManager::GetVisibleAirspacesAtPoint(const double &lon, co
   CAirspaceList::const_iterator it;
   CCriticalSection::CGuard guard(_csairspaces);
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-	if ((*it)->Visible()) {
+	if ((*it)->DrawStyle()) {
 	  if ((*it)->Inside(lon, lat)) res.push_back(*it);
 	}
   }

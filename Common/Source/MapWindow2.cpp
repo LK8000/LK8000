@@ -1855,7 +1855,7 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
   if (GetAirSpaceFillType() != asp_fill_none) {
 #ifdef LKAIRSPACE
 	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
-      if ((*it)->Visible() == 2) {
+      if ((*it)->DrawStyle() == adsFilled) {
 		airspace_type = (*it)->Type();
 		if (!found) {
 		  ClearAirSpace(true);
@@ -1922,7 +1922,7 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 
 #ifdef LKAIRSPACE
 	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
-        if ((*it)->Visible()) {
+        if ((*it)->DrawStyle()) {
 		  airspace_type = (*it)->Type();
 		  if (!found) {
             ClearAirSpace(true);

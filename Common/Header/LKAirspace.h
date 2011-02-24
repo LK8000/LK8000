@@ -58,6 +58,13 @@ private:
 typedef std::list<CGeoPoint> CGeoPointList;
 typedef std::vector<POINT> POINTList;
 
+//Airspace warning and ack states
+typedef enum {awNone=0, awPredicted, awWarning, awDailyAck} AirspaceWarningState_t;
+//Airspace warning system internal states
+typedef enum {awsNone, awsNew, awsCheckWarning, awsWarning } AirspaceWarningStateInternal_t;
+//Airspace drawstyles
+typedef enum {adsHidden, adsOutline, adsFilled } AirspaceDrawStyle_t;
+
 // 
 // AIRSPACE BASE CLASS
 //
@@ -70,8 +77,15 @@ public:
 			_base(),
 			_top(),
 			_bounds(),
-			_visible(0),
-			_newwarnacknobrush(false)
+			_drawstyle(adsHidden),
+			_newwarnacknobrush(false),
+			_warnstate(awsNone),
+			_userwarningstate(awNone),
+			_userwarningstateold(awNone),
+			_userwarnackstate(awNone),
+			_warnid(0),
+			_warnvdistance(0.0),
+			_warnhdistance(0.0)
 			{}
   virtual ~CAirspace() {}
 
@@ -93,8 +107,8 @@ public:
   const AIRSPACE_ALT* Base() const { return &_base; }
   const rectObj& Bounds() const { return _bounds; }
   
-  unsigned char Visible() const { return _visible; }
-  void Visible(unsigned char visible) { _visible = visible; } 
+  AirspaceDrawStyle_t DrawStyle() const { return _drawstyle; }
+  void DrawStyle(AirspaceDrawStyle_t drawstyle) { _drawstyle = drawstyle; } 
 
   int Type() const { return _type; }
   void Type(int type) { _type = type; } 
@@ -102,6 +116,29 @@ public:
   bool NewWarnAckNoBrush() const { return _newwarnacknobrush; }
   void NewWarnAckNoBrush(bool newwarnacknobrush) { _newwarnacknobrush = newwarnacknobrush; }
 
+  AirspaceWarningState_t UserWarningState() const { return _userwarningstate; }
+  void UserWarningState(AirspaceWarningState_t userwarningstate) { _userwarningstate = userwarningstate; }
+  
+  AirspaceWarningState_t UserWarningStateOld() const { return _userwarningstateold; }
+  void UserWarningStateOld(AirspaceWarningState_t userwarningstateold) { _userwarningstateold = userwarningstateold; }
+  
+  AirspaceWarningState_t UserWarnAckState() const { return _userwarnackstate; }
+  void UserWarnAckState(AirspaceWarningState_t userwarnackstate) { _userwarnackstate = userwarnackstate; }
+  
+  AirspaceWarningStateInternal_t WarningState() const { return _warnstate; }
+  void WarningState(AirspaceWarningStateInternal_t warnstate) { _warnstate = warnstate; }
+  
+//  int WarningTimer() const { return _warntimer; }
+//  void WarningTimer(int warntimer) { _warntimer = warntimer; }
+
+  int WarningID() const { return _warnid; }
+  void WarningID(int warnid) { _warnid = warnid; }
+
+  double WarnvDistance() const { return _warnvdistance; }
+  void WarnvDistance(double warnvdistance) { _warnvdistance = warnvdistance; }
+
+  double WarnhDistance() const { return _warnhdistance; }
+  void WarnhDistance(double warnhdistance) { _warnhdistance = warnhdistance; }
 
 protected:
   TCHAR _name[NAME_SIZE + 1];
@@ -109,9 +146,18 @@ protected:
   AIRSPACE_ALT _base;
   AIRSPACE_ALT _top;
   rectObj _bounds;
-  unsigned char _visible;
+  AirspaceDrawStyle_t _drawstyle;
   bool _newwarnacknobrush;
-
+  // Warnings
+  AirspaceWarningStateInternal_t _warnstate;  
+//  int _warntimer;  
+  AirspaceWarningState_t _userwarningstate;
+  AirspaceWarningState_t _userwarningstateold;
+  AirspaceWarningState_t _userwarnackstate;
+  int _warnid;
+  double _warnvdistance;
+  double _warnhdistance;
+  
   void AirspaceAGLLookup(double av_lat, double av_lon);
 
 };
@@ -175,6 +221,7 @@ private:
 typedef std::deque<CAirspace*> CAirspaceList;
 
 //Warning system 
+/*
 typedef struct _AirspaceInfo_c
 {
 public:
@@ -194,11 +241,11 @@ public:
   int    ID;                  // Unique ID
   int    WarnLevel;           // WarnLevel 0 far away, 1 prdicted entry, 2 predicted entry and close, 3 inside      
 } AirspaceInfo_c;
+*/
 typedef enum {asaNull, asaItemAdded, asaItemChanged, asaClearAll, asaItemRemoved, asaWarnLevelIncreased, asaProcessEnd, asaProcessBegin} AirspaceWarningNotifyAction_t;
-typedef void (*AirspaceWarningNotifier_t)(AirspaceWarningNotifyAction_t Action, AirspaceInfo_c *AirSpace) ;
-typedef std::deque<AirspaceWarningNotifier_t> AirspaceWarningNotifiersList;
-typedef std::deque<AirspaceInfo_c> AirspaceWarningsList;
-
+//typedef void (*AirspaceWarningNotifier_t)(AirspaceWarningNotifyAction_t Action, AirspaceInfo_c *AirSpace) ;
+//typedef std::deque<AirspaceWarningNotifier_t> AirspaceWarningNotifiersList;
+//typedef std::deque<AirspaceInfo_c> AirspaceWarningsList;
 
 
 class CAirspaceManager
@@ -222,18 +269,24 @@ public:
 
   //Warning system
   void AirspaceWarning (NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-  void AirspaceWarnListAdd(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
+/*  void AirspaceWarnListAdd(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                          bool Predicted, CAirspace *airspace,
-                         bool ackDay);
+                         bool ackDay);*/
   void AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
   bool ClearAirspaceWarnings(const bool acknowledge, const bool ack_all_day = false);
   void AirspaceWarnListCalcDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance);
+  void AirspaceWarnListCalcNextDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance);
   //dlgAirspaceWarning
   int AirspaceWarnGetItemCount();
-  bool AirspaceWarnGetItem(unsigned int Index, AirspaceInfo_c &Item);
-  void AirspaceWarnDoAck(int ID, int Ack);
+  bool AirspaceWarnGetItem(unsigned int Index, CAirspace **Item);
   int AirspaceWarnFindIndexByID(int ID);
 
+  void AirspaceWarnListAckWarn(CAirspace &airspace);
+  void AirspaceWarnListAckSpace(CAirspace &airspace);
+  void AirspaceWarnListDailyAck(CAirspace &airspace);
+  void AirspaceWarnListDailyAckCancel(CAirspace &airspace);
+  
+  
   //Get airspace details (dlgAirspaceDetails)
   CAirspaceList GetVisibleAirspacesAtPoint(const double &lon, const double &lat) const;
   CAirspaceList GetAllAirspaces() const;
@@ -263,10 +316,11 @@ private:
 
   // Warning system data
   mutable CCriticalSection _cswarnlist;
-  AirspaceWarningsList _airspaceWarnings;
+  CAirspaceList _airspaces_warning;		//Airspaces in warning state>0
+  //AirspaceWarningsList _airspaceWarnings;
   int _static_unique;														//TODO remove this hack
-  bool UpdateAirspaceAckBrush(AirspaceInfo_c *Item, int Force);
-  bool calcWarnLevel(AirspaceInfo_c *asi);
+  bool UpdateAirspaceAckBrush(CAirspace &Item, int Force);
+  //bool calcWarnLevel(AirspaceInfo_c *asi);
   void AirspaceWarnListSort();
   void AirspaceWarnListClear();
 
@@ -285,8 +339,7 @@ private:
 //dlgAirspaceWarning
 int dlgAirspaceWarningInit(void);
 int dlgAirspaceWarningDeInit(void);
-void dlgAirspaceWarningNotify(AirspaceWarningNotifyAction_t Action, 
-                           AirspaceInfo_c *AirSpace);
+void dlgAirspaceWarningNotify(AirspaceWarningNotifyAction_t Action, CAirspace *Airspace);
 
 
 void ScreenClosestPoint(const POINT &p1, const POINT &p2, 

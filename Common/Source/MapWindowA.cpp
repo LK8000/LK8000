@@ -141,7 +141,7 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   // draw without border
 #ifdef LKAIRSPACE
 	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
-        if ((*it)->Visible()==2) {
+        if ((*it)->DrawStyle() == adsFilled) {
 		  airspace_type = (*it)->Type();
 		  if (!found) {
 			found = true;
@@ -201,7 +201,7 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
 
 #ifdef LKAIRSPACE
 	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); it++) {
-        if ((*it)->Visible()) {
+        if ((*it)->DrawStyle()) {
 		  airspace_type = (*it)->Type();
 		  if (bAirspaceBlackOutline) {
 			SelectObject(hdc, GetStockObject(BLACK_PEN));
