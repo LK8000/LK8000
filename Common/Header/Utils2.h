@@ -49,6 +49,8 @@ double	CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated);
 int	CalculateLDRotary(ldrotary_s *buf);
 #endif
 
+void AddDotOneText(TCHAR Text[LKSIZEBUFFER], double Number);
+
 // TrueWind functions
 void	InitWindRotary(windrotary_s *wbuf);
 void	InsertWindRotary(windrotary_s *wbuf, double speed, double track, double altitude);

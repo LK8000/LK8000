@@ -71,6 +71,23 @@ typedef struct{
 
 extern MapWaypointLabel_t MapWaypointLabelList[];
 
+void AddDotOneText(TCHAR Text[LKSIZEBUFFER], double Number)
+  {
+  // This function converts Number to a text string rounded
+  // to one decimal place and appends that string
+  // to the string "Text".  For
+  // example, if Number is 24.95632, the string "25.0"
+  // would be appended to the "Text" string.
+  // If the "Text" string were "Home:", then
+  // the resulting string would be "Home:25.0".
+
+  double Middle = round(Number * 10.0) / 10.0; // e.g., 25.00000
+  int Left = (int) Middle; // e.g., 25
+
+  wsprintf(Text, TEXT("%s%d.%d"), Text, Left,
+           (int) ((Middle - Left) * 10.001));
+  }
+
 void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 {
   unsigned int i; 
@@ -78,6 +95,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
   TCHAR Buffer[LKSIZEBUFFER];
   TCHAR Buffer2[LKSIZEBUFFER];
   TCHAR sAltUnit[LKSIZEBUFFERUNIT];
+  TCHAR sVertSpdUnit[LKSIZEBUFFERUNIT];
   TextInBoxMode_t TextDisplayMode;
 
   static int resizer[10]={ 20,20,20,3,5,8,10,12,0 };
@@ -89,6 +107,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
   if (!WayPointList) return;
 
   _tcscpy(sAltUnit, Units::GetAltitudeName());
+  _tcscpy(sVertSpdUnit, Units::GetVerticalSpeedName());
 
   MapWaypointLabelListCount = 0;
 
@@ -308,14 +327,53 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		// ConvToUpper(Buffer2); 
 
 		if (draw_alt) {
-		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
+		  /*if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
 			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
 		  		wsprintf(Buffer, TEXT("%s:%d"), Buffer2, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
 			else
 		  		wsprintf(Buffer, TEXT("%s:%d%s"), Buffer2, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), sAltUnit);
 		  } else 
 			wsprintf(Buffer, TEXT("%s:%d"), Buffer2, (int)WayPointCalc[i].GR);
+         */
 
+      wsprintf(Buffer, TEXT("%s:"), Buffer2);  // (e.g., Buffer = "MYFIELD:")
+
+      switch (ArrivalValue)
+        {
+        case (ArrivalValue_t) avAltitude:
+
+          // (e.g., "MYFIELD:200")
+          wsprintf(Buffer, TEXT("%s%d"), Buffer,
+            (int) (WayPointList[i].AltArivalAGL * ALTITUDEMODIFY));
+
+          if ( (MapBox != (MapBox_t) mbUnboxedNoUnit) && 
+               (MapBox != (MapBox_t) mbBoxedNoUnit) )
+
+            // (e.g., "MYFIELD:200ft")
+            wsprintf(Buffer, TEXT("%s%s"), Buffer, sAltUnit); 
+
+          break;
+
+        case (ArrivalValue_t) avGR:
+
+          // (e.g., "MYFIELD:12")
+          wsprintf(Buffer, TEXT("%s%d"), Buffer, (int) WayPointCalc[i].GR);
+          break;
+
+        case (ArrivalValue_t) avSink:
+
+          // The following appends to the display string the sink
+          // value to display, shown to
+          // one decimal place (e.g., "MYFIELD:1.3").
+
+          AddDotOneText(Buffer, WayPointCalc[i].SinkMaxTotal * LIFTMODIFY);
+
+          if ( (MapBox != (MapBox_t) mbUnboxedNoUnit) && 
+               (MapBox != (MapBox_t) mbBoxedNoUnit) )
+
+            // (e.g., "MYFIELD:1.3kt")
+            wsprintf(Buffer, TEXT("%s%s"), Buffer, sVertSpdUnit);
+        } // "switch" statement
 
 		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
 			  TextDisplayMode.AsFlag.Border = 1;
@@ -342,14 +400,50 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 #endif /* MAP_ZOOM */
 
 		if (draw_alt) {
-		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
+		  /*if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
 			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
 		  		wsprintf(Buffer, TEXT("%d:%d"), WayPointList[i].Number, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
 			else
 		  		wsprintf(Buffer, TEXT("%d:%d%s"), WayPointList[i].Number, (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), sAltUnit);
 		  } else
 		  	wsprintf(Buffer, TEXT("%d:%d"), WayPointList[i].Number, (int)(WayPointCalc[i].GR));
-		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
+         */
+
+      wsprintf(Buffer, TEXT("%d:"), WayPointList[i].Number); // (e.g., "45:")
+
+      switch (ArrivalValue)
+        {
+        case (ArrivalValue_t) avAltitude:
+
+          wsprintf(Buffer, TEXT("%s%d"), Buffer,
+            (int) (WayPointList[i].AltArivalAGL * ALTITUDEMODIFY)); // (e.g., "45:200")
+
+          if ( (MapBox != (MapBox_t) mbUnboxedNoUnit) && 
+               (MapBox != (MapBox_t) mbBoxedNoUnit) )
+
+            wsprintf(Buffer, TEXT("%s%s"), Buffer, sAltUnit); // (e.g., "45:200ft")
+
+          break;
+
+        case (ArrivalValue_t) avGR:
+
+          // (e.g., "45:12")
+          wsprintf(Buffer, TEXT("%s%d"), Buffer, (int) WayPointCalc[i].GR);
+			    break;
+
+        case (ArrivalValue_t) avSink:
+
+          // (e.g., "45:0.9")
+          AddDotOneText(Buffer, WayPointCalc[i].SinkMaxTotal * LIFTMODIFY);
+
+          if ( (MapBox != (MapBox_t) mbUnboxedNoUnit) && 
+               (MapBox != (MapBox_t) mbBoxedNoUnit) )
+
+            // (e.g., "45:0.9kt")
+            wsprintf(Buffer, TEXT("%s%s"), Buffer, sVertSpdUnit);
+        }
+
+      if ( (MapBox == (MapBox_t) mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
 			  TextDisplayMode.AsFlag.Border = 1;
 			  TextDisplayMode.AsFlag.WhiteBold = 0;
 		  } else
@@ -370,7 +464,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		dowrite = intask;
 		if (intask) {
 		  if (draw_alt) {
-		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
+		  /*if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
 			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
 			    wsprintf(Buffer, TEXT("%s:%d"),
 				     WayPointList[i].Name, 
@@ -386,8 +480,45 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 			    wsprintf(Buffer, TEXT("%s:%d"),
 				     WayPointList[i].Name, 
 				     (int)(WayPointCalc[i].GR)); 
+         */
 
-		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
+        wsprintf(Buffer, TEXT("%s:"), WayPointList[i].Name); // (e.g., "MYFIELD:")
+
+        switch (ArrivalValue)
+          {
+          case (ArrivalValue_t) avAltitude:
+
+            wsprintf(Buffer, TEXT("%s%d"), Buffer,
+              (int) (WayPointList[i].AltArivalAGL * ALTITUDEMODIFY));
+              // (e.g., "MYFIELD:200")
+
+            if ( (MapBox != (MapBox_t) mbUnboxedNoUnit) && 
+                 (MapBox != (MapBox_t) mbBoxedNoUnit) )
+
+              wsprintf(Buffer, TEXT("%s%s"), Buffer, sAltUnit);
+              // (e.g., "MYFIELD:200ft")
+
+            break;
+
+          case (ArrivalValue_t) avGR:
+
+            // (e.g., "MYFIELD:12")
+            wsprintf(Buffer, TEXT("%s%d"), Buffer, (int) WayPointCalc[i].GR);
+            break;
+
+          case (ArrivalValue_t) avSink:
+
+            // (e.g., "MYFIELD:0.9")
+            AddDotOneText(Buffer, WayPointCalc[i].SinkMaxTotal * LIFTMODIFY);
+
+            if ( (MapBox != (MapBox_t) mbUnboxedNoUnit) && 
+                 (MapBox != (MapBox_t) mbBoxedNoUnit) )
+
+              // (e.g., "MYFIELD:0.9kt")
+              wsprintf(Buffer, TEXT("%s%s"), Buffer, sVertSpdUnit);
+          }
+
+		    if ( (MapBox == (MapBox_t) mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
 			  TextDisplayMode.AsFlag.Border = 1;
 			  TextDisplayMode.AsFlag.WhiteBold = 0;
 		  } else
@@ -412,7 +543,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 	      case DISPLAYNONE:
 		dowrite = (DeclutterLabels<MAPLABELS_ONLYTOPO) || intask || islandable;  // 100711
 		if (draw_alt) {
-		  if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
+		  /*if ( ArrivalValue == (ArrivalValue_t) avAltitude ) {
 			if ( (MapBox == (MapBox_t)mbUnboxedNoUnit) || (MapBox == (MapBox_t)mbBoxedNoUnit) )
 			  wsprintf(Buffer, TEXT("%d"), 
 				   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY));
@@ -423,8 +554,45 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		  } else
 			  wsprintf(Buffer, TEXT("%d"), 
 				   (int)(WayPointCalc[i].GR) );
+         */
 
-		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
+      switch (ArrivalValue)
+        {
+        case (ArrivalValue_t) avAltitude:
+
+          wsprintf(Buffer, TEXT("%d"), 
+            (int) (WayPointList[i].AltArivalAGL * ALTITUDEMODIFY));
+            // (e.g., "200")
+
+          if ( (MapBox != (MapBox_t) mbUnboxedNoUnit) && 
+                (MapBox != (MapBox_t)mbBoxedNoUnit))
+
+            wsprintf(Buffer, TEXT("%s%s"), Buffer, sAltUnit);
+            // (e.g., "200ft")
+
+          break;
+
+        case (ArrivalValue_t) avGR:
+
+          // (e.g., "12")
+          wsprintf(Buffer, TEXT("%d"), (int) WayPointCalc[i].GR);
+          break;
+
+        case (ArrivalValue_t) avSink:
+
+          // (e.g., "0.9")
+          AddDotOneText(Buffer, WayPointCalc[i].SinkMaxTotal * LIFTMODIFY);
+
+          if ( (MapBox != (MapBox_t) mbUnboxedNoUnit) && 
+                (MapBox != (MapBox_t) mbBoxedNoUnit) )
+
+            // (e.g., "0.9kt")
+            wsprintf(Buffer, TEXT("%s%s"), Buffer, sVertSpdUnit);
+        }
+
+		  if ( (MapBox == (MapBox_t) mbBoxed) || 
+           (MapBox == (MapBox_t) mbBoxedNoUnit))
+        {
 			  TextDisplayMode.AsFlag.Border = 1;
 			  TextDisplayMode.AsFlag.WhiteBold = 0;
 		  } else

@@ -5,6 +5,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "Calculations.h"
+#include "Parser.h"
+
+#define ALTABOVETARGET 1.0e6  // 1,000,000
+#define CRUISEEFF 1.0
 #define MAXSAFETYSPEED  100	// 360kmh
 #define MAXSPEED	100	// 360kmh = 100ms
 
@@ -19,9 +24,25 @@ class GlidePolar {
                                   double *VMacCready, 
 				  const bool isFinalGlide, 
                                   double *timetogo, 
-                                  double AltitudeAboveTarget=1.0e6,
-				  double cruise_efficiency=1.0);
+                                  double AltitudeAboveTarget = ALTABOVETARGET,
+                                  double cruise_efficiency = CRUISEEFF,
+                                  double Sink = 0.0);
 
+  static double MacCreadyAltitude(double MCREADY,
+                                  double Distance, 
+                                  const double Bearing,
+                                  const double WindSpeed,
+                                  const double WindBearing,
+                                  double Sink);
+
+  static double MaxOkaySink(NMEA_INFO *Basic,
+                            DERIVED_INFO *Calculated,
+                            double DistToWP,
+                            double BearingToWP,
+                            double LastValue,
+                            double AltWP,
+                            int WPindex);
+  
   static double MacCreadyRisk(double HeightAboveTerrain, double MaxThermalHeight,
                               double MCREADY);
 
@@ -66,7 +87,22 @@ class GlidePolar {
                                            double *VMacCready, 
                                            const bool isFinalGlide, 
                                            double *timetogo,
-					   const double cruise_efficiency);
+					   const double cruise_efficiency,
+                                           double Sink = 0.0);
+
+
+  static int GetSpeedToFly(double emcready, 
+                           double Distance, 
+                           const double Bearing, 
+                           const double WindSpeed, 
+                           const double WindBearing, 
+                           double *BestCruiseTrack, 
+                           double *VMacCready, 
+                           const bool isFinalGlide, 
+                           double *TimeToGo,
+                           const double cruise_efficiency,
+                           double *TimeToDestCruise,
+                           double SinkAir = 0.0);
 
   static double MacCreadyAltitude_heightadjust(double MCREADY, 
                                                double Distance, 
@@ -78,7 +114,8 @@ class GlidePolar {
                                                const bool isFinalGlide, 
                                                double *timetogo,
                                                const double AltitudeAboveTarget,
-					       const double cruise_efficiency);
+					       const double cruise_efficiency,
+                                               double Sink = 0.0);
 
 };
 

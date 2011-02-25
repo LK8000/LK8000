@@ -592,6 +592,7 @@ typedef enum{
 	avAltitude=0,
 	avGR,
 	// avDistance,
+	avSink
 } ArrivalValue_t;
 
 #if LKTOPO

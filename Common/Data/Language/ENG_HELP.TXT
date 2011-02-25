@@ -382,7 +382,7 @@ Two styles are available: WinPilot style (green and purple circles) or a high vi
 Choose how to display values for landable waypoints. With or without a box around, with or without units (meters, feet).
 
 @186
-Can show arrival altitude over safety, or required efficiency to arrive over safety.
+Can show arrival altitude over safety alt, required efficiency (glide ratio) to arrive at safety alt, or max air sink that can be present and still arrive at safety alt.
 
 @187
 If ON, bottom bar and LK pages are white with black text. The overlay text color will be reversed, so if you have set black they will be white. You can reverse these colors with a custom key. DEFAULT IS OFF.

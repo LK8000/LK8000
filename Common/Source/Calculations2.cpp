@@ -215,13 +215,15 @@ double FinalGlideThroughTerrain(const double this_bearing,
                                 double *retlat, double *retlon,
                                 const double max_range,
 				bool *out_of_range,
-				double *TerrainBase) 
-{
+				double *TerrainBase,
+                                double Sink) 
+  {
   double irange = GlidePolar::MacCreadyAltitude(MACCREADY, 
 						1.0, this_bearing, 
 						Calculated->WindSpeed, 
 						Calculated->WindBearing, 
-						0, 0, true, 0);
+						Sink);
+
   const double start_lat = Basic->Latitude;
   const double start_lon = Basic->Longitude;
   double safetyterrain;

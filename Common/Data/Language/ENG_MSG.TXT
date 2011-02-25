@@ -399,7 +399,7 @@ _@M386_ "Landing time"
 _@M387_ "Language "
 _@M388_ "Left "
 _@M389_ "Less"
-_@M390_ "Lift "
+_@M390_ "Lift/Sink "
 _@M391_ "Light Green"
 _@M392_ "Light grey"
 _@M393_ "Line"
@@ -955,6 +955,7 @@ _@M953_ "Transparent"
 _@M954_ "Font Renderer "
 _@M955_ "ClearType"
 _@M956_ "Anti Aliasing"
+_@M957_ "MaxOkaySink"
 
 #
 # Infoboxes in Description / Tile order. 

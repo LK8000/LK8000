@@ -3152,6 +3152,8 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M98_")));
 	// LKTOKEN  _@M254_ = "EfficiencyReq" 
     dfe->addEnumText(gettext(TEXT("_@M254_")));
+	// LKTOKEN  _@M957_ = "MaxAvgOkSink" 
+    dfe->addEnumText(gettext(TEXT("_@M957_")));
     dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(ArrivalValue);
     wp->RefreshDisplay();

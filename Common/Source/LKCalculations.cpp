@@ -937,10 +937,13 @@ double GetCurrentEfficiency(DERIVED_INFO *Calculated, short effmode) {
    return cruise;
 }
 
-static bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic,
+//static 
+bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic,
                                           DERIVED_INFO *Calculated,
                                           double LegToGo,
-                                          double LegBearing) {
+                                          double LegBearing,
+                                          double Sink)
+  {
   double lat, lon;
   bool out_of_range;
   double distance_soarable =
@@ -948,7 +951,8 @@ static bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic,
                              Basic, Calculated,
                              &lat,
                              &lon,
-                             LegToGo, &out_of_range, NULL);
+                             LegToGo, &out_of_range, NULL,
+                             Sink);
 
   if ((out_of_range)||(distance_soarable> LegToGo)) {
     return true;
@@ -1864,7 +1868,16 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 	}
 
     } // if landable or in task
-  } // for all waypoints
+
+    if (WayPointList[i].Reachable && WayPointCalc[i].IsLandable)
+      WayPointCalc[i].SinkMaxTotal = GlidePolar::MaxOkaySink(&DrawInfo, 
+        &DerivedDrawInfo, waypointDistance, waypointBearing,
+        WayPointCalc[i].SinkMaxTotal, WayPointList[i].Altitude,
+        (int) i);
+    else
+      WayPointCalc[i].SinkMaxTotal = 0.0;
+
+    } // for all waypoints
 
   if (!LandableReachable) // indentation wrong here
 

@@ -1838,6 +1838,7 @@ void InitWayPointCalc() {
 	WayPointCalc[i].GR=-1;
 	WayPointCalc[i].VGR=-1;
 	WayPointCalc[i].NextETE=0;
+       WayPointCalc[i].SinkMaxTotal = 0;
 
 	if ( (WayPointList[i].Flags & AIRPORT) == AIRPORT) {
 		WayPointCalc[i].IsAirport=true;

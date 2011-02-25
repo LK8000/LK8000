@@ -136,6 +136,9 @@ typedef struct _WAYPOINT_CALCULATED
   // if on, then they are also landable for sure
   bool IsAirport;
   bool IsOutlanding;
+  double SinkMaxTotal; // total amount of sink that can be present in the air
+                       // and still make it to the target at the configured minimum
+                       // acceptable altitude flying the ideal speed
 } WPCALC;
 
 typedef struct _SNAIL_POINT

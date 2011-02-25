@@ -310,7 +310,8 @@ double FinalGlideThroughTerrain(const double bearing, NMEA_INFO *Basic,
                                 double *retlat, double *retlon,
                                 const double maxrange,
 				bool *outofrange,
-				double *TerrainBase = NULL); 
+				double *TerrainBase = NULL,
+                                double Sink = 0.0); 
 
 double FarFinalGlideThroughTerrain(const double bearing, NMEA_INFO *Basic, 
                                 DERIVED_INFO *Calculated,
@@ -319,6 +320,12 @@ double FarFinalGlideThroughTerrain(const double bearing, NMEA_INFO *Basic,
 				bool *outofrange,
 				const double testaltitude,
 				double *TerrainBase = NULL);
+
+bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic,
+                                      DERIVED_INFO *Calculated,
+                                      double LegToGo,
+                                      double LegBearing,
+                                      double Sink = 0.0);
 
 double AltitudeNeededToPassObstacles(const double startLat, const double startLon, const double startAlt,
                                 const double wpLat, const double wpLon,
@@ -336,3 +343,4 @@ bool IsFlarmTargetCNInRange(void);
 void AlertBestAlternate(short soundmode); 
 
 #endif
+
