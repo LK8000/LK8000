@@ -198,9 +198,6 @@ class DevLXNano::Decl
     /// Sets the waypoint data to the @c task member.
     void SetWaypoint(const WAYPOINT* wp, WpType type, int idx);
 
-    /// Initializes @c crc member with computed CRC value.
-    void CalcCrc();
-
     /// Convert data to byte-stream for sending to device.
     int ToStream(void* buf);
 
@@ -236,9 +233,6 @@ class DevLXNano::Class
 
     /// Sets the value of @c name member.
     void SetName(const TCHAR* text);
-
-    /// Initializes @c crc member with computed CRC value.
-    void CalcCrc();
 
     /// Convert data to byte-stream for sending to device.
     int ToStream(void* buf);

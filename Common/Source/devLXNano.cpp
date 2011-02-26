@@ -528,15 +528,6 @@ void DevLXNano::Decl::SetWaypoint(const WAYPOINT* wp, WpType type, int idx)
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Initializes @c crc member with computed CRC value.
-///
-void DevLXNano::Decl::CalcCrc()
-{
-  crc = DevLXNano::CalcCrc(sizeof(*this) - 1, this);
-} // CalcCrc()
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Convert data to byte-stream for sending to device and calculate CRC.
 ///
 /// @param buf  [out] buffer (large enough for storing all data)
@@ -629,15 +620,6 @@ void DevLXNano::Class::SetName(const TCHAR* text)
 {
   Wide2Ascii(text, sizeof(name), name);
 } // SetName()
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Initializes @c crc member with computed CRC value.
-///
-void DevLXNano::Class::CalcCrc()
-{
-  crc = DevLXNano::CalcCrc(sizeof(*this) - 1, this);
-} // CalcCrc()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

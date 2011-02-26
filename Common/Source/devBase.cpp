@@ -12,18 +12,6 @@
 #include "options.h"
 #include "devBase.h"
 
-//______________________________________________________________________defines_
-
-// Wide2Ascii converts non-ascii characters to '_', define flag for WC2MB()
-#if (WINDOWSPC>0)
-  #define W2A_USE_DEFAULT_CHAR WC_NO_BEST_FIT_CHARS
-#else
-  #define W2A_USE_DEFAULT_CHAR WC_DEFAULTCHAR
-#endif
-
-/// US-ASCII (7-bit) character set for WC2MB()
-#define W2A_ASCII_CHARSET 20127
-
 //____________________________________________________________class_definitions_
 
 
@@ -182,15 +170,24 @@ bool DevBase::Wide2Ascii(const TCHAR* input, int outSize, char* output)
 
   if (len != 0)
   {
-    // convert to us-ascii characters only (7-bit), replace other chars with '_'
-    len = WideCharToMultiByte(W2A_ASCII_CHARSET, W2A_USE_DEFAULT_CHAR, input, len, tmp, sizeof(tmp), "_", NULL);
+    len = WideCharToMultiByte(CP_ACP, 0, input, len, tmp, sizeof(tmp), NULL, NULL);
 
     if (len == 0)
       return(false);
   }
 
   tmp[len] = '\0';
+
   strncat(output, tmp, outSize - 1);
+
+  // replace all non-ascii characters with '_' (LX Colibri is sensitive
+  // on non-ascii chars - the sw seal can be broken)
+  output--;
+  while (*++output != '\0')
+  {
+    if (*output < 32 || *output > 126)
+      *output = '_';
+  }
 
   return(len <= outSize);
 } // Wide2Ascii()
