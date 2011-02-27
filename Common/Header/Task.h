@@ -122,8 +122,4 @@ void CalculateAATIsoLines(void);
 
 void SaveDefaultTask(void);
 
-void ResumeAbortTask(int set = 0);
-
-bool TaskIsTemporary(void);
-
 #endif
