@@ -10,7 +10,8 @@ NEW
 
 CHANGES
 
-
+- AAT permanently ON for paragliders in configuration. 
+  With non-AT looking settings, though.
 
 
 BUGFIX
@@ -18,8 +19,11 @@ BUGFIX
 -  Bugfix Home Waypoint on multitarget not updated when unreachable 
    and not the same as a task point, or an alternate itself.
 
+- (refix LX declaration for non standard ASCII waypoint names)
 
-
+- (Infobox Title and description string terminations fixed)
+  The description _and_ title also displayed if description was too long, 
+  because of description null termination missing.
 
 
 
