@@ -113,5 +113,14 @@ void CTestContest::Run()
   //  std::cout << _trace << std::endl;
   
   //  _trace.DistanceVerify();
-  _trace.Solve();
+  CTrace::CSolution solution;
+  double length = _trace.Solve(solution);
+  
+  std::cout << "Solution:" << std::endl;
+  for(CTrace::CSolution::const_iterator it=solution.begin(); it!=solution.end(); ++it)
+    std::cout << " - " << TimeToString((*it)->Time()) << std::endl;
+  
+  std::cout << " - Length: " << length << std::endl;
+  
+  _kml.Dump(solution);
 }

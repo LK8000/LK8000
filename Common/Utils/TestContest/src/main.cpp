@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     //    unsigned algorithm = CTrace::ALGORITHM_TRIANGLES | CTrace::ALGORITHM_TIME_DELTA;
     unsigned algorithm = CTrace::ALGORITHM_DISTANCE  | CTrace::ALGORITHM_TIME_DELTA;
     //    unsigned algorithm = CTrace::ALGORITHM_DISTANCE | CTrace::ALGORITHM_INHERITED | CTrace::ALGORITHM_TIME_DELTA;
-    unsigned size = 500;
+    unsigned size = 250;
     CTestContest test(Convert<unsigned>(argv[1]), argv[2], algorithm, size);
     test.Run();
   }

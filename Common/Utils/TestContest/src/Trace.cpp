@@ -111,15 +111,6 @@ void CTrace::Push(double time, double lat, double lon, double alt)
   // compress the trace
   if(_size > _maxSize)
     Compress();
-
-  // CPoint *point = _front;
-  // while(point) {
-  //   if(point->_prev) {
-  //     if(point->_prevDistance - point->Distance(*point->_prev) > 0.001)
-  //       std::cout << "point->_prevDistance: " << point->_prevDistance << " point->Distance(point->_prev): " << point->Distance(*point->_prev) << std::endl;
-  //   }
-  //   point = point->_next;
-  // }
 }
 
 
@@ -207,38 +198,247 @@ void CTrace::DistanceVerify() const
 // }
 
 
-void CTrace::Solve()
-{
-  CPoint *point = _front;
-  while(point) {
-    point->_pathLength = -1;
-    point->_pathPrevious = 0;
-    point = point->_next;
-  }
-  
-  front->_pathLength = 0;
-  
-  typedef std::set<CPoint *, CDijkstraCmp> CDijkstraSet;
-  CDijkstraSet dijkstra;
-  CPoint *point = _front;
-  while(point) {
-    dijkstra.insert(point);
-    point = point->_next;
-  }
-  while(!dijkstra.empty()) {
-    CDijkstraSet::iterator it = dijkstra.begin();
-    point = *it;
-    if(point->_pathLength == -1)
-      // point inaccessible;
-      break;
 
-    dijkstra.erase(it);
+// unsigned CTrace::SolveIterate(const CPoint *pointArray[], unsigned idx, unsigned stage, CSolutionArray &solution)
+// {
+//   CSolutionArray bestSolution;
+//   unsigned bestLength = 0;
+//   for(unsigned i=idx+1; i<_maxSize; i++) {
+//     solution[stage] = idx;
+//     solution[stage + 1] = i;
+//     unsigned length = pointArray[idx]->Distance(*pointArray[i]);
+//     if(stage == 5) {
+//       std::cout << " - ";
+//       for(unsigned k=0; k<solution.size(); k++) {
+//         std::cout << solution[k] << " ";
+//       }
+//       std::cout << std::endl;
+//     }
+//     else {
+//       length += SolveIterate(pointArray, i, stage + 1, solution);
+//     }
     
-    CPoint *nextPoint = point->_next;
-    while(nextPoint) {
+//     if(length > bestLength) {
+//       bestSolution = solution;
+//       bestLength = length;
+//     }
+//   }
+//   solution = bestSolution;
+//   //  std::cout << "Exit: " << stage << std::endl;
+//   return bestLength;
+// }
+
+
+// void CTrace::Solve()
+// {
+//   const CPoint **pointArray = new const CPoint *[_maxSize];
+//   CPoint *point = _front;
+//   unsigned i=0;
+//   while(point) {
+//     pointArray[i++] = point;
+//     point = point->_next;
+//   }
+  
+//   CSolutionArray solution(7, 0);
+//   unsigned length = SolveIterate(pointArray, 0, 0, solution);
+  
+//   std::cout << "Solution [" << length << "]: " << std::endl;
+//   for(unsigned i=0; i<solution.size(); i++) {
+//     std::cout << " - " << i << ": " << solution[i] << std::endl;
+//   }
+  
+//   delete pointArray;
+// }
+
+  // if(point->_prev) {
+  //     if(point->_prevDistance - point->Distance(*point->_prev) > 0.001)
+  //       std::cout << "point->_prevDistance: " << point->_prevDistance << " point->Distance(point->_prev): " << point->Distance(*point->_prev) << std::endl;
+  //   }
+  //   point = point->_next;
+  // }
+
+
+double CTrace::Solve(CSolution &solution)
+{
+  CDijkstra dijkstra(*this, *_front);
+  return dijkstra.Solve(solution);
+}
+
+
+
+CTrace::CPoint::CPoint(double time, double lat, double lon, double alt, CPoint *prev):
+  _time(time), _lat(lat), _lon(lon), _alt(alt),
+  _prevDistance(prev ? prev->Distance(*this) : 0),
+  _inheritedCost(0), _distanceCost(0), _timeCost(0),
+  _pathLength(-1), _pathPrevious(0),
+  _prev(prev), _next(0)
+{
+  if(_prev) {
+    _prev->_next = this;
+    if(_prev->_prev)
+      _prev->AssesCost();
+  }
+}
+
+
+CTrace::CPoint::~CPoint()
+{
+  if(_prev)
+    _prev->_next = _next;
+  if(_next)
+    _next->_prev = _prev;
+}
+
+
+void CTrace::CPoint::Reduce()
+{
+  if(!_prev)
+    throw std::runtime_error("Reduce(), _prev");
+  if(!_next)
+    throw std::runtime_error("Reduce(), _next");
+  
+  // set new prevDistance for next point
+  _next->_prevDistance = _prevDistance + _next->_prevDistance - _distanceCost;
+  
+  // asses new costs
+  double distanceCost;
+  if(CTrace::_algorithm & ALGORITHM_TRIANGLES)
+    distanceCost = _prevDistance + _next->_prevDistance - _next->Distance(*_prev);
+  else
+    distanceCost = _distanceCost; 
       
+  double cost = (distanceCost + _inheritedCost) / 2.0;
+  _prev->_inheritedCost += cost;
+  _next->_inheritedCost += cost;
+}
+
+
+void CTrace::CPoint::AssesCost()
+{
+  if(!_prev)
+    throw std::runtime_error("AssesCost(), _prev");
+  if(!_next)
+    throw std::runtime_error("AssesCost(), _next");
+  
+  if(CTrace::_algorithm & ALGORITHM_TRIANGLES) {
+    double ax = _lon; double ay = _lat;
+    double bx = _prev->_lon;    double by = _prev->_lat;
+    double cx = _next->_lon;    double cy = _next->_lat;
+    _distanceCost = fabs(ax*(by-cy) + bx*(cy-ay) + cx*(ay-by));
+  }
+  else {
+    _distanceCost = _prevDistance + _next->_prevDistance - _next->Distance(*_prev);
+  }
+  _timeCost = TimeDelta(*_prev);// + _next->TimeDelta(*this);
+}
+
+
+bool CTrace::CPoint::operator<(const CPoint &ref) const
+{
+  double leftCost = 0;
+  double rightCost = 0;
       
-      nextPoint = nextPoint->_next;
+  leftCost += _distanceCost;
+  rightCost += ref._distanceCost;
+      
+  if(CTrace::_algorithm & ALGORITHM_INHERITED) {
+    leftCost += _inheritedCost;
+    rightCost += ref._inheritedCost;
+  }
+  if(CTrace::_algorithm & ALGORITHM_TIME_DELTA) {
+    leftCost *= _timeCost;
+    rightCost *= ref._timeCost;
+  }
+      
+  if(leftCost > rightCost)
+    return false;
+  else if(leftCost < rightCost)
+    return true;
+  else if(_timeCost > ref._timeCost)
+    return false;
+  else if(_timeCost < ref._timeCost)
+    return true;
+  else
+    return _time > ref._time;
+}
+
+
+
+
+CTrace::CDijkstra::CDijkstra(CTrace &trace, CPoint &startPoint):
+  _trace(trace)
+{
+  CPoint *point = _trace._front;
+  while(point) {
+    point->_pathLength = (point == &startPoint) ? 0 : -1;
+    point->_pathPrevious = 0;
+    _nodeSet.insert(point);
+    point = point->_next;
+  }
+}
+
+
+double CTrace::CDijkstra::Solve(CSolution &solution)
+{
+  while(!_nodeSet.empty()) {
+    std::cout << "Set size: " << _nodeSet.size() << std::endl;
+    for(CNodeSet::iterator it=_nodeSet.begin(); it!=_nodeSet.end(); ++it) {
+      std::cout << TimeToString((*it)->_time) << " - " << (*it)->_pathLength << std::endl;
+    }
+    
+    // get point with largest distance
+    CNodeSet::iterator it = _nodeSet.begin();
+    CPoint *prevPoint = *it;
+    double prevPathLength = prevPoint->_pathLength;
+    if(prevPathLength == -1) {
+      // all remaining points are inaccessible from start
+      throw std::runtime_error("Solve -1!!!");
+      break;
+    }
+    
+    // check if finish
+    
+    // remove the point from further analysis
+    std::cout << "Removing: " << TimeToString((*it)->_time) << std::endl;
+    _nodeSet.erase(it);
+
+    // update all remaining points
+    CPoint *point = prevPoint->_next;
+    while(point) {
+      double pathLength = prevPathLength + prevPoint->Distance(*point);
+      if(pathLength > point->_pathLength) {
+        it = _nodeSet.find(point);
+        if(it != _nodeSet.end())
+          _nodeSet.erase(it);
+        point->_pathLength = pathLength;
+        point->_pathPrevious = prevPoint;
+        if(it != _nodeSet.end())
+          _nodeSet.insert(point);
+      }
+      point = point->Next();
+    }
+
+    std::cout << "Points:" << std::endl;
+    point = _trace._front;
+    while(point) {
+      std::cout << TimeToString(point->_time) << " - " << point->_pathLength << std::endl;
+      point = point->Next();
     }
   }
+  
+  const CPoint *point = _trace.Front();
+  const CPoint *bestFinish = point;
+  while(point) {
+    if(point->_pathLength > bestFinish->_pathLength)
+      bestFinish = point;
+    point = point->Next();
+  }
+  
+  point = bestFinish;
+  while(point) {
+    solution.push_front(point);
+    point = point->_pathPrevious;
+  }
+  
+  return bestFinish->_pathLength;
 }

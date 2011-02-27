@@ -179,3 +179,53 @@ void CTestContest::CKMLWrapper::Dump(const CTrace &trace) const
   //   point = point->Next();
   // } while(point);
 }
+
+
+
+void CTestContest::CKMLWrapper::Dump(const CTrace::CSolution &solution) const
+{
+  _stream << "    <Folder>" << std::endl;
+  _stream << "    <visibility>0</visibility>" << std::endl;
+  _stream << "      <Placemark>" << std::endl;
+  _stream << "        <name>" << "Classic" << ": Trace" << "</name>" << std::endl;
+  _stream << "        <visibility>0</visibility>" << std::endl;
+  _stream << "        <styleUrl>#solution</styleUrl>" << std::endl;
+  _stream << "        <LineString>" << std::endl;
+  _stream << "          <tessellate>0</tessellate>" << std::endl;
+  _stream << "          <altitudeMode>absolute</altitudeMode>" << std::endl;
+  _stream << "          <coordinates>" << std::endl;
+  for(CTrace::CSolution::const_iterator it=solution.begin(); it!=solution.end(); ++it) {
+    _stream << std::setprecision(8) << (*it)->Longitude() << "," << (*it)->Latitude() << "," << std::setprecision(0) << (*it)->Altitude() << " " << std::endl;
+  }
+  _stream << "          </coordinates>" << std::endl;
+  _stream << "        </LineString>" << std::endl;
+  _stream << "      </Placemark>" << std::endl;
+  
+  unsigned i=0;
+  for(CTrace::CSolution::const_iterator it=solution.begin(); it!=solution.end(); ++it, i++) {
+    _stream << "      <Placemark>" << std::endl;
+    std::string name;
+    if(it == solution.begin())
+      name = "Start";
+    else if(it + 1 == solution.end())
+      name = "Finish";
+    else
+      name = "WP" + Convert(i);
+    _stream << "        <name>" << "Classic" << ": " << name << "</name>" << std::endl;
+    _stream << "        <visibility>0</visibility>" << std::endl;
+    _stream << "        <description>" << std::endl;
+    _stream << "          <![CDATA[" << std::endl;
+    _stream << "            <b>Longitude:</b> " << CoordToString((*it)->Longitude(), false) << "<br>" << std::endl;
+    _stream << "            <b>Latitude:</b> " << CoordToString((*it)->Latitude(), true) << "<br>" << std::endl;
+    _stream << "            <b>Altitude:</b> " << std::setprecision(0) << (*it)->Altitude() << "m" << "<br>" << std::endl;
+    _stream << "            <b>Time:</b> " << TimeToString((*it)->Time()) << std::endl;
+    _stream << "          ]]>"  << std::endl;
+    _stream << "        </description>"  << std::endl;
+    _stream << "        <Point>" << std::endl;
+    _stream << "          <altitudeMode>absolute</altitudeMode>" << std::endl;
+    _stream << "          <coordinates>" << std::setprecision(8) << (*it)->Longitude() << "," << (*it)->Latitude() << "," << (*it)->Altitude() << "</coordinates>" << std::endl;
+    _stream << "        </Point>" << std::endl;
+    _stream << "      </Placemark>" << std::endl;
+  }
+  _stream << "    </Folder>" << std::endl;
+}
