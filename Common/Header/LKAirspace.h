@@ -78,7 +78,6 @@ public:
 			_top(),
 			_bounds(),
 			_drawstyle(adsHidden),
-			_newwarnacknobrush(false),
 			_warnstate(awsNone),
 			_userwarningstate(awNone),
 			_userwarningstateold(awNone),
@@ -113,9 +112,6 @@ public:
   int Type() const { return _type; }
   void Type(int type) { _type = type; } 
   
-  bool NewWarnAckNoBrush() const { return _newwarnacknobrush; }
-  void NewWarnAckNoBrush(bool newwarnacknobrush) { _newwarnacknobrush = newwarnacknobrush; }
-
   AirspaceWarningState_t UserWarningState() const { return _userwarningstate; }
   void UserWarningState(AirspaceWarningState_t userwarningstate) { _userwarningstate = userwarningstate; }
   
@@ -147,7 +143,6 @@ protected:
   AIRSPACE_ALT _top;
   rectObj _bounds;
   AirspaceDrawStyle_t _drawstyle;
-  bool _newwarnacknobrush;
   // Warnings
   AirspaceWarningStateInternal_t _warnstate;  
 //  int _warntimer;  
@@ -221,32 +216,7 @@ private:
 typedef std::deque<CAirspace*> CAirspaceList;
 
 //Warning system 
-/*
-typedef struct _AirspaceInfo_c
-{
-public:
-  int    TimeOut;             // in systicks
-  int    InsideAckTimeOut;    // downgrade auto ACK timer
-  int    Sequence;            // Sequence nummer is equal for real and predicted calculation
-  int    hDistance;           // horizontal distance in m
-  int    vDistance;           // vertical distance in m
-  int    Bearing;             // in deg
-  DWORD  PredictedEntryTime;  // in ms
-  int    Acknowledge;         // 0=not Acked, 1=Acked til closer, 2=Acked til leave, 3= Acked whole day
-  bool   Inside;              // true if inside
-  bool   Predicted;           // true if predicted inside, menas close and entry expected
-  CAirspace *Airspace;
-  int    SortKey;             // SortKey
-  int    LastListIndex;       // Last index in List, used to sort items with same sort criteria
-  int    ID;                  // Unique ID
-  int    WarnLevel;           // WarnLevel 0 far away, 1 prdicted entry, 2 predicted entry and close, 3 inside      
-} AirspaceInfo_c;
-*/
 typedef enum {asaNull, asaItemAdded, asaItemChanged, asaClearAll, asaItemRemoved, asaWarnLevelIncreased, asaProcessEnd, asaProcessBegin} AirspaceWarningNotifyAction_t;
-//typedef void (*AirspaceWarningNotifier_t)(AirspaceWarningNotifyAction_t Action, AirspaceInfo_c *AirSpace) ;
-//typedef std::deque<AirspaceWarningNotifier_t> AirspaceWarningNotifiersList;
-//typedef std::deque<AirspaceInfo_c> AirspaceWarningsList;
-
 
 class CAirspaceManager
 {
@@ -269,9 +239,6 @@ public:
 
   //Warning system
   void AirspaceWarning (NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-/*  void AirspaceWarnListAdd(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
-                         bool Predicted, CAirspace *airspace,
-                         bool ackDay);*/
   void AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
   bool ClearAirspaceWarnings(const bool acknowledge, const bool ack_all_day = false);
   void AirspaceWarnListCalcDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance);
@@ -317,10 +284,7 @@ private:
   // Warning system data
   mutable CCriticalSection _cswarnlist;
   CAirspaceList _airspaces_warning;		//Airspaces in warning state>0
-  //AirspaceWarningsList _airspaceWarnings;
   int _static_unique;														//TODO remove this hack
-  bool UpdateAirspaceAckBrush(CAirspace &Item, int Force);
-  //bool calcWarnLevel(AirspaceInfo_c *asi);
   void AirspaceWarnListSort();
   void AirspaceWarnListClear();
 

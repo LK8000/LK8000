@@ -237,8 +237,7 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
          // || msRectContained(&screenbounds_latlon, &_bounds) is redundant here, msRectOverlap also returns true on containing!
 		 ) {
 
-	if (!_newwarnacknobrush &&
-	    !(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES-1)) {
+	if (!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES-1)) {
 	  _drawstyle = adsFilled;
 	} else {
 	  _drawstyle = adsOutline;
@@ -504,8 +503,7 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
          // || msRectContained(&screenbounds_latlon, &_bounds) is redundant here, msRectOverlap also returns true on containing!
 		 ) {
 
-	if (!_newwarnacknobrush &&
-	    !(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES-1)) {
+	if (!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES-1)) {
 	  _drawstyle = adsFilled;
 	} else {
 	  _drawstyle = adsOutline;
