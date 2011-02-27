@@ -899,8 +899,10 @@ bool SetDataOption( int index,
 	if (index>=NUMSELECTSTRING_MAX) return false;
 
 	tag.UnitGroup = UnitGroup;
-	_tcsncpy(tag.Description, gettext(Description), DESCRIPTION_SIZE);
+	_tcsncpy(tag.Description, gettext(Description), DESCRIPTION_SIZE); 
+	tag.Description[DESCRIPTION_SIZE] = 0;		// buff allocated to DESCRIPITON_SIZE+1
 	_tcsncpy(tag.Title, gettext(Title), TITLE_SIZE);
+	tag.Title[TITLE_SIZE] = 0;;					// buff allocated to TITLE_SIZE+1
 	tag.Formatter = Formatter;
 	tag.Process = Process;
 	tag.next_screen = next_screen;
