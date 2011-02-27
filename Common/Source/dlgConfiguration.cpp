@@ -55,7 +55,6 @@ extern LOGFONT autoCDIWindowLogFont; // New
 extern LOGFONT autoMapLabelLogFont;
 extern LOGFONT autoStatisticsLogFont;
 
-// #define ISPARAGLIDER (AircraftCategory == (AircraftCategory_t)umParaglider)
 
 extern void InitializeOneFont (HFONT * theFont, 
                                const TCHAR FontRegKey[] , 
@@ -4695,6 +4694,7 @@ void dlgConfigurationShowModal(void){
 		    (DWORD)(AircraftCategory));
       changed = true;
       requirerestart = true;
+	if (ISPARAGLIDER) AATEnabled=TRUE;
     }
   }
 

@@ -35,6 +35,7 @@
 #include "McReady.h"
 #include "NavFunctions.h"
 #include "WaveThread.h"
+#include "LKMapWindow.h"
 
 #include "FlarmIdFile.h"
 // Warning, this is initialising class, loading flarmnet IDs before anything else in the LK is even started..
@@ -876,8 +877,11 @@ void ReadRegistrySettings(void)
   EnableAutoSoundVolume = (Temp == 1);
 
   Temp = 0;
-  GetFromRegistry(szRegistryAircraftCategory,&Temp); // VENTA4
+  GetFromRegistry(szRegistryAircraftCategory,&Temp);
   AircraftCategory = Temp;
+  if (ISPARAGLIDER) {
+	AATEnabled=TRUE;
+  }
 
   Temp = 0;
   GetFromRegistry(szRegistryExtendedVisualGlide,&Temp); // VENTA4

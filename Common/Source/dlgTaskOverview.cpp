@@ -18,7 +18,7 @@
 #include "McReady.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
-
+#include "LKMapWindow.h"
 
 static WndForm *wf=NULL;
 static WndFrame *wfAdvanced=NULL;
@@ -88,12 +88,6 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
   } else {
     w0 = 210*InfoBoxLayout::scale;
   }
-  #ifdef PATCH091126
-  WndListFrame *wlf = (WndListFrame *)wf->FindByName(TEXT("frmTaskList"));
-  if (wlf) {
-     w0=wlf->GetWidth() - wlf->GetScrollbarWidth() - 4;
-  }
-  #endif
 
   int w1 = GetTextWidth(hDC, TEXT(" 000km"));
   int w2 = GetTextWidth(hDC, TEXT("  000")TEXT(DEG));
@@ -151,7 +145,7 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
 		 sTmp, _tcslen(sTmp), NULL);
     } else if ((DrawListIndex==n+1) && ValidTaskPoint(0)) {
 
-      if (!AATEnabled) {
+      if (!AATEnabled || ISPARAGLIDER) {
 	// LKTOKEN  _@M735_ = "Total:" 
 	_stprintf(sTmp, gettext(TEXT("_@M735_")));
 	ExtTextOut(hDC, 2*InfoBoxLayout::scale, 2*InfoBoxLayout::scale,
@@ -271,15 +265,7 @@ static void OnTaskListEnter(WindowControl * Sender,
 		     WndListFrame::ListInfo_t *ListInfo) {
   (void)Sender;
   bool isfinish = false;
-#ifndef PATCH091126
   ItemIndex = ListInfo->ItemIndex; 
-#else
-  int j=0;
-  ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
-  if (ItemIndex >= MAXTASKPOINTS) {
-    return;
-  }
-#endif
 
   if ((ItemIndex>= UpLimit) || (UpLimit==0)) {
     if (ItemIndex>=UpLimit) {
@@ -289,9 +275,6 @@ static void OnTaskListEnter(WindowControl * Sender,
     if (CheckDeclaration()) {
 
       if (ItemIndex>0) {
-#ifdef PATCH091126
-	j = ItemIndex; // patch 091126
-#endif
         if (MessageBoxX(hWndMapWindow,
 	// LKTOKEN  _@M817_ = "Will this be the finish?" 
                         gettext(TEXT("_@M817_")),
@@ -358,22 +341,12 @@ static void OnTaskListEnter(WindowControl * Sender,
 static void OnTaskListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
 	(void)Sender;
 
-#ifndef PATCH091126
   if (ListInfo->DrawIndex == -1){
     ListInfo->ItemCount = UpLimit-LowLimit+1;
   } else {
     DrawListIndex = ListInfo->DrawIndex; 
     ItemIndex = ListInfo->ItemIndex;
   }
-#else
-  // REMOVE THIS
-  if (ListInfo->DrawIndex == -1){
-    ListInfo->ItemCount = UpLimit-LowLimit+2; // 091126 patch from 1 to 2
-  } else {
-	DrawListIndex = ListInfo->DrawIndex + ListInfo->ScrollIndex;
-	ItemIndex = ListInfo->ItemIndex + ListInfo->ScrollIndex;
-  }
-#endif
 }
 
 static void OnCloseClicked(WindowControl * Sender){
@@ -512,26 +485,6 @@ static void OnSaveClicked(WindowControl * Sender, WndListFrame::ListInfo_t *List
   UpdateCaption();
 }
 
-#if 0
-static void OnLoadClicked(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
-  (void)ListInfo; (void)Sender;
-
-  WndProperty* wp;
-  DataFieldFileReader *dfe;
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpFile"));
-  if (!wp) return;
-  dfe = (DataFieldFileReader*) wp->GetDataField();
-  int file_index = dfe->GetAsInteger();
-
-  if (file_index>0) {
-    LoadNewTask(dfe->GetPathFile());
-    OverviewRefreshTask();
-    UpdateFilePointer();
-    UpdateCaption();
-  } 
-}
-#else
 static void OnLoadClicked(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){ // 091216
   (void)ListInfo; (void)Sender;
 
@@ -569,7 +522,6 @@ static void OnLoadClicked(WindowControl * Sender, WndListFrame::ListInfo_t *List
     UpdateCaption();
   }
 }
-#endif
 
 
 static void OnAdvancedClicked(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
@@ -624,6 +576,12 @@ void dlgTaskOverviewShowModal(void){
 
   ASSERT(wf!=NULL);
 
+  if (ISPARAGLIDER) {
+        AATEnabled=TRUE;
+        EnableMultipleStartPoints=false;
+  }
+
+
   UpdateCaption();
 
   wfAdvanced = ((WndFrame *)wf->FindByName(TEXT("frmAdvanced")));
@@ -633,9 +591,6 @@ void dlgTaskOverviewShowModal(void){
   ASSERT(wTaskList!=NULL);
   wTaskList->SetBorderKind(BORDERLEFT);
   wTaskList->SetEnterCallback(OnTaskListEnter);
-  #ifdef PATCH091126
-  wTaskList->SetWidth(wf->GetWidth() - wTaskList->GetLeft()-2); // 091126 patch
-  #endif
   wTaskListEntry = (WndOwnerDrawFrame*)wf->
     FindByName(TEXT("frmTaskListEntry"));
 
@@ -663,10 +618,7 @@ void dlgTaskOverviewShowModal(void){
   // initialise and turn on the display
   OverviewRefreshTask();
 
-  #ifndef PATCH091126
   UpdateAdvanced(); 
-  #else
-  #endif
 
   wf->ShowModal();
 
