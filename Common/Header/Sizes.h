@@ -47,8 +47,8 @@
 // #define FLARM_MAX_TRAFFIC 15
 #define MAXSATELLITES 12
 
-#define DESCRIPTION_SIZE 30
-#define TITLE_SIZE 30
+#define DESCRIPTION_SIZE 40			// Infobox descriptions
+#define TITLE_SIZE 20				// Infobox titles 
 #define FORMAT_SIZE 20
 // task points enlarged from 10 to 20 
 #define MAXTASKPOINTS 20
