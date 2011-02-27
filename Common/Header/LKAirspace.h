@@ -77,6 +77,7 @@ public:
 			_base(),
 			_top(),
 			_bounds(),
+			_flyzone(false),
 			_drawstyle(adsHidden),
 			_warnstate(awsNone),
 			_userwarningstate(awNone),
@@ -99,12 +100,14 @@ public:
   bool GetFarVisible(const rectObj &bounds_active) const;
   
   // Attributes interface
-  void Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top) { _tcsncpy(_name, name, NAME_SIZE); _type = type; memcpy(&_base, &base, sizeof(_base)); memcpy(&_top, &top, sizeof(_top));}
+  void Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone) 
+	  { _tcsncpy(_name, name, NAME_SIZE); _type = type; memcpy(&_base, &base, sizeof(_base)); memcpy(&_top, &top, sizeof(_top)); _flyzone = flyzone;}
 
   const TCHAR* Name() const { return _name; }
   const AIRSPACE_ALT* Top() const { return &_top; }
   const AIRSPACE_ALT* Base() const { return &_base; }
   const rectObj& Bounds() const { return _bounds; }
+  const bool Flyzone() const { return _flyzone; }
   
   AirspaceDrawStyle_t DrawStyle() const { return _drawstyle; }
   void DrawStyle(AirspaceDrawStyle_t drawstyle) { _drawstyle = drawstyle; } 
@@ -142,6 +145,7 @@ protected:
   AIRSPACE_ALT _base;
   AIRSPACE_ALT _top;
   rectObj _bounds;
+  bool _flyzone;					// true if leaving generates warning
   AirspaceDrawStyle_t _drawstyle;
   // Warnings
   AirspaceWarningStateInternal_t _warnstate;  
@@ -241,8 +245,7 @@ public:
   void AirspaceWarning (NMEA_INFO *Basic, DERIVED_INFO *Calculated);
   void AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
   bool ClearAirspaceWarnings(const bool acknowledge, const bool ack_all_day = false);
-  void AirspaceWarnListCalcDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance);
-  void AirspaceWarnListCalcNextDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance);
+  bool AirspaceWarnListCalcDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance);
   //dlgAirspaceWarning
   int AirspaceWarnGetItemCount();
   bool AirspaceWarnGetItem(unsigned int Index, CAirspace **Item);

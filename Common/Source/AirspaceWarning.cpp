@@ -194,9 +194,11 @@ static void AirspaceWarnListDoNotify(AirspaceWarningNotifyAction_t Action, Airsp
 #endif
 
 #ifdef LKAIRSPACE
-void CAirspaceManager::AirspaceWarnListCalcDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance)
+// Calculates nearest horizontal and vertical distance to airspace
+// Returns true if inside, false if outside
+bool CAirspaceManager::AirspaceWarnListCalcDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance)
 {
-
+  bool inside = true;
   int vDistanceBase;
   int vDistanceTop;
   int alt;
@@ -213,7 +215,7 @@ void CAirspaceManager::AirspaceWarnListCalcDistance(NMEA_INFO *Basic, DERIVED_IN
   if (1) {
 	CCriticalSection::CGuard guard(_csairspaces);
 	distance = airspace->Range(Basic->Longitude, Basic->Latitude, fbearing);
-	if (distance < 0) distance = 0;
+	if (distance >= 0) inside = false;
 	if (airspace->Base()->Base != abAGL) {
 		vDistanceBase = alt - (int)(airspace->Base()->Altitude);
 	} else {
@@ -226,20 +228,19 @@ void CAirspaceManager::AirspaceWarnListCalcDistance(NMEA_INFO *Basic, DERIVED_IN
 	}
   }
 
-  // EntryTime = ToDo
+  if (vDistanceBase < 0 || vDistanceTop > 0) inside = false;
+
   if (Bearing) *Bearing = (int)fbearing;
   if (hDistance) *hDistance = (int)distance;
   if (vDistance) {
-	if (vDistanceBase > 0 && vDistanceTop < 0) {
-	  *vDistance  = 0;
-	}
-	else if (-vDistanceBase > vDistanceTop)
+	if (-vDistanceBase > vDistanceTop)
 	  *vDistance = vDistanceBase;
 	else
 	  *vDistance = vDistanceTop;
   }
+  return inside;
 }
-
+/*
 void CAirspaceManager::AirspaceWarnListCalcNextDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance)
 {
 
@@ -279,7 +280,7 @@ void CAirspaceManager::AirspaceWarnListCalcNextDistance(NMEA_INFO *Basic, DERIVE
 	else
 	  *vDistance = vDistanceTop;
   }
-}
+}*/
 #else
 static void AirspaceWarnListCalcDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated, bool IsCircle, int AsIdx, int *hDistance, int *Bearing, int *vDistance){
 
@@ -612,11 +613,20 @@ void CAirspaceManager::AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *C
   int hDistance = 0;
   int vDistance = 0;
   int Bearing = 0;
+  bool warning_condition = false;
+  bool inside;
   int ticknow = GetTickCount();
   
   CCriticalSection::CGuard guard(_cswarnlist);
   for (CAirspaceList::iterator it = _airspaces_warning.begin(); it != _airspaces_warning.end(); ) {
 	
+	inside = AirspaceWarnListCalcDistance(Basic, Calculated, *it, &hDistance, &Bearing, &vDistance);
+	(*it)->WarnvDistance(vDistance);
+	(*it)->WarnhDistance(hDistance);
+	dlgAirspaceWarningNotify(asaItemChanged, *it);
+	warning_condition = ( (!(*it)->Flyzone() && inside) || 
+						  ((*it)->Flyzone() && !inside ) );
+			
 	switch ((*it)->WarningState()) {
 	  default:
 		break;
@@ -630,13 +640,16 @@ void CAirspaceManager::AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *C
 		  break;
 		
 	  case awsCheckWarning:
-		  AirspaceWarnListCalcDistance(Basic, Calculated, *it, &hDistance, &Bearing, &vDistance);
-		  (*it)->WarnvDistance(vDistance);
-		  (*it)->WarnhDistance(hDistance);
-		  dlgAirspaceWarningNotify(asaItemChanged, *it);
-		  if (hDistance>0 || vDistance!=0 ) { 
-			// far away, remove from warning list
-			if ((hDistance > 2500) || (abs(vDistance) > 250)) {  
+		  if ( warning_condition ) { 
+			// Warning
+			(*it)->UserWarningState(awWarning);		// Issue user warning
+			(*it)->WarningState(awsWarning);
+			#ifdef DEBUG_AIRSPACE
+			StartupStore(TEXT("LKAIRSP: %s hdist:%f, vdist:%f awsCheckWarning->awsWarning%s"),(*it)->Name(),(*it)->WarnhDistance(),(*it)->WarnvDistance(),NEWLINE );
+			#endif
+		  } else {
+			// Far away, remove from warning list
+			if ( abs(hDistance > 2500) && (abs(vDistance) > 250)) {  
 			  #ifdef DEBUG_AIRSPACE
 			  StartupStore(TEXT("LKAIRSP: %s removed%s"),(*it)->Name(),NEWLINE );
 			  #endif
@@ -647,28 +660,16 @@ void CAirspaceManager::AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *C
 			  continue;
 			}
 			break;
-		  } //if !inside
-			(*it)->UserWarningState(awWarning);		//Issue user warning
-			dlgAirspaceWarningNotify(asaItemChanged, *it);
-			(*it)->WarningState(awsWarning);
-			#ifdef DEBUG_AIRSPACE
-			StartupStore(TEXT("LKAIRSP: %s hdist:%f, vdist:%f awsCheckWarning->awsWarning%s"),(*it)->Name(),(*it)->WarnhDistance(),(*it)->WarnvDistance(),NEWLINE );
-			#endif
+		  } //else warning
 		  break;
 		
 	  case awsWarning:
-		  AirspaceWarnListCalcDistance(Basic, Calculated, *it, &hDistance, &Bearing, &vDistance);
-		  (*it)->WarnvDistance(vDistance);
-		  (*it)->WarnhDistance(hDistance);
-		  dlgAirspaceWarningNotify(asaItemChanged, *it);
-		  if (hDistance<=0 && vDistance==0 ) { 
-			break;
-		  }
-			(*it)->UserWarningState(awPredicted);
-			(*it)->WarningState(awsCheckWarning);
-			#ifdef DEBUG_AIRSPACE
-			StartupStore(TEXT("LKAIRSP: %s hdist:%f, vdist:%f awsWarning->awsCheckWarning%s"),(*it)->Name(),(*it)->WarnhDistance(),(*it)->WarnvDistance(),NEWLINE );
-			#endif
+		  if ( warning_condition ) break;
+		  (*it)->UserWarningState(awPredicted);
+		  (*it)->WarningState(awsCheckWarning);
+		  #ifdef DEBUG_AIRSPACE
+		  StartupStore(TEXT("LKAIRSP: %s hdist:%f, vdist:%f awsWarning->awsCheckWarning%s"),(*it)->Name(),(*it)->WarnhDistance(),(*it)->WarnvDistance(),NEWLINE );
+		  #endif
 		  break;
 	}
 	
@@ -942,7 +943,7 @@ int AirspaceWarnFindIndexByID(int ID){
 #endif
 
 #ifdef LKAIRSPACE
-int LKAirspaceDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
+/*int LKAirspaceDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                          bool Predicted, CAirspace *airspace,
                          bool ackDay){
 
@@ -956,7 +957,7 @@ int LKAirspaceDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
    //	else
    return hDistance;
   
-}
+}*/
 #else
 int LKAirspaceDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                          bool Predicted, bool IsCircle, int AsIdx,

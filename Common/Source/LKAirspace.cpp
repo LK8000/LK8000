@@ -57,9 +57,10 @@ CAirspaceManager CAirspaceManager::_instance = CAirspaceManager(CAirspaceManager
 
 
 //
-// CAIRSPACE CLASEE
+// CAIRSPACE CLASS
 //
 
+// Dumps object instance to Runtime.log
 void CAirspace::Dump() const
 {
   //StartupStore(TEXT("CAirspace Dump%s"),NEWLINE);
@@ -111,12 +112,14 @@ void CAirspace::AirspaceAGLLookup(double av_lat, double av_lon)
   }
 }
 
+// Called when QNH changed
 void CAirspace::QnhChangeNotify()
 {
   if (_top.Base == abFL) _top.Altitude = AltitudeToQNHAltitude((_top.FL * 100)/TOFEET);
   if (_base.Base == abFL) _base.Altitude = AltitudeToQNHAltitude((_base.FL * 100)/TOFEET);
 }
 
+// Check if airspace overlaps given bounds
 bool CAirspace::GetFarVisible(const rectObj &bounds_active) const
 {
   return (msRectOverlap(&_bounds, &bounds_active) == MS_TRUE);
@@ -150,14 +153,14 @@ CAirspace_Circle::CAirspace_Circle(const double &Center_Latitude, const double &
 	AirspaceAGLLookup(Center_Latitude, Center_Longitude); 
 }
 
-
+// Dumps object instance to Runtime.log
 void CAirspace_Circle::Dump() const
 {
   StartupStore(TEXT("CAirspace_Circle Dump, CenterLat:%lf, CenterLon:%lf, Radius:%lf%s"), _latcenter, _loncenter, _radius, NEWLINE);
   CAirspace::Dump();
 }
 
-
+// Check if the given coordinate is inside the airspace
 bool CAirspace_Circle::Inside(const double &longitude, const double &latitude) const
 {
   double bearing;
@@ -381,6 +384,7 @@ int CAirspace_Area::wn_PnPoly( const double &longitude, const double &latitude )
 }
 
 
+// Check if the given coordinate is inside the airspace
 bool CAirspace_Area::Inside(const double &longitude, const double &latitude) const
 {
   if (_geopoints.size() < 3) return false;
@@ -875,7 +879,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
   double CenterX = 0;
   double CenterY = 0;
   double lat=0,lon=0;
-
+  bool flyzone = false;
   
   StartupStore(TEXT(". Reading airspace file%s"),NEWLINE);
 
@@ -921,7 +925,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
 				  newairspace = new CAirspace_Area;
 	  			  newairspace->SetPoints(points);
 				}
-			  newairspace->Init(Name, Type, Base, Top);
+			  newairspace->Init(Name, Type, Base, Top, flyzone);
 
 			  if (1) {
 				CCriticalSection::CGuard guard(_csairspaces);
@@ -930,12 +934,13 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
 			  
 			  Name[0]='\0';
 			  Radius = 0;
-			  Longitude = 0;
+ 			  Longitude = 0;
 			  Latitude = 0;
 			  points.clear();
 			  Type = 0;
 			  Base.Base = abUndef;
 			  Top.Base = abUndef;
+			  flyzone = false;
 			  newairspace = NULL;
 			  parsing_state = 0;
 			}
@@ -967,7 +972,13 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
 			if (parsing_state == 10) ReadAltitude(p, &Top);
             break;
             
-          case _T('T'): // ignore airspace labels
+		  //OpenAir non standard field - AF - define a fly zone
+          case _T('F'): // AF - Fly zone, no parameter
+			  flyzone = true;
+            continue;
+
+		  case _T('T'): // AT
+			// ignore airspace labels
             // TODO: adding airspace labels
             continue;
 			
@@ -1093,7 +1104,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
 		newairspace = new CAirspace_Area();
 		newairspace->SetPoints(points);
 	}
-	newairspace->Init(Name, Type, Base, Top);
+	newairspace->Init(Name, Type, Base, Top, flyzone);
 	CCriticalSection::CGuard guard(_csairspaces);
 	_airspaces.push_back(newairspace);
   }
@@ -1384,19 +1395,37 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
 	  if (MapWindow::iAirspaceMode[(*it)->Type()] < 2) continue;
 	  
 	  // Check for altitude
-      if (((((*it)->Base()->Base != abAGL) && (alt >= (*it)->Base()->Altitude))
+	  bool altitude =
+         (((((*it)->Base()->Base != abAGL) && (alt >= (*it)->Base()->Altitude))
            || (((*it)->Base()->Base == abAGL) && (agl >= (*it)->Base()->AGL)))
           && ((((*it)->Top()->Base != abAGL) && (alt < (*it)->Top()->Altitude))
-           || (((*it)->Top()->Base == abAGL) && (agl < (*it)->Top()->AGL)))) {
-		// Check for inside
-		if ((*it)->Inside(lon, lat)) {
-		  (*it)->WarningState(awsNew);
-		  CCriticalSection::CGuard guard(_cswarnlist);
-		  _airspaces_warning.push_front(*it);
-		  #ifdef DEBUG_AIRSPACE
-		  StartupStore(TEXT("LKAIRSP: %s added%s"),(*it)->Name(),NEWLINE );
-		  #endif
-        }
+           || (((*it)->Top()->Base == abAGL) && (agl < (*it)->Top()->AGL))));
+		 
+  
+      if ((*it)->Flyzone()) {
+		  // FLY ZONE
+		  // Check for outside
+		  if (!(*it)->Inside(lon, lat) || !altitude) {
+			(*it)->WarningState(awsNew);
+			CCriticalSection::CGuard guard(_cswarnlist);
+			_airspaces_warning.push_front(*it);
+			#ifdef DEBUG_AIRSPACE
+			StartupStore(TEXT("LKAIRSP: %s added%s"),(*it)->Name(),NEWLINE );
+			#endif
+		  }
+	  } else {
+		  // DEFAULT - NON FLY ZONE
+		if (altitude) {
+		  // Check for inside
+		  if ((*it)->Inside(lon, lat)) {
+			(*it)->WarningState(awsNew);
+			CCriticalSection::CGuard guard(_cswarnlist);
+			_airspaces_warning.push_front(*it);
+			#ifdef DEBUG_AIRSPACE
+			StartupStore(TEXT("LKAIRSP: %s added%s"),(*it)->Name(),NEWLINE );
+			#endif
+		  }
+		}
 	  }
   }
   
@@ -1445,18 +1474,6 @@ void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbou
   }
 }
 
-// Passing reference instead
-// CAirspaceList CAirspaceManager::GetAirspacesToDraw() const
-// {
-//   CAirspaceList res;
-//   CAirspaceList::const_iterator it;
-//   CCriticalSection::CGuard guard(_csairspaces);
-// 
-//   for (it = _airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
-// 	if ((*it)->Visible() == 2) res.push_back(*it);
-//   }
-//   return res;
-// }
 
 const CAirspaceList& CAirspaceManager::GetNearAirspacesRef() const
 {

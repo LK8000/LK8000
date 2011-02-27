@@ -501,28 +501,57 @@ static void OnAirspaceListItemPaint(WindowControl * Sender, HDC hDC){
 	  default:
 		break;
 	  case awsWarning:
-		wsprintf(sTmp, TEXT("> %c %s"), GetAckIndicator(pairspace->UserWarnAckState()), sType);
+		if (!pairspace->Flyzone()) {
+		  //Non fly zone
+		  wsprintf(sTmp, TEXT("> %c %s %s"), GetAckIndicator(pairspace->UserWarnAckState()), sType, gettext(TEXT("_@M789_")));	//LKTOKEN _@M789_ "Warn"
+		} else {
+		  //Fly zone
+		  wsprintf(sTmp, TEXT("< %c %s %s"), GetAckIndicator(pairspace->UserWarnAckState()), sType, gettext(TEXT("_@M789_")));	//LKTOKEN _@M789_ "Warn"
+		}
 		break;
 		
 	  case awsCheckWarning:
 		TCHAR DistanceText[MAX_PATH];
-		if (pairspace->WarnhDistance() <= 0) {
-		  // Directly above or below airspace
-		  Units::FormatUserAltitude(fabs(pairspace->WarnvDistance()),DistanceText, 7);
-		  if (pairspace->WarnvDistance() > 0) {
-			wsprintf(sTmp, TEXT("< %c %s ab %s"), 
-					GetAckIndicator(pairspace->UserWarnAckState()), 
-					sType, DistanceText);
+		if (!pairspace->Flyzone()) {
+		  //Non fly zone
+		  if (pairspace->WarnhDistance() <= 0) {
+			// Directly above or below airspace
+			Units::FormatUserAltitude(fabs(pairspace->WarnvDistance()),DistanceText, 7);
+			if (pairspace->WarnvDistance() > 0) {
+			  wsprintf(sTmp, TEXT("< %c %s ab %s"), 
+					  GetAckIndicator(pairspace->UserWarnAckState()), 
+					  sType, DistanceText);
+			} else {
+			  wsprintf(sTmp, TEXT("< %c %s bl %s"), 
+					  GetAckIndicator(pairspace->UserWarnAckState()), 
+					  sType, DistanceText);
+			}
 		  } else {
-			wsprintf(sTmp, TEXT("< %c %s bl %s"), 
-					GetAckIndicator(pairspace->UserWarnAckState()), 
-					sType, DistanceText);
+			  // Horizontally separated
+			  Units::FormatUserDistance(fabs(pairspace->WarnhDistance()),DistanceText, 7);
+			  wsprintf(sTmp, TEXT("< %c %s H %s"), GetAckIndicator(pairspace->UserWarnAckState()),
+					  sType, DistanceText);
 		  }
 		} else {
-			// Horizontally separated
-			Units::FormatUserDistance(fabs(pairspace->WarnhDistance()),DistanceText, 7);
-			wsprintf(sTmp, TEXT("< %c %s H %s"), GetAckIndicator(pairspace->UserWarnAckState()),
-					sType, DistanceText);
+		  //Fly zone
+		  if ( abs(pairspace->WarnhDistance()) > abs(pairspace->WarnvDistance())*30) {
+			// vDist smaller than horizontal
+			Units::FormatUserAltitude(fabs(pairspace->WarnvDistance()),DistanceText, 7);
+			if (pairspace->WarnvDistance() > 0) {
+			  wsprintf(sTmp, TEXT("> %c %s ab %s"), 
+					  GetAckIndicator(pairspace->UserWarnAckState()), 
+					  sType, DistanceText);
+			} else {
+			  wsprintf(sTmp, TEXT("> %c %s bl %s"), 
+					  GetAckIndicator(pairspace->UserWarnAckState()), 
+					  sType, DistanceText);
+			}
+		  } else {
+			  // Horizontally separated
+			  Units::FormatUserDistance(fabs(pairspace->WarnhDistance()),DistanceText, 7);
+			  wsprintf(sTmp, TEXT("> %c %s H %s"), GetAckIndicator(pairspace->UserWarnAckState()),
+					  sType, DistanceText);
+		  }
 		}
 		break;
     }//sw
