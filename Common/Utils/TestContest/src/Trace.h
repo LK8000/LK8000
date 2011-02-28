@@ -40,8 +40,8 @@ private:
    */
   typedef std::set<CPoint *, CPtrCmp<CPoint *> > CPointCostSet;
   
-  static unsigned _maxSize;
-  static unsigned _algorithm;
+  const unsigned _maxSize;
+  const unsigned _algorithm;
   const bool _gpsPointsOwner;
   const unsigned _startHeightLoss;
   unsigned _size;
@@ -51,7 +51,7 @@ private:
   CPoint *_back;
   
   bool _startDetected;
-  double _startAltitude;
+  double _startMaxAltitude;
   
   CTrace(const CTrace &);              /**< @brief Disallowed */
   CTrace &operator=(const CTrace &);   /**< @brief Disallowed */
@@ -80,6 +80,7 @@ class CTrace::CPoint {
   friend class CTrace;
   friend class CTestContest;
   
+  const CTrace &_trace;
   const CPointGPS * const _gps;
   
   // trace compression values
@@ -99,8 +100,8 @@ class CTrace::CPoint {
   void AssesCost();
   
 public:
-  CPoint(const CPointGPS *pointGPS, CPoint *prev);
-  CPoint(const CPoint &ref, CPoint *prev);
+  CPoint(const CTrace &trace, const CPointGPS *pointGPS, CPoint *prev);
+  CPoint(const CTrace &trace, const CPoint &ref, CPoint *prev);
   ~CPoint();
   
   CPoint *Next() const { return _next; }
@@ -120,11 +121,11 @@ inline bool CTrace::CPoint::operator<(const CPoint &ref) const
   leftCost += _distanceCost;
   rightCost += ref._distanceCost;
       
-  if(CTrace::_algorithm & ALGORITHM_INHERITED) {
+  if(_trace._algorithm & ALGORITHM_INHERITED) {
     leftCost += _inheritedCost;
     rightCost += ref._inheritedCost;
   }
-  if(CTrace::_algorithm & ALGORITHM_TIME_DELTA) {
+  if(_trace._algorithm & ALGORITHM_TIME_DELTA) {
     leftCost *= _timeCost;
     rightCost *= ref._timeCost;
   }

@@ -10,17 +10,12 @@
 #include <iostream>
 
 
-unsigned CTrace::_maxSize;
-unsigned CTrace::_algorithm;
-
-
 CTrace::CTrace(unsigned maxSize, unsigned algorithm, unsigned startHeightLoss /*= 100*/, bool gpsPointsOwner /*= true*/):
+  _maxSize(maxSize), _algorithm(algorithm),
   _gpsPointsOwner(gpsPointsOwner), _startHeightLoss(startHeightLoss),
   _size(0), _analyzedPointCount(0), _front(0), _back(0),
-  _startDetected(false)
+  _startDetected(false), _startMaxAltitude(0)
 {
-  _maxSize = maxSize;
-  _algorithm = algorithm;
 }
 
 
@@ -58,7 +53,18 @@ void CTrace::Push(CPoint *point)
 
 void CTrace::Push(double time, double lat, double lon, double alt)
 {
-  Push(new CPoint(new CPointGPS(time, lat, lon, alt), _back));
+  // filter first points until a standalone flight is detected
+  if(!_startDetected) {
+    if(_startHeightLoss > 0) {
+      _startMaxAltitude = std::max(_startMaxAltitude, alt);
+      if(alt > _startMaxAltitude - _startHeightLoss)
+        return;
+    }
+    _startDetected = true;
+  }
+  
+  // add new point
+  Push(new CPoint(*this, new CPointGPS(time, lat, lon, alt), _back));
 }
 
 
@@ -123,15 +129,33 @@ void CTrace::Compress()
 
 double CTrace::Solve(CSolution &solution)
 {
+  if(!_size)
+    return 0;
+  
+  // find the last point meeting criteria
+  const CPoint *point = _back;
+  const CPoint *last = 0;
+  double startAltitude = _front->_gps->Altitude();
+  while(point) {
+    if(point->_gps->Altitude() >= startAltitude - 1000) {
+      last = point;
+      break;
+    }
+    point = point->_prev;
+  }
+  
+  // create solution trace
   CTrace trace(7, CTrace::ALGORITHM_DISTANCE, 0, false);
   
-  const CPoint *point = _front;
-  while(point) {
-    trace.Push(new CPoint(*point, trace._back));
+  // add points to solution trace
+  point = _front;
+  while(point != last) {
+    trace.Push(new CPoint(*this, *point, trace._back));
     point = point->_next;
   }
   trace.Compress();
   
+  // copy solution
   point = trace.Front();
   double length = 0;
   while(point) {
@@ -171,7 +195,8 @@ std::ostream &operator<<(std::ostream &stream, const CTrace &trace)
 
 
 
-CTrace::CPoint::CPoint(const CPointGPS *pointGPS, CPoint *prev):
+CTrace::CPoint::CPoint(const CTrace &trace, const CPointGPS *pointGPS, CPoint *prev):
+  _trace(trace), 
   _gps(pointGPS),
   _prevDistance(prev ? prev->_gps->Distance(*this->_gps) : 0),
   _inheritedCost(0), _distanceCost(0), _timeCost(0),
@@ -185,7 +210,8 @@ CTrace::CPoint::CPoint(const CPointGPS *pointGPS, CPoint *prev):
 }
 
 
-CTrace::CPoint::CPoint(const CPoint &ref, CPoint *prev):
+CTrace::CPoint::CPoint(const CTrace &trace, const CPoint &ref, CPoint *prev):
+  _trace(trace), 
   _gps(ref._gps),
   _prevDistance(ref._prevDistance),
   _inheritedCost(ref._inheritedCost), _distanceCost(ref._distanceCost), _timeCost(ref._timeCost),
@@ -220,7 +246,7 @@ void CTrace::CPoint::Reduce()
   
   // asses new costs
   double distanceCost;
-  if(CTrace::_algorithm & ALGORITHM_TRIANGLES)
+  if(_trace._algorithm & ALGORITHM_TRIANGLES)
     distanceCost = _prevDistance + _next->_prevDistance - _next->_gps->Distance(*_prev->_gps);
   else
     distanceCost = _distanceCost; 
@@ -238,7 +264,7 @@ void CTrace::CPoint::AssesCost()
   if(!_next)
     throw std::runtime_error("AssesCost(), _next");
   
-  if(CTrace::_algorithm & ALGORITHM_TRIANGLES) {
+  if(_trace._algorithm & ALGORITHM_TRIANGLES) {
     double ax = _gps->Longitude(); double ay = _gps->Latitude();
     double bx = _prev->_gps->Longitude();    double by = _prev->_gps->Latitude();
     double cx = _next->_gps->Longitude();    double cy = _next->_gps->Latitude();

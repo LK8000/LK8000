@@ -4,12 +4,12 @@
 #include <iomanip>
 
 
-CTestContest::CTestContest(unsigned handicap, const std::string &igcFile, unsigned algorithm, unsigned traceLimit /* = 500 */):
-  _handicap(handicap),
+CTestContest::CTestContest(const std::string &igcFile, unsigned handicap, unsigned startHeightLoss, unsigned algorithm, unsigned traceLimit /* = 500 */):
   _igcFile(igcFile),
+  _handicap(handicap),
   _replay(CReplayLogger::Instance()),
   _kml(igcFile + ".kml"),
-  _trace(traceLimit, algorithm)
+  _trace(traceLimit, algorithm, startHeightLoss)
 {
   std::wstring wname(_igcFile.begin(), _igcFile.end());
   _replay.Filename(wname.c_str());
@@ -37,7 +37,7 @@ void CTestContest::GPSHandler(void *user, double time, double latitude, double l
   test->_trace.Solve(solution);
   
   // meassure performance
-  if(test->_trace.AnalyzedPointCount() % TIME_ANALYSIS_STEP == 0) {
+  if(test->_trace.AnalyzedPointCount() && (test->_trace.AnalyzedPointCount() % TIME_ANALYSIS_STEP == 0)) {
     putchar('.');
     fflush(stdout);
     test->_timeArray.push_back(CTimeStamp());

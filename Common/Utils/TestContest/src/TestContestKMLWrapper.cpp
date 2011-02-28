@@ -25,11 +25,11 @@ CTestContest::CKMLWrapper::CKMLWrapper(const std::string &path):
   _stream << "    <StyleMap id=\"trace\">" << std::endl;
   _stream << "      <Pair>" << std::endl;
   _stream << "        <key>normal</key>" << std::endl;
-  _stream << "        <styleUrl>#green_line</styleUrl>" << std::endl;
+  _stream << "        <styleUrl>#yellow_line</styleUrl>" << std::endl;
   _stream << "      </Pair>" << std::endl;
   _stream << "      <Pair>" << std::endl;
   _stream << "        <key>highlight</key>" << std::endl;
-  _stream << "        <styleUrl>#green_line</styleUrl>" << std::endl;
+  _stream << "        <styleUrl>#yellow_line</styleUrl>" << std::endl;
   _stream << "      </Pair>" << std::endl;
   _stream << "    </StyleMap>" << std::endl;
   _stream << "    <StyleMap id=\"solution\">" << std::endl;

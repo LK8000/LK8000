@@ -34,8 +34,8 @@ class CTestContest {
   static const unsigned TRACE_SIZE = 20;
   static const unsigned TIME_ANALYSIS_STEP = 500;
   
-  const unsigned _handicap;
   const std::string _igcFile;
+  const unsigned _handicap;
   CReplayLogger &_replay;
   CKMLWrapper _kml;
   CTrace _trace;
@@ -44,7 +44,7 @@ class CTestContest {
   static void GPSHandler(void *user, double time, double latitude, double longitude, double altitude);
   
 public:
-  CTestContest(unsigned handicap, const std::string &igcFile, unsigned algorithm, unsigned traceLimit = 500);
+  CTestContest(const std::string &igcFile, unsigned handicap, unsigned startHeightLoss, unsigned algorithm, unsigned traceLimit = 500);
   ~CTestContest();
   void Run();
 };
