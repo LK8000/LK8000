@@ -148,7 +148,7 @@ void CTestContest::CKMLWrapper::Dump(const CTrace &trace) const
   _stream << "        <coordinates>" << std::endl;
   const CTrace::CPoint *point=trace.Front();
   do {
-    _stream << std::fixed << std::setprecision(8) << point->Longitude() << "," << point->Latitude() << "," << std::setprecision(0) << point->Altitude() << " " << std::endl;
+    _stream << std::fixed << std::setprecision(8) << point->_gps->Longitude() << "," << point->_gps->Latitude() << "," << std::setprecision(0) << point->_gps->Altitude() << " " << std::endl;
     point = point->Next();
   } while(point);
   _stream << "        </coordinates>" << std::endl;

@@ -9,15 +9,15 @@
 #ifndef __TRACE_H__
 #define __TRACE_H__
 
+#include "PointGPS.h"
 #include "Tools.h"
-#include "Utils.h"
-#include <list>
 #include <set>
-#include <deque>
-#include <cmath>
-#include <iostream>
-#include <limits>
+#include <vector>
+//#include <cmath>
+//#include <iostream>
 
+
+class CPointGPS;
 
 class CTrace {
 public:
@@ -31,7 +31,7 @@ public:
   };
   
   class CPoint;
-  typedef std::deque<const CPoint *> CSolution;
+  typedef std::vector<const CPointGPS *> CSolution;
   
 private:
   /**
@@ -40,35 +40,35 @@ private:
    */
   typedef std::set<CPoint *, CPtrCmp<CPoint *> > CPointCostSet;
   
-  class CDijkstra;
-  
   static unsigned _maxSize;
   static unsigned _algorithm;
+  const bool _gpsPointsOwner;
+  const unsigned _startHeightLoss;
   unsigned _size;
-  unsigned _pointCount;
-  CPointCostSet _pointCostSet;
+  unsigned _analyzedPointCount;
+  CPointCostSet _compressionCostSet;
   CPoint *_front;
   CPoint *_back;
-  double _length;
+  
+  bool _startDetected;
+  double _startAltitude;
   
   CTrace(const CTrace &);              /**< @brief Disallowed */
   CTrace &operator=(const CTrace &);   /**< @brief Disallowed */
-  
-  //  unsigned SolveIterate(const CPoint *pointArray[], unsigned idx, unsigned stage, CSolutionArray &solution);
+
+  void Push(CPoint *gps);
   
 public:
-  CTrace(unsigned maxSize, unsigned algorithm);
+  CTrace(unsigned maxSize, unsigned algorithm, unsigned startHeightLoss = 100, bool gpsPointsOwner = true);
   ~CTrace();
   
-  unsigned Size() const { return _size; }
-  unsigned PointCount() const { return _pointCount; }
-  
-  const CPoint *Front() const { return _front; }
-  
-  void Compress();
   void Push(double time, double lat, double lon, double alt);
+  void Compress();
   
-  void DistanceVerify() const;
+  unsigned Size() const               { return _size; }
+  unsigned AnalyzedPointCount() const { return _analyzedPointCount; }
+  
+  const CPoint *Front() const         { return _front; }
   
   double Solve(CSolution &solution);
   
@@ -78,26 +78,15 @@ public:
 
 class CTrace::CPoint {
   friend class CTrace;
-    
-  static const unsigned AVG_TASK_TIME  =  3 * 3600; // 3h
-  static const unsigned MAX_TIME_DELTA = 20 * 3600; // 20h
-  static const unsigned DAY_SECONDS    = 24 * 3600; // 24h
+  friend class CTestContest;
   
-  // data from GPS
-  const double _time;
-  const double _lat;
-  const double _lon;
-  const double _alt;
+  const CPointGPS * const _gps;
   
-  // trace optimisation values
+  // trace compression values
   double _prevDistance;
   double _inheritedCost;
   double _distanceCost;
   double _timeCost;
-  
-  // contest solving variables
-  double _pathLength;
-  const CPoint *_pathPrevious;
   
   // list iterators
   CPoint *_prev;
@@ -110,74 +99,46 @@ class CTrace::CPoint {
   void AssesCost();
   
 public:
-  CPoint(double time, double lat, double lon, double alt, CPoint *prev);
+  CPoint(const CPointGPS *pointGPS, CPoint *prev);
+  CPoint(const CPoint &ref, CPoint *prev);
   ~CPoint();
-    
-  double Time() const      { return _time; }
-  double Latitude() const  { return _lat; }
-  double Longitude() const { return _lon; }
-  double Altitude() const  { return _alt; }
-  
-  double Distance(const CPoint &ref) const;
-  double TimeDelta(const CPoint &ref) const;
   
   CPoint *Next() const { return _next; }
   
-  bool operator==(const CPoint &ref) const { return _time == ref._time; }
+  bool operator==(const CPoint &ref) const { return _gps->Time() == ref._gps->Time(); }
   bool operator<(const CPoint &ref) const;
   
   friend std::ostream &operator<<(std::ostream &stream, const CPoint &point);
 };
 
 
-class CTrace::CDijkstra {
-  struct CNodeCmp {
-    bool operator()(const CPoint *left, const CPoint *right) const
-    {
-      if(left->_pathLength > right->_pathLength)
-        return true;
-      if(left->_pathLength < right->_pathLength)
-        return false;
-      return left->_time < right->_time;
-    }
-  };
-  
-  typedef std::set<CPoint *, CNodeCmp> CNodeSet;
-  CTrace &_trace;
-  CNodeSet _nodeSet;
-  
-public:
-  CDijkstra(CTrace &trace, CPoint &startPoint);
-  double Solve(CSolution &solution);
-};
-
-
-
-inline double CTrace::CPoint::Distance(const CPoint &ref) const
-{ 
-  double dist;
-  DistanceBearing(ref._lat, ref._lon, _lat, _lon, &dist, 0);
-  return dist;
-}
-
-
-// inline double CTrace::CPoint::Distance(const CPoint &ref) const
-// { 
-//   double dx = fabs(ref._lon - _lon);
-//   double dy = fabs(ref._lat - _lat);
-//   return sqrt(dx*dx + dy*dy);
-// }
-
-inline double CTrace::CPoint::TimeDelta(const CPoint &ref) const
+inline bool CTrace::CPoint::operator<(const CPoint &ref) const
 {
-  double delta = _time - ref._time;
-  if(delta < 0) {
-    if(delta < -(DAY_SECONDS - MAX_TIME_DELTA))
-      delta += DAY_SECONDS;
-    else
-      std::cerr << "Delta time calculation error: " << delta << std::endl;
+  double leftCost = 0;
+  double rightCost = 0;
+      
+  leftCost += _distanceCost;
+  rightCost += ref._distanceCost;
+      
+  if(CTrace::_algorithm & ALGORITHM_INHERITED) {
+    leftCost += _inheritedCost;
+    rightCost += ref._inheritedCost;
   }
-  return delta;
+  if(CTrace::_algorithm & ALGORITHM_TIME_DELTA) {
+    leftCost *= _timeCost;
+    rightCost *= ref._timeCost;
+  }
+      
+  if(leftCost > rightCost)
+    return false;
+  else if(leftCost < rightCost)
+    return true;
+  else if(_timeCost > ref._timeCost)
+    return false;
+  else if(_timeCost < ref._timeCost)
+    return true;
+  else
+    return _gps->Time() > ref._gps->Time();
 }
 
 
