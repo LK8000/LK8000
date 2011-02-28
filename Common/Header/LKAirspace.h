@@ -256,6 +256,9 @@ public:
   void AirspaceWarnListDailyAck(CAirspace &airspace);
   void AirspaceWarnListDailyAckCancel(CAirspace &airspace);
   
+  //dlgLKAirspaceWarning
+  void ShowWarningsToUser();
+
   
   //Get airspace details (dlgAirspaceDetails)
   CAirspaceList GetVisibleAirspacesAtPoint(const double &lon, const double &lat) const;
@@ -284,13 +287,16 @@ private:
   CAirspaceList _airspaces_near;	//Near
   bool _GlobalClearAirspaceWarnings;
   
-
   // Warning system data
   mutable CCriticalSection _cswarnlist;
   CAirspaceList _airspaces_warning;		//Airspaces in warning state>0
   int _static_unique;														//TODO remove this hack
   void AirspaceWarnListSort();
   void AirspaceWarnListClear();
+
+  //User warning queue
+  mutable CCriticalSection _csuser_warning_queue;
+  CAirspaceList _user_warning_queue;				// warnings to show
 
   //Openair parsing functions, internal use
   void FillAirspacesFromOpenAir(ZZIP_FILE *fp);

@@ -340,6 +340,7 @@ DLGS	:=\
 	$(SRC)/dlgAirspacePatterns.cpp \
 	$(SRC)/dlgAirspaceSelect.cpp \
 	$(SRC)/dlgAirspaceWarning.cpp \
+	$(SRC)/dlgLKAirspaceWarning.cpp \
 	$(SRC)/dlgBasicSettings.cpp \
 	$(SRC)/dlgChecklist.cpp \
 	$(SRC)/dlgConfiguration.cpp \

@@ -572,7 +572,7 @@ void AirspaceWarnListSort(void){
 #ifdef LKAIRSPACE
 void CAirspaceManager::AirspaceWarnListAckWarn(CAirspace &airspace)
 {
-	CCriticalSection::CGuard guard(_cswarnlist);
+	CCriticalSection::CGuard guard(_csairspaces);
 	airspace.UserWarnAckState(airspace.UserWarningState());
 	#ifdef DEBUG_AIRSPACE
 	StartupStore(TEXT("LKAIRSP: %s AirspaceWarnListAck()%s"),airspace.Name(),NEWLINE );
@@ -581,7 +581,7 @@ void CAirspaceManager::AirspaceWarnListAckWarn(CAirspace &airspace)
 
 void CAirspaceManager::AirspaceWarnListAckSpace(CAirspace &airspace)
 {
-	CCriticalSection::CGuard guard(_cswarnlist);
+	CCriticalSection::CGuard guard(_csairspaces);
 	airspace.UserWarnAckState(awWarning);
 	#ifdef DEBUG_AIRSPACE
 	StartupStore(TEXT("LKAIRSP: %s AirspaceWarnListAckSpace()%s"),airspace.Name(),NEWLINE );
@@ -590,7 +590,7 @@ void CAirspaceManager::AirspaceWarnListAckSpace(CAirspace &airspace)
 
 void CAirspaceManager::AirspaceWarnListDailyAck(CAirspace &airspace)
 {
-	CCriticalSection::CGuard guard(_cswarnlist);
+	CCriticalSection::CGuard guard(_csairspaces);
 	airspace.UserWarnAckState(awDailyAck);
 	#ifdef DEBUG_AIRSPACE
 	StartupStore(TEXT("LKAIRSP: %s AirspaceWarnListDailyAck()%s"),airspace.Name(),NEWLINE );
@@ -599,7 +599,7 @@ void CAirspaceManager::AirspaceWarnListDailyAck(CAirspace &airspace)
 
 void CAirspaceManager::AirspaceWarnListDailyAckCancel(CAirspace &airspace)
 {
-	CCriticalSection::CGuard guard(_cswarnlist);
+	CCriticalSection::CGuard guard(_csairspaces);
 	airspace.UserWarnAckState(awNone);
 	#ifdef DEBUG_AIRSPACE
 	StartupStore(TEXT("LKAIRSP: %s AirspaceWarnListDailyAckCancel()%s"),airspace.Name(),NEWLINE );
@@ -713,6 +713,8 @@ void CAirspaceManager::AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *C
 		if ((*it)->UserWarningState() > awNone) {
 		  if (((*it)->UserWarningState() > (*it)->UserWarningStateOld()) || (now > (*it)->WarningRepeatTimer())) {
 			dlgAirspaceWarningNotify(asaWarnLevelIncreased, *it);
+			CCriticalSection::CGuard guard(_csuser_warning_queue);
+			_user_warning_queue.push_front(*it);
 			//DoFlashWarning(**it);
 			(*it)->WarningRepeatTimer(now + AcknowledgementTime);
 		  }
@@ -723,6 +725,8 @@ void CAirspaceManager::AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *C
 		if ((*it)->UserWarningState() > awPredicted) {
 		  if (((*it)->UserWarningState() > (*it)->UserWarningStateOld()) || (now > (*it)->WarningRepeatTimer()))  {
 			dlgAirspaceWarningNotify(asaWarnLevelIncreased, *it);
+			CCriticalSection::CGuard guard(_csuser_warning_queue);
+			_user_warning_queue.push_front(*it);
 			//DoFlashWarning(**it);
 			(*it)->WarningRepeatTimer(now + AcknowledgementTime);
 		  }
@@ -734,6 +738,8 @@ void CAirspaceManager::AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *C
 		if ((*it)->UserWarningState() > awWarning) {
 		  if (((*it)->UserWarningState() > (*it)->UserWarningStateOld()) || (now > (*it)->WarningRepeatTimer()))  {
 			dlgAirspaceWarningNotify(asaWarnLevelIncreased, *it);
+			CCriticalSection::CGuard guard(_csuser_warning_queue);
+			_user_warning_queue.push_front(*it);
 			//DoFlashWarning(**it);
 			(*it)->WarningRepeatTimer(now + AcknowledgementTime);
 		  }

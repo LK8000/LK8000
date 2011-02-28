@@ -1,0 +1,7 @@
+<PMML>
+<WndForm Name="frmAirspaceWarning" Type="Dialog" X=1 Y=2 Width=239 Height=172 Caption="_@M66_" Popup="1" Font=2 >
+<WndProperty Name="prpName" Caption="_@M451_" X=2 Y=40  Width=238 Height=22 CaptionWidth=50 Font=2 ReadOnly=1 />
+<WndButton  name="cmdAck" Caption="_@M45_"  X=47 Y=114 width=46 height=36 Font=2 OnClickNotify="OnAckClicked"/>
+<WndButton  Caption="_@M186_" X=189 Y=114 width=45 height=36 Font=2 OnClickNotify="OnCloseClicked"/>
+</WndForm>    
+</PMML>

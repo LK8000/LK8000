@@ -4369,12 +4369,17 @@ void CommonProcessTimer()
   // service the GCE and NMEA queue
   if (ProgramStarted==psNormalOp) {
     InputEvents::DoQueuedEvents();
+#ifdef LKAIRSPACE
+	  // only shows the dialog if needed.
+	  CAirspaceManager::Instance().ShowWarningsToUser();
+#else
     if (RequestAirspaceWarningDialog) {
       DisplayTimeOut=0;
       RequestAirspaceWarningDialog= false;
       dlgAirspaceWarningShowDlg(RequestAirspaceWarningForce);
       RequestAirspaceWarningForce = false;
     }
+#endif
     #ifndef NOFLARMGAUGE
     // update FLARM display (show/hide)
     GaugeFLARM::Show();
