@@ -1396,10 +1396,10 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
 	  
 	  // Check for altitude
 	  bool altitude =
-         (((((*it)->Base()->Base != abAGL) && (alt >= (*it)->Base()->Altitude))
-           || (((*it)->Base()->Base == abAGL) && (agl >= (*it)->Base()->AGL)))
-          && ((((*it)->Top()->Base != abAGL) && (alt < (*it)->Top()->Altitude))
-           || (((*it)->Top()->Base == abAGL) && (agl < (*it)->Top()->AGL))));
+         (((((*it)->Base()->Base != abAGL) && ( (alt+AltWarningMargin) >= (*it)->Base()->Altitude))
+           || (((*it)->Base()->Base == abAGL) && ( (agl+AltWarningMargin) >= (*it)->Base()->AGL))))
+          && (((((*it)->Top()->Base != abAGL) && (alt < ((*it)->Top()->Altitude)+AltWarningMargin)))
+           || (((*it)->Top()->Base == abAGL) && (agl < ((*it)->Top()->AGL+AltWarningMargin))));
 		 
   
       if ((*it)->Flyzone()) {

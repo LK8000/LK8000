@@ -606,8 +606,41 @@ void CAirspaceManager::AirspaceWarnListDailyAckCancel(CAirspace &airspace)
 	#endif
 }
 #endif
-// This is called at the end of slow calculation AirspaceWarning function, after tables have been filled up
+
 #ifdef LKAIRSPACE
+void CAirspaceManager::DoFlashWarning(CAirspace &airspace)
+{
+  TCHAR vDistanceText[16];
+  TCHAR hDistanceText[16];
+  TCHAR msg[128];
+    
+  switch (airspace.UserWarningState()) {
+	default:
+	  return;
+	  
+	case awPredicted:
+	  if (airspace.WarnhDistance()<0) {
+		Units::FormatUserAltitude(fabs(airspace.WarnvDistance()),vDistanceText, 15);
+		if (airspace.WarnvDistance()>0) {
+		  wsprintf(msg,TEXT("Near %s (ab %s)"), airspace.Name(), vDistanceText);
+		} else {
+		  wsprintf(msg,TEXT("Near %s (bl %s)"), airspace.Name(), vDistanceText);
+		}
+	  } else {
+		Units::FormatUserAltitude(fabs(airspace.WarnhDistance()),hDistanceText, 15);
+		wsprintf(msg,TEXT("Near %s (H %s)"), airspace.Name(), hDistanceText);
+	  }
+	  break;
+
+	case awWarning:
+		  wsprintf(msg,TEXT("Warn %s"), airspace.Name());
+	  break;
+  }//sw
+  
+  DoStatusMessage(msg);
+}
+
+// This is called at the end of slow calculation AirspaceWarning function, after tables have been filled up
 void CAirspaceManager::AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   int hDistance = 0;
@@ -615,7 +648,7 @@ void CAirspaceManager::AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *C
   int Bearing = 0;
   bool warning_condition = false;
   bool inside;
-  int ticknow = GetTickCount();
+  int now = Basic->Time;
   
   CCriticalSection::CGuard guard(_cswarnlist);
   for (CAirspaceList::iterator it = _airspaces_warning.begin(); it != _airspaces_warning.end(); ) {
@@ -678,16 +711,20 @@ void CAirspaceManager::AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *C
 	  default:
 	  case awNone:
 		if ((*it)->UserWarningState() > awNone) {
-		  if ((*it)->UserWarningState() > (*it)->UserWarningStateOld()) {
+		  if (((*it)->UserWarningState() > (*it)->UserWarningStateOld()) || (now > (*it)->WarningRepeatTimer())) {
 			dlgAirspaceWarningNotify(asaWarnLevelIncreased, *it);
+			//DoFlashWarning(**it);
+			(*it)->WarningRepeatTimer(now + AcknowledgementTime);
 		  }
 		}
 		break;
 		
 	  case awPredicted:
 		if ((*it)->UserWarningState() > awPredicted) {
-		  if ((*it)->UserWarningState() > (*it)->UserWarningStateOld()) {
+		  if (((*it)->UserWarningState() > (*it)->UserWarningStateOld()) || (now > (*it)->WarningRepeatTimer()))  {
 			dlgAirspaceWarningNotify(asaWarnLevelIncreased, *it);
+			//DoFlashWarning(**it);
+			(*it)->WarningRepeatTimer(now + AcknowledgementTime);
 		  }
 		}
 		//Step back: if ((*it)->UserWarningState() < awPredicted) (*it)->UserWarnAckState((*it)->UserWarningState());
@@ -695,8 +732,10 @@ void CAirspaceManager::AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *C
 		
 	  case awWarning:
 		if ((*it)->UserWarningState() > awWarning) {
-		  if ((*it)->UserWarningState() > (*it)->UserWarningStateOld()) {
+		  if (((*it)->UserWarningState() > (*it)->UserWarningStateOld()) || (now > (*it)->WarningRepeatTimer()))  {
 			dlgAirspaceWarningNotify(asaWarnLevelIncreased, *it);
+			//DoFlashWarning(**it);
+			(*it)->WarningRepeatTimer(now + AcknowledgementTime);
 		  }
 		}
 		//Step back: if ((*it)->UserWarningState() < awWarning) (*it)->UserWarnAckState((*it)->UserWarningState());

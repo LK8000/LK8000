@@ -127,8 +127,8 @@ public:
   AirspaceWarningStateInternal_t WarningState() const { return _warnstate; }
   void WarningState(AirspaceWarningStateInternal_t warnstate) { _warnstate = warnstate; }
   
-//  int WarningTimer() const { return _warntimer; }
-//  void WarningTimer(int warntimer) { _warntimer = warntimer; }
+  int WarningRepeatTimer() const { return _warn_repeat_time; }
+  void WarningRepeatTimer(int warnreptimer) { _warn_repeat_time = warnreptimer; }
 
   int WarningID() const { return _warnid; }
   void WarningID(int warnid) { _warnid = warnid; }
@@ -149,7 +149,7 @@ protected:
   AirspaceDrawStyle_t _drawstyle;
   // Warnings
   AirspaceWarningStateInternal_t _warnstate;  
-//  int _warntimer;  
+  int _warn_repeat_time;  			// tick when repeat warning message if not acked
   AirspaceWarningState_t _userwarningstate;
   AirspaceWarningState_t _userwarningstateold;
   AirspaceWarningState_t _userwarnackstate;
@@ -276,6 +276,7 @@ private:
   CAirspaceManager(const CAirspaceManager&) : _GlobalClearAirspaceWarnings(false) {}
   CAirspaceManager& operator=(const CAirspaceManager&);
   ~CAirspaceManager() { CloseAirspaces(); }
+  void DoFlashWarning(CAirspace &airspace);			// Prints flash warning messages to user
   
   // Airspaces data
   mutable CCriticalSection _csairspaces;

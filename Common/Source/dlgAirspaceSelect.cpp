@@ -258,12 +258,15 @@ static void PrepareData(void){
 
   int index=0;
   double bearing;
+  double distance;
   CAirspaceList Airspaces = CAirspaceManager::Instance().GetAllAirspaces();
   CAirspaceList::const_iterator it;
   for (it=Airspaces.begin(); it != Airspaces.end(); ++it) {
     AirspaceSelectInfo[index].airspace = *it;
 
-    AirspaceSelectInfo[index].Distance = DISTANCEMODIFY * (*it)->Range(Longitude, Latitude, bearing);
+	distance = DISTANCEMODIFY * (*it)->Range(Longitude, Latitude, bearing);
+	if (distance<0) distance=0;
+    AirspaceSelectInfo[index].Distance = distance;
 	AirspaceSelectInfo[index].Direction = bearing;
 
     _tcsncpy(sTmp, (*it)->Name(), 4);
