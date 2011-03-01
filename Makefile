@@ -4,7 +4,7 @@ HDR=Common/Header
 BIN=Bin/$(TARGET)
 
 #
-PROFILE		:= 
+PROFILE		:=
 OPTIMIZE	:=-O2
 #OPTIMIZE	:=-O3 -funroll-all-loops
 CONFIG_PPC2002	:=n
@@ -36,7 +36,7 @@ else
           CONFIG_WINE :=y
         else
           ifeq ($(TARGET),ALTAIR)
-            CONFIG_ALTAIR	:=y  
+            CONFIG_ALTAIR	:=y
 	    MINIMAL       :=y
 	    XSCALE	:=y
           endif
@@ -62,18 +62,18 @@ endif
 ifeq ($(CONFIG_PC),y)
 TCPATH		:=i386-mingw32-
 CPU		:=i586
-MCPU		:= -mcpu=$(CPU) 
+MCPU		:= -mcpu=$(CPU)
 else
 ifeq ($(CONFIG_WINE),y)
 TCPATH		:=wine
 CPU		:=i586
-MCPU		:= -mcpu=$(CPU) 
+MCPU		:= -mcpu=$(CPU)
 else
 TCPATH		:=arm-mingw32ce-
 
 ifeq ($(XSCALE),y)
 CPU		:=xscale
-MCPU		:= -mcpu=$(CPU) 
+MCPU		:= -mcpu=$(CPU)
 else
 CPU		:=
 MCPU		:=
@@ -167,8 +167,8 @@ EBROWSE         :=ebrowse
 ######## windows definitions
 
 ifeq ($(CONFIG_PC),y)
-CE_DEFS		:=-D_WIN32_WINDOWS=$(CE_VERSION) -DWINVER=$(CE_VERSION) 
-CE_DEFS		+=-D_WIN32_IE=$(CE_VERSION) -DWINDOWSPC=1 
+CE_DEFS		:=-D_WIN32_WINDOWS=$(CE_VERSION) -DWINVER=$(CE_VERSION)
+CE_DEFS		+=-D_WIN32_IE=$(CE_VERSION) -DWINDOWSPC=1
 CE_DEFS		+=-D_REALTHING_
 else
 CE_DEFS		:=-D_WIN32_WCE=$(CE_VERSION) -D_WIN32_IE=$(CE_VERSION)
@@ -176,10 +176,10 @@ CE_DEFS		+=-DWIN32_PLATFORM_PSPC=$(CE_PLATFORM)
 endif
 
 ifeq ($(CONFIG_PPC2002),y)
-CE_DEFS		+=-DPPC2002=1 
+CE_DEFS		+=-DPPC2002=1
 endif
 ifeq ($(CONFIG_PPC2003),y)
-CE_DEFS		+=-DPPC2003=1 
+CE_DEFS		+=-DPPC2003=1
 endif
 
 
@@ -188,35 +188,35 @@ UNICODE		:= -DUNICODE -D_UNICODE
 ######## paths
 
 ifeq ($(CONFIG_WINE),y)
-INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR) -I$(SRC) 
+INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR) -I$(SRC)
 else
-INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR) -I$(SRC) 
+INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR) -I$(SRC)
 endif
 
 ######## compiler flags
 
-CPPFLAGS	:= $(INCLUDES) $(CE_DEFS) 
+CPPFLAGS	:= $(INCLUDES) $(CE_DEFS)
 CPPFLAGS	+= -DNDEBUG -DFIVV
 #CPPFLAGS	+= -DFLARM_AVERAGE  NOW INSIDE options.h
-#CPPFLAGS	+= -Wchar-subscripts -Wformat -Winit-self -Wimplicit -Wmissing-braces -Wparentheses -Wreturn-type 
-#CPPFLAGS	+= -Wunused-label -Wunused-variable -Wunused-value -Wuninitialized 
+#CPPFLAGS	+= -Wchar-subscripts -Wformat -Winit-self -Wimplicit -Wmissing-braces -Wparentheses -Wreturn-type
+#CPPFLAGS	+= -Wunused-label -Wunused-variable -Wunused-value -Wuninitialized
 
 CPPFLAGS	+= -Wall -Wno-write-strings -Wno-char-subscripts
-#CPPFLAGS	+= -Wall -Wno-non-virtual-dtor 
+#CPPFLAGS	+= -Wall -Wno-non-virtual-dtor
 #CPPFLAGS	+= -Wno-char-subscripts -Wno-switch
 
-#CPPFLAGS	+= -Wshadow 
-#CPPFLAGS	+= -Wsign-compare -Wsign-conversion 
+#CPPFLAGS	+= -Wshadow
+#CPPFLAGS	+= -Wsign-compare -Wsign-conversion
 ifeq ($(CONFIG_PNA),y)
-#CPPFLAGS	+= -DBIGDISPLAY -DCECORE -DPNA -DNOLINETO 
-CPPFLAGS	+= -DCECORE -DPNA 
+#CPPFLAGS	+= -DBIGDISPLAY -DCECORE -DPNA -DNOLINETO
+CPPFLAGS	+= -DCECORE -DPNA
 endif
 
 ifeq ($(CONFIG_PC),y)
 CPPFLAGS	+= -D_WINDOWS -D_MBCS -DWIN32 -DCECORE -DUNDER_CE=300 $(UNICODE)
   ifeq ($(CONFIG_WINE),y)
-CPPFLAGS	+= -D__MINGW32__ 
-# -mno-cygwin 
+CPPFLAGS	+= -D__MINGW32__
+# -mno-cygwin
   else
 CPPFLAGS	+= $(UNICODE)
   endif
@@ -247,7 +247,7 @@ LDLIBS		:= -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi
 else
   LDLIBS		:= -Wl,-Bstatic -lstdc++  -Wl,-Bdynamic -lcommctrl
   ifeq ($(MINIMAL),n)
-    LDLIBS		+= -laygshell 
+    LDLIBS		+= -laygshell
     ifneq ($(TARGET),PNA)
       LDLIBS		+= -limgdecmp
     endif
@@ -308,6 +308,7 @@ DEVS	:=\
 	$(SRC)/devDigifly.cpp \
 	$(SRC)/devGeneric.cpp \
 	$(SRC)/devBase.cpp \
+	$(SRC)/devBaseAscii.cpp \
 	$(SRC)/devLX.cpp \
 	$(SRC)/devLXNano.cpp \
 	$(SRC)/devNmeaOut.cpp \
@@ -499,7 +500,7 @@ all:	$(OUTPUTS)
 clean: cleani
 	@$(NQ)echo "  CLEAN   $(BIN)"
 	$(Q)$(FIND) $(BIN) $(IGNORE) \( -name '*.[oa]' -o -name '*.rsc' -o -name '.*.d' \) -type f -print | xargs -r $(RM)
-	$(Q)$(RM) LK8000-$(TARGET)-ns.exe 
+	$(Q)$(RM) LK8000-$(TARGET)-ns.exe
 
 cleani:
 	@$(NQ)echo "  CLEANI"

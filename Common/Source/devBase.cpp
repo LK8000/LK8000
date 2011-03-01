@@ -149,51 +149,6 @@ bool DevBase::CheckWPCount(const Declaration_t& decl,
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Converts TCHAR[] string into ASCII string (writing as much as possible
-/// characters into @p output).
-/// Output string will always be terminated by '\0'.
-///
-/// @param input    wide character string
-/// @param outSize  output buffer size
-/// @param output   output buffer
-///
-/// @retval true  all characters copied
-/// @retval false some characters could not be copied due to buffer size
-///
-//static
-bool DevBase::Wide2Ascii(const TCHAR* input, int outSize, char* output)
-{
-  char tmp[512];
-  int len = _tcslen(input);
-
-  output[0] = '\0';
-
-  if (len != 0)
-  {
-    len = WideCharToMultiByte(CP_ACP, 0, input, len, tmp, sizeof(tmp), NULL, NULL);
-
-    if (len == 0)
-      return(false);
-  }
-
-  tmp[len] = '\0';
-
-  strncat(output, tmp, outSize - 1);
-
-  // replace all non-ascii characters with '_' (LX Colibri is sensitive
-  // on non-ascii chars - the sw seal can be broken)
-  output--;
-  while (*++output != '\0')
-  {
-    if (*output < 32 || *output > 126)
-      *output = '_';
-  }
-
-  return(len <= outSize);
-} // Wide2Ascii()
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Stops port Rx thread.
 ///
 /// @param d           device descriptor

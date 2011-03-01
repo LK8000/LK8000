@@ -14,6 +14,11 @@
 
 #include "devLX.h"
 
+
+//______________________________________________________________________defines_
+
+//#define UNIT_TESTS
+
 //___________________________________________________________class_declarations_
 
 // #############################################################################
@@ -77,8 +82,25 @@ class DevLXNano : public DevLX
     /// Writes competition class declaration into the device.
     static bool WriteClass(PDeviceDescriptor_t d, Class& lxClass, unsigned errBufSize, TCHAR errBuf[]);
 
+    /// Converts TCHAR[] string into US-ASCII string.
+    static bool Wide2LxAscii(const TCHAR* input, int outSize, char* output);
+
     /// Calculate LX CRC value for the given data.
     static byte CalcCrc(int length, void* data);
+
+  //----------------------------------------------------------------------------
+  private:
+
+    #ifdef UNIT_TESTS
+
+    /// Log test suite result().
+    static void LogTestResult(const TCHAR* suite, const TCHAR* test, bool result);
+
+    /// Test suite for Wide2LxAscii().
+    static void Wide2LxAsciiTest();
+
+    #endif
+
 
 }; // DevLXNano
 

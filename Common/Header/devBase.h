@@ -109,6 +109,16 @@ class DevBase
     static bool ComExpect(PDeviceDescriptor_t d,
       const char* expected, int checkChars, void* rxBuf, unsigned errBufSize, TCHAR errBuf[]);
 
+  //----------------------------------------------------------------------------
+  private:
+
+    /// maximum UTF-16 code convertable through utf16toAscii[] map
+    static const unsigned int maxUtf16toAscii = 0x024F;
+
+    /// UTF-16 (0000-024F ~ C0, C1, Latin Extended-A, Latin Extended-B) character
+    /// to US-ASCII conversion table
+    static const char utf16toAscii[maxUtf16toAscii + 1];
+
 }; // DevBase
 
 
