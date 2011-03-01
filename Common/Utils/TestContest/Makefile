@@ -300,6 +300,7 @@ SRC_FILES :=\
 	$(SRC)/TestContest.cpp \
 	$(SRC)/TestContestKMLWrapper.cpp \
 	$(SRC)/ReplayLogger.cpp \
+	$(SRC)/ContestMgr.cpp \
 	$(SRC)/Trace.cpp \
 	$(SRC)/TimeStamp.cpp \
 	$(SRC)/Tools.cpp \

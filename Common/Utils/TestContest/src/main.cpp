@@ -15,16 +15,12 @@ int main(int argc, char *argv[])
 {
   if(argc < 4) {
     std::cout << "Usage:" << std::endl;
-    std::cout << "  TestContest.exe IGC_FILE HANDICAP START_HEIGHT_LOSS" << std::endl;
+    std::cout << "  TestContest.exe IGC_FILE HANDICAP START_ALT_LOSS" << std::endl;
     return EXIT_FAILURE;
   }
   
   try {
-    //unsigned algorithm = CTrace::ALGORITHM_TRIANGLES | CTrace::ALGORITHM_TIME_DELTA;
-    unsigned algorithm = CTrace::ALGORITHM_DISTANCE  | CTrace::ALGORITHM_TIME_DELTA;
-    //unsigned algorithm = CTrace::ALGORITHM_DISTANCE | CTrace::ALGORITHM_INHERITED | CTrace::ALGORITHM_TIME_DELTA;
-    unsigned size = 250;
-    CTestContest test(argv[1], Convert<unsigned>(argv[2]), Convert<unsigned>(argv[3]), algorithm, size);
+    CTestContest test(argv[1], Convert<unsigned>(argv[2]), Convert<unsigned>(argv[3]));
     test.Run();
   }
   catch(const std::exception &ex) {

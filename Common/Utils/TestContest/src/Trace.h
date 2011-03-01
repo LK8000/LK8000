@@ -12,12 +12,8 @@
 #include "PointGPS.h"
 #include "Tools.h"
 #include <set>
-#include <vector>
-//#include <cmath>
-//#include <iostream>
 
-
-class CPointGPS;
+class CContestMgr; 
 
 class CTrace {
 public:
@@ -31,9 +27,10 @@ public:
   };
   
   class CPoint;
-  typedef std::vector<const CPointGPS *> CSolution;
   
 private:
+  friend class CContestMgr; 
+
   /**
    * @brief A map of GPS points sorted from the most importand to the least important ones.
    * 
@@ -41,9 +38,9 @@ private:
   typedef std::set<CPoint *, CPtrCmp<CPoint *> > CPointCostSet;
   
   const unsigned _maxSize;
+  const unsigned _timeLimit;
+  const unsigned _startAltitudeLoss;
   const unsigned _algorithm;
-  const bool _gpsPointsOwner;
-  const unsigned _startHeightLoss;
   unsigned _size;
   unsigned _analyzedPointCount;
   CPointCostSet _compressionCostSet;
@@ -56,21 +53,20 @@ private:
   CTrace(const CTrace &);              /**< @brief Disallowed */
   CTrace &operator=(const CTrace &);   /**< @brief Disallowed */
 
-  void Push(CPoint *gps);
+  void Push(CPoint *point);
   
 public:
-  CTrace(unsigned maxSize, unsigned algorithm, unsigned startHeightLoss = 100, bool gpsPointsOwner = true);
+  CTrace(unsigned maxSize, unsigned timeLimit, unsigned startAltitudeLoss, unsigned algorithm);
   ~CTrace();
   
-  void Push(double time, double lat, double lon, double alt);
+  void Push(const CPointGPSSmart &gps);
   void Compress();
   
   unsigned Size() const               { return _size; }
   unsigned AnalyzedPointCount() const { return _analyzedPointCount; }
   
   const CPoint *Front() const         { return _front; }
-  
-  double Solve(CSolution &solution);
+  const CPoint *Back() const          { return _back; }
   
   friend std::ostream &operator<<(std::ostream &stream, const CTrace &trace);
 };
@@ -81,7 +77,7 @@ class CTrace::CPoint {
   friend class CTestContest;
   
   const CTrace &_trace;
-  const CPointGPS * const _gps;
+  CPointGPSSmart _gps;
   
   // trace compression values
   double _prevDistance;
@@ -100,11 +96,14 @@ class CTrace::CPoint {
   void AssesCost();
   
 public:
-  CPoint(const CTrace &trace, const CPointGPS *pointGPS, CPoint *prev);
+  CPoint(const CTrace &trace, const CPointGPSSmart &gps, CPoint *prev);
   CPoint(const CTrace &trace, const CPoint &ref, CPoint *prev);
   ~CPoint();
   
+  const CPointGPS &GPS() const { return *_gps; }
+  
   CPoint *Next() const { return _next; }
+  CPoint *Previous() const { return _prev; }
   
   bool operator==(const CPoint &ref) const { return _gps->Time() == ref._gps->Time(); }
   bool operator<(const CPoint &ref) const;
@@ -141,6 +140,5 @@ inline bool CTrace::CPoint::operator<(const CPoint &ref) const
   else
     return _gps->Time() > ref._gps->Time();
 }
-
 
 #endif /* __TRACE_H__ */

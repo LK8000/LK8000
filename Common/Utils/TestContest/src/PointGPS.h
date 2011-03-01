@@ -9,7 +9,9 @@
 #ifndef __POINTGPS_H__
 #define __POINTGPS_H__
 
+#include "Tools.h"
 #include "Utils.h"
+#include <vector>
 
 
 class CPointGPS {
@@ -17,15 +19,16 @@ class CPointGPS {
   static const unsigned DAY_SECONDS    = 24 * 3600; // 24h
   
   // data from GPS
-  const double _time;
-  const double _lat;
-  const double _lon;
-  const double _alt;
+  double _time;
+  double _lat;
+  double _lon;
+  double _alt;
   
 public:
   CPointGPS(double time, double lat, double lon, double alt):
-    _time(time), _lat(lat), _lon(lon), _alt(alt) {}
-  
+    _time(time), _lat(lat), _lon(lon), _alt(alt)
+  {}
+
   double Time() const      { return _time; }
   double Latitude() const  { return _lat; }
   double Longitude() const { return _lon; }
@@ -35,6 +38,8 @@ public:
   double TimeDelta(const CPointGPS &ref) const;
 };
 
+typedef CSmartPtr<const CPointGPS> CPointGPSSmart;
+typedef std::vector<CPointGPS> CPointGPSArray;
 
 
 inline double CPointGPS::Distance(const CPointGPS &ref) const

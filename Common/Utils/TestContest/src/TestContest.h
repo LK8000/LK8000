@@ -9,7 +9,7 @@
 #ifndef __TESTCONTEST_H__
 #define __TESTCONTEST_H__
 
-#include "Trace.h"
+#include "ContestMgr.h"
 #include "TimeStamp.h"
 #include <fstream>
 #include <vector>
@@ -26,28 +26,25 @@ class CTestContest {
     ~CKMLWrapper();
     
     void Dump(const CTrace &trace) const;
-    void Dump(const CTrace::CSolution &solution) const;
+    void Dump(const CContestMgr::CSolution &solution) const;
   };
   
   typedef std::vector<CTimeStamp> CTimeStampArray;
   
-  static const unsigned TRACE_SIZE = 20;
   static const unsigned TIME_ANALYSIS_STEP = 500;
   
   const std::string _igcFile;
   const unsigned _handicap;
   CReplayLogger &_replay;
   CKMLWrapper _kml;
-  CTrace _trace;
+  CContestMgr _contestMgr;
   CTimeStampArray _timeArray;
-
+  
   static void GPSHandler(void *user, double time, double latitude, double longitude, double altitude);
   
 public:
-  CTestContest(const std::string &igcFile, unsigned handicap, unsigned startHeightLoss, unsigned algorithm, unsigned traceLimit = 500);
-  ~CTestContest();
+  CTestContest(const std::string &igcFile, unsigned handicap, unsigned startAltitudeLoss);
   void Run();
 };
-
 
 #endif /* __TESTCONTEST_H__ */

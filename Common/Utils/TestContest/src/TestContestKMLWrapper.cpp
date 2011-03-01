@@ -64,78 +64,6 @@ CTestContest::CKMLWrapper::~CKMLWrapper()
 }
 
 
-// void CTestContest::CKMLWrapper::Dump(const std::string &contestName, const TracePointVector &solution) const
-// {
-//   _stream << "      <Placemark>" << std::endl;
-//   _stream << "        <name>" << contestName << ": Trace" << "</name>" << std::endl;
-//   _stream << "        <visibility>0</visibility>" << std::endl;
-//   _stream << "        <styleUrl>#solution</styleUrl>" << std::endl;
-//   _stream << "        <LineString>" << std::endl;
-//   _stream << "          <tessellate>0</tessellate>" << std::endl;
-//   _stream << "          <altitudeMode>absolute</altitudeMode>" << std::endl;
-//   _stream << "          <coordinates>" << std::endl;
-//   for(TracePointVector::const_iterator it=solution.begin(); it!=solution.end(); ++it) {
-//     const GeoPoint &point = it->get_location();
-//     const fixed &lon = point.Longitude.value_degrees();
-//     const fixed &lat = point.Latitude.value_degrees();
-//     _stream << std::setprecision(8) << lon << "," << lat << "," << std::setprecision(0) << it->NavAltitude << " " << std::endl;
-//   }
-//   _stream << "          </coordinates>" << std::endl;
-//   _stream << "        </LineString>" << std::endl;
-//   _stream << "      </Placemark>" << std::endl;
-  
-//   unsigned i=0;
-//   for(TracePointVector::const_iterator it=solution.begin(); it!=solution.end(); ++it, i++) {
-//     _stream << "      <Placemark>" << std::endl;
-//     std::string name;
-//     if(it == solution.begin())
-//       name = "Start";
-//     else if(it + 1 == solution.end())
-//       name = "Finish";
-//     else
-//       name = "WP" + Convert(i);
-//     _stream << "        <name>" << contestName << ": " << name << "</name>" << std::endl;
-//     _stream << "        <visibility>0</visibility>" << std::endl;
-//     const GeoPoint &point = it->get_location();
-//     _stream << "        <description>" << std::endl;
-//     _stream << "          <![CDATA[" << std::endl;
-//     _stream << "            <b>Longitude:</b> " << PointToString(point, false) << "<br>" << std::endl;
-//     _stream << "            <b>Latitude:</b> " << PointToString(point, true) << "<br>" << std::endl;
-//     _stream << "            <b>Altitude:</b> " << std::setprecision(0) << it->NavAltitude << "m" << "<br>" << std::endl;
-//     _stream << "            <b>Time:</b> " << TimeToString(it->time) << std::endl;
-//     _stream << "          ]]>"  << std::endl;
-//     _stream << "        </description>"  << std::endl;
-//     _stream << "        <Point>" << std::endl;
-//     const fixed &lon = point.Longitude.value_degrees();
-//     const fixed &lat = point.Latitude.value_degrees();
-//     _stream << "          <altitudeMode>absolute</altitudeMode>" << std::endl;
-//     _stream << "          <coordinates>" << std::setprecision(8) << lon << "," << lat << "," << it->NavAltitude << "</coordinates>" << std::endl;
-//     _stream << "        </Point>" << std::endl;
-//     _stream << "      </Placemark>" << std::endl;
-//   }
-// }
-
-
-// void CTestContest::CKMLWrapper::Dump(const std::string &contestName, const ContestManager &manager, const ContestResult &results) const
-// {
-//   _stream << "    <Folder>" << std::endl;
-//   _stream << "    <name>" << contestName << "</name>" << std::endl;
-//   _stream << "    <description>" << std::endl;
-//   _stream << "      <![CDATA[" << std::endl;
-//   _stream << "        <b>Points:</b> " << std::setprecision(2) << results.score << "<br>" << std::endl;
-//   _stream << "        <b>Distance:</b> " << std::setprecision(1) << results.distance / 1000.0 << " km<br>" << std::endl;
-//   _stream << "        <b>Speed:</b> " << std::setprecision(1) << std::fixed << results.speed * 3600 / 1000.0 << " km/h<br>" << std::endl;
-//   _stream << "        <b>Duration:</b> " << TimeToString(results.time) << std::endl;
-//   _stream << "      ]]>"  << std::endl;
-//   _stream << "    </description>"  << std::endl;
-//   _stream << "    <visibility>0</visibility>" << std::endl;
-  
-//   Dump(contestName, manager.get_contest_solution());
-  
-//   _stream << "    </Folder>" << std::endl;
-// }
-
-
 void CTestContest::CKMLWrapper::Dump(const CTrace &trace) const
 {
   _stream << "    <Placemark>" << std::endl;
@@ -182,9 +110,17 @@ void CTestContest::CKMLWrapper::Dump(const CTrace &trace) const
 
 
 
-void CTestContest::CKMLWrapper::Dump(const CTrace::CSolution &solution) const
+void CTestContest::CKMLWrapper::Dump(const CContestMgr::CSolution &solution) const
 {
   _stream << "    <Folder>" << std::endl;
+  _stream << "    <description>" << std::endl;
+  _stream << "      <![CDATA[" << std::endl;
+  _stream << "        <b>Points:</b> " << std::setprecision(2) << solution.Score() << "<br>" << std::endl;
+  _stream << "        <b>Distance:</b> " << std::setprecision(1) << solution.Distance() / 1000.0 << " km<br>" << std::endl;
+  _stream << "        <b>Speed:</b> " << std::setprecision(1) << std::fixed << solution.Speed() * 3600 / 1000.0 << " km/h<br>" << std::endl;
+  _stream << "        <b>Duration:</b> " << TimeToString(solution.Duration()) << std::endl;
+  _stream << "      ]]>"  << std::endl;
+  _stream << "    </description>"  << std::endl;
   _stream << "    <visibility>0</visibility>" << std::endl;
   _stream << "      <Placemark>" << std::endl;
   _stream << "        <name>" << "Classic" << ": Trace" << "</name>" << std::endl;
@@ -194,20 +130,20 @@ void CTestContest::CKMLWrapper::Dump(const CTrace::CSolution &solution) const
   _stream << "          <tessellate>0</tessellate>" << std::endl;
   _stream << "          <altitudeMode>absolute</altitudeMode>" << std::endl;
   _stream << "          <coordinates>" << std::endl;
-  for(CTrace::CSolution::const_iterator it=solution.begin(); it!=solution.end(); ++it) {
-    _stream << std::setprecision(8) << (*it)->Longitude() << "," << (*it)->Latitude() << "," << std::setprecision(0) << (*it)->Altitude() << " " << std::endl;
+  for(CPointGPSArray::const_iterator it=solution.PointArray().begin(); it!=solution.PointArray().end(); ++it) {
+    _stream << std::setprecision(8) << it->Longitude() << "," << it->Latitude() << "," << std::setprecision(0) << it->Altitude() << " " << std::endl;
   }
   _stream << "          </coordinates>" << std::endl;
   _stream << "        </LineString>" << std::endl;
   _stream << "      </Placemark>" << std::endl;
   
   unsigned i=0;
-  for(CTrace::CSolution::const_iterator it=solution.begin(); it!=solution.end(); ++it, i++) {
+  for(CPointGPSArray::const_iterator it=solution.PointArray().begin(); it!=solution.PointArray().end(); ++it, i++) {
     _stream << "      <Placemark>" << std::endl;
     std::string name;
-    if(it == solution.begin())
+    if(it == solution.PointArray().begin())
       name = "Start";
-    else if(it + 1 == solution.end())
+    else if(it + 1 == solution.PointArray().end())
       name = "Finish";
     else
       name = "WP" + Convert(i);
@@ -215,15 +151,15 @@ void CTestContest::CKMLWrapper::Dump(const CTrace::CSolution &solution) const
     _stream << "        <visibility>0</visibility>" << std::endl;
     _stream << "        <description>" << std::endl;
     _stream << "          <![CDATA[" << std::endl;
-    _stream << "            <b>Longitude:</b> " << CoordToString((*it)->Longitude(), false) << "<br>" << std::endl;
-    _stream << "            <b>Latitude:</b> " << CoordToString((*it)->Latitude(), true) << "<br>" << std::endl;
-    _stream << "            <b>Altitude:</b> " << std::setprecision(0) << (*it)->Altitude() << "m" << "<br>" << std::endl;
-    _stream << "            <b>Time:</b> " << TimeToString((*it)->Time()) << std::endl;
+    _stream << "            <b>Longitude:</b> " << CoordToString(it->Longitude(), false) << "<br>" << std::endl;
+    _stream << "            <b>Latitude:</b> " << CoordToString(it->Latitude(), true) << "<br>" << std::endl;
+    _stream << "            <b>Altitude:</b> " << std::setprecision(0) << it->Altitude() << "m" << "<br>" << std::endl;
+    _stream << "            <b>Time:</b> " << TimeToString(it->Time()) << std::endl;
     _stream << "          ]]>"  << std::endl;
     _stream << "        </description>"  << std::endl;
     _stream << "        <Point>" << std::endl;
     _stream << "          <altitudeMode>absolute</altitudeMode>" << std::endl;
-    _stream << "          <coordinates>" << std::setprecision(8) << (*it)->Longitude() << "," << (*it)->Latitude() << "," << (*it)->Altitude() << "</coordinates>" << std::endl;
+    _stream << "          <coordinates>" << std::setprecision(8) << it->Longitude() << "," << it->Latitude() << "," << it->Altitude() << "</coordinates>" << std::endl;
     _stream << "        </Point>" << std::endl;
     _stream << "      </Placemark>" << std::endl;
   }
