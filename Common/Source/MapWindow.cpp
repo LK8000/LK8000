@@ -272,7 +272,6 @@ HPEN MapWindow::hpBearing;
 HPEN MapWindow::hpBestCruiseTrack;
 HPEN MapWindow::hpCompass;
 
-HPEN MapWindow::hpThermalCircle;
 HPEN MapWindow::hpThermalBand;
 HPEN MapWindow::hpThermalBandGlider;
 HPEN MapWindow::hpFinalGlideAbove;
@@ -1586,7 +1585,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 	hpAircraft = LKPen_White_N3;
 	hpAircraftBorder = LKPen_Black_N1;
       }
-	hpThermalCircle = LKPen_White_N3;
 
 	#else
       hpCompassBorder = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_BLACK); 
@@ -3032,48 +3030,31 @@ void MapWindow::DrawThermalEstimate(HDC hdc, const RECT rc) {
 		DrawBitmapIn(hdc, screen, hBmpThermalSource);
 
 		SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-		oldPen=(HPEN)SelectObject(hdc, hpThermalCircle); // white
-		if (ISPARAGLIDER) {
-#ifndef MAP_ZOOM
-			Circle(hdc, screen.x, screen.y, (int)(50*ResMapScaleOverDistanceModify), rc); //@ 101101
-#else /* MAP_ZOOM */
-			Circle(hdc, screen.x, screen.y, (int)(50*zoom.ResScaleOverDistanceModify()), rc); //@ 101101
-#endif /* MAP_ZOOM */
-		} else {
-#ifndef MAP_ZOOM
-			Circle(hdc, screen.x, screen.y, (int)(100*ResMapScaleOverDistanceModify), rc); //@ 101101
-#else /* MAP_ZOOM */
-			Circle(hdc, screen.x, screen.y, (int)(100*zoom.ResScaleOverDistanceModify()), rc); //@ 101101
-#endif /* MAP_ZOOM */
-			SelectObject(hdc, hpAircraftBorder); 
-#ifndef MAP_ZOOM
-			Circle(hdc, screen.x, screen.y, (int)(100*ResMapScaleOverDistanceModify)+NIBLSCALE(2), rc); //@ 101101
-			Circle(hdc, screen.x, screen.y, (int)(100*ResMapScaleOverDistanceModify), rc); //@ 101101
-#else /* MAP_ZOOM */
-			Circle(hdc, screen.x, screen.y, (int)(100*zoom.ResScaleOverDistanceModify())+NIBLSCALE(2), rc); //@ 101101
-			Circle(hdc, screen.x, screen.y, (int)(100*zoom.ResScaleOverDistanceModify()), rc); //@ 101101
-#endif /* MAP_ZOOM */
-		}
-/* 101219 This would display circles around the simulated thermal, but people is confused.
+		double tradius;
+		if (ISPARAGLIDER)
+			tradius=50;
+		else
+			tradius=100;
+			
+		oldPen=(HPEN)SelectObject(hdc, LKPen_White_N3); 
+		Circle(hdc, screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
+		SelectObject(hdc, hpAircraftBorder); 
+		Circle(hdc, screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify())+NIBLSCALE(2), rc);
+		Circle(hdc, screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
+
+		/* 101219 This would display circles around the simulated thermal, but people is confused.
 		if (SIMMODE && (ThLatitude>1 && ThLongitude>1)) { // there's a thermal to show
 			if ((counter==5 || counter==6|| counter==7)) {
 				LatLon2Screen(ThLongitude, ThLatitude, screen);
 				SelectObject(hdc, hSnailPens[7]);  
-#ifndef MAP_ZOOM
-				Circle(hdc, screen.x, screen.y, (int)(ThermalRadius*ResMapScaleOverDistanceModify), rc); 
-#else
 				Circle(hdc, screen.x, screen.y, (int)(ThermalRadius*zoom.ResScaleOverDistanceModify()), rc); 
-#endif
 				SelectObject(hdc, hSnailPens[7]); 
-#ifndef MAP_ZOOM
-				Circle(hdc, screen.x, screen.y, (int)((ThermalRadius+SinkRadius)*ResMapScaleOverDistanceModify), rc); 
-#else
 				Circle(hdc, screen.x, screen.y, (int)((ThermalRadius+SinkRadius)*zoom.ResScaleOverDistanceModify()), rc); 
-#endif
 			}
 			if (++counter>=60) counter=0;
 		}
- */
+ 		*/
+
 		SelectObject(hdc,oldPen);
 	}
   } else {
