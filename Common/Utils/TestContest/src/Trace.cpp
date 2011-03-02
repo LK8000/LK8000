@@ -195,16 +195,18 @@ void CTrace::CPoint::Reduce()
   if(!_next)
     throw std::runtime_error("Reduce(), _next");
   
-  // set new prevDistance for next point
-  _next->_prevDistance = _prevDistance + _next->_prevDistance - _distanceCost;
-  
-  // asses new costs
+  // asses new costs & set new prevDistance for next point
   double distanceCost;
-  if(_trace._algorithm & ALGORITHM_TRIANGLES)
-    distanceCost = _prevDistance + _next->_prevDistance - _next->_gps->Distance(*_prev->_gps);
-  else
+  if(_trace._algorithm & ALGORITHM_TRIANGLES) {
+    double newDistance = _next->_gps->Distance(*_prev->_gps);
+    distanceCost = _prevDistance + _next->_prevDistance - newDistance;
+    _next->_prevDistance = newDistance;
+  }
+  else {
+    _next->_prevDistance = _prevDistance + _next->_prevDistance - _distanceCost;
     distanceCost = _distanceCost; 
-      
+  }
+  
   double cost = (distanceCost + _inheritedCost) / 2.0;
   _prev->_inheritedCost += cost;
   _next->_inheritedCost += cost;
