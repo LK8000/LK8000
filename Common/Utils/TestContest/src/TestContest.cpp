@@ -77,13 +77,13 @@ void CTestContest::Run()
   std::cout << std::endl;
   //  std::cout << _trace << std::endl;
   
-  const CContestMgr::CSolution &solution = _contestMgr.Solution(CContestMgr::TYPE_OLC_CLASSIC);
-  std::cout << "Solution:" << std::endl;
-  for(CPointGPSArray::const_iterator it=solution.PointArray().begin(); it!=solution.PointArray().end(); ++it)
+  const CContestMgr::CResult &result = _contestMgr.Result(CContestMgr::TYPE_OLC_CLASSIC);
+  std::cout << "Result:" << std::endl;
+  for(CPointGPSArray::const_iterator it=result.PointArray().begin(); it!=result.PointArray().end(); ++it)
     std::cout << " - " << TimeToString(it->Time()) << std::endl;
   
-  std::cout << " - Distance: " << solution.Distance() << std::endl;
-  std::cout << " - Score: " << solution.Score() << std::endl;
+  std::cout << " - Distance: " << result.Distance() << std::endl;
+  std::cout << " - Score: " << result.Score() << std::endl;
   
-  _kml.Dump(solution);
+  _kml.Dump(result);
 }

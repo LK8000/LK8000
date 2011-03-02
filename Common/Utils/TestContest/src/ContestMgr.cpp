@@ -7,7 +7,7 @@ CContestMgr::CContestMgr(unsigned handicap, unsigned startAltitudeLoss):
   _traceSprint(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT, 0, COMPRESSION_ALGORITHM)
 {
   for(unsigned i=0; i<TYPE_NUM; i++)
-    _solutionArray.push_back(CSolution());
+    _resultArray.push_back(CResult());
 }
 
 
@@ -26,20 +26,20 @@ void CContestMgr::UpdateOLCClassic(const CRules &rules)
     point = point->Previous();
   }
   
-  // create solution trace
-  CTrace trace(rules.TPNum(), CTrace::ALGORITHM_DISTANCE, 0, false);
+  // create result trace
+  CTrace traceResult(rules.TPNum(), CTrace::ALGORITHM_DISTANCE, 0, false);
   
-  // add points to solution trace
+  // add points to result trace
   point = _trace.Front();
-  while(point != last) {
-    trace.Push(new CTrace::CPoint(_trace, *point, trace._back));
+  while(point && point != last->Next()) {
+    traceResult.Push(new CTrace::CPoint(traceResult, *point, traceResult._back));
     point = point->Next();
   }
-  trace.Compress();
+  traceResult.Compress();
 
-  // copy solution
+  // copy result
   CPointGPSArray pointArray;
-  point = trace.Front();
+  point = traceResult.Front();
   double length = 0;
   
   while(point) {
@@ -49,7 +49,7 @@ void CContestMgr::UpdateOLCClassic(const CRules &rules)
     point = point->Next();
   }
   
-  _solutionArray[TYPE_OLC_CLASSIC] = CSolution(length, length * 100 / _handicap, pointArray);
+  _resultArray[TYPE_OLC_CLASSIC] = CResult(length, length * 100 / _handicap, pointArray);
 }
 
 

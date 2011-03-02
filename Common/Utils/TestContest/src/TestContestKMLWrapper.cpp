@@ -32,7 +32,7 @@ CTestContest::CKMLWrapper::CKMLWrapper(const std::string &path):
   _stream << "        <styleUrl>#yellow_line</styleUrl>" << std::endl;
   _stream << "      </Pair>" << std::endl;
   _stream << "    </StyleMap>" << std::endl;
-  _stream << "    <StyleMap id=\"solution\">" << std::endl;
+  _stream << "    <StyleMap id=\"result\">" << std::endl;
   _stream << "      <Pair>" << std::endl;
   _stream << "        <key>normal</key>" << std::endl;
   _stream << "        <styleUrl>#green_line</styleUrl>" << std::endl;
@@ -110,27 +110,27 @@ void CTestContest::CKMLWrapper::Dump(const CTrace &trace) const
 
 
 
-void CTestContest::CKMLWrapper::Dump(const CContestMgr::CSolution &solution) const
+void CTestContest::CKMLWrapper::Dump(const CContestMgr::CResult &result) const
 {
   _stream << "    <Folder>" << std::endl;
   _stream << "    <description>" << std::endl;
   _stream << "      <![CDATA[" << std::endl;
-  _stream << "        <b>Points:</b> " << std::setprecision(2) << solution.Score() << "<br>" << std::endl;
-  _stream << "        <b>Distance:</b> " << std::setprecision(1) << solution.Distance() / 1000.0 << " km<br>" << std::endl;
-  _stream << "        <b>Speed:</b> " << std::setprecision(1) << std::fixed << solution.Speed() * 3600 / 1000.0 << " km/h<br>" << std::endl;
-  _stream << "        <b>Duration:</b> " << TimeToString(solution.Duration()) << std::endl;
+  _stream << "        <b>Points:</b> " << std::setprecision(2) << result.Score() << "<br>" << std::endl;
+  _stream << "        <b>Distance:</b> " << std::setprecision(1) << result.Distance() / 1000.0 << " km<br>" << std::endl;
+  _stream << "        <b>Speed:</b> " << std::setprecision(1) << std::fixed << result.Speed() * 3600 / 1000.0 << " km/h<br>" << std::endl;
+  _stream << "        <b>Duration:</b> " << TimeToString(result.Duration()) << std::endl;
   _stream << "      ]]>"  << std::endl;
   _stream << "    </description>"  << std::endl;
   _stream << "    <visibility>0</visibility>" << std::endl;
   _stream << "      <Placemark>" << std::endl;
   _stream << "        <name>" << "Classic" << ": Trace" << "</name>" << std::endl;
   _stream << "        <visibility>0</visibility>" << std::endl;
-  _stream << "        <styleUrl>#solution</styleUrl>" << std::endl;
+  _stream << "        <styleUrl>#result</styleUrl>" << std::endl;
   _stream << "        <LineString>" << std::endl;
   _stream << "          <tessellate>0</tessellate>" << std::endl;
   _stream << "          <altitudeMode>absolute</altitudeMode>" << std::endl;
   _stream << "          <coordinates>" << std::endl;
-  for(CPointGPSArray::const_iterator it=solution.PointArray().begin(); it!=solution.PointArray().end(); ++it) {
+  for(CPointGPSArray::const_iterator it=result.PointArray().begin(); it!=result.PointArray().end(); ++it) {
     _stream << std::setprecision(8) << it->Longitude() << "," << it->Latitude() << "," << std::setprecision(0) << it->Altitude() << " " << std::endl;
   }
   _stream << "          </coordinates>" << std::endl;
@@ -138,12 +138,12 @@ void CTestContest::CKMLWrapper::Dump(const CContestMgr::CSolution &solution) con
   _stream << "      </Placemark>" << std::endl;
   
   unsigned i=0;
-  for(CPointGPSArray::const_iterator it=solution.PointArray().begin(); it!=solution.PointArray().end(); ++it, i++) {
+  for(CPointGPSArray::const_iterator it=result.PointArray().begin(); it!=result.PointArray().end(); ++it, i++) {
     _stream << "      <Placemark>" << std::endl;
     std::string name;
-    if(it == solution.PointArray().begin())
+    if(it == result.PointArray().begin())
       name = "Start";
-    else if(it + 1 == solution.PointArray().end())
+    else if(it + 1 == result.PointArray().end())
       name = "Finish";
     else
       name = "WP" + Convert(i);

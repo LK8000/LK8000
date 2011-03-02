@@ -33,13 +33,13 @@ public:
     double FinishAltDiff() const { return _finishAltDiff; }
   };
   
-  class CSolution {
+  class CResult {
     double         _distance;
     double         _score;
     CPointGPSArray _pointArray;
   public:
-    CSolution(): _distance(0), _score(0) {}
-    CSolution(double distance, double score, const CPointGPSArray &pointArray):
+    CResult(): _distance(0), _score(0) {}
+    CResult(double distance, double score, const CPointGPSArray &pointArray):
       _distance(distance), _score(score), _pointArray(pointArray) {}
     double Distance() const                  { return _distance; }
     double Score() const                     { return _score / 1000; }
@@ -48,13 +48,13 @@ public:
     const CPointGPSArray &PointArray() const { return _pointArray; }
   };
   
-  typedef std::vector<CSolution> CSolutionArray;
+  typedef std::vector<CResult> CResultArray;
   
 private:
   const unsigned _handicap;
   CTrace _trace;
   CTrace _traceSprint;
-  CSolutionArray _solutionArray;
+  CResultArray _resultArray;
   
   void UpdateOLCClassic(const CRules &rules);
   
@@ -62,8 +62,8 @@ public:
   static const unsigned TRACE_FIX_LIMIT = 250;
   static const unsigned TRACE_SPRINT_FIX_LIMIT = 100;
   static const unsigned TRACE_SPRINT_TIME_LIMIT = 150 * 60;
-  //  static const unsigned COMPRESSION_ALGORITHM = CTrace::ALGORITHM_TRIANGLES | CTrace::ALGORITHM_TIME_DELTA;
-  static const unsigned COMPRESSION_ALGORITHM = CTrace::ALGORITHM_DISTANCE  | CTrace::ALGORITHM_TIME_DELTA;
+  static const unsigned COMPRESSION_ALGORITHM = CTrace::ALGORITHM_TRIANGLES | CTrace::ALGORITHM_TIME_DELTA;
+  //static const unsigned COMPRESSION_ALGORITHM = CTrace::ALGORITHM_DISTANCE  | CTrace::ALGORITHM_TIME_DELTA;
   //static const unsigned COMPRESSION_ALGORITHM = CTrace::ALGORITHM_DISTANCE  | CTrace::ALGORITHM_INHERITED | CTrace::ALGORITHM_TIME_DELTA;
   
   CContestMgr(unsigned handicap, unsigned startAltitudeLoss);
@@ -71,7 +71,7 @@ public:
   const CTrace &Trace() const { return _trace; }
   
   void Add(const CPointGPSSmart &gps);
-  const CSolution &Solution(TType type) const { return _solutionArray[type]; }
+  const CResult &Result(TType type) const { return _resultArray[type]; }
 };
 
 #endif /* __CONTESTMGR_H__ */

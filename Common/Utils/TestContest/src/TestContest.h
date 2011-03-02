@@ -26,7 +26,7 @@ class CTestContest {
     ~CKMLWrapper();
     
     void Dump(const CTrace &trace) const;
-    void Dump(const CContestMgr::CSolution &solution) const;
+    void Dump(const CContestMgr::CResult &result) const;
   };
   
   typedef std::vector<CTimeStamp> CTimeStampArray;
