@@ -27,6 +27,9 @@ CTestContest::CTestContest(const std::string &igcFile, unsigned handicap, unsign
 
 void CTestContest::GPSHandler(void *user, double time, double latitude, double longitude, double altitude)
 {
+  if(latitude == 0 && longitude == 0)
+    return;
+
   CTestContest *test = static_cast<CTestContest *>(user);
   
   // add new GPS point to the analysis

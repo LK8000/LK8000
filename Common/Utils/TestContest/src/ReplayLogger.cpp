@@ -209,11 +209,11 @@ bool CReplayLogger::ReadLine(unsigned bufferLen, TCHAR buffer[]) const
 bool CReplayLogger::ScanBuffer(const TCHAR *line, double &time,
                                double &latitude, double &longitude, double &altitude) const
 {
-  int degLat, degLon;
-  int minLat, minLon;
+  int degLat=0, degLon=0;
+  int minLat=0, minLon=0;
   TCHAR NoS, EoW;
-  int iAltitude;
-  int bAltitude;
+  int iAltitude=0;
+  int bAltitude=0;
   int hour=0;
   int minute=0;
   int second=0;
@@ -228,7 +228,7 @@ bool CReplayLogger::ScanBuffer(const TCHAR *line, double &time,
 	       &degLat, &minLat, &NoS, &degLon, &minLon,
 	       &EoW, &iAltitude, &bAltitude
 	       )) != EOF) {
-
+    
     if (lfound==11) {
       latitude = degLat+minLat/60000.0;
       if (NoS==_T('S')) {
@@ -266,7 +266,7 @@ bool CReplayLogger::ScanBuffer(const TCHAR *line, double &time,
     // }
 
   }
-  return (lfound>0);
+  return (lfound==11);
 }
 
 
