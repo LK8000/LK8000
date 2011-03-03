@@ -14,11 +14,7 @@
 #endif // _MSC_VER > 1000
 
 #include <windows.h>
-//#include <shlobj.h>
 #include <math.h>
-//#include "Task.h"
-//#include "Airspace.h"
-//#include <zzip/lib.h>
 
 
 double AngleLimit360(double theta);

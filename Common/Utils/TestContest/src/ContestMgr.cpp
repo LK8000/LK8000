@@ -1,4 +1,13 @@
+/*
+   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+   Released under GNU/GPL License v.2
+   See CREDITS.TXT file for authors and copyrights
+
+   $Id: $
+*/
+
 #include "ContestMgr.h"
+#include <iostream>
 
 
 CContestMgr::CContestMgr(unsigned handicap, unsigned startAltitudeLoss):
@@ -15,9 +24,9 @@ void CContestMgr::UpdateOLCClassic(const CRules &rules)
 {
   // find the last point meeting criteria
   double finishAltDiff = rules.FinishAltDiff();
-  const CTrace::CPoint *point = _trace.Back();
+  const CTrace::CPoint *point = rules.Trace().Back();
   const CTrace::CPoint *last = 0;
-  double startAltitude = _trace.Front()->GPS().Altitude();
+  double startAltitude = rules.Trace().Front()->GPS().Altitude();
   while(point) {
     if(point->GPS().Altitude() >= startAltitude - finishAltDiff) {
       last = point;
@@ -27,10 +36,10 @@ void CContestMgr::UpdateOLCClassic(const CRules &rules)
   }
   
   // create result trace
-  CTrace traceResult(rules.TPNum(), CTrace::ALGORITHM_DISTANCE, 0, false);
+  CTrace traceResult(rules.TPNum(), rules.TimeLimit(), 0, CTrace::ALGORITHM_DISTANCE);
   
   // add points to result trace
-  point = _trace.Front();
+  point = rules.Trace().Front();
   while(point && point != last->Next()) {
     traceResult.Push(new CTrace::CPoint(traceResult, *point, traceResult._back));
     point = point->Next();
@@ -40,16 +49,22 @@ void CContestMgr::UpdateOLCClassic(const CRules &rules)
   // copy result
   CPointGPSArray pointArray;
   point = traceResult.Front();
-  double length = 0;
+  double distance = 0;
   
   while(point) {
     if(pointArray.size())
-      length += point->GPS().Distance(pointArray.back());
+      distance += point->GPS().Distance(pointArray.back());
     pointArray.push_back(point->GPS());
     point = point->Next();
   }
-  
-  _resultArray[TYPE_OLC_CLASSIC] = CResult(length, length * 100 / _handicap, pointArray);
+  if(distance > _resultArray[rules.Type()].Distance()) {
+    double result;
+    if(rules.Type() == TYPE_OLC_LEAGUE)
+      result = distance / 2.5 * 200 / (_handicap + 100);
+    else
+      result = distance * 100 / _handicap;
+    _resultArray[rules.Type()] = CResult(rules.Type(), distance, result, pointArray);
+  }
 }
 
 
@@ -61,8 +76,9 @@ void CContestMgr::Add(const CPointGPSSmart &gps)
   _traceSprint.Push(gps);
   _traceSprint.Compress();
   
-  if(_trace.Size()) {
-    CRules rules(7, 0, 1000);
-    UpdateOLCClassic(rules);
-  }
+  if(_trace.Size())
+    UpdateOLCClassic(CRules(TYPE_OLC_CLASSIC, _trace, 7, 0, 1000));
+  
+  if(_traceSprint.Size())
+    UpdateOLCClassic(CRules(TYPE_OLC_LEAGUE, _traceSprint, 5, TRACE_SPRINT_TIME_LIMIT, 0));
 }

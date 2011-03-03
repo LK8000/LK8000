@@ -39,6 +39,28 @@ void CTrace::Push(CPoint *point)
   if(!_front)
     _front = _back;
   
+  if(_timeLimit) {
+    // limit the trace to required time period
+    while(_back && _front && _back->_gps->Time() - _front->_gps->Time() > _timeLimit) {
+      CPoint *next = _front->_next;
+      delete _front;
+      _size--;
+      
+      CPointCostSet::iterator nextIt = _compressionCostSet.find(next);
+      if(nextIt == _compressionCostSet.end()) {
+        std::cerr << "ERROR: next not found!!" << std::endl;
+        return;
+      }
+      _compressionCostSet.erase(nextIt);
+      
+      _front = next;
+      _front->_prevDistance = 0;
+      _front->_distanceCost = 0;
+      _front->_timeCost = 0;
+      _front->_prev = 0;
+    }
+  }
+  
   // first and last point are never a subject of optimization
   if(_size < 3)
     return;

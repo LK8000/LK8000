@@ -89,10 +89,10 @@ void CTestContest::CKMLWrapper::Dump(const CTrace &trace) const
   //   _stream << "        <visibility>0</visibility>" << std::endl;
   //   _stream << "        <description>" << std::endl;
   //   _stream << "          <![CDATA[" << std::endl;
-  //   _stream << "            <b>Longitude:</b> " << CoordToString(point->Longitude(), false) << "<br>" << std::endl;
-  //   _stream << "            <b>Latitude:</b> " << CoordToString(point->Latitude(), true) << "<br>" << std::endl;
-  //   _stream << "            <b>Altitude:</b> " << std::setprecision(0) << point->Altitude() << "m" << "<br>" << std::endl;
-  //   _stream << "            <b>Time:</b> " << TimeToString(point->Time()) << "<br>" << std::endl;
+  //   _stream << "            <b>Longitude:</b> " << CoordToString(point->_gps->Longitude(), false) << "<br>" << std::endl;
+  //   _stream << "            <b>Latitude:</b> " << CoordToString(point->_gps->Latitude(), true) << "<br>" << std::endl;
+  //   _stream << "            <b>Altitude:</b> " << std::setprecision(0) << point->_gps->Altitude() << "m" << "<br>" << std::endl;
+  //   _stream << "            <b>Time:</b> " << TimeToString(point->_gps->Time()) << "<br>" << std::endl;
   //   _stream << "            <b>Prev distance:</b> " << point->_prevDistance << "m<br>" << std::endl;
   //   _stream << "            <b>Inhertited cost:</b> " << point->_inheritedCost << "m<br>" << std::endl;
   //   _stream << "            <b>Distance cost:</b> " << point->_distanceCost << "m<br>" << std::endl;
@@ -101,7 +101,7 @@ void CTestContest::CKMLWrapper::Dump(const CTrace &trace) const
   //   _stream << "        </description>"  << std::endl;
   //   _stream << "        <Point>" << std::endl;
   //   _stream << "          <altitudeMode>absolute</altitudeMode>" << std::endl;
-  //   _stream << "          <coordinates>" << std::setprecision(8) << point->Longitude() << "," << point->Latitude() << "," << point->Altitude() << "</coordinates>" << std::endl;
+  //   _stream << "          <coordinates>" << std::setprecision(8) << point->_gps->Longitude() << "," << point->_gps->Latitude() << "," << point->_gps->Altitude() << "</coordinates>" << std::endl;
   //   _stream << "        </Point>" << std::endl;
   //   _stream << "      </Placemark>" << std::endl;
   //   point = point->Next();

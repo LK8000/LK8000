@@ -1,3 +1,11 @@
+/*
+   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+   Released under GNU/GPL License v.2
+   See CREDITS.TXT file for authors and copyrights
+
+   $Id: $
+*/
+
 #include "TestContest.h"
 #include "ReplayLogger.h"
 #include <iostream>
@@ -77,13 +85,27 @@ void CTestContest::Run()
   std::cout << std::endl;
   //  std::cout << _trace << std::endl;
   
-  const CContestMgr::CResult &result = _contestMgr.Result(CContestMgr::TYPE_OLC_CLASSIC);
-  std::cout << "Result:" << std::endl;
-  for(CPointGPSArray::const_iterator it=result.PointArray().begin(); it!=result.PointArray().end(); ++it)
-    std::cout << " - " << TimeToString(it->Time()) << std::endl;
+  {
+    const CContestMgr::CResult &result = _contestMgr.Result(CContestMgr::TYPE_OLC_CLASSIC);
+    std::cout << "Result:" << std::endl;
+    for(CPointGPSArray::const_iterator it=result.PointArray().begin(); it!=result.PointArray().end(); ++it)
+      std::cout << " - " << TimeToString(it->Time()) << std::endl;
+    
+    std::cout << " - Distance: " << result.Distance() << std::endl;
+    std::cout << " - Score: " << result.Score() << std::endl;
+    
+    _kml.Dump(result);
+  }
   
-  std::cout << " - Distance: " << result.Distance() << std::endl;
-  std::cout << " - Score: " << result.Score() << std::endl;
-  
-  _kml.Dump(result);
+  {
+    const CContestMgr::CResult &result = _contestMgr.Result(CContestMgr::TYPE_OLC_LEAGUE);
+    std::cout << "Result:" << std::endl;
+    for(CPointGPSArray::const_iterator it=result.PointArray().begin(); it!=result.PointArray().end(); ++it)
+      std::cout << " - " << TimeToString(it->Time()) << std::endl;
+    
+    std::cout << " - Distance: " << result.Distance() << std::endl;
+    std::cout << " - Score: " << result.Score() << std::endl;
+    
+    _kml.Dump(result);
+  }
 }

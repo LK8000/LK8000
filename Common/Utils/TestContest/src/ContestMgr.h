@@ -22,25 +22,32 @@ public:
   };
   
   class CRules {
-    unsigned _tpNum;
-    unsigned _timeLimit;
-    double _finishAltDiff;
+    const TType _type;
+    const CTrace &_trace;
+    const unsigned _tpNum;
+    const unsigned _timeLimit;
+    const double _finishAltDiff;
   public:
-    CRules(unsigned tpNum, unsigned timeLimit, double finishAltDiff):
-      _tpNum(tpNum), _finishAltDiff(finishAltDiff) {}
+    CRules(TType type, const CTrace &trace, unsigned tpNum, unsigned timeLimit, double finishAltDiff):
+      _type(type), _trace(trace), _tpNum(tpNum), _timeLimit(timeLimit), _finishAltDiff(finishAltDiff) {}
+    TType Type() const           { return _type; }
+    const CTrace &Trace() const  { return _trace; }
     unsigned TPNum() const       { return _tpNum; }
     unsigned TimeLimit() const   { return _timeLimit; }
     double FinishAltDiff() const { return _finishAltDiff; }
   };
   
+  
   class CResult {
+    TType          _type;
     double         _distance;
     double         _score;
     CPointGPSArray _pointArray;
   public:
     CResult(): _distance(0), _score(0) {}
-    CResult(double distance, double score, const CPointGPSArray &pointArray):
-      _distance(distance), _score(score), _pointArray(pointArray) {}
+    CResult(TType type, double distance, double score, const CPointGPSArray &pointArray):
+      _type(type), _distance(distance), _score(score), _pointArray(pointArray) {}
+    TType Type() const                       { return _type; }
     double Distance() const                  { return _distance; }
     double Score() const                     { return _score / 1000; }
     double Duration() const                  { return _pointArray.empty() ? 0 : (_pointArray.back().Time() - _pointArray.front().Time()); }
@@ -62,9 +69,9 @@ public:
   static const unsigned TRACE_FIX_LIMIT = 250;
   static const unsigned TRACE_SPRINT_FIX_LIMIT = 100;
   static const unsigned TRACE_SPRINT_TIME_LIMIT = 150 * 60;
-  static const unsigned COMPRESSION_ALGORITHM = CTrace::ALGORITHM_TRIANGLES | CTrace::ALGORITHM_TIME_DELTA;
+  //static const unsigned COMPRESSION_ALGORITHM = CTrace::ALGORITHM_TRIANGLES | CTrace::ALGORITHM_TIME_DELTA;
   //static const unsigned COMPRESSION_ALGORITHM = CTrace::ALGORITHM_DISTANCE  | CTrace::ALGORITHM_TIME_DELTA;
-  //static const unsigned COMPRESSION_ALGORITHM = CTrace::ALGORITHM_DISTANCE  | CTrace::ALGORITHM_INHERITED | CTrace::ALGORITHM_TIME_DELTA;
+  static const unsigned COMPRESSION_ALGORITHM = CTrace::ALGORITHM_DISTANCE  | CTrace::ALGORITHM_INHERITED | CTrace::ALGORITHM_TIME_DELTA;
   
   CContestMgr(unsigned handicap, unsigned startAltitudeLoss);
   
