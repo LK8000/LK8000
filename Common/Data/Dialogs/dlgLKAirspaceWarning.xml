@@ -1,8 +1,11 @@
 <PMML>
 <WndForm Name="frmAirspaceWarning" Type="Dialog" X=1 Y=1 Width=318 Height=238 Caption="_@M66_" Popup="1" Font=2 >
-<WndProperty Name="prpReason" Caption="" X=2 Y=2  Width=310 Height=36 CaptionWidth=310 Font=2 ReadOnly=1 />
+<WndProperty Name="prpReason" Caption="Reason" X=2 Y=2  Width=310 Height=22 CaptionWidth=50 Font=2 ReadOnly=1 />
+<WndProperty Name="prpState" Caption="State" X=2 Y=20  Width=310 Height=22 CaptionWidth=50 Font=2 ReadOnly=1 />
 <WndProperty Name="prpName" Caption="_@M451_" X=2 Y=40  Width=310 Height=22 CaptionWidth=50 Font=2 ReadOnly=1 />
-<WndButton  name="cmdAck" Caption="_@M45_"  X=64 Y=162 width=64 height=56 Font=2 OnClickNotify="OnAckClicked"/>
-<WndButton  Caption="_@M186_" X=253 Y=162 width=63 height=56 Font=2 OnClickNotify="OnCloseClicked"/>
+<WndProperty Name="prpHDist" Caption="HDist" X=2 Y=60  Width=310 Height=22 CaptionWidth=50 Font=2 ReadOnly=1 />
+<WndProperty Name="prpVDist" Caption="VDist" X=2 Y=80  Width=310 Height=22 CaptionWidth=50 Font=2 ReadOnly=1 />
+<WndButton  name="cmdAckForTime" Caption="_@M46_" X=1 Y=162 width=148 height=56 Font=2 OnClickNotify="OnAckForTimeClicked"/>
+<WndButton  Caption="_@M186_" X=152 Y=162 width=148 height=56 Font=2 OnClickNotify="OnCloseClicked"/>
 </WndForm>    
 </PMML>

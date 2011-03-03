@@ -60,13 +60,23 @@ typedef std::vector<POINT> POINTList;
 
 //Airspace warning and ack states
 typedef enum {awNone=0, awPredicted, awWarning, awDailyAck} AirspaceWarningState_t;
-//Airspace warning message types
-typedef enum { awmNone, 
-				// INFO messages
-				awmEnteringFly, awmLeavingNonFly, awmEnteringAckedNonFly,
-				// Warning messages
-				awmYellow, awmYellowRepeated, awmRed, awmRedRepeated 
-} AirspaceWarningMessageType;
+//Airspace warning events
+typedef enum { aweNone, 
+				//for FLY zones
+				aweMovingInsideFly,
+				awePredictedLeavingFly,
+				aweLeavingFly,
+				awePredictedEnteringFly,
+				aweEnteringFly,
+				aweMovingOutsideFly,
+				
+				//for NON-FLY zones
+				aweMovingOutsideNonfly,
+				awePredictedEnteringNonfly,
+				aweEnteringNonfly,
+				aweMovingInsideNonfly,
+				aweLeavingNonFly
+} AirspaceWarningEvent;
 //Airspace drawstyles
 typedef enum {adsHidden, adsOutline, adsFilled } AirspaceDrawStyle_t;
 
@@ -91,7 +101,12 @@ public:
 			_lastknownalt(0),
 			_lastknownagl(0),
 			_pos_inside_last(false),
-			_pos_inside_now(false)
+			_pos_inside_now(false),
+			_warnevent(aweNone),
+			_warneventold(aweNone),
+			_warnmsg(aweNone),
+			_warnacktimeout(0),
+			_now(0)
 			{}
   virtual ~CAirspace() {}
 
@@ -108,11 +123,11 @@ public:
   
   //Warning system
   // Calculate warning level based on last/next/predicted position
-  AirspaceWarningMessageType CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
+  void CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 						bool *pos_in_flyzone, bool *pred_in_flyzone, 
 						bool *pos_in_acked_nonfly_zone, bool *pred_in_acked_nonfly_zone);
   // Second pass warning level calculation
-  AirspaceWarningMessageType FinishWarning(int now, 
+  bool FinishWarning(int now, 
 					 bool pos_inside_fly_zone, bool pred_inside_fly_zone, 
 					 bool pos_in_acked_nonfly_zone, bool pred_in_acked_nonfly_zone);
   // Calculate airspace distance from last known position (required by messages and dialog boxes)
@@ -146,6 +161,8 @@ public:
   //int WarningRepeatTimer() const { return _warn_repeat_time; }
   //void WarningRepeatTimer(int warnreptimer) { _warn_repeat_time = warnreptimer; }
 
+  AirspaceWarningEvent WarningMsg() const { return _warnmsg; }
+  void SetAckTimeout();					// Set ack validity timeout
 
 protected:
   TCHAR _name[NAME_SIZE + 1];
@@ -165,6 +182,11 @@ protected:
   int _lastknownagl;
   bool _pos_inside_last;
   bool _pos_inside_now;
+  AirspaceWarningEvent _warnevent;
+  AirspaceWarningEvent _warneventold;
+  AirspaceWarningEvent _warnmsg;
+  int _warnacktimeout;
+  int _now;
   
   void AirspaceAGLLookup(double av_lat, double av_lon);
 
@@ -229,12 +251,12 @@ private:
 typedef std::deque<CAirspace*> CAirspaceList;
 
 //Warning system 
-typedef struct _AirspaceWarningMessage
-{
-  CAirspace *originator;
-  AirspaceWarningMessageType msgtype;
-} AirspaceWarningMessage;
-typedef std::deque<AirspaceWarningMessage> AirspaceWarningMessageList;
+// typedef struct _AirspaceWarningMessage
+// {
+//   CAirspace *originator;
+//   AirspaceWarningMessageType msgtype;
+// } AirspaceWarningMessage;
+// typedef std::deque<AirspaceWarningMessage> AirspaceWarningMessageList;
 
 
 class CAirspaceManager
@@ -260,12 +282,13 @@ public:
   void AirspaceWarning (NMEA_INFO *Basic, DERIVED_INFO *Calculated);
   bool ClearAirspaceWarnings(const bool acknowledge, const bool ack_all_day = false);
 
+  void AirspaceWarnListAckForTime(CAirspace &airspace);
   void AirspaceWarnListAckWarn(CAirspace &airspace);
   void AirspaceWarnListAckSpace(CAirspace &airspace);
   void AirspaceWarnListDailyAck(CAirspace &airspace);
   void AirspaceWarnListDailyAckCancel(CAirspace &airspace);
   
-  bool PopWarningMessage(AirspaceWarningMessage *msg);
+  CAirspace* PopWarningMessagedAirspace();
 
   
   //Get airspace details (dlgAirspaceDetails)
@@ -298,7 +321,7 @@ private:
   
   // Warning system data
   // User warning message queue
-  AirspaceWarningMessageList _user_warning_queue;				// warnings to show
+  CAirspaceList _user_warning_queue;				// warnings to show
 
   //Openair parsing functions, internal use
   void FillAirspacesFromOpenAir(ZZIP_FILE *fp);

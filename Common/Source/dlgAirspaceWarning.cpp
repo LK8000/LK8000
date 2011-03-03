@@ -81,11 +81,11 @@ static void DoAck(int Ack){
 	switch (Ack) {
 	  default:
 	  case -1:		//-1 Ack warning
-		CAirspaceManager::Instance().AirspaceWarnListAckWarn(*p);
+		CAirspaceManager::Instance().AirspaceWarnListAckForTime(*p);
 		break;
 
 	  case 3:		//3 Ack airspace
-		CAirspaceManager::Instance().AirspaceWarnListAckSpace(*p);
+		CAirspaceManager::Instance().AirspaceWarnListAckWarn(*p);
 		break;
 
 	  case 4:		//4 Dailyack clicked 
@@ -377,6 +377,7 @@ static void OnAirspaceListItemPaint(WindowControl * Sender, HDC hDC){
     InflateRect(&rc, IBLSCALE(-2), IBLSCALE(-2));
 #ifdef LKAIRSPACE
 	if (i>=(int)airspaces.size()) return;
+	// Method: get an airspace object copy from CAirspaceManager to use it in this thread indepently
 	CAirspace airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(airspaces[i]);
     if (ItemIndex == DrawListIndex) {
       FocusedIdx = ItemIndex;
