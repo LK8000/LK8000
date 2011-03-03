@@ -4371,7 +4371,7 @@ void CommonProcessTimer()
     InputEvents::DoQueuedEvents();
 #ifdef LKAIRSPACE
 	  // only shows the dialog if needed.
-	  CAirspaceManager::Instance().ShowWarningsToUser();
+	  ShowAirspaceWarningsToUser();
 #else
     if (RequestAirspaceWarningDialog) {
       DisplayTimeOut=0;

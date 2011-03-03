@@ -59,10 +59,9 @@ static int SelectedID = -1;    // Currently selected airspace ID
 static int SelectedIdx = -1;   // Currently selected airspace List Index
 static bool fDialogOpen = false;
 #ifdef LKAIRSPACE
-typedef std::vector<CAirspace*> AirspaceDlgList;
-AirspaceDlgList airspaces;
+CAirspaceList airspaces;
 
-void dlgAirspaceWarningNotify(AirspaceWarningNotifyAction_t Action, CAirspace *Airspace);
+//void dlgAirspaceWarningNotify(AirspaceWarningNotifyAction_t Action, CAirspace *Airspace);
 #else
 void AirspaceWarningNotify(AirspaceWarningNotifyAction_t Action, AirspaceInfo_c *AirSpace);
 #endif
@@ -74,9 +73,11 @@ static void DoAck(int Ack){
   Idx = SelectedIdx;				//use selected list entry
   if (Idx < 0) Idx = FocusedIdx;	//if none selected use focused
   if (Idx < 0) Idx = 0;				//if none focused?
-
+  if (Idx>=(int)airspaces.size()) return;
+  
   CAirspace *p;
-  if (CAirspaceManager::Instance().AirspaceWarnGetItem(Idx, &p)) {
+  p = airspaces[Idx];
+  
 	switch (Ack) {
 	  default:
 	  case -1:		//-1 Ack warning
@@ -96,7 +97,6 @@ static void DoAck(int Ack){
 		break;
 	}//sw
     wAirspaceList->Redraw();
-  }
 }
 #else
 static void DoAck(int Ack){
@@ -376,10 +376,10 @@ static void OnAirspaceListItemPaint(WindowControl * Sender, HDC hDC){
 
     InflateRect(&rc, IBLSCALE(-2), IBLSCALE(-2));
 #ifdef LKAIRSPACE
-	CAirspace *pairspace;
-    if (!CAirspaceManager::Instance().AirspaceWarnGetItem(i, &pairspace)) return;
-    if (ItemIndex == DrawListIndex){
-      FocusedID = pairspace->WarningID();
+	if (i>=(int)airspaces.size()) return;
+	CAirspace airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(airspaces[i]);
+    if (ItemIndex == DrawListIndex) {
+      FocusedIdx = ItemIndex;
     }
 #else
     if (!AirspaceWarnGetItem(i, pAS)) return;
@@ -389,10 +389,10 @@ static void OnAirspaceListItemPaint(WindowControl * Sender, HDC hDC){
 #endif
 
 #ifdef LKAIRSPACE
-      _tcsncpy(sName, pairspace->Name(), sizeof(sName)/sizeof(sName[0]));
-	  memcpy(&Base, pairspace->Base(), sizeof(Base));
-	  memcpy(&Top, pairspace->Top(), sizeof(Top));
-      Type = pairspace->Type();
+      _tcsncpy(sName, airspace_copy.Name(), sizeof(sName)/sizeof(sName[0]));
+	  memcpy(&Base, airspace_copy.Base(), sizeof(Base));
+	  memcpy(&Top, airspace_copy.Top(), sizeof(Top));
+      Type = airspace_copy.Type();
 #else
     if (pAS.IsCircle){
       _tcsncpy(sName, AirspaceCircle[pAS.AirspaceIndex].Name, 
@@ -417,25 +417,22 @@ static void OnAirspaceListItemPaint(WindowControl * Sender, HDC hDC){
     getAirspaceType(sType, Type);
 
 #ifdef LKAIRSPACE
-	// Select brush based on state, warning and acknowledge
-	switch (pairspace->WarningState()) {
-	  default:
-	  case awsCheckWarning:
-		if (pairspace->UserWarningState() > pairspace->UserWarnAckState()) {
+	// Select brush based on warning and ack level
+	  if (airspace_copy.UserWarningState() == awPredicted) {
+		if (airspace_copy.UserWarnAckState() >= awPredicted) {
 		  hBrushBk = hBrushNearAckBk;
 		} else {
 		  hBrushBk = hBrushNearBk;
 		}
-		break;
-		
-	  case awsWarning:
-		if (pairspace->UserWarningState() > pairspace->UserWarnAckState()) {
+	  }
+	  
+	  if (airspace_copy.UserWarningState() == awWarning) {
+		if (airspace_copy.UserWarnAckState() >= awWarning) {
 		  hBrushBk = hBrushInsideAckBk;
 		} else {
 		  hBrushBk = hBrushInsideBk;
 		}
-		break;
-	}
+	  }
 #else
     if (pAS.Inside){
       if (pAS.Acknowledge >= 3)
@@ -461,12 +458,12 @@ static void OnAirspaceListItemPaint(WindowControl * Sender, HDC hDC){
     }
 
 #ifdef LKAIRSPACE
-    if ((pairspace->UserWarnAckState() > 0) && (pairspace->UserWarnAckState() >= pairspace->UserWarningState())) {
+    if ((airspace_copy.UserWarnAckState() > 0) && (airspace_copy.UserWarnAckState() >= airspace_copy.UserWarningState())) {
       SetTextColor(hDC, clGray);
     }
 
     #if defined(DEBUG)
-    wsprintf(sTmp, TEXT("%-20s%d"), sName , pairspace->UserWarningState() - pairspace->UserWarnAckState() );
+    wsprintf(sTmp, TEXT("%-20s%d"), sName , airspace_copy.UserWarningState() - airspace_copy.UserWarnAckState() );
     #else
     if (_tcslen(sName)>0) wsprintf(sTmp, TEXT("%-20s"), sName);  //@ FIX ATTEMPT 101027
 	else _tcscpy(sTmp,_T("UNKNOWN")); //@ 101027
@@ -497,59 +494,69 @@ static void OnAirspaceListItemPaint(WindowControl * Sender, HDC hDC){
     ExtTextOut(hDC, IBLSCALE(Col1Left), IBLSCALE(TextTop+TextHeight),
       ETO_OPAQUE, NULL, sTmp, _tcslen(sTmp), NULL);
 #ifdef LKAIRSPACE
-	switch (pairspace->WarningState()) {
+	int hdistance;
+	int vdistance;
+	int bearing;
+	bool inside;
+	
+	inside = airspace_copy.CalculateDistance(&hdistance, &bearing, &vdistance);
+	
+	switch (airspace_copy.UserWarningState()) {
 	  default:
-		break;
-	  case awsWarning:
-		if (!pairspace->Flyzone()) {
-		  //Non fly zone
-		  wsprintf(sTmp, TEXT("> %c %s %s"), GetAckIndicator(pairspace->UserWarnAckState()), sType, gettext(TEXT("_@M789_")));	//LKTOKEN _@M789_ "Warn"
+		if (inside) {
+		  wsprintf(sTmp, TEXT("> %c %s"), GetAckIndicator(airspace_copy.UserWarnAckState()), sType );
 		} else {
-		  //Fly zone
-		  wsprintf(sTmp, TEXT("< %c %s %s"), GetAckIndicator(pairspace->UserWarnAckState()), sType, gettext(TEXT("_@M789_")));	//LKTOKEN _@M789_ "Warn"
+		  wsprintf(sTmp, TEXT("< %c %s"), GetAckIndicator(airspace_copy.UserWarnAckState()), sType );
+		}
+		break;
+	  case awWarning:
+		if (inside) {
+		  wsprintf(sTmp, TEXT("> %c %s %s"), GetAckIndicator(airspace_copy.UserWarnAckState()), sType, gettext(TEXT("_@M789_")));	//LKTOKEN _@M789_ "Warn"
+		} else {
+		  wsprintf(sTmp, TEXT("< %c %s %s"), GetAckIndicator(airspace_copy.UserWarnAckState()), sType, gettext(TEXT("_@M789_")));	//LKTOKEN _@M789_ "Warn"
 		}
 		break;
 		
-	  case awsCheckWarning:
+	  case awPredicted:
 		TCHAR DistanceText[MAX_PATH];
-		if (!pairspace->Flyzone()) {
+		if (!airspace_copy.Flyzone()) {
 		  //Non fly zone
-		  if (pairspace->WarnhDistance() <= 0) {
+		  if (hdistance <= 0) {
 			// Directly above or below airspace
-			Units::FormatUserAltitude(fabs(pairspace->WarnvDistance()),DistanceText, 7);
-			if (pairspace->WarnvDistance() > 0) {
+			Units::FormatUserAltitude(fabs(vdistance),DistanceText, 7);
+			if (vdistance > 0) {
 			  wsprintf(sTmp, TEXT("< %c %s ab %s"), 
-					  GetAckIndicator(pairspace->UserWarnAckState()), 
+					  GetAckIndicator(airspace_copy.UserWarnAckState()), 
 					  sType, DistanceText);
 			} else {
 			  wsprintf(sTmp, TEXT("< %c %s bl %s"), 
-					  GetAckIndicator(pairspace->UserWarnAckState()), 
+					  GetAckIndicator(airspace_copy.UserWarnAckState()), 
 					  sType, DistanceText);
 			}
 		  } else {
 			  // Horizontally separated
-			  Units::FormatUserDistance(fabs(pairspace->WarnhDistance()),DistanceText, 7);
-			  wsprintf(sTmp, TEXT("< %c %s H %s"), GetAckIndicator(pairspace->UserWarnAckState()),
+			  Units::FormatUserDistance(fabs(hdistance),DistanceText, 7);
+			  wsprintf(sTmp, TEXT("< %c %s H %s"), GetAckIndicator(airspace_copy.UserWarnAckState()),
 					  sType, DistanceText);
 		  }
 		} else {
 		  //Fly zone
-		  if ( abs(pairspace->WarnhDistance()) > abs(pairspace->WarnvDistance())*30) {
+		  if ( abs(hdistance) > abs(vdistance)*30) {
 			// vDist smaller than horizontal
-			Units::FormatUserAltitude(fabs(pairspace->WarnvDistance()),DistanceText, 7);
-			if (pairspace->WarnvDistance() > 0) {
+			Units::FormatUserAltitude(fabs(vdistance),DistanceText, 7);
+			if (vdistance > 0) {
 			  wsprintf(sTmp, TEXT("> %c %s ab %s"), 
-					  GetAckIndicator(pairspace->UserWarnAckState()), 
+					  GetAckIndicator(airspace_copy.UserWarnAckState()), 
 					  sType, DistanceText);
 			} else {
 			  wsprintf(sTmp, TEXT("> %c %s bl %s"), 
-					  GetAckIndicator(pairspace->UserWarnAckState()), 
+					  GetAckIndicator(airspace_copy.UserWarnAckState()), 
 					  sType, DistanceText);
 			}
 		  } else {
 			  // Horizontally separated
-			  Units::FormatUserDistance(fabs(pairspace->WarnhDistance()),DistanceText, 7);
-			  wsprintf(sTmp, TEXT("> %c %s H %s"), GetAckIndicator(pairspace->UserWarnAckState()),
+			  Units::FormatUserDistance(fabs(hdistance),DistanceText, 7);
+			  wsprintf(sTmp, TEXT("> %c %s H %s"), GetAckIndicator(airspace_copy.UserWarnAckState()),
 					  sType, DistanceText);
 		  }
 		}
@@ -686,7 +693,7 @@ int UserMsgNotify(WindowControl *Sender, MSG *msg){
   if (actListSizeChange){
     actListSizeChange = false;
 #ifdef LKAIRSPACE
-    Count = CAirspaceManager::Instance().AirspaceWarnGetItemCount();
+    Count = airspaces.size();
 #else
     Count = AirspaceWarnGetItemCount();
 #endif
@@ -739,7 +746,7 @@ extern bool RequestAirspaceWarningDialog;
 
 // WARNING: this is NOT called from the windows thread!
 #ifdef LKAIRSPACE
-void dlgAirspaceWarningNotify(AirspaceWarningNotifyAction_t Action, 
+/*void dlgAirspaceWarningNotify(AirspaceWarningNotifyAction_t Action, 
                            CAirspace *Airspace) {
 
   if ((Action == asaItemAdded) || (Action == asaWarnLevelIncreased)) {
@@ -767,7 +774,7 @@ void dlgAirspaceWarningNotify(AirspaceWarningNotifyAction_t Action,
     // sync dialog with MapWindow (event processing etc)
   }
 
-}
+}*/
 #else
 void AirspaceWarningNotify(AirspaceWarningNotifyAction_t Action, 
                            AirspaceInfo_c *AirSpace) {
@@ -825,7 +832,7 @@ bool dlgAirspaceWarningShow(void){
 
 bool dlgAirspaceWarningIsEmpty(void) {
 #ifdef LKAIRSPACE
-    return (CAirspaceManager::Instance().AirspaceWarnGetItemCount() == 0);
+    return (airspaces.size() == 0);
 #else
   return (AirspaceWarnGetItemCount()==0);
 #endif
@@ -842,11 +849,13 @@ bool dlgAirspaceWarningShowDlg(bool Force){
 
   if (fDialogOpen)
     return(false);
-
+#ifndef LKAIRSPACE
   if (!actShow && !Force)
     return false;
+#endif
 #ifdef LKAIRSPACE
-    Count = CAirspaceManager::Instance().AirspaceWarnGetItemCount();
+	airspaces = CAirspaceManager::Instance().GetAirspacesInWarning();
+    Count = airspaces.size();
 #else
   Count = AirspaceWarnGetItemCount();
 #endif

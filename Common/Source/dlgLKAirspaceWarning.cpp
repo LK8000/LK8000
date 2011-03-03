@@ -21,6 +21,8 @@
 extern HWND   hWndMainWindow;
 extern HWND   hWndMapWindow;
 CAirspace *airspace;
+CAirspace airspace_copy;
+
 WndForm *dlg=NULL;
 
 
@@ -28,7 +30,9 @@ static void OnAckClicked(WindowControl * Sender)
 {
   (void)Sender;
   if (airspace==NULL) return;
+  if (dlg==NULL) return;
   CAirspaceManager::Instance().AirspaceWarnListAckWarn(*airspace);
+  dlg->SetModalResult(mrOK);
 }
 
 static void OnCloseClicked(WindowControl * Sender)
@@ -62,51 +66,38 @@ static int OnKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam)
 }
 
 
-static void getAirspaceType(TCHAR *buf, int Type){
+TCHAR* getAirspaceTypeText(int Type)
+{
   switch (Type)
     {
     case RESTRICT:
-      _tcscpy(buf, TEXT("LxR"));
-      return;
+      return(TEXT("LxR"));
     case PROHIBITED:
-      _tcscpy(buf, TEXT("LxP"));
-      return;
+      return(TEXT("LxP"));
     case DANGER:
-      _tcscpy(buf, TEXT("LxD"));
-      return;
+      return(TEXT("LxD"));
     case CLASSA:
-      _tcscpy(buf, TEXT("A"));
-      return;
+      return(TEXT("A"));
     case CLASSB:
-      _tcscpy(buf, TEXT("B"));
-      return;
+      return(TEXT("B"));
     case CLASSC:
-      _tcscpy(buf, TEXT("C"));
-      return;
+      return(TEXT("C"));
     case CLASSD:
-      _tcscpy(buf, TEXT("D"));
-      return;
+      return(TEXT("D"));
     case CLASSE:
-      _tcscpy(buf, TEXT("E"));
-      return;
+      return(TEXT("E"));
     case CLASSF:
-      _tcscpy(buf, TEXT("F"));
-      return;
+      return(TEXT("F"));
     case CLASSG:
-      _tcscpy(buf, TEXT("G"));
-      return;
+      return(TEXT("G"));
     case NOGLIDER:
-      _tcscpy(buf, TEXT("NoGld"));
-      return;
+      return(TEXT("NoGld"));
     case CTR:
-      _tcscpy(buf, TEXT("CTR"));
-      return;
+      return(TEXT("CTR"));
     case WAVE:
-      _tcscpy(buf, TEXT("Wav"));
-      return;
+      return(TEXT("Wav"));
     default:
-      _tcscpy(buf, TEXT("?"));
-      return;
+      return(TEXT("?"));
     }
 }
 
@@ -119,52 +110,119 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(NULL)
 };
 
-  
 
-void CAirspaceManager::ShowWarningsToUser()
+void dlgLKAirspaceFill(AirspaceWarningMessageType msgtype)
 {
- 
-  if (airspace != NULL) return;		// Dialog already open
-  
-  if (1) {
-	CCriticalSection::CGuard guard(_csuser_warning_queue);
-	if (_user_warning_queue.size()==0) return;
-  }
-  
-  if (InfoBoxLayout::landscape)
-	dlg = dlgLoadFromXML(CallBackTable, NULL, hWndMainWindow, TEXT("IDR_XML_LKAIRSPACEWARNING_L"));
-  else
-	dlg = dlgLoadFromXML(CallBackTable, NULL, hWndMainWindow, TEXT("IDR_XML_LKAIRSPACEWARNING"));
+	//Fill up dialog data
+	WndProperty* wp;	
+	
+	wp = (WndProperty*)dlg->FindByName(TEXT("prpReason"));
+	if (wp) {
+	  //wp->SetFont(TempMapWindowFont);
+	  switch (msgtype) {
+		default:
+		  wp->SetCaption(TEXT("Unknown"));
+		  break;
+		case awmNone:
+		  wp->SetCaption(TEXT("None"));
+		  break;
+		case awmYellow:
+		  wp->SetCaption(TEXT("Yellow"));
+		  break;
+		case awmYellowRepeated:
+		  wp->SetCaption(TEXT("Yellow repeat"));
+		  break;
+		case awmRed:
+		  wp->SetCaption(TEXT("Red"));
+		  break;
+		case awmRedRepeated:
+		  wp->SetCaption(TEXT("Red repeat"));
+		  break;
+	  }//sw
+	  wp->RefreshDisplay();
 
-  if (dlg==NULL) {
-	StartupStore(_T("------ LKAirspaceWarning setup FAILED!%s"),NEWLINE); //@ 101027
-	return;
-  }
-  
-  dlg->SetKeyDownNotify(OnKeyDown);
- 
-	if (1) {
-	  CCriticalSection::CGuard guard(_csuser_warning_queue);
-	  airspace = _user_warning_queue.front();
-	  _user_warning_queue.pop_front();
-	  //Fill up dialog data
-	  WndProperty* wp;	
+	  
 	  wp = (WndProperty*)dlg->FindByName(TEXT("prpName"));
 	  if (wp) {
-		wp->SetText(airspace->Name());
+		wp->SetText(airspace_copy.Name());
 		wp->RefreshDisplay();
 	  }	
 	}
+  
+}
 
-    #ifndef DISABLEAUDIO
-    if (EnableSoundModes) LKSound(_T("LK_AIRSPACE.WAV")); // 100819
-    #endif
-    dlg->ShowModal();
+// Called periodically to show airspace warning messages to user
+void ShowAirspaceWarningsToUser()
+{
+  if (airspace != NULL) return;		// Dialog already open
+
+  AirspaceWarningMessage msg;
+  bool there_is_msg_to_show;
+  there_is_msg_to_show = CAirspaceManager::Instance().PopWarningMessage(&msg);
+  if (!there_is_msg_to_show) return;		// no message to display
+
+  airspace = msg.originator;
+  airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(airspace);
+
+  bool ackdialog_required = false;
+  TCHAR msgbuf[128];
+
+  // which message we need to show?
+  switch (msg.msgtype) {
+	default:
+	  DoStatusMessage(TEXT("Unknown airspace warning message"));
+	  break;	//Unknown msg type
+	  
+	case awmYellow:
+	case awmYellowRepeated:
+	case awmRed:
+	case awmRedRepeated:
+	  ackdialog_required = true;
+	  break;
+	  
+	case awmEnteringFly:
+	  wsprintf(msgbuf, TEXT("Entering FLY %s ZONE %s"), getAirspaceTypeText(airspace_copy.Type()), airspace_copy.Name());
+	  DoStatusMessage(msgbuf);
+	  break;
+
+	case awmLeavingNonFly:
+	  wsprintf(msgbuf, TEXT("Leaving NON-FLY %s ZONE %s"), getAirspaceTypeText(airspace_copy.Type()), airspace_copy.Name());
+	  DoStatusMessage(msgbuf);
+	  break;
+	  
+	case awmEnteringAckedNonFly:
+	  wsprintf(msgbuf, TEXT("Entering acked NON-FLY %s ZONE %s"), getAirspaceTypeText(airspace_copy.Type()), airspace_copy.Name());
+	  DoStatusMessage(msgbuf);
+	  break;
+  }
+
+  if (ackdialog_required) {
+	if (!InfoBoxLayout::landscape)
+	  dlg = dlgLoadFromXML(CallBackTable, NULL, hWndMainWindow, TEXT("IDR_XML_LKAIRSPACEWARNING_L"));
+	else
+	  dlg = dlgLoadFromXML(CallBackTable, NULL, hWndMainWindow, TEXT("IDR_XML_LKAIRSPACEWARNING"));
+
+	if (dlg==NULL) {
+	  StartupStore(_T("------ LKAirspaceWarning setup FAILED!%s"),NEWLINE); //@ 101027
+	  return;
+	}
 	
-  delete dlg;
-  dlg = NULL;
-  airspace = NULL;
+	dlg->SetKeyDownNotify(OnKeyDown);
 
+
+	dlgLKAirspaceFill(msg.msgtype);
+
+	#ifndef DISABLEAUDIO
+	if (EnableSoundModes) LKSound(_T("LK_AIRSPACE.WAV")); // 100819
+	#endif
+
+	dlg->ShowModal();
+
+	delete dlg;
+	dlg = NULL;
+  }
+  
+  airspace = NULL;
   return;
 }
 
