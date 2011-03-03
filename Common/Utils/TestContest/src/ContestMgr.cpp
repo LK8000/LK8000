@@ -9,6 +9,8 @@
 #include "ContestMgr.h"
 #include <iostream>
 
+unsigned CContestMgr::COMPRESSION_ALGORITHM;
+
 
 CContestMgr::CContestMgr(unsigned handicap, unsigned startAltitudeLoss):
   _handicap(handicap),

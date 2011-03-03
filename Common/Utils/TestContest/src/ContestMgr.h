@@ -69,15 +69,14 @@ public:
   static const unsigned TRACE_FIX_LIMIT = 250;
   static const unsigned TRACE_SPRINT_FIX_LIMIT = 100;
   static const unsigned TRACE_SPRINT_TIME_LIMIT = 150 * 60;
-  //static const unsigned COMPRESSION_ALGORITHM = CTrace::ALGORITHM_TRIANGLES | CTrace::ALGORITHM_TIME_DELTA;
-  //static const unsigned COMPRESSION_ALGORITHM = CTrace::ALGORITHM_DISTANCE  | CTrace::ALGORITHM_TIME_DELTA;
-  static const unsigned COMPRESSION_ALGORITHM = CTrace::ALGORITHM_DISTANCE  | CTrace::ALGORITHM_INHERITED | CTrace::ALGORITHM_TIME_DELTA;
+  static unsigned COMPRESSION_ALGORITHM;
   
   static const char *TypeToString(TType type);
   
   CContestMgr(unsigned handicap, unsigned startAltitudeLoss);
   
   const CTrace &Trace() const { return _trace; }
+  const CTrace &TraceSprint() const { return _traceSprint; }
   
   void Add(const CPointGPSSmart &gps);
   const CResult &Result(TType type) const { return _resultArray[type]; }

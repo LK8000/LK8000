@@ -77,6 +77,7 @@ void CTestContest::Run()
   
   // dump optimized trace
   const CTrace &trace = _contestMgr.Trace();
+  const CTrace &traceSprint = _contestMgr.TraceSprint();
   _kml.Dump(trace);
   //  std::cout << _trace << std::endl;
   
@@ -84,13 +85,14 @@ void CTestContest::Run()
   std::cout << std::endl;
   std::cout << "Performance stats:" << std::endl;
   std::cout << "------------------" << std::endl;
-  std::cout << " - fix data size:            " << sizeof(CTrace::CPoint) + sizeof(unsigned) + sizeof(CPointGPS) << std::endl;
-  std::cout << " - number of analysed fixes: " << trace.AnalyzedPointCount() << std::endl;;
-  std::cout << " - number of trace fixes:    " << trace.Size() << std::endl;;
-  std::cout << " - execution time:           " <<
+  std::cout << " - fix data size:                " << sizeof(CTrace::CPoint) + sizeof(unsigned) + sizeof(CPointGPS) << std::endl;
+  std::cout << " - number of analysed fixes:     " << trace.AnalyzedPointCount() << std::endl;;
+  std::cout << " - number of trace fixes:        " << trace.Size() << std::endl;;
+  std::cout << " - number of sprint trace fixes: " << traceSprint.Size() << std::endl;;
+  std::cout << " - execution time:               " <<
     std::fixed << std::setprecision(2) << (_timeArray.back() - _timeArray.front()) / 1000.0 << "s" << std::endl;;
   if(_timeArray.size() > 2) {
-    std::cout << " - " << TIME_ANALYSIS_STEP << " fixes periods: " << std::endl;
+    std::cout << " - execution time of " << TIME_ANALYSIS_STEP << " fixes periods: " << std::endl;
     
     for(unsigned i=1; i<_timeArray.size() - 1; i++)
       std::cout << "   * " << std::setw(5) << TIME_ANALYSIS_STEP * (i - 1) << " - " << std::setw(5) << TIME_ANALYSIS_STEP * i << ": " <<
