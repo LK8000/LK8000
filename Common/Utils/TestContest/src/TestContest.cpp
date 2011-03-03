@@ -42,6 +42,20 @@ void CTestContest::GPSHandler(void *user, double time, double latitude, double l
 }
 
 
+void CTestContest::Dump(const CContestMgr::TType type) const
+{
+  const CContestMgr::CResult &result = _contestMgr.Result(type);
+  
+  std::cout << "Contest '" << CContestMgr::TypeToString(type) << "':" << std::endl;
+  std::cout << " - Distance: " << result.Distance() << std::endl;
+  std::cout << " - Score: " << result.Score() << std::endl;
+  for(CPointGPSArray::const_iterator it=result.PointArray().begin(); it!=result.PointArray().end(); ++it)
+    std::cout << " - " << TimeToString(it->Time()) << std::endl;
+  
+  _kml.Dump(result);
+}
+
+
 void CTestContest::Run()
 {
   std::cout << "Contests analysis for: " << _igcFile << " (handicap: " << _handicap << ")" << std::endl;
@@ -64,6 +78,7 @@ void CTestContest::Run()
   // dump optimized trace
   const CTrace &trace = _contestMgr.Trace();
   _kml.Dump(trace);
+  //  std::cout << _trace << std::endl;
   
   // dump performance stats
   std::cout << std::endl;
@@ -83,29 +98,7 @@ void CTestContest::Run()
   }
   
   std::cout << std::endl;
-  //  std::cout << _trace << std::endl;
   
-  {
-    const CContestMgr::CResult &result = _contestMgr.Result(CContestMgr::TYPE_OLC_CLASSIC);
-    std::cout << "Result:" << std::endl;
-    for(CPointGPSArray::const_iterator it=result.PointArray().begin(); it!=result.PointArray().end(); ++it)
-      std::cout << " - " << TimeToString(it->Time()) << std::endl;
-    
-    std::cout << " - Distance: " << result.Distance() << std::endl;
-    std::cout << " - Score: " << result.Score() << std::endl;
-    
-    _kml.Dump(result);
-  }
-  
-  {
-    const CContestMgr::CResult &result = _contestMgr.Result(CContestMgr::TYPE_OLC_LEAGUE);
-    std::cout << "Result:" << std::endl;
-    for(CPointGPSArray::const_iterator it=result.PointArray().begin(); it!=result.PointArray().end(); ++it)
-      std::cout << " - " << TimeToString(it->Time()) << std::endl;
-    
-    std::cout << " - Distance: " << result.Distance() << std::endl;
-    std::cout << " - Score: " << result.Score() << std::endl;
-    
-    _kml.Dump(result);
-  }
+  Dump(CContestMgr::TYPE_OLC_CLASSIC);
+  Dump(CContestMgr::TYPE_OLC_LEAGUE);
 }

@@ -20,6 +20,18 @@ CContestMgr::CContestMgr(unsigned handicap, unsigned startAltitudeLoss):
 }
 
 
+const char *CContestMgr::TypeToString(TType type)
+{
+  const char *typeStr[] = {
+    "OLC Classic",
+    "OLC FAI",
+    "OLC League",
+    "<invalid>" 
+  };
+  return typeStr[type];
+}
+
+
 void CContestMgr::UpdateOLCClassic(const CRules &rules)
 {
   // find the last point meeting criteria

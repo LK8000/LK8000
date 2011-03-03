@@ -42,6 +42,8 @@ class CTestContest {
   
   static void GPSHandler(void *user, double time, double latitude, double longitude, double altitude);
   
+  void Dump(const CContestMgr::TType type) const;
+  
 public:
   CTestContest(const std::string &igcFile, unsigned handicap, unsigned startAltitudeLoss);
   void Run();

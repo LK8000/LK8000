@@ -73,6 +73,8 @@ public:
   //static const unsigned COMPRESSION_ALGORITHM = CTrace::ALGORITHM_DISTANCE  | CTrace::ALGORITHM_TIME_DELTA;
   static const unsigned COMPRESSION_ALGORITHM = CTrace::ALGORITHM_DISTANCE  | CTrace::ALGORITHM_INHERITED | CTrace::ALGORITHM_TIME_DELTA;
   
+  static const char *TypeToString(TType type);
+  
   CContestMgr(unsigned handicap, unsigned startAltitudeLoss);
   
   const CTrace &Trace() const { return _trace; }
