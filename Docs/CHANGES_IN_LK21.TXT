@@ -21,11 +21,14 @@ NEW
   When the screen is locked, no function can be used on the touch screen, but hardware keys 
   are still operational.
 
+- Preliminar OLC work testbench from Mateusz
 
 CHANGES
 
 - AAT permanently ON for paragliders in configuration. 
   With non-AT looking settings, though.
+
+- Outlined thermal circle also for paragliders
 
 
 BUGFIX
@@ -39,6 +42,7 @@ BUGFIX
   The description _and_ title also displayed if description was too long, 
   because of description null termination missing.
 
+- Fix bug Target 4.x page with _@M1008 and 1002 values appearing
 
 
 VERSION 2.1c  110218
