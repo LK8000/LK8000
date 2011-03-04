@@ -305,6 +305,7 @@ static void ReadValues(void) {
   if (wp) {
     CHECK_CHANGED(AATEnabled,
                   wp->GetDataField()->GetAsInteger());
+	if (ISPARAGLIDER) AATEnabled=true; // force it on
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishLine"));
