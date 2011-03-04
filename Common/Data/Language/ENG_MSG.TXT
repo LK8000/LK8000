@@ -957,6 +957,32 @@ _@M955_ "ClearType"
 _@M956_ "Anti Aliasing"
 
 #
+# Paragliding lock/unlock screen feature
+#
+_@M960_ "CONFIRM SCREEN UNLOCK?"
+_@M961_ "CONFIRM SCREEN LOCK?"
+# 962 max 35 characters!
+_@M962_ "SCREEN IS LOCKED UNTIL TAKEOFF"
+_@M963_ "DOUBLE-CLICK ON SCREEN TO FORCE UNLOCK"
+_@M964_ "SCREEN IS UNLOCKED"
+#
+# Menu buttons, MAX 8 character per line! Keep \n !
+_@M965_ "UNLOCK\nSCREEN"
+_@M966_ "LOCK\nSCREEN"
+
+#
+# GPS and COM port warnings
+#
+_@M970_ " GPS: NO VALID FIX "
+_@M971_ " GPS: No ComPort "
+_@M972_ " GPS: No Data Rx "
+_@M973_ " GPS is missing "
+_@M974_ " GPS not connected "
+_@M975_ " GPS data error "
+
+
+
+#
 # Infoboxes in Description / Tile order. 
 # In titles use maximum 7 characters
 #

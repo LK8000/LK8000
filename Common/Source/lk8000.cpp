@@ -472,6 +472,7 @@ short GlideBarMode=0;
 short OverlaySize=0;
 short BarOpacity=255; // bottom bar transparency if available, black by default
 short FontRenderer=0;
+bool LockModeStatus=false;
 short ArrivalValue=0;
 short NewMapDeclutter=0;
 short Shading=1;
@@ -5170,6 +5171,23 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 #else
   if (_tcsstr(OutBuffer, TEXT("$(")) == NULL) return false;
 #endif
+
+  if (_tcsstr(OutBuffer, TEXT("$(LOCKMODE"))) {
+	if (LockMode(0)) {	// query availability
+		TCHAR tbuf[10];
+		_tcscpy(tbuf,_T(""));
+		ReplaceInString(OutBuffer, TEXT("$(LOCKMODE)"), tbuf, Size);
+		if (LockMode(1)) // query status
+			_tcscpy(OutBuffer,gettext(_T("_@M965_"))); // UNLOCK\nSCREEN
+		else
+			_tcscpy(OutBuffer,gettext(_T("_@M966_"))); // LOCK\nSCREEN
+		if (!LockMode(3)) invalid=true; // button not usable
+	} else {
+		// This will make the button invisible
+		_tcscpy(OutBuffer,_T(""));
+	}
+	if (--items<=0) goto label_ret;
+  }
 
   if (_tcsstr(OutBuffer, TEXT("$(MacCreadyValue)"))) { // 091214
 

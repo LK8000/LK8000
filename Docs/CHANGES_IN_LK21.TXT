@@ -7,6 +7,20 @@ NEW
   System Page 11 choose from Cleartype/Anti Aliasing mode.
   On some devices/resolution/orientation sometimes one choice is better than the other.
 
+- New SCREEN LOCKING system for paragliders.
+  This feature is available only in Para/Hang Gliding mode.
+  A new menu button is available in Config 1/3 page:  LOCK SCREEN.
+  This feature is available only while not flying, and thus no takeoff was detected,
+  otherwise it is blanked and you cannot click on it.
+  Locking the screen will help paragliders not to have LK react to keypresses during the
+  takeoff , when the pilot is in a critical phase.
+  Screen will report "SCREEN IS LOCKED", and will remain locked until 10 SECONDS AFTER TAKEOFF.
+  After 10 seconds from takeoff detected, the screen will be AUTOMATICALLY unlocked.
+  If the pilot for any reason wants to unlock the screen, he can double-click on screen any
+  time to do it.
+  When the screen is locked, no function can be used on the touch screen, but hardware keys 
+  are still operational.
+
 
 CHANGES
 

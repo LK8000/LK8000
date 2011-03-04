@@ -189,6 +189,7 @@ extern int LKVarioBar;
 extern short OverlaySize;
 extern short BarOpacity;
 extern short FontRenderer;
+extern bool LockModeStatus;
 
 extern short GestureSize;
 extern bool IphoneGestures;

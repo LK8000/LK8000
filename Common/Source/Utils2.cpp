@@ -4211,6 +4211,47 @@ int GetFontRenderer() // Karim
 
 }
 
+// Are we using lockmode? What is the current status?
+bool LockMode(const short lmode) {
 
+  switch(lmode) {
+	case 0:		// query availability of LockMode
+		if (ISPARAGLIDER)
+			return true;
+		else
+			return false;
+		break;
+
+	case 1:		// query lock/unlock status
+		return LockModeStatus;
+		break;
+
+	case 2:		// invert lock status
+		LockModeStatus = !LockModeStatus;
+		return LockModeStatus;
+		break;
+
+	case 3:		// query button is usable or not, assuming ISPARAGLIDER
+		// Positive if not flying
+		return CALCULATED_INFO.Flying==TRUE?false:true;
+		break;
+
+	case 9:		// Check if we can unlock the screen
+		if (CALCULATED_INFO.Flying == TRUE) {
+			if ( (GPS_INFO.Time - CALCULATED_INFO.TakeOffTime)>10) {
+				LockModeStatus=false;
+			}
+		}
+		return LockModeStatus;
+		break;
+
+	default:
+		return false;
+		break;
+  }
+
+  return 0;
+
+}
 
 

@@ -1860,6 +1860,11 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       dwDownTime = GetTickCount();  
       XstartScreen = LOWORD(lParam); YstartScreen = HIWORD(lParam);
 
+	if (LockModeStatus) {
+		LockMode(2);
+		DoStatusMessage(gettext(_T("_@M964_"))); // SCREEN IS UNLOCKED
+	}
+
       // Careful! If you ignorenext, any event timed as double click of course will be affected.
       // and this means also fast clicking on bottombar!!
       // so first lets see if we are in lk8000 text screens.. 
@@ -1918,6 +1923,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       #ifdef DEBUG_DBLCLK
       DoStatusMessage(_T("BUTTONDOWN MapWindow")); 
       #endif
+	if (LockModeStatus) break;
       DisplayTimeOut = 0;
       dwDownTime = GetTickCount();
       // After calling a menu, on exit as we touch the screen we fall back here
@@ -1962,6 +1968,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       break;
 
     case WM_LBUTTONUP:
+	if (LockModeStatus) break;
 	if (ignorenext||dwDownTime==0) { 
 #ifdef DEBUG_MAPINPUT
 		if (ignorenext && (dwDownTime==0) )
@@ -3517,6 +3524,8 @@ void MapWindow::RenderMapWindow(  RECT rc)
     userasked = false;
   }
   MapWindow::UpdateTimeStats(true);
+
+  if (LockModeStatus) LockMode(9); // check if unlock is now possible 
   
   POINT Orig, Orig_Aircraft;
 
@@ -4107,11 +4116,10 @@ void MapWindow::DrawBitmapIn(const HDC hdc, const POINT &sc, const HBITMAP h) {
               hDCTemp,10,0,SRCAND);
 }
 
-
+// This will draw both GPS and LOCK SCREEN status
 void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
 {
 
-//StartupStore(_T("NAVWarn=%d Sats=%d\n"),DrawInfo.NAVWarning,DrawInfo.SatellitesUsed); REMOVE
   HFONT oldfont=NULL;
 #ifndef MAP_ZOOM
   if ((MapSpaceMode==MSM_WELCOME)||(MapWindow::isPan()) ) return; // 100210
@@ -4119,21 +4127,17 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
   if ((MapSpaceMode==MSM_WELCOME)||(mode.AnyPan()) ) return; // 100210
 #endif /* MAP_ZOOM */
 
-  if (extGPSCONNECT && !(DrawInfo.NAVWarning) && (DrawInfo.SatellitesUsed != 0)) 
-    // nothing to do
-    return;
-  TCHAR gpswarningtext2[] = TEXT(" GPS: NO VALID FIX ");
+  if (extGPSCONNECT && !(DrawInfo.NAVWarning) && (DrawInfo.SatellitesUsed != 0)) {
+	if (LockModeStatus) goto goto_DrawLockModeStatus;
+	return;
+  }
+
   static bool firstrun=true;
-  TCHAR gpswarningtext3[] = TEXT(" GPS: No ComPort ");
-  TCHAR gpswarningtext4[] = TEXT(" GPS: No Data Rx ");
-  TCHAR gpswarningtext5[] = TEXT(" GPS is missing ");
-  TCHAR gpswarningtext6[] = TEXT(" GPS not connected ");
-  TCHAR gpswarningtext7[] = TEXT(" GPS data error ");
-  TextInBoxMode_t TextInBoxMode = {2};
 
   if (!extGPSCONNECT) {
 
-    oldfont=(HFONT)SelectObject(hDC,LK8TargetFont);   // 100222 
+    oldfont=(HFONT)SelectObject(hDC,LK8TargetFont); 
+    TextInBoxMode_t TextInBoxMode = {2};
     TextInBoxMode.AsInt=0;
     TextInBoxMode.AsFlag.Color = TEXTWHITE;
     TextInBoxMode.AsFlag.NoSetFont=1;
@@ -4141,25 +4145,24 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
     TextInBoxMode.AsFlag.WhiteBorder = 1;
     TextInBoxMode.AsFlag.Border = 1;
     if (ComPortStatus[0]==CPS_OPENKO) {
-	// No Com Port
-    	TextInBox(hDC, gpswarningtext3, (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode);
+    	TextInBox(hDC, gettext(_T("_@M971_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode); // No ComPort
     } else {
     	if (ComPortStatus[0]==CPS_OPENOK) {
 		if ((ComPortRx[0]>0) && !firstrun) {
 			// Gps is missing
-    			TextInBox(hDC, gpswarningtext5, (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode);
+    			TextInBox(hDC, gettext(_T("_@M973_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode);
 			firstrun=false; // 100214
 		} else {
 			// No Data Rx
-    			TextInBox(hDC, gpswarningtext4, (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode);
+    			TextInBox(hDC, gettext(_T("_@M972_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode);
 		}
 	} else  {
 		if (ComPortStatus[0]==CPS_EFRAME)  {
 			// Data error
-    			TextInBox(hDC, gpswarningtext7, (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode); // 100214
+    			TextInBox(hDC, gettext(_T("_@M975_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode);
 		} else {
 			// Not Connected
-    			TextInBox(hDC, gpswarningtext6, (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode); // 100214
+    			TextInBox(hDC, gettext(_T("_@M974_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode);
 		}
 	}
 
@@ -4169,20 +4172,42 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
   } else
     if (DrawInfo.NAVWarning || (DrawInfo.SatellitesUsed == 0)) {
     oldfont=(HFONT)SelectObject(hDC,LK8TargetFont); // 100210
+    TextInBoxMode_t TextInBoxMode = {2};
     TextInBoxMode.AsInt=0;
     TextInBoxMode.AsFlag.Color = TEXTWHITE;
     TextInBoxMode.AsFlag.NoSetFont=1;
     TextInBoxMode.AsFlag.AlligneCenter = 1;
     TextInBoxMode.AsFlag.WhiteBorder = 1;
     TextInBoxMode.AsFlag.Border = 1;
-    TextInBox(hDC, gpswarningtext2, 
+    // No Valid Fix
+    TextInBox(hDC, gettext(_T("_@M970_")),
               (rc.right-rc.left)/2, 
               (rc.bottom-rc.top)/3,
               0, TextInBoxMode);
 
     }
-  SelectObject(hDC,oldfont);
 
+goto_DrawLockModeStatus:
+  if (LockModeStatus) {
+	if (oldfont!=NULL)
+		oldfont=(HFONT)SelectObject(hDC,LK8MediumFont);
+	else
+		SelectObject(hDC,LK8MediumFont);
+
+	TextInBoxMode_t TextInBoxModeL = {2};
+	TextInBoxModeL.AsInt=0;
+	TextInBoxModeL.AsFlag.Color = TEXTWHITE;
+	TextInBoxModeL.AsFlag.NoSetFont=1;
+	TextInBoxModeL.AsFlag.AlligneCenter = 1;
+	TextInBoxModeL.AsFlag.WhiteBorder = 1;
+	TextInBoxModeL.AsFlag.Border = 1;
+	TextInBox(hDC, gettext(_T("_@M962_")), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/3), 0, TextInBoxModeL);
+	SelectObject(hDC,LK8MapFont);
+	TextInBox(hDC, gettext(_T("_@M963_")), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/5), 0, TextInBoxModeL);
+  }
+
+  SelectObject(hDC,oldfont);
+  return;
 }
 
 void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
