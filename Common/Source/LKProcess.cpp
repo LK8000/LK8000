@@ -1669,7 +1669,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 					if ( Units::TimeToTextDown(BufferValue, (int)CALCULATED_INFO.LKTaskETE))  // 091112
 						wsprintf(BufferUnit, TEXT("h"));
 					else
-						wsprintf(BufferUnit, TEXT("m"));
+						wsprintf(BufferUnit, TEXT(""));
 				} else {
 					index = Task[ActiveWayPoint].Index;
 					if ( (WayPointCalc[index].NextETE > 0) && !ValidTaskPoint(1) ) {
@@ -1677,7 +1677,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 						if (Units::TimeToTextDown(BufferValue, (int)WayPointCalc[index].NextETE))
                                                 	wsprintf(BufferUnit, TEXT("h"));
                                         	else
-                                        	        wsprintf(BufferUnit, TEXT("m"));
+                                        	        wsprintf(BufferUnit, TEXT(""));
 					} else
 						wsprintf(BufferValue, TEXT(NULLTIME));
 				}
@@ -2300,7 +2300,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			}
 			wsprintf(BufferUnit, TEXT(""));
 			// LKTOKEN  _@M1007_ = "Bearing", _@M1008_ = "Brg"
-			wsprintf(BufferTitle, TEXT("_@M1008_"),text);
+			wsprintf(BufferTitle, gettext(TEXT("_@M1008_")));
 			break;
 
 		// B139
@@ -2336,7 +2336,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				}
 			}
 			// LKTOKEN  _@M1001_ = "Altitude QNH", _@M1002_ = "Alt", 
-			_stprintf(BufferTitle, TEXT("_@M1002_"));
+			_stprintf(BufferTitle, gettext(TEXT("_@M1002_")));
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;

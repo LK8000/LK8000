@@ -2321,6 +2321,28 @@ void InputEvents::eventService(const TCHAR *misc) {
 	return;
   }
 
+  if (_tcscmp(misc, TEXT("LOCKMODE")) == 0) {
+	TCHAR mtext[80];
+	if (LockMode(1)) {
+		// LKTOKEN  _@M960_ = "CONFIRM SCREEN UNLOCK?" 
+		_tcscpy(mtext, gettext(_T("_@M960_")));
+	} else {
+		// LKTOKEN  _@M961_ = "CONFIRM SCREEN LOCK?" 
+		_tcscpy(mtext, gettext(_T("_@M961_")));
+	}
+	if (MessageBoxX(hWndMapWindow, 
+		mtext, _T(""),
+		MB_YESNO|MB_ICONQUESTION) == IDYES) {
+			if (LockMode(2)) { // invert LockMode
+				DoStatusMessage(gettext(_T("_@M962_"))); // SCREEN IS LOCKED UNTIL TAKEOFF
+				DoStatusMessage(gettext(_T("_@M963_"))); // DOUBLECLICK TO UNLOCK
+			} else
+				DoStatusMessage(gettext(_T("_@M964_"))); // SCREEN IS UNLOCKED
+	}
+	return;
+  }
+
+
   // we should not get here
   DoStatusMessage(_T("Unknown Service: "),misc);
 

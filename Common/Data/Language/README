@@ -1,0 +1,4 @@
+
+CAREFUL! ALL *_MENU.TXT should be UCS-2 big endian : use Notepad++ from Windows to
+change them eventually, after changing and committing new ENG stuff from linux!
+Also ENG_MENU.TXT  MUST BE UCS-2 !!
