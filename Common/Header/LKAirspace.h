@@ -351,6 +351,7 @@ private:
   bool ReadCoords(TCHAR *Text, double *X, double *Y) const;
   bool CalculateArc(TCHAR *Text, CGeoPointList *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const;
   bool CalculateSector(TCHAR *Text, CGeoPointList *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const;
+  void CorrectGeoPoints(CGeoPointList &points);
   
 
 };

@@ -1175,6 +1175,16 @@ bool CAirspaceManager::CalculateSector(TCHAR *Text, CGeoPointList *_geopoints, d
   return true;
 }
 
+// Correcting geopointlist
+// All algorithms require non self-intersecting and closed polygons.
+// Also the geopointlist last element have to be the same as first -> openair doesn't require this, we have to do it here
+void CAirspaceManager::CorrectGeoPoints(CGeoPointList &points)
+{
+	CGeoPoint first = points.front();
+	CGeoPoint last = points.back();
+	
+	if ( (first.Latitude() != last.Latitude()) || (first.Longitude() != last.Longitude()) ) points.push_back(first);
+}
 
 // Reading and parsing OpenAir airspace file
 void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
@@ -1240,12 +1250,13 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
 				newairspace = new CAirspace_Circle(Longitude, Latitude, Radius);
 			  } else {
 				  // Last one was an area
+				  CorrectGeoPoints(points);
 				  // Skip it if we dont have minimum 3 points
 				  if (points.size()<3) {
 				  }
 				  newairspace = new CAirspace_Area;
 	  			  newairspace->SetPoints(points);
-				}
+			  }
 			  newairspace->Init(Name, Type, Base, Top, flyzone);
 
 			  if (1) {
@@ -1265,17 +1276,17 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
 			  newairspace = NULL;
 			  parsing_state = 0;
 			}
-			if (parsing_state==0) {	// New AC
-			  p++; //Skip space
-			  Rotation = +1;
-			  for (int i = 0; i < k_nAreaCount; ++i) {
-				if (StartsWith(p, k_strAreaStart[i])) {
-					Type = k_nAreaType[i];
-					parsing_state = 10;
-					break;
-				}
+			// New AC
+			p++; //Skip space
+			Type = OTHER;
+			for (int i = 0; i < k_nAreaCount; ++i) {
+			  if (StartsWith(p, k_strAreaStart[i])) {
+				  Type = k_nAreaType[i];
+				  break;
 			  }
-			}  
+			}
+			Rotation = +1;
+			parsing_state = 10;
 			break;
 
 		  case _T('N'): //AN - Airspace name
@@ -1419,6 +1430,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
 	  newairspace = new CAirspace_Circle(Longitude, Latitude, Radius);
 	} else {
 		// Last one was an area
+		CorrectGeoPoints(points);
 		// Skip it if we dont have minimum 3 points
 		if (points.size()<3) {
 		}
