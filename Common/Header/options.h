@@ -125,6 +125,8 @@
 #define MAP_ZOOM                1       // Applied 110204 expire 110601
 
 
+#define LKAIRSPACE		1	// New airspace handling code 
+
 
 #define ALPHADEBUG		1	// DEBUG STARTUPSTORE MESSAGES FOR ALPHA AND BETA VERSIONS
 					// IN FINAL VERSIONS WILL BE DISABLED
@@ -168,8 +170,6 @@
 
  */
 
-#define LKAIRSPACE		1	// New airspace handling code 
-
 /*
  * Put here debug defines, so that other developers can activate them if needed.
 
@@ -184,6 +184,7 @@
 #define DEBUG_GPS	  //  Parser.cpp will show more debug messages about wrong fixes
 #define DEBUGNPM	  // port monitor and hearthbeats in Parser
 #define DEBUG_BESTALTERNATE	// full bestalternate messages inside DEBUG.TXT in home directory
- */
+#define DEBUG_AIRSPACE	// Airspace code debug messages to runtime.log
+*/
 
 #endif
