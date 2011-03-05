@@ -63,12 +63,19 @@ private:
   CTrace _traceSprint;
   CResultArray _resultArray;
   
+  double AproxDistanceToLineSegment(const CPointGPS &point, const CPointGPS &seg1, const CPointGPS &seg2) const;
+  bool BiggestLoopDetect(const CTrace &trace, const CTrace::CPoint *&start, const CTrace::CPoint *&end) const;
   void UpdateOLCClassic(const CRules &rules);
   
 public:
   static const unsigned TRACE_FIX_LIMIT = 250;
   static const unsigned TRACE_SPRINT_FIX_LIMIT = 100;
+
+  static const unsigned TRACE_START_FINISH_ALT_DIFF = 1000;
+  static const unsigned TRACE_TRIANGLE_MIN_TIME = 10 * 60;
+  static const unsigned TRACE_CLOSED_MAX_DIST = 1000;
   static const unsigned TRACE_SPRINT_TIME_LIMIT = 150 * 60;
+
   static unsigned COMPRESSION_ALGORITHM;
   
   static const char *TypeToString(TType type);
