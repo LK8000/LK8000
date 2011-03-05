@@ -54,6 +54,9 @@ extern void ClipPolygon(HDC hdc, POINT *ptin, unsigned int n,
                  RECT rc, bool fill=true);
 
 CAirspaceManager CAirspaceManager::_instance = CAirspaceManager(CAirspaceManager::_instance);
+int CAirspace::_nearesthdistance = 0;
+int CAirspace::_nearestvdistance = 0;
+TCHAR* CAirspace::_nearestname = NULL;
 
 
 //
@@ -301,7 +304,7 @@ bool CAirspace::FinishWarning(int now,
 {
 	bool res = false;
 	_now = now;		//Save current time for acking
-	int MessageRepeatTime = 180;		// Unacknowledged message repeated in
+	int MessageRepeatTime = 1800;			// Unacknowledged message repeated in x secs
 	
 	//Do actions based on airspace warning events
 	  switch (_warnevent) {
@@ -390,13 +393,33 @@ bool CAirspace::FinishWarning(int now,
 	  }//sw warnevent
 
   _warneventold = _warnevent;
- 
+
+  
+  // Calculate distances if warnstate>awnone
+  if (_userwarningstate > awNone) {
+	CalculateDistance(NULL,NULL,NULL);
+	if ( (abs(_hdistance) < abs(_nearesthdistance)) || (abs(_vdistance) < abs(_nearestvdistance)) ) {
+	  _nearestname = _name;
+	  _nearesthdistance = abs(_hdistance);
+	  _nearestvdistance = _vdistance;
+	}
+  }
+  
   return res;
 }
 
 void CAirspace::SetAckTimeout()
 {
   _warnacktimeout = _now + AcknowledgementTime;
+}
+
+
+bool CAirspace::GetDistanceInfo(int *hDistance, int *Bearing, int *vDistance)
+{
+  if (Bearing) *Bearing = _bearing;
+  if (hDistance) *hDistance = _hdistance;
+  if (vDistance) *vDistance = _vdistance;
+  return _inside;
 }
 
 // Calculates nearest horizontal and vertical distance to airspace based on last known position
@@ -424,14 +447,16 @@ bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance)
 
   if (vDistanceBase < 0 || vDistanceTop > 0) inside = false;
 
-  if (Bearing) *Bearing = (int)fbearing;
-  if (hDistance) *hDistance = (int)distance;
-  if (vDistance) {
-	if (-vDistanceBase > vDistanceTop)
-	  *vDistance = vDistanceBase;
-	else
-	  *vDistance = vDistanceTop;
-  }
+  _bearing = (int)fbearing;
+  _hdistance = (int)distance;
+  if (-vDistanceBase > vDistanceTop)
+	_vdistance = vDistanceBase;
+  else
+	_vdistance = vDistanceTop;
+  
+  if (Bearing) *Bearing = _bearing;
+  if (hDistance) *hDistance = _hdistance;
+  if (vDistance) *vDistance = _vdistance;
   return inside;
 }
 
@@ -1675,7 +1700,11 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
     _GlobalClearAirspaceWarnings = false;
     Calculated->IsInAirspace = false;
   }
-
+  
+  #ifdef DEBUG_AIRSPACE
+  StartupStore(TEXT("---AirspaceWarning start%s"),NEWLINE);
+  #endif
+  
   bool pos_in_flyzone = false;
   bool pred_in_flyzone = false;
   bool pos_in_acked_nonfly_zone = false;
@@ -1693,7 +1722,8 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
 	  (*it)->CalculateWarning( Basic, Calculated, &pos_in_flyzone, &pred_in_flyzone, &pos_in_acked_nonfly_zone, &pred_in_acked_nonfly_zone );
   }
 
-  // Run warning fsms, and refine warnings in fly zones, collect user messages
+  // Run warning fsms, refine warnings in fly zones, collect user messages
+  CAirspace::ResetNearestDistances();
   for (it=_airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
 	  there_is_msg = (*it)->FinishWarning( Basic->Time, pos_in_flyzone, pred_in_flyzone, pos_in_acked_nonfly_zone, pred_in_acked_nonfly_zone );
 	  if (there_is_msg) {
@@ -1706,8 +1736,22 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
 	  }
   }
 
-  //TODO - Infoboxes
-  NearestAirspaceHDist=0;
+  // Fill infoboxes
+  if (CAirspace::GetNearestName() != NULL) {
+	_tcsncpy(NearestAirspaceName, CAirspace::GetNearestName(), NAME_SIZE);
+	NearestAirspaceName[NAME_SIZE]=0;
+	NearestAirspaceHDist = CAirspace::GetNearestHDistance();
+	NearestAirspaceVDist = CAirspace::GetNearestVDistance();
+  } else {
+	NearestAirspaceName[0]=0;
+	NearestAirspaceHDist=0;
+	NearestAirspaceVDist=0;
+  }
+
+  #ifdef DEBUG_AIRSPACE
+  StartupStore(TEXT("   AirspaceWarning ends, processed %d airspaces%s"),_airspaces_near.size(),NEWLINE);
+  #endif
+
 }
 
 
@@ -1815,16 +1859,10 @@ bool CAirspaceManager::PopWarningMessage(AirspaceWarningMessage *msg)
   //Sort warning messages
   size = _user_warning_queue.size();
   if (size == 0) return false;
-  //if (size>1) std::sort(_user_warning_queue.begin(), _user_warning_queue.end(), warning_queue_sorter);
-  
-  do {
-	size = _user_warning_queue.size();
-	if (size == 0) return false;
-	
-	*msg = _user_warning_queue.front();
-	_user_warning_queue.pop_front();			// remove message from fifo
-	
-  } while (msg->originator->UserWarningState() < msg->warnstate);
+  if (size>1) std::sort(_user_warning_queue.begin(), _user_warning_queue.end(), warning_queue_sorter);
+
+  *msg = _user_warning_queue.front();
+  _user_warning_queue.pop_front();			// remove message from fifo
   return true;
 }
 

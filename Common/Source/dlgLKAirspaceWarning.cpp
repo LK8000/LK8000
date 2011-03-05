@@ -196,10 +196,6 @@ void FillStateDisplay(WndProperty* wp, AirspaceWarningState_t state)
 		  
 		case awNone:
   		  wp->SetText(TEXT("None"));
-		  // we can automatically close the dialog when the warning msg gone
-		  // dlg->SetModalResult(mrOK);
-		  // this is not too good, because the dialog can disappear before the user can touch the screen,
-		  // or worst he presses a button on another airspace warning dialog appearing after this
 		  break;
 
 		case awPredicted:
@@ -214,8 +210,16 @@ void FillStateDisplay(WndProperty* wp, AirspaceWarningState_t state)
 	}
 }
 
+//from dlgAirspaceWarning.cpp
+TCHAR *fmtAirspaceAlt(TCHAR *Buffer, AIRSPACE_ALT *alt);
+
 void dlgLKAirspaceFill()
 {
+  if (msg.warnstate != airspace_copy.UserWarningState()) {
+	// we can automatically close the dialog when the warning level changes, probably new msg waiting in the queue
+	dlg->SetModalResult(mrOK);
+  }
+  
 	//Fill up dialog data
 	WndProperty* wp;	
 	
@@ -223,7 +227,8 @@ void dlgLKAirspaceFill()
 	FillEventDisplay(wp, msg.event);
 
 	wp = (WndProperty*)dlg->FindByName(TEXT("prpState"));
-	FillStateDisplay(wp, msg.warnstate);
+	//FillStateDisplay(wp, msg.warnstate);
+	FillStateDisplay(wp, airspace_copy.UserWarningState());
 	  
 	wp = (WndProperty*)dlg->FindByName(TEXT("prpName"));
 	if (wp) {
@@ -240,7 +245,8 @@ void dlgLKAirspaceFill()
 	// Unfortunatelly virtual methods don't work on copied instances
 	// we have to ask airspacemanager to perform the required calculations
 	//inside = airspace_copy.CalculateDistance(&hdist, &bearing, &vdist);
-	inside = CAirspaceManager::Instance().AirspaceCalculateDistance(msg.originator, &hdist, &bearing, &vdist);
+	//inside = CAirspaceManager::Instance().AirspaceCalculateDistance(msg.originator, &hdist, &bearing, &vdist);
+	inside = airspace_copy.GetDistanceInfo(&hdist, &bearing, &vdist);
 	
 	wp = (WndProperty*)dlg->FindByName(TEXT("prpHDist"));
 	if (wp) {
@@ -264,6 +270,26 @@ void dlgLKAirspaceFill()
 	  } else {
 		wsprintf(stmp2,TEXT("above %s"), stmp);
 	  }
+	  wp->SetText(stmp2);
+	  wp->RefreshDisplay();
+	}	
+
+	wp = (WndProperty*)dlg->FindByName(TEXT("prpTopAlt"));
+	if (wp) {
+	  TCHAR stmp2[40];
+	  AIRSPACE_ALT alt;
+	  memcpy(&alt, airspace_copy.Top(), sizeof(alt));
+	  fmtAirspaceAlt(stmp2, &alt);
+	  wp->SetText(stmp2);
+	  wp->RefreshDisplay();
+	}	
+
+	wp = (WndProperty*)dlg->FindByName(TEXT("prpBaseAlt"));
+	if (wp) {
+	  TCHAR stmp2[40];
+	  AIRSPACE_ALT alt;
+	  memcpy(&alt, airspace_copy.Base(), sizeof(alt));
+	  fmtAirspaceAlt(stmp2, &alt);
 	  wp->SetText(stmp2);
 	  wp->RefreshDisplay();
 	}	
@@ -312,7 +338,8 @@ void ShowAirspaceWarningsToUser()
 	  
   }
 
-  if (ackdialog_required) {
+  // show dialog to user if needed
+  if (ackdialog_required && (airspace_copy.UserWarningState() == msg.warnstate)) {
 	if (!InfoBoxLayout::landscape)
 	  dlg = dlgLoadFromXML(CallBackTable, NULL, hWndMainWindow, TEXT("IDR_XML_LKAIRSPACEWARNING_L"));
 	else

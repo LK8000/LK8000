@@ -270,8 +270,11 @@ static double FLAltRounded(double alt) {
   return (double)f;
 }
 
+#ifdef LKAIRSPACE
+TCHAR *fmtAirspaceAlt(TCHAR *Buffer, AIRSPACE_ALT *alt){
+#else
 static TCHAR *fmtAirspaceAlt(TCHAR *Buffer, AIRSPACE_ALT *alt){
-
+#endif
   TCHAR sUnitBuffer[24];
   TCHAR sAltUnitBuffer[24];
 
@@ -505,7 +508,8 @@ static void OnAirspaceListItemPaint(WindowControl * Sender, HDC hDC){
 	// Unfortunatelly virtual methods don't work on copied instances
 	// we have to ask airspacemanager to perform the required calculations
 	//inside = airspace_copy.CalculateDistance(&hdistance, &bearing, &vdistance);
-	inside = CAirspaceManager::Instance().AirspaceCalculateDistance(airspaces[i], &hdistance, &bearing, &vdistance);
+	//inside = CAirspaceManager::Instance().AirspaceCalculateDistance(airspaces[i], &hdistance, &bearing, &vdistance);
+	inside = airspace_copy.GetDistanceInfo(&hdistance, &bearing, &vdistance);
 	
 	switch (airspace_copy.UserWarningState()) {
 	  default:

@@ -106,7 +106,11 @@ public:
 			_warnevent(aweNone),
 			_warneventold(aweNone),
 			_warnacktimeout(0),
-			_now(0)
+			_now(0),
+			_vdistance(0),
+			_hdistance(0),
+			_bearing(0),
+			_inside(false)
 			{}
   virtual ~CAirspace() {}
 
@@ -164,6 +168,13 @@ public:
   AirspaceWarningEvent WarningEvent() const { return _warnevent; }
   void SetAckTimeout();					// Set ack validity timeout
 
+  static void ResetNearestDistances() { _nearestname = NULL; _nearesthdistance=100000; _nearestvdistance=100000; }
+  static TCHAR* GetNearestName() { return _nearestname; }
+  static int GetNearestHDistance() { return _nearesthdistance; }
+  static int GetNearestVDistance() { return _nearestvdistance; }
+
+  bool GetDistanceInfo(int *hDistance, int *Bearing, int *vDistance);
+  
 protected:
   TCHAR _name[NAME_SIZE + 1];
   int _type;
@@ -186,8 +197,17 @@ protected:
   AirspaceWarningEvent _warneventold;
   int _warnacktimeout;
   int _now;
+  // Values used by different dialog boxes, like dlgLKAirspace, dlgAirspace
+  int _vdistance;		// vertical distance to actual position
+  int _hdistance;		// horizontal distance to actual position
+  int _bearing;			// bearing from actual position
+  bool _inside;			// actual position is inside
   
   void AirspaceAGLLookup(double av_lat, double av_lon);
+
+  static int _nearesthdistance;
+  static int _nearestvdistance;
+  static TCHAR *_nearestname;
 
 };
 
