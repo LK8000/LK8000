@@ -17,7 +17,9 @@ CTestContest::CTestContest(const std::string &igcFile, unsigned handicap, unsign
   _handicap(handicap),
   _replay(CReplayLogger::Instance()),
   _kml(igcFile + ".kml"),
-  _contestMgr(handicap, startAltitudeLoss)
+  _contestMgr(handicap, startAltitudeLoss),
+  _maxIterProcessPeriod(0),
+  _maxIterProcessTime(0)
 {
   std::wstring wname(_igcFile.begin(), _igcFile.end());
   _replay.Filename(wname.c_str());
@@ -32,8 +34,17 @@ void CTestContest::GPSHandler(void *user, double time, double latitude, double l
 
   CTestContest *test = static_cast<CTestContest *>(user);
   
+  CTimeStamp iterBegin;
+  
   // add new GPS point to the analysis
   test->_contestMgr.Add(new CPointGPS(time, latitude, longitude, altitude));
+  
+  CTimeStamp iterEnd;
+  double iterTime = iterEnd - iterBegin;
+  if(iterTime > test->_maxIterProcessPeriod) {
+    test->_maxIterProcessPeriod = iterTime;
+    test->_maxIterProcessTime = time;
+  }
   
   // meassure performance
   unsigned analyzedPointCount = test->_contestMgr.Trace().AnalyzedPointCount();
@@ -94,6 +105,7 @@ void CTestContest::Run()
   std::cout << " - number of sprint trace fixes: " << traceSprint.Size() << std::endl;;
   std::cout << " - execution time:               " <<
     std::fixed << std::setprecision(2) << (_timeArray.back() - _timeArray.front()) / 1000.0 << "s" << std::endl;;
+  std::cout << " - max iteration processing:     " << _maxIterProcessPeriod << "ms (" << TimeToString(_maxIterProcessTime) << ")" << std::endl;
   if(_timeArray.size() > 2) {
     std::cout << " - execution time of " << TIME_ANALYSIS_STEP << " fixes periods: " << std::endl;
     

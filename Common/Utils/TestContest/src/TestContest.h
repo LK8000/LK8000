@@ -39,6 +39,8 @@ class CTestContest {
   CKMLWrapper _kml;
   CContestMgr _contestMgr;
   CTimeStampArray _timeArray;
+  double _maxIterProcessPeriod;
+  double _maxIterProcessTime;
   
   static void GPSHandler(void *user, double time, double latitude, double longitude, double altitude);
   
