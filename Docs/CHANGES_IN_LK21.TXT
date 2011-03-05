@@ -36,13 +36,15 @@ BUGFIX
 -  Bugfix Home Waypoint on multitarget not updated when unreachable 
    and not the same as a task point, or an alternate itself.
 
+-  Bugfix finish line or sector not appearing when a task had only 2 turnpoints including start.
+
 - (refix LX declaration for non standard ASCII waypoint names)
 
 - (Infobox Title and description string terminations fixed)
   The description _and_ title also displayed if description was too long, 
   because of description null termination missing.
 
-- Fix bug Target 4.x page with _@M1008 and 1002 values appearing
+- (Fix bug Target 4.x page with _@M1008 and 1002 values appearing)
 
 
 VERSION 2.1c  110218

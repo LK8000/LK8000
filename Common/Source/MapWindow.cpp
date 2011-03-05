@@ -4815,9 +4815,9 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
     for(i=1;i<MAXTASKPOINTS-1;i++) {
 
       if(ValidTaskPoint(i) && !ValidTaskPoint(i+1)) { // final waypoint
-	if (ActiveWayPoint>1) { 
+	if (ActiveWayPoint>0) { 
 	  // only draw finish line when past the first
-	  // waypoint.
+	  // waypoint. FIXED >0 110305
 	  if(FinishLine) {
 	    _DrawLine(hdc, PS_SOLID, NIBLSCALE(5), 
 		      WayPointList[Task[i].Index].Screen,
