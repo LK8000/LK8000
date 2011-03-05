@@ -165,6 +165,7 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   _lastknownalt = alt;
   _lastknownagl = agl;
 
+  if (_flyzone && agl<0) agl = 0;		// Limit actual altitude to surface to not get warnings on landing in fly zones
   // Check for altitude
   bool pos_altitude =
 	  ((((_base.Base != abAGL) && ( alt >= _base.Altitude))
@@ -185,6 +186,7 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 		bool pred_inside_now = false;
 		alt = (int)Calculated->NextAltitude;
 		agl = (int)Calculated->NextAltitudeAGL;
+		if (agl<0) agl = 0;		// Limit predicted position to surface, to not get warnings on landing in fly zones
 		// Check for altitude
 		pos_altitude =
 			((((_base.Base != abAGL) && ( alt >= _base.Altitude))
@@ -221,6 +223,7 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 		bool pred_inside_now = false;
 		alt = (int)Calculated->NextAltitude;
 		agl = (int)Calculated->NextAltitudeAGL;
+		if (agl<0) agl = 0;		// Limit predicted position to surface, to not get warnings on landing in fly zones
 		// Check for altitude
 		pos_altitude =
 			((((_base.Base != abAGL) && ( alt >= _base.Altitude))
@@ -253,7 +256,7 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 		// Entering, set warnlevel
 		_warnevent = aweEnteringNonfly;
 	  }
-  	  if (_userwarnackstate >= awWarning) *pos_in_acked_nonfly_zone = true;
+  	  if (_userwarnackstate > awNone) *pos_in_acked_nonfly_zone = true;
 	} else {
 	  if (_pos_inside_last) {
 		// NON-FLY ZONE _pos_inside_last = true, _pos_inside_now = false, _pred_inside_now = X
@@ -265,6 +268,7 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 		bool pred_inside_now = false;
 		alt = (int)Calculated->NextAltitude;
 		agl = (int)Calculated->NextAltitudeAGL;
+		if (agl<0) agl = 0;		// Limit predicted position to surface, to not get warnings on landing in fly zones
 		// Check for altitude
 		pos_altitude =
 			((((_base.Base != abAGL) && ( alt >= _base.Altitude))
@@ -277,7 +281,7 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 		  // NON-FLY ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = true
 		  // predicted enter
 		  _warnevent = awePredictedEnteringNonfly;
-		  if (_userwarnackstate >= awWarning) *pred_in_acked_nonfly_zone = true;
+		  if (_userwarnackstate > awNone) *pred_in_acked_nonfly_zone = true;
 		} else {
 		  // NON-FLY ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = false
 		  // moving outside
@@ -307,7 +311,6 @@ bool CAirspace::FinishWarning(int now,
 		// Events for FLY zones
 		case aweMovingInsideFly:
 		  _userwarningstate = awNone;
-		  _warnmsg = aweNone;
 		  //ACK Step back: 
 		  if ( (_userwarnackstate != awDailyAck) && (now > _warnacktimeout) ) _userwarnackstate=_userwarningstate;
 		  break;
@@ -318,7 +321,6 @@ bool CAirspace::FinishWarning(int now,
 				_userwarningstate = awPredicted;
 				if (_userwarnackstate < _userwarningstate) {
 				  _warn_repeat_time = now + MessageRepeatTime;
-				  _warnmsg = _warnevent;
 				  res = true;
 				}
 			}
@@ -330,7 +332,6 @@ bool CAirspace::FinishWarning(int now,
 			  _userwarningstate = awWarning;
 			  if (_userwarnackstate < _userwarningstate) {
 				_warn_repeat_time = now + MessageRepeatTime;
-				_warnmsg = _warnevent;
 				res = true;
 			  }
 		  }
@@ -340,7 +341,6 @@ bool CAirspace::FinishWarning(int now,
 		  break;
 		case aweEnteringFly:
 		  _userwarningstate = awNone;
-		  _warnmsg = _warnevent;
 		  res = true;
 		  break;
 		  
@@ -351,7 +351,6 @@ bool CAirspace::FinishWarning(int now,
 		// Events for NON-FLY zones
 		case aweMovingOutsideNonfly:
 		  _userwarningstate = awNone;
-		  _warnmsg = aweNone;
 		  //ACK Step back: 
 		  if ( (_userwarnackstate != awDailyAck) && (now > _warnacktimeout) ) _userwarnackstate=_userwarningstate;
 		  break;
@@ -361,7 +360,6 @@ bool CAirspace::FinishWarning(int now,
 			_userwarningstate = awPredicted;
 			if (_userwarnackstate < _userwarningstate) {
 			  _warn_repeat_time = now + MessageRepeatTime;
-			  _warnmsg = _warnevent;
 			  res = true;
 			}
 		  }
@@ -371,7 +369,6 @@ bool CAirspace::FinishWarning(int now,
 		  _userwarningstate = awWarning;
 		  if (_userwarnackstate < _userwarningstate) {
 			_warn_repeat_time = now + MessageRepeatTime;
-			_warnmsg = _warnevent;
 			res = true;
 		  }
 		  break;
@@ -381,7 +378,6 @@ bool CAirspace::FinishWarning(int now,
 		  if (_userwarnackstate < _userwarningstate) {
 			if (now > _warn_repeat_time) {
 			  _warn_repeat_time = now + MessageRepeatTime;
-			  _warnmsg = _warnevent;
 			  res = true;
 			}
 		  }
@@ -389,56 +385,13 @@ bool CAirspace::FinishWarning(int now,
 		  
 		case aweLeavingNonFly:
 		  _userwarningstate = awNone;
-		  _warnmsg = _warnevent;
 		  res = true;
 		  break;
 	  }//sw warnevent
 
   _warneventold = _warnevent;
  
-
-/*
-	switch (_userwarningstate) {
-	  default:
-	  case awNone:
-		//ACK Step back: if (_userwarnackstate != awDailyAck) _userwarnackstate=_userwarningstate;
-		break;
-		
-	  case awPredicted:
-		if (_userwarnackstate < _userwarningstate) {
-		  if (_userwarningstate > _userwarningstateold) {
-			_warn_repeat_time = now + AcknowledgementTime;
-			res = awmYellow;
-		  }
-		  if (now > _warn_repeat_time) {
-			_warn_repeat_time = now + AcknowledgementTime;
-			res = awmYellowRepeated;
-		  }
-		}
-		//ACK Step back: if (_userwarnackstate != awDailyAck) _userwarnackstate=_userwarningstate;
-		break;
-		
-	  case awWarning:
-		if (_userwarnackstate < _userwarningstate) {
-		  if (_userwarningstate > _userwarningstateold) {
-			_warn_repeat_time = now + AcknowledgementTime;
-			res = awmRed;
-		  }
-		  if (now > _warn_repeat_time) {
-			_warn_repeat_time = now + AcknowledgementTime;
-			res = awmRedRepeated;
-		  }
-		}
-		break;
-		
-	  case awDailyAck:	// Never
-		break;
-		
-	}//sw
-
-	_userwarningstateold = _userwarningstate;
-*/
-	return res;
+  return res;
 }
 
 void CAirspace::SetAckTimeout()
@@ -751,7 +704,7 @@ double CAirspace_Area::Range(const double &longitude, const double &latitude, do
 {
   // find nearest distance to line segment
   unsigned int i;
-  double dist= 0;
+  double dist = 0;
   double nearestdistance = dist;
   double nearestbearing = bearing;
   double lon4, lat4;
@@ -1743,7 +1696,14 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
   // Run warning fsms, and refine warnings in fly zones, collect user messages
   for (it=_airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
 	  there_is_msg = (*it)->FinishWarning( Basic->Time, pos_in_flyzone, pred_in_flyzone, pos_in_acked_nonfly_zone, pred_in_acked_nonfly_zone );
-	  if (there_is_msg) _user_warning_queue.push_back(*it);
+	  if (there_is_msg) {
+		// Add new warning message to queue
+		AirspaceWarningMessage msg;
+		msg.originator = *it;
+		msg.event = (*it)->WarningEvent();
+		msg.warnstate = (*it)->UserWarningState();
+		_user_warning_queue.push_back(msg);
+	  }
   }
 
   //TODO - Infoboxes
@@ -1815,29 +1775,64 @@ CAirspaceList CAirspaceManager::GetAirspacesInWarning() const
 }
 
 // Gets an airspace object instance copy for a given airspace
-// to display properties and make calculations in other threads
+// to display instance attributes 
+// NOTE: virtual methods don't work on copied instances!
+//       they have to be mapped through airspacemanager class because of the mutex
 CAirspace CAirspaceManager::GetAirspaceCopy(CAirspace* airspace) const
 {
   CCriticalSection::CGuard guard(_csairspaces);
   return *airspace;
 }
 
-// Gets an airspace object pointer for an airspace which has a warning message to show
-CAirspace* CAirspaceManager::PopWarningMessagedAirspace()
+// Calculate distances from a given airspace
+bool CAirspaceManager::AirspaceCalculateDistance(CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance)
 {
-  CAirspace *res = NULL;
+  CCriticalSection::CGuard guard(_csairspaces);
+  return airspace->CalculateDistance(hDistance, Bearing, vDistance);
+}
+
+
+bool warning_queue_sorter(AirspaceWarningMessage a, AirspaceWarningMessage b)
+{
+	return (a.warnstate > b.warnstate);
+}
+
+
+// Gets an airspace warning message to show
+bool CAirspaceManager::PopWarningMessage(AirspaceWarningMessage *msg)
+{
+/*  CAirspace *res = NULL;
   CCriticalSection::CGuard guard(_csairspaces);
   if (_user_warning_queue.size() == 0) return NULL;
   res = _user_warning_queue.front();
   _user_warning_queue.pop_front();			// remove message from fifo
-  return res;
+  return res;*/
+
+  if (msg == NULL) return false;
+  CCriticalSection::CGuard guard(_csairspaces);
+  int size;
+
+  //Sort warning messages
+  size = _user_warning_queue.size();
+  if (size == 0) return false;
+  //if (size>1) std::sort(_user_warning_queue.begin(), _user_warning_queue.end(), warning_queue_sorter);
+  
+  do {
+	size = _user_warning_queue.size();
+	if (size == 0) return false;
+	
+	*msg = _user_warning_queue.front();
+	_user_warning_queue.pop_front();			// remove message from fifo
+	
+  } while (msg->originator->UserWarningState() < msg->warnstate);
+  return true;
 }
 
-// Ack an airspace for a current level and time
-void CAirspaceManager::AirspaceWarnListAckForTime(CAirspace &airspace)
+// Ack an airspace for a given ack level and acknowledgement time
+void CAirspaceManager::AirspaceSetAckState(CAirspace &airspace, AirspaceWarningState_t ackstate)
 {
 	CCriticalSection::CGuard guard(_csairspaces);
-	airspace.UserWarnAckState(airspace.UserWarningState());
+	airspace.UserWarnAckState(ackstate);
 	airspace.SetAckTimeout();
 	#ifdef DEBUG_AIRSPACE
 	StartupStore(TEXT("LKAIRSP: %s AirspaceWarnListAckForTime()%s"),airspace.Name(),NEWLINE );
@@ -1849,6 +1844,7 @@ void CAirspaceManager::AirspaceWarnListAckWarn(CAirspace &airspace)
 {
 	CCriticalSection::CGuard guard(_csairspaces);
 	airspace.UserWarnAckState(airspace.UserWarningState());
+	airspace.SetAckTimeout();
 	#ifdef DEBUG_AIRSPACE
 	StartupStore(TEXT("LKAIRSP: %s AirspaceWarnListAck()%s"),airspace.Name(),NEWLINE );
 	#endif
@@ -1859,6 +1855,7 @@ void CAirspaceManager::AirspaceWarnListAckSpace(CAirspace &airspace)
 {
 	CCriticalSection::CGuard guard(_csairspaces);
 	airspace.UserWarnAckState(awWarning);
+	airspace.SetAckTimeout();
 	#ifdef DEBUG_AIRSPACE
 	StartupStore(TEXT("LKAIRSP: %s AirspaceWarnListAckSpace()%s"),airspace.Name(),NEWLINE );
 	#endif

@@ -21,9 +21,8 @@
 
 extern HWND   hWndMainWindow;
 extern HWND   hWndMapWindow;
-CAirspace *airspace;
 CAirspace airspace_copy;
-AirspaceWarningEvent msg_reason;
+AirspaceWarningMessage msg;
 
 WndForm *dlg=NULL;
 
@@ -32,9 +31,9 @@ void dlgLKAirspaceFill();
 static void OnAckForTimeClicked(WindowControl * Sender)
 {
   (void)Sender;
-  if (airspace==NULL) return;
-  if (dlg==NULL) return;
-  CAirspaceManager::Instance().AirspaceWarnListAckForTime(*airspace);
+  if (dlg == NULL) return;
+  if (msg.originator == NULL) return;
+  CAirspaceManager::Instance().AirspaceSetAckState(*msg.originator, msg.warnstate);
   dlg->SetModalResult(mrOK);
 }
 
@@ -47,9 +46,9 @@ static void OnCloseClicked(WindowControl * Sender)
 
 static int OnTimer(WindowControl * Sender){
   (void)Sender;
-  //Get a new copy from airspacemanager
-  if (airspace == NULL) return 0;
-  airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(airspace);
+  //Get a new copy with current values from airspacemanager
+  if (msg.originator == NULL) return 0;
+  airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(msg.originator);
   dlgLKAirspaceFill();
   return(0);
 }
@@ -122,7 +121,7 @@ static CallBackTableEntry_t CallBackTable[]={
 };
 
 
-void FillStateDisplay(WndProperty* wp, AirspaceWarningEvent ev)
+void FillEventDisplay(WndProperty* wp, AirspaceWarningEvent ev)
 {
 	if (wp) {
 	  //wp->SetFont(TempMapWindowFont);
@@ -133,10 +132,6 @@ void FillStateDisplay(WndProperty* wp, AirspaceWarningEvent ev)
 		  
 		case aweNone:
   		  wp->SetText(TEXT("None"));
-		  // we can automatically close the dialog when the warning msg gone
-		  // dlg->SetModalResult(mrOK);
-		  // this is not too good, because the dialog can disappear before the user can touch the screen,
-		  // or worst he presses a button on another airspace warning dialog appearing after this
 		  break;
 
 		case aweMovingInsideFly:
@@ -190,17 +185,45 @@ void FillStateDisplay(WndProperty* wp, AirspaceWarningEvent ev)
 	}
 }
 
+void FillStateDisplay(WndProperty* wp, AirspaceWarningState_t state)
+{
+	if (wp) {
+	  //wp->SetFont(TempMapWindowFont);
+	  switch (state) {
+		default:
+		  wp->SetText(TEXT("Unknown"));
+		  break;
+		  
+		case awNone:
+  		  wp->SetText(TEXT("None"));
+		  // we can automatically close the dialog when the warning msg gone
+		  // dlg->SetModalResult(mrOK);
+		  // this is not too good, because the dialog can disappear before the user can touch the screen,
+		  // or worst he presses a button on another airspace warning dialog appearing after this
+		  break;
+
+		case awPredicted:
+			wp->SetText(TEXT("awPredicted (YELLOW)"));
+		  break;
+		
+		case awWarning:
+			wp->SetText(TEXT("awWarning (RED)"));
+		  break;
+	  }//sw
+	  wp->RefreshDisplay();
+	}
+}
+
 void dlgLKAirspaceFill()
 {
 	//Fill up dialog data
 	WndProperty* wp;	
 	
 	wp = (WndProperty*)dlg->FindByName(TEXT("prpReason"));
-	FillStateDisplay(wp, msg_reason);
+	FillEventDisplay(wp, msg.event);
 
 	wp = (WndProperty*)dlg->FindByName(TEXT("prpState"));
-	FillStateDisplay(wp, airspace_copy.WarningMsg());
-
+	FillStateDisplay(wp, msg.warnstate);
 	  
 	wp = (WndProperty*)dlg->FindByName(TEXT("prpName"));
 	if (wp) {
@@ -214,22 +237,27 @@ void dlgLKAirspaceFill()
 	bool inside;
 	TCHAR stmp[21];
 	
-	inside = airspace_copy.CalculateDistance(&hdist, &bearing, &vdist);
+	// Unfortunatelly virtual methods don't work on copied instances
+	// we have to ask airspacemanager to perform the required calculations
+	//inside = airspace_copy.CalculateDistance(&hdist, &bearing, &vdist);
+	inside = CAirspaceManager::Instance().AirspaceCalculateDistance(msg.originator, &hdist, &bearing, &vdist);
 	
 	wp = (WndProperty*)dlg->FindByName(TEXT("prpHDist"));
 	if (wp) {
-/*	  if (inside) {
-		_tcsncpy(stmp,gettext(TEXT("_@M359_")),20);
+	  Units::FormatUserDistance((double)abs(hdist),stmp, 10);
+	  TCHAR stmp2[40];
+	  if (hdist<0) {
+		wsprintf(stmp2,TEXT("%s to leave"), stmp);
 	  } else {
-	  }*/
-	  Units::FormatUserDistance(fabs(hdist),stmp, 10);
-	  wp->SetText(stmp);
+		wsprintf(stmp2,TEXT("%s to enter"), stmp);
+	  }
+	  wp->SetText(stmp2);
 	  wp->RefreshDisplay();
 	}	
 
 	wp = (WndProperty*)dlg->FindByName(TEXT("prpVDist"));
 	if (wp) {
-	  Units::FormatUserAltitude(fabs(vdist),stmp, 10);
+	  Units::FormatUserAltitude((double)abs(vdist),stmp, 10);
 	  TCHAR stmp2[40];
 	  if (vdist<0) {
 		wsprintf(stmp2,TEXT("below %s"), stmp);
@@ -245,19 +273,18 @@ void dlgLKAirspaceFill()
 // Called periodically to show new airspace warning messages to user
 void ShowAirspaceWarningsToUser()
 {
-  if (airspace != NULL) return;		// Dialog already open
+  if (msg.originator != NULL) return;		// Dialog already open
 
-  airspace = CAirspaceManager::Instance().PopWarningMessagedAirspace();
-  if (airspace == NULL) return;		// no message to display
+  bool there_is_message = CAirspaceManager::Instance().PopWarningMessage(&msg);
+  if (!there_is_message) return;		// no message to display
 
-  airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(airspace);
-  msg_reason = airspace_copy.WarningMsg();
+  airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(msg.originator);
 
   bool ackdialog_required = false;
   TCHAR msgbuf[128];
 
   // which message we need to show?
-  switch (msg_reason) {
+  switch (msg.event) {
 	default:
 	  DoStatusMessage(TEXT("Unknown airspace warning message"));
 	  break;	//Unknown msg type
@@ -312,7 +339,7 @@ void ShowAirspaceWarningsToUser()
 	dlg = NULL;
   }
   
-  airspace = NULL;
+  msg.originator = NULL;
   return;
 }
 

@@ -17,6 +17,7 @@
 #include <vector>
 #include <deque>
 #include <list>
+#include <algorithm>
 using namespace std;
 
 #define max(a,b) ((a)>(b)?(a):(b))
@@ -104,7 +105,6 @@ public:
 			_pos_inside_now(false),
 			_warnevent(aweNone),
 			_warneventold(aweNone),
-			_warnmsg(aweNone),
 			_warnacktimeout(0),
 			_now(0)
 			{}
@@ -161,7 +161,7 @@ public:
   //int WarningRepeatTimer() const { return _warn_repeat_time; }
   //void WarningRepeatTimer(int warnreptimer) { _warn_repeat_time = warnreptimer; }
 
-  AirspaceWarningEvent WarningMsg() const { return _warnmsg; }
+  AirspaceWarningEvent WarningEvent() const { return _warnevent; }
   void SetAckTimeout();					// Set ack validity timeout
 
 protected:
@@ -184,7 +184,6 @@ protected:
   bool _pos_inside_now;
   AirspaceWarningEvent _warnevent;
   AirspaceWarningEvent _warneventold;
-  AirspaceWarningEvent _warnmsg;
   int _warnacktimeout;
   int _now;
   
@@ -251,12 +250,13 @@ private:
 typedef std::deque<CAirspace*> CAirspaceList;
 
 //Warning system 
-// typedef struct _AirspaceWarningMessage
-// {
-//   CAirspace *originator;
-//   AirspaceWarningMessageType msgtype;
-// } AirspaceWarningMessage;
-// typedef std::deque<AirspaceWarningMessage> AirspaceWarningMessageList;
+typedef struct _AirspaceWarningMessage
+{
+  CAirspace *originator;
+  AirspaceWarningEvent event;
+  AirspaceWarningState_t warnstate;
+} AirspaceWarningMessage;
+typedef std::deque<AirspaceWarningMessage> AirspaceWarningMessageList;
 
 
 class CAirspaceManager
@@ -282,20 +282,21 @@ public:
   void AirspaceWarning (NMEA_INFO *Basic, DERIVED_INFO *Calculated);
   bool ClearAirspaceWarnings(const bool acknowledge, const bool ack_all_day = false);
 
-  void AirspaceWarnListAckForTime(CAirspace &airspace);
+  void AirspaceSetAckState(CAirspace &airspace, AirspaceWarningState_t ackstate);
   void AirspaceWarnListAckWarn(CAirspace &airspace);
   void AirspaceWarnListAckSpace(CAirspace &airspace);
   void AirspaceWarnListDailyAck(CAirspace &airspace);
   void AirspaceWarnListDailyAckCancel(CAirspace &airspace);
   
-  CAirspace* PopWarningMessagedAirspace();
-
+  //CAirspace* PopWarningMessagedAirspace();
+  bool PopWarningMessage(AirspaceWarningMessage *msg);
   
   //Get airspace details (dlgAirspaceDetails)
   CAirspaceList GetVisibleAirspacesAtPoint(const double &lon, const double &lat) const;
   CAirspaceList GetAllAirspaces() const;
   CAirspaceList GetAirspacesInWarning() const;
   CAirspace GetAirspaceCopy(CAirspace* airspace) const;
+  bool AirspaceCalculateDistance(CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance);
   
   //Mapwindow drawing
   void SetFarVisible(const rectObj &bounds_active);
@@ -321,7 +322,7 @@ private:
   
   // Warning system data
   // User warning message queue
-  CAirspaceList _user_warning_queue;				// warnings to show
+  AirspaceWarningMessageList _user_warning_queue;				// warnings to show
 
   //Openair parsing functions, internal use
   void FillAirspacesFromOpenAir(ZZIP_FILE *fp);

@@ -60,6 +60,7 @@ static int SelectedIdx = -1;   // Currently selected airspace List Index
 static bool fDialogOpen = false;
 #ifdef LKAIRSPACE
 CAirspaceList airspaces;
+static HBRUSH hBrushNormal;
 
 //void dlgAirspaceWarningNotify(AirspaceWarningNotifyAction_t Action, CAirspace *Airspace);
 #else
@@ -81,11 +82,11 @@ static void DoAck(int Ack){
 	switch (Ack) {
 	  default:
 	  case -1:		//-1 Ack warning
-		CAirspaceManager::Instance().AirspaceWarnListAckForTime(*p);
+		CAirspaceManager::Instance().AirspaceWarnListAckWarn(*p);
 		break;
 
 	  case 3:		//3 Ack airspace
-		CAirspaceManager::Instance().AirspaceWarnListAckWarn(*p);
+		CAirspaceManager::Instance().AirspaceWarnListAckSpace(*p);
 		break;
 
 	  case 4:		//4 Dailyack clicked 
@@ -419,6 +420,7 @@ static void OnAirspaceListItemPaint(WindowControl * Sender, HDC hDC){
 
 #ifdef LKAIRSPACE
 	// Select brush based on warning and ack level
+	hBrushBk = hBrushNormal;
 	  if (airspace_copy.UserWarningState() == awPredicted) {
 		if (airspace_copy.UserWarnAckState() >= awPredicted) {
 		  hBrushBk = hBrushNearAckBk;
@@ -500,7 +502,10 @@ static void OnAirspaceListItemPaint(WindowControl * Sender, HDC hDC){
 	int bearing;
 	bool inside;
 	
-	inside = airspace_copy.CalculateDistance(&hdistance, &bearing, &vdistance);
+	// Unfortunatelly virtual methods don't work on copied instances
+	// we have to ask airspacemanager to perform the required calculations
+	//inside = airspace_copy.CalculateDistance(&hdistance, &bearing, &vdistance);
+	inside = CAirspaceManager::Instance().AirspaceCalculateDistance(airspaces[i], &hdistance, &bearing, &vdistance);
 	
 	switch (airspace_copy.UserWarningState()) {
 	  default:
