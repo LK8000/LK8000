@@ -64,8 +64,9 @@ private:
   CResultArray _resultArray;
   
   double AproxDistanceToLineSegment(const CPointGPS &point, const CPointGPS &seg1, const CPointGPS &seg2) const;
-  bool BiggestLoopDetect(const CTrace &trace, const CTrace::CPoint *&start, const CTrace::CPoint *&end) const;
-  void UpdateOLCClassic(const CRules &rules);
+  bool BiggestLoopFind(const CTrace &trace, const CTrace::CPoint *&start, const CTrace::CPoint *&end) const;
+  void SolvePoints(const CRules &rules);
+  void SolveTriangle(const CTrace &trace);
   
 public:
   static const unsigned TRACE_FIX_LIMIT = 250;

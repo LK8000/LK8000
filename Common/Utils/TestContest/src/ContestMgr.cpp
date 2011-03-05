@@ -66,7 +66,7 @@ double CContestMgr::AproxDistanceToLineSegment(const CPointGPS &point, const CPo
 }
 
 
-bool CContestMgr::BiggestLoopDetect(const CTrace &trace, const CTrace::CPoint *&start, const CTrace::CPoint *&end) const
+bool CContestMgr::BiggestLoopFind(const CTrace &trace, const CTrace::CPoint *&start, const CTrace::CPoint *&end) const
 {
   const CTrace::CPoint *back = trace.Back();
   
@@ -97,8 +97,11 @@ bool CContestMgr::BiggestLoopDetect(const CTrace &trace, const CTrace::CPoint *&
 }
 
 
-void CContestMgr::UpdateOLCClassic(const CRules &rules)
+void CContestMgr::SolvePoints(const CRules &rules)
 {
+  if(!rules.Trace().Size())
+    return;
+  
   // find the last point meeting criteria
   double finishAltDiff = rules.FinishAltDiff();
   const CTrace::CPoint *point = rules.Trace().Back();
@@ -122,18 +125,19 @@ void CContestMgr::UpdateOLCClassic(const CRules &rules)
     point = point->Next();
   }
   traceResult.Compress();
-
-  // copy result
+  
+  // prepare result
   CPointGPSArray pointArray;
   point = traceResult.Front();
   double distance = 0;
-  
   while(point) {
     if(pointArray.size())
       distance += point->GPS().Distance(pointArray.back());
     pointArray.push_back(point->GPS());
     point = point->Next();
   }
+  
+  // store result
   if(distance > _resultArray[rules.Type()].Distance()) {
     double result;
     if(rules.Type() == TYPE_OLC_LEAGUE)
@@ -145,26 +149,27 @@ void CContestMgr::UpdateOLCClassic(const CRules &rules)
 }
 
 
-void CContestMgr::Add(const CPointGPSSmart &gps)
+void CContestMgr::SolveTriangle(const CTrace &trace)
 {
-  static unsigned closureNum = 0;
-  _trace.Push(gps);
   // do only if the point was added
-  if(_trace.Size() > 2 && _trace.Back()->GPS().Time() == gps->Time()) {
+  if(trace.Size() > 2) {
     const CTrace::CPoint *start = 0;
     const CTrace::CPoint *end = 0;
-    if(BiggestLoopDetect(_trace, start, end)) {
-      std::cout << "Loop #" << ++closureNum << " detected: " << TimeToString(start->GPS().Time()) << " -> " << TimeToString(end->GPS().Time()) << std::endl;
+    if(BiggestLoopFind(trace, start, end)) {
+      std::cout << "Loop detected: " << TimeToString(start->GPS().Time()) << " -> " << TimeToString(end->GPS().Time()) << std::endl;
     }
   }
+}
+
+
+void CContestMgr::Add(const CPointGPSSmart &gps)
+{
+  _trace.Push(gps);
+  SolveTriangle(_trace);
   _trace.Compress();
+  SolvePoints(CRules(TYPE_OLC_CLASSIC, _trace, 7, 0, TRACE_START_FINISH_ALT_DIFF));
   
   _traceSprint.Push(gps);
   _traceSprint.Compress();
-  
-  if(_trace.Size())
-    UpdateOLCClassic(CRules(TYPE_OLC_CLASSIC, _trace, 7, 0, TRACE_START_FINISH_ALT_DIFF));
-  
-  if(_traceSprint.Size())
-    UpdateOLCClassic(CRules(TYPE_OLC_LEAGUE, _traceSprint, 5, TRACE_SPRINT_TIME_LIMIT, 0));
+  SolvePoints(CRules(TYPE_OLC_LEAGUE, _traceSprint, 5, TRACE_SPRINT_TIME_LIMIT, 0));
 }
