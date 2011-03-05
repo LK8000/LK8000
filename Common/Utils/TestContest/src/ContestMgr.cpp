@@ -61,7 +61,7 @@ double CContestMgr::AproxDistanceToLineSegment(const CPointGPS &point, const CPo
   }
   
   double dist;
-  DistanceBearing(point.Longitude(), point.Latitude(), xx, yy, &dist, 0);
+  DistanceBearing(point.Latitude(), point.Longitude(), yy, xx, &dist, 0);
   return dist;
 }
 
