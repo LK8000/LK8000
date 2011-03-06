@@ -25,6 +25,7 @@ extern HWND   hWndMainWindow;
 extern HWND   hWndMapWindow;
 CAirspace airspace_copy;
 AirspaceWarningMessage msg;
+int timer_counter;
 
 WndForm *dlg=NULL;
 
@@ -48,6 +49,18 @@ static void OnCloseClicked(WindowControl * Sender)
 
 static int OnTimer(WindowControl * Sender){
   (void)Sender;
+  
+  // Timer events comes at 500ms, we need every second
+  static bool timer_divider = false;
+  timer_divider = !timer_divider;
+  if (timer_divider) return 0;
+  
+  // Auto close dialog after some time
+  if (!(--timer_counter)) {
+	dlg->SetModalResult(mrOK);
+	return 0;
+  }
+  
   //Get a new copy with current values from airspacemanager
   if (msg.originator == NULL) return 0;
   airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(msg.originator);
@@ -123,11 +136,23 @@ static CallBackTableEntry_t CallBackTable[]={
 };
 
 
-void FillEventDisplay(WndProperty* wp, AirspaceWarningEvent ev)
+//from dlgAirspaceWarning.cpp
+TCHAR *fmtAirspaceAlt(TCHAR *Buffer, AIRSPACE_ALT *alt);
+
+void dlgLKAirspaceFill()
 {
+  if (msg.warnstate != airspace_copy.UserWarningState()) {
+	// we can automatically close the dialog when the warning level changes, probably new msg waiting in the queue
+	dlg->SetModalResult(mrOK);
+  }
+  
+	//Fill up dialog data
+	WndProperty* wp;	
+	WndButton* wb;	
+	
+	wp = (WndProperty*)dlg->FindByName(TEXT("prpReason"));
 	if (wp) {
-	  //wp->SetFont(TempMapWindowFont);
-	  switch (ev) {
+	  switch (msg.event) {
 		default:
 		  wp->SetText(TEXT("Unknown"));
 		  break;
@@ -185,13 +210,10 @@ void FillEventDisplay(WndProperty* wp, AirspaceWarningEvent ev)
 	  }//sw
 	  wp->RefreshDisplay();
 	}
-}
 
-void FillStateDisplay(WndProperty* wp, AirspaceWarningState_t state)
-{
+	wp = (WndProperty*)dlg->FindByName(TEXT("prpState"));
 	if (wp) {
-	  //wp->SetFont(TempMapWindowFont);
-	  switch (state) {
+	  switch (airspace_copy.UserWarningState()) {
 		default:
 		  wp->SetText(TEXT("Unknown"));
 		  break;
@@ -210,27 +232,6 @@ void FillStateDisplay(WndProperty* wp, AirspaceWarningState_t state)
 	  }//sw
 	  wp->RefreshDisplay();
 	}
-}
-
-//from dlgAirspaceWarning.cpp
-TCHAR *fmtAirspaceAlt(TCHAR *Buffer, AIRSPACE_ALT *alt);
-
-void dlgLKAirspaceFill()
-{
-  if (msg.warnstate != airspace_copy.UserWarningState()) {
-	// we can automatically close the dialog when the warning level changes, probably new msg waiting in the queue
-	dlg->SetModalResult(mrOK);
-  }
-  
-	//Fill up dialog data
-	WndProperty* wp;	
-	
-	wp = (WndProperty*)dlg->FindByName(TEXT("prpReason"));
-	FillEventDisplay(wp, msg.event);
-
-	wp = (WndProperty*)dlg->FindByName(TEXT("prpState"));
-	//FillStateDisplay(wp, msg.warnstate);
-	FillStateDisplay(wp, airspace_copy.UserWarningState());
 	  
 	wp = (WndProperty*)dlg->FindByName(TEXT("prpName"));
 	if (wp) {
@@ -296,6 +297,13 @@ void dlgLKAirspaceFill()
 	  wp->RefreshDisplay();
 	}	
 
+	wb = (WndButton*)dlg->FindByName(TEXT("cmdClose"));
+	if (wb) {
+	  TCHAR stmp2[40];
+	  wsprintf(stmp2,TEXT("%s (%d)"), gettext(TEXT("_@M186_")), timer_counter);
+	  wb->SetCaption(stmp2);
+	}	
+
 }
 
 // Called periodically to show new airspace warning messages to user
@@ -354,7 +362,7 @@ void ShowAirspaceWarningsToUser()
 	
 	dlg->SetKeyDownNotify(OnKeyDown);
     dlg->SetTimerNotify(OnTimer);
-
+	timer_counter = 20;					// Auto closing dialog in x secs
 
 	dlgLKAirspaceFill();
 

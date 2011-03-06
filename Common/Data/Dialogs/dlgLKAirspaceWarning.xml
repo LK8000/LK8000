@@ -8,6 +8,6 @@
 <WndProperty Name="prpTopAlt" Caption="TopAlt" X=2 Y=100  Width=310 Height=22 CaptionWidth=50 Font=2 ReadOnly=1 />
 <WndProperty Name="prpBaseAlt" Caption="BaseAlt" X=2 Y=120  Width=310 Height=22 CaptionWidth=50 Font=2 ReadOnly=1 />
 <WndButton  name="cmdAckForTime" Caption="_@M46_" X=1 Y=162 width=148 height=56 Font=2 OnClickNotify="OnAckForTimeClicked"/>
-<WndButton  Caption="_@M186_" X=152 Y=162 width=148 height=56 Font=2 OnClickNotify="OnCloseClicked"/>
+<WndButton  name="cmdClose" Caption="_@M186_" X=152 Y=162 width=148 height=56 Font=2 OnClickNotify="OnCloseClicked"/>
 </WndForm>    
 </PMML>
