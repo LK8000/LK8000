@@ -104,12 +104,12 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnCloseClicked),
   DeclareCallBackEntry(NULL)
 };
-
+#ifndef LKAIRSPACE
 static double FLAltRounded(double alt) {
   int f = iround(alt/10)*10;
   return (double)f;
 }
-
+#endif
 #ifdef LKAIRSPACE
 static void SetValues(const CAirspace *airspace) {
 

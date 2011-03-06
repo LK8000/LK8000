@@ -230,13 +230,16 @@ private:
   POINTList _screenpoints;
   int wn_PnPoly( const double &longitude, const double &latitude ) const;
   void CalcBounds();
-  void ScreenClosestPoint(const POINT &p1, const POINT &p2, 
+/*  void ScreenClosestPoint(const POINT &p1, const POINT &p2, 
 			const POINT &p3, POINT *p4, int offset) const;
   double ScreenCrossTrackError(double lon1, double lat1,
 			double lon2, double lat2,
 			double lon3, double lat3,
-			double *lon4, double *lat4) const;
+			double *lon4, double *lat4) const;*/
 			
+  void DistanceFromLine(double cx, double cy, double ax, double ay,
+					  double bx, double by, 
+					  double &distanceSegment, double &xx, double &yy) const;
 
 };
 

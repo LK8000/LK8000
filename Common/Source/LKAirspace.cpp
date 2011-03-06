@@ -169,6 +169,16 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   _lastknownagl = agl;
 
   if (_flyzone && agl<0) agl = 0;		// Limit actual altitude to surface to not get warnings on landing in fly zones
+
+  // Calculate distances
+  CalculateDistance(NULL,NULL,NULL);
+  if ( (abs(_hdistance) < abs(_nearesthdistance)) || (abs(_vdistance) < abs(_nearestvdistance)) ) {
+	_nearestname = _name;
+	_nearesthdistance = abs(_hdistance);
+	_nearestvdistance = _vdistance;
+  }
+  if (_nearesthdistance<0) _pos_inside_now = true;
+
   // Check for altitude
   bool pos_altitude =
 	  ((((_base.Base != abAGL) && ( alt >= _base.Altitude))
@@ -176,7 +186,7 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 	  && ((((_top.Base != abAGL) && (alt < _top.Altitude)))
 		|| ((_top.Base == abAGL) && (agl < _top.AGL)));
 
-  if (pos_altitude) _pos_inside_now = Inside(Basic->Longitude, Basic->Latitude);
+  if (!pos_altitude) _pos_inside_now = false;
 
   if (_flyzone) {
 	// FLY-ZONE
@@ -305,106 +315,94 @@ bool CAirspace::FinishWarning(int now,
 	bool res = false;
 	_now = now;		//Save current time for acking
 	int MessageRepeatTime = 1800;			// Unacknowledged message repeated in x secs
-	
-	//Do actions based on airspace warning events
-	  switch (_warnevent) {
-		default:
-		  break;
 
-		// Events for FLY zones
-		case aweMovingInsideFly:
-		  _userwarningstate = awNone;
-		  //ACK Step back: 
-		  if ( (_userwarnackstate != awDailyAck) && (now > _warnacktimeout) ) _userwarnackstate=_userwarningstate;
-		  break;
-		  
-		case awePredictedLeavingFly:
-		  if ( !(pred_inside_fly_zone || pred_in_acked_nonfly_zone) ) {
-			if (_warnevent != _warneventold) {
-				_userwarningstate = awPredicted;
-				if (_userwarnackstate < _userwarningstate) {
-				  _warn_repeat_time = now + MessageRepeatTime;
-				  res = true;
-				}
-			}
-		  }
-		  break;
-		  
-		case aweLeavingFly:
-		  if ( !(pos_inside_fly_zone || pos_in_acked_nonfly_zone) ) {
-			  _userwarningstate = awWarning;
+	//Do actions based on airspace warning events
+	switch (_warnevent) {
+	  default:
+		break;
+
+	  // Events for FLY zones
+	  case aweMovingInsideFly:
+		_userwarningstate = awNone;
+		//ACK Step back: 
+		if ( (_userwarnackstate != awDailyAck) && (now > _warnacktimeout) ) _userwarnackstate=_userwarningstate;
+		break;
+		
+	  case awePredictedLeavingFly:
+		if ( !(pred_inside_fly_zone || pred_in_acked_nonfly_zone) ) {
+		  if (_warnevent != _warneventold) {
+			  _userwarningstate = awPredicted;
 			  if (_userwarnackstate < _userwarningstate) {
 				_warn_repeat_time = now + MessageRepeatTime;
 				res = true;
 			  }
 		  }
-		  break;
-		  
-		case awePredictedEnteringFly:
-		  break;
-		case aweEnteringFly:
-		  _userwarningstate = awNone;
-		  res = true;
-		  break;
-		  
-		case aweMovingOutsideFly:
-		  if ( (pos_inside_fly_zone || pos_in_acked_nonfly_zone) ) _userwarningstate = awNone;
-		  break;
-		  
-		// Events for NON-FLY zones
-		case aweMovingOutsideNonfly:
-		  _userwarningstate = awNone;
-		  //ACK Step back: 
-		  if ( (_userwarnackstate != awDailyAck) && (now > _warnacktimeout) ) _userwarnackstate=_userwarningstate;
-		  break;
-		  
-		case awePredictedEnteringNonfly:
-		  if (_warnevent != _warneventold) {
-			_userwarningstate = awPredicted;
+		}
+		break;
+		
+	  case aweLeavingFly:
+		if ( !(pos_inside_fly_zone || pos_in_acked_nonfly_zone) ) {
+			_userwarningstate = awWarning;
 			if (_userwarnackstate < _userwarningstate) {
 			  _warn_repeat_time = now + MessageRepeatTime;
 			  res = true;
 			}
-		  }
-		  break;
-		  
-		case aweEnteringNonfly:
-		  _userwarningstate = awWarning;
+		}
+		break;
+		
+	  case awePredictedEnteringFly:
+		break;
+	  case aweEnteringFly:
+		_userwarningstate = awNone;
+		res = true;
+		break;
+		
+	  case aweMovingOutsideFly:
+		if ( (pos_inside_fly_zone || pos_in_acked_nonfly_zone) ) _userwarningstate = awNone;
+		break;
+		
+	  // Events for NON-FLY zones
+	  case aweMovingOutsideNonfly:
+		_userwarningstate = awNone;
+		//ACK Step back: 
+		if ( (_userwarnackstate != awDailyAck) && (now > _warnacktimeout) ) _userwarnackstate=_userwarningstate;
+		break;
+		
+	  case awePredictedEnteringNonfly:
+		if (_warnevent != _warneventold) {
+		  _userwarningstate = awPredicted;
 		  if (_userwarnackstate < _userwarningstate) {
 			_warn_repeat_time = now + MessageRepeatTime;
 			res = true;
 		  }
-		  break;
-
-		case aweMovingInsideNonfly:
-		  _userwarningstate = awWarning;
-		  if (_userwarnackstate < _userwarningstate) {
-			if (now > _warn_repeat_time) {
-			  _warn_repeat_time = now + MessageRepeatTime;
-			  res = true;
-			}
-		  }
-		  break;
-		  
-		case aweLeavingNonFly:
-		  _userwarningstate = awNone;
+		}
+		break;
+		
+	  case aweEnteringNonfly:
+		_userwarningstate = awWarning;
+		if (_userwarnackstate < _userwarningstate) {
+		  _warn_repeat_time = now + MessageRepeatTime;
 		  res = true;
-		  break;
-	  }//sw warnevent
+		}
+		break;
 
+	  case aweMovingInsideNonfly:
+		_userwarningstate = awWarning;
+		if (_userwarnackstate < _userwarningstate) {
+		  if (now > _warn_repeat_time) {
+			_warn_repeat_time = now + MessageRepeatTime;
+			res = true;
+		  }
+		}
+		break;
+		
+	  case aweLeavingNonFly:
+		_userwarningstate = awNone;
+		res = true;
+		break;
+	}//sw warnevent
+	
   _warneventold = _warnevent;
-
-  
-  // Calculate distances if warnstate>awnone
-  if (_userwarningstate > awNone) {
-	CalculateDistance(NULL,NULL,NULL);
-	if ( (abs(_hdistance) < abs(_nearesthdistance)) || (abs(_vdistance) < abs(_nearestvdistance)) ) {
-	  _nearestname = _name;
-	  _nearesthdistance = abs(_hdistance);
-	  _nearestvdistance = _vdistance;
-	}
-  }
-  
   return res;
 }
 
@@ -506,7 +504,6 @@ double CAirspace_Circle::Range(const double &longitude, const double &latitude, 
   return distance - _radius;
 }
 
-
 void CAirspace_Circle::ScanCircleBounds(double bearing)
 {
   double lat, lon;
@@ -594,41 +591,41 @@ void CAirspace_Area::Dump() const
   }
 }
 
-void CAirspace_Area::ScreenClosestPoint(const POINT &p1, const POINT &p2, 
-			const POINT &p3, POINT *p4, int offset) const
-{
+// void CAirspace_Area::ScreenClosestPoint(const POINT &p1, const POINT &p2, 
+// 			const POINT &p3, POINT *p4, int offset) const
+// {
+// 
+//   int v12x, v12y, v13x, v13y;
+// 
+//   v12x = p2.x-p1.x; v12y = p2.y-p1.y;
+//   v13x = p3.x-p1.x; v13y = p3.y-p1.y;
+// 
+//   int mag12 = isqrt4(v12x*v12x+v12y*v12y);
+//   if (mag12>1) {
+//     // projection of v13 along v12 = v12.v13/|v12|
+//     int proj = (v12x*v13x+v12y*v13y)/mag12;
+//     // fractional distance
+//     double f;
+//     if (offset>0) {
+//       if (offset*2<mag12) {
+// 	proj = max(0, min(proj, mag12));
+// 	proj = max(offset, min(mag12-offset, proj+offset));
+//       } else {
+// 	proj = mag12/2;
+//       }
+//     } 
+//     f = min(1.0,max(0.0,(double)proj/mag12));
+// 
+//     // location of 'closest' point 
+//     p4->x = lround(v12x*f)+p1.x;
+//     p4->y = lround(v12y*f)+p1.y;
+//   } else {
+//     p4->x = p1.x;
+//     p4->y = p1.y;
+//   }
+// }
 
-  int v12x, v12y, v13x, v13y;
-
-  v12x = p2.x-p1.x; v12y = p2.y-p1.y;
-  v13x = p3.x-p1.x; v13y = p3.y-p1.y;
-
-  int mag12 = isqrt4(v12x*v12x+v12y*v12y);
-  if (mag12>1) {
-    // projection of v13 along v12 = v12.v13/|v12|
-    int proj = (v12x*v13x+v12y*v13y)/mag12;
-    // fractional distance
-    double f;
-    if (offset>0) {
-      if (offset*2<mag12) {
-	proj = max(0, min(proj, mag12));
-	proj = max(offset, min(mag12-offset, proj+offset));
-      } else {
-	proj = mag12/2;
-      }
-    } 
-    f = min(1.0,max(0.0,(double)proj/mag12));
-
-    // location of 'closest' point 
-    p4->x = lround(v12x*f)+p1.x;
-    p4->y = lround(v12y*f)+p1.y;
-  } else {
-    p4->x = p1.x;
-    p4->y = p1.y;
-  }
-}
-
-
+/*
 // this one uses screen coordinates to avoid as many trig functions
 // as possible.. it means it is approximate but for our use it is ok.
 double CAirspace_Area::ScreenCrossTrackError(double lon1, double lat1,
@@ -650,7 +647,7 @@ double CAirspace_Area::ScreenCrossTrackError(double lon1, double lat1,
   double tmpd;
   DistanceBearing(lat3, lon3, *lat4, *lon4, &tmpd, NULL); 
   return tmpd;
-}
+}*/
 
 
 ///////////////////////////////////////////////////
@@ -725,13 +722,127 @@ bool CAirspace_Area::Inside(const double &longitude, const double &latitude) con
 }
 
 
+
+void CAirspace_Area::DistanceFromLine(double cx, double cy, double ax, double ay ,
+					  double bx, double by, 
+					  double &distanceSegment, double &xx, double &yy) const
+{
+	//
+	// find the distance from the point (cx,cy) to the line
+	// determined by the points (ax,ay) and (bx,by)
+	//
+	// distanceSegment = distance from the point to the line segment
+
+	/*
+		http://www.codeguru.com/forum/showthread.php?t=194400
+
+		Subject 1.02: How do I find the distance from a point to a line?
+
+		Let the point be C (Cx,Cy) and the line be AB (Ax,Ay) to (Bx,By).
+		Let P be the point of perpendicular projection of C on AB.  The parameter
+		r, which indicates P's position along AB, is computed by the dot product
+
+		of AC and AB divided by the square of the length of AB:
+		
+		(1)     AC dot AB
+			r = ---------  
+				||AB||^2
+		
+		r has the following meaning:
+		
+			r=0      P = A
+			r=1      P = B
+			r<0      P is on the backward extension of AB
+			r>1      P is on the forward extension of AB
+			0<r<1    P is interior to AB
+		
+		The length of a line segment in d dimensions, AB is computed by:
+		
+			L = sqrt( (Bx-Ax)^2 + (By-Ay)^2 + ... + (Bd-Ad)^2)
+
+		so in 2D:   
+		
+			L = sqrt( (Bx-Ax)^2 + (By-Ay)^2 )
+		
+		and the dot product of two vectors in d dimensions, U dot V is computed:
+		
+			D = (Ux * Vx) + (Uy * Vy) + ... + (Ud * Vd)
+		
+		so in 2D:   
+		
+			D = (Ux * Vx) + (Uy * Vy) 
+		
+		So (1) expands to:
+		
+				(Cx-Ax)(Bx-Ax) + (Cy-Ay)(By-Ay)
+			r = -------------------------------
+							  L^2
+
+		The point P can then be found:
+
+			Px = Ax + r(Bx-Ax)
+			Py = Ay + r(By-Ay)
+
+		And the distance from A to P = r*L.
+
+		Use another parameter s to indicate the location along PC, with the 
+		following meaning:
+			  s<0      C is left of AB
+			  s>0      C is right of AB
+			  s=0      C is on AB
+
+		Compute s as follows:
+
+				(Ay-Cy)(Bx-Ax)-(Ax-Cx)(By-Ay)
+			s = -----------------------------
+							L^2
+
+		Then the distance from C to P = |s|*L.
+	*/
+	double r_numerator = (cx-ax)*(bx-ax) + (cy-ay)*(by-ay);
+	double r_denomenator = (bx-ax)*(bx-ax) + (by-ay)*(by-ay);
+	double r = r_numerator / r_denomenator; //
+    double px = ax + r*(bx-ax);
+    double py = ay + r*(by-ay);
+    double s =  ((ay-cy)*(bx-ax)-(ax-cx)*(by-ay) ) / r_denomenator;
+
+	double distanceLine = fabs(s)*sqrt(r_denomenator);
+
+	// (xx,yy) is the point on the lineSegment closest to (cx,cy) //
+	xx = px;
+	yy = py;
+
+	if ( (r >= 0) && (r <= 1) )
+	{
+		distanceSegment = distanceLine;
+	}
+	else
+	{
+		double dist1 = (cx-ax)*(cx-ax) + (cy-ay)*(cy-ay);
+		double dist2 = (cx-bx)*(cx-bx) + (cy-by)*(cy-by);
+		if (dist1 < dist2)
+		{
+			xx = ax;
+			yy = ay;
+			distanceSegment = sqrt(dist1);
+		}
+		else
+		{
+			xx = bx;
+			yy = by;
+			distanceSegment = sqrt(dist2);
+		}
+	}
+}
+
 double CAirspace_Area::Range(const double &longitude, const double &latitude, double &bearing) const
 {
   // find nearest distance to line segment
   unsigned int i;
   double dist = 0;
-  double nearestdistance = dist;
-  double nearestbearing = bearing;
+  double dist_candidate = 0;
+  double nearestdistance;
+  double nearestbearing;
   double lon4, lat4;
   int    wn = 0;    // the winding number counter
   
@@ -740,14 +851,19 @@ double CAirspace_Area::Range(const double &longitude, const double &latitude, do
   ++itnext;
   
   for (i=0; i<_geopoints.size()-1; ++i) {
-    dist = ScreenCrossTrackError(
+/*    dist = ScreenCrossTrackError(
 				 it->Longitude(),
 				 it->Latitude(),
 				 itnext->Longitude(),
 				 itnext->Latitude(),
 				 longitude, latitude,
-				 &lon4, &lat4);
-	
+				 &lon4, &lat4);*/
+
+	DistanceFromLine(longitude, latitude,
+				 it->Longitude(), it->Latitude(),
+				 itnext->Longitude(), itnext->Latitude(),
+				 dist, lon4, lat4);
+
 	if (it->Latitude() <= latitude) {         // start y <= P.Latitude
 		if (itnext->Latitude() > latitude)      // an upward crossing
 			if (isLeft( *it, *itnext, longitude, latitude) > 0)  // P left of edge
@@ -758,10 +874,10 @@ double CAirspace_Area::Range(const double &longitude, const double &latitude, do
 				--wn;            // have a valid down intersect
 	}
 
-	if ((dist<nearestdistance)||(i==0)) {
-      nearestdistance = dist;
+	if ((dist<dist_candidate)||(i==0)) {
+      dist_candidate = dist;
       DistanceBearing(latitude, longitude,
-                      lat4, lon4, NULL, 
+                      lat4, lon4, &nearestdistance, 
                       &nearestbearing);
     }
     ++it;
@@ -1716,13 +1832,65 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
   #ifdef DEBUG_AIRSPACE
   StartupStore(TEXT("---AirspaceWarning start%s"),NEWLINE);
   #endif
+
+  // Calculate area of interest 20km range
+  double interest_radius = 20000;
+  rectObj bounds;
+  double lon = Basic->Longitude;
+  double lat = Basic->Latitude;
+  bounds.minx = lon;
+  bounds.maxx = lon;
+  bounds.miny = lat;
+  bounds.maxy = lat;
+
+  double bearing = 0;
+  {
+	FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
+	bounds.minx = min(lon, bounds.minx);
+	bounds.maxx = max(lon, bounds.maxx);
+	bounds.miny = min(lat, bounds.miny);
+	bounds.maxy = max(lat, bounds.maxy);
+  }
+  bearing = 90;
+  {
+	FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
+	bounds.minx = min(lon, bounds.minx);
+	bounds.maxx = max(lon, bounds.maxx);
+	bounds.miny = min(lat, bounds.miny);
+	bounds.maxy = max(lat, bounds.maxy);
+  }
+  bearing = 180;
+  {
+	FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
+	bounds.minx = min(lon, bounds.minx);
+	bounds.maxx = max(lon, bounds.maxx);
+	bounds.miny = min(lat, bounds.miny);
+	bounds.maxy = max(lat, bounds.maxy);
+  }
+  bearing = 270;
+  {
+	FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
+	bounds.minx = min(lon, bounds.minx);
+	bounds.maxx = max(lon, bounds.maxx);
+	bounds.miny = min(lat, bounds.miny);
+	bounds.maxy = max(lat, bounds.maxy);
+  }
+
+  // JMW detect airspace that wraps across 180
+  if ((bounds.minx< -90) && (bounds.maxx>90)) {
+	double tmp = bounds.minx;
+	bounds.minx = bounds.maxx;
+	bounds.maxx = tmp;
+  }
   
   bool pos_in_flyzone = false;
   bool pred_in_flyzone = false;
   bool pos_in_acked_nonfly_zone = false;
   bool pred_in_acked_nonfly_zone = false;
   bool there_is_msg;
+  CAirspaceList airspaces_of_interest;
   
+  CAirspace::ResetNearestDistances();
   CAirspaceList::iterator it;
   for (it=_airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
 	  // Check for warnings enabled for this class
@@ -1730,13 +1898,18 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
 		(*it)->UserWarningState(awNone);
 		continue;
 	  }
-
+	  // Check if in interest area
+	  if (!msRectOverlap(&bounds, &(*it)->Bounds())) {
+		(*it)->UserWarningState(awNone);
+		continue;
+	  }
+	  
 	  (*it)->CalculateWarning( Basic, Calculated, &pos_in_flyzone, &pred_in_flyzone, &pos_in_acked_nonfly_zone, &pred_in_acked_nonfly_zone );
+	  airspaces_of_interest.push_back(*it);
   }
 
   // Run warning fsms, refine warnings in fly zones, collect user messages
-  CAirspace::ResetNearestDistances();
-  for (it=_airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
+  for (it=airspaces_of_interest.begin(); it != airspaces_of_interest.end(); ++it) {
 	  there_is_msg = (*it)->FinishWarning( Basic->Time, pos_in_flyzone, pred_in_flyzone, pos_in_acked_nonfly_zone, pred_in_acked_nonfly_zone );
 	  if (there_is_msg) {
 		// Add new warning message to queue
@@ -1754,6 +1927,9 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
 	NearestAirspaceName[NAME_SIZE]=0;
 	NearestAirspaceHDist = CAirspace::GetNearestHDistance();
 	NearestAirspaceVDist = CAirspace::GetNearestVDistance();
+	// now we have only one infobox for nearest airspace distance NearestAirspaceHDist
+	// multiplex vertical and horizontal distances to this infobox
+	if (fabs(NearestAirspaceVDist) < NearestAirspaceHDist) NearestAirspaceHDist = fabs(NearestAirspaceVDist);
   } else {
 	NearestAirspaceName[0]=0;
 	NearestAirspaceHDist=0;
@@ -1761,7 +1937,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
   }
 
   #ifdef DEBUG_AIRSPACE
-  StartupStore(TEXT("   AirspaceWarning ends, processed %d airspaces%s"),_airspaces_near.size(),NEWLINE);
+  StartupStore(TEXT("   AirspaceWarning ends, processed %d airspaces from %d%s"), airspaces_of_interest.size(), _airspaces_near.size(), NEWLINE);
   #endif
 
 }
