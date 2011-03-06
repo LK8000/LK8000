@@ -137,136 +137,20 @@ static void SetValues(const CAirspace *airspace) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpType"));
   if (wp) {
-    switch (atype) {
-    case RESTRICT:
-	// LKTOKEN  _@M565_ = "Restricted" 
-      wp->SetText(gettext(TEXT("_@M565_"))); break;
-    case PROHIBITED:
-	// LKTOKEN  _@M537_ = "Prohibited" 
-      wp->SetText(gettext(TEXT("_@M537_"))); break;
-    case DANGER:
-	// LKTOKEN  _@M213_ = "Danger Area" 
-      wp->SetText(gettext(TEXT("_@M213_"))); break;
-    case CLASSA:
-      wp->SetText(TEXT("Class A")); break;
-    case CLASSB:
-      wp->SetText(TEXT("Class B")); break;
-    case CLASSC:
-      wp->SetText(TEXT("Class C")); break;
-    case CLASSD:
-      wp->SetText(TEXT("Class D")); break;
-    case CLASSE:
-      wp->SetText(TEXT("Class E")); break;
-    case CLASSF:
-      wp->SetText(TEXT("Class F")); break;
-    case CLASSG:
-      wp->SetText(TEXT("Class G")); break;
-    case NOGLIDER:
-	// LKTOKEN  _@M464_ = "No Glider" 
-      wp->SetText(gettext(TEXT("_@M464_"))); break;
-    case CTR:
-      wp->SetText(TEXT("CTR")); break;
-    case WAVE:
-	// LKTOKEN  _@M794_ = "Wave" 
-      wp->SetText(gettext(TEXT("_@M794_"))); break;
-    default:
-	// LKTOKEN  _@M765_ = "Unknown" 
-      wp->SetText(gettext(TEXT("_@M765_")));
-    }
+	wp->SetText( CAirspaceManager::Instance().GetAirspaceTypeText(atype) );
     wp->RefreshDisplay();
   }
   
   wp = (WndProperty*)wf->FindByName(TEXT("prpTop"));
   if (wp) {
-    switch (top->Base){
-    case abUndef:
-      if (Units::GetUserAltitudeUnit() == unMeter) {
-	_stprintf(buffer, TEXT("%.0f[m] %.0f[ft] [?]"), 
-		  (top->Altitude), 
-		  (top->Altitude*TOFEET));
-      } else {
-	_stprintf(buffer, TEXT("%.0f ft [?]"), 
-		  (top->Altitude*TOFEET));
-      }
-      break;
-    case abMSL:
-      if (Units::GetUserAltitudeUnit() == unMeter) {
-	_stprintf(buffer, TEXT("%.0f[m] %.0f[ft] MSL"), 
-		  top->Altitude, top->Altitude*TOFEET);
-      } else {
-	_stprintf(buffer, TEXT("%.0f ft MSL"), 
-		  top->Altitude*TOFEET);
-      }
-      break;
-    case abAGL:
-      if (Units::GetUserAltitudeUnit() == unMeter) {
-	_stprintf(buffer, TEXT("%.0f[m] %.0f[ft] AGL"), 
-		  top->AGL, top->AGL*TOFEET);
-      } else {
-	_stprintf(buffer, TEXT("%.0f ft AGL"), 
-		  top->AGL*TOFEET);
-      }
-      break;
-    case abFL:
-      if (Units::GetUserAltitudeUnit() == unMeter) {
-	_stprintf(buffer, TEXT("FL%.0f (%.0f[m] %.0f[ft])"), 
-		  top->FL, FLAltRounded(top->Altitude), 
-		  FLAltRounded(top->Altitude*TOFEET));
-      } else {
-	_stprintf(buffer, TEXT("FL%.0f (%.0f ft)"), 
-		  top->FL, FLAltRounded(top->Altitude*TOFEET));
-      }
-      break;
-    }
+	CAirspaceManager::Instance().GetAirspaceAltText(buffer, sizeof(buffer)/sizeof(buffer[0]), top);
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpBase"));
   if (wp) {
-    switch (base->Base){
-    case abUndef:
-      if (Units::GetUserAltitudeUnit() == unMeter) {
-	_stprintf(buffer, TEXT("%.0f[m] %.0f[ft] [?]"), 
-		  base->Altitude, base->Altitude*TOFEET);
-      } else {
-	_stprintf(buffer, TEXT("%.0f ft [?]"), 
-		  base->Altitude*TOFEET);
-      }
-      break;
-    case abMSL:
-      if (Units::GetUserAltitudeUnit() == unMeter) {
-	_stprintf(buffer, TEXT("%.0f[m] %.0f[ft] MSL"), 
-		  base->Altitude, base->Altitude*TOFEET);
-      } else {
-	_stprintf(buffer, TEXT("%.0f ft MSL"), 
-		  base->Altitude*TOFEET);
-      }
-      break;
-    case abAGL:
-      if (base->Altitude == 0) {
-        _stprintf(buffer, TEXT("SFC"));
-      } else {
-	if (Units::GetUserAltitudeUnit() == unMeter) {
-	  _stprintf(buffer, TEXT("%.0f[m] %.0f[ft] AGL"), 
-		    base->AGL, base->AGL*TOFEET);
-	} else {
-	  _stprintf(buffer, TEXT("%.0f ft AGL"), 
-		    base->AGL*TOFEET);
-	}
-      }
-      break;
-    case abFL:
-      if (Units::GetUserAltitudeUnit() == unMeter) {
-	_stprintf(buffer, TEXT("FL %.0f (%.0f[m] %.0f[ft])"), 
-		  base->FL, FLAltRounded(base->Altitude), 
-		  FLAltRounded(base->Altitude*TOFEET));
-      } else {
-	_stprintf(buffer, TEXT("FL%.0f (%.0f ft)"), 
-		  base->FL, FLAltRounded(base->Altitude*TOFEET));
-      }
-      break;
-    }
+	CAirspaceManager::Instance().GetAirspaceAltText(buffer, sizeof(buffer)/sizeof(buffer[0]), base);
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }

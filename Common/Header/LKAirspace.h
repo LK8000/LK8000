@@ -286,6 +286,9 @@ public:
 
   //HELPER FUNCTIONS
   bool CheckAirspaceAltitude(const double &Base, const double &Top) const;
+  TCHAR* GetAirspaceTypeText(int type) const;
+  TCHAR* GetAirspaceTypeShortText(int type) const;
+  void GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) const;
 
   // Upper level interfaces
   void ReadAirspaces();

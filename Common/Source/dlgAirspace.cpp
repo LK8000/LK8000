@@ -42,6 +42,10 @@ static void OnAirspacePaintListItem(WindowControl * Sender, HDC hDC){
   (void)Sender;
   if (DrawListIndex < AIRSPACECLASSCOUNT){
     int i = DrawListIndex;
+#ifdef LKAIRSPACE
+	_tcsncpy(label, CAirspaceManager::Instance().GetAirspaceTypeText(i), 39);
+	label[39]=0;
+#else
     switch (i) {
     case CLASSA: 
       _tcscpy(label, TEXT("Class A"));
@@ -95,7 +99,7 @@ static void OnAirspacePaintListItem(WindowControl * Sender, HDC hDC){
       _tcscpy(label, TEXT("AAT"));
       break;
     };
-
+#endif
     int w0, w1, w2, x0;
     if (InfoBoxLayout::landscape) {
       w0 = 202*InfoBoxLayout::scale;

@@ -1931,4 +1931,133 @@ void CAirspaceManager::AirspaceWarnListDailyAckCancel(CAirspace &airspace)
 	#endif
 }
 
+// Centralized function to get airspace type texts
+TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const
+{
+    switch (type) {
+	  case RESTRICT:
+		// LKTOKEN  _@M565_ = "Restricted" 
+		return gettext(TEXT("_@M565_"));
+	  case PROHIBITED:
+		// LKTOKEN  _@M537_ = "Prohibited" 
+		return gettext(TEXT("_@M537_"));
+	  case DANGER:
+		// LKTOKEN  _@M213_ = "Danger Area" 
+		return gettext(TEXT("_@M213_"));
+	  case CLASSA:
+		return TEXT("Class A");
+	  case CLASSB:
+		return TEXT("Class B");
+	  case CLASSC:
+		return TEXT("Class C");
+	  case CLASSD:
+		return TEXT("Class D");
+	  case CLASSE:
+		return TEXT("Class E");
+	  case CLASSF:
+		return TEXT("Class F");
+	  case CLASSG:
+		return TEXT("Class G");
+	  case NOGLIDER:
+		// LKTOKEN  _@M464_ = "No Glider" 
+		return gettext(TEXT("_@M464_"));
+	  case CTR:
+		return TEXT("CTR");
+	  case WAVE:
+		// LKTOKEN  _@M794_ = "Wave" 
+		return gettext(TEXT("_@M794_"));
+	  case AATASK:
+		return TEXT("AAT");
+	  case OTHER:
+		// LKTOKEN  _@M765_ = "Unknown" 
+		return gettext(TEXT("_@M765_"));
+	  default:
+		return TEXT("");
+    }
+}
+
+// Centralized function to get airspace type texts in short form
+TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) const
+{
+  switch (type) {
+    case RESTRICT:
+      return TEXT("Res");
+    case PROHIBITED:
+      return TEXT("Prb");
+    case DANGER:
+      return TEXT("Dgr");
+    case CLASSA:
+      return TEXT("A");
+    case CLASSB:
+      return TEXT("B");
+    case CLASSC:
+      return TEXT("C");
+    case CLASSD:
+      return TEXT("D");
+    case CLASSE:
+      return TEXT("E");
+    case CLASSF:
+      return TEXT("F");
+    case CLASSG:
+      return TEXT("G");
+    case NOGLIDER:
+      return TEXT("NoGld");
+    case CTR:
+      return TEXT("CTR");
+    case WAVE:
+      return TEXT("Wav");
+    default:
+      return TEXT("?");
+    }
+}
+
+void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) const
+{
+  TCHAR sUnitBuffer[24];
+  TCHAR sAltUnitBuffer[24];
+  TCHAR intbuf[128];
+
+  Units::FormatUserAltitude(alt->Altitude, sUnitBuffer, sizeof(sUnitBuffer)/sizeof(sUnitBuffer[0]));
+  Units::FormatAlternateUserAltitude(alt->Altitude, sAltUnitBuffer, sizeof(sAltUnitBuffer)/sizeof(sAltUnitBuffer[0]));
+
+  switch (alt->Base) {
+    case abUndef:
+      if (Units::GetUserAltitudeUnit() == unMeter) {
+		_stprintf(intbuf, TEXT("%s %s"), sUnitBuffer, sAltUnitBuffer);
+      } else {
+		_stprintf(intbuf, TEXT("%s"), sUnitBuffer);
+      }
+	  break;
+    case abMSL:
+      if (Units::GetUserAltitudeUnit() == unMeter) {
+		_stprintf(intbuf, TEXT("%s %s MSL"), sUnitBuffer, sAltUnitBuffer);
+      } else {
+		_stprintf(intbuf, TEXT("%s MSL"), sUnitBuffer);
+      }
+	  break;
+    case abAGL:
+      if (alt->Altitude == 0)
+        _stprintf(intbuf, TEXT("SFC"));
+      else {
+		Units::FormatUserAltitude(alt->AGL, sUnitBuffer, sizeof(sUnitBuffer)/sizeof(sUnitBuffer[0]));
+		Units::FormatAlternateUserAltitude(alt->AGL, sAltUnitBuffer, sizeof(sAltUnitBuffer)/sizeof(sAltUnitBuffer[0]));
+		if (Units::GetUserAltitudeUnit() == unMeter) {
+		  _stprintf(intbuf, TEXT("%s %s AGL"), sUnitBuffer, sAltUnitBuffer);
+		} else {
+		  _stprintf(intbuf, TEXT("%s AGL"), sUnitBuffer);
+		}
+      }
+	  break;
+    case abFL:
+      if (Units::GetUserAltitudeUnit() == unMeter) {
+		_stprintf(intbuf, TEXT("FL%.0f %.0fm %.0fft"), alt->FL, alt->Altitude, alt->Altitude*TOFEET);
+      } else {
+		_stprintf(intbuf, TEXT("FL%.0f %.0fft"), alt->FL, alt->Altitude*TOFEET);
+      }
+	  break;
+  }
+  _tcsncpy(buffer, intbuf, bufferlen-1);
+  buffer[bufferlen-1]=0;
+}
+
 #endif /* LKAIRSPACE */

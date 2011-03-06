@@ -59,6 +59,7 @@ static int lastHeading=0;
 
 static int NumberOfAirspaces = 0;
 
+#ifndef LKAIRSPACE
 // FIXV2
 static const TCHAR *TypeFilter[] = {TEXT("*"), 
 				    TEXT("Other"),
@@ -77,7 +78,7 @@ static const TCHAR *TypeFilter[] = {TEXT("*"),
 				    TEXT("Class F"),
 				    TEXT("Class G"),
 };
-
+#endif
 static unsigned TypeFilterIdx=0;
 
 static int UpLimit=0;
@@ -633,16 +634,27 @@ static void OnFilterType(DataField *Sender,
     break;
     case DataField::daInc:
       TypeFilterIdx++;
+#ifdef LKAIRSPACE
+      if (TypeFilterIdx > AIRSPACECLASSCOUNT) TypeFilterIdx = 0;		//Need to limit+1 because idx shifted with +1
+#else
       if (TypeFilterIdx > sizeof(TypeFilter)/sizeof(TypeFilter[0])-1)
         TypeFilterIdx = 0;
+#endif
       FilterMode(false);
       UpdateList();
     break;
     case DataField::daDec:
+#ifdef LKAIRSPACE
+      if (TypeFilterIdx == 0)
+        TypeFilterIdx = AIRSPACECLASSCOUNT;		//Need to limit+1 because idx shifted with +1
+      else
+        TypeFilterIdx--;
+#else
       if (TypeFilterIdx == 0)
         TypeFilterIdx = sizeof(TypeFilter)/sizeof(TypeFilter[0])-1;
       else
         TypeFilterIdx--;
+#endif
       FilterMode(false);
       UpdateList();
     break;
@@ -650,8 +662,15 @@ static void OnFilterType(DataField *Sender,
     break;
   }
 
+#ifdef LKAIRSPACE
+  if (TypeFilterIdx>0) {
+	_tcsncpy(sTmp, CAirspaceManager::Instance().GetAirspaceTypeText(TypeFilterIdx-1), sizeof(sTmp)/sizeof(sTmp[0]));
+  } else {
+	_tcscpy(sTmp, TEXT("*"));
+  }
+#else
   _stprintf(sTmp, TEXT("%s"), TypeFilter[TypeFilterIdx]);
-
+#endif
   Sender->Set(sTmp);
 
 }
@@ -700,7 +719,9 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
       sTmp[0] = '\0';
       sTmp[1] = '\0';
       sTmp[2] = '\0';
-      
+#ifdef LKAIRSPACE
+	  _tcsncpy(sTmp, CAirspaceManager::Instance().GetAirspaceTypeShortText(AirspaceSelectInfo[i].Type), 4);
+#else
       switch(AirspaceSelectInfo[i].Type) {
       case CLASSA: 
         _tcscpy(sTmp, TEXT("A"));
@@ -719,6 +740,9 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
         break;
       case CLASSF: 
         _tcscpy(sTmp, TEXT("F"));
+        break;
+      case CLASSG: 
+        _tcscpy(sTmp, TEXT("G"));
         break;
       case PROHIBITED: 
         _tcscpy(sTmp, TEXT("Prb"));
@@ -747,7 +771,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
       default:
         break;
       }
-
+#endif
       // left justified
       
       ExtTextOut(hDC, x1, 2*InfoBoxLayout::scale,
@@ -845,7 +869,11 @@ static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
     TypeFilterIdx = NewIndex;
     FilterMode(false);
     UpdateList();
+#ifdef LKAIRSPACE
+    wp->GetDataField()->SetAsString(CAirspaceManager::Instance().GetAirspaceTypeText(TypeFilterIdx));
+#else
     wp->GetDataField()->SetAsString(TypeFilter[TypeFilterIdx]);
+#endif
     wp->RefreshDisplay();
   }
 

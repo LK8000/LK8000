@@ -217,6 +217,7 @@ static void OnDistroy(WindowControl * Sender){
 }
 */
 
+#ifndef LKAIRSPACE
 static void getAirspaceType(TCHAR *buf, int Type){
   switch (Type)
     {
@@ -269,12 +270,11 @@ static double FLAltRounded(double alt) {
   int f = iround(alt/10)*10;
   return (double)f;
 }
-
-#ifdef LKAIRSPACE
-TCHAR *fmtAirspaceAlt(TCHAR *Buffer, AIRSPACE_ALT *alt){
-#else
-static TCHAR *fmtAirspaceAlt(TCHAR *Buffer, AIRSPACE_ALT *alt){
 #endif
+
+#ifndef LKAIRSPACE
+static TCHAR *fmtAirspaceAlt(TCHAR *Buffer, AIRSPACE_ALT *alt){
+
   TCHAR sUnitBuffer[24];
   TCHAR sAltUnitBuffer[24];
 
@@ -328,6 +328,8 @@ static TCHAR *fmtAirspaceAlt(TCHAR *Buffer, AIRSPACE_ALT *alt){
   }
   return(Buffer);
 }
+#endif
+
 #ifdef LKAIRSPACE
 static TCHAR GetAckIndicator(AirspaceWarningState_t ackstate)
 {
@@ -394,10 +396,15 @@ static void OnAirspaceListItemPaint(WindowControl * Sender, HDC hDC){
 #endif
 
 #ifdef LKAIRSPACE
-      _tcsncpy(sName, airspace_copy.Name(), sizeof(sName)/sizeof(sName[0]));
-	  memcpy(&Base, airspace_copy.Base(), sizeof(Base));
-	  memcpy(&Top, airspace_copy.Top(), sizeof(Top));
-      Type = airspace_copy.Type();
+	_tcsncpy(sName, airspace_copy.Name(), sizeof(sName)/sizeof(sName[0]));
+    sName[sizeof(sName)/sizeof(sName[0])-1] = '\0';
+	memcpy(&Base, airspace_copy.Base(), sizeof(Base));
+	memcpy(&Top, airspace_copy.Top(), sizeof(Top));
+	Type = airspace_copy.Type();
+
+	CAirspaceManager::Instance().GetAirspaceAltText(sTop, sizeof(sTop)/sizeof(sTop[0]), &Top); 
+	CAirspaceManager::Instance().GetAirspaceAltText(sBase, sizeof(sBase)/sizeof(sBase[0]), &Base); 
+	_tcsncpy(sType, CAirspaceManager::Instance().GetAirspaceTypeShortText(Type), 4);
 #else
     if (pAS.IsCircle){
       _tcsncpy(sName, AirspaceCircle[pAS.AirspaceIndex].Name, 
@@ -412,7 +419,6 @@ static void OnAirspaceListItemPaint(WindowControl * Sender, HDC hDC){
       Top  = AirspaceArea[pAS.AirspaceIndex].Top;
       Type = AirspaceArea[pAS.AirspaceIndex].Type;
     }
-#endif
 
     if (_tcslen(sName)>0) // 100324
     sName[sizeof(sName)/sizeof(sName[0])-1] = '\0';
@@ -420,6 +426,7 @@ static void OnAirspaceListItemPaint(WindowControl * Sender, HDC hDC){
     fmtAirspaceAlt(sTop, &Top);
     fmtAirspaceAlt(sBase, &Base);
     getAirspaceType(sType, Type);
+#endif
 
 #ifdef LKAIRSPACE
 	// Select brush based on warning and ack level

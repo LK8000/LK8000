@@ -136,9 +136,6 @@ static CallBackTableEntry_t CallBackTable[]={
 };
 
 
-//from dlgAirspaceWarning.cpp
-TCHAR *fmtAirspaceAlt(TCHAR *Buffer, AIRSPACE_ALT *alt);
-
 void dlgLKAirspaceFill()
 {
   if (msg.warnstate != airspace_copy.UserWarningState()) {
@@ -280,9 +277,7 @@ void dlgLKAirspaceFill()
 	wp = (WndProperty*)dlg->FindByName(TEXT("prpTopAlt"));
 	if (wp) {
 	  TCHAR stmp2[40];
-	  AIRSPACE_ALT alt;
-	  memcpy(&alt, airspace_copy.Top(), sizeof(alt));
-	  fmtAirspaceAlt(stmp2, &alt);
+	  CAirspaceManager::Instance().GetAirspaceAltText(stmp2, 40, airspace_copy.Top());
 	  wp->SetText(stmp2);
 	  wp->RefreshDisplay();
 	}	
@@ -290,9 +285,7 @@ void dlgLKAirspaceFill()
 	wp = (WndProperty*)dlg->FindByName(TEXT("prpBaseAlt"));
 	if (wp) {
 	  TCHAR stmp2[40];
-	  AIRSPACE_ALT alt;
-	  memcpy(&alt, airspace_copy.Base(), sizeof(alt));
-	  fmtAirspaceAlt(stmp2, &alt);
+	  CAirspaceManager::Instance().GetAirspaceAltText(stmp2, 40, airspace_copy.Base());
 	  wp->SetText(stmp2);
 	  wp->RefreshDisplay();
 	}	
