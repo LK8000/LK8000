@@ -355,7 +355,7 @@ void ShowAirspaceWarningsToUser()
 	
 	dlg->SetKeyDownNotify(OnKeyDown);
     dlg->SetTimerNotify(OnTimer);
-	timer_counter = 20;					// Auto closing dialog in x secs
+	timer_counter = 10;					// Auto closing dialog in x secs
 
 	dlgLKAirspaceFill();
 

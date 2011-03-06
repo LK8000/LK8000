@@ -109,8 +109,7 @@ public:
 			_now(0),
 			_vdistance(0),
 			_hdistance(0),
-			_bearing(0),
-			_inside(false)
+			_bearing(0)
 			{}
   virtual ~CAirspace() {}
 
@@ -174,7 +173,9 @@ public:
   static int GetNearestVDistance() { return _nearestvdistance; }
 
   bool GetDistanceInfo(int *hDistance, int *Bearing, int *vDistance);
-  
+
+  void GetWarningPoint(double &longitude, double &latitude) const;
+
 protected:
   TCHAR _name[NAME_SIZE + 1];
   int _type;
@@ -201,7 +202,6 @@ protected:
   int _vdistance;		// vertical distance to actual position
   int _hdistance;		// horizontal distance to actual position
   int _bearing;			// bearing from actual position
-  bool _inside;			// actual position is inside
   
   void AirspaceAGLLookup(double av_lat, double av_lon);
 

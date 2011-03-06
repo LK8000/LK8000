@@ -1934,6 +1934,17 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 			SelectObject(hDCTemp, hAirspacePens[airspace_type]);
 		  }
 		  (*it)->Draw(hDCTemp, rc, false);
+		  // Draw warning position if any
+		  if ((*it)->UserWarningState() > awNone) {
+			POINT sc;
+			double lon;
+			double lat;
+			(*it)->GetWarningPoint(lon,lat);
+			if (PointVisible(lon, lat)) {
+				LatLon2Screen(lon, lat, sc);
+				DrawBitmapIn(hdc, sc, hTerrainWarning);			//TODO
+			}
+		  }
         }
 	}//for
 #else

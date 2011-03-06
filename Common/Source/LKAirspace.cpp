@@ -152,7 +152,7 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   _warnevent = aweNone;
   int alt;
   int agl;
-
+  
   //Check actual position
   _pos_inside_now = false;
   if (Basic->BaroAltitudeAvailable) {
@@ -172,12 +172,25 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   // Calculate distances
   CalculateDistance(NULL,NULL,NULL);
-  if ( (abs(_hdistance) < abs(_nearesthdistance)) || (abs(_vdistance) < abs(_nearestvdistance)) ) {
-	_nearestname = _name;
-	_nearesthdistance = abs(_hdistance);
-	_nearestvdistance = _vdistance;
+  if ( _hdistance <= 0 ) {
+	_pos_inside_now = true;
+	// TODO Until we have one infobox, we have to collect nearest distance values differently!
+	if ( abs(_hdistance) < abs(_nearesthdistance) ) {
+	  _nearestname = _name;
+	  _nearesthdistance = abs(_hdistance);
+	  // not used now _nearestvdistance = _vdistance;
+	}
+	if ( abs(_vdistance) < abs(_nearesthdistance) ) {
+	  _nearestname = _name;
+	  _nearesthdistance = abs(_vdistance);
+	}
+  } else {
+	if ( (abs(_hdistance) < abs(_nearesthdistance)) ) {
+	  _nearestname = _name;
+	  _nearesthdistance = abs(_hdistance);
+	  // not used now _nearestvdistance = _vdistance;
+	}
   }
-  if (_nearesthdistance<0) _pos_inside_now = true;
 
   // Check for altitude
   bool pos_altitude =
@@ -211,8 +224,8 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 		if (pred_inside_now) {
 		  // FLY-ZONE _pos_inside_last = true, _pos_inside_now = true, _pred_inside_now = true
 		  // moving inside -> normal, no warning event
-		  *pred_in_flyzone = true;
 		  _warnevent = aweMovingInsideFly;
+		  *pred_in_flyzone = true;
 		} else {
 		  // FLY-ZONE _pos_inside_last = true, _pos_inside_now = true, _pred_inside_now = false
 		  // predicted leaving, yellow warning
@@ -290,7 +303,7 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 			  || ((_top.Base == abAGL) && (agl < _top.AGL)));
 
 		if (pos_altitude) pred_inside_now = Inside(Calculated->NextLongitude, Calculated->NextLatitude);
-		if (pred_inside_now) {
+		if ( pred_inside_now) {
 		  // NON-FLY ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = true
 		  // predicted enter
 		  _warnevent = awePredictedEnteringNonfly;
@@ -315,7 +328,8 @@ bool CAirspace::FinishWarning(int now,
 	bool res = false;
 	_now = now;		//Save current time for acking
 	int MessageRepeatTime = 1800;			// Unacknowledged message repeated in x secs
-
+	int hdistancemargin = 500;
+	
 	//Do actions based on airspace warning events
 	switch (_warnevent) {
 	  default:
@@ -323,14 +337,14 @@ bool CAirspace::FinishWarning(int now,
 
 	  // Events for FLY zones
 	  case aweMovingInsideFly:
-		_userwarningstate = awNone;
+		if ( (abs(_hdistance)>hdistancemargin) && (abs(_vdistance)>AltWarningMargin) ) _userwarningstate = awNone;
 		//ACK Step back: 
-		if ( (_userwarnackstate != awDailyAck) && (now > _warnacktimeout) ) _userwarnackstate=_userwarningstate;
+		if ( (_userwarnackstate != awDailyAck) && (_userwarnackstate>_userwarningstate) && (now > _warnacktimeout) ) _userwarnackstate=_userwarningstate;
 		break;
 		
 	  case awePredictedLeavingFly:
 		if ( !(pred_inside_fly_zone || pred_in_acked_nonfly_zone) ) {
-		  if (_warnevent != _warneventold) {
+		  if ( (_warnevent != _warneventold) && (_userwarningstate < awPredicted) ) {
 			  _userwarningstate = awPredicted;
 			  if (_userwarnackstate < _userwarningstate) {
 				_warn_repeat_time = now + MessageRepeatTime;
@@ -353,7 +367,7 @@ bool CAirspace::FinishWarning(int now,
 	  case awePredictedEnteringFly:
 		break;
 	  case aweEnteringFly:
-		_userwarningstate = awNone;
+		_userwarningstate = awPredicted;
 		res = true;
 		break;
 		
@@ -363,13 +377,13 @@ bool CAirspace::FinishWarning(int now,
 		
 	  // Events for NON-FLY zones
 	  case aweMovingOutsideNonfly:
-		_userwarningstate = awNone;
+		if ( (abs(_hdistance)>hdistancemargin) && (abs(_vdistance)>AltWarningMargin) ) _userwarningstate = awNone;
 		//ACK Step back: 
-		if ( (_userwarnackstate != awDailyAck) && (now > _warnacktimeout) ) _userwarnackstate=_userwarningstate;
+		if ( (_userwarnackstate != awDailyAck) && (_userwarnackstate>_userwarningstate) && (now > _warnacktimeout) ) _userwarnackstate=_userwarningstate;
 		break;
 		
 	  case awePredictedEnteringNonfly:
-		if (_warnevent != _warneventold) {
+		if ( (_warnevent != _warneventold) && (_userwarningstate < awPredicted) ) {
 		  _userwarningstate = awPredicted;
 		  if (_userwarnackstate < _userwarningstate) {
 			_warn_repeat_time = now + MessageRepeatTime;
@@ -397,7 +411,7 @@ bool CAirspace::FinishWarning(int now,
 		break;
 		
 	  case aweLeavingNonFly:
-		_userwarningstate = awNone;
+		_userwarningstate = awPredicted;
 		res = true;
 		break;
 	}//sw warnevent
@@ -417,7 +431,17 @@ bool CAirspace::GetDistanceInfo(int *hDistance, int *Bearing, int *vDistance)
   if (Bearing) *Bearing = _bearing;
   if (hDistance) *hDistance = _hdistance;
   if (vDistance) *vDistance = _vdistance;
-  return _inside;
+  return _pos_inside_now;
+}
+
+void CAirspace::GetWarningPoint(double &longitude, double &latitude) const
+{
+  double dist = fabs(_hdistance);
+  if (_pos_inside_now) {
+	// if vertical distance smaller, use actual position as warning point indicating a directly above or below warning situation
+	if ( abs(_vdistance) < abs(_hdistance) ) dist = 0;
+  }
+  FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &latitude, &longitude);
 }
 
 // Calculates nearest horizontal and vertical distance to airspace based on last known position
@@ -1833,8 +1857,9 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
   StartupStore(TEXT("---AirspaceWarning start%s"),NEWLINE);
   #endif
 
-  // Calculate area of interest 20km range
-  double interest_radius = 20000;
+  // Calculate area of interest
+  // At 300km/h 60sec = 5km
+  double interest_radius = 5000;
   rectObj bounds;
   double lon = Basic->Longitude;
   double lat = Basic->Latitude;
@@ -1922,14 +1947,12 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
   }
 
   // Fill infoboxes
+  // TODO Until we have one infobox, we have to collect nearest distance values differently!
   if (CAirspace::GetNearestName() != NULL) {
 	_tcsncpy(NearestAirspaceName, CAirspace::GetNearestName(), NAME_SIZE);
 	NearestAirspaceName[NAME_SIZE]=0;
 	NearestAirspaceHDist = CAirspace::GetNearestHDistance();
 	NearestAirspaceVDist = CAirspace::GetNearestVDistance();
-	// now we have only one infobox for nearest airspace distance NearestAirspaceHDist
-	// multiplex vertical and horizontal distances to this infobox
-	if (fabs(NearestAirspaceVDist) < NearestAirspaceHDist) NearestAirspaceHDist = fabs(NearestAirspaceVDist);
   } else {
 	NearestAirspaceName[0]=0;
 	NearestAirspaceHDist=0;
