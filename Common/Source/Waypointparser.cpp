@@ -867,10 +867,9 @@ static double ReadAltitude(TCHAR *temp)
 
 static double ReadLength(TCHAR *temp)
 {
-  TCHAR *stop;
+  TCHAR *stop=temp;
   double len;
   len = StrToDouble(temp, &stop);
-
   if (temp == stop) {		// error at begin
 	len=-9999;
 	return len;
@@ -1845,7 +1844,6 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
   #ifdef CUPDEBUG
   StartupStore(_T("NEW:<%s>%s"),TempString,NEWLINE);
   #endif
-
   // ---------------- NAME ----------------
   pToken = _tcstok(TempString, TEXT(","));
   if (pToken == NULL) return false;
@@ -1927,6 +1925,9 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
   if((Temp->Longitude  > 180) || (Temp->Longitude  < -180)) {
 	return false;
   }
+  #ifdef CUPDEBUG
+  StartupStore(_T("   CUP LONGITUDE=<%f>%s"),Temp->Longitude,NEWLINE);
+  #endif
 
 
 

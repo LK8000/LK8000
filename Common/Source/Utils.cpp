@@ -3604,7 +3604,10 @@ void InitSineTable(void)
     }
 }
 
-
+/*
+ * WARNING: if you are using Stop pointer, remember that you MUST set it equal to *Source before
+   calling this function, because in case of null result, it will not be set!!
+ */
 double StrToDouble(TCHAR *Source, TCHAR **Stop)
 {
   int index = 0;
@@ -3623,7 +3626,8 @@ double StrToDouble(TCHAR *Source, TCHAR **Stop)
       index ++;
     }
   if (index>= StringLength) {
-    return 0.0; // error!
+	// WARNING> we are not setting Stop here!!
+    return 0.0; // Set 0.0 as error, probably not the best thing to do. TOFIX 110307
   }
   if (Source[index]=='-') {
     neg=1;
