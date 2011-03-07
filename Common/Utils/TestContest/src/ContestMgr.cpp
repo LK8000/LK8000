@@ -66,17 +66,19 @@ double CContestMgr::AproxDistanceToLineSegment(const CPointGPS &point, const CPo
 }
 
 
-bool CContestMgr::BiggestLoopFind(const CTrace &trace, const CTrace::CPoint *&start, const CTrace::CPoint *&end) const
+unsigned CContestMgr::BiggestLoopFind(const CTrace &trace, const CTrace::CPoint *&start, const CTrace::CPoint *&end) const
 {
+  unsigned pointsCount = trace.Size();
   const CTrace::CPoint *back = trace.Back();
   
   // try to find the biggest closed path possible
   const CTrace::CPoint *point = trace.Front();
   CTrace::CPoint *next = point->Next();
   while(next && next != back) {
+    pointsCount--;
     if(back->GPS().Time() < next->GPS().Time() + TRACE_TRIANGLE_MIN_TIME)
       // filter too small circles from i.e. thermalling
-      return false;
+      return 0;
     
     if(back->GPS().Altitude() >= next->GPS().Altitude() - TRACE_START_FINISH_ALT_DIFF) {
       // valid points altitudes combination
@@ -86,14 +88,14 @@ bool CContestMgr::BiggestLoopFind(const CTrace &trace, const CTrace::CPoint *&st
       if(dist < TRACE_CLOSED_MAX_DIST) {
         start = next;
         end = back;
-        return true;
+        return pointsCount;
       }
     }
     point = next;
     next = point->Next();
   }
   
-  return false;
+  return 0;
 }
 
 
@@ -151,12 +153,56 @@ void CContestMgr::SolvePoints(const CRules &rules)
 
 void CContestMgr::SolveTriangle(const CTrace &trace)
 {
-  // do only if the point was added
   if(trace.Size() > 2) {
     const CTrace::CPoint *start = 0;
     const CTrace::CPoint *end = 0;
-    if(BiggestLoopFind(trace, start, end)) {
-      std::cout << "Loop detected: " << TimeToString(start->GPS().Time()) << " -> " << TimeToString(end->GPS().Time()) << std::endl;
+    if(unsigned pointsCount = BiggestLoopFind(trace, start, end)) {
+      std::cout << "Loop detected (" << pointsCount << "): " << TimeToString(start->GPS().Time()) << " -> " << TimeToString(end->GPS().Time()) << std::endl;
+      
+      CTrace traceLoop(TRACE_TRIANGLE_FIX_LIMIT, 0, 0, COMPRESSION_ALGORITHM);
+      if(pointsCount > TRACE_TRIANGLE_FIX_LIMIT * 1.5) {
+        // add points to dedicated loop trace to make calulations faster
+        const CTrace::CPoint *point = start;
+        while(point) {
+          traceLoop.Push(new CTrace::CPoint(traceLoop, *point, traceLoop._back));
+          if(point == end)
+            break;
+          point = point->Next();
+        }
+        traceLoop.Compress();
+        start = traceLoop.Front();
+        end = traceLoop.Back();
+      }
+      
+      // const CTrace::CPoint *current = start;
+      // typedef std::vector<const CTrace::CPoint *> CPointArray;
+      // CPointArray temporary;
+      
+      // while(current) {
+      //   const CPoint *next = &current->Next();
+      //   while(next) {
+          
+      //     next = next->Next();
+      //   }
+      // }
+      
+      // unsigned arraySize = pointsCount * (pointsCount + 1) / 2;
+      // double *path = new double[arraySize];
+      // CTrace::CPoint *path = new CTrace::CPoint *[arraySize];
+      // for(unsigned i=0; i<arraySize; i++) {
+      //   for(unsigned j=i; j<arraySize; j++) {
+      //     path[i+j];
+      //   }
+      // }
+
+      // for(unsigned k=0; k<arraySize; k++) {
+      //   for(unsigned i=0; i<arraySize; i++) {
+      //     for(unsigned j=i; j<arraySize; j++) {
+            
+      //     }
+      //   }
+      // }
+      // std::cout << "arraySize: " << arraySize << std::endl;
     }
   }
 }
