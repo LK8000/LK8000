@@ -117,5 +117,6 @@ void CTestContest::Run()
   std::cout << std::endl;
   
   Dump(CContestMgr::TYPE_OLC_CLASSIC);
+  Dump(CContestMgr::TYPE_OLC_FAI);
   Dump(CContestMgr::TYPE_OLC_LEAGUE);
 }

@@ -6,10 +6,11 @@
    $Id: $
 */
 
-#ifndef __COMPETITIONMGR_H__
-#define __COMPETITIONMGR_H__
+#ifndef __CONTESTMGR_H__
+#define __CONTESTMGR_H__
 
 #include "Trace.h"
+#include <map>
 
 
 class CContestMgr {
@@ -56,6 +57,7 @@ public:
   };
   
   typedef std::vector<CResult> CResultArray;
+  typedef std::multimap<double, const CTrace::CPoint *> CDistanceMap;
   
 private:
   const unsigned _handicap;
@@ -65,6 +67,9 @@ private:
   
   double AproxDistanceToLineSegment(const CPointGPS &point, const CPointGPS &seg1, const CPointGPS &seg2) const;
   unsigned BiggestLoopFind(const CTrace &trace, const CTrace::CPoint *&start, const CTrace::CPoint *&end) const;
+  void BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut) const;
+  bool FAITriangleEdgeCheck(double length, double best) const;
+  bool FAITriangleEdgeCheck(double length1, double length2, double length3) const;
   void SolvePoints(const CRules &rules);
   void SolveTriangle(const CTrace &trace);
   
@@ -77,6 +82,7 @@ public:
   static const unsigned TRACE_TRIANGLE_MIN_TIME = 10 * 60;
   static const unsigned TRACE_CLOSED_MAX_DIST = 1000;
   static const unsigned TRACE_SPRINT_TIME_LIMIT = 150 * 60;
+  static const unsigned TRACE_FAI_BIG_TRIANGLE_LENGTH = 500 * 1000;
 
   static unsigned COMPRESSION_ALGORITHM;
   
