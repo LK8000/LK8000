@@ -839,7 +839,7 @@ static int CheckFlags(TCHAR *temp)
 
 static double ReadAltitude(TCHAR *temp)
 {
-  TCHAR *Stop;
+  TCHAR *Stop=temp;
   double Altitude=-9999;
   Altitude = StrToDouble(temp, &Stop);
 
