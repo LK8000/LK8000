@@ -685,7 +685,7 @@ static bool ReadCoords(TCHAR *Text, double *X, double *Y)
 {
   double Ydeg=0, Ymin=0, Ysec=0;
   double Xdeg=0, Xmin=0, Xsec=0;
-  TCHAR *Stop;
+  TCHAR *Stop=Text;
 
   // ToDo, add more error checking and making it more tolerant/robust
 
@@ -947,7 +947,7 @@ static void AddArea(AIRSPACE_AREA *Temp)
 
 static void ReadAltitude(TCHAR *Text_, AIRSPACE_ALT *Alt)
 {
-  TCHAR *Stop;
+  TCHAR *Stop=NULL;
   TCHAR Text[128];
   TCHAR *pWClast = NULL;
   TCHAR *pToken;
@@ -1078,6 +1078,8 @@ static void CalculateSector(TCHAR *Text)
   double StartBearing;
   double EndBearing;
   TCHAR *Stop;
+
+  // TODO 110307 FIX problem of StrToDouble returning 0.0 in case of error , and not setting Stop!!
 
   Radius = NAUTICALMILESTOMETRES * (double)StrToDouble(&Text[2], &Stop);
   StartBearing = (double)StrToDouble(&Stop[1], &Stop);
