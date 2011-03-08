@@ -27,37 +27,37 @@ public:
     const CTrace &_trace;
     const unsigned _tpNum;
     const unsigned _timeLimit;
-    const double _finishAltDiff;
+    const unsigned _finishAltDiff;
   public:
-    CRules(TType type, const CTrace &trace, unsigned tpNum, unsigned timeLimit, double finishAltDiff):
+    CRules(TType type, const CTrace &trace, unsigned tpNum, unsigned timeLimit, unsigned finishAltDiff):
       _type(type), _trace(trace), _tpNum(tpNum), _timeLimit(timeLimit), _finishAltDiff(finishAltDiff) {}
-    TType Type() const           { return _type; }
-    const CTrace &Trace() const  { return _trace; }
-    unsigned TPNum() const       { return _tpNum; }
-    unsigned TimeLimit() const   { return _timeLimit; }
-    double FinishAltDiff() const { return _finishAltDiff; }
+    TType Type() const             { return _type; }
+    const CTrace &Trace() const    { return _trace; }
+    unsigned TPNum() const         { return _tpNum; }
+    unsigned TimeLimit() const     { return _timeLimit; }
+    unsigned FinishAltDiff() const { return _finishAltDiff; }
   };
   
   
   class CResult {
     TType          _type;
-    double         _distance;
-    double         _score;
+    unsigned       _distance;
+    float          _score;
     CPointGPSArray _pointArray;
   public:
     CResult(): _distance(0), _score(0) {}
-    CResult(TType type, double distance, double score, const CPointGPSArray &pointArray):
+    CResult(TType type, unsigned distance, float score, const CPointGPSArray &pointArray):
       _type(type), _distance(distance), _score(score), _pointArray(pointArray) {}
     TType Type() const                       { return _type; }
-    double Distance() const                  { return _distance; }
-    double Score() const                     { return _score / 1000; }
-    double Duration() const                  { return _pointArray.empty() ? 0 : (_pointArray.back().Time() - _pointArray.front().Time()); }
-    double Speed() const                     { return _pointArray.size() ? (_distance / Duration()) : 0; }
+    unsigned Distance() const                { return _distance; }
+    float Score() const                      { return _score; }
+    unsigned Duration() const                { return _pointArray.empty() ? 0 : (_pointArray.back().Time() - _pointArray.front().Time()); }
+    float Speed() const                      { return _pointArray.size() ? ((float)_distance / Duration()) : 0; }
     const CPointGPSArray &PointArray() const { return _pointArray; }
   };
   
   typedef std::vector<CResult> CResultArray;
-  typedef std::multimap<double, const CTrace::CPoint *> CDistanceMap;
+  typedef std::multimap<unsigned, const CTrace::CPoint *> CDistanceMap;
   
 private:
   const unsigned _handicap;
@@ -65,11 +65,11 @@ private:
   CTrace _traceSprint;
   CResultArray _resultArray;
   
-  double AproxDistanceToLineSegment(const CPointGPS &point, const CPointGPS &seg1, const CPointGPS &seg2) const;
+  unsigned AproxDistanceToLineSegment(const CPointGPS &point, const CPointGPS &seg1, const CPointGPS &seg2) const;
   unsigned BiggestLoopFind(const CTrace &trace, const CTrace::CPoint *&start, const CTrace::CPoint *&end) const;
   void BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut) const;
-  bool FAITriangleEdgeCheck(double length, double best) const;
-  bool FAITriangleEdgeCheck(double length1, double length2, double length3) const;
+  bool FAITriangleEdgeCheck(unsigned length, unsigned best) const;
+  bool FAITriangleEdgeCheck(unsigned length1, unsigned length2, unsigned length3) const;
   void SolvePoints(const CRules &rules);
   void SolveTriangle(const CTrace &trace);
   

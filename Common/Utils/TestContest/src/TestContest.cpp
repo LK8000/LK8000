@@ -27,7 +27,7 @@ CTestContest::CTestContest(const std::string &igcFile, unsigned handicap, unsign
 }
 
 
-void CTestContest::GPSHandler(void *user, double time, double latitude, double longitude, double altitude)
+void CTestContest::GPSHandler(void *user, unsigned time, double latitude, double longitude, unsigned altitude)
 {
   if(latitude == 0 && longitude == 0)
     return;
@@ -40,7 +40,7 @@ void CTestContest::GPSHandler(void *user, double time, double latitude, double l
   test->_contestMgr.Add(new CPointGPS(time, latitude, longitude, altitude));
   
   CTimeStamp iterEnd;
-  double iterTime = iterEnd - iterBegin;
+  unsigned iterTime = iterEnd - iterBegin;
   if(iterTime > test->_maxIterProcessPeriod) {
     test->_maxIterProcessPeriod = iterTime;
     test->_maxIterProcessTime = time;

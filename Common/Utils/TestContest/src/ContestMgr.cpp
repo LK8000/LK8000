@@ -34,12 +34,19 @@ const char *CContestMgr::TypeToString(TType type)
 }
 
 
-double CContestMgr::AproxDistanceToLineSegment(const CPointGPS &point, const CPointGPS &seg1, const CPointGPS &seg2) const
+unsigned CContestMgr::AproxDistanceToLineSegment(const CPointGPS &point, const CPointGPS &seg1, const CPointGPS &seg2) const
 {
-  double A = point.Longitude() - seg1.Longitude();
-  double B = point.Latitude() - seg1.Latitude();
-  double C = seg2.Longitude() - seg1.Longitude();
-  double D = seg2.Latitude() - seg1.Latitude();
+  double lat = point.Latitude();
+  double lon = point.Longitude();
+  double seg1Lat = seg1.Latitude();
+  double seg1Lon = seg1.Longitude();
+  double seg2Lat = seg2.Latitude();
+  double seg2Lon = seg2.Longitude();
+  
+  double A = lon - seg1Lon;
+  double B = lat - seg1Lat;
+  double C = seg2Lon - seg1Lon;
+  double D = seg2Lat - seg1Lat;
   
   double dot = A * C + B * D;
   double len_sq = C * C + D * D;
@@ -48,21 +55,23 @@ double CContestMgr::AproxDistanceToLineSegment(const CPointGPS &point, const CPo
   double xx, yy;
   
   if(param < 0) {
-    xx = seg1.Longitude();
-    yy = seg1.Latitude();
+    xx = seg1Lon;
+    yy = seg1Lat;
   }
   else if(param > 1) {
-    xx = seg2.Longitude();
-    yy = seg2.Latitude();
+    xx = seg2Lon;
+    yy = seg2Lat;
   }
   else {
-    xx = seg1.Longitude() + param * C;
-    yy = seg1.Latitude() + param * D;
+    xx = seg1Lon + param * C;
+    yy = seg1Lat + param * D;
   }
   
   double dist;
-  DistanceBearing(point.Latitude(), point.Longitude(), yy, xx, &dist, 0);
+  DistanceBearing(lat, lon, yy, xx, &dist, 0);
   return dist;
+  
+  //  return point.Distance(CPointGPS(0, yy, xx, 0));
 }
 
 
@@ -80,11 +89,11 @@ unsigned CContestMgr::BiggestLoopFind(const CTrace &trace, const CTrace::CPoint 
       // filter too small circles from i.e. thermalling
       return 0;
     
-    if(back->GPS().Altitude() >= next->GPS().Altitude() - TRACE_START_FINISH_ALT_DIFF) {
+    if(back->GPS().Altitude() + TRACE_START_FINISH_ALT_DIFF >= next->GPS().Altitude()) {
       // valid points altitudes combination
       // TODO: Determine if distance to line segment is really needed
-      //double dist = back->GPS().Distance(next->GPS());
-      double dist = AproxDistanceToLineSegment(back->GPS(), point->GPS(), next->GPS());
+      //unsigned dist = back->GPS().Distance(next->GPS());
+      unsigned dist = AproxDistanceToLineSegment(back->GPS(), point->GPS(), next->GPS());
       if(dist < TRACE_CLOSED_MAX_DIST) {
         start = next;
         end = back;
@@ -108,19 +117,19 @@ void CContestMgr::BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut) const
       const CTrace::CPoint *point = start;
       while(point) {
         traceOut.Push(new CTrace::CPoint(traceOut, *point, traceOut._back));
-        traceOut.Compress();
         if(point == end)
           break;
         point = point->Next();
       }
+      traceOut.Compress();
     }
   }
 }
 
 
-bool CContestMgr::FAITriangleEdgeCheck(double length, double best) const
+bool CContestMgr::FAITriangleEdgeCheck(unsigned length, unsigned best) const
 {
-  double length4 = length * 4;
+  unsigned length4 = length * 4;
   if(length4 < TRACE_FAI_BIG_TRIANGLE_LENGTH) { 
     // triangle to small to be a big FAI
     if(best * 7 > length * 25) // 28%
@@ -136,16 +145,16 @@ bool CContestMgr::FAITriangleEdgeCheck(double length, double best) const
 }
 
 
-bool CContestMgr::FAITriangleEdgeCheck(double length1, double length2, double length3) const
+bool CContestMgr::FAITriangleEdgeCheck(unsigned length1, unsigned length2, unsigned length3) const
 {
-  double length = length1 + length2 + length3;
+  unsigned length = length1 + length2 + length3;
   if(length < TRACE_FAI_BIG_TRIANGLE_LENGTH) {
-    double lengthMin = std::min(length1, std::min(length2, length3));
+    unsigned lengthMin = std::min(length1, std::min(length2, length3));
     return lengthMin * 4 > length;
   }
   else {
-    double lengthMin = std::min(length1, std::min(length2, length3));
-    double lengthMax = std::min(length1, std::min(length2, length3));
+    unsigned lengthMin = std::min(length1, std::min(length2, length3));
+    unsigned lengthMax = std::min(length1, std::min(length2, length3));
     return lengthMin * 25 > length * 7 && lengthMax * 20 < length * 9;
   }
 }
@@ -157,12 +166,12 @@ void CContestMgr::SolvePoints(const CRules &rules)
     return;
   
   // find the last point meeting criteria
-  double finishAltDiff = rules.FinishAltDiff();
+  unsigned finishAltDiff = rules.FinishAltDiff();
   const CTrace::CPoint *point = rules.Trace().Back();
   const CTrace::CPoint *last = 0;
-  double startAltitude = rules.Trace().Front()->GPS().Altitude();
+  unsigned startAltitude = rules.Trace().Front()->GPS().Altitude();
   while(point) {
-    if(point->GPS().Altitude() >= startAltitude - finishAltDiff) {
+    if(point->GPS().Altitude() + finishAltDiff >= startAltitude) {
       last = point;
       break;
     }
@@ -183,7 +192,7 @@ void CContestMgr::SolvePoints(const CRules &rules)
   // prepare result
   CPointGPSArray pointArray;
   point = traceResult.Front();
-  double distance = 0;
+  unsigned distance = 0;
   while(point) {
     if(pointArray.size())
       distance += point->GPS().Distance(pointArray.back());
@@ -193,11 +202,11 @@ void CContestMgr::SolvePoints(const CRules &rules)
   
   // store result
   if(distance > _resultArray[rules.Type()].Distance()) {
-    double score;
+    float score;
     if(rules.Type() == TYPE_OLC_LEAGUE)
-      score = distance / 2.5 * 200 / (_handicap + 100);
+      score = distance / 1000.0 / 2.5 * 200 / (_handicap + 100);
     else
-      score = distance * 100 / _handicap;
+      score = distance / 1000.0 * 100 / _handicap;
     _resultArray[rules.Type()] = CResult(rules.Type(), distance, score, pointArray);
   }
 }
@@ -214,7 +223,7 @@ void CContestMgr::SolveTriangle(const CTrace &trace)
       CDistanceMap distanceMap1st;
       const CTrace::CPoint *next = 0;
       for(next=point1st->Next(); next; next=next->Next()) {
-        double dist = point1st->GPS().Distance(next->GPS());
+        unsigned dist = point1st->GPS().Distance(next->GPS());
         // check if 1st edge not too short
         if(!FAITriangleEdgeCheck(dist, result.Distance()))
           continue;
@@ -223,7 +232,7 @@ void CContestMgr::SolveTriangle(const CTrace &trace)
       
       // check all possible first edges of the triangle
       for(CDistanceMap::reverse_iterator it1st=distanceMap1st.rbegin(); it1st!=distanceMap1st.rend(); ++it1st) {
-        double dist1st = it1st->first;
+        unsigned dist1st = it1st->first;
         if(!FAITriangleEdgeCheck(dist1st, result.Distance()))
           // better solution found in the meantime
           break;
@@ -232,7 +241,7 @@ void CContestMgr::SolveTriangle(const CTrace &trace)
         CDistanceMap distanceMap2nd;
         const CTrace::CPoint *point2nd = it1st->second;
         for(next=point2nd->Next(); next; next=next->Next()) {
-          double dist = point2nd->GPS().Distance(next->GPS());
+          unsigned dist = point2nd->GPS().Distance(next->GPS());
           // check if 2nd edge not too long
           if(dist * 14 > dist1st * 20) // 45% > 25%
             continue;
@@ -244,19 +253,19 @@ void CContestMgr::SolveTriangle(const CTrace &trace)
         
         // check all possible second and third edges of the triangle
         for(CDistanceMap::reverse_iterator it2nd=distanceMap2nd.rbegin(); it2nd!=distanceMap2nd.rend(); ++it2nd) {
-          double dist2nd = it2nd->first;
+          unsigned dist2nd = it2nd->first;
           if(!FAITriangleEdgeCheck(dist2nd, result.Distance()))
             // better solution found in the meantime
             break;
           
           const CTrace::CPoint *point3rd = it2nd->second;
-          double dist3rd = point3rd->GPS().Distance(point1st->GPS());
-          double distance = dist1st + dist2nd + dist3rd;
+          unsigned dist3rd = point3rd->GPS().Distance(point1st->GPS());
+          unsigned distance = dist1st + dist2nd + dist3rd;
           if(distance > result.Distance()) {
             // check if valid FAI triangle
             if(FAITriangleEdgeCheck(dist1st, dist2nd, dist3rd)) {
               // store new result
-              double score = distance * 0.3 * 100 / _handicap;
+              float score = distance / 1000.0 * 0.3 * 100 / _handicap;
               CPointGPSArray pointArray;
               pointArray.push_back(point1st->GPS());
               pointArray.push_back(point2nd->GPS());

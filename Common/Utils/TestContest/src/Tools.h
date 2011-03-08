@@ -107,7 +107,7 @@ public:
 };
 
 
-std::string TimeToString(double time);
+std::string TimeToString(unsigned time);
 std::string CoordToString(double coord, bool latitude);
 
 

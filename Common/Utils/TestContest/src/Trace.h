@@ -48,7 +48,7 @@ private:
   CPoint *_back;
   
   bool _startDetected;
-  double _startMaxAltitude;
+  unsigned _startMaxAltitude;
   
   CTrace(const CTrace &);              /**< @brief Disallowed */
   CTrace &operator=(const CTrace &);   /**< @brief Disallowed */
@@ -80,10 +80,10 @@ class CTrace::CPoint {
   CPointGPSSmart _gps;
   
   // trace compression values
-  double _prevDistance;
-  double _inheritedCost;
-  double _distanceCost;
-  double _timeCost;
+  unsigned _prevDistance;
+  unsigned _inheritedCost;
+  unsigned _distanceCost;
+  unsigned _timeCost;
   
   // list iterators
   CPoint *_prev;
@@ -114,8 +114,8 @@ public:
 
 inline bool CTrace::CPoint::operator<(const CPoint &ref) const
 {
-  double leftCost = 0;
-  double rightCost = 0;
+  unsigned leftCost = 0;
+  unsigned rightCost = 0;
       
   leftCost += _distanceCost;
   rightCost += ref._distanceCost;
@@ -128,7 +128,7 @@ inline bool CTrace::CPoint::operator<(const CPoint &ref) const
     leftCost *= _timeCost;
     rightCost *= ref._timeCost;
   }
-      
+
   if(leftCost > rightCost)
     return false;
   else if(leftCost < rightCost)

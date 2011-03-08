@@ -39,10 +39,10 @@ class CTestContest {
   CKMLWrapper _kml;
   CContestMgr _contestMgr;
   CTimeStampArray _timeArray;
-  double _maxIterProcessPeriod;
-  double _maxIterProcessTime;
+  unsigned _maxIterProcessPeriod;
+  unsigned _maxIterProcessTime;
   
-  static void GPSHandler(void *user, double time, double latitude, double longitude, double altitude);
+  static void GPSHandler(void *user, unsigned time, double latitude, double longitude, unsigned altitude);
   
   void Dump(const CContestMgr::TType type) const;
   
