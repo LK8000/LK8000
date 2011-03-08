@@ -4201,13 +4201,25 @@ void ClubForbiddenMsg() {
         return;
 }
 
-int GetFontRenderer() // Karim
-{
-  if (FontRenderer == 0)
-  {
-    return ANTIALIASED_QUALITY;
+int GetFontRenderer() { // Karim
+
+  switch(FontRenderer) {
+	case 0:
+		return NONANTIALIASED_QUALITY;
+		break;
+	case 1:
+		return DEFAULT_QUALITY;
+		break;
+	case 2:
+		return ANTIALIASED_QUALITY;
+		break;
+	case 3:
+		return CLEARTYPE_COMPAT_QUALITY;
+		break;
+	default:
+		return CLEARTYPE_COMPAT_QUALITY;
+		break;
   }
-  else return CLEARTYPE_COMPAT_QUALITY;
 
 }
 

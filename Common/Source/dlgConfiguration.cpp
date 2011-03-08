@@ -1734,10 +1734,11 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M955_ = "ClearType" 
-    dfe->addEnumText(gettext(TEXT("_@M955_")));
-	// LKTOKEN  _@M956_ = "Anti Aliasing" 
-    dfe->addEnumText(gettext(TEXT("_@M956_")));
+
+    dfe->addEnumText(gettext(TEXT("_@M479_"))); // None
+    dfe->addEnumText(gettext(TEXT("_@M480_"))); // Normal
+    dfe->addEnumText(gettext(TEXT("_@M956_"))); // Anti Aliasing
+    dfe->addEnumText(gettext(TEXT("_@M955_"))); // Clear Type Compatible
     dfe->Set(FontRenderer);
     wp->RefreshDisplay();
   }

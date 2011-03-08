@@ -1367,8 +1367,14 @@ and the bottom bar will be always full black or full white.
 
 @901
 [Font Renderer]
-Anti Aliasing or ClearType Quality. On some devices like old 3850 Anti Aliasing is not working. 
-Also on PNA like MIO400 portrait mode is better visible with Cleartype selected.
+Font smoothing will make characters appearing much better on the screen.
+[None] will force disabling font smoothing
+[Normal] will use default system rendering
+[Anti Aliasing] will use standard smoothing
+[ClearType] will use advanced Quality. 
+Please note that on some devices like old 3850 Anti Aliasing is not working. 
+On some PNAs in portrait mode, and on PPC2002, Antialiasing will work better.
+Otherwise, by default LK8000 is using ClearType.
 You must exit and restart LK8000 to see the effect of changes.
 
 @9999

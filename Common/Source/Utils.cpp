@@ -1029,8 +1029,12 @@ void ReadRegistrySettings(void)
   Temp = 60; // black bottom bar by default
   GetFromRegistry(szRegistryBarOpacity,&Temp); 
   BarOpacity = Temp;
-  
-  Temp = 0; 
+
+  #ifdef PPC2002  
+  Temp = 2; 
+  #else
+  Temp = 3; 
+  #endif
   GetFromRegistry(szRegistryFontRenderer,&Temp); 
   FontRenderer = Temp;
 
