@@ -337,7 +337,8 @@ bool CAirspace::FinishWarning(int now,
 
 	  // Events for FLY zones
 	  case aweMovingInsideFly:
-		if ( (abs(_hdistance)>hdistancemargin) && (abs(_vdistance)>AltWarningMargin) ) _userwarningstate = awNone;
+		if ( (abs(_hdistance)>2*hdistancemargin) && (abs(_vdistance)>2*AltWarningMargin) ) _userwarningstate = awNone;
+		if ( (abs(_hdistance)<hdistancemargin) && (abs(_vdistance)<AltWarningMargin) ) _userwarningstate = awPredicted;
 		//ACK Step back: 
 		if ( (_userwarnackstate != awDailyAck) && (_userwarnackstate>_userwarningstate) && (now > _warnacktimeout) ) _userwarnackstate=_userwarningstate;
 		break;
@@ -377,7 +378,8 @@ bool CAirspace::FinishWarning(int now,
 		
 	  // Events for NON-FLY zones
 	  case aweMovingOutsideNonfly:
-		if ( (abs(_hdistance)>hdistancemargin) && (abs(_vdistance)>AltWarningMargin) ) _userwarningstate = awNone;
+		if ( (abs(_hdistance)>2*hdistancemargin) && (abs(_vdistance)>2*AltWarningMargin) ) _userwarningstate = awNone;
+		if ( (abs(_hdistance)<hdistancemargin) && (abs(_vdistance)<AltWarningMargin) ) _userwarningstate = awPredicted;
 		//ACK Step back: 
 		if ( (_userwarnackstate != awDailyAck) && (_userwarnackstate>_userwarningstate) && (now > _warnacktimeout) ) _userwarnackstate=_userwarningstate;
 		break;
@@ -437,7 +439,7 @@ bool CAirspace::GetDistanceInfo(int *hDistance, int *Bearing, int *vDistance)
 void CAirspace::GetWarningPoint(double &longitude, double &latitude) const
 {
   double dist = fabs(_hdistance);
-  if (_pos_inside_now) {
+  if (_hdistance < 0) {
 	// if vertical distance smaller, use actual position as warning point indicating a directly above or below warning situation
 	if ( abs(_vdistance) < abs(_hdistance) ) dist = 0;
   }
