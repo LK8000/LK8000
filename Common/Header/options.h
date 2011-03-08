@@ -100,8 +100,6 @@
 // ew terrain manager, for shading and altitudes ex LKTEST
 #define NEWRASTER	1	// expire 110601
 
-#define CUPCOM		1	// CUP comments allocated dynamically
-
 #define ORBITER		1	// thermal orbiter
 
 #define LKSTARTUP	1	// new startup screen

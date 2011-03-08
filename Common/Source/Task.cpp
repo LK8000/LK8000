@@ -388,11 +388,7 @@ void RefreshTask() {
 
   // Determine if a waypoint is in the task
   if (WayPointList) {
-    #if CUPCOM
     for (i=NUMRESWP; i< (int)NumberOfWayPoints; i++) { // maybe paragliders takeoff is set as home
-    #else
-    for (i=0; i< (int)NumberOfWayPoints; i++) {
-    #endif
       WayPointList[i].InTask = false;
       if ((WayPointList[i].Flags & HOME) == HOME) {
         WayPointList[i].InTask = true;
@@ -933,9 +929,7 @@ void RefreshTaskWaypoint(int i) {
 static int FindOrAddWaypoint(WAYPOINT *read_waypoint) {
   // this is an invalid pointer!
   read_waypoint->Details = 0;
-  #if CUPCOM
   read_waypoint->Comment = 0;
-  #endif
   read_waypoint->Name[NAME_SIZE-1] = 0; // prevent overrun if data is bogus
  
   int waypoint_index = FindMatchingWaypoint(read_waypoint);

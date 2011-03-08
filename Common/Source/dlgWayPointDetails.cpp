@@ -440,14 +440,10 @@ void dlgWayPointDetailsShowModal(void){
   }
 
   wp = ((WndProperty *)wf->FindByName(TEXT("prpWpComment")));
-  #if CUPCOM	// 101112
   if (WayPointList[SelectedWaypoint].Comment==NULL)
 	wp->SetText(_T(""));
   else
 	wp->SetText(WayPointList[SelectedWaypoint].Comment);
-  #else
-  wp->SetText(WayPointList[SelectedWaypoint].Comment);
-  #endif
   wp->SetButtonSize(16);
 
   Units::LongitudeToString(WayPointList[SelectedWaypoint].Longitude, sTmp, sizeof(sTmp)-1);

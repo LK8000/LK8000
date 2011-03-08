@@ -57,34 +57,20 @@ static int WaypointOutOfTerrainRangeDontAskAgain = -1;
 void CloseWayPoints() {
   StartupStore(TEXT(". CloseWayPoints%s"),NEWLINE);
   unsigned int i;
-  #if CUPCOM
   if (NumberOfWayPoints>0) { // we must free also RESWps comments!
-  #else
-  if (NumberOfWayPoints>NUMRESWP) {
-  #endif
 	StartupStore(TEXT(". Waypoint list was not empty, closing.%s"),NEWLINE);
-	#if CUPCOM
 	for (i=0; i<NumberOfWayPoints; i++) {
-	#else
-	for (i=NUMRESWP; i<NumberOfWayPoints; i++) {
-	#endif
 		if (WayPointList[i].Details) {
 			free(WayPointList[i].Details);
 			WayPointList[i].Details = NULL;
 		}
-		#if CUPCOM
 		if (WayPointList[i].Comment) {
 			free(WayPointList[i].Comment);
 			WayPointList[i].Comment = NULL;
 		}
-		#endif
 	}
   }
-  #if CUPCOM
   NumberOfWayPoints = 0; // we must force realloc also for RESWPs
-  #else
-  NumberOfWayPoints = NUMRESWP; // 100206 TODO check , 0 or NUMRESWP?  0, this was a bug corrected by another bug 
-  #endif
  
   // here we should not have any memory allocated for wps including Reswp
   if(WayPointList != NULL) {
@@ -369,9 +355,7 @@ goto_inloop:
 		continue;
 
 	new_waypoint->Details = NULL; 
-	#if CUPCOM
 	new_waypoint->Comment = NULL; 
-	#endif
 
 	if ( fileformat == LKW_DAT || fileformat== LKW_XCW ) {
 		if (ParseWayPointString(nTemp2String, new_waypoint)) {
@@ -556,7 +540,6 @@ int ParseWayPointString(TCHAR *String,WAYPOINT *Temp)
     // the zoom factor
     ctemp[COMMENT_SIZE] = '\0';
 
-    #if CUPCOM
     if (_tcslen(ctemp) >0 ) {
 	if (Temp->Comment) {
 		free(Temp->Comment);
@@ -564,16 +547,9 @@ int ParseWayPointString(TCHAR *String,WAYPOINT *Temp)
 	Temp->Comment = (TCHAR*)malloc((_tcslen(ctemp)+1)*sizeof(TCHAR));
 	_tcscpy(Temp->Comment, ctemp);
     }
-    #else
-    _tcscpy(Temp->Comment, ctemp);
-    #endif
 
   } else {
-    #if CUPCOM
     Temp->Comment = NULL; // useless
-    #else
-    Temp->Comment[0] = '\0';
-    #endif
     Temp->Zoom = 0;
   }
 
@@ -1002,11 +978,9 @@ void ReadWayPoints(void)
         if (WayPointList[i].Details) {
           free(WayPointList[i].Details);
         }
-	#if CUPCOM
         if (WayPointList[i].Comment) {
           free(WayPointList[i].Comment);
         }
-	#endif
       }
     }
     MessageBoxX(hWndMainWindow,
@@ -1304,9 +1278,7 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
   TCHAR flags[MAX_PATH];
   TCHAR latitude[MAX_PATH];
   TCHAR longitude[MAX_PATH];
-  #if CUPCOM
   TCHAR comment[COMMENT_SIZE*2]; //@ 101112
-  #endif
   TCHAR rwdirection[30];
   TCHAR rwlen[30];
   TCHAR cupFreq[CUPSIZE_FREQ*2];
@@ -1342,7 +1314,6 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	}
 	#endif
 
-	#if CUPCOM	//@ 101112
 	if (wpt->Comment!=NULL)
 		_tcscpy(comment,wpt->Comment);
 	else
@@ -1357,17 +1328,6 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 		wpt->Name,
 		comment);  
 
-	#else
-	fprintf(fp,"%d,%S,%S,%dM,%S,%S,%S\r\n",
-		wpt->Number,
-		latitude,
-		longitude,
-		iround(wpt->Altitude),
-		flags,
-		wpt->Name,
-		wpt->Comment);  
-	#endif
-
 	return;
   } // DAT
 
@@ -1376,7 +1336,6 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	char NS[]= "SN";
 	char EW[]= "WE";
 
-	#if CUPCOM	//@ 101112
 
 	if (wpt->Comment!=NULL)
 		_tcscpy(comment,wpt->Comment);
@@ -1394,20 +1353,6 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	wpt->Altitude,
 	comment);
 
-	#else
-
-	fprintf(fp,"W  %S A %.10f%c%c %.10f%c%c 27-MAR-62 00:00:00 %.6f %S\r\n",
-	wpt->Name,
-	fabs(wpt->Latitude),
-	0xba,
-	NS[wpt->Latitude<0?0:1],
-	fabs(wpt->Longitude),
-	0xba,
-	EW[wpt->Longitude<0?0:1],
-	wpt->Altitude,
-	wpt->Comment);
-
-	#endif
 
 	return;
   }
@@ -1436,7 +1381,6 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	} else
 		_tcscpy(cupCode,_T(""));
 
-	#if CUPCOM	//@ 101112
 	if (wpt->Comment!=NULL)
 		_tcscpy(comment,wpt->Comment);
 	else
@@ -1453,21 +1397,6 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 		rwlen,
 		cupFreq,
 		comment);
-	#else
-	// TODO convert altitude and runway len to units in use
-	fprintf(fp,"\"%S\",%S,%S,%S,%S,%d.0m,%d,%S,%S,%S,%S\r\n",
-		wpt->Name,
-		wpt->Code,
-		wpt->Country,
-		latitude,
-		longitude,
-		iround(wpt->Altitude),
-		wpt->Style,
-		rwdirection,
-		rwlen,
-		cupFreq,
-		wpt->Comment);
-	#endif
 
 	return;
   }
@@ -1664,12 +1593,10 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_TAKEOFF].Altitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_TAKEOFF].Flags=TURNPOINT;
 	_tcscpy(WayPointList[RESWP_TAKEOFF].Name, gettext(TEXT(RESWP_TAKEOFF_NAME)) ); // 100227
-	#if CUPCOM
 	if ( WayPointList[RESWP_TAKEOFF].Comment == NULL) {
 		WayPointList[RESWP_TAKEOFF].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
 	}
 		else StartupStore(_T("......... AddReserved TAKEOFF comment non empty!\n")); // 101102 TODO REMOVE
-	#endif
 	_tcscpy(WayPointList[RESWP_TAKEOFF].Comment,_T("WAITING FOR GPS POSITION")); // 100227
 	WayPointList[RESWP_TAKEOFF].Zoom=0;
 	WayPointList[RESWP_TAKEOFF].Reachable=FALSE;
@@ -1688,9 +1615,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_LASTTHERMAL].Altitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_LASTTHERMAL].Flags=TURNPOINT;
 	_tcscpy(WayPointList[RESWP_LASTTHERMAL].Name, gettext(TEXT(RESWP_LASTTHERMAL_NAME)) );
-	#if CUPCOM
 	WayPointList[RESWP_LASTTHERMAL].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
-	#endif
 	// LKTOKEN _@M1320_ "LAST GOOD THERMAL"
 	_tcscpy(WayPointList[RESWP_LASTTHERMAL].Comment, gettext(TEXT("_@M1320_")));		
 	WayPointList[RESWP_LASTTHERMAL].Zoom=0;
@@ -1714,9 +1639,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_TEAMMATE].Altitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_TEAMMATE].Flags=TURNPOINT;
 	_tcscpy(WayPointList[RESWP_TEAMMATE].Name, gettext(TEXT(RESWP_TEAMMATE_NAME)) );
-	#if CUPCOM
 	WayPointList[RESWP_TEAMMATE].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
-	#endif
 	// LKTOKEN _@M1321_ "TEAM MATE"
 	_tcscpy(WayPointList[RESWP_TEAMMATE].Comment, gettext(TEXT("_@M1321_")));
 	WayPointList[RESWP_TEAMMATE].Zoom=0;
@@ -1740,9 +1663,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_FLARMTARGET].Altitude=RESWP_INVALIDNUMBER;
 	WayPointList[RESWP_FLARMTARGET].Flags=TURNPOINT;
 	_tcscpy(WayPointList[RESWP_FLARMTARGET].Name, gettext(TEXT(RESWP_FLARMTARGET_NAME)) );
-	#if CUPCOM
 	WayPointList[RESWP_FLARMTARGET].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
-	#endif
 	// LKTOKEN _@M1322_ "FLARM TARGET"
 	_tcscpy(WayPointList[RESWP_FLARMTARGET].Comment, gettext(TEXT("_@M1322_")));
 	WayPointList[RESWP_FLARMTARGET].Zoom=0;
@@ -1776,11 +1697,7 @@ void InitVirtualWaypoints()	// 091102
   }
 
   // if first load, reserve space
-  #if CUPCOM
   if (NumberOfWayPoints<=NUMRESWP) {
-  #else
-  if (NumberOfWayPoints==0) {
-  #endif
 	AddReservedWaypoints();
 	NumberOfWayPoints=NUMRESWP;
 	StartupStore(_T(". InitVirtualWaypoints: done (%d vwp)%s"),NUMRESWP,NEWLINE);
@@ -2028,7 +1945,6 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
 	for (j=0, i=0; i<_tcslen(ctemp); i++) 
 		if (ctemp[i]!='\"') ctemp[j++]=ctemp[i];
 	ctemp[j]= _T('\0');
-	#if CUPCOM
 	if (_tcslen(ctemp) >0 ) {
 		if (Temp->Comment) {
 			free(Temp->Comment);
@@ -2036,20 +1952,13 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
 		Temp->Comment = (TCHAR*)malloc((_tcslen(ctemp)+1)*sizeof(TCHAR));
 		_tcscpy(Temp->Comment, ctemp);
 	}
-	#else
-	_tcscpy(Temp->Comment, ctemp);
-	#endif
 
 	#ifdef CUPDEBUG
 	StartupStore(_T("   CUP COMMENT=<%s>%s"),Temp->Comment,NEWLINE);
 	#endif
 	Temp->Zoom = 0;
   } else {
-	#if CUPCOM
 	Temp->Comment=NULL; // useless
-	#else
-	Temp->Comment[0] = '\0';
-	#endif
 	Temp->Zoom = 0;
   }
 
@@ -2356,7 +2265,6 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   if (_tcslen(tComment) >COMMENT_SIZE) {
 	tComment[COMMENT_SIZE-1]=_T('\0');
   }
-  #if CUPCOM
   if (_tcslen(tComment) >0 ) {
 	if (Temp->Comment) {
 		free(Temp->Comment);
@@ -2365,9 +2273,6 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
 	_tcscpy(Temp->Comment,tComment);
   } else
 	Temp->Comment=NULL; //@ 101104
-  #else
-  _tcscpy(Temp->Comment,tComment);
-  #endif
 
 
 

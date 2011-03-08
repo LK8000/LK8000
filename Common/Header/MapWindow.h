@@ -89,11 +89,7 @@ typedef struct _WAYPOINT_INFO
   double Altitude;
   int Flags;
   TCHAR Name[NAME_SIZE + 1];
-#if CUPCOM
   TCHAR *Comment;
-#else
-  TCHAR Comment[COMMENT_SIZE + 1];
-#endif
   POINT	Screen;
   int Zoom;
   BOOL Reachable;

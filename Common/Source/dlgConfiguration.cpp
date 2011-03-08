@@ -1140,12 +1140,8 @@ static void OnWaypointNewClicked(WindowControl * Sender){
   edit_waypoint.Longitude = GPS_INFO.Longitude;
   edit_waypoint.FileNum = 0; // default, put into primary waypoint file
   edit_waypoint.Flags = 0;
-  #if CUPCOM
   edit_waypoint.Comment=(TCHAR*)malloc(100*sizeof(TCHAR)); //@ bugfix 101110
   _tcscpy(edit_waypoint.Comment,_T(""));
-  #else
-  edit_waypoint.Comment[0] = 0;
-  #endif
   edit_waypoint.Name[0] = 0;
   edit_waypoint.Details = 0;
   edit_waypoint.Number = NumberOfWayPoints;

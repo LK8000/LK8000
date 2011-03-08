@@ -3220,11 +3220,7 @@ void InputEvents::eventAddWaypoint(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("landable")) == 0) {
     edit_waypoint.Flags += LANDPOINT;
   }
-#if CUPCOM
   edit_waypoint.Comment = NULL;
-#else
-  edit_waypoint.Comment[0] = '\0';
-#endif
   edit_waypoint.Name[0] = 0;
   edit_waypoint.Details = 0;
   edit_waypoint.Number = NumberOfWayPoints;
