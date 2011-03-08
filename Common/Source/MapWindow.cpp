@@ -3591,6 +3591,10 @@ void MapWindow::RenderMapWindow(  RECT rc)
 
   DrawGPSStatus(hdcDrawWindow, rc);
 
+  #if (WINDOWSPC<1)
+  LKBatteryManager();
+  #endif
+
   /*
    * This may not be the correct place for locking map. 
    * In fact we just need once in a second somewhere to check for the following:
@@ -3794,12 +3798,6 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 	InvalidateRect(hWndMapWindow, &MapRect, false);
       }
       UpdateTimeStats(false);
-
-
-	#if (WINDOWSPC<1)
-	LKBatteryManager();
-	#endif
-
 
       // we do caching after screen update, to minimise perceived delay
       UpdateCaches(first);
