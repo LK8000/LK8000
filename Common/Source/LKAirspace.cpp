@@ -693,7 +693,7 @@ double CAirspace_Area::ScreenCrossTrackError(double lon1, double lat1,
 //            <0 for P2 right of the line
 //    See: the January 2001 Algorithm "Area of 2D and 3D Triangles and Polygons"
 inline static double
-isLeft( const CGeoPoint &P0, const CGeoPoint &P1, const double &longitude, const double &latitude )
+isLeft( const CGeoPoint &P0, const CGeoPoint &P1, const float &longitude, const float &latitude )
 {
     return ( (P1.Longitude() - P0.Longitude()) * (latitude - P0.Latitude())
             - (longitude - P0.Longitude()) * (P1.Latitude() - P0.Latitude()) );
@@ -703,7 +703,7 @@ isLeft( const CGeoPoint &P0, const CGeoPoint &P1, const double &longitude, const
 //      Input:   P = a point,
 //               V[] = vertex points of a polygon V[n+1] with V[n]=V[0]
 //      Return:  wn = the winding number (=0 only if P is outside V[])
-int CAirspace_Area::wn_PnPoly( const double &longitude, const double &latitude ) const
+int CAirspace_Area::wn_PnPoly( const float &longitude, const float &latitude ) const
 {
   int    wn = 0;    // the winding number counter
 
@@ -746,10 +746,9 @@ bool CAirspace_Area::Inside(const double &longitude, const double &latitude) con
 }
 
 
-
-void CAirspace_Area::DistanceFromLine(double cx, double cy, double ax, double ay ,
-					  double bx, double by, 
-					  double &distanceSegment, double &xx, double &yy) const
+void CAirspace_Area::DistanceFromLine(LONG cx, LONG cy, LONG ax, LONG ay ,
+					  LONG bx, LONG by, 
+					  LONG &distanceSegment, LONG &xx, LONG &yy) const
 {
 	//
 	// find the distance from the point (cx,cy) to the line
@@ -823,14 +822,14 @@ void CAirspace_Area::DistanceFromLine(double cx, double cy, double ax, double ay
 
 		Then the distance from C to P = |s|*L.
 	*/
-	double r_numerator = (cx-ax)*(bx-ax) + (cy-ay)*(by-ay);
-	double r_denomenator = (bx-ax)*(bx-ax) + (by-ay)*(by-ay);
-	double r = r_numerator / r_denomenator; //
-    double px = ax + r*(bx-ax);
-    double py = ay + r*(by-ay);
-    double s =  ((ay-cy)*(bx-ax)-(ax-cx)*(by-ay) ) / r_denomenator;
+	LONG r_numerator = (cx-ax)*(bx-ax) + (cy-ay)*(by-ay);
+	LONG r_denomenator = (bx-ax)*(bx-ax) + (by-ay)*(by-ay);
+	float r = (float)r_numerator / (float)r_denomenator;
+    LONG px = ax + r*(bx-ax);
+    LONG py = ay + r*(by-ay);
+    float s =  ((ay-cy)*(bx-ax)-(ax-cx)*(by-ay)) / (float)r_denomenator;
 
-	double distanceLine = fabs(s)*sqrt(r_denomenator);
+	LONG distanceLine = fabs(s)*isqrt4(r_denomenator);
 
 	// (xx,yy) is the point on the lineSegment closest to (cx,cy) //
 	xx = px;
@@ -842,19 +841,19 @@ void CAirspace_Area::DistanceFromLine(double cx, double cy, double ax, double ay
 	}
 	else
 	{
-		double dist1 = (cx-ax)*(cx-ax) + (cy-ay)*(cy-ay);
-		double dist2 = (cx-bx)*(cx-bx) + (cy-by)*(cy-by);
+		LONG dist1 = (cx-ax)*(cx-ax) + (cy-ay)*(cy-ay);
+		LONG dist2 = (cx-bx)*(cx-bx) + (cy-by)*(cy-by);
 		if (dist1 < dist2)
 		{
 			xx = ax;
 			yy = ay;
-			distanceSegment = sqrt(dist1);
+			distanceSegment = isqrt4(dist1);
 		}
 		else
 		{
 			xx = bx;
 			yy = by;
-			distanceSegment = sqrt(dist2);
+			distanceSegment = isqrt4(dist2);
 		}
 	}
 }
@@ -863,13 +862,21 @@ double CAirspace_Area::Range(const double &longitude, const double &latitude, do
 {
   // find nearest distance to line segment
   unsigned int i;
-  double dist = 0;
-  double dist_candidate = 0;
+  LONG dist = 0;
+  LONG dist_candidate = 0;
   double nearestdistance;
   double nearestbearing;
-  double lon4, lat4;
+  double lon4_candidate = 0;
+  double lat4_candidate = 0;
+  POINT p,pnext,p3,p4, p4_candidate;
+  float flongitude = longitude;
+  float flatitude = latitude;
+
   int    wn = 0;    // the winding number counter
   
+  p4_candidate.x = p4_candidate.y = 0;
+  
+  MapWindow::LatLon2Screen(longitude, latitude, p3);
   CGeoPointList::const_iterator it = _geopoints.begin();
   CGeoPointList::const_iterator itnext = it;
   ++itnext;
@@ -883,30 +890,32 @@ double CAirspace_Area::Range(const double &longitude, const double &latitude, do
 				 longitude, latitude,
 				 &lon4, &lat4);*/
 
-	DistanceFromLine(longitude, latitude,
-				 it->Longitude(), it->Latitude(),
-				 itnext->Longitude(), itnext->Latitude(),
-				 dist, lon4, lat4);
+	MapWindow::LatLon2Screen(it->Longitude(), it->Latitude(), p);
+	MapWindow::LatLon2Screen(itnext->Longitude(), itnext->Latitude(), pnext);
 
-	if (it->Latitude() <= latitude) {         // start y <= P.Latitude
-		if (itnext->Latitude() > latitude)      // an upward crossing
-			if (isLeft( *it, *itnext, longitude, latitude) > 0)  // P left of edge
+	DistanceFromLine(p3.x, p3.y, p.x, p.y, pnext.x, pnext.y, dist, p4.x, p4.y);
+
+	if (it->Latitude() <= flatitude) {         // start y <= P.Latitude
+		if (itnext->Latitude() > flatitude)      // an upward crossing
+			if (isLeft( *it, *itnext, flongitude, flatitude) > 0)  // P left of edge
 				++wn;            // have a valid up intersect
 	} else {                       // start y > P.Latitude (no test needed)
-		if (itnext->Latitude() <= latitude)     // a downward crossing
-			if (isLeft( *it, *itnext, longitude, latitude) < 0)  // P right of edge
+		if (itnext->Latitude() <= flatitude)     // a downward crossing
+			if (isLeft( *it, *itnext, flongitude, flatitude) < 0)  // P right of edge
 				--wn;            // have a valid down intersect
 	}
 
 	if ((dist<dist_candidate)||(i==0)) {
       dist_candidate = dist;
-      DistanceBearing(latitude, longitude,
-                      lat4, lon4, &nearestdistance, 
-                      &nearestbearing);
+	  p4_candidate = p4;
     }
     ++it;
 	++itnext;
   }
+
+  MapWindow::Screen2LatLon(p4_candidate.x, p4_candidate.y, lon4_candidate, lat4_candidate);
+  DistanceBearing(latitude, longitude, lat4_candidate, lon4_candidate, &nearestdistance, &nearestbearing);
+  
   bearing = nearestbearing;
   if (wn!=0) return -nearestdistance; else return nearestdistance;
 }
@@ -923,7 +932,7 @@ void CAirspace_Area::SetPoints(CGeoPointList &Area_Points)
 
 void CAirspace_Area::CalcBounds()
 {
-  list <CGeoPoint>::iterator it = _geopoints.begin();
+  CGeoPointList::iterator it = _geopoints.begin();
   
   _bounds.minx = it->Longitude();
   _bounds.maxx = it->Longitude();

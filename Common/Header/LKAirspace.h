@@ -46,14 +46,14 @@ public:
   CGeoPoint(const double &latitude, const double &longitude) : _latitude(latitude), _longitude(longitude) {}
 
   // Attributes interface
-  double Latitude() const { return _latitude; }
-  void Latitude(const double &latitude) { _latitude = latitude; }
-  double Longitude() const { return _longitude; }
-  void Longitude(const double &longitude) { _longitude = longitude; }
+  float Latitude() const { return _latitude; }
+  void Latitude(const float &latitude) { _latitude = latitude; }
+  float Longitude() const { return _longitude; }
+  void Longitude(const float &longitude) { _longitude = longitude; }
 
 private:
-  double _latitude;
-  double _longitude;
+  float _latitude;
+  float _longitude;
 };
 
 typedef std::list<CGeoPoint> CGeoPointList;
@@ -228,7 +228,7 @@ public:
 private:
   CGeoPointList _geopoints;
   POINTList _screenpoints;
-  int wn_PnPoly( const double &longitude, const double &latitude ) const;
+  int wn_PnPoly( const float &longitude, const float &latitude ) const;
   void CalcBounds();
 /*  void ScreenClosestPoint(const POINT &p1, const POINT &p2, 
 			const POINT &p3, POINT *p4, int offset) const;
@@ -237,9 +237,9 @@ private:
 			double lon3, double lat3,
 			double *lon4, double *lat4) const;*/
 			
-  void DistanceFromLine(double cx, double cy, double ax, double ay,
-					  double bx, double by, 
-					  double &distanceSegment, double &xx, double &yy) const;
+	void DistanceFromLine(LONG cx, LONG cy, LONG ax, LONG ay ,
+					  LONG bx, LONG by, 
+					  LONG &distanceSegment, LONG &xx, LONG &yy) const;
 
 };
 
