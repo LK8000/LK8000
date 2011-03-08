@@ -3,8 +3,8 @@ WHATS NEW IN 2.1d0
 
 NEW
 
-- New Setup Setting for FontRenderer.
-  System Page 11 choose from Cleartype/Anti Aliasing mode.
+- New Setup Setting for Font Smoothing
+  System Page 11 choose from None, Default, Antialiasing and Cleartype.
   On some devices/resolution/orientation sometimes one choice is better than the other.
 
 - New SCREEN LOCKING system for paragliders.
@@ -37,6 +37,15 @@ BUGFIX
    and not the same as a task point, or an alternate itself.
 
 -  Bugfix finish line or sector not appearing when a task had only 2 turnpoints including start.
+
+-  Bugfix Waypoint parser loading unusual CUP files may crash the software while loading configuration
+
+-  Bugfix task restart was advancing to second turnpoint after start, if previously had passed 
+   first turnpoint after start!  This problem was here since ever.
+
+-  Bugfix loading airspaces, with faulty files might crash the software
+
+-  Attempt to prevent possible problem with Battery Manager messages.
 
 - (refix LX declaration for non standard ASCII waypoint names)
 
