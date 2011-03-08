@@ -168,7 +168,7 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   _lastknownalt = alt;
   _lastknownagl = agl;
 
-  if (_flyzone && agl<0) agl = 0;		// Limit actual altitude to surface to not get warnings on landing in fly zones
+  if (agl<0) agl = 0;		// Limit actual altitude to surface to not get warnings if close to ground
 
   // Calculate distances
   CalculateDistance(NULL,NULL,NULL);
