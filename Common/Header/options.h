@@ -97,6 +97,13 @@
  #define TOPOFASTCACHE	1
 #endif
 
+// Eric Carden, March 7, 2011
+// minor changes in LKDrawWaypoints.cpp
+// changes "if...else" blocks to "switch...case" to simplify any
+// future addition of a 3rd (or more) "Landables Value" option
+
+#define IF_TO_SWITCH
+
 // ew terrain manager, for shading and altitudes ex LKTEST
 #define NEWRASTER	1	// expire 110601
 
