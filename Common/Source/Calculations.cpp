@@ -879,6 +879,8 @@ void StartTask(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   Calculated->CruiseStartAlt = Calculated->NavAltitude;
   Calculated->CruiseStartTime = Basic->Time;
 
+  aatdistance.Reset();
+
   // JMW TODO accuracy: Get time from aatdistance module since this is
   // more accurate
 
