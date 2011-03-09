@@ -13,35 +13,28 @@
 #include "Utils.h"
 #include <vector>
 
-#ifndef DEG_TO_RAD
-#define DEG_TO_RAD					0.0174532925199432958
-#define RAD_TO_DEG					57.2957795131
-#endif
-
 class CPointGPS {
   static const unsigned MAX_TIME_DELTA = 20 * 3600; // 20h
   static const unsigned DAY_SECONDS    = 24 * 3600; // 24h
   
   // data from GPS
   unsigned _time;
-  unsigned _alt;
+  short _alt;
   double _lat;
   double _lon;
   
 public:
-  CPointGPS(unsigned time, double lat, double lon, unsigned alt):
-    //_time(time), _lat(lat * DEG_TO_RAD), _lon(lon * DEG_TO_RAD), _alt(alt)
-    _time(time), _alt(alt), _lat(lat), _lon(lon)
-  {}
+  CPointGPS(unsigned time, double lat, double lon, short alt):
+    _time(time), _alt(alt), _lat(lat), _lon(lon) {}
   
   unsigned Time() const      { return _time; }
-  // double Latitude() const  { return _lat * RAD_TO_DEG; }
-  // double Longitude() const { return _lon * RAD_TO_DEG; }
   double Latitude() const    { return _lat; }
   double Longitude() const   { return _lon; }
-  unsigned Altitude() const  { return _alt; }
+  short Altitude() const     { return _alt; }
   
+  unsigned Distance(double lat, double lon) const;
   unsigned Distance(const CPointGPS &ref) const;
+  unsigned Distance(const CPointGPS &seg1, const CPointGPS &seg2) const;
   unsigned TimeDelta(const CPointGPS &ref) const;
 };
 
@@ -49,32 +42,55 @@ typedef CSmartPtr<const CPointGPS> CPointGPSSmart;
 typedef std::vector<CPointGPS> CPointGPSArray;
 
 
-inline unsigned CPointGPS::Distance(const CPointGPS &ref) const
+inline unsigned CPointGPS::Distance(double lat, double lon) const
 {
   double dist;
-  DistanceBearing(ref._lat, ref._lon, _lat, _lon, &dist, 0);
+  DistanceBearing(lat, lon, _lat, _lon, &dist, 0);
   return dist;
 }
 
 
-// inline double CPointGPS::Distance(const CPointGPS &ref) const
-// { 
-//   using namespace std;
-//   double clat1 = cos(_lat);
-//   double clat2 = cos(ref._lat);
-//   double dlon = ref._lon - _lon;
-//   double s1 = sin((ref._lat - _lat) / 2);
-//   double s2 = sin(dlon / 2);
-//   double a = max(0.0,min(1.0,s1*s1+clat1*clat2*s2*s2));
-//   return 6371000.0*2.0*atan2(sqrt(a),sqrt(1.0-a));
-// }
+inline unsigned CPointGPS::Distance(const CPointGPS &ref) const
+{
+  return Distance(ref._lat, ref._lon);
+}
+
+
+inline unsigned CPointGPS::Distance(const CPointGPS &seg1, const CPointGPS &seg2) const
+{
+  double A = _lon - seg1._lon;
+  double B = _lat - seg1._lat;
+  double C = seg2._lon - seg1._lon;
+  double D = seg2._lat - seg1._lat;
+  
+  double dot = A * C + B * D;
+  double len_sq = C * C + D * D;
+  double param = dot / len_sq;
+  
+  double lon, lat;
+  
+  if(param < 0) {
+    lon = seg1._lon;
+    lat = seg1._lat;
+  }
+  else if(param > 1) {
+    lon = seg2._lon;
+    lat = seg2._lat;
+  }
+  else {
+    lon = seg1._lon + param * C;
+    lat = seg1._lat + param * D;
+  }
+  
+  return Distance(lat, lon);
+}
 
 
 inline unsigned CPointGPS::TimeDelta(const CPointGPS &ref) const
 {
-  unsigned delta = _time - ref._time;
+  int delta = _time - ref._time;
   if(delta < 0) {
-    if(delta < -(DAY_SECONDS - MAX_TIME_DELTA))
+    if(delta < -(int)(DAY_SECONDS - MAX_TIME_DELTA))
       delta += DAY_SECONDS;
   }
   return delta;

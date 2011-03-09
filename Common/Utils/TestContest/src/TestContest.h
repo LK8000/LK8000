@@ -42,7 +42,7 @@ class CTestContest {
   unsigned _maxIterProcessPeriod;
   unsigned _maxIterProcessTime;
   
-  static void GPSHandler(void *user, unsigned time, double latitude, double longitude, unsigned altitude);
+  static void GPSHandler(void *user, unsigned time, double latitude, double longitude, short altitude);
   
   void Dump(const CContestMgr::TType type) const;
   

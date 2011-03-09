@@ -27,7 +27,7 @@ CTestContest::CTestContest(const std::string &igcFile, unsigned handicap, unsign
 }
 
 
-void CTestContest::GPSHandler(void *user, unsigned time, double latitude, double longitude, unsigned altitude)
+void CTestContest::GPSHandler(void *user, unsigned time, double latitude, double longitude, short altitude)
 {
   if(latitude == 0 && longitude == 0)
     return;
@@ -60,6 +60,7 @@ void CTestContest::Dump(const CContestMgr::TType type) const
 {
   const CContestMgr::CResult &result = _contestMgr.Result(type);
   
+  std::cout << std::endl;
   std::cout << "Contest '" << CContestMgr::TypeToString(type) << "':" << std::endl;
   std::cout << " - Distance: " << result.Distance() << std::endl;
   std::cout << " - Score: " << result.Score() << std::endl;
@@ -102,10 +103,11 @@ void CTestContest::Run()
   std::cout << " - fix data size:                " << sizeof(CTrace::CPoint) + sizeof(unsigned) + sizeof(CPointGPS) << std::endl;
   std::cout << " - number of analysed fixes:     " << trace.AnalyzedPointCount() << std::endl;;
   std::cout << " - number of trace fixes:        " << trace.Size() << std::endl;;
+  std::cout << " - number of FAI trace fixes:    " << CContestMgr::TRACE_TRIANGLE_FIX_LIMIT << std::endl;;
   std::cout << " - number of sprint trace fixes: " << traceSprint.Size() << std::endl;;
   std::cout << " - execution time:               " <<
     std::fixed << std::setprecision(2) << (_timeArray.back() - _timeArray.front()) / 1000.0 << "s" << std::endl;;
-  std::cout << " - max iteration processing:     " << _maxIterProcessPeriod << "ms (" << TimeToString(_maxIterProcessTime) << ")" << std::endl;
+  std::cout << " - max iteration time:           " << _maxIterProcessPeriod << "ms (" << TimeToString(_maxIterProcessTime) << ")" << std::endl;
   if(_timeArray.size() > 2) {
     std::cout << " - execution time of " << TIME_ANALYSIS_STEP << " fixes periods: " << std::endl;
     
@@ -114,9 +116,8 @@ void CTestContest::Run()
         std::setw(4) << _timeArray[i] - _timeArray[i - 1] << "ms" << std::endl;
   }
   
-  std::cout << std::endl;
-  
   Dump(CContestMgr::TYPE_OLC_CLASSIC);
   Dump(CContestMgr::TYPE_OLC_FAI);
+  Dump(CContestMgr::TYPE_OLC_PLUS);
   Dump(CContestMgr::TYPE_OLC_LEAGUE);
 }

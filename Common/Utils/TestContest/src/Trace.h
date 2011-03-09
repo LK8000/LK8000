@@ -39,7 +39,7 @@ private:
   
   const unsigned _maxSize;
   const unsigned _timeLimit;
-  const unsigned _startAltitudeLoss;
+  const short _startAltitudeLoss;
   const unsigned _algorithm;
   unsigned _size;
   unsigned _analyzedPointCount;
@@ -48,7 +48,7 @@ private:
   CPoint *_back;
   
   bool _startDetected;
-  unsigned _startMaxAltitude;
+  short _startMaxAltitude;
   
   CTrace(const CTrace &);              /**< @brief Disallowed */
   CTrace &operator=(const CTrace &);   /**< @brief Disallowed */
@@ -56,7 +56,7 @@ private:
   void Push(CPoint *point);
   
 public:
-  CTrace(unsigned maxSize, unsigned timeLimit, unsigned startAltitudeLoss, unsigned algorithm);
+  CTrace(unsigned maxSize, unsigned timeLimit, short startAltitudeLoss, unsigned algorithm);
   ~CTrace();
   
   void Push(const CPointGPSSmart &gps);
@@ -80,9 +80,9 @@ class CTrace::CPoint {
   CPointGPSSmart _gps;
   
   // trace compression values
-  unsigned _prevDistance;
-  unsigned _inheritedCost;
-  unsigned _distanceCost;
+  float _prevDistance;
+  float _inheritedCost;
+  float _distanceCost;
   unsigned _timeCost;
   
   // list iterators
@@ -114,8 +114,8 @@ public:
 
 inline bool CTrace::CPoint::operator<(const CPoint &ref) const
 {
-  unsigned leftCost = 0;
-  unsigned rightCost = 0;
+  float leftCost = 0;
+  float rightCost = 0;
       
   leftCost += _distanceCost;
   rightCost += ref._distanceCost;

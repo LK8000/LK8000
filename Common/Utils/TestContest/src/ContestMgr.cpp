@@ -12,7 +12,7 @@
 unsigned CContestMgr::COMPRESSION_ALGORITHM;
 
 
-CContestMgr::CContestMgr(unsigned handicap, unsigned startAltitudeLoss):
+CContestMgr::CContestMgr(unsigned handicap, short startAltitudeLoss):
   _handicap(handicap),
   _trace(TRACE_FIX_LIMIT, 0, startAltitudeLoss, COMPRESSION_ALGORITHM),
   _traceSprint(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT, 0, COMPRESSION_ALGORITHM)
@@ -25,53 +25,13 @@ CContestMgr::CContestMgr(unsigned handicap, unsigned startAltitudeLoss):
 const char *CContestMgr::TypeToString(TType type)
 {
   const char *typeStr[] = {
-    "OLC Classic",
-    "OLC FAI",
-    "OLC League",
+    "OLC-Classic",
+    "FAI-OLC",
+    "OLC-Plus",
+    "OLC-League",
     "<invalid>" 
   };
   return typeStr[type];
-}
-
-
-unsigned CContestMgr::AproxDistanceToLineSegment(const CPointGPS &point, const CPointGPS &seg1, const CPointGPS &seg2) const
-{
-  double lat = point.Latitude();
-  double lon = point.Longitude();
-  double seg1Lat = seg1.Latitude();
-  double seg1Lon = seg1.Longitude();
-  double seg2Lat = seg2.Latitude();
-  double seg2Lon = seg2.Longitude();
-  
-  double A = lon - seg1Lon;
-  double B = lat - seg1Lat;
-  double C = seg2Lon - seg1Lon;
-  double D = seg2Lat - seg1Lat;
-  
-  double dot = A * C + B * D;
-  double len_sq = C * C + D * D;
-  double param = dot / len_sq;
-  
-  double xx, yy;
-  
-  if(param < 0) {
-    xx = seg1Lon;
-    yy = seg1Lat;
-  }
-  else if(param > 1) {
-    xx = seg2Lon;
-    yy = seg2Lat;
-  }
-  else {
-    xx = seg1Lon + param * C;
-    yy = seg1Lat + param * D;
-  }
-  
-  double dist;
-  DistanceBearing(lat, lon, yy, xx, &dist, 0);
-  return dist;
-  
-  //  return point.Distance(CPointGPS(0, yy, xx, 0));
 }
 
 
@@ -91,9 +51,7 @@ unsigned CContestMgr::BiggestLoopFind(const CTrace &trace, const CTrace::CPoint 
     
     if(back->GPS().Altitude() + TRACE_START_FINISH_ALT_DIFF >= next->GPS().Altitude()) {
       // valid points altitudes combination
-      // TODO: Determine if distance to line segment is really needed
-      //unsigned dist = back->GPS().Distance(next->GPS());
-      unsigned dist = AproxDistanceToLineSegment(back->GPS(), point->GPS(), next->GPS());
+      unsigned dist = back->GPS().Distance(point->GPS(), next->GPS());
       if(dist < TRACE_CLOSED_MAX_DIST) {
         start = next;
         end = back;
@@ -166,10 +124,10 @@ void CContestMgr::SolvePoints(const CRules &rules)
     return;
   
   // find the last point meeting criteria
-  unsigned finishAltDiff = rules.FinishAltDiff();
+  short finishAltDiff = rules.FinishAltDiff();
   const CTrace::CPoint *point = rules.Trace().Back();
   const CTrace::CPoint *last = 0;
-  unsigned startAltitude = rules.Trace().Front()->GPS().Altitude();
+  short startAltitude = rules.Trace().Front()->GPS().Altitude();
   while(point) {
     if(point->GPS().Altitude() + finishAltDiff >= startAltitude) {
       last = point;
@@ -282,19 +240,41 @@ void CContestMgr::SolveTriangle(const CTrace &trace)
 }
 
 
+void CContestMgr::SolveOLCPlus()
+{
+  CResult &classic = _resultArray[TYPE_OLC_CLASSIC];
+  CResult &fai = _resultArray[TYPE_OLC_FAI];
+  _resultArray[TYPE_OLC_PLUS] = CResult(TYPE_OLC_PLUS, 0, classic.Score() + fai.Score(), CPointGPSArray());
+}
+
+
 void CContestMgr::Add(const CPointGPSSmart &gps)
 {
-  // OLC Plus
-  _trace.Push(gps);
-  CTrace traceLoop(TRACE_TRIANGLE_FIX_LIMIT, 0, 0, COMPRESSION_ALGORITHM);
-  BiggestLoopFind(_trace, traceLoop);
-  if(traceLoop.Size())
-    SolveTriangle(traceLoop); 
-  _trace.Compress();
-  SolvePoints(CRules(TYPE_OLC_CLASSIC, _trace, 7, 0, TRACE_START_FINISH_ALT_DIFF));
+  static unsigned step = 0;
+  const unsigned STEPS_NUM = 3;
   
-  // OLC League
+  // OLC-Plus
+  _trace.Push(gps);
+  if(step % STEPS_NUM == 0) {
+    // Solve FAI-OLC
+    CTrace traceLoop(TRACE_TRIANGLE_FIX_LIMIT, 0, 0, COMPRESSION_ALGORITHM);
+    BiggestLoopFind(_trace, traceLoop);
+    if(traceLoop.Size())
+      SolveTriangle(traceLoop); 
+  }
+  _trace.Compress();
+  if(step % STEPS_NUM == 1) {
+    // Solve OLC-Classic
+    SolvePoints(CRules(TYPE_OLC_CLASSIC, _trace, 7, 0, TRACE_START_FINISH_ALT_DIFF));
+  }
+  SolveOLCPlus();
+  
+  // OLC-League
   _traceSprint.Push(gps);
   _traceSprint.Compress();
-  SolvePoints(CRules(TYPE_OLC_LEAGUE, _traceSprint, 5, TRACE_SPRINT_TIME_LIMIT, 0));
+  if(step % STEPS_NUM == 2)
+    // Solve OLC-Sprint
+    SolvePoints(CRules(TYPE_OLC_LEAGUE, _traceSprint, 5, TRACE_SPRINT_TIME_LIMIT, 0));
+  
+  step++;
 }

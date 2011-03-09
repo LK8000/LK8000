@@ -10,7 +10,7 @@
 #include <iostream>
 
 
-CTrace::CTrace(unsigned maxSize, unsigned timeLimit, unsigned startAltitudeLoss, unsigned algorithm):
+CTrace::CTrace(unsigned maxSize, unsigned timeLimit, short startAltitudeLoss, unsigned algorithm):
   _maxSize(maxSize), _timeLimit(timeLimit), _startAltitudeLoss(startAltitudeLoss), _algorithm(algorithm),
   _size(0), _analyzedPointCount(0), _front(0), _back(0),
   _startDetected(false), _startMaxAltitude(0)
@@ -41,7 +41,7 @@ void CTrace::Push(CPoint *point)
   
   if(_timeLimit) {
     // limit the trace to required time period
-    while(_back && _front && _back->_gps->Time() - _front->_gps->Time() > _timeLimit) {
+    while(_back && _front && _back->_gps->TimeDelta(*_front->_gps) > _timeLimit) {
       CPoint *next = _front->_next;
       delete _front;
       _size--;
@@ -218,7 +218,7 @@ void CTrace::CPoint::Reduce()
     throw std::runtime_error("Reduce(), _next");
   
   // asses new costs & set new prevDistance for next point
-  unsigned distanceCost;
+  float distanceCost;
   if(_trace._algorithm & ALGORITHM_TRIANGLES) {
     unsigned newDistance = _next->_gps->Distance(*_prev->_gps);
     distanceCost = _prevDistance + _next->_prevDistance - newDistance;
@@ -229,7 +229,7 @@ void CTrace::CPoint::Reduce()
     distanceCost = _distanceCost; 
   }
   
-  unsigned cost = (distanceCost + _inheritedCost) / 2;
+  float cost = (distanceCost + _inheritedCost) / 2.0;
   _prev->_inheritedCost += cost;
   _next->_inheritedCost += cost;
 }
