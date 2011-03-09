@@ -23,6 +23,14 @@ NEW
 
 - Preliminar OLC work testbench from Mateusz
 
+- New SIM pan mode: you can now position the aircraft in pan mode during simulations in any point
+  of the screen, and not only in the sight-centered, with a long click on the map.
+  Example: start SIM mode, enter PAN mode, move the map where you want, choose a point on the map
+  where you want to position the aircraft, and press with your finger for a couple of seconds on that point.
+  Basically, earlier you could only long-click on the center, and it was complicated to position the
+  map center exactly on the point selected for the new aircraft desired reposition. Now it is very easy.
+
+
 CHANGES
 
 - AAT permanently ON for paragliders in configuration. 
