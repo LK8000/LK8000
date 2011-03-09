@@ -2487,6 +2487,14 @@ savecodesize1:
 #else /* MAP_ZOOM */
 					if (mode.AnyPan()) {
 #endif /* MAP_ZOOM */
+						#if 110308
+						Screen2LatLon(X,Y,PanLatitude,PanLongitude);
+						// LKTOKEN  _@M204_ = "Current position updated" 
+						DoStatusMessage(gettext(TEXT("_@M204_")));
+						GPS_INFO.Latitude=PanLatitude;
+						GPS_INFO.Longitude=PanLongitude;
+						break;
+						#else
 						// match only center screen
 						if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(12)) && 
 						      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(12)) ) {
@@ -2496,6 +2504,7 @@ savecodesize1:
 							GPS_INFO.Longitude=PanLongitude;
 							break;
 						}
+						#endif
 					}
 				}
 				// If we are here,  (DCI/2)+30 < dwDownTime < DOUBLECLICKINTERVAL
@@ -2535,15 +2544,24 @@ savecodesize1:
 #else /* MAP_ZOOM */
 					if (mode.AnyPan()) {
 #endif /* MAP_ZOOM */
+						#if 110308
+						Screen2LatLon(X,Y,PanLongitude,PanLatitude);
+						// LKTOKEN  _@M204_ = "Current position updated" 
+						DoStatusMessage(gettext(TEXT("_@M204_")));
+						GPS_INFO.Latitude=PanLatitude;
+						GPS_INFO.Longitude=PanLongitude;
+						break;
+						#else
 						// match only center screen
 						if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(5)) && 
 						      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(5)) ) {
-	// LKTOKEN  _@M204_ = "Current position updated" 
+							// LKTOKEN  _@M204_ = "Current position updated" 
 							DoStatusMessage(gettext(TEXT("_@M204_")));
 							GPS_INFO.Latitude=PanLatitude;
 							GPS_INFO.Longitude=PanLongitude;
 							break;
 						}
+						#endif
 					}
 				}
 				if (!OnAirSpace) break; // 100119
