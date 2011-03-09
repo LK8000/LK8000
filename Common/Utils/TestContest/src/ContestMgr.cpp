@@ -45,7 +45,7 @@ unsigned CContestMgr::BiggestLoopFind(const CTrace &trace, const CTrace::CPoint 
   CTrace::CPoint *next = point->Next();
   while(next && next != back) {
     pointsCount--;
-    if(back->GPS().Time() < next->GPS().Time() + TRACE_TRIANGLE_MIN_TIME)
+    if(back->GPS().TimeDelta(next->GPS()) < TRACE_TRIANGLE_MIN_TIME)
       // filter too small circles from i.e. thermalling
       return 0;
     
@@ -108,12 +108,12 @@ bool CContestMgr::FAITriangleEdgeCheck(unsigned length1, unsigned length2, unsig
   unsigned length = length1 + length2 + length3;
   if(length < TRACE_FAI_BIG_TRIANGLE_LENGTH) {
     unsigned lengthMin = std::min(length1, std::min(length2, length3));
-    return lengthMin * 4 > length;
+    return lengthMin * 25 > length * 7; // 28%
   }
   else {
     unsigned lengthMin = std::min(length1, std::min(length2, length3));
-    unsigned lengthMax = std::min(length1, std::min(length2, length3));
-    return lengthMin * 25 > length * 7 && lengthMax * 20 < length * 9;
+    unsigned lengthMax = std::max(length1, std::max(length2, length3));
+    return lengthMin * 4 > length && lengthMax * 20 < length * 9; // 25% + 45%
   }
 }
 
@@ -225,9 +225,11 @@ void CContestMgr::SolveTriangle(const CTrace &trace)
               // store new result
               float score = distance / 1000.0 * 0.3 * 100 / _handicap;
               CPointGPSArray pointArray;
+              pointArray.push_back(trace.Front()->GPS());
               pointArray.push_back(point1st->GPS());
               pointArray.push_back(point2nd->GPS());
               pointArray.push_back(point3rd->GPS());
+              pointArray.push_back(trace.Back()->GPS());
               _resultArray[TYPE_OLC_FAI] = CResult(TYPE_OLC_FAI, distance, score, pointArray);
             }
           }
