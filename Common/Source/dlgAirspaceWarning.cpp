@@ -516,7 +516,7 @@ static void OnAirspaceListItemPaint(WindowControl * Sender, HDC hDC){
 	// we have to ask airspacemanager to perform the required calculations
 	//inside = airspace_copy.CalculateDistance(&hdistance, &bearing, &vdistance);
 	//inside = CAirspaceManager::Instance().AirspaceCalculateDistance(airspaces[i], &hdistance, &bearing, &vdistance);
-	inside = airspace_copy.GetDistanceInfo(&hdistance, &bearing, &vdistance);
+	bool distances_ready = airspace_copy.GetDistanceInfo(inside, hdistance, bearing, vdistance);
 	
 	switch (airspace_copy.UserWarningState()) {
 	  default:
@@ -538,43 +538,53 @@ static void OnAirspaceListItemPaint(WindowControl * Sender, HDC hDC){
 		TCHAR DistanceText[MAX_PATH];
 		if (!airspace_copy.Flyzone()) {
 		  //Non fly zone
-		  if (hdistance <= 0) {
-			// Directly above or below airspace
-			Units::FormatUserAltitude(fabs(vdistance),DistanceText, 7);
-			if (vdistance > 0) {
-			  wsprintf(sTmp, TEXT("< %c %s ab %s"), 
-					  GetAckIndicator(airspace_copy.UserWarnAckState()), 
-					  sType, DistanceText);
+		  if (distances_ready) {
+			if (hdistance <= 0) {
+			  // Directly above or below airspace
+			  Units::FormatUserAltitude(fabs(vdistance),DistanceText, 7);
+			  if (vdistance > 0) {
+				wsprintf(sTmp, TEXT("< %c %s ab %s"), 
+						GetAckIndicator(airspace_copy.UserWarnAckState()), 
+						sType, DistanceText);
+			  } else {
+				wsprintf(sTmp, TEXT("< %c %s bl %s"), 
+						GetAckIndicator(airspace_copy.UserWarnAckState()), 
+						sType, DistanceText);
+			  }
 			} else {
-			  wsprintf(sTmp, TEXT("< %c %s bl %s"), 
-					  GetAckIndicator(airspace_copy.UserWarnAckState()), 
-					  sType, DistanceText);
+				// Horizontally separated
+				Units::FormatUserDistance(fabs(hdistance),DistanceText, 7);
+				wsprintf(sTmp, TEXT("< %c %s H %s"), GetAckIndicator(airspace_copy.UserWarnAckState()),
+						sType, DistanceText);
 			}
 		  } else {
-			  // Horizontally separated
-			  Units::FormatUserDistance(fabs(hdistance),DistanceText, 7);
-			  wsprintf(sTmp, TEXT("< %c %s H %s"), GetAckIndicator(airspace_copy.UserWarnAckState()),
-					  sType, DistanceText);
+			// distance info not available
+			wsprintf(sTmp, TEXT("< %c %s ---"), GetAckIndicator(airspace_copy.UserWarnAckState()), sType );
 		  }
 		} else {
 		  //Fly zone
-		  if ( abs(hdistance) > abs(vdistance)*30) {
-			// vDist smaller than horizontal
-			Units::FormatUserAltitude(fabs(vdistance),DistanceText, 7);
-			if (vdistance > 0) {
-			  wsprintf(sTmp, TEXT("> %c %s ab %s"), 
-					  GetAckIndicator(airspace_copy.UserWarnAckState()), 
-					  sType, DistanceText);
+		  if (distances_ready) {
+			if ( abs(hdistance) > abs(vdistance)*30) {
+			  // vDist smaller than horizontal
+			  Units::FormatUserAltitude(fabs(vdistance),DistanceText, 7);
+			  if (vdistance > 0) {
+				wsprintf(sTmp, TEXT("> %c %s ab %s"), 
+						GetAckIndicator(airspace_copy.UserWarnAckState()), 
+						sType, DistanceText);
+			  } else {
+				wsprintf(sTmp, TEXT("> %c %s bl %s"), 
+						GetAckIndicator(airspace_copy.UserWarnAckState()), 
+						sType, DistanceText);
+			  }
 			} else {
-			  wsprintf(sTmp, TEXT("> %c %s bl %s"), 
-					  GetAckIndicator(airspace_copy.UserWarnAckState()), 
-					  sType, DistanceText);
+				// Horizontally separated
+				Units::FormatUserDistance(fabs(hdistance),DistanceText, 7);
+				wsprintf(sTmp, TEXT("> %c %s H %s"), GetAckIndicator(airspace_copy.UserWarnAckState()),
+						sType, DistanceText);
 			}
 		  } else {
-			  // Horizontally separated
-			  Units::FormatUserDistance(fabs(hdistance),DistanceText, 7);
-			  wsprintf(sTmp, TEXT("> %c %s H %s"), GetAckIndicator(airspace_copy.UserWarnAckState()),
-					  sType, DistanceText);
+			// distance info not available
+			wsprintf(sTmp, TEXT("> %c %s ---"), GetAckIndicator(airspace_copy.UserWarnAckState()), sType );
 		  }
 		}
 		break;

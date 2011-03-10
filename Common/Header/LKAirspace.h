@@ -70,13 +70,15 @@ typedef enum { aweNone,
 				awePredictedEnteringFly,
 				aweEnteringFly,
 				aweMovingOutsideFly,
-				
+				aweNearOutsideFly,
+
 				//for NON-FLY zones
 				aweMovingOutsideNonfly,
 				awePredictedEnteringNonfly,
 				aweEnteringNonfly,
 				aweMovingInsideNonfly,
-				aweLeavingNonFly
+				aweLeavingNonFly,
+				aweNearInsideNonfly
 } AirspaceWarningEvent;
 //Airspace drawstyles
 typedef enum {adsHidden, adsOutline, adsFilled } AirspaceDrawStyle_t;
@@ -106,7 +108,7 @@ public:
 			_warnevent(aweNone),
 			_warneventold(aweNone),
 			_warnacktimeout(0),
-			_now(0),
+			_distances_ready(false),
 			_vdistance(0),
 			_hdistance(0),
 			_bearing(0)
@@ -115,6 +117,7 @@ public:
 
   
   virtual bool Inside(const double &longitude, const double &latitude) const { return false; }
+		  bool IsAltitudeInside(int alt, int agl, int extension=0) const;
   virtual void SetPoints(CGeoPointList &area_points) {}
   virtual void Dump() const;
   virtual void CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify) {}
@@ -125,14 +128,12 @@ public:
 
   
   //Warning system
-  // Calculate warning level based on last/next/predicted position
-  void CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
-						bool *pos_in_flyzone, bool *pred_in_flyzone, 
-						bool *pos_in_acked_nonfly_zone, bool *pred_in_acked_nonfly_zone);
-  // Second pass warning level calculation
-  bool FinishWarning(int now, 
-					 bool pos_inside_fly_zone, bool pred_inside_fly_zone, 
-					 bool pos_in_acked_nonfly_zone, bool pred_in_acked_nonfly_zone);
+  // At the start of warning calculation, set class attributes to init values
+  static void StartWarningCalculation();
+  // Calculate warning level on airspace based on last/next/predicted position
+  void CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+  // Second pass warning level calculation on airspace
+  bool FinishWarning();
   // Calculate airspace distance from last known position (required by messages and dialog boxes)
   bool CalculateDistance(int *hDistance, int *Bearing, int *vDistance);
   
@@ -167,14 +168,15 @@ public:
   AirspaceWarningEvent WarningEvent() const { return _warnevent; }
   void SetAckTimeout();					// Set ack validity timeout
 
-  static void ResetNearestDistances() { _nearestname = NULL; _nearesthdistance=100000; _nearestvdistance=100000; }
   static TCHAR* GetNearestName() { return _nearestname; }
   static int GetNearestHDistance() { return _nearesthdistance; }
   static int GetNearestVDistance() { return _nearestvdistance; }
 
-  bool GetDistanceInfo(int *hDistance, int *Bearing, int *vDistance);
+  bool GetDistanceInfo(bool &inside, int &hDistance, int &Bearing, int &vDistance) const;		// returns true if distances valid
 
-  void GetWarningPoint(double &longitude, double &latitude) const;
+  bool GetWarningPoint(double &longitude, double &latitude) const;			// returns true if airspace has valid distances calculated
+  
+  void ResetWarnings();
 
 protected:
   TCHAR _name[NAME_SIZE + 1];
@@ -197,8 +199,8 @@ protected:
   AirspaceWarningEvent _warnevent;
   AirspaceWarningEvent _warneventold;
   int _warnacktimeout;
-  int _now;
   // Values used by different dialog boxes, like dlgLKAirspace, dlgAirspace
+  bool _distances_ready;	// Distances calculated on this airspace
   int _vdistance;		// vertical distance to actual position
   int _hdistance;		// horizontal distance to actual position
   int _bearing;			// bearing from actual position
@@ -208,6 +210,12 @@ protected:
   static int _nearesthdistance;
   static int _nearestvdistance;
   static TCHAR *_nearestname;
+  static bool _pos_in_flyzone;
+  static bool _pred_in_flyzone;
+  static bool _pos_in_acked_nonfly_zone;
+  static bool _pred_in_acked_nonfly_zone;
+  static int _now;
+  static int _hdistancemargin;
 
 };
 
@@ -306,6 +314,7 @@ public:
 
   //Warning system
   void AirspaceWarning (NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+  bool AirspaceWarningIsGoodPosition(float longitude, float latitude, int alt, int agl) const;
   bool ClearAirspaceWarnings(const bool acknowledge, const bool ack_all_day = false);
 
   void AirspaceSetAckState(CAirspace &airspace, AirspaceWarningState_t ackstate);
@@ -349,7 +358,8 @@ private:
   // Warning system data
   // User warning message queue
   AirspaceWarningMessageList _user_warning_queue;				// warnings to show
-
+  CAirspaceList _airspaces_of_interest;
+  
   //Openair parsing functions, internal use
   void FillAirspacesFromOpenAir(ZZIP_FILE *fp);
   bool StartsWith(const TCHAR *Text, const TCHAR *LookFor) const;

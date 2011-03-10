@@ -215,8 +215,8 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
 			POINT sc;
 			double lon;
 			double lat;
-			(*it)->GetWarningPoint(lon,lat);
-			if (PointVisible(lon, lat)) {
+			bool distances_ready = (*it)->GetWarningPoint(lon,lat);
+			if (distances_ready && PointVisible(lon, lat)) {
 				LatLon2Screen(lon, lat, sc);
 				DrawBitmapIn(hdc, sc, hTerrainWarning);			//TODO
 			}

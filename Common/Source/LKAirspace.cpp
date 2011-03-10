@@ -57,6 +57,12 @@ CAirspaceManager CAirspaceManager::_instance = CAirspaceManager(CAirspaceManager
 int CAirspace::_nearesthdistance = 0;
 int CAirspace::_nearestvdistance = 0;
 TCHAR* CAirspace::_nearestname = NULL;
+bool CAirspace::_pos_in_flyzone = false;
+bool CAirspace::_pred_in_flyzone = false;
+bool CAirspace::_pos_in_acked_nonfly_zone = false;
+bool CAirspace::_pred_in_acked_nonfly_zone = false;
+int CAirspace::_now = 0;
+int CAirspace::_hdistancemargin = 0;
 
 
 //
@@ -143,13 +149,36 @@ inline bool CheckInsideLongitude(const double &longitude, const double &lon_min,
   }
 }
 
+bool CAirspace::IsAltitudeInside(int alt, int agl, int extension) const
+{
+  return (
+	  ((((_base.Base != abAGL) && ( alt >= (_base.Altitude - extension)))
+		|| ((_base.Base == abAGL) && ( agl >= (_base.AGL - extension)))))
+	  && ((((_top.Base != abAGL) && (alt < (_top.Altitude + extension))))
+		|| ((_top.Base == abAGL) && (agl < (_top.AGL + extension))))
+  );
+}
+
+void CAirspace::StartWarningCalculation()
+{
+  _pos_in_flyzone = false;
+  _pred_in_flyzone = false;
+  _pos_in_acked_nonfly_zone = false;
+  _pred_in_acked_nonfly_zone = false;
+  
+  _nearestname = NULL; 
+  _nearesthdistance=100000; 
+  _nearestvdistance=100000;
+
+}
+
 // Calculate userwarnstate based on last/now/next position
 // returns an event descriptor what happens
-void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated, 
-								 bool *pos_in_flyzone, bool *pred_in_flyzone,
-								 bool *pos_in_acked_nonfly_zone, bool *pred_in_acked_nonfly_zone)
+void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   _warnevent = aweNone;
+  _now = Basic->Time;
+  
   int alt;
   int agl;
   
@@ -167,8 +196,9 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   _lastknownpos.Longitude(Basic->Longitude);
   _lastknownalt = alt;
   _lastknownagl = agl;
-
   if (agl<0) agl = 0;		// Limit actual altitude to surface to not get warnings if close to ground
+
+  _hdistancemargin = Basic->Speed * WarningTime;
 
   // Calculate distances
   CalculateDistance(NULL,NULL,NULL);
@@ -180,7 +210,7 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 	  _nearesthdistance = abs(_hdistance);
 	  // not used now _nearestvdistance = _vdistance;
 	}
-	if ( abs(_vdistance) < abs(_nearesthdistance) ) {
+	if ( abs(_vdistance) < AltWarningMargin ) {
 	  _nearestname = _name;
 	  _nearesthdistance = abs(_vdistance);
 	}
@@ -193,18 +223,13 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   }
 
   // Check for altitude
-  bool pos_altitude =
-	  ((((_base.Base != abAGL) && ( alt >= _base.Altitude))
-		|| ((_base.Base == abAGL) && ( agl >= _base.AGL))))
-	  && ((((_top.Base != abAGL) && (alt < _top.Altitude)))
-		|| ((_top.Base == abAGL) && (agl < _top.AGL)));
-
+  bool pos_altitude = IsAltitudeInside(alt, agl);
   if (!pos_altitude) _pos_inside_now = false;
 
   if (_flyzone) {
 	// FLY-ZONE
 	if (_pos_inside_now) {
-	  *pos_in_flyzone = true;
+	  _pos_in_flyzone = true;
 	  if (_pos_inside_last) {
 		// FLY-ZONE _pos_inside_last = true, _pos_inside_now = true, _pred_inside_now = X
 		// Moving inside or predicted leaving
@@ -212,20 +237,15 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 		bool pred_inside_now = false;
 		alt = (int)Calculated->NextAltitude;
 		agl = (int)Calculated->NextAltitudeAGL;
-		if (agl<0) agl = 0;		// Limit predicted position to surface, to not get warnings on landing in fly zones
+		if (agl<0) agl = 0;		// Limit predicted agl to surface
 		// Check for altitude
-		pos_altitude =
-			((((_base.Base != abAGL) && ( alt >= _base.Altitude))
-			  || ((_base.Base == abAGL) && ( agl >= _base.AGL))))
-			&& ((((_top.Base != abAGL) && (alt < _top.Altitude)))
-			  || ((_top.Base == abAGL) && (agl < _top.AGL)));
-
+		pos_altitude = IsAltitudeInside(alt, agl);
 		if (pos_altitude) pred_inside_now = Inside(Calculated->NextLongitude, Calculated->NextLatitude);
 		if (pred_inside_now) {
 		  // FLY-ZONE _pos_inside_last = true, _pos_inside_now = true, _pred_inside_now = true
 		  // moving inside -> normal, no warning event
 		  _warnevent = aweMovingInsideFly;
-		  *pred_in_flyzone = true;
+		  _pred_in_flyzone = true;
 		} else {
 		  // FLY-ZONE _pos_inside_last = true, _pos_inside_now = true, _pred_inside_now = false
 		  // predicted leaving, yellow warning
@@ -249,19 +269,14 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 		bool pred_inside_now = false;
 		alt = (int)Calculated->NextAltitude;
 		agl = (int)Calculated->NextAltitudeAGL;
-		if (agl<0) agl = 0;		// Limit predicted position to surface, to not get warnings on landing in fly zones
+		if (agl<0) agl = 0;		// Limit predicted agl to surface
 		// Check for altitude
-		pos_altitude =
-			((((_base.Base != abAGL) && ( alt >= _base.Altitude))
-			  || ((_base.Base == abAGL) && ( agl >= _base.AGL))))
-			&& ((((_top.Base != abAGL) && (alt < _top.Altitude)))
-			  || ((_top.Base == abAGL) && (agl < _top.AGL)));
-
+		pos_altitude = IsAltitudeInside(alt, agl);
 		if (pos_altitude) pred_inside_now = Inside(Calculated->NextLongitude, Calculated->NextLatitude);
 		if (pred_inside_now) {
 		  // FLY-ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = true
 		  // predicted enter
-		  *pred_in_flyzone = true;
+		  _pred_in_flyzone = true;
 		  _warnevent = awePredictedEnteringFly;
 		} else {
 		  // FLY-ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = true
@@ -282,7 +297,7 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 		// Entering, set warnlevel
 		_warnevent = aweEnteringNonfly;
 	  }
-  	  if (_userwarnackstate > awNone) *pos_in_acked_nonfly_zone = true;
+  	  if (_userwarnackstate > awNone) _pos_in_acked_nonfly_zone = true;
 	} else {
 	  if (_pos_inside_last) {
 		// NON-FLY ZONE _pos_inside_last = true, _pos_inside_now = false, _pred_inside_now = X
@@ -294,20 +309,15 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 		bool pred_inside_now = false;
 		alt = (int)Calculated->NextAltitude;
 		agl = (int)Calculated->NextAltitudeAGL;
-		if (agl<0) agl = 0;		// Limit predicted position to surface, to not get warnings on landing in fly zones
+		if (agl<0) agl = 0;		// Limit predicted agl to surface
 		// Check for altitude
-		pos_altitude =
-			((((_base.Base != abAGL) && ( alt >= _base.Altitude))
-			  || ((_base.Base == abAGL) && ( agl >= _base.AGL))))
-			&& ((((_top.Base != abAGL) && (alt < _top.Altitude)))
-			  || ((_top.Base == abAGL) && (agl < _top.AGL)));
-
+		pos_altitude = IsAltitudeInside(alt, agl);
 		if (pos_altitude) pred_inside_now = Inside(Calculated->NextLongitude, Calculated->NextLatitude);
-		if ( pred_inside_now) {
+		if (pred_inside_now) {
 		  // NON-FLY ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = true
 		  // predicted enter
 		  _warnevent = awePredictedEnteringNonfly;
-		  if (_userwarnackstate > awNone) *pred_in_acked_nonfly_zone = true;
+		  if (_userwarnackstate > awNone) _pred_in_acked_nonfly_zone = true;
 		} else {
 		  // NON-FLY ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = false
 		  // moving outside
@@ -321,105 +331,121 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 }
 
 // returns true if a warning message has to be printed
-bool CAirspace::FinishWarning(int now, 
-							  bool pos_inside_fly_zone, bool pred_inside_fly_zone,
-							  bool pos_in_acked_nonfly_zone, bool pred_in_acked_nonfly_zone)
+bool CAirspace::FinishWarning()
 {
 	bool res = false;
-	_now = now;		//Save current time for acking
 	int MessageRepeatTime = 1800;			// Unacknowledged message repeated in x secs
-	int hdistancemargin = 500;
+	int abs_hdistance = abs(_hdistance);
+	int abs_vdistance = abs(_vdistance);
 	
-	//Do actions based on airspace warning events
+	//Calculate warning state based on airspace warning events
 	switch (_warnevent) {
 	  default:
 		break;
 
 	  // Events for FLY zones
 	  case aweMovingInsideFly:
-		if ( (abs(_hdistance)>2*hdistancemargin) && (abs(_vdistance)>2*AltWarningMargin) ) _userwarningstate = awNone;
-		if ( (abs(_hdistance)<hdistancemargin) && (abs(_vdistance)<AltWarningMargin) ) _userwarningstate = awPredicted;
-		//ACK Step back: 
-		if ( (_userwarnackstate != awDailyAck) && (_userwarnackstate>_userwarningstate) && (now > _warnacktimeout) ) _userwarnackstate=_userwarningstate;
-		break;
-		
-	  case awePredictedLeavingFly:
-		if ( !(pred_inside_fly_zone || pred_in_acked_nonfly_zone) ) {
-		  if ( (_warnevent != _warneventold) && (_userwarningstate < awPredicted) ) {
-			  _userwarningstate = awPredicted;
-			  if (_userwarnackstate < _userwarningstate) {
-				_warn_repeat_time = now + MessageRepeatTime;
-				res = true;
-			  }
+		// If far away from border, set warnstate to none
+		// If base is sfc, we skip near warnings to base, to not get disturbing messages on landing.
+		if ( (abs_hdistance>_hdistancemargin) && 
+			 ( (abs_vdistance>AltWarningMargin) || (_lastknownagl<=AltWarningMargin) ) 
+		   ) {
+		  // Far away horizontally _and_ vertically
+		  _userwarningstate = awNone;
+		} else {
+		  // Check what is outside this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
+		  double lon = 0;
+		  double lat =0;
+		  double dist = fabs(_hdistance) + 100;
+		  FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &lat, &lon);
+		  
+		  if ( !CAirspaceManager::Instance().AirspaceWarningIsGoodPosition(lon, lat, _lastknownalt, _lastknownagl) ) {
+			// Near to outside, modify warnevent to inform user
+			_userwarningstate = awPredicted;
+			_warnevent = aweNearOutsideFly;
 		  }
 		}
 		break;
 		
+	  case awePredictedLeavingFly:
+		if ( !(_pred_in_flyzone || _pred_in_acked_nonfly_zone) ) {
+			  // if predicted position not in other fly or acked nonfly zone, then leaving this one should be wrong
+			  _userwarningstate = awPredicted;
+		}
+		break;
+		
 	  case aweLeavingFly:
-		if ( !(pos_inside_fly_zone || pos_in_acked_nonfly_zone) ) {
-			_userwarningstate = awWarning;
-			if (_userwarnackstate < _userwarningstate) {
-			  _warn_repeat_time = now + MessageRepeatTime;
-			  res = true;
-			}
+		if ( !(_pos_in_flyzone || _pos_in_acked_nonfly_zone) ) {
+			  // if current position not in other fly or acked nonfly zone, then leaving this one should be wrong
+			  _userwarningstate = awWarning;
 		}
 		break;
 		
 	  case awePredictedEnteringFly:
 		break;
+		
 	  case aweEnteringFly:
-		_userwarningstate = awPredicted;
+		// Do info message on entering a fly zone
 		res = true;
 		break;
 		
 	  case aweMovingOutsideFly:
-		if ( (pos_inside_fly_zone || pos_in_acked_nonfly_zone) ) _userwarningstate = awNone;
+		// if outside, but in good zone, then this one is good as well
+		if ( (_pos_in_flyzone || _pos_in_acked_nonfly_zone) ) _userwarningstate = awNone;
 		break;
+
 		
 	  // Events for NON-FLY zones
 	  case aweMovingOutsideNonfly:
-		if ( (abs(_hdistance)>2*hdistancemargin) && (abs(_vdistance)>2*AltWarningMargin) ) _userwarningstate = awNone;
-		if ( (abs(_hdistance)<hdistancemargin) && (abs(_vdistance)<AltWarningMargin) ) _userwarningstate = awPredicted;
-		//ACK Step back: 
-		if ( (_userwarnackstate != awDailyAck) && (_userwarnackstate>_userwarningstate) && (now > _warnacktimeout) ) _userwarnackstate=_userwarningstate;
+		if ( abs_hdistance>_hdistancemargin ) {
+		  // Far away horizontally _or_ vertically
+		  _userwarningstate = awNone;
+		} else {
+		  if (IsAltitudeInside(_lastknownalt, _lastknownagl, AltWarningMargin)) {
+			// Near to inside, modify warnevent to inform user
+			_userwarningstate = awPredicted;
+			_warnevent = aweNearInsideNonfly;
+		  }
+		}
 		break;
 		
 	  case awePredictedEnteringNonfly:
-		if ( (_warnevent != _warneventold) && (_userwarningstate < awPredicted) ) {
-		  _userwarningstate = awPredicted;
-		  if (_userwarnackstate < _userwarningstate) {
-			_warn_repeat_time = now + MessageRepeatTime;
-			res = true;
-		  }
-		}
+		_userwarningstate = awPredicted;
 		break;
 		
 	  case aweEnteringNonfly:
 		_userwarningstate = awWarning;
-		if (_userwarnackstate < _userwarningstate) {
-		  _warn_repeat_time = now + MessageRepeatTime;
-		  res = true;
-		}
 		break;
 
 	  case aweMovingInsideNonfly:
 		_userwarningstate = awWarning;
-		if (_userwarnackstate < _userwarningstate) {
-		  if (now > _warn_repeat_time) {
-			_warn_repeat_time = now + MessageRepeatTime;
-			res = true;
-		  }
-		}
 		break;
 		
 	  case aweLeavingNonFly:
-		_userwarningstate = awPredicted;
+		// Do info message on leaving a nonfly zone
 		res = true;
 		break;
 	}//sw warnevent
+	_warneventold = _warnevent;
+
+	// Warnstate increased above ack state -> generate message
+	if ( (_userwarningstate > _userwarningstateold) && (_userwarningstate > _userwarnackstate) ) {
+		_warn_repeat_time = _now + MessageRepeatTime;
+		res = true;
+	}
 	
-  _warneventold = _warnevent;
-  return res;
+	// Unacknowledged warning repeated after some time
+	if ( (_userwarningstate > _userwarnackstate) && (_now > _warn_repeat_time) ) {
+		_warn_repeat_time = _now + MessageRepeatTime;
+		res = true;
+	}
+
+	//ACK Step back, if ack time ellapsed and warningstate below ack state
+	if ( (_userwarnackstate != awDailyAck) && (_userwarnackstate>_userwarningstate) && (_now > _warnacktimeout) ) _userwarnackstate=_userwarningstate;
+	
+	_userwarningstateold = _userwarningstate;
+
+	return res;
 }
 
 void CAirspace::SetAckTimeout()
@@ -427,23 +453,28 @@ void CAirspace::SetAckTimeout()
   _warnacktimeout = _now + AcknowledgementTime;
 }
 
-
-bool CAirspace::GetDistanceInfo(int *hDistance, int *Bearing, int *vDistance)
+// returns true if distances valid
+bool CAirspace::GetDistanceInfo(bool &inside, int &hDistance, int &Bearing, int &vDistance) const
 {
-  if (Bearing) *Bearing = _bearing;
-  if (hDistance) *hDistance = _hdistance;
-  if (vDistance) *vDistance = _vdistance;
-  return _pos_inside_now;
+  Bearing = _bearing;
+  hDistance = _hdistance;
+  vDistance = _vdistance;
+  inside = _pos_inside_now;
+  return _distances_ready;
 }
 
-void CAirspace::GetWarningPoint(double &longitude, double &latitude) const
+bool CAirspace::GetWarningPoint(double &longitude, double &latitude) const
 {
-  double dist = fabs(_hdistance);
-  if (_hdistance < 0) {
-	// if vertical distance smaller, use actual position as warning point indicating a directly above or below warning situation
-	if ( abs(_vdistance) < abs(_hdistance) ) dist = 0;
+  if (_distances_ready) {
+	double dist = fabs(_hdistance);
+	if (_hdistance < 0) {
+	  // if vertical distance smaller, use actual position as warning point indicating a directly above or below warning situation
+	  if ( abs(_vdistance) < AltWarningMargin ) dist = 0;
+	}
+	FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &latitude, &longitude);
+	return true;
   }
-  FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &latitude, &longitude);
+  return false;
 }
 
 // Calculates nearest horizontal and vertical distance to airspace based on last known position
@@ -481,7 +512,14 @@ bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance)
   if (Bearing) *Bearing = _bearing;
   if (hDistance) *hDistance = _hdistance;
   if (vDistance) *vDistance = _vdistance;
+  _distances_ready = true;
   return inside;
+}
+
+void CAirspace::ResetWarnings()
+{
+  _userwarningstate = awNone;
+  _distances_ready = false;
 }
 
 
@@ -1850,6 +1888,20 @@ bool CAirspaceManager::ValidAirspaces(void) const
 }
 
 
+// Special function call for calculating warnings on flyzones. Called from CAirspace, mutex already locked!
+bool CAirspaceManager::AirspaceWarningIsGoodPosition(float longitude, float latitude, int alt, int agl) const
+{
+	if (agl<0) agl = 0;		// Limit alt to surface
+	for (CAirspaceList::const_iterator it=_airspaces_of_interest.begin(); it!=_airspaces_of_interest.end(); ++it) {
+	  if ( (!(*it)->Flyzone()) && ((*it)->UserWarnAckState() == awNone) ) continue;
+	  // Check for altitude
+	  if ((*it)->IsAltitudeInside(alt, agl)) {
+		if ((*it)->Inside(longitude, latitude)) return true;
+	  }
+	}
+	return false;
+}
+
 void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated) 
 {
   if(!AIRSPACEWARNINGS) return;				//Airspace warnings disabled in config
@@ -1869,8 +1921,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
   #endif
 
   // Calculate area of interest
-  // At 300km/h 60sec = 5km
-  double interest_radius = 5000;
+  double interest_radius = Basic->Speed * WarningTime * 1.25;		// 25% more than required
   rectObj bounds;
   double lon = Basic->Longitude;
   double lat = Basic->Latitude;
@@ -1919,34 +1970,32 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
 	bounds.maxx = tmp;
   }
   
-  bool pos_in_flyzone = false;
-  bool pred_in_flyzone = false;
-  bool pos_in_acked_nonfly_zone = false;
-  bool pred_in_acked_nonfly_zone = false;
   bool there_is_msg;
-  CAirspaceList airspaces_of_interest;
-  
-  CAirspace::ResetNearestDistances();
+
+  // Step1 Init calculations
+  _airspaces_of_interest.clear();
+  CAirspace::StartWarningCalculation();
+  // Step2 select airspaces in range, and do warning calculations on it, add to interest list
   CAirspaceList::iterator it;
   for (it=_airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
 	  // Check for warnings enabled for this class
 	  if (MapWindow::iAirspaceMode[(*it)->Type()] < 2) {
-		(*it)->UserWarningState(awNone);
+		(*it)->ResetWarnings();
 		continue;
 	  }
 	  // Check if in interest area
 	  if (!msRectOverlap(&bounds, &(*it)->Bounds())) {
-		(*it)->UserWarningState(awNone);
+		(*it)->ResetWarnings();
 		continue;
 	  }
 	  
-	  (*it)->CalculateWarning( Basic, Calculated, &pos_in_flyzone, &pred_in_flyzone, &pos_in_acked_nonfly_zone, &pred_in_acked_nonfly_zone );
-	  airspaces_of_interest.push_back(*it);
+	  (*it)->CalculateWarning( Basic, Calculated );
+	  _airspaces_of_interest.push_back(*it);
   }
 
-  // Run warning fsms, refine warnings in fly zones, collect user messages
-  for (it=airspaces_of_interest.begin(); it != airspaces_of_interest.end(); ++it) {
-	  there_is_msg = (*it)->FinishWarning( Basic->Time, pos_in_flyzone, pred_in_flyzone, pos_in_acked_nonfly_zone, pred_in_acked_nonfly_zone );
+  // Step3 Run warning fsms, refine warnings in fly zones, collect user messages
+  for (it=_airspaces_of_interest.begin(); it != _airspaces_of_interest.end(); ++it) {
+	  there_is_msg = (*it)->FinishWarning();
 	  if (there_is_msg) {
 		// Add new warning message to queue
 		AirspaceWarningMessage msg;
@@ -1971,8 +2020,9 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
   }
 
   #ifdef DEBUG_AIRSPACE
-  StartupStore(TEXT("   AirspaceWarning ends, processed %d airspaces from %d%s"), airspaces_of_interest.size(), _airspaces_near.size(), NEWLINE);
+  StartupStore(TEXT("   AirspaceWarning ends, processed %d airspaces from %d%s"), _airspaces_of_interest.size(), _airspaces_near.size(), NEWLINE);
   #endif
+  _airspaces_of_interest.clear();
 
 }
 
@@ -2029,7 +2079,7 @@ CAirspaceList CAirspaceManager::GetAllAirspaces() const
   return res;
 }
 
-// Gets a list of airspaces which has a warning os an ack level different than awNone
+// Gets a list of airspaces which has a warning or an ack level different than awNone
 CAirspaceList CAirspaceManager::GetAirspacesInWarning() const
 {
   CAirspaceList res;

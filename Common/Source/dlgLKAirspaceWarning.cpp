@@ -165,6 +165,10 @@ void dlgLKAirspaceFill()
 		case awePredictedLeavingFly:
 			wp->SetText(TEXT("awePredictedLeavingFly"));
 		  break;
+		
+		case aweNearOutsideFly:
+			wp->SetText(TEXT("aweNearOutsideFly"));
+		  break;
 		  
 		case aweLeavingFly:
 			wp->SetText(TEXT("aweLeavingFly"));
@@ -191,7 +195,11 @@ void dlgLKAirspaceFill()
 		case awePredictedEnteringNonfly:
 			wp->SetText(TEXT("awePredictedEnteringNonfly"));
 		  break;
-		  
+
+		case aweNearInsideNonfly:
+			wp->SetText(TEXT("aweNearInsideNonfly"));
+		  break;
+
 		case aweEnteringNonfly:
 			wp->SetText(TEXT("aweEnteringNonfly"));
 		  break;
@@ -246,16 +254,21 @@ void dlgLKAirspaceFill()
 	// we have to ask airspacemanager to perform the required calculations
 	//inside = airspace_copy.CalculateDistance(&hdist, &bearing, &vdist);
 	//inside = CAirspaceManager::Instance().AirspaceCalculateDistance(msg.originator, &hdist, &bearing, &vdist);
-	inside = airspace_copy.GetDistanceInfo(&hdist, &bearing, &vdist);
-	
+	bool distances_ready = airspace_copy.GetDistanceInfo(inside, hdist, bearing, vdist);
+
 	wp = (WndProperty*)dlg->FindByName(TEXT("prpHDist"));
 	if (wp) {
-	  Units::FormatUserDistance((double)abs(hdist),stmp, 10);
 	  TCHAR stmp2[40];
-	  if (hdist<0) {
-		wsprintf(stmp2,TEXT("%s to leave"), stmp);
+	  if (distances_ready) {
+		Units::FormatUserDistance((double)abs(hdist),stmp, 10);
+		if (hdist<0) {
+		  wsprintf(stmp2,TEXT("%s to leave"), stmp);
+		} else {
+		  wsprintf(stmp2,TEXT("%s to enter"), stmp);
+		}
 	  } else {
-		wsprintf(stmp2,TEXT("%s to enter"), stmp);
+		// no distance info calculated
+		wsprintf(stmp2,TEXT("Not calculated"));
 	  }
 	  wp->SetText(stmp2);
 	  wp->RefreshDisplay();
@@ -263,12 +276,17 @@ void dlgLKAirspaceFill()
 
 	wp = (WndProperty*)dlg->FindByName(TEXT("prpVDist"));
 	if (wp) {
-	  Units::FormatUserAltitude((double)abs(vdist),stmp, 10);
-	  TCHAR stmp2[40];
-	  if (vdist<0) {
-		wsprintf(stmp2,TEXT("below %s"), stmp);
+		TCHAR stmp2[40];
+	  if (distances_ready) {
+		Units::FormatUserAltitude((double)abs(vdist),stmp, 10);
+		if (vdist<0) {
+		  wsprintf(stmp2,TEXT("below %s"), stmp);
+		} else {
+		  wsprintf(stmp2,TEXT("above %s"), stmp);
+		}
 	  } else {
-		wsprintf(stmp2,TEXT("above %s"), stmp);
+		// no distance info calculated
+		wsprintf(stmp2,TEXT("Not calculated"));
 	  }
 	  wp->SetText(stmp2);
 	  wp->RefreshDisplay();
@@ -322,8 +340,10 @@ void ShowAirspaceWarningsToUser()
 	  break;
 	  
 	case awePredictedLeavingFly:
+	case aweNearOutsideFly:
 	case aweLeavingFly:
 	case awePredictedEnteringNonfly:
+	case aweNearInsideNonfly:
 	case aweEnteringNonfly:
 	case aweMovingInsideNonfly:
 	  ackdialog_required = true;
@@ -356,6 +376,13 @@ void ShowAirspaceWarningsToUser()
 	dlg->SetKeyDownNotify(OnKeyDown);
     dlg->SetTimerNotify(OnTimer);
 	timer_counter = 10;					// Auto closing dialog in x secs
+
+	WndButton *wb = (WndButton*)dlg->FindByName(TEXT("cmdAckForTime"));
+	if (wb) {
+	  TCHAR stmp2[40];
+	  wsprintf(stmp2,TEXT("%s (%ds)"), gettext(TEXT("_@M46_")), AcknowledgementTime);
+	  wb->SetCaption(stmp2);
+	}	
 
 	dlgLKAirspaceFill();
 
