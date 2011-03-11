@@ -64,14 +64,15 @@ private:
   const unsigned _handicap;
   CTrace _trace;
   CTrace _traceSprint;
+  CTrace _traceLoop;
   CResultArray _resultArray;
   
   unsigned BiggestLoopFind(const CTrace &trace, const CTrace::CPoint *&start, const CTrace::CPoint *&end) const;
-  void BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut) const;
+  bool BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut) const;
   bool FAITriangleEdgeCheck(unsigned length, unsigned best) const;
   bool FAITriangleEdgeCheck(unsigned length1, unsigned length2, unsigned length3) const;
   void SolvePoints(const CRules &rules);
-  void SolveTriangle(const CTrace &trace);
+  void SolveTriangle(const CTrace &trace, const CPointGPS *prevFront, const CPointGPS *prevBack);
   void SolveOLCPlus();
   
 public:

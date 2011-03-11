@@ -14,7 +14,7 @@
 #include <vector>
 
 class CPointGPS {
-  static const unsigned MAX_TIME_DELTA = 20 * 3600; // 20h
+  static const unsigned MAX_TIME_DELTA = 12 * 3600; // 12h
   static const unsigned DAY_SECONDS    = 24 * 3600; // 24h
   
   // data from GPS
@@ -35,7 +35,11 @@ public:
   unsigned Distance(double lat, double lon) const;
   unsigned Distance(const CPointGPS &ref) const;
   unsigned Distance(const CPointGPS &seg1, const CPointGPS &seg2) const;
-  unsigned TimeDelta(const CPointGPS &ref) const;
+  int TimeDelta(const CPointGPS &ref) const;
+  
+  bool operator==(const CPointGPS &ref) const { return _time == ref._time; }
+  bool operator<(const CPointGPS &ref) const { return TimeDelta(ref) < 0; }
+  bool operator>(const CPointGPS &ref) const { return TimeDelta(ref) > 0; }
 };
 
 typedef CSmartPtr<const CPointGPS> CPointGPSSmart;
@@ -86,7 +90,7 @@ inline unsigned CPointGPS::Distance(const CPointGPS &seg1, const CPointGPS &seg2
 }
 
 
-inline unsigned CPointGPS::TimeDelta(const CPointGPS &ref) const
+inline int CPointGPS::TimeDelta(const CPointGPS &ref) const
 {
   int delta = _time - ref._time;
   if(delta < 0) {

@@ -15,7 +15,8 @@ unsigned CContestMgr::COMPRESSION_ALGORITHM;
 CContestMgr::CContestMgr(unsigned handicap, short startAltitudeLoss):
   _handicap(handicap),
   _trace(TRACE_FIX_LIMIT, 0, startAltitudeLoss, COMPRESSION_ALGORITHM),
-  _traceSprint(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT, 0, COMPRESSION_ALGORITHM)
+  _traceSprint(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT, 0, COMPRESSION_ALGORITHM),
+  _traceLoop(TRACE_TRIANGLE_FIX_LIMIT, 0, 0, COMPRESSION_ALGORITHM)
 {
   for(unsigned i=0; i<TYPE_NUM; i++)
     _resultArray.push_back(CResult());
@@ -45,7 +46,7 @@ unsigned CContestMgr::BiggestLoopFind(const CTrace &trace, const CTrace::CPoint 
   CTrace::CPoint *next = point->Next();
   while(next && next != back) {
     pointsCount--;
-    if(back->GPS().TimeDelta(next->GPS()) < TRACE_TRIANGLE_MIN_TIME)
+    if((unsigned)back->GPS().TimeDelta(next->GPS()) < TRACE_TRIANGLE_MIN_TIME)
       // filter too small circles from i.e. thermalling
       return 0;
     
@@ -66,12 +67,15 @@ unsigned CContestMgr::BiggestLoopFind(const CTrace &trace, const CTrace::CPoint 
 }
 
 
-void CContestMgr::BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut) const
+bool CContestMgr::BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut) const
 {
+  bool updated = false;
+  
   if(traceIn.Size() > 2) {
     const CTrace::CPoint *start = 0;
     const CTrace::CPoint *end = 0;
     if(BiggestLoopFind(traceIn, start, end)) {
+      traceOut.Clear();
       const CTrace::CPoint *point = start;
       while(point) {
         traceOut.Push(new CTrace::CPoint(traceOut, *point, traceOut._back));
@@ -80,8 +84,11 @@ void CContestMgr::BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut) const
         point = point->Next();
       }
       traceOut.Compress();
+      updated = true;
     }
   }
+  
+  return updated;
 }
 
 
@@ -170,13 +177,18 @@ void CContestMgr::SolvePoints(const CRules &rules)
 }
 
 
-void CContestMgr::SolveTriangle(const CTrace &trace)
+void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront, const CPointGPS *prevBack)
 {
   CResult &result = _resultArray[TYPE_OLC_FAI];
   if(trace.Size() > 2) {
     // check for every trace point
     const CTrace::CPoint *point1st = trace.Front();
     while(point1st) {
+      // check if all edges should be analysed
+      bool skip1 = prevFront && prevBack;
+      if(skip1 && (point1st->GPS() < *prevFront || point1st->GPS() > *prevBack))
+        skip1 = false;
+      
       // create a map of points that may form first edge of a better triangle
       CDistanceMap distanceMap1st;
       const CTrace::CPoint *next = 0;
@@ -190,6 +202,10 @@ void CContestMgr::SolveTriangle(const CTrace &trace)
       
       // check all possible first edges of the triangle
       for(CDistanceMap::reverse_iterator it1st=distanceMap1st.rbegin(); it1st!=distanceMap1st.rend(); ++it1st) {
+        bool skip2 = skip1;
+        if(skip2 && (it1st->second->GPS() < *prevFront || it1st->second->GPS() > *prevBack))
+          skip2 = false;
+        
         unsigned dist1st = it1st->first;
         if(!FAITriangleEdgeCheck(dist1st, result.Distance()))
           // better solution found in the meantime
@@ -199,6 +215,13 @@ void CContestMgr::SolveTriangle(const CTrace &trace)
         CDistanceMap distanceMap2nd;
         const CTrace::CPoint *point2nd = it1st->second;
         for(next=point2nd->Next(); next; next=next->Next()) {
+          bool skip3 = skip2;
+          if(skip3 && (next->GPS() < *prevFront || next->GPS() > *prevBack))
+            skip3 = false;
+          if(skip3)
+            // that triangle was analysed already
+            continue;
+          
           unsigned dist = point2nd->GPS().Distance(next->GPS());
           // check if 2nd edge not too long
           if(dist * 14 > dist1st * 20) // 45% > 25%
@@ -259,10 +282,10 @@ void CContestMgr::Add(const CPointGPSSmart &gps)
   _trace.Push(gps);
   if(step % STEPS_NUM == 0) {
     // Solve FAI-OLC
-    CTrace traceLoop(TRACE_TRIANGLE_FIX_LIMIT, 0, 0, COMPRESSION_ALGORITHM);
-    BiggestLoopFind(_trace, traceLoop);
-    if(traceLoop.Size())
-      SolveTriangle(traceLoop); 
+    std::auto_ptr<CPointGPS> prevFront(_traceLoop.Front() ? new CPointGPS(_traceLoop.Front()->GPS()) : 0);
+    std::auto_ptr<CPointGPS> prevBack(_traceLoop.Back() ? new CPointGPS(_traceLoop.Back()->GPS()) : 0);
+    if(BiggestLoopFind(_trace, _traceLoop))
+      SolveTriangle(_traceLoop, prevFront.get(), prevBack.get());
   }
   _trace.Compress();
   if(step % STEPS_NUM == 1) {

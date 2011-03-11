@@ -20,12 +20,26 @@ CTrace::CTrace(unsigned maxSize, unsigned timeLimit, short startAltitudeLoss, un
 
 CTrace::~CTrace()
 {
+  Clear();
+}
+
+
+void CTrace::Clear()
+{
   CPoint *point = _front;
   while(point) {
     CPoint *next = point->_next;
     delete point;
     point = next;
   }
+  
+  _size = 0;
+  _analyzedPointCount = 0;
+  _compressionCostSet.clear();
+  _front = 0;
+  _back = 0;
+  _startDetected = false;
+  _startMaxAltitude = 0;
 }
 
 
@@ -41,7 +55,7 @@ void CTrace::Push(CPoint *point)
   
   if(_timeLimit) {
     // limit the trace to required time period
-    while(_back && _front && _back->_gps->TimeDelta(*_front->_gps) > _timeLimit) {
+    while(_back && _front && (unsigned)_back->_gps->TimeDelta(*_front->_gps) > _timeLimit) {
       CPoint *next = _front->_next;
       delete _front;
       _size--;

@@ -59,6 +59,8 @@ public:
   CTrace(unsigned maxSize, unsigned timeLimit, short startAltitudeLoss, unsigned algorithm);
   ~CTrace();
   
+  void Clear();
+  
   void Push(const CPointGPSSmart &gps);
   void Compress();
   
@@ -99,7 +101,7 @@ public:
   CPoint(const CTrace &trace, const CPointGPSSmart &gps, CPoint *prev);
   CPoint(const CTrace &trace, const CPoint &ref, CPoint *prev);
   ~CPoint();
-  
+
   const CPointGPS &GPS() const { return *_gps; }
   
   CPoint *Next() const { return _next; }
