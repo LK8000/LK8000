@@ -1065,7 +1065,7 @@ bool CAirspaceManager::CheckAirspaceAltitude(const double &Base, const double &T
 
 void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const
 {
-  TCHAR *Stop;
+  TCHAR *Stop = NULL;
   TCHAR sTmp[128];
   TCHAR *pWClast = NULL;
   TCHAR *pToken;
@@ -1194,7 +1194,7 @@ bool CAirspaceManager::ReadCoords(TCHAR *Text, double *X, double *Y) const
 {
   double Ydeg=0, Ymin=0, Ysec=0;
   double Xdeg=0, Xmin=0, Xsec=0;
-  TCHAR *Stop;
+  TCHAR *Stop = Text;
 
   // ToDo, add more error checking and making it more tolerant/robust
 
@@ -1306,10 +1306,11 @@ bool CAirspaceManager::CalculateSector(TCHAR *Text, CGeoPointList *_geopoints, d
   double Radius;
   double StartBearing;
   double EndBearing;
-  TCHAR *Stop;
+  TCHAR *Stop = NULL;
   CGeoPoint newpoint(0,0);
   double lat=0,lon=0;
-
+  
+  // TODO 110307 FIX problem of StrToDouble returning 0.0 in case of error , and not setting Stop!!
   Radius = NAUTICALMILESTOMETRES * (double)StrToDouble(Text, &Stop);
   StartBearing = (double)StrToDouble(&Stop[1], &Stop);
   EndBearing = (double)StrToDouble(&Stop[1], &Stop);
