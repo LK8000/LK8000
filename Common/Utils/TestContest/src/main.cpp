@@ -23,6 +23,10 @@ int main(int argc, char *argv[])
     std::cout << " - 3: Distance lost + Inherited error" << std::endl;
     std::cout << std::endl;
     std::cout << "INTERRUPT_FIX = 0 - no interrupt" << std::endl;
+    std::cout << std::endl;
+    std::cout << "EXAMPLES:" << std::endl;
+    std::cout << " TestContest-PC.exe Test_1.igc 126 50 2 0" << std::endl;
+    std::cout << " TestContest-PC.exe Test_2.igc 126 50 3 0" << std::endl;
     return EXIT_FAILURE;
   }
   
