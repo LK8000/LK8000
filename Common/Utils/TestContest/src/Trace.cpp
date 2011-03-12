@@ -10,6 +10,14 @@
 #include <iostream>
 
 
+/** 
+ * @brief Constructor
+ * 
+ * @param maxSize Maximum number of GPS fixes to store inside a trace
+ * @param timeLimit Maximum time period of a trace
+ * @param startAltitudeLoss The loss of altitude needed to detect the start of powerless flight
+ * @param algorithm The compression algorithm of a trace
+ */
 CTrace::CTrace(unsigned maxSize, unsigned timeLimit, short startAltitudeLoss, unsigned algorithm):
   _maxSize(maxSize), _timeLimit(timeLimit), _startAltitudeLoss(startAltitudeLoss), _algorithm(algorithm),
   _size(0), _analyzedPointCount(0), _front(0), _back(0),
@@ -18,12 +26,18 @@ CTrace::CTrace(unsigned maxSize, unsigned timeLimit, short startAltitudeLoss, un
 }
 
 
+/** 
+ * @brief Destructor
+ */
 CTrace::~CTrace()
 {
   Clear();
 }
 
 
+/** 
+ * @brief Clears the trace
+ */
 void CTrace::Clear()
 {
   CPoint *point = _front;
@@ -43,6 +57,11 @@ void CTrace::Clear()
 }
 
 
+/** 
+ * @brief Adds a new point to a trace
+ * 
+ * @param point Point to add
+ */
 void CTrace::Push(CPoint *point)
 {
   _analyzedPointCount++;
@@ -84,6 +103,11 @@ void CTrace::Push(CPoint *point)
 }
 
 
+/** 
+ * @brief Adds a new GPS fix to a trace
+ * 
+ * @param gps GPS fix to add
+ */
 void CTrace::Push(const CPointGPSSmart &gps)
 {
   // filter first points until a standalone flight is detected
@@ -101,6 +125,13 @@ void CTrace::Push(const CPointGPSSmart &gps)
 }
 
 
+/** 
+ * @brief Compresses the trace to the required size
+ * 
+ * Removes the least important points to maintain required trace size.
+ * 
+ * @param maxSize Optional argument specifying a new maximum size of the trace
+ */
 void CTrace::Compress(unsigned maxSize /* = 0 */)
 {
   if(maxSize)
@@ -188,7 +219,13 @@ std::ostream &operator<<(std::ostream &stream, const CTrace &trace)
 
 
 
-
+/** 
+ * @brief Constructor
+ * 
+ * @param trace Parent trace
+ * @param gps GPS fix to contain
+ * @param prev Previous trace point
+ */
 CTrace::CPoint::CPoint(const CTrace &trace, const CPointGPSSmart &gps, CPoint *prev):
   _trace(trace), 
   _gps(gps),
@@ -204,6 +241,13 @@ CTrace::CPoint::CPoint(const CTrace &trace, const CPointGPSSmart &gps, CPoint *p
 }
 
 
+/** 
+ * @brief "Copy" constructor
+ * 
+ * @param trace Parent trace
+ * @param ref Point to copy data from
+ * @param prev Previous trace point
+ */
 CTrace::CPoint::CPoint(const CTrace &trace, const CPoint &ref, CPoint *prev):
   _trace(trace), 
   _gps(ref._gps),
@@ -219,6 +263,9 @@ CTrace::CPoint::CPoint(const CTrace &trace, const CPoint &ref, CPoint *prev):
 }
 
 
+/** 
+ * @brief Destructor
+ */
 CTrace::CPoint::~CPoint()
 {
   if(_prev)
@@ -228,6 +275,11 @@ CTrace::CPoint::~CPoint()
 }
 
 
+/** 
+ * @brief Prepares the point for removal from the trace
+ * 
+ * Updates the neighbors with the data of current point.
+ */
 void CTrace::CPoint::Reduce()
 {
   if(!_prev)
@@ -253,6 +305,9 @@ void CTrace::CPoint::Reduce()
 }
 
 
+/** 
+ * @brief Assesses the compression cost of a point
+ */
 void CTrace::CPoint::AssesCost()
 {
   if(!_prev)
@@ -271,7 +326,6 @@ void CTrace::CPoint::AssesCost()
   }
   _timeCost = _gps->TimeDelta(*_prev->_gps);
 }
-
 
 
 std::ostream &operator<<(std::ostream &stream, const CTrace::CPoint &point)

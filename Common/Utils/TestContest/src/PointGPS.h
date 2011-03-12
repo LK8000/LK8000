@@ -13,6 +13,13 @@
 #include "Utils.h"
 #include <vector>
 
+
+/** 
+ * @brief GPS fix data
+ * 
+ * CPointGPS class stores all data obrained from GPS fix. It also
+ * provides basic operations on GPS fixes.
+ */
 class CPointGPS {
   static const unsigned MAX_TIME_DELTA = 12 * 3600; // 12h
   
@@ -39,14 +46,22 @@ public:
   int TimeDelta(const CPointGPS &ref) const;
   
   bool operator==(const CPointGPS &ref) const { return _time == ref._time; }
-  bool operator<(const CPointGPS &ref) const { return TimeDelta(ref) < 0; }
-  bool operator>(const CPointGPS &ref) const { return TimeDelta(ref) > 0; }
+  bool operator<(const CPointGPS &ref) const  { return TimeDelta(ref) < 0; }
+  bool operator>(const CPointGPS &ref) const  { return TimeDelta(ref) > 0; }
 };
 
 typedef CSmartPtr<const CPointGPS> CPointGPSSmart;
 typedef std::vector<CPointGPS> CPointGPSArray;
 
 
+/** 
+ * @brief Calculates the distance between GPS fix and a given point
+ * 
+ * @param lat Latitude of distant point
+ * @param lon Longitude of distant point
+ * 
+ * @return Calculated distance
+ */
 inline unsigned CPointGPS::Distance(double lat, double lon) const
 {
   double dist;
@@ -55,12 +70,27 @@ inline unsigned CPointGPS::Distance(double lat, double lon) const
 }
 
 
+/** 
+ * @brief Calculates the distance between 2 GPS fixes
+ * 
+ * @param ref Other GPS fix to use in calculations
+ * 
+ * @return Calculated distance
+ */
 inline unsigned CPointGPS::Distance(const CPointGPS &ref) const
 {
   return Distance(ref._lat, ref._lon);
 }
 
 
+/** 
+ * @brief Calculates approximated distance of GPS fix from a line segment
+ * 
+ * @param seg1 First end of line segment
+ * @param seg2 Second end of line segment
+ * 
+ * @return Calculated distance
+ */
 inline unsigned CPointGPS::Distance(const CPointGPS &seg1, const CPointGPS &seg2) const
 {
   double A = _lon - seg1._lon;
@@ -91,6 +121,13 @@ inline unsigned CPointGPS::Distance(const CPointGPS &seg1, const CPointGPS &seg2
 }
 
 
+/** 
+ * @brief Calculates time difference between 2 GPS fixes
+ * 
+ * @param ref The second GPS fix to use
+ * 
+ * @return Calculated time difference
+ */
 inline int CPointGPS::TimeDelta(const CPointGPS &ref) const
 {
   int delta = _time - ref._time;

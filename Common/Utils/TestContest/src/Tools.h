@@ -12,6 +12,7 @@
 #include <sstream>
 #include <stdexcept>
 
+
 /**
  * @brief Converts string to specific type.
  *
@@ -75,12 +76,18 @@ template<class Seq> void Purge(Seq &container)
 }
 
 
+/** 
+ * @brief Pointers compare object
+ */
 template<class T>
 struct CPtrCmp {
   bool operator()(const T &left, const T &right) const { return *left < *right; }
 };
 
 
+/** 
+ * @brief Reference counting based smart pointer.
+ */
 template<class T>
 struct CSmartPtr {
   T * const _ptr;

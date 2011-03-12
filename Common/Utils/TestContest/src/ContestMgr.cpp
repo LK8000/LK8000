@@ -7,11 +7,55 @@
 */
 
 #include "ContestMgr.h"
-#include <iostream>
+
 
 unsigned CContestMgr::COMPRESSION_ALGORITHM;
 
 
+/** 
+ * @brief Default constructor
+ * 
+ * Constructor to create dummy invalid contest result object.
+ */
+CContestMgr::CResult::CResult():
+  _type(TYPE_NUM), _distance(0), _score(0)
+{
+}
+
+
+/** 
+ * @brief Primary constructor
+ * 
+ * @param type The type of the contest
+ * @param distance Contest covered distance
+ * @param score Contest score (if exists)
+ * @param pointArray The list of contest result points
+ */
+CContestMgr::CResult::CResult(TType type, unsigned distance, float score, const CPointGPSArray &pointArray):
+  _type(type), _distance(distance), _score(score), _pointArray(pointArray)
+{
+}
+
+
+/** 
+ * @brief "Copy" constructor
+ * 
+ * @param type The type of the contest results
+ * @param ref The results data to copy (beside type)
+ */
+CContestMgr::CResult::CResult(TType type, const CResult &ref):
+  _type(type), _distance(ref._distance), _score(ref._score), _pointArray(ref._pointArray)
+{
+}
+
+
+
+/** 
+ * @brief Constructor
+ * 
+ * @param handicap Glider handicap
+ * @param startAltitudeLoss The loss of altitude needed to detect the start of powerless flight
+ */
 CContestMgr::CContestMgr(unsigned handicap, short startAltitudeLoss):
   _handicap(handicap),
   _trace(TRACE_FIX_LIMIT, 0, startAltitudeLoss, COMPRESSION_ALGORITHM),
@@ -23,6 +67,13 @@ CContestMgr::CContestMgr(unsigned handicap, short startAltitudeLoss):
 }
 
 
+/** 
+ * @brief Returns the string representation of contest type
+ * 
+ * @param type Contest type to return
+ * 
+ * @return String representation of contest type
+ */
 const char *CContestMgr::TypeToString(TType type)
 {
   const char *typeStr[] = {
@@ -39,6 +90,20 @@ const char *CContestMgr::TypeToString(TType type)
 }
 
 
+/** 
+ * @brief Searches the trace for biggest allowed closed loop
+ * 
+ * Method searches provided trace to find the biggest closed loop allowed by
+ * the contest rules. The last point of provided trace is used as a reference
+ * to search for the closure. Method returns start and end points of the loop
+ * and the number of GPS fixes included in the loop.
+ * 
+ * @param trace The trace to search in
+ * @param [out] start Detected start point of the loop
+ * @param [out] end   Detected start point of the loop
+ * 
+ * @return The number of GPS fixes included in the loop.
+ */
 unsigned CContestMgr::BiggestLoopFind(const CTrace &trace, const CTrace::CPoint *&start, const CTrace::CPoint *&end) const
 {
   unsigned pointsCount = trace.Size();
@@ -70,6 +135,18 @@ unsigned CContestMgr::BiggestLoopFind(const CTrace &trace, const CTrace::CPoint 
 }
 
 
+/** 
+ * @brief Searches the trace for biggest allowed closed loop
+ * 
+ * Method searches provided trace to find the biggest closed loop allowed by
+ * the contest rules. If the loop is found, method returns @c true and all
+ * points of the loop are put to output trace.
+ * 
+ * @param traceIn Trace in which a loop should be found.
+ * @param traceOut Output trace with all points of the loop.
+ * 
+ * @return @c true if a loop was detected.
+ */
 bool CContestMgr::BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut) const
 {
   bool updated = false;
@@ -78,6 +155,7 @@ bool CContestMgr::BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut) const
     const CTrace::CPoint *start = 0;
     const CTrace::CPoint *end = 0;
     if(BiggestLoopFind(traceIn, start, end)) {
+      // new loop found - copy the points to output trace
       traceOut.Clear();
       const CTrace::CPoint *point = start;
       while(point) {
@@ -86,6 +164,7 @@ bool CContestMgr::BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut) const
           break;
         point = point->Next();
       }
+      // compress resulting trace
       traceOut.Compress();
       updated = true;
     }
@@ -95,6 +174,17 @@ bool CContestMgr::BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut) const
 }
 
 
+/** 
+ * @brief Verifies FAI triangle edge.
+ * 
+ * Method checks if provided edge can create bigger FAI triangle than
+ * the provided one.
+ * 
+ * @param length The length on a FAI triangle to verify.
+ * @param best Previous best FAI circumference.
+ * 
+ * @return @c true if a bigger FAI triangle can be constructed from the edge.
+ */
 bool CContestMgr::FAITriangleEdgeCheck(unsigned length, unsigned best) const
 {
   unsigned length4 = length * 4;
@@ -113,6 +203,18 @@ bool CContestMgr::FAITriangleEdgeCheck(unsigned length, unsigned best) const
 }
 
 
+/** 
+ * @brief Verifies if provided edges form a valid FAI triangle
+ * 
+ * Method checks if a valid triangle can be constructed from provided
+ * triangle edges.
+ * 
+ * @param length1 First edge
+ * @param length2 Second edge
+ * @param length3 Third edge
+ * 
+ * @return @c true if a valid FAI triangle can be constructed from provided edges
+ */
 bool CContestMgr::FAITriangleEdgeCheck(unsigned length1, unsigned length2, unsigned length3) const
 {
   unsigned length = length1 + length2 + length3;
@@ -123,11 +225,17 @@ bool CContestMgr::FAITriangleEdgeCheck(unsigned length1, unsigned length2, unsig
   else {
     unsigned lengthMin = std::min(length1, std::min(length2, length3));
     unsigned lengthMax = std::max(length1, std::max(length2, length3));
-    return lengthMin * 4 > length && lengthMax * 20 < length * 9; // 25% + 45%
+    return lengthMin * 4 > length && lengthMax * 20 < length * 9; // 25% && 45%
   }
 }
 
 
+/** 
+ * @brief Sets a result for points based contests
+ * 
+ * @param type The type of the contest
+ * @param traceResult The result data to set
+ */
 void CContestMgr::PointsResult(TType type, const CTrace &traceResult)
 {
   // prepare result
@@ -160,6 +268,13 @@ void CContestMgr::PointsResult(TType type, const CTrace &traceResult)
 }
 
 
+/** 
+ * @brief Solve point based contest
+ * 
+ * @param trace The trace to use
+ * @param sprint @c true if a sprint contest
+ * @param predicted @c true if a predicted path to the trace start should be calculated
+ */
 void CContestMgr::SolvePoints(const CTrace &trace, bool sprint, bool predicted)
 {
   if(!trace.Size())
@@ -224,6 +339,13 @@ void CContestMgr::SolvePoints(const CTrace &trace, bool sprint, bool predicted)
 }
 
 
+/** 
+ * @brief Solves FAI triangle based contest
+ * 
+ * @param trace The trace to use
+ * @param prevFront Loop front point of previous iteration
+ * @param prevBack Loop back point of previous iteration
+ */
 void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront, const CPointGPS *prevBack)
 {
   CResult &result = _resultArray[TYPE_OLC_FAI];
@@ -312,6 +434,11 @@ void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront,
 }
 
 
+/** 
+ * @brief Sets dummy OLC-Plus results data
+ * 
+ * Method sets OLC-Plus result based on the results of OLC-Classic and FAI-OLC.
+ */
 void CContestMgr::SolveOLCPlus()
 {
   CResult &classic = _resultArray[TYPE_OLC_CLASSIC];
@@ -320,6 +447,11 @@ void CContestMgr::SolveOLCPlus()
 }
 
 
+/** 
+ * @brief Adds a new GPS fix to analysis
+ * 
+ * @param gps New GPS fix to use in analysis
+ */
 void CContestMgr::Add(const CPointGPSSmart &gps)
 {
   static unsigned step = 0;

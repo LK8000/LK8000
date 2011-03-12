@@ -12,6 +12,15 @@
 #include <iomanip>
 
 
+
+/** 
+ * @brief Constructor
+ * 
+ * @param igcFile IGC file to analyse
+ * @param handicap Glider handicap
+ * @param startAltitudeLoss The loss of altitude needed to detect the start of powerless flight
+ * @param interruptFix GPS fix at which a test should be interrupted
+ */
 CTestContest::CTestContest(const std::string &igcFile, unsigned handicap, unsigned startAltitudeLoss, unsigned interruptFix):
   _igcFile(igcFile),
   _handicap(handicap),
@@ -28,14 +37,28 @@ CTestContest::CTestContest(const std::string &igcFile, unsigned handicap, unsign
 }
 
 
+/** 
+ * @brief GPS data receive handler
+ * 
+ * Main entry point to the test application.
+ *
+ * @param user User context
+ * @param time GPS fix time
+ * @param latitude GPS fix latitude
+ * @param longitude GPS fix longitude
+ * @param altitude GPS fix altitude
+ */
 void CTestContest::GPSHandler(void *user, unsigned time, double latitude, double longitude, short altitude)
 {
   if(latitude == 0 && longitude == 0)
+    // filter invalid GPS fixes
     return;
-
+  
+  // obtain test object
   CTestContest *test = static_cast<CTestContest *>(user);
   
   if(test->_interruptFix && test->_contestMgr.Trace().AnalyzedPointCount() > test->_interruptFix)
+    // interrupt the test after requested number of GPS fixes
     return;
   
   CTimeStamp iterBegin;
@@ -45,6 +68,8 @@ void CTestContest::GPSHandler(void *user, unsigned time, double latitude, double
   
   CTimeStamp iterEnd;
   unsigned iterTime = iterEnd - iterBegin;
+
+  // store the longest GPS fix processing period
   if(iterTime > test->_maxIterProcessPeriod) {
     test->_maxIterProcessPeriod = iterTime;
     test->_maxIterProcessTime = time;
@@ -60,6 +85,11 @@ void CTestContest::GPSHandler(void *user, unsigned time, double latitude, double
 }
 
 
+/** 
+ * @brief Dumps contest results
+ * 
+ * @param type The type of the contest to dump
+ */
 void CTestContest::Dump(const CContestMgr::TType type) const
 {
   const CContestMgr::CResult &result = _contestMgr.Result(type);
@@ -75,6 +105,9 @@ void CTestContest::Dump(const CContestMgr::TType type) const
 }
 
 
+/** 
+ * @brief Main test run method
+ */
 void CTestContest::Run()
 {
   std::cout << "Contests analysis for: " << _igcFile << " (handicap: " << _handicap << ")" << std::endl;
@@ -85,16 +118,13 @@ void CTestContest::Run()
   // store start timestamp
   _timeArray.push_back(CTimeStamp());
   
-  while(_replay.Update()) {
-    // if(_trace.PointCount() >= 30)
-    //   break;
-  }
+  while(_replay.Update()) {}
   putchar('\n');
   
   // store finish timestamp
   _timeArray.push_back(CTimeStamp());
   
-  // dump optimized trace
+  // dump compressed trace
   const CTrace &trace = _contestMgr.Trace();
   const CTrace &traceSprint = _contestMgr.TraceSprint();
   _kml.Dump(trace);
@@ -120,6 +150,7 @@ void CTestContest::Run()
         std::setw(4) << _timeArray[i] - _timeArray[i - 1] << "ms" << std::endl;
   }
   
+  // dump contest results
   Dump(CContestMgr::TYPE_OLC_CLASSIC);
   Dump(CContestMgr::TYPE_OLC_CLASSIC_PREDICTED);
   Dump(CContestMgr::TYPE_OLC_FAI);

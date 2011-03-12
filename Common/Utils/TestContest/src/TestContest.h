@@ -14,10 +14,18 @@
 #include <fstream>
 #include <vector>
 
+
 class CReplayLogger;
 
+
+/** 
+ * @brief Main contests test class
+ */
 class CTestContest {
   
+  /** 
+   * @brief Google Earth KML wrapper class
+   */
   class CKMLWrapper {
     mutable std::ofstream _stream;
     
@@ -33,15 +41,15 @@ class CTestContest {
   
   static const unsigned TIME_ANALYSIS_STEP = 500;
   
-  const std::string _igcFile;
-  const unsigned _handicap;
-  CReplayLogger &_replay;
-  CKMLWrapper _kml;
-  CContestMgr _contestMgr;
-  CTimeStampArray _timeArray;
-  unsigned _interruptFix;
-  unsigned _maxIterProcessPeriod;
-  unsigned _maxIterProcessTime;
+  const std::string _igcFile;                     /**< @brief IGC file to analyse */
+  const unsigned _handicap;                       /**< @brief Glider handicap */
+  CReplayLogger &_replay;                         /**< @brief IGC file replay logger */
+  CKMLWrapper _kml;                               /**< @brief Google Earth KML wraper */
+  CContestMgr _contestMgr;                        /**< @brief Contests Manager */
+  CTimeStampArray _timeArray;                     /**< @brief Performance measurements time array */
+  unsigned _interruptFix;                         /**< @brief GPS fix at which a test should be interrupted */
+  unsigned _maxIterProcessPeriod;                 /**< @brief Maximum iteration processing period */
+  unsigned _maxIterProcessTime;                   /**< @brief Time of GPS fix of maximum iteration processing */
   
   static void GPSHandler(void *user, unsigned time, double latitude, double longitude, short altitude);
   
