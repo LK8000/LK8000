@@ -35,16 +35,16 @@ CTestContest::CKMLWrapper::CKMLWrapper(const std::string &path):
   _stream << "    <StyleMap id=\"result\">" << std::endl;
   _stream << "      <Pair>" << std::endl;
   _stream << "        <key>normal</key>" << std::endl;
-  _stream << "        <styleUrl>#green_line</styleUrl>" << std::endl;
+  _stream << "        <styleUrl>#red_line</styleUrl>" << std::endl;
   _stream << "      </Pair>" << std::endl;
   _stream << "      <Pair>" << std::endl;
   _stream << "        <key>highlight</key>" << std::endl;
-  _stream << "        <styleUrl>#green_line</styleUrl>" << std::endl;
+  _stream << "        <styleUrl>#red_line</styleUrl>" << std::endl;
   _stream << "      </Pair>" << std::endl;
   _stream << "    </StyleMap>" << std::endl;
-  _stream << "    <Style id=\"green_line\">" << std::endl;
+  _stream << "    <Style id=\"red_line\">" << std::endl;
   _stream << "      <LineStyle>" << std::endl;
-  _stream << "        <color>ff00aa00</color>" << std::endl;
+  _stream << "        <color>ff0000ff</color>" << std::endl;
   _stream << "        <width>3</width>" << std::endl;
   _stream << "      </LineStyle>" << std::endl;
   _stream << "    </Style>" << std::endl;
@@ -129,7 +129,6 @@ void CTestContest::CKMLWrapper::Dump(const CContestMgr::CResult &result) const
   _stream << "        <styleUrl>#result</styleUrl>" << std::endl;
   _stream << "        <LineString>" << std::endl;
   _stream << "          <tessellate>0</tessellate>" << std::endl;
-  _stream << "          <altitudeMode>absolute</altitudeMode>" << std::endl;
   _stream << "          <coordinates>" << std::endl;
   for(CPointGPSArray::const_iterator it=result.PointArray().begin(); it!=result.PointArray().end(); ++it) {
     _stream << std::setprecision(8) << it->Longitude() << "," << it->Latitude() << "," << std::setprecision(0) << it->Altitude() << " " << std::endl;
