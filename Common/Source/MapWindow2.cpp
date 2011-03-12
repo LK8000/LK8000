@@ -1942,7 +1942,7 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 			bool distances_ready = (*it)->GetWarningPoint(lon,lat);
 			if (distances_ready && PointVisible(lon, lat)) {
 				LatLon2Screen(lon, lat, sc);
-				DrawBitmapIn(hdc, sc, hTerrainWarning);			//TODO
+				DrawBitmapIn(hdc, sc, hAirspaceWarning);
 			}
 		  }
         }

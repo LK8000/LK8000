@@ -66,6 +66,7 @@
 #define IDB_TOWN                        218
 #define IDB_MARK                        219
 #define IDB_TERRAINWARNING              220
+#define IDB_AIRSPACEWARNING             221
 #define IDI_XCSOARS                     224
 #define IDD_LOGGERDETAILS               231
 #define IDB_AIRSPACE                    235

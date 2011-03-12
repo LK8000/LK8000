@@ -628,7 +628,9 @@ class MapWindow {
     hTurnPoint, hSmall, hInvTurnPoint, hInvSmall, hCruise, hClimb,
     hFinalGlide, hAutoMacCready, hTerrainWarning, hGPSStatus1, hGPSStatus2,
     hAbort, hLogger, hLoggerOff, hFLARMTraffic;
-
+#ifdef LKAIRSPACE
+	static HBITMAP hAirspaceWarning;
+#endif
   static HBRUSH   hBackgroundBrush;
   static COLORREF BackgroundColor;
 
