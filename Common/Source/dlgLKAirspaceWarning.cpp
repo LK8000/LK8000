@@ -36,7 +36,7 @@ static void OnAckForTimeClicked(WindowControl * Sender)
   (void)Sender;
   if (dlg == NULL) return;
   if (msg.originator == NULL) return;
-  CAirspaceManager::Instance().AirspaceSetAckState(*msg.originator, msg.warnstate);
+  CAirspaceManager::Instance().AirspaceSetAckLevel(*msg.originator, msg.warnlevel);
   dlg->SetModalResult(mrOK);
 }
 
@@ -138,7 +138,7 @@ static CallBackTableEntry_t CallBackTable[]={
 
 void dlgLKAirspaceFill()
 {
-  if (msg.warnstate != airspace_copy.UserWarningState()) {
+  if (msg.warnlevel != airspace_copy.WarningLevel()) {
 	// we can automatically close the dialog when the warning level changes, probably new msg waiting in the queue
 	dlg->SetModalResult(mrOK);
   }
@@ -218,7 +218,7 @@ void dlgLKAirspaceFill()
 
 	wp = (WndProperty*)dlg->FindByName(TEXT("prpState"));
 	if (wp) {
-	  switch (airspace_copy.UserWarningState()) {
+	  switch (airspace_copy.WarningLevel()) {
 		default:
 		  wp->SetText(TEXT("Unknown"));
 		  break;
@@ -227,12 +227,12 @@ void dlgLKAirspaceFill()
   		  wp->SetText(TEXT("None"));
 		  break;
 
-		case awPredicted:
-			wp->SetText(TEXT("awPredicted (YELLOW)"));
+		case awYellow:
+			wp->SetText(TEXT("awYellow (YELLOW)"));
 		  break;
 		
-		case awWarning:
-			wp->SetText(TEXT("awWarning (RED)"));
+		case awRed:
+			wp->SetText(TEXT("awRed (RED)"));
 		  break;
 	  }//sw
 	  wp->RefreshDisplay();
@@ -362,7 +362,7 @@ void ShowAirspaceWarningsToUser()
   }
 
   // show dialog to user if needed
-  if (ackdialog_required && (airspace_copy.UserWarningState() == msg.warnstate)) {
+  if (ackdialog_required && (airspace_copy.WarningLevel() == msg.warnlevel)) {
 	if (!InfoBoxLayout::landscape)
 	  dlg = dlgLoadFromXML(CallBackTable, NULL, hWndMainWindow, TEXT("IDR_XML_LKAIRSPACEWARNING_L"));
 	else

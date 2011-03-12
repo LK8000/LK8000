@@ -44,11 +44,11 @@ static void OnAcknowledgeClicked(WindowControl * Sender){
 			 gettext(TEXT("_@M51_")),
 			 MB_YESNOCANCEL|MB_ICONQUESTION);
     if (answer == IDYES) {
-	  if (airspace) CAirspaceManager::Instance().AirspaceWarnListDailyAck(*airspace);
+	  if (airspace) CAirspaceManager::Instance().AirspaceAckDaily(*airspace);
       wf->SetModalResult(mrOK);
     } else if (answer == IDNO) {
       // this will cancel a daily ack
-	  if (airspace) CAirspaceManager::Instance().AirspaceWarnListDailyAckCancel(*airspace);
+	  if (airspace) CAirspaceManager::Instance().AirspaceAckDailyCancel(*airspace);
       wf->SetModalResult(mrOK);
     }
   }
@@ -121,7 +121,7 @@ static void SetValues(const CAirspace *airspace) {
   const AIRSPACE_ALT* top = airspace->Top();
   const AIRSPACE_ALT* base = airspace->Base();
   const TCHAR *name = airspace->Name();
-  bool inside = airspace->Inside(GPS_INFO.Longitude, GPS_INFO.Latitude);
+  bool inside = airspace->IsHorizontalInside(GPS_INFO.Longitude, GPS_INFO.Latitude);
   double bearing;
   double range = airspace->Range(GPS_INFO.Longitude, GPS_INFO.Latitude, bearing);
 

@@ -111,10 +111,10 @@ static void OnAirspaceListEnter(WindowControl * Sender,
 			       gettext(TEXT("_@M51_")),
 			       MB_YESNOCANCEL|MB_ICONQUESTION);
 		  if (answer == IDYES) {
-			if (airspace) CAirspaceManager::Instance().AirspaceWarnListDailyAck(*airspace);
+			if (airspace) CAirspaceManager::Instance().AirspaceAckDaily(*airspace);
           } else if (answer == IDNO) {
 			// this will cancel a daily ack
-			if (airspace) CAirspaceManager::Instance().AirspaceWarnListDailyAckCancel(*airspace);
+			if (airspace) CAirspaceManager::Instance().AirspaceAckDailyCancel(*airspace);
 		  }
         }
       }

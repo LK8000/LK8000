@@ -211,7 +211,7 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
 		  (*it)->Draw(hdc, rc, false);
 		  
 		  // Draw warning position if any
-		  if ((*it)->UserWarningState() > awNone) {
+		  if ((*it)->WarningLevel() > awNone) {
 			POINT sc;
 			double lon;
 			double lat;
