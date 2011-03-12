@@ -17,11 +17,11 @@
 /** 
  * @brief GPS fix data
  * 
- * CPointGPS class stores all data obrained from GPS fix. It also
+ * CPointGPS class stores all data obtained from GPS fix. It also
  * provides basic operations on GPS fixes.
  */
 class CPointGPS {
-  static const unsigned MAX_TIME_DELTA = 12 * 3600; // 12h
+  static const unsigned MAX_TIME_DELTA = 16 * 3600; // 16h
   
   // data from GPS
   unsigned _time;

@@ -60,7 +60,7 @@ public:
     TType Type() const         { return _type; }
     unsigned Distance() const  { return _distance; }
     float Score() const        { return _score; }
-    unsigned Duration() const  { return _pointArray.empty() ? 0 : (_pointArray.back().Time() - _pointArray.front().Time()); }
+    unsigned Duration() const  { return _pointArray.empty() ? 0 : (_pointArray.back().TimeDelta(_pointArray.front())); }
     float Speed() const        { return _pointArray.empty() ? 0 : ((float)_distance / Duration()); }
     const CPointGPSArray &PointArray() const { return _pointArray; }
   };
