@@ -337,6 +337,8 @@ bool CAirspace::FinishWarning()
 	int MessageRepeatTime = 1800;			// Unacknowledged message repeated in x secs
 	int abs_hdistance = abs(_hdistance);
 	int abs_vdistance = abs(_vdistance);
+	int hdistance_histeresis = 500;			// Horizontal distance histeresis to step back awNone
+	int vdistance_histeresis = 50;			// Vertical distance histeresis to step back awNone
 	
 	//Calculate warning state based on airspace warning events
 	switch (_warnevent) {
@@ -347,12 +349,16 @@ bool CAirspace::FinishWarning()
 	  case aweMovingInsideFly:
 		// If far away from border, set warnstate to none
 		// If base is sfc, we skip near warnings to base, to not get disturbing messages on landing.
-		if ( (abs_hdistance>_hdistancemargin) && 
-			 ( (abs_vdistance>AltWarningMargin) || (_lastknownagl<=AltWarningMargin) ) 
+		if ( (abs_hdistance>(_hdistancemargin+hdistance_histeresis)) && 
+			 (abs_vdistance>(AltWarningMargin+vdistance_histeresis)) 
 		   ) {
 		  // Far away horizontally _and_ vertically
 		  _userwarningstate = awNone;
-		} else {
+		  break;
+		} 
+		if ( (abs_hdistance<_hdistancemargin) || 
+			 ( (abs_vdistance<AltWarningMargin) && (_lastknownagl>AltWarningMargin) ) 
+		   ) {
 		  // Check what is outside this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
 		  double lon = 0;
 		  double lat =0;
@@ -397,10 +403,13 @@ bool CAirspace::FinishWarning()
 		
 	  // Events for NON-FLY zones
 	  case aweMovingOutsideNonfly:
-		if ( abs_hdistance>_hdistancemargin ) {
-		  // Far away horizontally _or_ vertically
-		  _userwarningstate = awNone;
-		} else {
+		if ( (abs_hdistance > (_hdistancemargin + hdistance_histeresis)) ||
+		     (!IsAltitudeInside(_lastknownalt, _lastknownagl, AltWarningMargin + vdistance_histeresis))
+		  ) {
+			// Far away horizontally _or_ vertically
+			_userwarningstate = awNone;
+		}
+		if ( abs_hdistance < _hdistancemargin ) {
 		  if (IsAltitudeInside(_lastknownalt, _lastknownagl, AltWarningMargin)) {
 			// Near to inside, modify warnevent to inform user
 			_userwarningstate = awPredicted;
