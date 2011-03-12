@@ -27,11 +27,13 @@ const char *CContestMgr::TypeToString(TType type)
 {
   const char *typeStr[] = {
     "OLC-Classic",
+    "OLC-Classic (P)",
     "FAI-OLC",
     "OLC-Plus",
     "OLC-League",
     "FAI 3 TPs",
-    "<invalid>" 
+    "FAI 3 TPs (P)",
+    "[invalid]" 
   };
   return typeStr[type];
 }
@@ -144,6 +146,7 @@ void CContestMgr::PointsResult(TType type, const CTrace &traceResult)
     float score;
     switch(type) {
     case TYPE_OLC_CLASSIC:
+    case TYPE_OLC_CLASSIC_PREDICTED:
       score = distance / 1000.0 * 100 / _handicap;
       break;
     case TYPE_OLC_LEAGUE:
@@ -157,7 +160,7 @@ void CContestMgr::PointsResult(TType type, const CTrace &traceResult)
 }
 
 
-void CContestMgr::SolvePoints(const CTrace &trace, bool sprint)
+void CContestMgr::SolvePoints(const CTrace &trace, bool sprint, bool predicted)
 {
   if(!trace.Size())
     return;
@@ -184,16 +187,39 @@ void CContestMgr::SolvePoints(const CTrace &trace, bool sprint)
     traceResult.Push(new CTrace::CPoint(traceResult, *point, traceResult._back));
     point = point->Next();
   }
+  
+  if(predicted) {
+    // predict GPS data of artificial point in the location of the trace start
+    const CPointGPS &start = traceResult.Front()->GPS();
+    const CResult &result = _resultArray[TYPE_OLC_CLASSIC];
+    unsigned time = start.Time();
+    if(result.Speed()) {
+      time += result.PointArray().back().Distance(start) / result.Speed();
+      time %= CPointGPS::DAY_SECONDS;
+    }
+    
+    // add predicted point
+    traceResult.Push(new CPointGPS(time, start.Latitude(), start.Longitude(), start.Altitude()));
+  }
+  
+  // compress trace to obtain the result
   traceResult.Compress();
   
   // store result
-  PointsResult(sprint ? TYPE_OLC_LEAGUE : TYPE_OLC_CLASSIC, traceResult);
+  TType type = sprint ? TYPE_OLC_LEAGUE : (predicted ? TYPE_OLC_CLASSIC_PREDICTED : TYPE_OLC_CLASSIC);
+  if(predicted)
+    // do it just in a case if predicted trace is worst than the current one
+    _resultArray[TYPE_OLC_CLASSIC_PREDICTED] = CResult(TYPE_OLC_CLASSIC_PREDICTED, _resultArray[TYPE_OLC_CLASSIC]);
+  PointsResult(type, traceResult);
   
   if(!sprint) {
     // calculate TYPE_FAI_3_TPS
     traceResult.Compress(5);
     // store result
-    PointsResult(TYPE_FAI_3_TPS, traceResult);
+    if(predicted)
+      // do it just in a case if predicted trace is worst than the current one
+      _resultArray[TYPE_FAI_3_TPS_PREDICTED] = CResult(TYPE_FAI_3_TPS_PREDICTED, _resultArray[TYPE_FAI_3_TPS]);
+    PointsResult(predicted ? TYPE_FAI_3_TPS_PREDICTED : TYPE_FAI_3_TPS, traceResult);
   }
 }
 
@@ -297,7 +323,7 @@ void CContestMgr::SolveOLCPlus()
 void CContestMgr::Add(const CPointGPSSmart &gps)
 {
   static unsigned step = 0;
-  const unsigned STEPS_NUM = 3;
+  const unsigned STEPS_NUM = 4;
   
   // OLC-Plus
   _trace.Push(gps);
@@ -310,17 +336,22 @@ void CContestMgr::Add(const CPointGPSSmart &gps)
   }
   _trace.Compress();
   if(step % STEPS_NUM == 1) {
-    // Solve OLC-Classic
-    SolvePoints(_trace, false);
+    // Solve OLC-Classic and FAI 3TPs
+    SolvePoints(_trace, false, false);
   }
   SolveOLCPlus();
+
+  if(step % STEPS_NUM == 2) {
+    // Solve OLC-Classic and FAI 3TPs for predicted path
+    SolvePoints(_trace, false, true);
+  }
   
   // OLC-League
   _traceSprint.Push(gps);
   _traceSprint.Compress();
-  if(step % STEPS_NUM == 2)
+  if(step % STEPS_NUM == 3)
     // Solve OLC-Sprint
-    SolvePoints(_traceSprint, true);
+    SolvePoints(_traceSprint, true, false);
   
   step++;
 }

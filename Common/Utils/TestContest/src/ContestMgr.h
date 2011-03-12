@@ -17,10 +17,12 @@ class CContestMgr {
 public:
   enum TType {
     TYPE_OLC_CLASSIC,
+    TYPE_OLC_CLASSIC_PREDICTED,
     TYPE_OLC_FAI,
     TYPE_OLC_PLUS,
     TYPE_OLC_LEAGUE,
     TYPE_FAI_3_TPS,
+    TYPE_FAI_3_TPS_PREDICTED,
     TYPE_NUM
   };
   
@@ -33,6 +35,8 @@ public:
     CResult(): _type(TYPE_NUM), _distance(0), _score(0) {}
     CResult(TType type, unsigned distance, float score, const CPointGPSArray &pointArray):
       _type(type), _distance(distance), _score(score), _pointArray(pointArray) {}
+    CResult(TType type, const CResult &ref):
+      _type(type), _distance(ref._distance), _score(ref._score), _pointArray(ref._pointArray) {}
     TType Type() const                       { return _type; }
     unsigned Distance() const                { return _distance; }
     float Score() const                      { return _score; }
@@ -56,7 +60,7 @@ private:
   bool FAITriangleEdgeCheck(unsigned length, unsigned best) const;
   bool FAITriangleEdgeCheck(unsigned length1, unsigned length2, unsigned length3) const;
   void PointsResult(TType type, const CTrace &traceResult);
-  void SolvePoints(const CTrace &trace, bool sprint);
+  void SolvePoints(const CTrace &trace, bool sprint, bool predicted);
   void SolveTriangle(const CTrace &trace, const CPointGPS *prevFront, const CPointGPS *prevBack);
   void SolveOLCPlus();
   

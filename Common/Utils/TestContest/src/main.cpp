@@ -13,14 +13,16 @@
 
 int main(int argc, char *argv[])
 {
-  if(argc < 5) {
+  if(argc < 6) {
     std::cout << "Usage:" << std::endl;
-    std::cout << "  TestContest.exe IGC_FILE HANDICAP START_ALT_LOSS ALGORITHM" << std::endl;
+    std::cout << "  TestContest.exe IGC_FILE HANDICAP START_ALT_LOSS ALGORITHM INTERRUPT_FIX" << std::endl;
     std::cout << std::endl;
     std::cout << "ALGORITHM:" << std::endl;
     std::cout << " - 1: Triangles area" << std::endl;
     std::cout << " - 2: Distance lost" << std::endl;
     std::cout << " - 3: Distance lost + Inherited error" << std::endl;
+    std::cout << std::endl;
+    std::cout << "INTERRUPT_FIX = 0 - no interrupt" << std::endl;
     return EXIT_FAILURE;
   }
   
@@ -40,7 +42,7 @@ int main(int argc, char *argv[])
       return EXIT_FAILURE;
     }
     
-    CTestContest test(argv[1], Convert<unsigned>(argv[2]), Convert<unsigned>(argv[3]));
+    CTestContest test(argv[1], Convert<unsigned>(argv[2]), Convert<unsigned>(argv[3]), Convert<unsigned>(argv[5]));
     test.Run();
   }
   catch(const std::exception &ex) {

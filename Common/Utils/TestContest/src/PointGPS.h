@@ -15,7 +15,6 @@
 
 class CPointGPS {
   static const unsigned MAX_TIME_DELTA = 12 * 3600; // 12h
-  static const unsigned DAY_SECONDS    = 24 * 3600; // 24h
   
   // data from GPS
   unsigned _time;
@@ -24,6 +23,8 @@ class CPointGPS {
   double _lon;
   
 public:
+  static const unsigned DAY_SECONDS    = 24 * 3600; // 24h
+  
   CPointGPS(unsigned time, double lat, double lon, short alt):
     _time(time), _alt(alt), _lat(lat), _lon(lon) {}
   

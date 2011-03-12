@@ -12,12 +12,13 @@
 #include <iomanip>
 
 
-CTestContest::CTestContest(const std::string &igcFile, unsigned handicap, unsigned startAltitudeLoss):
+CTestContest::CTestContest(const std::string &igcFile, unsigned handicap, unsigned startAltitudeLoss, unsigned interruptFix):
   _igcFile(igcFile),
   _handicap(handicap),
   _replay(CReplayLogger::Instance()),
   _kml(igcFile + ".kml"),
   _contestMgr(handicap, startAltitudeLoss),
+  _interruptFix(interruptFix),
   _maxIterProcessPeriod(0),
   _maxIterProcessTime(0)
 {
@@ -33,6 +34,9 @@ void CTestContest::GPSHandler(void *user, unsigned time, double latitude, double
     return;
 
   CTestContest *test = static_cast<CTestContest *>(user);
+  
+  if(test->_interruptFix && test->_contestMgr.Trace().AnalyzedPointCount() > test->_interruptFix)
+    return;
   
   CTimeStamp iterBegin;
   
@@ -117,8 +121,10 @@ void CTestContest::Run()
   }
   
   Dump(CContestMgr::TYPE_OLC_CLASSIC);
+  Dump(CContestMgr::TYPE_OLC_CLASSIC_PREDICTED);
   Dump(CContestMgr::TYPE_OLC_FAI);
   Dump(CContestMgr::TYPE_OLC_PLUS);
   Dump(CContestMgr::TYPE_OLC_LEAGUE);
   Dump(CContestMgr::TYPE_FAI_3_TPS);
+  Dump(CContestMgr::TYPE_FAI_3_TPS_PREDICTED);
 }

@@ -39,6 +39,7 @@ class CTestContest {
   CKMLWrapper _kml;
   CContestMgr _contestMgr;
   CTimeStampArray _timeArray;
+  unsigned _interruptFix;
   unsigned _maxIterProcessPeriod;
   unsigned _maxIterProcessTime;
   
@@ -47,7 +48,7 @@ class CTestContest {
   void Dump(const CContestMgr::TType type) const;
   
 public:
-  CTestContest(const std::string &igcFile, unsigned handicap, unsigned startAltitudeLoss);
+  CTestContest(const std::string &igcFile, unsigned handicap, unsigned startAltitudeLoss, unsigned interruptFix);
   void Run();
 };
 
