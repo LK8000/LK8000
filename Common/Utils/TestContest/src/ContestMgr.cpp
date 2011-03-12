@@ -30,6 +30,7 @@ const char *CContestMgr::TypeToString(TType type)
     "FAI-OLC",
     "OLC-Plus",
     "OLC-League",
+    "FAI 3 TPs",
     "<invalid>" 
   };
   return typeStr[type];
@@ -125,38 +126,11 @@ bool CContestMgr::FAITriangleEdgeCheck(unsigned length1, unsigned length2, unsig
 }
 
 
-void CContestMgr::SolvePoints(const CRules &rules)
+void CContestMgr::PointsResult(TType type, const CTrace &traceResult)
 {
-  if(!rules.Trace().Size())
-    return;
-  
-  // find the last point meeting criteria
-  short finishAltDiff = rules.FinishAltDiff();
-  const CTrace::CPoint *point = rules.Trace().Back();
-  const CTrace::CPoint *last = 0;
-  short startAltitude = rules.Trace().Front()->GPS().Altitude();
-  while(point) {
-    if(point->GPS().Altitude() + finishAltDiff >= startAltitude) {
-      last = point;
-      break;
-    }
-    point = point->Previous();
-  }
-  
-  // create result trace
-  CTrace traceResult(rules.TPNum(), rules.TimeLimit(), 0, CTrace::ALGORITHM_DISTANCE);
-  
-  // add points to result trace
-  point = rules.Trace().Front();
-  while(point && point != last->Next()) {
-    traceResult.Push(new CTrace::CPoint(traceResult, *point, traceResult._back));
-    point = point->Next();
-  }
-  traceResult.Compress();
-  
   // prepare result
   CPointGPSArray pointArray;
-  point = traceResult.Front();
+  const CTrace::CPoint *point = traceResult.Front();
   unsigned distance = 0;
   while(point) {
     if(pointArray.size())
@@ -166,13 +140,60 @@ void CContestMgr::SolvePoints(const CRules &rules)
   }
   
   // store result
-  if(distance > _resultArray[rules.Type()].Distance()) {
+  if(distance > _resultArray[type].Distance()) {
     float score;
-    if(rules.Type() == TYPE_OLC_LEAGUE)
-      score = distance / 1000.0 / 2.5 * 200 / (_handicap + 100);
-    else
+    switch(type) {
+    case TYPE_OLC_CLASSIC:
       score = distance / 1000.0 * 100 / _handicap;
-    _resultArray[rules.Type()] = CResult(rules.Type(), distance, score, pointArray);
+      break;
+    case TYPE_OLC_LEAGUE:
+      score = distance / 1000.0 / 2.5 * 200 / (_handicap + 100);
+      break;
+    default:
+      score = 0;
+    }
+    _resultArray[type] = CResult(type, distance, score, pointArray);
+  }
+}
+
+
+void CContestMgr::SolvePoints(const CTrace &trace, bool sprint)
+{
+  if(!trace.Size())
+    return;
+  
+  // find the last point meeting criteria
+  short finishAltDiff = sprint ? 0 : TRACE_START_FINISH_ALT_DIFF;
+  const CTrace::CPoint *point = trace.Back();
+  const CTrace::CPoint *last = 0;
+  short startAltitude = trace.Front()->GPS().Altitude();
+  while(point) {
+    if(point->GPS().Altitude() + finishAltDiff >= startAltitude) {
+      last = point;
+      break;
+    }
+    point = point->Previous();
+  }
+  
+  // create result trace
+  CTrace traceResult(sprint ? 5 : 7, sprint ? TRACE_SPRINT_TIME_LIMIT : 0, 0, CTrace::ALGORITHM_DISTANCE);
+  
+  // add points to result trace
+  point = trace.Front();
+  while(point && point != last->Next()) {
+    traceResult.Push(new CTrace::CPoint(traceResult, *point, traceResult._back));
+    point = point->Next();
+  }
+  traceResult.Compress();
+  
+  // store result
+  PointsResult(sprint ? TYPE_OLC_LEAGUE : TYPE_OLC_CLASSIC, traceResult);
+  
+  if(!sprint) {
+    // calculate TYPE_FAI_3_TPS
+    traceResult.Compress(5);
+    // store result
+    PointsResult(TYPE_FAI_3_TPS, traceResult);
   }
 }
 
@@ -290,7 +311,7 @@ void CContestMgr::Add(const CPointGPSSmart &gps)
   _trace.Compress();
   if(step % STEPS_NUM == 1) {
     // Solve OLC-Classic
-    SolvePoints(CRules(TYPE_OLC_CLASSIC, _trace, 7, 0, TRACE_START_FINISH_ALT_DIFF));
+    SolvePoints(_trace, false);
   }
   SolveOLCPlus();
   
@@ -299,7 +320,7 @@ void CContestMgr::Add(const CPointGPSSmart &gps)
   _traceSprint.Compress();
   if(step % STEPS_NUM == 2)
     // Solve OLC-Sprint
-    SolvePoints(CRules(TYPE_OLC_LEAGUE, _traceSprint, 5, TRACE_SPRINT_TIME_LIMIT, 0));
+    SolvePoints(_traceSprint, true);
   
   step++;
 }

@@ -120,4 +120,5 @@ void CTestContest::Run()
   Dump(CContestMgr::TYPE_OLC_FAI);
   Dump(CContestMgr::TYPE_OLC_PLUS);
   Dump(CContestMgr::TYPE_OLC_LEAGUE);
+  Dump(CContestMgr::TYPE_FAI_3_TPS);
 }

@@ -20,25 +20,9 @@ public:
     TYPE_OLC_FAI,
     TYPE_OLC_PLUS,
     TYPE_OLC_LEAGUE,
+    TYPE_FAI_3_TPS,
     TYPE_NUM
   };
-  
-  class CRules {
-    const TType _type;
-    const CTrace &_trace;
-    const unsigned _tpNum;
-    const unsigned _timeLimit;
-    const unsigned _finishAltDiff;
-  public:
-    CRules(TType type, const CTrace &trace, unsigned tpNum, unsigned timeLimit, unsigned finishAltDiff):
-      _type(type), _trace(trace), _tpNum(tpNum), _timeLimit(timeLimit), _finishAltDiff(finishAltDiff) {}
-    TType Type() const             { return _type; }
-    const CTrace &Trace() const    { return _trace; }
-    unsigned TPNum() const         { return _tpNum; }
-    unsigned TimeLimit() const     { return _timeLimit; }
-    unsigned FinishAltDiff() const { return _finishAltDiff; }
-  };
-  
   
   class CResult {
     TType          _type;
@@ -71,7 +55,8 @@ private:
   bool BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut) const;
   bool FAITriangleEdgeCheck(unsigned length, unsigned best) const;
   bool FAITriangleEdgeCheck(unsigned length1, unsigned length2, unsigned length3) const;
-  void SolvePoints(const CRules &rules);
+  void PointsResult(TType type, const CTrace &traceResult);
+  void SolvePoints(const CTrace &trace, bool sprint);
   void SolveTriangle(const CTrace &trace, const CPointGPS *prevFront, const CPointGPS *prevBack);
   void SolveOLCPlus();
   

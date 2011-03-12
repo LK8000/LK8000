@@ -101,8 +101,11 @@ void CTrace::Push(const CPointGPSSmart &gps)
 }
 
 
-void CTrace::Compress()
+void CTrace::Compress(unsigned maxSize /* = 0 */)
 {
+  if(maxSize)
+    _maxSize = maxSize;
+  
   while(_size > _maxSize) {
     // get the worst point
     CPointCostSet::iterator worstIt = _compressionCostSet.begin();
@@ -156,6 +159,7 @@ void CTrace::Compress()
     }
   }
 }
+
 
 
 std::ostream &operator<<(std::ostream &stream, const CTrace &trace)

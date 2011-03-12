@@ -37,7 +37,7 @@ private:
    */
   typedef std::set<CPoint *, CPtrCmp<CPoint *> > CPointCostSet;
   
-  const unsigned _maxSize;
+  unsigned _maxSize;
   const unsigned _timeLimit;
   const short _startAltitudeLoss;
   const unsigned _algorithm;
@@ -62,7 +62,7 @@ public:
   void Clear();
   
   void Push(const CPointGPSSmart &gps);
-  void Compress();
+  void Compress(unsigned maxSize = 0);
   
   unsigned Size() const               { return _size; }
   unsigned AnalyzedPointCount() const { return _analyzedPointCount; }
