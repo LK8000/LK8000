@@ -15,7 +15,7 @@
 
 class CReplayLogger {
 public:
-  typedef void (*FGPSHandler)(void *user, double time, double latitude, double longitude, double altitude);
+  typedef void (*FGPSHandler)(void *user, unsigned time, double latitude, double longitude, short altitude);
   
 private:
   class CCatmullRomInterpolator;

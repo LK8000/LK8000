@@ -11,6 +11,10 @@
 
 #include <sys/time.h>
 
+
+/** 
+ * @brief Simple timestamping class
+ */
 class CTimeStamp {
   timeval _tv;
 public:

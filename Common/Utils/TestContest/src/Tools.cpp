@@ -11,7 +11,7 @@
 #include <iomanip>
 
 
-std::string TimeToString(double time)
+std::string TimeToString(unsigned time)
 {
   unsigned hours = time / 3600;
   unsigned minutes = (time - hours * 3600) / 60;
