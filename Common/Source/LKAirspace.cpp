@@ -1764,7 +1764,7 @@ void CAirspaceManager::ScanAirspaceLine(double lats[], double lons[], double hei
 //
 // This only searches within a range of 100km of the target
 
-const CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, const double &latitude,
+CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, const double &latitude,
 			 double *nearestdistance, double *nearestbearing, double *height) const
 {
   double nearestd = 100000; // 100km
@@ -2064,7 +2064,7 @@ CAirspaceList CAirspaceManager::GetAirspacesInWarning() const
 // to display instance attributes 
 // NOTE: virtual methods don't work on copied instances!
 //       they have to be mapped through airspacemanager class because of the mutex
-CAirspace CAirspaceManager::GetAirspaceCopy(CAirspace* airspace) const
+CAirspace CAirspaceManager::GetAirspaceCopy(const CAirspace* airspace) const
 {
   CCriticalSection::CGuard guard(_csairspaces);
   return *airspace;

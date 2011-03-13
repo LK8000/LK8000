@@ -23,6 +23,7 @@
 
 #ifdef LKAIRSPACE
 static CAirspace *airspace = NULL;
+static CAirspace airspace_copy;
 #else
 static int index_circle = -1;
 static int index_area = -1;
@@ -35,22 +36,20 @@ static void OnAcknowledgeClicked(WindowControl * Sender){
   (void)Sender;
 
   if (airspace == NULL) return;
-  const TCHAR *Name = airspace->Name();
-  if (Name) {
-    UINT answer;
-    answer = MessageBoxX(hWndMapWindow,
-			 Name,
-			  // LKTOKEN  _@M51_ = "Acknowledge for day?" 
-			 gettext(TEXT("_@M51_")),
-			 MB_YESNOCANCEL|MB_ICONQUESTION);
-    if (answer == IDYES) {
-	  if (airspace) CAirspaceManager::Instance().AirspaceAckDaily(*airspace);
-      wf->SetModalResult(mrOK);
-    } else if (answer == IDNO) {
-      // this will cancel a daily ack
-	  if (airspace) CAirspaceManager::Instance().AirspaceAckDailyCancel(*airspace);
-      wf->SetModalResult(mrOK);
-    }
+  if (wf == NULL) return;
+  UINT answer;
+  answer = MessageBoxX(hWndMapWindow,
+			airspace_copy.Name(),
+			// LKTOKEN  _@M51_ = "Acknowledge for day?" 
+			gettext(TEXT("_@M51_")),
+			MB_YESNOCANCEL|MB_ICONQUESTION);
+  if (answer == IDYES) {
+	CAirspaceManager::Instance().AirspaceAckDaily(*airspace);
+	wf->SetModalResult(mrOK);
+  } else if (answer == IDNO) {
+	// this will cancel a daily ack
+	CAirspaceManager::Instance().AirspaceAckDailyCancel(*airspace);
+	wf->SetModalResult(mrOK);
   }
 }
 #else
@@ -111,46 +110,41 @@ static double FLAltRounded(double alt) {
 }
 #endif
 #ifdef LKAIRSPACE
-static void SetValues(const CAirspace *airspace) {
+static void SetValues() {
 
-    WndProperty* wp;
+  if (airspace==NULL) return;
+
+  WndProperty* wp;
   TCHAR buffer[80];
   TCHAR buffer2[80];
 
-  const int atype = airspace->Type();
-  const AIRSPACE_ALT* top = airspace->Top();
-  const AIRSPACE_ALT* base = airspace->Base();
-  const TCHAR *name = airspace->Name();
-  bool inside = airspace->IsHorizontalInside(GPS_INFO.Longitude, GPS_INFO.Latitude);
-  double bearing;
-  double range = airspace->Range(GPS_INFO.Longitude, GPS_INFO.Latitude, bearing);
-
-  if (range<0) {
-    range = -range;
-  }
-
+  int bearing;
+  int hdist;
+  int vdist;
+  bool inside = CAirspaceManager::Instance().AirspaceCalculateDistance( airspace, &hdist, &bearing, &vdist);
+  
   wp = (WndProperty*)wf->FindByName(TEXT("prpName"));
   if (wp) {
-    wp->SetText(name);
+    wp->SetText(airspace_copy.Name());
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpType"));
   if (wp) {
-	wp->SetText( CAirspaceManager::Instance().GetAirspaceTypeText(atype) );
+	wp->SetText( CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()) );
     wp->RefreshDisplay();
   }
   
   wp = (WndProperty*)wf->FindByName(TEXT("prpTop"));
   if (wp) {
-	CAirspaceManager::Instance().GetAirspaceAltText(buffer, sizeof(buffer)/sizeof(buffer[0]), top);
+	CAirspaceManager::Instance().GetAirspaceAltText(buffer, sizeof(buffer)/sizeof(buffer[0]), airspace_copy.Top());
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpBase"));
   if (wp) {
-	CAirspaceManager::Instance().GetAirspaceAltText(buffer, sizeof(buffer)/sizeof(buffer[0]), base);
+	CAirspaceManager::Instance().GetAirspaceAltText(buffer, sizeof(buffer)/sizeof(buffer[0]), airspace_copy.Base());
     wp->SetText(buffer);
     wp->RefreshDisplay();
   }
@@ -161,7 +155,7 @@ static void SetValues(const CAirspace *airspace) {
 	// LKTOKEN  _@M359_ = "Inside" 
       wp->SetCaption(gettext(TEXT("_@M359_")));
     }
-    Units::FormatUserDistance(range, buffer, 20);
+    Units::FormatUserDistance(abs(hdist), buffer, 20);
     _stprintf(buffer2, TEXT(" %d")TEXT(DEG), iround(bearing));
     _tcscat(buffer, buffer2);
     wp->SetText(buffer);
@@ -377,8 +371,8 @@ static void SetValues(void) {
 #endif
 
 #ifdef LKAIRSPACE
-void dlgAirspaceDetails(const CAirspace *airspace) {
-  if (airspace == NULL) {
+void dlgAirspaceDetails(CAirspace *airspace_to_show) {
+  if (airspace != NULL) {
     return;
   }
 
@@ -390,13 +384,12 @@ void dlgAirspaceDetails(const CAirspace *airspace) {
 		      TEXT("IDR_XML_AIRSPACEDETAILS"));
 
   if (!wf) return;
-
-  ASSERT(wf!=NULL);
-
-  SetValues(airspace);
+  airspace = airspace_to_show;
+  airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(airspace);
+  SetValues();
 
   wf->ShowModal();
-
+  airspace = NULL;
   delete wf;
   wf = NULL;
   return;

@@ -91,43 +91,6 @@ static int OnKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam)
 }
 
 
-TCHAR* getAirspaceTypeText(int Type)
-{
-  switch (Type)
-    {
-    case RESTRICT:
-      return(TEXT("LxR"));
-    case PROHIBITED:
-      return(TEXT("LxP"));
-    case DANGER:
-      return(TEXT("LxD"));
-    case CLASSA:
-      return(TEXT("A"));
-    case CLASSB:
-      return(TEXT("B"));
-    case CLASSC:
-      return(TEXT("C"));
-    case CLASSD:
-      return(TEXT("D"));
-    case CLASSE:
-      return(TEXT("E"));
-    case CLASSF:
-      return(TEXT("F"));
-    case CLASSG:
-      return(TEXT("G"));
-    case NOGLIDER:
-      return(TEXT("NoGld"));
-    case CTR:
-      return(TEXT("CTR"));
-    case WAVE:
-      return(TEXT("Wav"));
-    default:
-      return(TEXT("?"));
-    }
-}
-
-
-
 
 static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnAckForTimeClicked),
@@ -350,12 +313,12 @@ void ShowAirspaceWarningsToUser()
 	  break;
 	  
 	case aweEnteringFly:
-	  wsprintf(msgbuf, TEXT("Entering FLY %s ZONE %s"), getAirspaceTypeText(airspace_copy.Type()), airspace_copy.Name());
+	  wsprintf(msgbuf, TEXT("Entering %s"), airspace_copy.Name());
 	  DoStatusMessage(msgbuf);
 	  break;
 
 	case aweLeavingNonFly:
-	  wsprintf(msgbuf, TEXT("Leaving NON-FLY %s ZONE %s"), getAirspaceTypeText(airspace_copy.Type()), airspace_copy.Name());
+	  wsprintf(msgbuf, TEXT("Leaving %s"), airspace_copy.Name());
 	  DoStatusMessage(msgbuf);
 	  break;
 	  

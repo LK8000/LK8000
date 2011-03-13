@@ -421,7 +421,7 @@ bool MapWindow::Event_InteriorAirspaceDetails(double lon, double lat) {
   bool found=false;
 #ifdef LKAIRSPACE
   CAirspaceList reslist = CAirspaceManager::Instance().GetVisibleAirspacesAtPoint(lon, lat);
-  CAirspaceList::const_iterator it;
+  CAirspaceList::iterator it;
   for (it = reslist.begin(); it != reslist.end(); ++it) {
 	dlgAirspaceDetails(*it);
 	found = true;

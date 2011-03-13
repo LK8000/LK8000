@@ -73,7 +73,7 @@ void dlgAirspaceSelect(void);
 void dlgTarget(void);
 bool dlgTaskRules(void);
 #ifdef LKAIRSPACE
-void dlgAirspaceDetails(const CAirspace *airspace);
+void dlgAirspaceDetails(CAirspace *airspace);
 #else
 void dlgAirspaceDetails(int the_circle, int the_area);
 #endif

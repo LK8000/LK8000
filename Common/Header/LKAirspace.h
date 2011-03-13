@@ -324,7 +324,7 @@ public:
   void QnhChangeNotify(const double &newQNH);
   void ScanAirspaceLine(double lats[], double lons[], double heights[], 
 		      int airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) const;
-  const CAirspace* FindNearestAirspace(const double &longitude, const double &latitude,
+  CAirspace* FindNearestAirspace(const double &longitude, const double &latitude,
 			 double *nearestdistance, double *nearestbearing, double *height = NULL) const;
   void SortAirspaces(void);
   bool ValidAirspaces(void) const;
@@ -346,7 +346,7 @@ public:
   CAirspaceList GetVisibleAirspacesAtPoint(const double &lon, const double &lat) const;
   CAirspaceList GetAllAirspaces() const;
   CAirspaceList GetAirspacesInWarning() const;
-  CAirspace GetAirspaceCopy(CAirspace* airspace) const;
+  CAirspace GetAirspaceCopy(const CAirspace* airspace) const;
   bool AirspaceCalculateDistance(CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance);
   
   //Mapwindow drawing
