@@ -3414,7 +3414,11 @@ void WndProperty::Paint(HDC hDC){
   r.bottom = GetHeight();
 
   SetTextColor(hDC, GetForeColor());
-
+#ifdef WINE
+  // JMW make it look nice on wine
+  if (!GetFocused())
+    SetBkColor(hDC, GetBackColor());
+#endif /* WINE */
   SetBkMode(hDC, TRANSPARENT);
   HFONT oldFont = (HFONT)SelectObject(hDC, GetFont());
 
