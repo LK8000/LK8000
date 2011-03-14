@@ -1941,8 +1941,24 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 			double lat;
 			bool distances_ready = (*it)->GetWarningPoint(lon,lat);
 			if (distances_ready && PointVisible(lon, lat)) {
+				TCHAR hbuf[32], vDistanceText[16];
+				int vdist;
+				TextInBoxMode_t TextDisplayMode = {0};
+				(*it)->GetVDistanceInfo(vdist);
 				LatLon2Screen(lon, lat, sc);
 				DrawBitmapIn(hdc, sc, hAirspaceWarning);
+				
+				Units::FormatUserAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
+				_tcsncpy(hbuf, (*it)->Name(), 10);
+				hbuf[10]=0;
+				wcscat(hbuf, TEXT(" "));
+				wcscat(hbuf, vDistanceText);
+				
+				TextDisplayMode.AsFlag.Color = TEXTWHITE;
+				TextDisplayMode.AsFlag.WhiteBold = 1;
+				TextDisplayMode.AsFlag.Border = 1;
+
+				TextInBox(hdc, hbuf, sc.x+NIBLSCALE(15), sc.y, 0, TextDisplayMode, false); 
 			}
 		  }
         }

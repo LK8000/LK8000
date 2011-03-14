@@ -143,6 +143,8 @@ public:
   void SetAckTimeout();
   // get nearest distance info to this airspace, returns true if distances calculated by warning system
   bool GetDistanceInfo(bool &inside, int &hDistance, int &Bearing, int &vDistance) const;
+  // get nearest vertical distance to this airspace, returns true if distances calculated by warning system
+  bool GetVDistanceInfo(int &vDistance) const;
   // get warning point coordinates, returns true if airspace has valid distances calculated
   bool GetWarningPoint(double &longitude, double &latitude) const;
   // Reset warnings

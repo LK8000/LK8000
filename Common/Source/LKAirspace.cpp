@@ -472,12 +472,25 @@ void CAirspace::SetAckTimeout()
 // Gets calculated distances, returns true if distances valid
 bool CAirspace::GetDistanceInfo(bool &inside, int &hDistance, int &Bearing, int &vDistance) const
 {
-  Bearing = _bearing;
-  hDistance = _hdistance;
-  vDistance = _vdistance;
-  inside = _pos_inside_now;
-  return _distances_ready;
+  if (_distances_ready) {
+	Bearing = _bearing;
+	hDistance = _hdistance;
+	vDistance = _vdistance;
+	inside = _pos_inside_now;
+	return true;
+  }
+  return false;
 }
+
+bool CAirspace::GetVDistanceInfo(int &vDistance) const
+{ 
+  if (_distances_ready) {
+	vDistance = _vdistance; 
+	return true;
+  }
+  return false;
+}
+
 
 // Get warning point coordinates, returns true if distances valid
 bool CAirspace::GetWarningPoint(double &longitude, double &latitude) const
