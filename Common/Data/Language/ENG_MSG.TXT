@@ -1252,6 +1252,30 @@ _@M1237_ "A"
 _@M1238_ "L"
 _@M1239_ "T"
 
+# dlgLKAirspaceWarning - Airspace warning messages
+_@M1240_ "Entering"
+_@M1241_ "Leaving"
+_@M1242_ "Flying inside FLY zone"
+_@M1243_ "Predicted leaving FLY zone"
+_@M1244_ "Near leaving FLY zone"
+_@M1245_ "Leaving FLY zone"
+_@M1246_ "Predicted entering FLY zone"
+_@M1247_ "Entering FLY zone"
+_@M1248_ "Flying outside FLY zone"
+_@M1249_ "Flying outside NOFLY zone"
+_@M1250_ "Predicted entering NOFLY zone"
+_@M1251_ "Near entering NOFLY zone"
+_@M1252_ "Entering NOFLY zone"
+_@M1253_ "Flying inside NOFLY zone"
+_@M1254_ "Leaving NOFLY zone"
+_@M1255_ "YELLOW WARNING"
+_@M1256_ "RED WARNING"
+_@M1257_ "to leave"
+_@M1258_ "to enter"
+_@M1259_ "Too far, not calculated"
+_@M1260_ "below"
+_@M1261_ "above"
+
 
 # LK info page headers, try to use the same or less number of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!

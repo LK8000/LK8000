@@ -114,65 +114,81 @@ void dlgLKAirspaceFill()
 	if (wp) {
 	  switch (msg.event) {
 		default:
-		  wp->SetText(TEXT("Unknown"));
+		  // Normally not show
+		  // LKTOKEN _@M765_ "Unknown"
+		  wp->SetText(gettext(TEXT("_@M765_")));
 		  break;
 		  
 		case aweNone:
-  		  wp->SetText(TEXT("None"));
+		  // LKTOKEN _@M479_ "None"
+  		  wp->SetText(gettext(TEXT("_@M479_")));
 		  break;
 
 		case aweMovingInsideFly:
-			wp->SetText(TEXT("aweMovingInsideFly"));
+			// LKTOKEN _@M1242_ "Flying inside FLY zone"
+			wp->SetText(gettext(TEXT("_@M1242_")));
 		  break;
 		
 		case awePredictedLeavingFly:
-			wp->SetText(TEXT("awePredictedLeavingFly"));
+			// LKTOKEN _@M1243_ "Predicted leaving FLY zone"
+			wp->SetText(gettext(TEXT("_@M1243_")));
 		  break;
 		
 		case aweNearOutsideFly:
-			wp->SetText(TEXT("aweNearOutsideFly"));
+			// LKTOKEN _@M1244_ "Near leaving FLY zone"
+			wp->SetText(gettext(TEXT("_@M1244_")));
 		  break;
 		  
 		case aweLeavingFly:
-			wp->SetText(TEXT("aweLeavingFly"));
+			// LKTOKEN _@M1245_ "Leaving FLY zone"
+			wp->SetText(gettext(TEXT("_@M1245_")));
 		  break;
 
 		case awePredictedEnteringFly:
-			wp->SetText(TEXT("awePredictedEnteringFly"));
+			// LKTOKEN _@M1246_ "Predicted entering FLY zone"
+			wp->SetText(gettext(TEXT("_@M1246_")));
 		  break;
 		  
 		case aweEnteringFly:
-			wp->SetText(TEXT("aweEnteringFly"));
+			// LKTOKEN _@M1247_ "Entering FLY zone"
+			wp->SetText(gettext(TEXT("_@M1247_")));
 		  break;
 		  
 		case aweMovingOutsideFly:
-			wp->SetText(TEXT("aweMovingOutsideFly"));
+			// LKTOKEN _@M1248_ "Flying outside FLY zone"
+			wp->SetText(gettext(TEXT("_@M1248_")));
 		  break;
 		  
 				
 		// Events for NON-FLY zones
 		case aweMovingOutsideNonfly:
-			wp->SetText(TEXT("aweMovingOutsideNonfly"));
+			// LKTOKEN _@M1249_ "Flying outside NOFLY zone"
+			wp->SetText(gettext(TEXT("_@M1249_")));
 		  break;
 		  
 		case awePredictedEnteringNonfly:
-			wp->SetText(TEXT("awePredictedEnteringNonfly"));
+			// LKTOKEN _@M1250_ "Predicted entering NOFLY zone"
+			wp->SetText(gettext(TEXT("_@M1250_")));
 		  break;
 
 		case aweNearInsideNonfly:
-			wp->SetText(TEXT("aweNearInsideNonfly"));
+			// LKTOKEN _@M1251_ "Near entering NOFLY zone"
+			wp->SetText(gettext(TEXT("_@M1251_")));
 		  break;
 
 		case aweEnteringNonfly:
-			wp->SetText(TEXT("aweEnteringNonfly"));
+			// LKTOKEN _@M1252_ "Entering NOFLY zone"
+			wp->SetText(gettext(TEXT("_@M1252_")));
 		  break;
 
 		case aweMovingInsideNonfly:
-			wp->SetText(TEXT("aweMovingInsideNonfly"));
+			// LKTOKEN _@M1253_ "Flying inside NOFLY zone"
+			wp->SetText(gettext(TEXT("_@M1253_")));
 		  break;
 
 		case aweLeavingNonFly:
-			wp->SetText(TEXT("aweLeavingNonFly"));
+			// LKTOKEN _@M1254_ "Leaving NOFLY zone"
+			wp->SetText(gettext(TEXT("_@M1254_")));
 		  break;
 
 	  }//sw
@@ -183,19 +199,23 @@ void dlgLKAirspaceFill()
 	if (wp) {
 	  switch (airspace_copy.WarningLevel()) {
 		default:
-		  wp->SetText(TEXT("Unknown"));
+		  // LKTOKEN _@M765_ "Unknown"
+		  wp->SetText(gettext(TEXT("_@M765_")));
 		  break;
 		  
 		case awNone:
-  		  wp->SetText(TEXT("None"));
+		  // LKTOKEN _@M479_ "None"
+  		  wp->SetText(gettext(TEXT("_@M479_")));
 		  break;
 
 		case awYellow:
-			wp->SetText(TEXT("awYellow (YELLOW)"));
+			// LKTOKEN _@M1255_ "YELLOW WARNING"
+			wp->SetText(gettext(TEXT("_@M1255_")));
 		  break;
 		
 		case awRed:
-			wp->SetText(TEXT("awRed (RED)"));
+			// LKTOKEN _@M1256_ "RED WARNING"
+			wp->SetText(gettext(TEXT("_@M1256_")));
 		  break;
 	  }//sw
 	  wp->RefreshDisplay();
@@ -225,13 +245,16 @@ void dlgLKAirspaceFill()
 	  if (distances_ready) {
 		Units::FormatUserDistance((double)abs(hdist),stmp, 10);
 		if (hdist<0) {
-		  wsprintf(stmp2,TEXT("%s to leave"), stmp);
+		  // LKTOKEN _@M1257_ "to leave"
+		  wsprintf(stmp2, TEXT("%s %s"), stmp, gettext(TEXT("_@M1257_")));
 		} else {
-		  wsprintf(stmp2,TEXT("%s to enter"), stmp);
+		  // LKTOKEN _@M1258_ "to enter"
+		  wsprintf(stmp2,TEXT("%s %s"), stmp, gettext(TEXT("_@M1258_")));
 		}
 	  } else {
 		// no distance info calculated
-		wsprintf(stmp2,TEXT("Not calculated"));
+		// LKTOKEN _@M1259_ "Too far, not calculated"
+		wsprintf(stmp2,gettext(TEXT("_@M1259_")));
 	  }
 	  wp->SetText(stmp2);
 	  wp->RefreshDisplay();
@@ -243,13 +266,16 @@ void dlgLKAirspaceFill()
 	  if (distances_ready) {
 		Units::FormatUserAltitude((double)abs(vdist),stmp, 10);
 		if (vdist<0) {
-		  wsprintf(stmp2,TEXT("below %s"), stmp);
+		  // LKTOKEN _@M1260_ "below"
+		  wsprintf(stmp2,TEXT("%s %s"), stmp, gettext(TEXT("_@M1260_")));
 		} else {
-		  wsprintf(stmp2,TEXT("above %s"), stmp);
+		  // LKTOKEN _@M1261_ "above"
+		  wsprintf(stmp2,TEXT("%s %s"), stmp, gettext(TEXT("_@M1261_")));
 		}
 	  } else {
 		// no distance info calculated
-		wsprintf(stmp2,TEXT("Not calculated"));
+		// LKTOKEN _@M1259_ "Too far, not calculated"
+		wsprintf(stmp2,gettext(TEXT("_@M1259_")));
 	  }
 	  wp->SetText(stmp2);
 	  wp->RefreshDisplay();
@@ -296,6 +322,7 @@ void ShowAirspaceWarningsToUser()
   // which message we need to show?
   switch (msg.event) {
 	default:
+	  // normally not show
 	  DoStatusMessage(TEXT("Unknown airspace warning message"));
 	  break;	//Unknown msg type
 
@@ -313,12 +340,14 @@ void ShowAirspaceWarningsToUser()
 	  break;
 	  
 	case aweEnteringFly:
-	  wsprintf(msgbuf, TEXT("Entering %s"), airspace_copy.Name());
+	  // LKTOKEN _@M1240_ "Entering"
+	  wsprintf(msgbuf, TEXT("%s %s"), gettext(TEXT("_@M1240_")), airspace_copy.Name());
 	  DoStatusMessage(msgbuf);
 	  break;
 
 	case aweLeavingNonFly:
-	  wsprintf(msgbuf, TEXT("Leaving %s"), airspace_copy.Name());
+	  // LKTOKEN _@M1241_ "Leaving"
+	  wsprintf(msgbuf, TEXT("%s %s"), gettext(TEXT("_@M1241_")), airspace_copy.Name());
 	  DoStatusMessage(msgbuf);
 	  break;
 	  
