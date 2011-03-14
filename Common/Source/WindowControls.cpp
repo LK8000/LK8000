@@ -1632,7 +1632,9 @@ bool WindowControl::SetFocused(bool Value, HWND FromTo){
       rc.bottom = GetHeight();
       InvalidateRect(GetHandle(), &rc, false);
       // todo, only paint the selector edges
+#ifndef WINE
       UpdateWindow(GetHandle());
+#endif /* WINE */
       // Paint(GetDeviceContext());
     }
 
