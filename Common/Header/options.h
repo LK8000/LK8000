@@ -129,6 +129,10 @@
 #define ALPHADEBUG		1	// DEBUG STARTUPSTORE MESSAGES FOR ALPHA AND BETA VERSIONS
 					// IN FINAL VERSIONS WILL BE DISABLED
 
+#if (WINDOWSPC>0)
+#define WINE
+#endif
+
 /*
  * Incomplete work, or stuff that never got into production versions but still interesting
 

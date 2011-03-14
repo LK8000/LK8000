@@ -791,12 +791,23 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
 	SetTextColor(hDC,RGB_BLACK); // TODO somewhere else text color is not set correctly
 
 #else
+#ifdef WINE
+      SetBkMode(hDC,TRANSPARENT);
+      ExtTextOut(hDC, x+2, y, 0, NULL, Value, size, NULL);
+      ExtTextOut(hDC, x+1, y, 0, NULL, Value, size, NULL);
+      ExtTextOut(hDC, x-1, y, 0, NULL, Value, size, NULL);
+      ExtTextOut(hDC, x-2, y, 0, NULL, Value, size, NULL);
+      ExtTextOut(hDC, x, y+1, 0, NULL, Value, size, NULL);
+      ExtTextOut(hDC, x, y-1, 0, NULL, Value, size, NULL);
+#else /* WINE */
       ExtTextOut(hDC, x+2, y, ETO_OPAQUE, NULL, Value, size, NULL);
       ExtTextOut(hDC, x+1, y, ETO_OPAQUE, NULL, Value, size, NULL);
       ExtTextOut(hDC, x-1, y, ETO_OPAQUE, NULL, Value, size, NULL);
       ExtTextOut(hDC, x-2, y, ETO_OPAQUE, NULL, Value, size, NULL);
       ExtTextOut(hDC, x, y+1, ETO_OPAQUE, NULL, Value, size, NULL);
       ExtTextOut(hDC, x, y-1, ETO_OPAQUE, NULL, Value, size, NULL);
+#endif /* WINE */
+
 //#ifdef PNA 091115 no more big outlining for 314
 #if (0)
 	// On 800x480 resolution the following additional outlining is very nice.
@@ -818,7 +829,11 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
       } else
 	SetTextColor(hDC,RGB_BLACK); 
 
+#ifdef WINE
+      ExtTextOut(hDC, x, y, 0, NULL, Value, size, NULL);
+#else
       ExtTextOut(hDC, x, y, ETO_OPAQUE, NULL, Value, size, NULL);
+#endif /* WINE */
       if (NewMap&&OutlinedTp)
 	SetTextColor(hDC,RGB_BLACK); // TODO somewhere else text color is not set correctly
 #endif
