@@ -1941,7 +1941,7 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 			double lat;
 			bool distances_ready = (*it)->GetWarningPoint(lon,lat);
 			if (distances_ready && PointVisible(lon, lat)) {
-				TCHAR hbuf[32], vDistanceText[16];
+				TCHAR hbuf[NAME_SIZE+16], vDistanceText[16];
 				int vdist;
 				TextInBoxMode_t TextDisplayMode = {0};
 				(*it)->GetVDistanceInfo(vdist);
@@ -1949,7 +1949,7 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 				DrawBitmapIn(hdc, sc, hAirspaceWarning);
 				
 				Units::FormatUserAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
-				_tcsncpy(hbuf, (*it)->Name(), 10);
+				_tcscpy(hbuf, (*it)->Name());
 				hbuf[10]=0;
 				wcscat(hbuf, TEXT(" "));
 				wcscat(hbuf, vDistanceText);
