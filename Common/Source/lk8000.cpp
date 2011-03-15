@@ -397,6 +397,9 @@ double POLAR[POLARSIZE] = {0,0,0};
 double POLARV[POLARSIZE] = {21,27,40};
 double POLARLD[POLARSIZE] = {33,30,20};
 double WEIGHTS[POLARSIZE] = {250,70,100};
+#ifdef NEW_OLC
+int Handicap = 108; // LS-3
+#endif /* NEW_OLC */
 
 // Team code info
 int TeamCodeRefWaypoint = -1;

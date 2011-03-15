@@ -387,9 +387,6 @@
 <WndProperty Name="prpFAIFinishHeight" Caption="_@M275_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H168_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>
-<WndProperty Name="prpOLCRules" Caption="_@M501_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H169_">
-<DataField name="" DataType="enum"  Min=0 Max=50 Step=1/>
-</WndProperty>
 </WndFrame>
 <WndFrame Name="frmUnits" X=70 Y=0 Width=-246 Height=222 Font=2>
 <WndProperty Name="prpUnitsSpeed" Caption="_@M61_" X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H170_">

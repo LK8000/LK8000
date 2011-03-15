@@ -1,6 +1,10 @@
 #ifndef ONLINECONTEST_H
 #define ONLINECONTEST_H
 
+#include "options.h"
+
+#ifndef NEW_OLC
+
 #define MAX_OLC_POINTS 300
 #define MATSIZE (MAX_OLC_POINTS+1)*(MAX_OLC_POINTS/2) // for even MAX_OLC_POINTS
 
@@ -107,5 +111,7 @@ private:
   int scan_sprint_finished();
   int scan_classic();
 };
+
+#endif /* NEW_OLC */
 
 #endif /* ONLINECONTEST_H */

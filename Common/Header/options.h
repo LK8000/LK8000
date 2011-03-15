@@ -129,6 +129,8 @@
 #define ALPHADEBUG		1	// DEBUG STARTUPSTORE MESSAGES FOR ALPHA AND BETA VERSIONS
 					// IN FINAL VERSIONS WILL BE DISABLED
 
+#define NEW_OLC                 1       // Applied 110313
+
 /*
  * Incomplete work, or stuff that never got into production versions but still interesting
 

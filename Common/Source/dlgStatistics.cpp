@@ -559,10 +559,12 @@ void Statistics::DrawYGrid(HDC hdc, const RECT rc,
 
 
 
+#ifndef NEW_OLC
 #include "OnLineContest.h"
 extern OLCOptimizer olc;
 static bool olcvalid=false;
 static bool olcfinished=false;
+#endif /* NEW_OLC */
 
 void Statistics::RenderBarograph(HDC hdc, const RECT rc)
 {
@@ -849,7 +851,9 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
   double x1, y1, x2=0, y2=0;
   double lat_c, lon_c;
   double aatradius[MAXTASKPOINTS];
+#ifndef NEW_OLC
   bool olcvalid_this = olcvalid;
+#endif /* NEW_OLC */
 
   // find center
   ResetScale();
@@ -877,6 +881,7 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
     return;
   }
 
+#ifndef NEW_OLC
   olc.SetLine();
   int nolc = olc.getN();
 
@@ -894,6 +899,7 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
       ScaleXFromValue(rc, lon1);
     }
   }
+#endif /* NEW_OLC */
 
   lat_c = (y_max+y_min)/2;
   lon_c = (x_max+x_min)/2;
@@ -953,6 +959,7 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
       }
     }
   }
+#ifndef NEW_OLC
   for (i=0; i< nolc; i++) {
     lat1 = olc.getLatitude(i);
     lon1 = olc.getLongitude(i);
@@ -961,6 +968,7 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
     ScaleXFromValue(rc, x1);
     ScaleYFromValue(rc, y1);
   }
+#endif /* NEW_OLC */
 
   ScaleMakeSquare(rc);
 
@@ -1010,6 +1018,7 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
 
   // draw track
 
+#ifndef NEW_OLC
   for (i=0; i< nolc-1; i++) {
     lat1 = olc.getLatitude(i);
     lon1 = olc.getLongitude(i);
@@ -1023,6 +1032,7 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
 	     x1, y1, x2, y2,
 	     STYLE_MEDIUMBLACK);
   }
+#endif /* NEW_OLC */
 
   // draw task lines and labels
 
@@ -1104,6 +1114,7 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
     }
   }
   
+#ifndef NEW_OLC
   if (olcmode && olcvalid_this) {
     for (i=0; i< 7-1; i++) {
       switch(OLCRules) {
@@ -1142,6 +1153,7 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
 	       STYLE_BLUETHIN);
     }
   }
+#endif /* NEW_OLC */
 
   // Draw aircraft on top
   lat1 = GPS_INFO.Latitude;
@@ -1601,8 +1613,10 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
 static void Update(void){
   TCHAR sTmp[1000];
   //  WndProperty *wp;
+#ifndef NEW_OLC
   int dt=1;
   double d=0;
+#endif /* NEW_OLC */
 
   switch(page){
     case ANALYSIS_PAGE_BAROGRAPH:
@@ -1829,6 +1843,7 @@ static void Update(void){
               gettext(TEXT("_@M500_")));
     wf->SetCaption(sTmp);
 
+#ifndef NEW_OLC
     TCHAR sFinished[20];
     double score;
 
@@ -1914,6 +1929,7 @@ static void Update(void){
                 gettext(TEXT("_@M477_")));
     }
     wInfo->SetCaption(sTmp);
+#endif /* NEW_OLC */
 
     break;
   case ANALYSIS_PAGE_AIRSPACE:
@@ -2009,11 +2025,13 @@ static void OnCalcClicked(WindowControl * Sender,
     dlgTaskCalculatorShowModal();
     wf->SetVisible(true);
   }
+#ifndef NEW_OLC
   if (page==ANALYSIS_PAGE_OLC) {
     StartHourglassCursor();
     olc.Optimize((CALCULATED_INFO.Flying==1));
     StopHourglassCursor();
   }
+#endif /* NEW_OLC */
   if (page==ANALYSIS_PAGE_AIRSPACE) {
     dlgAirspaceWarningShowDlg(true);
   }
@@ -2037,8 +2055,10 @@ void dlgAnalysisShowModal(void){
   wGrid=NULL;
   wInfo=NULL;
   wCalc=NULL;
+#ifndef NEW_OLC
   olcvalid = false;
   olcfinished = false;
+#endif /* NEW_OLC */
   
   if (!InfoBoxLayout::landscape) {
     char filename[MAX_PATH];

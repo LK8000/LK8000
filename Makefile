@@ -402,7 +402,7 @@ SRC_FILES :=\
 	$(SRC)/MapWindowZoom.cpp        $(SRC)/MapWindowMode.cpp \
 	$(SRC)/Utils2.cpp \
 	$(SRC)/McReady.cpp 		$(SRC)/Message.cpp \
-	$(SRC)/NavFunctions.cpp		$(SRC)/OnLineContest.cpp \
+	$(SRC)/NavFunctions.cpp		\
 	$(SRC)/Parser.cpp		$(SRC)/Port.cpp \
 	$(SRC)/Process.cpp 		$(SRC)/dlgComboPicker.cpp \
 	$(SRC)/RasterTerrain.cpp	$(SRC)/rscalc.cpp \
@@ -427,7 +427,7 @@ SRC_FILES :=\
 	$(DEVS) \
 	$(DLGS) \
 	$(VOLKS)
-
+#	$(SRC)/OnLineContest.cpp \
 
 ####### libraries
 

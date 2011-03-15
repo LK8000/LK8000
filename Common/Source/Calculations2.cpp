@@ -34,7 +34,9 @@
 
 #include "NavFunctions.h" // used for team code
 
+#ifndef NEW_OLC
 extern OLCOptimizer olc;
+#endif /* NEW_OLC */
 
 int FastLogNum = 0; // number of points to log at high rate
 
@@ -83,11 +85,15 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static double SnailLastTime=0;
   static double LogLastTime=0;
   static double StatsLastTime=0;
+#ifndef NEW_OLC
   static double OLCLastTime = 0;
+#endif /* NEW_OLC */
   double dtLog = 5.0;
   double dtSnail = 2.0;
   double dtStats = 60.0;
+#ifndef NEW_OLC
   double dtOLC = 5.0;
+#endif /* NEW_OLC */
   double dtFRecord = 270; // 4.5 minutes (required minimum every 5)
 
   if(Basic->Time <= LogLastTime) {
@@ -99,9 +105,11 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if(Basic->Time <= StatsLastTime) {
     StatsLastTime = Basic->Time;
   }
+#ifndef NEW_OLC
   if(Basic->Time <= OLCLastTime) {
     OLCLastTime = Basic->Time;
   }
+#endif /* NEW_OLC */
   if(Basic->Time <= GetFRecordLastTime()) {
     SetFRecordLastTime(Basic->Time);
   }
@@ -187,6 +195,8 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
       }
     }
 
+#ifdef NEW_OLC
+#else
     if (Calculated->Flying && (Basic->Time - OLCLastTime >= dtOLC)) {
       bool restart;      
       restart = olc.addPoint(Basic->Longitude, 
@@ -202,6 +212,7 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
       }
       OLCLastTime += dtOLC;
     }
+#endif /* NEW_OLC */
   }
 }
 
@@ -671,10 +682,12 @@ void LoadCalculationsPersist(DERIVED_INFO *Calculated) {
     if (sizein != size) { flightstats.Reset(); CloseHandle(hFile); return; }
     ReadFile(hFile,&flightstats,size,&dwBytesWritten,(OVERLAPPED*)NULL);
 
+#ifndef NEW_OLC
     size = sizeof(OLCData);
     ReadFile(hFile,&sizein,sizeof(DWORD),&dwBytesWritten,(OVERLAPPED*)NULL);
     if (sizein != size) { olc.ResetFlight(); CloseHandle(hFile); return; }
     ReadFile(hFile,&olc.data,size,&dwBytesWritten,(OVERLAPPED*)NULL);   
+#endif /* NEW_OLC */
 
     size = sizeof(double);
     ReadFile(hFile,&sizein,sizeof(DWORD),&dwBytesWritten,(OVERLAPPED*)NULL);
@@ -731,9 +744,11 @@ void SaveCalculationsPersist(DERIVED_INFO *Calculated) {
     size = sizeof(Statistics);
     WriteFile(hFile,&size,sizeof(DWORD),&dwBytesWritten,(OVERLAPPED*)NULL);
     WriteFile(hFile,&flightstats,size,&dwBytesWritten,(OVERLAPPED*)NULL);
+#ifndef NEW_OLC
     size = sizeof(OLCData);
     WriteFile(hFile,&size,sizeof(DWORD),&dwBytesWritten,(OVERLAPPED*)NULL);
     WriteFile(hFile,&olc.data,size,&dwBytesWritten,(OVERLAPPED*)NULL);
+#endif /* NEW_OLC */
     size = sizeof(double)*5;
     WriteFile(hFile,&size,sizeof(DWORD),&dwBytesWritten,(OVERLAPPED*)NULL);
     size = sizeof(double);

@@ -987,11 +987,15 @@ void MapWindow::DrawGreatCircle(HDC hdc,
 
 int MapWindow::iSnailNext=0;
 
+#ifndef NEW_OLC
 extern OLCOptimizer olc;
+#endif /* NEW_OLC */
 
 void MapWindow::DrawTrailFromTask(HDC hdc, const RECT rc, 
 				  const double TrailFirstTime) {
+#ifndef NEW_OLC
   static POINT ptin[MAXCLIPPOLYGON];
+#endif /* NEW_OLC */
 
 #ifndef MAP_ZOOM
   if((TrailActive!=3) || (DisplayMode == dmCircling) || (TrailFirstTime<0))
@@ -1000,7 +1004,9 @@ void MapWindow::DrawTrailFromTask(HDC hdc, const RECT rc,
 #endif /* MAP_ZOOM */
     return;
 
+#ifndef NEW_OLC
   const double mTrailFirstTime = TrailFirstTime - DerivedDrawInfo.TakeOffTime;
+
   // since olc keeps track of time wrt takeoff
 
   olc.SetLine();
@@ -1018,6 +1024,7 @@ void MapWindow::DrawTrailFromTask(HDC hdc, const RECT rc,
     SelectObject(hdc,hSnailPens[NUMSNAILCOLORS/2]);
     ClipPolygon(hdc, ptin, j, rc, false);
   }
+#endif /* NEW_OLC */
 }
 
 extern HFONT  TitleWindowFont;
