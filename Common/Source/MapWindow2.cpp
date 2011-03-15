@@ -1955,14 +1955,14 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 				wcscat(hbuf, vDistanceText);
 				
 				TextDisplayMode.AsFlag.Color = TEXTWHITE;
+				TextDisplayMode.AsFlag.AlligneCenter = 1;
 				if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
 					TextDisplayMode.AsFlag.Border = 1;
-					TextDisplayMode.AsFlag.WhiteBold = 0;
 				} else {
 					TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
 				}
 
-				TextInBox(hdc, hbuf, sc.x+NIBLSCALE(15), sc.y, 0, TextDisplayMode, true); 
+				TextInBox(hdc, hbuf, sc.x, sc.y+NIBLSCALE(15), 0, TextDisplayMode, true); 
 			}
 		  }
         }
