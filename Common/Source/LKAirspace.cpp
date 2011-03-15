@@ -397,6 +397,9 @@ bool CAirspace::FinishWarning()
 		break;
 		
 	  case aweEnteringFly:
+		// Also preset warnlevel to awYellow, because we entering yellow zone. 
+		// but we don't need to generate a warning message right now - force no change in warnlevel
+		if (_lastknownagl>AltWarningMargin) _warninglevelold = _warninglevel = awYellow;
 		// Do info message on entering a fly zone
 		res = true;
 		break;
