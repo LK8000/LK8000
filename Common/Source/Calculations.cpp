@@ -51,8 +51,10 @@
 #endif
 #include "Waypointparser.h"
 
+#ifdef NEW_OLC
 using std::min;
 using std::max;
+#endif /* NEW_OLC */
 
 //#define DEBUGTGATES	1
 //#define DEBUGATE	1

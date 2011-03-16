@@ -1906,6 +1906,7 @@ static void Update(void){
     wInfo->SetCaption(sTmp);
     break;
   case ANALYSIS_PAGE_CONTEST:
+#ifdef NEW_OLC
     _stprintf(sTmp, TEXT("%s: %s - %s"), 
               // LKTOKEN  _@M93_ = "Analysis" 
               gettext(TEXT("_@M93_")),
@@ -1914,7 +1915,6 @@ static void Update(void){
               CContestMgr::TypeToString(contestType));
     wf->SetCaption(sTmp);
     
-#ifdef NEW_OLC
     {
       CContestMgr::CResult result;
       CContestMgr::Instance().Result(contestType, result);
@@ -1981,6 +1981,13 @@ static void Update(void){
       wInfo->SetCaption(sTmp);
     }
 #else
+    _stprintf(sTmp, TEXT("%s: %s"), 
+              // LKTOKEN  _@M93_ = "Analysis" 
+              gettext(TEXT("_@M93_")),
+              // LKTOKEN  _@M1450_ = "Contest" 
+              gettext(TEXT("_@M1450_")));
+    wf->SetCaption(sTmp);
+    
     TCHAR sFinished[20];
     double score;
 
