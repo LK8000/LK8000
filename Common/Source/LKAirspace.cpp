@@ -485,10 +485,17 @@ bool CAirspace::GetDistanceInfo(bool &inside, int &hDistance, int &Bearing, int 
   return false;
 }
 
-bool CAirspace::GetVDistanceInfo(int &vDistance) const
+// Gets vertical distance info for drawing
+bool CAirspace::GetVDistanceInfo(int &vDistance, AirspaceWarningDrawStyle_t &drawstyle) const
 { 
   if (_distances_ready) {
 	vDistance = _vdistance; 
+	drawstyle = awsBlack;
+	if (IsAltitudeInside(_lastknownalt, _lastknownagl, 0)) {
+	  	if (!_flyzone) drawstyle = awsRed;
+	} else {
+		if (_flyzone) drawstyle = awsAmber;
+	}
 	return true;
   }
   return false;

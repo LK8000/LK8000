@@ -158,6 +158,9 @@ typedef union{
     unsigned WhiteBold:1;
     unsigned NoSetFont:1;  // VENTA5
     unsigned Color:5;
+#ifdef LKAIRSPACE
+	unsigned SetTextColor:1;	// Set text color in border mode
+#endif
   }AsFlag;
 }TextInBoxMode_t;
   // mode are flags

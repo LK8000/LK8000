@@ -219,8 +219,10 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
 			if (distances_ready && PointVisible(lon, lat)) {
 				TCHAR hbuf[NAME_SIZE+16], vDistanceText[16];
 				int vdist;
+				AirspaceWarningDrawStyle_t labeldrawstyle;
+				
 				TextInBoxMode_t TextDisplayMode = {0};
-				(*it)->GetVDistanceInfo(vdist);
+				(*it)->GetVDistanceInfo(vdist, labeldrawstyle);
 				LatLon2Screen(lon, lat, sc);
 				DrawBitmapIn(hdc, sc, hAirspaceWarning);
 
@@ -229,7 +231,19 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
 				wcscat(hbuf, TEXT(" "));
 				wcscat(hbuf, vDistanceText);
 				
-				TextDisplayMode.AsFlag.Color = TEXTWHITE;
+				switch (labeldrawstyle) {
+				  default:
+				  case awsBlack:
+					TextDisplayMode.AsFlag.Color = TEXTBLACK;
+					break;
+				  case awsAmber:
+					TextDisplayMode.AsFlag.Color = TEXTORANGE;
+					break;
+				  case awsRed:
+					TextDisplayMode.AsFlag.Color = TEXTRED;
+					break;
+				} // sw
+				TextDisplayMode.AsFlag.SetTextColor = 1;
 				TextDisplayMode.AsFlag.AlligneCenter = 1;
 				if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
 					TextDisplayMode.AsFlag.Border = 1;
