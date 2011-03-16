@@ -308,7 +308,6 @@ _@M296_ "Finish radius"
 _@M297_ "Finish type "
 _@M298_ "Finish type"
 _@M299_ "Finish"
-_@M300_ "Finished"
 _@M301_ "First 3"
 _@M302_ "First 5"
 _@M303_ "Fix invalid"
@@ -485,6 +484,7 @@ _@M473_ "No landables"
 _@M474_ "No logger connected"
 _@M475_ "No overlay"
 _@M476_ "No task"
+_@M477_ "No valid path"
 _@M478_ "No waypoint file selected, cannot save."
 _@M479_ "None"
 _@M480_ "Normal"
@@ -506,10 +506,8 @@ _@M496_ "ON/Fixed"
 _@M497_ "ON/Scaled"
 _@M498_ "OUT (Enter)"
 _@M499_ "Off"
-_@M500_ "OnLine Contest"
 _@M502_ "Only LKMaps can be configured, sorry!"
 _@M503_ "Operation forbidden on CLUB devices"
-_@M504_ "Optimise"
 _@M505_ "Orange"
 _@M506_ "Orientation "
 _@M507_ "Other"
@@ -975,7 +973,6 @@ _@M974_ " GPS not connected "
 _@M975_ " GPS data error "
 
 
-
 #
 # Infoboxes in Description / Tile order. 
 # In titles use maximum 7 characters
@@ -1328,3 +1325,10 @@ _@M1415_ "Declaration not accepted!"
 _@M1420_ "Error while declaring"
 _@M1421_ "Task description"
 _@M1422_ "Start and Finish"
+
+#
+# Contests
+#
+_@M1450_ "Contest"
+_@M1451_ "Change"
+_@M1452_ "Powerless flight detected"

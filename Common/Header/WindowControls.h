@@ -14,6 +14,7 @@
 #include "XCSoar.h"
 #include "Utils.h"
 #include "LKUtils.h"
+#include <tchar.h>
 #define IsEmptyString(x)        ((x==NULL) || (x[0]=='\0'))
 
 #define BORDERTOP    (1<<bkTop)

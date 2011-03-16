@@ -29,12 +29,19 @@
 #include "windanalyser.h"
 #include "Atmosphere.h"
 
+#ifdef NEW_OLC
+#include "ContestMgr.h"
+#else
 #include "OnLineContest.h"
+#endif /* NEW_OLC */
 #include "AATDistance.h"
 
 #include "NavFunctions.h" // used for team code
 
-#ifndef NEW_OLC
+#ifdef NEW_OLC
+using std::min;
+using std::max;
+#else
 extern OLCOptimizer olc;
 #endif /* NEW_OLC */
 
@@ -49,7 +56,7 @@ void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   SnailTrail[SnailNext].Time = Basic->Time;
   SnailTrail[SnailNext].FarVisible = true; // hasn't been filtered out yet.
   if (Calculated->TerrainValid) {
-	double hr = max(0,Calculated->AltitudeAGL)/100.0;
+	double hr = max(0.0, Calculated->AltitudeAGL)/100.0;
 	SnailTrail[SnailNext].DriftFactor = 2.0/(1.0+exp(-hr))-1.0;
   } else {
 	SnailTrail[SnailNext].DriftFactor = 1.0;
@@ -181,12 +188,12 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     if (Basic->Time - StatsLastTime >= dtStats) {
 
       flightstats.Altitude_Terrain.
-        least_squares_update(max(0,
+        least_squares_update(max(0.0,
                                  Basic->Time-Calculated->TakeOffTime)/3600.0, 
                              Calculated->TerrainAlt);
 
       flightstats.Altitude.
-        least_squares_update(max(0,
+        least_squares_update(max(0.0,
                                  Basic->Time-Calculated->TakeOffTime)/3600.0, 
                              Calculated->NavAltitude);
       StatsLastTime += dtStats;
@@ -196,6 +203,8 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     }
 
 #ifdef NEW_OLC
+    if(Calculated->Flying)
+      CContestMgr::Instance().Add(new CPointGPS(Basic->Time, Basic->Latitude, Basic->Longitude, Calculated->NavAltitude));
 #else
     if (Calculated->Flying && (Basic->Time - OLCLastTime >= dtOLC)) {
       bool restart;      
@@ -280,7 +289,7 @@ double FinalGlideThroughTerrain(const double this_bearing,
   lon = last_lon = start_lon;
 
   altitude = Calculated->NavAltitude;
-  h =  max(0, RasterTerrain::GetTerrainHeight(lat, lon)); 
+  h =  max((short)0, RasterTerrain::GetTerrainHeight(lat, lon)); 
   if (h==TERRAIN_INVALID) h=0; // @ 101027 FIX
   dh = altitude - h - safetyterrain; 
   last_dh = dh;
@@ -341,7 +350,7 @@ double FinalGlideThroughTerrain(const double this_bearing,
 
     // find height over terrain
    
-    h =  max(0,RasterTerrain::GetTerrainHeight(lat, lon)); 
+    h =  max((short)0, RasterTerrain::GetTerrainHeight(lat, lon)); 
     if (h==TERRAIN_INVALID) h=0; //@ 101027 FIX
     
 
@@ -368,7 +377,7 @@ double FinalGlideThroughTerrain(const double this_bearing,
 	if (dh-last_dh==0) {
 		f = 0.0;
 	} else
-        f = max(0,min(1,(-last_dh)/(dh-last_dh)));
+        f = max(0.0, min(1.0, (-last_dh)/(dh-last_dh)));
       } else {
 	f = 0.0;
       }
@@ -884,7 +893,7 @@ static double EffectiveMacCready_internal(NMEA_INFO *Basic, DERIVED_INFO *Calcul
   double start_speed = Calculated->TaskStartSpeed;
   double V_bestld = GlidePolar::Vbestld;
   double energy_height_start = 
-    max(0, start_speed*start_speed-V_bestld*V_bestld)/(9.81*2.0);
+    max(0.0, start_speed*start_speed-V_bestld*V_bestld)/(9.81*2.0);
 
   double telapsed = Basic->Time-Calculated->TaskStartTime;
   double height_below_start = 

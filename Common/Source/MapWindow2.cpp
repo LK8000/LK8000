@@ -12,7 +12,9 @@
 #include "Defines.h"
 
 #include "MapWindow.h"
+#ifndef NEW_OLC
 #include "OnLineContest.h"
+#endif /* NEW_OLC */
 #include "Utils.h"
 #include "XCSoar.h"
 #include "LKUtils.h"

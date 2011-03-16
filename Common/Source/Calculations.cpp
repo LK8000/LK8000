@@ -35,7 +35,11 @@
 #include "ThermalLocator.h"
 #include "windanalyser.h"
 #include "Atmosphere.h"
+#ifdef NEW_OLC
+#include "ContestMgr.h"
+#else
 #include "OnLineContest.h"
+#endif /* NEW_OLC */
 #include "AATDistance.h"
 #include "NavFunctions.h" // used for team code
 #include "Calculations2.h"
@@ -46,6 +50,9 @@
 #include "ClimbAverageCalculator.h" // JMW new
 #endif
 #include "Waypointparser.h"
+
+using std::min;
+using std::max;
 
 //#define DEBUGTGATES	1
 //#define DEBUGATE	1
@@ -227,10 +234,10 @@ double FAIFinishHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int wp) {
 
   if (wp==FinalWayPoint) {
     if (EnableFAIFinishHeight && !AATEnabled) {
-      return max(max(FinishMinHeight/1000, safetyaltitudearrival)+ wp_alt, 
+      return max(max(FinishMinHeight/1000.0, safetyaltitudearrival)+ wp_alt, 
                  Calculated->TaskStartAltitude-1000.0);
     } else {
-      return max(FinishMinHeight/1000, safetyaltitudearrival)+wp_alt;
+      return max(FinishMinHeight/1000.0, safetyaltitudearrival)+wp_alt;
     }
   } else {
     return wp_alt + safetyaltitudearrival;
@@ -451,7 +458,7 @@ void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			     GlidePolar::Vminsink*sqrt(n));
     } else {
       Calculated->VOpt = max(Calculated->VOpt,
-			     GlidePolar::Vminsink);
+			     (double)GlidePolar::Vminsink);
     }
     Calculated->VOpt = LowPassFilter(Calculated->VOpt,VOptnew, 0.6);
     
@@ -482,9 +489,9 @@ void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   double glider_sink_rate;    
   if (Basic->AirspeedAvailable && replay_disabled) {
-	glider_sink_rate= GlidePolar::SinkRate(max(GlidePolar::Vminsink, Basic->IndicatedAirspeed), n);
+    glider_sink_rate= GlidePolar::SinkRate(max((double)GlidePolar::Vminsink, Basic->IndicatedAirspeed), n);
   } else {
-	glider_sink_rate= GlidePolar::SinkRate(max(GlidePolar::Vminsink, Calculated->IndicatedAirspeedEstimated), n);
+	glider_sink_rate= GlidePolar::SinkRate(max((double)GlidePolar::Vminsink, Calculated->IndicatedAirspeedEstimated), n);
 #if 0
 	StartupStore(_T(".... sink old/new:  %f / %f\n"), 
 		GlidePolar::SinkRate(max(GlidePolar::Vminsink, Basic->Speed), n),
@@ -777,7 +784,9 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   CRUISE_EFFICIENCY = 1.0;
 
   if (full) {
-#ifndef NEW_OLC
+#ifdef NEW_OLC
+    CContestMgr::Instance().Reset(Handicap, CContestMgr::DEFAULT_START_ALTITUDE_LOSS);
+#else
     olc.ResetFlight();
 #endif /* NEW_OLC */
     flightstats.Reset();
@@ -1666,7 +1675,7 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
           // we will catch the takeoff height as the base.
 
           flightstats.Altitude_Base.
-            least_squares_update(max(0,Calculated->ClimbStartTime
+            least_squares_update(max(0.0, Calculated->ClimbStartTime
                                      - Calculated->TakeOffTime)/3600.0,
                                  StartAlt);
         }
@@ -1731,7 +1740,7 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	InitWindRotary(&rotaryWind); // 100103
         
         flightstats.Altitude_Ceiling.
-          least_squares_update(max(0,Calculated->CruiseStartTime
+          least_squares_update(max(0.0, Calculated->CruiseStartTime
                                    - Calculated->TakeOffTime)/3600.0,
                                Calculated->CruiseStartAlt);
         
@@ -3196,7 +3205,7 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
     // total height required from start (takes safety arrival alt
     // and finish waypoint altitude into account)
     
-    double h1 = max(0,Calculated->NavAltitude-hf);
+    double h1 = max(0.0, Calculated->NavAltitude-hf);
     // height above target
 
     double dFinal;
@@ -3213,7 +3222,7 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
     }
 
     // JB's task speed...
-    double hx = max(0,SpeedHeight(Basic, Calculated));
+    double hx = max(0.0, SpeedHeight(Basic, Calculated));
     double t1mod = t1-hx/MacCreadyOrAvClimbRate(Basic, Calculated, this_maccready);
     // only valid if flown for 5 minutes or more
     if (t1mod>300.0) {
@@ -3240,7 +3249,7 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
       dFinal = 0;
     }
 
-    double dc = max(0,dr-dFinal); 
+    double dc = max(0.0, dr-dFinal); 
     // amount of extra distance to travel in cruise/climb before final glide
 
     // equivalent distance to end of final glide
@@ -3334,13 +3343,13 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
       vthis /= AirDensityRatio(Calculated->NavAltitude);
       
       dr_last = Calculated->LegDistanceCovered;
-      double ttg = max(1,Calculated->LegTimeToGo);
+      double ttg = max(1.0, Calculated->LegTimeToGo);
       //      double Vav = d0/max(1.0,t0); 
       double Vrem = Calculated->LegDistanceToGo/ttg;
       double Vref = // Vav;
 	Vrem;
       double sr = -GlidePolar::SinkRate(Vstar);
-      double height_diff = max(0,-Calculated->TaskAltitudeDifference);
+      double height_diff = max(0.0, -Calculated->TaskAltitudeDifference);
       
       if (Calculated->timeCircling>30) {
 	mc_safe = max(this_maccready, 
@@ -3352,11 +3361,11 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
       double time_climb = height_diff/mc_safe;
 
       // calculate amount of time in cruise/climb glide
-      double rho_c = max(0,min(1,time_climb/ttg));
+      double rho_c = max(0.0, min(1.0, time_climb/ttg));
 
       if (Calculated->FinalGlide) {
 	if (rho_climb>0) {
-	  rho_c = max(0,min(1,rho_c/rho_climb));
+	  rho_c = max(0.0, min(1.0, rho_c/rho_climb));
 	}
 	if (!Calculated->Circling) {
 	  if (Calculated->TaskAltitudeDifference>0) {
@@ -3401,9 +3410,9 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
 	    tsi_av/= n_av;
             flightstats.Task_Speed.
               least_squares_update(
-                                   max(0,
+                                   max(0.0,
                                        Basic->Time-Calculated->TaskStartTime)/3600.0,
-                                   max(0,min(100.0,tsi_av)));
+                                   max(0.0, min(100.0,tsi_av)));
             LastTimeStats = Basic->Time;
 	    tsi_av = 0;
 	    n_av = 0;
@@ -3466,7 +3475,7 @@ static void CheckGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 #if 1
 		Calculated->ObstacleDistance = distance_soarable;
 
-		Calculated->ObstacleHeight =  max(0,RasterTerrain::GetTerrainHeight(lat,lon));
+		Calculated->ObstacleHeight =  max((short)0, RasterTerrain::GetTerrainHeight(lat,lon));
 		if (Calculated->ObstacleHeight == TERRAIN_INVALID) Calculated->ObstacleHeight=0; //@ 101027 FIX
 
 		// how much height I will loose to get there
@@ -3688,7 +3697,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
       // Correct speed calculations for radius
       // JMW TODO accuracy: legcovered replace this with more accurate version
       // LegDistance -= StartRadius;
-      LegCovered = max(0,LegCovered-StartRadius);
+      LegCovered = max(0.0, LegCovered-StartRadius);
     }
   }
   
@@ -4329,7 +4338,7 @@ void AATStats_Time(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
       Calculated->AATTimeToGo = aat_tasklength_seconds;
     }
   } else if (aat_tasktime_elapsed>=0) {
-    Calculated->AATTimeToGo = max(0,
+    Calculated->AATTimeToGo = max(0.0,
 				  aat_tasklength_seconds 
 				  - aat_tasktime_elapsed);
   }
@@ -4515,7 +4524,7 @@ void ThermalBand(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     // calculate new buckets so glider is below max
     double hbuk = Calculated->MaxThermalHeight/NUMTHERMALBUCKETS;
   
-    max_thermal_height_new = max(1, Calculated->MaxThermalHeight);
+    max_thermal_height_new = max(1.0, Calculated->MaxThermalHeight);
     while (max_thermal_height_new<dheight) {
       max_thermal_height_new += hbuk;
     }
@@ -4946,7 +4955,7 @@ bool IsFlarmTargetCNInRange()
      if (GPS_INFO.Time > BallastTimeLast+5) {
        double BALLAST_last = BALLAST;
        double dt = GPS_INFO.Time - BallastTimeLast;
-       double percent_per_second = 1.0/max(10.0, BallastSecsToEmpty);
+       double percent_per_second = 1.0/max(10, BallastSecsToEmpty);
        BALLAST -= dt*percent_per_second;
        if (BALLAST<0) {
          BallastTimerActive = false;

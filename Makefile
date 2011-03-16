@@ -417,6 +417,7 @@ SRC_FILES :=\
 	$(SRC)/windanalyser.cpp		$(SRC)/windmeasurementlist.cpp \
 	$(SRC)/windstore.cpp 		$(SRC)/WindowControls.cpp \
 	$(SRC)/WindZigZag.cpp 		$(SRC)/xmlParser.cpp \
+	$(SRC)/ContestMgr.cpp 		$(SRC)/Trace.cpp \
 	\
 	$(SRC)/mapbits.cpp \
 	$(SRC)/maperror.cpp 		$(SRC)/mapprimitive.cpp \
