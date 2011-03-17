@@ -2217,6 +2217,13 @@ static CallBackTableEntry_t CallBackTable[]={
 };
 
 
+static int OnTimerNotify(WindowControl *Sender)
+{
+  Update();
+  return 0;
+}
+
+
 void dlgAnalysisShowModal(void){
 
   wf=NULL;
@@ -2260,6 +2267,8 @@ void dlgAnalysisShowModal(void){
   ((WndButton *)wf->FindByName(TEXT("cmdClose")))->SetOnClickNotify(OnCloseClicked);
 
   wCalc = ((WndButton *)wf->FindByName(TEXT("cmdCalc")));
+
+  wf->SetTimerNotify(OnTimerNotify);
 
   Update();
 
