@@ -531,7 +531,7 @@ void RasterTerrain::OpenTerrain(void)
   ExpandLocalPath(szFile);
   _tcscpy(szOrigFile, szFile);
   ContractLocalPath(szOrigFile);
-
+  
   SetRegistryString(szRegistryTerrainFile, TEXT("\0"));
   unicode2ascii(szFile, zfilename, MAX_PATH);
 
@@ -664,7 +664,9 @@ bool RasterMapRaw::Open(char* zfilename) {
   if (strlen(zfilename)<=0) 
     return false;
 
-  StartupStore(_T(". Terrain Open RasterMapRaw <%S>%s"),zfilename,NEWLINE); // 100102
+  TCHAR ucfilename[MAX_PATH];
+  ascii2unicode(zfilename, ucfilename, MAX_PATH);
+  StartupStore(_T(". Terrain Open RasterMapRaw <%s>%s"),ucfilename,NEWLINE); // 100102
 
   fpTerrain = zzip_fopen(zfilename, "rb");
   if (fpTerrain == NULL) {

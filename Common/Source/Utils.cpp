@@ -15,6 +15,8 @@
 #if (WINDOWSPC<1)
 #include "projects.h"
 #endif
+#else
+#include "wcecompat/ts_string.h"
 #endif
 
 #include "Defines.h" // VENTA3
@@ -4193,24 +4195,24 @@ static bool LoadRegistryFromFile_inner(const TCHAR *szFile, bool wide=true)
     } else {
       while (fgets(inval, nMaxValueValueSize, fp)) {
         if (sscanf(inval, "%[^#=\r\n ]=\"%[^\r\n\"]\"[\r\n]", name, value) == 2) {
-	  if (strlen(name)>0) {
-	    mbstowcs(wname, name, strlen(name)+1);
-	    mbstowcs(wvalue, value, strlen(value)+1);
-	    SetRegistryString(wname, wvalue);
-	    found = true;
-	  }
+          if (strlen(name)>0) {
+            utf2unicode(name, wname, nMaxValueValueSize);
+            utf2unicode(value, wvalue, nMaxValueValueSize);
+            SetRegistryString(wname, wvalue);
+            found = true;
+          }
         } else if (sscanf(inval, "%[^#=\r\n ]=%d[\r\n]", name, &j) == 2) {
-	  if (strlen(name)>0) {
-	    mbstowcs(wname, name, strlen(name)+1);
-	    SetToRegistry(wname, j);
-	    found = true;
-	  }
+          if (strlen(name)>0) {
+            utf2unicode(name, wname, nMaxValueValueSize);
+            SetToRegistry(wname, j);
+            found = true;
+          }
         } else if (sscanf(inval, "%[^#=\r\n ]=\"\"[\r\n]", name) == 1) {
-	  if (strlen(name)>0) {
-	    mbstowcs(wname, name, strlen(name)+1);
-	    SetRegistryString(wname, TEXT(""));
-	    found = true;
-	  }
+          if (strlen(name)>0) {
+            utf2unicode(name, wname, nMaxValueValueSize);
+            SetRegistryString(wname, TEXT(""));
+            found = true;
+          }
         } else {
 	  //		ASSERT(false);	// Invalid line reached
         }
@@ -4240,6 +4242,7 @@ void SaveRegistryToFile(const TCHAR *szFile)
   TCHAR lpstrName[nMaxKeyNameSize+1];
 //  char sName[nMaxKeyNameSize+1];
 //  char sValue[nMaxValueValueSize+1];
+  
   //  TCHAR lpstrClass[nMaxClassSize+1];
 #ifdef __MINGW32__
   union {
@@ -4307,34 +4310,37 @@ void SaveRegistryToFile(const TCHAR *szFile)
       } else
       // XXX SCOTT - Check that the output data (lpstrName and pValue) do not contain \r or \n
       if (nType==1) { // text
-	if (nValueSize>0) {
+        if (nValueSize>0) {
 #ifdef __MINGW32__
-	  uValue.pValue[nValueSize]= 0; // null terminate, just in case
-	  uValue.pValue[nValueSize+1]= 0; // null terminate, just in case
-	  if (_tcslen((TCHAR*)uValue.pValue)>0) {
-	    fprintf(fp,"%S=\"%S\"\r\n", lpstrName, (wchar_t *) uValue.pValue); // 100228 FIX
-	  } else {
-	    fprintf(fp,"%S=\"\"\r\n", lpstrName);
-	  }
+          if (_tcslen((TCHAR*)uValue.pValue)>0) {
+            char sValue[nMaxValueValueSize+1];
+            
+            uValue.pValue[nValueSize]= 0; // null terminate, just in case
+            uValue.pValue[nValueSize+1]= 0; // null terminate, just in case
+            unicode2utf((TCHAR*) uValue.pValue, sValue, sizeof(sValue));
+            fprintf(fp,"%S=\"%s\"\r\n", lpstrName, sValue);
+          } else {
+            fprintf(fp,"%S=\"\"\r\n", lpstrName);
+          }
 #else
-	  if (_tcslen((TCHAR*)pValue)>0) {
-	    pValue[nValueSize]= 0; // null terminate, just in case
-	    pValue[nValueSize+1]= 0; // null terminate, just in case
-	    wcstombs(sName,lpstrName,nMaxKeyNameSize+1);
-	    wcstombs(sValue,(TCHAR*)pValue,nMaxKeyNameSize+1);
-	    fprintf(fp,"%s=\"%s\"\r\n", sName, sValue);
-	  } else {
-	    wcstombs(sName,lpstrName,nMaxKeyNameSize+1);
-	    fprintf(fp,"%s=\"\"\r\n", sName);
-	  }
+          if (_tcslen((TCHAR*)pValue)>0) {
+            pValue[nValueSize]= 0; // null terminate, just in case
+            pValue[nValueSize+1]= 0; // null terminate, just in case
+            wcstombs(sName,lpstrName,nMaxKeyNameSize+1);
+            wcstombs(sValue,(TCHAR*)pValue,nMaxKeyNameSize+1);
+            fprintf(fp,"%s=\"%s\"\r\n", sName, sValue);
+          } else {
+            wcstombs(sName,lpstrName,nMaxKeyNameSize+1);
+            fprintf(fp,"%s=\"\"\r\n", sName);
+          }
 #endif
-	} else {
+        } else {
 #ifdef __MINGW32__
-	  fprintf(fp,"%S=\"\"\r\n", lpstrName);
+          fprintf(fp,"%S=\"\"\r\n", lpstrName);
 #else
-	  fprintf(fp,"%s=\"\"\r\n", lpstrName);
+          fprintf(fp,"%s=\"\"\r\n", lpstrName);
 #endif
-	}
+        }
       }
     }
 

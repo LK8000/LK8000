@@ -27,10 +27,12 @@
 #include <windows.h>
 
 
-void ascii2unicode(const char* ascii, WCHAR* unicode);
-void unicode2ascii(const WCHAR* unicode, char* ascii);
-void ascii2unicode(const char* ascii, WCHAR* unicode, int maxChars);
-void unicode2ascii(const WCHAR* unicode, char* ascii, int maxChars);
+int ascii2unicode(const char* ascii, WCHAR* unicode);
+int ascii2unicode(const char* ascii, WCHAR* unicode, int maxChars);
+int unicode2ascii(const WCHAR* unicode, char* ascii);
+int unicode2ascii(const WCHAR* unicode, char* ascii, int maxChars);
+int unicode2utf(const WCHAR* unicode, char* utf, int maxChars);
+int utf2unicode(const char* utf, WCHAR* unicode, int maxChars);
 
 
 //
