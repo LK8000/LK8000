@@ -1966,9 +1966,14 @@ static void Update(void){
           CContestMgr::TType type = result.Type() == CContestMgr::TYPE_OLC_CLASSIC_PREDICTED ?
             CContestMgr::TYPE_OLC_PLUS_PREDICTED : CContestMgr::TYPE_OLC_PLUS;
           CContestMgr::Instance().Result(type, resultPlus);
-          _stprintf(plusStr, TEXT("%s:\r\n  %6.2f"),
-                    CContestMgr::TypeToString(type),
-                    resultPlus.Score());
+          if(InfoBoxLayout::landscape)
+            _stprintf(plusStr, TEXT("%s:\r\n  %6.2f"),
+                      CContestMgr::TypeToString(type),
+                      resultPlus.Score());
+          else
+            _stprintf(plusStr, TEXT("%s: %6.2f"),
+                      CContestMgr::TypeToString(type),
+                      resultPlus.Score());
         }
         
         _stprintf(sTmp, _T("%s%s%s%s%s"), distStr, timeStr, speedStr, scoreStr, plusStr);
