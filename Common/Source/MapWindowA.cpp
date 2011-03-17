@@ -200,7 +200,7 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   HPEN hOrigPen = (HPEN) SelectObject(hdc, GetStockObject(WHITE_PEN));
 
 #ifdef LKAIRSPACE
-	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); it++) {
+	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->DrawStyle()) {
 		  airspace_type = (*it)->Type();
 		  if (bAirspaceBlackOutline) {
@@ -209,51 +209,6 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
 			SelectObject(hdc, hAirspacePens[airspace_type]);
 		  }
 		  (*it)->Draw(hdc, rc, false);
-		  
-		  // Draw warning position if any
-		  if ((*it)->WarningLevel() > awNone) {
-			POINT sc;
-			double lon;
-			double lat;
-			bool distances_ready = (*it)->GetWarningPoint(lon,lat);
-			if (distances_ready && PointVisible(lon, lat)) {
-				TCHAR hbuf[NAME_SIZE+16], vDistanceText[16];
-				int vdist;
-				AirspaceWarningDrawStyle_t labeldrawstyle;
-				
-				TextInBoxMode_t TextDisplayMode = {0};
-				(*it)->GetVDistanceInfo(vdist, labeldrawstyle);
-				LatLon2Screen(lon, lat, sc);
-				DrawBitmapIn(hdc, sc, hAirspaceWarning);
-
-				Units::FormatUserAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
-				_tcscpy(hbuf, (*it)->Name());
-				wcscat(hbuf, TEXT(" "));
-				wcscat(hbuf, vDistanceText);
-				
-				switch (labeldrawstyle) {
-				  default:
-				  case awsBlack:
-					TextDisplayMode.AsFlag.Color = TEXTBLACK;
-					break;
-				  case awsAmber:
-					TextDisplayMode.AsFlag.Color = TEXTORANGE;
-					break;
-				  case awsRed:
-					TextDisplayMode.AsFlag.Color = TEXTRED;
-					break;
-				} // sw
-				TextDisplayMode.AsFlag.SetTextColor = 1;
-				TextDisplayMode.AsFlag.AlligneCenter = 1;
-				if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
-					TextDisplayMode.AsFlag.Border = 1;
-				} else {
-					TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
-				}
-
-				TextInBox(hdc, hbuf, sc.x, sc.y+NIBLSCALE(15), 0, TextDisplayMode, true); 
-			}
-		  }
         }
 	}//for
 #else

@@ -1782,7 +1782,7 @@ void MapWindow::ClearAirSpace(bool fill) {
 void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc)
 {
     CAirspaceList::const_iterator it;
-	const CAirspaceList airspaces_to_draw = CAirspaceManager::Instance().GetAirspacesForWarningLabels();
+	const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
 
  	// Draw warning position and label on top of all airspaces
 	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
@@ -1826,12 +1826,7 @@ void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc)
 					TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
 				}
 
-				// bool success = 
-				TextInBox(hdc, hbuf, sc.x, sc.y+NIBLSCALE(15), 0, TextDisplayMode, true);
-				// if label not printed, we try some other locations
-				// if (!success) {
-				//  success = TextInBox(hdc, hbuf, sc.x, sc.y-NIBLSCALE(15), 0, TextDisplayMode, true);
-				//}
+				TextInBox(hdc, hbuf, sc.x, sc.y+NIBLSCALE(15), 0, TextDisplayMode, true); 
 			}
 		  }
 	}//for
@@ -1925,60 +1920,15 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
         if ((*it)->DrawStyle()) {
 		  airspace_type = (*it)->Type();
 		  if (!found) {
-            ClearAirSpace(true);
-            found = true;
-          }
+			ClearAirSpace(true);
+			found = true;
+		  }
 		  if (bAirspaceBlackOutline) {
 			SelectObject(hDCTemp, GetStockObject(BLACK_PEN));
 		  } else {
 			SelectObject(hDCTemp, hAirspacePens[airspace_type]);
 		  }
 		  (*it)->Draw(hDCTemp, rc, false);
-		  // Draw warning position if any
-		  if ((*it)->WarningLevel() > awNone) {
-			POINT sc;
-			double lon;
-			double lat;
-			bool distances_ready = (*it)->GetWarningPoint(lon,lat);
-			if (distances_ready && PointVisible(lon, lat)) {
-				TCHAR hbuf[NAME_SIZE+16], vDistanceText[16];
-				int vdist;
-				AirspaceWarningDrawStyle_t labeldrawstyle;
-
-				TextInBoxMode_t TextDisplayMode = {0};
-				(*it)->GetVDistanceInfo(vdist, labeldrawstyle);
-				LatLon2Screen(lon, lat, sc);
-				DrawBitmapIn(hdc, sc, hAirspaceWarning);
-				
-				Units::FormatUserAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
-				_tcscpy(hbuf, (*it)->Name());
-				hbuf[10]=0;
-				wcscat(hbuf, TEXT(" "));
-				wcscat(hbuf, vDistanceText);
-				
-				switch (labeldrawstyle) {
-				  default:
-				  case awsBlack:
-					TextDisplayMode.AsFlag.Color = TEXTBLACK;
-					break;
-				  case awsAmber:
-					TextDisplayMode.AsFlag.Color = TEXTORANGE;
-					break;
-				  case awsRed:
-					TextDisplayMode.AsFlag.Color = TEXTRED;
-					break;
-				} // sw
-				TextDisplayMode.AsFlag.SetTextColor = 1;
-				TextDisplayMode.AsFlag.AlligneCenter = 1;
-				if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
-					TextDisplayMode.AsFlag.Border = 1;
-				} else {
-					TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
-				}
-
-				TextInBox(hdc, hbuf, sc.x, sc.y+NIBLSCALE(15), 0, TextDisplayMode, true); 
-			}
-		  }
         }
 	}//for
 #else
