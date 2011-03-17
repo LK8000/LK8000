@@ -207,9 +207,15 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   // Calculate distances
   CalculateDistance(NULL,NULL,NULL);
+  if ( _hdistance <= 0 ) {
+	_pos_inside_now = true;
+  }
+  // Check for altitude
+  bool pos_altitude = IsAltitudeInside(alt, agl);
+  if (!pos_altitude) _pos_inside_now = false;
 
   // TODO Until we have one infobox, we have to collect nearest distance values differently!
-  if (_flyzone && _hdistance<0) {
+  if (_flyzone && _pos_inside_now) {
 	// If in flyzone, nearest warning point given (nearest distance to leaving the fly zone)
 	if ( abs(_hdistance) < abs(_nearesthdistance) ) {
 	  _nearestname = _name;
@@ -217,7 +223,7 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	  // not used now _nearestvdistance = _vdistance;
 	}
   }
-  if (!_flyzone && _hdistance>0) {
+  if (!_flyzone && !_pos_inside_now) {
 	// If outdise nofly zone, then nearest distance selected
 	if ( (abs(_hdistance) < abs(_nearesthdistance)) ) {
 	  _nearestname = _name;
@@ -225,14 +231,6 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	  // not used now _nearestvdistance = _vdistance;
 	}
   }
-
-
-  if ( _hdistance <= 0 ) {
-	_pos_inside_now = true;
-  }
-  // Check for altitude
-  bool pos_altitude = IsAltitudeInside(alt, agl);
-  if (!pos_altitude) _pos_inside_now = false;
 
   if (_flyzone) {
 	// FLY-ZONE
