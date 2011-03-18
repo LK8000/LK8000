@@ -16,11 +16,5 @@
 <WndProperty Name="prpFAIFinishHeight" Caption="_@M276_" X=2 Y=-1  Width=236 Height=22 CaptionWidth=150 Font=2 Help="_@H494_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>
-<WndProperty Name="prpOLCEnabled" Caption="_@M500_" X=2 Y=-1  Width=236 Height=22 CaptionWidth=150 Font=2 ReadOnly=0 Help="_@H495_">
-<DataField name="" DataType="boolean" ReadOnly=0/>
-</WndProperty>
-<WndProperty Name="prpOLCRules" Caption="_@M493_"     X=2 Y=-1  Width=236 Height=22 CaptionWidth=150 Font=2 Help="_@H496_">
-<DataField name="" DataType="enum"  Min=0 Max=50 Step=1/>
-</WndProperty>
 </WndForm>    
 </PMML>

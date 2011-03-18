@@ -132,6 +132,7 @@
 #if (WINDOWSPC>0)
 #define WINE
 #endif
+#define NEW_OLC                 1       // Applied 110313
 
 /*
  * Incomplete work, or stuff that never got into production versions but still interesting

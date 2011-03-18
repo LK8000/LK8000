@@ -390,9 +390,11 @@ extern DWORD StartMaxHeightMargin;
 extern DWORD StartMaxSpeed;
 extern DWORD StartMaxSpeedMargin;
 extern int StartHeightRef;
+#ifndef NEW_OLC
 extern int OLCRules;
 extern int Handicap;
 extern bool EnableOLC;
+#endif /* NEW_OLC */
 
 // master flight data
 extern NMEA_INFO GPS_INFO;
@@ -417,6 +419,9 @@ extern double POLAR[POLARSIZE];
 extern double WEIGHTS[POLARSIZE];
 extern int BallastSecsToEmpty;
 extern bool BallastTimerActive;
+#ifdef NEW_OLC
+extern int Handicap;
+#endif /* NEW_OLC */
 
 extern bool InfoWindowActive;
 

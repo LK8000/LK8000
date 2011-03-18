@@ -2053,6 +2053,7 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+#ifndef NEW_OLC
   wp = (WndProperty*)wf->FindByName(TEXT("prpOLCRules"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -2066,6 +2067,7 @@ static void setVariables(void) {
     dfe->Set(OLCRules);
     wp->RefreshDisplay();
   }
+#endif /* NEW_OLC */
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpHandicap"));
   if (wp) {
@@ -4363,6 +4365,7 @@ void dlgConfigurationShowModal(void){
     }
   }
 
+#ifndef NEW_OLC
   wp = (WndProperty*)wf->FindByName(TEXT("prpOLCRules"));
   if (wp) {
     if (OLCRules != wp->GetDataField()->GetAsInteger()) {
@@ -4371,6 +4374,7 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
+#endif /* NEW_OLC */
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpHandicap"));
   if (wp) {

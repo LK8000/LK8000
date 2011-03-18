@@ -16,6 +16,7 @@
 #include "Atmosphere.h"
 #include "RasterTerrain.h"
 
+
 #define GROUND_COLOUR RGB(157,101,60)
 
 extern HFONT                                   StatisticsFont;
@@ -559,10 +560,22 @@ void Statistics::DrawYGrid(HDC hdc, const RECT rc,
 
 
 
+#ifdef NEW_OLC
+
+#include "ContestMgr.h"
+using std::min;
+using std::max;
+
+static CContestMgr::TType contestType = CContestMgr::TYPE_OLC_CLASSIC;
+
+#else
+
 #include "OnLineContest.h"
 extern OLCOptimizer olc;
 static bool olcvalid=false;
 static bool olcfinished=false;
+
+#endif /* NEW_OLC */
 
 void Statistics::RenderBarograph(HDC hdc, const RECT rc)
 {
@@ -708,7 +721,7 @@ void Statistics::RenderClimb(HDC hdc, const RECT rc)
            STYLE_REDTHICK);
 
   DrawLabel(hdc, rc, TEXT("MC"), 
-	    max(0.5, flightstats.ThermalAverage.sum_n-1), MACCREADY);
+	    max(0.5, (double)flightstats.ThermalAverage.sum_n-1), MACCREADY);
   
   DrawTrendN(hdc, rc,
              &flightstats.ThermalAverage,
@@ -849,7 +862,9 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
   double x1, y1, x2=0, y2=0;
   double lat_c, lon_c;
   double aatradius[MAXTASKPOINTS];
+#ifndef NEW_OLC
   bool olcvalid_this = olcvalid;
+#endif /* NEW_OLC */
 
   // find center
   ResetScale();
@@ -877,6 +892,16 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
     return;
   }
 
+#ifdef NEW_OLC
+  CPointGPSArray trace;
+  CContestMgr::Instance().Trace(trace);
+  for(unsigned i=0; i<trace.size(); i++) {
+    lat1 = trace[i].Latitude();
+    lon1 = trace[i].Longitude();
+    ScaleYFromValue(rc, lat1);
+    ScaleXFromValue(rc, lon1);
+  }
+#else
   olc.SetLine();
   int nolc = olc.getN();
 
@@ -894,6 +919,7 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
       ScaleXFromValue(rc, lon1);
     }
   }
+#endif /* NEW_OLC */
 
   lat_c = (y_max+y_min)/2;
   lon_c = (x_max+x_min)/2;
@@ -953,9 +979,15 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
       }
     }
   }
+#ifdef NEW_OLC
+  for(unsigned i=0; i<trace.size(); i++) {
+    lat1 = trace[i].Latitude();
+    lon1 = trace[i].Longitude();
+#else
   for (i=0; i< nolc; i++) {
     lat1 = olc.getLatitude(i);
     lon1 = olc.getLongitude(i);
+#endif /* NEW_OLC */
     x1 = (lon1-lon_c)*fastcosine(lat1);
     y1 = (lat1-lat_c);
     ScaleXFromValue(rc, x1);
@@ -1009,12 +1041,19 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
   }
 
   // draw track
-
+#ifdef NEW_OLC
+  for(unsigned i=0; trace.size() && i<trace.size()-1; i++) {
+    lat1 = trace[i].Latitude();
+    lon1 = trace[i].Longitude();
+    lat2 = trace[i+1].Latitude();
+    lon2 = trace[i+1].Longitude();
+#else
   for (i=0; i< nolc-1; i++) {
     lat1 = olc.getLatitude(i);
     lon1 = olc.getLongitude(i);
     lat2 = olc.getLatitude(i+1);
     lon2 = olc.getLongitude(i+1);
+#endif /* NEW_OLC */
     x1 = (lon1-lon_c)*fastcosine(lat1);
     y1 = (lat1-lat_c);
     x2 = (lon2-lon_c)*fastcosine(lat2);
@@ -1104,6 +1143,48 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
     }
   }
   
+#ifdef NEW_OLC
+  if(olcmode) {
+    CContestMgr::CResult result;
+    CContestMgr::Instance().Result(contestType, result);
+    if(result.Type() == contestType) {
+      const CPointGPSArray &points = result.PointArray();
+      for(unsigned i=0; i<points.size()-1; i++) {
+        lat1 = points[i].Latitude();
+        lon1 = points[i].Longitude();
+        lat2 = points[i+1].Latitude();
+        lon2 = points[i+1].Longitude();
+        x1 = (lon1-lon_c)*fastcosine(lat1);
+        y1 = (lat1-lat_c);
+        x2 = (lon2-lon_c)*fastcosine(lat2);
+        y2 = (lat2-lat_c);
+        int style = STYLE_REDTHICK;
+        if(result.Type() == CContestMgr::TYPE_OLC_FAI) {
+          if(i==0 || i==3)
+            // triangle start and finish
+            style = STYLE_BLUETHIN;
+        }
+        else if(points[i+1].TimeDelta(GPS_INFO.Time) > 0) {
+          // predicted edge
+          style = STYLE_BLUETHIN;
+        }
+        DrawLine(hdc, rc, x1, y1, x2, y2, style);
+      }
+      if(result.Type() == CContestMgr::TYPE_OLC_FAI) {
+        // draw the last edge of a triangle
+        lat1 = points[1].Latitude();
+        lon1 = points[1].Longitude();
+        lat2 = points[3].Latitude();
+        lon2 = points[3].Longitude();
+        x1 = (lon1-lon_c)*fastcosine(lat1);
+        y1 = (lat1-lat_c);
+        x2 = (lon2-lon_c)*fastcosine(lat2);
+        y2 = (lat2-lat_c);
+        DrawLine(hdc, rc, x1, y1, x2, y2, STYLE_REDTHICK);
+      }
+    }
+  }
+#else
   if (olcmode && olcvalid_this) {
     for (i=0; i< 7-1; i++) {
       switch(OLCRules) {
@@ -1142,6 +1223,7 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
 	       STYLE_BLUETHIN);
     }
   }
+#endif /* NEW_OLC */
 
   // Draw aircraft on top
   lat1 = GPS_INFO.Latitude;
@@ -1166,14 +1248,14 @@ void Statistics::RenderTemperature(HDC hdc, const RECT rc)
   for (i=0; i<CUSONDE_NUMLEVELS-1; i++) {
     if (CuSonde::cslevels[i].nmeasurements) {
 
-      hmin = min(hmin, i);
-      hmax = max(hmax, i);
+      hmin = min(hmin, (float)i);
+      hmax = max(hmax, (float)i);
       tmin = min(tmin, (float)min(CuSonde::cslevels[i].tempDry,
-			   (float)min(CuSonde::cslevels[i].airTemp,
-			       CuSonde::cslevels[i].dewpoint)));
+			   (double)min(CuSonde::cslevels[i].airTemp,
+                                      (double)CuSonde::cslevels[i].dewpoint)));
       tmax = max(tmax, (float)max(CuSonde::cslevels[i].tempDry,
-			   (float)max(CuSonde::cslevels[i].airTemp,
-			       CuSonde::cslevels[i].dewpoint)));
+			   (double)max(CuSonde::cslevels[i].airTemp,
+			       (double)CuSonde::cslevels[i].dewpoint)));
     }
   }
   if (hmin>= hmax) {
@@ -1358,8 +1440,8 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   aclon = GPS_INFO.Longitude;
   ach = GPS_INFO.Altitude;
   acb = GPS_INFO.TrackBearing;
-  double hmin = max(0,GPS_INFO.Altitude-3300);
-  double hmax = max(3300,GPS_INFO.Altitude+1000);
+  double hmin = max(0.0, GPS_INFO.Altitude-3300);
+  double hmax = max(3300.0, GPS_INFO.Altitude+1000);
   RECT rcd;
 
   double d_lat[AIRSPACE_SCANSIZE_X];
@@ -1528,7 +1610,7 @@ static void SetCalcCaption(const TCHAR* caption) {
 #define ANALYSIS_PAGE_POLAR        4
 #define ANALYSIS_PAGE_TEMPTRACE    5
 #define ANALYSIS_PAGE_TASK         6
-#define ANALYSIS_PAGE_OLC          7
+#define ANALYSIS_PAGE_CONTEST      7
 #define ANALYSIS_PAGE_AIRSPACE     8
 
 static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
@@ -1572,8 +1654,8 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
     Statistics::RenderTask(hDC, rcgfx, false);
     UnlockTaskData();
     break;
-  case ANALYSIS_PAGE_OLC:
-    SetCalcCaption(gettext(TEXT("_@M504_"))); // Optimise
+  case ANALYSIS_PAGE_CONTEST:
+    SetCalcCaption(gettext(TEXT("_@M1451_"))); // Change
     LockTaskData();
     Statistics::RenderTask(hDC, rcgfx, true);
     UnlockTaskData();
@@ -1601,8 +1683,10 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
 static void Update(void){
   TCHAR sTmp[1000];
   //  WndProperty *wp;
+#ifndef NEW_OLC
   int dt=1;
   double d=0;
+#endif /* NEW_OLC */
 
   switch(page){
     case ANALYSIS_PAGE_BAROGRAPH:
@@ -1821,14 +1905,94 @@ static void Update(void){
     } 
     wInfo->SetCaption(sTmp);
     break;
-  case ANALYSIS_PAGE_OLC:
-    _stprintf(sTmp, TEXT("%s: %s"), 
-	// LKTOKEN  _@M93_ = "Analysis" 
+  case ANALYSIS_PAGE_CONTEST:
+#ifdef NEW_OLC
+    _stprintf(sTmp, TEXT("%s: %s - %s"), 
+              // LKTOKEN  _@M93_ = "Analysis" 
               gettext(TEXT("_@M93_")),
-	// LKTOKEN  _@M500_ = "OnLine Contest" 
-              gettext(TEXT("_@M500_")));
+              // LKTOKEN  _@M1450_ = "Contest" 
+              gettext(TEXT("_@M1450_")),
+              CContestMgr::TypeToString(contestType));
     wf->SetCaption(sTmp);
-
+    
+    {
+      CContestMgr::CResult result;
+      CContestMgr::Instance().Result(contestType, result);
+      if(result.Type() == contestType) {
+        TCHAR distStr[50];
+        if(InfoBoxLayout::landscape)
+          _stprintf(distStr, _T("%s:\r\n  %5.1f %s\r\n"),
+                    // LKTOKEN  _@M245_ = "Distance" 
+                    gettext(TEXT("_@M245_")),
+                    DISTANCEMODIFY * result.Distance(),
+                    Units::GetDistanceName());
+        else
+          _stprintf(distStr, _T("%s: %5.1f %s\r\n"),
+                    // LKTOKEN  _@M245_ = "Distance" 
+                    gettext(TEXT("_@M245_")),
+                    DISTANCEMODIFY * result.Distance(),
+                    Units::GetDistanceName());
+        
+        TCHAR timeTempStr[50];
+        Units::TimeToText(timeTempStr, result.Duration());
+        TCHAR timeStr[50];
+        _stprintf(timeStr, _T("%s: %s\r\n"),
+                  // LKTOKEN  _@M720_ = "Time" 
+                  gettext(TEXT("_@M720_")),
+                  timeTempStr);
+        
+        TCHAR speedStr[50];
+        _stprintf(speedStr, 
+                  TEXT("%s: %3.1f %s\r\n"),
+                  // LKTOKEN  _@M632_ = "Speed" 
+                  gettext(TEXT("_@M632_")),
+                  TASKSPEEDMODIFY * result.Speed(),
+                  Units::GetTaskSpeedName());
+        
+        TCHAR scoreStr[50] = _T("");
+        if(result.Type() != CContestMgr::TYPE_FAI_3_TPS &&
+           result.Type() != CContestMgr::TYPE_FAI_3_TPS_PREDICTED)
+          _stprintf(scoreStr, 
+                    TEXT("%s: %.2f\r\n"),
+                    // LKTOKEN  _@M584_ = "Score" 
+                    gettext(TEXT("_@M584_")),
+                    result.Score());
+        
+        TCHAR plusStr[50] = _T("");
+        if(result.Type() == CContestMgr::TYPE_OLC_CLASSIC ||
+           result.Type() == CContestMgr::TYPE_OLC_CLASSIC_PREDICTED ||
+           result.Type() == CContestMgr::TYPE_OLC_FAI) {
+          CContestMgr::CResult resultPlus;
+          CContestMgr::TType type = result.Type() == CContestMgr::TYPE_OLC_CLASSIC_PREDICTED ?
+            CContestMgr::TYPE_OLC_PLUS_PREDICTED : CContestMgr::TYPE_OLC_PLUS;
+          CContestMgr::Instance().Result(type, resultPlus);
+          if(InfoBoxLayout::landscape)
+            _stprintf(plusStr, TEXT("%s:\r\n  %6.2f"),
+                      CContestMgr::TypeToString(type),
+                      resultPlus.Score());
+          else
+            _stprintf(plusStr, TEXT("%s: %6.2f"),
+                      CContestMgr::TypeToString(type),
+                      resultPlus.Score());
+        }
+        
+        _stprintf(sTmp, _T("%s%s%s%s%s"), distStr, timeStr, speedStr, scoreStr, plusStr);
+      }
+      else {
+        _stprintf(sTmp, TEXT("%s\r\n"),
+                  // LKTOKEN  _@M477_ = "No valid path" 
+                  gettext(TEXT("_@M477_")));
+      }
+      wInfo->SetCaption(sTmp);
+    }
+#else
+    _stprintf(sTmp, TEXT("%s: %s"), 
+              // LKTOKEN  _@M93_ = "Analysis" 
+              gettext(TEXT("_@M93_")),
+              // LKTOKEN  _@M1450_ = "Contest" 
+              gettext(TEXT("_@M1450_")));
+    wf->SetCaption(sTmp);
+    
     TCHAR sFinished[20];
     double score;
 
@@ -1914,6 +2078,7 @@ static void Update(void){
                 gettext(TEXT("_@M477_")));
     }
     wInfo->SetCaption(sTmp);
+#endif /* NEW_OLC */
 
     break;
   case ANALYSIS_PAGE_AIRSPACE:
@@ -2009,10 +2174,36 @@ static void OnCalcClicked(WindowControl * Sender,
     dlgTaskCalculatorShowModal();
     wf->SetVisible(true);
   }
-  if (page==ANALYSIS_PAGE_OLC) {
+  if (page==ANALYSIS_PAGE_CONTEST) {
+#ifdef NEW_OLC
+    // Rotate presented contest
+    switch(contestType) {
+    case CContestMgr::TYPE_OLC_CLASSIC:
+      contestType = CContestMgr::TYPE_OLC_CLASSIC_PREDICTED;
+      break;
+    case CContestMgr::TYPE_OLC_CLASSIC_PREDICTED:
+      contestType = CContestMgr::TYPE_OLC_FAI;
+      break;
+    case CContestMgr::TYPE_OLC_FAI:
+      contestType = CContestMgr::TYPE_OLC_LEAGUE;
+      break;
+    case CContestMgr::TYPE_OLC_LEAGUE:
+      contestType = CContestMgr::TYPE_FAI_3_TPS;
+      break;
+    case CContestMgr::TYPE_FAI_3_TPS:
+      contestType = CContestMgr::TYPE_FAI_3_TPS_PREDICTED;
+      break;
+    case CContestMgr::TYPE_FAI_3_TPS_PREDICTED:
+      contestType = CContestMgr::TYPE_OLC_CLASSIC;
+      break;
+    default:
+      contestType = CContestMgr::TYPE_OLC_CLASSIC;
+    }
+#else
     StartHourglassCursor();
     olc.Optimize((CALCULATED_INFO.Flying==1));
     StopHourglassCursor();
+#endif /* NEW_OLC */
   }
   if (page==ANALYSIS_PAGE_AIRSPACE) {
     dlgAirspaceWarningShowDlg(true);
@@ -2031,14 +2222,23 @@ static CallBackTableEntry_t CallBackTable[]={
 };
 
 
+static int OnTimerNotify(WindowControl *Sender)
+{
+  Update();
+  return 0;
+}
+
+
 void dlgAnalysisShowModal(void){
 
   wf=NULL;
   wGrid=NULL;
   wInfo=NULL;
   wCalc=NULL;
+#ifndef NEW_OLC
   olcvalid = false;
   olcfinished = false;
+#endif /* NEW_OLC */
   
   if (!InfoBoxLayout::landscape) {
     char filename[MAX_PATH];
@@ -2072,6 +2272,8 @@ void dlgAnalysisShowModal(void){
   ((WndButton *)wf->FindByName(TEXT("cmdClose")))->SetOnClickNotify(OnCloseClicked);
 
   wCalc = ((WndButton *)wf->FindByName(TEXT("cmdCalc")));
+
+  wf->SetTimerNotify(OnTimerNotify);
 
   Update();
 

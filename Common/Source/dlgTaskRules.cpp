@@ -63,11 +63,13 @@ static CallBackTableEntry_t CallBackTable[]={
 static void setVariables(void) {
   WndProperty *wp;
 
+#ifndef NEW_OLC
   wp = (WndProperty*)wf->FindByName(TEXT("prpOLCEnabled"));
   if (wp) {
     wp->GetDataField()->Set(EnableOLC);
     wp->RefreshDisplay();
   }
+#endif /* NEW_OLC */
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFAIFinishHeight"));
   if (wp) {
@@ -85,6 +87,7 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+#ifndef NEW_OLC
   wp = (WndProperty*)wf->FindByName(TEXT("prpOLCRules"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -98,6 +101,7 @@ static void setVariables(void) {
     dfe->Set(OLCRules);
     wp->RefreshDisplay();
   }
+#endif /* NEW_OLC */
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFinishMinHeight"));
   if (wp) {
@@ -164,6 +168,7 @@ bool dlgTaskRules(void){
     }
   }
 
+#ifndef NEW_OLC
   wp = (WndProperty*)wf->FindByName(TEXT("prpOLCRules"));
   if (wp) {
     if (OLCRules != wp->GetDataField()->GetAsInteger()) {
@@ -180,6 +185,7 @@ bool dlgTaskRules(void){
       changed = true;
     }
   }
+#endif /* NEW_OLC */
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFinishMinHeight"));
   if (wp) {

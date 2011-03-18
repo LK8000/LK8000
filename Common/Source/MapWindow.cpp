@@ -14,7 +14,9 @@
 #include "Cpustats.h"
 #include "MapWindow.h"
 #include "LKMapWindow.h"
+#ifndef NEW_OLC
 #include "OnLineContest.h"
+#endif /* NEW_OLC */
 #include "Utils.h"
 #include "Units.h"
 #include "Logger.h"

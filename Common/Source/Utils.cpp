@@ -370,7 +370,9 @@ const TCHAR szRegistryAutoMcMode[] = TEXT("AutoMcMode");
 const TCHAR szRegistryWaypointsOutOfRange[] = TEXT("WaypointsOutOfRange2"); // 101020 2nd version, reset needed
 const TCHAR szRegistryEnableExternalTriggerCruise[] = TEXT("EnableExternalTriggerCruise");
 const TCHAR szRegistryFAIFinishHeight[] = TEXT("FAIFinishHeight");
+#ifndef NEW_OLC
 const TCHAR szRegistryOLCRules[] = TEXT("OLCRules");
+#endif /* NEW_OLC */
 const TCHAR szRegistryHandicap[] = TEXT("Handicap");
 const TCHAR szRegistrySnailWidthScale[] = TEXT("SnailWidthScale");
 const TCHAR szRegistryUserLevel[] = TEXT("UserLevel");
@@ -1324,9 +1326,11 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryWaypointsOutOfRange,&Temp);
   WaypointsOutOfRange = Temp;
 
+#ifndef NEW_OLC
   Temp = OLCRules;
   GetFromRegistry(szRegistryOLCRules,&Temp);
   OLCRules = Temp;
+#endif /* NEW_OLC */
 
   Temp = EnableFAIFinishHeight;
   GetFromRegistry(szRegistryFAIFinishHeight,&Temp);
