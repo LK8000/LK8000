@@ -7,6 +7,7 @@
 */
 
 #include "StdAfx.h"
+#include "wcecompat/ts_string.h"
 #include "options.h"
 #include "compatibility.h"
 #include "XCSoar.h"
@@ -4772,22 +4773,19 @@ void StartupStore(const TCHAR *Str, ...)
 
   startupStoreFile = _tfopen(szFileName, TEXT("ab+"));
   if (startupStoreFile != NULL) {
-	// add linefeed to StartupStore until we fixed all occurencies
-	char sbuf[(MAX_PATH*2)+1]; // FIX 100205
-	sprintf(sbuf,"%S",buf);
-	int i=strlen(sbuf)-1;
-	if (i>=0) {
-		if (i>0 && sbuf[i-1]!=0x0d && sbuf[i]==0x0a) {
-			sbuf[i]=0x0;
-			fprintf(startupStoreFile, "[%09u] %s%s", (unsigned int)GetTickCount(),sbuf,SNEWLINE);
-		} else
-			// i==0 will not translate 0x0a , no problems
-			fprintf(startupStoreFile, "[%09u] %s", (unsigned int)GetTickCount(), sbuf);
-	}
-	fclose(startupStoreFile);
+    char sbuf[(MAX_PATH*2)+1]; // FIX 100205
+    
+    int i = unicode2utf(buf, sbuf, sizeof(sbuf));
+    
+    if (i > 0) {
+      if (sbuf[i - 1] != 0x0a && sbuf[i - 1] != 0x0d)
+        sprintf(sbuf + i, SNEWLINE);
+      fprintf(startupStoreFile, "[%09u] %s", (unsigned int)GetTickCount(), sbuf);
+    }
+    fclose(startupStoreFile);
   }
   if (csFlightDataInitialized) {
-	UnlockFlightData();
+    UnlockFlightData();
   }
 }
 

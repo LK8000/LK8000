@@ -25,107 +25,73 @@
 #include "ts_string.h"
 #include "StdAfx.h"
 
-
-void ascii2unicode(const char* ascii, WCHAR* unicode)
+// return Unicode string length, -1 on conversion error
+int ascii2unicode(const char* ascii, WCHAR* unicode)
 {
-  if (strlen(ascii)==0) {
-    unicode[0]=0;
-    unicode[1]=0;
-    return;
-  }
-
-	if (((unsigned int)unicode & 1) == 0)
-	{	// word-aligned
-		while (*ascii != '\0')
-			*unicode++ = *ascii++;
-		*unicode = '\0';
-	}
-	else
-	{	// not word-aligned
-		while (*ascii != '\0')
-		{
-			*(char*)unicode = *ascii++;
-			*(((char*)unicode)+1) = 0;
-			unicode++;
-		}
-		*(char*)unicode = 0;
-		*(((char*)unicode)+1) = 0;
-	}
+  return(ascii2unicode(ascii, unicode, 0xffffff));
 }
 
-void unicode2ascii(const WCHAR* unicode, char* ascii)
+// return Unicode string length, -1 on conversion error
+int ascii2unicode(const char* ascii, WCHAR* unicode, int maxChars)
 {
-  if (_tcslen(unicode)==0) {
-    ascii[0] = 0;
-    return;
-  }
+  int res = MultiByteToWideChar(CP_ACP, 0, ascii, -1, unicode, maxChars);
 
-	if (((unsigned int)unicode & 1) == 0)
-	{	// word-aligned
-		while (*unicode != '\0')
-			*ascii++ = (char)*unicode++;
-		*ascii = '\0';
-	}
-	else
-	{	// not word-aligned
-		while (*(char*)unicode != 0 || *(((char*)unicode)+1) != 0)
-			*ascii++ = *(char*)unicode++;
-		*ascii = '\0';
-	}
+  if (res > 0)
+    return(res - 1);
+  
+  // for safety reasons, return empty string  
+  if (maxChars >= 1)
+    unicode[0] = 0;
+  return(-1);
 }
 
-void ascii2unicode(const char* ascii, WCHAR* unicode, int maxChars)
+// return ASCII string length, -1 on conversion error
+int unicode2ascii(const WCHAR* unicode, char* ascii)
 {
-  if (strlen(ascii)==0) {
-    unicode[0]=0;
-    unicode[1]=0;
-    return;
-  }
-
-	if (((unsigned int)unicode & 1) == 0)
-	{	// word-aligned
-    int i;
-		for (i=0; ascii[i] != 0 && i<maxChars; i++)
-			unicode[i] = ascii[i];
-		unicode[i] = 0;
-	}
-	else
-	{	// not word-aligned
-    int i;
-		for (i=0; ascii[i] != 0 && i<maxChars; i++)
-		{
-			*(char*)&unicode[i] = ascii[i];
-			*(((char*)&unicode[i])+1) = 0;
-			unicode++;
-		}
-		*(char*)&unicode[i] = 0;
-		*(((char*)&unicode[i])+1) = 0;
-	}
+  return(unicode2ascii(unicode, ascii, 0xffffff));
 }
 
-void unicode2ascii(const WCHAR* unicode, char* ascii, int maxChars)
+// return ASCII string length, -1 on conversion error (insufficient buffer e.g.)
+int unicode2ascii(const WCHAR* unicode, char* ascii, int maxChars)
 {
-  if (_tcslen(unicode)==0) {
-    ascii[0] = 0;
-    return;
-  }
-
-	if (((unsigned int)unicode & 1) == 0)
-	{	// word-aligned
-    int i;
-		for (i=0; unicode[i] != 0 && i<maxChars; i++)
-			ascii[i] = (char)unicode[i];
-		ascii[i] = 0;
-	}
-	else
-	{	// not word-aligned
-    int i;
-		for (i=0; (*(char*)&unicode[i] != 0 || *(((char*)&unicode[i])+1) != 0) && i<maxChars; i++)
-			ascii[i] = *(char*)&unicode[i];
-		ascii[i] = 0;
-	}
+  int res = WideCharToMultiByte(CP_ACP, 0, unicode, -1, ascii, maxChars, NULL, NULL);
+  
+  if (res > 0)
+    return(res - 1);
+  
+  // for safety reasons, return empty string  
+  if (maxChars >= 1)
+    ascii[0] = '\0';
+  return(-1);
 }
 
+// return UTF8 string length, -1 on conversion error (insufficient buffer e.g.)
+int unicode2utf(const WCHAR* unicode, char* utf, int maxChars)
+{
+  int res = WideCharToMultiByte(CP_UTF8, 0, unicode, -1, utf, maxChars, NULL, NULL);
+  
+  if (res > 0)
+    return(res - 1);
+  
+  // for safety reasons, return empty string  
+  if (maxChars >= 1)
+    utf[0] = '\0';
+  return(-1);
+}
+
+// return Unicode string length, -1 on conversion error (insufficient buffer e.g.)
+int utf2unicode(const char* utf, WCHAR* unicode, int maxChars)
+{
+  int res = MultiByteToWideChar(CP_UTF8, 0, utf, -1, unicode, maxChars);
+  
+  if (res > 0)
+    return(res - 1);
+  
+  // for safety reasons, return empty string  
+  if (maxChars >= 1)
+    unicode[0] = '\0';
+  return(-1);
+}
 
 //
 // ascii/unicode typesafe versions of strcat
