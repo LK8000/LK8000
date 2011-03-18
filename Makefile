@@ -296,6 +296,9 @@ endif
 
 ####### sources
 
+UTILS	:=\
+	$(SRC)/utils/stringext.cpp
+  
 DEVS	:=\
 	$(SRC)/devBorgeltB50.cpp \
 	$(SRC)/devCAI302.cpp \
@@ -425,6 +428,7 @@ SRC_FILES :=\
 	$(SRC)/maptree.cpp              $(SRC)/mapxbase.cpp \
 	\
 	$(SRC)/lk8000.cpp \
+	$(UTILS) \
 	$(DEVS) \
 	$(DLGS) \
 	$(VOLKS)
@@ -470,13 +474,18 @@ COMPAT	:=\
 	$(COMPATSRC)/errno.cpp 		$(COMPATSRC)/string_extras.cpp \
 	$(COMPATSRC)/ts_string.cpp 	$(COMPATSRC)/wtoi.c
 
+#ifneq ($(CONFIG_PC),y)
+#COMPAT	:=$(COMPAT) \
+#   $(COMPATSRC)/redir.cpp
+#endif
+
 
 ####### compilation outputs
 
 OBJS 	:=\
 	$(patsubst $(SRC)%.cpp,$(BIN)%.o,$(SRC_FILES)) \
-	$(BIN)/jasper.a \
 	$(BIN)/zzip.a \
+	$(BIN)/jasper.a \
 	$(BIN)/compat.a \
 	$(BIN)/lk8000.rsc
 

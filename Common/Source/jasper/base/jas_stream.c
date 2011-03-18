@@ -92,6 +92,8 @@
 #include <io.h>
 #endif
 
+#include "utils/stringext.h"
+
 /******************************************************************************\
 * Local function prototypes.
 \******************************************************************************/
@@ -234,7 +236,7 @@ jas_stream_t *jas_stream_memopen(char *buf, int bufsize)
 	return stream;
 }
 
-jas_stream_t *jas_stream_fopen(const char *filename, const char *mode)
+jas_stream_t *jas_stream_fopen(const wchar_t *filename, const char *mode)
 {
 	jas_stream_t *stream;
 	jas_stream_fileobj_t *obj;
@@ -276,8 +278,11 @@ jas_stream_t *jas_stream_fopen(const char *filename, const char *mode)
 	}
 	obj->fd = -1;
 	obj->flags = 0;
-	//obj->pathname[0] = '\0';
-        strncpy(obj->pathname, filename, DIM_MAX_FILE_NAME); //dima
+  
+  char utfname[MAX_PATH*2];
+  unicode2utf(filename, utfname, countof(utfname));
+  
+  strncpy(obj->pathname, utfname, DIM_MAX_FILE_NAME); //dima
 
 	stream->obj_ = (void *) obj;
 
@@ -292,7 +297,8 @@ jas_stream_t *jas_stream_fopen(const char *filename, const char *mode)
 	}
         */
         // JMW quick hack!
-	if ((obj->zfile = zzip_fopen(filename, "rb")) == NULL) {
+  
+	if ((obj->zfile = zzip_fopen(utfname, "rb")) == NULL) {
           jas_stream_close(stream);
           return 0;
 	}
@@ -304,7 +310,7 @@ jas_stream_t *jas_stream_fopen(const char *filename, const char *mode)
 }
 
 // JMW this is not used, don't worry about it
-jas_stream_t *jas_stream_freopen(const char *path, const char *mode, FILE *fp)
+jas_stream_t *jas_stream_freopen(const wchar_t *path, const char *mode, FILE *fp)
 {
 	jas_stream_t *stream;
 	int openflags;

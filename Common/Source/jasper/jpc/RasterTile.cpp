@@ -449,7 +449,7 @@ short RasterTileCache::GetMaxElevation(void) {
 
 extern RasterTileCache *raster_tile_current;
 
-void RasterTileCache::LoadJPG2000(char* jp2_filename) {
+void RasterTileCache::LoadJPG2000(const wchar_t* jp2_filename) {
   jas_stream_t *in;
   
   raster_tile_current = this;

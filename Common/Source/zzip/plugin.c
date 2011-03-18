@@ -11,6 +11,8 @@
  *          of the Mozilla Public License 1.1
  */
 
+#include <windows.h>
+
 #include <zzip/lib.h>
 #include <zzip/plugin.h>
 
@@ -27,6 +29,8 @@
 
 #include <zzip/file.h>
 #include <zzip/format.h>
+
+#include "utils/stringext.h"
 
 zzip_off_t
 zzip_filesize(int fd)
@@ -56,12 +60,12 @@ zzip_filesize(int fd)
 
 }
 
+
 #if defined(__MINGW32__) && (WINDOWSPC<1)
 
-#include <windows.h>
 #include <fcntl.h>
 
-int mingw_open (const char *path, int oflag, ...)
+int wince_open (const char *path, int oflag, ...)
 {
     wchar_t wpath[MAX_PATH];
     DWORD fileaccess;
@@ -115,7 +119,8 @@ int mingw_open (const char *path, int oflag, ...)
 	return -1;
     }
     
-    mbstowcs (wpath, path, path_len + 1);
+    utf2unicode(path, wpath, MAX_PATH);
+    //mbstowcs (wpath, path, path_len + 1);
     
     fileshare = FILE_SHARE_READ | FILE_SHARE_WRITE;
     fileattrib = FILE_ATTRIBUTE_NORMAL;
@@ -131,15 +136,26 @@ int mingw_open (const char *path, int oflag, ...)
     return (int) hnd;
 }
 
+#else 
+
+// on PC Windows we must convert UTF8 filename into WCHAR* and use _wopen
+int winpc_open(zzip_char_t* filename, int flags, ...)
+{
+  wchar_t wpath[MAX_PATH];
+  utf2unicode(filename, wpath, MAX_PATH);
+  
+  return(_wopen(wpath, flags));
+}
 
 #endif
+
 
 static const struct zzip_plugin_io default_io =
 {
 #if defined(__MINGW32__) && (WINDOWSPC<1)
-    &mingw_open,
+    &wince_open,
 #else
-    &open,
+    &winpc_open,
 #endif
     &close,
     &_zzip_read,
