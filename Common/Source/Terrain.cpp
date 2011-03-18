@@ -1754,10 +1754,11 @@ void OpenTopology() {
 
   // Ready to open the file now..
 
-  static ZZIP_FILE* zFile;
-  char zfilename[MAX_PATH];
-  unicode2ascii(szFile, zfilename, MAX_PATH);
-  zFile = zzip_fopen(zfilename, "rt");
+  char utfname[MAX_PATH*2];
+  unicode2utf(szFile, utfname, countof(utfname));
+  
+  static ZZIP_FILE* zFile = zzip_fopen(utfname, "rt");
+  
   if (!zFile) {
     UnlockTerrainDataGraphics();
     StartupStore(TEXT(". No topology file <%s>%s"), szFile,NEWLINE);
