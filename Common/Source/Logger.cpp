@@ -971,7 +971,7 @@ bool ReplayLogger::ScanBuffer(TCHAR *buffer, double *Time, double *Latitude,
     }
 
   }
-  return (lfound>0 && (*Latitude>0 && *Longitude>0) );
+  return (lfound==11 && (*Latitude!=0 && *Longitude!=0) );
 }
 
 
