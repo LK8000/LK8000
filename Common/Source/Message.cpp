@@ -14,6 +14,10 @@
 
 #include "utils/heapcheck.h"
 
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
 
 /*
 
@@ -217,12 +221,12 @@ void Message::Resize() {
     SelectObject(hdc,oldfont); // 100215
 
     int linecount = max(nvisible,max(1,
-			SendMessage(hWndMessageWindow, 
+			(int)SendMessage(hWndMessageWindow, 
 				    EM_GETLINECOUNT, 0, 0)));
 
     int width =// min((rcmsg.right-rcmsg.left)*0.8,tsize.cx);
       (int)((rcmsg.right-rcmsg.left)*0.9);
-    int height = (int)min((rcmsg.bottom-rcmsg.top)*0.8,tsize.cy*(linecount+1));
+    int height = (int)min((rcmsg.bottom-rcmsg.top)*0.8,(double)tsize.cy*(linecount+1));
     int h1 = height/2;
     int h2 = height-h1;
 

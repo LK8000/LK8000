@@ -19,6 +19,10 @@
 #include "Dialogs.h"
 
 #include "utils/heapcheck.h"
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
 
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;

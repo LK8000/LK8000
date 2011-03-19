@@ -14,6 +14,10 @@
 #include "wcecompat/ts_string.h"
 
 #include "utils/heapcheck.h"
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
 
 extern HFONT MapLabelFont;
 

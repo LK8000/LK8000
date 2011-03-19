@@ -16,6 +16,10 @@
 #include "RasterTerrain.h"
 
 #include "utils/heapcheck.h"
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
 
 unsigned short CuSonde::last_level=0;
 double CuSonde::thermalHeight = 0;
@@ -85,7 +89,7 @@ void CuSonde::updateMeasurements(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   }
 
   // find appropriate level:
-  unsigned short level = (unsigned short)(((int)(max(Basic->Altitude,0))) / CUSONDE_HEIGHTSTEP);
+  unsigned short level = (unsigned short)(((int)(max(Basic->Altitude,0.0))) / CUSONDE_HEIGHTSTEP);
   if (level>=CUSONDE_NUMLEVELS) {
     return; // out of range
   }

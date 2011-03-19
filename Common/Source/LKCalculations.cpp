@@ -29,6 +29,10 @@
 #include "Message.h"
 
 #include "utils/heapcheck.h"
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
 
 extern void LatLon2Flat(double lon, double lat, int *scx, int *scy);
 extern int CalculateWaypointApproxDistance(int scx_aircraft, int scy_aircraft, int i);
@@ -1163,7 +1167,7 @@ double FarFinalGlideThroughTerrain(const double this_bearing,
   lon = last_lon = start_lon;
 
   altitude = myaltitude;
-  h =  max(0, RasterTerrain::GetTerrainHeight(lat, lon)); 
+  h =  max(0, (int)RasterTerrain::GetTerrainHeight(lat, lon)); 
   if (h==TERRAIN_INVALID) h=0; //@ 101027 FIX
   dh = altitude - h - SAFETYALTITUDETERRAIN;
   last_dh = dh;
@@ -1216,7 +1220,7 @@ double FarFinalGlideThroughTerrain(const double this_bearing,
     lon += dlon;
 
     // find height over terrain
-    h =  max(0,RasterTerrain::GetTerrainHeight(lat, lon)); 
+    h =  max(0,(int)RasterTerrain::GetTerrainHeight(lat, lon)); 
     if (h==TERRAIN_INVALID) h=0;
 
     dh = altitude - h - SAFETYALTITUDETERRAIN;
@@ -1243,7 +1247,7 @@ double FarFinalGlideThroughTerrain(const double this_bearing,
 		StartupStore(_T("++++++++ FarFinalGlide recovered from division by zero!%s"),NEWLINE); // 091213
 		f = 0.0;
 	} else
-        f = max(0,min(1,(-last_dh)/(dh-last_dh)));
+        f = max(0.0,min(1.0,(-last_dh)/(dh-last_dh)));
       } else {
 	f = 0.0;
       }

@@ -18,6 +18,10 @@
 
 #include "utils/heapcheck.h"
 
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
 
 #define GROUND_COLOUR RGB(157,101,60)
 
@@ -247,7 +251,7 @@ void Statistics::DrawYLabel(HDC hdc, const RECT rc, const TCHAR *text) {
   SIZE tsize;
   HFONT hfOld = (HFONT)SelectObject(hdc, MapLabelFont);
   GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-  int x = max(2,rc.left-tsize.cx);
+  int x = max(2,(int)rc.left-(int)tsize.cx);
   int y = rc.top;
   ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
   SelectObject(hdc, hfOld);

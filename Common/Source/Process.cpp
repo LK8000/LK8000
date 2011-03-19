@@ -26,6 +26,10 @@
 #include "AATDistance.h"
 
 #include "utils/heapcheck.h"
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
 
 extern AATDistance aatdistance;
 
@@ -600,7 +604,7 @@ void FormatterAATTime::AssignValue(int i) {
         &&(ActiveWayPoint>0)) {
       dd += GPS_INFO.Time-CALCULATED_INFO.TaskStartTime;
     }
-    dd= max(0,min(24.0*3600.0,dd))-AATTaskLength*60;
+    dd= max(0.0,min(24.0*3600.0,dd))-AATTaskLength*60;
     if (dd<0) {
       status = 1; // red
     } else {

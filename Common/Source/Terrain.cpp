@@ -24,6 +24,10 @@
 
 #include "utils/heapcheck.h"
 
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
 
 #if NEWRASTER
 unsigned short minalt=9999;
@@ -845,13 +849,13 @@ inline void TerrainShading(const short illum, BYTE &r, BYTE &g, BYTE &b)
 {
   char x;
   if (illum<0) {           // shadow to blue
-    x = min(tshadow_h,-illum);
+    x = min((int)tshadow_h,-illum);
     r = MIX(tshadow_r,r,x);
     g = MIX(tshadow_g,g,x);
     b = MIX(tshadow_b,b,x);
   } else if (illum>0) {    // highlight to yellow
     if (thighlight_h == 255) return; // 101016
-    x = min(thighlight_h,illum/2);
+    x = min((int)thighlight_h,illum/2);
     r = MIX(thighlight_r,r,x);
     g = MIX(thighlight_g,g,x);
     b = MIX(thighlight_b,b,x);
@@ -886,7 +890,7 @@ public:
       // dtquant=3, latency=136 ms
       // dtquant=4, latency= 93 ms
     }
-    blursize = max(0, (dtquant-1)/2);
+    blursize = max((unsigned int)0, (dtquant-1)/2);
     oversampling = max(1,(blursize+1)/2+1);
     if (blursize==0) {
       oversampling = 1; // no point in oversampling, just let stretchblt do the scaling
@@ -1260,7 +1264,7 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 #if NEWRASTER
 			// this is setting to 0 any negative terrain value and can be a problem for dutch people
 			// myhbuf cannot load negative values!
-			*myhbuf = max(0, DisplayMap->GetField(Y,X));
+			*myhbuf = max(0, (int)DisplayMap->GetField(Y,X));
 			if (*myhbuf!=TERRAIN_INVALID) {
 				// if (*myhbuf>maxalt) maxalt=*myhbuf;
 				if (*myhbuf<minalt) minalt=*myhbuf;

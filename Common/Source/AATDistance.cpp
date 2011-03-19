@@ -15,6 +15,10 @@
 #include "externs.h"
 
 #include "utils/heapcheck.h"
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
 
 #define DISTANCETHRESHOLD 500
 
@@ -644,5 +648,5 @@ void AATDistance::ThinData(int taskwaypoint) {
 
 
 double AATCloseDistance(void) {
-  return max(100,GPS_INFO.Speed*1.5);
+  return max(100.0,GPS_INFO.Speed*1.5);
 }

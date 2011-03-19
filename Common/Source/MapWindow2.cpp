@@ -41,6 +41,11 @@
 #include "GaugeFLARM.h"
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
+#ifdef LKAIRSPACE
+#include "LKAirspace.h"
+using std::min;
+using std::max;
+#endif
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -529,7 +534,9 @@ void MapWindow::ScanVisibility(rectObj *bounds_active) {
   }
 
   // far visibility for airspace
-
+#ifdef LKAIRSPACE
+  CAirspaceManager::Instance().SetFarVisible( *bounds_active );
+#else
   if (AirspaceCircle) {
     for (AIRSPACE_CIRCLE* circ = AirspaceCircle;
          circ < AirspaceCircle+NumberOfAirspaceCircles; circ++) {
@@ -549,6 +556,7 @@ void MapWindow::ScanVisibility(rectObj *bounds_active) {
         (msRectContained(&area->bounds, bounds_active) == MS_TRUE);
     }
   }
+#endif
 
 }
 
@@ -585,7 +593,16 @@ void MapWindow::CalculateScreenPositionsThermalSources() {
   }
 }
 
-
+#ifdef LKAIRSPACE
+void MapWindow::CalculateScreenPositionsAirspace()
+{
+#ifndef MAP_ZOOM
+  CAirspaceManager::Instance().CalculateScreenPositionsAirspace(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, ResMapScaleOverDistanceModify);
+#else /* MAP_ZOOM */
+  CAirspaceManager::Instance().CalculateScreenPositionsAirspace(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, zoom.ResScaleOverDistanceModify());
+#endif /* MAP_ZOOM */
+}
+#else
 void MapWindow::CalculateScreenPositionsAirspaceCircle(AIRSPACE_CIRCLE &circ) {
   circ.Visible = false;
   if (!circ.FarVisible) return;
@@ -684,7 +701,7 @@ void MapWindow::CalculateScreenPositionsAirspace() {
     }
   }
 }
-
+#endif
 
 void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc, 
                                          POINT *Orig_Aircraft)
@@ -916,9 +933,9 @@ void MapWindow::SetTargetPan(bool do_pan, int target_point)
       PanLongitude = WayPointList[Task[target_point].Index].Longitude;
       PanLatitude = WayPointList[Task[target_point].Index].Latitude;
       if (target_point==0) {
-        TargetZoomDistance = max(2e3, StartRadius*2);
+        TargetZoomDistance = max(2e3, (double)StartRadius*2);
       } else if (!ValidTaskPoint(target_point+1)) {
-        TargetZoomDistance = max(2e3, FinishRadius*2);
+        TargetZoomDistance = max(2e3, (double)FinishRadius*2);
       } else if (AATEnabled) {
         if (Task[target_point].AATType == SECTOR) {
           TargetZoomDistance = max(2e3, Task[target_point].AATSectorRadius*2);
@@ -926,7 +943,7 @@ void MapWindow::SetTargetPan(bool do_pan, int target_point)
           TargetZoomDistance = max(2e3, Task[target_point].AATCircleRadius*2);
         }
       } else {
-        TargetZoomDistance = max(2e3, SectorRadius*2);
+        TargetZoomDistance = max(2e3, (double)SectorRadius*2);
       }
     }
     UnlockTaskData();
@@ -1262,7 +1279,7 @@ void MapWindow::DrawThermalBand(HDC hDC, const RECT rc)
 
   // calculate top/bottom height
   maxh = max(h, mth);
-  minh = min(h, 0);
+  minh = min(h, 0.0);
 
   if (draw_start_height) {
     maxh = max(maxh, hstart);
@@ -1597,7 +1614,7 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 		}
 		// VENTA10
 		GetTextExtentPoint(hDC, Value, _tcslen(Value), &TextSize); 
-		GlideBarOffset=max(NIBLSCALE(11),TextSize.cx) - NIBLSCALE(2);
+		GlideBarOffset=max(NIBLSCALE(11),(int)TextSize.cx) - NIBLSCALE(2);
  
 		TextInBoxMode_t TextInBoxMode = {1|8};
 		// boxed numbers are a bit too much on the left, so increase the offset
@@ -1751,15 +1768,99 @@ void MapWindow::ClearAirSpace(bool fill) {
   }
 }
 
+#ifdef LKAIRSPACE
+void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc)
+{
+    CAirspaceList::const_iterator it;
+	const CAirspaceList airspaces_to_draw = CAirspaceManager::Instance().GetAirspacesForWarningLabels();
+
+ 	// Draw warning position and label on top of all airspaces
+	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
+		  if ((*it)->WarningLevel() > awNone) {
+			POINT sc;
+			double lon;
+			double lat;
+			bool distances_ready = (*it)->GetWarningPoint(lon,lat);
+			if (distances_ready && PointVisible(lon, lat)) {
+				TCHAR hbuf[NAME_SIZE+16], vDistanceText[16];
+				int vdist;
+				AirspaceWarningDrawStyle_t labeldrawstyle;
+				
+				TextInBoxMode_t TextDisplayMode = {0};
+				(*it)->GetVDistanceInfo(vdist, labeldrawstyle);
+				LatLon2Screen(lon, lat, sc);
+				DrawBitmapIn(hdc, sc, hAirspaceWarning);
+
+				Units::FormatUserAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
+				_tcscpy(hbuf, (*it)->Name());
+				wcscat(hbuf, TEXT(" "));
+				wcscat(hbuf, vDistanceText);
+				
+				switch (labeldrawstyle) {
+				  default:
+				  case awsBlack:
+					TextDisplayMode.AsFlag.Color = TEXTBLACK;
+					break;
+				  case awsAmber:
+					TextDisplayMode.AsFlag.Color = TEXTORANGE;
+					break;
+				  case awsRed:
+					TextDisplayMode.AsFlag.Color = TEXTRED;
+					break;
+				} // sw
+				TextDisplayMode.AsFlag.SetTextColor = 1;
+				TextDisplayMode.AsFlag.AlligneCenter = 1;
+				if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
+					TextDisplayMode.AsFlag.Border = 1;
+				} else {
+					TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
+				}
+
+				// bool success = 
+				TextInBox(hdc, hbuf, sc.x, sc.y+NIBLSCALE(15), 0, TextDisplayMode, true);
+				// if label not printed, we try some other locations
+				// if (!success) {
+				//  success = TextInBox(hdc, hbuf, sc.x, sc.y-NIBLSCALE(15), 0, TextDisplayMode, true);
+				//}
+			}
+		  }
+	}//for
+ 
+}
+#endif
+
 // TODO code: optimise airspace drawing
 void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 {
   COLORREF whitecolor = RGB(0xff,0xff,0xff);
+#ifdef LKAIRSPACE
+  CAirspaceList::const_iterator it;
+  const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
+  int airspace_type;
+#else
   unsigned int i;
-  
+#endif
   bool found = false;
-
+	
   if (GetAirSpaceFillType() != asp_fill_none) {
+#ifdef LKAIRSPACE
+	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
+      if ((*it)->DrawStyle() == adsFilled) {
+		airspace_type = (*it)->Type();
+		if (!found) {
+		  ClearAirSpace(true);
+		  found = true;
+		}
+		// this color is used as the black bit
+		SetTextColor(hDCTemp,
+					  Colours[iAirspaceColour[airspace_type]]);
+		// get brush, can be solid or a 1bpp bitmap
+		SelectObject(hDCTemp,
+					  hAirspaceBrushes[iAirspaceBrush[airspace_type]]);
+		(*it)->Draw(hDCTemp, rc, true);
+	  }
+	}//for
+#else
     if (AirspaceCircle) {
       // draw without border
       for(i=0;i<NumberOfAirspaceCircles;i++) {
@@ -1800,8 +1901,8 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
         }      
       }
     }
+#endif  
   }
-  
   // draw it again, just the outlines
 
   if (found) {
@@ -1809,6 +1910,23 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
     SelectObject(hDCTemp, GetStockObject(WHITE_PEN));
   }
 
+#ifdef LKAIRSPACE
+	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
+        if ((*it)->DrawStyle()) {
+		  airspace_type = (*it)->Type();
+		  if (!found) {
+			ClearAirSpace(true);
+			found = true;
+		  }
+		  if (bAirspaceBlackOutline) {
+			SelectObject(hDCTemp, GetStockObject(BLACK_PEN));
+		  } else {
+			SelectObject(hDCTemp, hAirspacePens[airspace_type]);
+		  }
+		  (*it)->Draw(hDCTemp, rc, false);
+        }
+	}//for
+#else
   if (AirspaceCircle) {
     for(i=0;i<NumberOfAirspaceCircles;i++) {
       if (AirspaceCircle[i].Visible) {
@@ -1860,7 +1978,7 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
       }      
     }
   }
-
+#endif
 
   if (found) {
     // need to do this to prevent drawing of colored outline

@@ -26,6 +26,10 @@
 
 #include "utils/heapcheck.h"
 
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
 
 #define  BINFILEMAGICNUMBER     0x4ab199f0
 #define  BINFILEVERION          0x00000101

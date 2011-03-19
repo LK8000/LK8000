@@ -82,6 +82,10 @@ extern void LKObjects_Delete();
 #include "LKMainObjects.h"
 #endif
 
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
 
 #ifdef DEBUG_TRANSLATIONS
 #include <map>

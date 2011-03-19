@@ -18,6 +18,10 @@
 
 #include "utils/heapcheck.h"
 
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
 
 static WndForm *wf=NULL;
 static WndListFrame *wStartPointList=NULL;

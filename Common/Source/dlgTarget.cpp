@@ -20,6 +20,10 @@
 #include "InfoBoxLayout.h"
 
 #include "utils/heapcheck.h"
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
 
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
@@ -454,7 +458,7 @@ static void OnRadialData(DataField *Sender, DataField::DataAccessKind_t Mode) {
               -Task[target_point].AATTargetOffsetRadius;
             updated = true;
           } else {
-            RadialNew = max(-90,min(90,RadialNew));
+            RadialNew = max(-90.0,min(90.0,RadialNew));
             updated = true;
           }
         }

@@ -19,6 +19,11 @@
 #include <aygshell.h>
 #include "InfoBoxLayout.h"
 #include "Airspace.h"
+#ifdef LKAIRSPACE
+#include "LKAirspace.h"
+using std::min;
+using std::max;
+#endif
 #ifdef OLDPPC
 #include "XCSoarProcess.h"
 #else
@@ -1533,8 +1538,12 @@ void InputEvents::eventTerrainTopology(const TCHAR *misc) {
 // Do clear warnings IF NONE Toggle Terrain/Topology
 void InputEvents::eventClearWarningsOrTerrainTopology(const TCHAR *misc) {
 	(void)misc;
+#ifdef LKAIRSPACE
+  if (CAirspaceManager::Instance().ClearAirspaceWarnings(true,false)) {
+#else
   if (ClearAirspaceWarnings(true,false)) {
-    // airspace was active, enter was used to acknowledge
+#endif
+	// airspace was active, enter was used to acknowledge
     return;
   }
   // Else toggle TerrainTopology - and show the results
@@ -1546,6 +1555,17 @@ void InputEvents::eventClearWarningsOrTerrainTopology(const TCHAR *misc) {
 // Clears airspace warnings for the selected airspace
 //     day: clears the warnings for the entire day
 //     ack: clears the warnings for the acknowledgement time
+#ifdef LKAIRSPACE
+void InputEvents::eventClearAirspaceWarnings(const TCHAR *misc) {
+  if (_tcscmp(misc, TEXT("day")) == 0) {
+    // JMW clear airspace warnings for entire day (for selected airspace)
+    CAirspaceManager::Instance().ClearAirspaceWarnings(true,true);
+  } else {
+    // default, clear airspace for short acknowledgement time
+    CAirspaceManager::Instance().ClearAirspaceWarnings(true,false);
+  }
+}
+#else
 void InputEvents::eventClearAirspaceWarnings(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("day")) == 0) 
     // JMW clear airspace warnings for entire day (for selected airspace)
@@ -1558,6 +1578,7 @@ void InputEvents::eventClearAirspaceWarnings(const TCHAR *misc) {
     }
   }
 }
+#endif
 
 // ClearStatusMessages
 // Do Clear Event Warnings
@@ -2540,6 +2561,7 @@ void InputEvents::eventNearestAirspaceDetails(const TCHAR *misc) {
   (void)misc;
   double nearestdistance=0;
   double nearestbearing=0;
+#ifndef LKAIRSPACE
   int foundcircle = -1;
   int foundarea = -1;
   int i;
@@ -2548,14 +2570,22 @@ void InputEvents::eventNearestAirspaceDetails(const TCHAR *misc) {
   TCHAR szMessageBuffer[MAX_PATH];
   TCHAR szTitleBuffer[MAX_PATH];
   TCHAR text[MAX_PATH];
-
+  
   if (!dlgAirspaceWarningIsEmpty()) {
     RequestAirspaceWarningForce = true;
     RequestAirspaceWarningDialog= true;
     return;
   }
+#endif
 
   // StartHourglassCursor();
+#ifdef LKAIRSPACE
+  CAirspace *found = CAirspaceManager::Instance().FindNearestAirspace(GPS_INFO.Longitude, GPS_INFO.Latitude,
+		      &nearestdistance, &nearestbearing );
+  if (found != NULL) {
+	dlgAirspaceDetails(found);
+  }
+#else
   FindNearestAirspace(GPS_INFO.Longitude, GPS_INFO.Latitude,
 		      &nearestdistance, &nearestbearing,
 		      &foundcircle, &foundarea);
@@ -2631,6 +2661,7 @@ void InputEvents::eventNearestAirspaceDetails(const TCHAR *misc) {
   Message::Lock();
   Message::AddMessage(5000, MSG_AIRSPACE, text);
   Message::Unlock();
+#endif
 }
 
 // NearestWaypointDetails

@@ -27,6 +27,10 @@
 
 #include "utils/heapcheck.h"
 
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
 
 
 // static variables shared between rasterterrains because can only
@@ -75,7 +79,7 @@ int RasterMap::GetEffectivePixelSize(double *pixel_D,
 
   double rfact = max(terrain_step_x,terrain_step_y)/(*pixel_D);
 
-  int epx = (int)(max(1,ceil(rfact)));
+  int epx = (int)(max(1.0,ceil(rfact)));
   //  *pixel_D = (*pixel_D)*rfact/epx;
 
   return epx;
@@ -331,7 +335,7 @@ short RasterMapCache::LookupTerrainCacheFile(const long &SeekPos) {
       Alt = TERRAIN_INVALID;
     else {
 	// FIX HERE NETHERLAND
-      Alt = max(0,NewAlt);
+      Alt = max((short int)0,NewAlt);
     }
   }
   Unlock();
@@ -1110,7 +1114,7 @@ void RasterWeather::ValueToText(TCHAR* Buffer, short val) {
     _stprintf(Buffer, TEXT("%.0f%s"), val*ALTITUDEMODIFY, Units::GetAltitudeName());
     return;
   case 5: // blcloudpct
-    _stprintf(Buffer, TEXT("%d%%"), max(0,min(100,val)));
+    _stprintf(Buffer, TEXT("%d%%"), max(0,min(100,(int)val)));
     return;
   case 6: // sfctemp
     _stprintf(Buffer, TEXT("%d")TEXT(DEG), iround(val*0.5-20.0));

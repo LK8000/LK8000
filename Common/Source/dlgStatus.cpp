@@ -19,6 +19,11 @@
 #include "Process.h"
 #endif
 
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
+
 extern BOOL extGPSCONNECT;
 
 #include "dlgTools.h"

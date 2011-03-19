@@ -51,7 +51,11 @@
 #include "RasterTerrain.h"
 #include "Utils2.h"
 #include "externs.h" // 091110
-
+#ifdef LKAIRSPACE
+#include "LKAirspace.h"
+using std::min;
+using std::max;
+#endif
 #if (WINDOWSPC>0)
 #include <wingdi.h>
 #endif
@@ -219,6 +223,9 @@ HBITMAP MapWindow::hClimb;
 HBITMAP MapWindow::hFinalGlide;
 HBITMAP MapWindow::hAutoMacCready;
 HBITMAP MapWindow::hTerrainWarning;
+#ifdef LKAIRSPACE
+HBITMAP MapWindow::hAirspaceWarning;
+#endif
 HBITMAP MapWindow::hFLARMTraffic;
 HBITMAP MapWindow::hGPSStatus1;
 HBITMAP MapWindow::hGPSStatus2;
@@ -405,10 +412,19 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat,
 
 
 bool MapWindow::Event_InteriorAirspaceDetails(double lon, double lat) {
+#ifndef LKAIRSPACE
   unsigned int i;
-  bool found=false;
   bool inside;
-
+#endif
+  bool found=false;
+#ifdef LKAIRSPACE
+  CAirspaceList reslist = CAirspaceManager::Instance().GetVisibleAirspacesAtPoint(lon, lat);
+  CAirspaceList::iterator it;
+  for (it = reslist.begin(); it != reslist.end(); ++it) {
+	dlgAirspaceDetails(*it);
+	found = true;
+  }
+#else
   if (AirspaceCircle) {
     for (i=0; i<NumberOfAirspaceCircles; i++) {
       inside = false;
@@ -433,7 +449,7 @@ bool MapWindow::Event_InteriorAirspaceDetails(double lon, double lat) {
       }
     }
   }
-
+#endif
   return found; // nothing found..
 }
 
@@ -682,6 +698,9 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
       RoundRect(hDC, brect.left, brect.top, brect.right, brect.bottom, 
                 NIBLSCALE(8), NIBLSCALE(8));
       SelectObject(hDC, oldPen);
+#ifdef LKAIRSPACE
+	  if (Mode.AsFlag.SetTextColor) TextColor(hDC,Mode.AsFlag.Color); else TextColor(hDC, TEXTBLACK);
+#endif
 #if (WINDOWSPC>0)
       SetBkMode(hDC,TRANSPARENT);
       ExtTextOut(hDC, x, y, 0, NULL, Value, size, NULL);
@@ -1511,6 +1530,9 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 
       hFLARMTraffic=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_FLARMTRAFFIC));
       hTerrainWarning=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TERRAINWARNING));
+#ifdef LKAIRSPACE
+      hAirspaceWarning=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACEWARNING));
+#endif
       hTurnPoint=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TURNPOINT));
       hInvTurnPoint=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_INVTURNPOINT));
       hSmall=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SMALL));
@@ -1776,6 +1798,9 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       DeleteObject(hAutoMacCready);
       DeleteObject(hFLARMTraffic);
       DeleteObject(hTerrainWarning);
+#ifdef LKAIRSPACE
+      DeleteObject(hAirspaceWarning);
+#endif	  
       DeleteObject(hGPSStatus1);
       DeleteObject(hGPSStatus2);
       DeleteObject(hAbort);
@@ -3457,7 +3482,16 @@ QuickRedraw: // 100318 speedup redraw
 		SelectObject(hdcDrawWindow, hfOld);
 		goto QuickRedraw;
 	}
-
+#ifdef LKAIRSPACE
+  if (OnAirSpace > 0)  // Default is true, always true at startup no regsave 
+  {
+	DrawAirspaceLabels(hdc, rc);
+	if (DONTDRAWTHEMAP) { // 100319
+		SelectObject(hdcDrawWindow, hfOld);
+		goto QuickRedraw;
+	}
+  }
+#endif
   #ifdef LK8000_OPTIMIZE
   DrawWaypointsNew(hdc,rc);
   #else

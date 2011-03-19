@@ -13,6 +13,10 @@
 #include "externs.h"
 
 #include "utils/heapcheck.h"
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
 
 static WndForm *wf=NULL;
 static WndOwnerDrawFrame *wGrid=NULL;

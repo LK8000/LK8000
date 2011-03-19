@@ -26,6 +26,10 @@
 #include "Task.h"
 
 #include "utils/heapcheck.h"
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
 
 // #define NULLSHORT	"--" 
 #define NULLMEDIUM	"---"
@@ -1887,7 +1891,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				if ((CALCULATED_INFO.TaskStartTime>0.0) && (CALCULATED_INFO.Flying) &&(ActiveWayPoint>0)) {
 					dd += GPS_INFO.Time-CALCULATED_INFO.TaskStartTime;
 				}
-				dd= max(0,min(24.0*3600.0,dd))-AATTaskLength*60;
+				dd= max(0.0,min(24.0*3600.0,dd))-AATTaskLength*60;
 #if (0)
 				if (dd<0) {
 					status = 1; // red

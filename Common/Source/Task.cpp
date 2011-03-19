@@ -20,6 +20,10 @@
 #include "LKMapWindow.h"
 
 #include "utils/heapcheck.h"
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
 
 bool EnableMultipleStartPoints = false;
 bool TaskModified = false;
@@ -561,7 +565,7 @@ double AdjustAATTargets(double desired) {
     {
       if(ValidTaskPoint(i)&&ValidTaskPoint(i+1) && !Task[i].AATTargetLocked)
 	{
-          Task[i].AATTargetOffsetRadius = max(-1,min(1,
+          Task[i].AATTargetOffsetRadius = max(-1.0,min(1.0,
                                           Task[i].AATTargetOffsetRadius));
 	  av += Task[i].AATTargetOffsetRadius;
 	  inum++;
@@ -598,7 +602,7 @@ double AdjustAATTargets(double desired) {
           } else {
             d = desired;
           } 
-          d = min(1.0, max(d, 0))*2.0-1.0;
+          d = min(1.0, max(d, 0.0))*2.0-1.0;
           Task[i].AATTargetOffsetRadius = d;
 	}
     }
@@ -667,7 +671,7 @@ void CalculateAATTaskSectors()
         min(1.0, max(Task[i].AATTargetOffsetRadius,-1.0));
 
       Task[i].AATTargetOffsetRadial = 
-        min(90, max(-90, Task[i].AATTargetOffsetRadial));
+        min(90.0, max(-90.0, Task[i].AATTargetOffsetRadial));
 
       double targetbearing;
       double targetrange;
@@ -1412,7 +1416,7 @@ double FindInsideAATSectorRange(double latitude,
   double t_distance = FindInsideAATSectorDistance(latitude, longitude, taskwaypoint,
                                                   course_bearing, p_found);
   return (p_found / 
-          max(1,t_distance))*2-1;
+          max(1.0,t_distance))*2-1;
 }
 
 

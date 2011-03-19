@@ -50,6 +50,11 @@ RECT WINAPI DrawWireRects(LPRECT lprcTo, UINT nMilliSecSpeed) {
 #define DEFAULTBORDERPENWIDTH 1*ISCALE
 #define SELECTORWIDTH         4*ISCALE
 
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
+
 #if FIXDC
 HDC sHdc;
 HDC  GetTempDeviceContext(void){return(sHdc);};
@@ -4244,7 +4249,7 @@ void WndListFrame::SelectItemFromScreen(int xPos, int yPos,
 int WndListFrame::OnMouseMove(WPARAM wParam, LPARAM lParam) {  
   static bool bMoving = false;
 
-  if ( (GetTickCount()) >= LastMouseMoveTime )
+  if ( (GetTickCount()) >= (unsigned int)LastMouseMoveTime )
   {
     bMoving=true;
 
@@ -4254,7 +4259,7 @@ int WndListFrame::OnMouseMove(WPARAM wParam, LPARAM lParam) {
 
     if (mMouseDown && PtInRect(&rcScrollBar, Pos))
     {
-      int iScrollBarTop = max(1, Pos.y - mMouseScrollBarYOffset);
+      int iScrollBarTop = max(1, (int)Pos.y - mMouseScrollBarYOffset);
 
       int iScrollIndex = GetScrollIndexFromScrollBarTop(iScrollBarTop);
 
@@ -4284,7 +4289,7 @@ int WndListFrame::OnLButtonDown(WPARAM wParam, LPARAM lParam) {
     
   if (PtInRect(&rcScrollBarButton, Pos))  // see if click is on scrollbar handle
   {
-    mMouseScrollBarYOffset = max(0, Pos.y - rcScrollBarButton.top);  // start mouse drag
+    mMouseScrollBarYOffset = max(0, (int)Pos.y - (int)rcScrollBarButton.top);  // start mouse drag
     mMouseDown=true;
 
   }

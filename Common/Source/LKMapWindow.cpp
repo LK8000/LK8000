@@ -52,6 +52,10 @@
 
 #include "utils/heapcheck.h"
 
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
 
 extern HWND hWndCDIWindow;
 extern HFONT MapLabelFont;
@@ -877,7 +881,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
     // now we know either point is visible, better get screen coords
     // if we don't already.
 
-    double dt = max(0,(display_time-P1.Time)*P1.DriftFactor);
+    double dt = max(0.0,(display_time-P1.Time)*P1.DriftFactor);
     double this_lon = P1.Longitude+traildrift_lon*dt;
     double this_lat = P1.Latitude+traildrift_lat*dt;
 

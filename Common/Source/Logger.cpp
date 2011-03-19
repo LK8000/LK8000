@@ -21,6 +21,10 @@
 #include "utils/heapcheck.h"
 
 
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
 
 HINSTANCE GRecordDLLHandle = NULL;
 
@@ -310,8 +314,8 @@ void LogPointToFile(double Latitude, double Longitude, double Altitude,
   char NoS, EoW;
 
   if ((Altitude<0) && (BaroAltitude<0)) return;
-  Altitude = max(0,Altitude);
-  BaroAltitude = max(0,BaroAltitude);
+  Altitude = max(0.0,Altitude);
+  BaroAltitude = max(0.0,BaroAltitude);
 
   DegLat = (int)Latitude;
   MinLat = Latitude - DegLat;
@@ -1122,7 +1126,7 @@ public:
     return p[0].t;
   }
   double GetMaxTime(void) {
-    return max(0,max(p[0].t, max(p[1].t, max(p[2].t, p[3].t))));
+    return max(0.0,max(p[0].t, max(p[1].t, max(p[2].t, p[3].t))));
   }
   double GetAverageTime(void) {
     double tav= 0;
