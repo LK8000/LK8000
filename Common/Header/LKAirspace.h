@@ -18,11 +18,6 @@
 #include <deque>
 #include <list>
 #include <algorithm>
-using namespace std;
-
-//redefine min/max macros because stl redefines it
-#define max(a,b) ((a)>(b)?(a):(b))
-#define min(a,b) ((a)<(b)?(a):(b))
 
 #define AIRSPACE_SCANSIZE_X 16
 #define AIRSPACE_SCANSIZE_H 16

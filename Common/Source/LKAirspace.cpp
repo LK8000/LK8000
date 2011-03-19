@@ -17,6 +17,9 @@
 
 #ifdef LKAIRSPACE
 
+using std::min;
+using std::max;
+
 static const int k_nAreaCount = 13;
 static const TCHAR* k_strAreaStart[k_nAreaCount] = {
 					_T("R"),  
@@ -972,10 +975,10 @@ void CAirspace_Area::CalcBounds()
   _bounds.miny = it->Latitude();
   _bounds.maxy = it->Latitude();
   for(it = _geopoints.begin(); it != _geopoints.end(); ++it) {
-	_bounds.minx = min(it->Longitude(), _bounds.minx);
-	_bounds.maxx = max(it->Longitude(), _bounds.maxx);
-	_bounds.miny = min(it->Latitude(), _bounds.miny);
-	_bounds.maxy = max(it->Latitude(), _bounds.maxy);
+	_bounds.minx = min((double)it->Longitude(), _bounds.minx);
+	_bounds.maxx = max((double)it->Longitude(), _bounds.maxx);
+	_bounds.miny = min((double)it->Latitude(), _bounds.miny);
+	_bounds.maxy = max((double)it->Latitude(), _bounds.maxy);
   }
 
   // JMW detect airspace that wraps across 180

@@ -43,6 +43,8 @@
 #include "LKMapWindow.h"
 #ifdef LKAIRSPACE
 #include "LKAirspace.h"
+using std::min;
+using std::max;
 #endif
 #if defined(LKAIRSPACE) || defined(NEW_OLC)
 using std::min;
