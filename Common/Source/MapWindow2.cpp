@@ -1782,7 +1782,7 @@ void MapWindow::ClearAirSpace(bool fill) {
 void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc)
 {
     CAirspaceList::const_iterator it;
-	const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
+	const CAirspaceList airspaces_to_draw = CAirspaceManager::Instance().GetAirspacesForWarningLabels();
 
  	// Draw warning position and label on top of all airspaces
 	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
@@ -1826,7 +1826,12 @@ void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc)
 					TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
 				}
 
-				TextInBox(hdc, hbuf, sc.x, sc.y+NIBLSCALE(15), 0, TextDisplayMode, true); 
+				// bool success = 
+				TextInBox(hdc, hbuf, sc.x, sc.y+NIBLSCALE(15), 0, TextDisplayMode, true);
+				// if label not printed, we try some other locations
+				// if (!success) {
+				//  success = TextInBox(hdc, hbuf, sc.x, sc.y-NIBLSCALE(15), 0, TextDisplayMode, true);
+				//}
 			}
 		  }
 	}//for

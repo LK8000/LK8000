@@ -2018,8 +2018,6 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
   #ifdef DEBUG_AIRSPACE
   StartupStore(TEXT("   AirspaceWarning ends, processed %d airspaces from %d%s"), _airspaces_of_interest.size(), _airspaces_near.size(), NEWLINE);
   #endif
-  _airspaces_of_interest.clear();
-
 }
 
 
@@ -2062,16 +2060,19 @@ void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbou
 
 const CAirspaceList& CAirspaceManager::GetNearAirspacesRef() const
 {
-  CCriticalSection::CGuard guard(_csairspaces);
   return _airspaces_near;
 }
 
-CAirspaceList CAirspaceManager::GetAllAirspaces() const
+const CAirspaceList CAirspaceManager::GetAllAirspaces() const
 {
-  CAirspaceList res;
   CCriticalSection::CGuard guard(_csairspaces);
-  res = _airspaces;
-  return res;
+  return _airspaces;
+}
+
+const CAirspaceList CAirspaceManager::GetAirspacesForWarningLabels() const
+{
+  CCriticalSection::CGuard guard(_csairspaces);
+  return _airspaces_of_interest;
 }
 
 // Gets a list of airspaces which has a warning or an ack level different than awNone
