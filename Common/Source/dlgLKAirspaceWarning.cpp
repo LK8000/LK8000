@@ -18,7 +18,7 @@
 #ifdef LKAIRSPACE
 
 #include "dlgTools.h"
-#include "criticalsection.h"
+#include "CriticalSection.h"
 #include "LKAirspace.h"
 
 extern HWND   hWndMainWindow;

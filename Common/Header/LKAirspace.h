@@ -10,7 +10,7 @@
 #include "mapshape.h"
 
 #ifdef LKAIRSPACE
-#include "criticalsection.h"
+#include "CriticalSection.h"
 #include "Calculations.h"
 #include <tchar.h>
 
@@ -20,6 +20,7 @@
 #include <algorithm>
 using namespace std;
 
+//redefine min/max macros because stl redefines it
 #define max(a,b) ((a)>(b)?(a):(b))
 #define min(a,b) ((a)<(b)?(a):(b))
 

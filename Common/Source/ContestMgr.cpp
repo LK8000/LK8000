@@ -22,6 +22,11 @@
 
 #include "utils/heapcheck.h"
 
+#ifdef LKAIRSPACE
+#undef min
+#undef max
+#endif
+
 CContestMgr CContestMgr::_instance;
 
 
