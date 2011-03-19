@@ -178,6 +178,7 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
     _lastknownalt = (int)Basic->Altitude;
   }
   _lastknownagl = (int)Calculated->AltitudeAGL;
+  if (_lastknownagl < 0) _lastknownagl = 0;			// Limit agl to zero
   _lastknownpos.Latitude(Basic->Latitude);
   _lastknownpos.Longitude(Basic->Longitude);
 
@@ -419,7 +420,7 @@ bool CAirspace::FinishWarning()
 			// Far away horizontally _or_ vertically
 			_warninglevel = awNone;
 		}
-		if ( abs_hdistance < _hdistancemargin ) {
+		if ( _hdistance < _hdistancemargin ) {
 		  if (IsAltitudeInside(_lastknownalt, _lastknownagl, AltWarningMargin)) {
 			// Near to inside, modify warnevent to inform user
 			_warninglevel = awYellow;
@@ -506,7 +507,7 @@ bool CAirspace::GetVDistanceInfo(int &vDistance, AirspaceWarningDrawStyle_t &dra
 // Get warning point coordinates, returns true if distances valid
 bool CAirspace::GetWarningPoint(double &longitude, double &latitude) const
 {
-  if (_distances_ready) {
+  if (_distances_ready && (_warningacklevel < awDailyAck)) {
 	double dist = fabs(_hdistance);
 	if (_hdistance < 0) {
 	  // if vertical distance smaller, use actual position as warning point indicating a directly above or below warning situation
