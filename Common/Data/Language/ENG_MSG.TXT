@@ -1275,6 +1275,20 @@ _@M1258_ "to enter"
 _@M1259_ "Too far, not calculated"
 _@M1260_ "below"
 _@M1261_ "above"
+_@M1262_ "Message"
+_@M1263_ "WarnLevel"
+_@M1264_ "HDist"
+_@M1265_ "VDist"
+
+# dlgAirspaceDetails - Airspace details
+_@M1266_ "AckLevel"
+_@M1267_ "Yellow acknowledged"
+_@M1268_ "Red acknowledged"
+_@M1269_ "Daily acknowledged"
+_@M1270_ "FLY"
+_@M1271_ "NOFLY"
+_@M1272_ "Set as FLY zone?"
+_@M1273_ "Set as NOFLY zone?"
 
 
 # LK info page headers, try to use the same or less number of chars here,

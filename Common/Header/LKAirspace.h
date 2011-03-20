@@ -158,6 +158,7 @@ public:
   const AIRSPACE_ALT* Base() const { return &_base; }
   const rectObj& Bounds() const { return _bounds; }
   bool Flyzone() const { return _flyzone; }
+  void FlyzoneToggle() { _flyzone = !_flyzone; }
   
   AirspaceDrawStyle_t DrawStyle() const { return _drawstyle; }
   void DrawStyle(AirspaceDrawStyle_t drawstyle) { _drawstyle = drawstyle; } 
@@ -338,6 +339,7 @@ public:
   void AirspaceAckSpace(CAirspace &airspace);
   void AirspaceAckDaily(CAirspace &airspace);
   void AirspaceAckDailyCancel(CAirspace &airspace);
+  void AirspaceFlyzoneToggle(CAirspace &airspace);
   
   bool PopWarningMessage(AirspaceWarningMessage *msg);
   

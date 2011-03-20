@@ -2194,6 +2194,13 @@ void CAirspaceManager::AirspaceAckDailyCancel(CAirspace &airspace)
 	#endif
 }
 
+// Toggle flyzone on an airspace
+void CAirspaceManager::AirspaceFlyzoneToggle(CAirspace &airspace)
+{
+	CCriticalSection::CGuard guard(_csairspaces);
+	airspace.FlyzoneToggle();
+}
+
 // Centralized function to get airspace type texts
 TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const
 {
