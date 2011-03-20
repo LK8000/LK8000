@@ -4188,15 +4188,6 @@ bool GlobalClearAirspaceWarnings = false;
 
 // JMW this code is deprecated
 #ifdef LKAIRSPACE
-bool CAirspaceManager::ClearAirspaceWarnings(const bool acknowledge, const bool ack_all_day)
-{
-  if (acknowledge) {
-	// This uses deprecated WarningLevel and Ack members of CAirspace only here, so I deleted it.
-    _GlobalClearAirspaceWarnings = true;
-    return Message::Acknowledge(MSG_AIRSPACE);
-  }
-  return false;
-}
 #else
 bool ClearAirspaceWarnings(const bool acknowledge, const bool ack_all_day) {
   unsigned int i;

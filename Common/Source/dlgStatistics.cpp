@@ -2296,7 +2296,6 @@ void dlgAnalysisShowModal(void){
 
   MapWindow::RequestFastRefresh();
 #ifdef LKAIRSPACE
-  CAirspaceManager::Instance().ClearAirspaceWarnings(false);
 #else
   ClearAirspaceWarnings(false); // airspace warning gets refreshed
 #endif

@@ -1872,24 +1872,18 @@ CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, const 
   return found;
 }
 
+bool airspace_sorter(CAirspace *a, CAirspace *b)
+{
+	return (a->Top()->Altitude < b->Top()->Altitude);
+}
 
 void CAirspaceManager::SortAirspaces(void)
 {
   StartupStore(TEXT(". SortAirspace%s"),NEWLINE);
 
-  // force acknowledgement before sorting
-  ClearAirspaceWarnings(true, false);
-
-//   qsort(AirspaceArea,
-// 	NumberOfAirspaceAreas,
-// 	sizeof(AIRSPACE_AREA),
-// 	SortAirspaceAreaCompare);
-// 
-//   qsort(AirspaceCircle,
-// 	NumberOfAirspaceCircles,
-// 	sizeof(AIRSPACE_CIRCLE),
-// 	SortAirspaceCircleCompare);
-
+  // Sort by top altitude for drawing
+  CCriticalSection::CGuard guard(_csairspaces);
+  std::sort(_airspaces.begin(), _airspaces.end(), airspace_sorter );
 }
 
 bool CAirspaceManager::ValidAirspaces(void) const
@@ -1921,12 +1915,6 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
   CCriticalSection::CGuard guard(_csairspaces);
 
   if ( _airspaces_near.size() == 0 ) return;
-  
-  //TODO what is this???
-  if (_GlobalClearAirspaceWarnings == true) {
-    _GlobalClearAirspaceWarnings = false;
-    Calculated->IsInAirspace = false;
-  }
   
   #ifdef DEBUG_AIRSPACE
   StartupStore(TEXT("---AirspaceWarning start%s"),NEWLINE);
@@ -2017,6 +2005,9 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
 		_user_warning_queue.push_back(msg);
 	  }
   }
+
+  // This is used nowhere.
+  Calculated->IsInAirspace = false;
 
   // Fill infoboxes
   // TODO Until we have one infobox, we have to collect nearest distance values differently!

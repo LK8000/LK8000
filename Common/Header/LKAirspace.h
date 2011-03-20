@@ -332,7 +332,6 @@ public:
   //Warning system
   void AirspaceWarning (NMEA_INFO *Basic, DERIVED_INFO *Calculated);
   bool AirspaceWarningIsGoodPosition(float longitude, float latitude, int alt, int agl) const;
-  bool ClearAirspaceWarnings(const bool acknowledge, const bool ack_all_day = false);
 
   void AirspaceSetAckLevel(CAirspace &airspace, AirspaceWarningLevel_t ackstate);
   void AirspaceAckWarn(CAirspace &airspace);
@@ -357,12 +356,11 @@ public:
   
   //Attributes
   unsigned int NumberofAirspaces() { CCriticalSection::CGuard guard(_csairspaces); return _airspaces.size(); }
-  bool GlobalClearAirspaceWarnings() const { return _GlobalClearAirspaceWarnings; }
 
 
 private:
   static CAirspaceManager _instance;
-  CAirspaceManager(const CAirspaceManager&) : _GlobalClearAirspaceWarnings(false) {}
+  CAirspaceManager(const CAirspaceManager&) {}
   CAirspaceManager& operator=(const CAirspaceManager&);
   ~CAirspaceManager() { CloseAirspaces(); }
   
@@ -370,7 +368,6 @@ private:
   mutable CCriticalSection _csairspaces;
   CAirspaceList _airspaces;			//ALL
   CAirspaceList _airspaces_near;	//Near
-  bool _GlobalClearAirspaceWarnings;
   
   // Warning system data
   // User warning message queue
