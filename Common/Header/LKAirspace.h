@@ -106,7 +106,8 @@ public:
 			_distances_ready(false),
 			_vdistance(0),
 			_hdistance(0),
-			_bearing(0)
+			_bearing(0),
+			_labelpriority(0)
 			{}
   virtual ~CAirspace() {}
 
@@ -159,6 +160,10 @@ public:
   const rectObj& Bounds() const { return _bounds; }
   bool Flyzone() const { return _flyzone; }
   void FlyzoneToggle() { _flyzone = !_flyzone; }
+  int LabelPriority() const { return _labelpriority; }
+  // Label priority sequencing
+  void LabelPriorityInc() { if (_labelpriority<10) ++_labelpriority; }		// Increase priority
+  void LabelPriorityZero() { _labelpriority=0; }							// Zero priority
   
   AirspaceDrawStyle_t DrawStyle() const { return _drawstyle; }
   void DrawStyle(AirspaceDrawStyle_t drawstyle) { _drawstyle = drawstyle; } 
@@ -204,6 +209,7 @@ protected:
   int _vdistance;				// vertical distance to actual position
   int _hdistance;				// horizontal distance to actual position
   int _bearing;					// bearing from actual position
+  short int _labelpriority;			// warning label drawing priority to sequence labels on map
   
   // Private functions
   void AirspaceAGLLookup(double av_lat, double av_lon);
@@ -342,11 +348,12 @@ public:
   void AirspaceFlyzoneToggle(CAirspace &airspace);
   
   bool PopWarningMessage(AirspaceWarningMessage *msg);
+  void AirspaceWarningLabelPrinted(CAirspace &airspace, bool success);
   
   //Get airspace details (dlgAirspaceDetails)
   CAirspaceList GetVisibleAirspacesAtPoint(const double &lon, const double &lat) const;
   const CAirspaceList GetAllAirspaces() const;
-  const CAirspaceList GetAirspacesForWarningLabels() const;
+  const CAirspaceList GetAirspacesForWarningLabels();
   CAirspaceList GetAirspacesInWarning() const;
   CAirspace GetAirspaceCopy(const CAirspace* airspace) const;
   bool AirspaceCalculateDistance(CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance);

@@ -2075,10 +2075,25 @@ const CAirspaceList CAirspaceManager::GetAllAirspaces() const
   return _airspaces;
 }
 
-const CAirspaceList CAirspaceManager::GetAirspacesForWarningLabels() const
+// Comparer to sort airspaces based on label priority for drawing labels
+bool airspace_label_priority_sorter( CAirspace *a, CAirspace *b )
+{
+  return a->LabelPriority() > b->LabelPriority();
+}
+
+// Get airspaces list for label drawing
+const CAirspaceList CAirspaceManager::GetAirspacesForWarningLabels()
 {
   CCriticalSection::CGuard guard(_csairspaces);
+  if (_airspaces_of_interest.size()>1) std::sort(_airspaces_of_interest.begin(), _airspaces_of_interest.end(), airspace_label_priority_sorter);
   return _airspaces_of_interest;
+}
+
+// Feedback from mapwindow DrawAirspaceLabels to set a round-robin priority
+void CAirspaceManager::AirspaceWarningLabelPrinted(CAirspace &airspace, bool success)
+{
+  CCriticalSection::CGuard guard(_csairspaces);
+  if (success) airspace.LabelPriorityZero(); else airspace.LabelPriorityInc();
 }
 
 // Gets a list of airspaces which has a warning or an ack level different than awNone
