@@ -1149,6 +1149,23 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
     CContestMgr::Instance().Result(contestType, result);
     if(result.Type() == contestType) {
       const CPointGPSArray &points = result.PointArray();
+      bool predictedFAI = false;
+      if(result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) {
+        CContestMgr::CResult resultFAI;
+        CContestMgr::Instance().Result(CContestMgr::TYPE_OLC_FAI, resultFAI);
+        if(resultFAI.Type() == CContestMgr::TYPE_OLC_FAI) {
+          // check time range
+          const CPointGPSArray &pointsFAI = resultFAI.PointArray();
+          if(pointsFAI[0].TimeDelta(points[1]) > 0 ||
+             points[3].TimeDelta(pointsFAI[4]) > 0)
+            // result outside of not predicted loop
+            predictedFAI = true;
+        }
+        else
+          // has to be predicted triangle as OLC-FAI invalid
+          predictedFAI = true;
+      }
+      
       for(unsigned i=0; i<points.size()-1; i++) {
         lat1 = points[i].Latitude();
         lon1 = points[i].Longitude();
@@ -1159,18 +1176,20 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
         x2 = (lon2-lon_c)*fastcosine(lat2);
         y2 = (lat2-lat_c);
         int style = STYLE_REDTHICK;
-        if(result.Type() == CContestMgr::TYPE_OLC_FAI) {
-          if(i==0 || i==3)
-            // triangle start and finish
-            style = STYLE_BLUETHIN;
+        if((result.Type() == CContestMgr::TYPE_OLC_FAI ||
+            result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) &&
+           (i==0 || i==3)) {
+          // triangle start and finish
+          style = STYLE_DASHGREEN;
         }
-        else if(points[i+1].TimeDelta(GPS_INFO.Time) > 0) {
+        else if(predictedFAI || points[i+1].TimeDelta(GPS_INFO.Time) > 0) {
           // predicted edge
           style = STYLE_BLUETHIN;
         }
         DrawLine(hdc, rc, x1, y1, x2, y2, style);
       }
-      if(result.Type() == CContestMgr::TYPE_OLC_FAI) {
+      if(result.Type() == CContestMgr::TYPE_OLC_FAI ||
+         result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) {
         // draw the last edge of a triangle
         lat1 = points[1].Latitude();
         lon1 = points[1].Longitude();
@@ -1180,7 +1199,7 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
         y1 = (lat1-lat_c);
         x2 = (lon2-lon_c)*fastcosine(lat2);
         y2 = (lat2-lat_c);
-        DrawLine(hdc, rc, x1, y1, x2, y2, STYLE_REDTHICK);
+        DrawLine(hdc, rc, x1, y1, x2, y2, predictedFAI ? STYLE_BLUETHIN : STYLE_REDTHICK);
       }
     }
   }
@@ -1961,9 +1980,11 @@ static void Update(void){
         TCHAR plusStr[50] = _T("");
         if(result.Type() == CContestMgr::TYPE_OLC_CLASSIC ||
            result.Type() == CContestMgr::TYPE_OLC_CLASSIC_PREDICTED ||
-           result.Type() == CContestMgr::TYPE_OLC_FAI) {
+           result.Type() == CContestMgr::TYPE_OLC_FAI ||
+           result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) {
           CContestMgr::CResult resultPlus;
-          CContestMgr::TType type = result.Type() == CContestMgr::TYPE_OLC_CLASSIC_PREDICTED ?
+          CContestMgr::TType type = (result.Type() == CContestMgr::TYPE_OLC_CLASSIC_PREDICTED ||
+                                     result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) ?
             CContestMgr::TYPE_OLC_PLUS_PREDICTED : CContestMgr::TYPE_OLC_PLUS;
           CContestMgr::Instance().Result(type, resultPlus);
           if(InfoBoxLayout::landscape)
@@ -2179,12 +2200,15 @@ static void OnCalcClicked(WindowControl * Sender,
     // Rotate presented contest
     switch(contestType) {
     case CContestMgr::TYPE_OLC_CLASSIC:
-      contestType = CContestMgr::TYPE_OLC_CLASSIC_PREDICTED;
-      break;
-    case CContestMgr::TYPE_OLC_CLASSIC_PREDICTED:
       contestType = CContestMgr::TYPE_OLC_FAI;
       break;
     case CContestMgr::TYPE_OLC_FAI:
+      contestType = CContestMgr::TYPE_OLC_CLASSIC_PREDICTED;
+      break;
+    case CContestMgr::TYPE_OLC_CLASSIC_PREDICTED:
+      contestType = CContestMgr::TYPE_OLC_FAI_PREDICTED;
+      break;
+    case CContestMgr::TYPE_OLC_FAI_PREDICTED:
       contestType = CContestMgr::TYPE_OLC_LEAGUE;
       break;
     case CContestMgr::TYPE_OLC_LEAGUE:

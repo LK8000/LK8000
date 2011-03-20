@@ -26,9 +26,10 @@ const TCHAR *CContestMgr::TypeToString(TType type)
 {
   const TCHAR *typeStr[] = {
     _T("OLC-Classic"),
-    _T("OLC-Classic (P)"),
     _T("FAI-OLC"),
     _T("OLC-Plus"),
+    _T("OLC-Classic (P)"),
+    _T("FAI-OLC (P)"),
     _T("OLC-Plus (P)"),
     _T("OLC-League"),
     _T("FAI 3 TPs"),
@@ -89,7 +90,8 @@ CContestMgr::CContestMgr(unsigned handicap, short startAltitudeLoss):
   _startDetected(false), _startMaxAltitude(-1000),
   _trace(new CTrace(TRACE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM)),
   _traceSprint(new CTrace(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT, COMPRESSION_ALGORITHM)),
-  _traceLoop(new CTrace(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM))
+  _prevFAIFront(0), _prevFAIBack(0),
+  _prevFAIPredictedFront(0), _prevFAIPredictedBack(0)
 {
   CCriticalSection::CGuard guard(_resultsCS);
   for(unsigned i=0; i<TYPE_NUM; i++)
@@ -115,7 +117,10 @@ void CContestMgr::Reset(unsigned handicap, short startAltitudeLoss)
     _trace.reset(new CTrace(TRACE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM));
   }
   _traceSprint.reset(new CTrace(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT, COMPRESSION_ALGORITHM));
-  _traceLoop.reset(new CTrace(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM));
+  _prevFAIFront.reset(0);
+  _prevFAIBack.reset(0);
+  _prevFAIPredictedFront.reset(0);
+  _prevFAIPredictedBack.reset(0);
 
   {
     CCriticalSection::CGuard guard(_resultsCS);
@@ -179,19 +184,19 @@ unsigned CContestMgr::BiggestLoopFind(const CTrace &trace, const CTrace::CPoint 
  * 
  * @param traceIn Trace in which a loop should be found.
  * @param traceOut Output trace with all points of the loop.
+ * @param predicted @c true if a predicted path to the trace start should be calculated
  * 
  * @return @c true if a loop was detected.
  */
-bool CContestMgr::BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut) const
+bool CContestMgr::BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut, bool predicted) const
 {
   bool updated = false;
   
   if(traceIn.Size() > 2) {
-    const CTrace::CPoint *start = 0;
-    const CTrace::CPoint *end = 0;
-    if(BiggestLoopFind(traceIn, start, end)) {
+    const CTrace::CPoint *start = traceIn.Front();
+    const CTrace::CPoint *end = traceIn.Back();
+    if(predicted || BiggestLoopFind(traceIn, start, end)) {
       // new loop found - copy the points to output trace
-      traceOut.Clear();
       const CTrace::CPoint *point = start;
       while(point) {
         traceOut.Push(new CTrace::CPoint(traceOut, *point, traceOut._back));
@@ -386,10 +391,12 @@ void CContestMgr::SolvePoints(const CTrace &trace, bool sprint, bool predicted)
  * @param trace The trace to use
  * @param prevFront Loop front point of previous iteration
  * @param prevBack Loop back point of previous iteration
+ * @param predicted @c true if a predicted path to the trace start should be calculated
  */
-void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront, const CPointGPS *prevBack)
+void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront, const CPointGPS *prevBack, bool predicted)
 {
-  const CResult &result = _resultArray[TYPE_OLC_FAI];
+  TType type = predicted ? TYPE_OLC_FAI_PREDICTED : TYPE_OLC_FAI;
+  const CResult &result = _resultArray[type];
   if(trace.Size() > 2) {
     // check for every trace point
     const CTrace::CPoint *point1st = trace.Front();
@@ -464,7 +471,7 @@ void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront,
               pointArray.push_back(point3rd->GPS());
               pointArray.push_back(trace.Back()->GPS());
               CCriticalSection::CGuard guard(_resultsCS);
-              _resultArray[TYPE_OLC_FAI] = CResult(TYPE_OLC_FAI, distance, score, pointArray);
+              _resultArray[type] = CResult(type, distance, score, pointArray);
             }
           }
         }
@@ -487,7 +494,7 @@ void CContestMgr::SolveOLCPlus(bool predicted)
 {
   CCriticalSection::CGuard guard(_resultsCS);
   CResult &classic = _resultArray[predicted ? TYPE_OLC_CLASSIC_PREDICTED : TYPE_OLC_CLASSIC];
-  CResult &fai = _resultArray[TYPE_OLC_FAI];
+  CResult &fai = _resultArray[predicted ? TYPE_OLC_FAI_PREDICTED : TYPE_OLC_FAI];
   _resultArray[predicted ? TYPE_OLC_PLUS_PREDICTED : TYPE_OLC_PLUS] =
     CResult(predicted ? TYPE_OLC_PLUS_PREDICTED : TYPE_OLC_PLUS, 0, classic.Score() + fai.Score(), CPointGPSArray());
 }
@@ -501,7 +508,7 @@ void CContestMgr::SolveOLCPlus(bool predicted)
 void CContestMgr::Add(const CPointGPSSmart &gps)
 {
   static unsigned step = 0;
-  const unsigned STEPS_NUM = 4;
+  const unsigned STEPS_NUM = 5;
   
   CCriticalSection::CGuard guard(_mainCS);
   
@@ -527,10 +534,12 @@ void CContestMgr::Add(const CPointGPSSmart &gps)
   }
   if(step % STEPS_NUM == 0) {
     // Solve FAI-OLC
-    std::auto_ptr<CPointGPS> prevFront(_traceLoop->Front() ? new CPointGPS(_traceLoop->Front()->GPS()) : 0);
-    std::auto_ptr<CPointGPS> prevBack(_traceLoop->Back() ? new CPointGPS(_traceLoop->Back()->GPS()) : 0);
-    if(BiggestLoopFind(*_trace, *_traceLoop))
-      SolveTriangle(*_traceLoop, prevFront.get(), prevBack.get());
+    CTrace traceLoop(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM);
+    if(BiggestLoopFind(*_trace, traceLoop, false)) {
+      SolveTriangle(traceLoop, _prevFAIFront.get(), _prevFAIBack.get(), false);
+      _prevFAIFront.reset(traceLoop.Size() ? new CPointGPS(traceLoop.Front()->GPS()) : 0);
+      _prevFAIBack.reset(traceLoop.Size() ? new CPointGPS(traceLoop.Back()->GPS()) : 0);
+    }
   }
   {
     CCriticalSection::CGuard guard(_traceCS);
@@ -541,17 +550,26 @@ void CContestMgr::Add(const CPointGPSSmart &gps)
     SolvePoints(*_trace, false, false);
   }
   SolveOLCPlus(false);
-  SolveOLCPlus(true);
   
   if(step % STEPS_NUM == 2) {
     // Solve OLC-Classic and FAI 3TPs for predicted path
     SolvePoints(*_trace, false, true);
   }
+  if(step % STEPS_NUM == 3) {
+    // Solve FAI-OLC for predicted path
+    CTrace traceLoop(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM);
+    if(BiggestLoopFind(*_trace, traceLoop, true)) {
+      SolveTriangle(traceLoop, _prevFAIPredictedFront.get(), _prevFAIPredictedBack.get(), true);
+      _prevFAIPredictedFront.reset(traceLoop.Size() ? new CPointGPS(traceLoop.Front()->GPS()) : 0);
+      _prevFAIPredictedBack.reset(traceLoop.Size() ? new CPointGPS(traceLoop.Back()->GPS()) : 0);
+    }
+  }
+  SolveOLCPlus(true);
   
   // OLC-League
   _traceSprint->Push(gps);
   _traceSprint->Compress();
-  if(step % STEPS_NUM == 3)
+  if(step % STEPS_NUM == 4)
     // Solve OLC-Sprint
     SolvePoints(*_traceSprint, true, false);
   

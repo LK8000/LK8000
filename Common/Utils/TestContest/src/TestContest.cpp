@@ -155,9 +155,11 @@ void CTestContest::Run()
   
   // dump contest results
   Dump(CContestMgr::TYPE_OLC_CLASSIC);
-  Dump(CContestMgr::TYPE_OLC_CLASSIC_PREDICTED);
   Dump(CContestMgr::TYPE_OLC_FAI);
   Dump(CContestMgr::TYPE_OLC_PLUS);
+  Dump(CContestMgr::TYPE_OLC_CLASSIC_PREDICTED);
+  Dump(CContestMgr::TYPE_OLC_FAI_PREDICTED);
+  Dump(CContestMgr::TYPE_OLC_PLUS_PREDICTED);
   Dump(CContestMgr::TYPE_OLC_LEAGUE);
   Dump(CContestMgr::TYPE_FAI_3_TPS);
   Dump(CContestMgr::TYPE_FAI_3_TPS_PREDICTED);
