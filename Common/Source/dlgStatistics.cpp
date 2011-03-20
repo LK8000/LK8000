@@ -2224,6 +2224,11 @@ static CallBackTableEntry_t CallBackTable[]={
 
 static int OnTimerNotify(WindowControl *Sender)
 {
+  static unsigned i=0;
+  if(i++>>1 == 0)
+    return 0;
+  
+  // run once per second
   Update();
   return 0;
 }
