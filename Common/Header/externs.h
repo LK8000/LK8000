@@ -495,6 +495,10 @@ extern int DisplayTextType;
 extern int AIRSPACEWARNINGS;
 extern int WarningTime;
 extern int AcknowledgementTime;
+#ifdef LKAIRSPACE
+extern int AirspaceWarningRepeatTime;			// warning repeat time if not acknowledged
+extern int AirspaceWarningVerticalMargin;		// vertical distance used to calculate too close condition
+#endif
 extern int AltitudeMode;
 extern int SafetyAltitudeMode;
 extern int ClipAltitude;

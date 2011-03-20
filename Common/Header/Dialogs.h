@@ -84,7 +84,9 @@ void dlgTimeGatesShowModal(void);
 void dlgTopologyShowModal(void);
 void dlgCustomKeysShowModal(void);
 void dlgProfilesShowModal(void);
-
+#ifdef LKAIRSPACE
+void dlgAirspaceWarningParamsShowModal(void);
+#endif
 
 #if (WINDOWSPC>0)
 #ifdef DEBUG

@@ -756,6 +756,10 @@ unsigned int NumberOfAirspaceCircles = 0;
 int AIRSPACEWARNINGS = TRUE;
 int WarningTime = 30;
 int AcknowledgementTime = 30;
+#ifdef LKAIRSPACE
+int AirspaceWarningRepeatTime = 1800;			// warning repeat time if not acknowledged
+int AirspaceWarningVerticalMargin = 100;		// vertical distance used to calculate too close condition
+#endif
 
 // Registration Data
 TCHAR strAssetNumber[MAX_LOADSTRING] = TEXT(""); //4G17DW31L0HY");

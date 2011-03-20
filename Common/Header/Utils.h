@@ -76,6 +76,10 @@ extern const TCHAR szRegistryAirspaceFillType[];
 extern const TCHAR szRegistryAirspaceOpacity[];
 extern const TCHAR szRegistryWarningTime[];
 extern const TCHAR szRegistryAcknowledgementTime[];
+#ifdef LKAIRSPACE
+extern const TCHAR szRegistryAirspaceWarningRepeatTime[];
+extern const TCHAR szRegistryAirspaceWarningVerticalMargin[];
+#endif
 extern const TCHAR szRegistryCircleZoom[];
 extern const TCHAR szRegistryWindUpdateMode[];        
 extern const TCHAR szRegistryHomeWaypoint[];        

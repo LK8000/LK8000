@@ -345,12 +345,11 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 bool CAirspace::FinishWarning()
 {
 	bool res = false;
-	int MessageRepeatTime = 1800;			// Unacknowledged message repeated in x secs
 	int abs_hdistance = abs(_hdistance);
 	int abs_vdistance = abs(_vdistance);
 	int hdistance_histeresis = 500;			// Horizontal distance histeresis to step back awNone
-	int vdistance_histeresis = 50;			// Vertical distance histeresis to step back awNone
-	int hdistance_lookout = 250;			// Horizontal distance to lookout from a flyzone to check what is outside
+	int vdistance_histeresis = 20;			// Vertical distance histeresis to step back awNone
+	int hdistance_lookout = 200;			// Horizontal distance to lookout from a flyzone to check what is outside
 	
 	//Calculate warning state based on airspace warning events
 	switch (_warnevent) {
@@ -362,14 +361,14 @@ bool CAirspace::FinishWarning()
 		// If far away from border, set warnlevel to none
 		// If base is sfc, we skip near warnings to base, to not get disturbing messages on landing.
 		if ( (abs_hdistance>(_hdistancemargin+hdistance_histeresis)) && 
-			 (abs_vdistance>(AltWarningMargin+vdistance_histeresis)) 
+			 (abs_vdistance>(AirspaceWarningVerticalMargin+vdistance_histeresis)) 
 		   ) {
 		  // Far away horizontally _and_ vertically
 		  _warninglevel = awNone;
 		  break;
 		} 
 		if ( (abs_hdistance<_hdistancemargin) || 
-			 ( (abs_vdistance<AltWarningMargin) && (_lastknownagl>AltWarningMargin) ) 
+			 ( (abs_vdistance<AirspaceWarningVerticalMargin) && (_lastknownagl>AirspaceWarningVerticalMargin) ) 
 		   ) {
 		  // Check what is outside this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
 		  double lon = 0;
@@ -406,7 +405,7 @@ bool CAirspace::FinishWarning()
 		// Also preset warnlevel to awYellow, because we entering yellow zone. 
 		// but we don't need to generate a warning message right now - force no change in warnlevel
 		if ( (abs_hdistance<_hdistancemargin) || 
-			 ( (abs_vdistance<AltWarningMargin) && (_lastknownagl>AltWarningMargin) ) 
+			 ( (abs_vdistance<AirspaceWarningVerticalMargin) && (_lastknownagl>AirspaceWarningVerticalMargin) ) 
 		   ) {
 		  // Check what is outside this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
 		  double lon = 0;
@@ -431,13 +430,13 @@ bool CAirspace::FinishWarning()
 	  // Events for NON-FLY zones
 	  case aweMovingOutsideNonfly:
 		if ( (abs_hdistance > (_hdistancemargin + hdistance_histeresis)) ||
-		     (!IsAltitudeInside(_lastknownalt, _lastknownagl, AltWarningMargin + vdistance_histeresis))
+		     (!IsAltitudeInside(_lastknownalt, _lastknownagl, AirspaceWarningVerticalMargin + vdistance_histeresis))
 		  ) {
 			// Far away horizontally _or_ vertically
 			_warninglevel = awNone;
 		}
 		if ( _hdistance < _hdistancemargin ) {
-		  if (IsAltitudeInside(_lastknownalt, _lastknownagl, AltWarningMargin)) {
+		  if (IsAltitudeInside(_lastknownalt, _lastknownagl, AirspaceWarningVerticalMargin)) {
 			// Near to inside, modify warnevent to inform user
 			_warninglevel = awYellow;
 			_warnevent = aweNearInsideNonfly;
@@ -466,13 +465,13 @@ bool CAirspace::FinishWarning()
 
 	// Warnstate increased above ack state -> generate message
 	if ( (_warninglevel > _warninglevelold) && (_warninglevel > _warningacklevel) ) {
-		_warn_repeat_time = _now + MessageRepeatTime;
+		_warn_repeat_time = _now + AirspaceWarningRepeatTime;
 		res = true;
 	}
 	
 	// Unacknowledged warning repeated after some time
 	if ( (_warninglevel > _warningacklevel) && (_now > _warn_repeat_time) ) {
-		_warn_repeat_time = _now + MessageRepeatTime;
+		_warn_repeat_time = _now + AirspaceWarningRepeatTime;
 		res = true;
 	}
 
@@ -527,7 +526,7 @@ bool CAirspace::GetWarningPoint(double &longitude, double &latitude) const
 	double dist = fabs(_hdistance);
 	if (_hdistance < 0) {
 	  // if vertical distance smaller, use actual position as warning point indicating a directly above or below warning situation
-	  if ( abs(_vdistance) < AltWarningMargin ) dist = 0;
+	  if ( abs(_vdistance) < AirspaceWarningVerticalMargin ) dist = 0;
 	}
 	FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &latitude, &longitude);
 	return true;

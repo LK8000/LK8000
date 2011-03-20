@@ -153,6 +153,10 @@ const TCHAR szRegistryAirspaceWarning[]= TEXT("AirspaceWarn");
 const TCHAR szRegistryAirspaceBlackOutline[]= TEXT("AirspaceBlackOutline");
 const TCHAR szRegistryAirspaceFillType[]= TEXT("AirspaceFillType");
 const TCHAR szRegistryAirspaceOpacity[]= TEXT("AirspaceOpacity");
+#ifdef LKAIRSPACE
+const TCHAR szRegistryAirspaceWarningRepeatTime[]= TEXT("AirspaceWarningRepeatTime");
+const TCHAR szRegistryAirspaceWarningVerticalMargin[]= TEXT("AirspaceWarningVerticalMargin");
+#endif
 const TCHAR szRegistryAltMargin[]=	   TEXT("AltMargin");
 const TCHAR szRegistryAltMode[]=  TEXT("AltitudeMode");
 const TCHAR szRegistrySafetyAltitudeMode[]=  TEXT("SafetyAltitudeMode");
@@ -645,6 +649,16 @@ void ReadRegistrySettings(void)
   if(GetFromRegistry(szRegistryAltMargin,&Temp)==ERROR_SUCCESS)
     AltWarningMargin = Temp;
 
+#ifdef LKAIRSPACE
+  Temp=AirspaceWarningRepeatTime;
+  if(GetFromRegistry(szRegistryAirspaceWarningRepeatTime,&Temp)==ERROR_SUCCESS)
+    AirspaceWarningRepeatTime = Temp;
+
+  Temp=AirspaceWarningVerticalMargin;
+  if(GetFromRegistry(szRegistryAirspaceWarningVerticalMargin,&Temp)==ERROR_SUCCESS)
+    AirspaceWarningVerticalMargin = Temp;
+#endif
+	
   Temp=SafetyAltitudeMode;
   if(GetFromRegistry(szRegistrySafetyAltitudeMode,&Temp)==ERROR_SUCCESS)
     SafetyAltitudeMode = Temp;

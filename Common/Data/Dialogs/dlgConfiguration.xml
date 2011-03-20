@@ -35,6 +35,7 @@
 </WndProperty>
 </WndFrame>
 <WndFrame Name="frmAirspace" X=70 Y=0 Width=-246 Height=222 Font=2>
+<WndButton Name="cmdAirspaceWarningParams"  Caption="_@M1274_" X=30 Y=2 Width=70  Height=22 Font=2 OnClickNotify="OnAirspaceWarningParamsClicked" />
 <WndButton Name="cmdAirspaceColours"  Caption="_@M189_" X=100 Y=2 Width=70  Height=22 Font=2 OnClickNotify="OnAirspaceColoursClicked" />
 <WndButton Name="cmdAirspaceMode"  Caption="_@M286_" X=170 Y=2 Width=70  Height=22 Font=2 OnClickNotify="OnAirspaceModeClicked" />
 
@@ -50,12 +51,14 @@
 <WndProperty Name="prpAirspaceWarnings" Caption="_@M792_" X=2 Y=-1   Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H111_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>
+<!-- Moved to new dlgAirspaceWarningParams - this have to be enabled if LKAIRSPACE is not defined!
 <WndProperty Name="prpWarningTime" Caption="_@M790_"      X=2 Y=-1   Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H112_">
 <DataField name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min=10 Max=1000 Step=5/>
 </WndProperty>
 <WndProperty Name="prpAcknowledgementTime" Caption="_@M52_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H113_">
 <DataField name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min=10 Max=1000 Step=5/>
 </WndProperty>
+-->
 <WndProperty Name="prpAirspaceOutline" Caption="_@M771_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H114_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>

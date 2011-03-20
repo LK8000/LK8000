@@ -335,6 +335,7 @@ DEVS	:=\
 
 DLGS	:=\
 	$(SRC)/dlgAirspace.cpp \
+	$(SRC)/dlgAirspaceWarningParams.cpp \
 	$(SRC)/dlgAirspaceColours.cpp \
 	$(SRC)/dlgAirspaceDetails.cpp \
 	$(SRC)/dlgAirspacePatterns.cpp \

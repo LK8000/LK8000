@@ -202,7 +202,7 @@ IDR_XML_WEATHER_L       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWeather_L.xm
 IDR_XML_COMBOPICKER_L   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgComboPicker_L.xml"
 IDR_XML_COMBOPICKER     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgComboPicker.xml"
 IDR_XML_PROFILES     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgProfiles.xml"
-
+IDR_XML_AIRSPACEWARNINGPARAMS     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceWarningParams.xml"
 
 IDR_RASTER_EGM96S       RASTERDATA DISCARDABLE  "../Data/Bitmaps/egm96s.dem"
 

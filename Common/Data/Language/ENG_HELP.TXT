@@ -1499,6 +1499,18 @@ aircraft weight. Read the manual to know more about all of this.
 [Aircraft type]
 This contains a selection of aircrafts and wings of different performance classes.
 
+@1209
+[Airspace warning message repeat time]
+This is the time when airspace warning messages are repeated if not acknowledged.
+If you flying in a forbidden airspace without acknowledging the warning message, then after this time elapses warning message pops up again.
+
+@1210
+[Airspace vertical distance margin]
+If your vertical distance to an airspace base or top drops below this limit, then the yellow warning message dialog pops up.
+This also affects how airspace warning icons draws on the map. 
+If vertical distance (altitude difference) to airspace base or top is below this limit,
+then the warning icon is displayed directly above the glider symbol to warn you. 
+
 @9999
 No help available on this item!
 
