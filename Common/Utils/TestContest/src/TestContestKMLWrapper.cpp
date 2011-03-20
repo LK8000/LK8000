@@ -7,6 +7,7 @@
 */
 
 #include "TestContest.h"
+#include "Tools.h"
 #include <iomanip>
 #include <stdexcept>
 
@@ -113,7 +114,8 @@ void CTestContest::CKMLWrapper::Dump(const CTrace &trace) const
 void CTestContest::CKMLWrapper::Dump(const CContestMgr::CResult &result) const
 {
   _stream << "    <Folder>" << std::endl;
-  _stream << "    <name>" << CContestMgr::TypeToString(result.Type()) << "</name>" << std::endl;
+  std::wstring typeStr = CContestMgr::TypeToString(result.Type());
+  _stream << "    <name>" << std::string(typeStr.begin(), typeStr.end()) << "</name>" << std::endl;
   _stream << "    <description>" << std::endl;
   _stream << "      <![CDATA[" << std::endl;
   _stream << "        <b>Points:</b> " << std::setprecision(2) << result.Score() << "<br>" << std::endl;
@@ -124,7 +126,7 @@ void CTestContest::CKMLWrapper::Dump(const CContestMgr::CResult &result) const
   _stream << "    </description>"  << std::endl;
   _stream << "    <visibility>0</visibility>" << std::endl;
   _stream << "      <Placemark>" << std::endl;
-  _stream << "        <name>" << CContestMgr::TypeToString(result.Type()) << ": Trace" << "</name>" << std::endl;
+  _stream << "        <name>" << std::string(typeStr.begin(), typeStr.end()) << ": Trace" << "</name>" << std::endl;
   _stream << "        <visibility>0</visibility>" << std::endl;
   _stream << "        <styleUrl>#result</styleUrl>" << std::endl;
   _stream << "        <LineString>" << std::endl;
@@ -147,7 +149,7 @@ void CTestContest::CKMLWrapper::Dump(const CContestMgr::CResult &result) const
       name = "Finish";
     else
       name = "WP" + Convert(i);
-    _stream << "        <name>" << CContestMgr::TypeToString(result.Type()) << ": " << name << "</name>" << std::endl;
+    _stream << "        <name>" << std::string(typeStr.begin(), typeStr.end()) << ": " << name << "</name>" << std::endl;
     _stream << "        <visibility>0</visibility>" << std::endl;
     _stream << "        <description>" << std::endl;
     _stream << "          <![CDATA[" << std::endl;

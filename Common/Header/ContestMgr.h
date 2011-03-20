@@ -14,6 +14,9 @@
 #include <map>
 #include <memory>
 
+#ifdef TEST_CONTEST
+class CTestContest;
+#endif
 
 /** 
  * @brief Contest Manager
@@ -71,6 +74,9 @@ public:
   typedef std::vector<CResult> CResultArray;
   
 private:
+#ifdef TEST_CONTEST
+  friend class CTestContest;
+#endif
   typedef std::auto_ptr<CTrace> CTracePtr;
   typedef std::multimap<unsigned, const CTrace::CPoint *> CDistanceMap;
 

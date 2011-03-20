@@ -195,7 +195,7 @@ endif
 ######## compiler flags
 
 CPPFLAGS	:= $(INCLUDES) $(CE_DEFS) 
-CPPFLAGS	+= -DNDEBUG -DFIVV
+CPPFLAGS	+= -DNDEBUG -DFIVV -DTEST_CONTEST
 #CPPFLAGS	+= -DFLARM_AVERAGE  NOW INSIDE options.h
 #CPPFLAGS	+= -Wchar-subscripts -Wformat -Winit-self -Wimplicit -Wmissing-braces -Wparentheses -Wreturn-type 
 #CPPFLAGS	+= -Wunused-label -Wunused-variable -Wunused-value -Wuninitialized 

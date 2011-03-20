@@ -76,44 +76,6 @@ template<class Seq> void Purge(Seq &container)
 }
 
 
-/** 
- * @brief Pointers compare object
- */
-template<class T>
-struct CPtrCmp {
-  bool operator()(const T &left, const T &right) const { return *left < *right; }
-};
-
-
-/** 
- * @brief Reference counting based smart pointer.
- */
-template<class T>
-struct CSmartPtr {
-  T * const _ptr;
-  unsigned *_refNum;
-  CSmartPtr &operator=(const CSmartPtr &) const;
-public:
-  CSmartPtr(T *ptr): _ptr(ptr), _refNum(new unsigned(1)) {}
-  CSmartPtr(const CSmartPtr &ref):
-    _ptr(ref._ptr), _refNum(ref._refNum)
-  {
-    (*_refNum)++;
-  }
-  ~CSmartPtr()
-  {
-    if(!--(*_refNum)) {
-      delete _refNum;
-      delete _ptr;
-    }
-  }
-  T &operator*()              { return *_ptr; }
-  const T &operator*() const  { return *_ptr; }
-  T *operator->()             { return _ptr; }
-  const T *operator->() const { return _ptr; }
-};
-
-
 std::string TimeToString(unsigned time);
 std::string CoordToString(double coord, bool latitude);
 

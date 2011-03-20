@@ -513,9 +513,11 @@ void CContestMgr::Add(const CPointGPSSmart &gps)
         return;
     }
     _startDetected = true;
+#ifndef TEST_CONTEST
     if(_startAltitudeLoss > 0)
       // LKTOKEN  _@M1452_ = "Powerless flight detected" 
       DoStatusMessage(gettext(TEXT("_@M1452_")));
+#endif
   }
   
   // OLC-Plus

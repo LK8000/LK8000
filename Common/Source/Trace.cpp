@@ -84,7 +84,9 @@ void CTrace::Push(CPoint *point)
       
       CPointCostSet::iterator nextIt = _compressionCostSet.find(next);
       if(nextIt == _compressionCostSet.end()) {
+#ifndef TEST_CONTEST
         StartupStore(_T("%s:%u - ERROR: next not found!!\n"), _T(__FILE__), __LINE__);
+#endif
         _valid = false;
         return;
       }
@@ -152,7 +154,9 @@ void CTrace::Compress(unsigned maxSize /* = 0 */)
       // remove previous neighbor
       CPointCostSet::iterator preWorstIt = _compressionCostSet.find(preWorst);
       if(preWorstIt == _compressionCostSet.end()) {
+#ifndef TEST_CONTEST
         StartupStore(_T("%s:%u - ERROR: preWorst not found!!\n"), _T(__FILE__), __LINE__);
+#endif
         return;
       }
       _compressionCostSet.erase(preWorstIt);
@@ -164,7 +168,9 @@ void CTrace::Compress(unsigned maxSize /* = 0 */)
       // remove next neighbor
       CPointCostSet::iterator postWorstIt = _compressionCostSet.find(postWorst);
       if(postWorstIt == _compressionCostSet.end()) {
+#ifndef TEST_CONTEST
         StartupStore(_T("%s:%u - ERROR: postWorst not found!!\n"), _T(__FILE__), __LINE__);
+#endif
         return;
       }
       _compressionCostSet.erase(postWorstIt);
