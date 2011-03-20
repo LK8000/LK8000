@@ -350,6 +350,7 @@ bool CAirspace::FinishWarning()
 	int abs_vdistance = abs(_vdistance);
 	int hdistance_histeresis = 500;			// Horizontal distance histeresis to step back awNone
 	int vdistance_histeresis = 50;			// Vertical distance histeresis to step back awNone
+	int hdistance_lookout = 250;			// Horizontal distance to lookout from a flyzone to check what is outside
 	
 	//Calculate warning state based on airspace warning events
 	switch (_warnevent) {
@@ -373,7 +374,7 @@ bool CAirspace::FinishWarning()
 		  // Check what is outside this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
 		  double lon = 0;
 		  double lat =0;
-		  double dist = fabs(_hdistance) + 100;
+		  double dist = fabs(_hdistance) + hdistance_lookout;
 		  FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &lat, &lon);
 		  
 		  if ( !CAirspaceManager::Instance().AirspaceWarningIsGoodPosition(lon, lat, _lastknownalt, _lastknownagl) ) {
@@ -404,7 +405,19 @@ bool CAirspace::FinishWarning()
 	  case aweEnteringFly:
 		// Also preset warnlevel to awYellow, because we entering yellow zone. 
 		// but we don't need to generate a warning message right now - force no change in warnlevel
-		if (_lastknownagl>AltWarningMargin) _warninglevelold = _warninglevel = awYellow;
+		if ( (abs_hdistance<_hdistancemargin) || 
+			 ( (abs_vdistance<AltWarningMargin) && (_lastknownagl>AltWarningMargin) ) 
+		   ) {
+		  // Check what is outside this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
+		  double lon = 0;
+		  double lat =0;
+		  double dist = fabs(_hdistance) + hdistance_lookout;
+		  FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &lat, &lon);
+		  
+		  if ( !CAirspaceManager::Instance().AirspaceWarningIsGoodPosition(lon, lat, _lastknownalt, _lastknownagl) ) {
+			_warninglevelold = _warninglevel = awYellow;		  
+		  }
+		}
 		// Do info message on entering a fly zone
 		res = true;
 		break;
@@ -725,7 +738,7 @@ void CAirspace_Area::Dump() const
 //            =0 for P2 on the line
 //            <0 for P2 right of the line
 //    See: the January 2001 Algorithm "Area of 2D and 3D Triangles and Polygons"
-inline static double
+inline static float
 isLeft( const CGeoPoint &P0, const CGeoPoint &P1, const float &longitude, const float &latitude )
 {
     return ( (P1.Longitude() - P0.Longitude()) * (latitude - P0.Latitude())
