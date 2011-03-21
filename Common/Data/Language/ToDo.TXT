@@ -18,6 +18,7 @@ Things to be fixed in LK languages files/tokens:
 - H864 is missing, old issue from xcs. Check if we really need this infobox.
 - New 890 and 891     
 - New 900 
+- New 1208,1209,1210
 
   NEW MSG TOKENS
   --------------
@@ -30,6 +31,7 @@ Things to be fixed in LK languages files/tokens:
 - New fields: _@M1001_ - _@M1400_ for calculated values and infobox abbrev. translations, 
   see details in ENG_MSG
 - New Logger declarations Error Handling fields: _@M1400_ - _@M1429_
+- _@M1240_ - _@M1279_ to translate
 
   MENU files to be checked and translated?
 
