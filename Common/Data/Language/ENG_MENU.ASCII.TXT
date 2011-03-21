@@ -1,6 +1,11 @@
 #CLEAR
+#
+#         DO NOT USE - FOR REFERENCE ONLY 
+#
+#
+#
 # DEFAULT.XCI for LK8000 by Paolo Ventafridda
-# Release 4M , 110103
+# Release 4N , 110321
 # 
 # This is the default .XCI file configured internally.
 # It controls all events from soft buttons and hardware keys.
@@ -501,7 +506,7 @@ type=key
 data=6
 event=Setup Task
 event=Mode default
-label=Task\nEdit$(CheckWaypointFile)
+label=Task\nEdit
 location=5
 
 mode=Nav2
@@ -2255,7 +2260,7 @@ mode=SIMMENU
 type=key
 data=8
 event=Mode SIMDIR
-label=Turn\n$(TURN)Â°/s
+label=Turn\n$(TURN)°/s
 location=7
 
 mode=SIMMENU
@@ -2318,7 +2323,7 @@ mode=SIMALT
 type=key
 data=8
 event=Mode SIMDIR
-label=Turn\n$(TURN)Â°/s
+label=Turn\n$(TURN)°/s
 location=7
 
 mode=SIMALT
@@ -2381,7 +2386,7 @@ location=6
 mode=SIMDIR
 type=key
 data=8
-label=>Turn<\n$(TURN)°/s
+label=>Turn<\n$(TURN)?s
 location=7
 
 mode=SIMDIR

@@ -19,3 +19,6 @@ Things to be fixed in LK languages files/tokens:
 - _@M193_ to remove
 - _@M176_, _@M300_, _@M493_, _@M500_, _@M501_, _@M504_, _@M633_, _@M742_, _@H169_, _@H495_, _@H496_ to remove
 - _@M1450_ - _@M1452_ to add
+
+
+  MENU files to be checked and translated?
