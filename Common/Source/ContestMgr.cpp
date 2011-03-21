@@ -55,7 +55,7 @@ const TCHAR *CContestMgr::TypeToString(TType type)
  * Constructor to create dummy invalid contest result object.
  */
 CContestMgr::CResult::CResult():
-  _type(TYPE_NUM), _distance(0), _score(0)
+  _type(TYPE_NUM), _predicted(0), _distance(0), _score(0)
 {
 }
 
@@ -64,12 +64,13 @@ CContestMgr::CResult::CResult():
  * @brief Primary constructor
  * 
  * @param type The type of the contest
+ * @param predicted @c true if a result is based on prediction
  * @param distance Contest covered distance
  * @param score Contest score (if exists)
  * @param pointArray The list of contest result points
  */
-CContestMgr::CResult::CResult(TType type, unsigned distance, float score, const CPointGPSArray &pointArray):
-  _type(type), _distance(distance), _score(score), _pointArray(pointArray)
+CContestMgr::CResult::CResult(TType type, bool predicted, unsigned distance, float score, const CPointGPSArray &pointArray):
+  _type(type), _predicted(predicted), _distance(distance), _score(score), _pointArray(pointArray)
 {
 }
 
@@ -81,7 +82,7 @@ CContestMgr::CResult::CResult(TType type, unsigned distance, float score, const 
  * @param ref The results data to copy (beside type)
  */
 CContestMgr::CResult::CResult(TType type, const CResult &ref):
-  _type(type), _distance(ref._distance), _score(ref._score), _pointArray(ref._pointArray)
+  _type(type), _predicted(ref._predicted), _distance(ref._distance), _score(ref._score), _pointArray(ref._pointArray)
 {
 }
 
@@ -203,8 +204,12 @@ bool CContestMgr::BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut, bool 
   if(traceIn.Size() > 2) {
     const CTrace::CPoint *start = traceIn.Front();
     const CTrace::CPoint *end = traceIn.Back();
+    if((unsigned)end->GPS().TimeDelta(start->GPS()) < TRACE_TRIANGLE_MIN_TIME)
+      // filter too small circles from i.e. thermalling
+      return false;
+    
     if(predicted || BiggestLoopFind(traceIn, start, end)) {
-      // new loop found - copy the points to output trace
+      // new valid loop found - copy the points to output trace
       const CTrace::CPoint *point = start;
       while(point) {
         traceOut.Push(new CTrace::CPoint(traceOut, *point, traceOut._back));
@@ -212,6 +217,21 @@ bool CContestMgr::BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut, bool 
           break;
         point = point->Next();
       }
+      if(predicted) {
+        // predict GPS data of artificial point in the location of the trace start
+        const CPointGPS &start = traceOut.Front()->GPS();
+        const CPointGPS &end = traceOut.Back()->GPS();
+        const CResult &result = _resultArray[TYPE_OLC_CLASSIC];
+        unsigned time = end.Time();
+        if(result.Speed()) {
+          time += end.Distance(start) / result.Speed();
+          time %= CPointGPS::DAY_SECONDS;
+        }
+        
+        // add predicted point
+        traceOut.Push(new CPointGPS(time, start.Latitude(), start.Longitude(), start.Altitude()));
+      }
+      
       // compress resulting trace
       traceOut.Compress();
       updated = true;
@@ -311,8 +331,9 @@ void CContestMgr::PointsResult(TType type, const CTrace &traceResult)
     default:
       score = 0;
     }
+    bool predicted = pointArray.back().TimeDelta(_trace->Back()->GPS()) > 0;
     CCriticalSection::CGuard guard(_resultsCS);
-    _resultArray[type] = CResult(type, distance, score, pointArray);
+    _resultArray[type] = CResult(type, predicted, distance, score, pointArray);
   }
 }
 
@@ -405,6 +426,7 @@ void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront,
 {
   TType type = predicted ? TYPE_OLC_FAI_PREDICTED : TYPE_OLC_FAI;
   const CResult &result = _resultArray[type];
+  unsigned distance = result.Distance();
   if(trace.Size() > 2) {
     // check for every trace point
     const CTrace::CPoint *point1st = trace.Front();
@@ -478,8 +500,25 @@ void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront,
               pointArray.push_back(point2nd->GPS());
               pointArray.push_back(point3rd->GPS());
               pointArray.push_back(trace.Back()->GPS());
+              
+              bool predictedFAI = false;
+              if(type == TYPE_OLC_FAI_PREDICTED) {
+                const CResult &resultFAI = _resultArray[TYPE_OLC_FAI];
+                if(resultFAI.Type() == TYPE_OLC_FAI) {
+                  // check time range
+                  const CPointGPSArray &pointsFAI = resultFAI.PointArray();
+                  if(pointsFAI[0].TimeDelta(pointArray[1]) > 0 ||
+                     pointArray[3].TimeDelta(pointsFAI[4]) > 0)
+                    // result outside of not predicted loop
+                    predictedFAI = true;
+                }
+                else
+                  // has to be predicted triangle as OLC-FAI invalid
+                  predictedFAI = true;
+              }
+              
               CCriticalSection::CGuard guard(_resultsCS);
-              _resultArray[type] = CResult(type, distance, score, pointArray);
+              _resultArray[type] = CResult(type, predictedFAI, distance, score, pointArray);
             }
           }
         }
@@ -487,6 +526,21 @@ void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront,
       
       point1st = point1st->Next();
     }
+  }
+  
+  if(result.Type() == TYPE_OLC_FAI_PREDICTED && result.Predicted() && distance == result.Distance()) {
+    // recalculate the time to the finish
+    const CPointGPS &start = result.PointArray().front();
+    const CPointGPS &end = _trace->Back()->GPS();
+    float speed = _resultArray[TYPE_OLC_CLASSIC].Speed();
+    unsigned time = end.Time();
+    if(speed) {
+      time += end.Distance(start) / result.Speed();
+      time %= CPointGPS::DAY_SECONDS;
+    }
+    
+    CCriticalSection::CGuard guard(_resultsCS);
+    _resultArray[type]._pointArray[4] = CPointGPS(time, end.Latitude(), end.Longitude(), end.Altitude());
   }
 }
 
@@ -504,7 +558,9 @@ void CContestMgr::SolveOLCPlus(bool predicted)
   CResult &classic = _resultArray[predicted ? TYPE_OLC_CLASSIC_PREDICTED : TYPE_OLC_CLASSIC];
   CResult &fai = _resultArray[predicted ? TYPE_OLC_FAI_PREDICTED : TYPE_OLC_FAI];
   _resultArray[predicted ? TYPE_OLC_PLUS_PREDICTED : TYPE_OLC_PLUS] =
-    CResult(predicted ? TYPE_OLC_PLUS_PREDICTED : TYPE_OLC_PLUS, 0, classic.Score() + fai.Score(), CPointGPSArray());
+    CResult(predicted ? TYPE_OLC_PLUS_PREDICTED : TYPE_OLC_PLUS,
+            classic.Predicted() || fai.Predicted(),
+            0, classic.Score() + fai.Score(), CPointGPSArray());
 }
 
 

@@ -1149,23 +1149,6 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
     CContestMgr::Instance().Result(contestType, result);
     if(result.Type() == contestType) {
       const CPointGPSArray &points = result.PointArray();
-      bool predictedFAI = false;
-      if(result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) {
-        CContestMgr::CResult resultFAI;
-        CContestMgr::Instance().Result(CContestMgr::TYPE_OLC_FAI, resultFAI);
-        if(resultFAI.Type() == CContestMgr::TYPE_OLC_FAI) {
-          // check time range
-          const CPointGPSArray &pointsFAI = resultFAI.PointArray();
-          if(pointsFAI[0].TimeDelta(points[1]) > 0 ||
-             points[3].TimeDelta(pointsFAI[4]) > 0)
-            // result outside of not predicted loop
-            predictedFAI = true;
-        }
-        else
-          // has to be predicted triangle as OLC-FAI invalid
-          predictedFAI = true;
-      }
-      
       for(unsigned i=0; i<points.size()-1; i++) {
         lat1 = points[i].Latitude();
         lon1 = points[i].Longitude();
@@ -1182,7 +1165,9 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
           // triangle start and finish
           style = STYLE_DASHGREEN;
         }
-        else if(predictedFAI || points[i+1].TimeDelta(GPS_INFO.Time) > 0) {
+        else if(result.Predicted() &&
+                (result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED ||
+                 i == points.size() - 2)) {
           // predicted edge
           style = STYLE_BLUETHIN;
         }
@@ -1199,7 +1184,7 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
         y1 = (lat1-lat_c);
         x2 = (lon2-lon_c)*fastcosine(lat2);
         y2 = (lat2-lat_c);
-        DrawLine(hdc, rc, x1, y1, x2, y2, predictedFAI ? STYLE_BLUETHIN : STYLE_REDTHICK);
+        DrawLine(hdc, rc, x1, y1, x2, y2, result.Predicted() ? STYLE_BLUETHIN : STYLE_REDTHICK);
       }
     }
   }

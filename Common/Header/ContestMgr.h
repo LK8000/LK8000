@@ -56,15 +56,18 @@ public:
    * CContestMgr::CResult class stores the results of one contest.
    */
   class CResult {
+    friend class CContestMgr;
     TType          _type;                         /**< @brief The type of the contest (TYPE_NUM if result invalid) */
+    bool           _predicted;                    /**< @brief @c true if a result is based on prediction */
     unsigned       _distance;                     /**< @brief Contest covered distance */
     float          _score;                        /**< @brief Contest score (if exists) */
     CPointGPSArray _pointArray;                   /**< @brief The list of contest result points */
   public:
     CResult();
-    CResult(TType type, unsigned distance, float score, const CPointGPSArray &pointArray);
+    CResult(TType type, bool predicted, unsigned distance, float score, const CPointGPSArray &pointArray);
     CResult(TType type, const CResult &ref);
     TType Type() const         { return _type; }
+    bool Predicted() const     { return _predicted; }
     unsigned Distance() const  { return _distance; }
     float Score() const        { return _score; }
     unsigned Duration() const  { return _pointArray.empty() ? 0 : (_pointArray.back().TimeDelta(_pointArray.front())); }

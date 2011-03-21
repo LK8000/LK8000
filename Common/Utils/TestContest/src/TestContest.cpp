@@ -101,6 +101,7 @@ void CTestContest::Dump(const CContestMgr::TType type) const
   std::cout << "Contest '" << std::string(typeStr.begin(), typeStr.end()) << "':" << std::endl;
   std::cout << " - Distance: " << result.Distance() << std::endl;
   std::cout << " - Score: " << result.Score() << std::endl;
+  std::cout << " - Predicted: " << result.Predicted() << std::endl;
   for(CPointGPSArray::const_iterator it=result.PointArray().begin(); it!=result.PointArray().end(); ++it)
     std::cout << " - " << TimeToString(it->Time()) << std::endl;
   
