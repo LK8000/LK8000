@@ -52,45 +52,6 @@ const TCHAR *CContestMgr::TypeToString(TType type)
 
 
 /** 
- * @brief Default constructor
- * 
- * Constructor to create dummy invalid contest result object.
- */
-CContestMgr::CResult::CResult():
-  _type(TYPE_NUM), _predicted(0), _distance(0), _score(0)
-{
-}
-
-
-/** 
- * @brief Primary constructor
- * 
- * @param type The type of the contest
- * @param predicted @c true if a result is based on prediction
- * @param distance Contest covered distance
- * @param score Contest score (if exists)
- * @param pointArray The list of contest result points
- */
-CContestMgr::CResult::CResult(TType type, bool predicted, unsigned distance, float score, const CPointGPSArray &pointArray):
-  _type(type), _predicted(predicted), _distance(distance), _score(score), _pointArray(pointArray)
-{
-}
-
-
-/** 
- * @brief "Copy" constructor
- * 
- * @param type The type of the contest results
- * @param ref The results data to copy (beside type)
- */
-CContestMgr::CResult::CResult(TType type, const CResult &ref):
-  _type(type), _predicted(ref._predicted), _distance(ref._distance), _score(ref._score), _pointArray(ref._pointArray)
-{
-}
-
-
-
-/** 
  * @brief Constructor
  * 
  * @param handicap Glider handicap
@@ -640,19 +601,6 @@ void CContestMgr::Add(const CPointGPSSmart &gps)
     SolvePoints(*_traceSprint, true, false);
   
   step++;
-}
-
-
-/** 
- * @brief Returns requested contest result
- * 
- * @param type Contest type to return
- * @param result Results data to fill
- */
-void CContestMgr::Result(TType type, CResult &result) const
-{
-  CCriticalSection::CGuard guard(_resultsCS);
-  result = _resultArray[type];
 }
 
 

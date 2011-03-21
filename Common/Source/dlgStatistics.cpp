@@ -1147,8 +1147,7 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
   
 #ifdef NEW_OLC
   if(olcmode) {
-    CContestMgr::CResult result;
-    CContestMgr::Instance().Result(contestType, result);
+    CContestMgr::CResult result = CContestMgr::Instance().Result(contestType, true);
     if(result.Type() == contestType) {
       const CPointGPSArray &points = result.PointArray();
       for(unsigned i=0; i<points.size()-1; i++) {
@@ -1926,8 +1925,7 @@ static void Update(void){
     wf->SetCaption(sTmp);
     
     {
-      CContestMgr::CResult result;
-      CContestMgr::Instance().Result(contestType, result);
+      CContestMgr::CResult result = CContestMgr::Instance().Result(contestType, false);
       if(result.Type() == contestType) {
         TCHAR distStr[50];
         if(InfoBoxLayout::landscape)
@@ -1973,11 +1971,10 @@ static void Update(void){
            result.Type() == CContestMgr::TYPE_OLC_CLASSIC_PREDICTED ||
            result.Type() == CContestMgr::TYPE_OLC_FAI ||
            result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) {
-          CContestMgr::CResult resultPlus;
           CContestMgr::TType type = (result.Type() == CContestMgr::TYPE_OLC_CLASSIC_PREDICTED ||
                                      result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) ?
             CContestMgr::TYPE_OLC_PLUS_PREDICTED : CContestMgr::TYPE_OLC_PLUS;
-          CContestMgr::Instance().Result(type, resultPlus);
+          CContestMgr::CResult resultPlus = CContestMgr::Instance().Result(type, false);
           if(InfoBoxLayout::landscape)
             _stprintf(plusStr, TEXT("%s:\r\n  %6.2f"),
                       CContestMgr::TypeToString(type),

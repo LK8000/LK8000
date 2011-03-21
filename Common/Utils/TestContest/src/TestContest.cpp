@@ -93,8 +93,7 @@ void CTestContest::GPSHandler(void *user, unsigned time, double latitude, double
  */
 void CTestContest::Dump(const CContestMgr::TType type) const
 {
-  CContestMgr::CResult result;
-  _contestMgr.Result(type, result);
+  CContestMgr::CResult result = _contestMgr.Result(type, true);
   
   std::cout << std::endl;
   std::wstring typeStr = CContestMgr::TypeToString(type);
@@ -104,7 +103,7 @@ void CTestContest::Dump(const CContestMgr::TType type) const
   std::cout << " - Predicted: " << result.Predicted() << std::endl;
   for(CPointGPSArray::const_iterator it=result.PointArray().begin(); it!=result.PointArray().end(); ++it)
     std::cout << " - " << TimeToString(it->Time()) << std::endl;
-  
+ 
   _kml.Dump(result);
 }
 

@@ -61,17 +61,20 @@ public:
     bool           _predicted;                    /**< @brief @c true if a result is based on prediction */
     unsigned       _distance;                     /**< @brief Contest covered distance */
     float          _score;                        /**< @brief Contest score (if exists) */
+    unsigned       _duration;                     /**< @brief Contest duration */
+    float          _speed;                        /**< @brief Contest speed */
     CPointGPSArray _pointArray;                   /**< @brief The list of contest result points */
   public:
     CResult();
     CResult(TType type, bool predicted, unsigned distance, float score, const CPointGPSArray &pointArray);
     CResult(TType type, const CResult &ref);
+    CResult(const CResult &ref, bool fillArray);
     TType Type() const         { return _type; }
     bool Predicted() const     { return _predicted; }
     unsigned Distance() const  { return _distance; }
     float Score() const        { return _score; }
-    unsigned Duration() const  { return _pointArray.empty() ? 0 : (_pointArray.back().TimeDelta(_pointArray.front())); }
-    float Speed() const        { return _pointArray.empty() ? 0 : ((float)_distance / Duration()); }
+    unsigned Duration() const  { return _duration; }
+    float Speed() const        { return _speed; }
     const CPointGPSArray &PointArray() const { return _pointArray; }
   };
   
@@ -137,8 +140,80 @@ public:
   void Reset(unsigned handicap, short startAltitudeLoss);
   void Add(const CPointGPSSmart &gps);
   
-  void Result(TType type, CResult &result) const;
+  CResult Result(TType type, bool fillArray) const;
   void Trace(CPointGPSArray &array) const;
 };
+
+
+
+/** 
+ * @brief Default constructor
+ * 
+ * Constructor to create dummy invalid contest result object.
+ */
+inline CContestMgr::CResult::CResult():
+  _type(TYPE_NUM), _predicted(0), _distance(0), _score(0)
+{
+}
+
+
+/** 
+ * @brief Primary constructor
+ * 
+ * @param type The type of the contest
+ * @param predicted @c true if a result is based on prediction
+ * @param distance Contest covered distance
+ * @param score Contest score (if exists)
+ * @param pointArray The list of contest result points
+ */
+inline CContestMgr::CResult::CResult(TType type, bool predicted, unsigned distance, float score, const CPointGPSArray &pointArray):
+  _type(type), _predicted(predicted), _distance(distance), _score(score),
+  _duration(pointArray.empty() ? 0 : (pointArray.back().TimeDelta(pointArray.front()))),
+  _speed(pointArray.empty() ? 0 : ((float)_distance / _duration)),
+  _pointArray(pointArray)
+{
+}
+
+
+/** 
+ * @brief "Copy" constructor
+ * 
+ * @param type The type of the contest results
+ * @param ref The results data to copy (beside type)
+ */
+inline CContestMgr::CResult::CResult(TType type, const CResult &ref):
+  _type(type), _predicted(ref._predicted), _distance(ref._distance),
+  _score(ref._score), _duration(ref._duration), _speed(ref._speed),
+  _pointArray(ref._pointArray)
+{
+}
+
+
+/** 
+ * @brief "Copy" constructor
+ * 
+ * @param ref The results data to copy (beside type)
+ * @param fillArray When @c true GPS points will be copied
+ */
+inline CContestMgr::CResult::CResult(const CResult &ref, bool fillArray):
+  _type(ref._type), _predicted(ref._predicted), _distance(ref._distance),
+  _score(ref._score), _duration(ref._duration), _speed(ref._speed),
+  _pointArray(fillArray ? ref._pointArray : CPointGPSArray())
+{
+}
+
+
+
+/** 
+ * @brief Returns requested contest result
+ * 
+ * @param type Contest type to return
+ * @param fillArray When @c true GPS points will be copied
+ */
+inline CContestMgr::CResult CContestMgr::Result(TType type, bool fillArray) const
+{
+  CCriticalSection::CGuard guard(_resultsCS);
+  return CResult(_resultArray[type], fillArray);
+}
 
 #endif /* __CONTESTMGR_H__ */
