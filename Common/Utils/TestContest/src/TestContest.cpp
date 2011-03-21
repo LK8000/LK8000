@@ -8,6 +8,7 @@
 
 #include "TestContest.h"
 #include "ReplayLogger.h"
+#include "Tools.h"
 #include <iostream>
 #include <iomanip>
 
@@ -57,7 +58,7 @@ void CTestContest::GPSHandler(void *user, unsigned time, double latitude, double
   // obtain test object
   CTestContest *test = static_cast<CTestContest *>(user);
   
-  if(test->_interruptFix && test->_contestMgr.Trace().AnalyzedPointCount() > test->_interruptFix)
+  if(test->_interruptFix && test->_contestMgr._trace->AnalyzedPointCount() > test->_interruptFix)
     // interrupt the test after requested number of GPS fixes
     return;
   
@@ -76,7 +77,7 @@ void CTestContest::GPSHandler(void *user, unsigned time, double latitude, double
   }
   
   // meassure performance
-  unsigned analyzedPointCount = test->_contestMgr.Trace().AnalyzedPointCount();
+  unsigned analyzedPointCount = test->_contestMgr._trace->AnalyzedPointCount();
   if(analyzedPointCount && (analyzedPointCount % TIME_ANALYSIS_STEP == 0)) {
     putchar('.');
     fflush(stdout);
@@ -92,10 +93,12 @@ void CTestContest::GPSHandler(void *user, unsigned time, double latitude, double
  */
 void CTestContest::Dump(const CContestMgr::TType type) const
 {
-  const CContestMgr::CResult &result = _contestMgr.Result(type);
+  CContestMgr::CResult result;
+  _contestMgr.Result(type, result);
   
   std::cout << std::endl;
-  std::cout << "Contest '" << CContestMgr::TypeToString(type) << "':" << std::endl;
+  std::wstring typeStr = CContestMgr::TypeToString(type);
+  std::cout << "Contest '" << std::string(typeStr.begin(), typeStr.end()) << "':" << std::endl;
   std::cout << " - Distance: " << result.Distance() << std::endl;
   std::cout << " - Score: " << result.Score() << std::endl;
   for(CPointGPSArray::const_iterator it=result.PointArray().begin(); it!=result.PointArray().end(); ++it)
@@ -125,8 +128,8 @@ void CTestContest::Run()
   _timeArray.push_back(CTimeStamp());
   
   // dump compressed trace
-  const CTrace &trace = _contestMgr.Trace();
-  const CTrace &traceSprint = _contestMgr.TraceSprint();
+  const CTrace &trace = *_contestMgr._trace;
+  const CTrace &traceSprint = *_contestMgr._traceSprint;
   _kml.Dump(trace);
   //  std::cout << _trace << std::endl;
   
@@ -152,9 +155,11 @@ void CTestContest::Run()
   
   // dump contest results
   Dump(CContestMgr::TYPE_OLC_CLASSIC);
-  Dump(CContestMgr::TYPE_OLC_CLASSIC_PREDICTED);
   Dump(CContestMgr::TYPE_OLC_FAI);
   Dump(CContestMgr::TYPE_OLC_PLUS);
+  Dump(CContestMgr::TYPE_OLC_CLASSIC_PREDICTED);
+  Dump(CContestMgr::TYPE_OLC_FAI_PREDICTED);
+  Dump(CContestMgr::TYPE_OLC_PLUS_PREDICTED);
   Dump(CContestMgr::TYPE_OLC_LEAGUE);
   Dump(CContestMgr::TYPE_FAI_3_TPS);
   Dump(CContestMgr::TYPE_FAI_3_TPS_PREDICTED);

@@ -14,6 +14,9 @@
 #include <map>
 #include <memory>
 
+#ifdef TEST_CONTEST
+class CTestContest;
+#endif
 
 /** 
  * @brief Contest Manager
@@ -35,9 +38,10 @@ public:
    */
   enum TType {
     TYPE_OLC_CLASSIC,                             /**< @brief OLC-Classic part of OLC-Plus */
-    TYPE_OLC_CLASSIC_PREDICTED,                   /**< @brief OLC-Classic predicted for returning to start */
     TYPE_OLC_FAI,                                 /**< @brief FAI-OLC part of OLC-Plus */
     TYPE_OLC_PLUS,                                /**< @brief OLC-Plus contest (score only) */
+    TYPE_OLC_CLASSIC_PREDICTED,                   /**< @brief OLC-Classic predicted for returning to start */
+    TYPE_OLC_FAI_PREDICTED,                       /**< @brief FAI-OLC part of OLC-Plus predicted for returning to start */
     TYPE_OLC_PLUS_PREDICTED,                      /**< @brief OLC-Plus predicted for returning to start (score only) */
     TYPE_OLC_LEAGUE,                              /**< @brief OLC-League (Sprint) */
     TYPE_FAI_3_TPS,                               /**< @brief FAI with 3 turnpoints */
@@ -71,6 +75,9 @@ public:
   typedef std::vector<CResult> CResultArray;
   
 private:
+#ifdef TEST_CONTEST
+  friend class CTestContest;
+#endif
   typedef std::auto_ptr<CTrace> CTracePtr;
   typedef std::multimap<unsigned, const CTrace::CPoint *> CDistanceMap;
 
@@ -78,7 +85,7 @@ private:
   static const unsigned TRACE_FIX_LIMIT = 200;              /**< @brief The number of GPS fixes to store in the main trace */
   static const unsigned TRACE_TRIANGLE_FIX_LIMIT = 30;      /**< @brief The number of GPS fixes to store in the FAI-OLC trace */
   static const unsigned TRACE_SPRINT_FIX_LIMIT = 100;       /**< @brief The number of GPS fixes to store in the OLC-League trace */
-  static const unsigned TRACE_TRIANGLE_MIN_TIME = 10 * 60;  /**< @brief The minimum detected trace loop length
+  static const unsigned TRACE_TRIANGLE_MIN_TIME = 5 * 60;   /**< @brief The minimum detected trace loop length
                                                                         (to filter out small thermalling circles) */
   static const unsigned COMPRESSION_ALGORITHM = CTrace::ALGORITHM_DISTANCE  | CTrace::ALGORITHM_TIME_DELTA; /**< @brief Traces compression algorithm */
   
@@ -96,7 +103,10 @@ private:
   int _startMaxAltitude;                          /**< @brief The maximum altitude of a takeoff */
   CTracePtr _trace;                               /**< @brief Main trace */
   CTracePtr _traceSprint;                         /**< @brief Trace for OLC-League */
-  CTracePtr _traceLoop;                           /**< @brief Trace for FAI-OLC */
+  std::auto_ptr<CPointGPS> _prevFAIFront;         /**< @brief Last reviewed OLC-FAI loop end points */
+  std::auto_ptr<CPointGPS> _prevFAIBack;          /**< @brief Last reviewed OLC-FAI loop end points */
+  std::auto_ptr<CPointGPS> _prevFAIPredictedFront;/**< @brief Last reviewed OLC-FAI Predicted loop end points */
+  std::auto_ptr<CPointGPS> _prevFAIPredictedBack; /**< @brief Last reviewed OLC-FAI Predicted loop end points */
   CResultArray _resultArray;                      /**< @brief Array of results */
   
   mutable CCriticalSection _mainCS;               /**< @brief Main critical section that prevents Reset() and Add() at the same time */
@@ -104,12 +114,12 @@ private:
   mutable CCriticalSection _resultsCS;            /**< @brief Contests results critical section for returning results */
   
   unsigned BiggestLoopFind(const CTrace &trace, const CTrace::CPoint *&start, const CTrace::CPoint *&end) const;
-  bool BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut) const;
+  bool BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut, bool predicted) const;
   bool FAITriangleEdgeCheck(unsigned length, unsigned best) const;
   bool FAITriangleEdgeCheck(unsigned length1, unsigned length2, unsigned length3) const;
   void PointsResult(TType type, const CTrace &traceResult);
   void SolvePoints(const CTrace &trace, bool sprint, bool predicted);
-  void SolveTriangle(const CTrace &trace, const CPointGPS *prevFront, const CPointGPS *prevBack);
+  void SolveTriangle(const CTrace &trace, const CPointGPS *prevFront, const CPointGPS *prevBack, bool predicted);
   void SolveOLCPlus(bool predicted);
   
 public:
