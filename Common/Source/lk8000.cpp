@@ -759,6 +759,7 @@ int AcknowledgementTime = 30;
 #ifdef LKAIRSPACE
 int AirspaceWarningRepeatTime = 1800;			// warning repeat time if not acknowledged
 int AirspaceWarningVerticalMargin = 100;		// vertical distance used to calculate too close condition
+int AirspaceWarningDlgTimeout = 10;				// airspace warning dialog auto closing in x secs
 #endif
 
 // Registration Data

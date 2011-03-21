@@ -53,6 +53,12 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningDlgTimeout"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(AirspaceWarningDlgTimeout);
+    wp->RefreshDisplay();
+  }
+
 }
 
 
@@ -117,6 +123,16 @@ void dlgAirspaceWarningParamsShowModal(void){
     if (AirspaceWarningVerticalMargin != ival) {
       AirspaceWarningVerticalMargin = ival;
       SetToRegistry(szRegistryAirspaceWarningVerticalMargin,AirspaceWarningVerticalMargin);
+      changed = true;
+    }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningDlgTimeout"));
+  if (wp) {
+    if (AirspaceWarningDlgTimeout != wp->GetDataField()->GetAsInteger()) {
+      AirspaceWarningDlgTimeout = wp->GetDataField()->GetAsInteger();
+      SetToRegistry(szRegistryAirspaceWarningDlgTimeout,
+		    (DWORD)AirspaceWarningDlgTimeout);
       changed = true;
     }
   }

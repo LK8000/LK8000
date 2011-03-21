@@ -367,7 +367,7 @@ void ShowAirspaceWarningsToUser()
 	
 	dlg->SetKeyDownNotify(OnKeyDown);
     dlg->SetTimerNotify(OnTimer);
-	timer_counter = 10;					// Auto closing dialog in x secs
+	timer_counter = AirspaceWarningDlgTimeout;					// Auto closing dialog in x secs
 
 	WndButton *wb = (WndButton*)dlg->FindByName(TEXT("cmdAckForTime"));
 	if (wb) {

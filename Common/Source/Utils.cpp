@@ -156,6 +156,7 @@ const TCHAR szRegistryAirspaceOpacity[]= TEXT("AirspaceOpacity");
 #ifdef LKAIRSPACE
 const TCHAR szRegistryAirspaceWarningRepeatTime[]= TEXT("AirspaceWarningRepeatTime");
 const TCHAR szRegistryAirspaceWarningVerticalMargin[]= TEXT("AirspaceWarningVerticalMargin");
+const TCHAR szRegistryAirspaceWarningDlgTimeout[]= TEXT("AirspaceWarningDlgTimeout");
 #endif
 const TCHAR szRegistryAltMargin[]=	   TEXT("AltMargin");
 const TCHAR szRegistryAltMode[]=  TEXT("AltitudeMode");
@@ -657,6 +658,10 @@ void ReadRegistrySettings(void)
   Temp=AirspaceWarningVerticalMargin;
   if(GetFromRegistry(szRegistryAirspaceWarningVerticalMargin,&Temp)==ERROR_SUCCESS)
     AirspaceWarningVerticalMargin = Temp;
+
+  Temp=AirspaceWarningDlgTimeout;
+  if(GetFromRegistry(szRegistryAirspaceWarningDlgTimeout,&Temp)==ERROR_SUCCESS)
+    AirspaceWarningDlgTimeout = Temp;
 #endif
 	
   Temp=SafetyAltitudeMode;
