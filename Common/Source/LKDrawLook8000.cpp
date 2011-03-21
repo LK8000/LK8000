@@ -464,7 +464,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
  		GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize2);
 		if (!HideUnits) {
 			SelectObject(hdc, LKMAPFONT); // TODO FIX BUG here.. using different font from size
-			if (!OverlayClock && ScreenLandscape && !(ISPARAGLIDER && UseGates())) {
+			if ( (!OverlayClock || Look8000==lxcStandard) && ScreenLandscape && !(ISPARAGLIDER && UseGates())) {
 
 			} else {
 			 LKWriteText(hdc, BufferUnit, rcx+NIBLSCALE(4)+TextSize2.cx,rcy+ySizeLK8TargetFont+(ySizeLK8TargetFont/3)-NIBLSCALE(1), 0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true); 
