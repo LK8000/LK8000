@@ -290,7 +290,7 @@ const TCHAR szRegistryLKTopoZoomCat110[]= TEXT("LKTopoZoomCat110");
 const TCHAR szRegistryLKMaxLabels[]= TEXT("LKMaxLabels");
 const TCHAR szRegistryOverlaySize[]= TEXT("OverlaySize");
 const TCHAR szRegistryBarOpacity[]= TEXT("BarOpacity");
-const TCHAR szRegistryFontRenderer[]= TEXT("FontRenderer");
+const TCHAR szRegistryFontRenderer[]= TEXT("FontRenderer2");
 const TCHAR szRegistryPGGateIntervalTime[]= TEXT("PGGateIntervalTime");
 const TCHAR szRegistryPGStartOut[]= TEXT("PGStartOut");
 
@@ -1035,9 +1035,9 @@ void ReadRegistrySettings(void)
   BarOpacity = Temp;
 
   #ifdef PPC2002  
-  Temp = 2; 
+  Temp = 1;  // AntiAliasing
   #else
-  Temp = 3; 
+  Temp = 0;  // ClearType Compatible
   #endif
   GetFromRegistry(szRegistryFontRenderer,&Temp); 
   FontRenderer = Temp;

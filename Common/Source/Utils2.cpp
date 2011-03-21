@@ -903,8 +903,32 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 void InitNewMap()
 {
-
+  static bool doinit=true;
   StartupStore(_T(". InitNewMap%s"),NEWLINE); // 091213
+
+  if (doinit) {
+  	LK8TargetFont	= (HFONT)NULL;
+  	LK8BigFont	= NULL;
+  	LK8ValueFont	= NULL;
+  	LK8TitleFont	= NULL;
+  	LK8MapFont	= NULL;
+  	LK8TitleNavboxFont	= NULL;
+  	LK8UnitFont	= NULL;
+  	LK8SymbolFont	= NULL;
+  	LK8MediumFont	= NULL;
+  	LK8SmallFont	= NULL;
+  	LK8InfoBigFont	= NULL;
+  	LK8InfoBigItalicFont	= NULL;
+  	LK8InfoNormalFont	= NULL;
+  	LK8InfoSmallFont	= NULL;
+  	LK8PanelBigFont	= NULL;
+  	LK8PanelMediumFont	= NULL;
+  	LK8PanelSmallFont	= NULL;
+  	LK8PanelUnitFont	= NULL;
+
+	doinit=false;
+  }
+
 
   LOGFONT logfontTarget;	// StatisticsWindow
   LOGFONT logfontBig;		// InfoWindow
@@ -1507,7 +1531,6 @@ void InitNewMap()
 		BottomSize=38; // Title+Value-4
 		break;
   }
-
   logfontTarget.lfQuality = GetFontRenderer(); 
   logfontBig.lfQuality = GetFontRenderer(); 
   logfontValue.lfQuality = GetFontRenderer(); 
@@ -1527,6 +1550,25 @@ void InitNewMap()
   logfontPanelMedium.lfQuality= GetFontRenderer();
   logfontPanelSmall.lfQuality= GetFontRenderer();
   logfontPanelUnit.lfQuality= GetFontRenderer();
+
+  if (LK8TargetFont!=NULL) DeleteObject(LK8TargetFont);
+  if (LK8BigFont!=NULL) DeleteObject(LK8BigFont);
+  if (LK8ValueFont!=NULL) DeleteObject(LK8ValueFont);
+  if (LK8TitleFont!=NULL) DeleteObject(LK8TitleFont);
+  if (LK8MapFont!=NULL) DeleteObject(LK8MapFont);
+  if (LK8TitleNavboxFont!=NULL) DeleteObject(LK8TitleNavboxFont);
+  if (LK8UnitFont!=NULL) DeleteObject(LK8UnitFont);
+  if (LK8SymbolFont!=NULL) DeleteObject(LK8SymbolFont);
+  if (LK8MediumFont!=NULL) DeleteObject(LK8MediumFont);
+  if (LK8SmallFont!=NULL) DeleteObject(LK8SmallFont);
+  if (LK8InfoBigFont!=NULL) DeleteObject(LK8InfoBigFont);
+  if (LK8InfoBigItalicFont!=NULL) DeleteObject(LK8InfoBigItalicFont);
+  if (LK8InfoNormalFont!=NULL) DeleteObject(LK8InfoNormalFont);
+  if (LK8InfoSmallFont!=NULL) DeleteObject(LK8InfoSmallFont);
+  if (LK8PanelBigFont!=NULL) DeleteObject(LK8PanelBigFont);
+  if (LK8PanelMediumFont!=NULL) DeleteObject(LK8PanelMediumFont);
+  if (LK8PanelSmallFont!=NULL) DeleteObject(LK8PanelSmallFont);
+  if (LK8PanelUnitFont!=NULL) DeleteObject(LK8PanelUnitFont);
 
   LK8TargetFont	= CreateFontIndirect (&logfontTarget); 
   LK8BigFont	= CreateFontIndirect (&logfontBig);
@@ -4201,20 +4243,21 @@ void ClubForbiddenMsg() {
         return;
 }
 
-int GetFontRenderer() { // Karim
+int GetFontRenderer() { 
+
 
   switch(FontRenderer) {
 	case 0:
-		return NONANTIALIASED_QUALITY;
+		return CLEARTYPE_COMPAT_QUALITY;
 		break;
 	case 1:
-		return DEFAULT_QUALITY;
-		break;
-	case 2:
 		return ANTIALIASED_QUALITY;
 		break;
+	case 2:
+		return DEFAULT_QUALITY;
+		break;
 	case 3:
-		return CLEARTYPE_COMPAT_QUALITY;
+		return NONANTIALIASED_QUALITY;
 		break;
 	default:
 		return CLEARTYPE_COMPAT_QUALITY;

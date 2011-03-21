@@ -3066,6 +3066,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
   StartupStore(TEXT(". Initialize fonts%s"),NEWLINE);
   InitialiseFonts(rc);
+  InitNewMap();	// reload updating LK fonts after loading profile
 
   ButtonLabel::SetFont(MapWindowBoldFont);
 

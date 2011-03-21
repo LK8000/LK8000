@@ -1731,10 +1731,10 @@ static void setVariables(void) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
 
-    dfe->addEnumText(gettext(TEXT("_@M479_"))); // None
-    dfe->addEnumText(gettext(TEXT("_@M480_"))); // Normal
-    dfe->addEnumText(gettext(TEXT("_@M956_"))); // Anti Aliasing
     dfe->addEnumText(gettext(TEXT("_@M955_"))); // Clear Type Compatible
+    dfe->addEnumText(gettext(TEXT("_@M956_"))); // Anti Aliasing
+    dfe->addEnumText(gettext(TEXT("_@M480_"))); // Normal
+    dfe->addEnumText(gettext(TEXT("_@M479_"))); // None
     dfe->Set(FontRenderer);
     wp->RefreshDisplay();
   }
