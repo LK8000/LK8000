@@ -21,6 +21,8 @@
 #include <zzip/lib.h>
 #include "wcecompat/ts_string.h"
 
+#include "utils/heapcheck.h"
+
 ZZIP_FILE* zAirfieldDetails = NULL;
 
 static TCHAR szAirfieldDetailsFile[MAX_PATH] = TEXT("\0");

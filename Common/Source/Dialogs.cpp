@@ -41,6 +41,8 @@ static GetTextSTRUCT GetTextData[MAXSTATUSMESSAGECACHE];
 static int GetTextData_Size = 0;
 #endif
 
+#include "utils/heapcheck.h"
+
 void ReadWayPoints(void);
 void ReadAirspace(void);
 int FindIndex(HWND hWnd);

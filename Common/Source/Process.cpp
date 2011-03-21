@@ -25,6 +25,8 @@
 #include "Atmosphere.h"
 #include "AATDistance.h"
 
+#include "utils/heapcheck.h"
+
 extern AATDistance aatdistance;
 
 extern int PDABatteryPercent;

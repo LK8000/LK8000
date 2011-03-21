@@ -20,6 +20,8 @@
 #include "Units.h"
 #include "Utils2.h"
 
+#include "utils/heapcheck.h"
+
 extern void DrawJPG(HDC hdc, RECT rc);
 
 #ifndef CECORE

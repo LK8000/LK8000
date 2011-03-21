@@ -22,6 +22,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "utils/heapcheck.h"
+
 const char* messages[] = {
 /*0           */    "No error",
 /*EPERM       */    "Operation not permitted",

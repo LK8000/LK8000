@@ -14,6 +14,8 @@
 #include "Parser.h"
 #include "Port.h"
 
+#include "utils/heapcheck.h"
+
 
 BOOL nmoParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
 

@@ -17,6 +17,8 @@
 #include "Port.h"
 #include "InfoBoxLayout.h"
 
+#include "utils/heapcheck.h"
+
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 extern int TimeLocal(int d);

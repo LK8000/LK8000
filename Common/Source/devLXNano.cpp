@@ -15,6 +15,8 @@
 #include "externs.h"
 #include "devLXNano.h"
 
+#include "utils/heapcheck.h"
+
 //______________________________________________________________________defines_
 
 /// polynom for LX data CRC

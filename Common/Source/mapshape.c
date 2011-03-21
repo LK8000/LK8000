@@ -43,6 +43,8 @@ Copyright_License {
 
 #include <limits.h>
 
+#include "utils/heapcheck.h"
+
 #if UINT_MAX == 65535
 typedef long          int32;
 #else

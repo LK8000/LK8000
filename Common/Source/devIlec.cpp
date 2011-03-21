@@ -15,6 +15,8 @@
 
 #include "devIlec.h"
 
+#include "utils/heapcheck.h"
+
 static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 
 static BOOL IlecParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){

@@ -25,6 +25,8 @@
 
 #include "simpleList.h"
 
+#include "utils/heapcheck.h"
+
 static bool NewAirspaceWarnings = false;
 static CRITICAL_SECTION  csAirspaceWarnings;
 static bool InitDone = false;

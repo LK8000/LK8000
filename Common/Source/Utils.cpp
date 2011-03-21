@@ -47,6 +47,8 @@ FlarmIdFile file;
 #include "InfoBoxLayout.h"
 #endif
 
+#include "utils/heapcheck.h"
+
 // JMW not required in newer systems?
 #ifdef __MINGW32__
 #ifndef max

@@ -16,6 +16,8 @@
 #include "InfoBoxLayout.h"
 #include "MapWindow.h"
 
+#include "utils/heapcheck.h"
+
 
 static WndForm *wf=NULL;
 static WndListFrame *wAirspaceColoursList=NULL;

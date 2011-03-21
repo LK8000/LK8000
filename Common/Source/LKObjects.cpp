@@ -24,6 +24,8 @@
 #endif
 #include "LKObjects.h"
 
+#include "utils/heapcheck.h"
+
 #if LKOBJ
 void LKObjects_Create() {
 

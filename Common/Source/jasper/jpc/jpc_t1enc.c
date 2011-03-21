@@ -85,6 +85,8 @@
 #include "jpc_cod.h"
 #include "jpc_math.h"
 
+#include "utils/heapcheck.h"
+
 static int jpc_encsigpass(jpc_mqenc_t *mqenc, int bitpos, int orient, int,
   jas_matrix_t *flags, jas_matrix_t *data, int term, long *nmsedec);
 

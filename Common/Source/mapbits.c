@@ -36,6 +36,8 @@ Copyright_License {
 
 #include <limits.h>
 
+#include "utils/heapcheck.h"
+
 /* originally found at http://www.snippets.org/ */
 
 size_t msGetBitArraySize(int numbits)

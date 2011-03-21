@@ -24,6 +24,8 @@
 
 #include "wcecompat/ts_string.h"
 
+#include "utils/heapcheck.h"
+
 
 #define  BINFILEMAGICNUMBER     0x4ab199f0
 #define  BINFILEVERION          0x00000101

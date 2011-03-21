@@ -24,6 +24,8 @@
 #include <windows.h>
 #include "ts_string.h"
 
+#include "utils/heapcheck.h"
+
 
 //
 // ascii/unicode typesafe versions of strcat

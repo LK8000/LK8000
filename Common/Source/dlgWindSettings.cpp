@@ -14,6 +14,8 @@
 #include "Units.h"
 #include "dlgTools.h"
 
+#include "utils/heapcheck.h"
+
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 

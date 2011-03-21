@@ -20,6 +20,8 @@
 #include <memory>
 #include <tchar.h>
 
+#include "utils/heapcheck.h"
+
 CContestMgr CContestMgr::_instance;
 
 

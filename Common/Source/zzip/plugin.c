@@ -32,6 +32,8 @@
 
 #include "utils/stringext.h"
 
+#include "utils/heapcheck.h"
+
 zzip_off_t
 zzip_filesize(int fd)
 {

@@ -18,6 +18,8 @@
 #include <windows.h>
 #include <tchar.h>
 
+#include "utils/heapcheck.h"
+
 static void ComPort_StatusMessage(UINT type, const TCHAR *caption, const TCHAR *fmt, ...)
 {
   TCHAR tmp[127];

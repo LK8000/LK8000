@@ -18,6 +18,8 @@
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
 
+#include "utils/heapcheck.h"
+
 static int twItemIndex= 0;
 static WndForm *wf=NULL;
 static int twType = 0; // start, turnpoint, finish

@@ -33,6 +33,8 @@
 #include "InputEvents.h"
 #include "MapWindow.h"
 
+#include "utils/heapcheck.h"
+
 extern void NextMapSpace();
 extern void PreviousMapSpace();
 extern void ShowMenu();

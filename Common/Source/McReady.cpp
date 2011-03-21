@@ -17,6 +17,8 @@
 #include <math.h>
 #include <windows.h>
 
+#include "utils/heapcheck.h"
+
 double GlidePolar::RiskGamma = 0.0;
 double GlidePolar::polar_a;
 double GlidePolar::polar_b;

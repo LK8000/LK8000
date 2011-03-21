@@ -15,6 +15,8 @@
 
 #include "devBorgeltB50.h"
 
+#include "utils/heapcheck.h"
+
 BOOL PBB50(TCHAR *String, NMEA_INFO *GPS_INFO);
 
 

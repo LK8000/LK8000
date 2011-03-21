@@ -23,6 +23,8 @@
 #include <stdio.h>
 #include <errno.h>
 
+#include "utils/heapcheck.h"
+
 
 int _fmode;		/* default file translation mode */
 

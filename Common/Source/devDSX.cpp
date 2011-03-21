@@ -12,6 +12,8 @@
 #include "device.h"
 #include "Dialogs.h"
 
+#include "utils/heapcheck.h"
+
 extern NMEA_INFO GPS_INFO;
 
 static bool DSXPromptWait(PDeviceDescriptor_t d, unsigned waitChars);

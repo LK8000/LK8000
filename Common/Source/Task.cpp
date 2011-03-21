@@ -19,6 +19,8 @@
 #include "LKUtils.h"
 #include "LKMapWindow.h"
 
+#include "utils/heapcheck.h"
+
 bool EnableMultipleStartPoints = false;
 bool TaskModified = false;
 bool TargetModified = false;

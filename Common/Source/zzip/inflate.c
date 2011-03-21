@@ -85,6 +85,8 @@
 #include "zzip/inflate.h"
 #include "zzip/inffast.h"
 
+#include "utils/heapcheck.h"
+
 #ifdef MAKEFIXED
 #  ifndef BUILDFIXED
 #    define BUILDFIXED

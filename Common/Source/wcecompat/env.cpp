@@ -25,6 +25,8 @@
 #include "ts_string.h"
 #include "redir.h"	// initStdHandles
 
+#include "utils/heapcheck.h"
+
 
 int			num_env_vars;
 char**		_environ;

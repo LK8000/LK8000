@@ -46,6 +46,8 @@
 #include <wingdi.h>
 #endif
 
+#include "utils/heapcheck.h"
+
 #ifdef DEBUG
 #if (WINDOWSPC<1)
 #define DRAWLOAD

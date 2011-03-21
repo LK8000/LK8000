@@ -20,6 +20,8 @@
 #include "InfoBoxLayout.h"
 #include "Utils2.h"
 
+#include "utils/heapcheck.h"
+
 extern void SettingsEnter();
 extern void SettingsLeave();
 

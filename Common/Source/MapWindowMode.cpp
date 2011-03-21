@@ -11,6 +11,8 @@
 #ifdef MAP_ZOOM
 #include "MapWindow.h"
 
+#include "utils/heapcheck.h"
+
 
 MapWindow::Mode::Mode():
   _mode(MODE_CRUISE), _lastMode(MODE_NONE), _userForcedFlyMode(MODE_FLY_NONE)

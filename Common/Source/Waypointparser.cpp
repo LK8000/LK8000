@@ -32,6 +32,8 @@
 #include "xmlParser.h"
 #include "wcecompat/ts_string.h"
 
+#include "utils/heapcheck.h"
+
 
 static int globalFileNum = 0;
 

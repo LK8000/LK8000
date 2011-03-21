@@ -56,6 +56,8 @@
 #include <wingdi.h>
 #endif
 
+#include "utils/heapcheck.h"
+
 #include "LKGeneralAviation.h"
 
 

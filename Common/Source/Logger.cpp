@@ -18,6 +18,8 @@
 #include "InputEvents.h"
 #include "Parser.h"
 
+#include "utils/heapcheck.h"
+
 
 
 HINSTANCE GRecordDLLHandle = NULL;

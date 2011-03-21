@@ -15,6 +15,8 @@
 
 #include "devFlytec.h"
 
+#include "utils/heapcheck.h"
+
 static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 
 static BOOL FlytecParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){

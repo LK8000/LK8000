@@ -39,6 +39,8 @@
 #  include <ctype.h>
 #endif
 
+#include "utils/heapcheck.h"
+
 /* ===========================================================================
  * Constants
  */

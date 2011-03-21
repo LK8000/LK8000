@@ -13,6 +13,8 @@
 #include "externs.h"
 #include "wcecompat/ts_string.h"
 
+#include "utils/heapcheck.h"
+
 extern HFONT MapLabelFont;
 
 XShape::XShape() {

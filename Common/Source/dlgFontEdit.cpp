@@ -13,6 +13,8 @@
 #include "Utils.h"
 #include "XCSoar.h"
 
+#include "utils/heapcheck.h"
+
 extern HWND   hWndMainWindow;
 extern void InitializeOneFont (HFONT * theFont, 
                                const TCHAR FontRegKey[] , 

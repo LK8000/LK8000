@@ -25,6 +25,8 @@
 
 #include "Utils.h"
 
+#include "utils/heapcheck.h"
+
 
 static bool changed = false;
 static WndForm *wf=NULL;

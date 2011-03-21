@@ -16,6 +16,8 @@
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 
+#include "utils/heapcheck.h"
+
 #define MAXTITLE 200
 #define MAXDETAILS 5000
 

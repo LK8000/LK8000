@@ -15,6 +15,8 @@
 #include "externs.h"
 #include "RasterTerrain.h"
 
+#include "utils/heapcheck.h"
+
 unsigned short CuSonde::last_level=0;
 double CuSonde::thermalHeight = 0;
 double CuSonde::cloudBase = 0;

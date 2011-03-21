@@ -22,6 +22,8 @@
 #include "Volkslogger/vlapihlp.h"
 #include "Volkslogger/vlapityp.h"
 
+#include "utils/heapcheck.h"
+
 
 // base-64 functions
 //

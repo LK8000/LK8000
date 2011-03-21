@@ -8,6 +8,8 @@
 #include "options.h"
 #include "FlarmCalculations.h"
 
+#include "utils/heapcheck.h"
+
 FlarmCalculations::FlarmCalculations(void)
 {
 }

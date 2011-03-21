@@ -25,6 +25,8 @@
 #include "jasper/jpc_rtc.h"
 #include "wcecompat/ts_string.h"
 
+#include "utils/heapcheck.h"
+
 
 
 // static variables shared between rasterterrains because can only

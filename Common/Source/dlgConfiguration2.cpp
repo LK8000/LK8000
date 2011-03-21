@@ -17,6 +17,8 @@
 #include "InfoBoxLayout.h"
 #include "Waypointparser.h"
 
+#include "utils/heapcheck.h"
+
 extern int config_page;
 
 void OnInfoBoxHelp(WindowControl * Sender){

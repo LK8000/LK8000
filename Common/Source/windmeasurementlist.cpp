@@ -19,6 +19,8 @@
 
 #include "windmeasurementlist.h"
 
+#include "utils/heapcheck.h"
+
 
 WindMeasurementList::WindMeasurementList(){
   nummeasurementlist = 0;

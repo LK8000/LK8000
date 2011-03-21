@@ -13,6 +13,8 @@
 #include "externs.h"
 #include "InfoBoxLayout.h"
 
+#include "utils/heapcheck.h"
+
 static WndForm *wf=NULL;
 static WndOwnerDrawFrame *wGrid=NULL;
 

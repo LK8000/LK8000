@@ -37,6 +37,8 @@ NOTE: Some portions copyright as above
 
 #include "VOIMAGE.h"
 
+#include "utils/heapcheck.h"
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;

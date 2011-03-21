@@ -19,6 +19,8 @@ static WndForm *wf=NULL;
 
 #include "TeamCodeCalculation.h"
 
+#include "utils/heapcheck.h"
+
 static void Update() 
 {
   WndProperty* wp;

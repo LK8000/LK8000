@@ -75,6 +75,8 @@
 #include "jpc_t2cod.h"
 #include "jpc_math.h"
 
+#include "utils/heapcheck.h"
+
 static int jpc_pi_nextlrcp(jpc_pi_t *pi);
 static int jpc_pi_nextrlcp(jpc_pi_t *pi);
 static int jpc_pi_nextrpcl(jpc_pi_t *pi);

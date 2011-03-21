@@ -15,6 +15,8 @@
 
 #include "devDigifly.h"
 
+#include "utils/heapcheck.h"
+
 extern double LowPassFilter(double y_last, double x_in, double fact);
 
 static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);

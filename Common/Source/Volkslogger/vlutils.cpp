@@ -18,6 +18,8 @@
 #include <ctype.h>
 #include <stdio.h>
 
+#include "utils/heapcheck.h"
+
 char *utoa(unsigned value, char *digits, int base)
 {
     const char *s = "0123456789abcdefghijklmnopqrstuvwxyz";

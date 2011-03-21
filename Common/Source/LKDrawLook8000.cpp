@@ -28,6 +28,8 @@
 #include "LKMapWindow.h"
 #include "LKObjects.h"
 
+#include "utils/heapcheck.h"
+
 
 extern void DrawGlideCircle(HDC hdc, POINT Orig, RECT rc );
 extern void MapWaypointLabelAdd(TCHAR *Name, int X, int Y, TextInBoxMode_t Mode, int AltArivalAGL, bool inTask, 

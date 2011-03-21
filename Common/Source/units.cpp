@@ -22,6 +22,8 @@
 #include "Units.h"
 #include "externs.h"
 
+#include "utils/heapcheck.h"
+
 CoordinateFormats_t Units::CoordinateFormat;
 
 #ifndef __MINGW32__

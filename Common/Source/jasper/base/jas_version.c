@@ -61,6 +61,8 @@
 
 #include "jasper/jas_version.h"
 
+#include "utils/heapcheck.h"
+
 const char *jas_getversion()
 {
 	return JAS_VERSION;

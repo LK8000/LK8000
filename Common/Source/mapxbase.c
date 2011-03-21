@@ -43,6 +43,8 @@ Copyright_License {
 
 #include <ctype.h>	// 091016 missing
 
+#include "utils/heapcheck.h"
+
 /************************************************************************/
 /*                             SfRealloc()                              */
 /*                                                                      */

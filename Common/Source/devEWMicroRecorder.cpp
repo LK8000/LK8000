@@ -18,6 +18,8 @@
 
 #include "devEWMicroRecorder.h"
 
+#include "utils/heapcheck.h"
+
 
 // Additional sentance for EW support
 

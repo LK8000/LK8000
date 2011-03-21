@@ -22,6 +22,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 
+#include "utils/heapcheck.h"
+
 _CRTIMP const unsigned short _ctype[] =
 {
 	// _UPPER  : 41-5a

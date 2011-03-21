@@ -21,5 +21,7 @@
 
 #include <errno.h>
 
+#include "utils/heapcheck.h"
+
 
 int errno;

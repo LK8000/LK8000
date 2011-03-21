@@ -8,6 +8,8 @@
 #include "StdAfx.h"
 #include "Utils.h"
 
+#include "utils/heapcheck.h"
+
 #define EGM96SIZE 16200
 
 unsigned char* egm96data= NULL;

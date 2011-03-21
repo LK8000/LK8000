@@ -15,6 +15,8 @@
 #include "MapWindow.h"
 #include "Utils2.h"
 
+#include "utils/heapcheck.h"
+
 extern HFONT MapWindowFont;
 extern HFONT TitleWindowFont;
 extern HFONT InfoWindowFont;

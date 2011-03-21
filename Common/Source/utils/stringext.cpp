@@ -10,6 +10,8 @@
 #include "StdAfx.h"
 #include "stringext.h"
 
+#include "utils/heapcheck.h"
+
 //______________________________________________________________________________
 
 /// maximum UTF-16 code convertable through utf16toAscii[] map

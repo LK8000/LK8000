@@ -22,6 +22,8 @@
 #include "options.h"
 #include "Cpustats.h"
 
+#include "utils/heapcheck.h"
+
 
 #if NEWRASTER
 unsigned short minalt=9999;

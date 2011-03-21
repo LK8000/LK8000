@@ -19,6 +19,8 @@
 
 #include <zzip/file.h>
 
+#include "utils/heapcheck.h"
+
 /* *INDENT-OFF* */
 static struct errlistentry { int code; const char* mesg; } 
 errlist[] = 

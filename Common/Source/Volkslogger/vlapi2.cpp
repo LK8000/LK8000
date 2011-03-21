@@ -28,6 +28,8 @@
 
 #include "Volkslogger/utils.h"
 
+#include "utils/heapcheck.h"
+
 extern int noninteractive;
 
 // sizes of VL memory regions

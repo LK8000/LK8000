@@ -3,7 +3,9 @@ SRC=Common/Source
 HDR=Common/Header
 BIN=Bin/$(TARGET)
 
-#
+# enable/disable heap checking (dmalloc.h libdmalloc.a must be in ../dmalloc)
+DMALLOC=n
+
 PROFILE		:=
 OPTIMIZE	:=-O2
 #OPTIMIZE	:=-O3 -funroll-all-loops
@@ -230,6 +232,10 @@ CPPFLAGS	+= -DFORCEPORTRAIT
   endif
 endif
 
+ifeq ($(DMALLOC),y)
+  CPPFLAGS += -DHC_DMALLOC
+endif
+
 CXXFLAGS	:=$(OPTIMIZE) -fno-exceptions $(PROFILE)
 CFLAGS		:=$(OPTIMIZE) $(PROFILE)
 
@@ -243,15 +249,19 @@ endif
 LDFLAGS		+=$(PROFILE)
 
 ifeq ($(CONFIG_PC),y)
-LDLIBS		:= -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32
+  LDLIBS := -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32
 else
-  LDLIBS		:= -Wl,-Bstatic -lstdc++  -Wl,-Bdynamic -lcommctrl
+  LDLIBS := -Wl,-Bstatic -lstdc++  -Wl,-Bdynamic -lcommctrl
   ifeq ($(MINIMAL),n)
     LDLIBS		+= -laygshell
     ifneq ($(TARGET),PNA)
       LDLIBS		+= -limgdecmp
     endif
   endif
+endif
+
+ifeq ($(DMALLOC),y)
+  LDLIBS += -L../dmalloc -ldmalloc
 endif
 
 ####### compiler target

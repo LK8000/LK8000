@@ -20,6 +20,8 @@
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
 
+#include "utils/heapcheck.h"
+
 static WndForm *wf=NULL;
 static WndFrame *wfAdvanced=NULL;
 static WndListFrame *wTaskList=NULL;

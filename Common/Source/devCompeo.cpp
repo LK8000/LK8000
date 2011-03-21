@@ -15,6 +15,8 @@
 
 #include "devCompeo.h"
 
+#include "utils/heapcheck.h"
+
 static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 
 static BOOL CompeoParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){

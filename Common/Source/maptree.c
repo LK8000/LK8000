@@ -41,6 +41,8 @@ Copyright_License {
 #include "maptree.h"
 #include "maperror.h"
 
+#include "utils/heapcheck.h"
+
 int FileExists(TCHAR *FileName);
 /* -------------------------------------------------------------------- */
 /*      If the following is 0.5, nodes will be split in half.  If it    */

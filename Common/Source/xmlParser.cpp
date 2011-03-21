@@ -57,6 +57,8 @@
 #include "compatibility.h"
 #include "StdAfx.h"
 
+#include "utils/heapcheck.h"
+
 void StartupStore(const TCHAR *Str, ...); // 100102
 void FailStore(const TCHAR *Str, ...); // 100102
 

@@ -14,6 +14,8 @@
 
 #include <math.h>
 
+#include "utils/heapcheck.h"
+
 
 ///////////
 

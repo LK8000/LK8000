@@ -38,6 +38,8 @@ Copyright_License {
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "utils/heapcheck.h"
+
 #ifndef __MINGW32__
 #define min(x, y) \
         (((x) < (y)) ? (x) : (y))

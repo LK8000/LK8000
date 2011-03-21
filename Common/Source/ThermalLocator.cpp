@@ -13,6 +13,8 @@
 #include "Utils.h"
 #include <math.h>
 
+#include "utils/heapcheck.h"
+
 int EnableThermalLocator = 1;
 
 #define SFACT 111195

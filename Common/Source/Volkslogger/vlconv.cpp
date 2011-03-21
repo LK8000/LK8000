@@ -43,6 +43,8 @@
 // redeclaration of itoa()
 #include "Volkslogger/utils.h"
 
+#include "utils/heapcheck.h"
+
 // Conversion-Constants
 
 

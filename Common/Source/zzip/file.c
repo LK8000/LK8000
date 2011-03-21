@@ -26,6 +26,8 @@
 
 #include "utils/stringext.h"
 
+#include "utils/heapcheck.h"
+
 #if defined(__MINGW32__)
 //(WINDOWSPC>0)&&
 // JMW needed otherwise seek/tell won't work!

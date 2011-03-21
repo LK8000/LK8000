@@ -23,6 +23,8 @@
 #include <stdio.h>
 #include <errno.h>
 
+#include "utils/heapcheck.h"
+
 
 int access(const char* pathname, int mode)
 {

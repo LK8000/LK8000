@@ -50,6 +50,8 @@
 #include <wingdi.h>
 #endif
 
+#include "utils/heapcheck.h"
+
 
 extern HWND hWndCDIWindow;
 extern HFONT MapLabelFont;

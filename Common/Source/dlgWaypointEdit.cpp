@@ -15,6 +15,8 @@
 #include "InfoBoxLayout.h"
 #include "Waypointparser.h"
 
+#include "utils/heapcheck.h"
+
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 static WAYPOINT *global_wpt=NULL;

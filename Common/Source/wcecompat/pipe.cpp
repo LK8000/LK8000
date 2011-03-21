@@ -25,6 +25,8 @@
 #include "pipe.h"
 #include "ts_string.h"
 
+#include "utils/heapcheck.h"
+
 
 // dwCreationDisposition can be one of the following values from CreateFile:
 //   CREATE_NEW		Fail if the pipe already exists
