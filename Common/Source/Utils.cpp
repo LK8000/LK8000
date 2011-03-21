@@ -4368,7 +4368,7 @@ TCHAR* StringMallocParse(TCHAR* old_string) {
   TCHAR* new_string;
   unsigned int used = 0;
   unsigned int i;
-  for (i = 0; i < wcslen(old_string); i++) {
+  for (i = 0; i < _tcslen(old_string); i++) {
     if (used < 2045) {
       if (old_string[i] == '\\' ) {
         if (old_string[i + 1] == 'r') {
@@ -4390,8 +4390,8 @@ TCHAR* StringMallocParse(TCHAR* old_string) {
   };
   buffer[used++] =_T('\0');
   
-  new_string = (TCHAR *)malloc((wcslen(buffer)+1)*sizeof(TCHAR));
-  wcscpy(new_string, buffer);
+  new_string = (TCHAR *)malloc((_tcslen(buffer)+1)*sizeof(TCHAR));
+  _tcscpy(new_string, buffer);
   
   return new_string;
 }
@@ -4430,8 +4430,8 @@ void LocalPath(TCHAR* buffer, const TCHAR* file, int loc) {
 #endif
 
 	if (_tcslen(file)>0) {
-		wcsncat(buffer, TEXT("\\"), MAX_PATH);    
-		wcsncat(buffer, file, MAX_PATH);
+		_tcsncat(buffer, TEXT("\\"), MAX_PATH);    
+		_tcsncat(buffer, file, MAX_PATH);
 	}
 }
 
@@ -5501,6 +5501,9 @@ unsigned long CheckFreeRam(void) {
 
 // check maximum allocatable heap block
 unsigned long CheckMaxHeapBlock(void) {
+#if (WINDOWSPC>0)
+  return(0xFFFFFFFF);
+#else
   // try allocate maximum block (of course on PC with disk swapping, we will not
   // try maximum block, function just returns something near to initial top value)
   size_t top = 100*1024*1024; // start with 100MB/2
@@ -5522,6 +5525,7 @@ unsigned long CheckMaxHeapBlock(void) {
   }
   
   return(0);
+#endif
 }
 
 
@@ -5627,7 +5631,7 @@ BOOL PlayResource (const TCHAR* lpName)
 
   // TODO code: Modify to allow use of WAV Files and/or Embedded files
 
-  if (wcsstr(lpName, TEXT(".wav"))) {
+  if (_tcsstr(lpName, TEXT(".wav"))) {
     bRtn = sndPlaySound (lpName, SND_ASYNC | SND_NODEFAULT ); 
 
   } else {
@@ -5695,7 +5699,7 @@ bool InterfaceTimeoutCheck(void) {
   }
 }
 
-bool FileExistsW(TCHAR *FileName){
+bool FileExists(TCHAR *FileName){
 
   HANDLE hFile = CreateFileW(FileName, GENERIC_READ, 0, NULL,
                  OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
@@ -5706,32 +5710,16 @@ bool FileExistsW(TCHAR *FileName){
   CloseHandle(hFile);
 
   return(TRUE);
-
-}
-
-bool FileExistsA(char *FileName){
-
-#if (WINDOWSPC>0)
-  HANDLE hFile = CreateFileA(FileName, GENERIC_READ, 0, NULL,
-                 OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
-  if( hFile == INVALID_HANDLE_VALUE)
-    return(FALSE);
-
-  CloseHandle(hFile);
-
-  return(TRUE);
-#else
-  FILE *file = fopen(FileName, "r");
+  
+  /*
+  FILE *file = _tfopen(FileName, _T("r"));
   if (file != NULL) {
     fclose(file);
     return(TRUE);
   }
   return FALSE;
-#endif
-
+  */
 }
-
-
 
 bool RotateScreen() {
 #if (WINDOWSPC>0)

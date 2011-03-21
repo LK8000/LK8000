@@ -298,7 +298,7 @@ jas_stream_t *jas_stream_fopen(const wchar_t *filename, const char *mode)
         */
         // JMW quick hack!
   
-	if ((obj->zfile = zzip_fopen(utfname, "rb")) == NULL) {
+	if ((obj->zfile = zzip_fopen(filename, "rb")) == NULL) {
           jas_stream_close(stream);
           return 0;
 	}

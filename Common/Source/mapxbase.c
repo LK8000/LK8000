@@ -140,13 +140,13 @@ static void flushRecord( DBFHandle psDBF )
 /*                                                                      */
 /*      Open a .dbf file.                                               */
 /************************************************************************/   
-DBFHandle msDBFOpen( const char * pszFilename, const char * pszAccess )
+DBFHandle msDBFOpen( const TCHAR * pszFilename, const char * pszAccess )
 
 {
     DBFHandle		psDBF;
     uchar		*pabyBuf;
     int			nFields, nRecords, nHeadLen, nRecLen, iField;
-    char	        *pszDBFFilename;
+    TCHAR *pszDBFFilename;
 
     /* -------------------------------------------------------------------- */
     /*      We only allow the access strings "rb" and "r+".                 */
@@ -159,18 +159,18 @@ DBFHandle msDBFOpen( const char * pszFilename, const char * pszAccess )
     /*	Ensure the extension is converted to dbf or DBF if it is 	    */
     /*	currently .shp or .shx.						    */
     /* -------------------------------------------------------------------- */
-    pszDBFFilename = (char *) malloc(strlen(pszFilename)+1);
-    strcpy( pszDBFFilename, pszFilename );
+    pszDBFFilename = (TCHAR *) malloc((_tcslen(pszFilename)+1) * sizeof(TCHAR) * 2);
+    _tcscpy( pszDBFFilename, pszFilename );
     
-    if( strcmp(pszFilename+strlen(pszFilename)-4,".shp") 
-	|| strcmp(pszFilename+strlen(pszFilename)-4,".shx") )
+    if( _tcscmp(pszFilename+_tcslen(pszFilename)-4, _T(".shp")) 
+      || _tcscmp(pszFilename+_tcslen(pszFilename)-4, _T(".shx")) )
     {
-        strcpy( pszDBFFilename+strlen(pszDBFFilename)-4, ".dbf");
+        _tcscpy( pszDBFFilename+_tcslen(pszDBFFilename)-4, _T(".dbf"));
     }
-    else if( strcmp(pszFilename+strlen(pszFilename)-4,".SHP") 
-	     || strcmp(pszFilename+strlen(pszFilename)-4,".SHX") )
+    else if( _tcscmp(pszFilename+_tcslen(pszFilename)-4, _T(".SHP")) 
+      || _tcscmp(pszFilename+_tcslen(pszFilename)-4, _T(".SHX")) )
     {
-        strcpy( pszDBFFilename+strlen(pszDBFFilename)-4, ".DBF");
+        _tcscpy( pszDBFFilename+_tcslen(pszDBFFilename)-4, _T(".DBF"));
     }
 
     /* -------------------------------------------------------------------- */
@@ -319,7 +319,7 @@ void  msDBFClose(DBFHandle psDBF)
 /*                                                                      */
 /*      Create a new .dbf file.                                         */
 /************************************************************************/
-DBFHandle msDBFCreate( const char * pszFilename )
+DBFHandle msDBFCreate( const TCHAR * pszFilename )
 
 {
     DBFHandle	psDBF;
@@ -328,14 +328,14 @@ DBFHandle msDBFCreate( const char * pszFilename )
     /* -------------------------------------------------------------------- */
     /*      Create the file.                                                */
     /* -------------------------------------------------------------------- */
-    fp = fopen( pszFilename, "wb" );
+    fp = _tfopen( pszFilename, _T("wb"));
     if( fp == NULL )
         return( NULL );
 
     fputc( 0, fp );
     fclose( fp );
 
-    fp = fopen( pszFilename, "rb+" );
+    fp = _tfopen( pszFilename, _T("rb+"));
     if( fp == NULL )
         return( NULL );
 

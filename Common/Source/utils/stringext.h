@@ -12,7 +12,7 @@
 
 /*____________________________________________________________________________*/
 
-#include <wchar.h>
+#include <tchar.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,10 +25,13 @@ extern "C" {
 
 /*____________________________________________________________________________*/
   
-int ascii2unicode(const char* ascii, wchar_t* unicode, int maxChars);
-int unicode2ascii(const wchar_t* unicode, char* ascii, int maxChars);
-int unicode2utf(const wchar_t* unicode, char* utf, int maxChars);
-int utf2unicode(const char* utf, wchar_t* unicode, int maxChars);
+int ascii2unicode(const char* ascii, TCHAR* unicode, int maxChars);
+int unicode2ascii(const TCHAR* unicode, char* ascii, int maxChars);
+int unicode2utf(const TCHAR* unicode, char* utf, int maxChars);
+int utf2unicode(const char* utf, TCHAR* unicode, int maxChars);
+  
+int unicode2usascii(const TCHAR* unicode, char* ascii, int outSize);
+
 
 
 #ifdef __cplusplus

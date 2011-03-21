@@ -35,10 +35,7 @@
 zzip_off_t
 zzip_filesize(int fd)
 {
-
-// JMW
-#if (WINDOWSPC>0)&&!defined(__MINGW32__)
-    struct stat st;
+  struct stat st;
   if (fstat(fd, &st) < 0)
     return -1;
 
@@ -48,16 +45,6 @@ zzip_filesize(int fd)
 	      (long) st.st_size, (long) st.st_blocks);
 # endif
   return st.st_size;
-#else
-  // if (stat("filename",&st)<0) {
-  //    return -1;
-  // } else {
-  //    return st.st_size;
-  // }
-  // JMW TODO
-  return 0;
-#endif
-
 }
 
 
@@ -67,7 +54,7 @@ zzip_filesize(int fd)
 
 int wince_open (const char *path, int oflag, ...)
 {
-    wchar_t wpath[MAX_PATH];
+    TCHAR wpath[MAX_PATH];
     DWORD fileaccess;
     DWORD fileshare;
     DWORD filecreate;
@@ -141,7 +128,7 @@ int wince_open (const char *path, int oflag, ...)
 // on PC Windows we must convert UTF8 filename into WCHAR* and use _wopen
 int winpc_open(zzip_char_t* filename, int flags, ...)
 {
-  wchar_t wpath[MAX_PATH];
+  TCHAR wpath[MAX_PATH];
   utf2unicode(filename, wpath, MAX_PATH);
   
   return(_wopen(wpath, flags));

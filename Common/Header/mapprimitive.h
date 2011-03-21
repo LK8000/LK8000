@@ -132,7 +132,7 @@ void msFreeCharArray(char **array, int num_items);
 
 #include <zzip/lib.h>
 
-ZZIP_FILE *ppc_fopen(const char *filename, const char *mode);
+ZZIP_FILE *ppc_fopen(const TCHAR *filename, const char *mode);
 #ifdef __cplusplus
 }
 #endif

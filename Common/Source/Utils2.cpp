@@ -3956,8 +3956,7 @@ bool LoadModelFromProfile()
   StartupStore(_T(". Searching modeltype inside default profile <%s>%s"),tmpTbuf,NEWLINE);
 
   FILE *fp=NULL;
-  sprintf(tmpbuf,"%S",tmpTbuf);
-  fp = fopen(tmpbuf, "rb");
+  fp = _tfopen(tmpTbuf, _T("rb"));
   if(fp == NULL) {
 	StartupStore(_T("... No default profile found%s"),NEWLINE);
 	return false;

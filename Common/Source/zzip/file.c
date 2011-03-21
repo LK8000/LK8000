@@ -24,6 +24,8 @@
 #include <zzip/fetch.h>
 #include <zzip/__debug.h>
 
+#include "utils/stringext.h"
+
 #if defined(__MINGW32__)
 //(WINDOWSPC>0)&&
 // JMW needed otherwise seek/tell won't work!
@@ -546,9 +548,12 @@ zzip_fread(void *ptr, zzip_size_t size, zzip_size_t nmemb, ZZIP_FILE *file)
  * it). On error this function will return null setting => errno(3).
  */
 ZZIP_FILE*
-zzip_fopen(zzip_char_t* filename, zzip_char_t* mode)
+zzip_fopen(const TCHAR* filename, zzip_char_t* mode)
 {
-    return zzip_freopen (filename, mode, 0);
+    char utfname[MAX_PATH*2];
+    unicode2utf(filename, utfname, countof(utfname));
+  
+    return zzip_freopen (utfname, mode, 0);
 }
 
 /** => zzip_fopen
@@ -743,24 +748,15 @@ zzip_open_shared_io (ZZIP_FILE* stream,
 	int fd = os->fd.open(filename, o_flags); /* io->fd.open */
         if (fd != -1)
         {
-#if (WINDOWSPC<1)||defined(__MINGW32__)
-            struct stat st; // JMW
-#endif
             ZZIP_FILE* fp = calloc (1, sizeof(ZZIP_FILE));
             if (! fp) { 
-		os->fd.close(fd); return 0; 
+            os->fd.close(fd); return 0; 
 	    } /* io->fd.close */
 
             fp->dir = NULL;
             fp->fd = fd; 
             fp->io = os;
-
-#if (WINDOWSPC<1)||defined(__MINGW32__)
-            if (stat(filename,&st) >=0)
-                fp->usize = st.st_size;
-#else
             fp->usize = os->fd.filesize(fd);
-#endif
             return fp;
         }
         if (o_modes & ZZIP_PREFERZIP) {

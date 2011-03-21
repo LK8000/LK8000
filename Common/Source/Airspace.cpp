@@ -1246,9 +1246,8 @@ static void FindAirspaceAreaBounds() {
 
 void ReadAirspace(void)
 {
-  wchar_t	szFile1[MAX_PATH] = L"\0";
-  wchar_t	szFile2[MAX_PATH] = L"\0";
-  char utfname[MAX_PATH*2];
+  TCHAR szFile1[MAX_PATH] = _T("\0");
+  TCHAR szFile2[MAX_PATH] = _T("\0");
 
   ZZIP_FILE *fp=NULL;
   ZZIP_FILE *fp2=NULL;
@@ -1263,23 +1262,20 @@ void ReadAirspace(void)
   GetRegistryString(szRegistryAdditionalAirspaceFile, szFile2, MAX_PATH);
   ExpandLocalPath(szFile2);
 
-  if (wcslen(szFile1)>0) {
-    unicode2utf(szFile1, utfname, countof(utfname));
-    fp  = zzip_fopen(utfname, "rt");
+  if (_tcslen(szFile1)>0) {
+    fp  = zzip_fopen(szFile1, "rt");
   } else {
     //* 091206 back on 
-    static wchar_t szMapFile[MAX_PATH] = L"\0";
+    static TCHAR szMapFile[MAX_PATH] = _T("\0");
     GetRegistryString(szRegistryMapFile, szMapFile, MAX_PATH);
     ExpandLocalPath(szMapFile);
-    wcscat(szMapFile, L"/");
-    wcscat(szMapFile, _T(LKF_AIRSPACES));
-    unicode2utf(szMapFile, utfname, countof(utfname));
-    fp  = zzip_fopen(utfname, "rt");
+    _tcscat(szMapFile, _T("/"));
+    _tcscat(szMapFile, _T(LKF_AIRSPACES));
+    fp  = zzip_fopen(szMapFile, "rt");
   }
 
-  if (wcslen(szFile2)>0) {
-    unicode2utf(szFile2, utfname, countof(utfname));
-    fp2 = zzip_fopen(utfname, "rt");
+  if (_tcslen(szFile2)>0) {
+    fp2 = zzip_fopen(szFile2, "rt");
   }
 
   SetRegistryString(szRegistryAirspaceFile, TEXT("\0"));

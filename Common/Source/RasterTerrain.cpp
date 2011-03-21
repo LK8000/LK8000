@@ -521,25 +521,25 @@ void RasterTerrain::OpenTerrain(void)
   CreateProgressDialog(gettext(TEXT("_@M900_"))); // Loading Terrain File...
   SetProgressStepSize(2);
 
-  wchar_t szFile[MAX_PATH] = L"\0";
+  TCHAR szFile[MAX_PATH] = _T("\0");
 
   GetRegistryString(szRegistryTerrainFile, szFile, MAX_PATH);
 
-  wchar_t szOrigFile[MAX_PATH] = L"\0";
+  TCHAR szOrigFile[MAX_PATH] = _T("\0");
 
   ExpandLocalPath(szFile);
-  wcscpy(szOrigFile, szFile);
+  _tcscpy(szOrigFile, szFile);
   ContractLocalPath(szOrigFile);
   
   SetRegistryString(szRegistryTerrainFile, TEXT("\0"));
 
   static TCHAR  szMapFile[MAX_PATH] = TEXT("\0");
-  if (wcslen(szFile)==0) {
+  if (_tcslen(szFile)==0) {
     StartupStore(_T(". No Terrain File configured%s"),NEWLINE);
     GetRegistryString(szRegistryMapFile, szMapFile, MAX_PATH);
     ExpandLocalPath(szMapFile);
-    wcscpy(szFile,szMapFile);
-    wcscat(szFile, L"/terrain.jp2"); 
+    _tcscpy(szFile,szMapFile);
+    _tcscat(szFile, _T("/terrain.jp2")); 
     StartupStore(_T(". Attempting to use JP2 <%s> inside mapfile%s"),szFile,NEWLINE);
 
 	// support terrain.dat inside xcm files
@@ -548,8 +548,8 @@ void RasterTerrain::OpenTerrain(void)
 		terrain_initialised = true;
 		return;
 	} else {
-    wcscpy(szFile,szMapFile);
-		wcscat(szFile, L"/terrain.dem"); 
+    _tcscpy(szFile,szMapFile);
+		_tcscat(szFile, _T("/terrain.dem")); 
 		StartupStore(_T(". Attempting to use DEM <%s> inside mapfile%s"),szFile,NEWLINE);
 	}
   }
@@ -562,8 +562,8 @@ void RasterTerrain::OpenTerrain(void)
     terrain_initialised = true;
     return; // 100610
   } else {
-    wcscpy(szFile,szMapFile);
-		wcscat(szFile, L"/terrain.dat"); 
+    _tcscpy(szFile,szMapFile);
+		_tcscat(szFile, _T("/terrain.dat")); 
 		StartupStore(_T(". Attempting to use DAT <%s> inside mapfile%s"),szFile,NEWLINE);
 
 		if (CreateTerrainMap(szFile)) {
@@ -583,8 +583,8 @@ void RasterTerrain::OpenTerrain(void)
 }
 
 
-bool RasterTerrain::CreateTerrainMap(const wchar_t *zfilename) {
-  if (wcsstr(zfilename, L".jp2")) {
+bool RasterTerrain::CreateTerrainMap(const TCHAR *zfilename) {
+  if (_tcsstr(zfilename, _T(".jp2"))) {
     TerrainMap = new RasterMapJPG2000();
     if (!TerrainMap) 
       return false;
@@ -612,17 +612,14 @@ bool RasterTerrain::CreateTerrainMap(const wchar_t *zfilename) {
 
 ///////// Specialised open/close routines /////////////////// 
 
-bool RasterMapCache::Open(const wchar_t* zfilename) {
+bool RasterMapCache::Open(const TCHAR* zfilename) {
 
   terrain_valid = false;
-  if (wcslen(zfilename)<=0) {
+  if (_tcslen(zfilename)<=0) {
     return false;
   }
   if (!fpTerrain) {
-    char utfname[MAX_PATH*2];
-    unicode2utf(zfilename, utfname, countof(utfname));
-    
-    fpTerrain = zzip_fopen(utfname, "rb");
+    fpTerrain = zzip_fopen(zfilename, "rb");
     if (!fpTerrain) {
       return false;
     }
@@ -653,21 +650,18 @@ bool RasterMapCache::Open(const wchar_t* zfilename) {
 }
 
 
-bool RasterMapRaw::Open(const wchar_t* zfilename) {
+bool RasterMapRaw::Open(const TCHAR* zfilename) {
   ZZIP_FILE *fpTerrain;
 
   max_field_value = 0;
   terrain_valid = false;
 
-  if (wcslen(zfilename)<=0) 
+  if (_tcslen(zfilename)<=0) 
     return false;
 
   StartupStore(_T(". Terrain Open RasterMapRaw <%s>%s"),zfilename,NEWLINE); // 100102
 
-  char utfname[MAX_PATH*2];
-  unicode2utf(zfilename, utfname, countof(utfname));
-  
-  fpTerrain = zzip_fopen(utfname, "rb");
+  fpTerrain = zzip_fopen(zfilename, "rb");
   if (fpTerrain == NULL) {
 	StartupStore(_T(". Terrain RasterMapRaw Open failed%s"),NEWLINE); // 100102
 	return false;
@@ -721,8 +715,8 @@ bool RasterMapRaw::Open(const wchar_t* zfilename) {
 }
 
 
-bool RasterMapJPG2000::Open(const wchar_t* zfilename) {
-  wcscpy(jp2_filename,zfilename);
+bool RasterMapJPG2000::Open(const TCHAR* zfilename) {
+  _tcscpy(jp2_filename,zfilename);
 
   // force first-time load
   TriggerJPGReload = true;
@@ -918,17 +912,17 @@ int RasterWeather::IndexToTime(int x) {
 }
 
 
-void RasterWeather::RASP_filename(wchar_t* rasp_filename,
-                                  const wchar_t* name) {
-  wchar_t fname[MAX_PATH];
-  wsprintf(fname,
-            L"xcsoar-rasp.dat/%s.curr.%04dlst.d2.jp2",
+void RasterWeather::RASP_filename(TCHAR* rasp_filename,
+                                  const TCHAR* name) {
+  TCHAR fname[MAX_PATH];
+  _stprintf(fname,
+            _T("xcsoar-rasp.dat/%s.curr.%04dlst.d2.jp2"),
             name, IndexToTime(weather_time));
   LocalPath(rasp_filename, fname);
 }
 
 bool RasterWeather::LoadItem(int item, const TCHAR* name) {
-  wchar_t rasp_filename[MAX_PATH];
+  TCHAR rasp_filename[MAX_PATH];
   RASP_filename(rasp_filename, name);
   weather_map[item] = new RasterMapJPG2000();
   weather_map[item]->Open(rasp_filename);

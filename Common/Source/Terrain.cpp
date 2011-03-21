@@ -161,9 +161,9 @@ void TopologyInitialiseMarks() {
     delete topo_marks;
   }
 
-  char buf[MAX_PATH];
-  LocalPathS(buf,_T(LKD_CONF));
-  strcat(buf,"\\"); strcat(buf,LKF_SMARKS); 
+  TCHAR buf[MAX_PATH];
+  LocalPath(buf, _T(LKD_CONF));
+  _tcscat(buf, _T("\\")); _tcscat(buf, _T(LKF_SMARKS)); 
   topo_marks = new TopologyWriter(buf, RGB(0xD0,0xD0,0xD0)); 
   if (topo_marks) {
     topo_marks->scaleThreshold = 30.0;
@@ -1710,9 +1710,9 @@ void OpenTopology() {
   CreateProgressDialog(gettext(TEXT("_@M902_"))); // Loading Topology File...
 
   // Start off by getting the names and paths
-  static TCHAR  szOrigFile[MAX_PATH] = TEXT("\0");
-  static TCHAR  szFile[MAX_PATH] = TEXT("\0");
-  static  TCHAR Directory[MAX_PATH] = TEXT("\0");
+  static TCHAR szOrigFile[MAX_PATH] = TEXT("\0");
+  static TCHAR szFile[MAX_PATH] = TEXT("\0");
+  static TCHAR Directory[MAX_PATH] = TEXT("\0");
 
   LKTopo=0;
 
@@ -1743,21 +1743,17 @@ void OpenTopology() {
 
     // Look for the file within the map zip file...
     _tcscpy(Directory,szMapFile);
-    wcscat(Directory,TEXT("/"));
+    _tcscat(Directory,TEXT("/"));
     szFile[0]=0;
-    wcscat(szFile,Directory);
-    wcscat(szFile,TEXT("topology.tpl"));
+    _tcscat(szFile,Directory);
+    _tcscat(szFile,TEXT("topology.tpl"));
 
   } else {
     ExtractDirectory(Directory,szFile);
   }
 
   // Ready to open the file now..
-
-  char utfname[MAX_PATH*2];
-  unicode2utf(szFile, utfname, countof(utfname));
-  
-  static ZZIP_FILE* zFile = zzip_fopen(utfname, "rt");
+  ZZIP_FILE* zFile = zzip_fopen(szFile, "rt");
   
   if (!zFile) {
     UnlockTerrainDataGraphics();
@@ -1774,7 +1770,6 @@ void OpenTopology() {
   TCHAR wShapeFilename[MAX_PATH];
   TCHAR *Stop;
   int numtopo = 0;
-  char ShapeFilename[MAX_PATH];
   int shapeIndex=0;
   LKWaterThreshold=0;
 
@@ -1792,13 +1787,8 @@ void OpenTopology() {
         
         _tcscpy(wShapeFilename, Directory);
 
-        wcscat(wShapeFilename,ShapeName);
-        wcscat(wShapeFilename,TEXT(".shp"));
-        
-        WideCharToMultiByte( CP_ACP, 0, wShapeFilename,
-                             _tcslen(wShapeFilename)+1, 
-                             ShapeFilename,   
-                             200, NULL, NULL);
+        _tcscat(wShapeFilename,ShapeName);
+        _tcscat(wShapeFilename,TEXT(".shp"));
         
         // Shape range
         PExtractParameter(TempString, ctemp, 1);
@@ -1940,11 +1930,11 @@ void OpenTopology() {
         
         if (ShapeField<0) {
           Topology* newtopo;
-          newtopo = new Topology(ShapeFilename, RGB(red,green,blue));
+          newtopo = new Topology(wShapeFilename, RGB(red,green,blue));
           TopoStore[numtopo] = newtopo;
         } else {
           TopologyLabel *newtopol;
-          newtopol = new TopologyLabel(ShapeFilename, 
+          newtopol = new TopologyLabel(wShapeFilename, 
                                        RGB(red,green,blue),
                                        ShapeField);
           TopoStore[numtopo] = newtopol;

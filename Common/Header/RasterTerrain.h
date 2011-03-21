@@ -64,7 +64,7 @@ class RasterMap {
   short GetField(const double &Latitude, 
                  const double &Longitude);
 
-  virtual bool Open(const wchar_t* filename) = 0;
+  virtual bool Open(const TCHAR* filename) = 0;
   virtual void Close() = 0;
   virtual void Lock() = 0;
   virtual void Unlock() = 0;
@@ -123,7 +123,7 @@ class RasterMapCache: public RasterMap {
   short LookupTerrainCacheFile(const long &SeekPos);
   void OptimizeCash(void);
 
-  virtual bool Open(const wchar_t* filename);
+  virtual bool Open(const TCHAR* filename);
   virtual void Close();
   void Lock();
   void Unlock();
@@ -155,7 +155,7 @@ class RasterMapRaw: public RasterMap {
   }
   short *TerrainMem;
   virtual void SetFieldRounding(double xr, double yr);
-  virtual bool Open(const wchar_t* filename);
+  virtual bool Open(const TCHAR* filename);
   virtual void Close();
   void Lock();
   void Unlock();
@@ -177,14 +177,14 @@ class RasterMapJPG2000: public RasterMap {
   void SetViewCenter(const double &Latitude, 
                      const double &Longitude);
   virtual void SetFieldRounding(double xr, double yr);
-  virtual bool Open(const wchar_t* filename);
+  virtual bool Open(const TCHAR* filename);
   virtual void Close();
   void Lock();
   void Unlock();
   void ServiceFullReload(double lat, double lon);
 
  protected:
-  wchar_t jp2_filename[MAX_PATH*2];
+  TCHAR jp2_filename[MAX_PATH*2];
   virtual short _GetFieldAtXY(unsigned int lx,
                               unsigned int ly);
   bool TriggerJPGReload;
@@ -210,7 +210,7 @@ public:
     return terrain_initialised;
   }
   static RasterMap* TerrainMap;
-  static bool CreateTerrainMap(const wchar_t *zfilename);
+  static bool CreateTerrainMap(const TCHAR *zfilename);
 
  public:
   static void Lock(void);
@@ -255,7 +255,7 @@ public:
   void Reload(double lat, double lon);
   int weather_time;
   RasterMap* weather_map[MAX_WEATHER_MAP];
-  void RASP_filename(wchar_t* rasp_filename, const wchar_t* name);
+  void RASP_filename(TCHAR* rasp_filename, const TCHAR* name);
   bool LoadItem(int item, const TCHAR* name);
   void SetViewCenter(double lat, double lon);
   void ServiceFullReload(double lat, double lon);

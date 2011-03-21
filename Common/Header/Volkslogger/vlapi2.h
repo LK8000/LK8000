@@ -187,7 +187,7 @@ class VLAPI : protected VLA_XFR, public VLAPI_DATA {
   // into file named "filename". 
   // secure = 1 for DSA-signature, 0 for MD-signature only
   // DSA is mandatory for DMST and FAI flight validation
-  VLA_ERROR read_igcfile(char *filename,int index, int secure); 
+  VLA_ERROR read_igcfile(TCHAR *filename,int index, int secure); 
 
   // read database and flight declaration form from Volkslogger into the 
   // predefined structs DECLARATION and DATABASE (see above)

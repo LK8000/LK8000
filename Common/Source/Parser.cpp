@@ -1680,7 +1680,7 @@ void LogNMEA(TCHAR* text) {
   TCHAR	buffer[LKSIZEBUFFERPATH];
   char snmea[LKSIZENMEA];
 
-  static char	fpname[LKSIZEBUFFERPATH];
+  static TCHAR fpname[LKSIZEBUFFERPATH];
   static bool	doinit=true;
   static bool	wasWriting=false;
   static bool	alreadyWarned=false;
@@ -1696,13 +1696,13 @@ void LogNMEA(TCHAR* text) {
 
   if (doinit) {
 	LocalPath(buffer,TEXT(LKD_LOGS));
-	sprintf(fpname,"%S\\NMEA_%04d-%02d-%02d-%02d-%02d-%02d.txt",buffer,GPS_INFO.Year,GPS_INFO.Month, GPS_INFO.Day,
+	_stprintf(fpname, _T("%s\\NMEA_%04d-%02d-%02d-%02d-%02d-%02d.txt"), buffer, GPS_INFO.Year, GPS_INFO.Month, GPS_INFO.Day,
 		GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
 	doinit=false;
   }
 
   if (!wasWriting) {
-	logfp=fopen(fpname,"a");
+	logfp = _tfopen(fpname, _T("a"));
 	if (logfp == NULL) {
 		if (!alreadyWarned) {
 			DoStatusMessage(_T("ERR-049 Cannot open NMEA log"));

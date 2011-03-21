@@ -311,7 +311,6 @@ DEVS	:=\
 	$(SRC)/devDigifly.cpp \
 	$(SRC)/devGeneric.cpp \
 	$(SRC)/devBase.cpp \
-	$(SRC)/devBaseAscii.cpp \
 	$(SRC)/devLX.cpp \
 	$(SRC)/devLXNano.cpp \
 	$(SRC)/devNmeaOut.cpp \

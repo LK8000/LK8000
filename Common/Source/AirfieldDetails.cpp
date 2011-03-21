@@ -23,33 +23,31 @@
 
 ZZIP_FILE* zAirfieldDetails = NULL;
 
-static wchar_t szAirfieldDetailsFile[MAX_PATH] = TEXT("\0");
+static TCHAR szAirfieldDetailsFile[MAX_PATH] = TEXT("\0");
 
 void OpenAirfieldDetails() {
-  wchar_t zfilename[MAX_PATH];
+  TCHAR zfilename[MAX_PATH];
 
   zAirfieldDetails = NULL;
 
   GetRegistryString(szRegistryAirfieldFile, szAirfieldDetailsFile, MAX_PATH);
 
-  wcscpy(zfilename, szAirfieldDetailsFile);
-  
-  if (wcslen(szAirfieldDetailsFile)>0) {
+  if (_tcslen(szAirfieldDetailsFile)>0) {
     ExpandLocalPath(szAirfieldDetailsFile);
+    _tcscpy(zfilename, szAirfieldDetailsFile);
     SetRegistryString(szRegistryAirfieldFile, TEXT("\0"));
   } else {
 	#if 0
 	LocalPath(zfilename, _T(KD_WAYPOINTS));
-	wcscat(zfilename, L"\\"); 
-	wcscat(zfilename, _T(LKF_AIRFIELDS));
+	_tcscat(zfilename, _T("\\")); 
+	_tcscat(zfilename, _T(LKF_AIRFIELDS));
 	#else
-	wcscpy(zfilename, L"");
+	_tcscpy(zfilename, _T(""));
 	#endif
   }
-  if (wcslen(zfilename)>0) {
-    char utfname[MAX_PATH*2];
-    unicode2utf(zfilename, utfname, countof(utfname));
-    zAirfieldDetails = zzip_fopen(utfname, "rb");
+  if (_tcslen(zfilename)>0) {
+    StartupStore(_T(". open AirfieldFile <%s> %s"), zfilename, NEWLINE);
+    zAirfieldDetails = zzip_fopen(zfilename, "rb");
   }
 };
 
@@ -207,8 +205,8 @@ void ParseAirfieldDetails() {
 	  CleanString[n]='\0';
 
 	  if (_tcslen(Details)+_tcslen(CleanString)+3<DETAILS_LENGTH) {
-	    wcscat(Details,CleanString);
-	    wcscat(Details,TEXT("\r\n"));
+	    _tcscat(Details,CleanString);
+	    _tcscat(Details,TEXT("\r\n"));
 	  }
 	}
       }
