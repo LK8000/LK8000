@@ -504,13 +504,13 @@
 </WndFrame>
 <WndFrame Name="frmVarioAppearance" X=70 Y=0 Width=-246 Height=222 Font=2>
 <WndProperty Name="prpLook8000" Caption="_@M585_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H193_">
-<DataField name="" DataType="enum" Min=0 Max=10 Step=1 />
+<DataField name="" DataType="enum" OnDataAccess="OnLk8000ModeChange" />
 </WndProperty>
 <WndProperty Name="prpOverlaySize" Caption="_@M841_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H238_">
 <DataField name="" DataType="enum" Min=0 Max=10 Step=1 />
 </WndProperty>
 <WndProperty Name="prpOverlayClock" Caption="_@M615_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H237_">
-<DataField name="" DataType="boolean" />
+<DataField name="" DataType="enum" Min=0 Max=3 Step=1 />
 </WndProperty>
 <WndProperty Name="prpFinalGlideTerrain" Caption="_@M326_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H194_">
 <DataField name="" DataType="enum" Min=0 Max=2 Step=1/>

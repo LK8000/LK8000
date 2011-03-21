@@ -501,6 +501,47 @@ static void OnAirspaceFillType(DataField *Sender, DataField::DataAccessKind_t Mo
   }
 }
  
+static void OnLk8000ModeChange(DataField *Sender, DataField::DataAccessKind_t Mode){
+  WndProperty* wp;
+
+  switch(Mode){
+    case DataField::daGet:
+	break;
+    case DataField::daPut:
+    case DataField::daChange:
+	wp = (WndProperty*)wf->FindByName(TEXT("prpLook8000"));
+	if (wp) {
+		if (Look8000 != (Look8000_t) (wp->GetDataField()->GetAsInteger())) {
+			Look8000 = (Look8000_t) (wp->GetDataField()->GetAsInteger());
+			if (Look8000!=0) { // 091115 do not allow Reserved mode , do not disable LK8000 !
+				SetToRegistry(szRegistryLook8000, (DWORD)(Look8000));
+				changed = true;
+			} else Look8000=1;
+		}
+	}
+
+	wp = (WndProperty*)wf->FindByName(TEXT("prpOverlayClock"));
+	if (wp) {
+		if (Look8000==lxcStandard || !ScreenLandscape)  {
+			wp->SetReadOnly(true);
+			OverlayClock=0;
+		} else {
+			wp->SetReadOnly(false);
+		}
+		// Update the OverlayClock selection, without changing of course the content of enumerated list
+		DataFieldEnum* dfe;
+		dfe = (DataFieldEnum*)wp->GetDataField();
+		dfe->Set(OverlayClock);
+    		wp->RefreshDisplay();
+	}
+
+	break;
+    default: 
+	StartupStore(_T("........... DBG-908%s"),NEWLINE); 
+	break;
+  }
+}
+
 static void ResetFonts(bool bUseCustom) {
 // resest fonts when UseCustomFonts is turned off
 
@@ -1325,6 +1366,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnSetCustomKeysClicked),
   
   DeclareCallBackEntry(OnAirspaceFillType),
+  DeclareCallBackEntry(OnLk8000ModeChange),
   DeclareCallBackEntry(NULL)
 };
 
@@ -2951,13 +2993,20 @@ static void setVariables(void) {
     dfe->Set(ThermalBar);
     wp->RefreshDisplay();
   }
+
+  // This is updated also from DoLook8000ModeChange function
+  // These are only the initial startup values
   wp = (WndProperty*)wf->FindByName(TEXT("prpOverlayClock"));
   if (wp) {
+    if (Look8000==lxcStandard || !ScreenLandscape) {
+	OverlayClock=0;	// Disable clock
+    	wp->SetReadOnly(true);
+    } 
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M239_ = "Disabled" 
+    // LKTOKEN  _@M239_ = "Disabled" 
     dfe->addEnumText(gettext(TEXT("_@M239_")));
-	// LKTOKEN  _@M259_ = "Enabled" 
+    // LKTOKEN  _@M259_ = "Enabled" 
     dfe->addEnumText(gettext(TEXT("_@M259_")));
     dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->Set(OverlayClock);
@@ -4711,6 +4760,7 @@ void dlgConfigurationShowModal(void){
     }
   }
 
+/* 110321 REMOVE IT, NO MORE NEEDED BECAUSE WE USE FUNCTION 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLook8000"));
   if (wp) {
     if (Look8000 != (Look8000_t)
@@ -4723,6 +4773,7 @@ void dlgConfigurationShowModal(void){
 	} else Look8000=1;
     }
   }
+*/
 
 #if (0)
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltArrivMode"));
