@@ -4778,8 +4778,8 @@ void StartupStore(const TCHAR *Str, ...)
     int i = unicode2utf(buf, sbuf, sizeof(sbuf));
     
     if (i > 0) {
-      if (sbuf[i - 1] != 0x0a && sbuf[i - 1] != 0x0d)
-        sprintf(sbuf + i, SNEWLINE);
+      if (sbuf[i - 1] == 0x0a && (i == 1 || (i > 1 && sbuf[i-2] != 0x0d)))
+        sprintf(sbuf + i - 1, SNEWLINE);
       fprintf(startupStoreFile, "[%09u] %s", (unsigned int)GetTickCount(), sbuf);
     }
     fclose(startupStoreFile);
