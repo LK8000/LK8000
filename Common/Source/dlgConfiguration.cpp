@@ -4463,6 +4463,7 @@ void dlgConfigurationShowModal(void){
     if (_tcscmp(temptext,szMapFile)) {
       SetRegistryString(szRegistryMapFile, temptext);
       MAPFILECHANGED= true;
+      TERRAINFILECHANGED= true; //for .xcm
       changed = true;
     }
   }
