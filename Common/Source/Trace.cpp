@@ -6,6 +6,9 @@
    $Id: $
 */
 
+#include "options.h"
+#ifdef NEW_OLC
+
 #include "Trace.h"
 #include "XCSoar.h"
 #include <tchar.h>
@@ -293,3 +296,5 @@ void CTrace::CPoint::AssesCost()
   }
   _timeCost = _gps->TimeDelta(*_prev->_gps);
 }
+
+#endif /* NEW_OLC */

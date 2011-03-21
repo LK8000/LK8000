@@ -428,7 +428,7 @@ SRC_FILES :=\
 	$(DEVS) \
 	$(DLGS) \
 	$(VOLKS)
-#	$(SRC)/OnLineContest.cpp \
+
 
 ####### libraries
 

@@ -6,6 +6,14 @@
    $Id: $
 */
 
+
+#include "options.h"
+#ifndef NEW_OLC
+
+#include "OnLineContest.cpp"
+
+#else
+
 #include "ContestMgr.h"
 #include "XCSoar.h"
 #include "Dialogs.h"
@@ -606,3 +614,5 @@ void CContestMgr::Trace(CPointGPSArray &array) const
     point = point->Next();
   }
 }
+
+#endif /* NEW_OLC */
