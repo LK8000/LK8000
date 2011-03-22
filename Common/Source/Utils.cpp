@@ -5503,27 +5503,34 @@ unsigned long CheckFreeRam(void) {
 
 // check maximum allocatable heap block
 unsigned long CheckMaxHeapBlock(void) {
-  // try allocate maximum block (of course on PC with disk swapping, we will not
-  // try maximum block, function just returns something near to initial top value)
-  size_t top = 100*1024*1024; // start with 100MB/2
-  size_t btm = 0;
-  
-  void*  addr;
-  size_t size;
-  
-  while ((size = (btm + top) / 2) != 0) { // ~ btm + (top - btm) / 2
-    addr = malloc(size);
-    if (addr == NULL)
-      top = size;
-    else {
-      free(addr);
-      if ((top - btm) < 1024) // 1 KB accuracy
-        return(size);
-      btm = size;
+  #if defined(HC_DMALLOC) ||  defined(HC_DUMA)
+    // when using heap checker, do not try allocate maximum size - malloc() can
+    // return NULL which heap checker recognizes as an error and will terminate
+    // program immediately when configured so (can be confusing for developer)
+    return(0xFFFFFFFF);
+  #else  
+    // try allocate maximum block (of course on PC with disk swapping, we will not
+    // try maximum block, function just returns something near to initial top value)
+    size_t top = 100*1024*1024; // start with 100MB/2
+    size_t btm = 0;
+    
+    void*  addr;
+    size_t size;
+    
+    while ((size = (btm + top) / 2) != 0) { // ~ btm + (top - btm) / 2
+      addr = malloc(size);
+      if (addr == NULL)
+        top = size;
+      else {
+        free(addr);
+        if ((top - btm) < 1024) // 1 KB accuracy
+          return(size);
+        btm = size;
+      }
     }
-  }
-  
-  return(0);
+    
+    return(0);
+  #endif
 }
 
 
