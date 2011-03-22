@@ -15,6 +15,8 @@
 #include "dlgTools.h"
 #include "Utils.h"
 
+#ifdef LKAIRSPACE
+
 static bool changed = false;
 static WndForm *wf=NULL;
 
@@ -152,3 +154,4 @@ void dlgAirspaceWarningParamsShowModal(void){
 
 }
 
+#endif //LKAIRSPACE 
