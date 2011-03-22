@@ -1909,9 +1909,17 @@ bool CAirspaceManager::AirspaceWarningIsGoodPosition(float longitude, float lati
 
 void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated) 
 {
+  static int step = 0;
+  static double bearing = 0;
+  static double interest_radius = 0;
+  static rectObj bounds = {0};
+  static double lon = 0;
+  static double lat = 0;
+ 
   if(!AIRSPACEWARNINGS) return;				//Airspace warnings disabled in config
 
   CCriticalSection::CGuard guard(_csairspaces);
+  CAirspaceList::iterator it;
 
   if ( _airspaces_near.size() == 0 ) return;
   
@@ -1920,110 +1928,125 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
   StartupStore(TEXT("---AirspaceWarning start%s"),NEWLINE);
   #endif
 
-  // Calculate area of interest
-  double interest_radius = Basic->Speed * WarningTime * 1.25;		// 25% more than required
-  rectObj bounds;
-  double lon = Basic->Longitude;
-  double lat = Basic->Latitude;
-  bounds.minx = lon;
-  bounds.maxx = lon;
-  bounds.miny = lat;
-  bounds.maxy = lat;
-
-  double bearing = 0;
-  {
-	FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
-	bounds.minx = min(lon, bounds.minx);
-	bounds.maxx = max(lon, bounds.maxx);
-	bounds.miny = min(lat, bounds.miny);
-	bounds.maxy = max(lat, bounds.maxy);
-  }
-  bearing = 90;
-  {
-	FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
-	bounds.minx = min(lon, bounds.minx);
-	bounds.maxx = max(lon, bounds.maxx);
-	bounds.miny = min(lat, bounds.miny);
-	bounds.maxy = max(lat, bounds.maxy);
-  }
-  bearing = 180;
-  {
-	FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
-	bounds.minx = min(lon, bounds.minx);
-	bounds.maxx = max(lon, bounds.maxx);
-	bounds.miny = min(lat, bounds.miny);
-	bounds.maxy = max(lat, bounds.maxy);
-  }
-  bearing = 270;
-  {
-	FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
-	bounds.minx = min(lon, bounds.minx);
-	bounds.maxx = max(lon, bounds.maxx);
-	bounds.miny = min(lat, bounds.miny);
-	bounds.maxy = max(lat, bounds.maxy);
-  }
-
-  // JMW detect airspace that wraps across 180
-  if ((bounds.minx< -90) && (bounds.maxx>90)) {
-	double tmp = bounds.minx;
-	bounds.minx = bounds.maxx;
-	bounds.maxx = tmp;
-  }
   
-  bool there_is_msg;
+  switch (step) {
+	default:
+	case 0:
+		// MULTICALC STEP 1
+		// Calculate area of interest
+		interest_radius = Basic->Speed * WarningTime * 1.25;		// 25% more than required
+		lon = Basic->Longitude;
+		lat = Basic->Latitude;
+		bounds.minx = lon;
+		bounds.maxx = lon;
+		bounds.miny = lat;
+		bounds.maxy = lat;
 
-  // Step1 Init calculations
-  _airspaces_of_interest.clear();
-  CAirspace::StartWarningCalculation( Basic, Calculated );
-  // Step2 select airspaces in range, and do warning calculations on it, add to interest list
-  CAirspaceList::iterator it;
-  for (it=_airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
-	  // Check for warnings enabled for this class
-	  if (MapWindow::iAirspaceMode[(*it)->Type()] < 2) {
-		(*it)->ResetWarnings();
-		continue;
-	  }
-	  // Check if in interest area
-	  if (!msRectOverlap(&bounds, &(*it)->Bounds())) {
-		(*it)->ResetWarnings();
-		continue;
-	  }
-	  
-	  (*it)->CalculateWarning( Basic, Calculated );
-	  _airspaces_of_interest.push_back(*it);
-  }
+		bearing = 0;
+		{
+		  FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
+		  bounds.minx = min(lon, bounds.minx);
+		  bounds.maxx = max(lon, bounds.maxx);
+		  bounds.miny = min(lat, bounds.miny);
+		  bounds.maxy = max(lat, bounds.maxy);
+		}
+		bearing = 90;
+		{
+		  FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
+		  bounds.minx = min(lon, bounds.minx);
+		  bounds.maxx = max(lon, bounds.maxx);
+		  bounds.miny = min(lat, bounds.miny);
+		  bounds.maxy = max(lat, bounds.maxy);
+		}
+		bearing = 180;
+		{
+		  FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
+		  bounds.minx = min(lon, bounds.minx);
+		  bounds.maxx = max(lon, bounds.maxx);
+		  bounds.miny = min(lat, bounds.miny);
+		  bounds.maxy = max(lat, bounds.maxy);
+		}
+		bearing = 270;
+		{
+		  FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
+		  bounds.minx = min(lon, bounds.minx);
+		  bounds.maxx = max(lon, bounds.maxx);
+		  bounds.miny = min(lat, bounds.miny);
+		  bounds.maxy = max(lat, bounds.maxy);
+		}
 
-  // Step3 Run warning fsms, refine warnings in fly zones, collect user messages
-  for (it=_airspaces_of_interest.begin(); it != _airspaces_of_interest.end(); ++it) {
-	  there_is_msg = (*it)->FinishWarning();
-	  if (there_is_msg) {
-		// Add new warning message to queue
-		AirspaceWarningMessage msg;
-		msg.originator = *it;
-		msg.event = (*it)->WarningEvent();
-		msg.warnlevel = (*it)->WarningLevel();
-		_user_warning_queue.push_back(msg);
-	  }
-  }
+		// JMW detect airspace that wraps across 180
+		if ((bounds.minx< -90) && (bounds.maxx>90)) {
+		  double tmp = bounds.minx;
+		  bounds.minx = bounds.maxx;
+		  bounds.maxx = tmp;
+		}
+		
+		// Step1 Init calculations
+		CAirspace::StartWarningCalculation( Basic, Calculated );
+		++step;
+		break;
+		
+	case 1:
+		// MULTICALC STEP 2
+		// Step2 select airspaces in range, and do warning calculations on it, add to interest list
+		_airspaces_of_interest.clear();
+		for (it=_airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
+			// Check for warnings enabled for this class
+			if (MapWindow::iAirspaceMode[(*it)->Type()] < 2) {
+			  (*it)->ResetWarnings();
+			  continue;
+			}
+			// Check if in interest area
+			if (!msRectOverlap(&bounds, &(*it)->Bounds())) {
+			  (*it)->ResetWarnings();
+			  continue;
+			}
+			
+			(*it)->CalculateWarning( Basic, Calculated );
+			_airspaces_of_interest.push_back(*it);
+		}
+		++step;
+		break;
+		
+	case 2:
+		// MULTICALC STEP 3
+		// Step3 Run warning fsms, refine warnings in fly zones, collect user messages
+		bool there_is_msg;
+		for (it=_airspaces_of_interest.begin(); it != _airspaces_of_interest.end(); ++it) {
+			there_is_msg = (*it)->FinishWarning();
+			if (there_is_msg) {
+			  // Add new warning message to queue
+			  AirspaceWarningMessage msg;
+			  msg.originator = *it;
+			  msg.event = (*it)->WarningEvent();
+			  msg.warnlevel = (*it)->WarningLevel();
+			  _user_warning_queue.push_back(msg);
+			}
+		}
 
-  // This is used nowhere.
-  Calculated->IsInAirspace = false;
+		// This is used nowhere.
+		Calculated->IsInAirspace = false;
 
-  // Fill infoboxes
-  // TODO Until we have one infobox, we have to collect nearest distance values differently!
-  if (CAirspace::GetNearestName() != NULL) {
-	_tcsncpy(NearestAirspaceName, CAirspace::GetNearestName(), NAME_SIZE);
-	NearestAirspaceName[NAME_SIZE]=0;
-	NearestAirspaceHDist = CAirspace::GetNearestHDistance();
-	NearestAirspaceVDist = CAirspace::GetNearestVDistance();
-  } else {
-	NearestAirspaceName[0]=0;
-	NearestAirspaceHDist=0;
-	NearestAirspaceVDist=0;
-  }
+		// Fill infoboxes
+		// TODO Until we have one infobox, we have to collect nearest distance values differently!
+		if (CAirspace::GetNearestName() != NULL) {
+		  _tcsncpy(NearestAirspaceName, CAirspace::GetNearestName(), NAME_SIZE);
+		  NearestAirspaceName[NAME_SIZE]=0;
+		  NearestAirspaceHDist = CAirspace::GetNearestHDistance();
+		  NearestAirspaceVDist = CAirspace::GetNearestVDistance();
+		} else {
+		  NearestAirspaceName[0]=0;
+		  NearestAirspaceHDist=0;
+		  NearestAirspaceVDist=0;
+		}
+		step = 0;
+		break;
+		
+  } // sw step
 
   #ifdef DEBUG_AIRSPACE
-  StartupStore(TEXT("   ends in %dms, processed %d airspaces from %d%s"), GetTickCount()-starttick, _airspaces_of_interest.size(), _airspaces_near.size(), NEWLINE);
+  StartupStore(TEXT("   step %d takes %dms, processed %d airspaces from %d%s"), step, GetTickCount()-starttick, _airspaces_of_interest.size(), _airspaces_near.size(), NEWLINE);
   #endif
 }
 

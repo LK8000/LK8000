@@ -698,20 +698,15 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   static double LastOptimiseTime = 0;
   static double LastSearchBestTime = 0; 
+#ifndef LKAIRSPACE
   static double lastTime = 0;
+#endif
   static bool	validHomeWaypoint=false;
 
   // See also same redundant check inside AirspaceWarning
 #ifdef LKAIRSPACE
-	// It is not too good to call warning calculation every 6 seconds!
-	// It means that dlgAirspaceWarning gets refreshed only in 6 seconds!
-    // Changed to 2 seconds
-  	if (Basic->Time<= lastTime) {
-	  lastTime = Basic->Time-2;
- 	} else {
- 	   // calculate airspace warnings
-	  CAirspaceManager::Instance().AirspaceWarning( Basic, Calculated);
-	}
+  // calculate airspace warnings - multicalc approach embedded in CAirspaceManager
+  CAirspaceManager::Instance().AirspaceWarning( Basic, Calculated);
 #else
   if (NumberOfAirspaceAreas+NumberOfAirspaceCircles >0) {
   	if (Basic->Time<= lastTime) {
