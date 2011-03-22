@@ -1,5 +1,17 @@
 Things to be fixed in LK languages files/tokens:
 
+>>>>>>>>>>>> DO NOT REMOVE OR CHANGE EXISTING TOKENS!!!!!!!!!!!!!! <<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>> DO NOT REMOVE OR CHANGE EXISTING TOKENS!!!!!!!!!!!!!! <<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>> DO NOT REMOVE OR CHANGE EXISTING TOKENS!!!!!!!!!!!!!! <<<<<<<<<<<<<<<<<<<<<<<<<
+
+  WE DO A DIFF AGAINST PREVIOUS OFFICIAL VERSION TO GET THE DIFFERENCES FOR TRANSLATORS
+  WE DO A DIFF AGAINST PREVIOUS OFFICIAL VERSION TO GET THE DIFFERENCES FOR TRANSLATORS
+  WE DO A DIFF AGAINST PREVIOUS OFFICIAL VERSION TO GET THE DIFFERENCES FOR TRANSLATORS
+
+  THIS IS ONLY A MEMO
+  THIS IS ONLY A MEMO
+  THIS IS ONLY A MEMO
+
   HLP FIELDS
   ----------
 
@@ -10,15 +22,12 @@ Things to be fixed in LK languages files/tokens:
   NEW MSG TOKENS
   --------------
 
+
 - New Logger fields: _@M936_ - _@M939_  
 - New Airspace filling: _@M940 to  _@M944
 - New bar opacity M950
 - New fields: _@M1001_ - _@M1400_ for calculated values and infobox abbrev. translations, 
   see details in ENG_MSG
 - New Logger declarations Error Handling fields: _@M1400_ - _@M1429_
-- _@M193_ to remove
-- _@M176_, _@M300_, _@M493_, _@M500_, _@M501_, _@M504_, _@M633_, _@M742_, _@H169_, _@H495_, _@H496_ to remove
-- _@M1450_ - _@M1452_ to add
-
 
   MENU files to be checked and translated?

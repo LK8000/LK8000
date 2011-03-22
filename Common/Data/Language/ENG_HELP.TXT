@@ -310,6 +310,15 @@ Minimum height above ground while finishing the task.  Set to 0 for no limit.
 @168
 If enabled, this option requires the minimum height above ground for finish to be greater than 1000m below the start height.
 
+@169
+Rules used for calculating optimal points for OnLine Contest.
+[Sprint]: Conforms to FAI IGC League rules.  Up to 5 points including start and finish, maximum duration 2.5 hours, 
+finish height must not be below start height.
+[Triangle]: Conforms to FAI OLC triangle rules.  Four points with common start and finish.  
+For tasks longer than 500km, no leg less than 25% or larger than 45%; otherwise no leg less than 28% of total. 
+Finish height must not be lower than start height less 1000 meters.
+[Classic]: Conforms to OLC classic rules.  Up to seven points including start and finish, finish height must not be lower than start height less 1000 meters.  Points awarded 80% on second last leg and 60% on last leg.
+
 @170
 Units used for airspeed and ground speed.  A separate unit is available for task speeds.
 
@@ -733,6 +742,22 @@ Minimum height above ground while finishing the task.  Set to 0 for no limit.
 
 @494
 If enabled, this option requires the minimum height above ground for finish to be greater than 1000m below the start height.
+
+@495
+Enables OLC tasks.  When enabled, OLC style task start is detected automatically (lowest point of flight after initial climb). 
+Auto MacCready in final glide sets MacCready to obtain greatest distance in remaining height and time for OLC sprint tasks.
+
+@496
+Rules used for calculating optimal points for OnLine Contest.
+[Sprint]: Conforms to FAI IGC League rules.  Up to 5 points including start and finish, maximum duration 2.5 hours, finish height must not be below start height.
+[Triangle]: Conforms to FAI OLC triangle rules.  
+Four points with common start and finish.  
+For tasks longer than 500km, no leg less than
+25% or larger than 45%; otherwise no leg less than 28% of total.  
+Finish height must not be lower than start height less 1000 meters.
+[Classic]: Conforms to OLC classic rules.  Up to seven points including start and finish, 
+finish height must not be lower than start height less 1000 meters.  
+Points awarded 80% on second last leg and 60% on last leg.
 
 #
 # TASK WAYPOINTS
