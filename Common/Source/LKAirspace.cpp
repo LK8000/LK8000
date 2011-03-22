@@ -523,7 +523,9 @@ bool CAirspace::GetVDistanceInfo(int &vDistance, AirspaceWarningDrawStyle_t &dra
 bool CAirspace::GetWarningPoint(double &longitude, double &latitude) const
 {
   if (_distances_ready && (_warningacklevel < awDailyAck)) {
-	double dist = fabs(_hdistance);
+	if (_flyzone && !_pos_inside_now ) return false;	// no warning point if outside a flyzone
+	if (!_flyzone && _pos_inside_now) return false;		// no warning point if inside a nofly zone
+	double dist = abs(_hdistance);
 	if (_hdistance < 0) {
 	  // if vertical distance smaller, use actual position as warning point indicating a directly above or below warning situation
 	  if ( abs(_vdistance) < AirspaceWarningVerticalMargin ) dist = 0;
