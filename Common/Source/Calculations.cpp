@@ -4232,6 +4232,11 @@ void AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated){
   if ( (NumberOfAirspaceAreas+NumberOfAirspaceCircles) <= 0 ) return;
   static bool position_is_predicted = false;
 
+  #ifdef DEBUG_AIRSPACE
+  int starttick = GetTickCount();
+  StartupStore(TEXT("---Old AirspaceWarning start%s"),NEWLINE);
+  #endif
+  
   //  LockFlightData(); Not necessary, airspace stuff has its own locking
 
   if (GlobalClearAirspaceWarnings == true) {
@@ -4348,6 +4353,10 @@ void AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated){
   // NearestAirspaceHDist=mindist; TODO FIX 090921
 #endif
   NearestAirspaceHDist=0;
+
+  #ifdef DEBUG_AIRSPACE
+  StartupStore(TEXT("   ends in %dms%s"), GetTickCount()-starttick, NEWLINE);
+  #endif
 
 }
 #endif

@@ -1916,6 +1916,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
   if ( _airspaces_near.size() == 0 ) return;
   
   #ifdef DEBUG_AIRSPACE
+  int starttick = GetTickCount();
   StartupStore(TEXT("---AirspaceWarning start%s"),NEWLINE);
   #endif
 
@@ -2022,7 +2023,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
   }
 
   #ifdef DEBUG_AIRSPACE
-  StartupStore(TEXT("   AirspaceWarning ends, processed %d airspaces from %d%s"), _airspaces_of_interest.size(), _airspaces_near.size(), NEWLINE);
+  StartupStore(TEXT("   ends in %dms, processed %d airspaces from %d%s"), GetTickCount()-starttick, _airspaces_of_interest.size(), _airspaces_near.size(), NEWLINE);
   #endif
 }
 

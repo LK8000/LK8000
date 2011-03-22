@@ -184,7 +184,8 @@
 #define DEBUG_GPS	  //  Parser.cpp will show more debug messages about wrong fixes
 #define DEBUGNPM	  // port monitor and hearthbeats in Parser
 #define DEBUG_BESTALTERNATE	// full bestalternate messages inside DEBUG.TXT in home directory
-#define DEBUG_AIRSPACE	// Airspace code debug messages to runtime.log
 */
+
+#define DEBUG_AIRSPACE	// Airspace code debug messages to runtime.log
 
 #endif
