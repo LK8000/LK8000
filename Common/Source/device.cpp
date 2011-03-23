@@ -20,6 +20,8 @@
 #include "device.h"
 #include "MapWindow.h"
 
+#include "utils/heapcheck.h"
+
 // A note about locking.
 //  The ComPort RX threads lock using FlightData critical section.
 //  ComPort::StopRxThread and ComPort::Close both wait for these threads to

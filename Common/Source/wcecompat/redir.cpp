@@ -45,6 +45,8 @@
 #include <sys/stat.h>
 #include <conio.h>
 
+#include "utils/heapcheck.h"
+
 
 /*
 extern "C" void wcelog(const char* format, ...)

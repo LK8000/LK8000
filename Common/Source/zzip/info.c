@@ -21,6 +21,8 @@
 #include <stdio.h>
 #endif
 
+#include "utils/heapcheck.h"
+
 /** 
  *  just returns dir->errcode of the ZZIP_DIR handle 
  *  see: => zzip_dir_open, => zzip_diropen, => zzip_readdir, => zzip_dir_read

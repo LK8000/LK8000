@@ -34,6 +34,8 @@
 #include <wingdi.h>
 #endif
 
+#include "utils/heapcheck.h"
+
 #ifdef CPUSTATS
 extern void DrawCpuStats(HDC hdc, RECT rc);
 #endif

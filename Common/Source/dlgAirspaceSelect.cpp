@@ -19,6 +19,8 @@
 #include "Airspace.h"
 #include "AirspaceWarning.h"
 
+#include "utils/heapcheck.h"
+
 
 typedef struct{
   int Index_Circle;

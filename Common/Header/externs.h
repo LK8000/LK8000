@@ -32,7 +32,6 @@ extern TCHAR XCSoar_Version[256];
 //JMW#include "BlueSMS.h"
 #endif
 
-
 typedef enum {psInitInProgress=0, psInitDone=1, psFirstDrawDone=2, psNormalOp=3} StartupState_t;
 // 0: not started at all
 // 1: everything is alive

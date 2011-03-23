@@ -18,6 +18,8 @@
 #ifndef GRECORD_H
 #define GRECORD_H
 
+#include <tchar.h>
+
 #include "vlapityp.h"
 #include <stdio.h>
 
@@ -91,13 +93,13 @@ Block), von radix-64 in Binär umwandeln und in *puffer speichern.
 Pufferlänge puflen ist angegeben, um ein Überschreiben nicht zum Puffer
 gehörender Bereiche zu verhindern
 */
-int get_g_record(char *dateiname, lpb puffer, unsigned long puflen);
+int get_g_record(TCHAR *dateiname, lpb puffer, unsigned long puflen);
 
 
 // Eine IGC-Datei von allen Zeilen befreien, die vom Pilot oder OO legal zur
 // Datei hinzugefügt worden sein könnten
 // Speichern der "cleanen" Datei
-void clean_igcfile(char *quelldateiname, char *zieldateiname);
+void clean_igcfile(TCHAR *quelldateiname, TCHAR *zieldateiname);
 
 
 #endif

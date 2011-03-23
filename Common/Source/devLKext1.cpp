@@ -15,6 +15,8 @@
 
 #include "devLK8EX1.h"
 
+#include "utils/heapcheck.h"
+
 static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 
 static BOOL LK8EX1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){

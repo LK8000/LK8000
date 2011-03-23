@@ -20,6 +20,8 @@
 //#include "dlgTools.h"
 #include "InfoBoxLayout.h"
 
+#include "utils/heapcheck.h"
+
 
 static WndForm *wf=NULL;
 #define WPLSEL WayPointList[SelectedWaypoint]

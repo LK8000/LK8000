@@ -12,6 +12,8 @@
 #include "options.h"
 #include "devBase.h"
 
+#include "utils/heapcheck.h"
+
 //____________________________________________________________class_definitions_
 
 

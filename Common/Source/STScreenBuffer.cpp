@@ -10,6 +10,8 @@
 #include "STScreenBuffer.h"
 #include "XCSoar.h"
 
+#include "utils/heapcheck.h"
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;

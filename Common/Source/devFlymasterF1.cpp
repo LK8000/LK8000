@@ -15,6 +15,8 @@
 
 #include "devFlymasterF1.h"
 
+#include "utils/heapcheck.h"
+
 static BOOL VARIO(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 
 static BOOL FlymasterF1ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){

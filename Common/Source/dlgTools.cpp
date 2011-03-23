@@ -17,6 +17,8 @@
 #include "Dialogs.h"
 #include "externs.h" // 091214
 
+#include "utils/heapcheck.h"
+
 
 int DLGSCALE(int x) {
   int iRetVal = x;

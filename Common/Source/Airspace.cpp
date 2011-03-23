@@ -24,6 +24,8 @@
 
 #include "wcecompat/ts_string.h"
 
+#include "utils/heapcheck.h"
+
 
 #define  BINFILEMAGICNUMBER     0x4ab199f0
 #define  BINFILEVERION          0x00000101
@@ -1246,9 +1248,8 @@ static void FindAirspaceAreaBounds() {
 
 void ReadAirspace(void)
 {
-  TCHAR	szFile1[MAX_PATH] = TEXT("\0");
-  TCHAR	szFile2[MAX_PATH] = TEXT("\0");
-  char zfilename[MAX_PATH];
+  TCHAR szFile1[MAX_PATH] = _T("\0");
+  TCHAR szFile2[MAX_PATH] = _T("\0");
 
   ZZIP_FILE *fp=NULL;
   ZZIP_FILE *fp2=NULL;
@@ -1264,23 +1265,19 @@ void ReadAirspace(void)
   ExpandLocalPath(szFile2);
 
   if (_tcslen(szFile1)>0) {
-    unicode2ascii(szFile1, zfilename, MAX_PATH);
-    fp  = zzip_fopen(zfilename, "rt");
+    fp  = zzip_fopen(szFile1, "rt");
   } else {
     //* 091206 back on 
-    static TCHAR  szMapFile[MAX_PATH] = TEXT("\0");
+    static TCHAR szMapFile[MAX_PATH] = _T("\0");
     GetRegistryString(szRegistryMapFile, szMapFile, MAX_PATH);
     ExpandLocalPath(szMapFile);
-    wcscat(szMapFile,TEXT("/"));
-    wcscat(szMapFile,TEXT(LKF_AIRSPACES)); // 091206
-    unicode2ascii(szMapFile, zfilename, MAX_PATH);
-    fp  = zzip_fopen(zfilename, "rt");
-    //*/
+    _tcscat(szMapFile, _T("/"));
+    _tcscat(szMapFile, _T(LKF_AIRSPACES));
+    fp  = zzip_fopen(szMapFile, "rt");
   }
 
   if (_tcslen(szFile2)>0) {
-    unicode2ascii(szFile2, zfilename, MAX_PATH);
-    fp2 = zzip_fopen(zfilename, "rt");
+    fp2 = zzip_fopen(szFile2, "rt");
   }
 
   SetRegistryString(szRegistryAirspaceFile, TEXT("\0"));

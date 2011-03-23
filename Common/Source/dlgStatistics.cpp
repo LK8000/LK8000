@@ -16,6 +16,8 @@
 #include "Atmosphere.h"
 #include "RasterTerrain.h"
 
+#include "utils/heapcheck.h"
+
 
 #define GROUND_COLOUR RGB(157,101,60)
 

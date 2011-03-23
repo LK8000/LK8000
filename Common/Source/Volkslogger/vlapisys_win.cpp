@@ -24,6 +24,8 @@ extern BOOL SetProgressStepSize(int nSize);
 #include <time.h>
 #endif
 
+#include "utils/heapcheck.h"
+
 int noninteractive=1;
 
 /***********************************************************************

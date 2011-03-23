@@ -3,7 +3,9 @@ SRC=Common/Source
 HDR=Common/Header
 BIN=Bin/$(TARGET)
 
-#
+# enable/disable heap checking (dmalloc.h libdmalloc.a must be in ../dmalloc)
+DMALLOC=n
+
 PROFILE		:=
 OPTIMIZE	:=-O2
 #OPTIMIZE	:=-O3 -funroll-all-loops
@@ -230,6 +232,10 @@ CPPFLAGS	+= -DFORCEPORTRAIT
   endif
 endif
 
+ifeq ($(DMALLOC),y)
+  CPPFLAGS += -DHC_DMALLOC
+endif
+
 CXXFLAGS	:=$(OPTIMIZE) -fno-exceptions $(PROFILE)
 CFLAGS		:=$(OPTIMIZE) $(PROFILE)
 
@@ -243,15 +249,19 @@ endif
 LDFLAGS		+=$(PROFILE)
 
 ifeq ($(CONFIG_PC),y)
-LDLIBS		:= -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32
+  LDLIBS := -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32
 else
-  LDLIBS		:= -Wl,-Bstatic -lstdc++  -Wl,-Bdynamic -lcommctrl
+  LDLIBS := -Wl,-Bstatic -lstdc++  -Wl,-Bdynamic -lcommctrl
   ifeq ($(MINIMAL),n)
     LDLIBS		+= -laygshell
     ifneq ($(TARGET),PNA)
       LDLIBS		+= -limgdecmp
     endif
   endif
+endif
+
+ifeq ($(DMALLOC),y)
+  LDLIBS += -L../dmalloc -ldmalloc
 endif
 
 ####### compiler target
@@ -296,6 +306,9 @@ endif
 
 ####### sources
 
+UTILS	:=\
+	$(SRC)/utils/stringext.cpp
+  
 DEVS	:=\
 	$(SRC)/devBorgeltB50.cpp \
 	$(SRC)/devCAI302.cpp \
@@ -308,7 +321,6 @@ DEVS	:=\
 	$(SRC)/devDigifly.cpp \
 	$(SRC)/devGeneric.cpp \
 	$(SRC)/devBase.cpp \
-	$(SRC)/devBaseAscii.cpp \
 	$(SRC)/devLX.cpp \
 	$(SRC)/devLXNano.cpp \
 	$(SRC)/devNmeaOut.cpp \
@@ -425,6 +437,7 @@ SRC_FILES :=\
 	$(SRC)/maptree.cpp              $(SRC)/mapxbase.cpp \
 	\
 	$(SRC)/lk8000.cpp \
+	$(UTILS) \
 	$(DEVS) \
 	$(DLGS) \
 	$(VOLKS)
@@ -470,13 +483,18 @@ COMPAT	:=\
 	$(COMPATSRC)/errno.cpp 		$(COMPATSRC)/string_extras.cpp \
 	$(COMPATSRC)/ts_string.cpp 	$(COMPATSRC)/wtoi.c
 
+#ifneq ($(CONFIG_PC),y)
+#COMPAT	:=$(COMPAT) \
+#   $(COMPATSRC)/redir.cpp
+#endif
+
 
 ####### compilation outputs
 
 OBJS 	:=\
 	$(patsubst $(SRC)%.cpp,$(BIN)%.o,$(SRC_FILES)) \
-	$(BIN)/jasper.a \
 	$(BIN)/zzip.a \
+	$(BIN)/jasper.a \
 	$(BIN)/compat.a \
 	$(BIN)/lk8000.rsc
 

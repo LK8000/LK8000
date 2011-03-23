@@ -51,6 +51,8 @@
 #endif
 #include "Waypointparser.h"
 
+#include "utils/heapcheck.h"
+
 #ifdef NEW_OLC
 using std::min;
 using std::max;

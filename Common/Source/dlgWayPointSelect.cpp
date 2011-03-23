@@ -17,6 +17,8 @@
 #include "InfoBoxLayout.h"
 #include "WindowControls.h"
 
+#include "utils/heapcheck.h"
+
 typedef struct{
   int Index;
   double Distance;

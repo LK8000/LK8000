@@ -38,6 +38,8 @@
 
 #include "NavFunctions.h" // used for team code
 
+#include "utils/heapcheck.h"
+
 #ifdef NEW_OLC
 using std::min;
 using std::max;

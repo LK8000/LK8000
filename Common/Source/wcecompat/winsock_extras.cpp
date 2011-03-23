@@ -22,6 +22,8 @@
 #include <winsock_extras.h>
 #include <stdio.h>
 
+#include "utils/heapcheck.h"
+
 
 struct servent* PASCAL getservbyname(const char* name, const char* proto)
 {

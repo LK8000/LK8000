@@ -5,26 +5,21 @@
 
    $Id$
 */
-//_____________________________________________________________________includes_
+//______________________________________________________________________________
 
 #include "StdAfx.h"
-#include "devBase.h"
+#include "stringext.h"
 
-//____________________________________________________________class_definitions_
+#include "utils/heapcheck.h"
 
+//______________________________________________________________________________
 
-// #############################################################################
-// *****************************************************************************
-//
-//   DevBase
-//
-// *****************************************************************************
-// #############################################################################
+/// maximum UTF-16 code convertable through utf16toAscii[] map
+static const unsigned int maxUtf16toAscii = 0x024F;
 
 /// UTF-16 (0000-024F ~ C0, C1, Latin Extended-A, Latin Extended-B) character
 /// to US-ASCII conversion table
-//static
-const char DevBase::utf16toAscii[maxUtf16toAscii + 1] =
+static const char utf16toAscii[maxUtf16toAscii + 1] =
 {
   '?',  // 0000 - Null character NUL
   '?',  // 0001 - Start of Heading SOH
@@ -621,24 +616,91 @@ const char DevBase::utf16toAscii[maxUtf16toAscii + 1] =
 }; // utf16toAscii[]
 
 
+//______________________________________________________________________________
+
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Converts TCHAR[] string into US-ASCII string (writing as much
-/// as possible characters into @p output).
+/// Converts ASCII string encoded in system code page into Unicode string.
+/// \return Unicode string length, -1 on conversion error
+int ascii2unicode(const char* ascii, TCHAR* unicode, int maxChars)
+{
+  int res = MultiByteToWideChar(CP_ACP, 0, ascii, -1, unicode, maxChars);
+
+  if (res > 0)
+    return(res - 1);
+  
+  // for safety reasons, return empty string  
+  if (maxChars >= 1)
+    unicode[0] = 0;
+  return(-1);
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// Converts Unicode string into ASCII encoded in system code page.
+/// \return ASCII string length, -1 on conversion error (insufficient buffer e.g.)
+int unicode2ascii(const TCHAR* unicode, char* ascii, int maxChars)
+{
+  int res = WideCharToMultiByte(CP_ACP, 0, unicode, -1, ascii, maxChars, NULL, NULL);
+  
+  if (res > 0)
+    return(res - 1);
+  
+  // for safety reasons, return empty string  
+  if (maxChars >= 1)
+    ascii[0] = '\0';
+  return(-1);
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// Converts Unicode string into UTF-8 encoded string.
+/// \return UTF8 string length, -1 on conversion error (insufficient buffer e.g.)
+int unicode2utf(const TCHAR* unicode, char* utf, int maxChars)
+{
+  int res = WideCharToMultiByte(CP_UTF8, 0, unicode, -1, utf, maxChars, NULL, NULL);
+  
+  if (res > 0)
+    return(res - 1);
+  
+  // for safety reasons, return empty string  
+  if (maxChars >= 1)
+    utf[0] = '\0';
+  return(-1);
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// Converts UTF-8 encoded string into Unicode encoded string.
+/// \return Unicode string length, -1 on conversion error (insufficient buffer e.g.)
+int utf2unicode(const char* utf, TCHAR* unicode, int maxChars)
+{
+  int res = MultiByteToWideChar(CP_UTF8, 0, utf, -1, unicode, maxChars);
+  
+  if (res > 0)
+    return(res - 1);
+  
+  // for safety reasons, return empty string  
+  if (maxChars >= 1)
+    unicode[0] = '\0';
+  return(-1);
+}
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// Converts Unicode string into US-ASCII string (writing as much as possible
+/// characters into @p ascii). Output string will always be terminated by '\0'.
 ///
 /// Characters are converted into their most similar representation
-/// in ASCII. Nonconvertable characters are replaced by '?'.
+/// in US-ASCII. Nonconvertable characters are replaced by '?'.
 ///
 /// Output string will always be terminated by '\0'.
 ///
-/// @param input    input string (must be terminated with '\0')
-/// @param outSize  output buffer size
-/// @param output   output buffer
+/// @param unicode    input string (must be terminated with '\0')
+/// @param ascii      output buffer
+/// @param maxChars   output buffer size
 ///
-/// @retval true  all characters copied
-/// @retval false some characters could not be copied due to buffer size
+/// @retval  1  all characters copied
+/// @retval -1  some characters could not be copied due to buffer size
 ///
-//static
-bool DevBase::Wide2Ascii(const TCHAR* input, int outSize, char* output)
+int unicode2usascii(const TCHAR* unicode, char* ascii, int outSize)
 {
   TCHAR uc;
 
@@ -646,19 +708,19 @@ bool DevBase::Wide2Ascii(const TCHAR* input, int outSize, char* output)
     return(false);
 
   // decrement indeces to use more efficient pre-increments
-  input--;
-  output--;
-  while ((uc = *++input) != 0 && --outSize > 0)
+  unicode--;
+  ascii--;
+  while ((uc = *++unicode) != 0 && --outSize > 0)
   {
     if (uc <= maxUtf16toAscii)
-      *++output = utf16toAscii[uc];
+      *++ascii = utf16toAscii[uc];
     else if (uc < 0xDC00 || uc > 0xDFFF)
-      *++output = '?';
+      *++ascii = '?';
     else // skipping surrogate pair low item
       ++outSize;
   }
 
-  *++output = '\0';
+  *++ascii = '\0';
 
-  return(uc == 0);
+  return((uc == 0) ? 1 : -1);
 } // Wide2Ascii()

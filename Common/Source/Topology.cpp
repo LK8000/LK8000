@@ -13,6 +13,8 @@
 #include "externs.h"
 #include "wcecompat/ts_string.h"
 
+#include "utils/heapcheck.h"
+
 extern HFONT MapLabelFont;
 
 XShape::XShape() {
@@ -41,7 +43,7 @@ void Topology::loadBitmap(const int xx) {
 }
 
 // thecolor is relative to shapes, not to labels
-Topology::Topology(const char* shpname, COLORREF thecolor, bool doappend) {
+Topology::Topology(const TCHAR* shpname, COLORREF thecolor, bool doappend) {
 
   append = doappend;
   memset((void*)&shpfile, 0 ,sizeof(shpfile));
@@ -61,7 +63,7 @@ Topology::Topology(const char* shpname, COLORREF thecolor, bool doappend) {
   in_scale = false;
 
   // filename aleady points to _MAPS subdirectory!
-  strcpy( filename, shpname ); 
+  _tcscpy( filename, shpname ); 
   hPen = (HPEN)CreatePen(PS_SOLID, 1, thecolor);
   hbBrush=(HBRUSH)CreateSolidBrush(thecolor);
   Open();
@@ -158,25 +160,20 @@ void Topology::initCache()
 #endif
 
 void Topology::Open() {
-
-  TCHAR ufname[MAX_PATH]; // 091105
   shapefileopen = false;
 
   if (append) {
     if (msSHPOpenFile(&shpfile, (char*)"rb+", filename) == -1) {
-	ascii2unicode(filename,ufname);
-	// StartupStore(_T(". Topology: Open: append failed for <%s> (this can be normal)%s"),ufname,NEWLINE);
+      // StartupStore(_T(". Topology: Open: append failed for <%s> (this can be normal)%s"),filename,NEWLINE);
       return;
     }
   } else {
     if (msSHPOpenFile(&shpfile, (char*)"rb", filename) == -1) {
-	ascii2unicode(filename,ufname);
-	StartupStore(_T("------ Topology: Open FAILED for <%s>%s"),ufname,NEWLINE);
+      StartupStore(_T("------ Topology: Open FAILED for <%s>%s"),filename,NEWLINE);
       return;
     }
   }
-  ascii2unicode(filename,ufname); // 091105
-  // StartupStore(_T(". Topology: Open <%s>%s"),ufname,NEWLINE);
+  // StartupStore(_T(". Topology: Open <%s>%s"),filename,NEWLINE);
 
   scaleThreshold = 1000.0;
   shpCache = (XShape**)malloc(sizeof(XShape*)*shpfile.numshapes);
@@ -694,7 +691,7 @@ void Topology::Paint(HDC hdc, RECT rc) {
 
 
 
-TopologyLabel::TopologyLabel(const char* shpname, COLORREF thecolor, int field1):Topology(shpname, thecolor) 
+TopologyLabel::TopologyLabel(const TCHAR* shpname, COLORREF thecolor, int field1):Topology(shpname, thecolor) 
 {
   //sjt 02nov05 - enabled label fields
   setField(max(0,field1)); 
@@ -836,7 +833,7 @@ TopologyWriter::~TopologyWriter() {
 }
 
 
-TopologyWriter::TopologyWriter(const char* shpname, COLORREF thecolor):
+TopologyWriter::TopologyWriter(const TCHAR* shpname, COLORREF thecolor):
   Topology(shpname, thecolor, true) {
 
   Reset();
@@ -846,22 +843,22 @@ TopologyWriter::TopologyWriter(const char* shpname, COLORREF thecolor):
 void TopologyWriter::DeleteFiles(void) {
   // Delete all files, since zziplib interface doesn't handle file modes
   // properly
-  if (strlen(filename)>0) {
+  if (_tcslen(filename)>0) {
     TCHAR fname[MAX_PATH];
-    ascii2unicode(filename, fname);
-    _tcscat(fname, TEXT(".shp"));
+    _tcscpy(fname, filename);
+    _tcscat(fname, _T(".shp"));
 	#if ALPHADEBUG
 	StartupStore(_T(". TopologyWriter: deleting <%s>%s"),fname,NEWLINE);
 	#endif
     DeleteFile(fname);
-    ascii2unicode(filename, fname);
-    _tcscat(fname, TEXT(".shx"));
+    _tcscpy(fname, filename);
+    _tcscat(fname, _T(".shx"));
 	#if ALPHADEBUG
 	StartupStore(_T(". TopologyWriter: deleting <%s>%s"),fname,NEWLINE);
 	#endif
     DeleteFile(fname);
-    ascii2unicode(filename, fname);
-    _tcscat(fname, TEXT(".dbf"));
+    _tcscpy(fname, filename);
+    _tcscat(fname, _T(".dbf"));
 	#if ALPHADEBUG
 	StartupStore(_T(". TopologyWriter: deleting <%s>%s"),fname,NEWLINE);
 	#endif
@@ -872,15 +869,12 @@ void TopologyWriter::DeleteFiles(void) {
 
 void TopologyWriter::CreateFiles(void) {
   // by default, now, this overwrites previous contents
-
-  TCHAR ufname[MAX_PATH]; // 091105
   if (msSHPCreateFile(&shpfile, filename, SHP_POINT) == -1) {
   } else {
-    char dbfname[100];
-    strcpy(dbfname, filename );
-    strcat(dbfname, ".dbf"); 
-    ascii2unicode(dbfname,ufname); // 091105
-    StartupStore(_T(". TopologyWriter: creating <%s>%s"),ufname,NEWLINE);
+    TCHAR dbfname[100];
+    _tcscpy(dbfname, filename);
+    _tcscat(dbfname, _T(".dbf")); 
+    StartupStore(_T(". TopologyWriter: creating <%s>%s"),dbfname,NEWLINE);
     shpfile.hDBF = msDBFCreate(dbfname);
     if (shpfile.hDBF == NULL)
 	StartupStore(_T("------ TopologyWriter: msDBFCreate error%s"),NEWLINE);

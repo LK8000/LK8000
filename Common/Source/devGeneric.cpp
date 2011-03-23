@@ -16,6 +16,8 @@
 
 #include "devGeneric.h"
 
+#include "utils/heapcheck.h"
+
 
 BOOL genInstall(PDeviceDescriptor_t d){
   _tcscpy(d->Name, TEXT("Generic"));

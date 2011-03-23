@@ -25,6 +25,8 @@
 #include "ts_string.h"
 #include "internal.h"
 
+#include "utils/heapcheck.h"
+
 
 int stat(const char* filename, struct stat* st)
 {

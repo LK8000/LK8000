@@ -34,6 +34,8 @@
 
 #include <ctype.h>
 
+#include "utils/heapcheck.h"
+
 
 // #define DEBUG_GETTEXT	1
 #define LKD_LANGUAGE	"_Language"

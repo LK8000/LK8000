@@ -21,6 +21,8 @@
 #endif
 #include "InputEvents.h"
 
+#include "utils/heapcheck.h"
+
 
 class ConditionMonitor {
 public:

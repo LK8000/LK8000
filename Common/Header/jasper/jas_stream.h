@@ -294,7 +294,7 @@ typedef struct {
 \******************************************************************************/
 
 /* Open a file as a stream. */
-jas_stream_t *jas_stream_fopen(const char *filename, const char *mode);
+jas_stream_t *jas_stream_fopen(const wchar_t *filename, const char *mode);
 
 /* Open a memory buffer as a stream. */
 jas_stream_t *jas_stream_memopen(char *buf, int bufsize);
@@ -303,7 +303,7 @@ jas_stream_t *jas_stream_memopen(char *buf, int bufsize);
 jas_stream_t *jas_stream_fdopen(int fd, const char *mode);
 
 /* Open a stdio stream as a stream. */
-jas_stream_t *jas_stream_reopen(const char *path, const char *mode, FILE *fp);
+jas_stream_t *jas_stream_reopen(const wchar_t *path, const char *mode, FILE *fp);
 
 /* Open a temporary file as a stream. */
 jas_stream_t *jas_stream_tmpfile(void);

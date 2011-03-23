@@ -26,6 +26,8 @@
 #include <stdlib_extras.h>
 #include <errno.h>
 
+#include "utils/heapcheck.h"
+
 
 void abort(void)
 {

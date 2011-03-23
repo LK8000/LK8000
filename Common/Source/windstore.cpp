@@ -19,6 +19,8 @@
 #include "windstore.h"
 #include "XCSoar.h"
 
+#include "utils/heapcheck.h"
+
 WindStore::WindStore() {
   //create the lists
   windlist = new WindMeasurementList();

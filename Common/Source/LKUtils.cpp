@@ -33,6 +33,8 @@
 #include "InputEvents.h"
 #include "LKMapWindow.h"
 
+#include "utils/heapcheck.h"
+
 
 extern TCHAR LastTaskFileName[MAX_PATH];
 

@@ -52,7 +52,7 @@ typedef SHPTreeInfo * SHPTreeHandle;
 #define MS_NEW_MSB_ORDER 2
 
 
-SHPTreeHandle msSHPDiskTreeOpen(const char * pszTree, int debug);
+SHPTreeHandle msSHPDiskTreeOpen(const TCHAR* pszTree, int debug);
 void msSHPDiskTreeClose(SHPTreeHandle disktree);
 treeNodeObj *readTreeNode( SHPTreeHandle disktree );
 
@@ -61,10 +61,10 @@ void msTreeTrim(treeObj *tree);
 void msDestroyTree(treeObj *tree);
 
 char *msSearchTree(treeObj *tree, rectObj aoi);
-char *msSearchDiskTree(char *filename, rectObj aoi, int debug);
+char *msSearchDiskTree(const TCHAR *filename, rectObj aoi, int debug);
 
-treeObj *msReadTree(char *filename, int debug);
-int msWriteTree(treeObj *tree, char *filename, int LSB_order);
+treeObj *msReadTree(const TCHAR *filename, int debug);
+int msWriteTree(treeObj *tree, const TCHAR *filename, int LSB_order);
 
 void msFilterTreeSearch(shapefileObj *shp, char *status, rectObj search_rect);
 

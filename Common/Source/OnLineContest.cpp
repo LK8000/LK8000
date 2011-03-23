@@ -13,6 +13,8 @@
 #include "McReady.h"
 #include <math.h>
 
+#include "utils/heapcheck.h"
+
 
 #define CONST_D_FAK 6371000.0
 #define DISTANCETHRESHOLD 1000

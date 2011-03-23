@@ -85,6 +85,8 @@
 #include "jp2_cod.h"
 #include "jp2_dec.h"
 
+#include "utils/heapcheck.h"
+
 #define	JP2_VALIDATELEN	(JAS_MIN(JP2_JP_LEN + 16, JAS_STREAM_MAXPUTBACK))
 
 // Magick sequence for GeoJP2 box

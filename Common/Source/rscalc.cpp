@@ -15,6 +15,8 @@
 #include "externs.h"
 #include "Utils.h"
 
+#include "utils/heapcheck.h"
+
 class SunEphemeris {
 
 

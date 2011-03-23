@@ -497,14 +497,7 @@ bool InterfaceTimeoutCheck(void);
 extern "C"{
 #endif
 
-bool FileExistsW(TCHAR *FileName);
-bool FileExistsA(char *FileName);
-
-#ifdef _UNICODE
-#define FileExists FileExistsW
-#else
-#define FileExists FileExistsA
-#endif
+bool FileExists(TCHAR *FileName);
 
 #ifdef __cplusplus
 }

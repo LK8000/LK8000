@@ -25,6 +25,8 @@
 #include "Process.h"
 #include "Task.h"
 
+#include "utils/heapcheck.h"
+
 // #define NULLSHORT	"--" 
 #define NULLMEDIUM	"---"
 #define NULLLONG	"---"

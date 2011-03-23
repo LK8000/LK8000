@@ -18,6 +18,8 @@
 
 #include "dlgTools.h"
 
+#include "utils/heapcheck.h"
+
 // 110102 Note from paolo
 // the entire airspace warning system in xcsoar 5.2.4 which is still in use within lk8000 should be trashed.
 // The fake mechanism of message queues here does not work, and it is also shared between two different threads.

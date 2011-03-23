@@ -76,6 +76,8 @@
 #include "jasper/jas_malloc.h"
 #include "jasper/jas_string.h"
 
+#include "utils/heapcheck.h"
+
 /******************************************************************************\
 * Miscellaneous Functions
 \******************************************************************************/

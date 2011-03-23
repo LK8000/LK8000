@@ -36,6 +36,8 @@
 #include "Waypointparser.h"
 #include "LKMapWindow.h"
 
+#include "utils/heapcheck.h"
+
 static HFONT TempInfoWindowFont;
 static HFONT TempTitleWindowFont;
 static HFONT TempMapWindowFont;
@@ -4510,6 +4512,7 @@ void dlgConfigurationShowModal(void){
     if (_tcscmp(temptext,szMapFile)) {
       SetRegistryString(szRegistryMapFile, temptext);
       MAPFILECHANGED= true;
+      TERRAINFILECHANGED= true; //for .xcm
       changed = true;
     }
   }

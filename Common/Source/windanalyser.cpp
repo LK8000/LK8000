@@ -28,6 +28,8 @@
 #include "windanalyser.h"
 #include "XCSoar.h"
 
+#include "utils/heapcheck.h"
+
 /*
   About Windanalysation
 

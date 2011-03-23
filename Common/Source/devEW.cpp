@@ -19,6 +19,8 @@
 
 #include "devEW.h"
 
+#include "utils/heapcheck.h"
+
 
 #define  USESHORTTPNAME   1       // hack, soulf be configurable
 

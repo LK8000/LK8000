@@ -72,6 +72,8 @@
 #include <ctype.h>
 #include <string.h>
 
+#include "utils/heapcheck.h"
+
 #define	jas_iccputuint8(out, val)	jas_iccputuint(out, 1, val)
 #define	jas_iccputuint16(out, val)	jas_iccputuint(out, 2, val)
 #define	jas_iccputsint32(out, val)	jas_iccputsint(out, 4, val)

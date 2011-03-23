@@ -7,6 +7,8 @@
 
 #include "zzip/zutil.h"
 
+#include "utils/heapcheck.h"
+
 #ifndef NO_DUMMY_DECL
 struct internal_state      {int dummy;}; /* for buggy compilers */
 #endif

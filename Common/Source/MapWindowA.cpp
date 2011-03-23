@@ -15,6 +15,8 @@
 #include "externs.h"
 #include "Terrain.h"
 
+#include "utils/heapcheck.h"
+
 
 // pointer to AlphaBlend() function (initialized in AlphaBlendInit())
 //static 

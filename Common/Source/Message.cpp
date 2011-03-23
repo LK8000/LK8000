@@ -12,6 +12,8 @@
 #include "externs.h"
 #include "InfoBoxLayout.h"
 
+#include "utils/heapcheck.h"
+
 
 /*
 

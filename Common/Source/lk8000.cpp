@@ -87,6 +87,8 @@ extern void LKObjects_Delete();
 static std::map<TCHAR*, TCHAR*> unusedTranslations;
 #endif
 
+#include "utils/heapcheck.h"
+
 #if !defined(MapScale2)
   #define MapScale2  apMs2Default
 #endif

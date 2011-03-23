@@ -43,6 +43,8 @@ Copyright_License {
 
 #include <limits.h>
 
+#include "utils/heapcheck.h"
+
 #if UINT_MAX == 65535
 typedef long          int32;
 #else
@@ -203,10 +205,10 @@ static void writeHeader( SHPHandle psSHP )
 /*      Open the .shp and .shx files based on the basename of the       */
 /*      files or either file name.                                      */
 /************************************************************************/   
-SHPHandle msSHPOpen( const char * pszLayer, const char * pszAccess )
+SHPHandle msSHPOpen( const TCHAR * pszLayer, const char * pszAccess )
 {
-  char		*pszFullname, *pszBasename;
-  SHPHandle	psSHP;
+  TCHAR     *pszFullname, *pszBasename;
+  SHPHandle psSHP;
   
   uchar		*pabyBuf;
   int		i;
@@ -248,22 +250,21 @@ SHPHandle msSHPOpen( const char * pszLayer, const char * pszAccess )
   /*	Compute the base (layer) name.  If there is any extension	    */
   /*	on the passed in filename we will strip it off.			    */
   /* -------------------------------------------------------------------- */
-  pszBasename = (char *) malloc(strlen(pszLayer)+5);
-  strcpy( pszBasename, pszLayer );
-  for( i = strlen(pszBasename)-1; 
-       i > 0 && pszBasename[i] != '.' && pszBasename[i] != '/'
-	 && pszBasename[i] != '\\';
+  pszBasename = (TCHAR *) malloc((_tcslen(pszLayer)+5) * sizeof(TCHAR) * 2);
+  _tcscpy( pszBasename, pszLayer );
+  for( i = _tcslen(pszBasename)-1; 
+       i > 0 && pszBasename[i] != _T('.') && pszBasename[i] != _T('/') && pszBasename[i] != _T('\\');
        i-- ) {}
   
-  if( pszBasename[i] == '.' )
-    pszBasename[i] = '\0';
+  if( pszBasename[i] == _T('.') )
+    pszBasename[i] = _T('\0');
   
   /* -------------------------------------------------------------------- */
   /*	Open the .shp and .shx files.  Note that files pulled from	    */
   /*	a PC to Unix with upper case filenames won't work!		    */
   /* -------------------------------------------------------------------- */
-  pszFullname = (char *) malloc(strlen(pszBasename) + 5);
-  sprintf( pszFullname, "%s.shp", pszBasename );
+  pszFullname = (TCHAR *) malloc((_tcslen(pszBasename)+5) * sizeof(TCHAR) * 2);
+  _stprintf( pszFullname, _T("%s.shp"), pszBasename );
   psSHP->zfpSHP = ppc_fopen(pszFullname, pszAccess );
   psSHP->fpSHP = NULL;
   if( psSHP->zfpSHP == NULL ) {
@@ -272,7 +273,7 @@ SHPHandle msSHPOpen( const char * pszLayer, const char * pszAccess )
     return( NULL );
   }
   
-  sprintf( pszFullname, "%s.shx", pszBasename );
+  _stprintf( pszFullname, _T("%s.shx"), pszBasename );
   psSHP->zfpSHX = ppc_fopen(pszFullname, pszAccess );
   psSHP->fpSHX = NULL;
   if( psSHP->zfpSHX == NULL ) {
@@ -435,9 +436,9 @@ void msSHPGetInfo(SHPHandle psSHP, int * pnEntities, int * pnShapeType )
 /*      Create a new shape file and return a handle to the open         */
 /*      shape file with read/write access.                              */
 /************************************************************************/
-SHPHandle msSHPCreate( const char * pszLayer, int nShapeType )
+SHPHandle msSHPCreate( const TCHAR * pszLayer, int nShapeType )
 {
-  char	*pszBasename, *pszFullname;
+  TCHAR *pszBasename, *pszFullname;
   int		i;
   FILE	*fpSHP, *fpSHX;
   uchar     	abyHeader[100];
@@ -457,29 +458,28 @@ SHPHandle msSHPCreate( const char * pszLayer, int nShapeType )
   /*	Compute the base (layer) name.  If there is any extension  	    */
   /*	on the passed in filename we will strip it off.			    */
   /* -------------------------------------------------------------------- */
-  pszBasename = (char *) malloc(strlen(pszLayer)+5);
-  strcpy( pszBasename, pszLayer );
-  for( i = strlen(pszBasename)-1; 
-       i > 0 && pszBasename[i] != '.' && pszBasename[i] != '/'
-	 && pszBasename[i] != '\\';
+  pszBasename = (TCHAR *) malloc((_tcslen(pszLayer) + 5) * sizeof(TCHAR) * 2);
+  _tcscpy( pszBasename, pszLayer );
+  for( i = _tcslen(pszBasename)-1; 
+       i > 0 && pszBasename[i] != _T('.') && pszBasename[i] != _T('/') && pszBasename[i] != _T('\\');
        i-- ) {}
   
-  if( pszBasename[i] == '.' )
-    pszBasename[i] = '\0';
+  if( pszBasename[i] == _T('.') )
+    pszBasename[i] = _T('\0');
   
   /* -------------------------------------------------------------------- */
   /*      Open the two files so we can write their headers.               */
   /* -------------------------------------------------------------------- */
-  pszFullname = (char *) malloc(strlen(pszBasename) + 5);
-  sprintf( pszFullname, "%s.shp", pszBasename );
-  fpSHP = fopen(pszFullname, "wb" );
-  sprintf( pszFullname, "%s.shx", pszBasename );
+  pszFullname = (TCHAR *) malloc((_tcslen(pszBasename) + 5) * sizeof(TCHAR) * 2);
+  _stprintf( pszFullname, _T("%s.shp"), pszBasename );
+  fpSHP = _tfopen(pszFullname, _T("wb") );
+  _stprintf( pszFullname, _T("%s.shx"), pszBasename );
 
   free( pszBasename );
 
   if( fpSHP == NULL ) 
     return( NULL );
-  fpSHX = fopen(pszFullname, "wb" );
+  fpSHX = _tfopen(pszFullname, _T("wb") );
   if( fpSHX == NULL )
     return( NULL );
   
@@ -1284,10 +1284,10 @@ int msSHPReadBounds( SHPHandle psSHP, int hEntity, rectObj *padBounds)
   return(0);
 }
 
-int msSHPOpenFile(shapefileObj *shpfile, char *mode, char *filename)
+int msSHPOpenFile(shapefileObj *shpfile, char *mode, const TCHAR *filename)
 {
   int i;
-  char *dbfFilename;
+  TCHAR *dbfFilename;
 
   if(!filename) {
     msSetError(MS_IOERR, "No (NULL) filename provided.", "msSHPOpenFile()");
@@ -1305,33 +1305,33 @@ int msSHPOpenFile(shapefileObj *shpfile, char *mode, char *filename)
     shpfile->hSHP = msSHPOpen( filename, mode);
 
   if(!shpfile->hSHP) {
-    msSetError(MS_IOERR, "(%s)", "msSHPOpenFile()", filename);
+    msSetError(MS_IOERR, "(%ls)", "msSHPOpenFile()", filename);
     return(-1);
   }
 
-  strcpy(shpfile->source, filename);
+  _tcscpy(shpfile->source, filename);
   
   /* load some information about this shapefile */
   msSHPGetInfo( shpfile->hSHP, &shpfile->numshapes, &shpfile->type);
   msSHPReadBounds( shpfile->hSHP, -1, &(shpfile->bounds));
   
-  dbfFilename = (char *)malloc(strlen(filename)+5);
-  strcpy(dbfFilename, filename);
+  dbfFilename = (TCHAR *)malloc((_tcslen(filename)+5) * sizeof(TCHAR) * 2);
+  _tcscpy(dbfFilename, filename);
   
   /* clean off any extention the filename might have */
-  for (i = strlen(dbfFilename) - 1; 
-       i > 0 && dbfFilename[i] != '.' && dbfFilename[i] != '/' && dbfFilename[i] != '\\';
+  for (i = _tcslen(dbfFilename) - 1; 
+       i > 0 && dbfFilename[i] != _T('.') && dbfFilename[i] != _T('/') && dbfFilename[i] != _T('\\');
        i-- ) {}
 
-  if( dbfFilename[i] == '.' )
-    dbfFilename[i] = '\0';
+  if( dbfFilename[i] == _T('.') )
+    dbfFilename[i] = _T('\0');
   
-  strcat(dbfFilename, ".dbf");
+  _tcscat(dbfFilename, _T(".dbf"));
 
   shpfile->hDBF = msDBFOpen(dbfFilename, "rb");
 
   if(!shpfile->hDBF) {
-    msSetError(MS_IOERR, "(%s)", "msSHPOpenFile()", dbfFilename);    
+    msSetError(MS_IOERR, "(%ls)", "msSHPOpenFile()", dbfFilename);    
     free(dbfFilename);
     return(-1);
   }
@@ -1341,7 +1341,7 @@ int msSHPOpenFile(shapefileObj *shpfile, char *mode, char *filename)
 }
 
 // Creates a new shapefile
-int msSHPCreateFile(shapefileObj *shpfile, char *filename, int type)
+int msSHPCreateFile(shapefileObj *shpfile, const TCHAR *filename, int type)
 {
   if(type != SHP_POINT && type != SHP_MULTIPOINT && type != SHP_ARC &&
      type != SHP_POLYGON && type != SHP_POINTM && type != SHP_MULTIPOINTM &&
@@ -1353,7 +1353,7 @@ int msSHPCreateFile(shapefileObj *shpfile, char *filename, int type)
   // create the spatial portion
   shpfile->hSHP = msSHPCreate(filename, type);
   if(!shpfile->hSHP) {
-    msSetError(MS_IOERR, "(%s)", "msNewSHPFile()",filename);    
+    msSetError(MS_IOERR, "(%ls)", "msNewSHPFile()",filename);    
     return(-1);
   }
 
@@ -1383,7 +1383,7 @@ int msSHPWhichShapes(shapefileObj *shpfile, rectObj rect, int debug)
 {
   int i;
   rectObj shaperect;
-  char *filename;
+  TCHAR *filename;
 
   if(shpfile->status) {
     free(shpfile->status);
@@ -1405,11 +1405,11 @@ int msSHPWhichShapes(shapefileObj *shpfile, rectObj rect, int debug)
     for(i=0;i<shpfile->numshapes;i++) 
       msSetBit(shpfile->status, i, 1);
   } else {
-    if((filename = (char *)malloc(strlen(shpfile->source)+strlen(MS_INDEX_EXTENSION)+1)) == NULL) {
+    if((filename = (TCHAR *)malloc((_tcslen(shpfile->source)+_tcslen(_T(MS_INDEX_EXTENSION))+1) * sizeof(TCHAR) * 2)) == NULL) {
       msSetError(MS_MEMERR, NULL, "msSHPWhichShapes()");    
       return(MS_FAILURE);
     }
-    sprintf(filename, "%s%s", shpfile->source, MS_INDEX_EXTENSION);
+    _stprintf(filename, _T("%s%s"), shpfile->source, _T(MS_INDEX_EXTENSION));
     
     shpfile->status = msSearchDiskTree(filename, rect, debug);
     free(filename);

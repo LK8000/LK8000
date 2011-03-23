@@ -16,6 +16,8 @@
 #include "Cpustats.h"
 #include "Utils2.h"
 
+#include "utils/heapcheck.h"
+
 #include "FlarmIdFile.h"
 extern FlarmIdFile file; // in Utils
 

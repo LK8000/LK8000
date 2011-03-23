@@ -22,6 +22,8 @@
 #include "Volkslogger/vlapihlp.h"
 #include "Volkslogger/vlapityp.h"
 
+#include "utils/heapcheck.h"
+
 
 // base-64 functions
 //
@@ -201,7 +203,7 @@ Block), von radix-64 in Binär umwandeln und in *puffer speichern.
 Pufferlänge puflen ist angegeben, um ein Überschreiben nicht zum Puffer
 gehörender Bereiche zu verhindern
 */
-int get_g_record(char *dateiname, lpb puffer, unsigned long puflen) {
+int get_g_record(TCHAR *dateiname, lpb puffer, unsigned long puflen) {
  unsigned long i = 0;
  int	       j;
  const int     zeilemax = 79;
@@ -209,7 +211,7 @@ int get_g_record(char *dateiname, lpb puffer, unsigned long puflen) {
  FILE	       *datei;
  byte	       bin[3];
  char          *stat;
-  if ((datei = fopen(dateiname,"rt")) == NULL)
+  if ((datei = _tfopen(dateiname, _T("rt"))) == NULL)
     return -1;
   while ((stat=fgetline(zeile,sizeof(zeile),datei)) != 0) {
     if (strcmp(zeile,"") == 0) continue;
@@ -237,13 +239,13 @@ int get_g_record(char *dateiname, lpb puffer, unsigned long puflen) {
 // Eine IGC-Datei von allen Zeilen befreien, die vom Pilot oder OO legal zur
 // Datei hinzugefügt worden sein könnten
 // Speichern der "cleanen" Datei
-void clean_igcfile(char *quelldateiname, char *zieldateiname) {
+void clean_igcfile(TCHAR *quelldateiname, TCHAR *zieldateiname) {
  FILE *quelle;
  FILE *ziel;
  const int zeilemax = 79;
  char zeile[zeilemax];
-  quelle = fopen(quelldateiname,"rt");
-  ziel = fopen(zieldateiname,"wt");
+  quelle = _tfopen(quelldateiname, _T("rt"));
+  ziel = _tfopen(zieldateiname, _T("wt"));
   while ((fgetline(zeile,sizeof(zeile),quelle)) != 0) {
     if ( (zeile[0]) && (zeile[0] != 'G'))
       fprintf(ziel,"%s\n",zeile);

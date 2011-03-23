@@ -34,6 +34,8 @@ extern int DisplayTimeOut;
 #endif
 #endif
 
+#include "utils/heapcheck.h"
+
 #ifdef ALTAIRSYNC
 #define ISCALE 1
 void SetSourceRectangle(RECT fromRect) {};

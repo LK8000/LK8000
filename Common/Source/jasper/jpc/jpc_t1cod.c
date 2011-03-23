@@ -84,6 +84,8 @@
 #include "jpc_t1cod.h"
 #include "jpc_tsfb.h"
 
+#include "utils/heapcheck.h"
+
 double jpc_pow2i(int n);
 
 /******************************************************************************\

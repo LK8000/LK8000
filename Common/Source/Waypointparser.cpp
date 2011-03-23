@@ -32,6 +32,8 @@
 #include "xmlParser.h"
 #include "wcecompat/ts_string.h"
 
+#include "utils/heapcheck.h"
+
 
 static int globalFileNum = 0;
 
@@ -421,7 +423,7 @@ goto_inloop:
   }
 
   if (hProgress) {
-	wsprintf(szTemp,TEXT("100%%"));       
+	_stprintf(szTemp,TEXT("100%%"));       
 	SetDlgItemText(hProgress,IDC_PROGRESS,szTemp);
   }
   return fileformat;
@@ -878,7 +880,6 @@ void ReadWayPoints(void)
 
   TCHAR szFile1[MAX_PATH] = TEXT("\0");
   TCHAR szFile2[MAX_PATH] = TEXT("\0");
-  char zfilename[MAX_PATH] = "\0";
         
   ZZIP_FILE *fp=NULL;
 #ifdef HAVEEXCEPTIONS
@@ -897,19 +898,17 @@ void ReadWayPoints(void)
       
     if (_tcslen(szFile1)>0) {
       ExpandLocalPath(szFile1);
-      unicode2ascii(szFile1, zfilename, MAX_PATH);
-      fp = zzip_fopen(zfilename, "rt");
+      fp = zzip_fopen(szFile1, "rt");
     } else {
       static TCHAR  szMapFile[MAX_PATH] = TEXT("\0");
       GetRegistryString(szRegistryMapFile, szMapFile, MAX_PATH);
       ExpandLocalPath(szMapFile);
-      wcscat(szMapFile,TEXT("/"));
-      wcscat(szMapFile,TEXT("waypoints.xcw"));
-      unicode2ascii(szMapFile, zfilename, MAX_PATH);
-      fp  = zzip_fopen(zfilename, "rt");
+      _tcscat(szMapFile,TEXT("/"));
+      _tcscat(szMapFile,TEXT("waypoints.xcw"));
+      fp = zzip_fopen(szMapFile, "rt");
       if (fp != NULL) {
-	StartupStore(TEXT("... Waypoint file embedded inside xcm%s"), NEWLINE);
-	StartupStore(TEXT("... xcm: <%s>%s"), szMapFile,NEWLINE);
+      StartupStore(TEXT("... Waypoint file embedded inside xcm%s"), NEWLINE);
+      StartupStore(TEXT("... xcm: <%s>%s"), szMapFile,NEWLINE);
       }
     }
 
@@ -953,8 +952,7 @@ void ReadWayPoints(void)
 
     if (_tcslen(szFile2)>0){
       ExpandLocalPath(szFile2);
-      unicode2ascii(szFile2, zfilename, MAX_PATH);
-      fp = zzip_fopen(zfilename, "rt");
+      fp = zzip_fopen(szFile2, "rt");
       if(fp != NULL){
         globalFileNum = 1;
         WpFileType[2]=ReadWayPointFile(fp, szFile2);
@@ -964,7 +962,7 @@ void ReadWayPoints(void)
         ContractLocalPath(szFile2);
         SetRegistryString(szRegistryAdditionalWayPointFile, szFile2);  
       } else {
-	StartupStore(TEXT("--- No waypoint file 2%s"),NEWLINE);
+        StartupStore(TEXT("--- No waypoint file 2%s"),NEWLINE);
       }
     }
 

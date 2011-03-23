@@ -26,6 +26,8 @@
 
 #include "Utils.h"
 
+#include "utils/heapcheck.h"
+
 void AddConfList( DataFieldEnum* dfe);
 
 static bool changed = false;

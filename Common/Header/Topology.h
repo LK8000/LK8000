@@ -45,7 +45,7 @@ class XShapeLabel: public XShape {
 class Topology {
 
  public:
-  Topology(const char* shpname, COLORREF thecolor, bool doappend=false);
+  Topology(const TCHAR* shpname, COLORREF thecolor, bool doappend=false);
   Topology() {};
   
   virtual ~Topology();
@@ -72,7 +72,7 @@ class Topology {
 
   void loadBitmap(const int);
 
-  char filename[MAX_PATH];
+  TCHAR filename[MAX_PATH];
 
   virtual void removeShape(const int i);
   virtual XShape* addShape(const int i);
@@ -101,7 +101,7 @@ class Topology {
 
 class TopologyWriter: public Topology {
  public:
-  TopologyWriter(const char *shpname, COLORREF thecolor);
+  TopologyWriter(const TCHAR *shpname, COLORREF thecolor);
   virtual ~TopologyWriter();
   
   void addPoint(double x, double y);
@@ -114,7 +114,7 @@ class TopologyWriter: public Topology {
 
 class TopologyLabel: public Topology {
  public:
-  TopologyLabel(const char* shpname, COLORREF thecolor, INT field1);
+  TopologyLabel(const TCHAR* shpname, COLORREF thecolor, INT field1);
   virtual ~TopologyLabel();
   virtual XShape* addShape(const int i);
   void setField(int i);

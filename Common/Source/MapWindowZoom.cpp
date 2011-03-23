@@ -12,6 +12,8 @@
 #include "MapWindow.h"
 #include "externs.h"
 
+#include "utils/heapcheck.h"
+
 
 MapWindow::Zoom::Zoom():
   _inited(false),

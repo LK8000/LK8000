@@ -17,6 +17,8 @@
 #include "InfoBox.h"
 #include "XCSoar.h" // 091117
 
+#include "utils/heapcheck.h"
+
 extern InfoBox *InfoBoxes[MAXINFOWINDOWS];
 extern HWND hWndMainWindow; // Main Windows
 extern HINSTANCE hInst; // The current instance

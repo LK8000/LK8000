@@ -13,6 +13,8 @@
 #include "XCSoar.h"
 #include <tchar.h>
 
+#include "utils/heapcheck.h"
+
 
 /** 
  * @brief Constructor

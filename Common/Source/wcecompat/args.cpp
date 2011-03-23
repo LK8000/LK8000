@@ -26,6 +26,8 @@
 #include "ts_string.h"
 #include "args.h"
 
+#include "utils/heapcheck.h"
+
 
 typedef enum {
 	TOK_ERROR = -1,

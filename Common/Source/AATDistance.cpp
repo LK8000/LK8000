@@ -14,6 +14,8 @@
 #include "Calculations.h"
 #include "externs.h"
 
+#include "utils/heapcheck.h"
+
 #define DISTANCETHRESHOLD 500
 
 extern NMEA_INFO GPS_INFO;

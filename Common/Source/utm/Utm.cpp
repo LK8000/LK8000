@@ -30,6 +30,8 @@
 #include "utm.h"
 #include <math.h>
 
+#include "utils/heapcheck.h"
+
 // Some constants used by these functions.
 static const double fe = 500000.0;
 static const double ok = 0.9996;

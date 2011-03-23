@@ -8,6 +8,8 @@
 #include "zzip/inflate.h"
 #include "zzip/inffast.h"
 
+#include "utils/heapcheck.h"
+
 #ifndef ASMINF
 
 /* Allow machine dependent optimization for post-increment or pre-increment.

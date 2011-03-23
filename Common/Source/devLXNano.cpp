@@ -10,9 +10,12 @@
 #include <time.h>
 
 #include "StdAfx.h"
+#include "utils/stringext.h"
 #include "Dialogs.h"
 #include "externs.h"
 #include "devLXNano.h"
+
+#include "utils/heapcheck.h"
 
 //______________________________________________________________________defines_
 
@@ -422,12 +425,12 @@ bool DevLXNano::Wide2LxAscii(const TCHAR* input, int outSize, char* output)
   if (outSize == 0)
     return(false);
 
-  bool res = Wide2Ascii(input, outSize, output);
+  int res = unicode2usascii(input, output, outSize);
 
   // replace all non-ascii characters with '?' - LX Colibri is very sensitive
   // on non-ascii chars - the electronic seal can be broken
-  // (Wide2Ascii() should be enough, but to be sure that someone has not
-  // incorrectly changed Wide2Ascii())
+  // (unicode2usascii() should be enough, but to be sure that someone has not
+  // incorrectly changed unicode2usascii())
   output--;
   while (*++output != '\0')
   {
@@ -435,7 +438,7 @@ bool DevLXNano::Wide2LxAscii(const TCHAR* input, int outSize, char* output)
       *output = '?';
   }
 
-  return(res);
+  return(res >= 0);
 } // Wide2LxAscii()
 
 

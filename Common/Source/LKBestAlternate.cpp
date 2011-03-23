@@ -28,6 +28,8 @@
 #include "Calculations2.h"
 #include "Message.h"
 
+#include "utils/heapcheck.h"
+
 extern void LatLon2Flat(double lon, double lat, int *scx, int *scy);
 extern int CalculateWaypointApproxDistance(int scx_aircraft, int scy_aircraft, int i);
 

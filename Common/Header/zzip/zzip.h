@@ -20,6 +20,7 @@
 #define _ZZIP_ZZIP_H
 
 #include <zzip/types.h>
+#include <tchar.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -192,7 +193,7 @@ zzip_ssize_t	zzip_read(ZZIP_FILE * fp, void * buf, zzip_size_t len);
 _zzip_export
 ZZIP_FILE*      zzip_freopen(zzip_char_t* name, zzip_char_t* mode, ZZIP_FILE*);
 _zzip_export
-ZZIP_FILE*      zzip_fopen(zzip_char_t* name, zzip_char_t* mode);
+ZZIP_FILE*      zzip_fopen(const TCHAR* name, zzip_char_t* mode);
 _zzip_export
 zzip_size_t     zzip_fread(void *ptr, zzip_size_t size, zzip_size_t nmemb, 
 			   ZZIP_FILE * file);

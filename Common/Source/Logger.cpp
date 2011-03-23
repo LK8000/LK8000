@@ -18,6 +18,8 @@
 #include "InputEvents.h"
 #include "Parser.h"
 
+#include "utils/heapcheck.h"
+
 
 
 HINSTANCE GRecordDLLHandle = NULL;
@@ -1563,7 +1565,7 @@ void LinkGRecordDLL(void)
 
       StartupStore(TEXT(". Searching for GRecordDLL%s"),NEWLINE);
 #ifdef GNAV
-      if (FileExistsW(TEXT("\\NOR Flash\\GRecordDLL.dat"))) {
+      if (FileExists(TEXT("\\NOR Flash\\GRecordDLL.dat"))) {
 	StartupStore(TEXT("Updating GRecordDLL.DLL%s"),NEWLINE);
 	DeleteFile(TEXT("\\NOR Flash\\GRecordDLL.DLL"));
 	MoveFile(TEXT("\\NOR Flash\\GRecordDLL.dat"),

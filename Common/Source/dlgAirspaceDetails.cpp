@@ -16,6 +16,8 @@
 #include "Airspace.h"
 #include "AirspaceWarning.h"
 
+#include "utils/heapcheck.h"
+
 static int index_circle = -1;
 static int index_area = -1;
 static WndForm *wf=NULL;

@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "XCSoar.h"
 
+#include "utils/heapcheck.h"
+
 void debug(const TCHAR *fmt, ...)
 {
   TCHAR buf[80];

@@ -8,6 +8,10 @@
 
 #include "ClimbAverageCalculator.h"
 
+#include "utils/heapcheck.h"
+
+#include "utils/heapcheck.h"
+
 ClimbAverageCalculator::ClimbAverageCalculator(void)
 {
 	newestValIndex = -1;

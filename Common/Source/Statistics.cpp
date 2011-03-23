@@ -16,6 +16,8 @@
 #include "InfoBoxLayout.h"
 #include "Atmosphere.h"
 
+#include "utils/heapcheck.h"
+
 extern HFONT                                   StatisticsFont;
 
 

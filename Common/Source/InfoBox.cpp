@@ -20,6 +20,8 @@
 #include "LKObjects.h"
 #endif
 
+#include "utils/heapcheck.h"
+
 #define DEFAULTBORDERPENWIDTH NIBLSCALE(1)
 #define SELECTORWIDTH         (DEFAULTBORDERPENWIDTH+NIBLSCALE(4))
 

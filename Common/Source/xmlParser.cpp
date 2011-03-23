@@ -57,6 +57,8 @@
 #include "compatibility.h"
 #include "StdAfx.h"
 
+#include "utils/heapcheck.h"
+
 void StartupStore(const TCHAR *Str, ...); // 100102
 void FailStore(const TCHAR *Str, ...); // 100102
 
@@ -1318,9 +1320,9 @@ XMLNode XMLNode::parseString(LPCTSTR lpszXML, LPCTSTR tag,
     return xnode;
 }
 
-XMLNode XMLNode::parseFile(const char *filename, LPCTSTR tag, XMLResults *pResults)
+XMLNode XMLNode::parseFile(const TCHAR *filename, LPCTSTR tag, XMLResults *pResults)
 {
-    FILE *f=fopen(filename,"rb");
+    FILE *f=_tfopen(filename, _T("rb"));
     if (f==NULL)
     {
         if (pResults)
@@ -1385,7 +1387,7 @@ XMLNode XMLNode::parseFile(const char *filename, LPCTSTR tag, XMLResults *pResul
     return x;
 }
 
-XMLNode XMLNode::openFileHelper(const char *lpszXML, LPCTSTR tag)
+XMLNode XMLNode::openFileHelper(const TCHAR *lpszXML, LPCTSTR tag)
 {
     XMLResults pResults;
     XMLNode::GlobalError = false;
@@ -1393,22 +1395,12 @@ XMLNode XMLNode::openFileHelper(const char *lpszXML, LPCTSTR tag)
     if (pResults.error != eXMLErrorNone)
     {
 #ifdef DEBUG
-        printf(
-            "XML Parsing error inside file '%s'.\n"
-#ifdef _UNICODE
-            "Error: %S\n"
-#else
-            "Error: %s\n"
-#endif
-            "At line %i, column %i.\n",lpszXML,
-            XMLNode::getError(pResults.error),pResults.nLine,pResults.nColumn);
+        _tprintf(
+            _T("XML Parsing error inside file '%s'.\nError: %s\nAt line %i, column %i.\n"),
+            lpszXML, XMLNode::getError(pResults.error),pResults.nLine,pResults.nColumn);
         if (pResults.error==eXMLErrorTagNotFound)
         {
-#ifdef _UNICODE
-            printf("Tag is '%S'.\n",tag);
-#else
-            printf("Tag is '%s'.\n",tag);
-#endif
+            _tprintf(_T("Tag is '%s'.\n"), tag);
         }
 #endif
 	XMLNode::GlobalError = true;

@@ -18,6 +18,8 @@
 #include "Calculations2.h"
 #include "Dialogs.h"
 
+#include "utils/heapcheck.h"
+
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 

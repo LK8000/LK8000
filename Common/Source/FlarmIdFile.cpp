@@ -14,6 +14,8 @@
 #include "Utils.h"
 #include "Utils2.h"
 
+#include "utils/heapcheck.h"
+
 FlarmIdFile::FlarmIdFile(void)
 {
   TCHAR path[MAX_PATH];

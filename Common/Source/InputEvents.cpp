@@ -34,6 +34,8 @@
 #endif
 #include "Waypointparser.h"
 
+#include "utils/heapcheck.h"
+
 // Sensible maximums 
 #define MAX_MODE 100
 #define MAX_MODE_STRING 25

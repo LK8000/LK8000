@@ -23,6 +23,8 @@ extern BOOL extGPSCONNECT;
 
 #include "dlgTools.h"
 
+#include "utils/heapcheck.h"
+
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 static bool multi_page = false;

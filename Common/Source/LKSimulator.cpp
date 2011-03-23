@@ -36,6 +36,8 @@
 #include "externs.h"
 #include "Units.h"
 
+#include "utils/heapcheck.h"
+
 #define IASMS		CALCULATED_INFO.IndicatedAirspeedEstimated
 #define IAS		CALCULATED_INFO.IndicatedAirspeedEstimated*TOKPH
 #define BEARING		GPS_INFO.TrackBearing
