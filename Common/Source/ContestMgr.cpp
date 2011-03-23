@@ -566,6 +566,7 @@ void CContestMgr::Add(const CPointGPSSmart &gps)
       SolveTriangle(traceLoop, _prevFAIFront.get(), _prevFAIBack.get(), false);
       _prevFAIFront.reset(traceLoop.Size() ? new CPointGPS(traceLoop.Front()->GPS()) : 0);
       _prevFAIBack.reset(traceLoop.Size() ? new CPointGPS(traceLoop.Back()->GPS()) : 0);
+      SolveOLCPlus(false);
     }
   }
   {
@@ -575,12 +576,13 @@ void CContestMgr::Add(const CPointGPSSmart &gps)
   if(step % STEPS_NUM == 1) {
     // Solve OLC-Classic and FAI 3TPs
     SolvePoints(*_trace, false, false);
+    SolveOLCPlus(false);
   }
-  SolveOLCPlus(false);
   
   if(step % STEPS_NUM == 2) {
     // Solve OLC-Classic and FAI 3TPs for predicted path
     SolvePoints(*_trace, false, true);
+    SolveOLCPlus(true);
   }
   if(step % STEPS_NUM == 3) {
     // Solve FAI-OLC for predicted path
@@ -590,8 +592,8 @@ void CContestMgr::Add(const CPointGPSSmart &gps)
       _prevFAIPredictedFront.reset(traceLoop.Size() ? new CPointGPS(traceLoop.Front()->GPS()) : 0);
       _prevFAIPredictedBack.reset(traceLoop.Size() ? new CPointGPS(traceLoop.Back()->GPS()) : 0);
     }
+    SolveOLCPlus(true);
   }
-  SolveOLCPlus(true);
   
   // OLC-League
   _traceSprint->Push(gps);

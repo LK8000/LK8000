@@ -88,12 +88,12 @@ private:
   typedef std::multimap<unsigned, const CTrace::CPoint *> CDistanceMap;
 
   // Performance knobs
-  static const unsigned TRACE_FIX_LIMIT = 200;              /**< @brief The number of GPS fixes to store in the main trace */
-  static const unsigned TRACE_TRIANGLE_FIX_LIMIT = 30;      /**< @brief The number of GPS fixes to store in the FAI-OLC trace */
-  static const unsigned TRACE_SPRINT_FIX_LIMIT = 100;       /**< @brief The number of GPS fixes to store in the OLC-League trace */
+  static const unsigned TRACE_FIX_LIMIT = 100;              /**< @brief The number of GPS fixes to store in the main trace */
+  static const unsigned TRACE_TRIANGLE_FIX_LIMIT = 20;      /**< @brief The number of GPS fixes to store in the FAI-OLC trace */
+  static const unsigned TRACE_SPRINT_FIX_LIMIT = 50;        /**< @brief The number of GPS fixes to store in the OLC-League trace */
   static const unsigned TRACE_TRIANGLE_MIN_TIME = 5 * 60;   /**< @brief The minimum detected trace loop length
                                                                         (to filter out small thermalling circles) */
-  static const unsigned COMPRESSION_ALGORITHM = CTrace::ALGORITHM_DISTANCE  | CTrace::ALGORITHM_TIME_DELTA; /**< @brief Traces compression algorithm */
+  static const unsigned COMPRESSION_ALGORITHM = CTrace::ALGORITHM_DISTANCE | CTrace::ALGORITHM_TIME_DELTA; /**< @brief Traces compression algorithm */
   
   // Contest specific defines
   static const short TRACE_START_FINISH_ALT_DIFF = 1000;    /**< @brief Maximum difference of altitude between contest start
