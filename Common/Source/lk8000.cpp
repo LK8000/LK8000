@@ -2379,7 +2379,6 @@ void InitialiseFontsHardCoded(RECT rc,
  *
  */
 
-#if ( (WINDOWSPC==0) || ((WINDOWSPC>0)&&_REALTHING_)) // 091120  091202 removed _SIM_ need
 
    // If you set a font here for a specific resolution, no automatic font generation is used.
   if (ScreenSize==(ScreenSize_t)ss480x272) { // WQVGA  e.g. MIO
@@ -2606,7 +2605,6 @@ void InitialiseFontsHardCoded(RECT rc,
   }
 
 
-#endif // not WindowsPC or RealThing
 
 
 }

@@ -92,13 +92,7 @@
 
 // size of terrain cache
 #if (WINDOWSPC>0) 
-
-#if _REALTHING_
 #define MAXTERRAINCACHE 4096 
-#else
-#define MAXTERRAINCACHE 8192*2
-#endif
-
 #else
 #define MAXTERRAINCACHE 4096 
 #endif
