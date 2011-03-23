@@ -31,9 +31,9 @@ class CPointGPS {
   int _alt;
   double _lat;
   double _lon;
-  double _x;
-  double _y;
-  double _z;
+  int _x;
+  int _y;
+  int _z;
   
 public:
   static const unsigned DAY_SECONDS  = 24 * 3600; // 24h
@@ -58,7 +58,7 @@ public:
   unsigned Distance(double lat, double lon) const;
   unsigned Distance(const CPointGPS &ref) const;
   unsigned Distance(const CPointGPS &seg1, const CPointGPS &seg2) const;
-  unsigned Distance3D(double x, double y, double z) const;
+  unsigned Distance3D(int x, int y, int z) const;
   unsigned Distance3D(const CPointGPS &ref) const;
   unsigned Distance3D(const CPointGPS &seg1, const CPointGPS &seg2) const;
   int TimeDelta(unsigned ref) const;
@@ -151,7 +151,7 @@ inline unsigned CPointGPS::Distance(const CPointGPS &seg1, const CPointGPS &seg2
 }
 
 
-inline unsigned CPointGPS::Distance3D(double x, double y, double z) const
+inline unsigned CPointGPS::Distance3D(int x, int y, int z) const
 {
   double dx = _x - x;
   double dy = _y - y;
@@ -183,18 +183,18 @@ inline unsigned CPointGPS::Distance3D(const CPointGPS &ref) const
  */
 inline unsigned CPointGPS::Distance3D(const CPointGPS &seg1, const CPointGPS &seg2) const
 {
-  double X1 = _x - seg1._x;
-  double Y1 = _y - seg1._y;
-  double Z1 = _z - seg1._z;
-  double DX = seg2._x - seg1._x;
-  double DY = seg2._y - seg1._y;
-  double DZ = seg2._z - seg1._z;
+  int X1 = _x - seg1._x;
+  int Y1 = _y - seg1._y;
+  int Z1 = _z - seg1._z;
+  int DX = seg2._x - seg1._x;
+  int DY = seg2._y - seg1._y;
+  int DZ = seg2._z - seg1._z;
   
   double dot = X1*DX + Y1*DY + Z1*DZ;
   double len_sq = DX*DX + DY*DY + DZ*DZ;
   double param = dot / len_sq;
   
-  double x, y, z;
+  int x, y, z;
   
   if(param < 0) {
     x = seg1._x;

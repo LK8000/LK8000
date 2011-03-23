@@ -102,9 +102,9 @@ class CTrace::CPoint {
   CPointGPSSmart _gps;                            /**< @brief Contained GPS fix */
   
   // trace compression values
-  float _prevDistance;                            /**< @brief The distance from the previous GPS fix */
+  unsigned _prevDistance;                         /**< @brief The distance from the previous GPS fix */
   //  float _inheritedCost;                           /**< @brief The cost inherited from compressed (removed) GPS fixes */
-  float _distanceCost;                            /**< @brief The distance related compression cost */
+  unsigned _distanceCost;                         /**< @brief The distance related compression cost */
   unsigned _timeCost;                             /**< @brief Time related compression cost */
   
   // list iterators
@@ -155,8 +155,8 @@ inline void CTrace::Push(const CPointGPSSmart &gps)
 inline CTrace::CPoint::CPoint(const CTrace &trace, const CPointGPSSmart &gps, CPoint *prev):
   _trace(trace), 
   _gps(gps),
-  _prevDistance(prev ? prev->_gps->Distance(*this->_gps) : 0),
-  // _inheritedCost(0),
+  _prevDistance(prev ? prev->_gps->Distance3D(*this->_gps) : 0),
+  //  _inheritedCost(0),
   _distanceCost(0), _timeCost(0),
   _prev(prev), _next(0)
 {
@@ -218,13 +218,15 @@ inline void CTrace::CPoint::Reduce()
   //   _next->_prevDistance = newDistance;
   // }
   // else {
-    _next->_prevDistance = _prevDistance + _next->_prevDistance - _distanceCost;
-  //   distanceCost = _distanceCost; 
+  _next->_prevDistance = std::max(0, (int)(_prevDistance + _next->_prevDistance - _distanceCost));
+    //    distanceCost = _distanceCost; 
   // }
   
-  // float cost = (distanceCost + _inheritedCost) / 2.0;
-  // _prev->_inheritedCost += cost;
-  // _next->_inheritedCost += cost;
+  // if(_trace._algorithm & ALGORITHM_INHERITED) {
+  //   float cost = (distanceCost + _inheritedCost) / 2.0;
+  //   _prev->_inheritedCost += cost;
+  //   _next->_inheritedCost += cost;
+  // }
 }
 
 
@@ -240,7 +242,7 @@ inline void CTrace::CPoint::AssesCost()
   //   _distanceCost = fabs(ax*(by-cy) + bx*(cy-ay) + cx*(ay-by));
   // }
   // else {
-  _distanceCost = _prevDistance + _next->_prevDistance - _next->_gps->Distance(*_prev->_gps);
+  _distanceCost = std::max(0, (int)(_prevDistance + _next->_prevDistance - _next->_gps->Distance3D(*_prev->_gps)));
   // }
   if(_trace._algorithm & ALGORITHM_TIME_DELTA)
     _timeCost = _gps->TimeDelta(*_prev->_gps);
@@ -259,8 +261,8 @@ inline void CTrace::CPoint::AssesCost()
  */
 inline bool CTrace::CPoint::operator<(const CPoint &ref) const
 {
-  float leftCost = 0;
-  float rightCost = 0;
+  unsigned leftCost = 0;
+  unsigned rightCost = 0;
       
   leftCost += _distanceCost;
   rightCost += ref._distanceCost;
