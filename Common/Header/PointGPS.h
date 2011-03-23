@@ -13,6 +13,9 @@
 #include "Utils.h"
 #include <vector>
 
+#ifndef DEG_TO_RAD
+#define DEG_TO_RAD .0174532925199432958
+#endif
 
 /** 
  * @brief GPS fix data
@@ -28,12 +31,24 @@ class CPointGPS {
   int _alt;
   double _lat;
   double _lon;
+  double _x;
+  double _y;
+  double _z;
   
 public:
-  static const unsigned DAY_SECONDS    = 24 * 3600; // 24h
+  static const unsigned DAY_SECONDS  = 24 * 3600; // 24h
+  static const double EARTH_RADIUS   = 6371000.0;
   
   CPointGPS(unsigned time, double lat, double lon, int alt):
-    _time(time), _alt(alt), _lat(lat), _lon(lon) {}
+    _time(time), _alt(alt), _lat(lat), _lon(lon)
+  {
+    lat *= DEG_TO_RAD;
+    lon *= DEG_TO_RAD;
+    double clat = cos(lat);
+    _x = -EARTH_RADIUS * clat * cos(lon);
+    _y = EARTH_RADIUS * sin(lat);
+    _z = EARTH_RADIUS * clat * sin(lon);
+  }
   
   unsigned Time() const      { return _time; }
   double Latitude() const    { return _lat; }
@@ -43,6 +58,9 @@ public:
   unsigned Distance(double lat, double lon) const;
   unsigned Distance(const CPointGPS &ref) const;
   unsigned Distance(const CPointGPS &seg1, const CPointGPS &seg2) const;
+  unsigned Distance3D(double x, double y, double z) const;
+  unsigned Distance3D(const CPointGPS &ref) const;
+  unsigned Distance3D(const CPointGPS &seg1, const CPointGPS &seg2) const;
   int TimeDelta(unsigned ref) const;
   int TimeDelta(const CPointGPS &ref) const { return TimeDelta(ref.Time()); }
   
@@ -65,9 +83,20 @@ typedef std::vector<CPointGPS> CPointGPSArray;
  */
 inline unsigned CPointGPS::Distance(double lat, double lon) const
 {
-  double dist;
-  DistanceBearing(lat, lon, _lat, _lon, &dist, 0);
-  return dist;
+  lat *= DEG_TO_RAD;
+  double lat2 = _lat * DEG_TO_RAD;
+  lon *= DEG_TO_RAD;
+  double lon2 = _lon * DEG_TO_RAD;
+  
+  double clat1 = cos(lat);
+  double clat2 = cos(lat2);
+  double dlon = lon2-lon;
+  
+  double s1 = sin((lat2-lat)/2);
+  double s2 = sin(dlon/2);
+  double a= std::max(0.0, std::min(1.0,s1*s1+clat1*clat2*s2*s2));
+  
+  return 6371000.0*2.0*atan2(sqrt(a),sqrt(1.0-a));
 }
 
 
@@ -119,6 +148,71 @@ inline unsigned CPointGPS::Distance(const CPointGPS &seg1, const CPointGPS &seg2
   }
   
   return Distance(lat, lon);
+}
+
+
+inline unsigned CPointGPS::Distance3D(double x, double y, double z) const
+{
+  double dx = _x - x;
+  double dy = _y - y;
+  double dz = _z - z;
+  return sqrt(dx*dx + dy*dy + dz*dz);
+}
+
+
+/** 
+ * @brief Calculates the distance between 2 GPS fixes
+ * 
+ * @param ref Other GPS fix to use in calculations
+ * 
+ * @return Calculated distance
+ */
+inline unsigned CPointGPS::Distance3D(const CPointGPS &ref) const
+{
+  return Distance3D(ref._x, ref._y, ref._z);
+}
+
+
+/** 
+ * @brief Calculates approximated distance of GPS fix from a line segment
+ * 
+ * @param seg1 First end of line segment
+ * @param seg2 Second end of line segment
+ * 
+ * @return Calculated distance
+ */
+inline unsigned CPointGPS::Distance3D(const CPointGPS &seg1, const CPointGPS &seg2) const
+{
+  double X1 = _x - seg1._x;
+  double Y1 = _y - seg1._y;
+  double Z1 = _z - seg1._z;
+  double DX = seg2._x - seg1._x;
+  double DY = seg2._y - seg1._y;
+  double DZ = seg2._z - seg1._z;
+  
+  double dot = X1*DX + Y1*DY + Z1*DZ;
+  double len_sq = DX*DX + DY*DY + DZ*DZ;
+  double param = dot / len_sq;
+  
+  double x, y, z;
+  
+  if(param < 0) {
+    x = seg1._x;
+    y = seg1._y;
+    z = seg1._z;
+  }
+  else if(param > 1) {
+    x = seg2._x;
+    y = seg2._y;
+    z = seg2._z;
+  }
+  else {
+    x = seg1._x + param * DX;
+    y = seg1._y + param * DY;
+    z = seg1._z + param * DZ;
+  }
+  
+  return Distance3D(x, y, z);
 }
 
 
