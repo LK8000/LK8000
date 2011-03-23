@@ -133,6 +133,121 @@ public:
 
 
 /** 
+ * @brief Adds a new GPS fix to a trace
+ * 
+ * @param gps GPS fix to add
+ */
+inline void CTrace::Push(const CPointGPSSmart &gps)
+{
+  // add new point
+  Push(new CPoint(*this, gps, _back));
+}
+
+
+
+/** 
+ * @brief Constructor
+ * 
+ * @param trace Parent trace
+ * @param gps GPS fix to contain
+ * @param prev Previous trace point
+ */
+inline CTrace::CPoint::CPoint(const CTrace &trace, const CPointGPSSmart &gps, CPoint *prev):
+  _trace(trace), 
+  _gps(gps),
+  _prevDistance(prev ? prev->_gps->Distance(*this->_gps) : 0),
+  // _inheritedCost(0),
+  _distanceCost(0), _timeCost(0),
+  _prev(prev), _next(0)
+{
+  if(_prev) {
+    _prev->_next = this;
+    if(_prev->_prev)
+      _prev->AssesCost();
+  }
+}
+
+
+/** 
+ * @brief "Copy" constructor
+ * 
+ * @param trace Parent trace
+ * @param ref Point to copy data from
+ * @param prev Previous trace point
+ */
+inline CTrace::CPoint::CPoint(const CTrace &trace, const CPoint &ref, CPoint *prev):
+  _trace(trace), 
+  _gps(ref._gps),
+  _prevDistance(ref._prevDistance),
+  // _inheritedCost(ref._inheritedCost),
+  _distanceCost(ref._distanceCost), _timeCost(ref._timeCost),
+  _prev(prev), _next(0)
+{
+  if(_prev) {
+    _prev->_next = this;
+    if(_prev->_prev)
+      _prev->AssesCost();
+  }
+}
+
+
+/** 
+ * @brief Destructor
+ */
+inline CTrace::CPoint::~CPoint()
+{
+  if(_prev)
+    _prev->_next = _next;
+  if(_next)
+    _next->_prev = _prev;
+}
+
+
+/** 
+ * @brief Prepares the point for removal from the trace
+ * 
+ * Updates the neighbors with the data of current point.
+ */
+inline void CTrace::CPoint::Reduce()
+{
+  // asses new costs & set new prevDistance for next point
+  // float distanceCost;
+  // if(_trace._algorithm & ALGORITHM_TRIANGLES) {
+  //   unsigned newDistance = _next->_gps->Distance(*_prev->_gps);
+  //   distanceCost = _prevDistance + _next->_prevDistance - newDistance;
+  //   _next->_prevDistance = newDistance;
+  // }
+  // else {
+    _next->_prevDistance = _prevDistance + _next->_prevDistance - _distanceCost;
+  //   distanceCost = _distanceCost; 
+  // }
+  
+  // float cost = (distanceCost + _inheritedCost) / 2.0;
+  // _prev->_inheritedCost += cost;
+  // _next->_inheritedCost += cost;
+}
+
+
+/** 
+ * @brief Assesses the compression cost of a point
+ */
+inline void CTrace::CPoint::AssesCost()
+{
+  // if(_trace._algorithm & ALGORITHM_TRIANGLES) {
+  //   double ax = _gps->Longitude();           double ay = _gps->Latitude();
+  //   double bx = _prev->_gps->Longitude();    double by = _prev->_gps->Latitude();
+  //   double cx = _next->_gps->Longitude();    double cy = _next->_gps->Latitude();
+  //   _distanceCost = fabs(ax*(by-cy) + bx*(cy-ay) + cx*(ay-by));
+  // }
+  // else {
+  _distanceCost = _prevDistance + _next->_prevDistance - _next->_gps->Distance(*_prev->_gps);
+  // }
+  if(_trace._algorithm & ALGORITHM_TIME_DELTA)
+    _timeCost = _gps->TimeDelta(*_prev->_gps);
+}
+
+
+/** 
  * @brief Main compression routine
  * 
  * Main compression routine used in compression set. It checks if current point
@@ -170,5 +285,6 @@ inline bool CTrace::CPoint::operator<(const CPoint &ref) const
   else
     return _gps->Time() > ref._gps->Time();
 }
+
 
 #endif /* __TRACE_H__ */
