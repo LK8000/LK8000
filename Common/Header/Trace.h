@@ -38,9 +38,9 @@ public:
    */
   enum TAlgorithm {
     ALGORITHM_DISTANCE        = 0x0001,           /**< @brief AB + BC - AC */
-    ALGORITHM_TRIANGLES       = 0x0002,           /**< @brief ABC triangle area */
+    // ALGORITHM_TRIANGLES       = 0x0002,           /**< @brief ABC triangle area */
     
-    ALGORITHM_INHERITED       = 0x0010,           /**< @brief Remebers the cost of GPS fixes removed during compression */
+    // ALGORITHM_INHERITED       = 0x0010,           /**< @brief Remebers the cost of GPS fixes removed during compression */
     
     ALGORITHM_TIME_DELTA      = 0x0100            /**< @brief Uses the time between GPS fixes */
   };
@@ -103,8 +103,8 @@ class CTrace::CPoint {
   
   // trace compression values
   float _prevDistance;                            /**< @brief The distance from the previous GPS fix */
-  float _inheritedCost;                           /**< @brief The cost inherited from compressed (removed) GPS fixes */
-  float _distanceCost;                            /**< @brief The ditance related compression cost */
+  //  float _inheritedCost;                           /**< @brief The cost inherited from compressed (removed) GPS fixes */
+  float _distanceCost;                            /**< @brief The distance related compression cost */
   unsigned _timeCost;                             /**< @brief Time related compression cost */
   
   // list iterators
@@ -150,10 +150,10 @@ inline bool CTrace::CPoint::operator<(const CPoint &ref) const
   leftCost += _distanceCost;
   rightCost += ref._distanceCost;
       
-  if(_trace._algorithm & ALGORITHM_INHERITED) {
-    leftCost += _inheritedCost;
-    rightCost += ref._inheritedCost;
-  }
+  // if(_trace._algorithm & ALGORITHM_INHERITED) {
+  //   leftCost += _inheritedCost;
+  //   rightCost += ref._inheritedCost;
+  // }
   if(_trace._algorithm & ALGORITHM_TIME_DELTA) {
     leftCost *= _timeCost;
     rightCost *= ref._timeCost;
