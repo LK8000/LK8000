@@ -2391,11 +2391,7 @@ void InitialiseFontsHardCoded(RECT rc,
     // propGetFontSettingsFromString(TEXT("18,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapWindowLogFont); 091120
     propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapWindowLogFont);
     // propGetFontSettingsFromString(TEXT("16,0,0,0,500,0,0,0,0,0,0,4,2,TahomaBD"), ptrhardMapWindowBoldLogFont); 091120
-#if WINDOWSPC>0
-    propGetFontSettingsFromString(TEXT("19,0,0,0,500,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapWindowBoldLogFont); 
-#else
     propGetFontSettingsFromString(TEXT("19,0,0,0,500,0,0,0,0,0,0,6,2,Tahoma"), ptrhardMapWindowBoldLogFont); 
-#endif
     if (Appearance.InfoBoxGeom == 5) {
       GlobalEllipse=1.32f; // We don't use vario gauge in landscape geo5 anymore.. but doesn't hurt.
     }
