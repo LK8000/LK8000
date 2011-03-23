@@ -119,7 +119,7 @@ private:
   mutable CCriticalSection _traceCS;              /**< @brief Main trace critical section for returning _trace points */
   mutable CCriticalSection _resultsCS;            /**< @brief Contests results critical section for returning results */
   
-  unsigned BiggestLoopFind(const CTrace &trace, const CTrace::CPoint *&start, const CTrace::CPoint *&end) const;
+  bool BiggestLoopFind(const CTrace &trace, const CTrace::CPoint *&start, const CTrace::CPoint *&end) const;
   bool BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut, bool predicted) const;
   bool FAITriangleEdgeCheck(unsigned length, unsigned best) const;
   bool FAITriangleEdgeCheck(unsigned length1, unsigned length2, unsigned length3) const;

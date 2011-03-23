@@ -114,18 +114,16 @@ void CContestMgr::Reset(unsigned handicap, short startAltitudeLoss)
  * @param [out] start Detected start point of the loop
  * @param [out] end   Detected start point of the loop
  * 
- * @return The number of GPS fixes included in the loop.
+ * @return @c true if a loop found
  */
-unsigned CContestMgr::BiggestLoopFind(const CTrace &trace, const CTrace::CPoint *&start, const CTrace::CPoint *&end) const
+bool CContestMgr::BiggestLoopFind(const CTrace &trace, const CTrace::CPoint *&start, const CTrace::CPoint *&end) const
 {
-  unsigned pointsCount = trace.Size();
   const CTrace::CPoint *back = trace.Back();
   
   // try to find the biggest closed path possible
   const CTrace::CPoint *point = trace.Front();
   CTrace::CPoint *next = point->Next();
   while(next && next != back) {
-    pointsCount--;
     if((unsigned)back->GPS().TimeDelta(next->GPS()) < TRACE_TRIANGLE_MIN_TIME)
       // filter too small circles from i.e. thermalling
       return 0;
@@ -136,14 +134,14 @@ unsigned CContestMgr::BiggestLoopFind(const CTrace &trace, const CTrace::CPoint 
       if(dist < TRACE_CLOSED_MAX_DIST) {
         start = next;
         end = back;
-        return pointsCount;
+        return true;
       }
     }
     point = next;
     next = point->Next();
   }
   
-  return 0;
+  return false;
 }
 
 
