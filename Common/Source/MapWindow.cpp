@@ -2507,6 +2507,21 @@ savecodesize1:
 					if (mode.AnyPan()) {
 #endif /* MAP_ZOOM */
 						#if 110308
+						// match only center screen
+						if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(5)) && 
+						      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(5)) ) {
+							// LKTOKEN  _@M204_ = "Current position updated" 
+							DoStatusMessage(gettext(TEXT("_@M204_")));
+							GPS_INFO.Latitude=PanLatitude;
+							GPS_INFO.Longitude=PanLongitude;
+							break;
+						}
+						// if we are not long clicking in center screen, before setting new position
+						// we check if we are on an airspace for informations
+						if (OnAirSpace && Event_InteriorAirspaceDetails(Xstart, Ystart)) {
+							break;
+						}
+						// Ok, so we reposition the aircraft
 						Screen2LatLon(X,Y,PanLatitude,PanLongitude);
 						// LKTOKEN  _@M204_ = "Current position updated" 
 						DoStatusMessage(gettext(TEXT("_@M204_")));
@@ -2564,6 +2579,21 @@ savecodesize1:
 					if (mode.AnyPan()) {
 #endif /* MAP_ZOOM */
 						#if 110308
+						// match only center screen
+						if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(5)) && 
+						      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(5)) ) {
+							// LKTOKEN  _@M204_ = "Current position updated" 
+							DoStatusMessage(gettext(TEXT("_@M204_")));
+							GPS_INFO.Latitude=PanLatitude;
+							GPS_INFO.Longitude=PanLongitude;
+							break;
+						}
+						// if we are not long clicking in center screen, before setting new position
+						// we check if we are on an airspace for informations
+						if (OnAirSpace && Event_InteriorAirspaceDetails(Xstart, Ystart)) {
+							break;
+						}
+						// Ok, so we reposition the aircraft
 						Screen2LatLon(X,Y,PanLongitude,PanLatitude);
 						// LKTOKEN  _@M204_ = "Current position updated" 
 						DoStatusMessage(gettext(TEXT("_@M204_")));
