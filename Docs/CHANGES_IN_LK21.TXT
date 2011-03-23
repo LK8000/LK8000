@@ -15,16 +15,24 @@ CHANGES
   It is thus now possible to load a task even when no waypoints are in use, because the
   task will load its own waypoints of course
 
+.  Show Clock in Appearance menu 13 disabled when not available.
 
 BUGFIXES
+
 
 . National characters problem fixed. On some devices waypoints files, airspaces files, map files
   were not loaded. They could be selected in the file list, but wouldn't load, and they would
   disappear from configuration immediately after.
+  Also some flash cards were named by devices using internal unicode national characters and
+  would not allow anything to work at all within LK8000.
 
 . WINE version (Windows emulator under Unix) fixes
 
-. (2.1d fix IGC replay broken with negatove latitudes and longitudes)
+.  Fix bug making appearing target unit when half overlay and clock selected.
+.  Fix bug not loading terrain when first .lkm selected without terrain file set 
+   and then .xcm selected with terrain inside
+
+. (2.1d fix IGC replay broken with negative latitudes and longitudes)
 . (2.1c) fix Font Smoothing not working correctly, never setting ClearType on some devices
 
 
