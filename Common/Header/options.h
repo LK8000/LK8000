@@ -132,7 +132,14 @@
 #if (WINDOWSPC>0)
 #define WINE
 #endif
-#define NEW_OLC                 1       // Applied 110313
+
+// ------------ NEW OLC ENGINE -------------------------------------------------
+// Using NEW_OLC requires to change lk8000.rc and activate NEWOLC xmls. 
+// To do so, comment non-NEWOLC and uncomment NEWOLC. They are 3 files in total.
+// No need to change any XML filename. Just comment/uncomment.
+//
+// #define NEW_OLC                 1     // Applied 110313
+// -----------------------------------------------------------------------------
 
 /*
  * Incomplete work, or stuff that never got into production versions but still interesting

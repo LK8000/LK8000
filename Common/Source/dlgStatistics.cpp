@@ -1659,7 +1659,11 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
     UnlockTaskData();
     break;
   case ANALYSIS_PAGE_CONTEST:
+    #ifndef NEW_OLC
+    SetCalcCaption(gettext(TEXT("_@M504_"))); // Optimise
+    #else
     SetCalcCaption(gettext(TEXT("_@M1451_"))); // Change
+    #endif
     LockTaskData();
     Statistics::RenderTask(hDC, rcgfx, true);
     UnlockTaskData();
@@ -2231,6 +2235,7 @@ static CallBackTableEntry_t CallBackTable[]={
 };
 
 
+#ifdef NEW_OLC
 static int OnTimerNotify(WindowControl *Sender)
 {
   static unsigned i=0;
@@ -2241,6 +2246,7 @@ static int OnTimerNotify(WindowControl *Sender)
   Update();
   return 0;
 }
+#endif
 
 
 void dlgAnalysisShowModal(void){
@@ -2287,7 +2293,9 @@ void dlgAnalysisShowModal(void){
 
   wCalc = ((WndButton *)wf->FindByName(TEXT("cmdCalc")));
 
+  #ifdef NEW_OLC
   wf->SetTimerNotify(OnTimerNotify);
+  #endif
 
   Update();
 

@@ -1,4 +1,10 @@
-//Microsoft eMbedded Visual C++ generated resource script.
+// LK8000 Resource file - manually edited
+// 
+// Be careful that dependencies will not work for objects!!
+//
+// Current existing manual dependencies:
+// NEWOLC
+//
 //
 #include "resource.h"
 
@@ -131,6 +137,7 @@ IDR_XML_ANALYSIS        XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAnalysis.xml
 IDR_XML_BASICSETTINGS   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBasicSettings.xml"
 IDR_XML_BASICSETTINGS_L   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBasicSettings_L.xml"
 IDR_XML_CHECKLIST       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgChecklist.xml"
+// IDR_XML_CONFIGURATION   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfiguration.NEWOLC.xml"
 IDR_XML_CONFIGURATION   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfiguration.xml"
 IDR_XML_FONTEDIT        XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgFontEdit.xml"
 IDR_XML_LOGGERREPLAY    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgLoggerReplay.xml"
@@ -166,6 +173,7 @@ IDR_XML_WAYPOINTEDIT    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWaypointEdit
 IDR_XML_WEATHER         XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWeather.xml"
 IDR_XML_AIRSPACESELECT  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceSelect.xml"
 IDR_XML_TARGET          XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTarget.xml"
+// IDR_XML_TASKRULES       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTaskRules.NEWOLC.xml"
 IDR_XML_TASKRULES       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTaskRules.xml"
 IDR_XML_AIRSPACEDETAILS XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceDetails.xml"
 IDR_XML_LKTRAFFICDETAILS XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgLKTraffic.xml"
@@ -179,6 +187,7 @@ IDR_XML_AIRSPACE_L      XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspace_L.x
 IDR_XML_AIRSPACECOLOURS_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceColours_L.xml"
 IDR_XML_AIRSPACEPATTERNS_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspacePatterns_L.xml"
 IDR_XML_STARTPOINT_L    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgStartPoint_L.xml"
+// IDR_XML_CONFIGURATION   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfiguration_L.NEWOLC.xml"
 IDR_XML_CONFIGURATION_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfiguration_L.xml"
 IDR_XML_WAYPOINTSELECT_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWayPointSelect_L.xml"
 IDR_XML_TASKOVERVIEW_L  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTaskOverview_L.xml"
