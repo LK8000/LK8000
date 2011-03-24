@@ -110,6 +110,7 @@ private:
   int _startMaxAltitude;                          /**< @brief The maximum altitude of a takeoff */
   CTracePtr _trace;                               /**< @brief Main trace */
   CTracePtr _traceSprint;                         /**< @brief Trace for OLC-League */
+  CTracePtr _traceLoop;                           /**< @brief Trace for OLC-League */
   std::auto_ptr<CPointGPS> _prevFAIFront;         /**< @brief Last reviewed OLC-FAI loop end points */
   std::auto_ptr<CPointGPS> _prevFAIBack;          /**< @brief Last reviewed OLC-FAI loop end points */
   std::auto_ptr<CPointGPS> _prevFAIPredictedFront;/**< @brief Last reviewed OLC-FAI Predicted loop end points */

@@ -62,6 +62,7 @@ CContestMgr::CContestMgr(unsigned handicap, short startAltitudeLoss):
   _startDetected(false), _startMaxAltitude(-1000),
   _trace(new CTrace(TRACE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM)),
   _traceSprint(new CTrace(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT, COMPRESSION_ALGORITHM)),
+  _traceLoop(new CTrace(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM)),
   _prevFAIFront(0), _prevFAIBack(0),
   _prevFAIPredictedFront(0), _prevFAIPredictedBack(0)
 {
@@ -89,6 +90,7 @@ void CContestMgr::Reset(unsigned handicap, short startAltitudeLoss)
     _trace.reset(new CTrace(TRACE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM));
   }
   _traceSprint.reset(new CTrace(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT, COMPRESSION_ALGORITHM));
+  _traceLoop.reset(new CTrace(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM));
   _prevFAIFront.reset(0);
   _prevFAIBack.reset(0);
   _prevFAIPredictedFront.reset(0);
@@ -540,7 +542,7 @@ void CContestMgr::SolveOLCPlus(bool predicted)
 void CContestMgr::Add(const CPointGPSSmart &gps)
 {
   static unsigned step = 0;
-  const unsigned STEPS_NUM = 5;
+  const unsigned STEPS_NUM = 7;
   
   CCriticalSection::CGuard guard(_mainCS);
   
@@ -559,53 +561,65 @@ void CContestMgr::Add(const CPointGPSSmart &gps)
 #endif
   }
   
-  // OLC-Plus
   {
+    // Update main trace
     CCriticalSection::CGuard guard(_traceCS);
     _trace->Push(gps);
-  }
-  if(step % STEPS_NUM == 0) {
-    // Solve FAI-OLC
-    CTrace traceLoop(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM);
-    if(BiggestLoopFind(*_trace, traceLoop, false)) {
-      SolveTriangle(traceLoop, _prevFAIFront.get(), _prevFAIBack.get(), false);
-      _prevFAIFront.reset(traceLoop.Size() ? new CPointGPS(traceLoop.Front()->GPS()) : 0);
-      _prevFAIBack.reset(traceLoop.Size() ? new CPointGPS(traceLoop.Back()->GPS()) : 0);
-      SolveOLCPlus(false);
-    }
-  }
-  {
-    CCriticalSection::CGuard guard(_traceCS);
     _trace->Compress();
   }
-  if(step % STEPS_NUM == 1) {
+  
+  // OLC-Plus
+  if(step % STEPS_NUM == 0) {
     // Solve OLC-Classic and FAI 3TPs
     SolvePoints(*_trace, false, false);
     SolveOLCPlus(false);
   }
-  
+  if(step % STEPS_NUM == 1) {
+    // Find FAI-OLC loop
+    _traceLoop->Clear();
+    if(!BiggestLoopFind(*_trace, *_traceLoop, false))
+      _traceLoop->Clear();
+  }
   if(step % STEPS_NUM == 2) {
+    // Solve FAI-OLC
+    if(_traceLoop->Size()) {
+      SolveTriangle(*_traceLoop, _prevFAIFront.get(), _prevFAIBack.get(), false);
+      _prevFAIFront.reset(_traceLoop->Size() ? new CPointGPS(_traceLoop->Front()->GPS()) : 0);
+      _prevFAIBack.reset(_traceLoop->Size() ? new CPointGPS(_traceLoop->Back()->GPS()) : 0);
+      SolveOLCPlus(false);
+    }
+  }
+  
+  if(step % STEPS_NUM == 3) {
     // Solve OLC-Classic and FAI 3TPs for predicted path
     SolvePoints(*_trace, false, true);
     SolveOLCPlus(true);
   }
-  if(step % STEPS_NUM == 3) {
+  if(step % STEPS_NUM == 4) {
+    // Find FAI-OLC loop for predicted path
+    _traceLoop->Clear();
+    if(!BiggestLoopFind(*_trace, *_traceLoop, true))
+      _traceLoop->Clear();
+  }
+  if(step % STEPS_NUM == 5) {
     // Solve FAI-OLC for predicted path
-    CTrace traceLoop(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM);
-    if(BiggestLoopFind(*_trace, traceLoop, true)) {
-      SolveTriangle(traceLoop, _prevFAIPredictedFront.get(), _prevFAIPredictedBack.get(), true);
-      _prevFAIPredictedFront.reset(traceLoop.Size() ? new CPointGPS(traceLoop.Front()->GPS()) : 0);
-      _prevFAIPredictedBack.reset(traceLoop.Size() ? new CPointGPS(traceLoop.Back()->GPS()) : 0);
+    if(_traceLoop->Size()) {
+      SolveTriangle(*_traceLoop, _prevFAIPredictedFront.get(), _prevFAIPredictedBack.get(), true);
+      _prevFAIPredictedFront.reset(_traceLoop->Size() ? new CPointGPS(_traceLoop->Front()->GPS()) : 0);
+      _prevFAIPredictedBack.reset(_traceLoop->Size() ? new CPointGPS(_traceLoop->Back()->GPS()) : 0);
     }
     SolveOLCPlus(true);
   }
-  
-  // OLC-League
+
+  // Update sprint trace
   _traceSprint->Push(gps);
   _traceSprint->Compress();
-  if(step % STEPS_NUM == 4)
+  
+  // OLC-League
+  if(step % STEPS_NUM == 6) {
     // Solve OLC-Sprint
     SolvePoints(*_traceSprint, true, false);
+  }
   
   step++;
 }
