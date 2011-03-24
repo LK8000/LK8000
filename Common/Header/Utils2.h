@@ -173,8 +173,11 @@ extern HFONT					LK8PanelUnitFont;
 #define MSM_INFO_TRF		13
 // target page for traffic with graphics
 #define MSM_INFO_TARGET		14
-// turnaround point is TOP (equal to last TRI define), remember that arrays must count from zero, so MSM_TOP+1
-#define MSM_TOP			14
+#define MSM_OLC_CURRENT		15	// OLC current values
+#define MSM_OLC_PREDICTED	16	// OLC predicted values
+// turnaround point is TOP (equal to last TRI define), 
+// remember that arrays must count from zero, so MSM_TOP+1
+#define MSM_TOP			16
 //
 // THIS CONFIGURATION GIVES THE ORDER OF MENUs. ALL ITEMS MUST ALSO BE ADDED INSIDE INITMODETABLE()
 // in Utils2.cpp WHERE each mode is paired with an MSM_xxx item.
@@ -184,8 +187,9 @@ extern HFONT					LK8PanelUnitFont;
 #define LKMODE_INFOMODE		1
 #define LKMODE_WP		2
 #define LKMODE_NAV		3
-#define LKMODE_TRF		4
-#define LKMODE_TOP		4
+#define LKMODE_OLC		4
+#define LKMODE_TRF		5	// TRF page must be the last one
+#define LKMODE_TOP		5
 //
 // Map mode
 //
@@ -221,6 +225,12 @@ extern HFONT					LK8PanelUnitFont;
 #define IM_TRF			1
 #define IM_TARGET		2
 #define TF_TOP			2
+// 
+// OLC mode
+#define IMOLC_CURRENT		0
+#define IMOLC_PREDICTED		1
+#define IMOLC_TOP		1
+
 //
 extern short ModeTable[LKMODE_TOP+1][MSM_TOP+1];
 extern short ModeType[LKMODE_TOP+1];
