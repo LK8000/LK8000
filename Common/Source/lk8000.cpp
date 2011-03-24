@@ -766,7 +766,7 @@ int SnailNext = 0;
 
 #ifdef NEW_OLC
 // OLC COOKED VALUES
-COOKED_OLC OlcResults[CContestMgr::TYPE_NUM];
+CContestMgr::CResult OlcResults[CContestMgr::TYPE_NUM];
 #endif
 
 // user interface settings

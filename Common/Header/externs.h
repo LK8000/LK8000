@@ -26,6 +26,9 @@ extern TCHAR XCSoar_Version[256];
 #include "Task.h"
 #include "Statistics.h"
 #include "Dialogs.h"
+#ifdef NEW_OLC
+#include "ContestMgr.h"
+#endif
 #include "device.h" // 100210
 
 #if (EXPERIMENTAL > 0)
@@ -456,7 +459,7 @@ extern bool ForceFinalGlide;
 extern bool AutoForceFinalGlide;
 
 #ifdef NEW_OLC
-extern COOKED_OLC OlcResults[number of available contests];
+extern CContestMgr::CResult OlcResults[CContestMgr::TYPE_NUM];
 #endif
 
 // user interface options
