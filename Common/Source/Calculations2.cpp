@@ -206,7 +206,9 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 #ifdef NEW_OLC
     if(Calculated->Flying)
-      CContestMgr::Instance().Add(new CPointGPS(Basic->Time, Basic->Latitude, Basic->Longitude, Basic->Altitude));
+      CContestMgr::Instance().Add(new CPointGPS(static_cast<unsigned>(Basic->Time),
+                                                Basic->Latitude, Basic->Longitude,
+                                                static_cast<unsigned>(Basic->Altitude)));
 #else
     if (Calculated->Flying && (Basic->Time - OLCLastTime >= dtOLC)) {
       bool restart;      

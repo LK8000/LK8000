@@ -132,7 +132,7 @@ bool CContestMgr::BiggestLoopFind(const CTrace &trace, const CTrace::CPoint *&st
     
     if(back->GPS().Altitude() + TRACE_START_FINISH_ALT_DIFF >= next->GPS().Altitude()) {
       // valid points altitudes combination
-      unsigned dist = back->GPS().Distance3D(point->GPS(), next->GPS());
+      unsigned dist = back->GPS().DistanceXYZ(point->GPS(), next->GPS());
       if(dist < TRACE_CLOSED_MAX_DIST) {
         start = next;
         end = back;
@@ -187,7 +187,7 @@ bool CContestMgr::BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut, bool 
         const CResult &result = _resultArray[TYPE_OLC_CLASSIC];
         unsigned time = end.Time();
         if(result.Speed()) {
-          time += end.Distance3D(start) / result.Speed();
+          time += static_cast<unsigned>(end.DistanceXYZ(start) / result.Speed());
           time %= CPointGPS::DAY_SECONDS;
         }
         
@@ -275,7 +275,7 @@ void CContestMgr::PointsResult(TType type, const CTrace &traceResult)
   unsigned distance = 0;
   while(point) {
     if(pointArray.size())
-      distance += point->GPS().Distance3D(pointArray.back());
+      distance += point->GPS().DistanceXYZ(pointArray.back());
     pointArray.push_back(point->GPS());
     point = point->Next();
   }
@@ -343,7 +343,7 @@ void CContestMgr::SolvePoints(const CTrace &trace, bool sprint, bool predicted)
     const CResult &result = _resultArray[TYPE_OLC_CLASSIC];
     unsigned time = end.Time();
     if(result.Speed()) {
-      time += end.Distance3D(start) / result.Speed();
+      time += static_cast<unsigned>(end.DistanceXYZ(start) / result.Speed());
       time %= CPointGPS::DAY_SECONDS;
     }
     
@@ -403,7 +403,7 @@ void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront,
       CDistanceMap distanceMap1st;
       const CTrace::CPoint *next = 0;
       for(next=point1st->Next(); next; next=next->Next()) {
-        unsigned dist = point1st->GPS().Distance3D(next->GPS());
+        unsigned dist = point1st->GPS().DistanceXYZ(next->GPS());
         // check if 1st edge not too short
         if(!FAITriangleEdgeCheck(dist, result.Distance()))
           continue;
@@ -432,7 +432,7 @@ void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront,
             // that triangle was analysed already
             continue;
           
-          unsigned dist = point2nd->GPS().Distance3D(next->GPS());
+          unsigned dist = point2nd->GPS().DistanceXYZ(next->GPS());
           // check if 2nd edge not too long
           if(dist * 14 > dist1st * 20) // 45% > 25%
             continue;
@@ -450,7 +450,7 @@ void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront,
             break;
           
           const CTrace::CPoint *point3rd = it2nd->second;
-          unsigned dist3rd = point3rd->GPS().Distance3D(point1st->GPS());
+          unsigned dist3rd = point3rd->GPS().DistanceXYZ(point1st->GPS());
           unsigned distance = dist1st + dist2nd + dist3rd;
           if(distance > result.Distance()) {
             // check if valid FAI triangle
@@ -504,7 +504,7 @@ void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront,
       float speed = _resultArray[TYPE_OLC_CLASSIC].Speed();
       unsigned time = end.Time();
       if(speed) {
-        time += end.Distance3D(start) / result.Speed();
+        time += static_cast<unsigned>(end.DistanceXYZ(start) / result.Speed());
         time %= CPointGPS::DAY_SECONDS;
       }
       

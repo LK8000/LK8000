@@ -155,7 +155,7 @@ inline void CTrace::Push(const CPointGPSSmart &gps)
 inline CTrace::CPoint::CPoint(const CTrace &trace, const CPointGPSSmart &gps, CPoint *prev):
   _trace(trace), 
   _gps(gps),
-  _prevDistance(prev ? prev->_gps->Distance3D(*this->_gps) : 0),
+  _prevDistance(prev ? prev->_gps->DistanceXYZ(*this->_gps) : 0),
   //  _inheritedCost(0),
   _distanceCost(0), _timeCost(0),
   _prev(prev), _next(0)
@@ -242,7 +242,7 @@ inline void CTrace::CPoint::AssesCost()
   //   _distanceCost = fabs(ax*(by-cy) + bx*(cy-ay) + cx*(ay-by));
   // }
   // else {
-  _distanceCost = std::max(0, (int)(_prevDistance + _next->_prevDistance - _next->_gps->Distance3D(*_prev->_gps)));
+  _distanceCost = std::max(0, (int)(_prevDistance + _next->_prevDistance - _next->_gps->DistanceXYZ(*_prev->_gps)));
   // }
   if(_trace._algorithm & ALGORITHM_TIME_DELTA)
     _timeCost = _gps->TimeDelta(*_prev->_gps);
