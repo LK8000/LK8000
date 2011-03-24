@@ -2714,6 +2714,9 @@ void InitModeTable() {
 	ModeTable[LKMODE_TRF][IM_TRF]		=	MSM_INFO_TRF;
 	ModeTable[LKMODE_TRF][IM_TARGET]	=	MSM_INFO_TARGET;
 
+	ModeTable[LKMODE_OLC][IMOLC_CURRENT]	=	MSM_OLC_CURRENT;
+	ModeTable[LKMODE_OLC][IMOLC_PREDICTED]	=	MSM_OLC_PREDICTED;
+
 	// startup mode
 	ModeIndex=LKMODE_MAP;
 	// startup values for each mode
@@ -2722,11 +2725,13 @@ void InitModeTable() {
 	ModeType[LKMODE_INFOMODE]=	IM_CRUISE;
 	ModeType[LKMODE_NAV]	=	NV_COMMONS;
 	ModeType[LKMODE_TRF]	=	TF_LIST;
+	ModeType[LKMODE_OLC]	=	IMOLC_CURRENT;
 
 	ModeTableTop[LKMODE_MAP]=MP_TOP;
 	ModeTableTop[LKMODE_WP]=WP_TOP;
 	ModeTableTop[LKMODE_INFOMODE]=IM_TOP;
 	ModeTableTop[LKMODE_NAV]=NV_TOP;
+	ModeTableTop[LKMODE_OLC]=IMOLC_TOP;
 	ModeTableTop[LKMODE_TRF]=TF_TOP;
 
 	// set all sorting type to distance (default) even for unconventional modes just to be sure
@@ -2800,6 +2805,11 @@ redo:
 //
 void NextModeIndex() {
 	UnselectMapSpace(ModeTable[ModeIndex][CURTYPE]);
+	#ifndef NEW_OLC
+	// Since MapSpaceModes can be skipped with no other consequences, for code reversibility
+	// it is fine enough to skip their selection here.
+	if (ModeIndex==(LKMODE_OLC-1)) ModeIndex++; // skip OLC if unused
+	#endif
 	if ( GPS_INFO.FLARM_Available ) { // 100325
 		if ( (ModeIndex+1)>LKMODE_TOP)
 			ModeIndex=LKMODE_MAP;
@@ -2830,8 +2840,15 @@ void SoundModeIndex() {
 			case LKMODE_NAV:
 				PlayResource(TEXT("IDR_WAV_TONE3"));
 				break;
-			case LKMODE_TRF:
+			case LKMODE_OLC:
 				PlayResource(TEXT("IDR_WAV_TONE4"));
+				break;
+			case LKMODE_TRF:
+				#ifdef NEW_OLC
+				PlayResource(TEXT("IDR_WAV_TONE5"));
+				#else
+				PlayResource(TEXT("IDR_WAV_TONE4"));
+				#endif
 				break;
 		}
 	}
