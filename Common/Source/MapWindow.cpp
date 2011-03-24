@@ -3604,6 +3604,10 @@ void MapWindow::RenderMapWindow(  RECT rc)
   // This is also calculating CalculateScreenBounds 0.0  and placing it inside MapWindow::screenbounds_latlon
   CalculateScreenPositions(Orig, rc, &Orig_Aircraft);
 
+  #ifdef NEW_OLC
+  LKUpdateOlc();
+  #endif
+
   RenderMapWindowBg(hdcDrawWindow, rc, Orig, Orig_Aircraft);
 
   if (DONTDRAWTHEMAP) {

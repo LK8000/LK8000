@@ -455,6 +455,10 @@ extern bool SetSystemTimeFromGPS;
 extern bool ForceFinalGlide;
 extern bool AutoForceFinalGlide;
 
+#ifdef NEW_OLC
+extern COOKED_OLC OlcResults[number of available contests];
+#endif
+
 // user interface options
 extern bool bAirspaceBlackOutline;
 extern int TrailActive;

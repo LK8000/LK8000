@@ -146,7 +146,6 @@ typedef struct _SNAIL_POINT
 } SNAIL_POINT;
 
 
-
 typedef union{
   unsigned int AsInt;
   struct{
@@ -516,6 +515,7 @@ class MapWindow {
   static void LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
   static void LKFormatGR(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
   static void LKFormatAltDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
+  static void LKUpdateOlc(void);
 //  static void LKWriteText(HDC hDC, const TCHAR* wText, int x, int y, int maxsize, const bool mode, const short align, COLORREF rgb_tex, bool invertable);
 
 #ifdef CPUSTATS

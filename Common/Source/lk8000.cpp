@@ -82,6 +82,7 @@ extern void LKObjects_Delete();
 #include "LKMainObjects.h"
 #endif
 
+
 #ifdef DEBUG_TRANSLATIONS
 #include <map>
 static std::map<TCHAR*, TCHAR*> unusedTranslations;
@@ -758,6 +759,11 @@ int StatusMessageData_Size = 0;
 //Snail Trial
 SNAIL_POINT SnailTrail[TRAILSIZE];
 int SnailNext = 0;
+
+#ifdef NEW_OLC
+// OLC COOKED VALUES
+COOKED_OLC OlcResults[CContestMgr::TYPE_NUM];
+#endif
 
 // user interface settings
 #ifndef MAP_ZOOM

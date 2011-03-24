@@ -638,6 +638,13 @@ typedef struct {
 	bool	valid;
 } ldrotary_s;
 
+#ifdef NEW_OLC
+typedef struct {
+	signed int distance;
+	float score;
+} COOKED_OLC;
+#endif
+
 
 typedef struct{
   MapScaleAppearance_t MapScale;

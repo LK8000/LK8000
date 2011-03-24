@@ -2653,3 +2653,48 @@ void MapWindow::LKFormatAltDiff(const int wpindex, const bool wpvirtual, TCHAR *
 	wsprintf(BufferValue, TEXT("%S"),text);
   }
 }
+
+
+#ifdef NEW_OLC
+// This is called by Draw thread, at each run every second. 
+// It is a simple interface to the OLC engine to make all results
+// globals, and cooked.
+// Instead of locking and accessing the class each time, we do it ONCE
+// 
+// All values shall be updated every n seconds.
+void MapWindow::LKUpdateOlc(void) {
+
+  static bool doinit=true;
+  static short loop=0;
+
+  if (doinit) {
+
+	for all types of contests
+	do
+		OlcResults[type of contest].distance=-1; // invalid
+		OlcResults[type of contest].score=0.0;   
+	done
+
+	doinit=false;
+  }
+
+  if (++loop>20) loop=0; // 20 seconds for a test, 30 or 60 in real usage
+  if (loop) return;
+
+  for all types of contests
+  do
+	OlcResults[type of contest].distance=  value or -1 if not available;
+	OlcResults[type of contest].score=  value, or do not change if not available
+  done
+
+ // In the software we need to do things like 
+ // printf OlcResults[OLC_CLASSIC].distance
+ // so we do need an easy to use,access and also to WRITE enumerated list.
+ // Examples.
+ // Easy enumerated usage:   OLC_CLASSIC
+ // Crazy enumerated usage:  CContestMgr::TYPE_OLC_CLASSIC  because we need to access the class, include the header file
+ // and get all kind of problems from that. So we shall end up DUPLICATING the enumerated list.
+
+
+}
+#endif
