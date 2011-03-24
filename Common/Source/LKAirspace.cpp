@@ -1655,7 +1655,6 @@ void CAirspaceManager::ReadAirspaces()
 {
   TCHAR	szFile1[MAX_PATH] = TEXT("\0");
   TCHAR	szFile2[MAX_PATH] = TEXT("\0");
-  char zfilename[MAX_PATH];
 
   ZZIP_FILE *fp=NULL;
   ZZIP_FILE *fp2=NULL;
@@ -1671,8 +1670,7 @@ void CAirspaceManager::ReadAirspaces()
   ExpandLocalPath(szFile2);
 
   if (_tcslen(szFile1)>0) {
-    unicode2ascii(szFile1, zfilename, MAX_PATH);
-    fp  = zzip_fopen(zfilename, "rt");
+    fp  = zzip_fopen(szFile1, "rt");
   } else {
     //* 091206 back on 
     static TCHAR  szMapFile[MAX_PATH] = TEXT("\0");
@@ -1680,14 +1678,12 @@ void CAirspaceManager::ReadAirspaces()
     ExpandLocalPath(szMapFile);
     wcscat(szMapFile,TEXT("/"));
     wcscat(szMapFile,TEXT(LKF_AIRSPACES)); // 091206
-    unicode2ascii(szMapFile, zfilename, MAX_PATH);
-    fp  = zzip_fopen(zfilename, "rt");
+    fp  = zzip_fopen(szMapFile, "rt");
     //*/
   }
 
   if (_tcslen(szFile2)>0) {
-    unicode2ascii(szFile2, zfilename, MAX_PATH);
-    fp2 = zzip_fopen(zfilename, "rt");
+    fp2 = zzip_fopen(szFile2, "rt");
   }
 
   SetRegistryString(szRegistryAirspaceFile, TEXT("\0"));

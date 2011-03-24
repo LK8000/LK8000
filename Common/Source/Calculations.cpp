@@ -52,6 +52,8 @@
 #include "Waypointparser.h"
 #ifdef LKAIRSPACE
 #include "LKAirspace.h"
+using std::min;
+using std::max;
 #endif
 
 #include "utils/heapcheck.h"

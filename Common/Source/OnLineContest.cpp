@@ -15,6 +15,10 @@
 
 #include "utils/heapcheck.h"
 
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
 
 #define CONST_D_FAK 6371000.0
 #define DISTANCETHRESHOLD 1000

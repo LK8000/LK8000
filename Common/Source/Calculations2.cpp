@@ -40,6 +40,11 @@
 
 #include "utils/heapcheck.h"
 
+#ifdef LKAIRSPACE
+using std::min;
+using std::max;
+#endif
+
 #ifdef NEW_OLC
 using std::min;
 using std::max;
