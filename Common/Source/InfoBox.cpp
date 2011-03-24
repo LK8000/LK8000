@@ -19,7 +19,7 @@
 #if LKOBJ
 #include "LKObjects.h"
 #endif
-#ifdef LKAIRSPACE
+#if defined(LKAIRSPACE) || defined(NEW_OLC)
 using std::min;
 using std::max;
 #endif

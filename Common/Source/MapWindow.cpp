@@ -53,6 +53,8 @@
 #include "externs.h" // 091110
 #ifdef LKAIRSPACE
 #include "LKAirspace.h"
+#endif
+#if defined(LKAIRSPACE) || defined(NEW_OLC)
 using std::min;
 using std::max;
 #endif

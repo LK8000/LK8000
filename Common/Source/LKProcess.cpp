@@ -26,7 +26,7 @@
 #include "Task.h"
 
 #include "utils/heapcheck.h"
-#ifdef LKAIRSPACE
+#if defined(LKAIRSPACE) || defined(NEW_OLC)
 using std::min;
 using std::max;
 #endif

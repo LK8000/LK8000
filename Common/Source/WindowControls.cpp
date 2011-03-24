@@ -50,7 +50,7 @@ RECT WINAPI DrawWireRects(LPRECT lprcTo, UINT nMilliSecSpeed) {
 #define DEFAULTBORDERPENWIDTH 1*ISCALE
 #define SELECTORWIDTH         4*ISCALE
 
-#ifdef LKAIRSPACE
+#if defined(LKAIRSPACE) || defined(NEW_OLC)
 using std::min;
 using std::max;
 #endif

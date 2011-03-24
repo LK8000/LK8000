@@ -82,7 +82,7 @@ extern void LKObjects_Delete();
 #include "LKMainObjects.h"
 #endif
 
-#ifdef LKAIRSPACE
+#if defined(LKAIRSPACE) || defined(NEW_OLC)
 using std::min;
 using std::max;
 #endif

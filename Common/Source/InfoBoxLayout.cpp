@@ -18,7 +18,7 @@
 #include "XCSoar.h" // 091117
 
 #include "utils/heapcheck.h"
-#ifdef LKAIRSPACE
+#if defined(LKAIRSPACE) || defined(NEW_OLC)
 using std::min;
 using std::max;
 #endif
