@@ -235,27 +235,26 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	  // not used now _nearestvdistance = _vdistance;
 	}
   }
+  
+  // We have to calculate with the predicted position
+  bool pred_inside_now = false;
+  alt = (int)Calculated->NextAltitude;
+  agl = (int)Calculated->NextAltitudeAGL;
+  if (agl<0) agl = 0;		// Limit predicted agl to surface
+  // Check for altitude
+  pos_altitude = IsAltitudeInside(alt, agl);
+  if (pos_altitude) pred_inside_now = IsHorizontalInside(Calculated->NextLongitude, Calculated->NextLatitude);
 
   if (_flyzone) {
 	// FLY-ZONE
+	if (pred_inside_now) _pred_in_flyzone = true;
 	if (_pos_inside_now) {
 	  _pos_in_flyzone = true;
 	  if (_pos_inside_last) {
-		// FLY-ZONE _pos_inside_last = true, _pos_inside_now = true, _pred_inside_now = X
-		// Moving inside or predicted leaving
-		// We have to calculate with the predicted position
-		bool pred_inside_now = false;
-		alt = (int)Calculated->NextAltitude;
-		agl = (int)Calculated->NextAltitudeAGL;
-		if (agl<0) agl = 0;		// Limit predicted agl to surface
-		// Check for altitude
-		pos_altitude = IsAltitudeInside(alt, agl);
-		if (pos_altitude) pred_inside_now = IsHorizontalInside(Calculated->NextLongitude, Calculated->NextLatitude);
 		if (pred_inside_now) {
 		  // FLY-ZONE _pos_inside_last = true, _pos_inside_now = true, _pred_inside_now = true
 		  // moving inside -> normal, no warning event
 		  _warnevent = aweMovingInsideFly;
-		  _pred_in_flyzone = true;
 		} else {
 		  // FLY-ZONE _pos_inside_last = true, _pos_inside_now = true, _pred_inside_now = false
 		  // predicted leaving, yellow warning
@@ -272,21 +271,9 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 		// leaving, red warning
 		_warnevent = aweLeavingFly;
 	  } else {
-		// FLY-ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = X
-		// predicted enter, or moving outside
-		// we have to calculate if predicted pos inside us, because other fly zones require this data
-		// We have to calculate with the predicted position
-		bool pred_inside_now = false;
-		alt = (int)Calculated->NextAltitude;
-		agl = (int)Calculated->NextAltitudeAGL;
-		if (agl<0) agl = 0;		// Limit predicted agl to surface
-		// Check for altitude
-		pos_altitude = IsAltitudeInside(alt, agl);
-		if (pos_altitude) pred_inside_now = IsHorizontalInside(Calculated->NextLongitude, Calculated->NextLatitude);
 		if (pred_inside_now) {
 		  // FLY-ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = true
 		  // predicted enter
-		  _pred_in_flyzone = true;
 		  _warnevent = awePredictedEnteringFly;
 		} else {
 		  // FLY-ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = true
@@ -297,7 +284,9 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	}
   } else {
 	// Default NON-FLY ZONE
+	if (pred_inside_now && (_warningacklevel > awNone)) _pred_in_acked_nonfly_zone = true;
 	if (_pos_inside_now) {
+  	  if (_warningacklevel > awNone) _pos_in_acked_nonfly_zone = true;
 	  if (_pos_inside_last) {
 		//  NON-FLY ZONE _pos_inside_last = true, _pos_inside_now = true, _pred_inside_now = X
 		// Moving indside or predicted leaving, nothing to do
@@ -307,27 +296,16 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 		// Entering, set warnlevel
 		_warnevent = aweEnteringNonfly;
 	  }
-  	  if (_warningacklevel > awNone) _pos_in_acked_nonfly_zone = true;
 	} else {
 	  if (_pos_inside_last) {
 		// NON-FLY ZONE _pos_inside_last = true, _pos_inside_now = false, _pred_inside_now = X
 		// leaving, or leaving and then predicted entry? -> nothing to do
 		_warnevent = aweLeavingNonFly;
 	  } else {
-		// NON-FLY ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = X
-		// We have to calculate with the predicted position
-		bool pred_inside_now = false;
-		alt = (int)Calculated->NextAltitude;
-		agl = (int)Calculated->NextAltitudeAGL;
-		if (agl<0) agl = 0;		// Limit predicted agl to surface
-		// Check for altitude
-		pos_altitude = IsAltitudeInside(alt, agl);
-		if (pos_altitude) pred_inside_now = IsHorizontalInside(Calculated->NextLongitude, Calculated->NextLatitude);
 		if (pred_inside_now) {
 		  // NON-FLY ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = true
 		  // predicted enter
 		  _warnevent = awePredictedEnteringNonfly;
-		  if (_warningacklevel > awNone) _pred_in_acked_nonfly_zone = true;
 		} else {
 		  // NON-FLY ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = false
 		  // moving outside
@@ -368,7 +346,7 @@ bool CAirspace::FinishWarning()
 		  break;
 		} 
 		if ( (abs_hdistance<_hdistancemargin) || 
-			 ( (abs_vdistance<AirspaceWarningVerticalMargin) && (_lastknownagl>AirspaceWarningVerticalMargin) ) 
+			 (abs_vdistance<AirspaceWarningVerticalMargin) 
 		   ) {
 		  // Check what is outside this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
 		  double lon = 0;
@@ -404,9 +382,7 @@ bool CAirspace::FinishWarning()
 	  case aweEnteringFly:
 		// Also preset warnlevel to awYellow, because we entering yellow zone. 
 		// but we don't need to generate a warning message right now - force no change in warnlevel
-		if ( (abs_hdistance<_hdistancemargin) || 
-			 ( (abs_vdistance<AirspaceWarningVerticalMargin) && (_lastknownagl>AirspaceWarningVerticalMargin) ) 
-		   ) {
+		if (1) {
 		  // Check what is outside this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
 		  double lon = 0;
 		  double lat =0;
@@ -563,7 +539,7 @@ bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance)
 
   _bearing = (int)fbearing;
   _hdistance = (int)distance;
-  if (-vDistanceBase > vDistanceTop)
+  if ((-vDistanceBase > vDistanceTop) && (_base.Base != abAGL))
 	_vdistance = vDistanceBase;
   else
 	_vdistance = vDistanceTop;
