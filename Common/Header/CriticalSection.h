@@ -9,6 +9,8 @@
 #ifndef __CRITICALSECTION_H__
 #define __CRITICALSECTION_H__
 
+#include <windows.h>
+
 class CCriticalSection
 {
   CRITICAL_SECTION _criticalSection;
