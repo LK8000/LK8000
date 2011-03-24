@@ -55,9 +55,10 @@ void MapWindow::Zoom::CalculateAutoZoom()
     else
       AutoZoomFactor = 4;
     
-    if(wpd < AutoZoomFactor * _scaleOverDistanceModify || _modeScale[SCALE_AUTO_ZOOM] == 0)
+    if(wpd < AutoZoomFactor * _scaleOverDistanceModify) {
       // waypoint is too close, so zoom in
-      *_requestedScale = LimitMapScale(wpd * DISTANCEMODIFY / AutoZoomFactor);
+      _modeScale[SCALE_CRUISE] = LimitMapScale(wpd * DISTANCEMODIFY / AutoZoomFactor);
+    }
   }
   
   LockTaskData();  // protect from external task changes
@@ -76,7 +77,7 @@ void MapWindow::Zoom::CalculateAutoZoom()
         autoMapScaleWaypointIndex = Task[ActiveWayPoint].Index;
         
         // zoom back out to where we were before
-        _modeScale[SCALE_AUTO_ZOOM] = _modeScale[SCALE_CRUISE];
+        _modeScale[SCALE_CRUISE] = _modeScale[SCALE_AUTO_ZOOM];
       }
     }
 #ifdef HAVEEXCEPTIONS
@@ -162,6 +163,9 @@ void MapWindow::Zoom::Reset()
     break;
   }
   
+  if(_autoZoom)
+    _modeScale[SCALE_AUTO_ZOOM] = _modeScale[SCALE_CRUISE];
+  
   _requestedScale = &_modeScale[SCALE_CRUISE];
   _scale = *_requestedScale;
   _scaleOverDistanceModify = *_requestedScale / DISTANCEMODIFY;
@@ -213,14 +217,10 @@ void MapWindow::Zoom::SwitchMode()
       _requestedScale = &_modeScale[SCALE_CIRCLING];
     }
     else {
-      if(_autoZoom) {
-        _requestedScale = &_modeScale[SCALE_AUTO_ZOOM];
+      _requestedScale = &_modeScale[SCALE_CRUISE];
+      
+      if(_autoZoom)
         CalculateAutoZoom();
-      }
-      else {
-        _requestedScale = &_modeScale[SCALE_CRUISE];
-        _modeScale[SCALE_AUTO_ZOOM] = 0;
-      }
     }
     _bigZoom = true;
   }
@@ -245,6 +245,10 @@ void MapWindow::Zoom::EventAutoZoom(int vswitch)
     _autoZoom = !_autoZoom;
   else
     _autoZoom = vswitch;
+  
+  if(_autoZoom)
+    // backup current zoom
+    _modeScale[SCALE_AUTO_ZOOM] = _modeScale[SCALE_CRUISE];
   
   if(_autoZoom != lastAutoZoom)
     SwitchMode();
