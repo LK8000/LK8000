@@ -488,7 +488,7 @@ void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront,
     }
   }
   
-  if(bestResult.Type() != TYPE_NUM) {
+  if(bestResult.Type() != TYPE_INVALID) {
     // new better result found
     CCriticalSection::CGuard guard(_resultsCS);
     _resultArray[type] = bestResult;

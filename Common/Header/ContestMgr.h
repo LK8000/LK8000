@@ -47,7 +47,8 @@ public:
     TYPE_FAI_3_TPS,                               /**< @brief FAI with 3 turnpoints */
     TYPE_FAI_3_TPS_PREDICTED,                     /**< @brief FAI with 3 turnpoints predicted for returning to start */
     
-    TYPE_NUM                                      /**< @brief Do not use it! */
+    TYPE_NUM,                                     /**< @brief Do not use it! */
+    TYPE_INVALID = TYPE_NUM
   };
   
   /**
@@ -57,7 +58,7 @@ public:
    */
   class CResult {
     friend class CContestMgr;
-    TType          _type;                         /**< @brief The type of the contest (TYPE_NUM if result invalid) */
+    TType          _type;                         /**< @brief The type of the contest (TYPE_INVALID if result invalid) */
     bool           _predicted;                    /**< @brief @c true if a result is based on prediction */
     unsigned       _distance;                     /**< @brief Contest covered distance */
     float          _score;                        /**< @brief Contest score (if exists) */
@@ -152,7 +153,7 @@ public:
  * Constructor to create dummy invalid contest result object.
  */
 inline CContestMgr::CResult::CResult():
-  _type(TYPE_NUM), _predicted(0), _distance(0), _score(0)
+  _type(TYPE_INVALID), _predicted(0), _distance(0), _score(0)
 {
 }
 
