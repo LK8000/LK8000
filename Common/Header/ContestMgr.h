@@ -65,6 +65,7 @@ public:
     unsigned       _duration;                     /**< @brief Contest duration */
     float          _speed;                        /**< @brief Contest speed */
     CPointGPSArray _pointArray;                   /**< @brief The list of contest result points */
+    void Update();
   public:
     CResult();
     CResult(TType type, bool predicted, unsigned distance, float score, const CPointGPSArray &pointArray);
@@ -204,6 +205,17 @@ inline CContestMgr::CResult::CResult(const CResult &ref, bool fillArray):
 {
 }
 
+
+/** 
+ * @brief Recalculated contest results data
+ */
+inline void CContestMgr::CResult::Update()
+{
+  if(_pointArray.size()) {
+    _duration = _pointArray.back().TimeDelta(_pointArray.front());
+    _speed = (float)_distance / _duration;
+  }
+}
 
 
 /** 

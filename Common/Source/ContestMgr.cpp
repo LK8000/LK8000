@@ -128,7 +128,7 @@ bool CContestMgr::BiggestLoopFind(const CTrace &trace, const CTrace::CPoint *&st
   while(next && next != back) {
     if((unsigned)back->GPS().TimeDelta(next->GPS()) < TRACE_TRIANGLE_MIN_TIME)
       // filter too small circles from i.e. thermalling
-      return 0;
+      return false;
     
     if(back->GPS().Altitude() + TRACE_START_FINISH_ALT_DIFF >= next->GPS().Altitude()) {
       // valid points altitudes combination
@@ -179,20 +179,6 @@ bool CContestMgr::BiggestLoopFind(const CTrace &traceIn, CTrace &traceOut, bool 
         if(point == end)
           break;
         point = point->Next();
-      }
-      if(predicted) {
-        // predict GPS data of artificial point in the location of the trace start
-        const CPointGPS &start = traceOut.Front()->GPS();
-        const CPointGPS &end = traceOut.Back()->GPS();
-        const CResult &result = _resultArray[TYPE_OLC_CLASSIC];
-        unsigned time = end.Time();
-        if(result.Speed()) {
-          time += static_cast<unsigned>(end.DistanceXYZ(start) / result.Speed());
-          time %= CPointGPS::DAY_SECONDS;
-        }
-        
-        // add predicted point
-        traceOut.Push(new CPointGPS(time, start.Latitude(), start.Longitude(), start.Altitude()));
       }
       
       // compress resulting trace
@@ -340,10 +326,10 @@ void CContestMgr::SolvePoints(const CTrace &trace, bool sprint, bool predicted)
     // predict GPS data of artificial point in the location of the trace start
     const CPointGPS &start = traceResult.Front()->GPS();
     const CPointGPS &end = traceResult.Back()->GPS();
-    const CResult &result = _resultArray[TYPE_OLC_CLASSIC];
+    float speed = _resultArray[TYPE_OLC_CLASSIC].Speed();
     unsigned time = end.Time();
-    if(result.Speed()) {
-      time += static_cast<unsigned>(end.DistanceXYZ(start) / result.Speed());
+    if(speed) {
+      time += static_cast<unsigned>(end.DistanceXYZ(start) / speed);
       time %= CPointGPS::DAY_SECONDS;
     }
     
@@ -388,8 +374,7 @@ void CContestMgr::SolvePoints(const CTrace &trace, bool sprint, bool predicted)
 void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront, const CPointGPS *prevBack, bool predicted)
 {
   TType type = predicted ? TYPE_OLC_FAI_PREDICTED : TYPE_OLC_FAI;
-  const CResult &result = _resultArray[type];
-  CResult bestResult;
+  CResult bestResult = _resultArray[type];
   if(trace.Size() > 2) {
     // check for every trace point
     const CTrace::CPoint *point1st = trace.Front();
@@ -405,7 +390,7 @@ void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront,
       for(next=point1st->Next(); next; next=next->Next()) {
         unsigned dist = point1st->GPS().DistanceXYZ(next->GPS());
         // check if 1st edge not too short
-        if(!FAITriangleEdgeCheck(dist, result.Distance()))
+        if(!FAITriangleEdgeCheck(dist, bestResult.Distance()))
           continue;
         distanceMap1st.insert(std::make_pair(dist, next));
       }
@@ -417,7 +402,7 @@ void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront,
           skip2 = false;
         
         unsigned dist1st = it1st->first;
-        if(!FAITriangleEdgeCheck(dist1st, result.Distance()))
+        if(!FAITriangleEdgeCheck(dist1st, bestResult.Distance()))
           // better solution found in the meantime
           break;
         
@@ -437,7 +422,7 @@ void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront,
           if(dist * 14 > dist1st * 20) // 45% > 25%
             continue;
           // check if 2nd edge not too short
-          if(!FAITriangleEdgeCheck(dist, result.Distance()))
+          if(!FAITriangleEdgeCheck(dist, bestResult.Distance()))
             continue;
           distanceMap2nd.insert(std::make_pair(dist, next));
         }
@@ -445,14 +430,14 @@ void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront,
         // check all possible second and third edges of the triangle
         for(CDistanceMap::reverse_iterator it2nd=distanceMap2nd.rbegin(); it2nd!=distanceMap2nd.rend(); ++it2nd) {
           unsigned dist2nd = it2nd->first;
-          if(!FAITriangleEdgeCheck(dist2nd, result.Distance()))
+          if(!FAITriangleEdgeCheck(dist2nd, bestResult.Distance()))
             // better solution found in the meantime
             break;
           
           const CTrace::CPoint *point3rd = it2nd->second;
           unsigned dist3rd = point3rd->GPS().DistanceXYZ(point1st->GPS());
           unsigned distance = dist1st + dist2nd + dist3rd;
-          if(distance > result.Distance()) {
+          if(distance > bestResult.Distance()) {
             // check if valid FAI triangle
             if(FAITriangleEdgeCheck(dist1st, dist2nd, dist3rd)) {
               // store new result
@@ -490,27 +475,25 @@ void CContestMgr::SolveTriangle(const CTrace &trace, const CPointGPS *prevFront,
     }
   }
   
+  if(predicted && bestResult.Predicted()) {
+    // modify the last point and recalulate the result
+    const CPointGPS &start = bestResult.PointArray().front();
+    const CPointGPS &end = trace.Back()->GPS();
+    float speed = _resultArray[TYPE_OLC_CLASSIC].Speed();
+    unsigned time = end.Time();
+    if(speed) {
+      time += static_cast<unsigned>(end.DistanceXYZ(start) / speed);
+      time %= CPointGPS::DAY_SECONDS;
+    }
+    
+    CCriticalSection::CGuard guard(_resultsCS);
+    bestResult._pointArray[4] = CPointGPS(time, start.Latitude(), start.Longitude(), start.Altitude());
+    bestResult.Update();
+  }
+  
   if(bestResult.Type() != TYPE_INVALID) {
-    // new better result found
     CCriticalSection::CGuard guard(_resultsCS);
     _resultArray[type] = bestResult;
-  }
-  else {
-    // better result not found
-    if(result.Type() == TYPE_OLC_FAI_PREDICTED && result.Predicted()) {
-      // recalculate the time to the finish
-      const CPointGPS &start = result.PointArray().front();
-      const CPointGPS &end = _trace->Back()->GPS();
-      float speed = _resultArray[TYPE_OLC_CLASSIC].Speed();
-      unsigned time = end.Time();
-      if(speed) {
-        time += static_cast<unsigned>(end.DistanceXYZ(start) / result.Speed());
-        time %= CPointGPS::DAY_SECONDS;
-      }
-      
-      CCriticalSection::CGuard guard(_resultsCS);
-      _resultArray[type]._pointArray[4] = CPointGPS(time, end.Latitude(), end.Longitude(), end.Altitude());
-    }
   }
 }
 
