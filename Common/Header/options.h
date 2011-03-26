@@ -138,7 +138,7 @@
 // To do so, comment non-NEWOLC and uncomment NEWOLC. They are 3 files in total.
 // No need to change any XML filename. Just comment/uncomment.
 //
-// #define NEW_OLC                 1     // Applied 110313
+#define NEW_OLC                 1     // Applied 110313
 // -----------------------------------------------------------------------------
 
 /*
