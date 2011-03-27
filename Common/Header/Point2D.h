@@ -13,9 +13,9 @@
 #include <cmath>
 #include <vector>
 
-
 #ifndef DEG_TO_RAD
 #define DEG_TO_RAD .0174532925199432958
+#define RAD_TO_DEG 57.2957795131
 #endif
 
 /** 
@@ -42,8 +42,21 @@ public:
     lon *= DEG_TO_RAD;
     double clat = cos(lat);
     _x = static_cast<int>(-EARTH_RADIUS * clat * cos(lon));
-    _y = static_cast<int>(EARTH_RADIUS * sin(lat));
-    _z = static_cast<int>(EARTH_RADIUS * clat * sin(lon));
+    _y = static_cast<int>(EARTH_RADIUS * clat * sin(lon));
+    _z = static_cast<int>(EARTH_RADIUS * sin(lat));
+  }
+  
+  CPoint2D(unsigned x, unsigned y, unsigned z):
+    _x(x), _y(y), _z(z)
+  {
+    
+    _lat = asin(_z / EARTH_RADIUS) * RAD_TO_DEG;
+    if(_y == 0)
+      _lon = 0;
+    else {
+      _lon = atan(float(_x) / _y) * RAD_TO_DEG;
+      _lon += (_y>=0) ? 90 : -90;
+    }
   }
   
   double Latitude() const    { return _lat; }
@@ -54,7 +67,7 @@ public:
   unsigned Distance(const CPoint2D &seg1, const CPoint2D &seg2) const;
   unsigned DistanceXYZ(int x, int y, int z) const;
   unsigned DistanceXYZ(const CPoint2D &ref) const;
-  unsigned DistanceXYZ(const CPoint2D &seg1, const CPoint2D &seg2) const;
+  unsigned DistanceXYZ(const CPoint2D &seg1, const CPoint2D &seg2, CPoint2D *nearest = 0) const;
 };
 
 typedef CSmartPtr<const CPoint2D> CPoint2DSmart;
@@ -175,10 +188,11 @@ inline unsigned CPoint2D::DistanceXYZ(const CPoint2D &ref) const
  * 
  * @param seg1 First end of line segment
  * @param seg2 Second end of line segment
+ * @param nearest Nearest point on the line segment to return if not 0
  * 
  * @return Calculated distance
  */
-inline unsigned CPoint2D::DistanceXYZ(const CPoint2D &seg1, const CPoint2D &seg2) const
+inline unsigned CPoint2D::DistanceXYZ(const CPoint2D &seg1, const CPoint2D &seg2, CPoint2D *nearest /* = 0 */) const
 {
   int X1 = _x - seg1._x;
   int Y1 = _y - seg1._y;
@@ -209,8 +223,10 @@ inline unsigned CPoint2D::DistanceXYZ(const CPoint2D &seg1, const CPoint2D &seg2
     z = static_cast<unsigned>(seg1._z + param * DZ);
   }
   
+  if(nearest)
+    *nearest = CPoint2D(x, y, z);
+  
   return DistanceXYZ(x, y, z);
 }
-
 
 #endif /* __POINT2D_H__ */
