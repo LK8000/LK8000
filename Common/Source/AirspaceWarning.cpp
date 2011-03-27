@@ -37,6 +37,7 @@ static bool InitDone = false;
 extern int AcknowledgementTime;
 
 List<AirspaceWarningNotifier_t> AirspaceWarningNotifierList;
+
 List<AirspaceInfo_c> AirspaceWarnings;
 
 static void LockList(void){
@@ -94,6 +95,7 @@ void AirspaceWarnListAddNotifier(AirspaceWarningNotifier_t Notifier){
   AirspaceWarningNotifierList.push_front(Notifier);
 }
 
+
 void AirspaceWarnListRemoveNotifier(AirspaceWarningNotifier_t Notifier){
   List<AirspaceWarningNotifier_t>::Node* it = AirspaceWarningNotifierList.begin();
   while(it){
@@ -140,6 +142,8 @@ int AirspaceWarnGetItemCount(void){
   return(res);
 }
 
+
+
 double RangeAirspaceCircle(const double &longitude, const double &latitude, int i);
 double RangeAirspaceArea(const double &longitude, const double &latitude, int i, double *bearing);
 
@@ -149,6 +153,7 @@ static void AirspaceWarnListDoNotify(AirspaceWarningNotifyAction_t Action, Airsp
     (it->data)(Action, AirSpace);
   }
 }
+
 
 static void AirspaceWarnListCalcDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated, bool IsCircle, int AsIdx, int *hDistance, int *Bearing, int *vDistance){
 
@@ -248,6 +253,7 @@ static bool calcWarnLevel(AirspaceInfo_c *asi){
 void AirspaceWarnListAdd(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                          bool Predicted, bool IsCircle, int AsIdx,
                          bool ackDay){
+
   static int  Sequence = 0;
 
   if (!Predicted){
@@ -556,6 +562,7 @@ void AirspaceWarnDoAck(int ID, int Ack){
   }
 }
 
+
 void AirspaceWarnListClear(void){
 
   if (!InitDone)     // called by airspace parser during init, prevent
@@ -573,6 +580,7 @@ void AirspaceWarnListClear(void){
     UnLockList();
   }
 }
+
 
 void AirspaceWarnListInit(void){
   InitializeCriticalSection(&csAirspaceWarnings);

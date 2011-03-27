@@ -1264,6 +1264,7 @@ static void FindAirspaceAreaBounds() {
 #endif
 #ifndef LKAIRSPACE
 // ToDo add exception handler to protect parser code against chrashes
+
 void ReadAirspace(void)
 {
   TCHAR szFile1[MAX_PATH] = _T("\0");
@@ -1302,6 +1303,7 @@ void ReadAirspace(void)
   SetRegistryString(szRegistryAdditionalAirspaceFile, TEXT("\0"));
 
   if (fp != NULL){
+
     ReadAirspace(fp);
     zzip_fclose(fp);
 
@@ -1323,8 +1325,10 @@ void ReadAirspace(void)
   } else {
     StartupStore(TEXT("... No airspace file 1%s"),NEWLINE);
   }
+
   FindAirspaceAreaBounds();
   FindAirspaceCircleBounds();
+
 }
 #endif
 
@@ -1553,6 +1557,7 @@ wn_PnPoly( AIRSPACE_POINT P, AIRSPACE_POINT* V, int n )
 }
 //===================================================================
 
+
 bool InsideAirspaceArea(const double &longitude,
 			  const double &latitude,
 			  int i) {
@@ -1580,6 +1585,7 @@ bool InsideAirspaceArea(const double &longitude,
   }
   return false;
 }
+
 
 int FindAirspaceArea(double Longitude,double Latitude, bool visibleonly)
 {
@@ -1788,6 +1794,7 @@ double CrossTrackError(double lon1, double lat1,
 
   return XTD;
 }
+
 
 void ScreenClosestPoint(const POINT &p1, const POINT &p2, 
 			const POINT &p3, POINT *p4, int offset) {
@@ -2069,6 +2076,7 @@ static int _cdecl SortAirspaceCircleCompare(const void *elem1, const void *elem2
   return (0);
 }
 
+
 void SortAirspace(void) {
   StartupStore(TEXT(". SortAirspace%s"),NEWLINE);
 
@@ -2159,6 +2167,7 @@ bool line_rect_intersection (const double x1,
 			     &u)) return true;
   return false;
 }
+
 
 void ScanAirspaceLine(double *lats, double *lons, double *heights, 
 		      int airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) 
