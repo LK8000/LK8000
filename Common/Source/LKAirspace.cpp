@@ -228,12 +228,19 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       // not used now _nearestvdistance = _vdistance;
     }
   }
-  if (!_flyzone && !_pos_inside_now) {
-    // If outdise nofly zone, then nearest distance selected
-    if ( (abs(_hdistance) < abs(_nearesthdistance)) ) {
+  if (!_flyzone) {
+    if (_pos_inside_now) {
+      // Inside a non fly zone, distance is zero
       _nearestname = _name;
-      _nearesthdistance = abs(_hdistance);
-      // not used now _nearestvdistance = _vdistance;
+      _nearesthdistance = 0;
+      // not used now _nearestvdistance = 0;
+    } else {
+      // If outside nofly zone, then nearest distance selected
+      if ( (abs(_hdistance) < abs(_nearesthdistance)) ) {
+        _nearestname = _name;
+        _nearesthdistance = abs(_hdistance);
+        // not used now _nearestvdistance = _vdistance;
+      }
     }
   }
   
