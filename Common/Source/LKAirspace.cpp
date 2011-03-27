@@ -14,6 +14,7 @@
 #include <ctype.h>
 
 #include "wcecompat/ts_string.h"
+#include <Point2D.h>
 
 #ifdef LKAIRSPACE
 
@@ -69,7 +70,7 @@ bool CAirspace::_pos_in_acked_nonfly_zone = false;		// for refine warnings in fl
 bool CAirspace::_pred_in_acked_nonfly_zone = false;		// for refine warnings in flyzones
 int CAirspace::_now = 0;						// gps time saved
 int CAirspace::_hdistancemargin = 0;			// calculated horizontal distance margin to use
-CGeoPoint CAirspace::_lastknownpos;				// last known position saved for calculations
+CPoint2D CAirspace::_lastknownpos(0,0);				// last known position saved for calculations
 int CAirspace::_lastknownalt = 0;				// last known alt saved for calculations
 int CAirspace::_lastknownagl = 0;				// last known agl saved for calculations
 
@@ -182,8 +183,8 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
   }
   _lastknownagl = (int)Calculated->AltitudeAGL;
   if (_lastknownagl < 0) _lastknownagl = 0;			// Limit agl to zero
-  _lastknownpos.Latitude(Basic->Latitude);
-  _lastknownpos.Longitude(Basic->Longitude);
+  CPoint2D position_now(Basic->Latitude, Basic->Longitude);
+  _lastknownpos = position_now;
 
   // Horizontal distance margin
    _hdistancemargin = Basic->Speed * WarningTime;
@@ -686,7 +687,7 @@ void CAirspace_Circle::Draw(HDC hDCTemp, const RECT &rc, bool param1) const
 // Dumps object instance to Runtime.log
 void CAirspace_Area::Dump() const
 {
-  CGeoPointList::const_iterator i;
+  CPoint2DArray::const_iterator i;
 
   StartupStore(TEXT("CAirspace_Area Dump%s"), NEWLINE);
   CAirspace::Dump();
@@ -715,7 +716,7 @@ void CAirspace_Area::Dump() const
 //            <0 for P2 right of the line
 //    See: the January 2001 Algorithm "Area of 2D and 3D Triangles and Polygons"
 inline static float
-isLeft( const CGeoPoint &P0, const CGeoPoint &P1, const float &longitude, const float &latitude )
+isLeft( const CPoint2D &P0, const CPoint2D &P1, const double &longitude, const double &latitude )
 {
     return ( (P1.Longitude() - P0.Longitude()) * (latitude - P0.Latitude())
             - (longitude - P0.Longitude()) * (P1.Latitude() - P0.Latitude()) );
@@ -725,13 +726,13 @@ isLeft( const CGeoPoint &P0, const CGeoPoint &P1, const float &longitude, const 
 //      Input:   P = a point,
 //               V[] = vertex points of a polygon V[n+1] with V[n]=V[0]
 //      Return:  wn = the winding number (=0 only if P is outside V[])
-int CAirspace_Area::wn_PnPoly( const float &longitude, const float &latitude ) const
+int CAirspace_Area::wn_PnPoly( const double &longitude, const double &latitude ) const
 {
   int    wn = 0;    // the winding number counter
 
   // loop through all edges of the polygon
-  CGeoPointList::const_iterator it = _geopoints.begin();
-  CGeoPointList::const_iterator itnext = it;
+  CPoint2DArray::const_iterator it = _geopoints.begin();
+  CPoint2DArray::const_iterator itnext = it;
   ++itnext;
   for (int i=0; i<((int)_geopoints.size()-1); ++i, ++it, ++itnext) {
 		if (it->Latitude() <= latitude) {         // start y <= P.Latitude
@@ -767,184 +768,58 @@ bool CAirspace_Area::IsHorizontalInside(const double &longitude, const double &l
   return false;
 }
 
-
-void CAirspace_Area::DistanceFromLine(LONG cx, LONG cy, LONG ax, LONG ay ,
-					  LONG bx, LONG by, 
-					  LONG &distanceSegment, LONG &xx, LONG &yy) const
-{
-	//
-	// find the distance from the point (cx,cy) to the line
-	// determined by the points (ax,ay) and (bx,by)
-	//
-	// distanceSegment = distance from the point to the line segment
-
-	/*
-		http://www.codeguru.com/forum/showthread.php?t=194400
-
-		Subject 1.02: How do I find the distance from a point to a line?
-
-		Let the point be C (Cx,Cy) and the line be AB (Ax,Ay) to (Bx,By).
-		Let P be the point of perpendicular projection of C on AB.  The parameter
-		r, which indicates P's position along AB, is computed by the dot product
-
-		of AC and AB divided by the square of the length of AB:
-		
-		(1)     AC dot AB
-			r = ---------  
-				||AB||^2
-		
-		r has the following meaning:
-		
-			r=0      P = A
-			r=1      P = B
-			r<0      P is on the backward extension of AB
-			r>1      P is on the forward extension of AB
-			0<r<1    P is interior to AB
-		
-		The length of a line segment in d dimensions, AB is computed by:
-		
-			L = sqrt( (Bx-Ax)^2 + (By-Ay)^2 + ... + (Bd-Ad)^2)
-
-		so in 2D:   
-		
-			L = sqrt( (Bx-Ax)^2 + (By-Ay)^2 )
-		
-		and the dot product of two vectors in d dimensions, U dot V is computed:
-		
-			D = (Ux * Vx) + (Uy * Vy) + ... + (Ud * Vd)
-		
-		so in 2D:   
-		
-			D = (Ux * Vx) + (Uy * Vy) 
-		
-		So (1) expands to:
-		
-				(Cx-Ax)(Bx-Ax) + (Cy-Ay)(By-Ay)
-			r = -------------------------------
-							  L^2
-
-		The point P can then be found:
-
-			Px = Ax + r(Bx-Ax)
-			Py = Ay + r(By-Ay)
-
-		And the distance from A to P = r*L.
-
-		Use another parameter s to indicate the location along PC, with the 
-		following meaning:
-			  s<0      C is left of AB
-			  s>0      C is right of AB
-			  s=0      C is on AB
-
-		Compute s as follows:
-
-				(Ay-Cy)(Bx-Ax)-(Ax-Cx)(By-Ay)
-			s = -----------------------------
-							L^2
-
-		Then the distance from C to P = |s|*L.
-	*/
-	LONG r_numerator = (cx-ax)*(bx-ax) + (cy-ay)*(by-ay);
-	LONG r_denomenator = (bx-ax)*(bx-ax) + (by-ay)*(by-ay);
-	float r = (float)r_numerator / (float)r_denomenator;
-    LONG px = ax + r*(bx-ax);
-    LONG py = ay + r*(by-ay);
-    float s =  ((ay-cy)*(bx-ax)-(ax-cx)*(by-ay)) / (float)r_denomenator;
-
-	LONG distanceLine = fabs(s)*isqrt4(r_denomenator);
-
-	// (xx,yy) is the point on the lineSegment closest to (cx,cy) //
-	xx = px;
-	yy = py;
-
-	if ( (r >= 0) && (r <= 1) )
-	{
-		distanceSegment = distanceLine;
-	}
-	else
-	{
-		LONG dist1 = (cx-ax)*(cx-ax) + (cy-ay)*(cy-ay);
-		LONG dist2 = (cx-bx)*(cx-bx) + (cy-by)*(cy-by);
-		if (dist1 < dist2)
-		{
-			xx = ax;
-			yy = ay;
-			distanceSegment = isqrt4(dist1);
-		}
-		else
-		{
-			xx = bx;
-			yy = by;
-			distanceSegment = isqrt4(dist2);
-		}
-	}
-}
-
 // Calculate horizontal distance from a given point
 double CAirspace_Area::Range(const double &longitude, const double &latitude, double &bearing) const
 {
   // find nearest distance to line segment
   unsigned int i;
-  LONG dist = 0;
-  LONG dist_candidate = 0;
-  double nearestdistance;
-  double nearestbearing;
-  double lon4_candidate = 0;
-  double lat4_candidate = 0;
-  POINT p,pnext,p3,p4, p4_candidate;
-  float flongitude = longitude;
-  float flatitude = latitude;
+  unsigned int dist = 0;
+  unsigned int dist_candidate = 0;
+  CPoint2D p3(latitude, longitude);
+  int x=0,y=0,z=0;
+  int xc=0, yc=0, zc=0;
 
   int    wn = 0;    // the winding number counter
   
-  p4_candidate.x = p4_candidate.y = 0;
-  
-  MapWindow::LatLon2Screen(longitude, latitude, p3);
-  CGeoPointList::const_iterator it = _geopoints.begin();
-  CGeoPointList::const_iterator itnext = it;
+  CPoint2DArray::const_iterator it = _geopoints.begin();
+  CPoint2DArray::const_iterator itnext = it;
   ++itnext;
   
   for (i=0; i<_geopoints.size()-1; ++i) {
-/*    dist = ScreenCrossTrackError(
-				 it->Longitude(),
-				 it->Latitude(),
-				 itnext->Longitude(),
-				 itnext->Latitude(),
-				 longitude, latitude,
-				 &lon4, &lat4);*/
+    dist = p3.DistanceXYZ(*it, *itnext, &x, &y, &z);
 
-	MapWindow::LatLon2Screen(it->Longitude(), it->Latitude(), p);
-	MapWindow::LatLon2Screen(itnext->Longitude(), itnext->Latitude(), pnext);
+    if (it->Latitude() <= latitude) {         // start y <= P.Latitude
+        if (itnext->Latitude() > latitude)      // an upward crossing
+            if (isLeft( *it, *itnext, longitude, latitude) > 0)  // P left of edge
+                ++wn;            // have a valid up intersect
+    } else {                       // start y > P.Latitude (no test needed)
+        if (itnext->Latitude() <= latitude)     // a downward crossing
+            if (isLeft( *it, *itnext, longitude, latitude) < 0)  // P right of edge
+                --wn;            // have a valid down intersect
+    }
 
-	DistanceFromLine(p3.x, p3.y, p.x, p.y, pnext.x, pnext.y, dist, p4.x, p4.y);
-
-	if (it->Latitude() <= flatitude) {         // start y <= P.Latitude
-		if (itnext->Latitude() > flatitude)      // an upward crossing
-			if (isLeft( *it, *itnext, flongitude, flatitude) > 0)  // P left of edge
-				++wn;            // have a valid up intersect
-	} else {                       // start y > P.Latitude (no test needed)
-		if (itnext->Latitude() <= flatitude)     // a downward crossing
-			if (isLeft( *it, *itnext, flongitude, flatitude) < 0)  // P right of edge
-				--wn;            // have a valid down intersect
-	}
-
-	if ((dist<dist_candidate)||(i==0)) {
+    if ((dist<dist_candidate)||(i==0)) {
       dist_candidate = dist;
-	  p4_candidate = p4;
+	  xc = x;
+	  yc = y;
+	  zc = z;
     }
     ++it;
 	++itnext;
   }
 
-  MapWindow::Screen2LatLon(p4_candidate.x, p4_candidate.y, lon4_candidate, lat4_candidate);
-  DistanceBearing(latitude, longitude, lat4_candidate, lon4_candidate, &nearestdistance, &nearestbearing);
+  CPoint2D p4(xc,yc,zc);
+  double nearestdistance;
+  double nearestbearing;
+
+  DistanceBearing(latitude, longitude, p4.Latitude(), p4.Longitude(), &nearestdistance, &nearestbearing);
   
   bearing = nearestbearing;
   if (wn!=0) return -nearestdistance; else return nearestdistance;
 }
 
 // Set polygon point list
-void CAirspace_Area::SetPoints(CGeoPointList &Area_Points)
+void CAirspace_Area::SetPoints(CPoint2DArray &Area_Points)
 {
 	POINT p;
 	_geopoints = Area_Points;
@@ -957,7 +832,7 @@ void CAirspace_Area::SetPoints(CGeoPointList &Area_Points)
 // Calculate airspace bounds
 void CAirspace_Area::CalcBounds()
 {
-  CGeoPointList::iterator it = _geopoints.begin();
+  CPoint2DArray::iterator it = _geopoints.begin();
   
   _bounds.minx = it->Longitude();
   _bounds.maxx = it->Longitude();
@@ -976,7 +851,10 @@ void CAirspace_Area::CalcBounds()
 	_bounds.minx = _bounds.maxx;
 	_bounds.maxx = tmp;
 	for(it = _geopoints.begin(); it != _geopoints.end(); ++it) {
-	  if (it->Longitude()<0) it->Longitude(it->Longitude() + 360);
+	  if (it->Longitude()<0) {
+		CPoint2D newpoint(it->Latitude(), it->Longitude() + 360);
+		*it = newpoint;
+	  }
 	}
   }
 }
@@ -1008,7 +886,7 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
 	} else {
 	  _drawstyle = adsOutline;
 	}
-	CGeoPointList::iterator it;
+	CPoint2DArray::iterator it;
 	POINTList::iterator itr;
 	for (it = _geopoints.begin(), itr = _screenpoints.begin(); it != _geopoints.end(); ++it, ++itr) {
         MapWindow::LatLon2Screen(it->Longitude(), it->Latitude(), *itr);
@@ -1275,7 +1153,7 @@ bool CAirspaceManager::ReadCoords(TCHAR *Text, double *X, double *Y) const
 }
 
 
-bool CAirspaceManager::CalculateArc(TCHAR *Text, CGeoPointList *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const
+bool CAirspaceManager::CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const
 {
   double StartLat, StartLon;
   double EndLat, EndLon;
@@ -1283,7 +1161,6 @@ bool CAirspaceManager::CalculateArc(TCHAR *Text, CGeoPointList *_geopoints, doub
   double EndBearing;
   double Radius;
   TCHAR *Comma = NULL;
-  CGeoPoint newpoint(0,0);
   double lat,lon;
 
   ReadCoords(Text,&StartLon , &StartLat);
@@ -1298,9 +1175,7 @@ bool CAirspaceManager::CalculateArc(TCHAR *Text, CGeoPointList *_geopoints, doub
                   &Radius, &StartBearing);
   DistanceBearing(CenterY, CenterX, EndLat, EndLon, 
                   NULL, &EndBearing);
-  newpoint.Latitude(StartLat);
-  newpoint.Longitude(StartLon);
-  _geopoints->push_back(newpoint);
+  _geopoints->push_back(CPoint2D(StartLat, StartLon));
   
   while(fabs(EndBearing-StartBearing) > 7.5)
   {
@@ -1308,23 +1183,18 @@ bool CAirspaceManager::CalculateArc(TCHAR *Text, CGeoPointList *_geopoints, doub
 	  if(StartBearing > 360) StartBearing -= 360;
 	  if(StartBearing < 0) StartBearing += 360;
 	  FindLatitudeLongitude(CenterY, CenterX, StartBearing, Radius, &lat, &lon);
-	  newpoint.Latitude(lat);
-	  newpoint.Longitude(lon);
-	  _geopoints->push_back(newpoint);
+	  _geopoints->push_back(CPoint2D(lat,lon));
   }
-  newpoint.Latitude(EndLat);
-  newpoint.Longitude(EndLon);
-  _geopoints->push_back(newpoint);
+  _geopoints->push_back(CPoint2D(EndLat, EndLon));
   return true;
 }
 
-bool CAirspaceManager::CalculateSector(TCHAR *Text, CGeoPointList *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const
+bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const
 {
   double Radius;
   double StartBearing;
   double EndBearing;
   TCHAR *Stop = NULL;
-  CGeoPoint newpoint(0,0);
   double lat=0,lon=0;
   
   // TODO 110307 FIX problem of StrToDouble returning 0.0 in case of error , and not setting Stop!!
@@ -1339,26 +1209,22 @@ bool CAirspaceManager::CalculateSector(TCHAR *Text, CGeoPointList *_geopoints, d
 
 	FindLatitudeLongitude(CenterY, CenterX, StartBearing, Radius, &lat, &lon);
 
-	newpoint.Latitude(lat);
-	newpoint.Longitude(lon);
-	_geopoints->push_back(newpoint);
+	_geopoints->push_back(CPoint2D(lat,lon));
     
 	StartBearing += Rotation *5 ;
   }
   FindLatitudeLongitude(CenterY, CenterX, EndBearing, Radius, &lat, &lon);
-  newpoint.Latitude(lat);
-  newpoint.Longitude(lon);
-  _geopoints->push_back(newpoint);
+  _geopoints->push_back(CPoint2D(lat,lon));
   return true;
 }
 
 // Correcting geopointlist
 // All algorithms require non self-intersecting and closed polygons.
 // Also the geopointlist last element have to be the same as first -> openair doesn't require this, we have to do it here
-void CAirspaceManager::CorrectGeoPoints(CGeoPointList &points)
+void CAirspaceManager::CorrectGeoPoints(CPoint2DArray &points)
 {
-	CGeoPoint first = points.front();
-	CGeoPoint last = points.back();
+	CPoint2D first = points.front();
+	CPoint2D last = points.back();
 	
 	if ( (first.Latitude() != last.Latitude()) || (first.Longitude() != last.Longitude()) ) points.push_back(first);
 }
@@ -1376,7 +1242,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
   CAirspace *newairspace = NULL;
   // Variables to store airspace parameters
   TCHAR Name[NAME_SIZE+1];
-  CGeoPointList points;
+  CPoint2DArray points;
   double Radius = 0;
   double Latitude = 0;
   double Longitude = 0;
@@ -1530,7 +1396,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
           case _T('P'): //DP - polygon point
 			p++; p++; // skip P and space
 			if (ReadCoords(p,&lon, &lat)) {
-			  points.push_back(CGeoPoint(lat,lon));
+			  points.push_back(CPoint2D(lat,lon));
 			} else {
 			  wsprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p );
 			  // LKTOKEN  _@M68_ = "Airspace" 

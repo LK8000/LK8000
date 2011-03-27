@@ -12,8 +12,9 @@
 #ifdef LKAIRSPACE
 #include "CriticalSection.h"
 #include "Calculations.h"
-#include <tchar.h>
+#include "Point2D.h"
 
+#include <tchar.h>
 #include <vector>
 #include <deque>
 #include <list>
@@ -32,27 +33,6 @@ typedef struct _AIRSPACE_ALT
   AirspaceAltBase_t Base;  
 } AIRSPACE_ALT;
 
-// 
-// HELPER CLASSES
-//
-class CGeoPoint
-{
-public:
-  CGeoPoint() : _latitude(0.0), _longitude(0.0) {}
-  CGeoPoint(const double &latitude, const double &longitude) : _latitude(latitude), _longitude(longitude) {}
-
-  // Attributes interface
-  float Latitude() const { return _latitude; }
-  void Latitude(const float &latitude) { _latitude = latitude; }
-  float Longitude() const { return _longitude; }
-  void Longitude(const float &longitude) { _longitude = longitude; }
-
-private:
-  float _latitude;
-  float _longitude;
-};
-
-typedef std::list<CGeoPoint> CGeoPointList;
 typedef std::vector<POINT> POINTList;
 
 //Airspace warning and ack levels
@@ -117,7 +97,7 @@ public:
   // Check if an altitude vertically inside in this airspace
 		  bool IsAltitudeInside(int alt, int agl, int extension=0) const;
   // Set polygon points
-  virtual void SetPoints(CGeoPointList &area_points) {}
+  virtual void SetPoints(CPoint2DArray &area_points) {}
   // Dump this airspace to runtime.log
   virtual void Dump() const;
   // Calculate drawing coordinates on screen
@@ -224,7 +204,7 @@ protected:
   static bool _pred_in_acked_nonfly_zone;	// for flyzone warning refining
   static int _now;							// recent time
   static int _hdistancemargin;				// used horizontal distance margin
-  static CGeoPoint _lastknownpos;			// last known position saved for calculations
+  static CPoint2D _lastknownpos;			// last known position saved for calculations
   static int _lastknownalt;					// last known alt saved for calculations
   static int _lastknownagl;					// last known agl saved for calculations
 
@@ -241,7 +221,7 @@ public:
   // Check if a point horizontally inside in this airspace
   virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const;
   // Set polygon points
-  virtual void SetPoints(CGeoPointList &area_points);
+  virtual void SetPoints(CPoint2DArray &area_points);
   // Dump this airspace to runtime.log
   virtual void Dump() const;
   // Calculate drawing coordinates on screen
@@ -252,15 +232,13 @@ public:
   virtual double Range(const double &longitude, const double &latitude, double &bearing) const;
 
 private:
-  CGeoPointList _geopoints;		// polygon points
+  CPoint2DArray _geopoints;		// polygon points
   POINTList _screenpoints;		// screen coordinates
   
   // Winding number calculation to check a point is horizontally inside polygon
-  int wn_PnPoly( const float &longitude, const float &latitude ) const;
+  int wn_PnPoly( const double &longitude, const double &latitude ) const;
   // Calculate airspace bounds
   void CalcBounds();
-  // Calculate nearest distance from a line segment
-  void DistanceFromLine(LONG cx, LONG cy, LONG ax, LONG ay, LONG bx, LONG by, LONG &distanceSegment, LONG &xx, LONG &yy) const;
 };
 
 // 
@@ -388,9 +366,9 @@ private:
   bool StartsWith(const TCHAR *Text, const TCHAR *LookFor) const;
   void ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const;
   bool ReadCoords(TCHAR *Text, double *X, double *Y) const;
-  bool CalculateArc(TCHAR *Text, CGeoPointList *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const;
-  bool CalculateSector(TCHAR *Text, CGeoPointList *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const;
-  void CorrectGeoPoints(CGeoPointList &points);
+  bool CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const;
+  bool CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const;
+  void CorrectGeoPoints(CPoint2DArray &points);
   
 
 };
