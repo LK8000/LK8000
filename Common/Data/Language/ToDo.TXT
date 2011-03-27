@@ -31,3 +31,10 @@ Things to be fixed in LK languages files/tokens:
 - New Logger declarations Error Handling fields: _@M1400_ - _@M1429_
 
   MENU files to be checked and translated?
+
+110227 moved H890 to H1200
+             H891 to H1201
+             H900 to H1202
+             H901 to H1203
+
+

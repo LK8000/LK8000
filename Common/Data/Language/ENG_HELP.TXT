@@ -944,7 +944,7 @@ Negative convergence (divergence) produces subsiding vertical motion, creating l
 
 
 #
-# INFOBOXES
+# INFOBOXES 800 - 1199
 #
 
 @800
@@ -1340,6 +1340,80 @@ If you have no AirSpeed probe, Estimated Airspeed will be used. See the manual f
 No help available on this item!
 
 @890
+[OLC CLASSIC] distance
+
+@891
+[FAI TRIANGLE] distance
+
+@892
+[OLC LEAGUE] distance
+
+@893
+[FAI 3TPs] distance
+
+@894
+[OLC CLASSIC] predicted distance
+
+@895
+[FAI TRIANGLE] predicted distance
+
+@896
+[FAI 3TPs] predicted distance
+
+@897
+[OLC CLASSIC] speed
+
+@898
+[FAI TRIANGLE] speed
+
+@899
+[OLC LEAGUE] speed
+
+@900
+[FAI 3TPs] speed
+
+@901
+[OLC CLASSIC] predicted speed
+
+@902
+[FAI TRIANGLE] predicted speed
+
+@903
+[FAI 3TPs] predicted speed
+
+@904
+[OLC CLASSIC] score
+
+@905
+[FAI TRIANGLE] score
+
+@906
+[OLC LEAGUE] score
+
+@907
+[FAI 3TPs] score
+
+@908
+[OLC CLASSIC] predicted score
+
+@909
+[FAI TRIANGLE] predicted score
+
+@910
+[FAI 3TPs] predicted score
+
+@911
+[OLC PLUS] score
+
+@912
+[OLC PLUS] predicted score
+
+
+#
+# END INFOBOXES 800 - 1199
+#
+
+@1200
 [Airspace area filling]
 Airspace area can be denoted by outlines only, pattern filling, or semi-transparent colors.
 [Outlines only] there will be only lines on airspace area borders 
@@ -1347,11 +1421,11 @@ Airspace area can be denoted by outlines only, pattern filling, or semi-transpar
 [Semi-Transparent] airspace area will be filled with selected solid semi-transparent color (opacity of the color can be set in 'Opacity' item) . 
 Transparency may not be available on some hardware devices.
 
-@891
+@1201
 [Opacity of semi-transparent airspace]
 Defines how much transparent (->0%) / opaque (->100%) will be airspace area filled with solid semi-transparent color.
 
-@900
+@1202
 [Bottom Bar Opacity]
 Defines how much transparent (->0%) / opaque (->100%) will be the bottom bar area on the map .
 Normally the bar is black with white text, and can be reverted to white with black text on it.
@@ -1364,7 +1438,7 @@ Default is 60%.
 ATTENTION: some devices do not support opacity control. In this case, opacity has no effect
 and the bottom bar will be always full black or full white.
 
-@901
+@1203
 [Font Smoothing]
 Font smoothing will make characters appearing with better quality.
 [None] will force disabling font smoothing
