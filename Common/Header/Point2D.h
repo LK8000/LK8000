@@ -67,7 +67,7 @@ public:
   unsigned Distance(const CPoint2D &seg1, const CPoint2D &seg2) const;
   unsigned DistanceXYZ(int x, int y, int z) const;
   unsigned DistanceXYZ(const CPoint2D &ref) const;
-  unsigned DistanceXYZ(const CPoint2D &seg1, const CPoint2D &seg2, CPoint2D *nearest = 0) const;
+  unsigned DistanceXYZ(const CPoint2D &seg1, const CPoint2D &seg2, int *nearest_x = 0, int *nearest_y = 0, int *nearest_z = 0) const;
 };
 
 typedef CSmartPtr<const CPoint2D> CPoint2DSmart;
@@ -188,11 +188,13 @@ inline unsigned CPoint2D::DistanceXYZ(const CPoint2D &ref) const
  * 
  * @param seg1 First end of line segment
  * @param seg2 Second end of line segment
- * @param nearest Nearest point on the line segment to return if not 0
+ * @param nearest_x Nearest point's x on the line segment to return if not 0
+ * @param nearest_y Nearest point's x on the line segment to return if not 0
+ * @param nearest_z Nearest point's x on the line segment to return if not 0
  * 
  * @return Calculated distance
  */
-inline unsigned CPoint2D::DistanceXYZ(const CPoint2D &seg1, const CPoint2D &seg2, CPoint2D *nearest /* = 0 */) const
+inline unsigned CPoint2D::DistanceXYZ(const CPoint2D &seg1, const CPoint2D &seg2, int *nearest_x /* = 0 */, int *nearest_y /* = 0 */, int *nearest_z /* = 0 */) const
 {
   int X1 = _x - seg1._x;
   int Y1 = _y - seg1._y;
@@ -223,8 +225,9 @@ inline unsigned CPoint2D::DistanceXYZ(const CPoint2D &seg1, const CPoint2D &seg2
     z = static_cast<unsigned>(seg1._z + param * DZ);
   }
   
-  if(nearest)
-    *nearest = CPoint2D(x, y, z);
+  if(nearest_x) *nearest_x = x;
+  if(nearest_y) *nearest_y = y;
+  if(nearest_z) *nearest_z = z;
   
   return DistanceXYZ(x, y, z);
 }
