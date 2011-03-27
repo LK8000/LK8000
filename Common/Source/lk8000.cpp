@@ -858,7 +858,7 @@ DWORD BatteryWarningTime = 0;
 
 char dedicated[]="Dedicated to my father Vittorio";
 
-#define NUMSELECTSTRING_MAX			100
+#define NUMSELECTSTRING_MAX			130
 SCREEN_INFO Data_Options[NUMSELECTSTRING_MAX];
 int NUMSELECTSTRINGS = 0;
 
@@ -1149,7 +1149,63 @@ void FillDataOptions()
 	SetDataOption(88, ugNone,           TEXT("_@M1177_"), TEXT("_@M1178_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
 	// LKTOKEN  _@M1179_ = "_Experimental2", _@M1180_ = "Exp2"
 	SetDataOption(89, ugNone,           TEXT("_@M1179_"), TEXT("_@M1180_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	// LKTOKEN  _@M1181_ = "Battery Voltage", _@M1182_ = "Batt"
+
+	// Distance OLC
+	SetDataOption(90, ugNone,           TEXT("_@M1455_"), TEXT("_@M1456_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Distance FAI triangle
+	SetDataOption(91, ugNone,           TEXT("_@M1457_"), TEXT("_@M1458_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Distance League
+	SetDataOption(92, ugNone,           TEXT("_@M1459_"), TEXT("_@M1460_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Distance FAI 3 TPs
+	SetDataOption(93, ugNone,           TEXT("_@M1461_"), TEXT("_@M1462_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	
+	////////  PREDICTED ////////
+	// Distance OLC
+	SetDataOption(94, ugNone,           TEXT("_@M1463_"), TEXT("_@M1464_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Distance FAI triangle
+	SetDataOption(95, ugNone,           TEXT("_@M1465_"), TEXT("_@M1466_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Distance FAI 3 TPs
+	SetDataOption(96, ugNone,           TEXT("_@M1469_"), TEXT("_@M1470_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	
+	// Speed OLC
+	SetDataOption(97, ugNone,           TEXT("_@M1471_"), TEXT("_@M1472_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Speed FAI triangle
+	SetDataOption(98, ugNone,           TEXT("_@M1473_"), TEXT("_@M1474_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Speed League
+	SetDataOption(99, ugNone,           TEXT("_@M1475_"), TEXT("_@M1476_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Speed FAI 3 TPs
+	SetDataOption(100, ugNone,           TEXT("_@M1477_"), TEXT("_@M1478_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+
+	////////  PREDICTED ////////
+	// Speed OLC
+	SetDataOption(101, ugNone,           TEXT("_@M1479_"), TEXT("_@M1480_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Speed FAI triangle
+	SetDataOption(102, ugNone,           TEXT("_@M1481_"), TEXT("_@M1482_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Speed FAI 3 TPs
+	SetDataOption(103, ugNone,           TEXT("_@M1485_"), TEXT("_@M1486_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+
+	// Score OLC
+	SetDataOption(104, ugNone,           TEXT("_@M1487_"), TEXT("_@M1488_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Score FAI triangle
+	SetDataOption(105, ugNone,           TEXT("_@M1489_"), TEXT("_@M1490_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Score League
+	SetDataOption(106, ugNone,           TEXT("_@M1491_"), TEXT("_@M1492_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// FAI 3 TPs currently has no score
+	SetDataOption(107, ugNone,           TEXT("_Reserved 3"), TEXT("_@M1494_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+
+	////////  PREDICTED ////////
+	// Score OLC
+	SetDataOption(108, ugNone,           TEXT("_@M1495_"), TEXT("_@M1496_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Score FAI triangle
+	SetDataOption(109, ugNone,           TEXT("_@M1497_"), TEXT("_@M1498_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// FAI 3 TPs currently has no score
+	SetDataOption(110, ugNone,           TEXT("_Reserved 4"), TEXT("_@M1502_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+
+	// Olc Plus Score
+	SetDataOption(111, ugNone,           TEXT("_@M1503_"), TEXT("_@M1504_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Olc Plus Score Predicted
+	SetDataOption(112, ugNone,           TEXT("_@M1505_"), TEXT("_@M1506_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+
 
 	//Before adding new items, consider changing NUMSELECTSTRING_MAX
 

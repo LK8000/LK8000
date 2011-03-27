@@ -355,7 +355,38 @@ extern short ModeTableTop[LKMODE_TOP+1];
 // quick usage values
 #define LK_EXP1			88		//	--
 #define LK_EXP2			89		//	--
-// Non-infobox values
+
+// Non-infobox values - since 2.1 all values are no more available on Infoboxes (IBOX mode)
+
+#define LK_OLC_CLASSIC_DIST		90		//  not for ibox 
+#define LK_OLC_FAI_DIST			91		//  not for ibox 
+#define LK_OLC_LEAGUE_DIST		92		//  not for ibox 
+#define LK_OLC_3TPS_DIST		93		//  not for ibox 
+#define LK_OLC_CLASSIC_PREDICTED_DIST	94		//  not for ibox 
+#define LK_OLC_FAI_PREDICTED_DIST	95		//  not for ibox 
+#define LK_OLC_3TPS_PREDICTED_DIST	96		//  not for ibox 
+
+#define LK_OLC_CLASSIC_SPEED		97		//  not for ibox 
+#define LK_OLC_FAI_SPEED		98		//  not for ibox 
+#define LK_OLC_LEAGUE_SPEED		99		//  not for ibox 
+#define LK_OLC_3TPS_SPEED		100		//  not for ibox 
+#define LK_OLC_CLASSIC_PREDICTED_SPEED	101		//  not for ibox 
+#define LK_OLC_FAI_PREDICTED_SPEED	102		//  not for ibox 
+#define LK_OLC_3TPS_PREDICTED_SPEED	103		//  not for ibox 
+
+#define LK_OLC_CLASSIC_SCORE		104		//  not for ibox 
+#define LK_OLC_FAI_SCORE		105		//  not for ibox 
+#define LK_OLC_LEAGUE_SCORE		106		//  not for ibox 
+#define LK_OLC_3TPS_SCORE		107		//  not for ibox 
+#define LK_OLC_CLASSIC_PREDICTED_SCORE	108		//  not for ibox 
+#define LK_OLC_FAI_PREDICTED_SCORE	109		//  not for ibox 
+#define LK_OLC_3TPS_PREDICTED_SCORE	110		//  not for ibox 
+
+#define LK_OLC_PLUS_SCORE		111		//  not for ibox 
+#define LK_OLC_PLUS_PREDICTED_SCORE	112		//  not for ibox 
+
+// The following values are not available for custom configuration
+
 #define LK_WIND			131		//
 #define LK_FIN_ALTDIFF0		132		// final (task) altitude difference at MC=0
 #define LK_LKFIN_ETE		133		// real ETE 

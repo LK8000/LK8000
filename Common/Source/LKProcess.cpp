@@ -2481,6 +2481,116 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue, TEXT("%S"),text);
 			break;
 
+
+		// B90 B91 B92 B93 B94 B95 B96
+		case LK_OLC_CLASSIC_DIST:
+			ivalue=CContestMgr::TYPE_OLC_CLASSIC;
+			goto olc_dist;
+		case LK_OLC_FAI_DIST:
+			ivalue=CContestMgr::TYPE_OLC_FAI;
+			goto olc_dist;
+		case LK_OLC_LEAGUE_DIST:
+			ivalue=CContestMgr::TYPE_OLC_LEAGUE;
+			goto olc_dist;
+		case LK_OLC_3TPS_DIST:
+			ivalue=CContestMgr::TYPE_FAI_3_TPS;;
+			goto olc_dist;
+		case LK_OLC_CLASSIC_PREDICTED_DIST:
+			ivalue=CContestMgr::TYPE_OLC_CLASSIC_PREDICTED;
+			goto olc_dist;
+		case LK_OLC_FAI_PREDICTED_DIST:
+			ivalue=CContestMgr::TYPE_OLC_FAI_PREDICTED;
+			goto olc_dist;
+		case LK_OLC_3TPS_PREDICTED_DIST:
+			ivalue=CContestMgr::TYPE_FAI_3_TPS_PREDICTED;
+olc_dist:
+			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
+
+			if (OlcResults[ivalue].Type()==CContestMgr::TYPE_INVALID)
+				wsprintf(BufferValue,_T(NULLMEDIUM));
+			else {
+				_stprintf(BufferValue, TEXT("%5.0f"),DISTANCEMODIFY*OlcResults[ivalue].Distance());
+				valid=true;
+			}
+			break;
+
+		// B97 B98 B99 B100 B101 B102 B103
+		case LK_OLC_CLASSIC_SPEED:
+			ivalue=CContestMgr::TYPE_OLC_CLASSIC;
+			goto olc_speed;
+		case LK_OLC_FAI_SPEED:
+			ivalue=CContestMgr::TYPE_OLC_FAI;
+			goto olc_speed;
+		case LK_OLC_LEAGUE_SPEED:
+			ivalue=CContestMgr::TYPE_OLC_LEAGUE;
+			goto olc_speed;
+		case LK_OLC_3TPS_SPEED:
+			ivalue=CContestMgr::TYPE_FAI_3_TPS;;
+			goto olc_speed;
+		case LK_OLC_CLASSIC_PREDICTED_SPEED:
+			ivalue=CContestMgr::TYPE_OLC_CLASSIC_PREDICTED;
+			goto olc_speed;
+		case LK_OLC_FAI_PREDICTED_SPEED:
+			ivalue=CContestMgr::TYPE_OLC_FAI_PREDICTED;
+			goto olc_speed;
+		case LK_OLC_3TPS_PREDICTED_SPEED:
+			ivalue=CContestMgr::TYPE_FAI_3_TPS_PREDICTED;
+olc_speed:
+			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			wsprintf(BufferUnit, TEXT("%s"),(Units::GetHorizontalSpeedName()));
+
+			if (OlcResults[ivalue].Type()==CContestMgr::TYPE_INVALID)
+				wsprintf(BufferValue,_T(NULLMEDIUM));
+			else {
+				if ( OlcResults[ivalue].Speed() >999 ) {
+					wsprintf(BufferValue,_T(NULLMEDIUM));
+				} else {
+					_stprintf(BufferValue, TEXT("%3.1f"),SPEEDMODIFY*OlcResults[ivalue].Speed());
+					valid=true;
+				}
+			}
+			break;
+		
+		// B104 B105 B106 B107 B108 B109 B110 B111 B112
+		case LK_OLC_CLASSIC_SCORE:
+			ivalue=CContestMgr::TYPE_OLC_CLASSIC;
+			goto olc_score;
+		case LK_OLC_FAI_SCORE:
+			ivalue=CContestMgr::TYPE_OLC_FAI;
+			goto olc_score;
+		case LK_OLC_LEAGUE_SCORE:
+			ivalue=CContestMgr::TYPE_OLC_LEAGUE;
+			goto olc_score;
+		case LK_OLC_3TPS_SCORE:
+			ivalue=CContestMgr::TYPE_FAI_3_TPS;;
+			goto olc_score;
+		case LK_OLC_CLASSIC_PREDICTED_SCORE:
+			ivalue=CContestMgr::TYPE_OLC_CLASSIC_PREDICTED;
+			goto olc_score;
+		case LK_OLC_FAI_PREDICTED_SCORE:
+			ivalue=CContestMgr::TYPE_OLC_FAI_PREDICTED;
+			goto olc_score;
+		case LK_OLC_3TPS_PREDICTED_SCORE:
+			ivalue=CContestMgr::TYPE_FAI_3_TPS_PREDICTED;
+			goto olc_score;
+		case LK_OLC_PLUS_SCORE:
+			ivalue=CContestMgr::TYPE_OLC_PLUS;
+			goto olc_score;
+		case LK_OLC_PLUS_PREDICTED_SCORE:
+			ivalue=CContestMgr::TYPE_OLC_PLUS_PREDICTED;
+olc_score:
+			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			wsprintf(BufferUnit, TEXT("pt"));
+
+			if (OlcResults[ivalue].Type()==CContestMgr::TYPE_INVALID)
+				wsprintf(BufferValue,_T(NULLMEDIUM));
+			else {
+				_stprintf(BufferValue, TEXT("%3.0f"),OlcResults[ivalue].Score());
+				valid=true;
+			}
+			break;
+
 		case LK_DUMMY:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)

@@ -8,6 +8,8 @@
 # Please note that ENG_MSG.TXT is the english master language for LK8000
 # and it should always exist. Do not change ENG_MSG.TXT!
 #
+# ATTENTION> Max number of tokens is defined in LKLanguage as MAX_MESSAGES
+#
 # All lines that are empty, or starting with a # , are ignored.
 # DEVELOPERS ADDING NEW MESSAGES HERE SHOULD REQUEST A NUMBERING SLOT TO PAOLO
 
@@ -1340,4 +1342,71 @@ _@M1422_ "Start and Finish"
 #
 _@M1450_ "Contest"
 _@M1451_ "Change"
-_@M1452_ "Powerless flight detected"
+_@M1452_ "FREE FLIGHT START detected"
+
+#
+# Contest infoboxes, full name and abbreviated name for boxes
+# We need OLC ahead of full names, to keep ordering in infobox list during configuration
+#
+# League predicted is not used
+#
+_@M1455_ "OLC Classic Distance"
+_@M1456_ "OLC dis"
+_@M1457_ "OLC FAI Triangle Distance"
+_@M1458_ "FAI dis"
+_@M1459_ "OLC League Distance"
+_@M1460_ "LEA dis"
+_@M1461_ "OLC FAI 3 TPs Distance"
+_@M1462_ "3TP dis"
+
+_@M1463_ "OLC Classic*Predicted Distance"
+_@M1464_ "OLC*dis"
+_@M1465_ "OLC FAI Triangle*Predicted Distance"
+_@M1466_ "FAI*dis"
+_@M1467_ "OLC League*Predicted Distance"
+_@M1468_ "LEA*dis"
+_@M1469_ "OLC FAI 3 TPs*Predicted Distance"
+_@M1470_ "3TP*dis"
+
+_@M1471_ "OLC Classic Speed"
+_@M1472_ "OLC spd"
+_@M1473_ "OLC FAI Triangle Speed"
+_@M1474_ "FAI spd"
+_@M1475_ "OLC League Speed"
+_@M1476_ "LEA spd"
+_@M1477_ "OLC FAI 3 TPs Speed"
+_@M1478_ "3TP spd"
+
+_@M1479_ "OLC Classic*Predicted Speed"
+_@M1480_ "OLC*spd"
+_@M1481_ "OLC FAI Triangle*Predicted Speed"
+_@M1482_ "FAI*spd"
+_@M1483_ "OLC League*Predicted Speed"
+_@M1484_ "LEA*spd"
+_@M1485_ "OLC FAI 3 TPs*Predicted Speed"
+_@M1486_ "3TP*spd"
+
+_@M1487_ "OLC Classic Score"
+_@M1488_ "OLC scr"
+_@M1489_ "OLC FAI Triangle Score"
+_@M1490_ "FAI scr"
+_@M1491_ "OLC League Score"
+_@M1492_ "LEA scr"
+_@M1493_ "OLC FAI 3 TPs Score"
+_@M1494_ "3TP scr"
+
+_@M1495_ "OLC Classic*Predicted Score"
+_@M1496_ "OLC*scr"
+_@M1497_ "OLC FAI Triangle*Predicted Score"
+_@M1498_ "FAI*scr"
+_@M1499_ "OLC League*Predicted Score"
+_@M1500_ "LEA*scr"
+_@M1501_ "OLC FAI 3 TPs*Predicted Score"
+_@M1502_ "3TP*scr"
+
+_@M1503_ "OLC Plus Score"
+_@M1504_ "PLS scr"
+_@M1505_ "OLC Plus*Predicted Score"
+_@M1506_ "PLS*scr"
+
+

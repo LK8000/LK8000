@@ -32,7 +32,8 @@ class CPoint2D {
   int _z;
   
 public:
-  static const double EARTH_RADIUS  = 6371000.0;
+  //static const double EARTH_RADIUS  = 6371000.0;
+  #define EARTH_RADIUS 6371000.0
   
   CPoint2D(double lat, double lon):
     _lat(lat), _lon(lon)
