@@ -57,8 +57,8 @@ static int OnTimer(WindowControl * Sender){
   
   // Auto close dialog after some time
   if (!(--timer_counter)) {
-	dlg->SetModalResult(mrOK);
-	return 0;
+    dlg->SetModalResult(mrOK);
+    return 0;
   }
   
   //Get a new copy with current values from airspacemanager
@@ -71,7 +71,7 @@ static int OnTimer(WindowControl * Sender){
 static int OnKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam)
 {
   (void)lParam;
-	switch(wParam){
+    switch(wParam){
     case VK_RETURN:
       OnAckForTimeClicked(Sender);
       return(0);
@@ -102,217 +102,217 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgLKAirspaceFill()
 {
   if (msg.warnlevel != airspace_copy.WarningLevel()) {
-	// we can automatically close the dialog when the warning level changes, probably new msg waiting in the queue
-	dlg->SetModalResult(mrOK);
+    // we can automatically close the dialog when the warning level changes, probably new msg waiting in the queue
+    dlg->SetModalResult(mrOK);
   }
   
-	//Fill up dialog data
-	WndProperty* wp;	
-	WndButton* wb;	
-	
-	wp = (WndProperty*)dlg->FindByName(TEXT("prpReason"));
-	if (wp) {
-	  switch (msg.event) {
-		default:
-		  // Normally not show
-		  // LKTOKEN _@M765_ "Unknown"
-		  wp->SetText(gettext(TEXT("_@M765_")));
-		  break;
-		  
-		case aweNone:
-		  // LKTOKEN _@M479_ "None"
-  		  wp->SetText(gettext(TEXT("_@M479_")));
-		  break;
+    //Fill up dialog data
+    WndProperty* wp;    
+    WndButton* wb;    
+    
+    wp = (WndProperty*)dlg->FindByName(TEXT("prpReason"));
+    if (wp) {
+      switch (msg.event) {
+        default:
+          // Normally not show
+          // LKTOKEN _@M765_ "Unknown"
+          wp->SetText(gettext(TEXT("_@M765_")));
+          break;
+          
+        case aweNone:
+          // LKTOKEN _@M479_ "None"
+            wp->SetText(gettext(TEXT("_@M479_")));
+          break;
 
-		case aweMovingInsideFly:
-			// LKTOKEN _@M1242_ "Flying inside FLY zone"
-			wp->SetText(gettext(TEXT("_@M1242_")));
-		  break;
-		
-		case awePredictedLeavingFly:
-			// LKTOKEN _@M1243_ "Predicted leaving FLY zone"
-			wp->SetText(gettext(TEXT("_@M1243_")));
-		  break;
-		
-		case aweNearOutsideFly:
-			// LKTOKEN _@M1244_ "Near leaving FLY zone"
-			wp->SetText(gettext(TEXT("_@M1244_")));
-		  break;
-		  
-		case aweLeavingFly:
-			// LKTOKEN _@M1245_ "Leaving FLY zone"
-			wp->SetText(gettext(TEXT("_@M1245_")));
-		  break;
+        case aweMovingInsideFly:
+            // LKTOKEN _@M1242_ "Flying inside FLY zone"
+            wp->SetText(gettext(TEXT("_@M1242_")));
+          break;
+        
+        case awePredictedLeavingFly:
+            // LKTOKEN _@M1243_ "Predicted leaving FLY zone"
+            wp->SetText(gettext(TEXT("_@M1243_")));
+          break;
+        
+        case aweNearOutsideFly:
+            // LKTOKEN _@M1244_ "Near leaving FLY zone"
+            wp->SetText(gettext(TEXT("_@M1244_")));
+          break;
+          
+        case aweLeavingFly:
+            // LKTOKEN _@M1245_ "Leaving FLY zone"
+            wp->SetText(gettext(TEXT("_@M1245_")));
+          break;
 
-		case awePredictedEnteringFly:
-			// LKTOKEN _@M1246_ "Predicted entering FLY zone"
-			wp->SetText(gettext(TEXT("_@M1246_")));
-		  break;
-		  
-		case aweEnteringFly:
-			// LKTOKEN _@M1247_ "Entering FLY zone"
-			wp->SetText(gettext(TEXT("_@M1247_")));
-		  break;
-		  
-		case aweMovingOutsideFly:
-			// LKTOKEN _@M1248_ "Flying outside FLY zone"
-			wp->SetText(gettext(TEXT("_@M1248_")));
-		  break;
-		  
-				
-		// Events for NON-FLY zones
-		case aweMovingOutsideNonfly:
-			// LKTOKEN _@M1249_ "Flying outside NOFLY zone"
-			wp->SetText(gettext(TEXT("_@M1249_")));
-		  break;
-		  
-		case awePredictedEnteringNonfly:
-			// LKTOKEN _@M1250_ "Predicted entering NOFLY zone"
-			wp->SetText(gettext(TEXT("_@M1250_")));
-		  break;
+        case awePredictedEnteringFly:
+            // LKTOKEN _@M1246_ "Predicted entering FLY zone"
+            wp->SetText(gettext(TEXT("_@M1246_")));
+          break;
+          
+        case aweEnteringFly:
+            // LKTOKEN _@M1247_ "Entering FLY zone"
+            wp->SetText(gettext(TEXT("_@M1247_")));
+          break;
+          
+        case aweMovingOutsideFly:
+            // LKTOKEN _@M1248_ "Flying outside FLY zone"
+            wp->SetText(gettext(TEXT("_@M1248_")));
+          break;
+          
+                
+        // Events for NON-FLY zones
+        case aweMovingOutsideNonfly:
+            // LKTOKEN _@M1249_ "Flying outside NOFLY zone"
+            wp->SetText(gettext(TEXT("_@M1249_")));
+          break;
+          
+        case awePredictedEnteringNonfly:
+            // LKTOKEN _@M1250_ "Predicted entering NOFLY zone"
+            wp->SetText(gettext(TEXT("_@M1250_")));
+          break;
 
-		case aweNearInsideNonfly:
-			// LKTOKEN _@M1251_ "Near entering NOFLY zone"
-			wp->SetText(gettext(TEXT("_@M1251_")));
-		  break;
+        case aweNearInsideNonfly:
+            // LKTOKEN _@M1251_ "Near entering NOFLY zone"
+            wp->SetText(gettext(TEXT("_@M1251_")));
+          break;
 
-		case aweEnteringNonfly:
-			// LKTOKEN _@M1252_ "Entering NOFLY zone"
-			wp->SetText(gettext(TEXT("_@M1252_")));
-		  break;
+        case aweEnteringNonfly:
+            // LKTOKEN _@M1252_ "Entering NOFLY zone"
+            wp->SetText(gettext(TEXT("_@M1252_")));
+          break;
 
-		case aweMovingInsideNonfly:
-			// LKTOKEN _@M1253_ "Flying inside NOFLY zone"
-			wp->SetText(gettext(TEXT("_@M1253_")));
-		  break;
+        case aweMovingInsideNonfly:
+            // LKTOKEN _@M1253_ "Flying inside NOFLY zone"
+            wp->SetText(gettext(TEXT("_@M1253_")));
+          break;
 
-		case aweLeavingNonFly:
-			// LKTOKEN _@M1254_ "Leaving NOFLY zone"
-			wp->SetText(gettext(TEXT("_@M1254_")));
-		  break;
+        case aweLeavingNonFly:
+            // LKTOKEN _@M1254_ "Leaving NOFLY zone"
+            wp->SetText(gettext(TEXT("_@M1254_")));
+          break;
 
-	  }//sw
-	  wp->RefreshDisplay();
-	}
+      }//sw
+      wp->RefreshDisplay();
+    }
 
-	wp = (WndProperty*)dlg->FindByName(TEXT("prpState"));
-	if (wp) {
-	  switch (airspace_copy.WarningLevel()) {
-		default:
-		  // LKTOKEN _@M765_ "Unknown"
-		  wp->SetText(gettext(TEXT("_@M765_")));
-		  break;
-		  
-		case awNone:
-		  // LKTOKEN _@M479_ "None"
-  		  wp->SetText(gettext(TEXT("_@M479_")));
-		  break;
+    wp = (WndProperty*)dlg->FindByName(TEXT("prpState"));
+    if (wp) {
+      switch (airspace_copy.WarningLevel()) {
+        default:
+          // LKTOKEN _@M765_ "Unknown"
+          wp->SetText(gettext(TEXT("_@M765_")));
+          break;
+          
+        case awNone:
+          // LKTOKEN _@M479_ "None"
+            wp->SetText(gettext(TEXT("_@M479_")));
+          break;
 
-		case awYellow:
-			// LKTOKEN _@M1255_ "YELLOW WARNING"
-			wp->SetText(gettext(TEXT("_@M1255_")));
-		  break;
-		
-		case awRed:
-			// LKTOKEN _@M1256_ "RED WARNING"
-			wp->SetText(gettext(TEXT("_@M1256_")));
-		  break;
-	  }//sw
-	  wp->RefreshDisplay();
-	}
-	  
-	wp = (WndProperty*)dlg->FindByName(TEXT("prpName"));
-	if (wp) {
-	  wp->SetText(airspace_copy.Name());
-	  wp->RefreshDisplay();
-	}	
+        case awYellow:
+            // LKTOKEN _@M1255_ "YELLOW WARNING"
+            wp->SetText(gettext(TEXT("_@M1255_")));
+          break;
+        
+        case awRed:
+            // LKTOKEN _@M1256_ "RED WARNING"
+            wp->SetText(gettext(TEXT("_@M1256_")));
+          break;
+      }//sw
+      wp->RefreshDisplay();
+    }
+      
+    wp = (WndProperty*)dlg->FindByName(TEXT("prpName"));
+    if (wp) {
+      wp->SetText(airspace_copy.Name());
+      wp->RefreshDisplay();
+    }    
 
-	int hdist;
-	int vdist;
-	int bearing;
-	bool inside;
-	TCHAR stmp[21];
-	
-	// Unfortunatelly virtual methods don't work on copied instances
-	// we have to ask airspacemanager to perform the required calculations
-	//inside = airspace_copy.CalculateDistance(&hdist, &bearing, &vdist);
-	//inside = CAirspaceManager::Instance().AirspaceCalculateDistance(msg.originator, &hdist, &bearing, &vdist);
-	bool distances_ready = airspace_copy.GetDistanceInfo(inside, hdist, bearing, vdist);
+    int hdist;
+    int vdist;
+    int bearing;
+    bool inside;
+    TCHAR stmp[21];
+    
+    // Unfortunatelly virtual methods don't work on copied instances
+    // we have to ask airspacemanager to perform the required calculations
+    //inside = airspace_copy.CalculateDistance(&hdist, &bearing, &vdist);
+    //inside = CAirspaceManager::Instance().AirspaceCalculateDistance(msg.originator, &hdist, &bearing, &vdist);
+    bool distances_ready = airspace_copy.GetDistanceInfo(inside, hdist, bearing, vdist);
 
-	wp = (WndProperty*)dlg->FindByName(TEXT("prpHDist"));
-	if (wp) {
-	  TCHAR stmp2[40];
-	  if (distances_ready) {
-		Units::FormatUserDistance((double)abs(hdist),stmp, 10);
-		if (hdist<0) {
-		  // LKTOKEN _@M1257_ "to leave"
-		  wsprintf(stmp2, TEXT("%s %s"), stmp, gettext(TEXT("_@M1257_")));
-		} else {
-		  // LKTOKEN _@M1258_ "to enter"
-		  wsprintf(stmp2,TEXT("%s %s"), stmp, gettext(TEXT("_@M1258_")));
-		}
-	  } else {
-		// no distance info calculated
-		// LKTOKEN _@M1259_ "Too far, not calculated"
-		wsprintf(stmp2,gettext(TEXT("_@M1259_")));
-	  }
-	  wp->SetText(stmp2);
-	  wp->RefreshDisplay();
-	}	
+    wp = (WndProperty*)dlg->FindByName(TEXT("prpHDist"));
+    if (wp) {
+      TCHAR stmp2[40];
+      if (distances_ready) {
+        Units::FormatUserDistance((double)abs(hdist),stmp, 10);
+        if (hdist<0) {
+          // LKTOKEN _@M1257_ "to leave"
+          wsprintf(stmp2, TEXT("%s %s"), stmp, gettext(TEXT("_@M1257_")));
+        } else {
+          // LKTOKEN _@M1258_ "to enter"
+          wsprintf(stmp2,TEXT("%s %s"), stmp, gettext(TEXT("_@M1258_")));
+        }
+      } else {
+        // no distance info calculated
+        // LKTOKEN _@M1259_ "Too far, not calculated"
+        wsprintf(stmp2,gettext(TEXT("_@M1259_")));
+      }
+      wp->SetText(stmp2);
+      wp->RefreshDisplay();
+    }    
 
-	wp = (WndProperty*)dlg->FindByName(TEXT("prpVDist"));
-	if (wp) {
-		TCHAR stmp2[40];
-	  if (distances_ready) {
-		Units::FormatUserAltitude((double)abs(vdist),stmp, 10);
-		if (vdist<0) {
-		  // LKTOKEN _@M1260_ "below"
-		  wsprintf(stmp2,TEXT("%s %s"), stmp, gettext(TEXT("_@M1260_")));
-		} else {
-		  // LKTOKEN _@M1261_ "above"
-		  wsprintf(stmp2,TEXT("%s %s"), stmp, gettext(TEXT("_@M1261_")));
-		}
-	  } else {
-		// no distance info calculated
-		// LKTOKEN _@M1259_ "Too far, not calculated"
-		wsprintf(stmp2,gettext(TEXT("_@M1259_")));
-	  }
-	  wp->SetText(stmp2);
-	  wp->RefreshDisplay();
-	}	
+    wp = (WndProperty*)dlg->FindByName(TEXT("prpVDist"));
+    if (wp) {
+        TCHAR stmp2[40];
+      if (distances_ready) {
+        Units::FormatUserAltitude((double)abs(vdist),stmp, 10);
+        if (vdist<0) {
+          // LKTOKEN _@M1260_ "below"
+          wsprintf(stmp2,TEXT("%s %s"), stmp, gettext(TEXT("_@M1260_")));
+        } else {
+          // LKTOKEN _@M1261_ "above"
+          wsprintf(stmp2,TEXT("%s %s"), stmp, gettext(TEXT("_@M1261_")));
+        }
+      } else {
+        // no distance info calculated
+        // LKTOKEN _@M1259_ "Too far, not calculated"
+        wsprintf(stmp2,gettext(TEXT("_@M1259_")));
+      }
+      wp->SetText(stmp2);
+      wp->RefreshDisplay();
+    }    
 
-	wp = (WndProperty*)dlg->FindByName(TEXT("prpTopAlt"));
-	if (wp) {
-	  TCHAR stmp2[40];
-	  CAirspaceManager::Instance().GetAirspaceAltText(stmp2, 40, airspace_copy.Top());
-	  wp->SetText(stmp2);
-	  wp->RefreshDisplay();
-	}	
+    wp = (WndProperty*)dlg->FindByName(TEXT("prpTopAlt"));
+    if (wp) {
+      TCHAR stmp2[40];
+      CAirspaceManager::Instance().GetAirspaceAltText(stmp2, 40, airspace_copy.Top());
+      wp->SetText(stmp2);
+      wp->RefreshDisplay();
+    }    
 
-	wp = (WndProperty*)dlg->FindByName(TEXT("prpBaseAlt"));
-	if (wp) {
-	  TCHAR stmp2[40];
-	  CAirspaceManager::Instance().GetAirspaceAltText(stmp2, 40, airspace_copy.Base());
-	  wp->SetText(stmp2);
-	  wp->RefreshDisplay();
-	}	
+    wp = (WndProperty*)dlg->FindByName(TEXT("prpBaseAlt"));
+    if (wp) {
+      TCHAR stmp2[40];
+      CAirspaceManager::Instance().GetAirspaceAltText(stmp2, 40, airspace_copy.Base());
+      wp->SetText(stmp2);
+      wp->RefreshDisplay();
+    }    
 
-	wb = (WndButton*)dlg->FindByName(TEXT("cmdClose"));
-	if (wb) {
-	  TCHAR stmp2[40];
-	  wsprintf(stmp2,TEXT("%s (%d)"), gettext(TEXT("_@M186_")), timer_counter);
-	  wb->SetCaption(stmp2);
-	}	
+    wb = (WndButton*)dlg->FindByName(TEXT("cmdClose"));
+    if (wb) {
+      TCHAR stmp2[40];
+      wsprintf(stmp2,TEXT("%s (%d)"), gettext(TEXT("_@M186_")), timer_counter);
+      wb->SetCaption(stmp2);
+    }    
 
 }
 
 // Called periodically to show new airspace warning messages to user
 void ShowAirspaceWarningsToUser()
 {
-  if (msg.originator != NULL) return;		// Dialog already open
+  if (msg.originator != NULL) return;        // Dialog already open
 
   bool there_is_message = CAirspaceManager::Instance().PopWarningMessage(&msg);
-  if (!there_is_message) return;		// no message to display
+  if (!there_is_message) return;        // no message to display
 
   airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(msg.originator);
 
@@ -321,71 +321,71 @@ void ShowAirspaceWarningsToUser()
 
   // which message we need to show?
   switch (msg.event) {
-	default:
-	  // normally not show
-	  DoStatusMessage(TEXT("Unknown airspace warning message"));
-	  break;	//Unknown msg type
+    default:
+      // normally not show
+      DoStatusMessage(TEXT("Unknown airspace warning message"));
+      break;    //Unknown msg type
 
-	case aweNone:
-	  break;
-	  
-	case awePredictedLeavingFly:
-	case aweNearOutsideFly:
-	case aweLeavingFly:
-	case awePredictedEnteringNonfly:
-	case aweNearInsideNonfly:
-	case aweEnteringNonfly:
-	case aweMovingInsideNonfly:
-	  ackdialog_required = true;
-	  break;
-	  
-	case aweEnteringFly:
-	  // LKTOKEN _@M1240_ "Entering"
-	  wsprintf(msgbuf, TEXT("%s %s"), gettext(TEXT("_@M1240_")), airspace_copy.Name());
-	  DoStatusMessage(msgbuf);
-	  break;
+    case aweNone:
+      break;
+      
+    case awePredictedLeavingFly:
+    case aweNearOutsideFly:
+    case aweLeavingFly:
+    case awePredictedEnteringNonfly:
+    case aweNearInsideNonfly:
+    case aweEnteringNonfly:
+    case aweMovingInsideNonfly:
+      ackdialog_required = true;
+      break;
+      
+    case aweEnteringFly:
+      // LKTOKEN _@M1240_ "Entering"
+      wsprintf(msgbuf, TEXT("%s %s"), gettext(TEXT("_@M1240_")), airspace_copy.Name());
+      DoStatusMessage(msgbuf);
+      break;
 
-	case aweLeavingNonFly:
-	  // LKTOKEN _@M1241_ "Leaving"
-	  wsprintf(msgbuf, TEXT("%s %s"), gettext(TEXT("_@M1241_")), airspace_copy.Name());
-	  DoStatusMessage(msgbuf);
-	  break;
-	  
+    case aweLeavingNonFly:
+      // LKTOKEN _@M1241_ "Leaving"
+      wsprintf(msgbuf, TEXT("%s %s"), gettext(TEXT("_@M1241_")), airspace_copy.Name());
+      DoStatusMessage(msgbuf);
+      break;
+      
   }
 
   // show dialog to user if needed
   if (ackdialog_required && (airspace_copy.WarningLevel() == msg.warnlevel)) {
-	if (!InfoBoxLayout::landscape)
-	  dlg = dlgLoadFromXML(CallBackTable, NULL, hWndMainWindow, TEXT("IDR_XML_LKAIRSPACEWARNING_L"));
-	else
-	  dlg = dlgLoadFromXML(CallBackTable, NULL, hWndMainWindow, TEXT("IDR_XML_LKAIRSPACEWARNING"));
+    if (!InfoBoxLayout::landscape)
+      dlg = dlgLoadFromXML(CallBackTable, NULL, hWndMainWindow, TEXT("IDR_XML_LKAIRSPACEWARNING_L"));
+    else
+      dlg = dlgLoadFromXML(CallBackTable, NULL, hWndMainWindow, TEXT("IDR_XML_LKAIRSPACEWARNING"));
 
-	if (dlg==NULL) {
-	  StartupStore(_T("------ LKAirspaceWarning setup FAILED!%s"),NEWLINE); //@ 101027
-	  return;
-	}
-	
-	dlg->SetKeyDownNotify(OnKeyDown);
+    if (dlg==NULL) {
+      StartupStore(_T("------ LKAirspaceWarning setup FAILED!%s"),NEWLINE); //@ 101027
+      return;
+    }
+    
+    dlg->SetKeyDownNotify(OnKeyDown);
     dlg->SetTimerNotify(OnTimer);
-	timer_counter = AirspaceWarningDlgTimeout;					// Auto closing dialog in x secs
+    timer_counter = AirspaceWarningDlgTimeout;                    // Auto closing dialog in x secs
 
-	WndButton *wb = (WndButton*)dlg->FindByName(TEXT("cmdAckForTime"));
-	if (wb) {
-	  TCHAR stmp2[40];
-	  wsprintf(stmp2,TEXT("%s (%ds)"), gettext(TEXT("_@M46_")), AcknowledgementTime);
-	  wb->SetCaption(stmp2);
-	}	
+    WndButton *wb = (WndButton*)dlg->FindByName(TEXT("cmdAckForTime"));
+    if (wb) {
+      TCHAR stmp2[40];
+      wsprintf(stmp2,TEXT("%s (%ds)"), gettext(TEXT("_@M46_")), AcknowledgementTime);
+      wb->SetCaption(stmp2);
+    }    
 
-	dlgLKAirspaceFill();
+    dlgLKAirspaceFill();
 
-	#ifndef DISABLEAUDIO
-	if (EnableSoundModes) LKSound(_T("LK_AIRSPACE.WAV")); // 100819
-	#endif
+    #ifndef DISABLEAUDIO
+    if (EnableSoundModes) LKSound(_T("LK_AIRSPACE.WAV")); // 100819
+    #endif
 
-	dlg->ShowModal();
+    dlg->ShowModal();
 
-	delete dlg;
-	dlg = NULL;
+    delete dlg;
+    dlg = NULL;
   }
   
   msg.originator = NULL;

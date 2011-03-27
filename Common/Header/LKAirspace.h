@@ -39,22 +39,22 @@ typedef std::vector<POINT> POINTList;
 typedef enum {awNone=0, awYellow, awRed, awDailyAck} AirspaceWarningLevel_t;
 //Airspace warning events
 typedef enum { aweNone, 
-				//for FLY zones
-				aweMovingInsideFly,
-				awePredictedLeavingFly,
-				aweLeavingFly,
-				awePredictedEnteringFly,
-				aweEnteringFly,
-				aweMovingOutsideFly,
-				aweNearOutsideFly,
+                //for FLY zones
+                aweMovingInsideFly,
+                awePredictedLeavingFly,
+                aweLeavingFly,
+                awePredictedEnteringFly,
+                aweEnteringFly,
+                aweMovingOutsideFly,
+                aweNearOutsideFly,
 
-				//for NON-FLY zones
-				aweMovingOutsideNonfly,
-				awePredictedEnteringNonfly,
-				aweEnteringNonfly,
-				aweMovingInsideNonfly,
-				aweLeavingNonFly,
-				aweNearInsideNonfly
+                //for NON-FLY zones
+                aweMovingOutsideNonfly,
+                awePredictedEnteringNonfly,
+                aweEnteringNonfly,
+                aweMovingInsideNonfly,
+                aweLeavingNonFly,
+                aweNearInsideNonfly
 } AirspaceWarningEvent;
 //Airspace drawstyles
 typedef enum {adsHidden, adsOutline, adsFilled } AirspaceDrawStyle_t;
@@ -68,34 +68,34 @@ class CAirspace
 {
 public:
   CAirspace() :
-			_name(),
-			_type( 0 ),
-			_base(),
-			_top(),
-			_bounds(),
-			_flyzone(false),
-			_drawstyle(adsHidden),
-			_warninglevel(awNone),
-			_warninglevelold(awNone),
-			_warningacklevel(awNone),
-			_pos_inside_last(false),
-			_pos_inside_now(false),
-			_warnevent(aweNone),
-			_warneventold(aweNone),
-			_warnacktimeout(0),
-			_distances_ready(false),
-			_vdistance(0),
-			_hdistance(0),
-			_bearing(0),
-			_labelpriority(0)
-			{}
+            _name(),
+            _type( 0 ),
+            _base(),
+            _top(),
+            _bounds(),
+            _flyzone(false),
+            _drawstyle(adsHidden),
+            _warninglevel(awNone),
+            _warninglevelold(awNone),
+            _warningacklevel(awNone),
+            _pos_inside_last(false),
+            _pos_inside_now(false),
+            _warnevent(aweNone),
+            _warneventold(aweNone),
+            _warnacktimeout(0),
+            _distances_ready(false),
+            _vdistance(0),
+            _hdistance(0),
+            _bearing(0),
+            _labelpriority(0)
+            {}
   virtual ~CAirspace() {}
 
 
   // Check if a point horizontally inside in this airspace
   virtual bool IsHorizontalInside(const double &longitude, const double &latitude) const { return false; }
   // Check if an altitude vertically inside in this airspace
-		  bool IsAltitudeInside(int alt, int agl, int extension=0) const;
+          bool IsAltitudeInside(int alt, int agl, int extension=0) const;
   // Set polygon points
   virtual void SetPoints(CPoint2DArray &area_points) {}
   // Dump this airspace to runtime.log
@@ -132,7 +132,7 @@ public:
   // Attributes interface
   // Initialize instance attributes
   void Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone) 
-	  { _tcsncpy(_name, name, NAME_SIZE); _type = type; memcpy(&_base, &base, sizeof(_base)); memcpy(&_top, &top, sizeof(_top)); _flyzone = flyzone;}
+      { _tcsncpy(_name, name, NAME_SIZE); _type = type; memcpy(&_base, &base, sizeof(_base)); memcpy(&_top, &top, sizeof(_top)); _flyzone = flyzone;}
 
   const TCHAR* Name() const { return _name; }
   const AIRSPACE_ALT* Top() const { return &_top; }
@@ -142,8 +142,8 @@ public:
   void FlyzoneToggle() { _flyzone = !_flyzone; }
   int LabelPriority() const { return _labelpriority; }
   // Label priority sequencing
-  void LabelPriorityInc() { if (_labelpriority<10) ++_labelpriority; }		// Increase priority
-  void LabelPriorityZero() { _labelpriority=0; }							// Zero priority
+  void LabelPriorityInc() { if (_labelpriority<10) ++_labelpriority; }        // Increase priority
+  void LabelPriorityZero() { _labelpriority=0; }                            // Zero priority
   
   AirspaceDrawStyle_t DrawStyle() const { return _drawstyle; }
   void DrawStyle(AirspaceDrawStyle_t drawstyle) { _drawstyle = drawstyle; } 
@@ -166,47 +166,47 @@ public:
 
 
 protected:
-  TCHAR _name[NAME_SIZE + 1];					// Name
-  int _type;									// type (class) of airspace
-  AIRSPACE_ALT _base;							// base altitude
-  AIRSPACE_ALT _top;							// top altitude
-  rectObj _bounds;								// airspace bounds
-  bool _flyzone;								// true if this is a normally fly zone (leaving generates warning)
-  AirspaceDrawStyle_t _drawstyle;				// draw mode
+  TCHAR _name[NAME_SIZE + 1];                    // Name
+  int _type;                                    // type (class) of airspace
+  AIRSPACE_ALT _base;                            // base altitude
+  AIRSPACE_ALT _top;                            // top altitude
+  rectObj _bounds;                                // airspace bounds
+  bool _flyzone;                                // true if this is a normally fly zone (leaving generates warning)
+  AirspaceDrawStyle_t _drawstyle;                // draw mode
   
   // Warning system data
-  int _warn_repeat_time;  						// time when repeat warning message if not acked
-  AirspaceWarningLevel_t _warninglevel;			// actual warning level
-  AirspaceWarningLevel_t _warninglevelold;		// warning level in last cycle
-  AirspaceWarningLevel_t _warningacklevel;		// actual ack level
-  bool _pos_inside_last;						// last horizontal inside saved for calculations
-  bool _pos_inside_now;							// inside now  saved for calculations
-  AirspaceWarningEvent _warnevent;				// calculated warning event
-  AirspaceWarningEvent _warneventold;			// last calculated warning event
-  int _warnacktimeout;							// ack expiring time
+  int _warn_repeat_time;                          // time when repeat warning message if not acked
+  AirspaceWarningLevel_t _warninglevel;            // actual warning level
+  AirspaceWarningLevel_t _warninglevelold;        // warning level in last cycle
+  AirspaceWarningLevel_t _warningacklevel;        // actual ack level
+  bool _pos_inside_last;                        // last horizontal inside saved for calculations
+  bool _pos_inside_now;                            // inside now  saved for calculations
+  AirspaceWarningEvent _warnevent;                // calculated warning event
+  AirspaceWarningEvent _warneventold;            // last calculated warning event
+  int _warnacktimeout;                            // ack expiring time
   // Values used by different dialog boxes, like dlgLKAirspace, dlgAirspace, and warning system also
-  bool _distances_ready;		// Distances calculated on this airspace
-  int _vdistance;				// vertical distance to actual position
-  int _hdistance;				// horizontal distance to actual position
-  int _bearing;					// bearing from actual position
-  short int _labelpriority;			// warning label drawing priority to sequence labels on map
+  bool _distances_ready;        // Distances calculated on this airspace
+  int _vdistance;                // vertical distance to actual position
+  int _hdistance;                // horizontal distance to actual position
+  int _bearing;                    // bearing from actual position
+  short int _labelpriority;            // warning label drawing priority to sequence labels on map
   
   // Private functions
   void AirspaceAGLLookup(double av_lat, double av_lon);
 
   // Class attributes
-  static int _nearesthdistance;				// collecting horizontal distance to infobox
-  static int _nearestvdistance;				// collecting vertical distance to infobox
-  static TCHAR *_nearestname;				// collecting nearest name to infobox
-  static bool _pos_in_flyzone;				// for flyzone warning refining
-  static bool _pred_in_flyzone;				// for flyzone warning refining
-  static bool _pos_in_acked_nonfly_zone;	// for flyzone warning refining
-  static bool _pred_in_acked_nonfly_zone;	// for flyzone warning refining
-  static int _now;							// recent time
-  static int _hdistancemargin;				// used horizontal distance margin
-  static CPoint2D _lastknownpos;			// last known position saved for calculations
-  static int _lastknownalt;					// last known alt saved for calculations
-  static int _lastknownagl;					// last known agl saved for calculations
+  static int _nearesthdistance;                // collecting horizontal distance to infobox
+  static int _nearestvdistance;                // collecting vertical distance to infobox
+  static TCHAR *_nearestname;                // collecting nearest name to infobox
+  static bool _pos_in_flyzone;                // for flyzone warning refining
+  static bool _pred_in_flyzone;                // for flyzone warning refining
+  static bool _pos_in_acked_nonfly_zone;    // for flyzone warning refining
+  static bool _pred_in_acked_nonfly_zone;    // for flyzone warning refining
+  static int _now;                            // recent time
+  static int _hdistancemargin;                // used horizontal distance margin
+  static CPoint2D _lastknownpos;            // last known position saved for calculations
+  static int _lastknownalt;                    // last known alt saved for calculations
+  static int _lastknownagl;                    // last known agl saved for calculations
 
 };
 
@@ -232,8 +232,8 @@ public:
   virtual double Range(const double &longitude, const double &latitude, double &bearing) const;
 
 private:
-  CPoint2DArray _geopoints;		// polygon points
-  POINTList _screenpoints;		// screen coordinates
+  CPoint2DArray _geopoints;        // polygon points
+  POINTList _screenpoints;        // screen coordinates
   
   // Winding number calculation to check a point is horizontally inside polygon
   int wn_PnPoly( const double &longitude, const double &latitude ) const;
@@ -262,11 +262,11 @@ public:
   virtual double Range(const double &longitude, const double &latitude, double &bearing) const;
   
 private:
-  POINT _screencenter;		// center point in screen coordinates
-  int _screenradius;		// radius in screen coordinates
-  double _latcenter;		// center point latitude
-  double _loncenter;		// center point longitude
-  double _radius;			// radius
+  POINT _screencenter;        // center point in screen coordinates
+  int _screenradius;        // radius in screen coordinates
+  double _latcenter;        // center point latitude
+  double _loncenter;        // center point longitude
+  double _radius;            // radius
   
   // Bound calculation helper function
   void ScanCircleBounds(double bearing);
@@ -282,9 +282,9 @@ typedef std::deque<CAirspace*> CAirspaceList;
 //Warning system generated message
 typedef struct _AirspaceWarningMessage
 {
-  CAirspace *originator;				// airspace instance
-  AirspaceWarningEvent event;			// message cause
-  AirspaceWarningLevel_t warnlevel;		// warning level
+  CAirspace *originator;                // airspace instance
+  AirspaceWarningEvent event;            // message cause
+  AirspaceWarningLevel_t warnlevel;        // warning level
 } AirspaceWarningMessage;
 // Warning message queue
 typedef std::deque<AirspaceWarningMessage> AirspaceWarningMessageList;
@@ -308,9 +308,9 @@ public:
   void CloseAirspaces();
   void QnhChangeNotify(const double &newQNH);
   void ScanAirspaceLine(double lats[], double lons[], double heights[], 
-		      int airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) const;
+              int airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) const;
   CAirspace* FindNearestAirspace(const double &longitude, const double &latitude,
-			 double *nearestdistance, double *nearestbearing, double *height = NULL) const;
+             double *nearestdistance, double *nearestbearing, double *height = NULL) const;
   void SortAirspaces(void);
   bool ValidAirspaces(void) const;
 
@@ -353,12 +353,12 @@ private:
   
   // Airspaces data
   mutable CCriticalSection _csairspaces;
-  CAirspaceList _airspaces;			//ALL
-  CAirspaceList _airspaces_near;	//Near
+  CAirspaceList _airspaces;            //ALL
+  CAirspaceList _airspaces_near;    //Near
   
   // Warning system data
   // User warning message queue
-  AirspaceWarningMessageList _user_warning_queue;				// warnings to show
+  AirspaceWarningMessageList _user_warning_queue;                // warnings to show
   CAirspaceList _airspaces_of_interest;
   
   //Openair parsing functions, internal use
@@ -381,7 +381,7 @@ int dlgAirspaceWarningDeInit(void);
 void ShowAirspaceWarningsToUser();
 
 void ScreenClosestPoint(const POINT &p1, const POINT &p2, 
- 			const POINT &p3, POINT *p4, int offset);
+             const POINT &p3, POINT *p4, int offset);
 
 
 #endif /* LKAIRSPACE */

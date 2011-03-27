@@ -23,34 +23,34 @@ using std::max;
 
 static const int k_nAreaCount = 13;
 static const TCHAR* k_strAreaStart[k_nAreaCount] = {
-					_T("R"),  
-					_T("Q"), 
-					_T("P"), 
-					_T("CTR"),
-					_T("A"), 
-					_T("B"), 
-					_T("C"), 
-					_T("D"), 
-					_T("GP"), 
-					_T("W"), 
-					_T("E"), 
-					_T("F"),
-					_T("G")
+                    _T("R"),  
+                    _T("Q"), 
+                    _T("P"), 
+                    _T("CTR"),
+                    _T("A"), 
+                    _T("B"), 
+                    _T("C"), 
+                    _T("D"), 
+                    _T("GP"), 
+                    _T("W"), 
+                    _T("E"), 
+                    _T("F"),
+                    _T("G")
 };
 static const int k_nAreaType[k_nAreaCount] = {
-					RESTRICT, 
-					DANGER, 
-					PROHIBITED, 
-					CTR,
-					CLASSA, 
-					CLASSB, 
-					CLASSC, 
-					CLASSD, 
-					NOGLIDER, 
-					WAVE, 
-					CLASSE, 
-					CLASSF,
-					CLASSG};
+                    RESTRICT, 
+                    DANGER, 
+                    PROHIBITED, 
+                    CTR,
+                    CLASSA, 
+                    CLASSB, 
+                    CLASSC, 
+                    CLASSD, 
+                    NOGLIDER, 
+                    WAVE, 
+                    CLASSE, 
+                    CLASSF,
+                    CLASSG};
 
 
 //for Draw()
@@ -61,18 +61,18 @@ extern void ClipPolygon(HDC hdc, POINT *ptin, unsigned int n,
 CAirspaceManager CAirspaceManager::_instance = CAirspaceManager(CAirspaceManager::_instance);
 
 // CAirspace class attributes
-int CAirspace::_nearesthdistance = 0;			// for infobox
-int CAirspace::_nearestvdistance = 0;			// for infobox
-TCHAR* CAirspace::_nearestname = NULL;			// for infobox
-bool CAirspace::_pos_in_flyzone = false;		// for refine warnings in flyzones
-bool CAirspace::_pred_in_flyzone = false;		// for refine warnings in flyzones
-bool CAirspace::_pos_in_acked_nonfly_zone = false;		// for refine warnings in flyzones
-bool CAirspace::_pred_in_acked_nonfly_zone = false;		// for refine warnings in flyzones
-int CAirspace::_now = 0;						// gps time saved
-int CAirspace::_hdistancemargin = 0;			// calculated horizontal distance margin to use
-CPoint2D CAirspace::_lastknownpos(0,0);				// last known position saved for calculations
-int CAirspace::_lastknownalt = 0;				// last known alt saved for calculations
-int CAirspace::_lastknownagl = 0;				// last known agl saved for calculations
+int CAirspace::_nearesthdistance = 0;            // for infobox
+int CAirspace::_nearestvdistance = 0;            // for infobox
+TCHAR* CAirspace::_nearestname = NULL;            // for infobox
+bool CAirspace::_pos_in_flyzone = false;        // for refine warnings in flyzones
+bool CAirspace::_pred_in_flyzone = false;        // for refine warnings in flyzones
+bool CAirspace::_pos_in_acked_nonfly_zone = false;        // for refine warnings in flyzones
+bool CAirspace::_pred_in_acked_nonfly_zone = false;        // for refine warnings in flyzones
+int CAirspace::_now = 0;                        // gps time saved
+int CAirspace::_hdistancemargin = 0;            // calculated horizontal distance margin to use
+CPoint2D CAirspace::_lastknownpos(0,0);                // last known position saved for calculations
+int CAirspace::_lastknownalt = 0;                // last known alt saved for calculations
+int CAirspace::_lastknownagl = 0;                // last known agl saved for calculations
 
 
 //
@@ -106,24 +106,24 @@ void CAirspace::AirspaceAGLLookup(double av_lat, double av_lon)
     RasterTerrain::SetTerrainRounding(0,0);
     double th = RasterTerrain::GetTerrainHeight(av_lat, av_lon);
 
-	if (th==TERRAIN_INVALID) th=0; //@ 101027 FIX
+    if (th==TERRAIN_INVALID) th=0; //@ 101027 FIX
     
     if (_base.Base == abAGL) {
       if (_base.AGL>=0) {
-		_base.Altitude = _base.AGL+th;
+        _base.Altitude = _base.AGL+th;
       } else {
-		// surface, set to zero
-		_base.AGL = 0;
-		_base.Altitude = 0;
+        // surface, set to zero
+        _base.AGL = 0;
+        _base.Altitude = 0;
       }
     }
     if (_top.Base == abAGL) {
       if (_top.AGL>=0) {
-		_top.Altitude = _top.AGL+th;
+        _top.Altitude = _top.AGL+th;
       } else {
-		// surface, set to zero
-		_top.AGL = 0;
-		_top.Altitude = 0;
+        // surface, set to zero
+        _top.AGL = 0;
+        _top.Altitude = 0;
       }
     }
     // 101027 We still use 0 altitude for no terrain, what else can we do..
@@ -153,10 +153,10 @@ inline bool CheckInsideLongitude(const double &longitude, const double &lon_min,
 bool CAirspace::IsAltitudeInside(int alt, int agl, int extension) const
 {
   return (
-	  ((((_base.Base != abAGL) && ( alt >= (_base.Altitude - extension)))
-		|| ((_base.Base == abAGL) && ( agl >= (_base.AGL - extension)))))
-	  && ((((_top.Base != abAGL) && (alt < (_top.Altitude + extension))))
-		|| ((_top.Base == abAGL) && (agl < (_top.AGL + extension))))
+      ((((_base.Base != abAGL) && ( alt >= (_base.Altitude - extension)))
+        || ((_base.Base == abAGL) && ( agl >= (_base.AGL - extension)))))
+      && ((((_top.Base != abAGL) && (alt < (_top.Altitude + extension))))
+        || ((_top.Base == abAGL) && (agl < (_top.AGL + extension))))
   );
 }
 
@@ -182,7 +182,7 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
     _lastknownalt = (int)Basic->Altitude;
   }
   _lastknownagl = (int)Calculated->AltitudeAGL;
-  if (_lastknownagl < 0) _lastknownagl = 0;			// Limit agl to zero
+  if (_lastknownagl < 0) _lastknownagl = 0;            // Limit agl to zero
   CPoint2D position_now(Basic->Latitude, Basic->Longitude);
   _lastknownpos = position_now;
 
@@ -208,12 +208,12 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     alt = (int)Basic->Altitude;
   }
   agl = (int)Calculated->AltitudeAGL;
-  if (agl<0) agl = 0;		// Limit actual altitude to surface to not get warnings if close to ground
+  if (agl<0) agl = 0;        // Limit actual altitude to surface to not get warnings if close to ground
 
   // Calculate distances
   CalculateDistance(NULL,NULL,NULL);
   if ( _hdistance <= 0 ) {
-	_pos_inside_now = true;
+    _pos_inside_now = true;
   }
   // Check for altitude
   bool pos_altitude = IsAltitudeInside(alt, agl);
@@ -221,99 +221,99 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   // TODO Until we have one infobox, we have to collect nearest distance values differently!
   if (_flyzone && _pos_inside_now) {
-	// If in flyzone, nearest warning point given (nearest distance to leaving the fly zone)
-	if ( abs(_hdistance) < abs(_nearesthdistance) ) {
-	  _nearestname = _name;
-	  _nearesthdistance = abs(_hdistance);
-	  // not used now _nearestvdistance = _vdistance;
-	}
+    // If in flyzone, nearest warning point given (nearest distance to leaving the fly zone)
+    if ( abs(_hdistance) < abs(_nearesthdistance) ) {
+      _nearestname = _name;
+      _nearesthdistance = abs(_hdistance);
+      // not used now _nearestvdistance = _vdistance;
+    }
   }
   if (!_flyzone && !_pos_inside_now) {
-	// If outdise nofly zone, then nearest distance selected
-	if ( (abs(_hdistance) < abs(_nearesthdistance)) ) {
-	  _nearestname = _name;
-	  _nearesthdistance = abs(_hdistance);
-	  // not used now _nearestvdistance = _vdistance;
-	}
+    // If outdise nofly zone, then nearest distance selected
+    if ( (abs(_hdistance) < abs(_nearesthdistance)) ) {
+      _nearestname = _name;
+      _nearesthdistance = abs(_hdistance);
+      // not used now _nearestvdistance = _vdistance;
+    }
   }
   
   // We have to calculate with the predicted position
   bool pred_inside_now = false;
   alt = (int)Calculated->NextAltitude;
   agl = (int)Calculated->NextAltitudeAGL;
-  if (agl<0) agl = 0;		// Limit predicted agl to surface
+  if (agl<0) agl = 0;        // Limit predicted agl to surface
   // Check for altitude
   pos_altitude = IsAltitudeInside(alt, agl);
   if (pos_altitude) pred_inside_now = IsHorizontalInside(Calculated->NextLongitude, Calculated->NextLatitude);
 
   if (_flyzone) {
-	// FLY-ZONE
-	if (pred_inside_now) _pred_in_flyzone = true;
-	if (_pos_inside_now) {
-	  _pos_in_flyzone = true;
-	  if (_pos_inside_last) {
-		if (pred_inside_now) {
-		  // FLY-ZONE _pos_inside_last = true, _pos_inside_now = true, _pred_inside_now = true
-		  // moving inside -> normal, no warning event
-		  _warnevent = aweMovingInsideFly;
-		} else {
-		  // FLY-ZONE _pos_inside_last = true, _pos_inside_now = true, _pred_inside_now = false
-		  // predicted leaving, yellow warning
-		  _warnevent = awePredictedLeavingFly;
-		}
-	  } else {
-		// FLY-ZONE _pos_inside_last = false, _pos_inside_now = true, _pred_inside_now = X
-		// Entering, generate info msg
-		_warnevent = aweEnteringFly;
-	  }
-	} else {
-	  if (_pos_inside_last) {
-		// FLY-ZONE _pos_inside_last = true, _pos_inside_now = false, _pred_inside_now = X
-		// leaving, red warning
-		_warnevent = aweLeavingFly;
-	  } else {
-		if (pred_inside_now) {
-		  // FLY-ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = true
-		  // predicted enter
-		  _warnevent = awePredictedEnteringFly;
-		} else {
-		  // FLY-ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = true
-		  // moving outside
-		  _warnevent = aweMovingOutsideFly;
-		}
-	  }
-	}
+    // FLY-ZONE
+    if (pred_inside_now) _pred_in_flyzone = true;
+    if (_pos_inside_now) {
+      _pos_in_flyzone = true;
+      if (_pos_inside_last) {
+        if (pred_inside_now) {
+          // FLY-ZONE _pos_inside_last = true, _pos_inside_now = true, _pred_inside_now = true
+          // moving inside -> normal, no warning event
+          _warnevent = aweMovingInsideFly;
+        } else {
+          // FLY-ZONE _pos_inside_last = true, _pos_inside_now = true, _pred_inside_now = false
+          // predicted leaving, yellow warning
+          _warnevent = awePredictedLeavingFly;
+        }
+      } else {
+        // FLY-ZONE _pos_inside_last = false, _pos_inside_now = true, _pred_inside_now = X
+        // Entering, generate info msg
+        _warnevent = aweEnteringFly;
+      }
+    } else {
+      if (_pos_inside_last) {
+        // FLY-ZONE _pos_inside_last = true, _pos_inside_now = false, _pred_inside_now = X
+        // leaving, red warning
+        _warnevent = aweLeavingFly;
+      } else {
+        if (pred_inside_now) {
+          // FLY-ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = true
+          // predicted enter
+          _warnevent = awePredictedEnteringFly;
+        } else {
+          // FLY-ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = true
+          // moving outside
+          _warnevent = aweMovingOutsideFly;
+        }
+      }
+    }
   } else {
-	// Default NON-FLY ZONE
-	if (pred_inside_now && (_warningacklevel > awNone)) _pred_in_acked_nonfly_zone = true;
-	if (_pos_inside_now) {
-  	  if (_warningacklevel > awNone) _pos_in_acked_nonfly_zone = true;
-	  if (_pos_inside_last) {
-		//  NON-FLY ZONE _pos_inside_last = true, _pos_inside_now = true, _pred_inside_now = X
-		// Moving indside or predicted leaving, nothing to do
-		_warnevent = aweMovingInsideNonfly;
-	  } else {
-		// NON-FLY ZONE _pos_inside_last = false, _pos_inside_now = true, _pred_inside_now = X
-		// Entering, set warnlevel
-		_warnevent = aweEnteringNonfly;
-	  }
-	} else {
-	  if (_pos_inside_last) {
-		// NON-FLY ZONE _pos_inside_last = true, _pos_inside_now = false, _pred_inside_now = X
-		// leaving, or leaving and then predicted entry? -> nothing to do
-		_warnevent = aweLeavingNonFly;
-	  } else {
-		if (pred_inside_now) {
-		  // NON-FLY ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = true
-		  // predicted enter
-		  _warnevent = awePredictedEnteringNonfly;
-		} else {
-		  // NON-FLY ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = false
-		  // moving outside
-		  _warnevent = aweMovingOutsideNonfly;
-		}
-	  }
-	}
+    // Default NON-FLY ZONE
+    if (pred_inside_now && (_warningacklevel > awNone)) _pred_in_acked_nonfly_zone = true;
+    if (_pos_inside_now) {
+        if (_warningacklevel > awNone) _pos_in_acked_nonfly_zone = true;
+      if (_pos_inside_last) {
+        //  NON-FLY ZONE _pos_inside_last = true, _pos_inside_now = true, _pred_inside_now = X
+        // Moving indside or predicted leaving, nothing to do
+        _warnevent = aweMovingInsideNonfly;
+      } else {
+        // NON-FLY ZONE _pos_inside_last = false, _pos_inside_now = true, _pred_inside_now = X
+        // Entering, set warnlevel
+        _warnevent = aweEnteringNonfly;
+      }
+    } else {
+      if (_pos_inside_last) {
+        // NON-FLY ZONE _pos_inside_last = true, _pos_inside_now = false, _pred_inside_now = X
+        // leaving, or leaving and then predicted entry? -> nothing to do
+        _warnevent = aweLeavingNonFly;
+      } else {
+        if (pred_inside_now) {
+          // NON-FLY ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = true
+          // predicted enter
+          _warnevent = awePredictedEnteringNonfly;
+        } else {
+          // NON-FLY ZONE _pos_inside_last = false, _pos_inside_now = false, _pred_inside_now = false
+          // moving outside
+          _warnevent = aweMovingOutsideNonfly;
+        }
+      }
+    }
   }//if else flyzone
 
   _pos_inside_last = _pos_inside_now;
@@ -323,141 +323,141 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 // returns true if a warning message has to be printed
 bool CAirspace::FinishWarning()
 {
-	bool res = false;
-	int abs_hdistance = abs(_hdistance);
-	int abs_vdistance = abs(_vdistance);
-	int hdistance_histeresis = 500;			// Horizontal distance histeresis to step back awNone
-	int vdistance_histeresis = 20;			// Vertical distance histeresis to step back awNone
-	int hdistance_lookout = 200;			// Horizontal distance to lookout from a flyzone to check what is outside
-	
-	//Calculate warning state based on airspace warning events
-	switch (_warnevent) {
-	  default:
-		break;
+    bool res = false;
+    int abs_hdistance = abs(_hdistance);
+    int abs_vdistance = abs(_vdistance);
+    int hdistance_histeresis = 500;            // Horizontal distance histeresis to step back awNone
+    int vdistance_histeresis = 20;            // Vertical distance histeresis to step back awNone
+    int hdistance_lookout = 200;            // Horizontal distance to lookout from a flyzone to check what is outside
+    
+    //Calculate warning state based on airspace warning events
+    switch (_warnevent) {
+      default:
+        break;
 
-	  // Events for FLY zones
-	  case aweMovingInsideFly:
-		// If far away from border, set warnlevel to none
-		// If base is sfc, we skip near warnings to base, to not get disturbing messages on landing.
-		if ( (abs_hdistance>(_hdistancemargin+hdistance_histeresis)) && 
-			 (abs_vdistance>(AirspaceWarningVerticalMargin+vdistance_histeresis)) 
-		   ) {
-		  // Far away horizontally _and_ vertically
-		  _warninglevel = awNone;
-		  break;
-		} 
-		if ( (abs_hdistance<_hdistancemargin) || 
-			 (abs_vdistance<AirspaceWarningVerticalMargin) 
-		   ) {
-		  // Check what is outside this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
-		  double lon = 0;
-		  double lat =0;
-		  double dist = fabs(_hdistance) + hdistance_lookout;
-		  FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &lat, &lon);
-		  
-		  if ( !CAirspaceManager::Instance().AirspaceWarningIsGoodPosition(lon, lat, _lastknownalt, _lastknownagl) ) {
-			// Near to outside, modify warnevent to inform user
-			_warninglevel = awYellow;
-			_warnevent = aweNearOutsideFly;
-		  }
-		}
-		break;
-		
-	  case awePredictedLeavingFly:
-		if ( !(_pred_in_flyzone || _pred_in_acked_nonfly_zone) ) {
-			  // if predicted position not in other fly or acked nonfly zone, then leaving this one should be wrong
-			  _warninglevel = awYellow;
-		}
-		break;
-		
-	  case aweLeavingFly:
-		if ( !(_pos_in_flyzone || _pos_in_acked_nonfly_zone) ) {
-			  // if current position not in other fly or acked nonfly zone, then leaving this one should be wrong
-			  _warninglevel = awRed;
-		}
-		break;
-		
-	  case awePredictedEnteringFly:
-		break;
-		
-	  case aweEnteringFly:
-		// Also preset warnlevel to awYellow, because we entering yellow zone. 
-		// but we don't need to generate a warning message right now - force no change in warnlevel
-		if (1) {
-		  // Check what is outside this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
-		  double lon = 0;
-		  double lat =0;
-		  double dist = fabs(_hdistance) + hdistance_lookout;
-		  FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &lat, &lon);
-		  
-		  if ( !CAirspaceManager::Instance().AirspaceWarningIsGoodPosition(lon, lat, _lastknownalt, _lastknownagl) ) {
-			_warninglevelold = _warninglevel = awYellow;		  
-		  }
-		}
-		// Do info message on entering a fly zone
-		res = true;
-		break;
-		
-	  case aweMovingOutsideFly:
-		// if outside, but in good zone, then this one is good as well
-		if ( (_pos_in_flyzone || _pos_in_acked_nonfly_zone) ) _warninglevel = awNone;
-		break;
+      // Events for FLY zones
+      case aweMovingInsideFly:
+        // If far away from border, set warnlevel to none
+        // If base is sfc, we skip near warnings to base, to not get disturbing messages on landing.
+        if ( (abs_hdistance>(_hdistancemargin+hdistance_histeresis)) && 
+             (abs_vdistance>(AirspaceWarningVerticalMargin+vdistance_histeresis)) 
+           ) {
+          // Far away horizontally _and_ vertically
+          _warninglevel = awNone;
+          break;
+        } 
+        if ( (abs_hdistance<_hdistancemargin) || 
+             (abs_vdistance<AirspaceWarningVerticalMargin) 
+           ) {
+          // Check what is outside this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
+          double lon = 0;
+          double lat =0;
+          double dist = fabs(_hdistance) + hdistance_lookout;
+          FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &lat, &lon);
+          
+          if ( !CAirspaceManager::Instance().AirspaceWarningIsGoodPosition(lon, lat, _lastknownalt, _lastknownagl) ) {
+            // Near to outside, modify warnevent to inform user
+            _warninglevel = awYellow;
+            _warnevent = aweNearOutsideFly;
+          }
+        }
+        break;
+        
+      case awePredictedLeavingFly:
+        if ( !(_pred_in_flyzone || _pred_in_acked_nonfly_zone) ) {
+              // if predicted position not in other fly or acked nonfly zone, then leaving this one should be wrong
+              _warninglevel = awYellow;
+        }
+        break;
+        
+      case aweLeavingFly:
+        if ( !(_pos_in_flyzone || _pos_in_acked_nonfly_zone) ) {
+              // if current position not in other fly or acked nonfly zone, then leaving this one should be wrong
+              _warninglevel = awRed;
+        }
+        break;
+        
+      case awePredictedEnteringFly:
+        break;
+        
+      case aweEnteringFly:
+        // Also preset warnlevel to awYellow, because we entering yellow zone. 
+        // but we don't need to generate a warning message right now - force no change in warnlevel
+        if (1) {
+          // Check what is outside this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
+          double lon = 0;
+          double lat =0;
+          double dist = fabs(_hdistance) + hdistance_lookout;
+          FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &lat, &lon);
+          
+          if ( !CAirspaceManager::Instance().AirspaceWarningIsGoodPosition(lon, lat, _lastknownalt, _lastknownagl) ) {
+            _warninglevelold = _warninglevel = awYellow;          
+          }
+        }
+        // Do info message on entering a fly zone
+        res = true;
+        break;
+        
+      case aweMovingOutsideFly:
+        // if outside, but in good zone, then this one is good as well
+        if ( (_pos_in_flyzone || _pos_in_acked_nonfly_zone) ) _warninglevel = awNone;
+        break;
 
-		
-	  // Events for NON-FLY zones
-	  case aweMovingOutsideNonfly:
-		if ( (abs_hdistance > (_hdistancemargin + hdistance_histeresis)) ||
-		     (!IsAltitudeInside(_lastknownalt, _lastknownagl, AirspaceWarningVerticalMargin + vdistance_histeresis))
-		  ) {
-			// Far away horizontally _or_ vertically
-			_warninglevel = awNone;
-		}
-		if ( _hdistance < _hdistancemargin ) {
-		  if (IsAltitudeInside(_lastknownalt, _lastknownagl, AirspaceWarningVerticalMargin)) {
-			// Near to inside, modify warnevent to inform user
-			_warninglevel = awYellow;
-			_warnevent = aweNearInsideNonfly;
-		  }
-		}
-		break;
-		
-	  case awePredictedEnteringNonfly:
-		_warninglevel = awYellow;
-		break;
-		
-	  case aweEnteringNonfly:
-		_warninglevel = awRed;
-		break;
+        
+      // Events for NON-FLY zones
+      case aweMovingOutsideNonfly:
+        if ( (abs_hdistance > (_hdistancemargin + hdistance_histeresis)) ||
+             (!IsAltitudeInside(_lastknownalt, _lastknownagl, AirspaceWarningVerticalMargin + vdistance_histeresis))
+          ) {
+            // Far away horizontally _or_ vertically
+            _warninglevel = awNone;
+        }
+        if ( _hdistance < _hdistancemargin ) {
+          if (IsAltitudeInside(_lastknownalt, _lastknownagl, AirspaceWarningVerticalMargin)) {
+            // Near to inside, modify warnevent to inform user
+            _warninglevel = awYellow;
+            _warnevent = aweNearInsideNonfly;
+          }
+        }
+        break;
+        
+      case awePredictedEnteringNonfly:
+        _warninglevel = awYellow;
+        break;
+        
+      case aweEnteringNonfly:
+        _warninglevel = awRed;
+        break;
 
-	  case aweMovingInsideNonfly:
-		_warninglevel = awRed;
-		break;
-		
-	  case aweLeavingNonFly:
-		// Do info message on leaving a nonfly zone
-		res = true;
-		break;
-	}//sw warnevent
-	_warneventold = _warnevent;
+      case aweMovingInsideNonfly:
+        _warninglevel = awRed;
+        break;
+        
+      case aweLeavingNonFly:
+        // Do info message on leaving a nonfly zone
+        res = true;
+        break;
+    }//sw warnevent
+    _warneventold = _warnevent;
 
-	// Warnstate increased above ack state -> generate message
-	if ( (_warninglevel > _warninglevelold) && (_warninglevel > _warningacklevel) ) {
-		_warn_repeat_time = _now + AirspaceWarningRepeatTime;
-		res = true;
-	}
-	
-	// Unacknowledged warning repeated after some time
-	if ( (_warninglevel > _warningacklevel) && (_now > _warn_repeat_time) ) {
-		_warn_repeat_time = _now + AirspaceWarningRepeatTime;
-		res = true;
-	}
+    // Warnstate increased above ack state -> generate message
+    if ( (_warninglevel > _warninglevelold) && (_warninglevel > _warningacklevel) ) {
+        _warn_repeat_time = _now + AirspaceWarningRepeatTime;
+        res = true;
+    }
+    
+    // Unacknowledged warning repeated after some time
+    if ( (_warninglevel > _warningacklevel) && (_now > _warn_repeat_time) ) {
+        _warn_repeat_time = _now + AirspaceWarningRepeatTime;
+        res = true;
+    }
 
-	//ACK Step back, if ack time ellapsed and warningstate below ack state
-	if ( (_warningacklevel != awDailyAck) && (_warningacklevel>_warninglevel) && (_now > _warnacktimeout) ) _warningacklevel=_warninglevel;
-	
-	_warninglevelold = _warninglevel;
+    //ACK Step back, if ack time ellapsed and warningstate below ack state
+    if ( (_warningacklevel != awDailyAck) && (_warningacklevel>_warninglevel) && (_now > _warnacktimeout) ) _warningacklevel=_warninglevel;
+    
+    _warninglevelold = _warninglevel;
 
-	return res;
+    return res;
 }
 
 // Set ack timeout to configured value
@@ -470,11 +470,11 @@ void CAirspace::SetAckTimeout()
 bool CAirspace::GetDistanceInfo(bool &inside, int &hDistance, int &Bearing, int &vDistance) const
 {
   if (_distances_ready) {
-	Bearing = _bearing;
-	hDistance = _hdistance;
-	vDistance = _vdistance;
-	inside = _pos_inside_now;
-	return true;
+    Bearing = _bearing;
+    hDistance = _hdistance;
+    vDistance = _vdistance;
+    inside = _pos_inside_now;
+    return true;
   }
   return false;
 }
@@ -483,14 +483,14 @@ bool CAirspace::GetDistanceInfo(bool &inside, int &hDistance, int &Bearing, int 
 bool CAirspace::GetVDistanceInfo(int &vDistance, AirspaceWarningDrawStyle_t &drawstyle) const
 { 
   if (_distances_ready) {
-	vDistance = _vdistance; 
-	drawstyle = awsBlack;
-	if (IsAltitudeInside(_lastknownalt, _lastknownagl, 0)) {
-	  	if (!_flyzone) drawstyle = awsRed;
-	} else {
-		if (_flyzone) drawstyle = awsAmber;
-	}
-	return true;
+    vDistance = _vdistance; 
+    drawstyle = awsBlack;
+    if (IsAltitudeInside(_lastknownalt, _lastknownagl, 0)) {
+          if (!_flyzone) drawstyle = awsRed;
+    } else {
+        if (_flyzone) drawstyle = awsAmber;
+    }
+    return true;
   }
   return false;
 }
@@ -500,14 +500,14 @@ bool CAirspace::GetVDistanceInfo(int &vDistance, AirspaceWarningDrawStyle_t &dra
 bool CAirspace::GetWarningPoint(double &longitude, double &latitude) const
 {
   if (_distances_ready && (_warningacklevel < awDailyAck)) {
-	if (_flyzone && !_pos_inside_now ) return false;	// no warning point if outside a flyzone
-	double dist = abs(_hdistance);
-	if (_hdistance < 0) {
-	  // if vertical distance smaller, use actual position as warning point indicating a directly above or below warning situation
-	  if ( abs(_vdistance) < AirspaceWarningVerticalMargin ) dist = 0;
-	}
-	FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &latitude, &longitude);
-	return true;
+    if (_flyzone && !_pos_inside_now ) return false;    // no warning point if outside a flyzone
+    double dist = abs(_hdistance);
+    if (_hdistance < 0) {
+      // if vertical distance smaller, use actual position as warning point indicating a directly above or below warning situation
+      if ( abs(_vdistance) < AirspaceWarningVerticalMargin ) dist = 0;
+    }
+    FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &latitude, &longitude);
+    return true;
   }
   return false;
 }
@@ -525,14 +525,14 @@ bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance)
   distance = Range(_lastknownpos.Longitude(), _lastknownpos.Latitude(), fbearing);
   if (distance > 0) inside = false;
   if (_base.Base != abAGL) {
-	  vDistanceBase = _lastknownalt - (int)(_base.Altitude);
+      vDistanceBase = _lastknownalt - (int)(_base.Altitude);
   } else {
-	  vDistanceBase = _lastknownagl - (int)(_base.AGL);
+      vDistanceBase = _lastknownagl - (int)(_base.AGL);
   }
   if (_top.Base != abAGL) {
-	  vDistanceTop  = _lastknownalt - (int)(_top.Altitude);
+      vDistanceTop  = _lastknownalt - (int)(_top.Altitude);
   } else {
-	  vDistanceTop  = _lastknownagl - (int)(_top.AGL);
+      vDistanceTop  = _lastknownagl - (int)(_top.AGL);
   }
 
   if (vDistanceBase < 0 || vDistanceTop > 0) inside = false;
@@ -540,9 +540,9 @@ bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance)
   _bearing = (int)fbearing;
   _hdistance = (int)distance;
   if ((-vDistanceBase > vDistanceTop) && (_base.Base != abAGL))
-	_vdistance = vDistanceBase;
+    _vdistance = vDistanceBase;
   else
-	_vdistance = vDistanceTop;
+    _vdistance = vDistanceTop;
   
   if (Bearing) *Bearing = _bearing;
   if (hDistance) *hDistance = _hdistance;
@@ -563,13 +563,13 @@ void CAirspace::ResetWarnings()
 // CAIRSPACE_CIRCLE CLASS
 //
 CAirspace_Circle::CAirspace_Circle(const double &Center_Latitude, const double &Center_Longitude, const double &Airspace_Radius):
-		CAirspace(),
-		_latcenter(Center_Latitude),
-		_loncenter(Center_Longitude),
-		_radius(Airspace_Radius)
+        CAirspace(),
+        _latcenter(Center_Latitude),
+        _loncenter(Center_Longitude),
+        _radius(Airspace_Radius)
 {
-	CalcBounds();
-	AirspaceAGLLookup(Center_Latitude, Center_Longitude); 
+    CalcBounds();
+    AirspaceAGLLookup(Center_Latitude, Center_Longitude); 
 }
 
 // Dumps object instance to Runtime.log
@@ -584,12 +584,12 @@ bool CAirspace_Circle::IsHorizontalInside(const double &longitude, const double 
 {
   double bearing;
   if ((latitude> _bounds.miny) &&
-	  (latitude< _bounds.maxy) &&
-	  CheckInsideLongitude(longitude, _bounds.minx, _bounds.maxx)
-	) {
-	if (Range(longitude, latitude, bearing)<0) {
-	  return true;
-	}
+      (latitude< _bounds.maxy) &&
+      CheckInsideLongitude(longitude, _bounds.minx, _bounds.maxx)
+    ) {
+    if (Range(longitude, latitude, bearing)<0) {
+      return true;
+    }
   }
   return false;
 }
@@ -622,7 +622,7 @@ void CAirspace_Circle::ScanCircleBounds(double bearing)
 // Calculate airspace bounds
 void CAirspace_Circle::CalcBounds() 
 {
-	_bounds.minx = _loncenter;
+    _bounds.minx = _loncenter;
     _bounds.maxx = _loncenter;
     _bounds.miny = _latcenter;
     _bounds.maxy = _latcenter;
@@ -659,13 +659,13 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
     if(CAirspaceManager::Instance().CheckAirspaceAltitude(basealt, topalt)) {
       if (msRectOverlap(&_bounds, &screenbounds_latlon) 
          // || msRectContained(&screenbounds_latlon, &_bounds) is redundant here, msRectOverlap also returns true on containing!
-		 ) {
+         ) {
 
-	if (!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES-1)) {
-	  _drawstyle = adsFilled;
-	} else {
-	  _drawstyle = adsOutline;
-	}
+    if (!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES-1)) {
+      _drawstyle = adsFilled;
+    } else {
+      _drawstyle = adsOutline;
+    }
 
         MapWindow::LatLon2Screen(_loncenter, _latcenter, _screencenter);
         _screenradius = iround(_radius * ResMapScaleOverDistanceModify);
@@ -692,7 +692,7 @@ void CAirspace_Area::Dump() const
   StartupStore(TEXT("CAirspace_Area Dump%s"), NEWLINE);
   CAirspace::Dump();
   for (i = _geopoints.begin(); i != _geopoints.end(); ++i) {
-	StartupStore(TEXT("  Point lat:%lf, lon:%lf%s"), i->Latitude(), i->Longitude(), NEWLINE);
+    StartupStore(TEXT("  Point lat:%lf, lon:%lf%s"), i->Latitude(), i->Longitude(), NEWLINE);
   }
 }
 
@@ -735,17 +735,17 @@ int CAirspace_Area::wn_PnPoly( const double &longitude, const double &latitude )
   CPoint2DArray::const_iterator itnext = it;
   ++itnext;
   for (int i=0; i<((int)_geopoints.size()-1); ++i, ++it, ++itnext) {
-		if (it->Latitude() <= latitude) {         // start y <= P.Latitude
-			if (itnext->Latitude() > latitude)      // an upward crossing
-				if (isLeft( *it, *itnext, longitude, latitude) > 0)  // P left of edge
-					++wn;            // have a valid up intersect
-		} else {                       // start y > P.Latitude (no test needed)
-			if (itnext->Latitude() <= latitude)     // a downward crossing
-				if (isLeft( *it, *itnext, longitude, latitude) < 0)  // P right of edge
-					--wn;            // have a valid down intersect
-		}
-	}
-	return wn;
+        if (it->Latitude() <= latitude) {         // start y <= P.Latitude
+            if (itnext->Latitude() > latitude)      // an upward crossing
+                if (isLeft( *it, *itnext, longitude, latitude) > 0)  // P left of edge
+                    ++wn;            // have a valid up intersect
+        } else {                       // start y > P.Latitude (no test needed)
+            if (itnext->Latitude() <= latitude)     // a downward crossing
+                if (isLeft( *it, *itnext, longitude, latitude) < 0)  // P right of edge
+                    --wn;            // have a valid down intersect
+        }
+    }
+    return wn;
 }
 
 
@@ -755,15 +755,15 @@ bool CAirspace_Area::IsHorizontalInside(const double &longitude, const double &l
   if (_geopoints.size() < 3) return false;
   // first check if point is within bounding box
   if (
-	  (latitude> _bounds.miny)&&
-	  (latitude< _bounds.maxy)&&
-	  CheckInsideLongitude(longitude, _bounds.minx, _bounds.maxx)
-	) {
-	  // it is within, so now do detailed polygon test
-	  if (wn_PnPoly(longitude, latitude) != 0) {
-		// we are inside the i'th airspace area
-		return true;
-	  }
+      (latitude> _bounds.miny)&&
+      (latitude< _bounds.maxy)&&
+      CheckInsideLongitude(longitude, _bounds.minx, _bounds.maxx)
+    ) {
+      // it is within, so now do detailed polygon test
+      if (wn_PnPoly(longitude, latitude) != 0) {
+        // we are inside the i'th airspace area
+        return true;
+      }
   }
   return false;
 }
@@ -800,12 +800,12 @@ double CAirspace_Area::Range(const double &longitude, const double &latitude, do
 
     if ((dist<dist_candidate)||(i==0)) {
       dist_candidate = dist;
-	  xc = x;
-	  yc = y;
-	  zc = z;
+      xc = x;
+      yc = y;
+      zc = z;
     }
     ++it;
-	++itnext;
+    ++itnext;
   }
 
   CPoint2D p4(xc,yc,zc);
@@ -821,12 +821,12 @@ double CAirspace_Area::Range(const double &longitude, const double &latitude, do
 // Set polygon point list
 void CAirspace_Area::SetPoints(CPoint2DArray &Area_Points)
 {
-	POINT p;
-	_geopoints = Area_Points;
-	_screenpoints.clear();
-	for (unsigned int i=0; i<_geopoints.size(); ++i) _screenpoints.push_back(p);
-	CalcBounds();
-	AirspaceAGLLookup( (_bounds.miny+_bounds.maxy)/2.0, (_bounds.minx+_bounds.maxx)/2.0 ); 
+    POINT p;
+    _geopoints = Area_Points;
+    _screenpoints.clear();
+    for (unsigned int i=0; i<_geopoints.size(); ++i) _screenpoints.push_back(p);
+    CalcBounds();
+    AirspaceAGLLookup( (_bounds.miny+_bounds.maxy)/2.0, (_bounds.minx+_bounds.maxx)/2.0 ); 
 }
 
 // Calculate airspace bounds
@@ -839,23 +839,23 @@ void CAirspace_Area::CalcBounds()
   _bounds.miny = it->Latitude();
   _bounds.maxy = it->Latitude();
   for(it = _geopoints.begin(); it != _geopoints.end(); ++it) {
-	_bounds.minx = min((double)it->Longitude(), _bounds.minx);
-	_bounds.maxx = max((double)it->Longitude(), _bounds.maxx);
-	_bounds.miny = min((double)it->Latitude(), _bounds.miny);
-	_bounds.maxy = max((double)it->Latitude(), _bounds.maxy);
+    _bounds.minx = min((double)it->Longitude(), _bounds.minx);
+    _bounds.maxx = max((double)it->Longitude(), _bounds.maxx);
+    _bounds.miny = min((double)it->Latitude(), _bounds.miny);
+    _bounds.maxy = max((double)it->Latitude(), _bounds.maxy);
   }
 
   // JMW detect airspace that wraps across 180
   if ((_bounds.minx< -90) && (_bounds.maxx>90)) {
-	double tmp = _bounds.minx;
-	_bounds.minx = _bounds.maxx;
-	_bounds.maxx = tmp;
-	for(it = _geopoints.begin(); it != _geopoints.end(); ++it) {
-	  if (it->Longitude()<0) {
-		CPoint2D newpoint(it->Latitude(), it->Longitude() + 360);
-		*it = newpoint;
-	  }
-	}
+    double tmp = _bounds.minx;
+    _bounds.minx = _bounds.maxx;
+    _bounds.maxx = tmp;
+    for(it = _geopoints.begin(); it != _geopoints.end(); ++it) {
+      if (it->Longitude()<0) {
+        CPoint2D newpoint(it->Latitude(), it->Longitude() + 360);
+        *it = newpoint;
+      }
+    }
   }
 }
 
@@ -879,18 +879,18 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
     if(CAirspaceManager::Instance().CheckAirspaceAltitude(basealt, topalt)) {
       if (msRectOverlap(&_bounds, &screenbounds_latlon) 
          // || msRectContained(&screenbounds_latlon, &_bounds) is redundant here, msRectOverlap also returns true on containing!
-		 ) {
+         ) {
 
-	if (!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES-1)) {
-	  _drawstyle = adsFilled;
-	} else {
-	  _drawstyle = adsOutline;
-	}
-	CPoint2DArray::iterator it;
-	POINTList::iterator itr;
-	for (it = _geopoints.begin(), itr = _screenpoints.begin(); it != _geopoints.end(); ++it, ++itr) {
+    if (!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES-1)) {
+      _drawstyle = adsFilled;
+    } else {
+      _drawstyle = adsOutline;
+    }
+    CPoint2DArray::iterator it;
+    POINTList::iterator itr;
+    for (it = _geopoints.begin(), itr = _screenpoints.begin(); it != _geopoints.end(); ++it, ++itr) {
         MapWindow::LatLon2Screen(it->Longitude(), it->Latitude(), *itr);
-	}
+    }
       }
     }
   }
@@ -929,28 +929,28 @@ bool CAirspaceManager::CheckAirspaceAltitude(const double &Base, const double &T
   switch (AltitudeMode)
     {
     case ALLON : return TRUE;
-		
+        
     case CLIP : 
       if(Base < ClipAltitude)
-	return TRUE;
+    return TRUE;
       else
-	return FALSE;
+    return FALSE;
 
     case AUTO:
       if( ( alt > (Base - AltWarningMargin) ) 
-	  && ( alt < (Top + AltWarningMargin) ))
-	return TRUE;
+      && ( alt < (Top + AltWarningMargin) ))
+    return TRUE;
       else
-	return FALSE;
+    return FALSE;
 
     case ALLBELOW:
       if(  (Base - AltWarningMargin) < alt )
-	return  TRUE;
+    return  TRUE;
       else
-	return FALSE;
+    return FALSE;
     case INSIDE:
       if( ( alt >= (Base) ) && ( alt < (Top) ))
-	return TRUE;
+    return TRUE;
       else
         return FALSE;
     case ALLOFF : return FALSE;
@@ -986,7 +986,7 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const
         Alt->FL = d;
         Alt->Altitude = AltitudeToQNHAltitude((Alt->FL * 100)/TOFEET);
       } else if (Alt->Base == abAGL) {
-	Alt->AGL = d;
+    Alt->AGL = d;
       } else {
         Alt->Altitude = d;
       }
@@ -1001,13 +1001,13 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const
       // JMW support XXXGND as valid, equivalent to XXXAGL
       Alt->Base = abAGL;
       if (Alt->Altitude>0) {
-	Alt->AGL = Alt->Altitude;
-	Alt->Altitude = 0;
+    Alt->AGL = Alt->Altitude;
+    Alt->Altitude = 0;
       } else {
-	Alt->FL = 0;
-	Alt->Altitude = 0;
-	Alt->AGL = -1;
-	fHasUnit = true;
+    Alt->FL = 0;
+    Alt->Altitude = 0;
+    Alt->AGL = -1;
+    fHasUnit = true;
       }
     }
 
@@ -1024,8 +1024,8 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const
       Alt->Base = abFL;
       fHasUnit = true;
       if (pToken[2] != '\0'){// no separator between FL and number
-	pToken = &pToken[2];
-	continue;
+    pToken = &pToken[2];
+    continue;
       }
     }
 
@@ -1164,7 +1164,7 @@ bool CAirspaceManager::CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, doub
   double lat,lon;
 
   ReadCoords(Text,&StartLon , &StartLat);
-	
+    
   Comma = _tcschr(Text,',');
   if(!Comma)
     return false;
@@ -1179,11 +1179,11 @@ bool CAirspaceManager::CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, doub
   
   while(fabs(EndBearing-StartBearing) > 7.5)
   {
-	  StartBearing += Rotation *5 ;
-	  if(StartBearing > 360) StartBearing -= 360;
-	  if(StartBearing < 0) StartBearing += 360;
-	  FindLatitudeLongitude(CenterY, CenterX, StartBearing, Radius, &lat, &lon);
-	  _geopoints->push_back(CPoint2D(lat,lon));
+      StartBearing += Rotation *5 ;
+      if(StartBearing > 360) StartBearing -= 360;
+      if(StartBearing < 0) StartBearing += 360;
+      FindLatitudeLongitude(CenterY, CenterX, StartBearing, Radius, &lat, &lon);
+      _geopoints->push_back(CPoint2D(lat,lon));
   }
   _geopoints->push_back(CPoint2D(EndLat, EndLon));
   return true;
@@ -1207,11 +1207,11 @@ bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, d
     if(StartBearing >= 360) StartBearing -= 360;
     if(StartBearing < 0) StartBearing += 360;
 
-	FindLatitudeLongitude(CenterY, CenterX, StartBearing, Radius, &lat, &lon);
+    FindLatitudeLongitude(CenterY, CenterX, StartBearing, Radius, &lat, &lon);
 
-	_geopoints->push_back(CPoint2D(lat,lon));
+    _geopoints->push_back(CPoint2D(lat,lon));
     
-	StartBearing += Rotation *5 ;
+    StartBearing += Rotation *5 ;
   }
   FindLatitudeLongitude(CenterY, CenterX, EndBearing, Radius, &lat, &lon);
   _geopoints->push_back(CPoint2D(lat,lon));
@@ -1223,17 +1223,17 @@ bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, d
 // Also the geopointlist last element have to be the same as first -> openair doesn't require this, we have to do it here
 void CAirspaceManager::CorrectGeoPoints(CPoint2DArray &points)
 {
-	CPoint2D first = points.front();
-	CPoint2D last = points.back();
-	
-	if ( (first.Latitude() != last.Latitude()) || (first.Longitude() != last.Longitude()) ) points.push_back(first);
+    CPoint2D first = points.front();
+    CPoint2D last = points.back();
+    
+    if ( (first.Latitude() != last.Latitude()) || (first.Longitude() != last.Longitude()) ) points.push_back(first);
 }
 
 // Reading and parsing OpenAir airspace file
 void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
 {
-  TCHAR	*Comment;
-  int		nSize;
+  TCHAR    *Comment;
+  int        nSize;
   TCHAR Text[READLINE_LENGTH];
   TCHAR sTmp[READLINE_LENGTH+100];
   TCHAR *p;
@@ -1258,231 +1258,231 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
   StartupStore(TEXT(". Reading airspace file%s"),NEWLINE);
 
   while (ReadString(fp, READLINE_LENGTH, Text)){
-	++linecount;
-	p = Text;
-	//Skip whitespaces
-	while (*p!=0 && isspace(*p)) p++;
-	if (*p==0) continue;
-	//Skip comment lines
-	if (*p=='*') continue;
-	_tcsupr(p);
-	// Strip comments and newline chars from end of line
-	Comment = _tcschr(p, _T('*'));
-	if(Comment != NULL)
-	{
-		*Comment = _T('\0');		// Truncate line
-		nSize = Comment - p;		// Reset size
-		if (nSize < 3)
-		  continue;				// Ensure newline removal won't fail
-	}
+    ++linecount;
+    p = Text;
+    //Skip whitespaces
+    while (*p!=0 && isspace(*p)) p++;
+    if (*p==0) continue;
+    //Skip comment lines
+    if (*p=='*') continue;
+    _tcsupr(p);
+    // Strip comments and newline chars from end of line
+    Comment = _tcschr(p, _T('*'));
+    if(Comment != NULL)
+    {
+        *Comment = _T('\0');        // Truncate line
+        nSize = Comment - p;        // Reset size
+        if (nSize < 3)
+          continue;                // Ensure newline removal won't fail
+    }
     nSize = _tcsclen(p);
-	if(p[nSize-1] == _T('\n')) p[--nSize] = _T('\0');
-	if(p[nSize-1] == _T('\r')) p[--nSize] = _T('\0');
+    if(p[nSize-1] == _T('\n')) p[--nSize] = _T('\0');
+    if(p[nSize-1] == _T('\r')) p[--nSize] = _T('\0');
 
-//	StartupStore(TEXT(".  %s%s"),p,NEWLINE);
+//    StartupStore(TEXT(".  %s%s"),p,NEWLINE);
 
-	switch (*p) {
-	  case _T('A'):
-		p++; // skip A
-		switch (*p) {
-		  case _T('C'):	//AC
-			p++; // skip C
-			if (parsing_state==10) { // New airspace begin, store the old one, reset parser
-			  if (Radius>0) {
-				// Last one was a circle
-				newairspace = new CAirspace_Circle(Longitude, Latitude, Radius);
-			  } else {
-				  // Last one was an area
-				  CorrectGeoPoints(points);
-				  // Skip it if we dont have minimum 3 points
-				  if (points.size()<3) {
-				  }
-				  newairspace = new CAirspace_Area;
-	  			  newairspace->SetPoints(points);
-			  }
-			  newairspace->Init(Name, Type, Base, Top, flyzone);
+    switch (*p) {
+      case _T('A'):
+        p++; // skip A
+        switch (*p) {
+          case _T('C'):    //AC
+            p++; // skip C
+            if (parsing_state==10) { // New airspace begin, store the old one, reset parser
+              if (Radius>0) {
+                // Last one was a circle
+                newairspace = new CAirspace_Circle(Longitude, Latitude, Radius);
+              } else {
+                  // Last one was an area
+                  CorrectGeoPoints(points);
+                  // Skip it if we dont have minimum 3 points
+                  if (points.size()<3) {
+                  }
+                  newairspace = new CAirspace_Area;
+                    newairspace->SetPoints(points);
+              }
+              newairspace->Init(Name, Type, Base, Top, flyzone);
 
-			  if (1) {
-				CCriticalSection::CGuard guard(_csairspaces);
-				_airspaces.push_back(newairspace);
-			  }
-			  
-			  Name[0]='\0';
-			  Radius = 0;
- 			  Longitude = 0;
-			  Latitude = 0;
-			  points.clear();
-			  Type = 0;
-			  Base.Base = abUndef;
-			  Top.Base = abUndef;
-			  flyzone = false;
-			  newairspace = NULL;
-			  parsing_state = 0;
-			}
-			// New AC
-			p++; //Skip space
-			Type = OTHER;
-			for (int i = 0; i < k_nAreaCount; ++i) {
-			  if (StartsWith(p, k_strAreaStart[i])) {
-				  Type = k_nAreaType[i];
-				  break;
-			  }
-			}
-			Rotation = +1;
-			parsing_state = 10;
-			break;
+              if (1) {
+                CCriticalSection::CGuard guard(_csairspaces);
+                _airspaces.push_back(newairspace);
+              }
+              
+              Name[0]='\0';
+              Radius = 0;
+               Longitude = 0;
+              Latitude = 0;
+              points.clear();
+              Type = 0;
+              Base.Base = abUndef;
+              Top.Base = abUndef;
+              flyzone = false;
+              newairspace = NULL;
+              parsing_state = 0;
+            }
+            // New AC
+            p++; //Skip space
+            Type = OTHER;
+            for (int i = 0; i < k_nAreaCount; ++i) {
+              if (StartsWith(p, k_strAreaStart[i])) {
+                  Type = k_nAreaType[i];
+                  break;
+              }
+            }
+            Rotation = +1;
+            parsing_state = 10;
+            break;
 
-		  case _T('N'): //AN - Airspace name
-			p++; p++;
-			if (parsing_state == 10) _tcsncpy(Name, p, NAME_SIZE);
+          case _T('N'): //AN - Airspace name
+            p++; p++;
+            if (parsing_state == 10) _tcsncpy(Name, p, NAME_SIZE);
             break;
             
           case _T('L'): //AL - base altitude
-			p++; p++;
-			if (parsing_state == 10) ReadAltitude(p, &Base);
+            p++; p++;
+            if (parsing_state == 10) ReadAltitude(p, &Base);
             break;
             
           case _T('H'): //AH - top altitude
-			p++; p++;
-			if (parsing_state == 10) ReadAltitude(p, &Top);
+            p++; p++;
+            if (parsing_state == 10) ReadAltitude(p, &Top);
             break;
             
-		  //OpenAir non standard field - AF - define a fly zone
+          //OpenAir non standard field - AF - define a fly zone
           case _T('F'): // AF - Fly zone, no parameter
-			  flyzone = true;
+              flyzone = true;
             continue;
 
-		  case _T('T'): // AT
-			// ignore airspace labels
+          case _T('T'): // AT
+            // ignore airspace labels
             // TODO: adding airspace labels
             continue;
-			
-		  default:
-			wsprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p );
-			// LKTOKEN  _@M68_ = "Airspace" 
-			if (MessageBoxX(NULL, sTmp, gettext(TEXT("_@M68_")), MB_OKCANCEL) == IDCANCEL) return;
-			break;
-		} //sw
-		break;
-	  
+            
+          default:
+            wsprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p );
+            // LKTOKEN  _@M68_ = "Airspace" 
+            if (MessageBoxX(NULL, sTmp, gettext(TEXT("_@M68_")), MB_OKCANCEL) == IDCANCEL) return;
+            break;
+        } //sw
+        break;
+      
       case _T('D'):
-		p++;
-		switch (*p) {
+        p++;
+        switch (*p) {
           case _T('A'): //DA - Sector
-			if (!CalculateSector(p, &points, CenterX, CenterY, Rotation)) {
-			  wsprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p );
-			  // LKTOKEN  _@M68_ = "Airspace" 
-			  if (MessageBoxX(NULL, sTmp, gettext(TEXT("_@M68_")), MB_OKCANCEL) == IDCANCEL) return;
-			}
+            if (!CalculateSector(p, &points, CenterX, CenterY, Rotation)) {
+              wsprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p );
+              // LKTOKEN  _@M68_ = "Airspace" 
+              if (MessageBoxX(NULL, sTmp, gettext(TEXT("_@M68_")), MB_OKCANCEL) == IDCANCEL) return;
+            }
             break;
             
           case _T('B'): //DB - Arc
-			p++; p++; // skip B and space
-			if (!CalculateArc(p, &points, CenterX, CenterY, Rotation)) {
-			  wsprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p );
-			  // LKTOKEN  _@M68_ = "Airspace" 
-			  if (MessageBoxX(NULL, sTmp, gettext(TEXT("_@M68_")), MB_OKCANCEL) == IDCANCEL) return;
-			}
+            p++; p++; // skip B and space
+            if (!CalculateArc(p, &points, CenterX, CenterY, Rotation)) {
+              wsprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p );
+              // LKTOKEN  _@M68_ = "Airspace" 
+              if (MessageBoxX(NULL, sTmp, gettext(TEXT("_@M68_")), MB_OKCANCEL) == IDCANCEL) return;
+            }
             break;
             
           case _T('C'): //DC - Circle
-			p++; p++;
-			Radius = StrToDouble(p,NULL);
-			Radius = (Radius * NAUTICALMILESTOMETRES);
-			Latitude = CenterX;
-			Longitude = CenterY;
+            p++; p++;
+            Radius = StrToDouble(p,NULL);
+            Radius = (Radius * NAUTICALMILESTOMETRES);
+            Latitude = CenterX;
+            Longitude = CenterY;
             break;
             
           case _T('P'): //DP - polygon point
-			p++; p++; // skip P and space
-			if (ReadCoords(p,&lon, &lat)) {
-			  points.push_back(CPoint2D(lat,lon));
-			} else {
-			  wsprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p );
-			  // LKTOKEN  _@M68_ = "Airspace" 
-			  if (MessageBoxX(NULL, sTmp, gettext(TEXT("_@M68_")), MB_OKCANCEL) == IDCANCEL) return;
-			}
+            p++; p++; // skip P and space
+            if (ReadCoords(p,&lon, &lat)) {
+              points.push_back(CPoint2D(lat,lon));
+            } else {
+              wsprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p );
+              // LKTOKEN  _@M68_ = "Airspace" 
+              if (MessageBoxX(NULL, sTmp, gettext(TEXT("_@M68_")), MB_OKCANCEL) == IDCANCEL) return;
+            }
             break;
             
             // todo DY airway segment
             // what about 'V T=' ?
-		  default:
-			wsprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p );
-			// LKTOKEN  _@M68_ = "Airspace" 
-			if (MessageBoxX(NULL, sTmp, gettext(TEXT("_@M68_")), MB_OKCANCEL) == IDCANCEL) return;
-			break;
-		} //sw
-		break;
-	  
+          default:
+            wsprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p );
+            // LKTOKEN  _@M68_ = "Airspace" 
+            if (MessageBoxX(NULL, sTmp, gettext(TEXT("_@M68_")), MB_OKCANCEL) == IDCANCEL) return;
+            break;
+        } //sw
+        break;
+      
       case _T('V'):
-		p++; p++; //skip V and space
-		if(StartsWith(p, TEXT("X="))) {
-			if (ReadCoords(p+2,&CenterX, &CenterY))
-			  break;
-		  }
-		else if(StartsWith(p,TEXT("D=-")))
-		  {
-			Rotation = -1;
-			break;
-		  }
-		else if(StartsWith(p,TEXT("D=+")))
-		  {
-			Rotation = +1;
-			break;
-		  }
-		else if(StartsWith(p,TEXT("Z")))
-		  {
-			// ToDo Display Zool Level
-			break;
-		  }
-		else if(StartsWith(p,TEXT("W")))
-		  {
-			// ToDo width of an airway
-			break;
-		  }
-		else if(StartsWith(p,TEXT("T")))
-		  {
-			// ----- JMW THIS IS REQUIRED FOR LEGACY FILES
-			break;
-		  }
+        p++; p++; //skip V and space
+        if(StartsWith(p, TEXT("X="))) {
+            if (ReadCoords(p+2,&CenterX, &CenterY))
+              break;
+          }
+        else if(StartsWith(p,TEXT("D=-")))
+          {
+            Rotation = -1;
+            break;
+          }
+        else if(StartsWith(p,TEXT("D=+")))
+          {
+            Rotation = +1;
+            break;
+          }
+        else if(StartsWith(p,TEXT("Z")))
+          {
+            // ToDo Display Zool Level
+            break;
+          }
+        else if(StartsWith(p,TEXT("W")))
+          {
+            // ToDo width of an airway
+            break;
+          }
+        else if(StartsWith(p,TEXT("T")))
+          {
+            // ----- JMW THIS IS REQUIRED FOR LEGACY FILES
+            break;
+          }
 
-		wsprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p );
-		// LKTOKEN  _@M68_ = "Airspace" 
-		if (MessageBoxX(NULL, sTmp, gettext(TEXT("_@M68_")), MB_OKCANCEL) == IDCANCEL) return;
-		break;
+        wsprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p );
+        // LKTOKEN  _@M68_ = "Airspace" 
+        if (MessageBoxX(NULL, sTmp, gettext(TEXT("_@M68_")), MB_OKCANCEL) == IDCANCEL) return;
+        break;
         
       case _T('S'):  // ignore the SB,SP ...
-		p++;
+        p++;
         if (*p == _T('B')) continue;
         if (*p == _T('P')) continue;
-		// if none of the above, then falling to default
-		
-	  default:
-		wsprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p );
-		// LKTOKEN  _@M68_ = "Airspace" 
-		if (MessageBoxX(NULL, sTmp, gettext(TEXT("_@M68_")), MB_OKCANCEL) == IDCANCEL) return;
-		break;
-	}//sw
-	
+        // if none of the above, then falling to default
+        
+      default:
+        wsprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p );
+        // LKTOKEN  _@M68_ = "Airspace" 
+        if (MessageBoxX(NULL, sTmp, gettext(TEXT("_@M68_")), MB_OKCANCEL) == IDCANCEL) return;
+        break;
+    }//sw
+    
   }//wh readline
 
   // Push last one to the list
   if (parsing_state==10) {
-	if (Radius>0) {
-	  // Last one was a circle
-	  newairspace = new CAirspace_Circle(Longitude, Latitude, Radius);
-	} else {
-		// Last one was an area
-		CorrectGeoPoints(points);
-		// Skip it if we dont have minimum 3 points
-		if (points.size()<3) {
-		}
-		newairspace = new CAirspace_Area();
-		newairspace->SetPoints(points);
-	}
-	newairspace->Init(Name, Type, Base, Top, flyzone);
-	CCriticalSection::CGuard guard(_csairspaces);
-	_airspaces.push_back(newairspace);
+    if (Radius>0) {
+      // Last one was a circle
+      newairspace = new CAirspace_Circle(Longitude, Latitude, Radius);
+    } else {
+        // Last one was an area
+        CorrectGeoPoints(points);
+        // Skip it if we dont have minimum 3 points
+        if (points.size()<3) {
+        }
+        newairspace = new CAirspace_Area();
+        newairspace->SetPoints(points);
+    }
+    newairspace->Init(Name, Type, Base, Top, flyzone);
+    CCriticalSection::CGuard guard(_csairspaces);
+    _airspaces.push_back(newairspace);
   }
 
   CCriticalSection::CGuard guard(_csairspaces);
@@ -1494,8 +1494,8 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
 
 void CAirspaceManager::ReadAirspaces()
 {
-  TCHAR	szFile1[MAX_PATH] = TEXT("\0");
-  TCHAR	szFile2[MAX_PATH] = TEXT("\0");
+  TCHAR    szFile1[MAX_PATH] = TEXT("\0");
+  TCHAR    szFile2[MAX_PATH] = TEXT("\0");
 
   ZZIP_FILE *fp=NULL;
   ZZIP_FILE *fp2=NULL;
@@ -1531,7 +1531,7 @@ void CAirspaceManager::ReadAirspaces()
   SetRegistryString(szRegistryAdditionalAirspaceFile, TEXT("\0"));
 
   if (fp != NULL){
-	FillAirspacesFromOpenAir(fp);
+    FillAirspacesFromOpenAir(fp);
     zzip_fclose(fp);
 
     // file 1 was OK, so save it
@@ -1540,7 +1540,7 @@ void CAirspaceManager::ReadAirspaces()
 
     // also read any additional airspace
     if (fp2 != NULL) {
-	  FillAirspacesFromOpenAir(fp2);
+      FillAirspacesFromOpenAir(fp2);
       zzip_fclose(fp2);
       
       // file 2 was OK, so save it
@@ -1559,12 +1559,12 @@ void CAirspaceManager::CloseAirspaces()
 {
   CAirspaceList::iterator it;
   
-  //AirspaceWarnListClear();
   CCriticalSection::CGuard guard(_csairspaces);
   _user_warning_queue.clear();
   for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) delete *it;
   _airspaces.clear();
   _airspaces_near.clear();
+  StartupStore(TEXT(". CloseLKAirspace%s"),NEWLINE);
 }
 
 void CAirspaceManager::QnhChangeNotify(const double &newQNH)
@@ -1573,20 +1573,20 @@ void CAirspaceManager::QnhChangeNotify(const double &newQNH)
   static bool first = true;
   
   if ( (newQNH != lastQNH) || first) {
-	CAirspaceList::iterator i;
-	CCriticalSection::CGuard guard(_csairspaces);
+    CAirspaceList::iterator i;
+    CCriticalSection::CGuard guard(_csairspaces);
 
-	for(i= _airspaces.begin(); i != _airspaces.end(); ++i) (*i)->QnhChangeNotify();
+    for(i= _airspaces.begin(); i != _airspaces.end(); ++i) (*i)->QnhChangeNotify();
 
-	first = false;
+    first = false;
     lastQNH = newQNH; 
   }
 }
 
 
 void CAirspaceManager::ScanAirspaceLine(double lats[], double lons[], double heights[], 
-		      int airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) const
-{		      
+              int airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) const
+{              
 
   int i,j;
   double x1 = lons[0];
@@ -1608,24 +1608,24 @@ void CAirspaceManager::ScanAirspaceLine(double lats[], double lons[], double hei
   CCriticalSection::CGuard guard(_csairspaces);
 
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-	// ignore if outside scan height
-	if ( !((h_max<=(*it)->Base()->Altitude) || (h_min>=(*it)->Top()->Altitude)) ) {
-	  const rectObj &pbounds = (*it)->Bounds();
-	  // ignore if scan line doesn't intersect bounds
-	  if (msRectOverlap(&lineRect, &pbounds)) {
-		for (i=0; i<AIRSPACE_SCANSIZE_X; i++) {
-			inside = (*it)->IsHorizontalInside(lons[i], lats[i]);
-				if (inside) {
-					for (j=0; j<AIRSPACE_SCANSIZE_H; j++) {
-						if ((heights[j]>(*it)->Base()->Altitude)&&
-								(heights[j]<(*it)->Top()->Altitude)) {
-							airspacetype[j][i] = (*it)->Type();
-						} // inside height
-					} // finished scanning height
-				} // inside
-		} // finished scanning range
-	  } // if overlaps bounds
-	}//if inside height
+    // ignore if outside scan height
+    if ( !((h_max<=(*it)->Base()->Altitude) || (h_min>=(*it)->Top()->Altitude)) ) {
+      const rectObj &pbounds = (*it)->Bounds();
+      // ignore if scan line doesn't intersect bounds
+      if (msRectOverlap(&lineRect, &pbounds)) {
+        for (i=0; i<AIRSPACE_SCANSIZE_X; i++) {
+            inside = (*it)->IsHorizontalInside(lons[i], lats[i]);
+                if (inside) {
+                    for (j=0; j<AIRSPACE_SCANSIZE_H; j++) {
+                        if ((heights[j]>(*it)->Base()->Altitude)&&
+                                (heights[j]<(*it)->Top()->Altitude)) {
+                            airspacetype[j][i] = (*it)->Type();
+                        } // inside height
+                    } // finished scanning height
+                } // inside
+        } // finished scanning range
+      } // if overlaps bounds
+    }//if inside height
   } // for iterator
 }
 
@@ -1644,7 +1644,7 @@ void CAirspaceManager::ScanAirspaceLine(double lats[], double lons[], double hei
 // This only searches within a range of 100km of the target
 
 CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, const double &latitude,
-			 double *nearestdistance, double *nearestbearing, double *height) const
+             double *nearestdistance, double *nearestbearing, double *height) const
 {
   double nearestd = 100000; // 100km
   double nearestb = 0;
@@ -1663,8 +1663,8 @@ CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, const 
   CCriticalSection::CGuard guard(_csairspaces);
 
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-	type = (*it)->Type();
-	//TODO check index
+    type = (*it)->Type();
+    //TODO check index
     iswarn = (MapWindow::iAirspaceMode[type]>=2);
     isdisplay = ((MapWindow::iAirspaceMode[type]%2)>0);
 
@@ -1694,13 +1694,13 @@ CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, const 
       dist = (*it)->Range(longitude, latitude, bearing);
       
       if(dist < nearestd ) {
-		  nearestd = dist;
-		  nearestb = bearing;
-		  found = *it;
-		  if (dist<0) {
-				// no need to continue search, inside
-				break; //for
-		  }
+          nearestd = dist;
+          nearestb = bearing;
+          found = *it;
+          if (dist<0) {
+                // no need to continue search, inside
+                break; //for
+          }
       }
     }
   } //for
@@ -1712,7 +1712,7 @@ CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, const 
 
 bool airspace_sorter(CAirspace *a, CAirspace *b)
 {
-	return (a->Top()->Altitude < b->Top()->Altitude);
+    return (a->Top()->Altitude < b->Top()->Altitude);
 }
 
 void CAirspaceManager::SortAirspaces(void)
@@ -1735,15 +1735,15 @@ bool CAirspaceManager::ValidAirspaces(void) const
 // Special function call for calculating warnings on flyzones. Called from CAirspace, mutex already locked!
 bool CAirspaceManager::AirspaceWarningIsGoodPosition(float longitude, float latitude, int alt, int agl) const
 {
-	if (agl<0) agl = 0;		// Limit alt to surface
-	for (CAirspaceList::const_iterator it=_airspaces_of_interest.begin(); it!=_airspaces_of_interest.end(); ++it) {
-	  if ( (!(*it)->Flyzone()) && ((*it)->WarningAckLevel() == awNone) ) continue;
-	  // Check for altitude
-	  if ((*it)->IsAltitudeInside(alt, agl)) {
-		if ((*it)->IsHorizontalInside(longitude, latitude)) return true;
-	  }
-	}
-	return false;
+    if (agl<0) agl = 0;        // Limit alt to surface
+    for (CAirspaceList::const_iterator it=_airspaces_of_interest.begin(); it!=_airspaces_of_interest.end(); ++it) {
+      if ( (!(*it)->Flyzone()) && ((*it)->WarningAckLevel() == awNone) ) continue;
+      // Check for altitude
+      if ((*it)->IsAltitudeInside(alt, agl)) {
+        if ((*it)->IsHorizontalInside(longitude, latitude)) return true;
+      }
+    }
+    return false;
 }
 
 void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated) 
@@ -1755,7 +1755,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
   static double lon = 0;
   static double lat = 0;
  
-  if(!AIRSPACEWARNINGS) return;				//Airspace warnings disabled in config
+  if(!AIRSPACEWARNINGS) return;                //Airspace warnings disabled in config
 
   CCriticalSection::CGuard guard(_csairspaces);
   CAirspaceList::iterator it;
@@ -1769,119 +1769,119 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
 
   
   switch (step) {
-	default:
-	case 0:
-		// MULTICALC STEP 1
-		// Calculate area of interest
-		interest_radius = Basic->Speed * WarningTime * 1.25;		// 25% more than required
-		lon = Basic->Longitude;
-		lat = Basic->Latitude;
-		bounds.minx = lon;
-		bounds.maxx = lon;
-		bounds.miny = lat;
-		bounds.maxy = lat;
+    default:
+    case 0:
+        // MULTICALC STEP 1
+        // Calculate area of interest
+        interest_radius = Basic->Speed * WarningTime * 1.25;        // 25% more than required
+        lon = Basic->Longitude;
+        lat = Basic->Latitude;
+        bounds.minx = lon;
+        bounds.maxx = lon;
+        bounds.miny = lat;
+        bounds.maxy = lat;
 
-		bearing = 0;
-		{
-		  FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
-		  bounds.minx = min(lon, bounds.minx);
-		  bounds.maxx = max(lon, bounds.maxx);
-		  bounds.miny = min(lat, bounds.miny);
-		  bounds.maxy = max(lat, bounds.maxy);
-		}
-		bearing = 90;
-		{
-		  FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
-		  bounds.minx = min(lon, bounds.minx);
-		  bounds.maxx = max(lon, bounds.maxx);
-		  bounds.miny = min(lat, bounds.miny);
-		  bounds.maxy = max(lat, bounds.maxy);
-		}
-		bearing = 180;
-		{
-		  FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
-		  bounds.minx = min(lon, bounds.minx);
-		  bounds.maxx = max(lon, bounds.maxx);
-		  bounds.miny = min(lat, bounds.miny);
-		  bounds.maxy = max(lat, bounds.maxy);
-		}
-		bearing = 270;
-		{
-		  FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
-		  bounds.minx = min(lon, bounds.minx);
-		  bounds.maxx = max(lon, bounds.maxx);
-		  bounds.miny = min(lat, bounds.miny);
-		  bounds.maxy = max(lat, bounds.maxy);
-		}
+        bearing = 0;
+        {
+          FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
+          bounds.minx = min(lon, bounds.minx);
+          bounds.maxx = max(lon, bounds.maxx);
+          bounds.miny = min(lat, bounds.miny);
+          bounds.maxy = max(lat, bounds.maxy);
+        }
+        bearing = 90;
+        {
+          FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
+          bounds.minx = min(lon, bounds.minx);
+          bounds.maxx = max(lon, bounds.maxx);
+          bounds.miny = min(lat, bounds.miny);
+          bounds.maxy = max(lat, bounds.maxy);
+        }
+        bearing = 180;
+        {
+          FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
+          bounds.minx = min(lon, bounds.minx);
+          bounds.maxx = max(lon, bounds.maxx);
+          bounds.miny = min(lat, bounds.miny);
+          bounds.maxy = max(lat, bounds.maxy);
+        }
+        bearing = 270;
+        {
+          FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
+          bounds.minx = min(lon, bounds.minx);
+          bounds.maxx = max(lon, bounds.maxx);
+          bounds.miny = min(lat, bounds.miny);
+          bounds.maxy = max(lat, bounds.maxy);
+        }
 
-		// JMW detect airspace that wraps across 180
-		if ((bounds.minx< -90) && (bounds.maxx>90)) {
-		  double tmp = bounds.minx;
-		  bounds.minx = bounds.maxx;
-		  bounds.maxx = tmp;
-		}
-		
-		// Step1 Init calculations
-		CAirspace::StartWarningCalculation( Basic, Calculated );
-		++step;
-		break;
-		
-	case 1:
-		// MULTICALC STEP 2
-		// Step2 select airspaces in range, and do warning calculations on it, add to interest list
-		_airspaces_of_interest.clear();
-		for (it=_airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
-			// Check for warnings enabled for this class
-			if (MapWindow::iAirspaceMode[(*it)->Type()] < 2) {
-			  (*it)->ResetWarnings();
-			  continue;
-			}
-			// Check if in interest area
-			if (!msRectOverlap(&bounds, &(*it)->Bounds())) {
-			  (*it)->ResetWarnings();
-			  continue;
-			}
-			
-			(*it)->CalculateWarning( Basic, Calculated );
-			_airspaces_of_interest.push_back(*it);
-		}
-		++step;
-		break;
-		
-	case 2:
-		// MULTICALC STEP 3
-		// Step3 Run warning fsms, refine warnings in fly zones, collect user messages
-		bool there_is_msg;
-		for (it=_airspaces_of_interest.begin(); it != _airspaces_of_interest.end(); ++it) {
-			there_is_msg = (*it)->FinishWarning();
-			if (there_is_msg) {
-			  // Add new warning message to queue
-			  AirspaceWarningMessage msg;
-			  msg.originator = *it;
-			  msg.event = (*it)->WarningEvent();
-			  msg.warnlevel = (*it)->WarningLevel();
-			  _user_warning_queue.push_back(msg);
-			}
-		}
+        // JMW detect airspace that wraps across 180
+        if ((bounds.minx< -90) && (bounds.maxx>90)) {
+          double tmp = bounds.minx;
+          bounds.minx = bounds.maxx;
+          bounds.maxx = tmp;
+        }
+        
+        // Step1 Init calculations
+        CAirspace::StartWarningCalculation( Basic, Calculated );
+        ++step;
+        break;
+        
+    case 1:
+        // MULTICALC STEP 2
+        // Step2 select airspaces in range, and do warning calculations on it, add to interest list
+        _airspaces_of_interest.clear();
+        for (it=_airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
+            // Check for warnings enabled for this class
+            if (MapWindow::iAirspaceMode[(*it)->Type()] < 2) {
+              (*it)->ResetWarnings();
+              continue;
+            }
+            // Check if in interest area
+            if (!msRectOverlap(&bounds, &(*it)->Bounds())) {
+              (*it)->ResetWarnings();
+              continue;
+            }
+            
+            (*it)->CalculateWarning( Basic, Calculated );
+            _airspaces_of_interest.push_back(*it);
+        }
+        ++step;
+        break;
+        
+    case 2:
+        // MULTICALC STEP 3
+        // Step3 Run warning fsms, refine warnings in fly zones, collect user messages
+        bool there_is_msg;
+        for (it=_airspaces_of_interest.begin(); it != _airspaces_of_interest.end(); ++it) {
+            there_is_msg = (*it)->FinishWarning();
+            if (there_is_msg) {
+              // Add new warning message to queue
+              AirspaceWarningMessage msg;
+              msg.originator = *it;
+              msg.event = (*it)->WarningEvent();
+              msg.warnlevel = (*it)->WarningLevel();
+              _user_warning_queue.push_back(msg);
+            }
+        }
 
-		// This is used nowhere.
-		Calculated->IsInAirspace = false;
+        // This is used nowhere.
+        Calculated->IsInAirspace = false;
 
-		// Fill infoboxes
-		// TODO Until we have one infobox, we have to collect nearest distance values differently!
-		if (CAirspace::GetNearestName() != NULL) {
-		  _tcsncpy(NearestAirspaceName, CAirspace::GetNearestName(), NAME_SIZE);
-		  NearestAirspaceName[NAME_SIZE]=0;
-		  NearestAirspaceHDist = CAirspace::GetNearestHDistance();
-		  NearestAirspaceVDist = CAirspace::GetNearestVDistance();
-		} else {
-		  NearestAirspaceName[0]=0;
-		  NearestAirspaceHDist=0;
-		  NearestAirspaceVDist=0;
-		}
-		step = 0;
-		break;
-		
+        // Fill infoboxes
+        // TODO Until we have one infobox, we have to collect nearest distance values differently!
+        if (CAirspace::GetNearestName() != NULL) {
+          _tcsncpy(NearestAirspaceName, CAirspace::GetNearestName(), NAME_SIZE);
+          NearestAirspaceName[NAME_SIZE]=0;
+          NearestAirspaceHDist = CAirspace::GetNearestHDistance();
+          NearestAirspaceVDist = CAirspace::GetNearestVDistance();
+        } else {
+          NearestAirspaceName[0]=0;
+          NearestAirspaceHDist=0;
+          NearestAirspaceVDist=0;
+        }
+        step = 0;
+        break;
+        
   } // sw step
 
   #ifdef DEBUG_AIRSPACE
@@ -1896,9 +1896,9 @@ CAirspaceList CAirspaceManager::GetVisibleAirspacesAtPoint(const double &lon, co
   CAirspaceList::const_iterator it;
   CCriticalSection::CGuard guard(_csairspaces);
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-	if ((*it)->DrawStyle()) {
-	  if ((*it)->IsHorizontalInside(lon, lat)) res.push_back(*it);
-	}
+    if ((*it)->DrawStyle()) {
+      if ((*it)->IsHorizontalInside(lon, lat)) res.push_back(*it);
+    }
   }
   return res;
 }
@@ -1910,8 +1910,8 @@ void CAirspaceManager::SetFarVisible(const rectObj &bounds_active)
   CCriticalSection::CGuard guard(_csairspaces);
   _airspaces_near.clear();
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-	// Check if airspace overlaps given bounds
-	if (msRectOverlap(&bounds_active, &((*it)->Bounds())) == MS_TRUE) _airspaces_near.push_back(*it);
+    // Check if airspace overlaps given bounds
+    if (msRectOverlap(&bounds_active, &((*it)->Bounds())) == MS_TRUE) _airspaces_near.push_back(*it);
   }
 }
 
@@ -1922,7 +1922,7 @@ void CAirspaceManager::CalculateScreenPositionsAirspace(const rectObj &screenbou
 
   CCriticalSection::CGuard guard(_csairspaces);
   for (it = _airspaces_near.begin(); it!= _airspaces_near.end(); ++it) {
-	(*it)->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, ResMapScaleOverDistanceModify);
+    (*it)->CalculateScreenPosition(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, ResMapScaleOverDistanceModify);
   }
 }
 
@@ -1965,7 +1965,7 @@ CAirspaceList CAirspaceManager::GetAirspacesInWarning() const
   CAirspaceList res;
   CCriticalSection::CGuard guard(_csairspaces);
   for (CAirspaceList::const_iterator it = _airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
-	if ( (*it)->WarningLevel()>awNone || (*it)->WarningAckLevel()>awNone ) res.push_back(*it);
+    if ( (*it)->WarningLevel()>awNone || (*it)->WarningAckLevel()>awNone ) res.push_back(*it);
   }
   return res;
 }
@@ -1990,7 +1990,7 @@ bool CAirspaceManager::AirspaceCalculateDistance(CAirspace *airspace, int *hDist
 
 bool warning_queue_sorter(AirspaceWarningMessage a, AirspaceWarningMessage b)
 {
-	return (a.warnlevel > b.warnlevel);
+    return (a.warnlevel > b.warnlevel);
 }
 
 
@@ -2001,7 +2001,7 @@ bool CAirspaceManager::PopWarningMessage(AirspaceWarningMessage *msg)
   CCriticalSection::CGuard guard(_csairspaces);
   if (_user_warning_queue.size() == 0) return NULL;
   res = _user_warning_queue.front();
-  _user_warning_queue.pop_front();			// remove message from fifo
+  _user_warning_queue.pop_front();            // remove message from fifo
   return res;*/
 
   if (msg == NULL) return false;
@@ -2014,112 +2014,112 @@ bool CAirspaceManager::PopWarningMessage(AirspaceWarningMessage *msg)
   if (size>1) std::sort(_user_warning_queue.begin(), _user_warning_queue.end(), warning_queue_sorter);
 
   *msg = _user_warning_queue.front();
-  _user_warning_queue.pop_front();			// remove message from fifo
+  _user_warning_queue.pop_front();            // remove message from fifo
   return true;
 }
 
 // Ack an airspace for a given ack level and acknowledgement time
 void CAirspaceManager::AirspaceSetAckLevel(CAirspace &airspace, AirspaceWarningLevel_t ackstate)
 {
-	CCriticalSection::CGuard guard(_csairspaces);
-	airspace.WarningAckLevel(ackstate);
-	airspace.SetAckTimeout();
-	#ifdef DEBUG_AIRSPACE
-	StartupStore(TEXT("LKAIRSP: %s AirspaceWarnListAckForTime()%s"),airspace.Name(),NEWLINE );
-	#endif
+    CCriticalSection::CGuard guard(_csairspaces);
+    airspace.WarningAckLevel(ackstate);
+    airspace.SetAckTimeout();
+    #ifdef DEBUG_AIRSPACE
+    StartupStore(TEXT("LKAIRSP: %s AirspaceWarnListAckForTime()%s"),airspace.Name(),NEWLINE );
+    #endif
 }
 
 // Ack an airspace for a current level
 void CAirspaceManager::AirspaceAckWarn(CAirspace &airspace)
 {
-	CCriticalSection::CGuard guard(_csairspaces);
-	airspace.WarningAckLevel(airspace.WarningLevel());
-	airspace.SetAckTimeout();
-	#ifdef DEBUG_AIRSPACE
-	StartupStore(TEXT("LKAIRSP: %s AirspaceWarnListAck()%s"),airspace.Name(),NEWLINE );
-	#endif
+    CCriticalSection::CGuard guard(_csairspaces);
+    airspace.WarningAckLevel(airspace.WarningLevel());
+    airspace.SetAckTimeout();
+    #ifdef DEBUG_AIRSPACE
+    StartupStore(TEXT("LKAIRSP: %s AirspaceWarnListAck()%s"),airspace.Name(),NEWLINE );
+    #endif
 }
 
 // Ack an airspace for all future warnings
 void CAirspaceManager::AirspaceAckSpace(CAirspace &airspace)
 {
-	CCriticalSection::CGuard guard(_csairspaces);
-	airspace.WarningAckLevel(awRed);
-	airspace.SetAckTimeout();
-	#ifdef DEBUG_AIRSPACE
-	StartupStore(TEXT("LKAIRSP: %s AirspaceAckSpace()%s"),airspace.Name(),NEWLINE );
-	#endif
+    CCriticalSection::CGuard guard(_csairspaces);
+    airspace.WarningAckLevel(awRed);
+    airspace.SetAckTimeout();
+    #ifdef DEBUG_AIRSPACE
+    StartupStore(TEXT("LKAIRSP: %s AirspaceAckSpace()%s"),airspace.Name(),NEWLINE );
+    #endif
 }
 
 // Ack an airspace for a day 
 void CAirspaceManager::AirspaceAckDaily(CAirspace &airspace)
 {
-	CCriticalSection::CGuard guard(_csairspaces);
-	airspace.WarningAckLevel(awDailyAck);
-	#ifdef DEBUG_AIRSPACE
-	StartupStore(TEXT("LKAIRSP: %s AirspaceAckDaily()%s"),airspace.Name(),NEWLINE );
-	#endif
+    CCriticalSection::CGuard guard(_csairspaces);
+    airspace.WarningAckLevel(awDailyAck);
+    #ifdef DEBUG_AIRSPACE
+    StartupStore(TEXT("LKAIRSP: %s AirspaceAckDaily()%s"),airspace.Name(),NEWLINE );
+    #endif
 }
 
 // Cancel ack on an airspace
 void CAirspaceManager::AirspaceAckDailyCancel(CAirspace &airspace)
 {
-	CCriticalSection::CGuard guard(_csairspaces);
-	airspace.WarningAckLevel(awNone);
-	#ifdef DEBUG_AIRSPACE
-	StartupStore(TEXT("LKAIRSP: %s AirspaceAckDailyCancel()%s"),airspace.Name(),NEWLINE );
-	#endif
+    CCriticalSection::CGuard guard(_csairspaces);
+    airspace.WarningAckLevel(awNone);
+    #ifdef DEBUG_AIRSPACE
+    StartupStore(TEXT("LKAIRSP: %s AirspaceAckDailyCancel()%s"),airspace.Name(),NEWLINE );
+    #endif
 }
 
 // Toggle flyzone on an airspace
 void CAirspaceManager::AirspaceFlyzoneToggle(CAirspace &airspace)
 {
-	CCriticalSection::CGuard guard(_csairspaces);
-	airspace.FlyzoneToggle();
+    CCriticalSection::CGuard guard(_csairspaces);
+    airspace.FlyzoneToggle();
 }
 
 // Centralized function to get airspace type texts
 TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const
 {
     switch (type) {
-	  case RESTRICT:
-		// LKTOKEN  _@M565_ = "Restricted" 
-		return gettext(TEXT("_@M565_"));
-	  case PROHIBITED:
-		// LKTOKEN  _@M537_ = "Prohibited" 
-		return gettext(TEXT("_@M537_"));
-	  case DANGER:
-		// LKTOKEN  _@M213_ = "Danger Area" 
-		return gettext(TEXT("_@M213_"));
-	  case CLASSA:
-		return TEXT("Class A");
-	  case CLASSB:
-		return TEXT("Class B");
-	  case CLASSC:
-		return TEXT("Class C");
-	  case CLASSD:
-		return TEXT("Class D");
-	  case CLASSE:
-		return TEXT("Class E");
-	  case CLASSF:
-		return TEXT("Class F");
-	  case CLASSG:
-		return TEXT("Class G");
-	  case NOGLIDER:
-		// LKTOKEN  _@M464_ = "No Glider" 
-		return gettext(TEXT("_@M464_"));
-	  case CTR:
-		return TEXT("CTR");
-	  case WAVE:
-		// LKTOKEN  _@M794_ = "Wave" 
-		return gettext(TEXT("_@M794_"));
-	  case AATASK:
-		return TEXT("AAT");
-	  case OTHER:
-		// LKTOKEN  _@M765_ = "Unknown" 
-		return gettext(TEXT("_@M765_"));
-	  default:
-		return TEXT("");
+      case RESTRICT:
+        // LKTOKEN  _@M565_ = "Restricted" 
+        return gettext(TEXT("_@M565_"));
+      case PROHIBITED:
+        // LKTOKEN  _@M537_ = "Prohibited" 
+        return gettext(TEXT("_@M537_"));
+      case DANGER:
+        // LKTOKEN  _@M213_ = "Danger Area" 
+        return gettext(TEXT("_@M213_"));
+      case CLASSA:
+        return TEXT("Class A");
+      case CLASSB:
+        return TEXT("Class B");
+      case CLASSC:
+        return TEXT("Class C");
+      case CLASSD:
+        return TEXT("Class D");
+      case CLASSE:
+        return TEXT("Class E");
+      case CLASSF:
+        return TEXT("Class F");
+      case CLASSG:
+        return TEXT("Class G");
+      case NOGLIDER:
+        // LKTOKEN  _@M464_ = "No Glider" 
+        return gettext(TEXT("_@M464_"));
+      case CTR:
+        return TEXT("CTR");
+      case WAVE:
+        // LKTOKEN  _@M794_ = "Wave" 
+        return gettext(TEXT("_@M794_"));
+      case AATASK:
+        return TEXT("AAT");
+      case OTHER:
+        // LKTOKEN  _@M765_ = "Unknown" 
+        return gettext(TEXT("_@M765_"));
+      default:
+        return TEXT("");
     }
 }
 
@@ -2170,38 +2170,38 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
   switch (alt->Base) {
     case abUndef:
       if (Units::GetUserAltitudeUnit() == unMeter) {
-		_stprintf(intbuf, TEXT("%s %s"), sUnitBuffer, sAltUnitBuffer);
+        _stprintf(intbuf, TEXT("%s %s"), sUnitBuffer, sAltUnitBuffer);
       } else {
-		_stprintf(intbuf, TEXT("%s"), sUnitBuffer);
+        _stprintf(intbuf, TEXT("%s"), sUnitBuffer);
       }
-	  break;
+      break;
     case abMSL:
       if (Units::GetUserAltitudeUnit() == unMeter) {
-		_stprintf(intbuf, TEXT("%s %s MSL"), sUnitBuffer, sAltUnitBuffer);
+        _stprintf(intbuf, TEXT("%s %s MSL"), sUnitBuffer, sAltUnitBuffer);
       } else {
-		_stprintf(intbuf, TEXT("%s MSL"), sUnitBuffer);
+        _stprintf(intbuf, TEXT("%s MSL"), sUnitBuffer);
       }
-	  break;
+      break;
     case abAGL:
       if (alt->Altitude == 0)
         _stprintf(intbuf, TEXT("SFC"));
       else {
-		Units::FormatUserAltitude(alt->AGL, sUnitBuffer, sizeof(sUnitBuffer)/sizeof(sUnitBuffer[0]));
-		Units::FormatAlternateUserAltitude(alt->AGL, sAltUnitBuffer, sizeof(sAltUnitBuffer)/sizeof(sAltUnitBuffer[0]));
-		if (Units::GetUserAltitudeUnit() == unMeter) {
-		  _stprintf(intbuf, TEXT("%s %s AGL"), sUnitBuffer, sAltUnitBuffer);
-		} else {
-		  _stprintf(intbuf, TEXT("%s AGL"), sUnitBuffer);
-		}
+        Units::FormatUserAltitude(alt->AGL, sUnitBuffer, sizeof(sUnitBuffer)/sizeof(sUnitBuffer[0]));
+        Units::FormatAlternateUserAltitude(alt->AGL, sAltUnitBuffer, sizeof(sAltUnitBuffer)/sizeof(sAltUnitBuffer[0]));
+        if (Units::GetUserAltitudeUnit() == unMeter) {
+          _stprintf(intbuf, TEXT("%s %s AGL"), sUnitBuffer, sAltUnitBuffer);
+        } else {
+          _stprintf(intbuf, TEXT("%s AGL"), sUnitBuffer);
+        }
       }
-	  break;
+      break;
     case abFL:
       if (Units::GetUserAltitudeUnit() == unMeter) {
-		_stprintf(intbuf, TEXT("FL%.0f %.0fm %.0fft"), alt->FL, alt->Altitude, alt->Altitude*TOFEET);
+        _stprintf(intbuf, TEXT("FL%.0f %.0fm %.0fft"), alt->FL, alt->Altitude, alt->Altitude*TOFEET);
       } else {
-		_stprintf(intbuf, TEXT("FL%.0f %.0fft"), alt->FL, alt->Altitude*TOFEET);
+        _stprintf(intbuf, TEXT("FL%.0f %.0fft"), alt->FL, alt->Altitude*TOFEET);
       }
-	  break;
+      break;
   }
   _tcsncpy(buffer, intbuf, bufferlen-1);
   buffer[bufferlen-1]=0;
