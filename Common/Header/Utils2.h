@@ -173,9 +173,10 @@ extern HFONT					LK8PanelUnitFont;
 #define MSM_INFO_TRF		13
 // target page for traffic with graphics
 #define MSM_INFO_TARGET		14
+#define MSM_INFO_CONTEST	15
 // turnaround point is TOP (equal to last TRI define), 
 // remember that arrays must count from zero, so MSM_TOP+1
-#define MSM_TOP			14
+#define MSM_TOP			15
 //
 // THIS CONFIGURATION GIVES THE ORDER OF MENUs. ALL ITEMS MUST ALSO BE ADDED INSIDE INITMODETABLE()
 // in Utils2.cpp WHERE each mode is paired with an MSM_xxx item.
@@ -207,8 +208,9 @@ extern HFONT					LK8PanelUnitFont;
 #define IM_THERMAL		1
 #define IM_TASK			2
 #define IM_AUX			3
-#define IM_TRI			4
-#define IM_TOP			4
+#define IM_CONTEST		4
+#define IM_TRI			5
+#define IM_TOP			5
 //
 // Navigation mode
 //

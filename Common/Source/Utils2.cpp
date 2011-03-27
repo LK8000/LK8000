@@ -2705,6 +2705,7 @@ void InitModeTable() {
 	ModeTable[LKMODE_INFOMODE][IM_THERMAL]	=	MSM_INFO_THERMAL;
 	ModeTable[LKMODE_INFOMODE][IM_TASK]	=	MSM_INFO_TASK;
 	ModeTable[LKMODE_INFOMODE][IM_AUX]	=	MSM_INFO_AUX;
+	ModeTable[LKMODE_INFOMODE][IM_CONTEST]	=	MSM_INFO_CONTEST;
 	ModeTable[LKMODE_INFOMODE][IM_TRI]	=	MSM_INFO_TRI;
 
 	ModeTable[LKMODE_NAV][NV_COMMONS]	=	MSM_COMMON;
@@ -2771,7 +2772,7 @@ redo:
 		CURTYPE++;
 	}
 	if (ISPARAGLIDER) {
-		if (CURTYPE == IM_TRI) goto redo;
+		if (CURTYPE == IM_TRI || CURTYPE == IM_CONTEST) goto redo;
 	}
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 }
@@ -2788,7 +2789,7 @@ redo:
 		CURTYPE--;
 	}
 	if (ISPARAGLIDER) {
-		if (CURTYPE == IM_TRI) goto redo;
+		if (CURTYPE == IM_TRI || CURTYPE == IM_CONTEST) goto redo;
 	}
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 }
