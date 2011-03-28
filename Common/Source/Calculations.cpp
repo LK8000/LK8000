@@ -953,6 +953,7 @@ void InitCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   ResetFlightStats(Basic, Calculated, false);
   Calculated->Flying = false;
+  Calculated->FreeFlying = false;
   Calculated->Circling = false;
   Calculated->FinalGlide = false;
   for (int i=0; i<=NUMTERRAINSWEEPS; i++) {
@@ -1048,6 +1049,7 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   Heading(Basic, Calculated);
   DistanceToNext(Basic, Calculated);
   DistanceToHome(Basic, Calculated);
+  DetectFreeFlying();	// check ongoing powerless flight
   DoLogging(Basic, Calculated); // moved here to reduce latency 091201
   Vario(Basic,Calculated); // moved here to reduce latency 091201
   TerrainHeight(Basic, Calculated);

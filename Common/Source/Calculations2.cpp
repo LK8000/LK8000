@@ -205,7 +205,7 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     }
 
 #ifdef NEW_OLC
-    if(Calculated->Flying)
+    if(Calculated->FreeFlying)
       CContestMgr::Instance().Add(new CPointGPS(static_cast<unsigned>(Basic->Time),
                                                 Basic->Latitude, Basic->Longitude,
                                                 static_cast<unsigned>(Basic->Altitude)));

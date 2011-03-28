@@ -528,7 +528,11 @@ void CContestMgr::Add(const CPointGPSSmart &gps)
   const unsigned STEPS_NUM = 7;
   
   CCriticalSection::CGuard guard(_mainCS);
-  
+/* 4MAT, I let you fix your engine removing and cleaning up..  Check if removing the stuff is ok.
+   Add is now called only during a freeflight.
+   We should probably reset all OLC trace in case of landing or power flight, but only manually
+   after a task clear or something like that.
+
   // filter first points until a standalone flight is detected
   if(!_startDetected) {
     if(_startAltitudeLoss > 0) {
@@ -537,12 +541,15 @@ void CContestMgr::Add(const CPointGPSSmart &gps)
         return;
     }
     _startDetected = true;
+    Moved to DetectFreeFlying and handled differently because this is called from Calculation thread..
+
 #ifndef TEST_CONTEST
     if(_startAltitudeLoss > 0)
       // LKTOKEN  _@M1452_ = "Powerless flight detected" 
       DoStatusMessage(gettext(TEXT("_@M1452_")));
 #endif
   }
+*/
   
   {
     // Update main trace

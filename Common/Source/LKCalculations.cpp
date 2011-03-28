@@ -1926,3 +1926,75 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 }
 #endif
 // ---------- new version ----------------
+
+
+/* 
+ * Called by Calculations thread, each second.
+ */
+#define FF_ALTITUDELOSS	25		// meters
+#define FF_MAXTOWTIME	900		// 15 minutes
+
+bool DetectFreeFlying(void) {
+
+  static bool ffDetected=false;
+  static int lastMaxAltitude=-1000;
+
+  // reset on ground
+  if (CALCULATED_INFO.Flying == FALSE) {
+	CALCULATED_INFO.FreeFlying=false;
+	ffDetected=false;
+	lastMaxAltitude=-1000;
+	return false;
+  }
+
+  if (ISPARAGLIDER) {
+	CALCULATED_INFO.FreeFlying=true;
+	ffDetected=true;
+	return true; // no message for start of FF to paragliders
+  }
+
+  // If flying, and start was already detected, assume valid freeflight.
+  // Put here in the future the EN check for motorplanes
+  if (ffDetected) return true;
+
+  // Here we are flying, and the start of free flight must still be detected
+ 
+  // A loss of altitude will trigger FF
+  lastMaxAltitude = std::max(lastMaxAltitude, (int)GPS_INFO.Altitude);
+  if ((int)GPS_INFO.Altitude <= ( lastMaxAltitude - FF_ALTITUDELOSS)) goto backtrue;
+
+  // If circling we assume that we are in free flight already, using the start of circling time and position.
+  // But we must be sure that we are not circling.. while towed. A 12 deg/sec turn rate will make it quite sure.
+  if (CALCULATED_INFO.Circling && ( fabs(CALCULATED_INFO.TurnRate) >=12 ) ) {
+
+	// DoStatusMessage(gettext(TEXT("FF THERMAL")));
+
+	// 4MAT notice> I need to add a point to the trace: the very first point. 
+	CContestMgr::Instance().Add(new CPointGPS(static_cast<unsigned>(CALCULATED_INFO.ClimbStartTime),
+		CALCULATED_INFO.ClimbStartLat, CALCULATED_INFO.ClimbStartLong,
+		static_cast<unsigned>(CALCULATED_INFO.ClimbStartAlt)));
+
+	goto backtrue;
+  }
+
+  // TODO Vario Check. Start checking back in time since last thermal, until we detect the first vario 
+  // delta. This is how OLC and SeeYou is working, most probably.
+
+  // ......
+
+  // In any case, after this time, force a start
+  if ((int)GPS_INFO.Time > ( CALCULATED_INFO.TakeOffTime + FF_MAXTOWTIME)) goto backtrue;
+
+  // else we are not in free flight
+  return false;
+
+  backtrue:
+
+  // WE SHOULD USE A GLOBAL EVENT INSTEAD, and manage it from main thread > draw thread through CommonProcess
+  DoStatusMessage(gettext(TEXT("_@M1452_")));  // LKTOKEN  _@M1452_ = "Free flight detected"
+
+  ffDetected=true;
+  CALCULATED_INFO.FreeFlying=true;
+  return true;
+
+}

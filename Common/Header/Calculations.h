@@ -66,6 +66,7 @@ typedef struct _DERIVED_INFO
   int    FinalGlide;
   int    AutoMacCready; // TODO FIX bool
   int    Flying;	// TODO FIX bool ?
+  bool	 FreeFlying;	// set true when powerless flight is detected. Always true for paragliders.
   double NextAltitudeRequired;
   double NextAltitudeRequired0; // mc=0
   double NextAltitudeDifference;
