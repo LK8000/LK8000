@@ -3,7 +3,7 @@
 #include "Calculations.h"
 
 void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-bool DetectFreeFlying(void);
+bool DetectFreeFlying(DERIVED_INFO *Calculated);
 
 void AddSnailPoint(void);
 
