@@ -32,6 +32,7 @@
 #include "McReady.h"
 #include "InputEvents.h"
 #include "MapWindow.h"
+#include "LKMapWindow.h"
 
 #include "utils/heapcheck.h"
 #if defined(LKAIRSPACE) || defined(NEW_OLC)
@@ -2774,6 +2775,9 @@ redo:
 	if (ISPARAGLIDER) {
 		if (CURTYPE == IM_TRI || CURTYPE == IM_CONTEST) goto redo;
 	}
+	if (ISGAAIRCRAFT) {
+		if (CURTYPE == IM_CONTEST) goto redo;
+	}
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 }
 
@@ -2790,6 +2794,9 @@ redo:
 	}
 	if (ISPARAGLIDER) {
 		if (CURTYPE == IM_TRI || CURTYPE == IM_CONTEST) goto redo;
+	}
+	if (ISGAAIRCRAFT) {
+		if (CURTYPE == IM_CONTEST) goto redo;
 	}
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 }

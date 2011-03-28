@@ -958,6 +958,8 @@ _@M953_ "Transparent"
 _@M954_ "Font Smoothing "
 _@M955_ "ClearType"
 _@M956_ "Anti Aliasing"
+# Page 1.5 name, keep short:
+_@M957_ "Contest"
 
 #
 # Paragliding lock/unlock screen feature

@@ -285,6 +285,9 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 		case IM_TRI:
 			wsprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, gettext(TEXT("_@M909_"))); // Turn
 			break;
+		case IM_CONTEST:
+			wsprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, gettext(TEXT("_@M957_"))); // Contest
+			break;
 		case IM_TRF+IM_TOP:
 			wsprintf(Buffer,_T("%d.%d %s"), ModeIndex, IM_TRF+1, gettext(TEXT("_@M910_"))); // Target
 			break;
@@ -319,6 +322,9 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 			break;
 		case IM_TRI:
 			wsprintf(Buffer,gettext(TEXT("_@M913_"))); // Experimental
+			break;
+		case IM_CONTEST:
+			wsprintf(Buffer,gettext(TEXT("")));
 			break;
 		case IM_TRF+IM_TOP:
 		case IM_TARGET+IM_TOP:

@@ -366,6 +366,7 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
 	case MSM_INFO_TRI:
 	case MSM_INFO_TRF:
 	case MSM_INFO_TARGET:
+	case MSM_INFO_CONTEST:
 		DrawInfoPage(hdc,rc, false);
 		break;
 	case MSM_TRAFFIC:
