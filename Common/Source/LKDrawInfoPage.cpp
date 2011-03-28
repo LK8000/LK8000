@@ -654,7 +654,8 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 			showunit=LKFormatValue(LK_FIN_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
 			break;
 		case IM_CONTEST:
-			showunit=LKFormatValue(LK_OLC_PLUS_SCORE, false, BufferValue, BufferUnit, BufferTitle);
+			//showunit=LKFormatValue(LK_OLC_PLUS_SCORE, false, BufferValue, BufferUnit, BufferTitle);
+			showunit=LKFormatValue(LK_OLC_CLASSIC_SPEED, false, BufferValue, BufferUnit, BufferTitle);
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(9);
@@ -685,7 +686,8 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[8], &qcolumn[8],&qrow[9],&qrow[10],&qrow[8]);
 			break;
 		case IM_CONTEST:
-			showunit=LKFormatValue(LK_OLC_PLUS_PREDICTED_SCORE, false, BufferValue, BufferUnit, BufferTitle);
+			//showunit=LKFormatValue(LK_OLC_PLUS_PREDICTED_SCORE, false, BufferValue, BufferUnit, BufferTitle);
+			showunit=LKFormatValue(LK_OLC_FAI_SPEED, false, BufferValue, BufferUnit, BufferTitle); 
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[8], &qcolumn[8],&qrow[9],&qrow[10],&qrow[8]);
 			break;
 		case IM_AUX:
@@ -716,7 +718,8 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 			showunit=LKFormatValue(LK_TASK_DISTCOV, false, BufferValue, BufferUnit, BufferTitle);
 			break;
 		case IM_CONTEST:
-			showunit=LKFormatValue(LK_OLC_LEAGUE_SCORE, false, BufferValue, BufferUnit, BufferTitle);
+			//showunit=LKFormatValue(LK_OLC_LEAGUE_SCORE, false, BufferValue, BufferUnit, BufferTitle);
+			showunit=LKFormatValue(LK_OLC_LEAGUE_SPEED, true, BufferValue, BufferUnit, BufferTitle); 
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(11);
@@ -746,7 +749,8 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 			showunit=LKFormatValue(LK_FIN_GR, false, BufferValue, BufferUnit, BufferTitle);
 			break;
 		case IM_CONTEST:
-			wcscpy(BufferValue,_T("")); wcscpy(BufferTitle,_T(""));
+			//wcscpy(BufferValue,_T("")); wcscpy(BufferTitle,_T(""));
+			showunit=LKFormatValue(LK_OLC_3TPS_SPEED, true, BufferValue, BufferUnit, BufferTitle); 
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(12);
@@ -781,7 +785,8 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
 			break;
 		case IM_CONTEST:
-			showunit=LKFormatValue(LK_OLC_CLASSIC_SPEED, false, BufferValue, BufferUnit, BufferTitle);
+			showunit=LKFormatValue(LK_OLC_PLUS_SCORE, false, BufferValue, BufferUnit, BufferTitle);
+			//showunit=LKFormatValue(LK_OLC_CLASSIC_SPEED, false, BufferValue, BufferUnit, BufferTitle);
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
 			break;
 		case IM_AUX:
@@ -815,7 +820,8 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[9], &qcolumn[9],&qrow[12],&qrow[13],&qrow[11]);
 			break;
 		case IM_CONTEST:
-			showunit=LKFormatValue(LK_OLC_FAI_SPEED, false, BufferValue, BufferUnit, BufferTitle); 
+			//showunit=LKFormatValue(LK_OLC_FAI_SPEED, false, BufferValue, BufferUnit, BufferTitle); 
+			showunit=LKFormatValue(LK_OLC_PLUS_PREDICTED_SCORE, false, BufferValue, BufferUnit, BufferTitle);
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[8], &qcolumn[8],&qrow[12],&qrow[13],&qrow[11]);
 			break;
 		case IM_AUX:
@@ -849,7 +855,8 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[13], &qcolumn[13],&qrow[12],&qrow[13],&qrow[11]);
 			break;
 		case IM_CONTEST:
-			showunit=LKFormatValue(LK_OLC_LEAGUE_SPEED, true, BufferValue, BufferUnit, BufferTitle); 
+			//showunit=LKFormatValue(LK_OLC_LEAGUE_SPEED, true, BufferValue, BufferUnit, BufferTitle); 
+			showunit=LKFormatValue(LK_OLC_LEAGUE_SCORE, false, BufferValue, BufferUnit, BufferTitle);
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[12], &qcolumn[12],&qrow[12],&qrow[13],&qrow[11]);
 			break;
 		case IM_AUX:
@@ -878,7 +885,8 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 			showunit=LKFormatValue(LK_MC, true, BufferValue, BufferUnit, BufferTitle); 
 			break;
 		case IM_CONTEST:
-			showunit=LKFormatValue(LK_OLC_3TPS_SPEED, true, BufferValue, BufferUnit, BufferTitle); 
+			wcscpy(BufferValue,_T("")); wcscpy(BufferTitle,_T(""));
+			//showunit=LKFormatValue(LK_OLC_3TPS_SPEED, true, BufferValue, BufferUnit, BufferTitle); 
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(16);
