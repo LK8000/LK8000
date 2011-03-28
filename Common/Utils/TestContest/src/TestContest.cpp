@@ -27,11 +27,14 @@ CTestContest::CTestContest(const std::string &igcFile, unsigned handicap, unsign
   _handicap(handicap),
   _replay(CReplayLogger::Instance()),
   _kml(igcFile + ".kml"),
-  _contestMgr(handicap, startAltitudeLoss),
+  _contestMgr(),
   _interruptFix(interruptFix),
   _maxIterProcessPeriod(0),
-  _maxIterProcessTime(0)
+  _maxIterProcessTime(0),
+  _startAltitudeLoss(startAltitudeLoss), 
+  _startDetected(false), _startMaxAltitude(-1000)
 {
+  _contestMgr.Reset(handicap);
   std::wstring wname(_igcFile.begin(), _igcFile.end());
   _replay.Filename(wname.c_str());
   _replay.Register(this, GPSHandler);
@@ -62,6 +65,14 @@ void CTestContest::GPSHandler(void *user, unsigned time, double latitude, double
     // interrupt the test after requested number of GPS fixes
     return;
   
+  if(!test->_startDetected) {
+    if(test->_startAltitudeLoss > 0) {
+      test->_startMaxAltitude = std::max(test->_startMaxAltitude, (int)altitude);
+      if(altitude + test->_startAltitudeLoss > test->_startMaxAltitude)
+        return;
+    }
+    test->_startDetected = true;
+  }
   CTimeStamp iterBegin;
   
   // add new GPS point to the analysis

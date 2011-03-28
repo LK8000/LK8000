@@ -103,12 +103,12 @@ private:
   static const unsigned TRACE_CLOSED_MAX_DIST = 1000;       /**< @brief Maximum distance between 2 GPS fixes that form a closed path */
   static const unsigned TRACE_SPRINT_TIME_LIMIT = 150 * 60; /**< @brief Time limit for OLC-League trace */
   static const unsigned TRACE_FAI_BIG_TRIANGLE_LENGTH = 500 * 1000; /**< @brief Minimum distance for big FAI triangle with lees strict rules */
+
+  // Other
+  static const unsigned DEFAULT_HANDICAP = 100;
   
   static CContestMgr _instance;                   /**< @brief Singleton */
   unsigned _handicap;                             /**< @brief Glider handicap */
-  short _startAltitudeLoss;                       /**< @brief The loss of altitude needed to detect the start of powerless flight */
-  bool _startDetected;                            /**< @brief @c true if a start of powerless flight was detected */
-  int _startMaxAltitude;                          /**< @brief The maximum altitude of a takeoff */
   CTracePtr _trace;                               /**< @brief Main trace */
   CTracePtr _traceSprint;                         /**< @brief Trace for OLC-League */
   CTracePtr _traceLoop;                           /**< @brief Trace for OLC-League */
@@ -132,15 +132,12 @@ private:
   void SolveOLCPlus(bool predicted);
   
 public:
-  static const unsigned DEFAULT_START_ALTITUDE_LOSS = 25;
-  static const unsigned DEFAULT_HANDICAP = 100;
-  
   static CContestMgr &Instance() { return _instance; }
   static const TCHAR *TypeToString(TType type);
   
-  CContestMgr(unsigned handicap = DEFAULT_HANDICAP, short startAltitudeLoss = DEFAULT_START_ALTITUDE_LOSS);
+  CContestMgr();
   
-  void Reset(unsigned handicap, short startAltitudeLoss);
+  void Reset(unsigned handicap);
   void Add(const CPointGPSSmart &gps);
   
   CResult Result(TType type, bool fillArray) const;

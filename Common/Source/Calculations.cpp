@@ -789,7 +789,7 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   if (full) {
 #ifdef NEW_OLC
-    CContestMgr::Instance().Reset(Handicap, CContestMgr::DEFAULT_START_ALTITUDE_LOSS);
+    CContestMgr::Instance().Reset(Handicap);
 #else
     olc.ResetFlight();
 #endif /* NEW_OLC */

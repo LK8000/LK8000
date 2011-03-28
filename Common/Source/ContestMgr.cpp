@@ -53,13 +53,9 @@ const TCHAR *CContestMgr::TypeToString(TType type)
 
 /** 
  * @brief Constructor
- * 
- * @param handicap Glider handicap
- * @param startAltitudeLoss The loss of altitude needed to detect the start of powerless flight
  */
-CContestMgr::CContestMgr(unsigned handicap, short startAltitudeLoss):
-  _handicap(handicap), _startAltitudeLoss(startAltitudeLoss), 
-  _startDetected(false), _startMaxAltitude(-1000),
+CContestMgr::CContestMgr():
+  _handicap(DEFAULT_HANDICAP),
   _trace(new CTrace(TRACE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM)),
   _traceSprint(new CTrace(TRACE_SPRINT_FIX_LIMIT, TRACE_SPRINT_TIME_LIMIT, COMPRESSION_ALGORITHM)),
   _traceLoop(new CTrace(TRACE_TRIANGLE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM)),
@@ -76,15 +72,11 @@ CContestMgr::CContestMgr(unsigned handicap, short startAltitudeLoss):
  * @brief Resets Contest Manager
  * 
  * @param handicap Glider handicap
- * @param startAltitudeLoss The loss of altitude needed to detect the start of powerless flight
  */
-void CContestMgr::Reset(unsigned handicap, short startAltitudeLoss)
+void CContestMgr::Reset(unsigned handicap)
 {
   CCriticalSection::CGuard guard(_mainCS);
   _handicap = handicap;
-  _startAltitudeLoss = startAltitudeLoss;
-  _startDetected = false;
-  _startMaxAltitude = -1000;
   {
     CCriticalSection::CGuard guard(_traceCS);
     _trace.reset(new CTrace(TRACE_FIX_LIMIT, 0, COMPRESSION_ALGORITHM));
@@ -528,29 +520,6 @@ void CContestMgr::Add(const CPointGPSSmart &gps)
   const unsigned STEPS_NUM = 7;
   
   CCriticalSection::CGuard guard(_mainCS);
-/* 4MAT, I let you fix your engine removing and cleaning up..  Check if removing the stuff is ok.
-   Add is now called only during a freeflight.
-   We should probably reset all OLC trace in case of landing or power flight, but only manually
-   after a task clear or something like that.
-
-  // filter first points until a standalone flight is detected
-  if(!_startDetected) {
-    if(_startAltitudeLoss > 0) {
-      _startMaxAltitude = std::max(_startMaxAltitude, gps->Altitude());
-      if(gps->Altitude() + _startAltitudeLoss > _startMaxAltitude)
-        return;
-    }
-    _startDetected = true;
-    Moved to DetectFreeFlying and handled differently because this is called from Calculation thread..
-
-#ifndef TEST_CONTEST
-    if(_startAltitudeLoss > 0)
-      // LKTOKEN  _@M1452_ = "Powerless flight detected" 
-      DoStatusMessage(gettext(TEXT("_@M1452_")));
-#endif
-  }
-*/
-  
   {
     // Update main trace
     CCriticalSection::CGuard guard(_traceCS);

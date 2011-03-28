@@ -50,7 +50,10 @@ class CTestContest {
   unsigned _interruptFix;                         /**< @brief GPS fix at which a test should be interrupted */
   unsigned _maxIterProcessPeriod;                 /**< @brief Maximum iteration processing period */
   unsigned _maxIterProcessTime;                   /**< @brief Time of GPS fix of maximum iteration processing */
-  
+  short _startAltitudeLoss;                       /**< @brief The loss of altitude needed to detect the start of powerless flight */
+  bool _startDetected;                            /**< @brief @c true if a start of powerless flight was detected */
+  int _startMaxAltitude;                          /**< @brief The maximum altitude of a takeoff */
+ 
   static void GPSHandler(void *user, unsigned time, double latitude, double longitude, short altitude);
   
   void Dump(const CContestMgr::TType type) const;
