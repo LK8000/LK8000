@@ -1938,12 +1938,21 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
 
   static bool ffDetected=false;
   static int lastMaxAltitude=-1000;
+  static double gndAltitude=0;
+  static bool doinit=true;
+  static double vario[8];
+
+  if (doinit) {
+	for (int i=0; i<8; i++) vario[i]=0;
+	doinit=false;
+  }
 
   // reset on ground
   if (Calculated->Flying == FALSE) {
 	Calculated->FreeFlying=false;
 	ffDetected=false;
 	lastMaxAltitude=-1000;
+	gndAltitude=GPS_INFO.Altitude;
 	return false;
   }
 
@@ -1959,6 +1968,10 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
     return true;
 
   // Here we are flying, and the start of free flight must still be detected
+
+  // We shall not consider anything below 400m gain, and before 2.5minutes have passed since takeoff
+  if ( (GPS_INFO.Altitude - gndAltitude)<400) return false;
+  if ( (GPS_INFO.Time - Calculated->TakeOffTime) < 150) return false;
  
   // A loss of altitude will trigger FF
   lastMaxAltitude = std::max(lastMaxAltitude, (int)GPS_INFO.Altitude);
@@ -1969,9 +1982,6 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
   // But we must be sure that we are not circling.. while towed. A 12 deg/sec turn rate will make it quite sure.
   if (Calculated->Circling && ( fabs(Calculated->TurnRate) >=12 ) ) {
 
-	// DoStatusMessage(gettext(TEXT("FF THERMAL")));
-
-	// 4MAT notice> I need to add a point to the trace: the very first point. 
 	CContestMgr::Instance().Add(new CPointGPS(static_cast<unsigned>(Calculated->ClimbStartTime),
 		Calculated->ClimbStartLat, Calculated->ClimbStartLong,
 		static_cast<unsigned>(Calculated->ClimbStartAlt)));
@@ -1979,11 +1989,23 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
 	goto backtrue;
   }
 
-  // TODO Vario Check. Start checking back in time since last thermal, until we detect the first vario 
-  // delta. This is how OLC and SeeYou is working, most probably.
+  vario[7]=vario[6];
+  vario[6]=vario[5];
+  vario[5]=vario[4];
+  vario[4]=vario[3];
+  vario[3]=vario[2];
+  vario[2]=vario[1];
+  vario[1]=Calculated->Vario;
 
-  // ......
+  double newavervario;
+  double oldavervario;
+  newavervario=(vario[1]+vario[2]+vario[3])/3;
+  if (newavervario>0.6) goto lastcheck;
+  if (newavervario<=0) goto backtrue;
+  oldavervario=(vario[4]+vario[5]+vario[6]+vario[7])/4;
+  if ( fabs(oldavervario-newavervario)>2.2 ) goto backtrue;
 
+  lastcheck:
   // In any case, after this time, force a start
   if ((int)GPS_INFO.Time > ( Calculated->TakeOffTime + FF_MAXTOWTIME))
     goto backtrue;
@@ -1993,7 +2015,7 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
 
   backtrue:
 
-  // WE SHOULD USE A GLOBAL EVENT INSTEAD, and manage it from main thread > draw thread through CommonProcess
+  // REMOVE THIS MESSAGE FOR PRODUCTION VERSION, NO NEED.
   DoStatusMessage(gettext(TEXT("_@M1452_")));  // LKTOKEN  _@M1452_ = "Free flight detected"
 
   ffDetected=true;
