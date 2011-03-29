@@ -506,6 +506,7 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 			break;
 		case IM_CONTEST:
 			showunit=LKFormatValue(LK_OLC_3TPS_DIST, false, BufferValue, BufferUnit, BufferTitle);
+			_stprintf(BufferUnit,_T(""));
 			WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[16],&qcolumn[16], 
 											&qrow[3],&qrow[4],&qrow[2]);
 			break;
@@ -625,6 +626,7 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 			break;
 		case IM_CONTEST:
 			showunit=LKFormatValue(LK_OLC_3TPS_PREDICTED_DIST, false, BufferValue, BufferUnit, BufferTitle);
+			_stprintf(BufferUnit,_T(""));
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(8);
@@ -749,8 +751,8 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 			showunit=LKFormatValue(LK_FIN_GR, false, BufferValue, BufferUnit, BufferTitle);
 			break;
 		case IM_CONTEST:
-			//wcscpy(BufferValue,_T("")); wcscpy(BufferTitle,_T(""));
 			showunit=LKFormatValue(LK_OLC_3TPS_SPEED, true, BufferValue, BufferUnit, BufferTitle); 
+			_stprintf(BufferUnit,_T(""));
 			break;
 		case IM_AUX:
 			index=GetInfoboxType(12);
