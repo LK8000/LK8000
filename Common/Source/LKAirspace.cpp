@@ -333,9 +333,10 @@ bool CAirspace::FinishWarning()
     bool res = false;
     int abs_hdistance = abs(_hdistance);
     int abs_vdistance = abs(_vdistance);
-    int hdistance_histeresis = 500;            // Horizontal distance histeresis to step back awNone
+    int hdistance_histeresis = 500;           // Horizontal distance histeresis to step back awNone
     int vdistance_histeresis = 20;            // Vertical distance histeresis to step back awNone
-    int hdistance_lookout = 200;            // Horizontal distance to lookout from a flyzone to check what is outside
+    int hdistance_lookout = 200;              // Horizontal distance to lookout from a flyzone to check what is outside
+    int vdistance_lookout = 20;               // Vertical distance to lookout from a flyzone to check what is outside
     
     //Calculate warning state based on airspace warning events
     switch (_warnevent) {
@@ -353,9 +354,7 @@ bool CAirspace::FinishWarning()
           _warninglevel = awNone;
           break;
         } 
-        if ( (abs_hdistance<_hdistancemargin) || 
-             (abs_vdistance<AirspaceWarningVerticalMargin) 
-           ) {
+        if (abs_hdistance<_hdistancemargin) {
           // Check what is outside this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
           double lon = 0;
           double lat =0;
@@ -363,6 +362,27 @@ bool CAirspace::FinishWarning()
           FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &lat, &lon);
           
           if ( !CAirspaceManager::Instance().AirspaceWarningIsGoodPosition(lon, lat, _lastknownalt, _lastknownagl) ) {
+            // Near to outside, modify warnevent to inform user
+            _warninglevel = awYellow;
+            _warnevent = aweNearOutsideFly;
+          }
+        }
+        if (abs_vdistance<AirspaceWarningVerticalMargin) {
+          // Check what is outside vertically this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
+          int alt = _lastknownalt;
+          int agl = _lastknownagl;
+          if (_vdistance<0) {
+            // adjacent airspace will be above this one 
+            alt += abs_vdistance + vdistance_lookout;
+            agl += abs_vdistance + vdistance_lookout;
+          } else {
+            // adjacent airspace will be below this one 
+            alt -= abs_vdistance + vdistance_lookout;
+            agl -= abs_vdistance + vdistance_lookout;
+          }
+          if (agl<0) agl = 0;
+          
+          if ( !CAirspaceManager::Instance().AirspaceWarningIsGoodPosition(_lastknownpos.Longitude(), _lastknownpos.Latitude(), alt, agl) ) {
             // Near to outside, modify warnevent to inform user
             _warninglevel = awYellow;
             _warnevent = aweNearOutsideFly;
@@ -390,7 +410,7 @@ bool CAirspace::FinishWarning()
       case aweEnteringFly:
         // Also preset warnlevel to awYellow, because we entering yellow zone. 
         // but we don't need to generate a warning message right now - force no change in warnlevel
-        if (1) {
+        if (abs_hdistance<_hdistancemargin) {
           // Check what is outside this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
           double lon = 0;
           double lat =0;
@@ -398,6 +418,25 @@ bool CAirspace::FinishWarning()
           FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &lat, &lon);
           
           if ( !CAirspaceManager::Instance().AirspaceWarningIsGoodPosition(lon, lat, _lastknownalt, _lastknownagl) ) {
+            _warninglevelold = _warninglevel = awYellow;          
+          }
+        }
+        if (abs_vdistance<AirspaceWarningVerticalMargin) {
+          // Check what is outside vertically this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
+          int alt = _lastknownalt;
+          int agl = _lastknownagl;
+          if (_vdistance<0) {
+            // adjacent airspace will be above this one 
+            alt += abs_vdistance + vdistance_lookout;
+            agl += abs_vdistance + vdistance_lookout;
+          } else {
+            // adjacent airspace will be below this one 
+            alt -= abs_vdistance + vdistance_lookout;
+            agl -= abs_vdistance + vdistance_lookout;
+          }
+          if (agl<0) agl = 0;
+          
+          if ( !CAirspaceManager::Instance().AirspaceWarningIsGoodPosition(_lastknownpos.Longitude(), _lastknownpos.Latitude(), alt, agl) ) {
             _warninglevelold = _warninglevel = awYellow;          
           }
         }
