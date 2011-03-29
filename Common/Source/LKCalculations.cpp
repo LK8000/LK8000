@@ -27,6 +27,7 @@
 #include <tchar.h>
 #include "Calculations2.h"
 #include "Message.h"
+#include "Logger.h"
 
 #include "utils/heapcheck.h"
 #if defined(LKAIRSPACE) || defined(NEW_OLC)
@@ -1980,6 +1981,13 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
   }
 
   if (ISPARAGLIDER) {
+    Calculated->FreeFlying=true;
+    ffDetected=true;
+    return true; 
+  }
+
+  // do something special for other situations
+  if (SIMMODE && !ReplayLogger::IsEnabled()) {
     Calculated->FreeFlying=true;
     ffDetected=true;
     return true; 
