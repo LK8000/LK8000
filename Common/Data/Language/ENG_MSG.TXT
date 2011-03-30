@@ -961,6 +961,10 @@ _@M956_ "Anti Aliasing"
 # Page 1.5 name, keep short:
 _@M957_ "Contest"
 
+# ON/OFF in dialog windows (not Menu)
+_@M958_ "ON"
+_@M959_ "OFF"
+
 #
 # Paragliding lock/unlock screen feature
 #

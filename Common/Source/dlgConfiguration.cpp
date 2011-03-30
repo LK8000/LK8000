@@ -1854,8 +1854,8 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M491_ = "OFF" 
-    dfe->addEnumText(gettext(TEXT("_@M491_")));
+	// LKTOKEN  _@M959_ = "OFF" 
+    dfe->addEnumText(gettext(TEXT("_@M959_")));
 	// LKTOKEN  _@M496_ = "ON/Fixed" 
     dfe->addEnumText(gettext(TEXT("_@M496_")));
 	// LKTOKEN  _@M497_ = "ON/Scaled" 
@@ -1996,8 +1996,8 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M491_ = "OFF" 
-    dfe->addEnumText(gettext(TEXT("_@M491_")));
+	// LKTOKEN  _@M959_ = "OFF" 
+    dfe->addEnumText(gettext(TEXT("_@M959_")));
 	// LKTOKEN  _@M393_ = "Line" 
     dfe->addEnumText(gettext(TEXT("_@M393_")));
 	// LKTOKEN  _@M609_ = "Shade" 
@@ -2290,8 +2290,8 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M491_ = "OFF" 
-    dfe->addEnumText(gettext(TEXT("_@M491_")));
+	// LKTOKEN  _@M959_ = "OFF" 
+    dfe->addEnumText(gettext(TEXT("_@M959_")));
 	// LKTOKEN  _@M427_ = "Mark center" 
     dfe->addEnumText(gettext(TEXT("_@M427_")));
 	// LKTOKEN  _@M518_ = "Pan to center" 
@@ -3285,8 +3285,8 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M491_ = "OFF" 
-    dfe->addEnumText(gettext(TEXT("_@M491_")));
+	// LKTOKEN  _@M959_ = "OFF" 
+    dfe->addEnumText(gettext(TEXT("_@M959_")));
     dfe->addEnumText(gettext(TEXT("Flap")));
     dfe->addEnumText(gettext(TEXT("SC")));
     dfe->Set(EnableExternalTriggerCruise);
@@ -3298,10 +3298,10 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M894_ = "ON" 
-    dfe->addEnumText(gettext(TEXT("_@M894_")));
-	// LKTOKEN  _@M491_ = "OFF" 
-    dfe->addEnumText(gettext(TEXT("_@M491_")));
+	// LKTOKEN  _@M958_ = "ON" 
+    dfe->addEnumText(gettext(TEXT("_@M958_")));
+	// LKTOKEN  _@M959_ = "OFF" 
+    dfe->addEnumText(gettext(TEXT("_@M959_")));
     dfe->Set(Appearance.InverseInfoBox);
     wp->RefreshDisplay();
   }
