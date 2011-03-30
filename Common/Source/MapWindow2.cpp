@@ -1790,6 +1790,8 @@ void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc)
 	if (label_sequencing_divider) --label_sequencing_divider;
 
  	// Draw warning position and label on top of all airspaces
+    if (1) {
+    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
 	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
 		  if ((*it)->WarningLevel() > awNone) {
 			POINT sc;
@@ -1836,6 +1838,7 @@ void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc)
 			}
 		  }
 	}//for
+    }
 	if (!label_sequencing_divider) label_sequencing_divider=3;		// Do label sequencing slower than update rate
 }
 #endif
@@ -1855,6 +1858,8 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 	
   if (GetAirSpaceFillType() != asp_fill_none) {
 #ifdef LKAIRSPACE
+    if (1) {
+    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
 	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
       if ((*it)->DrawStyle() == adsFilled) {
 		airspace_type = (*it)->Type();
@@ -1871,6 +1876,7 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 		(*it)->Draw(hDCTemp, rc, true);
 	  }
 	}//for
+    }
 #else
     if (AirspaceCircle) {
       // draw without border
@@ -1922,6 +1928,8 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
   }
 
 #ifdef LKAIRSPACE
+    if (1) {
+    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
 	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->DrawStyle()) {
 		  airspace_type = (*it)->Type();
@@ -1937,6 +1945,7 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 		  (*it)->Draw(hDCTemp, rc, false);
         }
 	}//for
+    }
 #else
   if (AirspaceCircle) {
     for(i=0;i<NumberOfAirspaceCircles;i++) {

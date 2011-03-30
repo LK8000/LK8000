@@ -344,6 +344,8 @@ public:
   //Attributes
   unsigned int NumberofAirspaces() { CCriticalSection::CGuard guard(_csairspaces); return _airspaces.size(); }
 
+  //Locking
+  CCriticalSection& MutexRef() const { return _csairspaces; }
 
 private:
   static CAirspaceManager _instance;

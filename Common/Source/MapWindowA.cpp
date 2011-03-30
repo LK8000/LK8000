@@ -140,6 +140,8 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
 
   // draw without border
 #ifdef LKAIRSPACE
+    if (1) {
+    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
 	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->DrawStyle() == adsFilled) {
 		  airspace_type = (*it)->Type();
@@ -152,6 +154,7 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
 		  (*it)->Draw(hDCTemp, rc, true);
         }
 	}//for
+    }
 #else
   if (AirspaceCircle) {
     for(i = 0; i < NumberOfAirspaceCircles; i++) {
@@ -200,6 +203,8 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   HPEN hOrigPen = (HPEN) SelectObject(hdc, GetStockObject(WHITE_PEN));
 
 #ifdef LKAIRSPACE
+    if (1) {
+    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
 	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->DrawStyle()) {
 		  airspace_type = (*it)->Type();
@@ -211,6 +216,7 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
 		  (*it)->Draw(hdc, rc, false);
         }
 	}//for
+    }
 #else
   if (AirspaceCircle) {
     for(i = 0; i < NumberOfAirspaceCircles; i++) {
