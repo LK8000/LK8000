@@ -1932,43 +1932,24 @@ static void Update(void){
       CContestMgr::CResult result = CContestMgr::Instance().Result(contestType, false);
       if(result.Type() == contestType) {
         TCHAR distStr[50];
-        if(InfoBoxLayout::landscape)
-          _stprintf(distStr, _T("%s:\r\n  %5.1f %s\r\n"),
-                    // LKTOKEN  _@M245_ = "Distance" 
-                    gettext(TEXT("_@M245_")),
-                    DISTANCEMODIFY * result.Distance(),
-                    Units::GetDistanceName());
-        else
-          _stprintf(distStr, _T("%s: %5.1f %s\r\n"),
-                    // LKTOKEN  _@M245_ = "Distance" 
-                    gettext(TEXT("_@M245_")),
-                    DISTANCEMODIFY * result.Distance(),
-                    Units::GetDistanceName());
+        _stprintf(distStr, _T("%.1f %s\r\n"),
+                  DISTANCEMODIFY * result.Distance(),
+                  Units::GetDistanceName());
+        
+        TCHAR speedStr[50];
+        _stprintf(speedStr, TEXT("%.1f %s\r\n"),
+                  TASKSPEEDMODIFY * result.Speed(),
+                  Units::GetTaskSpeedName());
         
         TCHAR timeTempStr[50];
         Units::TimeToText(timeTempStr, result.Duration());
         TCHAR timeStr[50];
-        _stprintf(timeStr, _T("%s: %s\r\n"),
-                  // LKTOKEN  _@M720_ = "Time" 
-                  gettext(TEXT("_@M720_")),
-                  timeTempStr);
-        
-        TCHAR speedStr[50];
-        _stprintf(speedStr, 
-                  TEXT("%s: %3.1f %s\r\n"),
-                  // LKTOKEN  _@M632_ = "Speed" 
-                  gettext(TEXT("_@M632_")),
-                  TASKSPEEDMODIFY * result.Speed(),
-                  Units::GetTaskSpeedName());
+        _stprintf(timeStr, _T("%s\r\n"), timeTempStr);
         
         TCHAR scoreStr[50] = _T("");
         if(result.Type() != CContestMgr::TYPE_FAI_3_TPS &&
            result.Type() != CContestMgr::TYPE_FAI_3_TPS_PREDICTED)
-          _stprintf(scoreStr, 
-                    TEXT("%s: %.2f\r\n"),
-                    // LKTOKEN  _@M584_ = "Score" 
-                    gettext(TEXT("_@M584_")),
-                    result.Score());
+          _stprintf(scoreStr, TEXT("%.2f pt\r\n"), result.Score());
         
         TCHAR plusStr[50] = _T("");
         if(result.Type() == CContestMgr::TYPE_OLC_CLASSIC ||
@@ -1980,16 +1961,16 @@ static void Update(void){
             CContestMgr::TYPE_OLC_PLUS_PREDICTED : CContestMgr::TYPE_OLC_PLUS;
           CContestMgr::CResult resultPlus = CContestMgr::Instance().Result(type, false);
           if(InfoBoxLayout::landscape)
-            _stprintf(plusStr, TEXT("%s:\r\n  %6.2f"),
+            _stprintf(plusStr, TEXT("\r\n%s:\r\n%.2f pt"),
                       CContestMgr::TypeToString(type),
                       resultPlus.Score());
           else
-            _stprintf(plusStr, TEXT("%s: %6.2f"),
+            _stprintf(plusStr, TEXT("\r\n%s: %.2f pt"),
                       CContestMgr::TypeToString(type),
                       resultPlus.Score());
         }
         
-        _stprintf(sTmp, _T("%s%s%s%s%s"), distStr, timeStr, speedStr, scoreStr, plusStr);
+        _stprintf(sTmp, _T("%s%s%s%s%s"), distStr, speedStr, timeStr, scoreStr, plusStr);
       }
       else {
         _stprintf(sTmp, TEXT("%s\r\n"),
