@@ -2773,9 +2773,9 @@ redo:
 		CURTYPE++;
 	}
 	if (ISPARAGLIDER) {
-		if (CURTYPE == IM_TRI || CURTYPE == IM_CONTEST) goto redo;
+		if (CURTYPE == IM_TRI) goto redo;
 	}
-	if (ISGAAIRCRAFT) {
+	if (!UseContestEngine()) {
 		if (CURTYPE == IM_CONTEST) goto redo;
 	}
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
@@ -2793,9 +2793,9 @@ redo:
 		CURTYPE--;
 	}
 	if (ISPARAGLIDER) {
-		if (CURTYPE == IM_TRI || CURTYPE == IM_CONTEST) goto redo;
+		if (CURTYPE == IM_TRI) goto redo;
 	}
-	if (ISGAAIRCRAFT) {
+	if (!UseContestEngine()) {
 		if (CURTYPE == IM_CONTEST) goto redo;
 	}
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );

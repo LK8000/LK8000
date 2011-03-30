@@ -514,3 +514,16 @@ const TCHAR *TaskFileName(unsigned bufferLen, TCHAR buffer[])
   
   return buffer;
 }
+
+//
+// This is used globally to determine if Contest facility is in use or not
+// We might use here also a configuration option shortly.
+// Notice that engine Reset() is done in any case.
+//
+bool UseContestEngine(void) {
+
+  if (!ISGLIDER) return false;
+
+  return true;
+
+}

@@ -2025,9 +2025,11 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
   // Of course nobody can circle while winchlaunched, so in this case FF is immediately detected.
   if (Calculated->Circling && ( winchdetected || ( fabs(Calculated->TurnRate) >=12 ) ) ) {
 
-    CContestMgr::Instance().Add(new CPointGPS(static_cast<unsigned>(Calculated->ClimbStartTime),
+    if (UseContestEngine()) {
+      CContestMgr::Instance().Add(new CPointGPS(static_cast<unsigned>(Calculated->ClimbStartTime),
 	Calculated->ClimbStartLat, Calculated->ClimbStartLong,
 	static_cast<unsigned>(Calculated->ClimbStartAlt)));
+    }
 
     #if DEBUG_DFF
     DoStatusMessage(_T("DFF:  THERMALLING"));

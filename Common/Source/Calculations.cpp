@@ -789,6 +789,8 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   if (full) {
 #ifdef NEW_OLC
+    // It is better to reset it even if UseContestEngine() if false, because we might
+    // change aircraft type during runtime. We never know.
     CContestMgr::Instance().Reset(Handicap);
 #else
     olc.ResetFlight();
