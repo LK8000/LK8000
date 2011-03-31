@@ -288,6 +288,7 @@ int InitActiveGate(void);
 bool ValidGate(void);
 	// Are we on the correct side of start cylinder?
 bool CorrectSide(void);
+void ResetFreeFlightStats(DERIVED_INFO *Calculated);
 
 
 void InitCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated);

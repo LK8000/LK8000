@@ -954,7 +954,7 @@ void InitCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 
   ResetFlightStats(Basic, Calculated, false);
-  Calculated->Flying = false;
+  Calculated->Flying = false;	// CHECK should be FALSE, lets get rid of BOOLs!! 110330
   Calculated->FreeFlying = false;
   Calculated->Circling = false;
   Calculated->FinalGlide = false;
@@ -1359,6 +1359,7 @@ void AverageThermal(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 void MaxHeightGain(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   if (!Calculated->Flying) return;
+  if (!Calculated->FreeFlying && (ISGLIDER||ISPARAGLIDER)) return;
 
   if (Calculated->MinAltitude>0) {
     double height_gain = Calculated->NavAltitude - Calculated->MinAltitude;
