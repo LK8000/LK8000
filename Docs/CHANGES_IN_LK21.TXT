@@ -1,21 +1,105 @@
 WHATS NEW IN 2.1e
 
+VERSION 2.1e  110331
+
+======================================================================================
+IBOX mode is still available, but no more supported for new features.
 
 NEW
 
-. Mat's OLC work undergoing test.. wow 
+. Contest Calculation Engine "GMAT" version 1 by Mateusz Pusz
+  100% new engine, realtime calculation for OLC classic, FAI triangle, 
+  FAI 3 turnpoints, OLC sprint league, OLC Plus. In addition, also
+  the same paths are recalculated assuming the pilot can make it back
+  to the starting point, thus PREDICTING the final results.  
+  All values updated in realtime, automatically. Very light CPU load, 
+  will allow also very slow CPU to use the new engine. 
+  Powerful, flexible, expandable!
+
+  NOTE> The CCE Engine is available only to GLIDERS and will not currently
+        calculate anything for Paragliders, GA and CAR modes.
+	
+. New infoboxes (21) available for all contest values. 
+  THEY ARE NOT AVAILABLE IN IBOX MODE.
+  These new infoboxes are all named starting with OLC, to have them grouped:
+ 
+	OLC Classic Distance
+	OLC Classic Score (based on configured handicap)
+	OLC Classic Speed
+
+	OLC Classic Predicted Distance
+	OLC Classic Predicted Score
+	OLC Classic Predicted Speed 
+
+	OLC FAI 3 TPs Distance
+	OLC FAI 3 TPs Speed
+
+	OLC FAI 3 TPs Predicted Distance
+	OLC FAI 3 TPs Predicted Speed
+
+	OLC FAI triangle Distance
+	OLC FAI triangle Score
+	OLC FAI triangle Speed
+
+	OLC FAI triangle Predicted Distance
+	OLC FAI triangle Predicted Score
+	OLC FAI triangle Predicted Speed
+
+	OLC League Distance
+	OLC League Score
+	OLC League Speed
+
+	OLC Plus Score
+	OLC Plus Predicted Score
+
+  Total 21 new values. On display, Predicted values have an asterics "*".
+  (OLC Plus is only a score value, the sum of OLC classic score and FAI triangle score)
+  (Predicted Speed is calculated using average speed so far)
+
+  With all of these infoboxes you can create custom page or bottom bar stripes.
+  However, there is no need to configure anything because...... 
+
+. New CONTEST infopage 1.5 (the TRI becomes 1.6).
+  This page appears only for GLIDER mode, not for paragliders, GA, CAR etc.
+  The new infopage is showing all necessary values, updated in real time.
+
+. New Info -> Analysis -> Contest   page.
+  Here you can view graphical representation of selected contest, with all
+  values as well. To change contest, rotating all of them, simply press
+  on the "Change" button.
+
+. Bottom bar stripe  STA3  has no more ODOmeter displayed, if Contest is in use.
+  In place of ODO, the  OLC Distance is shown. 
+  ODO is now available in the TRI infopage 1.6
+
+. Free flight start detection engine. This is a very important feature for Contest
+  calculation, and generally for all flight statistics, expecially altitude min and max.
+  Previously, we were assuming the freeflight would start after takeoff, which is wrong
+  for gliders of course.
+  The new FF engine is detecting both Winch and Tow takeoffs, and it will reset flight
+  stats after the real free flight has started.
+  As a side effect, no thermalling mode is enabled during non-freeflight.
+
+. New polar for Dimona motorglider
 
 CHANGES
 
-. In SIM PAN mode you can no longer select an airspace using long click on it.
-  To select an airspace in SIM PAN, position your aircraft where the airspace is visible, and then
-  exit pan mode. Airspace selection in SIM PAN mode is not available.
+. Fix SIM mode PAN mode airspace display with long click on moving map.
+  Using PAN mode during SIM mode, long click on a visible airspace will produce as usual
+  the airspace details. If there is no airspace underlying, either because not existing in
+  that position, or because Airspace display OFF was selected in menu DISPLAY 1/3, then
+  long click on the moving map will result in reposition the aircraft there.
+  In any case, to maintain compatibility with old version, long click on center map screen will
+  always reposition the aircraft and will not recall airspace details.
 
-. Task Edit is now back available even when no waypoint files are configured. 
-  It is thus now possible to load a task even when no waypoints are in use, because the
+. Task Edit is now available even when no waypoint files are configured. 
+  It is thus possible to load a task even when no waypoints are in use, because the
   task will load its own waypoints of course
 
-.  Show Clock in Appearance menu 13 disabled when not available.
+. "Show Clock" in System Config Appearance menu 13 disabled when not available.
+
+. During takeoff, until the real free flight has started, no thermalling mode will be
+  triggered.   GA and CAR mode will not enter thermalling mode in any case anymore.
 
 BUGFIXES
 
@@ -34,6 +118,8 @@ BUGFIXES
 
 . (2.1d fix IGC replay broken with negative latitudes and longitudes)
 . (2.1c) fix Font Smoothing not working correctly, never setting ClearType on some devices
+
+
 
 
 VERSION 2.1d  110309
