@@ -936,6 +936,9 @@ label_TRI:
 
 	LKFormatValue(LK_GLOAD, true, BufferValue, BufferUnit, BufferTitle);
 	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[9],&qrow[10],&qrow[8]);
+
+	LKFormatValue(LK_ODOMETER, true, BufferValue, BufferUnit, BufferTitle);
+	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
      } else {
 	showunit=true;
 	// right
@@ -965,6 +968,9 @@ label_TRI:
 
 	LKFormatValue(LK_GLOAD, true, BufferValue, BufferUnit, BufferTitle);
 	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[3], &qcolumn[3],&qrow[9],&qrow[10],&qrow[8]);
+
+	LKFormatValue(LK_ODOMETER, true, BufferValue, BufferUnit, BufferTitle);
+	WriteInfo(hdc, &showunit, BufferValue, BufferUnit, BufferTitle, &qcolumn[4], &qcolumn[4],&qrow[12],&qrow[13],&qrow[11]);
      }
 
 #if 0
