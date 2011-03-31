@@ -470,6 +470,7 @@ unsigned long CheckFreeRam(void);
 unsigned long CheckMaxHeapBlock(void);
 
 const TCHAR *TaskFileName(unsigned bufferLen, TCHAR buffer[]);
+bool UseContestEngine(void);
 
 // LK Utils
 void LKBatteryManager();

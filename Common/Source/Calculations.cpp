@@ -789,6 +789,8 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   if (full) {
 #ifdef NEW_OLC
+    // It is better to reset it even if UseContestEngine() if false, because we might
+    // change aircraft type during runtime. We never know.
     CContestMgr::Instance().Reset(Handicap);
 #else
     olc.ResetFlight();
@@ -952,7 +954,7 @@ void InitCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 
   ResetFlightStats(Basic, Calculated, false);
-  Calculated->Flying = false;
+  Calculated->Flying = false;	// CHECK should be FALSE, lets get rid of BOOLs!! 110330
   Calculated->FreeFlying = false;
   Calculated->Circling = false;
   Calculated->FinalGlide = false;
@@ -1357,6 +1359,7 @@ void AverageThermal(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 void MaxHeightGain(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   if (!Calculated->Flying) return;
+  if (!Calculated->FreeFlying && (ISGLIDER||ISPARAGLIDER)) return;
 
   if (Calculated->MinAltitude>0) {
     double height_gain = Calculated->NavAltitude - Calculated->MinAltitude;
@@ -1667,7 +1670,8 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       break;
     }
     if((Rate >= MinTurnRate)||(forcecircling)) {
-      if( (!ISCAR && ((Basic->Time  - StartTime) > CruiseClimbSwitch))|| forcecircling) { // 101205 ISCAR
+      // if( (!ISCAR && ((Basic->Time  - StartTime) > CruiseClimbSwitch))|| forcecircling) { // 101205 ISCAR
+      if( (Calculated->FreeFlying && ((Basic->Time  - StartTime) > CruiseClimbSwitch))|| forcecircling) { // No GA or CAR
         Calculated->Circling = TRUE;
         // JMW Transition to climb
         MODE = CLIMB;

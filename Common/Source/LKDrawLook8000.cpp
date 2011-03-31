@@ -1057,7 +1057,11 @@ Drawbottom:
 		showunit=LKFormatValue(LK_HBARO, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_AUX:
-		showunit=LKFormatValue(LK_ODOMETER, true, BufferValue, BufferUnit, BufferTitle); // 100221
+		if (UseContestEngine())
+		  showunit=LKFormatValue(LK_OLC_CLASSIC_DIST, true, BufferValue, BufferUnit, BufferTitle);
+		else
+		  showunit=LKFormatValue(LK_ODOMETER, true, BufferValue, BufferUnit, BufferTitle); // 100221
+
 		// showunit=false; 100221
 		break;
 	case BM_TSK:

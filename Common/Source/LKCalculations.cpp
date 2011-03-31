@@ -25,9 +25,11 @@
 #include "RasterTerrain.h"
 #include <math.h>
 #include <tchar.h>
+#include "Calculations.h"
 #include "Calculations2.h"
 #include "Message.h"
 #include "Logger.h"
+#include "LKMapWindow.h"
 
 #include "utils/heapcheck.h"
 #if defined(LKAIRSPACE) || defined(NEW_OLC)
@@ -1982,8 +1984,10 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
 
   if (ISPARAGLIDER) {
     Calculated->FreeFlying=true;
-    ffDetected=true;
     return true; 
+  }
+  if (ISGAAIRCRAFT||ISCAR) {
+    return false; 
   }
 
   // do something special for other situations
@@ -2025,9 +2029,11 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
   // Of course nobody can circle while winchlaunched, so in this case FF is immediately detected.
   if (Calculated->Circling && ( winchdetected || ( fabs(Calculated->TurnRate) >=12 ) ) ) {
 
-    CContestMgr::Instance().Add(new CPointGPS(static_cast<unsigned>(Calculated->ClimbStartTime),
+    if (UseContestEngine()) {
+      CContestMgr::Instance().Add(new CPointGPS(static_cast<unsigned>(Calculated->ClimbStartTime),
 	Calculated->ClimbStartLat, Calculated->ClimbStartLong,
 	static_cast<unsigned>(Calculated->ClimbStartAlt)));
+    }
 
     #if DEBUG_DFF
     DoStatusMessage(_T("DFF:  THERMALLING"));
@@ -2111,6 +2117,50 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
   #endif
   ffDetected=true;
   Calculated->FreeFlying=true;
+  ResetFreeFlightStats(Calculated);
   return true;
+
+}
+
+
+//
+// Upon FF detection, we reset some calculations, ONLY SOME.
+// Most things are pertinent to flying, not to freeflying.
+//
+// Notice 1:  we cannot do oldstyle reset, because it would reset also takeoff time.
+//            For FF, we need new stuff doing new things.
+// Notice 2:  GA and CAR mode will not ever use FF stuff
+//
+// Notice 3:  since FF is not (still) affecting tasks, we shall not reset task values now
+//
+void ResetFreeFlightStats(DERIVED_INFO *Calculated) {
+
+  int i;
+
+  flightstats.Reset();
+  Calculated->timeCruising = 0;
+  Calculated->timeCircling = 0;
+  Calculated->TotalHeightClimb = 0;
+  Calculated->CruiseStartTime = -1;
+  Calculated->ClimbStartTime = -1;
+  Calculated->AverageThermal = 0;
+
+  for (i=0; i<200; i++) {
+     Calculated->AverageClimbRate[i]= 0;
+     Calculated->AverageClimbRateN[i]= 0;
+  }
+  Calculated->MaxThermalHeight = 0;
+  for (i=0; i<NUMTHERMALBUCKETS; i++) {
+    Calculated->ThermalProfileN[i]=0;
+    Calculated->ThermalProfileW[i]=0;
+  }
+
+  // clear thermal sources for first time.
+  for (i=0; i<MAX_THERMAL_SOURCES; i++) {
+    Calculated->ThermalSources[i].LiftRate= -1.0;
+  }
+
+  // MinAltitude is handled separately already taking care of FF
+
 
 }

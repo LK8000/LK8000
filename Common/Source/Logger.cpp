@@ -843,6 +843,12 @@ void LoggerDeviceDeclare() {
   Declaration_t Decl;
   int i;
 
+  if (CALCULATED_INFO.Flying) {
+    // LKTOKEN  _@M1423_ = "Forbidden during flight!"
+    MessageBoxX(hWndMapWindow, gettext(TEXT("_@M1423_")), _T(""), MB_OK| MB_ICONINFORMATION);
+    return;
+  }
+
   GetRegistryString(szRegistryPilotName, Decl.PilotName, 64);
   GetRegistryString(szRegistryAircraftType, Decl.AircraftType, 32);
   GetRegistryString(szRegistryAircraftRego, Decl.AircraftRego, 32);

@@ -1,5 +1,5 @@
 # LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  110131
+# MASTER UPDATED:  110331
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -11,7 +11,7 @@
 # ATTENTION> Max number of tokens is defined in LKLanguage as MAX_MESSAGES
 #
 # All lines that are empty, or starting with a # , are ignored.
-# DEVELOPERS ADDING NEW MESSAGES HERE SHOULD REQUEST A NUMBERING SLOT TO PAOLO
+# DEVELOPERS ADDING NEW MESSAGES HERE SHOULD REQUEST A NUMBERING SLOT ON GITHUB
 
 _@M1_ " Diff"
 _@M2_ " Dist"
@@ -1342,6 +1342,8 @@ _@M1415_ "Declaration not accepted!"
 _@M1420_ "Error while declaring"
 _@M1421_ "Task description"
 _@M1422_ "Start and Finish"
+
+_@M1423_ "Forbidden during flight!"
 
 #
 # Contests
