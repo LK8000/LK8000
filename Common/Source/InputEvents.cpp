@@ -198,7 +198,7 @@ void InputEvents::readFile() {
   TCHAR key[2049];	// key from scanf
   TCHAR value[2049];	// value from scanf
   TCHAR *new_label = NULL;		
-  int found;
+  int found = 0;
 
   // Init first entry
   bool some_data = false;		// Did we fin some in the last loop...
@@ -216,9 +216,10 @@ void InputEvents::readFile() {
   /* Read from the file */
   // TODO code: Note that ^# does not allow # in key - might be required (probably not)
   //		Better way is to separate the check for # and the scanf 
+  // ! _stscanf works differently on WinPC and WinCE (on WinCE it returns EOF on empty string)
 
-  while (ReadULine(fp, buffer, countof(buffer)) &&
-	   ((found = _stscanf(buffer, TEXT("%[^#=]=%[^\r\n][\r\n]"), key, value)) != EOF)
+  while (ReadULine(fp, buffer, countof(buffer)) && (buffer[0] == '\0' ||
+	   ((found = _stscanf(buffer, TEXT("%[^#=]=%[^\r\n][\r\n]"), key, value)) != EOF))
   ) {
     line++;
 
