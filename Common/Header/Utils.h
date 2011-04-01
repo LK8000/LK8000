@@ -327,9 +327,8 @@ void ReadUUID(void);
 void FormatWarningString(int Type, TCHAR *Name , AIRSPACE_ALT Base, AIRSPACE_ALT Top, TCHAR *szMessageBuffer, TCHAR *TileBuffer );
 BOOL ReadString(ZZIP_FILE* zFile, int Max, TCHAR *String);
 BOOL ReadString(HANDLE hFile, int Max, TCHAR *String);
-BOOL ReadUString(HANDLE hFile, int Max, TCHAR *String, short filetype);
-short FileIsUTF16(HANDLE hFile);
 BOOL ReadStringX(FILE *fp, int Max, TCHAR *String);
+bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars);
 
 // Fast trig functions
 void InitSineTable(void);

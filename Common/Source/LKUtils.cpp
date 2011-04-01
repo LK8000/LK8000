@@ -33,6 +33,7 @@
 #include "InputEvents.h"
 #include "LKMapWindow.h"
 
+#include "utils/stringext.h"
 #include "utils/heapcheck.h"
 
 
@@ -410,68 +411,55 @@ void LKRunStartEnd(bool start) {
 }
 
 
-// 101221 lets try to use UTF-16 directly
-// filetype 1 BE  -1 LE  
-// This is reading char string and returning tchar. We need to double the Max size.
-BOOL ReadUString(HANDLE hFile, int Max, TCHAR *String, short filetype)
+// Reads line from UTF-8 encoded text file.
+// File must be open in binary read mode.
+bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars)
 {
-  if (filetype==0)
-  return ( ReadString(hFile, Max, String)); // Ansi string, no-wide chars
+  unsigned char buf[READLINE_LENGTH * 2];
 
-  DWORD dwNumBytesRead=0;
-  DWORD dwTotalNumBytesRead=0;
-  char  FileBuffer[(READLINE_LENGTH*2)+2];
-  DWORD dwFilePos;
+  long startPos = zzip_tell(fp);
 
-  String[0] = '\0';
-
-  dwFilePos = SetFilePointer(hFile, 0, NULL, FILE_CURRENT);
-
-  if (hFile == INVALID_HANDLE_VALUE)
-	return(FALSE);
-
-  if (ReadFile(hFile, FileBuffer, sizeof(FileBuffer)-2, &dwNumBytesRead, (OVERLAPPED *)NULL) == 0)
-	return(FALSE);
-
-  int i = 0;
-  int j = 1;
-  if (filetype==1) j=0;  // do not skip leading 0 for Big Endians
-
-  char c;
-  char *pointer=(char *)&String[0];
-
-  // each character is a wide character here, so we read twice as much
-  while(i<((Max*2)-2) && j<(int)dwNumBytesRead){ 
-	c = FileBuffer[j++];
-	dwTotalNumBytesRead++;
-
-	if(c == '\n') break;
-	*pointer++=c;
-	i++;
+  if (startPos < 0) {
+    StartupStore(_T(". ftell() error = %d%s"), errno, NEWLINE);
+    return(false);
   }
-  *pointer++ = '\0';
-  *pointer++ = '\0';
+
+  size_t nbRead = zzip_fread(buf, 1, sizeof(buf) - 1, fp);
   
-  // There is a bug here, and/or in the LKLanguage calling function.
-  // Careful checking translations using UTF-16 BE
+  if (nbRead == 0)
+    return(false);
 
-  String[dwTotalNumBytesRead]='\0';
-  String[Max-1]='\0';
+  buf[nbRead] = '\0';
 
-  if (filetype==1 && dwTotalNumBytesRead>0) {
-	char *repoint;
-	for (repoint=(char *)&String[0]; repoint<=(pointer-2); repoint+=2) {
-		c = *repoint;
-		*repoint = *(repoint+1);
-		*(repoint+1)= c;
-	}
+  // find new line (CR/LF/CRLF) in the string and terminate string at that position
+  size_t i;
+  for (i = 0; i < nbRead; i++) {
+    if (buf[i] == '\n')
+    {
+      buf[i++] = '\0';
+      if (buf[i] == '\r')
+        i++;
+      break;
+    }
+
+    if (buf[i] == '\r')
+    {
+      buf[i++] = '\0';
+      if (buf[i] == '\n')
+        i++;
+      break;
+    }
   }
-  // String[dwTotalNumBytesRead/2]='\0';
 
-  SetFilePointer(hFile, dwFilePos+j, NULL, FILE_BEGIN);
+  // next reading will continue after new line
+  zzip_seek(fp, startPos + i, SEEK_SET);
 
-  return (dwTotalNumBytesRead>0);
+  // skip leading BOM
+  char* begin = (char*) buf;
+  if (buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF)
+    begin += 3;
 
+  return(utf2unicode(begin, unicode, maxChars) >= 0);
 }
 
 
