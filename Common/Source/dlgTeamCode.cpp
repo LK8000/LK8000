@@ -162,7 +162,7 @@ void dlgTeamCodeShowModal(void)
       if (!wf) return;
     }
 
-  TCHAR sTmp[32];
+  TCHAR sTmp[32] = { 0 };
   if( WayPointList && ValidWayPoint(TeamCodeRefWaypoint)) {
 	// LKTOKEN _@M1230_ "Team Ref.: "
 	_tcsncpy(sTmp, gettext(TEXT("_@M1230_")), 20);
