@@ -510,6 +510,9 @@
 <WndProperty Name="prpLKVarioBar" Caption="_@M785_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H196_">
 <DataField name="" DataType="enum" Min=0 Max=1 Step=1/>
 </WndProperty>
+<WndProperty Name="prpLKVarioVal" Caption="_@M1424_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H1204_">
+<DataField name="" DataType="enum" Min=0 Max=1 Step=1/>
+</WndProperty>
 <WndProperty Name="prpThermalBar" Caption="_@M712_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H197_">
 <DataField name="" DataType="boolean" />
 </WndProperty>

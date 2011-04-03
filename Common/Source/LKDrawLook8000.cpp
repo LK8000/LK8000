@@ -814,8 +814,23 @@ drawOverlay:
 	}
 
 	if (ISPARAGLIDER || LKVarioBar) { // 100213
-		//LKFormatValue(LK_HGPS, false, BufferValue, BufferUnit, BufferTitle);
-		LKFormatValue(LK_VARIO, false, BufferValue, BufferUnit, BufferTitle); // 091115
+		if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) || LKVarioVal==vValVarioVario) {
+			LKFormatValue(LK_VARIO, false, BufferValue, BufferUnit, BufferTitle);
+			wcscpy(BufferUnit,_T("V"));
+		} else {
+			switch(LKVarioVal) {
+				case vValVarioNetto:
+					LKFormatValue(LK_NETTO, false, BufferValue, BufferUnit, BufferTitle);
+					wcscpy(BufferUnit,_T("N"));
+					break;
+				case vValVarioSoll:
+				default:
+					LKFormatValue(LK_SPEED_DOLPHIN, false, BufferValue, BufferUnit, BufferTitle);
+					wcscpy(BufferUnit,_T("S"));
+					break;
+			}
+		}
+
 		SelectObject(hdc, bigFont); 
 		GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
 		rcy+=TextSize.cy;

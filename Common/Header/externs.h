@@ -187,6 +187,7 @@ extern short DeclutterMode;
 extern int PGClimbZoom;
 extern int PGCruiseZoom;
 extern int LKVarioBar;
+extern int LKVarioVal;
 
 extern short OverlaySize;
 extern short BarOpacity;

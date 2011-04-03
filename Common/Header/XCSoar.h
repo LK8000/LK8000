@@ -524,6 +524,12 @@ typedef enum {
 	vBarVarioRB,
 	vBarVarioGR,
 } LKVarioBar_t;
+typedef enum {
+	vValVarioVario,
+	vValVarioNetto,
+	vValVarioSoll,
+} LKVarioVal_t;
+
 typedef enum{
 	otDisabled=0,
 	otLandable,

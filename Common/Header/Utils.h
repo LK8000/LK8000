@@ -98,6 +98,7 @@ extern const TCHAR szRegistryNewMap[]; // VENTA5
 extern const TCHAR szRegistryIphoneGestures[];
 extern const TCHAR szRegistryPollingMode[];
 extern const TCHAR szRegistryLKVarioBar[];
+extern const TCHAR szRegistryLKVarioVal[];
 extern const TCHAR szRegistryUseMapLock[]; // VENTA9
 extern const TCHAR szRegistryOverlaySize[];
 extern const TCHAR szRegistryBarOpacity[];

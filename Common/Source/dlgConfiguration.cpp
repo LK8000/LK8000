@@ -2899,6 +2899,18 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpLKVarioVal"));
+  if (wp) {
+    DataFieldEnum* dfe;
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->addEnumText(gettext(TEXT("_@M1425_"))); // vario in thermal and cruise
+    dfe->addEnumText(gettext(TEXT("_@M1426_")));  // vario in thermal, netto in cruise
+    dfe->addEnumText(gettext(TEXT("_@M1427_")));  // vario in thermal, sollfahr in cruise
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->Set(LKVarioVal);
+    wp->RefreshDisplay();
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpHideUnits"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -4841,6 +4853,17 @@ void dlgConfigurationShowModal(void){
 	(wp->GetDataField()->GetAsInteger());
       SetToRegistry(szRegistryLKVarioBar,
 		    (DWORD)(LKVarioBar));
+      changed = true;
+    }
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpLKVarioVal")); 
+  if (wp) {
+    if (LKVarioVal != (LKVarioVal_t)
+	(wp->GetDataField()->GetAsInteger())) {
+      LKVarioVal = (LKVarioVal_t)
+	(wp->GetDataField()->GetAsInteger());
+      SetToRegistry(szRegistryLKVarioVal,
+		    (DWORD)(LKVarioVal));
       changed = true;
     }
   }

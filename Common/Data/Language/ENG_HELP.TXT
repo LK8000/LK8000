@@ -1450,6 +1450,20 @@ On some PNAs in portrait mode, and on PPC2002, Antialiasing will work better.
 Otherwise, by default LK8000 is using ClearType.
 You must exit and restart LK8000 to see the effect of changes.
 
+@1204
+[VarioBar mode]
+Choose the vario value and relative bar display on the left, if enabled.
+In thermal mode, only vario can be shown.
+In cruise mode, also nettovario or Speed To Fly (Sollfart).
+If STF is selected, the desired IAS is printed, and the bar is indicating
+if you must push or pull the stick to reach that value.
+
+The value is printed with a suffix letter indicating:
+N for netto
+S for STF
+V for vario
+
+
 @9999
 No help available on this item!
 

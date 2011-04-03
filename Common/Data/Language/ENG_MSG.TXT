@@ -1346,6 +1346,14 @@ _@M1422_ "Start and Finish"
 _@M1423_ "Forbidden during flight!"
 
 #
+# Variometer Bar
+#
+_@M1424_ "VarioBar mode"
+_@M1425_ "Vario in thermal and cruise"
+_@M1426_ "Vario in thermal, Netto in cruise"
+_@M1427_ "Vario in thermal, STF in cruise"
+
+#
 # Contests
 #
 _@M1450_ "Contest"

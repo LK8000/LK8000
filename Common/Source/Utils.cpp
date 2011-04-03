@@ -255,6 +255,7 @@ const TCHAR szRegistryNewMap[]= TEXT("NewMap");
 const TCHAR szRegistryIphoneGestures[]= TEXT("IphoneGestures");
 const TCHAR szRegistryPollingMode[]= TEXT("PollingMode");
 const TCHAR szRegistryLKVarioBar[]= TEXT("LKVarioBar");
+const TCHAR szRegistryLKVarioVal[]= TEXT("LKVarioVal");
 const TCHAR szRegistryHideUnits[]= TEXT("HideUnits");
 const TCHAR szRegistryVirtualKeys[]= TEXT("VirtualKeys");
 const TCHAR szRegistryGlideBarMode[]= TEXT("GlideBarMode");
@@ -1010,6 +1011,10 @@ void ReadRegistrySettings(void)
 	Temp = (LKVarioBar_t)vBarDisabled;
   GetFromRegistry(szRegistryLKVarioBar,&Temp);
   LKVarioBar = Temp;
+
+  Temp = (LKVarioVal_t)vValVarioVario;
+  GetFromRegistry(szRegistryLKVarioVal,&Temp);
+  LKVarioVal = Temp;
 
   Temp = (OutlinedTp_t)otLandable;  // VENTA6
   GetFromRegistry(szRegistryOutlinedTp,&Temp); 

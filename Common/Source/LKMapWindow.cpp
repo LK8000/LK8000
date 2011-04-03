@@ -499,12 +499,41 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
 	  SelectObject(hDC,blackThinPen);
 
   double value;
-  if (GPS_INFO.VarioAvailable) {
-	//value = LIFTMODIFY*GPS_INFO.Vario;
-	value = GPS_INFO.Vario;
+
+  if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) || LKVarioVal==vValVarioVario) {
+	if (GPS_INFO.VarioAvailable) {
+		// UHM. I think we are not painting values correctly for knots &c.
+		//value = LIFTMODIFY*GPS_INFO.Vario;
+		value = GPS_INFO.Vario;
+	} else {
+		value = CALCULATED_INFO.Vario;
+	}
   } else {
-	value = CALCULATED_INFO.Vario;
+	switch(LKVarioVal) {
+		case vValVarioNetto:
+			value = CALCULATED_INFO.NettoVario;
+			break;
+		case vValVarioSoll:
+			double ias;
+			if (GPS_INFO.AirspeedAvailable && GPS_INFO.VarioAvailable)
+				ias=GPS_INFO.IndicatedAirspeed;
+			else
+				ias=CALCULATED_INFO.IndicatedAirspeedEstimated;
+
+			value = CALCULATED_INFO.VOpt - ias;
+			// m/s 0-nnn autolimit to 20m/s full scale (72kmh diff)
+			if (value>20) value=20;
+			if (value<-20) value=-20;
+			value/=3.3333;	// 0-20  -> 0-6
+			value *= -1; // if up, push down
+			break;
+
+		default:
+			value = CALCULATED_INFO.NettoVario;
+			break;
+	}
   }
+
 
   if (dogaugeinit) {
 

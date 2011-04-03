@@ -507,6 +507,8 @@ int PGClimbZoom=1;
 int PGCruiseZoom=1;
 // This is the gauge bar on the left for variometer
 int LKVarioBar=0;
+// This is the value to be used for painting the bar
+int LKVarioVal=0;
 // moving map is all black and need white painting - not much used 091109
 bool BlackScreen=false; 
 // if true, LK specific text on map is painted black, otherwise white
