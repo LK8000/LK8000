@@ -3503,8 +3503,7 @@ static void CheckGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 			 - SAFETYALTITUDETERRAIN;
 
 		// Reminder: we already have a glide range on destination.
-		// start searching for obstacles with a virtual altitude = now+50m
-		minaltitude=CALCULATED_INFO.NavAltitude+50;
+		minaltitude=CALCULATED_INFO.NavAltitude;
 		maxaltitude=minaltitude*2;
 
 		// if no far obstacle will be found, we shall use the first obstacle. 
@@ -3542,7 +3541,7 @@ static void CheckGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 		Calculated->FarObstacle_Lon = oldfarlon;
 		Calculated->FarObstacle_Dist = oldfardist;
 		// 0-50m positive rounding
-		Calculated->FarObstacle_AltArriv = -1*(newaltitude-minaltitude);
+		Calculated->FarObstacle_AltArriv = minaltitude - newaltitude;
 
 #endif
 
