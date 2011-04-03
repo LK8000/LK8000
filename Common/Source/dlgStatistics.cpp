@@ -2222,8 +2222,8 @@ static CallBackTableEntry_t CallBackTable[]={
 #ifdef NEW_OLC
 static int OnTimerNotify(WindowControl *Sender)
 {
-  static unsigned i=0;
-  if(i++>>1 == 0)
+  static short i=0;
+  if(i++ % 2 == 0)
     return 0;
   
   // run once per second

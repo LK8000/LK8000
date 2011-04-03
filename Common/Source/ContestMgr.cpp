@@ -291,24 +291,29 @@ void CContestMgr::SolvePoints(const CTrace &trace, bool sprint, bool predicted)
   if(!trace.Size())
     return;
   
-  // find the last point meeting criteria
+  // find the first point meeting criteria
   short finishAltDiff = sprint ? 0 : TRACE_START_FINISH_ALT_DIFF;
-  const CTrace::CPoint *point = trace.Back();
-  const CTrace::CPoint *last = 0;
-  short startAltitude = trace.Front()->GPS().Altitude();
+  const CTrace::CPoint *first = 0;
+  const CTrace::CPoint *point = trace.Front();
+  const CTrace::CPoint *last = trace.Back();
+  short endAltitude = last->GPS().Altitude();
   while(point) {
-    if(point->GPS().Altitude() + finishAltDiff >= startAltitude) {
-      last = point;
+    if(point->GPS().Altitude() <= endAltitude + finishAltDiff) {
+      first = point;
       break;
     }
-    point = point->Previous();
+    point = point->Next();
   }
+  
+  if(!first)
+    // no points matching heights constrain
+    return;
   
   // create result trace
   CTrace traceResult(sprint ? 5 : 7, sprint ? TRACE_SPRINT_TIME_LIMIT : 0, CTrace::ALGORITHM_DISTANCE);
   
   // add points to result trace
-  point = trace.Front();
+  point = first;
   while(point && point != last->Next()) {
     traceResult.Push(new CTrace::CPoint(traceResult, *point, traceResult._back));
     point = point->Next();
