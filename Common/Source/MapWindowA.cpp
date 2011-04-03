@@ -47,7 +47,9 @@ bool MapWindow::AlphaBlendInit() {
   #endif
 
   if (AlphaBlendF == NULL) {
-    StartupStore(_T("error getting CoreDll::AlphaBlend() address\n"));
+    #if ALPHADEBUG
+    StartupStore(_T(". CoreDll::AlphaBlend() is not available\n"));
+    #endif
     return false;
   }
 
