@@ -68,7 +68,7 @@ Topology::Topology(const TCHAR* shpname, COLORREF thecolor, bool doappend) {
 
   // filename aleady points to _MAPS subdirectory!
   _tcscpy( filename, shpname ); 
-  hPen = (HPEN)CreatePen(PS_SOLID, 1, thecolor);
+  hPen = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), thecolor);
   hbBrush=(HBRUSH)CreateSolidBrush(thecolor);
   Open();
 }
