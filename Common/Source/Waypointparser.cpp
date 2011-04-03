@@ -259,9 +259,10 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 
   fSize = zzip_file_size(fp);
 
-  if (fSize == 0) {
-	StartupStore(_T("+++ ReadWayPointFile: FAILED USING %s%s"), CurrentWpFileName,NEWLINE);
-	return -1;
+  if (fSize <10) {
+	fileformat=GetWaypointFileFormatType(CurrentWpFileName);
+	StartupStore(_T("... ReadWayPointFile: waypoint file %s is empty%s"), CurrentWpFileName,NEWLINE);
+	return fileformat;
   }
 
   if (!AllocateWaypointList()) {
@@ -309,7 +310,12 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 		fileformat=LKW_CUP;
 		break;
 	}
-	if ( _tcsncmp(_T("1,"),nTemp2String,2) == 0) {
+	// consider also the case of empty file, when a waypoint if saved starting with numbering after
+	// the virtual wps (including the 0);
+	TCHAR virtualdatheader[3];
+	wsprintf(virtualdatheader,_T("%d,"),RESWP_END+2);
+	if ( _tcsncmp(_T("1,"),nTemp2String,2) == 0 ||
+	  _tcsncmp(virtualdatheader,nTemp2String,2) == 0) {
 		StartupStore(_T(". Waypoint file %d format: WinPilot%s"),globalFileNum+1,NEWLINE);
 		fempty=false;
 		fileformat=LKW_DAT;
@@ -317,7 +323,6 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 	}
 	fempty=false;
 	fileformat=LKW_DAT;
-	break;
 	StartupStore(_T("... Unknown WP file %d format identifier (assuming DAT), line 1: <%s>%s"),globalFileNum+1,nTemp2String,NEWLINE);
 	break;
   }

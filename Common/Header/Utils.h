@@ -471,6 +471,7 @@ unsigned long CheckMaxHeapBlock(void);
 
 const TCHAR *TaskFileName(unsigned bufferLen, TCHAR buffer[]);
 bool UseContestEngine(void);
+int  GetWaypointFileFormatType(const wchar_t* wextension);
 
 // LK Utils
 void LKBatteryManager();

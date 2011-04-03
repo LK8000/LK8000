@@ -527,3 +527,33 @@ bool UseContestEngine(void) {
   return true;
 
 }
+
+
+//
+// Returns the LKW extension index of the incoming suffix, or -1
+//
+int GetWaypointFileFormatType(const wchar_t* wfilename) {
+
+  TCHAR wextension[MAX_PATH];
+  _wsplitpath(wfilename, NULL,NULL,NULL,wextension);	
+
+  if ( wcscmp(wextension,_T(".cup"))==0 ||
+    wcscmp(wextension,_T(".CUP"))==0 ||
+    wcscmp(wextension,_T(".Cup"))==0) {
+	return LKW_CUP;
+  }
+  if ( wcscmp(wextension,_T(".dat"))==0 ||
+    wcscmp(wextension,_T(".DAT"))==0 ||
+    wcscmp(wextension,_T(".Dat"))==0) {
+	return LKW_DAT;
+  }
+  if ( wcscmp(wextension,_T(".wpt"))==0 ||
+    wcscmp(wextension,_T(".WPT"))==0 ||
+    wcscmp(wextension,_T(".Wpt"))==0) {
+	return LKW_COMPE;
+  }
+
+  return -1;
+
+}
+
