@@ -2549,7 +2549,7 @@ savecodesize1:
 							break;
 						}
 						// Ok, so we reposition the aircraft
-						Screen2LatLon(X,Y,PanLatitude,PanLongitude);
+						Screen2LatLon(X,Y,PanLongitude,PanLatitude);
 						// LKTOKEN  _@M204_ = "Current position updated" 
 						DoStatusMessage(gettext(TEXT("_@M204_")));
 						GPS_INFO.Latitude=PanLatitude;
