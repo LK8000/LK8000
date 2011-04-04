@@ -529,13 +529,70 @@ bool UseContestEngine(void) {
 }
 
 
+/* 
+ * Implementation of the _splitpath runtime library function with wide character strings
+ * Copyright 2000, 2004 Martin Fuchs -- GPL licensed - WINE project
+ */
+void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext)
+{
+	const WCHAR* end; /* end of processed string */
+	const WCHAR* p;	  /* search pointer */
+	const WCHAR* s;	  /* copy pointer */
+
+	/* extract drive name */
+	if (path[0] && path[1]==':') {
+		if (drv) {
+			*drv++ = *path++;
+			*drv++ = *path++;
+			*drv = '\0';
+		}
+	} else if (drv)
+		*drv = '\0';
+
+	/* search for end of string or stream separator */
+	for(end=path; *end && *end!=':'; )
+		end++;
+
+	/* search for begin of file extension */
+	for(p=end; p>path && *--p!='\\' && *p!='/'; )
+		if (*p == '.') {
+			end = p;
+			break;
+		}
+
+	if (ext)
+		for(s=end; (*ext=*s++); )
+			ext++;
+
+	/* search for end of directory name */
+	for(p=end; p>path; )
+		if (*--p=='\\' || *p=='/') {
+			p++;
+			break;
+		}
+
+	if (name) {
+		for(s=p; s<end; )
+			*name++ = *s++;
+
+		*name = '\0';
+	}
+
+	if (dir) {
+		for(s=path; s<p; )
+			*dir++ = *s++;
+
+		*dir = '\0';
+	}
+}
+
 //
 // Returns the LKW extension index of the incoming suffix, or -1
 //
 int GetWaypointFileFormatType(const wchar_t* wfilename) {
 
   TCHAR wextension[MAX_PATH];
-  _wsplitpath(wfilename, NULL,NULL,NULL,wextension);	
+  LK_wsplitpath(wfilename, NULL,NULL,NULL,wextension);	
 
   if ( wcscmp(wextension,_T(".cup"))==0 ||
     wcscmp(wextension,_T(".CUP"))==0 ||
