@@ -41,6 +41,7 @@ using std::max;
 #endif
 #include "Waypointparser.h"
 
+#include "utils/stringext.h"
 #include "utils/heapcheck.h"
 
 // Sensible maximums 
@@ -164,7 +165,7 @@ void InputEvents::readFile() {
   // Read in user defined configuration file
 	
   TCHAR szFile1[MAX_PATH] = TEXT("\0");
-  FILE *fp=NULL;
+  ZZIP_FILE *fp=NULL;
 
   // Open file from registry
   // This is used by LK engineering mode only, and has priority
@@ -173,8 +174,9 @@ void InputEvents::readFile() {
   SetRegistryString(szRegistryInputFile, TEXT("\0"));
 	
   if (_tcslen(szFile1)>0) {
-	fp=_tfopen(szFile1, TEXT("rt"));
+    fp=zzip_fopen(szFile1, "rb");
   }
+
   TCHAR xcifile[MAX_PATH];
   if (fp == NULL) {
 	// no special XCI in engineering, or nonexistent file.. go ahead with language check
@@ -183,36 +185,20 @@ void InputEvents::readFile() {
 	TCHAR xcipath[MAX_PATH];
 	LocalPath(xcipath,_T(LKD_LANGUAGE));
 	_stprintf(xcifile,_T("%s\\%s_MENU.TXT"), xcipath,LKLangSuffix);
-	fp=_tfopen(xcifile, TEXT("rt"));
+	fp=zzip_fopen(xcifile, "rb");
 	if (fp == NULL) {
 		StartupStore(_T(". No language menu <%s>, using internal XCI\n"),xcifile);
 		return;
 	} else
 		StartupStore(_T(". Loaded language menu <%s>\n"),xcifile);
   }
-  #define XCIUTF	1
-  #if XCIUTF
-  // 101221
-  fclose(fp);
-  HANDLE hXCI;
-  hXCI = INVALID_HANDLE_VALUE;
-  hXCI = CreateFile(xcifile, GENERIC_READ,0,NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,NULL);
-  if( hXCI == INVALID_HANDLE_VALUE) {
-	#if ALPHADEBUG
-	StartupStore(_T("... Invalid open HELP FILE <%s>%s"),xcifile,NEWLINE);
-	#endif
-	return;
-  }
-  short filetype=FileIsUTF16(hXCI);
-  #endif
-
 
   // TODO code - Safer sizes, strings etc - use C++ (can scanf restrict length?)
   TCHAR buffer[2049];	// Buffer for all
   TCHAR key[2049];	// key from scanf
   TCHAR value[2049];	// value from scanf
   TCHAR *new_label = NULL;		
-  int found;
+  int found = 0;
 
   // Init first entry
   bool some_data = false;		// Did we fin some in the last loop...
@@ -228,22 +214,13 @@ void InputEvents::readFile() {
   int line = 0;
 
   /* Read from the file */
-  // TODO code: What about \r - as in \r\n ?
   // TODO code: Note that ^# does not allow # in key - might be required (probably not)
-  //		Better way is to separate the check for # and the scanf 
+  //		Better way is to separate the check for # and the scanf
+  // ! _stscanf works differently on WinPC and WinCE (on WinCE it returns EOF on empty string)
 
-  #if XCIUTF
-  // minimal changing for UTF-16 (BE/LE) support 
-  while ( ReadUString(hXCI,2047,buffer,filetype) &&
-	   ((found = _stscanf(buffer, TEXT("%[^#=]=%[^\r\n][\r\n]"), key, value)) != EOF)
-	) {
-
-  #else
-  while ( _fgetts(buffer, 2048, fp) && 
-	   ((found = _stscanf(buffer, TEXT("%[^#=]=%[^\r\n][\r\n]"), key, value)) != EOF)
-	) {
-  #endif
-
+  while (ReadULine(fp, buffer, countof(buffer)) && (buffer[0] == '\0' ||
+	   ((found = _stscanf(buffer, TEXT("%[^#=]=%[^\r\n][\r\n]"), key, value)) != EOF))
+  ) {
     line++;
 
     // experimental: if the first line is "#CLEAR" then the whole default config is cleared
@@ -438,12 +415,7 @@ void InputEvents::readFile() {
   ContractLocalPath(szFile1);
   SetRegistryString(szRegistryInputFile, szFile1);
 
-  #if XCIUTF
-  CloseHandle(hXCI);
-  #else
-  fclose(fp);
-  #endif
-
+  zzip_fclose(fp);
 }
 
 #ifdef _INPUTDEBUG_
