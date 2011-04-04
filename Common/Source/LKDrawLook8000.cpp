@@ -816,17 +816,17 @@ drawOverlay:
 	if (ISPARAGLIDER || LKVarioBar) { // 100213
 		if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) || LKVarioVal==vValVarioVario) {
 			LKFormatValue(LK_VARIO, false, BufferValue, BufferUnit, BufferTitle);
-			wcscpy(BufferUnit,_T("V"));
+			// wcscpy(BufferUnit,_T("VAR"));
 		} else {
 			switch(LKVarioVal) {
 				case vValVarioNetto:
 					LKFormatValue(LK_NETTO, false, BufferValue, BufferUnit, BufferTitle);
-					wcscpy(BufferUnit,_T("N"));
+					wcscpy(BufferUnit,_T("NT"));
 					break;
 				case vValVarioSoll:
 				default:
 					LKFormatValue(LK_SPEED_DOLPHIN, false, BufferValue, BufferUnit, BufferTitle);
-					wcscpy(BufferUnit,_T("S"));
+					wcscpy(BufferUnit,_T("SF"));
 					break;
 			}
 		}
