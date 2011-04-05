@@ -2406,9 +2406,10 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    for (i=0; i<NUMPOLARS; i++) {
+    for (i=0; i<(NUMPOLARS-1); i++) { 
       dfe->addEnumText(PolarLabels[i]);
     }
+    dfe->addEnumText(gettext(TEXT("_@M206_"))); // instead of WinPilot File, we use now Custom Polar File
     i=0;
     bool ok = true;
     while (ok) {
