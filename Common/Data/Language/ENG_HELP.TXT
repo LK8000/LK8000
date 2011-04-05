@@ -1,4 +1,4 @@
-# LK8000 ENG_HLP.TXT 101210
+# LK8000 ENG_HLP.TXT 110405
 #
 # A single text line can be max 500 characters long
 # An entire help can be max 1024 characters total
@@ -1341,24 +1341,34 @@ No help available on this item!
 
 @890
 [OLC CLASSIC] distance
+Current distance calculated around 5 turnpoints. 
 
 @891
 [FAI TRIANGLE] distance
+FAI triangle maximum distance achieved so far.
 
 @892
 [OLC LEAGUE] distance
+Max distance calculated around 5 turnpoints, made in 2.5 hours so far.
 
 @893
 [FAI 3TPs] distance
+Current distance calculated around 3 turnpoints. 
 
 @894
 [OLC CLASSIC] predicted distance
+Current distance calculated around 5 turnpoints assuming the last one
+will be the starting point.
 
 @895
 [FAI TRIANGLE] predicted distance
+FAI triangle maximum distance achieved so far, assuming the last point
+will be the starting point.
 
 @896
 [FAI 3TPs] predicted distance
+Current distance calculated around 3 turnpoints assuming the last one
+will be the starting point.
 
 @897
 [OLC CLASSIC] speed
@@ -1404,9 +1414,11 @@ No help available on this item!
 
 @911
 [OLC PLUS] score
+The sum of OLC Classic score and FAI triangle score.
 
 @912
 [OLC PLUS] predicted score
+The sum of OLC Classic predicted score and FAI triangle predicted score.
 
 
 #
@@ -1459,10 +1471,15 @@ If STF is selected, the desired IAS is printed, and the bar is indicating
 if you must push or pull the stick to reach that value.
 
 The value is printed with a suffix letter indicating:
-N for netto
-S for STF
-V for vario
+NT for netto
+SF for STF
 
+@1205
+[Aircraft category]
+Select your aircraft type here, and possibly change the polar file also accordingly.
+Each aircraft mode has unique features, please visit the website or read the latest
+manual to discover differences.
+After changing category, you must restart LK in order to notice all differences.
 
 @9999
 No help available on this item!

@@ -298,7 +298,7 @@
 </WndProperty>
 </WndFrame>
 <WndFrame Name="frmPolar" X=70 Y=0 Width=-246 Height=222 Font=2>
-<WndProperty Name="prpAircraftCategory" Caption="_@M164_" X=2 Y=-1   Width=-246 Height=22 CaptionWidth=150 Font=2 >
+<WndProperty Name="prpAircraftCategory" Caption="_@M164_" X=2 Y=-1   Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1205_" >
 <DataField name="" DataType="enum" Min=0 Max=10 Step=1/>
 </WndProperty>
 <WndProperty Name="prpPolarType" Caption="_@M751_" X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H148_">
