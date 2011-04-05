@@ -90,6 +90,9 @@ static void setVariables(void) {
   }
 
 #ifndef NEW_OLC
+//
+// REMEMBER TO FREE TOKENS WHEN SETTING NEWOLC PERMANENTLY
+//
   wp = (WndProperty*)wf->FindByName(TEXT("prpOLCRules"));
   if (wp) {
     DataFieldEnum* dfe;

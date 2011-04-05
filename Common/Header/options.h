@@ -134,11 +134,14 @@
 #endif
 
 // ------------ NEW OLC ENGINE -------------------------------------------------
-// Using NEW_OLC requires to change lk8000.rc and activate NEWOLC xmls. 
-// To do so, comment non-NEWOLC and uncomment NEWOLC. They are 3 files in total.
+// This is permanently enabled as of 2.2 .
+// We keep the old olc engine because Mat has made full support for both versions.
+// After 2.2 we should remove old stuff.
+// Using old OLC requires to change lk8000.rc and activate OLDOLC xmls. 
+// They are 3 files in total.
 // No need to change any XML filename. Just comment/uncomment.
 //
-#define NEW_OLC                 1     // Applied 110313
+#define NEW_OLC                 1     // Applied 110313 - does not expire
 // -----------------------------------------------------------------------------
 
 /*
