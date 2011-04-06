@@ -501,26 +501,26 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
   double value;
 
   if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) || LKVarioVal==vValVarioVario) {
-	if (GPS_INFO.VarioAvailable) {
+	if (DrawInfo.VarioAvailable) {
 		// UHM. I think we are not painting values correctly for knots &c.
-		//value = LIFTMODIFY*GPS_INFO.Vario;
-		value = GPS_INFO.Vario;
+		//value = LIFTMODIFY*DrawInfo.Vario;
+		value = DrawInfo.Vario;
 	} else {
-		value = CALCULATED_INFO.Vario;
+		value = DerivedDrawInfo.Vario;
 	}
   } else {
 	switch(LKVarioVal) {
 		case vValVarioNetto:
-			value = CALCULATED_INFO.NettoVario;
+			value = DerivedDrawInfo.NettoVario;
 			break;
 		case vValVarioSoll:
 			double ias;
-			if (GPS_INFO.AirspeedAvailable && GPS_INFO.VarioAvailable)
-				ias=GPS_INFO.IndicatedAirspeed;
+			if (DrawInfo.AirspeedAvailable && DrawInfo.VarioAvailable)
+				ias=DrawInfo.IndicatedAirspeed;
 			else
-				ias=CALCULATED_INFO.IndicatedAirspeedEstimated;
+				ias=DerivedDrawInfo.IndicatedAirspeedEstimated;
 
-			value = CALCULATED_INFO.VOpt - ias;
+			value = DerivedDrawInfo.VOpt - ias;
 			// m/s 0-nnn autolimit to 20m/s full scale (72kmh diff)
 			if (value>20) value=20;
 			if (value<-20) value=-20;
@@ -529,7 +529,7 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
 			break;
 
 		default:
-			value = CALCULATED_INFO.NettoVario;
+			value = DerivedDrawInfo.NettoVario;
 			break;
 	}
   }
