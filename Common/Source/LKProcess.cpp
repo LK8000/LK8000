@@ -100,7 +100,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 
 		// B40
 		case LK_TIME_UTC:
-			Units::TimeToText(BufferValue,(int) GPS_INFO.Time);
+			Units::TimeToText(BufferValue,(int) DrawInfo.Time);
 			valid=true;
 			if (lktitle)
 				// LKTOKEN  _@M1081_ = "Time UTC", _@M1082_ = "UTC"
@@ -153,9 +153,9 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
 			if ( ValidWayPoint(HomeWaypoint) != false ) {
-				if (CALCULATED_INFO.HomeDistance >10.0) {
+				if (DerivedDrawInfo.HomeDistance >10.0) {
 					// homeradial == 0, ok?
-					value = CALCULATED_INFO.HomeRadial;
+					value = DerivedDrawInfo.HomeRadial;
 					valid=true;
 #ifndef __MINGW32__
 					if (value > 1)
@@ -193,7 +193,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 					if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
 #endif /* MAP_ZOOM */
 					{
-						value = WayPointCalc[index].Bearing -  GPS_INFO.TrackBearing;
+						value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
 						valid=true;
 						if (value < -180.0)
 							value += 360.0;
@@ -230,7 +230,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				if (index>=0) {
 					if (DisplayMode != dmCircling)
 					{
-						value = WayPointCalc[index].Bearing -  GPS_INFO.TrackBearing;
+						value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
 						valid=true;
 						if (value < -180.0)
 							value += 360.0;
@@ -267,7 +267,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				if (index>=0) {
 					if (DisplayMode != dmCircling)
 					{
-						value = WayPointCalc[index].Bearing -  GPS_INFO.TrackBearing;
+						value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
 						valid=true;
 						if (value < -180.0)
 							value += 360.0;
@@ -304,7 +304,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				if (index>=0) {
 					if (DisplayMode != dmCircling)
 					{
-						value = WayPointCalc[index].Bearing -  GPS_INFO.TrackBearing;
+						value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
 						valid=true;
 						if (value < -180.0)
 							value += 360.0;
@@ -341,7 +341,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				if (index>=0) {
 					if (DisplayMode != dmCircling)
 					{
-						value = WayPointCalc[index].Bearing -  GPS_INFO.TrackBearing;
+						value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
 						valid=true;
 						if (value < -180.0)
 							value += 360.0;
@@ -374,7 +374,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
-					value=CALCULATED_INFO.WaypointDistance*DISTANCEMODIFY;
+					value=DerivedDrawInfo.WaypointDistance*DISTANCEMODIFY;
 					valid=true;
 					if (value>99)
 						sprintf(text,"%.0f",value);
@@ -485,7 +485,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			if ( ValidTaskPoint(0) && ValidTaskPoint(1) ) { // if real task
 				index = Task[0].Index;
 				if (index>=0) {
-					value=(CALCULATED_INFO.WaypointDistance-StartRadius)*DISTANCEMODIFY;
+					value=(DerivedDrawInfo.WaypointDistance-StartRadius)*DISTANCEMODIFY;
 					if (value<0) value*=-1; // 101112 BUGFIX
 					valid=true;
 					if (value>99)
@@ -513,7 +513,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_HOME_DIST:
 			if (HomeWaypoint>=0) {
 				if ( ValidWayPoint(HomeWaypoint) != false ) {
-					value=CALCULATED_INFO.HomeDistance*DISTANCEMODIFY;
+					value=DerivedDrawInfo.HomeDistance*DISTANCEMODIFY;
 					valid=true;
 					if (value>99)
 						sprintf(text,"%.0f",value);
@@ -536,8 +536,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 
 		// B83
 		case LK_ODOMETER:
-			if (CALCULATED_INFO.Odometer>0) {
-				value=CALCULATED_INFO.Odometer*DISTANCEMODIFY;
+			if (DerivedDrawInfo.Odometer>0) {
+				value=DerivedDrawInfo.Odometer*DISTANCEMODIFY;
 				valid=true;
 				if (value>99)
 					sprintf(text,"%.0f",value);
@@ -563,9 +563,9 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
 					if ( lkindex == LK_AA_DISTMAX )
-						value = DISTANCEMODIFY*CALCULATED_INFO.AATMaxDistance ;
+						value = DISTANCEMODIFY*DerivedDrawInfo.AATMaxDistance ;
 					else
-						value = DISTANCEMODIFY*CALCULATED_INFO.AATMinDistance ;
+						value = DISTANCEMODIFY*DerivedDrawInfo.AATMinDistance ;
 					valid=true;
 					if (value>99)
 						sprintf(text,"%.0f",value);
@@ -587,7 +587,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			if ( (ValidTaskPoint(ActiveWayPoint) != false) && AATEnabled ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
-					value = DISTANCEMODIFY*CALCULATED_INFO.AATTargetDistance ;
+					value = DISTANCEMODIFY*DerivedDrawInfo.AATTargetDistance ;
 					valid=true;
 					if (value>99)
 						sprintf(text,"%.0f",value);
@@ -608,13 +608,13 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_AA_SPEEDMAX:
 		// B31
 		case LK_AA_SPEEDMIN:
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) && AATEnabled && CALCULATED_INFO.AATTimeToGo>=1 ) {
+			if ( (ValidTaskPoint(ActiveWayPoint) != false) && AATEnabled && DerivedDrawInfo.AATTimeToGo>=1 ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
 					if ( lkindex == LK_AA_SPEEDMAX )
-						value = TASKSPEEDMODIFY*CALCULATED_INFO.AATMaxSpeed;
+						value = TASKSPEEDMODIFY*DerivedDrawInfo.AATMaxSpeed;
 					else
-						value = TASKSPEEDMODIFY*CALCULATED_INFO.AATMinSpeed;
+						value = TASKSPEEDMODIFY*DerivedDrawInfo.AATMinSpeed;
 
 					valid=true;
 					sprintf(text,"%.0f",value);
@@ -631,10 +631,10 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 
 		// B52
 		case LK_AA_TARG_SPEED:
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) && AATEnabled && CALCULATED_INFO.AATTimeToGo>=1 ) {
+			if ( (ValidTaskPoint(ActiveWayPoint) != false) && AATEnabled && DerivedDrawInfo.AATTimeToGo>=1 ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
-					value = TASKSPEEDMODIFY*CALCULATED_INFO.AATTargetSpeed;
+					value = TASKSPEEDMODIFY*DerivedDrawInfo.AATTargetSpeed;
 					valid=true;
 					sprintf(text,"%.0f",value);
 				} else {
@@ -686,7 +686,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 #else /* MAP_ZOOM */
 			if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
 #endif /* MAP_ZOOM */
-				value=CALCULATED_INFO.AverageLD;
+				value=DerivedDrawInfo.AverageLD;
 				if (value <1 ||  value >=ALTERNATE_MAXVALIDGR ) {
 					strcpy(text,INFINVAL); 
 					valid=true;
@@ -778,7 +778,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				_stprintf(BufferTitle, gettext(TEXT("_@M1010_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			value=CALCULATED_INFO.LD;
+			value=DerivedDrawInfo.LD;
 			if (value <-99 ||  value >=ALTERNATE_MAXVALIDGR ) {
 				strcpy(text,INFINVAL);
 				valid=true;
@@ -813,7 +813,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
-			if (!CALCULATED_INFO.TerrainValid) { 
+			if (!DerivedDrawInfo.TerrainValid) { 
 				wsprintf(BufferValue, TEXT(NULLLONG));
 				wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 				valid=false;
@@ -828,7 +828,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 
 		// B33
 		case LK_HBARO:
-			if (GPS_INFO.BaroAltitudeAvailable) {
+			if (DrawInfo.BaroAltitudeAvailable) {
 				value=ALTITUDEMODIFY*DrawInfo.BaroAltitude;
 				valid=true;
 				sprintf(text,"%d",(int)value);
@@ -846,11 +846,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				_stprintf(BufferTitle, gettext(TEXT("_@M1174_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			if (GPS_INFO.NAVWarning || (GPS_INFO.SatellitesUsed == 0)) {
+			if (DrawInfo.NAVWarning || (DrawInfo.SatellitesUsed == 0)) {
 				wsprintf(BufferValue, TEXT(NULLLONG));
 				valid=false;
 			} else {
-				value=ALTITUDEMODIFY*GPS_INFO.Altitude;
+				value=ALTITUDEMODIFY*DrawInfo.Altitude;
 				valid=true;
 				sprintf(text,"%d",(int)value);
 				wsprintf(BufferValue, TEXT("%S"),text);
@@ -894,7 +894,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				_stprintf(BufferTitle, gettext(TEXT("_@M1048_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			value = GPS_INFO.TrackBearing;
+			value = DrawInfo.TrackBearing;
 			valid=true;
 #ifndef __MINGW32__
 			if (value > 1)
@@ -932,7 +932,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 
 		// B32
 		case LK_IAS:
-			if (GPS_INFO.AirspeedAvailable) {
+			if (DrawInfo.AirspeedAvailable) {
 				if (lktitle)
 					// LKTOKEN  _@M1065_ = "Airspeed IAS", _@M1066_ = "IAS"
 					wsprintf(BufferTitle, gettext(TEXT("_@M1066_")));
@@ -955,7 +955,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				
 		// B43 AKA STF
 		case LK_SPEED_DOLPHIN:
-			// if (GPS_INFO.AirspeedAvailable) {
+			// if (DrawInfo.AirspeedAvailable) {
 				value=SPEEDMODIFY*DerivedDrawInfo.VOpt;
 				if (value<0||value>999) value=0; else valid=true;
 				sprintf(text,"%d",(int)value);
@@ -970,10 +970,10 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_EQMC:
 			// LKTOKEN  _@M1175_ = "MacCready Equivalent", _@M1176_ = "eqMC"
 			wsprintf(BufferTitle, gettext(TEXT("_@M1176_")));
-			if ( CALCULATED_INFO.Circling == TRUE || CALCULATED_INFO.EqMc<0 || CALCULATED_INFO.OnGround == TRUE) {
+			if ( DerivedDrawInfo.Circling == TRUE || DerivedDrawInfo.EqMc<0 || DerivedDrawInfo.OnGround == TRUE) {
 				wsprintf(BufferValue, TEXT(NULLMEDIUM));
 			} else {
-				value = iround(LIFTMODIFY*CALCULATED_INFO.EqMc*10)/10.0;
+				value = iround(LIFTMODIFY*DerivedDrawInfo.EqMc*10)/10.0;
 				valid=true;
 				sprintf(text,"%2.1lf",value);
 				wsprintf(BufferValue, TEXT("%S"),text);
@@ -992,7 +992,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 
 		// B54 091221
 		case LK_TAS:
-			if (GPS_INFO.AirspeedAvailable) {
+			if (DrawInfo.AirspeedAvailable) {
 				if (lktitle)
 					// LKTOKEN  _@M1109_ = "Airspeed TAS", _@M1110_ = "TAS"
 					wsprintf(BufferTitle, gettext(TEXT("_@M1110_")));
@@ -1024,7 +1024,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		// B55  Team Code 091216
 		case LK_TEAM_CODE:
 			if(ValidWayPoint(TeamCodeRefWaypoint)) {
-				_tcsncpy(BufferValue,CALCULATED_INFO.OwnTeamCode,5);
+				_tcsncpy(BufferValue,DerivedDrawInfo.OwnTeamCode,5);
 				BufferValue[5] = '\0';
 				valid=true; // 091221
 			} else
@@ -1046,7 +1046,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
 			if(ValidWayPoint(TeamCodeRefWaypoint) && TeammateCodeValid) {
-				value=CALCULATED_INFO.TeammateBearing;
+				value=DerivedDrawInfo.TeammateBearing;
 				valid=true;
 				if (value > 1)
 					_stprintf(BufferValue, TEXT("%2.0f°"), value);
@@ -1068,7 +1068,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
 			if (ValidWayPoint(TeamCodeRefWaypoint) && TeammateCodeValid) {
-				value = CALCULATED_INFO.TeammateBearing -  GPS_INFO.TrackBearing;
+				value = DerivedDrawInfo.TeammateBearing -  DrawInfo.TrackBearing;
 				valid=true; // 091221
 				if (value < -180.0)
 					value += 360.0;
@@ -1087,7 +1087,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		// B58 091216 Team Range Distance
 		case LK_TEAM_DIST:
 			if ( TeammateCodeValid ) {
-				value=DISTANCEMODIFY*CALCULATED_INFO.TeammateRange;
+				value=DISTANCEMODIFY*DerivedDrawInfo.TeammateRange;
 				valid=true;
 				if (value>99)
 					sprintf(text,"%.0f",value);
@@ -1197,7 +1197,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 
 		// B07  091221
 		case LK_TL_AVG:
-			value= LIFTMODIFY*CALCULATED_INFO.LastThermalAverage;
+			value= LIFTMODIFY*DerivedDrawInfo.LastThermalAverage;
 			if (value==0)
 				sprintf(text,NULLMEDIUM);
 			else { 
@@ -1234,7 +1234,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 
 		// B21 091221
 		case LK_TC_AVG:
-			value= LIFTMODIFY*CALCULATED_INFO.AverageThermal;
+			value= LIFTMODIFY*DerivedDrawInfo.AverageThermal;
 			if (value==0)
 				sprintf(text,NULLMEDIUM);
 			else { 
@@ -1259,7 +1259,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			sprintf(text,"%2.1lf",value);
 			wsprintf(BufferValue, TEXT("%S"),text);
 			//if (!ValidTaskPoint(ActiveWayPoint) && ((AutoMcMode==0) || (AutoMcMode==2))) {
-			if (!CALCULATED_INFO.AutoMacCready) {
+			if (!DerivedDrawInfo.AutoMacCready) {
 				if (lktitle)
 					// LKTOKEN  _@M1183_ = "ManMC"
 					wsprintf(BufferTitle, gettext(TEXT("_@M1183_")));
@@ -1314,11 +1314,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 
 		// B63 091221
 		case LK_TC_ALL:
-			if (CALCULATED_INFO.timeCircling <=0)
+			if (DerivedDrawInfo.timeCircling <=0)
 				//value=0.0;
 				sprintf(text,NULLMEDIUM);
 			else {
-				value = LIFTMODIFY*CALCULATED_INFO.TotalHeightClimb /CALCULATED_INFO.timeCircling;
+				value = LIFTMODIFY*DerivedDrawInfo.TotalHeightClimb /DerivedDrawInfo.timeCircling;
 				if (value<20)
 					sprintf(text,"%+.1lf",value);
 				else
@@ -1336,10 +1336,10 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 
 		// B24
 		case LK_VARIO:
-			if (GPS_INFO.VarioAvailable) {
-				value = LIFTMODIFY*GPS_INFO.Vario;
+			if (DrawInfo.VarioAvailable) {
+				value = LIFTMODIFY*DrawInfo.Vario;
 			} else {
-				value = LIFTMODIFY*CALCULATED_INFO.Vario;
+				value = LIFTMODIFY*DerivedDrawInfo.Vario;
 			}
 			valid=true;
 			_stprintf(BufferValue,varformat,value);
@@ -1398,10 +1398,10 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
-					if (CALCULATED_INFO.ValidFinish) {
-						value = DISTANCEMODIFY*CALCULATED_INFO.WaypointDistance;
+					if (DerivedDrawInfo.ValidFinish) {
+						value = DISTANCEMODIFY*DerivedDrawInfo.WaypointDistance;
 					} else {
-						value = DISTANCEMODIFY*CALCULATED_INFO.TaskDistanceToGo;
+						value = DISTANCEMODIFY*DerivedDrawInfo.TaskDistanceToGo;
 					}
 					valid=true;
 					if (value>99)
@@ -1426,7 +1426,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		// B74
 		case LK_TASK_DISTCOV:
 			if ( (ActiveWayPoint >=1) && ( ValidTaskPoint(ActiveWayPoint) )) {
-				value = DISTANCEMODIFY*CALCULATED_INFO.TaskDistanceCovered;
+				value = DISTANCEMODIFY*DerivedDrawInfo.TaskDistanceCovered;
 				valid=true;
 				sprintf(text,"%.0f",value); // l o f?? TODO CHECK
 			} else {
@@ -1475,7 +1475,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				if (index>=0) {
 					// the ValidFinish() seem to return FALSE when is actually valid.
 					// In any case we do not use it for the vanilla GR
-					value = CALCULATED_INFO.GRFinish;
+					value = DerivedDrawInfo.GRFinish;
 					if (value <1 || value >=ALTERNATE_MAXVALIDGR )
 						strcpy(text,NULLMEDIUM);
 					else {
@@ -1501,10 +1501,10 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
-					if (CALCULATED_INFO.ValidFinish) {
+					if (DerivedDrawInfo.ValidFinish) {
 						value = 0;
 					} else {
-						value = CALCULATED_INFO.LDFinish;
+						value = DerivedDrawInfo.LDFinish;
 					}
 					if (value <1 || value >=ALTERNATE_MAXVALIDGR )
 						strcpy(text,NULLMEDIUM);
@@ -1529,7 +1529,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
-					value = CALCULATED_INFO.LDNext;
+					value = DerivedDrawInfo.LDNext;
 					if (value <1 || value >=ALTERNATE_MAXVALIDGR )
 						strcpy(text,NULLMEDIUM);
 					else {
@@ -1547,8 +1547,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue,_T(NULLMEDIUM));
 			//_stprintf(BufferUnit,TEXT(""));
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			if (GPS_INFO.AirspeedAvailable && GPS_INFO.VarioAvailable) {
-				value = CALCULATED_INFO.LDvario;
+			if (DrawInfo.AirspeedAvailable && DrawInfo.VarioAvailable) {
+				value = DerivedDrawInfo.LDvario;
 				if (value <1 || value >=ALTERNATE_MAXVALIDGR )
 					strcpy(text,NULLMEDIUM);
 				else {
@@ -1565,7 +1565,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferValue,_T(NULLMEDIUM));
 			if ( ActiveWayPoint >=1) {
 				if ( ValidTaskPoint(ActiveWayPoint) ) {
-					value = LIFTMODIFY*CALCULATED_INFO.DistanceVario;
+					value = LIFTMODIFY*DerivedDrawInfo.DistanceVario;
 					_stprintf(BufferValue,varformat,value);
 					valid=true;
 				}
@@ -1586,7 +1586,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			value=0;
 			if ( ActiveWayPoint >=1) {
 				if ( ValidTaskPoint(ActiveWayPoint) ) {
-					value = TASKSPEEDMODIFY*CALCULATED_INFO.TaskSpeedInstantaneous;
+					value = TASKSPEEDMODIFY*DerivedDrawInfo.TaskSpeedInstantaneous;
 					if (value<=0||value>999) value=0; else valid=true;
 					sprintf(text,"%d",(int)value);
 					wsprintf(BufferValue, TEXT("%S"),text);
@@ -1606,7 +1606,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			value=0;
 			if ( ActiveWayPoint >=1) {
 				if ( ValidTaskPoint(ActiveWayPoint) ) {
-					value = TASKSPEEDMODIFY*CALCULATED_INFO.TaskSpeedAchieved;
+					value = TASKSPEEDMODIFY*DerivedDrawInfo.TaskSpeedAchieved;
 					if (value<0||value>999) value=0; else valid=true;
 					sprintf(text,"%d",(int)value);
 					wsprintf(BufferValue, TEXT("%S"),text);
@@ -1626,7 +1626,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			value=0;
 			if ( ActiveWayPoint >=1) {
 				if ( ValidTaskPoint(ActiveWayPoint) ) {
-					value = TASKSPEEDMODIFY*CALCULATED_INFO.TaskSpeed;
+					value = TASKSPEEDMODIFY*DerivedDrawInfo.TaskSpeed;
 					if (value<=0||value>999) value=0; else valid=true;
 					sprintf(text,"%d",(int)value);
 					wsprintf(BufferValue, TEXT("%S"),text);
@@ -1670,9 +1670,9 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[LK_FIN_ETE].Title );
 
 			if ( ValidTaskPoint(ActiveWayPoint) ) { // 091222
-				if (CALCULATED_INFO.LKTaskETE > 0) { 
+				if (DerivedDrawInfo.LKTaskETE > 0) { 
 					valid=true;
-					if ( Units::TimeToTextDown(BufferValue, (int)CALCULATED_INFO.LKTaskETE))  // 091112
+					if ( Units::TimeToTextDown(BufferValue, (int)DerivedDrawInfo.LKTaskETE))  // 091112
 						wsprintf(BufferUnit, TEXT("h"));
 					else
 						wsprintf(BufferUnit, TEXT(""));
@@ -1725,10 +1725,10 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) && (CALCULATED_INFO.TaskTimeToGo< 0.9*ERROR_TIME)) {
-				if (CALCULATED_INFO.TaskTimeToGo > 0) {
+			if ( (ValidTaskPoint(ActiveWayPoint) != false) && (DerivedDrawInfo.TaskTimeToGo< 0.9*ERROR_TIME)) {
+				if (DerivedDrawInfo.TaskTimeToGo > 0) {
 					valid=true;
-					Units::TimeToText(BufferValue, (int)CALCULATED_INFO.TaskTimeToGo+DetectCurrentTime());
+					Units::TimeToText(BufferValue, (int)DerivedDrawInfo.TaskTimeToGo+DetectCurrentTime());
 				} else
 					wsprintf(BufferValue, TEXT(NULLTIME));
 			}
@@ -1745,10 +1745,10 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) && (CALCULATED_INFO.LegTimeToGo< 0.9*ERROR_TIME)) {
-				if (CALCULATED_INFO.LegTimeToGo > 0) {
+			if ( (ValidTaskPoint(ActiveWayPoint) != false) && (DerivedDrawInfo.LegTimeToGo< 0.9*ERROR_TIME)) {
+				if (DerivedDrawInfo.LegTimeToGo > 0) {
 					valid=true;
-					Units::TimeToText(BufferValue, (int)CALCULATED_INFO.LegTimeToGo+DetectCurrentTime());
+					Units::TimeToText(BufferValue, (int)DerivedDrawInfo.LegTimeToGo+DetectCurrentTime());
 				} else
 					wsprintf(BufferValue, TEXT(NULLTIME));
 			}
@@ -1765,9 +1765,9 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
-			if (CALCULATED_INFO.FlightTime > 0) {
+			if (DerivedDrawInfo.FlightTime > 0) {
 				valid=true;
-				Units::TimeToText(BufferValue, (int)CALCULATED_INFO.FlightTime);
+				Units::TimeToText(BufferValue, (int)DerivedDrawInfo.FlightTime);
 			} else {
 				wsprintf(BufferValue, TEXT(NULLTIME));
 			}
@@ -1783,9 +1783,9 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
-			if (CALCULATED_INFO.LastThermalTime > 0) {
+			if (DerivedDrawInfo.LastThermalTime > 0) {
 				valid=true;
-				Units::TimeToText(BufferValue, (int)CALCULATED_INFO.LastThermalTime);
+				Units::TimeToText(BufferValue, (int)DerivedDrawInfo.LastThermalTime);
 			} else {
 				wsprintf(BufferValue, TEXT(NULLTIME));
 			}
@@ -1801,15 +1801,15 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 #if (0)
 			double dd;
 			if (AATEnabled && ValidTaskPoint(ActiveWayPoint)) {
-				dd = CALCULATED_INFO.TaskTimeToGo;
-				if ((CALCULATED_INFO.TaskStartTime>0.0) && (CALCULATED_INFO.Flying) &&(ActiveWayPoint>0)) {
-					dd += GPS_INFO.Time-CALCULATED_INFO.TaskStartTime;
+				dd = DerivedDrawInfo.TaskTimeToGo;
+				if ((DerivedDrawInfo.TaskStartTime>0.0) && (DerivedDrawInfo.Flying) &&(ActiveWayPoint>0)) {
+					dd += DrawInfo.Time-DerivedDrawInfo.TaskStartTime;
 				}
 				dd= max(0,min(24.0*3600.0,dd))-AATTaskLength*60;
 				if (dd<0) {
 					status = 1; // red
 				} else {
-					if (CALCULATED_INFO.TaskTimeToGoTurningNow > (AATTaskLength+5)*60) {
+					if (DerivedDrawInfo.TaskTimeToGoTurningNow > (AATTaskLength+5)*60) {
 						status = 2; // blue
 					} else {
 						status = 0;  // black
@@ -1820,9 +1820,9 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				status = 0; // black
 			}
 #endif
-			if (ValidTaskPoint(ActiveWayPoint) && AATEnabled && (CALCULATED_INFO.AATTimeToGo< 0.9*ERROR_TIME)) {
+			if (ValidTaskPoint(ActiveWayPoint) && AATEnabled && (DerivedDrawInfo.AATTimeToGo< 0.9*ERROR_TIME)) {
 
-				Units::TimeToText(BufferValue, (int)CALCULATED_INFO.AATTimeToGo);
+				Units::TimeToText(BufferValue, (int)DerivedDrawInfo.AATTimeToGo);
 				valid=true;
 			}
 			wsprintf(BufferUnit,_T("h"));
@@ -1833,14 +1833,14 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			//wsprintf(BufferValue,_T(NULLMEDIUM)); 100302 obs
 			//wsprintf(BufferUnit,_T("g")); 100302 obs
 			// _stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title ); 100302 obs
-			if ( GPS_INFO.AccelerationAvailable) { 
-				value=GPS_INFO.Gload;
+			if ( DrawInfo.AccelerationAvailable) { 
+				value=DrawInfo.Gload;
 				_stprintf(BufferValue,TEXT("%+.1f"), value);
 				valid=true;
 				// LKTOKEN  _@M1075_ = "G load", _@M1076_ = "G"
 				_tcscpy(BufferTitle, gettext(TEXT("_@M1076_")));
 			} else {
-				value=CALCULATED_INFO.Gload;
+				value=DerivedDrawInfo.Gload;
 				_stprintf(BufferValue,TEXT("%+.1f"), value);
 				valid=true;
 				_stprintf(BufferTitle, TEXT("e%s"), gettext(TEXT("_@M1076_")));
@@ -1867,7 +1867,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				valid = true;
 			}
 	#else
-			value = GPS_INFO.SupplyBatteryVoltage;
+			value = DrawInfo.SupplyBatteryVoltage;
 			if (value>0.0) {
 				_stprintf(BufferValue,TEXT("%2.1fV"), value);
 				valid = true;
@@ -1887,16 +1887,16 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			// TODO This is in the wrong place, should be moved to calc thread! 090916
 			double dd;
 			if (AATEnabled && ValidTaskPoint(ActiveWayPoint)) {
-				dd = CALCULATED_INFO.TaskTimeToGo;
-				if ((CALCULATED_INFO.TaskStartTime>0.0) && (CALCULATED_INFO.Flying) &&(ActiveWayPoint>0)) {
-					dd += GPS_INFO.Time-CALCULATED_INFO.TaskStartTime;
+				dd = DerivedDrawInfo.TaskTimeToGo;
+				if ((DerivedDrawInfo.TaskStartTime>0.0) && (DerivedDrawInfo.Flying) &&(ActiveWayPoint>0)) {
+					dd += DrawInfo.Time-DerivedDrawInfo.TaskStartTime;
 				}
 				dd= max(0.0,min(24.0*3600.0,dd))-AATTaskLength*60;
 #if (0)
 				if (dd<0) {
 					status = 1; // red
 				} else {
-					if (CALCULATED_INFO.TaskTimeToGoTurningNow > (AATTaskLength+5)*60) {
+					if (DerivedDrawInfo.TaskTimeToGoTurningNow > (AATTaskLength+5)*60) {
 						status = 2; // blue
 					} else {
 						status = 0;  // black
@@ -1921,9 +1921,9 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				// LKTOKEN  _@M1083_ = "Task Time To Go", _@M1084_ = "TskETE"
 				_stprintf(BufferTitle, gettext(TEXT("_@M1084_")));
 
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) && (CALCULATED_INFO.LKTaskETE< 0.9*ERROR_TIME)) {
-				if (CALCULATED_INFO.LKTaskETE > 0) {
-					Units::TimeToText(BufferValue, (int)CALCULATED_INFO.LKTaskETE);
+			if ( (ValidTaskPoint(ActiveWayPoint) != false) && (DerivedDrawInfo.LKTaskETE< 0.9*ERROR_TIME)) {
+				if (DerivedDrawInfo.LKTaskETE > 0) {
+					Units::TimeToText(BufferValue, (int)DerivedDrawInfo.LKTaskETE);
 					valid=true;
 				} else
 					wsprintf(BufferValue, TEXT(NULLTIME));
@@ -2145,7 +2145,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_EXTBATTBANK:
 			wsprintf(BufferValue,_T(NULLMEDIUM));
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			ivalue=GPS_INFO.ExtBatt_Bank;
+			ivalue=DrawInfo.ExtBatt_Bank;
 			if (ivalue>0) {
 				_stprintf(BufferValue,TEXT("%d"), ivalue); // 091101
 				valid = true;
@@ -2160,7 +2160,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_EXTBATT2VOLT:
 			wsprintf(BufferValue,_T(NULLMEDIUM));
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			value = (lkindex==LK_EXTBATT1VOLT?GPS_INFO.ExtBatt1_Voltage:GPS_INFO.ExtBatt2_Voltage);
+			value = (lkindex==LK_EXTBATT1VOLT?DrawInfo.ExtBatt1_Voltage:DrawInfo.ExtBatt2_Voltage);
 			// hack to display percentage instead of voltage
 			if (value>=1000) {
 				value-=1000;
@@ -2182,7 +2182,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 
 		// B48 091216  OAT Outside Air Temperature
 		case LK_OAT:
-			value=GPS_INFO.OutsideAirTemperature;
+			value=DrawInfo.OutsideAirTemperature;
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if (value<-50||value>100) {
 				wsprintf(BufferValue, TEXT("---"));
@@ -2216,7 +2216,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				_stprintf(BufferTitle, gettext(TEXT("_@M1172_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			if (!CALCULATED_INFO.TerrainValid) { //@ 101013
+			if (!DerivedDrawInfo.TerrainValid) { //@ 101013
 				wsprintf(BufferValue, TEXT(NULLLONG));
 				wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 				valid=false;
@@ -2237,7 +2237,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					strcpy(text,NULLMEDIUM);
 			} else {
-	                        if (GPS_INFO.FLARM_Traffic[LKTargetIndex].ID <=0) {
+	                        if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
 					strcpy(text,NULLMEDIUM);
 				} else {
 					// get values
@@ -2262,11 +2262,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 					strcpy(text,NULLMEDIUM);
 					wsprintf(BufferValue, TEXT("%S"),text);
 			} else {
-	                        if (GPS_INFO.FLARM_Traffic[LKTargetIndex].ID <=0) {
+	                        if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
 					strcpy(text,NULLMEDIUM);
 					wsprintf(BufferValue, TEXT("%S"),text);
 				} else {
-						value = LKTraffic[LKTargetIndex].Bearing -  GPS_INFO.TrackBearing;
+						value = LKTraffic[LKTargetIndex].Bearing -  DrawInfo.TrackBearing;
 						valid=true;
 						if (value < -180.0)
 							value += 360.0;
@@ -2292,7 +2292,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 					strcpy(text,NULLMEDIUM);
 					wsprintf(BufferValue, TEXT("%S"),text);
 			} else {
-	                        if (GPS_INFO.FLARM_Traffic[LKTargetIndex].ID <=0) {
+	                        if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
 					strcpy(text,NULLMEDIUM);
 					wsprintf(BufferValue, TEXT("%S"),text);
 				} else {
@@ -2314,10 +2314,10 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					strcpy(text,NULLMEDIUM);
 			} else {
-	                        if (GPS_INFO.FLARM_Traffic[LKTargetIndex].ID <=0) {
+	                        if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
 					strcpy(text,NULLMEDIUM);
 				} else {
-					value=SPEEDMODIFY*GPS_INFO.FLARM_Traffic[LKTargetIndex].Speed;
+					value=SPEEDMODIFY*DrawInfo.FLARM_Traffic[LKTargetIndex].Speed;
 					if (value<0||value>9999) value=0; else valid=true;
 					sprintf(text,"%d",(int)value);
 				}
@@ -2333,10 +2333,10 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					strcpy(text,NULLMEDIUM);
 			} else {
-	                        if (GPS_INFO.FLARM_Traffic[LKTargetIndex].ID <=0) {
+	                        if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
 					strcpy(text,NULLMEDIUM);
 				} else {
-					value=ALTITUDEMODIFY*GPS_INFO.FLARM_Traffic[LKTargetIndex].Altitude;
+					value=ALTITUDEMODIFY*DrawInfo.FLARM_Traffic[LKTargetIndex].Altitude;
 					valid=true;
 					sprintf(text,"%d",(int)value);
 				}
@@ -2354,10 +2354,10 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					strcpy(text,NULLMEDIUM);
 			} else {
-	                        if (GPS_INFO.FLARM_Traffic[LKTargetIndex].ID <=0) {
+	                        if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
 					strcpy(text,NULLMEDIUM);
 				} else {
-					value=ALTITUDEMODIFY*(DerivedDrawInfo.NavAltitude-GPS_INFO.FLARM_Traffic[LKTargetIndex].Altitude)*-1;
+					value=ALTITUDEMODIFY*(DerivedDrawInfo.NavAltitude-DrawInfo.FLARM_Traffic[LKTargetIndex].Altitude)*-1;
 					valid=true;
 					sprintf(text,"%+d",(int)value);
 				}
@@ -2375,12 +2375,12 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 					wsprintf(BufferValue, TEXT("%S"),text);
 					_tcscpy(BufferUnit, _T(""));
 			} else {
-	                        if (GPS_INFO.FLARM_Traffic[LKTargetIndex].ID <=0) {
+	                        if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
 					strcpy(text,NULLMEDIUM);
 					wsprintf(BufferValue, TEXT("%S"),text);
 					_tcscpy(BufferUnit, _T(""));
 				} else {
-					value = LIFTMODIFY*GPS_INFO.FLARM_Traffic[LKTargetIndex].ClimbRate;
+					value = LIFTMODIFY*DrawInfo.FLARM_Traffic[LKTargetIndex].ClimbRate;
 					valid=true;
 					_stprintf(BufferValue,varformat,value);
 					wsprintf(BufferUnit, TEXT("%s"),Units::GetVerticalSpeedName());
@@ -2397,12 +2397,12 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 					wsprintf(BufferValue, TEXT("%S"),text);
 					_tcscpy(BufferUnit, _T(""));
 			} else {
-	                        if (GPS_INFO.FLARM_Traffic[LKTargetIndex].ID <=0) {
+	                        if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
 					strcpy(text,NULLMEDIUM);
 					wsprintf(BufferValue, TEXT("%S"),text);
 					_tcscpy(BufferUnit, _T(""));
 				} else {
-					value = LIFTMODIFY*GPS_INFO.FLARM_Traffic[LKTargetIndex].Average30s;
+					value = LIFTMODIFY*DrawInfo.FLARM_Traffic[LKTargetIndex].Average30s;
 					valid=true;
 					_stprintf(BufferValue,varformat,value);
 					wsprintf(BufferUnit, TEXT("%s"),Units::GetVerticalSpeedName());
@@ -2421,7 +2421,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 					strcpy(text,NULLMEDIUM);
 					wsprintf(BufferValue, TEXT("%S"),text);
 			} else {
-	                        if (GPS_INFO.FLARM_Traffic[LKTargetIndex].ID <=0) {
+	                        if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
 					strcpy(text,NULLMEDIUM);
 					wsprintf(BufferValue, TEXT("%S"),text);
 				} else {
@@ -2448,7 +2448,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 					strcpy(text,NULLMEDIUM);
 			} else {
-	                        if (GPS_INFO.FLARM_Traffic[LKTargetIndex].ID <=0) {
+	                        if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
 					strcpy(text,NULLMEDIUM);
 					wsprintf(BufferValue, TEXT("%S"),text);
 				} else {
@@ -2678,7 +2678,7 @@ void MapWindow::LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *
 #else /* MAP_ZOOM */
 	if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
 #endif /* MAP_ZOOM */
-		value = WayPointCalc[index].Bearing -  GPS_INFO.TrackBearing;
+		value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
 		if (value < -180.0)
 			value += 360.0;
 		else
