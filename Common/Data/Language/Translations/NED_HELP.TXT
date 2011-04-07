@@ -1,4 +1,4 @@
-# LK8000 NED_HLP.TXT 101210
+﻿# LK8000 NED_HLP.TXT 101210
 #
 # A single text line can be max 500 characters long
 # An entire help can be max 1024 characters total

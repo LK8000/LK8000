@@ -1,4 +1,4 @@
-# LK8000 ENG_HLP.TXT 101210
+﻿# LK8000 ENG_HLP.TXT 110405
 #
 # A single text line can be max 500 characters long
 # An entire help can be max 1024 characters total
@@ -86,7 +86,8 @@ Defines the brightness (whiteness) of the terrain rendering.  This controls the 
 Defines the color ramp used in terrain rendering.
 
 @120
-Enable or disable moving map shade effect.
+Enable or disable moving map shade/slope effect. You can also enable/disable shading from the Screen View menu buttons.
+However, if you disable shading here it will be disabled forever, and you will not be able to enable it from Screen View.
 
 @121
 If NO TERRAIN is used, this is the color to be used as a background. Note that some colors are suitable for no topology use, 
@@ -159,7 +160,7 @@ The height above terrain that the glider should arrive at for a safe landing. Do
 @134
 Apply safety altitude to landing points only, or also to turnpoints. If only to landables, then arrival altitude over turnpoints will NOT consider any extra margin.
 [Landables only] add extra altitude to landables only. This is the default.
-[Landables and turnpoints] Apply extra altitude for all waypoints.">
+[Landables and turnpoints] Apply extra altitude for all waypoints."
 
 @135
 The height above terrain that the glider must clear during final glide, and to pass obstacles. A good value is 50m
@@ -197,8 +198,7 @@ There is a tolerance of 30% relative to this parameter.
 
 @142
 This option defines which auto MacCready algorithm is used.
-[Final glide] adjusts Mc for fastest arrival.  For OLC sprint tasks,
- the MacCready is adjusted in order to cover the greatest distance in the remaining time and reach the finish height.
+[Final glide] adjusts Mc for fastest arrival.
 [Average] sets Mc to the average climb rate across all climbs.
 [Both] Uses average during task, then fastest arrival when in final glide mode.
 [Equivalent MC] Use MC calculated on your current average speed. See the manual. 
@@ -234,11 +234,10 @@ Otherwise GPS altitude is used.
 
 
 @148
-This contains a selection of gliders of different performance classes, as well as a special entry for WinPilot custom File.
+[THIS HELP IS UNUSED - do not translate]
 
 @149
-When WinPilot File is the polar type, this is the name of the file containing the glide polar data.
-Polars must be placed inside _Polars subfolder.
+[THIS HELP IS UNUSED - do not translate]
 
 @150
 The maximum manoeuvring speed can be entered on this page to prevent the glide computer from commanding unrealistic cruise speeds.
@@ -409,8 +408,8 @@ LK specific fonts cannot be customized.
 
 @193
 Draw overlay values on moving map.
-Half mode will paint destination waypoint and distance on upper left, and more informations on the right (MC, requested efficiency and arrival altitude difference for gliders).
-Full mode will also paint clock and left values. See the manual.
+[Half mode] show destination waypoint and distance, and other values on the right (MC, requested efficiency and arrival altitude difference for gliders).
+[Full mode] will add also left overlays values and the clock, if enabled. See the manual.
 
 @194
 This determines whether the the glide terrain range is calculated and drawn as a line on the map area:
@@ -591,7 +590,8 @@ This option defines how waypoints outside the terrain range are handled: the use
 or they can be always included or excluded.
 
 @237
-Show clock in full overlay mode
+Working only in Landscape and Full Overlay mode: localtime clock is shown.
+In portrait mode or Half overlay mode, no clock is displayed.
 
 @238
 Size of overlay fonts.
@@ -601,11 +601,13 @@ Size of overlay fonts.
 #
 
 @300
-Ballast of the glider.  Increase this value if the pilot/cockpit load is greater than the reference pilot weight of the glide polar 
-(typically 75kg).  Press ENTER on this field to toggle count-down of the ballast volume according to the dump rate specified in the configuration settings.
+Specifies how much of the water ballast is loaded in the glider.
+The total volume of the water ballast is defined in a glider polar data.
+Press DUMP BALLAST button to toggle countdown of the ballast volume according to the dump rate specified in s
+ystem configuration.
 
 @301
-Wing loading for this glider. It depends on your weight, on additional equipments installed, etc. Ballast is accounted separately. 
+Wing loading for this glider. It depends on your weight, on additional equipments installed, etc.
 You should set Wing Loading with no ballast first.
 This value is NOT saved, and it is reset at each startup to the wing loading calculated for your polar. 
 Normally, but not always, your polar has considered a 70kg weight pilot. If you are not sure, leave the default wing loading. 
@@ -817,6 +819,9 @@ Type of the finish.
 [Cylinder]: The task is finished when the glider enters the cylinder.  The cylinder radius is set via the 'Finish radius' property.
 [FAI Sector]: Defines a 90 degree sector.  The task is finished when the glider crosses the sector lines.  The radius of the sector is set via the 'Finish radius' property.
 
+@H514
+Radius of the finish cylinder or half length of the finish line.
+
 #
 # TIME GATES
 #
@@ -938,7 +943,7 @@ Negative convergence (divergence) produces subsiding vertical motion, creating l
 
 
 #
-# INFOBOXES
+# INFOBOXES 800 - 1199
 #
 
 @800
@@ -949,8 +954,8 @@ USE THIS ALTITUDE as main reference, since this is the one being used by LK8000.
 Touchscreen/PC only: in simulation mode, this value is adjustable with the up/down arrow keys and the right/left arrow keys also cause the glider to turn.
 
 @801
-[Altitude AGL
-This is the navigation altitude minus the terrain height obtained from the terrain file.  The value is coloured red when the glider is below the terrain safety clearance height.
+[Altitude AGL]
+This is the navigation altitude minus the terrain height obtained from the terrain file.  
 
 @802
 [Thermal last 30 sec]
@@ -1333,8 +1338,162 @@ If you have no AirSpeed probe, Estimated Airspeed will be used. See the manual f
 @889
 No help available on this item!
 
+@890
+[OLC CLASSIC] distance
+Current distance calculated around 5 turnpoints. 
+
+@891
+[FAI TRIANGLE] distance
+FAI triangle maximum distance achieved so far.
+
+@892
+[OLC LEAGUE] distance
+Max distance calculated around 3 turnpoints, made in 2.5 hours.
+
+@893
+[FAI 3TPs] distance
+Current distance calculated around 3 turnpoints. 
+
+@894
+[OLC CLASSIC] predicted distance
+Current distance calculated around 5 turnpoints assuming the last one
+will be the starting point.
+
+@895
+[FAI TRIANGLE] predicted distance
+FAI triangle maximum distance achieved so far, assuming the last point
+will be the starting point.
+
+@896
+[FAI 3TPs] predicted distance
+Current distance calculated around 3 turnpoints assuming the last one
+will be the starting point.
+
+@897
+[OLC CLASSIC] speed
+
+@898
+[FAI TRIANGLE] speed
+
+@899
+[OLC LEAGUE] speed
+
+@900
+[FAI 3TPs] speed
+
+@901
+[OLC CLASSIC] predicted speed
+
+@902
+[FAI TRIANGLE] predicted speed
+
+@903
+[FAI 3TPs] predicted speed
+
+@904
+[OLC CLASSIC] score
+
+@905
+[FAI TRIANGLE] score
+
+@906
+[OLC LEAGUE] score
+
+@907
+[FAI 3TPs] score
+
+@908
+[OLC CLASSIC] predicted score
+
+@909
+[FAI TRIANGLE] predicted score
+
+@910
+[FAI 3TPs] predicted score
+
+@911
+[OLC PLUS] score
+The sum of OLC Classic score and FAI triangle score.
+
+@912
+[OLC PLUS] predicted score
+The sum of OLC Classic predicted score and FAI triangle predicted score.
+
+
+#
+# END INFOBOXES 800 - 1199
+#
+
+@1200
+[Airspace area filling]
+Airspace area can be denoted by outlines only, pattern filling, or semi-transparent colors.
+[Outlines only] there will be only lines on airspace area borders 
+[Pattern] airspace area will be filled with selected pattern of selected color
+[Semi-Transparent] airspace area will be filled with selected solid semi-transparent color (opacity of the color can be set in 'Opacity' item) . 
+Transparency may not be available on some hardware devices.
+
+@1201
+[Opacity of semi-transparent airspace]
+Defines how much transparent (->0%) / opaque (->100%) will be airspace area filled with solid semi-transparent color.
+
+@1202
+[Bottom Bar Opacity]
+Defines how much transparent (->0%) / opaque (->100%) will be the bottom bar area on the map .
+Normally the bar is black with white text, and can be reverted to white with black text on it.
+Setting <30% opacity the bottom bar will be very transparent, and text color will be forced reversed.
+Some combinations of opacity and reverse colors may not be suitable to navigation, but there are
+infinite combinations to choose from.
+Using 0% or 100%  (full transparency  or full opacity) will speed up the software a bit.
+Another famous 8000 instrument is using 75% opacity.
+Default is 60%.
+ATTENTION: some devices do not support opacity control. In this case, opacity has no effect
+and the bottom bar will be always full black or full white.
+
+@1203
+[Font Smoothing]
+Font smoothing will make characters appearing with better quality.
+[None] will force disabling font smoothing
+[Normal] will use default quality
+[Anti Aliasing] normal quality
+[ClearType] advanced quality. 
+Please note that on some devices like old 3850 Anti Aliasing is not working. 
+On some PNAs in portrait mode, and on PPC2002, Antialiasing will work better.
+Otherwise, by default LK8000 is using ClearType.
+You must exit and restart LK8000 to see the effect of changes.
+
+@1204
+[VarioBar mode]
+Choose the vario value and relative bar display on the left, if enabled.
+In thermal mode, only vario can be shown.
+In cruise mode, also nettovario or Speed To Fly (Sollfart).
+If STF is selected, the desired IAS is printed, and the bar is indicating
+if you must push or pull the stick to reach that value.
+
+The value is printed with a suffix letter indicating:
+NT for netto
+SF for STF
+
+@1205
+[Aircraft category]
+Select your aircraft type here, and possibly change the polar file also accordingly.
+Each aircraft mode has unique features, please visit the website or read the latest
+manual to discover differences.
+After changing category, you must restart LK in order to notice all differences.
+
+@1206
+[Aircraft type]
+This contains a selection of aircrafts and wings of different performance classes.
+If you want to use your own polar file, choose Custom Polar File here 
+and then select it from the next configuration box.
+
+@1207
+[Custom polar file]
+When Custom Polar File is the polar type, this is the name of the file containing the glide polar data.
+Polars must be placed inside _Polars subfolder.
+Creating a polar file is not trivial, because you need actual sink rate values and a precise
+aircraft weight. Read the manual to know more about all of this. 
+
 @9999
 No help available on this item!
 
 
-=
