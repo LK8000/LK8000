@@ -65,10 +65,10 @@
 <WndProperty Name="prpAirspaceOutline" Caption="_@M771_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H114_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>
-<WndProperty Name="prpAirspaceFillType" Caption="_@M940_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H890_">
+<WndProperty Name="prpAirspaceFillType" Caption="_@M940_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1200_">
 <DataField name="" DataType="enum" OnDataAccess="OnAirspaceFillType"/>
 </WndProperty>
-<WndProperty Name="prpAirspaceOpacity" Caption="_@M944_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H891_">
+<WndProperty Name="prpAirspaceOpacity" Caption="_@M944_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1201_">
 <DataField name="" DataType="enum"/>
 </WndProperty>
 </WndFrame>
@@ -301,13 +301,13 @@
 </WndProperty>
 </WndFrame>
 <WndFrame Name="frmPolar" X=70 Y=0 Width=-246 Height=222 Font=2>
-<WndProperty Name="prpAircraftCategory" Caption="_@M164_" X=2 Y=-1   Width=-246 Height=22 CaptionWidth=150 Font=2 >
+<WndProperty Name="prpAircraftCategory" Caption="_@M164_" X=2 Y=-1   Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1205_" >
 <DataField name="" DataType="enum" Min=0 Max=10 Step=1/>
 </WndProperty>
-<WndProperty Name="prpPolarType" Caption="_@M751_" X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H148_">
+<WndProperty Name="prpPolarType" Caption="_@M751_" X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1206_">
 <DataField name="" DataType="enum" Min=0 Max=50 Step=1 OnDataAccess="OnPolarTypeData"/>
 </WndProperty>
-<WndProperty Name="prpPolarFile" Caption="_@M206_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H149_">
+<WndProperty Name="prpPolarFile" Caption="_@M206_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1207_">
 <DataField name="" DataType="filereader" Min=0 Max=200 Step=1 OnDataAccess="OnPolarFileData"/>
 </WndProperty>
 <WndProperty Name="prpMaxManoeuveringSpeed" Caption="_@M774_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H150_">
@@ -464,7 +464,7 @@
 <WndProperty Name="prpHideUnits" Caption="_@M337_"  X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H191_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>
-<WndProperty Name="prpBarOpacity" Caption="_@M950_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H900_">
+<WndProperty Name="prpBarOpacity" Caption="_@M950_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1202_">
 <DataField name="" DataType="enum"/>
 </WndProperty>
 </WndFrame>
@@ -522,6 +522,9 @@
 <DataField name="" DataType="enum" Min=0 Max=10 Step=1/>
 </WndProperty>
 <WndProperty Name="prpLKVarioBar" Caption="_@M785_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H196_">
+<DataField name="" DataType="enum" Min=0 Max=1 Step=1/>
+</WndProperty>
+<WndProperty Name="prpLKVarioVal" Caption="_@M1424_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1204_">
 <DataField name="" DataType="enum" Min=0 Max=1 Step=1/>
 </WndProperty>
 <WndProperty Name="prpThermalBar" Caption="_@M712_" X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H197_">
@@ -590,7 +593,7 @@
 <WndProperty Name="prpAutoSoundVolume" Caption="_@M110_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H212_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>
-<WndProperty Name="prpFontRenderer" Caption="_@M954_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H901_">
+<WndProperty Name="prpFontRenderer" Caption="_@M954_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1203_">
 <DataField name="" DataType="enum"/>
 </WndProperty>
 <WndProperty Name="prpEngineeringMenu" Caption="_@M260_"  X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H213_">
