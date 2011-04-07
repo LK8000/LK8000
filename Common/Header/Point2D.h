@@ -199,12 +199,12 @@ inline unsigned CPoint2D::DistanceXYZ(const CPoint2D &seg1, const CPoint2D &seg2
   int X1 = _x - seg1._x;
   int Y1 = _y - seg1._y;
   int Z1 = _z - seg1._z;
-  int DX = seg2._x - seg1._x;
-  int DY = seg2._y - seg1._y;
-  int DZ = seg2._z - seg1._z;
+  double DX = seg2._x - seg1._x;
+  double DY = seg2._y - seg1._y;
+  double DZ = seg2._z - seg1._z;
   
-  double dot = (double)X1*DX + (double)Y1*DY + (double)Z1*DZ;
-  double len_sq = (double)DX*DX + (double)DY*DY + (double)DZ*DZ;
+  double dot = X1*DX + Y1*DY + Z1*DZ;
+  double len_sq = DX*DX + DY*DY + DZ*DZ;
   double param = dot / len_sq;
   
   int x, y, z;
