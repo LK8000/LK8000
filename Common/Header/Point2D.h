@@ -220,9 +220,9 @@ inline unsigned CPoint2D::DistanceXYZ(const CPoint2D &seg1, const CPoint2D &seg2
     z = seg2._z;
   }
   else {
-    x = static_cast<unsigned>(seg1._x + param * DX);
-    y = static_cast<unsigned>(seg1._y + param * DY);
-    z = static_cast<unsigned>(seg1._z + param * DZ);
+    x = static_cast<int>(seg1._x + param * DX);
+    y = static_cast<int>(seg1._y + param * DY);
+    z = static_cast<int>(seg1._z + param * DZ);
   }
   
   if(nearest_x) *nearest_x = x;
