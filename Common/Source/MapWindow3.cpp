@@ -97,7 +97,7 @@ void MapWindow::DrawGlideCircle(HDC hdc, POINT Orig, RECT rc )
   maxcruise=(GlidePolar::bestld); 
   mincruise=(GlidePolar::bestld/4);
 
-  cruise= CALCULATED_INFO.AverageLD; 
+  cruise= DerivedDrawInfo.AverageLD; 
 
   if ( cruise <= 0 ) cruise = GlidePolar::bestld; // 091215 let cruise be always reasonable
   if ( cruise < mincruise ) return;

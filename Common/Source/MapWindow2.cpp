@@ -1587,16 +1587,24 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 	if (Appearance.IndFinalGlide == fgFinalGlideDefault){
 
 		if (OvertargetMode == OVT_TASK ) { //@ 101004
-			if ((GlideBarMode == (GlideBarMode_t)gbFinish) || !NewMap) {
+			// A task is made of at least 2 tps, otherwise its a goto
+			if (( (GlideBarMode == (GlideBarMode_t)gbFinish) && ValidTaskPoint(1)) || !NewMap) {
 				if ( (ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeDifference) <ALTDIFFLIMIT) //@ 091114
 					_stprintf(Value,TEXT(" --- "));
 				else
 					_stprintf(Value,TEXT("%1.0f "), ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeDifference);
 			} else {
+				if ( (ALTITUDEMODIFY*WayPointCalc[barindex].AltArriv[AltArrivMode]) < ALTDIFFLIMIT)
+					_stprintf(Value,TEXT(" --- "));
+				else
+					_stprintf(Value,TEXT("%1.0f "), ALTITUDEMODIFY*WayPointCalc[barindex].AltArriv[AltArrivMode]);
+				/*
+				 * Well this was the reason why the glidebar value was out of sync with overlays
 				if ( (ALTITUDEMODIFY*DerivedDrawInfo.NextAltitudeDifference) < ALTDIFFLIMIT) //@ 091114
 					_stprintf(Value,TEXT(" --- "));
 				else
 					_stprintf(Value,TEXT("%1.0f "), ALTITUDEMODIFY*DerivedDrawInfo.NextAltitudeDifference);
+				*/
 			}
 		} else {
 			if ( (ALTITUDEMODIFY*WayPointCalc[barindex].AltArriv[AltArrivMode]) < ALTDIFFLIMIT)

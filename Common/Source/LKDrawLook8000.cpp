@@ -716,11 +716,11 @@ drawOverlay:
 	if (HaveGates()) {
 		if (gatechrono>0) {
 			// IsInSector works reversed!
-			if (PGStartOut && CALCULATED_INFO.IsInSector) {
+			if (PGStartOut && DerivedDrawInfo.IsInSector) {
 				// LKTOKEN  _@M923_ = "WRONG inSIDE"
 				_tcscpy(BufferValue,gettext(TEXT("_@M923_")));
 			} else {
-				if (!PGStartOut && !CALCULATED_INFO.IsInSector) {
+				if (!PGStartOut && !DerivedDrawInfo.IsInSector) {
 					// LKTOKEN  _@M924_ = "WRONG outSIDE"
 					_tcscpy(BufferValue,gettext(TEXT("_@M924_")));
 				} else {
@@ -728,7 +728,7 @@ drawOverlay:
 					_tcscpy(BufferValue,gettext(TEXT("_@M921_")));
 				}
 			}
-			if (!CALCULATED_INFO.Flying) {
+			if (!DerivedDrawInfo.Flying) {
 				// LKTOKEN  _@M922_ = "NOT FLYING"
 				_tcscpy(BufferValue,gettext(TEXT("_@M922_")));
 			}
@@ -1170,7 +1170,7 @@ Drawbottom:
 				wsprintf(BufferTitle, gettext(TEXT("_@M1199_")));
 				wsprintf(BufferValue,TEXT("SIM"));
 			} else {
-				Value=GPS_INFO.SatellitesUsed;
+				Value=DrawInfo.SatellitesUsed;
 				if (Value<1 || Value>30) {
 					wsprintf(BufferValue,TEXT("---"));
 				} else {
@@ -1192,7 +1192,7 @@ Drawbottom:
 			}
 
 		#else
-		Value=GPS_INFO.SatellitesUsed;
+		Value=DrawInfo.SatellitesUsed;
 		if (Value<1 || Value>30) {
 			wsprintf(BufferValue,TEXT("---"));
  			//TextDisplayMode.AsFlag.Color = TEXTRED;
@@ -1284,7 +1284,7 @@ Drawbottom:
 	case BM_SYS:
 		// LKTOKEN _@M1068_ "HBAR"
   		wsprintf(BufferTitle, gettext(TEXT("_@M1068_")));
-		if (GPS_INFO.BaroAltitudeAvailable) {
+		if (DrawInfo.BaroAltitudeAvailable) {
 			if (EnableNavBaroAltitude)
 				// LKTOKEN _@M894_ "ON"
 				wsprintf(BufferValue,gettext(TEXT("_@M894_")));
@@ -1369,7 +1369,7 @@ Drawbottom:
 		break;
 	case BM_TSK:
 // TODO MAKE IT LKPROCESS
-  		Value=ALTITUDEMODIFY*CALCULATED_INFO.TaskStartAltitude;
+  		Value=ALTITUDEMODIFY*DerivedDrawInfo.TaskStartAltitude;
 		if (Value>0) {
 			sprintf(text,"%d",(int)Value);
 			wsprintf(BufferValue, TEXT("%S"),text);

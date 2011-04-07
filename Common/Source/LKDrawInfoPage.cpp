@@ -907,6 +907,11 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 	goto label_End;
 
 	// This is the TRI page
+	//
+	// ATTENTION PLEASE
+	// Some values are using direct access to CALCULATED_INFO for fast responses.
+	// Other values are using the copy of struct made 1 second later
+	//
 label_TRI:
 
 	VDrawLine(hdc,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_DARKGREEN);
