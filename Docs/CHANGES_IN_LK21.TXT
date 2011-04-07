@@ -1,4 +1,16 @@
 
+VERSION 2.1g
+
+CHANGES
+
+(. Thermal mode can still happen during FF)
+
+FIXES
+
+. Detect FF in thermal mode
+
+
+
 
 VERSION 2.1f  110407
 ======================================================================================

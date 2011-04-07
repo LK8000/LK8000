@@ -1670,8 +1670,9 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       break;
     }
     if((Rate >= MinTurnRate)||(forcecircling)) {
-      // if( (!ISCAR && ((Basic->Time  - StartTime) > CruiseClimbSwitch))|| forcecircling) { // 101205 ISCAR
-      if( (Calculated->FreeFlying && ((Basic->Time  - StartTime) > CruiseClimbSwitch))|| forcecircling) { // No GA or CAR
+      // WE CANNOT do this, because we also may need Circling mode to detect FF!!
+      // if( (Calculated->FreeFlying && ((Basic->Time  - StartTime) > CruiseClimbSwitch))|| forcecircling) {
+       if( (!ISCAR && !ISGAAIRCRAFT && ((Basic->Time  - StartTime) > CruiseClimbSwitch))|| forcecircling) { 
         Calculated->Circling = TRUE;
         // JMW Transition to climb
         MODE = CLIMB;
