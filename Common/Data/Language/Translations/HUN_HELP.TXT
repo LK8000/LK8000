@@ -1352,17 +1352,100 @@ Ez az érték nem változtatható meg, és ugyanannyi idejű repülési adatból
 Ezen az elemen nem áll rendelkezésre súgó.
 
 @890
+[OLC CLASSIC] távolság
+Az aktuális távolság az 5 fordulópont között számítva.
+
+@891
+[FAI Háromszög] távolság
+A FAI háromszög feladatban eddig elért távolság.
+
+@892
+[OLC LEAGUE] távolság
+Maximális távolság 3 fordulópont körül amit az elmúlt 2.5 órában értél el.
+
+@893
+[FAI 3 FP-os] távolság
+Az aktuális távolság a 3 fordulópont között számítva.
+
+@894
+[OLC CLASSIC] Előrevetített távolság
+Az aktuális távolság az 5 fordulópont között számítva, úgy mintha az utolsó lenne az indulási pont.
+
+@895
+[FAI Háromszög] Előrevetített távolság
+A FAI háromszög feladatban eddig elért távolság, mintha az utolsó pont lenne az indulási pont.
+
+@896
+[FAI 3 FP-os] Előrevetített távolság
+Az aktuális távolság a 3 fordulópont között számítva, úgy mintha az utolsó lenne az indulási pont.
+
+@897
+[OLC CLASSIC] sebesség
+
+@898
+[FAI TRIANGLE] sebesség
+
+@899
+[OLC LEAGUE] sebesség
+
+@900
+[FAI 3 FP-os] sebesség
+
+@901
+[OLC CLASSIC] Előrevetített sebesség
+
+@902
+[FAI Háromszög] Előrevetített sebesség
+
+@903
+[FAI 3 FP-os] Előrevetített sebesség
+
+@904
+[OLC CLASSIC] pontszám
+
+@905
+[FAI Háromszög] pontszám
+
+@906
+[OLC LEAGUE] pontszám
+
+@907
+[FAI 3 FP-os] pontszám
+
+@908
+[OLC CLASSIC] Előrevetített pontszám
+
+@909
+[FAI Háromszög] Előrevetített pontszám
+
+@910
+[FAI 3 FP-os] Előrevetített pontszám
+
+@911
+[OLC PLUS] pontszám
+Az OLC Classic pontszám és a FAI Háromszög pontszám összege.
+
+@912
+[OLC PLUS] Előrevetített pontszám
+Az OLC Classic előrevetített pontszám és a FAI Háromszög előrevetített pontszám összege.
+
+
+#
+# END INFOBOXES 800 - 1199
+#
+
+@1200
 [Légtér ábrázolás]
 A légtereket megjelenítheted körvonalként, mintázattal kitöltve vagy félig átlátszóan szinezve.
 [Csak körvonal] Csak a légterek határán jelenik meg körvonal
 [Mintázat] A légtér osztályához tartozó színnel és mintázattal jelenik meg
 [Félig átlátszó] A légtérhez tartozó színnel lesz kitöltve a terület, és az Elfedés paraméterben megadott mértékben lesz átlátszatlan.
 
-@891
+@1201
 [Légtér átlátszósága]
 Meghatározza mennyire legyen átlátszó (->0%) vagy átlátszatlan (->100%) a kirajzolt légtér.
 
-@900
+@1202
 [Alsósor elfedés]
 Meghatározza mennyire legyen átlátszó (->0%) vagy átlátszatlan (->100%) a képernyő alsó sorában lévő adatsor.
 Alapvetően az alsó sor fekete hátterű fehér betűkkel, habár ez invertálható a menüből.
@@ -1373,7 +1456,7 @@ A 0% vagy 100% beállítások kicsit gyorsabbá teszik a programot. Egy másik h
 az alapértelmezés 60%. Figyelem, mert nem minden eszköz támogatja az átlátszó területek megjelenítését. Ebben
 az esetben a teljes fekete vagy fehér variáció fog megjelenni, mintha 0% vagy 100%-ot állítottál volna be.
 
-@901
+@1203
 [Font Simítás]
 A karakterek simításával a betűk megjelenítése jobb minőségben történik, olvashatóbbak lesznek.
 [Nincs] esetén kikapcsolt
@@ -1384,6 +1467,35 @@ Megjegyzendő, hogy néhány eszközön mint pl. a régi 3850 az Anti Aliasing n
 Néhány PNA-n álló képernyős módban, és PPC2002 esetén az Anti Aliasing jobban működik.
 Egyébként alapértelmezésként az LK8000 a ClearType beállítást használja.
 Miután átállítottad ezt a beállítást, újra kell indítani a programot hogy érvényre jusson.
+
+@1204
+[VarioBar mód]
+Válaszd ki a varió értéket és a relatívként megjelenő oszlopjelzést a bal oldalon, ha engedélyezett.
+Termik módban csak a vario értket lehet megjeleníteni.
+Siklás módban a nettó variót is illetve az optimális siklósebességet (VMcOpt) is.
+Ha a VMcOpt megjelenítését választod akkor az aktuális repülési sebesség (IAS) jelenik meg és az oszlop
+azt jelzi hogy húznod vagy nyomnod kell-e a boton hogy az optimális sebességet elérd.
+Az érték egy végződéssel jelenik meg, NT a nettó esetén és SF a VMcOpt esetén.
+
+@1205
+[Repülőgép kategória]
+Itt kiválaszthatod a repülőgéped melyik kategóriába tartozik, és valószínűleg a géppoláris fájlt is meg kell változtatnod ennek megfelelően.
+Minden repülőgép kategóriának megvannak a sajátosságai, látogasd meg a weboldalt vagy olvasd el a legfrissebb
+kezelési utasítást a különbségek megértéséhez.
+A gépkategória megváltoztatása után újra kell indítanod a programot hogy minden változás érvényre jusson.
+
+@1206
+[Repülőgép tipus]
+Itt állíthatod be a repülőgéped vagy siklóernyőd pontos tipusát. Ez meghatározza a polárist, amivel a program a számításokat elvégzi.
+Ha saját poláris fájlt szeretnél használni, válaszd az [Egyéni poláris fájl] elemet, és add meg a fájl nevét a konfigurációban ezen beállítás értékénél.
+(következő sorban)
+
+@1207
+[Egyéni poláris fájl]
+Amikor a repülőgép tipusát [Egyéni poláris fájl]-ra állítod, akkor itt adhatod meg melyik poláris fájlt használja a program.
+A géppoláris fájlokat a _Polars alkönyvtárban kell elhelyezned hogy kiválaszthatók legyenek.
+Egy poláris fájl elkészítése nem triviális, szükséges a merülősebesség mértéke különböző siklási sebességeknél, és a repülőgép tömege is.
+A kezelési leírásban több információ található erről.
 
 @9999
 Ezen az elemen nem áll rendelkezésre súgó.
