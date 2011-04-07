@@ -648,7 +648,10 @@ double CAirspace_Circle::Range(const double &longitude, const double &latitude, 
                   _latcenter, 
                   _loncenter,
                   &distance, &bearing);
-  return distance - _radius;
+  distance -= _radius;
+  if (distance<0) bearing += 180;
+  if (bearing>360) bearing -= 360;
+  return distance;
 }
 
 // Helper function to calculate circle bounds
