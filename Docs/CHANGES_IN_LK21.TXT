@@ -1,23 +1,37 @@
-WHATS NEW IN 2.1f
 
+
+VERSION 2.1f  110407
+======================================================================================
 
 NEW
+. Variobar indicating Netto or Sollfarts (dolphin speed indicator)
+  System Config menu 13 Map Overlays has a new box "VarioBar Mode".
+  It is possible to have the Variometer bar displaying:
+	Vario in thermal and cruise mode, as before
+	Vario in thermal, Netto in cruise 
+	Vario in thermal, Dolphin speed indicator in cruise (aka Sollfart)
 
-
+  Due to the estimated nettovario, which is based on gps altitude differences,
+  obtained every second (with a possible GPS error, also), the overall result
+  may be of little use. Also, no total energy is used, to make it even worst.
+  However, as many have claimed, in old gliders it is much better than the
+  MacCready speed ring. Maybe. Or maybe not.
 
 
 CHANGES
-
-
+. Non-triangle based contests results accuracy improved for short flights
+. Fix thicker line for topology on big resolutions
+. Introduced UTF-8 encoding for language files
+. Change WinPilot File to Custom Polar File in configuration.
 
 
 
 BUGFIX
-
-
-
-
-
+.  Info->Analysis pages are now refreshed correctly with 1Hz
+.  Fix bug not saving new WP is waypoint file was empty
+.  Fix UCS-8 encoding of COMPEgps WPT file not loading waypoints
+.  Fixed a problem of 0m obstacle warning
+.  Fix bug in SIM PAN mode repositioning with Customkey ON and ActiveMap ON would go nuts.
 
 
 

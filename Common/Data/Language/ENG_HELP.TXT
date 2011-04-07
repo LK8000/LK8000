@@ -1348,7 +1348,7 @@ FAI triangle maximum distance achieved so far.
 
 @892
 [OLC LEAGUE] distance
-Max distance calculated around 5 turnpoints, made in 2.5 hours so far.
+Max distance calculated around 3 turnpoints, made in 2.5 hours.
 
 @893
 [FAI 3TPs] distance

@@ -1952,7 +1952,7 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 #define FF_WINCHIN_ALTLOSS	10		// meters loss for winching, careful about GPS H errors.
 #define FF_MAXTOWTIME	1200			// 20 minutes
 
-#define DEBUG_DFF	1		// REMOVE BEFORE FLIGHT!
+// #define DEBUG_DFF	1		// REMOVE BEFORE FLIGHT!
 
 bool DetectFreeFlying(DERIVED_INFO *Calculated) {
 
