@@ -1,4 +1,4 @@
-﻿# LK8000 POL_HELP.TXT 101210
+﻿# LK8000 POL_HELP.TXT 110406
 #
 # Pojedyncza linia tekstu może mieć maksymalną długość 500 znaków.
 # Cały tekst pomocy może mieć maksymalnie 1024 znaki
@@ -227,11 +227,10 @@ Wczesne wymuszenie dolotu jest także możliwe poprzez ręczne wybranie odpowied
 Ta opcja umożliwia używanie wysokości barometrycznej dla wszystkich obliczeń nawigacyjnych. Wymaga ona oczywiście podłączenia do LK8000 urządzenia udostępniającego taki sygnał na swoim wyjściu. W przeciwnym wypadku będzie używana wysokość GPS.
 
 @148
-Okno zawiera listę statków powietrznych znanych i obsługiwanych już przez LK8000 oraz specjalny typ "WinPilot File", który umożliwia podanie pliku z danymi dowolnego statku powietrznego.
+[Ten token pomocy nie jest używany - nie tłumaczyć]
 
 @149
-W przypadku, gdy w polu "Typ" wybrana jest opcja "WinPilot File", tutaj można podać plik z danymi dowolnego statku powietrznego.
-Pliki biegunowych statków powietrznych muszą znajdować się w podkatalogu _Polars.
+[Ten token pomocy nie jest używany - nie tłumaczyć]
 
 @150
 Maksymalna prędkość, którą komputer pokładowy LK8000 może zalecić pilotowi w czasie lotu. Opcja ta ma zapobiec sugerowaniu nierealistycznych bądź nawet niebezpiecznych dla danego statku powietrznego prędkości.
@@ -1340,24 +1339,31 @@ Pomoc dla tego elementu nie jest dostępna!
 
 @890
 [OLC CLASSIC] odległość
+Aktualna odległość obliczona dla 5 PZ.
 
 @891
 [FAI TRIANGLE] odległość
+Maksymalny obwód przelecianego dotychczas trójkąta FAI.
 
 @892
 [OLC LEAGUE] odległość
+Maksymalna odległość przebyta w czasie lotu dla 3 PZ w czasie 2,5 godziny.
 
 @893
 [FAI 3TPs] odległość
+Aktualna odległość obliczona dla 3 PZ.
 
 @894
 [OLC CLASSIC] przewidywana odległość
+Odległość obliczona dla 5 PZ przy założeniu, że meta będzie w miejscu startu.
 
 @895
 [FAI TRIANGLE] przewidywana odległość
+Maksymalny obwód trójkąta FAI przy założeniu, że meta będzie w miejscu startu.
 
 @896
 [FAI 3TPs] przewidywana odległość
+Odległość obliczona dla 3 PZ przy założeniu, że meta będzie w miejscu startu.
 
 @897
 [OLC CLASSIC] prędkość
@@ -1403,9 +1409,11 @@ Pomoc dla tego elementu nie jest dostępna!
 
 @911
 [OLC PLUS] punkty
+Suma punktów OLC CLASSIC i punktów FAI TRIANGLE.
 
 @912
 [OLC PLUS] przewidywane punkty
+Suma przewidywanych punktów OLC CLASSIC i przewidywanych punktów FAI TRIANGLE.
 
 
 #
@@ -1444,6 +1452,32 @@ Na niektórych urządzeniach jak np. starych 3850 Anti Aliasing nie działa.
 Na niektórych PNA w trybie pionowym, oraz na PPC2002, Anti Aliasing zapewni lepszą jakość.
 W przeciwnym przypadku LK8000 domyślnie używa ClearType.
 Aby zobaczyć zmiany należy ponownie uruchomić LK8000.
+
+@1204
+[Tryb paska Vario]
+Kontroluje co ma być wyświetlane na pasku vario po lewej stronie ekranu (jeśli jest włączony).
+W krążeniu w kominie można oglądać tylko wariometr.
+W czasie przelotu poza wariometrem można ustawić także wariometr Netto oraz Speed To Fly (Sollfahrt).
+Jeśli wybrane jest STF wtedy na ekranie prezentowana jest wartość IAS a pasek pokazuje czy należy przyspieszyć czy zwolnić, aby uzyskać tą prędkość.
+
+Wartość wyświetlana jest razem z symbolem wskazującym na to co jest prezentowane:
+- NT dla netto
+- SF dla STF
+
+@1205
+[Kategoria]
+Wybór typu statku powietrznego. Każdy z dostępnych typów posiada unikalne funkcjonalności. Więcej informacji na ten temat można znaleźć w instrukcji lub na stronie domowej projektu.
+Wszystkie funkcje po zmianie kategorii dostępne są dopiero po ponownym uruchomieniu LK.
+
+@1206
+[Typ]
+Okno zawiera listę statków powietrznych obsługiwanych już przez LK8000. W celu użycia własnego pliku z biegunową należy wybrać specjalny typ "Plik z biegunową" i ustawić odpowiedni plik w następnej opcji.
+
+@1207
+[Plik z biegunową]
+W przypadku, gdy w polu "Typ" wybrana jest opcja "Plik z biegunową", tutaj można podać plik z danymi dowolnego statku powietrznego.
+Pliki biegunowych statków powietrznych muszą znajdować się w podkatalogu _Polars.
+Tworzenie pliku z biegunową nie jest łatwe. Trzeba znać dokładne parametry opadania szybowca przy różnych prędkościach oraz wagę dla której te dane zostały zmierzone. Więcej informacji na ten temat można znaleźć w instrukcji LK8000.
 
 @9999
 Pomoc dla tego elementu nie jest dostępna!

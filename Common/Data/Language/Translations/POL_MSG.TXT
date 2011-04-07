@@ -1,5 +1,5 @@
 ﻿# LK8000 POLISH MESSAGES - POL_MSG.TXT
-# MASTER UPDATED:  101216
+# MASTER UPDATED:  110406
 #
 # Ten plik jest załadowany w czasie startu i wszystkie wiadomości są przechowywane w pamięci urządzenia.
 # Jeśli tłumaczysz ten plik to postaraj się przestrzegać długości wiadomości.
@@ -1343,6 +1343,14 @@ _@M1421_ "Opis zadania"
 _@M1422_ "Start i Meta"
 
 _@M1423_ "Niedozwolone w czasie lotu!"
+
+#
+# Variometer Bar
+#
+_@M1424_ "Tryb paska Vario"
+_@M1425_ "Vario w kominie i podczas przelotu"
+_@M1426_ "Vario w kominie, Netto w przelocie"
+_@M1427_ "Vario w kominie, STF w przelocie"
 
 #
 # Contests
