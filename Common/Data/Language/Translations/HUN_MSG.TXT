@@ -1334,9 +1334,87 @@ _@M1420_ "Hiba deklaráció közben"
 _@M1421_ "Feladat leírás"
 _@M1422_ "Start és Cél"
 
+_@M1423_ "Repülés közben tiltva!"
+
+#
+# Variometer Bar
+#
+_@M1424_ "VarioBar mód"
+_@M1425_ "Vario termik és siklás módban"
+_@M1426_ "Vario termik, Nettó siklás módban"
+_@M1427_ "Vario termik, VMcOpt siklás módban"
+
+
 #
 # Contests
 #
 _@M1450_ "Verseny"
 _@M1451_ "Váltás"
 _@M1452_ "Motornélküli repülés érzékelve"
+
+#
+# Contest infoboxes, full name and abbreviated name for boxes
+# We need OLC ahead of full names, to keep ordering in infobox list during configuration
+#
+# League predicted is not used
+#
+_@M1455_ "OLC Classic Táv"
+_@M1456_ "OLC táv"
+_@M1457_ "OLC FAI Háromszög Táv"
+_@M1458_ "FAI táv"
+_@M1459_ "OLC League Táv"
+_@M1460_ "LEA táv"
+_@M1461_ "OLC FAI 3 FP-os Táv"
+_@M1462_ "3TP táv"
+
+_@M1463_ "OLC Classic*Előrevetített Táv"
+_@M1464_ "OLC*táv"
+_@M1465_ "OLC FAI Háromszög*Előrevetített Táv"
+_@M1466_ "FAI*táv"
+_@M1467_ "OLC League*Előrevetített Táv"
+_@M1468_ "LEA*táv"
+_@M1469_ "OLC FAI 3 FP-os*Előrevetített Táv"
+_@M1470_ "3TP*táv"
+
+_@M1471_ "OLC Classic Sebesség"
+_@M1472_ "OLC seb"
+_@M1473_ "OLC FAI Háromszög Sebesség"
+_@M1474_ "FAI seb"
+_@M1475_ "OLC League Sebesség"
+_@M1476_ "LEA seb"
+_@M1477_ "OLC FAI 3 FP-os Sebesség"
+_@M1478_ "3TP seb"
+
+_@M1479_ "OLC Classic*Előrevetített Sebesség"
+_@M1480_ "OLC*seb"
+_@M1481_ "OLC FAI Háromszög*Előrevetített Sebesség"
+_@M1482_ "FAI*seb"
+_@M1483_ "OLC League*Előrevetített Sebesség"
+_@M1484_ "LEA*seb"
+_@M1485_ "OLC FAI 3 FP-os*Előrevetített Sebesség"
+_@M1486_ "3TP*seb"
+
+_@M1487_ "OLC Classic Pontszám"
+_@M1488_ "OLC pnt"
+_@M1489_ "OLC FAI Háromszög Pontszám"
+_@M1490_ "FAI pnt"
+_@M1491_ "OLC League Pontszám"
+_@M1492_ "LEA pnt"
+_@M1493_ "OLC FAI 3 FP-os Pontszám"
+_@M1494_ "3TP pnt"
+
+_@M1495_ "OLC Classic*Előrevetített Pontszám"
+_@M1496_ "OLC*pnt"
+_@M1497_ "OLC FAI Háromszög*Előrevetített Pontszám"
+_@M1498_ "FAI*pnt"
+_@M1499_ "OLC League*Előrevetített Pontszám"
+_@M1500_ "LEA*pnt"
+_@M1501_ "OLC FAI 3 FP-os*Előrevetített Pontszám"
+_@M1502_ "3TP*pnt"
+
+_@M1503_ "OLC Plus Pontszám"
+_@M1504_ "PLS pnt"
+_@M1505_ "OLC Plus*Előrevetített Pontszám"
+_@M1506_ "PLS*pnt"
+
+
