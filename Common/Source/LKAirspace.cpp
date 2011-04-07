@@ -549,8 +549,8 @@ bool CAirspace::GetWarningPoint(double &longitude, double &latitude) const
     if (_flyzone && !_pos_inside_now ) return false;    // no warning point if outside a flyzone
     double dist = abs(_hdistance);
     if (_hdistance < 0) {
-      // if vertical distance smaller, use actual position as warning point indicating a directly above or below warning situation
-      if ( abs(_vdistance) < AirspaceWarningVerticalMargin ) dist = 0;
+      // if vertical distance smaller, or nonfly zone - use actual position as warning point indicating a directly above or below warning situation
+      if ( !_flyzone || (abs(_vdistance) < AirspaceWarningVerticalMargin) ) dist = 0;
     }
     FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &latitude, &longitude);
     return true;
