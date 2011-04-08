@@ -580,7 +580,15 @@ void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR
 int GetWaypointFileFormatType(const wchar_t* wfilename) {
 
   TCHAR wextension[MAX_PATH];
-  LK_wsplitpath(wfilename, NULL,NULL,NULL,wextension);	
+  TCHAR wdrive[MAX_PATH];
+  TCHAR wdir[MAX_PATH];
+  TCHAR wname[MAX_PATH];
+  LK_wsplitpath(wfilename, wdrive,wdir,wname,wextension);
+
+  //StartupStore(_T("... wdrive=%s\n"),wdrive);
+  //StartupStore(_T("... wdir=%s\n"),wdir);
+  //StartupStore(_T("... wname=%s\n"),wname);
+  //StartupStore(_T("... wext=%s\n"),wextension);
 
   if ( wcscmp(wextension,_T(".cup"))==0 ||
     wcscmp(wextension,_T(".CUP"))==0 ||

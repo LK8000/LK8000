@@ -261,7 +261,7 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 
   if (fSize <10) {
 	fileformat=GetWaypointFileFormatType(CurrentWpFileName);
-	StartupStore(_T("... ReadWayPointFile: waypoint file %s is empty%s"), CurrentWpFileName,NEWLINE);
+	StartupStore(_T("... ReadWayPointFile: waypoint file %s type=%d is empty%s"), CurrentWpFileName,fileformat,NEWLINE);
 	return fileformat;
   }
 
