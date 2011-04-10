@@ -4,6 +4,9 @@ VERSION 2.1g
 CHANGES
 
 (. Thermal mode can still happen during FF)
+. "Ungestures": in infopages, it is possible to flip previous/next page
+   simply clicking on left and right of the screen. Gestures still working
+   of course, but this is much faster. Fully compatible.
 
 FIXES
 

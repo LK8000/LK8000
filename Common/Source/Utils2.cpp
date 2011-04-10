@@ -386,6 +386,7 @@ main(int argc, char *argv[])
 // however we consider a down as up, and viceversa
 int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
+#define UNGESTURES 1
 #define VKTIMELONG 1500
 #ifndef MAP_ZOOM
 #define DONTDRAWTHEMAP MapWindow::IsMapFullScreen()&&NewMap&&Look8000&&!MapWindow::EnablePan&&MapSpaceMode!=1
@@ -776,6 +777,9 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				MapWindow::RefreshMap();
 				return 0;
 			case LKGESTURE_RIGHT:
+#if UNGESTURES
+gesture_right:
+#endif
 				NextModeType();
 				MapWindow::RefreshMap();
 				#ifndef DISABLEAUDIO
@@ -791,6 +795,9 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				break;
 
 			case LKGESTURE_LEFT:
+#if UNGESTURES
+gesture_left:
+#endif
 				PreviousModeType();
 				MapWindow::RefreshMap();
 				#ifndef DISABLEAUDIO
@@ -854,6 +861,14 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		else
 			return 40;
 	}
+#if UNGESTURES
+	if (dontdrawthemap && ModeIndex == LKMODE_INFOMODE) {
+		if (X<=s_xleft) goto gesture_left;
+		if (X>=s_xright) goto gesture_right;
+	}
+#endif
+
+
 	// no click for already clicked events
 
 	//  Swap white and black colours on LK8000 : working only with virtual keys on, map mode
