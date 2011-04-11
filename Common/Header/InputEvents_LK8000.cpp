@@ -24,22 +24,22 @@ GC2Event[mode_id][GCE_TASK_CONFIRMSTART] = event_id;
 
 event_id = 0;
 event_id = InputEvents::makeEvent(&eventBeep, TEXT("1"), event_id);
-event_id = InputEvents::makeEvent(&eventStatusMessage, TEXT("In sector, arm advance when ready"), event_id);
+event_id = InputEvents::makeEvent(&eventStatusMessage, TEXT("ZYX926"), event_id);
 mode_id = InputEvents::mode2int(TEXT("default"), true);
 GC2Event[mode_id][GCE_ARM_READY] = event_id;
 
 event_id = 0;
-event_id = InputEvents::makeEvent(&eventStatusMessage, TEXT("Waiting for GPS Connection"), event_id);
+event_id = InputEvents::makeEvent(&eventStatusMessage, TEXT("ZYX927"), event_id);
 mode_id = InputEvents::mode2int(TEXT("default"), true);
 GC2Event[mode_id][GCE_GPS_CONNECTION_WAIT] = event_id;
 
 event_id = 0;
-event_id = InputEvents::makeEvent(&eventStatusMessage, TEXT("Restarting Comm Ports"), event_id);
+event_id = InputEvents::makeEvent(&eventStatusMessage, TEXT("ZYX928"), event_id);
 mode_id = InputEvents::mode2int(TEXT("default"), true);
 GC2Event[mode_id][GCE_COMMPORT_RESTART] = event_id;
 
 event_id = 0;
-event_id = InputEvents::makeEvent(&eventStatusMessage, TEXT("Waiting for GPS Fix"), event_id);
+event_id = InputEvents::makeEvent(&eventStatusMessage, TEXT("ZYX929"), event_id);
 mode_id = InputEvents::mode2int(TEXT("default"), true);
 GC2Event[mode_id][GCE_GPS_FIX_WAIT] = event_id;
 
@@ -55,28 +55,28 @@ GC2Event[mode_id][GCE_STARTUP_REAL] = event_id;
 
 event_id = 0;
 event_id = InputEvents::makeEvent(&eventAutoLogger, TEXT("start"), event_id);
-event_id = InputEvents::makeEvent(&eventStatusMessage, TEXT("Takeoff"), event_id);
+event_id = InputEvents::makeEvent(&eventStatusMessage, TEXT("ZYX930"), event_id);
 mode_id = InputEvents::mode2int(TEXT("default"), true);
 GC2Event[mode_id][GCE_TAKEOFF] = event_id;
 
 event_id = 0;
-event_id = InputEvents::makeEvent(&eventStatusMessage, TEXT("Landing"), event_id);
+event_id = InputEvents::makeEvent(&eventStatusMessage, TEXT("ZYX931"), event_id);
 event_id = InputEvents::makeEvent(&eventAutoLogger, TEXT("stop"), event_id);
 mode_id = InputEvents::mode2int(TEXT("default"), true);
 GC2Event[mode_id][GCE_LANDING] = event_id;
 
 event_id = 0;
-event_id = InputEvents::makeEvent(&eventStatusMessage, TEXT("Above Final Glide"), event_id);
+event_id = InputEvents::makeEvent(&eventStatusMessage, TEXT("ZYX932"), event_id);
 mode_id = InputEvents::mode2int(TEXT("default"), true);
 GC2Event[mode_id][GCE_FLIGHTMODE_FINALGLIDE_ABOVE] = event_id;
 
 event_id = 0;
-event_id = InputEvents::makeEvent(&eventStatusMessage, TEXT("Below Final Glide"), event_id);
+event_id = InputEvents::makeEvent(&eventStatusMessage, TEXT("ZYX933"), event_id);
 mode_id = InputEvents::mode2int(TEXT("default"), true);
 GC2Event[mode_id][GCE_FLIGHTMODE_FINALGLIDE_BELOW] = event_id;
 
 event_id = 0;
-event_id = InputEvents::makeEvent(&eventStatusMessage, TEXT("Final Glide Through Terrain"), event_id);
+event_id = InputEvents::makeEvent(&eventStatusMessage, TEXT("ZYX934"), event_id);
 mode_id = InputEvents::mode2int(TEXT("default"), true);
 GC2Event[mode_id][GCE_FLIGHTMODE_FINALGLIDE_TERRAIN] = event_id;
 
@@ -582,7 +582,7 @@ event_id = 0;
 event_id = InputEvents::makeEvent(&eventSetup, TEXT("Task"), event_id);
 event_id = InputEvents::makeEvent(&eventMode, TEXT("default"), event_id);
 mode_id = InputEvents::mode2int(TEXT("Nav2"), true);
-makeLabel(mode_id,TEXT("Task\nEdit$(CheckWaypointFile)"),5,event_id);
+makeLabel(mode_id,TEXT("Task\nEdit"),5,event_id);
 Key2Event[mode_id]['6'] = event_id;
 
 event_id = 0;
@@ -881,8 +881,10 @@ makeLabel(mode_id,TEXT(""),9,event_id);
 Key2Event[mode_id]['0'] = event_id;
 
 event_id = 0;
+event_id = InputEvents::makeEvent(&eventService, TEXT("LOCKMODE"), event_id);
+event_id = InputEvents::makeEvent(&eventMode, TEXT("default"), event_id);
 mode_id = InputEvents::mode2int(TEXT("Config1"), true);
-makeLabel(mode_id,TEXT(""),1,event_id);
+makeLabel(mode_id,TEXT("$(LOCKMODE)"),1,event_id);
 Key2Event[mode_id][VK_APP1] = event_id;
 
 event_id = 0;
@@ -970,7 +972,7 @@ makeLabel(mode_id,TEXT("Setup\nSystem$(CheckSettingsLockout)"),5,event_id);
 Key2Event[mode_id]['6'] = event_id;
 
 event_id = 0;
-event_id = InputEvents::makeEvent(&eventStatusMessage, TEXT("Marks cleared"), event_id);
+event_id = InputEvents::makeEvent(&eventStatusMessage, TEXT("ZYX935"), event_id);
 event_id = InputEvents::makeEvent(&eventMarkLocation, TEXT("reset"), event_id);
 mode_id = InputEvents::mode2int(TEXT("Config2"), true);
 makeLabel(mode_id,TEXT("Clear\nMarks"),6,event_id);
@@ -2081,7 +2083,7 @@ Key2Event[mode_id]['7'] = event_id;
 
 event_id = 0;
 mode_id = InputEvents::mode2int(TEXT("SIMDIR"), true);
-makeLabel(mode_id,TEXT(">Turn<\n$(TURN)°/s"),7,event_id);
+makeLabel(mode_id,TEXT(">Turn<\n$(TURN)°s"),7,event_id);
 Key2Event[mode_id]['8'] = event_id;
 
 event_id = 0;
