@@ -1,4 +1,4 @@
-﻿# LK8000 ENG_HLP.TXT 101210
+﻿# LK8000 ENG_HLP.TXT 110405
 #
 # Jeden textový rádek muže obsahovat max. 500 znaku
 # Celý help muže obsahovat celkem max. 1024 znaku
@@ -193,8 +193,8 @@ Tolerance pro tyto parametry je 30%.
 
 @142
 Tento parametr definuje použitý algoritmus pro automatický výpočet hodnoty MacCready.
-[Finální dokluz] Nastaví MC pro nejrychleší dosažení cíle. Pro rychlostní OLC úlohy bude MC automaticky zvoleno tak,
-aby bylo možno ve zbývajícím čase úlohy dosáhnout co nejvetší možné vzdálenosti s přihlédnutím na požadovanou výšku příletu.
+[Finální dokluz] Nastaví MC pro nejrychleší dosažení cíle.
+
 [Průměrné stoupání] Nastaví MC na průmernou hodnotu všech dosavadních stoupání.
 [Obojí] Použije Průměr během úlohy a Dokluz při dokluzu.
 [Ekvivalentní MC] Použije vypočtenou hodnotu MC podle aktuální průmerné rychlosti na trati, viz manuál. 
@@ -221,11 +221,10 @@ Pokud povolíte tuto možnost, bude možné vynutit zvolení dokluzového módu 
 Pokud povolíte tuto možnost a zároveň jsou k dispozici údaje o barometrické výšce, bude tato výška použita pro všechny navigační funkce. V opačném případě je použita GPS výška.
 
 @148
-Zde se nachází výběr kluzáků různých výkonnostních tříd, stejně tak jako políčko pro výběr vlastního souboru typu WinPilot.
+[THIS HELP IS UNUSED - do not translate]
 
 @149
-Pokud je místo typu zvolen soubor WinPilot, je toto jméno souboru obsahující data poláry kluzáku. Poláry musí být uloženy v adresáři _Polars.
-POZOR, aby byla použita tato polára, MUSÍ být v typu letadla vybrána možnost WinPilot File!!!
+[THIS HELP IS UNUSED - do not translate]
 
 @150
 Na této stránce je možné zadat maximální povolenou rychlost kluzáku, aby LK8000 nenabízel nereálné přeskokové rychlosti.
@@ -1411,11 +1410,166 @@ Pokud nemáte připojenu sondu rychlosti vzduchu, bude použita předpokládaná
 
 @888
 @889
-No help available on this item!
+Pro tuto položku není dostupná nápověda!
+
+
+@890
+[OLC CLASSIC] vzdálenost
+Momentální uletěná vzdálenost spočítaná pro 5 otočných bodů.
+
+@891
+[FAI TRIANGLE] vzdálenost
+Maximální momentální vzdálenost pro FAI trojuhelník.
+
+@892
+[OLC LEAGUE] vzdálenost
+Maximální vzdálenost pro 3 otočné body, uletěná za 2,5 hodiny.
+
+@893
+[FAI 3TPs] distance
+Momentální uletěná vzdálenost spočítaná pro 3 otočné body.
+
+@894
+[OLC CLASSIC] předpokládaná vzdálenost
+Uletěná vzdálenost spočítaná pro 5 otočných bodů, za předpokladu že posledním
+bodem bude místo startu.
+
+@895
+[FAI TRIANGLE] předpokládaná vzdálenost
+Maximální momentální vzdálenost pro FAI trojuhelník, za předpokladu že
+posledním bodem bude místo startu.
+
+@896
+[FAI 3TPs] předpokládaná vzdálenost
+Uletěná vzdálenost spočítaná pro 3 otočné body, za předpokladu že posledním
+bodem bude místo startu.
+
+@897
+[OLC CLASSIC] rychlost
+
+@898
+[FAI TRIANGLE] rychlost
+
+@899
+[OLC LEAGUE] rychlost
+
+@900
+[FAI 3TPs] rychlost
+
+@901
+[OLC CLASSIC] předpokládaná rychlost
+
+@902
+[FAI TRIANGLE] předpokládaná rychlost
+
+@903
+[FAI 3TPs] předpokládaná rychlost
+
+@904
+[OLC CLASSIC] bodování
+
+@905
+[FAI TRIANGLE] bodování
+
+@906
+[OLC LEAGUE] bodování
+
+@907
+[FAI 3TPs] bodování
+
+@908
+[OLC CLASSIC] předpokládané bodování
+
+@909
+[FAI TRIANGLE] předpokládané bodování
+
+@910
+[FAI 3TPs] předpokládané bodování
+
+@911
+[OLC PLUS] body
+Součet bodování z OLC Classic a FAI triangle.
+
+@912
+[OLC PLUS] předpokládané body
+Součet předpokládaných bodování z OLC Classic a FAI triangle.
+
+
+#
+# END INFOBOXES 800 - 1199
+#
+
+@1200
+[Výplň vzdušných prostorů]
+Vzdšné prostoru mohou být vyznačeny pouze okrajem, vyšrafováním nebo průsvitnými barvami.
+[Pouze okraje] prostor bude označen pouze zvýrazněním jeho okraje
+[Šrafování] prostor bude vyplněm zvoleným šrafováním ve zvolené barvě
+[Průsvitný] prostor bude vyplněn zvolenou průsvitnou barvou (míra průsvitnosti se dá nastavit pod položkou 'Průsvitnost') .
+Průsvitnost může být na některých zařízeních nedostupná.
+
+@1201
+[Míra průsvitnosti prostorů]
+Definuje jak moc má být průhledný (->0%) / neprůhledný (->100%) vzdušný prostor vyplněný průsvitnou barvou.
+
+@1202
+[Průsvitnost spodní lišty]
+Definuje jak moc má být průhledná (->0%) / neprůhledná (->100%) spodní lišta na mapě .
+Standardně je lišta černá s bílým textem a může být převrácena na bílou s černým textem.
+Nastavení průsvitnosti <30% udělá spodní lištu téměř průhlednou a barva textu se automaticky převrátí.
+Některé kombinace převrácených barev a úrovní průsvitnosti nemusí být vhodné pro navigaci, ale je zde
+nekonečno kombinací na výběr.
+Použitím 0% nebo 100%  (plná průhlednost nebo neprůhlednost) mírně zrychlí program.
+Ten druhý slavný "8000" přístroj je nastaven na 75% průsvotnost.
+Standardních je 60%.
+UPOZORNĚNÍ: Některé přístroje nepodporují kontrolu průsvitnost. V tom případě nemá nastavení průsvitnosti žádný efekt
+a spodní lišta bude buď černá nebo bílá.
+
+@1203
+[Zjemnění fontu]
+Zjemnění fontu zlepší kvalitu zobrazení písmen.
+[Žádné] Způsobí vypnutí zjemnění
+[Normal] Použije standardní kvalitu
+[Anti Aliasing] normální kvalita
+[ClearType] lepší kvalita.
+Na některých zařízeních jako stará 3850 nefunguje Anti Aliasing.
+Na nekterých zařízeních v režimu nastojato, a na PPC2002, bude Antialiasing fungovat lépe.
+Jinak používá LK8000 standardně ClearType.
+Pro změnu efektu musíte restartovat LK8000.
+
+@1204
+[Režim VarioBar]
+Vyberte hodnotu varia a příslušné zobrazení lišty nalevo, pokud je povolena. 
+V režimu stoupání je zobrazeno pouze vario.
+Při přeskoku je navíc zobrazeno nettovario nebo Speed To Fly (Sollfart).
+Při výběru STF jezobrazena požadovaná IAS a lišta ukazuje jestli máte
+přitáhnout nebo potlačit abyste dosáhli této hodnoty.
+
+Hodnota je zobrazena s příponou, která znamená:
+NT jako netto
+SF jako STF
+
+@1205
+[Kategorie letadla]
+Zde vyberte vaši kategorii letadla a případně i příslušnou poláru.
+Každý druh letadla má své unikátní charakteristiky, podívejte se na internetové stránky
+nebo si přečtěte poslední manuál pro zjištění odlišností.
+Po změně kategorie restartujte LK8000, aby se načetly všechny změny.
+
+@1206
+[Typ letadla]
+Zde je obsažen seznam letadel a křídel různých výkonnostních tříd.
+Pokud chcete použít vlastní poláru, vyberte zde "Vlastní polára"
+a pak si ji zvolte v následujícím konfiguračním boxu.
+
+@1207
+[Soubor vlastní poláry]
+Pokud je v typu poláry nsataveno "Vlastní polára", pak zde vyberte soubor ze
+kterého bude polára spočítána.
+Polára musí být uložena ve složce _Polars.
+Tvorba poláry není zase tak jednoduchá, jelikož potřebujete přesné hodnoty
+opadání a váhu letadla. Pro více informací si přečtěte manuál.
 
 @9999
-No help available on this item!
-
-
+Pro tuto položku není dostupná nápověda!
 
 
