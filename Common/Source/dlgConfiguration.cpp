@@ -66,8 +66,10 @@ extern void InitializeOneFont (HFONT * theFont,
 extern bool dlgFontEditShowModal(const TCHAR * FontDescription, 
                           const TCHAR * FontRegKey, 
                           LOGFONT autoLogFont);
+#if USERLEVEL
 // default user level is now expert
 int UserLevel = 1; 
+#endif
 
 static bool changed = false;
 static bool taskchanged = false;
@@ -428,6 +430,7 @@ static void UpdateDeviceSetupButton(int DeviceIdx, TCHAR *Name){
 }
 
 
+#if USERLEVEL
 static void OnUserLevel(DataField *Sender, DataField::DataAccessKind_t Mode){
   WndProperty* wp;
 
@@ -451,6 +454,7 @@ static void OnUserLevel(DataField *Sender, DataField::DataAccessKind_t Mode){
 		break;
   }
 }
+#endif
 
 
 static void OnDeviceAData(DataField *Sender, DataField::DataAccessKind_t Mode){
@@ -1363,7 +1367,9 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnEditMapLabelFontClicked),
   DeclareCallBackEntry(OnEditStatisticsFontClicked),
 
+  #if USERLEVEL
   DeclareCallBackEntry(OnUserLevel),
+  #endif
   DeclareCallBackEntry(OnSetTopologyClicked),
   DeclareCallBackEntry(OnSetCustomKeysClicked),
   
@@ -1539,7 +1545,7 @@ static void setVariables(void) {
 
   UpdateButtons();
 
-
+  #if USERLEVEL
   wp = (WndProperty*)wf->FindByName(TEXT("prpUserLevel"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -1551,6 +1557,7 @@ static void setVariables(void) {
     dfe->Set(UserLevel);
     wp->RefreshDisplay();
   }
+  #endif
 
 // extended COM ports for PC
 // Changing items requires also changing the i<13 loop later on for port1 and port2
@@ -3734,7 +3741,11 @@ void dlgConfigurationShowModal(void){
   //ASSERT(wConfig27!=NULL);
   // ADDPAGE HERE
 
+  #if USERLEVEL
   wf->FilterAdvanced(UserLevel>0);
+  #else
+  wf->FilterAdvanced(1);
+  #endif
 
 
 #if !defined(PNA) && !defined(FIVV)

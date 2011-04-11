@@ -3,9 +3,6 @@
 <WndButton Name="cmdNext"  Caption="_@M460_" X=3 Y=94 Width=62  Height=42 Font=2 OnClickNotify="OnNextClicked" Tag=1 />
 <WndButton Name="cmdPrev"  Caption="_@M6_" X=3 Y=-1 Width=62  Height=42 Font=2 OnClickNotify="OnPrevClicked" Tag=0/>
 <WndButton Name="cmdClose" Caption="_@M186_" X=3 Y=-1 Width=62  Height=42 Font=2 Tag=3 />
-<WndProperty Name="prpUserLevel" Caption="" X=0 Y=2  Width=70 Height=28 CaptionWidth=5 Font=2 Help="_@H100_">
-<DataField name="" DataType="enum"  Min=0 Max=50 Step=1 OnDataAccess="OnUserLevel"/>
-</WndProperty>
 <WndButton Name="cmdCopy" Caption="_@M200_" X=5 Y=32 Width=60  Height=28 Font=2 />
 <WndButton Name="cmdPaste" Caption="_@M521_" X=5 Y=62 Width=60  Height=28 Font=2 />
 <WndFrame Name="frmSite" X=70 Y=0 Width=-246 Height=222 Font=2>

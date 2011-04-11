@@ -144,6 +144,8 @@
 #define NEW_OLC                 1     // Applied 110313 - does not expire
 // -----------------------------------------------------------------------------
 
+// #define USERLEVEL	1	// old UserLevel configuration expert/basic mode, obsoleted
+
 /*
  * Incomplete work, or stuff that never got into production versions but still interesting
 

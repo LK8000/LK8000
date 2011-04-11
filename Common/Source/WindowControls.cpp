@@ -1552,6 +1552,7 @@ void WindowControl::AddClient(WindowControl *Client){
 	
 }
 
+// 110411 This is always set true because we don't use UserLevel anymore
 void WindowControl::FilterAdvanced(bool advanced){
   if (_tcsstr(mCaption, TEXT("*")) != NULL) {
     if (advanced) {

@@ -227,7 +227,9 @@ extern const TCHAR szRegistryOLCRules[];
 extern const TCHAR szRegistryHandicap[];
 extern const TCHAR szRegistrySnailWidthScale[];
 extern const TCHAR szRegistryLatLonUnits[];
+#if USERLEVEL
 extern const TCHAR szRegistryUserLevel[];
+#endif
 extern const TCHAR szRegistryRiskGamma[];
 extern const TCHAR szRegistryWindArrowStyle[];
 extern const TCHAR szRegistryDisableAutoLogger[];

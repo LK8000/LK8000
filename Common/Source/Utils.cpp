@@ -380,7 +380,9 @@ const TCHAR szRegistryOLCRules[] = TEXT("OLCRules");
 #endif /* NEW_OLC */
 const TCHAR szRegistryHandicap[] = TEXT("Handicap");
 const TCHAR szRegistrySnailWidthScale[] = TEXT("SnailWidthScale");
+#if USERLEVEL
 const TCHAR szRegistryUserLevel[] = TEXT("UserLevel");
+#endif
 const TCHAR szRegistryRiskGamma[] = TEXT("RiskGamma");
 const TCHAR szRegistryWindArrowStyle[] = TEXT("WindArrowStyle");
 const TCHAR szRegistryDisableAutoLogger[] = TEXT("DisableAutoLogger");
@@ -1524,9 +1526,11 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistrySafetyMacCready,&Temp);
   GlidePolar::SafetyMacCready = Temp/10.0;
 
+  #if USERLEVEL
   Temp  = UserLevel;
   GetFromRegistry(szRegistryUserLevel,&Temp);
   UserLevel = Temp;
+  #endif
 
   Temp  = iround(GlidePolar::RiskGamma*10);
   GetFromRegistry(szRegistryRiskGamma,&Temp);
