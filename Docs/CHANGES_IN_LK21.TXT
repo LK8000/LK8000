@@ -8,6 +8,15 @@ CHANGES
    simply clicking on left and right of the screen. Gestures still working
    of course, but this is much faster. Fully compatible.
 
+. Virtual Keys are moved to Engineering menu, being very complicated and unused.
+  They were introduced in 2009, when no LK8000 mode was existing yet.
+
+. Map Lock moved to engineering menu. This modality is now obsoleted by the new
+  screen locking facility available for paragliders in Config menu 1/3.
+
+. Removed Expert/Basic mode in configuration 
+
+
 FIXES
 
 . Detect FF in thermal mode

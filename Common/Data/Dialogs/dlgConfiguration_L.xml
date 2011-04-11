@@ -405,14 +405,8 @@
 <WndProperty Name="prpActiveMap" Caption="_@M53_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H178_">
 <DataField name="" DataType="boolean" />
 </WndProperty>
-<WndProperty Name="prpVirtualKeys" Caption="_@M787_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H179_">
-<DataField name="" DataType="boolean"/>
-</WndProperty>
 <WndProperty Name="prpIphoneGestures" Caption="_@M346_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H180_">
 <DataField name="" DataType="enum" Min="0" Max="1" Step="1" />
-</WndProperty>
-<WndProperty Name="prpUseMapLock" Caption="_@M419_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H181_">
-<DataField name="" DataType="boolean"/>
 </WndProperty>
 <WndProperty Name="prpMenuTimeout" Caption="_@M434_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H182_">
 <DataField name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min=1 Max=120 Step=1/>
@@ -624,6 +618,12 @@
 </WndProperty>
 <WndProperty Name="prpLoggerTimeStepCircling" Caption="_@M718_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2  Help="_@H227_">
 <DataField name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min=1 Max=30 Step=1/>
+</WndProperty>
+<WndProperty Name="prpVirtualKeys" Caption="_@M787_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H179_">
+<DataField name="" DataType="boolean"/>
+</WndProperty>
+<WndProperty Name="prpUseMapLock" Caption="_@M419_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H181_">
+<DataField name="" DataType="boolean"/>
 </WndProperty>
 </WndFrame>
 <WndFrame Name="frmEngineering2" X=0 Y=0 Width=235 Height=222 Font=1>
