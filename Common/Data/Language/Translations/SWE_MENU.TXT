@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT.XCI for LK8000 by Paolo Ventafridda
-# Release 4M , 101122
+# Release 4N , 110331
 # 
 # This is the default .XCI file configured internally.
 # It controls all events from soft buttons and hardware keys.
@@ -500,7 +500,7 @@ type=key
 data=6
 event=Setup Task
 event=Mode default
-label=Skapa\nBana$(CheckWaypointFile)
+label=Skapa\nBana
 location=5
 
 mode=Nav2
@@ -879,7 +879,9 @@ location=9
 mode=Config1
 type=key
 data=APP1
-label=
+event=Service LOCKMODE
+event=Mode default
+label=$(LOCKMODE)
 location=1
 
 mode=Config1
@@ -2378,7 +2380,7 @@ location=6
 mode=SIMDIR
 type=key
 data=8
-label=>Sväng<\n$(TURN)gr/s
+label=>Sväng<\n$(TURN)°s
 location=7
 
 mode=SIMDIR

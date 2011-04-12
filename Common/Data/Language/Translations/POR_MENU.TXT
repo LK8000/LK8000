@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT.XCI for LK8000 by Paolo Ventafridda
-# Release 4M , 101122
+# Release 4N , 110331
 # 
 # Este é o ficheiro por defeito .XCI, configurado internamente.
 # Controla todos os eventos dos software buttons e hardware keys.
@@ -501,7 +501,7 @@ type=key
 data=6
 event=Setup Task
 event=Mode default
-label=Editar\nTask$(CheckWaypointFile)
+label=Editar\nTask
 location=5
 
 mode=Nav2
@@ -880,7 +880,9 @@ location=9
 mode=Config1
 type=key
 data=APP1
-label=
+event=Service LOCKMODE
+event=Mode default
+label=$(LOCKMODE)
 location=1
 
 mode=Config1
