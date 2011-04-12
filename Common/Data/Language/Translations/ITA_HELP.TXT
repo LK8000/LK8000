@@ -1498,7 +1498,7 @@ Si suggerisce di fare qualche prova col proprio dispositivo.
 @1204
 [Modalita' VarioBar]
 Scegli il valore del vario e la barra relativa sulla sinistra, se abilitata.
-In modalita' termica solo il varrio puo' essere mostrato.
+In modalita' termica solo il vario puo' essere mostrato.
 In modalita' navigazione anche il nettoVario o la velocita'-da-volare (SpeedToFly/Sollfart).
 Se STF e' selezionato la IAS desiderata viene indicata, e la barra indica se devi spingere o tirare la cloche per raggiungere quel valore.
 Il valore e' indicato con un suffisso:
@@ -1513,15 +1513,15 @@ Dopo aver cambiato categoria devi riavviare LK per vedere tutte le differenze.
 
 @1206
 [Tipo di velivolo]
-Qui trovi una selezione di velivoli e profili alari con differnti classi di efficienza.
+Qui trovi una selezione di velivoli e profili alari con differenti classi di efficienza.
 Se vuoi usare un file con la tua curva polare personale, allora scegli Polare Personalizzata
 e dunque selezionala nel successivo riquadro di configurazione.
 
 @1207
 [Polare Personalizzata, file]
-File di Polare Personalizzata e' la tipologia di polare: e' il nome del file che contiene i dati della curva polare.
+File di Polare Personalizzata e' il nome del file che contiene i dati della curva polare.
 Il file deve essere messo nella sottodirectory _Polars
-Creare un file di polare non e' complicatissimo: devi inserire i ratei di discesa ed il peso (con pilota) preciso del velivolo.
+Creare un file di polare non e' semplice: devi inserire i ratei precisi di discesa relativi al peso (con pilota) del velivolo.
 Leggi il manuale per approfondimenti.
 
 @9999
