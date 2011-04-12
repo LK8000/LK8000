@@ -126,8 +126,15 @@ static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   double ps = StrToDouble(ctemp,NULL);
   if (ps!=999999) {
 	ps/=100;
+	#if DUALBARO
+	if (d == pDevPrimaryBaroSource) {
+		GPS_INFO->BaroAltitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
+		havebaro=true;
+	}
+	#else
 	GPS_INFO->BaroAltitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
 	havebaro=true;
+	#endif
   }
 
   // QNE
@@ -135,14 +142,31 @@ static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 	NMEAParser::ExtractParameter(String,ctemp,1);
 	double ba = StrToDouble(ctemp,NULL);
 	if (ba!=99999) {
+		#if DUALBARO
+		if (d == pDevPrimaryBaroSource) {
+			GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(ba);
+			havebaro=true;
+		}
+		#else
 		GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(ba);
 		havebaro=true;
+		#endif
 	}
   }
+  #if DUALBARO
+  if (d == pDevPrimaryBaroSource) {
+ 	 if (havebaro)
+		GPS_INFO->BaroAltitudeAvailable = TRUE;
+	  else
+		GPS_INFO->BaroAltitudeAvailable = FALSE;
+  }
+  #else
   if (havebaro)
 	GPS_INFO->BaroAltitudeAvailable = TRUE;
   else
 	GPS_INFO->BaroAltitudeAvailable = FALSE;
+
+  #endif
 
 
   // VARIO

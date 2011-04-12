@@ -94,7 +94,7 @@ void NMEAParser::UpdateMonitor(void)
   static short lastactive=0;
   static bool  lastvalidBaro=false;
   short invalidGps=0;
-  // short invalidBaro=0;  // not really used now
+  short invalidBaro=0;
   short validBaro=0; 
 
   // does anyone have GPS?
@@ -137,6 +137,16 @@ void NMEAParser::UpdateMonitor(void)
 	}
 	nmeaParser1.gpsValid=false;
 	invalidGps=1;
+	#if DUALBARO
+	// We want to be sure that if this device is silent, and it was providing Baro altitude,
+	// now it is set to off.
+	if (GPS_INFO.BaroAltitudeAvailable==TRUE) {
+		if ( devA() == pDevPrimaryBaroSource || nmeaParser1.RMZAvailable 
+		  || nmeaParser1.RMAAvailable || nmeaParser1.TASAvailable ) {
+			invalidBaro=1;
+		}
+	}
+	#endif
   } else {
 	// We have hearth beats, is baro available?
 	if ( devIsBaroSource(devA()) || nmeaParser1.RMZAvailable || nmeaParser1.RMAAvailable || nmeaParser1.TASAvailable ) // 100411
@@ -152,6 +162,14 @@ void NMEAParser::UpdateMonitor(void)
 	}
 	nmeaParser2.gpsValid=false;
 	invalidGps++;
+	#if DUALBARO
+	if (GPS_INFO.BaroAltitudeAvailable==TRUE) {
+		if ( devB() == pDevPrimaryBaroSource || nmeaParser2.RMZAvailable 
+		  || nmeaParser2.RMAAvailable || nmeaParser2.TASAvailable ) {
+			invalidBaro++;
+		}
+	}
+	#endif
   } else {
 	// We have hearth beats, is baro available?
 	if ( devIsBaroSource(devB()) || nmeaParser2.RMZAvailable || nmeaParser2.RMAAvailable || nmeaParser2.TASAvailable   )  // 100411
@@ -161,6 +179,9 @@ void NMEAParser::UpdateMonitor(void)
   #ifdef DEBUGNPM
   if (invalidGps==2) {
 	StartupStore(_T("... GPS no gpsValid available on port 1 and 2, active=%d%s"),active,NEWLINE);
+  }
+  if (invalidBaro>0) {
+	StartupStore(_T("... Baro altitude just lost, current status=%d%s"),GPS_INFO.BaroAltitudeAvailable,NEWLINE);
   }
   #endif
 
@@ -194,9 +215,19 @@ void NMEAParser::UpdateMonitor(void)
 	// LKTOKEN  _@M120_ = "BARO ALTITUDE IS AVAILABLE" 
 			DoStatusMessage(gettext(TEXT("_@M120_")));
 		lastvalidBaro=true;
+	} 
+	#if DUALBARO
+	else {
+		// last baro was Ok, currently we still have a validbaro, but no HBs...
+		// Probably it is a special case when no gps fix was found on the secondary baro source.
+		if (invalidBaro) {
+			GPS_INFO.BaroAltitudeAvailable=FALSE;
+			#ifdef DEBUGNPM
+			StartupStore(_T(".... We still have valid baro, resetting BaroAltitude OFF\n"));
+			#endif
+		}
 	}
-
-
+	#endif
   }
 
   // Following diagnostics only

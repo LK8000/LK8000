@@ -114,10 +114,19 @@ static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   GPS_INFO->Altitude = StrToDouble(ctemp,NULL);
 
   NMEAParser::ExtractParameter(String,ctemp,2);
+  #if DUALBARO
+  if (d == pDevPrimaryBaroSource) {
+	  GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(StrToDouble(ctemp,NULL));
+	  GPS_INFO->BaroAltitudeAvailable = TRUE;
+  }
+  #else
   GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(StrToDouble(ctemp,NULL));
+  GPS_INFO->BaroAltitudeAvailable = TRUE;
+  #endif
 
   NMEAParser::ExtractParameter(String,ctemp,4);
   GPS_INFO->Vario = StrToDouble(ctemp,NULL);
+  GPS_INFO->VarioAvailable = TRUE;
 
   NMEAParser::ExtractParameter(String,ctemp,8);
   if (ctemp[0] != '\0') { // 100209
@@ -135,8 +144,6 @@ static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   } else
 		GPS_INFO->AirspeedAvailable = FALSE;
 
-  GPS_INFO->VarioAvailable = TRUE;
-  GPS_INFO->BaroAltitudeAvailable = TRUE;
 
   TriggerVarioUpdate();
 

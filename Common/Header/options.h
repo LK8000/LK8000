@@ -144,6 +144,11 @@
 #define NEW_OLC                 1     // Applied 110313 - does not expire
 // -----------------------------------------------------------------------------
 
+#define DUALBARO		1	// Handle dual baro feed
+
+
+
+
 // #define USERLEVEL	1	// old UserLevel configuration expert/basic mode, obsoleted
 
 /*

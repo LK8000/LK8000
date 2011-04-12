@@ -102,9 +102,16 @@ BOOL zanderRegister(void){
 static BOOL PZAN1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *aGPS_INFO)
 {
   TCHAR ctemp[80];
-  aGPS_INFO->BaroAltitudeAvailable = TRUE;
   NMEAParser::ExtractParameter(String,ctemp,0);
+  #if DUALBARO
+  if (d == pDevPrimaryBaroSource) {
+  	aGPS_INFO->BaroAltitude = AltitudeToQNHAltitude(StrToDouble(ctemp,NULL));
+  	aGPS_INFO->BaroAltitudeAvailable = TRUE;
+  }
+  #else
   aGPS_INFO->BaroAltitude = AltitudeToQNHAltitude(StrToDouble(ctemp,NULL));
+  aGPS_INFO->BaroAltitudeAvailable = TRUE;
+  #endif
   return TRUE;
 }
 

@@ -93,7 +93,15 @@ static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   if (_tcscmp(ctemp,_T("PDA1"))==0) {
 
 	NMEAParser::ExtractParameter(String,ctemp,1);
+	#if DUALBARO
+	if (d == pDevPrimaryBaroSource) {
+		GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(StrToDouble(ctemp,NULL));
+		GPS_INFO->BaroAltitudeAvailable = TRUE;
+	}
+	#else
 	GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(StrToDouble(ctemp,NULL));
+	GPS_INFO->BaroAltitudeAvailable = TRUE;
+	#endif
 
 	NMEAParser::ExtractParameter(String,ctemp,2);
 	GPS_INFO->Vario = StrToDouble(ctemp,NULL);
@@ -120,7 +128,6 @@ static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 	
 	
 	GPS_INFO->VarioAvailable = TRUE;
-	GPS_INFO->BaroAltitudeAvailable = TRUE;
 	TriggerVarioUpdate();
 	return TRUE;
   }

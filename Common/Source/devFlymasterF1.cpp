@@ -105,7 +105,16 @@ static BOOL VARIO(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   TCHAR ctemp[80];
   NMEAParser::ExtractParameter(String,ctemp,0);
   double ps = StrToDouble(ctemp,NULL);
+  #if DUALBARO
+  if (d == pDevPrimaryBaroSource) {
+  	GPS_INFO->BaroAltitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
+  	GPS_INFO->BaroAltitudeAvailable = TRUE;
+  }
+  #else
   GPS_INFO->BaroAltitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
+  GPS_INFO->BaroAltitudeAvailable = TRUE;
+  #endif
+
   NMEAParser::ExtractParameter(String,ctemp,1);
   GPS_INFO->Vario = StrToDouble(ctemp,NULL)/10.0;
   // JMW vario is in dm/s
@@ -124,7 +133,6 @@ static BOOL VARIO(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 */
 
   GPS_INFO->VarioAvailable = TRUE;
-  GPS_INFO->BaroAltitudeAvailable = TRUE;
 
   TriggerVarioUpdate();
 

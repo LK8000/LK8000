@@ -16,6 +16,9 @@ CHANGES
 
 . Removed Expert/Basic mode in configuration 
 
+. Double Baro Altitude feed supported, using only the first available on 
+  any non-generic device.
+
 
 FIXES
 
