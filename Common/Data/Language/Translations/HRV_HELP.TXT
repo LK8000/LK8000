@@ -1377,6 +1377,163 @@ ako nemate sondu za mjerenje brzine, procjenjena brzina će biti korištena - po
 @889
 Za ovu stvku ne postoji uputstvo!
 
+
+@890
+[OLC CLASSIC] distance
+Current distance calculated around 5 turnpoints. 
+
+@891
+[FAI TRIANGLE] distance
+FAI triangle maximum distance achieved so far.
+
+@892
+[OLC LEAGUE] distance
+Max distance calculated around 3 turnpoints, made in 2.5 hours.
+
+@893
+[FAI 3TPs] distance
+Current distance calculated around 3 turnpoints. 
+
+@894
+[OLC CLASSIC] predicted distance
+Current distance calculated around 5 turnpoints assuming the last one
+will be the starting point.
+
+@895
+[FAI TRIANGLE] predicted distance
+FAI triangle maximum distance achieved so far, assuming the last point
+will be the starting point.
+
+@896
+[FAI 3TPs] predicted distance
+Current distance calculated around 3 turnpoints assuming the last one
+will be the starting point.
+
+@897
+[OLC CLASSIC] speed
+
+@898
+[FAI TRIANGLE] speed
+
+@899
+[OLC LEAGUE] speed
+
+@900
+[FAI 3TPs] speed
+
+@901
+[OLC CLASSIC] predicted speed
+
+@902
+[FAI TRIANGLE] predicted speed
+
+@903
+[FAI 3TPs] predicted speed
+
+@904
+[OLC CLASSIC] score
+
+@905
+[FAI TRIANGLE] score
+
+@906
+[OLC LEAGUE] score
+
+@907
+[FAI 3TPs] score
+
+@908
+[OLC CLASSIC] predicted score
+
+@909
+[FAI TRIANGLE] predicted score
+
+@910
+[FAI 3TPs] predicted score
+
+@911
+[OLC PLUS] score
+The sum of OLC Classic score and FAI triangle score.
+
+@912
+[OLC PLUS] predicted score
+The sum of OLC Classic predicted score and FAI triangle predicted score.
+
+
+#
+# END INFOBOXES 800 - 1199
+#
+
+@1200
+[Airspace area filling]
+Airspace area can be denoted by outlines only, pattern filling, or semi-transparent colors.
+[Outlines only] there will be only lines on airspace area borders 
+[Pattern] airspace area will be filled with selected pattern of selected color
+[Semi-Transparent] airspace area will be filled with selected solid semi-transparent color (opacity of the color can be set in 'Opacity' item) . 
+Transparency may not be available on some hardware devices.
+
+@1201
+[Opacity of semi-transparent airspace]
+Defines how much transparent (->0%) / opaque (->100%) will be airspace area filled with solid semi-transparent color.
+
+@1202
+[Bottom Bar Opacity]
+Defines how much transparent (->0%) / opaque (->100%) will be the bottom bar area on the map .
+Normally the bar is black with white text, and can be reverted to white with black text on it.
+Setting <30% opacity the bottom bar will be very transparent, and text color will be forced reversed.
+Some combinations of opacity and reverse colors may not be suitable to navigation, but there are
+infinite combinations to choose from.
+Using 0% or 100%  (full transparency  or full opacity) will speed up the software a bit.
+Another famous 8000 instrument is using 75% opacity.
+Default is 60%.
+ATTENTION: some devices do not support opacity control. In this case, opacity has no effect
+and the bottom bar will be always full black or full white.
+
+@1203
+[Font Smoothing]
+Font smoothing will make characters appearing with better quality.
+[None] will force disabling font smoothing
+[Normal] will use default quality
+[Anti Aliasing] normal quality
+[ClearType] advanced quality. 
+Please note that on some devices like old 3850 Anti Aliasing is not working. 
+On some PNAs in portrait mode, and on PPC2002, Antialiasing will work better.
+Otherwise, by default LK8000 is using ClearType.
+You must exit and restart LK8000 to see the effect of changes.
+
+@1204
+[VarioBar mode]
+Choose the vario value and relative bar display on the left, if enabled.
+In thermal mode, only vario can be shown.
+In cruise mode, also nettovario or Speed To Fly (Sollfart).
+If STF is selected, the desired IAS is printed, and the bar is indicating
+if you must push or pull the stick to reach that value.
+
+The value is printed with a suffix letter indicating:
+NT for netto
+SF for STF
+
+@1205
+[Aircraft category]
+Select your aircraft type here, and possibly change the polar file also accordingly.
+Each aircraft mode has unique features, please visit the website or read the latest
+manual to discover differences.
+After changing category, you must restart LK in order to notice all differences.
+
+@1206
+[Aircraft type]
+This contains a selection of aircrafts and wings of different performance classes.
+If you want to use your own polar file, choose Custom Polar File here 
+and then select it from the next configuration box.
+
+@1207
+[Custom polar file]
+When Custom Polar File is the polar type, this is the name of the file containing the glide polar data.
+Polars must be placed inside _Polars subfolder.
+Creating a polar file is not trivial, because you need actual sink rate values and a precise
+aircraft weight. Read the manual to know more about all of this. 
+
+
 @9999
 Za ovu stvku ne postoji uputstvo!
 
