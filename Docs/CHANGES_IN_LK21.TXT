@@ -1,6 +1,11 @@
 
 VERSION 2.1g
 
+
+NEW
+
+. Flytec FLYSEN firmware 3.32 support
+
 CHANGES
 
 (. Thermal mode can still happen during FF)
