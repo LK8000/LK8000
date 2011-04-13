@@ -985,163 +985,158 @@ Ako nemate sonu vazdušne brzine, Određivanje brzine vazduha je veoma korisno. 
 @888
 @889
 NIJE RAPOLOŽIV HELP ZA OVO POLJE!
-
+@9999
+NIJE RAPOLOŽIV HELP ZA OVO POLJE!
 
 @890
-[OLC CLASSIC] distance
-Current distance calculated around 5 turnpoints. 
+[OLC Klasik] rastojanje
+Trenutno rastojanje računano oko 5 okretnih tačaka.
 
 @891
-[FAI TRIANGLE] distance
-FAI triangle maximum distance achieved so far.
+[FAI TRIANGLE] rastojanje
+FAI triangle maksimalno rastojanje koje je arhivirano dosada.
 
 @892
-[OLC LEAGUE] distance
-Max distance calculated around 3 turnpoints, made in 2.5 hours.
+[OLC LEAGUE] rastojanje
+Maksimalno rastojanje računato oko 3 okretne tačke, napravljeno u dva ipo sata.
 
 @893
-[FAI 3TPs] distance
-Current distance calculated around 3 turnpoints. 
+[FAI 3TPs] rastojanje
+Trenutno rastojanje računato oko 3 okretne tačke.
 
 @894
-[OLC CLASSIC] predicted distance
-Current distance calculated around 5 turnpoints assuming the last one
-will be the starting point.
+[OLC CLASSIC] predviđanje rastojanja
+Trenutna sitanca računata oko 5 okretnih tačaka pod pretpostavkom da će poslednja biti prolazna tačka. 
 
 @895
-[FAI TRIANGLE] predicted distance
-FAI triangle maximum distance achieved so far, assuming the last point
-will be the starting point.
+[FAI TRIANGLE] predviđanje rastojanja
+FAI triangle maksimalno rastojanje koje je arhivirano dosada, pod pretpostavkom da je poslednja polazna startna tačka.
 
 @896
-[FAI 3TPs] predicted distance
-Current distance calculated around 3 turnpoints assuming the last one
-will be the starting point.
+[FAI 3TPs] predviđanje rastojanja
+Trenutno rastojanje računato oko 3 okretne tačke,  pod pretpostavkom da je poslednja polazna startna tačka.
 
 @897
-[OLC CLASSIC] speed
+[OLC CLASSIC] Brzina
 
 @898
-[FAI TRIANGLE] speed
+[FAI TRIANGLE] Brzina
 
 @899
-[OLC LEAGUE] speed
+[OLC LEAGUE] Brzina
 
 @900
-[FAI 3TPs] speed
+[FAI 3TPs] Brzina
 
 @901
-[OLC CLASSIC] predicted speed
+[OLC CLASSIC] Predviđena brzina
 
 @902
-[FAI TRIANGLE] predicted speed
+[FAI TRIANGLE] Predviđena brzina
 
 @903
-[FAI 3TPs] predicted speed
+[FAI 3TPs] Predviđena brzina
 
 @904
-[OLC CLASSIC] score
+[OLC CLASSIC] Rezultat
 
 @905
-[FAI TRIANGLE] score
+[FAI TRIANGLE] Rezultat
 
 @906
-[OLC LEAGUE] score
+[OLC LEAGUE] Rezultat
 
 @907
-[FAI 3TPs] score
+[FAI 3TPs] Rezultat
 
 @908
-[OLC CLASSIC] predicted score
+[OLC CLASSIC] Predviđeni rezultat
 
 @909
-[FAI TRIANGLE] predicted score
+[FAI TRIANGLE] Predviđeni rezultat
 
 @910
-[FAI 3TPs] predicted score
+[FAI 3TPs] Predviđeni rezultat
 
 @911
-[OLC PLUS] score
-The sum of OLC Classic score and FAI triangle score.
+[OLC PLUS] Rezultat
+Zbir OLC klasičnih rezultata i FAI triangle rezultata.
 
 @912
-[OLC PLUS] predicted score
-The sum of OLC Classic predicted score and FAI triangle predicted score.
-
+[OLC PLUS] Predviđeni rezultat
+Zbir OLC klasično predviđenih rezultata i FAI triangle predviđenih rezultata.
 
 #
 # END INFOBOXES 800 - 1199
 #
 
 @1200
-[Airspace area filling]
-Airspace area can be denoted by outlines only, pattern filling, or semi-transparent colors.
-[Outlines only] there will be only lines on airspace area borders 
-[Pattern] airspace area will be filled with selected pattern of selected color
-[Semi-Transparent] airspace area will be filled with selected solid semi-transparent color (opacity of the color can be set in 'Opacity' item) . 
-Transparency may not be available on some hardware devices.
+[Popunjavanje područja vazdušnoh prostora]
+Polje vazdušnog prostora može biti uokvireno samo spoljnom linijom, ispunjeno šablonom, ili polu-transparentnim bojama.
+[Samo spoljne linije] Biće prikazane samo pogranične linije na području vazdušnog prostora.
+[Šabloni] Podrčje vazdušnog prostora će biti ispunjeno sa izabranim šablonom selektovane boje.
+[Polu-Providno] Područje vazdušnog prostora će biti ispunjeno sa izabranom polu-providnom bojom (Procenat prozirnosti možete podesiti u opciji 'Prozirnosti').
+Transparentnost možda neće biti raspoloživa na svim uređajima.
 
 @1201
-[Opacity of semi-transparent airspace]
-Defines how much transparent (->0%) / opaque (->100%) will be airspace area filled with solid semi-transparent color.
+[Prozirnost polu-providnog vazdušnog prostora]
+Definišete kolika će biti prozirnost (->0%) / neproziran (->100%) važdušni prostor će se ispuniti čvrstom poluprovidnom bojom.
 
 @1202
-[Bottom Bar Opacity]
-Defines how much transparent (->0%) / opaque (->100%) will be the bottom bar area on the map .
-Normally the bar is black with white text, and can be reverted to white with black text on it.
-Setting <30% opacity the bottom bar will be very transparent, and text color will be forced reversed.
-Some combinations of opacity and reverse colors may not be suitable to navigation, but there are
-infinite combinations to choose from.
-Using 0% or 100%  (full transparency  or full opacity) will speed up the software a bit.
-Another famous 8000 instrument is using 75% opacity.
-Default is 60%.
-ATTENTION: some devices do not support opacity control. In this case, opacity has no effect
-and the bottom bar will be always full black or full white.
+[Bottom Bar Prozirnost]
+Definišete kolika će biti prozirnost (->0%) / neproziran (->100%) koliko će biti prozirnost donjeg bara na mapi.
+Normalno bar linija je crna sa belim tekstom, i moće biti postavljeno za inverzno belo sa crnim tekstom.
+Podešavanje <30% prozirnosti u donjem baru 'bottom bar' će biti veoma transparentno, i boja teksta će biti prinutdno obrnuta.
+Pojedine kombinacije prozirnosti i obrnutih boja možda neće biti prikazane na navigaciji, ali one imaju beskonačne kombinacije.
+Koristi se od 0% do 100% (puna transparentnost ili puna prozirnost) će malo ubrzati software.
+Još jedan poznati 8000 instrumenta koristi 75% neprozirnost.
+Podrazumevana vrednost je 60%.
+UPOZORENJE: pojedini uređaji ne podržavaju kontrolu prozirnosti. U ovom slučaju, prozirnost nema efekta i donja bar linija će uvek biti puna ispunjena crnom bojom ili puna ispunjena belom bojom.
 
 @1203
 [Font Smoothing]
-Font smoothing will make characters appearing with better quality.
-[None] will force disabling font smoothing
-[Normal] will use default quality
-[Anti Aliasing] normal quality
-[ClearType] advanced quality. 
-Please note that on some devices like old 3850 Anti Aliasing is not working. 
-On some PNAs in portrait mode, and on PPC2002, Antialiasing will work better.
-Otherwise, by default LK8000 is using ClearType.
-You must exit and restart LK8000 to see the effect of changes.
+Uglađivanje fonta će mapraviti karaktere koji se ispisuju boljim kvalitetom.
+[Ništa] će nasilno izgasiti uglađivanje fonta.
+[Normalno] će koristiti podrazumevani kvalitet.
+[Anti Aliasing] normalni kvalitet.
+[ClearType] napredni kvalitet. 
+Imajte u vidu da na nekim uređajima kao što su stari 3850 anti Aliasing ne radi.
+Na nekim PNAs u portretnom režimu , kao i na PPC2002 , ublažavanje će raditi bolje.
+Inače, po podrazumevanoj vrednosti LK8000 koristi ClearType
+Morate izaći i resetovati LK8000 da biste videli efekte promene.
 
 @1204
 [VarioBar mode]
-Choose the vario value and relative bar display on the left, if enabled.
-In thermal mode, only vario can be shown.
-In cruise mode, also nettovario or Speed To Fly (Sollfart).
-If STF is selected, the desired IAS is printed, and the bar is indicating
-if you must push or pull the stick to reach that value.
-
-The value is printed with a suffix letter indicating:
-NT for netto
-SF for STF
+Odaberite vrednost Vario i 'relativne bara' ekran na levoj strani , ukoliko je omogućeno.
+Ako je prikazan termal mod, samo vario će biti prikazan.
+U modu krstarenja, Takođe nettovario ili Speed To Fly (Sollfart).
+Ako je STF selektovan, željeni IAS se štampa, a na istoj bar liniji i ukazuje ako morate pritisnuti ili pustiti da stignete te vrednosti.
+Vrednost štampana sa sufiksom koje ukazuje na znak:
+NT za netto
+SF za STF
 
 @1205
-[Aircraft category]
-Select your aircraft type here, and possibly change the polar file also accordingly.
-Each aircraft mode has unique features, please visit the website or read the latest
-manual to discover differences.
-After changing category, you must restart LK in order to notice all differences.
+[Kategorija vazduhoplova]
+Selektujte tip Vašeg vazduhoplova, i moguće promene fajla polare su prema tome.
+Svaki vazduhoplov ima svoje jedinstvene karakteristike, molimo Vas da posetite 'Website' ili pročitate poslednje korisničko uputstvo da biste primetili razlike.
+Posle promene kategorije, morate resetovati Vaš LK8000 uređaj da biste primetili razliku.
+
 
 @1206
-[Aircraft type]
-This contains a selection of aircrafts and wings of different performance classes.
-If you want to use your own polar file, choose Custom Polar File here 
-and then select it from the next configuration box.
+[Tip vazduhoplova]
+Ovaj odeljak sadrži podatke o vazduhoplovu i prilu za različite performanse određene klase.
+Ako želite da koriste Vaš fajl polare, izaberite Proizvoljni Fajl Polare 'Custom Polar File here' i izaberite   isto iz sledećeg konfiguracione kutije.
 
 @1207
-[Custom polar file]
-When Custom Polar File is the polar type, this is the name of the file containing the glide polar data.
-Polars must be placed inside _Polars subfolder.
-Creating a polar file is not trivial, because you need actual sink rate values and a precise
-aircraft weight. Read the manual to know more about all of this. 
-
+[Izborni fajl polare]
+Kada je Izborni Fajl Polare tip polare, to je ime fajla koje sadrži podatke o polari glajdera.
+Polara mora biti smeštena u folder '_Polars'.
+Kreiranje fajla polare nije beznačajno, zato što Vam je neophodna vrednost propadanja i precizna 
+Creating a polar file is not trivial, because you need actual sink rate values and a precizna težina vazduhoplova. Pročitajte uputstvo da biste saznali više o istome.
 
 @9999
-NIJE RAPOLOŽIV HELP ZA OVO POLJE!
+Nije raposloživa pomoć za ovo polje!
+
+
+
+
