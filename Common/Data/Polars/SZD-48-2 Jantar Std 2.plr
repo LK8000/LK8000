@@ -1,4 +1,4 @@
-* LK8000 polar for: SZD-55-1
+* LK8000 polar for: SZD-48-2 Jantar Std 2
 * MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
- 350, 200, 100.0, -0.66, 120, -0.86, 150, -1.4, 9.60
+ 375, 150, 100, -0.73, 120, -0.95, 150, -1.60, 10.66
 
