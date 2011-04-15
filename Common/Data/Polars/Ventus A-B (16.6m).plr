@@ -1,0 +1,4 @@
+* LK8000 polar for: Ventus A-B (16.6m)
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+ 358, 151, 100.17, -0.64, 159.69, -1.47, 239.54, -4.3, 9.96
+

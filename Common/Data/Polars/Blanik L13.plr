@@ -1,0 +1,4 @@
+* LK8000 polar for: Blanik L13
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+ 472, 0, 85.0, -0.84, 143.0, -3.32, 200.0, -9.61, 19.1
+

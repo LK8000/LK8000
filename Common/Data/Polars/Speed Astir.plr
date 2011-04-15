@@ -1,0 +1,4 @@
+* LK8000 polar for: Speed Astir
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+351,  90,  90, -0.63, 105, -0.72, 157, -2.00, 11.5   // BestLD40@105
+

@@ -1,0 +1,4 @@
+* LK8000 polar for: Ventus 2CT (18m)
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+ 470, 130, 100.0, -0.56, 150.0, -1.13, 200.0, -2.28, 11.03
+
