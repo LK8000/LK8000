@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT.XCI for LK8000 by Paolo Ventafridda
-# Release 4N , 110331
+# Release 4N , 110416
 # 
 # This is the default .XCI file configured internally.
 # It controls all events from soft buttons and hardware keys.
@@ -1322,7 +1322,7 @@ mode=Menu
 type=key
 data=7
 event=Mode TrueWind
-label=Расчет\nветера
+label=Расчет\nветра
 location=6
 
 mode=Menu
