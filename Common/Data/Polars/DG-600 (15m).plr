@@ -1,0 +1,4 @@
+* LX8000 polar for: DG-600 (15m)
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+ 327, 180, 100, -0.60, 120, -0.76, 150, -1.19, 10.95
+

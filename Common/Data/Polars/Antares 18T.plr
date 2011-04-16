@@ -1,0 +1,4 @@
+* LX8000 polar for: Antares 18T
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+ 395, 205, 100, -0.54, 120, -0.69, 150, -1.11, 10.97
+
