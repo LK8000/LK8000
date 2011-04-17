@@ -3,9 +3,6 @@
 <WndButton Name="cmdNext"  Caption="_@M460_" X=3 Y=94 Width=62  Height=42 Font=2 OnClickNotify="OnNextClicked" Tag=1 />
 <WndButton Name="cmdPrev"  Caption="_@M6_" X=3 Y=-1 Width=62  Height=42 Font=2 OnClickNotify="OnPrevClicked" Tag=0/>
 <WndButton Name="cmdClose" Caption="_@M186_" X=3 Y=-1 Width=62  Height=42 Font=2 Tag=3 />
-<WndProperty Name="prpUserLevel" Caption="" X=0 Y=2  Width=70 Height=28 CaptionWidth=5 Font=2 Help="_@H100_">
-<DataField name="" DataType="enum"  Min=0 Max=50 Step=1 OnDataAccess="OnUserLevel"/>
-</WndProperty>
 <WndButton Name="cmdCopy" Caption="_@M200_" X=5 Y=32 Width=60  Height=28 Font=2 />
 <WndButton Name="cmdPaste" Caption="_@M521_" X=5 Y=62 Width=60  Height=28 Font=2 />
 <WndFrame Name="frmSite" X=70 Y=0 Width=-246 Height=222 Font=2>
@@ -422,14 +419,8 @@
 <WndProperty Name="prpActiveMap" Caption="_@M53_"  X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H178_">
 <DataField name="" DataType="boolean" />
 </WndProperty>
-<WndProperty Name="prpVirtualKeys" Caption="_@M787_"  X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H179_">
-<DataField name="" DataType="boolean"/>
-</WndProperty>
 <WndProperty Name="prpIphoneGestures" Caption="_@M346_" X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H180_">
 <DataField name="" DataType="enum" Min="0" Max="1" Step="1" />
-</WndProperty>
-<WndProperty Name="prpUseMapLock" Caption="_@M419_" X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H181_">
-<DataField name="" DataType="boolean" />
 </WndProperty>
 <WndProperty Name="prpMenuTimeout" Caption="_@M434_" X=2 Y=-1  Width="-246" Height=22 CaptionWidth=150 Font=2 Help="_@H182_">
 <DataField name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min=1 Max=120 Step=1/>
@@ -641,6 +632,12 @@
 </WndProperty>
 <WndProperty Name="prpLoggerTimeStepCircling" Caption="_@M718_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H227_">
 <DataField name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min=1 Max=30 Step=1/>
+</WndProperty>
+<WndProperty Name="prpVirtualKeys" Caption="_@M787_"  X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H179_">
+<DataField name="" DataType="boolean"/>
+</WndProperty>
+<WndProperty Name="prpUseMapLock" Caption="_@M419_" X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H181_">
+<DataField name="" DataType="boolean" />
 </WndProperty>
 </WndFrame>
 <WndFrame Name="frmEngineering2" X=70 Y=0 Width=-246 Height=222 Font=1>
