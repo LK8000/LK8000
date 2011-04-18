@@ -995,11 +995,21 @@ bool ReplayLogger::ReadPoint(double *Time,
 			     double *Altitude)
 {
   TCHAR buffer[200];
+/*
+  // This is creating problems with the interpolator and calculations based on differential times
+  // such as variometer derived from altitude differences. Probably due to vario lowpass filters.
   while(ReadLine(buffer)) {
     if(ScanBuffer(buffer, Time, Latitude, Longitude, Altitude))
       return true;
   }
   return false;
+*/
+  bool found=false;
+  while(ReadLine(buffer) &&!found) {
+    if(ScanBuffer(buffer, Time, Latitude, Longitude, Altitude))
+      found=true;
+  }
+  return found;
 }
 
 

@@ -20,6 +20,7 @@ CHANGES
 
 
 BUG FIX
-
+. Fix problem saving profiles on exit, even on CLUB versions
+. Fix problem with IGC Replay and variometer values
 
 
