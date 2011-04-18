@@ -1,0 +1,25 @@
+
+
+Changes in LK8000 v2.3a
+
+
+NEW
+
+. New configuration for Polar requires reconfiguring polar type
+. Many new polars
+
+
+
+
+CHANGES
+
+. Polars are now files inside _Polars folder, and can be viewed and edited.
+
+
+
+
+
+BUG FIX
+
+
+

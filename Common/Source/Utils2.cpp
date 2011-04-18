@@ -2644,6 +2644,22 @@ bool CheckLanguageDir() {
   return true;
 }
 
+bool CheckPolarsDir() {
+  TCHAR srcdir[MAX_PATH];
+  TCHAR srcfile[MAX_PATH];
+  LocalPath(srcdir, _T(LKD_POLARS));
+  _stprintf(srcfile,TEXT("%s\\_POLARS"),srcdir);
+  if (  GetFileAttributes(srcfile) == 0xffffffff ) {
+	return false;
+  }
+
+  LocalPath(srcdir, _T(LKD_POLARS));
+  _stprintf(srcfile,TEXT("%s\\Default.plr"),srcdir);
+  if (  GetFileAttributes(srcfile) == 0xffffffff ) return false;
+
+  return true;
+}
+
 bool CheckRegistryProfile() {
 	TCHAR srcpath[MAX_PATH];
 	if ( GlobalModelType == MODELTYPE_PNA_HP31X ) return false;

@@ -441,6 +441,21 @@ void dlgStartupShowModal(void){
 	MessageBoxX(hWndMainWindow, mes, _T("NO LANGUAGE DIRECTORY"), MB_OK|MB_ICONQUESTION);
 	Shutdown();
   }
+  if  (!CheckPolarsDir()) {
+	TCHAR mydir[MAX_PATH];
+	TCHAR mes[MAX_PATH];
+	StartupStore(_T("... CHECK POLARS DIRECTORY FAILED!%s"),NEWLINE);
+
+	_stprintf(mes,_T("%s v%s.%s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE));
+	RawWrite(mes,1,1);
+	LocalPath(mydir,_T(LKD_POLARS));
+	_stprintf(mes,_T("%s"),mydir);
+	RawWrite(_T("Directory or configuration files missing"),8,1);
+	RawWrite(mes,9,0);
+	MessageBoxX(hWndMainWindow, _T("NO POLARS DIRECTORY\nCheck Install"), _T("FATAL ERROR 003"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(hWndMainWindow, mes, _T("NO POLARS DIRECTORY"), MB_OK|MB_ICONQUESTION);
+	Shutdown();
+  }
   wf->ShowModal();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpProfile"));

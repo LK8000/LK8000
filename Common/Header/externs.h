@@ -62,6 +62,7 @@ extern short		InstallSystem();
 extern bool		CheckRootDir();
 extern bool		CheckDataDir();
 extern bool		CheckLanguageDir();
+extern bool		CheckPolarsDir();
 extern bool		CheckRegistryProfile();
 extern void		ConvToUpper( TCHAR *);
 

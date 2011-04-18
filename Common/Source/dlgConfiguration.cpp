@@ -1100,16 +1100,17 @@ static void OnUTCData(DataField *Sender, DataField::DataAccessKind_t Mode){
 
 }
 
-static int lastSelectedPolarFile = -1;
+// static int lastSelectedPolarFile = -1; REMOVE 110416
 
 static void OnPolarFileData(DataField *Sender, DataField::DataAccessKind_t Mode){
-  WndProperty* wp;
+  // WndProperty* wp; REMOVE 110416
 
   switch(Mode){
     case DataField::daGet:
     break;
     case DataField::daPut:
     case DataField::daChange:
+/* REMOVE ALL 1104
       if (Sender->GetAsString() != NULL && _tcscmp(Sender->GetAsString(), TEXT("")) != 0){
         // then ... set Polar Tape to Winpilot
 
@@ -1121,6 +1122,7 @@ static void OnPolarFileData(DataField *Sender, DataField::DataAccessKind_t Mode)
         }
 
       }
+*/
     break;
 	default: 
 		StartupStore(_T("........... DBG-907%s"),NEWLINE); // 091105
@@ -1130,6 +1132,7 @@ static void OnPolarFileData(DataField *Sender, DataField::DataAccessKind_t Mode)
 }
 
 
+/*
 static void OnPolarTypeData(DataField *Sender, DataField::DataAccessKind_t Mode){
   WndProperty* wp;
 
@@ -1163,6 +1166,7 @@ static void OnPolarTypeData(DataField *Sender, DataField::DataAccessKind_t Mode)
   }
 
 }
+*/
 
 
 extern void OnInfoBoxHelp(WindowControl * Sender);
@@ -1352,7 +1356,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnWaypointSaveClicked),
 
   DeclareCallBackEntry(OnPolarFileData),
-  DeclareCallBackEntry(OnPolarTypeData),
+  // DeclareCallBackEntry(OnPolarTypeData),  REMOVE 110416
 
   DeclareCallBackEntry(OnDeviceAData),
   DeclareCallBackEntry(OnDeviceBData),
@@ -2409,6 +2413,7 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+/* REMOVE 110416
   wp = (WndProperty*)wf->FindByName(TEXT("prpPolarType"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -2433,9 +2438,13 @@ static void setVariables(void) {
     dfe->Set(POLARID);
     wp->RefreshDisplay();
   }
+*/
 
   GetRegistryString(szRegistryPolarFile, szPolarFile, MAX_PATH);
-  _tcscpy(temptext,szPolarFile);
+  if (_tcscmp(szPolarFile,_T(""))==0) 
+    _tcscpy(temptext,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
+  else
+    _tcscpy(temptext,szPolarFile);
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpPolarFile"));
   if (wp) {
@@ -3964,6 +3973,7 @@ void dlgConfigurationShowModal(void){
     }
   }
 
+/* REMOVE 110416
   wp = (WndProperty*)wf->FindByName(TEXT("prpPolarType"));
   if (wp) {
     if (POLARID != wp->GetDataField()->GetAsInteger()) {
@@ -3974,6 +3984,7 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
+*/
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceDisplay"));
   if (wp) {
@@ -4466,7 +4477,11 @@ void dlgConfigurationShowModal(void){
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
     _tcscpy(temptext, dfe->GetPathFile());
-    ContractLocalPath(temptext);
+    if (_tcscmp(temptext,_T(""))==0) {
+	_tcscpy(temptext,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
+    } else
+      ContractLocalPath(temptext);
+
     if (_tcscmp(temptext,szPolarFile)) {
       SetRegistryString(szRegistryPolarFile, temptext);
       POLARFILECHANGED = true;

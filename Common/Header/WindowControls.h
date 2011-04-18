@@ -287,7 +287,7 @@ class DataFieldEnum: public DataField {
   void Sort(int startindex=0);
 };
 
-#define DFE_MAX_FILES 200
+#define DFE_MAX_FILES 300
 
 typedef struct {
   TCHAR *mTextFile;

@@ -400,7 +400,7 @@ double SAFETYALTITUDETERRAIN = 50;
 double SAFTEYSPEED = 50.0;
 
 // polar info
-int              POLARID = 0;
+// int              POLARID = 0; REMOVE 110416
 double POLAR[POLARSIZE] = {0,0,0};
 double POLARV[POLARSIZE] = {21,27,40};
 double POLARLD[POLARSIZE] = {33,30,20};

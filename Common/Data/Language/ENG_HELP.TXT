@@ -1480,18 +1480,24 @@ Each aircraft mode has unique features, please visit the website or read the lat
 manual to discover differences.
 After changing category, you must restart LK in order to notice all differences.
 
+# 1206 OBSOLETED BY 1208 in 2.3
 @1206
 [Aircraft type]
 This contains a selection of aircrafts and wings of different performance classes.
 If you want to use your own polar file, choose Custom Polar File here 
 and then select it from the next configuration box.
 
+# 1207 UNUSED in 2.3
 @1207
 [Custom polar file]
 When Custom Polar File is the polar type, this is the name of the file containing the glide polar data.
 Polars must be placed inside _Polars subfolder.
 Creating a polar file is not trivial, because you need actual sink rate values and a precise
 aircraft weight. Read the manual to know more about all of this. 
+
+@1208
+[Aircraft type]
+This contains a selection of aircrafts and wings of different performance classes.
 
 @9999
 No help available on this item!
