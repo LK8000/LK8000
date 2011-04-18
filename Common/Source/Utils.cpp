@@ -4717,7 +4717,8 @@ void RestoreRegistry(void) {
 void StoreRegistry(void) {
   StartupStore(TEXT(". Store registry%s"),NEWLINE);
   // save registry backup first (try a few places)
-  SaveRegistryToFile(startProfileFile);
+  if (!CheckClubVersion())
+	SaveRegistryToFile(startProfileFile);
   SaveRegistryToFile(defaultProfileFile);
 }
 
