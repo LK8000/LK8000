@@ -319,6 +319,7 @@ DEVS	:=\
 	$(SRC)/devCompeo.cpp \
 	$(SRC)/devDigifly.cpp \
 	$(SRC)/devGeneric.cpp \
+	$(SRC)/devDisabled.cpp \
 	$(SRC)/devBase.cpp \
 	$(SRC)/devLX.cpp \
 	$(SRC)/devLXNano.cpp \

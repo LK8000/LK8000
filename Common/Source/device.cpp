@@ -133,6 +133,14 @@ BOOL devRegisterGetName(int Index, TCHAR *Name){
   return(TRUE);
 }
 
+// This device is not available if Disabled
+// Index 0 or 1 
+bool devIsDisabled(int Index) {
+  if (Index < 0 || Index >1)
+	return (true);
+	
+  return DeviceList[Index].Disabled;
+}
 
 static int devIsFalseReturn(PDeviceDescriptor_t d){
   (void)d;
@@ -175,6 +183,7 @@ BOOL devInit(LPTSTR CommandLine){
     DeviceList[i].PutFreqActive = NULL;
     DeviceList[i].PutFreqStandby = NULL;
     DeviceList[i].IsCondor = devIsFalseReturn;
+    DeviceList[i].Disabled = true;
 
     ComPortStatus[i]=CPS_UNUSED; // 100210
     ComPortHB[i]=0; // counter
@@ -193,7 +202,7 @@ BOOL devInit(LPTSTR CommandLine){
   pDevSecondaryBaroSource=NULL;
 
   ReadDeviceSettings(0, DeviceName);
-  StartupStore(_T(". Device A is <%s>%s"),DeviceName,NEWLINE); // 100526
+	
 #ifdef GNAV
   PortIndex1 = 2; SpeedIndex1 = 5;
 #else
@@ -201,7 +210,17 @@ BOOL devInit(LPTSTR CommandLine){
 #endif
   ReadPort1Settings(&PortIndex1,&SpeedIndex1,&Bit1Index);
 
+  if (_tcslen(DeviceName)>0)
+  if (wcscmp(DeviceName,gettext(_T("_@M1600_")))!=0) {
+	DeviceList[0].Disabled=false;
+	StartupStore(_T(". Device A is <%s> Port=%s%s"),DeviceName,COMMPort[PortIndex1],NEWLINE);
+  } else {
+	DeviceList[0].Disabled=true;
+	StartupStore(_T(". Device A is DISABLED.%s"),NEWLINE);
+  }
+
   for (i=DeviceRegisterCount-1; i>=0; i--) {
+    if (DeviceList[0].Disabled) break;
 
     if ((_tcscmp(DeviceRegister[i].Name, DeviceName) == 0) || (i==0)) {
 
@@ -239,9 +258,8 @@ BOOL devInit(LPTSTR CommandLine){
     }
   }
 
-
   ReadDeviceSettings(1, DeviceName);
-  StartupStore(_T(". Device B is <%s>%s"),DeviceName,NEWLINE); // 100526
+
 #ifdef GNAV
   PortIndex2 = 0; SpeedIndex2 = 5;
 #else
@@ -249,9 +267,18 @@ BOOL devInit(LPTSTR CommandLine){
 #endif
   ReadPort2Settings(&PortIndex2,&SpeedIndex2, &Bit2Index);
 
+  if (_tcslen(DeviceName)>0)
+  if (wcscmp(DeviceName,gettext(_T("_@M1600_")))!=0) {
+	DeviceList[1].Disabled=false;
+	StartupStore(_T(". Device B is <%s> Port=%s%s"),DeviceName,COMMPort[PortIndex2],NEWLINE);
+  } else {
+	DeviceList[1].Disabled=true;
+	StartupStore(_T(". Device B is DISABLED.%s"),NEWLINE);
+  }
+
   for (i=DeviceRegisterCount-1; i>=0; i--) {
-    if (PortIndex1 == PortIndex2)
-      break;
+    if (PortIndex1 == PortIndex2) break;
+    if (DeviceList[1].Disabled) break;
 
     if ((_tcscmp(DeviceRegister[i].Name, DeviceName) == 0) || (i==0)) {
       ComPort *Com = new ComPort(1);

@@ -402,28 +402,41 @@ static void OnSetupDeviceBClicked(WindowControl * Sender){
 static void UpdateDeviceSetupButton(int DeviceIdx, TCHAR *Name){
 
   WndButton *wb;
+  WndProperty *wp;
+  if (DeviceIdx<0||DeviceIdx>1) return;
+
+  if (_tcslen(Name)>0) {
+    if (_tcscmp(Name,gettext(_T("_@M1600_")))==0) {
+	DeviceList[DeviceIdx].Disabled=true;
+    } else {
+	DeviceList[DeviceIdx].Disabled=false;
+    }
+  }
 
   if (DeviceIdx == 0){
+    wp = (WndProperty*)wf->FindByName(TEXT("prpComPort1"));
+    if (wp != NULL) wp->SetReadOnly(DeviceList[0].Disabled);
+    wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed1"));
+    if (wp != NULL) wp->SetReadOnly(DeviceList[0].Disabled);
+    wp = (WndProperty*)wf->FindByName(TEXT("prpComBit1"));
+    if (wp != NULL) wp->SetReadOnly(DeviceList[0].Disabled);
 
     wb = ((WndButton *)wf->FindByName(TEXT("cmdSetupDeviceA")));
-    if (wb != NULL) {
-      if (_tcscmp(Name, TEXT("Vega")) == 0)
-        wb->SetVisible(true);
-      else 
-        wb->SetVisible(false);
-    }
+    if (wb != NULL) wb->SetVisible(false);
 
   }
 
+
   if (DeviceIdx == 1){
+    wp = (WndProperty*)wf->FindByName(TEXT("prpComPort2"));
+    if (wp != NULL) wp->SetReadOnly(DeviceList[1].Disabled);
+    wp = (WndProperty*)wf->FindByName(TEXT("prpComSpeed2"));
+    if (wp != NULL) wp->SetReadOnly(DeviceList[1].Disabled);
+    wp = (WndProperty*)wf->FindByName(TEXT("prpComBit2"));
+    if (wp != NULL) wp->SetReadOnly(DeviceList[1].Disabled);
 
     wb = ((WndButton *)wf->FindByName(TEXT("cmdSetupDeviceB")));
-    if (wb != NULL) {
-      if (_tcscmp(Name, TEXT("Vega")) == 0)
-        wb->SetVisible(true);
-      else 
-        wb->SetVisible(false);
-    }
+    if (wb != NULL) wb->SetVisible(false);
 
   }
 
@@ -1609,6 +1622,7 @@ static void setVariables(void) {
       dfe->addEnumText((tSpeed[i]));
     }
     dfe->Set(dwSpeedIndex1);
+    wp->SetReadOnly(false);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpComBit1"));
@@ -1638,7 +1652,7 @@ static void setVariables(void) {
         dwDeviceIndex1 = i;
 
     }
-    dfe->Sort(1);
+    dfe->Sort(2);
     dfe->Set(dwDeviceIndex1);
     wp->RefreshDisplay();
   }
@@ -1691,7 +1705,7 @@ static void setVariables(void) {
       if (_tcscmp(DeviceName, deviceName2) == 0)
         dwDeviceIndex2 = i;
     }
-    dfe->Sort(1);
+    dfe->Sort(2);
     dfe->Set(dwDeviceIndex2);
     wp->RefreshDisplay();
   }

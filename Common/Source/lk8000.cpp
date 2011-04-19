@@ -49,6 +49,7 @@
 #include "devCaiGpsNav.h"
 #include "devEW.h"
 #include "devGeneric.h"
+#include "devDisabled.h"
 #include "devNmeaOut.h"
 #include "devPosiGraph.h"
 #include "devBorgeltB50.h"
@@ -1423,8 +1424,8 @@ void UnlockComm() {
 
 
 void RestartCommPorts() {
-  static bool first = true;
  /*
+  static bool first = true;
 #if (WINDOWSPC>0)
   if (!first) {
     NMEAParser::Reset();
@@ -1432,6 +1433,7 @@ void RestartCommPorts() {
   }
 #endif
  */
+
   StartupStore(TEXT(". RestartCommPorts%s"),NEWLINE);
 
   while(!goInitDevice) Sleep(50); // 100118
@@ -1442,7 +1444,7 @@ void RestartCommPorts() {
 
   NMEAParser::Reset();
 
-  first = false;
+//  first = false;
 
   devInit(TEXT(""));      
 
@@ -2173,7 +2175,8 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   // Please check that the number of devices is not exceeding NUMREGDEV in device.h
   CreateProgressDialog(gettext(TEXT("_@M1217_")));
   StartupStore(TEXT(". Register serial devices%s"),NEWLINE);
-  genRegister(); // MUST BE FIRST
+  disRegister(); // must be first
+  genRegister(); // must be second, since we Sort(2) in dlgConfiguration
   cai302Register();
   ewRegister();
   #if !110101
@@ -2202,7 +2205,6 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   goInitDevice=true; // 100118
 
   if (!SIMMODE) {
-	StartupStore(TEXT(". RestartCommPorts%s"),NEWLINE);
 	RestartCommPorts();
   }
 // WINDOWSPC _SIM_ devInit called twice missing devA name
@@ -4513,9 +4515,10 @@ int ConnectionProcessTimer(int itimeout) {
 			// no activity for 60/2 seconds (running at 2Hz), then reset.
 			// This is needed only for virtual com ports..
 			extGPSCONNECT = FALSE;
-			InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
-			RestartCommPorts();
-
+			if (!(devIsDisabled(0) && devIsDisabled(1))) {
+			  InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
+			  RestartCommPorts();
+			}
 			#if (EXPERIMENTAL > 0)
 			// if comm port shut down, probably so did bluetooth dialup
 			// so restart it here also.

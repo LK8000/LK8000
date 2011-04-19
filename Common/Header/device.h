@@ -55,6 +55,7 @@ typedef	struct DeviceDescriptor_t{
   DeviceDescriptor_t *pDevPipeTo;
 
   int PortNumber;
+  bool Disabled;
 }DeviceDescriptor_t;
 
 typedef	DeviceDescriptor_t *PDeviceDescriptor_t;
@@ -89,6 +90,7 @@ BOOL devCloseAll(void);
 PDeviceDescriptor_t devGetDeviceOnPort(int Port);
 BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token);
 BOOL devHasBaroSource(void);
+bool devIsDisabled(int devindex);
 
 BOOL devParseNMEA(int portNum, TCHAR *String,	NMEA_INFO	*GPS_INFO);
 BOOL devPutMacCready(PDeviceDescriptor_t d,	double MacCready);
