@@ -20,7 +20,8 @@
 
 
 BOOL disInstall(PDeviceDescriptor_t d){
-  _tcscpy(d->Name, gettext(_T("_@M1600_")));
+  // _tcscpy(d->Name, gettext(_T("_@M1600_"))); causing problems with language change
+  _tcscpy(d->Name, _T("DISABLED"));
   d->ParseNMEA = NULL;
   d->PutMacCready = NULL;
   d->PutBugs = NULL;
@@ -43,7 +44,8 @@ BOOL disInstall(PDeviceDescriptor_t d){
 
 BOOL disRegister(void){
   return(devRegister(
-    gettext(_T("_@M1600_")), 
+    // gettext(_T("_@M1600_")), 
+    _T("DISABLED"),
     (1l << dfGPS)
    ,
     disInstall

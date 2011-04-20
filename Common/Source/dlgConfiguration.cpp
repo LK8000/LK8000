@@ -406,7 +406,8 @@ static void UpdateDeviceSetupButton(int DeviceIdx, TCHAR *Name){
   if (DeviceIdx<0||DeviceIdx>1) return;
 
   if (_tcslen(Name)>0) {
-    if (_tcscmp(Name,gettext(_T("_@M1600_")))==0) {
+    // if (_tcscmp(Name,gettext(_T("_@M1600_")))==0) {
+    if (_tcscmp(Name,_T("DISABLED"))==0) {
 	DeviceList[DeviceIdx].Disabled=true;
     } else {
 	DeviceList[DeviceIdx].Disabled=false;
