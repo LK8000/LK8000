@@ -4588,8 +4588,8 @@ void dlgConfigurationShowModal(void){
     ContractLocalPath(temptext);
     if (_tcscmp(temptext,szLanguageFile)) {
       SetRegistryString(szRegistryLanguageFile, temptext);
-      requirerestart = true; // restart needed for XCI reload
-      LKReadLanguageFile();
+      requirerestart = true; // restart needed for language load
+      // LKReadLanguageFile(); // NO GOOD. MEMORY LEAKS PENDING
       changed = true;
     }
   }
