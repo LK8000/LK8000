@@ -3720,9 +3720,9 @@ _@M1326_ "2>"
 #Heimplatz
 _@M1327_ "H>"
 
-#_@M1328_ "L>"
+#_@M1328_ "T>"
 #letzter Bart/Thermik
-_@M1328_ "T>"
+_@M1328_ "L>"
 
 #_@M1329_ "M"
 #Partner

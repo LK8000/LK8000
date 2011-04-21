@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT.XCI for LK8000 by Paolo Ventafridda
-# Release 4N , 110331
+# Release 4N , 110421
 # 
 # This is the default .XCI file configured internally.
 # It controls all events from soft buttons and hardware keys.
@@ -2158,7 +2158,7 @@ type=key
 data=APP3
 event=ChangeMultitarget MATE
 event=Mode default
-label=M>\nTeam
+label=P>\nPartner
 location=3
 
 mode=MTarget
@@ -2174,7 +2174,7 @@ type=key
 data=6
 event=ChangeMultitarget TASK
 event=Mode default
-label=T>\nAufgabe
+label=A>\nAufgabe
 location=5
 
 mode=MTarget
