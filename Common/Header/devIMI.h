@@ -13,17 +13,12 @@
 
 class CDevIMI : public DevBase
 {
+  typedef char IMICHAR;                         // 8bit text character
   typedef unsigned char IMIBYTE;                // 8bit unsigned
   typedef unsigned short IMIWORD;               // 16bit unsigned
   typedef unsigned long IMIDWORD;               // 32bit unsigned
-  // typedef unsigned __int64 IMIDDWORD;	//64bit unsigned
-  
-  // typedef signed char IMISBYTE;              //8bit signed
   typedef short IMISWORD;                       // 16bit unsigned
-  // typedef long IMISDWORD;                    //32bit unsigned
-  // typedef __int64 IMISDDWORD;                //64bit unsigned
-  
-  // typedef unsigned long IMIDATETIMESEC;      //32bit unsigned
+  typedef unsigned long IMIDATETIMESEC;         // 32bit unsigned
   
   enum TMsgType {
     MSG_ACK_SUCCESS      = 0x00,
@@ -63,28 +58,14 @@ class CDevIMI : public DevBase
     IMIBYTE payload[COMM_MAX_PAYLOAD_SIZE];
     IMIWORD crc16;
   };
-  
-  struct TDeviceInfo {
-    IMIBYTE device;
-    IMIBYTE tampered;
-    IMIBYTE hwVersion;
-    IMIBYTE swVersion;
-    IMIBYTE gps;
-    IMIBYTE sensor;
-    IMIBYTE flash;
-    IMIBYTE eeprom;
-    IMIDWORD flashSize;
-    IMIDWORD eepromSize;
-    IMISWORD sensor0Offset;
-    IMISWORD sensor8kOffset;
-    IMIWORD buildNumber;
-    IMIBYTE reserved[64 - 22];
-  } PACKED;
-  
 #define IMICOMM_MAX_MSG_SIZE (sizeof(TMsg))
-#define IMICOMM_MSG_HEADER_SIZE ((unsigned)(&(((TMsg *)0)->payload)))
-#define IMICOMM_BIGPARAM1(param) ((IMIBYTE)((param) >> 16))
-#define IMICOMM_BIGPARAM2(param) ((IMIWORD)(param))
+
+  struct TDeviceInfo;
+  struct TDeclarationHeader;
+  struct TObservationZone;
+  struct TAngle;
+  struct TWaypoint;
+  struct TDeclaration;
   
   class CMsgParser {
     enum TState {
@@ -111,13 +92,18 @@ class CDevIMI : public DevBase
   
   // IMI tools
   static IMIWORD CRC16Checksum(const void *message, unsigned bytes);
+  static void IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint &imiWp);
   static bool Send(PDeviceDescriptor_t d, const TMsg &msg, unsigned errBufSize, TCHAR errBuf[]);
-  static bool Send(PDeviceDescriptor_t d, IMIBYTE msgID, unsigned errBufSize, TCHAR errBuf[], const void *payload = 0, IMIWORD payloadSize = 0, IMIBYTE parameter1 = 0, IMIWORD parameter2 = 0);
+  static bool Send(PDeviceDescriptor_t d, IMIBYTE msgID, unsigned errBufSize, TCHAR errBuf[], const void *payload = 0, IMIWORD payloadSize = 0, IMIBYTE parameter1 = 0, IMIWORD parameter2 = 0, IMIWORD parameter3 = 0);
   static const TMsg *Receive(PDeviceDescriptor_t d, unsigned extraTimeout, unsigned expectedPayloadSize, unsigned errBufSize, TCHAR errBuf[]);
+  static const TMsg *SendRet(PDeviceDescriptor_t d, IMIBYTE msgID, const void *payload, IMIWORD payloadSize, 
+                             IMIBYTE reMsgID, IMIWORD retPayloadSize, unsigned errBufSize, TCHAR errBuf[],
+                             IMIBYTE parameter1 = 0, IMIWORD parameter2 = 0, IMIWORD parameter3 = 0,
+                             unsigned extraTimeout = 300, int retry = 4);
   
   // IMI interface
   static bool Connect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
-  static bool DeclarationWrite(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[]);
+  static bool DeclarationWrite(PDeviceDescriptor_t d, const Declaration_t &decl, unsigned errBufSize, TCHAR errBuf[]);
   static bool Disconnect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
   
   // LK interface
