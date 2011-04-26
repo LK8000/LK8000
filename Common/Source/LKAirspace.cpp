@@ -1284,6 +1284,7 @@ bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, d
 // Also the geopointlist last element have to be the same as first -> openair doesn't require this, we have to do it here
 void CAirspaceManager::CorrectGeoPoints(CPoint2DArray &points)
 {
+    if (points.size()==0) return;
     CPoint2D first = points.front();
     CPoint2D last = points.back();
     
@@ -1349,6 +1350,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
           case _T('C'):    //AC
             p++; // skip C
             if (parsing_state==10) { // New airspace begin, store the old one, reset parser
+              newairspace = NULL;
               if (Radius>0) {
                 // Last one was a circle
                 newairspace = new CAirspace_Circle(Longitude, Latitude, Radius);
@@ -1356,21 +1358,23 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
                   // Last one was an area
                   CorrectGeoPoints(points);
                   // Skip it if we dont have minimum 3 points
-                  if (points.size()<3) {
-                  }
-                  newairspace = new CAirspace_Area;
+                  if (points.size()>3) {
+                    newairspace = new CAirspace_Area;
                     newairspace->SetPoints(points);
+                  }
               }
-              newairspace->Init(Name, Type, Base, Top, flyzone);
+              if (newairspace!=NULL) {
+                newairspace->Init(Name, Type, Base, Top, flyzone);
 
-              if (1) {
-                CCriticalSection::CGuard guard(_csairspaces);
-                _airspaces.push_back(newairspace);
+                if (1) {
+                  CCriticalSection::CGuard guard(_csairspaces);
+                  _airspaces.push_back(newairspace);
+                }
               }
               
               Name[0]='\0';
               Radius = 0;
-               Longitude = 0;
+              Longitude = 0;
               Latitude = 0;
               points.clear();
               Type = 0;
