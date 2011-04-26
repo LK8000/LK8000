@@ -125,6 +125,11 @@
 #define MAP_ZOOM                1       // Applied 110204 expire 110601
 
 
+// ------------ NEW AIRSPACE ENGINE -------------------------------------------------
+// Using new airspaces requires to change lk8000.rc and activate LKAIRSPACE xmls. 
+// They are 2 files in total.
+// No need to change any XML filename. Just comment/uncomment.
+//
 #define LKAIRSPACE		1	// New airspace handling code 
 
 
