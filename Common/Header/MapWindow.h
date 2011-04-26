@@ -505,7 +505,7 @@ class MapWindow {
   static void DrawWindAtAircraft2(HDC hdc, POINT Orig, RECT rc);
   static void DrawAirSpace(HDC hdc, const RECT rc);
 #ifdef LKAIRSPACE
-  static void DrawAirspaceLabels(HDC hdc, const RECT rc);
+  static void DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Aircraft);
 #endif
   static void DrawWaypoints(HDC hdc, const RECT rc);
   static void DrawWaypointsNew(HDC hdc, const RECT rc);

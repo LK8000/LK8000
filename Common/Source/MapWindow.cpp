@@ -3489,7 +3489,7 @@ QuickRedraw: // 100318 speedup redraw
 #ifdef LKAIRSPACE
   if (OnAirSpace > 0)  // Default is true, always true at startup no regsave 
   {
-	DrawAirspaceLabels(hdc, rc);
+	DrawAirspaceLabels(hdc, rc, Orig_Aircraft);
 	if (DONTDRAWTHEMAP) { // 100319
 		SelectObject(hdcDrawWindow, hfOld);
 		goto QuickRedraw;

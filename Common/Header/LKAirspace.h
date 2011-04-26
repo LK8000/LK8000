@@ -59,7 +59,7 @@ typedef enum { aweNone,
 //Airspace drawstyles
 typedef enum {adsHidden, adsOutline, adsFilled } AirspaceDrawStyle_t;
 //Airspace warning drawstyles
-typedef enum {awsBlack, awsAmber, awsRed } AirspaceWarningDrawStyle_t;
+typedef enum {awsHidden, awsBlack, awsAmber, awsRed } AirspaceWarningDrawStyle_t;
 
 // 
 // AIRSPACE BASE CLASS
@@ -87,7 +87,9 @@ public:
             _vdistance(0),
             _hdistance(0),
             _bearing(0),
-            _labelpriority(0)
+            _labelpriority(0),
+            _vwarninglabel_hide(false),
+            _hwarninglabel_hide(false)
             {}
   virtual ~CAirspace() {}
 
@@ -122,10 +124,8 @@ public:
   void SetAckTimeout();
   // get nearest distance info to this airspace, returns true if distances calculated by warning system
   bool GetDistanceInfo(bool &inside, int &hDistance, int &Bearing, int &vDistance) const;
-  // get nearest vertical distance to this airspace, returns true if distances calculated by warning system
-  bool GetVDistanceInfo(int &vDistance, AirspaceWarningDrawStyle_t &drawstyle) const;
   // get warning point coordinates, returns true if airspace has valid distances calculated
-  bool GetWarningPoint(double &longitude, double &latitude) const;
+  bool GetWarningPoint(double &longitude, double &latitude, AirspaceWarningDrawStyle_t &hdrawstyle, int &vDistance, AirspaceWarningDrawStyle_t &vdrawstyle) const;
   // Reset warnings
   void ResetWarnings();
   
@@ -190,6 +190,8 @@ protected:
   int _hdistance;                // horizontal distance to actual position
   int _bearing;                    // bearing from actual position
   short int _labelpriority;            // warning label drawing priority to sequence labels on map
+  bool _vwarninglabel_hide;     // Hide vertical warning label
+  bool _hwarninglabel_hide;     // Hide horizontal warning label
   
   // Private functions
   void AirspaceAGLLookup(double av_lat, double av_lon);

@@ -352,8 +352,11 @@ bool CAirspace::FinishWarning()
            ) {
           // Far away horizontally _and_ vertically
           _warninglevel = awNone;
+          _hwarninglabel_hide = false;
+          _vwarninglabel_hide = false;
           break;
-        } 
+        }
+        _hwarninglabel_hide = true;
         if (abs_hdistance<_hdistancemargin) {
           // Check what is outside this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
           double lon = 0;
@@ -365,8 +368,11 @@ bool CAirspace::FinishWarning()
             // Near to outside, modify warnevent to inform user
             _warninglevel = awYellow;
             _warnevent = aweNearOutsideFly;
+            _hwarninglabel_hide = false;
           }
         }
+        
+        _vwarninglabel_hide = true;
         if (abs_vdistance<AirspaceWarningVerticalMargin) {
           // Check what is outside vertically this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
           int alt = _lastknownalt;
@@ -386,6 +392,7 @@ bool CAirspace::FinishWarning()
             // Near to outside, modify warnevent to inform user
             _warninglevel = awYellow;
             _warnevent = aweNearOutsideFly;
+            _vwarninglabel_hide = false;
           }
         }
         break;
@@ -410,6 +417,7 @@ bool CAirspace::FinishWarning()
       case aweEnteringFly:
         // Also preset warnlevel to awYellow, because we entering yellow zone. 
         // but we don't need to generate a warning message right now - force no change in warnlevel
+        _hwarninglabel_hide = true;
         if (abs_hdistance<_hdistancemargin) {
           // Check what is outside this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
           double lon = 0;
@@ -419,8 +427,11 @@ bool CAirspace::FinishWarning()
           
           if ( !CAirspaceManager::Instance().AirspaceWarningIsGoodPosition(lon, lat, _lastknownalt, _lastknownagl) ) {
             _warninglevelold = _warninglevel = awYellow;          
+            _hwarninglabel_hide = false;
           }
         }
+        
+        _vwarninglabel_hide = true;
         if (abs_vdistance<AirspaceWarningVerticalMargin) {
           // Check what is outside vertically this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
           int alt = _lastknownalt;
@@ -438,6 +449,7 @@ bool CAirspace::FinishWarning()
           
           if ( !CAirspaceManager::Instance().AirspaceWarningIsGoodPosition(_lastknownpos.Longitude(), _lastknownpos.Latitude(), alt, agl) ) {
             _warninglevelold = _warninglevel = awYellow;          
+            _vwarninglabel_hide = false;
           }
         }
         // Do info message on entering a fly zone
@@ -525,34 +537,34 @@ bool CAirspace::GetDistanceInfo(bool &inside, int &hDistance, int &Bearing, int 
   return false;
 }
 
-// Gets vertical distance info for drawing
-bool CAirspace::GetVDistanceInfo(int &vDistance, AirspaceWarningDrawStyle_t &drawstyle) const
-{ 
-  if (_distances_ready) {
-    vDistance = _vdistance; 
-    drawstyle = awsBlack;
-    if (IsAltitudeInside(_lastknownalt, _lastknownagl, 0)) {
-          if (!_flyzone) drawstyle = awsRed;
-    } else {
-        if (_flyzone) drawstyle = awsAmber;
-    }
-    return true;
-  }
-  return false;
-}
-
-
 // Get warning point coordinates, returns true if distances valid
-bool CAirspace::GetWarningPoint(double &longitude, double &latitude) const
+bool CAirspace::GetWarningPoint(double &longitude, double &latitude, AirspaceWarningDrawStyle_t &hdrawstyle, int &vDistance, AirspaceWarningDrawStyle_t &vdrawstyle) const
 {
   if (_distances_ready && (_warningacklevel < awDailyAck)) {
-    if (_flyzone && !_pos_inside_now ) return false;    // no warning point if outside a flyzone
-    double dist = abs(_hdistance);
-    if (_hdistance < 0) {
-      // if vertical distance smaller, or nonfly zone - use actual position as warning point indicating a directly above or below warning situation
-      if ( !_flyzone || (abs(_vdistance) < AirspaceWarningVerticalMargin) ) dist = 0;
+    if (_flyzone && !_pos_inside_now ) return false;    // no warning labels if outside a flyzone
+
+    vdrawstyle = awsBlack;
+    if (IsAltitudeInside(_lastknownalt, _lastknownagl, 0)) {
+          if (!_flyzone) vdrawstyle = awsRed;
+    } else {
+        if (_flyzone) vdrawstyle = awsAmber;
     }
+    hdrawstyle = vdrawstyle;
+
+    double dist = abs(_hdistance);
     FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &latitude, &longitude);
+
+    vDistance = _vdistance;
+    //if (abs(_vdistance) > AirspaceWarningVerticalMargin) vdrawstyle = awsHidden;
+
+    // Nofly zones
+    if (!_flyzone && (_hdistance<0)) hdrawstyle = awsHidden;       // No horizontal warning label if directly below or above
+    if (!_flyzone && (_hdistance>0)) vdrawstyle = awsHidden;       // No vertical warning label if outside horizontally
+
+    //In flyzones if adjacent flyzone exists, we do not display labels
+    if (_hwarninglabel_hide) hdrawstyle = awsHidden;
+    if (_vwarninglabel_hide) vdrawstyle = awsHidden;
+
     return true;
   }
   return false;
