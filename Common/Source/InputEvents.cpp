@@ -2328,7 +2328,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
 			if (LockMode(2)) { // invert LockMode
 				DoStatusMessage(gettext(_T("_@M962_"))); // SCREEN IS LOCKED UNTIL TAKEOFF
-				DoStatusMessage(gettext(_T("_@M963_"))); // DOUBLECLICK TO UNLOCK
+				DoStatusMessage(gettext(_T("_@M1601_"))); // DOUBLECLICK TO UNLOCK
 			} else
 				DoStatusMessage(gettext(_T("_@M964_"))); // SCREEN IS UNLOCKED
 	}

@@ -1909,6 +1909,9 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       XstartScreen = LOWORD(lParam); YstartScreen = HIWORD(lParam);
 
 	if (LockModeStatus) {
+        	ignorenext=true; // do not interpret the second click of the doubleclick as a real click.
+		if (XstartScreen <(MapRect.right-BottomSize-NIBLSCALE(15))) break;
+		if (YstartScreen<(MapRect.bottom-MapRect.top-BottomSize-NIBLSCALE(15))) break;
 		LockMode(2);
 		DoStatusMessage(gettext(_T("_@M964_"))); // SCREEN IS UNLOCKED
 	}
@@ -4310,7 +4313,7 @@ goto_DrawLockModeStatus:
 	TextInBoxModeL.AsFlag.Border = 1;
 	TextInBox(hDC, gettext(_T("_@M962_")), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/3), 0, TextInBoxModeL);
 	SelectObject(hDC,LK8MapFont);
-	TextInBox(hDC, gettext(_T("_@M963_")), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/5), 0, TextInBoxModeL);
+	TextInBox(hDC, gettext(_T("_@M1601_")), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/5), 0, TextInBoxModeL);
   }
 
   SelectObject(hDC,oldfont);

@@ -972,6 +972,7 @@ _@M960_ "CONFIRM SCREEN UNLOCK?"
 _@M961_ "CONFIRM SCREEN LOCK?"
 # 962 max 35 characters!
 _@M962_ "SCREEN IS LOCKED UNTIL TAKEOFF"
+# 963 unused since 2.3
 _@M963_ "DOUBLE-CLICK ON SCREEN TO FORCE UNLOCK"
 _@M964_ "SCREEN IS UNLOCKED"
 #
@@ -1476,6 +1477,8 @@ _@M1506_ "PLS*scr"
 
 # Device name for "no device"
 _@M1600_ "DISABLED"
+# Ex-963, new message for screen unlock
+_@M1601_ "Double-Click on Low-Right Corner to UNLOCK"
 
 
 # Note for developers: LKLanguage MAX_MESSAGE  1700: 0-1699 !
