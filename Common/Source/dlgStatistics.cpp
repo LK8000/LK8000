@@ -1493,8 +1493,11 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
       d_airspace[i][j]= -1; // no airspace
     }
   }
+#ifdef LKAIRSPACE
+  CAirspaceManager::Instance().ScanAirspaceLine(d_lat, d_lon, d_h, d_airspace);
+#else
   ScanAirspaceLine(d_lat, d_lon, d_h, d_airspace);
-
+#endif
   int type;
 
   HPEN mpen = (HPEN)CreatePen(PS_NULL, 0, RGB(0xf0,0xf0,0xb0));
@@ -2292,7 +2295,10 @@ void dlgAnalysisShowModal(void){
   DeleteObject(penThinSignal);
 
   MapWindow::RequestFastRefresh();
+#ifdef LKAIRSPACE
+#else
   ClearAirspaceWarnings(false); // airspace warning gets refreshed
+#endif
   FullScreen();
 
 }

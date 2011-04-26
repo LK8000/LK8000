@@ -15,13 +15,66 @@
 #include "InfoBoxLayout.h"
 #include "Airspace.h"
 #include "AirspaceWarning.h"
+#ifdef LKAIRSPACE
+#include "LKAirspace.h"
+#endif
 
 #include "utils/heapcheck.h"
 
+#ifdef LKAIRSPACE
+static CAirspace *airspace = NULL;
+static CAirspace airspace_copy;
+#else
 static int index_circle = -1;
 static int index_area = -1;
+#endif
 static WndForm *wf=NULL;
 
+#ifdef LKAIRSPACE
+static void OnFlyClicked(WindowControl * Sender){
+  (void)Sender;
+
+  if (airspace == NULL) return;
+  if (wf == NULL) return;
+  UINT answer;
+  
+  if (airspace_copy.Flyzone()) {
+	// LKTOKEN _@M1273_ "Set as NOFLY zone?"
+	answer = MessageBoxX(hWndMapWindow, airspace_copy.Name(), gettext(TEXT("_@M1273_")), MB_YESNO|MB_ICONQUESTION);
+  } else {
+	// LKTOKEN _@M1272_ "Set as FLY zone?"
+	answer = MessageBoxX(hWndMapWindow, airspace_copy.Name(), gettext(TEXT("_@M1272_")), MB_YESNO|MB_ICONQUESTION);
+  }
+  
+  if (answer == IDYES) {
+	CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
+	wf->SetModalResult(mrOK);
+  }
+}
+#endif
+
+#ifdef LKAIRSPACE
+static void OnAcknowledgeClicked(WindowControl * Sender){
+  (void)Sender;
+
+  if (airspace == NULL) return;
+  if (wf == NULL) return;
+  UINT answer;
+  answer = MessageBoxX(hWndMapWindow,
+			airspace_copy.Name(),
+			// LKTOKEN  _@M51_ = "Acknowledge for day?" 
+			gettext(TEXT("_@M51_")),
+			MB_YESNOCANCEL|MB_ICONQUESTION);
+  if (answer == IDYES) {
+	CAirspaceManager::Instance().AirspaceAckDaily(*airspace);
+	wf->SetModalResult(mrOK);
+  } else if (answer == IDNO) {
+	// this will cancel a daily ack
+	CAirspaceManager::Instance().AirspaceAckDailyCancel(*airspace);
+	wf->SetModalResult(mrOK);
+  }
+}
+#else
 static void OnAcknowledgeClicked(WindowControl * Sender){
   (void)Sender;
 
@@ -60,7 +113,7 @@ static void OnAcknowledgeClicked(WindowControl * Sender){
     }
   }
 }
-
+#endif
 
 static void OnCloseClicked(WindowControl * Sender){
 	(void)Sender;
@@ -69,14 +122,152 @@ static void OnCloseClicked(WindowControl * Sender){
 
 static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnAcknowledgeClicked),
+#ifdef LKAIRSPACE
+  DeclareCallBackEntry(OnFlyClicked),
+#endif
   DeclareCallBackEntry(OnCloseClicked),
   DeclareCallBackEntry(NULL)
 };
-
+#ifndef LKAIRSPACE
 static double FLAltRounded(double alt) {
   int f = iround(alt/10)*10;
   return (double)f;
 }
+#endif
+#ifdef LKAIRSPACE
+static void SetValues() {
+
+  if (airspace==NULL) return;
+
+  WndProperty* wp;
+  WndButton *wb;
+  TCHAR buffer[80];
+  TCHAR buffer2[80];
+
+  int bearing;
+  int hdist;
+  int vdist;
+  bool inside = CAirspaceManager::Instance().AirspaceCalculateDistance( airspace, &hdist, &bearing, &vdist);
+  
+  wp = (WndProperty*)wf->FindByName(TEXT("prpName"));
+  if (wp) {
+    wp->SetText(airspace_copy.Name());
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpType"));
+  if (wp) {
+	if (airspace_copy.Flyzone()) {
+	  wsprintf(buffer,TEXT("%s %s"), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()), gettext(TEXT("FLY")));
+	} else {
+	  wsprintf(buffer,TEXT("%s %s"), CAirspaceManager::Instance().GetAirspaceTypeText(airspace_copy.Type()), gettext(TEXT("NOFLY")));
+	}
+	wp->SetText( buffer );
+    wp->RefreshDisplay();
+  }
+  
+  wp = (WndProperty*)wf->FindByName(TEXT("prpTop"));
+  if (wp) {
+	CAirspaceManager::Instance().GetAirspaceAltText(buffer, sizeof(buffer)/sizeof(buffer[0]), airspace_copy.Top());
+    wp->SetText(buffer);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpBase"));
+  if (wp) {
+	CAirspaceManager::Instance().GetAirspaceAltText(buffer, sizeof(buffer)/sizeof(buffer[0]), airspace_copy.Base());
+    wp->SetText(buffer);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpRange"));
+  if (wp) {
+    Units::FormatUserDistance(abs(hdist), buffer, 20);
+    if (inside) {
+	  // LKTOKEN  _@M359_ = "Inside" 
+      wp->SetCaption(gettext(TEXT("_@M359_")));
+	  // LKTOKEN _@M1257_ "to leave"
+	  wsprintf(buffer2, TEXT("%s %d")TEXT(DEG)TEXT(" %s"), buffer, iround(bearing), gettext(TEXT("_@M1257_")));
+    } else {
+	  // LKTOKEN _@M1258_ "to enter"
+	  wsprintf(buffer2, TEXT("%s %d")TEXT(DEG)TEXT(" %s"), buffer, iround(bearing), gettext(TEXT("_@M1258_")));
+	}
+    wp->SetText(buffer2);
+    wp->RefreshDisplay();
+  }
+  
+  wp = (WndProperty*)wf->FindByName(TEXT("prpWarnLevel"));
+  if (wp) {
+	  switch (airspace_copy.WarningLevel()) {
+		default:
+		  // LKTOKEN _@M765_ "Unknown"
+		  wp->SetText(gettext(TEXT("_@M765_")));
+		  break;
+		  
+		case awNone:
+		  // LKTOKEN _@M479_ "None"
+  		  wp->SetText(gettext(TEXT("_@M479_")));
+		  break;
+
+		case awYellow:
+			// LKTOKEN _@M1255_ "YELLOW WARNING"
+			wp->SetText(gettext(TEXT("_@M1255_")));
+		  break;
+		
+		case awRed:
+			// LKTOKEN _@M1256_ "RED WARNING"
+			wp->SetText(gettext(TEXT("_@M1256_")));
+		  break;
+	  }//sw
+	  wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAckLevel"));
+  if (wp) {
+	  switch (airspace_copy.WarningAckLevel()) {
+		default:
+		  // LKTOKEN _@M765_ "Unknown"
+		  wp->SetText(gettext(TEXT("_@M765_")));
+		  break;
+		  
+		case awNone:
+		  // LKTOKEN _@M479_ "None"
+  		  wp->SetText(gettext(TEXT("_@M479_")));
+		  break;
+
+		case awYellow:
+			// LKTOKEN _@M1267_ "Yellow acknowledged"
+			wp->SetText(gettext(TEXT("_@M1267_")));
+		  break;
+		
+		case awRed:
+			// LKTOKEN _@M1268_ "Red acknowledged"
+			wp->SetText(gettext(TEXT("_@M1268_")));
+		  break;
+
+		case awDailyAck:
+			// LKTOKEN _@M1269_ "Daily acknowledged"
+			wp->SetText(gettext(TEXT("_@M1269_")));
+		  break;
+		
+	  }//sw
+	  wp->RefreshDisplay();
+  }
+
+  wb = (WndButton*)wf->FindByName(TEXT("cmdFly"));
+  if (wp) {
+	if (airspace_copy.Flyzone()) {
+	  // LKTOKEN _@M1271_ "NOFLY"
+	  wb->SetCaption(gettext(TEXT("_@M1271_")));
+	} else {
+	  // LKTOKEN _@M1270_ "FLY"
+	  wb->SetCaption(gettext(TEXT("_@M1270_")));
+	}
+	wb->Redraw();
+  }
+}
+
+#else
 
 static void SetValues(void) {
   int atype = 0;
@@ -281,8 +472,33 @@ static void SetValues(void) {
     wp->RefreshDisplay();
   }
 }
+#endif
 
+#ifdef LKAIRSPACE
+void dlgAirspaceDetails(CAirspace *airspace_to_show) {
+  if (airspace != NULL) {
+    return;
+  }
 
+  char filename[MAX_PATH];
+  LocalPathS(filename, TEXT("dlgAirspaceDetails.xml"));
+  wf = dlgLoadFromXML(CallBackTable,
+		      filename, 
+		      hWndMainWindow,
+		      TEXT("IDR_XML_AIRSPACEDETAILS"));
+
+  if (!wf) return;
+  airspace = airspace_to_show;
+  airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(airspace);
+  SetValues();
+
+  wf->ShowModal();
+  airspace = NULL;
+  delete wf;
+  wf = NULL;
+  return;
+}
+#else
 void dlgAirspaceDetails(int the_circle, int the_area) {
   index_circle = the_circle;
   index_area = the_area;
@@ -309,7 +525,7 @@ void dlgAirspaceDetails(int the_circle, int the_area) {
   wf = NULL;
   return;
 }
-
+#endif
 
 /*
 

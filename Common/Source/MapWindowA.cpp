@@ -14,6 +14,9 @@
 #include "MapWindow.h"
 #include "externs.h"
 #include "Terrain.h"
+#ifdef LKAIRSPACE
+#include "LKAirspace.h"
+#endif
 
 #include "utils/heapcheck.h"
 
@@ -126,13 +129,34 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   // airspace) we must copy destination bitmap into source bitmap first so that 
   // alpha blending of such areas results in the same pixels as origin pixels 
   // in destination 
-
+#ifdef LKAIRSPACE
+  CAirspaceList::const_iterator it;
+  const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
+  int airspace_type;
+#else
   unsigned int i;
-
+#endif
   bool found = false;
 
+  // draw without border
+#ifdef LKAIRSPACE
+    if (1) {
+    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
+        if ((*it)->DrawStyle() == adsFilled) {
+		  airspace_type = (*it)->Type();
+		  if (!found) {
+			found = true;
+			ClearTptAirSpace(hdc, rc);
+		  }
+		  // set filling brush
+		  SelectObject(hDCTemp, GetAirSpaceSldBrushByClass(airspace_type));
+		  (*it)->Draw(hDCTemp, rc, true);
+        }
+	}//for
+    }
+#else
   if (AirspaceCircle) {
-    // draw without border
     for(i = 0; i < NumberOfAirspaceCircles; i++) {
       if (AirspaceCircle[i].Visible == 2) {
         if (!found) {
@@ -167,17 +191,33 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
       }
     }
   }
+#endif
 
   // alpha blending
   if (found)
     DoAlphaBlend(hdc, rc, hDCTemp, rc, (255 * GetAirSpaceOpacity()) / 100);
-  
   
   // draw it again, just the outlines
   
   // we will be drawing directly into given hdc, so store original PEN object
   HPEN hOrigPen = (HPEN) SelectObject(hdc, GetStockObject(WHITE_PEN));
 
+#ifdef LKAIRSPACE
+    if (1) {
+    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
+        if ((*it)->DrawStyle()) {
+		  airspace_type = (*it)->Type();
+		  if (bAirspaceBlackOutline) {
+			SelectObject(hdc, GetStockObject(BLACK_PEN));
+		  } else {
+			SelectObject(hdc, hAirspacePens[airspace_type]);
+		  }
+		  (*it)->Draw(hdc, rc, false);
+        }
+	}//for
+    }
+#else
   if (AirspaceCircle) {
     for(i = 0; i < NumberOfAirspaceCircles; i++) {
       if (AirspaceCircle[i].Visible) {
@@ -221,7 +261,7 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
       }
     }
   }
-
+#endif
   // restore original PEN
   SelectObject(hdc, hOrigPen);
 } // DrawTptAirSpace()

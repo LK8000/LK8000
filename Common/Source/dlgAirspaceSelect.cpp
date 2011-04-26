@@ -23,8 +23,12 @@
 
 
 typedef struct{
+#ifdef LKAIRSPACE
+  CAirspace *airspace;
+#else
   int Index_Circle;
   int Index_Area;
+#endif
   double Distance;
   double Direction;
   int    DirectionErr;
@@ -55,6 +59,7 @@ static int lastHeading=0;
 
 static int NumberOfAirspaces = 0;
 
+#ifndef LKAIRSPACE
 // FIXV2
 static const TCHAR *TypeFilter[] = {TEXT("*"), 
 				    TEXT("Other"),
@@ -73,7 +78,7 @@ static const TCHAR *TypeFilter[] = {TEXT("*"),
 				    TEXT("Class F"),
 				    TEXT("Class G"),
 };
-
+#endif
 static unsigned TypeFilterIdx=0;
 
 static int UpLimit=0;
@@ -83,7 +88,42 @@ static int ItemIndex = -1;
 
 static AirspaceSelectInfo_t *AirspaceSelectInfo=NULL;
 
+#ifdef LKAIRSPACE
+static void OnAirspaceListEnter(WindowControl * Sender, 
+				WndListFrame::ListInfo_t *ListInfo){
+  (void)Sender; (void)ListInfo;
 
+  if (ItemIndex != -1) {
+
+    if ((UpLimit-LowLimit>0)
+        && (ItemIndex >= 0)  // JMW fixed bug, was >0
+        && (ItemIndex < (UpLimit - LowLimit))) {
+
+      CAirspace *airspace = AirspaceSelectInfo[LowLimit+ItemIndex].airspace;
+      if (airspace) {
+        
+        const TCHAR *Name = airspace->Name();
+        if (Name) {
+		  UINT answer;
+          answer = MessageBoxX(hWndMapWindow,
+			       Name,
+					// LKTOKEN  _@M51_ = "Acknowledge for day?" 
+			       gettext(TEXT("_@M51_")),
+			       MB_YESNOCANCEL|MB_ICONQUESTION);
+		  if (answer == IDYES) {
+			if (airspace) CAirspaceManager::Instance().AirspaceAckDaily(*airspace);
+          } else if (answer == IDNO) {
+			// this will cancel a daily ack
+			if (airspace) CAirspaceManager::Instance().AirspaceAckDailyCancel(*airspace);
+		  }
+        }
+      }
+    }
+  } else {
+    wf->SetModalResult(mrCancle);
+  }
+}
+#else
 static void OnAirspaceListEnter(WindowControl * Sender, 
 				WndListFrame::ListInfo_t *ListInfo){
   (void)Sender; (void)ListInfo;
@@ -137,7 +177,7 @@ static void OnAirspaceListEnter(WindowControl * Sender,
     wf->SetModalResult(mrCancle);
   }
 }
-
+#endif
 
 
 static int _cdecl AirspaceNameCompare(const void *elem1, const void *elem2 ){
@@ -202,6 +242,54 @@ static int _cdecl AirspaceDirectionCompare(const void *elem1, const void *elem2 
   return (0);
 }
 
+#ifdef LKAIRSPACE
+static void PrepareData(void){
+
+  TCHAR sTmp[5];
+
+  if (NumberOfAirspaces==0) return;
+
+  AirspaceSelectInfo = (AirspaceSelectInfo_t*)
+    malloc(sizeof(AirspaceSelectInfo_t) * NumberOfAirspaces);
+
+  if (AirspaceSelectInfo==NULL) { // 100101
+	StartupStore(_T("------ Airspace malloc SelectInfo Failed!!%s"), NEWLINE);
+	return;
+  }
+
+  int index=0;
+  double bearing;
+  double distance;
+  CAirspaceList Airspaces = CAirspaceManager::Instance().GetAllAirspaces();
+  CAirspaceList::const_iterator it;
+  for (it=Airspaces.begin(); it != Airspaces.end(); ++it) {
+    AirspaceSelectInfo[index].airspace = *it;
+
+	distance = DISTANCEMODIFY * (*it)->Range(Longitude, Latitude, bearing);
+	if (distance<0) distance=0;
+    AirspaceSelectInfo[index].Distance = distance;
+	AirspaceSelectInfo[index].Direction = bearing;
+
+    _tcsncpy(sTmp, (*it)->Name(), 4);
+    sTmp[4] = '\0';
+    _tcsupr(sTmp);
+
+    AirspaceSelectInfo[index].FourChars =
+                    (((DWORD)sTmp[0] & 0xff) << 24)
+                  + (((DWORD)sTmp[1] & 0xff) << 16)
+                  + (((DWORD)sTmp[2] & 0xff) << 8)
+                  + (((DWORD)sTmp[3] & 0xff) );
+
+    AirspaceSelectInfo[index].Type = (*it)->Type();
+
+    index++;
+  }
+
+  qsort(AirspaceSelectInfo, UpLimit,
+      sizeof(AirspaceSelectInfo_t), AirspaceNameCompare);
+
+}
+#else
 static void PrepareData(void){
 
   TCHAR sTmp[5];
@@ -273,7 +361,7 @@ static void PrepareData(void){
       sizeof(AirspaceSelectInfo_t), AirspaceNameCompare);
 
 }
-
+#endif
 
 static void UpdateList(void){
 
@@ -546,16 +634,27 @@ static void OnFilterType(DataField *Sender,
     break;
     case DataField::daInc:
       TypeFilterIdx++;
+#ifdef LKAIRSPACE
+      if (TypeFilterIdx > AIRSPACECLASSCOUNT) TypeFilterIdx = 0;		//Need to limit+1 because idx shifted with +1
+#else
       if (TypeFilterIdx > sizeof(TypeFilter)/sizeof(TypeFilter[0])-1)
         TypeFilterIdx = 0;
+#endif
       FilterMode(false);
       UpdateList();
     break;
     case DataField::daDec:
+#ifdef LKAIRSPACE
+      if (TypeFilterIdx == 0)
+        TypeFilterIdx = AIRSPACECLASSCOUNT;		//Need to limit+1 because idx shifted with +1
+      else
+        TypeFilterIdx--;
+#else
       if (TypeFilterIdx == 0)
         TypeFilterIdx = sizeof(TypeFilter)/sizeof(TypeFilter[0])-1;
       else
         TypeFilterIdx--;
+#endif
       FilterMode(false);
       UpdateList();
     break;
@@ -563,8 +662,15 @@ static void OnFilterType(DataField *Sender,
     break;
   }
 
+#ifdef LKAIRSPACE
+  if (TypeFilterIdx>0) {
+	_tcsncpy(sTmp, CAirspaceManager::Instance().GetAirspaceTypeText(TypeFilterIdx-1), sizeof(sTmp)/sizeof(sTmp[0]));
+  } else {
+	_tcscpy(sTmp, TEXT("*"));
+  }
+#else
   _stprintf(sTmp, TEXT("%s"), TypeFilter[TypeFilterIdx]);
-
+#endif
   Sender->Set(sTmp);
 
 }
@@ -581,6 +687,10 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
     int i = LowLimit + DrawListIndex;
 
 // Sleep(100);
+#ifdef LKAIRSPACE
+	TCHAR *Name = NULL;
+	if (AirspaceSelectInfo[i].airspace) Name = (TCHAR*)AirspaceSelectInfo[i].airspace->Name();
+#else
     TCHAR *Name = 0;
     if (AirspaceSelectInfo[i].Index_Circle>=0) {
       Name = AirspaceCircle[AirspaceSelectInfo[i].Index_Circle].Name;
@@ -588,6 +698,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
     if (AirspaceSelectInfo[i].Index_Area>=0) {
       Name = AirspaceArea[AirspaceSelectInfo[i].Index_Area].Name;
     }
+#endif
     if (Name) {
 
       int w0, w1, w2, w3, x1, x2, x3;
@@ -603,12 +714,14 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
       x1 = w0-w1-w2-w3;
 
       ExtTextOutClip(hDC, 2*InfoBoxLayout::scale, 2*InfoBoxLayout::scale,
-                     Name, x1-InfoBoxLayout::scale*5); 
+                     (TCHAR*)Name, x1-InfoBoxLayout::scale*5); 
       
       sTmp[0] = '\0';
       sTmp[1] = '\0';
       sTmp[2] = '\0';
-      
+#ifdef LKAIRSPACE
+	  _tcsncpy(sTmp, CAirspaceManager::Instance().GetAirspaceTypeShortText(AirspaceSelectInfo[i].Type), 4);
+#else
       switch(AirspaceSelectInfo[i].Type) {
       case CLASSA: 
         _tcscpy(sTmp, TEXT("A"));
@@ -627,6 +740,9 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
         break;
       case CLASSF: 
         _tcscpy(sTmp, TEXT("F"));
+        break;
+      case CLASSG: 
+        _tcscpy(sTmp, TEXT("G"));
         break;
       case PROHIBITED: 
         _tcscpy(sTmp, TEXT("Prb"));
@@ -655,7 +771,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
       default:
         break;
       }
-
+#endif
       // left justified
       
       ExtTextOut(hDC, x1, 2*InfoBoxLayout::scale,
@@ -753,7 +869,11 @@ static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
     TypeFilterIdx = NewIndex;
     FilterMode(false);
     UpdateList();
+#ifdef LKAIRSPACE
+    wp->GetDataField()->SetAsString(CAirspaceManager::Instance().GetAirspaceTypeText(TypeFilterIdx));
+#else
     wp->GetDataField()->SetAsString(TypeFilter[TypeFilterIdx]);
+#endif
     wp->RefreshDisplay();
   }
 
@@ -778,9 +898,12 @@ void dlgAirspaceSelect(void) {
   UpLimit = 0;
   LowLimit = 0;
   ItemIndex = -1;
-
+#ifdef LKAIRSPACE
+  NumberOfAirspaces = CAirspaceManager::Instance().NumberofAirspaces();
+#else
   NumberOfAirspaces = NumberOfAirspaceCircles + NumberOfAirspaceAreas;
-
+#endif
+  
   Latitude = GPS_INFO.Latitude;
   Longitude = GPS_INFO.Longitude;
 

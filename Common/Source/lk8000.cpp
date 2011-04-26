@@ -742,6 +742,7 @@ TCHAR NearestAirspaceName[NAME_SIZE+1]; // TODO INITIALISE IT!
 int FlarmNetCount=0;
 
 // Airspace Database
+#ifndef LKAIRSPACE
 AIRSPACE_AREA *AirspaceArea = NULL;
 AIRSPACE_POINT *AirspacePoint = NULL;
 POINT *AirspaceScreenPoint = NULL;
@@ -749,11 +750,17 @@ AIRSPACE_CIRCLE *AirspaceCircle = NULL;
 unsigned int NumberOfAirspacePoints = 0;
 unsigned int NumberOfAirspaceAreas = 0;
 unsigned int NumberOfAirspaceCircles = 0;
+#endif
 
 //Airspace Warnings
 int AIRSPACEWARNINGS = TRUE;
 int WarningTime = 30;
 int AcknowledgementTime = 30;
+#ifdef LKAIRSPACE
+int AirspaceWarningRepeatTime = 1800;			// warning repeat time if not acknowledged
+int AirspaceWarningVerticalMargin = 100;		// vertical distance used to calculate too close condition
+int AirspaceWarningDlgTimeout = 10;				// airspace warning dialog auto closing in x secs
+#endif
 
 // Registration Data
 TCHAR strAssetNumber[MAX_LOADSTRING] = TEXT(""); //4G17DW31L0HY");
@@ -1336,9 +1343,15 @@ void SettingsLeave() {
   }
   
   if(AIRSPACEFILECHANGED) {
+#ifdef LKAIRSPACE
+	CAirspaceManager::Instance().CloseAirspaces();
+	CAirspaceManager::Instance().ReadAirspaces();
+	CAirspaceManager::Instance().SortAirspaces();
+#else
 	CloseAirspace();
 	ReadAirspace();
 	SortAirspace();
+#endif
 	MapWindow::ForceVisibilityScan = true;
   }  
   
@@ -2149,10 +2162,13 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   // CreateProgressDialog(gettext(TEXT("_@M1216_")));
   StartupStore(TEXT(". RASP load%s"),NEWLINE);
   RASP.Scan(GPS_INFO.Latitude, GPS_INFO.Longitude);
-
+#ifdef LKAIRSPACE
+  CAirspaceManager::Instance().ReadAirspaces();
+  CAirspaceManager::Instance().SortAirspaces();
+#else
   ReadAirspace();
   SortAirspace();
-
+#endif
   OpenTopology();
   TopologyInitialiseMarks();
 
@@ -2248,9 +2264,10 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   while(!(goCalculationThread)) Sleep(50); // 091119
   #endif
   // Sleep(500); 091119
-
+#ifndef LKAIRSPACE
   StartupStore(TEXT(". AirspaceWarnListInit%s"),NEWLINE);
   AirspaceWarnListInit();
+#endif
   StartupStore(TEXT(". dlgAirspaceWarningInit%s"),NEWLINE);
   dlgAirspaceWarningInit();
 
@@ -3317,9 +3334,11 @@ void Shutdown(void) {
 
   StartupStore(TEXT(". dlgAirspaceWarningDeInit%s"),NEWLINE);
   dlgAirspaceWarningDeInit();
+#ifndef LKAIRSPACE
   StartupStore(TEXT(". AirspaceWarnListDeInit%s"),NEWLINE);
   AirspaceWarnListDeInit();
-
+#endif
+  
   // LKTOKEN _@M1220_ "Shutdown, saving logs..."
   CreateProgressDialog(gettext(TEXT("_@M1220_")));
   // stop logger
@@ -3375,8 +3394,10 @@ void Shutdown(void) {
   LockTaskData();
   Task[0].Index = -1;  ActiveWayPoint = -1; 
   AATEnabled = FALSE;
+#ifndef LKAIRSPACE
   NumberOfAirspacePoints = 0; NumberOfAirspaceAreas = 0; 
   NumberOfAirspaceCircles = 0;
+#endif
   CloseWayPoints();
   UnlockTaskData();
 
@@ -3465,12 +3486,14 @@ void Shutdown(void) {
   DeleteObject(MapWindowBoldFont);
   DeleteObject(StatisticsFont);  
   DeleteObject(TitleSmallWindowFont);
-  
+#ifdef LKAIRSPACE  
+  CAirspaceManager::Instance().CloseAirspaces();
+#else
   if(AirspaceArea != NULL)   LocalFree((HLOCAL)AirspaceArea);
   if(AirspacePoint != NULL)  LocalFree((HLOCAL)AirspacePoint);
   if(AirspaceScreenPoint != NULL)  LocalFree((HLOCAL)AirspaceScreenPoint);
   if(AirspaceCircle != NULL) LocalFree((HLOCAL)AirspaceCircle);
-
+#endif
   StartupStore(TEXT(". Delete Critical Sections%s"),NEWLINE);
   
   DeleteCriticalSection(&CritSec_EventQueue);
@@ -4351,12 +4374,17 @@ void CommonProcessTimer()
   // service the GCE and NMEA queue
   if (ProgramStarted==psNormalOp) {
     InputEvents::DoQueuedEvents();
+#ifdef LKAIRSPACE
+	  // only shows the dialog if needed.
+	  ShowAirspaceWarningsToUser();
+#else
     if (RequestAirspaceWarningDialog) {
       DisplayTimeOut=0;
       RequestAirspaceWarningDialog= false;
       dlgAirspaceWarningShowDlg(RequestAirspaceWarningForce);
       RequestAirspaceWarningForce = false;
     }
+#endif
     #ifndef NOFLARMGAUGE
     // update FLARM display (show/hide)
     GaugeFLARM::Show();
@@ -5431,7 +5459,11 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
   if (_tcsstr(OutBuffer, TEXT("$(CheckAirspace)"))) {
-    if (!ValidAirspace()) {
+#ifdef LKAIRSPACE
+	if (!CAirspaceManager::Instance().ValidAirspaces()) {
+#else
+	if (!ValidAirspace()) {
+#endif
       invalid = true;
     }
     ReplaceInString(OutBuffer, TEXT("$(CheckAirspace)"), TEXT(""), Size);

@@ -153,6 +153,11 @@ const TCHAR szRegistryAirspaceWarning[]= TEXT("AirspaceWarn");
 const TCHAR szRegistryAirspaceBlackOutline[]= TEXT("AirspaceBlackOutline");
 const TCHAR szRegistryAirspaceFillType[]= TEXT("AirspaceFillType");
 const TCHAR szRegistryAirspaceOpacity[]= TEXT("AirspaceOpacity");
+#ifdef LKAIRSPACE
+const TCHAR szRegistryAirspaceWarningRepeatTime[]= TEXT("AirspaceWarningRepeatTime");
+const TCHAR szRegistryAirspaceWarningVerticalMargin[]= TEXT("AirspaceWarningVerticalMargin");
+const TCHAR szRegistryAirspaceWarningDlgTimeout[]= TEXT("AirspaceWarningDlgTimeout");
+#endif
 const TCHAR szRegistryAltMargin[]=	   TEXT("AltMargin");
 const TCHAR szRegistryAltMode[]=  TEXT("AltitudeMode");
 const TCHAR szRegistrySafetyAltitudeMode[]=  TEXT("SafetyAltitudeMode");
@@ -645,6 +650,20 @@ void ReadRegistrySettings(void)
   if(GetFromRegistry(szRegistryAltMargin,&Temp)==ERROR_SUCCESS)
     AltWarningMargin = Temp;
 
+#ifdef LKAIRSPACE
+  Temp=AirspaceWarningRepeatTime;
+  if(GetFromRegistry(szRegistryAirspaceWarningRepeatTime,&Temp)==ERROR_SUCCESS)
+    AirspaceWarningRepeatTime = Temp;
+
+  Temp=AirspaceWarningVerticalMargin;
+  if(GetFromRegistry(szRegistryAirspaceWarningVerticalMargin,&Temp)==ERROR_SUCCESS)
+    AirspaceWarningVerticalMargin = Temp;
+
+  Temp=AirspaceWarningDlgTimeout;
+  if(GetFromRegistry(szRegistryAirspaceWarningDlgTimeout,&Temp)==ERROR_SUCCESS)
+    AirspaceWarningDlgTimeout = Temp;
+#endif
+	
   Temp=SafetyAltitudeMode;
   if(GetFromRegistry(szRegistrySafetyAltitudeMode,&Temp)==ERROR_SUCCESS)
     SafetyAltitudeMode = Temp;
@@ -2910,7 +2929,8 @@ int DrawArc(HDC hdc, long x, long y, int radius, RECT rc,
   return TRUE;
 }
 
-
+#ifndef LKAIRSPACE
+//Not used function!
 void ConvertFlightLevels(void)
 {
   unsigned i;
@@ -2946,6 +2966,7 @@ void ConvertFlightLevels(void)
 	}
     }
 }
+#endif
 
 BOOL PolygonVisible(const POINT *lpPoints, int nCount, RECT rc)
 {

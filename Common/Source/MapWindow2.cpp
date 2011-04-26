@@ -43,6 +43,8 @@
 #include "LKMapWindow.h"
 #ifdef LKAIRSPACE
 #include "LKAirspace.h"
+using std::min;
+using std::max;
 #endif
 #if defined(LKAIRSPACE) || defined(NEW_OLC)
 using std::min;
@@ -1779,63 +1781,104 @@ void MapWindow::ClearAirSpace(bool fill) {
 }
 
 #ifdef LKAIRSPACE
-void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc)
+void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Aircraft)
 {
-    CAirspaceList::const_iterator it;
-	const CAirspaceList airspaces_to_draw = CAirspaceManager::Instance().GetAirspacesForWarningLabels();
+  static short int label_sequencing_divider = 0;
+  CAirspaceList::const_iterator it;
+  const CAirspaceList airspaces_to_draw = CAirspaceManager::Instance().GetAirspacesForWarningLabels();
+  
+  if (label_sequencing_divider) --label_sequencing_divider;
 
- 	// Draw warning position and label on top of all airspaces
-	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
-		  if ((*it)->WarningLevel() > awNone) {
-			POINT sc;
-			double lon;
-			double lat;
-			bool distances_ready = (*it)->GetWarningPoint(lon,lat);
-			if (distances_ready && PointVisible(lon, lat)) {
-				TCHAR hbuf[NAME_SIZE+16], vDistanceText[16];
-				int vdist;
-				AirspaceWarningDrawStyle_t labeldrawstyle;
-				
-				TextInBoxMode_t TextDisplayMode = {0};
-				(*it)->GetVDistanceInfo(vdist, labeldrawstyle);
-				LatLon2Screen(lon, lat, sc);
-				DrawBitmapIn(hdc, sc, hAirspaceWarning);
+  // Draw warning position and label on top of all airspaces
+  if (1) {
+  CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+  for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
+        if ((*it)->WarningLevel() > awNone) {
+          POINT sc;
+          double lon;
+          double lat;
+          int vdist;
+          AirspaceWarningDrawStyle_t vlabeldrawstyle, hlabeldrawstyle;
+          bool distances_ready = (*it)->GetWarningPoint(lon, lat, hlabeldrawstyle, vdist, vlabeldrawstyle);
+          TCHAR hbuf[NAME_SIZE+16], vDistanceText[16];
+          TextInBoxMode_t TextDisplayMode = {0};
+          bool hlabel_draws = false;
+          bool vlabel_draws = false;
+          
+          // Horizontal warning point
+          if (distances_ready && (hlabeldrawstyle > awsHidden) && PointVisible(lon, lat)) {
 
-				Units::FormatUserAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
-				_tcscpy(hbuf, (*it)->Name());
-				wcscat(hbuf, TEXT(" "));
-				wcscat(hbuf, vDistanceText);
-				
-				switch (labeldrawstyle) {
-				  default:
-				  case awsBlack:
-					TextDisplayMode.AsFlag.Color = TEXTBLACK;
-					break;
-				  case awsAmber:
-					TextDisplayMode.AsFlag.Color = TEXTORANGE;
-					break;
-				  case awsRed:
-					TextDisplayMode.AsFlag.Color = TEXTRED;
-					break;
-				} // sw
-				TextDisplayMode.AsFlag.SetTextColor = 1;
-				TextDisplayMode.AsFlag.AlligneCenter = 1;
-				if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
-					TextDisplayMode.AsFlag.Border = 1;
-				} else {
-					TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
-				}
+              LatLon2Screen(lon, lat, sc);
+              DrawBitmapIn(hdc, sc, hAirspaceWarning);
+              
+              Units::FormatUserAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
+              _tcscpy(hbuf, (*it)->Name());
+              wcscat(hbuf, TEXT(" "));
+              wcscat(hbuf, vDistanceText);
+              
+              switch (hlabeldrawstyle) {
+                default:
+                case awsHidden:
+                case awsBlack:
+                  TextDisplayMode.AsFlag.Color = TEXTBLACK;
+                  break;
+                case awsAmber:
+                  TextDisplayMode.AsFlag.Color = TEXTORANGE;
+                  break;
+                case awsRed:
+                  TextDisplayMode.AsFlag.Color = TEXTRED;
+                  break;
+              } // sw
+              TextDisplayMode.AsFlag.SetTextColor = 1;
+              TextDisplayMode.AsFlag.AlligneCenter = 1;
+              if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
+                  TextDisplayMode.AsFlag.Border = 1;
+              } else {
+                  TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
+              }
 
-				// bool success = 
-				TextInBox(hdc, hbuf, sc.x, sc.y+NIBLSCALE(15), 0, TextDisplayMode, true);
-				// if label not printed, we try some other locations
-				// if (!success) {
-				//  success = TextInBox(hdc, hbuf, sc.x, sc.y-NIBLSCALE(15), 0, TextDisplayMode, true);
-				//}
-			}
-		  }
-	}//for
- 
+              hlabel_draws = TextInBox(hdc, hbuf, sc.x, sc.y+NIBLSCALE(15), 0, TextDisplayMode, true);
+           }
+           
+          // Vertical warning point
+          if (distances_ready && vlabeldrawstyle > awsHidden) {
+
+              //DrawBitmapIn(hdc, Orig_Aircraft, hAirspaceWarning);
+              
+              Units::FormatUserAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
+              _tcscpy(hbuf, (*it)->Name());
+              wcscat(hbuf, TEXT(" "));
+              wcscat(hbuf, vDistanceText);
+              
+              switch (vlabeldrawstyle) {
+                default:
+                case awsHidden:
+                case awsBlack:
+                  TextDisplayMode.AsFlag.Color = TEXTBLACK;
+                  break;
+                case awsAmber:
+                  TextDisplayMode.AsFlag.Color = TEXTORANGE;
+                  break;
+                case awsRed:
+                  TextDisplayMode.AsFlag.Color = TEXTRED;
+                  break;
+              } // sw
+              TextDisplayMode.AsFlag.SetTextColor = 1;
+              TextDisplayMode.AsFlag.AlligneCenter = 1;
+              if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
+                  TextDisplayMode.AsFlag.Border = 1;
+              } else {
+                  TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
+              }
+
+              vlabel_draws = TextInBox(hdc, hbuf, Orig_Aircraft.x, Orig_Aircraft.y+NIBLSCALE(15), 0, TextDisplayMode, true);
+           }
+           if (!label_sequencing_divider) CAirspaceManager::Instance().AirspaceWarningLabelPrinted(**it, hlabel_draws || vlabel_draws);
+           
+         }// if warnlevel>awnone
+  }//for
+  }// if(1) mutex
+  if (!label_sequencing_divider) label_sequencing_divider=3;		// Do label sequencing slower than update rate
 }
 #endif
 
@@ -1854,6 +1897,8 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 	
   if (GetAirSpaceFillType() != asp_fill_none) {
 #ifdef LKAIRSPACE
+    if (1) {
+    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
 	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
       if ((*it)->DrawStyle() == adsFilled) {
 		airspace_type = (*it)->Type();
@@ -1870,6 +1915,7 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 		(*it)->Draw(hDCTemp, rc, true);
 	  }
 	}//for
+    }
 #else
     if (AirspaceCircle) {
       // draw without border
@@ -1921,6 +1967,8 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
   }
 
 #ifdef LKAIRSPACE
+    if (1) {
+    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
 	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->DrawStyle()) {
 		  airspace_type = (*it)->Type();
@@ -1936,6 +1984,7 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 		  (*it)->Draw(hDCTemp, rc, false);
         }
 	}//for
+    }
 #else
   if (AirspaceCircle) {
     for(i=0;i<NumberOfAirspaceCircles;i++) {

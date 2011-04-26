@@ -335,11 +335,13 @@ DEVS	:=\
 
 DLGS	:=\
 	$(SRC)/dlgAirspace.cpp \
+	$(SRC)/dlgAirspaceWarningParams.cpp \
 	$(SRC)/dlgAirspaceColours.cpp \
 	$(SRC)/dlgAirspaceDetails.cpp \
 	$(SRC)/dlgAirspacePatterns.cpp \
 	$(SRC)/dlgAirspaceSelect.cpp \
 	$(SRC)/dlgAirspaceWarning.cpp \
+	$(SRC)/dlgLKAirspaceWarning.cpp \
 	$(SRC)/dlgBasicSettings.cpp \
 	$(SRC)/dlgChecklist.cpp \
 	$(SRC)/dlgConfiguration.cpp \
@@ -392,6 +394,7 @@ VOLKS	:=\
 #	$(SRC)/dlgBrightness.cpp \
 
 SRC_FILES :=\
+	$(SRC)/LKAirspace.cpp \
 	$(SRC)/AATDistance.cpp 		$(SRC)/AirfieldDetails.cpp \
 	$(SRC)/Airspace.cpp 		$(SRC)/AirspaceColourDlg.cpp \
 	$(SRC)/AirspaceWarning.cpp 	$(SRC)/Atmosphere.cpp \

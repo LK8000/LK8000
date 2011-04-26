@@ -33,7 +33,7 @@
 #define INSIDE 4
 #define ALLOFF 5
 
-
+#ifndef LKAIRSPACE
 typedef struct _AIRSPACE_ACK
 {
   bool AcknowledgedToday;
@@ -94,9 +94,11 @@ typedef struct _AIRSPACE_CIRCLE
   unsigned char WarningLevel; // 0= no warning, 1= predicted incursion, 2= entered
   bool FarVisible;
 } AIRSPACE_CIRCLE;
-
+#endif
 
 void ReadAirspace(void);
+
+#ifndef LKAIRSPACE
 int FindAirspaceCircle(double Longditude,double Lattitude,
 		       bool visibleonly=true);
 int FindAirspaceArea(double Longditude,double Lattitude,
@@ -113,8 +115,11 @@ void FindNearestAirspace(double longitude,
 			 double *height=NULL);
 
 void SortAirspace(void);
+#endif
+
 extern int AirspacePriority[AIRSPACECLASSCOUNT];
 
+#ifndef LKAIRSPACE
 bool InsideAirspaceCircle(const double &longitude,
 			  const double &latitude,
 			  int i);
@@ -131,6 +136,7 @@ void ScanAirspaceLine(double *lats, double *lons, double *heights,
 
 
 void AirspaceQnhChangeNotify(double newQNH);
+#endif
 
 //*******************************************************************************
 // experimental: new dialog based warning system
@@ -138,6 +144,7 @@ void AirspaceQnhChangeNotify(double newQNH);
 
 #define OUTSIDE_CHECK_INTERVAL 4
 
+#ifndef LKAIRSPACE
 class AirspaceInfo_c{
 
 public:
@@ -180,10 +187,11 @@ void AirspaceWarnListDeInit(void);
 // MapWindow interface ...
 bool dlgAirspaceWarningShowDlg(bool Force);
 
+#endif
 double ProjectedDistance(double lon1, double lat1,
                          double lon2, double lat2,
                          double lon3, double lat3);
-
+#ifndef LKAIRSPACE
 bool ValidAirspace(void);
 
 double RangeAirspaceCircle(const double &longitude,
@@ -196,6 +204,7 @@ double RangeAirspaceArea(const double &longitude,
 
 void ScreenClosestPoint(const POINT &p1, const POINT &p2, 
 			const POINT &p3, POINT *p4, int offset = 0);
+#endif
 
 
 #endif

@@ -4,6 +4,7 @@
 //
 // Current existing manual dependencies:
 // OLDOLC
+// LKAIRSPACE
 //
 //
 #include "resource.h"
@@ -138,7 +139,8 @@ IDR_XML_BASICSETTINGS   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBasicSetting
 IDR_XML_BASICSETTINGS_L   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBasicSettings_L.xml"
 IDR_XML_CHECKLIST       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgChecklist.xml"
 //IDR_XML_CONFIGURATION   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfiguration.OLDOLC.xml"
-IDR_XML_CONFIGURATION   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfiguration.xml"
+//IDR_XML_CONFIGURATION   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfiguration.xml"
+IDR_XML_CONFIGURATION   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfiguration.LKAIRSPACE.xml"
 IDR_XML_FONTEDIT        XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgFontEdit.xml"
 IDR_XML_LOGGERREPLAY    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgLoggerReplay.xml"
 IDR_XML_STARTUP         XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgStartup.xml"
@@ -159,6 +161,7 @@ IDR_XML_CUSTOMKEYS       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgCustomKeys.
 IDR_XML_FILESELECT      XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgFileSelect.xml"
 IDR_XML_WAYPOINTTERRAIN XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWaypointOutOfTerrain.xml"
 IDR_XML_AIRSPACEWARNING XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceWarning.xml"
+IDR_XML_LKAIRSPACEWARNING XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgLKAirspaceWarning.xml"
 IDR_XML_HELP            XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgHelp.xml"
 IDR_XML_TEXTENTRY       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTextEntry.xml"
 IDR_XML_TEXTENTRY_T     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTextEntry_T.xml"
@@ -182,13 +185,15 @@ IDR_XML_CHECKLIST_L     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgChecklist_L.
 IDR_XML_WAYPOINTDETAILS_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWayPointDetails_L.xml"
 IDR_XML_ANALYSIS_L      XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAnalysis_L.xml"
 IDR_XML_AIRSPACEWARNING_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceWarning_L.xml"
+IDR_XML_LKAIRSPACEWARNING_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgLKAirspaceWarning_L.xml"
 IDR_XML_HELP_L          XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgHelp_L.xml"
 IDR_XML_AIRSPACE_L      XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspace_L.xml"
 IDR_XML_AIRSPACECOLOURS_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceColours_L.xml"
 IDR_XML_AIRSPACEPATTERNS_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspacePatterns_L.xml"
 IDR_XML_STARTPOINT_L    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgStartPoint_L.xml"
 //IDR_XML_CONFIGURATION_L   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfiguration_L.OLDOLC.xml"
-IDR_XML_CONFIGURATION_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfiguration_L.xml"
+//IDR_XML_CONFIGURATION_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfiguration_L.xml"
+IDR_XML_CONFIGURATION_L   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfiguration_L.LKAIRSPACE.xml"
 IDR_XML_WAYPOINTSELECT_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWayPointSelect_L.xml"
 IDR_XML_TASKOVERVIEW_L  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTaskOverview_L.xml"
 IDR_XML_TASKWAYPOINT_L  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTaskWaypoint_L.xml"
@@ -200,7 +205,7 @@ IDR_XML_WEATHER_L       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWeather_L.xm
 IDR_XML_COMBOPICKER_L   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgComboPicker_L.xml"
 IDR_XML_COMBOPICKER     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgComboPicker.xml"
 IDR_XML_PROFILES     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgProfiles.xml"
-
+IDR_XML_AIRSPACEWARNINGPARAMS     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceWarningParams.xml"
 
 IDR_RASTER_EGM96S       RASTERDATA DISCARDABLE  "../Data/Bitmaps/egm96s.dem"
 
@@ -248,6 +253,7 @@ IDB_LKSMALLTOWN         BITMAP  DISCARDABLE     "../Data/Bitmaps/smalltown.bmp"
 IDB_LKVERYSMALLTOWN     BITMAP  DISCARDABLE     "../Data/Bitmaps/verysmalltown.bmp"
 IDB_MARK                BITMAP  DISCARDABLE     "../Data/Bitmaps/mark.bmp"
 IDB_TERRAINWARNING      BITMAP  DISCARDABLE     "../Data/Bitmaps/terrainw.bmp"
+IDB_AIRSPACEWARNING     BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace_warning.bmp"
 IDB_PEAKHIGH            BITMAP  DISCARDABLE     "../Data/Bitmaps/peakhigh.bmp"
 IDB_PEAKLOW             BITMAP  DISCARDABLE     "../Data/Bitmaps/peaklow.bmp"
 IDB_MAPSCALE_A          BITMAP  DISCARDABLE     "../Data/Bitmaps/MapScale_A.bmp"

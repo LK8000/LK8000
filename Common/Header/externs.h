@@ -323,6 +323,7 @@ extern bool LKDoNotResetComms;
 extern ldrotary_s rotaryLD;
 extern windrotary_s rotaryWind;
 // airspace data
+#ifndef LKAIRSPACE
 extern AIRSPACE_AREA *AirspaceArea;
 extern AIRSPACE_POINT *AirspacePoint;
 extern POINT *AirspaceScreenPoint;
@@ -330,6 +331,7 @@ extern AIRSPACE_CIRCLE *AirspaceCircle;
 extern unsigned int NumberOfAirspacePoints;
 extern unsigned int NumberOfAirspaceAreas;
 extern unsigned int NumberOfAirspaceCircles;
+#endif
 
 extern short AltArrivMode;
 extern bool GlobalRunning;
@@ -493,6 +495,11 @@ extern int DisplayTextType;
 extern int AIRSPACEWARNINGS;
 extern int WarningTime;
 extern int AcknowledgementTime;
+#ifdef LKAIRSPACE
+extern int AirspaceWarningRepeatTime;			// warning repeat time if not acknowledged
+extern int AirspaceWarningVerticalMargin;		// vertical distance used to calculate too close condition
+extern int AirspaceWarningDlgTimeout;			// airspace warning dialog auto closing in x secs
+#endif
 extern int AltitudeMode;
 extern int SafetyAltitudeMode;
 extern int ClipAltitude;

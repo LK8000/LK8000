@@ -17,7 +17,12 @@
 #include <shlobj.h>
 #include <math.h>
 #include "Task.h"
+#include "options.h"
+#ifdef LKAIRSPACE
+#include "LKAirspace.h"
+#else
 #include "Airspace.h"
+#endif
 #include <zzip/lib.h>
 
 
@@ -71,6 +76,11 @@ extern const TCHAR szRegistryAirspaceFillType[];
 extern const TCHAR szRegistryAirspaceOpacity[];
 extern const TCHAR szRegistryWarningTime[];
 extern const TCHAR szRegistryAcknowledgementTime[];
+#ifdef LKAIRSPACE
+extern const TCHAR szRegistryAirspaceWarningRepeatTime[];
+extern const TCHAR szRegistryAirspaceWarningVerticalMargin[];
+extern const TCHAR szRegistryAirspaceWarningDlgTimeout[];
+#endif
 extern const TCHAR szRegistryCircleZoom[];
 extern const TCHAR szRegistryWindUpdateMode[];        
 extern const TCHAR szRegistryHomeWaypoint[];        

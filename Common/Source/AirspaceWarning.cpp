@@ -11,6 +11,8 @@
 #include "externs.h"
 #include "Dialogs.h"
 #include "Utils.h"
+
+#ifndef LKAIRSPACE
 #include "Airspace.h"
 #include "device.h"
 
@@ -122,6 +124,7 @@ bool AirspaceWarnGetItem(int Index, AirspaceInfo_c &Item){
   }
   return(res);
 }
+
 
 int AirspaceWarnGetItemCount(void){
   int res=0;
@@ -388,6 +391,7 @@ static int _cdecl cmp(const void *a, const void *b){
 
 }
 
+
 void AirspaceWarnListSort(void){
 
   unsigned int i, idx=0;
@@ -416,7 +420,7 @@ void AirspaceWarnListSort(void){
 
 }
 
-// This is called at the end of slow calculation AirspaceWarning function, after tables have been filled up
+
 void AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *Calculated){
 
   if (!InitDone) return;
@@ -532,6 +536,7 @@ void AirspaceWarnListProcess(NMEA_INFO *Basic, DERIVED_INFO *Calculated){
 
 }
 
+
 void AirspaceWarnDoAck(int ID, int Ack){
   LockList();
   __try{
@@ -587,6 +592,7 @@ void AirspaceWarnListDeInit(void){
   InitDone = false;
 }
 
+
 int AirspaceWarnFindIndexByID(int ID){
   int idx=0;
   int res = -1;
@@ -625,3 +631,6 @@ int LKAirspaceDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
    return hDistance;
   
 }
+
+#endif //ifndef LKAIRSPACE
+

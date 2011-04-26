@@ -21,6 +21,8 @@
 #include "Airspace.h"
 #ifdef LKAIRSPACE
 #include "LKAirspace.h"
+using std::min;
+using std::max;
 #endif
 #if defined(LKAIRSPACE) || defined(NEW_OLC)
 using std::min;
@@ -1513,7 +1515,7 @@ void InputEvents::eventTerrainTopology(const TCHAR *misc) {
 void InputEvents::eventClearWarningsOrTerrainTopology(const TCHAR *misc) {
 	(void)misc;
 #ifdef LKAIRSPACE
-  if (CAirspaceManager::Instance().ClearAirspaceWarnings(true,false)) {
+  if (0) {
 #else
   if (ClearAirspaceWarnings(true,false)) {
 #endif
@@ -1531,13 +1533,7 @@ void InputEvents::eventClearWarningsOrTerrainTopology(const TCHAR *misc) {
 //     ack: clears the warnings for the acknowledgement time
 #ifdef LKAIRSPACE
 void InputEvents::eventClearAirspaceWarnings(const TCHAR *misc) {
-  if (_tcscmp(misc, TEXT("day")) == 0) {
-    // JMW clear airspace warnings for entire day (for selected airspace)
-    CAirspaceManager::Instance().ClearAirspaceWarnings(true,true);
-  } else {
-    // default, clear airspace for short acknowledgement time
-    CAirspaceManager::Instance().ClearAirspaceWarnings(true,false);
-  }
+  // this is not used anymore.
 }
 #else
 void InputEvents::eventClearAirspaceWarnings(const TCHAR *misc) {
