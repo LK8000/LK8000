@@ -365,16 +365,16 @@ void CDevIMI::IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint 
   double angle = wp.Latitude;
   if((a.sign = (angle < 0) ? 1 : 0) != 0)
     angle *= -1;
-  a.degrees = angle;
-  a.milliminutes = (angle - a.degrees) * 60 * 1000;
+  a.degrees = static_cast<IMIDWORD>(angle);
+  a.milliminutes = static_cast<IMIDWORD>((angle - a.degrees) * 60 * 1000);
   imiWp.lat = a.value;
   
   // set longitude
   angle = wp.Longitude;
   if((a.sign = (angle < 0) ? 1 : 0) != 0)
     angle *= -1;
-  a.degrees = angle;
-  a.milliminutes = (angle - a.degrees) * 60 * 1000;
+  a.degrees = static_cast<IMIDWORD>(angle);
+  a.milliminutes = static_cast<IMIDWORD>((angle - a.degrees) * 60 * 1000);
   imiWp.lon = a.value;
   
   // TAKEOFF and LANDING do not have OZs
