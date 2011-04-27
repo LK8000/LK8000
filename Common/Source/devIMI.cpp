@@ -6,6 +6,9 @@
    $Id$
 */
 
+/**
+ * IMI driver methods are based on the source code provided by Juraj Rojko from IMI-Gliding.
+ */
 
 #include "StdAfx.h"
 #include "devIMI.h"
@@ -16,20 +19,25 @@
 #include "utils/heapcheck.h"
 
 
-#define IMIDECL_PLT_LENGTH 30
-#define IMIDECL_CM2_LENGTH 30
-#define IMIDECL_GTY_LENGTH 20 
-#define IMIDECL_GID_LENGTH 12
-#define IMIDECL_CID_LENGTH 4
-#define IMIDECL_CCL_LENGTH 20
-#define IMIDECL_CLB_LENGTH 20
-#define IMIDECL_SIT_LENGTH 20
+/* *********************** C O N S T A N T S ************************** */
 
-#define IMIDECL_TASK_NAME_LENGTH 30
+static const unsigned IMIDECL_PLT_LENGTH = 30;
+static const unsigned IMIDECL_CM2_LENGTH = 30;
+static const unsigned IMIDECL_GTY_LENGTH = 20;
+static const unsigned IMIDECL_GID_LENGTH = 12;
+static const unsigned IMIDECL_CID_LENGTH = 4;
+static const unsigned IMIDECL_CCL_LENGTH = 20;
+static const unsigned IMIDECL_CLB_LENGTH = 20;
+static const unsigned IMIDECL_SIT_LENGTH = 20;
 
-#define IMIDECL_WP_NAME_LENGTH 12
-#define IMIDECL_MAX_WAYPOINTS 15
+static const unsigned IMIDECL_TASK_NAME_LENGTH = 30;
 
+static const unsigned IMIDECL_WP_NAME_LENGTH   = 12;
+static const unsigned IMIDECL_MAX_WAYPOINTS    = 15;
+
+
+
+/* *********************** M E S S A G E S ************************** */
 
 struct CDevIMI::TDeviceInfo {
   IMIBYTE device;
@@ -108,24 +116,6 @@ struct CDevIMI::TObservationZone {
 } PACKED;
   
   
-struct CDevIMI::TAngle
-{
-  union {
-    struct {
-      IMIDWORD milliminutes:16;
-      IMIDWORD degrees:8;
-      IMIDWORD sign:1;
-    };
-    struct {
-      IMIDWORD milliminutes:16;
-      IMIDWORD degrees:8;
-      IMIDWORD sign:1;
-    }x;
-    IMIDWORD value;
-  };
-};
-
-
 struct CDevIMI::TWaypoint {
   IMIDWORD lon:25;
   IMIDWORD reserved1:7;
@@ -147,85 +137,70 @@ struct CDevIMI::TDeclaration {
 } PACKED;
 
 
-  
+struct CDevIMI::TMsg {
+  IMIBYTE syncChar1, syncChar2;
+  IMIWORD sn;
+  IMIBYTE msgID, parameter1;
+  IMIWORD parameter2;
+  IMIWORD parameter3;
+  IMIWORD payloadSize;
+  IMIBYTE payload[COMM_MAX_PAYLOAD_SIZE];
+  IMIWORD crc16;
+};
+#define IMICOMM_MAX_MSG_SIZE (sizeof(TMsg))
 #define IMICOMM_MSG_HEADER_SIZE ((unsigned)(&(((TMsg *)0)->payload)))
 #define IMICOMM_BIGPARAM1(param) ((IMIBYTE)((param) >> 16))
 #define IMICOMM_BIGPARAM2(param) ((IMIWORD)(param))
   
-bool CDevIMI::_connected;
-CDevIMI::CMsgParser CDevIMI::_parser;
-CDevIMI::TDeviceInfo CDevIMI::_info;
-CDevIMI::IMIWORD CDevIMI::_serialNumber;
+
+
+
+/* *********************** M S G   P A R S E R ************************** */
+
+/**
+ * @brief Message parser class
+ */
+class CDevIMI::CMsgParser {
+  /**
+   * @brief Parser state
+   */
+  enum TState {
+    STATE_NOT_SYNC,                               /**< @brief Synchronization bits not found */
+    STATE_COMM_MSG                                /**< @brief Parsing message body */
+  };
   
+  TState _state;                                  /**< @brief Parser state */
+  IMIBYTE _msgBuffer[IMICOMM_MAX_MSG_SIZE];       /**< @brief Parsed message buffer */
+  unsigned _msgBufferPos;                         /**< @brief Current position in a message buffer */
+  unsigned _msgBytesLeft;                         /**< @brief Remaining number of bytes of the message to parse */
+  
+  bool Check(const TMsg *msg, IMIDWORD size) const;
+  
+public:
+  void Reset();
+  const TMsg *Parse(const IMIBYTE buffer[], IMIDWORD size);
+};
 
 
+/** 
+ * @brief Resets the state of the parser
+ */
 void CDevIMI::CMsgParser::Reset()
 {
-  _msgLen = 0;
+  _msgBytesLeft = 0;
   _msgBufferPos = 0;
   _state = STATE_NOT_SYNC;
 }
 
 
-const CDevIMI::TMsg *CDevIMI::CMsgParser::Parse(const IMIBYTE buffer[], IMIDWORD size)
-{
-  const IMIBYTE *ptr = buffer;
-  const TMsg *msg = 0;
-  
-  for(;size; size--) {
-    IMIBYTE byte = *ptr++;
-    
-    if(_state == STATE_NOT_SYNC) {
-      if(byte == IMICOMM_SYNC_CHAR1 && _msgBufferPos == 0) {
-        _msgBuffer[_msgBufferPos++] = byte;
-      }
-      else if(byte == IMICOMM_SYNC_CHAR2 && _msgBufferPos == 1) {
-        _msgBuffer[_msgBufferPos++] = byte;
-        _state = STATE_COMM_MSG;
-      }
-      else {
-        _msgBufferPos = 0;
-      }
-    }
-    else if(_state == STATE_COMM_MSG) {
-      if(_msgBufferPos < IMICOMM_MSG_HEADER_SIZE) {
-        _msgBuffer[_msgBufferPos++] = byte;
-      }
-      else {
-        if(_msgBufferPos == IMICOMM_MSG_HEADER_SIZE) {
-          _msgLen = ((TMsg *)_msgBuffer)->payloadSize + IMICOMM_CRC_LEN;
-          
-          if(_msgLen > COMM_MAX_PAYLOAD_SIZE + IMICOMM_CRC_LEN) {
-            // Invalid length
-            Reset();
-            continue;
-          }
-        }
-        
-        _msgLen--;
-        
-        if(_msgBufferPos < sizeof(_msgBuffer)) // Just in case
-          _msgBuffer[_msgBufferPos++] = byte;
-        
-        if(_msgLen == 0) {
-          if(Check((TMsg *)_msgBuffer, _msgBufferPos)) {
-            msg = (TMsg *)_msgBuffer;
-          }
-          else {
-          }
-          Reset();
-        }
-      }
-    }
-  }
-
-  if(_msgBufferPos == IMICOMM_MSG_HEADER_SIZE)
-    msg = (TMsg *)_msgBuffer;
-  
-  return msg;
-}
-
-
+/** 
+ * @brief Verifies received message
+ * 
+ * @param msg Message to check
+ * @param size Size of received message
+ * 
+ * @return Verification status
+ */
 bool CDevIMI::CMsgParser::Check(const TMsg *msg, IMIDWORD size) const
 {
   // minimal size of comm message
@@ -240,7 +215,8 @@ bool CDevIMI::CMsgParser::Check(const TMsg *msg, IMIDWORD size) const
   if(msg->payloadSize != size - IMICOMM_MSG_HEADER_SIZE - IMICOMM_CRC_LEN)
     return false;
   
-  IMIWORD crc1 = CDevIMI::CRC16Checksum(((IMIBYTE*)msg) + 2, IMICOMM_MSG_HEADER_SIZE + msg->payloadSize - 2);
+  // check CRC
+  IMIWORD crc1 = CDevIMI::CRC16Checksum(((IMIBYTE*)msg) + IMICOMM_SYNC_LEN, IMICOMM_MSG_HEADER_SIZE + msg->payloadSize - IMICOMM_SYNC_LEN);
   IMIWORD crc2 = (IMIWORD)(((IMIBYTE*)msg)[size - 1]) | ((IMIWORD)(((IMIBYTE*)msg)[size - 2]) << 8);
   if(crc1 != crc2)
     return false;
@@ -249,8 +225,89 @@ bool CDevIMI::CMsgParser::Check(const TMsg *msg, IMIDWORD size) const
 }
 
 
+/** 
+ * @brief Parses received message chunk
+ * 
+ * @param buffer Buffer with received data
+ * @param size The size of received data
+ * 
+ * @return Received message or 0 if invalid on incomplete.
+ */
+const CDevIMI::TMsg *CDevIMI::CMsgParser::Parse(const IMIBYTE buffer[], IMIDWORD size)
+{
+  const IMIBYTE *ptr = buffer;
+  const TMsg *msg = 0;
+  
+  for(;size; size--) {
+    IMIBYTE byte = *ptr++;
+    
+    if(_state == STATE_NOT_SYNC) {
+      // verify synchronization chars
+      if(byte == IMICOMM_SYNC_CHAR1 && _msgBufferPos == 0) {
+        _msgBuffer[_msgBufferPos++] = byte;
+      }
+      else if(byte == IMICOMM_SYNC_CHAR2 && _msgBufferPos == 1) {
+        _msgBuffer[_msgBufferPos++] = byte;
+        _state = STATE_COMM_MSG;
+      }
+      else {
+        _msgBufferPos = 0;
+      }
+    }
+    else if(_state == STATE_COMM_MSG) {
+      if(_msgBufferPos < IMICOMM_MSG_HEADER_SIZE) {
+        // copy header
+        _msgBuffer[_msgBufferPos++] = byte;
+      }
+      else {
+        if(_msgBufferPos == IMICOMM_MSG_HEADER_SIZE) {
+          // verify payload size
+          _msgBytesLeft = ((TMsg *)_msgBuffer)->payloadSize + IMICOMM_CRC_LEN;
+          if(_msgBytesLeft > COMM_MAX_PAYLOAD_SIZE + IMICOMM_CRC_LEN) {
+            // Invalid length
+            Reset();
+            continue;
+          }
+        }
+        
+        // copy payload
+        _msgBytesLeft--;
+        if(_msgBufferPos < sizeof(_msgBuffer)) // Just in case
+          _msgBuffer[_msgBufferPos++] = byte;
+        
+        if(_msgBytesLeft == 0) {
+          // end of message
+          if(Check((TMsg *)_msgBuffer, _msgBufferPos))
+            msg = (TMsg *)_msgBuffer;
+          
+          // prepare parser for the next message
+          Reset();
+        }
+      }
+    }
+  }
+  
+  return msg;
+}
 
 
+
+/* *********************** I M I    D E V I C E ************************** */
+
+bool CDevIMI::_connected;
+CDevIMI::CMsgParser CDevIMI::_parser;
+CDevIMI::TDeviceInfo CDevIMI::_info;
+CDevIMI::IMIWORD CDevIMI::_serialNumber;
+
+
+/** 
+ * @brief Calculates IMI CRC value
+ * 
+ * @param message Message for which CRC should be provided
+ * @param bytes The size of the message
+ * 
+ * @return IMI CRC value
+ */
 CDevIMI::IMIWORD CDevIMI::CRC16Checksum(const void *message, unsigned bytes)
 {
   const IMIBYTE *pData = (const IMIBYTE *)message;
@@ -271,13 +328,39 @@ CDevIMI::IMIWORD CDevIMI::CRC16Checksum(const void *message, unsigned bytes)
 }
 
 
+/**
+ * @brief Coordinates converter helper
+ */
+struct CDevIMI::TAngle
+{
+  union {
+    struct {
+      IMIDWORD milliminutes:16;
+      IMIDWORD degrees:8;
+      IMIDWORD sign:1;
+    };
+    IMIDWORD value;
+  };
+};
+
+
+/** 
+ * @brief Sets data in IMI Waypoint structure
+ * 
+ * @param decl LK task declaration
+ * @param imiIdx The index of IMI waypoint to set
+ * @param imiWp IMI waypoint structure to set
+ */
 void CDevIMI::IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint &imiWp)
 {
   unsigned idx = imiIdx == 0 ? 0 :
     (imiIdx == (unsigned)decl.num_waypoints + 1 ? imiIdx - 2 : imiIdx - 1);
   const WAYPOINT &wp = *decl.waypoint[idx];
+  
+  // set name
   unicode2usascii(wp.Name, imiWp.name, sizeof(imiWp.name));
   
+  // set latitude
   TAngle a;
   double angle = wp.Latitude;
   if((a.sign = (angle < 0) ? 1 : 0) != 0)
@@ -286,6 +369,7 @@ void CDevIMI::IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint 
   a.milliminutes = (angle - a.degrees) * 60 * 1000;
   imiWp.lat = a.value;
   
+  // set longitude
   angle = wp.Longitude;
   if((a.sign = (angle < 0) ? 1 : 0) != 0)
     angle *= -1;
@@ -293,10 +377,13 @@ void CDevIMI::IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint 
   a.milliminutes = (angle - a.degrees) * 60 * 1000;
   imiWp.lon = a.value;
   
+  // TAKEOFF and LANDING do not have OZs
   if(imiIdx == 0 || imiIdx == (unsigned)decl.num_waypoints + 1)
     return;
   
+  // set observation zones
   if(imiIdx == 1) {
+    // START
     imiWp.oz.style = 3;
     switch(StartLine) {
     case 0: // cylinder
@@ -312,6 +399,7 @@ void CDevIMI::IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint 
     imiWp.oz.R1 = std::min((DWORD)250000, StartRadius);
   }
   else if(imiIdx == (unsigned)decl.num_waypoints) {
+    // FINISH
     imiWp.oz.style = 4;
     switch(FinishLine) {
     case 0: // cylinder
@@ -327,6 +415,7 @@ void CDevIMI::IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint 
     imiWp.oz.R1 = std::min((DWORD)250000, FinishRadius);
   }
   else {
+    // TPs
     imiWp.oz.style = 2;
     switch(SectorType) {
     case 0: // cylinder
@@ -346,19 +435,47 @@ void CDevIMI::IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint 
     }
   }
   
+  // other unused data
   imiWp.oz.maxAlt = 0;
   imiWp.oz.reduce = 0;
   imiWp.oz.move   = 0;
 }
 
 
-bool CDevIMI::Send(PDeviceDescriptor_t d, const TMsg &msg, unsigned errBufSize, TCHAR errBuf[])
+/** 
+ * @brief Sends message buffer to a device
+ * 
+ * @param d Device handle
+ * @param errBufSize The size of the buffer for error string
+ * @param errBuf The buffer for error string
+ * @param msg IMI message to send
+ * 
+ * @return Operation status
+ */
+bool CDevIMI::Send(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[], const TMsg &msg)
 {
   return ComWrite(d, &msg, IMICOMM_MSG_HEADER_SIZE + msg.payloadSize + 2, errBufSize, errBuf);
 }
 
 
-bool CDevIMI::Send(PDeviceDescriptor_t d, IMIBYTE msgID, unsigned errBufSize, TCHAR errBuf[], const void *payload /* =0 */, IMIWORD payloadSize /* =0 */, IMIBYTE parameter1 /* =0 */, IMIWORD parameter2 /* =0 */, IMIWORD parameter3 /* =0 */)
+/** 
+ * @brief Prepares and sends the message to a device
+ * 
+ * @param d Device handle
+ * @param errBufSize The size of the buffer for error string
+ * @param errBuf The buffer for error string
+ * @param msgID ID of the message to send
+ * @param payload Payload buffer to use for the message
+ * @param payloadSize The size of the payload buffer
+ * @param parameter1 1st parameter for to put in the message
+ * @param parameter2 2nd parameter for to put in the message
+ * @param parameter3 3rd parameter for to put in the message
+ * 
+ * @return Operation status
+ */
+bool CDevIMI::Send(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[],
+                   IMIBYTE msgID, const void *payload /* =0 */, IMIWORD payloadSize /* =0 */,
+                   IMIBYTE parameter1 /* =0 */, IMIWORD parameter2 /* =0 */, IMIWORD parameter3 /* =0 */)
 {
   if(payloadSize > COMM_MAX_PAYLOAD_SIZE)
     return false;
@@ -380,22 +497,34 @@ bool CDevIMI::Send(PDeviceDescriptor_t d, IMIBYTE msgID, unsigned errBufSize, TC
   msg.payload[payloadSize] = (IMIBYTE)(crc >> 8);
   msg.payload[payloadSize + 1] = (IMIBYTE)crc;
   
-  return Send(d, msg, errBufSize, errBuf);
+  return Send(d, errBufSize, errBuf, msg);
 }
 
 
-const CDevIMI::TMsg *CDevIMI::Receive(PDeviceDescriptor_t d, unsigned extraTimeout, unsigned expectedPayloadSize, unsigned errBufSize, TCHAR errBuf[])
+/** 
+ * @brief Receives a message from the device
+ * 
+ * @param d Device handle
+ * @param errBufSize The size of the buffer for error string
+ * @param errBuf The buffer for error string
+ * @param extraTimeout Additional timeout to wait for the message
+ * @param expectedPayloadSize Expected size of the message
+ * 
+ * @return Pointer to a message structure if expected message was received or 0 otherwise
+ */
+const CDevIMI::TMsg *CDevIMI::Receive(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[],
+                                      unsigned extraTimeout, unsigned expectedPayloadSize)
 {
   if(expectedPayloadSize > COMM_MAX_PAYLOAD_SIZE)
     expectedPayloadSize = COMM_MAX_PAYLOAD_SIZE;
   
   // set timeout
   unsigned timeout = extraTimeout + 10000 * (expectedPayloadSize + sizeof(IMICOMM_MSG_HEADER_SIZE) + 10) / d->Com->GetBaudrate();
-  //  unsigned timeout = 1000;
   int orgTimeout;
   if(!SetRxTimeout(d, timeout, orgTimeout, errBufSize, errBuf))
     return 0;
   
+  // wait for the message
   const TMsg *msg = 0;
   timeout += GetTickCount();
   while(GetTickCount() < timeout) {
@@ -405,8 +534,10 @@ const CDevIMI::TMsg *CDevIMI::Receive(PDeviceDescriptor_t d, unsigned extraTimeo
     if(bytesRead == 0)
       continue;
     
+    // parse message
     const TMsg *lastMsg = _parser.Parse(buffer, bytesRead);
     if(lastMsg) {
+      // message received
       if(lastMsg->msgID == MSG_ACK_NOTCONFIG) {
         Disconnect(d, errBufSize, errBuf);
       }
@@ -425,19 +556,38 @@ const CDevIMI::TMsg *CDevIMI::Receive(PDeviceDescriptor_t d, unsigned extraTimeo
 }
 
 
-const CDevIMI::TMsg *CDevIMI::SendRet(PDeviceDescriptor_t d, IMIBYTE msgID, const void *payload, IMIWORD payloadSize, 
-                                      IMIBYTE reMsgID, IMIWORD retPayloadSize, unsigned errBufSize, TCHAR errBuf[],
+/** 
+ * @brief Sends a message and waits for a confirmation from the device
+ * 
+ * @param d Device handle
+ * @param errBufSize The size of the buffer for error string
+ * @param errBuf The buffer for error string
+ * @param msgID ID of the message to send
+ * @param payload Payload buffer to use for the message
+ * @param payloadSize The size of the payload buffer
+ * @param reMsgID Expected ID of the message to receive
+ * @param retPayloadSize Expected size of the received message
+ * @param parameter1 1st parameter for to put in the message
+ * @param parameter2 2nd parameter for to put in the message
+ * @param parameter3 3rd parameter for to put in the message
+ * @param extraTimeout Additional timeout to wait for the message
+ * @param retry Number of send retries
+ * 
+ * @return Pointer to a message structure if expected message was received or 0 otherwise
+ */
+const CDevIMI::TMsg *CDevIMI::SendRet(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[],
+                                      IMIBYTE msgID, const void *payload, IMIWORD payloadSize, 
+                                      IMIBYTE reMsgID, IMIWORD retPayloadSize, 
                                       IMIBYTE parameter1 /* =0 */, IMIWORD parameter2 /* =0 */, IMIWORD parameter3 /* =0 */,
                                       unsigned extraTimeout /* =300 */, int retry /* =4 */)
 {
   unsigned baudRate = d->Com->GetBaudrate();
   extraTimeout += 10000 * (payloadSize + sizeof(IMICOMM_MSG_HEADER_SIZE) + 10) / baudRate;
   while(retry--) {
-    if(Send(d, msgID, errBufSize, errBuf, payload, payloadSize, parameter1, parameter2, parameter3)) {
-      const TMsg *msg = Receive(d, extraTimeout, retPayloadSize, errBufSize, errBuf);
-      if(msg && msg->msgID == reMsgID && (retPayloadSize == (IMIWORD)-1 || msg->payloadSize == retPayloadSize)) {
+    if(Send(d, errBufSize, errBuf, msgID, payload, payloadSize, parameter1, parameter2, parameter3)) {
+      const TMsg *msg = Receive(d, errBufSize, errBuf, extraTimeout, retPayloadSize);
+      if(msg && msg->msgID == reMsgID && (retPayloadSize == (IMIWORD)-1 || msg->payloadSize == retPayloadSize))
         return msg;
-      }
     }
   }
   
@@ -446,18 +596,29 @@ const CDevIMI::TMsg *CDevIMI::SendRet(PDeviceDescriptor_t d, IMIBYTE msgID, cons
 
 
 
+/** 
+ * @brief Connects to the device
+ * 
+ * @param d Device handle
+ * @param errBufSize The size of the buffer for error string
+ * @param errBuf The buffer for error string
+ * 
+ * @return Operation status
+ */
 bool CDevIMI::Connect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
 {
   if(_connected)
-    Disconnect(d, errBufSize, errBuf);
+    if(!Disconnect(d, errBufSize, errBuf))
+      return false;
+  
   _connected = false;
   memset(&_info, 0, sizeof(_info));
   _serialNumber = 0;
   _parser.Reset();
   
   // check connectivity
-  if(Send(d, MSG_CFG_HELLO, errBufSize, errBuf)) {
-    const TMsg *msg = Receive(d, 100, 0, errBufSize, errBuf);
+  if(Send(d, errBufSize, errBuf, MSG_CFG_HELLO)) {
+    const TMsg *msg = Receive(d, errBufSize, errBuf, 100, 0);
     if(msg) {
       if(msg->msgID == MSG_CFG_HELLO) {
         _serialNumber = msg->sn;
@@ -474,31 +635,26 @@ bool CDevIMI::Connect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]
       return false;
     }
   }
-  else {
-    // LKTOKEN  _@M1414_ = "Device not responsive!"
-    _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1414_")));
-    return false;
-  }
   
   // configure baudrate
   unsigned long baudRate = d->Com->GetBaudrate();
-  if(!Send(d, MSG_CFG_STARTCONFIG, errBufSize, errBuf, 0, 0, IMICOMM_BIGPARAM1(baudRate), IMICOMM_BIGPARAM2(baudRate)))
+  if(!Send(d, errBufSize, errBuf, MSG_CFG_STARTCONFIG, 0, 0, IMICOMM_BIGPARAM1(baudRate), IMICOMM_BIGPARAM2(baudRate)))
     return false;
   
   // get device info
   for(int i = 0; i < 4; i++) {
-    if(Send(d, MSG_CFG_DEVICEINFO, errBufSize, errBuf)) {
-      const TMsg *msg = Receive(d, 300, sizeof(TDeviceInfo), errBufSize, errBuf);
+    if(Send(d, errBufSize, errBuf, MSG_CFG_DEVICEINFO)) {
+      const TMsg *msg = Receive(d, errBufSize, errBuf, 300, sizeof(TDeviceInfo));
       if(msg) {
-        if(msg->msgID == MSG_CFG_DEVICEINFO && msg->payloadSize == sizeof(TDeviceInfo)) {
-          memcpy(&_info, msg->payload, sizeof(TDeviceInfo));
-          _connected = true;
-          return true;
-        }
-        else if(msg->msgID == MSG_CFG_DEVICEINFO && msg->payloadSize == 16) {
-          // old version of the structure
-          memset(&_info, 0, sizeof(TDeviceInfo));
-          memcpy(&_info, msg->payload, 16);
+        if(msg->msgID == MSG_CFG_DEVICEINFO) {
+          if(msg->payloadSize == sizeof(TDeviceInfo)) {
+            memcpy(&_info, msg->payload, sizeof(TDeviceInfo));
+          }
+          else if(msg->payloadSize == 16) {
+            // old version of the structure
+            memset(&_info, 0, sizeof(TDeviceInfo));
+            memcpy(&_info, msg->payload, 16);
+          }
           _connected = true;
           return true;
         }
@@ -515,6 +671,16 @@ bool CDevIMI::Connect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]
 }
 
 
+/** 
+ * @brief Sends task declaration
+ *
+ * @param d Device handle
+ * @param decl Task declaration data
+ * @param errBufSize The size of the buffer for error string
+ * @param errBuf The buffer for error string
+ * 
+ * @return Operation status
+ */
 bool CDevIMI::DeclarationWrite(PDeviceDescriptor_t d, const Declaration_t &decl, unsigned errBufSize, TCHAR errBuf[])
 {
   if(!_connected) {
@@ -548,15 +714,29 @@ bool CDevIMI::DeclarationWrite(PDeviceDescriptor_t d, const Declaration_t &decl,
     IMIWaypoint(decl, i + 1, imiDecl.wp[i + 1]);
   IMIWaypoint(decl, decl.num_waypoints + 1, imiDecl.wp[decl.num_waypoints + 1]);
   
-  const TMsg *msg = SendRet(d, MSG_DECLARATION, &imiDecl, sizeof(imiDecl), MSG_ACK_SUCCESS, 0, errBufSize, errBuf);
-  return msg != 0;
+  const TMsg *msg = SendRet(d, errBufSize, errBuf, MSG_DECLARATION, &imiDecl, sizeof(imiDecl), MSG_ACK_SUCCESS, 0);
+  if(!msg && errBuf[0] == '\0') {
+    // LKTOKEN  _@M1415_ = "Declaration not accepted!"
+    _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1415_")));
+  }
+  
+  return msg;
 }
 
 
+/** 
+ * @brief Disconnects from the device
+ *
+ * @param d Device handle
+ * @param errBufSize The size of the buffer for error string
+ * @param errBuf The buffer for error string
+ * 
+ * @return Operation status
+ */
 bool CDevIMI::Disconnect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[])
 {
   if(_connected) {
-    if(Send(d, MSG_CFG_BYE, errBufSize, errBuf)) {
+    if(Send(d, errBufSize, errBuf, MSG_CFG_BYE)) {
       _connected = false;
       memset(&_info, 0, sizeof(_info));
       _serialNumber = 0;
@@ -576,10 +756,11 @@ const TCHAR *CDevIMI::GetName()
 
 BOOL CDevIMI::DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufSize, TCHAR errBuf[])
 {
+  // verify WP number
   if(!CheckWPCount(*decl, 2, 13, errBufSize, errBuf))
     return false;
   
-  // stop RX thread
+  // stop Rx thread
   if(!StopRxThread(d, errBufSize, errBuf))
     return false;
   
@@ -587,13 +768,16 @@ BOOL CDevIMI::DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsigned e
   int orgRxTimeout;
   bool status = SetRxTimeout(d, 2000, orgRxTimeout, errBufSize, errBuf);
   if(status) {
+    // connect to the device
     ShowProgress(decl_enable);
     status = Connect(d, errBufSize, errBuf);
     if(status) {
+      // task declaration
       ShowProgress(decl_send);
       status = status && DeclarationWrite(d, *decl, errBufSize, errBuf);
     }
     
+    // disconnect
     ShowProgress(decl_disable);
     status = Disconnect(d, status ? errBufSize : 0, errBuf) && status;
     
@@ -601,6 +785,7 @@ BOOL CDevIMI::DeclareTask(PDeviceDescriptor_t d, Declaration_t *decl, unsigned e
     status = SetRxTimeout(d, orgRxTimeout, orgRxTimeout, status ? errBufSize : 0, errBuf) && status;
   }
   
+  // restart Rx thread
   status = StartRxThread(d, status ? errBufSize : 0, errBuf) && status;
   
   return status;

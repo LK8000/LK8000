@@ -11,6 +11,14 @@
  
 #include "devBase.h"
 
+
+/**
+ * @brief IMI-Gliding ERIXX device class
+ * 
+ * Class provides support for IMI-Gliding ERIXX IGC certifed logger.
+ *
+ * @note IMI driver methods are based on the source code provided by Juraj Rojko from IMI-Gliding.
+ */
 class CDevIMI : public DevBase
 {
   typedef char IMICHAR;                         // 8bit text character
@@ -39,52 +47,31 @@ class CDevIMI : public DevBase
     MSG_DECLARATION      = 0x20,
     
     MSG_FLIGHT_INFO      = 0x40,
-    MSG_FLIGHT_DELETE    = 0x41,
     MSG_FLIGHT_DELETEALL = 0x42
   };
   
-  static const IMIBYTE IMICOMM_SYNC_CHAR1 = 'E';
-  static const IMIBYTE IMICOMM_SYNC_CHAR2 = 'X';
-  static const unsigned IMICOMM_CRC_LEN = 2;
-  static const unsigned COMM_MAX_PAYLOAD_SIZE = 1024;
-  
-  struct TMsg {
-    IMIBYTE syncChar1, syncChar2;
-    IMIWORD sn;
-    IMIBYTE msgID, parameter1;
-    IMIWORD parameter2;
-    IMIWORD parameter3;
-    IMIWORD payloadSize;
-    IMIBYTE payload[COMM_MAX_PAYLOAD_SIZE];
-    IMIWORD crc16;
-  };
-#define IMICOMM_MAX_MSG_SIZE (sizeof(TMsg))
-
+  // messages
   struct TDeviceInfo;
   struct TDeclarationHeader;
   struct TObservationZone;
-  struct TAngle;
   struct TWaypoint;
   struct TDeclaration;
+  struct TMsg;
   
-  class CMsgParser {
-    enum TState {
-      STATE_NOT_SYNC,
-      STATE_COMM_MSG
-    };
-    
-    TState _state;
-    IMIBYTE _msgBuffer[IMICOMM_MAX_MSG_SIZE];
-    unsigned _msgBufferPos;
-    unsigned _msgLen;
-    
-    bool Check(const TMsg *msg, IMIDWORD size) const;
-    
-  public:
-    void Reset();
-    const TMsg *Parse(const IMIBYTE buffer[], IMIDWORD size);
-  };
+  // helpers
+  struct TAngle;
   
+  // message parser
+  class CMsgParser;
+  
+  // constants
+  static const IMIBYTE IMICOMM_SYNC_CHAR1 = 'E';
+  static const IMIBYTE IMICOMM_SYNC_CHAR2 = 'X';
+  static const unsigned IMICOMM_SYNC_LEN  = 2;
+  static const unsigned IMICOMM_CRC_LEN   = 2;
+  static const unsigned COMM_MAX_PAYLOAD_SIZE = 1024;
+  
+  // variables
   static bool _connected;
   static CMsgParser _parser;
   static TDeviceInfo _info;
@@ -93,11 +80,15 @@ class CDevIMI : public DevBase
   // IMI tools
   static IMIWORD CRC16Checksum(const void *message, unsigned bytes);
   static void IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint &imiWp);
-  static bool Send(PDeviceDescriptor_t d, const TMsg &msg, unsigned errBufSize, TCHAR errBuf[]);
-  static bool Send(PDeviceDescriptor_t d, IMIBYTE msgID, unsigned errBufSize, TCHAR errBuf[], const void *payload = 0, IMIWORD payloadSize = 0, IMIBYTE parameter1 = 0, IMIWORD parameter2 = 0, IMIWORD parameter3 = 0);
-  static const TMsg *Receive(PDeviceDescriptor_t d, unsigned extraTimeout, unsigned expectedPayloadSize, unsigned errBufSize, TCHAR errBuf[]);
-  static const TMsg *SendRet(PDeviceDescriptor_t d, IMIBYTE msgID, const void *payload, IMIWORD payloadSize, 
-                             IMIBYTE reMsgID, IMIWORD retPayloadSize, unsigned errBufSize, TCHAR errBuf[],
+  static bool Send(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[], const TMsg &msg);
+  static bool Send(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[],
+                   IMIBYTE msgID, const void *payload = 0, IMIWORD payloadSize = 0,
+                   IMIBYTE parameter1 = 0, IMIWORD parameter2 = 0, IMIWORD parameter3 = 0);
+  static const TMsg *Receive(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[],
+                             unsigned extraTimeout, unsigned expectedPayloadSize);
+  static const TMsg *SendRet(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[],
+                             IMIBYTE msgID, const void *payload, IMIWORD payloadSize, 
+                             IMIBYTE reMsgID, IMIWORD retPayloadSize, 
                              IMIBYTE parameter1 = 0, IMIWORD parameter2 = 0, IMIWORD parameter3 = 0,
                              unsigned extraTimeout = 300, int retry = 4);
   
