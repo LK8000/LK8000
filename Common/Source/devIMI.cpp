@@ -714,7 +714,8 @@ bool CDevIMI::DeclarationWrite(PDeviceDescriptor_t d, const Declaration_t &decl,
     IMIWaypoint(decl, i + 1, imiDecl.wp[i + 1]);
   IMIWaypoint(decl, decl.num_waypoints + 1, imiDecl.wp[decl.num_waypoints + 1]);
   
-  const TMsg *msg = SendRet(d, errBufSize, errBuf, MSG_DECLARATION, &imiDecl, sizeof(imiDecl), MSG_ACK_SUCCESS, 0);
+  // send declaration for current task
+  const TMsg *msg = SendRet(d, errBufSize, errBuf, MSG_DECLARATION, &imiDecl, sizeof(imiDecl), MSG_ACK_SUCCESS, 0, -1);
   if(!msg && errBuf[0] == '\0') {
     // LKTOKEN  _@M1415_ = "Declaration not accepted!"
     _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1415_")));
