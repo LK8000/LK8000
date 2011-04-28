@@ -961,6 +961,14 @@ static void OnSetCustomKeysClicked(WindowControl * Sender){
 	(void)Sender;
   dlgCustomKeysShowModal();
 }
+static void OnSetBottomBarClicked(WindowControl * Sender){
+	(void)Sender;
+  dlgBottomBarShowModal();
+}
+static void OnSetInfoPagesClicked(WindowControl * Sender){
+	(void)Sender;
+  dlgBottomBarShowModal();
+}
 
 #ifdef LKAIRSPACE
 static void OnAirspaceWarningParamsClicked(WindowControl * Sender){
@@ -1400,6 +1408,8 @@ static CallBackTableEntry_t CallBackTable[]={
   #endif
   DeclareCallBackEntry(OnSetTopologyClicked),
   DeclareCallBackEntry(OnSetCustomKeysClicked),
+  DeclareCallBackEntry(OnSetBottomBarClicked),
+  DeclareCallBackEntry(OnSetInfoPagesClicked),
   
   DeclareCallBackEntry(OnAirspaceFillType),
   DeclareCallBackEntry(OnLk8000ModeChange),

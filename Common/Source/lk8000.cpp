@@ -488,6 +488,8 @@ bool LockModeStatus=false;
 short ArrivalValue=0;
 short NewMapDeclutter=0;
 short Shading=1;
+bool ConfBB[10];
+bool ConfBB1=1, ConfBB2=1, ConfBB3=1, ConfBB4=1, ConfBB5=1, ConfBB6=1, ConfBB7=1, ConfBB8=1, ConfBB9=1;
 short AverEffTime=0;
 bool DrawBottom=false; // new map's bottom line in landscape mode fullscreen condition
 short BottomMode=BM_FIRST; 

@@ -226,6 +226,15 @@ extern const TCHAR szRegistryShading[];
 extern const TCHAR szRegistryOverlayClock[];
 extern const TCHAR szRegistryLoggerTimeStepCruise[];
 extern const TCHAR szRegistryLoggerTimeStepCircling[];
+extern const TCHAR szRegistryConfBB1[];
+extern const TCHAR szRegistryConfBB2[];
+extern const TCHAR szRegistryConfBB3[];
+extern const TCHAR szRegistryConfBB4[];
+extern const TCHAR szRegistryConfBB5[];
+extern const TCHAR szRegistryConfBB6[];
+extern const TCHAR szRegistryConfBB7[];
+extern const TCHAR szRegistryConfBB8[];
+extern const TCHAR szRegistryConfBB9[];
 
 extern const TCHAR szRegistrySafetyMacCready[];
 extern const TCHAR szRegistryAbortSafetyUseCurrent[];
@@ -568,5 +577,6 @@ bool RotateScreen(void);
 
 int GetTextWidth(HDC hDC, TCHAR *text);
 void ExtTextOutClip(HDC hDC, int x, int y, TCHAR *text, int width);
+void UpdateConfBB(void);
 
 #endif

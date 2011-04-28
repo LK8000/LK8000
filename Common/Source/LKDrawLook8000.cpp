@@ -290,6 +290,12 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		// splitoffset2= (rc.right-rc.left)/splitter;
 		splitoffset2= splitoffset;
 	}
+	// set correct initial bottombar stripe
+	short ii;
+	for (ii=BM_FIRST; ii<=BM_LAST;ii++) {
+		if (ConfBB[ii]) break;
+	}
+	BottomMode=ii;
 	doinit=false; 
   } // end doinit
 

@@ -482,6 +482,16 @@ extern bool EnableNavBaroAltitude;
 extern short Orbiter;
 #endif
 extern short Shading;
+extern bool ConfBB[10];
+extern bool ConfBB1;
+extern bool ConfBB2;
+extern bool ConfBB3;
+extern bool ConfBB4;
+extern bool ConfBB5;
+extern bool ConfBB6;
+extern bool ConfBB7;
+extern bool ConfBB8;
+extern bool ConfBB9;
 extern bool OverlayClock;
 extern bool EnableSoundVario;
 extern bool EnableSoundTask;

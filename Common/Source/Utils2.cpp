@@ -500,6 +500,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				wsprintf(buf,_T("RIGHT in limit=%d"),sizeup-BottomSize-NIBLSCALE(20));
 				DoStatusMessage(buf);
 				#endif
+#if 0 // REMOVE
 				if (  (BottomMode+1) >BM_LAST ) {
 #ifndef MAP_ZOOM
 					if ( DisplayMode == dmCircling)
@@ -521,6 +522,12 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 */
 				MapWindow::RefreshMap();
 				return 0;
+#else
+				BottomBarChange(true); // advance
+				BottomSounds();
+				MapWindow::RefreshMap();
+				return 0;
+#endif
 			}
 			if ( X<s_xleft ) { // following is ugly
 				if (keytime >=CustomKeyTime) {
@@ -532,6 +539,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				wsprintf(buf,_T("LEFT in limit=%d"),sizeup-BottomSize-NIBLSCALE(20));
 				DoStatusMessage(buf);
 				#endif
+#if 0 // REMOVE
 				if ((BottomMode-1) == BM_TRM) {
 #ifndef MAP_ZOOM
 					if (DisplayMode != dmCircling) BottomMode=BM_LAST;
@@ -575,6 +583,12 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 */
 				MapWindow::RefreshMap();
 				return 0;
+#else
+				BottomBarChange(false); // backwards
+				BottomSounds();
+				MapWindow::RefreshMap();
+				return 0;
+#endif
 			}
 			#ifdef DEBUG_PROCVK
 			wsprintf(buf,_T("CENTER in limit=%d"),sizeup-BottomSize-NIBLSCALE(20));
@@ -4350,6 +4364,54 @@ bool LockMode(const short lmode) {
   }
 
   return 0;
+
+}
+
+
+// We assume that at least ConfBB[1] will be ON!
+// We cannot have all OFF!
+void BottomBarChange(bool advance) {
+
+  short wanted;
+  if (!advance) goto bbc_previous;
+
+  wanted=BottomMode+1;
+  while (true) {
+    if (wanted >BM_LAST) {
+	if ( MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+		wanted=BM_TRM;
+		break;
+	} else {
+		wanted=BM_FIRST;
+		continue;
+	}
+    }
+    if (ConfBB[wanted]) break;
+    wanted++;
+  }
+  BottomMode=wanted;
+  return;
+
+bbc_previous:
+  wanted=BottomMode-1;
+  while (true) {
+    if (wanted == BM_TRM) {
+	if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+		break;
+	} else {
+		wanted=BM_LAST;
+		continue;
+	}
+    }
+    if (wanted<0) {
+	wanted=BM_LAST;
+	continue;
+    }
+    if (ConfBB[wanted]) break;
+    wanted--;
+  }
+  BottomMode=wanted;
+  return;
 
 }
 

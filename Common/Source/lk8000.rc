@@ -158,6 +158,8 @@ IDR_XML_STARTTASK       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgStartTask.xm
 IDR_XML_TIMEGATES       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTimeGates.xml"
 IDR_XML_TOPOLOGY       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTopology.xml"
 IDR_XML_CUSTOMKEYS       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgCustomKeys.xml"
+IDR_XML_BOTTOMBAR       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgBottomBar.xml"
+IDR_XML_INFOPAGES       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgInfoPages.xml"
 IDR_XML_FILESELECT      XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgFileSelect.xml"
 IDR_XML_WAYPOINTTERRAIN XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWaypointOutOfTerrain.xml"
 IDR_XML_AIRSPACEWARNING XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceWarning.xml"

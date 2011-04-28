@@ -1480,5 +1480,13 @@ _@M1600_ "DISABLED"
 # Ex-963, new message for screen unlock
 _@M1601_ "Double-Click on Low-Right Corner to UNLOCK"
 
+# Config system menu page 
+_@M1602_ "Configure Bottom Bar"
+_@M1603_ "Configure Info Pages"
+_@M1604_ "Configure xxxx"
+_@M1605_ "Bottom Bar"
+_@M1605_ "Info Pages"
+_@M1607_ "Bottom Bar Config Saved"
+_@M1608_ "Info Pages Config Saved"
 
 # Note for developers: LKLanguage MAX_MESSAGE  1700: 0-1699 !

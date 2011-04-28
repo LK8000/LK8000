@@ -369,6 +369,15 @@ const TCHAR szRegistryStartHeightRef[] = TEXT("StartHeightRef");
 const TCHAR szRegistryEnableNavBaroAltitude[] = TEXT("EnableNavBaroAltitude");
 const TCHAR szRegistryOrbiter[] = TEXT("Orbiter");
 const TCHAR szRegistryShading[] = TEXT("Shading");
+const TCHAR szRegistryConfBB1[] = TEXT("ConfBB1");
+const TCHAR szRegistryConfBB2[] = TEXT("ConfBB2");
+const TCHAR szRegistryConfBB3[] = TEXT("ConfBB3");
+const TCHAR szRegistryConfBB4[] = TEXT("ConfBB4");
+const TCHAR szRegistryConfBB5[] = TEXT("ConfBB5");
+const TCHAR szRegistryConfBB6[] = TEXT("ConfBB6");
+const TCHAR szRegistryConfBB7[] = TEXT("ConfBB7");
+const TCHAR szRegistryConfBB8[] = TEXT("ConfBB8");
+const TCHAR szRegistryConfBB9[] = TEXT("ConfBB9");
 const TCHAR szRegistryOverlayClock[] = TEXT("OverlayClock");
 
 const TCHAR szRegistryLoggerTimeStepCruise[]= TEXT("LoggerTimeStepCruise");
@@ -1536,6 +1545,34 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryOverlayClock,&Temp);
   OverlayClock = Temp;
 
+  // default BB is all ON
+  Temp = 1;
+  GetFromRegistry(szRegistryConfBB1,&Temp);
+  ConfBB1 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfBB2,&Temp);
+  ConfBB2 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfBB3,&Temp);
+  ConfBB3 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfBB4,&Temp);
+  ConfBB4 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfBB5,&Temp);
+  ConfBB5 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfBB6,&Temp);
+  ConfBB6 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfBB7,&Temp);
+  ConfBB7 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfBB8,&Temp);
+  ConfBB8 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfBB9,&Temp);
+  ConfBB9 = Temp;
 
   Temp = LoggerTimeStepCruise;
   GetFromRegistry(szRegistryLoggerTimeStepCruise,&Temp);
@@ -1574,6 +1611,9 @@ void ReadRegistrySettings(void)
     DisableAutoLogger = true;
   else 
     DisableAutoLogger = false;
+
+  UpdateConfBB();
+
 }
 
 //
@@ -5727,4 +5767,25 @@ void ExtTextOutClip(HDC hDC, int x, int y, TCHAR *text, int width) {
              text, len, NULL);
 }
 
+void UpdateConfBB(void) {
 
+  ConfBB[0]=true; // thermal always on automatically
+  ConfBB[1]=ConfBB1;
+  ConfBB[2]=ConfBB2;
+  ConfBB[3]=ConfBB3;
+  ConfBB[4]=ConfBB4;
+  ConfBB[5]=ConfBB5;
+  ConfBB[6]=ConfBB6;
+  ConfBB[7]=ConfBB7;
+  ConfBB[8]=ConfBB8;
+  ConfBB[9]=ConfBB9;
+
+  if (ConfBB2==false && ConfBB3==false &&
+      ConfBB4==false && ConfBB5==false &&
+      ConfBB6==false && ConfBB7==false &&
+      ConfBB8==false && ConfBB9==false)
+
+		// we need at least one bottom bar stripe available (thermal apart)
+		ConfBB[1]=true;
+
+}

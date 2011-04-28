@@ -65,6 +65,7 @@ void	LockMap();
 void	UnlockMap();
 int   GetFontRenderer();
 bool	LockMode(short lmode);
+void	BottomBarChange(bool advance);
 int	roundupdivision(int a, int b);
 void	Cpustats(int *acc, FILETIME *a, FILETIME *b, FILETIME *c, FILETIME *d);
 #ifdef FIVV

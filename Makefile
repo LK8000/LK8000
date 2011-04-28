@@ -375,6 +375,7 @@ DLGS	:=\
 	$(SRC)/dlgFontEdit.cpp \
 	$(SRC)/dlgLKTraffic.cpp \
 	$(SRC)/dlgCustomKeys.cpp \
+	$(SRC)/dlgBottomBar.cpp \
 	$(SRC)/dlgProfiles.cpp \
 
 VOLKS	:=\
