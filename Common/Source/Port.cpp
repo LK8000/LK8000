@@ -620,6 +620,26 @@ unsigned long ComPort::SetBaudrate(unsigned long BaudRate)
   return result;
 }
 
+unsigned long ComPort::GetBaudrate()
+{
+  COMSTAT ComStat;
+  DCB     PortDCB;
+  DWORD   dwErrors;
+  
+  if (hPort == INVALID_HANDLE_VALUE)
+    return 0;
+  
+  do {
+    ClearCommError(hPort, &dwErrors, &ComStat);
+  } while (ComStat.cbOutQue > 0);
+  
+  Sleep(10);
+  
+  GetCommState(hPort, &PortDCB);
+  
+  return PortDCB.BaudRate;
+}
+
 int ComPort::Read(void *Buffer, size_t Size)
 {
   DWORD dwBytesTransferred;

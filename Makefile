@@ -330,6 +330,7 @@ DEVS	:=\
 	$(SRC)/devZander.cpp \
 	$(SRC)/devIlec.cpp \
 	$(SRC)/devDSX.cpp \
+	$(SRC)/devIMI.cpp \
 	$(SRC)/devFlytec.cpp \
 	$(SRC)/devLKext1.cpp \
 
