@@ -23,6 +23,7 @@ class ComPort {
 
 	int SetRxTimeout(int);
 	unsigned long SetBaudrate(unsigned long);
+	unsigned long GetBaudrate();
 
 	BOOL StopRxThread();
 	BOOL StartRxThread();
