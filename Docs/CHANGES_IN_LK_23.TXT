@@ -7,16 +7,97 @@ NEW
 
 . New configuration for Polars (requires reconfiguring polar type!)
 . Many new polars
+. New airspace handling engine
+  . New airspace storage classes (CAirspace, CAirspaceCicrle, CAirspaceArea)
+  . New CAirspaceManager singleton class for managing airspace operations
+  . New openair parser based on the old one
+  . New airspace distance calculation algorithms
 
+  . NOFLY/FLY airspaces introduced.
+    . NOFLY zones - works like the old airspaces. You are in a wrong position when you are inside a nofly zone.
+      Warning events based on this, so if you try to enter a nofly zone you get warnings to not do that.
+    . FLY zones - Zones you should be in to be safe. You are in a good position when you are inside a fly zone.
+      Warning event based on to remain in a fly zone, so if you try to leave it you get warnings to not do that.
+      Flying to an adjacent fly zone is permitted, in that case no warnings issued. (For ex. corridors beetween
+      different fly zones)
+      In the openair file the AF sentence defines a zone as fly, or you can change it from the UI.
+
+  . Current / predicted position
+    Predicted position of the aircraft calculated by lk. This calculation based on current mode (circling/cruise),
+    ground and vertical speed, and the configured warning time. This is the time before an airspace warning event
+    is estimated at which the system will warn the pilot. Warning messages based on predicted and current position
+    as well.
+
+  . Warning levels, warning messages
+    . Yellow warning:
+      Your current position near a warning situation. This means that you have a possibility to be in a wrong position
+      in the given warning time. (30sec by default). There are two types of yellow situation:
+      Predicted warning situation - your predicted posititon in a wrong zone (same as old airspaces case)
+      Near to a warning situation - You too close horizontally or vertically to a warning position.
+      (Too close comes from actual speed and nearest warning point distance and from the configured warning time)
+    . Red warning:
+      Your current position is wrong, you shouldn't be there because that position violates airspace rules.
+      (For example you enter a nofly zone, or you leave a fly zone)
+    . New airspace warning dialog
+      . Shows the reason of the message, warning level, name of airspace, horizontal and vertical distance, airspace
+        base and top altitude
+      . Dialog auto closes after a configured time automatically, or you can close it
+      . There is a possibility to acknowledge the given warning level for a configured time to not show up again.
+      . The old one still accessible under Info1/Analysis/Airspace/Warnings button
+    . Acknowledging
+      . Each airspace has a warning level and a corresponding ack level. 
+      . Actual warning level calculated by LK based on distances, fly/nofly zones, etc.
+      . Ack level set by the user, by acknowledging warning messages.
+      . The warning message appears only if the warning level increases above the ack level. Lets see a few examples:
+          1.You are circling in a position where a no warning/yellow warning situation flipping. When a yellow warning
+            situation occurs a warning dialog appears. If you do not press the ack button then in every circle the new
+            warning dlg will appear beacuse warning level > ack level. But if you ack the yellow warning then the dialog
+            not shows up again in the yellow warning case for a configured time. If the ack time (120s) expires, then the
+            ack level goes back to zero, so the warning will appear again.
+          2.The same case if you are circling at a nofly zone border. Half circle inside the zone. This is a yellow/red
+            warning flipping. If you ack the red warning for a time, then you won't get a new warning message on every circle.
+      . Daily acknowledging
+        There is a posiibility to acknowledge an airspace for a day (until lk restart). You can do that from airspace
+        details dialog (long click on map), pressing the ACKDay button. Acknowledging an airspace for a day means that warning
+        dialog will never appear for that airspace.
+    . Warning dialog messages can be:
+      . "Predicted leaving FLY zone" : Current position inside, predicted position outside a flyzone (YELLOW)
+      . "Near leaving FLY zone" : Current position inside a flyzone, but you are too close to the border to leave it (YELLOW)
+      . "Leaving FLY zone" : You have just leaved the fly zone (RED)
+      . "Predicted entering NOFLY zone" : Current position outside, predicted position inside a nofly zone (YELLOW)
+      . "Near entering NOFLY zone" : Current position outside a flyzone, but you are too close to the border to enter it (YELLOW)
+      . "Entering NOFLY zone" : You have just entered the nofly zone (RED)
+    . New airspace info messages
+      . When leaving a nonfly zone
+      . When entering a (new)fly zone
+
+  . New UI features
+    . Long click on the map shows an extended airspace details dialog. 
+      . It displays the current warning and ack level for an airpsace. 
+      . In the type field FLY/NOFLY displayed
+      . There is a new button to set an airspace to FLY/NOFLY.
+      . The order of the airspaces sorted by top altitude. Lowest first.
+    . Airspace warning labels on map
+      . Can be disabled from config
+      . Shows a red mark on the nearest posititon to a warning situation
+      . Shows airspace name, and the vertical distance to the border
+      . Vertical distance negative if airspace border above, positive if below your current altitude. (like in landables case)
+      . Label color means:
+        - Black - vertical distance ok, you are in good position vertically
+        - Red - vertical distance wrong against that nofly zone
+        - Orange - vartical distance wrong against that fly zone
 
 
 CHANGES
 
 . Polars are now files inside _Polars folder, and can be viewed and edited.
 . Device configuration has type "DISABLED", no more confusion.
-
-
-
+. Changes regarding airspaces:
+  . Drawing order of airspaces changed. They are draw from lowest top altitude first.
+  . Infobox nearest airspace shows the horizontal distance to the nearest airspace
+  . Daily acked airspaces are also drawed on the map without any change
+  . In airspace details dialog (long click on map) ACKDay button behaviour changed, now it shows a simple question to toggle actual ackday setting.
+  . Config page 2 reordered, some parameters moved under page accessible by pressing the "Warnings" button
 
 BUG FIX
 . Fix problem saving profiles on exit, even on CLUB versions

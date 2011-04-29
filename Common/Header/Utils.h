@@ -80,6 +80,7 @@ extern const TCHAR szRegistryAcknowledgementTime[];
 extern const TCHAR szRegistryAirspaceWarningRepeatTime[];
 extern const TCHAR szRegistryAirspaceWarningVerticalMargin[];
 extern const TCHAR szRegistryAirspaceWarningDlgTimeout[];
+extern const TCHAR szRegistryAirspaceWarningMapLabels[];
 #endif
 extern const TCHAR szRegistryCircleZoom[];
 extern const TCHAR szRegistryWindUpdateMode[];        

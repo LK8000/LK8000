@@ -508,7 +508,8 @@ extern int AcknowledgementTime;
 #ifdef LKAIRSPACE
 extern int AirspaceWarningRepeatTime;			// warning repeat time if not acknowledged
 extern int AirspaceWarningVerticalMargin;		// vertical distance used to calculate too close condition
-extern int AirspaceWarningDlgTimeout;			// airspace warning dialog auto closing in x secs
+extern int AirspaceWarningDlgTimeout;           // airspace warning dialog auto closing in x secs
+extern int AirspaceWarningMapLabels;            // airspace warning labels showed on map
 #endif
 extern int AltitudeMode;
 extern int SafetyAltitudeMode;

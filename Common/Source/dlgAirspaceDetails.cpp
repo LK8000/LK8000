@@ -60,18 +60,21 @@ static void OnAcknowledgeClicked(WindowControl * Sender){
   if (airspace == NULL) return;
   if (wf == NULL) return;
   UINT answer;
-  answer = MessageBoxX(hWndMapWindow,
-			airspace_copy.Name(),
-			// LKTOKEN  _@M51_ = "Acknowledge for day?" 
-			gettext(TEXT("_@M51_")),
-			MB_YESNOCANCEL|MB_ICONQUESTION);
-  if (answer == IDYES) {
-	CAirspaceManager::Instance().AirspaceAckDaily(*airspace);
-	wf->SetModalResult(mrOK);
-  } else if (answer == IDNO) {
-	// this will cancel a daily ack
-	CAirspaceManager::Instance().AirspaceAckDailyCancel(*airspace);
-	wf->SetModalResult(mrOK);
+  if (airspace_copy.WarningAckLevel() == awDailyAck) {
+    // LKTOKEN  _@M1280_ "Clear daily acknowledgement?"
+    answer = MessageBoxX(hWndMapWindow, airspace_copy.Name(), gettext(TEXT("_@M1280_")),  MB_YESNO|MB_ICONQUESTION);
+    if (answer == IDYES) {
+      // this will cancel a daily ack
+      CAirspaceManager::Instance().AirspaceAckDailyCancel(*airspace);
+      wf->SetModalResult(mrOK);
+    }
+  } else {
+    // LKTOKEN  _@M51_ = "Acknowledge for day?" 
+    answer = MessageBoxX(hWndMapWindow, airspace_copy.Name(), gettext(TEXT("_@M51_")),	MB_YESNO|MB_ICONQUESTION);
+    if (answer == IDYES) {
+      CAirspaceManager::Instance().AirspaceAckDaily(*airspace);
+      wf->SetModalResult(mrOK);
+    }
   }
 }
 #else

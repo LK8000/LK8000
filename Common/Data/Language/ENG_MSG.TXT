@@ -1298,6 +1298,9 @@ _@M1276_ "Airspace warning parameters saved."
 _@M1277_ "Msg repeat time "
 _@M1278_ "Vertical margin "
 _@M1279_ "Msg timeout "
+_@M1280_ "Clear daily acknowledgement?"
+_@M1281_ "Map labels "
+
 
 # LK info page headers, try to use the same or less number of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!

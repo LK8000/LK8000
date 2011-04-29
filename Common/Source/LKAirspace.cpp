@@ -1820,8 +1820,17 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
   static double lon = 0;
   static double lat = 0;
  
-  if(!AIRSPACEWARNINGS) return;                //Airspace warnings disabled in config
-
+  if(!AIRSPACEWARNINGS) {                       //Airspace warnings disabled in config
+    CCriticalSection::CGuard guard(_csairspaces);
+    // Set CAirspace class attributes to to range calculations well from UI
+    CAirspace::StartWarningCalculation( Basic, Calculated );
+    // No infobox values if warnings disabled, because no range calculation done.
+    NearestAirspaceName[0]=0;
+    NearestAirspaceHDist=0;
+    NearestAirspaceVDist=0;
+    return;
+  }
+  
   CCriticalSection::CGuard guard(_csairspaces);
   CAirspaceList::iterator it;
 
