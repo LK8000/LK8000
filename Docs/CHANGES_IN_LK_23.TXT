@@ -87,6 +87,7 @@ CHANGES
   . Drawing order of airspaces changed. They are draw from lowest top altitude first.
   . Infobox nearest airspace shows the horizontal distance to the nearest airspace
   . Daily acked airspaces are also drawed on the map without any change
+  . In airspace details dialog (long click on map) ACKDay button behaviour changed, now it shows a simple question to toggle actual ackday setting.
 
 
 BUG FIX
