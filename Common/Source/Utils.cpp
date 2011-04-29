@@ -157,6 +157,7 @@ const TCHAR szRegistryAirspaceOpacity[]= TEXT("AirspaceOpacity");
 const TCHAR szRegistryAirspaceWarningRepeatTime[]= TEXT("AirspaceWarningRepeatTime");
 const TCHAR szRegistryAirspaceWarningVerticalMargin[]= TEXT("AirspaceWarningVerticalMargin");
 const TCHAR szRegistryAirspaceWarningDlgTimeout[]= TEXT("AirspaceWarningDlgTimeout");
+const TCHAR szRegistryAirspaceWarningMapLabels[]= TEXT("AirspaceWarningMapLabels");
 #endif
 const TCHAR szRegistryAltMargin[]=	   TEXT("AltMargin");
 const TCHAR szRegistryAltMode[]=  TEXT("AltitudeMode");
@@ -671,6 +672,10 @@ void ReadRegistrySettings(void)
   Temp=AirspaceWarningDlgTimeout;
   if(GetFromRegistry(szRegistryAirspaceWarningDlgTimeout,&Temp)==ERROR_SUCCESS)
     AirspaceWarningDlgTimeout = Temp;
+
+  Temp=AirspaceWarningMapLabels;
+  if(GetFromRegistry(szRegistryAirspaceWarningMapLabels,&Temp)==ERROR_SUCCESS)
+    AirspaceWarningMapLabels = Temp;
 #endif
 	
   Temp=SafetyAltitudeMode;

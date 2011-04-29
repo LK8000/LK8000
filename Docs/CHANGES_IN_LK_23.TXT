@@ -77,6 +77,15 @@ NEW
       . In the type field FLY/NOFLY displayed
       . There is a new button to set an airspace to FLY/NOFLY.
       . The order of the airspaces sorted by top altitude. Lowest first.
+    . Airspace warning labels on map
+      . Can be disabled from config
+      . Shows a red mark on the nearest posititon to a warning situation
+      . Shows airspace name, and the vertical distance to the border
+      . Vertical distance negative if airspace border above, positive if below your current altitude. (like in landables case)
+      . Label color means:
+        - Black - vertical distance ok, you are in good position vertically
+        - Red - vertical distance wrong against that nofly zone
+        - Orange - vartical distance wrong against that fly zone
 
 
 CHANGES
@@ -88,7 +97,7 @@ CHANGES
   . Infobox nearest airspace shows the horizontal distance to the nearest airspace
   . Daily acked airspaces are also drawed on the map without any change
   . In airspace details dialog (long click on map) ACKDay button behaviour changed, now it shows a simple question to toggle actual ackday setting.
-
+  . Config page 2 reordered, some parameters moved under page accessible by pressing the "Warnings" button
 
 BUG FIX
 . Fix problem saving profiles on exit, even on CLUB versions

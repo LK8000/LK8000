@@ -1511,10 +1511,14 @@ This also affects how airspace warning icons draws on the map.
 If vertical distance (altitude difference) to airspace base or top is below this limit,
 then the warning icon is displayed directly above the glider symbol to warn you. 
 
-@1210
+@1211
 [Airspace warning dialog timeout]
 If this time elapses, airspace warning dialog closes automatically, without pressing the close button.
 In airspace warning dialog, you can see a decrementing counter on the close button caption showing the remaining time to close.
+
+@1212
+[Airspace warning map labels]
+If this is on, airspace warning labels shows on the map indicating airspace name and vertical distance.
 
 @1220
 [Bottom Bar configuration]
