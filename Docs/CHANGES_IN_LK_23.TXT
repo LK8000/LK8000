@@ -7,7 +7,15 @@ NEW
 
 . New configuration for Polars (requires reconfiguring polar type!)
 . Many new polars
-. New airspace handling engine
+. New IMI ERIXX logger support, also for task declaration
+. New configurable BottomBar.
+    System config menu 10 let you configure individually each bottombar stripe.
+    While rotating, only desired stripes will be shown.
+    Even if all bars are set off, NAV1 is shown.
+    Thermal mode will keep showing THR 0 bar.
+
+
+. >>> New airspace handling engine <<<
   . New airspace storage classes (CAirspace, CAirspaceCicrle, CAirspaceArea)
   . New CAirspaceManager singleton class for managing airspace operations
   . New openair parser based on the old one
@@ -99,8 +107,17 @@ CHANGES
   . In airspace details dialog (long click on map) ACKDay button behaviour changed, now it shows a simple question to toggle actual ackday setting.
   . Config page 2 reordered, some parameters moved under page accessible by pressing the "Warnings" button
 
+. Paragliders screen unlock is valid by doubleclicking only on lower right screen corner.
+    Previously any position was good, leading to possible false unlocks during takeoffs.
+
 BUG FIX
+. Fix the WHITE SCREEN bug: a white screen on startup would stop LK proceeding with execution, leaving a white page.
+    This was happening when 2 devices were in use, and the main gps on port A still had no valid fix.
+
 . Fix problem saving profiles on exit, even on CLUB versions
 . Fix problem with IGC Replay and variometer values
+. Fix old MapLock for paragliders being set ON by mistake.
+    Old MapLock is inside Engineering menu now, and should be set OFF by default.
+    However, changing from glider to paraglider mode it was set ON by mistake.
 
 
