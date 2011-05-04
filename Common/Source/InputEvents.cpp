@@ -649,7 +649,7 @@ void InputEvents::setMode(const TCHAR *mode) {
 void InputEvents::drawButtons(int Mode){
   int i;
 
-  if (!(ProgramStarted==3)) return;
+  if (!(ProgramStarted==psNormalOp)) return;
 
   for (i = 0; i < ModeLabel_count[Mode]; i++) {
     if ((ModeLabel[Mode][i].location > 0)) {
@@ -681,7 +681,7 @@ int InputEvents::getModeID() {
 
 // Input is a via the user touching the label on a touch screen / mouse
 bool InputEvents::processButton(int bindex) {
-  if (!(ProgramStarted==3)) return false;
+  if (!(ProgramStarted==psNormalOp)) return false;
 
   int thismode = getModeID();
 
@@ -726,7 +726,7 @@ bool InputEvents::processButton(int bindex) {
   Return = We had a valid key (even if nothing happens because of Bounce)
 */
 bool InputEvents::processKey(int dWord) {
-  if (!(ProgramStarted==3)) return false;
+  if (!(ProgramStarted==psNormalOp)) return false;
 
   InterfaceTimeoutReset();
 
@@ -813,7 +813,7 @@ bool InputEvents::processNmea(int ne_id) {
   Return = TRUE if we have a valid key match
 */
 bool InputEvents::processNmea_real(int ne_id) {
-  if (!(ProgramStarted==3)) return false;
+  if (!(ProgramStarted==psNormalOp)) return false;
   int event_id = 0;
 
   InterfaceTimeoutReset();
@@ -914,7 +914,7 @@ bool InputEvents::processGlideComputer(int gce_id) {
   Take virtual inputs from a Glide Computer to do special events
 */
 bool InputEvents::processGlideComputer_real(int gce_id) {
-  if (!(ProgramStarted==3)) return false;
+  if (!(ProgramStarted==psNormalOp)) return false;
   int event_id = 0;
 
   // TODO feature: Log glide computer events to IGC file
@@ -945,7 +945,7 @@ extern int MenuTimeOut;
 
 // EXECUTE an Event - lookup event handler and call back - no return
 void InputEvents::processGo(int eventid) {
-  if (!(ProgramStarted==3)) return;
+  if (!(ProgramStarted==psNormalOp)) return;
 
   // 
   // TODO feature: event/macro recorder
@@ -1803,7 +1803,7 @@ void InputEvents::eventGotoLookup(const TCHAR *misc) {
 void InputEvents::eventStatusMessage(const TCHAR *misc) {
   // 110102 shorthack to handle lktokens and any character
   if (_tcslen(misc)>4) {
-	if (misc[0]=='Z' && misc[1]=='Y' && misc[2]=='X') {
+	if (misc[0]=='Z' && misc[1]=='Y' && misc[2]=='X') {	// ZYX synthetic tokens inside XCIs
 		TCHAR nmisc[10];
 		_tcscpy(nmisc,_T("_@M"));
 		_tcscat(nmisc,&misc[3]);

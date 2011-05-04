@@ -4237,6 +4237,8 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
   if ((MapSpaceMode==MSM_WELCOME)||(mode.AnyPan()) ) return; // 100210
 #endif /* MAP_ZOOM */
 
+  if (!LKLanguageReady) return;
+
   if (extGPSCONNECT && !(DrawInfo.NAVWarning) && (DrawInfo.SatellitesUsed != 0)) {
 	if (LockModeStatus) goto goto_DrawLockModeStatus;
 	return;
@@ -4290,10 +4292,7 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
     TextInBoxMode.AsFlag.WhiteBorder = 1;
     TextInBoxMode.AsFlag.Border = 1;
     // No Valid Fix
-    TextInBox(hDC, gettext(_T("_@M970_")),
-              (rc.right-rc.left)/2, 
-              (rc.bottom-rc.top)/3,
-              0, TextInBoxMode);
+    TextInBox(hDC, gettext(_T("_@M970_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode);
 
     }
 

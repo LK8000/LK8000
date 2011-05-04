@@ -333,6 +333,7 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
   switch (MapSpaceMode) {
 	case MSM_WELCOME:
 #if (1)
+		// if (!GPS_INFO.NAVWarning) { // optional
 		static double firsttime=GPS_INFO.Time;
 		// delayed automatic exit from welcome mode
 		if ( GPS_INFO.Time > (firsttime+1.0) ) {
@@ -340,6 +341,7 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
 			LKevent=LKEVENT_NONE;
 			break;
 		}
+		// }
 #endif
 		DrawWelcome8000(hdc, rc);
 		break;
@@ -348,11 +350,6 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
 	case MSM_NEARTPS:
 		DrawNearest(hdc, rc);
 		break;
-/* 101222 REMOVE
-	case MSM_NEARTPS:
-		DrawNearestTurnpoint(hdc, rc);
-		break;
-*/
 	case MSM_COMMON:
 	case MSM_RECENT:
 		DrawCommon(hdc, rc);

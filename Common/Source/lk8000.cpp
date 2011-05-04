@@ -800,7 +800,7 @@ int SoundDeadband = 5;
 bool EnableVarioGauge = false;
 bool EnableAutoBlank = false;
 bool ScreenBlanked = false;
-
+bool LKLanguageReady = false;
 
 
 //IGC Logger
@@ -1776,7 +1776,7 @@ void CreateCalculationThread() {
 void PreloadInitialisation(bool ask) {
   //SetToRegistry(TEXT("XCV"), 1);
   SetToRegistry(TEXT("LKV"), 3);
-
+  LKLanguageReady=false;
   LKReadLanguageFile();
   FillDataOptions();
 
@@ -2158,6 +2158,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   ReadAirfieldFile();
   SetHome(false);
   LKReadLanguageFile();
+  LKLanguageReady=true;
 
   RasterTerrain::ServiceFullReload(GPS_INFO.Latitude, 
                                    GPS_INFO.Longitude);
@@ -2283,7 +2284,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   MapWindow::RequestOnFullScreen(); // VENTA10 EXPERIMENTAL
 
   // Da-da, start everything now
-  StartupStore(TEXT(". ProgramStarted=1%s"),NEWLINE);
+  StartupStore(TEXT(". ProgramStarted=InitDone%s"),NEWLINE);
   ProgramStarted = psInitDone;
 
   GlobalRunning = true;
@@ -3734,7 +3735,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	if (ProgramStarted==psFirstDrawDone) {
 	  AfterStartup();
 	  ProgramStarted = psNormalOp;
-          StartupStore(TEXT(". ProgramStarted=3%s"),NEWLINE);
+          StartupStore(TEXT(". ProgramStarted=NormalOp%s"),NEWLINE);
           StartupLogFreeRamAndStorage();
 	}
       }

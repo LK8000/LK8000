@@ -566,6 +566,8 @@ extern int StatusMessageData_Size;
 
 extern bool RequestAirspaceWarningDialog;
 
+extern bool LKLanguageReady;
+
 #if USERLEVEL
 extern int UserLevel;
 #endif
