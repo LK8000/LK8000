@@ -2226,9 +2226,6 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   // we want to be sure that RestartCommPort works on startup ONLY after all devices are inititalized
   goInitDevice=true; // 100118
 
-  if (!SIMMODE) {
-	RestartCommPorts();
-  }
 // WINDOWSPC _SIM_ devInit called twice missing devA name
 // on PC nonSIM we cannot use devInit here! Generic device is used until next port reset!
 
