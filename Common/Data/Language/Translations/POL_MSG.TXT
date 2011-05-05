@@ -1,5 +1,5 @@
 ﻿# LK8000 POLISH MESSAGES - POL_MSG.TXT
-# MASTER UPDATED:  110406
+# MASTER UPDATED:  110505
 #
 # Ten plik jest załadowany w czasie startu i wszystkie wiadomości są przechowywane w pamięci urządzenia.
 # Jeśli tłumaczysz ten plik to postaraj się przestrzegać długości wiadomości.
@@ -169,7 +169,6 @@ _@M155_ "SPRAWDŹ bezpieczną wysokość dolotu\n"
 _@M156_ "ZAMKNIJ"
 _@M157_ "ZAMKNIĘTY"
 _@M158_ "ZATWIERDZIĆ PZ i PRZERWAĆ ZADANIE?"
-_@M158_ "ZATWIERDZIĆ PZ i PRZERWAĆ zadanie?"
 _@M160_ "Oblicz"
 _@M161_ "Anuluj"
 _@M162_ "Nie można nadpisać!"
