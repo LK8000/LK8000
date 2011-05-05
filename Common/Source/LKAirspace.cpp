@@ -2257,7 +2257,7 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
       }
       break;
     case abAGL:
-      if (alt->Altitude == 0)
+      if (alt->AGL <= 0)
         _stprintf(intbuf, TEXT("SFC"));
       else {
         Units::FormatUserAltitude(alt->AGL, sUnitBuffer, sizeof(sUnitBuffer)/sizeof(sUnitBuffer[0]));
