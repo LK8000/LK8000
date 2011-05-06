@@ -105,6 +105,7 @@ CHANGES
   . Infobox nearest airspace shows the horizontal distance to the nearest airspace
   . Daily acked airspaces are also drawed on the map without any change
   . In airspace details dialog (long click on map) ACKDay button behaviour changed, now it shows a simple question to toggle actual ackday setting.
+  . Airspace ACK Day functionality changed to disabled/enabled
   . Config page 2 reordered, some parameters moved under page accessible by pressing the "Warnings" button
 
 . Paragliders screen unlock is valid by doubleclicking only on lower right screen corner.

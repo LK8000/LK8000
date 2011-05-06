@@ -90,11 +90,11 @@ static void DoAck(int Ack){
 		break;
 
 	  case 4:		//4 Dailyack clicked 
-		CAirspaceManager::Instance().AirspaceAckDaily(*p);
+		CAirspaceManager::Instance().AirspaceDisable(*p);
 		break;
 
 	  case 0:		//0 Enable clicked 
-		CAirspaceManager::Instance().AirspaceAckDailyCancel(*p);
+		CAirspaceManager::Instance().AirspaceEnable(*p);
 		break;
 	}//sw
     wAirspaceList->Redraw();
@@ -341,8 +341,6 @@ static TCHAR GetAckIndicator(AirspaceWarningLevel_t ackstate)
 		return _TEXT("+")[0];			// Predicted warning acked
 	  case awRed:
 		return _TEXT("#")[0];			// Warning acked
-	  case awDailyAck:
-		return _TEXT("*")[0];			// Daily acked
 	}
 }
 #endif

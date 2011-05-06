@@ -36,7 +36,7 @@ typedef struct _AIRSPACE_ALT
 typedef std::vector<POINT> POINTList;
 
 //Airspace warning and ack levels
-typedef enum {awNone=0, awYellow, awRed, awDailyAck} AirspaceWarningLevel_t;
+typedef enum {awNone=0, awYellow, awRed} AirspaceWarningLevel_t;
 //Airspace warning events
 typedef enum { aweNone, 
                 //for FLY zones
@@ -89,7 +89,8 @@ public:
             _bearing(0),
             _labelpriority(0),
             _vwarninglabel_hide(false),
-            _hwarninglabel_hide(false)
+            _hwarninglabel_hide(false),
+            _enabled(true)
             {}
   virtual ~CAirspace() {}
 
@@ -150,6 +151,9 @@ public:
 
   int Type() const { return _type; }
   void Type(int type) { _type = type; } 
+
+  int Enabled() const { return _enabled; }
+  void Enabled(bool enabled) { _enabled = enabled; } 
   
   AirspaceWarningLevel_t WarningLevel() const { return _warninglevel; }
   void WarningLevel(AirspaceWarningLevel_t userwarningstate) { _warninglevel = userwarningstate; }
@@ -192,6 +196,7 @@ protected:
   short int _labelpriority;            // warning label drawing priority to sequence labels on map
   bool _vwarninglabel_hide;     // Hide vertical warning label
   bool _hwarninglabel_hide;     // Hide horizontal warning label
+  bool _enabled;                // Airspace enabled for operations
   
   // Private functions
   void AirspaceAGLLookup(double av_lat, double av_lon);
@@ -323,8 +328,8 @@ public:
   void AirspaceSetAckLevel(CAirspace &airspace, AirspaceWarningLevel_t ackstate);
   void AirspaceAckWarn(CAirspace &airspace);
   void AirspaceAckSpace(CAirspace &airspace);
-  void AirspaceAckDaily(CAirspace &airspace);
-  void AirspaceAckDailyCancel(CAirspace &airspace);
+  void AirspaceDisable(CAirspace &airspace);
+  void AirspaceEnable(CAirspace &airspace);
   void AirspaceFlyzoneToggle(CAirspace &airspace);
   
   bool PopWarningMessage(AirspaceWarningMessage *msg);

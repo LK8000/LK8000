@@ -511,7 +511,7 @@ bool CAirspace::FinishWarning()
     }
 
     //ACK Step back, if ack time ellapsed and warningstate below ack state
-    if ( (_warningacklevel != awDailyAck) && (_warningacklevel>_warninglevel) && (_now > _warnacktimeout) ) _warningacklevel=_warninglevel;
+    if ( (_warningacklevel>_warninglevel) && (_now > _warnacktimeout) ) _warningacklevel=_warninglevel;
     
     _warninglevelold = _warninglevel;
 
@@ -540,7 +540,7 @@ bool CAirspace::GetDistanceInfo(bool &inside, int &hDistance, int &Bearing, int 
 // Get warning point coordinates, returns true if distances valid
 bool CAirspace::GetWarningPoint(double &longitude, double &latitude, AirspaceWarningDrawStyle_t &hdrawstyle, int &vDistance, AirspaceWarningDrawStyle_t &vdrawstyle) const
 {
-  if (_distances_ready && (_warningacklevel < awDailyAck)) {
+  if (_distances_ready && _enabled) {
     if (_flyzone && !_pos_inside_now ) return false;    // no warning labels if outside a flyzone
 
     vdrawstyle = awsBlack;
@@ -704,6 +704,8 @@ void CAirspace_Circle::CalcBounds()
 void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify) 
 {
   _drawstyle = adsHidden;
+  if (!_enabled) return;
+  
   if (iAirspaceMode[_type]%2 == 1) {
     double basealt;
     double topalt;
@@ -722,7 +724,7 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
          // || msRectContained(&screenbounds_latlon, &_bounds) is redundant here, msRectOverlap also returns true on containing!
          ) {
 
-    if ((!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES-1)) && (_warningacklevel < awDailyAck) && ((_warninglevel == awNone) || (_warninglevel > _warningacklevel))) {
+    if ((!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES-1)) && ((_warninglevel == awNone) || (_warninglevel > _warningacklevel))) {
       _drawstyle = adsFilled;
     } else {
       _drawstyle = adsOutline;
@@ -924,6 +926,8 @@ void CAirspace_Area::CalcBounds()
 void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify) 
 {
   _drawstyle = adsHidden;
+  if (!_enabled) return;
+  
   if (iAirspaceMode[_type]%2 == 1) {
     double basealt;
     double topalt;
@@ -942,7 +946,7 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
          // || msRectContained(&screenbounds_latlon, &_bounds) is redundant here, msRectOverlap also returns true on containing!
          ) {
 
-    if ((!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES-1)) && (_warningacklevel < awDailyAck) && ((_warninglevel == awNone) || (_warninglevel > _warningacklevel))) {
+    if ((!(iAirspaceBrush[_type] == NUMAIRSPACEBRUSHES-1)) && ((_warninglevel == awNone) || (_warninglevel > _warningacklevel))) {
       _drawstyle = adsFilled;
     } else {
       _drawstyle = adsOutline;
@@ -1985,7 +1989,9 @@ void CAirspaceManager::SetFarVisible(const rectObj &bounds_active)
   _airspaces_near.clear();
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
     // Check if airspace overlaps given bounds
-    if (msRectOverlap(&bounds_active, &((*it)->Bounds())) == MS_TRUE) _airspaces_near.push_back(*it);
+    if ( (msRectOverlap(&bounds_active, &((*it)->Bounds())) == MS_TRUE)
+        && (*it)->Enabled()
+       ) _airspaces_near.push_back(*it);
   }
 }
 
@@ -2125,23 +2131,23 @@ void CAirspaceManager::AirspaceAckSpace(CAirspace &airspace)
     #endif
 }
 
-// Ack an airspace for a day 
-void CAirspaceManager::AirspaceAckDaily(CAirspace &airspace)
+// Disable an airspace 
+void CAirspaceManager::AirspaceDisable(CAirspace &airspace)
 {
     CCriticalSection::CGuard guard(_csairspaces);
-    airspace.WarningAckLevel(awDailyAck);
+    airspace.Enabled(false);
     #ifdef DEBUG_AIRSPACE
-    StartupStore(TEXT("LKAIRSP: %s AirspaceAckDaily()%s"),airspace.Name(),NEWLINE );
+    StartupStore(TEXT("LKAIRSP: %s AirspaceDisable()%s"),airspace.Name(),NEWLINE );
     #endif
 }
 
-// Cancel ack on an airspace
-void CAirspaceManager::AirspaceAckDailyCancel(CAirspace &airspace)
+// Enable an airspace
+void CAirspaceManager::AirspaceEnable(CAirspace &airspace)
 {
     CCriticalSection::CGuard guard(_csairspaces);
-    airspace.WarningAckLevel(awNone);
+    airspace.Enabled(true);
     #ifdef DEBUG_AIRSPACE
-    StartupStore(TEXT("LKAIRSP: %s AirspaceAckDailyCancel()%s"),airspace.Name(),NEWLINE );
+    StartupStore(TEXT("LKAIRSP: %s AirspaceEnable()%s"),airspace.Name(),NEWLINE );
     #endif
 }
 
