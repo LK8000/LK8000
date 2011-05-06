@@ -31,7 +31,8 @@ Things to be fixed in LK languages files/tokens:
 - New fields: _@M1001_ - _@M1400_ for calculated values and infobox abbrev. translations, 
   see details in ENG_MSG
 - New Logger declarations Error Handling fields: _@M1400_ - _@M1429_
-- _@M1240_ - _@M1279_ to translate
+- _@M1240_ - _@M1284_ to translate
+- remove * from _@M771_ _@M790_ _@M52_
 
   MENU files to be checked and translated?
 

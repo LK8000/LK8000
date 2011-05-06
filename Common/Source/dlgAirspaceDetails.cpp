@@ -60,19 +60,19 @@ static void OnAcknowledgeClicked(WindowControl * Sender){
   if (airspace == NULL) return;
   if (wf == NULL) return;
   UINT answer;
-  if (airspace_copy.WarningAckLevel() == awDailyAck) {
-    // LKTOKEN  _@M1280_ "Clear daily acknowledgement?"
+  if (!airspace_copy.Enabled()) {
+    // LKTOKEN  _@M1280_ "Enable this airspace?"
     answer = MessageBoxX(hWndMapWindow, airspace_copy.Name(), gettext(TEXT("_@M1280_")),  MB_YESNO|MB_ICONQUESTION);
     if (answer == IDYES) {
       // this will cancel a daily ack
-      CAirspaceManager::Instance().AirspaceAckDailyCancel(*airspace);
+      CAirspaceManager::Instance().AirspaceEnable(*airspace);
       wf->SetModalResult(mrOK);
     }
   } else {
-    // LKTOKEN  _@M51_ = "Acknowledge for day?" 
-    answer = MessageBoxX(hWndMapWindow, airspace_copy.Name(), gettext(TEXT("_@M51_")),	MB_YESNO|MB_ICONQUESTION);
+    // LKTOKEN  _@M1284_ "Disable this airspace?" 
+    answer = MessageBoxX(hWndMapWindow, airspace_copy.Name(), gettext(TEXT("_@M1284_")),	MB_YESNO|MB_ICONQUESTION);
     if (answer == IDYES) {
-      CAirspaceManager::Instance().AirspaceAckDaily(*airspace);
+      CAirspaceManager::Instance().AirspaceDisable(*airspace);
       wf->SetModalResult(mrOK);
     }
   }
@@ -227,33 +227,33 @@ static void SetValues() {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAckLevel"));
   if (wp) {
-	  switch (airspace_copy.WarningAckLevel()) {
-		default:
-		  // LKTOKEN _@M765_ "Unknown"
-		  wp->SetText(gettext(TEXT("_@M765_")));
-		  break;
-		  
-		case awNone:
-		  // LKTOKEN _@M479_ "None"
-  		  wp->SetText(gettext(TEXT("_@M479_")));
-		  break;
+      if (airspace_copy.Enabled()) {
+        switch (airspace_copy.WarningAckLevel()) {
+          default:
+            // LKTOKEN _@M765_ "Unknown"
+            wp->SetText(gettext(TEXT("_@M765_")));
+            break;
+            
+          case awNone:
+            // LKTOKEN _@M479_ "None"
+            wp->SetText(gettext(TEXT("_@M479_")));
+            break;
 
-		case awYellow:
-			// LKTOKEN _@M1267_ "Yellow acknowledged"
-			wp->SetText(gettext(TEXT("_@M1267_")));
-		  break;
-		
-		case awRed:
-			// LKTOKEN _@M1268_ "Red acknowledged"
-			wp->SetText(gettext(TEXT("_@M1268_")));
-		  break;
+          case awYellow:
+              // LKTOKEN _@M1267_ "Yellow acknowledged"
+              wp->SetText(gettext(TEXT("_@M1267_")));
+            break;
+          
+          case awRed:
+              // LKTOKEN _@M1268_ "Red acknowledged"
+              wp->SetText(gettext(TEXT("_@M1268_")));
+            break;
 
-		case awDailyAck:
-			// LKTOKEN _@M1269_ "Daily acknowledged"
-			wp->SetText(gettext(TEXT("_@M1269_")));
-		  break;
-		
-	  }//sw
+        }//sw
+      } else {
+          // LKTOKEN _@M1269_ "Disabled"
+          wp->SetText(gettext(TEXT("_@M1269_")));
+      }
 	  wp->RefreshDisplay();
   }
 
@@ -268,6 +268,19 @@ static void SetValues() {
 	}
 	wb->Redraw();
   }
+
+  wb = (WndButton*)wf->FindByName(TEXT("cmdAcknowledge"));
+  if (wp) {
+    if (airspace_copy.Enabled()) {
+      // LKTOKEN _@M1283_ "Disable"
+      wb->SetCaption(gettext(TEXT("_@M1283_")));
+    } else {
+      // LKTOKEN _@M1282_ "Enable"
+      wb->SetCaption(gettext(TEXT("_@M1282_")));
+    }
+    wb->Redraw();
+  }
+
 }
 
 #else
