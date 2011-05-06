@@ -707,19 +707,7 @@ void CAirspace_Circle::CalculateScreenPosition(const rectObj &screenbounds_latlo
   if (!_enabled) return;
   
   if (iAirspaceMode[_type]%2 == 1) {
-    double basealt;
-    double topalt;
-    if (_base.Base != abAGL) {
-      basealt = _base.Altitude;
-    } else {
-      basealt = _base.AGL + CALCULATED_INFO.TerrainAlt;
-    }
-    if (_top.Base != abAGL) {
-      topalt = _top.Altitude;
-    } else {
-      topalt = _top.AGL + CALCULATED_INFO.TerrainAlt;
-    }
-    if(CAirspaceManager::Instance().CheckAirspaceAltitude(basealt, topalt)) {
+    if(CAirspaceManager::Instance().CheckAirspaceAltitude(_base, _top)) {
       if (msRectOverlap(&_bounds, &screenbounds_latlon) 
          // || msRectContained(&screenbounds_latlon, &_bounds) is redundant here, msRectOverlap also returns true on containing!
          ) {
@@ -929,19 +917,7 @@ void CAirspace_Area::CalculateScreenPosition(const rectObj &screenbounds_latlon,
   if (!_enabled) return;
   
   if (iAirspaceMode[_type]%2 == 1) {
-    double basealt;
-    double topalt;
-    if (_base.Base != abAGL) {
-      basealt = _base.Altitude;
-    } else {
-      basealt = _base.AGL + CALCULATED_INFO.TerrainAlt;
-    }
-    if (_top.Base != abAGL) {
-      topalt = _top.Altitude;
-    } else {
-      topalt = _top.AGL + CALCULATED_INFO.TerrainAlt;
-    }
-    if(CAirspaceManager::Instance().CheckAirspaceAltitude(basealt, topalt)) {
+    if(CAirspaceManager::Instance().CheckAirspaceAltitude(_base, _top)) {
       if (msRectOverlap(&_bounds, &screenbounds_latlon) 
          // || msRectContained(&screenbounds_latlon, &_bounds) is redundant here, msRectOverlap also returns true on containing!
          ) {
@@ -982,39 +958,53 @@ bool CAirspaceManager::StartsWith(const TCHAR *Text, const TCHAR *LookFor) const
   }
 }
 
-bool CAirspaceManager::CheckAirspaceAltitude(const double &Base, const double &Top) const
+bool CAirspaceManager::CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIRSPACE_ALT &Top) const
 {
+  
   double alt;
+  double basealt;
+  double topalt;
+  bool base_is_sfc = false;
+  
   if (GPS_INFO.BaroAltitudeAvailable) {
     alt = GPS_INFO.BaroAltitude;
   } else {
     alt = GPS_INFO.Altitude;
   }
 
+    if (Base.Base != abAGL) {
+      basealt = Base.Altitude;
+    } else {
+      basealt = Base.AGL + CALCULATED_INFO.TerrainAlt;
+      if (Base.AGL <= 0) base_is_sfc = true;
+    }
+    if (Top.Base != abAGL) {
+      topalt = Top.Altitude;
+    } else {
+      topalt = Top.AGL + CALCULATED_INFO.TerrainAlt;
+    }
+
   switch (AltitudeMode)
     {
     case ALLON : return TRUE;
         
     case CLIP : 
-      if(Base < ClipAltitude)
-    return TRUE;
-      else
-    return FALSE;
+      if ((basealt < ClipAltitude) || base_is_sfc) return TRUE; else return FALSE;
 
     case AUTO:
-      if( ( alt > (Base - AltWarningMargin) ) 
-      && ( alt < (Top + AltWarningMargin) ))
+      if( (( alt > (basealt - AltWarningMargin)) || base_is_sfc )
+      && ( alt < (topalt + AltWarningMargin) ))
     return TRUE;
       else
     return FALSE;
 
     case ALLBELOW:
-      if(  (Base - AltWarningMargin) < alt )
+      if(  ((basealt - AltWarningMargin) < alt ) || base_is_sfc )
     return  TRUE;
       else
     return FALSE;
     case INSIDE:
-      if( ( alt >= (Base) ) && ( alt < (Top) ))
+      if( (( alt >= basealt ) || base_is_sfc ) && ( alt < topalt ) )
     return TRUE;
       else
         return FALSE;
@@ -1720,8 +1710,6 @@ CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, const 
 
   bool iswarn;
   bool isdisplay;
-  double basealt;
-  double topalt;
   bool altok;
   double bearing;
   CAirspace *found = NULL;
@@ -1741,22 +1729,26 @@ CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, const 
       // don't want warnings for this one
       continue;
     }
-
-    if ((*it)->Base()->Base != abAGL) {
-      basealt = (*it)->Base()->Altitude;
-    } else {
-      basealt = (*it)->Base()->AGL + CALCULATED_INFO.TerrainAlt;
-    }
-    if ((*it)->Top()->Base != abAGL) {
-      topalt = (*it)->Top()->Altitude;
-    } else {
-      topalt = (*it)->Top()->AGL + CALCULATED_INFO.TerrainAlt;
-    }
     
     if (height) {
-      altok = ((*height > basealt) && (*height < topalt));
+      double basealt;
+      double topalt;
+      bool base_is_sfc = false;
+
+      if ((*it)->Base()->Base != abAGL) {
+        basealt = (*it)->Base()->Altitude;
+      } else {
+        basealt = (*it)->Base()->AGL + CALCULATED_INFO.TerrainAlt;
+        if ((*it)->Base()->AGL <= 0) base_is_sfc = true;
+      }
+      if ((*it)->Top()->Base != abAGL) {
+        topalt = (*it)->Top()->Altitude;
+      } else {
+        topalt = (*it)->Top()->AGL + CALCULATED_INFO.TerrainAlt;
+      }
+      altok = (((*height > basealt) || base_is_sfc) && (*height < topalt));
     } else {
-      altok = CheckAirspaceAltitude(basealt, topalt)==TRUE;
+      altok = CheckAirspaceAltitude(*(*it)->Base(), *(*it)->Top())==TRUE;
     }
     if(altok) {
       

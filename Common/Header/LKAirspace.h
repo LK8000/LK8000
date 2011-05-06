@@ -305,7 +305,7 @@ public:
   static CAirspaceManager& Instance() { return _instance; }
 
   //HELPER FUNCTIONS
-  bool CheckAirspaceAltitude(const double &Base, const double &Top) const;
+  bool CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIRSPACE_ALT &Top) const;
   TCHAR* GetAirspaceTypeText(int type) const;
   TCHAR* GetAirspaceTypeShortText(int type) const;
   void GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AIRSPACE_ALT *alt) const;
