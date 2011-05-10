@@ -2780,6 +2780,8 @@ void MapWindow::LKUpdateOlc(void)
   // get one result each second
   CContestMgr::TType type = (CContestMgr::TType)(loop++ % CContestMgr::TYPE_NUM);
   OlcResults[type] = CContestMgr::Instance().Result(type, false);
+  if(loop == CContestMgr::TYPE_NUM)
+    loop = 0;
 }
 
 #endif
