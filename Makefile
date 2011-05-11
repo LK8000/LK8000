@@ -377,6 +377,7 @@ DLGS	:=\
 	$(SRC)/dlgLKTraffic.cpp \
 	$(SRC)/dlgCustomKeys.cpp \
 	$(SRC)/dlgBottomBar.cpp \
+	$(SRC)/dlgInfoPages.cpp \
 	$(SRC)/dlgProfiles.cpp \
 
 VOLKS	:=\

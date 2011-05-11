@@ -26,6 +26,7 @@ extern TCHAR XCSoar_Version[256];
 #include "Task.h"
 #include "Statistics.h"
 #include "Dialogs.h"
+#include "Utils2.h"
 #ifdef NEW_OLC
 #include "ContestMgr.h"
 #endif
@@ -492,6 +493,21 @@ extern bool ConfBB6;
 extern bool ConfBB7;
 extern bool ConfBB8;
 extern bool ConfBB9;
+extern bool ConfMP[10];
+extern bool ConfIP[10][10];
+extern bool ConfIP11;
+extern bool ConfIP12;
+extern bool ConfIP13;
+extern bool ConfIP14;
+extern bool ConfIP15;
+extern bool ConfIP16;
+extern bool ConfIP21;
+extern bool ConfIP22;
+extern bool ConfIP23;
+extern bool ConfIP24;
+extern bool ConfIP31;
+extern bool ConfIP32;
+
 extern bool OverlayClock;
 extern bool EnableSoundVario;
 extern bool EnableSoundTask;

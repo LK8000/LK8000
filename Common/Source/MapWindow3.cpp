@@ -310,6 +310,17 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
 	p[6].x=rc.right-1; p[6].y=0; p[7].x=rc.right-1; p[7].y=rc.bottom-BottomSize-NIBLSCALE(2); // 091230 right-1
 
 //	p[8].x=0; p[8].y=rc.bottom-BottomSize-NIBLSCALE(2); p[9].x=rc.right; p[9].y=p[8].y;
+
+/*
+StartupStore(_T("DOINIT DRAWMAPSPACE 21=%d=%d 22=%d=%d 23=%d=%d 24=%d=%d 31=%d=%d 32=%d=%d\n"),
+ConfIP[LKMODE_WP][0],ConfIP21,
+ConfIP[LKMODE_WP][1],ConfIP22,
+ConfIP[LKMODE_WP][2],ConfIP23,
+ConfIP[LKMODE_WP][3],ConfIP24,
+ConfIP[LKMODE_NAV][0],ConfIP31,
+ConfIP[LKMODE_NAV][1],ConfIP32);
+*/
+
 	doinit=false; 
   }
 
@@ -329,6 +340,12 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
 #ifdef DRAWLKSTATUS 
   if (LKevent==LKEVENT_NEWRUN) dodrawlkstatus=true;
 #endif
+
+  // We are entering mapspacemodes with no initial check on configured subpages.
+  // Thus we need to ensure that the page is really available, or find the first valid.
+  // However, this will prevent direct customkey access to pages!
+  // Instead, we do it when we call next page from InfoPageChange
+  // if (!ConfIP[ModeIndex][CURTYPE]) NextModeType();
 
   switch (MapSpaceMode) {
 	case MSM_WELCOME:

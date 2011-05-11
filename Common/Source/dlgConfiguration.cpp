@@ -967,7 +967,7 @@ static void OnSetBottomBarClicked(WindowControl * Sender){
 }
 static void OnSetInfoPagesClicked(WindowControl * Sender){
 	(void)Sender;
-  dlgBottomBarShowModal();
+  dlgInfoPagesShowModal();
 }
 
 #ifdef LKAIRSPACE

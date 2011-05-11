@@ -1491,8 +1491,30 @@ _@M1602_ "Configure Bottom Bar"
 _@M1603_ "Configure Info Pages"
 _@M1604_ "Configure xxxx"
 _@M1605_ "Bottom Bar"
-_@M1605_ "Info Pages"
+_@M1606_ "Info Pages"
 _@M1607_ "Bottom Bar Config Saved"
 _@M1608_ "Info Pages Config Saved"
+
+# Config InfoPages
+_@M1610_ "1.1 Cruise "
+_@M1611_ "1.2 Thermal "
+_@M1612_ "1.3 Task "
+_@M1613_ "1.4 Custom "
+_@M1614_ "1.5 Contest "
+_@M1615_ "1.6 Turn "
+_@M1616_ "2.1 APT "
+_@M1617_ "2.2 LND "
+_@M1618_ "2.3 TPS "
+_@M1619_ "2.4 ASP "
+_@M1620_ "3.1 COMN "
+_@M1621_ "3.2 HIST "
+
+
+
+
+
+
+
+
 
 # Note for developers: LKLanguage MAX_MESSAGE  1700: 0-1699 !
