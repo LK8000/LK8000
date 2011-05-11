@@ -2763,10 +2763,11 @@ void InitModeTable() {
 
 	// startup mode
 	ModeIndex=LKMODE_MAP;
-	// startup values for each mode
+	// startup values for each mode. we shall update these defaults using current profile settings
+	// for ConfIP real values. 
 	ModeType[LKMODE_MAP]	=	MP_WELCOME;
-	ModeType[LKMODE_WP]	=	WP_AIRPORTS;
 	ModeType[LKMODE_INFOMODE]=	IM_CRUISE;
+	ModeType[LKMODE_WP]	=	WP_AIRPORTS;
 	ModeType[LKMODE_NAV]	=	NV_COMMONS;
 	ModeType[LKMODE_TRF]	=	TF_LIST;
 
@@ -2790,6 +2791,7 @@ void InitModeTable() {
 	for (i=0; i<MAXCOMMON; i++) 
 		CommonIndex[i]= -1;
 
+	SetInitialModeTypes();
 
 	StartupStore(_T("Ok%s"),NEWLINE);
 }
@@ -2810,6 +2812,7 @@ void SetModeType(short modeindex, short modetype) {
 void NextModeType() {
 
 	UnselectMapSpace( ModeTable[ModeIndex][CURTYPE] );
+	short curtype_entry=CURTYPE;
 redo:
 	if ( CURTYPE >= ModeTableTop[ModeIndex] ) {
 		// point to first
@@ -2817,12 +2820,22 @@ redo:
 	} else {
 		CURTYPE++;
 	}
+
+	// if we are at the beginning point, we keep it
+	if (CURTYPE == curtype_entry) goto finish;
+
+	#if 0 // REMOVE
 	if (ISPARAGLIDER) {
 		if (CURTYPE == IM_TRI) goto redo;
 	}
+	#else
+	if (!ConfIP[ModeIndex][CURTYPE]) goto redo;
+	#endif
+
 	if (!UseContestEngine()) {
 		if (CURTYPE == IM_CONTEST) goto redo;
 	}
+finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 }
 
@@ -2830,19 +2843,30 @@ redo:
 void PreviousModeType() {
 // usare ifcircling per decidere se 0 o 1
 	UnselectMapSpace( ModeTable[ModeIndex][CURTYPE] );
+	short curtype_entry=CURTYPE;
 redo:
 	if ( CURTYPE <= 0 ) {
 		// point to last
 		CURTYPE=ModeTableTop[ModeIndex]; 
 	} else {
 		CURTYPE--;
+
 	}
+	// if we are at the beginning point, we keep it
+	if (CURTYPE == curtype_entry) goto finish;
+
+	#if 0 // REMOVE
 	if (ISPARAGLIDER) {
 		if (CURTYPE == IM_TRI) goto redo;
 	}
+	#else
+	if (!ConfIP[ModeIndex][CURTYPE]) goto redo;
+	#endif
+
 	if (!UseContestEngine()) {
 		if (CURTYPE == IM_CONTEST) goto redo;
 	}
+finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 }
 
@@ -2853,7 +2877,8 @@ redo:
 //
 void NextModeIndex() {
 	UnselectMapSpace(ModeTable[ModeIndex][CURTYPE]);
-	if ( GPS_INFO.FLARM_Available ) { // 100325
+	#if 0 // REMOVE
+	if ( GPS_INFO.FLARM_Available ) { 
 		if ( (ModeIndex+1)>LKMODE_TOP)
 			ModeIndex=LKMODE_MAP;
 		else
@@ -2864,6 +2889,9 @@ void NextModeIndex() {
 		else
 			ModeIndex++;
 	}
+	#else
+	InfoPageChange(true);
+	#endif
 	SelectMapSpace(ModeTable[ModeIndex][CURTYPE]);
 }
 
@@ -2930,9 +2958,9 @@ void BottomSounds() {
 #endif
 }
 
-// This is currently unused.. we need a button!
 void PreviousModeIndex() {
   UnselectMapSpace(ModeTable[ModeIndex][CURTYPE]);
+  #if 0 // REMOVE
   if ( (ModeIndex-1)<0) {
 	if ( GPS_INFO.FLARM_Available ) { // 100325
 		ModeIndex=LKMODE_TOP;
@@ -2941,6 +2969,9 @@ void PreviousModeIndex() {
 	}
   } else
 	ModeIndex--;
+  #else
+  InfoPageChange(false);
+  #endif
   SelectMapSpace(ModeTable[ModeIndex][CURTYPE]);
 }
 
@@ -4411,6 +4442,56 @@ bbc_previous:
     wanted--;
   }
   BottomMode=wanted;
+  return;
+
+}
+
+
+void InfoPageChange(bool advance) {
+
+  short wanted;
+  if (!advance) goto ipc_previous;
+
+  wanted=ModeIndex+1;
+  while (true) {
+    if (wanted >LKMODE_TOP) {
+	wanted=LKMODE_MAP;
+	break;
+    }
+    if (wanted == LKMODE_TRF) {
+	if ( GPS_INFO.FLARM_Available ) break; // always ON if available
+	wanted++;
+	continue;
+    }
+    if (ConfMP[wanted]) break;
+    wanted++;
+  }
+  ModeIndex=wanted;
+  // Here we set the correct subpage initially. Only DrawInfoPage is checking CURTYPE, while
+  // DrawNearest and commons use MapSpaceMode. It's a bit confusing, but both things are good.
+  if (!ConfIP[ModeIndex][CURTYPE]) NextModeType();
+
+  return;
+
+ipc_previous:
+
+  wanted=ModeIndex-1;
+  while (true) {
+    if (wanted <LKMODE_MAP) {
+	wanted=LKMODE_TOP;
+	continue;
+    }
+    if (wanted == LKMODE_TRF) {
+	if ( GPS_INFO.FLARM_Available ) break; // always ON if available
+	wanted--;
+	continue;
+    }
+    if (ConfMP[wanted]) break;
+    wanted--;
+  }
+
+  ModeIndex=wanted;
+  if (!ConfIP[ModeIndex][CURTYPE]) PreviousModeType();
   return;
 
 }

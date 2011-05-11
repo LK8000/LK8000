@@ -1526,6 +1526,12 @@ Enable or disable each bottom bar stripe while rotating navboxes.
 If all bars are disabled, NAV1 is always shown automatically.
 During thermal mode the THR 0 infobar is always shown, also.
 
+@1221
+[InfoPages rotation configuration]
+Enable or disable each page in the rotating sequence.
+If all items in a page are disabled, then this page will be skipped.
+A page will be still reachable with a custom keys, eventually.
+
 @9999
 No help available on this item!
 

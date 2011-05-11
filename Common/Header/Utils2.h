@@ -66,6 +66,7 @@ void	UnlockMap();
 int   GetFontRenderer();
 bool	LockMode(short lmode);
 void	BottomBarChange(bool advance);
+void	InfoPageChange(bool advance);
 int	roundupdivision(int a, int b);
 void	Cpustats(int *acc, FILETIME *a, FILETIME *b, FILETIME *c, FILETIME *d);
 #ifdef FIVV
@@ -211,7 +212,7 @@ extern HFONT					LK8PanelUnitFont;
 #define IM_AUX			3
 #define IM_CONTEST		4
 #define IM_TRI			5
-#define IM_TOP			5
+#define IM_TOP			5	// THIS IS THE ABSOLUTE MAX NUMBER OF PAGES IN ALL MODES, ALSO!
 //
 // Navigation mode
 //

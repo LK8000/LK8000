@@ -379,6 +379,20 @@ const TCHAR szRegistryConfBB6[] = TEXT("ConfBB6");
 const TCHAR szRegistryConfBB7[] = TEXT("ConfBB7");
 const TCHAR szRegistryConfBB8[] = TEXT("ConfBB8");
 const TCHAR szRegistryConfBB9[] = TEXT("ConfBB9");
+
+const TCHAR szRegistryConfIP11[] = TEXT("ConfIP11");
+const TCHAR szRegistryConfIP12[] = TEXT("ConfIP12");
+const TCHAR szRegistryConfIP13[] = TEXT("ConfIP13");
+const TCHAR szRegistryConfIP14[] = TEXT("ConfIP14");
+const TCHAR szRegistryConfIP15[] = TEXT("ConfIP15");
+const TCHAR szRegistryConfIP16[] = TEXT("ConfIP16");
+const TCHAR szRegistryConfIP21[] = TEXT("ConfIP21");
+const TCHAR szRegistryConfIP22[] = TEXT("ConfIP22");
+const TCHAR szRegistryConfIP23[] = TEXT("ConfIP23");
+const TCHAR szRegistryConfIP24[] = TEXT("ConfIP24");
+const TCHAR szRegistryConfIP31[] = TEXT("ConfIP31");
+const TCHAR szRegistryConfIP32[] = TEXT("ConfIP32");
+
 const TCHAR szRegistryOverlayClock[] = TEXT("OverlayClock");
 
 const TCHAR szRegistryLoggerTimeStepCruise[]= TEXT("LoggerTimeStepCruise");
@@ -1550,7 +1564,7 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryOverlayClock,&Temp);
   OverlayClock = Temp;
 
-  // default BB is all ON
+  // default BB and IP is all ON
   Temp = 1;
   GetFromRegistry(szRegistryConfBB1,&Temp);
   ConfBB1 = Temp;
@@ -1578,6 +1592,43 @@ void ReadRegistrySettings(void)
   Temp = 1;
   GetFromRegistry(szRegistryConfBB9,&Temp);
   ConfBB9 = Temp;
+
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP11,&Temp);
+  ConfIP11 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP12,&Temp);
+  ConfIP12 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP13,&Temp);
+  ConfIP13 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP14,&Temp);
+  ConfIP14 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP15,&Temp);
+  ConfIP15 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP16,&Temp);
+  ConfIP16 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP21,&Temp);
+  ConfIP21 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP22,&Temp);
+  ConfIP22 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP23,&Temp);
+  ConfIP23 = Temp;
+  Temp = 0; // STILL DISABLED AIRSPACES
+  GetFromRegistry(szRegistryConfIP24,&Temp);
+  ConfIP24 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP31,&Temp);
+  ConfIP31 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP32,&Temp);
+  ConfIP32 = Temp;
 
   Temp = LoggerTimeStepCruise;
   GetFromRegistry(szRegistryLoggerTimeStepCruise,&Temp);
@@ -1618,6 +1669,7 @@ void ReadRegistrySettings(void)
     DisableAutoLogger = false;
 
   UpdateConfBB();
+  UpdateConfIP();
 
 }
 
@@ -5794,3 +5846,90 @@ void UpdateConfBB(void) {
 		ConfBB[1]=true;
 
 }
+
+void UpdateConfIP(void) {
+
+  // MAP MODE always available
+  ConfIP[0][0]=true; 
+  ConfIP[0][1]=true; 
+  ConfMP[0]=true; // map mode
+
+  // LKMODE_INFOMODE is 1
+  ConfIP[1][0]=ConfIP11;
+  ConfIP[1][1]=ConfIP12;
+  ConfIP[1][2]=ConfIP13;
+  ConfIP[1][3]=ConfIP14;
+  ConfIP[1][4]=ConfIP15;
+  ConfIP[1][5]=ConfIP16;
+
+  // WPMODE
+  ConfIP[2][0]=ConfIP21;
+  ConfIP[2][1]=ConfIP22;
+  ConfIP[2][2]=ConfIP23;
+  ConfIP[2][3]=ConfIP24;
+
+  // COMMONS
+  ConfIP[3][0]=ConfIP31;
+  ConfIP[3][1]=ConfIP32;
+
+  // TRAFFIC always on if available
+  ConfIP[4][0]=true;
+  ConfIP[4][1]=true;
+  ConfIP[4][2]=true;
+  ConfMP[4]=true; // traffic mode
+
+  // Check if we have INFOMODE
+  if (ConfIP[1][0]==false && ConfIP[1][1]==false 
+	&& ConfIP[1][2]==false && ConfIP[1][3]==false 
+	&& ConfIP[1][4]==false && ConfIP[1][5]==false) {
+	ConfMP[1]=false;
+  } else
+	ConfMP[1]=true;
+
+  // Check if we have NEAREST pages
+  if (ConfIP[2][0]==false && ConfIP[2][1]==false 
+	&& ConfIP[2][2]==false && ConfIP[2][3]==false ) {
+	ConfMP[2]=false;
+  } else
+	ConfMP[2]=true;
+
+  // Check if we have COMMONS
+  if (ConfIP[3][0]==false && ConfIP[3][1]==false ) {
+	ConfMP[3]=false;
+  } else
+	ConfMP[3]=true;
+
+  /*
+  // Verify that we have at least one menu
+  if (ConfMP[1]==false && ConfMP[2]==false && ConfMP[3]==false ) {
+	ConfIP[1][0]=true;
+	ConfMP[1]=true;
+  }
+  */
+  SetInitialModeTypes();
+
+}
+
+void SetInitialModeTypes(void) {
+
+  // Update the initial values for each mapspace, keeping the first valid value. We search backwards.
+  // INFOMODE 1  
+  if (ConfIP[LKMODE_INFOMODE][IM_TRI]) ModeType[LKMODE_INFOMODE]=IM_TRI;
+  if (ConfIP[LKMODE_INFOMODE][IM_CONTEST]) ModeType[LKMODE_INFOMODE]=IM_CONTEST;
+  if (ConfIP[LKMODE_INFOMODE][IM_AUX]) ModeType[LKMODE_INFOMODE]=IM_AUX;
+  if (ConfIP[LKMODE_INFOMODE][IM_TASK]) ModeType[LKMODE_INFOMODE]=IM_TASK;
+  if (ConfIP[LKMODE_INFOMODE][IM_THERMAL]) ModeType[LKMODE_INFOMODE]=IM_THERMAL;
+  if (ConfIP[LKMODE_INFOMODE][IM_CRUISE]) ModeType[LKMODE_INFOMODE]=IM_CRUISE;
+
+  // WP NEAREST MODE 2  
+  if (ConfIP[LKMODE_WP][WP_NEARTPS]) ModeType[LKMODE_WP]=WP_NEARTPS;
+  if (ConfIP[LKMODE_WP][WP_LANDABLE]) ModeType[LKMODE_WP]=WP_LANDABLE;
+  if (ConfIP[LKMODE_WP][WP_AIRPORTS]) ModeType[LKMODE_WP]=WP_AIRPORTS;
+
+  // COMMONS MODE 3
+  if (ConfIP[LKMODE_NAV][NV_HISTORY]) ModeType[LKMODE_WP]=NV_HISTORY;
+  if (ConfIP[LKMODE_NAV][NV_COMMONS]) ModeType[LKMODE_WP]=NV_COMMONS;
+
+
+}
+

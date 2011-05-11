@@ -237,6 +237,20 @@ extern const TCHAR szRegistryConfBB7[];
 extern const TCHAR szRegistryConfBB8[];
 extern const TCHAR szRegistryConfBB9[];
 
+extern const TCHAR szRegistryConfIP11[];
+extern const TCHAR szRegistryConfIP12[];
+extern const TCHAR szRegistryConfIP13[];
+extern const TCHAR szRegistryConfIP14[];
+extern const TCHAR szRegistryConfIP15[];
+extern const TCHAR szRegistryConfIP16[];
+extern const TCHAR szRegistryConfIP21[];
+extern const TCHAR szRegistryConfIP22[];
+extern const TCHAR szRegistryConfIP23[];
+extern const TCHAR szRegistryConfIP24[];
+extern const TCHAR szRegistryConfIP31[];
+extern const TCHAR szRegistryConfIP32[];
+
+
 extern const TCHAR szRegistrySafetyMacCready[];
 extern const TCHAR szRegistryAbortSafetyUseCurrent[];
 extern const TCHAR szRegistryAutoMcMode[];
@@ -579,5 +593,7 @@ bool RotateScreen(void);
 int GetTextWidth(HDC hDC, TCHAR *text);
 void ExtTextOutClip(HDC hDC, int x, int y, TCHAR *text, int width);
 void UpdateConfBB(void);
+void UpdateConfIP(void);
+void SetInitialModeTypes(void);
 
 #endif
