@@ -40,12 +40,12 @@
 <WndButton Name="cmdAirspaceMode"  Caption="_@M286_" X=170 Y=2 Width=70  Height=22 Font=2 OnClickNotify="OnAirspaceModeClicked" />
 
 <WndProperty Name="prpAirspaceDisplay" Caption="_@M67_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H108_">
-<DataField name="" DataType="enum"  Min=0 Max=50 Step=1/>
+<DataField name="" DataType="enum"  Min=0 Max=50 Step=1 OnDataAccess="OnAirspaceDisplay" />
 </WndProperty>
 <WndProperty Name="prpClipAltitude" Caption="_@M183_"      X=2 Y=-1   Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H109_">
 <DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=20000 Step=10/>
 </WndProperty>
-<WndProperty Name="prpAltWarningMargin" Caption="_@M1630_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H110_">
+<WndProperty Name="prpAltWarningMargin" Caption="_@M1630_" X=2 Y=-999 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H110_">
 <DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=20000 Step=10/>
 </WndProperty>
 <WndProperty Name="prpWarningMapLabels" Caption="_@M1281_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1212_">

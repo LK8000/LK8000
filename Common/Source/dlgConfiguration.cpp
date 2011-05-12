@@ -521,6 +521,27 @@ static void OnAirspaceFillType(DataField *Sender, DataField::DataAccessKind_t Mo
   }
 }
  
+static void OnAirspaceDisplay(DataField *Sender, DataField::DataAccessKind_t Mode){
+  WndProperty* wp;
+  int altmode=0;
+  switch(Mode){
+    case DataField::daGet:
+    break;
+    case DataField::daPut:
+    case DataField::daChange:
+      wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceDisplay"));
+      if (wp) altmode=(wp->GetDataField()->GetAsInteger());
+      wp = (WndProperty*)wf->FindByName(TEXT("prpClipAltitude"));
+      if (wp) wp->SetVisible(altmode==CLIP);
+      wp = (WndProperty*)wf->FindByName(TEXT("prpAltWarningMargin"));
+      if (wp) wp->SetVisible(altmode==AUTO);
+    break;
+	default: 
+		StartupStore(_T("........... DBG-908%s"),NEWLINE); 
+		break;
+  }
+}
+ 
 static void OnLk8000ModeChange(DataField *Sender, DataField::DataAccessKind_t Mode){
   WndProperty* wp;
 
@@ -1412,6 +1433,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnSetInfoPagesClicked),
   
   DeclareCallBackEntry(OnAirspaceFillType),
+  DeclareCallBackEntry(OnAirspaceDisplay),
   DeclareCallBackEntry(OnLk8000ModeChange),
   DeclareCallBackEntry(NULL)
 };
