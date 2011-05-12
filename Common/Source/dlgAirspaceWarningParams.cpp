@@ -26,6 +26,28 @@ static void OnCloseClicked(WindowControl * Sender){
   wf->SetModalResult(mrOK);
 }
 
+static void OnWarningsClicked(DataField *Sender, DataField::DataAccessKind_t Mode){
+  WndProperty* wp;
+  bool aspw=false;
+  switch(Mode){
+    case DataField::daGet:
+    break;
+    case DataField::daPut:
+    case DataField::daChange:
+      wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceWarnings"));
+      if (wp) aspw=(wp->GetDataField()->GetAsBoolean());
+      wp = (WndProperty*)wf->FindByName(TEXT("prpWarningTime"));
+      if (wp) wp->SetReadOnly(!aspw);
+      wp = (WndProperty*)wf->FindByName(TEXT("prpAcknowledgementTime"));
+      if (wp) wp->SetReadOnly(!aspw);
+      wp = (WndProperty*)wf->FindByName(TEXT("prpWarningDlgTimeout"));
+      if (wp) wp->SetReadOnly(!aspw);
+    break;
+        default:
+                StartupStore(_T("........... DBG-908%s"),NEWLINE);
+                break;
+  }
+}
 
 static void setVariables(void) {
   WndProperty *wp;
@@ -42,11 +64,13 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  #if 0 // REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMessageRepeatTime"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(AirspaceWarningRepeatTime/60);
     wp->RefreshDisplay();
   }
+  #endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningVerticalMargin"));
   if (wp) {
@@ -83,6 +107,7 @@ static void setVariables(void) {
 
 static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnCloseClicked),
+  DeclareCallBackEntry(OnWarningsClicked),
   DeclareCallBackEntry(NULL)
 };
 
@@ -126,6 +151,7 @@ void dlgAirspaceWarningParamsShowModal(void){
     }
   }
 
+  #if 0 // REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMessageRepeatTime"));
   if (wp) {
     if (AirspaceWarningRepeatTime != (wp->GetDataField()->GetAsInteger()*60)) {
@@ -134,6 +160,7 @@ void dlgAirspaceWarningParamsShowModal(void){
       changed = true;
     }
   }
+  #endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningVerticalMargin"));
   if (wp) {
