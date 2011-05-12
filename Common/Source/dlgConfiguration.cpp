@@ -1925,12 +1925,14 @@ static void setVariables(void) {
   }
   #endif
 
+  #if 0 // REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceWarnings"));
   if (wp) {
     bool aw = AIRSPACEWARNINGS != 0;
     wp->GetDataField()->Set(aw);
     wp->RefreshDisplay();
   }
+  #endif
 
 #ifdef LKAIRSPACE
 #else
@@ -4218,6 +4220,7 @@ void dlgConfigurationShowModal(void){
     }
   }
 
+  #if 0 // REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceWarnings"));
   if (wp) {
     if (AIRSPACEWARNINGS != wp->GetDataField()->GetAsInteger()) {
@@ -4226,6 +4229,7 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
+  #endif
 
 #ifdef LKAIRSPACE
 #else

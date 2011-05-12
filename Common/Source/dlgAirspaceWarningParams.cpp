@@ -69,6 +69,14 @@ static void setVariables(void) {
   }
   #endif
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceWarnings"));
+  if (wp) {
+    bool aw = AIRSPACEWARNINGS != 0;
+    wp->GetDataField()->Set(aw);
+    wp->RefreshDisplay();
+  }
+
+
 }
 
 
@@ -158,6 +166,16 @@ void dlgAirspaceWarningParamsShowModal(void){
     }
   }
   #endif
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceWarnings"));
+  if (wp) {
+    if (AIRSPACEWARNINGS != wp->GetDataField()->GetAsInteger()) {
+      AIRSPACEWARNINGS = wp->GetDataField()->GetAsInteger();
+      SetToRegistry(szRegistryAirspaceWarning,(DWORD)AIRSPACEWARNINGS);
+      changed = true;
+    }
+  }
+
 
   if (changed) {
     StoreRegistry();
