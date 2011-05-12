@@ -764,7 +764,7 @@ int AIRSPACEWARNINGS = TRUE;
 int WarningTime = 30;
 int AcknowledgementTime = 30;
 #ifdef LKAIRSPACE
-int AirspaceWarningRepeatTime = 1800;			// warning repeat time if not acknowledged
+int AirspaceWarningRepeatTime = 300;			// warning repeat time if not acknowledged after 5 minutes
 int AirspaceWarningVerticalMargin = 100;		// vertical distance used to calculate too close condition
 int AirspaceWarningDlgTimeout = 10;             // airspace warning dialog auto closing in x secs
 int AirspaceWarningMapLabels = 1;               // airspace warning map labels showed

@@ -154,7 +154,7 @@ const TCHAR szRegistryAirspaceBlackOutline[]= TEXT("AirspaceBlackOutline1");
 const TCHAR szRegistryAirspaceFillType[]= TEXT("AirspaceFillType");
 const TCHAR szRegistryAirspaceOpacity[]= TEXT("AirspaceOpacity");
 #ifdef LKAIRSPACE
-const TCHAR szRegistryAirspaceWarningRepeatTime[]= TEXT("AirspaceWarningRepeatTime");
+const TCHAR szRegistryAirspaceWarningRepeatTime[]= TEXT("AirspaceWarningRepeatTime1");
 const TCHAR szRegistryAirspaceWarningVerticalMargin[]= TEXT("AirspaceWarningVerticalMargin");
 const TCHAR szRegistryAirspaceWarningDlgTimeout[]= TEXT("AirspaceWarningDlgTimeout");
 const TCHAR szRegistryAirspaceWarningMapLabels[]= TEXT("AirspaceWarningMapLabels");

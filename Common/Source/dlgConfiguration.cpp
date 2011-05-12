@@ -1901,6 +1901,13 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMessageRepeatTime"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(AirspaceWarningRepeatTime/60);
+    wp->RefreshDisplay();
+  }
+
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceOutline"));
   if (wp) {
     wp->GetDataField()->Set(MapWindow::bAirspaceBlackOutline);
@@ -4172,6 +4179,15 @@ void dlgConfigurationShowModal(void){
 	    FontRenderer = wp->GetDataField()->GetAsInteger();
       SetToRegistry(szRegistryFontRenderer, FontRenderer);
       requirerestart = true;
+      changed = true;
+    }
+  }
+
+ wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMessageRepeatTime"));
+  if (wp) {
+    if (AirspaceWarningRepeatTime != (wp->GetDataField()->GetAsInteger()*60)) {
+      AirspaceWarningRepeatTime = wp->GetDataField()->GetAsInteger()*60;
+      SetToRegistry(szRegistryAirspaceWarningRepeatTime, (DWORD)AirspaceWarningRepeatTime);
       changed = true;
     }
   }
