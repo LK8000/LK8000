@@ -150,7 +150,7 @@ const TCHAR *szRegistryAirspacePriority[] = {  TEXT("AirspacePriority0"),
 
 
 const TCHAR szRegistryAirspaceWarning[]= TEXT("AirspaceWarn");
-const TCHAR szRegistryAirspaceBlackOutline[]= TEXT("AirspaceBlackOutline");
+const TCHAR szRegistryAirspaceBlackOutline[]= TEXT("AirspaceBlackOutline1");
 const TCHAR szRegistryAirspaceFillType[]= TEXT("AirspaceFillType");
 const TCHAR szRegistryAirspaceOpacity[]= TEXT("AirspaceOpacity");
 #ifdef LKAIRSPACE
