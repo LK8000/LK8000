@@ -51,6 +51,9 @@
 <WndProperty Name="prpAirspaceWarnings" Caption="_@M792_" X=2 Y=-1   Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H111_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>
+<WndProperty Name="prpWarningMapLabels" Caption="_@M1281_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1212_">
+<DataField name="" DataType="boolean"/>
+</WndProperty>
 <!-- Moved to new dlgAirspaceWarningParams - this have to be enabled if LKAIRSPACE is not defined!
 <WndProperty Name="prpWarningTime" Caption="_@M790_"      X=2 Y=-1   Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H112_">
 <DataField name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min=10 Max=1000 Step=5/>

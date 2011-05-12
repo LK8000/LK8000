@@ -61,11 +61,13 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  #if 0 // REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMapLabels"));
   if (wp) {
     wp->GetDataField()->Set(AirspaceWarningMapLabels);
     wp->RefreshDisplay();
   }
+  #endif
 
 }
 
@@ -145,6 +147,7 @@ void dlgAirspaceWarningParamsShowModal(void){
     }
   }
 
+  #if 0 // REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMapLabels"));
   if (wp) {
     if (AirspaceWarningMapLabels != wp->GetDataField()->GetAsInteger()) {
@@ -154,6 +157,7 @@ void dlgAirspaceWarningParamsShowModal(void){
       changed = true;
     }
   }
+  #endif
 
   if (changed) {
     StoreRegistry();
