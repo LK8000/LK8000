@@ -1509,7 +1509,8 @@ _@M1619_ "2.4 ASP "
 _@M1620_ "3.1 COMN "
 _@M1621_ "3.2 HIST "
 
-
+# New airspace messages
+_@M1630_ "Auto Margin "
 
 
 

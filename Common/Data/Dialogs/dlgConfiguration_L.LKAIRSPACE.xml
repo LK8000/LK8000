@@ -45,7 +45,7 @@
 <WndProperty Name="prpClipAltitude" Caption="_@M183_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H109_">
 <DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=20000 Step=10/>
 </WndProperty>
-<WndProperty Name="prpAltWarningMargin" Caption="_@M425_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H110_">
+<WndProperty Name="prpAltWarningMargin" Caption="_@M1630_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H110_">
 <DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=20000 Step=10/>
 </WndProperty>
 <WndProperty Name="prpWarningMapLabels" Caption="_@M1281_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H1212_">
