@@ -762,7 +762,7 @@ unsigned int NumberOfAirspaceCircles = 0;
 //Airspace Warnings
 int AIRSPACEWARNINGS = TRUE;
 int WarningTime = 30;
-int AcknowledgementTime = 30;
+int AcknowledgementTime = 900;                  // keep ack level for this time, [secs]
 #ifdef LKAIRSPACE
 int AirspaceWarningRepeatTime = 300;			// warning repeat time if not acknowledged after 5 minutes
 int AirspaceWarningVerticalMargin = 100;		// vertical distance used to calculate too close condition
