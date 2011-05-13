@@ -372,7 +372,7 @@ void ShowAirspaceWarningsToUser()
     WndButton *wb = (WndButton*)dlg->FindByName(TEXT("cmdAckForTime"));
     if (wb) {
       TCHAR stmp2[40];
-      wsprintf(stmp2,TEXT("%s (%ds)"), gettext(TEXT("_@M46_")), AcknowledgementTime);
+      wsprintf(stmp2,TEXT("%s (%dmin)"), gettext(TEXT("_@M46_")), AcknowledgementTime/60);
       wb->SetCaption(stmp2);
     }    
 
