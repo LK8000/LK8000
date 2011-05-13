@@ -4765,7 +4765,7 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	#endif
 		// 101121 extend search for nearest wp
 		int i=FindNearestWayPoint(Basic->Longitude, Basic->Latitude, 2000);
-		if ( (i>=0) && (WayPointList[i].Altitude>0) ) { 
+		if ( (i>=NUMRESWP) && (WayPointList[i].Altitude>0) ) { // 110513 BUGFIX - do not count virtual waypoints in qnh setting
 			fixaltitude=WayPointList[i].Altitude;
 			#if ALPHADEBUG
 			StartupStore(_T(". AutoQNH: setting QNH to nearest <%s> waypoint altitude=%.0f m%s"),
