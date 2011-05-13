@@ -64,10 +64,10 @@ NEW
             ack level goes back to zero, so the warning will appear again.
           2.The same case if you are circling at a nofly zone border. Half circle inside the zone. This is a yellow/red
             warning flipping. If you ack the red warning for a time, then you won't get a new warning message on every circle.
-      . Daily acknowledging
-        There is a posiibility to acknowledge an airspace for a day (until lk restart). You can do that from airspace
-        details dialog (long click on map), pressing the ACKDay button. Acknowledging an airspace for a day means that warning
-        dialog will never appear for that airspace.
+      . Daily acknowledging - enable/disable an airspace
+        There is a possibility to disable an airspace (until lk restart). You can do that from airspace
+        details dialog (long click on map), pressing the Disable button. Disabling an airspace means that warning
+        dialog will never appear for that airspace, and it is not shown on the map as well.
     . Warning dialog messages can be:
       . "Predicted leaving FLY zone" : Current position inside, predicted position outside a flyzone (YELLOW)
       . "Near leaving FLY zone" : Current position inside a flyzone, but you are too close to the border to leave it (YELLOW)
