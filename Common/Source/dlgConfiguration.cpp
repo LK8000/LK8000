@@ -1769,12 +1769,6 @@ static void setVariables(void) {
   }
 
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMapLabels"));
-  if (wp) {
-    wp->GetDataField()->Set(AirspaceWarningMapLabels);
-    wp->RefreshDisplay();
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceFillType"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -4131,16 +4125,6 @@ void dlgConfigurationShowModal(void){
     if (debounceTimeout != wp->GetDataField()->GetAsInteger()) {
       debounceTimeout = wp->GetDataField()->GetAsInteger();
       SetToRegistry(szRegistryDebounceTimeout, debounceTimeout);
-      changed = true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMapLabels"));
-  if (wp) {
-    if (AirspaceWarningMapLabels != wp->GetDataField()->GetAsInteger()) {
-      AirspaceWarningMapLabels = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryAirspaceWarningMapLabels,
-            (DWORD)AirspaceWarningMapLabels);
       changed = true;
     }
   }

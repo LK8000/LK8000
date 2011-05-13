@@ -26,22 +26,33 @@ static void OnCloseClicked(WindowControl * Sender){
   wf->SetModalResult(mrOK);
 }
 
-static void OnWarningsClicked(DataField *Sender, DataField::DataAccessKind_t Mode){
+static void SetReadOnlyItems()
+{
   WndProperty* wp;
   bool aspw=false;
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceWarnings"));
+  if (wp) aspw=(wp->GetDataField()->GetAsBoolean());
+  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningTime"));
+  if (wp) wp->SetReadOnly(!aspw);
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAcknowledgementTime"));
+  if (wp) wp->SetReadOnly(!aspw);
+  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningDlgTimeout"));
+  if (wp) wp->SetReadOnly(!aspw);
+  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMapLabels"));
+  if (wp) wp->SetReadOnly(!aspw);
+  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningVerticalMargin"));
+  if (wp) wp->SetReadOnly(!aspw);
+ 
+}
+
+static void OnWarningsClicked(DataField *Sender, DataField::DataAccessKind_t Mode){
   switch(Mode){
     case DataField::daGet:
     break;
     case DataField::daPut:
     case DataField::daChange:
-      wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceWarnings"));
-      if (wp) aspw=(wp->GetDataField()->GetAsBoolean());
-      wp = (WndProperty*)wf->FindByName(TEXT("prpWarningTime"));
-      if (wp) wp->SetReadOnly(!aspw);
-      wp = (WndProperty*)wf->FindByName(TEXT("prpAcknowledgementTime"));
-      if (wp) wp->SetReadOnly(!aspw);
-      wp = (WndProperty*)wf->FindByName(TEXT("prpWarningDlgTimeout"));
-      if (wp) wp->SetReadOnly(!aspw);
+       SetReadOnlyItems();
     break;
         default:
                 StartupStore(_T("........... DBG-908%s"),NEWLINE);
@@ -85,13 +96,11 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  #if 0 // REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMapLabels"));
   if (wp) {
     wp->GetDataField()->Set(AirspaceWarningMapLabels);
     wp->RefreshDisplay();
   }
-  #endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceWarnings"));
   if (wp) {
@@ -100,7 +109,7 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-
+  SetReadOnlyItems();
 }
 
 
@@ -182,7 +191,6 @@ void dlgAirspaceWarningParamsShowModal(void){
     }
   }
 
-  #if 0 // REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMapLabels"));
   if (wp) {
     if (AirspaceWarningMapLabels != wp->GetDataField()->GetAsInteger()) {
@@ -192,7 +200,6 @@ void dlgAirspaceWarningParamsShowModal(void){
       changed = true;
     }
   }
-  #endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceWarnings"));
   if (wp) {
