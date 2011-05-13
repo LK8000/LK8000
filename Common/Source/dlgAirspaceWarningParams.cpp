@@ -42,6 +42,8 @@ static void OnWarningsClicked(DataField *Sender, DataField::DataAccessKind_t Mod
       if (wp) wp->SetReadOnly(!aspw);
       wp = (WndProperty*)wf->FindByName(TEXT("prpWarningDlgTimeout"));
       if (wp) wp->SetReadOnly(!aspw);
+      wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMapLabels"));
+      if (wp) wp->SetReadOnly(!aspw);
     break;
         default:
                 StartupStore(_T("........... DBG-908%s"),NEWLINE);
@@ -85,13 +87,11 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  #if 0 // REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMapLabels"));
   if (wp) {
     wp->GetDataField()->Set(AirspaceWarningMapLabels);
     wp->RefreshDisplay();
   }
-  #endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceWarnings"));
   if (wp) {
@@ -182,7 +182,6 @@ void dlgAirspaceWarningParamsShowModal(void){
     }
   }
 
-  #if 0 // REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMapLabels"));
   if (wp) {
     if (AirspaceWarningMapLabels != wp->GetDataField()->GetAsInteger()) {
@@ -192,7 +191,6 @@ void dlgAirspaceWarningParamsShowModal(void){
       changed = true;
     }
   }
-  #endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceWarnings"));
   if (wp) {
