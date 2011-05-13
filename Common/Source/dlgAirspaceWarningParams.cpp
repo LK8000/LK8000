@@ -71,7 +71,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAcknowledgementTime"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(AcknowledgementTime);
+    wp->GetDataField()->SetAsFloat(AcknowledgementTime/60);
     wp->RefreshDisplay();
   }
 
@@ -152,8 +152,8 @@ void dlgAirspaceWarningParamsShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAcknowledgementTime"));
   if (wp) {
-    if (AcknowledgementTime != wp->GetDataField()->GetAsInteger()) {
-      AcknowledgementTime = wp->GetDataField()->GetAsInteger();
+    if (AcknowledgementTime != wp->GetDataField()->GetAsInteger()*60) {
+      AcknowledgementTime = wp->GetDataField()->GetAsInteger()*60;
       SetToRegistry(szRegistryAcknowledgementTime,
 		    (DWORD)AcknowledgementTime);
       changed = true;
