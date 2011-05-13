@@ -4746,7 +4746,6 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 #if 1
 	// if we have a valid fix, and a valid home waypoint, then if we are close to it assume we are at home
 	// and use known altitude, instead of presumed terrain altitude which is always approximated
-	#if 0
 	double hdist=0;
 	if (ValidWayPoint(HomeWaypoint)) {
 		DistanceBearing(Basic->Latitude, Basic->Longitude, 
@@ -4762,10 +4761,9 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 				StartupStore(_T(". AutoQNH: cannot set QNH, impossible terrain altitude%s"),NEWLINE);
 		}
 	} else {
-	#endif
 		// 101121 extend search for nearest wp
 		int i=FindNearestWayPoint(Basic->Longitude, Basic->Latitude, 2000);
-		if ( (i>=0) && (WayPointList[i].Altitude>0) ) { 
+		if ( (i>RESWP_END) && (WayPointList[i].Altitude>0) ) {  // avoid using TAKEOFF wp
 			fixaltitude=WayPointList[i].Altitude;
 			#if ALPHADEBUG
 			StartupStore(_T(". AutoQNH: setting QNH to nearest <%s> waypoint altitude=%.0f m%s"),
@@ -4779,7 +4777,7 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 				StartupStore(_T(". AutoQNH: cannot set QNH, impossible terrain altitude%s"),NEWLINE);
 			#endif
 		}
-	//}
+	}
 #endif
 	if (fixaltitude!=0) { // 100430 BUGFIX
 		QNH = FindQNH(Basic->BaroAltitude, fixaltitude);
