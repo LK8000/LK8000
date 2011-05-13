@@ -11,7 +11,7 @@
 <DataField name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min=10 Max=1000 Step=5/>
 </WndProperty>
 <WndProperty Name="prpAcknowledgementTime" Caption="_@M52_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H113_">
-<DataField name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min=10 Max=1000 Step=5/>
+<DataField name="" DataType="double" DisplayFormat="%.0f min" EditFormat="%.0f" Min=1 Max=120 Step=1/>
 </WndProperty>
 <WndProperty Name="prpWarningVerticalMargin" Caption="_@M1278_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H1210_">
 <DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=10 Max=1000 Step=10/>
