@@ -1542,7 +1542,13 @@ Controls filtering of airspace for display and warnings.  The airspace filter bu
 [All below] All airspace below the glider and within height margin above.
 
 @1251
-Height margin used to control airspace display filtering on the moving map used only in AUTO and ALL BELOW modes. For AUTO it determines the height above and below the glider for which airspaces should be shown. ALL BELLOW mode will show airspaces up to specified height above the glider and all airspaces below it.
+Height margin used to control airspace display filtering on the moving map used only in AUTO and ALL BELOW modes. For AUTO it determines the height above and below the glider for which airspaces should be shown. 
+ALL BELLOW mode will show airspaces up to specified height above the glider and all airspaces below it.
+
+@1252
+Even if you have acknowledged an airspace, after this time it will be back "active" for warnings.
+You may want to be warned again while flying back home and crossing an airspace you have crossed in the morning, for example!
+By default, after 15 minutes airspaces will be back "armed" for warnings.
 
 @9999
 No help available on this item!
