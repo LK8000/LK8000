@@ -6,16 +6,26 @@ Changes in LK8000 v2.3a
 NEW
 
 . New configuration for Polars (requires reconfiguring polar type!)
+
 . Many new polars
+
 . New IMI ERIXX logger support, also for task declaration
+
 . New configurable BottomBar.
     System config menu 10 let you configure individually each bottombar stripe.
     While rotating, only desired stripes will be shown.
     Even if all bars are set off, NAV1 is shown.
     Thermal mode will keep showing THR 0 bar.
 
+. New configurable Infopages.
+    System config menu 10 let you configure individually each infopage, except traffic.
+    If all pages of a branch (for example, all 2.x pages) are OFF, then that branch will not be selected
+    during rotation.
+    Direct access to pages through custom keys is always possible, bypassing this configuration.
+    Traffic pages 4.x - when Flarm is detected - are always available. If you don't want traffic informations, 
+    then please disable these traffic data being sent by flarm in its protocol, and save CPU.
 
-. >>> New airspace handling engine <<<
+. ------- New airspace handling engine ----------
   . New airspace storage classes (CAirspace, CAirspaceCicrle, CAirspaceArea)
   . New CAirspaceManager singleton class for managing airspace operations
   . New openair parser based on the old one
@@ -99,7 +109,9 @@ NEW
 CHANGES
 
 . Polars are now files inside _Polars folder, and can be viewed and edited.
+
 . Device configuration has type "DISABLED", no more confusion.
+
 . Changes regarding airspaces:
   . Drawing order of airspaces changed. They are draw from lowest top altitude first.
   . Infobox nearest airspace shows the horizontal distance to the nearest airspace
@@ -111,14 +123,12 @@ CHANGES
 . Paragliders screen unlock is valid by doubleclicking only on lower right screen corner.
     Previously any position was good, leading to possible false unlocks during takeoffs.
 
-BUG FIX
-. Fix the WHITE SCREEN bug: a white screen on startup would stop LK proceeding with execution, leaving a white page.
-    This was happening when 2 devices were in use, and the main gps on port A still had no valid fix.
 
-. Fix problem saving profiles on exit, even on CLUB versions
-. Fix problem with IGC Replay and variometer values
-. Fix old MapLock for paragliders being set ON by mistake.
-    Old MapLock is inside Engineering menu now, and should be set OFF by default.
-    However, changing from glider to paraglider mode it was set ON by mistake.
+BUG FIX
+
+. Fix AutoQNH problem. Takeoff wp was used in place of Home first!
+    Correct mode now is: look for home, if no home nearby, look for another known waypoint near 2km.
+    Do not consider TAKEOFF as a valid waypoint for QNH because it is itself assigned an altitude!
+    If no waypoints nearby, and no home, use terrain altitude if available.
 
 
