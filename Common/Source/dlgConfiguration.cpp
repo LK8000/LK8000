@@ -534,7 +534,7 @@ static void OnAirspaceDisplay(DataField *Sender, DataField::DataAccessKind_t Mod
       wp = (WndProperty*)wf->FindByName(TEXT("prpClipAltitude"));
       if (wp) wp->SetVisible(altmode==CLIP);
       wp = (WndProperty*)wf->FindByName(TEXT("prpAltWarningMargin"));
-      if (wp) wp->SetVisible(altmode==AUTO);
+      if (wp) wp->SetVisible(altmode==AUTO || altmode==ALLBELOW);
     break;
 	default: 
 		StartupStore(_T("........... DBG-908%s"),NEWLINE); 
