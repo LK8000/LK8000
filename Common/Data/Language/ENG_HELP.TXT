@@ -43,6 +43,7 @@ The file name of the secondary airspace file.
 For each airfield, you can add additional informations inside this file located in _Waypoints subdirectory.
 Here you can change this default file name to something else.
 
+# 108 OBSOLETED BY 1250 in 2.3
 @108
 Controls filtering of airspace for display and warnings.  The airspace filter button also allows filtering of display and warnings independently for each airspace class.
 [All on] All is displayed.
@@ -53,6 +54,7 @@ Controls filtering of airspace for display and warnings.  The airspace filter bu
 @109
 For clip airspace mode, this is the altitude below which airspace is displayed.
 
+# 110 OBSOLETED BY 1251 in 2.3
 @110
 For auto airspace mode, this is the altitude above/below which airspace is included.
 
@@ -1532,7 +1534,15 @@ Enable or disable each page in the rotating sequence.
 If all items in a page are disabled, then this page will be skipped.
 A page will be still reachable with a custom keys, eventually.
 
+@1250
+Controls filtering of airspace for display and warnings.  The airspace filter button also allows filtering of display and warnings independently for each airspace class.
+[All on] All is displayed.
+[Clip] Only airspace below the clip altitude.
+[Auto] All within a height margin of the glider.
+[All below] All airspace below the glider and within height margin above.
+
+@1251
+Height margin used to control airspace display filtering on the moving map used only in AUTO and ALL BELOW modes. For AUTO it determines the height above and below the glider for which airspaces should be shown. ALL BELLOW mode will show airspaces up to specified height above the glider and all airspaces below it.
+
 @9999
 No help available on this item!
-
-
