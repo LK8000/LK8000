@@ -103,6 +103,11 @@ static void OnAltitudeData(DataField *Sender, DataField::DataAccessKind_t Mode){
 		}
 		wp->RefreshDisplay();
 	}
+#ifdef LKAIRSPACE
+    CAirspaceManager::Instance().QnhChangeNotify(QNH);
+#else
+    AirspaceQnhChangeNotify(QNH);
+#endif
 	break;
   case DataField::daInc:
   case DataField::daDec:

@@ -725,6 +725,12 @@ void LoadCalculationsPersist(DERIVED_INFO *Calculated) {
     BALLAST = min(1.0, max(BALLAST,0.0));
     //   CRUISE_EFFICIENCY = min(1.5, max(CRUISE_EFFICIENCY,0.75));
 
+#ifdef LKAIRSPACE
+    CAirspaceManager::Instance().QnhChangeNotify(QNH);
+#else
+    AirspaceQnhChangeNotify(QNH);
+#endif
+    
     StartupStore(TEXT("LoadCalculationsPersist OK%s"),NEWLINE);
 
     CloseHandle(hFile);
