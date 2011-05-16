@@ -1895,12 +1895,13 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+#ifdef LKAIRSPACE
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMessageRepeatTime"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(AirspaceWarningRepeatTime/60);
     wp->RefreshDisplay();
   }
-
+#endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceOutline"));
   if (wp) {
@@ -4166,7 +4167,8 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
-
+  
+#ifdef LKAIRSPACE
  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMessageRepeatTime"));
   if (wp) {
     if (AirspaceWarningRepeatTime != (wp->GetDataField()->GetAsInteger()*60)) {
@@ -4175,6 +4177,7 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
+#endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceOutline"));
   if (wp) {
