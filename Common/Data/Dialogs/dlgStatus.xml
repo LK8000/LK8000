@@ -20,6 +20,7 @@
 <WndProperty Name="prpLogger"    Caption="_@M409_"    X=2 Y=-1 Width=235 Height=22 CaptionWidth=120 Font=2 ReadOnly=1 />
 <WndProperty Name="prpDeclared"    Caption="_@M223_"    X=2 Y=-1 Width=235 Height=22 CaptionWidth=120 Font=2 ReadOnly=1 />
 <WndProperty Name="prpBattery"       Caption="_@M672_"       X=2 Y=-1 Width=235 Height=22 CaptionWidth=120 Font=2 ReadOnly=1 />
+<WndProperty Name="prpVersion"       Caption="Software version"       X=2 Y=-1 Width=235 Height=22 CaptionWidth=120 Font=2 ReadOnly=1 />
 </WndFrame>
 <WndFrame Name="frmStatusTask" X=0 Y=32 Width=230 Height=200 Font=2>
 <WndProperty Name="prpTaskTime" Caption="_@M101_" X=2 Y=-1  Width=235 Height=22 CaptionWidth=150 Font=2 ReadOnly=1 />

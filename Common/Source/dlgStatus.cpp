@@ -18,6 +18,7 @@
 #else
 #include "Process.h"
 #endif
+#include "buildnumber.h"
 
 #if defined(LKAIRSPACE) || defined(NEW_OLC)
 using std::min;
@@ -53,8 +54,14 @@ static void NextPage(int Step){
     wf->SetCaption(gettext(TEXT("_@M661_")));
     break;
   case 1:
+    if (SIMMODE) {
+	TCHAR sysmode[100];
+	wsprintf(sysmode,_T("%s (%s)"),gettext(TEXT("_@M664_")),gettext(TEXT("_@M1211_")) );
+    	wf->SetCaption(sysmode);
+    } else {
 	// LKTOKEN  _@M664_ = "Status: System" 
-    wf->SetCaption(gettext(TEXT("_@M664_")));
+    	wf->SetCaption(gettext(TEXT("_@M664_")));
+    }
     break;
   case 2:
 	// LKTOKEN  _@M665_ = "Status: Task" 
@@ -269,6 +276,14 @@ static void UpdateValuesSystem() {
       wp->SetText(gettext(TEXT("_@M890_"))); // No
     }
     wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpVersion"));
+  if (wp) {
+      TCHAR softversion[100];
+      wsprintf(softversion,_T("%s.%s #%d"),_T(LKVERSION), _T(LKRELEASE), BUILDNUMBER);
+      wp->SetText(softversion);
+      wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpBattBank"));
