@@ -477,7 +477,7 @@ const COLORRAMP weather_colors[6][NUM_COLOR_RAMP_LEVELS] = {
   },
 };
 
-#define NUMRAMPS	13
+#define NUMRAMPS	14
 
 // terrain shadowing and highlight relative to type
 // shadow to blue   is 0 0 64
@@ -497,6 +497,7 @@ const COLORRAMP terrain_shadow[NUMRAMPS] = {
   { 63, 16, 32, 32},
   { 63, 16, 32, 32},
   { 63, 16, 32, 32},
+  { 63, 60,60, 60},
   { 63, 60,60, 60}
   //{ 63, 16, 32, 32}
 };
@@ -519,7 +520,7 @@ const COLORRAMP terrain_highlight[NUMRAMPS] = {
   { 255, 0,0,0},
   // { 32, 220, 255, 220}  // 101016 high alps no highlight
   { 63, 250, 250, 250},
-  // { 255, 0,0,0}
+  { 255, 0,0,0}
 };
 
 // Use shading for terrain modes
@@ -536,7 +537,8 @@ const bool terrain_doshading[NUMRAMPS] = {
 	1,
 	1,
 	1,	// YouSee Shaded
-	1 	// YouSee HiContrast
+	1, 	// YouSee HiContrast
+	0	// Obstacles
 };
 // Use minimal altitude normalizer for terrain modes
 const bool terrain_minalt[NUMRAMPS] = {
@@ -552,7 +554,8 @@ const bool terrain_minalt[NUMRAMPS] = {
 	1,
 	1,
 	0,	// YouSee Default
-	1 	// YouSee HiContrast
+	1, 	// YouSee HiContrast
+	1 	// Obstacles
 };
 
 const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = { 
@@ -786,6 +789,22 @@ const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = {
     {1800,    128,0,0},
     {3100,    255,255,255},
     {4900,    160,191,237},
+  },
+
+  {	// Obstacles
+    {0,       227,255,224 },
+    {50,      227,255,224 },
+    {51,      255,255,0 },
+    {120,     255,255,0 },
+    {149,     255,100,50 },
+    {150,     255,0,0 }, // 0m
+    {300,     255,0,0},
+    {500,    220,0,0},
+    {700,    200,0,0},
+    {900,    180,0,0},
+    {1100,    150,0,0},
+    {1300,    120,0,0},
+    {3500,    100,0,0}
   }
 };
 
@@ -1285,6 +1304,13 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 	}
   }
   if (!terrain_minalt[TerrainRamp]) minalt=0;	//@ 101110
+  if (TerrainRamp==13) {
+	if (CALCULATED_INFO.Flying) {
+		minalt=(unsigned short)GPS_INFO.Altitude-150; // 500ft
+	} else {
+		minalt=(unsigned short)GPS_INFO.Altitude+100; // 330ft
+	}
+  }
 
   #if NEWRASTER
   // StartupStore(_T("... MinAlt=%d MaxAlt=%d Multiplier=%.3f\n"),minalt,maxalt, (double)((double)maxalt/(double)(maxalt-minalt))); 
@@ -1368,7 +1394,7 @@ void Slope(const int sx, const int sy, const int sz) {
 
 // StartupStore(_T("... ciys=%d epx=%d iysbottom=%d\n"),ciys,iepx,iysbottom); // REMOVE
 
-  short h;
+  unsigned short h;
 
   #ifdef DEBUG
   unsigned short* hBufTop = hBuf+cixs*ciys;

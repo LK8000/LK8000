@@ -3461,6 +3461,7 @@ static void setVariables(void) {
     dfe->addEnumText(TEXT("YouSee"));
 	// LKTOKEN  _@M340_ = "HighContrast" 
     dfe->addEnumText(gettext(TEXT("_@M340_")));
+    dfe->addEnumText(TEXT("GA Relative"));
     dfe->Set(TerrainRamp);
     wp->RefreshDisplay();
   }
