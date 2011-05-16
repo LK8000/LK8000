@@ -793,18 +793,18 @@ const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = {
 
   {	// Obstacles
     {0,       227,255,224 },
-    {100,     255,255,0 },
-    {150,     255,51,51 }, // 0m
-    {300,     250,0,0},
-    {500,    230,0,0},
-    {800,    200,0,0},
-    {1800,    150,0,0},
-    {2000,    150,0,0},
-    {2500,    150,0,0},
-    {3500,    150,0,0},
-    {3500,    150,0,0},
-    {3500,    150,0,0},
-    {3500,    150,0,0}
+    {50,      227,255,224 },
+    {51,      255,255,0 },
+    {120,     255,255,0 },
+    {149,     255,100,50 },
+    {150,     255,0,0 }, // 0m
+    {300,     255,0,0},
+    {500,    220,0,0},
+    {700,    200,0,0},
+    {900,    180,0,0},
+    {1100,    150,0,0},
+    {1300,    120,0,0},
+    {3500,    100,0,0}
   }
 };
 
@@ -1305,7 +1305,11 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
   }
   if (!terrain_minalt[TerrainRamp]) minalt=0;	//@ 101110
   if (TerrainRamp==13) {
-	minalt=(unsigned short)GPS_INFO.Altitude-150; // 500ft
+	if (CALCULATED_INFO.Flying) {
+		minalt=(unsigned short)GPS_INFO.Altitude-150; // 500ft
+	} else {
+		minalt=(unsigned short)GPS_INFO.Altitude+100; // 330ft
+	}
   }
 
   #if NEWRASTER
