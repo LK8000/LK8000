@@ -37,6 +37,10 @@ double GlidePolar::WingArea = 0.0;
 double GlidePolar::WingLoading = 0.0;
 double GlidePolar::WeightOffset = 0.0; 
 
+double GlidePolar::FlapsPos[MAX_FLAPS][2];
+int GlidePolar::FlapsPosCount = 0;
+double GlidePolar::FlapsMass = 0.0;
+
 double GlidePolar::SafetyMacCready= 0.5;
 bool GlidePolar::AbortSafetyUseCurrent = false;
 

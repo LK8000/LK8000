@@ -1512,7 +1512,9 @@ _@M1621_ "3.2 HIST "
 # New airspace messages
 _@M1630_ "Height margin "
 
-
+# Navboxes
+_@M1640_ "Current Flaps"
+_@M1641_ "Flaps"
 
 
 
