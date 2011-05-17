@@ -20,12 +20,16 @@
 #endif
 #include "buildnumber.h"
 
+
 #if defined(LKAIRSPACE) || defined(NEW_OLC)
 using std::min;
 using std::max;
 #endif
 
 extern BOOL extGPSCONNECT;
+extern NMEAParser nmeaParser1;
+extern NMEAParser nmeaParser2;
+
 
 #include "dlgTools.h"
 
@@ -209,6 +213,10 @@ static void UpdateValuesSystem() {
         } else { // valid but unknown number of sats
           _stprintf(Temp,TEXT(">3"));
         }
+	if (nmeaParser1.activeGPS==true)
+		_tcscat(Temp,_T("  (Dev:A)"));
+	else
+		_tcscat(Temp,_T("  (Dev:B)"));
         wp->SetText(Temp);
         wp->RefreshDisplay();
       }
