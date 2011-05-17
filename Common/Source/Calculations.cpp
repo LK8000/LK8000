@@ -115,6 +115,7 @@ static void Vario(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void LD(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void CruiseLD(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+static void Flaps(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void Average30s(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void AverageThermal(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -830,6 +831,7 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     Calculated->LDvario = INVALID_GR;
     Calculated->AverageThermal = 0;
     Calculated->Odometer = 0; // 091228
+    Calculated->Flaps = 0;
 
     for (i=0; i<200; i++) {
       Calculated->AverageClimbRate[i]= 0;
@@ -1097,6 +1099,7 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   Turning(Basic, Calculated);
   LD(Basic,Calculated);
   CruiseLD(Basic,Calculated);
+  Flaps(Basic,Calculated);
   Calculated->AverageLD=CalculateLDRotary(&rotaryLD,Calculated); 
   Average30s(Basic,Calculated);
   AverageThermal(Basic,Calculated);
@@ -1477,6 +1480,24 @@ void LD(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   }
 }
 
+void Flaps(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
+{	
+	double speed = 0.0;
+	if (Basic->AirspeedAvailable) {
+		speed = (int)(SPEEDMODIFY*Basic->TrueAirspeed);
+	} else {
+		speed = (int)(SPEEDMODIFY*Calculated->TrueAirspeedEstimated);
+	}
+
+	double massCorrectionFactor = sqrt(GlidePolar::GetAUW()/GlidePolar::FlapsMass);
+
+	for (int i=0;i<GlidePolar::FlapsPosCount-1;i++) {
+		if (speed >= GlidePolar::FlapsPos[i][0]*massCorrectionFactor 
+			&& speed < GlidePolar::FlapsPos[i+1][0]*massCorrectionFactor) {
+			Calculated->Flaps = GlidePolar::FlapsPos[i][1];
+		}
+	}	
+}
 
 void CruiseLD(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
