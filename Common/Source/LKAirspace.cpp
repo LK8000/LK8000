@@ -1546,8 +1546,9 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
 
   CCriticalSection::CGuard guard(_csairspaces);
   StartupStore(TEXT(". Readed %d airspaces%s"), _airspaces.size(), NEWLINE);
-//  list<CAirspace*>::iterator it;
-//  for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) (*it)->Dump();
+  // For debugging, dump all readed airspaces to runtime.log
+  //CAirspaceList::iterator it;
+  //for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) (*it)->Dump();
 }
 
 
@@ -1620,9 +1621,10 @@ void CAirspaceManager::CloseAirspaces()
   
   CCriticalSection::CGuard guard(_csairspaces);
   _user_warning_queue.clear();
+  _airspaces_near.clear();
+  _airspaces_of_interest.clear();
   for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) delete *it;
   _airspaces.clear();
-  _airspaces_near.clear();
   StartupStore(TEXT(". CloseLKAirspace%s"),NEWLINE);
 }
 
