@@ -1224,6 +1224,8 @@ void FillDataOptions()
 	// Olc Plus Score Predicted
 	SetDataOption(112, ugNone,           TEXT("_@M1505_"), TEXT("_@M1506_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
 
+  // Flaps
+  SetDataOption(113, ugNone,           TEXT("_@M1640_"), TEXT("_@M1641_"), new InfoBoxFormatter(TEXT("")), AirspeedProcessing, 8, 2);
 
 	//Before adding new items, consider changing NUMSELECTSTRING_MAX
 

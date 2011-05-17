@@ -989,6 +989,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
 
+  
+		case LK_FLAPS:			
+			_stprintf(BufferTitle, gettext(TEXT("_@M1641_")));
+			_stprintf(BufferValue,TEXT("%d"), DerivedDrawInfo.Flaps);			
+			break;
 
 		// B54 091221
 		case LK_TAS:

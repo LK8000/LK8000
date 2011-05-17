@@ -8,6 +8,8 @@
 #define MAXSAFETYSPEED  100	// 360kmh
 #define MAXSPEED	100	// 360kmh = 100ms
 
+#define MAX_FLAPS 10 // max flaps positions count
+
 class GlidePolar {
  public:
 
@@ -47,6 +49,10 @@ class GlidePolar {
   static double WeightOffset;
   
   static double sinkratecache[MAXSPEED+1];
+
+  static double FlapsPos[MAX_FLAPS][2];
+  static int FlapsPosCount;
+  static double FlapsMass;
 
   static double SinkRate(double Vias);
   static double SinkRate(double Vias, 

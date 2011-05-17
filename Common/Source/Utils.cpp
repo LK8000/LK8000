@@ -2595,6 +2595,27 @@ bool ReadWinPilotPolar(void) {
             }
         }
 
+        // try to read flaps configuration line
+        PExtractParameter(TempString, ctemp, 0);
+        GlidePolar::FlapsMass = StrToDouble(ctemp,NULL);
+        PExtractParameter(TempString, ctemp, 1);
+        int flapsCount = StrToDouble(ctemp,NULL);
+        int currentFlapsPos = 0;
+        GlidePolar::FlapsPos[currentFlapsPos][0] = 0.0;
+        currentFlapsPos++;
+        for (int i=2; i <= flapsCount*2; i=i+2) {
+	        PExtractParameter(TempString, ctemp, i);
+	        GlidePolar::FlapsPos[currentFlapsPos][0] = StrToDouble(ctemp,NULL);	
+	        PExtractParameter(TempString, ctemp, i+1);
+	        GlidePolar::FlapsPos[currentFlapsPos][1] = StrToDouble(ctemp,NULL);
+	        currentFlapsPos++;
+        }
+        GlidePolar::FlapsPos[0][1] = GlidePolar::FlapsPos[1][1];
+        GlidePolar::FlapsPos[currentFlapsPos][0] = SPEEDMODIFY*MAXSPEED;
+        GlidePolar::FlapsPos[currentFlapsPos][1] = StrToDouble(ctemp,NULL);
+        currentFlapsPos++;
+        GlidePolar::FlapsPosCount = currentFlapsPos;
+
         // file was OK, so save it
         if (foundline) {
           ContractLocalPath(szFile);
