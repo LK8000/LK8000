@@ -23,7 +23,7 @@
 #include "InfoBoxLayout.h"
 #include "Logger.h"
 #include "Process.h"
-#include "RasterTerrain.h" // 091109
+#include "RasterTerrain.h"
 #include "LKUtils.h"
 #include "LKMapWindow.h"
 #include "LKObjects.h"
@@ -65,8 +65,8 @@ typedef struct{
   TextInBoxMode_t Mode;
   int AltArivalAGL;
   bool inTask;
-  bool isLandable; // VENTA5
-  bool isAirport; // VENTA5
+  bool isLandable;
+  bool isAirport;
   bool isExcluded;
   int  index;
 }MapWaypointLabel_t;
@@ -109,18 +109,9 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
   static bool doinit=true;
 
   if (INVERTCOLORS) {
-	#if LKOBJ
   	sortbrush=LKBrush_LightGreen;
   } else {
   	sortbrush=LKBrush_DarkGreen;
-	#else
-  	if ( (sortbrush=CreateSolidBrush(RGB_LIGHTGREEN)) == NULL) {
-		DoStatusMessage(_T("ERR-011 Brush DrawNearest failed"));
-  		sortbrush=CreateSolidBrush(RGB_WHITE);
-	}
-  } else {
-  	sortbrush=CreateSolidBrush(RGB_DARKGREEN);
-	#endif
   }
 
   if (doinit) {
@@ -242,9 +233,6 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
   SelectedPage[MSM_LANDABLE]=0; SelectedPage[MSM_AIRPORTS]=0;
 
   doinit=false;
-  #ifndef LKOBJ
-  DeleteObject(sortbrush);
-  #endif
   return;
   } // doinit
 
@@ -257,9 +245,6 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 	DoStatusMessage(_T("ERR-091 curpage invalid!")); 
 	SelectedPage[curmapspace]=0;
 	LKevent=LKEVENT_NONE;
-	#ifndef LKOBJ
-  	DeleteObject(sortbrush);
-	#endif
 	return;
   }
 
@@ -281,36 +266,26 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 				break;
 		}
 
-/* REMOVE 101222
-		if (curmapspace==MSM_LANDABLE) 
-			i=SortedLandableIndex[SelectedRaw[curmapspace]+(curpage*Numraws)];
-		else
-			i=SortedAirportIndex[SelectedRaw[curmapspace] + (curpage*Numraws)];
-*/	
-
 		if ( !ValidWayPoint(i)) {
 			if (SortedNumber>0)
 				DoStatusMessage(_T("ERR-019 Invalid selection")); 
 			break;
 		}
 		SelectedWaypoint=i;
-		LastDoNearest = GPS_INFO.Time+NEARESTONHOLD; //@ 101003
+		LastDoNearest = GPS_INFO.Time+NEARESTONHOLD; 
 		PopupWaypointDetails();
-		LastDoNearest = 0; //@ 101003
+		LastDoNearest = 0; 
 		// SetModeType(LKMODE_MAP,MP_MOVING); EXperimental OFF 101219
 		LKevent=LKEVENT_NONE; 
-		#ifndef LKOBJ
-  		DeleteObject(sortbrush);
-		#endif
 		return;
 		break;
 	case LKEVENT_DOWN:
 		if (++SelectedRaw[curmapspace] >=Numraws) SelectedRaw[curmapspace]=0;
-		LastDoNearest=GPS_INFO.Time+PAGINGTIMEOUT-1.0; //@ 101003
+		LastDoNearest=GPS_INFO.Time+PAGINGTIMEOUT-1.0; 
 		break;
 	case LKEVENT_UP:
 		if (--SelectedRaw[curmapspace] <0) SelectedRaw[curmapspace]=Numraws-1;
-		LastDoNearest=GPS_INFO.Time+PAGINGTIMEOUT-1.0; //@ 101003
+		LastDoNearest=GPS_INFO.Time+PAGINGTIMEOUT-1.0; 
 		break;
 	case LKEVENT_PAGEUP:
 		LKevent=LKEVENT_NONE;
@@ -370,12 +345,6 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 			break;
 	}
 
-/* 101222
-	if (curmapspace==MSM_LANDABLE) 
- 		_stprintf(Buffer,TEXT("LND %d/%d"),  curpage+1,Numpages); 
- 	else
- 	 	_stprintf(Buffer,TEXT("APT %d/%d"),  curpage+1, Numpages); 
-*/
 
 	if (cursortbox == 0)
 		LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
@@ -413,8 +382,6 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 
   } else {
 	FillRect(hdc,&s_sortBox[cursortbox], sortbrush);
-	//oldpen=(HPEN)SelectObject(hdc,hpen);
-	//Rectangle(hdc,s_sortBox[cursortbox].left, s_sortBox[cursortbox].top, s_sortBox[cursortbox].right, s_sortBox[cursortbox].bottom); 
 
 	if ( (ScreenSize == (ScreenSize_t)ss640x480) || (ScreenSize == (ScreenSize_t)ss320x240) || (ScreenSize == ss896x672) ) {
 
@@ -438,12 +405,6 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 				_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1315_")), curpage+1, Numpages); 
 				break;
 		}
-/* 101222 REMOVE
-		if (curmapspace==MSM_LANDABLE) 
-			_stprintf(Buffer,TEXT("LNDB %d/%d"), curpage+1,Numpages); 
-		else
-			_stprintf(Buffer,TEXT("APTS %d/%d"), curpage+1, Numpages); 
-*/
 		if (cursortbox==0)
 			LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
 		else
@@ -497,12 +458,6 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 				_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1315_")), curpage+1, Numpages); 
 				break;
 		}
-/* 101222 REMOVE
-		if (curmapspace==MSM_LANDABLE) 
-			_stprintf(Buffer,TEXT("LNDB %d/%d"),  curpage+1,Numpages); 
-		else
-			_stprintf(Buffer,TEXT("APTS %d/%d"), curpage+1, Numpages); 
-*/
 		if (cursortbox==0)
 			LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
 		else
@@ -567,14 +522,6 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 
 	rli=*(psortedindex+curraw);
 
-/* REMOVE 101222
-	if (curmapspace==MSM_LANDABLE) {
-		rli=SortedLandableIndex[curraw];
-	} else {
-		rli=SortedAirportIndex[curraw];
-	}
-*/
-
 	if (!ndr) {
 		goto KeepOldValues;
 	}
@@ -594,11 +541,7 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
          	_stprintf(Buffer2[i][curpage],TEXT("%0.1lf"),value);
 
 
-#ifndef MAP_ZOOM
-		if (DisplayMode != dmCircling) {
-#else /* MAP_ZOOM */
 		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
 			value = WayPointCalc[rli].Bearing -  GPS_INFO.TrackBearing;
 
 			if (value < -180.0)
@@ -665,16 +608,6 @@ KeepOldValues:
 			rcolor=RGB_WHITE;
   			SelectObject(hdc, LK8InfoBigFont); 
 		}
-/* REMOVE 101222
-		if ( ((WayPointList[rli].Flags & AIRPORT) == AIRPORT) ) 
-		{
-			rcolor=RGB_WHITE;
-  			SelectObject(hdc, LK8InfoBigFont); // Text font for Nearest
-		} else {
-			rcolor=RGB_LIGHTYELLOW;
-  			SelectObject(hdc, LK8InfoBigItalicFont); // Text font for Nearest
-		}
-*/
 		if ((WayPointCalc[rli].VGR == 3 )|| (!WayPointList[rli].Reachable)) 
 			rcolor=RGB_LIGHTRED;
 	} else {
@@ -697,18 +630,12 @@ KeepOldValues:
 
   if (LKevent==LKEVENT_NEWRUN || LKevent==LKEVENT_NEWPAGE ) {
 		LKevent=LKEVENT_NONE;
-		#ifndef LKOBJ
-  		DeleteObject(sortbrush);
-		#endif
 		return;
   }
 
   if (drawn_items_onpage>0) {
 
 	if (SelectedRaw[curmapspace] <0 || SelectedRaw[curmapspace]>(Numraws-1)) {
-		#ifndef LKOBJ
-  		DeleteObject(sortbrush); 
-		#endif
 		return;
 	}
 	if (SelectedRaw[curmapspace] >= drawn_items_onpage) {
@@ -731,9 +658,6 @@ KeepOldValues:
   } 
 
   LKevent=LKEVENT_NONE;
-  #ifndef LKOBJ
-  DeleteObject(sortbrush);
-  #endif
   return;
 }
 

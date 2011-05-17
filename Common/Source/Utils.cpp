@@ -1620,7 +1620,7 @@ void ReadRegistrySettings(void)
   Temp = 1;
   GetFromRegistry(szRegistryConfIP23,&Temp);
   ConfIP23 = Temp;
-  Temp = 0; // STILL DISABLED AIRSPACES
+  Temp = 1;
   GetFromRegistry(szRegistryConfIP24,&Temp);
   ConfIP24 = Temp;
   Temp = 1;

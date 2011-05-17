@@ -494,7 +494,7 @@ bool ConfIP[10][10];
 bool ConfMP[10]={1,1,1,1,1,1,1,1,1,1};
 bool ConfBB1=1, ConfBB2=1, ConfBB3=1, ConfBB4=1, ConfBB5=1, ConfBB6=1, ConfBB7=1, ConfBB8=1, ConfBB9=1;
 bool ConfIP11=1, ConfIP12=1, ConfIP13=1, ConfIP14=1, ConfIP15=1, ConfIP16=1, ConfIP21=1, ConfIP22=1;
-bool ConfIP23=1, ConfIP24=0, ConfIP31=1, ConfIP32=1; // 24 still disabled
+bool ConfIP23=1, ConfIP24=1, ConfIP31=1, ConfIP32=1;
 short AverEffTime=0;
 bool DrawBottom=false; // new map's bottom line in landscape mode fullscreen condition
 short BottomMode=BM_FIRST; 

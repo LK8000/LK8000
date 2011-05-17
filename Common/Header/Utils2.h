@@ -176,9 +176,10 @@ extern HFONT					LK8PanelUnitFont;
 // target page for traffic with graphics
 #define MSM_INFO_TARGET		14
 #define MSM_INFO_CONTEST	15
+#define MSM_AIRSPACES		16
 // turnaround point is TOP (equal to last TRI define), 
 // remember that arrays must count from zero, so MSM_TOP+1
-#define MSM_TOP			15
+#define MSM_TOP			16
 //
 // THIS CONFIGURATION GIVES THE ORDER OF MENUs. ALL ITEMS MUST ALSO BE ADDED INSIDE INITMODETABLE()
 // in Utils2.cpp WHERE each mode is paired with an MSM_xxx item.
@@ -202,7 +203,8 @@ extern HFONT					LK8PanelUnitFont;
 #define WP_AIRPORTS		0
 #define WP_LANDABLE		1
 #define WP_NEARTPS		2
-#define WP_TOP			2
+#define WP_AIRSPACES		3
+#define WP_TOP			3
 //
 // InfoMode 
 //
