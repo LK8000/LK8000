@@ -1305,10 +1305,14 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
   }
   if (!terrain_minalt[TerrainRamp]) minalt=0;	//@ 101110
   if (TerrainRamp==13) {
-	if (CALCULATED_INFO.Flying) {
-		minalt=(unsigned short)GPS_INFO.Altitude-150; // 500ft
+	if (!GPS_INFO.NAVWarning) {
+		if (CALCULATED_INFO.Flying) {
+			minalt=(unsigned short)GPS_INFO.Altitude-150; // 500ft
+		} else {
+			minalt=(unsigned short)GPS_INFO.Altitude+100; // 330ft
+		}
 	} else {
-		minalt=(unsigned short)GPS_INFO.Altitude+100; // 330ft
+		minalt+=150;
 	}
   }
 
