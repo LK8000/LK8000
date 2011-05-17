@@ -173,7 +173,10 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
   _nearesthdistance=100000; 
   _nearestvdistance=100000;
 
-  _now = Basic->Time;
+  // 110518 PENDING_QUESTION
+  // From Paolo to Kalman: casting a double to a signed int won't create problems 
+  // if for any reason it overflows the positive sign, going negative?
+  _now = (int)Basic->Time;
   
   //Save position for further calculations made by gui threads
   if (Basic->BaroAltitudeAvailable) {
@@ -187,7 +190,7 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
   _lastknownpos = position_now;
 
   // Horizontal distance margin
-   _hdistancemargin = Basic->Speed * WarningTime;
+   _hdistancemargin = (int) (Basic->Speed * WarningTime); // 110518 casting forced
 
 }
 

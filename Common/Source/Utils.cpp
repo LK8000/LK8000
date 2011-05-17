@@ -2599,7 +2599,7 @@ bool ReadWinPilotPolar(void) {
         PExtractParameter(TempString, ctemp, 0);
         GlidePolar::FlapsMass = StrToDouble(ctemp,NULL);
         PExtractParameter(TempString, ctemp, 1);
-        int flapsCount = StrToDouble(ctemp,NULL);
+        int flapsCount = (int) StrToDouble(ctemp,NULL); // 110517 casting forced
         int currentFlapsPos = 0;
         GlidePolar::FlapsPos[currentFlapsPos][0] = 0.0;
         currentFlapsPos++;

@@ -1494,7 +1494,7 @@ void Flaps(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	for (int i=0;i<GlidePolar::FlapsPosCount-1;i++) {
 		if (speed >= GlidePolar::FlapsPos[i][0]*massCorrectionFactor 
 			&& speed < GlidePolar::FlapsPos[i+1][0]*massCorrectionFactor) {
-			Calculated->Flaps = GlidePolar::FlapsPos[i][1];
+			Calculated->Flaps = (int) GlidePolar::FlapsPos[i][1]; // casting forced 110517
 		}
 	}	
 }
