@@ -6,8 +6,9 @@ Changes in LK8000 v2.3a
 NEW
 
 . New configuration for Polars (requires reconfiguring polar type!)
-
 . Many new polars
+
+. New FLAPS setting calculator , for extended polars 
 
 . New IMI ERIXX logger support, also for task declaration
 
@@ -25,7 +26,18 @@ NEW
     Traffic pages 4.x - when Flarm is detected - are always available. If you don't want traffic informations, 
     then please disable these traffic data being sent by flarm in its protocol, and save CPU.
 
-. ------- New airspace handling engine ----------
+. New Color scheme for GA: relative terrain.
+    This scheme will show red any terrain above current altitude.
+    Anything below, up to 500ft below, will be graded to yellow.
+    This scheme is NOT good for gliders, because it does not consider the loss of altitude while gliding.
+    It is intended to be used by general aviation mode, optionally activated by a button.
+
+. New Info Status System indicators for :
+	Simulator mode
+	GPS device in use for fix
+	Software version
+
+. ------- New AIRSPACE handling ENGINE ----------
   . New airspace storage classes (CAirspace, CAirspaceCicrle, CAirspaceArea)
   . New CAirspaceManager singleton class for managing airspace operations
   . New openair parser based on the old one
