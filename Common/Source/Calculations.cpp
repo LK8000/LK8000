@@ -1099,7 +1099,11 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   Turning(Basic, Calculated);
   LD(Basic,Calculated);
   CruiseLD(Basic,Calculated);
-  Flaps(Basic,Calculated);
+
+  // We calculate flaps settings only if the polar is extended.
+  // We do assume that GA planes will NOT use extended polars
+  if (GlidePolar::FlapsPosCount >0) Flaps(Basic,Calculated);
+
   Calculated->AverageLD=CalculateLDRotary(&rotaryLD,Calculated); 
   Average30s(Basic,Calculated);
   AverageThermal(Basic,Calculated);
@@ -1483,6 +1487,7 @@ void LD(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 void Flaps(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {	
 	double speed = 0.0;
+	if (GlidePolar::FlapsMass<=0) return; // avoid division by zero crashes
 	if (Basic->AirspeedAvailable) {
 		speed = (int)(SPEEDMODIFY*Basic->TrueAirspeed);
 	} else {
@@ -1494,7 +1499,7 @@ void Flaps(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	for (int i=0;i<GlidePolar::FlapsPosCount-1;i++) {
 		if (speed >= GlidePolar::FlapsPos[i][0]*massCorrectionFactor 
 			&& speed < GlidePolar::FlapsPos[i+1][0]*massCorrectionFactor) {
-			Calculated->Flaps = (int) GlidePolar::FlapsPos[i][1]; // casting forced 110517
+			Calculated->Flaps = (int) GlidePolar::FlapsPos[i][1];
 		}
 	}	
 }

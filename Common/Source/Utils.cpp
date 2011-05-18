@@ -2595,26 +2595,48 @@ bool ReadWinPilotPolar(void) {
             }
         }
 
-        // try to read flaps configuration line
-        PExtractParameter(TempString, ctemp, 0);
-        GlidePolar::FlapsMass = StrToDouble(ctemp,NULL);
-        PExtractParameter(TempString, ctemp, 1);
-        int flapsCount = (int) StrToDouble(ctemp,NULL); // 110517 casting forced
-        int currentFlapsPos = 0;
-        GlidePolar::FlapsPos[currentFlapsPos][0] = 0.0;
-        currentFlapsPos++;
-        for (int i=2; i <= flapsCount*2; i=i+2) {
+	int i;
+
+	// Reset flaps values after loading a new polar, and init FlapsPos for the first time
+	for (i=0; i<MAX_FLAPS; i++) {
+		GlidePolar::FlapsPos[i][0]=0.0;
+		GlidePolar::FlapsPos[i][1]=0.0;
+	}
+	GlidePolar::FlapsPosCount=0;
+	GlidePolar::FlapsMass=0.0;
+
+	// Unless we check valid string, even with empty string currentFlapsPos will be positive,
+	// and thus force Flaps calculations even with no extended polar.
+	// Let's allow empty lines and comments in the polar file, before the flaps line is found.
+	// 
+	do {
+	   if (_tcslen(TempString) <10) continue;
+	   if(_tcsstr(TempString,TEXT("*")) == TempString) continue;
+    	   // try to read flaps configuration line
+     	   PExtractParameter(TempString, ctemp, 0);
+     	   GlidePolar::FlapsMass = StrToDouble(ctemp,NULL);
+     	   PExtractParameter(TempString, ctemp, 1);
+     	   int flapsCount = (int) StrToDouble(ctemp,NULL);
+
+     	   // int currentFlapsPos = 0;
+     	   // GlidePolar::FlapsPos[currentFlapsPos][0] = 0.0;  // no need, already initialised
+
+     	   int currentFlapsPos=1;
+     	   for (i=2; i <= flapsCount*2; i=i+2) {
 	        PExtractParameter(TempString, ctemp, i);
 	        GlidePolar::FlapsPos[currentFlapsPos][0] = StrToDouble(ctemp,NULL);	
 	        PExtractParameter(TempString, ctemp, i+1);
 	        GlidePolar::FlapsPos[currentFlapsPos][1] = StrToDouble(ctemp,NULL);
+		if (currentFlapsPos >= (MAX_FLAPS-1)) break; // safe check
 	        currentFlapsPos++;
-        }
-        GlidePolar::FlapsPos[0][1] = GlidePolar::FlapsPos[1][1];
-        GlidePolar::FlapsPos[currentFlapsPos][0] = SPEEDMODIFY*MAXSPEED;
-        GlidePolar::FlapsPos[currentFlapsPos][1] = StrToDouble(ctemp,NULL);
-        currentFlapsPos++;
-        GlidePolar::FlapsPosCount = currentFlapsPos;
+       	   }
+           GlidePolar::FlapsPos[0][1] = GlidePolar::FlapsPos[1][1];
+           GlidePolar::FlapsPos[currentFlapsPos][0] = SPEEDMODIFY*MAXSPEED;
+           GlidePolar::FlapsPos[currentFlapsPos][1] = StrToDouble(ctemp,NULL);
+           currentFlapsPos++;
+           GlidePolar::FlapsPosCount = currentFlapsPos; 
+	   break;
+	} while(ReadString(hFile,READLINE_LENGTH,TempString));
 
         // file was OK, so save it
         if (foundline) {

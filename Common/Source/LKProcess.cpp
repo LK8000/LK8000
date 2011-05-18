@@ -992,7 +992,12 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
   
 		case LK_FLAPS:			
 			_stprintf(BufferTitle, gettext(TEXT("_@M1641_")));
-			_stprintf(BufferValue,TEXT("%d"), DerivedDrawInfo.Flaps);			
+			if (GlidePolar::FlapsPosCount>0) {
+				_stprintf(BufferValue,TEXT("%d"), DerivedDrawInfo.Flaps);
+				valid=true;
+			} else {
+				wsprintf(BufferValue, TEXT(NULLMEDIUM));
+			}
 			break;
 
 		// B54 091221
