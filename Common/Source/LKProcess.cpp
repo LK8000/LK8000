@@ -686,7 +686,10 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 #else /* MAP_ZOOM */
 			if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
 #endif /* MAP_ZOOM */
-				value=DerivedDrawInfo.AverageLD;
+				if (DerivedDrawInfo.Flying)
+					value=DerivedDrawInfo.AverageLD;
+				else
+					value=0;
 				if (value <1 ||  value >=ALTERNATE_MAXVALIDGR ) {
 					strcpy(text,INFINVAL); 
 					valid=true;
@@ -757,7 +760,10 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				_stprintf(BufferTitle, gettext(TEXT("_@M1012_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			value=DerivedDrawInfo.CruiseLD;
+			if (DerivedDrawInfo.Flying)
+				value=DerivedDrawInfo.CruiseLD;
+			else
+				value=0;
 			if (value <-99 ||  value >=ALTERNATE_MAXVALIDGR ) {
 				strcpy(text,INFINVAL); 
 				valid=true;
