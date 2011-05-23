@@ -874,15 +874,15 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryFinishRadius,&Temp);
   FinishRadius = Temp;
 
-  Temp = 0;
+  Temp = AIRSPACEWARNINGS;
   GetFromRegistry(szRegistryAirspaceWarning,&Temp);
   AIRSPACEWARNINGS = Temp;
 
-  Temp = 30;
+  Temp = WarningTime;
   GetFromRegistry(szRegistryWarningTime,&Temp);
   WarningTime = max(10,Temp);
 
-  Temp = 30;
+  Temp = AcknowledgementTime;
   GetFromRegistry(szRegistryAcknowledgementTime,&Temp);
   AcknowledgementTime = max(10,Temp);
 

@@ -1296,8 +1296,7 @@ Radial to home waypoint, if available.
 
 @879
 [Airspace Distance]
-CURRENTLY NOT AVAILABLE. Distance to the nearest Airspace. Even if airspace is not appearing on the map, disabled or acknowldged already, distance remains. 
-If 0, you are inside an airspace, use Nearest Airspace menu to know more about it.
+Distance to the nearest Airspace. Available even if the airspace is not appearing on the map, it is disabled or acknowldged already.
 
 @880
 [Ext.Batt.Bank ]
@@ -1421,6 +1420,9 @@ The sum of OLC Classic score and FAI triangle score.
 [OLC PLUS] predicted score
 The sum of OLC Classic predicted score and FAI triangle predicted score.
 
+@913
+[FLAP SETTINGS]
+Please call 800-KUBA toll free for more informations :-)
 
 #
 # END INFOBOXES 800 - 1199
