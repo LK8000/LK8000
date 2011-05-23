@@ -531,6 +531,7 @@ static void OnAirspaceDisplay(DataField *Sender, DataField::DataAccessKind_t Mod
     case DataField::daChange:
       wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceDisplay"));
       if (wp) altmode=(wp->GetDataField()->GetAsInteger());
+      // Warning, this is duplicated later on
       wp = (WndProperty*)wf->FindByName(TEXT("prpClipAltitude"));
       if (wp) wp->SetVisible(altmode==CLIP);
       wp = (WndProperty*)wf->FindByName(TEXT("prpAltWarningMargin"));
@@ -1766,6 +1767,10 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M77_")));
     dfe->Set(AltitudeMode);
     wp->RefreshDisplay();
+      wp = (WndProperty*)wf->FindByName(TEXT("prpClipAltitude"));
+      if (wp) wp->SetVisible(AltitudeMode==CLIP);
+      wp = (WndProperty*)wf->FindByName(TEXT("prpAltWarningMargin"));
+      if (wp) wp->SetVisible(AltitudeMode==AUTO || AltitudeMode==ALLBELOW);
   }
 
 
