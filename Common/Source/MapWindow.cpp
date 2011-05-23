@@ -92,13 +92,8 @@ extern void DrawDebug(HDC hdc, RECT rc );
 
 #define NUMSNAILRAMP 6
 
-#ifndef MAP_ZOOM
-#define DONTDRAWTHEMAP IsMapFullScreen()&&NewMap&&Look8000&&!EnablePan&&MapSpaceMode!=MSM_MAP
-#define MAPMODE8000    IsMapFullScreen()&&NewMap&&Look8000&&!EnablePan&&MapSpaceMode==MSM_MAP
-#else /* MAP_ZOOM */
 #define DONTDRAWTHEMAP IsMapFullScreen()&&NewMap&&Look8000&&!mode.AnyPan()&&MapSpaceMode!=MSM_MAP
 #define MAPMODE8000    IsMapFullScreen()&&NewMap&&Look8000&&!mode.AnyPan()&&MapSpaceMode==MSM_MAP
-#endif /* MAP_ZOOM */
 
 
 extern int GetOvertargetIndex(void);
@@ -116,13 +111,8 @@ const COLORRAMP snail_colors[] = {
 };
 
 
-#ifndef MAP_ZOOM
-DisplayMode_t UserForceDisplayMode = dmNone;
-DisplayMode_t DisplayMode = dmCruise;
-#else /* MAP_ZOOM */
 MapWindow::Zoom MapWindow::zoom;
 MapWindow::Mode MapWindow::mode;
-#endif /* MAP_ZOOM */
 
 HBITMAP MapWindow::hBmpAirportReachable;
 HBITMAP MapWindow::hBmpAirportUnReachable;
@@ -175,10 +165,6 @@ int MapWindow::TargetDrag_State = 0;
 double MapWindow::TargetDrag_Latitude = 0;
 double MapWindow::TargetDrag_Longitude = 0;
 
-#ifndef MAP_ZOOM
-bool MapWindow::EnablePan = false;
-bool MapWindow::TargetPan = false;
-#endif /* ! MAP_ZOOM */
 int MapWindow::TargetPanIndex = 0;
 double MapWindow::TargetZoomDistance = 500.0;
 bool MapWindow::EnableTrailDrift=false;
@@ -192,30 +178,14 @@ BOOL MapWindow::THREADRUNNING = TRUE;
 BOOL MapWindow::THREADEXIT = FALSE;
 BOOL MapWindow::Initialised = FALSE;
 
-#ifndef MAP_ZOOM
-bool MapWindow::BigZoom = true;
-#endif /* ! MAP_ZOOM */
 unsigned char MapWindow::DeclutterLabels = MAPLABELS_ALLON;
 
 DWORD  MapWindow::dwDrawThreadID;
 HANDLE MapWindow::hDrawThread;
 
-#ifndef MAP_ZOOM
-double MapWindow::RequestMapScale; // VENTA9 = 5; 
-double MapWindow::MapScale; // VENTA9 = 5; 
-double MapWindow::MapScaleOverDistanceModify; // VENTA9  = 5/DISTANCEMODIFY;
-double MapWindow::ResMapScaleOverDistanceModify = 0.0;
-#endif /* ! MAP_ZOOM */
 double MapWindow::DisplayAngle = 0.0;
 double MapWindow::DisplayAircraftAngle = 0.0;
-#ifndef MAP_ZOOM
-double MapWindow::DrawScale;
-double MapWindow::InvDrawScale;
-#endif /* ! MAP_ZOOM */
 
-#ifndef MAP_ZOOM
-bool MapWindow::AutoZoom = false;
-#endif /* ! MAP_ZOOM */
 bool MapWindow::LandableReachable = false;
 
 HBITMAP MapWindow::hTurnPoint;
@@ -389,21 +359,11 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat,
   */
 
   int i;
-#ifndef MAP_ZOOM
-  if (!pan || !EnablePan) {
-    i=FindNearestWayPoint(lon, lat, range);
-  } else {
-#else /* MAP_ZOOM */
   if(pan && (mode.Is(Mode::MODE_PAN) || mode.Is(Mode::MODE_TARGET_PAN)))
-#endif /* MAP_ZOOM */
     // nearest to center of screen if in pan mode
     i=FindNearestWayPoint(PanLongitude, PanLatitude, range);
-#ifndef MAP_ZOOM
-  }
-#else /* MAP_ZOOM */
   else
     i=FindNearestWayPoint(lon, lat, range);
-#endif /* MAP_ZOOM */
   if(i != -1)
     {
       SelectedWaypoint = i;
@@ -458,68 +418,6 @@ bool MapWindow::Event_InteriorAirspaceDetails(double lon, double lat) {
 }
 
 
-#ifndef MAP_ZOOM
-void MapWindow::SwitchZoomClimb(void) {
-
-  static bool doinit=true;
-  static bool last_isclimb = false;
-  static bool last_targetpan = false;
-
-  bool isclimb = (DisplayMode == dmCircling);
-
-  if (doinit) {
-	SetMapScales();
-	doinit=false;
-  }
-
-  if (TargetPan != last_targetpan) {
-    if (TargetPan) {
-      // save starting values
-      if (isclimb) {
-        ClimbMapScale = MapScale;
-      } else {
-        CruiseMapScale = MapScale;
-      }
-    } else {
-      // restore scales
-      if (isclimb) {
-        RequestMapScale = LimitMapScale(ClimbMapScale);
-      } else {
-        RequestMapScale = LimitMapScale(CruiseMapScale);
-      }
-      BigZoom = true;
-    }
-    last_targetpan = TargetPan;
-    return;
-  }
-  if (!TargetPan && CircleZoom) {
-    if (isclimb != last_isclimb) {
-      if (isclimb) {
-        // save cruise scale
-        CruiseMapScale = MapScale;
-        // switch to climb scale
-        RequestMapScale = LimitMapScale(ClimbMapScale);
-      } else {
-        // leaving climb
-        // save cruise scale
-        ClimbMapScale = MapScale;
-        RequestMapScale = LimitMapScale(CruiseMapScale);
-        // switch to climb scale
-      }
-      BigZoom = true;
-      last_isclimb = isclimb;
-    } else {
-      // nothing to do.
-    }
-  }
-
-}
-
-bool MapWindow::isAutoZoom() {
-  return AutoZoom;
-}
-
-#endif /* ! MAP_ZOOM */
 bool TextInBoxMoveInView(POINT *offset, RECT *brect){
 
   bool res = false;
@@ -1000,26 +898,6 @@ extern bool DialogActive;
 
 
 
-#ifndef MAP_ZOOM
-void MapWindow::Event_AutoZoom(int vswitch) {
-  if (vswitch== -1) {
-    AutoZoom = !AutoZoom;
-  } else {
-    AutoZoom = (vswitch != 0); // 0 off, 1 on
-  }
-  
-  if (AutoZoom) {
-    if (EnablePan) {
-      EnablePan = false;
-      InputEvents::setMode(TEXT("default"));
-      StoreRestoreFullscreen(false);
-    }
-  }
-  RefreshMap();
-}
-
-
-#endif /* ! MAP_ZOOM */
 void MapWindow::Event_PanCursor(int dx, int dy) {
   int X= (MapRect.right+MapRect.left)/2;
   int Y= (MapRect.bottom+MapRect.top)/2;
@@ -1031,23 +909,13 @@ void MapWindow::Event_PanCursor(int dx, int dy) {
   Y+= (MapRect.bottom-MapRect.top)*dy/4;
   Screen2LatLon(X, Y, Xnew, Ynew);
 
-#ifndef MAP_ZOOM
-  if (EnablePan) {
-#else /* MAP_ZOOM */
   if(mode.AnyPan()) {
-#endif /* MAP_ZOOM */
     PanLongitude += Xstart-Xnew;
     PanLatitude += Ystart-Ynew;
   }
   RefreshMap();
 }
 
-#ifndef MAP_ZOOM
-bool MapWindow::isPan() {
-  return EnablePan;
-}
-
-#endif /* ! MAP_ZOOM */
 /* Event_TerrainToplogy Changes
    0       Show
    1       Toplogy = ON
@@ -1140,54 +1008,24 @@ void MapWindow::StoreRestoreFullscreen(bool store) {
 
 void MapWindow::Event_Pan(int vswitch) {
   //  static bool oldfullscreen = 0;  never assigned!
-#ifndef MAP_ZOOM
-  bool oldPan = EnablePan;
-#else /* MAP_ZOOM */
   bool oldPan = mode.AnyPan();
-#endif /* MAP_ZOOM */
   if (vswitch == -2) { // superpan, toggles fullscreen also
 
-#ifndef MAP_ZOOM
-    if (!EnablePan) {
-      StoreRestoreFullscreen(true);
-    } else {
-      StoreRestoreFullscreen(false);
-    }
-#else /* MAP_ZOOM */
     StoreRestoreFullscreen(!mode.AnyPan());
-#endif /* MAP_ZOOM */
     // new mode
-#ifndef MAP_ZOOM
-    EnablePan = !EnablePan;
-    if (EnablePan) { // pan now on, so go fullscreen
-#else /* MAP_ZOOM */
     mode.Special(Mode::MODE_SPECIAL_PAN, !oldPan);
     if (mode.AnyPan()) { // pan now on, so go fullscreen
-#endif /* MAP_ZOOM */
       RequestFullScreen = true;
     }
 
   } else if (vswitch == -1) {
-#ifndef MAP_ZOOM
-    EnablePan = !EnablePan;
-#else /* MAP_ZOOM */
     mode.Special(Mode::MODE_SPECIAL_PAN, !oldPan);
-#endif /* MAP_ZOOM */
   } else {
-#ifndef MAP_ZOOM
-    EnablePan = (vswitch != 0); // 0 off, 1 on
-#else /* MAP_ZOOM */
     mode.Special(Mode::MODE_SPECIAL_PAN, vswitch != 0); // 0 off, 1 on
-#endif /* MAP_ZOOM */
   }
 
-#ifndef MAP_ZOOM
-  if (EnablePan != oldPan) {
-    if (EnablePan) {
-#else /* MAP_ZOOM */
   if (mode.AnyPan() != oldPan) {
     if (mode.AnyPan()) {
-#endif /* MAP_ZOOM */
       PanLongitude = DrawInfo.Longitude;
       PanLatitude = DrawInfo.Latitude;
       InputEvents::setMode(TEXT("pan"));
@@ -1206,11 +1044,7 @@ double MapWindow::LimitMapScale(double value) {
   else
     minreasonable = 0.05; 
 
-#ifndef MAP_ZOOM
-  if (AutoZoom && DisplayMode != dmCircling) {
-#else /* MAP_ZOOM */
   if (zoom.AutoZoom() && !mode.Is(Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
     if (AATEnabled && (ActiveWayPoint>0)) {
       if ( ISPARAGLIDER ) minreasonable = 0.005; 
       else minreasonable = 0.88;
@@ -1228,94 +1062,6 @@ double MapWindow::LimitMapScale(double value) {
 }
 
 
-#ifndef MAP_ZOOM
-void MapWindow::Event_SetZoom(double value) {
-
-
-/* 091023 TEST REMOVE
-//  static bool doinit_climb=true;
-//  static bool doinit_cruise=true;
-//
-//  if (!CALCULATED_INFO.Circling && doinit_cruise) {
-//	RequestMapScale=8.0;
-//	doinit_cruise=false;
-//  }
-//  if (CALCULATED_INFO.Circling && doinit_climb) {
-//	RequestMapScale=0.70;
-//	doinit_climb=false;
-//  }
-*/
-
-
-  static double lastRequestMapScale = RequestMapScale;
-
-  RequestMapScale = LimitMapScale(value);
-  if (lastRequestMapScale != RequestMapScale){
-    lastRequestMapScale = RequestMapScale;
-    BigZoom = true;
-    RefreshMap();
-  }
-}
-
-
-void MapWindow::Event_ScaleZoom(int vswitch) {
-
-  static double lastRequestMapScale = RequestMapScale;
-  double value = RequestMapScale;
-  static int nslow=0;
-
-  if (isAutoZoom()) {
-	// DoStatusMessage(_T("Autozoom OFF")); // REMOVE FIXV2
-	DoStatusMessage(gettext(TEXT("_@M857_"))); // AutoZoom OFF
-	AutoZoom=0;
-  }
-
-  // For best results, zooms should be multiples or roots of 2
-
-  if (ScaleListCount > 0){
-    value = FindMapScale(RequestMapScale);
-    value = StepMapScale(-vswitch);
-  } else {
-
-    if (abs(vswitch)>=4) {
-      nslow++;
-      if (nslow %2 != 0) {
-        // JMW disabled        return;
-      }
-      if (vswitch==4) {
-        vswitch = 1;
-      }
-      if (vswitch==-4) {
-        vswitch = -1;
-      }
-    }
-    if (vswitch==1) { // zoom in a little
-      value /= 1.414;
-    }
-    if (vswitch== -1) { // zoom out a little
-      value *= 1.414;
-    }
-    if (vswitch==2) { // zoom in a lot
-      value /= 2.0;
-    }
-    if (vswitch== -2) { // zoom out a lot
-      value *= 2.0;
-    } 
-
-  }
-  RequestMapScale = LimitMapScale(value);
-
-  if (lastRequestMapScale != RequestMapScale){
-    lastRequestMapScale = RequestMapScale;
-    BigZoom = true;
-
-    RefreshMap();
-
-  }
-}
-
-
-#endif /* ! MAP_ZOOM */
 int MapWindow::GetMapResolutionFactor(void) { // TESTFIX 091017 CHECKFIX
   static int retglider=NIBLSCALE(30);
   //static int retpara=IBLSCALE(30);
@@ -1746,11 +1492,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 
 
       ScaleListCount = propGetScaleList(ScaleList, sizeof(ScaleList)/sizeof(ScaleList[0]));
-#ifndef MAP_ZOOM
-      RequestMapScale = LimitMapScale(RequestMapScale);
-#else /* MAP_ZOOM */
       zoom.RequestedScale(LimitMapScale(zoom.RequestedScale()));
-#endif /* MAP_ZOOM */
 
       hBmpMapScale = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_MAPSCALE_A));
 
@@ -1954,16 +1696,10 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
         }
       }
 
-#if 100318
 	// only when activemap (which means newmap is on) is off
       if (ActiveMap) ignorenext=true;
+      // 090721 doubleclick no more used in lk8000
       if (NewMap) break;
-#else
-
-      ignorenext=true;
-      // VENTA 090721 doubleclick no more used in lk8000
-      if (NewMap) break;
-#endif
       #ifndef DISABLEAUDIO
       if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
       #endif
@@ -1992,11 +1728,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       LKevent=LKEVENT_NONE; // CHECK FIX TODO VENTA10  probably useless 090915
 
       LockTaskData();
-#ifndef MAP_ZOOM
-      if (AATEnabled && TargetPan) {
-#else /* MAP_ZOOM */
       if (AATEnabled && mode.Is(Mode::MODE_TARGET_PAN)) {
-#endif /* MAP_ZOOM */
 	if (ValidTaskPoint(TargetPanIndex)) {
 	  POINT tscreen;
 	  LatLon2Screen(Task[TargetPanIndex].AATTargetLon, 
@@ -2105,25 +1837,15 @@ goto_menu:
 		// Long click on aircraft icon, toggle thermal mode
 		//
 		if ( dwInterval >=VKLONGCLICK) { // in Defines.h
-#ifndef MAP_ZOOM
-			if (DisplayMode == dmCircling) {
-				UserForceDisplayMode=dmCruise;
-#else /* MAP_ZOOM */
 			if (mode.Is(Mode::MODE_CIRCLING)) {
 				mode.UserForcedMode(Mode::MODE_FLY_CRUISE);
-#endif /* MAP_ZOOM */
 				#ifndef DISABLEAUDIO
 				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 				#endif
 				break;
 			} else 
-#ifndef MAP_ZOOM
-			if (DisplayMode == dmCruise) {
-				UserForceDisplayMode=dmNone;
-#else /* MAP_ZOOM */
 			if (mode.Is(Mode::MODE_CRUISE)) {
 				mode.UserForcedMode(Mode::MODE_FLY_NONE);
-#endif /* MAP_ZOOM */
 				#ifndef DISABLEAUDIO
 				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 				#endif
@@ -2260,11 +1982,7 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 	// if clicking on navboxes, process fast virtual keys
 	// maybe check LK8000 active?
 	// This point is selected when in MapSpaceMode==MSM_MAP, i.e. lk8000 with moving map on.
-#ifndef MAP_ZOOM
-	if (  DrawBottom && IsMapFullScreen() && (Y >= (rc.bottom-BottomSize)) && !MapWindow::EnablePan ) {
-#else /* MAP_ZOOM */
 	if (  DrawBottom && IsMapFullScreen() && (Y >= (rc.bottom-BottomSize)) && !mode.AnyPan() ) {
-#endif /* MAP_ZOOM */
 		wParam=ProcessVirtualKey(X,Y,dwInterval,LKGESTURE_NONE);
 #ifdef DEBUG_MAPINPUT
 		DoStatusMessage(_T("DBG-034 navboxes")); 
@@ -2280,11 +1998,7 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 
       } // end newmap preliminar checks
 
-#ifndef MAP_ZOOM
-      if(NewMap&&UseMapLock&&MapLock&&!EnablePan&&!(dontdrawthemap)) 
-#else /* MAP_ZOOM */
       if(NewMap&&UseMapLock&&MapLock&&!mode.AnyPan()&&!(dontdrawthemap)) 
-#endif /* MAP_ZOOM */
       {
 		// With LOCKED map...
 		// When you single click on the map, here you come.
@@ -2387,33 +2101,21 @@ Escamotage:
 
       Screen2LatLon(X, Y, Xlat, Ylat);
     
-#ifndef MAP_ZOOM
-      if (AATEnabled && TargetPan && (TargetDrag_State>0)) {
-#else /* MAP_ZOOM */
       if (AATEnabled && mode.Is(Mode::MODE_TARGET_PAN) && (TargetDrag_State>0)) {
-#endif /* MAP_ZOOM */
 	LockTaskData();
 	TargetDrag_State = 2;
 	TargetDrag_Latitude = Ylat;
 	TargetDrag_Longitude = Xlat;
 	UnlockTaskData();
 	break;
-#ifndef MAP_ZOOM
-      } else if (!TargetPan && EnablePan && (distance>36)) { // TODO FIX should be IBLSCALE 36 instead?
-#else /* MAP_ZOOM */
       } else if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN) && (distance>36)) { // TODO FIX should be IBLSCALE 36 instead?
-#endif /* MAP_ZOOM */
 	PanLongitude += Xstart-Xlat;
 	PanLatitude  += Ystart-Ylat;
 	RefreshMap();
 	// disable picking when in pan mode
 	break; 
       } 
-#ifndef MAP_ZOOM
-      else if (SIMMODE && (!TargetPan && (distance>NIBLSCALE(36)))) {
-#else /* MAP_ZOOM */
       else if (SIMMODE && (!mode.Is(Mode::MODE_TARGET_PAN) && (distance>NIBLSCALE(36)))) {
-#endif /* MAP_ZOOM */
 	// This drag moves the aircraft (changes speed and direction)
 	double newbearing;
 	double oldbearing = GPS_INFO.TrackBearing;
@@ -2432,11 +2134,7 @@ Escamotage:
 	break;
       }
 
-#ifndef MAP_ZOOM
-      if (!TargetPan) {
-#else /* MAP_ZOOM */
       if (!mode.Is(Mode::MODE_TARGET_PAN)) {
-#endif /* MAP_ZOOM */
 		// if map is locked and we are here, then if infobox are under focus accept the click
 		// as an order to defocus. Otherwise since we are under lock condition we simply
 		// ignore the click and break out.
@@ -2483,21 +2181,12 @@ Escamotage:
 			// And at the same time let this action pass transparently to virtual keys.
 			//
 			if(dwInterval < VKSHORTCLICK) { //100ms is NOT  enough for a short click since GetTickCount is OEM custom!
-#if 100318 
 			if (ActiveMap) {
-#ifndef MAP_ZOOM
-				if (Event_NearestWaypointDetails(Xstart, Ystart, 500*MapScale, false)) {
-#else /* MAP_ZOOM */
                             if (Event_NearestWaypointDetails(Xstart, Ystart, 500*zoom.Scale(), false)) {
-#endif /* MAP_ZOOM */
 					break;
 				}
-#ifndef MAP_ZOOM
-			} else {
-#else /* MAP_ZOOM */
 			}
                         else {
-#endif /* MAP_ZOOM */
 savecodesize1:
 			int yup, ydown, ytmp;
 			ytmp=(int)((MapWindow::MapRect.bottom-MapWindow::MapRect.top-BottomSize)/2);
@@ -2525,19 +2214,10 @@ savecodesize1:
 			dwDownTime= 0L;
 			return TRUE; 
 			}
-#else
-				if (Event_NearestWaypointDetails(Xstart, Ystart, 500*MapScale, false)) {
-					break;
-				}
-#endif
 			} else {
 				// in pan mode and SIM mode, click to center current position
 				if (SIMMODE) {
-#ifndef MAP_ZOOM
-					if (EnablePan) {
-#else /* MAP_ZOOM */
 					if (mode.AnyPan()) {
-#endif /* MAP_ZOOM */
 						#if 110308
 						// match only center screen
 						if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(5)) && 
@@ -2583,33 +2263,15 @@ savecodesize1:
 			}
 		} else {
 			if(dwInterval < AIRSPACECLICK) { // original and untouched interval
-#if 100318
 				if (ActiveMap) {
-#ifndef MAP_ZOOM
-					if (Event_NearestWaypointDetails(Xstart, Ystart, 500*MapScale, false)) {
-#else /* MAP_ZOOM */
                                   if (Event_NearestWaypointDetails(Xstart, Ystart, 500*zoom.Scale(), false)) {
-#endif /* MAP_ZOOM */
 						break;
 					}
 				} else
 					goto savecodesize1;
-#else
-#ifndef MAP_ZOOM
-				if (Event_NearestWaypointDetails(Xstart, Ystart, 500*MapScale, false)) {
-#else /* MAP_ZOOM */
-				if (Event_NearestWaypointDetails(Xstart, Ystart, 500*zoom.Scale(), false)) {
-#endif /* MAP_ZOOM */
-					break;
-				}
-#endif
 			} else {
 				if (SIMMODE) {
-#ifndef MAP_ZOOM
-					if (EnablePan) {
-#else /* MAP_ZOOM */
 					if (mode.AnyPan()) {
-#endif /* MAP_ZOOM */
 						#if 110308
 						// match only center screen
 						if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(5)) && 
@@ -2793,153 +2455,6 @@ Wirth:
 }
 
 
-#ifndef MAP_ZOOM
-void MapWindow::ModifyMapScale(void) {
-  // limit zoomed in so doesn't reach silly levels
-  RequestMapScale = LimitMapScale(RequestMapScale); // FIX VENTA remove limit
-  MapScaleOverDistanceModify = RequestMapScale/DISTANCEMODIFY;
-  ResMapScaleOverDistanceModify = 
-    GetMapResolutionFactor()/MapScaleOverDistanceModify;
-  DrawScale = MapScaleOverDistanceModify;
-  DrawScale = DrawScale/111194;
-  DrawScale = GetMapResolutionFactor()/DrawScale;
-  InvDrawScale = 1.0/DrawScale;
-  MapScale = RequestMapScale;
-}
-
-
-bool MapWindow::isTargetPan(void) {
-  return TargetPan;
-}
-
-
-void MapWindow::UpdateMapScale()
-{
-  static int AutoMapScaleWaypointIndex = -1;
-  static double StartingAutoMapScale=0.0;
-  double AutoZoomFactor;
-
-  bool useraskedforchange = false;
-
-  // if there is user intervention in the scale
-  if(MapScale != RequestMapScale) {
-	ModifyMapScale();
-	useraskedforchange = true;
-  }
-
-  double wpd;
-  if (TargetPan) {
-	wpd = TargetZoomDistance;
-  } else {
-	wpd = DerivedDrawInfo.ZoomDistance; 
-  }
-  if (TargetPan) {
-	// set scale exactly so that waypoint distance is the zoom factor across the screen
-	RequestMapScale = LimitMapScale(wpd *DISTANCEMODIFY/ 4.0);
-	ModifyMapScale();
-	return;
-  } 
-  
-  if (AutoZoom) {
-	if(wpd > 0) {
-      
-		if(
-		   (((DisplayOrientation == NORTHTRACK)
-		     &&(DisplayMode != dmCircling))
-		    ||(DisplayOrientation == NORTHUP) 
-		    ||(DisplayOrientation == NORTHSMART)  // 100419
-		    || 
-		    (((DisplayOrientation == NORTHCIRCLE) 
-		      || (DisplayOrientation == TRACKCIRCLE)) 
-		     && (DisplayMode == dmCircling) ))
-		   && !TargetPan
-		   )
-		{
-	 		AutoZoomFactor = 2.5;
-		} else {
-			AutoZoomFactor = 4;
-		}
-      
-		if(
-		  (wpd < ( AutoZoomFactor * MapScaleOverDistanceModify))
-		  || 
-	  	  (StartingAutoMapScale==0.0)) 
-		{
-			// waypoint is too close, so zoom in
-			// OR just turned waypoint
-
-			// this is the first time this waypoint has gotten close,
-			// so save original map scale
-
-			if (StartingAutoMapScale==0.0) {
-				StartingAutoMapScale = MapScale;
-			}
-			else { // 101007 BUGFIX XCSOAR
-
-				// set scale exactly so that waypoint distance is the zoom factor across the screen
-				RequestMapScale = LimitMapScale(wpd *DISTANCEMODIFY/ AutoZoomFactor);
-				if (MapScale != RequestMapScale) { // do not loose time if same scale
-					ModifyMapScale();
-				}
-			}
-		} else {
-			if (useraskedforchange) {
-				// user asked for a zoom change and it was achieved, so reset starting map scale
-			}
-
-		}
-      } // wpd>0
-  } else { // !AutoZoom
-    
-	// reset starting map scale for auto zoom if momentarily switch
-	// off autozoom
-	// StartingAutoMapScale = RequestMapScale;
-	StartingAutoMapScale=0; //@ 101007 BUGFIX we need to reset it to let current mapscale be used on next azoom on
-  }
-
-  if (TargetPan) {
-	return;
-  }
-
-  LockTaskData();  // protect from external task changes
-#ifdef HAVEEXCEPTIONS
-  __try{
-#endif
-    // if we aren't looking at a waypoint, see if we are now
-    if (AutoMapScaleWaypointIndex == -1) {
-	if (ValidTaskPoint(ActiveWayPoint)) {
-		AutoMapScaleWaypointIndex = Task[ActiveWayPoint].Index;
-	}
-    }
-
-    if (ValidTaskPoint(ActiveWayPoint)) {
-
-	// if the current zoom focused waypoint has changed...
-	if (AutoMapScaleWaypointIndex != Task[ActiveWayPoint].Index) {
-
-		AutoMapScaleWaypointIndex = Task[ActiveWayPoint].Index;
-
-		// zoom back out to where we were before
-		if (StartingAutoMapScale> 0.0) {
-			RequestMapScale = StartingAutoMapScale;
-		}
-
-		// reset search for new starting zoom level
-		StartingAutoMapScale = 0.0;
-	}
-
-    }
-#ifdef HAVEEXCEPTIONS
-  }__finally
-#endif
-     {
-       UnlockTaskData();
-     }
-
-}
-
-
-#endif /* ! MAP_ZOOM */
 bool MapWindow::GliderCenter=false;
 
 
@@ -2950,27 +2465,15 @@ void MapWindow::CalculateOrientationNormal(void) {
   if( (DisplayOrientation == NORTHUP) 
       ||
       ((DisplayOrientation == NORTHTRACK)
-#ifndef MAP_ZOOM
-       &&(DisplayMode != dmCircling))
-#else /* MAP_ZOOM */
        &&(!mode.Is(Mode::MODE_CIRCLING)))
-#endif /* MAP_ZOOM */
 	|| (DisplayOrientation == NORTHSMART)  // 100419
       || 
       (
        ((DisplayOrientation == NORTHCIRCLE)
         ||(DisplayOrientation==TRACKCIRCLE))
-#ifndef MAP_ZOOM
-       && (DisplayMode == dmCircling) )
-#else /* MAP_ZOOM */
        && (mode.Is(Mode::MODE_CIRCLING)) )
-#endif /* MAP_ZOOM */
       ) {
-#ifndef MAP_ZOOM
-	if (DisplayMode == dmCircling)
-#else /* MAP_ZOOM */
 	if (mode.Is(Mode::MODE_CIRCLING))
-#endif /* MAP_ZOOM */
 		GliderCenter=true;
 	else
 		GliderCenter=false;
@@ -3002,11 +2505,7 @@ void MapWindow::CalculateOrientationTargetPan(void) {
       &&(DisplayOrientation != NORTHSMART) // 100419
       &&(DisplayOrientation != NORTHTRACK)
       )    {
-#ifndef MAP_ZOOM
-    if (DisplayMode == dmCircling) {
-#else /* MAP_ZOOM */
     if (mode.Is(Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
       // target-up
       DisplayAngle = DerivedDrawInfo.WaypointBearing;
       DisplayAircraftAngle = 
@@ -3027,21 +2526,13 @@ void MapWindow::CalculateOrientationTargetPan(void) {
 
 void MapWindow::CalculateOrigin(const RECT rc, POINT *Orig)
 {
-#ifndef MAP_ZOOM
-  if (TargetPan) {
-#else /* MAP_ZOOM */
   if (mode.Is(Mode::MODE_TARGET_PAN)) {
-#endif /* MAP_ZOOM */
 	CalculateOrientationTargetPan();
   } else {
 	CalculateOrientationNormal();
   }
   
-#ifndef MAP_ZOOM
-  if ( EnablePan || DisplayMode==dmCircling) {
-#else /* MAP_ZOOM */
   if ( mode.AnyPan() || mode.Is(Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
 	Orig->x = (rc.left + rc.right)/2;
 	Orig->y = (rc.bottom + rc.top)/2;
   } else {
@@ -3087,11 +2578,7 @@ void MapWindow::CalculateOrigin(const RECT rc, POINT *Orig)
 		}
 */
 		// 100924 if we are in north up autorient, position the glider in middle screen
-#ifndef MAP_ZOOM
-		if ((MapScale*1.4) >= AutoOrientScale) {
-#else /* MAP_ZOOM */
 		if ((zoom.Scale()*1.4) >= AutoOrientScale) {
-#endif /* MAP_ZOOM */
 			Orig->x = (rc.left + rc.right)/2;
 			Orig->y=((rc.bottom-BottomSize)+rc.top)/2;
 		} else {
@@ -3126,11 +2613,7 @@ void MapWindow::DrawThermalEstimate(HDC hdc, const RECT rc) {
   */
   if (!EnableThermalLocator) return;
 
-#ifndef MAP_ZOOM
-  if (DisplayMode == dmCircling) {
-#else /* MAP_ZOOM */
   if (mode.Is(Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
 	if (DerivedDrawInfo.ThermalEstimate_R>0) {
 		LatLon2Screen(DerivedDrawInfo.ThermalEstimate_Longitude, DerivedDrawInfo.ThermalEstimate_Latitude, screen);
 		DrawBitmapIn(hdc, screen, hBmpThermalSource);
@@ -3164,11 +2647,7 @@ void MapWindow::DrawThermalEstimate(HDC hdc, const RECT rc) {
 		SelectObject(hdc,oldPen);
 	}
   } else {
-#ifndef MAP_ZOOM
-	if (MapScale <= 4) {
-#else /* MAP_ZOOM */
 	if (zoom.Scale() <= 4) {
-#endif /* MAP_ZOOM */
 		for (int i=0; i<MAX_THERMAL_SOURCES; i++) {
 			if (DerivedDrawInfo.ThermalSources[i].Visible) {
 				DrawBitmapIn(hdc, DerivedDrawInfo.ThermalSources[i].Screen, hBmpThermalSource);
@@ -3185,15 +2664,6 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 {
   HFONT hfOld;
 
-#ifndef MAP_ZOOM
-
-  static bool alreadyTriggered=false;
-  //static double lastTrigger=0;
-  static double savedMapScale=0;
-  static double savedRequestMapScale=0;
-  static double savedMapScaleOverDistanceModify=0;
-
-#endif /* ! MAP_ZOOM */
   // Calculations are taking time and slow down painting of map, beware
   #if MULTICALC
   #define MULTICALC_MINROBIN	5	// minimum split
@@ -3244,28 +2714,11 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
   CalculateScreenPositionsGroundline();
 
   if (PGZoomTrigger) {
-#ifndef MAP_ZOOM
-	if (!alreadyTriggered) {
-		alreadyTriggered=true;
-#else /* MAP_ZOOM */
     if(!mode.Is(Mode::MODE_PANORAMA)) {
       mode.Special(Mode::MODE_SPECIAL_PANORAMA, true);
-#endif /* MAP_ZOOM */
 		LastZoomTrigger=GPS_INFO.Time;
-#ifndef MAP_ZOOM
-		savedMapScale=MapWindow::MapScale;
-		savedRequestMapScale=RequestMapScale;
-		savedMapScaleOverDistanceModify=MapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
       
-#endif /* MAP_ZOOM */
 		// maybe todo check mode and remember where were these parameters taken from.. 
-#ifndef MAP_ZOOM
-		if (ISPARAGLIDER) // 100316
-			Event_SetZoom(5.0);
-		else
-			Event_SetZoom(7.0);
-#endif /* ! MAP_ZOOM */
 		Message::Lock(); // 091211
 	        // Message::AddMessage(1000, 3, _T("LANDSCAPE ZOOM for 20\"")); // REMOVE FIXV2
 	        Message::AddMessage(1000, 3, gettext(TEXT("_@M872_"))); // LANDSCAPE ZOOM FOR 20s
@@ -3273,26 +2726,13 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
       		#ifndef DISABLEAUDIO
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_TONEUP"));
 		#endif
-#ifndef MAP_ZOOM
-	} else {
-#else /* MAP_ZOOM */
     }
     else {
-#endif /* MAP_ZOOM */
 		// previously called, see if time has passed
 		if ( GPS_INFO.Time > (LastZoomTrigger + 20.0)) {
 			// time has passed, lets go back
-#ifndef MAP_ZOOM
-			Event_SetZoom(savedRequestMapScale);
-#else /* MAP_ZOOM */
-        
-#endif /* MAP_ZOOM */
 			LastZoomTrigger=0; // just for safety
-#ifndef MAP_ZOOM
-			alreadyTriggered=false;
-#else /* MAP_ZOOM */
         mode.Special(Mode::MODE_SPECIAL_PANORAMA, false);
-#endif /* MAP_ZOOM */
 			PGZoomTrigger=false;
 			Message::Lock(); // 091211
 	        	// Message::AddMessage(1500, 3, _T("BACK TO NORMAL ZOOM")); // REMOVE FIXV2
@@ -3305,9 +2745,6 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 	}
   }
 	
-#ifndef MAP_ZOOM
-
-#endif /* ! MAP_ZOOM */
   // let the calculations run, but dont draw anything but the look8000 when in MapSpaceMode != MSM_MAP
   if (DONTDRAWTHEMAP) 
   {
@@ -3358,13 +2795,8 @@ QuickRedraw: // 100318 speedup redraw
   
   // ground first...
   
-#ifndef MAP_ZOOM
-  if (BigZoom) {
-    BigZoom = false;
-#else /* MAP_ZOOM */
   if (zoom.BigZoom()) {
     zoom.BigZoom(false);
-#endif /* MAP_ZOOM */
   }
   
   if (DONTDRAWTHEMAP) { // 100319
@@ -3390,11 +2822,7 @@ QuickRedraw: // 100318 speedup redraw
 
     if (MapDirty) {
       // map has been dirtied since we started drawing, so hurry up
-#ifndef MAP_ZOOM
-      BigZoom = true;
-#else /* MAP_ZOOM */
       zoom.BigZoom(true);
-#endif /* MAP_ZOOM */
     }
 
     LockTerrainDataGraphics();
@@ -3533,26 +2961,14 @@ QuickRedraw: // 100318 speedup redraw
   }
 
   // draw wind vector at aircraft
-#ifndef MAP_ZOOM
-  if (!EnablePan) {
-#else /* MAP_ZOOM */
   if (!mode.AnyPan()) {
-#endif /* MAP_ZOOM */
     DrawWindAtAircraft2(hdc, Orig_Aircraft, rc);
-#ifndef MAP_ZOOM
-  } else if (TargetPan) {
-#else /* MAP_ZOOM */
   } else if (mode.Is(Mode::MODE_TARGET_PAN)) {
-#endif /* MAP_ZOOM */
     DrawWindAtAircraft2(hdc, Orig, rc);
   }
 
   // VisualGlide drawn BEFORE lk8000 overlays
-#ifndef MAP_ZOOM
-  if ( (!TargetPan) && (!EnablePan) && (VisualGlide>0) ) {
-#else /* MAP_ZOOM */
   if (!mode.AnyPan() && VisualGlide > 0) {
-#endif /* MAP_ZOOM */
     DrawGlideCircle(hdc, Orig, rc); 
   }
 
@@ -3564,13 +2980,8 @@ QuickRedraw: // 100318 speedup redraw
   // Draw traffic and other specifix LK gauges
   if (Look8000) { // 091111
   	LKDrawFLARMTraffic(hdc, rc, Orig_Aircraft);
-#ifndef MAP_ZOOM
-	if ( !EnablePan) DrawLook8000(hdc,rc); 
-	if (LKVarioBar && IsMapFullScreen() && !EnablePan) // 091214 do not draw Vario when in Pan mode
-#else /* MAP_ZOOM */
 	if ( !mode.AnyPan()) DrawLook8000(hdc,rc); 
 	if (LKVarioBar && IsMapFullScreen() && !mode.AnyPan()) // 091214 do not draw Vario when in Pan mode
-#endif /* MAP_ZOOM */
 		LKDrawVario(hdc,rc); // 091111
   #ifdef LK8000_OPTIMIZE
   }
@@ -3582,11 +2993,7 @@ QuickRedraw: // 100318 speedup redraw
   
   // finally, draw you!
   // Draw cross air for panmode, instead of aircraft icon
-#ifndef MAP_ZOOM
-  if (EnablePan && !TargetPan) {
-#else /* MAP_ZOOM */
   if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN)) {
-#endif /* MAP_ZOOM */
     DrawCrossHairs(hdc, Orig, rc);
   }
 
@@ -3595,11 +3002,7 @@ QuickRedraw: // 100318 speedup redraw
     DrawAircraft(hdc, Orig_Aircraft);
   }
 
-#ifndef MAP_ZOOM
-  if ( (!TargetPan) && (!EnablePan) && (Look8000)  ) {
-#else /* MAP_ZOOM */
   if (!mode.AnyPan() && Look8000) {
-#endif /* MAP_ZOOM */
 	if (TrackBar) DrawHeading(hdc, Orig, rc); 
   }
 
@@ -3664,11 +3067,7 @@ void MapWindow::RenderMapWindow(  RECT rc)
 
   hfOld = (HFONT)SelectObject(hdcDrawWindow, MapWindowFont);
   
-#ifndef MAP_ZOOM
-  DrawMapScale(hdcDrawWindow,rc, BigZoom);
-#else /* MAP_ZOOM */
   DrawMapScale(hdcDrawWindow,rc, zoom.BigZoom());
-#endif /* MAP_ZOOM */
 
   DrawCompass(hdcDrawWindow, rc);
 
@@ -3684,19 +3083,11 @@ void MapWindow::RenderMapWindow(  RECT rc)
   DrawFlightMode(hdcDrawWindow, rc);
 
   // REMINDER TODO let it be configurable for not circling also, as before
-#ifndef MAP_ZOOM
-  if (!(NewMap && Look8000) || (DisplayMode == dmCircling) )
-#else /* MAP_ZOOM */
   if (!(NewMap && Look8000) || (mode.Is(Mode::MODE_CIRCLING)) )
-#endif /* MAP_ZOOM */
 	if (ThermalBar) DrawThermalBand(hdcDrawWindow, rc); // 091122
 
 
-#ifndef MAP_ZOOM
-  if (!EnablePan) // 091214
-#else /* MAP_ZOOM */
   if (!mode.AnyPan()) // 091214
-#endif /* MAP_ZOOM */
   DrawFinalGlide(hdcDrawWindow,rc);
 
   // DrawSpeedToFly(hdcDrawWindow, rc);  // Usable
@@ -3727,11 +3118,7 @@ void MapWindow::UpdateInfo(NMEA_INFO *nmea_info,
   LockFlightData();
   memcpy(&DrawInfo,nmea_info,sizeof(NMEA_INFO));
   memcpy(&DerivedDrawInfo,derived_info,sizeof(DERIVED_INFO));
-#ifndef MAP_ZOOM
-  UpdateMapScale(); // done here to avoid double latency due to locks 
-#else /* MAP_ZOOM */
   zoom.UpdateMapScale(); // done here to avoid double latency due to locks 
-#endif /* MAP_ZOOM */
   UnlockFlightData();
 }
 
@@ -3836,13 +3223,8 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
   UpdateTimeStats(true);
   //
 
-#ifndef MAP_ZOOM
-  RequestMapScale = MapScale;
-  ModifyMapScale();
-#else /* MAP_ZOOM */
   zoom.RequestedScale(zoom.Scale());
   zoom.ModifyMapScale();
-#endif /* MAP_ZOOM */
   
   bool first = true;
 
@@ -3877,11 +3259,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
       }
 
 #ifndef LK8000_OPTIMIZE
-#ifndef MAP_ZOOM
-      if (BigZoom && !NewMap) {
-#else /* MAP_ZOOM */
       if (zoom.BigZoom() && !NewMap) {
-#endif /* MAP_ZOOM */
 	// quickly draw zoom level on top
 	// Messy behaviour with NewMap
 	DrawMapScale(hdcScreen, MapRect, true); 
@@ -4231,11 +3609,7 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
 {
 
   HFONT oldfont=NULL;
-#ifndef MAP_ZOOM
-  if ((MapSpaceMode==MSM_WELCOME)||(MapWindow::isPan()) ) return; // 100210
-#else /* MAP_ZOOM */
   if ((MapSpaceMode==MSM_WELCOME)||(mode.AnyPan()) ) return; // 100210
-#endif /* MAP_ZOOM */
 
   if (!LKLanguageReady) return;
 
@@ -4367,17 +3741,9 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
 
   if (Appearance.FlightModeIcon == apFlightModeIconDefault){
 
-#ifndef MAP_ZOOM
-      if (DisplayMode == dmCircling) {
-#else /* MAP_ZOOM */
       if (mode.Is(Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
         SelectObject(hDCTemp,hClimb);
-#ifndef MAP_ZOOM
-      } else if (DisplayMode == dmFinalGlide) {
-#else /* MAP_ZOOM */
       } else if (mode.Is(Mode::MODE_FINAL_GLIDE)) {
-#endif /* MAP_ZOOM */
         SelectObject(hDCTemp,hFinalGlide);
       } else {
         SelectObject(hDCTemp,hCruise);
@@ -4434,11 +3800,7 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
                Center.x+NIBLSCALE(8), 
                Center.y+NIBLSCALE(4));
 
-#ifndef MAP_ZOOM
-    } else if (DisplayMode == dmFinalGlide) {
-#else /* MAP_ZOOM */
     } else if (mode.Is(Mode::MODE_FINAL_GLIDE)) {
-#endif /* MAP_ZOOM */
 
       SetPoint(0, 
                Center.x, 
@@ -4536,17 +3898,9 @@ MapWaypointLabel_t MapWaypointLabelList[200];
 int MapWaypointLabelListCount=0;
 
 bool MapWindow::WaypointInRange(int i) {
-#ifndef MAP_ZOOM
-  return ((WayPointList[i].Zoom >= MapScale*10) 
-#else /* MAP_ZOOM */
   return ((WayPointList[i].Zoom >= zoom.Scale()*10) 
-#endif /* MAP_ZOOM */
           || (WayPointList[i].Zoom == 0)) 
-#ifndef MAP_ZOOM
-    && (MapScale <= 10);
-#else /* MAP_ZOOM */
     && (zoom.Scale() <= 10);
-#endif /* MAP_ZOOM */
 }
 
 #ifndef LK8000_OPTIMIZE
@@ -4873,11 +4227,7 @@ void MapWindow::DrawStartSector(HDC hdc, const RECT rc,
     _DrawLine(hdc, PS_SOLID, NIBLSCALE(1), WayPointList[Index].Screen,
               End, RGB(255,0,0), rc);
   } else {
-#ifndef MAP_ZOOM
-    tmp = StartRadius*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
     tmp = StartRadius*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
     SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
     SelectObject(hdc, hpStartFinishThick);
     Circle(hdc,
@@ -4941,11 +4291,7 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 		      WayPointList[Task[i].Index].Screen,
 		      Task[i].End, RGB(255,0,0), rc);
 	  } else {
-#ifndef MAP_ZOOM
-	    tmp = FinishRadius*ResMapScaleOverDistanceModify; 
-#else /* MAP_ZOOM */
 	    tmp = FinishRadius*zoom.ResScaleOverDistanceModify(); 
-#endif /* MAP_ZOOM */
 	    SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
 	    SelectObject(hdc, hpStartFinishThick);
 	    Circle(hdc,
@@ -4969,11 +4315,7 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 	  SelectObject(hdc, GetStockObject(HOLLOW_BRUSH)); 
 	  SelectObject(hdc, hpBearing); // 091216
 	  if(SectorType== 0) {
-#ifndef MAP_ZOOM
-	    tmp = SectorRadius*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
 	    tmp = SectorRadius*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
 
 	    Circle(hdc,
 		   WayPointList[Task[i].Index].Screen.x,
@@ -4983,11 +4325,7 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 	  }
 	  // FAI SECTOR
 	  if(SectorType==1) {
-#ifndef MAP_ZOOM
-	    tmp = SectorRadius*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
 	    tmp = SectorRadius*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
 
 	    Segment(hdc,
 		    WayPointList[Task[i].Index].Screen.x,
@@ -4998,21 +4336,13 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 	  }
 	  if(SectorType== 2) {
 	    // JMW added german rules
-#ifndef MAP_ZOOM
-	    tmp = 500*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
 	    tmp = 500*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
 	    Circle(hdc,
 		   WayPointList[Task[i].Index].Screen.x,
 		   WayPointList[Task[i].Index].Screen.y,
 		   (int)tmp, rc, false, false); 
 
-#ifndef MAP_ZOOM
-	    tmp = 10e3*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
 	    tmp = 10e3*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
           
 	    Segment(hdc,
 		    WayPointList[Task[i].Index].Screen.x,
@@ -5024,11 +4354,7 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 	} else {
 		// ELSE HERE IS   *** AAT ***
 	  // JMW added iso lines
-#ifndef MAP_ZOOM
-	  if ((i==ActiveWayPoint) || (TargetPan && (i==TargetPanIndex))) {
-#else /* MAP_ZOOM */
 	  if ((i==ActiveWayPoint) || (mode.Is(Mode::MODE_TARGET_PAN) && (i==TargetPanIndex))) {
-#endif /* MAP_ZOOM */
 	    // JMW 20080616 flash arc line if very close to target
 	    static bool flip = false;
 	  
@@ -5061,11 +4387,7 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 	// JMW AAT!
 	double bearing = Task[i].OutBound;
 	POINT sct1, sct2;
-#ifndef MAP_ZOOM
-	if (AATEnabled && !TargetPan) {
-#else /* MAP_ZOOM */
 	if (AATEnabled && !mode.Is(Mode::MODE_TARGET_PAN)) {
-#endif /* MAP_ZOOM */
 	  LatLon2Screen(Task[i].AATTargetLon, 
 			Task[i].AATTargetLat, 
 			sct1);
@@ -5152,11 +4474,7 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc)
 	if(ValidTaskPoint(i) && ValidTaskPoint(i+1)) {
 	  if(Task[i].AATType == CIRCLE)
 	    {
-#ifndef MAP_ZOOM
-	      tmp = Task[i].AATCircleRadius*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
 	      tmp = Task[i].AATCircleRadius*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
           
 	      // this color is used as the black bit
 	      SetTextColor(hDCTemp, 
@@ -5196,11 +4514,7 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc)
 	      }
 	      SelectObject(hDCTemp, GetStockObject(BLACK_PEN));
           
-#ifndef MAP_ZOOM
-	      tmp = Task[i].AATSectorRadius*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
 	      tmp = Task[i].AATSectorRadius*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
           
 	      Segment(hDCTemp,
 		      WayPointList[Task[i].Index].Screen.x,
@@ -5309,11 +4623,7 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
     _DrawLine(hdc, PS_DASH, 1, Tail[0], Tail[1], RGB(0,0,0), rc);
   }
 
-#ifndef MAP_ZOOM
-  if ( !(NewMap&&Look8000) || (DisplayMode == dmCircling) ) {
-#else /* MAP_ZOOM */
   if ( !(NewMap&&Look8000) || (mode.Is(Mode::MODE_CIRCLING)) ) {
-#endif /* MAP_ZOOM */
 
   	_itot(iround(DerivedDrawInfo.WindSpeed * SPEEDMODIFY), sTmp, 10);
 
@@ -5376,11 +4686,7 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
   DrawGreatCircle(hdc, startLon, startLat,
                   targetLon, targetLat, rc);
 
-#ifndef MAP_ZOOM
-  if (TargetPan) {
-#else /* MAP_ZOOM */
   if (mode.Is(Mode::MODE_TARGET_PAN)) {
-#endif /* MAP_ZOOM */
     // Draw all of task if in target pan mode
     startLat = targetLat;
     startLon = targetLon;
@@ -5440,11 +4746,7 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
 
 
 double MapWindow::GetApproxScreenRange() {
-#ifndef MAP_ZOOM
-  return (MapScale * max(MapRectBig.right-MapRectBig.left,
-#else /* MAP_ZOOM */
   return (zoom.Scale() * max(MapRectBig.right-MapRectBig.left,
-#endif /* MAP_ZOOM */
                          MapRectBig.bottom-MapRectBig.top))
     *1000.0/GetMapResolutionFactor();
 }
@@ -5559,13 +4861,8 @@ void MapWindow::OrigScreen2LatLon(const int &x, const int &y,
   int sx = x;
   int sy = y;
   irotate(sx, sy, DisplayAngle);
-#ifndef MAP_ZOOM
-  Y= PanLatitude  - sy*InvDrawScale;
-  X= PanLongitude + sx*invfastcosine(Y)*InvDrawScale;
-#else /* MAP_ZOOM */
   Y= PanLatitude  - sy*zoom.InvDrawScale();
   X= PanLongitude + sx*invfastcosine(Y)*zoom.InvDrawScale();
-#endif /* MAP_ZOOM */
 }
 
 
@@ -5575,24 +4872,14 @@ void MapWindow::Screen2LatLon(const int &x, const int &y,
   int sx = x-(int)Orig_Screen.x;
   int sy = y-(int)Orig_Screen.y;
   irotate(sx, sy, DisplayAngle);
-#ifndef MAP_ZOOM
-  Y= PanLatitude  - sy*InvDrawScale;
-  X= PanLongitude + sx*invfastcosine(Y)*InvDrawScale;
-#else /* MAP_ZOOM */
   Y= PanLatitude  - sy*zoom.InvDrawScale();
   X= PanLongitude + sx*invfastcosine(Y)*zoom.InvDrawScale();
-#endif /* MAP_ZOOM */
 }
 
 void MapWindow::LatLon2Screen(const double &lon, const double &lat, 
                               POINT &sc) {
-#ifndef MAP_ZOOM
-  int Y = Real2Int((PanLatitude-lat)*DrawScale);
-  int X = Real2Int((PanLongitude-lon)*fastcosine(lat)*DrawScale);
-#else /* MAP_ZOOM */
   int Y = Real2Int((PanLatitude-lat)*zoom.DrawScale());
   int X = Real2Int((PanLongitude-lon)*fastcosine(lat)*zoom.DrawScale());
-#endif /* MAP_ZOOM */
     
   irotate(X, Y, DisplayAngle);
     
@@ -5615,11 +4902,7 @@ void MapWindow::LatLon2Screen(pointObj *ptin, POINT *ptout, const int n,
   }
   const int xxs = Orig_Screen.x*1024-512;
   const int yys = Orig_Screen.y*1024+512;
-#ifndef MAP_ZOOM
-  const double mDrawScale = DrawScale;
-#else /* MAP_ZOOM */
   const double mDrawScale = zoom.DrawScale();
-#endif /* MAP_ZOOM */
   const double mPanLongitude = PanLongitude;
   const double mPanLatitude = PanLatitude;
   pointObj* p = ptin;
@@ -5754,6 +5037,3 @@ void MapWindow::DrawDashLine(HDC hdc, const int width,
    } 
 
 */
-#ifndef MAP_ZOOM
-
-#endif /* ! MAP_ZOOM */
