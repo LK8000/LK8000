@@ -350,14 +350,6 @@ void MapWindow::UpdateTimeStats(bool start) {
 bool MapWindow::Event_NearestWaypointDetails(double lon, double lat, 
                                              double range,
                                              bool pan) {
-  /*
-    if (!pan) {
-    dlgWayPointSelect(lon, lat, 0, 1);
-    } else {
-    dlgWayPointSelect(PanLongitude, PanLatitude, 0, 1);
-    }
-  */
-
   int i;
   if(pan && (mode.Is(Mode::MODE_PAN) || mode.Is(Mode::MODE_TARGET_PAN)))
     // nearest to center of screen if in pan mode
@@ -690,32 +682,6 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
 	SetTextColor(hDC,RGB_WHITE); 
 
 //#if (WINDOWSPC>0) 091115 do not use custom things for PC in textinbox
-#if (0)
-      SetBkMode(hDC,TRANSPARENT);
-      ExtTextOut(hDC, x+1, y, 0, NULL, Value, size, NULL);
-      ExtTextOut(hDC, x+2, y, 0, NULL, Value, size, NULL);
-      ExtTextOut(hDC, x-1, y, 0, NULL, Value, size, NULL);
-      ExtTextOut(hDC, x-2, y, 0, NULL, Value, size, NULL);
-      ExtTextOut(hDC, x, y+1, 0, NULL, Value, size, NULL);
-      ExtTextOut(hDC, x, y-1, 0, NULL, Value, size, NULL);
-      if (NewMap&&OutlinedTp) {
-	if (ScreenSize == (ScreenSize_t)ss800x480) {
-		ExtTextOut(hDC, x, y+2, 0, NULL, Value, size, NULL); 
-		ExtTextOut(hDC, x, y-2, 0, NULL, Value, size, NULL); 
-		ExtTextOut(hDC, x-3, y, 0, NULL, Value, size, NULL); 
-		ExtTextOut(hDC, x+3, y, 0, NULL, Value, size, NULL); 
-		ExtTextOut(hDC, x, y+3, 0, NULL, Value, size, NULL); 
-		ExtTextOut(hDC, x, y-3, 0, NULL, Value, size, NULL); 
-	}
-	TextColor(hDC,Mode.AsFlag.Color);
-      } else
-	SetTextColor(hDC,RGB_BLACK); 
-
-      ExtTextOut(hDC, x, y, 0, NULL, Value, size, NULL);
-      if (NewMap&&OutlinedTp)
-	SetTextColor(hDC,RGB_BLACK); // TODO somewhere else text color is not set correctly
-
-#else
 #ifdef WINE
       SetBkMode(hDC,TRANSPARENT);
       ExtTextOut(hDC, x+2, y, 0, NULL, Value, size, NULL);
@@ -733,22 +699,6 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
       ExtTextOut(hDC, x, y-1, ETO_OPAQUE, NULL, Value, size, NULL);
 #endif /* WINE */
 
-//#ifdef PNA 091115 no more big outlining for 314
-#if (0)
-	// On 800x480 resolution the following additional outlining is very nice.
-	// But on 640x480 and lower resolutions it is bad.. Maybe we should work
-	// something out for 640x480 devices in landscape mode, when there's nothing else to do. --paolo
-      if (NewMap&&OutlinedTp) {
-      	if (GlobalModelType == MODELTYPE_PNA_HP31X ) {
-	      ExtTextOut(hDC, x+3, y, ETO_OPAQUE, NULL, Value, size, NULL);
-	      ExtTextOut(hDC, x-3, y, ETO_OPAQUE, NULL, Value, size, NULL);
-	      ExtTextOut(hDC, x, y+2, ETO_OPAQUE, NULL, Value, size, NULL);
-	      ExtTextOut(hDC, x, y-2, ETO_OPAQUE, NULL, Value, size, NULL);
-	      ExtTextOut(hDC, x, y+3, ETO_OPAQUE, NULL, Value, size, NULL);
-	      ExtTextOut(hDC, x, y-3, ETO_OPAQUE, NULL, Value, size, NULL);
-      	}
-      }
-#endif
       if (NewMap&&OutlinedTp) {
 	TextColor(hDC,Mode.AsFlag.Color);
       } else
@@ -761,7 +711,6 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
 #endif /* WINE */
       if (NewMap&&OutlinedTp)
 	SetTextColor(hDC,RGB_BLACK); // TODO somewhere else text color is not set correctly
-#endif
       drawn=true;
     }
 
@@ -2104,7 +2053,6 @@ savecodesize1:
 				// in pan mode and SIM mode, click to center current position
 				if (SIMMODE) {
 					if (mode.AnyPan()) {
-						#if 110308
 						// match only center screen
 						if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(5)) && 
 						      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(5)) ) {
@@ -2126,17 +2074,6 @@ savecodesize1:
 						GPS_INFO.Latitude=PanLatitude;
 						GPS_INFO.Longitude=PanLongitude;
 						break;
-						#else
-						// match only center screen
-						if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(12)) && 
-						      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(12)) ) {
-							// LKTOKEN  _@M204_ = "Current position updated" 
-							DoStatusMessage(gettext(TEXT("_@M204_")));
-							GPS_INFO.Latitude=PanLatitude;
-							GPS_INFO.Longitude=PanLongitude;
-							break;
-						}
-						#endif
 					}
 				}
 				// If we are here,  (DCI/2)+30 < dwDownTime < DOUBLECLICKINTERVAL
@@ -2158,7 +2095,6 @@ savecodesize1:
 			} else {
 				if (SIMMODE) {
 					if (mode.AnyPan()) {
-						#if 110308
 						// match only center screen
 						if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(5)) && 
 						      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(5)) ) {
@@ -2180,17 +2116,6 @@ savecodesize1:
 						GPS_INFO.Latitude=PanLatitude;
 						GPS_INFO.Longitude=PanLongitude;
 						break;
-						#else
-						// match only center screen
-						if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(5)) && 
-						      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(5)) ) {
-							// LKTOKEN  _@M204_ = "Current position updated" 
-							DoStatusMessage(gettext(TEXT("_@M204_")));
-							GPS_INFO.Latitude=PanLatitude;
-							GPS_INFO.Longitude=PanLongitude;
-							break;
-						}
-						#endif
 					}
 				}
 				if (!OnAirSpace) break; // 100119
@@ -2440,29 +2365,7 @@ void MapWindow::CalculateOrigin(const RECT rc, POINT *Orig)
 			Orig->x= middleXY - (int)(spanxy*fastsine(trackbearing));
 			Orig->y = ((rc.bottom-BottomSize) + rc.top)/2;
 		}
-/* REMOVE
-
-		//double spany=(rc.bottom-BottomSize)-NIBLSCALE(40)- middleY;
-		if (InfoBoxLayout::landscape) {
-			spany=NIBLSCALE(50);
-			Orig->y= middleY + (int)(spany*fastcosine(trackbearing));
-			Orig->x = (rc.left + rc.right)/2;
-		} else { 
-			spanx=NIBLSCALE(40);
-			Orig->x= middleX + (int)(spany*fastcosine(trackbearing));
-			Orig->y = ((rc.bottom-BottomSize) + rc.top)/2;
-		}
-*/
 	} else {
-/*
-		if (DisplayOrientation == NORTHUP) { 
-			Orig->x = (rc.left + rc.right)/2;
-			Orig->y = (rc.bottom + rc.top)/2;
-		} else {
-			Orig->x = ((rc.right - rc.left )*GliderScreenPositionX/100)+rc.left;
-			Orig->y = ((rc.top - rc.bottom )*GliderScreenPositionY/100)+rc.bottom;
-		}
-*/
 		// 100924 if we are in north up autorient, position the glider in middle screen
 		if ((zoom.Scale()*1.4) >= AutoOrientScale) {
 			Orig->x = (rc.left + rc.right)/2;
@@ -2494,9 +2397,6 @@ bool MapWindow::RenderTimeAvailable() {
 void MapWindow::DrawThermalEstimate(HDC hdc, const RECT rc) {
   POINT screen;
   HPEN oldPen;
-  /*
-  static short counter=0;
-  */
   if (!EnableThermalLocator) return;
 
   if (mode.Is(Mode::MODE_CIRCLING)) {
@@ -2695,16 +2595,7 @@ QuickRedraw: // 100318 speedup redraw
       || RasterTerrain::render_weather) {
 	// sunelevation is never used, it is still a todo in Terrain
 	double sunelevation = 40.0;
-	#if 0
-	double sunazimuth = DisplayAngle-DerivedDrawInfo.WindBearing;
-	// draw sun from constant angle if very low wind speed
-	if (DerivedDrawInfo.WindSpeed<0.5) {
-		sunazimuth = DisplayAngle + 45.0;
-	} 
-	#else
-	// 101013 XCSOAR BUGFIX SUNAZIMUTH
 	double sunazimuth=GetAzimuth();
-	#endif
 
     if (MapDirty) {
       // map has been dirtied since we started drawing, so hurry up
@@ -3606,13 +3497,6 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
       } else {
         SelectObject(hDCTemp,hCruise);
       }
-    // Code already commented as of 12aug05 - redundant? -st
-    //          BitBlt(hdc,rc.right-35,5,24,20,
-    //                           hDCTemp,20,0,SRCAND);
-
-    // code for pre 12aug icons - st
-    //BitBlt(hdc,rc.right-24-3,rc.bottom-20-3,24,20,
-    //  hDCTemp,0,0,SRCAND);
 
     offset -= 24;
 
@@ -3630,73 +3514,7 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
                 hDCTemp,
                 24,0,SRCAND);
 
-  // FlightModeIcon is always 0, unused!
-  #if 100920
   }
-  #else
-  } else if (Appearance.FlightModeIcon == apFlightModeIconAltA){
-
-#define SetPoint(Idx,X,Y) Arrow[Idx].x = X; Arrow[Idx].y = Y
-
-    POINT Arrow[3];
-    POINT Center;
-    HBRUSH oldBrush;
-    HPEN   oldPen;
-
-    Center.x = rc.right-10;
-    Center.y = rc.bottom-10;
-
-    if (DisplayMode == dmCircling) {
-
-      SetPoint(0, 
-               Center.x,
-               Center.y-NIBLSCALE(4));
-      SetPoint(1, 
-               Center.x-NIBLSCALE(8), 
-               Center.y+NIBLSCALE(4));
-      SetPoint(2, 
-               Center.x+NIBLSCALE(8), 
-               Center.y+NIBLSCALE(4));
-
-    } else if (mode.Is(Mode::MODE_FINAL_GLIDE)) {
-
-      SetPoint(0, 
-               Center.x, 
-               Center.y+NIBLSCALE(4));
-      SetPoint(1, 
-               Center.x-NIBLSCALE(8), 
-               Center.y-NIBLSCALE(4));
-      SetPoint(2, 
-               Center.x+NIBLSCALE(8), 
-               Center.y-NIBLSCALE(4));
-    } else {
-
-      SetPoint(0, 
-               Center.x+NIBLSCALE(4), 
-               Center.y);
-      SetPoint(1, 
-               Center.x-NIBLSCALE(4), 
-               Center.y+NIBLSCALE(8));
-      SetPoint(2, 
-               Center.x-NIBLSCALE(4), 
-               Center.y-NIBLSCALE(8));
-
-    }
-
-     oldBrush = (HBRUSH)SelectObject(hdc, hbCompass);
-
-    oldPen = (HPEN)SelectObject(hdc, hpCompassBorder);
-    Polygon(hdc, Arrow, 3);
-
-    SelectObject(hdc, hpCompass);
-    Polygon(hdc, Arrow, 3);
-
-    SelectObject(hdc, oldPen);
-    SelectObject(hdc, oldBrush);
-
-  }
-  #endif // no flighticon 100920
-
 
   if (!Appearance.DontShowAutoMacCready && DerivedDrawInfo.AutoMacCready) {
     SelectObject(hDCTemp,hAutoMacCready);
@@ -3719,9 +3537,6 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
 		hDCTemp,
 		24,0,SRCAND);
 
-    //  commented @ 12aug st
-    //  BitBlt(hdc,rc.right-48-3,rc.bottom-20-3,24,20,
-    //    hDCTemp,0,0,SRCAND);
   };
   
 }
@@ -3744,15 +3559,10 @@ bool MapWindow::WaypointInTask(int ind) {
   return WayPointList[ind].InTask;
 }
 
-//FIX
-//static void MapWaypointLabelAdd(TCHAR *Name, int X, int Y, TextInBoxMode_t Mode, int AltArivalAGL, bool inTask=false, bool isLandable=false, bool isAirport=false, bool isExcluded=false);
 void MapWaypointLabelAdd(TCHAR *Name, int X, int Y, TextInBoxMode_t Mode, int AltArivalAGL, bool inTask, bool isLandable, bool isAirport, bool isExcluded, int index);
-//static int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 );
 int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 );
-//static MapWaypointLabel_t MapWaypointLabelList[50];
 
 MapWaypointLabel_t MapWaypointLabelList[200]; 
-//static int MapWaypointLabelListCount=0;
 int MapWaypointLabelListCount=0;
 
 bool MapWindow::WaypointInRange(int i) {
@@ -3991,14 +3801,9 @@ void MapWindow::DrawWaypoints(HDC hdc, const RECT rc)
 }
 #endif
 
-//static int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 ){
 int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 ){
 
   // Now sorts elements in task preferentially.
-  /*
-    if (((MapWaypointLabel_t *)elem1)->inTask && ! ((MapWaypointLabel_t *)elem2)->inTask)
-    return (-1);
-  */
   if (((MapWaypointLabel_t *)elem1)->AltArivalAGL > ((MapWaypointLabel_t *)elem2)->AltArivalAGL)
     return (-1);
   if (((MapWaypointLabel_t *)elem1)->AltArivalAGL < ((MapWaypointLabel_t *)elem2)->AltArivalAGL)
@@ -4007,7 +3812,6 @@ int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 ){
 }
 
 
-//static void MapWaypointLabelAdd(TCHAR *Name, int X, int Y,  FIX
 void MapWaypointLabelAdd(TCHAR *Name, int X, int Y, 
 			 TextInBoxMode_t Mode, 
 			 int AltArivalAGL, bool inTask, bool isLandable, bool isAirport, bool isExcluded, int index){
@@ -4866,32 +4670,3 @@ void MapWindow::DrawDashLine(HDC hdc, const int width,
   
 } 
 
-
-/* Not used
-   void DrawDotLine(HDC hdc, POINT ptStart, POINT ptEnd, COLORREF cr,
-   const RECT rc)
-   {
-   HPEN hpDot, hpOld;
-   LOGPEN dashLogPen;
-   POINT pt[2];
-   //Create a dot pen
-   dashLogPen.lopnColor = cr;
-   dashLogPen.lopnStyle = PS_DOT;
-   dashLogPen.lopnWidth.x = 0;
-   dashLogPen.lopnWidth.y = 0;
-
-   hpDot = (HPEN)CreatePenIndirect(&dashLogPen);
-   hpOld = (HPEN)SelectObject(hdc, hpDot);
-
-   pt[0].x = ptStart.x;
-   pt[0].y = ptStart.y;
-   pt[1].x = ptEnd.x;
-   pt[1].y = ptEnd.y;
-  
-   Polyline(hdc, pt, 2);
-  
-   SelectObject(hdc, hpOld);
-   DeleteObject((HPEN)hpDot);
-   } 
-
-*/
