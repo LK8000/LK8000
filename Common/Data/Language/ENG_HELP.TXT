@@ -1296,7 +1296,9 @@ Radial to home waypoint, if available.
 
 @879
 [Airspace Horizontal Distance]
-Horizontal distance to the nearest Airspace. This value is not available if you are already inside an airspace.
+Horizontal distance to the nearest airspace.
+If 0 (showing ---), you are inside an airspace, or too far from it. Use Nearest Airspace menu to know more about it.
+In case of flyzones, the nearest distance is calculated where you can leave that flyzone.
 
 @880
 [Ext.Batt.Bank ]
@@ -1425,8 +1427,11 @@ The sum of OLC Classic predicted score and FAI triangle predicted score.
 Please call 800-KUBA toll free for more informations :-)
 
 @914
-[Airspace Vertical distance]
-The vertical distance to the nearest airspace.  This value is not available if you are already inside an airspace.
+[Airspace Vertical Distance]
+Vertical distance to the nearest airspace.
+If 0 (showing ---), you are inside an airspace, or too far from it. Use Nearest Airspace menu to know more about it.
+In case of flyzones, the nearest distance is calculated where you can leave that flyzone.
+Negative values means that nearest altitude is below, positive means that is above you. (Like arrival altitudes)
 
 #
 # END INFOBOXES 800 - 1199
