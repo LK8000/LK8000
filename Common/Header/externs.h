@@ -239,7 +239,7 @@ extern int LKSortedTraffic[FLARM_MAX_TRAFFIC+1];
 extern int LKTargetIndex;
 extern int LKTargetType;
 
-// extern kalman_airspaces LKAirspaces[MAXNEARAIRSPACES+1];
+extern LKAirspace_Nearest_Item LKAirspaces[MAXNEARAIRSPACES+1];
 extern int LKNumAirspaces;
 extern int LKSortedAirspaces[MAXNEARAIRSPACES+1];
 

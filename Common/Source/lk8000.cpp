@@ -548,7 +548,7 @@ int LKTargetIndex=-1;
 int LKTargetType=LKT_TYPE_NONE;
 
 // Copy of runtime airspaces for instant use 
-//-> kalman_traffic LKAirspaces[MAXNEARAIRSPACES+1];
+LKAirspace_Nearest_Item LKAirspaces[MAXNEARAIRSPACES+1];
 // Number of asps (items) of existing airspaces updated from DoAirspaces
 int LKNumAirspaces=0;
 // Pointer to ASP struct, ordered by DoAirspaces, from 0 to LKNumAirspaces-1
