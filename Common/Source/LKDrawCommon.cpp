@@ -100,6 +100,8 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
   #define HEADRAW	NIBLSCALE(6)	
   RECT invsel;
 
+  short curmapspace=MapSpaceMode;
+
   static bool doinit=true;
   
   if (doinit) {
@@ -231,7 +233,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 
   int *pNumber;
   int *pIndex;
-  switch(MapSpaceMode) {
+  switch(curmapspace) {
 	case MSM_COMMON:
 			pNumber=&CommonNumber;
 			pIndex=CommonIndex;
@@ -250,11 +252,11 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
   if (CommonNumpages>MAXCOMMONNUMPAGES) CommonNumpages=MAXCOMMONNUMPAGES;
   else if (CommonNumpages<1) CommonNumpages=1;
   // current page in use by current mapspacemode
-  curpage=SelectedPage[MapSpaceMode];
+  curpage=SelectedPage[curmapspace];
   if (curpage<0||curpage>=MAXCOMMONNUMPAGES) {
 	DoStatusMessage(_T("ERR-092 current page invalid!")); // TODO FIX this to happen
 	// immediate action to resolve this problem, take it back to normality
-	SelectedPage[MapSpaceMode]=0;
+	SelectedPage[curmapspace]=0;
 	LKevent=LKEVENT_NONE;
 	return;
   }
@@ -266,8 +268,8 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 	case LKEVENT_NONE:
 		break;
 	case LKEVENT_ENTER:
-		// i=CommonIndex[SelectedRaw[MapSpaceMode] + (curpage*CommonNumraws)]; OLD
-		i=pIndex[SelectedRaw[MapSpaceMode] + (curpage*CommonNumraws)];
+		// i=CommonIndex[SelectedRaw[curmapspace] + (curpage*CommonNumraws)]; OLD
+		i=pIndex[SelectedRaw[curmapspace] + (curpage*CommonNumraws)];
 
 		if ( !ValidWayPoint(i)) {
 			// dont say error if empty list and an enter was pressed
@@ -284,12 +286,12 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 		return;
 		break;
 	case LKEVENT_DOWN:
-		if (++SelectedRaw[MapSpaceMode] >=CommonNumraws) SelectedRaw[MapSpaceMode]=0;
+		if (++SelectedRaw[curmapspace] >=CommonNumraws) SelectedRaw[curmapspace]=0;
 		LastDoCommon=GPS_INFO.Time+PAGINGTIMEOUT-1.0; //@ 101003
 		// Event to be cleared at the end
 		break;
 	case LKEVENT_UP:
-		if (--SelectedRaw[MapSpaceMode] <0) SelectedRaw[MapSpaceMode]=CommonNumraws-1;
+		if (--SelectedRaw[curmapspace] <0) SelectedRaw[curmapspace]=CommonNumraws-1;
 		LastDoCommon=GPS_INFO.Time+PAGINGTIMEOUT-1.0; //@ 101003
 		break;
 	case LKEVENT_PAGEUP:
@@ -331,7 +333,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 	LKWriteText(hdc, Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 	SelectObject(hdc, LK8InfoNormalFont);
 
-	if (MapSpaceMode == MSM_COMMON )
+	if (curmapspace == MSM_COMMON )
 		// LKTOKEN _@M1309_ "COMN"
   		_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1309_")), curpage+1, CommonNumpages); 
 	else
@@ -366,7 +368,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 	SelectObject(hdc, LK8InfoNormalFont);
 
 	if ( (ScreenSize == (ScreenSize_t)ss640x480) || (ScreenSize == (ScreenSize_t)ss320x240) || ScreenSize == ss896x672 ) {
-		if (MapSpaceMode == MSM_COMMON )
+		if (curmapspace == MSM_COMMON )
 			// LKTOKEN _@M1309_ "COMN"
 			_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1309_")), curpage+1,CommonNumpages); 
 		else
@@ -390,7 +392,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 		_stprintf(Buffer,gettext(TEXT("_@M1308_"))); 
 		LKWriteText(hdc, Buffer, Column5, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 	} else {
-		if (MapSpaceMode==MSM_COMMON)
+		if (curmapspace==MSM_COMMON)
 			// LKTOKEN _@M1309_ "COMN"
 			_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1309_")), curpage+1,CommonNumpages); 
 		else
@@ -424,7 +426,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
   // try to reduce conflicts, as task thread could change it while we are using it here.
   // so we copy it and clear it here once forever in this run
   bool ndr;
-  switch (MapSpaceMode) {
+  switch (curmapspace) {
 	case MSM_COMMON:
   		ndr=CommonDataReady;
   		CommonDataReady=false;
@@ -564,27 +566,27 @@ KeepOldValues:
   // BOXOUT SELECTED ITEM
     if (drawn_items_onpage>0) { 
 
-	if (SelectedRaw[MapSpaceMode] <0 || SelectedRaw[MapSpaceMode]>(CommonNumraws-1)) {
+	if (SelectedRaw[curmapspace] <0 || SelectedRaw[curmapspace]>(CommonNumraws-1)) {
 		LKevent=LKEVENT_NONE;
 		return;
 	}
 	// avoid boxing and selecting nonexistent items
 	// selectedraw starts from 0, drawnitems from 1...
 	// In this case we set the first one, or last one, assuming we are rotating forward or backward
-	if (SelectedRaw[MapSpaceMode] >= drawn_items_onpage) {
-		if (LKevent==LKEVENT_DOWN) SelectedRaw[MapSpaceMode]=0;
+	if (SelectedRaw[curmapspace] >= drawn_items_onpage) {
+		if (LKevent==LKEVENT_DOWN) SelectedRaw[curmapspace]=0;
 		else 
 		// up from top to bottom, bottom empty, look for the last valid one (ie first going back from bottom)
-		if (LKevent==LKEVENT_UP) SelectedRaw[MapSpaceMode]=drawn_items_onpage-1;
+		if (LKevent==LKEVENT_UP) SelectedRaw[curmapspace]=drawn_items_onpage-1;
 		else {
 			DoStatusMessage(_T("Cant find valid raw"));
-			SelectedRaw[MapSpaceMode]=0;
+			SelectedRaw[curmapspace]=0;
 		}
 	}
 	invsel.left=left;
 	invsel.right=right;
-	invsel.top=TopSize+(rawspace*SelectedRaw[MapSpaceMode])+NIBLSCALE(2);
-	invsel.bottom=TopSize+(rawspace*(SelectedRaw[MapSpaceMode]+1))-NIBLSCALE(1);
+	invsel.top=TopSize+(rawspace*SelectedRaw[curmapspace])+NIBLSCALE(2);
+	invsel.bottom=TopSize+(rawspace*(SelectedRaw[curmapspace]+1))-NIBLSCALE(1);
 	InvertRect(hdc,&invsel);
   } 
 
