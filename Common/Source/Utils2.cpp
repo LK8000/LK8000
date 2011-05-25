@@ -652,7 +652,8 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		} else 
 		// CLICK ON SORTBOX line at the top, only with no map and only for nearest
 		if ( (MapSpaceMode == MSM_LANDABLE || MapSpaceMode==MSM_AIRPORTS || 
-			MapSpaceMode==MSM_NEARTPS || MapSpaceMode==MSM_TRAFFIC) && Y<=SortBoxY ) {
+			MapSpaceMode==MSM_NEARTPS || MapSpaceMode==MSM_TRAFFIC ||
+			MapSpaceMode==MSM_AIRSPACES) && Y<=SortBoxY ) {
 
 			// only search for 1-3, otherwise it's the fourth (fifth really)
 			// we don't use 0 now
@@ -680,6 +681,14 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 							if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 							#endif
 							break;
+				case MSM_AIRSPACES:
+							SortedMode[MapSpaceMode]=j;
+							LastDoAirspaces=0;
+							#ifndef DISABLEAUDIO
+							if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+							#endif
+							break;
+							
 				default:
 							DoStatusMessage(_T("ERR-022 UNKNOWN MSM in VK"));
 							break;

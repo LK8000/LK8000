@@ -203,7 +203,8 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   return;
   } // doinit
 
-  DoAirspaces(&GPS_INFO,  &CALCULATED_INFO);
+  bool ndr;
+  ndr=DoAirspaces(&GPS_INFO,  &CALCULATED_INFO);
 
   AspNumpages=roundupdivision(LKNumAirspaces, AspNumraws);
   if (AspNumpages>MAXAIRSPACENUMPAGES) AspNumpages=MAXAIRSPACENUMPAGES;
@@ -228,7 +229,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 			DoStatusMessage(_T("ERR-039 Invalid ASP selection")); 
 			break;
 		}
-		LastDoNearest = GPS_INFO.Time+NEARESTONHOLD; 
+		LastDoAirspaces = GPS_INFO.Time+NEARESTONHOLD; 
 		// dlgLKAirspaceDetails(i);
 		LastDoNearest = 0; 
 		LKevent=LKEVENT_NONE; 
@@ -236,11 +237,11 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 		break;
 	case LKEVENT_DOWN:
 		if (++SelectedRaw[curmapspace] >=AspNumraws) SelectedRaw[curmapspace]=0;
-		LastDoNearest=GPS_INFO.Time+PAGINGTIMEOUT-1.0; 
+		LastDoAirspaces=GPS_INFO.Time+PAGINGTIMEOUT-1.0; 
 		break;
 	case LKEVENT_UP:
 		if (--SelectedRaw[curmapspace] <0) SelectedRaw[curmapspace]=AspNumraws-1;
-		LastDoNearest=GPS_INFO.Time+PAGINGTIMEOUT-1.0; 
+		LastDoAirspaces=GPS_INFO.Time+PAGINGTIMEOUT-1.0; 
 		break;
 	case LKEVENT_PAGEUP:
 		LKevent=LKEVENT_NONE;
@@ -404,17 +405,10 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 
   SelectObject(hdc, LK8InfoBigFont); // Text font for Nearest
 
-  bool ndr=NearestDataReady;
-  NearestDataReady=false;
 
   int *psortedindex;
-  switch(curmapspace) {
-	case MSM_AIRSPACES:
-	default:
-		psortedindex=LKSortedAirspaces;
-		break;
-  }
-	
+  psortedindex=LKSortedAirspaces;
+
   for (i=0, drawn_items_onpage=0; i<AspNumraws; i++) {
 	iRaw=TopSize+(s_rawspace*i);
 	short curraw=(curpage*AspNumraws)+i;

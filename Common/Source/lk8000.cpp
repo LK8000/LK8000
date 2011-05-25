@@ -640,6 +640,7 @@ double  LastZoomTrigger=0;
 // traffic DoTraffic interval, also reset during key up and down to prevent wrong selections
 double  LastDoTraffic=0;
 double  LastDoNearest=0;
+double  LastDoAirspaces=0;
 // double  LastDoNearestTp=0; 101222
 double  LastDoCommon=0;
 // double  LastDoTarget=0; unused 

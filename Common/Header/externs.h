@@ -206,6 +206,7 @@ extern int LKVarioSize;
 extern bool PGZoomTrigger;
 extern double  LastZoomTrigger;
 extern double  LastDoTraffic;
+extern double  LastDoAirspaces;
 extern double LastDoNearest;
 // extern double LastDoNearestTp;
 extern double LastDoCommon;
