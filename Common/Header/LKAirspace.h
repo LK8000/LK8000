@@ -164,7 +164,8 @@ public:
   AirspaceWarningEvent WarningEvent() const { return _warnevent; }
 
   // Get class attributes for infobox values
-  static TCHAR* GetNearestName() { return _nearestname; }
+  static TCHAR* GetNearestHName() { return _nearesthname; }
+  static TCHAR* GetNearestVName() { return _nearestvname; }
   static int GetNearestHDistance() { return _nearesthdistance; }
   static int GetNearestVDistance() { return _nearestvdistance; }
 
@@ -204,7 +205,8 @@ protected:
   // Class attributes
   static int _nearesthdistance;                // collecting horizontal distance to infobox
   static int _nearestvdistance;                // collecting vertical distance to infobox
-  static TCHAR *_nearestname;                // collecting nearest name to infobox
+  static TCHAR *_nearesthname;                // collecting nearest horizontal name to infobox
+  static TCHAR *_nearestvname;                // collecting nearest vertical name to infobox
   static bool _pos_in_flyzone;                // for flyzone warning refining
   static bool _pred_in_flyzone;                // for flyzone warning refining
   static bool _pos_in_acked_nonfly_zone;    // for flyzone warning refining
