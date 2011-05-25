@@ -68,6 +68,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   static short left,right,bottom;
   // one for each mapspace, no matter if 0 and 1 are unused
 
+  short curmapspace=curmapspace;
   static int TrafficNumraws=0;
   //static int TrafficNumpages=0; global..
   // Vertical and horizontal spaces
@@ -210,10 +211,10 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   if (TrafficNumpages>MAXTRAFFICNUMPAGES) TrafficNumpages=MAXTRAFFICNUMPAGES;
   else if (TrafficNumpages<1) TrafficNumpages=1;
 
-  curpage=SelectedPage[MapSpaceMode];
+  curpage=SelectedPage[curmapspace];
   if (curpage<0||curpage>=MAXTRAFFICNUMPAGES) {
 	DoStatusMessage(_T("ERR-041 traffic curpage invalid!")); 
-	SelectedPage[MapSpaceMode]=0;
+	SelectedPage[curmapspace]=0;
 	LKevent=LKEVENT_NONE;
 	return;
   }
@@ -223,7 +224,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 		break;
 	case LKEVENT_ENTER:
 		LKevent=LKEVENT_NONE;
-		i=LKSortedTraffic[SelectedRaw[MapSpaceMode]+(curpage*TrafficNumraws)];
+		i=LKSortedTraffic[SelectedRaw[curmapspace]+(curpage*TrafficNumraws)];
 
 		if ( (i<0) || (i>=MAXTRAFFIC) || (LKTraffic[i].ID<=0) ) {
 			if (LKNumTraffic>0)
@@ -237,12 +238,12 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 		LastDoTraffic=0;
 		break;
 	case LKEVENT_DOWN:
-		if (++SelectedRaw[MapSpaceMode] >=TrafficNumraws) SelectedRaw[MapSpaceMode]=0;
+		if (++SelectedRaw[curmapspace] >=TrafficNumraws) SelectedRaw[curmapspace]=0;
 		// Reset LastDoTraffic so that it wont be updated while selecting an item
 		LastDoTraffic=GPS_INFO.Time+PAGINGTIMEOUT-1.0;
 		break;
 	case LKEVENT_UP:
-		if (--SelectedRaw[MapSpaceMode] <0) SelectedRaw[MapSpaceMode]=TrafficNumraws-1;
+		if (--SelectedRaw[curmapspace] <0) SelectedRaw[curmapspace]=TrafficNumraws-1;
 		LastDoTraffic=GPS_INFO.Time+PAGINGTIMEOUT-1.0;
 		break;
 	case LKEVENT_PAGEUP:
@@ -277,7 +278,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
   SelectObject(hdc, LK8InfoNormalFont); // Heading line
 
-  short cursortbox=SortedMode[MapSpaceMode];
+  short cursortbox=SortedMode[curmapspace];
 
   if ( ScreenSize < (ScreenSize_t)sslandscape ) { // portrait mode
 	FillRect(hdc,&s_sortBox[cursortbox], sortbrush); 
@@ -578,22 +579,22 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
   if (drawn_items_onpage>0) {
 
-	if (SelectedRaw[MapSpaceMode] <0 || SelectedRaw[MapSpaceMode]>(TrafficNumraws-1)) {
+	if (SelectedRaw[curmapspace] <0 || SelectedRaw[curmapspace]>(TrafficNumraws-1)) {
   		LKevent=LKEVENT_NONE; // 100328
 		return;
 	}
-	if (SelectedRaw[MapSpaceMode] >= drawn_items_onpage) {
-		if (LKevent==LKEVENT_DOWN) SelectedRaw[MapSpaceMode]=0;
+	if (SelectedRaw[curmapspace] >= drawn_items_onpage) {
+		if (LKevent==LKEVENT_DOWN) SelectedRaw[curmapspace]=0;
 		else 
-		if (LKevent==LKEVENT_UP) SelectedRaw[MapSpaceMode]=drawn_items_onpage-1;
+		if (LKevent==LKEVENT_UP) SelectedRaw[curmapspace]=drawn_items_onpage-1;
 		else {
-			SelectedRaw[MapSpaceMode]=0;
+			SelectedRaw[curmapspace]=0;
 		}
 	}
 	invsel.left=left;
 	invsel.right=right;
-	invsel.top=TopSize+(s_rawspace*SelectedRaw[MapSpaceMode])+NIBLSCALE(2);
-	invsel.bottom=TopSize+(s_rawspace*(SelectedRaw[MapSpaceMode]+1))-NIBLSCALE(1);
+	invsel.top=TopSize+(s_rawspace*SelectedRaw[curmapspace])+NIBLSCALE(2);
+	invsel.bottom=TopSize+(s_rawspace*(SelectedRaw[curmapspace]+1))-NIBLSCALE(1);
 	InvertRect(hdc,&invsel);
 
   } 
