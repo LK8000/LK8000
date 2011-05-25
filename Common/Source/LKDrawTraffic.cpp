@@ -80,7 +80,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
   static bool doinit=true;
 
-  #ifndef LKOBJ
+  #ifdef LKOBJ
   if (INVERTCOLORS) {
   	sortbrush=LKBrush_LightGreen;
   } else {
