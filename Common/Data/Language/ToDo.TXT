@@ -36,6 +36,8 @@ Things to be fixed in LK languages files/tokens:
 - New Logger declarations Error Handling fields: _@M1400_ - _@M1429_
 - _@M1240_ - _@M1284_ to translate
 - remove * from _@M771_ _@M790_ _@M52_
+- _@M1285_ - _@M1286_ to translate, airspace vertical distance infobox
+- _@M1159_ - _@M1160_ changed to airspace horizontal distance
 
   MENU files to be checked and translated?
 

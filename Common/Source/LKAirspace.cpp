@@ -1836,8 +1836,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
     CAirspace::StartWarningCalculation( Basic, Calculated );
     // No infobox values if warnings disabled, because no range calculation done.
     NearestAirspaceName[0]=0;
-    // TODO nearest vertical airspace name infobox
-    //NearestAirspaceVName[0]=0;
+    NearestAirspaceVName[0]=0;
     NearestAirspaceHDist=0;
     NearestAirspaceVDist=0;
     return;
@@ -1965,13 +1964,11 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
         }
         // Fill infoboxes - Nearest vertical
         if (CAirspace::GetNearestVName() != NULL) {
-          // TODO nearest vertical airspace name infobox
-          //_tcsncpy(NearestAirspaceVName, CAirspace::GetNearestVName(), NAME_SIZE);
-          //NearestAirspaceVName[NAME_SIZE]=0;
+          _tcsncpy(NearestAirspaceVName, CAirspace::GetNearestVName(), NAME_SIZE);
+          NearestAirspaceVName[NAME_SIZE]=0;
           NearestAirspaceVDist = CAirspace::GetNearestVDistance();
         } else {
-          // TODO nearest vertical airspace name infobox
-          //NearestAirspaceVName[0]=0;
+          NearestAirspaceVName[0]=0;
           NearestAirspaceVDist=0;
         }
         step = 0;

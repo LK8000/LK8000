@@ -369,7 +369,10 @@ extern int Cpu_Aver;
 
 extern double	NearestAirspaceHDist;
 extern double	NearestAirspaceVDist;
-extern TCHAR	NearestAirspaceName[NAME_SIZE+1];
+extern TCHAR    NearestAirspaceName[NAME_SIZE+1];
+#ifdef LKAIRSPACE
+extern TCHAR    NearestAirspaceVName[NAME_SIZE+1];
+#endif
 
 // Ready to use for experiments
 extern double Experimental1;

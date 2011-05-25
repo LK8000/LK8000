@@ -748,8 +748,11 @@ int LKIBLSCALE[MAXIBLSCALE+1];
 double Experimental1=0, Experimental2=0;
 
 double NearestAirspaceHDist=-1;
-double NearestAirspaceVDist=-1;
-TCHAR NearestAirspaceName[NAME_SIZE+1]; // TODO INITIALISE IT!
+double NearestAirspaceVDist=0;
+TCHAR NearestAirspaceName[NAME_SIZE+1] = {0};
+#ifdef LKAIRSPACE
+TCHAR NearestAirspaceVName[NAME_SIZE+1] = {0};
+#endif
 
 // Flarmnet tools
 int FlarmNetCount=0;
@@ -1148,7 +1151,7 @@ void FillDataOptions()
 	SetDataOption(77, ugAltitude,       TEXT("_@M1155_"), TEXT("_@M1156_"), new FormatterAlternate(TEXT("%2.0f")), BestAlternateProcessing, 36, 46);
 	// LKTOKEN  _@M1157_ = "Home Radial", _@M1158_ = "Radial"
 	SetDataOption(78, ugNone,           TEXT("_@M1157_"), TEXT("_@M1158_"), new InfoBoxFormatter(TEXT("%.0f")TEXT(DEG)), NoProcessing, 6, 54);
-	// LKTOKEN  _@M1159_ = "Airspace Distance", _@M1160_ = "AirSpace"
+	// LKTOKEN  _@M1159_ "Airspace Horizontal Dist", _@M1160_ "ArSpcH"
 	SetDataOption(79, ugDistance,       TEXT("_@M1159_"), TEXT("_@M1160_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 38, 5);
 	// LKTOKEN  _@M1161_ = "Ext.Batt.Bank", _@M1162_ = "xBnk#"
 	SetDataOption(80, ugNone,           TEXT("_@M1161_"), TEXT("_@M1162_"), new InfoBoxFormatter(TEXT("%1.0f")), NoProcessing, 38, 5);
@@ -4049,7 +4052,12 @@ void DisplayText(void)
 	if (NearestAirspaceHDist>0)
           InfoBoxes[i]->SetComment(NearestAirspaceName);
 	  break;
-
+#ifdef LKAIRSPACE
+    case 114:
+    if (NearestAirspaceVDist>0)
+          InfoBoxes[i]->SetComment(NearestAirspaceVName);
+      break;
+#endif      
     case 10:
       if (CALCULATED_INFO.AutoMacCready)
 		// LKTOKEN _@M1184_ "AutMC"
