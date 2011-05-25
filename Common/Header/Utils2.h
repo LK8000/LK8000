@@ -375,7 +375,8 @@ extern short ModeTableTop[LKMODE_TOP+1];
 
 #define LK_OLC_PLUS_SCORE		111		//  not for ibox 
 #define LK_OLC_PLUS_PREDICTED_SCORE	112		//  not for ibox 
-#define LK_FLAPS	113   // not for ibox
+#define LK_FLAPS			113   		// not for ibox
+#define LK_AIRSPACEVDIST		114		// not for ibox
 
 // The following values are not available for custom configuration
 

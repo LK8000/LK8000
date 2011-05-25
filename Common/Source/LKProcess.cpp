@@ -1470,6 +1470,26 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 			break;
 
+		// B114
+		case LK_AIRSPACEVDIST:
+			if (lktitle)
+				wsprintf(BufferTitle, gettext(TEXT("_@M1286_"))); // ArSpcV
+			else
+				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+
+			if (NearestAirspaceVDist >0 && NearestAirspaceVDist<9999 ) { // 9999 m or ft is ok
+				value = ALTITUDEMODIFY*NearestAirspaceVDist;
+				sprintf(text,"%.0f",value);
+				wsprintf(BufferValue, TEXT("%S"),text);
+				valid = true;
+			} else {
+				valid=false;
+				wsprintf(BufferValue, TEXT(NULLMEDIUM),text);
+				value = -1;
+			}
+			wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
+			break;
+
 		// B66
 		case LK_FIN_GR:
 			wsprintf(BufferValue,_T(NULLLONG));

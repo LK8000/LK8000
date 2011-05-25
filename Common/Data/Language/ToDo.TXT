@@ -20,6 +20,8 @@ Things to be fixed in LK languages files/tokens:
 - New 900 
 - New 1208,1209,1210
 - 110523  CHANGE HELP FOR AIRSPACE 879 
+- 110525  CHANGED AIRSPACE TOKENS 1159 1160
+          CHANGED HELP 879
 
   NEW MSG TOKENS
   --------------

@@ -1295,8 +1295,8 @@ Arrival altitude difference over alternate. Press ENTER or RETURN after selectin
 Radial to home waypoint, if available.
 
 @879
-[Airspace Distance]
-Distance to the nearest Airspace. Available even if the airspace is not appearing on the map, it is disabled or acknowldged already.
+[Airspace Horizontal Distance]
+Horizontal distance to the nearest Airspace. This value is not available if you are already inside an airspace.
 
 @880
 [Ext.Batt.Bank ]
@@ -1423,6 +1423,10 @@ The sum of OLC Classic predicted score and FAI triangle predicted score.
 @913
 [FLAP SETTINGS]
 Please call 800-KUBA toll free for more informations :-)
+
+@914
+[Airspace Vertical distance]
+The vertical distance to the nearest airspace.  This value is not available if you are already inside an airspace.
 
 #
 # END INFOBOXES 800 - 1199

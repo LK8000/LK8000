@@ -1153,8 +1153,8 @@ _@M1155_ "BestAlternate Arrival"
 _@M1156_ "BAtnArr"
 _@M1157_ "Home Radial"
 _@M1158_ "Radial"
-_@M1159_ "Airspace Distance"
-_@M1160_ "ArSpace"
+_@M1159_ "Airspace Horizontal Dist"
+_@M1160_ "ArSpcH"
 _@M1161_ "Ext.Batt.Bank"
 _@M1162_ "xBnk#"
 _@M1163_ "Ext.Batt.1 Voltage"
@@ -1304,6 +1304,9 @@ _@M1282_ "Enable"
 _@M1283_ "Disable"
 _@M1284_ "Disable this airspace?"
 
+# new airspace infobox
+_@M1285_ "Airspace Vertical Dist"
+_@M1286_ "ArSpcV"
 
 # LK info page headers, try to use the same or less number of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!

@@ -1229,6 +1229,9 @@ void FillDataOptions()
   // Flaps
   SetDataOption(113, ugNone,           TEXT("_@M1640_"), TEXT("_@M1641_"), new InfoBoxFormatter(TEXT("")), AirspeedProcessing, 8, 2);
 
+  // Vertical distance to airspace
+  SetDataOption(114, ugNone,           TEXT("_@M1285_"), TEXT("_@M1286_"), new InfoBoxFormatter(TEXT("")), NoProcessing, 8, 2);
+
 	//Before adding new items, consider changing NUMSELECTSTRING_MAX
 
 }
