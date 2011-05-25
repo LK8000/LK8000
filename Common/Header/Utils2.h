@@ -333,7 +333,7 @@ extern short ModeTableTop[LKMODE_TOP+1];
 #define LK_ALTERN2_ARRIV	76		//
 #define LK_BESTALTERN_ARRIV	77		//
 #define LK_HOMERADIAL		78		//
-#define LK_AIRSPACEDIST		79		//
+#define LK_AIRSPACEHDIST	79		//
 #define LK_EXTBATTBANK		80		//
 #define LK_EXTBATT1VOLT		81		//
 #define LK_EXTBATT2VOLT		82		//

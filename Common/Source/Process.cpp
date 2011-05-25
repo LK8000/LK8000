@@ -1068,7 +1068,7 @@ int index;
 	Valid = false;
       }
     break;
-  case LK_AIRSPACEDIST:
+  case LK_AIRSPACEHDIST:
 	if (NearestAirspaceHDist >0) {
         	Value = DISTANCEMODIFY*NearestAirspaceHDist;
        		Valid = true;

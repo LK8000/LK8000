@@ -1450,7 +1450,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			break;
 
 		// B79
-		case LK_AIRSPACEDIST:
+		case LK_AIRSPACEHDIST:
 			if (lktitle)
 				// LKTOKEN  _@M1159_ = "Airspace Distance", _@M1160_ = "AirSpace"
 				wsprintf(BufferTitle, gettext(TEXT("_@M1160_")));
