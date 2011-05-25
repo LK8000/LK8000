@@ -1892,11 +1892,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoZoom"));
   if (wp) {
-#ifndef MAP_ZOOM
-    wp->GetDataField()->Set(MapWindow::AutoZoom);
-#else /* MAP_ZOOM */
     wp->GetDataField()->Set(MapWindow::zoom.AutoZoom());
-#endif /* MAP_ZOOM */
     wp->RefreshDisplay();
   }
 
@@ -2024,11 +2020,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpCirclingZoom"));
   if (wp) {
-#ifndef MAP_ZOOM
-    wp->GetDataField()->Set(CircleZoom);
-#else /* MAP_ZOOM */
     wp->GetDataField()->Set(MapWindow::zoom.CircleZoom());
-#endif /* MAP_ZOOM */
     wp->RefreshDisplay();
   }
 
@@ -3977,11 +3969,7 @@ void dlgConfigurationShowModal(void){
       PGCruiseZoom = wp->GetDataField()->GetAsInteger();
       SetToRegistry(szRegistryPGCruiseZoom, PGCruiseZoom);
       changed = true;
-#ifndef MAP_ZOOM
-	InitAircraftCategory(); // 100512
-#else /* MAP_ZOOM */
       MapWindow::zoom.Reset();
-#endif /* MAP_ZOOM */
         requirerestart=true;
     }
   }
@@ -3991,11 +3979,7 @@ void dlgConfigurationShowModal(void){
       PGClimbZoom = wp->GetDataField()->GetAsInteger();
       SetToRegistry(szRegistryPGClimbZoom, PGClimbZoom);
       changed = true;
-#ifndef MAP_ZOOM
-	SetMapScales(); // 100512
-#else /* MAP_ZOOM */
       MapWindow::zoom.Reset();
-#endif /* MAP_ZOOM */
         requirerestart=true; 
     }
   }
@@ -4197,20 +4181,11 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoZoom"));
   if (wp) {
-#ifndef MAP_ZOOM
-    if (MapWindow::AutoZoom != wp->GetDataField()->GetAsBoolean()) {
-      MapWindow::AutoZoom = wp->GetDataField()->GetAsBoolean();
-#else /* MAP_ZOOM */
     if (MapWindow::zoom.AutoZoom() != 
 	wp->GetDataField()->GetAsBoolean()) {
       MapWindow::zoom.AutoZoom(wp->GetDataField()->GetAsBoolean());
-#endif /* MAP_ZOOM */
       SetToRegistry(szRegistryAutoZoom,
-#ifndef MAP_ZOOM
-		    MapWindow::AutoZoom);
-#else /* MAP_ZOOM */
 		    MapWindow::zoom.AutoZoom());
-#endif /* MAP_ZOOM */
       changed = true;
     }
   }
@@ -4313,15 +4288,9 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpCirclingZoom"));
   if (wp) {
-#ifndef MAP_ZOOM
-    if (CircleZoom != wp->GetDataField()->GetAsBoolean()) {
-      CircleZoom = wp->GetDataField()->GetAsBoolean();
-      SetToRegistry(szRegistryCircleZoom, CircleZoom);
-#else /* MAP_ZOOM */
     if (MapWindow::zoom.CircleZoom() != wp->GetDataField()->GetAsBoolean()) {
       MapWindow::zoom.CircleZoom(wp->GetDataField()->GetAsBoolean());
       SetToRegistry(szRegistryCircleZoom, MapWindow::zoom.CircleZoom());
-#endif /* MAP_ZOOM */
       changed = true;
     }
   }

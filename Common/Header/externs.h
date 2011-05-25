@@ -209,10 +209,6 @@ extern double  LastDoTraffic;
 extern double LastDoNearest;
 // extern double LastDoNearestTp;
 extern double LastDoCommon;
-#ifndef MAP_ZOOM
-extern double  CruiseMapScale;
-extern double  ClimbMapScale;
-#endif /* ! MAP_ZOOM */
 extern int LKwdlgConfig;
 extern double NmeaTime;
 extern int NmeaHours, NmeaMinutes, NmeaSeconds;
@@ -476,9 +472,6 @@ extern CContestMgr::CResult OlcResults[CContestMgr::TYPE_NUM];
 extern bool bAirspaceBlackOutline;
 extern int TrailActive;
 extern int VisualGlide; // VENTA3
-#ifndef MAP_ZOOM
-extern bool CircleZoom;
-#endif /* ! MAP_ZOOM */
 extern bool EnableTopology;
 extern bool EnableTerrain;
 extern int FinalGlideTerrain;

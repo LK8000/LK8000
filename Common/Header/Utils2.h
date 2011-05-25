@@ -56,9 +56,6 @@ TCHAR*  GetSizeSuffix(void);
 void	LKRunStartEnd(bool);
 
 void	InitNewMap();
-#ifndef MAP_ZOOM
-void	InitAircraftCategory();
-#endif /* ! MAP_ZOOM */
 void	InitScreenSize();
 void	InitLK8000();
 void	LockMap();
@@ -84,11 +81,7 @@ void	SoundModeIndex();
 void	SelectMapSpace(short i);
 void	UnselectMapSpace(short i);
 int	GetInfoboxType(int i);
-#ifndef MAP_ZOOM
-int	GetInfoboxIndex(int i, short dmMode);
-#else /* MAP_ZOOM */
 int	GetInfoboxIndex(int i, MapWindow::Mode::TModeFly dmMode);
-#endif /* MAP_ZOOM */
 double	GetMacCready(int wpindex, short wpmode);
 void	unicodetoascii(TCHAR *text, int tsize, char *atext);
 
