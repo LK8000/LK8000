@@ -78,11 +78,9 @@
 
 #include "InfoBox.h"
 #include "RasterTerrain.h"
-#if LKOBJ
 extern void LKObjects_Create();
 extern void LKObjects_Delete();
 #include "LKMainObjects.h"
-#endif
 
 #if defined(LKAIRSPACE) || defined(NEW_OLC)
 using std::min;
@@ -2268,9 +2266,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
 		DispatchMessage(&msg);
 	}
   }
-  #if LKOBJ
   LKObjects_Delete(); //@ 101124
-  #endif
   StartupStore(_T(". WinMain terminated%s"),NEWLINE);
 
 #if (WINDOWSPC>0)
@@ -3095,10 +3091,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   StartupStore(TEXT(". InfoBox geometry%s"),NEWLINE);
 
   InfoBoxLayout::ScreenGeometry(rc);
-  #if LKOBJ
   StartupStore(TEXT(". Create Objects%s"),NEWLINE);
   LKObjects_Create(); //@ 101124
-  #endif
 
   StartupStore(TEXT(". Load unit bitmaps%s"),NEWLINE);
 

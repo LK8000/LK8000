@@ -869,22 +869,9 @@ Drawbottom:
   // HPEN hP; REMOVE 101204
   HBRUSH hB;
   if ( INVERTCOLORS ) {
-	#if LKOBJ
   	hB = LKBrush_Black;
-  	// hB = LKBrush_Ndark; REMOVE 101204
-	// hP = LKPen_White_N0; // FIX  with Yellow  REMOVE 101204
-	#else
-  	hB = (HBRUSH)CreateSolidBrush(RGB_NDARK);
-	// hP = (HPEN)CreatePen(PS_SOLID,0,RGB_YELLOW);  REMOVE 101204
-	#endif
   } else {
-	#if LKOBJ
   	hB = LKBrush_Nlight;
-	// hP = LKPen_Black_N0; REMOVE 101204
-	#else
-  	hB = (HBRUSH)CreateSolidBrush(RGB_NLIGHT);
-	// hP = (HPEN)CreatePen(PS_SOLID,0,RGB_BLACK); REMOVE 101204
-	#endif
   }
 
 
@@ -1419,12 +1406,7 @@ Drawbottom:
    */
 
 EndOfNavboxes:
-  #ifndef LKOBJ
-  DeleteObject(hB);
-  // DeleteObject(hP);  REMOVE 101204
-  #else
   ;
-  #endif
 
 } // drawbottom
 

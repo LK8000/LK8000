@@ -16,9 +16,7 @@
 #include "Utils.h"
 #include "externs.h"
 #include "InfoBoxLayout.h"
-#if LKOBJ
 #include "LKObjects.h"
-#endif
 #if defined(LKAIRSPACE) || defined(NEW_OLC)
 using std::min;
 using std::max;
@@ -52,9 +50,6 @@ COLORREF InfoBox::inv_magentaColor = RGB(0xff,0x00,0xff); //VENTA2
 
 static COLORREF fgColor = RGB_BLACK;
 static COLORREF bkColor = RGB_WHITE;
-#ifndef LKOBJ
-static COLORREF bkColorSel = RGB_DARKGREEN;   // RGB(150,0x0,0x0);
-#endif
 static COLORREF bdColor = RGB_MIDDLEGREY;  
 //static DWORD lastErr; REMOVE
 static HBRUSH hBrushDefaultBackGround;
@@ -87,7 +82,6 @@ InfoBox::InfoBox(HWND Parent, int X, int Y, int Width, int Height){
   colorBottom = 0;
 
   if (Count == 0){
-	#if LKOBJ
 	if (Appearance.InverseInfoBox) 
 		hBrushDefaultBackGround = LKBrush_Black;
 	else
@@ -97,12 +91,6 @@ InfoBox::InfoBox(HWND Parent, int X, int Y, int Width, int Height){
     hPenDefaultBorder = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH, bdColor);
     hPenSelector = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH+2, mColorFore);
 
-	#else
-    hBrushDefaultBackGround = (HBRUSH)CreateSolidBrush(bkColor);
-    hBrushDefaultBackGroundSel = (HBRUSH)CreateSolidBrush(bkColorSel);
-    hPenDefaultBorder = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH, bdColor);
-    hPenSelector = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH+2, mColorFore);
-	#endif
   }
 
   mHWnd = CreateWindow(TEXT("STATIC"), TEXT("\0"),
@@ -193,10 +181,6 @@ InfoBox::~InfoBox(void){
 
   if (Count==0){
 
-	#ifndef LKOBJ
-    DeleteObject(hBrushDefaultBackGround);
-    DeleteObject(hBrushDefaultBackGroundSel);
-	#endif
     DeleteObject(hPenDefaultBorder);
     DeleteObject(hPenSelector);
 

@@ -42,9 +42,7 @@
 #include "GaugeFLARM.h"
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
-#if LKOBJ
 #include "LKObjects.h"
-#endif
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -120,11 +118,7 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
   }
 
   HPEN hpold;
-  #if LKOBJ
   HPEN thinBlackPen = LKPen_Black_N1;
-  #else
-  HPEN thinBlackPen = CreatePen(PS_SOLID, NIBLSCALE(1), RGB(0,0,0));
-  #endif
   POINT Arrow[5];
 
   //TCHAR buffer[50]; REMOVE
@@ -144,15 +138,9 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
   double screenrange = GetApproxScreenRange();
   double scalefact = screenrange/6000.0; // FIX 100820
 
-  #if LKOBJ
   HBRUSH redBrush = LKBrush_Red;
   HBRUSH yellowBrush = LKBrush_Yellow;
   HBRUSH greenBrush = LKBrush_Green;
-  #else
-  HBRUSH redBrush = CreateSolidBrush(RGB_RED);
-  HBRUSH yellowBrush = CreateSolidBrush(RGB_YELLOW);
-  HBRUSH greenBrush = CreateSolidBrush(RGB_GREEN);
-  #endif
   HFONT  oldfont = (HFONT)SelectObject(hDC, LK8MapFont);
 
   for (i=0,painted=0; i<FLARM_MAX_TRAFFIC; i++) {
@@ -254,12 +242,6 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
 
   SelectObject(hDC, oldfont);
   SelectObject(hDC, hpold);
-  #ifndef LKOBJ
-  DeleteObject((HPEN)thinBlackPen);
-  DeleteObject(greenBrush);
-  DeleteObject(yellowBrush);
-  DeleteObject(redBrush);
-  #endif
 
 }
 
@@ -320,7 +302,6 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
   int variowidth=LKVarioSize;
 
 
-  #if LKOBJ
   whiteThickPen =  LKPen_White_N2;	// BOXTHICK
   blackThickPen =  LKPen_Black_N2;	// BOXTHICK
   whiteThinPen =   LKPen_White_N0;
@@ -334,21 +315,6 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
   lakeBrush = LKBrush_Lake;
   blueBrush = LKBrush_Blue;
   indigoBrush = LKBrush_Indigo;
-  #else
-  whiteThickPen =   (HPEN)CreatePen(PS_SOLID,IBLSCALE(BOXTHICK),RGB_WHITE);
-  blackThickPen =   (HPEN)CreatePen(PS_SOLID,IBLSCALE(BOXTHICK),RGB_BLACK);
-  whiteThinPen =   (HPEN)CreatePen(PS_SOLID,0,RGB_WHITE);
-  blackThinPen =   (HPEN)CreatePen(PS_SOLID,0,RGB_BLACK);
-  blackBrush = (HBRUSH)CreateSolidBrush(RGB_BLACK);
-  whiteBrush = (HBRUSH)CreateSolidBrush(RGB_WHITE);
-  greenBrush = (HBRUSH)CreateSolidBrush(RGB_GREEN);
-  darkyellowBrush = (HBRUSH)CreateSolidBrush(RGB_DARKYELLOW2);
-  orangeBrush = (HBRUSH)CreateSolidBrush(RGB_ORANGE);
-  redBrush = (HBRUSH)CreateSolidBrush(RGB_RED);
-  lakeBrush = (HBRUSH)CreateSolidBrush(RGB_LAKE);
-  blueBrush = (HBRUSH)CreateSolidBrush(RGB_BLUE);
-  indigoBrush = (HBRUSH)CreateSolidBrush(RGB_INDIGO);
-  #endif
 
   // set default background in case of missing values
   for (int i=0; i<(NUMVBRICKS/2); i++ )

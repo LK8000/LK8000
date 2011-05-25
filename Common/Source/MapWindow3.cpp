@@ -20,9 +20,7 @@
 #include "LKMapWindow.h"
 #include "buildnumber.h"
 #include "Utils2.h"
-#if LKOBJ
 #include "LKObjects.h"
-#endif
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -249,7 +247,6 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
   static bool doinit=true;
   static POINT p[10];
 
-  #if LKOBJ
   if (MapSpaceMode==MSM_WELCOME) {
 	if (INVERTCOLORS)
 		hB=LKBrush_Petrol;
@@ -261,17 +258,8 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
 	  else
 		hB=LKBrush_Mlight;
   }
-  #else
-  if (INVERTCOLORS)
-	hB=CreateSolidBrush(RGB_MDARK);
-  else
-	hB=CreateSolidBrush(RGB_MLIGHT);
-  #endif
   oldfont = (HFONT)SelectObject(hdc, LKINFOFONT); // save font
   FillRect(hdc,&rc, hB); 
-  #ifndef LKOBJ
-  DeleteObject(hB);
-  #endif
   //oldbkmode=SetBkMode(hdc,TRANSPARENT);
 
   if (doinit) {
@@ -737,34 +725,17 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   if (GPS_INFO.Speed <5.5) disabled=true; 
 
   if (disabled) {
-	#if LKOBJ
 	hpBlack = LKPen_Grey_N1;
 	hbBlack = LKBrush_Grey;
-	#else
-	hpBlack = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_GREY);
-	hbBlack = (HBRUSH)CreateSolidBrush(RGB_GREY);
-	#endif
   } else {
-	#if LKOBJ
 	hpBlack = LKPen_Black_N1;
 	hbBlack = LKBrush_Black;
-	#else
-	hpBlack = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_BLACK);
-	hbBlack = (HBRUSH)CreateSolidBrush(RGB_BLACK);
-	#endif
   	beta = DerivedDrawInfo.BankAngle;
   }
-  #if LKOBJ
   hpWhite = LKPen_White_N1;
   hbWhite = LKBrush_White;
   hpBorder = LKPen_Grey_N2;
   hbBorder = LKBrush_Grey;
-  #else
-  hpWhite = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_WHITE);
-  hbWhite = (HBRUSH)CreateSolidBrush( RGB_WHITE);
-  hpBorder = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_GREY);
-  hbBorder = (HBRUSH)CreateSolidBrush( RGB_GREY);
-  #endif
 
   hpOld = (HPEN)SelectObject(hDC, hpWhite);
   hbOld = (HBRUSH)SelectObject(hDC, hbWhite);
@@ -848,14 +819,6 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
 
   SelectObject(hDC, hbOld);
   SelectObject(hDC, hpOld);
-  #ifndef LKOBJ
-  DeleteObject((HPEN)hpBlack);
-  DeleteObject((HBRUSH)hbBlack);
-  DeleteObject((HPEN)hpWhite);
-  DeleteObject((HBRUSH)hbWhite);
-  DeleteObject((HPEN)hpBorder);
-  DeleteObject((HBRUSH)hbBorder);
-  #endif
 }
 
 

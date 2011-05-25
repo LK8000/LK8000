@@ -1,6 +1,5 @@
 //#if !defined(LKOBJECTS_H)
 //#define LKOBJECTS_H
-#if LKOBJ
 
 // Reusable objects for LK
 extern	HBRUSH	LKBrush_White;
@@ -50,5 +49,4 @@ extern	HPEN	LKPen_Grey_N2;
 extern	HPEN	LKPen_Petrol_C2;
 extern	HPEN	LKPen_GABRG;
 
-#endif
 //#endif

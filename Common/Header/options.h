@@ -113,9 +113,6 @@
 // Will speed up Range search, and also BestAlternate search
 #define UNSORTEDRANGE		1	// 101120 expire 110601
 
-
-#define LKOBJ			1	// expire 110401
-
 #define GASUPPORT		1	// oren's GA work
 
 #define MULTICALC		1	// Use multicalc approach, splitting calculation inside MapWindow

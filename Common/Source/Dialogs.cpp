@@ -30,9 +30,7 @@
 #include "InfoBoxLayout.h"
 #include "InputEvents.h"
 #include "Message.h"
-#if LKOBJ
 #include "LKObjects.h"
-#endif
 
 #ifdef DEBUG_TRANSLATIONS
 #include <map>
@@ -649,34 +647,20 @@ HWND CreateProgressDialog(TCHAR* text) {
 
   HFONT oldFont=(HFONT)SelectObject(hStartupDC,LKSTARTBOTTOMFONT);
 
-  #if LKOBJ
   HBRUSH hB=LKBrush_Petrol;
-  #else
-  HBRUSH hB=(HBRUSH)CreateSolidBrush(RGB_PETROL);
-  #endif
   FillRect(hStartupDC,&PrintAreaR, hB);
 
   // Create text area
 
   // we cannot use LKPen here because they are not still initialised for startup menu. no problem
-  #if PEN_LKOBJ
-  SelectObject(hStartupDC,LKPen_Green_N1);
-  #else
   HPEN hP=(HPEN)  CreatePen(PS_SOLID,NIBLSCALE(1),RGB_GREEN);
   SelectObject(hStartupDC,hP);
-  #endif
   SelectObject(hStartupDC,hB);
   Rectangle(hStartupDC, PrintAreaR.left,PrintAreaR.top,PrintAreaR.right,PrintAreaR.bottom);
-  #ifndef PEN_LKOBJ
   DeleteObject(hP);
-  #endif
 
-  #if PEN_LKOBJ
-  SelectObject(hStartupDC,LKPen_Black_N1);
-  #else
   hP=(HPEN)  CreatePen(PS_SOLID,NIBLSCALE(1),RGB_BLACK);
   SelectObject(hStartupDC,hP);
-  #endif
   Rectangle(hStartupDC, PrintAreaR.left+NIBLSCALE(2),PrintAreaR.top+NIBLSCALE(2),PrintAreaR.right-NIBLSCALE(2),PrintAreaR.bottom-NIBLSCALE(2));
 
   SetTextColor(hStartupDC,RGB_WHITE);
@@ -692,12 +676,7 @@ HWND CreateProgressDialog(TCHAR* text) {
   SelectObject(hStartupDC,oldFont);
   // Sleep(300); // Slow down display of data? No because in case of important things, Sleep is set by calling part
 
-  #ifndef LKOBJ
-  DeleteObject(hB);
-  #endif
-  #ifndef PEN_LKOBJ
   DeleteObject(hP);
-  #endif
 
 
   return hStartupWindow;

@@ -1251,7 +1251,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
   
       AlphaBlendInit();
     
-      #if LKOBJ
       hBackgroundBrush = LKBrush_White;
       hInvBackgroundBrush[0] = LKBrush_White;
       hInvBackgroundBrush[1] = LKBrush_LightGrey;
@@ -1263,20 +1262,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hInvBackgroundBrush[7] = LKBrush_DarkSlate;
       hInvBackgroundBrush[8] = LKBrush_RifleGrey;
       hInvBackgroundBrush[9] = LKBrush_Black;
-      #else
-      hBackgroundBrush = CreateSolidBrush(BackgroundColor);
-      hInvBackgroundBrush[0] = CreateSolidBrush(COLORREF RGB_WHITE);	 // black text required
-      hInvBackgroundBrush[1] = CreateSolidBrush(COLORREF RGB_LIGHTGREY); // black  light grey
-      hInvBackgroundBrush[2] = CreateSolidBrush(COLORREF RGB_LCDGREEN);	// black   lcd green 
-      hInvBackgroundBrush[3] = CreateSolidBrush(COLORREF RGB_LCDDARKGREEN); // lcd green dark
-      hInvBackgroundBrush[4] = CreateSolidBrush(COLORREF RGB_GREY);	// 
-      hInvBackgroundBrush[5] = CreateSolidBrush(COLORREF RGB_LAKE);	// bianco , ok con topology
-      hInvBackgroundBrush[6] = CreateSolidBrush(COLORREF RGB_EMERALD);   // slategreen
-      // BlackScreen requested for white waypoints, no topology working
-      hInvBackgroundBrush[7] = CreateSolidBrush(COLORREF RGB_DARKSLATE); // senza topo, richiede wp bianchi
-      hInvBackgroundBrush[8] = CreateSolidBrush(COLORREF RGB_RIFLEGREY);  // dark grey
-      hInvBackgroundBrush[9] = CreateSolidBrush(COLORREF RGB_BLACK); // richiede blackscreen
-      #endif
 
       hFLARMTraffic=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_FLARMTRAFFIC));
       hTerrainWarning=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TERRAINWARNING));
@@ -1362,12 +1347,8 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 	hSnailPens[13] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), hSnailColours[13]);
 	hSnailPens[14] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), hSnailColours[14]);
 
-      /* JMW created all re-used pens here */
-
-
       // testing only    Appearance.InverseAircraft = true;
 
-	#if LKOBJ
       hpCompassBorder = LKPen_Black_N2;
       if (Appearance.InverseAircraft) {
 	hpAircraft = LKPen_Black_N3;
@@ -1377,45 +1358,20 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 	hpAircraftBorder = LKPen_Black_N1;
       }
 
-	#else
-      hpCompassBorder = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_BLACK); 
-      if (Appearance.InverseAircraft) {
-	hpAircraft = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(3), RGB_BLACK);
-	hpAircraftBorder = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_WHITE);
-      } else {
-	hpAircraft = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(3), RGB_WHITE);
-	hpAircraftBorder = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_BLACK);
-      }
-	hpThermalCircle = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(3), RGB_WHITE);
-	#endif
-
-	#if LKOBJ
 #if (MONOCHROME_SCREEN > 0)
       hpWind = LKPen_Black_N2;
 #else
       hpWind = LKPen_Red_N2;
 #endif
-	#else
-#if (MONOCHROME_SCREEN > 0)
-      hpWind = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_BLACK);
-#else
-      hpWind = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_RED);
-#endif
-	#endif
 
       hpWindThick = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(4), RGB(255,220,220));
 
-	#if LKOBJ
       if (ISGAAIRCRAFT)
 	hpBearing = LKPen_GABRG;
       else
 	hpBearing = LKPen_Black_N2;
 
       hpBestCruiseTrack = LKPen_Blue_N1;
-	#else
-      hpBearing = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_BLACK);
-      hpBestCruiseTrack = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_BLUE);
-	#endif
 #if (MONOCHROME_SCREEN > 0)
       hpCompass = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_BLACK);
 #else
@@ -1430,18 +1386,11 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       // TODO enhancement: support red/green Color blind
       hpFinalGlideAbove = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB(0xA0,0xFF,0xA0));
 
-	#if LKOBJ
       hpSpeedSlow=LKPen_Red_N1;
       hpSpeedFast=LKPen_Green_N1;
       hpStartFinishThin=LKPen_Red_N1;
       hpMapScale = LKPen_Black_N1;
 
-	#else
-      hpSpeedSlow=(HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_RED);
-      hpSpeedFast=(HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_GREEN);
-      hpStartFinishThin=(HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_RED);
-      hpMapScale = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1),  RGB_BLACK);
-	#endif
 
       hpStartFinishThick=(HPEN)CreatePen(PS_SOLID, NIBLSCALE(5), taskcolor);
       hpMapScale2 = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1)+1, RGB_BLACK);
@@ -1452,8 +1401,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hpVisualGlideHeavyBlack = (HPEN)CreatePen(PS_DASH, (2), RGB_BLACK);
       hpVisualGlideLightRed = (HPEN)CreatePen(PS_DASH, (1), RGB_RED);
       hpVisualGlideHeavyRed = (HPEN)CreatePen(PS_DASH, (2), RGB_RED);
-
-      #if LKOBJ
 
       hbThermalBand=LKBrush_Emerald;
 	#if (MONOCHROME_SCREEN > 0)
@@ -1470,37 +1417,13 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 	#else
       hbWind=LKBrush_Grey;
 	#endif
-      #else
-
-      hbThermalBand=(HBRUSH)CreateSolidBrush(RGB(0x80,0x80,0xFF));
-	#if (MONOCHROME_SCREEN > 0)
-      hbCompass=(HBRUSH)CreateSolidBrush(RGB_WHITE);
-	#else
-      hbCompass=(HBRUSH)CreateSolidBrush(RGB(0x40,0x40,0xFF));
-	#endif
-      hbBestCruiseTrack=(HBRUSH)CreateSolidBrush(RGB_BLUE);
-      hbFinalGlideBelow=(HBRUSH)CreateSolidBrush(RGB_RED);
-      hbFinalGlideAbove=(HBRUSH)CreateSolidBrush(RGB_GREEN);
-      hbFinalGlideBelowLandable=(HBRUSH)CreateSolidBrush(RGB(0xFF,180,0x00));
-	#if (MONOCHROME_SCREEN > 0)
-      hbWind=(HBRUSH)CreateSolidBrush(RGB_MIDDLEGREY);
-	#else
-      hbWind=(HBRUSH)CreateSolidBrush(RGB_MIDDLEGREY);
-	#endif
-
-      #endif
-
 
       ScaleListCount = propGetScaleList(ScaleList, sizeof(ScaleList)/sizeof(ScaleList[0]));
       zoom.RequestedScale(LimitMapScale(zoom.RequestedScale()));
 
       hBmpMapScale = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_MAPSCALE_A));
 
-      #if LKOBJ
       hBrushFlyingModeAbort = LKBrush_Red;
-      #else
-      hBrushFlyingModeAbort = (HBRUSH)CreateSolidBrush(RGB_RED);
-      #endif
 
       if (Appearance.IndLandable == wpLandableDefault){
 	hBmpAirportReachable = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_REACHABLE));
@@ -1555,19 +1478,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
     
       DeleteObject((HPEN)hpWindThick);
 
-	#ifndef LKOBJ
-      DeleteObject((HPEN)hpBestCruiseTrack);
-      DeleteObject((HPEN)hpBearing);
-      DeleteObject((HPEN)hpWind);
-      DeleteObject((HPEN)hpAircraft); 
-      DeleteObject((HPEN)hpAircraftBorder); 
-      DeleteObject((HPEN)hpCompass); 
-      DeleteObject((HPEN)hpThermalCircle);
-      DeleteObject((HPEN)hpSpeedSlow);
-      DeleteObject((HPEN)hpSpeedFast);
-      DeleteObject((HPEN)hpStartFinishThin);
-      DeleteObject((HPEN)hpMapScale);
-	#endif
       DeleteObject((HPEN)hpThermalBand);
       DeleteObject((HPEN)hpThermalBandGlider);
       DeleteObject((HPEN)hpFinalGlideAbove);
@@ -1582,32 +1492,8 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       DeleteObject((HPEN)hpVisualGlideHeavyBlack); // VENTA3
       DeleteObject((HPEN)hpFinalGlideBelowLandable);
 
-      #ifndef LKOBJ
-      DeleteObject((HBRUSH)hbCompass);
-      DeleteObject((HBRUSH)hbThermalBand);
-      DeleteObject((HBRUSH)hbBestCruiseTrack);
-      DeleteObject((HBRUSH)hbFinalGlideBelow);
-      DeleteObject((HBRUSH)hbFinalGlideAbove);
-      DeleteObject((HBRUSH)hbWind);
-      #endif
-
       DeleteObject(hBmpMapScale);
       DeleteObject(hBmpCompassBg);
-      #ifndef LKOBJ
-      DeleteObject((HBRUSH)hbFinalGlideBelowLandable);
-      DeleteObject(hBackgroundBrush);
-      DeleteObject(hInvBackgroundBrush[0]); // 091110
-      DeleteObject(hInvBackgroundBrush[1]); // 091110
-      DeleteObject(hInvBackgroundBrush[2]); // 091110
-      DeleteObject(hInvBackgroundBrush[3]); // 091110
-      DeleteObject(hInvBackgroundBrush[4]); // 091110
-      DeleteObject(hInvBackgroundBrush[5]); // 091110
-      DeleteObject(hInvBackgroundBrush[6]); // 091110
-      DeleteObject(hInvBackgroundBrush[7]); // 091110
-      DeleteObject(hInvBackgroundBrush[8]); // 091110
-      DeleteObject(hInvBackgroundBrush[9]); // 091110
-      DeleteObject((HBRUSH)hBrushFlyingModeAbort);
-      #endif
       DeleteObject(hBmpClimbeAbort);
 
       DeleteObject((HPEN)hpCompassBorder);
@@ -3386,19 +3272,11 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
     HBRUSH hbPAircraftSolidBg;
 
     if (BlackScreen) {
-	#if LKOBJ
       hbPAircraftSolid = LKBrush_LightCyan;
       hbPAircraftSolidBg = LKBrush_Blue;
     } else {
       hbPAircraftSolid = LKBrush_Blue;
       hbPAircraftSolidBg = LKBrush_Grey;
-	#else
-      hbPAircraftSolid = (HBRUSH) CreateSolidBrush(RGB_LIGHTCYAN);
-      hbPAircraftSolidBg = (HBRUSH) CreateSolidBrush(RGB_BLUE);
-    } else {
-      hbPAircraftSolid = (HBRUSH) CreateSolidBrush(RGB_BLUE);
-      hbPAircraftSolidBg = (HBRUSH) CreateSolidBrush(RGB_GREY);
-	#endif
     }
 
     HBRUSH hbPOld = (HBRUSH)SelectObject(hdc, hbPAircraftSolidBg);
@@ -3424,11 +3302,6 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
     SelectObject(hdc, hpPOld);
     SelectObject(hdc, hbPOld);
 
-    #ifndef LKOBJ
-    DeleteObject(hbPAircraftSolid);
-    DeleteObject(hbPAircraftSolidBg);
-    #endif
-    
     return;
   }
 
@@ -3460,7 +3333,6 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
     HBRUSH hbAircraftSolid; 
     HBRUSH hbAircraftSolidBg;
 
-	#if LKOBJ
     if (Appearance.InverseAircraft) {
       hbAircraftSolid = LKBrush_White;
       hbAircraftSolidBg = LKBrush_Black;
@@ -3468,15 +3340,6 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
       hbAircraftSolid = LKBrush_Black;
       hbAircraftSolidBg = LKBrush_White;
     }
-	#else
-    if (Appearance.InverseAircraft) {
-      hbAircraftSolid = (HBRUSH) CreateSolidBrush(RGB_WHITE);
-      hbAircraftSolidBg = (HBRUSH) CreateSolidBrush(RGB_BLACK);
-    } else {
-      hbAircraftSolid = (HBRUSH) CreateSolidBrush(RGB_BLACK);
-      hbAircraftSolidBg = (HBRUSH) CreateSolidBrush(RGB_WHITE);
-    }
-	#endif
 
     HBRUSH hbOld = (HBRUSH)SelectObject(hdc, hbAircraftSolidBg);
     hpOld = (HPEN)SelectObject(hdc, hpAircraft);
@@ -3500,11 +3363,6 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
 
     SelectObject(hdc, hpOld);
     SelectObject(hdc, hbOld);
-
-    #ifndef LKOBJ
-    DeleteObject(hbAircraftSolid);
-    DeleteObject(hbAircraftSolidBg);
-    #endif
     
   } else
 

@@ -26,9 +26,7 @@
 #include "RasterTerrain.h" 
 #include "LKUtils.h"
 #include "LKMapWindow.h"
-#if LKOBJ
 #include "LKObjects.h"
-#endif
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -80,19 +78,11 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
   static bool doinit=true;
 
-  #ifdef LKOBJ
   if (INVERTCOLORS) {
   	sortbrush=LKBrush_LightGreen;
   } else {
   	sortbrush=LKBrush_DarkGreen;
   }
-  #else
-  if (INVERTCOLORS) {
-  	sortbrush=CreateSolidBrush(RGB_LIGHTGREEN);
-  } else {
-  	sortbrush=CreateSolidBrush(RGB_DARKGREEN);
-  }
-  #endif
 
   if (doinit) {
 
@@ -211,9 +201,6 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   SelectedPage[MSM_TRAFFIC]=0;
 
   doinit=false;
-  #ifndef LKOBJ
-  DeleteObject(sortbrush);
-  #endif
   return;
   } // doinit
 
@@ -228,9 +215,6 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 	DoStatusMessage(_T("ERR-041 traffic curpage invalid!")); 
 	SelectedPage[MapSpaceMode]=0;
 	LKevent=LKEVENT_NONE;
-	#ifndef LKOBJ
-  	DeleteObject(sortbrush); // 100328 BUGFIX
-	#endif
 	return;
   }
 
@@ -589,9 +573,6 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
   if (LKevent==LKEVENT_NEWRUN || LKevent==LKEVENT_NEWPAGE ) {
 		LKevent=LKEVENT_NONE;
-		#ifndef LKOBJ
-  		DeleteObject(sortbrush); // 100328 BUGFIX
-		#endif
 		return;
   }
 
@@ -599,9 +580,6 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
 	if (SelectedRaw[MapSpaceMode] <0 || SelectedRaw[MapSpaceMode]>(TrafficNumraws-1)) {
   		LKevent=LKEVENT_NONE; // 100328
-		#ifndef LKOBJ
-  		DeleteObject(sortbrush);
-		#endif
 		return;
 	}
 	if (SelectedRaw[MapSpaceMode] >= drawn_items_onpage) {
@@ -621,9 +599,6 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   } 
 
   LKevent=LKEVENT_NONE;
-  #ifndef LKOBJ
-  DeleteObject(sortbrush);
-  #endif
   return;
 }
 
