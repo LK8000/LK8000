@@ -238,6 +238,7 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 // void DoNearestTurnpoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 void DoCommon(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
+bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 bool DoTarget(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 void DoRecent(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated);

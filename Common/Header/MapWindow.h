@@ -512,7 +512,7 @@ class MapWindow {
   static void DrawLook8000(HDC hdc, const RECT rc);
   static void DrawMapSpace(HDC hdc, const RECT rc);
   static void DrawNearest(HDC hdc, const RECT rc);
-  static void DrawNearestTurnpoint(HDC hdc, const RECT rc);
+  static void DrawAspNearest(HDC hdc, const RECT rc);
   static void DrawCommon(HDC hdc, const RECT rc);
   static void DrawInfoPage(HDC hdc, const RECT rc, const bool forceinit);
   static void DrawTraffic(HDC hdc, const RECT rc);

@@ -30,7 +30,7 @@
 <WndProperty Name="prpIP22" Caption="_@M1617_" X=0 Y=-1 Width=119 Height=22 CaptionWidth=70 Font=3 Help="_@H1221_">
 <DataField name="" DataType="boolean" />
 </WndProperty>
-<WndProperty Name="prpIP24" Caption="_@M1619_" X=119 Y=-999 Width=119 Height=22 CaptionWidth=70 Font=3 Help="_@H1221_" ReadOnly=1 >
+<WndProperty Name="prpIP24" Caption="_@M1619_" X=119 Y=-999 Width=119 Height=22 CaptionWidth=70 Font=3 Help="_@H1221_" >
 <DataField name="" DataType="boolean" />
 </WndProperty>
 

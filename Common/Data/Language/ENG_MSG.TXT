@@ -1323,6 +1323,7 @@ _@M1312_ "LNDB"
 _@M1313_ "APT"
 _@M1314_ "APTS"
 _@M1315_ "TPS"
+# ASP for nearest airspaces is M1642
 
 # Reserved waypoint names, comments
 _@M1316_ "TAKEOFF"
@@ -1515,6 +1516,9 @@ _@M1630_ "Height margin "
 # Navboxes
 _@M1640_ "Current Flaps"
 _@M1641_ "Flaps"
+
+# Header nearest Airspaces
+_@M1642_ "ASP"
 
 
 

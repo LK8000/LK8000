@@ -41,7 +41,6 @@ extern int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *ele
 
 extern void DrawMapSpace(HDC hdc, RECT rc);
 extern void DrawNearest(HDC hdc, RECT rc);
-extern void DrawNearestTurnpoint(HDC hdc, RECT rc);
 extern void DrawCommon(HDC hdc, RECT rc);
 extern void DrawWelcome8000(HDC hdc, RECT rc);
 #ifdef CPUSTATS

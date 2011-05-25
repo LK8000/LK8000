@@ -549,6 +549,13 @@ int LKSortedTraffic[FLARM_MAX_TRAFFIC+1];
 int LKTargetIndex=-1;
 int LKTargetType=LKT_TYPE_NONE;
 
+// Copy of runtime airspaces for instant use 
+//-> kalman_traffic LKAirspaces[MAXNEARAIRSPACES+1];
+// Number of asps (items) of existing airspaces updated from DoAirspaces
+int LKNumAirspaces=0;
+// Pointer to ASP struct, ordered by DoAirspaces, from 0 to LKNumAirspaces-1
+int LKSortedAirspaces[MAXNEARAIRSPACES+1];
+
 // type of file format for waypoints files
 int WpFileType[3];
 TCHAR WpHome_Name[NAME_SIZE+1];
@@ -605,11 +612,13 @@ short SelectedRaw[MSM_TOP+1];
 // since it doesnt eat memory, it is also used for pages with currently no subpages
 short SelectedPage[MSM_TOP+1];
 // number of raws in mapspacemode screen
+// TODO: check if they can be unsigned
 short Numraws;
 short CommonNumraws;
 short Numpages;
 short CommonNumpages;
 short TrafficNumpages;
+short AspNumpages;
 //  mapspace sort mode: 0 wp name  1 distance  2 bearing  3 reff  4 altarr
 //  UNUSED on MSM_COMMON etc. however it is dimensioned on mapspacemodes
 short SortedMode[MSM_TOP+1];
@@ -714,8 +723,6 @@ int  SortedAirportIndex[MAXNEAREST+1];
 int  SortedTurnpointIndex[MAXNEAREST+1];
 // Real number of NEAREST items contained in array after removing duplicates, or not enough to fill MAXNEAREST/MAX..
 int  SortedNumber=0;
-// as above, for nearest turnpoints
-// int  SortedTurnpointNumber=0; 101222
 
 // Commons are Home, best alternate, alternate1, 2, and task waypoints , all up to MAXCOMMON.
 // It is reset when changing wp file

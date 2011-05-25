@@ -242,6 +242,10 @@ extern int LKSortedTraffic[FLARM_MAX_TRAFFIC+1];
 extern int LKTargetIndex;
 extern int LKTargetType;
 
+// extern kalman_airspaces LKAirspaces[MAXNEARAIRSPACES+1];
+extern int LKNumAirspaces;
+extern int LKSortedAirspaces[MAXNEARAIRSPACES+1];
+
 extern int PGOpenTimeH;
 extern int PGOpenTimeM;
 extern int PGOpenTime;
@@ -306,6 +310,7 @@ extern short CommonNumpages;
 // extern short TurnpointNumraws; 101222
 // extern short TurnpointNumpages;
 extern short TrafficNumpages;
+extern short AspNumpages;
 extern short ModeIndex;
 
 // LK8000 sync flags

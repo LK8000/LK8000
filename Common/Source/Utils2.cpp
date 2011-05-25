@@ -744,6 +744,9 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 						LKForceDoRecent=true;
 						numpages=CommonNumpages;
 						break;
+			case MSM_AIRSPACES:
+						numpages=AspNumpages;
+						break;
 			case MSM_TRAFFIC:
 						numpages=TrafficNumpages;
 						break;
@@ -2781,10 +2784,8 @@ void InitModeTable() {
 	// set all sorting type to distance (default) even for unconventional modes just to be sure
 	for (i=0; i<=MSM_TOP; i++) SortedMode[i]=1;
 
-	for (i=0; i<MAXNEAREST;i++) 
-		SortedTurnpointIndex[i]=-1;
-
 	for (i=0; i<MAXNEAREST;i++) {
+		SortedTurnpointIndex[i]=-1;
 		SortedLandableIndex[i]=-1;
 		SortedAirportIndex[i]=-1;
 	}
