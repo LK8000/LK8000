@@ -10,16 +10,6 @@
 #include "mapshape.h"
 
 
-//Data struct for nearest airspace pages
-typedef struct {
-  TCHAR Name[NAME_SIZE+1];              // 1) Name of airspace . We shall use only 15 to 25 characters max in any case
-  TCHAR Type[5];                        // 2) Type of airspace    like CTR   A B C etc.    we use 3-4 chars
-  double Distance;                      // 3) Distance
-  double Bearing_difference;            // 4) Bearing difference  (so we can sort by airspaces we have in front of us, for example)
-  bool Enabled;                         // 5) Active - not active
-} LKAirspace_Nearest_Item;
-
-
 #ifdef LKAIRSPACE
 #include "CriticalSection.h"
 #include "Calculations.h"
@@ -404,6 +394,18 @@ void ShowAirspaceWarningsToUser();
 
 void ScreenClosestPoint(const POINT &p1, const POINT &p2, 
              const POINT &p3, POINT *p4, int offset);
+
+
+//Data struct for nearest airspace pages
+typedef struct {
+  bool Valid;                           // Struct item is valid
+  TCHAR Name[NAME_SIZE+1];              // 1) Name of airspace . We shall use only 15 to 25 characters max in any case
+  TCHAR Type[5];                        // 2) Type of airspace    like CTR   A B C etc.    we use 3-4 chars
+  double Distance;                      // 3) Distance
+  double Bearing;                       // 4) Bearing (so we can sort by airspaces we have in front of us, for example)
+  bool Enabled;                         // 5) Active - not active
+  CAirspace *Pointer;                   // 6) Pointer to CAirspace class for further operations (don't forget CAirspacemanager mutex!)
+} LKAirspace_Nearest_Item;
 
 
 #endif /* LKAIRSPACE */

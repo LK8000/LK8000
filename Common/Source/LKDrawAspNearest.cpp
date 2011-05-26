@@ -230,7 +230,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 			break;
 		}
 		LastDoAirspaces = GPS_INFO.Time+NEARESTONHOLD; 
-		// dlgLKAirspaceDetails( LKAirspaces[i].Pointer );
+		dlgAirspaceDetails( LKAirspaces[i].Pointer );
 		LastDoAirspaces = 0; 
 		LKevent=LKEVENT_NONE; 
 		return;
@@ -490,7 +490,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 		//
 		// AIRSPACE BEARING DIFFERENCE, OR BEARING IF CIRCLING
 		//
-		_stprintf(Buffer4[i][curpage], TEXT("%2.0f°"), LKAirspaces[rli].Bearing_difference);
+		_stprintf(Buffer4[i][curpage], TEXT("%2.0f°"), LKAirspaces[rli].Bearing);
 
 /*
 		value=WayPointCalc[rli].GR;
