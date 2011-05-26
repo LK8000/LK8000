@@ -2209,6 +2209,10 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	memset(LKAirspaces, 0, sizeof(LKAirspaces));
 	LKNumAirspaces=0;
 	memset(LKSortedAirspaces, -1, sizeof(LKSortedAirspaces));
+    for (int i=0; i<MAXNEARAIRSPACES; i++) {
+      LKAirspaces[i].Valid = false;
+      LKAirspaces[i].Pointer = NULL;
+    }
 	doinit=false;
 	return true;
    }
