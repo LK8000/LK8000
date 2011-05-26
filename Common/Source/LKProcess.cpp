@@ -1477,7 +1477,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
-			if (NearestAirspaceVDist >0 && NearestAirspaceVDist<9999 ) { // 9999 m or ft is ok
+			if (NearestAirspaceVDist != 0 && (fabs(NearestAirspaceVDist)<=9999) ) { // 9999 m or ft is ok
 				value = ALTITUDEMODIFY*NearestAirspaceVDist;
 				sprintf(text,"%.0f",value);
 				wsprintf(BufferValue, TEXT("%S"),text);

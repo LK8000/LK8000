@@ -9,6 +9,17 @@
 #include "Sizes.h"
 #include "mapshape.h"
 
+
+//Data struct for nearest airspace pages
+typedef struct {
+  TCHAR Name[NAME_SIZE+1];              // 1) Name of airspace . We shall use only 15 to 25 characters max in any case
+  TCHAR Type[5];                        // 2) Type of airspace    like CTR   A B C etc.    we use 3-4 chars
+  double Distance;                      // 3) Distance
+  double Bearing_difference;            // 4) Bearing difference  (so we can sort by airspaces we have in front of us, for example)
+  bool Enabled;                         // 5) Active - not active
+} LKAirspace_Nearest_Item;
+
+
 #ifdef LKAIRSPACE
 #include "CriticalSection.h"
 #include "Calculations.h"
@@ -164,7 +175,8 @@ public:
   AirspaceWarningEvent WarningEvent() const { return _warnevent; }
 
   // Get class attributes for infobox values
-  static TCHAR* GetNearestName() { return _nearestname; }
+  static TCHAR* GetNearestHName() { return _nearesthname; }
+  static TCHAR* GetNearestVName() { return _nearestvname; }
   static int GetNearestHDistance() { return _nearesthdistance; }
   static int GetNearestVDistance() { return _nearestvdistance; }
 
@@ -204,7 +216,8 @@ protected:
   // Class attributes
   static int _nearesthdistance;                // collecting horizontal distance to infobox
   static int _nearestvdistance;                // collecting vertical distance to infobox
-  static TCHAR *_nearestname;                // collecting nearest name to infobox
+  static TCHAR *_nearesthname;                // collecting nearest horizontal name to infobox
+  static TCHAR *_nearestvname;                // collecting nearest vertical name to infobox
   static bool _pos_in_flyzone;                // for flyzone warning refining
   static bool _pred_in_flyzone;                // for flyzone warning refining
   static bool _pos_in_acked_nonfly_zone;    // for flyzone warning refining

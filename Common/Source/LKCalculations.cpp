@@ -2157,27 +2157,76 @@ void ResetFreeFlightStats(DERIVED_INFO *Calculated) {
 }
 
 
+// Comparer to sort airspaces based on distance
+static bool airspace_distance_sorter( CAirspace *a, CAirspace *b )
+{
+  int da,db;
+  a->CalculateDistance(&da,NULL,NULL);
+  b->CalculateDistance(&db,NULL,NULL);
+  return da<db;     //nearest first
+}
+
+// Comparer to sort airspaces based on name
+static bool airspace_name_sorter( CAirspace *a, CAirspace *b )
+{
+  return wcscmp(a->Name(), b->Name()) < 0;
+}
+
+// Comparer to sort airspaces based on type
+static bool airspace_type_sorter( CAirspace *a, CAirspace *b )
+{
+  return a->Type() < b->Type();
+}
+
+// Comparer to sort airspaces based on enabled
+static bool airspace_enabled_sorter( CAirspace *a, CAirspace *b )
+{
+  return a->Enabled() < b->Enabled();
+}
+
+// Comparer to sort airspaces based on bearing difference
+static bool airspace_beardiff_sorter( CAirspace *a, CAirspace *b )
+{
+  int beara,bearb;
+  int beardiffa,beardiffb;
+  a->CalculateDistance(NULL,&beara,NULL);
+  b->CalculateDistance(NULL,&bearb,NULL);
+  
+  if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) return beara < bearb; 
+
+  beardiffa = beara -  GPS_INFO.TrackBearing;
+  if (beardiffa < -180.0) beardiffa += 360.0;
+    else if (beardiffa > 180.0) beardiffa -= 360.0;
+  if (beardiffa<0) beardiffa*=-1;
+
+  beardiffb = bearb -  GPS_INFO.TrackBearing;
+  if (beardiffb < -180.0) beardiffb += 360.0;
+    else if (beardiffb > 180.0) beardiffb -= 360.0;
+  if (beardiffb<0) beardiffb*=-1;
+  
+  return beardiffa < beardiffb;
+}
+
+//REMOVE later, for test only
+//#define DEBUG_LKT
+
 //
 // Running every n seconds ONLY when the nearest airspace page is active and we are not drawing map.
 // Returns true if did calculations, false if ok to use old values
 bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
-   int i,k,l;
-   double bearing, distance, sortvalue;
-   double sortedValue[MAXNEARAIRSPACES+1];
 
    static bool doinit=true;
 
    if (doinit) {
-	memset(LKTraffic, 0, sizeof(LKTraffic));
+	memset(LKAirspaces, 0, sizeof(LKAirspaces));
 	LKNumAirspaces=0;
 	memset(LKSortedAirspaces, -1, sizeof(LKSortedAirspaces));
 	doinit=false;
 	return true;
    }
 
-
-   // DoTraffic is called from MapWindow, in real time. We have enough CPU power there now
+   // DoAirspaces is called from MapWindow, in real time. We have enough CPU power there now
    // Consider replay mode...
    if (  LastDoAirspaces > Basic->Time ) LastDoAirspaces=Basic->Time;
    if ( Basic->Time < (LastDoAirspaces+PAGINGTIMEOUT) ) { 
@@ -2186,107 +2235,96 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    LastDoAirspaces=Basic->Time;
 
    #ifdef DEBUG_LKT
-   StartupStore(_T("... DoTraffic Copy LKTraffic and reset LKSortedAirspaces\n"));
+   StartupStore(_T("... DoAirspaces Copy LKAirspaces and reset LKSortedAirspaces\n"));
    #endif
-   LockFlightData();
-   memcpy(LKTraffic, Basic->FLARM_Traffic, sizeof(LKTraffic));
-   UnlockFlightData();
+   // Get a copy of all airspace ptrs from airspacemanager
+   CAirspaceList airspaces = CAirspaceManager::Instance().GetAllAirspaces();
 
    memset(LKSortedAirspaces, -1, sizeof(LKSortedAirspaces));
-   memset(sortedValue, -1, sizeof(sortedValue));
-
    LKNumAirspaces=0;
-   for (i=0; i<FLARM_MAX_TRAFFIC; i++) {
-	if ( LKTraffic[i].ID <=0 ) continue;
-	LKNumAirspaces++;
-	DistanceBearing(Basic->Latitude, Basic->Longitude, 
-		LKTraffic[i].Latitude, LKTraffic[i].Longitude,
-		&distance, &bearing);
-	LKTraffic[i].Distance=distance;
-	LKTraffic[i].Bearing=bearing;
+   if (airspaces.size()<1) return true;
+
+   //Lock airspace instances externally
+   CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+   
+   //sort by given key
+    switch (SortedMode[MSM_AIRSPACES]) {
+        case 0: 
+            // ASP NAME
+            std::sort(airspaces.begin(), airspaces.end(), airspace_name_sorter);
+            break;
+        case 1:
+            // ASP TYPE
+            std::sort(airspaces.begin(), airspaces.end(), airspace_type_sorter);
+            break;
+            
+        default:
+        case 2:
+            // ASP DISTANCE
+            std::sort(airspaces.begin(), airspaces.end(), airspace_distance_sorter);
+            break;
+        case 3:
+            // ASP BEARING DIFFERENCE
+            std::sort(airspaces.begin(), airspaces.end(), airspace_beardiff_sorter);
+            break;
+        case 4:
+            // ACTIVE / NOT ACTIVE
+            std::sort(airspaces.begin(), airspaces.end(), airspace_enabled_sorter);
+            break;
+    } //sw
+
+   //copy result data to interface structs
+   // we dont need LKSortedAirspaces[] array, every item will be
+   // in correct order in airspaces list, thanks to std::sort,
+   // we just fill up LKAirspaces[] array in the right order.
+   CAirspaceList::iterator it;
+   int i = 0;
+   int hdist=0,vdist=0,bear=0;
+   for (it=airspaces.begin(); it!=airspaces.end(); ++it) {
+      // sort key not used, iterator goes in in right order
+      LKSortedAirspaces[i] = i;
+      // copy name
+      _tcsncpy(LKAirspaces[i].Name, (*it)->Name(), NAME_SIZE);
+      LKAirspaces[i].Name[NAME_SIZE]=0;
+      // copy type string (type string comes from centralized type->str conversion function of CAirspaceManager)
+      _tcsncpy(LKAirspaces[i].Type, CAirspaceManager::Instance().GetAirspaceTypeShortText((*it)->Type()), 4);
+      LKAirspaces[i].Type[4]=0;
+
+      // Calculate current distances and bearing on this airspace
+      (*it)->CalculateDistance(&hdist,&bear,&vdist);
+      // copy distance
+      LKAirspaces[i].Distance = hdist;
+
+      if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+        // if circling, use bearing
+        LKAirspaces[i].Bearing_difference = bear;
+      } else {
+        // if not circling, calculate and use bearing difference
+        int beardiff = bear - GPS_INFO.TrackBearing;
+        if (beardiff < -180.0) beardiff += 360.0;
+          else if (beardiff > 180.0) beardiff -= 360.0;
+        if (beardiff<0) beardiff*=-1;
+        LKAirspaces[i].Bearing_difference = beardiff;
+      }
+      // copy Enabled()
+      LKAirspaces[i].Enabled = (*it)->Enabled();
+      
+      i++;
+      if (i>=MAXNEARAIRSPACES) break;
    }
-   if (LKNumAirspaces<1) return true;
-
-   // We know there is at least one traffic..
-   for (i=0; i<FLARM_MAX_TRAFFIC; i++) {
-
-	if ( LKTraffic[i].ID <=0 ) continue;
-
-	switch (SortedMode[MSM_AIRSPACES]) {
-		case 0:	
-			// ASP NAME
-			sortvalue=LKTraffic[i].Time_Fix;
-			// sort by highest: the highest the closer to now
-			sortvalue*=-1;
-			break;
-		case 1:
-			// ASP TYPE
-			sortvalue=LKTraffic[i].Distance;
-			break;
-		case 2:
-			// ASP DISTANCE
-			if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-				sortvalue=LKTraffic[i].Bearing;
-				break;
-			}
-			sortvalue=LKTraffic[i].Bearing - GPS_INFO.TrackBearing;
-			if (sortvalue < -180.0) sortvalue += 360.0;
-			else
-				if (sortvalue > 180.0) sortvalue -= 360.0;
-			if (sortvalue<0) sortvalue*=-1;
-			break;
-		case 3:
-			// ASP BEARING DIFFERENCE
-			sortvalue=LKTraffic[i].Average30s;
-			// sort by highest
-			sortvalue*=-1;
-			break;
-		case 4:
-			// ACTIVE / NOT ACTIVE
-			sortvalue=LKTraffic[i].Altitude;
-			// sort by highest
-			sortvalue*=-1;
-			break;
-		default:
-			// DISTANCE
-			sortvalue=LKTraffic[i].Distance;
-			break;
-	}
-
-	// MAXNEARAIRSPACES is simply FLARM_MAX_TRAFFIC 
-	for (k=0; k< MAXNEARAIRSPACES; k++)  {
-
-		// if new value is lower or index position is empty,  AND index position is not itself
-		// (just for safety, since it is not possible with traffic)
-		if ( ((sortvalue < sortedValue[k]) || (LKSortedAirspaces[k]== -1))
-		&& (LKSortedAirspaces[k] != i) )
-		{
-			// ok, got new lower value, put it into slot
-			for (l=MAXNEARAIRSPACES-1; l>k; l--) {
-				if (l>0) {
-					sortedValue[l] = sortedValue[l-1];
-					LKSortedAirspaces[l] = LKSortedAirspaces[l-1];
-				}
-			}
-			sortedValue[k] = sortvalue;
-			LKSortedAirspaces[k] = i;
-			//inserted++;
-			break;
-		}
-	} // for k
-	continue;
-
-   } // for i
+   LKNumAirspaces=i;
+   
    #ifdef DEBUG_LKT
    StartupStore(_T("... DoAirspaces Sorted, LKNumAirspaces=%d :\n"),LKNumAirspaces);
    for (i=0; i<MAXNEARAIRSPACES; i++) {
 	if (LKSortedAirspaces[i]>=0)
-		StartupStore(_T("... LKSortedAirspaces[%d]=LKTraffic[%d] Id=%lx Name=<%s> Cn=<%s> Status=%d\n"), i, 
+		StartupStore(_T("... LKSortedAirspaces[%d]=LKAirspaces[%d] Name=<%s> Type=<%s> Dist=%2.0f beardiff=%2.0f enabled=%s\n"), i, 
 			LKSortedAirspaces[i],
-			LKTraffic[LKSortedAirspaces[i]].ID,
-			LKTraffic[LKSortedAirspaces[i]].Name,
-			LKTraffic[LKSortedAirspaces[i]].Cn,
-			LKTraffic[LKSortedAirspaces[i]].Status);
+			LKAirspaces[LKSortedAirspaces[i]].Name,
+			LKAirspaces[LKSortedAirspaces[i]].Type,
+            LKAirspaces[LKSortedAirspaces[i]].Distance,
+            LKAirspaces[LKSortedAirspaces[i]].Bearing_difference,
+            LKAirspaces[LKSortedAirspaces[i]].Enabled ? _TEXT("true"):_TEXT("false"));
    }
    #endif
 

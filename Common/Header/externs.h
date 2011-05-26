@@ -239,7 +239,7 @@ extern int LKSortedTraffic[FLARM_MAX_TRAFFIC+1];
 extern int LKTargetIndex;
 extern int LKTargetType;
 
-// extern kalman_airspaces LKAirspaces[MAXNEARAIRSPACES+1];
+extern LKAirspace_Nearest_Item LKAirspaces[MAXNEARAIRSPACES+1];
 extern int LKNumAirspaces;
 extern int LKSortedAirspaces[MAXNEARAIRSPACES+1];
 
@@ -369,7 +369,10 @@ extern int Cpu_Aver;
 
 extern double	NearestAirspaceHDist;
 extern double	NearestAirspaceVDist;
-extern TCHAR	NearestAirspaceName[NAME_SIZE+1];
+extern TCHAR    NearestAirspaceName[NAME_SIZE+1];
+#ifdef LKAIRSPACE
+extern TCHAR    NearestAirspaceVName[NAME_SIZE+1];
+#endif
 
 // Ready to use for experiments
 extern double Experimental1;
