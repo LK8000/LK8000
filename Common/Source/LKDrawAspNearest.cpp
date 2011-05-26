@@ -27,6 +27,7 @@
 #include "LKUtils.h"
 #include "LKMapWindow.h"
 #include "LKObjects.h"
+#include "LKAirspace.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -47,7 +48,6 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   static TCHAR Buffer3[MAXNEARAIRSPACES][MAXAIRSPACENUMPAGES][10];
   static TCHAR Buffer4[MAXNEARAIRSPACES][MAXAIRSPACENUMPAGES][12], Buffer5[MAXNEARAIRSPACES][MAXAIRSPACENUMPAGES][12];
   static short s_maxnlname;
-  char text[30];
   short i, k, iRaw, wlen, rli=0, curpage, drawn_items_onpage;
   double value;
   COLORREF rcolor;
@@ -421,20 +421,42 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 	}
 	if ( ValidAirspace(rli) ) {
 
-		wlen=wcslen(WayPointList[rli].Name);
+		//
+		// AIRSPACE NAME
+		//
+		wlen=wcslen(LKAirspaces[rli].Name);
 		if (wlen>s_maxnlname) {
-			_tcsncpy(Buffer, WayPointList[rli].Name, s_maxnlname); Buffer[s_maxnlname]='\0';
+			_tcsncpy(Buffer, LKAirspaces[rli].Name, s_maxnlname); Buffer[s_maxnlname]='\0';
 		}
 		else {
-			_tcsncpy(Buffer, WayPointList[rli].Name, wlen); Buffer[wlen]='\0';
+			_tcsncpy(Buffer, LKAirspaces[rli].Name, wlen); Buffer[wlen]='\0';
 		}
 		ConvToUpper(Buffer);
 		_tcscpy(Buffer1[i][curpage],Buffer); 
 
-		value=WayPointCalc[rli].Distance*DISTANCEMODIFY;
-         	_stprintf(Buffer2[i][curpage],TEXT("%0.1lf"),value);
 
+		//
+		// AIRSPACE TYPE
+		//
+		wlen=wcslen(LKAirspaces[rli].Type);
+		#define LKASP_TYPE_LEN	4
+		if (wlen>LKASP_TYPE_LEN) {
+			_tcsncpy(Buffer, LKAirspaces[rli].Type, LKASP_TYPE_LEN); Buffer[LKASP_TYPE_LEN]='\0';
+		}
+		else {
+			_tcsncpy(Buffer, LKAirspaces[rli].Type, wlen); Buffer[wlen]='\0';
+		}
+		ConvToUpper(Buffer);
+		_tcscpy(Buffer2[i][curpage],Buffer); 
 
+		
+		//
+		// AIRSPACE DISTANCE
+		//
+		value=LKAirspaces[rli].Distance*DISTANCEMODIFY;
+         	_stprintf(Buffer3[i][curpage],TEXT("%0.1lf"),value);
+
+/* -------------
 		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
 			value = WayPointCalc[rli].Bearing -  GPS_INFO.TrackBearing;
 
@@ -463,7 +485,14 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 #endif
 		} else
 			_stprintf(Buffer3[i][curpage], TEXT("%2.0f°"), WayPointCalc[rli].Bearing); // 101219
+ ----------- */
 
+		//
+		// AIRSPACE BEARING DIFFERENCE, OR BEARING IF CIRCLING
+		//
+		_stprintf(Buffer4[i][curpage], TEXT("%2.0f°"), LKAirspaces[rli].Bearing_difference);
+
+/*
 		value=WayPointCalc[rli].GR;
 		if (value<1 || value>=MAXEFFICIENCYSHOW) 
 			_stprintf(Buffer4[i][curpage],_T("---"));
@@ -479,6 +508,12 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 		else
 			sprintf(text,"%+.0f",value);
 		wsprintf(Buffer5[i][curpage], TEXT("%S"),text);
+*/
+
+		//
+		// AIRSPACE ACTIVE OR NOT
+		//
+		_stprintf(Buffer5[i][curpage], TEXT("%s"), LKAirspaces[rli].Enabled ? _T("+") : _T("."));
 
 	} else {
 		if ( ScreenSize < (ScreenSize_t)sslandscape ) 
@@ -498,15 +533,13 @@ KeepOldValues:
 
 		drawn_items_onpage++;
 
-		if (WayPointCalc[rli].IsOutlanding) {
-			rcolor=RGB_LIGHTYELLOW;
+		if (!LKAirspaces[rli].Enabled) {
+			rcolor=RGB_LIGHTRED;
   			SelectObject(hdc, LK8InfoBigItalicFont); 
 		} else {
 			rcolor=RGB_WHITE;
   			SelectObject(hdc, LK8InfoBigFont); 
 		}
-		if ((WayPointCalc[rli].VGR == 3 )|| (!WayPointList[rli].Reachable)) 
-			rcolor=RGB_LIGHTRED;
 	} else {
 		rcolor=RGB_GREY;
 	}
@@ -561,5 +594,5 @@ KeepOldValues:
 // True if the i airspace is existing and valid
 bool ValidAirspace(int i) {
 
-	return false;
+	return true;
 }
