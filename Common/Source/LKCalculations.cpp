@@ -2185,13 +2185,27 @@ static bool airspace_enabled_sorter( CAirspace *a, CAirspace *b )
 }
 
 // Comparer to sort airspaces based on bearing
+// During cruise, we sort bearing diff and use bearing diff in DrawAsp
 static bool airspace_bearing_sorter( CAirspace *a, CAirspace *b )
 {
   int beara,bearb;
+  int beardiffa,beardiffb;
   a->CalculateDistance(NULL,&beara,NULL);
   b->CalculateDistance(NULL,&bearb,NULL);
+
+  if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) return beara < bearb;
+ 
+  beardiffa = beara - (int)GPS_INFO.TrackBearing;
+  if (beardiffa < -180) beardiffa += 360;
+    else if (beardiffa > 180) beardiffa -= 360;
+  if (beardiffa<0) beardiffa*=-1;
   
-  return beara < bearb; 
+  beardiffb = bearb - (int)GPS_INFO.TrackBearing;
+  if (beardiffb < -180) beardiffb += 360;
+    else if (beardiffb > 180) beardiffb -= 360;
+  if (beardiffb<0) beardiffb*=-1;
+ 
+  return beardiffa < beardiffb; 
 }
 
 //REMOVE later, for test only
@@ -2295,6 +2309,8 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       LKAirspaces[i].Enabled = (*it)->Enabled();
       // copy pointer
       LKAirspaces[i].Pointer = (*it);
+
+      LKAirspaces[i].Valid = true; // missing!!
       
       i++;
       if (i>=MAXNEARAIRSPACES) break;

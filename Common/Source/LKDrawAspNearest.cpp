@@ -456,9 +456,12 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 		value=LKAirspaces[rli].Distance*DISTANCEMODIFY;
          	_stprintf(Buffer3[i][curpage],TEXT("%0.1lf"),value);
 
-/* -------------
+
+		//
+		// AIRSPACE BEARING DIFFERENCE, OR BEARING IF CIRCLING
+		//
 		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-			value = WayPointCalc[rli].Bearing -  GPS_INFO.TrackBearing;
+			value = LKAirspaces[rli].Bearing -  GPS_INFO.TrackBearing;
 
 			if (value < -180.0)
 				value += 360.0;
@@ -466,49 +469,16 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 				if (value > 180.0)
 					value -= 360.0;
 
-#ifndef __MINGW32__
 			if (value > 1)
-				_stprintf(Buffer3[i][curpage], TEXT("%2.0f��"), value);
+				_stprintf(Buffer4[i][curpage], TEXT("%2.0f°»"), value);
 			else
 				if (value < -1)
-					_stprintf(Buffer3[i][curpage], TEXT("�%2.0f�"), -value);
+					_stprintf(Buffer4[i][curpage], TEXT("«%2.0f°"), -value);
 				else
-					_tcscpy(Buffer3[i][curpage], TEXT("��"));
-#else
-			if (value > 1)
-				_stprintf(Buffer3[i][curpage], TEXT("%2.0f°»"), value);
-			else
-				if (value < -1)
-					_stprintf(Buffer3[i][curpage], TEXT("«%2.0f°"), -value);
-				else
-					_tcscpy(Buffer3[i][curpage], TEXT("«»"));
-#endif
+					_tcscpy(Buffer4[i][curpage], TEXT("«»"));
 		} else
-			_stprintf(Buffer3[i][curpage], TEXT("%2.0f°"), WayPointCalc[rli].Bearing); // 101219
- ----------- */
+			_stprintf(Buffer4[i][curpage], TEXT("%2.0f°"), LKAirspaces[rli].Bearing);
 
-		//
-		// AIRSPACE BEARING DIFFERENCE, OR BEARING IF CIRCLING
-		//
-		_stprintf(Buffer4[i][curpage], TEXT("%2.0f°"), LKAirspaces[rli].Bearing);
-
-/*
-		value=WayPointCalc[rli].GR;
-		if (value<1 || value>=MAXEFFICIENCYSHOW) 
-			_stprintf(Buffer4[i][curpage],_T("---"));
-		else {
-			if (value>99) sprintf(text,"%.0f",value);
-			else sprintf(text,"%.1f",value);
-			_stprintf(Buffer4[i][curpage],_T("%S"),text);
-		}
-
-		value=ALTITUDEMODIFY*WayPointCalc[rli].AltArriv[AltArrivMode];
-		if (value <-9999 ||  value >9999 )
-			strcpy(text,"---");
-		else
-			sprintf(text,"%+.0f",value);
-		wsprintf(Buffer5[i][curpage], TEXT("%S"),text);
-*/
 
 		//
 		// AIRSPACE ACTIVE OR NOT
@@ -593,6 +563,6 @@ KeepOldValues:
 
 // True if the i airspace is existing and valid
 bool ValidAirspace(int i) {
-
-	return true;
+  if (i<0 || i>MAXNEARAIRSPACES) return false;
+  return LKAirspaces[i].Valid;
 }
