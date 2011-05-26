@@ -2242,6 +2242,7 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
    memset(LKSortedAirspaces, -1, sizeof(LKSortedAirspaces));
    LKNumAirspaces=0;
+   for (int i=0; i<MAXNEARAIRSPACES; i++) LKAirspaces[i].Valid = false;
    if (airspaces.size()<1) return true;
 
    //Lock airspace instances externally
@@ -2293,7 +2294,7 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       // Calculate current distances and bearing on this airspace
       (*it)->CalculateDistance(&hdist,&bear,&vdist);
       // copy distance
-      LKAirspaces[i].Distance = hdist;
+      LKAirspaces[i].Distance = max(hdist,0);
 
       if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
         // if circling, use bearing
@@ -2308,6 +2309,8 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       }
       // copy Enabled()
       LKAirspaces[i].Enabled = (*it)->Enabled();
+      // copy pointer
+      LKAirspaces[i].Pointer = (*it);
       
       i++;
       if (i>=MAXNEARAIRSPACES) break;
