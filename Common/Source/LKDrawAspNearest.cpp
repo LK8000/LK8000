@@ -230,7 +230,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 			break;
 		}
 		LastDoAirspaces = GPS_INFO.Time+NEARESTONHOLD; 
-		// dlgLKAirspaceDetails( LKAirspaces[i].Pointer );
+		dlgAirspaceDetails( LKAirspaces[i].Pointer );
 		LastDoAirspaces = 0; 
 		LKevent=LKEVENT_NONE; 
 		return;
