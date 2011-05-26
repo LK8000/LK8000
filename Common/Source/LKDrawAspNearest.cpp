@@ -96,7 +96,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 	right=rc.right-NIBLSCALE(5);
   	bottom=rc.bottom-BottomSize;
 	s_maxnlname=15; 
-  	_stprintf(Buffer,TEXT("MAKSJSMMMMMMMMM"));  
+  	_stprintf(Buffer,TEXT("ABCDEF GHIJK-LM"));  
   }
 
 
@@ -112,7 +112,8 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   _stprintf(Buffer,TEXT("<<123")); 
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &BETextSize);
 
-  // TYPE, 3 letters printed
+  // TYPE, 4 letters printed
+  #define LKASP_TYPE_LEN	4
   _stprintf(Buffer,TEXT("CTRA")); 
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &TYTextSize);
 
@@ -135,8 +136,8 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   Column0=MITextSize.cx+LEFTLIMITER+NIBLSCALE(5);
   Column1=left;							// WP align left
   Column2=afterwpname+TYTextSize.cx;				// TY align right
-  Column3=Column2+intercolumn+BETextSize.cx;			// BE align right
-  Column4=Column3+intercolumn+DSTextSize.cx;			// DS align right
+  Column3=Column2+intercolumn+DSTextSize.cx;			// DS align right
+  Column4=Column3+intercolumn+BETextSize.cx;			// BE align right
   Column5=Column4+intercolumn+ACTextSize.cx;			// AC align right
 
 
@@ -439,7 +440,6 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 		// AIRSPACE TYPE
 		//
 		wlen=wcslen(LKAirspaces[rli].Type);
-		#define LKASP_TYPE_LEN	4
 		if (wlen>LKASP_TYPE_LEN) {
 			_tcsncpy(Buffer, LKAirspaces[rli].Type, LKASP_TYPE_LEN); Buffer[LKASP_TYPE_LEN]='\0';
 		}
@@ -454,8 +454,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 		// AIRSPACE DISTANCE
 		//
 		value=LKAirspaces[rli].Distance*DISTANCEMODIFY;
-         	_stprintf(Buffer3[i][curpage],TEXT("%0.1lf"),value);
-
+       		_stprintf(Buffer3[i][curpage],TEXT("%0.1lf"),value);
 
 		//
 		// AIRSPACE BEARING DIFFERENCE, OR BEARING IF CIRCLING
@@ -483,7 +482,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 		//
 		// AIRSPACE ACTIVE OR NOT
 		//
-		_stprintf(Buffer5[i][curpage], TEXT("%s"), LKAirspaces[rli].Enabled ? _T("+") : _T("-"));
+		_stprintf(Buffer5[i][curpage], TEXT("%s"), LKAirspaces[rli].Enabled ? _T("  ") : _T("X "));
 
 	} else {
 		if ( ScreenSize < (ScreenSize_t)sslandscape ) 
@@ -516,7 +515,6 @@ KeepOldValues:
 
 	LKWriteText(hdc, Buffer1[i][curpage], Column1, iRaw , 0, WTMODE_NORMAL, WTALIGN_LEFT, rcolor, false);
 	
-  	SelectObject(hdc, LK8InfoBigFont); // Text font for Nearest
 	LKWriteText(hdc, Buffer2[i][curpage], Column2, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
 
 	LKWriteText(hdc, Buffer3[i][curpage], Column3, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
