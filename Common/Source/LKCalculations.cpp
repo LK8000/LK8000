@@ -2229,7 +2229,10 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
    memset(LKSortedAirspaces, -1, sizeof(LKSortedAirspaces));
    LKNumAirspaces=0;
-   for (int i=0; i<MAXNEARAIRSPACES; i++) LKAirspaces[i].Valid = false;
+   for (int i=0; i<MAXNEARAIRSPACES; i++) {
+      LKAirspaces[i].Valid = false;
+      LKAirspaces[i].Pointer = NULL;
+   }
    if (airspaces.size()<1) return true;
 
    //Lock airspace instances externally
