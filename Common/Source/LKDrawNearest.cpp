@@ -195,41 +195,53 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
   else s_sortBox[0].right=left+WPTextSize.cx-NIBLSCALE(10);
   s_sortBox[0].top=2;
   s_sortBox[0].bottom=p1.y;
-  SortBoxX[0]=s_sortBox[0].right;
+  SortBoxX[MSM_LANDABLE][0]=s_sortBox[0].right;
+  SortBoxX[MSM_AIRPORTS][0]=s_sortBox[0].right;
+  SortBoxX[MSM_NEARTPS][0]=s_sortBox[0].right;
 
   if ( ScreenSize < (ScreenSize_t)sslandscape ) s_sortBox[1].left=Column1+afterwpname-INTERBOX;
   else s_sortBox[1].left=Column1+afterwpname-INTERBOX-NIBLSCALE(2);
   s_sortBox[1].right=Column2+INTERBOX;
   s_sortBox[1].top=2;
   s_sortBox[1].bottom=p1.y;
-  SortBoxX[1]=s_sortBox[1].right;
+  SortBoxX[MSM_LANDABLE][1]=s_sortBox[1].right;
+  SortBoxX[MSM_AIRPORTS][1]=s_sortBox[1].right;
+  SortBoxX[MSM_NEARTPS][1]=s_sortBox[1].right;
 
   s_sortBox[2].left=Column2+INTERBOX;
   s_sortBox[2].right=Column3+INTERBOX;
   s_sortBox[2].top=2;
   s_sortBox[2].bottom=p1.y;
-  SortBoxX[2]=s_sortBox[2].right;
+  SortBoxX[MSM_LANDABLE][2]=s_sortBox[2].right;
+  SortBoxX[MSM_AIRPORTS][2]=s_sortBox[2].right;
+  SortBoxX[MSM_NEARTPS][2]=s_sortBox[2].right;
 
   s_sortBox[3].left=Column3+INTERBOX;
   s_sortBox[3].right=Column4+INTERBOX;
   s_sortBox[3].top=2;
   s_sortBox[3].bottom=p1.y;
-  SortBoxX[3]=s_sortBox[3].right;
+  SortBoxX[MSM_LANDABLE][3]=s_sortBox[3].right;
+  SortBoxX[MSM_AIRPORTS][3]=s_sortBox[3].right;
+  SortBoxX[MSM_NEARTPS][3]=s_sortBox[3].right;
 
   s_sortBox[4].left=Column4+INTERBOX;
   s_sortBox[4].right=rc.right-1;
   s_sortBox[4].top=2;
   s_sortBox[4].bottom=p1.y;
-  SortBoxX[4]=s_sortBox[4].right;
+  SortBoxX[MSM_LANDABLE][4]=s_sortBox[4].right;
+  SortBoxX[MSM_AIRPORTS][4]=s_sortBox[4].right;
+  SortBoxX[MSM_NEARTPS][4]=s_sortBox[4].right;
 
-  SortBoxY=p1.y;
+  SortBoxY[MSM_LANDABLE]=p1.y;
+  SortBoxY[MSM_AIRPORTS]=p1.y;
+  SortBoxY[MSM_NEARTPS]=p1.y;
 
   Numpages=roundupdivision(MAXNEAREST, Numraws);
   if (Numpages>MAXNUMPAGES) Numpages=MAXNUMPAGES;
   else if (Numpages<1) Numpages=1;
 
-  SelectedRaw[MSM_LANDABLE]=0; SelectedRaw[MSM_AIRPORTS]=0;
-  SelectedPage[MSM_LANDABLE]=0; SelectedPage[MSM_AIRPORTS]=0;
+  SelectedRaw[MSM_LANDABLE]=0; SelectedRaw[MSM_AIRPORTS]=0; SelectedRaw[MSM_NEARTPS]=0;
+  SelectedPage[MSM_LANDABLE]=0; SelectedPage[MSM_AIRPORTS]=0; SelectedPage[MSM_NEARTPS]=0;
 
   doinit=false;
   return;

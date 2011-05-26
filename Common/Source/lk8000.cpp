@@ -499,9 +499,9 @@ short BottomMode=BM_FIRST;
 short BottomSize=1; // Init by MapWindow3  091213 0 to 1
 short TopSize=0;
 short BottomGeom=0; 
-// coordinates of the 5 (0-4) sort boxes. 6 for safety
-short SortBoxX[6];
-short SortBoxY;
+// coordinates of the sort boxes. Each mapspace can have a different layout
+short SortBoxX[MSM_TOP+1][MAXSORTBOXES+1];
+short SortBoxY[MSM_TOP+1];
 // default initialization for gestures. InitLK8000 will fine tune it.
 short GestureSize=60;
 // xml dlgconfiguration value replacing 246 which became 278

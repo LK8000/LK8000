@@ -163,34 +163,34 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   else s_sortBox[0].right=left+ASPTextSize.cx-NIBLSCALE(10);
   s_sortBox[0].top=2;
   s_sortBox[0].bottom=p1.y;
-  SortBoxX[0]=s_sortBox[0].right;
+  SortBoxX[MSM_AIRSPACES][0]=s_sortBox[0].right;
 
   if ( ScreenSize < (ScreenSize_t)sslandscape ) s_sortBox[1].left=Column1+afterwpname-INTERBOX;
   else s_sortBox[1].left=Column1+afterwpname-INTERBOX-NIBLSCALE(2);
   s_sortBox[1].right=Column2+INTERBOX;
   s_sortBox[1].top=2;
   s_sortBox[1].bottom=p1.y;
-  SortBoxX[1]=s_sortBox[1].right;
+  SortBoxX[MSM_AIRSPACES][1]=s_sortBox[1].right;
 
   s_sortBox[2].left=Column2+INTERBOX;
   s_sortBox[2].right=Column3+INTERBOX;
   s_sortBox[2].top=2;
   s_sortBox[2].bottom=p1.y;
-  SortBoxX[2]=s_sortBox[2].right;
+  SortBoxX[MSM_AIRSPACES][2]=s_sortBox[2].right;
 
   s_sortBox[3].left=Column3+INTERBOX;
   s_sortBox[3].right=Column4+INTERBOX;
   s_sortBox[3].top=2;
   s_sortBox[3].bottom=p1.y;
-  SortBoxX[3]=s_sortBox[3].right;
+  SortBoxX[MSM_AIRSPACES][3]=s_sortBox[3].right;
 
   s_sortBox[4].left=Column4+INTERBOX;
   s_sortBox[4].right=rc.right-1;
   s_sortBox[4].top=2;
   s_sortBox[4].bottom=p1.y;
-  SortBoxX[4]=s_sortBox[4].right;
+  SortBoxX[MSM_AIRSPACES][4]=s_sortBox[4].right;
 
-  SortBoxY=p1.y;
+  SortBoxY[MSM_AIRSPACES]=p1.y;
 
   AspNumpages=roundupdivision(MAXNEARAIRSPACES, AspNumraws);
   if (AspNumpages>MAXAIRSPACENUMPAGES) AspNumpages=MAXAIRSPACENUMPAGES;

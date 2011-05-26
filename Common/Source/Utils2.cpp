@@ -653,12 +653,12 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		// CLICK ON SORTBOX line at the top, only with no map and only for nearest
 		if ( (MapSpaceMode == MSM_LANDABLE || MapSpaceMode==MSM_AIRPORTS || 
 			MapSpaceMode==MSM_NEARTPS || MapSpaceMode==MSM_TRAFFIC ||
-			MapSpaceMode==MSM_AIRSPACES) && Y<=SortBoxY ) {
+			MapSpaceMode==MSM_AIRSPACES) && Y<=SortBoxY[MapSpaceMode] ) {
 
 			// only search for 1-3, otherwise it's the fourth (fifth really)
 			// we don't use 0 now
 			for (i=0, j=4; i<4; i++) { // i=1 original 090925 FIX
-				if (X <SortBoxX[i]) {
+				if (X <SortBoxX[MapSpaceMode][i]) {
 					j=i;
 					break;
 				}
@@ -2641,11 +2641,11 @@ void Cpustats(int *accounting, FILETIME *kernel_old, FILETIME *kernel_new, FILET
 //
 void InitModeTable() {
 
-	short i;
+	short i,j;
 	StartupStore(_T(". Init ModeTable for LK8000: "));
 
 	for (i=0; i<=LKMODE_TOP; i++)
-		for (short j=0; j<=MSM_TOP; j++)
+		for (j=0; j<=MSM_TOP; j++)
 			ModeTable[i][j]=INVALID_VALUE;
 
 
@@ -2699,6 +2699,11 @@ void InitModeTable() {
 
 	for (i=0; i<MAXCOMMON; i++) 
 		CommonIndex[i]= -1;
+
+	for (i=0; i<=MSM_TOP; i++) {
+		SortBoxY[i]=0;
+		for (j=0; j<=MAXSORTBOXES; j++) SortBoxX[i][j]=0;
+	}
 
 	SetInitialModeTypes();
 

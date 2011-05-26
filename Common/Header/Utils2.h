@@ -223,6 +223,10 @@ extern HFONT					LK8PanelUnitFont;
 #define TF_TOP			2
 
 //
+// How many sort boxes in nearest pages we can have, on the top line, normally 0-4 plus 1 spare
+#define MAXSORTBOXES		6
+
+//
 extern short ModeTable[LKMODE_TOP+1][MSM_TOP+1];
 extern short ModeType[LKMODE_TOP+1];
 extern short ModeTableTop[LKMODE_TOP+1];

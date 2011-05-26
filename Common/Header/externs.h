@@ -177,8 +177,8 @@ extern bool DrawBottom;
 extern short BottomMode; // Stripe number
 extern short BottomSize; // Height of bottom stripe
 extern short TopSize;
-extern short SortBoxY;
-extern short SortBoxX[];
+extern short SortBoxY[MSM_TOP+1];
+extern short SortBoxX[MSM_TOP+1][MAXSORTBOXES+1];
 extern short BottomGeom; // registry saved lk8000 navboxes geometry
 extern short GlideBarOffset; // offset to the right for drawing LK8000 with GB active
 extern bool  EngineeringMenu; // not saved in registry

@@ -184,7 +184,8 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
   else s_sortBox[0].right=left+WPTextSize.cx-NIBLSCALE(10);
   s_sortBox[0].top=0;
   s_sortBox[0].bottom=p1.y;
-  SortBoxX[0]=s_sortBox[0].right;
+  SortBoxX[MSM_COMMON][0]=s_sortBox[0].right;
+  SortBoxX[MSM_RECENT][0]= SortBoxX[MSM_COMMON][0];
 
   // Distance
   if ( ScreenSize < (ScreenSize_t)sslandscape ) s_sortBox[1].left=Column1+afterwpname-INTERBOX;
@@ -192,30 +193,35 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
   s_sortBox[1].right=Column2+INTERBOX;
   s_sortBox[1].top=0;
   s_sortBox[1].bottom=p1.y;
-  SortBoxX[1]=s_sortBox[1].right;
+  SortBoxX[MSM_COMMON][1]=s_sortBox[1].right;
+  SortBoxX[MSM_RECENT][1]= SortBoxX[MSM_COMMON][1];
 
   // Bearing
   s_sortBox[2].left=Column2+INTERBOX;
   s_sortBox[2].right=Column3+INTERBOX;
   s_sortBox[2].top=0;
   s_sortBox[2].bottom=p1.y;
-  SortBoxX[2]=s_sortBox[2].right;
+  SortBoxX[MSM_COMMON][2]=s_sortBox[2].right;
+  SortBoxX[MSM_RECENT][2]= SortBoxX[MSM_COMMON][2];
 
   // reqE
   s_sortBox[3].left=Column3+INTERBOX;
   s_sortBox[3].right=Column4+INTERBOX;
   s_sortBox[3].top=0;
   s_sortBox[3].bottom=p1.y;
-  SortBoxX[3]=s_sortBox[3].right;
+  SortBoxX[MSM_COMMON][3]=s_sortBox[3].right;
+  SortBoxX[MSM_RECENT][3]= SortBoxX[MSM_COMMON][3];
 
   // AltArr
   s_sortBox[4].left=Column4+INTERBOX;
   s_sortBox[4].right=Column5+INTERBOX;
   s_sortBox[4].top=0;
   s_sortBox[4].bottom=p1.y;
-  SortBoxX[4]=s_sortBox[4].right;
+  SortBoxX[MSM_COMMON][4]=s_sortBox[4].right;
+  SortBoxX[MSM_RECENT][4]= SortBoxX[MSM_COMMON][4];
 
-  SortBoxY=p1.y;
+  SortBoxY[MSM_COMMON]=p1.y;
+  SortBoxY[MSM_RECENT]=SortBoxY[MSM_COMMON];
 
   // Caution: could be wrong? no..
   //CommonNumpages=(short)ceil( (float)MAXCOMMON / (float)CommonNumraws );
@@ -225,7 +231,9 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 
   // set the initial highlighted item to the first, in each MapSpace
   SelectedRaw[MSM_COMMON]=0; 
+  SelectedRaw[MSM_RECENT]=0; 
   SelectedPage[MSM_COMMON]=0;
+  SelectedPage[MSM_RECENT]=0;
 
   doinit=false;
   return;
