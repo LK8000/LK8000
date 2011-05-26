@@ -199,6 +199,9 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   SelectedRaw[MSM_AIRSPACES]=0;
   SelectedPage[MSM_AIRSPACES]=0;
 
+  // This will initialize the structs, since the firs run of DoAirspaces is lossy
+  DoAirspaces(&GPS_INFO,  &CALCULATED_INFO); 
+
   doinit=false;
   return;
   } // doinit
@@ -259,7 +262,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 				_stprintf(Buffer2[i][k],_T("----"));
 				_stprintf(Buffer3[i][k],_T("----"));
 				_stprintf(Buffer4[i][k],_T("----"));
-				_stprintf(Buffer5[i][k],_T("-"));
+				_stprintf(Buffer5[i][k],_T("  "));
 			}
 		}
 		break;
@@ -513,7 +516,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 		//
 		// AIRSPACE ACTIVE OR NOT
 		//
-		_stprintf(Buffer5[i][curpage], TEXT("%s"), LKAirspaces[rli].Enabled ? _T("+") : _T("."));
+		_stprintf(Buffer5[i][curpage], TEXT("%s"), LKAirspaces[rli].Enabled ? _T("+") : _T("-"));
 
 	} else {
 		if ( ScreenSize < (ScreenSize_t)sslandscape ) 
@@ -523,7 +526,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 		_stprintf(Buffer2[i][curpage],_T("----"));
 		_stprintf(Buffer3[i][curpage],_T("----"));
 		_stprintf(Buffer4[i][curpage],_T("----"));
-		_stprintf(Buffer5[i][curpage],_T("-"));
+		_stprintf(Buffer5[i][curpage],_T("  "));
 	}
 
 
