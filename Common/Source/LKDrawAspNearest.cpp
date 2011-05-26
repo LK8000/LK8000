@@ -199,9 +199,6 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   SelectedRaw[MSM_AIRSPACES]=0;
   SelectedPage[MSM_AIRSPACES]=0;
 
-  // This will initialize the structs, since the firs run of DoAirspaces is lossy
-  DoAirspaces(&GPS_INFO,  &CALCULATED_INFO); 
-
   doinit=false;
   return;
   } // doinit

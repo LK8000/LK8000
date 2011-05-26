@@ -946,6 +946,7 @@ void InitCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   // Initialise calculations, DoInit will make it and return
   DoRangeWaypointList(Basic,Calculated);
   DoTraffic(Basic,Calculated);
+  DoAirspaces(Basic,Calculated);
 
   LockFlightData();
 
