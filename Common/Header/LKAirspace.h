@@ -402,7 +402,7 @@ typedef struct {
   TCHAR Name[NAME_SIZE+1];              // 1) Name of airspace . We shall use only 15 to 25 characters max in any case
   TCHAR Type[5];                        // 2) Type of airspace    like CTR   A B C etc.    we use 3-4 chars
   double Distance;                      // 3) Distance
-  double Bearing_difference;            // 4) Bearing difference  (so we can sort by airspaces we have in front of us, for example)
+  double Bearing;                       // 4) Bearing (so we can sort by airspaces we have in front of us, for example)
   bool Enabled;                         // 5) Active - not active
   CAirspace *Pointer;                   // 6) Pointer to CAirspace class for further operations (don't forget CAirspacemanager mutex!)
 } LKAirspace_Nearest_Item;

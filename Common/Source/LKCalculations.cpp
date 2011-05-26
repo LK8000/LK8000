@@ -2184,27 +2184,14 @@ static bool airspace_enabled_sorter( CAirspace *a, CAirspace *b )
   return a->Enabled() < b->Enabled();
 }
 
-// Comparer to sort airspaces based on bearing difference
-static bool airspace_beardiff_sorter( CAirspace *a, CAirspace *b )
+// Comparer to sort airspaces based on bearing
+static bool airspace_bearing_sorter( CAirspace *a, CAirspace *b )
 {
   int beara,bearb;
-  int beardiffa,beardiffb;
   a->CalculateDistance(NULL,&beara,NULL);
   b->CalculateDistance(NULL,&bearb,NULL);
   
-  if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) return beara < bearb; 
-
-  beardiffa = beara -  GPS_INFO.TrackBearing;
-  if (beardiffa < -180.0) beardiffa += 360.0;
-    else if (beardiffa > 180.0) beardiffa -= 360.0;
-  if (beardiffa<0) beardiffa*=-1;
-
-  beardiffb = bearb -  GPS_INFO.TrackBearing;
-  if (beardiffb < -180.0) beardiffb += 360.0;
-    else if (beardiffb > 180.0) beardiffb -= 360.0;
-  if (beardiffb<0) beardiffb*=-1;
-  
-  return beardiffa < beardiffb;
+  return beara < bearb; 
 }
 
 //REMOVE later, for test only
@@ -2265,8 +2252,8 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
             std::sort(airspaces.begin(), airspaces.end(), airspace_distance_sorter);
             break;
         case 3:
-            // ASP BEARING DIFFERENCE
-            std::sort(airspaces.begin(), airspaces.end(), airspace_beardiff_sorter);
+            // ASP BEARING
+            std::sort(airspaces.begin(), airspaces.end(), airspace_bearing_sorter);
             break;
         case 4:
             // ACTIVE / NOT ACTIVE
@@ -2295,18 +2282,8 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       (*it)->CalculateDistance(&hdist,&bear,&vdist);
       // copy distance
       LKAirspaces[i].Distance = max(hdist,0);
-
-      if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-        // if circling, use bearing
-        LKAirspaces[i].Bearing_difference = bear;
-      } else {
-        // if not circling, calculate and use bearing difference
-        int beardiff = bear - GPS_INFO.TrackBearing;
-        if (beardiff < -180.0) beardiff += 360.0;
-          else if (beardiff > 180.0) beardiff -= 360.0;
-        if (beardiff<0) beardiff*=-1;
-        LKAirspaces[i].Bearing_difference = beardiff;
-      }
+      // copy bearing
+      LKAirspaces[i].Bearing = bear;
       // copy Enabled()
       LKAirspaces[i].Enabled = (*it)->Enabled();
       // copy pointer
