@@ -38,8 +38,9 @@ static void OnFlyClicked(WindowControl * Sender){
 
   if (airspace == NULL) return;
   if (wf == NULL) return;
-  UINT answer;
  
+  #if 0  // We dont ask anymore to the user for fly/nofly confirmation
+  UINT answer;
   if (airspace_copy.Flyzone()) {
 	// LKTOKEN _@M1273_ "Set as NOFLY zone?"
 	answer = MessageBoxX(hWndMapWindow, airspace_copy.Name(), gettext(TEXT("_@M1273_")), MB_YESNO|MB_ICONQUESTION);
@@ -53,6 +54,10 @@ static void OnFlyClicked(WindowControl * Sender){
     SetValues();        // If dialog remains open, we need to update the change. (updates airspace_copy as well)
 	// wf->SetModalResult(mrOK);
   }
+  #endif
+
+  CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
+  SetValues();        // If dialog remains open, we need to update the change. (updates airspace_copy as well)
   if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 }
 #endif
