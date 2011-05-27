@@ -37,7 +37,9 @@ static void OnFlyClicked(WindowControl * Sender){
   if (airspace == NULL) return;
   if (wf == NULL) return;
   UINT answer;
-  
+ 
+  // THIS IS A COPY, WE CANNOT UPDATE IN REAL TIME  . SAME PROBLEM AS WITH ACK
+  // PLEASE HELP FIX IT
   if (airspace_copy.Flyzone()) {
 	// LKTOKEN _@M1273_ "Set as NOFLY zone?"
 	answer = MessageBoxX(hWndMapWindow, airspace_copy.Name(), gettext(TEXT("_@M1273_")), MB_YESNO|MB_ICONQUESTION);
@@ -48,8 +50,9 @@ static void OnFlyClicked(WindowControl * Sender){
   
   if (answer == IDYES) {
 	CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
-	wf->SetModalResult(mrOK);
+	// wf->SetModalResult(mrOK);
   }
+  if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 }
 #endif
 
@@ -59,8 +62,11 @@ static void OnAcknowledgeClicked(WindowControl * Sender){
 
   if (airspace == NULL) return;
   if (wf == NULL) return;
+
+  #if 0  // We dont ask anymore to the user for enable/disable confirmation
   UINT answer;
   if (!airspace_copy.Enabled()) {
+  
     // LKTOKEN  _@M1280_ "Enable this airspace?"
     answer = MessageBoxX(hWndMapWindow, airspace_copy.Name(), gettext(TEXT("_@M1280_")),  MB_YESNO|MB_ICONQUESTION);
     if (answer == IDYES) {
@@ -76,6 +82,26 @@ static void OnAcknowledgeClicked(WindowControl * Sender){
       wf->SetModalResult(mrOK);
     }
   }
+  #endif
+
+  //
+  // ALL I WANT is a stupid way to know if this airspace is enabled or not, in REAL TIME, and not from an OLD copy!
+  // Kalman please help fix it
+
+  WndButton *wb;
+  wb = (WndButton*)wf->FindByName(TEXT("cmdAcknowledge"));
+  if (wb) {
+    if (airspace_copy.Enabled()) { // THIS IS WRONG! IT DOESNT GET UPDATED.
+      CAirspaceManager::Instance().AirspaceDisable(*airspace);
+      wb->SetCaption(gettext(TEXT("_@M1283_"))); // DISABLE
+    } else {
+      CAirspaceManager::Instance().AirspaceEnable(*airspace);
+      wb->SetCaption(gettext(TEXT("_@M1282_"))); // ENABLE
+    }
+    if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+    wb->Redraw();
+  }
+
 }
 #else
 static void OnAcknowledgeClicked(WindowControl * Sender){
@@ -258,7 +284,7 @@ static void SetValues() {
   }
 
   wb = (WndButton*)wf->FindByName(TEXT("cmdFly"));
-  if (wp) {
+  if (wb) {
 	if (airspace_copy.Flyzone()) {
 	  // LKTOKEN _@M1271_ "NOFLY"
 	  wb->SetCaption(gettext(TEXT("_@M1271_")));
@@ -269,8 +295,9 @@ static void SetValues() {
 	wb->Redraw();
   }
 
+
   wb = (WndButton*)wf->FindByName(TEXT("cmdAcknowledge"));
-  if (wp) {
+  if (wb) {
     if (airspace_copy.Enabled()) {
       // LKTOKEN _@M1283_ "Disable"
       wb->SetCaption(gettext(TEXT("_@M1283_")));
@@ -280,6 +307,7 @@ static void SetValues() {
     }
     wb->Redraw();
   }
+
 
 }
 

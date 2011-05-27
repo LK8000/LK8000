@@ -8,7 +8,9 @@
 <WndProperty Name="prpTop" Caption="_@M729_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
 <WndProperty Name="prpBase" Caption="_@M128_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
 <WndProperty Name="prpRange" Caption="_@M543_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
+<!-- Only for diagnostics
 <WndProperty Name="prpWarnLevel" Caption="_@M1263_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
 <WndProperty Name="prpAckLevel" Caption="_@M1266_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
+-->
 </WndForm>    
 </PMML>
