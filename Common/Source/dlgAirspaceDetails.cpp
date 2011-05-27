@@ -165,6 +165,7 @@ static void SetValues() {
 
   if (airspace==NULL) return;
 
+   // Get an object instance copy with actual values
   airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(airspace);
 
   WndProperty* wp;
