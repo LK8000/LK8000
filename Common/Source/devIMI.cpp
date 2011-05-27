@@ -470,7 +470,12 @@ void CDevIMI::IMIWaypoint(const Declaration_t &decl, unsigned imiIdx, TWaypoint 
  */
 bool CDevIMI::Send(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[], const TMsg &msg)
 {
-  return ComWrite(d, &msg, IMICOMM_MSG_HEADER_SIZE + msg.payloadSize + 2, errBufSize, errBuf);
+  bool status = ComWrite(d, &msg, IMICOMM_MSG_HEADER_SIZE + msg.payloadSize + 2, errBufSize, errBuf);
+  
+  if(status)
+    ComFlush(d);
+  
+  return status;
 }
 
 
@@ -633,23 +638,25 @@ bool CDevIMI::Connect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]
   _parser.Reset();
   
   // check connectivity
-  if(Send(d, errBufSize, errBuf, MSG_CFG_HELLO)) {
-    const TMsg *msg = Receive(d, errBufSize, errBuf, 100, 0);
-    if(msg) {
-      if(msg->msgID == MSG_CFG_HELLO) {
-        _serialNumber = msg->sn;
-      }
-      else {
-        // LKTOKEN  _@M1414_ = "Device not responsive!"
-        _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1414_")));
-        return false;
-      }
+  const TMsg *msg = 0;
+  for(unsigned i=0; i<IMICOMM_CONNECT_RETRIES_COUNT && (!msg || msg->msgID != MSG_CFG_HELLO); i++) {
+    if(Send(d, errBufSize, errBuf, MSG_CFG_HELLO))
+      msg = Receive(d, errBufSize, errBuf, 200, 0);
+  }
+  if(msg) {
+    if(msg->msgID == MSG_CFG_HELLO) {
+      _serialNumber = msg->sn;
     }
-    else if(errBuf[0] == '\0') {
+    else {
       // LKTOKEN  _@M1414_ = "Device not responsive!"
       _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1414_")));
       return false;
     }
+  }
+  else if(errBuf[0] == '\0') {
+    // LKTOKEN  _@M1414_ = "Device not responsive!"
+    _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1414_")));
+    return false;
   }
   
   // configure baudrate
@@ -658,29 +665,29 @@ bool CDevIMI::Connect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]
     return false;
   
   // get device info
-  for(int i = 0; i < 4; i++) {
-    if(Send(d, errBufSize, errBuf, MSG_CFG_DEVICEINFO)) {
-      const TMsg *msg = Receive(d, errBufSize, errBuf, 300, sizeof(TDeviceInfo));
-      if(msg) {
-        if(msg->msgID == MSG_CFG_DEVICEINFO) {
-          if(msg->payloadSize == sizeof(TDeviceInfo)) {
-            memcpy(&_info, msg->payload, sizeof(TDeviceInfo));
-          }
-          else if(msg->payloadSize == 16) {
-            // old version of the structure
-            memset(&_info, 0, sizeof(TDeviceInfo));
-            memcpy(&_info, msg->payload, 16);
-          }
-          _connected = true;
-          return true;
-        }
+  msg = 0;
+  for(int i = 0; i < 5 && (!msg || msg->msgID != MSG_CFG_DEVICEINFO); i++) {
+    if(Send(d, errBufSize, errBuf, MSG_CFG_DEVICEINFO))
+      msg = Receive(d, errBufSize, errBuf, 400, sizeof(TDeviceInfo));
+  }
+  if(msg) {
+    if(msg->msgID == MSG_CFG_DEVICEINFO) {
+      if(msg->payloadSize == sizeof(TDeviceInfo)) {
+        memcpy(&_info, msg->payload, sizeof(TDeviceInfo));
       }
-      else if(errBuf[0] == '\0') {
-        // LKTOKEN  _@M1414_ = "Device not responsive!"
-        _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1414_")));
-        return false;
+      else if(msg->payloadSize == 16) {
+        // old version of the structure
+        memset(&_info, 0, sizeof(TDeviceInfo));
+        memcpy(&_info, msg->payload, 16);
       }
+      _connected = true;
+      return true;
     }
+  }
+  else if(errBuf[0] == '\0') {
+    // LKTOKEN  _@M1414_ = "Device not responsive!"
+    _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1414_")));
+    return false;
   }
   
   return false;

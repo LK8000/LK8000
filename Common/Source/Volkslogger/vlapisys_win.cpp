@@ -119,7 +119,7 @@ VLA_ERROR VLA_SYS::serial_in(byte *inbyte)
 /** clear serial input- and output-buffers */
 VLA_ERROR VLA_SYS::serial_empty_io_buffers()
 {
-  device->Com->Flush();
+  device->Com->Purge();
   return VLA_ERR_NOERR;
 }
 

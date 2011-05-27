@@ -281,6 +281,19 @@ bool DevBase::ComWrite(PDeviceDescriptor_t d,
 } // ComWrite()
 
 
+///
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// Flushes COM port output buffers.
+///
+/// @param d           device descriptor
+///
+//static
+void DevBase::ComFlush(PDeviceDescriptor_t d)
+{
+  d->Com->Flush();
+}
+
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Reads data from COM port and checks if they contain expected data.
 /// Up to @p checkChars characters is read, then @c false is returned if
