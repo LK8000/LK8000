@@ -2169,19 +2169,39 @@ static bool airspace_distance_sorter( CAirspace *a, CAirspace *b )
 // Comparer to sort airspaces based on name
 static bool airspace_name_sorter( CAirspace *a, CAirspace *b )
 {
-  return wcscmp(a->Name(), b->Name()) < 0;
+  int res = wcscmp(a->Name(), b->Name());
+  if (res) return res < 0;
+  
+  // if name is the same, get closer first
+  int da,db;
+  a->CalculateDistance(&da,NULL,NULL);
+  b->CalculateDistance(&db,NULL,NULL);
+  return da<db;
 }
 
 // Comparer to sort airspaces based on type
 static bool airspace_type_sorter( CAirspace *a, CAirspace *b )
 {
-  return a->Type() < b->Type();
+  if (a->Type() != b->Type()) return a->Type() < b->Type();
+  
+  // if type is the same, get closer first
+  int da,db;
+  a->CalculateDistance(&da,NULL,NULL);
+  b->CalculateDistance(&db,NULL,NULL);
+  return da<db;
 }
 
 // Comparer to sort airspaces based on enabled
 static bool airspace_enabled_sorter( CAirspace *a, CAirspace *b )
 {
-  return a->Enabled() < b->Enabled();
+
+  if (a->Enabled() != b->Enabled()) return a->Enabled() < b->Enabled();
+
+  // if enabled is the same, get closer first
+  int da,db;
+  a->CalculateDistance(&da,NULL,NULL);
+  b->CalculateDistance(&db,NULL,NULL);
+  return da<db;
 }
 
 // Comparer to sort airspaces based on bearing
@@ -2190,10 +2210,15 @@ static bool airspace_bearing_sorter( CAirspace *a, CAirspace *b )
 {
   int beara,bearb;
   int beardiffa,beardiffb;
-  a->CalculateDistance(NULL,&beara,NULL);
-  b->CalculateDistance(NULL,&bearb,NULL);
+  int da,db;
+  a->CalculateDistance(&da,&beara,NULL);
+  b->CalculateDistance(&db,&bearb,NULL);
 
-  if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) return beara < bearb;
+  if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+    if (beara != bearb) return beara < bearb;
+    // if bearing is the same, get closer first
+    return da<db;
+  }
  
   beardiffa = beara - (int)GPS_INFO.TrackBearing;
   if (beardiffa < -180) beardiffa += 360;
@@ -2205,11 +2230,10 @@ static bool airspace_bearing_sorter( CAirspace *a, CAirspace *b )
     else if (beardiffb > 180) beardiffb -= 360;
   if (beardiffb<0) beardiffb*=-1;
  
-  return beardiffa < beardiffb; 
+  if (beardiffa != beardiffb) return beardiffa < beardiffb; 
+  // if bearing difference is the same, get closer first
+  return da<db;
 }
-
-//REMOVE later, for test only
-//#define DEBUG_LKT
 
 //
 // Running every n seconds ONLY when the nearest airspace page is active and we are not drawing map.
@@ -2255,30 +2279,39 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
    //Lock airspace instances externally
    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+
+   // Sort all airspace by distance first
+   std::sort(airspaces.begin(), airspaces.end(), airspace_distance_sorter);
+
+   // get first MAXNEARAIRSPACES to a new list
+   CAirspaceList nearest_airspaces;
+   CAirspaceList::iterator it = airspaces.begin();
+   for (int i=0; i<MAXNEARAIRSPACES; ++i, ++it) nearest_airspaces.push_back(*it);
+   airspaces.clear();
    
    //sort by given key
     switch (SortedMode[MSM_AIRSPACES]) {
         case 0: 
             // ASP NAME
-            std::sort(airspaces.begin(), airspaces.end(), airspace_name_sorter);
+            std::sort(nearest_airspaces.begin(), nearest_airspaces.end(), airspace_name_sorter);
             break;
         case 1:
             // ASP TYPE
-            std::sort(airspaces.begin(), airspaces.end(), airspace_type_sorter);
+            std::sort(nearest_airspaces.begin(), nearest_airspaces.end(), airspace_type_sorter);
             break;
             
         default:
         case 2:
             // ASP DISTANCE
-            std::sort(airspaces.begin(), airspaces.end(), airspace_distance_sorter);
+            // we don't need sorting, already sorted by distance
             break;
         case 3:
             // ASP BEARING
-            std::sort(airspaces.begin(), airspaces.end(), airspace_bearing_sorter);
+            std::sort(nearest_airspaces.begin(), nearest_airspaces.end(), airspace_bearing_sorter);
             break;
         case 4:
             // ACTIVE / NOT ACTIVE
-            std::sort(airspaces.begin(), airspaces.end(), airspace_enabled_sorter);
+            std::sort(nearest_airspaces.begin(), nearest_airspaces.end(), airspace_enabled_sorter);
             break;
     } //sw
 
@@ -2286,10 +2319,9 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    // we dont need LKSortedAirspaces[] array, every item will be
    // in correct order in airspaces list, thanks to std::sort,
    // we just fill up LKAirspaces[] array in the right order.
-   CAirspaceList::iterator it;
    int i = 0;
    int hdist=0,vdist=0,bear=0;
-   for (it=airspaces.begin(); it!=airspaces.end(); ++it) {
+   for (it=nearest_airspaces.begin(); it!=nearest_airspaces.end(); ++it) {
       // sort key not used, iterator goes in in right order
       LKSortedAirspaces[i] = i;
       // copy name
