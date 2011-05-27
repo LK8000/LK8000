@@ -30,16 +30,17 @@ static int index_area = -1;
 #endif
 static WndForm *wf=NULL;
 
+static void SetValues(void);
+
 #ifdef LKAIRSPACE
 static void OnFlyClicked(WindowControl * Sender){
   (void)Sender;
 
   if (airspace == NULL) return;
   if (wf == NULL) return;
+
+  #if 0 // We dont ask for confirmation, but we might change our mind!
   UINT answer;
- 
-  // THIS IS A COPY, WE CANNOT UPDATE IN REAL TIME  . SAME PROBLEM AS WITH ACK
-  // PLEASE HELP FIX IT
   if (airspace_copy.Flyzone()) {
 	// LKTOKEN _@M1273_ "Set as NOFLY zone?"
 	answer = MessageBoxX(hWndMapWindow, airspace_copy.Name(), gettext(TEXT("_@M1273_")), MB_YESNO|MB_ICONQUESTION);
@@ -47,12 +48,17 @@ static void OnFlyClicked(WindowControl * Sender){
 	// LKTOKEN _@M1272_ "Set as FLY zone?"
 	answer = MessageBoxX(hWndMapWindow, airspace_copy.Name(), gettext(TEXT("_@M1272_")), MB_YESNO|MB_ICONQUESTION);
   }
-  
   if (answer == IDYES) {
 	CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
+	SetValues();
 	// wf->SetModalResult(mrOK);
   }
+  #endif
+
+  CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
+  SetValues();
   if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+
 }
 #endif
 
@@ -84,23 +90,14 @@ static void OnAcknowledgeClicked(WindowControl * Sender){
   }
   #endif
 
-  //
-  // ALL I WANT is a stupid way to know if this airspace is enabled or not, in REAL TIME, and not from an OLD copy!
-  // Kalman please help fix it
-
-  WndButton *wb;
-  wb = (WndButton*)wf->FindByName(TEXT("cmdAcknowledge"));
-  if (wb) {
-    if (airspace_copy.Enabled()) { // THIS IS WRONG! IT DOESNT GET UPDATED.
+  if (airspace_copy.Enabled()) 
       CAirspaceManager::Instance().AirspaceDisable(*airspace);
-      wb->SetCaption(gettext(TEXT("_@M1283_"))); // DISABLE
-    } else {
+  else 
       CAirspaceManager::Instance().AirspaceEnable(*airspace);
-      wb->SetCaption(gettext(TEXT("_@M1282_"))); // ENABLE
-    }
-    if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-    wb->Redraw();
-  }
+
+  SetValues();
+  if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+
 
 }
 #else
@@ -167,6 +164,8 @@ static double FLAltRounded(double alt) {
 static void SetValues() {
 
   if (airspace==NULL) return;
+
+  airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(airspace);
 
   WndProperty* wp;
   WndButton *wb;
@@ -533,7 +532,6 @@ void dlgAirspaceDetails(CAirspace *airspace_to_show) {
 
   if (!wf) return;
   airspace = airspace_to_show;
-  airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(airspace);
   SetValues();
 
   wf->ShowModal();
