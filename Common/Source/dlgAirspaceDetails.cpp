@@ -308,6 +308,17 @@ static void SetValues() {
     wb->Redraw();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpStatus"));
+  if (wp) {
+    if (airspace_copy.Enabled()) {
+      wp->SetText(gettext(TEXT("_@M1643_"))); // ENABLED
+    } else {
+      wp->SetText(gettext(TEXT("_@M1600_"))); // DISABLED
+    }
+    wp->RefreshDisplay();
+  }
+
+
 
 }
 

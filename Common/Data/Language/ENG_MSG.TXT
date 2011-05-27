@@ -1523,6 +1523,7 @@ _@M1641_ "Flaps"
 # Header nearest Airspaces
 _@M1642_ "ASP"
 
+_@M1643_ "ENABLED"
 
 
 
