@@ -215,6 +215,11 @@ void ComPort::PutChar(BYTE Byte)
   }
 }
 
+void ComPort::Flush(void)
+{
+  FlushFileBuffers(hPort);
+}
+
 void ComPort::Purge(void)
 {
   PurgeComm(hPort, 
