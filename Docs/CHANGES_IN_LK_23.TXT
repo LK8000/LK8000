@@ -103,12 +103,13 @@ NEW
 
   . New UI features
     . Long click on the map shows an extended airspace details dialog. 
-      . It displays the current warning and ack level for an airpsace. 
       . In the type field FLY/NOFLY displayed
       . There is a new button to set an airspace to FLY/NOFLY.
+      . Daily Ack changed to Enable/Disable
+      . Enable/Disable and Fly/Nofly buttons do not close the dialog automatically, and do not pop up a confirmation dialog 
       . The order of the airspaces sorted by top altitude. Lowest first.
     . Airspace warning labels on map
-      . Can be disabled from config
+      . Can be disabled from config page2/Warnings
       . Shows a red mark on the nearest posititon to a warning situation
       . Shows airspace name, and the vertical distance to the border
       . Vertical distance negative if airspace border above, positive if below your current altitude. (like in landables case)
@@ -116,6 +117,8 @@ NEW
         - Black - vertical distance ok, you are in good position vertically
         - Red - vertical distance wrong against that nofly zone
         - Orange - vartical distance wrong against that fly zone
+    . New infobox showing nearest vertical distance to an airspace (or to leave a fly zone)
+    . New nearest page 2.4 showing airspaces like waypoints
 
 
 CHANGES
@@ -126,10 +129,11 @@ CHANGES
 
 . Changes regarding airspaces:
   . Drawing order of airspaces changed. They are draw from lowest top altitude first.
-  . Infobox nearest airspace shows the horizontal distance to the nearest airspace
-  . Daily acked airspaces are also drawed on the map without any change
+  . Daily acked (now disabled) airspaces are not drawed on the map
+  . Infobox nearest airspace shows the horizontal distance to the nearest airspace (or to leave a fly zone)
   . In airspace details dialog (long click on map) ACKDay button behaviour changed, now it shows a simple question to toggle actual ackday setting.
   . Airspace ACK Day functionality changed to disabled/enabled
+  . Enable/Disable and Fly/Nofly buttons do not close the dialog automatically, and do not pop up a confirmation dialog 
   . Config page 2 reordered, some parameters moved under page accessible by pressing the "Warnings" button
 
 . Paragliders screen unlock is valid by doubleclicking only on lower right screen corner.
