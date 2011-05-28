@@ -625,6 +625,7 @@ bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance)
 void CAirspace::ResetWarnings()
 {
   _warninglevel = awNone;
+  _warninglevelold = awNone;
   _distances_ready = false;
 }
 
@@ -1924,6 +1925,11 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
             }
             // Check if in interest area
             if (!msRectOverlap(&bounds, &(*it)->Bounds())) {
+              (*it)->ResetWarnings();
+              continue;
+            }
+            // Check if it enabled
+            if (!(*it)->Enabled()) {
               (*it)->ResetWarnings();
               continue;
             }
