@@ -541,7 +541,7 @@ KeepOldValues:
 		else 
 		if (LKevent==LKEVENT_UP) SelectedRaw[curmapspace]=drawn_items_onpage-1;
 		else {
-			DoStatusMessage(_T("Cant find valid raw"));
+			// DoStatusMessage(_T("Cant find valid raw")); not needed anymore
 			SelectedRaw[curmapspace]=0;
 		}
 	}

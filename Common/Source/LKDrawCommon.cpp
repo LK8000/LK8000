@@ -583,7 +583,7 @@ KeepOldValues:
 		// up from top to bottom, bottom empty, look for the last valid one (ie first going back from bottom)
 		if (LKevent==LKEVENT_UP) SelectedRaw[curmapspace]=drawn_items_onpage-1;
 		else {
-			DoStatusMessage(_T("Cant find valid raw"));
+			// DoStatusMessage(_T("Cant find valid raw")); // no more needed
 			SelectedRaw[curmapspace]=0;
 		}
 	}
