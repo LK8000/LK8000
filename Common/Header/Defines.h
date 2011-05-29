@@ -247,3 +247,7 @@
 #define ALTA_AVEFF	3	// Altitude arrival at current average efficiency
 #define ALTA_TOP	3
 #define ALTA_SIZE	4
+
+// Fixed text for a disabled device. Cannot be used for translations.
+#define DEV_DISABLED_NAME	"DISABLED"
+

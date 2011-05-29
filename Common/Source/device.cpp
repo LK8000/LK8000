@@ -211,8 +211,7 @@ BOOL devInit(LPTSTR CommandLine){
   ReadPort1Settings(&PortIndex1,&SpeedIndex1,&Bit1Index);
 
   if (_tcslen(DeviceName)>0)
-  // if (wcscmp(DeviceName,gettext(_T("_@M1600_")))!=0) { 
-  if (wcscmp(DeviceName,_T("DISABLED"))!=0) {
+  if (wcscmp(DeviceName,_T(DEV_DISABLED_NAME))!=0) {
 	DeviceList[0].Disabled=false;
 	StartupStore(_T(". Device A is <%s> Port=%s%s"),DeviceName,COMMPort[PortIndex1],NEWLINE);
   } else {
@@ -269,8 +268,7 @@ BOOL devInit(LPTSTR CommandLine){
   ReadPort2Settings(&PortIndex2,&SpeedIndex2, &Bit2Index);
 
   if (_tcslen(DeviceName)>0)
-  // if (wcscmp(DeviceName,gettext(_T("_@M1600_")))!=0) {
-  if (wcscmp(DeviceName,_T("DISABLED"))!=0) {
+  if (wcscmp(DeviceName,_T(DEV_DISABLED_NAME))!=0) {
 	DeviceList[1].Disabled=false;
 	StartupStore(_T(". Device B is <%s> Port=%s%s"),DeviceName,COMMPort[PortIndex2],NEWLINE);
   } else {
