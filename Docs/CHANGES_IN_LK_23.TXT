@@ -37,6 +37,8 @@ NEW
 	GPS device in use for fix
 	Software version
 
+. New infobox Home Arrival altitude
+
 . ------- New AIRSPACE handling ENGINE ----------
 
   . NEW 2.4 nearest airspace page
