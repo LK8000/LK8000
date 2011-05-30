@@ -1,0 +1,57 @@
+*
+* LK8000 WinPilot extended POLAR file example - v2 
+* In the second part of this file, it is explained how to add flap setting extension
+*
+* You can create your own polar file, which is based on WinPilot format. 
+* LK has an optional additional field, appended, for Wing Area.
+* Without wing area, you can't change wing loading in Basic Settings.
+* Since the wing area of your glider is an easy to find, and certain, parameter
+* we strongly suggest that you add this additional parameter to the default
+* WinPilot polar file. Wing area is in squared meters.
+* Before explaining the format of a polar line, be sure to understand the
+* following: a polar defines the sink rate of a glider at 3 different speed,
+* in order to provide later an interpolation for your current speed and 
+* determine the extimated sink rate. 
+* Whoever did the polar, has determined these values using a glider with a 
+* certain weight: this weight was normally without ballast and includes
+* also the pilot's weight. It is easy to understand: you jump on your glider,
+* and you fly away measuring sink rates. The weight matters a lot!
+* It is also called "Dry All Up Weight" (Dry AUW),
+* So you should NOT change the weight field unless you are actually creating
+* from scratch your polar , measuring also sink rates!
+* You can change the real gross weight of your glider (you+glider+parachute+whatever),
+* ballast apart, simply changing in Basic Settings the wing loading.
+* In that case, the polar is SHIFTED correctly, and these sink rates are still valuable.
+* If you don't understand what we are talking about, then use a predefined polar and do
+* not change anything inside Basic Settings.. (but probably you should ask a mate for some
+* help about these things, as well!).
+
+* Format explanation: all lines starting with a * are comments and you can also have empty lines
+*
+* Field 1: Gross weight of the glider, excluded ballast, when the values were measured
+* Field 2: Max ballast you can load (water). It will add wing loading, separately
+* Field 3-4, 5-6, 7-8  are couples of  speed,sink rate  in km/h and m/s .
+* 	these values are used to create an interpolated curve of sink rates
+* Field 9: NEW! Normally winpilot does not have this value. Put here at all cost the glider
+*          surface area in squared meters (m2). If the polar curve you are using does not have
+*          this value, go on wikipedia to find the wing area for that glider and add it after a comma.
+*
+* Here is the REAL polar used internally, that you have to create or change, for a glider 
+* that during test flight was weighting 330kg including pilots and everything, that can load
+* extra 90 liters of water ballast, that at 75km/h has a sink rate of 0.7 m/s , at 93 km/h of 0,74  
+* at 185 km/h sinks at 3.1 m/s and finally that has a wing surface of 10.6 m2. 
+* Thus, the polar was calculated with a default wing loading of 31.1 kg/m2 
+
+* So this is an example
+330,	90,	75.0,	-0.7,	93.0,	-0.74,	185.00,	-3.1, 10.6
+
+* To extend polar file for using Flaps, you need to create a new line containing:
+* - mass at which you specify flaps position speeds
+* - position counts (how many possible flap settings your glider has)
+* - and for every position you need a pairs of value:   minimum speed for the position, and the ID of the position
+* -      The ID is simply the name you have on the flaps lever. Like S1, L1 etc. It can be anything.
+*
+* Example for Diana2: another line after the standard polar line should be
+* 280, 7, 0, 28, 67,21, 71.5, 14, 77.5, 8, 98, 3, 140, 0, 170, -2
+* please notice that diana2 is indicating flap settings using degrees of extension, like 28, 14, 0 for no flaps, etc.
+

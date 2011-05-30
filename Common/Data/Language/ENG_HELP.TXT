@@ -1424,7 +1424,8 @@ The sum of OLC Classic predicted score and FAI triangle predicted score.
 
 @913
 [FLAP SETTINGS]
-Please call 800-KUBA toll free for more informations :-)
+Show current optimum flap setting based on extended polar file and current wing loading.
+See the example polar file inside _Polars folder, for help on how to create an extended polar.
 
 @914
 [Airspace Vertical Distance]
