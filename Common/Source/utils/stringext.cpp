@@ -9,6 +9,7 @@
 
 #include "StdAfx.h"
 #include "stringext.h"
+#include "utf8/unchecked.h"
 
 #include "utils/heapcheck.h"
 
@@ -618,6 +619,58 @@ static const char utf16toAscii[maxUtf16toAscii + 1] =
 
 //______________________________________________________________________________
 
+#ifndef SYS_UTF8_CONV
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// Iterator for constant size arrays (helper for utf8::utf16to8 etc).
+template <class ItemType> class array_back_insert_iterator
+: public std::iterator<std::output_iterator_tag, void, void, void, void>
+{
+  protected:
+    ItemType* array;
+    int       size;
+    int       elements;
+    bool      overflow;
+
+  public:
+    typedef ItemType container_type;
+
+    explicit array_back_insert_iterator(ItemType* array, int size)
+    : array(array),
+      size(size),
+      elements(0),
+      overflow(false)
+    {}
+
+    int length() const
+    { return elements; }
+
+    bool overflowed() const
+    { return overflow; }
+
+    array_back_insert_iterator<ItemType>& operator= (ItemType value)
+      {
+        if (elements >= size)
+          overflow = true;
+        else
+          array[elements++] = value;
+        return *this;
+      }
+
+    array_back_insert_iterator<ItemType>& operator* ()
+      { return *this; }
+
+    array_back_insert_iterator<ItemType>& operator++ ()
+      { return *this; }
+
+    array_back_insert_iterator<ItemType>& operator++ (int)
+      { return *this; }
+}; // array_back_insert_iterator
+
+#endif
+
+//______________________________________________________________________________
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Converts ASCII string encoded in system code page into Unicode string.
@@ -628,8 +681,8 @@ int ascii2unicode(const char* ascii, TCHAR* unicode, int maxChars)
 
   if (res > 0)
     return(res - 1);
-  
-  // for safety reasons, return empty string  
+
+  // for safety reasons, return empty string
   if (maxChars >= 1)
     unicode[0] = 0;
   return(-1);
@@ -641,11 +694,11 @@ int ascii2unicode(const char* ascii, TCHAR* unicode, int maxChars)
 int unicode2ascii(const TCHAR* unicode, char* ascii, int maxChars)
 {
   int res = WideCharToMultiByte(CP_ACP, 0, unicode, -1, ascii, maxChars, NULL, NULL);
-  
+
   if (res > 0)
     return(res - 1);
-  
-  // for safety reasons, return empty string  
+
+  // for safety reasons, return empty string
   if (maxChars >= 1)
     ascii[0] = '\0';
   return(-1);
@@ -653,34 +706,85 @@ int unicode2ascii(const TCHAR* unicode, char* ascii, int maxChars)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Converts Unicode string into UTF-8 encoded string.
-/// \return UTF8 string length, -1 on conversion error (insufficient buffer e.g.)
+/// \return UTF8 string size [octets], -1 on conversion error (insufficient buffer e.g.)
 int unicode2utf(const TCHAR* unicode, char* utf, int maxChars)
 {
-  int res = WideCharToMultiByte(CP_UTF8, 0, unicode, -1, utf, maxChars, NULL, NULL);
-  
-  if (res > 0)
-    return(res - 1);
-  
-  // for safety reasons, return empty string  
+  #ifndef SYS_UTF8_CONV
+
+  // we will use our own UTF16->UTF8 conversion (WideCharToMultiByte(CP_UTF8)
+  // is not working on some Win CE systems)
+  size_t len = _tcslen(unicode);
+
+  array_back_insert_iterator<char> iter = array_back_insert_iterator<char>(utf, maxChars - 1);
+
+  iter = utf8::unchecked::utf16to8(unicode, unicode + len, iter);
+
+  if (!iter.overflowed()) {
+    utf[iter.length()] = '\0';
+    return(iter.length());
+  }
+
+  // for safety reasons, return empty string
   if (maxChars >= 1)
     utf[0] = '\0';
   return(-1);
+
+  #else /* just for fallback return to old code, to be removed after tests */
+
+  int res = WideCharToMultiByte(CP_UTF8, 0, unicode, -1, utf, maxChars, NULL, NULL);
+
+  if (res > 0)
+    return(res - 1);
+
+  // for safety reasons, return empty string
+  if (maxChars >= 1)
+    utf[0] = '\0';
+  return(-1);
+
+  #endif
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Converts UTF-8 encoded string into Unicode encoded string.
-/// \return Unicode string length, -1 on conversion error (insufficient buffer e.g.)
+/// \return Unicode string size [TCHARs], -1 on conversion error (insufficient buffer e.g.)
 int utf2unicode(const char* utf, TCHAR* unicode, int maxChars)
 {
-  int res = MultiByteToWideChar(CP_UTF8, 0, utf, -1, unicode, maxChars);
-  
-  if (res > 0)
-    return(res - 1);
-  
-  // for safety reasons, return empty string  
+  #ifndef SYS_UTF8_CONV
+
+  // we will use our own UTF16->UTF8 conversion (MultiByteToWideChar(CP_UTF8)
+  // is not working on some Win CE systems)
+  size_t len = strlen(utf);
+
+  // first check if UTF8 is correct (utf8to16() may not be called on invalid string)
+  if (utf8::find_invalid(utf, utf + len) == (utf + len)) {
+    array_back_insert_iterator<TCHAR> iter = array_back_insert_iterator<TCHAR>(unicode, maxChars - 1);
+
+    iter = utf8::unchecked::utf8to16(utf, utf + len, iter);
+
+    if (!iter.overflowed()) {
+      unicode[iter.length()] = '\0';
+      return(iter.length());
+    }
+  }
+
+  // for safety reasons, return empty string
   if (maxChars >= 1)
     unicode[0] = '\0';
   return(-1);
+
+  #else /* just for fallback return to old code, to be removed after tests */
+
+  int res = MultiByteToWideChar(CP_UTF8, 0, utf, -1, unicode, maxChars);
+
+  if (res > 0)
+    return(res - 1);
+
+  // for safety reasons, return empty string
+  if (maxChars >= 1)
+    unicode[0] = '\0';
+  return(-1);
+
+  #endif
 }
 
 
