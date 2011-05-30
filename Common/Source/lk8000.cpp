@@ -1236,6 +1236,9 @@ void FillDataOptions()
   // Vertical distance to airspace
   SetDataOption(114, ugNone,           TEXT("_@M1285_"), TEXT("_@M1286_"), new InfoBoxFormatter(TEXT("")), NoProcessing, 8, 2);
 
+	// LKTOKEN  _@M1644_ = "Home Alt.Arrival", _@M1645_ = "HomeArr"
+	SetDataOption(115, ugAltitude,       TEXT("_@M1644_"), TEXT("_@M1645_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 8, 2);
+
 	//Before adding new items, consider changing NUMSELECTSTRING_MAX
 
 }

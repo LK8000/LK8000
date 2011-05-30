@@ -1434,6 +1434,10 @@ If 0 (showing ---), you are inside an airspace, or too far from it. Use Nearest 
 In case of flyzones, the nearest distance is calculated where you can leave that flyzone.
 Negative values means that nearest altitude is below, positive means that is above you. (Like arrival altitudes)
 
+@915
+[Home Altitude Arrival]
+Arrival altitude at the Home airfield. Calculated for current MC, uses safetyAlt and safetyMC.
+
 #
 # END INFOBOXES 800 - 1199
 #

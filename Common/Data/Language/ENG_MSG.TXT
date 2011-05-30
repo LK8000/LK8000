@@ -1525,6 +1525,8 @@ _@M1642_ "ASP"
 
 _@M1643_ "ENABLED"
 
+_@M1644_ "Home Alt.Arrival"
+_@M1645_ "HomeArr"
 
 
 

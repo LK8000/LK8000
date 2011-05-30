@@ -530,6 +530,27 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
 
+		// B115
+		case LK_HOME_ARRIVAL:
+			if (lktitle)
+				// LKTOKEN  _@M1644_ = "Home Alt.Arrival", _@M1645_ = "HomeArr"
+				_stprintf(BufferTitle, gettext(TEXT("_@M1645_")));
+			else
+				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+      
+			if ( ValidWayPoint(HomeWaypoint) != false ) {
+        value=WayPointCalc[HomeWaypoint].AltArriv[AltArrivMode]*ALTITUDEMODIFY;
+        if ( value > ALTDIFFLIMIT ) {
+          valid=true;
+          _stprintf(BufferValue,TEXT("%+1.0f"), value);
+        }
+			}
+      if (!valid)
+				wsprintf(BufferValue,_T(NULLLONG));
+        
+			wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
+			break;
+      
 		// B83
 		case LK_ODOMETER:
 			if (DerivedDrawInfo.Odometer>0) {
