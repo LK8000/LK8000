@@ -382,6 +382,9 @@ extern short ModeTableTop[LKMODE_TOP+1];
 #define LK_FLAPS			113   		// not for ibox
 #define LK_AIRSPACEVDIST		114		// not for ibox
 
+#define LK_HOME_ARRIVAL 115 // not for ibox
+
+
 // The following values are not available for custom configuration
 
 #define LK_WIND			131		//
