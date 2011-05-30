@@ -38,6 +38,9 @@ NEW
 	Software version
 
 . ------- New AIRSPACE handling ENGINE ----------
+
+  . NEW 2.4 nearest airspace page
+
   . New airspace storage classes (CAirspace, CAirspaceCicrle, CAirspaceArea)
   . New CAirspaceManager singleton class for managing airspace operations
   . New openair parser based on the old one
@@ -118,12 +121,12 @@ NEW
         - Red - vertical distance wrong against that nofly zone
         - Orange - vartical distance wrong against that fly zone
     . New infobox showing nearest vertical distance to an airspace (or to leave a fly zone)
-    . New nearest page 2.4 showing airspaces like waypoints
 
 
 CHANGES
 
 . Polars are now files inside _Polars folder, and can be viewed and edited.
+. Extended polars are possible for use of FLAPS settings indicator. See Example.plr  file in _Polars.
 
 . Device configuration has type "DISABLED", no more confusion.
 
@@ -142,9 +145,15 @@ CHANGES
 
 BUG FIX
 
+. Fix bug in 4.1 traffic page: using this page for a long time may lead to system locks. This is a critical fix.
+
 . Fix AutoQNH problem. Takeoff wp was used in place of Home first!
     Correct mode now is: look for home, if no home nearby, look for another known waypoint near 2km.
     Do not consider TAKEOFF as a valid waypoint for QNH because it is itself assigned an altitude!
     If no waypoints nearby, and no home, use terrain altitude if available.
+
+. Fix a possible problem of UTF8 characters on very old devices, that may show as funny tokens appearing in place of text.
+  This was due to missing UTF8 support on some old operating system like Windows CE 3.0. The patch has been tested on
+  CE 3.0 Ipaq 3630, perfectly working now.
 
 
