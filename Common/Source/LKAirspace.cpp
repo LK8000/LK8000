@@ -63,7 +63,8 @@ CAirspaceManager CAirspaceManager::_instance = CAirspaceManager(CAirspaceManager
 // CAirspace class attributes
 int CAirspace::_nearesthdistance = 0;            // for infobox
 int CAirspace::_nearestvdistance = 0;            // for infobox
-TCHAR* CAirspace::_nearestname = NULL;            // for infobox
+TCHAR* CAirspace::_nearesthname = NULL;            // for infobox
+TCHAR* CAirspace::_nearestvname = NULL;            // for infobox
 bool CAirspace::_pos_in_flyzone = false;        // for refine warnings in flyzones
 bool CAirspace::_pred_in_flyzone = false;        // for refine warnings in flyzones
 bool CAirspace::_pos_in_acked_nonfly_zone = false;        // for refine warnings in flyzones
@@ -169,7 +170,8 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
   _pos_in_acked_nonfly_zone = false;
   _pred_in_acked_nonfly_zone = false;
   
-  _nearestname = NULL; 
+  _nearesthname = NULL; 
+  _nearestvname = NULL; 
   _nearesthdistance=100000; 
   _nearestvdistance=100000;
 
@@ -222,27 +224,34 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   bool pos_altitude = IsAltitudeInside(alt, agl);
   if (!pos_altitude) _pos_inside_now = false;
 
-  // TODO Until we have one infobox, we have to collect nearest distance values differently!
   if (_flyzone && _pos_inside_now) {
     // If in flyzone, nearest warning point given (nearest distance to leaving the fly zone)
     if ( abs(_hdistance) < abs(_nearesthdistance) ) {
-      _nearestname = _name;
+      _nearesthname = _name;
       _nearesthdistance = abs(_hdistance);
-      // not used now _nearestvdistance = _vdistance;
+    }
+    if ( abs(_vdistance) < abs(_nearestvdistance) ) {
+      _nearestvname = _name;
+      _nearestvdistance = _vdistance;
     }
   }
   if (!_flyzone) {
     if (_pos_inside_now) {
       // Inside a non fly zone, distance is zero
-      _nearestname = _name;
+      _nearesthname = _name;
       _nearesthdistance = 0;
-      // not used now _nearestvdistance = 0;
+      _nearestvname = _name;
+      _nearestvdistance = 0;
     } else {
       // If outside nofly zone, then nearest distance selected
-      if ( (abs(_hdistance) < abs(_nearesthdistance)) ) {
-        _nearestname = _name;
+      // Do not count it, if directly above or below (_hdistance<=0), or give zero horiz distance?
+      if ( (abs(_hdistance) < abs(_nearesthdistance)) && (_hdistance > 0) && IsAltitudeInside(alt,agl,AirspaceWarningVerticalMargin) ) {
+        _nearesthname = _name;
         _nearesthdistance = abs(_hdistance);
-        // not used now _nearestvdistance = _vdistance;
+      }
+      if ( (abs(_vdistance) < abs(_nearestvdistance)) ) {
+        _nearestvname = _name;
+        _nearestvdistance = _vdistance;
       }
     }
   }
@@ -616,6 +625,7 @@ bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance)
 void CAirspace::ResetWarnings()
 {
   _warninglevel = awNone;
+  _warninglevelold = awNone;
   _distances_ready = false;
 }
 
@@ -1827,6 +1837,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
     CAirspace::StartWarningCalculation( Basic, Calculated );
     // No infobox values if warnings disabled, because no range calculation done.
     NearestAirspaceName[0]=0;
+    NearestAirspaceVName[0]=0;
     NearestAirspaceHDist=0;
     NearestAirspaceVDist=0;
     return;
@@ -1849,6 +1860,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
         // MULTICALC STEP 1
         // Calculate area of interest
         interest_radius = Basic->Speed * WarningTime * 1.25;        // 25% more than required
+        if (interest_radius < 5000) interest_radius = 5000;         // but minimum 5km
         lon = Basic->Longitude;
         lat = Basic->Latitude;
         bounds.minx = lon;
@@ -1916,6 +1928,11 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
               (*it)->ResetWarnings();
               continue;
             }
+            // Check if it enabled
+            if (!(*it)->Enabled()) {
+              (*it)->ResetWarnings();
+              continue;
+            }
             
             (*it)->CalculateWarning( Basic, Calculated );
             _airspaces_of_interest.push_back(*it);
@@ -1942,16 +1959,22 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
         // This is used nowhere.
         Calculated->IsInAirspace = false;
 
-        // Fill infoboxes
-        // TODO Until we have one infobox, we have to collect nearest distance values differently!
-        if (CAirspace::GetNearestName() != NULL) {
-          _tcsncpy(NearestAirspaceName, CAirspace::GetNearestName(), NAME_SIZE);
+        // Fill infoboxes - Nearest horizontal
+        if (CAirspace::GetNearestHName() != NULL) {
+          _tcsncpy(NearestAirspaceName, CAirspace::GetNearestHName(), NAME_SIZE);
           NearestAirspaceName[NAME_SIZE]=0;
           NearestAirspaceHDist = CAirspace::GetNearestHDistance();
-          NearestAirspaceVDist = CAirspace::GetNearestVDistance();
         } else {
           NearestAirspaceName[0]=0;
           NearestAirspaceHDist=0;
+        }
+        // Fill infoboxes - Nearest vertical
+        if (CAirspace::GetNearestVName() != NULL) {
+          _tcsncpy(NearestAirspaceVName, CAirspace::GetNearestVName(), NAME_SIZE);
+          NearestAirspaceVName[NAME_SIZE]=0;
+          NearestAirspaceVDist = CAirspace::GetNearestVDistance();
+        } else {
+          NearestAirspaceVName[0]=0;
           NearestAirspaceVDist=0;
         }
         step = 0;

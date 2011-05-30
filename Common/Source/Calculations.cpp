@@ -102,11 +102,7 @@ bool BallastTimerActive = false;
 
 #define THERMAL_TIME_MIN 45.0
 double CRUISE_EFFICIENCY = 1.0;
-#ifndef MAP_ZOOM
-#define MAPMODE8000    MapWindow::IsMapFullScreen()&&NewMap&&Look8000&&!MapWindow::EnablePan&&MapSpaceMode==MSM_MAP
-#else /* MAP_ZOOM */
 #define MAPMODE8000    MapWindow::IsMapFullScreen()&&NewMap&&Look8000&&!MapWindow::mode.AnyPan()&&MapSpaceMode==MSM_MAP
-#endif /* MAP_ZOOM */
 
 
 static double SpeedHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -341,45 +337,12 @@ extern int FastLogNum; // number of points to log at high rate
 
 void AnnounceWayPointSwitch(DERIVED_INFO *Calculated, bool do_advance) {
   if (ActiveWayPoint == 0) {
-    #if 1 
     InputEvents::processGlideComputer(GCE_TASK_START); // 101014
-    #else  // TOREMOVE 1103 remove this #if code anytime from march 2011
-    // This is bad, called from wrong thread, moved to Service event. ?
-    TCHAR TempTime[40];
-    TCHAR TempAlt[40];
-    TCHAR TempSpeed[40];
-    Units::TimeToText(TempTime, (int)TimeLocal((int)Calculated->TaskStartTime));
-    _stprintf(TempAlt, TEXT("%.0f %s"),
-              Calculated->TaskStartAltitude*ALTITUDEMODIFY,
-              Units::GetAltitudeName());    
-    _stprintf(TempSpeed, TEXT("%.0f %s"),
-             Calculated->TaskStartSpeed*TASKSPEEDMODIFY,
-             Units::GetTaskSpeedName());
-
-    TCHAR TempAll[120];
-    _stprintf(TempAll, TEXT("\r\nAltitude: %s\r\nSpeed:%s\r\nTime: %s"), TempAlt, TempSpeed, TempTime); // FIXV2
-
-	// LKTOKEN  _@M692_ = "Task Start" 
-    DoStatusMessage(gettext(TEXT("_@M692_")), TempAll);
-	if (EnableSoundModes) {
-		LKSound(_T("LK_TASKSTART.WAV"));
-	}
-    #endif
 
   } else if (Calculated->ValidFinish && IsFinalWaypoint()) {
     InputEvents::processGlideComputer(GCE_TASK_FINISH);
-	#if 0 // TOREMOVE 1103
-	if (EnableSoundModes) {
-		LKSound(_T("LK_TASKFINISH.WAV"));
-	}
-	#endif
   } else {
     InputEvents::processGlideComputer(GCE_TASK_NEXTWAYPOINT);
-	#if 0 // TOREMOVE 1103
-	if (EnableSoundModes) {
-		LKSound(_T("LK_TASKPOINT.WAV"));
-	}
-	#endif
   }
 
   if (do_advance) {
@@ -636,7 +599,6 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       atan2(Calculated->GPSVario-Calculated->Vario,
            Calculated->TrueAirspeedEstimated);
 */
-	// VENTA FIX QUI REMOVE AND REPLACE OLD PitchAngle
 	// should be used as here only when no real vario available
     Calculated->PitchAngle = RAD_TO_DEG*	
       atan2(Calculated->Vario,
@@ -984,6 +946,7 @@ void InitCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   // Initialise calculations, DoInit will make it and return
   DoRangeWaypointList(Basic,Calculated);
   DoTraffic(Basic,Calculated);
+  DoAirspaces(Basic,Calculated);
 
   LockFlightData();
 
@@ -1141,11 +1104,7 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   DoAlternates(Basic, Calculated,BestAlternate); 
 
   // Calculate nearest landing when needed
-#ifndef MAP_ZOOM
-  if ( MapWindow::IsMapFullScreen() && !MapWindow::EnablePan && NewMap && Look8000 && DrawBottom && (MapSpaceMode>MSM_MAP) ) {
-#else /* MAP_ZOOM */
   if ( MapWindow::IsMapFullScreen() && !MapWindow::mode.AnyPan() && NewMap && Look8000 && DrawBottom && (MapSpaceMode>MSM_MAP) ) {
-#endif /* MAP_ZOOM */
 	switch(MapSpaceMode) {
 		case MSM_LANDABLE:
 		case MSM_AIRPORTS:
@@ -1158,11 +1117,6 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 		case MSM_RECENT:
 			DoRecent(Basic,Calculated);
 			break;
-/* 101222 REMOVE
-		case MSM_NEARTPS:
-			DoNearestTurnpoint(Basic,Calculated);
-			break;
-*/
 	}
   }
 
@@ -2757,7 +2711,6 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
 			}
 			// now check for special alerts on countdown, only on current armed start
 			if (gatetimediff==3600 && ((PGGateIntervalTime>=70)||ActiveGate==0) ) { 
-				// DoStatusMessage(_T("FIRST GATE OPEN IN 1 HOUR")); // REMOVE FIXV2
 				//  850  FIRST GATE OPEN IN 1 HOUR
 				DoStatusMessage(gettext(TEXT("_@M850_")));
 				if (EnableSoundModes) {
@@ -2765,7 +2718,6 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
 				}
 			}
 			if (gatetimediff==1800 && ((PGGateIntervalTime>=45)||ActiveGate==0) ) { 
-				// DoStatusMessage(_T("FIRST GATE OPEN IN 30 MINUTES")); // REMOVE FIXV2
 				//  851  FIRST GATE OPEN IN 30 MINUTES
 				DoStatusMessage(gettext(TEXT("_@M851_")));
 				if (EnableSoundModes) {
@@ -2773,7 +2725,6 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
 				}
 			}
 			if (gatetimediff==600 && ((PGGateIntervalTime>=15)||ActiveGate==0) ) { // 10 minutes to go
-				// DoStatusMessage(_T("10 MINUTES TO GO")); // REMOVE FIXV2
 				//  852  10 MINUTES TO GO
 				DoStatusMessage(gettext(TEXT("_@M852_")));
 				if (EnableSoundModes) {
@@ -2781,7 +2732,6 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
 				}
 			}
 			if (gatetimediff==300 && ((PGGateIntervalTime>=10)||ActiveGate==0)) { // 5 minutes to go
-				// DoStatusMessage(_T("5 MINUTES TO GO")); // REMOVE FIXV2
 				//  853  5 MINUTES TO GO
 				DoStatusMessage(gettext(TEXT("_@M853_")));
 				if (EnableSoundModes) {
@@ -3596,27 +3546,6 @@ static void CheckGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   }
 }
 
-/* 091123 unused REMOVE
-static void CheckFinalGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated, double LegToGo, double LegBearing) {
-  // Final glide through terrain updates
-  if (Calculated->FinalGlide) {
-	double lat, lon;
-	bool out_of_range;
-	double distance_soarable = FinalGlideThroughTerrain(LegBearing, Basic, Calculated, &lat, &lon, LegToGo, &out_of_range, NULL);
- 
-	if ((!out_of_range)&&(distance_soarable< LegToGo)) {
-		Calculated->TerrainWarningLatitude = lat;
-		Calculated->TerrainWarningLongitude = lon;
-	} else {
-		Calculated->TerrainWarningLatitude = 0.0;
-		Calculated->TerrainWarningLongitude = 0.0;
-	}
-  } else {
-	Calculated->TerrainWarningLatitude = 0.0;
-	Calculated->TerrainWarningLongitude = 0.0;
-  }
-}
-*/
 
 void LDNext(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double LegToGo) {
   double height_above_leg = Calculated->NavAltitude+Calculated->EnergyHeight

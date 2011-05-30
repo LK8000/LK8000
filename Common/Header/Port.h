@@ -16,6 +16,7 @@ class ComPort {
 	void PutChar(BYTE);
 	bool Write(const void *data, size_t length);
 	void WriteString(const TCHAR *);
+	void Purge();
 	void Flush();
 
 	BOOL Initialize(LPCTSTR, DWORD, DWORD,DWORD);

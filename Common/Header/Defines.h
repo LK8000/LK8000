@@ -190,6 +190,8 @@
 // Commons are both 1 page of commons and HISTORY as well! HISTORY is sized MAXCOMMON!
 #define MAXCOMMON		50
 #define MAXTRAFFIC		FLARM_MAX_TRAFFIC
+// Max number of airspaces handled by 2.4 nearest airspace page. Basically, the 50 nearest.
+#define MAXNEARAIRSPACES	50
 
 // Max number of pages in mapspacemode. 
 // Large enough to contain MAXNEAREST/numrows (numraws min 5 on some devices)
@@ -199,6 +201,7 @@
 #define MAXNUMPAGES		9	// the nearest
 #define MAXCOMMONNUMPAGES	9
 #define MAXTRAFFICNUMPAGES	9
+#define MAXAIRSPACENUMPAGES	9
 
 // Nearest Update time: wait for some seconds before updating nearest pages with
 // new calculations. 5 seconds is far enough, could even be more..

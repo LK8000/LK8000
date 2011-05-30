@@ -1153,8 +1153,8 @@ _@M1155_ "BestAlternate Arrival"
 _@M1156_ "BAtnArr"
 _@M1157_ "Home Radial"
 _@M1158_ "Radial"
-_@M1159_ "Airspace Distance"
-_@M1160_ "ArSpace"
+_@M1159_ "Airspace Horizontal Dist"
+_@M1160_ "ArSpcH"
 _@M1161_ "Ext.Batt.Bank"
 _@M1162_ "xBnk#"
 _@M1163_ "Ext.Batt.1 Voltage"
@@ -1286,8 +1286,8 @@ _@M1266_ "AckLevel"
 _@M1267_ "Yellow acknowledged"
 _@M1268_ "Red acknowledged"
 _@M1269_ "Disabled"
-_@M1270_ "FLY"
-_@M1271_ "NOFLY"
+_@M1270_ "FLY-IN"
+_@M1271_ "FLY-OUT"
 _@M1272_ "Set as FLY zone?"
 _@M1273_ "Set as NOFLY zone?"
 
@@ -1300,10 +1300,13 @@ _@M1278_ "Vertical margin "
 _@M1279_ "Msg timeout "
 _@M1280_ "Enable this airspace?"
 _@M1281_ "Map labels "
-_@M1282_ "Enable"
-_@M1283_ "Disable"
+_@M1282_ "ENABLE"
+_@M1283_ "DISABLE"
 _@M1284_ "Disable this airspace?"
 
+# new airspace infobox
+_@M1285_ "Airspace Vertical Dist"
+_@M1286_ "ArSpcV"
 
 # LK info page headers, try to use the same or less number of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!
@@ -1323,6 +1326,7 @@ _@M1312_ "LNDB"
 _@M1313_ "APT"
 _@M1314_ "APTS"
 _@M1315_ "TPS"
+# ASP for nearest airspaces is M1642
 
 # Reserved waypoint names, comments
 _@M1316_ "TAKEOFF"
@@ -1516,6 +1520,10 @@ _@M1630_ "Height margin "
 _@M1640_ "Current Flaps"
 _@M1641_ "Flaps"
 
+# Header nearest Airspaces
+_@M1642_ "ASP"
+
+_@M1643_ "ENABLED"
 
 
 

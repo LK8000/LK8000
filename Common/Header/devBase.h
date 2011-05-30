@@ -93,6 +93,9 @@ class DevBase
     /// Writes given character to COM port and checks the result.
     static bool ComWrite(PDeviceDescriptor_t d, char character, unsigned errBufSize, TCHAR errBuf[]);
 
+    /// Flushes COM port output buffers.
+    static void ComFlush(PDeviceDescriptor_t d);
+
     /// Reads data from COM port and checks if they contain expected data.
     static bool ComExpect(PDeviceDescriptor_t d,
       const void* expected, int length, int checkChars, void* rxBuf, unsigned errBufSize, TCHAR errBuf[]);

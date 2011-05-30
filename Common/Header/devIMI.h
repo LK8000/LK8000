@@ -65,11 +65,12 @@ class CDevIMI : public DevBase
   class CMsgParser;
   
   // constants
-  static const IMIBYTE IMICOMM_SYNC_CHAR1 = 'E';
-  static const IMIBYTE IMICOMM_SYNC_CHAR2 = 'X';
-  static const unsigned IMICOMM_SYNC_LEN  = 2;
-  static const unsigned IMICOMM_CRC_LEN   = 2;
-  static const unsigned COMM_MAX_PAYLOAD_SIZE = 1024;
+  static const unsigned IMICOMM_CONNECT_RETRIES_COUNT = 10;
+  static const IMIBYTE IMICOMM_SYNC_CHAR1             = 'E';
+  static const IMIBYTE IMICOMM_SYNC_CHAR2             = 'X';
+  static const unsigned IMICOMM_SYNC_LEN              = 2;
+  static const unsigned IMICOMM_CRC_LEN               = 2;
+  static const unsigned COMM_MAX_PAYLOAD_SIZE         = 1024;
   
   // variables
   static bool _connected;
@@ -90,7 +91,7 @@ class CDevIMI : public DevBase
                              IMIBYTE msgID, const void *payload, IMIWORD payloadSize, 
                              IMIBYTE reMsgID, IMIWORD retPayloadSize, 
                              IMIBYTE parameter1 = 0, IMIWORD parameter2 = 0, IMIWORD parameter3 = 0,
-                             unsigned extraTimeout = 300, int retry = 4);
+                             unsigned extraTimeout = 500, int retry = 4);
   
   // IMI interface
   static bool Connect(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);

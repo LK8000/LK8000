@@ -78,11 +78,9 @@
 
 #include "InfoBox.h"
 #include "RasterTerrain.h"
-#if LKOBJ
 extern void LKObjects_Create();
 extern void LKObjects_Delete();
 #include "LKMainObjects.h"
-#endif
 
 #if defined(LKAIRSPACE) || defined(NEW_OLC)
 using std::min;
@@ -501,9 +499,9 @@ short BottomMode=BM_FIRST;
 short BottomSize=1; // Init by MapWindow3  091213 0 to 1
 short TopSize=0;
 short BottomGeom=0; 
-// coordinates of the 5 (0-4) sort boxes. 6 for safety
-short SortBoxX[6];
-short SortBoxY;
+// coordinates of the sort boxes. Each mapspace can have a different layout
+short SortBoxX[MSM_TOP+1][MAXSORTBOXES+1];
+short SortBoxY[MSM_TOP+1];
 // default initialization for gestures. InitLK8000 will fine tune it.
 short GestureSize=60;
 // xml dlgconfiguration value replacing 246 which became 278
@@ -548,6 +546,13 @@ int LKSortedTraffic[FLARM_MAX_TRAFFIC+1];
 // 100404 index inside FLARM_Traffic of our target, and its type as defined in Utils2
 int LKTargetIndex=-1;
 int LKTargetType=LKT_TYPE_NONE;
+
+// Copy of runtime airspaces for instant use 
+LKAirspace_Nearest_Item LKAirspaces[MAXNEARAIRSPACES+1];
+// Number of asps (items) of existing airspaces updated from DoAirspaces
+int LKNumAirspaces=0;
+// Pointer to ASP struct, ordered by DoAirspaces, from 0 to LKNumAirspaces-1
+int LKSortedAirspaces[MAXNEARAIRSPACES+1];
 
 // type of file format for waypoints files
 int WpFileType[3];
@@ -605,11 +610,13 @@ short SelectedRaw[MSM_TOP+1];
 // since it doesnt eat memory, it is also used for pages with currently no subpages
 short SelectedPage[MSM_TOP+1];
 // number of raws in mapspacemode screen
+// TODO: check if they can be unsigned
 short Numraws;
 short CommonNumraws;
 short Numpages;
 short CommonNumpages;
 short TrafficNumpages;
+short AspNumpages;
 //  mapspace sort mode: 0 wp name  1 distance  2 bearing  3 reff  4 altarr
 //  UNUSED on MSM_COMMON etc. however it is dimensioned on mapspacemodes
 short SortedMode[MSM_TOP+1];
@@ -633,6 +640,7 @@ double  LastZoomTrigger=0;
 // traffic DoTraffic interval, also reset during key up and down to prevent wrong selections
 double  LastDoTraffic=0;
 double  LastDoNearest=0;
+double  LastDoAirspaces=0;
 // double  LastDoNearestTp=0; 101222
 double  LastDoCommon=0;
 // double  LastDoTarget=0; unused 
@@ -714,8 +722,6 @@ int  SortedAirportIndex[MAXNEAREST+1];
 int  SortedTurnpointIndex[MAXNEAREST+1];
 // Real number of NEAREST items contained in array after removing duplicates, or not enough to fill MAXNEAREST/MAX..
 int  SortedNumber=0;
-// as above, for nearest turnpoints
-// int  SortedTurnpointNumber=0; 101222
 
 // Commons are Home, best alternate, alternate1, 2, and task waypoints , all up to MAXCOMMON.
 // It is reset when changing wp file
@@ -742,8 +748,11 @@ int LKIBLSCALE[MAXIBLSCALE+1];
 double Experimental1=0, Experimental2=0;
 
 double NearestAirspaceHDist=-1;
-double NearestAirspaceVDist=-1;
-TCHAR NearestAirspaceName[NAME_SIZE+1]; // TODO INITIALISE IT!
+double NearestAirspaceVDist=0;
+TCHAR NearestAirspaceName[NAME_SIZE+1] = {0};
+#ifdef LKAIRSPACE
+TCHAR NearestAirspaceVName[NAME_SIZE+1] = {0};
+#endif
 
 // Flarmnet tools
 int FlarmNetCount=0;
@@ -761,12 +770,12 @@ unsigned int NumberOfAirspaceCircles = 0;
 
 //Airspace Warnings
 int AIRSPACEWARNINGS = TRUE;
-int WarningTime = 30;
+int WarningTime = 60;
 int AcknowledgementTime = 900;                  // keep ack level for this time, [secs]
 #ifdef LKAIRSPACE
 int AirspaceWarningRepeatTime = 300;			// warning repeat time if not acknowledged after 5 minutes
 int AirspaceWarningVerticalMargin = 100;		// vertical distance used to calculate too close condition
-int AirspaceWarningDlgTimeout = 10;             // airspace warning dialog auto closing in x secs
+int AirspaceWarningDlgTimeout = 30;             // airspace warning dialog auto closing in x secs
 int AirspaceWarningMapLabels = 1;               // airspace warning map labels showed
 #endif
 
@@ -788,9 +797,6 @@ CContestMgr::CResult OlcResults[CContestMgr::TYPE_NUM];
 #endif
 
 // user interface settings
-#ifndef MAP_ZOOM
-bool CircleZoom = true;
-#endif /* ! MAP_ZOOM */
 int WindUpdateMode = 0;
 bool EnableTopology = true; // 091105
 bool EnableTerrain = true;  // 091105
@@ -1145,7 +1151,7 @@ void FillDataOptions()
 	SetDataOption(77, ugAltitude,       TEXT("_@M1155_"), TEXT("_@M1156_"), new FormatterAlternate(TEXT("%2.0f")), BestAlternateProcessing, 36, 46);
 	// LKTOKEN  _@M1157_ = "Home Radial", _@M1158_ = "Radial"
 	SetDataOption(78, ugNone,           TEXT("_@M1157_"), TEXT("_@M1158_"), new InfoBoxFormatter(TEXT("%.0f")TEXT(DEG)), NoProcessing, 6, 54);
-	// LKTOKEN  _@M1159_ = "Airspace Distance", _@M1160_ = "AirSpace"
+	// LKTOKEN  _@M1159_ "Airspace Horizontal Dist", _@M1160_ "ArSpcH"
 	SetDataOption(79, ugDistance,       TEXT("_@M1159_"), TEXT("_@M1160_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 38, 5);
 	// LKTOKEN  _@M1161_ = "Ext.Batt.Bank", _@M1162_ = "xBnk#"
 	SetDataOption(80, ugNone,           TEXT("_@M1161_"), TEXT("_@M1162_"), new InfoBoxFormatter(TEXT("%1.0f")), NoProcessing, 38, 5);
@@ -1226,6 +1232,9 @@ void FillDataOptions()
 
   // Flaps
   SetDataOption(113, ugNone,           TEXT("_@M1640_"), TEXT("_@M1641_"), new InfoBoxFormatter(TEXT("")), AirspeedProcessing, 8, 2);
+
+  // Vertical distance to airspace
+  SetDataOption(114, ugNone,           TEXT("_@M1285_"), TEXT("_@M1286_"), new InfoBoxFormatter(TEXT("")), NoProcessing, 8, 2);
 
 	//Before adding new items, consider changing NUMSELECTSTRING_MAX
 
@@ -1480,11 +1489,7 @@ void RestartCommPorts() {
 void DefocusInfoBox() {
   FocusOnWindow(InfoFocus,false);
   InfoFocus = -1;
-#ifndef MAP_ZOOM
-  if (MapWindow::isPan() && !MapWindow::isTargetPan()) {
-#else /* MAP_ZOOM */
   if(MapWindow::mode.Is(MapWindow::Mode::MODE_PAN)) {
-#endif /* MAP_ZOOM */
     InputEvents::setMode(TEXT("pan"));
   } else {
     InputEvents::setMode(TEXT("default"));
@@ -1650,48 +1655,15 @@ DWORD CalculationThread (LPVOID lpvoid) {
     
     if (GpsUpdated) {
       if(DoCalculations(&tmp_GPS_INFO,&tmp_CALCULATED_INFO)){
-#ifndef MAP_ZOOM
-
-        DisplayMode_t lastDisplayMode = DisplayMode;
-
-#endif /* ! MAP_ZOOM */
         MapWindow::MapDirty = true;
         needcalculationsslow = true;
 
-#ifndef MAP_ZOOM
-        switch (UserForceDisplayMode){
-		case dmCircling:
-			DisplayMode = dmCircling;
-			break;
-		case dmCruise:
-			DisplayMode = dmCruise;
-			break;
-		case dmFinalGlide:
-			DisplayMode = dmFinalGlide;
-			break;
-		case dmNone:
-			if (tmp_CALCULATED_INFO.Circling) {
-				DisplayMode = dmCircling;
-			} else if (tmp_CALCULATED_INFO.FinalGlide){
-				DisplayMode = dmFinalGlide;
-			} else
-				DisplayMode = dmCruise;
-
-			break;
-	}
-
-        if (lastDisplayMode != DisplayMode){
-		MapWindow::SwitchZoomClimb();
-        }
-
-#else /* MAP_ZOOM */
         if (tmp_CALCULATED_INFO.Circling)
           MapWindow::mode.Fly(MapWindow::Mode::MODE_FLY_CIRCLING);
         else if (tmp_CALCULATED_INFO.FinalGlide)
           MapWindow::mode.Fly(MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
         else
           MapWindow::mode.Fly(MapWindow::Mode::MODE_FLY_CRUISE);
-#endif /* MAP_ZOOM */
       }
       InfoBoxesDirty = true;
     }
@@ -2155,11 +2127,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   InitLDRotary(&rotaryLD); 
   InitWindRotary(&rotaryWind); // 100103
   // InitNewMap(); was moved in InitInstance 
-#ifndef MAP_ZOOM
-  InitAircraftCategory();
-#else /* MAP_ZOOM */
   MapWindow::zoom.Reset();
-#endif /* MAP_ZOOM */
   InitLK8000();
   ReadAirfieldFile();
   SetHome(false);
@@ -2305,9 +2273,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
 		DispatchMessage(&msg);
 	}
   }
-  #if LKOBJ
   LKObjects_Delete(); //@ 101124
-  #endif
   StartupStore(_T(". WinMain terminated%s"),NEWLINE);
 
 #if (WINDOWSPC>0)
@@ -3132,10 +3098,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   StartupStore(TEXT(". InfoBox geometry%s"),NEWLINE);
 
   InfoBoxLayout::ScreenGeometry(rc);
-  #if LKOBJ
   StartupStore(TEXT(". Create Objects%s"),NEWLINE);
   LKObjects_Create(); //@ 101124
-  #endif
 
   StartupStore(TEXT(". Load unit bitmaps%s"),NEWLINE);
 
@@ -3193,32 +3157,18 @@ int getInfoType(int i) {
   if (EnableAuxiliaryInfo) {
     retval = (InfoType[i] >> 24) & 0xff; // auxiliary
   } else {
-#ifndef MAP_ZOOM
-    if (DisplayMode == dmCircling)
-#else /* MAP_ZOOM */
     switch(MapWindow::mode.Fly()) {
     case MapWindow::Mode::MODE_FLY_CIRCLING:
-#endif /* MAP_ZOOM */
       retval = InfoType[i] & 0xff; // climb
-#ifndef MAP_ZOOM
-    else if (DisplayMode == dmFinalGlide) {
-#else /* MAP_ZOOM */
       break;
     case MapWindow::Mode::MODE_FLY_FINAL_GLIDE:
-#endif /* MAP_ZOOM */
       retval = (InfoType[i] >> 16) & 0xff; //final glide
-#ifndef MAP_ZOOM
-    } else {
-#else /* MAP_ZOOM */
       break;
     case MapWindow::Mode::MODE_FLY_CRUISE:
-#endif /* MAP_ZOOM */
       retval = (InfoType[i] >> 8) & 0xff; // cruise
-#ifdef MAP_ZOOM
       break;
     case MapWindow::Mode::MODE_FLY_NONE:
       break;
-#endif /* MAP_ZOOM */
     }
   }
   return min(NUMSELECTSTRINGS-1,retval);
@@ -3232,35 +3182,21 @@ void setInfoType(int i, char j) {
     InfoType[i] &= 0x00ffffff;
     InfoType[i] += (j<<24);
   } else {
-#ifndef MAP_ZOOM
-    if (DisplayMode == dmCircling) {
-#else /* MAP_ZOOM */
     switch(MapWindow::mode.Fly()) {
     case MapWindow::Mode::MODE_FLY_CIRCLING:
-#endif /* MAP_ZOOM */
       InfoType[i] &= 0xffffff00;
       InfoType[i] += (j);
-#ifndef MAP_ZOOM
-    } else if (DisplayMode == dmFinalGlide) {
-#else /* MAP_ZOOM */
       break;
     case MapWindow::Mode::MODE_FLY_FINAL_GLIDE:
-#endif /* MAP_ZOOM */
       InfoType[i] &= 0xff00ffff;
       InfoType[i] += (j<<16);
-#ifndef MAP_ZOOM
-    } else {
-#else /* MAP_ZOOM */
       break;
     case MapWindow::Mode::MODE_FLY_CRUISE:
-#endif /* MAP_ZOOM */
       InfoType[i] &= 0xffff00ff;
       InfoType[i] += (j<<8);
-#ifdef MAP_ZOOM
       break;
     case MapWindow::Mode::MODE_FLY_NONE:
       break;
-#endif /* MAP_ZOOM */
     }
   }
 }
@@ -4116,7 +4052,12 @@ void DisplayText(void)
 	if (NearestAirspaceHDist>0)
           InfoBoxes[i]->SetComment(NearestAirspaceName);
 	  break;
-
+#ifdef LKAIRSPACE
+    case 114:
+    if (NearestAirspaceVDist>0)
+          InfoBoxes[i]->SetComment(NearestAirspaceVName);
+      break;
+#endif      
     case 10:
       if (CALCULATED_INFO.AutoMacCready)
 		// LKTOKEN _@M1184_ "AutMC"
@@ -4420,11 +4361,7 @@ void CommonProcessTimer()
 
   if (DisplayLocked) {
     if(MenuTimeOut==MenuTimeoutMax) {
-#ifndef MAP_ZOOM
-      if (!MapWindow::isPan()) {
-#else /* MAP_ZOOM */
       if (!MapWindow::mode.AnyPan()) {
-#endif /* MAP_ZOOM */
 	InputEvents::setMode(TEXT("default"));
       }
     }
@@ -5661,11 +5598,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   }
 
   if (_tcsstr(OutBuffer, TEXT("$(PanModeStatus)"))) {
-#ifndef MAP_ZOOM
-    if ( MapWindow::isPan() )
-#else /* MAP_ZOOM */
     if ( MapWindow::mode.AnyPan() )
-#endif /* MAP_ZOOM */
       ReplaceInString(OutBuffer, TEXT("$(PanModeStatus)"), gettext(TEXT("_@M491_")), Size); // OFF
     else
       ReplaceInString(OutBuffer, TEXT("$(PanModeStatus)"), gettext(TEXT("_@M894_")), Size); // ON
@@ -5756,11 +5689,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   }
 
   CondReplaceInString(MapWindow::IsMapFullScreen(), OutBuffer, TEXT("$(FullScreenToggleActionName)"), gettext(TEXT("_@M894_")), gettext(TEXT("_@M491_")), Size);
-#ifndef MAP_ZOOM
-  CondReplaceInString(MapWindow::isAutoZoom(), OutBuffer, TEXT("$(ZoomAutoToggleActionName)"), gettext(TEXT("_@M418_")), gettext(TEXT("_@M897_")), Size);
-#else /* MAP_ZOOM */
   CondReplaceInString(MapWindow::zoom.AutoZoom(), OutBuffer, TEXT("$(ZoomAutoToggleActionName)"), gettext(TEXT("_@M418_")), gettext(TEXT("_@M897_")), Size);
-#endif /* MAP_ZOOM */
   CondReplaceInString(EnableTopology, OutBuffer, TEXT("$(TopologyToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
   CondReplaceInString(EnableTerrain, OutBuffer, TEXT("$(TerrainToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
 
@@ -5791,13 +5720,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
   CondReplaceInString(CALCULATED_INFO.AutoMacCready != 0, OutBuffer, TEXT("$(MacCreadyToggleActionName)"), gettext(TEXT("_@M418_")), gettext(TEXT("_@M897_")), Size);
   CondReplaceInString(EnableAuxiliaryInfo, OutBuffer, TEXT("$(AuxInfoToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
-#ifndef MAP_ZOOM
-
-  CondReplaceInString(UserForceDisplayMode == dmCircling, OutBuffer, TEXT("$(DispModeClimbShortIndicator)"), TEXT("_"), TEXT(""), Size);
-  CondReplaceInString(UserForceDisplayMode == dmCruise, OutBuffer, TEXT("$(DispModeCruiseShortIndicator)"), TEXT("_"), TEXT(""), Size);
-  CondReplaceInString(UserForceDisplayMode == dmNone, OutBuffer, TEXT("$(DispModeAutoShortIndicator)"), TEXT("_"), TEXT(""), Size);
-  CondReplaceInString(UserForceDisplayMode == dmFinalGlide, OutBuffer, TEXT("$(DispModeFinalShortIndicator)"), TEXT("_"), TEXT(""), Size);
-#else /* MAP_ZOOM */
   {
   MapWindow::Mode::TModeFly userForcedMode = MapWindow::mode.UserForcedMode();
   CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_CIRCLING, OutBuffer, TEXT("$(DispModeClimbShortIndicator)"), TEXT("_"), TEXT(""), Size);
@@ -5805,7 +5727,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_NONE, OutBuffer, TEXT("$(DispModeAutoShortIndicator)"), TEXT("_"), TEXT(""), Size);
   CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_FINAL_GLIDE, OutBuffer, TEXT("$(DispModeFinalShortIndicator)"), TEXT("_"), TEXT(""), Size);
   }
-#endif /* MAP_ZOOM */
 
 #if 0
   CondReplaceInString(AltitudeMode == ALLON, OutBuffer, TEXT("$(AirspaceModeAllShortIndicator)"), TEXT("|"), TEXT(""), Size);

@@ -30,14 +30,17 @@ static int index_area = -1;
 #endif
 static WndForm *wf=NULL;
 
+static void SetValues(void);
+
 #ifdef LKAIRSPACE
 static void OnFlyClicked(WindowControl * Sender){
   (void)Sender;
 
   if (airspace == NULL) return;
   if (wf == NULL) return;
+
+  #if 0 // We dont ask for confirmation, but we might change our mind!
   UINT answer;
-  
   if (airspace_copy.Flyzone()) {
 	// LKTOKEN _@M1273_ "Set as NOFLY zone?"
 	answer = MessageBoxX(hWndMapWindow, airspace_copy.Name(), gettext(TEXT("_@M1273_")), MB_YESNO|MB_ICONQUESTION);
@@ -45,11 +48,17 @@ static void OnFlyClicked(WindowControl * Sender){
 	// LKTOKEN _@M1272_ "Set as FLY zone?"
 	answer = MessageBoxX(hWndMapWindow, airspace_copy.Name(), gettext(TEXT("_@M1272_")), MB_YESNO|MB_ICONQUESTION);
   }
-  
   if (answer == IDYES) {
 	CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
-	wf->SetModalResult(mrOK);
+	SetValues();
+	// wf->SetModalResult(mrOK);
   }
+  #endif
+
+  CAirspaceManager::Instance().AirspaceFlyzoneToggle(*airspace);
+  SetValues();
+  if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+
 }
 #endif
 
@@ -59,8 +68,11 @@ static void OnAcknowledgeClicked(WindowControl * Sender){
 
   if (airspace == NULL) return;
   if (wf == NULL) return;
+
+  #if 0  // We dont ask anymore to the user for enable/disable confirmation
   UINT answer;
   if (!airspace_copy.Enabled()) {
+  
     // LKTOKEN  _@M1280_ "Enable this airspace?"
     answer = MessageBoxX(hWndMapWindow, airspace_copy.Name(), gettext(TEXT("_@M1280_")),  MB_YESNO|MB_ICONQUESTION);
     if (answer == IDYES) {
@@ -76,6 +88,17 @@ static void OnAcknowledgeClicked(WindowControl * Sender){
       wf->SetModalResult(mrOK);
     }
   }
+  #endif
+
+  if (airspace_copy.Enabled()) 
+      CAirspaceManager::Instance().AirspaceDisable(*airspace);
+  else 
+      CAirspaceManager::Instance().AirspaceEnable(*airspace);
+
+  SetValues();
+  if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+
+
 }
 #else
 static void OnAcknowledgeClicked(WindowControl * Sender){
@@ -141,6 +164,9 @@ static double FLAltRounded(double alt) {
 static void SetValues() {
 
   if (airspace==NULL) return;
+
+   // Get an object instance copy with actual values
+  airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(airspace);
 
   WndProperty* wp;
   WndButton *wb;
@@ -258,7 +284,7 @@ static void SetValues() {
   }
 
   wb = (WndButton*)wf->FindByName(TEXT("cmdFly"));
-  if (wp) {
+  if (wb) {
 	if (airspace_copy.Flyzone()) {
 	  // LKTOKEN _@M1271_ "NOFLY"
 	  wb->SetCaption(gettext(TEXT("_@M1271_")));
@@ -269,8 +295,9 @@ static void SetValues() {
 	wb->Redraw();
   }
 
+
   wb = (WndButton*)wf->FindByName(TEXT("cmdAcknowledge"));
-  if (wp) {
+  if (wb) {
     if (airspace_copy.Enabled()) {
       // LKTOKEN _@M1283_ "Disable"
       wb->SetCaption(gettext(TEXT("_@M1283_")));
@@ -280,6 +307,18 @@ static void SetValues() {
     }
     wb->Redraw();
   }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpStatus"));
+  if (wp) {
+    if (airspace_copy.Enabled()) {
+      wp->SetText(gettext(TEXT("_@M1643_"))); // ENABLED
+    } else {
+      wp->SetText(gettext(TEXT("_@M1600_"))); // DISABLED
+    }
+    wp->RefreshDisplay();
+  }
+
+
 
 }
 
@@ -505,7 +544,6 @@ void dlgAirspaceDetails(CAirspace *airspace_to_show) {
 
   if (!wf) return;
   airspace = airspace_to_show;
-  airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(airspace);
   SetValues();
 
   wf->ShowModal();

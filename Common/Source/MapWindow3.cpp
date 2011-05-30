@@ -20,9 +20,7 @@
 #include "LKMapWindow.h"
 #include "buildnumber.h"
 #include "Utils2.h"
-#if LKOBJ
 #include "LKObjects.h"
-#endif
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -37,7 +35,7 @@ extern int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *ele
 
 extern void DrawMapSpace(HDC hdc, RECT rc);
 extern void DrawNearest(HDC hdc, RECT rc);
-extern void DrawNearestTurnpoint(HDC hdc, RECT rc);
+extern void DrawAspNearest(HDC hdc, RECT rc);
 extern void DrawCommon(HDC hdc, RECT rc);
 extern void DrawTraffic(HDC hdc, RECT rc);
 extern void DrawWelcome8000(HDC hdc, RECT rc);
@@ -144,33 +142,16 @@ void MapWindow::DrawGlideCircle(HDC hdc, POINT Orig, RECT rc )
      * TRACKUP, NORTHUP, NORTHCIRCLE, TRACKCIRCLE, NORTHTRACK
      */
 	if ( ((DisplayOrientation == TRACKUP) || (DisplayOrientation == NORTHCIRCLE) || (DisplayOrientation == TRACKCIRCLE))
-#ifndef MAP_ZOOM
-		&& (DisplayMode != dmCircling) ) {
-
-#else /* MAP_ZOOM */
            && (!mode.Is(MapWindow::Mode::MODE_CIRCLING)) ) {
-#endif /* MAP_ZOOM */
 		if ( VisualGlide == 1 ) {
-#ifndef MAP_ZOOM
-			tmp = i*gunit*cruise*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
 			tmp = i*gunit*cruise*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
 			DrawArc(hdc, Orig.x, Orig.y,(int)tmp, rc, 315, 45);
 		} else {
-#ifndef MAP_ZOOM
-			tmp = i*gunit*cruise*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
 			tmp = i*gunit*cruise*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
 			DrawArc(hdc, Orig.x, Orig.y,(int)tmp, rc, 330+spread, 30+spread);
 		}
 	} else {
-#ifndef MAP_ZOOM
-		tmp = i*gunit*cruise*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
 		tmp = i*gunit*cruise*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
 		Circle(hdc, Orig.x,Orig.y,(int)tmp, rc, true, false);
 	}
 
@@ -226,28 +207,16 @@ void MapWindow::DrawHeading(HDC hdc, POINT Orig, RECT rc ) {
 
    if (GPS_INFO.NAVWarning) return; // 100214
 
-#ifndef MAP_ZOOM
-   if (MapScale>5 || (DisplayMode == dmCircling)) return;
-#else /* MAP_ZOOM */
    if (zoom.Scale()>5 || mode.Is(MapWindow::Mode::MODE_CIRCLING)) return;
-#endif /* MAP_ZOOM */
    POINT p2;
 
    #if 0
    if ( !( DisplayOrientation == TRACKUP || DisplayOrientation == NORTHCIRCLE || DisplayOrientation == TRACKCIRCLE )) return;
-#ifndef MAP_ZOOM
-   double tmp = 12000*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
    double tmp = 12000*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
    p2.x=Orig.x;
    p2.y=Orig.y-(int)tmp;
    #else
-#ifndef MAP_ZOOM
-   double tmp = 12000*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
    double tmp = 12000*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
    if ( !( DisplayOrientation == TRACKUP || DisplayOrientation == NORTHCIRCLE || DisplayOrientation == TRACKCIRCLE )) {
 	double trackbearing = DrawInfo.TrackBearing;
 	p2.y= Orig.y - (int)(tmp*fastcosine(trackbearing));
@@ -278,7 +247,6 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
   static bool doinit=true;
   static POINT p[10];
 
-  #if LKOBJ
   if (MapSpaceMode==MSM_WELCOME) {
 	if (INVERTCOLORS)
 		hB=LKBrush_Petrol;
@@ -290,17 +258,8 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
 	  else
 		hB=LKBrush_Mlight;
   }
-  #else
-  if (INVERTCOLORS)
-	hB=CreateSolidBrush(RGB_MDARK);
-  else
-	hB=CreateSolidBrush(RGB_MLIGHT);
-  #endif
   oldfont = (HFONT)SelectObject(hdc, LKINFOFONT); // save font
   FillRect(hdc,&rc, hB); 
-  #ifndef LKOBJ
-  DeleteObject(hB);
-  #endif
   //oldbkmode=SetBkMode(hdc,TRANSPARENT);
 
   if (doinit) {
@@ -363,9 +322,12 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 		DrawWelcome8000(hdc, rc);
 		break;
 	case MSM_LANDABLE:
-	case MSM_AIRPORTS:
 	case MSM_NEARTPS:
+	case MSM_AIRPORTS:
 		DrawNearest(hdc, rc);
+		break;
+	case MSM_AIRSPACES:
+		DrawAspNearest(hdc, rc);
 		break;
 	case MSM_COMMON:
 	case MSM_RECENT:
@@ -763,34 +725,17 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   if (GPS_INFO.Speed <5.5) disabled=true; 
 
   if (disabled) {
-	#if LKOBJ
 	hpBlack = LKPen_Grey_N1;
 	hbBlack = LKBrush_Grey;
-	#else
-	hpBlack = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_GREY);
-	hbBlack = (HBRUSH)CreateSolidBrush(RGB_GREY);
-	#endif
   } else {
-	#if LKOBJ
 	hpBlack = LKPen_Black_N1;
 	hbBlack = LKBrush_Black;
-	#else
-	hpBlack = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_BLACK);
-	hbBlack = (HBRUSH)CreateSolidBrush(RGB_BLACK);
-	#endif
   	beta = DerivedDrawInfo.BankAngle;
   }
-  #if LKOBJ
   hpWhite = LKPen_White_N1;
   hbWhite = LKBrush_White;
   hpBorder = LKPen_Grey_N2;
   hbBorder = LKBrush_Grey;
-  #else
-  hpWhite = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_WHITE);
-  hbWhite = (HBRUSH)CreateSolidBrush( RGB_WHITE);
-  hpBorder = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_GREY);
-  hbBorder = (HBRUSH)CreateSolidBrush( RGB_GREY);
-  #endif
 
   hpOld = (HPEN)SelectObject(hDC, hpWhite);
   hbOld = (HBRUSH)SelectObject(hDC, hbWhite);
@@ -874,14 +819,6 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
 
   SelectObject(hDC, hbOld);
   SelectObject(hDC, hpOld);
-  #ifndef LKOBJ
-  DeleteObject((HPEN)hpBlack);
-  DeleteObject((HBRUSH)hbBlack);
-  DeleteObject((HPEN)hpWhite);
-  DeleteObject((HBRUSH)hbWhite);
-  DeleteObject((HPEN)hpBorder);
-  DeleteObject((HBRUSH)hbBorder);
-  #endif
 }
 
 

@@ -215,8 +215,12 @@ void ComPort::PutChar(BYTE Byte)
   }
 }
 
-
 void ComPort::Flush(void)
+{
+  FlushFileBuffers(hPort);
+}
+
+void ComPort::Purge(void)
 {
   PurgeComm(hPort, 
             PURGE_TXABORT | PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR);
@@ -246,7 +250,7 @@ DWORD ComPort::ReadThread()
   #endif
 
   // JMW added purging of port on open to prevent overflow
-  Flush();
+  Purge();
   StartupStore(_T(". ReadThread running on port %d%s"),sportnumber+1,NEWLINE);
   
   // Specify a set of events to be monitored for the port.
@@ -356,7 +360,7 @@ DWORD ComPort::ReadThread()
 
   }
 
-  Flush();      
+  Purge();
 
   fRxThreadTerminated = TRUE;
   StartupStore(_T(". ComPort %d ReadThread: terminated%s"),sportnumber+1,NEWLINE);

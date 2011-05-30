@@ -177,8 +177,8 @@ extern bool DrawBottom;
 extern short BottomMode; // Stripe number
 extern short BottomSize; // Height of bottom stripe
 extern short TopSize;
-extern short SortBoxY;
-extern short SortBoxX[];
+extern short SortBoxY[MSM_TOP+1];
+extern short SortBoxX[MSM_TOP+1][MAXSORTBOXES+1];
 extern short BottomGeom; // registry saved lk8000 navboxes geometry
 extern short GlideBarOffset; // offset to the right for drawing LK8000 with GB active
 extern bool  EngineeringMenu; // not saved in registry
@@ -206,13 +206,10 @@ extern int LKVarioSize;
 extern bool PGZoomTrigger;
 extern double  LastZoomTrigger;
 extern double  LastDoTraffic;
+extern double  LastDoAirspaces;
 extern double LastDoNearest;
 // extern double LastDoNearestTp;
 extern double LastDoCommon;
-#ifndef MAP_ZOOM
-extern double  CruiseMapScale;
-extern double  ClimbMapScale;
-#endif /* ! MAP_ZOOM */
 extern int LKwdlgConfig;
 extern double NmeaTime;
 extern int NmeaHours, NmeaMinutes, NmeaSeconds;
@@ -241,6 +238,10 @@ extern int LKNumTraffic;
 extern int LKSortedTraffic[FLARM_MAX_TRAFFIC+1];
 extern int LKTargetIndex;
 extern int LKTargetType;
+
+extern LKAirspace_Nearest_Item LKAirspaces[MAXNEARAIRSPACES+1];
+extern int LKNumAirspaces;
+extern int LKSortedAirspaces[MAXNEARAIRSPACES+1];
 
 extern int PGOpenTimeH;
 extern int PGOpenTimeM;
@@ -306,6 +307,7 @@ extern short CommonNumpages;
 // extern short TurnpointNumraws; 101222
 // extern short TurnpointNumpages;
 extern short TrafficNumpages;
+extern short AspNumpages;
 extern short ModeIndex;
 
 // LK8000 sync flags
@@ -367,7 +369,10 @@ extern int Cpu_Aver;
 
 extern double	NearestAirspaceHDist;
 extern double	NearestAirspaceVDist;
-extern TCHAR	NearestAirspaceName[NAME_SIZE+1];
+extern TCHAR    NearestAirspaceName[NAME_SIZE+1];
+#ifdef LKAIRSPACE
+extern TCHAR    NearestAirspaceVName[NAME_SIZE+1];
+#endif
 
 // Ready to use for experiments
 extern double Experimental1;
@@ -471,9 +476,6 @@ extern CContestMgr::CResult OlcResults[CContestMgr::TYPE_NUM];
 extern bool bAirspaceBlackOutline;
 extern int TrailActive;
 extern int VisualGlide; // VENTA3
-#ifndef MAP_ZOOM
-extern bool CircleZoom;
-#endif /* ! MAP_ZOOM */
 extern bool EnableTopology;
 extern bool EnableTerrain;
 extern int FinalGlideTerrain;

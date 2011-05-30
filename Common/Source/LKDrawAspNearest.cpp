@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: LKDrawTraffic.cpp,v 1.1 2010/12/11 18:13:58 root Exp root $
+   $Id$
 */
 
 #include "StdAfx.h"
@@ -23,10 +23,11 @@
 #include "InfoBoxLayout.h"
 #include "Logger.h"
 #include "Process.h"
-#include "RasterTerrain.h" 
+#include "RasterTerrain.h"
 #include "LKUtils.h"
 #include "LKMapWindow.h"
 #include "LKObjects.h"
+#include "LKAirspace.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -34,27 +35,19 @@
 
 #include "utils/heapcheck.h"
 
-#ifdef CPUSTATS
-extern void DrawCpuStats(HDC hdc, RECT rc);
-#endif
-#ifdef DRAWDEBUG
-extern void DrawDebug(HDC hdc, RECT rc);
-#endif
-
-extern void WriteInfo(HDC hdc, bool *showunit, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle, 
-				short *columnvalue, short *columntitle, short *row1, short *row2, short *row3);
 extern void ConvToUpper(TCHAR *str);
+extern bool ValidAirspace(int i);
 
-void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
+void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 
-  SIZE WPTextSize, DSTextSize, BETextSize, RETextSize, AATextSize, HLTextSize, MITextSize;
+
+  SIZE ASPTextSize, DSTextSize, BETextSize, TYTextSize, ACTextSize, HLTextSize, MITextSize;
   TCHAR Buffer[LKSIZEBUFFERLARGE];
   static RECT s_sortBox[6]; 
-  static TCHAR Buffer1[MAXTRAFFIC][MAXTRAFFICNUMPAGES][24], Buffer2[MAXTRAFFIC][MAXTRAFFICNUMPAGES][10];
-  static TCHAR Buffer3[MAXTRAFFIC][MAXTRAFFICNUMPAGES][10];
-  static TCHAR Buffer4[MAXTRAFFIC][MAXTRAFFICNUMPAGES][12], Buffer5[MAXTRAFFIC][MAXTRAFFICNUMPAGES][12];
+  static TCHAR Buffer1[MAXNEARAIRSPACES][MAXAIRSPACENUMPAGES][30], Buffer2[MAXNEARAIRSPACES][MAXAIRSPACENUMPAGES][10];
+  static TCHAR Buffer3[MAXNEARAIRSPACES][MAXAIRSPACENUMPAGES][10];
+  static TCHAR Buffer4[MAXNEARAIRSPACES][MAXAIRSPACENUMPAGES][12], Buffer5[MAXNEARAIRSPACES][MAXAIRSPACENUMPAGES][12];
   static short s_maxnlname;
-  char text[30];
   short i, k, iRaw, wlen, rli=0, curpage, drawn_items_onpage;
   double value;
   COLORREF rcolor;
@@ -68,9 +61,12 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   static short left,right,bottom;
   // one for each mapspace, no matter if 0 and 1 are unused
 
-  short curmapspace=curmapspace;
-  static int TrafficNumraws=0;
-  //static int TrafficNumpages=0; global..
+  // we lock to current mapspace for this drawing
+  short curmapspace=MapSpaceMode; 
+
+  static int AspNumraws=0;
+
+
   // Vertical and horizontal spaces
   #define INTERRAW	1
   #define HEADRAW	NIBLSCALE(6)	
@@ -87,37 +83,45 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
   if (doinit) {
 
+  // Set screen borders to avoid writing on extreme pixels
   if ( ScreenSize < (ScreenSize_t)sslandscape ) {
+	// Portrait mode has tight horizontal margins...
 	left=rc.left+NIBLSCALE(1);
 	right=rc.right-NIBLSCALE(1);
   	bottom=rc.bottom-BottomSize-NIBLSCALE(2);
-	s_maxnlname=MAXNLNAME-5; // 7 chars max, 8 sized
-  	_stprintf(Buffer,TEXT("MAKSJSMM"));  
+	s_maxnlname=9; 
+  	_stprintf(Buffer,TEXT("AKSJSMMMM"));  
   } else {
 	left=rc.left+NIBLSCALE(5);
 	right=rc.right-NIBLSCALE(5);
   	bottom=rc.bottom-BottomSize;
-	s_maxnlname=MAXNLNAME-3; // 9 chars, sized 10
-  	_stprintf(Buffer,TEXT("ABCDEFGHMx")); 
+	s_maxnlname=15; 
+  	_stprintf(Buffer,TEXT("ABCDEF GHIJK-LM"));  
   }
 
 
+  /// WPT is now AIRSPACE name
   SelectObject(hdc, LK8InfoBigFont); // Text font for Nearest  was LK8Title
-  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &WPTextSize);
+  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &ASPTextSize);
 
+  // DST is always distance
   _stprintf(Buffer,TEXT("000.0")); 
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &DSTextSize);
 
+  // Bearing
   _stprintf(Buffer,TEXT("<<123")); 
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &BETextSize);
 
-  _stprintf(Buffer,TEXT("5299")); 
-  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &RETextSize);
+  // TYPE, 4 letters printed
+  #define LKASP_TYPE_LEN	4
+  _stprintf(Buffer,TEXT("CTRA")); 
+  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &TYTextSize);
 
-  _stprintf(Buffer,TEXT("+9999")); 
-  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &AATextSize);
+  // Active can only be 0 or 1  
+  _stprintf(Buffer,TEXT("00")); 
+  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &ACTextSize);
 
-  SelectObject(hdc, LK8InfoNormalFont); // Heading line  was MapWindow QUI
+  SelectObject(hdc, LK8InfoNormalFont);
   _stprintf(Buffer,TEXT("MMMM")); 
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &HLTextSize);
 
@@ -125,95 +129,90 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   _stprintf(Buffer,TEXT("1.1")); 
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &MITextSize);
 
-  short afterwpname=left+WPTextSize.cx+NIBLSCALE(5);
-  short intercolumn=(right-afterwpname- DSTextSize.cx-BETextSize.cx-RETextSize.cx-AATextSize.cx)/3; 
+  short afterwpname=left+ASPTextSize.cx+NIBLSCALE(5);
+  short intercolumn=(right-afterwpname- DSTextSize.cx-BETextSize.cx-TYTextSize.cx-ACTextSize.cx)/3; 
 
+  // Col0 is where ASP 1/3 can be written, after ModeIndex:Curtype
   Column0=MITextSize.cx+LEFTLIMITER+NIBLSCALE(5);
   Column1=left;							// WP align left
-  Column2=afterwpname+DSTextSize.cx;						// DS align right
-  Column3=Column2+intercolumn+BETextSize.cx;			// BE align right
-  Column4=Column3+intercolumn+RETextSize.cx;			// RE align right
-  Column5=Column4+intercolumn+AATextSize.cx;			// AA align right
+  Column2=afterwpname+TYTextSize.cx;				// TY align right
+  Column3=Column2+intercolumn+DSTextSize.cx;			// DS align right
+  Column4=Column3+intercolumn+BETextSize.cx;			// BE align right
+  Column5=Column4+intercolumn+ACTextSize.cx;			// AC align right
 
 
   if ( ScreenSize < (ScreenSize_t)sslandscape ) {
   	TopSize=rc.top+HEADRAW*2+HLTextSize.cy;
   	p1.x=0; p1.y=TopSize; p2.x=rc.right; p2.y=p1.y;
   	TopSize+=HEADRAW;
-  	TrafficNumraws=(bottom - TopSize) / (WPTextSize.cy+(INTERRAW*2));
-  	if (TrafficNumraws>MAXTRAFFIC) TrafficNumraws=MAXTRAFFIC;
-  	s_rawspace=(WPTextSize.cy+INTERRAW);
+  	AspNumraws=(bottom - TopSize) / (ASPTextSize.cy+(INTERRAW*2));
+  	if (AspNumraws>MAXNEARAIRSPACES) AspNumraws=MAXNEARAIRSPACES;
+  	s_rawspace=(ASPTextSize.cy+INTERRAW);
   } else {
   	TopSize=rc.top+HEADRAW*2+HLTextSize.cy;
   	p1.x=0; p1.y=TopSize; p2.x=rc.right; p2.y=p1.y;
   	TopSize+=HEADRAW/2;
-  	TrafficNumraws=(bottom - TopSize) / (WPTextSize.cy+INTERRAW);
-  	if (TrafficNumraws>MAXTRAFFIC) TrafficNumraws=MAXTRAFFIC;
-  	s_rawspace=(WPTextSize.cy+INTERRAW);
+  	AspNumraws=(bottom - TopSize) / (ASPTextSize.cy+INTERRAW);
+  	if (AspNumraws>MAXNEARAIRSPACES) AspNumraws=MAXNEARAIRSPACES;
+  	s_rawspace=(ASPTextSize.cy+INTERRAW);
   }
 
 #define INTERBOX intercolumn/2
 
-  // Traffic name
-  s_sortBox[0].left=Column0; // FIX 090925 era solo 0
-  if ( ScreenSize < (ScreenSize_t)sslandscape ) s_sortBox[0].right=left+WPTextSize.cx-NIBLSCALE(2);
-  else s_sortBox[0].right=left+WPTextSize.cx-NIBLSCALE(10);
+  s_sortBox[0].left=Column0; 
+  if ( ScreenSize < (ScreenSize_t)sslandscape ) s_sortBox[0].right=left+ASPTextSize.cx-NIBLSCALE(2);
+  else s_sortBox[0].right=left+ASPTextSize.cx-NIBLSCALE(10);
   s_sortBox[0].top=2;
   s_sortBox[0].bottom=p1.y;
-  SortBoxX[MSM_TRAFFIC][0]=s_sortBox[0].right;
+  SortBoxX[MSM_AIRSPACES][0]=s_sortBox[0].right;
 
-  // Distance
   if ( ScreenSize < (ScreenSize_t)sslandscape ) s_sortBox[1].left=Column1+afterwpname-INTERBOX;
   else s_sortBox[1].left=Column1+afterwpname-INTERBOX-NIBLSCALE(2);
   s_sortBox[1].right=Column2+INTERBOX;
   s_sortBox[1].top=2;
   s_sortBox[1].bottom=p1.y;
-  SortBoxX[MSM_TRAFFIC][1]=s_sortBox[1].right;
+  SortBoxX[MSM_AIRSPACES][1]=s_sortBox[1].right;
 
-  // Bearing
   s_sortBox[2].left=Column2+INTERBOX;
   s_sortBox[2].right=Column3+INTERBOX;
   s_sortBox[2].top=2;
   s_sortBox[2].bottom=p1.y;
-  SortBoxX[MSM_TRAFFIC][2]=s_sortBox[2].right;
+  SortBoxX[MSM_AIRSPACES][2]=s_sortBox[2].right;
 
-  // Vario
   s_sortBox[3].left=Column3+INTERBOX;
   s_sortBox[3].right=Column4+INTERBOX;
   s_sortBox[3].top=2;
   s_sortBox[3].bottom=p1.y;
-  SortBoxX[MSM_TRAFFIC][3]=s_sortBox[3].right;
+  SortBoxX[MSM_AIRSPACES][3]=s_sortBox[3].right;
 
-  // Altitude
   s_sortBox[4].left=Column4+INTERBOX;
-  //s_sortBox[4].right=Column5+INTERBOX;
   s_sortBox[4].right=rc.right-1;
   s_sortBox[4].top=2;
   s_sortBox[4].bottom=p1.y;
-  SortBoxX[MSM_TRAFFIC][4]=s_sortBox[4].right;
+  SortBoxX[MSM_AIRSPACES][4]=s_sortBox[4].right;
 
-  SortBoxY[MSM_TRAFFIC]=p1.y;
+  SortBoxY[MSM_AIRSPACES]=p1.y;
 
-  TrafficNumpages=roundupdivision(MAXTRAFFIC, TrafficNumraws);
-  if (TrafficNumpages>MAXTRAFFICNUMPAGES) TrafficNumpages=MAXTRAFFICNUMPAGES;
-  else if (TrafficNumpages<1) TrafficNumpages=1;
+  AspNumpages=roundupdivision(MAXNEARAIRSPACES, AspNumraws);
+  if (AspNumpages>MAXAIRSPACENUMPAGES) AspNumpages=MAXAIRSPACENUMPAGES;
+  else if (AspNumpages<1) AspNumpages=1;
 
-  SelectedRaw[MSM_TRAFFIC]=0;
-  SelectedPage[MSM_TRAFFIC]=0;
+  SelectedRaw[MSM_AIRSPACES]=0;
+  SelectedPage[MSM_AIRSPACES]=0;
 
   doinit=false;
   return;
   } // doinit
 
-  DoTraffic(&GPS_INFO,  &CALCULATED_INFO);
+  bool ndr;
+  ndr=DoAirspaces(&GPS_INFO,  &CALCULATED_INFO);
 
-  TrafficNumpages=roundupdivision(LKNumTraffic, TrafficNumraws);
-  if (TrafficNumpages>MAXTRAFFICNUMPAGES) TrafficNumpages=MAXTRAFFICNUMPAGES;
-  else if (TrafficNumpages<1) TrafficNumpages=1;
+  AspNumpages=roundupdivision(LKNumAirspaces, AspNumraws);
+  if (AspNumpages>MAXAIRSPACENUMPAGES) AspNumpages=MAXAIRSPACENUMPAGES;
+  else if (AspNumpages<1) AspNumpages=1;
 
   curpage=SelectedPage[curmapspace];
-  if (curpage<0||curpage>=MAXTRAFFICNUMPAGES) {
-	DoStatusMessage(_T("ERR-041 traffic curpage invalid!")); 
+  if (curpage<0||curpage>=MAXAIRSPACENUMPAGES) { // TODO also >Numpages
 	SelectedPage[curmapspace]=0;
 	LKevent=LKEVENT_NONE;
 	return;
@@ -224,27 +223,26 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 		break;
 	case LKEVENT_ENTER:
 		LKevent=LKEVENT_NONE;
-		i=LKSortedTraffic[SelectedRaw[curmapspace]+(curpage*TrafficNumraws)];
+		i=LKSortedAirspaces[SelectedRaw[curmapspace] + (curpage*AspNumraws)];
 
-		if ( (i<0) || (i>=MAXTRAFFIC) || (LKTraffic[i].ID<=0) ) {
-			if (LKNumTraffic>0)
-				DoStatusMessage(_T("ERR-045 Invalid selection")); 
+		if ( !ValidAirspace(i)) {
+			// todo only if numairspace>0
+			DoStatusMessage(_T("ERR-039 Invalid ASP selection")); 
 			break;
 		}
+		LastDoAirspaces = GPS_INFO.Time+NEARESTONHOLD; 
+		dlgAirspaceDetails( LKAirspaces[i].Pointer );
+		LastDoAirspaces = 0; 
 		LKevent=LKEVENT_NONE; 
-		// Do not update Traffic while in details mode, max 10m
-		LastDoTraffic=GPS_INFO.Time+600;
-		dlgLKTrafficDetails(i);
-		LastDoTraffic=0;
+		return;
 		break;
 	case LKEVENT_DOWN:
-		if (++SelectedRaw[curmapspace] >=TrafficNumraws) SelectedRaw[curmapspace]=0;
-		// Reset LastDoTraffic so that it wont be updated while selecting an item
-		LastDoTraffic=GPS_INFO.Time+PAGINGTIMEOUT-1.0;
+		if (++SelectedRaw[curmapspace] >=AspNumraws) SelectedRaw[curmapspace]=0;
+		LastDoAirspaces=GPS_INFO.Time+PAGINGTIMEOUT-1.0; 
 		break;
 	case LKEVENT_UP:
-		if (--SelectedRaw[curmapspace] <0) SelectedRaw[curmapspace]=TrafficNumraws-1;
-		LastDoTraffic=GPS_INFO.Time+PAGINGTIMEOUT-1.0;
+		if (--SelectedRaw[curmapspace] <0) SelectedRaw[curmapspace]=AspNumraws-1;
+		LastDoAirspaces=GPS_INFO.Time+PAGINGTIMEOUT-1.0; 
 		break;
 	case LKEVENT_PAGEUP:
 		LKevent=LKEVENT_NONE;
@@ -253,13 +251,16 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 		LKevent=LKEVENT_NONE;
 		break;
 	case LKEVENT_NEWRUN:
-		for (i=0; i<MAXTRAFFIC; i++) {
-			for (k=0; k<MAXTRAFFICNUMPAGES; k++) {
-				_stprintf(Buffer1[i][k],_T("------------")); // 12 chars
+		for (i=0; i<MAXNEARAIRSPACES; i++) {
+			for (k=0; k<MAXAIRSPACENUMPAGES; k++) {
+				if ( ScreenSize < (ScreenSize_t)sslandscape ) 
+					_stprintf(Buffer1[i][k],_T("---------------")); // 15 chars
+				else
+					_stprintf(Buffer1[i][k],_T("-----------------------")); // 23 chars
 				_stprintf(Buffer2[i][k],_T("----"));
 				_stprintf(Buffer3[i][k],_T("----"));
 				_stprintf(Buffer4[i][k],_T("----"));
-				_stprintf(Buffer5[i][k],_T("----"));
+				_stprintf(Buffer5[i][k],_T("  "));
 			}
 		}
 		break;
@@ -269,7 +270,6 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 		LKevent=LKEVENT_NONE;
 		break;
   }
-
 
   if (INVERTCOLORS)
 	  _DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p1, p2, RGB_GREEN, rc);
@@ -282,41 +282,40 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
   if ( ScreenSize < (ScreenSize_t)sslandscape ) { // portrait mode
 	FillRect(hdc,&s_sortBox[cursortbox], sortbrush); 
+
 	_stprintf(Buffer,TEXT("%d.%d"),ModeIndex,CURTYPE+1);
   	SelectObject(hdc, LK8PanelMediumFont); 
+
 	LKWriteText(hdc, Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0,  WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
   	SelectObject(hdc, LK8InfoNormalFont); 
 
- 		// LKTOKEN _@M1331_ "TRF"
-		_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1331_")), curpage+1,TrafficNumpages); 
-	if (cursortbox==0)
- 		LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
-	else
- 		LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+	_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1642_")), curpage+1, AspNumpages);  // ASP
 
-	// LKTOKEN _@M1300_ "Dist"
-	 _stprintf(Buffer, gettext(TEXT("_@M1300_"))); 
+	if (cursortbox == 0)
+		LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
+	else
+		LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+
+	_stprintf(Buffer,gettext(TEXT("_@M752_"))); // Type
 	if (cursortbox==1)
 		LKWriteText(hdc, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
 		LKWriteText(hdc, Buffer, Column2, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-	// LKTOKEN _@M1301_ "Dir"
-	_stprintf(Buffer, gettext(TEXT("_@M1301_"))); 
+	_stprintf(Buffer,gettext(TEXT("_@M1300_")));  // Dist
 	if (cursortbox==2)
 		LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
 		LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-	// LKTOKEN _@M1332_ "Var"
-	_stprintf(Buffer, gettext(TEXT("_@M1332_"))); 
+	_stprintf(Buffer,gettext(TEXT("_@M1301_")));  // Dir
 	if (cursortbox==3)
 		LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
 		LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-	// LKTOKEN _@M1334_ "Alt"
-	_stprintf(Buffer, gettext(TEXT("_@M1334_"))); 
+	// Active mode
+	_stprintf(Buffer,TEXT("*")); 
 	if (cursortbox==4)
 		LKWriteText(hdc, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
@@ -324,45 +323,41 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
 
   } else {
-	FillRect(hdc,&s_sortBox[cursortbox], sortbrush); 
+	FillRect(hdc,&s_sortBox[cursortbox], sortbrush);
 
-	if ( (ScreenSize == (ScreenSize_t)ss640x480) || (ScreenSize == (ScreenSize_t)ss320x240)|| ScreenSize==ss896x672 ) {
+	if ( (ScreenSize == (ScreenSize_t)ss640x480) || (ScreenSize == (ScreenSize_t)ss320x240) || (ScreenSize == ss896x672) ) {
 
 		_stprintf(Buffer,TEXT("%d.%d"),ModeIndex,CURTYPE+1);
   		SelectObject(hdc, LK8PanelMediumFont); 
 		LKWriteText(hdc, Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
   		SelectObject(hdc, LK8InfoNormalFont); 
 
- 		// LKTOKEN _@M1331_ "TRF"
-		_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1331_")), curpage+1,TrafficNumpages); 
+		_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1642_")), curpage+1, AspNumpages);  // ASP
+
 		if (cursortbox==0)
 			LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
-		// LKTOKEN _@M1300_ "Dist"
-		 _stprintf(Buffer, gettext(TEXT("_@M1300_"))); 
+		_stprintf(Buffer,gettext(TEXT("_@M752_"))); // Type
 		if (cursortbox==1)
 			LKWriteText(hdc, Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		// LKTOKEN _@M1301_ "Dir"
-		_stprintf(Buffer, gettext(TEXT("_@M1301_"))); 
+		_stprintf(Buffer,gettext(TEXT("_@M1300_")));  // Dist
 		if (cursortbox==2)
 			LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		// LKTOKEN _@M1332_ "Var"
-		_stprintf(Buffer, gettext(TEXT("_@M1332_"))); 
+		_stprintf(Buffer,gettext(TEXT("_@M1301_")));  // dir
 		if (cursortbox==3)
 			LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		// LKTOKEN _@M1334_ "Alt"
-		_stprintf(Buffer, gettext(TEXT("_@M1334_"))); 
+		_stprintf(Buffer,TEXT("*"));
 		if (cursortbox==4)
 			LKWriteText(hdc, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
@@ -373,36 +368,32 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 		LKWriteText(hdc, Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
   		SelectObject(hdc, LK8InfoNormalFont); 
 
- 		// LKTOKEN _@M1331_ "TRF"
-		_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1331_")), curpage+1,TrafficNumpages); 
+		_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1642_")), curpage+1, AspNumpages);  // ASP
+
 		if (cursortbox==0)
 			LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column0, HEADRAW-NIBLSCALE(1) , 0,WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
-		// LKTOKEN _@M1304_ "Distance"
-		_stprintf(Buffer, gettext(TEXT("_@M1304_"))); 
+		_stprintf(Buffer,gettext(TEXT("_@M752_")));  // Type
 		if (cursortbox==1)
 			LKWriteText(hdc, Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column2, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		// LKTOKEN _@M1305_ "Direction"
-		_stprintf(Buffer, gettext(TEXT("_@M1305_"))); 
+		_stprintf(Buffer,gettext(TEXT("_@M1300_")));  // Dist
 		if (cursortbox==2)
 			LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		// LKTOKEN _@M1333_ "Vario"
-		_stprintf(Buffer, gettext(TEXT("_@M1333_"))); 
+		_stprintf(Buffer,gettext(TEXT("_@M1301_")));  // Dir
 		if (cursortbox==3)
 			LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
 			LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		// LKTOKEN _@M1334_ "Alt"
-		_stprintf(Buffer, gettext(TEXT("_@M1334_"))); 
+		_stprintf(Buffer,TEXT("*")); 
 		if (cursortbox==4)
 			LKWriteText(hdc, Buffer, Column5, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
@@ -415,73 +406,61 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
   SelectObject(hdc, LK8InfoBigFont); // Text font for Nearest
 
-  #ifdef DEBUG_LKT_DRAWTRAFFIC
-  TCHAR v2buf[100]; // REMOVE VENTA
-  wsprintf(v2buf,_T("MAXTRAFFIC=%d LKNumTraff=%d / TrafficNumraws=%d TrafficNumpages=%d calc=%d\n"),MAXTRAFFIC, LKNumTraffic,TrafficNumraws, TrafficNumpages, (short)(ceil(MAXTRAFFIC/TrafficNumraws)));
-  StartupStore(v2buf);
-  #endif
 
-  for (i=0, drawn_items_onpage=0; i<TrafficNumraws; i++) {
+  int *psortedindex;
+  psortedindex=LKSortedAirspaces;
+
+  for (i=0, drawn_items_onpage=0; i<AspNumraws; i++) {
 	iRaw=TopSize+(s_rawspace*i);
-	short curraw=(curpage*TrafficNumraws)+i;
-	if (curraw>=MAXTRAFFIC) break;
-	rli=LKSortedTraffic[curraw];
+	short curraw=(curpage*AspNumraws)+i;
+	if (curraw>=MAXNEARAIRSPACES) break;
 
-	#ifdef DEBUG_LKT_DRAWTRAFFIC
-	StartupStore(_T("..LKDrawTraff page=%d curraw=%d rli=%d \n"),
-		curpage,curraw,rli);
-	#endif
+	rli=*(psortedindex+curraw);
 
-	if ( (rli>=0) && (LKTraffic[rli].ID>0) ) {
+	if (!ndr) {
+		goto KeepOldValues;
+	}
+	if ( ValidAirspace(rli) ) {
 
-		// Traffic name
-		wlen=wcslen(LKTraffic[rli].Name);
-
-		// if name is unknown then it is a '?'
-		if (wlen==1) { 
-			_stprintf(Buffer,_T("%06x"),LKTraffic[rli].ID);
-			Buffer[s_maxnlname]='\0';
-		} else {
-			// if XY I-ABCD  doesnt fit..
-			if ( (wlen+3)>s_maxnlname) {
-				_tcsncpy(Buffer, LKTraffic[rli].Name, s_maxnlname); Buffer[s_maxnlname]='\0';
-			}
-			else {
-				unsigned short cnlen=_tcslen(LKTraffic[rli].Cn);
-				// if cn is XY create XY I-ABCD
-				if (cnlen==1 || cnlen==2) {
-					_tcscpy(Buffer,LKTraffic[rli].Cn);
-					_tcscat(Buffer,_T(" "));
-					_tcscat(Buffer,LKTraffic[rli].Name);
-					// for safety
-					Buffer[s_maxnlname]='\0';
-				} else {
-					// else use only long name
-					_tcsncpy(Buffer, LKTraffic[rli].Name, wlen); Buffer[wlen]='\0';
-				}
-			}
-			ConvToUpper(Buffer);
+		//
+		// AIRSPACE NAME
+		//
+		wlen=wcslen(LKAirspaces[rli].Name);
+		if (wlen>s_maxnlname) {
+			_tcsncpy(Buffer, LKAirspaces[rli].Name, s_maxnlname); Buffer[s_maxnlname]='\0';
 		}
-		if (LKTraffic[rli].Locked) {
-			TCHAR buf2[LKSIZEBUFFERLARGE];
-			_stprintf(buf2,_T("*%s"),Buffer);
-			buf2[s_maxnlname]='\0';
-			_tcscpy(Buffer,buf2);
+		else {
+			_tcsncpy(Buffer, LKAirspaces[rli].Name, wlen); Buffer[wlen]='\0';
 		}
-		#ifdef DEBUG_LKT_DRAWTRAFFIC
-		StartupStore(_T(".. Traffic[%d] Name=<%s> Id=<%0x> Status=%d Named:<%s>\n"),rli,LKTraffic[rli].Name,
-			LKTraffic[rli].ID, LKTraffic[rli].Status,Buffer);
-		#endif
+		ConvToUpper(Buffer);
 		_tcscpy(Buffer1[i][curpage],Buffer); 
 
-		// Distance
-		value=LKTraffic[rli].Distance*DISTANCEMODIFY;
-         	_stprintf(Buffer2[i][curpage],TEXT("%0.1lf"),value);
 
-		// relative bearing
+		//
+		// AIRSPACE TYPE
+		//
+		wlen=wcslen(LKAirspaces[rli].Type);
+		if (wlen>LKASP_TYPE_LEN) {
+			_tcsncpy(Buffer, LKAirspaces[rli].Type, LKASP_TYPE_LEN); Buffer[LKASP_TYPE_LEN]='\0';
+		}
+		else {
+			_tcsncpy(Buffer, LKAirspaces[rli].Type, wlen); Buffer[wlen]='\0';
+		}
+		ConvToUpper(Buffer);
+		_tcscpy(Buffer2[i][curpage],Buffer); 
 
+		
+		//
+		// AIRSPACE DISTANCE
+		//
+		value=LKAirspaces[rli].Distance*DISTANCEMODIFY;
+       		_stprintf(Buffer3[i][curpage],TEXT("%0.1lf"),value);
+
+		//
+		// AIRSPACE BEARING DIFFERENCE, OR BEARING IF CIRCLING
+		//
 		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-			value = LKTraffic[rli].Bearing -  GPS_INFO.TrackBearing;
+			value = LKAirspaces[rli].Bearing -  GPS_INFO.TrackBearing;
 
 			if (value < -180.0)
 				value += 360.0;
@@ -489,74 +468,53 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 				if (value > 180.0)
 					value -= 360.0;
 
-#ifndef __MINGW32__
 			if (value > 1)
-				_stprintf(Buffer3[i][curpage], TEXT("%2.0f\xB0\xBB"), value);
+				_stprintf(Buffer4[i][curpage], TEXT("%2.0f°»"), value);
 			else
 				if (value < -1)
-					_stprintf(Buffer3[i][curpage], TEXT("\xAB%2.0f\xB0"), -value);
+					_stprintf(Buffer4[i][curpage], TEXT("«%2.0f°"), -value);
 				else
-					_tcscpy(Buffer3[i][curpage], TEXT("\xAB\xBB"));
-#else
-			if (value > 1)
-				_stprintf(Buffer3[i][curpage], TEXT("%2.0f°»"), value);
-			else
-				if (value < -1)
-					_stprintf(Buffer3[i][curpage], TEXT("«%2.0f°"), -value);
-				else
-					_tcscpy(Buffer3[i][curpage], TEXT("«»"));
-#endif
-		} else {
-			_stprintf(Buffer3[i][curpage], _T("%2.0f°"), LKTraffic[rli].Bearing);
-		}
-			
+					_tcscpy(Buffer4[i][curpage], TEXT("«»"));
+		} else
+			_stprintf(Buffer4[i][curpage], TEXT("%2.0f°"), LKAirspaces[rli].Bearing);
 
-		// Vario
-		value=LIFTMODIFY*LKTraffic[rli].Average30s;
-		if (value<-6 || value>6) 
-			_stprintf(Buffer4[i][curpage],_T("---"));
-		else {
-			sprintf(text,"%+.1f",value);
-			_stprintf(Buffer4[i][curpage],_T("%S"),text);
-		}
 
-		// Altitude
-		value=ALTITUDEMODIFY*LKTraffic[rli].Altitude;
-		if (value<-1000 || value >45000 )
-			strcpy(text,"---");
-		else
-			sprintf(text,"%.0f",value);
-		wsprintf(Buffer5[i][curpage], TEXT("%S"),text);
+		//
+		// AIRSPACE ACTIVE OR NOT
+		//
+		_stprintf(Buffer5[i][curpage], TEXT("%s"), LKAirspaces[rli].Enabled ? _T("  ") : _T("X "));
 
 	} else {
-		// Empty traffic, fill in all empty data and maybe break loop
-		_stprintf(Buffer1[i][curpage],_T("------------"));
-		_stprintf(Buffer2[i][curpage],_T("---"));
-		_stprintf(Buffer3[i][curpage],_T("---"));
-		_stprintf(Buffer4[i][curpage],_T("---"));
-		_stprintf(Buffer5[i][curpage],_T("---"));
+		if ( ScreenSize < (ScreenSize_t)sslandscape ) 
+			_stprintf(Buffer1[i][curpage], _T("---------------")); // 15 chars
+		else
+			_stprintf(Buffer1[i][curpage], _T("-----------------------")); // 23 chars
+		_stprintf(Buffer2[i][curpage],_T("----"));
+		_stprintf(Buffer3[i][curpage],_T("----"));
+		_stprintf(Buffer4[i][curpage],_T("----"));
+		_stprintf(Buffer5[i][curpage],_T("  "));
 	}
 
 
-	if ((rli>=0) && (LKTraffic[rli].ID>0)) {
+KeepOldValues:
+
+	if ( ValidAirspace(rli) ) {
+
 		drawn_items_onpage++;
-		if (LKTraffic[rli].Status == LKT_REAL) {
-			rcolor=RGB_WHITE;
-  			SelectObject(hdc, LK8InfoBigFont);
+
+		if (!LKAirspaces[rli].Enabled) {
+			rcolor=RGB_LIGHTRED;
+  			SelectObject(hdc, LK8InfoBigItalicFont); 
 		} else {
-			if (LKTraffic[rli].Status == LKT_GHOST) {
-				rcolor=RGB_LIGHTYELLOW;
-			} else {
-				rcolor=RGB_LIGHTRED;
-			}
-  			SelectObject(hdc, LK8InfoBigItalicFont);
+			rcolor=RGB_WHITE;
+  			SelectObject(hdc, LK8InfoBigFont); 
 		}
-	} else 
+	} else {
 		rcolor=RGB_GREY;
+	}
 
 	LKWriteText(hdc, Buffer1[i][curpage], Column1, iRaw , 0, WTMODE_NORMAL, WTALIGN_LEFT, rcolor, false);
 	
-  	SelectObject(hdc, LK8InfoBigFont); // Text font for Nearest
 	LKWriteText(hdc, Buffer2[i][curpage], Column2, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
 
 	LKWriteText(hdc, Buffer3[i][curpage], Column3, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
@@ -565,7 +523,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
 	LKWriteText(hdc, Buffer5[i][curpage], Column5, iRaw , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rcolor, false);
 
-  }  // for
+  } 
 
 
   if (LKevent==LKEVENT_NEWRUN || LKevent==LKEVENT_NEWPAGE ) {
@@ -575,8 +533,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
   if (drawn_items_onpage>0) {
 
-	if (SelectedRaw[curmapspace] <0 || SelectedRaw[curmapspace]>(TrafficNumraws-1)) {
-  		LKevent=LKEVENT_NONE; // 100328
+	if (SelectedRaw[curmapspace] <0 || SelectedRaw[curmapspace]>(AspNumraws-1)) {
 		return;
 	}
 	if (SelectedRaw[curmapspace] >= drawn_items_onpage) {
@@ -584,9 +541,12 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 		else 
 		if (LKevent==LKEVENT_UP) SelectedRaw[curmapspace]=drawn_items_onpage-1;
 		else {
+			DoStatusMessage(_T("Cant find valid raw"));
 			SelectedRaw[curmapspace]=0;
 		}
 	}
+
+	
 	invsel.left=left;
 	invsel.right=right;
 	invsel.top=TopSize+(s_rawspace*SelectedRaw[curmapspace])+NIBLSCALE(2);
@@ -599,3 +559,8 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   return;
 }
 
+// True if the i airspace is existing and valid
+bool ValidAirspace(int i) {
+  if (i<0 || i>MAXNEARAIRSPACES) return false;
+  return LKAirspaces[i].Valid;
+}

@@ -38,7 +38,6 @@ extern int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *ele
 
 extern void DrawMapSpace(HDC hdc, RECT rc);
 extern void DrawNearest(HDC hdc, RECT rc);
-extern void DrawNearestTurnpoint(HDC hdc, RECT rc);
 extern void DrawCommon(HDC hdc, RECT rc);
 extern void DrawWelcome8000(HDC hdc, RECT rc);
 #ifdef CPUSTATS
@@ -134,11 +133,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   redwarning=false;
   oldfont = (HFONT)SelectObject(hdc, LKINFOFONT); // FIXFONT
 
-#ifndef MAP_ZOOM
-  if ( IsMapFullScreen() && !EnablePan )
-#else /* MAP_ZOOM */
   if ( IsMapFullScreen() && !mode.AnyPan() )
-#endif /* MAP_ZOOM */
 	DrawBottom=true; // TODO maybe also !TargetPan
   else
 	DrawBottom=false;
@@ -325,11 +320,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
   // First we draw flight related values such as instant efficiency, altitude, new infoboxes etc.
 
-#ifndef MAP_ZOOM
-  if (MapWindow::IsMapFullScreen() && LKVarioBar && !EnablePan) { // 091214 Vario non available in pan mode
-#else /* MAP_ZOOM */
   if (MapWindow::IsMapFullScreen() && LKVarioBar && !mode.AnyPan()) { // 091214 Vario non available in pan mode
-#endif /* MAP_ZOOM */
 	leftmargin=(LKVarioSize+NIBLSCALE(3)); // VARIOWIDTH + middle separator right extension
 	tlen-=2; // 091115
 	
@@ -350,11 +341,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   } else {
 	index = GetOvertargetIndex();
   }
-#ifndef MAP_ZOOM
-		if (DisplayMode != dmCircling) {
-#else /* MAP_ZOOM */
 		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
 			rcx=rc.left+leftmargin+NIBLSCALE(1);
 			rcy=rc.top+NIBLSCALE(1);
 		} else {
@@ -480,11 +467,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		}
 
 		// DIFF Bearing value displayed only when not circling
-#ifndef MAP_ZOOM
-	  	if (DisplayMode != dmCircling) {
-#else /* MAP_ZOOM */
 	  	if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
 			switch (OvertargetMode) {
 				case OVT_TASK:
 		 			LKFormatValue(LK_BRGDIFF, false, BufferValue, BufferUnit, BufferTitle);
@@ -647,11 +630,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
 	} else {
 		SelectObject(hdc, bigFont); // use this font for big values
-#ifndef MAP_ZOOM
-	  	if (DisplayMode == dmCircling)
-#else /* MAP_ZOOM */
 	  	if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
-#endif /* MAP_ZOOM */
 			LKFormatValue(LK_TC_30S, false, BufferValue, BufferUnit, BufferTitle);
 		else
 			LKFormatValue(LK_LD_AVR, false, BufferValue, BufferUnit, BufferTitle);
@@ -784,21 +763,13 @@ drawOverlay:
 	if (ISPARAGLIDER) {
 		LKFormatValue(LK_HNAV, false, BufferValue, BufferUnit, BufferTitle); // 091115
 	} else {
-#ifndef MAP_ZOOM
-		if (DisplayMode == dmCircling)
-#else /* MAP_ZOOM */
 		if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
-#endif /* MAP_ZOOM */
 			LKFormatValue(LK_TC_30S, false, BufferValue, BufferUnit, BufferTitle);
 		else
 			LKFormatValue(LK_LD_AVR, false, BufferValue, BufferUnit, BufferTitle);
 	}
 	GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
-#ifndef MAP_ZOOM
-	if (!EnablePan) // 091214
-#else /* MAP_ZOOM */
 	if (!mode.AnyPan()) // 091214
-#endif /* MAP_ZOOM */
 		rcx=rc.left+NIBLSCALE(10)+leftmargin+GlideBarOffset;   // 091115
 	else
 		rcx=rc.left+NIBLSCALE(10)+leftmargin;   // 091115
@@ -898,22 +869,9 @@ Drawbottom:
   // HPEN hP; REMOVE 101204
   HBRUSH hB;
   if ( INVERTCOLORS ) {
-	#if LKOBJ
   	hB = LKBrush_Black;
-  	// hB = LKBrush_Ndark; REMOVE 101204
-	// hP = LKPen_White_N0; // FIX  with Yellow  REMOVE 101204
-	#else
-  	hB = (HBRUSH)CreateSolidBrush(RGB_NDARK);
-	// hP = (HPEN)CreatePen(PS_SOLID,0,RGB_YELLOW);  REMOVE 101204
-	#endif
   } else {
-	#if LKOBJ
   	hB = LKBrush_Nlight;
-	// hP = LKPen_Black_N0; REMOVE 101204
-	#else
-  	hB = (HBRUSH)CreateSolidBrush(RGB_NLIGHT);
-	// hP = (HPEN)CreatePen(PS_SOLID,0,RGB_BLACK); REMOVE 101204
-	#endif
   }
 
 
@@ -959,21 +917,13 @@ Drawbottom:
   static short OldBottomMode=BM_FIRST;
   bool showunit=false;
 
-#ifndef MAP_ZOOM
-  if ( (DisplayMode == dmCircling) && !wascircling) {
-#else /* MAP_ZOOM */
   if ( MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && !wascircling) {
-#endif /* MAP_ZOOM */
 	// switch to thermal mode
 	OldBottomMode=BottomMode;
 	BottomMode=BM_TRM;
 	wascircling=true;
   }
-#ifndef MAP_ZOOM
-  if ( (DisplayMode != dmCircling) && wascircling) {
-#else /* MAP_ZOOM */
   if ( !MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && wascircling) {
-#endif /* MAP_ZOOM */
 	// back to cruise mode
 	BottomMode=OldBottomMode;
 	wascircling=false;
@@ -988,11 +938,7 @@ Drawbottom:
 
   switch(BottomMode) {
 	case BM_TRM:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(1,dmCircling);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(1,MapWindow::Mode::MODE_FLY_CIRCLING);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1025,21 +971,13 @@ Drawbottom:
 		break;
 
 	case BM_CUS2:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(1,dmCruise);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(1,MapWindow::Mode::MODE_FLY_CRUISE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
 		
 	case BM_CUS3:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(1,dmFinalGlide);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(1,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1063,11 +1001,7 @@ Drawbottom:
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(2,dmCircling);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(2,MapWindow::Mode::MODE_FLY_CIRCLING);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1107,21 +1041,13 @@ Drawbottom:
 		BufferTitle[7]='\0';
 		break;
 	case BM_CUS2:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(2,dmCruise);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(2,MapWindow::Mode::MODE_FLY_CRUISE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
 		
 	case BM_CUS3:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(2,dmFinalGlide);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(2,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1146,11 +1072,7 @@ Drawbottom:
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(3,dmCircling);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(3,MapWindow::Mode::MODE_FLY_CIRCLING);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1227,21 +1149,13 @@ Drawbottom:
 		BufferTitle[7]='\0';
 		break;
 	case BM_CUS2:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(3,dmCruise);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(3,MapWindow::Mode::MODE_FLY_CRUISE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
 		
 	case BM_CUS3:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(3,dmFinalGlide);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(3,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1266,11 +1180,7 @@ Drawbottom:
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(4,dmCircling);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(4,MapWindow::Mode::MODE_FLY_CIRCLING);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1316,21 +1226,13 @@ Drawbottom:
 		BufferTitle[7]='\0';
 		break;
 	case BM_CUS2:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(4,dmCruise);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(4,MapWindow::Mode::MODE_FLY_CRUISE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
 		
 	case BM_CUS3:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(4,dmFinalGlide);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(4,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1356,11 +1258,7 @@ Drawbottom:
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(5,dmCircling);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(5,MapWindow::Mode::MODE_FLY_CIRCLING);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1406,21 +1304,13 @@ Drawbottom:
 		BufferTitle[7]='\0';
 		break;
 	case BM_CUS2:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(5,dmCruise);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(5,MapWindow::Mode::MODE_FLY_CRUISE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
 		
 	case BM_CUS3:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(5,dmFinalGlide);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(5,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1447,11 +1337,7 @@ Drawbottom:
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(6,dmCircling);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(6,MapWindow::Mode::MODE_FLY_CIRCLING);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1490,21 +1376,13 @@ Drawbottom:
 		BufferTitle[7]='\0';
 		break;
 	case BM_CUS2:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(6,dmCruise);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(6,MapWindow::Mode::MODE_FLY_CRUISE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
 		
 	case BM_CUS3:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(6,dmFinalGlide);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(6,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1528,12 +1406,7 @@ Drawbottom:
    */
 
 EndOfNavboxes:
-  #ifndef LKOBJ
-  DeleteObject(hB);
-  // DeleteObject(hP);  REMOVE 101204
-  #else
   ;
-  #endif
 
 } // drawbottom
 

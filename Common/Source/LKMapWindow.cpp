@@ -42,9 +42,7 @@
 #include "GaugeFLARM.h"
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
-#if LKOBJ
 #include "LKObjects.h"
-#endif
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -120,11 +118,7 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
   }
 
   HPEN hpold;
-  #if LKOBJ
   HPEN thinBlackPen = LKPen_Black_N1;
-  #else
-  HPEN thinBlackPen = CreatePen(PS_SOLID, NIBLSCALE(1), RGB(0,0,0));
-  #endif
   POINT Arrow[5];
 
   //TCHAR buffer[50]; REMOVE
@@ -144,15 +138,9 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
   double screenrange = GetApproxScreenRange();
   double scalefact = screenrange/6000.0; // FIX 100820
 
-  #if LKOBJ
   HBRUSH redBrush = LKBrush_Red;
   HBRUSH yellowBrush = LKBrush_Yellow;
   HBRUSH greenBrush = LKBrush_Green;
-  #else
-  HBRUSH redBrush = CreateSolidBrush(RGB_RED);
-  HBRUSH yellowBrush = CreateSolidBrush(RGB_YELLOW);
-  HBRUSH greenBrush = CreateSolidBrush(RGB_GREEN);
-  #endif
   HFONT  oldfont = (HFONT)SelectObject(hDC, LK8MapFont);
 
   for (i=0,painted=0; i<FLARM_MAX_TRAFFIC; i++) {
@@ -254,12 +242,6 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
 
   SelectObject(hDC, oldfont);
   SelectObject(hDC, hpold);
-  #ifndef LKOBJ
-  DeleteObject((HPEN)thinBlackPen);
-  DeleteObject(greenBrush);
-  DeleteObject(yellowBrush);
-  DeleteObject(redBrush);
-  #endif
 
 }
 
@@ -320,7 +302,6 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
   int variowidth=LKVarioSize;
 
 
-  #if LKOBJ
   whiteThickPen =  LKPen_White_N2;	// BOXTHICK
   blackThickPen =  LKPen_Black_N2;	// BOXTHICK
   whiteThinPen =   LKPen_White_N0;
@@ -334,21 +315,6 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
   lakeBrush = LKBrush_Lake;
   blueBrush = LKBrush_Blue;
   indigoBrush = LKBrush_Indigo;
-  #else
-  whiteThickPen =   (HPEN)CreatePen(PS_SOLID,IBLSCALE(BOXTHICK),RGB_WHITE);
-  blackThickPen =   (HPEN)CreatePen(PS_SOLID,IBLSCALE(BOXTHICK),RGB_BLACK);
-  whiteThinPen =   (HPEN)CreatePen(PS_SOLID,0,RGB_WHITE);
-  blackThinPen =   (HPEN)CreatePen(PS_SOLID,0,RGB_BLACK);
-  blackBrush = (HBRUSH)CreateSolidBrush(RGB_BLACK);
-  whiteBrush = (HBRUSH)CreateSolidBrush(RGB_WHITE);
-  greenBrush = (HBRUSH)CreateSolidBrush(RGB_GREEN);
-  darkyellowBrush = (HBRUSH)CreateSolidBrush(RGB_DARKYELLOW2);
-  orangeBrush = (HBRUSH)CreateSolidBrush(RGB_ORANGE);
-  redBrush = (HBRUSH)CreateSolidBrush(RGB_RED);
-  lakeBrush = (HBRUSH)CreateSolidBrush(RGB_LAKE);
-  blueBrush = (HBRUSH)CreateSolidBrush(RGB_BLUE);
-  indigoBrush = (HBRUSH)CreateSolidBrush(RGB_INDIGO);
-  #endif
 
   // set default background in case of missing values
   for (int i=0; i<(NUMVBRICKS/2); i++ )
@@ -701,11 +667,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   #endif
 
   #if 100303
-#ifndef MAP_ZOOM
-  if (MapWindow::MapScale <2.34) { // <3km map zoom
-#else /* MAP_ZOOM */
   if (MapWindow::zoom.Scale() <2.34) { // <3km map zoom
-#endif /* MAP_ZOOM */
 	usecolors=true;
   }
   #endif
@@ -715,11 +677,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   double traildrift_lat = 0.0;
   double traildrift_lon = 0.0;
   
-#ifndef MAP_ZOOM
-  if (EnableTrailDrift && (DisplayMode == dmCircling)) {
-#else /* MAP_ZOOM */
   if (EnableTrailDrift && MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
     double tlat1, tlon1;
     
     FindLatitudeLongitude(DrawInfo.Latitude, 
@@ -746,11 +704,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 	// scan only recently for lift magnitude
 	num_trail_max = TRAILSIZE/TRAILSHRINK;
   }
-#ifndef MAP_ZOOM
-  if ((DisplayMode == dmCircling)) {
-#else /* MAP_ZOOM */
   if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
 	num_trail_max /= TRAILSHRINK;
   }
 
@@ -788,11 +742,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 
   // Constants for speedups
 
-#ifndef MAP_ZOOM
-  const bool display_circling = DisplayMode == dmCircling;
-#else /* MAP_ZOOM */
   const bool display_circling = MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING);
-#endif /* MAP_ZOOM */
   const double display_time = DrawInfo.Time;
 
   // expand bounds so in strong winds the appropriate snail points are
@@ -813,11 +763,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   const int sint = ISINETABLE[deg];
   const int xxs = Orig_Screen.x*1024-512;
   const int yys = Orig_Screen.y*1024+512;
-#ifndef MAP_ZOOM
-  const double mDrawScale = DrawScale;
-#else /* MAP_ZOOM */
   const double mDrawScale = zoom.DrawScale();
-#endif /* MAP_ZOOM */
   const double mPanLongitude = PanLongitude;
   const double mPanLatitude = PanLatitude;
 
@@ -827,11 +773,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   if (display_circling) {
 	nearby=NIBLSCALE(1);
   } else {
-#ifndef MAP_ZOOM
-  	if (MapWindow::MapScale <=1)
-#else /* MAP_ZOOM */
   	if (MapWindow::zoom.Scale() <=1)
-#endif /* MAP_ZOOM */
 		nearby=NIBLSCALE(1); 
 	else
 		nearby=NIBLSCALE(2);
@@ -1016,11 +958,7 @@ void MapWindow::SetAutoOrientation(bool doreset) {
   }
 
   // 1.4 because of correction if mapscale reported on screen in MapWindow2
-#ifndef MAP_ZOOM
-  if ((MapScale*1.4) >= AutoOrientScale) {
-#else /* MAP_ZOOM */
   if (MapWindow::zoom.Scale() * 1.4 >= AutoOrientScale) {
-#endif /* MAP_ZOOM */
 	// DisplayOrientation=NORTHSMART; // better to keep the glider centered on low zoom levels
 	DisplayOrientation=NORTHUP;
   } else {

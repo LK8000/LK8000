@@ -1,14 +1,17 @@
 <PMML>
-<WndForm Type="Dialog" X=1 Y=1 Width=238 Height=200 Caption="_@M65_" Font=2 >
-<WndButton Name="cmdClose" Caption="_@M186_" X=2 Y=2 Width=60  Height=28 Font=2 Tag=0 OnClickNotify="OnCloseClicked" />
-<WndButton Name="cmdFly" Caption="_@M1270_" X=95 Y=2 Width=70  Height=28 Font=2 Tag=0 OnClickNotify="OnFlyClicked" />
-<WndButton Name="cmdAcknowledge" Caption="_@M1283_" X=167 Y=2 Width=70  Height=28 Font=2 Tag=0 OnClickNotify="OnAcknowledgeClicked" />
-<WndProperty Name="prpName" Caption="_@M451_" X=2 Y=40  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
+<WndForm Type="Dialog" X=1 Y=1 Width=238 Height=238 Caption="_@M65_" Font=2 >
+<WndButton Name="cmdFly" Caption="_@M1270_" X=3 Y=2 Width=80  Height=38 Font=2 Tag=0 OnClickNotify="OnFlyClicked" />
+<WndButton Name="cmdAcknowledge" Caption="_@M1283_" X=91 Y=-999 Width=134  Height=38 Font=2 Tag=0 OnClickNotify="OnAcknowledgeClicked" />
+<WndProperty Name="prpName" Caption="_@M451_" X=2 Y=-998  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
 <WndProperty Name="prpType" Caption="_@M752_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
-<WndProperty Name="prpTop" Caption="_@M729_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
+<WndProperty Name="prpStatus" Caption="_@M660_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
+<WndProperty Name="prpTop" Caption="_@M729_" X=2 Y=-998  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
 <WndProperty Name="prpBase" Caption="_@M128_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
 <WndProperty Name="prpRange" Caption="_@M543_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
+<WndButton Name="cmdClose" Caption="_@M156_" X=3 Y=-998 Width=222  Height=38 Font=2 Tag=0 OnClickNotify="OnCloseClicked" />
+<!-- Only for diagnostics
 <WndProperty Name="prpWarnLevel" Caption="_@M1263_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
 <WndProperty Name="prpAckLevel" Caption="_@M1266_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
+-->
 </WndForm>    
 </PMML>

@@ -811,17 +811,9 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryAutoWind,&Temp);
   AutoWindMode = Temp;
 
-#ifndef MAP_ZOOM
-  Temp  = CircleZoom;
-#else /* MAP_ZOOM */
   Temp  = MapWindow::zoom.CircleZoom();
-#endif /* MAP_ZOOM */
   GetFromRegistry(szRegistryCircleZoom,&Temp);
-#ifndef MAP_ZOOM
-  CircleZoom = (Temp == 1);
-#else /* MAP_ZOOM */
   MapWindow::zoom.CircleZoom(Temp == 1);
-#endif /* MAP_ZOOM */
 
   Temp  = WindUpdateMode;
   GetFromRegistry(szRegistryWindUpdateMode,&Temp);
@@ -874,15 +866,15 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryFinishRadius,&Temp);
   FinishRadius = Temp;
 
-  Temp = 0;
+  Temp = AIRSPACEWARNINGS;
   GetFromRegistry(szRegistryAirspaceWarning,&Temp);
   AIRSPACEWARNINGS = Temp;
 
-  Temp = 30;
+  Temp = WarningTime;
   GetFromRegistry(szRegistryWarningTime,&Temp);
   WarningTime = max(10,Temp);
 
-  Temp = 30;
+  Temp = AcknowledgementTime;
   GetFromRegistry(szRegistryAcknowledgementTime,&Temp);
   AcknowledgementTime = max(10,Temp);
 
@@ -1423,11 +1415,7 @@ void ReadRegistrySettings(void)
 
   Temp = 0;
   GetFromRegistry(szRegistryAutoZoom,&Temp);
-#ifndef MAP_ZOOM
-  MapWindow::AutoZoom = (Temp == 1);
-#else /* MAP_ZOOM */
   MapWindow::zoom.AutoZoom(Temp == 1);
-#endif /* MAP_ZOOM */
 
   Temp = MenuTimeoutMax;
   GetFromRegistry(szRegistryMenuTimeout,&Temp);

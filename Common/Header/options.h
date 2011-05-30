@@ -113,17 +113,11 @@
 // Will speed up Range search, and also BestAlternate search
 #define UNSORTEDRANGE		1	// 101120 expire 110601
 
-
-#define LKOBJ			1	// expire 110401
-
 #define GASUPPORT		1	// oren's GA work
 
 #define MULTICALC		1	// Use multicalc approach, splitting calculation inside MapWindow
 					// thread into multiple instances, 0.5 or 0.33 Hz recommended
 					// Extensive checking required expire 110601
-
-#define MAP_ZOOM                1       // Applied 110204 expire 110601
-
 
 // ------------ NEW AIRSPACE ENGINE -------------------------------------------------
 // Using new airspaces requires to change lk8000.rc and activate LKAIRSPACE xmls. 

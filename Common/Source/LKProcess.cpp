@@ -187,11 +187,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
-#ifndef MAP_ZOOM
-					if (DisplayMode != dmCircling)
-#else /* MAP_ZOOM */
 					if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
-#endif /* MAP_ZOOM */
 					{
 						value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
 						valid=true;
@@ -681,12 +677,11 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				_stprintf(BufferTitle, gettext(TEXT("_@M1144_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-#ifndef MAP_ZOOM
-			if (DisplayMode != dmCircling) {
-#else /* MAP_ZOOM */
 			if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
-				value=DerivedDrawInfo.AverageLD;
+				if (DerivedDrawInfo.Flying)
+					value=DerivedDrawInfo.AverageLD;
+				else
+					value=0;
 				if (value <1 ||  value >=ALTERNATE_MAXVALIDGR ) {
 					strcpy(text,INFINVAL); 
 					valid=true;
@@ -757,7 +752,10 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				_stprintf(BufferTitle, gettext(TEXT("_@M1012_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			value=DerivedDrawInfo.CruiseLD;
+			if (DerivedDrawInfo.Flying)
+				value=DerivedDrawInfo.CruiseLD;
+			else
+				value=0;
 			if (value <-99 ||  value >=ALTERNATE_MAXVALIDGR ) {
 				strcpy(text,INFINVAL); 
 				valid=true;
@@ -1452,7 +1450,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			break;
 
 		// B79
-		case LK_AIRSPACEDIST:
+		case LK_AIRSPACEHDIST:
 			if (lktitle)
 				// LKTOKEN  _@M1159_ = "Airspace Distance", _@M1160_ = "AirSpace"
 				wsprintf(BufferTitle, gettext(TEXT("_@M1160_")));
@@ -1470,6 +1468,26 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				value = -1;
 			}
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
+			break;
+
+		// B114
+		case LK_AIRSPACEVDIST:
+			if (lktitle)
+				wsprintf(BufferTitle, gettext(TEXT("_@M1286_"))); // ArSpcV
+			else
+				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+
+			if (NearestAirspaceVDist != 0 && (fabs(NearestAirspaceVDist)<=9999) ) { // 9999 m or ft is ok
+				value = ALTITUDEMODIFY*NearestAirspaceVDist;
+				sprintf(text,"%.0f",value);
+				wsprintf(BufferValue, TEXT("%S"),text);
+				valid = true;
+			} else {
+				valid=false;
+				wsprintf(BufferValue, TEXT(NULLMEDIUM),text);
+				value = -1;
+			}
+			wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
 
 		// B66
@@ -2683,11 +2701,7 @@ void MapWindow::LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *
   _tcscpy(BufferValue,_T(NULLMEDIUM)); 
   _tcscpy(BufferUnit,_T(""));
   if (index>=0) {
-#ifndef MAP_ZOOM
-	if (DisplayMode != dmCircling) {
-#else /* MAP_ZOOM */
 	if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
 		value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
 		if (value < -180.0)
 			value += 360.0;

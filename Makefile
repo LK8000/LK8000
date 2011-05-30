@@ -411,7 +411,7 @@ SRC_FILES :=\
 	$(SRC)/InputEvents.cpp 		$(SRC)/leastsqs.cpp \
 	$(SRC)/Logger.cpp 		$(SRC)/LKMapWindow.cpp \
 	$(SRC)/LKDrawLook8000.cpp 	$(SRC)/LKDrawNearest.cpp\
-	$(SRC)/LKDrawCommon.cpp 	\
+	$(SRC)/LKDrawCommon.cpp 	$(SRC)/LKDrawAspNearest.cpp\
 	$(SRC)/LKDrawInfoPage.cpp	$(SRC)/LKDrawWaypoints.cpp\
 	$(SRC)/LKDrawTraffic.cpp	$(SRC)/LKSimulator.cpp\
 	$(SRC)/LKBestAlternate.cpp \
