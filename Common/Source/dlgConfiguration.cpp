@@ -399,12 +399,15 @@ static void OnSetupDeviceBClicked(WindowControl * Sender){
     wf->FocusNext(NULL);
 }
 
-static void UpdateDeviceSetupButton(int DeviceIdx, TCHAR *Name){
+static void UpdateDeviceSetupButton(int DeviceIdx, TCHAR *Name){ 
 
   WndButton *wb;
   WndProperty *wp;
   if (DeviceIdx<0||DeviceIdx>1) return;
 
+  #ifdef DEBUG_DEVSETTING
+  StartupStore(_T("...... dev=%d, name=<%s> disabled=%d\n"),DeviceIdx, Name, DeviceList[DeviceIdx].Disabled);
+  #endif
   if (_tcslen(Name)>0) {
     if (_tcscmp(Name,_T(DEV_DISABLED_NAME))==0) { // Do NOT use tokens here!
 	DeviceList[DeviceIdx].Disabled=true;
@@ -1682,6 +1685,9 @@ static void setVariables(void) {
   TCHAR deviceName2[MAX_PATH];
   ReadDeviceSettings(0, deviceName1);
   ReadDeviceSettings(1, deviceName2);
+  #ifdef DEBUG_DEVSETTING
+  StartupStore(_T("...... Config ReadDeviceSet 0=<%s> 1=<%s>\n"),deviceName1, deviceName2);
+  #endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpComDevice1"));
   if (wp) {
@@ -3843,8 +3849,12 @@ void dlgConfigurationShowModal(void){
 
   setVariables();
 
-  UpdateDeviceSetupButton(0, devA()->Name);
-  UpdateDeviceSetupButton(1, devB()->Name);
+  TCHAR deviceName1[MAX_PATH];
+  TCHAR deviceName2[MAX_PATH];
+  ReadDeviceSettings(0, deviceName1);
+  ReadDeviceSettings(1, deviceName2);
+  UpdateDeviceSetupButton(0, deviceName1);
+  UpdateDeviceSetupButton(1, deviceName2);
 
   NextPage(0); // just to turn proper pages on/off
 

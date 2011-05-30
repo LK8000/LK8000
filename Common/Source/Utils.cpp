@@ -3964,18 +3964,13 @@ void ReadDeviceSettings(const int devIdx, TCHAR *Name){
 
   if (devIdx == 0){
     GetRegistryString(szRegistryDeviceA , Name, DEVNAMESIZE);
-    return;
   }
 
   if (devIdx == 1){
     GetRegistryString(szRegistryDeviceB , Name, DEVNAMESIZE);
-    return;
   }
-
-  if (devIdx == 2){
-    GetRegistryString(szRegistryDeviceC , Name, DEVNAMESIZE);
+    if (_tcslen(Name)==0) _tcscpy(Name,_T(DEV_DISABLED_NAME));
     return;
-  }
 
 }
 

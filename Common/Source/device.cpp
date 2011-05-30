@@ -151,7 +151,7 @@ static int devIsFalseReturn(PDeviceDescriptor_t d){
 
 BOOL devInit(LPTSTR CommandLine){
   int i;
-  TCHAR DeviceName[DEVNAMESIZE];
+  TCHAR DeviceName[DEVNAMESIZE+1];
   PDeviceDescriptor_t pDevNmeaOut = NULL;
   static bool doinit=true;
 
@@ -202,6 +202,9 @@ BOOL devInit(LPTSTR CommandLine){
   pDevSecondaryBaroSource=NULL;
 
   ReadDeviceSettings(0, DeviceName);
+  #ifdef DEBUG_DEVSETTING
+  StartupStore(_T(".......... ReadDeviceSetting 0, DeviceName=<%s>\n"),DeviceName);
+  #endif
 	
 #ifdef GNAV
   PortIndex1 = 2; SpeedIndex1 = 5;
@@ -210,7 +213,7 @@ BOOL devInit(LPTSTR CommandLine){
 #endif
   ReadPort1Settings(&PortIndex1,&SpeedIndex1,&Bit1Index);
 
-  if (_tcslen(DeviceName)>0)
+  //if (_tcslen(DeviceName)>0) // removed 110530
   if (wcscmp(DeviceName,_T(DEV_DISABLED_NAME))!=0) {
 	DeviceList[0].Disabled=false;
 	StartupStore(_T(". Device A is <%s> Port=%s%s"),DeviceName,COMMPort[PortIndex1],NEWLINE);
@@ -259,6 +262,9 @@ BOOL devInit(LPTSTR CommandLine){
   }
 
   ReadDeviceSettings(1, DeviceName);
+  #ifdef DEBUG_DEVSETTING
+  StartupStore(_T(".......... ReadDeviceSetting 1, DeviceName=<%s>\n"),DeviceName);
+  #endif
 
 #ifdef GNAV
   PortIndex2 = 0; SpeedIndex2 = 5;
@@ -267,7 +273,7 @@ BOOL devInit(LPTSTR CommandLine){
 #endif
   ReadPort2Settings(&PortIndex2,&SpeedIndex2, &Bit2Index);
 
-  if (_tcslen(DeviceName)>0)
+  //if (_tcslen(DeviceName)>0) // removed 110530
   if (wcscmp(DeviceName,_T(DEV_DISABLED_NAME))!=0) {
 	DeviceList[1].Disabled=false;
 	StartupStore(_T(". Device B is <%s> Port=%s%s"),DeviceName,COMMPort[PortIndex2],NEWLINE);

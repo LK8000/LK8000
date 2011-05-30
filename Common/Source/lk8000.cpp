@@ -2203,8 +2203,14 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
 // WINDOWSPC _SIM_ devInit called twice missing devA name
 // on PC nonSIM we cannot use devInit here! Generic device is used until next port reset!
 
-#if (WINDOWSPC>0)
+#if 110530
+  // we need devInit for all devices. Missing initialization otherwise.
+  devInit(TEXT("")); 
+#else
+  // I dont remember anymore WHY! Probably it has been fixed already! paolo
+  #if (WINDOWSPC>0)
   if (SIMMODE) devInit(TEXT(""));      
+  #endif
 #endif
 
 

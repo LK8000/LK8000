@@ -172,6 +172,7 @@
 /*
  * Put here debug defines, so that other developers can activate them if needed.
 
+#define DEBUG_DEVSETTING  // startupstore messages to understand sequence of device and com port init
 #define DRAWLOAD          // show cpu load (set by DEBUG mode)
 #define DEBUG_DBLCLK      // show double click is being pressed
 #define VENTA_DEBUG_EVENT // show key events, actually very few.
