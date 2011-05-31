@@ -21,7 +21,7 @@
 using std::min;
 using std::max;
 
-static const int k_nAreaCount = 13;
+static const int k_nAreaCount = 14;
 static const TCHAR* k_strAreaStart[k_nAreaCount] = {
                     _T("R"),  
                     _T("Q"), 
@@ -35,7 +35,8 @@ static const TCHAR* k_strAreaStart[k_nAreaCount] = {
                     _T("W"), 
                     _T("E"), 
                     _T("F"),
-                    _T("G")
+                    _T("G"),
+                    _T("TMZ")
 };
 static const int k_nAreaType[k_nAreaCount] = {
                     RESTRICT, 
@@ -50,7 +51,8 @@ static const int k_nAreaType[k_nAreaCount] = {
                     WAVE, 
                     CLASSE, 
                     CLASSF,
-                    CLASSG};
+                    CLASSG,
+                    CLASSTMZ};
 
 
 //for Draw()
@@ -2215,6 +2217,8 @@ TCHAR* CAirspaceManager::GetAirspaceTypeText(int type) const
         return gettext(TEXT("_@M794_"));
       case AATASK:
         return TEXT("AAT");
+      case CLASSTMZ:
+        return TEXT("TMZ");
       case OTHER:
         // LKTOKEN  _@M765_ = "Unknown" 
         return gettext(TEXT("_@M765_"));
@@ -2253,6 +2257,8 @@ TCHAR* CAirspaceManager::GetAirspaceTypeShortText(int type) const
       return TEXT("CTR");
     case WAVE:
       return TEXT("Wav");
+    case CLASSTMZ:
+        return TEXT("TMZ");
     default:
       return TEXT("?");
     }

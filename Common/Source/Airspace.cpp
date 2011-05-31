@@ -89,7 +89,7 @@ static const int k_nLtDB	= 6;
 static const int k_nLtDA	= 7;
 static const int k_nLtDC	= 8;
 
-static const int k_nAreaCount = 13;
+static const int k_nAreaCount = 14;
 static const TCHAR* k_strAreaStart[k_nAreaCount] = {
 					_T("R"),  
 					_T("Q"), 
@@ -103,7 +103,8 @@ static const TCHAR* k_strAreaStart[k_nAreaCount] = {
 					_T("W"), 
 					_T("E"), 
 					_T("F"),
-					_T("G")
+					_T("G"),
+					_T("TMZ")
 };
 static const int k_nAreaType[k_nAreaCount] = {
 					RESTRICT, 
@@ -118,7 +119,8 @@ static const int k_nAreaType[k_nAreaCount] = {
 					WAVE, 
 					CLASSE, 
 					CLASSF,
-					CLASSG};
+					CLASSG,
+                    CLASSTMZ};
 #endif
 #ifdef LKAIRSPACE
 #include <LKAirspace.h>
@@ -2380,6 +2382,8 @@ void DumpAirspaceFile(void){
         _ftprintf(fp, TEXT("CTR")); break;
       case WAVE:
         _ftprintf(fp, TEXT("Wave")); break;
+      case CLASSTMZ:
+        _ftprintf(fp, TEXT("TMZ")); break;
       default:
         _ftprintf(fp, TEXT("Unknown"));
     }
@@ -2450,6 +2454,8 @@ void DumpAirspaceFile(void){
         _ftprintf(fp, TEXT("CTR")); break;
       case WAVE:
         _ftprintf(fp, TEXT("Wave")); break;
+      case CLASSTMZ:
+        _ftprintf(fp, TEXT("TMZ")); break;
       default:
         _ftprintf(fp, TEXT("Unknown"));
     }

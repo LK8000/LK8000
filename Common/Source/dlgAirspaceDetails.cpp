@@ -412,6 +412,8 @@ static void SetValues(void) {
     case WAVE:
 	// LKTOKEN  _@M794_ = "Wave" 
       wp->SetText(gettext(TEXT("_@M794_"))); break;
+    case CLASSTMZ:
+      wp->SetText(TEXT("TMZ")); break;
     default:
 	// LKTOKEN  _@M765_ = "Unknown" 
       wp->SetText(gettext(TEXT("_@M765_")));

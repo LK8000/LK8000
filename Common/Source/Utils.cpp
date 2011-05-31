@@ -92,7 +92,8 @@ const TCHAR *szRegistryColour[] =     { TEXT("Colour0"),
 				  TEXT("Colour11"),
 				  TEXT("Colour12"),
 				  TEXT("Colour13"),
-				  TEXT("Colour14")
+                  TEXT("Colour14"),
+                  TEXT("Colour15")
 }; // pL
 
 
@@ -110,7 +111,8 @@ const TCHAR *szRegistryBrush[] =     {  TEXT("Brush0"),
 				  TEXT("Brush11"),
 				  TEXT("Brush12"),
 				  TEXT("Brush13"),
-				  TEXT("Brush14")
+                  TEXT("Brush14"),
+                  TEXT("Brush15")
 }; // pL
 
 const TCHAR *szRegistryAirspaceMode[] =     {  TEXT("AirspaceMode0"),
@@ -127,7 +129,8 @@ const TCHAR *szRegistryAirspaceMode[] =     {  TEXT("AirspaceMode0"),
 					       TEXT("AirspaceMode11"),
 					       TEXT("AirspaceMode12"),
 					       TEXT("AirspaceMode13"),
-					       TEXT("AirspaceMode14")
+                           TEXT("AirspaceMode14"),
+                           TEXT("AirspaceMode15")
 }; // pL
 
 
@@ -145,7 +148,8 @@ const TCHAR *szRegistryAirspacePriority[] = {  TEXT("AirspacePriority0"),
 					 TEXT("AirspacePriority11"),
 					 TEXT("AirspacePriority12"),
 					 TEXT("AirspacePriority13"),
-					 TEXT("AirspacePriority14")
+                     TEXT("AirspacePriority14"),
+                     TEXT("AirspacePriority15")
 }; // pL
 
 
@@ -3589,6 +3593,8 @@ void FormatWarningString(int Type, TCHAR *Name , AIRSPACE_ALT Base, AIRSPACE_ALT
     case WAVE:				
 	// LKTOKEN  _@M794_ = "Wave" 
       _tcscpy(szTitleBuffer,gettext(TEXT("_@M794_"))); break;
+    case CLASSTMZ:            
+      _tcscpy(szTitleBuffer,TEXT("TMZ")); break;
     default:					
 	// LKTOKEN  _@M765_ = "Unknown" 
       _tcscpy(szTitleBuffer,gettext(TEXT("_@M765_")));

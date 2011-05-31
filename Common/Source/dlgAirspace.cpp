@@ -91,6 +91,9 @@ static void OnAirspacePaintListItem(WindowControl * Sender, HDC hDC){
 	// LKTOKEN  _@M794_ = "Wave" 
       _tcscpy(label, gettext(TEXT("_@M794_")));
       break;
+    case CLASSTMZ: 
+      _tcscpy(label, TEXT("TMZ"));
+      break;
     case OTHER:
 	// LKTOKEN  _@M507_ = "Other" 
       _tcscpy(label, gettext(TEXT("_@M507_")));

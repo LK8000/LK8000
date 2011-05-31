@@ -47,6 +47,7 @@ NEW
   . New CAirspaceManager singleton class for managing airspace operations
   . New openair parser based on the old one
   . New airspace distance calculation algorithms
+  . New TMZ airspace class for handling TMZ zones separated from OTHER zones
 
   . NOFLY/FLY airspaces introduced.
     . NOFLY zones - works like the old airspaces. You are in a wrong position when you are inside a nofly zone.
