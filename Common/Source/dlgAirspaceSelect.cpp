@@ -770,6 +770,9 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
       case WAVE:
         _tcscpy(sTmp, TEXT("Wav"));
         break;
+      case CLASSTMZ: 
+        _tcscpy(sTmp, TEXT("TMZ"));
+        break;
       case OTHER:
         _tcscpy(sTmp, TEXT("?"));
         break;

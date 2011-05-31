@@ -260,6 +260,9 @@ static void getAirspaceType(TCHAR *buf, int Type){
     case WAVE:
       _tcscpy(buf, TEXT("Wav"));
       return;
+    case CLASSTMZ:
+      _tcscpy(buf, TEXT("TMZ"));
+      return;
     default:
       _tcscpy(buf, TEXT("?"));
       return;
