@@ -123,7 +123,9 @@ NEW
         - Black - vertical distance ok, you are in good position vertically
         - Red - vertical distance wrong against that nofly zone
         - Orange - vartical distance wrong against that fly zone
+
     . New infobox showing nearest vertical distance to an airspace (or to leave a fly zone)
+    . New infobox showing nearest horizontal distance to an airspace (or to leave a fly zone)
 
 
 CHANGES
@@ -157,6 +159,8 @@ BUG FIX
 
 . Fix a possible problem of UTF8 characters on very old devices, that may show as funny tokens appearing in place of text.
   This was due to missing UTF8 support on some old operating system like Windows CE 3.0. The patch has been tested on
-  CE 3.0 Ipaq 3630, perfectly working now.
+  CE 3.0 Ipaq 3630.
+
+. Fix cheap chinese PNA bugs, when system messages appear lk is crashing with exception 0xC000001C
 
 
