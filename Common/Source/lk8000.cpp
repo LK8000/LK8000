@@ -853,6 +853,8 @@ Statistics flightstats;
 #if (((UNDER_CE >= 300)||(_WIN32_WCE >= 0x0300)) && (WINDOWSPC<1))
 #define HAVE_ACTIVATE_INFO
 static SHACTIVATEINFO s_sai;
+static bool api_has_SHHandleWMActivate = false;
+static bool api_has_SHHandleWMSettingChange = false;
 #endif
 
 BOOL InfoBoxesHidden = false; 
@@ -1929,6 +1931,14 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   #endif
   #endif
 
+  #ifdef HAVE_ACTIVATE_INFO
+  FARPROC ptr;
+  ptr = GetProcAddress(GetModuleHandle(TEXT("AYGSHELL")), TEXT("SHHandleWMActivate"));
+  if (ptr != NULL) api_has_SHHandleWMActivate = true;
+  ptr = GetProcAddress(GetModuleHandle(TEXT("AYGSHELL")), TEXT("SHHandleWMSettingChange"));
+  if (ptr != NULL) api_has_SHHandleWMSettingChange = true;
+  #endif
+    
   // We shall NOT create the LK8000 root folder if not existing
   // otherwise users will get confused on errors
   // CreateDirectoryIfAbsent(TEXT("")); 
@@ -3608,18 +3618,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                  SWP_SHOWWINDOW|SWP_NOMOVE|SWP_NOSIZE);
 
 #ifdef HAVE_ACTIVATE_INFO
-	  SHFullScreen(hWndMainWindow,SHFS_HIDETASKBAR|SHFS_HIDESIPBUTTON|SHFS_HIDESTARTICON);
+         SHFullScreen(hWndMainWindow,SHFS_HIDETASKBAR|SHFS_HIDESIPBUTTON|SHFS_HIDESTARTICON);
 #endif
 
         }
 #ifdef HAVE_ACTIVATE_INFO
-      SHHandleWMActivate(hWnd, wParam, lParam, &s_sai, FALSE);
+      if (api_has_SHHandleWMActivate) {
+        SHHandleWMActivate(hWnd, wParam, lParam, &s_sai, FALSE);
+      } else {
+        #ifdef ALPHADEBUG
+        StartupStore(TEXT("SHHandleWMActivate not available%s"),NEWLINE);
+        #endif
+        return DefWindowProc(hWnd, message, wParam, lParam);
+      }
 #endif
       break;
 
     case WM_SETTINGCHANGE:
 #ifdef HAVE_ACTIVATE_INFO
-      SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
+      if (api_has_SHHandleWMSettingChange) {
+        SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
+      } else {
+        #ifdef ALPHADEBUG
+        StartupStore(TEXT("SHHandleWMSettingChange not available%s"),NEWLINE);
+        #endif
+        return DefWindowProc(hWnd, message, wParam, lParam);
+      }
 #endif
       break;
 
