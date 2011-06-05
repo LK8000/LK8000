@@ -169,6 +169,7 @@
 
  */
 
+#define DEBUG_DEVSETTING  1
 /*
  * Put here debug defines, so that other developers can activate them if needed.
 

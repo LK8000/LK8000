@@ -1399,7 +1399,8 @@ void SettingsLeave() {
   UnlockFlightData();
 
   if(!SIMMODE && COMPORTCHANGED) {
-      RestartCommPorts();
+      LKForceComPortReset=true;
+      // RestartCommPorts(); 110605
   }
 
   MapWindow::ResumeDrawingThread();
@@ -1473,7 +1474,10 @@ void RestartCommPorts() {
 
   StartupStore(TEXT(". RestartCommPorts%s"),NEWLINE);
 
-  while(!goInitDevice) Sleep(50); // 100118
+  #ifdef DEBUG_DEVSETTINGS
+  if (!goInitDevice) StartupStore(_T(".......... RestartCommPorts waiting for goInit\n"));
+  #endif
+  while(!goInitDevice) Sleep(50); // 100118 110605 this is potentially a deadlock!
   LockComm();
 
   devClose(devA());
@@ -2210,15 +2214,17 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   CDevIMI::Register();
   FlytecRegister();
   LK8EX1Register();
-  // we want to be sure that RestartCommPort works on startup ONLY after all devices are inititalized
-  goInitDevice=true; // 100118
 
 // WINDOWSPC _SIM_ devInit called twice missing devA name
 // on PC nonSIM we cannot use devInit here! Generic device is used until next port reset!
 
 #if 110530
   // we need devInit for all devices. Missing initialization otherwise.
+  LockComm();
   devInit(TEXT("")); 
+  UnlockComm();
+  // we want to be sure that RestartCommPort works on startup ONLY after all devices are inititalized
+  goInitDevice=true; // 100118
 #else
   // I dont remember anymore WHY! Probably it has been fixed already! paolo
   #if (WINDOWSPC>0)

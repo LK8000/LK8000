@@ -192,7 +192,7 @@ static void OnSIMClicked(WindowControl * Sender){
 static void OnFLYClicked(WindowControl * Sender){
 	(void)Sender;
   RUN_MODE=RUN_FLY;
-  LKForceComPortReset=true;
+//  LKForceComPortReset=true; removed 110605
   PortMonitorMessages=0;
   wf->SetModalResult(mrOK);
 }
