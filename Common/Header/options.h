@@ -75,7 +75,6 @@
  // no instrument thread
  #define NOINSTHREAD	1
 
- #define FLIPFLOP	1	// obsoleted by MULTICALC. REMOVE WHEN MULTICALC IS PERMANENT
 #endif
 // -------------------------------------------------------------
 
@@ -114,10 +113,6 @@
 #define UNSORTEDRANGE		1	// 101120 expire 110601
 
 #define GASUPPORT		1	// oren's GA work
-
-#define MULTICALC		1	// Use multicalc approach, splitting calculation inside MapWindow
-					// thread into multiple instances, 0.5 or 0.33 Hz recommended
-					// Extensive checking required expire 110601
 
 // ------------ NEW AIRSPACE ENGINE -------------------------------------------------
 // Using new airspaces requires to change lk8000.rc and activate LKAIRSPACE xmls. 

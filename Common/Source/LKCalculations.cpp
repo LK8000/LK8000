@@ -960,156 +960,6 @@ static bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic,
   }
 }
 
-// -------------------- start old version ----------------------------------
-#ifndef MULTICALC
-// Warning: this is called from mapwindow Draw task , not from calculations!!
-// this is calling CheckLandableReachableTerrainNew
-void MapWindow::CalculateWaypointReachableNew(void)
-{
-  unsigned int i;
-  /*
-  #if UNSORTEDRANGE
-  int j;
-  #endif
-   */
-  double waypointDistance, waypointBearing,altitudeRequired,altitudeDifference;
-  double dtmp;
-
-  // LandableReachable is used only by the thermal bar indicator in MapWindow2, after here
-  // apparently, is used to tell you if you are below final glide but in range for a landable wp
-  LandableReachable = false;
-
-  if (!WayPointList) return;
-
-  LockTaskData();
-
-  /*
-  101218 We should include in this list also task points, at least.
-  For 2.0 we still use all waypoints, since the check for Visible is fast. Pity.
-  #if UNSORTEDRANGE
-  for(j=0;j<RangeLandableNumber;j++)
-  {
-	i=RangeLandableIndex[j];
-  #else
-  */
-  for(i=0;i<NumberOfWayPoints;i++)
-  {
-  // #endif
-    if ( ( ((WayPointCalc[i].AltArriv >=0)||(WayPointList[i].Visible)) && (WayPointCalc[i].IsLandable)) // 100307
-	|| WaypointInTask(i) ) {
-
-	DistanceBearing(DrawInfo.Latitude, DrawInfo.Longitude, WayPointList[i].Latitude, WayPointList[i].Longitude, &waypointDistance, &waypointBearing);
-
-	WayPointCalc[i].Distance=waypointDistance; 
-	WayPointCalc[i].Bearing=waypointBearing;
-
-	if (SafetyAltitudeMode==0 && !WayPointCalc[i].IsLandable)
-		dtmp=DerivedDrawInfo.NavAltitude - WayPointList[i].Altitude;
-	else
-		dtmp=DerivedDrawInfo.NavAltitude - SAFETYALTITUDEARRIVAL - WayPointList[i].Altitude;
-
-	if (dtmp>0) {
-		WayPointCalc[i].GR = waypointDistance / dtmp;
-		if (WayPointCalc[i].GR > INVALID_GR) WayPointCalc[i].GR=INVALID_GR; else
-		if (WayPointCalc[i].GR <1) WayPointCalc[i].GR=1;
-	} else
-		WayPointCalc[i].GR = INVALID_GR;
-
-	altitudeRequired = GlidePolar::MacCreadyAltitude (GetMacCready(i,0), waypointDistance, waypointBearing,  // 091221
-						DerivedDrawInfo.WindSpeed, DerivedDrawInfo.WindBearing, 0,0,true,0);
-
-	if (SafetyAltitudeMode==0 && !WayPointCalc[i].IsLandable)
-		altitudeRequired = altitudeRequired + WayPointList[i].Altitude ;
-	else
-		altitudeRequired = altitudeRequired + SAFETYALTITUDEARRIVAL + WayPointList[i].Altitude ;
-
-	WayPointCalc[i].AltReqd[AltArrivMode] = altitudeRequired; 
-
-	altitudeDifference = DerivedDrawInfo.NavAltitude - altitudeRequired; 
-	WayPointList[i].AltArivalAGL = altitudeDifference;
-      
-	if(altitudeDifference >=0){
-
-		WayPointList[i].Reachable = TRUE;
-
-	  	if (CheckLandableReachableTerrainNew(&DrawInfo, &DerivedDrawInfo, waypointDistance, waypointBearing)) {
-			if ((signed)i!=TASKINDEX) { 
-		  		LandableReachable = true;
-			}
-	  	} else {
-			WayPointList[i].Reachable = FALSE;
-		}
-	} else {
-		WayPointList[i].Reachable = FALSE;
-	}
-
-    } // if landable or in task
-  } // for all waypoints
-
-  if (!LandableReachable) // 091203
-  /* 101218 same as above, bugfix
-  #if UNSORTEDRANGE
-  for(j=0;j<RangeLandableNumber;j++) {
-	i = RangeLandableIndex[j];
-  #else
-  */
-  for(i=0;i<NumberOfWayPoints;i++) {
-  // #endif
-    if(!WayPointList[i].Visible && WayPointList[i].FarVisible)  {
-	// visible but only at a distance (limit this to 100km radius)
-
-	if(  WayPointCalc[i].IsLandable ) {
-
-		DistanceBearing(DrawInfo.Latitude, 
-                                DrawInfo.Longitude, 
-                                WayPointList[i].Latitude, 
-                                WayPointList[i].Longitude,
-                                &waypointDistance,
-                                &waypointBearing);
-               
-		WayPointCalc[i].Distance=waypointDistance;  // VENTA6
-		WayPointCalc[i].Bearing=waypointBearing;
-
-		if (waypointDistance<100000.0) {
-
-			altitudeRequired = GlidePolar::MacCreadyAltitude (GetMacCready(i,0), waypointDistance, waypointBearing,  // 091221
-					DerivedDrawInfo.WindSpeed, DerivedDrawInfo.WindBearing, 0,0,true,0);
-                  
-			if (SafetyAltitudeMode==0 && !WayPointCalc[i].IsLandable)
-                		altitudeRequired = altitudeRequired + WayPointList[i].Altitude ;
-			else
-                		altitudeRequired = altitudeRequired + SAFETYALTITUDEARRIVAL + WayPointList[i].Altitude ;
-
-               		altitudeDifference = DerivedDrawInfo.NavAltitude - altitudeRequired;                                      
-                	WayPointList[i].AltArivalAGL = altitudeDifference;
-
-			WayPointCalc[i].AltReqd[AltArrivMode] = altitudeRequired; // VENTA6
-
-                	if(altitudeDifference >=0){
-
-                	    	WayPointList[i].Reachable = TRUE;
-
-                	    	if (CheckLandableReachableTerrainNew(&DrawInfo, &DerivedDrawInfo, waypointDistance, waypointBearing)) {
-                    	 		LandableReachable = true;
-                     		} else
-                    			WayPointList[i].Reachable = FALSE;
-                    	} 
-			else { 	
-                    		WayPointList[i].Reachable = FALSE;
-			}
-		} else {
-			WayPointList[i].Reachable = FALSE;
-		} // <100000
-
-	} // landable wp
-     } // visible or far visible
-   } // for all waypoint
-
-  UnlockTaskData(); 
-}
-#endif
-// -------------------------------- end of old version -------------------
-
 double FarFinalGlideThroughTerrain(const double this_bearing, 
 				NMEA_INFO *Basic, 
                                 DERIVED_INFO *Calculated,
@@ -1748,11 +1598,11 @@ void CalculateOrbiter(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 }
 
-// -------- new version ---------------------------
-#if MULTICALC
 
 // Warning: this is called from mapwindow Draw task , not from calculations!!
 // this is calling CheckLandableReachableTerrainNew
+// Use multicalc approach, splitting calculation inside MapWindow
+// thread into multiple instances, 0.5 or 0.33 Hz recommended
 // 
 void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslots)
 {
@@ -1919,8 +1769,6 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 
   UnlockTaskData(); 
 }
-#endif
-// ---------- new version ----------------
 
 
 /* 

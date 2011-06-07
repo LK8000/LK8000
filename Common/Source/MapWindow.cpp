@@ -2451,7 +2451,6 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
   HFONT hfOld;
 
   // Calculations are taking time and slow down painting of map, beware
-  #if MULTICALC
   #define MULTICALC_MINROBIN	5	// minimum split
   #define MULTICALC_MAXROBIN	20	// max split
   static short multicalc_slot=0;// -1 (which becomes immediately 0) will force full loading on startup, but this is not good
@@ -2479,22 +2478,6 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
   // Basically we assume -like for nearest- that values will not change that much in the multicalc split time.
   // Target and tasks are recalculated in real time in any case. Nearest too. 
   LKCalculateWaypointReachable(multicalc_slot, numslots);
-  #else
-  // -- no multicalc
-#ifdef LK8000_OPTIMIZE
-  #ifdef FLIPFLOP
-  static bool flipflop=true;
-  if (flipflop) {
-	CalculateWaypointReachableNew();
-	flipflop=false;
-  } else flipflop=true;
-  #else
-  CalculateWaypointReachableNew();
-  #endif
-#else
-  CalculateWaypointReachable();
-#endif
-  #endif // no multicalc 
   CalculateScreenPositionsAirspace();
   CalculateScreenPositionsThermalSources();
   CalculateScreenPositionsGroundline();
