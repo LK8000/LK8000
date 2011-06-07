@@ -5668,7 +5668,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 		ReplaceInString(OutBuffer, TEXT("$(OVERLAY)"), gettext(TEXT("_@M491_")), Size);
 	if (--items<=0) goto label_ret; 
   }
-#if ORBITER
   if (_tcsstr(OutBuffer, TEXT("$(Orbiter"))) {
 	if (!Orbiter)
 		ReplaceInString(OutBuffer, TEXT("$(Orbiter)"), gettext(TEXT("_@M894_")), Size);
@@ -5678,7 +5677,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (!EnableThermalLocator) invalid = true;
 	if (--items<=0) goto label_ret; 
   }
-#endif
 
 #if 0 // 100517
   if (_tcsstr(OutBuffer, TEXT("$(TerrainTopologyToggleName)"))) {

@@ -99,8 +99,6 @@
 // ew terrain manager, for shading and altitudes ex LKTEST
 #define NEWRASTER	1	// expire 110601
 
-#define ORBITER		1	// thermal orbiter
-
 #define LKSTARTUP	1	// new startup screen
 
 // 101020
@@ -108,18 +106,12 @@
 // When expire date is reached, unnecessary old stuff can be removed, even if commented
 //
 
-// Will speed up Range search, and also BestAlternate search
-#define UNSORTEDRANGE		1	// 101120 expire 110601
-
-#define GASUPPORT		1	// oren's GA work
-
 // ------------ NEW AIRSPACE ENGINE -------------------------------------------------
 // Using new airspaces requires to change lk8000.rc and activate LKAIRSPACE xmls. 
 // They are 2 files in total.
 // No need to change any XML filename. Just comment/uncomment.
 //
 #define LKAIRSPACE		1	// New airspace handling code 
-
 
 #define ALPHADEBUG		1	// DEBUG STARTUPSTORE MESSAGES FOR ALPHA AND BETA VERSIONS
 					// IN FINAL VERSIONS WILL BE DISABLED

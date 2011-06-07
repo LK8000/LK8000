@@ -83,9 +83,7 @@ int AutoWindMode= D_AUTOWIND_CIRCLING;
 // 3: Both
 
 bool EnableNavBaroAltitude=false;
-#if ORBITER
 short Orbiter=1;
-#endif
 int EnableExternalTriggerCruise=false;
 bool ExternalTriggerCruise= false;
 bool ExternalTriggerCircling= false;
@@ -1078,9 +1076,7 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   PredictNextPosition(Basic, Calculated);
 
-  #if ORBITER
   if (Orbiter) CalculateOrbiter(Basic,Calculated);
-  #endif
 
   CalculateOwnTeamCode(Basic, Calculated);
   CalculateTeammateBearingRange(Basic, Calculated);

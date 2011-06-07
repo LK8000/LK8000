@@ -394,12 +394,7 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
    int rangeLandableDistance[MAXRANGELANDABLE];
    int rangeAirportDistance[MAXRANGELANDABLE];
    int rangeTurnpointDistance[MAXRANGETURNPOINT];
-   #if UNSORTEDRANGE
    int i, kl, kt, ka;
-   #else
-   int i, k, l;
-   bool inserted;
-   #endif
    //double arrival_altitude;
    static bool DoInit=true;
 
@@ -452,11 +447,7 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	rangeTurnpointDistance[i] = 0;
   }
 
-  #if UNSORTEDRANGE
   for (i=0, kt=0, kl=0, ka=0; i<(int)NumberOfWayPoints; i++) {
-  #else
-  for (i=0; i<(int)NumberOfWayPoints; i++) {
-  #endif
 
 	int approx_distance = CalculateWaypointApproxDistance(scx_aircraft, scy_aircraft, i);
 
@@ -469,7 +460,6 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		( (TpFilter==(TpFilter_t)TfAll) ) ||
 		( (TpFilter==(TpFilter_t)TfTps) && ((WayPointList[i].Flags & TURNPOINT) == TURNPOINT) ) 
 	 ) {
-		#if UNSORTEDRANGE
 		if (kt+1<MAXRANGETURNPOINT) { // never mind if we use maxrange-2
 			RangeTurnpointIndex[kt++]=i;
 			RangeTurnpointNumber++;
@@ -478,27 +468,6 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		else {
 			StartupStore(_T("... OVERFLOW RangeTurnpoint cannot insert <%s> in list\n"),WayPointList[i].Name);
 		}
-		#endif
-		#else
-		for (k=0, inserted=false; k< MAXRANGETURNPOINT; k++)  {
-			if (((approx_distance < rangeTurnpointDistance[k]) 
-			|| (RangeTurnpointIndex[k]== -1))
-			&& (RangeTurnpointIndex[k]!= i))
-			{
-				// ok, got new biggest, put it into the slot.
-				for (l=MAXRANGETURNPOINT-1; l>k; l--) {
-					if (l>0) {
-						rangeTurnpointDistance[l] = rangeTurnpointDistance[l-1];
-						RangeTurnpointIndex[l] = RangeTurnpointIndex[l-1];
-					}
-				}
-				rangeTurnpointDistance[k] = approx_distance;
-				RangeTurnpointIndex[k] = i;
-				k=MAXRANGETURNPOINT;
-				inserted=true;
-			}
-		} // for k
-		if (inserted) RangeTurnpointNumber++;
 		#endif
 	}
 
@@ -511,7 +480,6 @@ LabelLandables:
 	if (!WayPointCalc[i].IsLandable )
 		continue; 
 
-	#if UNSORTEDRANGE
 	if (kl+1<MAXRANGELANDABLE) { // never mind if we use maxrange-2
 		RangeLandableIndex[kl++]=i;
 		RangeLandableNumber++;
@@ -523,33 +491,9 @@ LabelLandables:
 	}
 	#endif
 
-	#else // not unsortedrange in use
-	for (k=0, inserted=false; k< MAXRANGELANDABLE; k++)  {
-		if (((approx_distance < rangeLandableDistance[k]) 
-		|| (RangeLandableIndex[k]== -1))
-        	&& (RangeLandableIndex[k]!= i))
-        	{
-          		// ok, got new biggest, put it into the slot.
-          		for (l=MAXRANGELANDABLE-1; l>k; l--) {
-            			if (l>0) {
-              				rangeLandableDistance[l] = rangeLandableDistance[l-1];
-             				RangeLandableIndex[l] = RangeLandableIndex[l-1];
-            			}
-          		}
-         		rangeLandableDistance[k] = approx_distance;
-          		RangeLandableIndex[k] = i;
-          		k=MAXRANGELANDABLE;
-			inserted=true;
-        	}
-	} // for k
-	if (inserted) RangeLandableNumber++;
-	#endif
-
-
 	// If it's an Airport then we also take it into account separately
 	if ( WayPointCalc[i].IsAirport )
 	{
-		#if UNSORTEDRANGE
 		if (ka+1<MAXRANGELANDABLE) { // never mind if we use maxrange-2
 			RangeAirportIndex[ka++]=i;
 			RangeAirportNumber++;
@@ -558,27 +502,6 @@ LabelLandables:
 		else {
 			StartupStore(_T("... OVERFLOW RangeAirport cannot insert <%s> in list\n"),WayPointList[i].Name);
 		}
-		#endif
-		#else
-		for (k=0, inserted=false; k< MAXRANGELANDABLE; k++)  {
-			if (((approx_distance < rangeAirportDistance[k]) 
-			|| (RangeAirportIndex[k]== -1))
-			&& (RangeAirportIndex[k]!= i))
-			{
-				// ok, got new biggest, put it into the slot.
-				for (l=MAXRANGELANDABLE-1; l>k; l--) {
-					if (l>0) {
-						rangeAirportDistance[l] = rangeAirportDistance[l-1];
-						RangeAirportIndex[l] = RangeAirportIndex[l-1];
-					}
-				}
-				rangeAirportDistance[k] = approx_distance;
-				RangeAirportIndex[k] = i;
-				k=MAXRANGELANDABLE;
-				inserted=true;
-			}
-		} // for k
-		if (inserted) RangeAirportNumber++;
 		#endif
 	}
 
@@ -1607,11 +1530,6 @@ void CalculateOrbiter(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslots)
 {
   unsigned int i;
-  /*
-  #if UNSORTEDRANGE
-  int j;
-  #endif
-   */
   double waypointDistance, waypointBearing,altitudeRequired,altitudeDifference;
   double dtmp;
 
@@ -1642,17 +1560,6 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 	//StartupStore(_T("... wps=%d multicalc_slot=%d of %d, scan %d < %d%s"),NumberOfWayPoints,
 	//	multicalc_slot, numslots,scanstart,scanend,NEWLINE);
   }
-
-  /*
-  // 101218 We should include in this list also task points, at least.
-  // For 2.0 we still use all waypoints, since the check for Visible is fast. Pity.
-  #if UNSORTEDRANGE
-  for(j=0;j<RangeLandableNumber;j++)
-  {
-	i=RangeLandableIndex[j];
-	...
-  #endif
-  */
 
   for(i=scanstart;i<scanend;i++) {
     if ( ( ((WayPointCalc[i].AltArriv >=0)||(WayPointList[i].Visible)) && (WayPointCalc[i].IsLandable)) 
@@ -1709,13 +1616,6 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 
   if (!LandableReachable) // indentation wrong here
 
-  /* 101218 same as above, bugfix
-  #if UNSORTEDRANGE
-  for(j=0;j<RangeLandableNumber;j++) {
-	i = RangeLandableIndex[j];
-	... 
-  #endif
-  */
   for(i=scanstart;i<scanend;i++) {
     if(!WayPointList[i].Visible && WayPointList[i].FarVisible)  {
 	// visible but only at a distance (limit this to 100km radius)

@@ -1544,11 +1544,9 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryEnableNavBaroAltitude,&Temp);
   EnableNavBaroAltitude = (Temp!=0);
 
-  #if ORBITER
   Temp = 1;
   GetFromRegistry(szRegistryOrbiter,&Temp);
   Orbiter = (Temp!=0);
-  #endif
   Temp = 1;
   GetFromRegistry(szRegistryShading,&Temp);
   Shading = Temp;

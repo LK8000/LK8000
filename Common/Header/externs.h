@@ -481,9 +481,7 @@ extern bool EnableTerrain;
 extern int FinalGlideTerrain;
 extern int AutoWindMode;
 extern bool EnableNavBaroAltitude;
-#if ORBITER
 extern short Orbiter;
-#endif
 extern short Shading;
 extern bool ConfBB[10];
 extern bool ConfBB1;

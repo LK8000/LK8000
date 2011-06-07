@@ -95,9 +95,7 @@ extern void ToggleOverlays(void);
 extern bool CheckClubVersion(void);
 extern void ClubForbiddenMsg(void);
 
-#if ORBITER
 extern void CalculateOrbiter(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-#endif
 
 extern HFONT                                   LK8UnitFont;
 extern HFONT					LK8TitleFont;

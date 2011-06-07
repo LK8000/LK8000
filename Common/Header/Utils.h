@@ -220,9 +220,7 @@ extern const TCHAR szRegistryStartMaxSpeedMargin[];
 extern const TCHAR szRegistryStartHeightRef[];
 
 extern const TCHAR szRegistryEnableNavBaroAltitude[];
-#if ORBITER
 extern const TCHAR szRegistryOrbiter[];
-#endif
 extern const TCHAR szRegistryShading[];
 extern const TCHAR szRegistryOverlayClock[];
 extern const TCHAR szRegistryLoggerTimeStepCruise[];

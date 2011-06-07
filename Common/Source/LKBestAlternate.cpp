@@ -58,9 +58,7 @@ void SearchBestAlternate(NMEA_INFO *Basic,
   int sortApproxDistance[MAXBEST*2];
   int sortApproxIndex[MAXBEST*2];
   int i, k, l;
-  #if UNSORTEDRANGE
   int j;
-  #endif
   double arrival_altitude;
   int active_bestalternate_on_entry=-1;
   int bestalternate=-1;
@@ -89,16 +87,8 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 	sortApproxIndex[i]= -1;
 	sortApproxDistance[i] = 0;
   }
-  #if UNSORTEDRANGE
   for (j=0; j<RangeLandableNumber; j++) {
 	i=RangeLandableIndex[j];
-  #else
-  for (i=0; i<(int)NumberOfWayPoints; i++) {
-
-	if (!WayPointCalc[i].IsLandable) {
-		continue; // ignore non-landable fields
-	}
-   #endif
 
 	int approx_distance = CalculateWaypointApproxDistance(scx_aircraft, scy_aircraft, i);
 
