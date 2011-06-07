@@ -1,7 +1,30 @@
+======================
+Changes in LK8000 v2.3
+======================
+
+Version 2.3b
+
+NEW
 
 
-Changes in LK8000 v2.3a
+CHANGES
 
+. Orbiter enabled only after 100m thermal gain achieved. Below this gain, we assume the thermal center is not valid.
+  Remember that orbiter will autodisable after 500m thermal gain. Thus it is working in the 100-500m th.gain range.
+
+
+
+FIXES
+
+. Fix a bug in 2.3a causing again sometimes the "White Screen of Pain" problem on startup.
+
+
+
+
+
+
+---------------
+Version 2.3a 110603
 
 NEW
 
