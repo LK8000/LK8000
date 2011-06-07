@@ -24,9 +24,6 @@ extern void Shutdown(void);
 
 static WndForm *wf=NULL;
 static WndOwnerDrawFrame *wSplash=NULL;
-#if !LKSTARTUP
-static HBITMAP hSplash;
-#endif
 extern HINSTANCE hInst;
 
 // lines are: 0 - 9
@@ -81,7 +78,6 @@ void RawWrite(TCHAR *text, int line, short fsize) {
 
 static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 
-#if LKSTARTUP
  HBITMAP hWelcomeBitmap=NULL;
  TCHAR sDir[MAX_PATH];
  TCHAR srcfile[MAX_PATH];
@@ -164,19 +160,6 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 
 
 
-#else
-  RECT  rc;
-  hSplash=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SWIFT));
-  CopyRect(&rc, Sender->GetBoundRect());
-  HDC hDCTemp = CreateCompatibleDC(hDC);
-  SelectObject(hDCTemp, hSplash);
-  StretchBlt(hDC, 
-	     rc.left, rc.top, 
-	     rc.right, rc.bottom,
-	     hDCTemp, 0, 0, 318, 163, SRCCOPY); 
-  DeleteObject(hSplash);
-  DeleteDC(hDCTemp);
-#endif
 
 }
 
@@ -217,18 +200,10 @@ static CallBackTableEntry_t CallBackTable[]={
 extern TCHAR startProfileFile[];
 
 
-#if LKSTARTUP
 bool dlgStartupShowModal(void){
-#else
-void dlgStartupShowModal(void){
-#endif
   WndProperty* wp;
 
-  #if LKSTARTUP
   StartupStore(TEXT(". Startup dialog, RUN_MODE=%d %s"),RUN_MODE,NEWLINE);
-  #else 
-  StartupStore(TEXT(". Startup dialog%s"),NEWLINE);
-  #endif
 
   char filename[MAX_PATH];
   strcpy(filename,"");
@@ -240,13 +215,9 @@ void dlgStartupShowModal(void){
 		LocalPathS(filename, TEXT("dlgFlySim.xml"));
 		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_FLYSIM"));
 	}
-	#if LKSTARTUP
 	if (!wf) {
 		return false;
 	}
-	#else
-	if (!wf) return;
-	#endif
   } else {
 	if (!InfoBoxLayout::landscape) {
 		LocalPathS(filename, TEXT("dlgStartup_L.xml"));
@@ -255,18 +226,13 @@ void dlgStartupShowModal(void){
 		LocalPathS(filename, TEXT("dlgStartup.xml"));
 		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_STARTUP"));
 	}
-	#if LKSTARTUP
 	if (!wf) return false;
-	#else
-	if (!wf) return;
-	#endif
   }
 
   wSplash = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmSplash")); 
   wSplash->SetWidth(ScreenSizeX);
 
 
-  #if LKSTARTUP
   int  PROFWIDTH=0, PROFACCEPTWIDTH=0, PROFHEIGHT=0, PROFSEPARATOR=0;
   if (RUN_MODE==RUN_WELCOME) {
 	((WndButton *)wf->FindByName(TEXT("cmdFLY"))) ->SetOnClickNotify(OnFLYClicked);
@@ -352,12 +318,6 @@ void dlgStartupShowModal(void){
 	}
   }
 
-
-  #else
-  ((WndButton *)wf->FindByName(TEXT("cmdClose"))) ->SetOnClickNotify(OnCloseClicked);
-  ((WndButton *)wf->FindByName(TEXT("cmdClose"))) ->SetWidth(ScreenSizeX-NIBLSCALE(6));
-  #endif
-
   TCHAR temp[MAX_PATH];
 
   wf->SetHeight(ScreenSizeY);
@@ -371,30 +331,14 @@ void dlgStartupShowModal(void){
     dfe->ScanDirectoryTop(_T(LKD_CONF),temp); 
     dfe->Lookup(startProfileFile);
 
-    #if LKSTARTUP
     wp->SetHeight(PROFHEIGHT);
     wp->SetWidth(PROFWIDTH);
     if (ScreenLandscape)
     	wp->SetLeft(((ScreenSizeX-PROFWIDTH-PROFSEPARATOR-PROFACCEPTWIDTH)/2)-NIBLSCALE(2));
     else
     	wp->SetLeft(0);
-    #else
-
-    wp->SetHeight(NIBLSCALE(25));
-    int xs=ScreenSizeX-NIBLSCALE(2)-(NIBLSCALE(60));
-    if (!ScreenLandscape) xs+=NIBLSCALE(20);
-    wp->SetWidth(xs);
-    wp->SetLeft(( ScreenSizeX-xs)/2);
-    #endif
 
     wp->RefreshDisplay();
-    #ifndef LKSTARTUP
-    if (dfe->GetNumFiles()<=2) {
-      delete wf;
-      wf = NULL;
-      return;
-    }
-    #endif
   }
 
   if  (!CheckRootDir()) {
@@ -484,7 +428,6 @@ void dlgStartupShowModal(void){
 
   wf = NULL;
 
-  #if LKSTARTUP
   if (RUN_MODE==RUN_FLY) {
 	if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
 	return false;
@@ -495,7 +438,6 @@ void dlgStartupShowModal(void){
   }
 
   return true; // else repeat dialog
-  #endif
 
 }
 

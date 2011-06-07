@@ -47,11 +47,7 @@ void dlgVegaDemoShowModal(void);
 bool dlgConfigurationVarioShowModal(void);
 void dlgLoggerReplayShowModal(void);
 void dlgBasicSettingsShowModal(void);
-#if LKSTARTUP
 bool dlgStartupShowModal(void);
-#else
-void dlgStartupShowModal(void);
-#endif
 void dlgTaskCalculatorShowModal(void);
 void dlgWindSettingsShowModal(void);
 void dlgStartTaskShowModal(bool *validStart, double Time, double Speed, double Altitude);

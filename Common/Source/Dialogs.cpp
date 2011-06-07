@@ -358,18 +358,11 @@ void SetWindowText_gettext(HWND hDlg, int entry) {
 }
 -----------------------   end removable part */
 
-#if LKSTARTUP
 static HWND	hStartupWindow = NULL;
 static HDC	hStartupDC = NULL;
-#else
-static HWND hProgress = NULL;
-static HWND hWndCurtain = NULL;
-#endif
 
 static HCURSOR oldCursor = NULL;
-#if LKSTARTUP
 static bool doinitprogress=true;
-#endif
 
 
 void StartHourglassCursor(void) {
@@ -389,121 +382,19 @@ void StopHourglassCursor(void) {
 }
 
 void CloseProgressDialog() {
-  #if LKSTARTUP
    ReleaseDC(hWndMainWindow,hStartupDC); 
    DestroyWindow(hStartupWindow);
    hStartupWindow=NULL;
    doinitprogress=true;
-  #else
-  if (hProgress) {
-    DestroyWindow(hProgress);
-    hProgress = NULL;
-  }
-  if (hWndCurtain) {
-    DestroyWindow(hWndCurtain);
-    hWndCurtain = NULL;
-  }
-  #endif
 }
 
 void StepProgressDialog(void) {
-  #if (!LKSTARTUP)
-  if (hProgress) {
-    SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1), PBM_STEPIT, 
-		(WPARAM)0, (LPARAM)0);
-    UpdateWindow(hProgress);
-  }
-  #endif
 }
 
 BOOL SetProgressStepSize(int nSize) {
-  #if (!LKSTARTUP)
-  nSize = 5;
-  if (hProgress)
-    if (nSize < 100)
-      SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1), 
-		  PBM_SETSTEP, (WPARAM)nSize, (LPARAM)0);
-  #endif
   return(TRUE);
 }
 
-#if (!LKSTARTUP)
-// OLD VERSION!!!!!!!!!!
-HWND CreateProgressDialog(TCHAR* text) {
-#if (WINDOWSPC>2)
-  hProgress = NULL;
-  return NULL;
-#endif
-  if (hProgress) {
-  } else {
-
-    if (InfoBoxLayout::landscape) {
-      hProgress=
-	CreateDialog(hInst,
-		     (LPCTSTR)IDD_PROGRESS_LANDSCAPE,
-		     hWndMainWindow,
-		     (DLGPROC)Progress);
-
-    } else {
-      hProgress=
-	CreateDialog(hInst,
-		     (LPCTSTR)IDD_PROGRESS,
-		     hWndMainWindow,
-		     (DLGPROC)Progress);
-    }
-
-    TCHAR Temp[1024];
-    _stprintf(Temp,TEXT("%s"),XCSoar_Version);
-    SetWindowText(GetDlgItem(hProgress,IDC_VERSION),Temp);
-
-    RECT rc;
-    GetClientRect(hWndMainWindow, &rc);
-
-#if (WINDOWSPC<1)
-    hWndCurtain = CreateWindow(TEXT("STATIC"), TEXT(" "),
-			       WS_VISIBLE | WS_CHILD,
-                               0, 0, (rc.right - rc.left),
-			       (rc.bottom-rc.top),
-                               hWndMainWindow, NULL, hInst, NULL);
-    SetWindowPos(hWndCurtain,HWND_TOP,0,0,0,0,
-                 SWP_NOMOVE|SWP_NOSIZE|SWP_SHOWWINDOW);
-    ShowWindow(hWndCurtain,SW_SHOW);
-    SetForegroundWindow(hWndCurtain);
-    UpdateWindow(hWndCurtain);
-#endif
-
-#if (WINDOWSPC>0)
-    RECT rcp;
-    GetClientRect(hProgress, &rcp);
-    GetWindowRect(hWndMainWindow, &rc);
-    SetWindowPos(hProgress,HWND_TOP,
-                 rc.left, rc.top, (rcp.right - rcp.left), (rcp.bottom-rcp.top),
-                 SWP_SHOWWINDOW);
-#else
-    SHFullScreen(hProgress,
-		 SHFS_HIDETASKBAR
-		 |SHFS_HIDESIPBUTTON
-		 |SHFS_HIDESTARTICON);
-    SetWindowPos(hProgress,HWND_TOP,0,0,0,0,
-                 SWP_NOMOVE|SWP_NOSIZE|SWP_SHOWWINDOW);
-#endif
-
-    SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1), 
-		PBM_SETRANGE, (WPARAM)0, 
-		(LPARAM) MAKELPARAM (0, 100));
-    SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1), 
-		PBM_SETSTEP, (WPARAM)5, (LPARAM)0);
-
-    SetForegroundWindow(hProgress);
-    UpdateWindow(hProgress);    
-  }
-  
-  SetDlgItemText(hProgress,IDC_MESSAGE, text);
-  SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1), PBM_SETPOS, 0, 0);
-  UpdateWindow(hProgress);
-  return hProgress;
-}
-#else
 // New LK8000 Startup splash 
 #define LKSTARTBOTTOMFONT MapWindowBoldFont
 extern HFONT MapWindowBoldFont;
@@ -681,7 +572,6 @@ HWND CreateProgressDialog(TCHAR* text) {
 
   return hStartupWindow;
 }
-#endif
 
 
 

@@ -96,9 +96,7 @@
  #define TOPOFASTCACHE	1
 #endif
 
-#define LKSTARTUP	1	// new startup screen
 
-// 101020
 // TEMPORARY FIXES THAT REQUIRE EXTENSIVE TESTING - KEEP #ifdef until expiring date
 // When expire date is reached, unnecessary old stuff can be removed, even if commented
 //

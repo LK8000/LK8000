@@ -1239,16 +1239,11 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
   unsigned short* hBufTop = hBuf+ixs*iys;
   #endif
 
-  #ifndef SLOW_STUFF
-
-  // This code is quickest but not so readable
-    
   const double PanLatitude =  MapWindow::GetPanLatitude();
   const double PanLongitude = MapWindow::GetPanLongitude();
   const double InvDrawScale = MapWindow::GetInvDrawScale()/1024.0;
   const double DisplayAngle = MapWindow::GetDisplayAngle();
 
-  #ifndef DISABLED_LK8000_OPTIMIZE
   const int cost = ifastcosine(DisplayAngle);
   const int sint = ifastsine(DisplayAngle);
   minalt=9999;
@@ -1295,57 +1290,7 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
   }
 
   // StartupStore(_T("... MinAlt=%d MaxAlt=%d Multiplier=%.3f\n"),minalt,maxalt, (double)((double)maxalt/(double)(maxalt-minalt))); 
-  #else	// OPTIMIZE 100304
-  // This code is quicker than quicker, but
-  // I don't really have the time to check if it is working, it was made under Laphroaig effect
-  // calculating screen (X * Y) / 4^2 = 19200 on a 640x480 screen
-  const int cost = ifastcosine(DisplayAngle);
-  const int sint = ifastsine(DisplayAngle);
-  const double costInvDrawScale=cost*InvDrawScale;
-  const double sintInvDrawScale=sint*InvDrawScale;
-
-  double X,Y;
-  double Pan_ycostInvDrawScale;
-  int x, ysint;
-
-  for (int y = Y0; y<Y1; y+= dtquant) {
-
-	if (y<rect_visible.top || y>rect_visible.bottom) {
-		// use setmem, but it is dangerous..
-		for ( x = X0; x<X1; x+= dtquant, myhbuf++) *myhbuf = 0;
-		continue;
-	}
-
-	ysint = y*sint;
-	Pan_ycostInvDrawScale = PanLatitude - (y * costInvDrawScale);
-
-	for (x = X0; x<X1; x+= dtquant, myhbuf++) {
-		if ((x>= rect_visible.left) && (x<= rect_visible.right)) {
-			#ifdef DEBUG
-			ASSERT(myhbuf<hBufTop);
-			#endif
-			Y = Pan_ycostInvDrawScale  - (x* sintInvDrawScale);
-			X = PanLongitude + (x*cost-ysint)*invfastcosine(Y)*InvDrawScale;
-
-			*myhbuf = max(0, DisplayMap->GetField(Y,X));
-		} else {
-			*myhbuf = 0;
-		}
-	}
-    }
-  #endif
  
-  #else	// SLOW STUFF
-  // This code is marginally slower but readable
-  double X, Y;
-  for (int y = Y0; y<Y1; y+= dtquant) {
-	for (int x = X0; x<X1; x+= dtquant) {
-		MapWindow::Screen2LatLon(x,y,X,Y);
-		*myhbuf++ = max(0, DisplayMap->GetField(Y, X));
-	}
-  }
-  #endif
-
 }
 
 // JMW: if zoomed right in (e.g. one unit is larger than terrain

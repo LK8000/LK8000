@@ -69,9 +69,7 @@ extern void		ConvToUpper( TCHAR *);
 
 #endif
 
-#if LKSTARTUP
 extern BYTE RUN_MODE;
-#endif
 
 // asset/registration data
 extern TCHAR strAssetNumber[];

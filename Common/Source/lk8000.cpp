@@ -373,9 +373,7 @@ int time_in_flight=0;
 int time_on_ground=0;
 double TakeOffSpeedThreshold=0.0;
 
-#if LKSTARTUP
 BYTE RUN_MODE=RUN_WELCOME;
-#endif
 
 DWORD EnableFLARMMap = 1;
 
@@ -1769,12 +1767,8 @@ void PreloadInitialisation(bool ask) {
 
 
   } else {
-    #if LKSTARTUP
     FullScreen();
     while (dlgStartupShowModal());
-    #else
-    dlgStartupShowModal();
-    #endif
     RestoreRegistry();
     ReadRegistrySettings();
 
