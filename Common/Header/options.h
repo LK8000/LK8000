@@ -96,9 +96,6 @@
  #define TOPOFASTCACHE	1
 #endif
 
-// ew terrain manager, for shading and altitudes ex LKTEST
-#define NEWRASTER	1	// expire 110601
-
 #define LKSTARTUP	1	// new startup screen
 
 // 101020

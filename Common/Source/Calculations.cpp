@@ -2977,7 +2977,6 @@ static void TerrainHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
                                         Basic->Longitude);
   RasterTerrain::Unlock();
 
-  #if NEWRASTER	// 101017
   if(Alt!=TERRAIN_INVALID) { // terrain invalid is now positive  ex. 32767
 	Calculated->TerrainValid = true;
 	if (Alt>=0) {
@@ -2990,19 +2989,6 @@ static void TerrainHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	Calculated->TerrainValid = false; 
 	Calculated->TerrainAlt = 0;
   }
-  #else
-  if(Alt<0) {
-	if (Alt <= TERRAIN_INVALID) {
-		Calculated->TerrainValid = false; 
-	} else {
-		Calculated->TerrainValid = true; 
-	}
-	Calculated->TerrainAlt = 0;
-  } else {
-	Calculated->TerrainValid = true;
-	Calculated->TerrainAlt = Alt;
-  }
-  #endif
   Calculated->AltitudeAGL = Calculated->NavAltitude - Calculated->TerrainAlt;
   if (!FinalGlideTerrain) {
 	Calculated->TerrainBase = Calculated->TerrainAlt;

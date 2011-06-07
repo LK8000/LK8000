@@ -129,11 +129,7 @@
 #define DISPLAYTIMEOUTMAX 60*4
 
 // invalid value for terrain, we can store inside terrain altitude being unsigned short
-#if NEWRASTER
 #define TERRAIN_INVALID 32767
-#else
-#define TERRAIN_INVALID -1000
-#endif
 
 #define NUMAIRSPACECOLORS 16
 #define NUMAIRSPACEBRUSHES 8

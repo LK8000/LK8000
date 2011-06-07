@@ -29,9 +29,7 @@ using std::min;
 using std::max;
 #endif
 
-#if NEWRASTER
 unsigned short minalt=9999;
-#endif
 
 Topology* TopoStore[MAXTOPOLOGY];
 
@@ -1069,11 +1067,7 @@ public:
     case 0:
       interp_levels = 2;
       is_terrain = true;
-	#if NEWRASTER
 	do_water=false; //@ 101017 we dont use it anymore, water printed always from Slope
-	#else
-      do_water = true;
-	#endif
       height_scale = 4;
       DisplayMap = RasterTerrain::TerrainMap;
       color_ramp = (COLORRAMP*)&terrain_colors[TerrainRamp][0];
@@ -1257,9 +1251,7 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
   #ifndef DISABLED_LK8000_OPTIMIZE
   const int cost = ifastcosine(DisplayAngle);
   const int sint = ifastsine(DisplayAngle);
-  #if NEWRASTER
   minalt=9999;
-  #endif
   for (int y = Y0; y<Y1; y+= dtquant) {
 	int ycost = y*cost;
 	int ysint = y*sint;
@@ -1275,7 +1267,6 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 			double Y = PanLatitude - (ycost+x*sint)*InvDrawScale;
 			double X = PanLongitude + (x*cost-ysint)*invfastcosine(Y)*InvDrawScale;
 
-#if NEWRASTER
 			// this is setting to 0 any negative terrain value and can be a problem for dutch people
 			// myhbuf cannot load negative values!
 			*myhbuf = max(0, (int)DisplayMap->GetField(Y,X));
@@ -1287,14 +1278,6 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 			// invisible terrain
 			*myhbuf = TERRAIN_INVALID;
 		}
-#else
-			*myhbuf = max(0, DisplayMap->GetField(Y,X));
-		} else {
-			// this is setting water color at all effects
-			*myhbuf = 0;
-		}
-#endif
-
 
 	}
   }
@@ -1311,9 +1294,7 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 	}
   }
 
-  #if NEWRASTER
   // StartupStore(_T("... MinAlt=%d MaxAlt=%d Multiplier=%.3f\n"),minalt,maxalt, (double)((double)maxalt/(double)(maxalt-minalt))); 
-  #endif
   #else	// OPTIMIZE 100304
   // This code is quicker than quicker, but
   // I don't really have the time to check if it is working, it was made under Laphroaig effect
@@ -1430,7 +1411,6 @@ void Slope(const int sx, const int sy, const int sz) {
 
 		// FIX here Netherland dutch terrain problem
 		// if >=0 then the sea disappears...
-		#if NEWRASTER
 		if ((h = *thBuf) != TERRAIN_INVALID ) { 
 			// if (h==0 && LKWaterThreshold==0) { // no LKM coasts, and water altitude
 			if (h==LKWaterThreshold) { // see above.. h cannot be -1000.. so only when LKW is 0 h can be equal
@@ -1438,10 +1418,6 @@ void Slope(const int sx, const int sy, const int sz) {
 				continue;
 			}
 			h=h-minalt+1;
-		#else
-		// but Buf cannot hold negative values.. so ?? We are never painting water? UHM. never mind
-		if ((h = *thBuf) >LKWaterThreshold ) { 
-		#endif
 
 			int p20, p22;
 
@@ -1559,7 +1535,6 @@ void ColorTable() {
 	for (int mag= -64; mag<64; mag++) {
 		BYTE r, g, b; 
 		// NEWRASTER i=255 means TERRAIN_INVALID
-		#if NEWRASTER
 		if (i == 255) {
 			// do_water set by weather, also for no weather, normally we never use this
 			// because water is colored now in Slope
@@ -1577,28 +1552,6 @@ void ColorTable() {
 			if (do_shading) TerrainShading(mag, r, g, b); //@ 101122
 			colorBuf[i+(mag+64)*256] = BGRColor(r,g,b);
 		}
-		#else
-		if (i == 255) {
-			// do_water set by weather, also for no weather
-			if (do_water) {
-				// water colours
-				r = 85;
-				g = 160;
-				b = 255;
-			} else {
-				r = 255;
-				g = 255;
-				b = 255;
-				// ColorRampLookup(0, r, g, b, color_ramp, NUM_COLOR_RAMP_LEVELS, interp_levels); UNUSED
-			}
-		} else {
-			// height_scale, color_ramp interp_levels  used only for weather
-			// ColorRampLookup is preparing terrain color to pass to TerrainShading for mixing
-			ColorRampLookup(i<<height_scale, r, g, b, color_ramp, NUM_COLOR_RAMP_LEVELS, interp_levels);
-			if (do_shading)TerrainShading(mag, r, g, b);
-		}
-		colorBuf[i+(mag+64)*256] = BGRColor(r,g,b);
-		#endif
 	}
   }
 }
