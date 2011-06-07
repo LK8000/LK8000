@@ -192,7 +192,8 @@ static void OnSIMClicked(WindowControl * Sender){
 static void OnFLYClicked(WindowControl * Sender){
 	(void)Sender;
   RUN_MODE=RUN_FLY;
-//  LKForceComPortReset=true; removed 110605
+//  Removed 110605: we now run devInit on startup for all devices, and we dont want an immediate and useless reset.
+//  LKForceComPortReset=true; 
   PortMonitorMessages=0;
   wf->SetModalResult(mrOK);
 }

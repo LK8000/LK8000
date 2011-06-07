@@ -866,7 +866,9 @@ void PopupBugsBallast(int updown);
 bool goInstallSystem=false;
 bool goCalculationThread=false;
 bool goInstrumentThread=false;
+#if USEGOINIT
 bool goInitDevice=false; 
+#endif
 // bool goCalculating=false;
 
 #include "GaugeCDI.h"
@@ -1462,30 +1464,21 @@ void UnlockComm() {
 
 
 void RestartCommPorts() {
- /*
-  static bool first = true;
-#if (WINDOWSPC>0)
-  if (!first) {
-    NMEAParser::Reset();
-    return;
-  }
-#endif
- */
 
   StartupStore(TEXT(". RestartCommPorts%s"),NEWLINE);
 
+  #if USEGOINIT
   #ifdef DEBUG_DEVSETTINGS
   if (!goInitDevice) StartupStore(_T(".......... RestartCommPorts waiting for goInit\n"));
   #endif
   while(!goInitDevice) Sleep(50); // 100118 110605 this is potentially a deadlock!
+  #endif
   LockComm();
 
   devClose(devA());
   devClose(devB());
 
   NMEAParser::Reset();
-
-//  first = false;
 
   devInit(TEXT(""));      
 
@@ -2223,8 +2216,10 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   LockComm();
   devInit(TEXT("")); 
   UnlockComm();
+  #if USEGOINIT
   // we want to be sure that RestartCommPort works on startup ONLY after all devices are inititalized
   goInitDevice=true; // 100118
+  #endif
 #else
   // I dont remember anymore WHY! Probably it has been fixed already! paolo
   #if (WINDOWSPC>0)

@@ -147,7 +147,7 @@
 
 #define DUALBARO		1	// Handle dual baro feed
 
-
+#define USEGOINIT		1	// expire 1.7.2011, it is disabled and should be removed
 
 
 // #define USERLEVEL	1	// old UserLevel configuration expert/basic mode, obsoleted
@@ -169,7 +169,6 @@
 
  */
 
-#define DEBUG_DEVSETTING  1
 /*
  * Put here debug defines, so that other developers can activate them if needed.
 
