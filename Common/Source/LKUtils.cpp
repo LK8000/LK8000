@@ -510,7 +510,10 @@ const TCHAR *TaskFileName(unsigned bufferLen, TCHAR buffer[])
 //
 bool UseContestEngine(void) {
 
-  if (!ISGLIDER) return false;
+  // Gliding mode always have the engine running
+  if (ISGLIDER) return true;
+  // All other modes like paragliding, Car and GA, will need 1.5 page to be ON
+  if (!ConfIP[LKMODE_INFOMODE][IM_CONTEST]) return false;
 
   return true;
 
