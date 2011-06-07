@@ -527,9 +527,6 @@ class WindowControl {
     WindowControl *mOwner;
     WindowControl *mTopOwner;
     HDC  mHdc;
-    #ifndef FIXDC
-    HDC  mHdcTemp;
-    #endif
     HBITMAP mBmpMem;
     int  mBorderKind;
     COLORREF mColorBack;
@@ -672,10 +669,6 @@ class WindowControl {
     HWND GetParent(void){return(mParent);};
     HDC  GetDeviceContext(void){return(mHdc);};
 
-    #if FIXDC
-    #else
-    HDC  GetTempDeviceContext(void){return(mHdcTemp);};
-    #endif
     WindowControl *GetOwner(void){return(mOwner);};
 
     void SetParentHandle(HWND hwnd);

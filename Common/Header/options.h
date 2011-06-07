@@ -107,7 +107,6 @@
 // TEMPORARY FIXES THAT REQUIRE EXTENSIVE TESTING - KEEP #ifdef until expiring date
 // When expire date is reached, unnecessary old stuff can be removed, even if commented
 //
-#define FIXDC			1	// expire 110601
 
 // Will speed up Range search, and also BestAlternate search
 #define UNSORTEDRANGE		1	// 101120 expire 110601

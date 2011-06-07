@@ -55,10 +55,8 @@ using std::min;
 using std::max;
 #endif
 
-#if FIXDC
 HDC sHdc;
 HDC  GetTempDeviceContext(void){return(sHdc);};
-#endif
 
 // utility functions
 
@@ -1308,15 +1306,9 @@ WindowControl::WindowControl(WindowControl *Owner,
   mColorFore = fgColor; // WHITE
 
   if (InstCount == 0){
-	#if FIXDC
 	hBrushDefaultBk = LKBrush_Petrol;
 	hPenDefaultBorder = LKPen_White_N1;
 	hPenDefaultSelector = LKPen_Petrol_C2;
-	#else
-	hBrushDefaultBk = (HBRUSH)CreateSolidBrush(mColorBack);
-	hPenDefaultBorder = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH, mColorFore); // NIBLSCCALE 1 White
-	hPenDefaultSelector = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH+2, RGB_LISTHIGHLIGHTCORNER); // NIBS(1)+2, PETROL
-	#endif
   }
   InstCount++;
 
@@ -1351,11 +1343,6 @@ WindowControl::WindowControl(WindowControl *Owner,
   SetWindowLong(mHWnd, GWL_WNDPROC, (LONG) WindowControlWndProc);
 
   mHdc = GetDC(mHWnd);
-  #if FIXDC
-  // mHdcTemp = CreateCompatibleDC(mHdc);  // 101205 made public, initialized by drawscrollbar
-  #else
-  mHdcTemp = CreateCompatibleDC(mHdc); 
-  #endif
 
   #if FIXGDI
   if (mhBrushBk != hBrushDefaultBk) { //@ 101117
@@ -1407,14 +1394,10 @@ void WindowControl::Destroy(void){
   }
 
   ReleaseDC(mHWnd, mHdc);
-  #if FIXDC
   if (sHdc!=NULL) {
 	DeleteDC(sHdc);
 	sHdc=NULL;
   }
-  #else
-  DeleteDC(mHdcTemp); 
-  #endif
   SetWindowLong(mHWnd, GWL_WNDPROC, (LONG) mSavWndProcedure);
   SetWindowLong(mHWnd, GWL_USERDATA, (long)0);
 
@@ -1423,14 +1406,6 @@ void WindowControl::Destroy(void){
   DestroyWindow(mHWnd);
 
   InstCount--;
-  if (InstCount==0){
-	#if FIXDC		// 101205
-	#else
-	DeleteObject(hBrushDefaultBk);
-	DeleteObject(hPenDefaultBorder);
-	DeleteObject(hPenDefaultSelector);
-	#endif
-  }
 
 }
 
@@ -1853,23 +1828,13 @@ void WindowControl::Paint(HDC hDC){
 
   // JMW added highlighting, useful for lists
   if (!mDontPaintSelector && mCanFocus && mHasFocus){
-    #if FIXDC
     HBRUSH hB = LKBrush_DarkYellow2;
-    //HBRUSH hB = LKBrush_LcdDarkGreen;
-    #else
-    COLORREF ff = RGB_LISTHIGHLIGHTBG;
-    HBRUSH hB = (HBRUSH)CreateSolidBrush(ff);
-    #endif
     rc.left += 0;
     rc.right -= 2;
     rc.top += 0;
     rc.bottom -= 2;
     FillRect(hDC, &rc, hB);
 
-      #if FIXDC
-      #else
-      DeleteObject(hB);
-      #endif
   }
 
   if (mBorderKind != 0){
@@ -2131,11 +2096,7 @@ WndForm::WndForm(HWND Parent, const TCHAR *Name, const TCHAR *Caption,
 
   mhTitleFont = GetFont();
 
-  #if FIXDC
   mhBrushTitle = LKBrush_Black; // 101204
-  #else
-  mhBrushTitle = (HBRUSH)CreateSolidBrush(mColorTitle);
-  #endif
 
   mClientWindow = new WindowControl(this, GetHandle(), TEXT(""), 20, 20, Width, Height);
   mClientWindow->SetBackColor(RGB_WINBACKGROUND);
@@ -2170,10 +2131,6 @@ void WndForm::Destroy(void){
   KillTimer(GetHandle(),cbTimerID);
 
   DestroyAcceleratorTable(mhAccelTable);
-  #if FIXDC
-  #else
-  DeleteObject(mhBrushTitle);
-  #endif
 
   WindowControl::Destroy();  // delete all childs
 
@@ -3782,9 +3739,6 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
   static HBITMAP hScrollBarBitmapTop = NULL;
   static HBITMAP hScrollBarBitmapMid = NULL;
   static HBITMAP hScrollBarBitmapBot = NULL;
-  #ifndef FIXDC
-  static HBITMAP hScrollBarBitmapFill = NULL; //101205
-  #endif
   RECT rc;
   HPEN hP, hP3;
   HBITMAP oldBmp;
@@ -3811,34 +3765,18 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
   int w = GetWidth()- (ScrollbarWidth);
   int h = GetHeight() - ScrollbarTop;
 
-  #if FIXDC
   if ( (sHdc==NULL) || (hScrollBarBitmapTop == NULL)) {
-	//StartupStore(_T("... sHdc Create\n")); // REMOVE
 	sHdc = CreateCompatibleDC(hDC); 
   }
   if (hScrollBarBitmapTop == NULL) {
 	hScrollBarBitmapTop=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARTOP));
   }
-  #else
-  if (hScrollBarBitmapTop == NULL) 
-	hScrollBarBitmapTop=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARTOP));
-  #endif
   if (hScrollBarBitmapMid == NULL)
 	hScrollBarBitmapMid=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARMID));
   if (hScrollBarBitmapBot == NULL)
 	hScrollBarBitmapBot=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARBOT));
-  #ifndef FIXDC // 101205
-  if (hScrollBarBitmapFill == NULL)
-	hScrollBarBitmapFill=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARFILL));
-  #endif
 
-  #if FIXDC	// 101205
   hP = LKPen_Black_N1;
-
-  #else	// ------  REMOVABLE 1/1/2011
-  hP = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH, RGB_SCROLLBARBORDER);
-  #endif // -------- END REMOVABLE
-
   SelectObject(hDC, hP);
 
   // ENTIRE SCROLLBAR AREA
@@ -3854,10 +3792,6 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
   rcScrollBar.bottom=rc.bottom;
 
   if (mListInfo.BottomIndex == mListInfo.ItemCount) { // don't need scroll bar if one page only
-	#if FIXDC
-        #else
-	DeleteObject(hP);
-	#endif
 	return;
   }
 
@@ -3950,22 +3884,12 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
 	}
 
 	// box around slider rect
-	#if FIXDC
 	hP3=LKPen_Black_N2;
-
-	#else // ------- REMOVABLE
-	hP3 = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH * 2, RGB_SCROLLBARBOX); 
-	#endif // -------- REMOVABLE
-
 	int iBorderOffset = 1;  // set to 1 if BORDERWIDTH >2, else 0
 	SelectObject(hDC, hP3);
 	// just left line of scrollbar
 	DrawLine2(hDC, rc.left+iBorderOffset, rc.top, rc.left+iBorderOffset, rc.bottom, rc.right, rc.bottom); 
 	DrawLine2(hDC, rc.right, rc.bottom, rc.right, rc.top, rc.left+iBorderOffset, rc.top); // just left line of scrollbar
-	#if FIXDC  
-	#else
-	DeleteObject(hP3);
-	#endif
 
   } // more items than fit on screen
 
@@ -3976,10 +3900,6 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
   rcScrollBarButton.top=rc.top;
   rcScrollBarButton.bottom=rc.bottom;
 
-  #if FIXDC
-  #else
-  DeleteObject(hP);
-  #endif
 }
 
 
