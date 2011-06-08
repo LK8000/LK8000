@@ -11,12 +11,16 @@ CHANGES
 
 . Orbiter enabled only after 100m thermal gain achieved. Below this gain, we assume the thermal center is not valid.
   Remember that orbiter will autodisable after 500m thermal gain. Thus it is working in the 100-500m th.gain range.
+. 2.4 nearest airspace page contains airspaces in maximum 100km range
+. Airspace nearest vertical distance infobox shows vertical distance to an airspace directly above or below at current position (or to leave a fly zone)
+. Airspace nearest horizontal distance infobox shows horizontal distance to an airspace at the current altitude (or to leave a fly zone)
 
 
 
 FIXES
 
 . Fix a bug in 2.3a causing again sometimes the "White Screen of Pain" problem on startup.
+. Fix Airspace parser, coordinate parsing fails if coords given in DD:MM:SS<spc><spc>X format
 
 
 

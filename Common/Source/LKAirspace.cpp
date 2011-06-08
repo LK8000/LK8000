@@ -1648,9 +1648,12 @@ void CAirspaceManager::CloseAirspaces()
   CAirspaceList::iterator it;
   
   CCriticalSection::CGuard guard(_csairspaces);
+  if (_airspaces.size()==0) return;
+
   _user_warning_queue.clear();
   _airspaces_near.clear();
   _airspaces_of_interest.clear();
+  _airspaces_page24.clear();
   for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) delete *it;
   _airspaces.clear();
   StartupStore(TEXT(". CloseLKAirspace%s"),NEWLINE);
@@ -2312,6 +2315,88 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
   }
   _tcsncpy(buffer, intbuf, bufferlen-1);
   buffer[bufferlen-1]=0;
+}
+
+
+// Operations for nearest page 2.4
+// Because of the multicalc approach, we need to store multicalc state inside airspacemanager
+// in this case not need to have a notifier facility if airspace list changed during calculations
+void CAirspaceManager::SelectAirspacesForPage24(const double latitude, const double longitude, const double interest_radius)
+{
+  double lon,lat,bearing;
+  rectObj bounds;
+
+  CCriticalSection::CGuard guard(_csairspaces);
+  if (_airspaces.size()<1) return;
+
+  // Calculate area of interest
+  lon = longitude;
+  lat = latitude;
+  bounds.minx = lon;
+  bounds.maxx = lon;
+  bounds.miny = lat;
+  bounds.maxy = lat;
+
+  bearing = 0;
+  {
+    FindLatitudeLongitude(latitude, longitude, bearing, interest_radius, &lat, &lon);
+    bounds.minx = min(lon, bounds.minx);
+    bounds.maxx = max(lon, bounds.maxx);
+    bounds.miny = min(lat, bounds.miny);
+    bounds.maxy = max(lat, bounds.maxy);
+  }
+  bearing = 90;
+  {
+    FindLatitudeLongitude(latitude, longitude, bearing, interest_radius, &lat, &lon);
+    bounds.minx = min(lon, bounds.minx);
+    bounds.maxx = max(lon, bounds.maxx);
+    bounds.miny = min(lat, bounds.miny);
+    bounds.maxy = max(lat, bounds.maxy);
+  }
+  bearing = 180;
+  {
+    FindLatitudeLongitude(latitude, longitude, bearing, interest_radius, &lat, &lon);
+    bounds.minx = min(lon, bounds.minx);
+    bounds.maxx = max(lon, bounds.maxx);
+    bounds.miny = min(lat, bounds.miny);
+    bounds.maxy = max(lat, bounds.maxy);
+  }
+  bearing = 270;
+  {
+    FindLatitudeLongitude(latitude, longitude, bearing, interest_radius, &lat, &lon);
+    bounds.minx = min(lon, bounds.minx);
+    bounds.maxx = max(lon, bounds.maxx);
+    bounds.miny = min(lat, bounds.miny);
+    bounds.maxy = max(lat, bounds.maxy);
+  }
+
+  // JMW detect airspace that wraps across 180
+  if ((bounds.minx< -90) && (bounds.maxx>90)) {
+    double tmp = bounds.minx;
+    bounds.minx = bounds.maxx;
+    bounds.maxx = tmp;
+  }
+
+  // Select nearest ones (based on bounds)
+  _airspaces_page24.clear();
+  for (CAirspaceList::iterator it = _airspaces.begin(); it != _airspaces.end(); ++it) {
+    if (msRectOverlap(&bounds, &(*it)->Bounds()) == MS_TRUE) _airspaces_page24.push_back(*it);
+  }
+}
+
+
+void CAirspaceManager::CalculateDistancesForPage24()
+{
+  CCriticalSection::CGuard guard(_csairspaces);
+  for (CAirspaceList::iterator it = _airspaces_page24.begin(); it != _airspaces_page24.end(); ++it) {
+    (*it)->CalculateDistance(NULL, NULL, NULL);
+  }
+}
+
+CAirspaceList CAirspaceManager::GetAirspacesForPage24()
+{
+  CCriticalSection::CGuard guard(_csairspaces);
+  return _airspaces_page24;
 }
 
 #endif /* LKAIRSPACE */
