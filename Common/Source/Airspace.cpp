@@ -726,8 +726,7 @@ static bool ReadCoords(TCHAR *Text, double *X, double *Y)
 
   *Y = Ysec/3600 + Ymin/60 + Ydeg;
 
-  if (*Stop == ' ')
-    Stop++;
+  while (*Stop == ' ') Stop++;
 
   if (*Stop =='\0') goto OnError;
   if((*Stop == 'S') || (*Stop == 's'))
@@ -749,8 +748,7 @@ static bool ReadCoords(TCHAR *Text, double *X, double *Y)
 
   *X = Xsec/3600 + Xmin/60 + Xdeg;
 
-  if (*Stop == ' ')
-    Stop++;
+  while (*Stop == ' ') Stop++;
   if (*Stop =='\0') goto OnError;
   if((*Stop == 'W') || (*Stop == 'w'))
     {

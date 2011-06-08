@@ -1182,8 +1182,7 @@ bool CAirspaceManager::ReadCoords(TCHAR *Text, double *X, double *Y) const
 
   *Y = Ysec/3600 + Ymin/60 + Ydeg;
 
-  if (*Stop == ' ')
-    Stop++;
+  while (*Stop == ' ') Stop++;
 
   if (*Stop =='\0') return false;
   if((*Stop == 'S') || (*Stop == 's'))
@@ -1204,8 +1203,7 @@ bool CAirspaceManager::ReadCoords(TCHAR *Text, double *X, double *Y) const
 
   *X = Xsec/3600 + Xmin/60 + Xdeg;
 
-  if (*Stop == ' ')
-    Stop++;
+  while (*Stop == ' ') Stop++;
   if (*Stop =='\0') return false;
   if((*Stop == 'W') || (*Stop == 'w'))
     {
