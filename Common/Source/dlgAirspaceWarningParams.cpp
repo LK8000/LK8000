@@ -30,19 +30,21 @@ static void SetReadOnlyItems()
 {
   WndProperty* wp;
   bool aspw=false;
-
+  bool aspmaplabels=false;
+  
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceWarnings"));
   if (wp) aspw=(wp->GetDataField()->GetAsBoolean());
+  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMapLabels"));
+  if (wp) aspmaplabels=(wp->GetDataField()->GetAsBoolean());
+  
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningTime"));
-  if (wp) wp->SetReadOnly(!aspw);
+  if (wp) wp->SetReadOnly(!aspw && !aspmaplabels);
   wp = (WndProperty*)wf->FindByName(TEXT("prpAcknowledgementTime"));
   if (wp) wp->SetReadOnly(!aspw);
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningDlgTimeout"));
   if (wp) wp->SetReadOnly(!aspw);
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMapLabels"));
-  if (wp) wp->SetReadOnly(!aspw);
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningVerticalMargin"));
-  if (wp) wp->SetReadOnly(!aspw);
+  if (wp) wp->SetReadOnly(!aspw && !aspmaplabels);
  
 }
 

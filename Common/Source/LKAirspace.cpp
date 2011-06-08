@@ -251,7 +251,8 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
         _nearesthname = _name;
         _nearesthdistance = abs(_hdistance);
       }
-      if ( (abs(_vdistance) < abs(_nearestvdistance)) ) {
+      // Just directly above or below distances counts
+      if ( (abs(_vdistance) < abs(_nearestvdistance)) && (_hdistance < 0) ) {
         _nearestvname = _name;
         _nearestvdistance = _vdistance;
       }
@@ -1182,8 +1183,7 @@ bool CAirspaceManager::ReadCoords(TCHAR *Text, double *X, double *Y) const
 
   *Y = Ysec/3600 + Ymin/60 + Ydeg;
 
-  if (*Stop == ' ')
-    Stop++;
+  while (*Stop == ' ') Stop++;
 
   if (*Stop =='\0') return false;
   if((*Stop == 'S') || (*Stop == 's'))
@@ -1204,8 +1204,7 @@ bool CAirspaceManager::ReadCoords(TCHAR *Text, double *X, double *Y) const
 
   *X = Xsec/3600 + Xmin/60 + Xdeg;
 
-  if (*Stop == ' ')
-    Stop++;
+  while (*Stop == ' ') Stop++;
   if (*Stop =='\0') return false;
   if((*Stop == 'W') || (*Stop == 'w'))
     {
@@ -1221,7 +1220,6 @@ bool CAirspaceManager::ReadCoords(TCHAR *Text, double *X, double *Y) const
 
   return true;
 }
-
 
 bool CAirspaceManager::CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const
 {
@@ -1291,13 +1289,28 @@ bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, d
 // Correcting geopointlist
 // All algorithms require non self-intersecting and closed polygons.
 // Also the geopointlist last element have to be the same as first -> openair doesn't require this, we have to do it here
+// Also delete adjacent duplicated vertexes
 void CAirspaceManager::CorrectGeoPoints(CPoint2DArray &points)
 {
     if (points.size()==0) return;
+    
+    // Close polygon if not closed
     CPoint2D first = points.front();
     CPoint2D last = points.back();
-    
     if ( (first.Latitude() != last.Latitude()) || (first.Longitude() != last.Longitude()) ) points.push_back(first);
+    
+    // Delete duplicated vertexes
+    bool firstrun = true;
+    CPoint2DArray::iterator it = points.begin();
+    while (it != points.end()) {
+      if (!firstrun && ((*it).Latitude() == last.Latitude()) && ((*it).Longitude() == last.Longitude())) {
+        it = points.erase(it);
+        continue;
+      }
+      last = *it;
+      ++it;
+      firstrun = false;
+    }
 }
 
 // Reading and parsing OpenAir airspace file
@@ -1833,18 +1846,6 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
   static double lon = 0;
   static double lat = 0;
  
-  if(!AIRSPACEWARNINGS) {                       //Airspace warnings disabled in config
-    CCriticalSection::CGuard guard(_csairspaces);
-    // Set CAirspace class attributes to to range calculations well from UI
-    CAirspace::StartWarningCalculation( Basic, Calculated );
-    // No infobox values if warnings disabled, because no range calculation done.
-    NearestAirspaceName[0]=0;
-    NearestAirspaceVName[0]=0;
-    NearestAirspaceHDist=0;
-    NearestAirspaceVDist=0;
-    return;
-  }
-  
   CCriticalSection::CGuard guard(_csairspaces);
   CAirspaceList::iterator it;
 
@@ -1948,7 +1949,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
         bool there_is_msg;
         for (it=_airspaces_of_interest.begin(); it != _airspaces_of_interest.end(); ++it) {
             there_is_msg = (*it)->FinishWarning();
-            if (there_is_msg) {
+            if (there_is_msg && AIRSPACEWARNINGS) {     // Pass warning messages only if warnings enabled
               // Add new warning message to queue
               AirspaceWarningMessage msg;
               msg.originator = *it;
