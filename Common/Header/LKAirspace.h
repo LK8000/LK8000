@@ -354,7 +354,12 @@ public:
   void SetFarVisible(const rectObj &bounds_active);
   void CalculateScreenPositionsAirspace(const rectObj &screenbounds_latlon, const int iAirspaceMode[], const int iAirspaceBrush[], const double &ResMapScaleOverDistanceModify);
   const CAirspaceList& GetNearAirspacesRef() const;
-  
+
+  //Nearest page 2.4
+  void SelectAirspacesForPage24(const double latitude, const double longitude, const double interest_radius);
+  void CalculateDistancesForPage24();
+  CAirspaceList GetAirspacesForPage24();
+
   //Attributes
   unsigned int NumberofAirspaces() { CCriticalSection::CGuard guard(_csairspaces); return _airspaces.size(); }
 
@@ -369,8 +374,9 @@ private:
   
   // Airspaces data
   mutable CCriticalSection _csairspaces;
-  CAirspaceList _airspaces;            //ALL
-  CAirspaceList _airspaces_near;    //Near
+  CAirspaceList _airspaces;             // ALL
+  CAirspaceList _airspaces_near;        // Near, in reachable range for warnings
+  CAirspaceList _airspaces_page24;      // Airspaces for nearest 2.4 page
   
   // Warning system data
   // User warning message queue

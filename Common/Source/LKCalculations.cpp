@@ -1989,8 +1989,6 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
    static bool doinit=true;
    static int step = 0;
-   static CAirspaceList airspaces;
-   CAirspaceList allairspaces;
    bool ret = false;
    
    if (doinit) {
@@ -2018,87 +2016,27 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    StartupStore(_T("... DoAirspaces step%d started\n"),step);
    #endif
 
-   // Lock airspace instances externally
-   CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
 
    switch (step) {
      // MULTICALC STEP0 - select airspaces in range based on bounds
      default:
      case 0:
-          // Get a copy of all airspace ptrs from airspacemanager
-          allairspaces = CAirspaceManager::Instance().GetAllAirspaces();
-          if (allairspaces.size()<1) return true;
-
-          double lat, lon, bearing, interest_radius;
-          rectObj bounds;
-          
-            // Calculate area of interest
-            interest_radius = 100000;                                   //100km
-            lon = Basic->Longitude;
-            lat = Basic->Latitude;
-            bounds.minx = lon;
-            bounds.maxx = lon;
-            bounds.miny = lat;
-            bounds.maxy = lat;
-
-            bearing = 0;
-            {
-              FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
-              bounds.minx = min(lon, bounds.minx);
-              bounds.maxx = max(lon, bounds.maxx);
-              bounds.miny = min(lat, bounds.miny);
-              bounds.maxy = max(lat, bounds.maxy);
-            }
-            bearing = 90;
-            {
-              FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
-              bounds.minx = min(lon, bounds.minx);
-              bounds.maxx = max(lon, bounds.maxx);
-              bounds.miny = min(lat, bounds.miny);
-              bounds.maxy = max(lat, bounds.maxy);
-            }
-            bearing = 180;
-            {
-              FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
-              bounds.minx = min(lon, bounds.minx);
-              bounds.maxx = max(lon, bounds.maxx);
-              bounds.miny = min(lat, bounds.miny);
-              bounds.maxy = max(lat, bounds.maxy);
-            }
-            bearing = 270;
-            {
-              FindLatitudeLongitude(Basic->Latitude, Basic->Longitude, bearing, interest_radius, &lat, &lon);
-              bounds.minx = min(lon, bounds.minx);
-              bounds.maxx = max(lon, bounds.maxx);
-              bounds.miny = min(lat, bounds.miny);
-              bounds.maxy = max(lat, bounds.maxy);
-            }
-
-            // JMW detect airspace that wraps across 180
-            if ((bounds.minx< -90) && (bounds.maxx>90)) {
-              double tmp = bounds.minx;
-              bounds.minx = bounds.maxx;
-              bounds.maxx = tmp;
-            }
-
-          // Select nearest ones (based on bounds)
-          airspaces.clear();
-          for (CAirspaceList::iterator it = allairspaces.begin(); it != allairspaces.end(); ++it) {
-            if (msRectOverlap(&bounds, &(*it)->Bounds()) == MS_TRUE) airspaces.push_back(*it);
-          }
-          ++step;
-          break;
+        CAirspaceManager::Instance().SelectAirspacesForPage24(Basic->Latitude, Basic->Longitude, 100000.0);        // 100km
+        ++step;
+        break;
           
      // MULTICALC STEP1 - Do distance calculations on selected airspaces
      case 1:
-        for (CAirspaceList::iterator it = airspaces.begin(); it != airspaces.end(); ++it) {
-          (*it)->CalculateDistance(NULL, NULL, NULL);
-        }
+        CAirspaceManager::Instance().CalculateDistancesForPage24();
         ++step;
         break;
         
      // MULTICALC STEP2 - Sort by different keys, and fill up result struct array
      case 2:
+        // Lock airspace instances externally
+        CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+        // Get selected list from airspacemanager
+        CAirspaceList airspaces = CAirspaceManager::Instance().GetAirspacesForPage24();
         // Sort selected airspaces by distance first
         std::sort(airspaces.begin(), airspaces.end(), airspace_distance_sorter);
         // get first MAXNEARAIRSPACES to a new list
