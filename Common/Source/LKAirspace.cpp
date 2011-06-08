@@ -251,7 +251,8 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
         _nearesthname = _name;
         _nearesthdistance = abs(_hdistance);
       }
-      if ( (abs(_vdistance) < abs(_nearestvdistance)) ) {
+      // Just directly above or below distances counts
+      if ( (abs(_vdistance) < abs(_nearestvdistance)) && (_hdistance < 0) ) {
         _nearestvname = _name;
         _nearestvdistance = _vdistance;
       }
