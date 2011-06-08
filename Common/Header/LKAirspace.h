@@ -155,7 +155,11 @@ public:
 
   int Enabled() const { return _enabled; }
   void Enabled(bool enabled) { _enabled = enabled; } 
-  
+
+  int LastCalculatedHDistance() const { return _hdistance; }            // Get last calculated horizontal distance (LKCalculations.cpp / DoAirspaces())
+  int LastCalculatedVDistance() const { return _vdistance; }            // Get last calculated vertical distance (LKCalculations.cpp / DoAirspaces())
+  int LastCalculatedBearing() const { return _bearing; }                // Get last calculated bearing (LKCalculations.cpp / DoAirspaces())
+
   AirspaceWarningLevel_t WarningLevel() const { return _warninglevel; }
   void WarningLevel(AirspaceWarningLevel_t userwarningstate) { _warninglevel = userwarningstate; }
   
