@@ -1289,13 +1289,28 @@ bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, d
 // Correcting geopointlist
 // All algorithms require non self-intersecting and closed polygons.
 // Also the geopointlist last element have to be the same as first -> openair doesn't require this, we have to do it here
+// Also delete adjacent duplicated vertexes
 void CAirspaceManager::CorrectGeoPoints(CPoint2DArray &points)
 {
     if (points.size()==0) return;
+    
+    // Close polygon if not closed
     CPoint2D first = points.front();
     CPoint2D last = points.back();
-    
     if ( (first.Latitude() != last.Latitude()) || (first.Longitude() != last.Longitude()) ) points.push_back(first);
+    
+    // Delete duplicated vertexes
+    bool firstrun = true;
+    CPoint2DArray::iterator it = points.begin();
+    while (it != points.end()) {
+      if (!firstrun && ((*it).Latitude() == last.Latitude()) && ((*it).Longitude() == last.Longitude())) {
+        it = points.erase(it);
+        continue;
+      }
+      last = *it;
+      ++it;
+      firstrun = false;
+    }
 }
 
 // Reading and parsing OpenAir airspace file
