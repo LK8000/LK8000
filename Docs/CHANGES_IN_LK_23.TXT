@@ -2,6 +2,21 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3c
+
+NEW
+
+
+
+CHANGES
+
+
+
+FIXES
+
+
+
+-------------------
 Version 2.3b 110609
 
 NEW
@@ -25,11 +40,7 @@ FIXES
 . Fix Airspace parser, coordinate parsing fails if coords given in DD:MM:SS<spc><spc>X format
 
 
-
-
-
-
----------------
+-------------------
 Version 2.3a 110603
 
 NEW
