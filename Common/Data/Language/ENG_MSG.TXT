@@ -28,6 +28,7 @@ _@M12_ "11 Appearance"
 _@M13_ "12 Fonts"
 _@M14_ "13 Map Overlays "
 _@M15_ "14 Task"
+# UNUSED M16
 _@M16_ "15 Task rules"
 _@M17_ "15 seconds"
 _@M18_ "16 InfoBox Cruise"
@@ -1528,6 +1529,8 @@ _@M1643_ "ENABLED"
 _@M1644_ "Home Alt.Arrival"
 _@M1645_ "HomeArr"
 
+# Menu Config 15, Alarms
+_@M1646_ "15 Alarms"
 
 
 # Note for developers: LKLanguage MAX_MESSAGE  1700: 0-1699 !

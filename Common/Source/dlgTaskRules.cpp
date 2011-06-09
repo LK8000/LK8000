@@ -117,8 +117,14 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeight"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(StartMaxHeight*ALTITUDEMODIFY));// 100315
     wp->GetDataField()->SetAsFloat(iround(StartMaxHeight*ALTITUDEMODIFY/1000));
+    wp->GetDataField()->SetUnits(Units::GetAltitudeName());
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeightMargin"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(iround(StartMaxHeightMargin*ALTITUDEMODIFY/1000));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
@@ -129,6 +135,15 @@ static void setVariables(void) {
     wp->GetDataField()->SetUnits(Units::GetHorizontalSpeedName());
     wp->RefreshDisplay();
   }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeedMargin"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(iround(StartMaxSpeedMargin*SPEEDMODIFY/1000));
+    wp->GetDataField()->SetUnits(Units::GetHorizontalSpeedName());
+    wp->RefreshDisplay();
+  }
+
+
 }
 
 
@@ -212,6 +227,16 @@ bool dlgTaskRules(void){
     }
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeightMargin"));
+  if (wp) {
+    ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0 ); // 100315
+    if ((int)StartMaxHeightMargin != ival) {
+      StartMaxHeightMargin = ival;
+      SetToRegistry(szRegistryStartMaxHeightMargin,StartMaxHeightMargin);
+      changed = true;
+    }
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeed"));
   if (wp) {
     ival = iround((wp->GetDataField()->GetAsInteger()/SPEEDMODIFY)*1000);
@@ -222,6 +247,15 @@ bool dlgTaskRules(void){
     }
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeedMargin"));
+  if (wp) {
+    ival = iround((wp->GetDataField()->GetAsInteger()/SPEEDMODIFY)*1000.0);
+    if ((int)StartMaxSpeedMargin != ival) {
+      StartMaxSpeedMargin = ival;
+      SetToRegistry(szRegistryStartMaxSpeedMargin,StartMaxSpeedMargin);
+      changed = true;
+    }
+  }
 
   if (changed) {
     StoreRegistry();

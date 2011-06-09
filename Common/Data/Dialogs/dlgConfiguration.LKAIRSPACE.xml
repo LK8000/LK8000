@@ -356,28 +356,7 @@
 <DataField name="" DataType="enum"  Min=0 Max=1 Step=1/>
 </WndProperty>
 </WndFrame>
-<WndFrame Name="frmTaskRules" X=70 Y=0 Width=-246 Height=222 Font=2>
-<WndProperty Name="prpStartMaxSpeed" Caption="_@M643_" X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H162_">
-<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=300 Step=5/>
-</WndProperty>
-<WndProperty Name="prpStartMaxSpeedMargin" Caption="_@M646_"  X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H163_">
-<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=300 Step=5/>
-</WndProperty>
-<WndProperty Name="prpStartMaxHeight" Caption="_@M641_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H164_">
-<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=20000 Step=50/>
-</WndProperty>
-<WndProperty Name="prpStartMaxHeightMargin" Caption="_@M645_" X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H165_">
-<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=20000 Step=50/>
-</WndProperty>
-<WndProperty Name="prpStartHeightRef" Caption="_@M639_" X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H166_">
-<DataField name="" DataType="enum"  Min=0 Max=50 Step=1/>
-</WndProperty>
-<WndProperty Name="prpFinishMinHeight" Caption="_@M292_" X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H167_">
-<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=20000 Step=50/>
-</WndProperty>
-<WndProperty Name="prpFAIFinishHeight" Caption="_@M275_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H168_">
-<DataField name="" DataType="boolean"/>
-</WndProperty>
+<WndFrame Name="frmAlarms" X=70 Y=0 Width=-246 Height=222 Font=2>
 </WndFrame>
 <WndFrame Name="frmUnits" X=70 Y=0 Width=-246 Height=222 Font=2>
 <WndProperty Name="prpUnitsSpeed" Caption="_@M61_" X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H170_">
@@ -543,6 +522,7 @@
 <WndProperty Name="prpTaskFinishRadius" Caption="_@M295_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=100 Font=2 Help="_@H206_">
 <DataField name="" DataType="double" DisplayFormat="%.1f %s" EditFormat="%.1f" Min=0 Max=100 Step="0.5" Fine=1/>
 </WndProperty>
+<WndButton Name="cmdTaskRules" Caption="_@M690_" X=70 Y=-997 Width=180  Height=30 Font=2 OnClickNotify="OnTaskRulesClicked" />
 </WndFrame>
 <WndFrame Name="frmLogger" X=70 Y=0 Width=-246 Height=222 Font=2>
 <WndButton Name="cmdPilotName" Caption="_@M525_" X=2 Y=-1 Width=-246  Height=22 Font=2 />

@@ -255,8 +255,7 @@ static void NextPage(int Step){
     wf->SetCaption(gettext(TEXT("_@M15_")));
     break;
   case 14:
-	// LKTOKEN  _@M16_ = "15 Task rules" 
-    wf->SetCaption(gettext(TEXT("_@M16_")));
+    wf->SetCaption(gettext(TEXT("_@M1646_"))); // 15 Alarms
     break;
   case 15:
 	// LKTOKEN  _@M18_ = "16 InfoBox Cruise" 
@@ -993,6 +992,10 @@ static void OnSetInfoPagesClicked(WindowControl * Sender){
 	(void)Sender;
   dlgInfoPagesShowModal();
 }
+static void OnTaskRulesClicked(WindowControl * Sender){
+	(void)Sender;
+  dlgTaskRules();
+}
 
 #ifdef LKAIRSPACE
 static void OnAirspaceWarningParamsClicked(WindowControl * Sender){
@@ -1434,6 +1437,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnSetCustomKeysClicked),
   DeclareCallBackEntry(OnSetBottomBarClicked),
   DeclareCallBackEntry(OnSetInfoPagesClicked),
+  DeclareCallBackEntry(OnTaskRulesClicked),
   
   DeclareCallBackEntry(OnAirspaceFillType),
   DeclareCallBackEntry(OnAirspaceDisplay),
@@ -2175,11 +2179,13 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  /* REMOVE 110608
   wp = (WndProperty*)wf->FindByName(TEXT("prpFAIFinishHeight"));
   if (wp) {
     wp->GetDataField()->Set(EnableFAIFinishHeight);
     wp->RefreshDisplay();
   }
+  */
 
 #ifndef NEW_OLC
   wp = (WndProperty*)wf->FindByName(TEXT("prpOLCRules"));
@@ -3628,27 +3634,34 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  /* REMOVE 110608
   wp = (WndProperty*)wf->FindByName(TEXT("prpFinishMinHeight"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(FinishMinHeight*ALTITUDEMODIFY/1000)); // BUGFIX XCSOAR 100315
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
+  */
 
+  /* REMOVE 110608
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeight"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(StartMaxHeight*ALTITUDEMODIFY/1000)); // BUGFIX XCSOAR 100315
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
+  */
 
+  /* REMOVE 110608
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeightMargin"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(StartMaxHeightMargin*ALTITUDEMODIFY/1000));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
+  */
 
+  /* REMOVE 110608
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartHeightRef"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -3658,20 +3671,25 @@ static void setVariables(void) {
     dfe->Set(StartHeightRef);
     wp->RefreshDisplay();
   }
+  */
 
+  /* REMOVE 110608
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeed"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(StartMaxSpeed*SPEEDMODIFY/1000)); 
     wp->GetDataField()->SetUnits(Units::GetHorizontalSpeedName());
     wp->RefreshDisplay();
   }
+  */
 
+  /* REMOVE 110608
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeedMargin"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(StartMaxSpeedMargin*SPEEDMODIFY/1000)); 
     wp->GetDataField()->SetUnits(Units::GetHorizontalSpeedName());
     wp->RefreshDisplay();
   }
+  */
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLoggerTimeStepCruise"));
   if (wp) {
@@ -3781,7 +3799,7 @@ void dlgConfigurationShowModal(void){
   wConfig12    = ((WndFrame *)wf->FindByName(TEXT("frmFonts")));
   wConfig13    = ((WndFrame *)wf->FindByName(TEXT("frmVarioAppearance")));
   wConfig14    = ((WndFrame *)wf->FindByName(TEXT("frmTask")));
-  wConfig15    = ((WndFrame *)wf->FindByName(TEXT("frmTaskRules")));
+  wConfig15    = ((WndFrame *)wf->FindByName(TEXT("frmAlarms")));
   wConfig16    = ((WndFrame *)wf->FindByName(TEXT("frmInfoBoxCircling")));
   wConfig17    = ((WndFrame *)wf->FindByName(TEXT("frmInfoBoxCruise")));
   wConfig18    = ((WndFrame *)wf->FindByName(TEXT("frmInfoBoxFinalGlide")));
@@ -4513,6 +4531,7 @@ void dlgConfigurationShowModal(void){
     }
   }
 
+  /* REMOVE 110608
   wp = (WndProperty*)wf->FindByName(TEXT("prpFAIFinishHeight"));
   if (wp) {
     if (EnableFAIFinishHeight != (wp->GetDataField()->GetAsInteger()>0)) {
@@ -4521,6 +4540,7 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
+  */
 
 #ifndef NEW_OLC
   wp = (WndProperty*)wf->FindByName(TEXT("prpOLCRules"));
@@ -5532,6 +5552,7 @@ void dlgConfigurationShowModal(void){
     }
   }
 
+  /* 110608 REMOVE 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFinishMinHeight"));
   if (wp) {
     ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY)*1000.0); // 100315 BUGFIX XCSOAr
@@ -5541,7 +5562,9 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
+  */
 
+  /* 110608 REMOVE 
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeight"));
   if (wp) {
     ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0); // 100315 BUGFIX XCSOAR
@@ -5551,7 +5574,9 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
+  */
 
+  /* 110608 REMOVE 
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeightMargin"));
   if (wp) {
     ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0 ); // 100315
@@ -5561,6 +5586,9 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
+  */
+
+  /* REMOVE 110608
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartHeightRef"));
   if (wp) {
     if (StartHeightRef != wp->GetDataField()->GetAsInteger()) {
@@ -5569,7 +5597,9 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
+  */
 
+  /* REMOVE 110608
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeed"));
   if (wp) {
     ival = iround( (wp->GetDataField()->GetAsInteger()/SPEEDMODIFY)*1000.0);  
@@ -5579,7 +5609,9 @@ void dlgConfigurationShowModal(void){
 	changed = true;
     }
   }
+  */
 
+  /* REMOVE 110608
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeedMargin"));
   if (wp) {
     ival = iround((wp->GetDataField()->GetAsInteger()/SPEEDMODIFY)*1000.0); 
@@ -5589,6 +5621,8 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
+  */
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoAdvance"));
   if (wp) {
     if (AutoAdvance != wp->GetDataField()->GetAsInteger()) {
