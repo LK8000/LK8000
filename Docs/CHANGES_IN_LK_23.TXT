@@ -10,6 +10,14 @@ NEW
 
 CHANGES
 
+. Enable Contest Engine also for non-glider aircrafts, IF infopage 1.5 is enabled.
+  This means that using glider mode will not require 1.5 to be enabled.
+  But using paragliding, GA or Car mode will require 1.5 to BE ENABLED otherwise the
+  calculation engine will NOT run.
+  Be careful enabling during flight calculation engine, because all previous point since the
+  takeoff will not be valid, and the freeflight detection will be wrong of course.
+  (This feature was really added in 2.3B but forgotten to be mentioned!)
+
 
 
 FIXES
