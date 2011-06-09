@@ -6,16 +6,18 @@ Version 2.3b
 
 NEW
 
+. Menu 15 in config, for Alarms - still not operational
+
 
 CHANGES
 
-. Orbiter enabled only after 100m thermal gain achieved. Below this gain, we assume the thermal center is not valid.
-  Remember that orbiter will autodisable after 500m thermal gain. Thus it is working in the 100-500m th.gain range.
+. Orbiter enabled only after 50m thermal gain achieved. Below this gain, we assume the thermal center is not valid.
+  Orbiter will autodisable after 700m thermal gain. Thus it is now working in the 50-700m th.gain range.
 . 2.4 nearest airspace page contains airspaces in maximum 100km range
 . Airspace nearest vertical distance infobox shows vertical distance to an airspace directly above or below at current position (or to leave a fly zone)
 . Airspace nearest horizontal distance infobox shows horizontal distance to an airspace at the current altitude (or to leave a fly zone)
 
-
+. Config menu 15 Task rules moved to Menu 14 as a button
 
 FIXES
 
