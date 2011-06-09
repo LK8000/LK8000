@@ -1569,5 +1569,16 @@ Even if you have acknowledged an airspace, after this time it will be back "acti
 You may want to be warned again while flying back home and crossing an airspace you have crossed in the morning, for example!
 By default, after 15 minutes airspaces will be back "armed" for warnings.
 
+@1253
+[Alarm Max Altitude] An alarm will be triggered everytime this altitude is reached and crossed.
+The alarm will not be repeated within the next 3 minutes.
+After 3 minutes, if altitude has been lower than Max Altitude and then becomes higher again, alarm will sound again.
+To disable this alarm, set it to 0. 
+The altitude used for alarm is the one chosen in Config menu 5 "Use baro altitude".
+Multiple alarms set at the same altitude will have no effect.
+Glider pilots should be careful not to set alarms below a safety altitude, during critical phases of flight.
+Each alarm can be repeated max 20 times. After 20 times, an alarm will automatically self disable for the current flight.
+Default is 0 (no alarm).
+
 @9999
 No help available on this item!
