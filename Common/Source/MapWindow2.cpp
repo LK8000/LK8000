@@ -1369,6 +1369,17 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
   #endif
 
 	const int y0 = ( (rc.bottom - rc.top )/2)+rc.top;
+
+	#if 110609
+	if ( ValidTaskPoint(1) && OvertargetMode == OVT_TASK && GlideBarMode == (GlideBarMode_t)gbFinish ) {
+		Offset = ((int)DerivedDrawInfo.TaskAltitudeDifference)/8; 
+		Offset0 = ((int)DerivedDrawInfo.TaskAltitudeDifference0)/8; 
+	} else {
+		Offset=(int)WayPointCalc[barindex].AltArriv[AltArrivMode];
+		Offset0=Offset;
+	}
+	#else
+	// This is wrong, we are painting values relative to MC and ignoring safetyMC
 	if (OvertargetMode != OVT_TASK) { //@ 101004
 		Offset=(int)WayPointCalc[barindex].AltArriv[AltArrivMode];
 		Offset0=Offset;
@@ -1382,6 +1393,8 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 			Offset0 = ((int)DerivedDrawInfo.NextAltitudeDifference0)/8; 
 		}
 	}
+	#endif
+
 	// TODO feature: should be an angle if in final glide mode
 
 	if(Offset > maxBar) Offset = maxBar;
