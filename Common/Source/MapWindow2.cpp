@@ -2215,11 +2215,7 @@ void MapWindow::DrawGlideThroughTerrain(HDC hDC, const RECT rc) {
   // draw red cross obstacles only if destination looks reachable!
   // only if using OVT_TASK of course!
 
-#ifdef _SIM_ 
-  if ( (OvertargetMode == OVT_TASK) && ValidTaskPoint(ActiveWayPoint) )  // 100930
-#else
-  if ( (OvertargetMode==OVT_TASK) && DerivedDrawInfo.Flying && ValidTaskPoint(ActiveWayPoint)) // 100930
-#endif
+  if ( (OvertargetMode==OVT_TASK) && DerivedDrawInfo.Flying && ValidTaskPoint(ActiveWayPoint))
   if (WayPointCalc[TASKINDEX].AltArriv[AltArrivMode] >0) { 
 
 	POINT sc;
