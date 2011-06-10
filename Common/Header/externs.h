@@ -323,6 +323,7 @@ extern bool LKDoNotResetComms;
 
 extern ldrotary_s rotaryLD;
 extern windrotary_s rotaryWind;
+extern lkalarms_s LKalarms[];
 // airspace data
 #ifndef LKAIRSPACE
 extern AIRSPACE_AREA *AirspaceArea;
@@ -405,6 +406,10 @@ extern int OLCRules;
 extern int Handicap;
 extern bool EnableOLC;
 #endif /* NEW_OLC */
+
+extern DWORD AlarmMaxAltitude1;
+extern DWORD AlarmMaxAltitude2;
+extern DWORD AlarmMaxAltitude3;
 
 // master flight data
 extern NMEA_INFO GPS_INFO;

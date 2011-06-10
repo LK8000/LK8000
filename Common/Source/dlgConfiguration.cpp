@@ -3716,6 +3716,27 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmMaxAltitude1"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(iround(AlarmMaxAltitude1*ALTITUDEMODIFY/1000));
+    wp->GetDataField()->SetUnits(Units::GetAltitudeName());
+    wp->RefreshDisplay();
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmMaxAltitude2"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(iround(AlarmMaxAltitude2*ALTITUDEMODIFY/1000));
+    wp->GetDataField()->SetUnits(Units::GetAltitudeName());
+    wp->RefreshDisplay();
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmMaxAltitude3"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(iround(AlarmMaxAltitude3*ALTITUDEMODIFY/1000));
+    wp->GetDataField()->SetUnits(Units::GetAltitudeName());
+    wp->RefreshDisplay();
+  }
+
+
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpUseGeoidSeparation"));
   if (wp) {
     wp->GetDataField()->Set(UseGeoidSeparation);
@@ -5622,6 +5643,40 @@ void dlgConfigurationShowModal(void){
     }
   }
   */
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmMaxAltitude1"));
+  if (wp) {
+    ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0);
+    if ((int)AlarmMaxAltitude1 != ival) {
+      AlarmMaxAltitude1 = ival;
+      LKalarms[0].triggervalue=(int)AlarmMaxAltitude1/1000;
+      LKalarms[0].triggerscount=0;
+      SetToRegistry(szRegistryAlarmMaxAltitude1,AlarmMaxAltitude1);
+      changed = true;
+    }
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmMaxAltitude2"));
+  if (wp) {
+    ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0);
+    if ((int)AlarmMaxAltitude2 != ival) {
+      AlarmMaxAltitude2 = ival;
+      LKalarms[1].triggervalue=(int)AlarmMaxAltitude2/1000;
+      LKalarms[1].triggerscount=0;
+      SetToRegistry(szRegistryAlarmMaxAltitude2,AlarmMaxAltitude2);
+      changed = true;
+    }
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmMaxAltitude3"));
+  if (wp) {
+    ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0);
+    if ((int)AlarmMaxAltitude3 != ival) {
+      AlarmMaxAltitude3 = ival;
+      LKalarms[2].triggervalue=(int)AlarmMaxAltitude3/1000;
+      LKalarms[2].triggerscount=0;
+      SetToRegistry(szRegistryAlarmMaxAltitude3,AlarmMaxAltitude3);
+      changed = true;
+    }
+  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoAdvance"));
   if (wp) {

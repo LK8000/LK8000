@@ -644,6 +644,13 @@ typedef struct {
 	bool	valid;
 } ldrotary_s;
 
+typedef struct {
+	int triggervalue;	// example altitude limit
+	int lastvalue;
+	double lasttriggertime;	// last time trigger was issued
+	short triggerscount;	// how many times alarm was issued
+} lkalarms_s;
+
 
 typedef struct{
   MapScaleAppearance_t MapScale;

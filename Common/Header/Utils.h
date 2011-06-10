@@ -219,6 +219,10 @@ extern const TCHAR szRegistryStartMaxSpeed[];
 extern const TCHAR szRegistryStartMaxSpeedMargin[];
 extern const TCHAR szRegistryStartHeightRef[];
 
+extern const TCHAR szRegistryAlarmMaxAltitude1[];
+extern const TCHAR szRegistryAlarmMaxAltitude2[];
+extern const TCHAR szRegistryAlarmMaxAltitude3[];
+
 extern const TCHAR szRegistryEnableNavBaroAltitude[];
 extern const TCHAR szRegistryOrbiter[];
 extern const TCHAR szRegistryShading[];
@@ -516,6 +520,9 @@ bool LKRun(const TCHAR *prog, const int runmode, const DWORD dwaitime);
 void GotoWaypoint(const int wpnum);
 void ToggleBaroAltitude(void);
 bool ReducedMapSize(void);
+
+void InitAlarms(void);
+bool CheckAlarms(unsigned short al);
 
 void MemCheckPoint();
 void MemLeakCheck();

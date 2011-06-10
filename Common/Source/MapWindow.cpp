@@ -2817,6 +2817,7 @@ void MapWindow::RenderMapWindow(  RECT rc)
   if (DONTDRAWTHEMAP) {
   	DrawFlightMode(hdcDrawWindow, rc);
   	DrawGPSStatus(hdcDrawWindow, rc);
+	DrawLKAlarms(hdcDrawWindow, rc);
 
 	return;
   }
@@ -2857,6 +2858,8 @@ void MapWindow::RenderMapWindow(  RECT rc)
   #if (WINDOWSPC<1)
   LKBatteryManager();
   #endif
+
+  DrawLKAlarms(hdcDrawWindow, rc);
 
   /*
    * This may not be the correct place for locking map. 

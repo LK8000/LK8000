@@ -777,6 +777,8 @@ int AirspaceWarningDlgTimeout = 30;             // airspace warning dialog auto 
 int AirspaceWarningMapLabels = 1;               // airspace warning map labels showed
 #endif
 
+lkalarms_s LKalarms[MAXLKALARMS];
+
 // Registration Data
 TCHAR strAssetNumber[MAX_LOADSTRING] = TEXT(""); //4G17DW31L0HY");
 TCHAR strRegKey[MAX_LOADSTRING] = TEXT("");
@@ -844,6 +846,9 @@ DWORD StartMaxSpeed = 0;
 DWORD StartMaxHeightMargin = 0;
 DWORD StartMaxSpeedMargin = 0;
 
+DWORD AlarmMaxAltitude1=0;
+DWORD AlarmMaxAltitude2=0;
+DWORD AlarmMaxAltitude3=0;
 
 // Statistics
 Statistics flightstats;

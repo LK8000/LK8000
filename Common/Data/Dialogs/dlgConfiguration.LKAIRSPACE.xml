@@ -357,13 +357,13 @@
 </WndProperty>
 </WndFrame>
 <WndFrame Name="frmAlarms" X=70 Y=0 Width=-246 Height=222 Font=2>
-<WndProperty Name="prpAlarmMaxAltitude1" Caption="_@M1647_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1253_" ReadOnly="1">
+<WndProperty Name="prpAlarmMaxAltitude1" Caption="_@M1647_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1253_">
 <DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=30000 Step=50/>
 </WndProperty>
-<WndProperty Name="prpAlarmMaxAltitude2" Caption="_@M1648_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1253_" ReadOnly="1">
+<WndProperty Name="prpAlarmMaxAltitude2" Caption="_@M1648_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1253_">
 <DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=30000 Step=50/>
 </WndProperty>
-<WndProperty Name="prpAlarmMaxAltitude3" Caption="_@M1649_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1253_" ReadOnly="1">
+<WndProperty Name="prpAlarmMaxAltitude3" Caption="_@M1649_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1253_">
 <DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=30000 Step=50/>
 </WndProperty>
 </WndFrame>

@@ -251,3 +251,8 @@
 // Fixed text for a disabled device. Cannot be used for translations.
 #define DEV_DISABLED_NAME	"DISABLED"
 
+// Max number of existing LK Alarms
+#define MAXLKALARMS	3
+#define MAXLKALARMSTRIGGERS	30	// max number of triggered events per alarm
+#define LKALARMSINTERVAL	60	// seconds of interval for LK alarms
+

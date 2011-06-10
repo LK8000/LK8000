@@ -1571,13 +1571,16 @@ By default, after 15 minutes airspaces will be back "armed" for warnings.
 
 @1253
 [Alarm Max Altitude] An alarm will be triggered everytime this altitude is reached and crossed.
-The alarm will not be repeated within the next 3 minutes.
-After 3 minutes, if altitude has been lower than Max Altitude and then becomes higher again, alarm will sound again.
+The alarm will not be repeated within the next 60 seconds.
+After 1 minute, if altitude has been lower than Max Altitude and then becomes higher again, alarm will sound again.
 To disable this alarm, set it to 0. 
 The altitude used for alarm is the one chosen in Config menu 5 "Use baro altitude".
 Multiple alarms set at the same altitude will have no effect.
 Glider pilots should be careful not to set alarms below a safety altitude, during critical phases of flight.
-Each alarm can be repeated max 20 times. After 20 times, an alarm will automatically self disable for the current flight.
+Each alarm can be repeated max 30 times. After 30 times, an alarm will automatically self disable for the current flight.
+The visual alarm message automatically disappears after 12 seconds.
+Each alarm has a custom sound that can be changed inside _System _Sounds folder.
+They are named LK_ALARM_ALTx.WAV
 Default is 0 (no alarm).
 
 @9999

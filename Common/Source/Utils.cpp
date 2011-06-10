@@ -365,6 +365,10 @@ const TCHAR szRegistryVoiceNewWaypoint[]= TEXT("VoiceNewWaypoint");
 const TCHAR szRegistryVoiceInSector[]= TEXT("VoiceInSector");
 const TCHAR szRegistryVoiceAirspace[]= TEXT("VoiceAirspace");
 
+const TCHAR szRegistryAlarmMaxAltitude1[]= TEXT("AlarmMaxAltitude1");
+const TCHAR szRegistryAlarmMaxAltitude2[]= TEXT("AlarmMaxAltitude3");
+const TCHAR szRegistryAlarmMaxAltitude3[]= TEXT("AlarmMaxAltitude4");
+
 const TCHAR szRegistryFinishMinHeight[]= TEXT("FinishMinHeight");
 const TCHAR szRegistryStartMaxHeight[]= TEXT("StartMaxHeight");
 const TCHAR szRegistryStartMaxSpeed[]= TEXT("StartMaxSpeed");
@@ -1514,6 +1518,18 @@ void ReadRegistrySettings(void)
   EnableVoiceAirspace = (Temp!=0);
 #endif
 
+  Temp = AlarmMaxAltitude1;
+  GetFromRegistry(szRegistryAlarmMaxAltitude1,&Temp);
+  AlarmMaxAltitude1 = Temp; // saved *1000, /1000 when used
+
+  Temp = AlarmMaxAltitude2;
+  GetFromRegistry(szRegistryAlarmMaxAltitude2,&Temp);
+  AlarmMaxAltitude2 = Temp; // saved *1000, /1000 when used
+
+  Temp = AlarmMaxAltitude3;
+  GetFromRegistry(szRegistryAlarmMaxAltitude3,&Temp);
+  AlarmMaxAltitude3 = Temp; // saved *1000, /1000 when used
+
   Temp = FinishMinHeight;
   GetFromRegistry(szRegistryFinishMinHeight,&Temp);
   FinishMinHeight = Temp; // 100315 saved *1000, /1000 when used
@@ -1658,6 +1674,9 @@ void ReadRegistrySettings(void)
   else 
     DisableAutoLogger = false;
 
+  LKalarms[0].triggervalue=(int)AlarmMaxAltitude1/1000;
+  LKalarms[1].triggervalue=(int)AlarmMaxAltitude2/1000;
+  LKalarms[2].triggervalue=(int)AlarmMaxAltitude3/1000;
   UpdateConfBB();
   UpdateConfIP();
 

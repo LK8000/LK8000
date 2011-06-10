@@ -946,6 +946,8 @@ void InitCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   DoTraffic(Basic,Calculated);
   DoAirspaces(Basic,Calculated);
 
+  InitAlarms();
+
   LockFlightData();
 
   if (!windanalyser) {
