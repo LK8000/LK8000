@@ -2818,6 +2818,9 @@ void MapWindow::RenderMapWindow(  RECT rc)
   	DrawFlightMode(hdcDrawWindow, rc);
   	DrawGPSStatus(hdcDrawWindow, rc);
 	DrawLKAlarms(hdcDrawWindow, rc);
+	#if (WINDOWSPC<1)
+	LKBatteryManager();
+	#endif
 
 	return;
   }
