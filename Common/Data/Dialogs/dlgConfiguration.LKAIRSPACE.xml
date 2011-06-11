@@ -490,7 +490,7 @@
 <WndProperty Name="prpFinalGlideTerrain" Caption="_@M326_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H194_">
 <DataField name="" DataType="enum" Min=0 Max=2 Step=1/>
 </WndProperty>
-<WndProperty Name="prpGlideBarMode" Caption="_@M324_" X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H195_">
+<WndProperty Name="prpGlideBarMode" Caption="_@M324_" X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1254_">
 <DataField name="" DataType="enum" Min=0 Max=10 Step=1/>
 </WndProperty>
 <WndProperty Name="prpLKVarioBar" Caption="_@M785_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H196_">

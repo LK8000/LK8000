@@ -423,6 +423,7 @@ The obstacle is indicated together with a boxed value, which is the altitude you
 This altitude takes into account the terrain safety margin you have configured in safety menu.
 NOTICE: Glide terrain SHADE is shown ONLY during flight. When on ground, it is NOT displayed.
 
+# 195 UNUSED SINCE 2.4
 @195
 Glide bar can be relative to Task Finish or to the next turnpoint, or it can be disabled. This bar is drawn on the left side of the screen.
 Value is calculated for current MC, being a task value: if you dont have a task but only a single goto, 
@@ -1582,6 +1583,13 @@ The visual alarm message automatically disappears after 12 seconds.
 Each alarm has a custom sound that can be changed inside _System _Sounds folder.
 They are named LK_ALARM_ALTx.WAV
 Default is 0 (no alarm).
+
+# ex 195
+@1254
+Glide bar can be relative to Task Finish or to the next turnpoint, or it can be disabled. This bar is drawn on the left side of the screen.
+When using next waypoint, or task waypoint with only final waypoint to go, then this value will be equal to the one shown on overlays.
+
+@196
 
 @9999
 No help available on this item!
