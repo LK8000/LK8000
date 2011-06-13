@@ -68,7 +68,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   static short left,right,bottom;
   // one for each mapspace, no matter if 0 and 1 are unused
 
-  short curmapspace=curmapspace;
+  short curmapspace=MapSpaceMode;
   static int TrafficNumraws=0;
   //static int TrafficNumpages=0; global..
   // Vertical and horizontal spaces
