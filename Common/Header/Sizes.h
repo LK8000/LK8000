@@ -37,6 +37,8 @@
 
 #define POLARSIZE 3
 
+#define MAXFLAPSNAME 10
+
 #if LKCLIP
 // this value is used also by DrawTrail, to be optimized!
 #define MAXCLIPPOLYGON 5000

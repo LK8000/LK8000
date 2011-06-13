@@ -50,7 +50,8 @@ class GlidePolar {
   
   static double sinkratecache[MAXSPEED+1];
 
-  static double FlapsPos[MAX_FLAPS][2];
+  static double FlapsPos[MAX_FLAPS];
+  static TCHAR  FlapsName[MAX_FLAPS][MAXFLAPSNAME+1];
   static int FlapsPosCount;
   static double FlapsMass;
 

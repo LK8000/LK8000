@@ -791,7 +791,7 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     Calculated->LDvario = INVALID_GR;
     Calculated->AverageThermal = 0;
     Calculated->Odometer = 0; // 091228
-    Calculated->Flaps = 0;
+    wcscpy(Calculated->Flaps,_T("???"));
 
     for (i=0; i<200; i++) {
       Calculated->AverageClimbRate[i]= 0;
@@ -1449,9 +1449,9 @@ void Flaps(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	double massCorrectionFactor = sqrt(GlidePolar::GetAUW()/GlidePolar::FlapsMass);
 
 	for (int i=0;i<GlidePolar::FlapsPosCount-1;i++) {
-		if (speed >= GlidePolar::FlapsPos[i][0]*massCorrectionFactor 
-			&& speed < GlidePolar::FlapsPos[i+1][0]*massCorrectionFactor) {
-			Calculated->Flaps = (int) GlidePolar::FlapsPos[i][1];
+		if (speed >= GlidePolar::FlapsPos[i]*massCorrectionFactor 
+			&& speed < GlidePolar::FlapsPos[i+1]*massCorrectionFactor) {
+			wcscpy(Calculated->Flaps,GlidePolar::FlapsName[i]);
 		}
 	}	
 }

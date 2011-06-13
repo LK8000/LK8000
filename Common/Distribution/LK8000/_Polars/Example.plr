@@ -54,4 +54,5 @@
 * Example for Diana2: another line after the standard polar line should be
 * 280, 7, 0, 28, 67,21, 71.5, 14, 77.5, 8, 98, 3, 140, 0, 170, -2
 * please notice that diana2 is indicating flap settings using degrees of extension, like 28, 14, 0 for no flaps, etc.
+* but you may choose instead of 28   LANDUNG  for example. The name of ID cannot exceed 7 characters.
 

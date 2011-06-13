@@ -8,6 +8,7 @@
 
 #include "StdAfx.h"
 #include "options.h"
+#include "Sizes.h"
 #include "McReady.h"
 #include "externs.h"
 
@@ -37,7 +38,8 @@ double GlidePolar::WingArea = 0.0;
 double GlidePolar::WingLoading = 0.0;
 double GlidePolar::WeightOffset = 0.0; 
 
-double GlidePolar::FlapsPos[MAX_FLAPS][2];
+double GlidePolar::FlapsPos[MAX_FLAPS];
+TCHAR  GlidePolar::FlapsName[MAX_FLAPS][MAXFLAPSNAME+1];
 int GlidePolar::FlapsPosCount = 0;
 double GlidePolar::FlapsMass = 0.0;
 

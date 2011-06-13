@@ -1012,7 +1012,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_FLAPS:			
 			_stprintf(BufferTitle, gettext(TEXT("_@M1641_")));
 			if (GlidePolar::FlapsPosCount>0) {
-				_stprintf(BufferValue,TEXT("%d"), DerivedDrawInfo.Flaps);
+				_stprintf(BufferValue,TEXT("%s"), DerivedDrawInfo.Flaps);
+				BufferValue[7]='\0'; // set a limiter to the name: max 7 chars
 				valid=true;
 			} else {
 				wsprintf(BufferValue, TEXT(NULLMEDIUM));

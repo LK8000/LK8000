@@ -137,7 +137,7 @@ typedef struct _DERIVED_INFO
   double NettoVario;
 
   // Current flap
-  int Flaps;
+  TCHAR Flaps[MAXFLAPSNAME+1];
 
   // optimum speed to fly instantaneously
   double VOpt; 
