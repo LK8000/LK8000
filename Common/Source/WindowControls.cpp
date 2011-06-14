@@ -12,40 +12,25 @@
 #include "Defines.h" // VENTA3
 #include "options.h"
 #include "WindowControls.h"
-#ifndef ALTAIRSYNC
 #include "Message.h"
 #include "MapWindow.h"
 #include "InfoBoxLayout.h"
-#endif
 #include "Utils.h"
 #include "compatibility.h"
 #include "LKObjects.h"
 
-#ifndef ALTAIRSYNC
 #include "externs.h" 
 
 extern int DisplayTimeOut;
-#ifndef GNAV
 #if (WINDOWSPC<1)
 #ifndef __MINGW32__
 #include <projects.h>
 #endif
 #endif
-#endif
-#endif
 
 #include "utils/heapcheck.h"
 
-#ifdef ALTAIRSYNC
-#define ISCALE 1
-void SetSourceRectangle(RECT fromRect) {};
-RECT WINAPI DrawWireRects(LPRECT lprcTo, UINT nMilliSecSpeed) {
-  return *lprcTo;
-}
-
-#else
 #define ISCALE InfoBoxLayout::scale
-#endif
 
 #define DEFAULTBORDERPENWIDTH 1*ISCALE
 #define SELECTORWIDTH         4*ISCALE
@@ -1789,16 +1774,10 @@ void WindowControl::Redraw(void){
 }
 
 
-#ifdef ALTAIRSYNC
-#else
 extern void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText);
-#endif
 
 
 int WindowControl::OnHelp() {
-#ifdef ALTAIRSYNC
-    return(0); // undefined. return 1 if defined
-#else
     if (mHelpText) {
       dlgHelpShowModal(mCaption, mHelpText);
       return(1);
@@ -1810,7 +1789,6 @@ int WindowControl::OnHelp() {
 	return(0);
       }
     }
-#endif
 };
 
 void WindowControl::Paint(HDC hDC){
@@ -2210,9 +2188,7 @@ int WndForm::ShowModal(bool bEnableMap) {
 
   enterTime = ::GetTickCount();
 
-#ifndef ALTAIRSYNC
   Message::BlockRender(true);
-#endif
 
   RECT mRc;
   GetWindowRect(GetHandle(), &mRc);
@@ -2409,12 +2385,8 @@ int WndForm::ShowModal(bool bEnableMap) {
 
   SetFocus(oldFocusHwnd);
 
-#ifndef ALTAIRSYNC
-  // JMW added to make sure screen is redrawn
   MapWindow::RequestFastRefresh();
-
   Message::BlockRender(false);
-#endif
 
   return(mModalResult);
 
@@ -4288,7 +4260,6 @@ inline int WndListFrame::GetScrollBarTopFromScrollIndex()
 }
 
 
-#ifndef ALTAIRSYNC
 #include "InputEvents.h"
 
 void WndEventButton_OnClickNotify(WindowControl *Sender) {
@@ -4328,6 +4299,3 @@ WndEventButton::WndEventButton(WindowControl *Parent, const TCHAR *Name,
 }
 
 
-// 
-// 
-#endif

@@ -1053,7 +1053,6 @@ class WndProperty:public WindowControl{
 
 };
 
-#ifndef ALTAIRSYNC
 
 typedef void (*webpt2Event)(const TCHAR *);
 
@@ -1072,7 +1071,6 @@ class WndEventButton:public WndButton {
 };
 
 
-#endif
 
 #endif
 

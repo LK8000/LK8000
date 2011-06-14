@@ -11,10 +11,8 @@ OPTIMIZE	:=-O2
 #OPTIMIZE	:=-O3 -funroll-all-loops
 CONFIG_PPC2002	:=n
 CONFIG_PPC2003	:=n
-CONFIG_ALTAIR	:=n
 CONFIG_PC	:=n
 CONFIG_WINE	:=n
-ALTAIR_PORTRAIT :=n
 CONFIG_PNA	:=n
 MINIMAL		:=n
 XSCALE		:=n
@@ -37,17 +35,6 @@ else
         ifeq ($(TARGET),WINE)
           CONFIG_WINE :=y
         else
-          ifeq ($(TARGET),ALTAIR)
-            CONFIG_ALTAIR	:=y
-	    MINIMAL       :=y
-	    XSCALE	:=y
-          endif
-          ifeq ($(TARGET),ALTAIRPORTRAIT)
-            CONFIG_ALTAIR	:=y
-	    ALTAIR_PORTRAIT :=y
-	    MINIMAL       :=y
-	    XSCALE	:=y
-          endif
 	  ifeq ($(TARGET),PNA)
 	    CONFIG_PNA := y
 	    CONFIG_PPC2003 := y
@@ -115,18 +102,6 @@ endif
 #CE_MINOR	:=00
 #CE_PLATFORM	:=500
 #endif
-
-ifeq ($(CONFIG_ALTAIR),y)
-# armv4i
-CE_MAJOR	:=5
-CE_MINOR	:=00
-CE_PLATFORM	:=500
-TARGET		:=ALTAIR
-ifeq ($(ALTAIR_PORTRAIT),y)
-TARGET          :=ALTAIRPORTRAIT
-endif
-
-endif
 
 ifeq ($(CONFIG_PC),y)
 # armv4i
@@ -209,7 +184,6 @@ CPPFLAGS	+= -Wall -Wno-write-strings -Wno-char-subscripts
 #CPPFLAGS	+= -Wshadow
 #CPPFLAGS	+= -Wsign-compare -Wsign-conversion
 ifeq ($(CONFIG_PNA),y)
-#CPPFLAGS	+= -DBIGDISPLAY -DCECORE -DPNA -DNOLINETO
 CPPFLAGS	+= -DCECORE -DPNA
 endif
 
@@ -223,12 +197,6 @@ CPPFLAGS	+= $(UNICODE)
   endif
 else
 CPPFLAGS	+= -D_ARM_ $(UNICODE)
-  ifeq ($(CONFIG_ALTAIR),y)
-CPPFLAGS 	+=-IPPC2005 -DGNAV
-    ifeq ($(ALTAIR_PORTRAIT),y)
-CPPFLAGS	+= -DFORCEPORTRAIT
-    endif
-  endif
 endif
 
 ifeq ($(DMALLOC),y)
@@ -276,9 +244,6 @@ endif
 
 endif
 WINDRESFLAGS	:=-I$(HDR) -I$(SRC) $(CE_DEFS) -D_MINGW32_
-ifeq ($(CONFIG_ALTAIR),y)
-WINDRESFLAGS	+=-DGNAV
-endif
 MAKEFLAGS	+=-r
 
 ####### build verbosity

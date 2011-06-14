@@ -184,11 +184,6 @@ int WINAPI MessageBoxX(HWND hWnd, LPCTSTR lpText, LPCTSTR lpCaption, UINT uType)
 
   delete wf;
 
-#ifdef ALTAIRSYNC
-  // force a refresh of the window behind
-  InvalidateRect(hWnd,NULL,true);
-  UpdateWindow(hWnd);
-#endif
   return(res);
 
 }
@@ -720,7 +715,6 @@ void LoadChildsFromXML(WindowControl *Parent,
     }else
 
 
-#ifndef ALTAIRSYNC
 
     if (_tcscmp(childNode.getName(), TEXT("WndEventButton")) == 0){
 
@@ -742,7 +736,6 @@ void LoadChildsFromXML(WindowControl *Parent,
 
     }else
 
-#endif
 
 
     if (_tcscmp(childNode.getName(), TEXT("WndOwnerDrawFrame")) == 0){
