@@ -68,6 +68,7 @@
 #include "devIlec.h"
 #include "devDSX.h"
 #include "devIMI.h"
+#include "devWesterboer.h"
 
 #include "externs.h"
 #include "Units.h"
@@ -2206,6 +2207,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   CDevIMI::Register();
   FlytecRegister();
   LK8EX1Register();
+  WesterboerRegister();
 
 // WINDOWSPC _SIM_ devInit called twice missing devA name
 // on PC nonSIM we cannot use devInit here! Generic device is used until next port reset!
