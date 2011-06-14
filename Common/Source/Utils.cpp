@@ -1483,41 +1483,6 @@ void ReadRegistrySettings(void)
   UseCustomFonts = (Temp == 0 ? 0 : 1);
   SetToRegistry(szRegistryUseCustomFonts, UseCustomFonts);  
 
-
-#ifdef VEGAVOICE
-  Temp = EnableVoiceClimbRate; 
-  GetFromRegistry(szRegistryVoiceClimbRate,&Temp);
-  EnableVoiceClimbRate = (Temp!=0);
-
-  Temp = EnableVoiceTerrain; 
-  GetFromRegistry(szRegistryVoiceTerrain,&Temp);
-  EnableVoiceTerrain = (Temp!=0);
-
-  Temp = EnableVoiceWaypointDistance; 
-  GetFromRegistry(szRegistryVoiceWaypointDistance,&Temp);
-  EnableVoiceWaypointDistance = (Temp!=0);
-
-  Temp = EnableVoiceTaskAltitudeDifference; 
-  GetFromRegistry(szRegistryVoiceTaskAltitudeDifference,&Temp);
-  EnableVoiceTaskAltitudeDifference = (Temp!=0);
-
-  Temp = EnableVoiceMacCready; 
-  GetFromRegistry(szRegistryVoiceMacCready,&Temp);
-  EnableVoiceMacCready = (Temp!=0);
-
-  Temp = EnableVoiceNewWaypoint; 
-  GetFromRegistry(szRegistryVoiceNewWaypoint,&Temp);
-  EnableVoiceNewWaypoint = (Temp!=0);
-
-  Temp = EnableVoiceInSector; 
-  GetFromRegistry(szRegistryVoiceInSector,&Temp);
-  EnableVoiceInSector = (Temp!=0);
-
-  Temp = EnableVoiceAirspace; 
-  GetFromRegistry(szRegistryVoiceAirspace,&Temp);
-  EnableVoiceAirspace = (Temp!=0);
-#endif
-
   Temp = AlarmMaxAltitude1;
   GetFromRegistry(szRegistryAlarmMaxAltitude1,&Temp);
   AlarmMaxAltitude1 = Temp; // saved *1000, /1000 when used

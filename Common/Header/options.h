@@ -29,11 +29,8 @@
 /////////////////////////////////////////////////////////
 
 
-// disable internally generated sounds
-//#define DISABLEAUDIO
-
-// no vegavoice support
-#undef VEGAVOICE
+// Disable internally generated sounds
+// #define DISABLEAUDIO
 
 #ifndef BIGDISPLAY
 #define BIGDISPLAY

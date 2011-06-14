@@ -364,9 +364,6 @@ static void OnSetupDeviceAClicked(WindowControl * Sender){
 	}
   }
 
-#ifdef VEGAVOICE
-    changed = dlgConfigurationVarioShowModal();
-#endif
     // this is a hack to get the dialog to retain focus because
     // the progress dialog in the vario configuration somehow causes
     // focus problems
@@ -388,9 +385,6 @@ static void OnSetupDeviceBClicked(WindowControl * Sender){
 		return;
 	}
   }
-#ifdef VEGAVOICE
-    changed = dlgConfigurationVarioShowModal();
-#endif
 
     // this is a hack to get the dialog to retain focus because
     // the progress dialog in the vario configuration somehow causes

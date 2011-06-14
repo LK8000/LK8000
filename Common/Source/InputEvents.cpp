@@ -2729,10 +2729,6 @@ void InputEvents::eventSetup(const TCHAR *misc) {
   } else if (_tcscmp(misc,TEXT("Switches"))==0){
     dlgSwitchesShowModal();
 #endif
-#ifdef VEGAVOICE
-  } else if (_tcscmp(misc,TEXT("Voice"))==0){
-    dlgVoiceShowModal();
-#endif
   } else if (_tcscmp(misc,TEXT("Teamcode"))==0){
     dlgTeamCodeShowModal();
   } else if (_tcscmp(misc,TEXT("Target"))==0){
