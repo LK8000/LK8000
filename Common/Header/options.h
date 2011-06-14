@@ -9,7 +9,6 @@
 #define OPTIONS_H
 
 #include "Debug.h"				// DEBUG OPTIONS FOR EVERYONE
-#define   MONOCHROME_SCREEN     1             // optimize for monochrom screen
 
 // define this to be true for windows PC port
 #if !defined(WINDOWSPC)

@@ -1307,11 +1307,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 	hpAircraftBorder = LKPen_Black_N1;
       }
 
-#if (MONOCHROME_SCREEN > 0)
       hpWind = LKPen_Black_N2;
-#else
-      hpWind = LKPen_Red_N2;
-#endif
 
       hpWindThick = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(4), RGB(255,220,220));
 
@@ -1321,11 +1317,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 	hpBearing = LKPen_Black_N2;
 
       hpBestCruiseTrack = LKPen_Blue_N1;
-#if (MONOCHROME_SCREEN > 0)
       hpCompass = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_BLACK);
-#else
-      hpCompass = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB(0xcf,0xcf,0xFF));
-#endif
       hpThermalBand = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB(0x40,0x40,0xFF));
       hpThermalBandGlider = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB(0x00,0x00,0x30));
 
@@ -1352,20 +1344,12 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hpVisualGlideHeavyRed = (HPEN)CreatePen(PS_DASH, (2), RGB_RED);
 
       hbThermalBand=LKBrush_Emerald;
-	#if (MONOCHROME_SCREEN > 0)
       hbCompass=LKBrush_White;
-	#else
-      hbCompass=LKBrush_Cyan;
-	#endif
       hbBestCruiseTrack=LKBrush_Blue;
       hbFinalGlideBelow=LKBrush_Red;
       hbFinalGlideAbove=LKBrush_Green;
       hbFinalGlideBelowLandable=LKBrush_Orange;
-	#if (MONOCHROME_SCREEN > 0)
       hbWind=LKBrush_Grey;
-	#else
-      hbWind=LKBrush_Grey;
-	#endif
 
       ScaleListCount = propGetScaleList(ScaleList, sizeof(ScaleList)/sizeof(ScaleList[0]));
       zoom.RequestedScale(LimitMapScale(zoom.RequestedScale()));
