@@ -11,10 +11,6 @@
 #include "Debug.h"				// DEBUG OPTIONS FOR EVERYONE
 #define   MONOCHROME_SCREEN     1             // optimize for monochrom screen
 
-#define   LOGGDEVICEINSTREAM    0             // log device in stream
-#define   LOGGDEVCOMMANDLINE    NULL          // device in-stream logger command line
-                                              // ie TEXT("-logA=\\Speicherkarte\\logA.log ""-logB=\\SD Card\\logB.log""")
-
 // define this to be true for windows PC port
 #if !defined(WINDOWSPC)
 #define   WINDOWSPC             0
