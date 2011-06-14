@@ -32,10 +32,6 @@
 // Disable internally generated sounds
 // #define DISABLEAUDIO
 
-#ifndef BIGDISPLAY
-#define BIGDISPLAY
-#endif
-
 #ifdef PNA
 #define NOLINETO
 #endif
