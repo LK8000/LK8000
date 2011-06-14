@@ -3520,9 +3520,6 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoBlank"));
   if (wp) {
-#ifdef GNAV
-    wp->SetVisible(false);
-#endif
 #if (WINDOWSPC>0)
     wp->SetVisible(false);
 #endif

@@ -964,7 +964,6 @@ int index;
     break;
   case 65: // battery voltage
 #if (WINDOWSPC<1)
-#ifndef GNAV
    #if 100228
    if (PDABatteryFlag==BATTERY_FLAG_CHARGING || PDABatteryStatus==AC_LINE_ONLINE) {
 	_tcscpy(Format,TEXT("%2.0f%%C"));  // 100228
@@ -977,14 +976,6 @@ int index;
    Value = PDABatteryPercent;
    Valid = true;
    #endif
-#else
-    Value = GPS_INFO.SupplyBatteryVoltage;
-    if (Value>0.0) {
-      Valid = true;
-    } else {
-      Valid = false;
-    }
-#endif
 #else	// on PC no battery value
     Value = 0.0;
     Valid = false;

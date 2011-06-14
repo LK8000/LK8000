@@ -208,19 +208,6 @@ int numInfoWindows = 9;
 InfoBox *InfoBoxes[MAXINFOWINDOWS];
 
 int                                     InfoType[MAXINFOWINDOWS] = 
-#ifdef GNAV
-  {
-    873336334,
-    856820491,
-    822280982,
-    2829105,
-    103166000,
-    421601569,
-    657002759,
-    621743887,
-    439168301
-  };
-#else
   {1008146198,
    1311715074,
    923929365,
@@ -230,18 +217,6 @@ int                                     InfoType[MAXINFOWINDOWS] =
    1410419993,
    1396384771,
    387389207};
-#endif
-/* OLD
-  {921102,
-   725525,
-   262144,
-   74518,
-   657930,
-   2236963,
-   394758,
-   1644825,
-   1644825};
-*/
 
 
 bool RequestAirspaceWarningDialog= false;
@@ -881,12 +856,10 @@ bool goInitDevice=false;
 // Battery status for SIMULATOR mode
 //	30% reminder, 20% exit, 30 second reminders on warnings
 
-#ifndef GNAV
 #define BATTERY_WARNING 30
 #define BATTERY_EXIT 20
 #define BATTERY_REMINDER 30000
 DWORD BatteryWarningTime = 0;
-#endif
 
 char dedicated[]="Dedicated to my father Vittorio";
 
@@ -1126,13 +1099,8 @@ void FillDataOptions()
 	SetDataOption(63, ugVerticalSpeed,  TEXT("_@M1127_"), TEXT("_@M1128_"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 8, 2);
 	// LKTOKEN  _@M1129_ = "Distance Vario", _@M1130_ = "DVario"
 	SetDataOption(64, ugVerticalSpeed,  TEXT("_@M1129_"), TEXT("_@M1130_"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 8, 2);
-#ifndef GNAV
 	// LKTOKEN  _@M1131_ = "Battery Percent", _@M1132_ = "Battery"
 	SetDataOption(65, ugNone,           TEXT("_@M1131_"), TEXT("_@M1132_"), new InfoBoxFormatter(TEXT("%2.0f%%")), NoProcessing, 49, 26);
-#else
-	// LKTOKEN  _@M1181_ = "Battery Voltage", _@M1182_ = "Batt"
-	SetDataOption(65, ugNone,           TEXT("_@M1181_"), TEXT("_@M1182_"), new InfoBoxFormatter(TEXT("%2.1fV")), NoProcessing, 49, 26);
-#endif
 	// LKTOKEN  _@M1133_ = "Task Req.Efficiency", _@M1134_ = "TskReqE"
 	SetDataOption(66, ugNone,           TEXT("_@M1133_"), TEXT("_@M1134_"), new InfoBoxFormatter(TEXT("%1.1f")), NoProcessing, 38, 5);
 	// LKTOKEN  _@M1135_ = "Alternate1 Req.Efficiency", _@M1136_ = "Atn1.E"
@@ -1272,11 +1240,7 @@ void HideMenu() {
 }
 
 void ShowMenu() {
-#if !defined(GNAV) && !defined(PCGNAV)
-  // Popup exit button if in .xci
-  //InputEvents::setMode(TEXT("Exit"));
-  InputEvents::setMode(TEXT("Menu")); // VENTA3
-#endif
+  InputEvents::setMode(TEXT("Menu"));
   MenuTimeOut = 0;
   DisplayTimeOut = 0;
 }
@@ -2324,11 +2288,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance, LPTSTR szWindowClass)
   wc.cbWndExtra                 = dc.cbWndExtra ;
 #endif
   wc.hInstance                  = hInstance;
-#if defined(GNAV) && !defined(PCGNAV)
-  wc.hIcon = NULL;
-#else
   wc.hIcon                      = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_XCSOARSWIFT));
-#endif
   wc.hCursor                    = 0;
   wc.hbrBackground              = (HBRUSH) GetStockObject(BLACK_BRUSH); 
   wc.lpszMenuName               = 0;
@@ -2937,7 +2897,7 @@ void InitialiseFonts(RECT rc)
                         &hardMapLabelLogFont,
                         &hardStatisticsLogFont);
 
-// for PNA & GNAV, merge the "hard" into the "auto" if one exists 
+// for PNA, merge the "hard" into the "auto" if one exists 
   if (!IsNullLogFont(hardInfoWindowLogFont))
     autoInfoWindowLogFont = hardInfoWindowLogFont;
 
@@ -3083,14 +3043,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
     }
 
-#if defined(GNAV) && !defined(PCGNAV)
-  // TODO code: release the handle?
-  HANDLE hTmp = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_XCSOARSWIFT));
-  SendMessage(hWndMainWindow, WM_SETICON,
-	      (WPARAM)ICON_BIG, (LPARAM)hTmp);
-  SendMessage(hWndMainWindow, WM_SETICON,
-	      (WPARAM)ICON_SMALL, (LPARAM)hTmp);
-#endif
 
   hBrushSelected = (HBRUSH)CreateSolidBrush(ColorSelected);
   hBrushUnselected = (HBRUSH)CreateSolidBrush(ColorUnselected);
@@ -3374,16 +3326,6 @@ void Shutdown(void) {
   //  CalibrationSave();
 #endif
 
-  #if defined(GNAV) && !defined(PCGNAV)
-    StartupStore(TEXT(". Altair shutdown%s"),NEWLINE);
-    Sleep(2500);
-    StopHourglassCursor();
-    InputEvents::eventDLLExecute(TEXT("altairplatform.dll SetShutdown 1"));
-    while(1) {
-      Sleep(100); // free time up for processor to perform shutdown
-    }
-  #endif
-
   CloseFLARMDetails();
 
   ProgramStarted = psInitInProgress;
@@ -3658,11 +3600,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       // 	- Not sure how to do double click... (need timer call back
       // 	process unless reset etc... tricky)
       // we do this in WindowControls
-#if defined(GNAV) || defined(PCGNAV)
-    case WM_KEYDOWN: // JMW was keyup
-#else
     case WM_KEYUP: // JMW was keyup
-#endif
 
       InterfaceTimeoutReset();
 
@@ -3716,7 +3654,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_CLOSE:
 
-#ifndef GNAV
       ASSERT(hWnd==hWndMainWindow);
       if(ForceShutdown || ((hWnd==hWndMainWindow) && 
          (MessageBoxX(hWndMainWindow,
@@ -3724,7 +3661,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                	gettext(TEXT("_@M198_")),
                       TEXT("LK8000"),
                       MB_YESNO|MB_ICONQUESTION) == IDYES))) 
-#endif
         {
           if(iTimerID) {
             KillTimer(hWnd,iTimerID);
@@ -4651,9 +4587,7 @@ void SIMProcessTimer(void)
 
 #ifdef DEBUG
   // use this to test FLARM parsing/display
-#ifndef GNAV
   NMEAParser::TestRoutine(&GPS_INFO);
-#endif
 #endif
 
   TriggerGPSUpdate();
@@ -4728,7 +4662,7 @@ void PopUpSelect(int Index)
 
 void DebugStore(const char *Str, ...)
 {
-#if defined(DEBUG) && !defined(GNAV)
+#if defined(DEBUG)
   char buf[MAX_PATH];
   va_list ap;
   int len;
@@ -4963,7 +4897,6 @@ void ShowInfoBoxes() {
 }
 
 #if (WINDOWSPC<1)
-#ifndef GNAV
 DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo)
 {
     // set default return value
@@ -4996,7 +4929,6 @@ DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo)
 
     return result;
 }
-#endif
 #endif
 
 // GDI Escapes for ExtEscape()
@@ -5031,9 +4963,6 @@ int PDABatteryFlag=0;
 void BlankDisplay(bool doblank) {
 
 #if (WINDOWSPC>0)
-  return;
-#else
-#ifdef GNAV
   return;
 #else
   static bool oldblank = false;
@@ -5130,7 +5059,6 @@ void BlankDisplay(bool doblank) {
 
   }
   ::ReleaseDC(NULL, gdc);
-#endif
 #endif
 }
 

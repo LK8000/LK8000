@@ -79,12 +79,8 @@ void DrawLine2(const HDC&hdc, int x1, int y1, int x2, int y2, int x3, int y3) {
 }
 
 extern int dlgComboPicker(WndProperty* theProperty);
-#ifdef GNAV
-#define ENABLECOMBO false // master on/off for combo popup
-#else
 #define ENABLECOMBO true // master on/off for combo popup
 // Must be off if no touchscreen
-#endif
 
 // returns true if it is a long press,
 // otherwise returns false
@@ -938,9 +934,6 @@ void DataFieldInteger::Dec(void){
 int DataFieldInteger::SpeedUp(bool keyup){
   int res=1;  
 
-#ifdef GNAV
-  return res;
-#endif
 
   if (GetDisableSpeedUp() == true) 
     return 1;
@@ -1073,9 +1066,6 @@ void DataFieldFloat::Dec(void){
 double DataFieldFloat::SpeedUp(bool keyup){
   double res=1.0;
 
-#ifdef GNAV
-  return res;
-#endif
 
   if (GetDisableSpeedUp() == true) 
     return 1;
@@ -2236,7 +2226,6 @@ int WndForm::ShowModal(bool bEnableMap) {
           || msg.message == WM_LBUTTONDBLCLK
         )  // screen event
         && msg.hwnd != GetHandle() && !IsChild(GetHandle(), msg.hwnd)  // not current window or child
-#ifndef GNAV
         &&  !( // exception
               bEnableMap
               && msg.hwnd == hWndMapWindow
@@ -2246,7 +2235,6 @@ int WndForm::ShowModal(bool bEnableMap) {
                 || msg.message == WM_MOUSEMOVE
               )
          )
-#endif
     )
       continue;   // make it modal
 
@@ -2356,7 +2344,6 @@ int WndForm::ShowModal(bool bEnableMap) {
     // TODO code: maybe this should block all key handlers to avoid 
     // accidental key presses
     if (!hastimed) {
-#if !defined(GNAV) && !defined(NOKEYDEBONCE)
 	#if defined(PNA) || (WINDOWSPC>0) 
 	if (::GetTickCount()-enterTime<400) { // 091217
 	#else
@@ -2366,7 +2353,6 @@ int WndForm::ShowModal(bool bEnableMap) {
 	} else {
 		hastimed = true;
 	}
-#endif
     }
   } // End Modal Loop
   WndForm::timeAnyOpenClose = GetTickCount(); // static.  this is current open/close or child open/close
@@ -2675,10 +2661,6 @@ int WndButton::OnKeyDown(WPARAM wParam, LPARAM lParam){
 	DoStatusMessage(ventabuffer);
 #endif
   switch (wParam){
-#ifdef GNAV
-    // JMW added this to make data entry easier
-    case VK_F4:
-#endif
     case VK_RETURN:
     case VK_SPACE:
       if (!mDown){
@@ -2693,10 +2675,6 @@ int WndButton::OnKeyDown(WPARAM wParam, LPARAM lParam){
 int WndButton::OnKeyUp(WPARAM wParam, LPARAM lParam){
 	(void)lParam;
   switch (wParam){
-#ifdef GNAV
-    // JMW added this to make data entry easier
-    case VK_F4:
-#endif
     case VK_RETURN:
     case VK_SPACE:
       if (!Debounce()) return(1); // prevent false trigger
@@ -3970,10 +3948,6 @@ int WndListFrame::OnItemKeyDown(WindowControl *Sender, WPARAM wParam, LPARAM lPa
 	(void)Sender;
 	(void)lParam;
   switch (wParam){
-#ifdef GNAV
-    // JMW added this to make data entry easier
-    case VK_F4:
-#endif
   case VK_RETURN:
     if (mOnListEnterCallback) {
       mOnListEnterCallback(this, &mListInfo);
@@ -3981,7 +3955,6 @@ int WndListFrame::OnItemKeyDown(WindowControl *Sender, WPARAM wParam, LPARAM lPa
       return(0);
     } else 
       return(1);
-    //#ifndef GNAV
   case VK_LEFT:
     if ((mListInfo.ScrollIndex>0)
 	&&(mListInfo.ItemCount>mListInfo.ItemInPageCount)) {

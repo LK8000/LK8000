@@ -32,7 +32,6 @@ NOTE: Some portions copyright as above
 */
 
 #ifndef CECORE
-#ifndef GNAV
 #include "StdAfx.h"
 
 #include "VOIMAGE.h"
@@ -298,5 +297,4 @@ BOOL CVOResource::IsLoaded()
 	return (m_pData != NULL);
 }
 
-#endif
 #endif

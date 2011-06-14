@@ -161,9 +161,7 @@ void Statistics::ScaleXFromValue(const RECT rc, const double value)
 void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
                            const int Style, const RECT rc) {
   int minwidth = 1;
-#ifndef GNAV
   minwidth = 2;
-#endif  
   POINT line[2];
   line[0] = l1;
   line[1] = l2;
@@ -2266,11 +2264,7 @@ void dlgAnalysisShowModal(void){
 
   if (!wf) return;
 
-#ifndef GNAV
   penThinSignal = CreatePen(PS_SOLID, 2 , RGB(50,243,45));
-#else
-  penThinSignal = CreatePen(PS_SOLID, 1 , RGB(50,243,45));
-#endif
 
   wf->SetKeyDownNotify(FormKeyDown);
 

@@ -861,13 +861,11 @@ DWORD tnow;
     break;
 
     case WM_LBUTTONDBLCLK:
-#ifndef GNAV
       // JMW capture double click, so infoboxes double clicked also bring up menu
       // VENTA3: apparently this is working only on PC ! Disable it to let PC work
       // with same timeout of PDA and PNA versions with synthetic DBLCLK
 #ifdef DEBUG_DBLCLK
       DoStatusMessage(_T("DBLCLK InfoBox")); // VENTA3 
-#endif
 
       ShowMenu(); 
       break;

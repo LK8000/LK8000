@@ -323,10 +323,8 @@ static void UpdateValuesSystem() {
   if (wp) {
     _stprintf(Temp,TEXT("\0"));
 #if (WINDOWSPC<1)
-#ifndef GNAV
     _stprintf(Temp2,TEXT("%d%% "), PDABatteryPercent);
     _tcscat(Temp, Temp2);
-#endif
 #endif
     if (GPS_INFO.SupplyBatteryVoltage == 0) {
       _stprintf(Temp2,TEXT("\0"));

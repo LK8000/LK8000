@@ -368,14 +368,14 @@ static bool doinitprogress=true;
 void StartHourglassCursor(void) {
   HCURSOR newc = LoadCursor(NULL, IDC_WAIT);
   oldCursor = (HCURSOR)SetCursor(newc);
-#ifdef GNAV
+#if 0
   SetCursorPos(160,120);
 #endif
 }
 
 void StopHourglassCursor(void) {
   SetCursor(oldCursor);
-#ifdef GNAV
+#if 0
   SetCursorPos(640,480);
 #endif
   oldCursor = NULL;

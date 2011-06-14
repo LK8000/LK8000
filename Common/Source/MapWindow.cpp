@@ -1094,8 +1094,8 @@ static void SetFontInfo(HDC hDC, FontHeightInfo_t *FontHeightInfo){
     }
   }
 
-#ifdef GNAV
-  // JMW: don't know why we need this in GNAV, but we do.
+#if 0
+  // JMW: don't know why we need this in Gnav/Altair, but we do.
   if (FontHeightInfo->CapitalHeight<y)
     FontHeightInfo->CapitalHeight = bottom - top + 1;
 #endif
@@ -2124,7 +2124,7 @@ savecodesize1:
 
 
 
-#if defined(GNAV) || defined(PNA) // VENTA FIXED PNA SCROLL WHEEL 
+#if defined(PNA) // VENTA FIXED PNA SCROLL WHEEL 
     case WM_KEYDOWN: // JMW was keyup
 #else
     case WM_KEYUP: // JMW was keyup
@@ -2204,25 +2204,6 @@ savecodesize1:
 #endif
 
 
-#if defined(GNAV)
-      if (wParam == 0xF5){
-
-	if (MessageBoxX(hWnd,
-			TEXT("Shutdown?"),
-			TEXT("Altair system message"),
-			MB_YESNO|MB_ICONQUESTION) == IDYES) {
-
-	  SendMessage(hWnd, 
-		      WM_ACTIVATE, 
-		      MAKEWPARAM(WA_INACTIVE, 0), 
-		      (LPARAM)hWndMainWindow);
-	  SendMessage (hWndMainWindow, WM_CLOSE, 0, 0);
-	}
-
-	break;
-
-      }
-#endif
 Wirth:
 #ifdef DEBUG_MAPINPUT
 	DoStatusMessage(_T("Wirth"));
@@ -2820,13 +2801,6 @@ void MapWindow::RenderMapWindow(  RECT rc)
   DrawCompass(hdcDrawWindow, rc);
 
   // JMW Experimental only! EXPERIMENTAL
-#if 0
-  //  #ifdef GNAV
-  if (EnableAuxiliaryInfo) {
-//    DrawHorizon(hdcDrawWindow, rc);
-  }
-  //  #endif
-#endif
 
   DrawFlightMode(hdcDrawWindow, rc);
 

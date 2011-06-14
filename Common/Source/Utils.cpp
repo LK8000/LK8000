@@ -472,17 +472,6 @@ void CheckInfoTypes() {
 
 
 void ResetInfoBoxes(void) {
-#ifdef GNAV
-  InfoType[0]=873336334;
-  InfoType[1]=856820491;
-  InfoType[2]=822280982;
-  InfoType[3]=2829105;
-  InfoType[4]=103166000;
-  InfoType[5]=421601569;
-  InfoType[6]=657002759;
-  InfoType[7]=621743887;
-  InfoType[8]=439168301;
-#else
   InfoType[0] = 921102;
   InfoType[1] = 725525;
   InfoType[2] = 262144;
@@ -491,8 +480,7 @@ void ResetInfoBoxes(void) {
   InfoType[5] = 2236963;
   InfoType[6] = 394758;
   InfoType[7] = 1644825;
-  InfoType[8] = 1644825; // TESTFIX BUGFIX 091015 missing
-#endif
+  InfoType[8] = 1644825;
 }
 
 void SetRegistryStringIfAbsent(const TCHAR* name,
@@ -510,7 +498,7 @@ void SetRegistryStringIfAbsent(const TCHAR* name,
 }
 
 void DefaultRegistrySettingsAltair(void)
-{  // RLD left GNAV Altair settings untouched.  
+{  
    // these are redundant b/c they're also added to "InitialiseFontsHardCoded"
   SetRegistryStringIfAbsent(TEXT("InfoWindowFont"),
    TEXT("24,0,0,0,700,0,0,0,0,0,0,3,2,RasterGothicTwentyFourCond"));
@@ -561,10 +549,6 @@ void ReadRegistrySettings(void)
   int i;
 
   StartupStore(TEXT(". Read registry settings%s"),NEWLINE);
-
-#if defined(GNAV) || defined(PCGNAV) || defined(GNAV_FONTEST)
-  DefaultRegistrySettingsAltair();
-#endif
 
   for (i=0; i<AIRSPACECLASSCOUNT; i++) {
     Temp=0;
@@ -4757,7 +4741,7 @@ void propGetFontSettings(TCHAR *Name, LOGFONT* lplf) {
   ASSERT(Name[0] != '\0');
   ASSERT(lplf != NULL);
 
-#if (WINDOWSPC>0) && !defined(PCGNAV)
+#if (WINDOWSPC>0) 
   // Don't load font settings from registry values for windows version
   return; // TODO FIX let font settings be read by windows PC also! 091021 
 #endif
@@ -4808,30 +4792,6 @@ int propGetScaleList(double *List, size_t Size){
 }
 
 long GetUTCOffset(void) {
-/*
-#ifndef GNAV
-  long utcoffset=0;
-  // returns offset in seconds
-  TIME_ZONE_INFORMATION TimeZoneInformation;
-  DWORD tzi = GetTimeZoneInformation(&TimeZoneInformation);
-
-  utcoffset = -TimeZoneInformation.Bias*60;
-
-  if (tzi==TIME_ZONE_ID_STANDARD) {
-    utcoffset -= TimeZoneInformation.StandardBias*60;
-  }
-  if (tzi==TIME_ZONE_ID_DAYLIGHT) {
-    utcoffset -= TimeZoneInformation.DaylightBias*60;
-  }
-#if (WINDOWSPC>0)
-  return UTCOffset;
-#else
-  return utcoffset;
-#endif
-#else
-  return UTCOffset;
-#endif
-*/
   return UTCOffset;
 }
 
@@ -5069,13 +5029,13 @@ bool CheckRectOverlap(RECT rc1, RECT rc2) {
 #endif
 
 
-#if !defined(GNAV) || (WINDOWSPC>0)
+#if (WINDOWSPC>0)
 typedef DWORD (_stdcall *GetIdleTimeProc) (void);
 GetIdleTimeProc GetIdleTime;
 #endif
 
 int MeasureCPULoad() {
-#if (!defined(GNAV) || (WINDOWSPC>0)) && !defined(__MINGW32__)
+#if (WINDOWSPC>0) && !defined(__MINGW32__)
   static bool init=false;
   if (!init) {
     // get the pointer to the function
@@ -5087,10 +5047,6 @@ int MeasureCPULoad() {
   if (!GetIdleTime) return 0;
 #endif
 
-#if defined(GNAV) && defined(__MINGW32__)
-  // JMW GetIdleTime() not defined?
-  return 100;
-#else
   static int pi;
   static int PercentIdle;
   static int PercentLoad;
@@ -5112,7 +5068,6 @@ int MeasureCPULoad() {
   start = !start;
   PercentLoad = 100-PercentIdle;
   return PercentLoad;
-#endif
 }
 
 
@@ -5635,7 +5590,7 @@ void MemLeakCheck() {
 // memory defragmentation, since on pocket pc platforms there is no
 // automatic defragmentation.
 void MyCompactHeaps() {
-#if (WINDOWSPC>0)||(defined(GNAV) && !defined(__MINGW32__))
+#if (WINDOWSPC>0)
   HeapCompact(GetProcessHeap(),0);
 #else
   typedef DWORD (_stdcall *CompactAllHeapsFn) (void);
@@ -5795,7 +5750,7 @@ bool RotateScreen() {
   //
   // Change the orientation of the screen
   //
-#ifdef GNAV  
+#if 0
   DEVMODE DeviceMode;
     
   memset(&DeviceMode, 0, sizeof(DeviceMode));

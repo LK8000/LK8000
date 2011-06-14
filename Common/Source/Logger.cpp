@@ -1586,17 +1586,7 @@ void LinkGRecordDLL(void)
       bFirstTime=false;
 
       StartupStore(TEXT(". Searching for GRecordDLL%s"),NEWLINE);
-#ifdef GNAV
-      if (FileExists(TEXT("\\NOR Flash\\GRecordDLL.dat"))) {
-	StartupStore(TEXT("Updating GRecordDLL.DLL%s"),NEWLINE);
-	DeleteFile(TEXT("\\NOR Flash\\GRecordDLL.DLL"));
-	MoveFile(TEXT("\\NOR Flash\\GRecordDLL.dat"),
-		 TEXT("\\NOR Flash\\GRecordDLL.DLL"));
-      }
-      GRecordDLLHandle = LoadLibrary(TEXT("\\NOR Flash\\GRecordDLL.DLL"));
-#else
       GRecordDLLHandle = LoadLibrary(TEXT("GRecordDLL.DLL"));
-#endif
       if (GRecordDLLHandle != NULL)
         {
 	  BOOL bLoadOK = true;  // if any pointers don't link, disable entire library

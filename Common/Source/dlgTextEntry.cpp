@@ -189,19 +189,11 @@ void dlgTextEntryHighscoreType(TCHAR *text, int width)
   max_width = min(MAX_TEXTENTRY, width);
 
   char filename[MAX_PATH];
-#ifndef GNAV
   LocalPathS(filename, TEXT("dlgTextEntry_T.xml"));
   wf = dlgLoadFromXML(CallBackTable, 
                       filename, 
 		      hWndMainWindow,
 		      TEXT("IDR_XML_TEXTENTRY_T"));
-#else
-  LocalPathS(filename, TEXT("dlgTextEntry.xml"));
-  wf = dlgLoadFromXML(CallBackTable, 
-                      filename, 
-		      hWndMainWindow,
-		      TEXT("IDR_XML_TEXTENTRY"));
-#endif
   if (!wf) return;
 
   wGrid = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmGrid"));

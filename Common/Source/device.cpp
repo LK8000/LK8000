@@ -206,11 +206,7 @@ BOOL devInit(LPTSTR CommandLine){
   StartupStore(_T(".......... ReadDeviceSetting 0, DeviceName=<%s>\n"),DeviceName);
   #endif
 	
-#ifdef GNAV
-  PortIndex1 = 2; SpeedIndex1 = 5;
-#else
   PortIndex1 = 0; SpeedIndex1 = 2; Bit1Index=(BitIndex_t)bit8N1;
-#endif
   ReadPort1Settings(&PortIndex1,&SpeedIndex1,&Bit1Index);
 
   //if (_tcslen(DeviceName)>0) // removed 110530
@@ -266,11 +262,7 @@ BOOL devInit(LPTSTR CommandLine){
   StartupStore(_T(".......... ReadDeviceSetting 1, DeviceName=<%s>\n"),DeviceName);
   #endif
 
-#ifdef GNAV
-  PortIndex2 = 0; SpeedIndex2 = 5;
-#else
   PortIndex2 = 0; SpeedIndex2 = 2, Bit2Index=(BitIndex_t)bit8N1;
-#endif
   ReadPort2Settings(&PortIndex2,&SpeedIndex2, &Bit2Index);
 
   //if (_tcslen(DeviceName)>0) // removed 110530

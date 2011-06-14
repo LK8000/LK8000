@@ -594,13 +594,7 @@ void ButtonLabel::GetButtonPosition(int i, RECT rc,
 				*x = rc.right-(*sizex);
 				int k = rc.bottom-rc.top-NIBLSCALE(46); 
 
-				#ifdef GNAV
-				k = rc.bottom-rc.top; 
-				// JMW need upside down button order for rotated Altair
-				*y = rc.bottom-(i-5)*k/5-(*sizey)-NIBLSCALE(20);
-				#else
 				*y = (rc.top+(i-5)*k/6+(*sizey/2+NIBLSCALE(3)));
-				#endif
 			}
 		}
 		break;

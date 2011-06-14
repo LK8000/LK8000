@@ -2693,9 +2693,6 @@ void InputEvents::eventBeep(const TCHAR *misc) {
 #ifndef DISABLEAUDIO
   if (EnableSoundModes) MessageBeep(MB_ICONEXCLAMATION); // 100221 FIX
 #endif
-#if defined(GNAV)
-  InputEvents::eventDLLExecute(TEXT("altairplatform.dll DoBeep2 1"));
-#endif
 }
 
 void SystemConfiguration(void);

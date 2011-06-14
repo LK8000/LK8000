@@ -1903,7 +1903,6 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
 #if (WINDOWSPC<1)
-	#ifndef GNAV
 			value = PDABatteryPercent;
                 	if (value<1||value>100)
 				_stprintf(BufferValue,_T("---"));
@@ -1916,15 +1915,6 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 
 				valid = true;
 			}
-	#else
-			value = DrawInfo.SupplyBatteryVoltage;
-			if (value>0.0) {
-				_stprintf(BufferValue,TEXT("%2.1fV"), value);
-				valid = true;
-			} else {
-				valid = false;
-			}
-	#endif
 #endif
 			break;
 

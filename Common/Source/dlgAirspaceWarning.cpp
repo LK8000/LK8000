@@ -177,24 +177,6 @@ static int OnKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
     case VK_ESCAPE:
       OnCloseClicked(Sender);
       return(0);
-#ifdef GNAV
-    case VK_APP1:
-    case '6':
-      OnAckClicked(Sender);
-      return(0);
-    case VK_APP2:
-    case '7':
-      OnAck1Clicked(Sender);
-      return(0);
-    case VK_APP3:
-    case '8':
-      OnAck2Clicked(Sender);
-      return(0);
-    case VK_APP4:
-    case '9':
-      OnEnableClicked(Sender);
-      return(0);
-#endif
   }
 
   return(1);
