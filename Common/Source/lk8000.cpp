@@ -99,45 +99,6 @@ static std::map<TCHAR*, TCHAR*> unusedTranslations;
   #define MapScale2  apMs2Default
 #endif
 
-#if SAMGI
-Appearance_t Appearance = {
-  apMsAltA,
-  apMs2None,
-  true,
-  206,
-  {0,-13},
-  apFlightModeIconAltA,
-  //apFlightModeIconDefault,
-  {10,3},
-  apCompassAltA,
-  {0,0,0},
-  {0,0,0},
-  {0,0,0},
-  {0,0,0},
-  {0,0,0},
-  ctBestCruiseTrackAltA,
-  afAircraftAltA,
-  true,
-  fgFinalGlideAltA,
-  wpLandableAltA,
-  true,
-  true,
-  true,
-  smAlligneTopLeft,
-  true,
-  true,
-  true,
-  true,
-  true,
-  gvnsDefault, 
-  false,
-  apIbBox,
-  false,
-  true,
-  false
-};
-#else
-
 Appearance_t Appearance = {
   apMsAltA, // mapscale
   MapScale2, 
@@ -182,7 +143,6 @@ Appearance_t Appearance = {
   false
 };
 
-#endif
 
 
 TCHAR XCSoar_Version[256] = TEXT("");
@@ -237,15 +197,6 @@ COLORREF ColorSelected = RGB(0xC0,0xC0,0xC0);
 COLORREF ColorUnselected = RGB_WHITE;
 COLORREF ColorWarning = RGB_RED;
 COLORREF ColorOK = RGB_BLUE;
-/* Possible alternative colors for buttons:
-	//COLORREF ColorButton = RGB(133,255,163); // ligher green 0
-	//COLORREF ColorButton = RGB(158,231,255); // azure 2
-	// COLORREF ColorButton = RGB(158,255,231); // azure 3
-	// COLORREF ColorButton = RGB(158,181,255); // indigo 4
-	// COLORREF ColorButton = RGB(138,255,173); // nice light green
-	// COLORREF ColorButton = RGB(157,185,200); // light blue grey
-	// COLORREF ColorButton = RGB(37,77,116); // dirty blue
- */
 COLORREF ColorButton = RGB_BUTTONS;  
 
 // Display Gobals
@@ -2684,9 +2635,6 @@ void InitialiseFontsAuto(RECT rc,
 
   memset ((char *)&logfont, 0, sizeof (logfont));
 
-// #if defined(PNA) || defined(FIVV)  // Only for PNA, since we still do not copy Fonts in their Windows memory.
-				      // though we could already do it automatically. 
-// #if defined(PNA) //FIX 090925 QUI
   _tcscpy(logfont.lfFaceName, _T("Tahoma")); 
 
   logfont.lfPitchAndFamily = VARIABLE_PITCH | FF_DONTCARE  ;
@@ -2707,15 +2655,12 @@ void InitialiseFontsAuto(RECT rc,
 
     iFontHeight--;
     logfont.lfHeight = iFontHeight;
-//    InfoWindowFont = CreateFontIndirect (&logfont);
-//    SelectObject(iwhdc, InfoWindowFont);
 
     TempWindowFont = CreateFontIndirect (&logfont);
     hfOld=(HFONT)SelectObject(iwhdc, TempWindowFont);
 
 
     GetTextExtentPoint(iwhdc, TEXT("00:00"), 5, &tsize);
-//    DeleteObject(InfoWindowFont);
     SelectObject(iwhdc, hfOld); // unselect it before deleting it
     DeleteObject(TempWindowFont);
 
@@ -2725,8 +2670,6 @@ void InitialiseFontsAuto(RECT rc,
   iFontHeight++;
   logfont.lfHeight = iFontHeight;
 
-//  propGetFontSettings(TEXT("InfoWindowFont"), &logfont);
-//  InfoWindowFont = CreateFontIndirect (&logfont);
  memcpy ((void *)ptrautoInfoWindowLogFont, &logfont, sizeof (LOGFONT));
 
 
@@ -2740,11 +2683,7 @@ void InitialiseFontsAuto(RECT rc,
   logfont.lfWidth =  (int)(FontWidth/TITLEFONTWIDTHRATIO);
   logfont.lfWeight = FW_BOLD;
     ApplyClearType(&logfont); // 110106
-  // RLD this was the only auto font to not have "ApplyClearType()".  It does not apply to very small fonts
-  // we now apply ApplyClearType to all fonts in CreateOneFont(). 
 
-//  propGetFontSettings(TEXT("TitleWindowFont"), &logfont);
-//  TitleWindowFont = CreateFontIndirect (&logfont);
   memcpy ((void *)ptrautoTitleWindowLogFont, &logfont, sizeof (LOGFONT));
 
   memset ((char *)&logfont, 0, sizeof (logfont));
@@ -2758,8 +2697,6 @@ void InitialiseFontsAuto(RECT rc,
   logfont.lfWeight = FW_MEDIUM;
   ApplyClearType(&logfont); // 110106
 
-//  propGetFontSettings(TEXT("CDIWindowFont"), &logfont);
-//  CDIWindowFont = CreateFontIndirect (&logfont);
   memcpy ((void *)ptrautoCDIWindowLogFont, &logfont, sizeof (LOGFONT));
 
   // new font for map labels
@@ -2773,8 +2710,6 @@ void InitialiseFontsAuto(RECT rc,
   logfont.lfItalic = TRUE; 
   ApplyClearType(&logfont); // 110106
 
-//  propGetFontSettings(TEXT("MapLabelFont"), &logfont);
-//  MapLabelFont = CreateFontIndirect (&logfont);
   memcpy ((void *)ptrautoMapLabelLogFont, &logfont, sizeof (LOGFONT));
 
 
@@ -2788,8 +2723,6 @@ void InitialiseFontsAuto(RECT rc,
   logfont.lfWeight = FW_MEDIUM;
   ApplyClearType(&logfont); // 110106
 
-//  propGetFontSettings(TEXT("StatisticsFont"), &logfont);
-//  StatisticsFont = CreateFontIndirect (&logfont);
   memcpy ((void *)ptrautoStatisticsLogFont, &logfont, sizeof (LOGFONT));
 
   // new font for map labels
@@ -2801,11 +2734,7 @@ void InitialiseFontsAuto(RECT rc,
   logfont.lfWeight = FW_MEDIUM;
   ApplyClearType(&logfont); // 110106
 
-//  propGetFontSettings(TEXT("MapWindowFont"), &logfont);
-//  MapWindowFont = CreateFontIndirect (&logfont);
 
-//  SendMessage(hWndMapWindow,WM_SETFONT,
-//        (WPARAM)MapWindowFont,MAKELPARAM(TRUE,0));
   memcpy ((void *)ptrautoMapWindowLogFont, &logfont, sizeof (LOGFONT));
 
   // Font for map bold text
@@ -2815,8 +2744,6 @@ void InitialiseFontsAuto(RECT rc,
   logfont.lfWidth =  0; // JMW (int)(FontWidth*MAPFONTWIDTHRATIO*1.3) +2;
   ApplyClearType(&logfont); // 110106 missing
 
-//  propGetFontSettings(TEXT("MapWindowBoldFont"), &logfont);
-//  MapWindowBoldFont = CreateFontIndirect (&logfont);
   memcpy ((void *)ptrautoMapWindowBoldLogFont, &logfont, sizeof (LOGFONT));
 
   // TODO code: create font settings for this one...
@@ -3797,14 +3724,6 @@ void DisplayText(void)
 
   // VENTA3 - Dynamic box values
   if ( GPS_INFO.Time > LastFlipBoxTime + DYNABOXTIME ) {
-/*
-	static TCHAR ventabuffer[200];
-	FILE *fp;
-        wsprintf(ventabuffer,TEXT("GPS_INFO.Time=%d LastFlipBoxTime=%d Flip=%d"),(int)GPS_INFO.Time, (int)LastFlipBoxTime,
-	FlipBoxValue == true ? 1 : 0);
-        if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL){;fprintf(fp,"%S\n",ventabuffer);fclose(fp)
-;}
-*/
 	FlipBoxValue = ( FlipBoxValue == false );
 	LastFlipBoxTime = GPS_INFO.Time;
   }
@@ -3902,35 +3821,6 @@ void DisplayText(void)
 	InfoBoxes[i]->SetValueUnit(Units::GetUserUnitByGroup(
           Data_Options[DisplayType[i]].UnitGroup));
 	break;	
-/*
-    case 75: // VENTA3 alternate1 and 2
-    case 76: 
-    case 77:
-	if (DisplayType[i]==75) ActiveAlternate=Alternate1; else
-	if (DisplayType[i]==76) ActiveAlternate=Alternate2; 
-		else ActiveAlternate=BestAlternate;
-	InfoBoxes[i]->SetSmallerFont(false);
-	if ( ActiveAlternate != -1 ) {
-		InfoBoxes[i]->SetTitle(Data_Options[DisplayType[i]].Formatter->
-			   RenderTitle(&color));
-		InfoBoxes[i]->SetColor(color);
-		InfoBoxes[i]->SetValue(Data_Options[DisplayType[i]].Formatter->
-			   Render(&color));
-		InfoBoxes[i]->SetColor(color);
-	} else {
-		if ( DisplayType[i]==75 ) 
-			InfoBoxes[i]->SetTitle(TEXT("Alt1Arr"));
-		else if ( DisplayType[i]==76 ) 
-			InfoBoxes[i]->SetTitle(TEXT("Alt2Arr"));
-		else	InfoBoxes[i]->SetTitle(TEXT("BAltArr"));
-		InfoBoxes[i]->SetValue(TEXT("---"));
-		InfoBoxes[i]->SetColor(-1);
-	}
-      if (needupdate)
-	InfoBoxes[i]->SetValueUnit(Units::GetUserUnitByGroup(
-          Data_Options[DisplayType[i]].UnitGroup));
-	break;	
-*/
     case 55:
       InfoBoxes[i]->SetSmallerFont(true);
       if (needupdate)
@@ -4233,10 +4123,6 @@ void DisplayText(void)
 				wsprintf(sTmp,_T("---"));
 			else
 				wsprintf(sTmp,_T("%d"),(int)WayPointCalc[ActiveAlternate].GR);
-/*
-			Units::FormatUserArrival(WayPointCalc[ActiveAlternate].GR,
-					 sTmp, sizeof(sTmp)/sizeof(sTmp[0]));
-*/
 			InfoBoxes[i]->SetComment(sTmp);
 		}
 		break;
@@ -4561,26 +4447,8 @@ void SIMProcessTimer(void)
     // Process timer is run at 2hz, so this is bringing it back to 1hz
     if (i%2==0) return;
 
-#if 101015
     extern void LKSimulator(void);
     LKSimulator();
-#else
-    LockFlightData();
-
-    GPS_INFO.NAVWarning = FALSE;
-    GPS_INFO.SatellitesUsed = 6;
-    FindLatitudeLongitude(GPS_INFO.Latitude, GPS_INFO.Longitude, 
-                          GPS_INFO.TrackBearing, GPS_INFO.Speed*1.0,
-                          &GPS_INFO.Latitude,
-                          &GPS_INFO.Longitude);
-    GPS_INFO.Time+= 1.0;
-    long tsec = (long)GPS_INFO.Time;
-    GPS_INFO.Hour = tsec/3600;
-    GPS_INFO.Minute = (tsec-GPS_INFO.Hour*3600)/60;
-    GPS_INFO.Second = (tsec-GPS_INFO.Hour*3600-GPS_INFO.Minute*60);
-
-    UnlockFlightData();
-#endif
   }
 
   if (i%2==0) return;
@@ -5152,16 +5020,12 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   TCHAR *a;
   short items=1;
 
-#if 100517
   if (_tcsstr(OutBuffer, TEXT("$(")) == NULL) return false;
   a =_tcsstr(OutBuffer, TEXT("&("));
   if (a != NULL) {
 	*a=_T('$');
 	items=2;
   }
-#else
-  if (_tcsstr(OutBuffer, TEXT("$(")) == NULL) return false;
-#endif
 
   if (_tcsstr(OutBuffer, TEXT("$(LOCKMODE"))) {
 	if (LockMode(0)) {	// query availability
@@ -5592,35 +5456,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; 
   }
 
-#if 0 // 100517
-  if (_tcsstr(OutBuffer, TEXT("$(TerrainTopologyToggleName)"))) {
-    char val;
-    val = 0;
-    if (EnableTopology) val++;
-    if (EnableTerrain) val += (char)2;
-    switch(val) {
-    case 0:
-      ReplaceInString(OutBuffer, TEXT("$(TerrainTopologyToggleName)"), 
-                      TEXT("Topology\nON"), Size);
-      break;
-    case 1:
-      ReplaceInString(OutBuffer, TEXT("$(TerrainTopologyToggleName)"), 
-                      TEXT("Terrain\nON"), Size);
-      break;
-    case 2:
-      ReplaceInString(OutBuffer, TEXT("$(TerrainTopologyToggleName)"), 
-                      TEXT("Terrain\nTopology"), Size);
-      break;
-    case 3:
-      ReplaceInString(OutBuffer, TEXT("$(TerrainTopologyToggleName)"), 
-	// LKTOKEN  _@M709_ = "Terrain\nOFF" 
-                      gettext(TEXT("_@M709_")), Size);
-      break;
-    }
-	if (--items<=0) goto label_ret; // 100517
-  }
-  #endif
-
 
   if (_tcsstr(OutBuffer, TEXT("$(FinalForceToggleActionName)"))) {
     CondReplaceInString(ForceFinalGlide, OutBuffer, 
@@ -5674,14 +5509,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_FINAL_GLIDE, OutBuffer, TEXT("$(DispModeFinalShortIndicator)"), TEXT("_"), TEXT(""), Size);
   }
 
-#if 0
-  CondReplaceInString(AltitudeMode == ALLON, OutBuffer, TEXT("$(AirspaceModeAllShortIndicator)"), TEXT("|"), TEXT(""), Size);
-
-  CondReplaceInString(AltitudeMode == CLIP,  OutBuffer, TEXT("$(AirspaceModeClipShortIndicator)"), TEXT("(�)"), TEXT(""), Size);
-  CondReplaceInString(AltitudeMode == AUTO,  OutBuffer, TEXT("$(AirspaceModeAutoShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-  CondReplaceInString(AltitudeMode == ALLBELOW, OutBuffer, TEXT("$(AirspaceModeBelowShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-  CondReplaceInString(AltitudeMode == ALLOFF, OutBuffer, TEXT("$(AirspaceModeAllOffIndicator)"), TEXT("(*)"), TEXT(""), Size);
-#else  // 091211
   if (_tcsstr(OutBuffer, TEXT("$(AirspaceMode)"))) {
     switch(AltitudeMode) {
     case 0:
@@ -5710,22 +5537,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     }
 	if (--items<=0) goto label_ret; // 100517
   }
-#endif
 
-#if 0  //  100517 NOUSE
-  CondReplaceInString(TrailActive == 0, OutBuffer, TEXT("$(SnailTrailOffShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-  CondReplaceInString(TrailActive == 2, OutBuffer, TEXT("$(SnailTrailShortShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-  CondReplaceInString(TrailActive == 1, OutBuffer, TEXT("$(SnailTrailLongShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-  CondReplaceInString(TrailActive == 3, OutBuffer, TEXT("$(SnailTrailFullShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-
-// VENTA3 VisualGlide
-  CondReplaceInString(VisualGlide == 0, OutBuffer, TEXT("$(VisualGlideOffShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-  CondReplaceInString(VisualGlide == 1, OutBuffer, TEXT("$(VisualGlideLightShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-  CondReplaceInString(VisualGlide == 2, OutBuffer, TEXT("$(VisualGlideHeavyShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-// VENTA3 AirSpace
-  CondReplaceInString(OnAirSpace  == 0, OutBuffer, TEXT("$(AirSpaceOffShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-  CondReplaceInString(OnAirSpace  == 1, OutBuffer, TEXT("$(AirSpaceOnShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-#endif
 
   #ifndef NOFLARMGAUGE
   CondReplaceInString(EnableFLARMGauge != 0, OutBuffer, TEXT("$(FlarmDispToggleActionName)"), TEXT("OFF"), TEXT("ON"), Size);
