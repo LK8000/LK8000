@@ -530,9 +530,6 @@ BOOL DoCalculationsVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   NettoVario(Basic, Calculated);
   SpeedToFly(Basic, Calculated);
-#ifndef DISABLEAUDIOVARIO
-  AudioVario(Basic, Calculated);
-#endif
 
   // has GPS time advanced?
   if(Basic->Time <= LastTime)

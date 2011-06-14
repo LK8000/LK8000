@@ -15,6 +15,8 @@
 #define   WINDOWSPC             0
 #endif
 
+/////////////////////////////////////////////////////////
+// This stuff need checking. At 110614 unknown if working
 #if (WINDOWSPC>0)
 #if _DEBUG
 // leak checking
@@ -24,8 +26,8 @@
 #include <crtdbg.h>
 #endif
 #endif
+/////////////////////////////////////////////////////////
 
-#define DISABLEAUDIOVARIO
 
 // disable internally generated sounds
 //#define DISABLEAUDIO

@@ -2163,17 +2163,6 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
 
   OpenFLARMDetails();
 
-
-#ifndef DISABLEAUDIOVARIO
-  /*
-  VarioSound_Init();
-  VarioSound_EnableSound(EnableSoundVario);
-  VarioSound_SetVdead(SoundDeadband);
-  VarioSound_SetV(0);
-  VarioSound_SetSoundVolume(SoundVolume);
-  */
-#endif
-
   // ... register all supported devices
   // IMPORTANT: ADD NEW ONES TO BOTTOM OF THIS LIST
   // LKTOKEN _@M1217_ "Starting devices"
@@ -3322,10 +3311,6 @@ void Shutdown(void) {
   StartupStore(TEXT(". SaveSoundSettings%s"),NEWLINE);
   SaveSoundSettings();
 
-#ifndef DISABLEAUDIOVARIO  
-  //  VarioSound_EnableSound(false);
-  //  VarioSound_Close();
-#endif
 
   // Stop SMS device
 #if (EXPERIMENTAL > 0)
