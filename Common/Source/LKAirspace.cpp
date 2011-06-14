@@ -1228,6 +1228,7 @@ bool CAirspaceManager::CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, doub
   double StartBearing;
   double EndBearing;
   double Radius;
+  double arc_bearing_range;
   TCHAR *Comma = NULL;
   double lat,lon;
 
@@ -1245,9 +1246,14 @@ bool CAirspaceManager::CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, doub
                   NULL, &EndBearing);
   _geopoints->push_back(CPoint2D(StartLat, StartLon));
   
-  while(fabs(EndBearing-StartBearing) > 7.5)
+  if (Rotation>0) arc_bearing_range = EndBearing - StartBearing; else arc_bearing_range = StartBearing - EndBearing;
+  if (arc_bearing_range>360) arc_bearing_range -= 360;
+  if (arc_bearing_range<0) arc_bearing_range += 360;
+  
+  while( arc_bearing_range > 7.5 )
   {
       StartBearing += Rotation *5 ;
+      arc_bearing_range -= 5;
       if(StartBearing > 360) StartBearing -= 360;
       if(StartBearing < 0) StartBearing += 360;
       FindLatitudeLongitude(CenterY, CenterX, StartBearing, Radius, &lat, &lon);
@@ -1262,6 +1268,7 @@ bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, d
   double Radius;
   double StartBearing;
   double EndBearing;
+  double arc_bearing_range;
   TCHAR *Stop = NULL;
   double lat=0,lon=0;
   
@@ -1270,7 +1277,11 @@ bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, d
   StartBearing = (double)StrToDouble(&Stop[1], &Stop);
   EndBearing = (double)StrToDouble(&Stop[1], &Stop);
 
-  while(fabs(EndBearing-StartBearing) > 7.5)
+  if (Rotation>0) arc_bearing_range = EndBearing - StartBearing; else arc_bearing_range = StartBearing - EndBearing;
+  if (arc_bearing_range>360) arc_bearing_range -= 360;
+  if (arc_bearing_range<0) arc_bearing_range += 360;
+  
+  while( arc_bearing_range > 7.5 )
   {
     if(StartBearing >= 360) StartBearing -= 360;
     if(StartBearing < 0) StartBearing += 360;
@@ -1280,6 +1291,7 @@ bool CAirspaceManager::CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, d
     _geopoints->push_back(CPoint2D(lat,lon));
     
     StartBearing += Rotation *5 ;
+    arc_bearing_range -= 5;
   }
   FindLatitudeLongitude(CenterY, CenterX, EndBearing, Radius, &lat, &lon);
   _geopoints->push_back(CPoint2D(lat,lon));
