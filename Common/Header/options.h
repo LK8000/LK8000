@@ -15,8 +15,6 @@
 #define   WINDOWSPC             0
 #endif
 
-#define   FONTQUALITY           NONANTIALIASED_QUALITY
-
 #if (WINDOWSPC>0)
 #if _DEBUG
 // leak checking
