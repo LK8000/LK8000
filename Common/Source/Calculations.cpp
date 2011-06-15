@@ -752,14 +752,18 @@ void DistanceToHome(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 }
 
-void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated, 
-                      bool full=true) {
+//
+// This is called only by calculations thread, at init, at restart of a replay flight, and also on takeoff
+// 
+void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   int i;
   (void)Basic;
 
   CRUISE_EFFICIENCY = 1.0;
 
-  if (full) {
+    #if ALPHADEBUG
+    StartupStore(_T("... ResetFlightStats\n"));
+    #endif
 #ifdef NEW_OLC
     // It is better to reset it even if UseContestEngine() if false, because we might
     // change aircraft type during runtime. We never know.
@@ -770,14 +774,17 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     flightstats.Reset();
     aatdistance.Reset();
     CRUISE_EFFICIENCY = 1.0;
+
     Calculated->FlightTime = 0;
     Calculated->TakeOffTime = 0;
     Calculated->FreeFlying=false;
     Calculated->Flying=0;
+    Calculated->Circling = false;
+    Calculated->FinalGlide = false;
     Calculated->timeCruising = 0;
     Calculated->timeCircling = 0;
-    Calculated->TotalHeightClimb = 0;
 
+    Calculated->TotalHeightClimb = 0;
     Calculated->CruiseStartTime = -1;
     Calculated->ClimbStartTime = -1;
     Calculated->ClimbStartAlt = 0;
@@ -797,20 +804,15 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
       Calculated->AverageClimbRate[i]= 0;
       Calculated->AverageClimbRateN[i]= 0;
     }
-  }
 
-  Calculated->MaxThermalHeight = 0;
-  for (i=0; i<NUMTHERMALBUCKETS; i++) {
-    Calculated->ThermalProfileN[i]=0;
-    Calculated->ThermalProfileW[i]=0;
-  }
-  // clear thermal sources for first time.
-  for (i=0; i<MAX_THERMAL_SOURCES; i++) {
-    Calculated->ThermalSources[i].LiftRate= -1.0;
-  }
+    for (int i=0; i<=NUMTERRAINSWEEPS; i++) {
+      Calculated->GlideFootPrint[i].x = 0;
+      Calculated->GlideFootPrint[i].y = 0;
+    }
+    Calculated->TerrainWarningLatitude = 0.0;
+    Calculated->TerrainWarningLongitude = 0.0;
 
-  // Full reset for task system
-  if (full) {
+    // Task system reset
     Calculated->ValidFinish = false;
     Calculated->ValidStart = false;
     Calculated->TaskStartTime = 0;
@@ -819,7 +821,23 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     Calculated->LegStartTime = 0;
     Calculated->MinAltitude = 0;
     Calculated->MaxHeightGain = 0;
-  }
+
+    if ( ISPARAGLIDER || ISCAR ) {
+	// paragliders can takeoff at 5kmh ground with some head wind!
+	TakeOffSpeedThreshold=1.39; 
+    } else {
+	TakeOffSpeedThreshold=11.12; // 40kmh
+    }
+
+    Calculated->MaxThermalHeight = 0;
+    for (i=0; i<NUMTHERMALBUCKETS; i++) {
+      Calculated->ThermalProfileN[i]=0;
+      Calculated->ThermalProfileW[i]=0;
+    }
+    // clear thermal sources for first time.
+    for (i=0; i<MAX_THERMAL_SOURCES; i++) {
+      Calculated->ThermalSources[i].LiftRate= -1.0;
+    }
 }
 
 
@@ -827,12 +845,9 @@ bool FlightTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static double LastTime = 0;
 
   if ((Basic->Time != 0) && (Basic->Time <= LastTime)) {
-  // 20060519:sgi added (Basic->Time != 0) dueto alwas return here
-  // if no GPS time available
-
 	if ((Basic->Time<LastTime) && (!Basic->NAVWarning)) {
 		// Reset statistics.. (probably due to being in IGC replay mode)
-		StartupStore(_T("... ResetFlightStats, time is in the past%s"),NEWLINE);
+		StartupStore(_T("...... Time is in the past! Flight reset.%s"),NEWLINE);
 		ResetFlightStats(Basic, Calculated);
 	}
 
@@ -884,8 +899,8 @@ void StartTask(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   // JMW clear thermal climb average on task start
   flightstats.ThermalAverage.Reset();
   flightstats.Task_Speed.Reset();
-  Calculated->AverageThermal = 0; // VNT for some reason looked uninitialised
-  Calculated->WaypointBearing=0; // VNT TEST
+  Calculated->AverageThermal = 0;
+  Calculated->WaypointBearing=0;
 
   // JMW reset time cruising/time circling stats on task start
   Calculated->timeCircling = 0;
@@ -918,32 +933,10 @@ void CloseCalculations() {
 
 void InitCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   StartupStore(TEXT(". Init Calculations%s"),NEWLINE);
-  // CalibrationInit();
-  ResetFlightStats(Basic, Calculated, true);
-  // LoadCalculationsPersist(Calculated); // confusing people
-  // DeleteCalculationsPersist(); 
 
-  // WARNING USING m/s 
-  if ( ISPARAGLIDER || ISCAR ) {
-	TakeOffSpeedThreshold=1.39; // paragliders can takeoff at 5kmh ground with some head wind!
-  } else {
-	TakeOffSpeedThreshold=11.12; // 40kmh
-  }
+  ResetFlightStats(Basic, Calculated);
 
-
-  ResetFlightStats(Basic, Calculated, false);
-  Calculated->Flying = false;	// CHECK should be FALSE, lets get rid of BOOLs!! 110330
-  Calculated->FreeFlying = false;
-  Calculated->Circling = false;
-  Calculated->FinalGlide = false;
-  for (int i=0; i<=NUMTERRAINSWEEPS; i++) {
-    Calculated->GlideFootPrint[i].x = 0;
-    Calculated->GlideFootPrint[i].y = 0;
-  }
-  Calculated->TerrainWarningLatitude = 0.0;
-  Calculated->TerrainWarningLongitude = 0.0;
-
-  // Initialise calculations, DoInit will make it and return
+  // Initialise calculations, on first run DoInit will make it and return
   DoRangeWaypointList(Basic,Calculated);
   DoTraffic(Basic,Calculated);
   DoAirspaces(Basic,Calculated);
@@ -951,13 +944,8 @@ void InitCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   InitAlarms();
 
   LockFlightData();
-
   if (!windanalyser) {
     windanalyser = new WindAnalyser();
-    
-    //JMW TODO enhancement: seed initial wind store with start conditions
-    // SetWindEstimate(Calculated->WindSpeed,Calculated->WindBearing, 1);
-
   }
   UnlockFlightData();
 
@@ -4821,12 +4809,13 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if (!Calculated->Flying) {
 	// detect takeoff
 	if (time_in_flight>10) {
-		Calculated->Flying = TRUE;
-		WasFlying=true; // VENTA3
 		InputEvents::processGlideComputer(GCE_TAKEOFF);
+
 		// reset stats on takeoff
 		ResetFlightStats(Basic, Calculated);
- 
+
+		Calculated->Flying = TRUE;
+		WasFlying=true;
 		Calculated->TakeOffTime= Basic->Time;
 		TakeOffWayPoint=true;
 		// wait before getting a new takeoff until we are no more flying
