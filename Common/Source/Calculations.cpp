@@ -772,15 +772,18 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     CRUISE_EFFICIENCY = 1.0;
     Calculated->FlightTime = 0;
     Calculated->TakeOffTime = 0;
+    Calculated->FreeFlying=false;
+    Calculated->Flying=0;
     Calculated->timeCruising = 0;
     Calculated->timeCircling = 0;
     Calculated->TotalHeightClimb = 0;
 
     Calculated->CruiseStartTime = -1;
     Calculated->ClimbStartTime = -1;
+    Calculated->ClimbStartAlt = 0;
 
     Calculated->LDFinish = INVALID_GR;
-    Calculated->GRFinish = INVALID_GR;  // VENTA-ADDON GR to final destination
+    Calculated->GRFinish = INVALID_GR;
     Calculated->CruiseLD = INVALID_GR;
     Calculated->AverageLD = INVALID_GR;
     Calculated->LDNext = INVALID_GR;
@@ -806,6 +809,7 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     Calculated->ThermalSources[i].LiftRate= -1.0;
   }
 
+  // Full reset for task system
   if (full) {
     Calculated->ValidFinish = false;
     Calculated->ValidStart = false;
@@ -828,6 +832,7 @@ bool FlightTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 	if ((Basic->Time<LastTime) && (!Basic->NAVWarning)) {
 		// Reset statistics.. (probably due to being in IGC replay mode)
+		StartupStore(_T("... ResetFlightStats, time is in the past%s"),NEWLINE);
 		ResetFlightStats(Basic, Calculated);
 	}
 
