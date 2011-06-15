@@ -754,6 +754,9 @@ void DistanceToHome(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 //
 // This is called only by calculations thread, at init, at restart of a replay flight, and also on takeoff
+// IT SHOULD NEVER HAPPEN DURING REAL FLIGHT, AFTER TAKEOFF!
+// PLEASE NOTICE THAT TAKEOFF IS NOT NECESSARILY THE START OF FREEFLIGHT
+// We reset some values at start of free flight in LKCalculations
 // 
 void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   int i;
@@ -778,16 +781,30 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     Calculated->FlightTime = 0;
     Calculated->TakeOffTime = 0;
     Calculated->FreeFlying=false;
-    Calculated->Flying=0;
-    Calculated->Circling = false;
+    Calculated->Flying=FALSE;
+    Calculated->Circling = FALSE;
     Calculated->FinalGlide = false;
     Calculated->timeCruising = 0;
     Calculated->timeCircling = 0;
 
     Calculated->TotalHeightClimb = 0;
     Calculated->CruiseStartTime = -1;
+    Calculated->CruiseStartAlt = 0;
+    Calculated->CruiseStartLong = 0;
+    Calculated->CruiseStartLat = 0;
+
     Calculated->ClimbStartTime = -1;
     Calculated->ClimbStartAlt = 0;
+    Calculated->ClimbStartLong = 0;
+    Calculated->ClimbStartLat = 0;
+
+    Calculated->AverageThermal = 0;
+    Calculated->Average30s = 0;
+    Calculated->NettoAverage30s = 0;
+    Calculated->ThermalGain = 0;
+    Calculated->LastThermalAverage = 0;
+    Calculated->LastThermalGain = 0;
+    Calculated->LastThermalTime = 0;
 
     Calculated->LDFinish = INVALID_GR;
     Calculated->GRFinish = INVALID_GR;
@@ -796,7 +813,6 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     Calculated->LDNext = INVALID_GR;
     Calculated->LD = INVALID_GR;
     Calculated->LDvario = INVALID_GR;
-    Calculated->AverageThermal = 0;
     Calculated->Odometer = 0; // 091228
     wcscpy(Calculated->Flaps,_T("???"));
 
@@ -849,6 +865,8 @@ bool FlightTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		// Reset statistics.. (probably due to being in IGC replay mode)
 		StartupStore(_T("...... Time is in the past! Flight reset.%s"),NEWLINE);
 		ResetFlightStats(Basic, Calculated);
+		time_in_flight=0;
+		time_on_ground=0;
 	}
 
 	LastTime = Basic->Time; 
@@ -1336,12 +1354,14 @@ void MaxHeightGain(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
 void ThermalGain(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
+StartupStore(_T(".......TG = ClimbStartTime=%.0f BasicTime=%.0f\n"), Calculated->ClimbStartTime,Basic->Time);
   if (Calculated->ClimbStartTime>=0) {
     if(Basic->Time >= Calculated->ClimbStartTime)
       {
         Calculated->ThermalGain = 
           Calculated->NavAltitude + Calculated->EnergyHeight 
           - Calculated->ClimbStartAlt;
+StartupStore(_T(".......TG = %.0f - %.0f\n"), Calculated->NavAltitude, Calculated->ClimbStartAlt,Calculated->ThermalGain);
       }
   }
 }
@@ -1540,8 +1560,21 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   if (!Calculated->Flying) return;
 
+  // Back in time in IGC replay mode?
   if(Basic->Time <= LastTime) {
+    #if ALPHADEBUG
+    StartupStore(_T("...... Turning back in time: reset\n"));
+    #endif
     LastTime = Basic->Time;
+    LastTrack = 0;
+    StartTime  = 0;
+    StartLong = 0;
+    StartLat = 0;
+    StartAlt = 0;
+    StartEnergyHeight = 0;
+    LastTime = 0;
+    MODE = CRUISE;
+    LEFT = FALSE;
     return;
   }
   dT = Basic->Time - LastTime;
@@ -1634,6 +1667,8 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   switch(MODE) {
   case CRUISE:
     if((Rate >= MinTurnRate)||(forcecircling)) {
+      // This is initialising the potential thermalling start
+      // We still dont know if we are really circling for thermal
       StartTime = Basic->Time;
       StartLong = Basic->Longitude;
       StartLat  = Basic->Latitude;
@@ -1658,6 +1693,14 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
         Calculated->Circling = TRUE;
         // JMW Transition to climb
         MODE = CLIMB;
+	// Probably a replay flight, with fast forward with no cruise init
+	if (StartTime==0) {
+	      StartTime = Basic->Time;
+	      StartLong = Basic->Longitude;
+	      StartLat  = Basic->Latitude;
+	      StartAlt  = Calculated->NavAltitude;
+	      StartEnergyHeight  = Calculated->EnergyHeight;
+	}
         Calculated->ClimbStartLat = StartLat;
         Calculated->ClimbStartLong = StartLong;
         Calculated->ClimbStartAlt = StartAlt+StartEnergyHeight;
@@ -1718,6 +1761,13 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
         
         // Transition to cruise
         MODE = CRUISE;
+      if (StartTime==0) {
+        StartTime = Basic->Time;
+        StartLong = Basic->Longitude;
+        StartLat  = Basic->Latitude;
+        StartAlt  = Calculated->NavAltitude;
+        StartEnergyHeight  = Calculated->EnergyHeight;
+      }
         Calculated->CruiseStartLat  = StartLat;
         Calculated->CruiseStartLong = StartLong;
         Calculated->CruiseStartAlt  = StartAlt;
@@ -4811,6 +4861,10 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	if (time_in_flight>10) {
 		InputEvents::processGlideComputer(GCE_TAKEOFF);
 
+		#if ALPHADEBUG
+		StartupStore(_T("... TAKEOFF\n"));
+		#endif
+
 		// reset stats on takeoff
 		ResetFlightStats(Basic, Calculated);
 
@@ -4836,6 +4890,10 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	if (time_in_flight==0 && !ISCAR) { 
 		// have been stationary for a minute
 		InputEvents::processGlideComputer(GCE_LANDING);
+
+		#if ALPHADEBUG
+		StartupStore(_T("... LANDING\n"));
+		#endif
 
 		// JMWX  restore data calculated at finish so
 		// user can review flight as at finish line

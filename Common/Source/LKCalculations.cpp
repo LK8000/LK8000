@@ -1880,10 +1880,14 @@ void ResetFreeFlightStats(DERIVED_INFO *Calculated) {
   flightstats.Reset();
   Calculated->timeCruising = 0;
   Calculated->timeCircling = 0;
-  Calculated->TotalHeightClimb = 0;
-  Calculated->CruiseStartTime = -1;
-  Calculated->ClimbStartTime = -1;
-  Calculated->AverageThermal = 0;
+
+  // Calculated->TotalHeightClimb = 0;
+  // Calculated->CruiseStartTime = -1;
+  // 
+  // ClimbStartTime CANNOT be reset here: it is a loop! We use themal start to detect freeflight!
+  // We have a conflict here!
+  // Calculated->ClimbStartTime = -1;  
+  // Calculated->AverageThermal = 0;
 
   for (i=0; i<200; i++) {
      Calculated->AverageClimbRate[i]= 0;
