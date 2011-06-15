@@ -765,7 +765,7 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   CRUISE_EFFICIENCY = 1.0;
 
     #if ALPHADEBUG
-    StartupStore(_T("... ResetFlightStats\n"));
+    // StartupStore(_T("... ResetFlightStats\n"));
     #endif
 #ifdef NEW_OLC
     // It is better to reset it even if UseContestEngine() if false, because we might
@@ -863,7 +863,7 @@ bool FlightTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if ((Basic->Time != 0) && (Basic->Time <= LastTime)) {
 	if ((Basic->Time<LastTime) && (!Basic->NAVWarning)) {
 		// Reset statistics.. (probably due to being in IGC replay mode)
-		StartupStore(_T("...... Time is in the past! Flight reset.%s"),NEWLINE);
+		StartupStore(_T("... Time is in the past! Flight reset.%s"),NEWLINE);
 		ResetFlightStats(Basic, Calculated);
 		time_in_flight=0;
 		time_on_ground=0;
@@ -1354,14 +1354,12 @@ void MaxHeightGain(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
 void ThermalGain(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
-StartupStore(_T(".......TG = ClimbStartTime=%.0f BasicTime=%.0f\n"), Calculated->ClimbStartTime,Basic->Time);
   if (Calculated->ClimbStartTime>=0) {
     if(Basic->Time >= Calculated->ClimbStartTime)
       {
         Calculated->ThermalGain = 
           Calculated->NavAltitude + Calculated->EnergyHeight 
           - Calculated->ClimbStartAlt;
-StartupStore(_T(".......TG = %.0f - %.0f\n"), Calculated->NavAltitude, Calculated->ClimbStartAlt,Calculated->ThermalGain);
       }
   }
 }
@@ -4862,7 +4860,7 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		InputEvents::processGlideComputer(GCE_TAKEOFF);
 
 		#if ALPHADEBUG
-		StartupStore(_T("... TAKEOFF\n"));
+		StartupStore(_T(". TAKEOFF\n"));
 		#endif
 
 		// reset stats on takeoff
@@ -4892,7 +4890,7 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		InputEvents::processGlideComputer(GCE_LANDING);
 
 		#if ALPHADEBUG
-		StartupStore(_T("... LANDING\n"));
+		StartupStore(_T(". LANDING\n"));
 		#endif
 
 		// JMWX  restore data calculated at finish so
