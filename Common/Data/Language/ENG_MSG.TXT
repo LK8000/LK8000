@@ -1540,7 +1540,12 @@ _@M1650_ "ALARM"
 _@M1651_ "ALTITUDE"
 
 # customkey for airspace analysis
-_@M1652 "Airspace Analysis"
-_@M1653 "Toggle Map<>Airspace infopage"
+_@M1652_ "Airspace Analysis"
+_@M1653_ "Toggle Map<>Airspace infopage"
+
+# Airspace details buttons
+_@M1654_ "SELECT"
+_@M1655_ "ANALYSIS"
+_@M1656_ "*SELECTED*"
 
 # Note for developers: LKLanguage MAX_MESSAGE  1700: 0-1699 !

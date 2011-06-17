@@ -13,6 +13,7 @@
 #include "externs.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
+#include "InputEvents.h"
 #include "Airspace.h"
 #include "AirspaceWarning.h"
 #ifdef LKAIRSPACE
@@ -60,6 +61,33 @@ static void OnFlyClicked(WindowControl * Sender){
   if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 
 }
+
+static void OnSelectClicked(WindowControl * Sender){
+  (void)Sender;
+
+  if (airspace == NULL) return;
+
+  // Kalman, set the flag here for selected airspace. It will be used for Hdist and Vdist infoboxes.
+  // We might also in the near future add more functions for the selected airspace, which is the one
+  // that the pilot cares most. An airspace cannot be deselected, only changed to another airspace.
+  // (We need also a query for this flag, in LKDrawAspNearest, and also in this .cpp)
+
+  // CAirspaceManager::Instance().AirspaceSetSelect(*airspace);
+  SetValues();
+  if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+
+}
+
+static void OnAnalysisClicked(WindowControl * Sender){
+  (void)Sender;
+
+  InputEvents::eventSetup(_T("AspAnalysis"));
+
+  if (wf == NULL) return;
+  wf->SetModalResult(mrOK);
+
+}
+
 #endif
 
 #ifdef LKAIRSPACE
@@ -152,6 +180,8 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnFlyClicked),
 #endif
   DeclareCallBackEntry(OnCloseClicked),
+  DeclareCallBackEntry(OnSelectClicked),
+  DeclareCallBackEntry(OnAnalysisClicked),
   DeclareCallBackEntry(NULL)
 };
 #ifndef LKAIRSPACE
@@ -161,7 +191,7 @@ static double FLAltRounded(double alt) {
 }
 #endif
 #ifdef LKAIRSPACE
-static void SetValues() {
+static void SetValues(void) {
 
   if (airspace==NULL) return;
 
@@ -177,12 +207,26 @@ static void SetValues() {
   int hdist;
   int vdist;
   bool inside = CAirspaceManager::Instance().AirspaceCalculateDistance( airspace, &hdist, &bearing, &vdist);
-  
+
+  if (wf!=NULL) {
+	TCHAR capbuffer[250];
+	wsprintf(capbuffer,_T("%s ("),airspace_copy.Name());
+        if (airspace_copy.Enabled()) {
+        	_tcscat(capbuffer,gettext(TEXT("_@M1643_"))); // ENABLED
+        } else {
+        	_tcscat(capbuffer,gettext(TEXT("_@M1600_"))); // DISABLED
+        }
+        _tcscat(capbuffer,_T(")")); // DISABLED
+	wf->SetCaption(capbuffer);
+  }
+
+  #if 0	// REMOVE 
   wp = (WndProperty*)wf->FindByName(TEXT("prpName"));
   if (wp) {
     wp->SetText(airspace_copy.Name());
     wp->RefreshDisplay();
   }
+  #endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpType"));
   if (wp) {
@@ -225,6 +269,8 @@ static void SetValues() {
     wp->RefreshDisplay();
   }
   
+  // ONLY for DIAGNOSTICS- ENABLE ALSO XML
+  #if 0
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarnLevel"));
   if (wp) {
 	  switch (airspace_copy.WarningLevel()) {
@@ -282,6 +328,7 @@ static void SetValues() {
       }
 	  wp->RefreshDisplay();
   }
+  #endif
 
   wb = (WndButton*)wf->FindByName(TEXT("cmdFly"));
   if (wb) {
@@ -295,6 +342,16 @@ static void SetValues() {
 	wb->Redraw();
   }
 
+  wb = (WndButton*)wf->FindByName(TEXT("cmdSelect"));
+  if (wb) {
+	// if (airspace_copy.Selected()) {   // For Kalman
+	if (airspace_copy.Flyzone()) { // only for demo, until Selected() works!
+	  wb->SetCaption(gettext(TEXT("_@M1656_"))); // SELECTED!
+	} else {
+	  wb->SetCaption(gettext(TEXT("_@M1654_"))); // SELECT
+	}
+	wb->Redraw();
+  }
 
   wb = (WndButton*)wf->FindByName(TEXT("cmdAcknowledge"));
   if (wb) {
@@ -308,6 +365,7 @@ static void SetValues() {
     wb->Redraw();
   }
 
+  #if 0 // REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpStatus"));
   if (wp) {
     if (airspace_copy.Enabled()) {
@@ -317,6 +375,7 @@ static void SetValues() {
     }
     wp->RefreshDisplay();
   }
+  #endif
 
 
 
@@ -583,17 +642,3 @@ void dlgAirspaceDetails(int the_circle, int the_area) {
 }
 #endif
 
-/*
-
-
-			distance,
-                    Units::GetDistanceName()
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpDistance"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(distance);
-    wp->GetDataField()->SetUnits(Units::GetDistanceName());
-    wp->RefreshDisplay();
-  }
-
-*/
