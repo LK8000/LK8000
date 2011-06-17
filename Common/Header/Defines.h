@@ -256,3 +256,16 @@
 #define MAXLKALARMSTRIGGERS	30	// max number of triggered events per alarm
 #define LKALARMSINTERVAL	60	// seconds of interval for LK alarms
 
+// Analysys pages can be called directly
+#define ANALYSYS_PAGE_DEFAULT	  -1	
+#define ANALYSIS_PAGE_BAROGRAPH    0
+#define ANALYSIS_PAGE_CLIMB        1
+#define ANALYSIS_PAGE_TASK_SPEED   2
+#define ANALYSIS_PAGE_WIND         3
+#define ANALYSIS_PAGE_POLAR        4
+#define ANALYSIS_PAGE_TEMPTRACE    5
+#define ANALYSIS_PAGE_TASK         6
+#define ANALYSIS_PAGE_CONTEST      7
+#define ANALYSIS_PAGE_AIRSPACE     8
+
+

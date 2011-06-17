@@ -51,7 +51,7 @@ bool dlgStartupShowModal(void);
 void dlgTaskCalculatorShowModal(void);
 void dlgWindSettingsShowModal(void);
 void dlgStartTaskShowModal(bool *validStart, double Time, double Speed, double Altitude);
-void dlgAnalysisShowModal(void);
+void dlgAnalysisShowModal(int inpage);
 void dlgStatusShowModal(int page);
 void dlgSwitchesShowModal(void);
 void dlgTaskWaypointShowModal(int itemindex, int type, bool addonly=false);

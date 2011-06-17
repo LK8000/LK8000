@@ -4481,7 +4481,7 @@ void SwitchToMapWindow(void)
 void PopupAnalysis()
 {
   DialogActive = true;
-  dlgAnalysisShowModal();
+  dlgAnalysisShowModal(ANALYSYS_PAGE_DEFAULT);
   DialogActive = false;
 }
 

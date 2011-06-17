@@ -1612,7 +1612,9 @@ static void SetCalcCaption(const TCHAR* caption) {
   }
 }
 
-
+/* TODO REMOVE 
+   these are now part of define.h
+#define ANALYSYS_PAGE_DEFAULT	  -1
 #define ANALYSIS_PAGE_BAROGRAPH    0
 #define ANALYSIS_PAGE_CLIMB        1
 #define ANALYSIS_PAGE_TASK_SPEED   2
@@ -1622,6 +1624,7 @@ static void SetCalcCaption(const TCHAR* caption) {
 #define ANALYSIS_PAGE_TASK         6
 #define ANALYSIS_PAGE_CONTEST      7
 #define ANALYSIS_PAGE_AIRSPACE     8
+ */
 
 static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
 
@@ -2204,6 +2207,7 @@ static void OnCalcClicked(WindowControl * Sender,
 #endif /* NEW_OLC */
   }
   if (page==ANALYSIS_PAGE_AIRSPACE) {
+    //dlgAirspaceWarningParamsShowModal(); // in case we want only setup warnings display!
     dlgAirspaceWarningShowDlg(true);
   }
   Update();
@@ -2234,7 +2238,7 @@ static int OnTimerNotify(WindowControl *Sender)
 #endif
 
 
-void dlgAnalysisShowModal(void){
+void dlgAnalysisShowModal(int inpage){
 
   wf=NULL;
   wGrid=NULL;
@@ -2279,6 +2283,8 @@ void dlgAnalysisShowModal(void){
   #endif
 
   Update();
+
+  if (inpage!=ANALYSYS_PAGE_DEFAULT) page=inpage;
 
   wf->ShowModal();
 

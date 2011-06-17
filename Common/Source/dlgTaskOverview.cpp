@@ -396,7 +396,7 @@ static void OnAnalysisClicked(WindowControl * Sender,
   (void)ListInfo;
 
   wf->SetVisible(false);
-  dlgAnalysisShowModal();
+  dlgAnalysisShowModal(ANALYSIS_PAGE_TASK);
   wf->SetVisible(true);
 }
 
