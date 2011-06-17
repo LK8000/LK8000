@@ -1539,4 +1539,8 @@ _@M1649_ "Max Altitude 3 "
 _@M1650_ "ALARM"
 _@M1651_ "ALTITUDE"
 
+# customkey for airspace analysis
+_@M1652 "Airspace Analysis"
+_@M1653 "Toggle Map<>Airspace infopage"
+
 # Note for developers: LKLanguage MAX_MESSAGE  1700: 0-1699 !

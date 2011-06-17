@@ -2931,6 +2931,11 @@ void SelectMapSpace(short i) {
 			SelectedPage[MapSpaceMode]=0;
 			SelectedRaw[MapSpaceMode]=0;
 			break;
+		case MSM_AIRSPACES:
+			LKevent=LKEVENT_NEWRUN;
+			SelectedPage[MapSpaceMode]=0;
+			SelectedRaw[MapSpaceMode]=0;
+			break;
 		case MSM_COMMON:
 			LKForceDoCommon=true;
 			LKevent=LKEVENT_NEWRUN;
@@ -3873,6 +3878,20 @@ bool CustomKeyHandler(const int key) {
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 		#endif
 		InputEvents::setMode(_T("SIMMENU"));
+		return true;
+	case ckToggleMapAirspace:
+		if (ModeIndex==LKMODE_MAP)
+			SetModeType(LKMODE_WP,WP_AIRSPACES);
+		else
+			SetModeIndex(LKMODE_MAP);
+		MapWindow::RefreshMap();
+		SoundModeIndex();
+		return true;
+	case ckAirspaceAnalysis:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		InputEvents::eventSetup(_T("AspAnalysis"));
 		return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));

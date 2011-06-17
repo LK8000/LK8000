@@ -485,6 +485,8 @@ typedef enum{
 	ckBaroToggle,
 	ckBasicSetup,
 	ckSimMenu,
+	ckAirspaceAnalysis,
+	ckToggleMapAirspace,
 	// ToggleInfobox MUST be the last one, used only for Aircraft Icons..
 	ckToggleInfobox,
 } CustomKeyMode_t;

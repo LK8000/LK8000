@@ -68,7 +68,6 @@ static void setVariables(void) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
 	AddConfList(dfe);
-	//#include "LKinclude_confcuskey.cpp" REMOVE
 	dfe->Set(CustomKeyModeLeftUpCorner);
 	wp->RefreshDisplay();
   }
@@ -77,7 +76,6 @@ static void setVariables(void) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
 	AddConfList(dfe);
-	//#include "LKinclude_confcuskey.cpp" REMOVE
 	dfe->Set(CustomKeyModeRightUpCorner);
 	dfe->Set(CustomKeyModeRightUpCorner);
 	if (ISPARAGLIDER) wp->SetReadOnly(true);
@@ -90,7 +88,6 @@ static void setVariables(void) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
 	AddConfList(dfe);
-	//#include "LKinclude_confcuskey.cpp" REMOVE
 	dfe->Set(CustomKeyModeCenter);
 	wp->RefreshDisplay();
   }
@@ -100,7 +97,6 @@ static void setVariables(void) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
 	AddConfList(dfe);
-	//#include "LKinclude_confcuskey.cpp" REMOVE
 	dfe->Set(CustomKeyModeLeft);
 	wp->RefreshDisplay();
   }
@@ -109,7 +105,6 @@ static void setVariables(void) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
 	AddConfList(dfe);
-	//#include "LKinclude_confcuskey.cpp" // REMOVE
 	dfe->Set(CustomKeyModeRight);
 	wp->RefreshDisplay();
   }
@@ -117,7 +112,6 @@ static void setVariables(void) {
   if (wp) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
-	//#include "LKinclude_confcuskey.cpp" // REMOVE
 	AddConfList(dfe);
 	dfe->addEnumText(TEXT("Toggle IBOX"));
 	dfe->Set(CustomKeyModeAircraftIcon);
@@ -273,6 +267,8 @@ void AddConfList( DataFieldEnum* dfe) {
 	// LKTOKEN  _@M130_ = "Basic Setup menu" 
     dfe->addEnumText(gettext(TEXT("_@M130_")));
     dfe->addEnumText(TEXT("SIMulation menu"));
+    dfe->addEnumText(gettext(TEXT("_@M1652_"))); // Airspace Analysis
+    dfe->addEnumText(gettext(TEXT("_@M1653_"))); // toggle map Airspace 
 
 }
 
