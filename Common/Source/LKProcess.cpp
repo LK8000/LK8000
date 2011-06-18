@@ -2707,6 +2707,7 @@ void MapWindow::LKFormatDist(const int wpindex, const bool wpvirtual, TCHAR *Buf
   return;
 }
 
+// DO NOT use this for AAT values! 
 void MapWindow::LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit) {
 
   static int	index;
@@ -2723,28 +2724,29 @@ void MapWindow::LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *
   _tcscpy(BufferUnit,_T(""));
   if (index>=0) {
 	if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+		// Warning, for AAT this should be WaypointBearing, so do not use it!
 		value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
 		if (value < -180.0)
 			value += 360.0;
 		else
 			if (value > 180.0)
 				value -= 360.0;
-#ifndef __MINGW32__
-		if (value > 1)
-			_stprintf(BufferValue, TEXT("%2.0f\xB0\xBB"), value);
-		else if (value < -1)
-			_stprintf(BufferValue, TEXT("\xAB%2.0f\xB0"), -value);
-		else
-			_tcscpy(BufferValue, TEXT("\xAB\xBB"));
-#else
 		if (value > 1)
 			_stprintf(BufferValue, TEXT("%2.0f°»"), value);
 		else if (value < -1)
 			_stprintf(BufferValue, TEXT("«%2.0f°"), -value);
 		else
 			_tcscpy(BufferValue, TEXT("«»"));
+	} else {
+		// while circling, print simple bearing
+		value = WayPointCalc[index].Bearing;
+		if (value > 1)
+			_stprintf(BufferValue, TEXT("%2.0f°"), value);
+		else if (value < -1)
+				_stprintf(BufferValue, TEXT("%2.0f°"), -value);
+			else
+				_tcscpy(BufferValue, TEXT("0°"));
 	}
-#endif
   }
 }
 

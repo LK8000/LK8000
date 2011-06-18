@@ -467,9 +467,10 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		}
 
 		// DIFF Bearing value displayed only when not circling
-	  	if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+	  	// if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
 			switch (OvertargetMode) {
 				case OVT_TASK:
+					// Do not use FormatBrgDiff for TASK, could be AAT!
 		 			LKFormatValue(LK_BRGDIFF, false, BufferValue, BufferUnit, BufferTitle);
 					break;
 				case OVT_ALT1:
@@ -507,7 +508,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 					LKWriteText(hdc, BufferValue, ((rc.right+rc.left)/3)*2, rc.top+ NIBLSCALE(15), 0, 
 						WTMODE_OUTLINED, WTALIGN_CENTER, overcolor, true);
 			}
-		}
+		// } // only when circling
 
 		// Draw efficiency required and altitude arrival for destination waypoint
 		// For paragliders, average efficiency and arrival destination
