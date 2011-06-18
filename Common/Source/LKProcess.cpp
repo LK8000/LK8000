@@ -121,8 +121,13 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
-					// This value in AAT is not the waypoint bearing!
-					value = WayPointCalc[index].Bearing;
+goto_bearing:
+					// we could use only waypointbearing, but lets keep them separated anyway
+					if (AATEnabled)
+						value=DerivedDrawInfo.WaypointBearing;
+					else
+						value = WayPointCalc[index].Bearing;
+
 					valid=true;
 #ifndef __MINGW32__
 					if (value > 1)
@@ -189,7 +194,10 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 				if (index>=0) {
 					if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
 					{
-						value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
+						if (AATEnabled)
+							value=DerivedDrawInfo.WaypointBearing -  DrawInfo.TrackBearing;
+						else
+							value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
 						valid=true;
 						if (value < -180.0)
 							value += 360.0;
@@ -211,6 +219,7 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 						else
 							_tcscpy(BufferValue, TEXT("«»"));
 					}
+					else goto goto_bearing;
 #endif
 				}
 			}
