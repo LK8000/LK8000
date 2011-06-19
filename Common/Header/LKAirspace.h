@@ -24,6 +24,14 @@
 #define AIRSPACE_SCANSIZE_X 16
 #define AIRSPACE_SCANSIZE_H 16
 
+// Define this, if airspace nearest distance infoboxes will use selected airpsace only
+// In this case infoboxes show distance to selected airspace only.
+// I use this define, because lot of variables and calculations not needed, if we use
+// selected airspace for infoboxes. - Kalman
+// Will be permanent in the future.
+#define LKAIRSP_INFOBOX_USE_SELECTED 
+
+
 typedef enum {abUndef=0, abMSL, abAGL, abFL} AirspaceAltBase_t;
 
 typedef struct _AIRSPACE_ALT
@@ -91,7 +99,8 @@ public:
             _labelpriority(0),
             _vwarninglabel_hide(false),
             _hwarninglabel_hide(false),
-            _enabled(true)
+            _enabled(true),
+            _selected(false)
             {}
   virtual ~CAirspace() {}
 
@@ -156,6 +165,9 @@ public:
   int Enabled() const { return _enabled; }
   void Enabled(bool enabled) { _enabled = enabled; } 
 
+  int Selected() const { return _selected; }
+  void Selected(bool selected) { _selected = selected; } 
+
   int LastCalculatedHDistance() const { return _hdistance; }            // Get last calculated horizontal distance (LKCalculations.cpp / DoAirspaces())
   int LastCalculatedVDistance() const { return _vdistance; }            // Get last calculated vertical distance (LKCalculations.cpp / DoAirspaces())
   int LastCalculatedBearing() const { return _bearing; }                // Get last calculated bearing (LKCalculations.cpp / DoAirspaces())
@@ -168,12 +180,13 @@ public:
   
   AirspaceWarningEvent WarningEvent() const { return _warnevent; }
 
+#ifndef LKAIRSP_INFOBOX_USE_SELECTED 
   // Get class attributes for infobox values
   static TCHAR* GetNearestHName() { return _nearesthname; }
   static TCHAR* GetNearestVName() { return _nearestvname; }
   static int GetNearestHDistance() { return _nearesthdistance; }
   static int GetNearestVDistance() { return _nearestvdistance; }
-
+#endif
 
 protected:
   TCHAR _name[NAME_SIZE + 1];                    // Name
@@ -203,15 +216,18 @@ protected:
   bool _vwarninglabel_hide;     // Hide vertical warning label
   bool _hwarninglabel_hide;     // Hide horizontal warning label
   bool _enabled;                // Airspace enabled for operations
+  bool _selected;               // Airspace selected (for distance calc infoboxes)
   
   // Private functions
   void AirspaceAGLLookup(double av_lat, double av_lon);
 
   // Class attributes
+#ifndef LKAIRSP_INFOBOX_USE_SELECTED 
   static int _nearesthdistance;                // collecting horizontal distance to infobox
   static int _nearestvdistance;                // collecting vertical distance to infobox
   static TCHAR *_nearesthname;                // collecting nearest horizontal name to infobox
   static TCHAR *_nearestvname;                // collecting nearest vertical name to infobox
+#endif
   static bool _pos_in_flyzone;                // for flyzone warning refining
   static bool _pred_in_flyzone;                // for flyzone warning refining
   static bool _pos_in_acked_nonfly_zone;    // for flyzone warning refining
@@ -327,7 +343,7 @@ public:
              double *nearestdistance, double *nearestbearing, double *height = NULL) const;
   void SortAirspaces(void);
   bool ValidAirspaces(void) const;
-
+  
   //Warning system
   void AirspaceWarning (NMEA_INFO *Basic, DERIVED_INFO *Calculated);
   bool AirspaceWarningIsGoodPosition(float longitude, float latitude, int alt, int agl) const;
@@ -342,13 +358,14 @@ public:
   bool PopWarningMessage(AirspaceWarningMessage *msg);
   void AirspaceWarningLabelPrinted(CAirspace &airspace, bool success);
   
-  //Get airspace details (dlgAirspaceDetails)
+  //Get/Set airspace details (dlgAirspaceDetails)
   CAirspaceList GetVisibleAirspacesAtPoint(const double &lon, const double &lat) const;
   const CAirspaceList GetAllAirspaces() const;
   const CAirspaceList GetAirspacesForWarningLabels();
   CAirspaceList GetAirspacesInWarning() const;
   CAirspace GetAirspaceCopy(const CAirspace* airspace) const;
   bool AirspaceCalculateDistance(CAirspace *airspace, int *hDistance, int *Bearing, int *vDistance);
+  void AirspaceSetSelect(CAirspace &airspace);
   
   //Mapwindow drawing
   void SetFarVisible(const rectObj &bounds_active);
@@ -368,7 +385,7 @@ public:
 
 private:
   static CAirspaceManager _instance;
-  CAirspaceManager(const CAirspaceManager&) {}
+  CAirspaceManager(const CAirspaceManager&) { _selected_airspace = NULL; }
   CAirspaceManager& operator=(const CAirspaceManager&);
   ~CAirspaceManager() { CloseAirspaces(); }
   
@@ -377,6 +394,7 @@ private:
   CAirspaceList _airspaces;             // ALL
   CAirspaceList _airspaces_near;        // Near, in reachable range for warnings
   CAirspaceList _airspaces_page24;      // Airspaces for nearest 2.4 page
+  CAirspace *_selected_airspace;         // Selected airspace
   
   // Warning system data
   // User warning message queue
@@ -408,13 +426,18 @@ void ScreenClosestPoint(const POINT &p1, const POINT &p2,
 
 //Data struct for nearest airspace pages
 typedef struct {
-  bool Valid;                           // Struct item is valid
-  TCHAR Name[NAME_SIZE+1];              // 1) Name of airspace . We shall use only 15 to 25 characters max in any case
-  TCHAR Type[5];                        // 2) Type of airspace    like CTR   A B C etc.    we use 3-4 chars
-  double Distance;                      // 3) Distance
-  double Bearing;                       // 4) Bearing (so we can sort by airspaces we have in front of us, for example)
-  bool Enabled;                         // 5) Active - not active
-  CAirspace *Pointer;                   // 6) Pointer to CAirspace class for further operations (don't forget CAirspacemanager mutex!)
+  bool Valid;                               // Struct item is valid
+  TCHAR Name[NAME_SIZE+1];                  // 1)  Name of airspace . We shall use only 15 to 25 characters max in any case
+  TCHAR Type[5];                            // 2)  Type of airspace    like CTR   A B C etc.    we use 3-4 chars
+  double Distance;                          // 3)  Distance
+  double Bearing;                           // 4)  Bearing (so we can sort by airspaces we have in front of us, for example)
+  bool Enabled;                             // 5)  Active - not active
+  bool Selected;                            // 6)  Selected / Not selected (infobox calc)
+  bool Flyzone;                             // 7)  True if this is a flyzone (normally fly-in zone)
+  AirspaceWarningLevel_t WarningLevel;      // 8)  Actual warning level fro this airspace
+  AirspaceWarningLevel_t WarningAckLevel;   // 9)  Actual ack level fro this airspace
+  
+  CAirspace *Pointer;                       // 10) Pointer to CAirspace class for further operations (don't forget CAirspacemanager mutex!)
 } LKAirspace_Nearest_Item;
 
 

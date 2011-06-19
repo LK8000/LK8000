@@ -63,10 +63,12 @@ extern void ClipPolygon(HDC hdc, POINT *ptin, unsigned int n,
 CAirspaceManager CAirspaceManager::_instance = CAirspaceManager(CAirspaceManager::_instance);
 
 // CAirspace class attributes
+#ifndef LKAIRSP_INFOBOX_USE_SELECTED 
 int CAirspace::_nearesthdistance = 0;            // for infobox
 int CAirspace::_nearestvdistance = 0;            // for infobox
 TCHAR* CAirspace::_nearesthname = NULL;            // for infobox
 TCHAR* CAirspace::_nearestvname = NULL;            // for infobox
+#endif
 bool CAirspace::_pos_in_flyzone = false;        // for refine warnings in flyzones
 bool CAirspace::_pred_in_flyzone = false;        // for refine warnings in flyzones
 bool CAirspace::_pos_in_acked_nonfly_zone = false;        // for refine warnings in flyzones
@@ -172,14 +174,17 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
   _pos_in_acked_nonfly_zone = false;
   _pred_in_acked_nonfly_zone = false;
   
+#ifndef LKAIRSP_INFOBOX_USE_SELECTED 
   _nearesthname = NULL; 
   _nearestvname = NULL; 
   _nearesthdistance=100000; 
   _nearestvdistance=100000;
-
+#endif
+  
   // 110518 PENDING_QUESTION
   // From Paolo to Kalman: casting a double to a signed int won't create problems 
   // if for any reason it overflows the positive sign, going negative?
+  // Kalman: overflow occurs after 24855days (68years) runtime, i think it will not cause problems.
   _now = (int)Basic->Time;
   
   //Save position for further calculations made by gui threads
@@ -226,6 +231,7 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   bool pos_altitude = IsAltitudeInside(alt, agl);
   if (!pos_altitude) _pos_inside_now = false;
 
+#ifndef LKAIRSP_INFOBOX_USE_SELECTED   
   if (_flyzone && _pos_inside_now) {
     // If in flyzone, nearest warning point given (nearest distance to leaving the fly zone)
     if ( abs(_hdistance) < abs(_nearesthdistance) ) {
@@ -258,7 +264,8 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       }
     }
   }
-  
+#endif
+
   // We have to calculate with the predicted position
   bool pred_inside_now = false;
   alt = (int)Calculated->NextAltitude;
@@ -1661,7 +1668,7 @@ void CAirspaceManager::CloseAirspaces()
   
   CCriticalSection::CGuard guard(_csairspaces);
   if (_airspaces.size()==0) return;
-
+  _selected_airspace = NULL;
   _user_warning_queue.clear();
   _airspaces_near.clear();
   _airspaces_of_interest.clear();
@@ -1978,6 +1985,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
         Calculated->IsInAirspace = false;
 
         // Fill infoboxes - Nearest horizontal
+#ifndef LKAIRSP_INFOBOX_USE_SELECTED 
         if (CAirspace::GetNearestHName() != NULL) {
           _tcsncpy(NearestAirspaceName, CAirspace::GetNearestHName(), NAME_SIZE);
           NearestAirspaceName[NAME_SIZE]=0;
@@ -1995,6 +2003,25 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
           NearestAirspaceVName[0]=0;
           NearestAirspaceVDist=0;
         }
+#endif
+
+#ifdef LKAIRSP_INFOBOX_USE_SELECTED 
+        if (_selected_airspace != NULL) {
+          _selected_airspace->CalculateDistance(NULL,NULL,NULL);
+          _tcsncpy(NearestAirspaceName, _selected_airspace->Name(), NAME_SIZE);
+          NearestAirspaceName[NAME_SIZE]=0;
+          NearestAirspaceHDist = _selected_airspace->LastCalculatedHDistance();
+          
+          _tcsncpy(NearestAirspaceVName, _selected_airspace->Name(), NAME_SIZE);
+          NearestAirspaceVName[NAME_SIZE]=0;
+          NearestAirspaceVDist = _selected_airspace->LastCalculatedVDistance();
+        } else {
+          NearestAirspaceName[0]=0;
+          NearestAirspaceHDist=0;
+          NearestAirspaceVName[0]=0;
+          NearestAirspaceVDist=0;
+        }
+#endif
         step = 0;
         break;
         
@@ -2409,6 +2436,15 @@ CAirspaceList CAirspaceManager::GetAirspacesForPage24()
 {
   CCriticalSection::CGuard guard(_csairspaces);
   return _airspaces_page24;
+}
+
+// Set or change selected airspace
+void CAirspaceManager::AirspaceSetSelect(CAirspace &airspace)
+{
+  CCriticalSection::CGuard guard(_csairspaces);
+  if (_selected_airspace != NULL) _selected_airspace->Selected(false);
+  _selected_airspace = &airspace;
+  if (_selected_airspace != NULL) _selected_airspace->Selected(true);
 }
 
 #endif /* LKAIRSPACE */
