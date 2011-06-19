@@ -254,6 +254,8 @@ static void SetValues(void) {
     if (inside) {
 	  // LKTOKEN  _@M359_ = "Inside" 
       wp->SetCaption(gettext(TEXT("_@M359_")));
+    }
+    if (hdist < 0) {
 	  // LKTOKEN _@M1257_ "to leave"
 	  wsprintf(buffer2, TEXT("%s %d")TEXT(DEG)TEXT(" %s"), buffer, iround(bearing), gettext(TEXT("_@M1257_")));
     } else {
