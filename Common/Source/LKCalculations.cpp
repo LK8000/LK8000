@@ -2103,6 +2103,15 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
               LKAirspaces[i].Bearing = (*it)->LastCalculatedBearing();
               // copy Enabled()
               LKAirspaces[i].Enabled = (*it)->Enabled();
+              // copy Selected()
+              LKAirspaces[i].Selected = (*it)->Selected();
+              // copy Flyzone()
+              LKAirspaces[i].Flyzone = (*it)->Flyzone();
+              // copy WarningLevel()
+              LKAirspaces[i].WarningLevel = (*it)->WarningLevel();
+              // copy WarningAckLevel()
+              LKAirspaces[i].WarningAckLevel = (*it)->WarningAckLevel();
+              
               // copy pointer
               LKAirspaces[i].Pointer = (*it);
               

@@ -67,12 +67,7 @@ static void OnSelectClicked(WindowControl * Sender){
 
   if (airspace == NULL) return;
 
-  // Kalman, set the flag here for selected airspace. It will be used for Hdist and Vdist infoboxes.
-  // We might also in the near future add more functions for the selected airspace, which is the one
-  // that the pilot cares most. An airspace cannot be deselected, only changed to another airspace.
-  // (We need also a query for this flag, in LKDrawAspNearest, and also in this .cpp)
-
-  // CAirspaceManager::Instance().AirspaceSetSelect(*airspace);
+  CAirspaceManager::Instance().AirspaceSetSelect(*airspace);
   SetValues();
   if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 
@@ -344,8 +339,7 @@ static void SetValues(void) {
 
   wb = (WndButton*)wf->FindByName(TEXT("cmdSelect"));
   if (wb) {
-	// if (airspace_copy.Selected()) {   // For Kalman
-	if (airspace_copy.Flyzone()) { // only for demo, until Selected() works!
+	if (airspace_copy.Selected()) {
 	  wb->SetCaption(gettext(TEXT("_@M1656_"))); // SELECTED!
 	} else {
 	  wb->SetCaption(gettext(TEXT("_@M1654_"))); // SELECT

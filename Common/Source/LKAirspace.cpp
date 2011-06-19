@@ -1661,7 +1661,7 @@ void CAirspaceManager::CloseAirspaces()
   
   CCriticalSection::CGuard guard(_csairspaces);
   if (_airspaces.size()==0) return;
-
+  _selected_airspace = NULL;
   _user_warning_queue.clear();
   _airspaces_near.clear();
   _airspaces_of_interest.clear();
@@ -2409,6 +2409,15 @@ CAirspaceList CAirspaceManager::GetAirspacesForPage24()
 {
   CCriticalSection::CGuard guard(_csairspaces);
   return _airspaces_page24;
+}
+
+// Set or change selected airspace
+void CAirspaceManager::AirspaceSetSelect(CAirspace &airspace)
+{
+  CCriticalSection::CGuard guard(_csairspaces);
+  if (_selected_airspace != NULL) _selected_airspace->Selected(false);
+  _selected_airspace = &airspace;
+  if (_selected_airspace != NULL) _selected_airspace->Selected(true);
 }
 
 #endif /* LKAIRSPACE */
