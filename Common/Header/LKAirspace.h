@@ -24,6 +24,14 @@
 #define AIRSPACE_SCANSIZE_X 16
 #define AIRSPACE_SCANSIZE_H 16
 
+// Define this, if airspace nearest distance infoboxes will use selected airpsace only
+// In this case infoboxes show distance to selected airspace only.
+// I use this define, because lot of variables and calculations not needed, if we use
+// selected airspace for infoboxes. - Kalman
+// Will be permanent in the future.
+#define LKAIRSP_INFOBOX_USE_SELECTED 
+
+
 typedef enum {abUndef=0, abMSL, abAGL, abFL} AirspaceAltBase_t;
 
 typedef struct _AIRSPACE_ALT
@@ -172,12 +180,13 @@ public:
   
   AirspaceWarningEvent WarningEvent() const { return _warnevent; }
 
+#ifndef LKAIRSP_INFOBOX_USE_SELECTED 
   // Get class attributes for infobox values
   static TCHAR* GetNearestHName() { return _nearesthname; }
   static TCHAR* GetNearestVName() { return _nearestvname; }
   static int GetNearestHDistance() { return _nearesthdistance; }
   static int GetNearestVDistance() { return _nearestvdistance; }
-
+#endif
 
 protected:
   TCHAR _name[NAME_SIZE + 1];                    // Name
@@ -213,10 +222,12 @@ protected:
   void AirspaceAGLLookup(double av_lat, double av_lon);
 
   // Class attributes
+#ifndef LKAIRSP_INFOBOX_USE_SELECTED 
   static int _nearesthdistance;                // collecting horizontal distance to infobox
   static int _nearestvdistance;                // collecting vertical distance to infobox
   static TCHAR *_nearesthname;                // collecting nearest horizontal name to infobox
   static TCHAR *_nearestvname;                // collecting nearest vertical name to infobox
+#endif
   static bool _pos_in_flyzone;                // for flyzone warning refining
   static bool _pred_in_flyzone;                // for flyzone warning refining
   static bool _pos_in_acked_nonfly_zone;    // for flyzone warning refining
