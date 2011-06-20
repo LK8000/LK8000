@@ -2207,8 +2207,11 @@ static void OnCalcClicked(WindowControl * Sender,
 #endif /* NEW_OLC */
   }
   if (page==ANALYSIS_PAGE_AIRSPACE) {
-    //dlgAirspaceWarningParamsShowModal(); // in case we want only setup warnings display!
+#ifdef LKAIRSPACE
+    dlgAirspaceWarningParamsShowModal();
+#else
     dlgAirspaceWarningShowDlg(true);
+#endif
   }
   Update();
 }

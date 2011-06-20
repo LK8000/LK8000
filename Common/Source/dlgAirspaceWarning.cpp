@@ -5,7 +5,6 @@
 
    $Id$
 */
-
 #include "StdAfx.h"
 #include <aygshell.h>
 
@@ -855,6 +854,11 @@ bool dlgAirspaceWarningVisible(void) {
   return fDialogOpen;
 }
 
+#if LKAIRSPACE
+// LKairspace will trigger only one event at a time, each one overriding previous.
+// This ShowDlg was already disabled in lk8000.cpp and was still here only from manual button inside statistics.
+// There we call airspace warning configuration, now. So no need to keep this.
+#else
 bool dlgAirspaceWarningShowDlg(bool Force){
 
   if (fDialogOpen)
@@ -918,6 +922,7 @@ bool dlgAirspaceWarningShowDlg(bool Force){
 
   return(true);
 }
+#endif
 
 
 int dlgAirspaceWarningInit(void){
@@ -992,4 +997,3 @@ int dlgAirspaceWarningDeInit(void){
   return(0);
   
 }
-
