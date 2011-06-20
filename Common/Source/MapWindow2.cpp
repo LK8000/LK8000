@@ -99,62 +99,6 @@ double MapWindow::findMapScaleBarSize(const RECT rc) {
   return 0.1/pixelsize;
 }
 
-#ifndef LK8000_OPTIMIZE
-void MapWindow::DrawMapScale2(HDC hDC, const RECT rc, 
-			      const POINT Orig_Aircraft)
-{
-  if (Appearance.MapScale2 == apMs2None) return;
-
-  HPEN hpOld   = (HPEN)SelectObject(hDC, hpMapScale);
-  HPEN hpWhite = (HPEN)GetStockObject(WHITE_PEN);
-  HPEN hpBlack = (HPEN)GetStockObject(BLACK_PEN);
-
-  bool color = false;
-  POINT Start, End={0,0};
-  bool first=true;
-
-  int barsize = iround(findMapScaleBarSize(rc));
-
-  Start.x = rc.right-1;
-  for (Start.y=Orig_Aircraft.y; Start.y<rc.bottom+barsize; Start.y+= barsize) {
-    if (color) {
-      SelectObject(hDC, hpWhite);
-    } else {
-      SelectObject(hDC, hpBlack);
-    }
-    if (!first) {
-      DrawSolidLine(hDC,Start,End, rc);
-    } else {
-      first=false;
-    }
-    End = Start;
-    color = !color;
-  }
-
-  color = true;
-  first = true;
-  for (Start.y=Orig_Aircraft.y; Start.y>rc.top-barsize; Start.y-= barsize) {
-    if (color) {
-      SelectObject(hDC, hpWhite);
-    } else {
-      SelectObject(hDC, hpBlack);
-    }
-    if (!first) {
-      DrawSolidLine(hDC,Start,End, rc);
-    } else {
-      first=false;
-    }
-    End = Start;
-    color = !color;
-  }
-
-  // draw text as before
-  
-  SelectObject(hDC, hpOld);
-
-}
-#endif
-
 
 #if 0
 // new version, using estimated IAS

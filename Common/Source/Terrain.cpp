@@ -1584,52 +1584,6 @@ void DrawTerrain( const HDC hdc, const RECT rc,
   misc_tick_count = GetTickCount()-misc_tick_count;
 }
 
-#ifndef LK8000_OPTIMIZE
-static void DrawSpotHeight_Internal(const HDC hdc, TCHAR *Buffer, POINT pt) {
-  int size = _tcslen(Buffer);
-  if (size==0) {
-    return;
-  }
-  POINT orig = MapWindow::GetOrigScreen();
-  SIZE tsize;
-  RECT brect;
-  GetTextExtentPoint(hdc, Buffer, size, &tsize);
-  
-  pt.x+= 2+orig.x;
-  pt.y+= 2+orig.y;
-  brect.left = pt.x;
-  brect.right = brect.left+tsize.cx;
-  brect.top = pt.y;
-  brect.bottom = brect.top+tsize.cy;
-
-  if (!MapWindow::checkLabelBlock(brect))
-    return;
-  
-  ExtTextOut(hdc, pt.x, pt.y, 0, NULL,
-             Buffer, size, NULL);
-}
-
-void DrawSpotHeights(const HDC hdc) {
-  // JMW testing, display of spot max/min
-  if (!RasterTerrain::render_weather) 
-    return;
-  if (!trenderer) 
-    return;
-
-  extern HFONT  TitleWindowFont;
-  HFONT old_font = (HFONT)SelectObject(hdc, TitleWindowFont);
-
-  TCHAR Buffer[20];
-
-  RASP.ValueToText(Buffer, trenderer->spot_max_val);
-  DrawSpotHeight_Internal(hdc, Buffer, trenderer->spot_max_pt);
-
-  RASP.ValueToText(Buffer, trenderer->spot_min_val);
-  DrawSpotHeight_Internal(hdc, Buffer, trenderer->spot_min_pt);
-
-  SelectObject(hdc, old_font);
-}
-#endif
 
 #include "wcecompat/ts_string.h"
 // TODO code: check ts_string does the right thing

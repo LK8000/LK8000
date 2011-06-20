@@ -694,20 +694,6 @@ bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
 
 	SetBkMode(hDC,TRANSPARENT);
 
-	#ifndef LK8000_OPTIMIZE
-	if (ispunct(Temp[0])) {
-		double dTemp;
-      
-		Temp[0]='0';
-		dTemp = StrToDouble(Temp,NULL);
-		dTemp = ALTITUDEMODIFY*dTemp;
-		if (dTemp > 999)
-			wsprintf(Temp,TEXT("%.1f"),(dTemp/1000));
-		else
-			wsprintf(Temp,TEXT("%d"),int(dTemp));
-	}
-	#endif
-
 	SIZE tsize;
 	RECT brect;
 	GetTextExtentPoint(hDC, Temp, size, &tsize);

@@ -3222,10 +3222,6 @@ void Shutdown(void) {
 
   // Kill windows
 
-  #ifndef LK8000_OPTIMIZE
-  StartupStore(TEXT(". Close Gauges%s"),NEWLINE);
-  #endif
-  
   StartupStore(TEXT(". Close Messages%s"),NEWLINE);
   Message::Destroy();
   

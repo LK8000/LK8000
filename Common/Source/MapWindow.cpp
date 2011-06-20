@@ -2640,13 +2640,7 @@ QuickRedraw: // 100318 speedup redraw
 	}
   }
 #endif
-  #ifdef LK8000_OPTIMIZE
   DrawWaypointsNew(hdc,rc);
-  #else
-  if (NewMap) DrawWaypointsNew(hdc,rc);
-  else DrawWaypoints(hdc,rc);
-  #endif
-
  	if (DONTDRAWTHEMAP) { // 100319
 		SelectObject(hdcDrawWindow, hfOld);
 		goto QuickRedraw;
@@ -2666,9 +2660,7 @@ QuickRedraw: // 100318 speedup redraw
   if (extGPSCONNECT) {
     // TODO enhancement: don't draw offtrack indicator if showing spot heights
     DrawProjectedTrack(hdc, rc, Orig_Aircraft);
-    #ifndef LK8000_OPTIMIZE
-    DrawOffTrackIndicator(hdc, rc);
-    #endif
+    // DrawOffTrackIndicator(hdc, rc); 
     DrawBestCruiseTrack(hdc, Orig_Aircraft);
     DrawBearing(hdc, rc);
   }
@@ -2696,13 +2688,7 @@ QuickRedraw: // 100318 speedup redraw
 	if ( !mode.AnyPan()) DrawLook8000(hdc,rc); 
 	if (LKVarioBar && IsMapFullScreen() && !mode.AnyPan()) // 091214 do not draw Vario when in Pan mode
 		LKDrawVario(hdc,rc); // 091111
-  #ifdef LK8000_OPTIMIZE
   }
-  #else
-  } else {
-	DrawFLARMTraffic(hdc, rc, Orig_Aircraft);
-  }
-  #endif
   
   // finally, draw you!
   // Draw cross air for panmode, instead of aircraft icon
@@ -2864,24 +2850,12 @@ void MapWindow::UpdateCaches(bool force) {
   fpsTimeThis = ::GetTickCount();
   static DWORD fpsTimeLast_terrain=0;
 
-
-#ifdef LK8000_OPTIMIZE  	// 100115
   if (EnableTerrain) {
 	if (RenderTimeAvailable() || ((fpsTimeThis-fpsTimeLast_terrain)>5000) || force) {
 		fpsTimeLast_terrain = fpsTimeThis;
 		RasterTerrain::ServiceCache();
 	}
   }
-#else
-  if (RenderTimeAvailable() ||
-      (fpsTimeThis-fpsTimeLast_terrain>5000) || force) {
-    // have some time, do graphics terrain cache update if necessary
-    if (EnableTerrain) {
-      fpsTimeLast_terrain = fpsTimeThis;
-      RasterTerrain::ServiceCache();
-    }
-  }
-#endif
 }
 
 
@@ -2966,14 +2940,6 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
       } else {
 	MapDirty = false;
       }
-
-#ifndef LK8000_OPTIMIZE
-      if (zoom.BigZoom() && !NewMap) {
-	// quickly draw zoom level on top
-	// Messy behaviour with NewMap
-	DrawMapScale(hdcScreen, MapRect, true); 
-      }
-#endif
 
       MapWindow::UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
 
@@ -3495,236 +3461,6 @@ bool MapWindow::WaypointInRange(int i) {
           || (WayPointList[i].Zoom == 0)) 
     && (zoom.Scale() <= 10);
 }
-
-#ifndef LK8000_OPTIMIZE
-void MapWindow::DrawWaypoints(HDC hdc, const RECT rc)
-{
-  unsigned int i;
-  TCHAR Buffer[32];
-  TCHAR Buffer2[32];
-  TCHAR sAltUnit[4];
-  TextInBoxMode_t TextDisplayMode;
-
-  // if pan mode, show full names
-  int pDisplayTextType = DisplayTextType;
-  if (EnablePan) {
-    pDisplayTextType = DISPLAYNAME;
-  }
-
-  if (!WayPointList) return;
-
-  _tcscpy(sAltUnit, Units::GetAltitudeName());
-
-  MapWaypointLabelListCount = 0;
-
-  for(i=0;i<NumberOfWayPoints;i++)
-    {
-      if(WayPointList[i].Visible )
-	{
-
-#ifdef HAVEEXCEPTIONS
-	  __try{
-#endif
-
-	    bool irange = false;
-	    bool intask = false;
-	    bool islandable = false;
-	    bool dowrite;
-
-	    intask = WaypointInTask(i);
-	    dowrite = intask;
-
-	    TextDisplayMode.AsInt = 0;
-
-	    irange = WaypointInRange(i);
-
-	    if(MapScale > 20) {
-	      SelectObject(hDCTemp,hSmall);
-	    } else if( WayPointCalc[i].IsLandable ) {
-	      islandable = true; // so we can always draw them
-	      if(WayPointList[i].Reachable){
-
-		TextDisplayMode.AsFlag.Reachable = 1;
-
-		if ((DeclutterLabels<MAPLABELS_ALLOFF)||intask) {
-
-		  if (intask || (DeclutterLabels<MAPLABELS_ONLYTOPO)) {
-		    TextDisplayMode.AsFlag.Border = 1;
-		  }
-		  // show all reachable landing fields unless we want a decluttered
-		  // screen.
-		  dowrite = true;
-		}
-
-		if (WayPointCalc[i].IsAirport)
-		  SelectObject(hDCTemp,hBmpAirportReachable);
-		else
-		  SelectObject(hDCTemp,hBmpFieldReachable);
-	      } else {
-		if (WayPointCalc[i].IsAirport)
-		  SelectObject(hDCTemp,hBmpAirportUnReachable);
-		else
-		  SelectObject(hDCTemp,hBmpFieldUnReachable);
-	      }
-	    } else {
-	      if(MapScale > 4) {
-		SelectObject(hDCTemp,hSmall);
-	      } else {
-		SelectObject(hDCTemp,hTurnPoint);
-	      }
-	    }
-
-	    if (intask) { // VNT 
-	      TextDisplayMode.AsFlag.WhiteBold = 1;
-	    }
-
-	    if(irange || intask || islandable || dowrite) {
-        
-	      DrawBitmapX(hdc,
-			  WayPointList[i].Screen.x-NIBLSCALE(10), 
-			  WayPointList[i].Screen.y-NIBLSCALE(10),
-			  20,20,
-			  hDCTemp,0,0,SRCPAINT);
-        
-	      DrawBitmapX(hdc,
-			  WayPointList[i].Screen.x-NIBLSCALE(10), 
-			  WayPointList[i].Screen.y-NIBLSCALE(10),
-			  20,20,
-			  hDCTemp,20,0,SRCAND);
-	    }
-
-	    if(intask || irange || dowrite) {
-	      bool draw_alt = TextDisplayMode.AsFlag.Reachable 
-		&& ((DeclutterLabels<MAPLABELS_ONLYTOPO) || intask);
-
-	      switch(pDisplayTextType) {
-	      case DISPLAYNAMEIFINTASK:
-		dowrite = intask;
-		if (intask) {
-		  if (draw_alt)
-		    wsprintf(Buffer, TEXT("%s:%d%s"),
-			     WayPointList[i].Name, 
-			     (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), 
-			     sAltUnit);
-		  else
-		    wsprintf(Buffer, TEXT("%s"),WayPointList[i].Name);
-		}
-		break;
-	      case DISPLAYNAME:
-		dowrite = (DeclutterLabels<MAPLABELS_ALLOFF) || intask;
-		if (draw_alt)
-		  wsprintf(Buffer, TEXT("%s:%d%s"),
-			   WayPointList[i].Name, 
-			   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), 
-			   sAltUnit);
-		else
-		  wsprintf(Buffer, TEXT("%s"),WayPointList[i].Name);
-          
-		break;
-	      case DISPLAYNUMBER:
-		dowrite = (DeclutterLabels<MAPLABELS_ALLOFF) || intask;
-		if (draw_alt)
-		  wsprintf(Buffer, TEXT("%d:%d%s"),
-			   WayPointList[i].Number, 
-			   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), 
-			   sAltUnit);
-		else
-		  wsprintf(Buffer, TEXT("%d"),WayPointList[i].Number);
-          
-		break;
-	      case DISPLAYFIRSTFIVE:
-		dowrite = (DeclutterLabels<MAPLABELS_ALLOFF) || intask;
-		_tcsncpy(Buffer2, WayPointList[i].Name, 5);
-		Buffer2[5] = '\0';
-		if (draw_alt)
-		  wsprintf(Buffer, TEXT("%s:%d%s"),
-			   Buffer2, 
-			   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), 
-			   sAltUnit);
-		else
-		  wsprintf(Buffer, TEXT("%s"),Buffer2);
-          
-		break;
-	      case DISPLAYFIRSTTHREE:
-		dowrite = (DeclutterLabels<MAPLABELS_ALLOFF) || intask;
-		_tcsncpy(Buffer2, WayPointList[i].Name, 3);
-		Buffer2[3] = '\0';
-		if (draw_alt)
-		  wsprintf(Buffer, TEXT("%s:%d%s"),
-			   Buffer2, 
-			   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), 
-			   sAltUnit);
-		else
-		  wsprintf(Buffer, TEXT("%s"),Buffer2);
-          
-		break;
-	      case DISPLAYNONE:
-		dowrite = (DeclutterLabels<MAPLABELS_ALLOFF) || intask;
-		if (draw_alt)
-		  wsprintf(Buffer, TEXT("%d%s"), 
-			   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), 
-			   sAltUnit);
-		else
-		  Buffer[0]= '\0';
-	      default:
-#if (WINDOWSPC<1)
-		ASSERT(0);
-#endif
-		break;
-	      }
-        
-	      if (dowrite) {
-		MapWaypointLabelAdd(
-				    Buffer,
-				    WayPointList[i].Screen.x+5,
-				    WayPointList[i].Screen.y,
-				    TextDisplayMode,
-				    (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY),
-				    intask,false,false,false,i);
-	      }
-        
-	    }
-      
-#ifdef HAVEEXCEPTIONS
-	  }__finally
-#endif
-	     { ; }
-	}
-    }
-  
-  qsort(&MapWaypointLabelList, 
-        MapWaypointLabelListCount,
-        sizeof(MapWaypointLabel_t), 
-        MapWaypointLabelListCompare);
-
-  int j;
-
-  // now draw task/landable waypoints in order of range (closest last)
-  // writing unconditionally
-  for (j=MapWaypointLabelListCount-1; j>=0; j--){
-    MapWaypointLabel_t *E = &MapWaypointLabelList[j];
-    // draws if they are in task unconditionally,
-    // otherwise, does comparison
-    if (E->inTask) {
-      TextInBox(hdc, E->Name, E->Pos.x,
-                E->Pos.y, 0, E->Mode, 
-                false);
-    }
-  }
-
-  // now draw normal waypoints in order of range (furthest away last)
-  // without writing over each other (or the task ones)
-  for (j=0; j<MapWaypointLabelListCount; j++) {
-    MapWaypointLabel_t *E = &MapWaypointLabelList[j];
-    if (!E->inTask) {
-      TextInBox(hdc, E->Name, E->Pos.x,
-                E->Pos.y, 0, E->Mode, 
-                true);
-    }
-  }
-
-}
-#endif
 
 int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 ){
 
