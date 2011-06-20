@@ -480,9 +480,15 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 
 
 		//
-		// AIRSPACE ACTIVE OR NOT
+		// AIRSPACE FLAGS
 		//
-		_stprintf(Buffer5[i][curpage], TEXT("%s"), LKAirspaces[rli].Enabled ? _T("  ") : _T("X "));
+		TCHAR aspflags[5];
+		wsprintf(aspflags,_T("%s%s%s"),
+			LKAirspaces[rli].Selected ? _T("S") : _T(""),
+			LKAirspaces[rli].Flyzone  ? _T("F") : _T("  "),
+			LKAirspaces[rli].Enabled  ? _T("E ") : _T("D "));
+
+		_stprintf(Buffer5[i][curpage], TEXT("%s"), aspflags);
 
 	} else {
 		if ( ScreenSize < (ScreenSize_t)sslandscape ) 
@@ -502,12 +508,20 @@ KeepOldValues:
 
 		drawn_items_onpage++;
 
-		if (!LKAirspaces[rli].Enabled) {
-			rcolor=RGB_LIGHTRED;
-  			SelectObject(hdc, LK8InfoBigItalicFont); 
-		} else {
-			rcolor=RGB_WHITE;
-  			SelectObject(hdc, LK8InfoBigFont); 
+		switch(LKAirspaces[rli].WarningLevel) {
+			case awYellow:
+				rcolor=RGB_LIGHTYELLOW;
+  				SelectObject(hdc, LK8InfoBigItalicFont); 
+				break;
+			case awRed:
+				rcolor=RGB_LIGHTRED;
+  				SelectObject(hdc, LK8InfoBigItalicFont); 
+				break;
+			case awNone:
+			default:
+				rcolor=RGB_WHITE;
+  				SelectObject(hdc, LK8InfoBigFont); 
+				break;
 		}
 	} else {
 		rcolor=RGB_GREY;
