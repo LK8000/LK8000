@@ -153,15 +153,10 @@ static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 		// else continue entering initqnh until somebody changes qnh in either digifly or lk8000
 	}
   }
-  #if DUALBARO
   if (d == pDevPrimaryBaroSource) {
 	GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(altqne);
 	GPS_INFO->BaroAltitudeAvailable = TRUE;
   }
-  #else
-  GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(altqne);
-  GPS_INFO->BaroAltitudeAvailable = TRUE;
-  #endif
 
 
   NMEAParser::ExtractParameter(String,ctemp,2);
@@ -252,16 +247,10 @@ static BOOL PDGFTTL(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 		// else continue entering initqnh until somebody changes qnh in either digifly or lk8000
 	}
   }
-  #if DUALBARO
   if (d == pDevPrimaryBaroSource) {
 	GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(altqne);
 	GPS_INFO->BaroAltitudeAvailable = TRUE;
   }
-  #else
-  GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(altqne);
-  GPS_INFO->BaroAltitudeAvailable = TRUE;
-  #endif
-
 
   NMEAParser::ExtractParameter(String,ctemp,2);
 #if 1

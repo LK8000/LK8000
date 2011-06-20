@@ -226,15 +226,10 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 
   // HBAR 1013.25
   NMEAParser::ExtractParameter(String,ctemp,11+offset);
-  #if DUALBARO
   if (d == pDevPrimaryBaroSource) {
 	GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(StrToDouble(ctemp,NULL));
 	GPS_INFO->BaroAltitudeAvailable = TRUE;
   }
-  #else
-	GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(StrToDouble(ctemp,NULL));
-	GPS_INFO->BaroAltitudeAvailable = TRUE;
-  #endif
 
   // VARIO
   NMEAParser::ExtractParameter(String,ctemp,12+offset);

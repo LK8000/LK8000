@@ -112,8 +112,6 @@
 #define NEW_OLC                 1     // Applied 110313 - does not expire
 // -----------------------------------------------------------------------------
 
-#define DUALBARO		1	// Handle dual baro feed
-
 #define USEGOINIT		1	// expire 1.7.2011, it is disabled and should be removed
 
 
@@ -121,10 +119,6 @@
 
 /*
  * Incomplete work, or stuff that never got into production versions but still interesting
-
-#define NEWTRIGGERGPS	  // Parser approach for triggering a quantum data completed
-			  // The idea was correct, since I could verify later that also the real
-			  // LX8000 has the same approach, although simplified!!
 
 #define FIXGDI		  // todo, work for further optimization of GDIs. 
 			  // To check GDI memory leaks, use the freeware GDIView.exe 

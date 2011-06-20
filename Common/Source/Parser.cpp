@@ -137,7 +137,6 @@ void NMEAParser::UpdateMonitor(void)
 	}
 	nmeaParser1.gpsValid=false;
 	invalidGps=1;
-	#if DUALBARO
 	// We want to be sure that if this device is silent, and it was providing Baro altitude,
 	// now it is set to off.
 	if (GPS_INFO.BaroAltitudeAvailable==TRUE) {
@@ -146,7 +145,6 @@ void NMEAParser::UpdateMonitor(void)
 			invalidBaro=1;
 		}
 	}
-	#endif
   } else {
 	// We have hearth beats, is baro available?
 	if ( devIsBaroSource(devA()) || nmeaParser1.RMZAvailable || nmeaParser1.RMAAvailable || nmeaParser1.TASAvailable ) // 100411
@@ -162,14 +160,12 @@ void NMEAParser::UpdateMonitor(void)
 	}
 	nmeaParser2.gpsValid=false;
 	invalidGps++;
-	#if DUALBARO
 	if (GPS_INFO.BaroAltitudeAvailable==TRUE) {
 		if ( devB() == pDevPrimaryBaroSource || nmeaParser2.RMZAvailable 
 		  || nmeaParser2.RMAAvailable || nmeaParser2.TASAvailable ) {
 			invalidBaro++;
 		}
 	}
-	#endif
   } else {
 	// We have hearth beats, is baro available?
 	if ( devIsBaroSource(devB()) || nmeaParser2.RMZAvailable || nmeaParser2.RMAAvailable || nmeaParser2.TASAvailable   )  // 100411
@@ -216,7 +212,6 @@ void NMEAParser::UpdateMonitor(void)
 			DoStatusMessage(gettext(TEXT("_@M120_")));
 		lastvalidBaro=true;
 	} 
-	#if DUALBARO
 	else {
 		// last baro was Ok, currently we still have a validbaro, but no HBs...
 		// Probably it is a special case when no gps fix was found on the secondary baro source.
@@ -227,7 +222,6 @@ void NMEAParser::UpdateMonitor(void)
 			#endif
 		}
 	}
-	#endif
   }
 
   // Following diagnostics only
@@ -625,28 +619,8 @@ BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   // use valid time with invalid fix
   double glltime = StrToDouble(params[4],NULL);
   if (glltime>0) {
-	#ifdef NEWTRIGGERGPS
-	double ThisTime = TimeConvert(glltime, GPS_INFO); // 091208
-	#else
 	double ThisTime = TimeModify(glltime, GPS_INFO);
-	#endif
-
-	#ifndef NEWTRIGGERGPS
 	if (!TimeHasAdvanced(ThisTime, GPS_INFO)) return FALSE; // 091208
-	#endif
-
-	#ifdef NEWTRIGGERGPS
-	// is time advanced to a new quantum?
-	if (ThisTime >NmeaTime) {
-		// yes so lets trigger the gps event
-		TriggerGPSUpdate();
-		Sleep(50); // 091208
-		NmeaTime=ThisTime;
-		TimeSet(GPS_INFO); // 091208
-		TimeHasAdvanced(ThisTime,GPS_INFO); // 091208
-		//StartupStore(_T(".............. trigger from GLL\n"));
-	}
-	#endif
   }
   if (!gpsValid) return FALSE;  // 091108 addon BUGFIX GLL time with no valid signal
   
@@ -780,11 +754,9 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   // say we are updated every time we get this,
   // so infoboxes get refreshed if GPS connected
   // the RMC sentence marks the start of a new fix, so we force the old data to be saved for calculations
-#ifndef NEWTRIGGERGPS
   if (!GGAAvailable) { 
 	TriggerGPSUpdate();
   }
-#endif
 
 	// Even with no valid position, we let RMC set the time and date if valid
 	long gy, gm, gd;
@@ -799,29 +771,10 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 		GPS_INFO->Year = gy;
 		GPS_INFO->Month = gm;
 		GPS_INFO->Day = gd;
-#ifdef NEWTRIGGERGPS
-		double ThisTime = TimeConvert(StrToDouble(params[0],NULL), GPS_INFO); // 091208
-#else
 		double ThisTime = TimeModify(StrToDouble(params[0],NULL), GPS_INFO);
-#endif
 
-#ifndef NEWTRIGGERGPS
 		if (!TimeHasAdvanced(ThisTime, GPS_INFO))
 			return FALSE;
-#endif
-#ifdef NEWTRIGGERGPS
-		// is time advanced to a new quantum?
-		if (ThisTime >NmeaTime) {
-			// yes so lets trigger the gps event
-			TriggerGPSUpdate();
-			// and only then advance the time in the GPSINFO
-			Sleep(50); // 091208
-			NmeaTime=ThisTime;
-			TimeSet(GPS_INFO); // 091208
-			TimeHasAdvanced(ThisTime, GPS_INFO); // 091208
-			StartupStore(_T(".............. trigger from RMC\n"));
-		}
-#endif
 			
 	}  else {
 		if (gpsValid && logbaddate) { // 091115
@@ -952,29 +905,11 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   // I assume that 0 is invalid, and I am very sorry for UTC time 00:00 ( missing a second a midnight).
   // is better than risking using 0 as valid, since many gps do not respect any real nmea standard
   if (ggatime>0) { 
-	#ifdef NEWTRIGGERGPS
-	double ThisTime = TimeConvert(ggatime, GPS_INFO);
-	#else
 	double ThisTime = TimeModify(ggatime, GPS_INFO);
-	#endif
 
-	#ifndef NEWTRIGGERGPS
 	if (!TimeHasAdvanced(ThisTime, GPS_INFO))
 		return FALSE;
-	#endif
 
-	#ifdef NEWTRIGGERGPS
-		// is time advanced to a new quantum?
-		if (ThisTime >NmeaTime) {
-			// yes so lets trigger the gps event
-			TriggerGPSUpdate();
-			Sleep(50); // 091208
-			NmeaTime=ThisTime;
-			TimeSet(GPS_INFO); // 091208
-			TimeHasAdvanced(ThisTime, GPS_INFO); // 091208
-			StartupStore(_T(".............. trigger from GGA\n"));
-		}
-	#endif
   }
   if (gpsValid) {
 	double tmplat;
@@ -1010,13 +945,11 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 	GPS_INFO->BaroAltitude = RMAAltitude;
   }
 
-#ifndef NEWTRIGGERGPS
   if (!gpsValid) { // 091108 addon BUGFIX GCA
 	// in old mode, GGA had priority over RMC for triggering, so this was needed in case of no signal 
 	TriggerGPSUpdate(); // 091205 TESTFIX
 	return FALSE; // 091108 addon BUGFIX GCA
   }
-#endif
 
   // "Altitude" should always be GPS Altitude.
   GPS_INFO->Altitude = ParseAltitude(params[8], params[9]);
@@ -1035,11 +968,9 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 	}
   }
 
-#ifndef NEWTRIGGERGPS
   // if RMC would be Triggering update, we loose the relative altitude, which is coming AFTER rmc! 
   // This was causing old altitude recorded in new pos fix.
   TriggerGPSUpdate(); 
-#endif
   return TRUE;
 }
 
