@@ -666,12 +666,6 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   // See also same redundant check inside AirspaceWarning
 #ifdef LKAIRSPACE
   // calculate airspace warnings - multicalc approach embedded in CAirspaceManager
-  // Do not give warnings during takeoff. In the future, also during landing.
-  // More generally, do not give warnings in the first 5 minutes of flight.
-  // If no takeoff, TakeOffTime is 0  and it is ok to give warnings.
-  if ( ((GPS_INFO.Time - Calculated->TakeOffTime) >= 300) ||
-	// consider midnight possible problems
-       (GPS_INFO.Time < Calculated->TakeOffTime) )
     CAirspaceManager::Instance().AirspaceWarning( Basic, Calculated);
 #else
   if (NumberOfAirspaceAreas+NumberOfAirspaceCircles >0) {
