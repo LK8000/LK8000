@@ -4856,6 +4856,7 @@ typedef DWORD (_stdcall *GetIdleTimeProc) (void);
 GetIdleTimeProc GetIdleTime;
 #endif
 
+#if DEBUG_MEM
 int MeasureCPULoad() {
 #if (WINDOWSPC>0) && !defined(__MINGW32__)
   static bool init=false;
@@ -4891,6 +4892,7 @@ int MeasureCPULoad() {
   PercentLoad = 100-PercentIdle;
   return PercentLoad;
 }
+#endif
 
 
 
