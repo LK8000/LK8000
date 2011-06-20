@@ -15,9 +15,6 @@
 #include "Utils2.h"
 #include "externs.h"
 #include "Logger.h"
-#ifndef NOFLARMGAUGE
-#include "GaugeFLARM.h"
-#endif
 #include "Parser.h"
 #include "device.h"
 #include "Geoid.h"
@@ -549,16 +546,6 @@ double NMEAParser::TimeConvert(double FixTime, NMEA_INFO* GPS_INFO)
   }
 
   return FixTime;
-}
-
-// set time to GPS struct
-void NMEAParser::TimeSet(NMEA_INFO* GPS_INFO)
-{
-
-  GPS_INFO->Hour = NmeaHours;
-  GPS_INFO->Minute = NmeaMinutes;
-  GPS_INFO->Second = NmeaSeconds;
-
 }
 
 bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *GPS_INFO) {
@@ -1195,9 +1182,6 @@ void FLARM_RefreshSlots(NMEA_INFO *GPS_INFO) {
 		}
 	}
   }
-  #ifndef NOFLARMGAUGE
-  GaugeFLARM::TrafficPresent(present);
-  #endif
 }
 
 // Reset a flarm slot
@@ -1337,9 +1321,6 @@ int FLARM_FindSlot(NMEA_INFO *GPS_INFO, long Id)
   for (i=0; i<FLARM_MAX_TRAFFIC; i++) {
 	if (GPS_INFO->FLARM_Traffic[i].ID<=0) { // 100327 <= was ==
 		// this is a new target
-		#ifndef NOFLARMGAUGE
-		GaugeFLARM::Suppress = false;
-		#endif
 		#ifdef DEBUG_LKT
 		StartupStore(_T("... FLARM ID=%lx assigned NEW SLOT=%d\n"),Id,i);
 		#endif

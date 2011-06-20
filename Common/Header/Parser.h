@@ -191,7 +191,6 @@ class NMEAParser {
   bool TimeHasAdvanced(double ThisTime, NMEA_INFO *GPS_INFO);
   static double TimeModify(double FixTime, NMEA_INFO* info);
   static double TimeConvert(double FixTime, NMEA_INFO* info);
-  void TimeSet( NMEA_INFO* info);
 
   BOOL GLL(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL GGA(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);

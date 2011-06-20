@@ -1425,12 +1425,6 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryEnableFLARMMap,&Temp);
   EnableFLARMMap = Temp;
 
-  #ifndef NOFLARMGAUGE
-  Temp = EnableFLARMGauge;
-  GetFromRegistry(szRegistryEnableFLARMGauge,&Temp);
-  EnableFLARMGauge = false;
-  #endif
-
   Temp = TerrainContrast;
   GetFromRegistry(szRegistryTerrainContrast,&Temp);
   TerrainContrast = (short)Temp;

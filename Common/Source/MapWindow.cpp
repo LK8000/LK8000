@@ -44,9 +44,6 @@
 #ifndef NOCDIGAUGE
 #include "GaugeCDI.h"
 #endif
-#ifndef NOFLARMGAUGE
-#include "GaugeFLARM.h"
-#endif
 #include "InfoBoxLayout.h"
 #include "RasterTerrain.h"
 #include "Utils2.h"
@@ -2998,9 +2995,6 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 
       //if ( !( IsMapFullScreen() && !EnablePan && Look8000 && NewMap && MapSpaceMode==1) ) { // VENTA TODO QUI FIX CRITIC
 
-	      #ifndef NOFLARMGAUGE
-	      GaugeFLARM::Render(&DrawInfo);
-	      #endif
 	      RenderMapWindow(MapRect);
       //}
     

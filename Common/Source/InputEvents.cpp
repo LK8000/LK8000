@@ -38,9 +38,6 @@ using std::max;
 #include "Units.h"
 #include "MapWindow.h"
 #include "Atmosphere.h"
-#ifndef NOFLARMGAUGE
-#include "GaugeFLARM.h"
-#endif
 #include "Waypointparser.h"
 
 #include "utils/stringext.h"
@@ -1480,15 +1477,6 @@ void InputEvents::eventFLARMRadar(const TCHAR *misc) {
 	(void)misc;
   //  if (_tcscmp(misc, TEXT("on")) == 0) {
 
-#ifndef NOFLARMGAUGE
-  if (_tcscmp(misc, TEXT("ForceToggle")) == 0) {
-    GaugeFLARM::ForceVisible = !GaugeFLARM::ForceVisible;
-    EnableFLARMGauge = GaugeFLARM::ForceVisible;
-  } else
-
-  GaugeFLARM::Suppress = !GaugeFLARM::Suppress;
-  // the result of this will get triggered by refreshslots
-#endif
 }
 
 

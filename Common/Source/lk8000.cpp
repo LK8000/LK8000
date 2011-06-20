@@ -3000,11 +3000,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   InfoBoxLayout::CreateInfoBoxes(rc);
   #endif
 
-  #ifndef NOFLARMGAUGE
-  StartupStore(TEXT(". Create FLARM gauge%s"),NEWLINE);
-  GaugeFLARM::Create();
-  #endif
-
   StartupStore(TEXT(". Create button labels%s"),NEWLINE);
   ButtonLabel::CreateButtonLabels(rc);
   ButtonLabel::SetLabelText(0,TEXT("MODE"));
@@ -3267,9 +3262,6 @@ void Shutdown(void) {
   #endif
   #ifndef NOVARIOGAUGE
   GaugeVario::Destroy();
-  #endif
-  #ifndef NOFLARMGAUGE
-  GaugeFLARM::Destroy();
   #endif
   
   StartupStore(TEXT(". Close Messages%s"),NEWLINE);
@@ -4177,10 +4169,6 @@ void CommonProcessTimer()
       RequestAirspaceWarningForce = false;
     }
 #endif
-    #ifndef NOFLARMGAUGE
-    // update FLARM display (show/hide)
-    GaugeFLARM::Show();
-    #endif
   }
 
 #if (WINDOWSPC<1)
@@ -5537,11 +5525,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     }
 	if (--items<=0) goto label_ret; // 100517
   }
-
-
-  #ifndef NOFLARMGAUGE
-  CondReplaceInString(EnableFLARMGauge != 0, OutBuffer, TEXT("$(FlarmDispToggleActionName)"), TEXT("OFF"), TEXT("ON"), Size);
-  #endif
 
 label_ret:
 

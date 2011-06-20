@@ -54,7 +54,6 @@
  #define LK_CACHECALC_MCA 60
  // #define LK_CACHECALC_MCA_STAT 1
 
- #define NOFLARMGAUGE	1
  // Old vario gauge for landscape geometry 6
  #define NOVARIOGAUGE	1
  #define NOCDIGAUGE	1
