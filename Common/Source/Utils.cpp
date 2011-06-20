@@ -3072,14 +3072,6 @@ void ReadAssetNumber(void)
       return;
     }
 
-  ReadCompaqID();
-  if(strAssetNumber[0] != '\0')
-    {
-      StartupStore(strAssetNumber);
-      StartupStore(TEXT(" (compaq)%s"),NEWLINE);
-      return;
-    }
-  
   ReadUUID();
   if(strAssetNumber[0] != '\0')
     {
@@ -3096,31 +3088,6 @@ void ReadAssetNumber(void)
   StartupStore(TEXT(" (fallback)%s"),NEWLINE);
   
   return;
-}
-
-void ReadCompaqID(void)
-{
-  PROCESS_INFORMATION pi;
-  HANDLE hInFile;// = INVALID_HANDLE_VALUE;
-  DWORD dwBytesRead;
-
-  if(strAssetNumber[0] != '\0')
-    {
-      return;
-    }
-
-  CreateProcess(TEXT("\\windows\\CreateAssetFile.exe"), NULL, NULL, NULL, FALSE, 0, NULL, NULL, NULL, &pi);
-
-  hInFile = CreateFile(TEXT("\\windows\\cpqAssetData.dat"), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
-  if (hInFile == INVALID_HANDLE_VALUE)
-    {
-      //	    MessageBox(hWnd, TEXT("Unable to open asset data file."), TEXT("Error!"), MB_OK);
-      return;
-    }
-  SetFilePointer(hInFile, 976, NULL, FILE_BEGIN);
-  memset(strAssetNumber, 0, 64 * sizeof(TCHAR));
-  ReadFile(hInFile, &strAssetNumber, 64, &dwBytesRead, (OVERLAPPED *)NULL);
-  CloseHandle(hInFile);
 }
 
 

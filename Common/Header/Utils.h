@@ -342,7 +342,6 @@ bool SetModelType();
 bool SetModelName(DWORD Temp);
 #endif
 double ScreenAngle(int x1, int y1, int x2, int y2);
-void ReadCompaqID(void);
 void ReadUUID(void);
 void FormatWarningString(int Type, TCHAR *Name , AIRSPACE_ALT Base, AIRSPACE_ALT Top, TCHAR *szMessageBuffer, TCHAR *TileBuffer );
 BOOL ReadString(ZZIP_FILE* zFile, int Max, TCHAR *String);
