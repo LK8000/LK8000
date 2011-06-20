@@ -1911,10 +1911,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 
   PreloadInitialisation(false); // calls dlgStartup
 
-  #ifndef NOCDIGAUGE
-  GaugeCDI::Create();
-  #endif
-
   GPS_INFO.NAVWarning = true; // default, no gps at all!
 
   GPS_INFO.SwitchState.AirbrakeLocked = false;
@@ -3228,9 +3224,6 @@ void Shutdown(void) {
 
   #ifndef LK8000_OPTIMIZE
   StartupStore(TEXT(". Close Gauges%s"),NEWLINE);
-  #endif
-  #ifndef NOCDIGAUGE
-  GaugeCDI::Destroy();
   #endif
   
   StartupStore(TEXT(". Close Messages%s"),NEWLINE);

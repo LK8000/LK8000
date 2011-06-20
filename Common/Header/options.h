@@ -54,7 +54,6 @@
  #define LK_CACHECALC_MCA 60
  // #define LK_CACHECALC_MCA_STAT 1
 
- #define NOCDIGAUGE	1
  // no instrument thread
  #define NOINSTHREAD	1
 

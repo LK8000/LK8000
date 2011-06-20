@@ -38,9 +38,6 @@
 #include "AATDistance.h"
 #include "LKObjects.h"
 
-#ifndef NOCDIGAUGE
-#include "GaugeCDI.h"
-#endif
 #include "InfoBoxLayout.h"
 #include "RasterTerrain.h"
 #include "Utils2.h"
@@ -2781,9 +2778,6 @@ void MapWindow::RenderMapWindow(  RECT rc)
 	return;
   }
   // overlays
-  #ifndef NOCDIGAUGE
-  DrawCDI();
-  #endif
 
   hfOld = (HFONT)SelectObject(hdcDrawWindow, MapWindowFont);
   
