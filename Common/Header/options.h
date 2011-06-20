@@ -39,14 +39,11 @@
 // General OPTIMIZATION for LK8000. Needed for all sub optimization definitions
 #define LK8000_OPTIMIZE 	1
 
-
 // -------------------------------------------------------------
 // Activate cache on all calculations defined below:
 #ifdef LK8000_OPTIMIZE
-
  // NEWIBLSCALE  to be used only for NUMBERS between 0 and MAXIBLSCALE !!!!
  #define NEWIBLSCALE	1
-
  // CACHE CALCULATIONS: IT IS IMPERATIVE THAT THIS OPTION CAN BE DISABLED ANYTIME!
  #define LK_CACHECALC 1
  // Notice:  These are only used if above is active!
@@ -54,11 +51,15 @@
  #define LK_CACHECALC_MCA 60
  // #define LK_CACHECALC_MCA_STAT 1
 
- // no instrument thread
- #define NOINSTHREAD	1
-
+ // New topology OPTIMIZE options
+ #define TOPOFAST	1
+ #define TOPOFASTLABEL	1
+ #define TOPOFASTCACHE	1
 #endif
 // -------------------------------------------------------------
+
+// No instrument thread. However it is here ready to be used for anything.
+#define NOINSTHREAD	1
 
 #ifdef NEWIBLSCALE
  #define IBLSCALE(x) (   (InfoBoxLayout::IntScaleFlag) ? ((x)*InfoBoxLayout::scale) : ((int)((x)*InfoBoxLayout::dscale)))
@@ -70,14 +71,6 @@
 #endif
 
 #define NOWINDREGISTRY	1	// Configurable: load and save wind from registry
-
-// New topology OPTIMIZE options
-#ifdef LK8000_OPTIMIZE
- #define TOPOFAST	1
- #define TOPOFASTLABEL	1
- #define TOPOFASTCACHE	1
-#endif
-
 
 // TEMPORARY FIXES THAT REQUIRE EXTENSIVE TESTING - KEEP #ifdef until expiring date
 // When expire date is reached, unnecessary old stuff can be removed, even if commented
@@ -105,7 +98,7 @@
 // They are 3 files in total.
 // No need to change any XML filename. Just comment/uncomment.
 //
-#define NEW_OLC                 1     // Applied 110313 - does not expire
+#define NEW_OLC                 1     // Applied 110313 - Expire as soon as possible. Permanent NEW_OLC.
 // -----------------------------------------------------------------------------
 
 #define USEGOINIT		1	// expire 1.7.2011, it is disabled and should be removed
