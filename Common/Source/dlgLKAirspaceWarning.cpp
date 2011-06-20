@@ -321,6 +321,9 @@ void ShowAirspaceWarningsToUser()
       break;    //Unknown msg type
 
     case aweNone:
+    case aweMovingInsideFly:            // normal, no msg, normally this msg type shouldn't get here
+    case awePredictedEnteringFly:       // normal, no msg, normally this msg type shouldn't get here
+    case aweMovingOutsideNonfly:        // normal, no msg, normally this msg type shouldn't get here
       break;
       
     case awePredictedLeavingFly:
@@ -329,7 +332,8 @@ void ShowAirspaceWarningsToUser()
     case awePredictedEnteringNonfly:
     case aweNearInsideNonfly:
     case aweEnteringNonfly:
-    case aweMovingInsideNonfly:
+    case aweMovingInsideNonfly:             // repeated messages
+    case aweMovingOutsideFly:               // repeated messages
       ackdialog_required = true;
       break;
       
