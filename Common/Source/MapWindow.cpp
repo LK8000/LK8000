@@ -38,9 +38,6 @@
 #include "AATDistance.h"
 #include "LKObjects.h"
 
-#ifndef NOVARIOGAUGE
-#include "GaugeVarioAltA.h"
-#endif
 #ifndef NOCDIGAUGE
 #include "GaugeCDI.h"
 #endif
@@ -816,9 +813,6 @@ void MapWindow::ToggleFullScreenStart() {
     MapRect = MapRectSmall;
     ShowInfoBoxes(); // VENTA FIX QUI
   }
-  #ifndef NOVARIOGAUGE
-  GaugeVario::Show(!MapFullScreen);
-  #endif
 }
 
 
@@ -3013,10 +3007,6 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
       if (ProgramStarted==psInitDone) {
 	ProgramStarted = psFirstDrawDone;
 
-#ifndef NOVARIOGAUGE
-	if ( (InfoBoxLayout::InfoBoxGeometry==6) && (InfoBoxLayout::landscape == true) )
-		GaugeVario::Show(!MapFullScreen);
-#endif
       }
 #ifdef CPUSTATS
 	if ( (GetThreadTimes( hDrawThread, &CreationTime, &ExitTime,&EndKernelTime,&EndUserTime)) == 0) {

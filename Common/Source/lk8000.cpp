@@ -1473,31 +1473,9 @@ DWORD InstrumentThread (LPVOID lpvoid) {
 	ResetEvent(varioTriggerEvent);
 	if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
-#ifndef NOVARIOGAUGE
-	// VNT This thread was eating cpu in landscape mode although vario not used. 
-	#ifdef LK8000_OPTIMIZE
-	if ( (InfoBoxLayout::landscape == true) && ( InfoBoxLayout::InfoBoxGeometry == 6) ) {
-		if (VarioUpdated && !InfoBoxLayout::fullscreen) { // VNT 090814 fix 
-	#else
-	if (VarioUpdated) { 
-	#endif
-		VarioUpdated = false;
-		if (MapWindow::IsDisplayRunning()) {
-			if (EnableVarioGauge) {
-				GaugeVario::Render();
-			}
-		}
-	}
-	#ifdef LK8000_OPTIMIZE
-		} else {
-			// VNT Not sure this is busy-wait, but normally the thread could even be suspended
-			Sleep(1000);
-		}
-	#endif
-#else
 	// DO NOTHING BY NOW
+	// if triggervario, render vario update eventually here
 	Sleep(10000);
-#endif
 	#ifdef CPUSTATS
 	if ( (GetThreadTimes( hInstrumentThread, &CreationTime, &ExitTime,&EndKernelTime,&EndUserTime)) == 0) {
 		Cpu_Instrument=9999;
@@ -1935,9 +1913,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 
   #ifndef NOCDIGAUGE
   GaugeCDI::Create();
-  #endif
-  #ifndef NOVARIOGAUGE
-  GaugeVario::Create();
   #endif
 
   GPS_INFO.NAVWarning = true; // default, no gps at all!
@@ -3204,9 +3179,6 @@ void Shutdown(void) {
   // Stop calculating too (wake up)
   SetEvent(dataTriggerEvent);
   SetEvent(drawTriggerEvent);
-  #ifndef NOVARIOGAUGE
-  SetEvent(varioTriggerEvent);
-  #endif
 
   // Clear data
   // LKTOKEN _@M1222_ "Shutdown, saving task..."
@@ -3259,9 +3231,6 @@ void Shutdown(void) {
   #endif
   #ifndef NOCDIGAUGE
   GaugeCDI::Destroy();
-  #endif
-  #ifndef NOVARIOGAUGE
-  GaugeVario::Destroy();
   #endif
   
   StartupStore(TEXT(". Close Messages%s"),NEWLINE);
