@@ -152,6 +152,7 @@ extern bool needclipping;
 #endif
 extern bool EnableAutoBacklight; // VENTA4
 extern bool EnableAutoSoundVolume; // VENTA4
+extern DWORD EnableFLARMMap;
 extern short AircraftCategory; // VENTA4
 extern bool ExtendedVisualGlide;
 extern short Look8000;
@@ -534,9 +535,6 @@ extern int AltitudeMode;
 extern int SafetyAltitudeMode;
 extern int ClipAltitude;
 extern int AltWarningMargin;
-extern bool EnableCDICruise;
-extern bool EnableCDICircling;
-extern bool EnableVarioGauge;
 extern int AutoAdvance;
 extern bool AdvanceArmed;
 extern bool EnableBlockSTF; // block speed to fly instead of dolphin

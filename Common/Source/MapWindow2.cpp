@@ -37,8 +37,6 @@
 #include "Terrain.h"
 #include "RasterTerrain.h"
 
-#include "GaugeCDI.h"
-#include "GaugeFLARM.h"
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
 #ifdef LKAIRSPACE
@@ -66,7 +64,6 @@ extern int misc_tick_count;
 #endif
 #endif
 
-extern HWND hWndCDIWindow;
 extern HFONT MapLabelFont;
 extern HFONT  MapWindowBoldFont;
 
@@ -1507,33 +1504,11 @@ void MapWindow::DrawCompass(HDC hDC, const RECT rc)
   HPEN hpOld;
   HBRUSH hbOld; 
 
-  if (Appearance.CompassAppearance == apCompassDefault){
-
-	    Start.y = NIBLSCALE(19)+rc.top;
-	    Start.x = rc.right - NIBLSCALE(19);
-
-    if (EnableVarioGauge && MapRectBig.right == rc.right)
-        Start.x -= InfoBoxLayout::ControlWidth;
-
-    POINT Arrow[5] = { {0,-18}, {-6,10}, {0,0}, {6,10}, {0,-18}};
-
-    hpOld = (HPEN)SelectObject(hDC, hpCompass);
-    hbOld = (HBRUSH)SelectObject(hDC, hbCompass);
-
-    // North arrow
-    PolygonRotateShift(Arrow, 5, Start.x, Start.y, -DisplayAngle);
-    Polygon(hDC,Arrow,5);
-
-    SelectObject(hDC, hbOld);
-    SelectObject(hDC, hpOld);
-
-  } else
   if (Appearance.CompassAppearance == apCompassAltA){
 
     static double lastDisplayAngle = 9999.9;
     static int lastRcRight = 0, lastRcTop = 0;
     static POINT Arrow[5] = { {0,-11}, {-5,9}, {0,3}, {5,9}, {0,-11}};
-    extern bool EnableVarioGauge;
 
 
     if (lastDisplayAngle != DisplayAngle || lastRcRight != rc.right || lastRcTop != rc.top){
@@ -1552,10 +1527,6 @@ void MapWindow::DrawCompass(HDC hDC, const RECT rc)
 	// no more clock, no need to have different compass position
 	Start.y = rc.top + NIBLSCALE(11); 
 	Start.x = rc.right - NIBLSCALE(11);
-
-      if (EnableVarioGauge && MapRectBig.right == rc.right) {
-        Start.x -= InfoBoxLayout::ControlWidth;
-      }
 
       // North arrow
       PolygonRotateShift(Arrow, 5, Start.x, Start.y, 

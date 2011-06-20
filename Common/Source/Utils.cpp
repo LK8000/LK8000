@@ -33,7 +33,6 @@
 #include "Terrain.h"
 #include "Units.h"
 #include "Calculations.h"
-#include "GaugeFLARM.h"
 #include "McReady.h"
 #include "NavFunctions.h"
 #include "WaveThread.h"
@@ -234,21 +233,11 @@ const TCHAR szRegistryCompetitionClass[]=  TEXT("CompetitionClass");
 const TCHAR szRegistryCompetitionID[]=  TEXT("CompetitionID");
 const TCHAR szRegistryLoggerID[]=  TEXT("LoggerID");
 const TCHAR szRegistryLoggerShort[]=  TEXT("LoggerShortName");
-const TCHAR szRegistrySoundVolume[]=  TEXT("SoundVolume");
-const TCHAR szRegistrySoundDeadband[]=  TEXT("SoundDeadband");
-const TCHAR szRegistrySoundAudioVario[]=  TEXT("AudioVario");
-const TCHAR szRegistrySoundTask[]=  TEXT("SoundTask");
-const TCHAR szRegistrySoundModes[]=  TEXT("SoundModes");
-const TCHAR szRegistryNettoSpeed[]= TEXT("NettoSpeed");
-const TCHAR szRegistryAccelerometerZero[]= TEXT("AccelerometerZero");
-const TCHAR szRegistryCDICruise[]= TEXT("CDICruise");
-const TCHAR szRegistryCDICircling[]= TEXT("CDICircling");
 
 const TCHAR szRegistryDeviceA[]= TEXT("DeviceA");
 const TCHAR szRegistryDeviceB[]= TEXT("DeviceB");
 const TCHAR szRegistryDeviceC[]= TEXT("DeviceC");
 
-const TCHAR szRegistryAutoBlank[]= TEXT("AutoBlank");
 const TCHAR szRegistryAutoBacklight[]= TEXT("AutoBacklight");
 const TCHAR szRegistryAutoSoundVolume[]= TEXT("AutoSoundVolume");
 const TCHAR szRegistryAircraftCategory[]= TEXT("AircraftCategory");
@@ -278,7 +267,6 @@ const TCHAR szRegistryArrivalValue[]= TEXT("ArrivalValue");
 const TCHAR szRegistryNewMapDeclutter[]= TEXT("NewMapDeclutter");
 const TCHAR szRegistryAverEffTime[]= TEXT("AverEffTime");
 const TCHAR szRegistryBgMapColor[]= TEXT("BgMapColor");
-const TCHAR szRegistryVarioGauge[]= TEXT("VarioGauge");
 
 const TCHAR szRegistryDebounceTimeout[]= TEXT("DebounceTimeout");
 
@@ -310,13 +298,6 @@ const TCHAR szRegistryPGStartOut[]= TEXT("PGStartOut");
 const TCHAR szRegistryAppIndFinalGlide[] = TEXT("AppIndFinalGlide");
 const TCHAR szRegistryAppIndLandable[] = TEXT("AppIndLandable");
 const TCHAR szRegistryAppInverseInfoBox[] = TEXT("AppInverseInfoBox2");
-const TCHAR szRegistryAppGaugeVarioSpeedToFly[] = TEXT("AppGaugeVarioSpeedToFly");
-const TCHAR szRegistryAppGaugeVarioAvgText[] = TEXT("AppGaugeVarioAvgText");
-const TCHAR szRegistryAppGaugeVarioMc[] = TEXT("AppGaugeVarioMc");
-const TCHAR szRegistryAppGaugeVarioBugs[] = TEXT("AppGaugeVarioBugs");
-const TCHAR szRegistryAppGaugeVarioBallast[] = TEXT("AppGaugeVarioBallast");
-const TCHAR szRegistryAppGaugeVarioGross[] = TEXT("AppGaugeVarioGross");
-const TCHAR szRegistryAppCompassAppearance[] = TEXT("AppCompassAppearance");
 const TCHAR szRegistryAppStatusMessageAlignment[] = TEXT("AppStatusMessageAlignment");
 const TCHAR szRegistryAppTextInputStyle[] = TEXT("AppTextInputStyle");
 const TCHAR szRegistryAppInfoBoxColors[] = TEXT("AppInfoBoxColors");
@@ -329,7 +310,6 @@ const TCHAR szRegistryAppInfoBoxModel[] = TEXT("AppInfoBoxModel");
 const TCHAR szRegistryGpsAltitudeOffset[] = TEXT("GpsAltitudeOffset");
 const TCHAR szRegistryUseGeoidSeparation[] = TEXT("UseGeoidSeparation");
 const TCHAR szRegistryPressureHg[] = TEXT("PressureHg");
-//const TCHAR szRegistryShortcutIbox[] = TEXT("ShortcutIbox");
 const TCHAR szRegistryCustomKeyTime[] = TEXT("CustomKeyTime");
 const TCHAR szRegistryCustomKeyModeCenter[] = TEXT("CustomKeyModeCenter");
 const TCHAR szRegistryCustomKeyModeLeft[] = TEXT("CustomKeyModeLeft");
@@ -337,8 +317,6 @@ const TCHAR szRegistryCustomKeyModeRight[] = TEXT("CustomKeyModeRight");
 const TCHAR szRegistryCustomKeyModeAircraftIcon[] = TEXT("CustomKeyModeAircraftIcon");
 const TCHAR szRegistryCustomKeyModeLeftUpCorner[] = TEXT("CustomKeyModeLeftUpCorner");
 const TCHAR szRegistryCustomKeyModeRightUpCorner[] = TEXT("CustomKeyModeRightUpCorner");
-
-const TCHAR szRegistryAppAveNeedle[] = TEXT("AppAveNeedle");
 
 const TCHAR szRegistryAutoAdvance[] = TEXT("AutoAdvance");
 const TCHAR szRegistryUTCOffset[] = TEXT("UTCOffset");
@@ -350,20 +328,9 @@ const TCHAR szRegistryTerrainContrast[] = TEXT("TerrainContrast");
 const TCHAR szRegistryTerrainBrightness[] = TEXT("TerrainBrightness");
 const TCHAR szRegistryTerrainRamp[] = TEXT("TerrainRamp");
 const TCHAR szRegistryEnableFLARMMap[] = TEXT("EnableFLARMDisplay");
-const TCHAR szRegistryEnableFLARMGauge[] = TEXT("EnableFLARMGauge");
-const TCHAR szRegistryFLARMGaugeBearing[] = TEXT("FLARMGaugeBearing");
 const TCHAR szRegistryGliderScreenPosition[] = TEXT("GliderScreenPosition");
 const TCHAR szRegistrySetSystemTimeFromGPS[] = TEXT("SetSystemTimeFromGPS");
 const TCHAR szRegistryAutoForceFinalGlide[] = TEXT("AutoForceFinalGlide");
-
-const TCHAR szRegistryVoiceClimbRate[]= TEXT("VoiceClimbRate");
-const TCHAR szRegistryVoiceTerrain[]= TEXT("VoiceTerrain");
-const TCHAR szRegistryVoiceWaypointDistance[]= TEXT("VoiceWaypointDistance");
-const TCHAR szRegistryVoiceTaskAltitudeDifference[]= TEXT("VoiceTaskAltitudeDifference");
-const TCHAR szRegistryVoiceMacCready[]= TEXT("VoiceMacCready");
-const TCHAR szRegistryVoiceNewWaypoint[]= TEXT("VoiceNewWaypoint");
-const TCHAR szRegistryVoiceInSector[]= TEXT("VoiceInSector");
-const TCHAR szRegistryVoiceAirspace[]= TEXT("VoiceAirspace");
 
 const TCHAR szRegistryAlarmMaxAltitude1[]= TEXT("AlarmMaxAltitude1");
 const TCHAR szRegistryAlarmMaxAltitude2[]= TEXT("AlarmMaxAltitude3");
@@ -495,37 +462,6 @@ void SetRegistryStringIfAbsent(const TCHAR* name,
     SetRegistryString(name, value);
   }
 #endif 
-}
-
-void DefaultRegistrySettingsAltair(void)
-{  
-   // these are redundant b/c they're also added to "InitialiseFontsHardCoded"
-  SetRegistryStringIfAbsent(TEXT("InfoWindowFont"),
-   TEXT("24,0,0,0,700,0,0,0,0,0,0,3,2,RasterGothicTwentyFourCond"));
-  SetRegistryStringIfAbsent(TEXT("TitleWindowFont"),
-   TEXT("10,0,0,0,500,0,0,0,0,0,0,3,2,RasterGothicNineCond"));
-  SetRegistryStringIfAbsent(TEXT("CDIWindowFont"),
-   TEXT("19,0,0,0,700,0,0,0,0,0,0,3,2,RasterGothicEighteenCond"));
-  SetRegistryStringIfAbsent(TEXT("MapLabelFont"),
-   TEXT("13,0,0,0,500,0,0,0,0,0,0,3,2,RasterGothicTwelveCond"));
-  SetRegistryStringIfAbsent(TEXT("StatisticsFont"),
-   TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,RasterGothicFourteenCond"));
-  SetRegistryStringIfAbsent(TEXT("MapWindowFont"),
-   TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,RasterGothicFourteenCond"));
-  SetRegistryStringIfAbsent(TEXT("MapWindowBoldFont"),
-   TEXT("15,0,0,0,700,0,0,0,0,0,0,3,2,RasterGothicFourteenCond"));
-  SetRegistryStringIfAbsent(TEXT("BugsBallastFont"),
-   TEXT("24,0,0,0,750,0,0,0,0,0,0,3,2,RasterGothicTwentyFourCond"));
-  SetRegistryStringIfAbsent(TEXT("AirspacePressFont"),
-   TEXT("24,0,0,0,750,0,0,0,0,0,0,3,2,RasterGothicTwentyFourCond"));
-  SetRegistryStringIfAbsent(TEXT("AirspaceColourDlgFont"),
-   TEXT("14,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"));
-  SetRegistryStringIfAbsent(TEXT("TeamCodeFont"),
-   TEXT("19,0,0,0,700,0,0,0,0,0,0,3,2,RasterGothicEighteenCond"));
-#if 0
-  SetRegistryStringIfAbsent(TEXT("ScaleList"),
-   TEXT("0.5,1,2,5,10,20,50,100,150,200,500,1000"));
-#endif
 }
 
 
@@ -870,47 +806,6 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryAcknowledgementTime,&Temp);
   AcknowledgementTime = max(10,Temp);
 
-  Temp = 80;
-  GetFromRegistry(szRegistrySoundVolume,&Temp);
-  SoundVolume = Temp;
-
-  Temp = 4;
-  GetFromRegistry(szRegistrySoundDeadband,&Temp);
-  SoundDeadband = Temp;
-
-  Temp = 1;
-  GetFromRegistry(szRegistrySoundAudioVario,&Temp);
-  EnableSoundVario = (Temp == 1);
-
-  Temp = 1;
-  GetFromRegistry(szRegistrySoundTask,&Temp);
-  EnableSoundTask = (Temp == 1);
-
-  Temp = 1;
-  GetFromRegistry(szRegistrySoundModes,&Temp);
-  EnableSoundModes = (Temp == 1);
-
-  Temp = 500;
-  GetFromRegistry(szRegistryNettoSpeed,&Temp);
-  NettoSpeed = Temp;
-
-  EnableCDICruise = 0;
-  EnableCDICircling = 0;
-
-  /* JMW temporarily disabled these because they are not updated for 4.7+
-  Temp = 0;
-  GetFromRegistry(szRegistryCDICruise,&Temp);
-  EnableCDICruise = (Temp == 1);
-
-  Temp = 0;
-  GetFromRegistry(szRegistryCDICircling,&Temp);
-  EnableCDICircling = (Temp == 1);
-  */
-
-  Temp = 0;
-  GetFromRegistry(szRegistryAutoBlank,&Temp);
-  EnableAutoBlank = (Temp == 1);
-
   Temp = 1;
   GetFromRegistry(szRegistryAutoBacklight,&Temp); // VENTA4
   EnableAutoBacklight = (Temp == 1);
@@ -1211,24 +1106,9 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryBgMapColor,&Temp); 
   BgMapColor = Temp;
 
-  /*
-  Temp = 0;
-  GetFromRegistry(szRegistryVarioGauge,&Temp);
-  EnableVarioGauge = (Temp == 1);
-  */
-
   Temp = 250;
   GetFromRegistry(szRegistryDebounceTimeout, &Temp);
   debounceTimeout = Temp;
-
-  Temp = 100;
-  GetFromRegistry(szRegistryAccelerometerZero,&Temp);
-  AccelerometerZero = Temp;
-  if (AccelerometerZero==0.0) {
-    AccelerometerZero= 100.0;
-    Temp = 100;
-    SetToRegistry(szRegistryAccelerometerZero,Temp);
-  }
 
   // new appearance variables
 
@@ -1246,32 +1126,7 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryAppInverseInfoBox, &Temp);
   Appearance.InverseInfoBox = (Temp != 0);
 
-  Temp = Appearance.GaugeVarioSpeedToFly;
-  GetFromRegistry(szRegistryAppGaugeVarioSpeedToFly, &Temp);
-  Appearance.GaugeVarioSpeedToFly = (Temp != 0);
-
-  Temp = Appearance.GaugeVarioAvgText;
-  GetFromRegistry(szRegistryAppGaugeVarioAvgText, &Temp);
-  Appearance.GaugeVarioAvgText = (Temp != 0);
-
-  Temp = Appearance.GaugeVarioMc;
-  GetFromRegistry(szRegistryAppGaugeVarioMc, &Temp);
-  Appearance.GaugeVarioMc = (Temp != 0);
-
-  Temp = Appearance.GaugeVarioBugs;
-  GetFromRegistry(szRegistryAppGaugeVarioBugs, &Temp);
-  Appearance.GaugeVarioBugs = (Temp != 0);
-
-  Temp = Appearance.GaugeVarioBallast;
-  GetFromRegistry(szRegistryAppGaugeVarioBallast, &Temp);
-  Appearance.GaugeVarioBallast = (Temp != 0);
-
-  Temp = Appearance.GaugeVarioGross;
-  GetFromRegistry(szRegistryAppGaugeVarioGross, &Temp);
-  Appearance.GaugeVarioGross = (Temp != 0);
-
   Appearance.CompassAppearance = (CompassAppearance_t)apCompassAltA; // 091114 FIXED SMALL OUTLINED COMPASS
-  
 
   //Temp = Appearance.InfoBoxBorder;
   Temp=(InfoBoxBorderAppearance_t)apIbBox; // VNT9 default
@@ -1345,24 +1200,6 @@ void ReadRegistrySettings(void)
   Temp=1; // true as default VNT9
   GetFromRegistry(szRegistryAppInfoBoxColors, &Temp);
   Appearance.InfoBoxColors = (Temp != 0);
-
-  Temp = Appearance.GaugeVarioAveNeedle;
-  GetFromRegistry(szRegistryAppAveNeedle, &Temp);
-  Appearance.GaugeVarioAveNeedle = (Temp != 0);
-
-  // StateMessageAlligne : center, topleft
-  // DefaultMapWidth: 206?
-  // CompassAppearance (north arrow)
-  // 
-  // DontShowLoggerIndicator
-  // FlightModeIcon
-  // DontShowAutoMacCready
-  // MapScale
-  // MapScale2
-  // BestCruiseTrack
-  // Aircraft
-  // IndFinalGlide
-  // IndLandable
 
   Temp = 1;
   GetFromRegistry(szRegistryAutoAdvance,&Temp);
@@ -3892,15 +3729,6 @@ double HexStrToDouble(TCHAR *Source, TCHAR **Stop)
   }
 }
 
-
-void SaveSoundSettings()
-{
-  SetToRegistry(szRegistrySoundVolume, (DWORD)SoundVolume);
-  SetToRegistry(szRegistrySoundDeadband, (DWORD)SoundDeadband);
-  SetToRegistry(szRegistrySoundAudioVario, EnableSoundVario);
-  SetToRegistry(szRegistrySoundTask, EnableSoundTask);
-  SetToRegistry(szRegistrySoundModes, EnableSoundModes);
-}
 
 #ifndef NOWINDREGISTRY
 void SaveWindToRegistry() {

@@ -214,19 +214,6 @@ void	SpeedProcessing(int UpDown)
 }
 
 
-void	AccelerometerProcessing(int UpDown)
-{
-  DWORD Temp;
-  if (UpDown==0) {
-    AccelerometerZero*= GPS_INFO.Gload;
-    if (AccelerometerZero<1) {
-      AccelerometerZero = 100;
-    }
-    Temp = (int)AccelerometerZero;
-    SetToRegistry(szRegistryAccelerometerZero,Temp);
-  }
-}
-
 void	WindDirectionProcessing(int UpDown)
 {
 	

@@ -518,9 +518,7 @@ class MapWindow {
   static void DrawThermalBand(HDC hDC, const RECT rc);
   static void DrawGlideThroughTerrain(HDC hDC, const RECT rc);
   static void DrawTerrainAbove(HDC hDC, const RECT rc);
-  static void DrawCDI();
-    static void DrawSpeedToFly(HDC hDC, RECT rc); // VNT9
-  static void DrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft);
+  static void DrawSpeedToFly(HDC hDC, RECT rc); // VNT9
   static void LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft);
   static void LKDrawVario(HDC hDC, RECT rc);
     

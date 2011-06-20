@@ -728,13 +728,8 @@ int WindUpdateMode = 0;
 bool EnableTopology = true; // 091105
 bool EnableTerrain = true;  // 091105
 int FinalGlideTerrain = 1;
-bool EnableSoundVario = true;
 bool EnableSoundModes = true;
-bool EnableSoundTask = true;
 bool OverlayClock = false;
-int SoundVolume = 80;
-int SoundDeadband = 5;
-bool EnableVarioGauge = false;
 bool EnableAutoBlank = false;
 bool ScreenBlanked = false;
 bool LKLanguageReady = false;
@@ -800,9 +795,6 @@ bool goInstrumentThread=false;
 bool goInitDevice=false; 
 #endif
 // bool goCalculating=false;
-
-#include "GaugeCDI.h"
-#include "GaugeFLARM.h"
 
 // Battery status for SIMULATOR mode
 //	30% reminder, 20% exit, 30 second reminders on warnings
@@ -991,7 +983,7 @@ void FillDataOptions()
 	// LKTOKEN  _@M1073_ = "Time of flight", _@M1074_ = "FlyTime"
 	SetDataOption(36, ugNone,           TEXT("_@M1073_"), TEXT("_@M1074_"), new FormatterTime(TEXT("%04.0f")), NoProcessing, 39, 14);
 	// LKTOKEN  _@M1075_ = "G load", _@M1076_ = "G"
-	SetDataOption(37, ugNone,           TEXT("_@M1075_"), TEXT("_@M1076_"), new InfoBoxFormatter(TEXT("%2.2f")), AccelerometerProcessing, 47, 32);
+	SetDataOption(37, ugNone,           TEXT("_@M1075_"), TEXT("_@M1076_"), new InfoBoxFormatter(TEXT("%2.2f")), NoProcessing, 47, 32);
 	// LKTOKEN  _@M1077_ = "_Reserved 2", _@M1078_ = "OLD nLD"
 	SetDataOption(38, ugNone,           TEXT("_@M1077_"), TEXT("_@M1078_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 53, 19);
 	// LKTOKEN  _@M1079_ = "Time local", _@M1080_ = "Time"
@@ -1535,7 +1527,6 @@ DWORD CalculationThread (LPVOID lpvoid) {
 
     // Do vario first to reduce audio latency
     if (GPS_INFO.VarioAvailable) {
-      // if (VarioUpdated) {  20060511/sgi commented out dueto asynchronus reset of VarioUpdate in InstrumentThread
       if (DoCalculationsVario(&tmp_GPS_INFO,&tmp_CALCULATED_INFO)) {
 	        
       }
@@ -3153,10 +3144,6 @@ void Shutdown(void) {
   SaveRecentList();
   // Stop sound
 
-  StartupStore(TEXT(". SaveSoundSettings%s"),NEWLINE);
-  SaveSoundSettings();
-
-
   // Stop SMS device
 #if (EXPERIMENTAL > 0)
   bsms.Shutdown();
@@ -4352,11 +4339,6 @@ void ProcessTimer(void)
   static int itimeout = -1;
   itimeout++;
   
-  // write settings to vario every second
-  if (itimeout % 2==0) {
-    VarioWriteSettings();
-  }
-    
   // also service replay logger
   ReplayLogger::Update();
   if (ReplayLogger::IsEnabled()) {
@@ -4406,7 +4388,6 @@ void SIMProcessTimer(void)
 
   TriggerGPSUpdate();
 
-  VarioWriteSettings();
 }
 
 

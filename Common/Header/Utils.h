@@ -96,8 +96,6 @@ extern const TCHAR szRegistryCompetitionID[];
 extern const TCHAR szRegistryLoggerID[];        
 extern const TCHAR szRegistryLoggerShort[];        
 extern const TCHAR szRegistryNettoSpeed[];        
-extern const TCHAR szRegistryCDICruise[];
-extern const TCHAR szRegistryCDICircling[];
 extern const TCHAR szRegistryAutoBlank[];
 extern const TCHAR szRegistryAutoBacklight[]; // VENTA4
 extern const TCHAR szRegistryAutoSoundVolume[]; // VENTA4
@@ -132,19 +130,12 @@ extern const TCHAR szRegistryNewMapDeclutter[]; // VENTA6
 extern const TCHAR szRegistryDeclutterMode[]; // VENTA10
 extern const TCHAR szRegistryAverEffTime[]; // VENTA6
 extern const TCHAR szRegistryBgMapColor[]; 
-extern const TCHAR szRegistryVarioGauge[];
 extern const TCHAR szRegistryDebounceTimeout[];
 extern const TCHAR szRegistryAppDefaultMapWidth[];
 extern const TCHAR szRegistryAppIndFinalGlide[];
 extern const TCHAR szRegistryAppIndLandable[];
 extern const TCHAR szRegistryAppInverseInfoBox[];
 extern const TCHAR szRegistryAppInfoBoxColors[];
-extern const TCHAR szRegistryAppGaugeVarioSpeedToFly[];
-extern const TCHAR szRegistryAppGaugeVarioAvgText[];
-extern const TCHAR szRegistryAppGaugeVarioMc[];
-extern const TCHAR szRegistryAppGaugeVarioBugs[];
-extern const TCHAR szRegistryAppGaugeVarioBallast[];
-extern const TCHAR szRegistryAppGaugeVarioGross[];
 extern const TCHAR szRegistryAppCompassAppearance[];
 extern const TCHAR szRegistryAppStatusMessageAlignment[];
 extern const TCHAR szRegistryAppTextInputStyle[];
@@ -194,7 +185,6 @@ extern const TCHAR szRegistryTerrainContrast[];
 extern const TCHAR szRegistryTerrainBrightness[];
 extern const TCHAR szRegistryTerrainRamp[];
 extern const TCHAR szRegistryEnableFLARMMap[];
-extern const TCHAR szRegistryEnableFLARMGauge[];
 extern const TCHAR szRegistrySnailTrail[];
 extern const TCHAR szRegistryTrailDrift[];
 extern const TCHAR szRegistryThermalLocator[];
@@ -202,15 +192,6 @@ extern const TCHAR szRegistryGliderScreenPosition[];
 extern const TCHAR szRegistryAnimation[];
 extern const TCHAR szRegistrySetSystemTimeFromGPS[];
 extern const TCHAR szRegistryAutoForceFinalGlide[];
-
-extern const TCHAR szRegistryVoiceClimbRate[];
-extern const TCHAR szRegistryVoiceTerrain[];
-extern const TCHAR szRegistryVoiceWaypointDistance[];
-extern const TCHAR szRegistryVoiceTaskAltitudeDifference[];
-extern const TCHAR szRegistryVoiceMacCready[];
-extern const TCHAR szRegistryVoiceNewWaypoint[];
-extern const TCHAR szRegistryVoiceInSector[];
-extern const TCHAR szRegistryVoiceAirspace[];
 
 extern const TCHAR szRegistryFinishMinHeight[];
 extern const TCHAR szRegistryStartMaxHeight[];

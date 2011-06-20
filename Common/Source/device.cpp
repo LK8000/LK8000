@@ -748,31 +748,6 @@ void VarioWriteNMEA(const TCHAR *text)
   UnlockComm();
 }
 
-void VarioWriteSettings(void)
-{
-  if (GPS_INFO.VarioAvailable) {
-    // JMW experimental
-    TCHAR mcbuf[100];
-    wsprintf(mcbuf, TEXT("PDVMC,%d,%d,%d,%d,%d"),
-	     iround(MACCREADY*10),
-	     iround(CALCULATED_INFO.VOpt*10),
-	     CALCULATED_INFO.Circling,
-	     iround(CALCULATED_INFO.TerrainAlt),
-	     iround(QNH*10));
-    VarioWriteNMEA(mcbuf);
-  }
-}
-
-#if !110101
-PDeviceDescriptor_t devVarioFindVega(void)
-{
-  for (int i = 0; i < NUMDEV; i++)
-    if (_tcscmp(DeviceList[i].Name, TEXT("Vega")) == 0)
-      return &DeviceList[i];
-  return NULL;
-}
-#endif
-
 
 BOOL devPutVolume(PDeviceDescriptor_t d, int Volume)
 {

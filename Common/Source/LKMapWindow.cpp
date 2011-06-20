@@ -38,8 +38,6 @@
 #include "Terrain.h"
 #include "RasterTerrain.h"
 
-#include "GaugeCDI.h"
-#include "GaugeFLARM.h"
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
 #include "LKObjects.h"
@@ -55,7 +53,6 @@ using std::min;
 using std::max;
 #endif
 
-extern HWND hWndCDIWindow;
 extern HFONT MapLabelFont;
 extern HFONT  MapWindowBoldFont;
 

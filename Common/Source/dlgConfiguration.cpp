@@ -14,7 +14,6 @@
 #include "Utils2.h"
 #include "MapWindow.h"
 #include "Terrain.h"
-#include "GaugeFLARM.h"
 
 #include "WindowControls.h"
 #include "Statistics.h"
@@ -1945,23 +1944,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  #if 0 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpEnableFLARMGauge"));
-  if (wp) {
-    wp->GetDataField()->Set(EnableFLARMGauge);
-    wp->RefreshDisplay();
-  }
-  #endif
-
-  #if 0 // REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceWarnings"));
-  if (wp) {
-    bool aw = AIRSPACEWARNINGS != 0;
-    wp->GetDataField()->Set(aw);
-    wp->RefreshDisplay();
-  }
-  #endif
-
 #ifdef LKAIRSPACE
 #else
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningTime"));
@@ -3347,6 +3329,7 @@ static void setVariables(void) {
 
 // end fonts
 
+  /* REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppCompassAppearance"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -3358,6 +3341,7 @@ static void setVariables(void) {
     dfe->Set(Appearance.CompassAppearance);
     wp->RefreshDisplay();
   }
+  */
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppIndFinalGlide"));
   if (wp) {
@@ -3471,59 +3455,6 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxColors"));
   if (wp) {
     wp->GetDataField()->Set(Appearance.InfoBoxColors);
-    wp->RefreshDisplay();
-  }
-
-  #if !110101
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppAveNeedle"));
-  if (wp) {
-    wp->GetDataField()->Set(Appearance.GaugeVarioAveNeedle);
-    wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppGaugeVarioSpeedToFly"));
-  if (wp) {
-    wp->GetDataField()->Set(Appearance.GaugeVarioSpeedToFly);
-    wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppGaugeVarioAvgText"));
-  if (wp) {
-    wp->GetDataField()->Set(Appearance.GaugeVarioAvgText);
-    wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppGaugeVarioGross"));
-  if (wp) {
-    wp->GetDataField()->Set(Appearance.GaugeVarioGross);
-    wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppGaugeVarioMc"));
-  if (wp) {
-    wp->GetDataField()->Set(Appearance.GaugeVarioMc);
-    wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppGaugeVarioBugs"));
-  if (wp) {
-    wp->GetDataField()->Set(Appearance.GaugeVarioBugs);
-    wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppGaugeVarioBallast"));
-  if (wp) {
-    wp->GetDataField()->Set(Appearance.GaugeVarioBallast);
-    wp->RefreshDisplay();
-  }
-  #endif // REMOVABLE GAUGEVARIO
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAutoBlank"));
-  if (wp) {
-#if (WINDOWSPC>0)
-    wp->SetVisible(false);
-#endif
-    wp->GetDataField()->Set(EnableAutoBlank);
     wp->RefreshDisplay();
   }
 
@@ -4136,19 +4067,6 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
-
-  #if 0
-  wp = (WndProperty*)wf->FindByName(TEXT("prpEnableFLARMGauge"));
-  if (wp) {
-    if (EnableFLARMGauge != 
-	wp->GetDataField()->GetAsBoolean()) {
-      EnableFLARMGauge = wp->GetDataField()->GetAsBoolean();
-      SetToRegistry(szRegistryEnableFLARMGauge,
-		    EnableFLARMGauge);
-      changed = true;
-    }
-  }
-  #endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpDebounceTimeout"));
   if (wp) {
@@ -4853,6 +4771,7 @@ void dlgConfigurationShowModal(void){
     }
   }
 
+  /* REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppCompassAppearance"));
   if (wp) {
     if (Appearance.CompassAppearance != (CompassAppearance_t)
@@ -4865,6 +4784,7 @@ void dlgConfigurationShowModal(void){
       requirerestart = true;
     }
   }
+  */
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxBorder"));
   if (wp) {
@@ -5433,85 +5353,6 @@ void dlgConfigurationShowModal(void){
       Appearance.InfoBoxColors = (wp->GetDataField()->GetAsInteger() != 0);
       SetToRegistry(szRegistryAppInfoBoxColors,Appearance.InfoBoxColors);
       requirerestart = true;
-      changed = true;
-    }
-  }
-
-  #if !110101
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppAveNeedle"));
-  if (wp) {
-    if ((int)(Appearance.GaugeVarioAveNeedle) != 
-	wp->GetDataField()->GetAsInteger()) {
-      Appearance.GaugeVarioAveNeedle = 
-        (wp->GetDataField()->GetAsInteger() != 0);
-      SetToRegistry(szRegistryAppAveNeedle,Appearance.GaugeVarioAveNeedle);
-      changed = true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppGaugeVarioSpeedToFly"));
-  if (wp) {
-    if ((int)(Appearance.GaugeVarioSpeedToFly) != wp->GetDataField()->GetAsInteger()) {
-      Appearance.GaugeVarioSpeedToFly = (wp->GetDataField()->GetAsInteger() != 0);
-      SetToRegistry(szRegistryAppGaugeVarioSpeedToFly,Appearance.GaugeVarioSpeedToFly);
-      changed = true;
-      requirerestart = true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppGaugeVarioAvgText"));
-  if (wp) {
-    if ((int)Appearance.GaugeVarioAvgText != wp->GetDataField()->GetAsInteger()) {
-      Appearance.GaugeVarioAvgText = (wp->GetDataField()->GetAsInteger() != 0);
-      SetToRegistry(szRegistryAppGaugeVarioAvgText,Appearance.GaugeVarioAvgText);
-      changed = true;
-      requirerestart = true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppGaugeVarioGross"));
-  if (wp) {
-    if ((int)Appearance.GaugeVarioGross != wp->GetDataField()->GetAsInteger()) {
-      Appearance.GaugeVarioGross = (wp->GetDataField()->GetAsInteger() != 0);
-      SetToRegistry(szRegistryAppGaugeVarioGross,Appearance.GaugeVarioGross);
-      changed = true;
-      requirerestart = true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppGaugeVarioMc"));
-  if (wp) {
-    if ((int)Appearance.GaugeVarioMc != wp->GetDataField()->GetAsInteger()) {
-      Appearance.GaugeVarioMc = (wp->GetDataField()->GetAsInteger() != 0);
-      SetToRegistry(szRegistryAppGaugeVarioMc,Appearance.GaugeVarioMc);
-      changed = true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppGaugeVarioBugs"));
-  if (wp) {
-    if ((int)Appearance.GaugeVarioBugs != wp->GetDataField()->GetAsInteger()) {
-      Appearance.GaugeVarioBugs = (wp->GetDataField()->GetAsInteger() != 0);
-      SetToRegistry(szRegistryAppGaugeVarioBugs,Appearance.GaugeVarioBugs);
-      changed = true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppGaugeVarioBallast"));
-  if (wp) {
-    if ((int)Appearance.GaugeVarioBallast != wp->GetDataField()->GetAsInteger()) {
-      Appearance.GaugeVarioBallast = (wp->GetDataField()->GetAsInteger() != 0);
-      SetToRegistry(szRegistryAppGaugeVarioBallast,Appearance.GaugeVarioBallast);
-      changed = true;
-    }
-  }
-  #endif // REMOVABLE
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAutoBlank"));
-  if (wp) {
-    if (EnableAutoBlank != (wp->GetDataField()->GetAsInteger()!=0)) {
-      EnableAutoBlank = (wp->GetDataField()->GetAsInteger() != 0);
-      SetToRegistry(szRegistryAutoBlank, EnableAutoBlank);
       changed = true;
     }
   }
