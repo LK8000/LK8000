@@ -1972,12 +1972,19 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
         for (it=_airspaces_of_interest.begin(); it != _airspaces_of_interest.end(); ++it) {
             there_is_msg = (*it)->FinishWarning();
             if (there_is_msg && AIRSPACEWARNINGS) {     // Pass warning messages only if warnings enabled
-              // Add new warning message to queue
-              AirspaceWarningMessage msg;
-              msg.originator = *it;
-              msg.event = (*it)->WarningEvent();
-              msg.warnlevel = (*it)->WarningLevel();
-              _user_warning_queue.push_back(msg);
+              // Do not give warnings during takeoff. In the future, also during landing.
+              // More generally, do not give warnings in the first 1 minute of flight.
+              // If no takeoff, TakeOffTime is 0  and it is ok to give warnings.
+              if ( ((GPS_INFO.Time - Calculated->TakeOffTime) >= 60) ||
+                // consider midnight possible problems
+                  (GPS_INFO.Time < Calculated->TakeOffTime) ) {
+                  // Add new warning message to queue for dlgLKAirspaceWarning popup
+                  AirspaceWarningMessage msg;
+                  msg.originator = *it;
+                  msg.event = (*it)->WarningEvent();
+                  msg.warnlevel = (*it)->WarningLevel();
+                  _user_warning_queue.push_back(msg);
+              }
             }
         }
 
