@@ -260,7 +260,7 @@ typedef struct
 
 
 DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo);
-void BlankDisplay(bool doblank);      
+void UpdateBatteryInfos(void);      
 void DefocusInfoBox(void);
 void Event_SelectInfoBox(int i);
 void Event_ChangeInfoBoxType(int i);

@@ -96,7 +96,6 @@ extern const TCHAR szRegistryCompetitionID[];
 extern const TCHAR szRegistryLoggerID[];        
 extern const TCHAR szRegistryLoggerShort[];        
 extern const TCHAR szRegistryNettoSpeed[];        
-extern const TCHAR szRegistryAutoBlank[];
 extern const TCHAR szRegistryAutoBacklight[]; // VENTA4
 extern const TCHAR szRegistryAutoSoundVolume[]; // VENTA4
 extern const TCHAR szRegistryAircraftCategory[]; // VENTA4
