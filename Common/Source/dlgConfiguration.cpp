@@ -2135,12 +2135,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpBlockSTF"));
-  if (wp) {
-    wp->GetDataField()->Set(EnableBlockSTF);
-    wp->RefreshDisplay();
-  }
-
   /* REMOVE 110608
   wp = (WndProperty*)wf->FindByName(TEXT("prpFAIFinishHeight"));
   if (wp) {
@@ -4328,15 +4322,6 @@ void dlgConfigurationShowModal(void){
     if (FinalGlideTerrain != wp->GetDataField()->GetAsInteger()) {
       FinalGlideTerrain = wp->GetDataField()->GetAsInteger();
       SetToRegistry(szRegistryFinalGlideTerrain, FinalGlideTerrain);
-      changed = true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpBlockSTF"));
-  if (wp) {
-    if (EnableBlockSTF != wp->GetDataField()->GetAsBoolean()) {
-      EnableBlockSTF = wp->GetDataField()->GetAsBoolean();
-      SetToRegistry(szRegistryBlockSTF, EnableBlockSTF);
       changed = true;
     }
   }

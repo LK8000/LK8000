@@ -145,9 +145,6 @@ typedef struct _DERIVED_INFO
   // JMW estimated track bearing at next time step
   double NextTrackBearing;
 
-  // whether Speed-To-Fly audio are valid or not 
-  bool STFMode; 
-
   // JMW energy height excess to slow to best glide speed
   double EnergyHeight;
 

@@ -160,6 +160,7 @@ _@M142_ "Big cities "
 _@M143_ "Big roads "
 _@M144_ "Black"
 _@M145_ "Blank!"
+# 146 REMOVED after v2.3
 _@M146_ "Block speed to fly "
 _@M147_ "Blue lake"
 _@M148_ "Both (Fin+Ave)"

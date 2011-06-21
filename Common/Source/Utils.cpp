@@ -318,7 +318,6 @@ const TCHAR szRegistryCustomKeyModeRightUpCorner[] = TEXT("CustomKeyModeRightUpC
 
 const TCHAR szRegistryAutoAdvance[] = TEXT("AutoAdvance");
 const TCHAR szRegistryUTCOffset[] = TEXT("UTCOffset");
-const TCHAR szRegistryBlockSTF[] = TEXT("BlockSpeedToFly");
 const TCHAR szRegistryAutoZoom[] = TEXT("AutoZoom");
 const TCHAR szRegistryMenuTimeout[] = TEXT("MenuTimeout");
 const TCHAR szRegistryLockSettingsInFlight[] = TEXT("LockSettingsInFlight");
@@ -1213,10 +1212,6 @@ void ReadRegistrySettings(void)
   if (UTCOffset>12*3600) {
     UTCOffset-= 24*3600;
   }
-
-  Temp = 0;
-  GetFromRegistry(szRegistryBlockSTF,&Temp);
-  EnableBlockSTF = (Temp == 1);
 
   Temp = 0;
   GetFromRegistry(szRegistryAutoZoom,&Temp);

@@ -254,8 +254,6 @@ bool                                            AdvanceArmed = false;
 int                                             SafetyAltitudeMode = 0;
 short	ScreenSize=0; // VENTA6
 
-bool EnableBlockSTF = false;
-
 bool GlobalRunning = false; 
 
 #if defined(PNA) || defined(FIVV)  // VENTA-ADDON we call it model and not PNA for possible future usage even for custom PDAs
@@ -3874,13 +3872,8 @@ void DisplayText(void)
       }
       break;
     case 43:
-      if (EnableBlockSTF) {
-		// LKTOKEN _@M1195_ "BLOCK"
-		InfoBoxes[i]->SetComment(gettext(TEXT("_@M1195_")));
-      } else {
-		// LKTOKEN _@M1196_ "DOLPHIN"
-		InfoBoxes[i]->SetComment(gettext(TEXT("_@M1196_")));
-      }
+	// LKTOKEN _@M1196_ "DOLPHIN"
+	InfoBoxes[i]->SetComment(gettext(TEXT("_@M1196_")));
       break;
     case 55: // own team code      
       InfoBoxes[i]->SetComment(TeammateCode);

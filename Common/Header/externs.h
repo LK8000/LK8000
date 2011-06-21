@@ -528,7 +528,6 @@ extern int ClipAltitude;
 extern int AltWarningMargin;
 extern int AutoAdvance;
 extern bool AdvanceArmed;
-extern bool EnableBlockSTF; // block speed to fly instead of dolphin
 extern int MenuTimeoutMax;
 extern int EnableThermalLocator;
 //

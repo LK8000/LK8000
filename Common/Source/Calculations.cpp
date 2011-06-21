@@ -381,11 +381,7 @@ void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   double risk_mc;
   risk_mc = MACCREADY;
 
-  if (EnableBlockSTF) {
-    delta_mc = risk_mc;
-  } else {
-    delta_mc = risk_mc-Calculated->NettoVario;
-  }
+  delta_mc = risk_mc-Calculated->NettoVario;
 
   if (1 || (Calculated->Vario <= risk_mc)) {
     // thermal is worse than mc threshold, so find opt cruise speed
@@ -433,7 +429,6 @@ void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     Calculated->VOpt = GlidePolar::Vminsink*sqrt(n);
   }
 
-  Calculated->STFMode = !Calculated->Circling;
 }
 
 

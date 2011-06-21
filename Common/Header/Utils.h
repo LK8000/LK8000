@@ -154,7 +154,6 @@ extern const TCHAR szRegistryCustomKeyModeRightUpCorner[];
 extern const TCHAR szRegistryAppAveNeedle[];
 extern const TCHAR szRegistryAutoAdvance[];
 extern const TCHAR szRegistryUTCOffset[];
-extern const TCHAR szRegistryBlockSTF[];
 extern const TCHAR szRegistryAutoZoom[];
 extern const TCHAR szRegistryPGCruiseZoom[];
 extern const TCHAR szRegistryPGClimbZoom[];
