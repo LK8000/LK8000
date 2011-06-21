@@ -44,131 +44,18 @@ extern int PDABatteryFlag;
 
 void	AirspeedProcessing(int UpDown)
 {
-#if 0
-  if (UpDown==0) {
-    EnableCalibration = !EnableCalibration;
-	// XXX InputEvents - Is this an automatic or user thing - either way, needs moving
-    if (EnableCalibration) 
-      DoStatusMessage(TEXT("Calibrate ON"));
-    else 
-      DoStatusMessage(TEXT("Calibrate OFF"));
-  }
-#endif
 }
 
 void	TeamCodeProcessing(int UpDown)
 {	
-#if 0
-	int tryCount = 0;
-	int searchSlot = FindFlarmSlot(TeamFlarmIdTarget);
-	int newFlarmSlot = -1;
-
-
-	while (tryCount < FLARM_MAX_TRAFFIC)
-	{
-		if (UpDown == 1)
-		{
-			searchSlot++;
-			if (searchSlot > FLARM_MAX_TRAFFIC - 1)
-			{
-				searchSlot = 0;
-			}
-		}
-		else if (UpDown == -1)
-		{
-			searchSlot--;
-			if (searchSlot < 0)
-			{
-				searchSlot = FLARM_MAX_TRAFFIC - 1;
-			}
-		}
-
-		if (GPS_INFO.FLARM_Traffic[searchSlot].ID != 0)
-		{
-			newFlarmSlot = searchSlot;
-			break; // a new flarmSlot with a valid flarm traffic record was found !
-		}
-		tryCount++;
-	}
-
-	if (newFlarmSlot != -1)
-	{
-		TeamFlarmIdTarget = GPS_INFO.FLARM_Traffic[newFlarmSlot].ID;
-
-		if (wcslen(GPS_INFO.FLARM_Traffic[newFlarmSlot].Name) != 0)
-		{			
-			// copy the 3 first chars from the name to TeamFlarmCNTarget
-			for (int z = 0; z < 3; z++)
-			{
-				if (GPS_INFO.FLARM_Traffic[newFlarmSlot].Name[z] != 0)
-				{
-					TeamFlarmCNTarget[z] = GPS_INFO.FLARM_Traffic[newFlarmSlot].Name[z];
-				}
-				else
-				{
-					TeamFlarmCNTarget[z] = 32; // add space char
-				}
-			}
-			TeamFlarmCNTarget[3] = 0;
-		}
-		else
-		{		
-			TeamFlarmCNTarget[0] = 0;
-		}
-	}
-	else
-	{
-			// no flarm traffic to select!
-			TeamFlarmIdTarget = 0;
-			TeamFlarmCNTarget[0] = 0;
-			return;		
-	}
-#endif
 }
 
 void	AltitudeProcessing(int UpDown)
 {
-#if 0
-  if (SIMMODE) {
-	if(UpDown==1) {
-	  GPS_INFO.Altitude += (100/ALTITUDEMODIFY);
-	}	else if (UpDown==-1)
-	  {
-	    GPS_INFO.Altitude -= (100/ALTITUDEMODIFY);
-	    if(GPS_INFO.Altitude < 0)
-	      GPS_INFO.Altitude = 0;
-	  } else if (UpDown==-2) {
-	  DirectionProcessing(-1);
-	} else if (UpDown==2) {
-	  DirectionProcessing(1);
-	}
-   }
-	return;
-#endif
 }
 
-// VENTA3 QFE
 void	QFEAltitudeProcessing(int UpDown)
 {
-#if 0
-	short step;
-	if ( ( CALCULATED_INFO.NavAltitude - QFEAltitudeOffset ) <10 ) step=1; else step=10;
-	if(UpDown==1) {
-	   QFEAltitudeOffset -= (step/ALTITUDEMODIFY);
-	}	else if (UpDown==-1)
-	  {
-	    QFEAltitudeOffset += (step/ALTITUDEMODIFY);
-/*
-	    if(QFEAltitudeOffset < 0)
-	      QFEAltitudeOffset = 0;
-*/
-	  } else if (UpDown==-2) {
-	  DirectionProcessing(-1);
-	} else if (UpDown==2) {
-	  DirectionProcessing(1);
-	}
-	return;
-#endif
 }
 
 // VENTA3 Alternates processing updown 

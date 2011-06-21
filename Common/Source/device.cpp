@@ -6,8 +6,6 @@
    $Id: device.cpp,v 8.6 2010/12/13 10:21:06 root Exp root $
 */
 
-// 20070413:sgi add NmeaOut support, allow nmea chaining an double port platforms
-
 #include "StdAfx.h"
 
 #include "options.h"
@@ -33,7 +31,6 @@
 //  of deadlock.  So, FlightData must never be locked after Comm.  Ever.
 //  Thankfully WinCE "critical sections" are recursive locks.
 
-#define debugIGNORERESPONCE 0
 
 //  remember that so still COMM port definitions have to be duplicated also inside dlgConfiguration... 
 //  change COMn: to \\.\COMn  without :  so that we can use COM10-COM99 devices
@@ -76,7 +73,6 @@ BOOL devHasBaroSource(void) {
   }
 }
 
-// LK need to fix the problem of dual baro sources
 BOOL devGetBaroAltitude(double *Value){
   // hack, just return GPS_INFO->BaroAltitude
   if (Value == NULL)
@@ -106,9 +102,6 @@ BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token){
 
   }
 
-  #if debugIGNORERESPONCE > 0
-  return(TRUE);
-  #endif
   return(FALSE);
 
 }
@@ -526,29 +519,6 @@ BOOL devLinkTimeout(PDeviceDescriptor_t d)
   return FALSE;
 }
 
-
-#if !110101
-BOOL devPutVoice(PDeviceDescriptor_t d, TCHAR *Sentence)
-{
-  BOOL result = FALSE;
-
-  LockComm();
-  if (d == NULL){
-    for (int i=0; i<NUMDEV; i++){
-      d = &DeviceList[i];
-      if (d->PutVoice != NULL)
-        d->PutVoice(d, Sentence);
-    }
-    result = TRUE;
-  } else {
-    if (d->PutVoice != NULL)
-      result = d->PutVoice(d, Sentence);
-  }
-  UnlockComm();
-
-  return FALSE;
-}
-#endif
 
 BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
 {

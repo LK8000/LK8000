@@ -42,7 +42,6 @@ void				NoProcessing(int UpDown);
 void				WindSpeedProcessing(int UpDown);
 void				WindDirectionProcessing(int UpDown);
 void				MacCreadyProcessing(int UpDown);
-void				AccelerometerProcessing(int UpDown);
 void				NextUpDown(int UpDown);
 void				SpeedProcessing(int UpDown);
 void				DirectionProcessing(int UpDown);

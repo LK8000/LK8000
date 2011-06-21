@@ -150,10 +150,10 @@ extern double LastRangeLandableTime;
 #if defined(PNA) || defined(FIVV)
 extern bool needclipping;
 #endif
-extern bool EnableAutoBacklight; // VENTA4
-extern bool EnableAutoSoundVolume; // VENTA4
+extern bool EnableAutoBacklight;
+extern bool EnableAutoSoundVolume;
 extern DWORD EnableFLARMMap;
-extern short AircraftCategory; // VENTA4
+extern short AircraftCategory;
 extern bool ExtendedVisualGlide;
 extern short Look8000;
 extern bool NewMap;
@@ -455,7 +455,6 @@ extern int LoggerTimeStepCircling;
 extern double MACCREADY;
 extern bool   AutoMacCready;
 extern int  AutoMcMode;
-extern double AccelerometerZero;
 extern double SAFETYALTITUDEARRIVAL;
 extern double SAFETYALTITUDEBREAKOFF;
 extern double SAFETYALTITUDETERRAIN;
@@ -464,7 +463,6 @@ extern double SAFTEYSPEED;
 extern int WindUpdateMode; // unused
 extern double QNH;
 extern int NettoSpeed;
-extern bool EnableCalibration;
 extern bool EnableAuxiliaryInfo;
 extern int debounceTimeout;
 extern bool SetSystemTimeFromGPS;
@@ -512,11 +510,7 @@ extern bool ConfIP31;
 extern bool ConfIP32;
 
 extern bool OverlayClock;
-extern bool EnableSoundVario;
-extern bool EnableSoundTask;
 extern bool EnableSoundModes;
-extern int SoundVolume;
-extern int SoundDeadband;
 extern int DisplayOrientation;
 extern int OldDisplayOrientation;
 extern int AutoOrientScale;

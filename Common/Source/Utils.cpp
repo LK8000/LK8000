@@ -181,7 +181,6 @@ const TCHAR szRegistryAlternate1[]= TEXT("Alternate1"); // VENTA3
 const TCHAR szRegistryAlternate2[]= TEXT("Alternate2");
 const TCHAR szRegistryLiftUnitsValue[] = TEXT("Lift");
 const TCHAR szRegistryLatLonUnits[] = TEXT("LatLonUnits");
-// const TCHAR szRegistryPolarID[] = TEXT("Polar"); // REMOVE
 const TCHAR szRegistryPort1Index[]= TEXT("PortIndex");
 const TCHAR szRegistryPort2Index[]= TEXT("Port2Index");
 // const TCHAR szRegistryPort3Index[]= TEXT("Port3Index");
@@ -661,14 +660,6 @@ void ReadRegistrySettings(void)
   SectorRadius = 10000;
   GetFromRegistry(szRegistrySectorRadius,
 		  &SectorRadius);
-
-  /* REMOVE  110416
-  Temp=37; // discus 2a
-  GetFromRegistry(szRegistryPolarID,
-		  &Temp); 
-  POLARID = (int)Temp;
-  //POLARID=POLARUSEWINPILOTFILE;
-  */
 
   GetRegistryString(szRegistryRegKey, strRegKey, 65);
 
@@ -2323,22 +2314,12 @@ bool ReadWinPilotPolar(void) {
     ExpandLocalPath(szFile);
     StartupStore(_T(". Loading polar file <%s>%s"),szFile,NEWLINE);
 
-/* REMOVE 110416
-    #ifndef HAVEEXCEPTIONS
-    SetRegistryString(szRegistryPolarFile, TEXT("\0"));
-    #endif
-*/
-
     hFile = CreateFile(szFile,GENERIC_READ,0,(LPSECURITY_ATTRIBUTES)NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
 
     if (hFile != INVALID_HANDLE_VALUE ){
 #ifdef HAVEEXCEPTIONS
       __try{
 #endif
-/* REMOVE 110416
-      //int *p=NULL; // test, force an exception
-      //p=0;
-*/
 
         while(ReadString(hFile,READLINE_LENGTH,TempString) && (!foundline)){
 
@@ -2464,68 +2445,11 @@ void CalculateNewPolarCoef(void)
 {
 
   // StartupStore(TEXT(". Calculate New Polar Coef%s"),NEWLINE);
-/* REMOVE 110416
-  static PolarCoefficients_t Polars[7] =
-    {
-      {-0.0538770500225782443497, 0.1323114348, -0.1273364037098239098543},
-      {-0.0532456270195884696748, 0.1509454717, -0.1474304674787072275183},
-      {-0.0598306909918491529791, 0.1896480967, -0.1883344146619101871894},
-      {-0.0303118230885946660507, 0.0771466019, -0.0799469636558217515699},
-      {-0.0222929913566948641563, 0.0318771616, -0.0307925896846546928318},
-      {-0.0430828898445299480353, 0.0746938776, -0.0487285153053357557183},
-      {0.0, 0.0, 0.0}
-
-    };
-
-
-  static WeightCoefficients_t Weights[7] = { {70,190,1},
-                                             {70,250,100},
-                                             {70,240,285},
-                                             {70,287,165},  // w ok!
-                                             {70,400,120},  //
-                                             {70,527,303},
-                                             {0,0,0}
-  };
-  // We use polar 6 : 0=USEWINPILOTPOLARFILE
-  static double WingAreas[7] = { 
-    12.4,  // Ka6
-    11.0,  // ASW19
-    10.5,  // LS8
-    9.0,   // ASW27
-    11.4,  // LS6C-18
-    16.31, // ASW22
-    0};
-  int i;
-
-  ASSERT(sizeof(Polars)/sizeof(Polars[0]) == sizeof(Weights)/sizeof(Weights[0]));
-*/
 
   GlidePolar::WeightOffset=0; // 100131 
 
-#if 110416
-    // Load polar file
-    if (ReadWinPilotPolar()) return;
-#else
-  if (POLARID < (int)(sizeof(Polars)/sizeof(Polars[0])) ){ // 100207 fixed (int)
-    for(i=0;i<3;i++){
-      POLAR[i] = Polars[POLARID][i];
-      WEIGHTS[i] = Weights[POLARID][i];
-    }
-    GlidePolar::WingArea = WingAreas[POLARID];
-  }
-  if (POLARID==POLARUSEWINPILOTFILE) {
-    if (ReadWinPilotPolar())
-    // polar data gets from winpilot file
-      return;
-  } else if (POLARID>POLARUSEWINPILOTFILE){
-    if (ReadWinPilotPolarInternal(POLARID-7))
-      // polar data get from build in table
-      return;
-  } else if (POLARID<POLARUSEWINPILOTFILE){
-    // polar data get from historical table
-    return;
-  }
-#endif
+  // Load polar file
+  if (ReadWinPilotPolar()) return;
 
   // Polar File error, we load a Ka6 just to be safe
 
@@ -2536,14 +2460,6 @@ void CalculateNewPolarCoef(void)
   WEIGHTS[1]=190;
   WEIGHTS[2]=1;
   GlidePolar::WingArea = 12.4;
-/*
-  POLARID = 2;              // do it again with default polar (LS8)
-    for(i=0;i<3;i++){
-      POLAR[i] = Polars[POLARID][i];
-      WEIGHTS[i] = Weights[POLARID][i];
-    }
-    GlidePolar::WingArea = WingAreas[POLARID];
-*/
 
   // Probably called from wrong thread - check
   MessageBoxX(NULL, 

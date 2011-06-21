@@ -22,8 +22,4 @@ double MacCreadyTimeLimit(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 void CalculateOwnTeamCode(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 void CalculateTeammateBearingRange(NMEA_INFO *Basic, DERIVED_INFO *Calculated) ;
 
-void CalibrationInit(void);
-void CalibrationUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-void CalibrationSave(void);
-
 #endif

@@ -251,7 +251,6 @@ extern const TCHAR szRegistryWindArrowStyle[];
 extern const TCHAR szRegistryDisableAutoLogger[];
 extern const TCHAR szRegistryMapFile[];
 extern const TCHAR szRegistryBallastSecsToEmpty[];
-extern const TCHAR szRegistryAccelerometerZero[];
 extern const TCHAR szRegistryUseCustomFonts[];
 extern const TCHAR szRegistryFontInfoWindowFont[]; 
 extern const TCHAR szRegistryFontTitleWindowFont[]; 

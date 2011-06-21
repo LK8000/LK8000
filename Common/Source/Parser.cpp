@@ -35,8 +35,6 @@ FlarmCalculations flarmCalculations;
 #endif
 #endif
 
-extern bool EnableCalibration;
-
 static double EastOrWest(double in, TCHAR EoW);
 static double NorthOrSouth(double in, TCHAR NoS);
 //static double LeftOrRight(double in, TCHAR LoR);
@@ -878,14 +876,10 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 	gpsValid=true;
   }
 
-  // don't set any GPS_INFO if not activeGPS!!
   if (!activeGPS) return TRUE;
 
   GPS_INFO->SatellitesUsed = nSatellites; // 091208
   GPS_INFO->NAVWarning = !gpsValid; // 091208
-
-//  // GPS_INFO->SatellitesUsed = (int)(min(16,StrToDouble(params[6], NULL))); 091205 091208 moved up
-//  GPS_INFO->SatellitesUsed = nSatellites; // 091205
 
   double ggatime=StrToDouble(params[0],NULL);
   // Even with invalid fix, we might still have valid time
@@ -1083,8 +1077,6 @@ BOOL NMEAParser::PTAS1(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   return FALSE;
 }
 
-
-double AccelerometerZero=100.0;
 
 void FLARM_RefreshSlots(NMEA_INFO *GPS_INFO) {
   int i;

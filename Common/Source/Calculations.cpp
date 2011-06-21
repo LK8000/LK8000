@@ -486,44 +486,6 @@ void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 }
 
 
-void AudioVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
-  /* JMW disabled, no longer used
-#define AUDIOSCALE 100/7.5  // +/- 7.5 m/s range
-
-  if (
-      (Basic->AirspeedAvailable && 
-       (Basic->IndicatedAirspeed >= NettoSpeed))
-      || 
-      (!Basic->AirspeedAvailable &&
-       (Basic->Speed >= NettoSpeed))
-      ) {
-
-    //    VarioSound_SetV((short)((Calculated->NettoVario-GlidePolar::minsink)*AUDIOSCALE));
-
-  } else {
-    if (Basic->VarioAvailable && !ReplayLogger::IsEnabled()) {
-      //      VarioSound_SetV((short)(Basic->Vario*AUDIOSCALE));
-    } else {
-      //      VarioSound_SetV((short)(Calculated->Vario*AUDIOSCALE));
-    }
-  }
-
-  double vdiff;
-
-  if (Basic->AirspeedAvailable) {
-    if (Basic->AirspeedAvailable) {
-      vdiff = 100*(1.0-Calculated->VOpt/(Basic->IndicatedAirspeed+0.01));
-    } else {
-      vdiff = 100*(1.0-Calculated->VOpt/(Basic->Speed+0.01));
-    }
-    //    VarioSound_SetVAlt((short)(vdiff));
-  }
-
-  //  VarioSound_SoundParam();
-  */
-}
-
-
 BOOL DoCalculationsVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   static double LastTime = 0;
@@ -541,9 +503,6 @@ BOOL DoCalculationsVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   return TRUE;
 }
-
-
-bool EnableCalibration = false;
 
 
 void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
@@ -1207,10 +1166,6 @@ void Vario(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   } else {
     // get value from instrument
     Calculated->Vario = Basic->Vario;
-    // we don't bother with sound here as it is polled at a 
-    // faster rate in the DoVarioCalcs methods
-
-    // CalibrationUpdate(Basic, Calculated);
   }
 }
 

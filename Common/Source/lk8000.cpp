@@ -3197,11 +3197,6 @@ void Shutdown(void) {
   StartupStore(TEXT(". Stop COM devices%s"),NEWLINE);
   devCloseAll();
 
-  // SaveCalculationsPersist(&CALCULATED_INFO); // 091119 DISABLED
-#if (EXPERIMENTAL > 0)
-  //  CalibrationSave();
-#endif
-
   CloseFLARMDetails();
 
   ProgramStarted = psInitInProgress;
