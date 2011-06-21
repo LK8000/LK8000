@@ -245,7 +245,6 @@ extern const TCHAR szRegistryLatLonUnits[];
 #if USERLEVEL
 extern const TCHAR szRegistryUserLevel[];
 #endif
-extern const TCHAR szRegistryRiskGamma[];
 extern const TCHAR szRegistryDisableAutoLogger[];
 extern const TCHAR szRegistryMapFile[];
 extern const TCHAR szRegistryBallastSecsToEmpty[];

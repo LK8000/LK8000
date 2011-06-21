@@ -24,7 +24,6 @@ using std::min;
 using std::max;
 #endif
 
-double GlidePolar::RiskGamma = 0.0;
 double GlidePolar::polar_a;
 double GlidePolar::polar_b;
 double GlidePolar::polar_c;
@@ -750,30 +749,8 @@ double GlidePolar::MacCreadyAltitude(double emcready,
 
 }
 
-static double FRiskFunction(double x, double k) {
-  return 2.0/(1.0+exp(-x*k))-1.0;
-}
-
 double GlidePolar::MacCreadyRisk(double HeightAboveTerrain, 
                                  double MaxThermalHeight, 
                                  double MC) {
-  double riskmc = MC;
-
-  double hthis = max(1.0, HeightAboveTerrain);
-  double hmax = max(hthis, MaxThermalHeight);
-  double x = hthis/hmax;
-  double f;
-  
-  if (RiskGamma<0.1) {
     return MC;
-  } else if (RiskGamma>0.9) {
-    f = x;
-  } else {
-    double k;
-    k = 1.0/(RiskGamma*RiskGamma)-1.0;
-    f = FRiskFunction(x, k)/FRiskFunction(1.0, k);
-  }
-  double mmin = 0; // min(MC,AbortSafetyMacCready());
-  riskmc = f*riskmc+(1-f)*mmin;
-  return riskmc;
 }

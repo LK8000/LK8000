@@ -579,6 +579,7 @@ Geometry values range 0-7 but  only some of them are really available.
 ATTENTION: LK8000 only supports 5 boxes on the right if in landscape mode, and classic top and bottom lines if in portrait mode. 
 If you use other geometries, the LK8000 will not work properly.
 
+# 233 REMOVED after v2.3
 @233
 The STF risk factor reduces the MacCready setting used to calculate speed to fly as the glider gets low, in order to compensate for risk. 
 Set to 0.0 for no compensation, 1.0 scales Mc linearly with height.

@@ -35,7 +35,6 @@ class GlidePolar {
   static bool AbortSafetyUseCurrent;
 
   //  static double BallastFactor;
-  static double RiskGamma;
   static double polar_a;
   static double polar_b;
   static double polar_c;

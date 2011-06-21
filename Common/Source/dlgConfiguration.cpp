@@ -2379,12 +2379,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRiskGamma"));
-  if (wp) {
-    wp->GetDataField()->Set(GlidePolar::RiskGamma);
-    wp->RefreshDisplay();
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpAnimation"));
   if (wp) {
     wp->GetDataField()->Set(EnableAnimation);
@@ -3837,17 +3831,6 @@ void dlgConfigurationShowModal(void){
       GlidePolar::SafetyMacCready = val;
       SetToRegistry(szRegistrySafetyMacCready, 
 		    iround(GlidePolar::SafetyMacCready*10));
-      changed = true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpRiskGamma"));
-  if (wp) {
-    val = wp->GetDataField()->GetAsFloat();
-    if (GlidePolar::RiskGamma != val) {
-      GlidePolar::RiskGamma = val;
-      SetToRegistry(szRegistryRiskGamma, 
-		    iround(GlidePolar::RiskGamma*10));
       changed = true;
     }
   }

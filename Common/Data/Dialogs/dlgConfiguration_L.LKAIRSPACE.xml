@@ -630,9 +630,6 @@
 <WndProperty Name="prpAppInfoBoxGeom" Caption="_@M355_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H232_">
 <DataField name="" DataType="enum" Min=0 Max=50 Step=1/>
 </WndProperty>
-<WndProperty Name="prpRiskGamma" Caption="_@M572_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H233_">
-<DataField name="" DataType="double" DisplayFormat="%.1f %s" EditFormat="%.1f" Min=0 Max=1 Step=0.1/>
-</WndProperty>
 <WndProperty Name="prpBlockSTF" Caption="_@M146_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H234_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>
