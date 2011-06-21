@@ -361,6 +361,9 @@ double LowPassFilter(double y_last, double x_in, double fact) {
 }
 
 
+//
+// Sollfarh / Dolphin Speed calculator
+//
 void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   double n;
   // get load factor
@@ -370,21 +373,14 @@ void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     n = fabs(Calculated->Gload);
   }
 
-  // calculate optimum cruise speed in current track direction
-  // this still makes use of mode, so it should agree with
-  // Vmcready if the track bearing is the best cruise track
-  // this does assume g loading of 1.0
-  
-  // this is basically a dolphin soaring calculator
-  
   double delta_mc;
-  double risk_mc;
-  risk_mc = MACCREADY;
+  double current_mc = MACCREADY;
 
-  delta_mc = risk_mc-Calculated->NettoVario;
+  delta_mc = current_mc-Calculated->NettoVario;
 
-  if (1 || (Calculated->Vario <= risk_mc)) {
-    // thermal is worse than mc threshold, so find opt cruise speed
+  // TODO FIX should we use this approach?
+  if (1 || (Calculated->Vario <= current_mc)) {
+    // airmass value is worse than mc threshold, so find opt cruise speed
 
     double VOptnew;
     
@@ -413,7 +409,7 @@ void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     
     // put low pass filter on VOpt so display doesn't jump around
     // too much
-    if (Calculated->Vario <= risk_mc) {
+    if (Calculated->Vario <= current_mc) {
       Calculated->VOpt = max(Calculated->VOpt,
 			     GlidePolar::Vminsink*sqrt(n));
     } else {
@@ -423,8 +419,7 @@ void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     Calculated->VOpt = LowPassFilter(Calculated->VOpt,VOptnew, 0.6);
     
   } else {
-    // this thermal is better than maccready, so fly at minimum sink
-    // speed
+    // this air mass is better than maccready, so fly at minimum sink speed
     // calculate speed of min sink adjusted for load factor 
     Calculated->VOpt = GlidePolar::Vminsink*sqrt(n);
   }
