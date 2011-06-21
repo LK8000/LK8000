@@ -44,16 +44,6 @@ void ReadAirspace(void);
 int FindIndex(HWND hWnd);
 void ReadNewTask(HWND hDlg);
 
-// 110405 DO NOT CHANGE THIS LIST. We should get rid of it shortly.
-// This list is used in dlgConfiguration. We are renaming WinPilot File there.
-const TCHAR *PolarLabels[] = {TEXT("Vintage - Ka6"),
-			      TEXT("Club - ASW19"),
-			      TEXT("Standard - LS8"),
-			      TEXT("15M - ASW27"),
-			      TEXT("18M - LS6C"),
-			      TEXT("Open - ASW22"),
-			      TEXT("WinPilot File")};	// This is item [6] changed in dlgConfiguration
-
 
 LRESULT CALLBACK Progress(HWND hDlg, UINT message, 
                           WPARAM wParam, LPARAM lParam)
