@@ -445,10 +445,6 @@ typedef enum{
         umGAaircraft,
 } AircraftCategory_t;
 typedef enum{
-	mlDisabled=0,
-	mlEnabled,
-} UseMapLock_t;
-typedef enum{
 	amDisabled=0,
 	amEnabled,
 } ActiveMap_t;

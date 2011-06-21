@@ -58,8 +58,6 @@ void	LKRunStartEnd(bool);
 void	InitNewMap();
 void	InitScreenSize();
 void	InitLK8000();
-void	LockMap();
-void	UnlockMap();
 int   GetFontRenderer();
 bool	LockMode(short lmode);
 void	BottomBarChange(bool advance);

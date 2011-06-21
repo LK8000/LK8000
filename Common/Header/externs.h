@@ -169,8 +169,6 @@ extern short GlideBarMode;
 extern short ArrivalValue;
 extern short NewMapDeclutter;
 extern short AverEffTime;
-extern bool MapLock;	// map locking status
-extern bool UseMapLock;
 extern bool ActiveMap; // 100318
 extern bool DrawBottom;
 extern short BottomMode; // Stripe number

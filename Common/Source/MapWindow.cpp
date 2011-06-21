@@ -1470,36 +1470,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 		break;
       }
 
-      if (UseMapLock&&NewMap) {
-        // ignorenext=true; 100318
-	if (MapLock)
-	{
-		// ignorenext only when expecting a double click when map is locked! 
-        	ignorenext=true; 
-		if (DrawBottom) { 
-	      		Y = HIWORD(lParam); 
-		        // Unlock map only if double clicking on real map, not on navboxes!
-			if ( Y < (MapWindow::MapRect.bottom-MapWindow::MapRect.top-BottomSize-NIBLSCALE(15)) ) {
-				  dwDownTime= 0L;
-				  DefocusInfoBox();
-				  SetFocus(hWnd);
-				  iboxtoclick=true; 
-	  			  UnlockMap();
-	  			  break;
-			} 
-		// old screen mode, dblclk on real map, unlock..
-		} else {
-			  dwDownTime= 0L;
-			  DefocusInfoBox();
-			  iboxtoclick=true; 
-			  SetFocus(hWnd);
-			  UnlockMap();
-			  break;
-		}
-
-        }
-      }
-
 	// only when activemap (which means newmap is on) is off
       if (ActiveMap) ignorenext=true;
       // 090721 doubleclick no more used in lk8000
@@ -1802,43 +1772,6 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 
       } // end newmap preliminar checks
 
-      if(NewMap&&UseMapLock&&MapLock&&!mode.AnyPan()&&!(dontdrawthemap)) 
-      {
-		// With LOCKED map...
-		// When you single click on the map, here you come.
-		// When you press double click to release lock, you fall here, also.
-
-	      if ((VirtualKeys==(VirtualKeys_t)vkEnabled) && (dwInterval>= DOUBLECLICKINTERVAL)) {   
-			wParam=ProcessVirtualKey(X,Y,dwInterval,LKGESTURE_NONE);
-			if (wParam==0) {
-				// Here we fall when you press for example long center map or do a gesture
-				// DoStatusMessage(_T("ERR-035 Invalid Virtual Key"));
-				break;
-			}
-			// Otherwise its a vk up/down/enter and must be handled, passing vk code down
-			goto Wirth; 
-	      }
-
-	  // while locked, any keypress on the map which is not a virtual key will unfocus infoboxes
-	  // but first check if it was already unfocused so you will not play a click 
-	  if (InfoFocus>=0) {
-	  	DefocusInfoBox();
-	  	SetFocus(hWnd);
-		#ifndef DISABLEAUDIO
-         	 if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
-		 iboxtoclick=true; 
-		 // DoStatusMessage(_T("Map is locked, defocus ibox")); 
-	  } else {
-		// newmap on, maplock on, NO VK, special case 
-		if (  DrawBottom && IsMapFullScreen() && (Y >= (rc.bottom-BottomSize)) ) {
-			goto Escamotage; 
-		}
-		// DoStatusMessage(_T("Map is locked, skipping")); 
-	  }
-	  break;
-      }
-
       if (dwInterval == 0) {
 		break; // should be impossible
       }
@@ -1939,26 +1872,6 @@ Escamotage:
       }
 
       if (!mode.Is(Mode::MODE_TARGET_PAN)) {
-		// if map is locked and we are here, then if infobox are under focus accept the click
-		// as an order to defocus. Otherwise since we are under lock condition we simply
-		// ignore the click and break out.
-		//
-		if (NewMap&&UseMapLock&&MapLock) { 
-			if (InfoFocus>=0) {
-				// DoStatusMessage(_T("Map is locked, defocus ibox")); 
-				DefocusInfoBox();
-				SetFocus(hWnd);
-				#ifndef DISABLEAUDIO
-				 if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-				#endif
-				iboxtoclick=true; 
-			} else {
-				// ignore click
-				// DoStatusMessage(_T("PAN map is locked, skipping")); 
-			}
-			break;
-		}
-		//
 		// We need to defocus infoboxes on demand here.  
 		// Probably should be a good idea to use it also for standard old map with no VK
 		// We do it also for old standard map with no VK.
@@ -2789,16 +2702,6 @@ void MapWindow::RenderMapWindow(  RECT rc)
   #endif
 
   DrawLKAlarms(hdcDrawWindow, rc);
-
-  /*
-   * This may not be the correct place for locking map. 
-   * In fact we just need once in a second somewhere to check for the following:
-   * 	if infobox are under focus and maplocking active then keep it locked
-   */
-  if ( InfoWindowActive && UseMapLock && NewMap ) {
-              LockMap();
-  }
-
 
   SelectObject(hdcDrawWindow, hfOld);
 

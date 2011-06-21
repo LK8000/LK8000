@@ -432,6 +432,7 @@ _@M415_ "Lower"
 _@M416_ "MacCready value "
 _@M417_ "Magenta"
 _@M418_ "Manual"
+# 419 no more used after 2.3
 _@M419_ "Map Locking "
 _@M420_ "Map file "
 _@M421_ "Map labels OFF"

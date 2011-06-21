@@ -243,7 +243,6 @@ const TCHAR szRegistryAircraftCategory[]= TEXT("AircraftCategory");
 const TCHAR szRegistryExtendedVisualGlide[]= TEXT("ExtVisualGlide");
 const TCHAR szRegistryLook8000[]= TEXT("Look8000");
 const TCHAR szRegistryAltArrivMode[]= TEXT("AltArrivMode");
-const TCHAR szRegistryUseMapLock[]= TEXT("UseMapLock3");
 const TCHAR szRegistryActiveMap[]= TEXT("ActiveMap"); // 100318
 const TCHAR szRegistryBestWarning[]= TEXT("BestWarning");
 const TCHAR szRegistryThermalBar[]= TEXT("ThermalBar");
@@ -1034,18 +1033,6 @@ void ReadRegistrySettings(void)
   Temp=0; // 100724 OFF by default
   GetFromRegistry(szRegistryVirtualKeys,&Temp); 
   VirtualKeys = Temp;
-
-  // REMOVE UseMapLock in the near future - currently inside engineering
-  #if 0
-  if ( AircraftCategory == (AircraftCategory_t)umParaglider )
-  	Temp = 1;
-  else
-  	Temp = 0;
-  #else
-  Temp=0;
-  #endif
-  GetFromRegistry(szRegistryUseMapLock,&Temp); 
-  UseMapLock = (Temp==1);
 
   Temp = 0;
   GetFromRegistry(szRegistryActiveMap,&Temp); 

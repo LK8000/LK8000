@@ -618,9 +618,6 @@
 <WndProperty Name="prpVirtualKeys" Caption="_@M787_"  X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H179_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>
-<WndProperty Name="prpUseMapLock" Caption="_@M419_" X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H181_">
-<DataField name="" DataType="boolean" />
-</WndProperty>
 <WndProperty Name="prpAirspaceOutline" Caption="_@M771_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H114_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>

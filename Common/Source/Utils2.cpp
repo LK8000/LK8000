@@ -470,13 +470,6 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		//
 		if (Y>= s_bottomY ) { // TESTFIX 090930
 
-			if ( UseMapLock ) {
-				if (MapLock==false) {
-					if (!MapWindow::mode.AnyPan()) LockMap();
-					MapWindow::RefreshMap();
-					return 0;
-				}
-			}
 			if ( X>s_xright ) {
 				// standard configurable mode
 				if (keytime >=CustomKeyTime) {
@@ -1754,30 +1747,6 @@ void InitLK8000()
 			break;
 	}
 
-}
-
-void LockMap(){
-	if (MapLock==false) {
-		// DoStatusMessage(_T("MAP LOCKED"));
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) 
-		        PlayResource(TEXT("IDR_WAV_GREEN"));
-		#endif
-		DefocusInfoBox();
-	}
-	MapLock=true;
-}
-
-void UnlockMap(){
-	if (MapLock) {
-		// DoStatusMessage(_T("MAP UNLOCKED")); // annoying
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) 
-		        LKSound(_T("UNLOCKMAP.WAV"));
-		#endif
-	}
-
-	MapLock=false;
 }
 
 // colorcode is taken from a 5 bit AsInt union

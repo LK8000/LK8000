@@ -1441,16 +1441,6 @@ EndOfNavboxes:
 
 afterWind:
 
-   if ( UseMapLock && MapLock ) {
-	_stprintf(Buffer,TEXT("MAPLOCK"));
-  	SelectObject(hdc, LKMAPFONT); // FIXFONT
-  	GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &TextSize);
-	if (DrawBottom)
-  		LKWriteText(hdc, Buffer, ((rc.right-rc.left-leftmargin)/2)+leftmargin, rc.bottom - BottomSize- (TextSize.cy/2)-NIBLSCALE(2) , 0, WTMODE_OUTLINED,WTALIGN_CENTER,RGB_WHITE, true);
-  	else
-  		LKWriteText(hdc, Buffer, ((rc.right-rc.left-leftmargin)/2)+leftmargin,  rc.bottom - (TextSize.cy/2)-NIBLSCALE(2) , 0, WTMODE_OUTLINED,WTALIGN_CENTER,RGB_WHITE, true);
-
-   }
    if ( !MapWindow::IsMapFullScreen() && InfoFocus>=0 ) {
 
 	_stprintf(Buffer,TEXT("IBOX"));

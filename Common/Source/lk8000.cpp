@@ -401,8 +401,6 @@ int  OverColor=0;
 COLORREF OverColorRef;
 int  TpFilter=0;
 short MapBox=0;
-bool MapLock=false;
-bool UseMapLock=false;
 bool ActiveMap=true;
 short GlideBarMode=0;
 short OverlaySize=0;
@@ -4115,7 +4113,7 @@ void CommonProcessTimer()
 #endif
 
   // VNT Maplock now has full control on focus/defocus on infoboxes
-  if(InfoWindowActive && !UseMapLock) 
+  if(InfoWindowActive)
     {
       if (!dlgAirspaceWarningVisible()) {
 	// JMW prevent switching to map window if in airspace warning dialog
