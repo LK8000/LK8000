@@ -734,20 +734,6 @@ void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
   UnlockComm();
 }
 
-void VarioWriteNMEA(const TCHAR *text)
-{
-  TCHAR tmp[512];
-
-  devFormatNMEAString(tmp, 512, text);
-
-  LockComm();
-  for (int i = 0; i < NUMDEV; i++)
-    if (_tcscmp(DeviceList[i].Name, TEXT("Vega")) == 0)
-      if (DeviceList[i].Com)
-        DeviceList[i].Com->WriteString(tmp);
-  UnlockComm();
-}
-
 
 BOOL devPutVolume(PDeviceDescriptor_t d, int Volume)
 {

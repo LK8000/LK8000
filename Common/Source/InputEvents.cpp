@@ -1850,8 +1850,6 @@ void InputEvents::eventWind(const TCHAR *misc) {
 }
 
 
-int jmw_demo=0;
-
 // SendNMEA
 //  Sends a user-defined NMEA string to an external instrument.
 //   The string sent is prefixed with the start character '$'
@@ -1860,7 +1858,8 @@ int jmw_demo=0;
 //
 void InputEvents::eventSendNMEA(const TCHAR *misc) {
   if (misc) {
-    VarioWriteNMEA(misc);
+    // Currently disabled, because nonexistent function
+    // PortWriteNMEA(misc);
   }
 }
 

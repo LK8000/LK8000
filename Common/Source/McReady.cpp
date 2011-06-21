@@ -130,27 +130,6 @@ void GlidePolar::SetBallast() {
     }
   UnlockFlightData();
 
-  int polar_ai = iround((polar_a*10)*4096);
-  int polar_bi = iround((polar_b)*4096);
-  int polar_ci = iround((polar_c/10)*4096);
-  int minsinki = -iround(minsink*10);
-  int vbestldi = iround(Vbestld*10);
-  int bestldi = iround(bestld*10);
-
-  if (GPS_INFO.VarioAvailable) {
-
-    TCHAR nmeabuf[100];
-    wsprintf(nmeabuf,TEXT("PDVGP,%d,%d,%d,%d,%d,%d,0"),
-	     polar_ai,
-	     polar_bi,
-	     polar_ci,
-	     minsinki,
-	     vbestldi,
-	     bestldi);
-
-    VarioWriteNMEA(nmeabuf);
-  }
-
 }
 
 

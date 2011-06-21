@@ -64,7 +64,6 @@ typedef	DeviceDescriptor_t *PDeviceDescriptor_t;
 #define Port2WriteNMEA(s)	devWriteNMEAString(devB(), s)
 
 void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *Text);
-void VarioWriteNMEA(const TCHAR *Text);
 void VarioWriteSettings(void);
 PDeviceDescriptor_t devVarioFindVega(void);
 
