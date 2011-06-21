@@ -379,16 +379,7 @@ void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   
   double delta_mc;
   double risk_mc;
-  if (Calculated->TaskAltitudeDifference> -120) {
-    risk_mc = MACCREADY;
-  } else {
-    risk_mc = 
-      GlidePolar::MacCreadyRisk(Calculated->NavAltitude+Calculated->EnergyHeight
-                                -SAFETYALTITUDEBREAKOFF-Calculated->TerrainBase,
-                                Calculated->MaxThermalHeight,
-                                MACCREADY);
-  }
-  Calculated->MacCreadyRisk = risk_mc;
+  risk_mc = MACCREADY;
 
   if (EnableBlockSTF) {
     delta_mc = risk_mc;

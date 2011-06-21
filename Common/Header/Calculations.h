@@ -210,7 +210,6 @@ typedef struct _DERIVED_INFO
   double BankAngle;
   double PitchAngle;
   double GPSVarioTE;
-  double MacCreadyRisk;
   double TaskTimeToGoTurningNow;
   double TotalHeightClimb;
   double DistanceVario;

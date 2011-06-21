@@ -749,8 +749,3 @@ double GlidePolar::MacCreadyAltitude(double emcready,
 
 }
 
-double GlidePolar::MacCreadyRisk(double HeightAboveTerrain, 
-                                 double MaxThermalHeight, 
-                                 double MC) {
-    return MC;
-}

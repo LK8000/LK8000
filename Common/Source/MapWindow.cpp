@@ -1812,7 +1812,6 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
       // Process faster clicks here and no precision, but let DBLCLK pass through
       // VK are used in the bottom line in this case, forced on for this situation.
       if (  DrawBottom && IsMapFullScreen() && (Y >= (rc.bottom-BottomSize)) ) {
-Escamotage:
 		// DoStatusMessage(_T("Click on hidden map ignored")); 
 
 		// do not process virtual key if it is timed as a DBLCLK

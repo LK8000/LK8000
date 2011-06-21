@@ -24,9 +24,6 @@ class GlidePolar {
                                   double AltitudeAboveTarget=1.0e6,
 				  double cruise_efficiency=1.0);
 
-  static double MacCreadyRisk(double HeightAboveTerrain, double MaxThermalHeight,
-                              double MCREADY);
-
   static void SetBallast();
   static double GetAUW();
 

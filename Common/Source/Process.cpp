@@ -348,10 +348,10 @@ void FormatterLowWarning::AssignValue(int i) {
     minimum = ALTITUDEMODIFY*SAFETYALTITUDETERRAIN;
     break;
   case 2:
-    minimum = 0.5*LIFTMODIFY*CALCULATED_INFO.MacCreadyRisk;
+    minimum = 0.5*LIFTMODIFY*MACCREADY;
     break;
   case 21:
-    minimum = 0.667*LIFTMODIFY*CALCULATED_INFO.MacCreadyRisk;
+    minimum = 0.667*LIFTMODIFY*MACCREADY;
     break;
   default:
     break;
