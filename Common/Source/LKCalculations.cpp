@@ -173,8 +173,8 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    LKForceDoNearest=false;
 
    if (!WayPointList) return;
-   // No need to check airports, cannot be better
-   if ( RangeLandableNumber==0) {
+   // No need to check airports, cannot be better because Airports are landables
+   if ( RangeLandableNumber==0 && RangeTurnpointNumber==0) {
 	return;
    }
 
@@ -463,6 +463,9 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		if (kt+1<MAXRANGETURNPOINT) { // never mind if we use maxrange-2
 			RangeTurnpointIndex[kt++]=i;
 			RangeTurnpointNumber++;
+			#if DEBUG_DORANGE
+			StartupStore(_T(".. insert turnpoint <%s>\n"),WayPointList[i].Name); 
+			#endif
 		}
 		#if DEBUG_DORANGE
 		else {
@@ -483,7 +486,9 @@ LabelLandables:
 	if (kl+1<MAXRANGELANDABLE) { // never mind if we use maxrange-2
 		RangeLandableIndex[kl++]=i;
 		RangeLandableNumber++;
-		// StartupStore(_T(".. insert landable <%s>\n"),WayPointList[i].Name); 
+		#if DEBUG_DORANGE
+		StartupStore(_T(".. insert landable <%s>\n"),WayPointList[i].Name); 
+		#endif
 	}
 	#if DEBUG_DORANGE
 	else {
