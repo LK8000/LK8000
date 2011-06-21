@@ -386,7 +386,6 @@ const TCHAR szRegistrySnailWidthScale[] = TEXT("SnailWidthScale");
 const TCHAR szRegistryUserLevel[] = TEXT("UserLevel");
 #endif
 const TCHAR szRegistryRiskGamma[] = TEXT("RiskGamma");
-const TCHAR szRegistryWindArrowStyle[] = TEXT("WindArrowStyle");
 const TCHAR szRegistryDisableAutoLogger[] = TEXT("DisableAutoLogger");
 const TCHAR szRegistryMapFile[]=	 TEXT("MapFile"); // pL
 const TCHAR szRegistryBallastSecsToEmpty[]=	 TEXT("BallastSecsToEmpty"); 
@@ -1419,11 +1418,6 @@ void ReadRegistrySettings(void)
   Temp  = iround(GlidePolar::RiskGamma*10);
   GetFromRegistry(szRegistryRiskGamma,&Temp);
   GlidePolar::RiskGamma = Temp/10.0;
-
-  //Temp = MapWindow::WindArrowStyle;
-  Temp=(CompassAppearance_t)apCompassAltA; // VNT9 default
-  GetFromRegistry(szRegistryWindArrowStyle,&Temp);
-  MapWindow::WindArrowStyle = Temp;
 
   Temp = DisableAutoLogger;
   GetFromRegistry(szRegistryDisableAutoLogger,&Temp);

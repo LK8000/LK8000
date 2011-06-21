@@ -365,6 +365,7 @@ For example, a gesture from left to right is a TURN PAGE LEFT on Iphones and man
 The same gesture otherwise will result in a TURN PAGE RIGHT.
 Default is INVERTED, opposite to Iphone usage.
 
+# 181 REMOVED after 2.3
 @181
 If enabled, clicking on a navbox will lock the moving map preventing waypoint selection or zoom actions. Double click on the moving map (NOT on navboxes) will unlock the map.
 This feature can be useful to PG and delta pilots, and by default it is OFF. 
@@ -567,6 +568,7 @@ If you want Visual Glide to display also moving circles or arcs, in addition to 
 @230
 Defines the alignment of the status message box, either centered or in the top left corner.
 
+# 231 REMOVED after v2.3
 @231
 Determines the way the wind arrow is drawn on the map.
 [Arrow head] Draws an arrow head only

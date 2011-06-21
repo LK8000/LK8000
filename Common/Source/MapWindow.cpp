@@ -162,7 +162,6 @@ bool MapWindow::EnableTrailDrift=false;
 int MapWindow::GliderScreenPosition = 40; // 20% from bottom
 int MapWindow::GliderScreenPositionX = 50;  // 100216
 int MapWindow::GliderScreenPositionY = 40;
-int MapWindow::WindArrowStyle = 0;
 
 BOOL MapWindow::CLOSETHREAD = FALSE;
 BOOL MapWindow::THREADRUNNING = TRUE;
@@ -3831,21 +3830,21 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
   PolygonRotateShift(Arrow, 7, Start.x, Start.y, 
 		     DerivedDrawInfo.WindBearing-DisplayAngle);
 
-  if (WindArrowStyle==1) {
-    POINT Tail[2] = {{0,-20}, {0,-26-min(20,wmag)*3}};
-    double angle = AngleLimit360(DerivedDrawInfo.WindBearing-DisplayAngle);
-    for(i=0; i<2; i++) {
-      if (InfoBoxLayout::scale>1) {
-        Tail[i].x *= InfoBoxLayout::scale;
-        Tail[i].y *= InfoBoxLayout::scale;
-      }
-      protateshift(Tail[i], angle, Start.x, Start.y);
+  // ------------------------------------------------------------------
+  // Draw Wind Arrow
+  POINT Tail[2] = {{0,-20}, {0,-26-min(20,wmag)*3}};
+  double angle = AngleLimit360(DerivedDrawInfo.WindBearing-DisplayAngle);
+  for(i=0; i<2; i++) {
+    if (InfoBoxLayout::scale>1) {
+      Tail[i].x *= InfoBoxLayout::scale;
+      Tail[i].y *= InfoBoxLayout::scale;
     }
-
-    // optionally draw dashed line
-    _DrawLine(hdc, PS_DASH, 1, Tail[0], Tail[1], RGB(0,0,0), rc);
+    protateshift(Tail[i], angle, Start.x, Start.y);
   }
+  // optionally draw dashed line for wind arrow
+  _DrawLine(hdc, PS_DASH, 1, Tail[0], Tail[1], RGB(0,0,0), rc);
 
+  // Paint wind value only while circling
   if ( !(NewMap&&Look8000) || (mode.Is(Mode::MODE_CIRCLING)) ) {
 
   	_itot(iround(DerivedDrawInfo.WindSpeed * SPEEDMODIFY), sTmp, 10);
@@ -3856,10 +3855,9 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
   	} else {
   	  TextInBox(hdc, sTmp, Arrow[6].x-kx, Arrow[6].y, 0, TextInBoxMode);
   	}
-
   }
-
   Polygon(hdc,Arrow,5);
+  // ------------------------------------------------------------------
 
   SelectObject(hdc, hbOld);
   SelectObject(hdc, hpOld);

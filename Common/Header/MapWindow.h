@@ -706,7 +706,6 @@ class MapWindow {
   #endif
   static bool RenderTimeAvailable();
   static int SnailWidthScale; 
-  static int WindArrowStyle;
   static bool TargetDragged(double *longitude, double *latitude);
 
  private:

@@ -2084,18 +2084,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWindArrowStyle"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M99_ = "Arrow head" 
-    dfe->addEnumText(gettext(TEXT("_@M99_")));
-	// LKTOKEN  _@M310_ = "Full arrow" 
-    dfe->addEnumText(gettext(TEXT("_@M310_")));
-    wp->GetDataField()->Set(MapWindow::WindArrowStyle);
-    wp->RefreshDisplay();
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoWind"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -4294,15 +4282,6 @@ void dlgConfigurationShowModal(void){
     if (AutoWindMode != wp->GetDataField()->GetAsInteger()) {
       AutoWindMode = wp->GetDataField()->GetAsInteger();
       SetToRegistry(szRegistryAutoWind, AutoWindMode);
-      changed = true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWindArrowStyle"));
-  if (wp) {
-    if (MapWindow::WindArrowStyle != wp->GetDataField()->GetAsInteger()) {
-      MapWindow::WindArrowStyle = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryWindArrowStyle, MapWindow::WindArrowStyle);
       changed = true;
     }
   }
