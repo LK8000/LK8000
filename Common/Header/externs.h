@@ -53,7 +53,6 @@ extern int UTCOffset;
 
 extern int	GlobalModelType; 
 extern TCHAR	GlobalModelName[];
-extern float	GlobalEllipse;
 extern TCHAR *	gmfpathname();
 extern TCHAR *	gmfbasename();
 extern int		GetGlobalModelName();

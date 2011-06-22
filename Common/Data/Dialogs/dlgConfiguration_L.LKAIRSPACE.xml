@@ -384,9 +384,6 @@
 <WndProperty Name="prpLocalTime" Caption="_@M402_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 ReadOnly=1/>
 </WndFrame>
 <WndFrame Name="frmInterface" X=0 Y=0 Width=235 Height=222 Font=2>
-<WndProperty Name="prpActiveMap" Caption="_@M53_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H178_">
-<DataField name="" DataType="boolean" />
-</WndProperty>
 <WndProperty Name="prpIphoneGestures" Caption="_@M346_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H180_">
 <DataField name="" DataType="enum" Min="0" Max="1" Step="1" />
 </WndProperty>
@@ -620,6 +617,9 @@
 </WndProperty>
 <WndProperty Name="prpAppInfoBoxGeom" Caption="_@M355_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H232_">
 <DataField name="" DataType="enum" Min=0 Max=50 Step=1/>
+</WndProperty>
+<WndProperty Name="prpActiveMap" Caption="_@M53_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H178_">
+<DataField name="" DataType="boolean" />
 </WndProperty>
 </WndFrame>
 </WndForm>    

@@ -347,7 +347,7 @@ The UTC offset field allows the UTC local time offset to be specified.  The loca
 @178
 If ON, short clicking on the map will show the nearest waypoint's details.
 If OFF, short clicking in the upper half area of the map will zoom in, in the lower part will zoom out.
-Default is OFF  with Virtual Keys OFF as well, to get a faster click response..
+Default is OFF.
 
 # 179 REMOVED after v2.3
 @179

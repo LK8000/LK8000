@@ -227,7 +227,6 @@ bool GlobalRunning = false;
 
 int	GlobalModelType=MODELTYPE_PNA_PNA;
 TCHAR	GlobalModelName[MAX_PATH]; // there are currently no checks.. TODO check it fits here
-float	GlobalEllipse=1.1f;	// default ellipse type VENTA2-ADDON
 
 // this controls all displays, to make sure everything is
 // properly initialised.
@@ -2279,12 +2278,6 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapWindowLogFont);
     // propGetFontSettingsFromString(TEXT("16,0,0,0,500,0,0,0,0,0,0,4,2,TahomaBD"), ptrhardMapWindowBoldLogFont); 091120
     propGetFontSettingsFromString(TEXT("19,0,0,0,500,0,0,0,0,0,0,6,2,Tahoma"), ptrhardMapWindowBoldLogFont); 
-    if (Appearance.InfoBoxGeom == 5) {
-      GlobalEllipse=1.32f; // We don't use vario gauge in landscape geo5 anymore.. but doesn't hurt.
-    }
-    else {
-      GlobalEllipse=1.1f;
-    }
   }
   else if (ScreenSize==(ScreenSize_t)ss720x408) { // WQVGA  e.g. MIO
     propGetFontSettingsFromString(TEXT("51,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // 28 091120
@@ -2295,12 +2288,6 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("30,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);//  (RLD is this used?)
     propGetFontSettingsFromString(TEXT("33,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
     propGetFontSettingsFromString(TEXT("30,0,0,0,700,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont);
-    if (Appearance.InfoBoxGeom == 5) {
-      GlobalEllipse=1.32f; // We don't use vario gauge in landscape geo5 anymore.. but doesn't hurt.
-    }
-    else {
-      GlobalEllipse=1.1f;
-    }
   }
 
   else if (ScreenSize==(ScreenSize_t)ss480x234) { // e.g. Messada 2440
@@ -2315,7 +2302,6 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("20,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
     // propGetFontSettingsFromString(TEXT("16,0,0,0,500,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont); 091120
     propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
-    GlobalEllipse=1.1f; // to be checked, TODO
   }
 
   else if (ScreenSize==(ScreenSize_t)ss800x480) {// e.g. ipaq 31x {
@@ -2328,13 +2314,11 @@ void InitialiseFontsHardCoded(RECT rc,
       case 6: // standard landscape
             propGetFontSettingsFromString(TEXT("56,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
             propGetFontSettingsFromString(TEXT("20,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
-            GlobalEllipse=1.1f;	// standard VENTA2-addon
             break;
       case 4:       
       case 5:   
             propGetFontSettingsFromString(TEXT("62,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // 64 091120
             propGetFontSettingsFromString(TEXT("24,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont); // 26 091120
-            GlobalEllipse=1.32f;	// VENTA2-addon
             break;
       case 7:
             propGetFontSettingsFromString(TEXT("66,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
@@ -2372,13 +2356,11 @@ void InitialiseFontsHardCoded(RECT rc,
       case 6: // standard landscape
             propGetFontSettingsFromString(TEXT("28,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
             propGetFontSettingsFromString(TEXT("10,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
-            GlobalEllipse=1.1f;	// standard VENTA2-addon
             break;
       case 4:       
       case 5:   
             propGetFontSettingsFromString(TEXT("31,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // 64 091120
             propGetFontSettingsFromString(TEXT("12,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont); // 26 091120
-            GlobalEllipse=1.32f;	// VENTA2-addon
             break;
       case 7:
             propGetFontSettingsFromString(TEXT("33,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
@@ -2415,7 +2397,6 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);  // wps and mapscale
     propGetFontSettingsFromString(TEXT("28,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont); // bold version of MapW
 										// and all messages and menus
-    GlobalEllipse=1.1f; // to be checked, TODO but unused, now
   }
   else if (ScreenSize==(ScreenSize_t)ss896x672) { // real VGA, not fake VGA
     propGetFontSettingsFromString(TEXT("75,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // infobox values
@@ -2427,7 +2408,6 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("44,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);  // wps and mapscale
     propGetFontSettingsFromString(TEXT("39,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont); // bold version of MapW
 										// and all messages and menus
-    GlobalEllipse=1.1f; // to be checked, TODO but unused, now
   }
   else if (ScreenSize==(ScreenSize_t)ss320x240) { // also applies for fake VGA where all values are doubled stretched
     propGetFontSettingsFromString(TEXT("26,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
@@ -2438,7 +2418,6 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);//  (RLD is this used?)
     propGetFontSettingsFromString(TEXT("18,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
     propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
-    GlobalEllipse=1.1f; // to be checked, TODO
   }
   else if (ScreenSize==(ScreenSize_t)ss240x320) { // also applies for fake VGA where all values are doubled stretched
     propGetFontSettingsFromString(TEXT("24,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
@@ -2449,7 +2428,6 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);//  (RLD is this used?)
     propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
     propGetFontSettingsFromString(TEXT("16,0,0,0,500,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont);
-    GlobalEllipse=1.1f; // to be checked, TODO
   }
   else if (ScreenSize==(ScreenSize_t)ss272x480) { 
     propGetFontSettingsFromString(TEXT("24,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardInfoWindowLogFont);
@@ -2460,7 +2438,6 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);
     propGetFontSettingsFromString(TEXT("18,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
     propGetFontSettingsFromString(TEXT("18,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
-    GlobalEllipse=1.1f; 
   }
   else if (ScreenSize==(ScreenSize_t)ss480x640) { // real VGA, not fake VGA
     propGetFontSettingsFromString(TEXT("48,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // infobox values
@@ -2472,7 +2449,6 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);  // wps and mapscale
     propGetFontSettingsFromString(TEXT("28,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont); // bold version of MapW
 										// and all messages and menus
-    GlobalEllipse=1.1f; // to be checked, TODO but unused, now
   }
   else if (ScreenSize==(ScreenSize_t)ss480x800) { // real VGA, not fake VGA
     propGetFontSettingsFromString(TEXT("48,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // infobox values
@@ -2484,7 +2460,6 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);  // wps and mapscale
     propGetFontSettingsFromString(TEXT("30,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont); // bold version of MapW
 										// and all messages and menus
-    GlobalEllipse=1.1f; // to be checked, TODO but unused, now
   }
 
 
