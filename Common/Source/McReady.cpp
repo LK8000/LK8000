@@ -12,7 +12,7 @@
 #include "McReady.h"
 #include "externs.h"
 
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "device.h"
 
 #include <math.h>

@@ -7,7 +7,7 @@
 */
 
 #include "StdAfx.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "ThermalLocator.h"
 #include "RasterTerrain.h"
 #include "Utils.h"

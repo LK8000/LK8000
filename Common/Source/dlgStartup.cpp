@@ -7,7 +7,7 @@
 */
 
 #include "StdAfx.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 
 #include "externs.h"
 #include "dlgTools.h"

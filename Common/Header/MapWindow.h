@@ -16,7 +16,7 @@
 #include <windows.h>
 #include "Sizes.h"
 #include "Utils.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "Airspace.h"
 #include "Parser.h"
 #include "Calculations.h"

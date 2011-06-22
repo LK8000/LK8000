@@ -15,7 +15,7 @@
 #else
 
 #include "ContestMgr.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "Dialogs.h"
 #include <memory>
 #include <tchar.h>

@@ -27,7 +27,6 @@ void				TeamCodeProcessing(int UpDown);
 void				ForecastTemperatureProcessing(int UpDown);
 int DetectStartTime(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 int DetectCurrentTime(void);
-int LocalTime(void);
 int TimeLocal(int d);
 
 #endif

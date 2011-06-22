@@ -9,7 +9,7 @@
 #ifndef INPUTEVENTS_H
 #define INPUTEVENTS_H
 
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "externs.h"
 
 typedef void (*pt2Event)(const TCHAR *);

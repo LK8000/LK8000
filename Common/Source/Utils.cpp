@@ -28,7 +28,7 @@
 #include "externs.h"
 #include "device.h"
 #include "uniqueid.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "Topology.h"
 #include "Terrain.h"
 #include "Units.h"
@@ -4464,7 +4464,7 @@ void StoreRegistry(void) {
   SaveRegistryToFile(defaultProfileFile);
 }
 
-void XCSoarGetOpts(LPTSTR CommandLine) {
+void LK8000GetOpts(LPTSTR CommandLine) {
   (void)CommandLine;
 
 //  LocalPath(defaultProfileFile,TEXT(XCSPROFILE));  

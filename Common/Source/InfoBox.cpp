@@ -8,7 +8,7 @@
 
 #include "StdAfx.h"
 #include "Defines.h" // VENTA3
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "Sizes.h"
 #include "MapWindow.h"
 #include "InfoBox.h"

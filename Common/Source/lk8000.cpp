@@ -10,7 +10,7 @@
 #include "wcecompat/ts_string.h"
 #include "options.h"
 #include "compatibility.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "buildnumber.h"
 #include "Cpustats.h"
 #include "MapWindow.h"
@@ -21,7 +21,7 @@
 #include "Dialogs.h"
 
 #ifdef OLDPPCx
-#include "XCSoarProcess.h"
+#include "LK8000Process.h"
 #else
 #include "Process.h"
 #endif
@@ -114,7 +114,7 @@ Appearance_t Appearance = {
 
 
 
-TCHAR XCSoar_Version[256] = TEXT("");
+TCHAR LK8000_Version[256] = TEXT("");
 
 bool ForceShutdown = false;
 
@@ -1684,16 +1684,16 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   CreateMutex(NULL,FALSE,_T("LOCK8000"));
   if (GetLastError() == ERROR_ALREADY_EXISTS) return(0);
   
-  wsprintf(XCSoar_Version,_T("%S v%S.%S "), LKFORK, LKVERSION,LKRELEASE);
-  wcscat(XCSoar_Version, TEXT(__DATE__));
+  wsprintf(LK8000_Version,_T("%S v%S.%S "), LKFORK, LKVERSION,LKRELEASE);
+  wcscat(LK8000_Version, TEXT(__DATE__));
   StartupStore(_T("%s------------------------------------------------------------%s"),NEWLINE,NEWLINE);
   #ifdef PNA
-  StartupStore(TEXT(". Starting %s %s build#%d%s"), XCSoar_Version,_T("PNA"),BUILDNUMBER,NEWLINE);
+  StartupStore(TEXT(". Starting %s %s build#%d%s"), LK8000_Version,_T("PNA"),BUILDNUMBER,NEWLINE);
   #else
   #if (WINDOWSPC>0)
-  StartupStore(TEXT(". Starting %s %s build#%d%s"), XCSoar_Version,_T("PC"),BUILDNUMBER,NEWLINE);
+  StartupStore(TEXT(". Starting %s %s build#%d%s"), LK8000_Version,_T("PC"),BUILDNUMBER,NEWLINE);
   #else
-  StartupStore(TEXT(". Starting %s %s build#%d%s"), XCSoar_Version,_T("PDA"),BUILDNUMBER,NEWLINE);
+  StartupStore(TEXT(". Starting %s %s build#%d%s"), LK8000_Version,_T("PDA"),BUILDNUMBER,NEWLINE);
   #endif
   #endif
 
@@ -1772,7 +1772,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   CreateDirectoryIfAbsent(TEXT(LKD_MAPS));
   CreateDirectoryIfAbsent(TEXT(LKD_WAYPOINTS));
 
-  XCSoarGetOpts(lpCmdLine);
+  LK8000GetOpts(lpCmdLine);
 
   icc.dwSize = sizeof(INITCOMMONCONTROLSEX);
   icc.dwICC = ICC_UPDOWN_CLASS;
@@ -2643,7 +2643,7 @@ void InitialiseFontsAuto(RECT rc,
 
 
 void InitialiseFonts(RECT rc)
-{ //this routine must be called only at start/restart of XCSoar b/c there are many pointers to these fonts
+{ //this routine must be called only at start/restart b/c there are many pointers to these fonts
  
   DeleteObject(InfoWindowFont);  
   DeleteObject(TitleWindowFont);

@@ -9,7 +9,7 @@
 #include "StdAfx.h"
 #include "options.h"
 #include "Cpustats.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "compatibility.h"
 #include "McReady.h"
 #include "externs.h"
@@ -422,7 +422,7 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
 	_stprintf(Buffer,TEXT("FONTS WILL NOT BE GOOD OR UNUSABLE"));
 	LKWriteText(hdc, Buffer, middlex, bottomlines+textSize.cy , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_SWHITE, false);
   } else {
-	_stprintf(Buffer,TEXT("%s build#%d"), XCSoar_Version,BUILDNUMBER);
+	_stprintf(Buffer,TEXT("%s build#%d"), LK8000_Version,BUILDNUMBER);
 	GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
 	bottomlines=rc.bottom-BottomSize-(textSize.cy*3);
 	LKWriteText(hdc, Buffer, middlex, bottomlines , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITE, false);

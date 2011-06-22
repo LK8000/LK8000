@@ -6,7 +6,7 @@
 */
 
 #include "StdAfx.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "options.h"
 #include "Flarm.h"
 #include "externs.h"

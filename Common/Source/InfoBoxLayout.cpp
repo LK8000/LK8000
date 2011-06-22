@@ -15,7 +15,7 @@
 #include "externs.h"
 
 #include "InfoBox.h"
-#include "XCSoar.h" // 091117
+#include "lk8000.h" // 091117
 
 #include "utils/heapcheck.h"
 #if defined(LKAIRSPACE) || defined(NEW_OLC)

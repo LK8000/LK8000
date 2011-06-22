@@ -15,7 +15,7 @@
 
 #include "compatibility.h"
 #ifdef OLDPPC
-#include "XCSoarProcess.h"
+#include "LK8000Process.h"
 #else
 #include "Process.h"
 #endif

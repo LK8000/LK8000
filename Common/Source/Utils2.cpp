@@ -18,7 +18,7 @@
 #endif
 #include "options.h"
 #include "externs.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "InfoBoxLayout.h"
 #include "Utils2.h"
 #include "Cpustats.h"
@@ -2094,13 +2094,11 @@ void CleanRegistry()
 #endif
 
 #ifdef PNA 	
-/* Paolo Ventafridda Apr 23th 2009 VENTA4
+/* 
  * SetBacklight for PNA devices. There is no standard way of managing backlight on CE,
  * and every device may have different value names and settings. Microsoft did not set 
  * a standard and thus we need a custom solution for each device.
  * But the approach is always the same: change a value and call an event.
- * We do this in XCSoar.cpp at the beginning, no need to make these settings configurable:
- * max brightness and no timeout if on power is the rule. Otherwise, do it manually..
  */
 bool SetBacklight() // VENTA4
 {
@@ -2185,25 +2183,6 @@ bool SetSoundVolume() // VENTA4
 
 #endif
 
-// VENTA2-ADDON fonts install
-/*
- * Get the localpath, enter XCSoarData/Config, see if there are fonts to copy,
- * check that they have not already been copied in \Windows\Fonts,
- * and eventually copy everything in place.
- *
- * 0 if nothing needed, and all is ok
- * 1 if made action, and all is ok
- * errors if >1
- * 
- * These are currently fonts used by PDA:
- *
-	DejaVuSansCondensed2.ttf
-	DejaVuSansCondensed-Bold2.ttf
-	DejaVuSansCondensed-BoldOblique2.ttf
-	DejaVuSansCondensed-Oblique2.ttf
- *
- *
- */
 
 // This will NOT be called from PC versions
 short InstallSystem() {

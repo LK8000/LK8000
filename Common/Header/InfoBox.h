@@ -7,7 +7,7 @@
 */
 
 #include "Units.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "Dialogs.h"
 
 #define BORDERTOP    (1<<bkTop)

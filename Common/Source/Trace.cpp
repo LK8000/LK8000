@@ -10,7 +10,7 @@
 #ifdef NEW_OLC
 
 #include "Trace.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include <tchar.h>
 
 #include "utils/heapcheck.h"

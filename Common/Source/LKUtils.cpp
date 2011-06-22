@@ -18,7 +18,7 @@
 #endif
 #include "options.h"
 #include "externs.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "InfoBoxLayout.h"
 #include "Utils2.h"
 #include "Cpustats.h"

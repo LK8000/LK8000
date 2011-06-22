@@ -7,7 +7,7 @@
 */
 
 #include "StdAfx.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "Utils.h"
 #include "MapWindow.h"
 #include "McReady.h"

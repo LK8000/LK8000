@@ -10,7 +10,7 @@
 #include "StdAfx.h"
 #include <aygshell.h>
 
-#include "XCSoar.h"
+#include "lk8000.h"
 
 #include "Statistics.h"
 #include "externs.h"

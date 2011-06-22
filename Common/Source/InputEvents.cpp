@@ -8,7 +8,7 @@
 
 
 #include "StdAfx.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "InputEvents.h"
 #include "Utils.h"
 #include "Utils2.h"
@@ -29,7 +29,7 @@ using std::min;
 using std::max;
 #endif
 #ifdef OLDPPC
-#include "XCSoarProcess.h"
+#include "LK8000Process.h"
 #else
 #include "Process.h"
 #endif

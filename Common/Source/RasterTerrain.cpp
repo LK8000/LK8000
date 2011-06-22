@@ -8,7 +8,7 @@
 
 #include "StdAfx.h"
 #include "RasterTerrain.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "Dialogs.h"
 #include "Units.h"
 #include "Process.h"

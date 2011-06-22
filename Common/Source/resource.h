@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
-// Used by XCSoar.rc
+// Used by lk8000.rc
 //
 #define IDS_APP_TITLE                   1
 #define IDC_XCSOAR                      3

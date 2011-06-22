@@ -8,7 +8,7 @@
 
 #include "StdAfx.h"
 #include <math.h>
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "Parser.h"
 #include "Calculations.h"
 #include "Atmosphere.h"

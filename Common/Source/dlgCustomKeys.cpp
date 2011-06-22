@@ -9,14 +9,14 @@
 #include "StdAfx.h"
 #include <aygshell.h>
 
-#include "XCSoar.h"
+#include "lk8000.h"
 
 #include "externs.h"
 #include "dlgTools.h"
 
 #include "compatibility.h"
 #ifdef OLDPPC
-#include "XCSoarProcess.h"
+#include "LK8000Process.h"
 #else
 #include "Process.h"
 #endif

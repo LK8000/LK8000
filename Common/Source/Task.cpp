@@ -9,7 +9,7 @@
 #include "StdAfx.h"
 #include "Task.h"
 #include "Logger.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "AATDistance.h"
 #include "Utils.h"
 #include "externs.h"

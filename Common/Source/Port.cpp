@@ -11,7 +11,7 @@
 #include "Sizes.h"
 #include "Port.h"
 #include "externs.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "device.h"
 #include "Utils2.h"
 

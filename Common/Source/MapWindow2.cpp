@@ -16,7 +16,7 @@
 #include "OnLineContest.h"
 #endif /* NEW_OLC */
 #include "Utils.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "LKUtils.h"
 #include "Utils2.h"
 #include "Units.h"

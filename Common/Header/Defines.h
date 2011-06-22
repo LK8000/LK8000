@@ -87,7 +87,6 @@
  * Global defines
  */
 
-#define LKNAME		"XCSoar"
 #define LKFORK		"LK8000"
 #define LKVERSION	"2"
 #define LKRELEASE	"3c0"

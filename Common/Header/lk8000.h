@@ -248,7 +248,7 @@ void SwitchToMapWindow(void);
 	also handle embedded gps com ports and adjustments (TODO)
 
     types     0 -    99 are reserved and 0 is generic/unknown
-    types   100 -   999 are special devices running embedded XCSoar
+    types   100 -   999 are special devices running embedded LK8000
     types  1000 -  9999 are PDAs
     types 10000 - 99999 are PNAs, each brand with 200 units slots for inner types
                                  (initially we try to stay below 32767 within a short var)
@@ -592,4 +592,4 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size);
 #define DEG "°"
 #endif
 
-#endif // !defined(AFX_XCSOAR_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
+#endif 

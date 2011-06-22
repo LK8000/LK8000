@@ -8,7 +8,7 @@
 
 #include "StdAfx.h"
 #include "STScreenBuffer.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 
 #include "utils/heapcheck.h"
 

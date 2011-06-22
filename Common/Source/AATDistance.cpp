@@ -10,7 +10,7 @@
 #include "AATDistance.h"
 #include "Task.h"
 #include "Airspace.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "Calculations.h"
 #include "externs.h"
 

@@ -11,7 +11,7 @@
 
 #include <malloc.h>
 #include "Units.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "Utils.h"
 #include "LKUtils.h"
 #include <tchar.h>

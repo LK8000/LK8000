@@ -9,7 +9,7 @@
 #include "StdAfx.h"
 #include <math.h>
 #include "Statistics.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "externs.h"
 #include "McReady.h"
 #include "Units.h"

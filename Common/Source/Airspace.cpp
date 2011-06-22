@@ -11,7 +11,7 @@
 #include "externs.h"
 #include "Dialogs.h"
 #include "Utils.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "MapWindow.h"
 #include "RasterTerrain.h"
 #include <windows.h>
