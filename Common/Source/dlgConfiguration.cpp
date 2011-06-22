@@ -1147,29 +1147,13 @@ static void OnUTCData(DataField *Sender, DataField::DataAccessKind_t Mode){
 
 }
 
-// static int lastSelectedPolarFile = -1; REMOVE 110416
-
 static void OnPolarFileData(DataField *Sender, DataField::DataAccessKind_t Mode){
-  // WndProperty* wp; REMOVE 110416
 
   switch(Mode){
     case DataField::daGet:
     break;
     case DataField::daPut:
     case DataField::daChange:
-/* REMOVE ALL 1104
-      if (Sender->GetAsString() != NULL && _tcscmp(Sender->GetAsString(), TEXT("")) != 0){
-        // then ... set Polar Tape to Winpilot
-
-        wp = (WndProperty *)wf->FindByName(TEXT("prpPolarType"));
-
-        if (wp != NULL){
-          wp->GetDataField()->SetAsInteger(POLARUSEWINPILOTFILE);
-          wp->RefreshDisplay();
-        }
-
-      }
-*/
     break;
 	default: 
 		StartupStore(_T("........... DBG-907%s"),NEWLINE); // 091105
@@ -1406,7 +1390,6 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnWaypointSaveClicked),
 
   DeclareCallBackEntry(OnPolarFileData),
-  // DeclareCallBackEntry(OnPolarTypeData),  REMOVE 110416
 
   DeclareCallBackEntry(OnDeviceAData),
   DeclareCallBackEntry(OnDeviceBData),
@@ -2133,14 +2116,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  /* REMOVE 110608
-  wp = (WndProperty*)wf->FindByName(TEXT("prpFAIFinishHeight"));
-  if (wp) {
-    wp->GetDataField()->Set(EnableFAIFinishHeight);
-    wp->RefreshDisplay();
-  }
-  */
-
 #ifndef NEW_OLC
   wp = (WndProperty*)wf->FindByName(TEXT("prpOLCRules"));
   if (wp) {
@@ -2433,33 +2408,6 @@ static void setVariables(void) {
     wp->GetDataField()->Set(BallastSecsToEmpty);
     wp->RefreshDisplay();
   }
-
-/* REMOVE 110416
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPolarType"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-    for (i=0; i<(NUMPOLARS-1); i++) { 
-      dfe->addEnumText(PolarLabels[i]);
-    }
-    dfe->addEnumText(gettext(TEXT("_@M206_"))); // instead of WinPilot File, we use now Custom Polar File
-    i=0;
-    bool ok = true;
-    while (ok) {
-      TCHAR *name;
-      name = GetWinPilotPolarInternalName(i);
-      if (!name) {
-	ok=false;
-      } else {
-	dfe->addEnumText(name);
-      }
-      i++;
-    }
-    dfe->Sort();
-    dfe->Set(POLARID);
-    wp->RefreshDisplay();
-  }
-*/
 
   GetRegistryString(szRegistryPolarFile, szPolarFile, MAX_PATH);
   if (_tcscmp(szPolarFile,_T(""))==0) 
@@ -3430,63 +3378,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  /* REMOVE 110608
-  wp = (WndProperty*)wf->FindByName(TEXT("prpFinishMinHeight"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(FinishMinHeight*ALTITUDEMODIFY/1000)); // BUGFIX XCSOAR 100315
-    wp->GetDataField()->SetUnits(Units::GetAltitudeName());
-    wp->RefreshDisplay();
-  }
-  */
-
-  /* REMOVE 110608
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeight"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(StartMaxHeight*ALTITUDEMODIFY/1000)); // BUGFIX XCSOAR 100315
-    wp->GetDataField()->SetUnits(Units::GetAltitudeName());
-    wp->RefreshDisplay();
-  }
-  */
-
-  /* REMOVE 110608
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeightMargin"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(StartMaxHeightMargin*ALTITUDEMODIFY/1000));
-    wp->GetDataField()->SetUnits(Units::GetAltitudeName());
-    wp->RefreshDisplay();
-  }
-  */
-
-  /* REMOVE 110608
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartHeightRef"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->addEnumText(gettext(TEXT("AGL")));
-    dfe->addEnumText(gettext(TEXT("MSL")));
-    dfe->Set(StartHeightRef);
-    wp->RefreshDisplay();
-  }
-  */
-
-  /* REMOVE 110608
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeed"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(StartMaxSpeed*SPEEDMODIFY/1000)); 
-    wp->GetDataField()->SetUnits(Units::GetHorizontalSpeedName());
-    wp->RefreshDisplay();
-  }
-  */
-
-  /* REMOVE 110608
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeedMargin"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(StartMaxSpeedMargin*SPEEDMODIFY/1000)); 
-    wp->GetDataField()->SetUnits(Units::GetHorizontalSpeedName());
-    wp->RefreshDisplay();
-  }
-  */
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpLoggerTimeStepCruise"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(LoggerTimeStepCruise);
@@ -3844,19 +3735,6 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
-
-/* REMOVE 110416
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPolarType"));
-  if (wp) {
-    if (POLARID != wp->GetDataField()->GetAsInteger()) {
-      POLARID = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryPolarID, POLARID);
-      GlidePolar::SetBallast();
-      POLARFILECHANGED = true;
-      changed = true;
-    }
-  }
-*/
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceDisplay"));
   if (wp) {
@@ -4284,17 +4162,6 @@ void dlgConfigurationShowModal(void){
     }
   }
 
-  /* REMOVE 110608
-  wp = (WndProperty*)wf->FindByName(TEXT("prpFAIFinishHeight"));
-  if (wp) {
-    if (EnableFAIFinishHeight != (wp->GetDataField()->GetAsInteger()>0)) {
-      EnableFAIFinishHeight = (wp->GetDataField()->GetAsInteger()>0);
-      SetToRegistry(szRegistryFAIFinishHeight, EnableFAIFinishHeight);
-      changed = true;
-    }
-  }
-  */
-
 #ifndef NEW_OLC
   wp = (WndProperty*)wf->FindByName(TEXT("prpOLCRules"));
   if (wp) {
@@ -4611,22 +4478,7 @@ void dlgConfigurationShowModal(void){
     }
   }
 
-/* 110321 REMOVE IT, NO MORE NEEDED BECAUSE WE USE FUNCTION 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLook8000"));
-  if (wp) {
-    if (Look8000 != (Look8000_t)
-	(wp->GetDataField()->GetAsInteger())) {
-      Look8000 = (Look8000_t)
-	(wp->GetDataField()->GetAsInteger());
-	if (Look8000!=0) { // 091115 do not allow Reserved mode , do not disable LK8000 !
-		SetToRegistry(szRegistryLook8000, (DWORD)(Look8000));
-		changed = true;
-	} else Look8000=1;
-    }
-  }
-*/
-
-#if (0)
+  #if (0)
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltArrivMode"));
   if (wp) {
     if (AltArrivMode != (AltArrivMode_t)
@@ -4638,7 +4490,7 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
-#endif
+  #endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpNewMap")); 
   if (wp) {
@@ -5143,77 +4995,6 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
-
-  /* 110608 REMOVE 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpFinishMinHeight"));
-  if (wp) {
-    ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY)*1000.0); // 100315 BUGFIX XCSOAr
-    if ((int)FinishMinHeight != ival) {
-      FinishMinHeight = ival;
-      SetToRegistry(szRegistryFinishMinHeight,FinishMinHeight);
-      changed = true;
-    }
-  }
-  */
-
-  /* 110608 REMOVE 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeight"));
-  if (wp) {
-    ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0); // 100315 BUGFIX XCSOAR
-    if ((int)StartMaxHeight != ival) {
-      StartMaxHeight = ival;
-      SetToRegistry(szRegistryStartMaxHeight,StartMaxHeight);
-      changed = true;
-    }
-  }
-  */
-
-  /* 110608 REMOVE 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeightMargin"));
-  if (wp) {
-    ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0 ); // 100315
-    if ((int)StartMaxHeightMargin != ival) {
-      StartMaxHeightMargin = ival;
-      SetToRegistry(szRegistryStartMaxHeightMargin,StartMaxHeightMargin);
-      changed = true;
-    }
-  }
-  */
-
-  /* REMOVE 110608
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartHeightRef"));
-  if (wp) {
-    if (StartHeightRef != wp->GetDataField()->GetAsInteger()) {
-      StartHeightRef = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryStartHeightRef, StartHeightRef);
-      changed = true;
-    }
-  }
-  */
-
-  /* REMOVE 110608
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeed"));
-  if (wp) {
-    ival = iround( (wp->GetDataField()->GetAsInteger()/SPEEDMODIFY)*1000.0);  
-    if (((int)StartMaxSpeed) != ival) {
-	StartMaxSpeed = ival;
-	SetToRegistry(szRegistryStartMaxSpeed,StartMaxSpeed);
-	changed = true;
-    }
-  }
-  */
-
-  /* REMOVE 110608
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeedMargin"));
-  if (wp) {
-    ival = iround((wp->GetDataField()->GetAsInteger()/SPEEDMODIFY)*1000.0); 
-    if ((int)StartMaxSpeedMargin != ival) {
-      StartMaxSpeedMargin = ival;
-      SetToRegistry(szRegistryStartMaxSpeedMargin,StartMaxSpeedMargin);
-      changed = true;
-    }
-  }
-  */
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmMaxAltitude1"));
   if (wp) {
