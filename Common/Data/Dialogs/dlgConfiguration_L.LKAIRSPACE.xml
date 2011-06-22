@@ -621,9 +621,6 @@
 <WndProperty Name="prpExtendedVisualGlide" Caption="_@M272_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H229_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>
-<WndProperty Name="prpAppStatusMessageAlignment" Caption="_@M446_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H230_">
-<DataField name="" DataType="enum" Min=0 Max=50 Step=1/>
-</WndProperty>
 <WndProperty Name="prpAppInfoBoxGeom" Caption="_@M355_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H232_">
 <DataField name="" DataType="enum" Min=0 Max=50 Step=1/>
 </WndProperty>

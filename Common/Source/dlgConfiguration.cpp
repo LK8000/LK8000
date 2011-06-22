@@ -2643,18 +2643,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppStatusMessageAlignment"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M167_ = "Center" 
-    dfe->addEnumText(gettext(TEXT("_@M167_")));
-	// LKTOKEN  _@M730_ = "Topleft" 
-    dfe->addEnumText(gettext(TEXT("_@M730_")));
-    dfe->Set(Appearance.StateMessageAlligne);
-    wp->RefreshDisplay();
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxBorder"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -5158,20 +5146,6 @@ void dlgConfigurationShowModal(void){
   DeleteObject (TempCDIWindowFont); 
   DeleteObject (TempMapLabelFont);
   DeleteObject (TempStatisticsFont);
-
-
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppStatusMessageAlignment"));
-  if (wp) {
-    if (Appearance.StateMessageAlligne != (StateMessageAlligne_t)
-	(wp->GetDataField()->GetAsInteger())) {
-      Appearance.StateMessageAlligne = (StateMessageAlligne_t)
-	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryAppStatusMessageAlignment,
-		    (DWORD)(Appearance.StateMessageAlligne));
-      changed = true;
-    }
-  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppIndLandable"));
   if (wp) {

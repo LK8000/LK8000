@@ -293,7 +293,6 @@ const TCHAR szRegistryPGStartOut[]= TEXT("PGStartOut");
 const TCHAR szRegistryAppIndFinalGlide[] = TEXT("AppIndFinalGlide");
 const TCHAR szRegistryAppIndLandable[] = TEXT("AppIndLandable");
 const TCHAR szRegistryAppInverseInfoBox[] = TEXT("AppInverseInfoBox2");
-const TCHAR szRegistryAppStatusMessageAlignment[] = TEXT("AppStatusMessageAlignment");
 const TCHAR szRegistryAppInfoBoxColors[] = TEXT("AppInfoBoxColors");
 const TCHAR szRegistryAppDefaultMapWidth[] = TEXT("AppDefaultMapWidth");
 const TCHAR szRegistryTeamcodeRefWaypoint[] = TEXT("TeamcodeRefWaypoint");
@@ -1149,10 +1148,6 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryAppInfoBoxModel, &Temp);
   Appearance.InfoBoxModel = (InfoBoxModelAppearance_t)Temp;
 #endif
-
-  Temp = Appearance.StateMessageAlligne;
-  GetFromRegistry(szRegistryAppStatusMessageAlignment, &Temp);
-  Appearance.StateMessageAlligne = (StateMessageAlligne_t)Temp;
 
   Temp = Appearance.DefaultMapWidth;
   GetFromRegistry(szRegistryAppDefaultMapWidth, &Temp);

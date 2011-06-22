@@ -566,6 +566,7 @@ Determines whether to draw window animations when dialogs open/close.
 @229
 If you want Visual Glide to display also moving circles or arcs, in addition to the steady mode then select Extended.
 
+# 230 REMOVED after v2.3
 @230
 Defines the alignment of the status message box, either centered or in the top left corner.
 

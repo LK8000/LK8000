@@ -124,7 +124,6 @@ Appearance_t Appearance = {
   true,
   false,
   true,
-  smAlligneCenter,
   false,
   false,
   false,

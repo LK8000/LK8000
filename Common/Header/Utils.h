@@ -135,7 +135,6 @@ extern const TCHAR szRegistryAppIndLandable[];
 extern const TCHAR szRegistryAppInverseInfoBox[];
 extern const TCHAR szRegistryAppInfoBoxColors[];
 extern const TCHAR szRegistryAppCompassAppearance[];
-extern const TCHAR szRegistryAppStatusMessageAlignment[];
 extern const TCHAR szRegistryAppInfoBoxBorder[];
 extern const TCHAR szRegistryAppInfoBoxGeom[];
 extern const TCHAR szRegistryAppInfoBoxModel[];

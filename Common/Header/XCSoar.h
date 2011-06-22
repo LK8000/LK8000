@@ -381,11 +381,6 @@ typedef enum{
   wpLandableAltA,
 }IndLandable_t;
 
-typedef enum{
-  smAlligneCenter=0,
-  smAlligneTopLeft,
-}StateMessageAlligne_t;
-
 typedef struct{
   int Height;
   int AscentHeight;
@@ -669,7 +664,6 @@ typedef struct{
   bool DontShowAutoMacCready;
   bool InverseInfoBox;
   bool InfoTitelCapital;
-  StateMessageAlligne_t StateMessageAlligne;
   bool GaugeVarioAvgText;
   bool GaugeVarioMc;
   bool GaugeVarioSpeedToFly;

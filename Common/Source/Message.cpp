@@ -227,18 +227,10 @@ void Message::Resize() {
     int midx = (rcmsg.right+rcmsg.left)/2;
     int midy = (rcmsg.bottom+rcmsg.top)/2;
 
-    if (Appearance.StateMessageAlligne == smAlligneTopLeft){
-      rthis.top = 0;
-      rthis.left = 0;
-      rthis.bottom = height;
-      rthis.right = 206*InfoBoxLayout::scale; 
-      // TODO code: this shouldn't be hard-coded
-    } else {
-      rthis.left = midx-width/2;
-      rthis.right = midx+width/2;
-      rthis.top = midy-h1;
-      rthis.bottom = midy+h2;
-    }
+    rthis.left = midx-width/2;
+    rthis.right = midx+width/2;
+    rthis.top = midy-h1;
+    rthis.bottom = midy+h2;
 
     SetWindowPos(hWndMessageWindow, HWND_TOP,
 		 rthis.left, rthis.top,
