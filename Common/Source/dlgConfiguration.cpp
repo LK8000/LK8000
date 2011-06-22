@@ -2318,13 +2318,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAbortSafetyUseCurrent"));
-  if (wp) {
-    wp->GetDataField()->Set(GlidePolar::AbortSafetyUseCurrent);
-    wp->RefreshDisplay();
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpDisableAutoLogger"));
   if (wp) {
     wp->GetDataField()->Set(!DisableAutoLogger);
@@ -3559,21 +3552,6 @@ void dlgConfigurationShowModal(void){
 
   StopHourglassCursor();
   wf->ShowModal();
-
-  // TODO enhancement: implement a cancel button that skips all this
-  // below after exit.
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAbortSafetyUseCurrent"));
-  if (wp) {
-    if (GlidePolar::AbortSafetyUseCurrent
-	!= wp->GetDataField()->GetAsBoolean()) {
-      GlidePolar::AbortSafetyUseCurrent = 
-	wp->GetDataField()->GetAsBoolean();
-      SetToRegistry(szRegistryAbortSafetyUseCurrent, 
-		    GlidePolar::AbortSafetyUseCurrent);
-      changed = true;
-    }
-  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpDisableAutoLogger"));
   if (wp) {

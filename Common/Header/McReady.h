@@ -27,9 +27,7 @@ class GlidePolar {
   static void SetBallast();
   static double GetAUW();
 
-  static double AbortSafetyMacCready();
   static double SafetyMacCready;
-  static bool AbortSafetyUseCurrent;
 
   //  static double BallastFactor;
   static double polar_a;

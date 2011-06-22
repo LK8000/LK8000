@@ -43,30 +43,8 @@ int GlidePolar::FlapsPosCount = 0;
 double GlidePolar::FlapsMass = 0.0;
 
 double GlidePolar::SafetyMacCready= 0.5;
-bool GlidePolar::AbortSafetyUseCurrent = false;
 
 static int iSAFETYSPEED=0;
-
-double GlidePolar::AbortSafetyMacCready() {
-#if (1)
-  if (AbortSafetyUseCurrent) {
-    return MACCREADY;
-  } else {
-    return SafetyMacCready;
-  }
-#else
-	switch(AltArrivMode) {
-		case ALTA_MC:
-			return MACCREADY;
-		case ALTA_MC0:
-			return 0;
-		case ALTA_SMC:
-			return SafetyMacCready;
-		default:
-			return 9; // something to notice!
-	}
-#endif
-}
 
 // GetAUW is returning gross weight of glider, with pilot and current ballast. 
 // We now also add the offset to match chosen wing loading, just like a non-dumpable ballast

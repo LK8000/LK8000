@@ -226,7 +226,6 @@ extern const TCHAR szRegistryConfIP32[];
 
 
 extern const TCHAR szRegistrySafetyMacCready[];
-extern const TCHAR szRegistryAbortSafetyUseCurrent[];
 extern const TCHAR szRegistryAutoMcMode[];
 extern const TCHAR szRegistryWaypointsOutOfRange[];
 extern const TCHAR szRegistryEnableExternalTriggerCruise[];

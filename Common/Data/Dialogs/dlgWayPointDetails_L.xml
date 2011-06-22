@@ -13,7 +13,6 @@
 <WndProperty Name="prpDistance"  Caption="_@M245_"      X=2 Y=-1 Width=238 Height=22 CaptionWidth=150 Font=2 ReadOnly=1 />
 <WndProperty Name="prpBearing"   Caption="_@M138_"       X=2 Y=-1 Width=238 Height=22 CaptionWidth=150 Font=2 ReadOnly=1 />
 <WndProperty Name="prpMc0"       Caption="_@M83_" X=2 Y=-1 Width=238 Height=22 CaptionWidth=150 Font=2 ReadOnly=1 />
-<aWndProperty Name="prpMc1"       Caption="_@M85_" X=2 Y=-1 Width=238 Height=22 CaptionWidth=150 Font=2 ReadOnly=1 />
 <WndProperty Name="prpMc2"       Caption="_@M84_" X=2 Y=-1 Width=238 Height=22 CaptionWidth=150 Font=2 ReadOnly=1 />
 </WndFrame>
 <WndListFrame Name=frmDetails X=0 Y=0 Width=240 Height=220 Font=3 OnListInfo="OnDetailsListInfo">

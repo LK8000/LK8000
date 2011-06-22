@@ -359,7 +359,6 @@ const TCHAR szRegistryLoggerTimeStepCruise[]= TEXT("LoggerTimeStepCruise");
 const TCHAR szRegistryLoggerTimeStepCircling[]= TEXT("LoggerTimeStepCircling");
 
 const TCHAR szRegistrySafetyMacCready[] = TEXT("SafetyMacCready");
-const TCHAR szRegistryAbortSafetyUseCurrent[] = TEXT("AbortSafetyUseCurrent");
 const TCHAR szRegistryAutoMcMode[] = TEXT("AutoMcMode");
 const TCHAR szRegistryWaypointsOutOfRange[] = TEXT("WaypointsOutOfRange2"); // 101020 2nd version, reset needed
 const TCHAR szRegistryEnableExternalTriggerCruise[] = TEXT("EnableExternalTriggerCruise");
@@ -1335,10 +1334,6 @@ void ReadRegistrySettings(void)
   Temp = LoggerTimeStepCircling;
   GetFromRegistry(szRegistryLoggerTimeStepCircling,&Temp);
   LoggerTimeStepCircling = Temp;
-
-  Temp = GlidePolar::AbortSafetyUseCurrent;
-  GetFromRegistry(szRegistryAbortSafetyUseCurrent, &Temp);
-  GlidePolar::AbortSafetyUseCurrent = (Temp != 0);
 
   Temp = iround(GlidePolar::SafetyMacCready*10);
   GetFromRegistry(szRegistrySafetyMacCready,&Temp);

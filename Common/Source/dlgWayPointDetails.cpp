@@ -502,24 +502,6 @@ void dlgWayPointDetailsShowModal(void){
   wp = ((WndProperty *)wf->FindByName(TEXT("prpMc0")));
   if (wp) wp->SetText(sTmp);
 
-  // alt reqd at safety mc
-
-  // this is unused in fact
-  alt = CALCULATED_INFO.NavAltitude - 
-    GlidePolar::MacCreadyAltitude(GlidePolar::AbortSafetyMacCready(),
-				  distance,
-				  bearing, 
-				  CALCULATED_INFO.WindSpeed, 
-				  CALCULATED_INFO.WindBearing, 
-				  0, 0, true,
-				  0)-SAFETYALTITUDEARRIVAL-
-    WayPointList[SelectedWaypoint].Altitude;
-
-  wp = ((WndProperty *)wf->FindByName(TEXT("prpMc1")));
-  if (wp) wp->SetText(sTmp);
-  //
-
-
   // alt reqd at current mc
   alt = CALCULATED_INFO.NavAltitude - 
     GlidePolar::MacCreadyAltitude(MACCREADY,
