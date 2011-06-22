@@ -167,8 +167,6 @@ IDR_XML_LKAIRSPACEWARNING XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgLKAirspace
 IDR_XML_HELP            XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgHelp.xml"
 IDR_XML_TEXTENTRY_KEYBOARD XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgTextEntry_Keyboard.xml"
 IDR_XML_TEXTENTRY_KEYBOARD_L XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgTextEntry_Keyboard_L.xml"
-IDR_XML_NUMBERENTRY_KEYBOARD XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgNumberEntry_Keyboard.xml"
-IDR_XML_NUMBERENTRY_KEYBOARD_L XMLDIALOG DISCARDABLE "../Data/Dialogs/dlgNumberEntry_Keyboard_L.xml"
 IDR_XML_TEAMCODE        XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTeamCode.xml"
 IDR_XML_TEAMCODE_L      XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTeamCode_L.xml"
 IDR_XML_STARTPOINT      XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgStartPoint.xml"
