@@ -7,6 +7,7 @@ Version 2.3c
 NEW
 
 . New ALTITUDE ALARMS in Menu Config 15
+
     There are 3 available altitude (height, really) alarms available.
     An alarm will be triggered everytime the configured altitude is reached or crossed.
     The alarm will not be repeated within the next 60 seconds.
@@ -21,21 +22,116 @@ NEW
     They are named LK_ALARM_ALTx.WAV
     Default is 0 (no alarm).
 
+. New device driver for Westerboer VW1150
+
+. New customkeys: Airspace Analysis and Toggle Map<>Airspaces page
+
+. New Airspace details page, two new buttons for SELECT and ANALYSIS.
+
+   SELECT is used to choose an airspace to be monitored for Hdist and Vdist infoboxes.
+   We call the Selected airspace "Preferred".
+   
+. New airspace 2.4 page flags (the * column on the right)
+  E = Enabled
+  D = Disabled
+  S = Selected
+  F = Fly-In modality
+
+. New airspace 2.4 colors, following red and yellow alerting situation.
+
+. Support 320x234 and 234x320 screen resolutions. Preliminary.
+
+
 
 CHANGES
 
 . Enable Contest Engine also for non-glider aircrafts, IF infopage 1.5 is enabled.
-  This means that using glider mode will not require 1.5 to be enabled.
-  But using paragliding, GA or Car mode will require 1.5 to BE ENABLED otherwise the
-  calculation engine will NOT run.
-  Be careful enabling during flight calculation engine, because all previous point since the
-  takeoff will not be valid, and the freeflight detection will be wrong of course.
-  (This feature was really added in 2.3B but forgotten to be mentioned!)
+
+    This means that using glider mode will not require 1.5 to be enabled.
+    But using paragliding, GA or Car mode will require 1.5 to BE ENABLED otherwise the
+    calculation engine will NOT run.
+    Be careful enabling during flight calculation engine, because all previous point since the
+    takeoff will not be valid, and the freeflight detection will be wrong of course.
+    (This feature was really added in 2.3B but forgotten to be mentioned!)
+
+. Show overlay BEARING while circling.
+    We could not display bearing difference while thermalling, because it was constantly changing.
+
+. Use selected airspace for distance infoboxes. 
+  In order to see Hdist and Vdist infoboxes, an airspace must be selected from Airspace details page.
+
+
+. Airspace warnings working only after 1 minute have passed since takeoff
+  This is to reduce pilot overload during critical phases of flight.
+
+. Following configuration items were REMOVED from Engineering mode, thus becoming PERMANENTLY removed from LK:
+
+	- VirtualKeys
+	VirtualKeys were obsoleted when the new SIM system was active. No need to use them anymore.
+	They were basically used at the very beginning of LK to change altitude and speed in infoboxes
+	for simulations. Active map is now available on demand by a simple button at runtime.
+
+	- MapLock
+	The old maplock system is permanently removed from the code.
+	Paragliders have a new screen locking mechanism, much better.
+
+	- STF Risk Factor
+	- Block Speed To Fly
+	- Text Input Style 
+	- Animation
+	- Status Message alignement
+	- WindArrow
+
+. Following configuration items are MOVED to Engineering mode, thus becoming candidated for permanent removal from LK:
+
+	. ActiveMap
+	ActiveMap is a good candidate for no configuration. There is a button to activate active map on demand.
+	There is also a customkey for it.
+
 
 
 FIXES
 
-. Fix glidebar painting based on value ignoring safetyMC in some cases.
+
+. Fixed (2.3) "unknown airspace warning message" when a message gets repeated during flying outside a fly zone
+
+. Fixed no nearest turnpoints showing if no landables were available in at least on waypoint file.
+  Bug introduced when nearest turnpoint pages and landables were unified at code level. Very old.
+
+. Fix (2.3) dlgairspacedetails range field, displaying "to enter" or "to leave" based on horiz ditance, not inside, which includes altitude as well.
+
+. Fix bug AAT next waypoint target bearing and bearing diff wrong .
+  They were always related to waypoint center, and not to the target
+
+. Task Edit / Analysis  will bring to task analysis page, which was not working.
+
+. Fix glidebar painting arrow based on a value that was ignoring safetyMC in some cases.
+
+. Fix LK not checking battery with LKBatteryManager while inside infopages. This might result in delayed warnings about battery.
+
+. Fix (2.3) Flaps using characters for name, and not a number. This was a real problem, since you could not assign for
+  example S1 to a flap position related to a IAS speed, for example.
+
+. Fix (2.3) bug in infopage traffic, not advancing beyond first page.
+
+. Fix airspace parser arc and sector calc
+  If someone wants to make an arc within  0-7.5degree or (360-7.5)-360 degree range nothing added to the polygon list...
+
+. Fix replay logger problem not resetting some variables in flightstats
+
+    This will not solve at 100% all replay problems when replaying several IGC files. Currently the only safe solution is
+    to restart LK to be sure all statistics are reset correctly.
+
+. Fix bug not calculating TC.Avg and Th.All at flight startup.
+
+    LKCalculation freeflight detection was resetting StartClimbMode and this was bad.
+    Because StartClimbMode is set before we actually start climbing, and discarded if
+    after a few turns we are not really circling.
+    FF engine is also using the first thermal to detect FF, and this was causing a sort of a loop.
+    The problem was more likely to appear only in IGC flight replay mode in simulation.
+    However, even in real flight there was 1/100 of chances to get this (minor) problem.
+
+
 
 
 
