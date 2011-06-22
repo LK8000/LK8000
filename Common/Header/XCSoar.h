@@ -255,7 +255,6 @@ void SwitchToMapWindow(void);
     types over 100000	are reserved and should not be used
  */
 
-#if defined(PNA) || defined(FIVV) // VENTA
 #define MODELTYPE_UNKNOWN		0
 #define MODELTYPE_GENERIC		0
 
@@ -290,8 +289,6 @@ void SwitchToMapWindow(void);
 #define MODELTYPE_PNA_NOKIA	12000
 #define MODELTYPE_PNA_NOKIA_500	12001 // 480x272
 
-
-#endif
 
 // This could be also used for PDA in landscape.. 
 typedef enum{
@@ -344,7 +341,6 @@ typedef enum{
   apIg7
 }InfoBoxGeomAppearance_t;
 
-#if defined(PNA) || defined(FIVV)
 // VENTA-ADDON MODEL
 typedef enum{
 	apImPnaGeneric=0,
@@ -355,7 +351,6 @@ typedef enum{
 	apImPnaPn6000,
 	apImPnaNavigon,
 }InfoBoxModelAppearance_t;
-#endif
 
 typedef enum{
 	umGlider=0,
@@ -584,10 +579,8 @@ typedef struct{
   BestCruiseTrack_t BestCruiseTrack;
   IndLandable_t IndLandable;	// landable icon style
   bool InverseInfoBox;		// InfoBox black or white inverted, used also by LK styles
-#if defined(PNA) || defined(FIVV)
-  InfoBoxGeomAppearance_t InfoBoxGeom; // VENTA-ADDON
-  InfoBoxModelAppearance_t InfoBoxModel; // VENTA-ADDON model change
-#endif
+  InfoBoxGeomAppearance_t InfoBoxGeom; 
+  InfoBoxModelAppearance_t InfoBoxModel;
 } Appearance_t;
 
 extern Appearance_t Appearance;

@@ -42,9 +42,7 @@
 // Warning, this is initialising class, loading flarmnet IDs before anything else in the LK is even started..
 FlarmIdFile file; 
 
-#if defined(PNA) || defined(FIVV)
 #include "InfoBoxLayout.h"
-#endif
 
 #include "utils/heapcheck.h"
 
@@ -441,14 +439,8 @@ void SetRegistryStringIfAbsent(const TCHAR* name,
 			       const TCHAR* value) {
 
   // VENTA force fonts registry rewrite in PNAs 
-#if defined(PNA) || defined(FIVV) // VENTA TODO WARNING should really delete the key before creating it TODO
+  // VENTA TODO WARNING should really delete the key before creating it TODO
   SetRegistryString(name, value);
-#else
-  TCHAR temp[MAX_PATH];
-  if (GetRegistryString(name, temp, MAX_PATH)) {  // 0==ERROR_SUCCESS 
-    SetRegistryString(name, value);
-  }
-#endif 
 }
 
 
@@ -1086,7 +1078,6 @@ void ReadRegistrySettings(void)
 // depending on infobox geometry and model type
 // I had to move here the font setting because I needed first to 
 // know the screen geometry, in the registry!
-#if defined(PNA) || defined(FIVV)
   Temp = Appearance.InfoBoxGeom;
   GetFromRegistry(szRegistryAppInfoBoxGeom, &Temp);
   Appearance.InfoBoxGeom = (InfoBoxGeomAppearance_t)Temp;
@@ -1131,7 +1122,6 @@ void ReadRegistrySettings(void)
   Temp = Appearance.InfoBoxModel;
   GetFromRegistry(szRegistryAppInfoBoxModel, &Temp);
   Appearance.InfoBoxModel = (InfoBoxModelAppearance_t)Temp;
-#endif
 
   Temp = Appearance.DefaultMapWidth;
   GetFromRegistry(szRegistryAppDefaultMapWidth, &Temp);
@@ -4204,33 +4194,27 @@ TCHAR* StringMallocParse(TCHAR* old_string) {
 //
 void LocalPath(TCHAR* buffer, const TCHAR* file, int loc) {
 
-#if defined (PNA) && (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
+  #if (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
 
-// check this is still valid 101212
-// For PNAs the localpath is taken from the application exec path
-// example> \sdmmc\bin\Program.exe  results in localpath=\sdmmc\XCSoarData
-// Then the basename is searched for an underscore char, which is
-// used as a separator for getting the model type.  example>
-// program_pna.exe results in GlobalModelType=pna
+  // For PNAs the localpath is taken from the application exec path
+  // example> \sdmmc\bin\Program.exe  results in localpath=\sdmmc\LK8000
+  // Then the basename is searched for an underscore char, which is
+  // used as a separator for getting the model type.  example>
+  // program_pna.exe results in GlobalModelType=pna
   
 	_stprintf(buffer,TEXT("%s%S"),gmfpathname(), XCSDATADIR );
-
-#elif defined (FIVV) && (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
-
-  _stprintf(buffer,TEXT("%s%S"),gmfpathname(), XCSDATADIR );
-
-#else
+  #else
 	// get the MyDocuments directory
 	SHGetSpecialFolderPath(hWndMainWindow, buffer, loc, false);
 
 	_tcscat(buffer,TEXT("\\"));
 	_tcscat(buffer,TEXT(XCSDATADIR));
-#endif
+  #endif
 
-	if (_tcslen(file)>0) {
-		_tcsncat(buffer, TEXT("\\"), MAX_PATH);    
-		_tcsncat(buffer, file, MAX_PATH);
-	}
+  if (_tcslen(file)>0) {
+	_tcsncat(buffer, TEXT("\\"), MAX_PATH);    
+	_tcsncat(buffer, file, MAX_PATH);
+  }
 }
 
 

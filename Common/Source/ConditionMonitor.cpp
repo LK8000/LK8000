@@ -397,9 +397,9 @@ ConditionMonitorGlideTerrain cm_glideterrain;
 void ConditionMonitorsUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   cm_wind.Update(Basic, Calculated);
   cm_finalglide.Update(Basic, Calculated);
-#ifndef FIVV
+  #if 0
   cm_sunset.Update(Basic, Calculated); // it doesnt work in europe..
-#endif
+  #endif
   cm_aattime.Update(Basic, Calculated);  
   cm_startrules.Update(Basic, Calculated);  
   cm_glideterrain.Update(Basic, Calculated);  

@@ -64,10 +64,6 @@ void	BottomBarChange(bool advance);
 void	InfoPageChange(bool advance);
 int	roundupdivision(int a, int b);
 void	Cpustats(int *acc, FILETIME *a, FILETIME *b, FILETIME *c, FILETIME *d);
-#ifdef FIVV
-void	CidContest();
-void	CidInit();
-#endif
 void	InitModeTable();
 void	SetModeType(short modeindex, short modetype);
 void	NextModeType();

@@ -1301,7 +1301,7 @@ TCHAR *FormatterAlternate::RenderTitle(int *color) {
 }
 
 /*
- * Currently even if set for FIVV, colors are not used.
+ * Currently even if set, colors are not used.
  */
 TCHAR *FormatterAlternate::Render(int *color) {
  //int active=ActiveAlternate; REMOVE
@@ -1313,18 +1313,10 @@ TCHAR *FormatterAlternate::Render(int *color) {
 			*color = 5; 
 			break;
 		case 1:
-#ifdef FIVV
-			*color = 0; // green
-#else
-			*color = 0; // blue
-#endif
+			*color = 0;
 			break;
 		case 2:
-#ifdef FIVV
 			*color = 0; // yellow 4
-#else
-			*color = 0; // normale white
-#endif
 			break;
 		case 3:
 			*color = 1; // red

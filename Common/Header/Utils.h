@@ -258,9 +258,7 @@ extern bool LoggerShortName;
 
 BOOL GetFromRegistry(const TCHAR *szRegValue, DWORD *pPos);
 
-#ifdef FIVV
 BOOL DelRegistryKey(const TCHAR *szRegistryKey); // VENTA2-ADDON delregistrykey
-#endif
 #ifdef PNA
 void CleanRegistry(); // VENTA2-ADDON cleanregistrykeyA
 bool SetBacklight(); // VENTA4-ADDON for PNA 
@@ -327,10 +325,8 @@ int DrawArc(HDC hdc, long x, long y, int radius, RECT rc,
 void ReadAssetNumber(void);
 void WriteProfile(const TCHAR *szFile);
 void ReadProfile(const TCHAR *szFile);
-#if defined(PNA) || defined(FIVV)  // VENTA-ADDON
 bool SetModelType();
 bool SetModelName(DWORD Temp);
-#endif
 double ScreenAngle(int x1, int y1, int x2, int y2);
 void ReadUUID(void);
 void FormatWarningString(int Type, TCHAR *Name , AIRSPACE_ALT Base, AIRSPACE_ALT Top, TCHAR *szMessageBuffer, TCHAR *TileBuffer );

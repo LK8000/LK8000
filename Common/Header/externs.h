@@ -51,7 +51,6 @@ extern StartupState_t ProgramStarted;
 
 extern int UTCOffset;
 
-#if defined(PNA) || defined(FIVV)  // VENTA2- ADD GlobalEllipse
 extern int	GlobalModelType; 
 extern TCHAR	GlobalModelName[];
 extern float	GlobalEllipse;
@@ -67,7 +66,6 @@ extern bool		CheckPolarsDir();
 extern bool		CheckRegistryProfile();
 extern void		ConvToUpper( TCHAR *);
 
-#endif
 
 extern BYTE RUN_MODE;
 
@@ -147,9 +145,7 @@ extern int OnAirSpace; // VENTA3 toggle DrawAirSpace
 extern bool WasFlying; // used by auto QFE.. 
 extern double LastFlipBoxTime; // used by XCSoar and Calculations
 extern double LastRangeLandableTime;
-#if defined(PNA) || defined(FIVV)
 extern bool needclipping;
-#endif
 extern bool EnableAutoBacklight;
 extern bool EnableAutoSoundVolume;
 extern DWORD EnableFLARMMap;

@@ -205,14 +205,12 @@ void InfoBoxLayout::ScreenGeometry(RECT rc) {
   GetFromRegistry(szRegistryInfoBoxGeometry,&Temp);
   InfoBoxGeometry = Temp;
 
-#if defined(PNA) || defined(FIVV)
 // VENTA-ADDON GEOM
   GetFromRegistry(szRegistryInfoBoxGeom,&Temp);
   if ((unsigned)InfoBoxGeometry != Temp) {
     StartupStore(_T(". Geometry was changed in config, applying%s"),NEWLINE);
     InfoBoxGeometry=Temp;
   }
-#endif
 
   // JMW testing only
   geometrychanged = true;

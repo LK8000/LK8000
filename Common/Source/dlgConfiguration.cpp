@@ -2643,7 +2643,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-#if defined(PNA) || defined(FIVV)
 // VENTA-ADDON Geometry change config menu 11
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxGeom"));
   if (wp) {
@@ -2679,7 +2678,6 @@ static void setVariables(void) {
     }
   }
 //
-#endif
 
 #ifdef PNA
 // VENTA-ADDON Model change config menu 11
@@ -2726,7 +2724,7 @@ static void setVariables(void) {
     dfe->Set(iTmp);
     wp->RefreshDisplay();
   }
-#elif defined FIVV
+#else
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxModel"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -2735,19 +2733,11 @@ static void setVariables(void) {
 #if (WINDOWSPC>0)
 	// LKTOKEN  _@M511_ = "PC/normal" 
     dfe->addEnumText(gettext(TEXT("_@M511_")));
-    #ifdef FIVV
-   	 wp->SetVisible(true); // no more gaps in menus
-    #else
-   	 wp->SetVisible(false); // currently no need to display default
-    #endif
+    wp->SetVisible(true); // no more gaps in menus
 #else
 	// LKTOKEN  _@M512_ = "PDA/normal" 
     dfe->addEnumText(gettext(TEXT("_@M512_")));
-    #ifdef FIVV
     wp->SetVisible(true);
-    #else
-    wp->SetVisible(false);
-    #endif
 #endif
         dfe->Set(0);
     wp->RefreshDisplay();
@@ -3674,19 +3664,6 @@ void dlgConfigurationShowModal(void){
   #else
   wf->FilterAdvanced(1);
   #endif
-
-
-#if !defined(PNA) && !defined(FIVV)
-  // JMW we don't want these for non-PDA platforms yet
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxGeom"));
-  if (wp) {
-    wp->SetVisible(false);
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxModel"));
-  if (wp) {
-    wp->SetVisible(false);
-  }
-#endif
 
   for (int item=0; item<10; item++) {
     cpyInfoBox[item] = -1;
@@ -4979,7 +4956,6 @@ void dlgConfigurationShowModal(void){
     }
   }
 
-#if defined(PNA) || defined(FIVV)
 // VENTA-ADDON GEOM
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxGeom"));
   if (wp) {
@@ -4994,7 +4970,6 @@ void dlgConfigurationShowModal(void){
     }
   }
 //
-#endif
 
 #if defined(PNA) 
 // VENTA-ADDON MODEL CHANGE

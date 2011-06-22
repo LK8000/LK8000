@@ -108,10 +108,8 @@ Appearance_t Appearance = {
   ctBestCruiseTrackAltA,
   wpLandableDefault,
   false,
-#if defined(PNA) || defined(FIVV)  // VENTA-ADDON Model type
   apIg0,  // VENTA-ADDON GEOM
   apImPnaGeneric
-#endif
 };
 
 
@@ -227,12 +225,9 @@ short	ScreenSize=0; // VENTA6
 
 bool GlobalRunning = false; 
 
-#if defined(PNA) || defined(FIVV)  // VENTA-ADDON we call it model and not PNA for possible future usage even for custom PDAs
 int	GlobalModelType=MODELTYPE_PNA_PNA;
 TCHAR	GlobalModelName[MAX_PATH]; // there are currently no checks.. TODO check it fits here
 float	GlobalEllipse=1.1f;	// default ellipse type VENTA2-ADDON
-#endif
-
 
 // this controls all displays, to make sure everything is
 // properly initialised.
@@ -353,9 +348,7 @@ bool WasFlying = false; // VENTA3 used by auto QFE: do not reset QFE if previous
 			//   on the ground, otherwise it turns to zero at once!
 double LastFlipBoxTime = 0; // VENTA3 need this global for slowcalculations cycle
 double LastRangeLandableTime=0;
-#if defined(PNA) || defined(FIVV)
 bool needclipping=false; // flag to activate extra clipping for some PNAs
-#endif
 bool EnableAutoBacklight=true;
 bool EnableAutoSoundVolume=true;
 short AircraftCategory=0;
@@ -869,11 +862,7 @@ void FillDataOptions()
 	// LKTOKEN  _@M1005_ = "Thermal last 30 sec", _@M1006_ = "TC.30\""
 	SetDataOption(2, ugVerticalSpeed,	TEXT("_@M1005_"), TEXT("_@M1006_"), new FormatterLowWarning(TEXT("%-2.1f"),0.0), NoProcessing, 7, 44);
 	// LKTOKEN  _@M1007_ = "Bearing", _@M1008_ = "Brg"
-#ifdef FIVV
 	SetDataOption(3, ugNone,			TEXT("_@M1007_"), TEXT("_@M1008_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)), NoProcessing, 6, 54);
-#else
-	SetDataOption((3, ugNone,			TEXT("_@M1007_"), TEXT("_@M1008_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)TEXT("T")), NoProcessing, 6, 54);
-#endif
 	// LKTOKEN  _@M1009_ = "Eff.last 20 sec", _@M1010_ = "E.20\""
 	SetDataOption(4, ugNone,			TEXT("_@M1009_"), TEXT("_@M1010_"), new InfoBoxFormatter(TEXT("%2.0f")), PopupBugsBallast, 5, 38);
 	// LKTOKEN  _@M1011_ = "Eff.cruise last therm", _@M1012_ = "E.Cru"
@@ -913,21 +902,13 @@ void FillDataOptions()
 	// LKTOKEN  _@M1045_ = "Thermal Gain", _@M1046_ = "TC.Gain"
 	SetDataOption(22, ugAltitude,       TEXT("_@M1045_"), TEXT("_@M1046_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 24, 21);
 	// LKTOKEN  _@M1047_ = "Track", _@M1048_ = "Track"
-#ifdef FIVV
 	SetDataOption(23, ugNone,           TEXT("_@M1047_"), TEXT("_@M1048_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)), DirectionProcessing, 32, 6);
-#else
-	SetDataOption(23, ugNone,           TEXT("_@M1047_"), TEXT("_@M1048_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)TEXT("T")), DirectionProcessing, 32, 6);
-#endif
 	// LKTOKEN  _@M1049_ = "Vario", _@M1050_ = "Vario"
 	SetDataOption(24, ugVerticalSpeed,  TEXT("_@M1049_"), TEXT("_@M1050_"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 44, 22);
 	// LKTOKEN  _@M1051_ = "Wind Speed", _@M1052_ = "WindV"
 	SetDataOption(25, ugWindSpeed,      TEXT("_@M1051_"), TEXT("_@M1052_"), new InfoBoxFormatter(TEXT("%2.0f")), WindSpeedProcessing, 26, 50);
 	// LKTOKEN  _@M1053_ = "Wind Bearing", _@M1054_ = "WindB"
-#ifdef FIVV
 	SetDataOption(26, ugNone,           TEXT("_@M1053_"), TEXT("_@M1054_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)), WindDirectionProcessing, 48, 25);
-#else
-	SetDataOption(26, ugNone,           TEXT("_@M1053_"), TEXT("_@M1054_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)TEXT("T")), WindDirectionProcessing, 48, 25);
-#endif
 	// LKTOKEN  _@M1055_ = "AA Time", _@M1056_ = "AATime"
 	SetDataOption(27, ugNone,           TEXT("_@M1055_"), TEXT("_@M1056_"), new FormatterAATTime(TEXT("%2.0f")), NoProcessing, 28, 18);
 	// LKTOKEN  _@M1057_ = "AA Distance Max", _@M1058_ = "AADmax"
@@ -987,11 +968,7 @@ void FillDataOptions()
 	// LKTOKEN  _@M1111_ = "Team Code", _@M1112_ = "TeamCode"
 	SetDataOption(55, ugNone,           TEXT("_@M1111_"), TEXT("_@M1112_"), new FormatterTeamCode(TEXT("\0")), TeamCodeProcessing, 56, 54);
 	// LKTOKEN  _@M1113_ = "Team Bearing", _@M1114_ = "TmBrng"
-#ifdef FIVV
 	SetDataOption(56, ugNone,           TEXT("_@M1113_"), TEXT("_@M1114_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)), NoProcessing, 57, 55);
-#else
-	SetDataOption(56, ugNone,           TEXT("_@M1113_"), TEXT("_@M1114_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)TEXT("T")), NoProcessing, 57, 55);
-#endif
 	// LKTOKEN  _@M1115_ = "Team Bearing Diff", _@M1116_ = "TeamBd"
 	SetDataOption(57, ugNone,           TEXT("_@M1115_"), TEXT("_@M1116_"), new FormatterDiffTeamBearing(TEXT("")), NoProcessing, 58, 56);
 	// LKTOKEN  _@M1117_ = "Team Range", _@M1118_ = "TeamDis"
@@ -1930,7 +1907,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
 #else
   TCHAR sTmpA[MAX_PATH], sTmpB[MAX_PATH];
   LocalPath(sTmpA,_T(""));
-#if defined(FIVV) && ( !defined(WINDOWSPC) || WINDOWSPC==0 )
+#if ( !defined(WINDOWSPC) || WINDOWSPC==0 )
   if ( !datadir ) {
 	// LKTOKEN _@M1208_ "ERROR NO DIRECTORY:"
     CreateProgressDialog(gettext(TEXT("_@M1208_")));
@@ -1939,7 +1916,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
 #endif
   wsprintf(sTmpB, TEXT("Conf=%s"),sTmpA);
   CreateProgressDialog(sTmpB); 
-#if defined(FIVV) && ( !defined(WINDOWSPC) || WINDOWSPC==0 )
+#if ( !defined(WINDOWSPC) || WINDOWSPC==0 )
   if ( !datadir ) {
     Sleep(3000);
     // LKTOKEN _@M1209_ "CHECK INSTALLATION!"

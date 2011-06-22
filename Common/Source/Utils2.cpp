@@ -1925,19 +1925,6 @@ bool SetModelName(DWORD Temp) {
 #endif
 
 
-#if defined(PNA) || defined(FIVV)  // VENTA-ADDON gmfpathname & C.
-
-/* 
-	Paolo Ventafridda 1 feb 08 
-	Get pathname & c. from GetModuleFilename (gmf)
-	In case of problems, always return \ERRORxx\  as path name
-	It will be displayed at startup and users will know that
-	something is wrong reporting the error code to us.
-	Approach not followed: It works but we don't know why
-	Approach followed: It doesn't work and we DO know why
-
-	These are temporary solutions to be improved
- */
 
 #define MAXPATHBASENAME MAX_PATH
 
@@ -2058,7 +2045,6 @@ int GetGlobalModelName ()
   
 }
 
-#endif   // PNA
 
 /*
  * Convert to uppercase a TCHAR array
@@ -2075,7 +2061,6 @@ void ConvToUpper( TCHAR *str )
 	return ;
 }
 
-#ifdef FIVV
 BOOL DelRegistryKey(const TCHAR *szDelKey)
 {
    HKEY tKey;
@@ -2086,7 +2071,6 @@ BOOL DelRegistryKey(const TCHAR *szDelKey)
    RegCloseKey(tKey);
    return true;
 }
-#endif
 
 #ifdef PNA
 void CleanRegistry()
@@ -2201,7 +2185,6 @@ bool SetSoundVolume() // VENTA4
 
 #endif
 
-#if defined(FIVV) || defined(PNA)
 // VENTA2-ADDON fonts install
 /*
  * Get the localpath, enter XCSoarData/Config, see if there are fonts to copy,
@@ -2560,7 +2543,6 @@ bool CheckRegistryProfile() {
 	if (  GetFileAttributes(srcpath) == 0xffffffff) return false;
 	return true;
 }
-#endif
 
 
 int roundupdivision(int a, int b) {
