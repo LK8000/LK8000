@@ -4610,9 +4610,19 @@ void LK8000GetOpts(LPTSTR CommandLine) {
       SCREENWIDTH=320;
       SCREENHEIGHT=240;
     }
+    pC = _tcsstr(MyCommandLine, TEXT("-320x234"));
+    if (pC != NULL){
+      SCREENWIDTH=320;
+      SCREENHEIGHT=234;
+    }
     pC = _tcsstr(MyCommandLine, TEXT("-240x320"));
     if (pC != NULL){
       SCREENWIDTH=240;
+      SCREENHEIGHT=320;
+    }
+    pC = _tcsstr(MyCommandLine, TEXT("-234x320"));
+    if (pC != NULL){
+      SCREENWIDTH=234;
       SCREENHEIGHT=320;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-272x480"));

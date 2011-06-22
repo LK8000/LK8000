@@ -1639,10 +1639,12 @@ void InitScreenSize() {
   ScreenSize=0;
 
   if (iWidth == 240 && iHeight == 320) ScreenSize=(ScreenSize_t)ss240x320; // QVGA      portrait
+  if (iWidth == 234 && iHeight == 320) ScreenSize=(ScreenSize_t)ss240x320; // QVGA      portrait
   if (iWidth == 272 && iHeight == 480) ScreenSize=(ScreenSize_t)ss272x480;
   if (iWidth == 480 && iHeight == 640) ScreenSize=(ScreenSize_t)ss480x640; //  VGA
   if (iWidth == 640 && iHeight == 480) ScreenSize=(ScreenSize_t)ss640x480; //   VGA
   if (iWidth == 320 && iHeight == 240) ScreenSize=(ScreenSize_t)ss320x240; //  QVGA
+  if (iWidth == 320 && iHeight == 234) ScreenSize=(ScreenSize_t)ss320x240; //  QVGA
   if (iWidth == 720 && iHeight == 408) ScreenSize=(ScreenSize_t)ss720x408;
   if (iWidth == 480 && iHeight == 800) ScreenSize=(ScreenSize_t)ss480x800;
   if (iWidth == 400 && iHeight == 240) ScreenSize=(ScreenSize_t)ss400x240; // landscape
