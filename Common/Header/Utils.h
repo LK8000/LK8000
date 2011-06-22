@@ -185,7 +185,6 @@ extern const TCHAR szRegistrySnailTrail[];
 extern const TCHAR szRegistryTrailDrift[];
 extern const TCHAR szRegistryThermalLocator[];
 extern const TCHAR szRegistryGliderScreenPosition[];
-extern const TCHAR szRegistryAnimation[];
 extern const TCHAR szRegistrySetSystemTimeFromGPS[];
 extern const TCHAR szRegistryAutoForceFinalGlide[];
 

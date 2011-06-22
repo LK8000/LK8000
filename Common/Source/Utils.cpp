@@ -56,8 +56,6 @@ FlarmIdFile file;
 #endif
 #endif
 
-bool EnableAnimation=false;
-
 bool ReadWinPilotPolarInternal(int i);
 
 const TCHAR szRegistryKey[] = TEXT(REGKEYNAME);
@@ -195,7 +193,6 @@ const TCHAR szRegistrySectorRadius[]=          TEXT("Radius");
 const TCHAR szRegistrySnailTrail[]=		 TEXT("SnailTrail");
 const TCHAR szRegistryTrailDrift[]=		 TEXT("TrailDrift");
 const TCHAR szRegistryThermalLocator[]=	 TEXT("ThermalLocator");
-const TCHAR szRegistryAnimation[]=		 TEXT("Animation");
 const TCHAR szRegistrySpeed1Index[]=		 TEXT("SpeedIndex");
 const TCHAR szRegistrySpeed2Index[]=		 TEXT("Speed2Index");
 //const TCHAR szRegistrySpeed3Index[]=		 TEXT("Speed3Index");
@@ -703,11 +700,6 @@ void ReadRegistrySettings(void)
   Temp = EnableThermalLocator;
   GetFromRegistry(szRegistryThermalLocator,&Temp);
   EnableThermalLocator = Temp;
-
-  //Temp = EnableAnimation;
-  Temp=0; // disabled by default VNT9
-  GetFromRegistry(szRegistryAnimation,&Temp);
-  EnableAnimation = (Temp==1);
 
   Temp  = EnableTopology;
   GetFromRegistry(szRegistryDrawTopology,&Temp);
@@ -4803,25 +4795,6 @@ bool ReadWinPilotPolarInternal(int i) {
 #define GdiFlush() do { } while (0)
 #endif
 
-////////////////////////////////////////////////////////////////////////////
-//
-// FUNCTION:    DrawWireRects
-//
-// DESCRIPTION: Creates exploding wire rectanges
-//
-// INPUTS:  LPRECT lprcFrom      Source Rectangle
-//          LPRECT lprcTo        Destination Rectangle
-//          UINT nMilliSecSpeed  Speed in millisecs for animation
-//
-// RETURN:    None
-// NOTES:    None
-//
-//  Maintenance Log
-//  Author      Date    Version     Notes
-//  NT Almond   011199  1.0         Origin
-//  CJ Maunder  010899  1.1         Modified rectangle transition code
-//
-/////////////////////////////////////////////////////////////////////////
 
 static RECT AnimationRectangle = {0,0,0,0};
 
@@ -4832,64 +4805,7 @@ void SetSourceRectangle(RECT fromRect) {
 
 RECT WINAPI DrawWireRects(LPRECT lprcTo, UINT nMilliSecSpeed)
 {
-  if (!EnableAnimation)
     return AnimationRectangle;
-
-  LPRECT lprcFrom = &AnimationRectangle;
-  const int nNumSteps = 10;
-  
-  GdiFlush();
-  Sleep(10);  // Let the desktop window sort itself out
-  
-  // if hwnd is null - "you have the CON".
-  HDC hDC = ::GetDC(NULL);
-  
-  // Pen size, urmmm not too thick
-  HPEN hPen = ::CreatePen(PS_SOLID, 2, RGB(0,0,0));
-  
-  int nMode = ::SetROP2(hDC, R2_NOT);
-  HPEN hOldPen = (HPEN) ::SelectObject(hDC, hPen);
-  
-  for (int i = 0; i < nNumSteps; i++)
-    {
-      double dFraction = (double) i / (double) nNumSteps;
-      
-      RECT transition;
-      transition.left   = lprcFrom->left + 
-	(int)((lprcTo->left - lprcFrom->left) * dFraction);
-      transition.right  = lprcFrom->right + 
-	(int)((lprcTo->right - lprcFrom->right) * dFraction);
-      transition.top    = lprcFrom->top + 
-	(int)((lprcTo->top - lprcFrom->top) * dFraction);
-      transition.bottom = lprcFrom->bottom + 
-	(int)((lprcTo->bottom - lprcFrom->bottom) * dFraction);
-      
-      POINT pt[5];
-      pt[0].x = transition.left; pt[0].y= transition.top;
-      pt[1].x = transition.right; pt[1].y= transition.top;
-      pt[2].x = transition.right; pt[2].y= transition.bottom;
-      pt[3].x = transition.left; pt[3].y= transition.bottom;
-      pt[4].x = transition.left; pt[4].y= transition.top;
-      
-      // We use Polyline because we can determine our own pen size
-      // Draw Sides
-      ::Polyline(hDC,pt,5);
-
-      GdiFlush();
-      
-      Sleep(nMilliSecSpeed);
-      
-      // UnDraw Sides
-      ::Polyline(hDC,pt,5);
-      
-      GdiFlush();
-    }
-  
-  ::SetROP2(hDC, nMode);
-  ::SelectObject(hDC, hOldPen);
-  ::DeleteObject(hPen);
-  ::ReleaseDC(NULL,hDC);
-  return AnimationRectangle;
 }
 
 // FLARM FUNCTIONS

@@ -184,8 +184,6 @@ static void UpdateButtons(void) {
   }
 }
 
-extern bool EnableAnimation;
-
 
 static void NextPage(int Step){
   config_page += Step;
@@ -2373,12 +2371,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAnimation"));
-  if (wp) {
-    wp->GetDataField()->Set(EnableAnimation);
-    wp->RefreshDisplay();
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpTrail"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -3820,15 +3812,6 @@ void dlgConfigurationShowModal(void){
     if (SetSystemTimeFromGPS != wp->GetDataField()->GetAsBoolean()) {
       SetSystemTimeFromGPS = wp->GetDataField()->GetAsBoolean();
       SetToRegistry(szRegistrySetSystemTimeFromGPS, SetSystemTimeFromGPS);
-      changed = true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAnimation"));
-  if (wp) {
-    if (EnableAnimation != wp->GetDataField()->GetAsBoolean()) {
-      EnableAnimation = wp->GetDataField()->GetAsBoolean();
-      SetToRegistry(szRegistryAnimation, EnableAnimation);
       changed = true;
     }
   }

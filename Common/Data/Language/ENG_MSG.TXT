@@ -107,6 +107,7 @@ _@M90_ "Always use MC=0"
 _@M91_ "Always use safety MC"
 _@M92_ "Amber"
 _@M93_ "Analysis"
+# 94 REMOVED after v2.3
 _@M94_ "Animation"
 _@M95_ "Append to task"
 _@M96_ "Arm start"

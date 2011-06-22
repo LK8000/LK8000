@@ -626,9 +626,6 @@
 </WndProperty>
 </WndFrame>
 <WndFrame Name="frmEngineering2" X=70 Y=0 Width=-246 Height=222 Font=1>
-<WndProperty Name="prpAnimation" Caption="_@M94_"  X=2 Y=-1   Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H228_">
-<DataField name="" DataType="boolean"/>
-</WndProperty>
 <WndProperty Name="prpAppDefaultMapWidth" Caption="_@M226_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2> 
 <DataField name="" DataType="double" DisplayFormat="%.0f" EditFormat="%.0f" Min=100 Max=400 Step=5/>
 </WndProperty>
