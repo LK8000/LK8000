@@ -95,19 +95,8 @@ static std::map<TCHAR*, TCHAR*> unusedTranslations;
 
 #include "utils/heapcheck.h"
 
-#if !defined(MapScale2)
-  #define MapScale2  apMs2Default
-#endif
-
 Appearance_t Appearance = {
-  apMsAltA, // mapscale
-  MapScale2, 
-  false, // don't show logger indicator
   206,
-  {0,-13},
-  apFlightModeIconDefault,
-  {0,0},
-  apCompassAltA,
   {0,0,0},
   {0,0,0},
   {0,0,0},
@@ -117,28 +106,12 @@ Appearance_t Appearance = {
   {0,0,0},
   {0,0,0},
   ctBestCruiseTrackAltA,
-  afAircraftAltA,
-  true, // don't show speed to fly
-  fgFinalGlideDefault,
   wpLandableDefault,
-  true,
   false,
-  true,
-  false,
-  false,
-  false,
-  false,
-  false,
-  gvnsLongNeedle,
-  true,
-  apIbBox,
 #if defined(PNA) || defined(FIVV)  // VENTA-ADDON Model type
   apIg0,  // VENTA-ADDON GEOM
-  apImPnaGeneric,
+  apImPnaGeneric
 #endif
-  false,
-  true,
-  false
 };
 
 

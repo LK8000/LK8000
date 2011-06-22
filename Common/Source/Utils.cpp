@@ -290,13 +290,10 @@ const TCHAR szRegistryFontRenderer[]= TEXT("FontRenderer2");
 const TCHAR szRegistryPGGateIntervalTime[]= TEXT("PGGateIntervalTime");
 const TCHAR szRegistryPGStartOut[]= TEXT("PGStartOut");
 
-const TCHAR szRegistryAppIndFinalGlide[] = TEXT("AppIndFinalGlide");
 const TCHAR szRegistryAppIndLandable[] = TEXT("AppIndLandable");
 const TCHAR szRegistryAppInverseInfoBox[] = TEXT("AppInverseInfoBox2");
-const TCHAR szRegistryAppInfoBoxColors[] = TEXT("AppInfoBoxColors");
 const TCHAR szRegistryAppDefaultMapWidth[] = TEXT("AppDefaultMapWidth");
 const TCHAR szRegistryTeamcodeRefWaypoint[] = TEXT("TeamcodeRefWaypoint");
-const TCHAR szRegistryAppInfoBoxBorder[] = TEXT("AppInfoBoxBorder");
 
 const TCHAR szRegistryAppInfoBoxGeom[] = TEXT("AppInfoBoxGeom");
 const TCHAR szRegistryAppInfoBoxModel[] = TEXT("AppInfoBoxModel"); 
@@ -1077,12 +1074,6 @@ void ReadRegistrySettings(void)
 
   // new appearance variables
 
-  //Temp = Appearance.IndFinalGlide;
-  Temp=(IndFinalGlide_t)fgFinalGlideDefault; // VNT9 default
-  GetFromRegistry(szRegistryAppIndFinalGlide, &Temp);
-  //Appearance.IndFinalGlide = (IndFinalGlide_t)Temp;
-  Appearance.IndFinalGlide = (IndFinalGlide_t)fgFinalGlideDefault; // VENTA9 FIX final glide bar mode set to default
-
   Temp = (IndLandable_t)wpLandableAltA;
   GetFromRegistry(szRegistryAppIndLandable, &Temp);
   Appearance.IndLandable = (IndLandable_t)Temp;
@@ -1090,13 +1081,6 @@ void ReadRegistrySettings(void)
   Temp = 1; 	// DEFAULT LK8000 091019
   GetFromRegistry(szRegistryAppInverseInfoBox, &Temp);
   Appearance.InverseInfoBox = (Temp != 0);
-
-  Appearance.CompassAppearance = (CompassAppearance_t)apCompassAltA; // 091114 FIXED SMALL OUTLINED COMPASS
-
-  //Temp = Appearance.InfoBoxBorder;
-  Temp=(InfoBoxBorderAppearance_t)apIbBox; // VNT9 default
-  GetFromRegistry(szRegistryAppInfoBoxBorder, &Temp);
-  Appearance.InfoBoxBorder = (InfoBoxBorderAppearance_t)Temp;
 
 // VENTA2-ADDON Geometry change and PNA custom font settings
 // depending on infobox geometry and model type
@@ -1152,11 +1136,6 @@ void ReadRegistrySettings(void)
   Temp = Appearance.DefaultMapWidth;
   GetFromRegistry(szRegistryAppDefaultMapWidth, &Temp);
   Appearance.DefaultMapWidth = Temp;
-
-  //Temp = Appearance.InfoBoxColors;
-  Temp=1; // true as default VNT9
-  GetFromRegistry(szRegistryAppInfoBoxColors, &Temp);
-  Appearance.InfoBoxColors = (Temp != 0);
 
   Temp = 1;
   GetFromRegistry(szRegistryAutoAdvance,&Temp);

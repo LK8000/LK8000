@@ -2643,18 +2643,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxBorder"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M151_ = "Box" 
-    dfe->addEnumText(gettext(TEXT("_@M151_")));
-	// LKTOKEN  _@M679_ = "Tab" 
-    dfe->addEnumText(gettext(TEXT("_@M679_")));
-    dfe->Set(Appearance.InfoBoxBorder);
-    wp->RefreshDisplay();
-  }
-
 #if defined(PNA) || defined(FIVV)
 // VENTA-ADDON Geometry change config menu 11
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxGeom"));
@@ -3256,31 +3244,6 @@ static void setVariables(void) {
 
 // end fonts
 
-  /* REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppCompassAppearance"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M480_ = "Normal" 
-    dfe->addEnumText(gettext(TEXT("_@M480_")));
-	// LKTOKEN  _@M815_ = "White outline" 
-    dfe->addEnumText(gettext(TEXT("_@M815_")));
-    dfe->Set(Appearance.CompassAppearance);
-    wp->RefreshDisplay();
-  }
-  */
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppIndFinalGlide"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M227_ = "Default" 
-    dfe->addEnumText(gettext(TEXT("_@M227_")));
-	// LKTOKEN  _@M87_ = "Alternate" 
-    dfe->addEnumText(gettext(TEXT("_@M87_")));
-    dfe->Set(Appearance.IndFinalGlide);
-    wp->RefreshDisplay();
-  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppIndLandable"));
   if (wp) {
@@ -3376,12 +3339,6 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M340_")));
     dfe->addEnumText(TEXT("GA Relative"));
     dfe->Set(TerrainRamp);
-    wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxColors"));
-  if (wp) {
-    wp->GetDataField()->Set(Appearance.InfoBoxColors);
     wp->RefreshDisplay();
   }
 
@@ -4651,43 +4608,6 @@ void dlgConfigurationShowModal(void){
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppIndFinalGlide"));
-  if (wp) {
-    if (Appearance.IndFinalGlide != (IndFinalGlide_t)(wp->GetDataField()->GetAsInteger())) {
-      Appearance.IndFinalGlide = (IndFinalGlide_t)(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryAppIndFinalGlide,(DWORD)(Appearance.IndFinalGlide));
-      changed = true;
-    }
-  }
-
-  /* REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppCompassAppearance"));
-  if (wp) {
-    if (Appearance.CompassAppearance != (CompassAppearance_t)
-	(wp->GetDataField()->GetAsInteger())) {
-      Appearance.CompassAppearance = (CompassAppearance_t)
-	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryAppCompassAppearance,
-		    (DWORD)(Appearance.CompassAppearance));
-      changed = true;
-      requirerestart = true;
-    }
-  }
-  */
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxBorder"));
-  if (wp) {
-    if (Appearance.InfoBoxBorder != (InfoBoxBorderAppearance_t)
-	(wp->GetDataField()->GetAsInteger())) {
-      Appearance.InfoBoxBorder = (InfoBoxBorderAppearance_t)
-	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryAppInfoBoxBorder,
-		    (DWORD)(Appearance.InfoBoxBorder));
-      changed = true;
-      requirerestart = true;
-    }
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpAircraftCategory")); // VENTA4
   if (wp) {
     if (AircraftCategory != (AircraftCategory_t)
@@ -5196,17 +5116,6 @@ void dlgConfigurationShowModal(void){
 	wp->GetDataField()->GetAsInteger()) {
       Appearance.DefaultMapWidth = wp->GetDataField()->GetAsInteger();
       SetToRegistry(szRegistryAppDefaultMapWidth,Appearance.DefaultMapWidth);
-      requirerestart = true;
-      changed = true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxColors"));
-  if (wp) {
-    if ((int)(Appearance.InfoBoxColors) != 
-	wp->GetDataField()->GetAsInteger()) {
-      Appearance.InfoBoxColors = (wp->GetDataField()->GetAsInteger() != 0);
-      SetToRegistry(szRegistryAppInfoBoxColors,Appearance.InfoBoxColors);
       requirerestart = true;
       changed = true;
     }

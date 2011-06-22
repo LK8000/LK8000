@@ -185,7 +185,6 @@ HBITMAP MapWindow::hInvSmall;
 HBITMAP MapWindow::hCruise;
 HBITMAP MapWindow::hClimb;
 HBITMAP MapWindow::hFinalGlide;
-HBITMAP MapWindow::hAutoMacCready;
 HBITMAP MapWindow::hTerrainWarning;
 #ifdef LKAIRSPACE
 HBITMAP MapWindow::hAirspaceWarning;
@@ -1146,6 +1145,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       {
 	HFONT      oldFont;
 
+	// REMOVE THIS STUFF AFTER REMOVING INFOBOXES
 	oldFont = (HFONT)SelectObject(hDCTemp, TitleWindowFont);
 	SetFontInfo(hDCTemp, &Appearance.TitleWindowFont);
 
@@ -1205,7 +1205,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hInvTurnPoint=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_INVTURNPOINT));
       hSmall=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SMALL));
       hInvSmall=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_INVSMALL));
-      hAutoMacCready=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AUTOMCREADY));
       hGPSStatus1=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_GPSSTATUS1));
       hGPSStatus2=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_GPSSTATUS2));
       hLogger=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_LOGGER));
@@ -1280,16 +1279,9 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 	hSnailPens[13] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), hSnailColours[13]);
 	hSnailPens[14] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), hSnailColours[14]);
 
-      // testing only    Appearance.InverseAircraft = true;
-
       hpCompassBorder = LKPen_Black_N2;
-      if (Appearance.InverseAircraft) {
-	hpAircraft = LKPen_Black_N3;
-	hpAircraftBorder = LKPen_White_N1;
-      } else {
-	hpAircraft = LKPen_White_N3;
-	hpAircraftBorder = LKPen_Black_N1;
-      }
+      hpAircraft = LKPen_White_N3;
+      hpAircraftBorder = LKPen_Black_N1;
 
       hpWind = LKPen_Black_N2;
 
@@ -1381,7 +1373,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       DeleteObject(hCruise);
       DeleteObject(hClimb);
       DeleteObject(hFinalGlide);
-      DeleteObject(hAutoMacCready);
       DeleteObject(hFLARMTraffic);
       DeleteObject(hTerrainWarning);
 #ifdef LKAIRSPACE
@@ -2985,7 +2976,7 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
     return;
   }
 
-  if (Appearance.Aircraft == afAircraftDefault){
+  if ( ISGAAIRCRAFT ) {
 
 #define NUMAIRCRAFTPOINTS 16
 
@@ -3013,13 +3004,8 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
     HBRUSH hbAircraftSolid; 
     HBRUSH hbAircraftSolidBg;
 
-    if (Appearance.InverseAircraft) {
-      hbAircraftSolid = LKBrush_White;
-      hbAircraftSolidBg = LKBrush_Black;
-    } else {
-      hbAircraftSolid = LKBrush_Black;
-      hbAircraftSolidBg = LKBrush_White;
-    }
+    hbAircraftSolid = LKBrush_Black;
+    hbAircraftSolidBg = LKBrush_White;
 
     HBRUSH hbOld = (HBRUSH)SelectObject(hdc, hbAircraftSolidBg);
     hpOld = (HPEN)SelectObject(hdc, hpAircraft);
@@ -3044,9 +3030,11 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
     SelectObject(hdc, hpOld);
     SelectObject(hdc, hbOld);
     
-  } else
+    return;
 
-    if (Appearance.Aircraft == afAircraftAltA){
+  }
+
+      // GLIDER AICRAFT NORMAL ICON
 
       HPEN oldPen;
       POINT Aircraft[] = {
@@ -3069,17 +3057,6 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
 	{1, -5},
       };
 
-      /* Experiment, when turning show the high wing larger, 
-	 low wing smaller
-	 if (DerivedDrawInfo.TurnRate>10) {
-	 Aircraft[3].y = 0;
-	 Aircraft[12].y = 2;
-	 } else if (DerivedDrawInfo.TurnRate<-10) {
-	 Aircraft[3].y = 2;
-	 Aircraft[12].y = 0;
-	 }
-      */
-
       int n = sizeof(Aircraft)/sizeof(Aircraft[0]);
 
       double angle = DisplayAircraftAngle+
@@ -3092,18 +3069,13 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
       Polygon(hdc, Aircraft, n);
 
       HBRUSH hbOld;
-      if (Appearance.InverseAircraft) {
-	hbOld = (HBRUSH)SelectObject(hdc, GetStockObject(WHITE_BRUSH));
-      } else {
-	hbOld = (HBRUSH)SelectObject(hdc, GetStockObject(BLACK_BRUSH));
-      }
+      hbOld = (HBRUSH)SelectObject(hdc, GetStockObject(BLACK_BRUSH));
       SelectObject(hdc, hpAircraftBorder); // hpBearing
       Polygon(hdc, Aircraft, n);
 
       SelectObject(hdc, oldPen);
       SelectObject(hdc, hbOld);
 
-    }
 
 }
 
@@ -3239,7 +3211,9 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
   static bool lastLoggerActive=false;
   int offset = -1;
 
-  if (!Appearance.DontShowLoggerIndicator){
+    //
+    // Logger indicator
+    //
 
 	// has GPS time advanced?
 	if(DrawInfo.Time <= LastTime) {
@@ -3263,21 +3237,21 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
 			SelectObject(hDCTemp,hLoggerOff);
 		}
 
-		DrawBitmapX(hdc, rc.right+IBLSCALE(offset+Appearance.FlightModeOffset.x),
+		DrawBitmapX(hdc, rc.right+IBLSCALE(offset),
                   	rc.bottom - BottomSize+NIBLSCALE(1),
 			7,7, hDCTemp, 0,0,SRCPAINT);
 
-		DrawBitmapX(hdc, rc.right+IBLSCALE(offset+Appearance.FlightModeOffset.x),
+		DrawBitmapX(hdc, rc.right+IBLSCALE(offset),
                   	rc.bottom-BottomSize+NIBLSCALE(1),
 			7,7, hDCTemp, 7,0,SRCAND);
 
 		// not really needed if we remove offset next on
 		offset +=7;
 	}
-  }
 
-
-  if (Appearance.FlightModeIcon == apFlightModeIconDefault){
+    //
+    // Flight mode Icon
+    //
 
       if (mode.Is(Mode::MODE_CIRCLING)) {
         SelectObject(hDCTemp,hClimb);
@@ -3290,44 +3264,19 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
     offset -= 24;
 
     DrawBitmapX(hdc,
-                rc.right+IBLSCALE(offset-1+Appearance.FlightModeOffset.x),
-                rc.bottom+IBLSCALE(-20-1+Appearance.FlightModeOffset.y),
+                rc.right+IBLSCALE(offset-1),
+                rc.bottom+IBLSCALE(-20-1),
                 24,20,
                 hDCTemp,
                 0,0,SRCPAINT);
     
     DrawBitmapX(hdc,
-                rc.right+IBLSCALE(offset-1+Appearance.FlightModeOffset.x),
-                rc.bottom+IBLSCALE(-20-1+Appearance.FlightModeOffset.y),
+                rc.right+IBLSCALE(offset-1),
+                rc.bottom+IBLSCALE(-20-1),
                 24,20,
                 hDCTemp,
                 24,0,SRCAND);
 
-  }
-
-  if (!Appearance.DontShowAutoMacCready && DerivedDrawInfo.AutoMacCready) {
-    SelectObject(hDCTemp,hAutoMacCready);
-
-    offset -= 24;
-
-    //changed draw mode & icon for higher opacity 12aug -st
-
-    DrawBitmapX(hdc,
-		rc.right+IBLSCALE(offset-3+Appearance.FlightModeOffset.x),
-		rc.bottom+IBLSCALE(-20-3+Appearance.FlightModeOffset.y),
-		24,20,
-		hDCTemp,
-		0,0,SRCPAINT);
-
-    DrawBitmapX(hdc,
-		rc.right+IBLSCALE(offset-3+Appearance.FlightModeOffset.x),
-		rc.bottom+IBLSCALE(-20-3+Appearance.FlightModeOffset.y),
-		24,20,
-		hDCTemp,
-		24,0,SRCAND);
-
-  };
-  
 }
 
 

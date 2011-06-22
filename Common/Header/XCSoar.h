@@ -1,42 +1,14 @@
 /*
-Copyright_License {
+   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+   Released under GNU/GPL License v.2
+   See CREDITS.TXT file for authors and copyrights
 
-  XCSoar Glide Computer - http://xcsoar.sourceforge.net/
-  Copyright (C) 2000 - 2008  
-
-  	M Roberts (original release)
-	Robin Birch <robinb@ruffnready.co.uk>
-	Samuel Gisiger <samuel.gisiger@triadis.ch>
-	Jeff Goodenough <jeff@enborne.f2s.com>
-	Alastair Harrison <aharrison@magic.force9.co.uk>
-	Scott Penrose <scottp@dd.com.au>
-	John Wharington <jwharington@gmail.com>
-	Lars H <lars_hn@hotmail.com>
-	Rob Dunning <rob@raspberryridgesheepfarm.com>
-	Russell King <rmk@arm.linux.org.uk>
-	Paolo Ventafridda <coolwind@email.it>
-	Tobias Lohner <tobias@lohner-net.de>
-
-  This program is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public License
-  as published by the Free Software Foundation; either version 2
-  of the License, or (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-  $Id: XCSoar.h,v 8.2 2009/06/24 10:06:10 root Exp root $
-}
+   $Id$
 */
 
-#if !defined(AFX_XCSOAR_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
-#define AFX_XCSOAR_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_
+#ifndef LK8000_LK8000_H
+#define LK8000_LK8000_H
+
 
 #if _MSC_VER > 1000
 #pragma once
@@ -340,41 +312,9 @@ typedef enum{
 }ScreenSize_t;
 
 typedef enum{
-  apMsDefault=0,
-  apMsNone,
-  apMsAltA
-}MapScaleAppearance_t;
-
-typedef enum{
-  apMs2Default=0,
-  apMs2None,
-  apMs2AltA
-}MapScale2Appearance_t;
-
-typedef enum{
-  apFlightModeIconDefault=0,
-  apFlightModeIconAltA
-}FlightModeIconAppearance_t;
-
-typedef enum{
-  apCompassDefault=0,
-  apCompassAltA
-}CompassAppearance_t;
-
-typedef enum{
   ctBestCruiseTrackDefault=0,
   ctBestCruiseTrackAltA,
 }BestCruiseTrack_t;
-
-typedef enum{
-  afAircraftDefault=0,
-  afAircraftAltA
-}Aircraft_t;
-
-typedef enum{
-  fgFinalGlideDefault=0,
-  fgFinalGlideAltA,
-}IndFinalGlide_t;
 
 typedef enum{
   wpLandableDefault=0,
@@ -386,16 +326,6 @@ typedef struct{
   int AscentHeight;
   int CapitalHeight;
 }FontHeightInfo_t;
-
-typedef enum{
-  gvnsDefault=0,
-  gvnsLongNeedle,
-}GaugeVarioNeedleStyle_t;
-
-typedef enum{
-  apIbBox=0,
-  apIbTab
-}InfoBoxBorderAppearance_t;
 
 typedef enum{
   bit8N1=0,
@@ -640,45 +570,24 @@ typedef struct {
 
 
 typedef struct{
-  MapScaleAppearance_t MapScale;
-  MapScale2Appearance_t MapScale2;
-  bool DontShowLoggerIndicator;
   int DefaultMapWidth;
-  POINT GPSStatusOffset;
-  FlightModeIconAppearance_t FlightModeIcon;
-  POINT FlightModeOffset;
-  CompassAppearance_t CompassAppearance;
+  // THESE ARE USED BY INFOBOX ONLY TO HAVE SIZES READY
   FontHeightInfo_t TitleWindowFont;
   FontHeightInfo_t MapWindowFont;
   FontHeightInfo_t MapWindowBoldFont;
   FontHeightInfo_t InfoWindowFont;
   FontHeightInfo_t CDIWindowFont;
   FontHeightInfo_t StatisticsFont;
-  FontHeightInfo_t MapLabelFont; // VENTA6 added
+  FontHeightInfo_t MapLabelFont;
   FontHeightInfo_t TitleSmallWindowFont;
+  // 
   BestCruiseTrack_t BestCruiseTrack;
-  Aircraft_t Aircraft;
-  bool DontShowSpeedToFly;
-  IndFinalGlide_t IndFinalGlide;
-  IndLandable_t IndLandable;
-  bool DontShowAutoMacCready;
-  bool InverseInfoBox;
-  bool InfoTitelCapital;
-  bool GaugeVarioAvgText;
-  bool GaugeVarioMc;
-  bool GaugeVarioSpeedToFly;
-  bool GaugeVarioBallast;
-  bool GaugeVarioBugs;
-  GaugeVarioNeedleStyle_t GaugeVarioNeedleStyle;
-  bool InfoBoxColors;
-  InfoBoxBorderAppearance_t InfoBoxBorder;
+  IndLandable_t IndLandable;	// landable icon style
+  bool InverseInfoBox;		// InfoBox black or white inverted, used also by LK styles
 #if defined(PNA) || defined(FIVV)
   InfoBoxGeomAppearance_t InfoBoxGeom; // VENTA-ADDON
   InfoBoxModelAppearance_t InfoBoxModel; // VENTA-ADDON model change
 #endif
-  bool InverseAircraft;
-  bool GaugeVarioGross;
-  bool GaugeVarioAveNeedle;
 } Appearance_t;
 
 extern Appearance_t Appearance;

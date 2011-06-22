@@ -1397,9 +1397,8 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 		}
 	}
 
-	// this is the only used choice: draw boxed value in the center
-	if (Appearance.IndFinalGlide == fgFinalGlideDefault){
 
+	// draw boxed value in the center
 		if (OvertargetMode == OVT_TASK ) { //@ 101004
 			// A task is made of at least 2 tps, otherwise its a goto
 			if (( (GlideBarMode == (GlideBarMode_t)gbFinish) && ValidTaskPoint(1)) || !NewMap) {
@@ -1444,47 +1443,6 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 		// boxed numbers are a bit too much on the left, so increase the offset
 		TextInBox(hDC, Value, lkVarioOffset+NIBLSCALE(1), (int)Offset, 0, TextInBoxMode); //@ 091114
 
-	} else {
-		// This part is unused
-#if 0
-		if (Appearance.IndFinalGlide == fgFinalGlideAltA){
-
-			HFONT oldFont;
-			int y = GlideBar[3].y;
-			// was ((rc.bottom - rc.top )/2)-rc.top-
-			//            Appearance.MapWindowBoldFont.CapitalHeight/2-1;
-			int x = GlideBar[2].x+NIBLSCALE(1);
-			HBITMAP Bmp;
-			POINT  BmpPos;
-			POINT  BmpSize;
-
-			if ((GlideBarMode == (GlideBarMode_t)gbFinish)||!NewMap) {
-				_stprintf(Value, TEXT("%1.0f"), Units::ToUserAltitude(DerivedDrawInfo.TaskAltitudeDifference));
-			} else {
-				_stprintf(Value, TEXT("%1.0f"), Units::ToUserAltitude(DerivedDrawInfo.NextAltitudeDifference));
-			}
-          
-			oldFont = (HFONT)SelectObject(hDC, MapWindowBoldFont);
-			GetTextExtentPoint(hDC, Value, _tcslen(Value), &TextSize);
-          
-			SelectObject(hDC, GetStockObject(WHITE_BRUSH));
-			SelectObject(hDC, GetStockObject(WHITE_PEN));
-			Rectangle(hDC, x, y, x+NIBLSCALE(1)+TextSize.cx, y+Appearance.MapWindowBoldFont.CapitalHeight+NIBLSCALE(2));
-          
-			ExtTextOut(hDC, x+NIBLSCALE(1), y+Appearance.MapWindowBoldFont.CapitalHeight
-				 -Appearance.MapWindowBoldFont.AscentHeight+NIBLSCALE(1), 0, NULL, Value, _tcslen(Value), NULL);
-          
-			if (Units::GetUnitBitmap(Units::GetUserAltitudeUnit(), &Bmp, &BmpPos, &BmpSize, 0)){
-				HBITMAP oldBitMap = (HBITMAP)SelectObject(hDCTemp, Bmp);
-				DrawBitmapX(hDC, x+TextSize.cx+NIBLSCALE(1), y, BmpSize.x, BmpSize.y, hDCTemp, BmpPos.x, BmpPos.y, SRCCOPY);
-				SelectObject(hDCTemp, oldBitMap);
-			}
-          
-			SelectObject(hDC, oldFont);
-		}
-#endif
-          
-	}
 	SelectObject(hDC, hbOld);
 	SelectObject(hDC, hpOld);
     } else GlideBarOffset=0; 	// 091125 BUGFIX glidebaroffset is zero when no task point
@@ -1503,8 +1461,6 @@ void MapWindow::DrawCompass(HDC hDC, const RECT rc)
   POINT Start;
   HPEN hpOld;
   HBRUSH hbOld; 
-
-  if (Appearance.CompassAppearance == apCompassAltA){
 
     static double lastDisplayAngle = 9999.9;
     static int lastRcRight = 0, lastRcTop = 0;
@@ -1546,8 +1502,6 @@ void MapWindow::DrawCompass(HDC hDC, const RECT rc)
 
     SelectObject(hDC, hbOld);
     SelectObject(hDC, hpOld);
-
-  }
 
 }
 
@@ -1860,9 +1814,6 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 {
   static short terrainwarning=0;
 
-
-  if ((Appearance.MapScale == apMsDefault) || NewMap){
-
     TCHAR Scale[80];
     TCHAR Scale2[80];
     TCHAR TEMP[20];
@@ -2046,7 +1997,6 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 
     SelectObject(hDC, hpOld);
 
-  }
 
 }
 

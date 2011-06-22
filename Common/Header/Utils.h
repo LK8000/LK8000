@@ -130,7 +130,6 @@ extern const TCHAR szRegistryAverEffTime[]; // VENTA6
 extern const TCHAR szRegistryBgMapColor[]; 
 extern const TCHAR szRegistryDebounceTimeout[];
 extern const TCHAR szRegistryAppDefaultMapWidth[];
-extern const TCHAR szRegistryAppIndFinalGlide[];
 extern const TCHAR szRegistryAppIndLandable[];
 extern const TCHAR szRegistryAppInverseInfoBox[];
 extern const TCHAR szRegistryAppInfoBoxColors[];

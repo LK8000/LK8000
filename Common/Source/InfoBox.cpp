@@ -127,11 +127,7 @@ InfoBox::InfoBox(HWND Parent, int X, int Y, int Width, int Height){
   FillRect(mHdcBuf, &rc, mhBrushBk);
 
   mBorderSize = 1; 
-  if (Appearance.InfoBoxBorder == apIbTab) {
-    mBorderKind = BORDERTAB; 
-  } else {
-    mBorderKind = BORDERRIGHT | BORDERBOTTOM;
-  }
+  mBorderKind = BORDERRIGHT | BORDERBOTTOM;
 
   mphFontTitle   = &TitleWindowFont;
   mphFontValue   = &InfoWindowFont;
@@ -237,13 +233,6 @@ int InfoBox::SetBorderKind(int Value){
   int res = mBorderKind;
   if (mBorderKind != Value){
     mBorderKind = Value;
-
-    if (Appearance.InfoBoxBorder == apIbTab) {
-      mBorderKind = BORDERTAB; 
-    } else {
-      mBorderKind = Value;
-    }
-    //JMW    Paint();
   }
   return(res);
 }
@@ -255,8 +244,7 @@ void InfoBox::SetTitle(TCHAR *Value){
   _tcsncpy(sTmp, Value, TITLESIZE);
   sTmp[TITLESIZE] = '\0';
 
-  if (Appearance.InfoTitelCapital)
-    _tcsupr(sTmp);
+  _tcsupr(sTmp);
 
   if (_tcscmp(mTitle, sTmp) != 0){
     _tcscpy(mTitle, sTmp);
@@ -276,27 +264,15 @@ void InfoBox::SetValue(TCHAR *Value){
 
 
 void InfoBox::SetColor(int value) {
-  if (Appearance.InfoBoxColors) {
     color = value;
-  } else {
-    color = 0;
-  }
 }
 
 void InfoBox::SetColorBottom(int value) {
-  if (Appearance.InfoBoxColors) {
     colorBottom = value;
-  } else {
-    colorBottom = 0;
-  }
 }
 
 void InfoBox::SetColorTop(int value) {
-  if (Appearance.InfoBoxColors) {
     colorTop = value;
-  } else {
-    colorTop = 0;
-  }
 }
 void InfoBox::SetComment(TCHAR *Value){
   if (_tcscmp(mComment, Value) != 0){
