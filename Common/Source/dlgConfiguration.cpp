@@ -2881,19 +2881,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpVirtualKeys"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M239_ = "Disabled" 
-    dfe->addEnumText(gettext(TEXT("_@M239_")));
-	// LKTOKEN  _@M259_ = "Enabled" 
-    dfe->addEnumText(gettext(TEXT("_@M259_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->Set(VirtualKeys);
-    wp->RefreshDisplay();
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpActiveMap")); // 100318
   if (wp) {
     DataFieldEnum* dfe;
@@ -4575,17 +4562,6 @@ void dlgConfigurationShowModal(void){
 	(wp->GetDataField()->GetAsInteger());
       SetToRegistry(szRegistryDeclutterMode,
 		    (DWORD)(DeclutterMode));
-      changed = true;
-    }
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("prpVirtualKeys")); // VENTA6
-  if (wp) {
-    if (VirtualKeys != (VirtualKeys_t)
-	(wp->GetDataField()->GetAsInteger())) {
-      VirtualKeys = (VirtualKeys_t)
-	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryVirtualKeys,
-		    (DWORD)(VirtualKeys));
       changed = true;
     }
   }

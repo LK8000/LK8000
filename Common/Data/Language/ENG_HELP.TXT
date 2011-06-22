@@ -349,6 +349,7 @@ If ON, short clicking on the map will show the nearest waypoint's details.
 If OFF, short clicking in the upper half area of the map will zoom in, in the lower part will zoom out.
 Default is OFF  with Virtual Keys OFF as well, to get a faster click response..
 
+# 179 REMOVED after v2.3
 @179
 When enabled, the map screen is divided in three virtual parts. Pressing for about 1 second on the upper part will result in a UP key, in the lower part into a DOWN key, and in the middle part into an ENTER key.
 These up down and enter keys may be applied to change IBOX values such as MC, destination waypoint in a task, etc. 

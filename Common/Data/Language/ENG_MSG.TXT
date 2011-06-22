@@ -810,6 +810,7 @@ _@M783_ "Vario red+blue"
 _@M784_ "Vario"
 _@M785_ "Variometer Bar "
 _@M786_ "Very High"
+# REMOVED after v2.3
 _@M787_ "Virtual Keys "
 _@M788_ "Volume "
 _@M789_ "Warn"

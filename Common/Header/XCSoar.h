@@ -490,10 +490,6 @@ typedef enum{
 	huEnabled,
 } HideUnits_t;
 typedef enum{
-	vkDisabled=0,
-	vkEnabled,
-} VirtualKeys_t;
-typedef enum{
 	gbDisabled=0,
 	gbNextTurnpoint,
 	gbFinish,

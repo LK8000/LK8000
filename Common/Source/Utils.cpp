@@ -249,7 +249,6 @@ const TCHAR szRegistryPollingMode[]= TEXT("PollingMode");
 const TCHAR szRegistryLKVarioBar[]= TEXT("LKVarioBar");
 const TCHAR szRegistryLKVarioVal[]= TEXT("LKVarioVal");
 const TCHAR szRegistryHideUnits[]= TEXT("HideUnits");
-const TCHAR szRegistryVirtualKeys[]= TEXT("VirtualKeys2");
 const TCHAR szRegistryGlideBarMode[]= TEXT("GlideBarMode");
 const TCHAR szRegistryOutlinedTp[]= TEXT("OutlinedTp");
 const TCHAR szRegistryOverColor[]= TEXT("OverColor");
@@ -1005,10 +1004,6 @@ void ReadRegistrySettings(void)
   	Temp = 0; 
   GetFromRegistry(szRegistryHideUnits,&Temp); 
   HideUnits = (Temp==1);
-
-  Temp=0; // 100724 OFF by default
-  GetFromRegistry(szRegistryVirtualKeys,&Temp); 
-  VirtualKeys = Temp;
 
   Temp = 0;
   GetFromRegistry(szRegistryActiveMap,&Temp); 

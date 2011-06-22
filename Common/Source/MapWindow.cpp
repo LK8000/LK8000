@@ -1782,24 +1782,6 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 	// Handling double click passthrough
 	// Caution, timed clicks from PC with a mouse are different from real touchscreen devices
 
-      // On PC a single click is around 80ms, and a doubleclick is around 150ms. 
-      // CHECK TODO FIX if only for NewMap when enabled.. VK work only with new map...so no need?
-
-	// This is called when long press in center map i.e. for inverting colors, 
-	// and for Virtual keys zoom in/out
-      if ((VirtualKeys==(VirtualKeys_t)vkEnabled) && distance<50 && (dwInterval>= DOUBLECLICKINTERVAL)) { 
-		wParam=ProcessVirtualKey(X,Y,dwInterval,LKGESTURE_NONE);
-		if (wParam==0) {
-			#ifdef DEBUG_VIRTUALKEYS
-			DoStatusMessage(_T("DBG-095 invalid Virtual Key!")); 
-			#endif
-			break;
-		}
-		//break; // TESTFIX 090930
-		goto Wirth; 
-      }
-
-
       // Process faster clicks here and no precision, but let DBLCLK pass through
       // VK are used in the bottom line in this case, forced on for this situation.
       if (  DrawBottom && IsMapFullScreen() && (Y >= (rc.bottom-BottomSize)) ) {
@@ -1878,91 +1860,39 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 		
 		//
 		// Finally process normally a click on the moving map.
-		// Virtual keys have been processed earlier, so we are now looking for a map selection.
-		// However, timings are different if virtual keys are enabled, for this operation.
 		//
-		if (VirtualKeys==(VirtualKeys_t)vkEnabled) {
-			// Shorter the time needed to trigger a WP select, solving also the annoying problem
-			// of unwanted wp selection while double clicking too slow!
-			// And at the same time let this action pass transparently to virtual keys.
-			//
-			if(dwInterval < VKSHORTCLICK) { //100ms is NOT  enough for a short click since GetTickCount is OEM custom!
-			if (ActiveMap) {
-                            if (Event_NearestWaypointDetails(Xstart, Ystart, 500*zoom.Scale(), false)) {
-					break;
-				}
-			}
-                        else {
-savecodesize1:
-			int yup, ydown, ytmp;
-			ytmp=(int)((MapWindow::MapRect.bottom-MapWindow::MapRect.top-BottomSize)/2);
-			yup=ytmp+MapWindow::MapRect.top;
-                	ydown=MapWindow::MapRect.bottom-BottomSize-ytmp;
-
-			if (Y<yup) {
-				// pg UP = zoom in
-				wParam = 0x26;
-			} else {
-				if (Y>ydown) {
-					// pg DOWN = zoom out
-					wParam = 0x28;
-				} 
-				else {
-					// process center key, do nothing 
-					break;
-				}
-			}
-			#ifndef DISABLEAUDIO
-			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-			#endif
-
-			InputEvents::processKey(wParam);
-			dwDownTime= 0L;
-			return TRUE; 
-			}
-			} else {
-				// in pan mode and SIM mode, click to center current position
-				if (SIMMODE) {
-					if (mode.AnyPan()) {
-						// match only center screen
-						if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(5)) && 
-						      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(5)) ) {
-							// LKTOKEN  _@M204_ = "Current position updated" 
-							DoStatusMessage(gettext(TEXT("_@M204_")));
-							GPS_INFO.Latitude=PanLatitude;
-							GPS_INFO.Longitude=PanLongitude;
-							break;
-						}
-						// if we are not long clicking in center screen, before setting new position
-						// we check if we are on an airspace for informations
-						if (OnAirSpace && Event_InteriorAirspaceDetails(Xstart, Ystart)) {
-							break;
-						}
-						// Ok, so we reposition the aircraft
-						Screen2LatLon(X,Y,PanLongitude,PanLatitude);
-						// LKTOKEN  _@M204_ = "Current position updated" 
-						DoStatusMessage(gettext(TEXT("_@M204_")));
-						GPS_INFO.Latitude=PanLatitude;
-						GPS_INFO.Longitude=PanLongitude;
-						break;
-					}
-				}
-				// If we are here,  (DCI/2)+30 < dwDownTime < DOUBLECLICKINTERVAL
-				// SO this is a tight interval. DCI should not be set too low. See Defines.h
-				// NO: VKSHORTCLICK-DCI  150-350 ?
-				if (!OnAirSpace) break; // 100119
-				if (Event_InteriorAirspaceDetails(Xstart, Ystart)) {
-					break;
-				}
-			}
-		} else {
 			if(dwInterval < AIRSPACECLICK) { // original and untouched interval
 				if (ActiveMap) {
                                   if (Event_NearestWaypointDetails(Xstart, Ystart, 500*zoom.Scale(), false)) {
 						break;
 					}
-				} else
-					goto savecodesize1;
+				} else {
+					int yup, ydown, ytmp;
+					ytmp=(int)((MapWindow::MapRect.bottom-MapWindow::MapRect.top-BottomSize)/2);
+					yup=ytmp+MapWindow::MapRect.top;
+					ydown=MapWindow::MapRect.bottom-BottomSize-ytmp;
+
+					if (Y<yup) {
+						// pg UP = zoom in
+						wParam = 0x26;
+					} else {
+						if (Y>ydown) {
+							// pg DOWN = zoom out
+							wParam = 0x28;
+						} 
+						else {
+							// process center key, do nothing 
+							break;
+						}
+					}
+					#ifndef DISABLEAUDIO
+					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+					#endif
+
+					InputEvents::processKey(wParam);
+					dwDownTime= 0L;
+					return TRUE; 
+				}
 			} else {
 				if (SIMMODE) {
 					if (mode.AnyPan()) {
@@ -1994,7 +1924,6 @@ savecodesize1:
 					break;
 				}
 			}
-		} // VK enabled
       } // !TargetPan
 
       break;
@@ -2090,11 +2019,6 @@ savecodesize1:
 
 #endif
 
-
-Wirth:
-#ifdef DEBUG_MAPINPUT
-	DoStatusMessage(_T("Wirth"));
-#endif
       dwDownTime= 0L;
 
       if (!DialogActive) { // JMW prevent keys being trapped if dialog is active

@@ -117,7 +117,6 @@ extern const TCHAR szRegistryThermalBar[];
 extern const TCHAR szRegistryTrackBar[];
 extern const TCHAR szRegistryMcOverlay[];
 extern const TCHAR szRegistryHideUnits[]; // VENTA5
-extern const TCHAR szRegistryVirtualKeys[]; // VENTA5
 extern const TCHAR szRegistryOutlinedTp[]; // VENTA5
 extern const TCHAR szRegistryOverColor[];
 extern const TCHAR szRegistryTpFilter[];

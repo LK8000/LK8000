@@ -615,9 +615,6 @@
 <WndProperty Name="prpLoggerTimeStepCircling" Caption="_@M718_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H227_">
 <DataField name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min=1 Max=30 Step=1/>
 </WndProperty>
-<WndProperty Name="prpVirtualKeys" Caption="_@M787_"  X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H179_">
-<DataField name="" DataType="boolean"/>
-</WndProperty>
 <WndProperty Name="prpAirspaceOutline" Caption="_@M771_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H114_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>

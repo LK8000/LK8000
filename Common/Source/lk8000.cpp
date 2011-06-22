@@ -355,7 +355,6 @@ short AircraftCategory=0;
 bool ExtendedVisualGlide=false;
 short Look8000=lxcAdvanced;
 bool HideUnits=false;
-bool VirtualKeys=false;
 bool NewMap=true;
 bool CheckSum=true;
 short OutlinedTp=0;

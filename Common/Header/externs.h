@@ -155,7 +155,6 @@ extern short Look8000;
 extern bool NewMap;
 extern bool CheckSum;
 extern bool HideUnits;
-extern bool VirtualKeys;
 extern short OutlinedTp;
 extern int  OverColor;
 extern COLORREF OverColorRef;
