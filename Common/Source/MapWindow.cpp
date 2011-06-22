@@ -667,7 +667,6 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
       else
 	SetTextColor(hDC,RGB_WHITE); 
 
-//#if (WINDOWSPC>0) 091115 do not use custom things for PC in textinbox
 #ifdef WINE
       SetBkMode(hDC,TRANSPARENT);
       ExtTextOut(hDC, x+2, y, 0, NULL, Value, size, NULL);
@@ -848,16 +847,6 @@ void MapWindow::Event_PanCursor(int dx, int dy) {
   RefreshMap();
 }
 
-/* Event_TerrainToplogy Changes
-   0       Show
-   1       Toplogy = ON
-   2       Toplogy = OFF
-   3       Terrain = ON
-   4       Terrain = OFF
-   -1      Toggle through 4 stages (off/off, off/on, on/off, on/on)
-   -2      Toggle terrain
-   -3      Toggle toplogy
-*/
 void MapWindow::Event_TerrainTopology(int vswitch) {
   char val;
 
@@ -1077,17 +1066,10 @@ static void SetFontInfo(HDC hDC, FontHeightInfo_t *FontHeightInfo){
     }
   }
 
-#if 0
-  // JMW: don't know why we need this in Gnav/Altair, but we do.
-  if (FontHeightInfo->CapitalHeight<y)
-    FontHeightInfo->CapitalHeight = bottom - top + 1;
-#endif
   // This works for PPC
   if (FontHeightInfo->CapitalHeight <= 0)
     FontHeightInfo->CapitalHeight = tm.tmAscent - 1 -(tm.tmHeight/10);
 
-  //  int lx = GetDeviceCaps(hDC,LOGPIXELSX);
-  // dpi
 }
 
 
@@ -1121,15 +1103,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
   switch (uMsg)
     {
     case WM_ERASEBKGND:
-      // JMW trying to reduce flickering
-      /*
-	if (first || MapDirty) {
-	first = false;
-	MapDirty = true;
-	return (DefWindowProc (hWnd, uMsg, wParam, lParam));
-	} else
-	return TRUE;
-      */
       return TRUE;
     case WM_SIZE:
 
@@ -1474,14 +1447,14 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       #ifdef DEBUG_DBLCLK
       DoStatusMessage(_T("BUTTONDOWN MapWindow")); 
       #endif
-	if (LockModeStatus) break;
+      if (LockModeStatus) break;
       DisplayTimeOut = 0;
       dwDownTime = GetTickCount();
       // After calling a menu, on exit as we touch the screen we fall back here
       if (ignorenext) {
-#ifdef DEBUG_MAPINPUT
+                #ifdef DEBUG_MAPINPUT
 		DoStatusMessage(TEXT("DBG-055 BUTTONDOWN with ignorenext"));
-#endif
+                #endif
 		break;
       }
       XstartScreen = LOWORD(lParam); YstartScreen = HIWORD(lParam);
@@ -1517,14 +1490,14 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
     case WM_LBUTTONUP:
 	if (LockModeStatus) break;
 	if (ignorenext||dwDownTime==0) { 
-#ifdef DEBUG_MAPINPUT
+                #ifdef DEBUG_MAPINPUT
 		if (ignorenext && (dwDownTime==0) )
 			DoStatusMessage(_T("DBG-098 ignorenext&&dwDownTime0"));
 		else if (dwDownTime==0)
 			DoStatusMessage(_T("DBG-099 dwDownTime0"));
 		else
 			DoStatusMessage(_T("DBG-097 ignorenext"));
-#endif
+                #endif
 		ignorenext=false;
 		break;
 	}
@@ -1730,9 +1703,9 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 		// We are here when lk8000, and NO moving map displayed: virtual enter, virtual up/down, or 
 		// navbox operations including center key.
 		wParam=ProcessVirtualKey(X,Y,dwInterval,LKGESTURE_NONE);
-#ifdef DEBUG_MAPINPUT
+                #ifdef DEBUG_MAPINPUT
 		DoStatusMessage(_T("DBG-035 navboxes")); 
-#endif
+                #endif
 		// we could use a single ProcessVirtual for all above, and check that wParam on return
 		// is really correct for gestures as well... since we do not want to go to wirth with gestures!
 		if (wParam!=0) {
@@ -1748,9 +1721,9 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 	// This point is selected when in MapSpaceMode==MSM_MAP, i.e. lk8000 with moving map on.
 	if (  DrawBottom && IsMapFullScreen() && (Y >= (rc.bottom-BottomSize)) && !mode.AnyPan() ) {
 		wParam=ProcessVirtualKey(X,Y,dwInterval,LKGESTURE_NONE);
-#ifdef DEBUG_MAPINPUT
+                #ifdef DEBUG_MAPINPUT
 		DoStatusMessage(_T("DBG-034 navboxes")); 
-#endif
+                #endif
 		if (wParam!=0) {
 			DoStatusMessage(_T("ERR-034 Invalid Virtual Key")); 
 			break;
@@ -1927,36 +1900,25 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
       } // !TargetPan
 
       break;
-      /*
-	case WM_PAINT:
-	if ((hWnd == hWndMapWindow) && (ProgramStarted==3)) {
-	//    RequestFastRefresh();
-	return TRUE;
-	} else {
-	break;
-	}
-      */
 
 
+    // VENTA-TODO careful here, keyup no more trapped for PNA. 
+    // Forbidden usage of keypress timing.
+    #if defined(PNA)
+    case WM_KEYDOWN:
+    #else
+    case WM_KEYUP: 
+    #endif
 
-
-#if defined(PNA) // VENTA FIXED PNA SCROLL WHEEL 
-    case WM_KEYDOWN: // JMW was keyup
-#else
-    case WM_KEYUP: // JMW was keyup
-#endif
-      // VENTA-TODO careful here, keyup no more trapped for PNA. 
-      // Forbidden usage of keypress timing.
-
-#ifdef VENTA_DEBUG_KEY
+      #ifdef VENTA_DEBUG_KEY
       TCHAR ventabuffer[80];
       wsprintf(ventabuffer,TEXT("WMKEY uMsg=%d wParam=%ld lParam=%ld"), uMsg, wParam,lParam);
       DoStatusMessage(ventabuffer);
-#endif
+      #endif
       DisplayTimeOut = 0;
       InterfaceTimeoutReset();
 
-#if defined(PNA) // VENTA-ADDON HARDWARE KEYS TRANSCODING
+      #if defined(PNA)
 
       if ( GlobalModelType == MODELTYPE_PNA_HP31X )
 	{
@@ -2017,25 +1979,13 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 	  }
 	}
 
-#endif
+      #endif // PNA TRANSCODING
 
       dwDownTime= 0L;
 
-      if (!DialogActive) { // JMW prevent keys being trapped if dialog is active
-	if (InputEvents::processKey(wParam)) {
-	  // TODO code: change to debugging DoStatusMessage(TEXT("Event in default"));
-	}
-	// XXX Should we only do this if it IS processed above ?
-	dwDownTime= 0L;
-	return TRUE; // don't go to default handler
-      } else {
-	// TODO code: debugging DoStatusMessage(TEXT("Event in dialog"));
-	if (InputEvents::processKey(wParam)) {
-	}
-	dwDownTime= 0L;
-	return TRUE; // don't go to default handler
-      }
-      // break; unreachable!
+      InputEvents::processKey(wParam);
+      dwDownTime= 0L;
+      return TRUE; 
     }
 
   return (DefWindowProc (hWnd, uMsg, wParam, lParam));
@@ -2263,9 +2213,7 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
       mode.Special(Mode::MODE_SPECIAL_PANORAMA, true);
 		LastZoomTrigger=GPS_INFO.Time;
       
-		// maybe todo check mode and remember where were these parameters taken from.. 
-		Message::Lock(); // 091211
-	        // Message::AddMessage(1000, 3, _T("LANDSCAPE ZOOM for 20\"")); // REMOVE FIXV2
+		Message::Lock();
 	        Message::AddMessage(1000, 3, gettext(TEXT("_@M872_"))); // LANDSCAPE ZOOM FOR 20s
 		Message::Unlock();
       		#ifndef DISABLEAUDIO
@@ -2279,8 +2227,7 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 			LastZoomTrigger=0; // just for safety
         mode.Special(Mode::MODE_SPECIAL_PANORAMA, false);
 			PGZoomTrigger=false;
-			Message::Lock(); // 091211
-	        	// Message::AddMessage(1500, 3, _T("BACK TO NORMAL ZOOM")); // REMOVE FIXV2
+			Message::Lock(); 
 	        	Message::AddMessage(1500, 3, gettext(TEXT("_@M873_"))); // BACK TO NORMAL ZOOM
 			Message::Unlock();
       			#ifndef DISABLEAUDIO
@@ -3702,8 +3649,9 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
   PolygonRotateShift(Arrow, 7, Start.x, Start.y, 
 		     DerivedDrawInfo.WindBearing-DisplayAngle);
 
-  // ------------------------------------------------------------------
+  //
   // Draw Wind Arrow
+  //
   POINT Tail[2] = {{0,-20}, {0,-26-min(20,wmag)*3}};
   double angle = AngleLimit360(DerivedDrawInfo.WindBearing-DisplayAngle);
   for(i=0; i<2; i++) {
@@ -3729,7 +3677,7 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
   	}
   }
   Polygon(hdc,Arrow,5);
-  // ------------------------------------------------------------------
+
 
   SelectObject(hdc, hbOld);
   SelectObject(hdc, hpOld);
@@ -3932,19 +3880,6 @@ bool MapWindow::PointVisible(const POINT &P)
     return FALSE;
 }
 
-
-#if 0  // THIS IS NOT USED ANYMORE 110102
-void MapWindow::DisplayAirspaceWarning(int Type, TCHAR *Name , 
-                                       AIRSPACE_ALT Base, AIRSPACE_ALT Top )
-{
-  TCHAR szMessageBuffer[1024];
-  TCHAR szTitleBuffer[1024];
-  
-  FormatWarningString(Type, Name , Base, Top, szMessageBuffer, szTitleBuffer );
-
-  DoStatusMessage(TEXT("Airspace Query"), szMessageBuffer);
-}
-#endif
 
 // RETURNS Longitude, Latitude!
 
