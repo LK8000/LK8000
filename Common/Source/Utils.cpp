@@ -182,7 +182,6 @@ const TCHAR szRegistryPort2Index[]= TEXT("Port2Index");
 // const TCHAR szRegistryPort3Index[]= TEXT("Port3Index");
 const TCHAR szRegistryRegKey[]=				 TEXT("RegKey");
 const TCHAR szRegistrySafetyAltitudeArrival[] =     TEXT("SafetyAltitudeArrival");
-const TCHAR szRegistrySafetyAltitudeBreakOff[] =     TEXT("SafetyAltitudeBreakOff");
 const TCHAR szRegistrySafetyAltitudeTerrain[] =     TEXT("SafetyAltitudeTerrain");
 const TCHAR szRegistrySafteySpeed[] =          TEXT("SafteySpeed");
 const TCHAR szRegistryWindCalcSpeed[] =          TEXT("WindCalcSpeed");
@@ -605,10 +604,6 @@ void ReadRegistrySettings(void)
   Temp=(DWORD)SAFETYALTITUDEARRIVAL;
   GetFromRegistry(szRegistrySafetyAltitudeArrival,&Temp);
   SAFETYALTITUDEARRIVAL = (double)Temp;
-
-  Temp=(DWORD)SAFETYALTITUDEBREAKOFF;
-  GetFromRegistry(szRegistrySafetyAltitudeBreakOff,&Temp);
-  SAFETYALTITUDEBREAKOFF = (double)Temp;
 
   Temp=(DWORD)SAFETYALTITUDETERRAIN;
   GetFromRegistry(szRegistrySafetyAltitudeTerrain,&Temp);

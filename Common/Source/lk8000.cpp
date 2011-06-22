@@ -283,7 +283,6 @@ static int iTimerID= 0;
 
 // Final Glide Data
 double SAFETYALTITUDEARRIVAL = 300;
-double SAFETYALTITUDEBREAKOFF = 0;
 double SAFETYALTITUDETERRAIN = 50;
 double SAFTEYSPEED = 50.0;
 

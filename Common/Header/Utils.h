@@ -37,7 +37,6 @@ extern const TCHAR szRegistryTaskSpeedUnitsValue[];
 extern const TCHAR szRegistryDisplayUpValue[];
 extern const TCHAR szRegistryDisplayText[];   
 extern const TCHAR szRegistrySafetyAltitudeArrival[];
-extern const TCHAR szRegistrySafetyAltitudeBreakOff[];
 extern const TCHAR szRegistrySafetyAltitudeTerrain[];
 extern const TCHAR szRegistrySafteySpeed[];
 extern const TCHAR szRegistryWindCalcSpeed[];

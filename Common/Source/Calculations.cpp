@@ -4444,7 +4444,6 @@ void ThermalBand(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   // JMW TODO accuracy: Should really work out dt here, 
   //           but i'm assuming constant time steps
   double dheight = Calculated->NavAltitude
-    -SAFETYALTITUDEBREAKOFF
     -Calculated->TerrainBase; // JMW EXPERIMENTAL
 
   int index, i, j;

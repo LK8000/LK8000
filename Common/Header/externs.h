@@ -444,7 +444,6 @@ extern double MACCREADY;
 extern bool   AutoMacCready;
 extern int  AutoMcMode;
 extern double SAFETYALTITUDEARRIVAL;
-extern double SAFETYALTITUDEBREAKOFF;
 extern double SAFETYALTITUDETERRAIN;
 extern double SAFTEYSPEED;
 

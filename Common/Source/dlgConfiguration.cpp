@@ -2021,13 +2021,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyAltitudeBreakoff"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(ALTITUDEMODIFY*SAFETYALTITUDEBREAKOFF));
-    wp->GetDataField()->SetUnits(Units::GetAltitudeName());
-    wp->RefreshDisplay();
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyAltitudeTerrain"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(ALTITUDEMODIFY*SAFETYALTITUDETERRAIN));
@@ -3984,17 +3977,6 @@ void dlgConfigurationShowModal(void){
       SAFETYALTITUDEARRIVAL = ival;
       SetToRegistry(szRegistrySafetyAltitudeArrival,
 		    (DWORD)SAFETYALTITUDEARRIVAL);
-      changed = true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyAltitudeBreakoff"));
-  if (wp) {
-    ival = iround(wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY);
-    if (SAFETYALTITUDEBREAKOFF != ival) {
-      SAFETYALTITUDEBREAKOFF = ival;
-      SetToRegistry(szRegistrySafetyAltitudeBreakOff,
-		    (DWORD)SAFETYALTITUDEBREAKOFF);
       changed = true;
     }
   }
