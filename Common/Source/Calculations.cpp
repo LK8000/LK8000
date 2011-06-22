@@ -664,10 +664,6 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		SearchBestAlternate(Basic, Calculated);
 	}
 
-
-    // If using a replay IGC file, current time is in the past and LastFlipBoxTime becomes unreachable!
-    if ( LastFlipBoxTime > Basic->Time ) LastFlipBoxTime = Basic->Time;
-
 }
 
 

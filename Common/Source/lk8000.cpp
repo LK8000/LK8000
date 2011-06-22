@@ -345,7 +345,6 @@ double QFEAltitudeOffset = 0;
 int OnAirSpace=1; // VENTA3 toggle DrawAirSpace, normal behaviour is "true"
 bool WasFlying = false; // VENTA3 used by auto QFE: do not reset QFE if previously in flight. So you can check QFE
 			//   on the ground, otherwise it turns to zero at once!
-double LastFlipBoxTime = 0; // VENTA3 need this global for slowcalculations cycle
 double LastRangeLandableTime=0;
 bool needclipping=false; // flag to activate extra clipping for some PNAs
 bool EnableAutoBacklight=true;
@@ -2056,7 +2055,8 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   MapWindow::CreateDrawingThread();
   Sleep(100);
   StartupStore(TEXT(". ShowInfoBoxes%s"),NEWLINE);
-  #ifndef NOIBOX
+  #ifdef NOIBOX
+  #else
   ShowInfoBoxes();
   #endif
 
@@ -2875,7 +2875,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
   StartupStore(TEXT(". Create info boxes%s"),NEWLINE);
 
-  #ifndef NOIBOX
+  #ifdef NOIBOX
+  #else
   InfoBoxLayout::CreateInfoBoxes(rc);
   #endif
 
@@ -3126,7 +3127,8 @@ void Shutdown(void) {
   
   Units::UnLoadUnitBitmap();
 
-  #ifndef NOIBOX  
+  #ifdef NOIBOX 
+  #else
   StartupStore(TEXT(". Destroy Info Boxes%s"),NEWLINE);
   InfoBoxLayout::DestroyInfoBoxes();
   #endif
@@ -3504,7 +3506,8 @@ LRESULT MainMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         ShowMenu();
       }
       */
-      #ifndef NOIBOX 
+      #ifdef NOIBOX 
+      #else
       for(i=0;i<numInfoWindows;i++) {
         if(wmControl == InfoBoxes[i]->GetHandle()) {
           InfoWindowActive = TRUE;
@@ -3567,17 +3570,6 @@ void DisplayText(void)
   static bool first=true;
   static int InfoFocusLast = -1;
   static int DisplayTypeLast[MAXINFOWINDOWS];
-// static double LastFlipBoxTime = 0; //  now global for SlowCalculations
-  static bool FlipBoxValue = false;
-
-
-  // VENTA3 - Dynamic box values
-  if ( GPS_INFO.Time > LastFlipBoxTime + DYNABOXTIME ) {
-	FlipBoxValue = ( FlipBoxValue == false );
-	LastFlipBoxTime = GPS_INFO.Time;
-  }
-	
-  
 
   LockNavBox();
 
@@ -3940,15 +3932,9 @@ void DisplayText(void)
       			InfoBoxes[i]->SetComment(TEXT(""));
 			break; 
 		}
-		if (FlipBoxValue == true) {
 			Units::FormatUserDistance(WayPointCalc[ActiveAlternate].Distance,
 					 sTmp, sizeof(sTmp)/sizeof(sTmp[0]));
 			InfoBoxes[i]->SetComment(sTmp);
-		} else {
-			Units::FormatUserArrival(WayPointCalc[ActiveAlternate].AltArriv[AltArrivMode],
-					 sTmp, sizeof(sTmp)/sizeof(sTmp[0]));
-			InfoBoxes[i]->SetComment(sTmp);
-		}
 		break;
 	// VENTA3 alternates
 	case 75:
@@ -3958,28 +3944,11 @@ void DisplayText(void)
       			InfoBoxes[i]->SetComment(TEXT(""));
 			break; 
 		}
-		if (FlipBoxValue == true) {
 			Units::FormatUserDistance(WayPointCalc[ActiveAlternate].Distance,
 					 sTmp, sizeof(sTmp)/sizeof(sTmp[0]));
 			InfoBoxes[i]->SetComment(sTmp);
-		} else {
-			if (WayPointCalc[ActiveAlternate].GR == INVALID_GR) 
-				wsprintf(sTmp,_T("---"));
-			else
-				wsprintf(sTmp,_T("%d"),(int)WayPointCalc[ActiveAlternate].GR);
-			InfoBoxes[i]->SetComment(sTmp);
-		}
 		break;
 	case 70: // QFE
-		/*
-		 // Showing the diff value offset was just interesting ;-)
-		if (FlipBoxValue == true) {
-			//Units::FormatUserArrival(QFEAltitudeOffset,
-			Units::FormatUserAltitude(QFEAltitudeOffset,
-				 sTmp, sizeof(sTmp)/sizeof(sTmp[0]));
-			InfoBoxes[i]->SetComment(sTmp);
-		} else {
-		*/
 		//Units::FormatUserArrival(GPS_INFO.Altitude,
 		Units::FormatUserAltitude(GPS_INFO.Altitude,
 			 sTmp, sizeof(sTmp)/sizeof(sTmp[0]));

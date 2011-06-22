@@ -11,9 +11,6 @@
 
 extern TCHAR LK8000_Version[256];
 
-#if !defined(AFX_EXTERNS_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
-#define AFX_EXTERNS_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_
-
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
@@ -142,7 +139,6 @@ extern bool ResumeSession;
 extern double QFEAltitudeOffset; // VENTA3
 extern int OnAirSpace; // VENTA3 toggle DrawAirSpace
 extern bool WasFlying; // used by auto QFE.. 
-extern double LastFlipBoxTime; // used by lk8000.cpp and no more used by Calculations
 extern double LastRangeLandableTime;
 extern bool needclipping;
 extern bool EnableAutoBacklight;
@@ -584,4 +580,3 @@ extern int SCREENHEIGHT;
 
 #endif
 
-#endif
