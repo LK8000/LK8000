@@ -328,7 +328,6 @@ DLGS	:=\
 	$(SRC)/dlgTopology.cpp \
 	$(SRC)/dlgTaskWaypoint.cpp \
 	$(SRC)/dlgTeamCode.cpp \
-	$(SRC)/dlgTextEntry.cpp \
 	$(SRC)/dlgTextEntry_Keyboard.cpp \
 	$(SRC)/dlgTools.cpp \
 	$(SRC)/dlgWayPointDetails.cpp \

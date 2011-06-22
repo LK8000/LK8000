@@ -202,4 +202,8 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width)
   wf=NULL; //@ 101027
 }
 
+void dlgTextEntryShowModal(TCHAR *text, int width)
+{
+      dlgTextEntryKeyboardShowModal(text, width);
+}
 

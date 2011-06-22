@@ -386,12 +386,6 @@ typedef enum{
   smAlligneTopLeft,
 }StateMessageAlligne_t;
 
-typedef enum{
-  tiHighScore=0,
-  tiKeyboard,
-}TextInputStyle_t;
-
-
 typedef struct{
   int Height;
   int AscentHeight;
@@ -676,7 +670,6 @@ typedef struct{
   bool InverseInfoBox;
   bool InfoTitelCapital;
   StateMessageAlligne_t StateMessageAlligne;
-  TextInputStyle_t TextInputStyle;
   bool GaugeVarioAvgText;
   bool GaugeVarioMc;
   bool GaugeVarioSpeedToFly;

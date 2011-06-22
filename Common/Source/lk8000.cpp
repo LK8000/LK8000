@@ -125,7 +125,6 @@ Appearance_t Appearance = {
   false,
   true,
   smAlligneCenter,
-  tiHighScore,
   false,
   false,
   false,

@@ -297,7 +297,6 @@ const TCHAR szRegistryAppIndFinalGlide[] = TEXT("AppIndFinalGlide");
 const TCHAR szRegistryAppIndLandable[] = TEXT("AppIndLandable");
 const TCHAR szRegistryAppInverseInfoBox[] = TEXT("AppInverseInfoBox2");
 const TCHAR szRegistryAppStatusMessageAlignment[] = TEXT("AppStatusMessageAlignment");
-const TCHAR szRegistryAppTextInputStyle[] = TEXT("AppTextInputStyle");
 const TCHAR szRegistryAppInfoBoxColors[] = TEXT("AppInfoBoxColors");
 const TCHAR szRegistryAppDefaultMapWidth[] = TEXT("AppDefaultMapWidth");
 const TCHAR szRegistryTeamcodeRefWaypoint[] = TEXT("TeamcodeRefWaypoint");
@@ -1162,10 +1161,6 @@ void ReadRegistrySettings(void)
   Temp = Appearance.StateMessageAlligne;
   GetFromRegistry(szRegistryAppStatusMessageAlignment, &Temp);
   Appearance.StateMessageAlligne = (StateMessageAlligne_t)Temp;
-
-  Temp = (TextInputStyle_t)tiKeyboard;
-  GetFromRegistry(szRegistryAppTextInputStyle, &Temp);
-  Appearance.TextInputStyle = (TextInputStyle_t)Temp;
 
   Temp = Appearance.DefaultMapWidth;
   GetFromRegistry(szRegistryAppDefaultMapWidth, &Temp);

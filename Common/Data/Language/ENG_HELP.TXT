@@ -589,6 +589,7 @@ Set to 0.0 for no compensation, 1.0 scales Mc linearly with height.
 If enabled, the command speed in cruise is set to the MacCready speed to fly in no vertical air-mass movement. 
 If disabled, the command speed in cruise is set to the dolphin speed to fly, equivalent to the MacCready speed with vertical air-mass movement.
 
+# 235 REMOVED after v2.3
 @235
 Determines how the user is prompted for text input (filename, teamcode etc.)
 
