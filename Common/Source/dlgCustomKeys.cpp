@@ -221,6 +221,8 @@ void dlgCustomKeysShowModal(void){
 
 void AddConfList( DataFieldEnum* dfe) {
 
+	// Careful, order must respect the enum list in lk8000.h CustomKeyMode_t
+
 	// LKTOKEN  _@M239_ = "Disabled" 
     dfe->addEnumText(gettext(TEXT("_@M239_")));
 	// LKTOKEN  _@M435_ = "Menu" 
@@ -269,6 +271,13 @@ void AddConfList( DataFieldEnum* dfe) {
     dfe->addEnumText(TEXT("SIMulation menu"));
     dfe->addEnumText(gettext(TEXT("_@M1652_"))); // Airspace Analysis
     dfe->addEnumText(gettext(TEXT("_@M1653_"))); // toggle map Airspace 
+    dfe->addEnumText(gettext(TEXT("_@M1657_"))); // zoom in
+    dfe->addEnumText(gettext(TEXT("_@M1658_"))); // zoom out
+    dfe->addEnumText(gettext(TEXT("_@M1659_"))); // zoom in more
+    dfe->addEnumText(gettext(TEXT("_@M1660_"))); // zoom out more
+
+	// Last ckToggleInfobox is automatically added at the bottom of this list. 
+	// Do not add it manually here.
 
 }
 

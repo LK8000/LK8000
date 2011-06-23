@@ -424,10 +424,8 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		// same for bottom navboxes: they do not exist in infobox mode
 		s_bottomY=(MapWindow::MapRect.bottom-MapWindow::MapRect.top)-BottomSize-NIBLSCALE(2); // bugfix era 15, troppo 090731
 
-		#if 100228
 		#define _NOCOMPASSINCLUDE
 		#include "./LKinclude_menusize.cpp"
-		#endif
 
 		doinit=false;
 	}
@@ -3543,6 +3541,34 @@ bool CustomKeyHandler(const int key) {
 
   switch(ckeymode) {
 	case ckDisabled:
+		break;
+	case ckZoomIn:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		MapWindow::zoom.EventScaleZoom(1);
+		return true;
+		break;
+	case ckZoomInMore:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		MapWindow::zoom.EventScaleZoom(2);
+		return true;
+		break;
+	case ckZoomOut:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		MapWindow::zoom.EventScaleZoom(-1);
+		return true;
+		break;
+	case ckZoomOutMore:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		MapWindow::zoom.EventScaleZoom(-2);
+		return true;
 		break;
 	case ckMenu:
 		#ifndef DISABLEAUDIO

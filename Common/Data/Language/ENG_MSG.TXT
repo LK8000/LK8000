@@ -1560,4 +1560,10 @@ _@M1654_ "SELECT"
 _@M1655_ "ANALYSIS"
 _@M1656_ "*SELECTED*"
 
+# customkeys zoom 
+_@M1657_ "Zoom In"
+_@M1658_ "Zoom Out"
+_@M1659_ "Zoom In More"
+_@M1660_ "Zoom Out More"
+
 # Note for developers: LKLanguage MAX_MESSAGE  1700: 0-1699 !
