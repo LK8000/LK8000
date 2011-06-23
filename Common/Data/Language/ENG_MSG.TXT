@@ -1566,4 +1566,7 @@ _@M1658_ "Zoom Out"
 _@M1659_ "Zoom In More"
 _@M1660_ "Zoom Out More"
 
+# Active map indicator in map scale (with AZM, NAV1 etc.), 3 letters!
+_@M1661_ "ACT"
+
 # Note for developers: LKLanguage MAX_MESSAGE  1700: 0-1699 !

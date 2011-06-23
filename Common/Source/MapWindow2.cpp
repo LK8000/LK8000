@@ -1755,7 +1755,6 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     DrawSolidLine(hDC,Start,End, rc);
 
      Start.y = Start.y - NIBLSCALE(42); End.y = Start.y;
-    //Start.y = Start.y - NIBLSCALE(30); End.y = Start.y; // 091116 BUGFIX MapScale NO we keep same scale, and change value 091117
     DrawSolidLine(hDC,Start,End, rc);
 
     SelectObject(hDC, hpOld);
@@ -1775,6 +1774,9 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 	}
     } else terrainwarning=0;
 
+    if (ActiveMap) {
+      _tcscat(Scale2, gettext(TEXT("_@M1661_"))); // ACT
+    }
     if (zoom.AutoZoom()) {
 		// LKTOKEN _@M1337_ " AZM"
       _tcscat(Scale2, gettext(TEXT("_@M1337_")));
