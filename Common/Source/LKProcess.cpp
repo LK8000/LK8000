@@ -1489,16 +1489,23 @@ goto_bearing:
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
 			if (NearestAirspaceHDist >0) {
-				value = DISTANCEMODIFY*NearestAirspaceHDist;
-				sprintf(text,"%1.1f",value);
-				wsprintf(BufferValue, TEXT("%S"),text);
+				if (NearestAirspaceHDist<1000) {
+					value = ALTITUDEMODIFY*NearestAirspaceHDist;
+					sprintf(text,"%1.0f",value);
+					wsprintf(BufferValue, TEXT("%S"),text);
+					wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
+				} else {
+					value = DISTANCEMODIFY*NearestAirspaceHDist;
+					sprintf(text,"%1.1f",value);
+					wsprintf(BufferValue, TEXT("%S"),text);
+					wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
+				}
 				valid = true;
 			} else {
 				valid=false;
 				wsprintf(BufferValue, TEXT(NULLMEDIUM),text);
-				value = -1;
+				wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 			}
-			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 			break;
 
 		// B114
@@ -1516,7 +1523,6 @@ goto_bearing:
 			} else {
 				valid=false;
 				wsprintf(BufferValue, TEXT(NULLMEDIUM),text);
-				value = -1;
 			}
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
 			break;
