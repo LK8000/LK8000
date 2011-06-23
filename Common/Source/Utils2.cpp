@@ -480,30 +480,10 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				wsprintf(buf,_T("RIGHT in limit=%d"),sizeup-BottomSize-NIBLSCALE(20));
 				DoStatusMessage(buf);
 				#endif
-#if 0 // REMOVE
-				if (  (BottomMode+1) >BM_LAST ) {
-					if ( MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
-						BottomMode=BM_TRM;
-					else
-						BottomMode=BM_FIRST;
-					BottomSounds();
-					MapWindow::RefreshMap();
-					return 0;
-				} else ++BottomMode;
-				BottomSounds(); // 100402
-/*
-				#ifndef DISABLEAUDIO
-			        if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-				#endif
-*/
-				MapWindow::RefreshMap();
-				return 0;
-#else
 				BottomBarChange(true); // advance
 				BottomSounds();
 				MapWindow::RefreshMap();
 				return 0;
-#endif
 			}
 			if ( X<s_xleft ) { // following is ugly
 				if (keytime >=CustomKeyTime) {
@@ -515,48 +495,10 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				wsprintf(buf,_T("LEFT in limit=%d"),sizeup-BottomSize-NIBLSCALE(20));
 				DoStatusMessage(buf);
 				#endif
-#if 0 // REMOVE
-				if ((BottomMode-1) == BM_TRM) {
-					if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) BottomMode=BM_LAST;
-					else {
-						BottomMode=BM_TRM;
-						/*
-						#ifndef DISABLEAUDIO
-                                        	if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
-						#endif
-						*/
-						BottomSounds();
-						MapWindow::RefreshMap();
-						return 0;
-					}
-				}
-				else if ((BottomMode-1)<0) {
-					BottomMode=BM_LAST;
-				} else if ( ((BottomMode-1)==BM_FIRST)&& !MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-					/*
-					#ifndef DISABLEAUDIO
-                                       	if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
-					#endif
-					*/
-					BottomMode--;
-					BottomSounds();
-					MapWindow::RefreshMap();
-					return 0;
-				} else BottomMode--;
-				BottomSounds(); // 100402
-/*
-				#ifndef DISABLEAUDIO
-			        if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-				#endif
-*/
-				MapWindow::RefreshMap();
-				return 0;
-#else
 				BottomBarChange(false); // backwards
 				BottomSounds();
 				MapWindow::RefreshMap();
 				return 0;
-#endif
 			}
 			#ifdef DEBUG_PROCVK
 			wsprintf(buf,_T("CENTER in limit=%d"),sizeup-BottomSize-NIBLSCALE(20));
@@ -2670,16 +2612,10 @@ redo:
 	// if we are at the beginning point, we keep it
 	if (CURTYPE == curtype_entry) goto finish;
 
-	#if 0 // REMOVE
-	if (ISPARAGLIDER) {
-		if (CURTYPE == IM_TRI) goto redo;
-	}
-	#else
 	if (!ConfIP[ModeIndex][CURTYPE]) goto redo;
-	#endif
 
-	if (!UseContestEngine()) {
-		if (CURTYPE == IM_CONTEST) goto redo;
+	if (CURTYPE == IM_CONTEST) {
+		if (!UseContestEngine()) goto redo;
 	}
 finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
@@ -2701,13 +2637,7 @@ redo:
 	// if we are at the beginning point, we keep it
 	if (CURTYPE == curtype_entry) goto finish;
 
-	#if 0 // REMOVE
-	if (ISPARAGLIDER) {
-		if (CURTYPE == IM_TRI) goto redo;
-	}
-	#else
 	if (!ConfIP[ModeIndex][CURTYPE]) goto redo;
-	#endif
 
 	if (!UseContestEngine()) {
 		if (CURTYPE == IM_CONTEST) goto redo;
@@ -2723,21 +2653,7 @@ finish:
 //
 void NextModeIndex() {
 	UnselectMapSpace(ModeTable[ModeIndex][CURTYPE]);
-	#if 0 // REMOVE
-	if ( GPS_INFO.FLARM_Available ) { 
-		if ( (ModeIndex+1)>LKMODE_TOP)
-			ModeIndex=LKMODE_MAP;
-		else
-			ModeIndex++;
-	} else {
-		if ( (ModeIndex+1)>(LKMODE_TOP-1))
-			ModeIndex=LKMODE_MAP;
-		else
-			ModeIndex++;
-	}
-	#else
 	InfoPageChange(true);
-	#endif
 	SelectMapSpace(ModeTable[ModeIndex][CURTYPE]);
 }
 
@@ -2806,18 +2722,7 @@ void BottomSounds() {
 
 void PreviousModeIndex() {
   UnselectMapSpace(ModeTable[ModeIndex][CURTYPE]);
-  #if 0 // REMOVE
-  if ( (ModeIndex-1)<0) {
-	if ( GPS_INFO.FLARM_Available ) { // 100325
-		ModeIndex=LKMODE_TOP;
-	} else {
-		ModeIndex=LKMODE_TOP-1;
-	}
-  } else
-	ModeIndex--;
-  #else
   InfoPageChange(false);
-  #endif
   SelectMapSpace(ModeTable[ModeIndex][CURTYPE]);
 }
 
