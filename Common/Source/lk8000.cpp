@@ -352,7 +352,6 @@ short AircraftCategory=0;
 bool ExtendedVisualGlide=false;
 short Look8000=lxcAdvanced;
 bool HideUnits=false;
-bool NewMap=true;
 bool CheckSum=true;
 short OutlinedTp=0;
 int  OverColor=0;
@@ -1952,7 +1951,6 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   InitWayPointCalc(); 
   InitLDRotary(&rotaryLD); 
   InitWindRotary(&rotaryWind); // 100103
-  // InitNewMap(); was moved in InitInstance 
   MapWindow::zoom.Reset();
   InitLK8000();
   ReadAirfieldFile();

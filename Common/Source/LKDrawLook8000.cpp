@@ -125,8 +125,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   static TCHAR StartGateNameHS[12];
   static TCHAR StartGateNameFS[12];
 
-  if (NewMap==false) return;
-
   if (!IsMapFullScreen()) return; // 101203
 
 

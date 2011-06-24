@@ -242,7 +242,6 @@ const TCHAR szRegistryBestWarning[]= TEXT("BestWarning");
 const TCHAR szRegistryThermalBar[]= TEXT("ThermalBar");
 const TCHAR szRegistryMcOverlay[]= TEXT("McOverlay2");
 const TCHAR szRegistryTrackBar[]= TEXT("TrackBar");
-const TCHAR szRegistryNewMap[]= TEXT("NewMap");
 const TCHAR szRegistryIphoneGestures[]= TEXT("IphoneGestures");
 const TCHAR szRegistryPollingMode[]= TEXT("PollingMode");
 const TCHAR szRegistryLKVarioBar[]= TEXT("LKVarioBar");
@@ -803,14 +802,6 @@ void ReadRegistrySettings(void)
   AltArrivMode = Temp;
 #endif
 
-  // NewMap forced on, ignore registry setting
-#if (0)
-  Temp = 1; 
-  GetFromRegistry(szRegistryNewMap,&Temp); 
-  NewMap = Temp;
-#else
-  NewMap = 1; 
-#endif
   Temp = 1; 
   GetFromRegistry(szRegistryCheckSum,&Temp); 
   CheckSum = Temp;

@@ -147,7 +147,6 @@ extern DWORD EnableFLARMMap;
 extern short AircraftCategory;
 extern bool ExtendedVisualGlide;
 extern short Look8000;
-extern bool NewMap;
 extern bool CheckSum;
 extern bool HideUnits;
 extern short OutlinedTp;

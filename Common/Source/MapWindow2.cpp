@@ -1112,7 +1112,7 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 
   SIZE           TextSize;
 
-  if (NewMap&&(GlideBarMode == (GlideBarMode_t)gbDisabled)) {
+  if ((GlideBarMode == (GlideBarMode_t)gbDisabled)) {
 	GlideBarOffset=0;
 	return;
   }
@@ -1181,7 +1181,7 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 		Offset0=Offset;
 	} else {
 		// 60 units is size, div by 8 means 60*8 = 480 meters.
-		if ( (GlideBarMode == (GlideBarMode_t)gbFinish) || !NewMap) {
+		if ( (GlideBarMode == (GlideBarMode_t)gbFinish)) {
 			Offset = ((int)DerivedDrawInfo.TaskAltitudeDifference)/8; 
 			Offset0 = ((int)DerivedDrawInfo.TaskAltitudeDifference0)/8; 
 		} else {
@@ -1288,7 +1288,7 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 		// JMW draw x on final glide bar if unreachable at current Mc
 		// hpAircraftBorder
 
-		if ( (GlideBarMode == (GlideBarMode_t)gbFinish) || !NewMap) {
+		if ( (GlideBarMode == (GlideBarMode_t)gbFinish) ) {
 			if ((DerivedDrawInfo.TaskTimeToGo>0.9*ERROR_TIME) || 
 			((MACCREADY<0.01) && (DerivedDrawInfo.TaskAltitudeDifference<0))) {
 				SelectObject(hDC, hpAircraftBorder);
@@ -1318,7 +1318,7 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 	// draw boxed value in the center
 		if (OvertargetMode == OVT_TASK ) { //@ 101004
 			// A task is made of at least 2 tps, otherwise its a goto
-			if (( (GlideBarMode == (GlideBarMode_t)gbFinish) && ValidTaskPoint(1)) || !NewMap) {
+			if (( (GlideBarMode == (GlideBarMode_t)gbFinish) && ValidTaskPoint(1)) ) {
 				if ( (ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeDifference) <ALTDIFFLIMIT) //@ 091114
 					_stprintf(Value,TEXT(" --- "));
 				else

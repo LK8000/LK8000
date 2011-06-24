@@ -83,8 +83,8 @@ extern void DrawDebug(HDC hdc, RECT rc );
 
 #define NUMSNAILRAMP 6
 
-#define DONTDRAWTHEMAP IsMapFullScreen()&&NewMap&&Look8000&&!mode.AnyPan()&&MapSpaceMode!=MSM_MAP
-#define MAPMODE8000    IsMapFullScreen()&&NewMap&&Look8000&&!mode.AnyPan()&&MapSpaceMode==MSM_MAP
+#define DONTDRAWTHEMAP IsMapFullScreen()&&Look8000&&!mode.AnyPan()&&MapSpaceMode!=MSM_MAP
+#define MAPMODE8000    IsMapFullScreen()&&Look8000&&!mode.AnyPan()&&MapSpaceMode==MSM_MAP
 
 
 extern int GetOvertargetIndex(void);
@@ -662,7 +662,7 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
 	#endif
   
     if (!noOverlap || notoverlapping) { 
-      if (NewMap&&OutlinedTp)
+      if (OutlinedTp)
 	SetTextColor(hDC,RGB_BLACK);
       else
 	SetTextColor(hDC,RGB_WHITE); 
@@ -684,7 +684,7 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
       ExtTextOut(hDC, x, y-1, ETO_OPAQUE, NULL, Value, size, NULL);
 #endif /* WINE */
 
-      if (NewMap&&OutlinedTp) {
+      if (OutlinedTp) {
 	TextColor(hDC,Mode.AsFlag.Color);
       } else
 	SetTextColor(hDC,RGB_BLACK); 
@@ -694,7 +694,7 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
 #else
       ExtTextOut(hDC, x, y, ETO_OPAQUE, NULL, Value, size, NULL);
 #endif /* WINE */
-      if (NewMap&&OutlinedTp)
+      if (OutlinedTp)
 	SetTextColor(hDC,RGB_BLACK); // TODO somewhere else text color is not set correctly
       drawn=true;
     }
@@ -742,19 +742,13 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
     if (!noOverlap || notoverlapping) {
 #if (WINDOWSPC>0)
       SetBkMode(hDC,TRANSPARENT);
-	if (NewMap) {
 		TextColor(hDC,Mode.AsFlag.Color);
       		ExtTextOut(hDC, x, y, 0, NULL, Value, size, NULL);
 		SetTextColor(hDC,RGB_BLACK); 
-	} else
-      		ExtTextOut(hDC, x, y, 0, NULL, Value, size, NULL);
 #else
-	if (NewMap) {
 		TextColor(hDC,Mode.AsFlag.Color);
       		ExtTextOut(hDC, x, y, ETO_OPAQUE, NULL, Value, size, NULL);
 		SetTextColor(hDC,RGB_BLACK); 
-	} else
-      		ExtTextOut(hDC, x, y, ETO_OPAQUE, NULL, Value, size, NULL);
 #endif
       drawn=true;
     }
@@ -1435,12 +1429,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 
 	// only when activemap (which means newmap is on) is off
       if (ActiveMap) ignorenext=true;
-      // 090721 doubleclick no more used in lk8000
-      if (NewMap) break;
-      #ifndef DISABLEAUDIO
-      if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-      #endif
-      ShowMenu();
       break;
 
     case WM_LBUTTONDOWN:
@@ -1545,7 +1533,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 		#include "./LKinclude_menusize.cpp"
 		doinit=false;
 	}
-      if (NewMap)  {
 
 	short topicon;
 	if (DrawBottom) topicon=MapRect.bottom-MapRect.top-BottomSize-14; // 100305
@@ -1555,12 +1542,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 if ( (X > ((MapRect.right-MapRect.left)- AIRCRAFTMENUSIZE)) &&
    (Y > topicon) ) {
 
-	/*
-	 * Available for future usage: short click on aircraft icon.
-	 * Remember there's already a normal click and a long click on the same icon!
-	   090720 short click replacing doubleclick forever!
-	 */
-	
 		// short click on aircraft icon
 		//
 		if ( dwInterval <= (DOUBLECLICKINTERVAL)) {
@@ -1731,9 +1712,6 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 		break;
 	}
 
-
-
-      } // end newmap preliminar checks
 
       if (dwInterval == 0) {
 		break; // should be impossible
@@ -2546,7 +2524,7 @@ void MapWindow::RenderMapWindow(  RECT rc)
   DrawFlightMode(hdcDrawWindow, rc);
 
   // REMINDER TODO let it be configurable for not circling also, as before
-  if (!(NewMap && Look8000) || (mode.Is(Mode::MODE_CIRCLING)) )
+  if (!(Look8000) || (mode.Is(Mode::MODE_CIRCLING)) )
 	if (ThermalBar) DrawThermalBand(hdcDrawWindow, rc); // 091122
 
 
@@ -2707,10 +2685,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 	ToggleFullScreenStart();
       }
 
-      //if ( !( IsMapFullScreen() && !EnablePan && Look8000 && NewMap && MapSpaceMode==1) ) { // VENTA TODO QUI FIX CRITIC
-
-	      RenderMapWindow(MapRect);
-      //}
+      RenderMapWindow(MapRect);
     
       if (!first) {
 	BitBlt(hdcScreen, 0, 0, 
@@ -3665,7 +3640,7 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
   _DrawLine(hdc, PS_DASH, 1, Tail[0], Tail[1], RGB(0,0,0), rc);
 
   // Paint wind value only while circling
-  if ( !(NewMap&&Look8000) || (mode.Is(Mode::MODE_CIRCLING)) ) {
+  if ( !(Look8000) || (mode.Is(Mode::MODE_CIRCLING)) ) {
 
   	_itot(iround(DerivedDrawInfo.WindSpeed * SPEEDMODIFY), sTmp, 10);
 

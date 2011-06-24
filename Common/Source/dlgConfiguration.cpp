@@ -2742,18 +2742,6 @@ static void setVariables(void) {
   }
 #endif
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpNewMap"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M239_ = "Disabled" 
-    dfe->addEnumText(gettext(TEXT("_@M239_")));
-	// LKTOKEN  _@M259_ = "Enabled" 
-    dfe->addEnumText(gettext(TEXT("_@M259_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->Set(NewMap);
-    wp->RefreshDisplay();
-  }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCheckSum"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -4439,17 +4427,6 @@ void dlgConfigurationShowModal(void){
   }
   #endif
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpNewMap")); 
-  if (wp) {
-    if (NewMap != (NewMap_t)
-	(wp->GetDataField()->GetAsInteger())) {
-      NewMap = (NewMap_t)
-	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryNewMap,
-		    (DWORD)(NewMap));
-      changed = true;
-    }
-  }
   wp = (WndProperty*)wf->FindByName(TEXT("prpCheckSum")); 
   if (wp) {
     if (CheckSum != (CheckSum_t)

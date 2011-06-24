@@ -387,7 +387,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 #define UNGESTURES 1
 #define VKTIMELONG 1500
-#define DONTDRAWTHEMAP MapWindow::IsMapFullScreen()&&NewMap&&Look8000&&!MapWindow::mode.AnyPan()&&MapSpaceMode!=1
+#define DONTDRAWTHEMAP MapWindow::IsMapFullScreen()&&Look8000&&!MapWindow::mode.AnyPan()&&MapSpaceMode!=1
 
 	#if 100228
 	static int AIRCRAFTMENUSIZE=0;
@@ -436,7 +436,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	// yup and ydown are used normally on nearest page item selection, but also for real VK
 	// that currently are almost unused. 
 
-	if (NewMap&&DrawBottom&&MapWindow::IsMapFullScreen()) {
+	if (DrawBottom&&MapWindow::IsMapFullScreen()) {
 		// Native LK mode: always fullscreen mode
 		// If long click, we are processing an Enter, and we want a wider valid center area
 		if ( keytime>=(VKSHORTCLICK*2)) { 
@@ -462,7 +462,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 	// Handle fullscreen 8000 mode 
 	// sound clicks require some attention here
-	if (NewMap &&  DrawBottom && !MapWindow::mode.AnyPan() && vkmode==LKGESTURE_NONE) { 
+	if (DrawBottom && !MapWindow::mode.AnyPan() && vkmode==LKGESTURE_NONE) { 
 		//
 		// CLICKS on NAVBOXES, any MapSpaceMode ok
 		//
@@ -809,7 +809,7 @@ gesture_left:
 	//  Currently as of 2.1 virtual keys are almost obsoleted, and it is very unlikely that 
 	//  someone will ever use this feature, which is also undocumented!!
 	if (keytime>=VKTIMELONG && !dontdrawthemap) {
-		if (NewMap&&Look8000) {
+		if (Look8000) {
 			static short oldOutline=OutlinedTp;
 			if (OutlinedTp>(OutlinedTp_t)otDisabled) OutlinedTp=(OutlinedTp_t)otDisabled;
 			else

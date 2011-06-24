@@ -418,10 +418,6 @@ typedef enum{
 	aamMCS,
 } AltArrivMode_t;
 typedef enum{
-	nmDisabled=0,
-	nmEnabled,
-} NewMap_t;
-typedef enum{
 	csumDisabled=0,
 	csumEnabled,
 } CheckSum_t;

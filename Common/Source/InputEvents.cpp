@@ -1156,93 +1156,7 @@ void InputEvents::eventScreenModes(const TCHAR *misc) {
     InfoBoxLayout::fullscreen = !InfoBoxLayout::fullscreen;
   } else {
 
-
-
-	//
-    	// Paolo Ventafridda - TOGGLE SCROLLWHEEL as INPUT on the HP31X
-	//
-   /* 
-#ifdef PNA
-
-	if ( GlobalModelType == MODELTYPE_PNA_HP31X ) {
-		// 1 normal > 2 aux > 3 biginfo > 4 fullscreen
-		short pnascrollstatus; 
-		pnascrollstatus=1;
-		// if ( InfoBoxLayout::fullscreen == true ) pnascrollstatus=3; // VNT 090702 no more used
-		if ( MapWindow::IsMapFullScreen() ) pnascrollstatus=4;
-		if ( EnableAuxiliaryInfo == true ) pnascrollstatus=2;
-
-		switch (pnascrollstatus) {
-		case 1:
-				#ifndef DISABLEAUDIO
-				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-				#endif
-				if (!(NewMap && Look8000)) {
-					EnableAuxiliaryInfo = true;
-					break;
-				}
-		case 2:
-		case 3:
-				#ifndef DISABLEAUDIO
-				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-				#endif
-				if (!(NewMap && Look8000)) 
-					EnableAuxiliaryInfo = false;
-				MapWindow::RequestOnFullScreen();
-				break;
-		case 4:
-				if (!(NewMap && Look8000)) {
-					EnableAuxiliaryInfo = false;
-					#ifndef DISABLEAUDIO
-					if (EnableSoundModes) LKSound(_T("LK_BELL.WAV"));
-					#endif 
-				} else {
-					#ifndef DISABLEAUDIO
-					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-					#endif 
-				}
-				MapWindow::RequestOffFullScreen();
-				break;
-		default:
-				break;
-		} // switch pnascrollstatus
-	} // not a PNA_HP31X
-	else
-	{
-		if (EnableAuxiliaryInfo&& !(NewMap&&Look8000)) {
-			#ifndef DISABLEAUDIO
-			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-			#endif
-    			MapWindow::RequestToggleFullScreen();
-     			EnableAuxiliaryInfo = false;
-
-		} else {
-			if (MapWindow::IsMapFullScreen()) {
-				MapWindow::RequestToggleFullScreen();		    
-				if (!(NewMap && Look8000)) {
-					#ifndef DISABLEAUDIO  
-					if (EnableSoundModes) LKSound(_T("LK_BELL.WAV"));
-					#endif
-				} else {
-					#ifndef DISABLEAUDIO  
-					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-					#endif
-				}
-			} else {
-				#ifndef DISABLEAUDIO
-				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-				#endif
-				if (!(NewMap && Look8000)) {
-					EnableAuxiliaryInfo = true;
-				} else {
-					MapWindow::RequestToggleFullScreen();
-				}
-			}
-		}
-	} // fallback for other PNAs
-*/
-//#else // UNDEFINED PNA
-	if (EnableAuxiliaryInfo&& !(NewMap&&Look8000)) {
+	if (EnableAuxiliaryInfo&& !(Look8000)) {
 
 		#ifndef DISABLEAUDIO
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
@@ -1253,7 +1167,7 @@ void InputEvents::eventScreenModes(const TCHAR *misc) {
 	} else {
 		if (MapWindow::IsMapFullScreen()) {
 			MapWindow::RequestToggleFullScreen();
-			if (!(NewMap && Look8000)) {
+			if (!(Look8000)) {
 				#ifndef DISABLEAUDIO  
 				if (EnableSoundModes) LKSound(_T("LK_BELL.WAV"));
 				#endif
@@ -1267,14 +1181,13 @@ void InputEvents::eventScreenModes(const TCHAR *misc) {
 			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 			#endif
 			
-			if (!(NewMap && Look8000)) {
+			if (!(Look8000)) {
 				EnableAuxiliaryInfo = true;
 			} else {
 				MapWindow::RequestToggleFullScreen();
 			}
 		}
 	}
-//#endif // def-undef PNA      
 	
   }
 }
