@@ -1187,7 +1187,7 @@ static void OnWaypointNewClicked(WindowControl * Sender){
   edit_waypoint.Comment=(TCHAR*)malloc(100*sizeof(TCHAR));
 
   extern void MSG_NotEnoughMemory(void);
-  if (edit_waypoint.Comment == (TCHAR *)NULL)
+  if (edit_waypoint.Comment == (TCHAR *)NULL) {
 	MSG_NotEnoughMemory();
 	return;
   }
