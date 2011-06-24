@@ -140,20 +140,20 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   bool found = false;
   bool borders_only = (GetAirSpaceFillType() == asp_fill_ablend_borders);
   HDC hdcbuffer = NULL;
-  HBITMAP hbbuffer = NULL;
+  HBITMAP hbbufferold = NULL, hbbuffer = NULL;
   HDC hdcstencil = NULL;
-  HBITMAP hbstencil = NULL;
+  HBITMAP hbstencilold = NULL, hbstencil = NULL;
   
   if (borders_only) {
     // Prepare layers
     hdcbuffer = CreateCompatibleDC(hdc);
     hbbuffer = CreateCompatibleBitmap(hdc, rc.right - rc.left, rc.bottom - rc.top);
-    SelectObject(hdcbuffer, hbbuffer);
+    hbbufferold = (HBITMAP)SelectObject(hdcbuffer, hbbuffer);
     SelectObject(hdcbuffer, GetStockObject(NULL_PEN));
   
     hdcstencil = CreateCompatibleDC(hdc);
     hbstencil = CreateCompatibleBitmap(hdcstencil, rc.right - rc.left, rc.bottom - rc.top);       // This will be monochrome!
-    SelectObject(hdcstencil, hbstencil);
+    hbstencilold = (HBITMAP)SelectObject(hdcstencil, hbstencil);
     SelectObject(hdcstencil, hAirspaceBorderPen);
     SelectObject(hdcstencil, GetStockObject(HOLLOW_BRUSH));
   }
@@ -367,8 +367,10 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
 
   if (borders_only) {
     // Free up GDI resources
+    SelectObject(hdcstencil, hbstencilold);
     DeleteObject(hbstencil);
     DeleteDC(hdcstencil);
+    SelectObject(hdcbuffer, hbbufferold);
     DeleteObject(hbbuffer);
     DeleteDC(hdcbuffer);
   }
