@@ -26,8 +26,6 @@
 #include <zzip/lib.h>
 
 
-#define  POLARUSEWINPILOTFILE  6    // if this polat is selected use the winpilot file
-
 extern const TCHAR szRegistryKey[];
 extern const TCHAR szRegistrySpeedUnitsValue[];
 extern const TCHAR szRegistryDistanceUnitsValue[];

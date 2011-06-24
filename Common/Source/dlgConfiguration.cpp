@@ -1162,44 +1162,6 @@ static void OnPolarFileData(DataField *Sender, DataField::DataAccessKind_t Mode)
 
 }
 
-
-/*
-static void OnPolarTypeData(DataField *Sender, DataField::DataAccessKind_t Mode){
-  WndProperty* wp;
-
-  switch(Mode){
-    case DataField::daGet:
-    break;
-    case DataField::daPut:
-    case DataField::daChange:
-      wp = (WndProperty *)wf->FindByName(TEXT("prpPolarFile"));
-
-      if (Sender->GetAsInteger() != POLARUSEWINPILOTFILE){
-        // then ... clear Winpilot File if Polar Type is not WinpilotFile
-
-        if (wp != NULL && wp->GetDataField()->GetAsInteger() > 0){
-          lastSelectedPolarFile = wp->GetDataField()->GetAsInteger();
-          wp->GetDataField()->SetAsInteger(-1);
-          wp->RefreshDisplay();
-        }
-
-      } else {
-        if (wp != NULL && wp->GetDataField()->GetAsInteger() <= 0 && lastSelectedPolarFile > 0){
-          wp->GetDataField()->SetAsInteger(lastSelectedPolarFile);
-          wp->RefreshDisplay();
-        }
-
-      }
-    break;
-	default: 
-		StartupStore(_T("........... DBG-906%s"),NEWLINE); // 091105
-		break;
-  }
-
-}
-*/
-
-
 extern void OnInfoBoxHelp(WindowControl * Sender);
 
 static void OnWaypointNewClicked(WindowControl * Sender){
@@ -1222,7 +1184,7 @@ static void OnWaypointNewClicked(WindowControl * Sender){
   edit_waypoint.Longitude = GPS_INFO.Longitude;
   edit_waypoint.FileNum = 0; // default, put into primary waypoint file
   edit_waypoint.Flags = 0;
-  edit_waypoint.Comment=(TCHAR*)malloc(100*sizeof(TCHAR)); //@ bugfix 101110
+  edit_waypoint.Comment=(TCHAR*)malloc(100*sizeof(TCHAR)); //@ bugfix 101110    TODOTODO
   _tcscpy(edit_waypoint.Comment,_T(""));
   edit_waypoint.Name[0] = 0;
   edit_waypoint.Details = 0;
@@ -2354,21 +2316,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  // VENTA3 VisualGlide
-  wp = (WndProperty*)wf->FindByName(TEXT("prpVGlide"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M499_ = "Off" 
-    dfe->addEnumText(gettext(TEXT("_@M499_")));
-	// LKTOKEN  _@M668_ = "Steady" 
-    dfe->addEnumText(gettext(TEXT("_@M668_")));
-	// LKTOKEN  _@M445_ = "Moving" 
-    dfe->addEnumText(gettext(TEXT("_@M445_")));
-    dfe->Set(VisualGlide);
-    wp->RefreshDisplay();
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpMaxManoeuveringSpeed"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(SPEEDMODIFY*SAFTEYSPEED));
@@ -3156,19 +3103,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpEnableExternalTriggerCruise"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M959_ = "OFF" 
-    dfe->addEnumText(gettext(TEXT("_@M959_")));
-    dfe->addEnumText(gettext(TEXT("Flap")));
-    dfe->addEnumText(gettext(TEXT("SC")));
-    dfe->Set(EnableExternalTriggerCruise);
-    wp->RefreshDisplay();
-  }
-
-  #if 100922
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInverseInfoBox"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -3180,13 +3114,6 @@ static void setVariables(void) {
     dfe->Set(Appearance.InverseInfoBox);
     wp->RefreshDisplay();
   }
-  #else
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppInverseInfoBox"));
-  if (wp) {
-    wp->GetDataField()->Set(Appearance.InverseInfoBox);
-    wp->RefreshDisplay();
-  }
-  #endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppDefaultMapWidth"));
   if (wp) {
@@ -4814,17 +4741,6 @@ void dlgConfigurationShowModal(void){
       SetToRegistry(szRegistryAppIndLandable,(DWORD)(Appearance.IndLandable));
       changed = true;
       requirerestart = true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpEnableExternalTriggerCruise"));
-  if (wp) {
-    if ((int)(EnableExternalTriggerCruise) != 
-	wp->GetDataField()->GetAsInteger()) {
-      EnableExternalTriggerCruise = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryEnableExternalTriggerCruise,
-		    EnableExternalTriggerCruise);
-      changed = true;
     }
   }
 
