@@ -783,7 +783,7 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryExtendedVisualGlide,&Temp); // VENTA4
   ExtendedVisualGlide = Temp;
 
-  // Do not allow LK8000 mode be disabled. Allow only temporary disabling, and permanent setting for normal/advanced
+  // Do not allow LK8000 mode be disabled. The reserved (0) mode is unused right now.
   if (ScreenLandscape) {
 	Temp = (Look8000_t)lxcAdvanced;  
 	GetFromRegistry(szRegistryLook8000,&Temp);

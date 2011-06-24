@@ -1130,7 +1130,7 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
   int i;
   int lkVarioOffset=0, minBar, maxBar;
 
-  if (Look8000&&IsMapFullScreen()&&LKVarioBar) //@ 091115
+  if (IsMapFullScreen()&&LKVarioBar) //@ 091115
 	lkVarioOffset=LKVarioSize+NIBLSCALE(2); //@ 091114
 
   // 091114

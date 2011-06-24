@@ -387,7 +387,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 #define UNGESTURES 1
 #define VKTIMELONG 1500
-#define DONTDRAWTHEMAP MapWindow::IsMapFullScreen()&&Look8000&&!MapWindow::mode.AnyPan()&&MapSpaceMode!=1
+#define DONTDRAWTHEMAP MapWindow::IsMapFullScreen()&&!MapWindow::mode.AnyPan()&&MapSpaceMode!=1
 
 	#if 100228
 	static int AIRCRAFTMENUSIZE=0;
@@ -809,7 +809,6 @@ gesture_left:
 	//  Currently as of 2.1 virtual keys are almost obsoleted, and it is very unlikely that 
 	//  someone will ever use this feature, which is also undocumented!!
 	if (keytime>=VKTIMELONG && !dontdrawthemap) {
-		if (Look8000) {
 			static short oldOutline=OutlinedTp;
 			if (OutlinedTp>(OutlinedTp_t)otDisabled) OutlinedTp=(OutlinedTp_t)otDisabled;
 			else
@@ -820,7 +819,6 @@ gesture_left:
 			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 			#endif
 			MapWindow::RefreshMap();
-		}
 		return 0;
 
 		// return 27; virtual ESC 

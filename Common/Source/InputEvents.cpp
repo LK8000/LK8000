@@ -1156,39 +1156,18 @@ void InputEvents::eventScreenModes(const TCHAR *misc) {
     InfoBoxLayout::fullscreen = !InfoBoxLayout::fullscreen;
   } else {
 
-	if (EnableAuxiliaryInfo&& !(Look8000)) {
-
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
-		MapWindow::RequestToggleFullScreen();
-		EnableAuxiliaryInfo = false;
-
-	} else {
 		if (MapWindow::IsMapFullScreen()) {
 			MapWindow::RequestToggleFullScreen();
-			if (!(Look8000)) {
-				#ifndef DISABLEAUDIO  
-				if (EnableSoundModes) LKSound(_T("LK_BELL.WAV"));
-				#endif
-			} else {
 				#ifndef DISABLEAUDIO  
 				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 				#endif
-			}
 		} else {
 			#ifndef DISABLEAUDIO
 			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 			#endif
 			
-			if (!(Look8000)) {
-				EnableAuxiliaryInfo = true;
-			} else {
 				MapWindow::RequestToggleFullScreen();
-			}
 		}
-	}
-	
   }
 }
 

@@ -83,8 +83,8 @@ extern void DrawDebug(HDC hdc, RECT rc );
 
 #define NUMSNAILRAMP 6
 
-#define DONTDRAWTHEMAP IsMapFullScreen()&&Look8000&&!mode.AnyPan()&&MapSpaceMode!=MSM_MAP
-#define MAPMODE8000    IsMapFullScreen()&&Look8000&&!mode.AnyPan()&&MapSpaceMode==MSM_MAP
+#define DONTDRAWTHEMAP IsMapFullScreen()&&!mode.AnyPan()&&MapSpaceMode!=MSM_MAP
+#define MAPMODE8000    IsMapFullScreen()&&!mode.AnyPan()&&MapSpaceMode==MSM_MAP
 
 
 extern int GetOvertargetIndex(void);
@@ -2431,12 +2431,10 @@ QuickRedraw: // 100318 speedup redraw
 	}
 
   // Draw traffic and other specifix LK gauges
-  if (Look8000) { // 091111
   	LKDrawFLARMTraffic(hdc, rc, Orig_Aircraft);
 	if ( !mode.AnyPan()) DrawLook8000(hdc,rc); 
 	if (LKVarioBar && IsMapFullScreen() && !mode.AnyPan()) // 091214 do not draw Vario when in Pan mode
 		LKDrawVario(hdc,rc); // 091111
-  }
   
   // finally, draw you!
   // Draw cross air for panmode, instead of aircraft icon
@@ -2449,7 +2447,7 @@ QuickRedraw: // 100318 speedup redraw
     DrawAircraft(hdc, Orig_Aircraft);
   }
 
-  if (!mode.AnyPan() && Look8000) {
+  if (!mode.AnyPan()) {
 	if (TrackBar) DrawHeading(hdc, Orig, rc); 
   }
 
@@ -2524,7 +2522,7 @@ void MapWindow::RenderMapWindow(  RECT rc)
   DrawFlightMode(hdcDrawWindow, rc);
 
   // REMINDER TODO let it be configurable for not circling also, as before
-  if (!(Look8000) || (mode.Is(Mode::MODE_CIRCLING)) )
+  if ((mode.Is(Mode::MODE_CIRCLING)) )
 	if (ThermalBar) DrawThermalBand(hdcDrawWindow, rc); // 091122
 
 
@@ -3640,7 +3638,7 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
   _DrawLine(hdc, PS_DASH, 1, Tail[0], Tail[1], RGB(0,0,0), rc);
 
   // Paint wind value only while circling
-  if ( !(Look8000) || (mode.Is(Mode::MODE_CIRCLING)) ) {
+  if ( (mode.Is(Mode::MODE_CIRCLING)) ) {
 
   	_itot(iround(DerivedDrawInfo.WindSpeed * SPEEDMODIFY), sTmp, 10);
 
