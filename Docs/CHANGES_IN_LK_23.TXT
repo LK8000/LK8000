@@ -4,6 +4,8 @@ Changes in LK8000 v2.3
 
 Version 2.3c
 
+
+
 NEW
 
 . New ALTITUDE ALARMS in Menu Config 15
@@ -26,6 +28,8 @@ NEW
 
 . New customkeys: Airspace Analysis and Toggle Map<>Airspaces page
 
+. New customkeys: Zoom in, Zoom in more, Zoom out, Zoom out more.
+
 . New Airspace details page, two new buttons for SELECT and ANALYSIS.
 
    SELECT is used to choose an airspace to be monitored for Hdist and Vdist infoboxes.
@@ -40,6 +44,14 @@ NEW
 . New airspace 2.4 colors, following red and yellow alerting situation.
 
 . Support 320x234 and 234x320 screen resolutions. Preliminary.
+
+. Add ACT indicator in mapscale for ActiveMap status
+  ActiveMap can be enabled/disabled with both a customkey and menu button.
+  When it is enabled, the indicator appears near the map scale.
+
+
+. New SZD-38A Jantar 1  polar, with flaps extension.
+
 
 
 
@@ -57,12 +69,14 @@ CHANGES
 . Show overlay BEARING while circling.
     We could not display bearing difference while thermalling, because it was constantly changing.
 
-. Use selected airspace for distance infoboxes. 
+. Use manually selected airspace for distance infoboxes. 
   In order to see Hdist and Vdist infoboxes, an airspace must be selected from Airspace details page.
-
 
 . Airspace warnings working only after 1 minute have passed since takeoff
   This is to reduce pilot overload during critical phases of flight.
+
+. (2.3) ArSpcH Airspace Horizontal distance below 1000m (~3300ft) will display 2 decimals.
+  Example, instead of 0.7km it will show 743m  .
 
 . Following configuration items were REMOVED from Engineering mode, thus becoming PERMANENTLY removed from LK:
 
@@ -87,6 +101,7 @@ CHANGES
 	. ActiveMap
 	ActiveMap is a good candidate for no configuration. There is a button to activate active map on demand.
 	There is also a customkey for it.
+
 
 
 
