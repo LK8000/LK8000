@@ -214,9 +214,6 @@ typedef struct _DERIVED_INFO
   double Gload;
   double Essing;
   double TerrainBase; // lowest height within glide range
-#ifndef NEW_OLC
-  double TermikLigaPoints;
-#endif /* NEW_OLC */
   double GRFinish;	// GRadient to final destination, 090203
 			// Note: we don't need GRNext since this value is used when going to a landing
 			// point, which is always a final glide.

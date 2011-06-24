@@ -19,7 +19,7 @@
 #include "Dialogs.h"
 
 #include "utils/heapcheck.h"
-#if defined(LKAIRSPACE) || defined(NEW_OLC)
+#if defined(LKAIRSPACE)
 using std::min;
 using std::max;
 #endif

@@ -83,17 +83,6 @@
 #define WINE
 #endif
 
-// ------------ NEW OLC ENGINE -------------------------------------------------
-// This is permanently enabled as of 2.2 .
-// We keep the old olc engine because Mat has made full support for both versions.
-// After 2.2 we should remove old stuff.
-// Using old OLC requires to change lk8000.rc and activate OLDOLC xmls. 
-// They are 3 files in total.
-// No need to change any XML filename. Just comment/uncomment.
-//
-#define NEW_OLC                 1     // Applied 110313 - Expire as soon as possible. Permanent NEW_OLC.
-// -----------------------------------------------------------------------------
-
 #define USEGOINIT		1	// expire 1.7.2011, it is disabled and should be removed
 
 

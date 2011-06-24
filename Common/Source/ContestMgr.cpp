@@ -8,11 +8,6 @@
 
 
 #include "options.h"
-#ifndef NEW_OLC
-
-#include "OnLineContest.cpp"
-
-#else
 
 #include "ContestMgr.h"
 #include "lk8000.h"
@@ -606,4 +601,3 @@ void CContestMgr::Trace(CPointGPSArray &array) const
   }
 }
 
-#endif /* NEW_OLC */

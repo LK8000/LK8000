@@ -12,9 +12,6 @@
 #include "Defines.h"
 
 #include "MapWindow.h"
-#ifndef NEW_OLC
-#include "OnLineContest.h"
-#endif /* NEW_OLC */
 #include "Utils.h"
 #include "lk8000.h"
 #include "LKUtils.h"
@@ -44,7 +41,7 @@
 using std::min;
 using std::max;
 #endif
-#if defined(LKAIRSPACE) || defined(NEW_OLC)
+#if defined(LKAIRSPACE)
 using std::min;
 using std::max;
 #endif
@@ -740,40 +737,13 @@ void MapWindow::DrawGreatCircle(HDC hdc,
 
 int MapWindow::iSnailNext=0;
 
-#ifndef NEW_OLC
-extern OLCOptimizer olc;
-#endif /* NEW_OLC */
 
 void MapWindow::DrawTrailFromTask(HDC hdc, const RECT rc, 
 				  const double TrailFirstTime) {
-#ifndef NEW_OLC
-  static POINT ptin[MAXCLIPPOLYGON];
-#endif /* NEW_OLC */
 
   if((TrailActive!=3) || mode.Is(Mode::MODE_CIRCLING) || (TrailFirstTime<0))
     return;
 
-#ifndef NEW_OLC
-  const double mTrailFirstTime = TrailFirstTime - DerivedDrawInfo.TakeOffTime;
-
-  // since olc keeps track of time wrt takeoff
-
-  olc.SetLine();
-  int n = min(MAXCLIPPOLYGON,olc.getN());
-  int i, j=0;
-  for (i=0; i<n; i++) {
-    if (olc.getTime(i)>= mTrailFirstTime) 
-      break;
-    LatLon2Screen(olc.getLongitude(i), 
-                  olc.getLatitude(i), 
-                  ptin[j]);
-    j++;
-  }
-  if (j>=2) {
-    SelectObject(hdc,hSnailPens[NUMSNAILCOLORS/2]);
-    ClipPolygon(hdc, ptin, j, rc, false);
-  }
-#endif /* NEW_OLC */
 }
 
 extern HFONT  TitleWindowFont;

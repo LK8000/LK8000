@@ -83,7 +83,7 @@ extern void LKObjects_Create();
 extern void LKObjects_Delete();
 #include "LKMainObjects.h"
 
-#if defined(LKAIRSPACE) || defined(NEW_OLC)
+#if defined(LKAIRSPACE)
 using std::min;
 using std::max;
 #endif
@@ -292,9 +292,7 @@ double POLAR[POLARSIZE] = {0,0,0};
 double POLARV[POLARSIZE] = {21,27,40};
 double POLARLD[POLARSIZE] = {33,30,20};
 double WEIGHTS[POLARSIZE] = {250,70,100};
-#ifdef NEW_OLC
 int Handicap = 108; // LS-3
-#endif /* NEW_OLC */
 
 // Team code info
 int TeamCodeRefWaypoint = -1;
@@ -673,10 +671,8 @@ int StatusMessageData_Size = 0;
 SNAIL_POINT SnailTrail[TRAILSIZE];
 int SnailNext = 0;
 
-#ifdef NEW_OLC
 // OLC COOKED VALUES
 CContestMgr::CResult OlcResults[CContestMgr::TYPE_NUM];
-#endif
 
 // user interface settings
 int WindUpdateMode = 0;

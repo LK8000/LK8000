@@ -24,9 +24,7 @@ extern TCHAR LK8000_Version[256];
 #include "Statistics.h"
 #include "Dialogs.h"
 #include "Utils2.h"
-#ifdef NEW_OLC
 #include "ContestMgr.h"
-#endif
 #include "device.h" // 100210
 
 #if (EXPERIMENTAL > 0)
@@ -389,11 +387,6 @@ extern DWORD StartMaxHeightMargin;
 extern DWORD StartMaxSpeed;
 extern DWORD StartMaxSpeedMargin;
 extern int StartHeightRef;
-#ifndef NEW_OLC
-extern int OLCRules;
-extern int Handicap;
-extern bool EnableOLC;
-#endif /* NEW_OLC */
 
 extern DWORD AlarmMaxAltitude1;
 extern DWORD AlarmMaxAltitude2;
@@ -422,9 +415,7 @@ extern double POLAR[POLARSIZE];
 extern double WEIGHTS[POLARSIZE];
 extern int BallastSecsToEmpty;
 extern bool BallastTimerActive;
-#ifdef NEW_OLC
 extern int Handicap;
-#endif /* NEW_OLC */
 
 extern bool InfoWindowActive;
 
@@ -455,9 +446,7 @@ extern bool SetSystemTimeFromGPS;
 extern bool ForceFinalGlide;
 extern bool AutoForceFinalGlide;
 
-#ifdef NEW_OLC
 extern CContestMgr::CResult OlcResults[CContestMgr::TYPE_NUM];
-#endif
 
 // user interface options
 extern bool bAirspaceBlackOutline;

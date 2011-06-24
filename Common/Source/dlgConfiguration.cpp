@@ -2078,21 +2078,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-#ifndef NEW_OLC
-  wp = (WndProperty*)wf->FindByName(TEXT("prpOLCRules"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M633_ = "Sprint" 
-    dfe->addEnumText(gettext(TEXT("_@M633_")));
-	// LKTOKEN  _@M742_ = "Triangle" 
-    dfe->addEnumText(gettext(TEXT("_@M742_")));
-	// LKTOKEN  _@M176_ = "Classic" 
-    dfe->addEnumText(gettext(TEXT("_@M176_")));
-    dfe->Set(OLCRules);
-    wp->RefreshDisplay();
-  }
-#endif /* NEW_OLC */
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpHandicap"));
   if (wp) {
@@ -4030,17 +4015,6 @@ void dlgConfigurationShowModal(void){
       requirerestart = true;
     }
   }
-
-#ifndef NEW_OLC
-  wp = (WndProperty*)wf->FindByName(TEXT("prpOLCRules"));
-  if (wp) {
-    if (OLCRules != wp->GetDataField()->GetAsInteger()) {
-      OLCRules = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryOLCRules, OLCRules);
-      changed = true;
-    }
-  }
-#endif /* NEW_OLC */
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpHandicap"));
   if (wp) {

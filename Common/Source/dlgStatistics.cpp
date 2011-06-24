@@ -18,7 +18,7 @@
 
 #include "utils/heapcheck.h"
 
-#if defined(LKAIRSPACE) || defined(NEW_OLC)
+#if defined(LKAIRSPACE)
 using std::min;
 using std::max;
 #endif
@@ -564,22 +564,12 @@ void Statistics::DrawYGrid(HDC hdc, const RECT rc,
 
 
 
-#ifdef NEW_OLC
-
 #include "ContestMgr.h"
 using std::min;
 using std::max;
 
 static CContestMgr::TType contestType = CContestMgr::TYPE_OLC_CLASSIC;
 
-#else
-
-#include "OnLineContest.h"
-extern OLCOptimizer olc;
-static bool olcvalid=false;
-static bool olcfinished=false;
-
-#endif /* NEW_OLC */
 
 void Statistics::RenderBarograph(HDC hdc, const RECT rc)
 {
@@ -866,9 +856,6 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
   double x1, y1, x2=0, y2=0;
   double lat_c, lon_c;
   double aatradius[MAXTASKPOINTS];
-#ifndef NEW_OLC
-  bool olcvalid_this = olcvalid;
-#endif /* NEW_OLC */
 
   // find center
   ResetScale();
@@ -896,7 +883,6 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
     return;
   }
 
-#ifdef NEW_OLC
   CPointGPSArray trace;
   CContestMgr::Instance().Trace(trace);
   for(unsigned i=0; i<trace.size(); i++) {
@@ -905,25 +891,6 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
     ScaleYFromValue(rc, lat1);
     ScaleXFromValue(rc, lon1);
   }
-#else
-  olc.SetLine();
-  int nolc = olc.getN();
-
-  if (olcvalid_this) {    
-    for (i=0; i< nolc; i++) {
-      lat1 = olc.getLatitude(i);
-      lon1 = olc.getLongitude(i);
-      ScaleYFromValue(rc, lat1);
-      ScaleXFromValue(rc, lon1);
-    }
-    if (!olcfinished) {
-      lat1 = olc.lat_proj;
-      lon1 = olc.lon_proj;
-      ScaleYFromValue(rc, lat1);
-      ScaleXFromValue(rc, lon1);
-    }
-  }
-#endif /* NEW_OLC */
 
   lat_c = (y_max+y_min)/2;
   lon_c = (x_max+x_min)/2;
@@ -983,15 +950,9 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
       }
     }
   }
-#ifdef NEW_OLC
   for(unsigned i=0; i<trace.size(); i++) {
     lat1 = trace[i].Latitude();
     lon1 = trace[i].Longitude();
-#else
-  for (i=0; i< nolc; i++) {
-    lat1 = olc.getLatitude(i);
-    lon1 = olc.getLongitude(i);
-#endif /* NEW_OLC */
     x1 = (lon1-lon_c)*fastcosine(lat1);
     y1 = (lat1-lat_c);
     ScaleXFromValue(rc, x1);
@@ -1045,19 +1006,11 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
   }
 
   // draw track
-#ifdef NEW_OLC
   for(unsigned i=0; trace.size() && i<trace.size()-1; i++) {
     lat1 = trace[i].Latitude();
     lon1 = trace[i].Longitude();
     lat2 = trace[i+1].Latitude();
     lon2 = trace[i+1].Longitude();
-#else
-  for (i=0; i< nolc-1; i++) {
-    lat1 = olc.getLatitude(i);
-    lon1 = olc.getLongitude(i);
-    lat2 = olc.getLatitude(i+1);
-    lon2 = olc.getLongitude(i+1);
-#endif /* NEW_OLC */
     x1 = (lon1-lon_c)*fastcosine(lat1);
     y1 = (lat1-lat_c);
     x2 = (lon2-lon_c)*fastcosine(lat2);
@@ -1147,7 +1100,6 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
     }
   }
   
-#ifdef NEW_OLC
   if(olcmode) {
     CContestMgr::CResult result = CContestMgr::Instance().Result(contestType, true);
     if(result.Type() == contestType) {
@@ -1191,46 +1143,6 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
       }
     }
   }
-#else
-  if (olcmode && olcvalid_this) {
-    for (i=0; i< 7-1; i++) {
-      switch(OLCRules) {
-      case 0:
-	lat1 = olc.data.solution_FAI_sprint.latitude[i];
-	lon1 = olc.data.solution_FAI_sprint.longitude[i];
-	lat2 = olc.data.solution_FAI_sprint.latitude[i+1];
-	lon2 = olc.data.solution_FAI_sprint.longitude[i+1];
-	break;
-      case 1:
-	lat1 = olc.data.solution_FAI_triangle.latitude[i];
-	lon1 = olc.data.solution_FAI_triangle.longitude[i];
-	lat2 = olc.data.solution_FAI_triangle.latitude[i+1];
-	lon2 = olc.data.solution_FAI_triangle.longitude[i+1];
-	break;
-      case 2:
-	lat1 = olc.data.solution_FAI_classic.latitude[i];
-	lon1 = olc.data.solution_FAI_classic.longitude[i];
-	lat2 = olc.data.solution_FAI_classic.latitude[i+1];
-	lon2 = olc.data.solution_FAI_classic.longitude[i+1];
-	break;
-      }
-      x1 = (lon1-lon_c)*fastcosine(lat1);
-      y1 = (lat1-lat_c);
-      x2 = (lon2-lon_c)*fastcosine(lat2);
-      y2 = (lat2-lat_c);
-      DrawLine(hdc, rc,
-	       x1, y1, x2, y2,
-	       STYLE_REDTHICK);
-    }
-    if (!olcfinished) {
-      x1 = (olc.lon_proj-lon_c)*fastcosine(lat1);
-      y1 = (olc.lat_proj-lat_c);
-      DrawLine(hdc, rc,
-	       x1, y1, x2, y2,
-	       STYLE_BLUETHIN);
-    }
-  }
-#endif /* NEW_OLC */
 
   // Draw aircraft on top
   lat1 = GPS_INFO.Latitude;
@@ -1668,11 +1580,7 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
     UnlockTaskData();
     break;
   case ANALYSIS_PAGE_CONTEST:
-    #ifndef NEW_OLC
-    SetCalcCaption(gettext(TEXT("_@M504_"))); // Optimise
-    #else
     SetCalcCaption(gettext(TEXT("_@M1451_"))); // Change
-    #endif
     LockTaskData();
     Statistics::RenderTask(hDC, rcgfx, true);
     UnlockTaskData();
@@ -1700,10 +1608,6 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
 static void Update(void){
   TCHAR sTmp[1000];
   //  WndProperty *wp;
-#ifndef NEW_OLC
-  int dt=1;
-  double d=0;
-#endif /* NEW_OLC */
 
   switch(page){
     case ANALYSIS_PAGE_BAROGRAPH:
@@ -1923,7 +1827,6 @@ static void Update(void){
     wInfo->SetCaption(sTmp);
     break;
   case ANALYSIS_PAGE_CONTEST:
-#ifdef NEW_OLC
     _stprintf(sTmp, TEXT("%s: %s - %s"), 
               // LKTOKEN  _@M93_ = "Analysis" 
               gettext(TEXT("_@M93_")),
@@ -1983,100 +1886,6 @@ static void Update(void){
       }
       wInfo->SetCaption(sTmp);
     }
-#else
-    _stprintf(sTmp, TEXT("%s: %s"), 
-              // LKTOKEN  _@M93_ = "Analysis" 
-              gettext(TEXT("_@M93_")),
-              // LKTOKEN  _@M1450_ = "Contest" 
-              gettext(TEXT("_@M1450_")));
-    wf->SetCaption(sTmp);
-    
-    TCHAR sFinished[20];
-    double score;
-
-    switch(OLCRules) {
-    case 0:
-      dt = olc.data.solution_FAI_sprint.time;
-      d = olc.data.solution_FAI_sprint.distance;
-      olcvalid = olc.data.solution_FAI_sprint.valid;
-      score = olc.data.solution_FAI_sprint.score;
-      olcfinished = olc.data.solution_FAI_sprint.finished;
-      break;
-    case 1:
-      dt = olc.data.solution_FAI_triangle.time;
-      d = olc.data.solution_FAI_triangle.distance;
-      olcvalid = olc.data.solution_FAI_triangle.valid;
-      score = olc.data.solution_FAI_triangle.score;
-      olcfinished = olc.data.solution_FAI_triangle.finished;
-      break;
-    case 2:
-      dt = olc.data.solution_FAI_classic.time;
-      d = olc.data.solution_FAI_classic.distance;
-      olcvalid = olc.data.solution_FAI_classic.valid;
-      score = olc.data.solution_FAI_classic.score;
-      olcfinished = olc.data.solution_FAI_classic.finished;
-      break;
-    default:
-      olcvalid = false;
-      olcfinished = false;
-      score = 0;
-      d = 0;
-      dt = 0;
-    }
-    if (olcfinished) {
-	// LKTOKEN  _@M300_ = "Finished" 
-      _tcscpy(sFinished,gettext(TEXT("_@M300_")));
-    } else {
-      _tcscpy(sFinished,TEXT("..."));
-    }
-
-    if (olcvalid) {
-      TCHAR timetext1[100];
-      Units::TimeToText(timetext1, dt);
-      if (InfoBoxLayout::landscape) {
-        _stprintf(sTmp, 
-                  TEXT("%s\r\n%s:\r\n  %5.0f %s\r\n%s: %s\r\n%s: %3.0f %s\r\n%s: %.2f\r\n"),
-                  sFinished,
-	// LKTOKEN  _@M245_ = "Distance" 
-                  gettext(TEXT("_@M245_")),
-                  DISTANCEMODIFY*d,
-                  Units::GetDistanceName(),
-	// LKTOKEN  _@M720_ = "Time" 
-                  gettext(TEXT("_@M720_")),
-                  timetext1,
-	// LKTOKEN  _@M632_ = "Speed" 
-                  gettext(TEXT("_@M632_")),
-                  TASKSPEEDMODIFY*d/dt,
-                  Units::GetTaskSpeedName(),
-	// LKTOKEN  _@M584_ = "Score" 
-                  gettext(TEXT("_@M584_")),
-                  score);
-      } else {
-        _stprintf(sTmp, 
-                  TEXT("%s\r\n%s: %5.0f %s\r\n%s: %s\r\n%s: %3.0f %s\r\n%s: %.2f\r\n"),
-                  sFinished,
-	// LKTOKEN  _@M245_ = "Distance" 
-                  gettext(TEXT("_@M245_")),
-                  DISTANCEMODIFY*d,
-                  Units::GetDistanceName(),
-	// LKTOKEN  _@M720_ = "Time" 
-                  gettext(TEXT("_@M720_")),
-                  timetext1,
-	// LKTOKEN  _@M632_ = "Speed" 
-                  gettext(TEXT("_@M632_")),
-                  TASKSPEEDMODIFY*d/dt,
-                  Units::GetTaskSpeedName(),
-	// LKTOKEN  _@M584_ = "Score" 
-                  gettext(TEXT("_@M584_")),
-                  score);
-      }
-    } else {
-      _stprintf(sTmp, TEXT("%s\r\n"),
-	// LKTOKEN  _@M477_ = "No valid path" 
-                gettext(TEXT("_@M477_")));
-    }
-    wInfo->SetCaption(sTmp);
-#endif /* NEW_OLC */
 
     break;
   case ANALYSIS_PAGE_AIRSPACE:
@@ -2173,7 +1982,6 @@ static void OnCalcClicked(WindowControl * Sender,
     wf->SetVisible(true);
   }
   if (page==ANALYSIS_PAGE_CONTEST) {
-#ifdef NEW_OLC
     // Rotate presented contest
     switch(contestType) {
     case CContestMgr::TYPE_OLC_CLASSIC:
@@ -2200,11 +2008,6 @@ static void OnCalcClicked(WindowControl * Sender,
     default:
       contestType = CContestMgr::TYPE_OLC_CLASSIC;
     }
-#else
-    StartHourglassCursor();
-    olc.Optimize((CALCULATED_INFO.Flying==1));
-    StopHourglassCursor();
-#endif /* NEW_OLC */
   }
   if (page==ANALYSIS_PAGE_AIRSPACE) {
 #ifdef LKAIRSPACE
@@ -2227,7 +2030,6 @@ static CallBackTableEntry_t CallBackTable[]={
 };
 
 
-#ifdef NEW_OLC
 static int OnTimerNotify(WindowControl *Sender)
 {
   static short i=0;
@@ -2238,7 +2040,6 @@ static int OnTimerNotify(WindowControl *Sender)
   Update();
   return 0;
 }
-#endif
 
 
 void dlgAnalysisShowModal(int inpage){
@@ -2247,10 +2048,6 @@ void dlgAnalysisShowModal(int inpage){
   wGrid=NULL;
   wInfo=NULL;
   wCalc=NULL;
-#ifndef NEW_OLC
-  olcvalid = false;
-  olcfinished = false;
-#endif /* NEW_OLC */
   
   if (!InfoBoxLayout::landscape) {
     char filename[MAX_PATH];
@@ -2281,9 +2078,7 @@ void dlgAnalysisShowModal(int inpage){
 
   wCalc = ((WndButton *)wf->FindByName(TEXT("cmdCalc")));
 
-  #ifdef NEW_OLC
   wf->SetTimerNotify(OnTimerNotify);
-  #endif
 
   Update();
 

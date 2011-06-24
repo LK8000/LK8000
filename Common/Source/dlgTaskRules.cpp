@@ -65,14 +65,6 @@ static CallBackTableEntry_t CallBackTable[]={
 static void setVariables(void) {
   WndProperty *wp;
 
-#ifndef NEW_OLC
-  wp = (WndProperty*)wf->FindByName(TEXT("prpOLCEnabled"));
-  if (wp) {
-    wp->GetDataField()->Set(EnableOLC);
-    wp->RefreshDisplay();
-  }
-#endif /* NEW_OLC */
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpFAIFinishHeight"));
   if (wp) {
     wp->GetDataField()->Set(EnableFAIFinishHeight);
@@ -89,24 +81,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-#ifndef NEW_OLC
-//
-// REMEMBER TO FREE TOKENS WHEN SETTING NEWOLC PERMANENTLY
-//
-  wp = (WndProperty*)wf->FindByName(TEXT("prpOLCRules"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M633_ = "Sprint" 
-    dfe->addEnumText(gettext(TEXT("_@M633_")));
-	// LKTOKEN  _@M742_ = "Triangle" 
-    dfe->addEnumText(gettext(TEXT("_@M742_")));
-	// LKTOKEN  _@M176_ = "Classic" 
-    dfe->addEnumText(gettext(TEXT("_@M176_")));
-    dfe->Set(OLCRules);
-    wp->RefreshDisplay();
-  }
-#endif /* NEW_OLC */
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFinishMinHeight"));
   if (wp) {
@@ -187,25 +161,6 @@ bool dlgTaskRules(void){
       changed = true;
     }
   }
-
-#ifndef NEW_OLC
-  wp = (WndProperty*)wf->FindByName(TEXT("prpOLCRules"));
-  if (wp) {
-    if (OLCRules != wp->GetDataField()->GetAsInteger()) {
-      OLCRules = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryOLCRules, OLCRules);
-      changed = true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpOLCEnabled"));
-  if (wp) {
-    if (EnableOLC != (wp->GetDataField()->GetAsInteger()==1)) {
-      EnableOLC = (wp->GetDataField()->GetAsInteger()==1);
-      changed = true;
-    }
-  }
-#endif /* NEW_OLC */
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFinishMinHeight"));
   if (wp) {

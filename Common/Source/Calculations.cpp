@@ -35,11 +35,7 @@
 #include "ThermalLocator.h"
 #include "windanalyser.h"
 #include "Atmosphere.h"
-#ifdef NEW_OLC
 #include "ContestMgr.h"
-#else
-#include "OnLineContest.h"
-#endif /* NEW_OLC */
 #include "AATDistance.h"
 #include "NavFunctions.h" // used for team code
 #include "Calculations2.h"
@@ -58,18 +54,13 @@ using std::max;
 
 #include "utils/heapcheck.h"
 
-#ifdef NEW_OLC
 using std::min;
 using std::max;
-#endif /* NEW_OLC */
 
 //#define DEBUGTGATES	1
 //#define DEBUGATE	1
 
 WindAnalyser *windanalyser = NULL;
-#ifndef NEW_OLC
-OLCOptimizer olc;
-#endif /* NEW_OLC */
 AATDistance aatdistance;
 static DERIVED_INFO Finish_Derived_Info;
 static ThermalLocator thermallocator;
@@ -703,13 +694,9 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     #if ALPHADEBUG
     // StartupStore(_T("... ResetFlightStats\n"));
     #endif
-#ifdef NEW_OLC
     // It is better to reset it even if UseContestEngine() if false, because we might
     // change aircraft type during runtime. We never know.
     CContestMgr::Instance().Reset(Handicap);
-#else
-    olc.ResetFlight();
-#endif /* NEW_OLC */
     flightstats.Reset();
     aatdistance.Reset();
     CRUISE_EFFICIENCY = 1.0;
@@ -3250,10 +3237,6 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
 	termikLigaPoints = konst*(0.015*0.001*d1-(400.0/(0.001*d1))+12.0)*v1*3.6*100.0/(double)Handicap;
       }
     
-#ifndef NEW_OLC
-    Calculated->TermikLigaPoints = termikLigaPoints;
-#endif /* NEW_OLC */
-
     if(Basic->Time < LastTime) {
       LastTime = Basic->Time;
     } else if (Basic->Time-LastTime >=1.0) {
@@ -3984,20 +3967,6 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     }
   } else if ( ((AutoMcMode==0)||(AutoMcMode==2)) && is_final_glide) {
 
-#ifndef NEW_OLC
-    double time_remaining = Basic->Time-Calculated->TaskStartTime-9000;
-    if (EnableOLC 
-	&& (OLCRules==0) 
-	&& (Calculated->NavAltitude>Calculated->TaskStartAltitude)
-	&& (time_remaining>0)) {
-      
-      mc_new = MacCreadyTimeLimit(Basic, Calculated,
-				  Calculated->WaypointBearing,
-				  time_remaining,
-				  Calculated->TaskStartAltitude);
-      
-    } else
-#endif /* NEW_OLC */
       if (Calculated->TaskAltitudeDifference0>0) {
 	
       // only change if above final glide with zero Mc

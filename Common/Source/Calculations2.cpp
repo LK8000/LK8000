@@ -29,11 +29,7 @@
 #include "windanalyser.h"
 #include "Atmosphere.h"
 
-#ifdef NEW_OLC
 #include "ContestMgr.h"
-#else
-#include "OnLineContest.h"
-#endif /* NEW_OLC */
 #include "AATDistance.h"
 
 #include "NavFunctions.h" // used for team code
@@ -45,12 +41,8 @@ using std::min;
 using std::max;
 #endif
 
-#ifdef NEW_OLC
 using std::min;
 using std::max;
-#else
-extern OLCOptimizer olc;
-#endif /* NEW_OLC */
 
 int FastLogNum = 0; // number of points to log at high rate
 
@@ -99,15 +91,9 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static double SnailLastTime=0;
   static double LogLastTime=0;
   static double StatsLastTime=0;
-#ifndef NEW_OLC
-  static double OLCLastTime = 0;
-#endif /* NEW_OLC */
   double dtLog = 5.0;
   double dtSnail = 2.0;
   double dtStats = 60.0;
-#ifndef NEW_OLC
-  double dtOLC = 5.0;
-#endif /* NEW_OLC */
   double dtFRecord = 270; // 4.5 minutes (required minimum every 5)
 
   if(Basic->Time <= LogLastTime) {
@@ -119,11 +105,6 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if(Basic->Time <= StatsLastTime) {
     StatsLastTime = Basic->Time;
   }
-#ifndef NEW_OLC
-  if(Basic->Time <= OLCLastTime) {
-    OLCLastTime = Basic->Time;
-  }
-#endif /* NEW_OLC */
   if(Basic->Time <= GetFRecordLastTime()) {
     SetFRecordLastTime(Basic->Time);
   }
@@ -209,28 +190,10 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
       }
     }
 
-#ifdef NEW_OLC
     if(UseContestEngine() && Calculated->FreeFlying)
       CContestMgr::Instance().Add(new CPointGPS(static_cast<unsigned>(Basic->Time),
                                                 Basic->Latitude, Basic->Longitude,
                                                 static_cast<unsigned>(Basic->Altitude)));
-#else
-    if (Calculated->Flying && (Basic->Time - OLCLastTime >= dtOLC)) {
-      bool restart;      
-      restart = olc.addPoint(Basic->Longitude, 
-			     Basic->Latitude, 
-			     Calculated->NavAltitude,
-			     Calculated->WaypointBearing,
-			     Basic->Time-Calculated->TakeOffTime);
-      
-      if (restart && EnableOLC) {
-	Calculated->ValidFinish = false;
-	StartTask(Basic, Calculated, false, false);
-	Calculated->ValidStart = true;
-      }
-      OLCLastTime += dtOLC;
-    }
-#endif /* NEW_OLC */
   }
 }
 

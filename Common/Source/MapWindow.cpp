@@ -14,9 +14,6 @@
 #include "Cpustats.h"
 #include "MapWindow.h"
 #include "LKMapWindow.h"
-#ifndef NEW_OLC
-#include "OnLineContest.h"
-#endif /* NEW_OLC */
 #include "Utils.h"
 #include "Units.h"
 #include "Logger.h"
@@ -47,7 +44,7 @@
 using std::min;
 using std::max;
 #endif
-#if defined(LKAIRSPACE) || defined(NEW_OLC)
+#if defined(LKAIRSPACE)
 using std::min;
 using std::max;
 #endif
@@ -2493,9 +2490,7 @@ void MapWindow::RenderMapWindow(  RECT rc)
   // This is also calculating CalculateScreenBounds 0.0  and placing it inside MapWindow::screenbounds_latlon
   CalculateScreenPositions(Orig, rc, &Orig_Aircraft);
 
-  #ifdef NEW_OLC
   LKUpdateOlc();
-  #endif
 
   RenderMapWindowBg(hdcDrawWindow, rc, Orig, Orig_Aircraft);
 

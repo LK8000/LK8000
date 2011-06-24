@@ -17,7 +17,7 @@
 #include "externs.h"
 #include "InfoBoxLayout.h"
 #include "LKObjects.h"
-#if defined(LKAIRSPACE) || defined(NEW_OLC)
+#if defined(LKAIRSPACE)
 using std::min;
 using std::max;
 #endif

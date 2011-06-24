@@ -26,7 +26,7 @@
 #include "Task.h"
 
 #include "utils/heapcheck.h"
-#if defined(LKAIRSPACE) || defined(NEW_OLC)
+#if defined(LKAIRSPACE)
 using std::min;
 using std::max;
 #endif
@@ -2822,7 +2822,6 @@ void MapWindow::LKFormatAltDiff(const int wpindex, const bool wpvirtual, TCHAR *
 }
 
 
-#ifdef NEW_OLC
 // This is called by Draw thread, at each run every second. 
 // It is a simple interface to the OLC engine to make all results
 // globals, and cooked.
@@ -2837,4 +2836,3 @@ void MapWindow::LKUpdateOlc(void)
     loop = 0;
 }
 
-#endif

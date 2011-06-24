@@ -7,7 +7,6 @@
 */
 
 #include "options.h"
-#ifdef NEW_OLC
 
 #include "Trace.h"
 #include "lk8000.h"
@@ -200,4 +199,3 @@ void CTrace::Compress(unsigned maxSize /* = 0 */)
 }
 
 
-#endif /* NEW_OLC */

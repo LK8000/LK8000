@@ -13,9 +13,6 @@
 #include "Defines.h"
 
 #include "MapWindow.h"
-#ifndef NEW_OLC
-#include "OnLineContest.h"
-#endif /* NEW_OLC */
 #include "Utils.h"
 #include "lk8000.h"
 #include "LKUtils.h"
@@ -48,7 +45,7 @@
 
 #include "utils/heapcheck.h"
 
-#if defined(LKAIRSPACE) || defined(NEW_OLC)
+#if defined(LKAIRSPACE)
 using std::min;
 using std::max;
 #endif

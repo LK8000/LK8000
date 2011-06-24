@@ -8,7 +8,6 @@
 
 #include "StdAfx.h"
 #include "lk8000.h"
-#include "OnLineContest.h"
 #include "Utils.h"
 #include "McReady.h"
 #include <math.h>

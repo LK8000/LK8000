@@ -15,7 +15,7 @@
 #ifdef LKAIRSPACE
 #include "LKAirspace.h"
 #endif
-#if defined(LKAIRSPACE) || defined(NEW_OLC)
+#if defined(LKAIRSPACE)
 using std::min;
 using std::max;
 #else
