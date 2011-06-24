@@ -47,6 +47,7 @@ LK8000 potrafi pracować z plikami w formacie OpenAir (WinPilot). Pliki te powin
 Plik z dodatkowymi informacjami użytkownika na temat lądowisk.
 Pliki te powinny mieć rozszerzenie TXT i znajdować się w podkatalogu _Waypoints.
 
+# 108 OBSOLETED BY 1250 in 2.3
 @108
 Kontroluje filtrowanie stref dla celów prezentacji i ostrzegania. Przycisk filtru stref umożliwia dodatkowo filtrowanie prezentacji i/lub ostrzegania niezależnie dla każdej klasy stref.
 [Włączone] Wszystkie strefy są wyświetlane.
@@ -57,6 +58,7 @@ Kontroluje filtrowanie stref dla celów prezentacji i ostrzegania. Przycisk filt
 @109
 W trybie "Przytnij" definiuje wysokość powyżej której strefy powinny być odfiltrowane.
 
+# 110 OBSOLETED BY 1251 in 2.3
 @110
 Margines wysokości używany do filtrowanie stref w trybie "Auto" i "Pod".
 
@@ -344,8 +346,9 @@ Pole "UTC Offset" umożliwia ustawienie różnicy czasu pomiędzy czasem UTC a a
 Ten parametr określa jak mapa LK8000 ma reagować na pobudzenia użytkownika:
 [Włączona] Krótkie kliknięcie na mapie pokaże detale najbliższego PZ.
 [Wyłączona] Krótkie kliknięcie w górnej połowie mapy powiększy ją, a kliknięcie w dolnej połowie pomniejszy mapę.
-Domyślnie "Aktywna Mapa" i "Klawisze Wirtualne" są wyłączone, aby uzyskać szybszą reakcję na kliknięcia użytkownika.
+Domyślnie "Aktywna Mapa" jest wyłączona.
 
+# 179 REMOVED after v2.3
 @179
 Klawisze Wirtualne to 3 niewidoczne poziome klawisze umieszczone nad mapą. Przytrzymanie przez około 1 sekundę górnego z nich spowoduje powiększenie mapy, dolnego pomniejszenie, a środkowego aktywuje negatyw interfejsu.
 Gdy "Aktywna Mapa" jest włączona, włączenie "Klawiszy Wirtualnych" zapewnia jedyną możliwość szybkiej zmiany powiększenia mapy. W celu wybrania PZ należy bardzo krótko kliknąć, a dłuższe przytrzymanie uruchomi klawisz wirtualny. Jeszcze dłuższe naciśnięcie mapy wybierze strefę.
@@ -357,6 +360,7 @@ Na przykład, gest z lewej do prawej jest interpretowany jako PRZEJDŹ DO POPRZE
 Ten sam gest może być interpretowany odwrotnie (PRZEJDŹ DO NASTĘPNEJ STRONY). Tak działa tryb ODWRÓCONY.
 Domyślna wartość to ODWRÓCONY.
 
+# 181 REMOVED after 2.3
 @181
 Gdy ta opcja jest włączona, mapę można zablokować klikając na dolnym pasku nawigacyjnym. Po zablokowaniu mapa nie będzie odpowiadać na akcje powiększania czy wyboru PZ. Podwójne kliknięcie na mapie (NIE na pasku nawigacyjnym) odblokuje mapę.
 Ta funkcja może być przydatna pilotom paralotni, a domyślnie jest wyłączona.
@@ -421,6 +425,7 @@ Określa czy i jak rysowany na mapie jest zasięg lotu:
 Linia zasięgu lotu uwzględnia margines wysokości określony przez parametr "Wysokość terenu".
 Włączenie rysowania zasięgu lotu włącza także rysowanie przeszkód terenowych wewnątrz tego zasięgu. Gdy cel jest osiągalny pod względem wysokości i doskonałości, ale po drodze występują przeszkody terenowe, to w miejscu przeszkody pojawi się CZERWONY KRZYŻ. Dodatkowo przeszkoda oznaczona jest przez ramkę z wysokością brakującą do ominięcia przeszkody plus "Wysokość terenu".
 
+# 195 UNUSED SINCE 2.4
 @195
 Określa czy i jak ma być rysowany pasek dolotu:
 [Wyłączony] Pasek dolotu nie jest rysowany.
@@ -560,15 +565,18 @@ Okres czasu pomiędzy logowanymi punktami w locie prostoliniowym.
 @227
 Okres czasu pomiędzy logowanymi punktami w czasie krążenia w kominach.
 
+# 228 REMOVED after v2.3
 @228
 Określa czy animacja okien dialogowych powinna być rysowana podczas otwierania i zamykania tych okien.
 
 @229
 Określa czy wraz ze standardowym zasięgiem lotu powinny być rysowane dodatkowo okręgi lub łuki.
 
+# 230 REMOVED after v2.3
 @230
 Określa czy okna wiadomośći powinny być wyświetlane w środku, czy w lewym górnym narożniku ekranu.
 
+# 231 REMOVED after v2.3
 @231
 Określa styl w jakim rysowany na ekranie jest symbol wiatru:
 [Kerunek] Na ekranie rysowana jest tylko główka strzałki pokazująca kierunek wiatru.
@@ -579,14 +587,17 @@ Ilość wartości okna informacyjnego może być w zakresie 0-7, ale tylko kilka
 UWAGA: LK8000 wspiera tylko 5 wartości po prawej w trybie poziomym, oraz klasyczne linie na górze i dole ekranu w trybie pionowym.
 Dla innych geometrii LK8000 nie będzie działać prawidłowo.
 
+# 233 REMOVED after v2.3
 @233
 Współczynnik ryzyka STF określa, czy wraz z opadaniem statku powietrznego, wartość MacCready używana do obliczenia Speed To Fly powinna się zmniejszać w celu kompensacji ryzyka. 
 0.0 oznacza brak kompensacji, 1.0 skaluje wartość MC liniowo z wysokością.
 
+# 234 REMOVED after v2.3
 @234
 Gdy parametr jest włączony, nakazywana prędkość STF jest ustawiana na wartość MC przy braku pionowych ruchów powietrza.
 Gdy parametr jest wyłączony, nakazywana prędkość STF jest ustawiana na prędkość Delfina odpowiadającą prędkości MacCready z pionowymi ruchami powietrza.
 
+# 235 REMOVED after v2.3
 @235
 Określa w jaki sposób użytkownik wprowadza tekst (nazwę pliku, kod grupowy, itp).
 
@@ -1290,11 +1301,10 @@ Wysokość dolotu nad najlepsze lądowisko alternatywne.
 Radial lotniska domowego (jeśli jest ono ustawione).
 
 @879
-[Airspace Distance]
-AKTUALNIE NIE DZIAŁA.
-Odległość do najbliższej strefy nawet, gdy nie mieści się ona na mapie, lub nie jest wyświetlana. 
-Wartość 0 oznacza, że statek powietrzny jest aktualnie wewnątrz strefy.
-Przycisk menu "Najbliższa strefa" umożliwia zobaczenie więcej danych na temat tej strefy.
+[Airspace Horizontal Distance]
+Pozioma odległość do WYBRANEJ strefy. Aby WYBRAĆ strefę należy zaznaczyć ją na stronie 2.4 ze strefami oraz wybrać odpowiedni przycisk ze strony z detalami. Po wybraniu strefa będzie monitorowana przez to pole.
+Jeśli żadna strefa nie jest wybrana, LUB jeśli już jesteś WEWNĄTRZ wybranej strefy to pole będzie pokazywać ---.
+W przypadku stref FLY odległość jest obliczana przed wylotem z tej strefy.
 
 @880
 [Ext.Batt.Bank]
@@ -1415,6 +1425,22 @@ Suma punktów OLC CLASSIC i punktów FAI TRIANGLE.
 [OLC PLUS] przewidywane punkty
 Suma przewidywanych punktów OLC CLASSIC i przewidywanych punktów FAI TRIANGLE.
 
+@913
+[Current Flaps]
+Pokazuje aktualne optymalne ustawienie klap. Obliczenia bazują na rozszerzonym pliku biegunowej szybowca i aktualnym obciążeniu skrzydła.
+Aby dowiedzieć się jak stworzyć rozszerzony plik biegunowej zobacz przykładowy plik biegunowej w katalogu _Polars.
+
+@914
+[Airspace Vertical Distance]
+Pionowa odległość do WYBRANEJ strefy. Aby WYBRAĆ strefę należy zaznaczyć ją na stronie 2.4 ze strefami oraz wybrać odpowiedni przycisk ze strony z detalami. Po wybraniu strefa będzie monitorowana przez to pole.
+Ujemna wartość oznacza, że granica strefy jest pod, a dodatnia wartość, że granica jest nad tobą (tak jak w przypadku wysokości dolotu).
+Jeśli żadna strefa nie jest wybrana, LUB jeśli już jesteś WEWNĄTRZ wybranej strefy to pole będzie pokazywać ---.
+W przypadku stref FLY odległość jest obliczana przed wylotem z tej strefy.
+
+@915
+[Home Altitude Arrival]
+Wysokość dolotu do lotniska domowego. Obliczana dla aktualnego MC, używa Wysokość bezpieczną i Bezpieczny MC.
+
 
 #
 # END INFOBOXES 800 - 1199
@@ -1469,15 +1495,92 @@ Wartość wyświetlana jest razem z symbolem wskazującym na to co jest prezento
 Wybór typu statku powietrznego. Każdy z dostępnych typów posiada unikalne funkcjonalności. Więcej informacji na ten temat można znaleźć w instrukcji lub na stronie domowej projektu.
 Wszystkie funkcje po zmianie kategorii dostępne są dopiero po ponownym uruchomieniu LK.
 
+# 1206 OBSOLETED BY 1208 in 2.3
 @1206
 [Typ]
 Okno zawiera listę statków powietrznych obsługiwanych już przez LK8000. W celu użycia własnego pliku z biegunową należy wybrać specjalny typ "Plik z biegunową" i ustawić odpowiedni plik w następnej opcji.
 
+# 1207 UNUSED in 2.3
 @1207
 [Plik z biegunową]
 W przypadku, gdy w polu "Typ" wybrana jest opcja "Plik z biegunową", tutaj można podać plik z danymi dowolnego statku powietrznego.
 Pliki biegunowych statków powietrznych muszą znajdować się w podkatalogu _Polars.
 Tworzenie pliku z biegunową nie jest łatwe. Trzeba znać dokładne parametry opadania szybowca przy różnych prędkościach oraz wagę dla której te dane zostały zmierzone. Więcej informacji na ten temat można znaleźć w instrukcji LK8000.
+
+@1208
+[Typ]
+Zawiera listę statków powietrznych i skrzydeł o różnych doskonałościach.
+
+@1209
+[Okres powtarzania ostrzeżeń o strefach]
+Okres czasu po którym ostrzeżenia o strefach są powtarzane jeśli nie zostały zatwierdzone.
+Jeśli latasz w zabronionej strefie bez jej zatwierdzenia to po tym właśnie czasie ponownie pojawi się komunikat z ostrzeżeniem.
+
+@1210
+[Pionowa separacja od stref]
+Jeśli pionowa separacja od podstawy lub góry strefy spadnie poniżej tej wartości wtedy pojawi się żółte ostrzeżenie o strefie.
+Dotyczy to także sposobu rysowania ostrzeżeń o strefach na mapie.
+Jeśli pionowa separacja od strefy jest mniejsza od tej wartości wtedy na mapie zaraz nad symbolem szybowca pojawi się ikona z ostrzeżeniem.
+
+@1211
+[Czas komunikatu ostrzeżeń o strefach]
+Jeśli przez czas określonym tym parametrem pilot nie zakmnie okna ręcznie to okno komunikatu ostrzeżeń o strefach jest zamykane automatycznie.
+W oknie komunikatu odliczany jest czas do automatycznego zamknięcia okna.
+
+@1212
+[Etykiety ostrzeżeń o strefach na mapie]
+Włącza na mapie etykiety ostrzeżeń o strefach prezentujące nazwę strefy i pionową od nich separację.
+
+@1220
+[Konfiguracja Dolnego Paska]
+Włącza lub wyłącza poszczególne dolne paski tak, że nie będą one prezentowane podczas przewijania pasków.
+Jeśli wszystkie paski są wyłączone, NAW1 będzie pokazywany automatycznie.
+Podczas krążenia w kominie zawsze będzie się pokazywał pasek KOM0.
+
+@1221
+[Konfiguracja Stron Informacyjnych]
+Włącza lub wyłączą każdą ze stref w sekwencji przewijania.
+Jeśli wszystkie elementy w grupie stron stronie są wyłączone, wtedy ta grupa stron będzie pominięta.
+Wyłączona strona będzie ciągle dostępna przez klawisz użytkownika.
+UWAGA: W konfiguracjach nieszybowcowych (lotnie, samoloty) wyłączenie strony 1.5 Konkurs spowoduje także wyłączenie wszytkich obliczeń związanych z tymi konkursami. Jeśli konkursy mają być obliczane strona 1.5 MUSI być włączona. W konfiguracji szybowcowej konkursy są obliczane nawet jak ta strona jest wyłączona.
+
+@1250
+[Wyświetlane strefy]
+Kontroluje filtrowanie stref dla celów prezentacji i ostrzegania. Przycisk filtru stref umożliwia dodatkowo filtrowanie prezentacji i/lub ostrzegania niezależnie dla każdej klasy stref.
+[Włączone] Wszystkie strefy są wyświetlane.
+[Przytnij] Wyświetlane są tylko strefy poniżej wysokości przycięcia.
+[Auto] Wyświetlane są strefy będące w zakresie podanego marginesu wysokości od statku powietrznego (nad i pod).
+[Pod] Wyświetlane są wszystkie strefy pod statkiem powietrznym i z marginesem wysokości nad nim.
+
+@1251
+[Margines wysokości]
+Margines wysokości używany do filtrowanie stref w trybie "Auto" i "Pod". W "Auto" określa on margines wysokości pod i nad szybowcem dla ktorych strefy powinny być wyświetlane. W trybie "Pod" wyświetlane będą wszystkie strefy pod szybowcem i z określonym tutaj marginesem wysokości nad nim.
+
+@1252
+[Czas zatwierdzenia]
+Nawet jeśli strefa została zatwierdzona to po tym czasie znowu stanie się ona aktywna i będa mogły pojawić się ponowne okna z ostrzeżeniami.
+Pilot może chcieć być ponownie ostrzegany na przykład w czasie powrotu do domu i przelatując przez strefę którą zatwierdził z rana.
+Domyślnie strefa będzie ponownie aktywna po 15 minutach.
+
+@1253
+[Alarm Wysokości Maksymalnej]
+Definiuje maksymalną wysokość powyżej której powinien zostać uruchomiony Alarm.
+Alarm nie będzie powtórzony przez następne 60 sekund.
+Jeśli wysokość lotu została obniżona to po jednej minucie alarm zostanie powtórzony jeśli wysokość graniczna ponownie zostanie przekroczona.
+Aby wyłączyć alarm należy go ustawić na 0.
+Piloci szybowców powinni uważać, aby nie ustawić alarmu na wysokość mniejszą niż wysokość bezpieczeństwa ponieważ może to przeszkadzać w krytycznych fragmentach lotu.
+Każdy z alarmów może być powtórzony maksymalnie 30 razy. Po 30 razach alarm automatycznie się deaktywuje na resztę lotu.
+Komunikat na ekranie znika automatycznie po 12 sekundach.
+Każdy z alarmów ma swój odgłos, który może być zmieniony w katalogu _System _Sounds. Pliki odgłosów mają nazwy LK_ALARM_ALTx.WAV.
+Domyślna wartość to 0 (brak alarmu).
+
+# ex 195
+@1254
+Określa czy i jak ma być rysowany pasek dolotu:
+[Wyłączony] Pasek dolotu nie jest rysowany.
+[Następny PZ] Dolot jest pokazywany względem każdego z PZ zadania.
+[Meta] Dolot jest pokazywany zawsze względem mety zadania.
+Pasek zależnie od sytuacji może pokazywać 2 wartości. Pełna wstążka paska pokazuje wysokość dla aktualnego MC (nawet gdy mniejszy od "Bezpiecznego MC"), a pusta dla MC=0.
 
 @9999
 Pomoc dla tego elementu nie jest dostępna!
