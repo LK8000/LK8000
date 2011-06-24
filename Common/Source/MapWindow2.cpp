@@ -1533,11 +1533,13 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
     hdcbuffer = CreateCompatibleDC(hdc);
     hbbuffer = CreateCompatibleBitmap(hdc, rc.right - rc.left, rc.bottom - rc.top);
     hbbufferold = (HBITMAP)SelectObject(hdcbuffer, hbbuffer);
+    BitBlt(hdcbuffer, rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, NULL, rc.left, rc.top, BLACKNESS );
     SelectObject(hdcbuffer, GetStockObject(NULL_PEN));
   
     hdcstencil = CreateCompatibleDC(hdc);
     hbstencil = CreateCompatibleBitmap(hdcstencil, rc.right - rc.left, rc.bottom - rc.top);       // This will be monochrome!
     hbstencilold = (HBITMAP)SelectObject(hdcstencil, hbstencil);
+    BitBlt(hdcstencil, rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, NULL, rc.left, rc.top, BLACKNESS );
     SelectObject(hdcstencil, hAirspaceBorderPen);
     SelectObject(hdcstencil, GetStockObject(HOLLOW_BRUSH));
   }
