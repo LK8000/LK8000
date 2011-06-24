@@ -1042,3 +1042,12 @@ void MapWindow::DrawLKAlarms(HDC hDC, const RECT rc) {
 }
 
 
+void MSG_NotEnoughMemory(void) {
+
+  MessageBoxX(hWndMapWindow,
+    gettext(TEXT("_@M1663_")), // NOT ENOUGH MEMORY
+    gettext(TEXT("_@M1662")),  // SYSTEM ERROR
+    MB_OK|MB_ICONEXCLAMATION);
+
+}
+

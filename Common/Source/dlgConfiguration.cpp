@@ -1184,8 +1184,15 @@ static void OnWaypointNewClicked(WindowControl * Sender){
   edit_waypoint.Longitude = GPS_INFO.Longitude;
   edit_waypoint.FileNum = 0; // default, put into primary waypoint file
   edit_waypoint.Flags = 0;
-  edit_waypoint.Comment=(TCHAR*)malloc(100*sizeof(TCHAR)); //@ bugfix 101110    TODOTODO
+  edit_waypoint.Comment=(TCHAR*)malloc(100*sizeof(TCHAR));
+
+  extern void MSG_NotEnoughMemory(void);
+  if (edit_waypoint.Comment == (TCHAR *)NULL)
+	MSG_NotEnoughMemory();
+	return;
+  }
   _tcscpy(edit_waypoint.Comment,_T(""));
+
   edit_waypoint.Name[0] = 0;
   edit_waypoint.Details = 0;
   edit_waypoint.Number = NumberOfWayPoints;
