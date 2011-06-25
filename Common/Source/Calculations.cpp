@@ -1368,9 +1368,9 @@ void Flaps(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	double speed = 0.0;
 	if (GlidePolar::FlapsMass<=0) return; // avoid division by zero crashes
 	if (Basic->AirspeedAvailable) {
-		speed = (int)(SPEEDMODIFY*Basic->TrueAirspeed);
+		speed = (int)(SPEEDMODIFY*Basic->IndicatedAirspeed);
 	} else {
-		speed = (int)(SPEEDMODIFY*Calculated->TrueAirspeedEstimated);
+		speed = (int)(SPEEDMODIFY*Calculated->IndicatedAirspeedEstimated);
 	}
 
 	double massCorrectionFactor = sqrt(GlidePolar::GetAUW()/GlidePolar::FlapsMass);
