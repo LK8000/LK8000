@@ -1525,8 +1525,6 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
   bool borders_only = (GetAirSpaceFillType() == asp_fill_patterns_borders);
   HDC hdcbuffer = NULL;
   HBITMAP hbbufferold = NULL, hbbuffer = NULL;
-  HDC hdcstencil = NULL;
-  HBITMAP hbstencilold = NULL, hbstencil = NULL;
   
   if (borders_only) {
     // Prepare layers
@@ -1536,12 +1534,9 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
     BitBlt(hdcbuffer, rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, NULL, rc.left, rc.top, BLACKNESS );
     SelectObject(hdcbuffer, GetStockObject(NULL_PEN));
   
-    hdcstencil = CreateCompatibleDC(hdc);
-    hbstencil = CreateCompatibleBitmap(hdcstencil, rc.right - rc.left, rc.bottom - rc.top);       // This will be monochrome!
-    hbstencilold = (HBITMAP)SelectObject(hdcstencil, hbstencil);
-    BitBlt(hdcstencil, rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, NULL, rc.left, rc.top, BLACKNESS );
-    SelectObject(hdcstencil, hAirspaceBorderPen);
-    SelectObject(hdcstencil, GetStockObject(HOLLOW_BRUSH));
+    BitBlt(hDCMask, rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, NULL, rc.left, rc.top, BLACKNESS );
+    SelectObject(hDCMask, hAirspaceBorderPen);
+    SelectObject(hDCMask, GetStockObject(HOLLOW_BRUSH));
   }
   
   if (GetAirSpaceFillType() != asp_fill_border_only) {
@@ -1565,7 +1560,7 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
             // get brush, can be solid or a 1bpp bitmap
             SelectObject(hdcbuffer, hAirspaceBrushes[iAirspaceBrush[airspace_type]]);
             (*itr)->Draw(hdcbuffer, rc, true);
-            (*itr)->Draw(hdcstencil, rc, false);
+            (*itr)->Draw(hDCMask, rc, false);
         }
       }//for
     } else {
@@ -1605,7 +1600,7 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
                   AirspaceCircle[i].Screen.x ,
                   AirspaceCircle[i].Screen.y ,
                   AirspaceCircle[i].ScreenR ,rc, true, true);
-            Circle(hdcstencil,
+            Circle(hDCMask,
                   AirspaceCircle[i].Screen.x ,
                   AirspaceCircle[i].Screen.y ,
                   AirspaceCircle[i].ScreenR ,rc, true, false);
@@ -1641,7 +1636,7 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
             ClipPolygon(hdcbuffer,
                         AirspaceScreenPoint+AirspaceArea[i].FirstPoint,
                         AirspaceArea[i].NumPoints, rc, true);
-            ClipPolygon(hdcstencil,
+            ClipPolygon(hDCMask,
                         AirspaceScreenPoint+AirspaceArea[i].FirstPoint,
                         AirspaceArea[i].NumPoints, rc, false);
           } else {
@@ -1668,7 +1663,7 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
         TransparentImage(hdcbuffer,
                 rc.left,rc.top,
                 rc.right-rc.left,rc.bottom-rc.top,
-                hdcstencil,
+                hDCMask,
                 rc.left,rc.top,
                 rc.right-rc.left,rc.bottom-rc.top,
                 RGB_WHITE
@@ -1685,7 +1680,7 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
         TransparentBlt(hdcbuffer,
                       rc.left,rc.top,
                       rc.right-rc.left,rc.bottom-rc.top,
-                      hdcstencil,
+                      hDCMask,
                       rc.left,rc.top,
                       rc.right-rc.left,rc.bottom-rc.top,
                       RGB_WHITE
@@ -1808,9 +1803,6 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
   
   if (borders_only) {
     // Free up GDI resources
-    SelectObject(hdcstencil, hbstencilold);
-    DeleteObject(hbstencil);
-    DeleteDC(hdcstencil);
     SelectObject(hdcbuffer, hbbufferold);
     DeleteObject(hbbuffer);
     DeleteDC(hdcbuffer);
