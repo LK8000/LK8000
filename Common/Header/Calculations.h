@@ -209,7 +209,6 @@ typedef struct _DERIVED_INFO
   double GPSVarioTE;
   double TaskTimeToGoTurningNow;
   double TotalHeightClimb;
-  double DistanceVario;
   double GliderSinkRate;
   double Gload;
   double Essing;

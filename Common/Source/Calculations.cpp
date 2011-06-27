@@ -924,33 +924,6 @@ void AverageClimbRate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 }
 
 
-#ifdef DEBUGTASKSPEED
-void DebugTaskCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
-{
-  if ((Calculated->TaskStartTime>0) 
-      && (Basic->Time-Calculated->TaskStartTime>0)) {
-      if (Calculated->Flying) {
-        
-        double effective_mc = EffectiveMacCready(Basic, Calculated);
-        DebugStore("%g %g %g %g %g %g %g %g %g %g %d %g %g # taskspeed\r\n",
-                Basic->Time-Calculated->TaskStartTime,
-                Calculated->TaskDistanceCovered,
-                Calculated->TaskDistanceToGo,
-                Calculated->TaskAltitudeRequired,
-                Calculated->NavAltitude,
-                Calculated->TaskSpeedAchieved,
-                Calculated->TaskSpeed,
-                Calculated->TaskSpeedInstantaneous,
-                MACCREADY,
-                effective_mc,
-                ActiveWayPoint,
-                Calculated->DistanceVario,
-                Calculated->GPSVario);
-      }
-    }
-}
-#endif
-
 extern bool TargetDialogOpen;
 
 BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
@@ -1094,7 +1067,7 @@ void Vario(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   static double LastTime = 0;
   static double LastAlt = 0;
   static double LastAltTE = 0;
-  static double h0last = 0;
+  // static double h0last = 0;
   double myTime;  // 091201
 
   myTime=Basic->Time; // 091201 
@@ -1111,12 +1084,12 @@ void Vario(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     Calculated->GPSVario = Gain / dT;
     Calculated->GPSVarioTE = Gain;
 
-    double dv = (Calculated->TaskAltitudeDifference-h0last)
-      /(myTime-LastTime); // 091201
-    Calculated->DistanceVario = LowPassFilter(Calculated->DistanceVario, 
-                                              dv, 0.1);
+    // double dv = (Calculated->TaskAltitudeDifference-h0last)
+      // /(myTime-LastTime); // 091201
+    // Calculated->DistanceVario = LowPassFilter(Calculated->DistanceVario, 
+      //                                        dv, 0.1);
 
-    h0last = Calculated->TaskAltitudeDifference;
+    // h0last = Calculated->TaskAltitudeDifference;
 
     LastAlt = Calculated->NavAltitude;
     LastAltTE = LastAlt;

@@ -829,7 +829,9 @@ int index;
     }
     break;
   case 64:
-    Value = LIFTMODIFY*CALCULATED_INFO.DistanceVario;
+    // UNUSED
+    // Value = LIFTMODIFY*CALCULATED_INFO.DistanceVario;
+    Value=999;
     if (ActiveWayPoint>=1) {
       Valid = ValidTaskPoint(ActiveWayPoint);
     } else {

@@ -1625,20 +1625,6 @@ goto_bearing:
 			}
 			break;
 
-		// B64
-		case LK_VARIO_DIST:
-			wsprintf(BufferValue,_T(NULLMEDIUM));
-			if ( ActiveWayPoint >=1) {
-				if ( ValidTaskPoint(ActiveWayPoint) ) {
-					value = LIFTMODIFY*DerivedDrawInfo.DistanceVario;
-					_stprintf(BufferValue,varformat,value);
-					valid=true;
-				}
-			}
-			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			wsprintf(BufferUnit, TEXT("%s"),Units::GetVerticalSpeedName());
-			break;
-
 
 		// B59
 		case LK_SPEEDTASK_INST:
@@ -2662,12 +2648,14 @@ olc_score:
 			wsprintf(BufferTitle, TEXT(""));
 			break;
 		case LK_ERROR:
+		case LK_RESERVED5:
 			// let it be shown entirely to understand the problem
 			valid=true;
 			wsprintf(BufferValue, TEXT("000"));
 			wsprintf(BufferUnit, TEXT("e"));
 			wsprintf(BufferTitle, TEXT("Err"));
 			break;
+
 		default:
 			valid=false;
 			wsprintf(BufferValue, TEXT(NULLMEDIUM));

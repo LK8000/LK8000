@@ -311,7 +311,7 @@ extern short ModeTableTop[LKMODE_TOP+1];
 #define LK_SPEEDTASK_ACH	61		//
 #define LK_AA_DELTATIME		62		//
 #define LK_TC_ALL		63		// Average of all thermals so far
-#define LK_VARIO_DIST		64		//
+#define LK_RESERVED5		64		// UNUSED, AVAILABLE
 #define LK_BATTERY		65		//
 #define LK_FIN_GR		66		//
 #define LK_ALTERNATESGR		67		// not a mistake: let it here before the alternates GR

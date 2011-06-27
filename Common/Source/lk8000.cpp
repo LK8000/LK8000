@@ -974,8 +974,10 @@ void FillDataOptions()
 	SetDataOption(62, ugNone,           TEXT("_@M1125_"), TEXT("_@M1126_"), new FormatterAATTime(TEXT("%2.0f")), NoProcessing, 28, 18);
 	// LKTOKEN  _@M1127_ = "Thermal All", _@M1128_ = "Th.All"
 	SetDataOption(63, ugVerticalSpeed,  TEXT("_@M1127_"), TEXT("_@M1128_"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 8, 2);
-	// LKTOKEN  _@M1129_ = "Distance Vario", _@M1130_ = "DVario"
-	SetDataOption(64, ugVerticalSpeed,  TEXT("_@M1129_"), TEXT("_@M1130_"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 8, 2);
+
+	// LKTOKEN  _@M1129_ = "Distance Vario", _@M1130_ = "DVario"  // REMOVED NO MORE  DISTANCE VARIO TO BER REMOVED
+	SetDataOption(64, ugVerticalSpeed,  TEXT("_Reserved 5"), TEXT("Rsrv5"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 8, 2);
+
 	// LKTOKEN  _@M1131_ = "Battery Percent", _@M1132_ = "Battery"
 	SetDataOption(65, ugNone,           TEXT("_@M1131_"), TEXT("_@M1132_"), new InfoBoxFormatter(TEXT("%2.0f%%")), NoProcessing, 49, 26);
 	// LKTOKEN  _@M1133_ = "Task Req.Efficiency", _@M1134_ = "TskReqE"

@@ -1142,6 +1142,7 @@ _@M1125_ "AA Delta Time"
 _@M1126_ "AAdT"
 _@M1127_ "Thermal All"
 _@M1128_ "Th.All"
+# 1129 and 1130 unused, can be used again
 _@M1129_ "Distance Vario"
 _@M1130_ "DVario"
 _@M1131_ "Battery Percent"
