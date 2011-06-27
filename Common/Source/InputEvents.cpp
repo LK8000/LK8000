@@ -1996,7 +1996,6 @@ void InputEvents::eventService(const TCHAR *misc) {
 	_stprintf(TempSpeed, TEXT("%.0f %s"), CALCULATED_INFO.TaskStartSpeed*TASKSPEEDMODIFY, Units::GetTaskSpeedName());
 
 	TCHAR TempAll[120];
-	// _stprintf(TempAll, TEXT("\r\nAltitude: %s\r\nSpeed:%s\r\nTime: %s"), TempAlt, TempSpeed, TempTime); REMOVE FIXV2
 	_stprintf(TempAll, TEXT("\r\n%s: %s\r\n%s:%s\r\n%s: %s"),
 		// Altitude
 		gettext(TEXT("_@M89_")),
@@ -2030,7 +2029,6 @@ void InputEvents::eventService(const TCHAR *misc) {
 
 	TCHAR TempAll[180];
 
-	//_stprintf(TempAll, TEXT("\r\nAltitude: %s\r\nSpeed:%s\r\nTime: %s\r\nTask Speed: %s"),  REMOVE FIXV2
 	_stprintf(TempAll, TEXT("\r\n%s: %s\r\n%s:%s\r\n%s: %s\r\n%s: %s"),
 	// Altitude
 	gettext(TEXT("_@M89_")),
@@ -2390,7 +2388,6 @@ void InputEvents::eventNearestAirspaceDetails(const TCHAR *misc) {
       && (CALCULATED_INFO.NavAltitude >= AirspaceArea[i].Base.Altitude)) {
 
     _stprintf(text,
-              // TEXT("Inside airspace: %s\r\n%s\r\nExit: %s\r\nBearing %d") TEXT(DEG)TEXT("\r\n"),  REMOVE FIXV2
               TEXT("%s: %s\r\n%s\r\n%s: %s\r\n%s %d") TEXT(DEG)TEXT("\r\n"), 
 		gettext(TEXT("_@M869_")), // Inside airspace
               szTitleBuffer, 
@@ -2401,7 +2398,6 @@ void InputEvents::eventNearestAirspaceDetails(const TCHAR *misc) {
               (int)nearestbearing);
   } else {
     _stprintf(text,
-	      // TEXT("Nearest airspace: %s\r\n%s\r\nDistance: %s\r\nBearing %d") TEXT(DEG)TEXT("\r\n"),  REMOVE FIXV2
 	      TEXT("%s: %s\r\n%s\r\n%s: %s\r\n%s %d") TEXT(DEG)TEXT("\r\n"), 
 		gettext(TEXT("_@M871_")), // Nearest airspace
 	      szTitleBuffer, 

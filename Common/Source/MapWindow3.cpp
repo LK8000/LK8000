@@ -210,12 +210,6 @@ void MapWindow::DrawHeading(HDC hdc, POINT Orig, RECT rc ) {
    if (zoom.Scale()>5 || mode.Is(MapWindow::Mode::MODE_CIRCLING)) return;
    POINT p2;
 
-   #if 0
-   if ( !( DisplayOrientation == TRACKUP || DisplayOrientation == NORTHCIRCLE || DisplayOrientation == TRACKCIRCLE )) return;
-   double tmp = 12000*zoom.ResScaleOverDistanceModify();
-   p2.x=Orig.x;
-   p2.y=Orig.y-(int)tmp;
-   #else
    double tmp = 12000*zoom.ResScaleOverDistanceModify();
    if ( !( DisplayOrientation == TRACKUP || DisplayOrientation == NORTHCIRCLE || DisplayOrientation == TRACKCIRCLE )) {
 	double trackbearing = DrawInfo.TrackBearing;
@@ -225,7 +219,6 @@ void MapWindow::DrawHeading(HDC hdc, POINT Orig, RECT rc ) {
 	p2.x=Orig.x;
 	p2.y=Orig.y-(int)tmp;
    }
-   #endif
 
    if (BlackScreen)
 	   _DrawLine(hdc, PS_SOLID, NIBLSCALE(1), Orig, p2, RGB_INVDRAW, rc); // 091109
@@ -407,7 +400,6 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
   LKWriteText(hdc, Buffer, middlex, contenttop+(textSize.cy*1) , 0, WTMODE_OUTLINED, WTALIGN_CENTER,RGB_AMBER, false);
 
 
-  //_stprintf(Buffer,TEXT("Click on center screen to begin")); // REMOVE FIXV2
   _stprintf(Buffer,gettext(TEXT("_@M874_"))); // Click on center screen to begin
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
   LKWriteText(hdc, Buffer, middlex, ((rc.bottom-rc.top)-textSize.cy)/2 , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_SWHITE, false);

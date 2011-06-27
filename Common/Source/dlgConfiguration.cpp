@@ -3770,17 +3770,6 @@ void dlgConfigurationShowModal(void){
     }
   }
 
-  #if 0 // REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceWarnings"));
-  if (wp) {
-    if (AIRSPACEWARNINGS != wp->GetDataField()->GetAsInteger()) {
-      AIRSPACEWARNINGS = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryAirspaceWarning,(DWORD)AIRSPACEWARNINGS);
-      changed = true;
-    }
-  }
-  #endif
-
 #ifdef LKAIRSPACE
 #else
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningTime"));

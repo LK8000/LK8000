@@ -115,7 +115,6 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
   HPEN thinBlackPen = LKPen_Black_N1;
   POINT Arrow[5];
 
-  //TCHAR buffer[50]; REMOVE
   TCHAR lbuffer[50];
 
   hpold = (HPEN)SelectObject(hDC, thinBlackPen);

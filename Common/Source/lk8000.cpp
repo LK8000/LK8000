@@ -286,8 +286,6 @@ double SAFETYALTITUDEARRIVAL = 300;
 double SAFETYALTITUDETERRAIN = 50;
 double SAFTEYSPEED = 50.0;
 
-// polar info
-// int              POLARID = 0; REMOVE 110416
 double POLAR[POLARSIZE] = {0,0,0};
 double POLARV[POLARSIZE] = {21,27,40};
 double POLARLD[POLARSIZE] = {33,30,20};
@@ -975,7 +973,6 @@ void FillDataOptions()
 	// LKTOKEN  _@M1127_ = "Thermal All", _@M1128_ = "Th.All"
 	SetDataOption(63, ugVerticalSpeed,  TEXT("_@M1127_"), TEXT("_@M1128_"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 8, 2);
 
-	// LKTOKEN  _@M1129_ = "Distance Vario", _@M1130_ = "DVario"  // REMOVED NO MORE  DISTANCE VARIO TO BER REMOVED
 	SetDataOption(64, ugVerticalSpeed,  TEXT("_Reserved 5"), TEXT("Rsrv5"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 8, 2);
 
 	// LKTOKEN  _@M1131_ = "Battery Percent", _@M1132_ = "Battery"
@@ -3164,34 +3161,16 @@ void Shutdown(void) {
   
   DeleteCriticalSection(&CritSec_EventQueue);
   csEventQueueInitialized = false;
-  #if ALPHADEBUG
-  StartupStore(TEXT(". Deleted EventQueue%s"),NEWLINE); // REMOVE 101121
-  #endif
   DeleteCriticalSection(&CritSec_TaskData);
   csTaskDataInitialized = false;
-  #if ALPHADEBUG
-  StartupStore(TEXT(". Deleted TaskData%s"),NEWLINE); // REMOVE 101121
-  #endif
   DeleteCriticalSection(&CritSec_FlightData);
   csFlightDataInitialized = false;
-  #if ALPHADEBUG
-  StartupStore(TEXT(". Deleted FlightData%s"),NEWLINE); // REMOVE 101121
-  #endif
   DeleteCriticalSection(&CritSec_NavBox);
   csNavBoxInitialized = false;
-  #if ALPHADEBUG
-  StartupStore(TEXT(". Deleted NavBox%s"),NEWLINE); // REMOVE 101121
-  #endif
   DeleteCriticalSection(&CritSec_Comm);
   csCommInitialized = false;
-  #if ALPHADEBUG
-  StartupStore(TEXT(". Deleted Comm%s"),NEWLINE); // REMOVE 101121
-  #endif
   DeleteCriticalSection(&CritSec_TerrainDataCalculations);
   csTerrainDataGraphicsInitialized = false;
-  #if ALPHADEBUG
-  StartupStore(TEXT(". Deleted TerrainData%s"),NEWLINE); // REMOVE 101121
-  #endif
   DeleteCriticalSection(&CritSec_TerrainDataGraphics);
   csTerrainDataCalculationsInitialized = false;
 
@@ -4421,12 +4400,6 @@ void StartupStore(const TCHAR *Str, ...)
   static bool initialised = false;
   if (!initialised) {
 	LocalPath(szFileName, TEXT(LKF_RUNLOG));
-  	#if 0
-	startupStoreFile = _tfopen(szFileName, TEXT("wb")); 100422
-	if (startupStoreFile) {
-		fclose(startupStoreFile);
-	}
-  	#endif
 	initialised = true;
   } 
 

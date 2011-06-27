@@ -1176,8 +1176,6 @@ public:
     rect_visible.bottom = min((long)MapWindow::MapRectBig.bottom,
                               (long)(MapWindow::MapRect.bottom+(long)epx*dtquant))-orig.y;
 
-     // StartupStore(_T(" vistop=%d visbot=%d  Y0=%d Y1=%d origy=%d \n"),rect_visible.top, rect_visible.bottom,Y0,Y1,orig.y); REMOVE
- 
     FillHeightBuffer(X0-orig.x, Y0-orig.y, X1-orig.x, Y1-orig.y);
 
     DisplayMap->Unlock();
@@ -1316,8 +1314,6 @@ void Slope(const int sx, const int sy, const int sz) {
   const BGRColor* oColorBuf = colorBuf+64*256;
   BGRColor* imageBuf = sbuf->GetBuffer();
   if (!imageBuf) return;
-
-// StartupStore(_T("... ciys=%d epx=%d iysbottom=%d\n"),ciys,iepx,iysbottom); // REMOVE
 
   unsigned short h;
 

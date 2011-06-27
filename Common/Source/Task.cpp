@@ -793,14 +793,12 @@ void guiStartLogger(bool noAsk) {
 		return;
 	}
 	TCHAR TaskMessage[1024];
-	// _tcscpy(TaskMessage,TEXT("Start Logger With Declaration\r\n")); // REMOVE FIXV2
 	_tcscpy(TaskMessage,gettext(TEXT("_@M876_"))); // Start Logger With Declaration\r\n")); 
 	_tcscat(TaskMessage,_T("\r\n"));
 	for(i=0;i<MAXTASKPOINTS;i++)
 	{
 		if(Task[i].Index == -1)
 		{
-			// if(i==0) _tcscat(TaskMessage,TEXT("None")); REMOVE FIXV2
 			if(i==0) _tcscat(TaskMessage,gettext(TEXT("_@M479_"))); // None
 			Debounce(); 
 			break;

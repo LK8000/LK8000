@@ -235,7 +235,6 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 
 	altdiff= bc.altitude[bcold] - bc.altitude[bc.start];
 
-	// StartupStore(_T("... bcold=%d bcstart=%d  old-start=%d\n"), bcold, bc.start, bcold-bc.start); // REMOVE
 	// if ( bc.valid == true ) {
 	// bcsize<=0  should NOT happen, but we check it for safety
 	if ( (bc.valid == true) && bc.size>0 ) {
@@ -277,6 +276,7 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 }
 
 #if 0
+// Example code used for rotary buffering
 bool InitFilterBuffer(ifilter_s *buf, short bsize) {
 short i;
 	if (bsize <3 || bsize>RASIZE) return false;
@@ -451,10 +451,6 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		yup=(short)(sizeup/2.7)+MapWindow::MapRect.top;
 		ydown=(short)(MapWindow::MapRect.bottom-(sizeup/2.7));
 	}
-//	TCHAR buf[100];  VENTA REMOVE
-//	wsprintf(buf,_T("sizeup=%d BottomSize=%d yup=%d ydown=%d"),
-//		sizeup, BottomSize, yup, ydown);
-//	DoStatusMessage(buf);
 
 	#ifdef DEBUG_PROCVK
 	TCHAR buf[100];

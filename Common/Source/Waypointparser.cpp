@@ -108,8 +108,6 @@ static bool WaypointInTerrainRange(WAYPOINT *List) {
       TCHAR sTmp[250];
       int res;
 
-      //_stprintf(sTmp, geTText(TEXT("Waypoint #%d \"%s\" \r\nout of Terrain bounds\r\n\r\nLoad anyway?")), REMOVE 101209
-
       _stprintf(sTmp, _T("Waypoint #%d \"%s\" \r\n%s\r\n\r\n%s"), 
                 List->Number, List->Name,
 	// LKTOKEN  _@M837_ = "out of Terrain bound" 
@@ -371,7 +369,6 @@ goto_inloop:
 
 			if ( (_tcscmp(new_waypoint->Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint->Number==RESWP_ID)) {
 				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
-				Sleep(1000); // REMOVE TODO 
 				memcpy(WayPointList,new_waypoint,sizeof(WAYPOINT));
 				continue;
 			}
@@ -392,7 +389,6 @@ goto_inloop:
 		if (ParseCUPWayPointString(nTemp2String, new_waypoint)) {
 			if ( (_tcscmp(new_waypoint->Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint->Number==RESWP_ID)) {
 				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
-				Sleep(1000); // REMOVE TODO 
 				memcpy(WayPointList,new_waypoint,sizeof(WAYPOINT));
 				continue;
 			}
@@ -410,7 +406,6 @@ goto_inloop:
 		if (ParseCOMPEWayPointString(nTemp2String, new_waypoint)) {
 			if ( (_tcscmp(new_waypoint->Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint->Number==RESWP_ID)) {
 				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
-				Sleep(1000); // REMOVE TODO 
 				memcpy(WayPointList,new_waypoint,sizeof(WAYPOINT));
 				continue;
 			}
@@ -1601,7 +1596,6 @@ void AddReservedWaypoints()
 	if ( WayPointList[RESWP_TAKEOFF].Comment == NULL) {
 		WayPointList[RESWP_TAKEOFF].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
 	}
-		else StartupStore(_T("......... AddReserved TAKEOFF comment non empty!\n")); // 101102 TODO REMOVE
 	_tcscpy(WayPointList[RESWP_TAKEOFF].Comment,_T("WAITING FOR GPS POSITION")); // 100227
 	WayPointList[RESWP_TAKEOFF].Zoom=0;
 	WayPointList[RESWP_TAKEOFF].Reachable=FALSE;
@@ -2075,7 +2069,6 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   }
   // p points to delimiter
 
-  // StartupStore(_T("i=%d p=%d%s"),i,p,NEWLINE); REMOVE
   // latitude from i to i+12, starting from i counts 13
   TCHAR tLatitude[16];
   if ( (p-i)>15 ) {
@@ -2128,7 +2121,6 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   }
   // p points to delimiter
 
-  //StartupStore(_T("i=%d p=%d%s"),i,p,NEWLINE); REMOVE
   TCHAR tLongitude[16];
   if ( (p-i)>15 ) {
 	#ifdef COMPEDEBUG
@@ -2184,7 +2176,6 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
 	#endif
 	return false;
   }
-  //StartupStore(_T(".... ok ......%s"),NEWLINE); REMOVE
 
   // we are now on the first digit of altitude
   // search for space delimiter
@@ -2202,7 +2193,6 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
   }
   // p points to space after altitude
 
-  //StartupStore(_T("i=%d p=%d%s"),i,p,NEWLINE); REMOVE
   TCHAR tAltitude[16];
   if ( (p-i)>15 ) {
 	#ifdef COMPEDEBUG

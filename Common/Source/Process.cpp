@@ -1016,44 +1016,6 @@ int index;
 		Valid=true;
 	}
     break;
-/* REMOVE
-  case 75:
-	Valid=false;
-	if ( ValidWayPoint(Alternate1)) {
-              Value=ALTITUDEMODIFY*WayPointCalc[Alternate1].AltArriv;
-              if ( (Value >ALTDIFFLIMIT) && (Value <9999) ) Valid=true;
-	}
-    break;
-  case 76:
-	Valid=false;
-	if ( ValidWayPoint(Alternate2)) {
-              Value=ALTITUDEMODIFY*WayPointCalc[Alternate2].AltArriv;
-              if ( (Value >ALTDIFFLIMIT) && (Value <9999) ) Valid=true;
-	}
-    break;
-  case 77:
-	Valid=false;
-	if ( ValidWayPoint(BestAlternate)) {
-              Value=ALTITUDEMODIFY*WayPointCalc[BestAlternate].AltArriv;
-              if ( (Value >ALTDIFFLIMIT) && (Value <9999) ) Valid=true;
-	}
-    break;
-*/
-
-/*
-  case xx: // termik liga points
-    if (CALCULATED_INFO.TermikLigaPoints != 0)
-      {
-	Value = CALCULATED_INFO.TermikLigaPoints;
-	Valid = true;
-      }
-    else
-      {
-	Value = 0.0;
-	Valid = false;
-      }
-    break;
-*/
 
   case LK_EXP1:
         Value = Experimental1/1000;
@@ -1306,7 +1268,6 @@ TCHAR *FormatterAlternate::RenderTitle(int *color) {
  * Currently even if set, colors are not used.
  */
 TCHAR *FormatterAlternate::Render(int *color) {
- //int active=ActiveAlternate; REMOVE
   LockTaskData();
   if(Valid && ValidWayPoint(ActiveAlternate)) {
 	switch (WayPointCalc[ActiveAlternate].VGR ) {
@@ -1329,7 +1290,6 @@ TCHAR *FormatterAlternate::Render(int *color) {
 			break;
 	}
 
-//	Value=WayPointCalc[ActiveAlternate].GR;    BUGFIX 090918
 
 	_stprintf(Text,Format,Value);
   } else {

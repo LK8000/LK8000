@@ -215,14 +215,6 @@ static void SetValues(void) {
 	wf->SetCaption(capbuffer);
   }
 
-  #if 0	// REMOVE 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpName"));
-  if (wp) {
-    wp->SetText(airspace_copy.Name());
-    wp->RefreshDisplay();
-  }
-  #endif
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpType"));
   if (wp) {
 	if (airspace_copy.Flyzone()) {
@@ -360,20 +352,6 @@ static void SetValues(void) {
     }
     wb->Redraw();
   }
-
-  #if 0 // REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStatus"));
-  if (wp) {
-    if (airspace_copy.Enabled()) {
-      wp->SetText(gettext(TEXT("_@M1643_"))); // ENABLED
-    } else {
-      wp->SetText(gettext(TEXT("_@M1600_"))); // DISABLED
-    }
-    wp->RefreshDisplay();
-  }
-  #endif
-
-
 
 }
 

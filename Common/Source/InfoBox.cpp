@@ -51,7 +51,6 @@ COLORREF InfoBox::inv_magentaColor = RGB(0xff,0x00,0xff); //VENTA2
 static COLORREF fgColor = RGB_BLACK;
 static COLORREF bkColor = RGB_WHITE;
 static COLORREF bdColor = RGB_MIDDLEGREY;  
-//static DWORD lastErr; REMOVE
 static HBRUSH hBrushDefaultBackGround;
 static HBRUSH hBrushDefaultBackGroundSel;
 static HPEN hPenDefaultBorder;

@@ -77,14 +77,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  #if 0 // REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMessageRepeatTime"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(AirspaceWarningRepeatTime/60);
-    wp->RefreshDisplay();
-  }
-  #endif
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningVerticalMargin"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(AirspaceWarningVerticalMargin*ALTITUDEMODIFY));
@@ -162,16 +154,6 @@ void dlgAirspaceWarningParamsShowModal(void){
     }
   }
 
-  #if 0 // REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMessageRepeatTime"));
-  if (wp) {
-    if (AirspaceWarningRepeatTime != (wp->GetDataField()->GetAsInteger()*60)) {
-      AirspaceWarningRepeatTime = wp->GetDataField()->GetAsInteger()*60;
-      SetToRegistry(szRegistryAirspaceWarningRepeatTime, (DWORD)AirspaceWarningRepeatTime);
-      changed = true;
-    }
-  }
-  #endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningVerticalMargin"));
   if (wp) {

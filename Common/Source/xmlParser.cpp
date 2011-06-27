@@ -793,13 +793,11 @@ int XMLNode::ParseXMLElement(void *pa)
     }
 
  
-//   StartupStore(_T("....  parseXMLE before while\n")); // 100102 REMOVE
     // Iterate through the tokens in the document
     while(TRUE)
     {
         // Obtain the next token
         token = GetNextToken(pXML, &cbToken, &type);
-//    StartupStore(_T("....  parseXMLE afterGetNextToken\n")); // 100102 REMOVE
 
         if (type != eTokenError)
         {
@@ -1247,7 +1245,6 @@ XMLNode XMLNode::parseString(LPCTSTR lpszXML, LPCTSTR tag,
             pResults->nLine=0;
             pResults->nColumn=0;
         }
-//	StartupStore(_T("...... parseString 0\n")); // 100102 REMOVE
         return emptyXMLNode;
     }
     static struct ClearTag tags[] =
@@ -1266,12 +1263,10 @@ XMLNode XMLNode::parseString(LPCTSTR lpszXML, LPCTSTR tag,
     xml.lpXML = lpszXML;
     xml.pClrTags = tags;
 
-//	StartupStore(_T("...... parseString 1\n")); // 100102 REMOVE
     // Create header element
     xnode.ParseXMLElement(&xml); // 100102 CRASH here
     error = xml.error;
 
-	//StartupStore(_T("...... parseString 2\n")); // 100102 REMOVE
     // If an error occurred
     if (error == eXMLErrorNone)
     {
@@ -1316,7 +1311,6 @@ XMLNode XMLNode::parseString(LPCTSTR lpszXML, LPCTSTR tag,
             CountLinesAndColumns(xml.lpXML, xml.nIndex, pResults);
         }
     }
-	//StartupStore(_T("...... parseString end\n")); // 100102 REMOVE
     return xnode;
 }
 

@@ -282,7 +282,6 @@ bool dlgAirspaceShowModal(bool coloredit){
   // now retrieve back the properties...
   if (changed) {
     StoreRegistry();
-    // DoStatusMessage(TEXT("Configuration saved")); // REMOVE FIXV2
     DoStatusMessage(gettext(TEXT("_@M877_"))); // Configuration saved
   };
 

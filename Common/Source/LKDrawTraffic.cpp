@@ -416,7 +416,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   SelectObject(hdc, LK8InfoBigFont); // Text font for Nearest
 
   #ifdef DEBUG_LKT_DRAWTRAFFIC
-  TCHAR v2buf[100]; // REMOVE VENTA
+  TCHAR v2buf[100]; 
   wsprintf(v2buf,_T("MAXTRAFFIC=%d LKNumTraff=%d / TrafficNumraws=%d TrafficNumpages=%d calc=%d\n"),MAXTRAFFIC, LKNumTraffic,TrafficNumraws, TrafficNumpages, (short)(ceil(MAXTRAFFIC/TrafficNumraws)));
   StartupStore(v2buf);
   #endif

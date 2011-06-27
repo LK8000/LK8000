@@ -1495,7 +1495,6 @@ bool LoggerClearFreeSpace(void) {
 
 bool IsValidIGCChar(char c) //returns 1 if valid char for IGC files
 {//                                 
-  //int iRetVal = 0; REMOVE
 
   if ( c >=0x20  && c <= 0x7E &&
        c != 0x0D &&

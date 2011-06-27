@@ -41,10 +41,6 @@ extern int PDABatteryPercent;
 extern int PDABatteryFlag;
 extern int PDABatteryStatus;
 
-// below this value, altitude differences are useless and not returned
-//#define	ALTDIFFLIMIT	-2000
-
-
 // Returns true if value is valid, false if not
 // lktitle is shorter and limited to 6 or 7 chars, good for navboxes
 // Units are empty by default, and valid is false by default
@@ -1739,7 +1735,6 @@ goto_bearing:
 						wsprintf(BufferValue, TEXT(NULLTIME));
 				}
 			}
-			// wsprintf(BufferUnit, TEXT("h")); 091112 REMOVE
 			break;
 
 		// B42

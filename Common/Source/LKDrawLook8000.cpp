@@ -865,7 +865,6 @@ Drawbottom:
     nrc.right=rc.right;
     nrc.bottom=rc.bottom;
 
-  // HPEN hP; REMOVE 101204
   HBRUSH hB;
   if ( INVERTCOLORS ) {
   	hB = LKBrush_Black;
