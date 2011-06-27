@@ -1066,7 +1066,7 @@ void Vario(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   static double LastTime = 0;
   static double LastAlt = 0;
-  static double LastAltTE = 0;
+  //static double LastAltTE = 0;
   // static double h0last = 0;
   double myTime;  // 091201
 
@@ -1082,7 +1082,7 @@ void Vario(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     double dT = (Basic->Time - LastTime);
     // estimate value from GPS   091201 or baro!
     Calculated->GPSVario = Gain / dT;
-    Calculated->GPSVarioTE = Gain;
+    // Calculated->GPSVarioTE = Gain; REMOVE 
 
     // double dv = (Calculated->TaskAltitudeDifference-h0last)
       // /(myTime-LastTime); // 091201
@@ -1092,7 +1092,7 @@ void Vario(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     // h0last = Calculated->TaskAltitudeDifference;
 
     LastAlt = Calculated->NavAltitude;
-    LastAltTE = LastAlt;
+    // LastAltTE = LastAlt;
     LastTime = myTime; // 091201
 
   }
