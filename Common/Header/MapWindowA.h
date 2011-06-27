@@ -29,20 +29,22 @@
  // declaration of interface for alpha blended air space drawing
  public:
   
-  enum EAirspaceFillType
+  typedef enum 
   {
-    asp_fill_none    = 0,  // airspace drawing using no filling
-    asp_fill_pattern = 1,  // airspace drawing using bitmap patterns
-    asp_fill_ablend  = 2,  // airspace drawing using alpha blend 
-  };
+    asp_fill_border_only        = 0,  // airspace drawing using no filling
+    asp_fill_patterns_full      = 1,  // airspace drawing using patterns
+    asp_fill_patterns_borders   = 2,  // airspace drawing using patterns, borders
+    asp_fill_ablend_full        = 3,  // airspace drawing using alpha blend 
+    asp_fill_ablend_borders     = 4,  // airspace drawing using alpha blend, borders
+  } EAirspaceFillType;
   
   // set airspace drawing type
-  static void SetAirSpaceFillType(int fillType) {
+  static void SetAirSpaceFillType(EAirspaceFillType fillType) {
     AirspaceFillType = fillType;
   }
 
   // get airspace drawing type
-  static int GetAirSpaceFillType(void) {
+  static EAirspaceFillType GetAirSpaceFillType(void) {
     return AirspaceFillType;
   }
   
@@ -59,7 +61,7 @@
  private:
 
   // airspace drawing type
-  static int AirspaceFillType;
+  static EAirspaceFillType AirspaceFillType;
   
   // alpha blended airspace opacity (0..100)
   static BYTE AirspaceOpacity;

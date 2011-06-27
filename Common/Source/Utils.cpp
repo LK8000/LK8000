@@ -656,7 +656,7 @@ void ReadRegistrySettings(void)
 
   Temp = MapWindow::GetAirSpaceFillType();
   if(GetFromRegistry(szRegistryAirspaceFillType,&Temp) == ERROR_SUCCESS)
-    MapWindow::SetAirSpaceFillType(Temp);
+    MapWindow::SetAirSpaceFillType((MapWindow::EAirspaceFillType)Temp);
 
   Temp = MapWindow::GetAirSpaceOpacity();
   if(GetFromRegistry(szRegistryAirspaceOpacity,&Temp) == ERROR_SUCCESS)

@@ -42,6 +42,7 @@ NEW
   F = Fly-In modality
 
 . New airspace 2.4 colors, following red and yellow alerting situation.
+. New airspace drawing options for drawing airspaces with borders and outlines
 
 . Support 320x234 and 234x320 screen resolutions. Preliminary.
 

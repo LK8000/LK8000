@@ -207,6 +207,7 @@ int      MapWindow::iAirspaceMode[AIRSPACECLASSCOUNT] =
   {0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0};
 
 HPEN MapWindow::hAirspacePens[AIRSPACECLASSCOUNT];
+HPEN MapWindow::hAirspaceBorderPen;
 bool MapWindow::bAirspaceBlackOutline = false;
 
 HBRUSH  MapWindow::hBackgroundBrush;
@@ -1390,6 +1391,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       for (i=0; i<AIRSPACECLASSCOUNT; i++) {
 	DeleteObject(hAirspacePens[i]);
       }
+      DeleteObject(hAirspaceBorderPen);
 
       for (i=0; i<NUMSNAILCOLORS; i++) {
 	DeleteObject(hSnailPens[i]);
@@ -2335,7 +2337,7 @@ QuickRedraw: // 100318 speedup redraw
  
   if (OnAirSpace > 0)  // Default is true, always true at startup no regsave 
   {
-    if (GetAirSpaceFillType() == asp_fill_ablend)
+    if ( (GetAirSpaceFillType() == asp_fill_ablend_full) || (GetAirSpaceFillType() == asp_fill_ablend_borders) )
       DrawTptAirSpace(hdc, rc);
     else
       DrawAirSpace(hdc, rc);
@@ -2646,6 +2648,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
     hAirspacePens[i] =
       CreatePen(PS_SOLID, NIBLSCALE(2), Colours[iAirspaceColour[i]]);
   }
+  hAirspaceBorderPen = CreatePen(PS_SOLID, NIBLSCALE(10), RGB_WHITE);
 
   while (!CLOSETHREAD) 
     {
