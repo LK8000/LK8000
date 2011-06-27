@@ -50,7 +50,14 @@ NEW
   When it is enabled, the indicator appears near the map scale.
 
 
-. New SZD-38A Jantar 1  polar, with flaps extension.
+. New extended polars with flaps extensions for flaps support:
+	SZD-38A Jantar
+	LS-6-15
+	Lak17A-15
+	Lak17A-18
+	Nimbus 4
+	SZD-56-2 Diana2
+	Ventus 2Cx (18m)
 
 
 
