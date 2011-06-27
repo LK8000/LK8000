@@ -505,7 +505,7 @@ static void OnAirspaceFillType(DataField *Sender, DataField::DataAccessKind_t Mo
     case DataField::daChange:
       wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceOpacity"));
       if (wp)
-        wp->SetVisible(Sender->GetAsInteger() == MapWindow::asp_fill_ablend);
+        wp->SetVisible( (Sender->GetAsInteger() == (int)MapWindow::asp_fill_ablend_full) || (Sender->GetAsInteger() == (int)MapWindow::asp_fill_ablend_borders) );
     break;
 	default: 
 		StartupStore(_T("........... DBG-908%s"),NEWLINE); 
@@ -1731,9 +1731,12 @@ static void setVariables(void) {
 	// TODOasp: transl 
     dfe->addEnumText(gettext(TEXT("_@M941_")));
     dfe->addEnumText(gettext(TEXT("_@M942_")));
-    if (MapWindow::AlphaBlendSupported())
+    dfe->addEnumText(gettext(TEXT("_@M945_")));
+    if (MapWindow::AlphaBlendSupported()) {
       dfe->addEnumText(gettext(TEXT("_@M943_")));
-    dfe->Set(MapWindow::GetAirSpaceFillType());
+      dfe->addEnumText(gettext(TEXT("_@M946_")));
+    }
+    dfe->Set((int)MapWindow::GetAirSpaceFillType());
     wp->RefreshDisplay();
   }
   
@@ -1755,7 +1758,7 @@ static void setVariables(void) {
     dfe->addEnumText(TEXT("100 %"));
     dfe->Set(MapWindow::GetAirSpaceOpacity() / 10);
     
-    wp->SetVisible(MapWindow::GetAirSpaceFillType() == MapWindow::asp_fill_ablend);
+    wp->SetVisible( (MapWindow::GetAirSpaceFillType() == (int)MapWindow::asp_fill_ablend_full) || (MapWindow::GetAirSpaceFillType() == (int)MapWindow::asp_fill_ablend_borders) );
     wp->RefreshDisplay();
   }
 
@@ -3664,7 +3667,7 @@ void dlgConfigurationShowModal(void){
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceFillType"));
   if (wp) {
     if (MapWindow::GetAirSpaceFillType() != wp->GetDataField()->GetAsInteger()) {
-      MapWindow::SetAirSpaceFillType(wp->GetDataField()->GetAsInteger());
+      MapWindow::SetAirSpaceFillType((MapWindow::EAirspaceFillType)wp->GetDataField()->GetAsInteger());
       SetToRegistry(szRegistryAirspaceFillType, MapWindow::GetAirSpaceFillType());
       changed = true;
     }

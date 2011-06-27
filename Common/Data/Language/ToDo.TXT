@@ -19,6 +19,7 @@ Things to be fixed in LK languages files/tokens:
 - New 890 and 891     
 - New 900 
 - New 1208,1209,1210
+- Changed H1200, airspace filling options
 - 110523  CHANGE HELP FOR AIRSPACE 879 
 - 110525  CHANGED AIRSPACE TOKENS 1159 1160
           CHANGED HELP 879
@@ -29,6 +30,7 @@ Things to be fixed in LK languages files/tokens:
 
 - New Logger fields: _@M936_ - _@M939_  
 - New Airspace filling: _@M940 to  _@M944
+- New Airspace drawing options: M945,946
 - New bar opacity M950
 - New 1.5 Contest M957
 - New fields: _@M1001_ - _@M1400_ for calculated values and infobox abbrev. translations, 
