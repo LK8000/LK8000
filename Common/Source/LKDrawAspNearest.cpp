@@ -454,8 +454,19 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 		//
 		// AIRSPACE DISTANCE
 		//
-		value=LKAirspaces[rli].Distance*DISTANCEMODIFY;
-       		_stprintf(Buffer3[i][curpage],TEXT("%0.1lf"),value);
+		switch(LKAirspaces[rli].WarningLevel) {
+			case awYellow:
+				value=LKAirspaces[rli].Distance*DISTANCEMODIFY;
+       				_stprintf(Buffer3[i][curpage],TEXT("%0.1lf!"),value);
+				break;
+			case awRed:
+       				_stprintf(Buffer3[i][curpage],TEXT("IN"));
+				break;
+			default:
+				value=LKAirspaces[rli].Distance*DISTANCEMODIFY;
+       				_stprintf(Buffer3[i][curpage],TEXT("%0.1lf"),value);
+				break;
+		}
 
 		//
 		// AIRSPACE BEARING DIFFERENCE, OR BEARING IF CIRCLING
