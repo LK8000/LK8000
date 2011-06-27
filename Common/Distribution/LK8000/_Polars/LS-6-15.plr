@@ -1,4 +1,4 @@
 * LK8000 polar for: LS-6-15
 * MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
     327, 160,  90, -0.6,  100, -0.658, 183, -1.965, 10.53   // BestLD42@?
-
+	327, 4, 0, 10, 100, 5, 117, 0, 151, -5

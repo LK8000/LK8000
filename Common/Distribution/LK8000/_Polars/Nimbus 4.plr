@@ -1,4 +1,5 @@
 * LK8000 polar for: Nimbus 4
 * MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
  597, 303, 85.1, -0.41, 127.98, -0.75, 162.74, -1.4, 17.8
-
+ 597, 5, 0, 2, 78, 1, 95, 0, 135, -1, 165, -2
+ 

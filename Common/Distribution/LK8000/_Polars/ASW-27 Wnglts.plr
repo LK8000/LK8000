@@ -1,4 +1,4 @@
 * LK8000 polar for: ASW-27 Wnglts
 * MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
  357, 165, 108.8, -0.64, 156.4, -1.18, 211.13, -2.5, 9.0
-
+ 357, 6, 0, 5, 75, 4, 83, S1, 105, S2, 127, 2, 171, 1
