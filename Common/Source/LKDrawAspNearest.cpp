@@ -89,7 +89,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 	left=rc.left+NIBLSCALE(1);
 	right=rc.right-NIBLSCALE(1);
   	bottom=rc.bottom-BottomSize-NIBLSCALE(2);
-	s_maxnlname=9; 
+	s_maxnlname=7; 
   	_stprintf(Buffer,TEXT("AKSJSMMMM"));  
   } else {
 	left=rc.left+NIBLSCALE(5);
@@ -97,7 +97,10 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   	bottom=rc.bottom-BottomSize;
 	s_maxnlname=15; 
   	_stprintf(Buffer,TEXT("ABCDEF GHIJK-LM"));  
+	// now resize for tuning on resolutions
+	if (ScreenSize == ss320x240) s_maxnlname=9;
   }
+  Buffer[s_maxnlname]='\0';
 
 
   /// WPT is now AIRSPACE name
@@ -253,10 +256,8 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 	case LKEVENT_NEWRUN:
 		for (i=0; i<MAXNEARAIRSPACES; i++) {
 			for (k=0; k<MAXAIRSPACENUMPAGES; k++) {
-				if ( ScreenSize < (ScreenSize_t)sslandscape ) 
-					_stprintf(Buffer1[i][k],_T("---------------")); // 15 chars
-				else
-					_stprintf(Buffer1[i][k],_T("-----------------------")); // 23 chars
+				_stprintf(Buffer1[i][k], _T("----------------------------"));  // max 30
+				Buffer1[i][k][s_maxnlname+7]='\0'; // some more dashes 
 				_stprintf(Buffer2[i][k],_T("----"));
 				_stprintf(Buffer3[i][k],_T("----"));
 				_stprintf(Buffer4[i][k],_T("----"));
@@ -491,10 +492,8 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 		_stprintf(Buffer5[i][curpage], TEXT("%s"), aspflags);
 
 	} else {
-		if ( ScreenSize < (ScreenSize_t)sslandscape ) 
-			_stprintf(Buffer1[i][curpage], _T("---------------")); // 15 chars
-		else
-			_stprintf(Buffer1[i][curpage], _T("-----------------------")); // 23 chars
+		_stprintf(Buffer1[i][curpage], _T("----------------------------"));  // max 30
+		Buffer1[i][curpage][s_maxnlname+7]='\0'; // some more dashes 
 		_stprintf(Buffer2[i][curpage],_T("----"));
 		_stprintf(Buffer3[i][curpage],_T("----"));
 		_stprintf(Buffer4[i][curpage],_T("----"));
