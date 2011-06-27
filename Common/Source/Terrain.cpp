@@ -381,7 +381,7 @@ void ChangeZoomTopology(int iCategory, double newScale, short cztmode)
 
 #define NUM_COLOR_RAMP_LEVELS 13
 
-
+#if USEWEATHER
 const COLORRAMP weather_colors[6][NUM_COLOR_RAMP_LEVELS] = {
   { // Blue to red       // vertical speed
     {   0,       0,     0,     255}, // -200   
@@ -474,6 +474,8 @@ const COLORRAMP weather_colors[6][NUM_COLOR_RAMP_LEVELS] = {
     {1000,     255,     102,       0},
   },
 };
+
+#endif // USEWEATHER
 
 #define NUMRAMPS	14
 
@@ -995,6 +997,7 @@ private:
 
 public:
   bool SetMap() {
+#if USEWEATHER
     if (RasterTerrain::render_weather) {
       RASP.Reload(GPS_INFO.Latitude, GPS_INFO.Longitude);
     }
@@ -1073,6 +1076,15 @@ public:
       color_ramp = (COLORRAMP*)&terrain_colors[TerrainRamp][0];
       break;
     }
+#else // USEWEATHER
+      interp_levels = 2;
+      is_terrain = true;
+      do_water=false; // we dont use it anymore, water printed always from Slope
+      height_scale = 4;
+      DisplayMap = RasterTerrain::TerrainMap;
+      color_ramp = (COLORRAMP*)&terrain_colors[TerrainRamp][0];
+
+#endif // USEWEATHER
 
     if (is_terrain) {
 	do_shading = true;
@@ -1180,11 +1192,14 @@ public:
 
     DisplayMap->Unlock();
 
+#if USEWEATHER
     if (RasterTerrain::render_weather) {
       ScanSpotHeights(X0-orig.x, Y0-orig.y, X1-orig.x, Y1-orig.y);
     }
+#endif
   }
 
+#if USEWEATHER
   void ScanSpotHeights(const int X0, const int Y0, const int X1, const int Y1) {
     unsigned short* myhbuf = hBuf;
 #ifdef DEBUG
@@ -1229,6 +1244,7 @@ public:
       }
     }
   }
+#endif // USEWEATHER
 
 void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
     // fill the buffer

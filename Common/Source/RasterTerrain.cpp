@@ -516,11 +516,14 @@ void RasterMapJPG2000::SetViewCenter(const double &Latitude,
 
 RasterMap* RasterTerrain::TerrainMap = NULL;
 bool RasterTerrain::terrain_initialised = false;
+#if USEWEATHER
 int RasterTerrain::render_weather = 0;
-
+#endif
 void RasterTerrain::OpenTerrain(void)
 {
+#if USEWEATHER
   render_weather = 0;
+#endif
   terrain_initialised = false;
 
   StartupStore(TEXT(". Loading Terrain... %s"),NEWLINE);
@@ -774,8 +777,9 @@ void RasterTerrain::CloseTerrain(void)
 {
   StartupStore(TEXT(". CloseTerrain%s"),NEWLINE);
 
+#if USEWEATHER
   render_weather = 0;
-
+#endif
   // TODO code: lock it first?
 
   if (terrain_initialised) {
@@ -845,8 +849,9 @@ void RasterTerrain::SetTerrainRounding(double x, double y) {
 void RasterTerrain::ServiceTerrainCenter(double lat, double lon) {
   Lock();
 
+#if USEWEATHER
   RASP.SetViewCenter(lat, lon);
-
+#endif
   if (TerrainMap) {
     TerrainMap->SetViewCenter(lat, lon);
   }
@@ -907,6 +912,7 @@ bool RasterTerrain::GetTerrainCenter(double *latitude,
 }
 
 
+#if USEWEATHER
 ////////// Weather map ////////////////////////////////////////////
 
 int RasterWeather::IndexToTime(int x) {
@@ -1136,3 +1142,4 @@ void RasterWeather::ValueToText(TCHAR* Buffer, short val) {
 
 RasterWeather RASP;
 
+#endif // USEWEATHER

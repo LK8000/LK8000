@@ -2584,8 +2584,10 @@ void InputEvents::eventSetup(const TCHAR *misc) {
     dlgTaskOverviewShowModal();
   } else if (_tcscmp(misc,TEXT("Airspace"))==0){
     dlgAirspaceShowModal(false);
+#if USEWEATHER
   } else if (_tcscmp(misc,TEXT("Weather"))==0){
     dlgWeatherShowModal();
+#endif
   } else if (_tcscmp(misc,TEXT("Replay"))==0){
     if (!GPS_INFO.MovementDetected) {     
       dlgLoggerReplayShowModal();

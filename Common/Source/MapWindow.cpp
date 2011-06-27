@@ -2275,7 +2275,11 @@ QuickRedraw: // 100318 speedup redraw
 
   if ((EnableTerrain && (DerivedDrawInfo.TerrainValid) 
        && RasterTerrain::isTerrainLoaded())
+#if USEWEATHER
       || RasterTerrain::render_weather) {
+#else
+	) {
+#endif
 	// sunelevation is never used, it is still a todo in Terrain
 	double sunelevation = 40.0;
 	double sunazimuth=GetAzimuth();
@@ -2394,14 +2398,15 @@ QuickRedraw: // 100318 speedup redraw
 	}
 
   DrawTeammate(hdc, rc);
- 
-//  VENTA 090711 TEST disabled DrawSpotHeights QUI
-// watchout for upcoming SSA errors in the gcc compiler if not using #if 0
+
+#if USEWEATHER 
 #if (0)
+// watchout for upcoming SSA errors in the gcc compiler if not using #if 0
   if ((EnableTerrain && (DerivedDrawInfo.TerrainValid))
       || RasterTerrain::render_weather) {
     DrawSpotHeights(hdc);
   } 
+#endif
 #endif
   
   if (extGPSCONNECT) {

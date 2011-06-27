@@ -1932,12 +1932,14 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
       _tcscat(Scale2, TEMP);
     }
 
+#if USEWEATHER
     TCHAR Buffer[20];
     RASP.ItemLabel(RasterTerrain::render_weather, Buffer);
     if (_tcslen(Buffer)) {
       _tcscat(Scale,TEXT(" ")); 
       _tcscat(Scale, Buffer);
     }
+#endif
 
     _tcscpy(Scale,TEXT(""));
     double mapScale=zoom.Scale()*1.4; // FIX 091117

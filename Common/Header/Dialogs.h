@@ -64,7 +64,9 @@ void dlgTeamCodeShowModal(void);
 void dlgStartPointShowModal(void);
 #include "MapWindow.h"
 void dlgWaypointEditShowModal(WAYPOINT *wpt);
+#if USEWEATHER
 void dlgWeatherShowModal(void);
+#endif
 void dlgAirspaceSelect(void);
 void dlgTarget(void);
 bool dlgTaskRules(void);

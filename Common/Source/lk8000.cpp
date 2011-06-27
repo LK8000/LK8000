@@ -1956,10 +1956,12 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   RasterTerrain::ServiceFullReload(GPS_INFO.Latitude, 
                                    GPS_INFO.Longitude);
 
+#if USEWEATHER
   // LKTOKEN _@M1216_ "Scanning weather forecast"  
   // CreateProgressDialog(gettext(TEXT("_@M1216_")));
   StartupStore(TEXT(". RASP load%s"),NEWLINE);
   RASP.Scan(GPS_INFO.Latitude, GPS_INFO.Longitude);
+#endif
 #ifdef LKAIRSPACE
   CAirspaceManager::Instance().ReadAirspaces();
   CAirspaceManager::Instance().SortAirspaces();
@@ -3095,7 +3097,9 @@ void Shutdown(void) {
   CreateProgressDialog(gettext(TEXT("_@M1219_")));
   StartupStore(TEXT(". CloseTerrainTopology%s"),NEWLINE);
 
+#if USEWEATHER
   RASP.Close();
+#endif
   RasterTerrain::CloseTerrain();
 
   CloseTopology();

@@ -228,9 +228,12 @@ public:
   static bool WaypointIsInTerrainRange(double latitude, double longitude);
   static bool GetTerrainCenter(double *latitude,
                                double *longitude);
+#if USEWEATHER
   static int render_weather;
+#endif
 };
 
+#if USEWEATHER
 #define MAX_WEATHER_MAP 16
 #define MAX_WEATHER_TIMES 48
 
@@ -269,5 +272,6 @@ public:
 };
 
 extern RasterWeather RASP;
+#endif // USEWEATHER
 
 #endif
