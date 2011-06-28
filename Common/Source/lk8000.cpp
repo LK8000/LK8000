@@ -752,15 +752,15 @@ DWORD BatteryWarningTime = 0;
 
 char dedicated[]="Dedicated to my father Vittorio";
 
-#define NUMSELECTSTRING_MAX			130
+#define NUMDATAOPTIONS_MAX			130
 
 #if USEIBOX
-SCREEN_INFO Data_Options[NUMSELECTSTRING_MAX];
+SCREEN_INFO Data_Options[NUMDATAOPTIONS_MAX];
 #else
-DATAOPTIONS Data_Options[NUMSELECTSTRING_MAX];
+DATAOPTIONS Data_Options[NUMDATAOPTIONS_MAX];
 #endif
 
-int NUMSELECTSTRINGS = 0;
+int NumDataOptions = 0;
 
 
 CRITICAL_SECTION  CritSec_FlightData;
@@ -815,7 +815,7 @@ bool SetDataOption( int index,
 					char prev_screen)
 {
 	SCREEN_INFO tag;
-	if (index>=NUMSELECTSTRING_MAX) return false;
+	if (index>=NUMDATAOPTIONS_MAX) return false;
 
 	tag.UnitGroup = UnitGroup;
 	_tcsncpy(tag.Description, gettext(Description), DESCRIPTION_SIZE); 
@@ -828,7 +828,7 @@ bool SetDataOption( int index,
 	tag.prev_screen = prev_screen;
 
 	memcpy(&Data_Options[index], &tag, sizeof(SCREEN_INFO));
-	if (NUMSELECTSTRINGS<=index) NUMSELECTSTRINGS=index+1;				//No. of items = max index+1
+	if (NumDataOptions<=index) NumDataOptions=index+1;				//No. of items = max index+1
 
 #ifdef DEBUG
 	DebugStore(TEXT("Add data option #%d %s%s"),index,tag.Description,NEWLINE);
@@ -1096,7 +1096,7 @@ void FillDataOptions()
 	// LKTOKEN  _@M1644_ = "Home Alt.Arrival", _@M1645_ = "HomeArr"
 	SetDataOption(115, ugAltitude,       TEXT("_@M1644_"), TEXT("_@M1645_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 8, 2);
 
-	//Before adding new items, consider changing NUMSELECTSTRING_MAX
+	//Before adding new items, consider changing NUMDATAOPTIONS_MAX
 
 }
 
@@ -2907,7 +2907,7 @@ int getInfoType(int i) {
 #if USEIBOX
   }
 #endif
-  return min(NUMSELECTSTRINGS-1,retval);
+  return min(NumDataOptions-1,retval);
 }
 
 
@@ -2956,7 +2956,7 @@ void DoInfoKey(int keycode) {
   // XXX This could crash if MapWindow does not capture
 
   LockFlightData();
-  Data_Options[min(NUMSELECTSTRINGS-1,i)].Process(keycode);
+  Data_Options[min(NumDataOptions-1,i)].Process(keycode);
   UnlockFlightData();
 
   UnlockNavBox();
@@ -3110,7 +3110,7 @@ void Shutdown(void) {
   //  CommandBar_Destroy(hWndCB);
 
   #if USEIBOX
-  for (i=0; i<NUMSELECTSTRINGS; i++) {
+  for (i=0; i<NumDataOptions; i++) {
     delete Data_Options[i].Formatter;
   }
   #endif

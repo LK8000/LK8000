@@ -82,7 +82,7 @@ extern SCREEN_INFO Data_Options[];
 extern DATAOPTIONS Data_Options[];
 #endif
 
-extern int NUMSELECTSTRINGS;
+extern int NumDataOptions;
 extern BOOL InfoBoxesHidden;
 extern int numInfoWindows;
 

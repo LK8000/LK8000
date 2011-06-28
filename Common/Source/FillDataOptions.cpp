@@ -5,7 +5,7 @@
 bool SetDataOption( int index, UnitGroup_t UnitGroup, TCHAR *Description, TCHAR *Title)
 {
 	DATAOPTIONS tag;
-	if (index>=NUMSELECTSTRING_MAX) return false;
+	if (index>=NUMDATAOPTIONS_MAX) return false;
 
 	tag.UnitGroup = UnitGroup;
 	_tcsncpy(tag.Description, gettext(Description), DESCRIPTION_SIZE); 
@@ -14,7 +14,7 @@ bool SetDataOption( int index, UnitGroup_t UnitGroup, TCHAR *Description, TCHAR 
 	tag.Title[TITLE_SIZE] = 0;	// buff allocated to TITLE_SIZE+1
 
 	memcpy(&Data_Options[index], &tag, sizeof(DATAOPTIONS));
-	if (NUMSELECTSTRINGS<=index) NUMSELECTSTRINGS=index+1; //No. of items = max index+1
+	if (NumDataOptions<=index) NumDataOptions=index+1; //No. of items = max index+1
 
 	return true;
 }
@@ -270,6 +270,6 @@ void FillDataOptions()
 	// LKTOKEN  _@M1644_ = "Home Alt.Arrival", _@M1645_ = "HomeArr"
 	SetDataOption(115, ugAltitude,       TEXT("_@M1644_"), TEXT("_@M1645_"));
 
-	//Before adding new items, consider changing NUMSELECTSTRING_MAX
+	//Before adding new items, consider changing NUMDATAOPTIONS_MAX
 
 }

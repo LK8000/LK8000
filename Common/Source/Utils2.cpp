@@ -2810,7 +2810,7 @@ int GetInfoboxType(int i) {
 		}
 	}
 
-	return min(NUMSELECTSTRINGS-1,retval);
+	return min(NumDataOptions-1,retval);
 }
 
 // Returns the LKProcess index value for configured infobox (0-8) for dmCruise, dmFinalGlide, Auxiliary, dmCircling
@@ -2835,7 +2835,7 @@ int GetInfoboxIndex(int i, MapWindow::Mode::TModeFly dmMode) {
 			retval = (InfoType[i-1] >> 24) & 0xff; 
 			break;
 	}
-	return min(NUMSELECTSTRINGS-1,retval);
+	return min(NumDataOptions-1,retval);
 }
 
 

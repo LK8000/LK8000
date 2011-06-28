@@ -1052,7 +1052,7 @@ static void OnPaste(WindowControl *Sender) {
       InfoBoxPropName(name, item, mode);
       WndProperty *wp;
       wp = (WndProperty*)wf->FindByName(name);
-      if (wp && (cpyInfoBox[item]>=0)&&(cpyInfoBox[item]<NUMSELECTSTRINGS)) {
+      if (wp && (cpyInfoBox[item]>=0)&&(cpyInfoBox[item]<NumDataOptions)) {
 	wp->GetDataField()->Set(cpyInfoBox[item]);
 	wp->RefreshDisplay();
       }
@@ -1369,7 +1369,7 @@ static void SetInfoBoxSelector(int item, int mode)
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-    for (int i=0; i<NUMSELECTSTRINGS; i++) {
+    for (int i=0; i<NumDataOptions; i++) {
       dfe->addEnumText(gettext(Data_Options[i].Description));
     }
     dfe->Sort(0);

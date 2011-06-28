@@ -2653,7 +2653,7 @@ olc_score:
 			valid=false;
 			wsprintf(BufferValue, TEXT(NULLMEDIUM));
 			wsprintf(BufferUnit, TEXT("."));
-			if ( lkindex >=NUMSELECTSTRINGS || lkindex <1 ) 
+			if ( lkindex >=NumDataOptions || lkindex <1 ) 
 				wsprintf(BufferTitle, TEXT("BadErr"));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
