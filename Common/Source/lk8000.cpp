@@ -1791,6 +1791,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 
   GPS_INFO.NAVWarning = true; // default, no gps at all!
 
+  #if USESWITCHES
   GPS_INFO.SwitchState.AirbrakeLocked = false;
   GPS_INFO.SwitchState.FlapPositive = false;
   GPS_INFO.SwitchState.FlapNeutral = false;
@@ -1803,6 +1804,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   GPS_INFO.SwitchState.UserSwitchMiddle = false;
   GPS_INFO.SwitchState.UserSwitchDown = false;
   GPS_INFO.SwitchState.VarioCircling = false;
+  #endif
 
   SYSTEMTIME pda_time;
   GetSystemTime(&pda_time);

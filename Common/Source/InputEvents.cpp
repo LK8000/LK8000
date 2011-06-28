@@ -2357,7 +2357,7 @@ void InputEvents::eventSetup(const TCHAR *misc) {
     if (!GPS_INFO.MovementDetected) {     
       dlgLoggerReplayShowModal();
     }
-#if 0
+#if USESWITCHES
   } else if (_tcscmp(misc,TEXT("Switches"))==0){
     dlgSwitchesShowModal();
 #endif

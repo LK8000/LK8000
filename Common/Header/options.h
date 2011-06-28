@@ -87,8 +87,12 @@
 /*
  * Incomplete work, or stuff that never got into production versions but still interesting
 
-#define FIXGDI		  // todo, work for further optimization of GDIs. 
-			  // To check GDI memory leaks, use the freeware GDIView.exe 
+#define USESWITCHES 	1	// External device switch support / to be completed because unused
+				// Do not remove, it can be worked out with no problems if we want to
+				// support external switches through NMEA input.
+
+#define FIXGDI		        // todo, work for further optimization of GDIs. 
+			        // To check GDI memory leaks, use the freeware GDIView.exe 
 
 #define LKCLIP		  // replace old Sutherland Hodgman clipping algo
 #define NEWUTM		  // New full UTM support INCOMPLETED

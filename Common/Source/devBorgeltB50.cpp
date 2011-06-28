@@ -163,7 +163,9 @@ BOOL PBB50(TCHAR *String, NMEA_INFO *GPS_INFO) {
   NMEAParser::ExtractParameter(String,ctemp,6);
   int climb = lround(StrToDouble(ctemp,NULL));
 
+  #if USESWITCHES
   GPS_INFO->SwitchState.VarioCircling = (climb==1);
+  #endif
 
   if (EnableExternalTriggerCruise) {
     if (climb) {

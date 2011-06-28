@@ -57,6 +57,7 @@ typedef struct _FLARM_TRAFFIC
 } FLARM_TRAFFIC;
 
 
+#if USESWITCHES
 typedef struct _SWITCH_INFO
 {
   bool AirbrakeLocked;
@@ -74,7 +75,7 @@ typedef struct _SWITCH_INFO
   bool FlapLanding;
   // bool Stall;
 } SWITCH_INFO;
-
+#endif
 
 typedef struct _NMEA_INFO
 {
@@ -136,8 +137,9 @@ typedef struct _NMEA_INFO
 
   double SupplyBatteryVoltage;
 
+  #if USESWITCHES
   SWITCH_INFO SwitchState;
-
+  #endif
   BOOL MovementDetected;
 
   double StallRatio;
