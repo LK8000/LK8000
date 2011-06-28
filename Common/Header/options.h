@@ -81,6 +81,8 @@
 //#define USEWEATHER		1	// we dont use rasp weather - hangarware
 //#define USEOLDASPWARNINGS	1	// we dont use old airspace warning system
 
+#define USEIBOX			1	// Use old IBOX mode, work in progress for complete removal 
+
 
 // #define USERLEVEL	1	// old UserLevel configuration expert/basic mode, obsoleted
 

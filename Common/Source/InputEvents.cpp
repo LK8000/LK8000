@@ -1304,6 +1304,7 @@ void InputEvents::eventTerrainTopology(const TCHAR *misc) {
 
 }
 
+#if 0  // REMOVE
 // Do clear warnings IF NONE Toggle Terrain/Topology
 void InputEvents::eventClearWarningsOrTerrainTopology(const TCHAR *misc) {
 	(void)misc;
@@ -1317,6 +1318,7 @@ void InputEvents::eventClearWarningsOrTerrainTopology(const TCHAR *misc) {
   MapWindow::Event_TerrainTopology(-1);
   MapWindow::Event_TerrainTopology(0);
 }
+#endif
 
 #if USEOLDASPWARNINGS
 // ClearAirspaceWarnings
@@ -1328,6 +1330,7 @@ void InputEvents::eventClearAirspaceWarnings(const TCHAR *misc) {
 }
 #endif
 
+#if 0 // REMOVE
 // ClearStatusMessages
 // Do Clear Event Warnings
 void InputEvents::eventClearStatusMessages(const TCHAR *misc) {
@@ -1336,14 +1339,9 @@ void InputEvents::eventClearStatusMessages(const TCHAR *misc) {
   // TODO enhancement: allow selection of specific messages (here we are acknowledging all)
   Message::Acknowledge(0);
 }
+#endif
 
-void InputEvents::eventFLARMRadar(const TCHAR *misc) {
-	(void)misc;
-  //  if (_tcscmp(misc, TEXT("on")) == 0) {
-
-}
-
-
+#ifdef USEIBOX
 // SelectInfoBox
 // Selects the next or previous infobox
 void InputEvents::eventSelectInfoBox(const TCHAR *misc) {
@@ -1365,6 +1363,7 @@ void InputEvents::eventChangeInfoBoxType(const TCHAR *misc) {
     Event_ChangeInfoBoxType(-1);
   }
 }
+#endif // USEIBOX
 
 // ArmAdvance
 // Controls waypoint advance trigger:
@@ -1423,6 +1422,7 @@ void InputEvents::eventArmAdvance(const TCHAR *misc) {
   }
 }
 
+#if USEIBOX
 // DoInfoKey
 // Performs functions associated with the selected infobox
 //    up: triggers the up event
@@ -1447,6 +1447,7 @@ void InputEvents::eventDoInfoKey(const TCHAR *misc) {
   }
   
 }
+#endif // USEIBOX
 
 // Mode
 // Sets the current event mode.
@@ -1460,12 +1461,6 @@ void InputEvents::eventMode(const TCHAR *misc) {
   MapWindow::RequestFastRefresh();
 }
 
-// MainMenu
-// Don't think we need this.
-void InputEvents::eventMainMenu(const TCHAR *misc) {
-	(void)misc;
-  // todo: popup main menu
-}
 
 // Checklist
 // Displays the checklist dialog
@@ -1475,6 +1470,7 @@ void InputEvents::eventChecklist(const TCHAR *misc) {
   dlgChecklistShowModal();
 }
 
+#if 0 // REMOVE, unused since xci 4
 // FLARM Traffic
 // Displays the FLARM traffic dialog
 // See the checklist dialog section of the reference manual for more info.
@@ -1484,6 +1480,7 @@ void InputEvents::eventFlarmTraffic(const TCHAR *misc) {
   dlgFlarmTrafficShowModal();
 #endif
 }
+#endif
  
 
 // Displays the task calculator dialog
@@ -2687,14 +2684,14 @@ void InputEvents::eventDeclutterLabels(const TCHAR *misc) {
 
 
 
-
+#if 0 // REMOVE
 void InputEvents::eventBrightness(const TCHAR *misc) {
 	(void)misc;
 #if 0
   dlgBrightnessShowModal();
 #endif
 }
-
+#endif
 
 void InputEvents::eventExit(const TCHAR *misc) {
 	(void)misc;
@@ -2864,7 +2861,7 @@ void InputEvents::eventAirspaceDisplayMode(const TCHAR *misc){
   }
 }
 
-
+// THIS IS UNUSED, AND SHOULD NOT BE USED SINCE IT DOES NOT SUPPORT CUPs
 void InputEvents::eventAddWaypoint(const TCHAR *misc) {
   static int tmpWaypointNum = 0;
   WAYPOINT edit_waypoint;

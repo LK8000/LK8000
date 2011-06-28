@@ -70,7 +70,6 @@ void dlgTarget(void);
 bool dlgTaskRules(void);
 void dlgAirspaceDetails(CAirspace *airspace);
 bool dlgAirspaceWarningVisible(void);
-void dlgFlarmTrafficShowModal(void);
 void dlgLKTrafficDetails(int indexid);
 void dlgTimeGatesShowModal(void);
 void dlgTopologyShowModal(void);

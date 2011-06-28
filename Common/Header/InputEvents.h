@@ -51,14 +51,11 @@ class InputEvents {
   static void eventCalculator(const TCHAR *misc);
   static void eventChangeInfoBoxType(const TCHAR *misc);
   static void eventChecklist(const TCHAR *misc);
-  static void eventClearStatusMessages(const TCHAR *misc);
-  static void eventClearWarningsOrTerrainTopology(const TCHAR *misc);
   static void eventDLLExecute(const TCHAR *misc);
   static void eventDoInfoKey(const TCHAR *misc);
   static void eventFlightMode(const TCHAR *misc);
   static void eventLogger(const TCHAR *misc);
   static void eventMacCready(const TCHAR *misc);
-  static void eventMainMenu(const TCHAR *misc);
   static void eventMarkLocation(const TCHAR *misc);
   static void eventMode(const TCHAR *misc);
   static void eventNearestAirspaceDetails(const TCHAR *misc);
@@ -88,10 +85,8 @@ class InputEvents {
   static void eventWaypointDetails(const TCHAR *misc);
   static void eventWind(const TCHAR *misc);
   static void eventZoom(const TCHAR *misc);
-  static void eventBrightness(const TCHAR *misc);
   static void eventDeclutterLabels(const TCHAR *misc);
   static void eventExit(const TCHAR *misc);
-  static void eventFLARMRadar(const TCHAR *misc);
   static void eventBeep(const TCHAR *misc);
   static void eventUserDisplayModeForce(const TCHAR *misc);
   static void eventAirspaceDisplayMode(const TCHAR *misc);
@@ -99,7 +94,6 @@ class InputEvents {
   static void eventGotoLookup(const TCHAR *misc);
   static void eventAddWaypoint(const TCHAR *misc);
   static void eventOrientation(const TCHAR *misc);
-  static void eventFlarmTraffic(const TCHAR *misc);
   static void eventCalcWind(const TCHAR *misc);
   static void eventInvertColor(const TCHAR *misc);
   static void eventChangeBack(const TCHAR *misc);
