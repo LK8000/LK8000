@@ -354,18 +354,11 @@ VOLKS	:=\
 	$(SRC)/Volkslogger/vlconv.cpp \
 	$(SRC)/Volkslogger/vlutils.cpp
 
-#	$(SRC)/dlgConfigurationVario.cpp \
-#	$(SRC)/dlgVoice.cpp \
-#	$(SRC)/dlgVegaDemo.cpp \
-#	$(SRC)/dlgFlarmTraffic.cpp \
-#	$(SRC)/dlgSwitches.cpp \
-#	$(SRC)/dlgBrightness.cpp \
-
 SRC_FILES :=\
 	$(SRC)/LKAirspace.cpp \
 	$(SRC)/AATDistance.cpp 		$(SRC)/AirfieldDetails.cpp \
-	$(SRC)/Airspace.cpp 		$(SRC)/AirspaceColourDlg.cpp \
-	$(SRC)/AirspaceWarning.cpp 	$(SRC)/Atmosphere.cpp \
+	$(SRC)/Airspace.cpp 		\
+	$(SRC)/Atmosphere.cpp 		\
 	$(SRC)/Calculations.cpp 	$(SRC)/Calculations2.cpp \
 	$(SRC)/ClimbAverageCalculator.cpp $(SRC)/LKCalculations.cpp \
 	$(SRC)/ConditionMonitor.cpp 	$(SRC)/device.cpp \
