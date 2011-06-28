@@ -84,8 +84,6 @@
 #define USEIBOX			1	// Use old IBOX mode, work in progress for complete removal 
 
 
-// #define USERLEVEL	1	// old UserLevel configuration expert/basic mode, obsoleted
-
 /*
  * Incomplete work, or stuff that never got into production versions but still interesting
 

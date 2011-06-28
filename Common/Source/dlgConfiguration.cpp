@@ -65,10 +65,6 @@ extern void InitializeOneFont (HFONT * theFont,
 extern bool dlgFontEditShowModal(const TCHAR * FontDescription, 
                           const TCHAR * FontRegKey, 
                           LOGFONT autoLogFont);
-#if USERLEVEL
-// default user level is now expert
-int UserLevel = 1; 
-#endif
 
 static bool changed = false;
 static bool taskchanged = false;
@@ -434,33 +430,6 @@ static void UpdateDeviceSetupButton(int DeviceIdx, TCHAR *Name){
   }
 
 }
-
-
-#if USERLEVEL
-static void OnUserLevel(DataField *Sender, DataField::DataAccessKind_t Mode){
-  WndProperty* wp;
-
-  switch(Mode){
-    case DataField::daGet:
-    break;
-    case DataField::daPut:
-    case DataField::daChange:
-      wp = (WndProperty*)wf->FindByName(TEXT("prpUserLevel"));
-      if (wp) {
-        if (wp->GetDataField()->GetAsInteger() != UserLevel) {
-          UserLevel = wp->GetDataField()->GetAsInteger();
-          changed = true;
-          SetToRegistry(szRegistryUserLevel,UserLevel);
-          wf->FilterAdvanced(UserLevel>0);
-        }
-      }
-    break;
-	default: 
-		StartupStore(_T("........... DBG-901%s"),NEWLINE); // 091105
-		break;
-  }
-}
-#endif
 
 
 static void OnDeviceAData(DataField *Sender, DataField::DataAccessKind_t Mode){
@@ -1369,9 +1338,6 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnEditMapLabelFontClicked),
   DeclareCallBackEntry(OnEditStatisticsFontClicked),
 
-  #if USERLEVEL
-  DeclareCallBackEntry(OnUserLevel),
-  #endif
   DeclareCallBackEntry(OnSetTopologyClicked),
   DeclareCallBackEntry(OnSetCustomKeysClicked),
   DeclareCallBackEntry(OnSetBottomBarClicked),
@@ -1549,19 +1515,6 @@ static void setVariables(void) {
 
   UpdateButtons();
 
-  #if USERLEVEL
-  wp = (WndProperty*)wf->FindByName(TEXT("prpUserLevel"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M131_ = "Basic" 
-    dfe->addEnumText(gettext(TEXT("_@M131_")));
-	// LKTOKEN  _@M271_ = "Expert" 
-    dfe->addEnumText(gettext(TEXT("_@M271_")));
-    dfe->Set(UserLevel);
-    wp->RefreshDisplay();
-  }
-  #endif
 
 // extended COM ports for PC
 // Changing items requires also changing the i<13 loop later on for port1 and port2
@@ -3412,11 +3365,7 @@ void dlgConfigurationShowModal(void){
   //ASSERT(wConfig27!=NULL);
   // ADDPAGE HERE
 
-  #if USERLEVEL
-  wf->FilterAdvanced(UserLevel>0);
-  #else
   wf->FilterAdvanced(1);
-  #endif
 
   for (int item=0; item<10; item++) {
     cpyInfoBox[item] = -1;

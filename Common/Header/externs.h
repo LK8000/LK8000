@@ -541,9 +541,6 @@ extern bool RequestAirspaceWarningDialog;
 
 extern bool LKLanguageReady;
 
-#if USERLEVEL
-extern int UserLevel;
-#endif
 extern int UseCustomFonts;
 #if (EXPERIMENTAL > 0)
 extern BlueDialupSMS bsms;

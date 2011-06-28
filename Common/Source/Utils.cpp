@@ -362,9 +362,6 @@ const TCHAR szRegistryEnableExternalTriggerCruise[] = TEXT("EnableExternalTrigge
 const TCHAR szRegistryFAIFinishHeight[] = TEXT("FAIFinishHeight");
 const TCHAR szRegistryHandicap[] = TEXT("Handicap");
 const TCHAR szRegistrySnailWidthScale[] = TEXT("SnailWidthScale");
-#if USERLEVEL
-const TCHAR szRegistryUserLevel[] = TEXT("UserLevel");
-#endif
 const TCHAR szRegistryDisableAutoLogger[] = TEXT("DisableAutoLogger");
 const TCHAR szRegistryMapFile[]=	 TEXT("MapFile"); // pL
 const TCHAR szRegistryBallastSecsToEmpty[]=	 TEXT("BallastSecsToEmpty"); 
@@ -1316,12 +1313,6 @@ void ReadRegistrySettings(void)
   Temp = iround(GlidePolar::SafetyMacCready*10);
   GetFromRegistry(szRegistrySafetyMacCready,&Temp);
   GlidePolar::SafetyMacCready = Temp/10.0;
-
-  #if USERLEVEL
-  Temp  = UserLevel;
-  GetFromRegistry(szRegistryUserLevel,&Temp);
-  UserLevel = Temp;
-  #endif
 
   Temp = DisableAutoLogger;
   GetFromRegistry(szRegistryDisableAutoLogger,&Temp);
