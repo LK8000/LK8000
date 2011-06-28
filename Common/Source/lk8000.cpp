@@ -1106,10 +1106,6 @@ void ShowMenu() {
 }
 
 
-#if (EXPERIMENTAL > 0)
-BlueDialupSMS bsms;
-#endif
-
 void SettingsEnter() {
   MenuActive = true;
 
@@ -2006,10 +2002,6 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   StartupStore(TEXT(". GlidePolar::SetBallast%s"),NEWLINE);
   GlidePolar::SetBallast();
 
-#if (EXPERIMENTAL > 0)
-  CreateProgressDialog(TEXT("Bluetooth dialup SMS"));
-  bsms.Initialise();
-#endif
   // LKTOKEN _@M1218_ "Initialising display"
   CreateProgressDialog(gettext(TEXT("_@M1218_")));
 
@@ -2021,9 +2013,8 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   StartupStore(TEXT(". CreateDrawingThread%s"),NEWLINE);
   MapWindow::CreateDrawingThread();
   Sleep(100);
+  #if USEIBOX
   StartupStore(TEXT(". ShowInfoBoxes%s"),NEWLINE);
-  #ifdef NOIBOX
-  #else
   ShowInfoBoxes();
   #endif
 
@@ -2045,7 +2036,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   ReadAssetNumber();
 
 
-  MapWindow::RequestOnFullScreen(); // VENTA10 EXPERIMENTAL
+  MapWindow::RequestOnFullScreen();
 
   // Da-da, start everything now
   StartupStore(TEXT(". ProgramStarted=InitDone%s"),NEWLINE);
@@ -2838,10 +2829,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
   Units::LoadUnitBitmap(hInstance);
 
+  #if USEIBOX
   StartupStore(TEXT(". Create info boxes%s"),NEWLINE);
-
-  #ifdef NOIBOX
-  #else
   InfoBoxLayout::CreateInfoBoxes(rc);
   #endif
 
@@ -3025,11 +3014,6 @@ void Shutdown(void) {
   SaveRecentList();
   // Stop sound
 
-  // Stop SMS device
-#if (EXPERIMENTAL > 0)
-  bsms.Shutdown();
-#endif
-
   // Stop drawing
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
   CreateProgressDialog(gettext(TEXT("_@M1219_")));
@@ -3088,8 +3072,7 @@ void Shutdown(void) {
   
   Units::UnLoadUnitBitmap();
 
-  #ifdef NOIBOX 
-  #else
+  #if USEIBOX
   StartupStore(TEXT(". Destroy Info Boxes%s"),NEWLINE);
   InfoBoxLayout::DestroyInfoBoxes();
   #endif
@@ -3442,8 +3425,7 @@ LRESULT MainMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         ShowMenu();
       }
       */
-      #ifdef NOIBOX 
-      #else
+      #if USEIBOX
       for(i=0;i<numInfoWindows;i++) {
         if(wmControl == InfoBoxes[i]->GetHandle()) {
           InfoWindowActive = TRUE;
@@ -3495,9 +3477,6 @@ void    AssignValues(void)
 extern int PDABatteryTemperature;
 void DisplayText(void)
 {
-#ifdef NOIBOX
-  return;
-#endif
   if (InfoBoxesHidden)
     return;
 
@@ -3994,15 +3973,6 @@ void CommonProcessTimer()
     }
   #endif
 
-#if (EXPERIMENTAL > 0)
-
-  if (bsms.Poll()) {
-    // turn screen on if blanked and receive a new message
-    DisplayTimeOut = 0;
-  }
-
-#endif
-
   static int iheapcompact = 0;
   // called 2 times per second, compact heap every minute.
   iheapcompact++;
@@ -4081,12 +4051,6 @@ int ConnectionProcessTimer(int itimeout) {
 			  InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
 			  RestartCommPorts();
 			}
-			#if (EXPERIMENTAL > 0)
-			// if comm port shut down, probably so did bluetooth dialup
-			// so restart it here also.
-			bsms.Shutdown();
-			bsms.Initialise();
-			#endif
 	  
 			itimeout = 0;
 		}

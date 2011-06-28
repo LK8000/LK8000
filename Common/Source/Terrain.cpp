@@ -225,10 +225,6 @@ void MarkLocation(const double lon, const double lat)
     fclose(stream);
   }
 
-#if (EXPERIMENTAL > 0)
-  bsms.SendSMS(message);
-#endif
-
 }
 
 void DrawMarks (const HDC hdc, const RECT rc)

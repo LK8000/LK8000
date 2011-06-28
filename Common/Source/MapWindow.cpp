@@ -2474,8 +2474,6 @@ void MapWindow::RenderMapWindow(  RECT rc)
 
   DrawCompass(hdcDrawWindow, rc);
 
-  // JMW Experimental only! EXPERIMENTAL
-
   DrawFlightMode(hdcDrawWindow, rc);
 
   // REMINDER TODO let it be configurable for not circling also, as before

@@ -807,7 +807,6 @@ gesture_left:
 			if (OutlinedTp>(OutlinedTp_t)otDisabled) OutlinedTp=(OutlinedTp_t)otDisabled;
 			else
 				OutlinedTp=oldOutline;
-			// TODO CHECK EXPERIMENTAL
 			Appearance.InverseInfoBox = !Appearance.InverseInfoBox;
 			#ifndef DISABLEAUDIO
 			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));

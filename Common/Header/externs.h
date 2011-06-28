@@ -27,9 +27,6 @@ extern TCHAR LK8000_Version[256];
 #include "ContestMgr.h"
 #include "device.h" // 100210
 
-#if (EXPERIMENTAL > 0)
-//JMW#include "BlueSMS.h"
-#endif
 
 typedef enum {psInitInProgress=0, psInitDone=1, psFirstDrawDone=2, psNormalOp=3} StartupState_t;
 // 0: not started at all
@@ -542,9 +539,6 @@ extern bool RequestAirspaceWarningDialog;
 extern bool LKLanguageReady;
 
 extern int UseCustomFonts;
-#if (EXPERIMENTAL > 0)
-extern BlueDialupSMS bsms;
-#endif
 
 #if (WINDOWSPC>0) 
 extern int SCREENWIDTH;

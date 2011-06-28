@@ -92,11 +92,9 @@
 
 #define LKCLIP		  // replace old Sutherland Hodgman clipping algo
 #define NEWUTM		  // New full UTM support INCOMPLETED
-#define NOIBOX		 1 // Ibox mode no more available, an important TODO
 #define DSX		  // only an experimental test feature for sms reception
 
 // Very old stuff probably we can clean and remove
-#define   EXPERIMENTAL          0             // unused stuff, such like SMS send
 #define   AIRSPACEUSEBINFILE    0             // use and maintain binary airspace file
 
  */
