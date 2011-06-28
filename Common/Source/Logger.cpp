@@ -1575,7 +1575,6 @@ void LinkGRecordDLL(void)
     {
       bFirstTime=false;
 
-      StartupStore(TEXT(". Searching for GRecordDLL%s"),NEWLINE);
       GRecordDLLHandle = LoadLibrary(TEXT("GRecordDLL.DLL"));
       if (GRecordDLLHandle != NULL)
         {
@@ -1702,11 +1701,11 @@ void LinkGRecordDLL(void)
       else {
 #if (WINDOWSPC<1)
 	_tcscpy(szLoadResults,TEXT("... Can't load GRecordDLL\r\n"));
-#else
-	_tcscpy(szLoadResults,TEXT(". Can't load GRecordDLL. On PC version this is normal.\r\n"));
 #endif
       }
+#if (WINDOWSPC<1)
       StartupStore(szLoadResults);
+#endif
 
     }
 }

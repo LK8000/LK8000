@@ -1688,7 +1688,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   
 
   // registry deleted at startup also for PC
-  StartupStore(_T(". Deleting registry key%s"),NEWLINE);
   if ( RegDeleteKey(HKEY_CURRENT_USER, _T(REGKEYNAME))== ERROR_SUCCESS )  // 091213
 	StartupStore(_T(". Registry key was correctly deleted%s"),NEWLINE);
   else
@@ -1722,10 +1721,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   if (ptr != NULL) api_has_SHHandleWMSettingChange = true;
   #endif
     
-  // We shall NOT create the LK8000 root folder if not existing
-  // otherwise users will get confused on errors
-  // CreateDirectoryIfAbsent(TEXT("")); 
-
   // These directories are needed if missing, as LK can run also with no maps and no waypoints..
   CreateDirectoryIfAbsent(TEXT(LKD_LOGS));
   CreateDirectoryIfAbsent(TEXT(LKD_CONF));
@@ -1739,8 +1734,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   icc.dwICC = ICC_UPDOWN_CLASS;
   InitCommonControls();
   InitSineTable();
-
-  StartupStore(TEXT(". Initialize application instance%s"),NEWLINE);
 
   // Perform application initialization: also ScreenGeometry and LKIBLSCALE, and Objects
   if (!InitInstance (hInstance, nCmdShow))
@@ -1756,16 +1749,9 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   SHSetAppKeyWndAssoc(VK_APP2, hWndMainWindow);
   SHSetAppKeyWndAssoc(VK_APP3, hWndMainWindow);
   SHSetAppKeyWndAssoc(VK_APP4, hWndMainWindow);
-  // Typical Record Button
-  //	Why you can't always get this to work
-  //	http://forums.devbuzz.com/m_1185/mpage_1/key_/tm.htm
-  //	To do with the fact it is a global hotkey, but you can with code above
-  //	Also APPA is record key on some systems
   SHSetAppKeyWndAssoc(VK_APP5, hWndMainWindow);
   SHSetAppKeyWndAssoc(VK_APP6, hWndMainWindow);
   #endif
-
-  StartupStore(TEXT(". Initializing critical sections and events%s"),NEWLINE);
 
   InitializeCriticalSection(&CritSec_EventQueue);
   csEventQueueInitialized = true;
@@ -1790,7 +1776,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 
   memset( &(Task), 0, sizeof(Task_t));
   memset( &(StartPoints), 0, sizeof(Start_t));
-  StartupStore(_T(". ClearTask%s"),NEWLINE);
   ClearTask();
   memset( &(GPS_INFO), 0, sizeof(GPS_INFO));
   memset( &(CALCULATED_INFO), 0,sizeof(CALCULATED_INFO));
@@ -2814,32 +2799,26 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   rc.bottom = SCREENHEIGHT;
 #endif
 
-  StartupStore(TEXT(". InfoBox geometry%s"),NEWLINE);
-
+  #if USEIBOX
   InfoBoxLayout::ScreenGeometry(rc);
-  StartupStore(TEXT(". Create Objects%s"),NEWLINE);
-  LKObjects_Create(); //@ 101124
+  #endif
 
-  StartupStore(TEXT(". Load unit bitmaps%s"),NEWLINE);
+  LKObjects_Create(); 
 
   Units::LoadUnitBitmap(hInstance);
 
   #if USEIBOX
-  StartupStore(TEXT(". Create info boxes%s"),NEWLINE);
   InfoBoxLayout::CreateInfoBoxes(rc);
   #endif
 
-  StartupStore(TEXT(". Create button labels%s"),NEWLINE);
   ButtonLabel::CreateButtonLabels(rc);
   ButtonLabel::SetLabelText(0,TEXT("MODE"));
 
-  StartupStore(TEXT(". Initialize fonts%s"),NEWLINE);
   InitialiseFonts(rc);
   InitNewMap();	// reload updating LK fonts after loading profile
 
   ButtonLabel::SetFont(MapWindowBoldFont);
 
-  StartupStore(TEXT(". Initialise message system%s"),NEWLINE);
   Message::Initialize(rc); // creates window, sets fonts
 
   ShowWindow(hWndMainWindow, SW_SHOW);
@@ -2853,7 +2832,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 			       (rc.bottom-rc.top) ,
                                hWndMainWindow, NULL ,hInstance,NULL);
 
-  // JMW gauge creation was here
   ShowWindow(hWndMainWindow, nCmdShow);
 
   UpdateWindow(hWndMainWindow);
