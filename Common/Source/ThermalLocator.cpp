@@ -14,10 +14,8 @@
 #include <math.h>
 
 #include "utils/heapcheck.h"
-#ifdef LKAIRSPACE
 using std::min;
 using std::max;
-#endif
 
 int EnableThermalLocator = 1;
 

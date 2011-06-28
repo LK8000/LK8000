@@ -21,10 +21,8 @@
 #include "buildnumber.h"
 
 
-#if defined(LKAIRSPACE)
 using std::min;
 using std::max;
-#endif
 
 extern BOOL extGPSCONNECT;
 extern NMEAParser nmeaParser1;

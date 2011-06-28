@@ -29,10 +29,8 @@
 #include "lk8000.h"
 
 #include "utils/heapcheck.h"
-#ifdef LKAIRSPACE
 using std::min;
 using std::max;
-#endif
 
 /*
   About Windanalysation

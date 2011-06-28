@@ -201,10 +201,6 @@ LRESULT CALLBACK StatusMsgWndTimerProc(HWND hwnd, UINT message,
       SetWindowLong(hwnd, GWL_USERDATA, (LONG) data);
     }
     MapWindow::RequestFastRefresh();
-#ifdef LKAIRSPACE
-#else
-    ClearAirspaceWarnings(false); 
-#endif
     // JMW do this so airspace warning gets refreshed
 
     return 0;

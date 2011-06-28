@@ -21,10 +21,8 @@
 #include "utils/heapcheck.h"
 
 
-#if defined(LKAIRSPACE)
 using std::min;
 using std::max;
-#endif
 
 HINSTANCE GRecordDLLHandle = NULL;
 

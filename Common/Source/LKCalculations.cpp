@@ -32,10 +32,8 @@
 #include "LKMapWindow.h"
 
 #include "utils/heapcheck.h"
-#if defined(LKAIRSPACE)
 using std::min;
 using std::max;
-#endif
 
 extern void LatLon2Flat(double lon, double lat, int *scx, int *scy);
 extern int CalculateWaypointApproxDistance(int scx_aircraft, int scy_aircraft, int i);

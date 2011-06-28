@@ -19,10 +19,8 @@
 #include <windows.h>
 
 #include "utils/heapcheck.h"
-#if defined(LKAIRSPACE)
 using std::min;
 using std::max;
-#endif
 
 double GlidePolar::polar_a;
 double GlidePolar::polar_b;

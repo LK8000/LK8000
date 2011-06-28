@@ -10,7 +10,6 @@
 #include "mapshape.h"
 
 
-#ifdef LKAIRSPACE
 #include "CriticalSection.h"
 #include "Calculations.h"
 #include "Point2D.h"
@@ -441,5 +440,4 @@ typedef struct {
 } LKAirspace_Nearest_Item;
 
 
-#endif /* LKAIRSPACE */
 #endif

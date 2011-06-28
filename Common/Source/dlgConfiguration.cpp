@@ -988,12 +988,10 @@ static void OnTaskRulesClicked(WindowControl * Sender){
   dlgTaskRules();
 }
 
-#ifdef LKAIRSPACE
 static void OnAirspaceWarningParamsClicked(WindowControl * Sender){
 	(void)Sender;
   dlgAirspaceWarningParamsShowModal();
 }
-#endif
 
 static void OnAirspaceModeClicked(WindowControl * Sender){
 	(void)Sender;
@@ -1344,9 +1342,7 @@ static void OnWaypointDeleteClicked(WindowControl * Sender){
 static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnAirspaceColoursClicked),
   DeclareCallBackEntry(OnAirspaceModeClicked),
-#ifdef LKAIRSPACE
   DeclareCallBackEntry(OnAirspaceWarningParamsClicked),
-#endif
   DeclareCallBackEntry(OnUTCData),
   DeclareCallBackEntry(OnNextClicked),
   DeclareCallBackEntry(OnPrevClicked),
@@ -1849,13 +1845,11 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-#ifdef LKAIRSPACE
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMessageRepeatTime"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(AirspaceWarningRepeatTime/60);
     wp->RefreshDisplay();
   }
-#endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceOutline"));
   if (wp) {
@@ -1894,21 +1888,6 @@ static void setVariables(void) {
     dfe->Set(EnableFLARMMap);
     wp->RefreshDisplay();
   }
-
-#ifdef LKAIRSPACE
-#else
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningTime"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(WarningTime);
-    wp->RefreshDisplay();
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAcknowledgementTime"));
-  if (wp) {
-    wp->GetDataField()->SetAsFloat(AcknowledgementTime);
-    wp->RefreshDisplay();
-  }
-#endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointLabels"));
   if (wp) {
@@ -3702,7 +3681,6 @@ void dlgConfigurationShowModal(void){
     }
   }
   
-#ifdef LKAIRSPACE
  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningMessageRepeatTime"));
   if (wp) {
     if (AirspaceWarningRepeatTime != (wp->GetDataField()->GetAsInteger()*60)) {
@@ -3711,7 +3689,6 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
-#endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceOutline"));
   if (wp) {
@@ -3770,8 +3747,6 @@ void dlgConfigurationShowModal(void){
     }
   }
 
-#ifdef LKAIRSPACE
-#else
   wp = (WndProperty*)wf->FindByName(TEXT("prpWarningTime"));
   if (wp) {
     if (WarningTime != wp->GetDataField()->GetAsInteger()) {
@@ -3790,7 +3765,6 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
-#endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointLabels"));
   if (wp) {

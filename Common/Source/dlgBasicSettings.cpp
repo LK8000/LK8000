@@ -62,11 +62,7 @@ static void OnQnhData(DataField *Sender, DataField::DataAccessKind_t Mode){
 		}
 		if (CALCULATED_INFO.Flying) QNH=fabs(QNH); 
 		devPutQNH(devAll(), QNH);
-#ifdef LKAIRSPACE
 		CAirspaceManager::Instance().QnhChangeNotify(QNH);
-#else
-		AirspaceQnhChangeNotify(QNH);
-#endif
 		// VarioWriteSettings();
 
 		wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
@@ -103,11 +99,7 @@ static void OnAltitudeData(DataField *Sender, DataField::DataAccessKind_t Mode){
 		}
 		wp->RefreshDisplay();
 	}
-#ifdef LKAIRSPACE
     CAirspaceManager::Instance().QnhChangeNotify(QNH);
-#else
-    AirspaceQnhChangeNotify(QNH);
-#endif
 	break;
   case DataField::daInc:
   case DataField::daDec:

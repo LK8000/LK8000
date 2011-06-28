@@ -18,10 +18,8 @@
 #include "lk8000.h" // 091117
 
 #include "utils/heapcheck.h"
-#if defined(LKAIRSPACE)
 using std::min;
 using std::max;
-#endif
 
 extern InfoBox *InfoBoxes[MAXINFOWINDOWS];
 extern HWND hWndMainWindow; // Main Windows

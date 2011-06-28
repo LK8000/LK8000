@@ -16,7 +16,6 @@
 #include "wcecompat/ts_string.h"
 #include <Point2D.h>
 
-#ifdef LKAIRSPACE
 
 using std::min;
 using std::max;
@@ -2454,4 +2453,3 @@ void CAirspaceManager::AirspaceSetSelect(CAirspace &airspace)
   if (_selected_airspace != NULL) _selected_airspace->Selected(true);
 }
 
-#endif /* LKAIRSPACE */

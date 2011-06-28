@@ -19,15 +19,9 @@
 #include <aygshell.h>
 #include "InfoBoxLayout.h"
 #include "Airspace.h"
-#ifdef LKAIRSPACE
 #include "LKAirspace.h"
 using std::min;
 using std::max;
-#endif
-#if defined(LKAIRSPACE)
-using std::min;
-using std::max;
-#endif
 #ifdef OLDPPC
 #include "LK8000Process.h"
 #else
@@ -1313,11 +1307,7 @@ void InputEvents::eventTerrainTopology(const TCHAR *misc) {
 // Do clear warnings IF NONE Toggle Terrain/Topology
 void InputEvents::eventClearWarningsOrTerrainTopology(const TCHAR *misc) {
 	(void)misc;
-#ifdef LKAIRSPACE
   if (0) {
-#else
-  if (ClearAirspaceWarnings(true,false)) {
-#endif
 	// airspace was active, enter was used to acknowledge
     return;
   }
@@ -1330,24 +1320,9 @@ void InputEvents::eventClearWarningsOrTerrainTopology(const TCHAR *misc) {
 // Clears airspace warnings for the selected airspace
 //     day: clears the warnings for the entire day
 //     ack: clears the warnings for the acknowledgement time
-#ifdef LKAIRSPACE
 void InputEvents::eventClearAirspaceWarnings(const TCHAR *misc) {
   // this is not used anymore.
 }
-#else
-void InputEvents::eventClearAirspaceWarnings(const TCHAR *misc) {
-  if (_tcscmp(misc, TEXT("day")) == 0) 
-    // JMW clear airspace warnings for entire day (for selected airspace)
-    ClearAirspaceWarnings(true,true);
-  else {
-    
-    // default, clear airspace for short acknowledgement time
-    if (ClearAirspaceWarnings(true,false)) {
-
-    }
-  }
-}
-#endif
 
 // ClearStatusMessages
 // Do Clear Event Warnings
@@ -2318,105 +2293,13 @@ void InputEvents::eventNearestAirspaceDetails(const TCHAR *misc) {
   (void)misc;
   double nearestdistance=0;
   double nearestbearing=0;
-#ifndef LKAIRSPACE
-  int foundcircle = -1;
-  int foundarea = -1;
-  int i;
-  bool inside = false;
-
-  TCHAR szMessageBuffer[MAX_PATH];
-  TCHAR szTitleBuffer[MAX_PATH];
-  TCHAR text[MAX_PATH];
-  
-  if (!dlgAirspaceWarningIsEmpty()) {
-    RequestAirspaceWarningForce = true;
-    RequestAirspaceWarningDialog= true;
-    return;
-  }
-#endif
 
   // StartHourglassCursor();
-#ifdef LKAIRSPACE
   CAirspace *found = CAirspaceManager::Instance().FindNearestAirspace(GPS_INFO.Longitude, GPS_INFO.Latitude,
 		      &nearestdistance, &nearestbearing );
   if (found != NULL) {
 	dlgAirspaceDetails(found);
   }
-#else
-  FindNearestAirspace(GPS_INFO.Longitude, GPS_INFO.Latitude,
-		      &nearestdistance, &nearestbearing,
-		      &foundcircle, &foundarea);
-  // StopHourglassCursor();
-
-  if ((foundcircle == -1)&&(foundarea == -1)) {
-    // nothing to display!
-    return;
-  }
-
-  if (foundcircle != -1) {
-    i = foundcircle;
-
-    dlgAirspaceDetails(i, -1);
-    /*
-    FormatWarningString(AirspaceCircle[i].Type , AirspaceCircle[i].Name , 
-			AirspaceCircle[i].Base, AirspaceCircle[i].Top, 
-			szMessageBuffer, szTitleBuffer );
-    */
-  } else if (foundarea != -1) {
-
-    i = foundarea;
-    dlgAirspaceDetails(-1, i);
-
-    /*
-    FormatWarningString(AirspaceArea[i].Type , AirspaceArea[i].Name , 
-			AirspaceArea[i].Base, AirspaceArea[i].Top, 
-			szMessageBuffer, szTitleBuffer );
-    */
-  }
-
-  return; 
-
-  if (nearestdistance<0) {
-    inside = true;
-    nearestdistance = -nearestdistance;
-  }
-
-  TCHAR DistanceText[MAX_PATH];
-  Units::FormatUserDistance(nearestdistance, DistanceText, 10);
-
-  if (inside && (CALCULATED_INFO.NavAltitude <= AirspaceArea[i].Top.Altitude)
-      && (CALCULATED_INFO.NavAltitude >= AirspaceArea[i].Base.Altitude)) {
-
-    _stprintf(text,
-              TEXT("%s: %s\r\n%s\r\n%s: %s\r\n%s %d") TEXT(DEG)TEXT("\r\n"), 
-		gettext(TEXT("_@M869_")), // Inside airspace
-              szTitleBuffer, 
-              szMessageBuffer,
-		gettext(TEXT("_@M870_")), // Exit
-              DistanceText,
-		gettext(TEXT("_@M138_")), // Bearing
-              (int)nearestbearing);
-  } else {
-    _stprintf(text,
-	      TEXT("%s: %s\r\n%s\r\n%s: %s\r\n%s %d") TEXT(DEG)TEXT("\r\n"), 
-		gettext(TEXT("_@M871_")), // Nearest airspace
-	      szTitleBuffer, 
-	      szMessageBuffer,
-		gettext(TEXT("_@M245_")), // Distance
-	      DistanceText,
-		gettext(TEXT("_@M138_")), // Bearing
-	      (int)nearestbearing);
-  }
-    
-  // clear previous warning if any
-  Message::Acknowledge(MSG_AIRSPACE);
-
-  // TODO code: No control via status data (ala DoStatusMEssage) 
-  // - can we change this?
-  Message::Lock();
-  Message::AddMessage(5000, MSG_AIRSPACE, text);
-  Message::Unlock();
-#endif
 }
 
 // NearestWaypointDetails

@@ -15,7 +15,6 @@
 #include "Units.h"
 #include "MapWindow.h"
 
-#ifdef LKAIRSPACE
 
 #include "dlgTools.h"
 #include "CriticalSection.h"
@@ -391,4 +390,3 @@ void ShowAirspaceWarningsToUser()
 }
 
 
-#endif //LKAIRSPACE

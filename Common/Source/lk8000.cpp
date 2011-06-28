@@ -83,10 +83,8 @@ extern void LKObjects_Create();
 extern void LKObjects_Delete();
 #include "LKMainObjects.h"
 
-#if defined(LKAIRSPACE)
 using std::min;
 using std::max;
-#endif
 
 #ifdef DEBUG_TRANSLATIONS
 #include <map>
@@ -626,34 +624,19 @@ double Experimental1=0, Experimental2=0;
 double NearestAirspaceHDist=-1;
 double NearestAirspaceVDist=0;
 TCHAR NearestAirspaceName[NAME_SIZE+1] = {0};
-#ifdef LKAIRSPACE
 TCHAR NearestAirspaceVName[NAME_SIZE+1] = {0};
-#endif
 
 // Flarmnet tools
 int FlarmNetCount=0;
-
-// Airspace Database
-#ifndef LKAIRSPACE
-AIRSPACE_AREA *AirspaceArea = NULL;
-AIRSPACE_POINT *AirspacePoint = NULL;
-POINT *AirspaceScreenPoint = NULL;
-AIRSPACE_CIRCLE *AirspaceCircle = NULL;
-unsigned int NumberOfAirspacePoints = 0;
-unsigned int NumberOfAirspaceAreas = 0;
-unsigned int NumberOfAirspaceCircles = 0;
-#endif
 
 //Airspace Warnings
 int AIRSPACEWARNINGS = TRUE;
 int WarningTime = 60;
 int AcknowledgementTime = 900;                  // keep ack level for this time, [secs]
-#ifdef LKAIRSPACE
 int AirspaceWarningRepeatTime = 300;			// warning repeat time if not acknowledged after 5 minutes
 int AirspaceWarningVerticalMargin = 100;		// vertical distance used to calculate too close condition
 int AirspaceWarningDlgTimeout = 30;             // airspace warning dialog auto closing in x secs
 int AirspaceWarningMapLabels = 1;               // airspace warning map labels showed
-#endif
 
 lkalarms_s LKalarms[MAXLKALARMS];
 
@@ -1213,15 +1196,9 @@ void SettingsLeave() {
   }
   
   if(AIRSPACEFILECHANGED) {
-#ifdef LKAIRSPACE
 	CAirspaceManager::Instance().CloseAirspaces();
 	CAirspaceManager::Instance().ReadAirspaces();
 	CAirspaceManager::Instance().SortAirspaces();
-#else
-	CloseAirspace();
-	ReadAirspace();
-	SortAirspace();
-#endif
 	MapWindow::ForceVisibilityScan = true;
   }  
   
@@ -1962,13 +1939,8 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   StartupStore(TEXT(". RASP load%s"),NEWLINE);
   RASP.Scan(GPS_INFO.Latitude, GPS_INFO.Longitude);
 #endif
-#ifdef LKAIRSPACE
   CAirspaceManager::Instance().ReadAirspaces();
   CAirspaceManager::Instance().SortAirspaces();
-#else
-  ReadAirspace();
-  SortAirspace();
-#endif
   OpenTopology();
   TopologyInitialiseMarks();
 
@@ -2063,10 +2035,6 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   while(!(goCalculationThread)) Sleep(50); // 091119
   #endif
   // Sleep(500); 091119
-#ifndef LKAIRSPACE
-  StartupStore(TEXT(". AirspaceWarnListInit%s"),NEWLINE);
-  AirspaceWarnListInit();
-#endif
   StartupStore(TEXT(". dlgAirspaceWarningInit%s"),NEWLINE);
   dlgAirspaceWarningInit();
 
@@ -3037,10 +3005,6 @@ void Shutdown(void) {
 
   StartupStore(TEXT(". dlgAirspaceWarningDeInit%s"),NEWLINE);
   dlgAirspaceWarningDeInit();
-#ifndef LKAIRSPACE
-  StartupStore(TEXT(". AirspaceWarnListDeInit%s"),NEWLINE);
-  AirspaceWarnListDeInit();
-#endif
   
   // LKTOKEN _@M1220_ "Shutdown, saving logs..."
   CreateProgressDialog(gettext(TEXT("_@M1220_")));
@@ -3086,10 +3050,6 @@ void Shutdown(void) {
   LockTaskData();
   Task[0].Index = -1;  ActiveWayPoint = -1; 
   AATEnabled = FALSE;
-#ifndef LKAIRSPACE
-  NumberOfAirspacePoints = 0; NumberOfAirspaceAreas = 0; 
-  NumberOfAirspaceCircles = 0;
-#endif
   CloseWayPoints();
   UnlockTaskData();
 
@@ -3153,14 +3113,7 @@ void Shutdown(void) {
   DeleteObject(MapWindowBoldFont);
   DeleteObject(StatisticsFont);  
   DeleteObject(TitleSmallWindowFont);
-#ifdef LKAIRSPACE  
   CAirspaceManager::Instance().CloseAirspaces();
-#else
-  if(AirspaceArea != NULL)   LocalFree((HLOCAL)AirspaceArea);
-  if(AirspacePoint != NULL)  LocalFree((HLOCAL)AirspacePoint);
-  if(AirspaceScreenPoint != NULL)  LocalFree((HLOCAL)AirspaceScreenPoint);
-  if(AirspaceCircle != NULL) LocalFree((HLOCAL)AirspaceCircle);
-#endif
   StartupStore(TEXT(". Delete Critical Sections%s"),NEWLINE);
   
   DeleteCriticalSection(&CritSec_EventQueue);
@@ -3717,12 +3670,10 @@ void DisplayText(void)
 	if (NearestAirspaceHDist>0)
           InfoBoxes[i]->SetComment(NearestAirspaceName);
 	  break;
-#ifdef LKAIRSPACE
     case 114:
     if (NearestAirspaceVDist>0)
           InfoBoxes[i]->SetComment(NearestAirspaceVName);
       break;
-#endif      
     case 10:
       if (CALCULATED_INFO.AutoMacCready)
 		// LKTOKEN _@M1184_ "AutMC"
@@ -3957,17 +3908,8 @@ void CommonProcessTimer()
   // service the GCE and NMEA queue
   if (ProgramStarted==psNormalOp) {
     InputEvents::DoQueuedEvents();
-#ifdef LKAIRSPACE
 	  // only shows the dialog if needed.
 	  ShowAirspaceWarningsToUser();
-#else
-    if (RequestAirspaceWarningDialog) {
-      DisplayTimeOut=0;
-      RequestAirspaceWarningDialog= false;
-      dlgAirspaceWarningShowDlg(RequestAirspaceWarningForce);
-      RequestAirspaceWarningForce = false;
-    }
-#endif
   }
 
 #if (WINDOWSPC<1)
@@ -4892,11 +4834,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
   if (_tcsstr(OutBuffer, TEXT("$(CheckAirspace)"))) {
-#ifdef LKAIRSPACE
 	if (!CAirspaceManager::Instance().ValidAirspaces()) {
-#else
-	if (!ValidAirspace()) {
-#endif
       invalid = true;
     }
     ReplaceInString(OutBuffer, TEXT("$(CheckAirspace)"), TEXT(""), Size);

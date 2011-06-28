@@ -14,9 +14,7 @@
 #include "MapWindow.h"
 #include "externs.h"
 #include "Terrain.h"
-#ifdef LKAIRSPACE
 #include "LKAirspace.h"
-#endif
 
 #include "utils/heapcheck.h"
 
@@ -129,14 +127,10 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   // airspace) we must copy destination bitmap into source bitmap first so that 
   // alpha blending of such areas results in the same pixels as origin pixels 
   // in destination 
-#ifdef LKAIRSPACE
   CAirspaceList::const_iterator it;
   CAirspaceList::const_reverse_iterator itr;
   const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
   int airspace_type;
-#else
-  unsigned int i;
-#endif
   bool found = false;
   bool borders_only = (GetAirSpaceFillType() == asp_fill_ablend_borders);
   HDC hdcbuffer = NULL;
@@ -156,7 +150,6 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   }
 
   // Draw airspace area
-#ifdef LKAIRSPACE
     if (1) {
     CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
     if (borders_only) {
@@ -193,66 +186,6 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
       }//for
     }//else borders_only
     }//mutex release
-#else
-  if (AirspaceCircle) {
-    for(i = 0; i < NumberOfAirspaceCircles; i++) {
-      if (AirspaceCircle[i].Visible == 2) {
-        if (!found) {
-          found = true;
-          ClearTptAirSpace(hdc, rc);
-        }
-        if (borders_only) {
-          // set filling brush
-          SelectObject(hdcbuffer, GetAirSpaceSldBrushByClass(airspace_type));
-          Circle(hdcbuffer,
-                AirspaceCircle[i].Screen.x ,
-                AirspaceCircle[i].Screen.y ,
-                AirspaceCircle[i].ScreenR ,rc, true, true);
-          Circle(hDCMask,
-                AirspaceCircle[i].Screen.x ,
-                AirspaceCircle[i].Screen.y ,
-                AirspaceCircle[i].ScreenR ,rc, true, false);
-        } else {
-          // set filling brush
-          SelectObject(hDCTemp, GetAirSpaceSldBrushByClass(AirspaceCircle[i].Type));
-          Circle(hDCTemp,
-                AirspaceCircle[i].Screen.x ,
-                AirspaceCircle[i].Screen.y ,
-                AirspaceCircle[i].ScreenR ,rc, true, true);
-        }
-      }
-    }
-  }
-
-
-  if (AirspaceArea) {
-    for(i = 0; i < NumberOfAirspaceAreas; i++) {
-      if(AirspaceArea[i].Visible == 2) {
-        if (!found) {
-          found = true;
-          ClearTptAirSpace(hdc, rc);
-        }
-        
-        if (borders_only) {
-          // set filling brush
-          SelectObject(hdcbuffer, GetAirSpaceSldBrushByClass(AirspaceArea[i].Type));
-          ClipPolygon(hdcbuffer,
-                      AirspaceScreenPoint + AirspaceArea[i].FirstPoint,
-                      AirspaceArea[i].NumPoints, rc, true);
-          ClipPolygon(hDCMask,
-                      AirspaceScreenPoint + AirspaceArea[i].FirstPoint,
-                      AirspaceArea[i].NumPoints, rc, false);
-        } else {
-          // set filling brush
-          SelectObject(hDCTemp, GetAirSpaceSldBrushByClass(AirspaceArea[i].Type));
-          ClipPolygon(hDCTemp,
-                      AirspaceScreenPoint + AirspaceArea[i].FirstPoint,
-                      AirspaceArea[i].NumPoints, rc, true);
-        }
-      }
-    }
-  }
-#endif
 
   // alpha blending
   if (found) {
@@ -301,7 +234,6 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   // we will be drawing directly into given hdc, so store original PEN object
   HPEN hOrigPen = (HPEN) SelectObject(hdc, GetStockObject(WHITE_PEN));
 
-#ifdef LKAIRSPACE
     if (1) {
     CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
 	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
@@ -316,51 +248,6 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
         }
 	}//for
     }
-#else
-  if (AirspaceCircle) {
-    for(i = 0; i < NumberOfAirspaceCircles; i++) {
-      if (AirspaceCircle[i].Visible) {
-        if (bAirspaceBlackOutline) {
-          SelectObject(hdc, GetStockObject(BLACK_PEN));
-        } else {
-          SelectObject(hdc, hAirspacePens[AirspaceCircle[i].Type]);
-        }
-        
-        Circle(hdc,
-               AirspaceCircle[i].Screen.x ,
-               AirspaceCircle[i].Screen.y ,
-               AirspaceCircle[i].ScreenR ,rc, true, false);
-      }
-    }
-  }
-
-  if (AirspaceArea) {
-    for(i = 0; i < NumberOfAirspaceAreas; i++) {
-      if(AirspaceArea[i].Visible) {
-        if (bAirspaceBlackOutline) {
-          SelectObject(hdc, GetStockObject(BLACK_PEN));
-        } else {
-          SelectObject(hdc, hAirspacePens[AirspaceArea[i].Type]);
-        }
-
-        POINT *pstart = AirspaceScreenPoint + AirspaceArea[i].FirstPoint;
-        ClipPolygon(hdc, pstart,
-                    AirspaceArea[i].NumPoints, rc, false);
-        
-        if (AirspaceArea[i].NumPoints>2) {
-          // JMW close if open
-          if ((pstart[0].x != pstart[AirspaceArea[i].NumPoints-1].x) ||
-              (pstart[0].y != pstart[AirspaceArea[i].NumPoints-1].y)) {
-            POINT ps[2];
-            ps[0] = pstart[0];
-            ps[1] = pstart[AirspaceArea[i].NumPoints-1];
-            _Polyline(hdc, ps, 2, rc);
-          }
-        }
-      }
-    }
-  }
-#endif
 
   if (borders_only) {
     // Free up GDI resources

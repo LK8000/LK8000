@@ -24,10 +24,8 @@
 
 #include "utils/heapcheck.h"
 
-#if defined(LKAIRSPACE)
 using std::min;
 using std::max;
-#endif
 
 unsigned short minalt=9999;
 

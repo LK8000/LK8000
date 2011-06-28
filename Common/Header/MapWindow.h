@@ -150,9 +150,7 @@ typedef union{
     unsigned WhiteBold:1;
     unsigned NoSetFont:1;  // VENTA5
     unsigned Color:5;
-#ifdef LKAIRSPACE
 	unsigned SetTextColor:1;	// Set text color in border mode
-#endif
   }AsFlag;
 }TextInBoxMode_t;
   // mode are flags
@@ -435,10 +433,6 @@ class MapWindow {
                                        POINT *Orig_Aircraft);
   static void CalculateScreenPositionsGroundline();
   static void CalculateScreenPositionsAirspace();
-#ifndef LKAIRSPACE
-  static void CalculateScreenPositionsAirspaceCircle(AIRSPACE_CIRCLE& circ);
-  static void CalculateScreenPositionsAirspaceArea(AIRSPACE_AREA& area);
-#endif
   static void CalculateScreenPositionsThermalSources();
   static void LKCalculateWaypointReachable(short multicalc_slot, short numslots);
   
@@ -460,9 +454,7 @@ class MapWindow {
   //  static void DrawWindAtAircraft(HDC hdc, POINT Orig, RECT rc);
   static void DrawWindAtAircraft2(HDC hdc, POINT Orig, RECT rc);
   static void DrawAirSpace(HDC hdc, const RECT rc);
-#ifdef LKAIRSPACE
   static void DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Aircraft);
-#endif
   static void DrawWaypoints(HDC hdc, const RECT rc);
   static void DrawWaypointsNew(HDC hdc, const RECT rc);
   static void DrawLook8000(HDC hdc, const RECT rc);
@@ -574,9 +566,7 @@ class MapWindow {
     hTurnPoint, hSmall, hInvTurnPoint, hInvSmall, hCruise, hClimb,
     hFinalGlide, hAutoMacCready, hTerrainWarning, hGPSStatus1, hGPSStatus2,
     hAbort, hLogger, hLoggerOff, hFLARMTraffic;
-#ifdef LKAIRSPACE
 	static HBITMAP hAirspaceWarning;
-#endif
   static HBRUSH   hBackgroundBrush;
   static COLORREF BackgroundColor;
 

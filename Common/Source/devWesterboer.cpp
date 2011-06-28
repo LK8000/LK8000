@@ -137,11 +137,7 @@ static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 	// if wester has qnh set by user qne and qnh are of course different
 	if (altqne != altqnh) {
 		QNH=FindQNH(altqne,altqnh);
-#ifdef LKAIRSPACE
         CAirspaceManager::Instance().QnhChangeNotify(QNH);
-#else
-        AirspaceQnhChangeNotify(QNH);
-#endif
 		StartupStore(_T(". Using WESTERBOER QNH %f%s"),QNH,NEWLINE);
 		initqnh=false;
 	} else {

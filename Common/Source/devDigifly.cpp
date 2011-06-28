@@ -140,11 +140,7 @@ static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 	// if digifly has qnh set by user qne and qnh are of course different
 	if (altqne != altqnh) {
 		QNH=FindQNH(altqne,altqnh);
-#ifdef LKAIRSPACE
         CAirspaceManager::Instance().QnhChangeNotify(QNH);
-#else
-        AirspaceQnhChangeNotify(QNH);
-#endif
 		StartupStore(_T(". Using Digifly QNH %f%s"),QNH,NEWLINE);
 		initqnh=false;
 	} else {
@@ -234,11 +230,7 @@ static BOOL PDGFTTL(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 	// if digifly has qnh set by user qne and qnh are of course different
 	if (altqne != altqnh) {
 		QNH=FindQNH(altqne,altqnh);
-#ifdef LKAIRSPACE
         CAirspaceManager::Instance().QnhChangeNotify(QNH);
-#else
-        AirspaceQnhChangeNotify(QNH);
-#endif
 		StartupStore(_T(". Using Digifly QNH %f%s"),QNH,NEWLINE);
 		initqnh=false;
 	} else {

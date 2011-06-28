@@ -21,10 +21,8 @@
 
 #include "utils/heapcheck.h"
 
-#ifdef LKAIRSPACE
 using std::min;
 using std::max;
-#endif
 
 WindMeasurementList::WindMeasurementList(){
   nummeasurementlist = 0;

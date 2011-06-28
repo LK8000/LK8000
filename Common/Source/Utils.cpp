@@ -152,12 +152,10 @@ const TCHAR szRegistryAirspaceWarning[]= TEXT("AirspaceWarn");
 const TCHAR szRegistryAirspaceBlackOutline[]= TEXT("AirspaceBlackOutline1");
 const TCHAR szRegistryAirspaceFillType[]= TEXT("AirspaceFillType");
 const TCHAR szRegistryAirspaceOpacity[]= TEXT("AirspaceOpacity");
-#ifdef LKAIRSPACE
 const TCHAR szRegistryAirspaceWarningRepeatTime[]= TEXT("AirspaceWarningRepeatTime1");
 const TCHAR szRegistryAirspaceWarningVerticalMargin[]= TEXT("AirspaceWarningVerticalMargin");
 const TCHAR szRegistryAirspaceWarningDlgTimeout[]= TEXT("AirspaceWarningDlgTimeout");
 const TCHAR szRegistryAirspaceWarningMapLabels[]= TEXT("AirspaceWarningMapLabels");
-#endif
 const TCHAR szRegistryAltMargin[]=	   TEXT("AltMargin");
 const TCHAR szRegistryAltMode[]=  TEXT("AltitudeMode");
 const TCHAR szRegistrySafetyAltitudeMode[]=  TEXT("SafetyAltitudeMode");
@@ -574,7 +572,6 @@ void ReadRegistrySettings(void)
   if(GetFromRegistry(szRegistryAltMargin,&Temp)==ERROR_SUCCESS)
     AltWarningMargin = Temp;
 
-#ifdef LKAIRSPACE
   Temp=AirspaceWarningRepeatTime;
   if(GetFromRegistry(szRegistryAirspaceWarningRepeatTime,&Temp)==ERROR_SUCCESS)
     AirspaceWarningRepeatTime = Temp;
@@ -590,7 +587,6 @@ void ReadRegistrySettings(void)
   Temp=AirspaceWarningMapLabels;
   if(GetFromRegistry(szRegistryAirspaceWarningMapLabels,&Temp)==ERROR_SUCCESS)
     AirspaceWarningMapLabels = Temp;
-#endif
 	
   Temp=SafetyAltitudeMode;
   if(GetFromRegistry(szRegistrySafetyAltitudeMode,&Temp)==ERROR_SUCCESS)
@@ -2548,45 +2544,6 @@ int DrawArc(HDC hdc, long x, long y, int radius, RECT rc,
   
   return TRUE;
 }
-
-#ifndef LKAIRSPACE
-//Not used function!
-void ConvertFlightLevels(void)
-{
-  unsigned i;
-
-  // TODO accuracy: Convert flightlevels is inaccurate!
-
-  for(i=0;i<NumberOfAirspaceCircles;i++)
-    {
-      if(AirspaceCircle[i].Base.FL  != 0)
-	{
-	  AirspaceCircle[i].Base.Altitude = (AirspaceCircle[i].Base.FL * 100) + ((QNH-1013)*30);
-	  AirspaceCircle[i].Base.Altitude = AirspaceCircle[i].Base.Altitude / TOFEET;
-	}
-      if(AirspaceCircle[i].Top.FL  != 0)
-	{
-	  AirspaceCircle[i].Top.Altitude = (AirspaceCircle[i].Top.FL * 100) + ((QNH-1013)*30);
-	  AirspaceCircle[i].Top.Altitude = AirspaceCircle[i].Top.Altitude / TOFEET;
-	}
-    }
-
-
-  for(i=0;i<NumberOfAirspaceAreas;i++)
-    {
-      if(AirspaceArea[i].Base.FL  != 0)
-	{
-	  AirspaceArea[i].Base.Altitude = (AirspaceArea[i].Base.FL * 100) + ((QNH-1013)*30);
-	  AirspaceArea[i].Base.Altitude = AirspaceArea[i].Base.Altitude / TOFEET;
-	}
-      if(AirspaceArea[i].Top.FL  != 0)
-	{
-	  AirspaceArea[i].Top.Altitude = (AirspaceArea[i].Top.FL * 100) + ((QNH-1013)*30);
-	  AirspaceArea[i].Top.Altitude = AirspaceArea[i].Top.Altitude / TOFEET;
-	}
-    }
-}
-#endif
 
 BOOL PolygonVisible(const POINT *lpPoints, int nCount, RECT rc)
 {

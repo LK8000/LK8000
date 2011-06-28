@@ -36,15 +36,9 @@
 
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
-#ifdef LKAIRSPACE
 #include "LKAirspace.h"
 using std::min;
 using std::max;
-#endif
-#if defined(LKAIRSPACE)
-using std::min;
-using std::max;
-#endif
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -327,29 +321,7 @@ void MapWindow::ScanVisibility(rectObj *bounds_active) {
   }
 
   // far visibility for airspace
-#ifdef LKAIRSPACE
   CAirspaceManager::Instance().SetFarVisible( *bounds_active );
-#else
-  if (AirspaceCircle) {
-    for (AIRSPACE_CIRCLE* circ = AirspaceCircle;
-         circ < AirspaceCircle+NumberOfAirspaceCircles; circ++) {
-      circ->FarVisible = 
-        (msRectOverlap(&circ->bounds, bounds_active) == MS_TRUE) ||
-        (msRectContained(bounds_active, &circ->bounds) == MS_TRUE) ||
-        (msRectContained(&circ->bounds, bounds_active) == MS_TRUE);
-    }
-  }
-
-  if (AirspaceArea) {
-    for(AIRSPACE_AREA *area = AirspaceArea;
-        area < AirspaceArea+NumberOfAirspaceAreas; area++) {
-      area->FarVisible = 
-        (msRectOverlap(&area->bounds, bounds_active) == MS_TRUE) ||
-        (msRectContained(bounds_active, &area->bounds) == MS_TRUE) ||
-        (msRectContained(&area->bounds, bounds_active) == MS_TRUE);
-    }
-  }
-#endif
 
 }
 
@@ -386,107 +358,10 @@ void MapWindow::CalculateScreenPositionsThermalSources() {
   }
 }
 
-#ifdef LKAIRSPACE
 void MapWindow::CalculateScreenPositionsAirspace()
 {
   CAirspaceManager::Instance().CalculateScreenPositionsAirspace(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, zoom.ResScaleOverDistanceModify());
 }
-#else
-void MapWindow::CalculateScreenPositionsAirspaceCircle(AIRSPACE_CIRCLE &circ) {
-  circ.Visible = false;
-  if (!circ.FarVisible) return;
-  if (iAirspaceMode[circ.Type]%2 == 1) {
-    double basealt;
-    double topalt;
-    if (circ.Base.Base != abAGL) {
-      basealt = circ.Base.Altitude;
-    } else {
-      basealt = circ.Base.AGL + CALCULATED_INFO.TerrainAlt;
-    }
-    if (circ.Top.Base != abAGL) {
-      topalt = circ.Top.Altitude;
-    } else {
-      topalt = circ.Top.AGL + CALCULATED_INFO.TerrainAlt;
-    }
-    if(CheckAirspaceAltitude(basealt, topalt)) {
-      if (msRectOverlap(&circ.bounds, &screenbounds_latlon) 
-          || msRectContained(&screenbounds_latlon, &circ.bounds)) {
-
-	if (!circ._NewWarnAckNoBrush &&
-	    !(iAirspaceBrush[circ.Type] == NUMAIRSPACEBRUSHES-1)) {
-	  circ.Visible = 2;
-	} else {
-	  circ.Visible = 1;
-	}
-
-        LatLon2Screen(circ.Longitude, 
-                      circ.Latitude, 
-                      circ.Screen);
-        circ.ScreenR = iround(circ.Radius*zoom.ResScaleOverDistanceModify());
-      }
-    }
-  }
-}
-
-void MapWindow::CalculateScreenPositionsAirspaceArea(AIRSPACE_AREA &area) {
-  area.Visible = false;
-  if (!area.FarVisible) return;
-  if (iAirspaceMode[area.Type]%2 == 1) {
-    double basealt;
-    double topalt;
-    if (area.Base.Base != abAGL) {
-      basealt = area.Base.Altitude;
-    } else {
-      basealt = area.Base.AGL + CALCULATED_INFO.TerrainAlt;
-    }
-    if (area.Top.Base != abAGL) {
-      topalt = area.Top.Altitude;
-    } else {
-      topalt = area.Top.AGL + CALCULATED_INFO.TerrainAlt;
-    }
-    if(CheckAirspaceAltitude(basealt, topalt)) {
-      if (msRectOverlap(&area.bounds, &screenbounds_latlon) 
-          || msRectContained(&screenbounds_latlon, &area.bounds)) {
-        AIRSPACE_POINT *ap= AirspacePoint+area.FirstPoint;
-        const AIRSPACE_POINT *ep= ap+area.NumPoints;
-        POINT* sp= AirspaceScreenPoint+area.FirstPoint;
-        while (ap < ep) {
-	  // JMW optimise!
-            LatLon2Screen(ap->Longitude, 
-                          ap->Latitude, 
-                          *sp);
-            ap++;
-            sp++;
-        }               
-
-	if (!area._NewWarnAckNoBrush &&
-	    !(iAirspaceBrush[area.Type] == NUMAIRSPACEBRUSHES-1)) {
-	  area.Visible = 2;
-	} else {
-	  area.Visible = 1;
-	}
-      }
-    }
-  }
-}
-
-void MapWindow::CalculateScreenPositionsAirspace() {
-  
-  
-  if (AirspaceCircle) {
-    for (AIRSPACE_CIRCLE* circ = AirspaceCircle;
-         circ < AirspaceCircle+NumberOfAirspaceCircles; circ++) {
-      CalculateScreenPositionsAirspaceCircle(*circ);
-    }
-  }
-  if (AirspaceArea) {
-    for(AIRSPACE_AREA *area = AirspaceArea;
-        area < AirspaceArea+NumberOfAirspaceAreas; area++) {
-      CalculateScreenPositionsAirspaceArea(*area);
-    }
-  }
-}
-#endif
 
 void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc, 
                                          POINT *Orig_Aircraft)
@@ -1407,7 +1282,6 @@ void MapWindow::ClearAirSpace(bool fill) {
   }
 }
 
-#ifdef LKAIRSPACE
 void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Aircraft)
 {
   static short int label_sequencing_divider = 0;
@@ -1507,20 +1381,15 @@ void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Airc
   }// if(1) mutex
   if (!label_sequencing_divider) label_sequencing_divider=3;		// Do label sequencing slower than update rate
 }
-#endif
 
 // TODO code: optimise airspace drawing
 void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 {
   COLORREF whitecolor = RGB(0xff,0xff,0xff);
-#ifdef LKAIRSPACE
   CAirspaceList::const_iterator it;
   CAirspaceList::const_reverse_iterator itr;
   const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
   int airspace_type;
-#else
-  unsigned int i;
-#endif
   bool found = false;
   bool borders_only = (GetAirSpaceFillType() == asp_fill_patterns_borders);
   HDC hdcbuffer = NULL;
@@ -1540,7 +1409,6 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
   }
   
   if (GetAirSpaceFillType() != asp_fill_border_only) {
-#ifdef LKAIRSPACE
     if (1) {
     CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
     if (borders_only) {
@@ -1580,79 +1448,6 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
       }//for
     }
     }
-#else
-    if (AirspaceCircle) {
-      // draw without border
-      for(i=0;i<NumberOfAirspaceCircles;i++) {
-        if (AirspaceCircle[i].Visible==2) {
-	  if (!found) {
-            ClearAirSpace(true);
-            found = true;
-          }
-          if (borders_only) {
-            // this color is used as the black bit
-            SetTextColor(hdcbuffer,
-                        Colours[iAirspaceColour[AirspaceCircle[i].Type]]);
-            // get brush, can be solid or a 1bpp bitmap
-            SelectObject(hdcbuffer,
-                        hAirspaceBrushes[iAirspaceBrush[AirspaceCircle[i].Type]]);
-            Circle(hdcbuffer,
-                  AirspaceCircle[i].Screen.x ,
-                  AirspaceCircle[i].Screen.y ,
-                  AirspaceCircle[i].ScreenR ,rc, true, true);
-            Circle(hDCMask,
-                  AirspaceCircle[i].Screen.x ,
-                  AirspaceCircle[i].Screen.y ,
-                  AirspaceCircle[i].ScreenR ,rc, true, false);
-          } else {
-            // this color is used as the black bit
-            SetTextColor(hDCTemp,
-                        Colours[iAirspaceColour[AirspaceCircle[i].Type]]);
-            // get brush, can be solid or a 1bpp bitmap
-            SelectObject(hDCTemp,
-                        hAirspaceBrushes[iAirspaceBrush[AirspaceCircle[i].Type]]);
-            Circle(hDCTemp,
-                  AirspaceCircle[i].Screen.x ,
-                  AirspaceCircle[i].Screen.y ,
-                  AirspaceCircle[i].ScreenR ,rc, true, true);
-          }
-        }
-      }
-    }
-
-    if (AirspaceArea) {
-      for(i=0;i<NumberOfAirspaceAreas;i++) {
-        if(AirspaceArea[i].Visible ==2) {
-          if (!found) {
-            ClearAirSpace(true);
-            found = true;
-          }
-          if (borders_only) {
-            // this color is used as the black bit
-            SetTextColor(hdcbuffer, 
-                        Colours[iAirspaceColour[AirspaceArea[i].Type]]);
-            SelectObject(hdcbuffer,
-                        hAirspaceBrushes[iAirspaceBrush[AirspaceArea[i].Type]]);         
-            ClipPolygon(hdcbuffer,
-                        AirspaceScreenPoint+AirspaceArea[i].FirstPoint,
-                        AirspaceArea[i].NumPoints, rc, true);
-            ClipPolygon(hDCMask,
-                        AirspaceScreenPoint+AirspaceArea[i].FirstPoint,
-                        AirspaceArea[i].NumPoints, rc, false);
-          } else {
-            // this color is used as the black bit
-            SetTextColor(hDCTemp, 
-                        Colours[iAirspaceColour[AirspaceArea[i].Type]]);
-            SelectObject(hDCTemp,
-                        hAirspaceBrushes[iAirspaceBrush[AirspaceArea[i].Type]]);         
-            ClipPolygon(hDCTemp,
-                        AirspaceScreenPoint+AirspaceArea[i].FirstPoint,
-                        AirspaceArea[i].NumPoints, rc, true);
-          }
-        }      
-      }
-    }
-#endif  
   }
   // draw it again, just the outlines
 
@@ -1699,7 +1494,6 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
     SelectObject(hDCTemp, GetStockObject(WHITE_PEN));
   }
 
-#ifdef LKAIRSPACE
     if (1) {
     CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
       for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
@@ -1718,59 +1512,6 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
         }
       }//for
     }
-#else
-  if (AirspaceCircle) {
-    for(i=0;i<NumberOfAirspaceCircles;i++) {
-      if (AirspaceCircle[i].Visible) {
-	if (!found) {
-	  ClearAirSpace(false);
-	  found = true;
-	}
-        if (bAirspaceBlackOutline) {
-          SelectObject(hDCTemp, GetStockObject(BLACK_PEN));
-        } else {
-          SelectObject(hDCTemp, hAirspacePens[AirspaceCircle[i].Type]);
-        }
-        Circle(hDCTemp,
-               AirspaceCircle[i].Screen.x ,
-               AirspaceCircle[i].Screen.y ,
-               AirspaceCircle[i].ScreenR ,rc, true, false);
-      }
-    }
-  }
-
-  if (AirspaceArea) {
-    for(i=0;i<NumberOfAirspaceAreas;i++) {
-      if(AirspaceArea[i].Visible) {
-	if (!found) {
-	  ClearAirSpace(false);
-	  found = true;
-	}
-        if (bAirspaceBlackOutline) {
-          SelectObject(hDCTemp, GetStockObject(BLACK_PEN));
-        } else {
-          SelectObject(hDCTemp, hAirspacePens[AirspaceArea[i].Type]);
-        }
-
-	POINT *pstart = AirspaceScreenPoint+AirspaceArea[i].FirstPoint;
-        ClipPolygon(hDCTemp, pstart,
-                    AirspaceArea[i].NumPoints, rc, false);
-
-	if (AirspaceArea[i].NumPoints>2) {
-	  // JMW close if open
-	  if ((pstart[0].x != pstart[AirspaceArea[i].NumPoints-1].x) ||
-	      (pstart[0].y != pstart[AirspaceArea[i].NumPoints-1].y)) {
-	    POINT ps[2];
-	    ps[0] = pstart[0];
-	    ps[1] = pstart[AirspaceArea[i].NumPoints-1];
-	    _Polyline(hDCTemp, ps, 2, rc);
-	  }
-	}
-
-      }      
-    }
-  }
-#endif
 
   if (found) {
     // need to do this to prevent drawing of colored outline

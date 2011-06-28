@@ -45,10 +45,8 @@
 
 #include "utils/heapcheck.h"
 
-#if defined(LKAIRSPACE)
 using std::min;
 using std::max;
-#endif
 
 extern HFONT MapLabelFont;
 extern HFONT  MapWindowBoldFont;

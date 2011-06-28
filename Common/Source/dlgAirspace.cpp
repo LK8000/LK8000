@@ -42,67 +42,8 @@ static void OnAirspacePaintListItem(WindowControl * Sender, HDC hDC){
   (void)Sender;
   if (DrawListIndex < AIRSPACECLASSCOUNT){
     int i = DrawListIndex;
-#ifdef LKAIRSPACE
 	_tcsncpy(label, CAirspaceManager::Instance().GetAirspaceTypeText(i), 39);
 	label[39]=0;
-#else
-    switch (i) {
-    case CLASSA: 
-      _tcscpy(label, TEXT("Class A"));
-      break;
-    case CLASSB: 
-      _tcscpy(label, TEXT("Class B"));
-      break;
-    case CLASSC: 
-      _tcscpy(label, TEXT("Class C"));
-      break;
-    case CLASSD: 
-      _tcscpy(label, TEXT("Class D"));
-      break;
-    case CLASSE: 
-      _tcscpy(label, TEXT("Class E"));
-      break;
-    case CLASSF: 
-      _tcscpy(label, TEXT("Class F"));
-      break;
-    case CLASSG: 
-      _tcscpy(label, TEXT("Class G"));
-      break;
-    case PROHIBITED: 
-	// LKTOKEN  _@M536_ = "Prohibited areas" 
-      _tcscpy(label, gettext(TEXT("_@M536_")));
-      break;
-    case DANGER: 
-	// LKTOKEN  _@M214_ = "Danger areas" 
-      _tcscpy(label, gettext(TEXT("_@M214_")));
-      break;
-    case RESTRICT: 
-	// LKTOKEN  _@M564_ = "Restricted areas" 
-      _tcscpy(label, gettext(TEXT("_@M564_")));
-      break;
-    case CTR: 
-      _tcscpy(label, TEXT("CTR"));
-      break;
-    case NOGLIDER: 
-	// LKTOKEN  _@M472_ = "No gliders" 
-      _tcscpy(label, gettext(TEXT("_@M472_")));
-      break;
-    case WAVE:
-	// LKTOKEN  _@M794_ = "Wave" 
-      _tcscpy(label, gettext(TEXT("_@M794_")));
-      break;
-    case CLASSTMZ: 
-      _tcscpy(label, TEXT("TMZ"));
-      break;
-    case OTHER:
-	// LKTOKEN  _@M507_ = "Other" 
-      _tcscpy(label, gettext(TEXT("_@M507_")));
-      break;
-    case AATASK:
-      _tcscpy(label, TEXT("AAT"));
-      break;
-    };
-#endif
     int w0, w1, w2, x0;
     if (InfoBoxLayout::landscape) {
       w0 = 202*InfoBoxLayout::scale;

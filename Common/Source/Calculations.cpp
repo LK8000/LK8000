@@ -46,11 +46,9 @@
 #include "ClimbAverageCalculator.h" // JMW new
 #endif
 #include "Waypointparser.h"
-#ifdef LKAIRSPACE
 #include "LKAirspace.h"
 using std::min;
 using std::max;
-#endif
 
 #include "utils/heapcheck.h"
 
@@ -122,9 +120,6 @@ static void InSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static bool  InFinishSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const int i);
 static bool  InTurnSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const int i);
 static void PredictNextPosition(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-#ifndef LKAIRSPACE
-static void AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-#endif
 static void AATStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void ThermalBand(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -572,25 +567,11 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   static double LastOptimiseTime = 0;
   static double LastSearchBestTime = 0; 
-#ifndef LKAIRSPACE
-  static double lastTime = 0;
-#endif
   static bool	validHomeWaypoint=false;
 
   // See also same redundant check inside AirspaceWarning
-#ifdef LKAIRSPACE
   // calculate airspace warnings - multicalc approach embedded in CAirspaceManager
     CAirspaceManager::Instance().AirspaceWarning( Basic, Calculated);
-#else
-  if (NumberOfAirspaceAreas+NumberOfAirspaceCircles >0) {
-  	if (Basic->Time<= lastTime) {
-    lastTime = Basic->Time-6;
- 	 } else {
- 	   // calculate airspace warnings every 6 seconds
- 	   AirspaceWarning(Basic, Calculated);
- 	 }
-   }
-#endif
 
 
    if (FinalGlideTerrain)
@@ -3931,149 +3912,6 @@ void PredictNextPosition(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
 }
 
-#ifndef LKAIRSPACE
-bool GlobalClearAirspaceWarnings = false;
-#endif
-
-// JMW this code is deprecated
-#ifdef LKAIRSPACE
-#else
-bool ClearAirspaceWarnings(const bool acknowledge, const bool ack_all_day) {
-  unsigned int i;
-  if (acknowledge) {
-    GlobalClearAirspaceWarnings = true;
-    if (AirspaceCircle) {
-      for (i=0; i<NumberOfAirspaceCircles; i++) {
-        if (AirspaceCircle[i].WarningLevel>0) {
-          AirspaceCircle[i].Ack.AcknowledgementTime = GPS_INFO.Time;
-          if (ack_all_day) {
-            AirspaceCircle[i].Ack.AcknowledgedToday = true;
-          }
-          AirspaceCircle[i].WarningLevel = 0;
-        }
-      }
-    }
-    if (AirspaceArea) {
-      for (i=0; i<NumberOfAirspaceAreas; i++) {
-        if (AirspaceArea[i].WarningLevel>0) {
-          AirspaceArea[i].Ack.AcknowledgementTime = GPS_INFO.Time;
-          if (ack_all_day) {
-            AirspaceArea[i].Ack.AcknowledgedToday = true;
-          }
-          AirspaceArea[i].WarningLevel = 0;
-        }
-      }
-    }
-    return Message::Acknowledge(MSG_AIRSPACE);
-  }
-  return false;
-}
-#endif
-
-#ifdef LKAIRSPACE
-#else
-void AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated){
-  unsigned int i;
-
-  if(!AIRSPACEWARNINGS)
-      return;
-
-  if ( (NumberOfAirspaceAreas+NumberOfAirspaceCircles) <= 0 ) return;
-  static bool position_is_predicted = false;
-
-  #ifdef DEBUG_AIRSPACE
-  int starttick = GetTickCount();
-  StartupStore(TEXT("---Old AirspaceWarning start%s"),NEWLINE);
-  #endif
-  
-  //  LockFlightData(); Not necessary, airspace stuff has its own locking
-
-  if (GlobalClearAirspaceWarnings == true) {
-    GlobalClearAirspaceWarnings = false;
-    Calculated->IsInAirspace = false;
-  }
-
-  position_is_predicted = !position_is_predicted; 
-  // every second time step, do predicted position rather than
-  // current position
-
-  double alt;
-  double agl;
-  double lat;
-  double lon;
-
-
-  if (position_is_predicted) {
-    alt = Calculated->NextAltitude;
-    agl = Calculated->NextAltitudeAGL;
-    lat = Calculated->NextLatitude;
-    lon = Calculated->NextLongitude;
-  } else {
-    // We may use NavAltitude
-    if (Basic->BaroAltitudeAvailable) {
-      alt = Basic->BaroAltitude;
-    } else {
-      alt = Basic->Altitude;
-    }
-    agl = Calculated->AltitudeAGL;
-    lat = Basic->Latitude;
-    lon = Basic->Longitude;
-  }
-
-  // JMW TODO enhancement: FindAirspaceCircle etc should sort results, return 
-  // the most critical or closest. 
-
-  if (AirspaceCircle) {
-    for (i=0; i<NumberOfAirspaceCircles; i++) {
-
-      if ((((AirspaceCircle[i].Base.Base != abAGL) && (alt >= AirspaceCircle[i].Base.Altitude))
-           || ((AirspaceCircle[i].Base.Base == abAGL) && (agl >= AirspaceCircle[i].Base.AGL)))
-          && (((AirspaceCircle[i].Top.Base != abAGL) && (alt < AirspaceCircle[i].Top.Altitude))
-           || ((AirspaceCircle[i].Top.Base == abAGL) && (agl < AirspaceCircle[i].Top.AGL)))) {
-        
-        if ((MapWindow::iAirspaceMode[AirspaceCircle[i].Type] >= 2) &&
-	    InsideAirspaceCircle(lon, lat, i)) { 
-
-          AirspaceWarnListAdd(Basic, Calculated, position_is_predicted, 1, i, false);
-        }
-        
-      }
-      
-    }
-  }
-
-  // repeat process for areas
-
-  if (AirspaceArea) {
-    for (i=0; i<NumberOfAirspaceAreas; i++) {
-
-      if ((((AirspaceArea[i].Base.Base != abAGL) && (alt >= AirspaceArea[i].Base.Altitude))
-           || ((AirspaceArea[i].Base.Base == abAGL) && (agl >= AirspaceArea[i].Base.AGL)))
-          && (((AirspaceArea[i].Top.Base != abAGL) && (alt < AirspaceArea[i].Top.Altitude))
-           || ((AirspaceArea[i].Top.Base == abAGL) && (agl < AirspaceArea[i].Top.AGL)))) {
-        
-        if ((MapWindow::iAirspaceMode[AirspaceArea[i].Type] >= 2) 
-            && InsideAirspaceArea(lon, lat, i)){
-
-          AirspaceWarnListAdd(Basic, Calculated, position_is_predicted, 0, i, false);
-        }
-        
-      }
-    }
-  }
-
-  AirspaceWarnListProcess(Basic, Calculated);
-
-  //  UnlockFlightData();  
-
-  NearestAirspaceHDist=0;
-
-  #ifdef DEBUG_AIRSPACE
-  StartupStore(TEXT("   ends in %dms%s"), GetTickCount()-starttick, NEWLINE);
-  #endif
-
-}
-#endif
 
 void AATStats_Time(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   // Task time to go calculations
@@ -4503,11 +4341,7 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			_stprintf(qmes,_T("QNH set to %.2f, Altitude %.0f%s"),QNH,fixaltitude,
 			Units::GetUnitName(Units::GetUserAltitudeUnit()));
 		DoStatusMessage(qmes);
-#ifdef LKAIRSPACE
 		CAirspaceManager::Instance().QnhChangeNotify(QNH);
-#else
-		AirspaceQnhChangeNotify(QNH);
-#endif
 	}
   }
 }

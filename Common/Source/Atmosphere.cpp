@@ -16,10 +16,8 @@
 #include "RasterTerrain.h"
 
 #include "utils/heapcheck.h"
-#if defined(LKAIRSPACE)
 using std::min;
 using std::max;
-#endif
 
 unsigned short CuSonde::last_level=0;
 double CuSonde::thermalHeight = 0;
