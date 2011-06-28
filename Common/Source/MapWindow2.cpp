@@ -1611,10 +1611,12 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 		// LKTOKEN _@M1338_ " PAN"
       _tcscat(Scale2, gettext(TEXT("_@M1338_")));
     }
+#if USEIBOX
     if (EnableAuxiliaryInfo) {
 		// LKTOKEN _@M1339_ " iAUX"
       _tcscat(Scale2, gettext(TEXT("_@M1339_")));
     }
+#endif
 
     if (DrawBottom) {
 	switch(BottomMode) {

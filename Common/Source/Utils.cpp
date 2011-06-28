@@ -4484,6 +4484,7 @@ bool ReadWinPilotPolarInternal(int i) {
 #endif
 
 
+#if 0 // REMOVE ANIMATION
 static RECT AnimationRectangle = {0,0,0,0};
 
 void SetSourceRectangle(RECT fromRect) {
@@ -4495,6 +4496,7 @@ RECT WINAPI DrawWireRects(LPRECT lprcTo, UINT nMilliSecSpeed)
 {
     return AnimationRectangle;
 }
+#endif // REMOVE
 
 // FLARM FUNCTIONS
 

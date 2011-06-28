@@ -14,65 +14,43 @@
 #include "Utils.h"
 #include "externs.h"
 
+#if USEIBOX
 #include "InfoBox.h"
-#include "lk8000.h" // 091117
+#endif
+#include "lk8000.h"
 
 #include "utils/heapcheck.h"
 using std::min;
 using std::max;
 
+#if USEIBOX
 extern InfoBox *InfoBoxes[MAXINFOWINDOWS];
 extern HWND hWndMainWindow; // Main Windows
 extern HINSTANCE hInst; // The current instance
-
-// Layouts:
-// 0: default, infoboxes along top and bottom, map in middle
-// 1: both infoboxes along bottom
-// 2: both infoboxes along top
-// 3: infoboxes along both sides
-// 4: infoboxes along left side
-// 5: infoboxes along right side
-// 6: infoboxes GNAV
-/*
-
-Screen 
-640x480 landscape
-
-480/6 = 80 control height
-
-2/3 of width is map = 420
-leaving 220 = 110 control width
-
-*/
-
-
-/*
-
-Button 0 (x,y,sx,sy)
-Button 1 (x,y,sx,sy)
-...
-
-InfoBox 0 (x,y,sx,sy)
-
-*/
-
 
 int InfoBoxLayout::InfoBoxGeometry = 0;
 int InfoBoxLayout::ControlWidth;
 int InfoBoxLayout::ControlHeight;
 int InfoBoxLayout::TitleHeight;
+#endif
+
 int InfoBoxLayout::scale = 1;
 double InfoBoxLayout::dscale=1.0;
 bool InfoBoxLayout::IntScaleFlag=false;
 
+#if USEIBOX
 bool gnav = false;
-
 bool geometrychanged = false;
+#endif
 
 bool InfoBoxLayout::landscape = false;
-bool InfoBoxLayout::square = false;
 bool InfoBoxLayout::fullscreen = false;
 
+#if USEIBOX
+bool InfoBoxLayout::square = false;
+#endif
+
+#if USEIBOX
 void InfoBoxLayout::GetInfoBoxPosition(int i, RECT rc, 
 				       int *x, int *y,
 				       int *sizex, int *sizey) {
@@ -189,13 +167,11 @@ void InfoBoxLayout::GetInfoBoxPosition(int i, RECT rc,
 
   };
 }
+#endif // USEIBOX
 
-
-//
-// Paolo Ventafridda, VENTA-ADDON Geometry change in Config menu 11
-//
 void InfoBoxLayout::ScreenGeometry(RECT rc) {
 
+#if USEIBOX
   TCHAR szRegistryInfoBoxGeometry[]=  TEXT("InfoBoxGeometry");
   TCHAR szRegistryInfoBoxGeom[]=  TEXT("AppInfoBoxGeom"); 
 
@@ -212,6 +188,7 @@ void InfoBoxLayout::ScreenGeometry(RECT rc) {
 
   // JMW testing only
   geometrychanged = true;
+#endif
 
   int maxsize=0;
   int minsize=0;
@@ -249,6 +226,7 @@ void InfoBoxLayout::ScreenGeometry(RECT rc) {
   if (rc.bottom<rc.right) {
     // landscape mode
     landscape = true;
+#if USEIBOX
     if (InfoBoxGeometry<4) {
       geometrychanged = true;
 
@@ -261,26 +239,32 @@ void InfoBoxLayout::ScreenGeometry(RECT rc) {
 	InfoBoxGeometry+= 3;
       }
     }
+#endif
 
   } else if (rc.bottom==rc.right) {
     landscape = false;
+#if USEIBOX
     square = true;
     if (InfoBoxGeometry<7) {
       geometrychanged = true;
     }
     InfoBoxGeometry = 7;
-
+#endif
   } else {
     landscape = false;
     // portrait mode
+
+#if USEIBOX
     gnav = false;
     if (InfoBoxGeometry>=3) {
       InfoBoxGeometry= 0;
 
       geometrychanged = true;
     }
+#endif
   }
 
+#if USEIBOX
   SetToRegistry(szRegistryInfoBoxGeometry,InfoBoxGeometry);
 
   // JMW testing
@@ -295,9 +279,10 @@ void InfoBoxLayout::ScreenGeometry(RECT rc) {
   } else {
     numInfoWindows = 8;
   }
+#endif
 }
 
-
+#if USEIBOX
 void InfoBoxLayout::GetInfoBoxSizes(RECT rc) {
 
   switch (InfoBoxGeometry) {
@@ -424,8 +409,9 @@ void InfoBoxLayout::GetInfoBoxSizes(RECT rc) {
   };
 
 }
+#endif // USEIBOX
 
-
+#if USEIBOX
 void InfoBoxLayout::Paint(void) {
   int i;
   for (i=0; i<numInfoWindows; i++) 
@@ -477,8 +463,9 @@ void InfoBoxLayout::Paint(void) {
     InfoBoxes[numInfoWindows]->PaintFast();
   }
 }
+#endif // USEIBOX
 
-
+#if USEIBOX
 void InfoBoxLayout::CreateInfoBoxes(RECT rc) {
   int i;
   int xoff, yoff, sizex, sizey;
@@ -531,18 +518,23 @@ void InfoBoxLayout::DestroyInfoBoxes(void){
   }
 
 }
+#endif // USEIBOX
 
 HWND ButtonLabel::hWndButtonWindow[NUMBUTTONLABELS];
 bool ButtonLabel::ButtonVisible[NUMBUTTONLABELS];
 bool ButtonLabel::ButtonDisabled[NUMBUTTONLABELS];
 
+#if USEIBOX
+// was used only to know if landscape mode, we now use ScreenLandscape
 int ButtonLabel::ButtonLabelGeometry = 0; 
+#endif
 
 
 void ButtonLabel::GetButtonPosition(int i, RECT rc,
 				    int *x, int *y,
 				    int *sizex, int *sizey) {
 
+#if USEIBOX
   TCHAR reggeompx[50];
   TCHAR reggeompy[50];
   TCHAR reggeomsx[50];
@@ -562,11 +554,18 @@ void ButtonLabel::GetButtonPosition(int i, RECT rc,
   if ((*sizex==0)||(*sizey==0)||geometrychanged) {
     // not defined in registry so go with defaults
     // these will be saved back to registry
+#else
+  if (1) {	// always calculate positions in LK 2.4
+#endif
+
     int hwidth = (rc.right-rc.left)/4;
     int hheight = (rc.bottom-rc.top)/4;
 
-
+#if USEIBOX
     switch (ButtonLabelGeometry) {
+#else
+    switch (ScreenLandscape) {
+#endif
 
 	case 0: // PORTRAIT MODE ONLY
 
@@ -750,10 +749,12 @@ void ButtonLabel::GetButtonPosition(int i, RECT rc,
 
 	} 
 
+#if USEIBOX
     SetToRegistry(reggeompx,*x);
     SetToRegistry(reggeompy,*y);
     SetToRegistry(reggeomsx,*sizex);
     SetToRegistry(reggeomsy,*sizey);
+#endif
 
   };
 
@@ -767,11 +768,13 @@ void ButtonLabel::CreateButtonLabels(RECT rc) {
   int buttonWidth = NIBLSCALE(50);
   int buttonHeight = NIBLSCALE(15);
 
+#if USEIBOX
   // set geometry for button correctly
   if (ScreenSize > (ScreenSize_t)sslandscape)
 	ButtonLabelGeometry = 1; 
   else
 	ButtonLabelGeometry = 0; 
+#endif
 
   for (i=0; i<NUMBUTTONLABELS; i++) {
 
@@ -813,9 +816,7 @@ void ButtonLabel::CreateButtonLabels(RECT rc) {
 
     GetButtonPosition(i, rc, &x, &y, &xsize, &ysize);
 
-    SetWindowPos(hWndButtonWindow[i],HWND_TOP,
-		 x, y,
-		 xsize, ysize, SWP_SHOWWINDOW);
+    SetWindowPos(hWndButtonWindow[i],HWND_TOP, x, y, xsize, ysize, SWP_SHOWWINDOW);
     ButtonVisible[i]= true;
     ButtonDisabled[i]= false;
 
@@ -828,8 +829,7 @@ void ButtonLabel::CreateButtonLabels(RECT rc) {
 void ButtonLabel::SetFont(HFONT Font) {
   int i;
   for (i=0; i<NUMBUTTONLABELS; i++) {
-    SendMessage(hWndButtonWindow[i], WM_SETFONT,
-              (WPARAM)Font, MAKELPARAM(TRUE,0));
+    SendMessage(hWndButtonWindow[i], WM_SETFONT, (WPARAM)Font, MAKELPARAM(TRUE,0));
   }
 }
 
@@ -853,8 +853,7 @@ void ButtonLabel::SetLabelText(int index, const TCHAR *text) {
     return;
 
   // don't try to draw if window isn't initialised
-  if (hWndButtonWindow[index] == NULL)
-    return;
+  if (hWndButtonWindow[index] == NULL) return;
 
   if ((text==NULL) || (*text==_T('\0'))||(*text==_T(' '))) {
     ShowWindow(hWndButtonWindow[index], SW_HIDE);
@@ -910,6 +909,7 @@ bool ButtonLabel::CheckButtonPress(HWND pressedwindow) {
 }
 
 
+#if 0 // REMOVE
 void ButtonLabel::AnimateButton(int i) {
   RECT mRc, aniRect;
   GetWindowRect(hWndButtonWindow[i], &mRc);
@@ -926,3 +926,4 @@ void ButtonLabel::AnimateButton(int i) {
   SetSourceRectangle(mRc);
 
 }
+#endif

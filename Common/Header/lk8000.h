@@ -141,6 +141,7 @@ class FormatterDiffBearing: public InfoBoxFormatter {
   virtual TCHAR *Render(int *color);
 };
 
+#if USEIBOX
 typedef struct _SCREEN_INFO
 {
   UnitGroup_t UnitGroup;
@@ -151,6 +152,14 @@ typedef struct _SCREEN_INFO
   char next_screen;
   char prev_screen;
 } SCREEN_INFO;
+#else
+typedef struct _DATAOPTIONS
+{
+  UnitGroup_t UnitGroup;
+  TCHAR Description[DESCRIPTION_SIZE +1];
+  TCHAR Title[TITLE_SIZE + 1];
+} DATAOPTIONS;
+#endif
 
 
 

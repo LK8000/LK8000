@@ -2180,7 +2180,9 @@ int WndForm::ShowModal(bool bEnableMap) {
 
   RECT mRc;
   GetWindowRect(GetHandle(), &mRc);
+  #if 0 // REMOVE ANIMATION
   DrawWireRects(&mRc, 5);
+  #endif
 
   SetVisible(true);
 
@@ -2642,7 +2644,9 @@ int WndButton::OnLButtonUp(WPARAM wParam, LPARAM lParam){
     if (mOnClickNotify != NULL) {
       RECT mRc;
       GetWindowRect(GetHandle(), &mRc);
+      #if 0 // REMOVE ANIMATION
       SetSourceRectangle(mRc);
+      #endif
       (mOnClickNotify)(this);
     }
   }
@@ -2682,7 +2686,9 @@ int WndButton::OnKeyUp(WPARAM wParam, LPARAM lParam){
         if (mOnClickNotify != NULL) {
           RECT mRc;
           GetWindowRect(GetHandle(), &mRc);
+	  #if 0 // REMOVE ANIMATION
           SetSourceRectangle(mRc);
+	  #endif
           (mOnClickNotify)(this);
         }
       }
@@ -3492,7 +3498,9 @@ int WndFrame::OnKeyDown(WPARAM wParam, LPARAM lParam){
   if (mIsListItem && GetOwner()!=NULL){
     RECT mRc;
     GetWindowRect(GetHandle(), &mRc);
+    #if 0 // REMOVE ANIMATION
     SetSourceRectangle(mRc);
+    #endif
     return(((WndListFrame*)GetOwner())->OnItemKeyDown(this, wParam, lParam));
   }
   return(1);

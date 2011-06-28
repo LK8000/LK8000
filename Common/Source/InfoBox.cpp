@@ -5,6 +5,7 @@
 
    $Id: InfoBox.cpp,v 8.2 2010/12/11 00:21:10 root Exp root $
 */
+#if USEIBOX
 
 #include "StdAfx.h"
 #include "Defines.h" // VENTA3
@@ -46,6 +47,7 @@ COLORREF InfoBox::inv_greenColor = RGB(0x00,0xff,0x00); //VENTA2
 COLORREF InfoBox::inv_magentaColor = RGB(0xff,0x00,0xff); //VENTA2
 
 
+
 static COLORREF fgColor = RGB_BLACK;
 static COLORREF bkColor = RGB_WHITE;
 static COLORREF bdColor = RGB_MIDDLEGREY;  
@@ -54,7 +56,6 @@ static HBRUSH hBrushDefaultBackGroundSel;
 static HPEN hPenDefaultBorder;
 static HPEN hPenSelector;
 static int Count=0;
-
 
 void InitInfoBoxModule(void);
 LRESULT CALLBACK InfoBoxWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -903,3 +904,4 @@ void InitInfoBoxModule(void){
   InitDone = true;
 }
 
+#endif // USEIBOX

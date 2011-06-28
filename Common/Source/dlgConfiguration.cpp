@@ -1350,8 +1350,11 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(NULL)
 };
 
-
+#if USEIBOX
 extern SCREEN_INFO Data_Options[];
+#else
+extern DATAOPTIONS Data_Options[];
+#endif
 extern int InfoType[];
 
 

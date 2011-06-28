@@ -1438,6 +1438,7 @@ EndOfNavboxes:
 
 afterWind:
 
+#if USEIBOX
    if ( !MapWindow::IsMapFullScreen() && InfoFocus>=0 ) {
 
 	_stprintf(Buffer,TEXT("IBOX"));
@@ -1451,6 +1452,7 @@ afterWind:
 		iboxtoclick=false;
 	}
    } 
+#endif
 
 TheEnd:
 

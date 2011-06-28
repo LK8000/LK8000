@@ -580,7 +580,9 @@ bool InputEvents::processButton(int bindex) {
 		#endif
 
 		if (!ButtonLabel::ButtonDisabled[bindex]) {
+			#if 0 // REMOVE ANIMATION
 			ButtonLabel::AnimateButton(bindex);
+			#endif
 			processGo(ModeLabel[thismode][i].event);
 		}
 
@@ -651,9 +653,11 @@ bool InputEvents::processKey(int dWord) {
       if ((ModeLabel[mode][i].event == event_id)) {
         bindex = ModeLabel[mode][i].location;
         pLabelText = ModeLabel[mode][i].label;
+	#if 0 // REMOVE ANIMATION
         if (bindex>0) {
           ButtonLabel::AnimateButton(bindex);
         }
+	#endif
       }
     }
 
@@ -1004,6 +1008,7 @@ void InputEvents::eventScreenModes(const TCHAR *misc) {
 
   if (_tcscmp(misc, TEXT("normal")) == 0) {
     MapWindow::RequestOffFullScreen();
+#if USEIBOX
     EnableAuxiliaryInfo = false;
   } else if (_tcscmp(misc, TEXT("auxilary")) == 0) {
     MapWindow::RequestOffFullScreen();
@@ -1011,6 +1016,7 @@ void InputEvents::eventScreenModes(const TCHAR *misc) {
   } else if (_tcscmp(misc, TEXT("toggleauxiliary")) == 0) {
     MapWindow::RequestOffFullScreen();
     EnableAuxiliaryInfo = !EnableAuxiliaryInfo;
+#endif
   } else if (_tcscmp(misc, TEXT("full")) == 0) {
     MapWindow::RequestOnFullScreen();
   } else if (_tcscmp(misc, TEXT("togglefull")) == 0) {
@@ -1022,8 +1028,10 @@ void InputEvents::eventScreenModes(const TCHAR *misc) {
   } else if (_tcscmp(misc, TEXT("show")) == 0) { // not used
     if (MapWindow::IsMapFullScreen()) 
       DoStatusMessage(TEXT("Screen Mode Full")); 
+#if USEIBOX
     else if (EnableAuxiliaryInfo)
       DoStatusMessage(TEXT("Screen Mode Auxiliary")); 
+#endif
     else 
       DoStatusMessage(TEXT("Screen Mode Normal")); 
   } else if (_tcscmp(misc, TEXT("togglebiginfo")) == 0) {

@@ -49,8 +49,10 @@ class InputEvents {
   static void eventBallast(const TCHAR *misc);
   static void eventBugs(const TCHAR *misc);
   static void eventCalculator(const TCHAR *misc);
+  static void eventChangeInfoBoxType(const TCHAR *misc);
   static void eventChecklist(const TCHAR *misc);
   static void eventDLLExecute(const TCHAR *misc);
+  static void eventDoInfoKey(const TCHAR *misc);
   static void eventFlightMode(const TCHAR *misc);
   static void eventLogger(const TCHAR *misc);
   static void eventMacCready(const TCHAR *misc);
@@ -66,6 +68,7 @@ class InputEvents {
   static void eventRepeatStatusMessage(const TCHAR *misc);
   static void eventRun(const TCHAR *misc);
   static void eventScreenModes(const TCHAR *misc);
+  static void eventSelectInfoBox(const TCHAR *misc);
   static void eventSendNMEA(const TCHAR *misc);
   static void eventSendNMEAPort1(const TCHAR *misc);
   static void eventSendNMEAPort2(const TCHAR *misc);

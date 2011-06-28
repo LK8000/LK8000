@@ -1471,3 +1471,4 @@ InfoBoxFormatter::InfoBoxFormatter(TCHAR *theformat) {
   Text[0] = 0;
   CommentText[0] = 0;
 }
+

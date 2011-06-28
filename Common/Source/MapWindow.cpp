@@ -751,11 +751,15 @@ void MapWindow::ToggleFullScreenStart() {
 
   if (MapFullScreen) {
     MapRect = MapRectBig;
+#if USEIBOX
     HideInfoBoxes();    
     DefocusInfoBox(); // BUGFIX 091115 BgColor
+#endif
   } else {
     MapRect = MapRectSmall;
+#if USEIBOX
     ShowInfoBoxes(); // VENTA FIX QUI
+#endif
   }
 }
 
@@ -1754,6 +1758,7 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 		// Probably should be a good idea to use it also for standard old map with no VK
 		// We do it also for old standard map with no VK.
 		//
+		#if USEIBOX
 		if ( InfoFocus>=0) { // 
 			// DoStatusMessage(_T("Defocus ibox")); 
 			DefocusInfoBox();
@@ -1764,6 +1769,7 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 			iboxtoclick=true; 
 			break;
 		}
+		#endif
 		
 		//
 		// Finally process normally a click on the moving map.
@@ -2191,6 +2197,7 @@ QuickRedraw: // 100318 speedup redraw
   if (!EnableTerrain || !DerivedDrawInfo.TerrainValid || !RasterTerrain::isTerrainLoaded() ) {
 
     // display border and fill background..
+	#if USEIBOX
 	if(InfoWindowActive) {
 		SelectObject(hdc, hInvBackgroundBrush[BgMapColor]); 
 		SelectObject(hdc, GetStockObject(BLACK_PEN));
@@ -2204,6 +2211,11 @@ QuickRedraw: // 100318 speedup redraw
 			SelectObject(hdc, GetStockObject(WHITE_PEN));
 		}
 	}
+	#else
+	SelectObject(hdc, hInvBackgroundBrush[BgMapColor]);
+	SelectObject(hdc, GetStockObject(WHITE_PEN));
+	#endif // USEIBOX
+
 	Rectangle(hdc,rc.left,rc.top,rc.right,rc.bottom);
 	// We force LK painting black values on screen depending on the background color in use
 	// TODO make it an array once settled

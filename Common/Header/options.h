@@ -81,7 +81,8 @@
 //#define USEWEATHER		1	// we dont use rasp weather - hangarware
 //#define USEOLDASPWARNINGS	1	// we dont use old airspace warning system
 
-#define USEIBOX			1	// Use old IBOX mode, work in progress for complete removal 
+//#define USEIBOX		1	// Use old IBOX mode, requires also a make inside Data/Input after changing
+					// InputEvents.h with InputEvents.USEIBOX.h - manually!
 
 
 /*

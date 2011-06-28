@@ -77,7 +77,9 @@
 #include "Atmosphere.h"
 #include "Geoid.h"
 
+#if USEIBOX
 #include "InfoBox.h"
+#endif
 #include "RasterTerrain.h"
 extern void LKObjects_Create();
 extern void LKObjects_Delete();
@@ -128,13 +130,13 @@ HANDLE hInstrumentThread;
 DWORD dwInstThreadID;
 #endif
 
+#if USEIBOX
 int numInfoWindows = 9;
-
-
-
 InfoBox *InfoBoxes[MAXINFOWINDOWS];
+#endif
 
-int                                     InfoType[MAXINFOWINDOWS] = 
+// Default configuration for infoboxes
+int InfoType[MAXINFOWINDOWS] = 
   {1008146198,
    1311715074,
    923929365,
@@ -149,10 +151,14 @@ int                                     InfoType[MAXINFOWINDOWS] =
 bool RequestAirspaceWarningDialog= false;
 bool RequestAirspaceWarningForce=false;
 #endif
+
+#if USEIBOX
 bool                                    DisplayLocked = true;
 bool                                    InfoWindowActive = true;
 bool                                    EnableAuxiliaryInfo = false;
 int                                     InfoBoxFocusTimeOut = 0;
+#endif
+
 int                                     MenuTimeOut = 0;
 int                                     DisplayTimeOut = 0;
 int                                     MenuTimeoutMax = MENUTIMEOUTMAX;
@@ -206,8 +212,12 @@ LOGFONT                                   autoMapLabelLogFont;
 LOGFONT                                   autoStatisticsLogFont;
 
 int  UseCustomFonts;
+
+#if USEIBOX
 int                                             CurrentInfoType;
 int                                             InfoFocus = 0;
+#endif
+
 int                                             DisplayOrientation = TRACKUP;
 int                                             OldDisplayOrientation = TRACKUP;
 int						AutoOrientScale = 10;
@@ -254,7 +264,9 @@ DERIVED_INFO  CALCULATED_INFO;
 BOOL GPSCONNECT = FALSE;
 BOOL extGPSCONNECT = FALSE; // this one used by external functions
 
+#if USEIBOX
 bool InfoBoxesDirty= false;
+#endif
 bool DialogActive = false;
 
 // 091011 Used by TakeoffLanding inside Calculation.cpp - limited values careful 
@@ -714,7 +726,9 @@ static bool api_has_SHHandleWMActivate = false;
 static bool api_has_SHHandleWMSettingChange = false;
 #endif
 
+#if USEIBOX
 BOOL InfoBoxesHidden = false; 
+#endif
 
 void PopupBugsBallast(int updown);
 
@@ -739,7 +753,13 @@ DWORD BatteryWarningTime = 0;
 char dedicated[]="Dedicated to my father Vittorio";
 
 #define NUMSELECTSTRING_MAX			130
+
+#if USEIBOX
 SCREEN_INFO Data_Options[NUMSELECTSTRING_MAX];
+#else
+DATAOPTIONS Data_Options[NUMSELECTSTRING_MAX];
+#endif
+
 int NUMSELECTSTRINGS = 0;
 
 
@@ -775,14 +795,16 @@ void                                                    DisplayText(void);
 void CommonProcessTimer    (void);
 void SIMProcessTimer(void);
 void ProcessTimer    (void);
+#if USEIBOX
 void                                                    PopUpSelect(int i);
-
+#endif
 //HWND CreateRpCommandBar(HWND hwnd);
 
 #ifdef DEBUG
 void                                            DebugStore(char *Str);
 #endif
 
+#if USEIBOX
 bool SetDataOption( int index,
 					UnitGroup_t UnitGroup,
 					TCHAR *Description,
@@ -813,7 +835,6 @@ bool SetDataOption( int index,
 #endif
 	return true;
 }
-
 
 
 void FillDataOptions()
@@ -1079,6 +1100,10 @@ void FillDataOptions()
 
 }
 
+#else
+#include "FillDataOptions.cpp"
+#endif // else USEIBOX
+
 void TriggerGPSUpdate()
 {
   GpsUpdated = true;
@@ -1092,11 +1117,16 @@ void TriggerVarioUpdate()
 }
 
 void HideMenu() {
+#if USEIBOX
   // ignore this if the display isn't locked -- must keep menu visible
   if (DisplayLocked) {
     MenuTimeOut = MenuTimeoutMax;
     DisplayTimeOut = 0;
   }
+#else
+    MenuTimeOut = MenuTimeoutMax;
+    DisplayTimeOut = 0;
+#endif
 }
 
 void ShowMenu() {
@@ -1262,7 +1292,9 @@ void FullScreen() {
 #endif
   }
   MapWindow::RequestFastRefresh();
+#if USEIBOX
   InfoBoxesDirty = true;
+#endif
 }
 
 
@@ -1305,7 +1337,7 @@ void RestartCommPorts() {
 }
 
 
-
+#if USEIBOX
 void DefocusInfoBox() {
   FocusOnWindow(InfoFocus,false);
   InfoFocus = -1;
@@ -1327,6 +1359,7 @@ void FocusOnWindow(int i, bool selected) {
   // todo defocus all other?
 
 }
+#endif // USEIBOX
 
 
 void TriggerRedraws(NMEA_INFO *nmea_info,
@@ -1462,7 +1495,9 @@ DWORD CalculationThread (LPVOID lpvoid) {
         else
           MapWindow::mode.Fly(MapWindow::Mode::MODE_FLY_CRUISE);
       }
+#if USEIBOX
       InfoBoxesDirty = true;
+#endif
     }
         
     if (MapWindow::CLOSETHREAD) break; // drop out on exit
@@ -1553,7 +1588,7 @@ void PreloadInitialisation(bool ask) {
   SetToRegistry(TEXT("LKV"), 3);
   LKLanguageReady=false;
   LKReadLanguageFile();
-  FillDataOptions();
+  FillDataOptions(); // Load infobox list
 
   // Registery (early)
 
@@ -2008,7 +2043,6 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   #else
   while(!(goCalculationThread)) Sleep(50); // 091119
   #endif
-  // Sleep(500); 091119 REMOVE
   #if USEOLDASPWARNINGS
   StartupStore(TEXT(". dlgAirspaceWarningInit%s"),NEWLINE);
   dlgAirspaceWarningInit();
@@ -2405,6 +2439,7 @@ void InitialiseFontsHardCoded(RECT rc,
 
 }
 
+#if USEIBOX
 void InitialiseFontsAuto(RECT rc,
                         LOGFONT * ptrautoInfoWindowLogFont,
                         LOGFONT * ptrautoTitleWindowLogFont,
@@ -2418,6 +2453,7 @@ void InitialiseFontsAuto(RECT rc,
   int FontHeight, FontWidth;
   int fontsz1 = (rc.bottom - rc.top );
   int fontsz2 = (rc.right - rc.left );
+
 
   memset ((char *)ptrautoInfoWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)ptrautoTitleWindowLogFont, 0, sizeof (LOGFONT));
@@ -2469,7 +2505,6 @@ void InitialiseFontsAuto(RECT rc,
   do {
     HFONT TempWindowFont;
     HFONT hfOld;
-
     iFontHeight--;
     logfont.lfHeight = iFontHeight;
 
@@ -2576,12 +2611,12 @@ void InitialiseFontsAuto(RECT rc,
   memcpy ((void *)ptrautoTitleSmallWindowLogFont, &logfont, sizeof (LOGFONT));
 }
 
-//  propGetFontSettings(TEXT("TeamCodeFont"), &logfont);
-//  TitleSmallWindowFont = CreateFontIndirect (&logfont);
+#endif // USEIBOX
 
 
 void InitialiseFonts(RECT rc)
 { //this routine must be called only at start/restart b/c there are many pointers to these fonts
+
  
   DeleteObject(InfoWindowFont);  
   DeleteObject(TitleWindowFont);
@@ -2591,6 +2626,8 @@ void InitialiseFonts(RECT rc)
   DeleteObject(CDIWindowFont);
   DeleteObject(MapLabelFont);
   DeleteObject(StatisticsFont);
+
+  #if USEIBOX
 
   memset ((char *)&autoInfoWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)&autoTitleWindowLogFont, 0, sizeof (LOGFONT));
@@ -2602,6 +2639,7 @@ void InitialiseFonts(RECT rc)
   memset ((char *)&autoStatisticsLogFont, 0, sizeof (LOGFONT));
 
 
+  // we dont need fonts auto because LK has embedded fonts tuned
   InitialiseFontsAuto(rc, 
                         &autoInfoWindowLogFont,
                         &autoTitleWindowLogFont,
@@ -2611,7 +2649,7 @@ void InitialiseFonts(RECT rc)
                         &autoCDIWindowLogFont, // New
                         &autoMapLabelLogFont,
                         &autoStatisticsLogFont);
-
+  #endif
 
   LOGFONT hardInfoWindowLogFont;
   LOGFONT hardTitleWindowLogFont;
@@ -2641,7 +2679,10 @@ void InitialiseFonts(RECT rc)
                         &hardMapLabelLogFont,
                         &hardStatisticsLogFont);
 
-// for PNA, merge the "hard" into the "auto" if one exists 
+  //
+  // Merge the "hard" into the "auto" if one exists 
+  //
+
   if (!IsNullLogFont(hardInfoWindowLogFont))
     autoInfoWindowLogFont = hardInfoWindowLogFont;
 
@@ -2801,9 +2842,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   rc.bottom = SCREENHEIGHT;
 #endif
 
-  #if USEIBOX
   InfoBoxLayout::ScreenGeometry(rc);
-  #endif
 
   LKObjects_Create(); 
 
@@ -2847,9 +2886,11 @@ int getInfoType(int i) {
   int retval = 0;
   if (i<0) return 0; // error
 
+#if USEIBOX
   if (EnableAuxiliaryInfo) {
     retval = (InfoType[i] >> 24) & 0xff; // auxiliary
   } else {
+#endif
     switch(MapWindow::mode.Fly()) {
     case MapWindow::Mode::MODE_FLY_CIRCLING:
       retval = InfoType[i] & 0xff; // climb
@@ -2863,7 +2904,9 @@ int getInfoType(int i) {
     case MapWindow::Mode::MODE_FLY_NONE:
       break;
     }
+#if USEIBOX
   }
+#endif
   return min(NUMSELECTSTRINGS-1,retval);
 }
 
@@ -2871,10 +2914,12 @@ int getInfoType(int i) {
 void setInfoType(int i, char j) {
   if (i<0) return; // error
 
+#if USEIBOX
   if (EnableAuxiliaryInfo) {
     InfoType[i] &= 0x00ffffff;
     InfoType[i] += (j<<24);
   } else {
+#endif
     switch(MapWindow::mode.Fly()) {
     case MapWindow::Mode::MODE_FLY_CIRCLING:
       InfoType[i] &= 0xffffff00;
@@ -2891,10 +2936,13 @@ void setInfoType(int i, char j) {
     case MapWindow::Mode::MODE_FLY_NONE:
       break;
     }
+#if USEIBOX
   }
+#endif
 }
 
 
+#if USEIBOX
 void DoInfoKey(int keycode) {
   int i;
 
@@ -2913,14 +2961,16 @@ void DoInfoKey(int keycode) {
 
   UnlockNavBox();
 
+  #if USEIBOX
   InfoBoxesDirty = true;
+  #endif
 
   TriggerGPSUpdate(); // emulate update to trigger calculations
-
   InfoBoxFocusTimeOut = 0;
   DisplayTimeOut = 0;
 
 }
+#endif // USEIBOX
 
 
 // Debounce input buttons (does not matter which button is pressed)
@@ -3058,9 +3108,12 @@ void Shutdown(void) {
   StartupStore(TEXT(". Delete Objects%s"),NEWLINE);
   
   //  CommandBar_Destroy(hWndCB);
+
+  #if USEIBOX
   for (i=0; i<NUMSELECTSTRINGS; i++) {
     delete Data_Options[i].Formatter;
   }
+  #endif
 
   // Kill graphics objects
 
@@ -3252,6 +3305,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       // JMW not sure this ever does anything useful..
       if (ProgramStarted > psInitInProgress) {
 
+#if USEIBOX
 	if(InfoWindowActive) {
 	  
 	  if(DisplayLocked) {
@@ -3264,6 +3318,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	  HideMenu();
 	  SetFocus(hWndMapWindow);
 	}
+#endif
       }
       break;
       // TODO enhancement: Capture KEYDOWN time
@@ -3312,10 +3367,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_INITMENUPOPUP:
       if (ProgramStarted > psInitInProgress) {
+	#if USEIBOX
 	if(DisplayLocked)
 	  CheckMenuItem((HMENU) wParam,IDM_FILE_LOCK,MF_CHECKED|MF_BYCOMMAND);
 	else
 	  CheckMenuItem((HMENU) wParam,IDM_FILE_LOCK,MF_UNCHECKED|MF_BYCOMMAND);
+	#else
+	  CheckMenuItem((HMENU) wParam,IDM_FILE_LOCK,MF_CHECKED|MF_BYCOMMAND);
+	#endif // USEIBOX
 	
 	if(LoggerActive)
 	  CheckMenuItem((HMENU) wParam,IDM_FILE_LOGGER,MF_CHECKED|MF_BYCOMMAND);
@@ -3381,7 +3440,9 @@ LRESULT MainMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   int wmId, wmEvent;
   HWND wmControl;
+#if USEIBOX
   int i;
+#endif
 
   wmId    = LOWORD(wParam);
   wmEvent = HIWORD(wParam);
@@ -3393,8 +3454,10 @@ LRESULT MainMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       DialogActive = false;
 
       FullScreen();
-      
+
+      #if USEIBOX      
       InfoBoxFocusTimeOut = 0;
+      #endif
       /*
       if (!InfoWindowActive) {
         ShowMenu();
@@ -3436,7 +3499,7 @@ LRESULT MainMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-
+#if USEIBOX
 void    AssignValues(void)
 {
   if (InfoBoxesHidden) {
@@ -3448,8 +3511,11 @@ void    AssignValues(void)
 
   // nothing to do here now!
 }
+#endif
 
 extern int PDABatteryTemperature;
+
+#if USEIBOX
 void DisplayText(void)
 {
   if (InfoBoxesHidden)
@@ -3857,6 +3923,7 @@ void DisplayText(void)
   UnlockNavBox();
 
 }
+#endif // USEIBOX
 
 #include "winbase.h"
 
@@ -3889,14 +3956,16 @@ void CommonProcessTimer()
 	InfoBoxFocusTimeOut ++;
       }
       #else
+#if USEIBOX
 	if(InfoBoxFocusTimeOut >= FOCUSTIMEOUTMAX)
 	  {
 	    SwitchToMapWindow();
 	  }
 	InfoBoxFocusTimeOut ++;
+#endif
       #endif
     }
-
+#if USEIBOX
   if (DisplayLocked) {
     if(MenuTimeOut==MenuTimeoutMax) {
       if (!MapWindow::mode.AnyPan()) {
@@ -3905,6 +3974,14 @@ void CommonProcessTimer()
     }
     MenuTimeOut++;
   }
+#else
+    if(MenuTimeOut==MenuTimeoutMax) {
+      if (!MapWindow::mode.AnyPan()) {
+	InputEvents::setMode(TEXT("default"));
+      }
+    }
+    MenuTimeOut++;
+#endif // USEIBOX
 
   UpdateBatteryInfos();
 
@@ -3919,16 +3996,13 @@ void CommonProcessTimer()
   }
 
   if (MapWindow::IsDisplayRunning()) {
-    // No need to redraw map or infoboxes if screen is blanked.
-    // This should save lots of battery power due to CPU usage
-    // of drawing the screen
+#if USEIBOX
     if (InfoBoxesDirty) {
-      //JMWTEST    LockFlightData();
       AssignValues();
       DisplayText();
       InfoBoxesDirty = false;
-      //JMWTEST    UnlockFlightData();
     }
+#endif
   }
 
   //
@@ -4145,15 +4219,18 @@ void SIMProcessTimer(void)
 
 void SwitchToMapWindow(void)
 {
+#if USEIBOX
   DefocusInfoBox();
-
+#endif
   SetFocus(hWndMapWindow);
   if (  MenuTimeOut< MenuTimeoutMax) {
     MenuTimeOut = MenuTimeoutMax;
   }
+#if USEIBOX
   if (  InfoBoxFocusTimeOut< FOCUSTIMEOUTMAX) {
     InfoBoxFocusTimeOut = FOCUSTIMEOUTMAX;
   }
+#endif
 }
 
 
@@ -4194,6 +4271,7 @@ void PopupBugsBallast(int UpDown)
 }
 
 
+#if USEIBOX
 void PopUpSelect(int Index)
 {
   DialogActive = true;
@@ -4204,6 +4282,7 @@ void PopUpSelect(int Index)
   SwitchToMapWindow();
   DialogActive = false;
 }
+#endif
 
 #include <stdio.h>
 
@@ -4419,7 +4498,7 @@ void UnlockEventQueue() {
 }
 
 
-
+#if USEIBOX
 void HideInfoBoxes() {
   int i;
   InfoBoxesHidden = true;
@@ -4436,6 +4515,7 @@ void ShowInfoBoxes() {
     InfoBoxes[i]->SetVisible(true);
   }
 }
+#endif
 
 #if (WINDOWSPC<1)
 DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo)
@@ -4507,7 +4587,7 @@ void UpdateBatteryInfos(void) {
 }
 
 
-
+#if USEIBOX
 void Event_SelectInfoBox(int i) {
 //  int oldinfofocus = InfoFocus;
 
@@ -4560,7 +4640,7 @@ void Event_ChangeInfoBoxType(int i) {
   DisplayText();
 
 }
-
+#endif // USEIBOX
 
 
 static void ReplaceInString(TCHAR *String, TCHAR *ToReplace, 
@@ -5072,7 +5152,9 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   }
 
   CondReplaceInString(CALCULATED_INFO.AutoMacCready != 0, OutBuffer, TEXT("$(MacCreadyToggleActionName)"), gettext(TEXT("_@M418_")), gettext(TEXT("_@M897_")), Size);
+#if USEIBOX
   CondReplaceInString(EnableAuxiliaryInfo, OutBuffer, TEXT("$(AuxInfoToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
+#endif
   {
   MapWindow::Mode::TModeFly userForcedMode = MapWindow::mode.UserForcedMode();
   CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_CIRCLING, OutBuffer, TEXT("$(DispModeClimbShortIndicator)"), TEXT("_"), TEXT(""), Size);
