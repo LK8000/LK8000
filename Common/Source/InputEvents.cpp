@@ -314,17 +314,7 @@ void InputEvents::readFile() {
 	  _tcscpy(d_event, TEXT(""));
 	  _tcscpy(d_misc, TEXT(""));
 	  int ef;
-#if defined(__BORLANDC__	)
-	  memset(d_event, 0, sizeof(d_event));
-	  memset(d_misc, 0, sizeof(d_event));
-	  if (_tcschr(value, ' ') == NULL){
-	    _tcscpy(d_event, value);
-	  } else {
-#endif
 	    ef = _stscanf(value, TEXT("%[^ ] %[A-Za-z0-9 \\/().,]"), d_event, d_misc);
-#if defined(__BORLANDC__	)
-	  }
-#endif
 
 	  // TODO code: Can't use token here - breaks
 	  // other token - damn C - how about
@@ -473,24 +463,6 @@ int InputEvents::makeEvent(void (*event)(const TCHAR *), const TCHAR *misc, int 
 // without taking up more data - but when loading from file must copy string
 void InputEvents::makeLabel(int mode_id, const TCHAR* label, int location, int event_id) {
 
-//  int i;
-
-/*
-  // experimental, dont work becuase after loaded default strings are static, after laoding
-  //               from file some strings are static some not
-  // add code for overwrite existing mode,location label
-  for (i=0; i<ModeLabel_count[mode_id]; i++){
-    if (ModeLabel[mode_id][i].location == location && ModeLabel[mode_id][i].event == event_id){
-      if (ModeLabel[mode_id][i].label != NULL && ModeLabel[mode_id][i].label != label){
-        TCHAR *pC;
-        pC = ModeLabel[mode_id][i].label;
-        free(ModeLabel[mode_id][i].label);
-      }
-      ModeLabel[mode_id][i].label = label;
-      return;
-    }
-  }
-*/
   if ((mode_id >= 0) && (mode_id < MAX_MODE) && (ModeLabel_count[mode_id] < MAX_LABEL)) {
     ModeLabel[mode_id][ModeLabel_count[mode_id]].label = LKGetText(label);
     ModeLabel[mode_id][ModeLabel_count[mode_id]].location = location;
@@ -545,34 +517,9 @@ void InputEvents::setMode(const TCHAR *mode) {
 
   if (thismode == lastmode) return;
 
-  // TODO code: Enable this in debug modes
-  // for debugging at least, set mode indicator on screen
-  /* 
-     if (thismode==0) {
-     ButtonLabel::SetLabelText(0,NULL);
-     } else {
-     ButtonLabel::SetLabelText(0,mode);
-     }
-  */
   ButtonLabel::SetLabelText(0,NULL);
 
   drawButtons(thismode);
-  /*
-  // Set button labels
-  int i;
-  for (i = 0; i < ModeLabel_count[thismode]; i++) {
-    // JMW removed requirement that label has to be non-null
-    if (// (ModeLabel[thismode][i].label != NULL) && 
-	(ModeLabel[thismode][i].location > 0)) {
-
-      ButtonLabel::SetLabelText(
-				ModeLabel[thismode][i].location,
-				ModeLabel[thismode][i].label
-				);
-    }
-  }
-  MapWindow::RequestFastRefresh();
-  */
 
   lastmode = thismode;
 
@@ -878,14 +825,6 @@ extern int MenuTimeOut;
 // EXECUTE an Event - lookup event handler and call back - no return
 void InputEvents::processGo(int eventid) {
   if (!(ProgramStarted==psNormalOp)) return;
-
-  // 
-  // TODO feature: event/macro recorder
-  /*
-    if (LoggerActive) {
-    LoggerNoteEvent(Events[eventid].);
-    }
-  */
 
   // evnentid 0 is special for "noop" - otherwise check event
   // exists (pointer to function)
