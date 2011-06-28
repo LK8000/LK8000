@@ -145,9 +145,10 @@ int                                     InfoType[MAXINFOWINDOWS] =
    1396384771,
    387389207};
 
-
+#if USEOLDASPWARNINGS // not really used anyway
 bool RequestAirspaceWarningDialog= false;
 bool RequestAirspaceWarningForce=false;
+#endif
 bool                                    DisplayLocked = true;
 bool                                    InfoWindowActive = true;
 bool                                    EnableAuxiliaryInfo = false;
@@ -2034,9 +2035,11 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   #else
   while(!(goCalculationThread)) Sleep(50); // 091119
   #endif
-  // Sleep(500); 091119
+  // Sleep(500); 091119 REMOVE
+  #if USEOLDASPWARNINGS
   StartupStore(TEXT(". dlgAirspaceWarningInit%s"),NEWLINE);
   dlgAirspaceWarningInit();
+  #endif
 
   // find unique ID of this PDA
   ReadAssetNumber();
@@ -3003,8 +3006,10 @@ void Shutdown(void) {
   // turn off all displays
   GlobalRunning = false;
 
+  #if USEOLDASPWARNINGS
   StartupStore(TEXT(". dlgAirspaceWarningDeInit%s"),NEWLINE);
   dlgAirspaceWarningDeInit();
+  #endif
   
   // LKTOKEN _@M1220_ "Shutdown, saving logs..."
   CreateProgressDialog(gettext(TEXT("_@M1220_")));
@@ -3919,6 +3924,7 @@ void CommonProcessTimer()
   // VNT Maplock now has full control on focus/defocus on infoboxes
   if(InfoWindowActive)
     {
+      #if USEOLDASPWARNINGS
       if (!dlgAirspaceWarningVisible()) {
 	// JMW prevent switching to map window if in airspace warning dialog
 
@@ -3928,6 +3934,13 @@ void CommonProcessTimer()
 	  }
 	InfoBoxFocusTimeOut ++;
       }
+      #else
+	if(InfoBoxFocusTimeOut >= FOCUSTIMEOUTMAX)
+	  {
+	    SwitchToMapWindow();
+	  }
+	InfoBoxFocusTimeOut ++;
+      #endif
     }
 
   if (DisplayLocked) {
@@ -3967,12 +3980,19 @@ void CommonProcessTimer()
   //
   // maybe block/delay this if a dialog is active?
   // JMW: is done in the message function now.
+  #if USEOLDASPWARNINGS
   if (!dlgAirspaceWarningVisible()) {
     if (Message::Render()) {
       // turn screen on if blanked and receive a new message 
       DisplayTimeOut=0;
     }
   }
+  #else
+    if (Message::Render()) {
+      // turn screen on if blanked and receive a new message 
+      DisplayTimeOut=0;
+    }
+  #endif
 
 #if (EXPERIMENTAL > 0)
 

@@ -51,7 +51,6 @@ class InputEvents {
   static void eventCalculator(const TCHAR *misc);
   static void eventChangeInfoBoxType(const TCHAR *misc);
   static void eventChecklist(const TCHAR *misc);
-  static void eventClearAirspaceWarnings(const TCHAR *misc);
   static void eventClearStatusMessages(const TCHAR *misc);
   static void eventClearWarningsOrTerrainTopology(const TCHAR *misc);
   static void eventDLLExecute(const TCHAR *misc);

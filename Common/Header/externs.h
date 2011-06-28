@@ -535,7 +535,9 @@ extern bool DisableAutoLogger;
 extern StatusMessageSTRUCT StatusMessageData[];
 extern int StatusMessageData_Size;
 
+#if USEOLDASPWARNINGS
 extern bool RequestAirspaceWarningDialog;
+#endif
 
 extern bool LKLanguageReady;
 

@@ -79,6 +79,7 @@
 #define USEGOINIT		1	// expire 1.7.2011, it is disabled and should be removed
 
 //#define USEWEATHER		1	// we dont use rasp weather - hangarware
+//#define USEOLDASPWARNINGS	1	// we dont use old airspace warning system
 
 
 // #define USERLEVEL	1	// old UserLevel configuration expert/basic mode, obsoleted

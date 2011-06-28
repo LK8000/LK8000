@@ -5,6 +5,15 @@
 
    $Id$
 */
+//
+// 110628  The new LKAIRSPACE by Kalman with 2.4 page does not need this dialog anymore
+// LKairspace will trigger only one event at a time, each one overriding previous.
+// This ShowDlg was already disabled in lk8000.cpp and was still here only from manual button inside statistics.
+// There we call airspace warning configuration, now. So no need to keep this.
+
+//
+#if USEOLDASPWARNINGS
+
 #include "StdAfx.h"
 #include <aygshell.h>
 
@@ -21,12 +30,7 @@ using std::max;
 
 #include "utils/heapcheck.h"
 
-// 110102 Note from paolo
-// the entire airspace warning system in xcsoar 5.2.4 which is still in use within lk8000 should be trashed.
-// The fake mechanism of message queues here does not work, and it is also shared between two different threads.
-// TODO ASAP entirely with a more simple approach.
-// This system may still cause crashes, despite my attempts to fix here and there possible conflicts.
-// Sadly we cannot simply disable airspace warnings right now.
+
 
 extern HWND   hWndMainWindow;
 extern HWND   hWndMapWindow;
@@ -430,10 +434,6 @@ bool dlgAirspaceWarningVisible(void) {
   return fDialogOpen;
 }
 
-// LKairspace will trigger only one event at a time, each one overriding previous.
-// This ShowDlg was already disabled in lk8000.cpp and was still here only from manual button inside statistics.
-// There we call airspace warning configuration, now. So no need to keep this.
-
 
 int dlgAirspaceWarningInit(void){
 
@@ -497,3 +497,5 @@ int dlgAirspaceWarningDeInit(void){
   return(0);
   
 }
+
+#endif // USEOLDASPWARNINGS
