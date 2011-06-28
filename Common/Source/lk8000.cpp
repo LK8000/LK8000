@@ -1608,13 +1608,8 @@ void AfterStartup() {
   }
   StatusMessageData[0].delay_ms = olddelay; 
 
-#ifdef _INPUTDEBUG_
-  InputEvents::showErrors();
-#endif
-
   // Create default task if none exists
   StartupStore(TEXT(". Create default task%s"),NEWLINE);
-//  Sleep(500); // 091212
   DefaultTask();
 
   // Trigger first redraw

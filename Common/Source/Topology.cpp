@@ -799,21 +799,12 @@ void TopologyWriter::DeleteFiles(void) {
     TCHAR fname[MAX_PATH];
     _tcscpy(fname, filename);
     _tcscat(fname, _T(".shp"));
-	#if ALPHADEBUG
-	StartupStore(_T(". TopologyWriter: deleting <%s>%s"),fname,NEWLINE);
-	#endif
     DeleteFile(fname);
     _tcscpy(fname, filename);
     _tcscat(fname, _T(".shx"));
-	#if ALPHADEBUG
-	StartupStore(_T(". TopologyWriter: deleting <%s>%s"),fname,NEWLINE);
-	#endif
     DeleteFile(fname);
     _tcscpy(fname, filename);
     _tcscat(fname, _T(".dbf"));
-	#if ALPHADEBUG
-	StartupStore(_T(". TopologyWriter: deleting <%s>%s"),fname,NEWLINE);
-	#endif
     DeleteFile(fname);
   }
 }
@@ -826,7 +817,6 @@ void TopologyWriter::CreateFiles(void) {
     TCHAR dbfname[100];
     _tcscpy(dbfname, filename);
     _tcscat(dbfname, _T(".dbf")); 
-    StartupStore(_T(". TopologyWriter: creating <%s>%s"),dbfname,NEWLINE);
     shpfile.hDBF = msDBFCreate(dbfname);
     if (shpfile.hDBF == NULL)
 	StartupStore(_T("------ TopologyWriter: msDBFCreate error%s"),NEWLINE);

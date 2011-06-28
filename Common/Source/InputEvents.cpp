@@ -44,21 +44,6 @@ using std::max;
 #define MAX_EVENTS 2048
 #define MAX_LABEL NUMBUTTONLABELS
 
-/*
-  TODO code - All of this input_Errors code needs to be removed and replaced with standard logger.
-  The logger can then display messages through Message:: if ncessary and log to files etc
-  This code, and baddly written #ifdef should be moved to Macros in the Log class.
-*/
-
-#ifdef _INPUTDEBUG_
-// Log first NN input event errors for display in simulator mode
-#define MAX_INPUT_ERRORS 5
-TCHAR input_errors[MAX_INPUT_ERRORS][3000];
-int input_errors_count = 0; 
-// JMW this is just far too annoying right now,
-// since "title" "note" and commencts are not parsed, they
-// come up as errors.
-#endif
 
 // Current modes - map mode to integer (primitive hash)
 static TCHAR mode_current[MAX_MODE_STRING] = TEXT("default");		// Current mode
@@ -275,39 +260,20 @@ void InputEvents::readFile() {
 	    int key = findKey(d_data);				// Get the int key (eg: APP1 vs 'a')
 	    if (key > 0)
 	      Key2Event[mode_id][key] = event_id;
-#ifdef _INPUTDEBUG_
-	    else if (input_errors_count < MAX_INPUT_ERRORS)
-	      _stprintf(input_errors[input_errors_count++], TEXT("Invalid key data: %s at %i"), d_data, line);
-#endif
-			    
 			    
 	    // Make gce (Glide Computer Event)
 	  } else if (_tcscmp(d_type, TEXT("gce")) == 0) {		// GCE - Glide Computer Event
 	    int key = findGCE(d_data);				// Get the int key (eg: APP1 vs 'a')
 	    if (key >= 0)
 	      GC2Event[mode_id][key] = event_id;
-#ifdef _INPUTDEBUG_
-	    else if (input_errors_count < MAX_INPUT_ERRORS)
-	      _stprintf(input_errors[input_errors_count++], TEXT("Invalid GCE data: %s at %i"), d_data, line);
-#endif
 			    
 	    // Make ne (NMEA Event)
 	  } else if (_tcscmp(d_type, TEXT("ne")) == 0) { 		// NE - NMEA Event
 	    int key = findNE(d_data);			// Get the int key (eg: APP1 vs 'a')
 	    if (key >= 0)
 	      N2Event[mode_id][key] = event_id;
-#ifdef _INPUTDEBUG_
-	    else if (input_errors_count < MAX_INPUT_ERRORS)
-	      _stprintf(input_errors[input_errors_count++], TEXT("Invalid GCE data: %s at %i"), d_data, line);
-#endif
-			    
 	  } else if (_tcscmp(d_type, TEXT("label")) == 0)	{	// label only - no key associated (label can still be touch screen)
 	    // Nothing to do here...
-			    
-#ifdef _INPUTDEBUG_
-	  } else if (input_errors_count < MAX_INPUT_ERRORS) {
-	    _stprintf(input_errors[input_errors_count++], TEXT("Invalid type: %s at %i"), d_type, line);
-#endif
 			    
 	  }
 			  
@@ -377,17 +343,7 @@ void InputEvents::readFile() {
 	    if (event) {
 	      event_id = makeEvent(event, 
                                    StringMallocParse(d_misc), event_id);
-#ifdef _INPUTDEBUG_
-	    } else  if (input_errors_count < MAX_INPUT_ERRORS) {
-	      _stprintf(input_errors[input_errors_count++], 
-                        TEXT("Invalid event type: %s at %i"), d_event, line);
-#endif
 	    }
-#ifdef _INPUTDEBUG_
-	  } else  if (input_errors_count < MAX_INPUT_ERRORS) {
-	    _stprintf(input_errors[input_errors_count++], 
-                      TEXT("Invalid event type at %i"), line);
-#endif
 	  }
 	}
       } else if (_tcscmp(key, TEXT("label")) == 0) {
@@ -395,10 +351,6 @@ void InputEvents::readFile() {
       } else if (_tcscmp(key, TEXT("location")) == 0) {
 	_stscanf(value, TEXT("%d"), &d_location);
 	
-#ifdef _INPUTDEBUG_
-      } else if (input_errors_count < MAX_INPUT_ERRORS) {
-	_stprintf(input_errors[input_errors_count++], TEXT("Invalid key/value pair %s=%s at %i"), key, value, line);
-#endif
       }
     }
 	
@@ -411,17 +363,6 @@ void InputEvents::readFile() {
   zzip_fclose(fp);
 }
 
-#ifdef _INPUTDEBUG_
-void InputEvents::showErrors() {
-  TCHAR buffer[2048];
-  int i;
-  for (i = 0; i < input_errors_count; i++) {
-    _stprintf(buffer, TEXT("%i of %i\r\n%s"), i + 1, input_errors_count, input_errors[i]);
-    DoStatusMessage(TEXT("XCI Error"), buffer);
-  }
-  input_errors_count = 0;
-}
-#endif
 
 int InputEvents::findKey(const TCHAR *data) {
 
@@ -2510,11 +2451,6 @@ void InputEvents::eventDLLExecute(const TCHAR *misc) {
   // dll_name (up to first space)
   pdest = _tcsstr(data, TEXT(" "));
   if (pdest == NULL) {
-#ifdef _INPUTDEBUG_
-    _stprintf(input_errors[input_errors_count++], 
-              TEXT("Invalid DLLExecute string - no DLL"));
-    InputEvents::showErrors();
-#endif
     return;
   }
   *pdest = _T('\0');
@@ -2543,15 +2479,6 @@ void InputEvents::eventDLLExecute(const TCHAR *misc) {
 #endif
     if (lpfnDLLProc != NULL) {
       (*lpfnDLLProc)(other);
-#ifdef _INPUTDEBUG_
-    } else {
-      DWORD le;
-      le = GetLastError();
-      _stprintf(input_errors[input_errors_count++], 
-		TEXT("Problem loading function (%s) in DLL (%s) = %d"), 
-		func_name, dll_name, le);
-      InputEvents::showErrors();
-#endif
     }
   }
 }
@@ -2582,12 +2509,6 @@ HINSTANCE _loadDLL(TCHAR *name) {
 	lpfnDLLProc(GetModuleHandle(NULL));
       
       return DLLCache[DLLCache_Count - 1].hinstance;
-#ifdef _INPUTDEBUG_
-    } else {
-      _stprintf(input_errors[input_errors_count++], 
-		TEXT("Invalid DLLExecute - not loaded - %s"), name);
-      InputEvents::showErrors();
-#endif
     }
   }
 
