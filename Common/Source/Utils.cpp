@@ -42,7 +42,9 @@
 // Warning, this is initialising class, loading flarmnet IDs before anything else in the LK is even started..
 FlarmIdFile file; 
 
+#if USEIBOX
 #include "InfoBoxLayout.h"
+#endif
 
 #include "utils/heapcheck.h"
 
@@ -288,7 +290,9 @@ const TCHAR szRegistryAppInverseInfoBox[] = TEXT("AppInverseInfoBox2");
 const TCHAR szRegistryAppDefaultMapWidth[] = TEXT("AppDefaultMapWidth");
 const TCHAR szRegistryTeamcodeRefWaypoint[] = TEXT("TeamcodeRefWaypoint");
 
+#if USEIBOX
 const TCHAR szRegistryAppInfoBoxGeom[] = TEXT("AppInfoBoxGeom");
+#endif
 const TCHAR szRegistryAppInfoBoxModel[] = TEXT("AppInfoBoxModel"); 
 const TCHAR szRegistryGpsAltitudeOffset[] = TEXT("GpsAltitudeOffset");
 const TCHAR szRegistryUseGeoidSeparation[] = TEXT("UseGeoidSeparation");
@@ -1044,6 +1048,7 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryAppInverseInfoBox, &Temp);
   Appearance.InverseInfoBox = (Temp != 0);
 
+ #if USEIBOX
 // VENTA2-ADDON Geometry change and PNA custom font settings
 // depending on infobox geometry and model type
 // I had to move here the font setting because I needed first to 
@@ -1051,6 +1056,7 @@ void ReadRegistrySettings(void)
   Temp = Appearance.InfoBoxGeom;
   GetFromRegistry(szRegistryAppInfoBoxGeom, &Temp);
   Appearance.InfoBoxGeom = (InfoBoxGeomAppearance_t)Temp;
+ #endif // USEIBOX
 
   if (GlobalModelType == MODELTYPE_PNA_HP31X ) {
 			needclipping=true;

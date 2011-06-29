@@ -17,12 +17,16 @@
 #include "Process.h"
 #endif
 #include "externs.h"
+
+#if USEIBOX
 #include "Utils.h"
 #include "Utils2.h"
 #include "device.h"
 #include "Dialogs.h"
 #include "Port.h"
 #include "Atmosphere.h"
+#endif
+
 #include "AATDistance.h"
 
 #include "utils/heapcheck.h"
@@ -35,11 +39,8 @@ extern int PDABatteryPercent;
 extern int PDABatteryStatus;
 extern int PDABatteryFlag;
 
-// JMW added key codes,
-// so -1 down
-//     1 up
-//     0 enter
 
+#if USEIBOX
 void	AirspeedProcessing(int UpDown)
 {
 }
@@ -97,7 +98,7 @@ void	SpeedProcessing(int UpDown)
   } 
 	return;
 }
-
+#endif // USEIBOX
 
 void	WindDirectionProcessing(int UpDown)
 {
@@ -153,6 +154,7 @@ void	WindSpeedProcessing(int UpDown)
 	return;
 }
 
+#if USEIBOX
 void	DirectionProcessing(int UpDown)
 {
   if (SIMMODE) {
@@ -176,6 +178,7 @@ void	DirectionProcessing(int UpDown)
   }
 	return;
 }
+#endif // USEIBOX
 
 void	MacCreadyProcessing(int UpDown)
 {
@@ -233,7 +236,7 @@ void	MacCreadyProcessing(int UpDown)
   return;
 }
 
-
+#if USEIBOX
 void	ForecastTemperatureProcessing(int UpDown)
 {
   if (UpDown==1) {
@@ -244,8 +247,9 @@ void	ForecastTemperatureProcessing(int UpDown)
   }
 }
 
-
 extern void PopupWaypointDetails();
+
+#endif // USEIBOX
 
 /*
 	1	Next waypoint
@@ -333,6 +337,7 @@ void NextUpDown(int UpDown)
 }
 
 
+#if USEIBOX
 void NoProcessing(int UpDown)
 {
   (void)UpDown;
@@ -355,8 +360,6 @@ void FormatterLowWarning::AssignValue(int i) {
     break;
   }
 }
-
-
 void FormatterTime::SecsToDisplayTime(int d) {
   bool negative = (d<0);
   int dd = abs(d) % (3600*24);
@@ -377,6 +380,7 @@ void FormatterTime::SecsToDisplayTime(int d) {
   Valid = TRUE;
 }
 
+#endif
 
 int TimeLocal(int localtime) {
   localtime += GetUTCOffset();
@@ -442,7 +446,7 @@ int DetectStartTime(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   return max(0,lastflighttime);
 }
 
-
+#if USEIBOX
 void FormatterTime::AssignValue(int i) {
   switch (i) {
   case 9:
@@ -1030,7 +1034,6 @@ int index;
   };
 }
 
-
 TCHAR *InfoBoxFormatter::GetCommentText(void) {
   return CommentText;
 }
@@ -1472,3 +1475,4 @@ InfoBoxFormatter::InfoBoxFormatter(TCHAR *theformat) {
   CommentText[0] = 0;
 }
 
+#endif // USEIBOX

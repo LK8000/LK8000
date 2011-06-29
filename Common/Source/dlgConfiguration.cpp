@@ -2454,6 +2454,7 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+#if USEIBOX
 // VENTA-ADDON Geometry change config menu 11
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxGeom"));
   if (wp) {
@@ -2489,6 +2490,7 @@ static void setVariables(void) {
     }
   }
 //
+#endif
 
 #ifdef PNA
 // VENTA-ADDON Model change config menu 11
@@ -4547,6 +4549,7 @@ void dlgConfigurationShowModal(void){
     }
   }
 
+#if USEIBOX
 // VENTA-ADDON GEOM
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxGeom"));
   if (wp) {
@@ -4561,6 +4564,7 @@ void dlgConfigurationShowModal(void){
     }
   }
 //
+#endif
 
 #if defined(PNA) 
 // VENTA-ADDON MODEL CHANGE
