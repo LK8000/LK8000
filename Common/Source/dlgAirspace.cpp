@@ -50,26 +50,49 @@ static void OnAirspacePaintListItem(WindowControl * Sender, HDC hDC){
 #else
     if (ScreenLandscape) {
 #endif
+#if USEIBOX
       w0 = 202*InfoBoxLayout::scale;
     } else {
       w0 = 225*InfoBoxLayout::scale;
     }
+#else
+      w0 = 202*ScreenScale;
+    } else {
+      w0 = 225*ScreenScale;
+    }
+#endif
 	// LKTOKEN  _@M789_ = "Warn" 
+#if USEIBOX
     w1 = GetTextWidth(hDC, gettext(TEXT("_@M789_")))+InfoBoxLayout::scale*10;
 	// LKTOKEN  _@M241_ = "Display" 
     w2 = GetTextWidth(hDC, gettext(TEXT("_@M241_")))+InfoBoxLayout::scale*10;
+#else
+    w1 = GetTextWidth(hDC, gettext(TEXT("_@M789_")))+ScreenScale*10;
+	// LKTOKEN  _@M241_ = "Display" 
+    w2 = GetTextWidth(hDC, gettext(TEXT("_@M241_")))+ScreenScale*10;
+#endif
     x0 = w0-w1-w2;
 
+#if USEIBOX
     ExtTextOutClip(hDC, 2*InfoBoxLayout::scale, 2*InfoBoxLayout::scale,
                    label, x0-InfoBoxLayout::scale*10);
+#else
+    ExtTextOutClip(hDC, 2*ScreenScale, 2*ScreenScale,
+                   label, x0-ScreenScale*10);
+#endif
 
     if (colormode) {
 
       SelectObject(hDC, GetStockObject(WHITE_PEN));
       SelectObject(hDC, GetStockObject(WHITE_BRUSH));
       Rectangle(hDC,
+#if USEIBOX
           x0, 2*InfoBoxLayout::scale,
           w0, 22*InfoBoxLayout::scale);
+#else
+          x0, 2*ScreenScale,
+          w0, 22*ScreenScale);
+#endif
       SetTextColor(hDC,
          MapWindow::GetAirspaceColourByClass(i));
          SetBkColor(hDC,
@@ -77,8 +100,13 @@ static void OnAirspacePaintListItem(WindowControl * Sender, HDC hDC){
       SelectObject(hDC,
 		   MapWindow::GetAirspaceBrushByClass(i));
         Rectangle(hDC,
+#if USEIBOX
         x0, 2*InfoBoxLayout::scale,
         w0, 22*InfoBoxLayout::scale);
+#else
+        x0, 2*ScreenScale,
+        w0, 22*ScreenScale);
+#endif
         
     } else {
     
@@ -92,7 +120,11 @@ static void OnAirspacePaintListItem(WindowControl * Sender, HDC hDC){
         _tcscpy(label, gettext(TEXT("_@M789_")));
         ExtTextOut(hDC,
                    w0-w1-w2,
+#if USEIBOX
                    2*InfoBoxLayout::scale,
+#else
+                   2*ScreenScale,
+#endif
                    ETO_OPAQUE, NULL,
                    label,
                    _tcslen(label),
@@ -103,7 +135,11 @@ static void OnAirspacePaintListItem(WindowControl * Sender, HDC hDC){
         _tcscpy(label, gettext(TEXT("_@M241_")));
         ExtTextOut(hDC,
                    w0-w2,
+#if USEIBOX
                    2*InfoBoxLayout::scale,
+#else
+                   2*ScreenScale,
+#endif
                    ETO_OPAQUE, NULL,
                    label,
                    _tcslen(label),

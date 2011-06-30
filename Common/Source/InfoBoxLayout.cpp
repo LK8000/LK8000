@@ -5,7 +5,6 @@
 
   $Id: InfoBoxLayout.cpp,v 8.4 2010/12/11 00:28:41 root Exp root $
 */
-
 #include "StdAfx.h"
 #include "Sizes.h"
 #include "MapWindow.h"
@@ -17,8 +16,8 @@
 #if USEIBOX
 #include "InfoBox.h"
 #endif
-#include "lk8000.h"
 
+#include "lk8000.h"
 #include "utils/heapcheck.h"
 using std::min;
 using std::max;
@@ -32,24 +31,18 @@ int InfoBoxLayout::InfoBoxGeometry = 0;
 int InfoBoxLayout::ControlWidth;
 int InfoBoxLayout::ControlHeight;
 int InfoBoxLayout::TitleHeight;
-#endif
 
 int InfoBoxLayout::scale = 1;
 double InfoBoxLayout::dscale=1.0;
 bool InfoBoxLayout::IntScaleFlag=false;
 
-#if USEIBOX
 bool gnav = false;
 bool geometrychanged = false;
-#endif
 
-#if USEIBOX
 bool InfoBoxLayout::landscape = false;
 bool InfoBoxLayout::fullscreen = false;
 bool InfoBoxLayout::square = false;
-#endif
 
-#if USEIBOX
 void InfoBoxLayout::GetInfoBoxPosition(int i, RECT rc, 
 				       int *x, int *y,
 				       int *sizex, int *sizey) {
@@ -166,11 +159,9 @@ void InfoBoxLayout::GetInfoBoxPosition(int i, RECT rc,
 
   };
 }
-#endif // USEIBOX
 
 void InfoBoxLayout::ScreenGeometry(RECT rc) {
 
-#if USEIBOX
   TCHAR szRegistryInfoBoxGeometry[]=  TEXT("InfoBoxGeometry");
   TCHAR szRegistryInfoBoxGeom[]=  TEXT("AppInfoBoxGeom"); 
 
@@ -187,7 +178,6 @@ void InfoBoxLayout::ScreenGeometry(RECT rc) {
 
   // JMW testing only
   geometrychanged = true;
-#endif
 
   int maxsize=0;
   int minsize=0;
@@ -220,7 +210,6 @@ void InfoBoxLayout::ScreenGeometry(RECT rc) {
   	for (i=0; i<=MAXIBLSCALE;i++) LKIBLSCALE[i]=(int)(i*dscale);
   }
 
-#if USEIBOX
   if (rc.bottom<rc.right) {
     // landscape mode
     landscape = true;
@@ -270,10 +259,9 @@ void InfoBoxLayout::ScreenGeometry(RECT rc) {
   } else {
     numInfoWindows = 8;
   }
-#endif // USEIBOX
 }
 
-#if USEIBOX
+
 void InfoBoxLayout::GetInfoBoxSizes(RECT rc) {
 
   switch (InfoBoxGeometry) {
@@ -400,9 +388,7 @@ void InfoBoxLayout::GetInfoBoxSizes(RECT rc) {
   };
 
 }
-#endif // USEIBOX
 
-#if USEIBOX
 void InfoBoxLayout::Paint(void) {
   int i;
   for (i=0; i<numInfoWindows; i++) 
@@ -454,9 +440,7 @@ void InfoBoxLayout::Paint(void) {
     InfoBoxes[numInfoWindows]->PaintFast();
   }
 }
-#endif // USEIBOX
 
-#if USEIBOX
 void InfoBoxLayout::CreateInfoBoxes(RECT rc) {
   int i;
   int xoff, yoff, sizex, sizey;
@@ -900,21 +884,3 @@ bool ButtonLabel::CheckButtonPress(HWND pressedwindow) {
 }
 
 
-#if 0 // REMOVE
-void ButtonLabel::AnimateButton(int i) {
-  RECT mRc, aniRect;
-  GetWindowRect(hWndButtonWindow[i], &mRc);
-  
-  if (ButtonVisible[i]) {
-    aniRect.top = (mRc.top*5+mRc.bottom)/6;
-    aniRect.left = (mRc.left*5+mRc.right)/6;
-    aniRect.right = (mRc.left+mRc.right*5)/6;
-    aniRect.bottom = (mRc.top+mRc.bottom*5)/6;
-    SetSourceRectangle(aniRect);
-    DrawWireRects(&mRc, 5);
-  }
-  
-  SetSourceRectangle(mRc);
-
-}
-#endif

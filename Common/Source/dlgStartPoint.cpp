@@ -60,8 +60,13 @@ static void OnStartPointPaintListItem(WindowControl * Sender, HDC hDC){
       }
     }
     ExtTextOut(hDC,
+#if USEIBOX
 	       2*InfoBoxLayout::scale,
 	       2*InfoBoxLayout::scale,
+#else
+	       2*ScreenScale,
+	       2*ScreenScale,
+#endif
 	       ETO_OPAQUE, NULL,
 	       label,
 	       _tcslen(label),

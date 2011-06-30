@@ -230,7 +230,6 @@ int                                             AutoAdvance = 1;
 bool                                            AdvanceArmed = false;
 
 int                                             SafetyAltitudeMode = 0;
-short	ScreenSize=0; // VENTA6
 
 bool GlobalRunning = false; 
 
@@ -514,10 +513,17 @@ TCHAR LKLangSuffix[4];
 bool WarningHomeDir=false;
 
 // Fixed Screen Parameters, initialised by InitScreen. Size
+short	ScreenSize=0;
 int  ScreenSizeX=0;
 int  ScreenSizeY=0;
 RECT ScreenSizeR;
 bool ScreenLandscape=false;
+#if USEIBOX
+#else
+double ScreenDScale=1;
+int    ScreenScale=1;
+bool   ScreenIntScale=false;
+#endif
 
 // Default arrival mode calculation type
 // 091016 currently not changed anymore
@@ -2843,7 +2849,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   rc.bottom = SCREENHEIGHT;
 #endif
 
+  #if USEIBOX
   InfoBoxLayout::ScreenGeometry(rc);
+  #endif
 
   LKObjects_Create(); 
 

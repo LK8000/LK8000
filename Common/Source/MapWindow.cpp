@@ -1436,7 +1436,11 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 				   *(XstartScreen-tscreen.x)+
 				   (YstartScreen-tscreen.y)
 				   *(YstartScreen-tscreen.y)))
+#if USEIBOX
 	    /InfoBoxLayout::scale;
+#else
+	    /ScreenScale;
+#endif
 
 	  if (distance<10) {
 	    TargetDrag_State = 1;
@@ -1696,9 +1700,15 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 
 	// we need to calculate it here only if needed
 	if (gestDist>=0)
+#if USEIBOX
 		distance = gestDist /InfoBoxLayout::scale;
 	else
 		distance = isqrt4((long)((XstartScreen-X)*(XstartScreen-X)+ (YstartScreen-Y)*(YstartScreen-Y))) /InfoBoxLayout::scale;
+#else
+		distance = gestDist /ScreenScale;
+	else
+		distance = isqrt4((long)((XstartScreen-X)*(XstartScreen-X)+ (YstartScreen-Y)*(YstartScreen-Y))) /ScreenScale;
+#endif
 
 	#ifdef DEBUG_VIRTUALKEYS
 	TCHAR buf[80]; char sbuf[80];
@@ -2769,8 +2779,13 @@ void PolygonRotateShift(POINT* poly, const int n, const int xs, const int ys, co
   if(angle != lastangle) {
     lastangle = angle;
     int deg = DEG_TO_INT(AngleLimit360(angle));
+#if USEIBOX
     cost = ICOSTABLE[deg]*InfoBoxLayout::scale;
     sint = ISINETABLE[deg]*InfoBoxLayout::scale;
+#else
+    cost = ICOSTABLE[deg]*ScreenScale;
+    sint = ISINETABLE[deg]*ScreenScale;
+#endif
   }
   const int xxs = xs*1024+512;
   const int yys = ys*1024+512;
@@ -2947,7 +2962,11 @@ void MapWindow::DrawBitmapX(HDC hdc, int x, int y,
                             HDC source,
                             int offsetx, int offsety,
                             DWORD mode) {
+#if USEIBOX
   if (InfoBoxLayout::scale>1) {
+#else
+  if (ScreenScale>1) {
+#endif
     StretchBlt(hdc, x, y, 
                IBLSCALE(sizex), 
                IBLSCALE(sizey), 
@@ -3628,7 +3647,11 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
   Start.y = Orig.y;
   Start.x = Orig.x;
 
+#if USEIBOX
   int kx = tsize.cx/InfoBoxLayout::scale/2;
+#else
+  int kx = tsize.cx/ScreenScale/2;
+#endif
 
   POINT Arrow[7] = { {0,-20}, {-6,-26}, {0,-20}, 
                      {6,-26}, {0,-20}, 
@@ -3647,9 +3670,15 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
   POINT Tail[2] = {{0,-20}, {0,-26-min(20,wmag)*3}};
   double angle = AngleLimit360(DerivedDrawInfo.WindBearing-DisplayAngle);
   for(i=0; i<2; i++) {
+#if USEIBOX
     if (InfoBoxLayout::scale>1) {
       Tail[i].x *= InfoBoxLayout::scale;
       Tail[i].y *= InfoBoxLayout::scale;
+#else
+    if (ScreenScale>1) {
+      Tail[i].x *= ScreenScale;
+      Tail[i].y *= ScreenScale;
+#endif
     }
     protateshift(Tail[i], angle, Start.x, Start.y);
   }

@@ -48,11 +48,19 @@
  #define TOPOFASTLABEL	1
  #define TOPOFASTCACHE	1
 
+// Use old IBOX mode, requires also a make inside Data/Input after changing InputEvents.h 
+// with InputEvents.USEIBOX.h - manually!
+// #define USEIBOX		1	
+
+
 // No instrument thread. However it is here ready to be used for anything.
 #define NOINSTHREAD	1
 
-
+#if USEIBOX
 #define IBLSCALE(x) (   (InfoBoxLayout::IntScaleFlag) ? ((x)*InfoBoxLayout::scale) : ((int)((x)*InfoBoxLayout::dscale)))
+#else
+#define IBLSCALE(x) (   (ScreenIntScale) ? ((x)*ScreenScale) : ((int)((x)*ScreenDScale)))
+#endif
 #define NIBLSCALE(x) (LKIBLSCALE[x])
 #define MAXIBLSCALE	100	// CAREFUL! NIBLSCALE can be used only UP TO MAXIBLSCALE!
 
@@ -74,8 +82,6 @@
 //#define USEWEATHER		1	// we dont use rasp weather - hangarware
 //#define USEOLDASPWARNINGS	1	// we dont use old airspace warning system
 
-//#define USEIBOX		1	// Use old IBOX mode, requires also a make inside Data/Input after changing
-					// InputEvents.h with InputEvents.USEIBOX.h - manually!
 
 
 /*

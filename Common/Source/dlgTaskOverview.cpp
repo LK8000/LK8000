@@ -89,19 +89,28 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
   int w0;
 #if USEIBOX
   if (InfoBoxLayout::landscape) {
-#else
-  if (ScreenLandscape) {
-#endif
     w0 = 200*InfoBoxLayout::scale;
   } else {
     w0 = 210*InfoBoxLayout::scale;
   }
+#else
+  if (ScreenLandscape) {
+    w0 = 200*ScreenScale;
+  } else {
+    w0 = 210*ScreenScale;
+  }
+#endif
 
   int w1 = GetTextWidth(hDC, TEXT(" 000km"));
   int w2 = GetTextWidth(hDC, TEXT("  000")TEXT(DEG));
 
+#if USEIBOX
   int p1 = w0-w1-w2; // 125*InfoBoxLayout::scale;
   int p2 = w0-w2;    // 175*InfoBoxLayout::scale;
+#else
+  int p1 = w0-w1-w2; // 125*ScreenScale;
+  int p2 = w0-w2;    // 175*ScreenScale;
+#endif
 
   if (DrawListIndex < n){
     int i = LowLimit + DrawListIndex;
@@ -127,20 +136,33 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
                   WayPointList[Task[i].Index].Name);
       }
 
+#if USEIBOX
       ExtTextOutClip(hDC, 2*InfoBoxLayout::scale, 2*InfoBoxLayout::scale,
 		     sTmp, p1-4*InfoBoxLayout::scale);
+#else
+      ExtTextOutClip(hDC, 2*ScreenScale, 2*ScreenScale,
+		     sTmp, p1-4*ScreenScale);
+#endif
 
       _stprintf(sTmp, TEXT("%.0f %s"), 
 		Task[i].Leg*DISTANCEMODIFY,
 		Units::GetDistanceName());
       ExtTextOut(hDC, p1+w1-GetTextWidth(hDC, sTmp), 
+#if USEIBOX
                  2*InfoBoxLayout::scale,
+#else
+                 2*ScreenScale,
+#endif
                  ETO_OPAQUE, NULL,
                  sTmp, _tcslen(sTmp), NULL);
 
       _stprintf(sTmp, TEXT("%d")TEXT(DEG),  iround(Task[i].InBound));
       ExtTextOut(hDC, p2+w2-GetTextWidth(hDC, sTmp), 
+#if USEIBOX
                  2*InfoBoxLayout::scale,
+#else
+                 2*ScreenScale,
+#endif
                  ETO_OPAQUE, NULL,
                  sTmp, _tcslen(sTmp), NULL);
     
@@ -152,7 +174,11 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
 
 	// LKTOKEN  _@M832_ = "add waypoint" 
       _stprintf(sTmp, TEXT("  (%s)"), gettext(TEXT("_@M832_")));
+#if USEIBOX
       ExtTextOut(hDC, 2*InfoBoxLayout::scale, 2*InfoBoxLayout::scale,
+#else
+      ExtTextOut(hDC, 2*ScreenScale, 2*ScreenScale,
+#endif
 		 ETO_OPAQUE, NULL,
 		 sTmp, _tcslen(sTmp), NULL);
     } else if ((DrawListIndex==n+1) && ValidTaskPoint(0)) {
@@ -160,7 +186,11 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
       if (!AATEnabled || ISPARAGLIDER) {
 	// LKTOKEN  _@M735_ = "Total:" 
 	_stprintf(sTmp, gettext(TEXT("_@M735_")));
+#if USEIBOX
 	ExtTextOut(hDC, 2*InfoBoxLayout::scale, 2*InfoBoxLayout::scale,
+#else
+	ExtTextOut(hDC, 2*ScreenScale, 2*ScreenScale,
+#endif
 		   ETO_OPAQUE, NULL,
 		   sTmp, _tcslen(sTmp), NULL);
       
@@ -172,7 +202,11 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
 		    Units::GetDistanceName());
 	}
 	ExtTextOut(hDC, p1+w1-GetTextWidth(hDC, sTmp), 
+#if USEIBOX
                    2*InfoBoxLayout::scale,
+#else
+                   2*ScreenScale,
+#endif
 		   ETO_OPAQUE, NULL,
 		   sTmp, _tcslen(sTmp), NULL);
 
@@ -194,7 +228,11 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
 		  DISTANCEMODIFY*lengthtotal,
 		  DISTANCEMODIFY*d1,
 		  Units::GetDistanceName());
+#if USEIBOX
 	ExtTextOut(hDC, 2*InfoBoxLayout::scale, 2*InfoBoxLayout::scale,
+#else
+	ExtTextOut(hDC, 2*ScreenScale, 2*ScreenScale,
+#endif
 		   ETO_OPAQUE, NULL,
 		   sTmp, _tcslen(sTmp), NULL);
       } 

@@ -530,29 +530,42 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
       int w0, w1, w2, w3, x1, x2, x3;
 #if USEIBOX
       if (InfoBoxLayout::landscape) {
-#else
-      if (ScreenLandscape) {
-#endif
         w0 = 202*InfoBoxLayout::scale;
       } else {
         w0 = 225*InfoBoxLayout::scale;
       }
+#else
+      if (ScreenLandscape) {
+        w0 = 202*ScreenScale;
+      } else {
+        w0 = 225*ScreenScale;
+      }
+#endif
       w1 = GetTextWidth(hDC, TEXT("XXX"));
       w2 = GetTextWidth(hDC, TEXT(" 000km"));
       w3 = GetTextWidth(hDC, TEXT(" 000")TEXT(DEG));
       
       x1 = w0-w1-w2-w3;
 
+#if USEIBOX
       ExtTextOutClip(hDC, 2*InfoBoxLayout::scale, 2*InfoBoxLayout::scale,
                      (TCHAR*)Name, x1-InfoBoxLayout::scale*5); 
+#else
+      ExtTextOutClip(hDC, 2*ScreenScale, 2*ScreenScale,
+                     (TCHAR*)Name, x1-ScreenScale*5); 
+#endif
       
       sTmp[0] = '\0';
       sTmp[1] = '\0';
       sTmp[2] = '\0';
 	  _tcsncpy(sTmp, CAirspaceManager::Instance().GetAirspaceTypeShortText(AirspaceSelectInfo[i].Type), 4);
       // left justified
-      
+     
+#if USEIBOX 
       ExtTextOut(hDC, x1, 2*InfoBoxLayout::scale,
+#else
+      ExtTextOut(hDC, x1, 2*ScreenScale,
+#endif
                  ETO_OPAQUE, NULL,
                  sTmp, _tcslen(sTmp), NULL);
 
@@ -561,14 +574,22 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
                 AirspaceSelectInfo[i].Distance,
                 Units::GetDistanceName());
       x2 = w0-w3-GetTextWidth(hDC, sTmp);
+#if USEIBOX
       ExtTextOut(hDC, x2, 2*InfoBoxLayout::scale,
+#else
+      ExtTextOut(hDC, x2, 2*ScreenScale,
+#endif
                  ETO_OPAQUE, NULL,
                  sTmp, _tcslen(sTmp), NULL);
       
       // right justified after distance
       _stprintf(sTmp, TEXT("%d")TEXT(DEG),  iround(AirspaceSelectInfo[i].Direction));
       x3 = w0-GetTextWidth(hDC, sTmp);
+#if USEIBOX
       ExtTextOut(hDC, x3, 2*InfoBoxLayout::scale,
+#else
+      ExtTextOut(hDC, x3, 2*ScreenScale,
+#endif
                  ETO_OPAQUE, NULL,
                  sTmp, _tcslen(sTmp), NULL);
     } else {
@@ -578,7 +599,11 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
     if (DrawListIndex == 0){
 	// LKTOKEN  _@M466_ = "No Match!" 
       _stprintf(sTmp, TEXT("%s"), gettext(TEXT("_@M466_")));
+#if USEIBOX
       ExtTextOut(hDC, 2*InfoBoxLayout::scale, 2*InfoBoxLayout::scale,
+#else
+      ExtTextOut(hDC, 2*ScreenScale, 2*ScreenScale,
+#endif
                  ETO_OPAQUE, NULL,
                  sTmp, _tcslen(sTmp), NULL);
     }

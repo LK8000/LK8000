@@ -321,6 +321,12 @@ extern int ScreenSizeX;
 extern int ScreenSizeY;
 extern RECT ScreenSizeR;
 extern bool ScreenLandscape;
+#if USEIBOX
+#else
+extern double ScreenDScale;
+extern int ScreenScale;
+extern bool ScreenIntScale;
+#endif
 
 extern int time_in_flight;
 extern int time_on_ground;

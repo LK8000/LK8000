@@ -85,7 +85,11 @@ static void OnPaintDetailsListItem(WindowControl * Sender, HDC hDC){
       nlen--;
     }
     if (nlen>0) {
+#if USEIBOX
       ExtTextOut(hDC, 2*InfoBoxLayout::scale, 2*InfoBoxLayout::scale,
+#else
+      ExtTextOut(hDC, 2*ScreenScale, 2*ScreenScale,
+#endif
 		 ETO_OPAQUE, NULL,
 		 text+nstart,
 		 nlen, 

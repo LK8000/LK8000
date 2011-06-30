@@ -43,10 +43,17 @@ static void OnPaintComboPopupListItem(WindowControl * Sender, HDC hDC){
 
 	w=Sender->GetWidth();
 
+#if USEIBOX
 	ExtTextOutClip(hDC, 2*InfoBoxLayout::scale, 
 		2*InfoBoxLayout::scale,
 		ComboListPopup->ComboPopupItemList[ComboListPopup->ComboPopupDrawListIndex]->StringValueFormatted,
 		w-InfoBoxLayout::scale*5);
+#else
+	ExtTextOutClip(hDC, 2*ScreenScale,
+		2*ScreenScale,
+		ComboListPopup->ComboPopupItemList[ComboListPopup->ComboPopupDrawListIndex]->StringValueFormatted,
+		w-ScreenScale*5);
+#endif
   }
 }
 

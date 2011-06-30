@@ -1575,6 +1575,43 @@ void InitScreenSize() {
   ScreenSizeR.left=0;
   ScreenSizeR.right=iWidth-1;
 
+#if USEIBOX
+#else
+  int maxsize=0;
+  int minsize=0;
+  maxsize = max(ScreenSizeR.right-ScreenSizeR.left+1,ScreenSizeR.bottom-ScreenSizeR.top+1);
+  minsize = min(ScreenSizeR.right-ScreenSizeR.left+1,ScreenSizeR.bottom-ScreenSizeR.top+1);
+
+  ScreenDScale = max(1.0,minsize/240.0); // always start w/ shortest dimension
+
+  if (maxsize == minsize) 
+  {
+    ScreenDScale *= 240.0 / 320.0;
+  }
+
+  ScreenScale = (int)ScreenDScale;
+
+  #if (WINDOWSPC>0)
+  if (maxsize==720) {
+        ScreenScale=2; // force rescaling with Stretch
+  }
+  #endif
+
+  if ( ((double)ScreenScale) == ScreenDScale)
+	ScreenIntScale = true;
+  else
+	ScreenIntScale = false;
+
+  int i;
+  if ( ScreenIntScale ) {
+        for (i=0; i<=MAXIBLSCALE; i++) LKIBLSCALE[i]=(int)(i*ScreenScale);
+  } else {
+        for (i=0; i<=MAXIBLSCALE;i++) LKIBLSCALE[i]=(int)(i*ScreenDScale);
+  }
+
+  // StartupStore(_T("...... ScreenScale=%d ScreenDScale=%.3f ScreenIntScale=%d\n"),ScreenScale,ScreenDScale,ScreenIntScale);
+#endif // !USEIBOX
+
   ScreenSize=0;
 
   if (iWidth == 240 && iHeight == 320) ScreenSize=(ScreenSize_t)ss240x320; // QVGA      portrait

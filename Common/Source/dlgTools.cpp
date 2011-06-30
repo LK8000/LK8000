@@ -22,7 +22,11 @@
 
 int DLGSCALE(int x) {
   int iRetVal = x;
+#if USEIBOX
   iRetVal = (int) ((x)*InfoBoxLayout::dscale);
+#else
+  iRetVal = (int) ((x)*ScreenDScale);
+#endif
   return iRetVal;
 }
 

@@ -4,32 +4,28 @@
 #include "StdAfx.h"
 #include "Sizes.h"
 
+#if USEIBOX
 class InfoBoxLayout {
  public:
-#if USEIBOX
   static bool fullscreen;
   static bool landscape;
   static bool square;
-#endif
   static double dscale;
   static bool IntScaleFlag;
   static int scale;
-#if USEIBOX
   static void CreateInfoBoxes(RECT rc);
   static void DestroyInfoBoxes(void);
   static int InfoBoxGeometry;
   static int ControlWidth, ControlHeight, TitleHeight;
-#endif
   static void ScreenGeometry(RECT rc);
   static void Paint(void);
  private:
-#if USEIBOX
   static void GetInfoBoxPosition(int i, RECT rc, 
 				 int *x, int *y,
 				 int *sizex, int *sizey);
   static void GetInfoBoxSizes(RECT rc);
-#endif
 };
+#endif
 
 class ButtonLabel {
  public:
