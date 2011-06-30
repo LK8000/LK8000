@@ -924,7 +924,11 @@ public:
     dtquant=2;
     #else
     // scale dtquant so resolution is not too high on large displays
+#if USEIBOX
     dtquant *= InfoBoxLayout::scale;  // lower resolution a bit.. (no need for CPU >800mHz)
+#else
+    dtquant *= ScreenScale;  // lower resolution a bit.. (no need for CPU >800mHz)
+#endif
 
     if (ScreenSize!=ss640x480)
 	    if (dtquant>3) dtquant=3; // .. but not too much
