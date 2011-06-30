@@ -4087,7 +4087,7 @@ int ConnectionProcessTimer(int itimeout) {
   
 		CONNECTWAIT = TRUE;
 		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_GREEN")); // 100404
+		if (EnableSoundModes) LKSound(TEXT("LK_GREEN.WAV"));
 		#endif
 		FullScreen();
 	} else {
@@ -4135,7 +4135,7 @@ int ConnectionProcessTimer(int itimeout) {
 	  
 		LOCKWAIT = TRUE;
 		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_GREEN")); // 100404
+		if (EnableSoundModes) LKSound(TEXT("LK_GREEN.WAV")); // 100404
 		#endif
 		FullScreen();
 	} else {

@@ -536,7 +536,6 @@ void SearchBestAlternate(NMEA_INFO *Basic,
   } else {
 	// If still invalid, i.e. not -1, then there's a big problem
 	if ( !ValidWayPoint(bestalternate) ) {
-		//if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_RED"));
 		AlertBestAlternate(2);
 		#ifdef DEBUG_BESTALTERNATE
 		wsprintf(ventabuffer,TEXT("WARNING ERROR INVALID BEST=%d"),bestalternate);
@@ -582,7 +581,7 @@ void AlertBestAlternate(short soundmode) {
 				break;
 			case 1:
 				#ifndef DISABLEAUDIO
-				PlayResource(TEXT("IDR_WAV_GREEN"));
+				LKSound(_T("LK_GREEN.WAV"));
 				#endif
 				_stprintf(mbuf,_T("BestAlternate: %s  @%.0f%s"), WayPointList[BestAlternate].Name,
 				DISTANCEMODIFY*WayPointCalc[BestAlternate].Distance,
@@ -593,7 +592,7 @@ void AlertBestAlternate(short soundmode) {
 				break;
 			case 2: 
 				#ifndef DISABLEAUDIO
-				PlayResource(TEXT("IDR_WAV_RED"));
+				LKSound(_T("LK_RED.WAV"));
 				#endif
 				wsprintf(mbuf,_T("BestAlternate: %s"), gettext(TEXT("_@M916_"))); // WARNING, NO LANDINGS
 				// Do NOT disturb the pilot for 5 minutes with useless further messages
@@ -605,8 +604,8 @@ void AlertBestAlternate(short soundmode) {
 				break;
 			case 11:
 				#ifndef DISABLEAUDIO
-				PlayResource(TEXT("IDR_WAV_GREEN"));
-				PlayResource(TEXT("IDR_WAV_GREEN"));
+				LKSound(_T("LK_GREEN.WAV"));
+				LKSound(_T("LK_GREEN.WAV"));
 				#endif
 				break;
 			default:

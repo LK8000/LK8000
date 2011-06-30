@@ -168,7 +168,7 @@ void LKBatteryManager() {
 	_stprintf(mbuf,_T("%d%% %s"), PDABatteryPercent, gettext(TEXT("_@M1354_")));
 	DoStatusMessage(mbuf);
 	#ifndef DISABLEAUDIO
-        PlayResource(TEXT("IDR_WAV_RED"));
+        LKSound(TEXT("LK_RED.WAV"));
 	#endif
 
 	// repeat after 1 minute, forced
