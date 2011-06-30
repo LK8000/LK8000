@@ -87,7 +87,11 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
   LockTaskData();
 
   int w0;
+#if USEIBOX
   if (InfoBoxLayout::landscape) {
+#else
+  if (ScreenLandscape) {
+#endif
     w0 = 200*InfoBoxLayout::scale;
   } else {
     w0 = 210*InfoBoxLayout::scale;
@@ -103,7 +107,11 @@ static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
     int i = LowLimit + DrawListIndex;
 
     if (Task[i].Index>=0) {
+#if USEIBOX
       if (InfoBoxLayout::landscape && 
+#else
+      if (ScreenLandscape && 
+#endif
           AATEnabled && ValidTaskPoint(i+1) && (i>0)) {
         if (Task[i].AATType==0) {
           _stprintf(sTmp, TEXT("%s %.1f"), 
@@ -558,7 +566,11 @@ void dlgTaskOverviewShowModal(void){
 
   wf = NULL;
 
+#if USEIBOX
   if (!InfoBoxLayout::landscape) {
+#else
+  if (!ScreenLandscape) {
+#endif
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgTaskOverview_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 

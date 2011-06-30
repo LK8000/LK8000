@@ -36,7 +36,11 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
     return;
   }
 
+#if USEIBOX
   if (!InfoBoxLayout::landscape) {
+#else
+  if (!ScreenLandscape) {
+#endif
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgHelp_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 

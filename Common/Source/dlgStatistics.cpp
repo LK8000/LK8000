@@ -1675,7 +1675,11 @@ static void Update(void){
                 gettext(TEXT("_@M889_")), // Mass
                 GlidePolar::GetAUW());
       wf->SetCaption(sTmp);
+#if USEIBOX
       if (InfoBoxLayout::landscape) {
+#else
+      if (ScreenLandscape) {
+#endif
         _stprintf(sTmp, TEXT("%s:\r\n  %3.0f\r\n  at %3.0f %s\r\n\r\n%s:\r\n%3.2f %s\r\n  at %3.0f %s"),
 	// LKTOKEN  _@M140_ = "Best LD" 
                   gettext(TEXT("_@M140_")),
@@ -1754,8 +1758,12 @@ static void Update(void){
       if (AATEnabled) {
         Units::TimeToText(timetext1, (int)CALCULATED_INFO.TaskTimeToGo);
         Units::TimeToText(timetext2, (int)CALCULATED_INFO.AATTimeToGo);
-        
+       
+#if USEIBOX 
         if (InfoBoxLayout::landscape) {
+#else
+        if (ScreenLandscape) {
+#endif
           _stprintf(sTmp, 
                     TEXT("%s:\r\n  %s\r\n%s:\r\n  %s\r\n%s:\r\n  %5.0f %s\r\n%s%.0f %s\r\n"), // 100429
 	// LKTOKEN  _@M698_ = "Task to go" 
@@ -1847,7 +1855,11 @@ static void Update(void){
                                      result.Type() == CContestMgr::TYPE_OLC_FAI_PREDICTED) ?
             CContestMgr::TYPE_OLC_PLUS_PREDICTED : CContestMgr::TYPE_OLC_PLUS;
           CContestMgr::CResult resultPlus = CContestMgr::Instance().Result(type, false);
+#if USEIBOX
           if(InfoBoxLayout::landscape)
+#else
+          if(ScreenLandscape)
+#endif
             _stprintf(plusStr, TEXT("\r\n%s:\r\n%.2f pt"),
                       CContestMgr::TypeToString(type),
                       resultPlus.Score());
@@ -2024,8 +2036,12 @@ void dlgAnalysisShowModal(int inpage){
   wGrid=NULL;
   wInfo=NULL;
   wCalc=NULL;
-  
+ 
+#if USEIBOX 
   if (!InfoBoxLayout::landscape) {
+#else
+  if (!ScreenLandscape) {
+#endif
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAnalysis_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 

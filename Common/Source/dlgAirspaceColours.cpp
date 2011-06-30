@@ -97,7 +97,11 @@ int dlgAirspaceColoursShowModal(void){
 
   ItemIndex = -1;
 
+#if USEIBOX
   if (!InfoBoxLayout::landscape) {
+#else
+  if (!ScreenLandscape) {
+#endif
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAirspaceColours_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 

@@ -208,7 +208,11 @@ bool dlgStartupShowModal(void){
   char filename[MAX_PATH];
   strcpy(filename,"");
   if (RUN_MODE==RUN_WELCOME) {
+#if USEIBOX
 	if (!InfoBoxLayout::landscape) {
+#else
+	if (!ScreenLandscape) {
+#endif
 		LocalPathS(filename, TEXT("dlgFlySim_L.xml"));
 		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_FLYSIM_L"));
 	} else {
@@ -219,7 +223,11 @@ bool dlgStartupShowModal(void){
 		return false;
 	}
   } else {
+#if USEIBOX
 	if (!InfoBoxLayout::landscape) {
+#else
+	if (!ScreenLandscape) {
+#endif
 		LocalPathS(filename, TEXT("dlgStartup_L.xml"));
 		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_STARTUP_L"));
 	} else {

@@ -2461,7 +2461,11 @@ static void setVariables(void) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
 
+#if USEIBOX
     if (InfoBoxLayout::landscape) {
+#else
+    if (ScreenLandscape) {
+#endif
 
 	
 	dfe->addEnumText(TEXT("vario+9box")); // 0
@@ -3290,7 +3294,11 @@ void dlgConfigurationShowModal(void){
 
   StartHourglassCursor(); 
 
+#if USEIBOX
   if (!InfoBoxLayout::landscape) {
+#else
+  if (!ScreenLandscape) {
+#endif
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgConfiguration_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 

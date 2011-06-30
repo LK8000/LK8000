@@ -363,7 +363,11 @@ void dlgWayPointDetailsShowModal(void){
   int sunsetmins;
   WndProperty *wp;
 
+#if USEIBOX
   if (!InfoBoxLayout::landscape) {
+#else
+  if (!ScreenLandscape) {
+#endif
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgWayPointDetails_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 

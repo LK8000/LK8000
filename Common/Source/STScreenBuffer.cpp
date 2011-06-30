@@ -9,6 +9,10 @@
 #include "StdAfx.h"
 #include "STScreenBuffer.h"
 #include "lk8000.h"
+#if USEIBOX
+#else
+#include "externs.h"
+#endif // USEIBOX
 
 #include "utils/heapcheck.h"
 
@@ -254,7 +258,11 @@ BOOL CSTScreenBuffer::DrawStretch(HDC* pDC, POINT ptDest,
   HBITMAP m_hOldBitmap = (HBITMAP)::SelectObject(memDc, m_hBitmap);
 
   int cropsize;
+#if USEIBOX
   if ((cy<m_nWidth)||(InfoBoxLayout::landscape)) {
+#else
+  if ((cy<m_nWidth)||ScreenLandscape) {
+#endif
     cropsize = m_nHeight*cx/cy;
   } else {
     // NOT TESTED!

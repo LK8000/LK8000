@@ -96,7 +96,11 @@ int dlgAirspacePatternsShowModal(void){
 
   ItemIndex = -1;
 
+#if USEIBOX
   if (!InfoBoxLayout::landscape) {
+#else
+  if (!ScreenLandscape) {
+#endif
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAirspacePatterns_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 

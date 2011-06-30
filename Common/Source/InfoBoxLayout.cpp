@@ -43,9 +43,8 @@ bool gnav = false;
 bool geometrychanged = false;
 #endif
 
-bool InfoBoxLayout::landscape = false;
-
 #if USEIBOX
+bool InfoBoxLayout::landscape = false;
 bool InfoBoxLayout::fullscreen = false;
 bool InfoBoxLayout::square = false;
 #endif
@@ -223,10 +222,10 @@ void InfoBoxLayout::ScreenGeometry(RECT rc) {
   }
 #endif
 
+#if USEIBOX
   if (rc.bottom<rc.right) {
     // landscape mode
     landscape = true;
-#if USEIBOX
     if (InfoBoxGeometry<4) {
       geometrychanged = true;
 
@@ -239,32 +238,26 @@ void InfoBoxLayout::ScreenGeometry(RECT rc) {
 	InfoBoxGeometry+= 3;
       }
     }
-#endif
 
   } else if (rc.bottom==rc.right) {
     landscape = false;
-#if USEIBOX
     square = true;
     if (InfoBoxGeometry<7) {
       geometrychanged = true;
     }
     InfoBoxGeometry = 7;
-#endif
   } else {
     landscape = false;
     // portrait mode
 
-#if USEIBOX
     gnav = false;
     if (InfoBoxGeometry>=3) {
       InfoBoxGeometry= 0;
 
       geometrychanged = true;
     }
-#endif
   }
 
-#if USEIBOX
   SetToRegistry(szRegistryInfoBoxGeometry,InfoBoxGeometry);
 
   // JMW testing
@@ -279,7 +272,7 @@ void InfoBoxLayout::ScreenGeometry(RECT rc) {
   } else {
     numInfoWindows = 8;
   }
-#endif
+#endif // USEIBOX
 }
 
 #if USEIBOX

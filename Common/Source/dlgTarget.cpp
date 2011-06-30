@@ -556,7 +556,11 @@ void dlgTarget(void) {
   }
   ActiveWayPointOnEntry = ActiveWayPoint;
 
+#if USEIBOX
   if (!InfoBoxLayout::landscape) {
+#else
+  if (!ScreenLandscape) {
+#endif
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgTarget_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
@@ -577,7 +581,11 @@ void dlgTarget(void) {
   TargetDialogOpen = true;
   TargetMoveMode = false;
 
+#if USEIBOX
   if (InfoBoxLayout::landscape) 
+#else
+  if (ScreenLandscape) 
+#endif
   {// make flush right in landscape mode (at top in portrait mode)
     WndFrame *wf2 = (WndFrame*)wf->FindByName(TEXT("frmTarget"));
     if (wf2) 

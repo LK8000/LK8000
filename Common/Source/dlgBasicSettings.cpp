@@ -278,7 +278,11 @@ void dlgBasicSettingsShowModal(void){
 
   char filename[MAX_PATH];
   LocalPathS(filename, TEXT("dlgBasicSettings.xml")); // no worry missing _L, it is unused anyway
+#if USEIBOX
   if (!InfoBoxLayout::landscape) 
+#else
+  if (!ScreenLandscape) 
+#endif
 	wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_BASICSETTINGS_L"));
   else
 	wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_BASICSETTINGS"));

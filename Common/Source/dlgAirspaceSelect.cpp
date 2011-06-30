@@ -528,7 +528,11 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
     if (Name) {
 
       int w0, w1, w2, w3, x1, x2, x3;
+#if USEIBOX
       if (InfoBoxLayout::landscape) {
+#else
+      if (ScreenLandscape) {
+#endif
         w0 = 202*InfoBoxLayout::scale;
       } else {
         w0 = 225*InfoBoxLayout::scale;
@@ -673,7 +677,11 @@ void dlgAirspaceSelect(void) {
   Latitude = GPS_INFO.Latitude;
   Longitude = GPS_INFO.Longitude;
 
+#if USEIBOX
   if (!InfoBoxLayout::landscape) {
+#else
+  if (!ScreenLandscape) {
+#endif
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAirspaceSelect_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 

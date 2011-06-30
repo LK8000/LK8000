@@ -141,7 +141,11 @@ void dlgTeamCodeShowModal(void)
   WndButton *buttonCode = NULL;
   wf = NULL;
   char filename[MAX_PATH];
+#if USEIBOX
   if (InfoBoxLayout::landscape) 
+#else
+  if (ScreenLandscape) 
+#endif
     {
       LocalPathS(filename, TEXT("dlgTeamCode_L.xml"));
       wf = dlgLoadFromXML(CallBackTable, 

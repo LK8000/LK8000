@@ -636,21 +636,12 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
 // Sleep(100);
 
 
-#if 100124
     int w1, w2, w3, x1, x2, x3;
     WndListFrame *wlf = (WndListFrame *)wf->FindByName(TEXT("frmWayPointList"));
     if (wlf) {
    	 w0=wlf->GetWidth() - wlf->ScrollbarWidth - 4;
     }
 
-#else
-    int w0, w1, w2, w3, x1, x2, x3;
-    if (InfoBoxLayout::landscape) {
-      w0 = 202*InfoBoxLayout::scale;
-    } else {
-      w0 = 225*InfoBoxLayout::scale;
-    }
-#endif
     w1 = GetTextWidth(hDC, TEXT("XXX"));
     w2 = GetTextWidth(hDC, TEXT(" 000km"));
     w3 = GetTextWidth(hDC, TEXT(" 000")TEXT(DEG));
@@ -831,7 +822,11 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
     DistanceFilterIdx = 1;
   }
 
+#if USEIBOX
   if (!InfoBoxLayout::landscape) {
+#else
+  if (!ScreenLandscape) {
+#endif
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgWayPointSelect_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 

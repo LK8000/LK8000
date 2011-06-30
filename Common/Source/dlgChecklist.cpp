@@ -262,7 +262,11 @@ void dlgChecklistShowModal(void){
 
   //  WndProperty *wp;
 
+#if USEIBOX
   if (!InfoBoxLayout::landscape) {
+#else
+  if (!ScreenLandscape) {
+#endif
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgChecklist_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 

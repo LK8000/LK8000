@@ -129,8 +129,11 @@ int dlgComboPicker(WndProperty* theProperty){
     ASSERT(theProperty!=NULL);
     wComboPopupWndProperty = theProperty;
 
-
+#if USEIBOX
     if (!InfoBoxLayout::landscape) {
+#else
+    if (!ScreenLandscape) {
+#endif
       char filename[MAX_PATH]; 
       LocalPathS(filename, TEXT("dlgComboPicker_L.xml"));
       wf = dlgLoadFromXML(CallBackTable, 

@@ -165,7 +165,11 @@ void dlgStartPointShowModal(void) {
 
   ItemIndex = -1;
 
+#if USEIBOX
   if (!InfoBoxLayout::landscape) {
+#else
+  if (!ScreenLandscape) {
+#endif
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgStartPoint_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 

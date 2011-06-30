@@ -45,7 +45,11 @@ static void OnAirspacePaintListItem(WindowControl * Sender, HDC hDC){
 	_tcsncpy(label, CAirspaceManager::Instance().GetAirspaceTypeText(i), 39);
 	label[39]=0;
     int w0, w1, w2, x0;
+#if USEIBOX
     if (InfoBoxLayout::landscape) {
+#else
+    if (ScreenLandscape) {
+#endif
       w0 = 202*InfoBoxLayout::scale;
     } else {
       w0 = 225*InfoBoxLayout::scale;
@@ -185,7 +189,11 @@ bool dlgAirspaceShowModal(bool coloredit){
 
   ItemIndex = -1;
 
+#if USEIBOX
   if (!InfoBoxLayout::landscape) {
+#else
+  if (!ScreenLandscape) {
+#endif
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAirspace_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
