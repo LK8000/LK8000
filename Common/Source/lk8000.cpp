@@ -7,9 +7,10 @@
 */
 
 #include "StdAfx.h"
+#include "wcecompat/ts_string.h"
 #include "options.h"
 #include "compatibility.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "buildnumber.h"
 #include "Cpustats.h"
 #include "MapWindow.h"
@@ -20,7 +21,7 @@
 #include "Dialogs.h"
 
 #ifdef OLDPPCx
-#include "XCSoarProcess.h"
+#include "LK8000Process.h"
 #else
 #include "Process.h"
 #endif
@@ -48,6 +49,7 @@
 #include "devCaiGpsNav.h"
 #include "devEW.h"
 #include "devGeneric.h"
+#include "devDisabled.h"
 #include "devNmeaOut.h"
 #include "devPosiGraph.h"
 #include "devBorgeltB50.h"
@@ -65,6 +67,8 @@
 #include "devCondor.h"
 #include "devIlec.h"
 #include "devDSX.h"
+#include "devIMI.h"
+#include "devWesterboer.h"
 
 #include "externs.h"
 #include "Units.h"
@@ -73,71 +77,26 @@
 #include "Atmosphere.h"
 #include "Geoid.h"
 
+#if USEIBOX
 #include "InfoBox.h"
+#endif
 #include "RasterTerrain.h"
-#if LKOBJ
 extern void LKObjects_Create();
 extern void LKObjects_Delete();
 #include "LKMainObjects.h"
-#endif
+
+using std::min;
+using std::max;
 
 #ifdef DEBUG_TRANSLATIONS
 #include <map>
 static std::map<TCHAR*, TCHAR*> unusedTranslations;
 #endif
 
-#if !defined(MapScale2)
-  #define MapScale2  apMs2Default
-#endif
-
-#if SAMGI
-Appearance_t Appearance = {
-  apMsAltA,
-  apMs2None,
-  true,
-  206,
-  {0,-13},
-  apFlightModeIconAltA,
-  //apFlightModeIconDefault,
-  {10,3},
-  apCompassAltA,
-  {0,0,0},
-  {0,0,0},
-  {0,0,0},
-  {0,0,0},
-  {0,0,0},
-  ctBestCruiseTrackAltA,
-  afAircraftAltA,
-  true,
-  fgFinalGlideAltA,
-  wpLandableAltA,
-  true,
-  true,
-  true,
-  smAlligneTopLeft,
-  true,
-  true,
-  true,
-  true,
-  true,
-  gvnsDefault, 
-  false,
-  apIbBox,
-  false,
-  true,
-  false
-};
-#else
+#include "utils/heapcheck.h"
 
 Appearance_t Appearance = {
-  apMsAltA, // mapscale
-  MapScale2, 
-  false, // don't show logger indicator
   206,
-  {0,-13},
-  apFlightModeIconDefault,
-  {0,0},
-  apCompassAltA,
   {0,0,0},
   {0,0,0},
   {0,0,0},
@@ -147,36 +106,15 @@ Appearance_t Appearance = {
   {0,0,0},
   {0,0,0},
   ctBestCruiseTrackAltA,
-  afAircraftAltA,
-  true, // don't show speed to fly
-  fgFinalGlideDefault,
   wpLandableDefault,
-  true,
   false,
-  true,
-  smAlligneCenter,
-  tiHighScore,
-  false,
-  false,
-  false,
-  false,
-  false,
-  gvnsLongNeedle,
-  true,
-  apIbBox,
-#if defined(PNA) || defined(FIVV)  // VENTA-ADDON Model type
   apIg0,  // VENTA-ADDON GEOM
-  apImPnaGeneric,
-#endif
-  false,
-  true,
-  false
+  apImPnaGeneric
 };
 
-#endif
 
 
-TCHAR XCSoar_Version[256] = TEXT("");
+TCHAR LK8000_Version[256] = TEXT("");
 
 bool ForceShutdown = false;
 
@@ -192,26 +130,13 @@ HANDLE hInstrumentThread;
 DWORD dwInstThreadID;
 #endif
 
+#if USEIBOX
 int numInfoWindows = 9;
-
-
-
 InfoBox *InfoBoxes[MAXINFOWINDOWS];
+#endif
 
-int                                     InfoType[MAXINFOWINDOWS] = 
-#ifdef GNAV
-  {
-    873336334,
-    856820491,
-    822280982,
-    2829105,
-    103166000,
-    421601569,
-    657002759,
-    621743887,
-    439168301
-  };
-#else
+// Default configuration for infoboxes
+int InfoType[MAXINFOWINDOWS] = 
   {1008146198,
    1311715074,
    923929365,
@@ -221,26 +146,19 @@ int                                     InfoType[MAXINFOWINDOWS] =
    1410419993,
    1396384771,
    387389207};
-#endif
-/* OLD
-  {921102,
-   725525,
-   262144,
-   74518,
-   657930,
-   2236963,
-   394758,
-   1644825,
-   1644825};
-*/
 
-
+#if USEOLDASPWARNINGS // not really used anyway
 bool RequestAirspaceWarningDialog= false;
 bool RequestAirspaceWarningForce=false;
+#endif
+
+#if USEIBOX
 bool                                    DisplayLocked = true;
 bool                                    InfoWindowActive = true;
 bool                                    EnableAuxiliaryInfo = false;
 int                                     InfoBoxFocusTimeOut = 0;
+#endif
+
 int                                     MenuTimeOut = 0;
 int                                     DisplayTimeOut = 0;
 int                                     MenuTimeoutMax = MENUTIMEOUTMAX;
@@ -253,15 +171,6 @@ COLORREF ColorSelected = RGB(0xC0,0xC0,0xC0);
 COLORREF ColorUnselected = RGB_WHITE;
 COLORREF ColorWarning = RGB_RED;
 COLORREF ColorOK = RGB_BLUE;
-/* Possible alternative colors for buttons:
-	//COLORREF ColorButton = RGB(133,255,163); // ligher green 0
-	//COLORREF ColorButton = RGB(158,231,255); // azure 2
-	// COLORREF ColorButton = RGB(158,255,231); // azure 3
-	// COLORREF ColorButton = RGB(158,181,255); // indigo 4
-	// COLORREF ColorButton = RGB(138,255,173); // nice light green
-	// COLORREF ColorButton = RGB(157,185,200); // light blue grey
-	// COLORREF ColorButton = RGB(37,77,116); // dirty blue
- */
 COLORREF ColorButton = RGB_BUTTONS;  
 
 // Display Gobals
@@ -303,13 +212,15 @@ LOGFONT                                   autoMapLabelLogFont;
 LOGFONT                                   autoStatisticsLogFont;
 
 int  UseCustomFonts;
+
+#if USEIBOX
 int                                             CurrentInfoType;
 int                                             InfoFocus = 0;
-int                                             DisplayOrientation = TRACKUP;
-#if AUTORIENT
-int                                             OldDisplayOrientation = TRACKUP;
-int AutoOrientScale = 10;
 #endif
+
+int                                             DisplayOrientation = TRACKUP;
+int                                             OldDisplayOrientation = TRACKUP;
+int						AutoOrientScale = 10;
 int                                             DisplayTextType = DISPLAYNONE;
 
 int                                             AltitudeMode = ALLON;
@@ -321,16 +232,10 @@ bool                                            AdvanceArmed = false;
 int                                             SafetyAltitudeMode = 0;
 short	ScreenSize=0; // VENTA6
 
-bool EnableBlockSTF = false;
-
 bool GlobalRunning = false; 
 
-#if defined(PNA) || defined(FIVV)  // VENTA-ADDON we call it model and not PNA for possible future usage even for custom PDAs
 int	GlobalModelType=MODELTYPE_PNA_PNA;
 TCHAR	GlobalModelName[MAX_PATH]; // there are currently no checks.. TODO check it fits here
-float	GlobalEllipse=1.1f;	// default ellipse type VENTA2-ADDON
-#endif
-
 
 // this controls all displays, to make sure everything is
 // properly initialised.
@@ -359,11 +264,9 @@ DERIVED_INFO  CALCULATED_INFO;
 BOOL GPSCONNECT = FALSE;
 BOOL extGPSCONNECT = FALSE; // this one used by external functions
 
-#ifndef NOTASKABORT
-bool          TaskAborted = false;
-#endif
-
+#if USEIBOX
 bool InfoBoxesDirty= false;
+#endif
 bool DialogActive = false;
 
 // 091011 Used by TakeoffLanding inside Calculation.cpp - limited values careful 
@@ -371,9 +274,7 @@ int time_in_flight=0;
 int time_on_ground=0;
 double TakeOffSpeedThreshold=0.0;
 
-#if LKSTARTUP
 BYTE RUN_MODE=RUN_WELCOME;
-#endif
 
 DWORD EnableFLARMMap = 1;
 
@@ -393,16 +294,14 @@ static int iTimerID= 0;
 
 // Final Glide Data
 double SAFETYALTITUDEARRIVAL = 300;
-double SAFETYALTITUDEBREAKOFF = 0;
 double SAFETYALTITUDETERRAIN = 50;
 double SAFTEYSPEED = 50.0;
 
-// polar info
-int              POLARID = 0;
 double POLAR[POLARSIZE] = {0,0,0};
 double POLARV[POLARSIZE] = {21,27,40};
 double POLARLD[POLARSIZE] = {33,30,20};
 double WEIGHTS[POLARSIZE] = {250,70,100};
+int Handicap = 108; // LS-3
 
 // Team code info
 int TeamCodeRefWaypoint = -1;
@@ -433,16 +332,15 @@ int Alternate1 = -1; // VENTA3
 int Alternate2 = -1; // VENTA3
 int BestAlternate = -1; // VENTA3
 int ActiveAlternate = -1; // VENTA3
-bool OnBestAlternate=false;
-bool OnAlternate1=false;
-bool OnAlternate2=false;
 
 // Specials
 double GPSAltitudeOffset = 0; // VENTA3
 bool	UseGeoidSeparation=false;
 bool	PressureHg=false;
+#if USEIBOX
 // 100413 shortcut on aircraft icon for ibox switching with medium click
 // bool	ShortcutIbox=true;
+#endif
 int	CustomKeyTime=700;
 int	CustomKeyModeCenter=(CustomKeyMode_t)ckDisabled;
 int	CustomKeyModeLeft=(CustomKeyMode_t)ckDisabled;
@@ -455,44 +353,44 @@ double QFEAltitudeOffset = 0;
 int OnAirSpace=1; // VENTA3 toggle DrawAirSpace, normal behaviour is "true"
 bool WasFlying = false; // VENTA3 used by auto QFE: do not reset QFE if previously in flight. So you can check QFE
 			//   on the ground, otherwise it turns to zero at once!
-double LastFlipBoxTime = 0; // VENTA3 need this global for slowcalculations cycle
 double LastRangeLandableTime=0;
-#if defined(PNA) || defined(FIVV)
 bool needclipping=false; // flag to activate extra clipping for some PNAs
-#endif
 bool EnableAutoBacklight=true;
 bool EnableAutoSoundVolume=true;
 short AircraftCategory=0;
 bool ExtendedVisualGlide=false;
 short Look8000=lxcAdvanced;
 bool HideUnits=false;
-bool VirtualKeys=false;
-bool NewMap=true;
 bool CheckSum=true;
 short OutlinedTp=0;
 int  OverColor=0;
 COLORREF OverColorRef;
 int  TpFilter=0;
 short MapBox=0;
-bool MapLock=false;
-bool UseMapLock=false;
 bool ActiveMap=true;
 short GlideBarMode=0;
 short OverlaySize=0;
 short BarOpacity=255; // bottom bar transparency if available, black by default
 short FontRenderer=0;
+bool LockModeStatus=false;
 short ArrivalValue=0;
 short NewMapDeclutter=0;
 short Shading=1;
+bool ConfBB[10];
+bool ConfIP[10][10];
+bool ConfMP[10]={1,1,1,1,1,1,1,1,1,1};
+bool ConfBB1=1, ConfBB2=1, ConfBB3=1, ConfBB4=1, ConfBB5=1, ConfBB6=1, ConfBB7=1, ConfBB8=1, ConfBB9=1;
+bool ConfIP11=1, ConfIP12=1, ConfIP13=1, ConfIP14=1, ConfIP15=1, ConfIP16=1, ConfIP21=1, ConfIP22=1;
+bool ConfIP23=1, ConfIP24=1, ConfIP31=1, ConfIP32=1;
 short AverEffTime=0;
 bool DrawBottom=false; // new map's bottom line in landscape mode fullscreen condition
 short BottomMode=BM_FIRST; 
 short BottomSize=1; // Init by MapWindow3  091213 0 to 1
 short TopSize=0;
 short BottomGeom=0; 
-// coordinates of the 5 (0-4) sort boxes. 6 for safety
-short SortBoxX[6];
-short SortBoxY;
+// coordinates of the sort boxes. Each mapspace can have a different layout
+short SortBoxX[MSM_TOP+1][MAXSORTBOXES+1];
+short SortBoxY[MSM_TOP+1];
 // default initialization for gestures. InitLK8000 will fine tune it.
 short GestureSize=60;
 // xml dlgconfiguration value replacing 246 which became 278
@@ -504,6 +402,8 @@ int PGClimbZoom=1;
 int PGCruiseZoom=1;
 // This is the gauge bar on the left for variometer
 int LKVarioBar=0;
+// This is the value to be used for painting the bar
+int LKVarioVal=0;
 // moving map is all black and need white painting - not much used 091109
 bool BlackScreen=false; 
 // if true, LK specific text on map is painted black, otherwise white
@@ -535,6 +435,13 @@ int LKSortedTraffic[FLARM_MAX_TRAFFIC+1];
 // 100404 index inside FLARM_Traffic of our target, and its type as defined in Utils2
 int LKTargetIndex=-1;
 int LKTargetType=LKT_TYPE_NONE;
+
+// Copy of runtime airspaces for instant use 
+LKAirspace_Nearest_Item LKAirspaces[MAXNEARAIRSPACES+1];
+// Number of asps (items) of existing airspaces updated from DoAirspaces
+int LKNumAirspaces=0;
+// Pointer to ASP struct, ordered by DoAirspaces, from 0 to LKNumAirspaces-1
+int LKSortedAirspaces[MAXNEARAIRSPACES+1];
 
 // type of file format for waypoints files
 int WpFileType[3];
@@ -592,11 +499,13 @@ short SelectedRaw[MSM_TOP+1];
 // since it doesnt eat memory, it is also used for pages with currently no subpages
 short SelectedPage[MSM_TOP+1];
 // number of raws in mapspacemode screen
+// TODO: check if they can be unsigned
 short Numraws;
 short CommonNumraws;
 short Numpages;
 short CommonNumpages;
 short TrafficNumpages;
+short AspNumpages;
 //  mapspace sort mode: 0 wp name  1 distance  2 bearing  3 reff  4 altarr
 //  UNUSED on MSM_COMMON etc. however it is dimensioned on mapspacemodes
 short SortedMode[MSM_TOP+1];
@@ -620,6 +529,7 @@ double  LastZoomTrigger=0;
 // traffic DoTraffic interval, also reset during key up and down to prevent wrong selections
 double  LastDoTraffic=0;
 double  LastDoNearest=0;
+double  LastDoAirspaces=0;
 // double  LastDoNearestTp=0; 101222
 double  LastDoCommon=0;
 // double  LastDoTarget=0; unused 
@@ -645,7 +555,6 @@ bool	PGStartOut=false;
 // Current assigned gate 
 int ActiveGate=-1;
 
-#if LKTOPO
 // LKMAPS flag for topology: >0 means ON, and indicating how many topo files are loaded
 int  LKTopo=0;
 // This threshold used in Terrain.cpp to distinguish water altitude
@@ -662,14 +571,11 @@ double LKTopoZoomCat80=0;
 double LKTopoZoomCat90=0;
 double LKTopoZoomCat100=0;
 double LKTopoZoomCat110=0;
-#endif
 // max number of topo and wp labels painted on map, defined by default in Utils
 int  LKMaxLabels=0;
 
-#if OVERTARGET
 // current mode of overtarget 0=task 1=alt1, 2=alt2, 3=best alt
 short OvertargetMode=0;
-#endif
 double SimTurn=0;
 double ThLatitude=1;
 double ThLongitude=1;
@@ -705,8 +611,6 @@ int  SortedAirportIndex[MAXNEAREST+1];
 int  SortedTurnpointIndex[MAXNEAREST+1];
 // Real number of NEAREST items contained in array after removing duplicates, or not enough to fill MAXNEAREST/MAX..
 int  SortedNumber=0;
-// as above, for nearest turnpoints
-// int  SortedTurnpointNumber=0; 101222
 
 // Commons are Home, best alternate, alternate1, 2, and task waypoints , all up to MAXCOMMON.
 // It is reset when changing wp file
@@ -733,25 +637,23 @@ int LKIBLSCALE[MAXIBLSCALE+1];
 double Experimental1=0, Experimental2=0;
 
 double NearestAirspaceHDist=-1;
-double NearestAirspaceVDist=-1;
-TCHAR NearestAirspaceName[NAME_SIZE+1]; // TODO INITIALISE IT!
+double NearestAirspaceVDist=0;
+TCHAR NearestAirspaceName[NAME_SIZE+1] = {0};
+TCHAR NearestAirspaceVName[NAME_SIZE+1] = {0};
 
 // Flarmnet tools
 int FlarmNetCount=0;
 
-// Airspace Database
-AIRSPACE_AREA *AirspaceArea = NULL;
-AIRSPACE_POINT *AirspacePoint = NULL;
-POINT *AirspaceScreenPoint = NULL;
-AIRSPACE_CIRCLE *AirspaceCircle = NULL;
-unsigned int NumberOfAirspacePoints = 0;
-unsigned int NumberOfAirspaceAreas = 0;
-unsigned int NumberOfAirspaceCircles = 0;
-
 //Airspace Warnings
 int AIRSPACEWARNINGS = TRUE;
-int WarningTime = 30;
-int AcknowledgementTime = 30;
+int WarningTime = 60;
+int AcknowledgementTime = 900;                  // keep ack level for this time, [secs]
+int AirspaceWarningRepeatTime = 300;			// warning repeat time if not acknowledged after 5 minutes
+int AirspaceWarningVerticalMargin = 100;		// vertical distance used to calculate too close condition
+int AirspaceWarningDlgTimeout = 30;             // airspace warning dialog auto closing in x secs
+int AirspaceWarningMapLabels = 1;               // airspace warning map labels showed
+
+lkalarms_s LKalarms[MAXLKALARMS];
 
 // Registration Data
 TCHAR strAssetNumber[MAX_LOADSTRING] = TEXT(""); //4G17DW31L0HY");
@@ -765,24 +667,18 @@ int StatusMessageData_Size = 0;
 SNAIL_POINT SnailTrail[TRAILSIZE];
 int SnailNext = 0;
 
+// OLC COOKED VALUES
+CContestMgr::CResult OlcResults[CContestMgr::TYPE_NUM];
+
 // user interface settings
-#ifndef MAP_ZOOM
-bool CircleZoom = true;
-#endif /* ! MAP_ZOOM */
 int WindUpdateMode = 0;
 bool EnableTopology = true; // 091105
 bool EnableTerrain = true;  // 091105
 int FinalGlideTerrain = 1;
-bool EnableSoundVario = true;
 bool EnableSoundModes = true;
-bool EnableSoundTask = true;
 bool OverlayClock = false;
-int SoundVolume = 80;
-int SoundDeadband = 5;
-bool EnableVarioGauge = false;
-bool EnableAutoBlank = false;
 bool ScreenBlanked = false;
-
+bool LKLanguageReady = false;
 
 
 //IGC Logger
@@ -818,6 +714,9 @@ DWORD StartMaxSpeed = 0;
 DWORD StartMaxHeightMargin = 0;
 DWORD StartMaxSpeedMargin = 0;
 
+DWORD AlarmMaxAltitude1=0;
+DWORD AlarmMaxAltitude2=0;
+DWORD AlarmMaxAltitude3=0;
 
 // Statistics
 Statistics flightstats;
@@ -825,9 +724,13 @@ Statistics flightstats;
 #if (((UNDER_CE >= 300)||(_WIN32_WCE >= 0x0300)) && (WINDOWSPC<1))
 #define HAVE_ACTIVATE_INFO
 static SHACTIVATEINFO s_sai;
+static bool api_has_SHHandleWMActivate = false;
+static bool api_has_SHHandleWMSettingChange = false;
 #endif
 
+#if USEIBOX
 BOOL InfoBoxesHidden = false; 
+#endif
 
 void PopupBugsBallast(int updown);
 
@@ -836,27 +739,30 @@ void PopupBugsBallast(int updown);
 bool goInstallSystem=false;
 bool goCalculationThread=false;
 bool goInstrumentThread=false;
+#if USEGOINIT
 bool goInitDevice=false; 
+#endif
 // bool goCalculating=false;
-
-#include "GaugeCDI.h"
-#include "GaugeFLARM.h"
 
 // Battery status for SIMULATOR mode
 //	30% reminder, 20% exit, 30 second reminders on warnings
 
-#ifndef GNAV
 #define BATTERY_WARNING 30
 #define BATTERY_EXIT 20
 #define BATTERY_REMINDER 30000
 DWORD BatteryWarningTime = 0;
-#endif
 
 char dedicated[]="Dedicated to my father Vittorio";
 
-#define NUMSELECTSTRING_MAX			100
-SCREEN_INFO Data_Options[NUMSELECTSTRING_MAX];
-int NUMSELECTSTRINGS = 0;
+#define NUMDATAOPTIONS_MAX			130
+
+#if USEIBOX
+SCREEN_INFO Data_Options[NUMDATAOPTIONS_MAX];
+#else
+DATAOPTIONS Data_Options[NUMDATAOPTIONS_MAX];
+#endif
+
+int NumDataOptions = 0;
 
 
 CRITICAL_SECTION  CritSec_FlightData;
@@ -889,24 +795,18 @@ void                                                    AssignValues(void);
 void                                                    DisplayText(void);
 
 void CommonProcessTimer    (void);
-#if NOSIM
 void SIMProcessTimer(void);
 void ProcessTimer    (void);
-#else
-#ifdef _SIM_
-void SIMProcessTimer(void);
-#else
-void ProcessTimer    (void);
-#endif
-#endif
+#if USEIBOX
 void                                                    PopUpSelect(int i);
-
+#endif
 //HWND CreateRpCommandBar(HWND hwnd);
 
 #ifdef DEBUG
 void                                            DebugStore(char *Str);
 #endif
 
+#if USEIBOX
 bool SetDataOption( int index,
 					UnitGroup_t UnitGroup,
 					TCHAR *Description,
@@ -917,25 +817,26 @@ bool SetDataOption( int index,
 					char prev_screen)
 {
 	SCREEN_INFO tag;
-	if (index>=NUMSELECTSTRING_MAX) return false;
+	if (index>=NUMDATAOPTIONS_MAX) return false;
 
 	tag.UnitGroup = UnitGroup;
-	_tcsncpy(tag.Description, gettext(Description), DESCRIPTION_SIZE);
+	_tcsncpy(tag.Description, gettext(Description), DESCRIPTION_SIZE); 
+	tag.Description[DESCRIPTION_SIZE] = 0;		// buff allocated to DESCRIPITON_SIZE+1
 	_tcsncpy(tag.Title, gettext(Title), TITLE_SIZE);
+	tag.Title[TITLE_SIZE] = 0;;					// buff allocated to TITLE_SIZE+1
 	tag.Formatter = Formatter;
 	tag.Process = Process;
 	tag.next_screen = next_screen;
 	tag.prev_screen = prev_screen;
 
 	memcpy(&Data_Options[index], &tag, sizeof(SCREEN_INFO));
-	if (NUMSELECTSTRINGS<=index) NUMSELECTSTRINGS=index+1;				//No. of items = max index+1
+	if (NumDataOptions<=index) NumDataOptions=index+1;				//No. of items = max index+1
 
 #ifdef DEBUG
 	DebugStore(TEXT("Add data option #%d %s%s"),index,tag.Description,NEWLINE);
 #endif
 	return true;
 }
-
 
 
 void FillDataOptions()
@@ -957,11 +858,7 @@ void FillDataOptions()
 	// LKTOKEN  _@M1005_ = "Thermal last 30 sec", _@M1006_ = "TC.30\""
 	SetDataOption(2, ugVerticalSpeed,	TEXT("_@M1005_"), TEXT("_@M1006_"), new FormatterLowWarning(TEXT("%-2.1f"),0.0), NoProcessing, 7, 44);
 	// LKTOKEN  _@M1007_ = "Bearing", _@M1008_ = "Brg"
-#ifdef FIVV
 	SetDataOption(3, ugNone,			TEXT("_@M1007_"), TEXT("_@M1008_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)), NoProcessing, 6, 54);
-#else
-	SetDataOption((3, ugNone,			TEXT("_@M1007_"), TEXT("_@M1008_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)TEXT("T")), NoProcessing, 6, 54);
-#endif
 	// LKTOKEN  _@M1009_ = "Eff.last 20 sec", _@M1010_ = "E.20\""
 	SetDataOption(4, ugNone,			TEXT("_@M1009_"), TEXT("_@M1010_"), new InfoBoxFormatter(TEXT("%2.0f")), PopupBugsBallast, 5, 38);
 	// LKTOKEN  _@M1011_ = "Eff.cruise last therm", _@M1012_ = "E.Cru"
@@ -1001,21 +898,13 @@ void FillDataOptions()
 	// LKTOKEN  _@M1045_ = "Thermal Gain", _@M1046_ = "TC.Gain"
 	SetDataOption(22, ugAltitude,       TEXT("_@M1045_"), TEXT("_@M1046_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 24, 21);
 	// LKTOKEN  _@M1047_ = "Track", _@M1048_ = "Track"
-#ifdef FIVV
 	SetDataOption(23, ugNone,           TEXT("_@M1047_"), TEXT("_@M1048_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)), DirectionProcessing, 32, 6);
-#else
-	SetDataOption(23, ugNone,           TEXT("_@M1047_"), TEXT("_@M1048_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)TEXT("T")), DirectionProcessing, 32, 6);
-#endif
 	// LKTOKEN  _@M1049_ = "Vario", _@M1050_ = "Vario"
 	SetDataOption(24, ugVerticalSpeed,  TEXT("_@M1049_"), TEXT("_@M1050_"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 44, 22);
 	// LKTOKEN  _@M1051_ = "Wind Speed", _@M1052_ = "WindV"
 	SetDataOption(25, ugWindSpeed,      TEXT("_@M1051_"), TEXT("_@M1052_"), new InfoBoxFormatter(TEXT("%2.0f")), WindSpeedProcessing, 26, 50);
 	// LKTOKEN  _@M1053_ = "Wind Bearing", _@M1054_ = "WindB"
-#ifdef FIVV
 	SetDataOption(26, ugNone,           TEXT("_@M1053_"), TEXT("_@M1054_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)), WindDirectionProcessing, 48, 25);
-#else
-	SetDataOption(26, ugNone,           TEXT("_@M1053_"), TEXT("_@M1054_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)TEXT("T")), WindDirectionProcessing, 48, 25);
-#endif
 	// LKTOKEN  _@M1055_ = "AA Time", _@M1056_ = "AATime"
 	SetDataOption(27, ugNone,           TEXT("_@M1055_"), TEXT("_@M1056_"), new FormatterAATTime(TEXT("%2.0f")), NoProcessing, 28, 18);
 	// LKTOKEN  _@M1057_ = "AA Distance Max", _@M1058_ = "AADmax"
@@ -1037,7 +926,7 @@ void FillDataOptions()
 	// LKTOKEN  _@M1073_ = "Time of flight", _@M1074_ = "FlyTime"
 	SetDataOption(36, ugNone,           TEXT("_@M1073_"), TEXT("_@M1074_"), new FormatterTime(TEXT("%04.0f")), NoProcessing, 39, 14);
 	// LKTOKEN  _@M1075_ = "G load", _@M1076_ = "G"
-	SetDataOption(37, ugNone,           TEXT("_@M1075_"), TEXT("_@M1076_"), new InfoBoxFormatter(TEXT("%2.2f")), AccelerometerProcessing, 47, 32);
+	SetDataOption(37, ugNone,           TEXT("_@M1075_"), TEXT("_@M1076_"), new InfoBoxFormatter(TEXT("%2.2f")), NoProcessing, 47, 32);
 	// LKTOKEN  _@M1077_ = "_Reserved 2", _@M1078_ = "OLD nLD"
 	SetDataOption(38, ugNone,           TEXT("_@M1077_"), TEXT("_@M1078_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 53, 19);
 	// LKTOKEN  _@M1079_ = "Time local", _@M1080_ = "Time"
@@ -1075,11 +964,7 @@ void FillDataOptions()
 	// LKTOKEN  _@M1111_ = "Team Code", _@M1112_ = "TeamCode"
 	SetDataOption(55, ugNone,           TEXT("_@M1111_"), TEXT("_@M1112_"), new FormatterTeamCode(TEXT("\0")), TeamCodeProcessing, 56, 54);
 	// LKTOKEN  _@M1113_ = "Team Bearing", _@M1114_ = "TmBrng"
-#ifdef FIVV
 	SetDataOption(56, ugNone,           TEXT("_@M1113_"), TEXT("_@M1114_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)), NoProcessing, 57, 55);
-#else
-	SetDataOption(56, ugNone,           TEXT("_@M1113_"), TEXT("_@M1114_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)TEXT("T")), NoProcessing, 57, 55);
-#endif
 	// LKTOKEN  _@M1115_ = "Team Bearing Diff", _@M1116_ = "TeamBd"
 	SetDataOption(57, ugNone,           TEXT("_@M1115_"), TEXT("_@M1116_"), new FormatterDiffTeamBearing(TEXT("")), NoProcessing, 58, 56);
 	// LKTOKEN  _@M1117_ = "Team Range", _@M1118_ = "TeamDis"
@@ -1094,15 +979,11 @@ void FillDataOptions()
 	SetDataOption(62, ugNone,           TEXT("_@M1125_"), TEXT("_@M1126_"), new FormatterAATTime(TEXT("%2.0f")), NoProcessing, 28, 18);
 	// LKTOKEN  _@M1127_ = "Thermal All", _@M1128_ = "Th.All"
 	SetDataOption(63, ugVerticalSpeed,  TEXT("_@M1127_"), TEXT("_@M1128_"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 8, 2);
-	// LKTOKEN  _@M1129_ = "Distance Vario", _@M1130_ = "DVario"
-	SetDataOption(64, ugVerticalSpeed,  TEXT("_@M1129_"), TEXT("_@M1130_"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 8, 2);
-#ifndef GNAV
+
+	SetDataOption(64, ugVerticalSpeed,  TEXT("_Reserved 5"), TEXT("Rsrv5"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 8, 2);
+
 	// LKTOKEN  _@M1131_ = "Battery Percent", _@M1132_ = "Battery"
 	SetDataOption(65, ugNone,           TEXT("_@M1131_"), TEXT("_@M1132_"), new InfoBoxFormatter(TEXT("%2.0f%%")), NoProcessing, 49, 26);
-#else
-	// LKTOKEN  _@M1181_ = "Battery Voltage", _@M1182_ = "Batt"
-	SetDataOption(65, ugNone,           TEXT("_@M1181_"), TEXT("_@M1182_"), new InfoBoxFormatter(TEXT("%2.1fV")), NoProcessing, 49, 26);
-#endif
 	// LKTOKEN  _@M1133_ = "Task Req.Efficiency", _@M1134_ = "TskReqE"
 	SetDataOption(66, ugNone,           TEXT("_@M1133_"), TEXT("_@M1134_"), new InfoBoxFormatter(TEXT("%1.1f")), NoProcessing, 38, 5);
 	// LKTOKEN  _@M1135_ = "Alternate1 Req.Efficiency", _@M1136_ = "Atn1.E"
@@ -1129,7 +1010,7 @@ void FillDataOptions()
 	SetDataOption(77, ugAltitude,       TEXT("_@M1155_"), TEXT("_@M1156_"), new FormatterAlternate(TEXT("%2.0f")), BestAlternateProcessing, 36, 46);
 	// LKTOKEN  _@M1157_ = "Home Radial", _@M1158_ = "Radial"
 	SetDataOption(78, ugNone,           TEXT("_@M1157_"), TEXT("_@M1158_"), new InfoBoxFormatter(TEXT("%.0f")TEXT(DEG)), NoProcessing, 6, 54);
-	// LKTOKEN  _@M1159_ = "Airspace Distance", _@M1160_ = "AirSpace"
+	// LKTOKEN  _@M1159_ "Airspace Horizontal Dist", _@M1160_ "ArSpcH"
 	SetDataOption(79, ugDistance,       TEXT("_@M1159_"), TEXT("_@M1160_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 38, 5);
 	// LKTOKEN  _@M1161_ = "Ext.Batt.Bank", _@M1162_ = "xBnk#"
 	SetDataOption(80, ugNone,           TEXT("_@M1161_"), TEXT("_@M1162_"), new InfoBoxFormatter(TEXT("%1.0f")), NoProcessing, 38, 5);
@@ -1151,11 +1032,79 @@ void FillDataOptions()
 	SetDataOption(88, ugNone,           TEXT("_@M1177_"), TEXT("_@M1178_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
 	// LKTOKEN  _@M1179_ = "_Experimental2", _@M1180_ = "Exp2"
 	SetDataOption(89, ugNone,           TEXT("_@M1179_"), TEXT("_@M1180_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	// LKTOKEN  _@M1181_ = "Battery Voltage", _@M1182_ = "Batt"
 
-	//Before adding new items, consider changing NUMSELECTSTRING_MAX
+	// Distance OLC
+	SetDataOption(90, ugNone,           TEXT("_@M1455_"), TEXT("_@M1456_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Distance FAI triangle
+	SetDataOption(91, ugNone,           TEXT("_@M1457_"), TEXT("_@M1458_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Distance League
+	SetDataOption(92, ugNone,           TEXT("_@M1459_"), TEXT("_@M1460_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Distance FAI 3 TPs
+	SetDataOption(93, ugNone,           TEXT("_@M1461_"), TEXT("_@M1462_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	
+	////////  PREDICTED ////////
+	// Distance OLC
+	SetDataOption(94, ugNone,           TEXT("_@M1463_"), TEXT("_@M1464_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Distance FAI triangle
+	SetDataOption(95, ugNone,           TEXT("_@M1465_"), TEXT("_@M1466_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Distance FAI 3 TPs
+	SetDataOption(96, ugNone,           TEXT("_@M1469_"), TEXT("_@M1470_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	
+	// Speed OLC
+	SetDataOption(97, ugNone,           TEXT("_@M1471_"), TEXT("_@M1472_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Speed FAI triangle
+	SetDataOption(98, ugNone,           TEXT("_@M1473_"), TEXT("_@M1474_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Speed League
+	SetDataOption(99, ugNone,           TEXT("_@M1475_"), TEXT("_@M1476_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Speed FAI 3 TPs
+	SetDataOption(100, ugNone,           TEXT("_@M1477_"), TEXT("_@M1478_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+
+	////////  PREDICTED ////////
+	// Speed OLC
+	SetDataOption(101, ugNone,           TEXT("_@M1479_"), TEXT("_@M1480_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Speed FAI triangle
+	SetDataOption(102, ugNone,           TEXT("_@M1481_"), TEXT("_@M1482_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Speed FAI 3 TPs
+	SetDataOption(103, ugNone,           TEXT("_@M1485_"), TEXT("_@M1486_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+
+	// Score OLC
+	SetDataOption(104, ugNone,           TEXT("_@M1487_"), TEXT("_@M1488_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Score FAI triangle
+	SetDataOption(105, ugNone,           TEXT("_@M1489_"), TEXT("_@M1490_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Score League
+	SetDataOption(106, ugNone,           TEXT("_@M1491_"), TEXT("_@M1492_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// FAI 3 TPs currently has no score
+	SetDataOption(107, ugNone,           TEXT("_Reserved 3"), TEXT("_@M1494_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+
+	////////  PREDICTED ////////
+	// Score OLC
+	SetDataOption(108, ugNone,           TEXT("_@M1495_"), TEXT("_@M1496_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Score FAI triangle
+	SetDataOption(109, ugNone,           TEXT("_@M1497_"), TEXT("_@M1498_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// FAI 3 TPs currently has no score
+	SetDataOption(110, ugNone,           TEXT("_Reserved 4"), TEXT("_@M1502_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+
+	// Olc Plus Score
+	SetDataOption(111, ugNone,           TEXT("_@M1503_"), TEXT("_@M1504_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+	// Olc Plus Score Predicted
+	SetDataOption(112, ugNone,           TEXT("_@M1505_"), TEXT("_@M1506_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
+
+  // Flaps
+  SetDataOption(113, ugNone,           TEXT("_@M1640_"), TEXT("_@M1641_"), new InfoBoxFormatter(TEXT("")), AirspeedProcessing, 8, 2);
+
+  // Vertical distance to airspace
+  SetDataOption(114, ugNone,           TEXT("_@M1285_"), TEXT("_@M1286_"), new InfoBoxFormatter(TEXT("")), NoProcessing, 8, 2);
+
+	// LKTOKEN  _@M1644_ = "Home Alt.Arrival", _@M1645_ = "HomeArr"
+	SetDataOption(115, ugAltitude,       TEXT("_@M1644_"), TEXT("_@M1645_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 8, 2);
+
+	//Before adding new items, consider changing NUMDATAOPTIONS_MAX
 
 }
+
+#else
+#include "FillDataOptions.cpp"
+#endif // else USEIBOX
 
 void TriggerGPSUpdate()
 {
@@ -1170,27 +1119,24 @@ void TriggerVarioUpdate()
 }
 
 void HideMenu() {
+#if USEIBOX
   // ignore this if the display isn't locked -- must keep menu visible
   if (DisplayLocked) {
     MenuTimeOut = MenuTimeoutMax;
     DisplayTimeOut = 0;
   }
+#else
+    MenuTimeOut = MenuTimeoutMax;
+    DisplayTimeOut = 0;
+#endif
 }
 
 void ShowMenu() {
-#if !defined(GNAV) && !defined(PCGNAV)
-  // Popup exit button if in .xci
-  //InputEvents::setMode(TEXT("Exit"));
-  InputEvents::setMode(TEXT("Menu")); // VENTA3
-#endif
+  InputEvents::setMode(TEXT("Menu"));
   MenuTimeOut = 0;
   DisplayTimeOut = 0;
 }
 
-
-#if (EXPERIMENTAL > 0)
-BlueDialupSMS bsms;
-#endif
 
 void SettingsEnter() {
   MenuActive = true;
@@ -1279,9 +1225,9 @@ void SettingsLeave() {
   }
   
   if(AIRSPACEFILECHANGED) {
-	CloseAirspace();
-	ReadAirspace();
-	SortAirspace();
+	CAirspaceManager::Instance().CloseAirspaces();
+	CAirspaceManager::Instance().ReadAirspaces();
+	CAirspaceManager::Instance().SortAirspaces();
 	MapWindow::ForceVisibilityScan = true;
   }  
   
@@ -1304,17 +1250,10 @@ void SettingsLeave() {
   UnlockTaskData();
   UnlockFlightData();
 
-  #if NOSIM
   if(!SIMMODE && COMPORTCHANGED) {
-      RestartCommPorts();
+      LKForceComPortReset=true;
+      // RestartCommPorts(); 110605
   }
-  #else
-  #ifndef _SIM_
-  if(COMPORTCHANGED) {
-      RestartCommPorts();
-  }
-  #endif
-  #endif
 
   MapWindow::ResumeDrawingThread();
   // allow map and calculations threads to continue on their merry way
@@ -1322,21 +1261,12 @@ void SettingsLeave() {
 
 
 void SystemConfiguration(void) {
-#if NOSIM
   if (!SIMMODE) {
   	if (LockSettingsInFlight && CALCULATED_INFO.Flying) {
 		DoStatusMessage(TEXT("Settings locked in flight"));
 		return;
 	}
   }
-#else
-#ifndef _SIM_
-  if (LockSettingsInFlight && CALCULATED_INFO.Flying) {
-    DoStatusMessage(TEXT("Settings locked in flight"));
-    return;
-  }
-#endif
-#endif
 
   SettingsEnter();
   dlgConfigurationShowModal(); 
@@ -1364,7 +1294,9 @@ void FullScreen() {
 #endif
   }
   MapWindow::RequestFastRefresh();
+#if USEIBOX
   InfoBoxesDirty = true;
+#endif
 }
 
 
@@ -1384,26 +1316,21 @@ void UnlockComm() {
 
 
 void RestartCommPorts() {
-  static bool first = true;
- /*
-#if (WINDOWSPC>0)
-  if (!first) {
-    NMEAParser::Reset();
-    return;
-  }
-#endif
- */
+
   StartupStore(TEXT(". RestartCommPorts%s"),NEWLINE);
 
-  while(!goInitDevice) Sleep(50); // 100118
+  #if USEGOINIT
+  #ifdef DEBUG_DEVSETTINGS
+  if (!goInitDevice) StartupStore(_T(".......... RestartCommPorts waiting for goInit\n"));
+  #endif
+  while(!goInitDevice) Sleep(50); // 100118 110605 this is potentially a deadlock!
+  #endif
   LockComm();
 
   devClose(devA());
   devClose(devB());
 
   NMEAParser::Reset();
-
-  first = false;
 
   devInit(TEXT(""));      
 
@@ -1412,15 +1339,11 @@ void RestartCommPorts() {
 }
 
 
-
+#if USEIBOX
 void DefocusInfoBox() {
   FocusOnWindow(InfoFocus,false);
   InfoFocus = -1;
-#ifndef MAP_ZOOM
-  if (MapWindow::isPan() && !MapWindow::isTargetPan()) {
-#else /* MAP_ZOOM */
   if(MapWindow::mode.Is(MapWindow::Mode::MODE_PAN)) {
-#endif /* MAP_ZOOM */
     InputEvents::setMode(TEXT("pan"));
   } else {
     InputEvents::setMode(TEXT("default"));
@@ -1438,6 +1361,7 @@ void FocusOnWindow(int i, bool selected) {
   // todo defocus all other?
 
 }
+#endif // USEIBOX
 
 
 void TriggerRedraws(NMEA_INFO *nmea_info,
@@ -1483,31 +1407,9 @@ DWORD InstrumentThread (LPVOID lpvoid) {
 	ResetEvent(varioTriggerEvent);
 	if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
-#ifndef NOVARIOGAUGE
-	// VNT This thread was eating cpu in landscape mode although vario not used. 
-	#ifdef LK8000_OPTIMIZE
-	if ( (InfoBoxLayout::landscape == true) && ( InfoBoxLayout::InfoBoxGeometry == 6) ) {
-		if (VarioUpdated && !InfoBoxLayout::fullscreen) { // VNT 090814 fix 
-	#else
-	if (VarioUpdated) { 
-	#endif
-		VarioUpdated = false;
-		if (MapWindow::IsDisplayRunning()) {
-			if (EnableVarioGauge) {
-				GaugeVario::Render();
-			}
-		}
-	}
-	#ifdef LK8000_OPTIMIZE
-		} else {
-			// VNT Not sure this is busy-wait, but normally the thread could even be suspended
-			Sleep(1000);
-		}
-	#endif
-#else
 	// DO NOTHING BY NOW
+	// if triggervario, render vario update eventually here
 	Sleep(10000);
-#endif
 	#ifdef CPUSTATS
 	if ( (GetThreadTimes( hInstrumentThread, &CreationTime, &ExitTime,&EndKernelTime,&EndUserTime)) == 0) {
 		Cpu_Instrument=9999;
@@ -1567,7 +1469,6 @@ DWORD CalculationThread (LPVOID lpvoid) {
 
     // Do vario first to reduce audio latency
     if (GPS_INFO.VarioAvailable) {
-      // if (VarioUpdated) {  20060511/sgi commented out dueto asynchronus reset of VarioUpdate in InstrumentThread
       if (DoCalculationsVario(&tmp_GPS_INFO,&tmp_CALCULATED_INFO)) {
 	        
       }
@@ -1586,50 +1487,19 @@ DWORD CalculationThread (LPVOID lpvoid) {
     
     if (GpsUpdated) {
       if(DoCalculations(&tmp_GPS_INFO,&tmp_CALCULATED_INFO)){
-#ifndef MAP_ZOOM
-
-        DisplayMode_t lastDisplayMode = DisplayMode;
-
-#endif /* ! MAP_ZOOM */
         MapWindow::MapDirty = true;
         needcalculationsslow = true;
 
-#ifndef MAP_ZOOM
-        switch (UserForceDisplayMode){
-		case dmCircling:
-			DisplayMode = dmCircling;
-			break;
-		case dmCruise:
-			DisplayMode = dmCruise;
-			break;
-		case dmFinalGlide:
-			DisplayMode = dmFinalGlide;
-			break;
-		case dmNone:
-			if (tmp_CALCULATED_INFO.Circling) {
-				DisplayMode = dmCircling;
-			} else if (tmp_CALCULATED_INFO.FinalGlide){
-				DisplayMode = dmFinalGlide;
-			} else
-				DisplayMode = dmCruise;
-
-			break;
-	}
-
-        if (lastDisplayMode != DisplayMode){
-		MapWindow::SwitchZoomClimb();
-        }
-
-#else /* MAP_ZOOM */
         if (tmp_CALCULATED_INFO.Circling)
           MapWindow::mode.Fly(MapWindow::Mode::MODE_FLY_CIRCLING);
         else if (tmp_CALCULATED_INFO.FinalGlide)
           MapWindow::mode.Fly(MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
         else
           MapWindow::mode.Fly(MapWindow::Mode::MODE_FLY_CRUISE);
-#endif /* MAP_ZOOM */
       }
+#if USEIBOX
       InfoBoxesDirty = true;
+#endif
     }
         
     if (MapWindow::CLOSETHREAD) break; // drop out on exit
@@ -1638,9 +1508,8 @@ DWORD CalculationThread (LPVOID lpvoid) {
 
     if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
-#if NOSIM
     if (SIMMODE) {
-	if (needcalculationsslow || ( (OnBestAlternate == true) && (ReplayLogger::IsEnabled()) )) { 
+	if (needcalculationsslow || ( ReplayLogger::IsEnabled() ) ) { 
 		DoCalculationsSlow(&tmp_GPS_INFO,&tmp_CALCULATED_INFO);
 		needcalculationsslow = false;
 	}
@@ -1650,16 +1519,6 @@ DWORD CalculationThread (LPVOID lpvoid) {
 		needcalculationsslow = false;
 	}
     }
-#else
-#if defined(_SIM_)
-    if (needcalculationsslow || ( (OnBestAlternate == true) && (ReplayLogger::IsEnabled()) )) { // VENTA3, needed for BestAlternate SIM
-#else
-    if (needcalculationsslow) {
-#endif
-      DoCalculationsSlow(&tmp_GPS_INFO,&tmp_CALCULATED_INFO);
-      needcalculationsslow = false;
-    }
-#endif
 
     if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
@@ -1729,9 +1588,9 @@ void CreateCalculationThread() {
 void PreloadInitialisation(bool ask) {
   //SetToRegistry(TEXT("XCV"), 1);
   SetToRegistry(TEXT("LKV"), 3);
-
+  LKLanguageReady=false;
   LKReadLanguageFile();
-  FillDataOptions();
+  FillDataOptions(); // Load infobox list
 
   // Registery (early)
 
@@ -1742,12 +1601,8 @@ void PreloadInitialisation(bool ask) {
 
 
   } else {
-    #if LKSTARTUP
     FullScreen();
     while (dlgStartupShowModal());
-    #else
-    dlgStartupShowModal();
-    #endif
     RestoreRegistry();
     ReadRegistrySettings();
 
@@ -1781,7 +1636,6 @@ void AfterStartup() {
   int olddelay = StatusMessageData[0].delay_ms;
   StatusMessageData[0].delay_ms = 20000; // 20 seconds
 
-#if NOSIM
   if (SIMMODE) {
 	StartupStore(TEXT(". GCE_STARTUP_SIMULATOR%s"),NEWLINE);
 	InputEvents::processGlideComputer(GCE_STARTUP_SIMULATOR);
@@ -1789,24 +1643,10 @@ void AfterStartup() {
 	StartupStore(TEXT(". GCE_STARTUP_REAL%s"),NEWLINE);
 	InputEvents::processGlideComputer(GCE_STARTUP_REAL);
   }
-#else
-#ifdef _SIM_
-  StartupStore(TEXT(". GCE_STARTUP_SIMULATOR%s"),NEWLINE);
-  InputEvents::processGlideComputer(GCE_STARTUP_SIMULATOR);
-#else
-  StartupStore(TEXT(". GCE_STARTUP_REAL%s"),NEWLINE);
-  InputEvents::processGlideComputer(GCE_STARTUP_REAL);
-#endif
-#endif
   StatusMessageData[0].delay_ms = olddelay; 
-
-#ifdef _INPUTDEBUG_
-  InputEvents::showErrors();
-#endif
 
   // Create default task if none exists
   StartupStore(TEXT(". Create default task%s"),NEWLINE);
-//  Sleep(500); // 091212
   DefaultTask();
 
   // Trigger first redraw
@@ -1842,24 +1682,16 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   CreateMutex(NULL,FALSE,_T("LOCK8000"));
   if (GetLastError() == ERROR_ALREADY_EXISTS) return(0);
   
-  wsprintf(XCSoar_Version,_T("%S v%S.%S "), LKFORK, LKVERSION,LKRELEASE);
-  wcscat(XCSoar_Version, TEXT(__DATE__));
+  wsprintf(LK8000_Version,_T("%S v%S.%S "), LKFORK, LKVERSION,LKRELEASE);
+  wcscat(LK8000_Version, TEXT(__DATE__));
   StartupStore(_T("%s------------------------------------------------------------%s"),NEWLINE,NEWLINE);
   #ifdef PNA
-  StartupStore(TEXT(". Starting %s %s build#%d%s"), XCSoar_Version,_T("PNA"),BUILDNUMBER,NEWLINE);
+  StartupStore(TEXT(". Starting %s %s build#%d%s"), LK8000_Version,_T("PNA"),BUILDNUMBER,NEWLINE);
   #else
   #if (WINDOWSPC>0)
-  StartupStore(TEXT(". Starting %s %s build#%d%s"), XCSoar_Version,_T("PC"),BUILDNUMBER,NEWLINE);
+  StartupStore(TEXT(". Starting %s %s build#%d%s"), LK8000_Version,_T("PC"),BUILDNUMBER,NEWLINE);
   #else
-  StartupStore(TEXT(". Starting %s %s build#%d%s"), XCSoar_Version,_T("PDA"),BUILDNUMBER,NEWLINE);
-  #endif
-  #endif
-
-
-  #if NOSIM
-  #else
-  #ifdef _SIM_
-  StartupStore(TEXT(". Running mode Simulator%s"),NEWLINE);
+  StartupStore(TEXT(". Starting %s %s build#%d%s"), LK8000_Version,_T("PDA"),BUILDNUMBER,NEWLINE);
   #endif
   #endif
 
@@ -1893,7 +1725,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   
 
   // registry deleted at startup also for PC
-  StartupStore(_T(". Deleting registry key%s"),NEWLINE);
   if ( RegDeleteKey(HKEY_CURRENT_USER, _T(REGKEYNAME))== ERROR_SUCCESS )  // 091213
 	StartupStore(_T(". Registry key was correctly deleted%s"),NEWLINE);
   else
@@ -1919,10 +1750,14 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   #endif
   #endif
 
-  // We shall NOT create the LK8000 root folder if not existing
-  // otherwise users will get confused on errors
-  // CreateDirectoryIfAbsent(TEXT("")); 
-
+  #ifdef HAVE_ACTIVATE_INFO
+  FARPROC ptr;
+  ptr = GetProcAddress(GetModuleHandle(TEXT("AYGSHELL")), TEXT("SHHandleWMActivate"));
+  if (ptr != NULL) api_has_SHHandleWMActivate = true;
+  ptr = GetProcAddress(GetModuleHandle(TEXT("AYGSHELL")), TEXT("SHHandleWMSettingChange"));
+  if (ptr != NULL) api_has_SHHandleWMSettingChange = true;
+  #endif
+    
   // These directories are needed if missing, as LK can run also with no maps and no waypoints..
   CreateDirectoryIfAbsent(TEXT(LKD_LOGS));
   CreateDirectoryIfAbsent(TEXT(LKD_CONF));
@@ -1930,14 +1765,12 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   CreateDirectoryIfAbsent(TEXT(LKD_MAPS));
   CreateDirectoryIfAbsent(TEXT(LKD_WAYPOINTS));
 
-  XCSoarGetOpts(lpCmdLine);
+  LK8000GetOpts(lpCmdLine);
 
   icc.dwSize = sizeof(INITCOMMONCONTROLSEX);
   icc.dwICC = ICC_UPDOWN_CLASS;
   InitCommonControls();
   InitSineTable();
-
-  StartupStore(TEXT(". Initialize application instance%s"),NEWLINE);
 
   // Perform application initialization: also ScreenGeometry and LKIBLSCALE, and Objects
   if (!InitInstance (hInstance, nCmdShow))
@@ -1953,16 +1786,9 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   SHSetAppKeyWndAssoc(VK_APP2, hWndMainWindow);
   SHSetAppKeyWndAssoc(VK_APP3, hWndMainWindow);
   SHSetAppKeyWndAssoc(VK_APP4, hWndMainWindow);
-  // Typical Record Button
-  //	Why you can't always get this to work
-  //	http://forums.devbuzz.com/m_1185/mpage_1/key_/tm.htm
-  //	To do with the fact it is a global hotkey, but you can with code above
-  //	Also APPA is record key on some systems
   SHSetAppKeyWndAssoc(VK_APP5, hWndMainWindow);
   SHSetAppKeyWndAssoc(VK_APP6, hWndMainWindow);
   #endif
-
-  StartupStore(TEXT(". Initializing critical sections and events%s"),NEWLINE);
 
   InitializeCriticalSection(&CritSec_EventQueue);
   csEventQueueInitialized = true;
@@ -1987,7 +1813,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 
   memset( &(Task), 0, sizeof(Task_t));
   memset( &(StartPoints), 0, sizeof(Start_t));
-  StartupStore(_T(". ClearTask%s"),NEWLINE);
   ClearTask();
   memset( &(GPS_INFO), 0, sizeof(GPS_INFO));
   memset( &(CALCULATED_INFO), 0,sizeof(CALCULATED_INFO));
@@ -2001,15 +1826,9 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 
   PreloadInitialisation(false); // calls dlgStartup
 
-  #ifndef NOCDIGAUGE
-  GaugeCDI::Create();
-  #endif
-  #ifndef NOVARIOGAUGE
-  GaugeVario::Create();
-  #endif
-
   GPS_INFO.NAVWarning = true; // default, no gps at all!
 
+  #if USESWITCHES
   GPS_INFO.SwitchState.AirbrakeLocked = false;
   GPS_INFO.SwitchState.FlapPositive = false;
   GPS_INFO.SwitchState.FlapNeutral = false;
@@ -2022,6 +1841,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   GPS_INFO.SwitchState.UserSwitchMiddle = false;
   GPS_INFO.SwitchState.UserSwitchDown = false;
   GPS_INFO.SwitchState.VarioCircling = false;
+  #endif
 
   SYSTEMTIME pda_time;
   GetSystemTime(&pda_time);
@@ -2032,17 +1852,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   GPS_INFO.Hour  = pda_time.wHour;
   GPS_INFO.Minute = pda_time.wMinute;
   GPS_INFO.Second = pda_time.wSecond;
-
-#if !NOSIM
-#ifdef _SIM_
-  #if _SIM_STARTUPSPEED
-  GPS_INFO.Speed = _SIM_STARTUPSPEED;
-  #endif
-  #if _SIM_STARTUPALTITUDE
-  GPS_INFO.Altitude = _SIM_STARTUPALTITUDE;
-  #endif
-#endif
-#endif
 
 #ifdef DEBUG
   DebugStore("# Start\r\n");
@@ -2081,7 +1890,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
 #else
   TCHAR sTmpA[MAX_PATH], sTmpB[MAX_PATH];
   LocalPath(sTmpA,_T(""));
-#if defined(FIVV) && ( !defined(WINDOWSPC) || WINDOWSPC==0 )
+#if ( !defined(WINDOWSPC) || WINDOWSPC==0 )
   if ( !datadir ) {
 	// LKTOKEN _@M1208_ "ERROR NO DIRECTORY:"
     CreateProgressDialog(gettext(TEXT("_@M1208_")));
@@ -2090,7 +1899,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
 #endif
   wsprintf(sTmpB, TEXT("Conf=%s"),sTmpA);
   CreateProgressDialog(sTmpB); 
-#if defined(FIVV) && ( !defined(WINDOWSPC) || WINDOWSPC==0 )
+#if ( !defined(WINDOWSPC) || WINDOWSPC==0 )
   if ( !datadir ) {
     Sleep(3000);
     // LKTOKEN _@M1209_ "CHECK INSTALLATION!"
@@ -2104,16 +1913,8 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   if ( AircraftCategory == (AircraftCategory_t)umParaglider )
 	// LKTOKEN _@M1210_ "PARAGLIDING MODE"
 	CreateProgressDialog(gettext(TEXT("_@M1210_"))); 
-#if NOSIM
 	// LKTOKEN _@M1211_ "SIMULATION"
   if (SIMMODE) CreateProgressDialog(gettext(TEXT("_@M1211_"))); 
-#else
-#ifdef _SIM_  
-	// LKTOKEN _@M1211_ "SIMULATION"
-  CreateProgressDialog(gettext(TEXT("_@M1211_"))); 
-#endif
-#endif
-
 
 #ifdef PNA
   if ( SetBacklight() == true ) 
@@ -2138,43 +1939,28 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   InitWayPointCalc(); 
   InitLDRotary(&rotaryLD); 
   InitWindRotary(&rotaryWind); // 100103
-  // InitNewMap(); was moved in InitInstance 
-#ifndef MAP_ZOOM
-  InitAircraftCategory();
-#else /* MAP_ZOOM */
   MapWindow::zoom.Reset();
-#endif /* MAP_ZOOM */
   InitLK8000();
   ReadAirfieldFile();
   SetHome(false);
   LKReadLanguageFile();
+  LKLanguageReady=true;
 
   RasterTerrain::ServiceFullReload(GPS_INFO.Latitude, 
                                    GPS_INFO.Longitude);
 
+#if USEWEATHER
   // LKTOKEN _@M1216_ "Scanning weather forecast"  
   // CreateProgressDialog(gettext(TEXT("_@M1216_")));
   StartupStore(TEXT(". RASP load%s"),NEWLINE);
   RASP.Scan(GPS_INFO.Latitude, GPS_INFO.Longitude);
-
-  ReadAirspace();
-  SortAirspace();
-
+#endif
+  CAirspaceManager::Instance().ReadAirspaces();
+  CAirspaceManager::Instance().SortAirspaces();
   OpenTopology();
   TopologyInitialiseMarks();
 
   OpenFLARMDetails();
-
-
-#ifndef DISABLEAUDIOVARIO
-  /*
-  VarioSound_Init();
-  VarioSound_EnableSound(EnableSoundVario);
-  VarioSound_SetVdead(SoundDeadband);
-  VarioSound_SetV(0);
-  VarioSound_SetSoundVolume(SoundVolume);
-  */
-#endif
 
   // ... register all supported devices
   // IMPORTANT: ADD NEW ONES TO BOTTOM OF THIS LIST
@@ -2182,7 +1968,8 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   // Please check that the number of devices is not exceeding NUMREGDEV in device.h
   CreateProgressDialog(gettext(TEXT("_@M1217_")));
   StartupStore(TEXT(". Register serial devices%s"),NEWLINE);
-  genRegister(); // MUST BE FIRST
+  disRegister(); // must be first
+  genRegister(); // must be second, since we Sort(2) in dlgConfiguration
   cai302Register();
   ewRegister();
   #if !110101
@@ -2205,46 +1992,35 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   DigiflyRegister(); // 100209
   IlecRegister();
   DSXRegister();
+  CDevIMI::Register();
   FlytecRegister();
   LK8EX1Register();
-  // we want to be sure that RestartCommPort works on startup ONLY after all devices are inititalized
-  goInitDevice=true; // 100118
+  WesterboerRegister();
 
-#if NOSIM
-  if (!NOSIM) {
-	StartupStore(TEXT(". RestartCommPorts%s"),NEWLINE);
-	RestartCommPorts();
-  }
-#else
-#ifndef _SIM_
-  StartupStore(TEXT(". RestartCommPorts%s"),NEWLINE);
-  RestartCommPorts();
-#endif
-#endif
 // WINDOWSPC _SIM_ devInit called twice missing devA name
 // on PC nonSIM we cannot use devInit here! Generic device is used until next port reset!
-#if NOSIM
 
-#if (WINDOWSPC>0)
-  if (SIMMODE) devInit(TEXT(""));      
-#endif
-
+#if 110530
+  // we need devInit for all devices. Missing initialization otherwise.
+  LockComm();
+  devInit(TEXT("")); 
+  UnlockComm();
+  #if USEGOINIT
+  // we want to be sure that RestartCommPort works on startup ONLY after all devices are inititalized
+  goInitDevice=true; // 100118
+  #endif
 #else
-
-#if ((WINDOWSPC>0) && _SIM_) 
-  devInit(TEXT(""));      
+  // I dont remember anymore WHY! Probably it has been fixed already! paolo
+  #if (WINDOWSPC>0)
+  if (SIMMODE) devInit(TEXT(""));      
+  #endif
 #endif
 
-#endif
 
   // re-set polar in case devices need the data
   StartupStore(TEXT(". GlidePolar::SetBallast%s"),NEWLINE);
   GlidePolar::SetBallast();
 
-#if (EXPERIMENTAL > 0)
-  CreateProgressDialog(TEXT("Bluetooth dialup SMS"));
-  bsms.Initialise();
-#endif
   // LKTOKEN _@M1218_ "Initialising display"
   CreateProgressDialog(gettext(TEXT("_@M1218_")));
 
@@ -2256,8 +2032,8 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   StartupStore(TEXT(". CreateDrawingThread%s"),NEWLINE);
   MapWindow::CreateDrawingThread();
   Sleep(100);
+  #if USEIBOX
   StartupStore(TEXT(". ShowInfoBoxes%s"),NEWLINE);
-  #ifndef NOIBOX
   ShowInfoBoxes();
   #endif
 
@@ -2269,21 +2045,20 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   #else
   while(!(goCalculationThread)) Sleep(50); // 091119
   #endif
-  // Sleep(500); 091119
-
-  StartupStore(TEXT(". AirspaceWarnListInit%s"),NEWLINE);
-  AirspaceWarnListInit();
+  #if USEOLDASPWARNINGS
   StartupStore(TEXT(". dlgAirspaceWarningInit%s"),NEWLINE);
   dlgAirspaceWarningInit();
+  #endif
 
   // find unique ID of this PDA
   ReadAssetNumber();
 
-
-  MapWindow::RequestOnFullScreen(); // VENTA10 EXPERIMENTAL
+#if USEIBOX
+  MapWindow::RequestOnFullScreen();
+#endif
 
   // Da-da, start everything now
-  StartupStore(TEXT(". ProgramStarted=1%s"),NEWLINE);
+  StartupStore(TEXT(". ProgramStarted=InitDone%s"),NEWLINE);
   ProgramStarted = psInitDone;
 
   GlobalRunning = true;
@@ -2301,9 +2076,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
 		DispatchMessage(&msg);
 	}
   }
-  #if LKOBJ
   LKObjects_Delete(); //@ 101124
-  #endif
   StartupStore(_T(". WinMain terminated%s"),NEWLINE);
 
 #if (WINDOWSPC>0)
@@ -2344,11 +2117,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance, LPTSTR szWindowClass)
   wc.cbWndExtra                 = dc.cbWndExtra ;
 #endif
   wc.hInstance                  = hInstance;
-#if defined(GNAV) && !defined(PCGNAV)
-  wc.hIcon = NULL;
-#else
   wc.hIcon                      = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_XCSOARSWIFT));
-#endif
   wc.hCursor                    = 0;
   wc.hbrBackground              = (HBRUSH) GetStockObject(BLACK_BRUSH); 
   wc.lpszMenuName               = 0;
@@ -2471,7 +2240,6 @@ void InitialiseFontsHardCoded(RECT rc,
  *
  */
 
-#if ( (WINDOWSPC==0) || ((WINDOWSPC>0)&&_REALTHING_)) // 091120  091202 removed _SIM_ need
 
    // If you set a font here for a specific resolution, no automatic font generation is used.
   if (ScreenSize==(ScreenSize_t)ss480x272) { // WQVGA  e.g. MIO
@@ -2484,17 +2252,7 @@ void InitialiseFontsHardCoded(RECT rc,
     // propGetFontSettingsFromString(TEXT("18,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapWindowLogFont); 091120
     propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapWindowLogFont);
     // propGetFontSettingsFromString(TEXT("16,0,0,0,500,0,0,0,0,0,0,4,2,TahomaBD"), ptrhardMapWindowBoldLogFont); 091120
-#if WINDOWSPC>0
-    propGetFontSettingsFromString(TEXT("19,0,0,0,500,0,0,0,0,0,0,4,2,Tahoma"), ptrhardMapWindowBoldLogFont); 
-#else
     propGetFontSettingsFromString(TEXT("19,0,0,0,500,0,0,0,0,0,0,6,2,Tahoma"), ptrhardMapWindowBoldLogFont); 
-#endif
-    if (Appearance.InfoBoxGeom == 5) {
-      GlobalEllipse=1.32f; // We don't use vario gauge in landscape geo5 anymore.. but doesn't hurt.
-    }
-    else {
-      GlobalEllipse=1.1f;
-    }
   }
   else if (ScreenSize==(ScreenSize_t)ss720x408) { // WQVGA  e.g. MIO
     propGetFontSettingsFromString(TEXT("51,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // 28 091120
@@ -2505,12 +2263,6 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("30,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);//  (RLD is this used?)
     propGetFontSettingsFromString(TEXT("33,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
     propGetFontSettingsFromString(TEXT("30,0,0,0,700,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont);
-    if (Appearance.InfoBoxGeom == 5) {
-      GlobalEllipse=1.32f; // We don't use vario gauge in landscape geo5 anymore.. but doesn't hurt.
-    }
-    else {
-      GlobalEllipse=1.1f;
-    }
   }
 
   else if (ScreenSize==(ScreenSize_t)ss480x234) { // e.g. Messada 2440
@@ -2525,7 +2277,6 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("20,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
     // propGetFontSettingsFromString(TEXT("16,0,0,0,500,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont); 091120
     propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
-    GlobalEllipse=1.1f; // to be checked, TODO
   }
 
   else if (ScreenSize==(ScreenSize_t)ss800x480) {// e.g. ipaq 31x {
@@ -2538,13 +2289,11 @@ void InitialiseFontsHardCoded(RECT rc,
       case 6: // standard landscape
             propGetFontSettingsFromString(TEXT("56,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
             propGetFontSettingsFromString(TEXT("20,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
-            GlobalEllipse=1.1f;	// standard VENTA2-addon
             break;
       case 4:       
       case 5:   
             propGetFontSettingsFromString(TEXT("62,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // 64 091120
             propGetFontSettingsFromString(TEXT("24,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont); // 26 091120
-            GlobalEllipse=1.32f;	// VENTA2-addon
             break;
       case 7:
             propGetFontSettingsFromString(TEXT("66,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
@@ -2582,13 +2331,11 @@ void InitialiseFontsHardCoded(RECT rc,
       case 6: // standard landscape
             propGetFontSettingsFromString(TEXT("28,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
             propGetFontSettingsFromString(TEXT("10,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
-            GlobalEllipse=1.1f;	// standard VENTA2-addon
             break;
       case 4:       
       case 5:   
             propGetFontSettingsFromString(TEXT("31,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // 64 091120
             propGetFontSettingsFromString(TEXT("12,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont); // 26 091120
-            GlobalEllipse=1.32f;	// VENTA2-addon
             break;
       case 7:
             propGetFontSettingsFromString(TEXT("33,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
@@ -2625,7 +2372,6 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);  // wps and mapscale
     propGetFontSettingsFromString(TEXT("28,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont); // bold version of MapW
 										// and all messages and menus
-    GlobalEllipse=1.1f; // to be checked, TODO but unused, now
   }
   else if (ScreenSize==(ScreenSize_t)ss896x672) { // real VGA, not fake VGA
     propGetFontSettingsFromString(TEXT("75,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // infobox values
@@ -2637,7 +2383,6 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("44,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);  // wps and mapscale
     propGetFontSettingsFromString(TEXT("39,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont); // bold version of MapW
 										// and all messages and menus
-    GlobalEllipse=1.1f; // to be checked, TODO but unused, now
   }
   else if (ScreenSize==(ScreenSize_t)ss320x240) { // also applies for fake VGA where all values are doubled stretched
     propGetFontSettingsFromString(TEXT("26,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
@@ -2648,7 +2393,6 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);//  (RLD is this used?)
     propGetFontSettingsFromString(TEXT("18,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
     propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
-    GlobalEllipse=1.1f; // to be checked, TODO
   }
   else if (ScreenSize==(ScreenSize_t)ss240x320) { // also applies for fake VGA where all values are doubled stretched
     propGetFontSettingsFromString(TEXT("24,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
@@ -2659,7 +2403,6 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);//  (RLD is this used?)
     propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
     propGetFontSettingsFromString(TEXT("16,0,0,0,500,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont);
-    GlobalEllipse=1.1f; // to be checked, TODO
   }
   else if (ScreenSize==(ScreenSize_t)ss272x480) { 
     propGetFontSettingsFromString(TEXT("24,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardInfoWindowLogFont);
@@ -2670,7 +2413,6 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);
     propGetFontSettingsFromString(TEXT("18,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);
     propGetFontSettingsFromString(TEXT("18,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
-    GlobalEllipse=1.1f; 
   }
   else if (ScreenSize==(ScreenSize_t)ss480x640) { // real VGA, not fake VGA
     propGetFontSettingsFromString(TEXT("48,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // infobox values
@@ -2682,7 +2424,6 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);  // wps and mapscale
     propGetFontSettingsFromString(TEXT("28,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont); // bold version of MapW
 										// and all messages and menus
-    GlobalEllipse=1.1f; // to be checked, TODO but unused, now
   }
   else if (ScreenSize==(ScreenSize_t)ss480x800) { // real VGA, not fake VGA
     propGetFontSettingsFromString(TEXT("48,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // infobox values
@@ -2694,15 +2435,14 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("32,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowLogFont);  // wps and mapscale
     propGetFontSettingsFromString(TEXT("30,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont); // bold version of MapW
 										// and all messages and menus
-    GlobalEllipse=1.1f; // to be checked, TODO but unused, now
   }
 
 
-#endif // not WindowsPC or RealThing
 
 
 }
 
+#if USEIBOX
 void InitialiseFontsAuto(RECT rc,
                         LOGFONT * ptrautoInfoWindowLogFont,
                         LOGFONT * ptrautoTitleWindowLogFont,
@@ -2716,6 +2456,7 @@ void InitialiseFontsAuto(RECT rc,
   int FontHeight, FontWidth;
   int fontsz1 = (rc.bottom - rc.top );
   int fontsz2 = (rc.right - rc.left );
+
 
   memset ((char *)ptrautoInfoWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)ptrautoTitleWindowLogFont, 0, sizeof (LOGFONT));
@@ -2750,20 +2491,7 @@ void InitialiseFontsAuto(RECT rc,
 
   memset ((char *)&logfont, 0, sizeof (logfont));
 
-// #if defined(PNA) || defined(FIVV)  // Only for PNA, since we still do not copy Fonts in their Windows memory.
-				      // though we could already do it automatically. 
-// #if defined(PNA) //FIX 090925 QUI
-#if NOSIM
   _tcscpy(logfont.lfFaceName, _T("Tahoma")); 
-#else
-#if defined(PNA) || ((WINDOWSPC>0)&&_REALTHING_&&_SIM_)  // 091118
-//#if (1)
-	_tcscpy(logfont.lfFaceName, _T("Tahoma")); 
-#else
-  _tcscpy(logfont.lfFaceName, _T("DejaVu Sans Condensed"));
-#endif
-#endif
-
 
   logfont.lfPitchAndFamily = VARIABLE_PITCH | FF_DONTCARE  ;
   logfont.lfHeight = iFontHeight;
@@ -2780,18 +2508,14 @@ void InitialiseFontsAuto(RECT rc,
   do {
     HFONT TempWindowFont;
     HFONT hfOld;
-
     iFontHeight--;
     logfont.lfHeight = iFontHeight;
-//    InfoWindowFont = CreateFontIndirect (&logfont);
-//    SelectObject(iwhdc, InfoWindowFont);
 
     TempWindowFont = CreateFontIndirect (&logfont);
     hfOld=(HFONT)SelectObject(iwhdc, TempWindowFont);
 
 
     GetTextExtentPoint(iwhdc, TEXT("00:00"), 5, &tsize);
-//    DeleteObject(InfoWindowFont);
     SelectObject(iwhdc, hfOld); // unselect it before deleting it
     DeleteObject(TempWindowFont);
 
@@ -2801,21 +2525,10 @@ void InitialiseFontsAuto(RECT rc,
   iFontHeight++;
   logfont.lfHeight = iFontHeight;
 
-//  propGetFontSettings(TEXT("InfoWindowFont"), &logfont);
-//  InfoWindowFont = CreateFontIndirect (&logfont);
  memcpy ((void *)ptrautoInfoWindowLogFont, &logfont, sizeof (LOGFONT));
 
 
   // next font..
-
-#if NOSIM
-
-#else
-#if (WINDOWSPC>0)&& (!(_REALTHING_&&_SIM_) )
-  FontHeight= (int)(FontHeight/1.35);
-  FontWidth= (int)(FontWidth/1.35);
-#endif
-#endif
 
   memset ((char *)&logfont, 0, sizeof (logfont));
 
@@ -2825,11 +2538,7 @@ void InitialiseFontsAuto(RECT rc,
   logfont.lfWidth =  (int)(FontWidth/TITLEFONTWIDTHRATIO);
   logfont.lfWeight = FW_BOLD;
     ApplyClearType(&logfont); // 110106
-  // RLD this was the only auto font to not have "ApplyClearType()".  It does not apply to very small fonts
-  // we now apply ApplyClearType to all fonts in CreateOneFont(). 
 
-//  propGetFontSettings(TEXT("TitleWindowFont"), &logfont);
-//  TitleWindowFont = CreateFontIndirect (&logfont);
   memcpy ((void *)ptrautoTitleWindowLogFont, &logfont, sizeof (LOGFONT));
 
   memset ((char *)&logfont, 0, sizeof (logfont));
@@ -2843,8 +2552,6 @@ void InitialiseFontsAuto(RECT rc,
   logfont.lfWeight = FW_MEDIUM;
   ApplyClearType(&logfont); // 110106
 
-//  propGetFontSettings(TEXT("CDIWindowFont"), &logfont);
-//  CDIWindowFont = CreateFontIndirect (&logfont);
   memcpy ((void *)ptrautoCDIWindowLogFont, &logfont, sizeof (LOGFONT));
 
   // new font for map labels
@@ -2858,8 +2565,6 @@ void InitialiseFontsAuto(RECT rc,
   logfont.lfItalic = TRUE; 
   ApplyClearType(&logfont); // 110106
 
-//  propGetFontSettings(TEXT("MapLabelFont"), &logfont);
-//  MapLabelFont = CreateFontIndirect (&logfont);
   memcpy ((void *)ptrautoMapLabelLogFont, &logfont, sizeof (LOGFONT));
 
 
@@ -2873,8 +2578,6 @@ void InitialiseFontsAuto(RECT rc,
   logfont.lfWeight = FW_MEDIUM;
   ApplyClearType(&logfont); // 110106
 
-//  propGetFontSettings(TEXT("StatisticsFont"), &logfont);
-//  StatisticsFont = CreateFontIndirect (&logfont);
   memcpy ((void *)ptrautoStatisticsLogFont, &logfont, sizeof (LOGFONT));
 
   // new font for map labels
@@ -2886,11 +2589,7 @@ void InitialiseFontsAuto(RECT rc,
   logfont.lfWeight = FW_MEDIUM;
   ApplyClearType(&logfont); // 110106
 
-//  propGetFontSettings(TEXT("MapWindowFont"), &logfont);
-//  MapWindowFont = CreateFontIndirect (&logfont);
 
-//  SendMessage(hWndMapWindow,WM_SETFONT,
-//        (WPARAM)MapWindowFont,MAKELPARAM(TRUE,0));
   memcpy ((void *)ptrautoMapWindowLogFont, &logfont, sizeof (LOGFONT));
 
   // Font for map bold text
@@ -2900,8 +2599,6 @@ void InitialiseFontsAuto(RECT rc,
   logfont.lfWidth =  0; // JMW (int)(FontWidth*MAPFONTWIDTHRATIO*1.3) +2;
   ApplyClearType(&logfont); // 110106 missing
 
-//  propGetFontSettings(TEXT("MapWindowBoldFont"), &logfont);
-//  MapWindowBoldFont = CreateFontIndirect (&logfont);
   memcpy ((void *)ptrautoMapWindowBoldLogFont, &logfont, sizeof (LOGFONT));
 
   // TODO code: create font settings for this one...
@@ -2917,12 +2614,12 @@ void InitialiseFontsAuto(RECT rc,
   memcpy ((void *)ptrautoTitleSmallWindowLogFont, &logfont, sizeof (LOGFONT));
 }
 
-//  propGetFontSettings(TEXT("TeamCodeFont"), &logfont);
-//  TitleSmallWindowFont = CreateFontIndirect (&logfont);
+#endif // USEIBOX
 
 
 void InitialiseFonts(RECT rc)
-{ //this routine must be called only at start/restart of XCSoar b/c there are many pointers to these fonts
+{ //this routine must be called only at start/restart b/c there are many pointers to these fonts
+
  
   DeleteObject(InfoWindowFont);  
   DeleteObject(TitleWindowFont);
@@ -2932,6 +2629,8 @@ void InitialiseFonts(RECT rc)
   DeleteObject(CDIWindowFont);
   DeleteObject(MapLabelFont);
   DeleteObject(StatisticsFont);
+
+  #if USEIBOX
 
   memset ((char *)&autoInfoWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)&autoTitleWindowLogFont, 0, sizeof (LOGFONT));
@@ -2943,6 +2642,7 @@ void InitialiseFonts(RECT rc)
   memset ((char *)&autoStatisticsLogFont, 0, sizeof (LOGFONT));
 
 
+  // we dont need fonts auto because LK has embedded fonts tuned
   InitialiseFontsAuto(rc, 
                         &autoInfoWindowLogFont,
                         &autoTitleWindowLogFont,
@@ -2952,7 +2652,7 @@ void InitialiseFonts(RECT rc)
                         &autoCDIWindowLogFont, // New
                         &autoMapLabelLogFont,
                         &autoStatisticsLogFont);
-
+  #endif
 
   LOGFONT hardInfoWindowLogFont;
   LOGFONT hardTitleWindowLogFont;
@@ -2982,7 +2682,10 @@ void InitialiseFonts(RECT rc)
                         &hardMapLabelLogFont,
                         &hardStatisticsLogFont);
 
-// for PNA & GNAV, merge the "hard" into the "auto" if one exists 
+  //
+  // Merge the "hard" into the "auto" if one exists 
+  //
+
   if (!IsNullLogFont(hardInfoWindowLogFont))
     autoInfoWindowLogFont = hardInfoWindowLogFont;
 
@@ -3128,14 +2831,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
     }
 
-#if defined(GNAV) && !defined(PCGNAV)
-  // TODO code: release the handle?
-  HANDLE hTmp = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_XCSOARSWIFT));
-  SendMessage(hWndMainWindow, WM_SETICON,
-	      (WPARAM)ICON_BIG, (LPARAM)hTmp);
-  SendMessage(hWndMainWindow, WM_SETICON,
-	      (WPARAM)ICON_SMALL, (LPARAM)hTmp);
-#endif
 
   hBrushSelected = (HBRUSH)CreateSolidBrush(ColorSelected);
   hBrushUnselected = (HBRUSH)CreateSolidBrush(ColorUnselected);
@@ -3150,39 +2845,24 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   rc.bottom = SCREENHEIGHT;
 #endif
 
-  StartupStore(TEXT(". InfoBox geometry%s"),NEWLINE);
-
   InfoBoxLayout::ScreenGeometry(rc);
-  #if LKOBJ
-  StartupStore(TEXT(". Create Objects%s"),NEWLINE);
-  LKObjects_Create(); //@ 101124
-  #endif
 
-  StartupStore(TEXT(". Load unit bitmaps%s"),NEWLINE);
+  LKObjects_Create(); 
 
   Units::LoadUnitBitmap(hInstance);
 
-  StartupStore(TEXT(". Create info boxes%s"),NEWLINE);
-
-  #ifndef NOIBOX
+  #if USEIBOX
   InfoBoxLayout::CreateInfoBoxes(rc);
   #endif
 
-  #ifndef NOFLARMGAUGE
-  StartupStore(TEXT(". Create FLARM gauge%s"),NEWLINE);
-  GaugeFLARM::Create();
-  #endif
-
-  StartupStore(TEXT(". Create button labels%s"),NEWLINE);
   ButtonLabel::CreateButtonLabels(rc);
   ButtonLabel::SetLabelText(0,TEXT("MODE"));
 
-  StartupStore(TEXT(". Initialize fonts%s"),NEWLINE);
   InitialiseFonts(rc);
+  InitNewMap();	// reload updating LK fonts after loading profile
 
   ButtonLabel::SetFont(MapWindowBoldFont);
 
-  StartupStore(TEXT(". Initialise message system%s"),NEWLINE);
   Message::Initialize(rc); // creates window, sets fonts
 
   ShowWindow(hWndMainWindow, SW_SHOW);
@@ -3196,7 +2876,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 			       (rc.bottom-rc.top) ,
                                hWndMainWindow, NULL ,hInstance,NULL);
 
-  // JMW gauge creation was here
   ShowWindow(hWndMainWindow, nCmdShow);
 
   UpdateWindow(hWndMainWindow);
@@ -3210,82 +2889,63 @@ int getInfoType(int i) {
   int retval = 0;
   if (i<0) return 0; // error
 
+#if USEIBOX
   if (EnableAuxiliaryInfo) {
     retval = (InfoType[i] >> 24) & 0xff; // auxiliary
   } else {
-#ifndef MAP_ZOOM
-    if (DisplayMode == dmCircling)
-#else /* MAP_ZOOM */
+#endif
     switch(MapWindow::mode.Fly()) {
     case MapWindow::Mode::MODE_FLY_CIRCLING:
-#endif /* MAP_ZOOM */
       retval = InfoType[i] & 0xff; // climb
-#ifndef MAP_ZOOM
-    else if (DisplayMode == dmFinalGlide) {
-#else /* MAP_ZOOM */
       break;
     case MapWindow::Mode::MODE_FLY_FINAL_GLIDE:
-#endif /* MAP_ZOOM */
       retval = (InfoType[i] >> 16) & 0xff; //final glide
-#ifndef MAP_ZOOM
-    } else {
-#else /* MAP_ZOOM */
       break;
     case MapWindow::Mode::MODE_FLY_CRUISE:
-#endif /* MAP_ZOOM */
       retval = (InfoType[i] >> 8) & 0xff; // cruise
-#ifdef MAP_ZOOM
       break;
     case MapWindow::Mode::MODE_FLY_NONE:
       break;
-#endif /* MAP_ZOOM */
     }
+#if USEIBOX
   }
-  return min(NUMSELECTSTRINGS-1,retval);
+#endif
+  return min(NumDataOptions-1,retval);
 }
 
 
 void setInfoType(int i, char j) {
   if (i<0) return; // error
 
+#if USEIBOX
   if (EnableAuxiliaryInfo) {
     InfoType[i] &= 0x00ffffff;
     InfoType[i] += (j<<24);
   } else {
-#ifndef MAP_ZOOM
-    if (DisplayMode == dmCircling) {
-#else /* MAP_ZOOM */
+#endif
     switch(MapWindow::mode.Fly()) {
     case MapWindow::Mode::MODE_FLY_CIRCLING:
-#endif /* MAP_ZOOM */
       InfoType[i] &= 0xffffff00;
       InfoType[i] += (j);
-#ifndef MAP_ZOOM
-    } else if (DisplayMode == dmFinalGlide) {
-#else /* MAP_ZOOM */
       break;
     case MapWindow::Mode::MODE_FLY_FINAL_GLIDE:
-#endif /* MAP_ZOOM */
       InfoType[i] &= 0xff00ffff;
       InfoType[i] += (j<<16);
-#ifndef MAP_ZOOM
-    } else {
-#else /* MAP_ZOOM */
       break;
     case MapWindow::Mode::MODE_FLY_CRUISE:
-#endif /* MAP_ZOOM */
       InfoType[i] &= 0xffff00ff;
       InfoType[i] += (j<<8);
-#ifdef MAP_ZOOM
       break;
     case MapWindow::Mode::MODE_FLY_NONE:
       break;
-#endif /* MAP_ZOOM */
     }
+#if USEIBOX
   }
+#endif
 }
 
 
+#if USEIBOX
 void DoInfoKey(int keycode) {
   int i;
 
@@ -3299,19 +2959,21 @@ void DoInfoKey(int keycode) {
   // XXX This could crash if MapWindow does not capture
 
   LockFlightData();
-  Data_Options[min(NUMSELECTSTRINGS-1,i)].Process(keycode);
+  Data_Options[min(NumDataOptions-1,i)].Process(keycode);
   UnlockFlightData();
 
   UnlockNavBox();
 
+  #if USEIBOX
   InfoBoxesDirty = true;
+  #endif
 
   TriggerGPSUpdate(); // emulate update to trigger calculations
-
   InfoBoxFocusTimeOut = 0;
   DisplayTimeOut = 0;
 
 }
+#endif // USEIBOX
 
 
 // Debounce input buttons (does not matter which button is pressed)
@@ -3361,11 +3023,11 @@ void Shutdown(void) {
   // turn off all displays
   GlobalRunning = false;
 
+  #if USEOLDASPWARNINGS
   StartupStore(TEXT(". dlgAirspaceWarningDeInit%s"),NEWLINE);
   dlgAirspaceWarningDeInit();
-  StartupStore(TEXT(". AirspaceWarnListDeInit%s"),NEWLINE);
-  AirspaceWarnListDeInit();
-
+  #endif
+  
   // LKTOKEN _@M1220_ "Shutdown, saving logs..."
   CreateProgressDialog(gettext(TEXT("_@M1220_")));
   // stop logger
@@ -3380,19 +3042,6 @@ void Shutdown(void) {
   SaveRecentList();
   // Stop sound
 
-  StartupStore(TEXT(". SaveSoundSettings%s"),NEWLINE);
-  SaveSoundSettings();
-
-#ifndef DISABLEAUDIOVARIO  
-  //  VarioSound_EnableSound(false);
-  //  VarioSound_Close();
-#endif
-
-  // Stop SMS device
-#if (EXPERIMENTAL > 0)
-  bsms.Shutdown();
-#endif
-
   // Stop drawing
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
   CreateProgressDialog(gettext(TEXT("_@M1219_")));
@@ -3406,19 +3055,11 @@ void Shutdown(void) {
   // Stop calculating too (wake up)
   SetEvent(dataTriggerEvent);
   SetEvent(drawTriggerEvent);
-  #ifndef NOVARIOGAUGE
-  SetEvent(varioTriggerEvent);
-  #endif
 
   // Clear data
   // LKTOKEN _@M1222_ "Shutdown, saving task..."
   CreateProgressDialog(gettext(TEXT("_@M1222_")));
   StartupStore(TEXT(". Save default task%s"),NEWLINE);
-  LockTaskData();
-  #ifndef NOTASKABORT
-  ResumeAbortTask(-1); // turn off abort if it was on.
-  #endif
-  UnlockTaskData();
   SaveDefaultTask();
 
   StartupStore(TEXT(". Clear task data%s"),NEWLINE);
@@ -3426,8 +3067,6 @@ void Shutdown(void) {
   LockTaskData();
   Task[0].Index = -1;  ActiveWayPoint = -1; 
   AATEnabled = FALSE;
-  NumberOfAirspacePoints = 0; NumberOfAirspaceAreas = 0; 
-  NumberOfAirspaceCircles = 0;
   CloseWayPoints();
   UnlockTaskData();
 
@@ -3435,7 +3074,9 @@ void Shutdown(void) {
   CreateProgressDialog(gettext(TEXT("_@M1219_")));
   StartupStore(TEXT(". CloseTerrainTopology%s"),NEWLINE);
 
+#if USEWEATHER
   RASP.Close();
+#endif
   RasterTerrain::CloseTerrain();
 
   CloseTopology();
@@ -3448,46 +3089,18 @@ void Shutdown(void) {
   StartupStore(TEXT(". Stop COM devices%s"),NEWLINE);
   devCloseAll();
 
-  // SaveCalculationsPersist(&CALCULATED_INFO); // 091119 DISABLED
-#if (EXPERIMENTAL > 0)
-  //  CalibrationSave();
-#endif
-
-  #if defined(GNAV) && !defined(PCGNAV)
-    StartupStore(TEXT(". Altair shutdown%s"),NEWLINE);
-    Sleep(2500);
-    StopHourglassCursor();
-    InputEvents::eventDLLExecute(TEXT("altairplatform.dll SetShutdown 1"));
-    while(1) {
-      Sleep(100); // free time up for processor to perform shutdown
-    }
-  #endif
-
   CloseFLARMDetails();
 
   ProgramStarted = psInitInProgress;
 
   // Kill windows
 
-  #ifndef LK8000_OPTIMIZE
-  StartupStore(TEXT(". Close Gauges%s"),NEWLINE);
-  #endif
-  #ifndef NOCDIGAUGE
-  GaugeCDI::Destroy();
-  #endif
-  #ifndef NOVARIOGAUGE
-  GaugeVario::Destroy();
-  #endif
-  #ifndef NOFLARMGAUGE
-  GaugeFLARM::Destroy();
-  #endif
-  
   StartupStore(TEXT(". Close Messages%s"),NEWLINE);
   Message::Destroy();
   
   Units::UnLoadUnitBitmap();
 
-  #ifndef NOIBOX  
+  #if USEIBOX
   StartupStore(TEXT(". Destroy Info Boxes%s"),NEWLINE);
   InfoBoxLayout::DestroyInfoBoxes();
   #endif
@@ -3498,9 +3111,12 @@ void Shutdown(void) {
   StartupStore(TEXT(". Delete Objects%s"),NEWLINE);
   
   //  CommandBar_Destroy(hWndCB);
-  for (i=0; i<NUMSELECTSTRINGS; i++) {
+
+  #if USEIBOX
+  for (i=0; i<NumDataOptions; i++) {
     delete Data_Options[i].Formatter;
   }
+  #endif
 
   // Kill graphics objects
 
@@ -3516,44 +3132,21 @@ void Shutdown(void) {
   DeleteObject(MapWindowBoldFont);
   DeleteObject(StatisticsFont);  
   DeleteObject(TitleSmallWindowFont);
-  
-  if(AirspaceArea != NULL)   LocalFree((HLOCAL)AirspaceArea);
-  if(AirspacePoint != NULL)  LocalFree((HLOCAL)AirspacePoint);
-  if(AirspaceScreenPoint != NULL)  LocalFree((HLOCAL)AirspaceScreenPoint);
-  if(AirspaceCircle != NULL) LocalFree((HLOCAL)AirspaceCircle);
-
+  CAirspaceManager::Instance().CloseAirspaces();
   StartupStore(TEXT(". Delete Critical Sections%s"),NEWLINE);
   
   DeleteCriticalSection(&CritSec_EventQueue);
   csEventQueueInitialized = false;
-  #if ALPHADEBUG
-  StartupStore(TEXT(". Deleted EventQueue%s"),NEWLINE); // REMOVE 101121
-  #endif
   DeleteCriticalSection(&CritSec_TaskData);
   csTaskDataInitialized = false;
-  #if ALPHADEBUG
-  StartupStore(TEXT(". Deleted TaskData%s"),NEWLINE); // REMOVE 101121
-  #endif
   DeleteCriticalSection(&CritSec_FlightData);
   csFlightDataInitialized = false;
-  #if ALPHADEBUG
-  StartupStore(TEXT(". Deleted FlightData%s"),NEWLINE); // REMOVE 101121
-  #endif
   DeleteCriticalSection(&CritSec_NavBox);
   csNavBoxInitialized = false;
-  #if ALPHADEBUG
-  StartupStore(TEXT(". Deleted NavBox%s"),NEWLINE); // REMOVE 101121
-  #endif
   DeleteCriticalSection(&CritSec_Comm);
   csCommInitialized = false;
-  #if ALPHADEBUG
-  StartupStore(TEXT(". Deleted Comm%s"),NEWLINE); // REMOVE 101121
-  #endif
   DeleteCriticalSection(&CritSec_TerrainDataCalculations);
   csTerrainDataGraphicsInitialized = false;
-  #if ALPHADEBUG
-  StartupStore(TEXT(". Deleted TerrainData%s"),NEWLINE); // REMOVE 101121
-  #endif
   DeleteCriticalSection(&CritSec_TerrainDataGraphics);
   csTerrainDataCalculationsInitialized = false;
 
@@ -3682,18 +3275,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                  SWP_SHOWWINDOW|SWP_NOMOVE|SWP_NOSIZE);
 
 #ifdef HAVE_ACTIVATE_INFO
-	  SHFullScreen(hWndMainWindow,SHFS_HIDETASKBAR|SHFS_HIDESIPBUTTON|SHFS_HIDESTARTICON);
+         SHFullScreen(hWndMainWindow,SHFS_HIDETASKBAR|SHFS_HIDESIPBUTTON|SHFS_HIDESTARTICON);
 #endif
 
         }
 #ifdef HAVE_ACTIVATE_INFO
-      SHHandleWMActivate(hWnd, wParam, lParam, &s_sai, FALSE);
+      if (api_has_SHHandleWMActivate) {
+        SHHandleWMActivate(hWnd, wParam, lParam, &s_sai, FALSE);
+      } else {
+        #ifdef ALPHADEBUG
+        StartupStore(TEXT("SHHandleWMActivate not available%s"),NEWLINE);
+        #endif
+        return DefWindowProc(hWnd, message, wParam, lParam);
+      }
 #endif
       break;
 
     case WM_SETTINGCHANGE:
 #ifdef HAVE_ACTIVATE_INFO
-      SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
+      if (api_has_SHHandleWMSettingChange) {
+        SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
+      } else {
+        #ifdef ALPHADEBUG
+        StartupStore(TEXT("SHHandleWMSettingChange not available%s"),NEWLINE);
+        #endif
+        return DefWindowProc(hWnd, message, wParam, lParam);
+      }
 #endif
       break;
 
@@ -3701,6 +3308,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       // JMW not sure this ever does anything useful..
       if (ProgramStarted > psInitInProgress) {
 
+#if USEIBOX
 	if(InfoWindowActive) {
 	  
 	  if(DisplayLocked) {
@@ -3713,6 +3321,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	  HideMenu();
 	  SetFocus(hWndMapWindow);
 	}
+#endif
       }
       break;
       // TODO enhancement: Capture KEYDOWN time
@@ -3721,11 +3330,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       // 	- Not sure how to do double click... (need timer call back
       // 	process unless reset etc... tricky)
       // we do this in WindowControls
-#if defined(GNAV) || defined(PCGNAV)
-    case WM_KEYDOWN: // JMW was keyup
-#else
     case WM_KEYUP: // JMW was keyup
-#endif
 
       InterfaceTimeoutReset();
 
@@ -3750,22 +3355,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	LKHearthBeats++; // 100213
       //      ASSERT(hWnd==hWndMainWindow);
       if (ProgramStarted > psInitInProgress) {
-#if NOSIM
 	if (SIMMODE)
 		SIMProcessTimer();
 	else
 		ProcessTimer();
-#else
-#ifdef _SIM_
-	SIMProcessTimer();
-#else
-	ProcessTimer();
-#endif
-#endif
 	if (ProgramStarted==psFirstDrawDone) {
 	  AfterStartup();
 	  ProgramStarted = psNormalOp;
-          StartupStore(TEXT(". ProgramStarted=3%s"),NEWLINE);
+          StartupStore(TEXT(". ProgramStarted=NormalOp%s"),NEWLINE);
           StartupLogFreeRamAndStorage();
 	}
       }
@@ -3773,10 +3370,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_INITMENUPOPUP:
       if (ProgramStarted > psInitInProgress) {
+	#if USEIBOX
 	if(DisplayLocked)
 	  CheckMenuItem((HMENU) wParam,IDM_FILE_LOCK,MF_CHECKED|MF_BYCOMMAND);
 	else
 	  CheckMenuItem((HMENU) wParam,IDM_FILE_LOCK,MF_UNCHECKED|MF_BYCOMMAND);
+	#else
+	  CheckMenuItem((HMENU) wParam,IDM_FILE_LOCK,MF_CHECKED|MF_BYCOMMAND);
+	#endif // USEIBOX
 	
 	if(LoggerActive)
 	  CheckMenuItem((HMENU) wParam,IDM_FILE_LOGGER,MF_CHECKED|MF_BYCOMMAND);
@@ -3787,7 +3388,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_CLOSE:
 
-#ifndef GNAV
       ASSERT(hWnd==hWndMainWindow);
       if(ForceShutdown || ((hWnd==hWndMainWindow) && 
          (MessageBoxX(hWndMainWindow,
@@ -3795,7 +3395,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                	gettext(TEXT("_@M198_")),
                       TEXT("LK8000"),
                       MB_YESNO|MB_ICONQUESTION) == IDYES))) 
-#endif
         {
           if(iTimerID) {
             KillTimer(hWnd,iTimerID);
@@ -3844,7 +3443,9 @@ LRESULT MainMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   int wmId, wmEvent;
   HWND wmControl;
+#if USEIBOX
   int i;
+#endif
 
   wmId    = LOWORD(wParam);
   wmEvent = HIWORD(wParam);
@@ -3856,14 +3457,16 @@ LRESULT MainMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       DialogActive = false;
 
       FullScreen();
-      
+
+      #if USEIBOX      
       InfoBoxFocusTimeOut = 0;
+      #endif
       /*
       if (!InfoWindowActive) {
         ShowMenu();
       }
       */
-      #ifndef NOIBOX 
+      #if USEIBOX
       for(i=0;i<numInfoWindows;i++) {
         if(wmControl == InfoBoxes[i]->GetHandle()) {
           InfoWindowActive = TRUE;
@@ -3899,7 +3502,7 @@ LRESULT MainMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-
+#if USEIBOX
 void    AssignValues(void)
 {
   if (InfoBoxesHidden) {
@@ -3911,13 +3514,13 @@ void    AssignValues(void)
 
   // nothing to do here now!
 }
+#endif
 
 extern int PDABatteryTemperature;
+
+#if USEIBOX
 void DisplayText(void)
 {
-#ifdef NOIBOX
-  return;
-#endif
   if (InfoBoxesHidden)
     return;
 
@@ -3926,25 +3529,6 @@ void DisplayText(void)
   static bool first=true;
   static int InfoFocusLast = -1;
   static int DisplayTypeLast[MAXINFOWINDOWS];
-// static double LastFlipBoxTime = 0; //  now global for SlowCalculations
-  static bool FlipBoxValue = false;
-
-
-  // VENTA3 - Dynamic box values
-  if ( GPS_INFO.Time > LastFlipBoxTime + DYNABOXTIME ) {
-/*
-	static TCHAR ventabuffer[200];
-	FILE *fp;
-        wsprintf(ventabuffer,TEXT("GPS_INFO.Time=%d LastFlipBoxTime=%d Flip=%d"),(int)GPS_INFO.Time, (int)LastFlipBoxTime,
-	FlipBoxValue == true ? 1 : 0);
-        if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL){;fprintf(fp,"%S\n",ventabuffer);fclose(fp)
-;}
-*/
-	FlipBoxValue = ( FlipBoxValue == false );
-	LastFlipBoxTime = GPS_INFO.Time;
-  }
-	
-  
 
   LockNavBox();
 
@@ -4037,35 +3621,6 @@ void DisplayText(void)
 	InfoBoxes[i]->SetValueUnit(Units::GetUserUnitByGroup(
           Data_Options[DisplayType[i]].UnitGroup));
 	break;	
-/*
-    case 75: // VENTA3 alternate1 and 2
-    case 76: 
-    case 77:
-	if (DisplayType[i]==75) ActiveAlternate=Alternate1; else
-	if (DisplayType[i]==76) ActiveAlternate=Alternate2; 
-		else ActiveAlternate=BestAlternate;
-	InfoBoxes[i]->SetSmallerFont(false);
-	if ( ActiveAlternate != -1 ) {
-		InfoBoxes[i]->SetTitle(Data_Options[DisplayType[i]].Formatter->
-			   RenderTitle(&color));
-		InfoBoxes[i]->SetColor(color);
-		InfoBoxes[i]->SetValue(Data_Options[DisplayType[i]].Formatter->
-			   Render(&color));
-		InfoBoxes[i]->SetColor(color);
-	} else {
-		if ( DisplayType[i]==75 ) 
-			InfoBoxes[i]->SetTitle(TEXT("Alt1Arr"));
-		else if ( DisplayType[i]==76 ) 
-			InfoBoxes[i]->SetTitle(TEXT("Alt2Arr"));
-		else	InfoBoxes[i]->SetTitle(TEXT("BAltArr"));
-		InfoBoxes[i]->SetValue(TEXT("---"));
-		InfoBoxes[i]->SetColor(-1);
-	}
-      if (needupdate)
-	InfoBoxes[i]->SetValueUnit(Units::GetUserUnitByGroup(
-          Data_Options[DisplayType[i]].UnitGroup));
-	break;	
-*/
     case 55:
       InfoBoxes[i]->SetSmallerFont(true);
       if (needupdate)
@@ -4143,7 +3698,10 @@ void DisplayText(void)
 	if (NearestAirspaceHDist>0)
           InfoBoxes[i]->SetComment(NearestAirspaceName);
 	  break;
-
+    case 114:
+    if (NearestAirspaceVDist>0)
+          InfoBoxes[i]->SetComment(NearestAirspaceVName);
+      break;
     case 10:
       if (CALCULATED_INFO.AutoMacCready)
 		// LKTOKEN _@M1184_ "AutMC"
@@ -4185,13 +3743,8 @@ void DisplayText(void)
       }
       break;
     case 43:
-      if (EnableBlockSTF) {
-		// LKTOKEN _@M1195_ "BLOCK"
-		InfoBoxes[i]->SetComment(gettext(TEXT("_@M1195_")));
-      } else {
-		// LKTOKEN _@M1196_ "DOLPHIN"
-		InfoBoxes[i]->SetComment(gettext(TEXT("_@M1196_")));
-      }
+	// LKTOKEN _@M1196_ "DOLPHIN"
+	InfoBoxes[i]->SetComment(gettext(TEXT("_@M1196_")));
       break;
     case 55: // own team code      
       InfoBoxes[i]->SetComment(TeammateCode);
@@ -4336,15 +3889,9 @@ void DisplayText(void)
       			InfoBoxes[i]->SetComment(TEXT(""));
 			break; 
 		}
-		if (FlipBoxValue == true) {
 			Units::FormatUserDistance(WayPointCalc[ActiveAlternate].Distance,
 					 sTmp, sizeof(sTmp)/sizeof(sTmp[0]));
 			InfoBoxes[i]->SetComment(sTmp);
-		} else {
-			Units::FormatUserArrival(WayPointCalc[ActiveAlternate].AltArriv[AltArrivMode],
-					 sTmp, sizeof(sTmp)/sizeof(sTmp[0]));
-			InfoBoxes[i]->SetComment(sTmp);
-		}
 		break;
 	// VENTA3 alternates
 	case 75:
@@ -4354,32 +3901,11 @@ void DisplayText(void)
       			InfoBoxes[i]->SetComment(TEXT(""));
 			break; 
 		}
-		if (FlipBoxValue == true) {
 			Units::FormatUserDistance(WayPointCalc[ActiveAlternate].Distance,
 					 sTmp, sizeof(sTmp)/sizeof(sTmp[0]));
 			InfoBoxes[i]->SetComment(sTmp);
-		} else {
-			if (WayPointCalc[ActiveAlternate].GR == INVALID_GR) 
-				wsprintf(sTmp,_T("---"));
-			else
-				wsprintf(sTmp,_T("%d"),(int)WayPointCalc[ActiveAlternate].GR);
-/*
-			Units::FormatUserArrival(WayPointCalc[ActiveAlternate].GR,
-					 sTmp, sizeof(sTmp)/sizeof(sTmp[0]));
-*/
-			InfoBoxes[i]->SetComment(sTmp);
-		}
 		break;
 	case 70: // QFE
-		/*
-		 // Showing the diff value offset was just interesting ;-)
-		if (FlipBoxValue == true) {
-			//Units::FormatUserArrival(QFEAltitudeOffset,
-			Units::FormatUserAltitude(QFEAltitudeOffset,
-				 sTmp, sizeof(sTmp)/sizeof(sTmp[0]));
-			InfoBoxes[i]->SetComment(sTmp);
-		} else {
-		*/
 		//Units::FormatUserArrival(GPS_INFO.Altitude,
 		Units::FormatUserAltitude(GPS_INFO.Altitude,
 			 sTmp, sizeof(sTmp)/sizeof(sTmp[0]));
@@ -4400,6 +3926,7 @@ void DisplayText(void)
   UnlockNavBox();
 
 }
+#endif // USEIBOX
 
 #include "winbase.h"
 
@@ -4410,16 +3937,8 @@ void CommonProcessTimer()
   // service the GCE and NMEA queue
   if (ProgramStarted==psNormalOp) {
     InputEvents::DoQueuedEvents();
-    if (RequestAirspaceWarningDialog) {
-      DisplayTimeOut=0;
-      RequestAirspaceWarningDialog= false;
-      dlgAirspaceWarningShowDlg(RequestAirspaceWarningForce);
-      RequestAirspaceWarningForce = false;
-    }
-    #ifndef NOFLARMGAUGE
-    // update FLARM display (show/hide)
-    GaugeFLARM::Show();
-    #endif
+	  // only shows the dialog if needed.
+	  ShowAirspaceWarningsToUser();
   }
 
 #if (WINDOWSPC<1)
@@ -4427,8 +3946,9 @@ void CommonProcessTimer()
 #endif
 
   // VNT Maplock now has full control on focus/defocus on infoboxes
-  if(InfoWindowActive && !UseMapLock) 
+  if(InfoWindowActive)
     {
+      #if USEOLDASPWARNINGS
       if (!dlgAirspaceWarningVisible()) {
 	// JMW prevent switching to map window if in airspace warning dialog
 
@@ -4438,26 +3958,36 @@ void CommonProcessTimer()
 	  }
 	InfoBoxFocusTimeOut ++;
       }
+      #else
+#if USEIBOX
+	if(InfoBoxFocusTimeOut >= FOCUSTIMEOUTMAX)
+	  {
+	    SwitchToMapWindow();
+	  }
+	InfoBoxFocusTimeOut ++;
+#endif
+      #endif
     }
-
+#if USEIBOX
   if (DisplayLocked) {
     if(MenuTimeOut==MenuTimeoutMax) {
-#ifndef MAP_ZOOM
-      if (!MapWindow::isPan()) {
-#else /* MAP_ZOOM */
       if (!MapWindow::mode.AnyPan()) {
-#endif /* MAP_ZOOM */
 	InputEvents::setMode(TEXT("default"));
       }
     }
     MenuTimeOut++;
   }
+#else
+    if(MenuTimeOut==MenuTimeoutMax) {
+      if (!MapWindow::mode.AnyPan()) {
+	InputEvents::setMode(TEXT("default"));
+      }
+    }
+    MenuTimeOut++;
+#endif // USEIBOX
 
-  if (DisplayTimeOut >= DISPLAYTIMEOUTMAX) {
-    BlankDisplay(true);
-  } else {
-    BlankDisplay(false);
-  }
+  UpdateBatteryInfos();
+
   if (!DialogActive) {
     DisplayTimeOut++;
   } else {
@@ -4469,36 +3999,31 @@ void CommonProcessTimer()
   }
 
   if (MapWindow::IsDisplayRunning()) {
-    // No need to redraw map or infoboxes if screen is blanked.
-    // This should save lots of battery power due to CPU usage
-    // of drawing the screen
+#if USEIBOX
     if (InfoBoxesDirty) {
-      //JMWTEST    LockFlightData();
       AssignValues();
       DisplayText();
       InfoBoxesDirty = false;
-      //JMWTEST    UnlockFlightData();
     }
+#endif
   }
 
   //
   // maybe block/delay this if a dialog is active?
   // JMW: is done in the message function now.
+  #if USEOLDASPWARNINGS
   if (!dlgAirspaceWarningVisible()) {
     if (Message::Render()) {
       // turn screen on if blanked and receive a new message 
       DisplayTimeOut=0;
     }
   }
-
-#if (EXPERIMENTAL > 0)
-
-  if (bsms.Poll()) {
-    // turn screen on if blanked and receive a new message
-    DisplayTimeOut = 0;
-  }
-
-#endif
+  #else
+    if (Message::Render()) {
+      // turn screen on if blanked and receive a new message 
+      DisplayTimeOut=0;
+    }
+  #endif
 
   static int iheapcompact = 0;
   // called 2 times per second, compact heap every minute.
@@ -4574,15 +4099,10 @@ int ConnectionProcessTimer(int itimeout) {
 			// no activity for 60/2 seconds (running at 2Hz), then reset.
 			// This is needed only for virtual com ports..
 			extGPSCONNECT = FALSE;
-			InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
-			RestartCommPorts();
-
-			#if (EXPERIMENTAL > 0)
-			// if comm port shut down, probably so did bluetooth dialup
-			// so restart it here also.
-			bsms.Shutdown();
-			bsms.Initialise();
-			#endif
+			if (!(devIsDisabled(0) && devIsDisabled(1))) {
+			  InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
+			  RestartCommPorts();
+			}
 	  
 			itimeout = 0;
 		}
@@ -4594,9 +4114,7 @@ int ConnectionProcessTimer(int itimeout) {
 	StartupStore(_T(". ComPort RESET ordered%s"),NEWLINE);
 	LKForceComPortReset=false;
 	LKDoNotResetComms=false;
-	#if NOSIM
 	if (MapSpaceMode != MSM_WELCOME)
-	#endif
 		InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
 
 	RestartCommPorts();
@@ -4632,7 +4150,6 @@ int ConnectionProcessTimer(int itimeout) {
   return itimeout;
 }
 
-#if  !_SIM_ || NOSIM
 void ProcessTimer(void)
 {
 
@@ -4651,11 +4168,6 @@ void ProcessTimer(void)
   static int itimeout = -1;
   itimeout++;
   
-  // write settings to vario every second
-  if (itimeout % 2==0) {
-    VarioWriteSettings();
-  }
-    
   // also service replay logger
   ReplayLogger::Update();
   if (ReplayLogger::IsEnabled()) {
@@ -4676,9 +4188,7 @@ void ProcessTimer(void)
     itimeout = ConnectionProcessTimer(itimeout);
   }
 }
-#endif // end processing of non-simulation mode
 
-#if _SIM_ || NOSIM
 void SIMProcessTimer(void)
 {
 
@@ -4694,62 +4204,43 @@ void SIMProcessTimer(void)
     // Process timer is run at 2hz, so this is bringing it back to 1hz
     if (i%2==0) return;
 
-#if 101015
     extern void LKSimulator(void);
     LKSimulator();
-#else
-    LockFlightData();
-
-    GPS_INFO.NAVWarning = FALSE;
-    GPS_INFO.SatellitesUsed = 6;
-    FindLatitudeLongitude(GPS_INFO.Latitude, GPS_INFO.Longitude, 
-                          GPS_INFO.TrackBearing, GPS_INFO.Speed*1.0,
-                          &GPS_INFO.Latitude,
-                          &GPS_INFO.Longitude);
-    GPS_INFO.Time+= 1.0;
-    long tsec = (long)GPS_INFO.Time;
-    GPS_INFO.Hour = tsec/3600;
-    GPS_INFO.Minute = (tsec-GPS_INFO.Hour*3600)/60;
-    GPS_INFO.Second = (tsec-GPS_INFO.Hour*3600-GPS_INFO.Minute*60);
-
-    UnlockFlightData();
-#endif
   }
 
   if (i%2==0) return;
 
 #ifdef DEBUG
   // use this to test FLARM parsing/display
-#ifndef GNAV
   NMEAParser::TestRoutine(&GPS_INFO);
-#endif
 #endif
 
   TriggerGPSUpdate();
 
-  VarioWriteSettings();
 }
-#endif
 
 
 void SwitchToMapWindow(void)
 {
+#if USEIBOX
   DefocusInfoBox();
-
+#endif
   SetFocus(hWndMapWindow);
   if (  MenuTimeOut< MenuTimeoutMax) {
     MenuTimeOut = MenuTimeoutMax;
   }
+#if USEIBOX
   if (  InfoBoxFocusTimeOut< FOCUSTIMEOUTMAX) {
     InfoBoxFocusTimeOut = FOCUSTIMEOUTMAX;
   }
+#endif
 }
 
 
 void PopupAnalysis()
 {
   DialogActive = true;
-  dlgAnalysisShowModal();
+  dlgAnalysisShowModal(ANALYSYS_PAGE_DEFAULT);
   DialogActive = false;
 }
 
@@ -4783,6 +4274,7 @@ void PopupBugsBallast(int UpDown)
 }
 
 
+#if USEIBOX
 void PopUpSelect(int Index)
 {
   DialogActive = true;
@@ -4793,12 +4285,13 @@ void PopUpSelect(int Index)
   SwitchToMapWindow();
   DialogActive = false;
 }
+#endif
 
 #include <stdio.h>
 
 void DebugStore(const char *Str, ...)
 {
-#if defined(DEBUG) && !defined(GNAV)
+#if defined(DEBUG)
   char buf[MAX_PATH];
   va_list ap;
   int len;
@@ -4854,15 +4347,7 @@ void FailStore(const TCHAR *Str, ...)
   fprintf(stream, "------%s%04d%02d%02d-%02d:%02d:%02d [%09u] FailStore Start, Version %s%s (%s %s) FreeRam=%ld %s",SNEWLINE,
 	GPS_INFO.Year,GPS_INFO.Month,GPS_INFO.Day, GPS_INFO.Hour,GPS_INFO.Minute,GPS_INFO.Second,
 	(unsigned int)GetTickCount(),LKVERSION, LKRELEASE,
-#if NOSIM
 	"",
-#else
-#ifdef _SIM_
-	"SIM",
-#else
-	"",
-#endif
-#endif
 #if WINDOWSPC >0
 	"PC",
 #else
@@ -4902,33 +4387,24 @@ void StartupStore(const TCHAR *Str, ...)
   static bool initialised = false;
   if (!initialised) {
 	LocalPath(szFileName, TEXT(LKF_RUNLOG));
-  	#if 0
-	startupStoreFile = _tfopen(szFileName, TEXT("wb")); 100422
-	if (startupStoreFile) {
-		fclose(startupStoreFile);
-	}
-  	#endif
 	initialised = true;
   } 
 
   startupStoreFile = _tfopen(szFileName, TEXT("ab+"));
   if (startupStoreFile != NULL) {
-	// add linefeed to StartupStore until we fixed all occurencies
-	char sbuf[(MAX_PATH*2)+1]; // FIX 100205
-	sprintf(sbuf,"%S",buf);
-	int i=strlen(sbuf)-1;
-	if (i>=0) {
-		if (i>0 && sbuf[i-1]!=0x0d && sbuf[i]==0x0a) {
-			sbuf[i]=0x0;
-			fprintf(startupStoreFile, "[%09u] %s%s", (unsigned int)GetTickCount(),sbuf,SNEWLINE);
-		} else
-			// i==0 will not translate 0x0a , no problems
-			fprintf(startupStoreFile, "[%09u] %s", (unsigned int)GetTickCount(), sbuf);
-	}
-	fclose(startupStoreFile);
+    char sbuf[(MAX_PATH*2)+1]; // FIX 100205
+    
+    int i = unicode2utf(buf, sbuf, sizeof(sbuf));
+    
+    if (i > 0) {
+      if (sbuf[i - 1] == 0x0a && (i == 1 || (i > 1 && sbuf[i-2] != 0x0d)))
+        sprintf(sbuf + i - 1, SNEWLINE);
+      fprintf(startupStoreFile, "[%09u] %s", (unsigned int)GetTickCount(), sbuf);
+    }
+    fclose(startupStoreFile);
   }
   if (csFlightDataInitialized) {
-	UnlockFlightData();
+    UnlockFlightData();
   }
 }
 
@@ -5025,7 +4501,7 @@ void UnlockEventQueue() {
 }
 
 
-
+#if USEIBOX
 void HideInfoBoxes() {
   int i;
   InfoBoxesHidden = true;
@@ -5042,9 +4518,9 @@ void ShowInfoBoxes() {
     InfoBoxes[i]->SetVisible(true);
   }
 }
+#endif
 
 #if (WINDOWSPC<1)
-#ifndef GNAV
 DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo)
 {
     // set default return value
@@ -5067,7 +4543,6 @@ DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo)
         pBatteryInfo->acStatus = sps.ACLineStatus;
         pBatteryInfo->chargeStatus = sps.BatteryFlag;
         pBatteryInfo->BatteryLifePercent = sps.BatteryLifePercent;
-	// VENTA get everything ready for PNAs battery control
 	pBatteryInfo->BatteryVoltage = sps.BatteryVoltage;
 	pBatteryInfo->BatteryAverageCurrent = sps.BatteryAverageCurrent;
 	pBatteryInfo->BatteryCurrent = sps.BatteryCurrent;
@@ -5078,157 +4553,44 @@ DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo)
     return result;
 }
 #endif
-#endif
 
-// GDI Escapes for ExtEscape()
-#define QUERYESCSUPPORT    8
-// The following are unique to CE
-#define GETVFRAMEPHYSICAL   6144
-#define GETVFRAMELEN    6145
-#define DBGDRIVERSTAT    6146
-#define SETPOWERMANAGEMENT   6147
-#define GETPOWERMANAGEMENT   6148
-
-
-typedef enum _VIDEO_POWER_STATE {
-    VideoPowerOn = 1,
-    VideoPowerStandBy,
-    VideoPowerSuspend,
-    VideoPowerOff
-} VIDEO_POWER_STATE, *PVIDEO_POWER_STATE;
-
-
-typedef struct _VIDEO_POWER_MANAGEMENT {
-    ULONG Length;
-    ULONG DPMSVersion;
-    ULONG PowerState;
-} VIDEO_POWER_MANAGEMENT, *PVIDEO_POWER_MANAGEMENT;
 
 int PDABatteryPercent = 100;
 int PDABatteryTemperature = 0;
-int PDABatteryStatus=0; // 100125
+int PDABatteryStatus=0;
 int PDABatteryFlag=0;
 
-void BlankDisplay(bool doblank) {
 
-#if (WINDOWSPC>0)
+
+void UpdateBatteryInfos(void) {
+
+  #if (WINDOWSPC>0)
   return;
-#else
-#ifdef GNAV
-  return;
-#else
-  static bool oldblank = false;
+  #else
 
   BATTERYINFO BatteryInfo; 
-  BatteryInfo.acStatus = 0; // JMW initialise
+  BatteryInfo.acStatus = 0;
 
   if (GetBatteryInfo(&BatteryInfo)) {
     PDABatteryPercent = BatteryInfo.BatteryLifePercent;
     PDABatteryTemperature = BatteryInfo.BatteryTemperature; 
-    PDABatteryStatus=BatteryInfo.acStatus; // 100125
-    PDABatteryFlag=BatteryInfo.chargeStatus; // 100125
-/*
-	// All you need to display extra Battery informations...
+    PDABatteryStatus=BatteryInfo.acStatus;
+    PDABatteryFlag=BatteryInfo.chargeStatus;
 
-	TCHAR vtemp[1000];
-	_stprintf(vtemp,_T("Battpercent=%d Volt=%d Curr=%d AvCurr=%d mAhC=%d Temp=%d Lifetime=%d Fulllife=%d\n"),
- 		BatteryInfo.BatteryLifePercent, BatteryInfo.BatteryVoltage, 
- 		BatteryInfo.BatteryCurrent, BatteryInfo.BatteryAverageCurrent,
- 		BatteryInfo.BatterymAHourConsumed,
-		BatteryInfo.BatteryTemperature, BatteryInfo.BatteryLifeTime, BatteryInfo.BatteryFullLifeTime);
-	StartupStore( vtemp );
- */
+    // All you need to display extra Battery informations...
+    //	TCHAR vtemp[1000];
+    //	_stprintf(vtemp,_T("Battpercent=%d Volt=%d Curr=%d AvCurr=%d mAhC=%d Temp=%d Lifetime=%d Fulllife=%d\n"),
+    //		BatteryInfo.BatteryLifePercent, BatteryInfo.BatteryVoltage, 
+    //		BatteryInfo.BatteryCurrent, BatteryInfo.BatteryAverageCurrent,
+    //		BatteryInfo.BatterymAHourConsumed,
+    //		BatteryInfo.BatteryTemperature, BatteryInfo.BatteryLifeTime, BatteryInfo.BatteryFullLifeTime);
+    //	StartupStore( vtemp );
   } 
-
-  if (!EnableAutoBlank) {
-    return;
-  }
-  if (doblank == oldblank) {
-    return;
-  }
-
-  HDC gdc;
-  int iESC=SETPOWERMANAGEMENT;
-
-  gdc = ::GetDC(NULL);
-  if (ExtEscape(gdc, QUERYESCSUPPORT, sizeof(int), (LPCSTR)&iESC,
-                0, NULL)==0) {
-    // can't do it, not supported
-  } else {
-
-    VIDEO_POWER_MANAGEMENT vpm;
-    vpm.Length = sizeof(VIDEO_POWER_MANAGEMENT);
-    vpm.DPMSVersion = 0x0001;
-
-    // TODO feature: Trigger a GCE (Glide Computer Event) when
-    // switching to battery mode This can be used to warn users that
-    // power has been lost and you are now on battery power - ie:
-    // something else is wrong
-
-    if (doblank) {
-
-      /* Battery status - simulator only - for safety of battery data
-         note: Simulator only - more important to keep running in your plane
-      */
-
-      // JMW, maybe this should be active always...
-      // we don't want the PDA to be completely depleted.
-
-      if (BatteryInfo.acStatus==0) {
-#if NOSIM
-
-#else
-#ifdef _SIM_
-        if ((PDABatteryPercent < BATTERY_EXIT) && !ForceShutdown) {
-          StartupStore(TEXT("........ Battery low exit...%s"),NEWLINE);
-          // TODO feature: Warning message on battery shutdown
-	  ForceShutdown = true;
-          SendMessage(hWndMainWindow, WM_CLOSE, 0, 0);
-        } else
-#endif
-#endif
-          if (PDABatteryPercent < BATTERY_WARNING) {
-            DWORD LocalWarningTime = ::GetTickCount();
-            if ((LocalWarningTime - BatteryWarningTime) > BATTERY_REMINDER) {
-              BatteryWarningTime = LocalWarningTime;
-              // TODO feature: Show the user what the batt status is.
-              DoStatusMessage(TEXT("..... Organiser Battery Low"));
-            }
-          } else {
-            BatteryWarningTime = 0;
-          }
-      }
-
-      if (BatteryInfo.acStatus==0) {
-
-        // Power off the display
-        vpm.PowerState = VideoPowerOff;
-        ExtEscape(gdc, SETPOWERMANAGEMENT, vpm.Length, (LPCSTR) &vpm,
-                  0, NULL);
-        oldblank = true;
-        ScreenBlanked = true;
-      } else {
-        DisplayTimeOut = 0;
-      }
-    } else {
-      if (oldblank) { // was blanked
-        // Power on the display
-        vpm.PowerState = VideoPowerOn;
-        ExtEscape(gdc, SETPOWERMANAGEMENT, vpm.Length, (LPCSTR) &vpm,
-                  0, NULL);
-        oldblank = false;
-        ScreenBlanked = false;
-      }
-    }
-
-  }
-  ::ReleaseDC(NULL, gdc);
-#endif
-#endif
+  #endif
 }
 
 
-
+#if USEIBOX
 void Event_SelectInfoBox(int i) {
 //  int oldinfofocus = InfoFocus;
 
@@ -5281,7 +4643,7 @@ void Event_ChangeInfoBoxType(int i) {
   DisplayText();
 
 }
-
+#endif // USEIBOX
 
 
 static void ReplaceInString(TCHAR *String, TCHAR *ToReplace, 
@@ -5317,16 +4679,29 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   TCHAR *a;
   short items=1;
 
-#if 100517
   if (_tcsstr(OutBuffer, TEXT("$(")) == NULL) return false;
   a =_tcsstr(OutBuffer, TEXT("&("));
   if (a != NULL) {
 	*a=_T('$');
 	items=2;
   }
-#else
-  if (_tcsstr(OutBuffer, TEXT("$(")) == NULL) return false;
-#endif
+
+  if (_tcsstr(OutBuffer, TEXT("$(LOCKMODE"))) {
+	if (LockMode(0)) {	// query availability
+		TCHAR tbuf[10];
+		_tcscpy(tbuf,_T(""));
+		ReplaceInString(OutBuffer, TEXT("$(LOCKMODE)"), tbuf, Size);
+		if (LockMode(1)) // query status
+			_tcscpy(OutBuffer,gettext(_T("_@M965_"))); // UNLOCK\nSCREEN
+		else
+			_tcscpy(OutBuffer,gettext(_T("_@M966_"))); // LOCK\nSCREEN
+		if (!LockMode(3)) invalid=true; // button not usable
+	} else {
+		// This will make the button invisible
+		_tcscpy(OutBuffer,_T(""));
+	}
+	if (--items<=0) goto label_ret;
+  }
 
   if (_tcsstr(OutBuffer, TEXT("$(MacCreadyValue)"))) { // 091214
 
@@ -5348,31 +4723,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
 
-  #ifndef NOTASKABORT
-  if (TaskAborted) {
-    if (_tcsstr(OutBuffer, TEXT("$(WaypointNext)"))) {
-      // Waypoint\nNext
-      invalid = !ValidTaskPoint(ActiveWayPoint+1);
-      CondReplaceInString(!ValidTaskPoint(ActiveWayPoint+2), 
-                          OutBuffer,
-                          TEXT("$(WaypointNext)"), 
-                          TEXT("Landpoint\nFurthest"), 
-                          TEXT("Landpoint\nNext"), Size);
-	if (--items<=0) goto label_ret; // 100517
-      
-    } else
-    if (_tcsstr(OutBuffer, TEXT("$(WaypointPrevious)"))) {
-      // Waypoint\nNext
-      invalid = !ValidTaskPoint(ActiveWayPoint-1);
-      CondReplaceInString(!ValidTaskPoint(ActiveWayPoint-2), 
-                          OutBuffer,
-                          TEXT("$(WaypointPrevious)"), 
-                          TEXT("Landpoint\nClosest"), 
-                          TEXT("Landpoint\nPrevious"), Size);
-	if (--items<=0) goto label_ret; // 100517
-    }
-  } else {
-  #endif
     if (_tcsstr(OutBuffer, TEXT("$(WaypointNext)"))) {
       // Waypoint\nNext
       invalid = !ValidTaskPoint(ActiveWayPoint+1);
@@ -5408,9 +4758,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
       }
     }
-  #ifndef NOTASKABORT
-  }
-  #endif
 
   if (_tcsstr(OutBuffer, TEXT("$(RealTask)"))) {
 	if (! (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1))) {
@@ -5515,30 +4862,12 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
   if (_tcsstr(OutBuffer, TEXT("$(CheckSettingsLockout)"))) {
-#if NOSIM
     if (LockSettingsInFlight && CALCULATED_INFO.Flying) {
       invalid = true;
     }
-#else
-#ifndef _SIM_
-    if (LockSettingsInFlight && CALCULATED_INFO.Flying) {
-      invalid = true;
-    }
-#endif
-#endif
     ReplaceInString(OutBuffer, TEXT("$(CheckSettingsLockout)"), TEXT(""), Size);
 	if (--items<=0) goto label_ret; // 100517
   }
-  #ifndef NOTASKABORT
-  if (_tcsstr(OutBuffer, TEXT("$(CheckTaskResumed)"))) {
-    if (TaskAborted) {
-      // TODO code: check, does this need to be set with temporary task?
-      invalid = true;
-    }
-    ReplaceInString(OutBuffer, TEXT("$(CheckTaskResumed)"), TEXT(""), Size);
-	if (--items<=0) goto label_ret; // 100517
-  }
-  #endif
   if (_tcsstr(OutBuffer, TEXT("$(CheckTask)"))) {
     if (!ValidTaskPoint(ActiveWayPoint)) {
       invalid = true;
@@ -5547,7 +4876,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
   if (_tcsstr(OutBuffer, TEXT("$(CheckAirspace)"))) {
-    if (!ValidAirspace()) {
+	if (!CAirspaceManager::Instance().ValidAirspaces()) {
       invalid = true;
     }
     ReplaceInString(OutBuffer, TEXT("$(CheckAirspace)"), TEXT(""), Size);
@@ -5578,24 +4907,12 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
   // If it is not SIM mode, it is invalid
   if (_tcsstr(OutBuffer, TEXT("$(OnlyInSim)"))) {
-	#if NOSIM
 	if (!SIMMODE) invalid = true;
-	#else
-	#ifndef _SIM_
-	invalid = true;
-	#endif
-	#endif
 	ReplaceInString(OutBuffer, TEXT("$(OnlyInSim)"), TEXT(""), Size);
 	if (--items<=0) goto label_ret; // 100517
   }
   if (_tcsstr(OutBuffer, TEXT("$(OnlyInFly)"))) {
-	#if NOSIM
 	if (SIMMODE) invalid = true;
-	#else
-	#ifdef _SIM_
-	invalid = true;
-	#endif
-	#endif
 	ReplaceInString(OutBuffer, TEXT("$(OnlyInFly)"), TEXT(""), Size);
 	if (--items<=0) goto label_ret; // 100517
   }
@@ -5638,7 +4955,11 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   }
 
   if (_tcsstr(OutBuffer, TEXT("$(BoxMode)"))) {
+	#if USEIBOX
 	if ( MapWindow::IsMapFullScreen() ) invalid = true;
+	#else
+	invalid=true;
+	#endif
 	ReplaceInString(OutBuffer, TEXT("$(BoxMode)"), TEXT(""), Size);
 	if (--items<=0) goto label_ret; // 100517
   }
@@ -5671,7 +4992,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
   // This will make the button invisible
   if (_tcsstr(OutBuffer, TEXT("$(SIMONLY"))) {
-	#if NOSIM
 	if (SIMMODE) {
 		TCHAR tbuf[10];
 		_tcscpy(tbuf,_T(""));
@@ -5679,15 +4999,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	} else {
 		_tcscpy(OutBuffer,_T(""));
 	}
-	#else
-	#ifndef _SIM_
-	_tcscpy(OutBuffer,_T(""));
-	#else
-	TCHAR tbuf[10];
-	_tcscpy(tbuf,_T(""));
-	ReplaceInString(OutBuffer, TEXT("$(SIMONLY)"), tbuf, Size);
-	#endif
-	#endif
 	if (--items<=0) goto label_ret;
   }
 
@@ -5758,11 +5069,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   }
 
   if (_tcsstr(OutBuffer, TEXT("$(PanModeStatus)"))) {
-#ifndef MAP_ZOOM
-    if ( MapWindow::isPan() )
-#else /* MAP_ZOOM */
     if ( MapWindow::mode.AnyPan() )
-#endif /* MAP_ZOOM */
       ReplaceInString(OutBuffer, TEXT("$(PanModeStatus)"), gettext(TEXT("_@M491_")), Size); // OFF
     else
       ReplaceInString(OutBuffer, TEXT("$(PanModeStatus)"), gettext(TEXT("_@M894_")), Size); // ON
@@ -5798,7 +5105,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 		ReplaceInString(OutBuffer, TEXT("$(OVERLAY)"), gettext(TEXT("_@M491_")), Size);
 	if (--items<=0) goto label_ret; 
   }
-#if ORBITER
   if (_tcsstr(OutBuffer, TEXT("$(Orbiter"))) {
 	if (!Orbiter)
 		ReplaceInString(OutBuffer, TEXT("$(Orbiter)"), gettext(TEXT("_@M894_")), Size);
@@ -5808,42 +5114,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (!EnableThermalLocator) invalid = true;
 	if (--items<=0) goto label_ret; 
   }
-#endif
 
-#if 0 // 100517
-  if (_tcsstr(OutBuffer, TEXT("$(TerrainTopologyToggleName)"))) {
-    char val;
-    val = 0;
-    if (EnableTopology) val++;
-    if (EnableTerrain) val += (char)2;
-    switch(val) {
-    case 0:
-      ReplaceInString(OutBuffer, TEXT("$(TerrainTopologyToggleName)"), 
-                      TEXT("Topology\nON"), Size);
-      break;
-    case 1:
-      ReplaceInString(OutBuffer, TEXT("$(TerrainTopologyToggleName)"), 
-                      TEXT("Terrain\nON"), Size);
-      break;
-    case 2:
-      ReplaceInString(OutBuffer, TEXT("$(TerrainTopologyToggleName)"), 
-                      TEXT("Terrain\nTopology"), Size);
-      break;
-    case 3:
-      ReplaceInString(OutBuffer, TEXT("$(TerrainTopologyToggleName)"), 
-	// LKTOKEN  _@M709_ = "Terrain\nOFF" 
-                      gettext(TEXT("_@M709_")), Size);
-      break;
-    }
-	if (--items<=0) goto label_ret; // 100517
-  }
-  #endif
-
-  #ifndef NOTASKABORT
-  CondReplaceInString(TaskIsTemporary(), 
-		      OutBuffer, TEXT("$(TaskAbortToggleActionName)"), 
-		      TEXT("Resume"), TEXT("Suspend"), Size); // 091125 Abort is now Suspend
-  #endif
 
   if (_tcsstr(OutBuffer, TEXT("$(FinalForceToggleActionName)"))) {
     CondReplaceInString(ForceFinalGlide, OutBuffer, 
@@ -5857,19 +5128,18 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
 
+#if USEIBOX
   CondReplaceInString(MapWindow::IsMapFullScreen(), OutBuffer, TEXT("$(FullScreenToggleActionName)"), gettext(TEXT("_@M894_")), gettext(TEXT("_@M491_")), Size);
-#ifndef MAP_ZOOM
-  CondReplaceInString(MapWindow::isAutoZoom(), OutBuffer, TEXT("$(ZoomAutoToggleActionName)"), gettext(TEXT("_@M418_")), gettext(TEXT("_@M897_")), Size);
-#else /* MAP_ZOOM */
+#else
+  CondReplaceInString(1, OutBuffer, TEXT("$(FullScreenToggleActionName)"), gettext(TEXT("_@M894_")), gettext(TEXT("_@M491_")), Size);
+#endif
   CondReplaceInString(MapWindow::zoom.AutoZoom(), OutBuffer, TEXT("$(ZoomAutoToggleActionName)"), gettext(TEXT("_@M418_")), gettext(TEXT("_@M897_")), Size);
-#endif /* MAP_ZOOM */
   CondReplaceInString(EnableTopology, OutBuffer, TEXT("$(TopologyToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
   CondReplaceInString(EnableTerrain, OutBuffer, TEXT("$(TerrainToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
 
   if (_tcsstr(OutBuffer, TEXT("$(MapLabelsToggleActionName)"))) {
     switch(MapWindow::DeclutterLabels) {
     case MAPLABELS_ALLON:
-	//#if LKTOPO
 		// LKTOKEN _@M1203_ "WPTS"
       ReplaceInString(OutBuffer, TEXT("$(MapLabelsToggleActionName)"), 
                       gettext(TEXT("_@M1203_")), Size);
@@ -5881,7 +5151,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
                       gettext(TEXT("_@M1204_")), Size);
       break;
     case MAPLABELS_ONLYTOPO:
-	//#endif
       ReplaceInString(OutBuffer, TEXT("$(MapLabelsToggleActionName)"), 
                       gettext(TEXT("_@M898_")), Size);
       break;
@@ -5894,14 +5163,11 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   }
 
   CondReplaceInString(CALCULATED_INFO.AutoMacCready != 0, OutBuffer, TEXT("$(MacCreadyToggleActionName)"), gettext(TEXT("_@M418_")), gettext(TEXT("_@M897_")), Size);
+#if USEIBOX
   CondReplaceInString(EnableAuxiliaryInfo, OutBuffer, TEXT("$(AuxInfoToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
-#ifndef MAP_ZOOM
-
-  CondReplaceInString(UserForceDisplayMode == dmCircling, OutBuffer, TEXT("$(DispModeClimbShortIndicator)"), TEXT("_"), TEXT(""), Size);
-  CondReplaceInString(UserForceDisplayMode == dmCruise, OutBuffer, TEXT("$(DispModeCruiseShortIndicator)"), TEXT("_"), TEXT(""), Size);
-  CondReplaceInString(UserForceDisplayMode == dmNone, OutBuffer, TEXT("$(DispModeAutoShortIndicator)"), TEXT("_"), TEXT(""), Size);
-  CondReplaceInString(UserForceDisplayMode == dmFinalGlide, OutBuffer, TEXT("$(DispModeFinalShortIndicator)"), TEXT("_"), TEXT(""), Size);
-#else /* MAP_ZOOM */
+#else
+  CondReplaceInString(0, OutBuffer, TEXT("$(AuxInfoToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
+#endif
   {
   MapWindow::Mode::TModeFly userForcedMode = MapWindow::mode.UserForcedMode();
   CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_CIRCLING, OutBuffer, TEXT("$(DispModeClimbShortIndicator)"), TEXT("_"), TEXT(""), Size);
@@ -5909,16 +5175,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_NONE, OutBuffer, TEXT("$(DispModeAutoShortIndicator)"), TEXT("_"), TEXT(""), Size);
   CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_FINAL_GLIDE, OutBuffer, TEXT("$(DispModeFinalShortIndicator)"), TEXT("_"), TEXT(""), Size);
   }
-#endif /* MAP_ZOOM */
 
-#if 0
-  CondReplaceInString(AltitudeMode == ALLON, OutBuffer, TEXT("$(AirspaceModeAllShortIndicator)"), TEXT("|"), TEXT(""), Size);
-
-  CondReplaceInString(AltitudeMode == CLIP,  OutBuffer, TEXT("$(AirspaceModeClipShortIndicator)"), TEXT("(�)"), TEXT(""), Size);
-  CondReplaceInString(AltitudeMode == AUTO,  OutBuffer, TEXT("$(AirspaceModeAutoShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-  CondReplaceInString(AltitudeMode == ALLBELOW, OutBuffer, TEXT("$(AirspaceModeBelowShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-  CondReplaceInString(AltitudeMode == ALLOFF, OutBuffer, TEXT("$(AirspaceModeAllOffIndicator)"), TEXT("(*)"), TEXT(""), Size);
-#else  // 091211
   if (_tcsstr(OutBuffer, TEXT("$(AirspaceMode)"))) {
     switch(AltitudeMode) {
     case 0:
@@ -5947,26 +5204,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     }
 	if (--items<=0) goto label_ret; // 100517
   }
-#endif
-
-#if 0  //  100517 NOUSE
-  CondReplaceInString(TrailActive == 0, OutBuffer, TEXT("$(SnailTrailOffShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-  CondReplaceInString(TrailActive == 2, OutBuffer, TEXT("$(SnailTrailShortShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-  CondReplaceInString(TrailActive == 1, OutBuffer, TEXT("$(SnailTrailLongShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-  CondReplaceInString(TrailActive == 3, OutBuffer, TEXT("$(SnailTrailFullShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-
-// VENTA3 VisualGlide
-  CondReplaceInString(VisualGlide == 0, OutBuffer, TEXT("$(VisualGlideOffShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-  CondReplaceInString(VisualGlide == 1, OutBuffer, TEXT("$(VisualGlideLightShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-  CondReplaceInString(VisualGlide == 2, OutBuffer, TEXT("$(VisualGlideHeavyShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-// VENTA3 AirSpace
-  CondReplaceInString(OnAirSpace  == 0, OutBuffer, TEXT("$(AirSpaceOffShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-  CondReplaceInString(OnAirSpace  == 1, OutBuffer, TEXT("$(AirSpaceOnShortIndicator)"), TEXT("(*)"), TEXT(""), Size);
-#endif
-
-  #ifndef NOFLARMGAUGE
-  CondReplaceInString(EnableFLARMGauge != 0, OutBuffer, TEXT("$(FlarmDispToggleActionName)"), TEXT("OFF"), TEXT("ON"), Size);
-  #endif
 
 label_ret:
 

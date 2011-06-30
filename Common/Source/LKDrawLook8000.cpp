@@ -9,7 +9,7 @@
 #include "StdAfx.h"
 #include "options.h"
 #include "Cpustats.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "Utils2.h"
 #include "compatibility.h"
 #include "MapWindow.h"
@@ -28,12 +28,8 @@
 #include "LKMapWindow.h"
 #include "LKObjects.h"
 
+#include "utils/heapcheck.h"
 
-#if ALPHABLENDING
-#if (WINDOWSPC>0)
-#include <wingdi.h>
-#endif
-#endif
 
 extern void DrawGlideCircle(HDC hdc, POINT Orig, RECT rc );
 extern void MapWaypointLabelAdd(TCHAR *Name, int X, int Y, TextInBoxMode_t Mode, int AltArivalAGL, bool inTask, 
@@ -42,7 +38,6 @@ extern int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *ele
 
 extern void DrawMapSpace(HDC hdc, RECT rc);
 extern void DrawNearest(HDC hdc, RECT rc);
-extern void DrawNearestTurnpoint(HDC hdc, RECT rc);
 extern void DrawCommon(HDC hdc, RECT rc);
 extern void DrawWelcome8000(HDC hdc, RECT rc);
 #ifdef CPUSTATS
@@ -105,14 +100,14 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
   static COLORREF barTextColor=RGB_WHITE; // default bottom bar text color, reversable
 
-  #ifdef LKDRAW_OPTIMIZE
   short tlen;
   static int ySizeLK8BigFont;
   static int ySizeLK8MediumFont;
   static int ySizeLK8TargetFont;
   static short tlenFullScreen;
+#if USEIBOX
   static short tlenHalfScreen;
-  #if NEWPNAV
+#endif
   // position Y of text in navboxes
   static short yRow2Title=0;	// higher row in portrait, unused in landscape
   static short yRow2Value=0;
@@ -120,39 +115,33 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   static short yRow1Title=0;	// lower row in portrait, the only one in landscape
   static short yRow1Value=0;
   static short yRow1Unit=0;
-  #endif
 
-  #ifndef OLDSPLITTER
   static int splitoffset;
 
-  #if NEWPNAV
   static int splitoffset2; // second raw, which really is the first from top!
-  #endif
 
-  #endif
 
-  #else
-  static short tlen; // FIX TODO 100215 no static
-  #endif
 
   // This is going to be the START 1/3  name replacing waypoint name when gates are running
   TCHAR StartGateName[12]; // 100506
+#if USEIBOX
   static TCHAR StartGateNameHS[12];
+#endif
   static TCHAR StartGateNameFS[12];
 
-  if (NewMap==false) return;
-
+#if USEIBOX
   if (!IsMapFullScreen()) return; // 101203
+#endif
 
 
   redwarning=false;
   oldfont = (HFONT)SelectObject(hdc, LKINFOFONT); // FIXFONT
 
-#ifndef MAP_ZOOM
-  if ( IsMapFullScreen() && !EnablePan )
-#else /* MAP_ZOOM */
+#if USEIBOX
   if ( IsMapFullScreen() && !mode.AnyPan() )
-#endif /* MAP_ZOOM */
+#else
+  if ( !mode.AnyPan() )
+#endif
 	DrawBottom=true; // TODO maybe also !TargetPan
   else
 	DrawBottom=false;
@@ -168,11 +157,8 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 	bigFont=(HFONT *)LK8TargetFont;
 
   if (doinit) {
-#if LKDRAW_OPTIMIZE
 	TCHAR Tdummy[]=_T("T");
-	#ifndef OLDSPLITTER
 	int iconsize;
-	#endif
 	SelectObject(hdc, bigFont); 
 	GetTextExtentPoint(hdc, Tdummy, _tcslen(Tdummy), &TextSize);
 	ySizeLK8BigFont = TextSize.cy;
@@ -187,7 +173,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
 	// All these values are fine tuned for font/resolution/screenmode.
 	// there is no speed issue inside doinit. take your time.
-	#if NEWPNAV
 	SelectObject(hdc, LK8TitleNavboxFont); 
 	GetTextExtentPoint(hdc, Tdummy, _tcslen(Tdummy), &TextSize);
 	int syTitle = TextSize.cy;
@@ -230,45 +215,30 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 			yRow1Title =  rc.bottom-(syValue/2) - syTitle;
 			break;
 	}
-	#endif
 	if ( ScreenSize < (ScreenSize_t)sslandscape ) {
 		switch (ScreenSize) {			// portrait fullscreen
 			case (ScreenSize_t)ss240x320:
-				#if NEWPNAV
 				tlenFullScreen=8;
-				#else
-				tlenFullScreen=6;
-				#endif
 				// ST 1/3
 				_tcscpy(StartGateNameFS,_T("ST "));
 				break;
 			default:
 				_tcscpy(StartGateNameFS,_T("ST "));
-				#if NEWPNAV
 				tlenFullScreen=8;
-				#else
-				tlenFullScreen=6;
-				#endif
 				break;
 		}
+#if USEIBOX
 		switch (ScreenSize) {			// portrait not fullscreen
 			case (ScreenSize_t)ss240x320:
 				_tcscpy(StartGateNameHS,_T("ST "));
-				#if NEWPNAV
 				tlenHalfScreen=8;
-				#else
-				tlenHalfScreen=6;
-				#endif
 				break;
 			default:
 				_tcscpy(StartGateNameHS,_T("ST "));
-				#if NEWPNAV
 				tlenHalfScreen=8;
-				#else
-				tlenHalfScreen=6;
-				#endif
 				break;
 		}
+#endif // USEIBOX
 	} else  {
 		switch (ScreenSize) {			// landscape fullscreen
 			case (ScreenSize_t)ss800x480:
@@ -298,6 +268,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 				tlenFullScreen=9;
 				break;
 		}
+#if USEIBOX
 		switch (ScreenSize) {			// landscape not fullscreen
 			case (ScreenSize_t)ss480x272:
 			case (ScreenSize_t)ss720x408:
@@ -314,10 +285,9 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 				tlenHalfScreen=7;
 				break;
 		}
+#endif // USEIBOX
 	}
 	
-	#ifndef OLDSPLITTER
-	#if NEWPNAV
 	if (ScreenLandscape) {
 		iconsize=NIBLSCALE(26);
 		splitoffset= ((rc.right-iconsize)-rc.left)/splitter;
@@ -327,12 +297,12 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		// splitoffset2= (rc.right-rc.left)/splitter;
 		splitoffset2= splitoffset;
 	}
-	#else
-	iconsize=NIBLSCALE(26);
-	splitoffset= ((rc.right-iconsize)-rc.left)/splitter;
-	#endif
-	#endif
-#endif
+	// set correct initial bottombar stripe
+	short ii;
+	for (ii=BM_FIRST; ii<=BM_LAST;ii++) {
+		if (ConfBB[ii]) break;
+	}
+	BottomMode=ii;
 	doinit=false; 
   } // end doinit
 
@@ -351,6 +321,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   }
 
 
+#if USEIBOX
   if ( MapWindow::IsMapFullScreen() ) {
 	tlen=tlenFullScreen;
 	_tcscpy(StartGateName,StartGateNameFS);
@@ -358,15 +329,19 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 	tlen=tlenHalfScreen;
 	_tcscpy(StartGateName,StartGateNameHS);
   }
+#else
+  tlen=tlenFullScreen;
+  _tcscpy(StartGateName,StartGateNameFS);
+#endif
 
 
   // First we draw flight related values such as instant efficiency, altitude, new infoboxes etc.
 
-#ifndef MAP_ZOOM
-  if (MapWindow::IsMapFullScreen() && LKVarioBar && !EnablePan) { // 091214 Vario non available in pan mode
-#else /* MAP_ZOOM */
+#if USEIBOX
   if (MapWindow::IsMapFullScreen() && LKVarioBar && !mode.AnyPan()) { // 091214 Vario non available in pan mode
-#endif /* MAP_ZOOM */
+#else
+  if (LKVarioBar && !mode.AnyPan()) { // 091214 Vario non available in pan mode
+#endif
 	leftmargin=(LKVarioSize+NIBLSCALE(3)); // VARIOWIDTH + middle separator right extension
 	tlen-=2; // 091115
 	
@@ -378,7 +353,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   if ( Look8000 == (Look8000_t)lxcNoOverlay ) goto drawOverlay;
 
   // PRINT WP TARGET NAME
-  #ifdef OVERTARGET
   if ( ISPARAGLIDER && UseGates() && ActiveWayPoint==0) {
 	// if running a task, use the task index normally
 	if ( ValidTaskPoint(ActiveWayPoint) != false )
@@ -388,17 +362,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   } else {
 	index = GetOvertargetIndex();
   }
-  #else
-  if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-	index = Task[ActiveWayPoint].Index;
-	if ( index >=0 ) {
-	// in overtarget mode, we print the name even when no target. 
-  #endif
-#ifndef MAP_ZOOM
-		if (DisplayMode != dmCircling) {
-#else /* MAP_ZOOM */
 		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
 			rcx=rc.left+leftmargin+NIBLSCALE(1);
 			rcy=rc.top+NIBLSCALE(1);
 		} else {
@@ -411,9 +375,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		// Waypoint name and distance
 		SelectObject(hdc, LK8TargetFont);
 
-	#if OVERTARGET
 	if ( index >=0 ) {
-	#endif
 		#if 0
 		// Active colours
 		if (WayPointList[index].Reachable) {
@@ -450,7 +412,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
 	 		LKWriteText(hdc,Buffer, rcx+NIBLSCALE(2), rcy,0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
 		} else {
-			#if OVERTARGET
 			TCHAR buffername[LKSIZEBUFFERLARGE];
 			GetOvertargetName(buffername);
 			wlen=wcslen(buffername);
@@ -459,20 +420,11 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 			} else {
  			 	_tcsncpy(Buffer, buffername, wlen); Buffer[wlen]='\0';
 			}
-			#else
-			wlen=wcslen(WayPointList[index].Name);
- 			if (wlen>tlen) {
- 			 	_tcsncpy(Buffer, WayPointList[index].Name, tlen); Buffer[tlen]='\0';
-			} else {
- 			 	_tcsncpy(Buffer, WayPointList[index].Name, wlen); Buffer[wlen]='\0';
-			}
-			#endif
 
  			 ConvToUpper(Buffer);
 			 LKWriteText(hdc,Buffer, rcx+NIBLSCALE(2), rcy,0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
 		}
 
-		 #ifdef LKDRAW_OPTIMIZE
 		 if (gateinuse>=-1) {
 			// if we are still painting , it means we did not start yet..so we use colors
 			if (CorrectSide() ) {
@@ -482,7 +434,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 			}
 		 	LKFormatValue(LK_START_DIST, false, BufferValue, BufferUnit, BufferTitle);
 		 } else {
-			#if OVERTARGET
 			switch (OvertargetMode) {
 				case OVT_TASK:
 		 			LKFormatValue(LK_NEXT_DIST, false, BufferValue, BufferUnit, BufferTitle);
@@ -512,13 +463,11 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		 			LKFormatValue(LK_NEXT_DIST, false, BufferValue, BufferUnit, BufferTitle);
 					break;
 			}
-			#else
-		 	LKFormatValue(LK_NEXT_DIST, false, BufferValue, BufferUnit, BufferTitle);
-			#endif
 		}
 
 		if ( (!OverlayClock || Look8000==lxcStandard) && ScreenLandscape && (!(ISPARAGLIDER && UseGates())) ) {
 			_stprintf(BufferValue,_T("%s %s"),BufferValue,BufferUnit);
+			#if USEIBOX
 			if (MapWindow::IsMapFullScreen() ) {
 				SelectObject(hdc, LK8TargetFont); 
 				LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(30),rc.top+NIBLSCALE(1), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
@@ -526,23 +475,17 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 				SelectObject(hdc, LK8MediumFont); 
 				LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(28),rc.top+NIBLSCALE(1), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 			}
+			#else
+			SelectObject(hdc, LK8TargetFont); 
+			LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(30),rc.top+NIBLSCALE(1), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
+			#endif
 		} else
 			LKWriteText(hdc,BufferValue, rcx+NIBLSCALE(2), rcy+ ySizeLK8TargetFont, 0, WTMODE_OUTLINED, WTALIGN_LEFT, distcolor, true);
-		 #else
-		// WARNING NOT SUPPORTED ANYMORE TODO FIX
-		GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &TextSize);
-		 if (gateinuse>=-1)
-		 	LKFormatValue(LK_START_DIST, false, BufferValue, BufferUnit, BufferTitle);
-		 else
-	 		LKFormatValue(LK_NEXT_DIST, false, BufferValue, BufferUnit, BufferTitle);
-
-	 	LKWriteText(hdc,BufferValue, rcx+NIBLSCALE(2), rcy+TextSize.cy, 0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
-	 	#endif
 
  		GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize2);
 		if (!HideUnits) {
 			SelectObject(hdc, LKMAPFONT); // TODO FIX BUG here.. using different font from size
-			if (!OverlayClock && ScreenLandscape && !(ISPARAGLIDER && UseGates())) {
+			if ( (!OverlayClock || Look8000==lxcStandard) && ScreenLandscape && !(ISPARAGLIDER && UseGates())) {
 
 			} else {
 			 LKWriteText(hdc, BufferUnit, rcx+NIBLSCALE(4)+TextSize2.cx,rcy+ySizeLK8TargetFont+(ySizeLK8TargetFont/3)-NIBLSCALE(1), 0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true); 
@@ -550,14 +493,10 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		}
 
 		// DIFF Bearing value displayed only when not circling
-#ifndef MAP_ZOOM
-	  	if (DisplayMode != dmCircling) {
-#else /* MAP_ZOOM */
-	  	if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
-			#if OVERTARGET
+	  	// if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
 			switch (OvertargetMode) {
 				case OVT_TASK:
+					// Do not use FormatBrgDiff for TASK, could be AAT!
 		 			LKFormatValue(LK_BRGDIFF, false, BufferValue, BufferUnit, BufferTitle);
 					break;
 				case OVT_ALT1:
@@ -585,13 +524,8 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		 			LKFormatValue(LK_BRGDIFF, false, BufferValue, BufferUnit, BufferTitle);
 					break;
 			}
-			#else
-			LKFormatValue(LK_BRGDIFF, false, BufferValue, BufferUnit, BufferTitle);
-			#endif
-
 
 			SelectObject(hdc, bigFont);
-			#if NEWPNAV
 			if (!ISGAAIRCRAFT) {
 				if (ScreenLandscape)
 					LKWriteText(hdc, BufferValue, (rc.right+rc.left)/2, rc.top+ NIBLSCALE(15), 0, 
@@ -600,10 +534,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 					LKWriteText(hdc, BufferValue, ((rc.right+rc.left)/3)*2, rc.top+ NIBLSCALE(15), 0, 
 						WTMODE_OUTLINED, WTALIGN_CENTER, overcolor, true);
 			}
-			#else
-			LKWriteText(hdc, BufferValue, (rc.right+rc.left)/2, rc.top+ NIBLSCALE(15), 0, WTMODE_OUTLINED, WTALIGN_CENTER, overcolor, true);
-			#endif
-		}
+		// } // only when circling
 
 		// Draw efficiency required and altitude arrival for destination waypoint
 		// For paragliders, average efficiency and arrival destination
@@ -611,7 +542,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		SelectObject(hdc, bigFont); // use this font for big values
 
 		if ( ISGLIDER) {
-			#if OVERTARGET
 			switch (OvertargetMode) {
 				case OVT_TASK:
 		 			LKFormatValue(LK_NEXT_GR, false, BufferValue, BufferUnit, BufferTitle);
@@ -641,9 +571,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		 			LKFormatValue(LK_NEXT_GR, false, BufferValue, BufferUnit, BufferTitle);
 					break;
 			}
-			#else
-			LKFormatValue(LK_NEXT_GR, false, BufferValue, BufferUnit, BufferTitle);
-			#endif
 
 			GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
 			//	rcy=(rc.bottom + rc.top)/2 -TextSize.cy-NIBLSCALE(10); OLD
@@ -655,7 +582,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 				LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
 
 			// Altitude difference with current MC
-			#if OVERTARGET
 			switch (OvertargetMode) {
 				case OVT_TASK:
 		 			LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
@@ -685,9 +611,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		 			LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit,BufferTitle);
 					break;
 			}
-			#else
-			LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
-			#endif
 			if (redwarning) 
 				LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, 
 					WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_AMBER, true);
@@ -697,7 +620,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		}
 
 	} // index>0
-	#if OVERTARGET
 	// no valid index for current overmode, but we print something nevertheless
 	else {
 		TCHAR buffername[LKSIZEBUFFERLARGE];
@@ -711,10 +633,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
  		ConvToUpper(Buffer);
 		LKWriteText(hdc,Buffer, rcx+NIBLSCALE(2), rcy,0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);
 	}
-	#endif
-  #ifndef OVERTARGET
-  } // valid taskpoint
-  #endif
 
   // moved out from task paragliders stuff - this is painted on the right
   if ( ISPARAGLIDER ) {
@@ -739,11 +657,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
 	} else {
 		SelectObject(hdc, bigFont); // use this font for big values
-#ifndef MAP_ZOOM
-	  	if (DisplayMode == dmCircling)
-#else /* MAP_ZOOM */
 	  	if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
-#endif /* MAP_ZOOM */
 			LKFormatValue(LK_TC_30S, false, BufferValue, BufferUnit, BufferTitle);
 		else
 			LKFormatValue(LK_LD_AVR, false, BufferValue, BufferUnit, BufferTitle);
@@ -755,7 +669,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
 
 		// Altitude difference with current MC
-		#if OVERTARGET
 		switch (OvertargetMode) {
 			case OVT_TASK:
 	 			LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
@@ -785,9 +698,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 	 			LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
 				break;
 		}
-		#else
-		LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
-		#endif
 		if (redwarning)
 			LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_AMBER, true);
 		else
@@ -818,11 +728,11 @@ drawOverlay:
 	if (HaveGates()) {
 		if (gatechrono>0) {
 			// IsInSector works reversed!
-			if (PGStartOut && CALCULATED_INFO.IsInSector) {
+			if (PGStartOut && DerivedDrawInfo.IsInSector) {
 				// LKTOKEN  _@M923_ = "WRONG inSIDE"
 				_tcscpy(BufferValue,gettext(TEXT("_@M923_")));
 			} else {
-				if (!PGStartOut && !CALCULATED_INFO.IsInSector) {
+				if (!PGStartOut && !DerivedDrawInfo.IsInSector) {
 					// LKTOKEN  _@M924_ = "WRONG outSIDE"
 					_tcscpy(BufferValue,gettext(TEXT("_@M924_")));
 				} else {
@@ -830,7 +740,7 @@ drawOverlay:
 					_tcscpy(BufferValue,gettext(TEXT("_@M921_")));
 				}
 			}
-			if (!CALCULATED_INFO.Flying) {
+			if (!DerivedDrawInfo.Flying) {
 				// LKTOKEN  _@M922_ = "NOT FLYING"
 				_tcscpy(BufferValue,gettext(TEXT("_@M922_")));
 			}
@@ -880,21 +790,13 @@ drawOverlay:
 	if (ISPARAGLIDER) {
 		LKFormatValue(LK_HNAV, false, BufferValue, BufferUnit, BufferTitle); // 091115
 	} else {
-#ifndef MAP_ZOOM
-		if (DisplayMode == dmCircling)
-#else /* MAP_ZOOM */
 		if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
-#endif /* MAP_ZOOM */
 			LKFormatValue(LK_TC_30S, false, BufferValue, BufferUnit, BufferTitle);
 		else
 			LKFormatValue(LK_LD_AVR, false, BufferValue, BufferUnit, BufferTitle);
 	}
 	GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
-#ifndef MAP_ZOOM
-	if (!EnablePan) // 091214
-#else /* MAP_ZOOM */
 	if (!mode.AnyPan()) // 091214
-#endif /* MAP_ZOOM */
 		rcx=rc.left+NIBLSCALE(10)+leftmargin+GlideBarOffset;   // 091115
 	else
 		rcx=rc.left+NIBLSCALE(10)+leftmargin;   // 091115
@@ -916,8 +818,23 @@ drawOverlay:
 	}
 
 	if (ISPARAGLIDER || LKVarioBar) { // 100213
-		//LKFormatValue(LK_HGPS, false, BufferValue, BufferUnit, BufferTitle);
-		LKFormatValue(LK_VARIO, false, BufferValue, BufferUnit, BufferTitle); // 091115
+		if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) || LKVarioVal==vValVarioVario) {
+			LKFormatValue(LK_VARIO, false, BufferValue, BufferUnit, BufferTitle);
+			// wcscpy(BufferUnit,_T("VAR"));
+		} else {
+			switch(LKVarioVal) {
+				case vValVarioNetto:
+					LKFormatValue(LK_NETTO, false, BufferValue, BufferUnit, BufferTitle);
+					wcscpy(BufferUnit,_T("NT"));
+					break;
+				case vValVarioSoll:
+				default:
+					LKFormatValue(LK_SPEED_DOLPHIN, false, BufferValue, BufferUnit, BufferTitle);
+					wcscpy(BufferUnit,_T("SF"));
+					break;
+			}
+		}
+
 		SelectObject(hdc, bigFont); 
 		GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
 		rcy+=TextSize.cy;
@@ -944,18 +861,10 @@ drawOverlay:
 	LKFormatValue(LK_TIME_LOCALSEC, false, BufferValue, BufferUnit, BufferTitle);
 
 	if ( ScreenSize < (ScreenSize_t)sslandscape ) {
-		#ifndef NEWPNAV	// 101005 Do not display CLOCK in portrait mode anymore
-		if (MapWindow::IsMapFullScreen() ) {
-			// SelectObject(hdc, LK8MediumFont);  091125
-			SelectObject(hdc, LK8ValueFont); 
-			LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(10),rc.top+NIBLSCALE(1), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
-		} else {
-			SelectObject(hdc, LK8MediumFont); 
-			LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(27),rc.top+NIBLSCALE(1), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
-		}
-		#endif
+		// 101005 Do not display CLOCK in portrait mode anymore
 	} else {
 		if (OverlayClock || (ISPARAGLIDER && UseGates()) ) {
+			#if USEIBOX
 			if (MapWindow::IsMapFullScreen() ) {
 				SelectObject(hdc, LK8TargetFont); 
 				LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(30),rc.top+NIBLSCALE(1), 0, 
@@ -965,6 +874,11 @@ drawOverlay:
 				LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(28),rc.top+NIBLSCALE(1), 0, 
 					WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 			}
+			#else
+			SelectObject(hdc, LK8TargetFont); 
+			LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(30),rc.top+NIBLSCALE(1), 0, 
+				WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
+			#endif
 		}
 	}
 
@@ -985,29 +899,14 @@ Drawbottom:
     nrc.right=rc.right;
     nrc.bottom=rc.bottom;
 
-  // HPEN hP; REMOVE 101204
   HBRUSH hB;
   if ( INVERTCOLORS ) {
-	#if LKOBJ
   	hB = LKBrush_Black;
-  	// hB = LKBrush_Ndark; REMOVE 101204
-	// hP = LKPen_White_N0; // FIX  with Yellow  REMOVE 101204
-	#else
-  	hB = (HBRUSH)CreateSolidBrush(RGB_NDARK);
-	// hP = (HPEN)CreatePen(PS_SOLID,0,RGB_YELLOW);  REMOVE 101204
-	#endif
   } else {
-	#if LKOBJ
   	hB = LKBrush_Nlight;
-	// hP = LKPen_Black_N0; REMOVE 101204
-	#else
-  	hB = (HBRUSH)CreateSolidBrush(RGB_NLIGHT);
-	// hP = (HPEN)CreatePen(PS_SOLID,0,RGB_BLACK); REMOVE 101204
-	#endif
   }
 
 
-#if ABLEND
   if (MapWindow::AlphaBlendSupported() && MapSpaceMode==MSM_MAP && BarOpacity<100) {
 	static bool initablend=true;
 	static HDC hdc2;
@@ -1043,38 +942,6 @@ Drawbottom:
 	barTextColor=RGB_WHITE;
 	FillRect(hdc,&nrc, hB); 
   }
-#else
- #if ALPHABLENDING  
-  #if (WINDOWSPC>0)
-  HDC hdc2=CreateCompatibleDC(hdc);
-  HBITMAP bitmapnew=CreateCompatibleBitmap(hdc,rc.right,rc.bottom);
-  SelectObject(hdc2,bitmapnew); 
-  FillRect(hdc2,&nrc, hB); 
-
-  BLENDFUNCTION bs;
-  bs.BlendOp=AC_SRC_OVER;
-  bs.BlendFlags=0;
-  bs.SourceConstantAlpha=195;
-  bs.AlphaFormat=0;
-
-  AlphaBlend(hdc,0,rc.bottom-BottomSize,rc.right,BottomSize,hdc2,0,rc.bottom-BottomSize,rc.right,BottomSize,bs);
-  #else
-  FillRect(hdc,&nrc, hB); 
-  #endif
- #else
-  FillRect(hdc,&nrc, hB); 
-  #if 0
-  #if NEWPNAV
-  if (!ScreenLandscape) {
-	POINT pL, pR;
-	pL.y=pR.y= rc.bottom - (BottomSize/2);
-	pL.x=rc.left; pR.x=rc.right;
-	 _DrawLine(hdc, PS_SOLID, 0, pL, pR, RGB_LIGHTGREEN, rc);
-  }
-  #endif
-  #endif
- #endif
-#endif
 
   // NAVBOXES
 
@@ -1082,21 +949,13 @@ Drawbottom:
   static short OldBottomMode=BM_FIRST;
   bool showunit=false;
 
-#ifndef MAP_ZOOM
-  if ( (DisplayMode == dmCircling) && !wascircling) {
-#else /* MAP_ZOOM */
   if ( MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && !wascircling) {
-#endif /* MAP_ZOOM */
 	// switch to thermal mode
 	OldBottomMode=BottomMode;
 	BottomMode=BM_TRM;
 	wascircling=true;
   }
-#ifndef MAP_ZOOM
-  if ( (DisplayMode != dmCircling) && wascircling) {
-#else /* MAP_ZOOM */
   if ( !MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && wascircling) {
-#endif /* MAP_ZOOM */
 	// back to cruise mode
 	BottomMode=OldBottomMode;
 	wascircling=false;
@@ -1111,11 +970,7 @@ Drawbottom:
 
   switch(BottomMode) {
 	case BM_TRM:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(1,dmCircling);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(1,MapWindow::Mode::MODE_FLY_CIRCLING);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1148,21 +1003,13 @@ Drawbottom:
 		break;
 
 	case BM_CUS2:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(1,dmCruise);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(1,MapWindow::Mode::MODE_FLY_CRUISE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
 		
 	case BM_CUS3:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(1,dmFinalGlide);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(1,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1172,22 +1019,13 @@ Drawbottom:
 		break;
   }
 
-  #if OLDSPLITTER
-  rcx=rc.left+(rc.right/(splitter*2))-NIBLSCALE(5); // FIX make it static in doinit
-  #else
   rcx=rc.left+(splitoffset/2);
-  #endif
-  #if NEWPNAV
   if (ScreenLandscape) {
 	#include "LKMW3include_navbox1.cpp"
   } else {
 	#include "LKMW3include_navbox2.cpp"
   }
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
-  #else
-  #include "LKMW3include_navbox1.cpp"
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy-TextSize.cy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
-  #endif
 
   /*
    *   SECOND VALUE
@@ -1195,11 +1033,7 @@ Drawbottom:
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(2,dmCircling);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(2,MapWindow::Mode::MODE_FLY_CIRCLING);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1210,7 +1044,11 @@ Drawbottom:
 		showunit=LKFormatValue(LK_HBARO, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_AUX:
-		showunit=LKFormatValue(LK_ODOMETER, true, BufferValue, BufferUnit, BufferTitle); // 100221
+		if (UseContestEngine())
+		  showunit=LKFormatValue(LK_OLC_CLASSIC_DIST, true, BufferValue, BufferUnit, BufferTitle);
+		else
+		  showunit=LKFormatValue(LK_ODOMETER, true, BufferValue, BufferUnit, BufferTitle); // 100221
+
 		// showunit=false; 100221
 		break;
 	case BM_TSK:
@@ -1221,7 +1059,6 @@ Drawbottom:
 		break;
 
 	case BM_ALT:
-		#if NEWPNAV
 		if (ScreenLandscape) {
 			showunit=LKFormatValue(LK_BESTALTERN_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
 			wcscpy(BufferTitle,_T("<<<"));
@@ -1229,10 +1066,6 @@ Drawbottom:
 			showunit=LKFormatValue(LK_ALTERN1_GR, true, BufferValue, BufferUnit, BufferTitle);
 			BufferTitle[7]='\0';
 		}
-		#else
-		showunit=LKFormatValue(LK_BESTALTERN_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
-		wcscpy(BufferTitle,_T("<<<"));
-		#endif
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(2);
@@ -1240,21 +1073,13 @@ Drawbottom:
 		BufferTitle[7]='\0';
 		break;
 	case BM_CUS2:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(2,dmCruise);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(2,MapWindow::Mode::MODE_FLY_CRUISE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
 		
 	case BM_CUS3:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(2,dmFinalGlide);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(2,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1264,22 +1089,13 @@ Drawbottom:
 		break;
   }
 
-  #if OLDSPLITTER
-  rcx+=(rc.right/splitter); 
-  #else
   rcx+=splitoffset;
-  #endif
-  #if NEWPNAV
   if (ScreenLandscape) {
 	#include "LKMW3include_navbox1.cpp"
   } else {
 	#include "LKMW3include_navbox2.cpp"
   }
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
-  #else
-  #include "LKMW3include_navbox1.cpp"
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy-TextSize.cy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
-  #endif
 
   /*
    *   THIRD VALUE
@@ -1288,11 +1104,7 @@ Drawbottom:
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(3,dmCircling);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(3,MapWindow::Mode::MODE_FLY_CIRCLING);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1313,13 +1125,12 @@ Drawbottom:
 		#if 100221
   		showunit=true;
   			wsprintf(BufferUnit, TEXT(""));
-			#if NOSIM
 			if (SIMMODE) {
 				// LKTOKEN _@M1199_ "Sat"
 				wsprintf(BufferTitle, gettext(TEXT("_@M1199_")));
 				wsprintf(BufferValue,TEXT("SIM"));
 			} else {
-				Value=GPS_INFO.SatellitesUsed;
+				Value=DrawInfo.SatellitesUsed;
 				if (Value<1 || Value>30) {
 					wsprintf(BufferValue,TEXT("---"));
 				} else {
@@ -1339,37 +1150,9 @@ Drawbottom:
 						wsprintf(BufferTitle, TEXT("%s:?"), gettext(TEXT("_@M1199_")));
 				}
 			}
-			#else
-			#ifdef _SIM_ 
-			// LKTOKEN _@M1199_ "Sat"
-  			wsprintf(BufferTitle, gettext(TEXT("_@M1199_")));
-			wsprintf(BufferValue,TEXT("SIM"));
-			#else
-			Value=GPS_INFO.SatellitesUsed;
-			if (Value<1 || Value>30) {
-				wsprintf(BufferValue,TEXT("---"));
-			} else {
-  				sprintf(text,"%d",(int)Value);
-				wsprintf(BufferValue, TEXT("%S"),text);
-
-			}
-			if (nmeaParser1.activeGPS == true)
-				// LKTOKEN _@M1199_ "Sat"
-				wsprintf(BufferTitle, TEXT("%s:A"), gettext(TEXT("_@M1199_")));
-			else {
-				if (nmeaParser2.activeGPS == true)
-					// LKTOKEN _@M1199_ "Sat"
-					wsprintf(BufferTitle, TEXT("%s:B"), gettext(TEXT("_@M1199_")));
-				else
-					// LKTOKEN _@M1199_ "Sat"
-					wsprintf(BufferTitle, TEXT("%s:?"), gettext(TEXT("_@M1199_")));
-			}
-
-			#endif
-			#endif
 
 		#else
-		Value=GPS_INFO.SatellitesUsed;
+		Value=DrawInfo.SatellitesUsed;
 		if (Value<1 || Value>30) {
 			wsprintf(BufferValue,TEXT("---"));
  			//TextDisplayMode.AsFlag.Color = TEXTRED;
@@ -1386,17 +1169,11 @@ Drawbottom:
 		#endif
 		break;
 	case BM_ALT:
-		#if NEWPNAV
 		if (ScreenLandscape)
 			showunit=LKFormatValue(LK_ALTERN1_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
 		else
 			showunit=LKFormatValue(LK_ALTERN2_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
 		BufferTitle[7]='\0';
-		#else
-		showunit=LKFormatValue(LK_ALTERN1_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
-		BufferTitle[7]='\0';
-		// showunit=false; 100221
-		#endif
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(3);
@@ -1404,21 +1181,13 @@ Drawbottom:
 		BufferTitle[7]='\0';
 		break;
 	case BM_CUS2:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(3,dmCruise);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(3,MapWindow::Mode::MODE_FLY_CRUISE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
 		
 	case BM_CUS3:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(3,dmFinalGlide);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(3,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1428,22 +1197,13 @@ Drawbottom:
 		break;
   }
 
-  #if OLDSPLITTER
-  rcx+=(rc.right/splitter); 
-  #else
   rcx+=splitoffset;
-  #endif
-  #if NEWPNAV
   if (ScreenLandscape) {
 	#include "LKMW3include_navbox1.cpp"
   } else {
 	#include "LKMW3include_navbox2.cpp"
   }
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
-  #else
-  #include "LKMW3include_navbox1.cpp"
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy-TextSize.cy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
-  #endif
 
   /*
    *   FOURTH VALUE
@@ -1452,11 +1212,7 @@ Drawbottom:
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(4,dmCircling);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(4,MapWindow::Mode::MODE_FLY_CIRCLING);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1476,7 +1232,7 @@ Drawbottom:
 	case BM_SYS:
 		// LKTOKEN _@M1068_ "HBAR"
   		wsprintf(BufferTitle, gettext(TEXT("_@M1068_")));
-		if (GPS_INFO.BaroAltitudeAvailable) {
+		if (DrawInfo.BaroAltitudeAvailable) {
 			if (EnableNavBaroAltitude)
 				// LKTOKEN _@M894_ "ON"
 				wsprintf(BufferValue,gettext(TEXT("_@M894_")));
@@ -1488,7 +1244,6 @@ Drawbottom:
   		showunit=false;
 		break;
 	case BM_ALT:
-		#if NEWPNAV
 		if (ScreenLandscape) {
 			showunit=LKFormatValue(LK_ALTERN1_ARRIV, true, BufferValue, BufferUnit, BufferTitle); // 100221
 			wcscpy(BufferTitle,_T("<<<"));
@@ -1496,10 +1251,6 @@ Drawbottom:
 			showunit=LKFormatValue(LK_BESTALTERN_ARRIV, true, BufferValue, BufferUnit, BufferTitle); // 100221
 			wcscpy(BufferTitle,_T(""));
 		}
-		#else
-		showunit=LKFormatValue(LK_ALTERN1_ARRIV, true, BufferValue, BufferUnit, BufferTitle); // 100221
-		wcscpy(BufferTitle,_T("<<<"));
-		#endif
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(4);
@@ -1507,21 +1258,13 @@ Drawbottom:
 		BufferTitle[7]='\0';
 		break;
 	case BM_CUS2:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(4,dmCruise);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(4,MapWindow::Mode::MODE_FLY_CRUISE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
 		
 	case BM_CUS3:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(4,dmFinalGlide);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(4,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1531,45 +1274,23 @@ Drawbottom:
 		break;
   }
 
-  #if OLDSPLITTER
-  rcx+=(rc.right/splitter); 
-  #include "LKMW3include_navbox1.cpp"
-  #else
 
-  #if NEWPNAV
   if (ScreenLandscape) {
 	rcx+=splitoffset;
   }else {
 	rcx=rc.left+(splitoffset2/2);
   }
   #include "LKMW3include_navbox1.cpp"
-  #else
-  rcx+=splitoffset;
-  #include "LKMW3include_navbox1.cpp"
-  #endif
-  #endif
-  #if NEWPNAV
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
-  #else
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(7), rcy-TextSize.cy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
-  #endif
 
   /*
    *   FIFTH VALUE
    */
-  #if NEWPNAV
   if (ScreenLandscape && (splitter<5)) goto EndOfNavboxes;
-  #else
-  if (splitter<5) goto EndOfNavboxes;
-  #endif
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(5,dmCircling);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(5,MapWindow::Mode::MODE_FLY_CIRCLING);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1584,7 +1305,7 @@ Drawbottom:
 		break;
 	case BM_TSK:
 // TODO MAKE IT LKPROCESS
-  		Value=ALTITUDEMODIFY*CALCULATED_INFO.TaskStartAltitude;
+  		Value=ALTITUDEMODIFY*DerivedDrawInfo.TaskStartAltitude;
 		if (Value>0) {
 			sprintf(text,"%d",(int)Value);
 			wsprintf(BufferValue, TEXT("%S"),text);
@@ -1601,7 +1322,6 @@ Drawbottom:
 		showunit=LKFormatValue(LK_EMPTY, true, BufferValue, BufferUnit, BufferTitle); // 100221
 		break;
 	case BM_ALT:
-		#if NEWPNAV
 		if (ScreenLandscape) {
 			showunit=LKFormatValue(LK_ALTERN2_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
 			BufferTitle[7]='\0';
@@ -1609,10 +1329,6 @@ Drawbottom:
 			showunit=LKFormatValue(LK_ALTERN1_ARRIV, false, BufferValue, BufferUnit, BufferTitle); // 100221
 			wcscpy(BufferTitle,_T(""));
 		}
-		#else
-		showunit=LKFormatValue(LK_ALTERN2_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
-		BufferTitle[7]='\0';
-		#endif
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(5);
@@ -1620,21 +1336,13 @@ Drawbottom:
 		BufferTitle[7]='\0';
 		break;
 	case BM_CUS2:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(5,dmCruise);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(5,MapWindow::Mode::MODE_FLY_CRUISE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
 		
 	case BM_CUS3:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(5,dmFinalGlide);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(5,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1644,46 +1352,24 @@ Drawbottom:
 		break;
   }
 
-  #if OLDSPLITTER
-  rcx+=(rc.right/splitter)-NIBLSCALE(7);  // shorter value
-  #include "LKMW3include_navbox1.cpp"
-  #else
 
-  #if NEWPNAV
   if (ScreenLandscape) {
 	rcx+=splitoffset;
   }else {
 	rcx+=splitoffset2;
   }
   #include "LKMW3include_navbox1.cpp"
-  #else
-  rcx+=splitoffset;
-  #include "LKMW3include_navbox1.cpp"
-  #endif
 
-  #endif
-  #if NEWPNAV
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
-  #else
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(3), rcy-TextSize.cy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
-  #endif
 
   /*
    *   SIXTH VALUE
    */
-  #if NEWPNAV
   if (ScreenLandscape && (splitter<6)) goto EndOfNavboxes;
-  #else
-  if (splitter<6) goto EndOfNavboxes;
-  #endif
   showunit=true;
   switch(BottomMode) {
 	case BM_TRM:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(6,dmCircling);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(6,MapWindow::Mode::MODE_FLY_CIRCLING);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1711,14 +1397,10 @@ Drawbottom:
 		break;
 	case BM_ALT:
 		showunit=LKFormatValue(LK_ALTERN2_ARRIV, true, BufferValue, BufferUnit, BufferTitle); // 100221
-		#if NEWPNAV
 		if (ScreenLandscape)
 			wcscpy(BufferTitle,_T("<<<"));
 		else
 			wcscpy(BufferTitle,_T(""));
-		#else
-		wcscpy(BufferTitle,_T("<<<"));
-		#endif
 		break;
 	case BM_CUS:
 		index=GetInfoboxType(6);
@@ -1726,21 +1408,13 @@ Drawbottom:
 		BufferTitle[7]='\0';
 		break;
 	case BM_CUS2:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(6,dmCruise);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(6,MapWindow::Mode::MODE_FLY_CRUISE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
 		
 	case BM_CUS3:
-#ifndef MAP_ZOOM
-		index=GetInfoboxIndex(6,dmFinalGlide);
-#else /* MAP_ZOOM */
 		index=GetInfoboxIndex(6,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
-#endif /* MAP_ZOOM */
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1750,46 +1424,21 @@ Drawbottom:
 		break;
   }
 
-  #if OLDSPLITTER
-  rcx+=(rc.right/splitter)-NIBLSCALE(11); 
-  #include "LKMW3include_navbox1.cpp"
-  #else
 
-  #if NEWPNAV
   if (ScreenLandscape) {
 	rcx+=splitoffset;
   }else {
 	rcx+=splitoffset2;
   }
   #include "LKMW3include_navbox1.cpp"
-  #else
-  rcx+=splitoffset;
-  #include "LKMW3include_navbox1.cpp"
-  #endif
-  #endif
-  #if NEWPNAV
   LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(3), rcy, 0, WTMODE_NORMAL,WTALIGN_CENTER,barTextColor, false);
-  #else
-  LKWriteText(hdc, BufferTitle, rcx+NIBLSCALE(3), rcy-TextSize.cy, 0, WTMODE_NORMAL,WTALIGN_CENTER,RGB_WHITE, false);
-  #endif
 
   /*
    *    CLEAN UP 
    */
 
 EndOfNavboxes:
-  #ifndef LKOBJ
-  DeleteObject(hB);
-  // DeleteObject(hP);  REMOVE 101204
-  #else
   ;
-  #endif
-#if ALPHABLENDING
-  #if (WINDOWSPC>0)
-  DeleteObject(bitmapnew);
-  DeleteDC(hdc2);
-  #endif
-#endif
 
 } // drawbottom
 
@@ -1823,16 +1472,7 @@ EndOfNavboxes:
 
 afterWind:
 
-   if ( UseMapLock && MapLock ) {
-	_stprintf(Buffer,TEXT("MAPLOCK"));
-  	SelectObject(hdc, LKMAPFONT); // FIXFONT
-  	GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &TextSize);
-	if (DrawBottom)
-  		LKWriteText(hdc, Buffer, ((rc.right-rc.left-leftmargin)/2)+leftmargin, rc.bottom - BottomSize- (TextSize.cy/2)-NIBLSCALE(2) , 0, WTMODE_OUTLINED,WTALIGN_CENTER,RGB_WHITE, true);
-  	else
-  		LKWriteText(hdc, Buffer, ((rc.right-rc.left-leftmargin)/2)+leftmargin,  rc.bottom - (TextSize.cy/2)-NIBLSCALE(2) , 0, WTMODE_OUTLINED,WTALIGN_CENTER,RGB_WHITE, true);
-
-   }
+#if USEIBOX
    if ( !MapWindow::IsMapFullScreen() && InfoFocus>=0 ) {
 
 	_stprintf(Buffer,TEXT("IBOX"));
@@ -1846,6 +1486,7 @@ afterWind:
 		iboxtoclick=false;
 	}
    } 
+#endif
 
 TheEnd:
 

@@ -15,6 +15,8 @@
 
 #include "devFlytec.h"
 
+#include "utils/heapcheck.h"
+
 static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 
 static BOOL FlytecParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
@@ -112,9 +114,27 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 
   TCHAR ctemp[80];
   double vtas;
+  static int offset=-1;
+
+
+  // firmware 3.31h no offset
+  // firmware 3.32  1 offset
+  // Determine firmware version, assuming it will not change in the session!
+  if (offset<0) {
+	NMEAParser::ExtractParameter(String,ctemp,8);
+	if ( (_tcscmp(ctemp,_T("A"))==0) || (_tcscmp(ctemp,_T("V"))==0))
+		offset=0;
+	else {
+		NMEAParser::ExtractParameter(String,ctemp,9);
+		if ( (_tcscmp(ctemp,_T("A"))==0) || (_tcscmp(ctemp,_T("V"))==0))
+			offset=1;
+		else 
+			return TRUE;
+	}
+  }
 
   // VOID GPS SIGNAL
-  NMEAParser::ExtractParameter(String,ctemp,8);
+  NMEAParser::ExtractParameter(String,ctemp,8+offset);
   if (_tcscmp(ctemp,_T("V"))==0) {
 	GPS_INFO->NAVWarning=true;
 	GPSCONNECT=false;
@@ -125,14 +145,14 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   double tmplat;
   double tmplon;
 
-  NMEAParser::ExtractParameter(String,ctemp,1);
+  NMEAParser::ExtractParameter(String,ctemp,1+offset);
   tmplat = MixedFormatToDegrees(StrToDouble(ctemp, NULL));
-  NMEAParser::ExtractParameter(String,ctemp,2);
+  NMEAParser::ExtractParameter(String,ctemp,2+offset);
   tmplat = NorthOrSouth(tmplat, ctemp[0]);
 
-  NMEAParser::ExtractParameter(String,ctemp,3);
+  NMEAParser::ExtractParameter(String,ctemp,3+offset);
   tmplon = MixedFormatToDegrees(StrToDouble(ctemp, NULL));
-  NMEAParser::ExtractParameter(String,ctemp,4);
+  NMEAParser::ExtractParameter(String,ctemp,4+offset);
   tmplon = EastOrWest(tmplon,ctemp[0]);
 
   if (!((tmplat == 0.0) && (tmplon == 0.0))) {
@@ -143,31 +163,49 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   }
 
   // GPS SPEED
-  NMEAParser::ExtractParameter(String,ctemp,6);
+  NMEAParser::ExtractParameter(String,ctemp,6+offset);
   GPS_INFO->Speed = StrToDouble(ctemp,NULL)/10;
 
   // TRACK BEARING
   if (GPS_INFO->Speed>1.0) {
-	NMEAParser::ExtractParameter(String,ctemp,5);
+	NMEAParser::ExtractParameter(String,ctemp,5+offset);
 	GPS_INFO->TrackBearing = AngleLimit360(StrToDouble(ctemp, NULL));
   }
 
   // HGPS
-  NMEAParser::ExtractParameter(String,ctemp,7);
+  NMEAParser::ExtractParameter(String,ctemp,7+offset);
   GPS_INFO->Altitude = StrToDouble(ctemp,NULL);
 
   // ------------------------
   label_nogps: 
 
   // SATS
-  NMEAParser::ExtractParameter(String,ctemp,9);
+  NMEAParser::ExtractParameter(String,ctemp,9+offset);
   GPS_INFO->SatellitesUsed = (int) StrToDouble(ctemp,NULL);
-  GPS_INFO->SatellitesUsed = 4;
+
+  // DATE
+  // Firmware 3.32 has got the date 
+  if (offset>0) {
+	NMEAParser::ExtractParameter(String,ctemp,0);
+	long gy, gm, gd;
+	TCHAR *Stop;
+        gy = _tcstol(&ctemp[4], &Stop, 10) + 2000;
+        ctemp[4] = '\0';
+        gm = _tcstol(&ctemp[2], &Stop, 10);
+        ctemp[2] = '\0';
+        gd = _tcstol(&ctemp[0], &Stop, 10);
+
+	if ( ((gy > 1980) && (gy <2100) ) && (gm != 0) && (gd != 0) ) {
+		GPS_INFO->Year = gy;
+		GPS_INFO->Month = gm;
+		GPS_INFO->Day = gd;
+	}
+  }
 
   // TIME
-  // ignoring 00:00.00 , but that's minor problem. We don't have the date.
+  // ignoring 00:00.00
   // And no UTC, since this is local time already.
-  NMEAParser::ExtractParameter(String,ctemp,0);
+  NMEAParser::ExtractParameter(String,ctemp,0+offset);
   double fixTime = StrToDouble(ctemp,NULL);
   if (fixTime>0 && GPS_INFO->SatellitesUsed>0) {
 	double hours, mins,secs;
@@ -182,20 +220,23 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 
 
   // HPA from the pressure sensor
-  //   NMEAParser::ExtractParameter(String,ctemp,10);
+  //   NMEAParser::ExtractParameter(String,ctemp,10+offset);
   //   double ps = StrToDouble(ctemp,NULL)/100;
   //   GPS_INFO->BaroAltitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
 
   // HBAR 1013.25
-  NMEAParser::ExtractParameter(String,ctemp,11);
-  GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(StrToDouble(ctemp,NULL));
+  NMEAParser::ExtractParameter(String,ctemp,11+offset);
+  if (d == pDevPrimaryBaroSource) {
+	GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(StrToDouble(ctemp,NULL));
+	GPS_INFO->BaroAltitudeAvailable = TRUE;
+  }
 
   // VARIO
-  NMEAParser::ExtractParameter(String,ctemp,12);
+  NMEAParser::ExtractParameter(String,ctemp,12+offset);
   GPS_INFO->Vario = StrToDouble(ctemp,NULL)/100;
 
   // TAS
-  NMEAParser::ExtractParameter(String,ctemp,13);
+  NMEAParser::ExtractParameter(String,ctemp,13+offset);
   vtas=StrToDouble(ctemp,NULL)/10;
   GPS_INFO->IndicatedAirspeed = vtas/AirDensityRatio(GPS_INFO->BaroAltitude);
   GPS_INFO->TrueAirspeed = vtas;
@@ -207,21 +248,20 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   // ignore n.14 airspeed source
 
   // OAT
-  NMEAParser::ExtractParameter(String,ctemp,15);
+  NMEAParser::ExtractParameter(String,ctemp,15+offset);
   GPS_INFO->OutsideAirTemperature = StrToDouble(ctemp,NULL);
   GPS_INFO->TemperatureAvailable=TRUE;
 
   // ignore n.16 baloon temperature  
 
   // BATTERY PERCENTAGES
-  NMEAParser::ExtractParameter(String,ctemp,17);
+  NMEAParser::ExtractParameter(String,ctemp,17+offset);
   GPS_INFO->ExtBatt1_Voltage = StrToDouble(ctemp,NULL)+1000;
-  NMEAParser::ExtractParameter(String,ctemp,18);
+  NMEAParser::ExtractParameter(String,ctemp,18+offset);
   GPS_INFO->ExtBatt2_Voltage = StrToDouble(ctemp,NULL)+1000;
 
 
 
-  GPS_INFO->BaroAltitudeAvailable = TRUE;
   GPS_INFO->VarioAvailable = TRUE;
 
   // currently unused in LK, but ready for next future

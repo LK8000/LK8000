@@ -7,7 +7,7 @@
 */
 
 #include "StdAfx.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "Utils.h"
 #include "Utils2.h"
 #include "dlgTools.h"
@@ -18,6 +18,8 @@ static WndForm *wf=NULL;
      
 
 #include "TeamCodeCalculation.h"
+
+#include "utils/heapcheck.h"
 
 static void Update() 
 {
@@ -160,7 +162,7 @@ void dlgTeamCodeShowModal(void)
       if (!wf) return;
     }
 
-  TCHAR sTmp[32];
+  TCHAR sTmp[32] = { 0 };
   if( WayPointList && ValidWayPoint(TeamCodeRefWaypoint)) {
 	// LKTOKEN _@M1230_ "Team Ref.: "
 	_tcsncpy(sTmp, gettext(TEXT("_@M1230_")), 20);

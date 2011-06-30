@@ -8,6 +8,8 @@
 #define MAXSAFETYSPEED  100	// 360kmh
 #define MAXSPEED	100	// 360kmh = 100ms
 
+#define MAX_FLAPS 10 // max flaps positions count
+
 class GlidePolar {
  public:
 
@@ -22,18 +24,12 @@ class GlidePolar {
                                   double AltitudeAboveTarget=1.0e6,
 				  double cruise_efficiency=1.0);
 
-  static double MacCreadyRisk(double HeightAboveTerrain, double MaxThermalHeight,
-                              double MCREADY);
-
   static void SetBallast();
   static double GetAUW();
 
-  static double AbortSafetyMacCready();
   static double SafetyMacCready;
-  static bool AbortSafetyUseCurrent;
 
   //  static double BallastFactor;
-  static double RiskGamma;
   static double polar_a;
   static double polar_b;
   static double polar_c;
@@ -47,6 +43,11 @@ class GlidePolar {
   static double WeightOffset;
   
   static double sinkratecache[MAXSPEED+1];
+
+  static double FlapsPos[MAX_FLAPS];
+  static TCHAR  FlapsName[MAX_FLAPS][MAXFLAPSNAME+1];
+  static int FlapsPosCount;
+  static double FlapsMass;
 
   static double SinkRate(double Vias);
   static double SinkRate(double Vias, 

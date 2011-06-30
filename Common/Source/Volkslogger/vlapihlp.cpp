@@ -23,6 +23,8 @@
 #include "Volkslogger/vlapihlp.h"
 #include "Volkslogger/utils.h"
 
+#include "utils/heapcheck.h"
+
 /*
 Filtern einer Zeile:
   - Umwandeln von nicht-IGC-Zeichen in Leerzeichen

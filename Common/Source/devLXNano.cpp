@@ -10,9 +10,12 @@
 #include <time.h>
 
 #include "StdAfx.h"
+#include "utils/stringext.h"
 #include "Dialogs.h"
 #include "externs.h"
 #include "devLXNano.h"
+
+#include "utils/heapcheck.h"
 
 //______________________________________________________________________defines_
 
@@ -73,6 +76,10 @@ static const char PKT_CCREAD    = '\xCF';
 //static
 bool DevLXNano::Register()
 {
+  #ifdef UNIT_TESTS
+    Wide2LxAsciiTest();
+  #endif
+
   return(devRegister(GetName(),
     cap_gps | cap_baro_alt | cap_speed | cap_vario | cap_logger, Install));
 } // Register()
@@ -397,6 +404,45 @@ bool DevLXNano::WriteClass(PDeviceDescriptor_t d, Class& lxClass, unsigned errBu
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// Converts TCHAR[] string into US-ASCII string with characters safe for
+/// writing to LX devices.
+///
+/// Characters are converted into their most similar representation
+/// in ASCII. Nonconvertable characters are replaced by '?'.
+///
+/// Output string will always be terminated by '\0'.
+///
+/// @param input    input string (must be terminated with '\0')
+/// @param outSize  output buffer size
+/// @param output   output buffer
+///
+/// @retval true  all characters copied
+/// @retval false some characters could not be copied due to buffer size
+///
+//static
+bool DevLXNano::Wide2LxAscii(const TCHAR* input, int outSize, char* output)
+{
+  if (outSize == 0)
+    return(false);
+
+  int res = unicode2usascii(input, output, outSize);
+
+  // replace all non-ascii characters with '?' - LX Colibri is very sensitive
+  // on non-ascii chars - the electronic seal can be broken
+  // (unicode2usascii() should be enough, but to be sure that someone has not
+  // incorrectly changed unicode2usascii())
+  output--;
+  while (*++output != '\0')
+  {
+    if (*output < 32 || *output > 126)
+      *output = '?';
+  }
+
+  return(res >= 0);
+} // Wide2LxAscii()
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Calculate LX CRC value for the given data.
 ///
 /// @param length  data length
@@ -425,6 +471,59 @@ byte DevLXNano::CalcCrc(int length, void* data)
   return(crcVal);
 } // CalcCrc()
 
+
+#ifdef UNIT_TESTS
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// Test suite for Wide2LxAscii().
+///
+//static
+void DevLXNano::LogTestResult(const TCHAR* suite, const TCHAR* test, bool result)
+{
+  StartupStore(_T("UnitTest: %s :%s [%s]%s"),
+    result ? _T("ok") : _T("ER"), suite, test, NEWLINE);
+} // LogTestResult()
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// Test suite for Wide2LxAscii().
+///
+//static
+void DevLXNano::Wide2LxAsciiTest()
+{
+  static const TCHAR* suite = _T("Wide2LxAscii");
+
+  static const TCHAR uc0[] = {0};
+
+  static const TCHAR uc1[] = {0x0001, 0x001F, 0x0020, 0x0041, 0x007E, 0x007F, 0x00A5, 0x00D9, 0x010E, 0x024F, 0x0250, 0};
+  static const char* ch1a  = "?? A~?YUDy?";
+  static const char* ch1b  = "?? A";
+
+  static const TCHAR uc2[] = {0xD800, 0xDC00, 0xDBFF, 0xDFFF, 0xE000, 0x007A, 0};
+  static const char* ch2   = "???z";
+
+  char tmp[200] = { 'x' };
+
+  LogTestResult(suite, _T("0 output"), Wide2LxAscii(uc1, 0, NULL) == false);
+
+  LogTestResult(suite, _T("0 input"), Wide2LxAscii(uc0, 1, tmp) == true);
+  LogTestResult(suite, _T("0 input/chk"), tmp[0] == '\0');
+
+  LogTestResult(suite, _T("1 output"), Wide2LxAscii(uc1, 1, tmp) == false);
+  LogTestResult(suite, _T("1 output/chk"), tmp[0] == '\0');
+
+  LogTestResult(suite, _T("5 output"), Wide2LxAscii(uc1, 5, tmp) == false);
+  LogTestResult(suite, _T("5 output/chk"), strcmp(tmp, ch1b) == 0);
+
+  LogTestResult(suite, _T("uc1"), Wide2LxAscii(uc1, sizeof(tmp), tmp) == true);
+  LogTestResult(suite, _T("uc1/chk"), strcmp(tmp, ch1a) == 0);
+
+  LogTestResult(suite, _T("uc2"), Wide2LxAscii(uc2, sizeof(tmp), tmp) == true);
+  LogTestResult(suite, _T("uc2/chk"), strcmp(tmp, ch2) == 0);
+
+} // Wide2LxAsciiTest()
+
+#endif
 
 
 // #############################################################################
@@ -485,7 +584,7 @@ void DevLXNano::Decl::SetString(StrId str_id, const TCHAR* text)
       return;
   }
 
-  Wide2Ascii(text, outSize, output);
+  Wide2LxAscii(text, outSize, output);
 } // SetString()
 
 
@@ -525,15 +624,6 @@ void DevLXNano::Decl::SetWaypoint(const WAYPOINT* wp, WpType type, int idx)
     SetString((StrId) idx, name);
   }
 } // SetWaypoint()
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Initializes @c crc member with computed CRC value.
-///
-void DevLXNano::Decl::CalcCrc()
-{
-  crc = DevLXNano::CalcCrc(sizeof(*this) - 1, this);
-} // CalcCrc()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -627,17 +717,8 @@ DevLXNano::Class::Class()
 ///
 void DevLXNano::Class::SetName(const TCHAR* text)
 {
-  Wide2Ascii(text, sizeof(name), name);
+  Wide2LxAscii(text, sizeof(name), name);
 } // SetName()
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Initializes @c crc member with computed CRC value.
-///
-void DevLXNano::Class::CalcCrc()
-{
-  crc = DevLXNano::CalcCrc(sizeof(*this) - 1, this);
-} // CalcCrc()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

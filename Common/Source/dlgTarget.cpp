@@ -19,6 +19,10 @@
 #include "MapWindow.h"
 #include "InfoBoxLayout.h"
 
+#include "utils/heapcheck.h"
+using std::min;
+using std::max;
+
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 static WindowControl *btnMove = NULL;
@@ -208,15 +212,9 @@ static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
 	(void)Sender;
   switch(wParam & 0xffff){
     case '2':
-#ifdef GNAV
-    case VK_F2:
-#endif
       MoveTarget(0);
     return(0);
     case '3':
-#ifdef GNAV
-    case VK_F3:
-#endif
       MoveTarget(180);
     return(0);
     case '6':
@@ -452,7 +450,7 @@ static void OnRadialData(DataField *Sender, DataField::DataAccessKind_t Mode) {
               -Task[target_point].AATTargetOffsetRadius;
             updated = true;
           } else {
-            RadialNew = max(-90,min(90,RadialNew));
+            RadialNew = max(-90.0,min(90.0,RadialNew));
             updated = true;
           }
         }

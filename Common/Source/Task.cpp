@@ -9,7 +9,7 @@
 #include "StdAfx.h"
 #include "Task.h"
 #include "Logger.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "AATDistance.h"
 #include "Utils.h"
 #include "externs.h"
@@ -18,6 +18,10 @@
 #include "McReady.h"
 #include "LKUtils.h"
 #include "LKMapWindow.h"
+
+#include "utils/heapcheck.h"
+using std::min;
+using std::max;
 
 bool EnableMultipleStartPoints = false;
 bool TaskModified = false;
@@ -28,16 +32,6 @@ TCHAR LastTaskFileName[MAX_PATH]= TEXT("\0");
 extern bool TargetDialogOpen;
 
 extern AATDistance aatdistance;
-
-#ifndef NOTASKABORT
-static int Task_saved[MAXTASKPOINTS+1];
-static int active_waypoint_saved= -1;
-static bool aat_enabled_saved= false;
-#endif
-
-#ifndef NOTASKABORT
-static void BackupTask(void);
-#endif
 
 void ResetTaskWaypoint(int j) {
   Task[j].Index = -1;
@@ -56,17 +50,6 @@ void FlyDirectTo(int index) {
     return;
 
   LockTaskData();
-
-  #ifndef NOTASKABORT
-  if (TaskAborted) {
-    // in case we GOTO while already aborted
-    ResumeAbortTask(-1);
-  }
-
-  if (!TaskIsTemporary()) {
-    BackupTask();
-  }
-  #endif
 
   TaskModified = true;
   TargetModified = true;
@@ -409,11 +392,7 @@ void RefreshTask() {
 
   // Determine if a waypoint is in the task
   if (WayPointList) {
-    #if CUPCOM
     for (i=NUMRESWP; i< (int)NumberOfWayPoints; i++) { // maybe paragliders takeoff is set as home
-    #else
-    for (i=0; i< (int)NumberOfWayPoints; i++) {
-    #endif
       WayPointList[i].InTask = false;
       if ((WayPointList[i].Flags & HOME) == HOME) {
         WayPointList[i].InTask = true;
@@ -584,7 +563,7 @@ double AdjustAATTargets(double desired) {
     {
       if(ValidTaskPoint(i)&&ValidTaskPoint(i+1) && !Task[i].AATTargetLocked)
 	{
-          Task[i].AATTargetOffsetRadius = max(-1,min(1,
+          Task[i].AATTargetOffsetRadius = max(-1.0,min(1.0,
                                           Task[i].AATTargetOffsetRadius));
 	  av += Task[i].AATTargetOffsetRadius;
 	  inum++;
@@ -621,7 +600,7 @@ double AdjustAATTargets(double desired) {
           } else {
             d = desired;
           } 
-          d = min(1.0, max(d, 0))*2.0-1.0;
+          d = min(1.0, max(d, 0.0))*2.0-1.0;
           Task[i].AATTargetOffsetRadius = d;
 	}
     }
@@ -690,7 +669,7 @@ void CalculateAATTaskSectors()
         min(1.0, max(Task[i].AATTargetOffsetRadius,-1.0));
 
       Task[i].AATTargetOffsetRadial = 
-        min(90, max(-90, Task[i].AATTargetOffsetRadial));
+        min(90.0, max(-90.0, Task[i].AATTargetOffsetRadial));
 
       double targetbearing;
       double targetrange;
@@ -812,14 +791,12 @@ void guiStartLogger(bool noAsk) {
 		return;
 	}
 	TCHAR TaskMessage[1024];
-	// _tcscpy(TaskMessage,TEXT("Start Logger With Declaration\r\n")); // REMOVE FIXV2
 	_tcscpy(TaskMessage,gettext(TEXT("_@M876_"))); // Start Logger With Declaration\r\n")); 
 	_tcscat(TaskMessage,_T("\r\n"));
 	for(i=0;i<MAXTASKPOINTS;i++)
 	{
 		if(Task[i].Index == -1)
 		{
-			// if(i==0) _tcscat(TaskMessage,TEXT("None")); REMOVE FIXV2
 			if(i==0) _tcscat(TaskMessage,gettext(TEXT("_@M479_"))); // None
 			Debounce(); 
 			break;
@@ -954,9 +931,7 @@ void RefreshTaskWaypoint(int i) {
 static int FindOrAddWaypoint(WAYPOINT *read_waypoint) {
   // this is an invalid pointer!
   read_waypoint->Details = 0;
-  #if CUPCOM
   read_waypoint->Comment = 0;
-  #endif
   read_waypoint->Name[NAME_SIZE-1] = 0; // prevent overrun if data is bogus
  
   int waypoint_index = FindMatchingWaypoint(read_waypoint);
@@ -971,10 +946,8 @@ static int FindOrAddWaypoint(WAYPOINT *read_waypoint) {
 		return false;
 	}
 	memcpy(new_waypoint, read_waypoint, sizeof(WAYPOINT));
-	#ifdef NEWTASKWP
 	// 100229 set no-save flag on
 	new_waypoint->FileNum=-1;
-	#endif
 	waypoint_index = NumberOfWayPoints-1;
   }
   return waypoint_index;
@@ -1223,9 +1196,6 @@ void ClearTask(void) {
     for (int j=0; j<MAXISOLINES; j++) {
       TaskStats[i].IsoLine_valid[j] = false;
     }
-    #ifndef NOTASKABORT
-    Task_saved[i] = Task[i].Index;
-    #endif
   }
   for (i=0; i<MAXSTARTPOINTS; i++) {
     StartPoints[i].Index = -1;
@@ -1442,7 +1412,7 @@ double FindInsideAATSectorRange(double latitude,
   double t_distance = FindInsideAATSectorDistance(latitude, longitude, taskwaypoint,
                                                   course_bearing, p_found);
   return (p_found / 
-          max(1,t_distance))*2-1;
+          max(1.0,t_distance))*2-1;
 }
 
 
@@ -1590,9 +1560,6 @@ void CalculateAATIsoLines(void) {
 
 void SaveDefaultTask(void) {
   LockTaskData();
-  #ifndef NOTASKABORT
-  if (!TaskAborted) {
-  #endif
     TCHAR buffer[MAX_PATH];
 #if (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
   LocalPath(buffer,TEXT(LKD_TASKS));
@@ -1608,103 +1575,6 @@ void SaveDefaultTask(void) {
   _tcscat(buffer,_T(LKF_DEFAULTASK)); // 091101
 #endif
     SaveTask(buffer);
-  #ifndef NOTASKABORT
-  }
-  #endif
   UnlockTaskData();
 }
 
-
-#ifndef NOTASKABORT
-bool TaskIsTemporary(void) {
-  bool retval = false;
-
-  // if temporary, no autoMC is used!
-  return false; // 091221 BUGFIX
-  LockTaskData();
-  if (TaskAborted) {
-    retval = true;
-  }
-  if ((Task[0].Index>=0) && (Task[1].Index== -1)
-      && (Task_saved[0] >= 0)) {
-    retval = true;
-  };
-
-  UnlockTaskData();
-  return retval;
-}
-
-
-static void BackupTask(void) {
-  LockTaskData();
-  for (int i=0; i<=MAXTASKPOINTS; i++) {
-    Task_saved[i]= Task[i].Index;
-  }
-  active_waypoint_saved = ActiveWayPoint;
-  if (AATEnabled) {
-    aat_enabled_saved = true;
-  } else {
-    aat_enabled_saved = false;
-  }
-  UnlockTaskData();
-}
-
-
-void ResumeAbortTask(int set) {
-  int i;
-  int active_waypoint_on_entry;
-  bool task_temporary_on_entry = TaskIsTemporary();
-
-  //  LockFlightData();
-  LockTaskData();
-  active_waypoint_on_entry = ActiveWayPoint;
-
-  if (set == 0) {
-    if (task_temporary_on_entry && !TaskAborted) {
-      // no toggle required, we are resuming a temporary goto
-    } else {
-      TaskAborted = !TaskAborted;
-    }
-  } else if (set > 0)
-    TaskAborted = true;
-  else if (set < 0)
-    TaskAborted = false;
-
-  if (task_temporary_on_entry != TaskAborted) {
-    if (TaskAborted) {
-
-      // save current task in backup
-      BackupTask();
-      
-      // force new waypoint to be the closest
-      ActiveWayPoint = -1;
-
-      // force AAT off
-      AATEnabled = false;
-
-      // set MacCready
-      if (!GlidePolar::AbortSafetyUseCurrent)  // 20060520:sgi added
-        MACCREADY = min(MACCREADY,GlidePolar::SafetyMacCready);
-
-    } else {
-      
-      // reload backup task and clear it
-      
-      for (i=0; i<=MAXTASKPOINTS; i++) {
-        Task[i].Index = Task_saved[i];
-	Task_saved[i] = -1;
-      }
-      ActiveWayPoint = active_waypoint_saved;
-      AATEnabled = aat_enabled_saved;
-      
-      RefreshTask();
-    }
-  }
-
-  if (active_waypoint_on_entry != ActiveWayPoint){
-    SelectedWaypoint=Task[ActiveWayPoint].Index;
-  }
-
-  UnlockTaskData();
-}
-#endif

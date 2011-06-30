@@ -40,6 +40,8 @@ Copyright_License {
 #include <fcntl.h>
 #endif
 
+#include "utils/heapcheck.h"
+
 static char *ms_errorCodes[MS_NUMERRORCODES] = {"",
 						"Unable to access file.",
 						"Memory allocation error.",

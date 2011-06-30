@@ -32,10 +32,11 @@ NOTE: Some portions copyright as above
 */
 
 #ifndef CECORE
-#ifndef GNAV
 #include "StdAfx.h"
 
 #include "VOIMAGE.h"
+
+#include "utils/heapcheck.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -296,5 +297,4 @@ BOOL CVOResource::IsLoaded()
 	return (m_pData != NULL);
 }
 
-#endif
 #endif

@@ -18,6 +18,8 @@
 
 #include "devEWMicroRecorder.h"
 
+#include "utils/heapcheck.h"
+
 
 // Additional sentance for EW support
 
@@ -41,7 +43,7 @@ BOOL ExpectStringWait(PDeviceDescriptor_t d, TCHAR *token) {
 
     if (ch != EOF) {
 
-      if (token[i] == ch) 
+      if (token[i] == (unsigned)ch) 
         i++;
       else
         i=0;

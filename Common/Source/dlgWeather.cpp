@@ -5,6 +5,8 @@
 
    $Id: dlgWeather.cpp,v 8.2 2010/12/13 17:30:25 root Exp root $
 */
+
+#if USEWEATHER
 #include "StdAfx.h"
 
 #include "Statistics.h"
@@ -16,6 +18,8 @@
 #include "dlgTools.h"
 #include "Port.h"
 #include "InfoBoxLayout.h"
+
+#include "utils/heapcheck.h"
 
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
@@ -196,3 +200,4 @@ void dlgWeatherShowModal(void){
   wf = NULL;
 }
 
+#endif // USEWEATHER

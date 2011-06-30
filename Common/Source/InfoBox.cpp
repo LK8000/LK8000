@@ -5,10 +5,11 @@
 
    $Id: InfoBox.cpp,v 8.2 2010/12/11 00:21:10 root Exp root $
 */
+#if USEIBOX
 
 #include "StdAfx.h"
 #include "Defines.h" // VENTA3
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "Sizes.h"
 #include "MapWindow.h"
 #include "InfoBox.h"
@@ -16,9 +17,11 @@
 #include "Utils.h"
 #include "externs.h"
 #include "InfoBoxLayout.h"
-#if LKOBJ
 #include "LKObjects.h"
-#endif
+using std::min;
+using std::max;
+
+#include "utils/heapcheck.h"
 
 #define DEFAULTBORDERPENWIDTH NIBLSCALE(1)
 #define SELECTORWIDTH         (DEFAULTBORDERPENWIDTH+NIBLSCALE(4))
@@ -44,19 +47,15 @@ COLORREF InfoBox::inv_greenColor = RGB(0x00,0xff,0x00); //VENTA2
 COLORREF InfoBox::inv_magentaColor = RGB(0xff,0x00,0xff); //VENTA2
 
 
+
 static COLORREF fgColor = RGB_BLACK;
 static COLORREF bkColor = RGB_WHITE;
-#ifndef LKOBJ
-static COLORREF bkColorSel = RGB_DARKGREEN;   // RGB(150,0x0,0x0);
-#endif
 static COLORREF bdColor = RGB_MIDDLEGREY;  
-//static DWORD lastErr; REMOVE
 static HBRUSH hBrushDefaultBackGround;
 static HBRUSH hBrushDefaultBackGroundSel;
 static HPEN hPenDefaultBorder;
 static HPEN hPenSelector;
 static int Count=0;
-
 
 void InitInfoBoxModule(void);
 LRESULT CALLBACK InfoBoxWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -81,7 +80,6 @@ InfoBox::InfoBox(HWND Parent, int X, int Y, int Width, int Height){
   colorBottom = 0;
 
   if (Count == 0){
-	#if LKOBJ
 	if (Appearance.InverseInfoBox) 
 		hBrushDefaultBackGround = LKBrush_Black;
 	else
@@ -91,12 +89,6 @@ InfoBox::InfoBox(HWND Parent, int X, int Y, int Width, int Height){
     hPenDefaultBorder = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH, bdColor);
     hPenSelector = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH+2, mColorFore);
 
-	#else
-    hBrushDefaultBackGround = (HBRUSH)CreateSolidBrush(bkColor);
-    hBrushDefaultBackGroundSel = (HBRUSH)CreateSolidBrush(bkColorSel);
-    hPenDefaultBorder = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH, bdColor);
-    hPenSelector = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH+2, mColorFore);
-	#endif
   }
 
   mHWnd = CreateWindow(TEXT("STATIC"), TEXT("\0"),
@@ -133,11 +125,7 @@ InfoBox::InfoBox(HWND Parent, int X, int Y, int Width, int Height){
   FillRect(mHdcBuf, &rc, mhBrushBk);
 
   mBorderSize = 1; 
-  if (Appearance.InfoBoxBorder == apIbTab) {
-    mBorderKind = BORDERTAB; 
-  } else {
-    mBorderKind = BORDERRIGHT | BORDERBOTTOM;
-  }
+  mBorderKind = BORDERRIGHT | BORDERBOTTOM;
 
   mphFontTitle   = &TitleWindowFont;
   mphFontValue   = &InfoWindowFont;
@@ -187,10 +175,6 @@ InfoBox::~InfoBox(void){
 
   if (Count==0){
 
-	#ifndef LKOBJ
-    DeleteObject(hBrushDefaultBackGround);
-    DeleteObject(hBrushDefaultBackGroundSel);
-	#endif
     DeleteObject(hPenDefaultBorder);
     DeleteObject(hPenSelector);
 
@@ -247,13 +231,6 @@ int InfoBox::SetBorderKind(int Value){
   int res = mBorderKind;
   if (mBorderKind != Value){
     mBorderKind = Value;
-
-    if (Appearance.InfoBoxBorder == apIbTab) {
-      mBorderKind = BORDERTAB; 
-    } else {
-      mBorderKind = Value;
-    }
-    //JMW    Paint();
   }
   return(res);
 }
@@ -265,8 +242,7 @@ void InfoBox::SetTitle(TCHAR *Value){
   _tcsncpy(sTmp, Value, TITLESIZE);
   sTmp[TITLESIZE] = '\0';
 
-  if (Appearance.InfoTitelCapital)
-    _tcsupr(sTmp);
+  _tcsupr(sTmp);
 
   if (_tcscmp(mTitle, sTmp) != 0){
     _tcscpy(mTitle, sTmp);
@@ -286,27 +262,15 @@ void InfoBox::SetValue(TCHAR *Value){
 
 
 void InfoBox::SetColor(int value) {
-  if (Appearance.InfoBoxColors) {
     color = value;
-  } else {
-    color = 0;
-  }
 }
 
 void InfoBox::SetColorBottom(int value) {
-  if (Appearance.InfoBoxColors) {
     colorBottom = value;
-  } else {
-    colorBottom = 0;
-  }
 }
 
 void InfoBox::SetColorTop(int value) {
-  if (Appearance.InfoBoxColors) {
     colorTop = value;
-  } else {
-    colorTop = 0;
-  }
 }
 void InfoBox::SetComment(TCHAR *Value){
   if (_tcscmp(mComment, Value) != 0){
@@ -391,7 +355,7 @@ void InfoBox::PaintTitle(void){
 
   halftextwidth = (mWidth - tsize.cx)>>1;
 
-  x = max(1,recTitle.left + halftextwidth);
+  x = max(1,(int)recTitle.left + halftextwidth);
 
   y = recTitle.top + 1 + mpFontHeightTitle->CapitalHeight 
     - mpFontHeightTitle->AscentHeight;
@@ -499,8 +463,8 @@ void InfoBox::PaintValue(void){
 
   GetTextExtentPoint(mHdcBuf, mValue, len, &tsize);
 
-  x = max(1,recValue.left + 
-          (mWidth - tsize.cx - mBitmapUnitSize.x*InfoBoxLayout::scale) / 2);
+  x = max(1,(int)recValue.left + 
+          (mWidth - (int)tsize.cx - (int)mBitmapUnitSize.x*InfoBoxLayout::scale) / 2);
 
   if (mBorderKind & BORDERLEFT)
     x+= DEFAULTBORDERPENWIDTH;
@@ -607,7 +571,7 @@ void InfoBox::PaintComment(void){
 
   GetTextExtentPoint(mHdcBuf, mComment, len, &tsize);
 
-  x = max(1,recComment.left + (mWidth - tsize.cx) / 2);
+  x = max(1,(int)recComment.left + (mWidth - (int)tsize.cx) / 2);
   if (mBorderKind & BORDERLEFT)
     x+= DEFAULTBORDERPENWIDTH;
 
@@ -871,13 +835,11 @@ DWORD tnow;
     break;
 
     case WM_LBUTTONDBLCLK:
-#ifndef GNAV
       // JMW capture double click, so infoboxes double clicked also bring up menu
       // VENTA3: apparently this is working only on PC ! Disable it to let PC work
       // with same timeout of PDA and PNA versions with synthetic DBLCLK
 #ifdef DEBUG_DBLCLK
       DoStatusMessage(_T("DBLCLK InfoBox")); // VENTA3 
-#endif
 
       ShowMenu(); 
       break;
@@ -942,3 +904,4 @@ void InitInfoBoxModule(void){
   InitDone = true;
 }
 
+#endif // USEIBOX

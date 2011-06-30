@@ -9,19 +9,21 @@
 #include "StdAfx.h"
 #include <aygshell.h>
 
-#include "XCSoar.h"
+#include "lk8000.h"
 
 #include "externs.h"
 #include "dlgTools.h"
 
 #include "compatibility.h"
 #ifdef OLDPPC
-#include "XCSoarProcess.h"
+#include "LK8000Process.h"
 #else
 #include "Process.h"
 #endif
 
 #include "Utils.h"
+
+#include "utils/heapcheck.h"
 
 
 static bool changed = false;
@@ -63,12 +65,6 @@ static CallBackTableEntry_t CallBackTable[]={
 static void setVariables(void) {
   WndProperty *wp;
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpOLCEnabled"));
-  if (wp) {
-    wp->GetDataField()->Set(EnableOLC);
-    wp->RefreshDisplay();
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpFAIFinishHeight"));
   if (wp) {
     wp->GetDataField()->Set(EnableFAIFinishHeight);
@@ -85,19 +81,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpOLCRules"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M633_ = "Sprint" 
-    dfe->addEnumText(gettext(TEXT("_@M633_")));
-	// LKTOKEN  _@M742_ = "Triangle" 
-    dfe->addEnumText(gettext(TEXT("_@M742_")));
-	// LKTOKEN  _@M176_ = "Classic" 
-    dfe->addEnumText(gettext(TEXT("_@M176_")));
-    dfe->Set(OLCRules);
-    wp->RefreshDisplay();
-  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFinishMinHeight"));
   if (wp) {
@@ -108,8 +91,14 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeight"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(StartMaxHeight*ALTITUDEMODIFY));// 100315
     wp->GetDataField()->SetAsFloat(iround(StartMaxHeight*ALTITUDEMODIFY/1000));
+    wp->GetDataField()->SetUnits(Units::GetAltitudeName());
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeightMargin"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(iround(StartMaxHeightMargin*ALTITUDEMODIFY/1000));
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
@@ -120,6 +109,15 @@ static void setVariables(void) {
     wp->GetDataField()->SetUnits(Units::GetHorizontalSpeedName());
     wp->RefreshDisplay();
   }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeedMargin"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(iround(StartMaxSpeedMargin*SPEEDMODIFY/1000));
+    wp->GetDataField()->SetUnits(Units::GetHorizontalSpeedName());
+    wp->RefreshDisplay();
+  }
+
+
 }
 
 
@@ -164,23 +162,6 @@ bool dlgTaskRules(void){
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpOLCRules"));
-  if (wp) {
-    if (OLCRules != wp->GetDataField()->GetAsInteger()) {
-      OLCRules = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryOLCRules, OLCRules);
-      changed = true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpOLCEnabled"));
-  if (wp) {
-    if (EnableOLC != (wp->GetDataField()->GetAsInteger()==1)) {
-      EnableOLC = (wp->GetDataField()->GetAsInteger()==1);
-      changed = true;
-    }
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpFinishMinHeight"));
   if (wp) {
     ival = iround((wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY)*1000);
@@ -201,6 +182,16 @@ bool dlgTaskRules(void){
     }
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxHeightMargin"));
+  if (wp) {
+    ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0 ); // 100315
+    if ((int)StartMaxHeightMargin != ival) {
+      StartMaxHeightMargin = ival;
+      SetToRegistry(szRegistryStartMaxHeightMargin,StartMaxHeightMargin);
+      changed = true;
+    }
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeed"));
   if (wp) {
     ival = iround((wp->GetDataField()->GetAsInteger()/SPEEDMODIFY)*1000);
@@ -211,6 +202,15 @@ bool dlgTaskRules(void){
     }
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpStartMaxSpeedMargin"));
+  if (wp) {
+    ival = iround((wp->GetDataField()->GetAsInteger()/SPEEDMODIFY)*1000.0);
+    if ((int)StartMaxSpeedMargin != ival) {
+      StartMaxSpeedMargin = ival;
+      SetToRegistry(szRegistryStartMaxSpeedMargin,StartMaxSpeedMargin);
+      changed = true;
+    }
+  }
 
   if (changed) {
     StoreRegistry();

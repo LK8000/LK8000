@@ -1,0 +1,4 @@
+* LK8000 polar for: Stemme S-10 PIL
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+ 759, 0, 125.8, -0.82, 158.51, -1.33, 193.74, -2.2, 18.70
+

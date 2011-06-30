@@ -28,6 +28,8 @@
 #include <zzip/__mmap.h>
 #include <zzip/__debug.h>
 
+#include "utils/heapcheck.h"
+
 #define __sizeof(X) ((zzip_ssize_t)(sizeof(X)))
 
 /* per default, we use a little hack to correct bad z_rootseek parts */
@@ -646,9 +648,6 @@ __zzip_dir_parse (ZZIP_DIR* dir)
     zzip_error_t rv;
     zzip_off_t filesize;
     struct _disk_trailer trailer;
-#if (WINDOWSPC<1)||defined(__MINGW32__)
-    struct stat st; // JMW
-#endif
 
     /* if (! dir || dir->fd < 0) 
      *     { rv = EINVAL; goto error; } 
@@ -656,15 +655,8 @@ __zzip_dir_parse (ZZIP_DIR* dir)
 
     HINT2("------------------ fd=%i", (int) dir->fd);
 
-#if (WINDOWSPC<1)||defined(__MINGW32__)
-    if (stat(jmw_filename,&st) <0) 
-        { rv = ZZIP_DIR_STAT; goto error; }
-    else
-        filesize = st.st_size;
-#else
     if ((filesize = dir->io->fd.filesize(dir->fd)) < 0)
         { rv = ZZIP_DIR_STAT; goto error; }
-#endif
 
     HINT2("------------------ filesize=%ld", (long) filesize);
     if ((rv = __zzip_fetch_disk_trailer(dir->fd, filesize, &trailer, 

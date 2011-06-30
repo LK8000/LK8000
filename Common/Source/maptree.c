@@ -33,13 +33,17 @@ Copyright_License {
 }
 */
 
+#include <tchar.h>
+
 #include <stdlib.h>
 #include <string.h>
 //#include "map.h"
 #include "maptree.h"
 #include "maperror.h"
 
-int FileExistsA(char *FileName);
+#include "utils/heapcheck.h"
+
+int FileExists(TCHAR *FileName);
 /* -------------------------------------------------------------------- */
 /*      If the following is 0.5, nodes will be split in half.  If it    */
 /*      is 0.6 then each subnode will contain 60% of the parent         */
@@ -90,9 +94,9 @@ static treeNodeObj *treeNodeCreate(rectObj rect)
 }
 
 
-SHPTreeHandle msSHPDiskTreeOpen(const char * pszTree, int debug)
+SHPTreeHandle msSHPDiskTreeOpen(const TCHAR* pszTree, int debug)
 {
-    char		*pszFullname, *pszBasename;
+    TCHAR *pszFullname, *pszBasename;
     SHPTreeHandle	psTree;
   
     char		pabyBuf[16];
@@ -117,24 +121,23 @@ SHPTreeHandle msSHPDiskTreeOpen(const char * pszTree, int debug)
   /*	Compute the base (layer) name.  If there is any extension	    */
   /*	on the passed in filename we will strip it off.			    */
   /* -------------------------------------------------------------------- */
-    pszBasename = (char *) malloc(strlen(pszTree)+5);
-    strcpy( pszBasename, pszTree );
-    for( i = strlen(pszBasename)-1; 
-       i > 0 && pszBasename[i] != '.' && pszBasename[i] != '/'
-	 && pszBasename[i] != '\\';
+    pszBasename = (TCHAR *) malloc((_tcslen(pszTree)+5) * sizeof(TCHAR) * 2);
+    _tcscpy( pszBasename, pszTree );
+    for( i = _tcslen(pszBasename)-1; 
+       i > 0 && pszBasename[i] != _T('.') && pszBasename[i] != _T('/') && pszBasename[i] != _T('\\');
        i-- ) {}
   
-    if( pszBasename[i] == '.' )
-      pszBasename[i] = '\0';
+    if( pszBasename[i] == _T('.') )
+      pszBasename[i] = _T('\0');
   
   /* -------------------------------------------------------------------- */
   /*	Open the .shp and .shx files.  Note that files pulled from	    */
   /*	a PC to Unix with upper case filenames won't work!		    */
   /* -------------------------------------------------------------------- */
-    pszFullname = (char *) malloc(strlen(pszBasename) + 5);
-    sprintf( pszFullname, "%s%s", pszBasename, MS_INDEX_EXTENSION); 
+    pszFullname = (TCHAR *) malloc((_tcslen(pszBasename) + _tcslen(_T(MS_INDEX_EXTENSION)) + 1) * sizeof(TCHAR) * 2);
+    _stprintf( pszFullname, _T("%s%s"), pszBasename, _T(MS_INDEX_EXTENSION)); 
 
-    if (FileExistsA(pszFullname))  // prevent codegurad warnings (open unexisting file for reading)
+    if (FileExists(pszFullname))  // prevent codegurad warnings (open unexisting file for reading)
       psTree->zfp = zzip_fopen(pszFullname, "rb" );
     else
       psTree->zfp = NULL;
@@ -162,7 +165,7 @@ SHPTreeHandle msSHPDiskTreeOpen(const char * pszTree, int debug)
   /* ---------------------------------------------------------------------- */
       if (debug)
       {
-          msDebug("WARNING in msSHPDiskTreeOpen(): %s is in old index format "
+          msDebug("WARNING in msSHPDiskTreeOpen(): %ls is in old index format "
                   "which has been deprecated.  It is strongly recommended to "
                   "regenerate it in new format.\n", pszTree);
       }
@@ -519,7 +522,7 @@ static void searchDiskTreeNode(SHPTreeHandle disktree, rectObj aoi, char *status
   return;
 }
 
-char *msSearchDiskTree(char *filename, rectObj aoi, int debug)
+char *msSearchDiskTree(const TCHAR *filename, rectObj aoi, int debug)
 {
   SHPTreeHandle	disktree;
   char *status=NULL;
@@ -528,7 +531,7 @@ char *msSearchDiskTree(char *filename, rectObj aoi, int debug)
   if(!disktree) {
 
     // only set this error IF debugging is turned on, gets annoying otherwise
-    if(debug) msSetError(MS_IOERR, "Unable to open spatial index for %s. In most cases you can safely ignore this message, otherwise check file names and permissions.", "msSearchDiskTree()", filename);
+    if(debug) msSetError(MS_IOERR, "Unable to open spatial index for %ls. In most cases you can safely ignore this message, otherwise check file names and permissions.", "msSearchDiskTree()", filename);
 
     return(NULL);
   }
@@ -583,7 +586,7 @@ treeNodeObj *readTreeNode( SHPTreeHandle disktree )
   return node;
 }
 
-treeObj *msReadTree(char *filename, int debug)
+treeObj *msReadTree(const TCHAR *filename, int debug)
 {
   treeObj *tree=NULL;
   SHPTreeHandle	disktree;
@@ -674,7 +677,7 @@ static void writeTreeNode(SHPTreeHandle disktree, treeNodeObj *node)
   
 }
 
-int msWriteTree(treeObj *tree, char *filename, int B_order)
+int msWriteTree(treeObj *tree, const TCHAR *filename, int B_order)
 {
   char		signature[3] = "SQT";
   char		version = 1;
@@ -683,7 +686,7 @@ int msWriteTree(treeObj *tree, char *filename, int B_order)
   int		i;
   char		mtBigEndian;
   char		pabyBuf[32];
-  char		*pszBasename, *pszFullname;
+  TCHAR  *pszBasename, *pszFullname;
   
   
   disktree = (SHPTreeHandle) malloc(sizeof(SHPTreeInfo));
@@ -692,23 +695,22 @@ int msWriteTree(treeObj *tree, char *filename, int B_order)
   /*	Compute the base (layer) name.  If there is any extension	    */
   /*	on the passed in filename we will strip it off.			    */
   /* -------------------------------------------------------------------- */
-  pszBasename = (char *) malloc(strlen(filename)+5);
-  strcpy( pszBasename, filename );
-  for( i = strlen(pszBasename)-1; 
-       i > 0 && pszBasename[i] != '.' && pszBasename[i] != '/'
-	 && pszBasename[i] != '\\';
+  pszBasename = (TCHAR *) malloc((_tcslen(filename) + 1) * sizeof(TCHAR) * 2);
+  _tcscpy( pszBasename, filename );
+  for( i = _tcslen(pszBasename)-1; 
+       i > 0 && pszBasename[i] != _T('.') && pszBasename[i] != _T('/') && pszBasename[i] != _T('\\');
        i-- ) {}
   
-  if( pszBasename[i] == '.' )
-    pszBasename[i] = '\0';
+  if( pszBasename[i] == _T('.') )
+    pszBasename[i] = _T('\0');
   
   /* -------------------------------------------------------------------- */
   /*	Open the .shp and .shx files.  Note that files pulled from	    */
   /*	a PC to Unix with upper case filenames won't work!		    */
   /* -------------------------------------------------------------------- */
-  pszFullname = (char *) malloc(strlen(pszBasename) + 5);
-  sprintf( pszFullname, "%s%s", pszBasename, MS_INDEX_EXTENSION); 
-  disktree->fp = fopen(pszFullname, "wb");
+  pszFullname = (TCHAR *) malloc((_tcslen(pszBasename) + _tcslen(_T(MS_INDEX_EXTENSION)) + 1) * sizeof(TCHAR) * 2);
+  _stprintf( pszFullname, _T("%s%s"), pszBasename, _T(MS_INDEX_EXTENSION));
+  disktree->fp = _tfopen(pszFullname, _T("wb"));
   
   msFree(pszBasename); // not needed
   msFree(pszFullname);

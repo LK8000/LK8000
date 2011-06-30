@@ -57,6 +57,7 @@ typedef struct _FLARM_TRAFFIC
 } FLARM_TRAFFIC;
 
 
+#if USESWITCHES
 typedef struct _SWITCH_INFO
 {
   bool AirbrakeLocked;
@@ -74,7 +75,7 @@ typedef struct _SWITCH_INFO
   bool FlapLanding;
   // bool Stall;
 } SWITCH_INFO;
-
+#endif
 
 typedef struct _NMEA_INFO
 {
@@ -136,8 +137,9 @@ typedef struct _NMEA_INFO
 
   double SupplyBatteryVoltage;
 
+  #if USESWITCHES
   SWITCH_INFO SwitchState;
-
+  #endif
   BOOL MovementDetected;
 
   double StallRatio;
@@ -191,7 +193,6 @@ class NMEAParser {
   bool TimeHasAdvanced(double ThisTime, NMEA_INFO *GPS_INFO);
   static double TimeModify(double FixTime, NMEA_INFO* info);
   static double TimeConvert(double FixTime, NMEA_INFO* info);
-  void TimeSet( NMEA_INFO* info);
 
   BOOL GLL(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL GGA(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);

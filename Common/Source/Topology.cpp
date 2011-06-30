@@ -13,6 +13,10 @@
 #include "externs.h"
 #include "wcecompat/ts_string.h"
 
+#include "utils/heapcheck.h"
+using std::min;
+using std::max;
+
 extern HFONT MapLabelFont;
 
 XShape::XShape() {
@@ -41,7 +45,7 @@ void Topology::loadBitmap(const int xx) {
 }
 
 // thecolor is relative to shapes, not to labels
-Topology::Topology(const char* shpname, COLORREF thecolor, bool doappend) {
+Topology::Topology(const TCHAR* shpname, COLORREF thecolor, bool doappend) {
 
   append = doappend;
   memset((void*)&shpfile, 0 ,sizeof(shpfile));
@@ -61,8 +65,8 @@ Topology::Topology(const char* shpname, COLORREF thecolor, bool doappend) {
   in_scale = false;
 
   // filename aleady points to _MAPS subdirectory!
-  strcpy( filename, shpname ); 
-  hPen = (HPEN)CreatePen(PS_SOLID, 1, thecolor);
+  _tcscpy( filename, shpname ); 
+  hPen = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), thecolor);
   hbBrush=(HBRUSH)CreateSolidBrush(thecolor);
   Open();
 }
@@ -158,25 +162,20 @@ void Topology::initCache()
 #endif
 
 void Topology::Open() {
-
-  TCHAR ufname[MAX_PATH]; // 091105
   shapefileopen = false;
 
   if (append) {
     if (msSHPOpenFile(&shpfile, (char*)"rb+", filename) == -1) {
-	ascii2unicode(filename,ufname);
-	// StartupStore(_T(". Topology: Open: append failed for <%s> (this can be normal)%s"),ufname,NEWLINE);
+      // StartupStore(_T(". Topology: Open: append failed for <%s> (this can be normal)%s"),filename,NEWLINE);
       return;
     }
   } else {
     if (msSHPOpenFile(&shpfile, (char*)"rb", filename) == -1) {
-	ascii2unicode(filename,ufname);
-	StartupStore(_T("------ Topology: Open FAILED for <%s>%s"),ufname,NEWLINE);
+      StartupStore(_T("------ Topology: Open FAILED for <%s>%s"),filename,NEWLINE);
       return;
     }
   }
-  ascii2unicode(filename,ufname); // 091105
-  // StartupStore(_T(". Topology: Open <%s>%s"),ufname,NEWLINE);
+  // StartupStore(_T(". Topology: Open <%s>%s"),filename,NEWLINE);
 
   scaleThreshold = 1000.0;
   shpCache = (XShape**)malloc(sizeof(XShape*)*shpfile.numshapes);
@@ -229,20 +228,10 @@ Topology::~Topology() {
 
 
 bool Topology::CheckScale(void) {
-  #if LKTOPO
   if (scaleCategory==10)
-#ifndef MAP_ZOOM
-	return (MapWindow::MapScale <= scaleDefaultThreshold);
-#else /* MAP_ZOOM */
     return (MapWindow::zoom.Scale() <= scaleDefaultThreshold);
-#endif /* MAP_ZOOM */
   else
-  #endif
-#ifndef MAP_ZOOM
-  return (MapWindow::MapScale <= scaleThreshold);
-#else /* MAP_ZOOM */
   return (MapWindow::zoom.Scale() <= scaleThreshold);
-#endif /* MAP_ZOOM */
 }
 
 void Topology::TriggerIfScaleNowVisible(void) {
@@ -465,30 +454,16 @@ void Topology::Paint(HDC hdc, RECT rc) {
 
   if (!shapefileopen) return;
 
-  #if LKTOPO
   bool nolabels=false;
   if (scaleCategory==10) {
 	// for water areas, use scaleDefault
-#ifndef MAP_ZOOM
-	if ( MapWindow::MapScale>scaleDefaultThreshold) {
-#else /* MAP_ZOOM */
 	if ( MapWindow::zoom.Scale()>scaleDefaultThreshold) {
-#endif /* MAP_ZOOM */
 		return;
 	}
 	// since we just checked category 10, if we are over scale we set nolabels
-#ifndef MAP_ZOOM
-	if ( MapWindow::MapScale>scaleThreshold) nolabels=true;
-#else /* MAP_ZOOM */
 	if ( MapWindow::zoom.Scale()>scaleThreshold) nolabels=true;
-#endif /* MAP_ZOOM */
   } else 
-  #endif
-#ifndef MAP_ZOOM
-  if (MapWindow::MapScale > scaleThreshold) return;
-#else /* MAP_ZOOM */
   if (MapWindow::zoom.Scale() > scaleThreshold) return;
-#endif /* MAP_ZOOM */
 
   // TODO code: only draw inside screen!
   // this will save time with rendering pixmaps especially
@@ -507,36 +482,20 @@ void Topology::Paint(HDC hdc, RECT rc) {
     
   int iskip = 1;
   
-#if LKTOPO
   // attempt to bugfix 100615 polyline glitch with zoom over 33Km
   // do not skip points, if drawing coast lines which have a scaleThreshold of 100km!
   // != 5 and != 10
   if (scaleCategory>10) { 
-#endif
-#ifndef MAP_ZOOM
-  if (MapWindow::MapScale>0.25*scaleThreshold) {
-#else /* MAP_ZOOM */
   if (MapWindow::zoom.Scale()>0.25*scaleThreshold) {
-#endif /* MAP_ZOOM */
     iskip = 2;
   } 
-#ifndef MAP_ZOOM
-  if (MapWindow::MapScale>0.5*scaleThreshold) {
-#else /* MAP_ZOOM */
   if (MapWindow::zoom.Scale()>0.5*scaleThreshold) {
-#endif /* MAP_ZOOM */
     iskip = 3;
   }
-#ifndef MAP_ZOOM
-  if (MapWindow::MapScale>0.75*scaleThreshold) {
-#else /* MAP_ZOOM */
   if (MapWindow::zoom.Scale()>0.75*scaleThreshold) {
-#endif /* MAP_ZOOM */
     iskip = 4;
   }
-#if LKTOPO
   }
-#endif
 
   #if TOPOFASTLABEL
   // use the already existing screenbounds_latlon, calculated by CalculateScreenPositions in MapWindow2
@@ -564,11 +523,7 @@ void Topology::Paint(HDC hdc, RECT rc) {
 	#if 101016
 	// -------------------------- NOT PRINTING ICONS ---------------------------------------------
 	bool dobitmap=false;
-#ifndef MAP_ZOOM
-	if (scaleCategory<90 || (MapWindow::MapScale<2)) dobitmap=true;
-#else /* MAP_ZOOM */
 	if (scaleCategory<90 || (MapWindow::zoom.Scale()<2)) dobitmap=true;
-#endif /* MAP_ZOOM */
 	// first a latlon overlap check, only approximated because of fastcosine in latlon2screen
 	if (checkVisible(*shape, screenRect))
 		for (int tt = 0; tt < shape->numlines; tt++) {
@@ -588,22 +543,13 @@ void Topology::Paint(HDC hdc, RECT rc) {
 
 	#else
 	// -------------------------- PRINTING ICONS ---------------------------------------------
-	#if (LKTOPO && TOPOFAST)
-	#if 101016
+	#if (TOPOFAST)
 	// no bitmaps for small town over a certain zoom level and no bitmap if no label at all levels
 	bool nobitmap=false, noiconwithnolabel=false;
 	if (scaleCategory==90 || scaleCategory==100) {
 		noiconwithnolabel=true;
 		if (MapWindow::MapScale>4) nobitmap=true;
 	}
-	#else
-	// do not print bitmaps for small town over a certain zoom level
-	bool nobitmap=false;
-	if (scaleCategory==90 && (MapWindow::MapScale>4))
-		nobitmap=true;
-	else 
-	if (scaleCategory==100 && (MapWindow::MapScale>4)) nobitmap=true;
-	#endif
 	#endif
 
 	//#if TOPOFASTLABEL
@@ -613,7 +559,7 @@ void Topology::Paint(HDC hdc, RECT rc) {
 				POINT sc;
 				MapWindow::LatLon2Screen(shape->line[tt].point[jj].x, shape->line[tt].point[jj].y, sc);
 	
-				#if (LKTOPO && TOPOFAST)
+				#if (TOPOFAST)
 				if (!nobitmap)
 				#endif
 				#if 101016
@@ -661,7 +607,6 @@ void Topology::Paint(HDC hdc, RECT rc) {
       
     case(MS_SHAPE_POLYGON):
 
-	#if LKTOPO
 	// if it's a water area (nolabels), print shape up to defaultShape, but print
 	// labels only up to custom label levels
 	if ( nolabels ) {
@@ -681,7 +626,6 @@ void Topology::Paint(HDC hdc, RECT rc) {
 			}
 		}
 	} else 
-	#endif
 	if (checkVisible(*shape, screenRect)) {
 		for (int tt = 0; tt < shape->numlines; tt ++) {
 			int minx = rc.right;
@@ -713,7 +657,7 @@ void Topology::Paint(HDC hdc, RECT rc) {
 
 
 
-TopologyLabel::TopologyLabel(const char* shpname, COLORREF thecolor, int field1):Topology(shpname, thecolor) 
+TopologyLabel::TopologyLabel(const TCHAR* shpname, COLORREF thecolor, int field1):Topology(shpname, thecolor) 
 {
   //sjt 02nov05 - enabled label fields
   setField(max(0,field1)); 
@@ -740,31 +684,13 @@ XShape* TopologyLabel::addShape(const int i) {
 
 // Print topology labels
 bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
-#if LKTOPO
   if (label && ((MapWindow::DeclutterLabels==MAPLABELS_ALLON)||(MapWindow::DeclutterLabels==MAPLABELS_ONLYTOPO))) {
-#else
-  if (label && (MapWindow::DeclutterLabels<MAPLABELS_ALLOFF)) {
-#endif
 
 	TCHAR Temp[100];
 	int size = MultiByteToWideChar(CP_ACP, 0, label, -1, Temp, 100) - 1;			//ANSI to UNICODE
 	if (size <= 0) return false;													//Do not waste time with null labels
 
 	SetBkMode(hDC,TRANSPARENT);
-
-	#ifndef LK8000_OPTIMIZE
-	if (ispunct(Temp[0])) {
-		double dTemp;
-      
-		Temp[0]='0';
-		dTemp = StrToDouble(Temp,NULL);
-		dTemp = ALTITUDEMODIFY*dTemp;
-		if (dTemp > 999)
-			wsprintf(Temp,TEXT("%.1f"),(dTemp/1000));
-		else
-			wsprintf(Temp,TEXT("%d"),int(dTemp));
-	}
-	#endif
 
 	SIZE tsize;
 	RECT brect;
@@ -859,7 +785,7 @@ TopologyWriter::~TopologyWriter() {
 }
 
 
-TopologyWriter::TopologyWriter(const char* shpname, COLORREF thecolor):
+TopologyWriter::TopologyWriter(const TCHAR* shpname, COLORREF thecolor):
   Topology(shpname, thecolor, true) {
 
   Reset();
@@ -869,25 +795,16 @@ TopologyWriter::TopologyWriter(const char* shpname, COLORREF thecolor):
 void TopologyWriter::DeleteFiles(void) {
   // Delete all files, since zziplib interface doesn't handle file modes
   // properly
-  if (strlen(filename)>0) {
+  if (_tcslen(filename)>0) {
     TCHAR fname[MAX_PATH];
-    ascii2unicode(filename, fname);
-    _tcscat(fname, TEXT(".shp"));
-	#if ALPHADEBUG
-	StartupStore(_T(". TopologyWriter: deleting <%s>%s"),fname,NEWLINE);
-	#endif
+    _tcscpy(fname, filename);
+    _tcscat(fname, _T(".shp"));
     DeleteFile(fname);
-    ascii2unicode(filename, fname);
-    _tcscat(fname, TEXT(".shx"));
-	#if ALPHADEBUG
-	StartupStore(_T(". TopologyWriter: deleting <%s>%s"),fname,NEWLINE);
-	#endif
+    _tcscpy(fname, filename);
+    _tcscat(fname, _T(".shx"));
     DeleteFile(fname);
-    ascii2unicode(filename, fname);
-    _tcscat(fname, TEXT(".dbf"));
-	#if ALPHADEBUG
-	StartupStore(_T(". TopologyWriter: deleting <%s>%s"),fname,NEWLINE);
-	#endif
+    _tcscpy(fname, filename);
+    _tcscat(fname, _T(".dbf"));
     DeleteFile(fname);
   }
 }
@@ -895,15 +812,11 @@ void TopologyWriter::DeleteFiles(void) {
 
 void TopologyWriter::CreateFiles(void) {
   // by default, now, this overwrites previous contents
-
-  TCHAR ufname[MAX_PATH]; // 091105
   if (msSHPCreateFile(&shpfile, filename, SHP_POINT) == -1) {
   } else {
-    char dbfname[100];
-    strcpy(dbfname, filename );
-    strcat(dbfname, ".dbf"); 
-    ascii2unicode(dbfname,ufname); // 091105
-    StartupStore(_T(". TopologyWriter: creating <%s>%s"),ufname,NEWLINE);
+    TCHAR dbfname[100];
+    _tcscpy(dbfname, filename);
+    _tcscat(dbfname, _T(".dbf")); 
     shpfile.hDBF = msDBFCreate(dbfname);
     if (shpfile.hDBF == NULL)
 	StartupStore(_T("------ TopologyWriter: msDBFCreate error%s"),NEWLINE);

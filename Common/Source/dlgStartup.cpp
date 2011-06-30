@@ -7,13 +7,15 @@
 */
 
 #include "StdAfx.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 
 #include "externs.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 #include "MapWindow.h"
 #include "Utils2.h"
+
+#include "utils/heapcheck.h"
 
 extern HFONT MapWindowFont;
 extern HFONT TitleWindowFont;
@@ -22,9 +24,6 @@ extern void Shutdown(void);
 
 static WndForm *wf=NULL;
 static WndOwnerDrawFrame *wSplash=NULL;
-#if !LKSTARTUP
-static HBITMAP hSplash;
-#endif
 extern HINSTANCE hInst;
 
 // lines are: 0 - 9
@@ -79,7 +78,6 @@ void RawWrite(TCHAR *text, int line, short fsize) {
 
 static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 
-#if LKSTARTUP
  HBITMAP hWelcomeBitmap=NULL;
  TCHAR sDir[MAX_PATH];
  TCHAR srcfile[MAX_PATH];
@@ -162,19 +160,6 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 
 
 
-#else
-  RECT  rc;
-  hSplash=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SWIFT));
-  CopyRect(&rc, Sender->GetBoundRect());
-  HDC hDCTemp = CreateCompatibleDC(hDC);
-  SelectObject(hDCTemp, hSplash);
-  StretchBlt(hDC, 
-	     rc.left, rc.top, 
-	     rc.right, rc.bottom,
-	     hDCTemp, 0, 0, 318, 163, SRCCOPY); 
-  DeleteObject(hSplash);
-  DeleteDC(hDCTemp);
-#endif
 
 }
 
@@ -190,7 +175,8 @@ static void OnSIMClicked(WindowControl * Sender){
 static void OnFLYClicked(WindowControl * Sender){
 	(void)Sender;
   RUN_MODE=RUN_FLY;
-  LKForceComPortReset=true;
+//  Removed 110605: we now run devInit on startup for all devices, and we dont want an immediate and useless reset.
+//  LKForceComPortReset=true; 
   PortMonitorMessages=0;
   wf->SetModalResult(mrOK);
 }
@@ -214,18 +200,10 @@ static CallBackTableEntry_t CallBackTable[]={
 extern TCHAR startProfileFile[];
 
 
-#if LKSTARTUP
 bool dlgStartupShowModal(void){
-#else
-void dlgStartupShowModal(void){
-#endif
   WndProperty* wp;
 
-  #if LKSTARTUP
   StartupStore(TEXT(". Startup dialog, RUN_MODE=%d %s"),RUN_MODE,NEWLINE);
-  #else 
-  StartupStore(TEXT(". Startup dialog%s"),NEWLINE);
-  #endif
 
   char filename[MAX_PATH];
   strcpy(filename,"");
@@ -237,13 +215,9 @@ void dlgStartupShowModal(void){
 		LocalPathS(filename, TEXT("dlgFlySim.xml"));
 		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_FLYSIM"));
 	}
-	#if LKSTARTUP
 	if (!wf) {
 		return false;
 	}
-	#else
-	if (!wf) return;
-	#endif
   } else {
 	if (!InfoBoxLayout::landscape) {
 		LocalPathS(filename, TEXT("dlgStartup_L.xml"));
@@ -252,18 +226,13 @@ void dlgStartupShowModal(void){
 		LocalPathS(filename, TEXT("dlgStartup.xml"));
 		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_STARTUP"));
 	}
-	#if LKSTARTUP
 	if (!wf) return false;
-	#else
-	if (!wf) return;
-	#endif
   }
 
   wSplash = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmSplash")); 
   wSplash->SetWidth(ScreenSizeX);
 
 
-  #if LKSTARTUP
   int  PROFWIDTH=0, PROFACCEPTWIDTH=0, PROFHEIGHT=0, PROFSEPARATOR=0;
   if (RUN_MODE==RUN_WELCOME) {
 	((WndButton *)wf->FindByName(TEXT("cmdFLY"))) ->SetOnClickNotify(OnFLYClicked);
@@ -349,12 +318,6 @@ void dlgStartupShowModal(void){
 	}
   }
 
-
-  #else
-  ((WndButton *)wf->FindByName(TEXT("cmdClose"))) ->SetOnClickNotify(OnCloseClicked);
-  ((WndButton *)wf->FindByName(TEXT("cmdClose"))) ->SetWidth(ScreenSizeX-NIBLSCALE(6));
-  #endif
-
   TCHAR temp[MAX_PATH];
 
   wf->SetHeight(ScreenSizeY);
@@ -368,30 +331,14 @@ void dlgStartupShowModal(void){
     dfe->ScanDirectoryTop(_T(LKD_CONF),temp); 
     dfe->Lookup(startProfileFile);
 
-    #if LKSTARTUP
     wp->SetHeight(PROFHEIGHT);
     wp->SetWidth(PROFWIDTH);
     if (ScreenLandscape)
     	wp->SetLeft(((ScreenSizeX-PROFWIDTH-PROFSEPARATOR-PROFACCEPTWIDTH)/2)-NIBLSCALE(2));
     else
     	wp->SetLeft(0);
-    #else
-
-    wp->SetHeight(NIBLSCALE(25));
-    int xs=ScreenSizeX-NIBLSCALE(2)-(NIBLSCALE(60));
-    if (!ScreenLandscape) xs+=NIBLSCALE(20);
-    wp->SetWidth(xs);
-    wp->SetLeft(( ScreenSizeX-xs)/2);
-    #endif
 
     wp->RefreshDisplay();
-    #ifndef LKSTARTUP
-    if (dfe->GetNumFiles()<=2) {
-      delete wf;
-      wf = NULL;
-      return;
-    }
-    #endif
   }
 
   if  (!CheckRootDir()) {
@@ -439,6 +386,21 @@ void dlgStartupShowModal(void){
 	MessageBoxX(hWndMainWindow, mes, _T("NO LANGUAGE DIRECTORY"), MB_OK|MB_ICONQUESTION);
 	Shutdown();
   }
+  if  (!CheckPolarsDir()) {
+	TCHAR mydir[MAX_PATH];
+	TCHAR mes[MAX_PATH];
+	StartupStore(_T("... CHECK POLARS DIRECTORY FAILED!%s"),NEWLINE);
+
+	_stprintf(mes,_T("%s v%s.%s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE));
+	RawWrite(mes,1,1);
+	LocalPath(mydir,_T(LKD_POLARS));
+	_stprintf(mes,_T("%s"),mydir);
+	RawWrite(_T("Directory or configuration files missing"),8,1);
+	RawWrite(mes,9,0);
+	MessageBoxX(hWndMainWindow, _T("NO POLARS DIRECTORY\nCheck Install"), _T("FATAL ERROR 003"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(hWndMainWindow, mes, _T("NO POLARS DIRECTORY"), MB_OK|MB_ICONQUESTION);
+	Shutdown();
+  }
   wf->ShowModal();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpProfile"));
@@ -466,7 +428,6 @@ void dlgStartupShowModal(void){
 
   wf = NULL;
 
-  #if LKSTARTUP
   if (RUN_MODE==RUN_FLY) {
 	if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
 	return false;
@@ -477,7 +438,6 @@ void dlgStartupShowModal(void){
   }
 
   return true; // else repeat dialog
-  #endif
 
 }
 

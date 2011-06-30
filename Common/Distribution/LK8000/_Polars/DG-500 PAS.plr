@@ -1,0 +1,4 @@
+* LK8000 polar for: DG-500 PAS
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+ 660, 160, 115.5, -0.72, 152.16, -1.28, 190.22, -2.3, 18.29
+

@@ -11,10 +11,12 @@
 #include <aygshell.h>
 
 #include "Defines.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "externs.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
+
+#include "utils/heapcheck.h"
 
 #define MAXTITLE 200
 #define MAXDETAILS 5000

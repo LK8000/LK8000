@@ -34,6 +34,8 @@ Copyright_License {
 #include "mapprimitive.h"
 #include "maperror.h"
 
+#include "utils/heapcheck.h"
+
 typedef enum {CLIP_LEFT, CLIP_MIDDLE, CLIP_RIGHT} CLIP_STATE;
 
 #define CLIP_CHECK(min, a, max) ((a) < (min) ? CLIP_LEFT : ((a) > (max) ? CLIP_RIGHT : CLIP_MIDDLE));
@@ -927,19 +929,7 @@ int msPolylineLabelPoint(shapeObj *p, pointObj *lp, int min_length, double *angl
 }
 
 
-ZZIP_FILE *ppc_fopen(const char *filename, const char *mode)
+ZZIP_FILE *ppc_fopen(const TCHAR *filename, const char *mode)
 {
-  /*
-  WCHAR wszFileName[256];          // Unicode user name
-  WCHAR wszMode[10];
-
-  MultiByteToWideChar( CP_ACP, 0, filename,
-        strlen(filename)+1, wszFileName,   
-     sizeof(wszFileName)/sizeof(wszFileName[0]) );
-  MultiByteToWideChar( CP_ACP, 0, mode,
-        strlen(mode)+1, wszMode,   
-     sizeof(wszMode)/sizeof(wszMode[0]) );
-  return _tfopen(wszFileName, wszMode);
-  */
   return zzip_fopen(filename, mode);
 }

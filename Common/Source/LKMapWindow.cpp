@@ -13,9 +13,8 @@
 #include "Defines.h"
 
 #include "MapWindow.h"
-#include "OnLineContest.h"
 #include "Utils.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "LKUtils.h"
 #include "Utils2.h"
 #include "Units.h"
@@ -36,20 +35,19 @@
 #include "Terrain.h"
 #include "RasterTerrain.h"
 
-#include "GaugeCDI.h"
-#include "GaugeFLARM.h"
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
-#if LKOBJ
 #include "LKObjects.h"
-#endif
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
 #endif
 
+#include "utils/heapcheck.h"
 
-extern HWND hWndCDIWindow;
+using std::min;
+using std::max;
+
 extern HFONT MapLabelFont;
 extern HFONT  MapWindowBoldFont;
 
@@ -112,14 +110,9 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
   }
 
   HPEN hpold;
-  #if LKOBJ
   HPEN thinBlackPen = LKPen_Black_N1;
-  #else
-  HPEN thinBlackPen = CreatePen(PS_SOLID, NIBLSCALE(1), RGB(0,0,0));
-  #endif
   POINT Arrow[5];
 
-  //TCHAR buffer[50]; REMOVE
   TCHAR lbuffer[50];
 
   hpold = (HPEN)SelectObject(hDC, thinBlackPen);
@@ -136,15 +129,9 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
   double screenrange = GetApproxScreenRange();
   double scalefact = screenrange/6000.0; // FIX 100820
 
-  #if LKOBJ
   HBRUSH redBrush = LKBrush_Red;
   HBRUSH yellowBrush = LKBrush_Yellow;
   HBRUSH greenBrush = LKBrush_Green;
-  #else
-  HBRUSH redBrush = CreateSolidBrush(RGB_RED);
-  HBRUSH yellowBrush = CreateSolidBrush(RGB_YELLOW);
-  HBRUSH greenBrush = CreateSolidBrush(RGB_GREEN);
-  #endif
   HFONT  oldfont = (HFONT)SelectObject(hDC, LK8MapFont);
 
   for (i=0,painted=0; i<FLARM_MAX_TRAFFIC; i++) {
@@ -246,12 +233,6 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
 
   SelectObject(hDC, oldfont);
   SelectObject(hDC, hpold);
-  #ifndef LKOBJ
-  DeleteObject((HPEN)thinBlackPen);
-  DeleteObject(greenBrush);
-  DeleteObject(yellowBrush);
-  DeleteObject(redBrush);
-  #endif
 
 }
 
@@ -312,7 +293,6 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
   int variowidth=LKVarioSize;
 
 
-  #if LKOBJ
   whiteThickPen =  LKPen_White_N2;	// BOXTHICK
   blackThickPen =  LKPen_Black_N2;	// BOXTHICK
   whiteThinPen =   LKPen_White_N0;
@@ -326,21 +306,6 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
   lakeBrush = LKBrush_Lake;
   blueBrush = LKBrush_Blue;
   indigoBrush = LKBrush_Indigo;
-  #else
-  whiteThickPen =   (HPEN)CreatePen(PS_SOLID,IBLSCALE(BOXTHICK),RGB_WHITE);
-  blackThickPen =   (HPEN)CreatePen(PS_SOLID,IBLSCALE(BOXTHICK),RGB_BLACK);
-  whiteThinPen =   (HPEN)CreatePen(PS_SOLID,0,RGB_WHITE);
-  blackThinPen =   (HPEN)CreatePen(PS_SOLID,0,RGB_BLACK);
-  blackBrush = (HBRUSH)CreateSolidBrush(RGB_BLACK);
-  whiteBrush = (HBRUSH)CreateSolidBrush(RGB_WHITE);
-  greenBrush = (HBRUSH)CreateSolidBrush(RGB_GREEN);
-  darkyellowBrush = (HBRUSH)CreateSolidBrush(RGB_DARKYELLOW2);
-  orangeBrush = (HBRUSH)CreateSolidBrush(RGB_ORANGE);
-  redBrush = (HBRUSH)CreateSolidBrush(RGB_RED);
-  lakeBrush = (HBRUSH)CreateSolidBrush(RGB_LAKE);
-  blueBrush = (HBRUSH)CreateSolidBrush(RGB_BLUE);
-  indigoBrush = (HBRUSH)CreateSolidBrush(RGB_INDIGO);
-  #endif
 
   // set default background in case of missing values
   for (int i=0; i<(NUMVBRICKS/2); i++ )
@@ -491,12 +456,41 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
 	  SelectObject(hDC,blackThinPen);
 
   double value;
-  if (GPS_INFO.VarioAvailable) {
-	//value = LIFTMODIFY*GPS_INFO.Vario;
-	value = GPS_INFO.Vario;
+
+  if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) || LKVarioVal==vValVarioVario) {
+	if (DrawInfo.VarioAvailable) {
+		// UHM. I think we are not painting values correctly for knots &c.
+		//value = LIFTMODIFY*DrawInfo.Vario;
+		value = DrawInfo.Vario;
+	} else {
+		value = DerivedDrawInfo.Vario;
+	}
   } else {
-	value = CALCULATED_INFO.Vario;
+	switch(LKVarioVal) {
+		case vValVarioNetto:
+			value = DerivedDrawInfo.NettoVario;
+			break;
+		case vValVarioSoll:
+			double ias;
+			if (DrawInfo.AirspeedAvailable && DrawInfo.VarioAvailable)
+				ias=DrawInfo.IndicatedAirspeed;
+			else
+				ias=DerivedDrawInfo.IndicatedAirspeedEstimated;
+
+			value = DerivedDrawInfo.VOpt - ias;
+			// m/s 0-nnn autolimit to 20m/s full scale (72kmh diff)
+			if (value>20) value=20;
+			if (value<-20) value=-20;
+			value/=3.3333;	// 0-20  -> 0-6
+			value *= -1; // if up, push down
+			break;
+
+		default:
+			value = DerivedDrawInfo.NettoVario;
+			break;
+	}
   }
+
 
   if (dogaugeinit) {
 
@@ -664,11 +658,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   #endif
 
   #if 100303
-#ifndef MAP_ZOOM
-  if (MapWindow::MapScale <2.34) { // <3km map zoom
-#else /* MAP_ZOOM */
   if (MapWindow::zoom.Scale() <2.34) { // <3km map zoom
-#endif /* MAP_ZOOM */
 	usecolors=true;
   }
   #endif
@@ -678,11 +668,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   double traildrift_lat = 0.0;
   double traildrift_lon = 0.0;
   
-#ifndef MAP_ZOOM
-  if (EnableTrailDrift && (DisplayMode == dmCircling)) {
-#else /* MAP_ZOOM */
   if (EnableTrailDrift && MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
     double tlat1, tlon1;
     
     FindLatitudeLongitude(DrawInfo.Latitude, 
@@ -709,11 +695,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 	// scan only recently for lift magnitude
 	num_trail_max = TRAILSIZE/TRAILSHRINK;
   }
-#ifndef MAP_ZOOM
-  if ((DisplayMode == dmCircling)) {
-#else /* MAP_ZOOM */
   if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
 	num_trail_max /= TRAILSHRINK;
   }
 
@@ -751,11 +733,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 
   // Constants for speedups
 
-#ifndef MAP_ZOOM
-  const bool display_circling = DisplayMode == dmCircling;
-#else /* MAP_ZOOM */
   const bool display_circling = MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING);
-#endif /* MAP_ZOOM */
   const double display_time = DrawInfo.Time;
 
   // expand bounds so in strong winds the appropriate snail points are
@@ -776,11 +754,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   const int sint = ISINETABLE[deg];
   const int xxs = Orig_Screen.x*1024-512;
   const int yys = Orig_Screen.y*1024+512;
-#ifndef MAP_ZOOM
-  const double mDrawScale = DrawScale;
-#else /* MAP_ZOOM */
   const double mDrawScale = zoom.DrawScale();
-#endif /* MAP_ZOOM */
   const double mPanLongitude = PanLongitude;
   const double mPanLatitude = PanLatitude;
 
@@ -790,11 +764,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   if (display_circling) {
 	nearby=NIBLSCALE(1);
   } else {
-#ifndef MAP_ZOOM
-  	if (MapWindow::MapScale <=1)
-#else /* MAP_ZOOM */
   	if (MapWindow::zoom.Scale() <=1)
-#endif /* MAP_ZOOM */
 		nearby=NIBLSCALE(1); 
 	else
 		nearby=NIBLSCALE(2);
@@ -873,7 +843,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
     // now we know either point is visible, better get screen coords
     // if we don't already.
 
-    double dt = max(0,(display_time-P1.Time)*P1.DriftFactor);
+    double dt = max(0.0,(display_time-P1.Time)*P1.DriftFactor);
     double this_lon = P1.Longitude+traildrift_lon*dt;
     double this_lat = P1.Latitude+traildrift_lat*dt;
 
@@ -962,7 +932,6 @@ go_selcolor:
 }
 
 
-#if AUTORIENT
 // change dynamically the map orientation mode
 // set true flag for resetting DisplayOrientation mode and return
 void MapWindow::SetAutoOrientation(bool doreset) {
@@ -980,17 +949,99 @@ void MapWindow::SetAutoOrientation(bool doreset) {
   }
 
   // 1.4 because of correction if mapscale reported on screen in MapWindow2
-#ifndef MAP_ZOOM
-  if ((MapScale*1.4) >= AutoOrientScale) {
-#else /* MAP_ZOOM */
   if (MapWindow::zoom.Scale() * 1.4 >= AutoOrientScale) {
-#endif /* MAP_ZOOM */
 	// DisplayOrientation=NORTHSMART; // better to keep the glider centered on low zoom levels
 	DisplayOrientation=NORTHUP;
   } else {
 	DisplayOrientation=OldDisplayOrientation;
   }
 }
-#endif
 
+// Called by DrawThread
+void MapWindow::DrawLKAlarms(HDC hDC, const RECT rc) {
+
+  static unsigned short displaycounter=0;
+  static short oldvalidalarm=-1;
+  short validalarm=-1;
+
+  // Alarms are working only with a valid GPS fix. No navigator, no alarms.
+  if (GPS_INFO.NAVWarning) return;
+
+  // give priority to the lowest alarm in list
+  if (CheckAlarms(2)) validalarm=2;
+  if (CheckAlarms(1)) validalarm=1;
+  if (CheckAlarms(0)) validalarm=0;
+
+  // If we have a new alarm, play sound if available and enabled
+  if (validalarm>=0) {
+	if (EnableSoundModes) {
+		switch (validalarm) {
+			case 0:
+				LKSound(_T("LK_ALARM_ALT1.WAV"));
+				break;
+			case 1:
+				LKSound(_T("LK_ALARM_ALT2.WAV"));
+				break;
+			case 2:
+				LKSound(_T("LK_ALARM_ALT3.WAV"));
+				break;
+			default:
+				break;
+		}
+	}
+	displaycounter=12; // seconds to display alarm on screen, resetting anything set previously
+  }
+
+  // Now paint message, even for passed alarms
+  if (displaycounter) {
+
+	if (--displaycounter>60) displaycounter=0; // safe check 
+
+	TCHAR textalarm[100];
+	short currentalarm=0;
+	if (validalarm>=0) {
+		currentalarm=validalarm;
+		oldvalidalarm=validalarm;
+	} else
+		if (oldvalidalarm>=0) currentalarm=oldvalidalarm; // safety check
+
+	switch(currentalarm) {
+		case 0:
+		case 1:
+		case 2:
+			wsprintf(textalarm,_T("%s %d: %s %d"),
+			gettext(_T("_@M1650_")), currentalarm+1, gettext(_T("_@M1651_")),  // ALARM ALTITUDE
+			LKalarms[currentalarm].triggervalue);
+			break;
+		default:
+			break;
+	}
+
+	HFONT oldfont=NULL;
+	oldfont=(HFONT)SelectObject(hDC,LK8TargetFont);
+	TextInBoxMode_t TextInBoxMode = {2};
+	TextInBoxMode.AsInt=0;
+	TextInBoxMode.AsFlag.Color = TEXTWHITE;
+	TextInBoxMode.AsFlag.NoSetFont=1;
+	TextInBoxMode.AsFlag.AlligneCenter = 1;
+	TextInBoxMode.AsFlag.WhiteBorder = 1;
+	TextInBoxMode.AsFlag.Border = 1;
+
+	// same position for gps warnings: if navwarning, then no alarms. So no overlapping.
+        TextInBox(hDC, textalarm , (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode); 
+
+	SelectObject(hDC,oldfont);
+  }
+
+}
+
+
+void MSG_NotEnoughMemory(void) {
+
+  MessageBoxX(hWndMapWindow,
+    gettext(TEXT("_@M1663_")), // NOT ENOUGH MEMORY
+    gettext(TEXT("_@M1662")),  // SYSTEM ERROR
+    MB_OK|MB_ICONEXCLAMATION);
+
+}
 

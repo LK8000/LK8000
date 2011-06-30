@@ -7,11 +7,15 @@
 */
 
 #include "StdAfx.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "Utils.h"
 #include "dlgTools.h"
 #include "externs.h"
 #include "InfoBoxLayout.h"
+
+#include "utils/heapcheck.h"
+using std::min;
+using std::max;
 
 static WndForm *wf=NULL;
 static WndOwnerDrawFrame *wGrid=NULL;
@@ -196,4 +200,8 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width)
   wf=NULL; //@ 101027
 }
 
+void dlgTextEntryShowModal(TCHAR *text, int width)
+{
+      dlgTextEntryKeyboardShowModal(text, width);
+}
 

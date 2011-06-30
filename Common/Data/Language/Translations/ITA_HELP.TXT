@@ -1,4 +1,4 @@
-# LK8000 ITA_HLP.TXT 101210
+Ôªø# LK8000 ITA_HLP.TXT 090411
 # 
 # A single text line can be max 500 characters long
 # An entire help can be max 1024 characters total
@@ -7,30 +7,30 @@
 
 @100
 Definisce il livello di dettaglio delle impostazioni.
-[Basico]: Sono mostrate solo le impostazioni di base.
+[Di base]: Sono mostrate solo le impostazioni di base.
 [Esperto]: Sono mostrate le impostazioni di base ed avanzate.
 
 @101
-Scelta del file che contiene la TOPOLOGIA della mappa; È possibile, come opzione, che tale file contenga anche il terreno, i waypoint e gli spazi aerei.
-Il file con estensione .LKM Ë in realt‡ un file compresso: cambiandone il suffisso in .ZIP Ë possibile scompattarlo e cambiarne i contenuti.
+Scelta del file che contiene la TOPOLOGIA della mappa; e' possibile, come opzione, che tale file contenga anche il terreno, i waypoint e gli spazi aerei.
+Il file con estensione .LKM e' in realta' un file compresso: cambiandone il suffisso in .ZIP e' possibile scompattarlo e cambiarne i contenuti.
 I file con le mappe sono nella cartella _Maps.
 
 @102
 File contenente i dati del modello digitale di elevazione del terreno (.DEM).
 Qui sono anche utilizzabili file con estensione .DAT e .JP2.
-Ricorda che il terreno puÚ anche essere caricato internamente dal file di mappa del tipo .LKM; in tal caso il modello di terreno qui definito viene impiegato al posto di quello preconfigurato nel file .LKM.
-Questo file È nella cartella _Maps.
+Ricorda che il terreno puo' anche essere caricato internamente dal file di mappa del tipo .LKM; in tal caso il modello di terreno qui definito viene impiegato al posto di quello preconfigurato nel file .LKM.
+Questo file e' nella cartella _Maps.
 
 @103
 File primario dei piloni.
 I files dei piloni sono nella cartella _Waypoints.
-È possibile usare file tipo Winpilot (DAT), SeeYou (CUP), COMPEgps (WPT).
-ATTENZIONE: quando si crea un nuovo pilone, sar‡ salvato nel file 1, nel formato corrispondente.
+e' possibile usare file tipo Winpilot (DAT), SeeYou (CUP), COMPEgps (WPT).
+ATTENZIONE: quando si crea un nuovo pilone, sara' salvato nel file 1, nel formato corrispondente.
 
 @104
 File secondario dei piloni.
 I files dei piloni sono nella cartella _Waypoints.
-È possibile usare file tipo Winpilot (DAT), SeeYou (CUP), COMPEgps (WPT).
+e' possibile usare file tipo Winpilot (DAT), SeeYou (CUP), COMPEgps (WPT).
 
 @105
 File primario degli spazi aerei.
@@ -41,7 +41,7 @@ File secondario degli spazi aerei.
 
 @107
 Per ogni aeroporto si possono inserire informazioni aggiuntive in questo file che si trova nella cartella _Waypoints.
-Qui È possibile cambiare questo nome di file di default in qualcos'altro.
+Qui e' possibile cambiare questo nome di file di default in qualcos'altro.
 
 @108
 Comandi per filtrare la visualizzazione e gli allarmi degli spazi aerei. Il bottone di filtro spazi aerei permette anche di filtrare ogni classe di spazio aereo indipendentemente.
@@ -51,36 +51,36 @@ Comandi per filtrare la visualizzazione e gli allarmi degli spazi aerei. Il bott
 [Tutti sotto] Mostrati tutti gli spazi aerei sotto il velivolo.
 
 @109
-Per la modalit‡ "clip", questa È la quota sotto la quale gli spazi aerei sono mostrati.
+Per la modalita' "clip", questa e' la quota sotto la quale gli spazi aerei sono mostrati.
 
 @110
-Per la modalit‡ automatica, questa È la distanza verticale dal velivolo (differenza di quota) entro la quale gli spazi aerei sono mostrati.
+Per la modalita' automatica, questa e' la distanza verticale dal velivolo (differenza di quota) entro la quale gli spazi aerei sono mostrati.
 
 @111
 Abilita/disabilita tutti gli allarmi di spazi aerei.
 
 @112
-Questo È il tempo di preavviso sul momento d'ingresso stimato in uno spazio aereo.
+Questo e' il tempo di preavviso sul momento d'ingresso stimato in uno spazio aereo.
 
 @113
-Questo È il tempo per cui l'allarme di spazio aereo non verr‡ ripetuto dopo il silenziamento da parte del pilota.
+Questo e' il tempo per cui l'allarme di spazio aereo non verra' ripetuto dopo il silenziamento da parte del pilota.
 
 @114
 Disegna un contorno nero attorno ad ogni spazio aereo, piuttosto che usare il colore dello spazio aereo.
 
 @115
 Mostra il terreno con l'altimetria sulla mappa.
-Questa visualizzazione È ombreggiata in funzione della direzione del vento: sopravvento piÚ chiaro, sottovento piÚ scuro.
+Questa visualizzazione e' ombreggiata in funzione della direzione del vento: sopravvento pio' chiaro, sottovento pio' scuro.
 
 @116
 Disegna sulla mappa gli elementi topografici salienti (strade, fiumi, laghi, ecc.).
 Richiede che sia specificato il file di topologia.
 
 @117
-Definisce la quantit‡ di phong shading nel rendering del terreno. Usare valori grandi per esaltare le pendenze del terreno mentre valori piÚ piccoli quando si vola in zone di montagne ripide.
+Definisce la quantita' di phong shading nel rendering del terreno. Usare valori grandi per esaltare le pendenze del terreno mentre valori pio' piccoli quando si vola in zone di montagne ripide.
 
 @118
-Definisce la luminosit‡ del rendering del terreno. Questo parametro controlla l'illuminazione media del terreno.
+Definisce la luminosita' del rendering del terreno. Questo parametro controlla l'illuminazione media del terreno.
 
 @119
 Definisce la scala di colori usata nel rendering del terreno.
@@ -89,38 +89,38 @@ Definisce la scala di colori usata nel rendering del terreno.
 Abilita o disabilita l'effetto di ombreggiatura per la mappa mobile.
 
 @121
-Se non È usato il TERRENO, questo È il colore che si vedr‡ come sfondo. Notare che alcuni colori sono adatti all'assenza della topologia mentre altri sono adatti alla presenza della topologia.
+Se non e' usato il TERRENO, questo e' il colore che si vedra' come sfondo. Notare che alcuni colori sono adatti all'assenza della topologia mentre altri sono adatti alla presenza della topologia.
 
 @122
-Imposta un limite a quanti cartigli, inclusa la topologia, atterrabili e piloni, possono essere mostrati contemporaneamente sulla mappa. Il sistema di "decluttering" eviter‡ di far sovrapporre i cartigli. Questa impostazione È utile per velocizzare il display della mappa quando È presente un grande numero di elementi di topologia e piloni, su sistemi con processori lenti. Normalmente si puÚ lasciare al valore di default, 70.
+Imposta un limite a quanti cartigli, inclusa la topologia, atterrabili e piloni, possono essere mostrati contemporaneamente sulla mappa. Il sistema di "decluttering" evitera' di far sovrapporre i cartigli. Questa impostazione e' utile per velocizzare il display della mappa quando e' presente un grande numero di elementi di topologia e piloni, su sistemi con processori lenti. Normalmente si puo' lasciare al valore di default, 70.
 
 @123
 Definisce come sono mostrati i cartigli di ogni pilone:
-[Nomi] È mostrato il nome completo del pilone.
-[Numero] È mostrato il numero identificativo di ogni pilone.
+[Nomi] e' mostrato il nome completo del pilone.
+[Numero] e' mostrato il numero identificativo di ogni pilone.
 [Nessuno] Nulla viene visualizzato presso i piloni.
-[Nomi nel tema] Sono mostrati i nomi unicamente dei piloni presenti nel tema attivo, cosÏ come l'aeroporto "casa".
+[Nomi nel tema] Sono mostrati i nomi unicamente dei piloni presenti nel tema attivo, cosi' come l'aeroporto "casa".
 [Prime 3] Sono mostrate le prime 3 lettere del nome del pilone.
 [Prime 5] Sono mostrate le prime 5 lettere del nome del pilone.
 ecc.
 
 @124
-Definisce se e quanto lunga È la scia mostrata sul display, rappresentante il percorso del velivolo.
+Definisce se e quanto lunga e' la scia mostrata sul display, rappresentante il percorso del velivolo.
 
 @125
 Definisce come il display ruota con il velivolo:
-[Nord su] Il display della mappa mobile sar‡ sempre orientato da Nord a Sud a l'icona del velivolo ruoter‡ per mostrare la sua rotta.
-[Nord dinamico] È come il "Nord su", ma l'icona del velivolo viene riposizionata automaticamente per permettere pi˘ spazio di mappa mostrato nella direzione di volo.
-Questa modalit‡ funziona unicamente in modalità schermo landscape (orizzontale). In modalit‡ ritratto (verticale), quest'opzione È identica alla "Nord su". In modalità' Nord dinamico, non È possibile riposizionare l'aliante manualmente dai bottoni del menu.
-[Rotta su] Il display della mappa mobile sar‡ rotato di modo da avere la rotta sempre verso l'alto.
+[Nord su] Il display della mappa mobile sara' sempre orientato da Nord a Sud a l'icona del velivolo ruotera' per mostrare la sua rotta.
+[Nord dinamico] e' come il "Nord su", ma l'icona del velivolo viene riposizionata automaticamente per permettere piu' spazio di mappa mostrato nella direzione di volo.
+Questa modalita' funziona unicamente in modalit»†schermo landscape (orizzontale). In modalita' ritratto (verticale), quest'opzione e' identica alla "Nord su". In modalit»ß Nord dinamico, non e' possibile riposizionare l'aliante manualmente dai bottoni del menu.
+[Rotta su] Il display della mappa mobile sara' rotato di modo da avere la rotta sempre verso l'alto.
 [Nord su quango in termica] "Rotta su" quango in planate e "Nord su" quango in termica.
 [Obiettivo su quando in termica] "Rotta su" in planate e "Rotta al prossimo pilone" quando in termica.
 [Nord/rotta] "Nord su" in planata, "Rotta" - "Rotta su" quando in termica.
 
 @126
-Quando il livello di zoom È uguale o maggiore a questo valore, il display di mappa cambia a "Nord su".
-Se il valore È inferiore a questo, sar‡ attiva l'impostazione selezionata.
-Impostare un valore elevato significa che l'opzione non sar‡ mai utilizzata. Il valore di default È 10.
+Quando il livello di zoom e' uguale o maggiore a questo valore, il display di mappa cambia a "Nord su".
+Se il valore e' inferiore a questo, sara' attiva l'impostazione selezionata.
+Impostare un valore elevato significa che l'opzione non sara' mai utilizzata. Il valore di default e' 10.
 
 @127
 L'Auto-zoom cambia il livello di zoom durante il volo, di modo che la mappa faccia uno "zoom in" all'avvicinarsi al pilone-obiettivo.
@@ -128,104 +128,104 @@ Dopo aver passato il pilone, la mappa esegue uno "zoom out" al prossimo pilone.
 Una modifica manuale dello zoom disabilita l'auto-zoom.
 
 @128
-Determina se la scia viene scarrocciata col vento quando mostrata in modalit‡ termica.
+Determina se la scia viene scarrocciata col vento quando mostrata in modalita' termica.
 
 @129
 Imposta lo spessore della linea di scia.
 
 @130
-Quando attivo, la mappa eseguir‡ automaticamente uno "zoom in" quando si passi a modalit‡ termica, per poi eseguire uno "zoom out" abbandonando la modalit‡ termica.
+Quando attivo, la mappa eseguira' automaticamente uno "zoom in" quando si passi a modalita' termica, per poi eseguire uno "zoom out" abbandonando la modalita' termica.
 
 @131
-I cartigli dei piloni hanno priorit‡ sui cartigli della topologia, cosÏ la presenza di molti piloni sulla mappa impedir‡ la comparsa di cartigli della topologia.
-Qui si puÚ definire quanto vicini possono essere i cartigli dei piloni, uno all'altro, usando il sistema di "decluttering" di LK8000.
-"Disabilita" causer‡ la visualizzazione di tutti i nomi dei piloni sulla mappa, anche sovrapponendoli;
-"Basso" non mostrer‡ i nomi dei piloni sovrapposti, ma riempir‡ la mappa per quanto possibile;
-"Medio" ed "Alto" lascer‡ pi˘ spazio tra i cartigli dei piloni, lasciando piÚ spazio per le scritte della topologia;
-"Molto alto" separer‡ di molto i cartigli dei piloni, dando quasi la precedenza alle scritte relative alla topologia.
+I cartigli dei piloni hanno priorita' sui cartigli della topologia, cosi' la presenza di molti piloni sulla mappa impedira' la comparsa di cartigli della topologia.
+Qui si puo' definire quanto vicini possono essere i cartigli dei piloni, uno all'altro, usando il sistema di "decluttering" di LK8000.
+"Disabilita" causera' la visualizzazione di tutti i nomi dei piloni sulla mappa, anche sovrapponendoli;
+"Basso" non mostrera' i nomi dei piloni sovrapposti, ma riempira' la mappa per quanto possibile;
+"Medio" ed "Alto" lascera' piu' spazio tra i cartigli dei piloni, lasciando pio' spazio per le scritte della topologia;
+"Molto alto" separera' di molto i cartigli dei piloni, dando quasi la precedenza alle scritte relative alla topologia.
 
 @132
 "Disabilita" fa vedere in mappa tutti i punti (piloni) atterrabili e raggiungibili.
-"Basso" non mostra i fuoricampo se sono disponibilii atterrabilit‡ migliori.
-"Alto" evita di visualizzare le atterrabilit‡ secnodarie vicine (fuoricampo) se ne esistono di migliori (aeroporti).
+"Basso" non mostra i fuoricampo se sono disponibilii atterrabilita' migliori.
+"Alto" evita di visualizzare le atterrabilita' secnodarie vicine (fuoricampo) se ne esistono di migliori (aeroporti).
 
 @133
-La quota sul terreno alla quale il velivolo deve giungere per compiere un atterraggio in sicurezza. NON lasciare a zero! Un valore ragionevole È 300m.
+La quota sul terreno alla quale il velivolo deve giungere per compiere un atterraggio in sicurezza. NON lasciare a zero! Un valore ragionevole e' 300m.
 
 @134
-Applica la quota di sicurezza unicamente all'altezza (quota sul terreno) di arrivo agli atterrabili, oppure anche a quella ai piloni. Se unicamente agli atterrabili, allora l'altezza di arrivo sui piloni non includer‡ il margine di sicurezza.
-[Solo Atterrabili] aggiunge un valore di quota solo all'altezza di arrivo sugli atterrabili. Questo È il default.
+Applica la quota di sicurezza unicamente all'altezza (quota sul terreno) di arrivo agli atterrabili, oppure anche a quella ai piloni. Se unicamente agli atterrabili, allora l'altezza di arrivo sui piloni non includera' il margine di sicurezza.
+[Solo Atterrabili] aggiunge un valore di quota solo all'altezza di arrivo sugli atterrabili. Questo e' il default.
 [Atterrabili e Piloni] aggiunge un valore di quota all'altezza di arrivo sugli atterrabili e sui piloni tutti.
 
 @135
-Altezza (sul terreno) minima alla quale il velivolo deve passare sull'ostacolo piÚ alto durante la planata finale. Un buon valore È 50 m.
+Altezza (sul terreno) minima alla quale il velivolo deve passare sull'ostacolo pio' alto durante la planata finale. Un buon valore e' 50 m.
 
 @136
-Valore di MacCready usato per il calcolo dell'altezza (quota sul terreno) di arrivo all'atterraggio. Un buon valore È 0.5.
+Valore di MacCready usato per il calcolo dell'altezza (quota sul terreno) di arrivo all'atterraggio. Un buon valore e' 0.5.
 
 @137
-Se piloni atterrabili sono disponibili nelle vicinanze, BestAlternate avviser‡ quando si perder‡ la planata su quegli atterrabili e quando cambier‡ la BestAlternate.
+Se piloni atterrabili sono disponibili nelle vicinanze, BestAlternate avvisera' quando si perdera' la planata su quegli atterrabili e quando cambiera' la BestAlternate.
 Questi avvisi non saranno mostrati sotto un'altezza critica, per evitare di disturbare il pilota.
 
 @138
 Determina se i menu di impostazioni sono accessibili in volo.
 
 @139
-Permette di attivare / disattivare l'algoritmo di calcolo automatico del vento. Quando l'algoritmo È OFF, il pilota deve inserire i valori di vento stimati.
+Permette di attivare / disattivare l'algoritmo di calcolo automatico del vento. Quando l'algoritmo e' OFF, il pilota deve inserire i valori di vento stimati.
 [Termica] richiede solo la presenza dei dati GPS
-[ZigZag] richiede i dati di velocit‡ all'aria provenienti da un variometro
+[ZigZag] richiede i dati di velocita' all'aria provenienti da un variometro
 [Entrambi] usa il ZigZag e la Termica.
 
 @140
-Velocit‡ anemometrica indicata da mantenere in volo rettilineo prima di richiedere il calcolo TrueWind.
-Mantenere la prua (non rotta) verso NSEO, controllando la bussola, mantenendo questa velocità' per alcuni secondi e poi premere il pulsante TrueWind. PoichÈ non È presente un Pitot collegato all'LK8000 per fornirgli i dati di velocit‡ anemometrica, LK suppone che il velivolo stia volando alla velocit‡ indicata.
-Se LK riceve i dati di velocità' anemometrica, questo valore non verr‡ usato perchÈ il vento verr‡ calcolato usando la IAS fornita.
-La velocit‡ minima È pari a 10 km/h (circa 5 nodi); di default È 100 km/h (circa 54 nodi).
+Velocita' anemometrica indicata da mantenere in volo rettilineo prima di richiedere il calcolo TrueWind.
+Mantenere la prua (non rotta) verso NSEO, controllando la bussola, mantenendo questa velocit»ß per alcuni secondi e poi premere il pulsante TrueWind. Poiche' non e' presente un Pitot collegato all'LK8000 per fornirgli i dati di velocita' anemometrica, LK suppone che il velivolo stia volando alla velocita' indicata.
+Se LK riceve i dati di velocit»ß anemometrica, questo valore non verra' usato perche' il vento verra' calcolato usando la IAS fornita.
+La velocita' minima e' pari a 10 km/h (circa 5 nodi); di default e' 100 km/h (circa 54 nodi).
 
 @141
-Per calcolare il vento durante il volo rettilineo È necessario mantenere prua e velocit‡ costanti per alcuni secondi.
-Definire per quanti secondi si terranno valori stabili. Default È 10 secondi.
-Tempi pi˘ lunghi sono pi˘ complessi da rispettare. Tempi pi˘ brevi sono pi˘ facili da realizzare ma possono dare risultati inaccurati sotto i 10 secondi.
-C'È una tolleranza pari al 30% su questo parametro.
+Per calcolare il vento durante il volo rettilineo e' necessario mantenere prua e velocita' costanti per alcuni secondi.
+Definire per quanti secondi si terranno valori stabili. Default e' 10 secondi.
+Tempi piu' lunghi sono piu' complessi da rispettare. Tempi piu' brevi sono piu' facili da realizzare ma possono dare risultati inaccurati sotto i 10 secondi.
+C'e' una tolleranza pari al 30% su questo parametro.
 
 @142
-Quest'opzione definisce quale algoritmo di auto MacCready È utilizzato.
-[Planata Finale] imposta il MC per l'arrivo pi˘' rapido. Per i temi di velocità' OLC il MC È impostato per coprire la distanza maggiore, arrivando alla quota di arrivo, nel tempo rimanente
+Quest'opzione definisce quale algoritmo di auto MacCready e' utilizzato.
+[Planata Finale] imposta il MC per l'arrivo piu'' rapido. Per i temi di velocit»ß OLC il MC e' impostato per coprire la distanza maggiore, arrivando alla quota di arrivo, nel tempo rimanente
 [Salita Media] imposta il MC al valore medio di tutte le salite.
-[Entrambe] utilizza la media durante il tema e poi il valore per l'arrivo piÚ rapido nella planata finale.
-[MC Equivalente] usa il valore di MC calcolato sulla velocità' media corrente. Leggere il manuale.
+[Entrambe] utilizza la media durante il tema e poi il valore per l'arrivo pio' rapido nella planata finale.
+[MC Equivalente] usa il valore di MC calcolato sulla velocit»ß media corrente. Leggere il manuale.
 
 @143
-L'efficienza media È sempre calcolata in TEMPO REALE. Qui si imposta la durata in secondi del tempo su cui eseguire la media.
-La distanza percorsa secondo per secondo durante il periodo di tempo selezionato È divisa per la differenza finale di quota. Ad esempio, se si imposta un tempo di media di 120 secondi, in un'andata e ritorno allo stesso punto in due minuti, la distanza conteggiata non È la distanza tra il primo e l'ultimo punto (= zero) ma quella effettivamente percorsa.
-Per gli alianti un valore raccomandato È 90-120 secondi; per parapendio 15 secondi.
-Valori inferiori daranno un risultato molto simile alla L/D istantanea mentre valori pi˘ elevati daranno un risultato simile alla L/D di planata. Altri strumenti e programmi usano 2 minuti come valore di media.
+L'efficienza media e' sempre calcolata in TEMPO REALE. Qui si imposta la durata in secondi del tempo su cui eseguire la media.
+La distanza percorsa secondo per secondo durante il periodo di tempo selezionato e' divisa per la differenza finale di quota. Ad esempio, se si imposta un tempo di media di 120 secondi, in un'andata e ritorno allo stesso punto in due minuti, la distanza conteggiata non e' la distanza tra il primo e l'ultimo punto (= zero) ma quella effettivamente percorsa.
+Per gli alianti un valore raccomandato e' 90-120 secondi; per parapendio 15 secondi.
+Valori inferiori daranno un risultato molto simile alla L/D istantanea mentre valori piu' elevati daranno un risultato simile alla L/D di planata. Altri strumenti e programmi usano 2 minuti come valore di media.
 
 @144
-La stima della posizione del centro della termica È mostrata quando si È in modalit‡ Termica.
-[OFF] il localizzatore di termica È disabilitato
+La stima della posizione del centro della termica e' mostrata quando si e' in modalita' Termica.
+[OFF] il localizzatore di termica e' disabilitato
 [Segna Centro] un segnaposto indica il centro stimato della termica
 [Pan to center] un segnaposto indica il centro stimato della termica e, quando in Termica, la visualizzazione si centra sulla termica.
 
 @145
-Quando abilitato, ed anche il localizzatore di termica È attivo, si udir‡ un avviso sonoro quando in termica È il momento di ridurre la cadenza e raddrizzare un po'.
+Quando abilitato, ed anche il localizzatore di termica e' attivo, si udira' un avviso sonoro quando in termica e' il momento di ridurre la cadenza e raddrizzare un po'.
 
 @146
-Abilita il passaggio forzato a planata finale se il velivolo È sopra la planata finale prima di raggiungere il penultimo pilone. La forzatura a planata finale puÚ essere fatta anche prima, manualmente.
+Abilita il passaggio forzato a planata finale se il velivolo e' sopra la planata finale prima di raggiungere il penultimo pilone. La forzatura a planata finale puo' essere fatta anche prima, manualmente.
 
 @147
-Quando abilitato e se connesso ad un altimetro barometrico, la quota barometrica È utilizzata per tutte le funzioni di navigazione.
-Altrimenti È utilizzata la quota GPS.
+Quando abilitato e se connesso ad un altimetro barometrico, la quota barometrica e' utilizzata per tutte le funzioni di navigazione.
+Altrimenti e' utilizzata la quota GPS.
 
 @148
 Contiene una rosa di alianti appartenenti a classi con prestazioni diverse, cosi come un'opzione speciale per file nel formato WinPilot.
 
 @149
-Quando il il tipo di polare È un file del tipo WinPilot, questo È il nome del file contenente i dati della polare velivolo.
+Quando il il tipo di polare e' un file del tipo WinPilot, questo e' il nome del file contenente i dati della polare velivolo.
 I file delle polari devono essere messi nella cartella _Polars.
 
 @150
-La massima velocit‡ di manovra puÚ essere inserita in questa pagina per prevenire di avere indicate dal calcolatore di planata velocit‡ non realistiche.
+La massima velocita' di manovra puo' essere inserita in questa pagina per prevenire di avere indicate dal calcolatore di planata velocita' non realistiche.
 
 @151
 Fattore di handicap usato per il punteggio dell'OnLine Contest.
@@ -234,49 +234,49 @@ Fattore di handicap usato per il punteggio dell'OnLine Contest.
 Tempo per scaricare completamente la zavorra d'acqua, in secondi.
 
 @153
-Tipo di strumento primario che fornisce i dati GPS ad LK. Lo strumento primario dovrebbe essere quello con la miglior qualit‡ dei dati GPS.
+Tipo di strumento primario che fornisce i dati GPS ad LK. Lo strumento primario dovrebbe essere quello con la miglior qualita' dei dati GPS.
 
 @154
 Porta COM interna
 
 @155
-Velocit‡ della porta
+Velocita' della porta
 
 @156
 Formato dei bit, normalmente 8
 
 @157
 Tipo di strumento secondario.
-Lo strumento secondario puÚ essere usato come fonte di dati GPS di riserva oppure per altri dati, come ad esempio un variometro elettrico.
-Generico puÚ essere usato per fonti dati GPS, incluso Flarm.
+Lo strumento secondario puo' essere usato come fonte di dati GPS di riserva oppure per altri dati, come ad esempio un variometro elettrico.
+Generico puo' essere usato per fonti dati GPS, incluso Flarm.
 
 @158
-La correzione di elevazione rispetto al geoide si applica unicamente alla quota GPS, non a quella barometrica. Se si dispone della quota barometrica e si decide di utilizzarla, questo parametro non È molto importante.
-Se non si dispone della quota barometrica, È bene controllare che la quota proveniente dal GPS sia gi‡ corretta della differenza di elevazione del geoide rispetto al globo terrestre oppure no.
-Se la quota al suolo È costantemente errata di circa 30-50m, È necessario abilitare o disabilitare questa impostazione. Nel dubbio, lasciarla abilitata.
-Alcuni GPS sono gi‡ compensati per l'errore del geoide.
+La correzione di elevazione rispetto al geoide si applica unicamente alla quota GPS, non a quella barometrica. Se si dispone della quota barometrica e si decide di utilizzarla, questo parametro non e' molto importante.
+Se non si dispone della quota barometrica, e' bene controllare che la quota proveniente dal GPS sia gia' corretta della differenza di elevazione del geoide rispetto al globo terrestre oppure no.
+Se la quota al suolo e' costantemente errata di circa 30-50m, e' necessario abilitare o disabilitare questa impostazione. Nel dubbio, lasciarla abilitata.
+Alcuni GPS sono gia' compensati per l'errore del geoide.
 Il simulatore Condor richiede che questa impostazione sia disabilitata.
-Deafult È ON.
+Deafult e' ON.
 
 @159
 Correggere la quota GPS di un valore costante.
-Attenzione con questo settaggio: questo valore modificher‡ permanentemente la quota GPS durante il volo!
-Prima di modificare questo valore, controllare che la correzione del geoide sia applicata in modo opportuno. Il valore di default È 0.
-Questo valore È salvato nel file di registro!
+Attenzione con questo settaggio: questo valore modifichera' permanentemente la quota GPS durante il volo!
+Prima di modificare questo valore, controllare che la correzione del geoide sia applicata in modo opportuno. Il valore di default e' 0.
+Questo valore e' salvato nel file di registro!
 
 @160
 Nel caso si verifichino rallentamenti di comunicazione con il GPS o assenze intermittenti di segnale, provare ad impostare il modo polling.
-Default È Normale e per il PC questa impostazione non ha alcun effetto.
+Default e' Normale e per il PC questa impostazione non ha alcun effetto.
 
 @161
 Abilitata di default, se disabilitata ignora gli errori NMEA e continua ad usare i dati ricevuti.
 
 @162
-Massima velocit‡ permessa nella zona d'osservazione del traguardo di partenza.
+Massima velocita' permessa nella zona d'osservazione del traguardo di partenza.
 Impostare 0 per nessun limite.
 
 @163
-Massimo eccesso di velocit‡ tollerato sulla massima velocit‡ permessa.
+Massimo eccesso di velocita' tollerato sulla massima velocita' permessa.
 Impostare 0 per nessuna tolleranza.
 
 @164
@@ -289,71 +289,71 @@ Impostare 0 per nessuna tolleranza.
 
 @166
 Riferimento utilizzato per la regola della massima quota alla partenza.
-[MSL] È il riferimento rispetto al livello del mare
-[AGL] È il riferimento rispetto all'elevazione del punto di partenza
+[MSL] e' il riferimento rispetto al livello del mare
+[AGL] e' il riferimento rispetto all'elevazione del punto di partenza
 
 @167
 Altezza minima sul terreno alla fine del tema.
 Impostare a 0 per nessun limite.
 
 @168
-Quando abilitata, questa opzione richiede che la differenza rispetto alla quota di partenza sia inferiore a 1000m (non pi˘ basso di 1000m all'arrivo).
+Quando abilitata, questa opzione richiede che la differenza rispetto alla quota di partenza sia inferiore a 1000m (non piu' basso di 1000m all'arrivo).
 
 @169
 Regole usate per il calcolo del punteggio ottimale per l'OnLine Contest.
 [Sprint]: Segue le regole della FAI IGC League. Fino a cinque punti, inclusi lo start e l'arrivo, massima durata pari a 2.5h, quota di arrivo non inferiore alla quota di partenza.
 [Triangolo]: Segue le regole del triangolo FAI OLC. Quattro punti con start ed arrivo uguali.
-Per temi pi˘ lunghi di 500 km, nessun lato inferiore al 25% o maggiore del 45%;  in alternativa nessun lato inferiore al 28% del totale.
+Per temi piu' lunghi di 500 km, nessun lato inferiore al 25% o maggiore del 45%;  in alternativa nessun lato inferiore al 28% del totale.
 La quota di arrive non deve essere inferiore a 1000m sotto la quota di partenza.
 [Classico]: Segue le regole OLC classico. Fino a sette punti inclusi lo start e l'arrivo, con quota di arrivo non inferiore a 1000m sotto la quota di partenza.
 Punti assegnati all'80% al penultimo lato e 60% all'ultimo lato.
 
 @170
-Unit‡ utilizzate per la velocit‡ anemometrica ed al suolo. Un'unit‡ diversa separata È disponibile per la velocit‡ del tema.
+Unita' utilizzate per la velocita' anemometrica ed al suolo. Un'unita' diversa separata e' disponibile per la velocita' del tema.
 
 @171
-Unit‡ utilizzate per le distanze orizzontali, ad esempio distanza al pilone, distanza mancante.
+Unita' utilizzate per le distanze orizzontali, ad esempio distanza al pilone, distanza mancante.
 
 @172
-Unit‡ utilizzate per la velocit‡ verticale (variometro).
+Unita' utilizzate per la velocita' verticale (variometro).
 
 @173
-Unit‡ utilizzate per la quota e le altezze.
+Unita' utilizzate per la quota e le altezze.
 
 @174
-Unit‡ utilizzate per le velocit‡ del tema.
+Unita' utilizzate per le velocita' del tema.
 
 @175
-Unit‡ utilizzate per le latitudine e longitudine.
+Unita' utilizzate per le latitudine e longitudine.
 
 @176
-Unit‡ di pressione utilizzata per impostare il QNH, hPa o inHg.
+Unita' di pressione utilizzata per impostare il QNH, hPa o inHg.
 
 @177
-Il campo UTC Offset permette di specificare il fuso orario locale. L'orario locale È mostrato sotto, di modo da rendere pi˘ facile verificare che che il valore immesso sia corretto.
+Il campo UTC Offset permette di specificare il fuso orario locale. L'orario locale e' mostrato sotto, di modo da rendere piu' facile verificare che che il valore immesso sia corretto.
 
 @178
-Se ON, premendo brevemente sulla mappa compariranno i dettagli del pilone piÚ vicino.
-Se OFF, premendo brevemente nella met‡ superiore della mappa si eseguir‡ uno "Zoom in" (ravvicinato), mentre premendo nella met‡ inferiore si far‡ uno "Zoom out" (pi˘ panoramico).
-Il default È Off con anche i Tasti Virtuali OFF, per avere una risposta piÚ rapida ai click.
+Se ON, premendo brevemente sulla mappa compariranno i dettagli del pilone pio' vicino.
+Se OFF, premendo brevemente nella meta' superiore della mappa si eseguira' uno "Zoom in" (ravvicinato), mentre premendo nella meta' inferiore si fara' uno "Zoom out" (piu' panoramico).
+Il default e' Off con anche i Tasti Virtuali OFF, per avere una risposta pio' rapida ai click.
 
 @179
-Quando abilitato, lo schermo della mappa È diviso in tre zone virtuali. Premendo per circa 1 secondo nella zona superiore equivarr‡ alla "Freccia Su", nella zona inferiore "Freccia Giu", nella zona centrale "invio".
-Questi tasti virtuali Su, Giu ed Invio possono essere utilizzati per modificare i valori negli iBox, quali il MC, il pilone selezionato nel tema, ecc., una volta che una infobox sia stata selezionata in modalit‡ iBox.
-Per selezionare un pilone sulla mappa, fare un rapido click su di esso, il pi˘ corto possibile.
-Ricordare che click piÚ prolungati possono essere interpretati come azione sui tasti virtuali!
+Quando abilitato, lo schermo della mappa e' diviso in tre zone virtuali. Premendo per circa 1 secondo nella zona superiore equivarra' alla "Freccia Su", nella zona inferiore "Freccia Giu", nella zona centrale "invio".
+Questi tasti virtuali Su, Giu ed Invio possono essere utilizzati per modificare i valori negli iBox, quali il MC, il pilone selezionato nel tema, ecc., una volta che una infobox sia stata selezionata in modalita' iBox.
+Per selezionare un pilone sulla mappa, fare un rapido click su di esso, il piu' corto possibile.
+Ricordare che click pio' prolungati possono essere interpretati come azione sui tasti virtuali!
 Per selezionare uno spazio aereo sulla mappa, premere per circa mezzo secondo su di esso.
 Se si esegue un Invio sulla mappa, si invertiranno i colori del testo.
-Se non si usa la mappa attiva, È meglio non abilitare i tasti virtuali perchÈ "Zoom in" e "Zoom out" richiederanno click molto brevi.
+Se non si usa la mappa attiva, e' meglio non abilitare i tasti virtuali perche' "Zoom in" e "Zoom out" richiederanno click molto brevi.
 
 @180
 Le 'gestures' (i movimenti di scorrimento con le dita sullo schermo) sono sempre abilitati, ma psi puo decidere se averli come su iPhone o esattamente al contrario.
-Per esempio una strisciata del dito da sinistra a destra coincide con lo scorrimento di una pagina verso sinistra per l'impostazione in stile iPhone, verso destra se invece viene selezionata la modalit‡ inversa.
-Di base È impostata quella inversa, opposta all'iPhone.
+Per esempio una strisciata del dito da sinistra a destra coincide con lo scorrimento di una pagina verso sinistra per l'impostazione in stile iPhone, verso destra se invece viene selezionata la modalita' inversa.
+Di base e' impostata quella inversa, opposta all'iPhone.
 
 @181
 Se abilitato, facendo click su di un navbox blocca la mappa in movimento (moving map) evitando che i piloni siano selezionabili ed evitando lo zoom a schermo. Facendo un doppio-click sulla mappa (NON sul navbox) si sblocca nuovamente la mappa in movimento (moving map).
-Questa azione torna utile ai parapendii e ai deltaplani, e di base È disabilitata.
+Questa azione torna utile ai parapendii e ai deltaplani, e di base e' disabilitata.
 
 
 @182
@@ -361,22 +361,22 @@ Definisce per quanto tempo i menu vengono mostrati sullo schermo prima di scompa
 
 @183
 Definisce la posizione del velivolo sulla mappa, calcolato in percentuale partendo dal fondo.
-50% si trova a met‡ dello schermo.
+50% si trova a meta' dello schermo.
 
 @184
-Sono disponibili 2 stili: stile WinPilot (cerchi verdi e viola) o lo stile ad alta visibilit‡.
+Sono disponibili 2 stili: stile WinPilot (cerchi verdi e viola) o lo stile ad alta visibilita'.
 
 @185
 Scegli come mostrare i valori per i piloni atterrabili.
-Con o senza un contorno attorno al testo, con o senza unit‡ di misura (metri, piedi).
+Con o senza un contorno attorno al testo, con o senza unita' di misura (metri, piedi).
 
 @186
-PuÚ mostrare la quota di arrivo sopra a quella di sicurezza, oppure l'efficienza richiesta per arrivare sopra alla quota di sicurezza.
+Puo' mostrare la quota di arrivo sopra a quella di sicurezza, oppure l'efficienza richiesta per arrivare sopra alla quota di sicurezza.
 
 @187
 Se abilitato (ON) la barra inferiore e tutte le pagine di LK sono con sfondo bianco e testo nero.
-Il testo sovrapposto viene invertito: se si È impostato in nero compare di color bianco.
-Si possono invertire questi colori con un 'pulsante personalizzato'; di base È impostato come disabilitato (OFF).
+Il testo sovrapposto viene invertito: se si e' impostato in nero compare di color bianco.
+Si possono invertire questi colori con un 'pulsante personalizzato'; di base e' impostato come disabilitato (OFF).
 
 @188
 Cambia il colore del testo sullo schermo.
@@ -386,18 +386,18 @@ TUTTO BIANCO mostra tutti i valori contornati di bianco, compresi gli atterraggi
 
 @189
 Scegli il colore delle sovrapposizioni di mappa.
-Di base È impostato bianco e diventa automaticamente nero quando si inverte il colore.
-Alcuni colori posso essere invertiti, altri no: in tal caso È meglio fare alcune prove.
+Di base e' impostato bianco e diventa automaticamente nero quando si inverte il colore.
+Alcuni colori posso essere invertiti, altri no: in tal caso e' meglio fare alcune prove.
 
 @190
-La pagina 2.3 elenca i piloni pi˘ vicini; qui si puo definire che cosa elencare.
-NESSUNA ATTERRABILIT‡ non include nell'elenco i piloni che rappresentano punti atterrabili, e quindi parte delle pagine 2.1 o 2.2. Questa È la modalit‡ di default.
-TUTTI I PILONI mostra tutti i piloni, comprese le atterrabilit‡ che sono gi‡ indicate alla pagine 2.1 e 2.2
-PILONI .DAT mostra solo i piloni col contrassegno T. Questo serve solo in caso di file dei piloni in formato DAT, giacchÈ i piloni provenienti da SeeYou (.CUP) hanno tutti i flag T.
-Questo filtro non modifica altre funzionalit‡.
+La pagina 2.3 elenca i piloni piu' vicini; qui si puo definire che cosa elencare.
+NESSUNA ATTERRABILITa' non include nell'elenco i piloni che rappresentano punti atterrabili, e quindi parte delle pagine 2.1 o 2.2. Questa e' la modalita' di default.
+TUTTI I PILONI mostra tutti i piloni, comprese le atterrabilita' che sono gia' indicate alla pagine 2.1 e 2.2
+PILONI .DAT mostra solo i piloni col contrassegno T. Questo serve solo in caso di file dei piloni in formato DAT, giacche' i piloni provenienti da SeeYou (.CUP) hanno tutti i flag T.
+Questo filtro non modifica altre funzionalita'.
 
 @191
-Non mostra le unit‡ di misura (Km, piedi, ecc...) nelle InfoBox in modalit‡ LK8000.
+Non mostra le unita' di misura (Km, piedi, ecc...) nelle InfoBox in modalita' LK8000.
 Alcuni schermi a bassa risoluzione posso godere di tale impostazione per risparmiare spazio sullo schermo, soprattutto per quelli che hanno una risoluzione di 320x240!
 
 @192
@@ -407,28 +407,28 @@ I caratteri appositamente installati per LK8000 non possono essere personalizzat
 
 @193
 Mostra i valori in sovrapposizione alla mappa.
-La modalit‡ 'a met‡' (half) indica i piloni di destinazione sulla parte in alto a sinistra dello schermo, ed altre informazioni sulla destra (MacCready, efficienza richiesta e differenza di quota necessaria all'arrivo per gli alianti).
-La modalit‡ completa (full) aggiunge l'orologio ed altri valori: si veda il manuale.
+La modalita' 'a meta'' (half) indica i piloni di destinazione sulla parte in alto a sinistra dello schermo, ed altre informazioni sulla destra (MacCready, efficienza richiesta e differenza di quota necessaria all'arrivo per gli alianti).
+La modalita' completa (full) aggiunge l'orologio ed altri valori: si veda il manuale.
 
 @194
-Qui viene definito se calcolare l'area raggiungibile in planata e rappresentarla con una linea sulla mappa; tiene conto dei rilievi del terreno (ma non valuta la possibilit‡ di girarci attorno):
+Qui viene definito se calcolare l'area raggiungibile in planata e rappresentarla con una linea sulla mappa; tiene conto dei rilievi del terreno (ma non valuta la possibilita' di girarci attorno):
 [OFF] non viene mostrata
 [Linea] disegna una linea tratteggiata al limitare della zona raggiungibile in planata
 [Ombreggiata] un retino viene disegnato sulla parte di terreno non raggiungibile in planata.
-NOTA: l'ombreggiatura viene disegnata a schermo solo in volo, ma non quando si È a terra.
-LEGGI BENE: quando una planata sul terreno viene selezionata, nel caso in cui la traiettoria diretta incroci un ostacolo (una montagna), viene indicata una CROCE ROSSA sul tragitto: ciÚ indica che il punto magari È comunque raggiungibile, ma che in mezzo c'È un ostacolo da superare. 
+NOTA: l'ombreggiatura viene disegnata a schermo solo in volo, ma non quando si e' a terra.
+LEGGI BENE: quando una planata sul terreno viene selezionata, nel caso in cui la traiettoria diretta incroci un ostacolo (una montagna), viene indicata una CROCE ROSSA sul tragitto: cio' indica che il punto magari e' comunque raggiungibile, ma che in mezzo c'e' un ostacolo da superare. 
 Sulla croce viene anche indicata la quota necessaria per scavalcarlo passandoci SOPRA. Tale valore prende in considerazione la quota di sicurezza sul terreno impostata nel menu 'sicurezza'.
 
 
 @195
-La barra di planata puÚ riferirsi al traguardo del tema od al pilone successivo, oppure puÚ essere disabilitata.
+La barra di planata puo' riferirsi al traguardo del tema od al pilone successivo, oppure puo' essere disabilitata.
 Tale barra compare sulla parte sinistra dello schermo.
-Il valore È calcolato sul MacCready corrente, poichÈ È un valore del tema: se non si sta facendo un tema, ma un semplice 'goto', allora tale valore puÚ risultare diverso dai dati in sovrapposizione per il pilone di arrivo, perchÈ viene sempre calcolato sul MacCready attuale, anche sotto al MacCready di sicurezza.
+Il valore e' calcolato sul MacCready corrente, poiche' e' un valore del tema: se non si sta facendo un tema, ma un semplice 'goto', allora tale valore puo' risultare diverso dai dati in sovrapposizione per il pilone di arrivo, perche' viene sempre calcolato sul MacCready attuale, anche sotto al MacCready di sicurezza.
 Per i punti atterrabili invece si considera sempre presente l'altezza di sicurezza impostata.
 
 @196
 Il variometro compare sulla sinistra dello schermo.
-Ha senso usarlo SOLO se si È collegato un variometro reale esterno, o un barometro molto veloce e sensibile. Altrimenti il dato sar‡ desunto dalla quota GPS (che risulta imprecisa per tale scopo).
+Ha senso usarlo SOLO se si e' collegato un variometro reale esterno, o un barometro molto veloce e sensibile. Altrimenti il dato sara' desunto dalla quota GPS (che risulta imprecisa per tale scopo).
 
 @197
 Un profilo della termica di colore BLU compare, quando in termica, nell'angolo in alto a sinistra della mappa.
@@ -440,24 +440,24 @@ La traccia non compare a livelli di zoom ravvicinato.
 Serve per abilitare la schermata del traffico Flarm sulla finestra della mappa.
 [OFF] nessun oggetto Flarm viene mostrato in mappa
 [ON/Fixed] l'oggetto del Flarm compare sulla mappa nella sua posizione reale
-[ON/Scaled] gli oggetti Flarm sulla mappa vengono scalati quando lo zoom È ampio, per risultano ancora visibili.
-Questa modalit‡ tende a confondere il pilota, poichÈ gli oggetti appaiono attorno all'aliante sulla mappa, ma non nella loro posizione reale. Nel dubbio, È meglio usare ON/FIXED.
+[ON/Scaled] gli oggetti Flarm sulla mappa vengono scalati quando lo zoom e' ampio, per risultano ancora visibili.
+Questa modalita' tende a confondere il pilota, poiche' gli oggetti appaiono attorno all'aliante sulla mappa, ma non nella loro posizione reale. Nel dubbio, e' meglio usare ON/FIXED.
 
 @200
 Definisce il modo in cui i piloni avanzano mentre si vola il tema.
 [Manuale] il pilota deve avanzare manualmente al pilone successivo.
 [Auto] i piloni avanzano automaticamente mano a mano che vengono toccati dall'aliante (cilindri, settori o linee) compresa la partenza.
-[Armato] il pilota deve armare manualmente ogni pilone prima di passare al successivo (compresa la partenza). Questa opzione È RACCOMANDATA per i temi AAT!
+[Armato] il pilota deve armare manualmente ogni pilone prima di passare al successivo (compresa la partenza). Questa opzione e' RACCOMANDATA per i temi AAT!
 [Arma partenza] il pilota deve armare il pilone di partenza prima che il tema inizi. Gli altri piloni avanzano automaticamente.
 
 @201
 Tipo di inizio
-[Linea]: il tema viene iniziato quando la linea viene attraversata. La semi-lunghezza della linea È definita in 'Raggio del cilindro iniziale.
-[Cilindro]: il tema viene iniziato quando l'aliante esce dal cilindro. Il raggio del cilindro È definito in 'Raggio del cilindro iniziale.
-[Settore FAI]: definisce un settore di 90 gradi. Il tema viene iniziato quando l'aliante attraversa le linee del settore. Il raggio del settore È definito come Raggio del cilindro di partenza.
+[Linea]: il tema viene iniziato quando la linea viene attraversata. La semi-lunghezza della linea e' definita in 'Raggio del cilindro iniziale.
+[Cilindro]: il tema viene iniziato quando l'aliante esce dal cilindro. Il raggio del cilindro e' definito in 'Raggio del cilindro iniziale.
+[Settore FAI]: definisce un settore di 90 gradi. Il tema viene iniziato quando l'aliante attraversa le linee del settore. Il raggio del settore e' definito come Raggio del cilindro di partenza.
 
 @202
-Raggio del cilindro/settore di partenza oppure meta‡ lunghezza della linea di partenza.
+Raggio del cilindro/settore di partenza oppure metaa' lunghezza della linea di partenza.
 
 @203
 Tipo di settore usato per i temi non-AAT (not Assigned Area Task)
@@ -470,15 +470,15 @@ Raggio dell'area di osservazione per i temi non-AAT.
 
 @205
 Tipo di traguardo.
-[Linea]: il tema È concluso quando la linea viene attraversata. La semi-lunghezza della linea È definita come Raggio del cilindro finale.
-[Cilindro]: il tema È concluso quando l'aliante entra nel cilindro. Il raggio del cilindro È definito come Raggio del cilindro finale.
-[Settore FAI]: definisce un settore di 90 gradi. Il tema È concluso quando l'aliante attraversa le linee del settore. Il raggio del settore È definito come Raggio del cilindro finale.
+[Linea]: il tema e' concluso quando la linea viene attraversata. La semi-lunghezza della linea e' definita come Raggio del cilindro finale.
+[Cilindro]: il tema e' concluso quando l'aliante entra nel cilindro. Il raggio del cilindro e' definito come Raggio del cilindro finale.
+[Settore FAI]: definisce un settore di 90 gradi. Il tema e' concluso quando l'aliante attraversa le linee del settore. Il raggio del settore e' definito come Raggio del cilindro finale.
 
 @206
-Raggio del cilindro finale, o del settore, o met‡ della lunghezza della linea di traguardo.
+Raggio del cilindro finale, o del settore, o meta' della lunghezza della linea di traguardo.
 
 @207
-Imposta se usare il nome breve o lungo per il file del log IGC (per un'eventuale compatibilit‡ con vecchi sistemi DOS).
+Imposta se usare il nome breve o lungo per il file del log IGC (per un'eventuale compatibilita' con vecchi sistemi DOS).
 Esempio di nome corto: 14HXABC1.IGC
 Esempio di nome lungo: 2011-04-12-XXX-ABC-01.IGC
 
@@ -490,44 +490,44 @@ Seleziona il modello di PDA/PNA, se disponibile in elenco, al fine di utilizzare
 
 @210
 Questa opzione sincronizza l'orologio interno del computer con l'ora del GPS (quando abbia un fix valido).
-Questa procedura È necessaria se il dispositivo sul quale funziona LK non ha un orologio interno dotato di batteria tampone, oppure se il dispositivo stesso perde la data per l'esaurimento della  batteria interna.
+Questa procedura e' necessaria se il dispositivo sul quale funziona LK non ha un orologio interno dotato di batteria tampone, oppure se il dispositivo stesso perde la data per l'esaurimento della  batteria interna.
 
 @211
 FUNZIONA SOLO SU HP iPaq 31x!
-Imposta la retroilluminazione automatica. Si ha luminosit‡ massima sempre, se collegato ad una batteria esterna, altrimenti lo schermo viene spento dopo 5 minuti per risparmia energia.
+Imposta la retroilluminazione automatica. Si ha luminosita' massima sempre, se collegato ad una batteria esterna, altrimenti lo schermo viene spento dopo 5 minuti per risparmia energia.
 
 @212
 Solamente per alcuni palmari/navigatori, imposta il volume al massimo.
 
 @213
-Abilita ulteriori pagine di configurazione in modalit‡ engineering: solo per utenti esperti.
-ATTENZIONE: cambiare alcune di queste impostazioni puÚ causare dei problemi al software, giacchÈ alcune di queste non sono del tutto compatibili con l'attuale interfaccia di LK8000.
+Abilita ulteriori pagine di configurazione in modalita' engineering: solo per utenti esperti.
+ATTENZIONE: cambiare alcune di queste impostazioni puo' causare dei problemi al software, giacche' alcune di queste non sono del tutto compatibili con l'attuale interfaccia di LK8000.
 Dopo aver abilitato questa opzione, uscire dal menu e rientrare per vedere le configurazioni aggiuntive.
 
 @214
 Imposta lo zoom predefinito in termica.
-Si puo modificarlo in termica, zoomando avanti ed indietro manualmente; l'ultimo valore di zoom selezionato verr‡ mantenuto per il resto del volo.
-Questa opzione È predefinita, se non la si cambia.
+Si puo modificarlo in termica, zoomando avanti ed indietro manualmente; l'ultimo valore di zoom selezionato verra' mantenuto per il resto del volo.
+Questa opzione e' predefinita, se non la si cambia.
 
 @215
 Zoom predefinito in planata.
-Valori pi˘ bassi coincidono con maggior ingrandimento, valori pi˘ alti con uno zoom minore.
+Valori piu' bassi coincidono con maggior ingrandimento, valori piu' alti con uno zoom minore.
 
 @216
-Un cancello a tempo È un orario locale che virtualmente definisce l'inizio del tema, come per le barche.
+Un cancello a tempo e' un orario locale che virtualmente definisce l'inizio del tema, come per le barche.
 Impostarlo a 0 se non si ha un'ora di partenza.
 Impostarlo almeno a 1 se la competizione ha almeno un orario di partenza.
 
 @217
 Per i temi di gara con almeno 1 cancello a tempo, impostare la partenza sull'ora locale.
-Se il numero dei cancelli È 0, allora questo valore viene ignorato
+Se il numero dei cancelli e' 0, allora questo valore viene ignorato
 
 @218
 Per i temi di gara con almeno 1 cancello a tempo, impostare la partenza sull'ora locale.
-Se il numero dei cancelli È 0, allora questo valore viene ignorato
+Se il numero dei cancelli e' 0, allora questo valore viene ignorato
 
 @219
-Se si ha pi˘ di un cancello a tempo, impostare l'intervalo di tempo in MINUTI per gli altri cancelli.
+Se si ha piu' di un cancello a tempo, impostare l'intervalo di tempo in MINUTI per gli altri cancelli.
 Se si ha solo 1 cancello con chiusura a tempo, impostare l'intervallo con la differenza di tempo che intercorre.
 Se si ha solo 1 cancello senza chiusura a tempo, impostare l'intervallo con un valore elevato (come 480 minuti).
 
@@ -536,42 +536,42 @@ Inizia dentro (esci): quando il pilota lascia il settore o il cilindro da dentro
 Inizia fuori (entra): quando il pilota entra nel settore o nel cilindro da fuori verso dentro (Start OUT).
 
 @221
-Questo È l'intervallo minore (espresso in millisecondi) che il sistema riconosce dalla pressione di un tasto.
-Impostalo a valori bassi per avere un'interfaccia molto reattiva; se tale valore È troppo basso puÚ accadere che il sistema rilevi pressioni multiple ed accidentali dei tasti.
-Cambiare questo valore puÚ influenzare anche i pulsanti virtuali.
-ATTENZIONE: il valore pari a 250 ms È consigliato.
+Questo e' l'intervallo minore (espresso in millisecondi) che il sistema riconosce dalla pressione di un tasto.
+Impostalo a valori bassi per avere un'interfaccia molto reattiva; se tale valore e' troppo basso puo' accadere che il sistema rilevi pressioni multiple ed accidentali dei tasti.
+Cambiare questo valore puo' influenzare anche i pulsanti virtuali.
+ATTENZIONE: il valore pari a 250 ms e' consigliato.
 
 @222
 Il file 'inserisci eventi' definisce il sistema del menu e come LK8000 risponde alla pressione dei tasti o alle informazioni che gli vengono fornite da dispositivi esterni.
 
 @223
 Il file della lingua definisce quale traduzione dall'inglese ad altra lingua utilizzare.
-Se questo campo È lasciato vuoto, LK8000 utilizza automaticamente l'inglese.
+Se questo campo e' lasciato vuoto, LK8000 utilizza automaticamente l'inglese.
 
 @224
-Il file di stato puÚ essere usato per definire i suoni da far sentire in corrispondenza di determinati eventi, e per quanto tempo i vari messaggi vengono mostrati sullo schermo.
+Il file di stato puo' essere usato per definire i suoni da far sentire in corrispondenza di determinati eventi, e per quanto tempo i vari messaggi vengono mostrati sullo schermo.
 
 @225
 Se abilitato, il valore MacCready impostato viene mostrato sopra alla mappa a destra, appena sotto alla bussola.
 
 @226
-Questo È l'intervallo di tempo dei punti registrati nel log IGC durante la fase di volo rettilineo (non in termica).
-Tale intervallo puÚ cosÏ essere diverso a seconda che il velivolo sia in planata piuttosto che in termca.
-Il valore massimo È di 1 punto registrato ogni secondo.
+Questo e' l'intervallo di tempo dei punti registrati nel log IGC durante la fase di volo rettilineo (non in termica).
+Tale intervallo puo' cosi' essere diverso a seconda che il velivolo sia in planata piuttosto che in termca.
+Il valore massimo e' di 1 punto registrato ogni secondo.
 
 @227
-Questo È l'intervallo di tempo dei punti registrati nel log IGC durante la fase di termica.
-Tale intervallo puÚ cosÏ essere diverso a seconda che il velivolo sia in planata piuttosto che in termca.
-Il valore massimo È di 1 punto registrato ogni secondo.
+Questo e' l'intervallo di tempo dei punti registrati nel log IGC durante la fase di termica.
+Tale intervallo puo' cosi' essere diverso a seconda che il velivolo sia in planata piuttosto che in termca.
+Il valore massimo e' di 1 punto registrato ogni secondo.
 
 @228
 Definisce se usare l'animazione delle finestre di dialogo quando vengono aperte o chiuse.
 
 @229
-Se si vuole che i coni di planata mostrino anche cerchi ed archi in movimento, allora in aggiunta alla modalit‡ fissa selezionare quella estesa.
+Se si vuole che i coni di planata mostrino anche cerchi ed archi in movimento, allora in aggiunta alla modalita' fissa selezionare quella estesa.
 
 @230
-Definisce l'allineamento del riquadro del messaggio di stato, che puÚ essere centrato oppure nell'angolo in alto a sinistra.
+Definisce l'allineamento del riquadro del messaggio di stato, che puo' essere centrato oppure nell'angolo in alto a sinistra.
 
 @231
 Definisce il modo in cui la freccia che indica il vento viene mostrata sullo schermo.
@@ -580,25 +580,25 @@ Definisce il modo in cui la freccia che indica il vento viene mostrata sullo sch
 
 @232
 Gamma di valori delle geometrie per lo schermo da 0 a 7, ma solo alcuni di questi sono effettivamente disponibili.
-ATTENZIONE: LK8000 accetta solo 5 box sulla destra se lo schermo È in modalit‡ orizzontale (landscape), in cima e in basso se in modalit‡ verticale (portrait).
-Se usi geometrie diverse LK8000 non funzioner‡ correttamente.
+ATTENZIONE: LK8000 accetta solo 5 box sulla destra se lo schermo e' in modalita' orizzontale (landscape), in cima e in basso se in modalita' verticale (portrait).
+Se usi geometrie diverse LK8000 non funzionera' correttamente.
 
 @233
-Il fattore di rischio STF riduce le impostazioni del MacCready per calcolare la velocit‡ da volare mano a mano che l'aliante si trova piu basso, ciÚ al fine di compensare iper il rischio.
-Impostato a 0.0 non vi È alcuna compensazione; impostato a 1.0 scala il valore di MacCready linearmente in funzione della quota.
+Il fattore di rischio STF riduce le impostazioni del MacCready per calcolare la velocita' da volare mano a mano che l'aliante si trova piu basso, cio' al fine di compensare iper il rischio.
+Impostato a 0.0 non vi e' alcuna compensazione; impostato a 1.0 scala il valore di MacCready linearmente in funzione della quota.
 
 @234
-Se abilitato il comando velocit‡ in planata È impostato sulla velocit‡ Mac Cready da volare in una massa d'aria senza movimento verticale.
-Se disabilitato il comando velocit‡ in planata È impostato sulla velocit‡ di delfinamento a cui volare, equivalente alla velocit‡ MacCready a cui volare in una massa d'aria con movimento verticale.
+Se abilitato il comando velocita' in planata e' impostato sulla velocita' Mac Cready da volare in una massa d'aria senza movimento verticale.
+Se disabilitato il comando velocita' in planata e' impostato sulla velocita' di delfinamento a cui volare, equivalente alla velocita' MacCready a cui volare in una massa d'aria con movimento verticale.
 
 @235
-Definisce la modalit‡ in base alla quale il pilota inserisce il testo (nome del file, codice del team, ecc...)
+Definisce la modalita' in base alla quale il pilota inserisce il testo (nome del file, codice del team, ecc...)
 
 @236
-Questa opzione definisce il modo in cui i piloni sono gestiti al di fuori della cartografia del terreno: il pilota puÚ ricevere una richiesta su che cosa fare quando ciÚ accade, oppure possono essere sempre mostrati o esclusi.
+Questa opzione definisce il modo in cui i piloni sono gestiti al di fuori della cartografia del terreno: il pilota puo' ricevere una richiesta su che cosa fare quando cio' accade, oppure possono essere sempre mostrati o esclusi.
 
 @237
-Mostra l'orologio in modalit‡ 'full overlay' (sovrapposizione completa).
+Mostra l'orologio in modalita' 'full overlay' (sovrapposizione completa).
 
 @238
 Dimensione dei caratteri per le scritte sovrapposte (overlay).
@@ -609,8 +609,8 @@ Dimensione dei caratteri per le scritte sovrapposte (overlay).
 
 @300
 Ballast dell'aliante.
-Specifica la quantit‡ d'acqua caricata nell'aliante.
-Il volume totale della zavorra È definito nei dati della polare.
+Specifica la quantita' d'acqua caricata nell'aliante.
+Il volume totale della zavorra e' definito nei dati della polare.
 Premere il pulsante SCARICA BALLAST per passare al conto alla rovescia del volume del ballast in funzione del tasso di scarico specificato nella configurazione del sistema.
 
 @301
@@ -624,20 +624,20 @@ Nel dubbio lasciare il carico alare preimpostato.
 @302
 Percentuale di pulizia dell'aliante.
 Se impostato al 100% di pulizia, abbassare il valore mano a mano che le ali vengono sporcate da insetti.
-ATTENZIONE: impostando questo valore a 50% si ottiene un raddoppio del rateo di discesa desunto dalla polare (consigliato ad esempio per il volo in montagna con vento forte e/o in previsione di forti discendenze; in tal caso l'efficienza dell'aliante viene calcolata come dimezzata).
+ATTENZIONE: impostando questo valore a 50% si ottiene un raddoppio del rateo di discesa desunto dalla polare (consigliato ad esempio per il volo in montagna con vento forte e/o in previsione di forti discendenze, come spesso accade in Valle d'Aosta; in tal caso l'efficienza dell'aliante viene calcolata come dimezzata).
 
 @303
 SOLO per la QUOTA BAROMETRICA, quando disponibile come dato (esterno)!
-Questa È la pressione dell'area per la calibrazione dell'altimetro barometrico.
+Questa e' la pressione dell'area per la calibrazione dell'altimetro barometrico.
 Alcune variometri elettrici esterni la impostano automaticamente, mentre altri richiedono un'attivazione manuale.
-Cambiando il QNH verr‡ conseguentemente modificata la quota barometrica.
-Se cambia la quota nel riquadro successivo, allora anche il QNH verr‡ modificato di conseguenza.
+Cambiando il QNH verra' conseguentemente modificata la quota barometrica.
+Se cambia la quota nel riquadro successivo, allora anche il QNH verra' modificato di conseguenza.
 Normalmente si dovrebbe impostare la quota corretta al suolo, e modificare il valore QNH in volo se via radio il servizio dell'AFIS comunica il nuovo QNH.
-Il valore standard per il QNE È 1013.2 ed Ë impostato di base; se non È chiaro ciÚ di cui si sta parlando, allora NON modificare il QNH.
+Il valore standard per il QNE e' 1013.2 ed e' impostato di base; se non e' chiaro cio' di cui si sta parlando, allora NON modificare il QNH.
 
 @304
-Cambiare qui la quota barometrica. Naturalmente serve un'altezza barometrica rilevata da uno strumento esterno e collegato al software LK8000, altrimenti tale valore sar‡ costantemente a 0.
-Cambianto l'altezza barometrica verr‡ congiuntamente modificata la quota QNH, automaticamente.
+Cambiare qui la quota barometrica. Naturalmente serve un'altezza barometrica rilevata da uno strumento esterno e collegato al software LK8000, altrimenti tale valore sara' costantemente a 0.
+Cambianto l'altezza barometrica verra' congiuntamente modificata la quota QNH, automaticamente.
 Se si vuole impostare la quota QNE, regolare il QNH a 1013.2 .
 
 @305
@@ -649,41 +649,41 @@ Impostare la temperatura prevista al suolo. Il parametro viene usato dal calcola
 
 @400
 I tasti personalizzati si attivano premendo sulla parte sinistra della barra inferiore almeno per un poco di tempo (quello impostato).
-Sotto a tale tempo LK ruoter‡ le informazioni sulla barra inferiore, come normalmente fa.
-Qui si puo definire per quanto tempo va premuta un'area sullo schermo (la durata minima) per la quale si attiver‡ il tasto personalizzato al posto della normale rotazione delle informazioni.
-Tale valore È espresso in millisecondi e va inserito a seconda dei dispositivi (alcuni sono pi˘ reattivi di altri); fare delle prove.
-Il valore predefinito È di 700 ms che in genere va bene su dispositivi tipo l'iPaq 314 e simili.
+Sotto a tale tempo LK ruotera' le informazioni sulla barra inferiore, come normalmente fa.
+Qui si puo definire per quanto tempo va premuta un'area sullo schermo (la durata minima) per la quale si attivera' il tasto personalizzato al posto della normale rotazione delle informazioni.
+Tale valore e' espresso in millisecondi e va inserito a seconda dei dispositivi (alcuni sono piu' reattivi di altri); fare delle prove.
+Il valore predefinito e' di 700 ms che in genere va bene su dispositivi tipo l'iPaq 314 e simili.
 Se non viene definita alcuna azione per i tasti personali, allora tale parametro viene ignorato.
 I tasti personali della parte superiore dello schermo non seguono questo valore, ma verranno attivati istantaneamente al tocco.
 
 @401
 Il tasto personalizzato IN ALTO A SINISTRA si attiva premendo nell'angolo in alto a sinistra.
-Di default È impostato come 'obiettivo multiplo' (MultiTarget). 
+Di default e' impostato come 'obiettivo multiplo' (MultiTarget). 
 
 @402
 Il tasto personalizzato IN ALTO A DESTRA si attiva premendo nell'angolo in alto a destra.
-Tale tasto NON È disponibile per la modalit‡ parapendio/deltaplano.
-Leggere il manuale per veder tutte le combinazioni possibili. Di default È impostato come 'nessuna azione'. 
+Tale tasto NON e' disponibile per la modalita' parapendio/deltaplano.
+Leggere il manuale per veder tutte le combinazioni possibili. Di default e' impostato come 'nessuna azione'. 
 
 @403
 Il tasto personalizzato SINISTRO si attiva premendo sulla parte sinistra della barra inferiore almeno per un poco di tempo (quello impostato).
-Sotto al tempo qui impostato il click far‡ passare la barra inferiore di LK8000 al successivo gruppo di informazioni.
-Leggere il manuale per veder tutte le combinazioni possibili. Di default È impostato come 'nessuna azione'. 
+Sotto al tempo qui impostato il click fara' passare la barra inferiore di LK8000 al successivo gruppo di informazioni.
+Leggere il manuale per veder tutte le combinazioni possibili. Di default e' impostato come 'nessuna azione'. 
 
 @404
 Il tasto personalizzato CENTRALE si attiva premendo sulla parte centrale della barra inferiore almeno per un poco di tempo (quello impostato).
-Sotto al tempo qui impostato il click LK8000 ruoter‡ normalmente le pagine.
-Qui si puo definire l'azione che verr‡ eseguita usando il tasto personalizzato.
+Sotto al tempo qui impostato il click LK8000 ruotera' normalmente le pagine.
+Qui si puo definire l'azione che verra' eseguita usando il tasto personalizzato.
 
 @405
 Il tasto personalizzato DESTRO si attiva premendo sulla parte destra della barra inferiore almeno per un poco di tempo (quello impostato).
-Sotto al tempo qui impostato il click far‡ passare la barra inferiore di LK8000 al successivo gruppo di informazioni.
-Leggere il manuale per vedere tutte le combinazioni possibili. Di default È impostato come 'nessuna azione'. 
+Sotto al tempo qui impostato il click fara' passare la barra inferiore di LK8000 al successivo gruppo di informazioni.
+Leggere il manuale per vedere tutte le combinazioni possibili. Di default e' impostato come 'nessuna azione'. 
 
 @406
 Questo pulsante si attiva premendo per un momento (il tempo impostato) sull'icona del velivolo (barra inferiore a destra).
-Sotto al tempo qui impostato il click richiamer‡ il classico menu.
-Leggere il manuale per veder tutte le combinazioni possibili. Di default È impostato come 'nessuna azione'. 
+Sotto al tempo qui impostato il click richiamera' il classico menu.
+Leggere il manuale per veder tutte le combinazioni possibili. Di default e' impostato come 'nessuna azione'. 
 
 #
 # LOGGER REPLAY
@@ -702,11 +702,11 @@ Attenzione: accelerazioni oltre il 10x causeranno errori su statistiche e calcol
 Questo imposta il punto del tema da rivedere.
 
 @461
-Per le AAT, questa impostazione puÚ essere usata per definire il previsto punto di virata all'interno del cerchio del pilone.
-Valori piÚ grandi spostano i punti di virata per generare maggiori lunghezze del tema; valori piÚ piccoli causano l'opposto, spostando i punti di virata per ridurre la lunghezza del tema.
+Per le AAT, questa impostazione puo' essere usata per definire il previsto punto di virata all'interno del cerchio del pilone.
+Valori pio' grandi spostano i punti di virata per generare maggiori lunghezze del tema; valori pio' piccoli causano l'opposto, spostando i punti di virata per ridurre la lunghezza del tema.
 
 @462
-Per le AAT, questa impostazione puÚ essere usata per definire il previsto punto di virata all'interno del cerchio del pilone.
+Per le AAT, questa impostazione puo' essere usata per definire il previsto punto di virata all'interno del cerchio del pilone.
 Valori positivi fanno ruotare la linea di "range" in senso orario, valori negativi la fanno ruotare in senso antiorario.
 ######### range ??
 
@@ -720,24 +720,24 @@ Quando abilitato, gli obiettivi presenti nel cerchio dell'AAT non sono adattati 
 
 @480
 Definire il valore di MC utilizzato dal calcolatore. Utilizzare questo per determinare l'effetto sul tempo stimato di completamento del tema dovuto al cambio delle condizioni.
-Questo valore non andr‡ a modificare le impostazioni principali del calcolatore, se si preme il pulsante "Annulla" per uscire.
+Questo valore non andra' a modificare le impostazioni principali del calcolatore, se si preme il pulsante "Annulla" per uscire.
 
 @481
-Per le AAT, questa impostazione puÚ essere usata per definire il previsto punto di virata all'interno del cerchio del pilone.
-Valori piÚ grandi spostano i punti di virata per generare maggiori lunghezze del tema; valori piÚ piccoli causano l'opposto, spostando i punti di virata per ridurre la lunghezza del tema.
+Per le AAT, questa impostazione puo' essere usata per definire il previsto punto di virata all'interno del cerchio del pilone.
+Valori pio' grandi spostano i punti di virata per generare maggiori lunghezze del tema; valori pio' piccoli causano l'opposto, spostando i punti di virata per ridurre la lunghezza del tema.
 
 @482
 Efficienza in planata. 100 indica una perfetta rispondenza con il MC.
 Valori maggiori di 100 indicano una prestazione migliore del MC impostato (si ottiene ad esempio volando per strade di cumuli).
 Valori minori di 100 sono appropriati se si vola considerevolmente fuori rotta.
-Premendo il pulsante "Invia" in questa finestra, si otterr‡ la stima dell'efficienza di volo secondo la recente storia del volo, relativamente al MC impostato.
+Premendo il pulsante "Invia" in questa finestra, si otterra' la stima dell'efficienza di volo secondo la recente storia del volo, relativamente al MC impostato.
 
 #
 # TASK RULES
 #
 
 @490
-Massima velocit‡ permessa allo start.
+Massima velocita' permessa allo start.
 Impostare 0 per nessun limite.
 
 @491
@@ -757,7 +757,7 @@ Impostare 0 per nessun limite.
 Se abilitata, questa opzioni richiede che la minima altezza sul terreno al completamento del tema sia superiore a 1000m sotto l'altezza di partenza.
 
 @495
-Abilita i temi OLC. Quando abilitata, lo start di un tema del tipo OLC È rilevato automaticamente (punto più' basso del volo dopo la salita iniziale).
+Abilita i temi OLC. Quando abilitata, lo start di un tema del tipo OLC e' rilevato automaticamente (punto pi›ß basso del volo dopo la salita iniziale).
 L'Auto MC nella planata finale imposta un valore di MC per ottenere la maggior distanza possibile con la quota disponibile ed il tempo disponibile nei temi sprint OLC.
 
 @496
@@ -766,7 +766,7 @@ Rules used for calculating optimal points for OnLine Contest.
 
 [Sprint]: segue le regole FAI IGC; fino a 5 punti di virata, inclusi lo start e l'arrivo, con durata massima di 2.5h; la quota di arrivo deve essere inferiore a quella di partenza.
 [Triangolo]: segue le regole FAI OLC per i triangoli; 4 punti di virata, con partenza ed arrivo comuni.
-Per temi più lunghi di 500 km, nessun braccio deve essere inferiore al 25% o superiore al 45% del totale, oppure nessun braccio inferiore al 28% del totale.
+Per temi pi›†lunghi di 500 km, nessun braccio deve essere inferiore al 25% o superiore al 45% del totale, oppure nessun braccio inferiore al 28% del totale.
 La quota soul traguardo d'arrivo non deve essere inferiore della quota di partenza meno 1000m.
 [Classico]: segue le regole OLC classiche; fino a 7 punti di virata, inclusi start ed arrivo; la quota di arrivo non dev'essere inferiore alla quota di partenza meno 1000m.
 Punti assegnati 80% sul penultimo braccio e 60% sull'ultimo traversone.
@@ -777,9 +777,9 @@ Punti assegnati 80% sul penultimo braccio e 60% sull'ultimo traversone.
 
 @500
 Tipo di partenza.
-[linea]: il task parte quando viene attraversata la linea. La lunghezza della linea È definita in 'raggio di partenza'.
-[cilindro]: il task inizia quando l'aliante esce dal cilindro. Il raggio di tale cilindro È definito in 'raggio di partenza'.
-[settore FAI]: definisce un settore di 90 gradi. Il task inizia quando l'aliante entra nel settore. Il raggio di tale settore È definito in 'Raggio di Partenza'
+[linea]: il task parte quando viene attraversata la linea. La lunghezza della linea e' definita in 'raggio di partenza'.
+[cilindro]: il task inizia quando l'aliante esce dal cilindro. Il raggio di tale cilindro e' definito in 'raggio di partenza'.
+[settore FAI]: definisce un settore di 90 gradi. Il task inizia quando l'aliante entra nel settore. Il raggio di tale settore e' definito in 'Raggio di Partenza'
 
 @501
 Raggio del cilindro/settore di partenza oppure SEMI-LUNGHEZZA della linea di traguardo di partenza.
@@ -811,8 +811,8 @@ Determina come i piloni sono fatti avanzare durante il tema.
 
 @508
 Tipo delle aree AAT:
-[Cilindro]: definisce un pilone cilindrico, con raggio definito nella propriet‡ 'Raggio pilone'
-[Settore]: pilone AAT con settore, raggio definito dal parametro "Raggio Settore"; il settore È legato ai parametri "Radiale di start" e "Radiale di arrivo".
+[Cilindro]: definisce un pilone cilindrico, con raggio definito nella proprieta' 'Raggio pilone'
+[Settore]: pilone AAT con settore, raggio definito dal parametro "Raggio Settore"; il settore e' legato ai parametri "Radiale di start" e "Radiale di arrivo".
 ######### 'Start radial' / 'End radial' ??
 
 @509
@@ -829,9 +829,9 @@ Radiale di arrivo per l'area di osservazione di tipo a settore per l'AAT.
 
 @513
 Tipo di traguardo d'arrivo
-[Linea]: il tema È completato quando la linea viene attraversata. La lunghezza della linea È definita tramite il parametro "Raggio traguardo d'arrivo"
-[Cilindro]: il tema È completato quango si entree nel cilindro. Il raggio del cilindro È definito col parametro "Raggio traguardo d'arrivo".
-[Settore FAI]: definisce un setter di 90 gradi. Il tema È completato quando si entra nel settore. Il raggio del settore È definito con il parametro "Raggio traguardo d'arrivo".
+[Linea]: il tema e' completato quando la linea viene attraversata. La lunghezza della linea e' definita tramite il parametro "Raggio traguardo d'arrivo"
+[Cilindro]: il tema e' completato quango si entree nel cilindro. Il raggio del cilindro e' definito col parametro "Raggio traguardo d'arrivo".
+[Settore FAI]: definisce un setter di 90 gradi. Il tema e' completato quando si entra nel settore. Il raggio del settore e' definito con il parametro "Raggio traguardo d'arrivo".
 
 @514
 Raggio del cilindro di arrivo o mezza lunghezza del traguardo d'arrivo.
@@ -841,16 +841,16 @@ Raggio del cilindro di arrivo o mezza lunghezza del traguardo d'arrivo.
 #
 
 @530
-Un traguardo a tempo È un orario locale che apre il traguardo di partenza, esattamente come nelle regate.
-Impostare 0 se non c'È un traguardo a tempo.
+Un traguardo a tempo e' un orario locale che apre il traguardo di partenza, esattamente come nelle regate.
+Impostare 0 se non c'e' un traguardo a tempo.
 Impostare ad almeno 1 se la gara ha un traguardo a tempo.
 I TRAGUARDI A TEMPO SONO ATTIVI SOLO NELLA MODALITA' PARA E DELTA.
 
 @531
-Per temi di gara con almeno 1 traguardo a tempo, impostare l'orario locale. Se il numero di traguardo È 0, questo valore sar‡ ignorato.
+Per temi di gara con almeno 1 traguardo a tempo, impostare l'orario locale. Se il numero di traguardo e' 0, questo valore sara' ignorato.
 
 @532
-In presenza di piÚ di un traguardo a tempo, impostare l'intervallo di tempo IN MINUTI per gli altri.
+In presenza di pio' di un traguardo a tempo, impostare l'intervallo di tempo IN MINUTI per gli altri.
 Se presente solo un traguardo che chiude ad un certo orario, impostare l'intervallo di tempo a quella differenza.
 Se presente solo un traguardo, e senza orario di chiusura, impostare l'intervallo ad un valore elevato, ad esempio 480 minuti.
 
@@ -873,23 +873,23 @@ Impostare 0 per nessun cartiglio.
 @602
 Mostra i cartigli per questa categoria solo sotto il fattore di scala scelto.
 Impostare 0 per nessun cartiglio.
-Se non È in uso una topologia avanzata, che potrebbe non essere disponibile per le aree di volo scelte, questo riquadro sar‡ colorato di blu e nessun valore sar‡ selezionabile..
+Se non e' in uso una topologia avanzata, che potrebbe non essere disponibile per le aree di volo scelte, questo riquadro sara' colorato di blu e nessun valore sara' selezionabile..
 
 @610
-Impostazione manuale della velocit‡ vento.
+Impostazione manuale della velocita' vento.
 
 @611
 Impostazione manuale della direzione del vento.
 
 @612
 Questo permette di attivare o disattivare l'algoritmo di calcolo automatico del vento.
-Quando l'algoritmo È disattivato, il pilota È responsabile per impostare i valori di vento stimati.
+Quando l'algoritmo e' disattivato, il pilota e' responsabile per impostare i valori di vento stimati.
 [Termica] Richiede solo ulna sorgente dati GPS
-[ZigZag] Richiede un variometro elettrico con nell'uscita dati la velocit‡ all'aria
+[ZigZag] Richiede un variometro elettrico con nell'uscita dati la velocita' all'aria
 [Entrambi] Usa il ZigZag e la termica
 
 @613
-Definisce se la scia È scarrocciata col vento quando mostrata in termica.
+Definisce se la scia e' scarrocciata col vento quando mostrata in termica.
 
 #
 # WEATHER RASP - NO NEED TO TRANSLATE SINCE RASP IS NOT YET WORKING CORRECTLY IN LK8000
@@ -934,7 +934,7 @@ Being for "dry" thermals, this parameter omits the effect of "cloudsuck".
 This parameter provides an additional means of evaluating the formation of clouds within the BL and might be used either 
 in conjunction with or instead of the other cloud prediction parameters.  
 It assumes a very simple relationship between cloud cover percentage and the maximum relative humidity within the BL.
-The cloud base height is not predicted, but is expected to be below the BL Top height.
+The cloud base height is not prevista, but is expected to be below the BL Top height.
 
 @656
 [Sfc temp]
@@ -963,14 +963,14 @@ Negative convergence (divergence) produces subsiding vertical motion, creating l
 
 @800
 [Altitudine QNH]
-È la quota sul livello del mare, rilevata dal GPS o dal barometro collegato (solo se il dato di quota legato alla pressione È fornito dallo strumento, e solo se È stata selezionata tale opzione nelle impostazioni relative). 
-È il valore di quota usato da LK8000 per eseguire i calcoli. Sono anche disponibili le InfoBox di quota GPS e di quota barometrica.
+e' la quota sul livello del mare, rilevata dal GPS o dal barometro collegato (solo se il dato di quota legato alla pressione e' fornito dallo strumento, e solo se e' stata selezionata tale opzione nelle impostazioni relative). 
+e' il valore di quota usato da LK8000 per eseguire i calcoli. Sono anche disponibili le InfoBox di quota GPS e di quota barometrica.
 QUESTO DATO RAPPRESENTA LA QUOTA DI RIFERIMENTO IMPIEGATA DAL SOFTWARE.
-In modalit‡ simulazione questo valore puÚ essere definito manualmente con le frecce di direzione Su e Gi˘; parimenti le frecce Destra e Sinistra fanno ruotare il velivolo in mappa.
+In modalita' simulazione questo valore puo' essere definito manualmente con le frecce di direzione Su e Giu'; parimenti le frecce Destra e Sinistra fanno ruotare il velivolo in mappa.
 
 @801
 [Altitudine AGL]
-Altezza sul terreno. È data dalla quota di volo meno l'elevazione del terreno, ricavata dal file del modello digitale di elevazione (DEM).
+Altezza sul terreno. e' data dalla quota di volo meno l'elevazione del terreno, ricavata dal file del modello digitale di elevazione (DEM).
 Il valore diventa ROSSO quando si scende sotto all'altezza di sicurezza sul terreno impostata.
 
 @802
@@ -980,24 +980,24 @@ Rateo di salita durante gli ultimi 30 secondi, basato sulla quota GPS o su quell
 @803
 [Rilevamento/direzione]
 Rotta al pilone successivo.
-Per i temi AAT, È la rotta verso il punto di virata all'interno dell'area del AAT.
+Per i temi AAT, e' la rotta verso il punto di virata all'interno dell'area del AAT.
 
 @804
 [L/D 20"]
-Rateo di planata determinato dalla veloci‡ sul terreno DIVISO la velocit‡ verticale (fornita dal GPS) negli ultimi 20 secondi.
-Valori negativi indicano una planata in salita. Se la velocit‡ verticale È prossima a 0, allora il valore mostrato È '---'.
+Rateo di planata determinato dalla velocia' sul terreno DIVISO la velocita' verticale (fornita dal GPS) negli ultimi 20 secondi.
+Valori negativi indicano una planata in salita. Se la velocita' verticale e' prossima a 0, allora il valore mostrato e' '---'.
 
 @805
 [L/D Termica]
-È la distanza dalla cima dell'ultima termica DIVISO la quota persa dal suo raggiungimento.
-Valori negativi indicano una planata in salita (quota guadagnata da quando si È lasciata la termica).
-Se la velocit‡ verticale È prossima a 0, allora il valore mostrato È '---'.
-Attenzione: andare a zig-zag o tornare indietro fornir‡ valori errati! Usare in tal caso l'efficienza media 'L/D average'.
+e' la distanza dalla cima dell'ultima termica DIVISO la quota persa dal suo raggiungimento.
+Valori negativi indicano una planata in salita (quota guadagnata da quando si e' lasciata la termica).
+Se la velocita' verticale e' prossima a 0, allora il valore mostrato e' '---'.
+Attenzione: andare a zig-zag o tornare indietro fornira' valori errati! Usare in tal caso l'efficienza media 'L/D average'.
 
 @806
-[Velocit‡ sul terreno]
-Velocit‡ sul terreno misurata dal GPS.
-Se l'InfoBox È attiva durante la simulazione, premendo le frecce su e gi˘ si modifica la velocit‡, sinistra e destra per virare.
+[Velocita' sul terreno]
+Velocita' sul terreno misurata dal GPS.
+Se l'InfoBox e' attiva durante la simulazione, premendo le frecce su e giu' si modifica la velocita', sinistra e destra per virare.
 
 @807
 [Media ultima termica]
@@ -1014,8 +1014,8 @@ Tempo trascorso nell'ultima termica.
 @810
 [Impostazioni MacCready]
 Impostazioni attuali del MacCready.
-Questa InfoBox È mostrata anche se il valore È impostato manualmente o in automatico.
-(Solo per PC e touchscreen: si puÚ usare per modificare i valori MacCready con le frecce su e gi˘, se l'InfoBox È attiva).
+Questa InfoBox e' mostrata anche se il valore e' impostato manualmente o in automatico.
+(Solo per PC e touchscreen: si puo' usare per modificare i valori MacCready con le frecce su e giu', se l'InfoBox e' attiva).
 
 @811
 [Distanza al prossimo pilone]
@@ -1033,7 +1033,7 @@ Quota necessaria per raggiungere il prossimo pilone con l'attuale valore di MacC
 
 @814
 [Prossimo pilone]
-Il nome del pilone attualmente selezionato. Quando l'InfoBox È attiva, usando le frecce su e gi˘, si puÚ selezionare il pilone successivo e precedente del tema in corso.
+Il nome del pilone attualmente selezionato. Quando l'InfoBox e' attiva, usando le frecce su e giu', si puo' selezionare il pilone successivo e precedente del tema in corso.
 (Solo per PC e touchscreen: premendo il tasto invio si ottengono i dettagli del pilone stesso).
 
 @815
@@ -1045,8 +1045,8 @@ E' la quota di arrivo al traguardo del tema, tenendo in conto la quota di sicure
 E' la quota necessaria al completamento del tema.
 
 @817
-[Velocit‡ media tema]
-E' la velocit‡ media di cross-country del tema in corso, compensata per la quota.
+[Velocita' media tema]
+E' la velocita' media di cross-country del tema in corso, compensata per la quota.
 
 @818
 [Distanza finale]
@@ -1055,12 +1055,12 @@ Distanza finale per punti di virata rimanenti.
 @819
 [L/D finale]
 ATTENZIONE: non usare questo valore.
-E' qui solo per un motivo di compatibilit‡ con le vecchie versioni.
+E' qui solo per un motivo di compatibilita' con le vecchie versioni.
 Usa EFF al suo posto!
 
 @820
 [Altezza terreno]
-Rappresenta l'elevazione del terreno sul livello del mare; È ricavata dal file DEM (modello di elevazione digitale del terreno) in corrispondenza dell'attuale posizione GPS.
+Rappresenta l'elevazione del terreno sul livello del mare; e' ricavata dal file DEM (modello di elevazione digitale del terreno) in corrispondenza dell'attuale posizione GPS.
 
 @821
 [Media termica]
@@ -1073,15 +1073,15 @@ Guadagno di quota nella termica attuale.
 @823
 [Rotta]
 Rotta magnetica riportata dal GPS.
-(Solo per PC e touchscreen: in simulazione, se l'InfoBox È attiva, premendo le frecce su e gi˘ si modifica la traccia).
+(Solo per PC e touchscreen: in simulazione, se l'InfoBox e' attiva, premendo le frecce su e giu' si modifica la traccia).
 
 @824
 [Vario]
-Velocit‡ verticale istantanea desunta dal GPS, o dal dato di energia totale fornita da un variometro 'intelligentÈ esterno, se collegato.
+Velocita' verticale istantanea desunta dal GPS, o dal dato di energia totale fornita da un variometro 'intelligente' esterno, se collegato.
 
 @825
-[Velocit‡ vento]
-Velocit‡ del vento stimata da LK8000 metiante i calcolo del TrueWind o in termica.
+[Velocita' vento]
+Velocita' del vento stimata da LK8000 metiante i calcolo del TrueWind o in termica.
 
 @826
 [Direzione vento]
@@ -1090,7 +1090,7 @@ Direzione del vento stimata da LK8000 mediante il calcolo del TrueWind o in term
 @827
 [Tempo AAT]
 Tempo rimanente al minimo tempo per l'AAT.
-Diventa ROSSO quando il tempo rimanente È finito.
+Diventa ROSSO quando il tempo rimanente e' finito.
 
 @828
 [Distanza max AAT]
@@ -1101,27 +1101,27 @@ Distanza massima possibile per l'AAT come pro-memoria del tema.
 Distanza minima possibile per l'AAT come pro-memoria del tema.
 
 @830
-[Velocit‡ max AAT]
-Velocit‡ media ottenibile per l'AAT se si percorre la massima distanza possibile rimanente nel tempo minimo AAT.
+[Velocita' max AAT]
+Velocita' media ottenibile per l'AAT se si percorre la massima distanza possibile rimanente nel tempo minimo AAT.
 
 @831
-[Velocit‡ min AAT]
-Velocit‡ media ottenibile per l'AAT se si percorre la minima distanza possibile rimanente nel tempo minimo AAT.
+[Velocita' min AAT]
+Velocita' media ottenibile per l'AAT se si percorre la minima distanza possibile rimanente nel tempo minimo AAT.
 
 @832
 [IAS spazio aereo]
-IAS (velocit‡ all'aria indicata) misurata da un variometro elettrico collegato all'LK.
-Se nessun sensore È disponibile viene STIMATA secondo il vento attuale e la densit‡ dell'aria alla quota di volo. In tal caso viene mostrata come eIAS (IAS stimata).
+IAS (velocita' all'aria indicata) misurata da un variometro elettrico collegato all'LK.
+Se nessun sensore e' disponibile viene STIMATA secondo il vento attuale e la densita' dell'aria alla quota di volo. In tal caso viene mostrata come eIAS (IAS stimata).
 
 @833
 [Quota barometrica]
 E' la quota barometrica fornita da un GPS dotato di sensore di pressione o da un variometro elettrico esterno che sia supportato dal software.
-Se si È selezionato 'Usa altezza barometrica' nel menu 5, allora tale quota È anche mostrata come QNH ed utilizzata da LK per tutti i calcoli.
+Se si e' selezionato 'Usa altezza barometrica' nel menu 5, allora tale quota e' anche mostrata come QNH ed utilizzata da LK per tutti i calcoli.
 
 @834
-[Velocit‡ MacReady]
-E' la velocit‡ MacCready equivalente.
-NON È la velocit‡ da tenere in volo (speed to fly) per come viene intesa delfinando o col Sollfahr.
+[Velocita' MacReady]
+E' la velocita' MacCready equivalente.
+NON e' la velocita' da tenere in volo (speed to fly) per come viene intesa delfinando o col Sollfahr.
 
 @835
 [Percentuale di salita]
@@ -1139,7 +1139,7 @@ Il valore risulta positivo in caso di richiamata.
 @838
 [Prossima L/D]
 ATTENZIONE: non usare questo valore.
-E' qui solo per un motivo di compatibilit‡ con le vecchie versioni.
+E' qui solo per un motivo di compatibilita' con le vecchie versioni.
 Usare EFF al suo posto!
 
 @839
@@ -1159,16 +1159,16 @@ Tempo stimato necessario per completare il tema, prevedendo una performance con 
 Tempo stimato necessario per raggiungere il successivo pilone, prevedendo una performance con un ciclo planata/termica MacCready ideale.
 
 @843
-[Velocit‡ in volo, o delfinamento o Sollfarh]
-La velocit‡ istantanea da mantenere facendo uso dei calcoli di 'netto vario' per determinare la velocit‡ di delfinamento in planata con l'attuale rotta dell'aliante.
-In modalit‡ planata/traversone questa velocit‡ È calcolata al fine di mantenere la quota.
-In modalit‡ planata finale questa velocit‡ È calcolata per eseguire una planata all'arrivo.
-In modlit‡ termica si commuta alla velocit‡ di discesa minima in funzione del carico impostato (se un accelerometro È collegato).
+[Velocita' in volo, o delfinamento o Sollfarh]
+La velocita' istantanea da mantenere facendo uso dei calcoli di 'netto vario' per determinare la velocita' di delfinamento in planata con l'attuale rotta dell'aliante.
+In modalita' planata/traversone questa velocita' e' calcolata al fine di mantenere la quota.
+In modalita' planata finale questa velocita' e' calcolata per eseguire una planata all'arrivo.
+In modlita' termica si commuta alla velocita' di discesa minima in funzione del carico impostato (se un accelerometro e' collegato).
 
 @844
 [Netto Vario]
-Velocit‡ verticale istantanea della massa d'aria: È ricavata dai valori del variometro MENO il tasso di caduta stimato dell'aliante.
-Dato migliore se sono collegati strumenti esterni di rilevamento della velocit‡, accelerometro e variometro; altrimenti i calcoli sono bastati sulle misure del GPS e del vento stimato.
+Velocita' verticale istantanea della massa d'aria: e' ricavata dai valori del variometro MENO il tasso di caduta stimato dell'aliante.
+Dato migliore se sono collegati strumenti esterni di rilevamento della velocita', accelerometro e variometro; altrimenti i calcoli sono bastati sulle misure del GPS e del vento stimato.
 
 @845
 [Ora arrivo tema]
@@ -1181,7 +1181,7 @@ Ora locale di arrivo stimata al prossimo pilone, prevedendo una performance con 
 @847
 [Differenza direzione]
 La differenza di rotta tra la rotta tenuta del velivolo e quella al pilone successivo, oppure per i temi AAT rispetto al punto di virata all'interno dell'area del AAT.
-La navigazione GPS È basata sulla rotta e tale direzione puÚ essere diversa rispetto alla prua del velivolo in presenza di vento (da cui lo scarroccio).
+La navigazione GPS e' basata sulla rotta e tale direzione puo' essere diversa rispetto alla prua del velivolo in presenza di vento (da cui lo scarroccio).
 Chevrons point to the direction the glider needs to alter course to correct the bearing difference, that is, so that the glider's course made good is pointing directly at the next waypoint.  
 Questa direzione prende in considerazione la curvatura terrestre.
 
@@ -1190,13 +1190,13 @@ Questa direzione prende in considerazione la curvatura terrestre.
 Temperatura dell'aria esterna misurata da una sonda (o vario elettrico) se collegata e se supportata dal software.
 
 @849
-[Unidit‡ relativa]
-Umidit‡ relativa misurata da una sonda (o vario elettrico) se collegata e se supportata dal software.
+[Unidita' relativa]
+Umidita' relativa misurata da una sonda (o vario elettrico) se collegata e se supportata dal software.
 
 @850
 [Temperatura prevista]
-Temperatura prevista al suolo per l'aeroporto/campo di volo impostato come base, determinato stimando la quota di convezione e la base cumulo associando i dati di temperatura esterna e umidit‡ relativa.
-(Solo per PC e touchscreen: premendo i tasti su e gi˘ si puÚ modificare la temperatura prevista).
+Temperatura prevista al suolo per l'aeroporto/campo di volo impostato come base, determinato stimando la quota di convezione e la base cumulo associando i dati di temperatura esterna e umidita' relativa.
+(Solo per PC e touchscreen: premendo i tasti su e giu' si puo' modificare la temperatura prevista).
 
 @851
 [Distanza AAT Tgt]
@@ -1204,20 +1204,20 @@ Distanza AAT per i punti di arrivo del tema.
 #########
 
 @852
-[Velocit‡ AA Tgt]
-Velocit‡ raggiungibile per AAT per gli obiettivi rimanenti in un tempo minimo dell'AAT.
+[Velocita' AA Tgt]
+Velocita' raggiungibile per AAT per gli obiettivi rimanenti in un tempo minimo dell'AAT.
 #########
 
 @853
 [L/D vario]
-Rateo di planata istantaneo determinato dala velocit‡ indicata DIVISO la velocit‡ verticale riferita all'energia totale, solo quando collegato ad un variometro elettrico.
-Valori negativi indicano una planata in salita. Se la velocit‡ verticale riferita all'energia totale È prossima a 0, verr‡ mostrato come valore '---'.
+Rateo di planata istantaneo determinato dala velocita' indicata DIVISO la velocita' verticale riferita all'energia totale, solo quando collegato ad un variometro elettrico.
+Valori negativi indicano una planata in salita. Se la velocita' verticale riferita all'energia totale e' prossima a 0, verra' mostrato come valore '---'.
 
 @854
-[Velocit‡ TAS]
-Velocit‡ reale all'aria rilevata da un variomentro elettronico esterno.
-In assenza di sensori esterni viene stimata usando il vento calcolato e la densit‡ dell'aria alla quota di volo.
-In tale caso verr‡ indicata come eTAS (TAS stimata).
+[Velocita' TAS]
+Velocita' reale all'aria rilevata da un variomentro elettronico esterno.
+In assenza di sensori esterni viene stimata usando il vento calcolato e la densita' dell'aria alla quota di volo.
+In tale caso verra' indicata come eTAS (TAS stimata).
 
 @855
 [Proprio codice team]
@@ -1237,22 +1237,22 @@ Deviazione di rotta rispetto al velivolo del team in base all'ultima posizione r
 Il raggio di portata del velivolo del team in base all'ultima posizione rilevata.
 
 @859
-[Velocit‡ tema istantanea]
-Velocit‡ istantanea di cross-country nel tema in corso, compensata sulla quota.
+[Velocita' tema istantanea]
+Velocita' istantanea di cross-country nel tema in corso, compensata sulla quota.
 
 @860
 [Distaza dalla base]
 Distanza dal campo di volo/aeroporto base, se impostato.
 
 @861
-[Velocit‡ raggiunta nel tema]
-Velocit‡ di cross-country raggiunta durante l'attuale tema, compensata sulla quota.
-Normalmente questa È usata come prima scelta.
+[Velocita' raggiunta nel tema]
+Velocita' di cross-country raggiunta durante l'attuale tema, compensata sulla quota.
+Normalmente questa e' usata come prima scelta.
 
 @862
 [AAT Delta Tempo]
 Differenza fra la durata stimata per il tema e il tempo medio AAT.
-E' ROSSO se negativo (arrivo previsto troppo presto), o BLU se in un settore e puÚ cambiare con un tempo di arrivo stimato maggiore di quello AAT pi˘ 5 minuti.
+E' ROSSO se negativo (arrivo previsto troppo presto), o BLU se in un settore e puo' cambiare con un tempo di arrivo stimato maggiore di quello AAT piu' 5 minuti.
 
 @863
 [Termiche tutte]
@@ -1261,7 +1261,7 @@ Media temporale del rateo di salita di tutte le termiche.
 @865
 [Batteria]
 Per palmari e navigatori stradali: fornisce la percentuale di carica residua della batteria.
-Se finisce con una C significa che la batteria È in ricarica.
+Se finisce con una C significa che la batteria e' in ricarica.
 Se finisce con una D significa che la batteria si sta scaricando.
 
 @866
@@ -1272,19 +1272,19 @@ Efficienza necessaria per giungere alla quota di arrivo sopra al pilone finale. 
 @868
 [Efficienza Alternativa]
 Efficienza necessaria per giungere alla quota di arrivo sopra al pilone alternativo selezionato.
-Non È corretta per l'energia totale.
+Non e' corretta per l'energia totale.
 Sopra il valore 200 non viene mostrato nulla; tra 100 e 200 viene mostrato un numero intero; tra 99 e 1 viene mostrato un valore decimale.
 
 @869
 [Miglior Alternativa]
-Ricerca automatica della migliore atterrabilit‡ disponibile.
+Ricerca automatica della migliore atterrabilita' disponibile.
 
 @870
 [QFE]
 QFE automatico. La quota indicata usa quella fornita dal GPS o da uno strumento barometrico collegato e selezionato; viene sempre impostata a 0 (zero) sul terreno prima del decollo.
-Dopo il decollo non viene pi˘ azzerata automaticamente, neppure dopo l'atterraggio.
+Dopo il decollo non viene piu' azzerata automaticamente, neppure dopo l'atterraggio.
 Cambiare il QFE non influenza in alcun modo la quota QNH.
-Il QFE non È utilizzato per i calcoli: È solo un riferimento per il pilota.
+Il QFE non e' utilizzato per i calcoli: e' solo un riferimento per il pilota.
 
 @871
 [Efficienza media]
@@ -1292,23 +1292,23 @@ La distanza percorsa nel periodo di tempo configurato DIVISO la quota persa da q
 I valori negativi sono mostrati come oo (infinito) ed indicano una planata in salita (con guadagno di quota).
 Efficienza sopra 1 a 200 viene indicata come oo (infinita).
 Puoi configurare il periodo di tempo analizzato nel menu 5 'calcolo di planata'.
-I valori minimi suggeriti sono di 60, 90 o 120 secondi: valori pi˘ bassi tenderebbero ad essere prossimi all'Efficienza istantanea, mentre valori temporali maggiori tenderanno ad essere vicini all'Efficienza dall'ultima termica.
-La distanza non È rappresentata dalla linea che collega i due punti, ma la distanza che hai percorso comprensiva delle eventuali deviazioni.
+I valori minimi suggeriti sono di 60, 90 o 120 secondi: valori piu' bassi tenderebbero ad essere prossimi all'Efficienza istantanea, mentre valori temporali maggiori tenderanno ad essere vicini all'Efficienza dall'ultima termica.
+La distanza non e' rappresentata dalla linea che collega i due punti, ma la distanza che hai percorso comprensiva delle eventuali deviazioni.
 Tale valore non viene calcolato in termica.
 
 @872
 [Prossima Efficienza richiesta]
 E' l'efficienza richiesta per raggiungere il prossimo pilone, determinata dalla distanza dal successivo pilone DIVISO l'altezza richiesta per arrivarci all'ALTEZZA DI SICUREZZA IMPOSTATA.
 I valori sopra 199 e sotto 1 non sono visualizzati.
-Si tratta di un calcolo squisitamente geometrico, come avviene per il Garmin, per Naviter e per la maggior parte dei pi˘ diffusi strumenti.
+Si tratta di un calcolo squisitamente geometrico, come avviene per il Garmin, per Naviter e per la maggior parte dei piu' diffusi strumenti.
 
 @873
 [Livello di volo]
-Indicatore del livello di volo: È espresso in centinaia o in piedi.
-Viene impiegata la quota di volo attuale, che non È necessariamente quella barometrica, e comunque non necessariamente calcolata in atmosfera standard.
-In altre parole È imprecisa e puÚ essere sbagliata anche di qualche centinaio di piedi (qualche 30ina di metri)!
+Indicatore del livello di volo: e' espresso in centinaia o in piedi.
+Viene impiegata la quota di volo attuale, che non e' necessariamente quella barometrica, e comunque non necessariamente calcolata in atmosfera standard.
+In altre parole e' imprecisa e puo' essere sbagliata anche di qualche centinaio di piedi (qualche 30ina di metri)!
 Utilizzala come indicatore approssimativo.
-Attenzione, non vi È alcuna garanzia sull'esattezza di tale dato!
+Attenzione, non vi e' alcuna garanzia sull'esattezza di tale dato!
 
 @874
 [Tema: distanza coperta]
@@ -1336,9 +1336,9 @@ Radiale al pilone della base/aeroporto impostata, se disponibile.
 @879
 [Distanza spazio aereo]
 ATTUALMENTE NON DISPONIBILE.
-Distanza dallo spazio aereo pi˘ vicino.
-Esprime la distanza rimanente dallo spazio aereo, anche se non compare sulla mappa, o se È stato disabilitato, o se ne È gi‡ stato dato avviso.
-Se = 0 significa che sei dentro ad uno spazio aereo; usa il menu 'spazio aereo pi˘ vicino' per avere pi˘ informazione sullo spazio aereo in oggetto.
+Distanza dallo spazio aereo piu' vicino.
+Esprime la distanza rimanente dallo spazio aereo, anche se non compare sulla mappa, o se e' stato disabilitato, o se ne e' gia' stato dato avviso.
+Se = 0 significa che sei dentro ad uno spazio aereo; usa il menu 'spazio aereo piu' vicino' per avere piu' informazione sullo spazio aereo in oggetto.
 
 @880
 [Ext.Batt.Bank ]
@@ -1355,35 +1355,174 @@ Voltaggio della batteria 2, se disponibile.
 @883
 [Odometro]
 Rappresenta la distanza percorsa dal DECOLLO, calcolata ogni secondo, anche in termica.
-Tale valore viene azzerato al decollo e non puÚ essere resettato in altri modi.
+Tale valore viene azzerato al decollo e non puo' essere resettato in altri modi.
 La distanza viene calcolata come se stessi guidando un'auto su una superficie piana.
 
 @884
 [Altern QNH]
-Quota QNH con unit‡ invertite: se stai usando i metri, allora verr‡ mostrata in piedi, e viceversa. 
+Quota QNH con unita' invertite: se stai usando i metri, allora verra' mostrata in piedi, e viceversa. 
 
 @885
 [Altern AltAGL]
-Altezza dal terreno con unit‡ invertite: se stai usando i metri, allora verr‡ mostrata in piedi, e viceversa.
+Altezza dal terreno con unita' invertite: se stai usando i metri, allora verra' mostrata in piedi, e viceversa.
 
 @886
 [Quota GPS]
-E' la quota indicata dal GPS. Attenzione: in funzione del GPS che si sta usando puÚ essere abbastanza precisa (+/- 15 m), come pure molto sbagliata (+/- ben oltre 70 m).
-In termica inoltre, soprattutto con i PNA (i navigatori stradali), la quota indicata puÚ essere notevolmente errata.
-Se non si ha un'altitudine barometrica rilevata da uno strumento esterno al GPS stesso, o se non la si È configurata nel menu 5, allora il valore di quota GPS È quello impiegato dal software per tutti i calcoli.
-La quota QNH puÚ usare sia quella fornita dal GPS sia quella barometrica.
-Normalmente si dovrebbe utilizzare come InfoBox principale la quota QNH, poichÈ fornisce sempre la quota utilizzata internamente.
+E' la quota indicata dal GPS. Attenzione: in funzione del GPS che si sta usando puo' essere abbastanza precisa (+/- 15 m), come pure molto sbagliata (+/- ben oltre 70 m).
+In termica inoltre, soprattutto con i PNA (i navigatori stradali), la quota indicata puo' essere notevolmente errata.
+Se non si ha un'altitudine barometrica rilevata da uno strumento esterno al GPS stesso, o se non la si e' configurata nel menu 5, allora il valore di quota GPS e' quello impiegato dal software per tutti i calcoli.
+La quota QNH puo' usare sia quella fornita dal GPS sia quella barometrica.
+Normalmente si dovrebbe utilizzare come InfoBox principale la quota QNH, poiche' fornisce sempre la quota utilizzata internamente.
 
 @887
 [MacCready Equivalente]
-Questo È il valore McCready reale e corrente che si sta usando: È basato sull'attuale velocit‡ media. 
-Non puÚ essere cambiato ed È mediato sulla medesima quantit‡ di tempo dell'efficienza media (L/D media, menu 5).
-Se non si sta impiegando una sonda esterna che rilevi la velocit‡ dell'aria, allora sar‡ usata la velocit‡ stimata.
+Questo e' il valore McCready reale e corrente che si sta usando: e' basato sull'attuale velocita' media. 
+Non puo' essere cambiato ed e' mediato sulla medesima quantita' di tempo dell'efficienza media (L/D media, menu 5).
+Se non si sta impiegando una sonda esterna che rilevi la velocita' dell'aria, allora sara' usata la velocita' stimata.
 Leggere il manuale per approfondimenti.
 
 @888
+Nessun aiuto e' disponibile per questa sezione.
+
 @889
-Nessun aiuto È disponibile per questa sezione.
+Nessun aiuto e' disponibile per questa sezione.
+
+@890
+[OLC CLASSIC] distanza
+
+@891
+[FAI TRIANGLE] distanza
+
+@892
+[OLC LEAGUE] distanza
+
+@893
+[FAI 3TPs] distanza
+
+@894
+[OLC CLASSIC] distanza prevista
+
+@895
+[FAI TRIANGLE] distanza prevista
+
+@896
+[FAI 3TPs] distanza prevista
+
+@897
+[OLC CLASSIC] velocita'
+
+@898
+[FAI TRIANGLE] velocita'
+
+@899
+[OLC LEAGUE] velocita'
+
+@900
+[FAI 3TPs] velocita'
+
+@901
+[OLC CLASSIC] prevista velocita'
+
+@902
+[FAI TRIANGLE] prevista velocita'
+
+@903
+[FAI 3TPs] prevista velocita'
+
+@904
+[OLC CLASSIC] punteggio
+
+@905
+[FAI TRIANGLE] punteggio
+
+@906
+[OLC LEAGUE] punteggio
+
+@907
+[FAI 3TPs] punteggio
+
+@908
+[OLC CLASSIC] punteggio previsto
+
+@909
+[FAI TRIANGLE] punteggio previsto
+
+@910
+[FAI 3TPs] punteggio previsto
+
+@911
+[OLC PLUS] punteggio
+
+@912
+[OLC PLUS] punteggio previsto
+
+
+#
+# END INFOBOXES 800 - 1199
+#
+
+@1200
+[Campitura dello spazio aereo]
+L'area dello spazio aereo puo' essere identificata dai soli contorni, da una campitura, o da colori in trasparenza.
+[Solo contorni] compaiono solo i contorni (linee) dello spazio aereo
+[Campitura] lo spazio aereo viene campito col motivo ed i colori scelti
+[Semi-trasparente] lo spazio aereo viene campito con un colore semitrasparente (l'opacita' del colore puo' essere definita nella rispettiva voce)
+
+@1201
+[Opacita' e semitrasparenza dello spazio aereo]
+Definisce l'opacita': 0% trasparente, 100% opaco; lo spazio aereo viene campito con un colore semitrasparente.
+
+@1202
+[Barra inferiore: opacita' e trasparenza]
+Definisce l'opacita' della barra inferiore rispetto alla mappa: 0% trasparente, 100% opaco;
+Normalmente la barra e' nera col testo bianco, e i colori possono essere invertiti.
+Impostando l'opacita' <30% la barra inferiore risulta molto trasparente e il colore del testo viene forzatamente invertito.
+Alcune combinazioni di opacita' e colori invertiti potrebbero risultare inadatti alla navigazione, ma le combinazioni sono infinite (dunque fate delle prove sul Vs dispositivo).
+Usando i valori a 0% trasparente, 100% opaco LK8000 sara' piu' veloce.
+Un famoso strumento (...) dal nome simile a LK8000 usa il valore di 75%.
+Il valore predefinito e' 100% opaco.
+
+@1203
+[arrotondamento Font]
+L'arrotondamento dei caratteri Font li fara' apparire piu' leggibili.
+[Nessuno] nessun arrotondamento verra' applicato
+[Normale] verra' usata la qualita' normale
+[Anti Aliasing] arrotondamento caratteri
+[ClearType] qualita' superiore
+Attenzione: su alcuni vecchi dispositivi l'anti-alias non funziona.
+Su alcuni PNA in modalita' ritratto (schermo verticale), e su PPC2002, l'anti-alias funziona meglio.
+Altrimenti LK usa automaticamente il ClearType.
+Per vedere l'effetto di questa impostazione devi riavviare LK.
+Si suggerisce di fare qualche prova col proprio dispositivo.
+
+@1204
+[Modalita' VarioBar]
+Scegli il valore del vario e la barra relativa sulla sinistra, se abilitata.
+In modalita' termica solo il vario puo' essere mostrato.
+In modalita' navigazione anche il nettoVario o la velocita'-da-volare (SpeedToFly/Sollfart).
+Se STF e' selezionato la IAS desiderata viene indicata, e la barra indica se devi spingere o tirare la cloche per raggiungere quel valore.
+Il valore e' indicato con un suffisso:
+NT per netto
+SF per STF
+
+@1205
+[Categoria del velivolo]
+Seleziona il tipo di velivolo e possibilmente cambia la relativa polare.
+Ogni modalita' ha caratteristiche uniche: controlla sul sito internet per approfondire tale aspetto sul manuale.
+Dopo aver cambiato categoria devi riavviare LK per vedere tutte le differenze.
+
+@1206
+[Tipo di velivolo]
+Qui trovi una selezione di velivoli e profili alari con differenti classi di efficienza.
+Se vuoi usare un file con la tua curva polare personale, allora scegli Polare Personalizzata
+e dunque selezionala nel successivo riquadro di configurazione.
+
+@1207
+[Polare Personalizzata, file]
+File di Polare Personalizzata e' il nome del file che contiene i dati della curva polare.
+Il file deve essere messo nella sottodirectory _Polars
+Creare un file di polare non e' semplice: devi inserire i ratei precisi di discesa relativi al peso (con pilota) del velivolo.
+Leggi il manuale per approfondimenti.
 
 @9999
-Nessun aiuto È disponibile per questa sezione.
+Nessun aiuto disponibile per questo argomento!

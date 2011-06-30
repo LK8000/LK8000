@@ -15,6 +15,8 @@
 
 #include "devIlec.h"
 
+#include "utils/heapcheck.h"
+
 static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 
 static BOOL IlecParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
@@ -91,7 +93,10 @@ static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   if (_tcscmp(ctemp,_T("PDA1"))==0) {
 
 	NMEAParser::ExtractParameter(String,ctemp,1);
-	GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(StrToDouble(ctemp,NULL));
+	if (d == pDevPrimaryBaroSource) {
+		GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(StrToDouble(ctemp,NULL));
+		GPS_INFO->BaroAltitudeAvailable = TRUE;
+	}
 
 	NMEAParser::ExtractParameter(String,ctemp,2);
 	GPS_INFO->Vario = StrToDouble(ctemp,NULL);
@@ -118,7 +123,6 @@ static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 	
 	
 	GPS_INFO->VarioAvailable = TRUE;
-	GPS_INFO->BaroAltitudeAvailable = TRUE;
 	TriggerVarioUpdate();
 	return TRUE;
   }
@@ -127,7 +131,7 @@ static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 	NMEAParser::ExtractParameter(String,ctemp,1);
 	QNH = StrToDouble(ctemp,NULL);
 	// StartupStore(_T("... SET QNH= %.1f\n"),QNH);
-	AirspaceQnhChangeNotify(QNH);
+	CAirspaceManager::Instance().QnhChangeNotify(QNH);
 
 	return TRUE;
   }

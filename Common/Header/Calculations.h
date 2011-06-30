@@ -66,6 +66,7 @@ typedef struct _DERIVED_INFO
   int    FinalGlide;
   int    AutoMacCready; // TODO FIX bool
   int    Flying;	// TODO FIX bool ?
+  bool	 FreeFlying;	// set true when powerless flight is detected. Always true for paragliders.
   double NextAltitudeRequired;
   double NextAltitudeRequired0; // mc=0
   double NextAltitudeDifference;
@@ -120,9 +121,7 @@ typedef struct _DERIVED_INFO
   double Odometer;
   // Paolo Ventafridda: recalcuated value with no strange assumptions. These values are trustable.
   double LKTaskETE;
-  #if EQMC
   double EqMc; // equivalent MacCready
-  #endif
 
   // JMW moved calculated waypoint info here
 
@@ -137,14 +136,14 @@ typedef struct _DERIVED_INFO
 
   double NettoVario;
 
+  // Current flap
+  TCHAR Flaps[MAXFLAPSNAME+1];
+
   // optimum speed to fly instantaneously
   double VOpt; 
 
   // JMW estimated track bearing at next time step
   double NextTrackBearing;
-
-  // whether Speed-To-Fly audio are valid or not 
-  bool STFMode; 
 
   // JMW energy height excess to slow to best glide speed
   double EnergyHeight;
@@ -207,16 +206,12 @@ typedef struct _DERIVED_INFO
   double TurnRateWind;
   double BankAngle;
   double PitchAngle;
-  double GPSVarioTE;
-  double MacCreadyRisk;
   double TaskTimeToGoTurningNow;
   double TotalHeightClimb;
-  double DistanceVario;
   double GliderSinkRate;
   double Gload;
   double Essing;
   double TerrainBase; // lowest height within glide range
-  double TermikLigaPoints;
   double GRFinish;	// GRadient to final destination, 090203
 			// Note: we don't need GRNext since this value is used when going to a landing
 			// point, which is always a final glide.
@@ -234,6 +229,7 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 // void DoNearestTurnpoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 void DoCommon(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
+bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 bool DoTarget(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 void DoRecent(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -287,6 +283,7 @@ int InitActiveGate(void);
 bool ValidGate(void);
 	// Are we on the correct side of start cylinder?
 bool CorrectSide(void);
+void ResetFreeFlightStats(DERIVED_INFO *Calculated);
 
 
 void InitCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated);

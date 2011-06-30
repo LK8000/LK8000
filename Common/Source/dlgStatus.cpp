@@ -14,14 +14,24 @@
 #include "Logger.h"
 #include "compatibility.h"
 #ifdef OLDPPC
-#include "XCSoarProcess.h"
+#include "LK8000Process.h"
 #else
 #include "Process.h"
 #endif
+#include "buildnumber.h"
+
+
+using std::min;
+using std::max;
 
 extern BOOL extGPSCONNECT;
+extern NMEAParser nmeaParser1;
+extern NMEAParser nmeaParser2;
+
 
 #include "dlgTools.h"
+
+#include "utils/heapcheck.h"
 
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
@@ -46,8 +56,14 @@ static void NextPage(int Step){
     wf->SetCaption(gettext(TEXT("_@M661_")));
     break;
   case 1:
+    if (SIMMODE) {
+	TCHAR sysmode[100];
+	wsprintf(sysmode,_T("%s (%s)"),gettext(TEXT("_@M664_")),gettext(TEXT("_@M1211_")) );
+    	wf->SetCaption(sysmode);
+    } else {
 	// LKTOKEN  _@M664_ = "Status: System" 
-    wf->SetCaption(gettext(TEXT("_@M664_")));
+    	wf->SetCaption(gettext(TEXT("_@M664_")));
+    }
     break;
   case 2:
 	// LKTOKEN  _@M665_ = "Status: Task" 
@@ -195,6 +211,10 @@ static void UpdateValuesSystem() {
         } else { // valid but unknown number of sats
           _stprintf(Temp,TEXT(">3"));
         }
+	if (nmeaParser1.activeGPS==true)
+		_tcscat(Temp,_T("  (Dev:A)"));
+	else
+		_tcscat(Temp,_T("  (Dev:B)"));
         wp->SetText(Temp);
         wp->RefreshDisplay();
       }
@@ -264,6 +284,14 @@ static void UpdateValuesSystem() {
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpVersion"));
+  if (wp) {
+      TCHAR softversion[100];
+      wsprintf(softversion,_T("%s.%s #%d"),_T(LKVERSION), _T(LKRELEASE), BUILDNUMBER);
+      wp->SetText(softversion);
+      wp->RefreshDisplay();
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpBattBank"));
   if (wp) {
     _stprintf(Temp,TEXT("%d"),GPS_INFO.ExtBatt_Bank);
@@ -293,10 +321,8 @@ static void UpdateValuesSystem() {
   if (wp) {
     _stprintf(Temp,TEXT("\0"));
 #if (WINDOWSPC<1)
-#ifndef GNAV
     _stprintf(Temp2,TEXT("%d%% "), PDABatteryPercent);
     _tcscat(Temp, Temp2);
-#endif
 #endif
     if (GPS_INFO.SupplyBatteryVoltage == 0) {
       _stprintf(Temp2,TEXT("\0"));

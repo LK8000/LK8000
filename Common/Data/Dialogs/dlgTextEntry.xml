@@ -1,5 +1,0 @@
-<PMML>
-<WndForm Name="frmTextEntry" Type="Dialog" X=5 Y=5 Width=200 Height=70 Caption="_@M251_" Font=2 >
-<WndOwnerDrawFrame Name="frmGrid" X=0 Y=-1 Width=199 Height=60 Font=3 BackColor=0x404000 ForeColor=0xFFFFFF OnPaint="OnTextPaint" />
-</WndForm>    
-</PMML>

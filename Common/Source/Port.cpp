@@ -11,12 +11,14 @@
 #include "Sizes.h"
 #include "Port.h"
 #include "externs.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "device.h"
 #include "Utils2.h"
 
 #include <windows.h>
 #include <tchar.h>
+
+#include "utils/heapcheck.h"
 
 static void ComPort_StatusMessage(UINT type, const TCHAR *caption, const TCHAR *fmt, ...)
 {
@@ -54,13 +56,7 @@ BOOL ComPort::Initialize(LPCTSTR lpszPortName, DWORD dwPortSpeed, DWORD dwPortBi
   DCB PortDCB;
   TCHAR lkbuf[100];
   TCHAR lkPortName[10]; // 9 should be enough
-#if NOSIM
   if (SIMMODE) return FALSE;
-#else
-#ifdef _SIM_
-  return FALSE;
-#endif
-#endif
 
 #if (WINDOWSPC>0)
   // Do not use anymore COMn: , use \\.\COMnn  on PC version
@@ -219,8 +215,12 @@ void ComPort::PutChar(BYTE Byte)
   }
 }
 
-
 void ComPort::Flush(void)
+{
+  FlushFileBuffers(hPort);
+}
+
+void ComPort::Purge(void)
 {
   PurgeComm(hPort, 
             PURGE_TXABORT | PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR);
@@ -250,7 +250,7 @@ DWORD ComPort::ReadThread()
   #endif
 
   // JMW added purging of port on open to prevent overflow
-  Flush();
+  Purge();
   StartupStore(_T(". ReadThread running on port %d%s"),sportnumber+1,NEWLINE);
   
   // Specify a set of events to be monitored for the port.
@@ -360,7 +360,7 @@ DWORD ComPort::ReadThread()
 
   }
 
-  Flush();      
+  Purge();
 
   fRxThreadTerminated = TRUE;
   StartupStore(_T(". ComPort %d ReadThread: terminated%s"),sportnumber+1,NEWLINE);
@@ -622,6 +622,26 @@ unsigned long ComPort::SetBaudrate(unsigned long BaudRate)
     return 0;
 
   return result;
+}
+
+unsigned long ComPort::GetBaudrate()
+{
+  COMSTAT ComStat;
+  DCB     PortDCB;
+  DWORD   dwErrors;
+  
+  if (hPort == INVALID_HANDLE_VALUE)
+    return 0;
+  
+  do {
+    ClearCommError(hPort, &dwErrors, &ComStat);
+  } while (ComStat.cbOutQue > 0);
+  
+  Sleep(10);
+  
+  GetCommState(hPort, &PortDCB);
+  
+  return PortDCB.BaudRate;
 }
 
 int ComPort::Read(void *Buffer, size_t Size)

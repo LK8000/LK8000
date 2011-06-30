@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
-// Used by XCSoar.rc
+// Used by lk8000.rc
 //
 #define IDS_APP_TITLE                   1
 #define IDC_XCSOAR                      3
@@ -66,6 +66,7 @@
 #define IDB_TOWN                        218
 #define IDB_MARK                        219
 #define IDB_TERRAINWARNING              220
+#define IDB_AIRSPACEWARNING             221
 #define IDI_XCSOARS                     224
 #define IDD_LOGGERDETAILS               231
 #define IDB_AIRSPACE                    235

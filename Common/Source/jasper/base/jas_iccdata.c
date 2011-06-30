@@ -62,6 +62,8 @@
 #include <jasper/jas_config.h>
 #include <jasper/jas_types.h>
 
+#include "utils/heapcheck.h"
+
 uchar jas_iccprofdata_srgb[] =
 {
 	0x00, 0x00, 0x0c, 0x48, 0x4c, 0x69, 0x6e, 0x6f,

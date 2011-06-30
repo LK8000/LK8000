@@ -10,7 +10,7 @@
 #include "StdAfx.h"
 #include <aygshell.h>
 
-#include "XCSoar.h"
+#include "lk8000.h"
 
 #include "Statistics.h"
 #include "externs.h"
@@ -20,12 +20,12 @@
 #include "Units.h"
 #include "Utils2.h"
 
+#include "utils/heapcheck.h"
+
 extern void DrawJPG(HDC hdc, RECT rc);
 
 #ifndef CECORE
-#ifndef GNAV
 #include "VOIMAGE.h"
-#endif
 #endif
 
 static int page=0;
@@ -40,10 +40,8 @@ static BOOL hasimage1 = false;
 static BOOL hasimage2 = false;
 
 #ifndef CECORE
-#ifndef GNAV
 static CVOImage jpgimage1;
 static CVOImage jpgimage2;
-#endif
 #endif
 
 static TCHAR path_modis[MAX_PATH];
@@ -241,7 +239,6 @@ static void OnNewHomeClicked(WindowControl * Sender){
 	(void)Sender;
   LockTaskData();
   HomeWaypoint = SelectedWaypoint;
-  #if NOSIM
   if (SIMMODE) {
 	GPS_INFO.Latitude = WayPointList[HomeWaypoint].Latitude;
 	GPS_INFO.Longitude = WayPointList[HomeWaypoint].Longitude;
@@ -253,19 +250,6 @@ static void OnNewHomeClicked(WindowControl * Sender){
 		GPS_INFO.Altitude = WayPointList[HomeWaypoint].Altitude;
 	}
   }
-  #else
-  #ifdef _SIM_
-  GPS_INFO.Latitude = WayPointList[HomeWaypoint].Latitude;	// 100213
-  GPS_INFO.Longitude = WayPointList[HomeWaypoint].Longitude;
-  GPS_INFO.Altitude = WayPointList[HomeWaypoint].Altitude;
-  #else
-  if ( GPS_INFO.NAVWarning ) {
-	GPS_INFO.Latitude = WayPointList[HomeWaypoint].Latitude;	// 100213
-	GPS_INFO.Longitude = WayPointList[HomeWaypoint].Longitude;
-	GPS_INFO.Altitude = WayPointList[HomeWaypoint].Altitude;
-  }
-  #endif
-  #endif
   // Update HomeWaypoint
   WpHome_Lat=WayPointList[HomeWaypoint].Latitude; // 100213
   WpHome_Lon=WayPointList[HomeWaypoint].Longitude;
@@ -301,8 +285,8 @@ static void OnSetAlternate2Clicked(WindowControl * Sender){
 static void OnClearAlternatesClicked(WindowControl * Sender){
 	(void)Sender;
   LockTaskData();
-  Alternate1 = -1; OnAlternate1=false;
-  Alternate2 = -1; OnAlternate2=false;
+  Alternate1 = -1;
+  Alternate2 = -1;
   SetToRegistry(szRegistryAlternate1, Alternate1);
   SetToRegistry(szRegistryAlternate2, Alternate2);
   RefreshTask();
@@ -351,14 +335,12 @@ static void OnImagePaint(WindowControl * Sender, HDC hDC){
   (void)Sender;
 
 #ifndef CECORE
-#ifndef GNAV
   if (page == 3)
     jpgimage1.Draw(hDC, 0, 0, -1, -1);
 
   if (page == 4)
     jpgimage2.Draw(hDC, 0, 0, -1, -1);
 
-#endif
 #endif
 }
 
@@ -413,7 +395,6 @@ void dlgWayPointDetailsShowModal(void){
            Directory,
            SelectedWaypoint+1);
 
-  #ifdef CUPSUP
   // if SeeYou waypoint
   if (WPLSEL.Format == LKW_CUP) { 
 	TCHAR ttmp[50];
@@ -453,21 +434,12 @@ void dlgWayPointDetailsShowModal(void){
 	_tcscat(sTmp, WayPointList[SelectedWaypoint].Name);
 	wf->SetCaption(sTmp);
   }
-  #else
-  _stprintf(sTmp, TEXT("%s: "), wf->GetCaption());
-  _tcscat(sTmp, WayPointList[SelectedWaypoint].Name);
-  wf->SetCaption(sTmp);
-  #endif
 
   wp = ((WndProperty *)wf->FindByName(TEXT("prpWpComment")));
-  #if CUPCOM	// 101112
   if (WayPointList[SelectedWaypoint].Comment==NULL)
 	wp->SetText(_T(""));
   else
 	wp->SetText(WayPointList[SelectedWaypoint].Comment);
-  #else
-  wp->SetText(WayPointList[SelectedWaypoint].Comment);
-  #endif
   wp->SetButtonSize(16);
 
   Units::LongitudeToString(WayPointList[SelectedWaypoint].Longitude, sTmp, sizeof(sTmp)-1);
@@ -529,24 +501,6 @@ void dlgWayPointDetailsShowModal(void){
 
   wp = ((WndProperty *)wf->FindByName(TEXT("prpMc0")));
   if (wp) wp->SetText(sTmp);
-
-  // alt reqd at safety mc
-
-  // this is unused in fact
-  alt = CALCULATED_INFO.NavAltitude - 
-    GlidePolar::MacCreadyAltitude(GlidePolar::AbortSafetyMacCready(),
-				  distance,
-				  bearing, 
-				  CALCULATED_INFO.WindSpeed, 
-				  CALCULATED_INFO.WindBearing, 
-				  0, 0, true,
-				  0)-SAFETYALTITUDEARRIVAL-
-    WayPointList[SelectedWaypoint].Altitude;
-
-  wp = ((WndProperty *)wf->FindByName(TEXT("prpMc1")));
-  if (wp) wp->SetText(sTmp);
-  //
-
 
   // alt reqd at current mc
   alt = CALCULATED_INFO.NavAltitude - 
@@ -663,10 +617,8 @@ void dlgWayPointDetailsShowModal(void){
     wb->SetOnClickNotify(OnRemoveFromTaskClicked);
 
 #ifndef CECORE
-#ifndef GNAV
   hasimage1 = jpgimage1.Load(wImage->GetDeviceContext() ,path_modis );
   hasimage2 = jpgimage2.Load(wImage->GetDeviceContext() ,path_google );
-#endif
 #endif
 
   page = 0;

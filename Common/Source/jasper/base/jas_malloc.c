@@ -86,6 +86,8 @@
 //JMW#include "../../../local/src/memalloc.c"
 #endif
 
+#include "utils/heapcheck.h"
+
 #if !defined(DEBUG_MEMALLOC)
 
 void *jas_malloc(size_t size)

@@ -9,7 +9,7 @@
 #include "StdAfx.h"
 #include "options.h"
 #include "Cpustats.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "Utils2.h"
 #include "compatibility.h"
 #include "MapWindow.h"
@@ -26,13 +26,13 @@
 #include "RasterTerrain.h" 
 #include "LKUtils.h"
 #include "LKMapWindow.h"
-#if LKOBJ
 #include "LKObjects.h"
-#endif
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
 #endif
+
+#include "utils/heapcheck.h"
 
 #ifdef CPUSTATS
 extern void DrawCpuStats(HDC hdc, RECT rc);
@@ -68,6 +68,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   static short left,right,bottom;
   // one for each mapspace, no matter if 0 and 1 are unused
 
+  short curmapspace=MapSpaceMode;
   static int TrafficNumraws=0;
   //static int TrafficNumpages=0; global..
   // Vertical and horizontal spaces
@@ -78,19 +79,11 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
   static bool doinit=true;
 
-  #ifndef LKOBJ
   if (INVERTCOLORS) {
   	sortbrush=LKBrush_LightGreen;
   } else {
   	sortbrush=LKBrush_DarkGreen;
   }
-  #else
-  if (INVERTCOLORS) {
-  	sortbrush=CreateSolidBrush(RGB_LIGHTGREEN);
-  } else {
-  	sortbrush=CreateSolidBrush(RGB_DARKGREEN);
-  }
-  #endif
 
   if (doinit) {
 
@@ -167,7 +160,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   else s_sortBox[0].right=left+WPTextSize.cx-NIBLSCALE(10);
   s_sortBox[0].top=2;
   s_sortBox[0].bottom=p1.y;
-  SortBoxX[0]=s_sortBox[0].right;
+  SortBoxX[MSM_TRAFFIC][0]=s_sortBox[0].right;
 
   // Distance
   if ( ScreenSize < (ScreenSize_t)sslandscape ) s_sortBox[1].left=Column1+afterwpname-INTERBOX;
@@ -175,21 +168,21 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   s_sortBox[1].right=Column2+INTERBOX;
   s_sortBox[1].top=2;
   s_sortBox[1].bottom=p1.y;
-  SortBoxX[1]=s_sortBox[1].right;
+  SortBoxX[MSM_TRAFFIC][1]=s_sortBox[1].right;
 
   // Bearing
   s_sortBox[2].left=Column2+INTERBOX;
   s_sortBox[2].right=Column3+INTERBOX;
   s_sortBox[2].top=2;
   s_sortBox[2].bottom=p1.y;
-  SortBoxX[2]=s_sortBox[2].right;
+  SortBoxX[MSM_TRAFFIC][2]=s_sortBox[2].right;
 
   // Vario
   s_sortBox[3].left=Column3+INTERBOX;
   s_sortBox[3].right=Column4+INTERBOX;
   s_sortBox[3].top=2;
   s_sortBox[3].bottom=p1.y;
-  SortBoxX[3]=s_sortBox[3].right;
+  SortBoxX[MSM_TRAFFIC][3]=s_sortBox[3].right;
 
   // Altitude
   s_sortBox[4].left=Column4+INTERBOX;
@@ -197,9 +190,9 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   s_sortBox[4].right=rc.right-1;
   s_sortBox[4].top=2;
   s_sortBox[4].bottom=p1.y;
-  SortBoxX[4]=s_sortBox[4].right;
+  SortBoxX[MSM_TRAFFIC][4]=s_sortBox[4].right;
 
-  SortBoxY=p1.y;
+  SortBoxY[MSM_TRAFFIC]=p1.y;
 
   TrafficNumpages=roundupdivision(MAXTRAFFIC, TrafficNumraws);
   if (TrafficNumpages>MAXTRAFFICNUMPAGES) TrafficNumpages=MAXTRAFFICNUMPAGES;
@@ -209,9 +202,6 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   SelectedPage[MSM_TRAFFIC]=0;
 
   doinit=false;
-  #ifndef LKOBJ
-  DeleteObject(sortbrush);
-  #endif
   return;
   } // doinit
 
@@ -221,14 +211,11 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   if (TrafficNumpages>MAXTRAFFICNUMPAGES) TrafficNumpages=MAXTRAFFICNUMPAGES;
   else if (TrafficNumpages<1) TrafficNumpages=1;
 
-  curpage=SelectedPage[MapSpaceMode];
+  curpage=SelectedPage[curmapspace];
   if (curpage<0||curpage>=MAXTRAFFICNUMPAGES) {
 	DoStatusMessage(_T("ERR-041 traffic curpage invalid!")); 
-	SelectedPage[MapSpaceMode]=0;
+	SelectedPage[curmapspace]=0;
 	LKevent=LKEVENT_NONE;
-	#ifndef LKOBJ
-  	DeleteObject(sortbrush); // 100328 BUGFIX
-	#endif
 	return;
   }
 
@@ -237,7 +224,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 		break;
 	case LKEVENT_ENTER:
 		LKevent=LKEVENT_NONE;
-		i=LKSortedTraffic[SelectedRaw[MapSpaceMode]+(curpage*TrafficNumraws)];
+		i=LKSortedTraffic[SelectedRaw[curmapspace]+(curpage*TrafficNumraws)];
 
 		if ( (i<0) || (i>=MAXTRAFFIC) || (LKTraffic[i].ID<=0) ) {
 			if (LKNumTraffic>0)
@@ -251,12 +238,12 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 		LastDoTraffic=0;
 		break;
 	case LKEVENT_DOWN:
-		if (++SelectedRaw[MapSpaceMode] >=TrafficNumraws) SelectedRaw[MapSpaceMode]=0;
+		if (++SelectedRaw[curmapspace] >=TrafficNumraws) SelectedRaw[curmapspace]=0;
 		// Reset LastDoTraffic so that it wont be updated while selecting an item
 		LastDoTraffic=GPS_INFO.Time+PAGINGTIMEOUT-1.0;
 		break;
 	case LKEVENT_UP:
-		if (--SelectedRaw[MapSpaceMode] <0) SelectedRaw[MapSpaceMode]=TrafficNumraws-1;
+		if (--SelectedRaw[curmapspace] <0) SelectedRaw[curmapspace]=TrafficNumraws-1;
 		LastDoTraffic=GPS_INFO.Time+PAGINGTIMEOUT-1.0;
 		break;
 	case LKEVENT_PAGEUP:
@@ -291,7 +278,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
   SelectObject(hdc, LK8InfoNormalFont); // Heading line
 
-  short cursortbox=SortedMode[MapSpaceMode];
+  short cursortbox=SortedMode[curmapspace];
 
   if ( ScreenSize < (ScreenSize_t)sslandscape ) { // portrait mode
 	FillRect(hdc,&s_sortBox[cursortbox], sortbrush); 
@@ -429,7 +416,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   SelectObject(hdc, LK8InfoBigFont); // Text font for Nearest
 
   #ifdef DEBUG_LKT_DRAWTRAFFIC
-  TCHAR v2buf[100]; // REMOVE VENTA
+  TCHAR v2buf[100]; 
   wsprintf(v2buf,_T("MAXTRAFFIC=%d LKNumTraff=%d / TrafficNumraws=%d TrafficNumpages=%d calc=%d\n"),MAXTRAFFIC, LKNumTraffic,TrafficNumraws, TrafficNumpages, (short)(ceil(MAXTRAFFIC/TrafficNumraws)));
   StartupStore(v2buf);
   #endif
@@ -493,11 +480,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
 		// relative bearing
 
-#ifndef MAP_ZOOM
-		if (DisplayMode != dmCircling) {
-#else /* MAP_ZOOM */
 		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
 			value = LKTraffic[rli].Bearing -  GPS_INFO.TrackBearing;
 
 			if (value < -180.0)
@@ -587,41 +570,32 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
   if (LKevent==LKEVENT_NEWRUN || LKevent==LKEVENT_NEWPAGE ) {
 		LKevent=LKEVENT_NONE;
-		#ifndef LKOBJ
-  		DeleteObject(sortbrush); // 100328 BUGFIX
-		#endif
 		return;
   }
 
   if (drawn_items_onpage>0) {
 
-	if (SelectedRaw[MapSpaceMode] <0 || SelectedRaw[MapSpaceMode]>(TrafficNumraws-1)) {
+	if (SelectedRaw[curmapspace] <0 || SelectedRaw[curmapspace]>(TrafficNumraws-1)) {
   		LKevent=LKEVENT_NONE; // 100328
-		#ifndef LKOBJ
-  		DeleteObject(sortbrush);
-		#endif
 		return;
 	}
-	if (SelectedRaw[MapSpaceMode] >= drawn_items_onpage) {
-		if (LKevent==LKEVENT_DOWN) SelectedRaw[MapSpaceMode]=0;
+	if (SelectedRaw[curmapspace] >= drawn_items_onpage) {
+		if (LKevent==LKEVENT_DOWN) SelectedRaw[curmapspace]=0;
 		else 
-		if (LKevent==LKEVENT_UP) SelectedRaw[MapSpaceMode]=drawn_items_onpage-1;
+		if (LKevent==LKEVENT_UP) SelectedRaw[curmapspace]=drawn_items_onpage-1;
 		else {
-			SelectedRaw[MapSpaceMode]=0;
+			SelectedRaw[curmapspace]=0;
 		}
 	}
 	invsel.left=left;
 	invsel.right=right;
-	invsel.top=TopSize+(s_rawspace*SelectedRaw[MapSpaceMode])+NIBLSCALE(2);
-	invsel.bottom=TopSize+(s_rawspace*(SelectedRaw[MapSpaceMode]+1))-NIBLSCALE(1);
+	invsel.top=TopSize+(s_rawspace*SelectedRaw[curmapspace])+NIBLSCALE(2);
+	invsel.bottom=TopSize+(s_rawspace*(SelectedRaw[curmapspace]+1))-NIBLSCALE(1);
 	InvertRect(hdc,&invsel);
 
   } 
 
   LKevent=LKEVENT_NONE;
-  #ifndef LKOBJ
-  DeleteObject(sortbrush);
-  #endif
   return;
 }
 

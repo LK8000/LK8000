@@ -18,6 +18,8 @@
 #include "device.h"
 #include "InfoBoxLayout.h"
 
+#include "utils/heapcheck.h"
+
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 
@@ -60,8 +62,7 @@ static void OnQnhData(DataField *Sender, DataField::DataAccessKind_t Mode){
 		}
 		if (CALCULATED_INFO.Flying) QNH=fabs(QNH); 
 		devPutQNH(devAll(), QNH);
-		AirspaceQnhChangeNotify(QNH);
-
+		CAirspaceManager::Instance().QnhChangeNotify(QNH);
 		// VarioWriteSettings();
 
 		wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
@@ -98,6 +99,7 @@ static void OnAltitudeData(DataField *Sender, DataField::DataAccessKind_t Mode){
 		}
 		wp->RefreshDisplay();
 	}
+    CAirspaceManager::Instance().QnhChangeNotify(QNH);
 	break;
   case DataField::daInc:
   case DataField::daDec:

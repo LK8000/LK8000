@@ -76,6 +76,8 @@
 #include <jasper/jas_malloc.h>
 #include <jasper/jas_math.h>
 
+#include "utils/heapcheck.h"
+
 static jas_cmprof_t *jas_cmprof_create(void);
 static void jas_cmshapmatlut_cleanup(jas_cmshapmatlut_t *);
 static jas_cmreal_t jas_cmshapmatlut_lookup(jas_cmshapmatlut_t *lut, jas_cmreal_t x);

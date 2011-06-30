@@ -29,6 +29,8 @@
 #include "StdAfx.h"
 #include <math.h>
 
+#include "utils/heapcheck.h"
+
 // Some constants used by these functions.
 
 

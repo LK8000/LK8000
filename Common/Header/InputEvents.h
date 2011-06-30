@@ -9,7 +9,7 @@
 #ifndef INPUTEVENTS_H
 #define INPUTEVENTS_H
 
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "externs.h"
 
 typedef void (*pt2Event)(const TCHAR *);
@@ -49,17 +49,11 @@ class InputEvents {
   static void eventBallast(const TCHAR *misc);
   static void eventBugs(const TCHAR *misc);
   static void eventCalculator(const TCHAR *misc);
-  static void eventChangeInfoBoxType(const TCHAR *misc);
   static void eventChecklist(const TCHAR *misc);
-  static void eventClearAirspaceWarnings(const TCHAR *misc);
-  static void eventClearStatusMessages(const TCHAR *misc);
-  static void eventClearWarningsOrTerrainTopology(const TCHAR *misc);
   static void eventDLLExecute(const TCHAR *misc);
-  static void eventDoInfoKey(const TCHAR *misc);
   static void eventFlightMode(const TCHAR *misc);
   static void eventLogger(const TCHAR *misc);
   static void eventMacCready(const TCHAR *misc);
-  static void eventMainMenu(const TCHAR *misc);
   static void eventMarkLocation(const TCHAR *misc);
   static void eventMode(const TCHAR *misc);
   static void eventNearestAirspaceDetails(const TCHAR *misc);
@@ -72,7 +66,6 @@ class InputEvents {
   static void eventRepeatStatusMessage(const TCHAR *misc);
   static void eventRun(const TCHAR *misc);
   static void eventScreenModes(const TCHAR *misc);
-  static void eventSelectInfoBox(const TCHAR *misc);
   static void eventSendNMEA(const TCHAR *misc);
   static void eventSendNMEAPort1(const TCHAR *misc);
   static void eventSendNMEAPort2(const TCHAR *misc);
@@ -89,10 +82,8 @@ class InputEvents {
   static void eventWaypointDetails(const TCHAR *misc);
   static void eventWind(const TCHAR *misc);
   static void eventZoom(const TCHAR *misc);
-  static void eventBrightness(const TCHAR *misc);
   static void eventDeclutterLabels(const TCHAR *misc);
   static void eventExit(const TCHAR *misc);
-  static void eventFLARMRadar(const TCHAR *misc);
   static void eventBeep(const TCHAR *misc);
   static void eventUserDisplayModeForce(const TCHAR *misc);
   static void eventAirspaceDisplayMode(const TCHAR *misc);
@@ -100,7 +91,6 @@ class InputEvents {
   static void eventGotoLookup(const TCHAR *misc);
   static void eventAddWaypoint(const TCHAR *misc);
   static void eventOrientation(const TCHAR *misc);
-  static void eventFlarmTraffic(const TCHAR *misc);
   static void eventCalcWind(const TCHAR *misc);
   static void eventInvertColor(const TCHAR *misc);
   static void eventChangeBack(const TCHAR *misc);
@@ -119,13 +109,7 @@ class InputEvents {
   static void eventService(const TCHAR *misc);
   // -------
 
-#if NOSIM
   static void showErrors();
-#else
-#ifdef _SIM_
-  static void showErrors();
-#endif 
-#endif
 
  private:
   static bool processGlideComputer_real(int);
@@ -304,10 +288,5 @@ enum {
   NE_COUNT = 132, // How many we have for arrays etc // XXX Increased arbitrarily for duplicates above
 };
 
-/*
-#ifdef _SIM_
-#define _INPUTDEBUG_
-#endif
-*/
 
 #endif

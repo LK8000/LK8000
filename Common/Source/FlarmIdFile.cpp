@@ -6,13 +6,15 @@
 */
 
 #include "StdAfx.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "options.h"
 #include "Flarm.h"
 #include "externs.h"
 #include "FlarmIdFile.h"
 #include "Utils.h"
 #include "Utils2.h"
+
+#include "utils/heapcheck.h"
 
 FlarmIdFile::FlarmIdFile(void)
 {
@@ -21,13 +23,7 @@ FlarmIdFile::FlarmIdFile(void)
   LKSound(_T("LK_CONNECT.WAV"));
 
   TCHAR flarmIdFileName[MAX_PATH] = TEXT("\0");
-#if NOSIM
   if (SIMMODE) return;
-#else
-#ifdef _SIM_
-	return;
-#endif
-#endif
 
   LocalPath(path);
 

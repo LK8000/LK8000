@@ -21,12 +21,14 @@
 #include <zzip/lib.h>
 #include "wcecompat/ts_string.h"
 
+#include "utils/heapcheck.h"
+
 ZZIP_FILE* zAirfieldDetails = NULL;
 
-static TCHAR  szAirfieldDetailsFile[MAX_PATH] = TEXT("\0");
+static TCHAR szAirfieldDetailsFile[MAX_PATH] = TEXT("\0");
 
 void OpenAirfieldDetails() {
-  char zfilename[MAX_PATH] = "\0";
+  TCHAR zfilename[MAX_PATH];
 
   zAirfieldDetails = NULL;
 
@@ -34,19 +36,20 @@ void OpenAirfieldDetails() {
 
   if (_tcslen(szAirfieldDetailsFile)>0) {
     ExpandLocalPath(szAirfieldDetailsFile);
-    unicode2ascii(szAirfieldDetailsFile, zfilename, MAX_PATH);
+    _tcscpy(zfilename, szAirfieldDetailsFile);
     SetRegistryString(szRegistryAirfieldFile, TEXT("\0"));
   } else {
 	#if 0
-	LocalPathS(zfilename,_T(LKD_WAYPOINTS));
-	strcat(zfilename,"\\"); 
-	strcat(zfilename,LKF_AIRFIELDS);
+	LocalPath(zfilename, _T(KD_WAYPOINTS));
+	_tcscat(zfilename, _T("\\")); 
+	_tcscat(zfilename, _T(LKF_AIRFIELDS));
 	#else
-	strcpy(zfilename,"");
+	_tcscpy(zfilename, _T(""));
 	#endif
   }
-  if (strlen(zfilename)>0) {
-    zAirfieldDetails = zzip_fopen(zfilename,"rb");
+  if (_tcslen(zfilename)>0) {
+    StartupStore(_T(". open AirfieldFile <%s> %s"), zfilename, NEWLINE);
+    zAirfieldDetails = zzip_fopen(zfilename, "rb");
   }
 };
 
@@ -204,8 +207,8 @@ void ParseAirfieldDetails() {
 	  CleanString[n]='\0';
 
 	  if (_tcslen(Details)+_tcslen(CleanString)+3<DETAILS_LENGTH) {
-	    wcscat(Details,CleanString);
-	    wcscat(Details,TEXT("\r\n"));
+	    _tcscat(Details,CleanString);
+	    _tcscat(Details,TEXT("\r\n"));
 	  }
 	}
       }

@@ -8,7 +8,7 @@
 
 
 #include "StdAfx.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "InputEvents.h"
 #include "Utils.h"
 #include "Utils2.h"
@@ -19,8 +19,11 @@
 #include <aygshell.h>
 #include "InfoBoxLayout.h"
 #include "Airspace.h"
+#include "LKAirspace.h"
+using std::min;
+using std::max;
 #ifdef OLDPPC
-#include "XCSoarProcess.h"
+#include "LK8000Process.h"
 #else
 #include "Process.h"
 #endif
@@ -29,10 +32,10 @@
 #include "Units.h"
 #include "MapWindow.h"
 #include "Atmosphere.h"
-#ifndef NOFLARMGAUGE
-#include "GaugeFLARM.h"
-#endif
 #include "Waypointparser.h"
+
+#include "utils/stringext.h"
+#include "utils/heapcheck.h"
 
 // Sensible maximums 
 #define MAX_MODE 100
@@ -41,21 +44,6 @@
 #define MAX_EVENTS 2048
 #define MAX_LABEL NUMBUTTONLABELS
 
-/*
-  TODO code - All of this input_Errors code needs to be removed and replaced with standard logger.
-  The logger can then display messages through Message:: if ncessary and log to files etc
-  This code, and baddly written #ifdef should be moved to Macros in the Log class.
-*/
-
-#ifdef _INPUTDEBUG_
-// Log first NN input event errors for display in simulator mode
-#define MAX_INPUT_ERRORS 5
-TCHAR input_errors[MAX_INPUT_ERRORS][3000];
-int input_errors_count = 0; 
-// JMW this is just far too annoying right now,
-// since "title" "note" and commencts are not parsed, they
-// come up as errors.
-#endif
 
 // Current modes - map mode to integer (primitive hash)
 static TCHAR mode_current[MAX_MODE_STRING] = TEXT("default");		// Current mode
@@ -155,7 +143,7 @@ void InputEvents::readFile() {
   // Read in user defined configuration file
 	
   TCHAR szFile1[MAX_PATH] = TEXT("\0");
-  FILE *fp=NULL;
+  ZZIP_FILE *fp=NULL;
 
   // Open file from registry
   // This is used by LK engineering mode only, and has priority
@@ -164,8 +152,9 @@ void InputEvents::readFile() {
   SetRegistryString(szRegistryInputFile, TEXT("\0"));
 	
   if (_tcslen(szFile1)>0) {
-	fp=_tfopen(szFile1, TEXT("rt"));
+    fp=zzip_fopen(szFile1, "rb");
   }
+
   TCHAR xcifile[MAX_PATH];
   if (fp == NULL) {
 	// no special XCI in engineering, or nonexistent file.. go ahead with language check
@@ -174,36 +163,20 @@ void InputEvents::readFile() {
 	TCHAR xcipath[MAX_PATH];
 	LocalPath(xcipath,_T(LKD_LANGUAGE));
 	_stprintf(xcifile,_T("%s\\%s_MENU.TXT"), xcipath,LKLangSuffix);
-	fp=_tfopen(xcifile, TEXT("rt"));
+	fp=zzip_fopen(xcifile, "rb");
 	if (fp == NULL) {
 		StartupStore(_T(". No language menu <%s>, using internal XCI\n"),xcifile);
 		return;
 	} else
 		StartupStore(_T(". Loaded language menu <%s>\n"),xcifile);
   }
-  #define XCIUTF	1
-  #if XCIUTF
-  // 101221
-  fclose(fp);
-  HANDLE hXCI;
-  hXCI = INVALID_HANDLE_VALUE;
-  hXCI = CreateFile(xcifile, GENERIC_READ,0,NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,NULL);
-  if( hXCI == INVALID_HANDLE_VALUE) {
-	#if ALPHADEBUG
-	StartupStore(_T("... Invalid open HELP FILE <%s>%s"),xcifile,NEWLINE);
-	#endif
-	return;
-  }
-  short filetype=FileIsUTF16(hXCI);
-  #endif
-
 
   // TODO code - Safer sizes, strings etc - use C++ (can scanf restrict length?)
   TCHAR buffer[2049];	// Buffer for all
   TCHAR key[2049];	// key from scanf
   TCHAR value[2049];	// value from scanf
   TCHAR *new_label = NULL;		
-  int found;
+  int found = 0;
 
   // Init first entry
   bool some_data = false;		// Did we fin some in the last loop...
@@ -219,22 +192,13 @@ void InputEvents::readFile() {
   int line = 0;
 
   /* Read from the file */
-  // TODO code: What about \r - as in \r\n ?
   // TODO code: Note that ^# does not allow # in key - might be required (probably not)
-  //		Better way is to separate the check for # and the scanf 
+  //		Better way is to separate the check for # and the scanf
+  // ! _stscanf works differently on WinPC and WinCE (on WinCE it returns EOF on empty string)
 
-  #if XCIUTF
-  // minimal changing for UTF-16 (BE/LE) support 
-  while ( ReadUString(hXCI,2047,buffer,filetype) &&
-	   ((found = _stscanf(buffer, TEXT("%[^#=]=%[^\r\n][\r\n]"), key, value)) != EOF)
-	) {
-
-  #else
-  while ( _fgetts(buffer, 2048, fp) && 
-	   ((found = _stscanf(buffer, TEXT("%[^#=]=%[^\r\n][\r\n]"), key, value)) != EOF)
-	) {
-  #endif
-
+  while (ReadULine(fp, buffer, countof(buffer)) && (buffer[0] == '\0' ||
+	   ((found = _stscanf(buffer, TEXT("%[^#=]=%[^\r\n][\r\n]"), key, value)) != EOF))
+  ) {
     line++;
 
     // experimental: if the first line is "#CLEAR" then the whole default config is cleared
@@ -296,39 +260,20 @@ void InputEvents::readFile() {
 	    int key = findKey(d_data);				// Get the int key (eg: APP1 vs 'a')
 	    if (key > 0)
 	      Key2Event[mode_id][key] = event_id;
-#ifdef _INPUTDEBUG_
-	    else if (input_errors_count < MAX_INPUT_ERRORS)
-	      _stprintf(input_errors[input_errors_count++], TEXT("Invalid key data: %s at %i"), d_data, line);
-#endif
-			    
 			    
 	    // Make gce (Glide Computer Event)
 	  } else if (_tcscmp(d_type, TEXT("gce")) == 0) {		// GCE - Glide Computer Event
 	    int key = findGCE(d_data);				// Get the int key (eg: APP1 vs 'a')
 	    if (key >= 0)
 	      GC2Event[mode_id][key] = event_id;
-#ifdef _INPUTDEBUG_
-	    else if (input_errors_count < MAX_INPUT_ERRORS)
-	      _stprintf(input_errors[input_errors_count++], TEXT("Invalid GCE data: %s at %i"), d_data, line);
-#endif
 			    
 	    // Make ne (NMEA Event)
 	  } else if (_tcscmp(d_type, TEXT("ne")) == 0) { 		// NE - NMEA Event
 	    int key = findNE(d_data);			// Get the int key (eg: APP1 vs 'a')
 	    if (key >= 0)
 	      N2Event[mode_id][key] = event_id;
-#ifdef _INPUTDEBUG_
-	    else if (input_errors_count < MAX_INPUT_ERRORS)
-	      _stprintf(input_errors[input_errors_count++], TEXT("Invalid GCE data: %s at %i"), d_data, line);
-#endif
-			    
 	  } else if (_tcscmp(d_type, TEXT("label")) == 0)	{	// label only - no key associated (label can still be touch screen)
 	    // Nothing to do here...
-			    
-#ifdef _INPUTDEBUG_
-	  } else if (input_errors_count < MAX_INPUT_ERRORS) {
-	    _stprintf(input_errors[input_errors_count++], TEXT("Invalid type: %s at %i"), d_type, line);
-#endif
 			    
 	  }
 			  
@@ -369,17 +314,7 @@ void InputEvents::readFile() {
 	  _tcscpy(d_event, TEXT(""));
 	  _tcscpy(d_misc, TEXT(""));
 	  int ef;
-#if defined(__BORLANDC__	)
-	  memset(d_event, 0, sizeof(d_event));
-	  memset(d_misc, 0, sizeof(d_event));
-	  if (_tcschr(value, ' ') == NULL){
-	    _tcscpy(d_event, value);
-	  } else {
-#endif
 	    ef = _stscanf(value, TEXT("%[^ ] %[A-Za-z0-9 \\/().,]"), d_event, d_misc);
-#if defined(__BORLANDC__	)
-	  }
-#endif
 
 	  // TODO code: Can't use token here - breaks
 	  // other token - damn C - how about
@@ -398,17 +333,7 @@ void InputEvents::readFile() {
 	    if (event) {
 	      event_id = makeEvent(event, 
                                    StringMallocParse(d_misc), event_id);
-#ifdef _INPUTDEBUG_
-	    } else  if (input_errors_count < MAX_INPUT_ERRORS) {
-	      _stprintf(input_errors[input_errors_count++], 
-                        TEXT("Invalid event type: %s at %i"), d_event, line);
-#endif
 	    }
-#ifdef _INPUTDEBUG_
-	  } else  if (input_errors_count < MAX_INPUT_ERRORS) {
-	    _stprintf(input_errors[input_errors_count++], 
-                      TEXT("Invalid event type at %i"), line);
-#endif
 	  }
 	}
       } else if (_tcscmp(key, TEXT("label")) == 0) {
@@ -416,10 +341,6 @@ void InputEvents::readFile() {
       } else if (_tcscmp(key, TEXT("location")) == 0) {
 	_stscanf(value, TEXT("%d"), &d_location);
 	
-#ifdef _INPUTDEBUG_
-      } else if (input_errors_count < MAX_INPUT_ERRORS) {
-	_stprintf(input_errors[input_errors_count++], TEXT("Invalid key/value pair %s=%s at %i"), key, value, line);
-#endif
       }
     }
 	
@@ -429,25 +350,9 @@ void InputEvents::readFile() {
   ContractLocalPath(szFile1);
   SetRegistryString(szRegistryInputFile, szFile1);
 
-  #if XCIUTF
-  CloseHandle(hXCI);
-  #else
-  fclose(fp);
-  #endif
-
+  zzip_fclose(fp);
 }
 
-#ifdef _INPUTDEBUG_
-void InputEvents::showErrors() {
-  TCHAR buffer[2048];
-  int i;
-  for (i = 0; i < input_errors_count; i++) {
-    _stprintf(buffer, TEXT("%i of %i\r\n%s"), i + 1, input_errors_count, input_errors[i]);
-    DoStatusMessage(TEXT("XCI Error"), buffer);
-  }
-  input_errors_count = 0;
-}
-#endif
 
 int InputEvents::findKey(const TCHAR *data) {
 
@@ -558,24 +463,6 @@ int InputEvents::makeEvent(void (*event)(const TCHAR *), const TCHAR *misc, int 
 // without taking up more data - but when loading from file must copy string
 void InputEvents::makeLabel(int mode_id, const TCHAR* label, int location, int event_id) {
 
-//  int i;
-
-/*
-  // experimental, dont work becuase after loaded default strings are static, after laoding
-  //               from file some strings are static some not
-  // add code for overwrite existing mode,location label
-  for (i=0; i<ModeLabel_count[mode_id]; i++){
-    if (ModeLabel[mode_id][i].location == location && ModeLabel[mode_id][i].event == event_id){
-      if (ModeLabel[mode_id][i].label != NULL && ModeLabel[mode_id][i].label != label){
-        TCHAR *pC;
-        pC = ModeLabel[mode_id][i].label;
-        free(ModeLabel[mode_id][i].label);
-      }
-      ModeLabel[mode_id][i].label = label;
-      return;
-    }
-  }
-*/
   if ((mode_id >= 0) && (mode_id < MAX_MODE) && (ModeLabel_count[mode_id] < MAX_LABEL)) {
     ModeLabel[mode_id][ModeLabel_count[mode_id]].label = LKGetText(label);
     ModeLabel[mode_id][ModeLabel_count[mode_id]].location = location;
@@ -630,34 +517,9 @@ void InputEvents::setMode(const TCHAR *mode) {
 
   if (thismode == lastmode) return;
 
-  // TODO code: Enable this in debug modes
-  // for debugging at least, set mode indicator on screen
-  /* 
-     if (thismode==0) {
-     ButtonLabel::SetLabelText(0,NULL);
-     } else {
-     ButtonLabel::SetLabelText(0,mode);
-     }
-  */
   ButtonLabel::SetLabelText(0,NULL);
 
   drawButtons(thismode);
-  /*
-  // Set button labels
-  int i;
-  for (i = 0; i < ModeLabel_count[thismode]; i++) {
-    // JMW removed requirement that label has to be non-null
-    if (// (ModeLabel[thismode][i].label != NULL) && 
-	(ModeLabel[thismode][i].location > 0)) {
-
-      ButtonLabel::SetLabelText(
-				ModeLabel[thismode][i].location,
-				ModeLabel[thismode][i].label
-				);
-    }
-  }
-  MapWindow::RequestFastRefresh();
-  */
 
   lastmode = thismode;
 
@@ -666,7 +528,7 @@ void InputEvents::setMode(const TCHAR *mode) {
 void InputEvents::drawButtons(int Mode){
   int i;
 
-  if (!(ProgramStarted==3)) return;
+  if (!(ProgramStarted==psNormalOp)) return;
 
   for (i = 0; i < ModeLabel_count[Mode]; i++) {
     if ((ModeLabel[Mode][i].location > 0)) {
@@ -698,7 +560,7 @@ int InputEvents::getModeID() {
 
 // Input is a via the user touching the label on a touch screen / mouse
 bool InputEvents::processButton(int bindex) {
-  if (!(ProgramStarted==3)) return false;
+  if (!(ProgramStarted==psNormalOp)) return false;
 
   int thismode = getModeID();
 
@@ -718,7 +580,9 @@ bool InputEvents::processButton(int bindex) {
 		#endif
 
 		if (!ButtonLabel::ButtonDisabled[bindex]) {
+			#if 0 // REMOVE ANIMATION
 			ButtonLabel::AnimateButton(bindex);
+			#endif
 			processGo(ModeLabel[thismode][i].event);
 		}
 
@@ -743,7 +607,7 @@ bool InputEvents::processButton(int bindex) {
   Return = We had a valid key (even if nothing happens because of Bounce)
 */
 bool InputEvents::processKey(int dWord) {
-  if (!(ProgramStarted==3)) return false;
+  if (!(ProgramStarted==psNormalOp)) return false;
 
   InterfaceTimeoutReset();
 
@@ -789,9 +653,11 @@ bool InputEvents::processKey(int dWord) {
       if ((ModeLabel[mode][i].event == event_id)) {
         bindex = ModeLabel[mode][i].location;
         pLabelText = ModeLabel[mode][i].label;
+	#if 0 // REMOVE ANIMATION
         if (bindex>0) {
           ButtonLabel::AnimateButton(bindex);
         }
+	#endif
       }
     }
 
@@ -830,7 +696,7 @@ bool InputEvents::processNmea(int ne_id) {
   Return = TRUE if we have a valid key match
 */
 bool InputEvents::processNmea_real(int ne_id) {
-  if (!(ProgramStarted==3)) return false;
+  if (!(ProgramStarted==psNormalOp)) return false;
   int event_id = 0;
 
   InterfaceTimeoutReset();
@@ -931,7 +797,7 @@ bool InputEvents::processGlideComputer(int gce_id) {
   Take virtual inputs from a Glide Computer to do special events
 */
 bool InputEvents::processGlideComputer_real(int gce_id) {
-  if (!(ProgramStarted==3)) return false;
+  if (!(ProgramStarted==psNormalOp)) return false;
   int event_id = 0;
 
   // TODO feature: Log glide computer events to IGC file
@@ -962,15 +828,7 @@ extern int MenuTimeOut;
 
 // EXECUTE an Event - lookup event handler and call back - no return
 void InputEvents::processGo(int eventid) {
-  if (!(ProgramStarted==3)) return;
-
-  // 
-  // TODO feature: event/macro recorder
-  /*
-    if (LoggerActive) {
-    LoggerNoteEvent(Events[eventid].);
-    }
-  */
+  if (!(ProgramStarted==psNormalOp)) return;
 
   // evnentid 0 is special for "noop" - otherwise check event
   // exists (pointer to function)
@@ -1141,7 +999,10 @@ void InputEvents::eventActiveMap(const TCHAR *misc) {
   }  
 }
 
+
 void InputEvents::eventScreenModes(const TCHAR *misc) {
+
+#if USEIBOX 	// ScreenModes can be removed from events and xci
   // toggle switches like this:
   //  -- normal infobox
   //  -- auxiliary infobox
@@ -1176,127 +1037,20 @@ void InputEvents::eventScreenModes(const TCHAR *misc) {
     InfoBoxLayout::fullscreen = !InfoBoxLayout::fullscreen;
   } else {
 
-
-
-	//
-    	// Paolo Ventafridda - TOGGLE SCROLLWHEEL as INPUT on the HP31X
-	//
-   /* 
-#ifdef PNA
-
-	if ( GlobalModelType == MODELTYPE_PNA_HP31X ) {
-		// 1 normal > 2 aux > 3 biginfo > 4 fullscreen
-		short pnascrollstatus; 
-		pnascrollstatus=1;
-		// if ( InfoBoxLayout::fullscreen == true ) pnascrollstatus=3; // VNT 090702 no more used
-		if ( MapWindow::IsMapFullScreen() ) pnascrollstatus=4;
-		if ( EnableAuxiliaryInfo == true ) pnascrollstatus=2;
-
-		switch (pnascrollstatus) {
-		case 1:
-				#ifndef DISABLEAUDIO
-				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-				#endif
-				if (!(NewMap && Look8000)) {
-					EnableAuxiliaryInfo = true;
-					break;
-				}
-		case 2:
-		case 3:
-				#ifndef DISABLEAUDIO
-				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-				#endif
-				if (!(NewMap && Look8000)) 
-					EnableAuxiliaryInfo = false;
-				MapWindow::RequestOnFullScreen();
-				break;
-		case 4:
-				if (!(NewMap && Look8000)) {
-					EnableAuxiliaryInfo = false;
-					#ifndef DISABLEAUDIO
-					if (EnableSoundModes) LKSound(_T("LK_BELL.WAV"));
-					#endif 
-				} else {
-					#ifndef DISABLEAUDIO
-					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-					#endif 
-				}
-				MapWindow::RequestOffFullScreen();
-				break;
-		default:
-				break;
-		} // switch pnascrollstatus
-	} // not a PNA_HP31X
-	else
-	{
-		if (EnableAuxiliaryInfo&& !(NewMap&&Look8000)) {
-			#ifndef DISABLEAUDIO
-			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-			#endif
-    			MapWindow::RequestToggleFullScreen();
-     			EnableAuxiliaryInfo = false;
-
-		} else {
-			if (MapWindow::IsMapFullScreen()) {
-				MapWindow::RequestToggleFullScreen();		    
-				if (!(NewMap && Look8000)) {
-					#ifndef DISABLEAUDIO  
-					if (EnableSoundModes) LKSound(_T("LK_BELL.WAV"));
-					#endif
-				} else {
-					#ifndef DISABLEAUDIO  
-					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-					#endif
-				}
-			} else {
-				#ifndef DISABLEAUDIO
-				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-				#endif
-				if (!(NewMap && Look8000)) {
-					EnableAuxiliaryInfo = true;
-				} else {
-					MapWindow::RequestToggleFullScreen();
-				}
-			}
-		}
-	} // fallback for other PNAs
-*/
-//#else // UNDEFINED PNA
-	if (EnableAuxiliaryInfo&& !(NewMap&&Look8000)) {
-
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
-		MapWindow::RequestToggleFullScreen();
-		EnableAuxiliaryInfo = false;
-
-	} else {
 		if (MapWindow::IsMapFullScreen()) {
 			MapWindow::RequestToggleFullScreen();
-			if (!(NewMap && Look8000)) {
-				#ifndef DISABLEAUDIO  
-				if (EnableSoundModes) LKSound(_T("LK_BELL.WAV"));
-				#endif
-			} else {
 				#ifndef DISABLEAUDIO  
 				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 				#endif
-			}
 		} else {
 			#ifndef DISABLEAUDIO
 			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 			#endif
 			
-			if (!(NewMap && Look8000)) {
-				EnableAuxiliaryInfo = true;
-			} else {
 				MapWindow::RequestToggleFullScreen();
-			}
 		}
-	}
-//#endif // def-undef PNA      
-	
   }
+#endif // USEIBOX
 }
 
 
@@ -1322,29 +1076,13 @@ void InputEvents::eventZoom(const TCHAR* misc) {
   float zoom;
 
   if (_tcscmp(misc, TEXT("auto toggle")) == 0)
-#ifndef MAP_ZOOM
-    MapWindow::Event_AutoZoom(-1);
-#else /* MAP_ZOOM */
     MapWindow::zoom.EventAutoZoom(-1);
-#endif /* MAP_ZOOM */
   else if (_tcscmp(misc, TEXT("auto on")) == 0)
-#ifndef MAP_ZOOM
-    MapWindow::Event_AutoZoom(1);
-#else /* MAP_ZOOM */
     MapWindow::zoom.EventAutoZoom(1);
-#endif /* MAP_ZOOM */
   else if (_tcscmp(misc, TEXT("auto off")) == 0)
-#ifndef MAP_ZOOM
-    MapWindow::Event_AutoZoom(0);
-#else /* MAP_ZOOM */
     MapWindow::zoom.EventAutoZoom(0);
-#endif /* MAP_ZOOM */
   else if (_tcscmp(misc, TEXT("auto show")) == 0) {
-#ifndef MAP_ZOOM
-    if (MapWindow::isAutoZoom())
-#else /* MAP_ZOOM */
     if (MapWindow::zoom.AutoZoom())
-#endif /* MAP_ZOOM */
 	// 856 AutoZoom ON
       DoStatusMessage(gettext(TEXT("_@M856_")));
     else
@@ -1352,90 +1090,35 @@ void InputEvents::eventZoom(const TCHAR* misc) {
       DoStatusMessage(gettext(TEXT("_@M857_")));
   }
   else if (_tcscmp(misc, TEXT("slowout")) == 0)
-#ifndef MAP_ZOOM
-    MapWindow::Event_ScaleZoom(-4);
-#else /* MAP_ZOOM */
     MapWindow::zoom.EventScaleZoom(-4);
-#endif /* MAP_ZOOM */
   else if (_tcscmp(misc, TEXT("slowin")) == 0)
-#ifndef MAP_ZOOM
-    MapWindow::Event_ScaleZoom(4);
-#else /* MAP_ZOOM */
     MapWindow::zoom.EventScaleZoom(4);
-#endif /* MAP_ZOOM */
   else if (_tcscmp(misc, TEXT("out")) == 0)
-#ifndef MAP_ZOOM
-    MapWindow::Event_ScaleZoom(-1);
-#else /* MAP_ZOOM */
     MapWindow::zoom.EventScaleZoom(-1);
-#endif /* MAP_ZOOM */
   else if (_tcscmp(misc, TEXT("in")) == 0)
-#ifndef MAP_ZOOM
-    MapWindow::Event_ScaleZoom(1);
-#else /* MAP_ZOOM */
     MapWindow::zoom.EventScaleZoom(1);
-#endif /* MAP_ZOOM */
   else if (_tcscmp(misc, TEXT("-")) == 0)
-#ifndef MAP_ZOOM
-    MapWindow::Event_ScaleZoom(-1);
-#else /* MAP_ZOOM */
     MapWindow::zoom.EventScaleZoom(-1);
-#endif /* MAP_ZOOM */
   else if (_tcscmp(misc, TEXT("+")) == 0)
-#ifndef MAP_ZOOM
-    MapWindow::Event_ScaleZoom(1);
-#else /* MAP_ZOOM */
     MapWindow::zoom.EventScaleZoom(1);
-#endif /* MAP_ZOOM */
   else if (_tcscmp(misc, TEXT("--")) == 0)
-#ifndef MAP_ZOOM
-    MapWindow::Event_ScaleZoom(-2);
-#else /* MAP_ZOOM */
     MapWindow::zoom.EventScaleZoom(-2);
-#endif /* MAP_ZOOM */
   else if (_tcscmp(misc, TEXT("++")) == 0) 
-#ifndef MAP_ZOOM
-    MapWindow::Event_ScaleZoom(2);
-#else /* MAP_ZOOM */
     MapWindow::zoom.EventScaleZoom(2);
-#endif /* MAP_ZOOM */
   else if (_stscanf(misc, TEXT("%f"), &zoom) == 1)
-#ifndef MAP_ZOOM
-    MapWindow::Event_SetZoom((double)zoom);
-#else /* MAP_ZOOM */
     MapWindow::zoom.EventSetZoom((double)zoom);
-#endif /* MAP_ZOOM */
 
   else if (_tcscmp(misc, TEXT("circlezoom toggle")) == 0) {
-#ifndef MAP_ZOOM
-    CircleZoom = !CircleZoom;
-    MapWindow::SwitchZoomClimb();
-#else /* MAP_ZOOM */
     MapWindow::zoom.CircleZoom(!MapWindow::zoom.CircleZoom());
     MapWindow::zoom.SwitchMode();
-#endif /* MAP_ZOOM */
   } else if (_tcscmp(misc, TEXT("circlezoom on")) == 0) {
-#ifndef MAP_ZOOM
-    CircleZoom = true;
-    MapWindow::SwitchZoomClimb();
-#else /* MAP_ZOOM */
     MapWindow::zoom.CircleZoom(true);
     MapWindow::zoom.SwitchMode();
-#endif /* MAP_ZOOM */
   } else if (_tcscmp(misc, TEXT("circlezoom off")) == 0) {
-#ifndef MAP_ZOOM
-    CircleZoom = false;
-    MapWindow::SwitchZoomClimb();
-#else /* MAP_ZOOM */
     MapWindow::zoom.CircleZoom(false);
     MapWindow::zoom.SwitchMode();
-#endif /* MAP_ZOOM */
   } else if (_tcscmp(misc, TEXT("circlezoom show")) == 0) {
-#ifndef MAP_ZOOM
-    if (CircleZoom)
-#else /* MAP_ZOOM */
     if (MapWindow::zoom.CircleZoom())
-#endif /* MAP_ZOOM */
 	// LKTOKEN  _@M173_ = "Circling Zoom ON" 
       DoStatusMessage(gettext(TEXT("_@M173_")));
     else
@@ -1463,35 +1146,16 @@ void InputEvents::eventPan(const TCHAR *misc) {
   else if (_tcscmp(misc, TEXT("off")) == 0) 
     MapWindow::Event_Pan(0);
 
-#if defined(PNA) || defined(FIVV)   // VENTA-ADDON  let pan mode scroll wheel zooming with HP31X. VENTA-TODO: make it different for other PNAs
  else if (_tcscmp(misc, TEXT("up")) == 0)
-#ifndef MAP_ZOOM
-			MapWindow::Event_ScaleZoom(1);
-#else /* MAP_ZOOM */
 			MapWindow::zoom.EventScaleZoom(1);
-#endif /* MAP_ZOOM */
 else if (_tcscmp(misc, TEXT("down")) == 0)
-#ifndef MAP_ZOOM
-			MapWindow::Event_ScaleZoom(-1); // fixed v58
-#else /* MAP_ZOOM */
 			MapWindow::zoom.EventScaleZoom(-1); // fixed v58
-#endif /* MAP_ZOOM */
-#else
-  else if (_tcscmp(misc, TEXT("up")) == 0)
-    MapWindow::Event_PanCursor(0,1);
-  else if (_tcscmp(misc, TEXT("down")) == 0)
-    MapWindow::Event_PanCursor(0,-1);
-#endif   // END VENTA
   else if (_tcscmp(misc, TEXT("left")) == 0)
     MapWindow::Event_PanCursor(1,0);
   else if (_tcscmp(misc, TEXT("right")) == 0)
     MapWindow::Event_PanCursor(-1,0);
   else if (_tcscmp(misc, TEXT("show")) == 0) {
-#ifndef MAP_ZOOM
-    if (MapWindow::isPan())
-#else /* MAP_ZOOM */
     if (MapWindow::mode.AnyPan())
-#endif /* MAP_ZOOM */
       DoStatusMessage(gettext(TEXT("_@M858_"))); // Pan mode ON
     else
       DoStatusMessage(gettext(TEXT("_@M859_"))); // Pan mode OFF
@@ -1528,35 +1192,33 @@ void InputEvents::eventTerrainTopology(const TCHAR *misc) {
 
 }
 
+#if 0  // REMOVE
 // Do clear warnings IF NONE Toggle Terrain/Topology
 void InputEvents::eventClearWarningsOrTerrainTopology(const TCHAR *misc) {
 	(void)misc;
-  if (ClearAirspaceWarnings(true,false)) {
-    // airspace was active, enter was used to acknowledge
+  #if USEOLDASPWARNINGS
+  if (0) {
+	// airspace was active, enter was used to acknowledge
     return;
   }
+  #endif
   // Else toggle TerrainTopology - and show the results
   MapWindow::Event_TerrainTopology(-1);
   MapWindow::Event_TerrainTopology(0);
 }
+#endif
 
+#if USEOLDASPWARNINGS
 // ClearAirspaceWarnings
 // Clears airspace warnings for the selected airspace
 //     day: clears the warnings for the entire day
 //     ack: clears the warnings for the acknowledgement time
 void InputEvents::eventClearAirspaceWarnings(const TCHAR *misc) {
-  if (_tcscmp(misc, TEXT("day")) == 0) 
-    // JMW clear airspace warnings for entire day (for selected airspace)
-    ClearAirspaceWarnings(true,true);
-  else {
-    
-    // default, clear airspace for short acknowledgement time
-    if (ClearAirspaceWarnings(true,false)) {
-
-    }
-  }
+  // this is not used anymore.
 }
+#endif
 
+#if 0 // REMOVE
 // ClearStatusMessages
 // Do Clear Event Warnings
 void InputEvents::eventClearStatusMessages(const TCHAR *misc) {
@@ -1565,23 +1227,9 @@ void InputEvents::eventClearStatusMessages(const TCHAR *misc) {
   // TODO enhancement: allow selection of specific messages (here we are acknowledging all)
   Message::Acknowledge(0);
 }
-
-void InputEvents::eventFLARMRadar(const TCHAR *misc) {
-	(void)misc;
-  //  if (_tcscmp(misc, TEXT("on")) == 0) {
-
-#ifndef NOFLARMGAUGE
-  if (_tcscmp(misc, TEXT("ForceToggle")) == 0) {
-    GaugeFLARM::ForceVisible = !GaugeFLARM::ForceVisible;
-    EnableFLARMGauge = GaugeFLARM::ForceVisible;
-  } else
-
-  GaugeFLARM::Suppress = !GaugeFLARM::Suppress;
-  // the result of this will get triggered by refreshslots
 #endif
-}
 
-
+#ifdef USEIBOX
 // SelectInfoBox
 // Selects the next or previous infobox
 void InputEvents::eventSelectInfoBox(const TCHAR *misc) {
@@ -1603,6 +1251,7 @@ void InputEvents::eventChangeInfoBoxType(const TCHAR *misc) {
     Event_ChangeInfoBoxType(-1);
   }
 }
+#endif // USEIBOX
 
 // ArmAdvance
 // Controls waypoint advance trigger:
@@ -1661,6 +1310,7 @@ void InputEvents::eventArmAdvance(const TCHAR *misc) {
   }
 }
 
+#if USEIBOX
 // DoInfoKey
 // Performs functions associated with the selected infobox
 //    up: triggers the up event
@@ -1685,6 +1335,7 @@ void InputEvents::eventDoInfoKey(const TCHAR *misc) {
   }
   
 }
+#endif // USEIBOX
 
 // Mode
 // Sets the current event mode.
@@ -1698,12 +1349,6 @@ void InputEvents::eventMode(const TCHAR *misc) {
   MapWindow::RequestFastRefresh();
 }
 
-// MainMenu
-// Don't think we need this.
-void InputEvents::eventMainMenu(const TCHAR *misc) {
-	(void)misc;
-  // todo: popup main menu
-}
 
 // Checklist
 // Displays the checklist dialog
@@ -1713,6 +1358,7 @@ void InputEvents::eventChecklist(const TCHAR *misc) {
   dlgChecklistShowModal();
 }
 
+#if 0 // REMOVE, unused since xci 4
 // FLARM Traffic
 // Displays the FLARM traffic dialog
 // See the checklist dialog section of the reference manual for more info.
@@ -1722,6 +1368,7 @@ void InputEvents::eventFlarmTraffic(const TCHAR *misc) {
   dlgFlarmTrafficShowModal();
 #endif
 }
+#endif
  
 
 // Displays the task calculator dialog
@@ -1810,7 +1457,7 @@ void InputEvents::eventGotoLookup(const TCHAR *misc) {
 void InputEvents::eventStatusMessage(const TCHAR *misc) {
   // 110102 shorthack to handle lktokens and any character
   if (_tcslen(misc)>4) {
-	if (misc[0]=='Z' && misc[1]=='Y' && misc[2]=='X') {
+	if (misc[0]=='Z' && misc[1]=='Y' && misc[2]=='X') {	// ZYX synthetic tokens inside XCIs
 		TCHAR nmisc[10];
 		_tcscpy(nmisc,_T("_@M"));
 		_tcscat(nmisc,&misc[3]);
@@ -1952,8 +1599,6 @@ void InputEvents::eventWind(const TCHAR *misc) {
 }
 
 
-int jmw_demo=0;
-
 // SendNMEA
 //  Sends a user-defined NMEA string to an external instrument.
 //   The string sent is prefixed with the start character '$'
@@ -1962,7 +1607,8 @@ int jmw_demo=0;
 //
 void InputEvents::eventSendNMEA(const TCHAR *misc) {
   if (misc) {
-    VarioWriteNMEA(misc);
+    // Currently disabled, because nonexistent function
+    // PortWriteNMEA(misc);
   }
 }
 
@@ -2214,7 +1860,6 @@ void InputEvents::eventService(const TCHAR *misc) {
 	_stprintf(TempSpeed, TEXT("%.0f %s"), CALCULATED_INFO.TaskStartSpeed*TASKSPEEDMODIFY, Units::GetTaskSpeedName());
 
 	TCHAR TempAll[120];
-	// _stprintf(TempAll, TEXT("\r\nAltitude: %s\r\nSpeed:%s\r\nTime: %s"), TempAlt, TempSpeed, TempTime); REMOVE FIXV2
 	_stprintf(TempAll, TEXT("\r\n%s: %s\r\n%s:%s\r\n%s: %s"),
 		// Altitude
 		gettext(TEXT("_@M89_")),
@@ -2248,7 +1893,6 @@ void InputEvents::eventService(const TCHAR *misc) {
 
 	TCHAR TempAll[180];
 
-	//_stprintf(TempAll, TEXT("\r\nAltitude: %s\r\nSpeed:%s\r\nTime: %s\r\nTask Speed: %s"),  REMOVE FIXV2
 	_stprintf(TempAll, TEXT("\r\n%s: %s\r\n%s:%s\r\n%s: %s\r\n%s: %s"),
 	// Altitude
 	gettext(TEXT("_@M89_")),
@@ -2320,6 +1964,28 @@ void InputEvents::eventService(const TCHAR *misc) {
 	ToggleOverlays();
 	return;
   }
+
+  if (_tcscmp(misc, TEXT("LOCKMODE")) == 0) {
+	TCHAR mtext[80];
+	if (LockMode(1)) {
+		// LKTOKEN  _@M960_ = "CONFIRM SCREEN UNLOCK?" 
+		_tcscpy(mtext, gettext(_T("_@M960_")));
+	} else {
+		// LKTOKEN  _@M961_ = "CONFIRM SCREEN LOCK?" 
+		_tcscpy(mtext, gettext(_T("_@M961_")));
+	}
+	if (MessageBoxX(hWndMapWindow, 
+		mtext, _T(""),
+		MB_YESNO|MB_ICONQUESTION) == IDYES) {
+			if (LockMode(2)) { // invert LockMode
+				DoStatusMessage(gettext(_T("_@M962_"))); // SCREEN IS LOCKED UNTIL TAKEOFF
+				DoStatusMessage(gettext(_T("_@M1601_"))); // DOUBLECLICK TO UNLOCK
+			} else
+				DoStatusMessage(gettext(_T("_@M964_"))); // SCREEN IS UNLOCKED
+	}
+	return;
+  }
+
 
   // we should not get here
   DoStatusMessage(_T("Unknown Service: "),misc);
@@ -2425,20 +2091,10 @@ void InputEvents::eventBallast(const TCHAR *misc) {
 
 
 void InputEvents::eventAutoLogger(const TCHAR *misc) {
-  #if NOSIM
   if (SIMMODE) return;
   if (!DisableAutoLogger) {
     eventLogger(misc);
   }
-  #else
-  #ifdef _SIM_
-  return;	// 100310
-  #else
-  if (!DisableAutoLogger) {
-    eventLogger(misc);
-  }
-  #endif
-  #endif
 }
 
 // Logger
@@ -2517,106 +2173,23 @@ void InputEvents::eventRepeatStatusMessage(const TCHAR *misc) {
 // If the aircraft is within airspace, this displays the distance and bearing
 // to the nearest exit to the airspace.
 
-
+#if USEOLDASPWARNINGS
 bool dlgAirspaceWarningIsEmpty(void);
 
 extern bool RequestAirspaceWarningForce;
+#endif
 
 void InputEvents::eventNearestAirspaceDetails(const TCHAR *misc) {
   (void)misc;
   double nearestdistance=0;
   double nearestbearing=0;
-  int foundcircle = -1;
-  int foundarea = -1;
-  int i;
-  bool inside = false;
-
-  TCHAR szMessageBuffer[MAX_PATH];
-  TCHAR szTitleBuffer[MAX_PATH];
-  TCHAR text[MAX_PATH];
-
-  if (!dlgAirspaceWarningIsEmpty()) {
-    RequestAirspaceWarningForce = true;
-    RequestAirspaceWarningDialog= true;
-    return;
-  }
 
   // StartHourglassCursor();
-  FindNearestAirspace(GPS_INFO.Longitude, GPS_INFO.Latitude,
-		      &nearestdistance, &nearestbearing,
-		      &foundcircle, &foundarea);
-  // StopHourglassCursor();
-
-  if ((foundcircle == -1)&&(foundarea == -1)) {
-    // nothing to display!
-    return;
+  CAirspace *found = CAirspaceManager::Instance().FindNearestAirspace(GPS_INFO.Longitude, GPS_INFO.Latitude,
+		      &nearestdistance, &nearestbearing );
+  if (found != NULL) {
+	dlgAirspaceDetails(found);
   }
-
-  if (foundcircle != -1) {
-    i = foundcircle;
-
-    dlgAirspaceDetails(i, -1);
-    /*
-    FormatWarningString(AirspaceCircle[i].Type , AirspaceCircle[i].Name , 
-			AirspaceCircle[i].Base, AirspaceCircle[i].Top, 
-			szMessageBuffer, szTitleBuffer );
-    */
-  } else if (foundarea != -1) {
-
-    i = foundarea;
-    dlgAirspaceDetails(-1, i);
-
-    /*
-    FormatWarningString(AirspaceArea[i].Type , AirspaceArea[i].Name , 
-			AirspaceArea[i].Base, AirspaceArea[i].Top, 
-			szMessageBuffer, szTitleBuffer );
-    */
-  }
-
-  return; 
-
-  if (nearestdistance<0) {
-    inside = true;
-    nearestdistance = -nearestdistance;
-  }
-
-  TCHAR DistanceText[MAX_PATH];
-  Units::FormatUserDistance(nearestdistance, DistanceText, 10);
-
-  if (inside && (CALCULATED_INFO.NavAltitude <= AirspaceArea[i].Top.Altitude)
-      && (CALCULATED_INFO.NavAltitude >= AirspaceArea[i].Base.Altitude)) {
-
-    _stprintf(text,
-              // TEXT("Inside airspace: %s\r\n%s\r\nExit: %s\r\nBearing %d") TEXT(DEG)TEXT("\r\n"),  REMOVE FIXV2
-              TEXT("%s: %s\r\n%s\r\n%s: %s\r\n%s %d") TEXT(DEG)TEXT("\r\n"), 
-		gettext(TEXT("_@M869_")), // Inside airspace
-              szTitleBuffer, 
-              szMessageBuffer,
-		gettext(TEXT("_@M870_")), // Exit
-              DistanceText,
-		gettext(TEXT("_@M138_")), // Bearing
-              (int)nearestbearing);
-  } else {
-    _stprintf(text,
-	      // TEXT("Nearest airspace: %s\r\n%s\r\nDistance: %s\r\nBearing %d") TEXT(DEG)TEXT("\r\n"),  REMOVE FIXV2
-	      TEXT("%s: %s\r\n%s\r\n%s: %s\r\n%s %d") TEXT(DEG)TEXT("\r\n"), 
-		gettext(TEXT("_@M871_")), // Nearest airspace
-	      szTitleBuffer, 
-	      szMessageBuffer,
-		gettext(TEXT("_@M245_")), // Distance
-	      DistanceText,
-		gettext(TEXT("_@M138_")), // Bearing
-	      (int)nearestbearing);
-  }
-    
-  // clear previous warning if any
-  Message::Acknowledge(MSG_AIRSPACE);
-
-  // TODO code: No control via status data (ala DoStatusMEssage) 
-  // - can we change this?
-  Message::Lock();
-  Message::AddMessage(5000, MSG_AIRSPACE, text);
-  Message::Unlock();
 }
 
 // NearestWaypointDetails
@@ -2761,9 +2334,6 @@ void InputEvents::eventBeep(const TCHAR *misc) {
 #ifndef DISABLEAUDIO
   if (EnableSoundModes) MessageBeep(MB_ICONEXCLAMATION); // 100221 FIX
 #endif
-#if defined(GNAV)
-  InputEvents::eventDLLExecute(TEXT("altairplatform.dll DoBeep2 1"));
-#endif
 }
 
 void SystemConfiguration(void);
@@ -2787,20 +2357,20 @@ void InputEvents::eventSetup(const TCHAR *misc) {
     dlgTaskOverviewShowModal();
   } else if (_tcscmp(misc,TEXT("Airspace"))==0){
     dlgAirspaceShowModal(false);
+#if USEWEATHER
   } else if (_tcscmp(misc,TEXT("Weather"))==0){
     dlgWeatherShowModal();
+#endif
   } else if (_tcscmp(misc,TEXT("Replay"))==0){
     if (!GPS_INFO.MovementDetected) {     
       dlgLoggerReplayShowModal();
     }
-#if 0
+#if USESWITCHES
   } else if (_tcscmp(misc,TEXT("Switches"))==0){
     dlgSwitchesShowModal();
 #endif
-#ifdef VEGAVOICE
-  } else if (_tcscmp(misc,TEXT("Voice"))==0){
-    dlgVoiceShowModal();
-#endif
+  } else if (_tcscmp(misc,TEXT("AspAnalysis"))==0){
+    dlgAnalysisShowModal(ANALYSIS_PAGE_AIRSPACE);
   } else if (_tcscmp(misc,TEXT("Teamcode"))==0){
     dlgTeamCodeShowModal();
   } else if (_tcscmp(misc,TEXT("Target"))==0){
@@ -2828,11 +2398,6 @@ void InputEvents::eventDLLExecute(const TCHAR *misc) {
   // dll_name (up to first space)
   pdest = _tcsstr(data, TEXT(" "));
   if (pdest == NULL) {
-#ifdef _INPUTDEBUG_
-    _stprintf(input_errors[input_errors_count++], 
-              TEXT("Invalid DLLExecute string - no DLL"));
-    InputEvents::showErrors();
-#endif
     return;
   }
   *pdest = _T('\0');
@@ -2861,15 +2426,6 @@ void InputEvents::eventDLLExecute(const TCHAR *misc) {
 #endif
     if (lpfnDLLProc != NULL) {
       (*lpfnDLLProc)(other);
-#ifdef _INPUTDEBUG_
-    } else {
-      DWORD le;
-      le = GetLastError();
-      _stprintf(input_errors[input_errors_count++], 
-		TEXT("Problem loading function (%s) in DLL (%s) = %d"), 
-		func_name, dll_name, le);
-      InputEvents::showErrors();
-#endif
     }
   }
 }
@@ -2900,12 +2456,6 @@ HINSTANCE _loadDLL(TCHAR *name) {
 	lpfnDLLProc(GetModuleHandle(NULL));
       
       return DLLCache[DLLCache_Count - 1].hinstance;
-#ifdef _INPUTDEBUG_
-    } else {
-      _stprintf(input_errors[input_errors_count++], 
-		TEXT("Invalid DLLExecute - not loaded - %s"), name);
-      InputEvents::showErrors();
-#endif
     }
   }
 
@@ -2979,21 +2529,14 @@ void InputEvents::eventRun(const TCHAR *misc) {
 
 void InputEvents::eventDeclutterLabels(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("toggle")) == 0) {
-	#if LKTOPO
 	MapWindow::DeclutterLabels ++;
 	MapWindow::DeclutterLabels = MapWindow::DeclutterLabels % 4;
-	#else
-	if (MapWindow::DeclutterLabels==MAPLABELS_ALLOFF) MapWindow::DeclutterLabels=MAPLABELS_ALLON;
-		else MapWindow::DeclutterLabels=MAPLABELS_ALLOFF;
-	#endif
   } else if (_tcscmp(misc, TEXT("on")) == 0)
     MapWindow::DeclutterLabels = MAPLABELS_ALLOFF;
   else if (_tcscmp(misc, TEXT("off")) == 0)
     MapWindow::DeclutterLabels = MAPLABELS_ALLON;
-  #if LKTOPO
   else if (_tcscmp(misc, TEXT("mid")) == 0)
     MapWindow::DeclutterLabels = MAPLABELS_ONLYTOPO;
-  #endif
   else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (MapWindow::DeclutterLabels==MAPLABELS_ALLON)
 	// LKTOKEN  _@M422_ = "Map labels ON" 
@@ -3009,14 +2552,14 @@ void InputEvents::eventDeclutterLabels(const TCHAR *misc) {
 
 
 
-
+#if 0 // REMOVE
 void InputEvents::eventBrightness(const TCHAR *misc) {
 	(void)misc;
 #if 0
   dlgBrightnessShowModal();
 #endif
 }
-
+#endif
 
 void InputEvents::eventExit(const TCHAR *misc) {
 	(void)misc;
@@ -3119,32 +2662,16 @@ void InputEvents::eventMoveGlider(const TCHAR *misc) {
 void InputEvents::eventUserDisplayModeForce(const TCHAR *misc){
 
   if (_tcscmp(misc, TEXT("unforce")) == 0){
-#ifndef MAP_ZOOM
-    UserForceDisplayMode = dmNone;
-#else /* MAP_ZOOM */
     MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_NONE);
-#endif /* MAP_ZOOM */
   }
   else if (_tcscmp(misc, TEXT("forceclimb")) == 0){
-#ifndef MAP_ZOOM
-    UserForceDisplayMode = dmCircling;
-#else /* MAP_ZOOM */
     MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CIRCLING);
-#endif /* MAP_ZOOM */
   }
   else if (_tcscmp(misc, TEXT("forcecruise")) == 0){
-#ifndef MAP_ZOOM
-    UserForceDisplayMode = dmCruise;
-#else /* MAP_ZOOM */
     MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_CRUISE);
-#endif /* MAP_ZOOM */
   }
   else if (_tcscmp(misc, TEXT("forcefinal")) == 0){
-#ifndef MAP_ZOOM
-    UserForceDisplayMode = dmFinalGlide;
-#else /* MAP_ZOOM */
     MapWindow::mode.UserForcedMode(MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
-#endif /* MAP_ZOOM */
   }
   else if (_tcscmp(misc, TEXT("show")) == 0){
     // DoStatusMessage(TEXT("Map labels ON")); 091211 ?????
@@ -3202,7 +2729,7 @@ void InputEvents::eventAirspaceDisplayMode(const TCHAR *misc){
   }
 }
 
-
+// THIS IS UNUSED, AND SHOULD NOT BE USED SINCE IT DOES NOT SUPPORT CUPs
 void InputEvents::eventAddWaypoint(const TCHAR *misc) {
   static int tmpWaypointNum = 0;
   WAYPOINT edit_waypoint;
@@ -3215,11 +2742,7 @@ void InputEvents::eventAddWaypoint(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("landable")) == 0) {
     edit_waypoint.Flags += LANDPOINT;
   }
-#if CUPCOM
   edit_waypoint.Comment = NULL;
-#else
-  edit_waypoint.Comment[0] = '\0';
-#endif
   edit_waypoint.Name[0] = 0;
   edit_waypoint.Details = 0;
   edit_waypoint.Number = NumberOfWayPoints;

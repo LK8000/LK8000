@@ -18,7 +18,7 @@
 #endif
 #include "options.h"
 #include "externs.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "InfoBoxLayout.h"
 #include "Utils2.h"
 #include "Cpustats.h"
@@ -26,12 +26,14 @@
 #include "Logger.h"
 #include "Parser.h"
 #include "WaveThread.h"
-#include "GaugeFLARM.h"
 #include "LKUtils.h"
 #include "Message.h"
 #include "McReady.h"
 #include "InputEvents.h"
 #include "LKMapWindow.h"
+
+#include "utils/stringext.h"
+#include "utils/heapcheck.h"
 
 
 extern TCHAR LastTaskFileName[MAX_PATH];
@@ -408,68 +410,55 @@ void LKRunStartEnd(bool start) {
 }
 
 
-// 101221 lets try to use UTF-16 directly
-// filetype 1 BE  -1 LE  
-// This is reading char string and returning tchar. We need to double the Max size.
-BOOL ReadUString(HANDLE hFile, int Max, TCHAR *String, short filetype)
+// Reads line from UTF-8 encoded text file.
+// File must be open in binary read mode.
+bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars)
 {
-  if (filetype==0)
-  return ( ReadString(hFile, Max, String)); // Ansi string, no-wide chars
+  unsigned char buf[READLINE_LENGTH * 2];
 
-  DWORD dwNumBytesRead=0;
-  DWORD dwTotalNumBytesRead=0;
-  char  FileBuffer[(READLINE_LENGTH*2)+2];
-  DWORD dwFilePos;
+  long startPos = zzip_tell(fp);
 
-  String[0] = '\0';
-
-  dwFilePos = SetFilePointer(hFile, 0, NULL, FILE_CURRENT);
-
-  if (hFile == INVALID_HANDLE_VALUE)
-	return(FALSE);
-
-  if (ReadFile(hFile, FileBuffer, sizeof(FileBuffer)-2, &dwNumBytesRead, (OVERLAPPED *)NULL) == 0)
-	return(FALSE);
-
-  int i = 0;
-  int j = 1;
-  if (filetype==1) j=0;  // do not skip leading 0 for Big Endians
-
-  char c;
-  char *pointer=(char *)&String[0];
-
-  // each character is a wide character here, so we read twice as much
-  while(i<((Max*2)-2) && j<(int)dwNumBytesRead){ 
-	c = FileBuffer[j++];
-	dwTotalNumBytesRead++;
-
-	if(c == '\n') break;
-	*pointer++=c;
-	i++;
+  if (startPos < 0) {
+    StartupStore(_T(". ftell() error = %d%s"), errno, NEWLINE);
+    return(false);
   }
-  *pointer++ = '\0';
-  *pointer++ = '\0';
+
+  size_t nbRead = zzip_fread(buf, 1, sizeof(buf) - 1, fp);
   
-  // There is a bug here, and/or in the LKLanguage calling function.
-  // Careful checking translations using UTF-16 BE
+  if (nbRead == 0)
+    return(false);
 
-  String[dwTotalNumBytesRead]='\0';
-  String[Max-1]='\0';
+  buf[nbRead] = '\0';
 
-  if (filetype==1 && dwTotalNumBytesRead>0) {
-	char *repoint;
-	for (repoint=(char *)&String[0]; repoint<=(pointer-2); repoint+=2) {
-		c = *repoint;
-		*repoint = *(repoint+1);
-		*(repoint+1)= c;
-	}
+  // find new line (CR/LF/CRLF) in the string and terminate string at that position
+  size_t i;
+  for (i = 0; i < nbRead; i++) {
+    if (buf[i] == '\n')
+    {
+      buf[i++] = '\0';
+      if (buf[i] == '\r')
+        i++;
+      break;
+    }
+
+    if (buf[i] == '\r')
+    {
+      buf[i++] = '\0';
+      if (buf[i] == '\n')
+        i++;
+      break;
+    }
   }
-  // String[dwTotalNumBytesRead/2]='\0';
 
-  SetFilePointer(hFile, dwFilePos+j, NULL, FILE_BEGIN);
+  // next reading will continue after new line
+  zzip_seek(fp, startPos + i, SEEK_SET);
 
-  return (dwTotalNumBytesRead>0);
+  // skip leading BOM
+  char* begin = (char*) buf;
+  if (buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF)
+    begin += 3;
 
+  return(utf2unicode(begin, unicode, maxChars) >= 0);
 }
 
 
@@ -512,3 +501,239 @@ const TCHAR *TaskFileName(unsigned bufferLen, TCHAR buffer[])
   
   return buffer;
 }
+
+//
+// This is used globally to determine if Contest facility is in use or not
+// We might use here also a configuration option shortly.
+// Notice that engine Reset() is done in any case.
+//
+bool UseContestEngine(void) {
+
+  // Gliding mode always have the engine running
+  if (ISGLIDER) return true;
+  // All other modes like paragliding, Car and GA, will need 1.5 page to be ON
+  if (!ConfIP[LKMODE_INFOMODE][IM_CONTEST]) return false;
+
+  return true;
+
+}
+
+
+/* 
+ * Implementation of the _splitpath runtime library function with wide character strings
+ * Copyright 2000, 2004 Martin Fuchs -- GPL licensed - WINE project
+ */
+void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext)
+{
+	const WCHAR* end; /* end of processed string */
+	const WCHAR* p;	  /* search pointer */
+	const WCHAR* s;	  /* copy pointer */
+
+	/* extract drive name */
+	if (path[0] && path[1]==':') {
+		if (drv) {
+			*drv++ = *path++;
+			*drv++ = *path++;
+			*drv = '\0';
+		}
+	} else if (drv)
+		*drv = '\0';
+
+	/* search for end of string or stream separator */
+	for(end=path; *end && *end!=':'; )
+		end++;
+
+	/* search for begin of file extension */
+	for(p=end; p>path && *--p!='\\' && *p!='/'; )
+		if (*p == '.') {
+			end = p;
+			break;
+		}
+
+	if (ext)
+		for(s=end; (*ext=*s++); )
+			ext++;
+
+	/* search for end of directory name */
+	for(p=end; p>path; )
+		if (*--p=='\\' || *p=='/') {
+			p++;
+			break;
+		}
+
+	if (name) {
+		for(s=p; s<end; )
+			*name++ = *s++;
+
+		*name = '\0';
+	}
+
+	if (dir) {
+		for(s=path; s<p; )
+			*dir++ = *s++;
+
+		*dir = '\0';
+	}
+}
+
+//
+// Returns the LKW extension index of the incoming suffix, or -1
+//
+int GetWaypointFileFormatType(const wchar_t* wfilename) {
+
+  TCHAR wextension[MAX_PATH];
+  TCHAR wdrive[MAX_PATH];
+  TCHAR wdir[MAX_PATH];
+  TCHAR wname[MAX_PATH];
+  LK_wsplitpath(wfilename, wdrive,wdir,wname,wextension);
+
+  //StartupStore(_T("... wdrive=%s\n"),wdrive);
+  //StartupStore(_T("... wdir=%s\n"),wdir);
+  //StartupStore(_T("... wname=%s\n"),wname);
+  //StartupStore(_T("... wext=%s\n"),wextension);
+
+  if ( wcscmp(wextension,_T(".cup"))==0 ||
+    wcscmp(wextension,_T(".CUP"))==0 ||
+    wcscmp(wextension,_T(".Cup"))==0) {
+       return LKW_CUP;
+  }
+  if ( wcscmp(wextension,_T(".dat"))==0 ||
+    wcscmp(wextension,_T(".DAT"))==0 ||
+    wcscmp(wextension,_T(".Dat"))==0) {
+       return LKW_DAT;
+  }
+  if ( wcscmp(wextension,_T(".wpt"))==0 ||
+    wcscmp(wextension,_T(".WPT"))==0 ||
+    wcscmp(wextension,_T(".Wpt"))==0) {
+       return LKW_COMPE;
+  }
+
+  return -1;
+
+}
+
+
+// #define DEBUG_LKALARMS	1
+
+void InitAlarms(void) {
+
+  #if DEBUG_LKALARMS
+  StartupStore(_T("...... Alarms: InitAlarms\n"));
+  #endif
+  int i;
+  for (i=0; i<MAXLKALARMS; i++) {
+	LKalarms[i].triggervalue=0;
+	LKalarms[i].lastvalue=0;
+	LKalarms[i].lasttriggertime=0.0;
+	LKalarms[i].triggerscount=0;
+  }
+	/* Test values
+	LKalarms[0].triggervalue=500;
+	LKalarms[1].triggervalue=0;
+	LKalarms[2].triggervalue=1200;
+	*/
+}
+
+#if DEBUG_LKALARMS
+#undef LKALARMSINTERVAL
+#undef MAXLKALARMSTRIGGERS
+#define LKALARMSINTERVAL 10
+#define MAXLKALARMSTRIGGERS 3
+#endif
+
+// alarms in range 0-(MAXLKALARMS-1), that is  0-2
+bool CheckAlarms(unsigned short al) {
+
+  int i;
+
+  // safe check
+  if (al>=MAXLKALARMS) return false;
+
+  // Alarms are working only with a valid GPS fix. No navigator, no alarms.
+  if (GPS_INFO.NAVWarning) return false;
+
+  // do we have a valid alarm request?
+  if ( LKalarms[al].triggervalue == 0) return false;
+
+  // We check for duplicates. We could do it only when config is changing, right now.
+  // However, maybe we can have LK set automatically alarms in the future.
+  // Duplicates filter is working giving priority to the lowest element in the list
+  // We don't want more than 1 alarm for the same trigger value
+  for (i=0; i<=al; i++) {
+	if (i==al) continue; // do not check against ourselves
+	// if a previous alarm has the same value, we are a duplicate
+	if (LKalarms[al].triggervalue == LKalarms[i].triggervalue) {
+		#if DEBUG_LKALARMS
+		StartupStore(_T("...... Alarms: duplicate value [%d]=[%d] =<%d>\n"), al, i, LKalarms[i].triggervalue);
+		#endif
+		return false;
+	}
+  }
+
+  // ok so this is not a duplicated alarm, lets check if we have overcounted
+  if (LKalarms[al].triggerscount >= MAXLKALARMSTRIGGERS) {
+	#if DEBUG_LKALARMS
+	StartupStore(_T("...... Alarms: count exceeded for [%d]\n"),al);
+	#endif
+	return false;
+  }
+
+  // if too early we ignore it in any case
+  if (GPS_INFO.Time < (LKalarms[al].lasttriggertime + LKALARMSINTERVAL)) {
+	#if DEBUG_LKALARMS
+	StartupStore(_T("...... Alarms: too early for [%d], still %.0f seconds to go\n"),al,
+	(LKalarms[al].lasttriggertime + LKALARMSINTERVAL)- GPS_INFO.Time);
+	#endif
+	return false;
+  }
+
+  // So this is a potentially valid alarm to check
+
+  //
+  // First we check for altitude alarms , 0-2
+  //
+  if (al<3) {
+
+	int navaltitude=(int)CALCULATED_INFO.NavAltitude;
+
+	// is this is the first valid sample?
+	if (LKalarms[al].lastvalue==0) {
+		LKalarms[al].lastvalue= navaltitude;
+		#if DEBUG_LKALARMS
+		StartupStore(_T("...... Alarms: init lastvalue [%d] = %d\n"),al,LKalarms[al].lastvalue);
+		#endif
+		return false;
+	}
+
+	// if we were previously below trigger altitude
+	if (LKalarms[al].lastvalue< LKalarms[al].triggervalue) {
+		#if DEBUG_LKALARMS
+		StartupStore(_T("...... Alarms: armed lastvalue [%d] = %d < trigger <%d>\n"),al,
+		LKalarms[al].lastvalue,LKalarms[al].triggervalue);
+		#endif
+		// if we are now over the trigger altitude
+		if (navaltitude >= LKalarms[al].triggervalue) {
+			#if DEBUG_LKALARMS
+			StartupStore(_T("...... Alarms: RING [%d] = %d\n"),al,navaltitude);
+			#endif
+			// bingo. first reset last value , update lasttime and counter
+			LKalarms[al].lastvalue=0;
+			LKalarms[al].triggerscount++;
+			LKalarms[al].lasttriggertime = GPS_INFO.Time;
+			return true;
+		}
+	}
+
+	// otherwise simply update lastvalue
+	LKalarms[al].lastvalue=navaltitude;
+	return false;
+
+  } // end altitude alarms
+
+
+  // other alarms here, or failed
+  return false;
+
+}
+
+

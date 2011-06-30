@@ -1,6 +1,8 @@
 #include "jasper/jpc_rtc.h"
 #include "jasper/RasterTile.h"
 
+#include "utils/heapcheck.h"
+
 RasterTileCache *raster_tile_current = 0;
 
 extern void StepProgressDialog(void);

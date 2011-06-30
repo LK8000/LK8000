@@ -8,8 +8,9 @@
 
 
 #include "StdAfx.h"
-#ifdef MAP_ZOOM
 #include "MapWindow.h"
+
+#include "utils/heapcheck.h"
 
 
 MapWindow::Mode::Mode():
@@ -59,4 +60,3 @@ void MapWindow::Mode::Special(TModeSpecial specialMode, bool enable)
     MapWindow::zoom.SwitchMode();
 }
 
-#endif /* MAP_ZOOM */

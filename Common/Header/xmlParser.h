@@ -147,8 +147,8 @@ typedef struct XMLNode
     // (see complete explanation of parameters below)
    
     static XMLNode parseString   (LPCTSTR     lpszXML, LPCTSTR tag=NULL, XMLResults *pResults=NULL);
-    static XMLNode parseFile     (const char *lpszXML, LPCTSTR tag=NULL, XMLResults *pResults=NULL);
-    static XMLNode openFileHelper(const char *lpszXML, LPCTSTR tag);
+    static XMLNode parseFile     (const TCHAR *lpszXML, LPCTSTR tag=NULL, XMLResults *pResults=NULL);
+    static XMLNode openFileHelper(const TCHAR *lpszXML, LPCTSTR tag);
 
     // The tag parameter should be the name of the first tag inside the XML file.
     // If the tag parameter is omitted, the 3 functions return a node that represents

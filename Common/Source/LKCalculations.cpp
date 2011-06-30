@@ -13,7 +13,7 @@
 #include "Calculations.h"
 #include "compatibility.h"
 #ifdef OLDPPC
-#include "XCSoarProcess.h"
+#include "LK8000Process.h"
 #else
 #include "Process.h"
 #endif
@@ -25,8 +25,15 @@
 #include "RasterTerrain.h"
 #include <math.h>
 #include <tchar.h>
+#include "Calculations.h"
 #include "Calculations2.h"
 #include "Message.h"
+#include "Logger.h"
+#include "LKMapWindow.h"
+
+#include "utils/heapcheck.h"
+using std::min;
+using std::max;
 
 extern void LatLon2Flat(double lon, double lat, int *scx, int *scy);
 extern int CalculateWaypointApproxDistance(int scx_aircraft, int scy_aircraft, int i);
@@ -164,8 +171,8 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    LKForceDoNearest=false;
 
    if (!WayPointList) return;
-   // No need to check airports, cannot be better
-   if ( RangeLandableNumber==0) {
+   // No need to check airports, cannot be better because Airports are landables
+   if ( RangeLandableNumber==0 && RangeTurnpointNumber==0) {
 	return;
    }
 
@@ -276,11 +283,7 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	// which is TWICE what we really need. 
 	switch (SortedMode[curmapspace]) {
 		case 2:
-#ifndef MAP_ZOOM
-			if (DisplayMode == dmCircling) {
-#else /* MAP_ZOOM */
 			if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
 				wp_value=WayPointCalc[wp_index].Bearing;
 				break;
 			}
@@ -389,12 +392,7 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
    int rangeLandableDistance[MAXRANGELANDABLE];
    int rangeAirportDistance[MAXRANGELANDABLE];
    int rangeTurnpointDistance[MAXRANGETURNPOINT];
-   #if UNSORTEDRANGE
    int i, kl, kt, ka;
-   #else
-   int i, k, l;
-   bool inserted;
-   #endif
    //double arrival_altitude;
    static bool DoInit=true;
 
@@ -447,11 +445,7 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	rangeTurnpointDistance[i] = 0;
   }
 
-  #if UNSORTEDRANGE
   for (i=0, kt=0, kl=0, ka=0; i<(int)NumberOfWayPoints; i++) {
-  #else
-  for (i=0; i<(int)NumberOfWayPoints; i++) {
-  #endif
 
 	int approx_distance = CalculateWaypointApproxDistance(scx_aircraft, scy_aircraft, i);
 
@@ -464,36 +458,17 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		( (TpFilter==(TpFilter_t)TfAll) ) ||
 		( (TpFilter==(TpFilter_t)TfTps) && ((WayPointList[i].Flags & TURNPOINT) == TURNPOINT) ) 
 	 ) {
-		#if UNSORTEDRANGE
 		if (kt+1<MAXRANGETURNPOINT) { // never mind if we use maxrange-2
 			RangeTurnpointIndex[kt++]=i;
 			RangeTurnpointNumber++;
+			#if DEBUG_DORANGE
+			StartupStore(_T(".. insert turnpoint <%s>\n"),WayPointList[i].Name); 
+			#endif
 		}
 		#if DEBUG_DORANGE
 		else {
 			StartupStore(_T("... OVERFLOW RangeTurnpoint cannot insert <%s> in list\n"),WayPointList[i].Name);
 		}
-		#endif
-		#else
-		for (k=0, inserted=false; k< MAXRANGETURNPOINT; k++)  {
-			if (((approx_distance < rangeTurnpointDistance[k]) 
-			|| (RangeTurnpointIndex[k]== -1))
-			&& (RangeTurnpointIndex[k]!= i))
-			{
-				// ok, got new biggest, put it into the slot.
-				for (l=MAXRANGETURNPOINT-1; l>k; l--) {
-					if (l>0) {
-						rangeTurnpointDistance[l] = rangeTurnpointDistance[l-1];
-						RangeTurnpointIndex[l] = RangeTurnpointIndex[l-1];
-					}
-				}
-				rangeTurnpointDistance[k] = approx_distance;
-				RangeTurnpointIndex[k] = i;
-				k=MAXRANGETURNPOINT;
-				inserted=true;
-			}
-		} // for k
-		if (inserted) RangeTurnpointNumber++;
 		#endif
 	}
 
@@ -506,11 +481,12 @@ LabelLandables:
 	if (!WayPointCalc[i].IsLandable )
 		continue; 
 
-	#if UNSORTEDRANGE
 	if (kl+1<MAXRANGELANDABLE) { // never mind if we use maxrange-2
 		RangeLandableIndex[kl++]=i;
 		RangeLandableNumber++;
-		// StartupStore(_T(".. insert landable <%s>\n"),WayPointList[i].Name); 
+		#if DEBUG_DORANGE
+		StartupStore(_T(".. insert landable <%s>\n"),WayPointList[i].Name); 
+		#endif
 	}
 	#if DEBUG_DORANGE
 	else {
@@ -518,33 +494,9 @@ LabelLandables:
 	}
 	#endif
 
-	#else // not unsortedrange in use
-	for (k=0, inserted=false; k< MAXRANGELANDABLE; k++)  {
-		if (((approx_distance < rangeLandableDistance[k]) 
-		|| (RangeLandableIndex[k]== -1))
-        	&& (RangeLandableIndex[k]!= i))
-        	{
-          		// ok, got new biggest, put it into the slot.
-          		for (l=MAXRANGELANDABLE-1; l>k; l--) {
-            			if (l>0) {
-              				rangeLandableDistance[l] = rangeLandableDistance[l-1];
-             				RangeLandableIndex[l] = RangeLandableIndex[l-1];
-            			}
-          		}
-         		rangeLandableDistance[k] = approx_distance;
-          		RangeLandableIndex[k] = i;
-          		k=MAXRANGELANDABLE;
-			inserted=true;
-        	}
-	} // for k
-	if (inserted) RangeLandableNumber++;
-	#endif
-
-
 	// If it's an Airport then we also take it into account separately
 	if ( WayPointCalc[i].IsAirport )
 	{
-		#if UNSORTEDRANGE
 		if (ka+1<MAXRANGELANDABLE) { // never mind if we use maxrange-2
 			RangeAirportIndex[ka++]=i;
 			RangeAirportNumber++;
@@ -553,27 +505,6 @@ LabelLandables:
 		else {
 			StartupStore(_T("... OVERFLOW RangeAirport cannot insert <%s> in list\n"),WayPointList[i].Name);
 		}
-		#endif
-		#else
-		for (k=0, inserted=false; k< MAXRANGELANDABLE; k++)  {
-			if (((approx_distance < rangeAirportDistance[k]) 
-			|| (RangeAirportIndex[k]== -1))
-			&& (RangeAirportIndex[k]!= i))
-			{
-				// ok, got new biggest, put it into the slot.
-				for (l=MAXRANGELANDABLE-1; l>k; l--) {
-					if (l>0) {
-						rangeAirportDistance[l] = rangeAirportDistance[l-1];
-						RangeAirportIndex[l] = RangeAirportIndex[l-1];
-					}
-				}
-				rangeAirportDistance[k] = approx_distance;
-				RangeAirportIndex[k] = i;
-				k=MAXRANGELANDABLE;
-				inserted=true;
-			}
-		} // for k
-		if (inserted) RangeAirportNumber++;
 		#endif
 	}
 
@@ -611,10 +542,10 @@ bool DoCommonList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	CommonIndex[CommonNumber++]=HomeWaypoint;
    }
 
-   // Then we insert the alternates, if existing
-   if (OnBestAlternate) InsertCommonList(BestAlternate);
-   if (OnAlternate1) InsertCommonList(Alternate1);
-   if (OnAlternate2) InsertCommonList(Alternate2);
+   // Then we update the alternates in the common list
+   InsertCommonList(BestAlternate);
+   InsertCommonList(Alternate1);
+   InsertCommonList(Alternate2);
 
    // Then we insert active destination and task points
    for (i=0; i< MAXTASKPOINTS; i++) {
@@ -756,13 +687,11 @@ bool SaveRecentList() {
    fprintf(fp,"### LK8000 History of Goto Waypoints - DO NOT MODIFY THIS FILE! ###\r\n");
    fprintf(fp,"### WPRECENT FORMAT 01T \r\n");
    for (i=0; i<RecentNumber; i++)  {
-	#ifdef NEWTASKWP
 	if ( !ValidNotResWayPoint(RecentIndex[i])) {
 		StartupStore(_T("---- SaveHistory: invalid wp, maybe file has changed. Aborting.%s"),NEWLINE);
 		break;
 	}
 	if ( WayPointList[RecentIndex[i]].FileNum == -1) continue; // 100219
-	#endif
 	if ( GetWpChecksum(RecentIndex[i]) != RecentChecksum[i] ) {
 		StartupStore(_T("---- SaveHistory: invalid checksum for wp=%d checksum=%d oldchecksum=%d, maybe file has changed. Aborting.%s"),
 		i,GetWpChecksum(RecentIndex[i]), RecentChecksum[i],NEWLINE);
@@ -957,156 +886,6 @@ static bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic,
   }
 }
 
-// -------------------- start old version ----------------------------------
-#ifndef MULTICALC
-// Warning: this is called from mapwindow Draw task , not from calculations!!
-// this is calling CheckLandableReachableTerrainNew
-void MapWindow::CalculateWaypointReachableNew(void)
-{
-  unsigned int i;
-  /*
-  #if UNSORTEDRANGE
-  int j;
-  #endif
-   */
-  double waypointDistance, waypointBearing,altitudeRequired,altitudeDifference;
-  double dtmp;
-
-  // LandableReachable is used only by the thermal bar indicator in MapWindow2, after here
-  // apparently, is used to tell you if you are below final glide but in range for a landable wp
-  LandableReachable = false;
-
-  if (!WayPointList) return;
-
-  LockTaskData();
-
-  /*
-  101218 We should include in this list also task points, at least.
-  For 2.0 we still use all waypoints, since the check for Visible is fast. Pity.
-  #if UNSORTEDRANGE
-  for(j=0;j<RangeLandableNumber;j++)
-  {
-	i=RangeLandableIndex[j];
-  #else
-  */
-  for(i=0;i<NumberOfWayPoints;i++)
-  {
-  // #endif
-    if ( ( ((WayPointCalc[i].AltArriv >=0)||(WayPointList[i].Visible)) && (WayPointCalc[i].IsLandable)) // 100307
-	|| WaypointInTask(i) ) {
-
-	DistanceBearing(DrawInfo.Latitude, DrawInfo.Longitude, WayPointList[i].Latitude, WayPointList[i].Longitude, &waypointDistance, &waypointBearing);
-
-	WayPointCalc[i].Distance=waypointDistance; 
-	WayPointCalc[i].Bearing=waypointBearing;
-
-	if (SafetyAltitudeMode==0 && !WayPointCalc[i].IsLandable)
-		dtmp=DerivedDrawInfo.NavAltitude - WayPointList[i].Altitude;
-	else
-		dtmp=DerivedDrawInfo.NavAltitude - SAFETYALTITUDEARRIVAL - WayPointList[i].Altitude;
-
-	if (dtmp>0) {
-		WayPointCalc[i].GR = waypointDistance / dtmp;
-		if (WayPointCalc[i].GR > INVALID_GR) WayPointCalc[i].GR=INVALID_GR; else
-		if (WayPointCalc[i].GR <1) WayPointCalc[i].GR=1;
-	} else
-		WayPointCalc[i].GR = INVALID_GR;
-
-	altitudeRequired = GlidePolar::MacCreadyAltitude (GetMacCready(i,0), waypointDistance, waypointBearing,  // 091221
-						DerivedDrawInfo.WindSpeed, DerivedDrawInfo.WindBearing, 0,0,true,0);
-
-	if (SafetyAltitudeMode==0 && !WayPointCalc[i].IsLandable)
-		altitudeRequired = altitudeRequired + WayPointList[i].Altitude ;
-	else
-		altitudeRequired = altitudeRequired + SAFETYALTITUDEARRIVAL + WayPointList[i].Altitude ;
-
-	WayPointCalc[i].AltReqd[AltArrivMode] = altitudeRequired; 
-
-	altitudeDifference = DerivedDrawInfo.NavAltitude - altitudeRequired; 
-	WayPointList[i].AltArivalAGL = altitudeDifference;
-      
-	if(altitudeDifference >=0){
-
-		WayPointList[i].Reachable = TRUE;
-
-	  	if (CheckLandableReachableTerrainNew(&DrawInfo, &DerivedDrawInfo, waypointDistance, waypointBearing)) {
-			if ((signed)i!=TASKINDEX) { 
-		  		LandableReachable = true;
-			}
-	  	} else {
-			WayPointList[i].Reachable = FALSE;
-		}
-	} else {
-		WayPointList[i].Reachable = FALSE;
-	}
-
-    } // if landable or in task
-  } // for all waypoints
-
-  if (!LandableReachable) // 091203
-  /* 101218 same as above, bugfix
-  #if UNSORTEDRANGE
-  for(j=0;j<RangeLandableNumber;j++) {
-	i = RangeLandableIndex[j];
-  #else
-  */
-  for(i=0;i<NumberOfWayPoints;i++) {
-  // #endif
-    if(!WayPointList[i].Visible && WayPointList[i].FarVisible)  {
-	// visible but only at a distance (limit this to 100km radius)
-
-	if(  WayPointCalc[i].IsLandable ) {
-
-		DistanceBearing(DrawInfo.Latitude, 
-                                DrawInfo.Longitude, 
-                                WayPointList[i].Latitude, 
-                                WayPointList[i].Longitude,
-                                &waypointDistance,
-                                &waypointBearing);
-               
-		WayPointCalc[i].Distance=waypointDistance;  // VENTA6
-		WayPointCalc[i].Bearing=waypointBearing;
-
-		if (waypointDistance<100000.0) {
-
-			altitudeRequired = GlidePolar::MacCreadyAltitude (GetMacCready(i,0), waypointDistance, waypointBearing,  // 091221
-					DerivedDrawInfo.WindSpeed, DerivedDrawInfo.WindBearing, 0,0,true,0);
-                  
-			if (SafetyAltitudeMode==0 && !WayPointCalc[i].IsLandable)
-                		altitudeRequired = altitudeRequired + WayPointList[i].Altitude ;
-			else
-                		altitudeRequired = altitudeRequired + SAFETYALTITUDEARRIVAL + WayPointList[i].Altitude ;
-
-               		altitudeDifference = DerivedDrawInfo.NavAltitude - altitudeRequired;                                      
-                	WayPointList[i].AltArivalAGL = altitudeDifference;
-
-			WayPointCalc[i].AltReqd[AltArrivMode] = altitudeRequired; // VENTA6
-
-                	if(altitudeDifference >=0){
-
-                	    	WayPointList[i].Reachable = TRUE;
-
-                	    	if (CheckLandableReachableTerrainNew(&DrawInfo, &DerivedDrawInfo, waypointDistance, waypointBearing)) {
-                    	 		LandableReachable = true;
-                     		} else
-                    			WayPointList[i].Reachable = FALSE;
-                    	} 
-			else { 	
-                    		WayPointList[i].Reachable = FALSE;
-			}
-		} else {
-			WayPointList[i].Reachable = FALSE;
-		} // <100000
-
-	} // landable wp
-     } // visible or far visible
-   } // for all waypoint
-
-  UnlockTaskData(); 
-}
-#endif
-// -------------------------------- end of old version -------------------
-
 double FarFinalGlideThroughTerrain(const double this_bearing, 
 				NMEA_INFO *Basic, 
                                 DERIVED_INFO *Calculated,
@@ -1163,7 +942,7 @@ double FarFinalGlideThroughTerrain(const double this_bearing,
   lon = last_lon = start_lon;
 
   altitude = myaltitude;
-  h =  max(0, RasterTerrain::GetTerrainHeight(lat, lon)); 
+  h =  max(0, (int)RasterTerrain::GetTerrainHeight(lat, lon)); 
   if (h==TERRAIN_INVALID) h=0; //@ 101027 FIX
   dh = altitude - h - SAFETYALTITUDETERRAIN;
   last_dh = dh;
@@ -1216,7 +995,7 @@ double FarFinalGlideThroughTerrain(const double this_bearing,
     lon += dlon;
 
     // find height over terrain
-    h =  max(0,RasterTerrain::GetTerrainHeight(lat, lon)); 
+    h =  max(0,(int)RasterTerrain::GetTerrainHeight(lat, lon)); 
     if (h==TERRAIN_INVALID) h=0;
 
     dh = altitude - h - SAFETYALTITUDETERRAIN;
@@ -1243,7 +1022,7 @@ double FarFinalGlideThroughTerrain(const double this_bearing,
 		StartupStore(_T("++++++++ FarFinalGlide recovered from division by zero!%s"),NEWLINE); // 091213
 		f = 0.0;
 	} else
-        f = max(0,min(1,(-last_dh)/(dh-last_dh)));
+        f = max(0.0,min(1.0,(-last_dh)/(dh-last_dh)));
       } else {
 	f = 0.0;
       }
@@ -1304,7 +1083,6 @@ void ResetTask() {
   DoStatusMessage(gettext(TEXT("_@M676_")));
 
 }
-
 
 //
 // Running every n seconds ONLY when the nearest page is active and we are not drawing map.
@@ -1378,11 +1156,7 @@ bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 			sortvalue=LKTraffic[i].Distance;
 			break;
 		case 2:
-#ifndef MAP_ZOOM
-			if (DisplayMode == dmCircling) {
-#else /* MAP_ZOOM */
 			if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
 				sortvalue=LKTraffic[i].Bearing;
 				break;
 			}
@@ -1544,19 +1318,11 @@ double GetAzimuth() {
 	int hours = (dd/3600);
 	int mins = (dd/60-hours*60);
 	hours = hours % 24;
-	#if NOSIM
 	if (SIMMODE) {
 		// for those who test the sim mode in the evening..
 		if (hours>21) hours-=12;
 		if (hours<7) hours+=12;
 	}
-	#else
-	#ifdef _SIM_
-	// for those who test the sim mode in the evening..
-	if (hours>21) hours-=12;
-	if (hours<7) hours+=12;
-	#endif
-	#endif
 	double h=(12-(double)hours)-((double)mins/60.0);
 
 	if (h>=0) {
@@ -1626,7 +1392,8 @@ void CalculateOrbiter(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   // we need a valid thermal center to work on. Assuming 2 minutes is enough to sample the air around.
   if (thtime<120) return;
   // after 1500ft thermal gain, autodisable
-  if (Calculated->ThermalGain>500) return;
+  if (Calculated->ThermalGain>700) return;
+  if (Calculated->ThermalGain<50) return;
 
   // StartupStore(_T("*** Tlat=%f Tlon=%f R=%f W=%f  TurnRate=%f \n"), LKTH_LAT, LKTH_LON, LKTH_R, LKTH_W, LK_TURNRATE);
   // StartupStore(_T("*** CalcHeading=%f Track=%f TurnRate=%f Bank=%f \n"), LK_HEADING, LK_MYTRACK,  LK_TURNRATE, LK_BANKING);
@@ -1757,20 +1524,15 @@ void CalculateOrbiter(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 }
 
-// -------- new version ---------------------------
-#if MULTICALC
 
 // Warning: this is called from mapwindow Draw task , not from calculations!!
 // this is calling CheckLandableReachableTerrainNew
+// Use multicalc approach, splitting calculation inside MapWindow
+// thread into multiple instances, 0.5 or 0.33 Hz recommended
 // 
 void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslots)
 {
   unsigned int i;
-  /*
-  #if UNSORTEDRANGE
-  int j;
-  #endif
-   */
   double waypointDistance, waypointBearing,altitudeRequired,altitudeDifference;
   double dtmp;
 
@@ -1801,17 +1563,6 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 	//StartupStore(_T("... wps=%d multicalc_slot=%d of %d, scan %d < %d%s"),NumberOfWayPoints,
 	//	multicalc_slot, numslots,scanstart,scanend,NEWLINE);
   }
-
-  /*
-  // 101218 We should include in this list also task points, at least.
-  // For 2.0 we still use all waypoints, since the check for Visible is fast. Pity.
-  #if UNSORTEDRANGE
-  for(j=0;j<RangeLandableNumber;j++)
-  {
-	i=RangeLandableIndex[j];
-	...
-  #endif
-  */
 
   for(i=scanstart;i<scanend;i++) {
     if ( ( ((WayPointCalc[i].AltArriv >=0)||(WayPointList[i].Visible)) && (WayPointCalc[i].IsLandable)) 
@@ -1868,13 +1619,6 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 
   if (!LandableReachable) // indentation wrong here
 
-  /* 101218 same as above, bugfix
-  #if UNSORTEDRANGE
-  for(j=0;j<RangeLandableNumber;j++) {
-	i = RangeLandableIndex[j];
-	... 
-  #endif
-  */
   for(i=scanstart;i<scanend;i++) {
     if(!WayPointList[i].Visible && WayPointList[i].FarVisible)  {
 	// visible but only at a distance (limit this to 100km radius)
@@ -1928,5 +1672,479 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 
   UnlockTaskData(); 
 }
-#endif
-// ---------- new version ----------------
+
+
+/* 
+ * Detect start of free flight (FF) for both towing and winching.
+ * Start of FF may be marked 3 seconds later, max. Small error.
+ * This combined approach is much more accurate than seeyou!
+ * WARNING> the internal IGC interpolator is buggy and will cause problems
+ * while replaying IGC file logged at more than 2s interval.
+ * During testing, all 1s interval logs (which are equivalent to real flight)
+ * worked fine, while we got false positives using >2s interval logs.
+ * We dont care much, since we need real flight FF detection, and LK
+ * is logging always at 1s. So this might actually happen only replaying 
+ * an external log file on LK. 
+ *
+ * Called by Calculations thread, each second.
+ *
+ * No message will be given to the user concerning start of free flight.
+ * We should not disturb pilots during critical phases of flight.
+ */
+#define FF_TOWING_ALTLOSS	25		// meters loss for towing
+#define FF_WINCHIN_ALTLOSS	10		// meters loss for winching, careful about GPS H errors.
+#define FF_MAXTOWTIME	1200			// 20 minutes
+
+// #define DEBUG_DFF	1		// REMOVE BEFORE FLIGHT!
+
+bool DetectFreeFlying(DERIVED_INFO *Calculated) {
+
+  static bool   ffDetected=false;
+  static int    lastMaxAltitude=-1000;
+  static double gndAltitude=0;
+  static bool   doinit=true;
+  static double vario[8];
+  static bool   winchdetected=false;
+  static short  wlaunch=0;
+  static int    altLoss=0;
+
+  if (doinit) {
+    for (int i=0; i<8; i++) vario[i]=0;
+    doinit=false;
+  }
+
+  // reset on ground
+  if (Calculated->Flying == FALSE) {
+    Calculated->FreeFlying=false;
+    ffDetected=false;
+    lastMaxAltitude=-1000;
+    gndAltitude=GPS_INFO.Altitude;
+    winchdetected=false;
+    wlaunch=0;
+    altLoss=FF_TOWING_ALTLOSS;
+    return false;
+  }
+
+  if (ISPARAGLIDER) {
+    Calculated->FreeFlying=true;
+    return true; 
+  }
+  if (ISGAAIRCRAFT||ISCAR) {
+    return false; 
+  }
+
+  // do something special for other situations
+  if (SIMMODE && !ReplayLogger::IsEnabled()) {
+    Calculated->FreeFlying=true;
+    ffDetected=true;
+    return true; 
+  }
+
+  // If flying, and start was already detected, assume valid freeflight.
+  // Put here in the future the Engine Noise Detection for motorplanes
+  if (ffDetected)
+    return true;
+
+  // Here we are flying, and the start of free flight must still be detected
+
+  // In any case, after this time, force a start. This is to avoid that for any reason, no FF is ever detected.
+  if ((int)GPS_INFO.Time > ( Calculated->TakeOffTime + FF_MAXTOWTIME)) {
+    #if DEBUG_DFF
+    DoStatusMessage(_T("DFF:  TIMEOUT"));
+    #endif
+    goto backtrue;	// unconditionally force start FF
+  }
+
+ 
+  // A loss of altitude will trigger FF 
+  lastMaxAltitude = std::max(lastMaxAltitude, (int)GPS_INFO.Altitude);
+  if ((int)GPS_INFO.Altitude <= ( lastMaxAltitude - altLoss)) {
+    #if DEBUG_DFF
+    if ( (winchdetected) || ((GPS_INFO.Altitude - gndAltitude)>=400) 
+      && ((GPS_INFO.Time - Calculated->TakeOffTime) >= 150))
+      DoStatusMessage(_T("DFF:  ALTITUDE LOSS"));
+    #endif
+    goto lastcheck;
+  }
+
+  // If circling we assume that we are in free flight already, using the start of circling time and position.
+  // But we must be sure that we are not circling.. while towed. A 12 deg/sec turn rate will make it quite sure.
+  // Of course nobody can circle while winchlaunched, so in this case FF is immediately detected.
+  if (Calculated->Circling && ( winchdetected || ( fabs(Calculated->TurnRate) >=12 ) ) ) {
+
+    if (UseContestEngine()) {
+      CContestMgr::Instance().Add(new CPointGPS(static_cast<unsigned>(Calculated->ClimbStartTime),
+	Calculated->ClimbStartLat, Calculated->ClimbStartLong,
+	static_cast<unsigned>(Calculated->ClimbStartAlt)));
+    }
+
+    #if DEBUG_DFF
+    DoStatusMessage(_T("DFF:  THERMALLING"));
+    #endif
+    goto backtrue;
+  }
+
+  vario[7]=vario[6];
+  vario[6]=vario[5];
+  vario[5]=vario[4];
+  vario[4]=vario[3];
+  vario[3]=vario[2];
+  vario[2]=vario[1];
+  vario[1]=Calculated->Vario;
+
+  double newavervario;
+  double oldavervario;
+
+  newavervario=(vario[1]+vario[2]+vario[3])/3;
+
+  if (newavervario>=10) {
+    wlaunch++;
+  } else {
+    wlaunch=0;
+  }
+  // After (6+2) 8 seconds of consecutive fast climbing (AFTER TAKEOFF DETECTED!), winch launch is detected
+  if (wlaunch==6) {
+    #if DEBUG_DFF
+    DoStatusMessage(_T("DFF:  WINCH LAUNCH"));
+    #endif
+    altLoss=FF_WINCHIN_ALTLOSS;
+    winchdetected=true;
+  }
+    
+  if (newavervario>0.3)
+    return false;
+
+  if (newavervario<=0) {
+    #if DEBUG_DFF
+    if ( (winchdetected) || ((GPS_INFO.Altitude - gndAltitude)>=400) 
+      && ((GPS_INFO.Time - Calculated->TakeOffTime) >= 150))
+      DoStatusMessage(_T("DFF:  VARIO SINK"));
+    #endif
+    goto lastcheck;
+  }
+
+  oldavervario=(vario[4]+vario[5]+vario[6]+vario[7])/4;
+  // current avervario between 0.0 and 0.3: uncertain situation,  we check what we had in the previous time
+  // Windy situations during towing may lead to false positives if delta is too low. This is the most
+  // difficult part which could lead to false positives or negatives.
+  if ( oldavervario >=4.5 ) {
+    #if DEBUG_DFF
+    StartupStore(_T("..... oldavervario=%.1f newavervario=%.1f current=%.1f\n"),oldavervario,newavervario,Calculated->Vario);
+    if ( (winchdetected) || ((GPS_INFO.Altitude - gndAltitude)>=400) 
+      && ((GPS_INFO.Time - Calculated->TakeOffTime) >= 150))
+      DoStatusMessage(_T("DFF:  DELTA VARIO"));
+    #endif
+    goto lastcheck;
+  }
+
+  // No free flight detected
+  return false;
+
+  lastcheck: 
+
+  // Unless under a winch launch, we shall not consider anything below 400m gain, 
+  // and before 2.5minutes have passed since takeoff
+  // Anybody releasing tow before 3 minutes will be below 500m QFE, and won't go much around
+  // until a thermal is found. So no problems. 
+
+  if (!winchdetected) {
+    if ( (GPS_INFO.Altitude - gndAltitude)<400)
+      return false;
+    if ( (GPS_INFO.Time - Calculated->TakeOffTime) < 150)
+      return false;
+  }
+
+  backtrue:
+  #if DEBUG_DFF
+  DoStatusMessage(gettext(TEXT("_@M1452_")));  // LKTOKEN  _@M1452_ = "Free flight detected"
+  #endif
+  ffDetected=true;
+  Calculated->FreeFlying=true;
+  ResetFreeFlightStats(Calculated);
+  return true;
+
+}
+
+
+//
+// Upon FF detection, we reset some calculations, ONLY SOME.
+// Most things are pertinent to flying, not to freeflying.
+//
+// Notice 1:  we cannot do oldstyle reset, because it would reset also takeoff time.
+//            For FF, we need new stuff doing new things.
+// Notice 2:  GA and CAR mode will not ever use FF stuff
+//
+// Notice 3:  since FF is not (still) affecting tasks, we shall not reset task values now
+//
+void ResetFreeFlightStats(DERIVED_INFO *Calculated) {
+
+  int i;
+
+  flightstats.Reset();
+  Calculated->timeCruising = 0;
+  Calculated->timeCircling = 0;
+
+  // Calculated->TotalHeightClimb = 0;
+  // Calculated->CruiseStartTime = -1;
+  // 
+  // ClimbStartTime CANNOT be reset here: it is a loop! We use themal start to detect freeflight!
+  // We have a conflict here!
+  // Calculated->ClimbStartTime = -1;  
+  // Calculated->AverageThermal = 0;
+
+  for (i=0; i<200; i++) {
+     Calculated->AverageClimbRate[i]= 0;
+     Calculated->AverageClimbRateN[i]= 0;
+  }
+  Calculated->MaxThermalHeight = 0;
+  for (i=0; i<NUMTHERMALBUCKETS; i++) {
+    Calculated->ThermalProfileN[i]=0;
+    Calculated->ThermalProfileW[i]=0;
+  }
+
+  // clear thermal sources for first time.
+  for (i=0; i<MAX_THERMAL_SOURCES; i++) {
+    Calculated->ThermalSources[i].LiftRate= -1.0;
+  }
+
+  // MinAltitude is handled separately already taking care of FF
+
+
+}
+
+
+// Comparer to sort airspaces based on distance
+static bool airspace_distance_sorter( CAirspace *a, CAirspace *b )
+{
+  int da = a->LastCalculatedHDistance();
+  int db = b->LastCalculatedHDistance();
+  return da<db;     //nearest first
+}
+
+// Comparer to sort airspaces based on name
+static bool airspace_name_sorter( CAirspace *a, CAirspace *b )
+{
+  int res = wcscmp(a->Name(), b->Name());
+  if (res) return res < 0;
+  
+  // if name is the same, get closer first
+  int da = a->LastCalculatedHDistance();
+  int db = b->LastCalculatedHDistance();
+  return da<db;
+}
+
+// Comparer to sort airspaces based on type
+static bool airspace_type_sorter( CAirspace *a, CAirspace *b )
+{
+  if (a->Type() != b->Type()) return a->Type() < b->Type();
+  
+  // if type is the same, get closer first
+  int da = a->LastCalculatedHDistance();
+  int db = b->LastCalculatedHDistance();
+  return da<db;
+}
+
+// Comparer to sort airspaces based on enabled
+static bool airspace_enabled_sorter( CAirspace *a, CAirspace *b )
+{
+
+  if (a->Enabled() != b->Enabled()) return a->Enabled() < b->Enabled();
+
+  // if enabled is the same, get closer first
+  int da = a->LastCalculatedHDistance();
+  int db = b->LastCalculatedHDistance();
+  return da<db;
+}
+
+// Comparer to sort airspaces based on bearing
+// During cruise, we sort bearing diff and use bearing diff in DrawAsp
+static bool airspace_bearing_sorter( CAirspace *a, CAirspace *b )
+{
+  int beara = a->LastCalculatedBearing();
+  int bearb = b->LastCalculatedBearing();
+  int beardiffa,beardiffb;
+  int da = a->LastCalculatedHDistance();
+  int db = b->LastCalculatedHDistance();
+
+  if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+    if (beara != bearb) return beara < bearb;
+    // if bearing is the same, get closer first
+    return da<db;
+  }
+ 
+  beardiffa = beara - (int)GPS_INFO.TrackBearing;
+  if (beardiffa < -180) beardiffa += 360;
+    else if (beardiffa > 180) beardiffa -= 360;
+  if (beardiffa<0) beardiffa*=-1;
+  
+  beardiffb = bearb - (int)GPS_INFO.TrackBearing;
+  if (beardiffb < -180) beardiffb += 360;
+    else if (beardiffb > 180) beardiffb -= 360;
+  if (beardiffb<0) beardiffb*=-1;
+ 
+  if (beardiffa != beardiffb) return beardiffa < beardiffb; 
+  // if bearing difference is the same, get closer first
+  return da<db;
+}
+
+
+//
+// Running every n seconds ONLY when the nearest airspace page is active and we are not drawing map.
+// Returns true if did calculations, false if ok to use old values
+bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
+{
+
+   static bool doinit=true;
+   static int step = 0;
+   bool ret = false;
+   
+   if (doinit) {
+	memset(LKAirspaces, 0, sizeof(LKAirspaces));
+	LKNumAirspaces=0;
+	memset(LKSortedAirspaces, -1, sizeof(LKSortedAirspaces));
+    for (int i=0; i<MAXNEARAIRSPACES; i++) {
+      LKAirspaces[i].Valid = false;
+      LKAirspaces[i].Pointer = NULL;
+    }
+	doinit=false;
+	return true;
+   }
+
+   // DoAirspaces is called from MapWindow, in real time. We have enough CPU power there now
+   // Consider replay mode...
+   // Multicalc used below, we don't need this
+   //if (  LastDoAirspaces > Basic->Time ) LastDoAirspaces=Basic->Time;
+   //if ( Basic->Time < (LastDoAirspaces+PAGINGTIMEOUT) ) { 
+   //  return false;
+   //}
+   LastDoAirspaces=Basic->Time;
+
+   #ifdef DEBUG_LKT
+   StartupStore(_T("... DoAirspaces step%d started\n"),step);
+   #endif
+
+
+   switch (step) {
+     // MULTICALC STEP0 - select airspaces in range based on bounds
+     default:
+     case 0:
+        CAirspaceManager::Instance().SelectAirspacesForPage24(Basic->Latitude, Basic->Longitude, 100000.0);        // 100km
+        ++step;
+        break;
+          
+     // MULTICALC STEP1 - Do distance calculations on selected airspaces
+     case 1:
+        CAirspaceManager::Instance().CalculateDistancesForPage24();
+        ++step;
+        break;
+        
+     // MULTICALC STEP2 - Sort by different keys, and fill up result struct array
+     case 2:
+        // Lock airspace instances externally
+        CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+        // Get selected list from airspacemanager
+        CAirspaceList airspaces = CAirspaceManager::Instance().GetAirspacesForPage24();
+        // Sort selected airspaces by distance first
+        std::sort(airspaces.begin(), airspaces.end(), airspace_distance_sorter);
+        // get first MAXNEARAIRSPACES to a new list
+        CAirspaceList nearest_airspaces;
+        CAirspaceList::iterator it = airspaces.begin();
+        for (int i=0; (i<MAXNEARAIRSPACES) && (it!=airspaces.end()); ++i, ++it) nearest_airspaces.push_back(*it);
+        airspaces.clear();
+
+        //sort by given key
+          switch (SortedMode[MSM_AIRSPACES]) {
+              case 0: 
+                  // ASP NAME
+                  std::sort(nearest_airspaces.begin(), nearest_airspaces.end(), airspace_name_sorter);
+                  break;
+              case 1:
+                  // ASP TYPE
+                  std::sort(nearest_airspaces.begin(), nearest_airspaces.end(), airspace_type_sorter);
+                  break;
+                  
+              default:
+              case 2:
+                  // ASP DISTANCE
+                  // we don't need sorting, already sorted by distance
+                  break;
+              case 3:
+                  // ASP BEARING
+                  std::sort(nearest_airspaces.begin(), nearest_airspaces.end(), airspace_bearing_sorter);
+                  break;
+              case 4:
+                  // ACTIVE / NOT ACTIVE
+                  std::sort(nearest_airspaces.begin(), nearest_airspaces.end(), airspace_enabled_sorter);
+                  break;
+          } //sw
+
+          // Clear results
+          memset(LKSortedAirspaces, -1, sizeof(LKSortedAirspaces));
+          LKNumAirspaces=0;
+          for (int i=0; i<MAXNEARAIRSPACES; i++) {
+              LKAirspaces[i].Valid = false;
+              LKAirspaces[i].Pointer = NULL;
+          }
+          //copy result data to interface structs
+          // we dont need LKSortedAirspaces[] array, every item will be
+          // in correct order in airspaces list, thanks to std::sort,
+          // we just fill up LKAirspaces[] array in the right order.
+          int i = 0;
+          for (it=nearest_airspaces.begin(); it!=nearest_airspaces.end(); ++it) {
+              // sort key not used, iterator goes in right order after std::sort
+              LKSortedAirspaces[i] = i;
+              // copy name
+              _tcsncpy(LKAirspaces[i].Name, (*it)->Name(), NAME_SIZE);
+              LKAirspaces[i].Name[NAME_SIZE]=0;
+              // copy type string (type string comes from centralized type->str conversion function of CAirspaceManager)
+              _tcsncpy(LKAirspaces[i].Type, CAirspaceManager::Instance().GetAirspaceTypeShortText((*it)->Type()), 4);
+              LKAirspaces[i].Type[4]=0;
+
+              // copy distance
+              LKAirspaces[i].Distance = max((*it)->LastCalculatedHDistance(),0);
+              // copy bearing
+              LKAirspaces[i].Bearing = (*it)->LastCalculatedBearing();
+              // copy Enabled()
+              LKAirspaces[i].Enabled = (*it)->Enabled();
+              // copy Selected()
+              LKAirspaces[i].Selected = (*it)->Selected();
+              // copy Flyzone()
+              LKAirspaces[i].Flyzone = (*it)->Flyzone();
+              // copy WarningLevel()
+              LKAirspaces[i].WarningLevel = (*it)->WarningLevel();
+              // copy WarningAckLevel()
+              LKAirspaces[i].WarningAckLevel = (*it)->WarningAckLevel();
+              
+              // copy pointer
+              LKAirspaces[i].Pointer = (*it);
+              
+              // Record is valid now.
+              LKAirspaces[i].Valid = true;
+              
+              i++;
+              if (i>=MAXNEARAIRSPACES) break;
+          }
+          LKNumAirspaces=i;
+          ret = true;       // ok to use new values.
+          step = 0;
+          break;
+   } //sw step
+   
+   #ifdef DEBUG_LKT
+   StartupStore(_T("... DoAirspaces finished, LKNumAirspaces=%d :\n"), LKNumAirspaces);
+   // For sorting debug only
+   /*for (i=0; i<MAXNEARAIRSPACES; i++) {
+	if (LKSortedAirspaces[i]>=0)
+		StartupStore(_T("... LKSortedAirspaces[%d]=LKAirspaces[%d] Name=<%s> Type=<%s> Dist=%2.0f beardiff=%2.0f enabled=%s\n"), i, 
+			LKSortedAirspaces[i],
+			LKAirspaces[LKSortedAirspaces[i]].Name,
+			LKAirspaces[LKSortedAirspaces[i]].Type,
+            LKAirspaces[LKSortedAirspaces[i]].Distance,
+            LKAirspaces[LKSortedAirspaces[i]].Bearing_difference,
+            LKAirspaces[LKSortedAirspaces[i]].Enabled ? _TEXT("true"):_TEXT("false"));
+   }*/
+   #endif
+
+   return ret;
+}
+

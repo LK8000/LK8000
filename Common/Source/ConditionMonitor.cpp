@@ -15,11 +15,13 @@
 
 #include "compatibility.h"
 #ifdef OLDPPC
-#include "XCSoarProcess.h"
+#include "LK8000Process.h"
 #else
 #include "Process.h"
 #endif
 #include "InputEvents.h"
+
+#include "utils/heapcheck.h"
 
 
 class ConditionMonitor {
@@ -267,11 +269,7 @@ public:
 protected:
 
   bool CheckCondition(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {    
-    #ifndef NOTASKABORT
-    if (!AATEnabled || !ValidTaskPoint(ActiveWayPoint) || TaskIsTemporary()
-    #else
     if (!AATEnabled || !ValidTaskPoint(ActiveWayPoint) 
-    #endif
         || !(Calculated->ValidStart && !Calculated->ValidFinish)
         || !Calculated->Flying) {
       return false;
@@ -399,9 +397,9 @@ ConditionMonitorGlideTerrain cm_glideterrain;
 void ConditionMonitorsUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   cm_wind.Update(Basic, Calculated);
   cm_finalglide.Update(Basic, Calculated);
-#ifndef FIVV
+  #if 0
   cm_sunset.Update(Basic, Calculated); // it doesnt work in europe..
-#endif
+  #endif
   cm_aattime.Update(Basic, Calculated);  
   cm_startrules.Update(Basic, Calculated);  
   cm_glideterrain.Update(Basic, Calculated);  

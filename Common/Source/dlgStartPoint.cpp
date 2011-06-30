@@ -9,13 +9,17 @@
 #include "StdAfx.h"
 #include <aygshell.h>
 
-#include "XCSoar.h"
+#include "lk8000.h"
 
 #include "externs.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 #include "MapWindow.h"
 
+#include "utils/heapcheck.h"
+
+using std::min;
+using std::max;
 
 static WndForm *wf=NULL;
 static WndListFrame *wStartPointList=NULL;

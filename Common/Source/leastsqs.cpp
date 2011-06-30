@@ -27,6 +27,8 @@
 
 #include "leastsqs.h"
 
+#include "utils/heapcheck.h"
+
 
 /* 
 Least squares fit:

@@ -14,7 +14,6 @@
 #include "Cpustats.h"
 #include "MapWindow.h"
 #include "LKMapWindow.h"
-#include "OnLineContest.h"
 #include "Utils.h"
 #include "Units.h"
 #include "Logger.h"
@@ -36,23 +35,20 @@
 #include "AATDistance.h"
 #include "LKObjects.h"
 
-#ifndef NOVARIOGAUGE
-#include "GaugeVarioAltA.h"
-#endif
-#ifndef NOCDIGAUGE
-#include "GaugeCDI.h"
-#endif
-#ifndef NOFLARMGAUGE
-#include "GaugeFLARM.h"
-#endif
 #include "InfoBoxLayout.h"
 #include "RasterTerrain.h"
 #include "Utils2.h"
 #include "externs.h" // 091110
-
+#include "LKAirspace.h"
+using std::min;
+using std::max;
+using std::min;
+using std::max;
 #if (WINDOWSPC>0)
 #include <wingdi.h>
 #endif
+
+#include "utils/heapcheck.h"
 
 #include "LKGeneralAviation.h"
 
@@ -80,18 +76,16 @@ extern void DrawDebug(HDC hdc, RECT rc );
 
 #define NUMSNAILRAMP 6
 
-#ifndef MAP_ZOOM
-#define DONTDRAWTHEMAP IsMapFullScreen()&&NewMap&&Look8000&&!EnablePan&&MapSpaceMode!=MSM_MAP
-#define MAPMODE8000    IsMapFullScreen()&&NewMap&&Look8000&&!EnablePan&&MapSpaceMode==MSM_MAP
-#else /* MAP_ZOOM */
-#define DONTDRAWTHEMAP IsMapFullScreen()&&NewMap&&Look8000&&!mode.AnyPan()&&MapSpaceMode!=MSM_MAP
-#define MAPMODE8000    IsMapFullScreen()&&NewMap&&Look8000&&!mode.AnyPan()&&MapSpaceMode==MSM_MAP
-#endif /* MAP_ZOOM */
-
-
-#ifdef OVERTARGET
-extern int GetOvertargetIndex(void);
+#if USEIBOX
+#define DONTDRAWTHEMAP IsMapFullScreen()&&!mode.AnyPan()&&MapSpaceMode!=MSM_MAP
+#define MAPMODE8000    IsMapFullScreen()&&!mode.AnyPan()&&MapSpaceMode==MSM_MAP
+#else
+#define DONTDRAWTHEMAP !mode.AnyPan()&&MapSpaceMode!=MSM_MAP
+#define MAPMODE8000    !mode.AnyPan()&&MapSpaceMode==MSM_MAP
 #endif
+
+
+extern int GetOvertargetIndex(void);
 
 static const COLORREF taskcolor = RGB_TASKLINECOL; // 091216
 static bool ignorenext=false;
@@ -106,13 +100,8 @@ const COLORRAMP snail_colors[] = {
 };
 
 
-#ifndef MAP_ZOOM
-DisplayMode_t UserForceDisplayMode = dmNone;
-DisplayMode_t DisplayMode = dmCruise;
-#else /* MAP_ZOOM */
 MapWindow::Zoom MapWindow::zoom;
 MapWindow::Mode MapWindow::mode;
-#endif /* MAP_ZOOM */
 
 HBITMAP MapWindow::hBmpAirportReachable;
 HBITMAP MapWindow::hBmpAirportUnReachable;
@@ -146,7 +135,9 @@ POINT MapWindow::Orig_Screen;
 
 RECT MapWindow::MapRect;
 RECT MapWindow::MapRectBig;
+#if USEIBOX
 RECT MapWindow::MapRectSmall;
+#endif
 
 HBITMAP MapWindow::hDrawBitMap = NULL;
 HBITMAP MapWindow::hDrawBitMapTmp = NULL;
@@ -165,47 +156,26 @@ int MapWindow::TargetDrag_State = 0;
 double MapWindow::TargetDrag_Latitude = 0;
 double MapWindow::TargetDrag_Longitude = 0;
 
-#ifndef MAP_ZOOM
-bool MapWindow::EnablePan = false;
-bool MapWindow::TargetPan = false;
-#endif /* ! MAP_ZOOM */
 int MapWindow::TargetPanIndex = 0;
 double MapWindow::TargetZoomDistance = 500.0;
 bool MapWindow::EnableTrailDrift=false;
 int MapWindow::GliderScreenPosition = 40; // 20% from bottom
 int MapWindow::GliderScreenPositionX = 50;  // 100216
 int MapWindow::GliderScreenPositionY = 40;
-int MapWindow::WindArrowStyle = 0;
 
 BOOL MapWindow::CLOSETHREAD = FALSE;
 BOOL MapWindow::THREADRUNNING = TRUE;
 BOOL MapWindow::THREADEXIT = FALSE;
 BOOL MapWindow::Initialised = FALSE;
 
-#ifndef MAP_ZOOM
-bool MapWindow::BigZoom = true;
-#endif /* ! MAP_ZOOM */
 unsigned char MapWindow::DeclutterLabels = MAPLABELS_ALLON;
 
 DWORD  MapWindow::dwDrawThreadID;
 HANDLE MapWindow::hDrawThread;
 
-#ifndef MAP_ZOOM
-double MapWindow::RequestMapScale; // VENTA9 = 5; 
-double MapWindow::MapScale; // VENTA9 = 5; 
-double MapWindow::MapScaleOverDistanceModify; // VENTA9  = 5/DISTANCEMODIFY;
-double MapWindow::ResMapScaleOverDistanceModify = 0.0;
-#endif /* ! MAP_ZOOM */
 double MapWindow::DisplayAngle = 0.0;
 double MapWindow::DisplayAircraftAngle = 0.0;
-#ifndef MAP_ZOOM
-double MapWindow::DrawScale;
-double MapWindow::InvDrawScale;
-#endif /* ! MAP_ZOOM */
 
-#ifndef MAP_ZOOM
-bool MapWindow::AutoZoom = false;
-#endif /* ! MAP_ZOOM */
 bool MapWindow::LandableReachable = false;
 
 HBITMAP MapWindow::hTurnPoint;
@@ -215,8 +185,8 @@ HBITMAP MapWindow::hInvSmall;
 HBITMAP MapWindow::hCruise;
 HBITMAP MapWindow::hClimb;
 HBITMAP MapWindow::hFinalGlide;
-HBITMAP MapWindow::hAutoMacCready;
 HBITMAP MapWindow::hTerrainWarning;
+HBITMAP MapWindow::hAirspaceWarning;
 HBITMAP MapWindow::hFLARMTraffic;
 HBITMAP MapWindow::hGPSStatus1;
 HBITMAP MapWindow::hGPSStatus2;
@@ -229,15 +199,16 @@ COLORREF MapWindow::hSnailColours[NUMSNAILCOLORS];
 
 POINT MapWindow::Groundline[NUMTERRAINSWEEPS+1];
 
-// 15 is number of airspace types
+// 16 is number of airspace types
 int      MapWindow::iAirspaceBrush[AIRSPACECLASSCOUNT] = 
-  {2,0,0,0,3,3,3,3,0,3,2,3,3,3,3};
+  {2,0,0,0,3,3,3,3,0,3,2,3,3,3,3,3};
 int      MapWindow::iAirspaceColour[AIRSPACECLASSCOUNT] = 
-  {5,0,0,10,0,0,10,2,0,10,9,3,7,7,7};
+  {5,0,0,10,0,0,10,2,0,10,9,3,7,7,7,10};
 int      MapWindow::iAirspaceMode[AIRSPACECLASSCOUNT] =
-  {0,0,0,0,0,0,0,0,0,0,0,1,1,0,0};
+  {0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0};
 
 HPEN MapWindow::hAirspacePens[AIRSPACECLASSCOUNT];
+HPEN MapWindow::hAirspaceBorderPen;
 bool MapWindow::bAirspaceBlackOutline = false;
 
 HBRUSH  MapWindow::hBackgroundBrush;
@@ -274,12 +245,6 @@ HPEN MapWindow::hpBearing;
 HPEN MapWindow::hpBestCruiseTrack;
 HPEN MapWindow::hpCompass;
 
-HPEN MapWindow::hpThermalCircle;
-/*
-#if OVERTARGET
-HPEN MapWindow::hpOvertarget;
-#endif
-*/
 HPEN MapWindow::hpThermalBand;
 HPEN MapWindow::hpThermalBandGlider;
 HPEN MapWindow::hpFinalGlideAbove;
@@ -303,8 +268,12 @@ COLORREF MapWindow::BackgroundColor = RGB_WHITE;
 
 bool MapWindow::MapDirty = true;
 DWORD MapWindow::fpsTime0 = 0;
+
+#if USEIBOX
 bool MapWindow::MapFullScreen = false;
 bool MapWindow::RequestFullScreen = false;
+#endif
+
 bool MapWindow::ForceVisibilityScan = false;
 
 
@@ -314,10 +283,7 @@ NMEA_INFO MapWindow::DrawInfo;
 DERIVED_INFO MapWindow::DerivedDrawInfo;
 
 int SelectedWaypoint = -1;
-bool EnableCDICruise = false;
-bool EnableCDICircling = false;
 
-extern HWND hWndCDIWindow;
 extern int iround(double i);
 extern void ShowMenu();
 
@@ -373,30 +339,12 @@ void MapWindow::UpdateTimeStats(bool start) {
 bool MapWindow::Event_NearestWaypointDetails(double lon, double lat, 
                                              double range,
                                              bool pan) {
-  /*
-    if (!pan) {
-    dlgWayPointSelect(lon, lat, 0, 1);
-    } else {
-    dlgWayPointSelect(PanLongitude, PanLatitude, 0, 1);
-    }
-  */
-
   int i;
-#ifndef MAP_ZOOM
-  if (!pan || !EnablePan) {
-    i=FindNearestWayPoint(lon, lat, range);
-  } else {
-#else /* MAP_ZOOM */
   if(pan && (mode.Is(Mode::MODE_PAN) || mode.Is(Mode::MODE_TARGET_PAN)))
-#endif /* MAP_ZOOM */
     // nearest to center of screen if in pan mode
     i=FindNearestWayPoint(PanLongitude, PanLatitude, range);
-#ifndef MAP_ZOOM
-  }
-#else /* MAP_ZOOM */
   else
     i=FindNearestWayPoint(lon, lat, range);
-#endif /* MAP_ZOOM */
   if(i != -1)
     {
       SelectedWaypoint = i;
@@ -409,101 +357,17 @@ bool MapWindow::Event_NearestWaypointDetails(double lon, double lat,
 
 
 bool MapWindow::Event_InteriorAirspaceDetails(double lon, double lat) {
-  unsigned int i;
   bool found=false;
-  bool inside;
-
-  if (AirspaceCircle) {
-    for (i=0; i<NumberOfAirspaceCircles; i++) {
-      inside = false;
-      if (AirspaceCircle[i].Visible) {
-        inside = InsideAirspaceCircle(lon, lat, i);
-      }
-      if (inside) {
-	dlgAirspaceDetails(i, -1);
-        found = true;
-      }
-    }
+  CAirspaceList reslist = CAirspaceManager::Instance().GetVisibleAirspacesAtPoint(lon, lat);
+  CAirspaceList::iterator it;
+  for (it = reslist.begin(); it != reslist.end(); ++it) {
+	dlgAirspaceDetails(*it);
+	found = true;
   }
-  if (AirspaceArea) {
-    for (i=0; i<NumberOfAirspaceAreas; i++) {
-      inside = false;
-      if (AirspaceArea[i].Visible) {
-        inside = InsideAirspaceArea(lon, lat, i);
-      }
-      if (inside) {
-	dlgAirspaceDetails(-1, i);
-        found = true;
-      }
-    }
-  }
-
   return found; // nothing found..
 }
 
 
-#ifndef MAP_ZOOM
-void MapWindow::SwitchZoomClimb(void) {
-
-  static bool doinit=true;
-  static bool last_isclimb = false;
-  static bool last_targetpan = false;
-
-  bool isclimb = (DisplayMode == dmCircling);
-
-  if (doinit) {
-	SetMapScales();
-	doinit=false;
-  }
-
-  if (TargetPan != last_targetpan) {
-    if (TargetPan) {
-      // save starting values
-      if (isclimb) {
-        ClimbMapScale = MapScale;
-      } else {
-        CruiseMapScale = MapScale;
-      }
-    } else {
-      // restore scales
-      if (isclimb) {
-        RequestMapScale = LimitMapScale(ClimbMapScale);
-      } else {
-        RequestMapScale = LimitMapScale(CruiseMapScale);
-      }
-      BigZoom = true;
-    }
-    last_targetpan = TargetPan;
-    return;
-  }
-  if (!TargetPan && CircleZoom) {
-    if (isclimb != last_isclimb) {
-      if (isclimb) {
-        // save cruise scale
-        CruiseMapScale = MapScale;
-        // switch to climb scale
-        RequestMapScale = LimitMapScale(ClimbMapScale);
-      } else {
-        // leaving climb
-        // save cruise scale
-        ClimbMapScale = MapScale;
-        RequestMapScale = LimitMapScale(CruiseMapScale);
-        // switch to climb scale
-      }
-      BigZoom = true;
-      last_isclimb = isclimb;
-    } else {
-      // nothing to do.
-    }
-  }
-
-}
-
-bool MapWindow::isAutoZoom() {
-  return AutoZoom;
-}
-
-#endif /* ! MAP_ZOOM */
 bool TextInBoxMoveInView(POINT *offset, RECT *brect){
 
   bool res = false;
@@ -686,6 +550,7 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
       RoundRect(hDC, brect.left, brect.top, brect.right, brect.bottom, 
                 NIBLSCALE(8), NIBLSCALE(8));
       SelectObject(hDC, oldPen);
+	  if (Mode.AsFlag.SetTextColor) TextColor(hDC,Mode.AsFlag.Color); else TextColor(hDC, TEXTBLACK);
 #if (WINDOWSPC>0)
       SetBkMode(hDC,TRANSPARENT);
       ExtTextOut(hDC, x, y, 0, NULL, Value, size, NULL);
@@ -767,69 +632,40 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
 	#endif
   
     if (!noOverlap || notoverlapping) { 
-      if (NewMap&&OutlinedTp)
+      if (OutlinedTp)
 	SetTextColor(hDC,RGB_BLACK);
       else
 	SetTextColor(hDC,RGB_WHITE); 
 
-//#if (WINDOWSPC>0) 091115 do not use custom things for PC in textinbox
-#if (0)
+#ifdef WINE
       SetBkMode(hDC,TRANSPARENT);
-      ExtTextOut(hDC, x+1, y, 0, NULL, Value, size, NULL);
       ExtTextOut(hDC, x+2, y, 0, NULL, Value, size, NULL);
+      ExtTextOut(hDC, x+1, y, 0, NULL, Value, size, NULL);
       ExtTextOut(hDC, x-1, y, 0, NULL, Value, size, NULL);
       ExtTextOut(hDC, x-2, y, 0, NULL, Value, size, NULL);
       ExtTextOut(hDC, x, y+1, 0, NULL, Value, size, NULL);
       ExtTextOut(hDC, x, y-1, 0, NULL, Value, size, NULL);
-      if (NewMap&&OutlinedTp) {
-	if (ScreenSize == (ScreenSize_t)ss800x480) {
-		ExtTextOut(hDC, x, y+2, 0, NULL, Value, size, NULL); 
-		ExtTextOut(hDC, x, y-2, 0, NULL, Value, size, NULL); 
-		ExtTextOut(hDC, x-3, y, 0, NULL, Value, size, NULL); 
-		ExtTextOut(hDC, x+3, y, 0, NULL, Value, size, NULL); 
-		ExtTextOut(hDC, x, y+3, 0, NULL, Value, size, NULL); 
-		ExtTextOut(hDC, x, y-3, 0, NULL, Value, size, NULL); 
-	}
-	TextColor(hDC,Mode.AsFlag.Color);
-      } else
-	SetTextColor(hDC,RGB_BLACK); 
-
-      ExtTextOut(hDC, x, y, 0, NULL, Value, size, NULL);
-      if (NewMap&&OutlinedTp)
-	SetTextColor(hDC,RGB_BLACK); // TODO somewhere else text color is not set correctly
-
-#else
+#else /* WINE */
       ExtTextOut(hDC, x+2, y, ETO_OPAQUE, NULL, Value, size, NULL);
       ExtTextOut(hDC, x+1, y, ETO_OPAQUE, NULL, Value, size, NULL);
       ExtTextOut(hDC, x-1, y, ETO_OPAQUE, NULL, Value, size, NULL);
       ExtTextOut(hDC, x-2, y, ETO_OPAQUE, NULL, Value, size, NULL);
       ExtTextOut(hDC, x, y+1, ETO_OPAQUE, NULL, Value, size, NULL);
       ExtTextOut(hDC, x, y-1, ETO_OPAQUE, NULL, Value, size, NULL);
-//#ifdef PNA 091115 no more big outlining for 314
-#if (0)
-	// On 800x480 resolution the following additional outlining is very nice.
-	// But on 640x480 and lower resolutions it is bad.. Maybe we should work
-	// something out for 640x480 devices in landscape mode, when there's nothing else to do. --paolo
-      if (NewMap&&OutlinedTp) {
-      	if (GlobalModelType == MODELTYPE_PNA_HP31X ) {
-	      ExtTextOut(hDC, x+3, y, ETO_OPAQUE, NULL, Value, size, NULL);
-	      ExtTextOut(hDC, x-3, y, ETO_OPAQUE, NULL, Value, size, NULL);
-	      ExtTextOut(hDC, x, y+2, ETO_OPAQUE, NULL, Value, size, NULL);
-	      ExtTextOut(hDC, x, y-2, ETO_OPAQUE, NULL, Value, size, NULL);
-	      ExtTextOut(hDC, x, y+3, ETO_OPAQUE, NULL, Value, size, NULL);
-	      ExtTextOut(hDC, x, y-3, ETO_OPAQUE, NULL, Value, size, NULL);
-      	}
-      }
-#endif
-      if (NewMap&&OutlinedTp) {
+#endif /* WINE */
+
+      if (OutlinedTp) {
 	TextColor(hDC,Mode.AsFlag.Color);
       } else
 	SetTextColor(hDC,RGB_BLACK); 
 
+#ifdef WINE
+      ExtTextOut(hDC, x, y, 0, NULL, Value, size, NULL);
+#else
       ExtTextOut(hDC, x, y, ETO_OPAQUE, NULL, Value, size, NULL);
-      if (NewMap&&OutlinedTp)
+#endif /* WINE */
+      if (OutlinedTp)
 	SetTextColor(hDC,RGB_BLACK); // TODO somewhere else text color is not set correctly
-#endif
       drawn=true;
     }
 
@@ -876,19 +712,13 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
     if (!noOverlap || notoverlapping) {
 #if (WINDOWSPC>0)
       SetBkMode(hDC,TRANSPARENT);
-	if (NewMap) {
 		TextColor(hDC,Mode.AsFlag.Color);
       		ExtTextOut(hDC, x, y, 0, NULL, Value, size, NULL);
 		SetTextColor(hDC,RGB_BLACK); 
-	} else
-      		ExtTextOut(hDC, x, y, 0, NULL, Value, size, NULL);
 #else
-	if (NewMap) {
 		TextColor(hDC,Mode.AsFlag.Color);
       		ExtTextOut(hDC, x, y, ETO_OPAQUE, NULL, Value, size, NULL);
 		SetTextColor(hDC,RGB_BLACK); 
-	} else
-      		ExtTextOut(hDC, x, y, ETO_OPAQUE, NULL, Value, size, NULL);
 #endif
       drawn=true;
     }
@@ -915,13 +745,13 @@ void MapWindow::RefreshMap() {
   SetEvent(drawTriggerEvent);
 }
 
+#if USEIBOX
 bool MapWindow::IsMapFullScreen() {
   // SDP - Seems that RequestFullScreen
   // is always more accurate (MapFullSCreen is delayed)
   return RequestFullScreen;
   // return  MapFullScreen;
 }
-
 
 void MapWindow::ToggleFullScreenStart() {
 
@@ -938,9 +768,6 @@ void MapWindow::ToggleFullScreenStart() {
     MapRect = MapRectSmall;
     ShowInfoBoxes(); // VENTA FIX QUI
   }
-  #ifndef NOVARIOGAUGE
-  GaugeVario::Show(!MapFullScreen);
-  #endif
 }
 
 
@@ -959,6 +786,7 @@ void MapWindow::RequestOffFullScreen() {
   RefreshMap();
 }
 
+#endif // USEIBOX
 
 
 extern BOOL extGPSCONNECT;
@@ -966,26 +794,6 @@ extern bool DialogActive;
 
 
 
-#ifndef MAP_ZOOM
-void MapWindow::Event_AutoZoom(int vswitch) {
-  if (vswitch== -1) {
-    AutoZoom = !AutoZoom;
-  } else {
-    AutoZoom = (vswitch != 0); // 0 off, 1 on
-  }
-  
-  if (AutoZoom) {
-    if (EnablePan) {
-      EnablePan = false;
-      InputEvents::setMode(TEXT("default"));
-      StoreRestoreFullscreen(false);
-    }
-  }
-  RefreshMap();
-}
-
-
-#endif /* ! MAP_ZOOM */
 void MapWindow::Event_PanCursor(int dx, int dy) {
   int X= (MapRect.right+MapRect.left)/2;
   int Y= (MapRect.bottom+MapRect.top)/2;
@@ -997,33 +805,13 @@ void MapWindow::Event_PanCursor(int dx, int dy) {
   Y+= (MapRect.bottom-MapRect.top)*dy/4;
   Screen2LatLon(X, Y, Xnew, Ynew);
 
-#ifndef MAP_ZOOM
-  if (EnablePan) {
-#else /* MAP_ZOOM */
   if(mode.AnyPan()) {
-#endif /* MAP_ZOOM */
     PanLongitude += Xstart-Xnew;
     PanLatitude += Ystart-Ynew;
   }
   RefreshMap();
 }
 
-#ifndef MAP_ZOOM
-bool MapWindow::isPan() {
-  return EnablePan;
-}
-
-#endif /* ! MAP_ZOOM */
-/* Event_TerrainToplogy Changes
-   0       Show
-   1       Toplogy = ON
-   2       Toplogy = OFF
-   3       Terrain = ON
-   4       Terrain = OFF
-   -1      Toggle through 4 stages (off/off, off/on, on/off, on/on)
-   -2      Toggle terrain
-   -3      Toggle toplogy
-*/
 void MapWindow::Event_TerrainTopology(int vswitch) {
   char val;
 
@@ -1084,6 +872,7 @@ void MapWindow::Event_TerrainTopology(int vswitch) {
 }
 
 
+#if USEIBOX
 void MapWindow::StoreRestoreFullscreen(bool store) {
   static bool oldfullscreen = 0;
   static bool SuperPan = false;
@@ -1102,58 +891,32 @@ void MapWindow::StoreRestoreFullscreen(bool store) {
     }
   }
 }
-
+#endif
 
 void MapWindow::Event_Pan(int vswitch) {
   //  static bool oldfullscreen = 0;  never assigned!
-#ifndef MAP_ZOOM
-  bool oldPan = EnablePan;
-#else /* MAP_ZOOM */
   bool oldPan = mode.AnyPan();
-#endif /* MAP_ZOOM */
   if (vswitch == -2) { // superpan, toggles fullscreen also
 
-#ifndef MAP_ZOOM
-    if (!EnablePan) {
-      StoreRestoreFullscreen(true);
-    } else {
-      StoreRestoreFullscreen(false);
-    }
-#else /* MAP_ZOOM */
+#if USEIBOX
     StoreRestoreFullscreen(!mode.AnyPan());
-#endif /* MAP_ZOOM */
+#endif
     // new mode
-#ifndef MAP_ZOOM
-    EnablePan = !EnablePan;
-    if (EnablePan) { // pan now on, so go fullscreen
-#else /* MAP_ZOOM */
     mode.Special(Mode::MODE_SPECIAL_PAN, !oldPan);
+#if USEIBOX
     if (mode.AnyPan()) { // pan now on, so go fullscreen
-#endif /* MAP_ZOOM */
       RequestFullScreen = true;
     }
+#endif
 
   } else if (vswitch == -1) {
-#ifndef MAP_ZOOM
-    EnablePan = !EnablePan;
-#else /* MAP_ZOOM */
     mode.Special(Mode::MODE_SPECIAL_PAN, !oldPan);
-#endif /* MAP_ZOOM */
   } else {
-#ifndef MAP_ZOOM
-    EnablePan = (vswitch != 0); // 0 off, 1 on
-#else /* MAP_ZOOM */
     mode.Special(Mode::MODE_SPECIAL_PAN, vswitch != 0); // 0 off, 1 on
-#endif /* MAP_ZOOM */
   }
 
-#ifndef MAP_ZOOM
-  if (EnablePan != oldPan) {
-    if (EnablePan) {
-#else /* MAP_ZOOM */
   if (mode.AnyPan() != oldPan) {
     if (mode.AnyPan()) {
-#endif /* MAP_ZOOM */
       PanLongitude = DrawInfo.Longitude;
       PanLatitude = DrawInfo.Latitude;
       InputEvents::setMode(TEXT("pan"));
@@ -1172,11 +935,7 @@ double MapWindow::LimitMapScale(double value) {
   else
     minreasonable = 0.05; 
 
-#ifndef MAP_ZOOM
-  if (AutoZoom && DisplayMode != dmCircling) {
-#else /* MAP_ZOOM */
   if (zoom.AutoZoom() && !mode.Is(Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
     if (AATEnabled && (ActiveWayPoint>0)) {
       if ( ISPARAGLIDER ) minreasonable = 0.005; 
       else minreasonable = 0.88;
@@ -1194,94 +953,6 @@ double MapWindow::LimitMapScale(double value) {
 }
 
 
-#ifndef MAP_ZOOM
-void MapWindow::Event_SetZoom(double value) {
-
-
-/* 091023 TEST REMOVE
-//  static bool doinit_climb=true;
-//  static bool doinit_cruise=true;
-//
-//  if (!CALCULATED_INFO.Circling && doinit_cruise) {
-//	RequestMapScale=8.0;
-//	doinit_cruise=false;
-//  }
-//  if (CALCULATED_INFO.Circling && doinit_climb) {
-//	RequestMapScale=0.70;
-//	doinit_climb=false;
-//  }
-*/
-
-
-  static double lastRequestMapScale = RequestMapScale;
-
-  RequestMapScale = LimitMapScale(value);
-  if (lastRequestMapScale != RequestMapScale){
-    lastRequestMapScale = RequestMapScale;
-    BigZoom = true;
-    RefreshMap();
-  }
-}
-
-
-void MapWindow::Event_ScaleZoom(int vswitch) {
-
-  static double lastRequestMapScale = RequestMapScale;
-  double value = RequestMapScale;
-  static int nslow=0;
-
-  if (isAutoZoom()) {
-	// DoStatusMessage(_T("Autozoom OFF")); // REMOVE FIXV2
-	DoStatusMessage(gettext(TEXT("_@M857_"))); // AutoZoom OFF
-	AutoZoom=0;
-  }
-
-  // For best results, zooms should be multiples or roots of 2
-
-  if (ScaleListCount > 0){
-    value = FindMapScale(RequestMapScale);
-    value = StepMapScale(-vswitch);
-  } else {
-
-    if (abs(vswitch)>=4) {
-      nslow++;
-      if (nslow %2 != 0) {
-        // JMW disabled        return;
-      }
-      if (vswitch==4) {
-        vswitch = 1;
-      }
-      if (vswitch==-4) {
-        vswitch = -1;
-      }
-    }
-    if (vswitch==1) { // zoom in a little
-      value /= 1.414;
-    }
-    if (vswitch== -1) { // zoom out a little
-      value *= 1.414;
-    }
-    if (vswitch==2) { // zoom in a lot
-      value /= 2.0;
-    }
-    if (vswitch== -2) { // zoom out a lot
-      value *= 2.0;
-    } 
-
-  }
-  RequestMapScale = LimitMapScale(value);
-
-  if (lastRequestMapScale != RequestMapScale){
-    lastRequestMapScale = RequestMapScale;
-    BigZoom = true;
-
-    RefreshMap();
-
-  }
-}
-
-
-#endif /* ! MAP_ZOOM */
 int MapWindow::GetMapResolutionFactor(void) { // TESTFIX 091017 CHECKFIX
   static int retglider=NIBLSCALE(30);
   //static int retpara=IBLSCALE(30);
@@ -1365,17 +1036,10 @@ static void SetFontInfo(HDC hDC, FontHeightInfo_t *FontHeightInfo){
     }
   }
 
-#ifdef GNAV
-  // JMW: don't know why we need this in GNAV, but we do.
-  if (FontHeightInfo->CapitalHeight<y)
-    FontHeightInfo->CapitalHeight = bottom - top + 1;
-#endif
   // This works for PPC
   if (FontHeightInfo->CapitalHeight <= 0)
     FontHeightInfo->CapitalHeight = tm.tmAscent - 1 -(tm.tmHeight/10);
 
-  //  int lx = GetDeviceCaps(hDC,LOGPIXELSX);
-  // dpi
 }
 
 
@@ -1409,15 +1073,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
   switch (uMsg)
     {
     case WM_ERASEBKGND:
-      // JMW trying to reduce flickering
-      /*
-	if (first || MapDirty) {
-	first = false;
-	MapDirty = true;
-	return (DefWindowProc (hWnd, uMsg, wParam, lParam));
-	} else
-	return TRUE;
-      */
       return TRUE;
     case WM_SIZE:
 
@@ -1433,6 +1088,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       {
 	HFONT      oldFont;
 
+	// REMOVE THIS STUFF AFTER REMOVING INFOBOXES
 	oldFont = (HFONT)SelectObject(hDCTemp, TitleWindowFont);
 	SetFontInfo(hDCTemp, &Appearance.TitleWindowFont);
 
@@ -1469,11 +1125,8 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hDCTemp = CreateCompatibleDC(hdcDrawWindow);
       hDCMask = CreateCompatibleDC(hdcDrawWindow);
   
-      #if ABLEND  
       AlphaBlendInit();
-      #endif
     
-      #if LKOBJ
       hBackgroundBrush = LKBrush_White;
       hInvBackgroundBrush[0] = LKBrush_White;
       hInvBackgroundBrush[1] = LKBrush_LightGrey;
@@ -1485,28 +1138,14 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hInvBackgroundBrush[7] = LKBrush_DarkSlate;
       hInvBackgroundBrush[8] = LKBrush_RifleGrey;
       hInvBackgroundBrush[9] = LKBrush_Black;
-      #else
-      hBackgroundBrush = CreateSolidBrush(BackgroundColor);
-      hInvBackgroundBrush[0] = CreateSolidBrush(COLORREF RGB_WHITE);	 // black text required
-      hInvBackgroundBrush[1] = CreateSolidBrush(COLORREF RGB_LIGHTGREY); // black  light grey
-      hInvBackgroundBrush[2] = CreateSolidBrush(COLORREF RGB_LCDGREEN);	// black   lcd green 
-      hInvBackgroundBrush[3] = CreateSolidBrush(COLORREF RGB_LCDDARKGREEN); // lcd green dark
-      hInvBackgroundBrush[4] = CreateSolidBrush(COLORREF RGB_GREY);	// 
-      hInvBackgroundBrush[5] = CreateSolidBrush(COLORREF RGB_LAKE);	// bianco , ok con topology
-      hInvBackgroundBrush[6] = CreateSolidBrush(COLORREF RGB_EMERALD);   // slategreen
-      // BlackScreen requested for white waypoints, no topology working
-      hInvBackgroundBrush[7] = CreateSolidBrush(COLORREF RGB_DARKSLATE); // senza topo, richiede wp bianchi
-      hInvBackgroundBrush[8] = CreateSolidBrush(COLORREF RGB_RIFLEGREY);  // dark grey
-      hInvBackgroundBrush[9] = CreateSolidBrush(COLORREF RGB_BLACK); // richiede blackscreen
-      #endif
 
       hFLARMTraffic=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_FLARMTRAFFIC));
       hTerrainWarning=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TERRAINWARNING));
+      hAirspaceWarning=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACEWARNING));
       hTurnPoint=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TURNPOINT));
       hInvTurnPoint=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_INVTURNPOINT));
       hSmall=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SMALL));
       hInvSmall=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_INVSMALL));
-      hAutoMacCready=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AUTOMCREADY));
       hGPSStatus1=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_GPSSTATUS1));
       hGPSStatus2=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_GPSSTATUS2));
       hLogger=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_LOGGER));
@@ -1581,66 +1220,21 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 	hSnailPens[13] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), hSnailColours[13]);
 	hSnailPens[14] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), hSnailColours[14]);
 
-      /* JMW created all re-used pens here */
-
-
-      // testing only    Appearance.InverseAircraft = true;
-
-	#if LKOBJ
       hpCompassBorder = LKPen_Black_N2;
-      if (Appearance.InverseAircraft) {
-	hpAircraft = LKPen_Black_N3;
-	hpAircraftBorder = LKPen_White_N1;
-      } else {
-	hpAircraft = LKPen_White_N3;
-	hpAircraftBorder = LKPen_Black_N1;
-      }
-	hpThermalCircle = LKPen_White_N3;
+      hpAircraft = LKPen_White_N3;
+      hpAircraftBorder = LKPen_Black_N1;
 
-	#else
-      hpCompassBorder = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_BLACK); 
-      if (Appearance.InverseAircraft) {
-	hpAircraft = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(3), RGB_BLACK);
-	hpAircraftBorder = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_WHITE);
-      } else {
-	hpAircraft = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(3), RGB_WHITE);
-	hpAircraftBorder = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_BLACK);
-      }
-	hpThermalCircle = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(3), RGB_WHITE);
-	#endif
-
-	#if LKOBJ
-#if (MONOCHROME_SCREEN > 0)
       hpWind = LKPen_Black_N2;
-#else
-      hpWind = LKPen_Red_N2;
-#endif
-	#else
-#if (MONOCHROME_SCREEN > 0)
-      hpWind = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_BLACK);
-#else
-      hpWind = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_RED);
-#endif
-	#endif
 
       hpWindThick = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(4), RGB(255,220,220));
 
-	#if LKOBJ
       if (ISGAAIRCRAFT)
 	hpBearing = LKPen_GABRG;
       else
 	hpBearing = LKPen_Black_N2;
 
       hpBestCruiseTrack = LKPen_Blue_N1;
-	#else
-      hpBearing = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_BLACK);
-      hpBestCruiseTrack = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_BLUE);
-	#endif
-#if (MONOCHROME_SCREEN > 0)
       hpCompass = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_BLACK);
-#else
-      hpCompass = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB(0xcf,0xcf,0xFF));
-#endif
       hpThermalBand = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB(0x40,0x40,0xFF));
       hpThermalBandGlider = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB(0x00,0x00,0x30));
 
@@ -1650,18 +1244,11 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       // TODO enhancement: support red/green Color blind
       hpFinalGlideAbove = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB(0xA0,0xFF,0xA0));
 
-	#if LKOBJ
       hpSpeedSlow=LKPen_Red_N1;
       hpSpeedFast=LKPen_Green_N1;
       hpStartFinishThin=LKPen_Red_N1;
       hpMapScale = LKPen_Black_N1;
 
-	#else
-      hpSpeedSlow=(HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_RED);
-      hpSpeedFast=(HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_GREEN);
-      hpStartFinishThin=(HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_RED);
-      hpMapScale = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1),  RGB_BLACK);
-	#endif
 
       hpStartFinishThick=(HPEN)CreatePen(PS_SOLID, NIBLSCALE(5), taskcolor);
       hpMapScale2 = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1)+1, RGB_BLACK);
@@ -1673,58 +1260,20 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hpVisualGlideLightRed = (HPEN)CreatePen(PS_DASH, (1), RGB_RED);
       hpVisualGlideHeavyRed = (HPEN)CreatePen(PS_DASH, (2), RGB_RED);
 
-      #if LKOBJ
-
       hbThermalBand=LKBrush_Emerald;
-	#if (MONOCHROME_SCREEN > 0)
       hbCompass=LKBrush_White;
-	#else
-      hbCompass=LKBrush_Cyan;
-	#endif
       hbBestCruiseTrack=LKBrush_Blue;
       hbFinalGlideBelow=LKBrush_Red;
       hbFinalGlideAbove=LKBrush_Green;
       hbFinalGlideBelowLandable=LKBrush_Orange;
-	#if (MONOCHROME_SCREEN > 0)
       hbWind=LKBrush_Grey;
-	#else
-      hbWind=LKBrush_Grey;
-	#endif
-      #else
-
-      hbThermalBand=(HBRUSH)CreateSolidBrush(RGB(0x80,0x80,0xFF));
-	#if (MONOCHROME_SCREEN > 0)
-      hbCompass=(HBRUSH)CreateSolidBrush(RGB_WHITE);
-	#else
-      hbCompass=(HBRUSH)CreateSolidBrush(RGB(0x40,0x40,0xFF));
-	#endif
-      hbBestCruiseTrack=(HBRUSH)CreateSolidBrush(RGB_BLUE);
-      hbFinalGlideBelow=(HBRUSH)CreateSolidBrush(RGB_RED);
-      hbFinalGlideAbove=(HBRUSH)CreateSolidBrush(RGB_GREEN);
-      hbFinalGlideBelowLandable=(HBRUSH)CreateSolidBrush(RGB(0xFF,180,0x00));
-	#if (MONOCHROME_SCREEN > 0)
-      hbWind=(HBRUSH)CreateSolidBrush(RGB_MIDDLEGREY);
-	#else
-      hbWind=(HBRUSH)CreateSolidBrush(RGB_MIDDLEGREY);
-	#endif
-
-      #endif
-
 
       ScaleListCount = propGetScaleList(ScaleList, sizeof(ScaleList)/sizeof(ScaleList[0]));
-#ifndef MAP_ZOOM
-      RequestMapScale = LimitMapScale(RequestMapScale);
-#else /* MAP_ZOOM */
       zoom.RequestedScale(LimitMapScale(zoom.RequestedScale()));
-#endif /* MAP_ZOOM */
 
       hBmpMapScale = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_MAPSCALE_A));
 
-      #if LKOBJ
       hBrushFlyingModeAbort = LKBrush_Red;
-      #else
-      hBrushFlyingModeAbort = (HBRUSH)CreateSolidBrush(RGB_RED);
-      #endif
 
       if (Appearance.IndLandable == wpLandableDefault){
 	hBmpAirportReachable = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_REACHABLE));
@@ -1756,9 +1305,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       DeleteObject(hDrawBitMap);
       DeleteObject(hMaskBitMap);
 
-      #if ABLEND
       AlphaBlendDestroy();
-      #endif
 
       DeleteObject(hTurnPoint);
       DeleteObject(hSmall);
@@ -1767,9 +1314,9 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       DeleteObject(hCruise);
       DeleteObject(hClimb);
       DeleteObject(hFinalGlide);
-      DeleteObject(hAutoMacCready);
       DeleteObject(hFLARMTraffic);
       DeleteObject(hTerrainWarning);
+      DeleteObject(hAirspaceWarning);
       DeleteObject(hGPSStatus1);
       DeleteObject(hGPSStatus2);
       DeleteObject(hAbort);
@@ -1778,24 +1325,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
     
       DeleteObject((HPEN)hpWindThick);
 
-	#ifndef LKOBJ
-      DeleteObject((HPEN)hpBestCruiseTrack);
-      DeleteObject((HPEN)hpBearing);
-      DeleteObject((HPEN)hpWind);
-      DeleteObject((HPEN)hpAircraft); 
-      DeleteObject((HPEN)hpAircraftBorder); 
-      DeleteObject((HPEN)hpCompass); 
-      DeleteObject((HPEN)hpThermalCircle);
-      DeleteObject((HPEN)hpSpeedSlow);
-      DeleteObject((HPEN)hpSpeedFast);
-      DeleteObject((HPEN)hpStartFinishThin);
-      DeleteObject((HPEN)hpMapScale);
-	#endif
-/*
-#if OVERTARGET
-      DeleteObject((HPEN)hpOvertarget);
-#endif
-*/
       DeleteObject((HPEN)hpThermalBand);
       DeleteObject((HPEN)hpThermalBandGlider);
       DeleteObject((HPEN)hpFinalGlideAbove);
@@ -1810,32 +1339,8 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       DeleteObject((HPEN)hpVisualGlideHeavyBlack); // VENTA3
       DeleteObject((HPEN)hpFinalGlideBelowLandable);
 
-      #ifndef LKOBJ
-      DeleteObject((HBRUSH)hbCompass);
-      DeleteObject((HBRUSH)hbThermalBand);
-      DeleteObject((HBRUSH)hbBestCruiseTrack);
-      DeleteObject((HBRUSH)hbFinalGlideBelow);
-      DeleteObject((HBRUSH)hbFinalGlideAbove);
-      DeleteObject((HBRUSH)hbWind);
-      #endif
-
       DeleteObject(hBmpMapScale);
       DeleteObject(hBmpCompassBg);
-      #ifndef LKOBJ
-      DeleteObject((HBRUSH)hbFinalGlideBelowLandable);
-      DeleteObject(hBackgroundBrush);
-      DeleteObject(hInvBackgroundBrush[0]); // 091110
-      DeleteObject(hInvBackgroundBrush[1]); // 091110
-      DeleteObject(hInvBackgroundBrush[2]); // 091110
-      DeleteObject(hInvBackgroundBrush[3]); // 091110
-      DeleteObject(hInvBackgroundBrush[4]); // 091110
-      DeleteObject(hInvBackgroundBrush[5]); // 091110
-      DeleteObject(hInvBackgroundBrush[6]); // 091110
-      DeleteObject(hInvBackgroundBrush[7]); // 091110
-      DeleteObject(hInvBackgroundBrush[8]); // 091110
-      DeleteObject(hInvBackgroundBrush[9]); // 091110
-      DeleteObject((HBRUSH)hBrushFlyingModeAbort);
-      #endif
       DeleteObject(hBmpClimbeAbort);
 
       DeleteObject((HPEN)hpCompassBorder);
@@ -1860,6 +1365,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       for (i=0; i<AIRSPACECLASSCOUNT; i++) {
 	DeleteObject(hAirspacePens[i]);
       }
+      DeleteObject(hAirspaceBorderPen);
 
       for (i=0; i<NUMSNAILCOLORS; i++) {
 	DeleteObject(hSnailPens[i]);
@@ -1878,6 +1384,14 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       dwDownTime = GetTickCount();  
       XstartScreen = LOWORD(lParam); YstartScreen = HIWORD(lParam);
 
+	if (LockModeStatus) {
+        	ignorenext=true; // do not interpret the second click of the doubleclick as a real click.
+		if (XstartScreen <(MapRect.right-BottomSize-NIBLSCALE(15))) break;
+		if (YstartScreen<(MapRect.bottom-MapRect.top-BottomSize-NIBLSCALE(15))) break;
+		LockMode(2);
+		DoStatusMessage(gettext(_T("_@M964_"))); // SCREEN IS UNLOCKED
+	}
+
       // Careful! If you ignorenext, any event timed as double click of course will be affected.
       // and this means also fast clicking on bottombar!!
       // so first lets see if we are in lk8000 text screens.. 
@@ -1886,63 +1400,22 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 		break;
       }
 
-      if (UseMapLock&&NewMap) {
-        // ignorenext=true; 100318
-	if (MapLock)
-	{
-		// ignorenext only when expecting a double click when map is locked! 
-        	ignorenext=true; 
-		if (DrawBottom) { 
-	      		Y = HIWORD(lParam); 
-		        // Unlock map only if double clicking on real map, not on navboxes!
-			if ( Y < (MapWindow::MapRect.bottom-MapWindow::MapRect.top-BottomSize-NIBLSCALE(15)) ) {
-				  dwDownTime= 0L;
-				  DefocusInfoBox();
-				  SetFocus(hWnd);
-				  iboxtoclick=true; 
-	  			  UnlockMap();
-	  			  break;
-			} 
-		// old screen mode, dblclk on real map, unlock..
-		} else {
-			  dwDownTime= 0L;
-			  DefocusInfoBox();
-			  iboxtoclick=true; 
-			  SetFocus(hWnd);
-			  UnlockMap();
-			  break;
-		}
-
-        }
-      }
-
-#if 100318
 	// only when activemap (which means newmap is on) is off
       if (ActiveMap) ignorenext=true;
-      if (NewMap) break;
-#else
-
-      ignorenext=true;
-      // VENTA 090721 doubleclick no more used in lk8000
-      if (NewMap) break;
-#endif
-      #ifndef DISABLEAUDIO
-      if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-      #endif
-      ShowMenu();
       break;
 
     case WM_LBUTTONDOWN:
       #ifdef DEBUG_DBLCLK
       DoStatusMessage(_T("BUTTONDOWN MapWindow")); 
       #endif
+      if (LockModeStatus) break;
       DisplayTimeOut = 0;
       dwDownTime = GetTickCount();
       // After calling a menu, on exit as we touch the screen we fall back here
       if (ignorenext) {
-#ifdef DEBUG_MAPINPUT
+                #ifdef DEBUG_MAPINPUT
 		DoStatusMessage(TEXT("DBG-055 BUTTONDOWN with ignorenext"));
-#endif
+                #endif
 		break;
       }
       XstartScreen = LOWORD(lParam); YstartScreen = HIWORD(lParam);
@@ -1953,11 +1426,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       LKevent=LKEVENT_NONE; // CHECK FIX TODO VENTA10  probably useless 090915
 
       LockTaskData();
-#ifndef MAP_ZOOM
-      if (AATEnabled && TargetPan) {
-#else /* MAP_ZOOM */
       if (AATEnabled && mode.Is(Mode::MODE_TARGET_PAN)) {
-#endif /* MAP_ZOOM */
 	if (ValidTaskPoint(TargetPanIndex)) {
 	  POINT tscreen;
 	  LatLon2Screen(Task[TargetPanIndex].AATTargetLon, 
@@ -1980,15 +1449,16 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       break;
 
     case WM_LBUTTONUP:
+	if (LockModeStatus) break;
 	if (ignorenext||dwDownTime==0) { 
-#ifdef DEBUG_MAPINPUT
+                #ifdef DEBUG_MAPINPUT
 		if (ignorenext && (dwDownTime==0) )
 			DoStatusMessage(_T("DBG-098 ignorenext&&dwDownTime0"));
 		else if (dwDownTime==0)
 			DoStatusMessage(_T("DBG-099 dwDownTime0"));
 		else
 			DoStatusMessage(_T("DBG-097 ignorenext"));
-#endif
+                #endif
 		ignorenext=false;
 		break;
 	}
@@ -2036,7 +1506,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 		#include "./LKinclude_menusize.cpp"
 		doinit=false;
 	}
-      if (NewMap)  {
 
 	short topicon;
 	if (DrawBottom) topicon=MapRect.bottom-MapRect.top-BottomSize-14; // 100305
@@ -2046,12 +1515,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 if ( (X > ((MapRect.right-MapRect.left)- AIRCRAFTMENUSIZE)) &&
    (Y > topicon) ) {
 
-	/*
-	 * Available for future usage: short click on aircraft icon.
-	 * Remember there's already a normal click and a long click on the same icon!
-	   090720 short click replacing doubleclick forever!
-	 */
-	
 		// short click on aircraft icon
 		//
 		if ( dwInterval <= (DOUBLECLICKINTERVAL)) {
@@ -2065,25 +1528,15 @@ goto_menu:
 		// Long click on aircraft icon, toggle thermal mode
 		//
 		if ( dwInterval >=VKLONGCLICK) { // in Defines.h
-#ifndef MAP_ZOOM
-			if (DisplayMode == dmCircling) {
-				UserForceDisplayMode=dmCruise;
-#else /* MAP_ZOOM */
 			if (mode.Is(Mode::MODE_CIRCLING)) {
 				mode.UserForcedMode(Mode::MODE_FLY_CRUISE);
-#endif /* MAP_ZOOM */
 				#ifndef DISABLEAUDIO
 				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 				#endif
 				break;
 			} else 
-#ifndef MAP_ZOOM
-			if (DisplayMode == dmCruise) {
-				UserForceDisplayMode=dmNone;
-#else /* MAP_ZOOM */
 			if (mode.Is(Mode::MODE_CRUISE)) {
 				mode.UserForcedMode(Mode::MODE_FLY_NONE);
-#endif /* MAP_ZOOM */
 				#ifndef DISABLEAUDIO
 				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 				#endif
@@ -2204,9 +1657,9 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 		// We are here when lk8000, and NO moving map displayed: virtual enter, virtual up/down, or 
 		// navbox operations including center key.
 		wParam=ProcessVirtualKey(X,Y,dwInterval,LKGESTURE_NONE);
-#ifdef DEBUG_MAPINPUT
+                #ifdef DEBUG_MAPINPUT
 		DoStatusMessage(_T("DBG-035 navboxes")); 
-#endif
+                #endif
 		// we could use a single ProcessVirtual for all above, and check that wParam on return
 		// is really correct for gestures as well... since we do not want to go to wirth with gestures!
 		if (wParam!=0) {
@@ -2220,15 +1673,15 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 	// if clicking on navboxes, process fast virtual keys
 	// maybe check LK8000 active?
 	// This point is selected when in MapSpaceMode==MSM_MAP, i.e. lk8000 with moving map on.
-#ifndef MAP_ZOOM
-	if (  DrawBottom && IsMapFullScreen() && (Y >= (rc.bottom-BottomSize)) && !MapWindow::EnablePan ) {
-#else /* MAP_ZOOM */
+#if USEIBOX
 	if (  DrawBottom && IsMapFullScreen() && (Y >= (rc.bottom-BottomSize)) && !mode.AnyPan() ) {
-#endif /* MAP_ZOOM */
-		wParam=ProcessVirtualKey(X,Y,dwInterval,LKGESTURE_NONE);
-#ifdef DEBUG_MAPINPUT
-		DoStatusMessage(_T("DBG-034 navboxes")); 
+#else
+	if (  DrawBottom && (Y >= (rc.bottom-BottomSize)) && !mode.AnyPan() ) {
 #endif
+		wParam=ProcessVirtualKey(X,Y,dwInterval,LKGESTURE_NONE);
+                #ifdef DEBUG_MAPINPUT
+		DoStatusMessage(_T("DBG-034 navboxes")); 
+                #endif
 		if (wParam!=0) {
 			DoStatusMessage(_T("ERR-034 Invalid Virtual Key")); 
 			break;
@@ -2236,50 +1689,6 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 		break;
 	}
 
-
-
-      } // end newmap preliminar checks
-
-#ifndef MAP_ZOOM
-      if(NewMap&&UseMapLock&&MapLock&&!EnablePan&&!(dontdrawthemap)) 
-#else /* MAP_ZOOM */
-      if(NewMap&&UseMapLock&&MapLock&&!mode.AnyPan()&&!(dontdrawthemap)) 
-#endif /* MAP_ZOOM */
-      {
-		// With LOCKED map...
-		// When you single click on the map, here you come.
-		// When you press double click to release lock, you fall here, also.
-
-	      if ((VirtualKeys==(VirtualKeys_t)vkEnabled) && (dwInterval>= DOUBLECLICKINTERVAL)) {   
-			wParam=ProcessVirtualKey(X,Y,dwInterval,LKGESTURE_NONE);
-			if (wParam==0) {
-				// Here we fall when you press for example long center map or do a gesture
-				// DoStatusMessage(_T("ERR-035 Invalid Virtual Key"));
-				break;
-			}
-			// Otherwise its a vk up/down/enter and must be handled, passing vk code down
-			goto Wirth; 
-	      }
-
-	  // while locked, any keypress on the map which is not a virtual key will unfocus infoboxes
-	  // but first check if it was already unfocused so you will not play a click 
-	  if (InfoFocus>=0) {
-	  	DefocusInfoBox();
-	  	SetFocus(hWnd);
-		#ifndef DISABLEAUDIO
-         	 if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
-		 iboxtoclick=true; 
-		 // DoStatusMessage(_T("Map is locked, defocus ibox")); 
-	  } else {
-		// newmap on, maplock on, NO VK, special case 
-		if (  DrawBottom && IsMapFullScreen() && (Y >= (rc.bottom-BottomSize)) ) {
-			goto Escamotage; 
-		}
-		// DoStatusMessage(_T("Map is locked, skipping")); 
-	  }
-	  break;
-      }
 
       if (dwInterval == 0) {
 		break; // should be impossible
@@ -2301,28 +1710,13 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 	// Handling double click passthrough
 	// Caution, timed clicks from PC with a mouse are different from real touchscreen devices
 
-      // On PC a single click is around 80ms, and a doubleclick is around 150ms. 
-      // CHECK TODO FIX if only for NewMap when enabled.. VK work only with new map...so no need?
-
-	// This is called when long press in center map i.e. for inverting colors, 
-	// and for Virtual keys zoom in/out
-      if ((VirtualKeys==(VirtualKeys_t)vkEnabled) && distance<50 && (dwInterval>= DOUBLECLICKINTERVAL)) { 
-		wParam=ProcessVirtualKey(X,Y,dwInterval,LKGESTURE_NONE);
-		if (wParam==0) {
-			#ifdef DEBUG_VIRTUALKEYS
-			DoStatusMessage(_T("DBG-095 invalid Virtual Key!")); 
-			#endif
-			break;
-		}
-		//break; // TESTFIX 090930
-		goto Wirth; 
-      }
-
-
       // Process faster clicks here and no precision, but let DBLCLK pass through
       // VK are used in the bottom line in this case, forced on for this situation.
+#if USEIBOX
       if (  DrawBottom && IsMapFullScreen() && (Y >= (rc.bottom-BottomSize)) ) {
-Escamotage:
+#else
+      if (  DrawBottom && (Y >= (rc.bottom-BottomSize)) ) {
+#endif
 		// DoStatusMessage(_T("Click on hidden map ignored")); 
 
 		// do not process virtual key if it is timed as a DBLCLK
@@ -2347,34 +1741,21 @@ Escamotage:
 
       Screen2LatLon(X, Y, Xlat, Ylat);
     
-#ifndef MAP_ZOOM
-      if (AATEnabled && TargetPan && (TargetDrag_State>0)) {
-#else /* MAP_ZOOM */
       if (AATEnabled && mode.Is(Mode::MODE_TARGET_PAN) && (TargetDrag_State>0)) {
-#endif /* MAP_ZOOM */
 	LockTaskData();
 	TargetDrag_State = 2;
 	TargetDrag_Latitude = Ylat;
 	TargetDrag_Longitude = Xlat;
 	UnlockTaskData();
 	break;
-#ifndef MAP_ZOOM
-      } else if (!TargetPan && EnablePan && (distance>36)) { // TODO FIX should be IBLSCALE 36 instead?
-#else /* MAP_ZOOM */
       } else if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN) && (distance>36)) { // TODO FIX should be IBLSCALE 36 instead?
-#endif /* MAP_ZOOM */
 	PanLongitude += Xstart-Xlat;
 	PanLatitude  += Ystart-Ylat;
 	RefreshMap();
 	// disable picking when in pan mode
 	break; 
       } 
-#if NOSIM
-#ifndef MAP_ZOOM
-      else if (SIMMODE && (!TargetPan && (distance>NIBLSCALE(36)))) {
-#else /* MAP_ZOOM */
       else if (SIMMODE && (!mode.Is(Mode::MODE_TARGET_PAN) && (distance>NIBLSCALE(36)))) {
-#endif /* MAP_ZOOM */
 	// This drag moves the aircraft (changes speed and direction)
 	double newbearing;
 	double oldbearing = GPS_INFO.TrackBearing;
@@ -2393,53 +1774,12 @@ Escamotage:
 	break;
       }
 
-#else
-#ifdef _SIM_
-      else if (!TargetPan && (distance>NIBLSCALE(36))) {
-	// This drag moves the aircraft (changes speed and direction)
-	double newbearing;
-	double oldbearing = GPS_INFO.TrackBearing;
-	double minspeed = 1.1*GlidePolar::Vminsink;
-	DistanceBearing(Ystart, Xstart, Ylat, Xlat, NULL, &newbearing);
-	if ((fabs(AngleLimit180(newbearing-oldbearing))<30) || (GPS_INFO.Speed<minspeed)) {
-		GPS_INFO.Speed = min(100.0,max(minspeed,distance/3));
-	} 
-	GPS_INFO.TrackBearing = newbearing;
-	TriggerGPSUpdate();
-      
-	break;
-      }
-#endif
-#endif
-#ifndef MAP_ZOOM
-      if (!TargetPan) {
-#else /* MAP_ZOOM */
       if (!mode.Is(Mode::MODE_TARGET_PAN)) {
-#endif /* MAP_ZOOM */
-		// if map is locked and we are here, then if infobox are under focus accept the click
-		// as an order to defocus. Otherwise since we are under lock condition we simply
-		// ignore the click and break out.
-		//
-		if (NewMap&&UseMapLock&&MapLock) { 
-			if (InfoFocus>=0) {
-				// DoStatusMessage(_T("Map is locked, defocus ibox")); 
-				DefocusInfoBox();
-				SetFocus(hWnd);
-				#ifndef DISABLEAUDIO
-				 if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-				#endif
-				iboxtoclick=true; 
-			} else {
-				// ignore click
-				// DoStatusMessage(_T("PAN map is locked, skipping")); 
-			}
-			break;
-		}
-		//
 		// We need to defocus infoboxes on demand here.  
 		// Probably should be a good idea to use it also for standard old map with no VK
 		// We do it also for old standard map with no VK.
 		//
+		#if USEIBOX
 		if ( InfoFocus>=0) { // 
 			// DoStatusMessage(_T("Defocus ibox")); 
 			DefocusInfoBox();
@@ -2450,201 +1790,96 @@ Escamotage:
 			iboxtoclick=true; 
 			break;
 		}
+		#endif
 		
 		//
 		// Finally process normally a click on the moving map.
-		// Virtual keys have been processed earlier, so we are now looking for a map selection.
-		// However, timings are different if virtual keys are enabled, for this operation.
 		//
-		if (VirtualKeys==(VirtualKeys_t)vkEnabled) {
-			// Shorter the time needed to trigger a WP select, solving also the annoying problem
-			// of unwanted wp selection while double clicking too slow!
-			// And at the same time let this action pass transparently to virtual keys.
-			//
-			if(dwInterval < VKSHORTCLICK) { //100ms is NOT  enough for a short click since GetTickCount is OEM custom!
-#if 100318 
-			if (ActiveMap) {
-#ifndef MAP_ZOOM
-				if (Event_NearestWaypointDetails(Xstart, Ystart, 500*MapScale, false)) {
-#else /* MAP_ZOOM */
-                            if (Event_NearestWaypointDetails(Xstart, Ystart, 500*zoom.Scale(), false)) {
-#endif /* MAP_ZOOM */
-					break;
-				}
-#ifndef MAP_ZOOM
-			} else {
-#else /* MAP_ZOOM */
-			}
-                        else {
-#endif /* MAP_ZOOM */
-savecodesize1:
-			int yup, ydown, ytmp;
-			ytmp=(int)((MapWindow::MapRect.bottom-MapWindow::MapRect.top-BottomSize)/2);
-			yup=ytmp+MapWindow::MapRect.top;
-                	ydown=MapWindow::MapRect.bottom-BottomSize-ytmp;
+			if(dwInterval < AIRSPACECLICK) { // original and untouched interval
+				if (ActiveMap) {
+                                  if (Event_NearestWaypointDetails(Xstart, Ystart, 500*zoom.Scale(), false)) {
+						break;
+					}
+				} else {
+					int yup, ydown, ytmp;
+					ytmp=(int)((MapWindow::MapRect.bottom-MapWindow::MapRect.top-BottomSize)/2);
+					yup=ytmp+MapWindow::MapRect.top;
+					ydown=MapWindow::MapRect.bottom-BottomSize-ytmp;
 
-			if (Y<yup) {
-				// pg UP = zoom in
-				wParam = 0x26;
-			} else {
-				if (Y>ydown) {
-					// pg DOWN = zoom out
-					wParam = 0x28;
-				} 
-				else {
-					// process center key, do nothing 
-					break;
-				}
-			}
-			#ifndef DISABLEAUDIO
-			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-			#endif
+					if (Y<yup) {
+						// pg UP = zoom in
+						wParam = 0x26;
+					} else {
+						if (Y>ydown) {
+							// pg DOWN = zoom out
+							wParam = 0x28;
+						} 
+						else {
+							// process center key, do nothing 
+							break;
+						}
+					}
+					#ifndef DISABLEAUDIO
+					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+					#endif
 
-			InputEvents::processKey(wParam);
-			dwDownTime= 0L;
-			return TRUE; 
-			}
-#else
-				if (Event_NearestWaypointDetails(Xstart, Ystart, 500*MapScale, false)) {
-					break;
+					InputEvents::processKey(wParam);
+					dwDownTime= 0L;
+					return TRUE; 
 				}
-#endif
 			} else {
-				// in pan mode and SIM mode, click to center current position
-				#if NOSIM
 				if (SIMMODE) {
-#ifndef MAP_ZOOM
-					if (EnablePan) {
-#else /* MAP_ZOOM */
 					if (mode.AnyPan()) {
-#endif /* MAP_ZOOM */
 						// match only center screen
-						if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(12)) && 
-						      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(12)) ) {
+						if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(5)) && 
+						      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(5)) ) {
 							// LKTOKEN  _@M204_ = "Current position updated" 
 							DoStatusMessage(gettext(TEXT("_@M204_")));
 							GPS_INFO.Latitude=PanLatitude;
 							GPS_INFO.Longitude=PanLongitude;
 							break;
 						}
-					}
-				}
-				#else
-				#if _SIM_
-				if (EnablePan) {
-					// match only center screen
-					if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(5)) && 
-					      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(5)) ) {
-						DoStatusMessage(_T("Current position updated")); 
-						GPS_INFO.Latitude=PanLatitude;
-						GPS_INFO.Longitude=PanLongitude;
-						break;
-					}
-				}
-				#endif
-				#endif
-				// If we are here,  (DCI/2)+30 < dwDownTime < DOUBLECLICKINTERVAL
-				// SO this is a tight interval. DCI should not be set too low. See Defines.h
-				// NO: VKSHORTCLICK-DCI  150-350 ?
-				if (!OnAirSpace) break; // 100119
-				if (Event_InteriorAirspaceDetails(Xstart, Ystart)) {
-					break;
-				}
-			}
-		} else {
-			if(dwInterval < AIRSPACECLICK) { // original and untouched interval
-#if 100318
-				if (ActiveMap) {
-#ifndef MAP_ZOOM
-					if (Event_NearestWaypointDetails(Xstart, Ystart, 500*MapScale, false)) {
-#else /* MAP_ZOOM */
-                                  if (Event_NearestWaypointDetails(Xstart, Ystart, 500*zoom.Scale(), false)) {
-#endif /* MAP_ZOOM */
-						break;
-					}
-				} else
-					goto savecodesize1;
-#else
-#ifndef MAP_ZOOM
-				if (Event_NearestWaypointDetails(Xstart, Ystart, 500*MapScale, false)) {
-#else /* MAP_ZOOM */
-				if (Event_NearestWaypointDetails(Xstart, Ystart, 500*zoom.Scale(), false)) {
-#endif /* MAP_ZOOM */
-					break;
-				}
-#endif
-			} else {
-				#if NOSIM
-				if (SIMMODE) {
-#ifndef MAP_ZOOM
-					if (EnablePan) {
-#else /* MAP_ZOOM */
-					if (mode.AnyPan()) {
-#endif /* MAP_ZOOM */
-						// match only center screen
-						if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(5)) && 
-						      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(5)) ) {
-	// LKTOKEN  _@M204_ = "Current position updated" 
-							DoStatusMessage(gettext(TEXT("_@M204_")));
-							GPS_INFO.Latitude=PanLatitude;
-							GPS_INFO.Longitude=PanLongitude;
+						// if we are not long clicking in center screen, before setting new position
+						// we check if we are on an airspace for informations
+						if (OnAirSpace && Event_InteriorAirspaceDetails(Xstart, Ystart)) {
 							break;
 						}
-					}
-				}
-				#else
-				#if _SIM_
-				if (EnablePan) {
-					// match only center screen
-					if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(5)) && 
-					      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(5)) ) {
-						DoStatusMessage(_T("Current position updated"));
+						// Ok, so we reposition the aircraft
+						Screen2LatLon(X,Y,PanLongitude,PanLatitude);
+						// LKTOKEN  _@M204_ = "Current position updated" 
+						DoStatusMessage(gettext(TEXT("_@M204_")));
 						GPS_INFO.Latitude=PanLatitude;
 						GPS_INFO.Longitude=PanLongitude;
 						break;
 					}
 				}
-				#endif
-				#endif
 				if (!OnAirSpace) break; // 100119
 				if (Event_InteriorAirspaceDetails(Xstart, Ystart)) {
 					break;
 				}
 			}
-		} // VK enabled
       } // !TargetPan
 
       break;
-      /*
-	case WM_PAINT:
-	if ((hWnd == hWndMapWindow) && (ProgramStarted==3)) {
-	//    RequestFastRefresh();
-	return TRUE;
-	} else {
-	break;
-	}
-      */
 
 
+    // VENTA-TODO careful here, keyup no more trapped for PNA. 
+    // Forbidden usage of keypress timing.
+    #if defined(PNA)
+    case WM_KEYDOWN:
+    #else
+    case WM_KEYUP: 
+    #endif
 
-
-#if defined(GNAV) || defined(PNA) // VENTA FIXED PNA SCROLL WHEEL 
-    case WM_KEYDOWN: // JMW was keyup
-#else
-    case WM_KEYUP: // JMW was keyup
-#endif
-      // VENTA-TODO careful here, keyup no more trapped for PNA. 
-      // Forbidden usage of keypress timing.
-
-#ifdef VENTA_DEBUG_KEY
+      #ifdef VENTA_DEBUG_KEY
       TCHAR ventabuffer[80];
       wsprintf(ventabuffer,TEXT("WMKEY uMsg=%d wParam=%ld lParam=%ld"), uMsg, wParam,lParam);
       DoStatusMessage(ventabuffer);
-#endif
+      #endif
       DisplayTimeOut = 0;
       InterfaceTimeoutReset();
 
-#if defined(PNA) // VENTA-ADDON HARDWARE KEYS TRANSCODING
+      #if defined(PNA)
 
       if ( GlobalModelType == MODELTYPE_PNA_HP31X )
 	{
@@ -2705,202 +1940,19 @@ savecodesize1:
 	  }
 	}
 
-#endif
+      #endif // PNA TRANSCODING
 
-
-#if defined(GNAV)
-      if (wParam == 0xF5){
-
-	if (MessageBoxX(hWnd,
-			TEXT("Shutdown?"),
-			TEXT("Altair system message"),
-			MB_YESNO|MB_ICONQUESTION) == IDYES) {
-
-	  SendMessage(hWnd, 
-		      WM_ACTIVATE, 
-		      MAKEWPARAM(WA_INACTIVE, 0), 
-		      (LPARAM)hWndMainWindow);
-	  SendMessage (hWndMainWindow, WM_CLOSE, 0, 0);
-	}
-
-	break;
-
-      }
-#endif
-Wirth:
-#ifdef DEBUG_MAPINPUT
-	DoStatusMessage(_T("Wirth"));
-#endif
       dwDownTime= 0L;
 
-      if (!DialogActive) { // JMW prevent keys being trapped if dialog is active
-	if (InputEvents::processKey(wParam)) {
-	  // TODO code: change to debugging DoStatusMessage(TEXT("Event in default"));
-	}
-	// XXX Should we only do this if it IS processed above ?
-	dwDownTime= 0L;
-	return TRUE; // don't go to default handler
-      } else {
-	// TODO code: debugging DoStatusMessage(TEXT("Event in dialog"));
-	if (InputEvents::processKey(wParam)) {
-	}
-	dwDownTime= 0L;
-	return TRUE; // don't go to default handler
-      }
-      // break; unreachable!
+      InputEvents::processKey(wParam);
+      dwDownTime= 0L;
+      return TRUE; 
     }
 
   return (DefWindowProc (hWnd, uMsg, wParam, lParam));
 }
 
 
-#ifndef MAP_ZOOM
-void MapWindow::ModifyMapScale(void) {
-  // limit zoomed in so doesn't reach silly levels
-  RequestMapScale = LimitMapScale(RequestMapScale); // FIX VENTA remove limit
-  MapScaleOverDistanceModify = RequestMapScale/DISTANCEMODIFY;
-  ResMapScaleOverDistanceModify = 
-    GetMapResolutionFactor()/MapScaleOverDistanceModify;
-  DrawScale = MapScaleOverDistanceModify;
-  DrawScale = DrawScale/111194;
-  DrawScale = GetMapResolutionFactor()/DrawScale;
-  InvDrawScale = 1.0/DrawScale;
-  MapScale = RequestMapScale;
-}
-
-
-bool MapWindow::isTargetPan(void) {
-  return TargetPan;
-}
-
-
-void MapWindow::UpdateMapScale()
-{
-  static int AutoMapScaleWaypointIndex = -1;
-  static double StartingAutoMapScale=0.0;
-  double AutoZoomFactor;
-
-  bool useraskedforchange = false;
-
-  // if there is user intervention in the scale
-  if(MapScale != RequestMapScale) {
-	ModifyMapScale();
-	useraskedforchange = true;
-  }
-
-  double wpd;
-  if (TargetPan) {
-	wpd = TargetZoomDistance;
-  } else {
-	wpd = DerivedDrawInfo.ZoomDistance; 
-  }
-  if (TargetPan) {
-	// set scale exactly so that waypoint distance is the zoom factor across the screen
-	RequestMapScale = LimitMapScale(wpd *DISTANCEMODIFY/ 4.0);
-	ModifyMapScale();
-	return;
-  } 
-  
-  if (AutoZoom) {
-	if(wpd > 0) {
-      
-		if(
-		   (((DisplayOrientation == NORTHTRACK)
-		     &&(DisplayMode != dmCircling))
-		    ||(DisplayOrientation == NORTHUP) 
-		    ||(DisplayOrientation == NORTHSMART)  // 100419
-		    || 
-		    (((DisplayOrientation == NORTHCIRCLE) 
-		      || (DisplayOrientation == TRACKCIRCLE)) 
-		     && (DisplayMode == dmCircling) ))
-		   && !TargetPan
-		   )
-		{
-	 		AutoZoomFactor = 2.5;
-		} else {
-			AutoZoomFactor = 4;
-		}
-      
-		if(
-		  (wpd < ( AutoZoomFactor * MapScaleOverDistanceModify))
-		  || 
-	  	  (StartingAutoMapScale==0.0)) 
-		{
-			// waypoint is too close, so zoom in
-			// OR just turned waypoint
-
-			// this is the first time this waypoint has gotten close,
-			// so save original map scale
-
-			if (StartingAutoMapScale==0.0) {
-				StartingAutoMapScale = MapScale;
-			}
-			else { // 101007 BUGFIX XCSOAR
-
-				// set scale exactly so that waypoint distance is the zoom factor across the screen
-				RequestMapScale = LimitMapScale(wpd *DISTANCEMODIFY/ AutoZoomFactor);
-				if (MapScale != RequestMapScale) { // do not loose time if same scale
-					ModifyMapScale();
-				}
-			}
-		} else {
-			if (useraskedforchange) {
-				// user asked for a zoom change and it was achieved, so reset starting map scale
-			}
-
-		}
-      } // wpd>0
-  } else { // !AutoZoom
-    
-	// reset starting map scale for auto zoom if momentarily switch
-	// off autozoom
-	// StartingAutoMapScale = RequestMapScale;
-	StartingAutoMapScale=0; //@ 101007 BUGFIX we need to reset it to let current mapscale be used on next azoom on
-  }
-
-  if (TargetPan) {
-	return;
-  }
-
-  LockTaskData();  // protect from external task changes
-#ifdef HAVEEXCEPTIONS
-  __try{
-#endif
-    // if we aren't looking at a waypoint, see if we are now
-    if (AutoMapScaleWaypointIndex == -1) {
-	if (ValidTaskPoint(ActiveWayPoint)) {
-		AutoMapScaleWaypointIndex = Task[ActiveWayPoint].Index;
-	}
-    }
-
-    if (ValidTaskPoint(ActiveWayPoint)) {
-
-	// if the current zoom focused waypoint has changed...
-	if (AutoMapScaleWaypointIndex != Task[ActiveWayPoint].Index) {
-
-		AutoMapScaleWaypointIndex = Task[ActiveWayPoint].Index;
-
-		// zoom back out to where we were before
-		if (StartingAutoMapScale> 0.0) {
-			RequestMapScale = StartingAutoMapScale;
-		}
-
-		// reset search for new starting zoom level
-		StartingAutoMapScale = 0.0;
-	}
-
-    }
-#ifdef HAVEEXCEPTIONS
-  }__finally
-#endif
-     {
-       UnlockTaskData();
-     }
-
-}
-
-
-#endif /* ! MAP_ZOOM */
 bool MapWindow::GliderCenter=false;
 
 
@@ -2911,34 +1963,18 @@ void MapWindow::CalculateOrientationNormal(void) {
   if( (DisplayOrientation == NORTHUP) 
       ||
       ((DisplayOrientation == NORTHTRACK)
-#ifndef MAP_ZOOM
-       &&(DisplayMode != dmCircling))
-#else /* MAP_ZOOM */
        &&(!mode.Is(Mode::MODE_CIRCLING)))
-#endif /* MAP_ZOOM */
 	|| (DisplayOrientation == NORTHSMART)  // 100419
       || 
       (
        ((DisplayOrientation == NORTHCIRCLE)
         ||(DisplayOrientation==TRACKCIRCLE))
-#ifndef MAP_ZOOM
-       && (DisplayMode == dmCircling) )
-#else /* MAP_ZOOM */
        && (mode.Is(Mode::MODE_CIRCLING)) )
-#endif /* MAP_ZOOM */
       ) {
-#ifndef NEWMOVEICON
-    GliderCenter = true;
-#else
-#ifndef MAP_ZOOM
-	if (DisplayMode == dmCircling)
-#else /* MAP_ZOOM */
 	if (mode.Is(Mode::MODE_CIRCLING))
-#endif /* MAP_ZOOM */
 		GliderCenter=true;
 	else
 		GliderCenter=false;
-#endif
     
     if (DisplayOrientation == TRACKCIRCLE) {
       DisplayAngle = DerivedDrawInfo.WaypointBearing;
@@ -2967,11 +2003,7 @@ void MapWindow::CalculateOrientationTargetPan(void) {
       &&(DisplayOrientation != NORTHSMART) // 100419
       &&(DisplayOrientation != NORTHTRACK)
       )    {
-#ifndef MAP_ZOOM
-    if (DisplayMode == dmCircling) {
-#else /* MAP_ZOOM */
     if (mode.Is(Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
       // target-up
       DisplayAngle = DerivedDrawInfo.WaypointBearing;
       DisplayAircraftAngle = 
@@ -2992,26 +2024,16 @@ void MapWindow::CalculateOrientationTargetPan(void) {
 
 void MapWindow::CalculateOrigin(const RECT rc, POINT *Orig)
 {
-#ifndef MAP_ZOOM
-  if (TargetPan) {
-#else /* MAP_ZOOM */
   if (mode.Is(Mode::MODE_TARGET_PAN)) {
-#endif /* MAP_ZOOM */
 	CalculateOrientationTargetPan();
   } else {
 	CalculateOrientationNormal();
   }
   
-#ifndef MAP_ZOOM
-  if ( EnablePan || DisplayMode==dmCircling) {
-#else /* MAP_ZOOM */
   if ( mode.AnyPan() || mode.Is(Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
 	Orig->x = (rc.left + rc.right)/2;
 	Orig->y = (rc.bottom + rc.top)/2;
   } else {
-	#if NEWMOVEICON
-	#if 100415
 	// automagic northup smart
 	if (DisplayOrientation == NORTHSMART) { 
 		double trackbearing = DrawInfo.TrackBearing;
@@ -3030,35 +2052,9 @@ void MapWindow::CalculateOrigin(const RECT rc, POINT *Orig)
 			Orig->x= middleXY - (int)(spanxy*fastsine(trackbearing));
 			Orig->y = ((rc.bottom-BottomSize) + rc.top)/2;
 		}
-/* REMOVE
-
-		//double spany=(rc.bottom-BottomSize)-NIBLSCALE(40)- middleY;
-		if (InfoBoxLayout::landscape) {
-			spany=NIBLSCALE(50);
-			Orig->y= middleY + (int)(spany*fastcosine(trackbearing));
-			Orig->x = (rc.left + rc.right)/2;
-		} else { 
-			spanx=NIBLSCALE(40);
-			Orig->x= middleX + (int)(spany*fastcosine(trackbearing));
-			Orig->y = ((rc.bottom-BottomSize) + rc.top)/2;
-		}
-*/
 	} else {
-/*
-		if (DisplayOrientation == NORTHUP) { 
-			Orig->x = (rc.left + rc.right)/2;
-			Orig->y = (rc.bottom + rc.top)/2;
-		} else {
-			Orig->x = ((rc.right - rc.left )*GliderScreenPositionX/100)+rc.left;
-			Orig->y = ((rc.top - rc.bottom )*GliderScreenPositionY/100)+rc.bottom;
-		}
-*/
 		// 100924 if we are in north up autorient, position the glider in middle screen
-#ifndef MAP_ZOOM
-		if ((MapScale*1.4) >= AutoOrientScale) {
-#else /* MAP_ZOOM */
 		if ((zoom.Scale()*1.4) >= AutoOrientScale) {
-#endif /* MAP_ZOOM */
 			Orig->x = (rc.left + rc.right)/2;
 			Orig->y=((rc.bottom-BottomSize)+rc.top)/2;
 		} else {
@@ -3067,14 +2063,6 @@ void MapWindow::CalculateOrigin(const RECT rc, POINT *Orig)
 			Orig->y = ((rc.top - rc.bottom )*GliderScreenPositionY/100)+rc.bottom;
 		}
 	}
-	#else // no 100415
-		Orig->x = ((rc.right - rc.left )*GliderScreenPositionX/100)+rc.left;
-		Orig->y = ((rc.top - rc.bottom )*GliderScreenPositionY/100)+rc.bottom;
-	#endif
-	#else
-	Orig->x = (rc.left + rc.right)/2;
-	Orig->y = ((rc.top - rc.bottom )*GliderScreenPosition/100)+rc.bottom;
-	#endif
   }
 }
 
@@ -3096,100 +2084,43 @@ bool MapWindow::RenderTimeAvailable() {
 void MapWindow::DrawThermalEstimate(HDC hdc, const RECT rc) {
   POINT screen;
   HPEN oldPen;
-  /*
-  #if NOSIM
-  static short counter=0;
-  #else
-  #ifdef _SIM_
-  static short counter=0;
-  #endif
-  #endif
-  */
   if (!EnableThermalLocator) return;
 
-#ifndef MAP_ZOOM
-  if (DisplayMode == dmCircling) {
-#else /* MAP_ZOOM */
   if (mode.Is(Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
 	if (DerivedDrawInfo.ThermalEstimate_R>0) {
 		LatLon2Screen(DerivedDrawInfo.ThermalEstimate_Longitude, DerivedDrawInfo.ThermalEstimate_Latitude, screen);
 		DrawBitmapIn(hdc, screen, hBmpThermalSource);
 
 		SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-		oldPen=(HPEN)SelectObject(hdc, hpThermalCircle); // white
-		if (ISPARAGLIDER) {
-#ifndef MAP_ZOOM
-			Circle(hdc, screen.x, screen.y, (int)(50*ResMapScaleOverDistanceModify), rc); //@ 101101
-#else /* MAP_ZOOM */
-			Circle(hdc, screen.x, screen.y, (int)(50*zoom.ResScaleOverDistanceModify()), rc); //@ 101101
-#endif /* MAP_ZOOM */
-		} else {
-#ifndef MAP_ZOOM
-			Circle(hdc, screen.x, screen.y, (int)(100*ResMapScaleOverDistanceModify), rc); //@ 101101
-#else /* MAP_ZOOM */
-			Circle(hdc, screen.x, screen.y, (int)(100*zoom.ResScaleOverDistanceModify()), rc); //@ 101101
-#endif /* MAP_ZOOM */
-			SelectObject(hdc, hpAircraftBorder); 
-#ifndef MAP_ZOOM
-			Circle(hdc, screen.x, screen.y, (int)(100*ResMapScaleOverDistanceModify)+NIBLSCALE(2), rc); //@ 101101
-			Circle(hdc, screen.x, screen.y, (int)(100*ResMapScaleOverDistanceModify), rc); //@ 101101
-#else /* MAP_ZOOM */
-			Circle(hdc, screen.x, screen.y, (int)(100*zoom.ResScaleOverDistanceModify())+NIBLSCALE(2), rc); //@ 101101
-			Circle(hdc, screen.x, screen.y, (int)(100*zoom.ResScaleOverDistanceModify()), rc); //@ 101101
-#endif /* MAP_ZOOM */
-		}
-/* 101219 This would display circles around the simulated thermal, but people is confused.
-		#if NOSIM
+		double tradius;
+		if (ISPARAGLIDER)
+			tradius=50;
+		else
+			tradius=100;
+			
+		oldPen=(HPEN)SelectObject(hdc, LKPen_White_N3); 
+		Circle(hdc, screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
+		SelectObject(hdc, hpAircraftBorder); 
+		Circle(hdc, screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify())+NIBLSCALE(2), rc);
+		Circle(hdc, screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
+
+		/* 101219 This would display circles around the simulated thermal, but people is confused.
 		if (SIMMODE && (ThLatitude>1 && ThLongitude>1)) { // there's a thermal to show
 			if ((counter==5 || counter==6|| counter==7)) {
 				LatLon2Screen(ThLongitude, ThLatitude, screen);
 				SelectObject(hdc, hSnailPens[7]);  
-#ifndef MAP_ZOOM
-				Circle(hdc, screen.x, screen.y, (int)(ThermalRadius*ResMapScaleOverDistanceModify), rc); 
-#else
 				Circle(hdc, screen.x, screen.y, (int)(ThermalRadius*zoom.ResScaleOverDistanceModify()), rc); 
-#endif
 				SelectObject(hdc, hSnailPens[7]); 
-#ifndef MAP_ZOOM
-				Circle(hdc, screen.x, screen.y, (int)((ThermalRadius+SinkRadius)*ResMapScaleOverDistanceModify), rc); 
-#else
 				Circle(hdc, screen.x, screen.y, (int)((ThermalRadius+SinkRadius)*zoom.ResScaleOverDistanceModify()), rc); 
-#endif
 			}
 			if (++counter>=60) counter=0;
 		}
-		#else
-		#ifdef _SIM_	//@ 101104
-		if (ThLatitude>1 && ThLongitude>1) { // there's a thermal to show
-			if (counter==5 || counter==6|| counter==7) {
-				LatLon2Screen(ThLongitude, ThLatitude, screen);
-				SelectObject(hdc, hSnailPens[7]);  
-#ifndef MAP_ZOOM
-				Circle(hdc, screen.x, screen.y, (int)(ThermalRadius*ResMapScaleOverDistanceModify), rc); 
-#else
-				Circle(hdc, screen.x, screen.y, (int)(ThermalRadius*zoom.ResScaleOverDistanceModify()), rc); 
-#endif
-				SelectObject(hdc, hSnailPens[7]); 
-#ifndef MAP_ZOOM
-				Circle(hdc, screen.x, screen.y, (int)((ThermalRadius+SinkRadius)*ResMapScaleOverDistanceModify), rc); 
-#else
-				Circle(hdc, screen.x, screen.y, (int)((ThermalRadius+SinkRadius)*zoom.ResScaleOverDistanceModify()), rc); 
-#endif
-			}
-			if (++counter>=30) counter=0;
-		}
-		#endif
-		#endif
- */
+ 		*/
+
 		SelectObject(hdc,oldPen);
 	}
   } else {
-#ifndef MAP_ZOOM
-	if (MapScale <= 4) {
-#else /* MAP_ZOOM */
 	if (zoom.Scale() <= 4) {
-#endif /* MAP_ZOOM */
 		for (int i=0; i<MAX_THERMAL_SOURCES; i++) {
 			if (DerivedDrawInfo.ThermalSources[i].Visible) {
 				DrawBitmapIn(hdc, DerivedDrawInfo.ThermalSources[i].Screen, hBmpThermalSource);
@@ -3206,17 +2137,7 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 {
   HFONT hfOld;
 
-#ifndef MAP_ZOOM
-
-  static bool alreadyTriggered=false;
-  //static double lastTrigger=0;
-  static double savedMapScale=0;
-  static double savedRequestMapScale=0;
-  static double savedMapScaleOverDistanceModify=0;
-
-#endif /* ! MAP_ZOOM */
   // Calculations are taking time and slow down painting of map, beware
-  #if MULTICALC
   #define MULTICALC_MINROBIN	5	// minimum split
   #define MULTICALC_MAXROBIN	20	// max split
   static short multicalc_slot=0;// -1 (which becomes immediately 0) will force full loading on startup, but this is not good
@@ -3244,79 +2165,30 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
   // Basically we assume -like for nearest- that values will not change that much in the multicalc split time.
   // Target and tasks are recalculated in real time in any case. Nearest too. 
   LKCalculateWaypointReachable(multicalc_slot, numslots);
-  #else
-  // -- no multicalc
-#ifdef LK8000_OPTIMIZE
-  #ifdef FLIPFLOP
-  static bool flipflop=true;
-  if (flipflop) {
-	CalculateWaypointReachableNew();
-	flipflop=false;
-  } else flipflop=true;
-  #else
-  CalculateWaypointReachableNew();
-  #endif
-#else
-  CalculateWaypointReachable();
-#endif
-  #endif // no multicalc 
   CalculateScreenPositionsAirspace();
   CalculateScreenPositionsThermalSources();
   CalculateScreenPositionsGroundline();
 
   if (PGZoomTrigger) {
-#ifndef MAP_ZOOM
-	if (!alreadyTriggered) {
-		alreadyTriggered=true;
-#else /* MAP_ZOOM */
     if(!mode.Is(Mode::MODE_PANORAMA)) {
       mode.Special(Mode::MODE_SPECIAL_PANORAMA, true);
-#endif /* MAP_ZOOM */
 		LastZoomTrigger=GPS_INFO.Time;
-#ifndef MAP_ZOOM
-		savedMapScale=MapWindow::MapScale;
-		savedRequestMapScale=RequestMapScale;
-		savedMapScaleOverDistanceModify=MapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
       
-#endif /* MAP_ZOOM */
-		// maybe todo check mode and remember where were these parameters taken from.. 
-#ifndef MAP_ZOOM
-		if (ISPARAGLIDER) // 100316
-			Event_SetZoom(5.0);
-		else
-			Event_SetZoom(7.0);
-#endif /* ! MAP_ZOOM */
-		Message::Lock(); // 091211
-	        // Message::AddMessage(1000, 3, _T("LANDSCAPE ZOOM for 20\"")); // REMOVE FIXV2
+		Message::Lock();
 	        Message::AddMessage(1000, 3, gettext(TEXT("_@M872_"))); // LANDSCAPE ZOOM FOR 20s
 		Message::Unlock();
       		#ifndef DISABLEAUDIO
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_TONEUP"));
 		#endif
-#ifndef MAP_ZOOM
-	} else {
-#else /* MAP_ZOOM */
     }
     else {
-#endif /* MAP_ZOOM */
 		// previously called, see if time has passed
 		if ( GPS_INFO.Time > (LastZoomTrigger + 20.0)) {
 			// time has passed, lets go back
-#ifndef MAP_ZOOM
-			Event_SetZoom(savedRequestMapScale);
-#else /* MAP_ZOOM */
-        
-#endif /* MAP_ZOOM */
 			LastZoomTrigger=0; // just for safety
-#ifndef MAP_ZOOM
-			alreadyTriggered=false;
-#else /* MAP_ZOOM */
         mode.Special(Mode::MODE_SPECIAL_PANORAMA, false);
-#endif /* MAP_ZOOM */
 			PGZoomTrigger=false;
-			Message::Lock(); // 091211
-	        	// Message::AddMessage(1500, 3, _T("BACK TO NORMAL ZOOM")); // REMOVE FIXV2
+			Message::Lock(); 
 	        	Message::AddMessage(1500, 3, gettext(TEXT("_@M873_"))); // BACK TO NORMAL ZOOM
 			Message::Unlock();
       			#ifndef DISABLEAUDIO
@@ -3326,9 +2198,6 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 	}
   }
 	
-#ifndef MAP_ZOOM
-
-#endif /* ! MAP_ZOOM */
   // let the calculations run, but dont draw anything but the look8000 when in MapSpaceMode != MSM_MAP
   if (DONTDRAWTHEMAP) 
   {
@@ -3349,6 +2218,7 @@ QuickRedraw: // 100318 speedup redraw
   if (!EnableTerrain || !DerivedDrawInfo.TerrainValid || !RasterTerrain::isTerrainLoaded() ) {
 
     // display border and fill background..
+	#if USEIBOX
 	if(InfoWindowActive) {
 		SelectObject(hdc, hInvBackgroundBrush[BgMapColor]); 
 		SelectObject(hdc, GetStockObject(BLACK_PEN));
@@ -3362,6 +2232,11 @@ QuickRedraw: // 100318 speedup redraw
 			SelectObject(hdc, GetStockObject(WHITE_PEN));
 		}
 	}
+	#else
+	SelectObject(hdc, hInvBackgroundBrush[BgMapColor]);
+	SelectObject(hdc, GetStockObject(WHITE_PEN));
+	#endif // USEIBOX
+
 	Rectangle(hdc,rc.left,rc.top,rc.right,rc.bottom);
 	// We force LK painting black values on screen depending on the background color in use
 	// TODO make it an array once settled
@@ -3379,13 +2254,8 @@ QuickRedraw: // 100318 speedup redraw
   
   // ground first...
   
-#ifndef MAP_ZOOM
-  if (BigZoom) {
-    BigZoom = false;
-#else /* MAP_ZOOM */
   if (zoom.BigZoom()) {
     zoom.BigZoom(false);
-#endif /* MAP_ZOOM */
   }
   
   if (DONTDRAWTHEMAP) { // 100319
@@ -3395,27 +2265,18 @@ QuickRedraw: // 100318 speedup redraw
 
   if ((EnableTerrain && (DerivedDrawInfo.TerrainValid) 
        && RasterTerrain::isTerrainLoaded())
+#if USEWEATHER
       || RasterTerrain::render_weather) {
+#else
+	) {
+#endif
 	// sunelevation is never used, it is still a todo in Terrain
 	double sunelevation = 40.0;
-	#if 0
-	double sunazimuth = DisplayAngle-DerivedDrawInfo.WindBearing;
-	// draw sun from constant angle if very low wind speed
-	if (DerivedDrawInfo.WindSpeed<0.5) {
-		sunazimuth = DisplayAngle + 45.0;
-	} 
-	#else
-	// 101013 XCSOAR BUGFIX SUNAZIMUTH
 	double sunazimuth=GetAzimuth();
-	#endif
 
     if (MapDirty) {
       // map has been dirtied since we started drawing, so hurry up
-#ifndef MAP_ZOOM
-      BigZoom = true;
-#else /* MAP_ZOOM */
       zoom.BigZoom(true);
-#endif /* MAP_ZOOM */
     }
 
     LockTerrainDataGraphics();
@@ -3458,15 +2319,9 @@ QuickRedraw: // 100318 speedup redraw
   for (short nvi=0; nvi<SCREENVSLOTS; nvi++) nVLabelBlocks[nvi]=0;
   #endif
   
-  #ifndef NOTASKABORT 
-  if (!TaskIsTemporary()) {
-    DrawTaskAAT(hdc, rc);
-  }
-  #else
   if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) { // 100503
 	DrawTaskAAT(hdc, rc);
   }
-  #endif
 
   
  	if (DONTDRAWTHEMAP) { // 100319
@@ -3474,17 +2329,13 @@ QuickRedraw: // 100318 speedup redraw
 		goto QuickRedraw;
 	}
  
-  #if ABLEND 
   if (OnAirSpace > 0)  // Default is true, always true at startup no regsave 
   {
-    if (GetAirSpaceFillType() == asp_fill_ablend)
+    if ( (GetAirSpaceFillType() == asp_fill_ablend_full) || (GetAirSpaceFillType() == asp_fill_ablend_borders) )
       DrawTptAirSpace(hdc, rc);
     else
       DrawAirSpace(hdc, rc);
   }
-  #else
-  if (OnAirSpace > 0) DrawAirSpace(hdc, rc); // Default is true, always true at startup no regsave 
-  #endif
 
  	if (DONTDRAWTHEMAP) { // 100319
 		SelectObject(hdcDrawWindow, hfOld);
@@ -3507,17 +2358,9 @@ QuickRedraw: // 100318 speedup redraw
 
   DrawThermalEstimate(hdc, rc);
  
-  #ifdef NOTASKABORT 
   if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) { // 100503
 	DrawTask(hdc, rc, Orig_Aircraft);
   }
-  #else
-  if (TaskAborted) {
-    DrawAbortedTask(hdc, rc, Orig_Aircraft);
-  } else {
-    DrawTask(hdc, rc, Orig_Aircraft);
-  }
-  #endif
   
   // draw red cross on glide through terrain marker
   if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid) {
@@ -3528,61 +2371,49 @@ QuickRedraw: // 100318 speedup redraw
 		SelectObject(hdcDrawWindow, hfOld);
 		goto QuickRedraw;
 	}
-
-  #ifdef LK8000_OPTIMIZE
+  if ((OnAirSpace > 0) && AirspaceWarningMapLabels)
+  {
+	DrawAirspaceLabels(hdc, rc, Orig_Aircraft);
+	if (DONTDRAWTHEMAP) { // 100319
+		SelectObject(hdcDrawWindow, hfOld);
+		goto QuickRedraw;
+	}
+  }
   DrawWaypointsNew(hdc,rc);
-  #else
-  if (NewMap) DrawWaypointsNew(hdc,rc);
-  else DrawWaypoints(hdc,rc);
-  #endif
-
  	if (DONTDRAWTHEMAP) { // 100319
 		SelectObject(hdcDrawWindow, hfOld);
 		goto QuickRedraw;
 	}
 
   DrawTeammate(hdc, rc);
- 
-//  VENTA 090711 TEST disabled DrawSpotHeights QUI
-// watchout for upcoming SSA errors in the gcc compiler if not using #if 0
+
+#if USEWEATHER 
 #if (0)
+// watchout for upcoming SSA errors in the gcc compiler if not using #if 0
   if ((EnableTerrain && (DerivedDrawInfo.TerrainValid))
       || RasterTerrain::render_weather) {
     DrawSpotHeights(hdc);
   } 
 #endif
+#endif
   
   if (extGPSCONNECT) {
     // TODO enhancement: don't draw offtrack indicator if showing spot heights
     DrawProjectedTrack(hdc, rc, Orig_Aircraft);
-    #ifndef LK8000_OPTIMIZE
-    DrawOffTrackIndicator(hdc, rc);
-    #endif
+    // DrawOffTrackIndicator(hdc, rc); 
     DrawBestCruiseTrack(hdc, Orig_Aircraft);
     DrawBearing(hdc, rc);
   }
 
   // draw wind vector at aircraft
-#ifndef MAP_ZOOM
-  if (!EnablePan) {
-#else /* MAP_ZOOM */
   if (!mode.AnyPan()) {
-#endif /* MAP_ZOOM */
     DrawWindAtAircraft2(hdc, Orig_Aircraft, rc);
-#ifndef MAP_ZOOM
-  } else if (TargetPan) {
-#else /* MAP_ZOOM */
   } else if (mode.Is(Mode::MODE_TARGET_PAN)) {
-#endif /* MAP_ZOOM */
     DrawWindAtAircraft2(hdc, Orig, rc);
   }
 
   // VisualGlide drawn BEFORE lk8000 overlays
-#ifndef MAP_ZOOM
-  if ( (!TargetPan) && (!EnablePan) && (VisualGlide>0) ) {
-#else /* MAP_ZOOM */
   if (!mode.AnyPan() && VisualGlide > 0) {
-#endif /* MAP_ZOOM */
     DrawGlideCircle(hdc, Orig, rc); 
   }
 
@@ -3592,31 +2423,18 @@ QuickRedraw: // 100318 speedup redraw
 	}
 
   // Draw traffic and other specifix LK gauges
-  if (Look8000) { // 091111
   	LKDrawFLARMTraffic(hdc, rc, Orig_Aircraft);
-#ifndef MAP_ZOOM
-	if ( !EnablePan) DrawLook8000(hdc,rc); 
-	if (LKVarioBar && IsMapFullScreen() && !EnablePan) // 091214 do not draw Vario when in Pan mode
-#else /* MAP_ZOOM */
 	if ( !mode.AnyPan()) DrawLook8000(hdc,rc); 
+#if USEIBOX
 	if (LKVarioBar && IsMapFullScreen() && !mode.AnyPan()) // 091214 do not draw Vario when in Pan mode
-#endif /* MAP_ZOOM */
+#else
+	if (LKVarioBar && !mode.AnyPan()) // 091214 do not draw Vario when in Pan mode
+#endif
 		LKDrawVario(hdc,rc); // 091111
-  #ifdef LK8000_OPTIMIZE
-  }
-  #else
-  } else {
-	DrawFLARMTraffic(hdc, rc, Orig_Aircraft);
-  }
-  #endif
   
   // finally, draw you!
   // Draw cross air for panmode, instead of aircraft icon
-#ifndef MAP_ZOOM
-  if (EnablePan && !TargetPan) {
-#else /* MAP_ZOOM */
   if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN)) {
-#endif /* MAP_ZOOM */
     DrawCrossHairs(hdc, Orig, rc);
   }
 
@@ -3625,11 +2443,7 @@ QuickRedraw: // 100318 speedup redraw
     DrawAircraft(hdc, Orig_Aircraft);
   }
 
-#ifndef MAP_ZOOM
-  if ( (!TargetPan) && (!EnablePan) && (Look8000)  ) {
-#else /* MAP_ZOOM */
-  if (!mode.AnyPan() && Look8000) {
-#endif /* MAP_ZOOM */
+  if (!mode.AnyPan()) {
 	if (TrackBar) DrawHeading(hdc, Orig, rc); 
   }
 
@@ -3662,12 +2476,12 @@ void MapWindow::RenderMapWindow(  RECT rc)
     userasked = false;
   }
   MapWindow::UpdateTimeStats(true);
+
+  if (LockModeStatus) LockMode(9); // check if unlock is now possible 
   
   POINT Orig, Orig_Aircraft;
 
-  #if AUTORIENT
   SetAutoOrientation(false); // false for no reset Old values
-  #endif  
   CalculateOrigin(rc, &Orig);
 
   // this is calculating waypoint visible, and must be executed before rendermapwindowbg which calls   
@@ -3675,69 +2489,47 @@ void MapWindow::RenderMapWindow(  RECT rc)
   // This is also calculating CalculateScreenBounds 0.0  and placing it inside MapWindow::screenbounds_latlon
   CalculateScreenPositions(Orig, rc, &Orig_Aircraft);
 
+  LKUpdateOlc();
+
   RenderMapWindowBg(hdcDrawWindow, rc, Orig, Orig_Aircraft);
 
   if (DONTDRAWTHEMAP) {
   	DrawFlightMode(hdcDrawWindow, rc);
   	DrawGPSStatus(hdcDrawWindow, rc);
+	DrawLKAlarms(hdcDrawWindow, rc);
+	#if (WINDOWSPC<1)
+	LKBatteryManager();
+	#endif
 
 	return;
   }
   // overlays
-  #ifndef NOCDIGAUGE
-  DrawCDI();
-  #endif
 
   hfOld = (HFONT)SelectObject(hdcDrawWindow, MapWindowFont);
   
-#ifndef MAP_ZOOM
-  DrawMapScale(hdcDrawWindow,rc, BigZoom);
-#else /* MAP_ZOOM */
   DrawMapScale(hdcDrawWindow,rc, zoom.BigZoom());
-#endif /* MAP_ZOOM */
 
   DrawCompass(hdcDrawWindow, rc);
-
-  // JMW Experimental only! EXPERIMENTAL
-#if 0
-  //  #ifdef GNAV
-  if (EnableAuxiliaryInfo) {
-//    DrawHorizon(hdcDrawWindow, rc);
-  }
-  //  #endif
-#endif
 
   DrawFlightMode(hdcDrawWindow, rc);
 
   // REMINDER TODO let it be configurable for not circling also, as before
-#ifndef MAP_ZOOM
-  if (!(NewMap && Look8000) || (DisplayMode == dmCircling) )
-#else /* MAP_ZOOM */
-  if (!(NewMap && Look8000) || (mode.Is(Mode::MODE_CIRCLING)) )
-#endif /* MAP_ZOOM */
+  if ((mode.Is(Mode::MODE_CIRCLING)) )
 	if (ThermalBar) DrawThermalBand(hdcDrawWindow, rc); // 091122
 
 
-#ifndef MAP_ZOOM
-  if (!EnablePan) // 091214
-#else /* MAP_ZOOM */
   if (!mode.AnyPan()) // 091214
-#endif /* MAP_ZOOM */
   DrawFinalGlide(hdcDrawWindow,rc);
 
   // DrawSpeedToFly(hdcDrawWindow, rc);  // Usable
 
   DrawGPSStatus(hdcDrawWindow, rc);
 
-  /*
-   * This may not be the correct place for locking map. 
-   * In fact we just need once in a second somewhere to check for the following:
-   * 	if infobox are under focus and maplocking active then keep it locked
-   */
-  if ( InfoWindowActive && UseMapLock && NewMap ) {
-              LockMap();
-  }
+  #if (WINDOWSPC<1)
+  LKBatteryManager();
+  #endif
 
+  DrawLKAlarms(hdcDrawWindow, rc);
 
   SelectObject(hdcDrawWindow, hfOld);
 
@@ -3749,11 +2541,7 @@ void MapWindow::UpdateInfo(NMEA_INFO *nmea_info,
   LockFlightData();
   memcpy(&DrawInfo,nmea_info,sizeof(NMEA_INFO));
   memcpy(&DerivedDrawInfo,derived_info,sizeof(DERIVED_INFO));
-#ifndef MAP_ZOOM
-  UpdateMapScale(); // done here to avoid double latency due to locks 
-#else /* MAP_ZOOM */
   zoom.UpdateMapScale(); // done here to avoid double latency due to locks 
-#endif /* MAP_ZOOM */
   UnlockFlightData();
 }
 
@@ -3790,24 +2578,12 @@ void MapWindow::UpdateCaches(bool force) {
   fpsTimeThis = ::GetTickCount();
   static DWORD fpsTimeLast_terrain=0;
 
-
-#ifdef LK8000_OPTIMIZE  	// 100115
   if (EnableTerrain) {
 	if (RenderTimeAvailable() || ((fpsTimeThis-fpsTimeLast_terrain)>5000) || force) {
 		fpsTimeLast_terrain = fpsTimeThis;
 		RasterTerrain::ServiceCache();
 	}
   }
-#else
-  if (RenderTimeAvailable() ||
-      (fpsTimeThis-fpsTimeLast_terrain>5000) || force) {
-    // have some time, do graphics terrain cache update if necessary
-    if (EnableTerrain) {
-      fpsTimeLast_terrain = fpsTimeThis;
-      RasterTerrain::ServiceCache();
-    }
-  }
-#endif
 }
 
 
@@ -3835,9 +2611,13 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
   GetClientRect(hWndMapWindow, &MapRectBig);
 
   UpdateTimeStats(true);
-  
+
+#if USEIBOX  
   MapRectSmall = MapRect;
   MapRect = MapRectSmall;
+#else
+  MapRect = MapRectBig;
+#endif
   
   SetBkMode(hdcDrawWindow,TRANSPARENT);
   SetBkMode(hDCTemp,OPAQUE);
@@ -3858,13 +2638,8 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
   UpdateTimeStats(true);
   //
 
-#ifndef MAP_ZOOM
-  RequestMapScale = MapScale;
-  ModifyMapScale();
-#else /* MAP_ZOOM */
   zoom.RequestedScale(zoom.Scale());
   zoom.ModifyMapScale();
-#endif /* MAP_ZOOM */
   
   bool first = true;
 
@@ -3872,6 +2647,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
     hAirspacePens[i] =
       CreatePen(PS_SOLID, NIBLSCALE(2), Colours[iAirspaceColour[i]]);
   }
+  hAirspaceBorderPen = CreatePen(PS_SOLID, NIBLSCALE(10), RGB_WHITE);
 
   while (!CLOSETHREAD) 
     {
@@ -3898,31 +2674,15 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 	MapDirty = false;
       }
 
-#ifndef LK8000_OPTIMIZE
-#ifndef MAP_ZOOM
-      if (BigZoom && !NewMap) {
-#else /* MAP_ZOOM */
-      if (zoom.BigZoom() && !NewMap) {
-#endif /* MAP_ZOOM */
-	// quickly draw zoom level on top
-	// Messy behaviour with NewMap
-	DrawMapScale(hdcScreen, MapRect, true); 
-      }
-#endif
-
       MapWindow::UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
 
+#if USEIBOX
       if (RequestFullScreen != MapFullScreen) {
 	ToggleFullScreenStart();
       }
+#endif
 
-      //if ( !( IsMapFullScreen() && !EnablePan && Look8000 && NewMap && MapSpaceMode==1) ) { // VENTA TODO QUI FIX CRITIC
-
-	      #ifndef NOFLARMGAUGE
-	      GaugeFLARM::Render(&DrawInfo);
-	      #endif
-	      RenderMapWindow(MapRect);
-      //}
+      RenderMapWindow(MapRect);
     
       if (!first) {
 	BitBlt(hdcScreen, 0, 0, 
@@ -3933,22 +2693,12 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
       }
       UpdateTimeStats(false);
 
-
-	#if (WINDOWSPC<1)
-	LKBatteryManager();
-	#endif
-
-
       // we do caching after screen update, to minimise perceived delay
       UpdateCaches(first);
       first = false;
       if (ProgramStarted==psInitDone) {
 	ProgramStarted = psFirstDrawDone;
 
-#ifndef NOVARIOGAUGE
-	if ( (InfoBoxLayout::InfoBoxGeometry==6) && (InfoBoxLayout::landscape == true) )
-		GaugeVario::Show(!MapFullScreen);
-#endif
       }
 #ifdef CPUSTATS
 	if ( (GetThreadTimes( hDrawThread, &CreationTime, &ExitTime,&EndKernelTime,&EndUserTime)) == 0) {
@@ -4036,19 +2786,11 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
     HBRUSH hbPAircraftSolidBg;
 
     if (BlackScreen) {
-	#if LKOBJ
       hbPAircraftSolid = LKBrush_LightCyan;
       hbPAircraftSolidBg = LKBrush_Blue;
     } else {
       hbPAircraftSolid = LKBrush_Blue;
       hbPAircraftSolidBg = LKBrush_Grey;
-	#else
-      hbPAircraftSolid = (HBRUSH) CreateSolidBrush(RGB_LIGHTCYAN);
-      hbPAircraftSolidBg = (HBRUSH) CreateSolidBrush(RGB_BLUE);
-    } else {
-      hbPAircraftSolid = (HBRUSH) CreateSolidBrush(RGB_BLUE);
-      hbPAircraftSolidBg = (HBRUSH) CreateSolidBrush(RGB_GREY);
-	#endif
     }
 
     HBRUSH hbPOld = (HBRUSH)SelectObject(hdc, hbPAircraftSolidBg);
@@ -4074,15 +2816,10 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
     SelectObject(hdc, hpPOld);
     SelectObject(hdc, hbPOld);
 
-    #ifndef LKOBJ
-    DeleteObject(hbPAircraftSolid);
-    DeleteObject(hbPAircraftSolidBg);
-    #endif
-    
     return;
   }
 
-  if (Appearance.Aircraft == afAircraftDefault){
+  if ( ISGAAIRCRAFT ) {
 
 #define NUMAIRCRAFTPOINTS 16
 
@@ -4110,23 +2847,8 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
     HBRUSH hbAircraftSolid; 
     HBRUSH hbAircraftSolidBg;
 
-	#if LKOBJ
-    if (Appearance.InverseAircraft) {
-      hbAircraftSolid = LKBrush_White;
-      hbAircraftSolidBg = LKBrush_Black;
-    } else {
-      hbAircraftSolid = LKBrush_Black;
-      hbAircraftSolidBg = LKBrush_White;
-    }
-	#else
-    if (Appearance.InverseAircraft) {
-      hbAircraftSolid = (HBRUSH) CreateSolidBrush(RGB_WHITE);
-      hbAircraftSolidBg = (HBRUSH) CreateSolidBrush(RGB_BLACK);
-    } else {
-      hbAircraftSolid = (HBRUSH) CreateSolidBrush(RGB_BLACK);
-      hbAircraftSolidBg = (HBRUSH) CreateSolidBrush(RGB_WHITE);
-    }
-	#endif
+    hbAircraftSolid = LKBrush_Black;
+    hbAircraftSolidBg = LKBrush_White;
 
     HBRUSH hbOld = (HBRUSH)SelectObject(hdc, hbAircraftSolidBg);
     hpOld = (HPEN)SelectObject(hdc, hpAircraft);
@@ -4150,15 +2872,12 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
 
     SelectObject(hdc, hpOld);
     SelectObject(hdc, hbOld);
-
-    #ifndef LKOBJ
-    DeleteObject(hbAircraftSolid);
-    DeleteObject(hbAircraftSolidBg);
-    #endif
     
-  } else
+    return;
 
-    if (Appearance.Aircraft == afAircraftAltA){
+  }
+
+      // GLIDER AICRAFT NORMAL ICON
 
       HPEN oldPen;
       POINT Aircraft[] = {
@@ -4181,17 +2900,6 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
 	{1, -5},
       };
 
-      /* Experiment, when turning show the high wing larger, 
-	 low wing smaller
-	 if (DerivedDrawInfo.TurnRate>10) {
-	 Aircraft[3].y = 0;
-	 Aircraft[12].y = 2;
-	 } else if (DerivedDrawInfo.TurnRate<-10) {
-	 Aircraft[3].y = 2;
-	 Aircraft[12].y = 0;
-	 }
-      */
-
       int n = sizeof(Aircraft)/sizeof(Aircraft[0]);
 
       double angle = DisplayAircraftAngle+
@@ -4204,18 +2912,13 @@ void MapWindow::DrawAircraft(HDC hdc, const POINT Orig)
       Polygon(hdc, Aircraft, n);
 
       HBRUSH hbOld;
-      if (Appearance.InverseAircraft) {
-	hbOld = (HBRUSH)SelectObject(hdc, GetStockObject(WHITE_BRUSH));
-      } else {
-	hbOld = (HBRUSH)SelectObject(hdc, GetStockObject(BLACK_BRUSH));
-      }
+      hbOld = (HBRUSH)SelectObject(hdc, GetStockObject(BLACK_BRUSH));
       SelectObject(hdc, hpAircraftBorder); // hpBearing
       Polygon(hdc, Aircraft, n);
 
       SelectObject(hdc, oldPen);
       SelectObject(hdc, hbOld);
 
-    }
 
 }
 
@@ -4254,33 +2957,26 @@ void MapWindow::DrawBitmapIn(const HDC hdc, const POINT &sc, const HBITMAP h) {
               hDCTemp,10,0,SRCAND);
 }
 
-
+// This will draw both GPS and LOCK SCREEN status
 void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
 {
 
-//StartupStore(_T("NAVWarn=%d Sats=%d\n"),DrawInfo.NAVWarning,DrawInfo.SatellitesUsed); REMOVE
   HFONT oldfont=NULL;
-#ifndef MAP_ZOOM
-  if ((MapSpaceMode==MSM_WELCOME)||(MapWindow::isPan()) ) return; // 100210
-#else /* MAP_ZOOM */
   if ((MapSpaceMode==MSM_WELCOME)||(mode.AnyPan()) ) return; // 100210
-#endif /* MAP_ZOOM */
 
-  if (extGPSCONNECT && !(DrawInfo.NAVWarning) && (DrawInfo.SatellitesUsed != 0)) 
-    // nothing to do
-    return;
-  TCHAR gpswarningtext2[] = TEXT(" GPS: NO VALID FIX ");
+  if (!LKLanguageReady) return;
+
+  if (extGPSCONNECT && !(DrawInfo.NAVWarning) && (DrawInfo.SatellitesUsed != 0)) {
+	if (LockModeStatus) goto goto_DrawLockModeStatus;
+	return;
+  }
+
   static bool firstrun=true;
-  TCHAR gpswarningtext3[] = TEXT(" GPS: No ComPort ");
-  TCHAR gpswarningtext4[] = TEXT(" GPS: No Data Rx ");
-  TCHAR gpswarningtext5[] = TEXT(" GPS is missing ");
-  TCHAR gpswarningtext6[] = TEXT(" GPS not connected ");
-  TCHAR gpswarningtext7[] = TEXT(" GPS data error ");
-  TextInBoxMode_t TextInBoxMode = {2};
 
   if (!extGPSCONNECT) {
 
-    oldfont=(HFONT)SelectObject(hDC,LK8TargetFont);   // 100222 
+    oldfont=(HFONT)SelectObject(hDC,LK8TargetFont); 
+    TextInBoxMode_t TextInBoxMode = {2};
     TextInBoxMode.AsInt=0;
     TextInBoxMode.AsFlag.Color = TEXTWHITE;
     TextInBoxMode.AsFlag.NoSetFont=1;
@@ -4288,25 +2984,24 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
     TextInBoxMode.AsFlag.WhiteBorder = 1;
     TextInBoxMode.AsFlag.Border = 1;
     if (ComPortStatus[0]==CPS_OPENKO) {
-	// No Com Port
-    	TextInBox(hDC, gpswarningtext3, (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode);
+    	TextInBox(hDC, gettext(_T("_@M971_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode); // No ComPort
     } else {
     	if (ComPortStatus[0]==CPS_OPENOK) {
 		if ((ComPortRx[0]>0) && !firstrun) {
 			// Gps is missing
-    			TextInBox(hDC, gpswarningtext5, (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode);
+    			TextInBox(hDC, gettext(_T("_@M973_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode);
 			firstrun=false; // 100214
 		} else {
 			// No Data Rx
-    			TextInBox(hDC, gpswarningtext4, (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode);
+    			TextInBox(hDC, gettext(_T("_@M972_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode);
 		}
 	} else  {
 		if (ComPortStatus[0]==CPS_EFRAME)  {
 			// Data error
-    			TextInBox(hDC, gpswarningtext7, (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode); // 100214
+    			TextInBox(hDC, gettext(_T("_@M975_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode);
 		} else {
 			// Not Connected
-    			TextInBox(hDC, gpswarningtext6, (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode); // 100214
+    			TextInBox(hDC, gettext(_T("_@M974_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode);
 		}
 	}
 
@@ -4316,20 +3011,39 @@ void MapWindow::DrawGPSStatus(HDC hDC, const RECT rc)
   } else
     if (DrawInfo.NAVWarning || (DrawInfo.SatellitesUsed == 0)) {
     oldfont=(HFONT)SelectObject(hDC,LK8TargetFont); // 100210
+    TextInBoxMode_t TextInBoxMode = {2};
     TextInBoxMode.AsInt=0;
     TextInBoxMode.AsFlag.Color = TEXTWHITE;
     TextInBoxMode.AsFlag.NoSetFont=1;
     TextInBoxMode.AsFlag.AlligneCenter = 1;
     TextInBoxMode.AsFlag.WhiteBorder = 1;
     TextInBoxMode.AsFlag.Border = 1;
-    TextInBox(hDC, gpswarningtext2, 
-              (rc.right-rc.left)/2, 
-              (rc.bottom-rc.top)/3,
-              0, TextInBoxMode);
+    // No Valid Fix
+    TextInBox(hDC, gettext(_T("_@M970_")), (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode);
 
     }
-  SelectObject(hDC,oldfont);
 
+goto_DrawLockModeStatus:
+  if (LockModeStatus) {
+	if (oldfont!=NULL)
+		oldfont=(HFONT)SelectObject(hDC,LK8MediumFont);
+	else
+		SelectObject(hDC,LK8MediumFont);
+
+	TextInBoxMode_t TextInBoxModeL = {2};
+	TextInBoxModeL.AsInt=0;
+	TextInBoxModeL.AsFlag.Color = TEXTWHITE;
+	TextInBoxModeL.AsFlag.NoSetFont=1;
+	TextInBoxModeL.AsFlag.AlligneCenter = 1;
+	TextInBoxModeL.AsFlag.WhiteBorder = 1;
+	TextInBoxModeL.AsFlag.Border = 1;
+	TextInBox(hDC, gettext(_T("_@M962_")), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/3), 0, TextInBoxModeL);
+	SelectObject(hDC,LK8MapFont);
+	TextInBox(hDC, gettext(_T("_@M1601_")), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/5), 0, TextInBoxModeL);
+  }
+
+  SelectObject(hDC,oldfont);
+  return;
 }
 
 void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
@@ -4340,7 +3054,9 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
   static bool lastLoggerActive=false;
   int offset = -1;
 
-  if (!Appearance.DontShowLoggerIndicator){
+    //
+    // Logger indicator
+    //
 
 	// has GPS time advanced?
 	if(DrawInfo.Time <= LastTime) {
@@ -4364,175 +3080,46 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
 			SelectObject(hDCTemp,hLoggerOff);
 		}
 
-		DrawBitmapX(hdc, rc.right+IBLSCALE(offset+Appearance.FlightModeOffset.x),
+		DrawBitmapX(hdc, rc.right+IBLSCALE(offset),
                   	rc.bottom - BottomSize+NIBLSCALE(1),
 			7,7, hDCTemp, 0,0,SRCPAINT);
 
-		DrawBitmapX(hdc, rc.right+IBLSCALE(offset+Appearance.FlightModeOffset.x),
+		DrawBitmapX(hdc, rc.right+IBLSCALE(offset),
                   	rc.bottom-BottomSize+NIBLSCALE(1),
 			7,7, hDCTemp, 7,0,SRCAND);
 
 		// not really needed if we remove offset next on
 		offset +=7;
 	}
-  }
 
+    //
+    // Flight mode Icon
+    //
 
-  if (Appearance.FlightModeIcon == apFlightModeIconDefault){
-
-    #ifndef NOTASKABORT
-    if (TaskAborted) {
-      SelectObject(hDCTemp,hAbort);
-    } else {
-    #else
-#ifndef MAP_ZOOM
-      if (DisplayMode == dmCircling) {
-#else /* MAP_ZOOM */
       if (mode.Is(Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
         SelectObject(hDCTemp,hClimb);
-#ifndef MAP_ZOOM
-      } else if (DisplayMode == dmFinalGlide) {
-#else /* MAP_ZOOM */
       } else if (mode.Is(Mode::MODE_FINAL_GLIDE)) {
-#endif /* MAP_ZOOM */
         SelectObject(hDCTemp,hFinalGlide);
       } else {
         SelectObject(hDCTemp,hCruise);
       }
-    #endif
-    #ifndef NOTASKABORT
-    }
-    #endif
-    // Code already commented as of 12aug05 - redundant? -st
-    //          BitBlt(hdc,rc.right-35,5,24,20,
-    //                           hDCTemp,20,0,SRCAND);
-
-    // code for pre 12aug icons - st
-    //BitBlt(hdc,rc.right-24-3,rc.bottom-20-3,24,20,
-    //  hDCTemp,0,0,SRCAND);
 
     offset -= 24;
 
     DrawBitmapX(hdc,
-                rc.right+IBLSCALE(offset-1+Appearance.FlightModeOffset.x),
-                rc.bottom+IBLSCALE(-20-1+Appearance.FlightModeOffset.y),
+                rc.right+IBLSCALE(offset-1),
+                rc.bottom+IBLSCALE(-20-1),
                 24,20,
                 hDCTemp,
                 0,0,SRCPAINT);
     
     DrawBitmapX(hdc,
-                rc.right+IBLSCALE(offset-1+Appearance.FlightModeOffset.x),
-                rc.bottom+IBLSCALE(-20-1+Appearance.FlightModeOffset.y),
+                rc.right+IBLSCALE(offset-1),
+                rc.bottom+IBLSCALE(-20-1),
                 24,20,
                 hDCTemp,
                 24,0,SRCAND);
 
-  // FlightModeIcon is always 0, unused!
-  #if 100920
-  }
-  #else
-  } else if (Appearance.FlightModeIcon == apFlightModeIconAltA){
-
-#define SetPoint(Idx,X,Y) Arrow[Idx].x = X; Arrow[Idx].y = Y
-
-    POINT Arrow[3];
-    POINT Center;
-    HBRUSH oldBrush;
-    HPEN   oldPen;
-
-    Center.x = rc.right-10;
-    Center.y = rc.bottom-10;
-
-    if (DisplayMode == dmCircling) {
-
-      SetPoint(0, 
-               Center.x,
-               Center.y-NIBLSCALE(4));
-      SetPoint(1, 
-               Center.x-NIBLSCALE(8), 
-               Center.y+NIBLSCALE(4));
-      SetPoint(2, 
-               Center.x+NIBLSCALE(8), 
-               Center.y+NIBLSCALE(4));
-
-#ifndef MAP_ZOOM
-    } else if (DisplayMode == dmFinalGlide) {
-#else /* MAP_ZOOM */
-    } else if (mode.Is(Mode::MODE_FINAL_GLIDE)) {
-#endif /* MAP_ZOOM */
-
-      SetPoint(0, 
-               Center.x, 
-               Center.y+NIBLSCALE(4));
-      SetPoint(1, 
-               Center.x-NIBLSCALE(8), 
-               Center.y-NIBLSCALE(4));
-      SetPoint(2, 
-               Center.x+NIBLSCALE(8), 
-               Center.y-NIBLSCALE(4));
-    } else {
-
-      SetPoint(0, 
-               Center.x+NIBLSCALE(4), 
-               Center.y);
-      SetPoint(1, 
-               Center.x-NIBLSCALE(4), 
-               Center.y+NIBLSCALE(8));
-      SetPoint(2, 
-               Center.x-NIBLSCALE(4), 
-               Center.y-NIBLSCALE(8));
-
-    }
-
-    #ifndef NOTASKABORT
-    if (TaskAborted)
-      oldBrush = (HBRUSH)SelectObject(hdc, hBrushFlyingModeAbort);
-    else
-      oldBrush = (HBRUSH)SelectObject(hdc, hbCompass);
-    #else
-     oldBrush = (HBRUSH)SelectObject(hdc, hbCompass);
-    #endif
-
-    oldPen = (HPEN)SelectObject(hdc, hpCompassBorder);
-    Polygon(hdc, Arrow, 3);
-
-    SelectObject(hdc, hpCompass);
-    Polygon(hdc, Arrow, 3);
-
-    SelectObject(hdc, oldPen);
-    SelectObject(hdc, oldBrush);
-
-  }
-  #endif // no flighticon 100920
-
-
-  if (!Appearance.DontShowAutoMacCready && DerivedDrawInfo.AutoMacCready) {
-    SelectObject(hDCTemp,hAutoMacCready);
-
-    offset -= 24;
-
-    //changed draw mode & icon for higher opacity 12aug -st
-
-    DrawBitmapX(hdc,
-		rc.right+IBLSCALE(offset-3+Appearance.FlightModeOffset.x),
-		rc.bottom+IBLSCALE(-20-3+Appearance.FlightModeOffset.y),
-		24,20,
-		hDCTemp,
-		0,0,SRCPAINT);
-
-    DrawBitmapX(hdc,
-		rc.right+IBLSCALE(offset-3+Appearance.FlightModeOffset.x),
-		rc.bottom+IBLSCALE(-20-3+Appearance.FlightModeOffset.y),
-		24,20,
-		hDCTemp,
-		24,0,SRCAND);
-
-    //  commented @ 12aug st
-    //  BitBlt(hdc,rc.right-48-3,rc.bottom-20-3,24,20,
-    //    hDCTemp,0,0,SRCAND);
-  };
-  
 }
 
 
@@ -4553,269 +3140,21 @@ bool MapWindow::WaypointInTask(int ind) {
   return WayPointList[ind].InTask;
 }
 
-//FIX
-//static void MapWaypointLabelAdd(TCHAR *Name, int X, int Y, TextInBoxMode_t Mode, int AltArivalAGL, bool inTask=false, bool isLandable=false, bool isAirport=false, bool isExcluded=false);
 void MapWaypointLabelAdd(TCHAR *Name, int X, int Y, TextInBoxMode_t Mode, int AltArivalAGL, bool inTask, bool isLandable, bool isAirport, bool isExcluded, int index);
-//static int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 );
 int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 );
-//static MapWaypointLabel_t MapWaypointLabelList[50];
 
 MapWaypointLabel_t MapWaypointLabelList[200]; 
-//static int MapWaypointLabelListCount=0;
 int MapWaypointLabelListCount=0;
 
 bool MapWindow::WaypointInRange(int i) {
-#ifndef MAP_ZOOM
-  return ((WayPointList[i].Zoom >= MapScale*10) 
-#else /* MAP_ZOOM */
   return ((WayPointList[i].Zoom >= zoom.Scale()*10) 
-#endif /* MAP_ZOOM */
           || (WayPointList[i].Zoom == 0)) 
-#ifndef MAP_ZOOM
-    && (MapScale <= 10);
-#else /* MAP_ZOOM */
     && (zoom.Scale() <= 10);
-#endif /* MAP_ZOOM */
 }
 
-#ifndef LK8000_OPTIMIZE
-void MapWindow::DrawWaypoints(HDC hdc, const RECT rc)
-{
-  unsigned int i;
-  TCHAR Buffer[32];
-  TCHAR Buffer2[32];
-  TCHAR sAltUnit[4];
-  TextInBoxMode_t TextDisplayMode;
-
-  // if pan mode, show full names
-  int pDisplayTextType = DisplayTextType;
-  if (EnablePan) {
-    pDisplayTextType = DISPLAYNAME;
-  }
-
-  if (!WayPointList) return;
-
-  _tcscpy(sAltUnit, Units::GetAltitudeName());
-
-  MapWaypointLabelListCount = 0;
-
-  for(i=0;i<NumberOfWayPoints;i++)
-    {
-      if(WayPointList[i].Visible )
-	{
-
-#ifdef HAVEEXCEPTIONS
-	  __try{
-#endif
-
-	    bool irange = false;
-	    bool intask = false;
-	    bool islandable = false;
-	    bool dowrite;
-
-	    intask = WaypointInTask(i);
-	    dowrite = intask;
-
-	    TextDisplayMode.AsInt = 0;
-
-	    irange = WaypointInRange(i);
-
-	    if(MapScale > 20) {
-	      SelectObject(hDCTemp,hSmall);
-	    } else if( WayPointCalc[i].IsLandable ) {
-	      islandable = true; // so we can always draw them
-	      if(WayPointList[i].Reachable){
-
-		TextDisplayMode.AsFlag.Reachable = 1;
-
-		if ((DeclutterLabels<MAPLABELS_ALLOFF)||intask) {
-
-		  if (intask || (DeclutterLabels<MAPLABELS_ONLYTOPO)) {
-		    TextDisplayMode.AsFlag.Border = 1;
-		  }
-		  // show all reachable landing fields unless we want a decluttered
-		  // screen.
-		  dowrite = true;
-		}
-
-		if (WayPointCalc[i].IsAirport)
-		  SelectObject(hDCTemp,hBmpAirportReachable);
-		else
-		  SelectObject(hDCTemp,hBmpFieldReachable);
-	      } else {
-		if (WayPointCalc[i].IsAirport)
-		  SelectObject(hDCTemp,hBmpAirportUnReachable);
-		else
-		  SelectObject(hDCTemp,hBmpFieldUnReachable);
-	      }
-	    } else {
-	      if(MapScale > 4) {
-		SelectObject(hDCTemp,hSmall);
-	      } else {
-		SelectObject(hDCTemp,hTurnPoint);
-	      }
-	    }
-
-	    if (intask) { // VNT 
-	      TextDisplayMode.AsFlag.WhiteBold = 1;
-	    }
-
-	    if(irange || intask || islandable || dowrite) {
-        
-	      DrawBitmapX(hdc,
-			  WayPointList[i].Screen.x-NIBLSCALE(10), 
-			  WayPointList[i].Screen.y-NIBLSCALE(10),
-			  20,20,
-			  hDCTemp,0,0,SRCPAINT);
-        
-	      DrawBitmapX(hdc,
-			  WayPointList[i].Screen.x-NIBLSCALE(10), 
-			  WayPointList[i].Screen.y-NIBLSCALE(10),
-			  20,20,
-			  hDCTemp,20,0,SRCAND);
-	    }
-
-	    if(intask || irange || dowrite) {
-	      bool draw_alt = TextDisplayMode.AsFlag.Reachable 
-		&& ((DeclutterLabels<MAPLABELS_ONLYTOPO) || intask);
-
-	      switch(pDisplayTextType) {
-	      case DISPLAYNAMEIFINTASK:
-		dowrite = intask;
-		if (intask) {
-		  if (draw_alt)
-		    wsprintf(Buffer, TEXT("%s:%d%s"),
-			     WayPointList[i].Name, 
-			     (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), 
-			     sAltUnit);
-		  else
-		    wsprintf(Buffer, TEXT("%s"),WayPointList[i].Name);
-		}
-		break;
-	      case DISPLAYNAME:
-		dowrite = (DeclutterLabels<MAPLABELS_ALLOFF) || intask;
-		if (draw_alt)
-		  wsprintf(Buffer, TEXT("%s:%d%s"),
-			   WayPointList[i].Name, 
-			   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), 
-			   sAltUnit);
-		else
-		  wsprintf(Buffer, TEXT("%s"),WayPointList[i].Name);
-          
-		break;
-	      case DISPLAYNUMBER:
-		dowrite = (DeclutterLabels<MAPLABELS_ALLOFF) || intask;
-		if (draw_alt)
-		  wsprintf(Buffer, TEXT("%d:%d%s"),
-			   WayPointList[i].Number, 
-			   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), 
-			   sAltUnit);
-		else
-		  wsprintf(Buffer, TEXT("%d"),WayPointList[i].Number);
-          
-		break;
-	      case DISPLAYFIRSTFIVE:
-		dowrite = (DeclutterLabels<MAPLABELS_ALLOFF) || intask;
-		_tcsncpy(Buffer2, WayPointList[i].Name, 5);
-		Buffer2[5] = '\0';
-		if (draw_alt)
-		  wsprintf(Buffer, TEXT("%s:%d%s"),
-			   Buffer2, 
-			   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), 
-			   sAltUnit);
-		else
-		  wsprintf(Buffer, TEXT("%s"),Buffer2);
-          
-		break;
-	      case DISPLAYFIRSTTHREE:
-		dowrite = (DeclutterLabels<MAPLABELS_ALLOFF) || intask;
-		_tcsncpy(Buffer2, WayPointList[i].Name, 3);
-		Buffer2[3] = '\0';
-		if (draw_alt)
-		  wsprintf(Buffer, TEXT("%s:%d%s"),
-			   Buffer2, 
-			   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), 
-			   sAltUnit);
-		else
-		  wsprintf(Buffer, TEXT("%s"),Buffer2);
-          
-		break;
-	      case DISPLAYNONE:
-		dowrite = (DeclutterLabels<MAPLABELS_ALLOFF) || intask;
-		if (draw_alt)
-		  wsprintf(Buffer, TEXT("%d%s"), 
-			   (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY), 
-			   sAltUnit);
-		else
-		  Buffer[0]= '\0';
-	      default:
-#if (WINDOWSPC<1)
-		ASSERT(0);
-#endif
-		break;
-	      }
-        
-	      if (dowrite) {
-		MapWaypointLabelAdd(
-				    Buffer,
-				    WayPointList[i].Screen.x+5,
-				    WayPointList[i].Screen.y,
-				    TextDisplayMode,
-				    (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY),
-				    intask,false,false,false,i);
-	      }
-        
-	    }
-      
-#ifdef HAVEEXCEPTIONS
-	  }__finally
-#endif
-	     { ; }
-	}
-    }
-  
-  qsort(&MapWaypointLabelList, 
-        MapWaypointLabelListCount,
-        sizeof(MapWaypointLabel_t), 
-        MapWaypointLabelListCompare);
-
-  int j;
-
-  // now draw task/landable waypoints in order of range (closest last)
-  // writing unconditionally
-  for (j=MapWaypointLabelListCount-1; j>=0; j--){
-    MapWaypointLabel_t *E = &MapWaypointLabelList[j];
-    // draws if they are in task unconditionally,
-    // otherwise, does comparison
-    if (E->inTask) {
-      TextInBox(hdc, E->Name, E->Pos.x,
-                E->Pos.y, 0, E->Mode, 
-                false);
-    }
-  }
-
-  // now draw normal waypoints in order of range (furthest away last)
-  // without writing over each other (or the task ones)
-  for (j=0; j<MapWaypointLabelListCount; j++) {
-    MapWaypointLabel_t *E = &MapWaypointLabelList[j];
-    if (!E->inTask) {
-      TextInBox(hdc, E->Name, E->Pos.x,
-                E->Pos.y, 0, E->Mode, 
-                true);
-    }
-  }
-
-}
-#endif
-
-//static int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 ){
 int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 ){
 
   // Now sorts elements in task preferentially.
-  /*
-    if (((MapWaypointLabel_t *)elem1)->inTask && ! ((MapWaypointLabel_t *)elem2)->inTask)
-    return (-1);
-  */
   if (((MapWaypointLabel_t *)elem1)->AltArivalAGL > ((MapWaypointLabel_t *)elem2)->AltArivalAGL)
     return (-1);
   if (((MapWaypointLabel_t *)elem1)->AltArivalAGL < ((MapWaypointLabel_t *)elem2)->AltArivalAGL)
@@ -4824,7 +3163,6 @@ int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 ){
 }
 
 
-//static void MapWaypointLabelAdd(TCHAR *Name, int X, int Y,  FIX
 void MapWaypointLabelAdd(TCHAR *Name, int X, int Y, 
 			 TextInBoxMode_t Mode, 
 			 int AltArivalAGL, bool inTask, bool isLandable, bool isAirport, bool isExcluded, int index){
@@ -4902,11 +3240,7 @@ void MapWindow::DrawStartSector(HDC hdc, const RECT rc,
     _DrawLine(hdc, PS_SOLID, NIBLSCALE(1), WayPointList[Index].Screen,
               End, RGB(255,0,0), rc);
   } else {
-#ifndef MAP_ZOOM
-    tmp = StartRadius*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
     tmp = StartRadius*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
     SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
     SelectObject(hdc, hpStartFinishThick);
     Circle(hdc,
@@ -4953,9 +3287,9 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
     for(i=1;i<MAXTASKPOINTS-1;i++) {
 
       if(ValidTaskPoint(i) && !ValidTaskPoint(i+1)) { // final waypoint
-	if (ActiveWayPoint>1) { 
+	if (ActiveWayPoint>1 || !ValidTaskPoint(2)) { 
 	  // only draw finish line when past the first
-	  // waypoint.
+	  // waypoint. FIXED 110307: or if task is with only 2 tps
 	  if(FinishLine) {
 	    _DrawLine(hdc, PS_SOLID, NIBLSCALE(5), 
 		      WayPointList[Task[i].Index].Screen,
@@ -4970,11 +3304,7 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 		      WayPointList[Task[i].Index].Screen,
 		      Task[i].End, RGB(255,0,0), rc);
 	  } else {
-#ifndef MAP_ZOOM
-	    tmp = FinishRadius*ResMapScaleOverDistanceModify; 
-#else /* MAP_ZOOM */
 	    tmp = FinishRadius*zoom.ResScaleOverDistanceModify(); 
-#endif /* MAP_ZOOM */
 	    SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
 	    SelectObject(hdc, hpStartFinishThick);
 	    Circle(hdc,
@@ -4998,11 +3328,7 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 	  SelectObject(hdc, GetStockObject(HOLLOW_BRUSH)); 
 	  SelectObject(hdc, hpBearing); // 091216
 	  if(SectorType== 0) {
-#ifndef MAP_ZOOM
-	    tmp = SectorRadius*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
 	    tmp = SectorRadius*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
 
 	    Circle(hdc,
 		   WayPointList[Task[i].Index].Screen.x,
@@ -5012,11 +3338,7 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 	  }
 	  // FAI SECTOR
 	  if(SectorType==1) {
-#ifndef MAP_ZOOM
-	    tmp = SectorRadius*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
 	    tmp = SectorRadius*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
 
 	    Segment(hdc,
 		    WayPointList[Task[i].Index].Screen.x,
@@ -5027,21 +3349,13 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 	  }
 	  if(SectorType== 2) {
 	    // JMW added german rules
-#ifndef MAP_ZOOM
-	    tmp = 500*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
 	    tmp = 500*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
 	    Circle(hdc,
 		   WayPointList[Task[i].Index].Screen.x,
 		   WayPointList[Task[i].Index].Screen.y,
 		   (int)tmp, rc, false, false); 
 
-#ifndef MAP_ZOOM
-	    tmp = 10e3*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
 	    tmp = 10e3*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
           
 	    Segment(hdc,
 		    WayPointList[Task[i].Index].Screen.x,
@@ -5053,11 +3367,7 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 	} else {
 		// ELSE HERE IS   *** AAT ***
 	  // JMW added iso lines
-#ifndef MAP_ZOOM
-	  if ((i==ActiveWayPoint) || (TargetPan && (i==TargetPanIndex))) {
-#else /* MAP_ZOOM */
 	  if ((i==ActiveWayPoint) || (mode.Is(Mode::MODE_TARGET_PAN) && (i==TargetPanIndex))) {
-#endif /* MAP_ZOOM */
 	    // JMW 20080616 flash arc line if very close to target
 	    static bool flip = false;
 	  
@@ -5090,11 +3400,7 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 	// JMW AAT!
 	double bearing = Task[i].OutBound;
 	POINT sct1, sct2;
-#ifndef MAP_ZOOM
-	if (AATEnabled && !TargetPan) {
-#else /* MAP_ZOOM */
 	if (AATEnabled && !mode.Is(Mode::MODE_TARGET_PAN)) {
-#endif /* MAP_ZOOM */
 	  LatLon2Screen(Task[i].AATTargetLon, 
 			Task[i].AATTargetLat, 
 			sct1);
@@ -5181,11 +3487,7 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc)
 	if(ValidTaskPoint(i) && ValidTaskPoint(i+1)) {
 	  if(Task[i].AATType == CIRCLE)
 	    {
-#ifndef MAP_ZOOM
-	      tmp = Task[i].AATCircleRadius*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
 	      tmp = Task[i].AATCircleRadius*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
           
 	      // this color is used as the black bit
 	      SetTextColor(hDCTemp, 
@@ -5225,11 +3527,7 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc)
 	      }
 	      SelectObject(hDCTemp, GetStockObject(BLACK_PEN));
           
-#ifndef MAP_ZOOM
-	      tmp = Task[i].AATSectorRadius*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
 	      tmp = Task[i].AATSectorRadius*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
           
 	      Segment(hDCTemp,
 		      WayPointList[Task[i].Index].Screen.x,
@@ -5323,26 +3621,23 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
   PolygonRotateShift(Arrow, 7, Start.x, Start.y, 
 		     DerivedDrawInfo.WindBearing-DisplayAngle);
 
-  if (WindArrowStyle==1) {
-    POINT Tail[2] = {{0,-20}, {0,-26-min(20,wmag)*3}};
-    double angle = AngleLimit360(DerivedDrawInfo.WindBearing-DisplayAngle);
-    for(i=0; i<2; i++) {
-      if (InfoBoxLayout::scale>1) {
-        Tail[i].x *= InfoBoxLayout::scale;
-        Tail[i].y *= InfoBoxLayout::scale;
-      }
-      protateshift(Tail[i], angle, Start.x, Start.y);
+  //
+  // Draw Wind Arrow
+  //
+  POINT Tail[2] = {{0,-20}, {0,-26-min(20,wmag)*3}};
+  double angle = AngleLimit360(DerivedDrawInfo.WindBearing-DisplayAngle);
+  for(i=0; i<2; i++) {
+    if (InfoBoxLayout::scale>1) {
+      Tail[i].x *= InfoBoxLayout::scale;
+      Tail[i].y *= InfoBoxLayout::scale;
     }
-
-    // optionally draw dashed line
-    _DrawLine(hdc, PS_DASH, 1, Tail[0], Tail[1], RGB(0,0,0), rc);
+    protateshift(Tail[i], angle, Start.x, Start.y);
   }
+  // optionally draw dashed line for wind arrow
+  _DrawLine(hdc, PS_DASH, 1, Tail[0], Tail[1], RGB(0,0,0), rc);
 
-#ifndef MAP_ZOOM
-  if ( !(NewMap&&Look8000) || (DisplayMode == dmCircling) ) {
-#else /* MAP_ZOOM */
-  if ( !(NewMap&&Look8000) || (mode.Is(Mode::MODE_CIRCLING)) ) {
-#endif /* MAP_ZOOM */
+  // Paint wind value only while circling
+  if ( (mode.Is(Mode::MODE_CIRCLING)) ) {
 
   	_itot(iround(DerivedDrawInfo.WindSpeed * SPEEDMODIFY), sTmp, 10);
 
@@ -5352,10 +3647,9 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
   	} else {
   	  TextInBox(hdc, sTmp, Arrow[6].x-kx, Arrow[6].y, 0, TextInBoxMode);
   	}
-
   }
-
   Polygon(hdc,Arrow,5);
+
 
   SelectObject(hdc, hbOld);
   SelectObject(hdc, hpOld);
@@ -5365,29 +3659,14 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
 void MapWindow::DrawBearing(HDC hdc, const RECT rc)
 {
 
-  #if OVERTARGET
   int overindex=GetOvertargetIndex();
   if (overindex<0) return;
-/* REMOVE
-  int overindex=-1;
-  if (OvertargetMode >OVT_TASK) overindex=GetOvertargetIndex();
-  if ( (!ValidTaskPoint(ActiveWayPoint)) && (overindex<0)) {
-	return; 
-  }
-*/
-  #else
-  if (!ValidTaskPoint(ActiveWayPoint)) {
-	return; 
-  }
-  LockTaskData();  // protect from external task changes
-  #endif
 
   double startLat = DrawInfo.Latitude;
   double startLon = DrawInfo.Longitude;
   double targetLat;
   double targetLon;
 
-  #if OVERTARGET
   if (overindex>OVT_TASK) {
   	LockTaskData();
 	targetLat = WayPointList[overindex].Latitude;
@@ -5407,7 +3686,6 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
 	return; 
   }
   LockTaskData();
-  #endif
 
   if (AATEnabled && (ActiveWayPoint>0) && ValidTaskPoint(ActiveWayPoint+1)) {
     targetLat = Task[ActiveWayPoint].AATTargetLat;
@@ -5421,11 +3699,7 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
   DrawGreatCircle(hdc, startLon, startLat,
                   targetLon, targetLat, rc);
 
-#ifndef MAP_ZOOM
-  if (TargetPan) {
-#else /* MAP_ZOOM */
   if (mode.Is(Mode::MODE_TARGET_PAN)) {
-#endif /* MAP_ZOOM */
     // Draw all of task if in target pan mode
     startLat = targetLat;
     startLon = targetLon;
@@ -5485,11 +3759,7 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
 
 
 double MapWindow::GetApproxScreenRange() {
-#ifndef MAP_ZOOM
-  return (MapScale * max(MapRectBig.right-MapRectBig.left,
-#else /* MAP_ZOOM */
   return (zoom.Scale() * max(MapRectBig.right-MapRectBig.left,
-#endif /* MAP_ZOOM */
                          MapRectBig.bottom-MapRectBig.top))
     *1000.0/GetMapResolutionFactor();
 }
@@ -5583,19 +3853,6 @@ bool MapWindow::PointVisible(const POINT &P)
 }
 
 
-#if 0  // THIS IS NOT USED ANYMORE 110102
-void MapWindow::DisplayAirspaceWarning(int Type, TCHAR *Name , 
-                                       AIRSPACE_ALT Base, AIRSPACE_ALT Top )
-{
-  TCHAR szMessageBuffer[1024];
-  TCHAR szTitleBuffer[1024];
-  
-  FormatWarningString(Type, Name , Base, Top, szMessageBuffer, szTitleBuffer );
-
-  DoStatusMessage(TEXT("Airspace Query"), szMessageBuffer);
-}
-#endif
-
 // RETURNS Longitude, Latitude!
 
 void MapWindow::OrigScreen2LatLon(const int &x, const int &y, 
@@ -5604,13 +3861,8 @@ void MapWindow::OrigScreen2LatLon(const int &x, const int &y,
   int sx = x;
   int sy = y;
   irotate(sx, sy, DisplayAngle);
-#ifndef MAP_ZOOM
-  Y= PanLatitude  - sy*InvDrawScale;
-  X= PanLongitude + sx*invfastcosine(Y)*InvDrawScale;
-#else /* MAP_ZOOM */
   Y= PanLatitude  - sy*zoom.InvDrawScale();
   X= PanLongitude + sx*invfastcosine(Y)*zoom.InvDrawScale();
-#endif /* MAP_ZOOM */
 }
 
 
@@ -5620,24 +3872,14 @@ void MapWindow::Screen2LatLon(const int &x, const int &y,
   int sx = x-(int)Orig_Screen.x;
   int sy = y-(int)Orig_Screen.y;
   irotate(sx, sy, DisplayAngle);
-#ifndef MAP_ZOOM
-  Y= PanLatitude  - sy*InvDrawScale;
-  X= PanLongitude + sx*invfastcosine(Y)*InvDrawScale;
-#else /* MAP_ZOOM */
   Y= PanLatitude  - sy*zoom.InvDrawScale();
   X= PanLongitude + sx*invfastcosine(Y)*zoom.InvDrawScale();
-#endif /* MAP_ZOOM */
 }
 
 void MapWindow::LatLon2Screen(const double &lon, const double &lat, 
                               POINT &sc) {
-#ifndef MAP_ZOOM
-  int Y = Real2Int((PanLatitude-lat)*DrawScale);
-  int X = Real2Int((PanLongitude-lon)*fastcosine(lat)*DrawScale);
-#else /* MAP_ZOOM */
   int Y = Real2Int((PanLatitude-lat)*zoom.DrawScale());
   int X = Real2Int((PanLongitude-lon)*fastcosine(lat)*zoom.DrawScale());
-#endif /* MAP_ZOOM */
     
   irotate(X, Y, DisplayAngle);
     
@@ -5660,11 +3902,7 @@ void MapWindow::LatLon2Screen(pointObj *ptin, POINT *ptout, const int n,
   }
   const int xxs = Orig_Screen.x*1024-512;
   const int yys = Orig_Screen.y*1024+512;
-#ifndef MAP_ZOOM
-  const double mDrawScale = DrawScale;
-#else /* MAP_ZOOM */
   const double mDrawScale = zoom.DrawScale();
-#endif /* MAP_ZOOM */
   const double mPanLongitude = PanLongitude;
   const double mPanLatitude = PanLatitude;
   pointObj* p = ptin;
@@ -5770,35 +4008,3 @@ void MapWindow::DrawDashLine(HDC hdc, const int width,
   
 } 
 
-
-/* Not used
-   void DrawDotLine(HDC hdc, POINT ptStart, POINT ptEnd, COLORREF cr,
-   const RECT rc)
-   {
-   HPEN hpDot, hpOld;
-   LOGPEN dashLogPen;
-   POINT pt[2];
-   //Create a dot pen
-   dashLogPen.lopnColor = cr;
-   dashLogPen.lopnStyle = PS_DOT;
-   dashLogPen.lopnWidth.x = 0;
-   dashLogPen.lopnWidth.y = 0;
-
-   hpDot = (HPEN)CreatePenIndirect(&dashLogPen);
-   hpOld = (HPEN)SelectObject(hdc, hpDot);
-
-   pt[0].x = ptStart.x;
-   pt[0].y = ptStart.y;
-   pt[1].x = ptEnd.x;
-   pt[1].y = ptEnd.y;
-  
-   Polyline(hdc, pt, 2);
-  
-   SelectObject(hdc, hpOld);
-   DeleteObject((HPEN)hpDot);
-   } 
-
-*/
-#ifndef MAP_ZOOM
-
-#endif /* ! MAP_ZOOM */

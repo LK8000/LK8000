@@ -26,6 +26,8 @@
 #include <tchar.h>
 #include "ts_string.h"
 
+#include "utils/heapcheck.h"
+
 
 extern char** _environ;
 

@@ -15,6 +15,8 @@
 #include "Logger.h"
 #include "dlgTools.h"
 
+#include "utils/heapcheck.h"
+
 extern HWND   hWndMainWindow;
 
 void dlgStatusSystemShowModal(void){

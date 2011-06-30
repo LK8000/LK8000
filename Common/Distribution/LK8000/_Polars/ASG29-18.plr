@@ -1,0 +1,4 @@
+* LK8000 polar for: ASG29-18
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+   355, 225,  85, -0.47,  90, -0.48, 185, -2.00, 10.5   // BestLD52@90kph
+

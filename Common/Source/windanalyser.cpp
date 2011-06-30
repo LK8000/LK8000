@@ -26,7 +26,11 @@
 #include "Calculations.h"
 #include "Utils.h"
 #include "windanalyser.h"
-#include "XCSoar.h"
+#include "lk8000.h"
+
+#include "utils/heapcheck.h"
+using std::min;
+using std::max;
 
 /*
   About Windanalysation

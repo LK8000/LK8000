@@ -107,7 +107,7 @@ typedef struct {
 #ifdef SWIG
 %immutable;
 #endif
-  char source[MS_PATH_LENGTH]; // full path to this file data
+  TCHAR source[MS_PATH_LENGTH]; // full path to this file data
 
 #ifndef SWIG
   SHPHandle hSHP; // SHP/SHX file pointer
@@ -143,14 +143,14 @@ typedef struct {
 #ifndef SWIG
 
 // shapefileObj function prototypes 
-int msSHPOpenFile(shapefileObj *shpfile, char *mode, char *filename);
-int msSHPCreateFile(shapefileObj *shpfile, char *filename, int type);
+int msSHPOpenFile(shapefileObj *shpfile, char *mode, const TCHAR *filename);
+int msSHPCreateFile(shapefileObj *shpfile, const TCHAR *filename, int type);
 void msSHPCloseFile(shapefileObj *shpfile);
 int msSHPWhichShapes(shapefileObj *shpfile, rectObj rect, int debug);
 
 // SHP/SHX function prototypes
-SHPHandle msSHPOpen( const char * pszShapeFile, const char * pszAccess );
-SHPHandle msSHPCreate( const char * pszShapeFile, int nShapeType );
+SHPHandle msSHPOpen( const TCHAR * pszShapeFile, const char * pszAccess );
+SHPHandle msSHPCreate( const TCHAR * pszShapeFile, int nShapeType );
 void msSHPClose( SHPHandle hSHP );
 void msSHPGetInfo( SHPHandle hSHP, int * pnEntities, int * pnShapeType );
 int msSHPReadBounds( SHPHandle psSHP, int hEntity, rectObj *padBounds );
@@ -163,9 +163,9 @@ int msSHPWritePoint(SHPHandle psSHP, pointObj *point );
 #endif
 
 // XBase function prototypes
-DBFHandle msDBFOpen( const char * pszDBFFile, const char * pszAccess );
+DBFHandle msDBFOpen( const TCHAR * pszDBFFile, const char * pszAccess );
 void msDBFClose( DBFHandle hDBF );
-DBFHandle msDBFCreate( const char * pszDBFFile );
+DBFHandle msDBFCreate( const TCHAR * pszDBFFile );
 
 int msDBFGetFieldCount( DBFHandle psDBF );
 int msDBFGetRecordCount( DBFHandle psDBF );

@@ -29,12 +29,15 @@
 #include "windanalyser.h"
 #include "Atmosphere.h"
 
-#include "OnLineContest.h"
+#include "ContestMgr.h"
 #include "AATDistance.h"
 
 #include "NavFunctions.h" // used for team code
 
-extern OLCOptimizer olc;
+#include "utils/heapcheck.h"
+
+using std::min;
+using std::max;
 
 int FastLogNum = 0; // number of points to log at high rate
 
@@ -47,7 +50,7 @@ void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   SnailTrail[SnailNext].Time = Basic->Time;
   SnailTrail[SnailNext].FarVisible = true; // hasn't been filtered out yet.
   if (Calculated->TerrainValid) {
-	double hr = max(0,Calculated->AltitudeAGL)/100.0;
+	double hr = max(0.0, Calculated->AltitudeAGL)/100.0;
 	SnailTrail[SnailNext].DriftFactor = 2.0/(1.0+exp(-hr))-1.0;
   } else {
 	SnailTrail[SnailNext].DriftFactor = 1.0;
@@ -83,11 +86,9 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static double SnailLastTime=0;
   static double LogLastTime=0;
   static double StatsLastTime=0;
-  static double OLCLastTime = 0;
   double dtLog = 5.0;
   double dtSnail = 2.0;
   double dtStats = 60.0;
-  double dtOLC = 5.0;
   double dtFRecord = 270; // 4.5 minutes (required minimum every 5)
 
   if(Basic->Time <= LogLastTime) {
@@ -98,9 +99,6 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   }
   if(Basic->Time <= StatsLastTime) {
     StatsLastTime = Basic->Time;
-  }
-  if(Basic->Time <= OLCLastTime) {
-    OLCLastTime = Basic->Time;
   }
   if(Basic->Time <= GetFRecordLastTime()) {
     SetFRecordLastTime(Basic->Time);
@@ -173,12 +171,12 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     if (Basic->Time - StatsLastTime >= dtStats) {
 
       flightstats.Altitude_Terrain.
-        least_squares_update(max(0,
+        least_squares_update(max(0.0,
                                  Basic->Time-Calculated->TakeOffTime)/3600.0, 
                              Calculated->TerrainAlt);
 
       flightstats.Altitude.
-        least_squares_update(max(0,
+        least_squares_update(max(0.0,
                                  Basic->Time-Calculated->TakeOffTime)/3600.0, 
                              Calculated->NavAltitude);
       StatsLastTime += dtStats;
@@ -187,21 +185,10 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
       }
     }
 
-    if (Calculated->Flying && (Basic->Time - OLCLastTime >= dtOLC)) {
-      bool restart;      
-      restart = olc.addPoint(Basic->Longitude, 
-			     Basic->Latitude, 
-			     Calculated->NavAltitude,
-			     Calculated->WaypointBearing,
-			     Basic->Time-Calculated->TakeOffTime);
-      
-      if (restart && EnableOLC) {
-	Calculated->ValidFinish = false;
-	StartTask(Basic, Calculated, false, false);
-	Calculated->ValidStart = true;
-      }
-      OLCLastTime += dtOLC;
-    }
+    if(UseContestEngine() && Calculated->FreeFlying)
+      CContestMgr::Instance().Add(new CPointGPS(static_cast<unsigned>(Basic->Time),
+                                                Basic->Latitude, Basic->Longitude,
+                                                static_cast<unsigned>(Basic->Altitude)));
   }
 }
 
@@ -269,7 +256,7 @@ double FinalGlideThroughTerrain(const double this_bearing,
   lon = last_lon = start_lon;
 
   altitude = Calculated->NavAltitude;
-  h =  max(0, RasterTerrain::GetTerrainHeight(lat, lon)); 
+  h =  max((short)0, RasterTerrain::GetTerrainHeight(lat, lon)); 
   if (h==TERRAIN_INVALID) h=0; // @ 101027 FIX
   dh = altitude - h - safetyterrain; 
   last_dh = dh;
@@ -330,7 +317,7 @@ double FinalGlideThroughTerrain(const double this_bearing,
 
     // find height over terrain
    
-    h =  max(0,RasterTerrain::GetTerrainHeight(lat, lon)); 
+    h =  max((short)0, RasterTerrain::GetTerrainHeight(lat, lon)); 
     if (h==TERRAIN_INVALID) h=0; //@ 101027 FIX
     
 
@@ -357,7 +344,7 @@ double FinalGlideThroughTerrain(const double this_bearing,
 	if (dh-last_dh==0) {
 		f = 0.0;
 	} else
-        f = max(0,min(1,(-last_dh)/(dh-last_dh)));
+        f = max(0.0, min(1.0, (-last_dh)/(dh-last_dh)));
       } else {
 	f = 0.0;
       }
@@ -638,217 +625,6 @@ void CalculateTeammateBearingRange(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
 extern double CRUISE_EFFICIENCY;
 
-#if 0 // NOT USED
-static TCHAR szCalculationsPersistFileName[MAX_PATH]= TEXT("\0");
-static TCHAR szCalculationsPersistDirectory[MAX_PATH]= TEXT("\0");
-
-void DeleteCalculationsPersist(void) {
-  DeleteFile(szCalculationsPersistFileName);
-}
-
-void LoadCalculationsPersist(DERIVED_INFO *Calculated) {
-  if (szCalculationsPersistFileName[0]==0) {
-    LocalPath(szCalculationsPersistFileName, TEXT(LKF_PERSIST));    
-    LocalPath(szCalculationsPersistDirectory);
-  }
-
-  StartupStore(TEXT("LoadCalculationsPersist%s"),NEWLINE);
-
-  HANDLE hFile;
-  DWORD dwBytesWritten;
-  DWORD size, sizein;
-  hFile = CreateFile(szCalculationsPersistFileName,
-                     GENERIC_READ,0,(LPSECURITY_ATTRIBUTES)NULL,
-                     OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
-  if(hFile!=INVALID_HANDLE_VALUE ) {
-    size = sizeof(DERIVED_INFO);
-    ReadFile(hFile,&sizein,sizeof(DWORD),&dwBytesWritten,(OVERLAPPED*)NULL);
-    if (sizein != size) { CloseHandle(hFile); return; }
-    ReadFile(hFile,Calculated,size,&dwBytesWritten,(OVERLAPPED*)NULL);
-
-    size = sizeof(Statistics);
-    ReadFile(hFile,&sizein,sizeof(DWORD),&dwBytesWritten,(OVERLAPPED*)NULL);
-    if (sizein != size) { flightstats.Reset(); CloseHandle(hFile); return; }
-    ReadFile(hFile,&flightstats,size,&dwBytesWritten,(OVERLAPPED*)NULL);
-
-    size = sizeof(OLCData);
-    ReadFile(hFile,&sizein,sizeof(DWORD),&dwBytesWritten,(OVERLAPPED*)NULL);
-    if (sizein != size) { olc.ResetFlight(); CloseHandle(hFile); return; }
-    ReadFile(hFile,&olc.data,size,&dwBytesWritten,(OVERLAPPED*)NULL);   
-
-    size = sizeof(double);
-    ReadFile(hFile,&sizein,sizeof(DWORD),&dwBytesWritten,(OVERLAPPED*)NULL);
-    if (sizein != size*5) { CloseHandle(hFile); return; }
-    ReadFile(hFile,&MACCREADY,size,&dwBytesWritten,(OVERLAPPED*)NULL);   
-    ReadFile(hFile,&QNH,size,&dwBytesWritten,(OVERLAPPED*)NULL);   
-    ReadFile(hFile,&BUGS,size,&dwBytesWritten,(OVERLAPPED*)NULL);   
-    ReadFile(hFile,&BALLAST,size,&dwBytesWritten,(OVERLAPPED*)NULL);   
-    ReadFile(hFile,&CuSonde::maxGroundTemperature,
-             size,&dwBytesWritten,(OVERLAPPED*)NULL);   
-    //    ReadFile(hFile,&CRUISE_EFFICIENCY,
-    //             size,&dwBytesWritten,(OVERLAPPED*)NULL);   
-
-    MACCREADY = min(10.0,max(MACCREADY,0));
-    QNH = min(1113.2, max(QNH,913.2));
-    BUGS = min(1.0, max(BUGS,0.0));
-    BALLAST = min(1.0, max(BALLAST,0.0));
-    //   CRUISE_EFFICIENCY = min(1.5, max(CRUISE_EFFICIENCY,0.75));
-
-    StartupStore(TEXT("LoadCalculationsPersist OK%s"),NEWLINE);
-
-    CloseHandle(hFile);
-  } else {
-    StartupStore(TEXT("LoadCalculationsPersist file not found%s"),NEWLINE);
-  }
-}
-
-
-void SaveCalculationsPersist(DERIVED_INFO *Calculated) {
-  HANDLE hFile;
-  DWORD dwBytesWritten;
-  DWORD size;
-
-  LoggerClearFreeSpace();
-
-  if (FindFreeSpace(szCalculationsPersistDirectory)<MINFREESTORAGE) {
-    if (!LoggerClearFreeSpace()) {
-      StartupStore(TEXT("SaveCalculationsPersist insufficient storage%s"),NEWLINE);
-      return;
-    } else {
-      StartupStore(TEXT("SaveCalculationsPersist cleared logs to free storage%s"),NEWLINE);
-    }
-  }
-
-  StartupStore(TEXT("SaveCalculationsPersist%s"),NEWLINE);
-
-  hFile = CreateFile(szCalculationsPersistFileName,
-                     GENERIC_WRITE,0,(LPSECURITY_ATTRIBUTES)NULL,
-                     CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
-  if (hFile!=INVALID_HANDLE_VALUE ) {
-    size = sizeof(DERIVED_INFO);
-    WriteFile(hFile,&size,sizeof(DWORD),&dwBytesWritten,(OVERLAPPED*)NULL);
-    WriteFile(hFile,Calculated,size,&dwBytesWritten,(OVERLAPPED*)NULL);
-    size = sizeof(Statistics);
-    WriteFile(hFile,&size,sizeof(DWORD),&dwBytesWritten,(OVERLAPPED*)NULL);
-    WriteFile(hFile,&flightstats,size,&dwBytesWritten,(OVERLAPPED*)NULL);
-    size = sizeof(OLCData);
-    WriteFile(hFile,&size,sizeof(DWORD),&dwBytesWritten,(OVERLAPPED*)NULL);
-    WriteFile(hFile,&olc.data,size,&dwBytesWritten,(OVERLAPPED*)NULL);
-    size = sizeof(double)*5;
-    WriteFile(hFile,&size,sizeof(DWORD),&dwBytesWritten,(OVERLAPPED*)NULL);
-    size = sizeof(double);
-    WriteFile(hFile,&MACCREADY,size,&dwBytesWritten,(OVERLAPPED*)NULL);
-    WriteFile(hFile,&QNH,size,&dwBytesWritten,(OVERLAPPED*)NULL);
-    WriteFile(hFile,&BUGS,size,&dwBytesWritten,(OVERLAPPED*)NULL);
-    WriteFile(hFile,&BALLAST,size,&dwBytesWritten,(OVERLAPPED*)NULL);
-    WriteFile(hFile,&CuSonde::maxGroundTemperature,
-              size,&dwBytesWritten,(OVERLAPPED*)NULL);
-    //    WriteFile(hFile,&CRUISE_EFFICIENCY,
-    //              size,&dwBytesWritten,(OVERLAPPED*)NULL);
-
-    StartupStore(TEXT("SaveCalculationsPersist ok%s"),NEWLINE);
-
-    CloseHandle(hFile);
-  } else {
-    StartupStore(TEXT("SaveCalculationsPersist can't create file%s"),NEWLINE);
-  }
-
-}
-
-#endif // NO USE 
-
-#define NUM_CAL_SPEED 25
-#define NUM_CAL_VARIO 101
-#define NUM_CAL_VSPEED 50
-
-#if 0 // NO CALIBRATION FOR LK
-
-static double calibration_tevario_val[NUM_CAL_SPEED][NUM_CAL_VARIO];
-static unsigned int calibration_tevario_num[NUM_CAL_SPEED][NUM_CAL_VARIO];
-static double calibration_speed_val[NUM_CAL_VSPEED];
-static unsigned int calibration_speed_num[NUM_CAL_VSPEED];
-
-
-void CalibrationInit(void) {
-  int i, j;
-  for (i=0; i< NUM_CAL_SPEED; i++) {
-    for (j=0; j< NUM_CAL_VARIO; j++) {
-      calibration_tevario_val[i][j] = 0;
-      calibration_tevario_num[i][j] = 0;
-    }
-  }
-  for (i=0; i< NUM_CAL_VSPEED; i++) {
-    calibration_speed_val[i] = 0;
-    calibration_speed_num[i] = 0;
-  }
-}
-
-
-
-void CalibrationSave(void) {
-  int i, j;
-  double v, w = 0, wav;
-  StartupStore(TEXT("Calibration data for TE vario%s"),NEWLINE);
-  for (i=0; i< NUM_CAL_SPEED; i++) {
-    for (j=0; j< NUM_CAL_VARIO; j++) {
-      if (calibration_tevario_num[i][j]>0) {
-        v = i*2.0+20.0;
-        w = (j-50.0)/10.0;
-        wav = calibration_tevario_val[i][j]/calibration_tevario_num[i][j];
-        StartupStore(TEXT("%g %g %g %d%s"), v, w, wav,
-                  calibration_tevario_num[i][j],NEWLINE);
-      }
-    }
-  }
-  StartupStore(TEXT("Calibration data for ASI%s"),NEWLINE);
-  for (i=0; i< NUM_CAL_VSPEED; i++) {
-    if (calibration_speed_num[i]>0) {
-      v = i+20.0;
-      wav = calibration_speed_val[i]/calibration_speed_num[i];
-      StartupStore(TEXT("%g %g %g %d%s"), v, w, wav,
-                calibration_speed_num[i],NEWLINE);
-    }
-  }
-}
-
-
-void CalibrationUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
-  if (!Calculated->Flying) return;
-  if ((!Basic->AirspeedAvailable) || (Basic->TrueAirspeed<=0)) {
-    return;
-  }
-  double ias_to_tas = Basic->TrueAirspeed/
-    max(1.0,Basic->IndicatedAirspeed);
-
-  // Vario calibration info 
-  int index_te_vario = lround(Calculated->GPSVarioTE*10)+50;
-  int index_speed = lround((Basic->TrueAirspeed-20)/2);
-  if (index_te_vario < 0) 
-    return;
-  if (index_te_vario >= NUM_CAL_VARIO) 
-    return;
-  if (index_speed<0) 
-    return;
-  if (index_speed>= NUM_CAL_SPEED) 
-    return;
-  
-  calibration_tevario_val[index_speed][index_te_vario] += 
-    Basic->Vario*ias_to_tas;
-  calibration_tevario_num[index_speed][index_te_vario] ++;
-
-  // ASI calibration info 
-  int index_vspeed = lround((Basic->TrueAirspeed-20));
-  if (index_vspeed<0) 
-    return;
-  if (index_vspeed>= NUM_CAL_VSPEED) 
-    return;
-
-  calibration_speed_val[index_vspeed] += Calculated->TrueAirspeedEstimated;
-  calibration_speed_num[index_vspeed] ++;
-
-}
-
-#endif // --- NO CALIBRATION
 
 static double EffectiveMacCready_internal(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 					  bool cruise_efficiency_mode) {
@@ -869,7 +645,7 @@ static double EffectiveMacCready_internal(NMEA_INFO *Basic, DERIVED_INFO *Calcul
   double start_speed = Calculated->TaskStartSpeed;
   double V_bestld = GlidePolar::Vbestld;
   double energy_height_start = 
-    max(0, start_speed*start_speed-V_bestld*V_bestld)/(9.81*2.0);
+    max(0.0, start_speed*start_speed-V_bestld*V_bestld)/(9.81*2.0);
 
   double telapsed = Basic->Time-Calculated->TaskStartTime;
   double height_below_start = 

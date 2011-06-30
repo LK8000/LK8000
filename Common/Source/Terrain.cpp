@@ -20,14 +20,14 @@
 #include "InfoBoxLayout.h"
 #include "Sizes.h"
 #include "options.h"
-#if LKTOPO
 #include "Cpustats.h"
-#endif
 
+#include "utils/heapcheck.h"
 
-#if NEWRASTER
+using std::min;
+using std::max;
+
 unsigned short minalt=9999;
-#endif
 
 Topology* TopoStore[MAXTOPOLOGY];
 
@@ -37,10 +37,8 @@ TopologyWriter *topo_marks = NULL;
 
 bool reset_marks = false;
 
-#ifdef LKSHADING
 BYTE tshadow_r, tshadow_g, tshadow_b, tshadow_h;
 BYTE thighlight_r, thighlight_g, thighlight_b, thighlight_h;
-#endif
 
 bool RectangleIsInside(rectObj r_exterior, rectObj r_interior) {
   if ((r_interior.minx >= r_exterior.minx)&&
@@ -165,9 +163,9 @@ void TopologyInitialiseMarks() {
     delete topo_marks;
   }
 
-  char buf[MAX_PATH];
-  LocalPathS(buf,_T(LKD_CONF));
-  strcat(buf,"\\"); strcat(buf,LKF_SMARKS); 
+  TCHAR buf[MAX_PATH];
+  LocalPath(buf, _T(LKD_CONF));
+  _tcscat(buf, _T("\\")); _tcscat(buf, _T(LKF_SMARKS)); 
   topo_marks = new TopologyWriter(buf, RGB(0xD0,0xD0,0xD0)); 
   if (topo_marks) {
     topo_marks->scaleThreshold = 30.0;
@@ -227,10 +225,6 @@ void MarkLocation(const double lon, const double lat)
     fclose(stream);
   }
 
-#if (EXPERIMENTAL > 0)
-  bsms.SendSMS(message);
-#endif
-
 }
 
 void DrawMarks (const HDC hdc, const RECT rc)
@@ -264,7 +258,6 @@ void DrawTopology(const HDC hdc, const RECT rc)
 
 }
 
-#if LKTOPO
 
 double ReadZoomTopology(int iCategory) {
 
@@ -379,11 +372,10 @@ void ChangeZoomTopology(int iCategory, double newScale, short cztmode)
 
   UnlockTerrainDataGraphics();
 }
-#endif
 
 #define NUM_COLOR_RAMP_LEVELS 13
 
-
+#if USEWEATHER
 const COLORRAMP weather_colors[6][NUM_COLOR_RAMP_LEVELS] = {
   { // Blue to red       // vertical speed
     {   0,       0,     0,     255}, // -200   
@@ -477,9 +469,10 @@ const COLORRAMP weather_colors[6][NUM_COLOR_RAMP_LEVELS] = {
   },
 };
 
-#define NUMRAMPS	13
+#endif // USEWEATHER
 
-#ifdef LKSHADING
+#define NUMRAMPS	14
+
 // terrain shadowing and highlight relative to type
 // shadow to blue   is 0 0 64
 // highl  to yellow is 255 255 16
@@ -498,6 +491,7 @@ const COLORRAMP terrain_shadow[NUMRAMPS] = {
   { 63, 16, 32, 32},
   { 63, 16, 32, 32},
   { 63, 16, 32, 32},
+  { 63, 60,60, 60},
   { 63, 60,60, 60}
   //{ 63, 16, 32, 32}
 };
@@ -520,7 +514,7 @@ const COLORRAMP terrain_highlight[NUMRAMPS] = {
   { 255, 0,0,0},
   // { 32, 220, 255, 220}  // 101016 high alps no highlight
   { 63, 250, 250, 250},
-  // { 255, 0,0,0}
+  { 255, 0,0,0}
 };
 
 // Use shading for terrain modes
@@ -537,7 +531,8 @@ const bool terrain_doshading[NUMRAMPS] = {
 	1,
 	1,
 	1,	// YouSee Shaded
-	1 	// YouSee HiContrast
+	1, 	// YouSee HiContrast
+	0	// Obstacles
 };
 // Use minimal altitude normalizer for terrain modes
 const bool terrain_minalt[NUMRAMPS] = {
@@ -553,9 +548,9 @@ const bool terrain_minalt[NUMRAMPS] = {
 	1,
 	1,
 	0,	// YouSee Default
-	1 	// YouSee HiContrast
+	1, 	// YouSee HiContrast
+	1 	// Obstacles
 };
-#endif
 
 const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = { 
   {
@@ -788,6 +783,22 @@ const COLORRAMP terrain_colors[NUMRAMPS][NUM_COLOR_RAMP_LEVELS] = {
     {1800,    128,0,0},
     {3100,    255,255,255},
     {4900,    160,191,237},
+  },
+
+  {	// Obstacles
+    {0,       227,255,224 },
+    {50,      227,255,224 },
+    {51,      255,255,0 },
+    {120,     255,255,0 },
+    {149,     255,100,50 },
+    {150,     255,0,0 }, // 0m
+    {300,     255,0,0},
+    {500,    220,0,0},
+    {700,    200,0,0},
+    {900,    180,0,0},
+    {1100,    150,0,0},
+    {1300,    120,0,0},
+    {3500,    100,0,0}
   }
 };
 
@@ -850,32 +861,18 @@ short TerrainRamp = 0;
 inline void TerrainShading(const short illum, BYTE &r, BYTE &g, BYTE &b)
 {
   char x;
-#ifdef LKSHADING
   if (illum<0) {           // shadow to blue
-    x = min(tshadow_h,-illum);
+    x = min((int)tshadow_h,-illum);
     r = MIX(tshadow_r,r,x);
     g = MIX(tshadow_g,g,x);
     b = MIX(tshadow_b,b,x);
   } else if (illum>0) {    // highlight to yellow
     if (thighlight_h == 255) return; // 101016
-    x = min(thighlight_h,illum/2);
+    x = min((int)thighlight_h,illum/2);
     r = MIX(thighlight_r,r,x);
     g = MIX(thighlight_g,g,x);
     b = MIX(thighlight_b,b,x);
   }
-#else
-  if (illum<0) {           // shadow to blue
-    x = min(63,-illum);
-    r = MIX(0,r,x);
-    g = MIX(0,g,x);
-    b = MIX(64,b,x);
-  } else if (illum>0) {    // highlight to yellow
-    x = min(32,illum/2);
-    r = MIX(255,r,x);
-    g = MIX(255,g,x);
-    b = MIX(16,b,x);
-  }
-#endif
 }
 
 
@@ -906,7 +903,7 @@ public:
       // dtquant=3, latency=136 ms
       // dtquant=4, latency= 93 ms
     }
-    blursize = max(0, (dtquant-1)/2);
+    blursize = max((unsigned int)0, (dtquant-1)/2);
     oversampling = max(1,(blursize+1)/2+1);
     if (blursize==0) {
       oversampling = 1; // no point in oversampling, just let stretchblt do the scaling
@@ -994,6 +991,7 @@ private:
 
 public:
   bool SetMap() {
+#if USEWEATHER
     if (RasterTerrain::render_weather) {
       RASP.Reload(GPS_INFO.Latitude, GPS_INFO.Longitude);
     }
@@ -1066,16 +1064,21 @@ public:
     case 0:
       interp_levels = 2;
       is_terrain = true;
-	#if NEWRASTER
 	do_water=false; //@ 101017 we dont use it anymore, water printed always from Slope
-	#else
-      do_water = true;
-	#endif
       height_scale = 4;
       DisplayMap = RasterTerrain::TerrainMap;
       color_ramp = (COLORRAMP*)&terrain_colors[TerrainRamp][0];
       break;
     }
+#else // USEWEATHER
+      interp_levels = 2;
+      is_terrain = true;
+      do_water=false; // we dont use it anymore, water printed always from Slope
+      height_scale = 4;
+      DisplayMap = RasterTerrain::TerrainMap;
+      color_ramp = (COLORRAMP*)&terrain_colors[TerrainRamp][0];
+
+#endif // USEWEATHER
 
     if (is_terrain) {
 	do_shading = true;
@@ -1090,14 +1093,12 @@ public:
 
   }
 
-  #if LKSHADING
   void SetShading() { 
 	if (is_terrain && Shading && terrain_doshading[TerrainRamp])
 		do_shading=true;
 	else
 		do_shading=false;
   }
-  #endif
 
   void Height() {
 
@@ -1110,13 +1111,8 @@ public:
 
     unsigned int rfact=1;
 
-#ifndef MAP_ZOOM
-    if (MapWindow::BigZoom) {
-      MapWindow::BigZoom = false;
-#else /* MAP_ZOOM */
     if (MapWindow::zoom.BigZoom()) {
       MapWindow::zoom.BigZoom(false);
-#endif /* MAP_ZOOM */
       if (!RasterTerrain::IsDirectAccess()) {
         // first time displaying this data, so do it at half resolution
         // to avoid too many cache misses
@@ -1186,17 +1182,18 @@ public:
     rect_visible.bottom = min((long)MapWindow::MapRectBig.bottom,
                               (long)(MapWindow::MapRect.bottom+(long)epx*dtquant))-orig.y;
 
-     // StartupStore(_T(" vistop=%d visbot=%d  Y0=%d Y1=%d origy=%d \n"),rect_visible.top, rect_visible.bottom,Y0,Y1,orig.y); REMOVE
- 
     FillHeightBuffer(X0-orig.x, Y0-orig.y, X1-orig.x, Y1-orig.y);
 
     DisplayMap->Unlock();
 
+#if USEWEATHER
     if (RasterTerrain::render_weather) {
       ScanSpotHeights(X0-orig.x, Y0-orig.y, X1-orig.x, Y1-orig.y);
     }
+#endif
   }
 
+#if USEWEATHER
   void ScanSpotHeights(const int X0, const int Y0, const int X1, const int Y1) {
     unsigned short* myhbuf = hBuf;
 #ifdef DEBUG
@@ -1241,6 +1238,7 @@ public:
       }
     }
   }
+#endif // USEWEATHER
 
 void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
     // fill the buffer
@@ -1249,21 +1247,14 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
   unsigned short* hBufTop = hBuf+ixs*iys;
   #endif
 
-  #ifndef SLOW_STUFF
-
-  // This code is quickest but not so readable
-    
   const double PanLatitude =  MapWindow::GetPanLatitude();
   const double PanLongitude = MapWindow::GetPanLongitude();
   const double InvDrawScale = MapWindow::GetInvDrawScale()/1024.0;
   const double DisplayAngle = MapWindow::GetDisplayAngle();
 
-  #ifndef DISABLED_LK8000_OPTIMIZE
   const int cost = ifastcosine(DisplayAngle);
   const int sint = ifastsine(DisplayAngle);
-  #if NEWRASTER
   minalt=9999;
-  #endif
   for (int y = Y0; y<Y1; y+= dtquant) {
 	int ycost = y*cost;
 	int ysint = y*sint;
@@ -1279,10 +1270,9 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 			double Y = PanLatitude - (ycost+x*sint)*InvDrawScale;
 			double X = PanLongitude + (x*cost-ysint)*invfastcosine(Y)*InvDrawScale;
 
-#if NEWRASTER
 			// this is setting to 0 any negative terrain value and can be a problem for dutch people
 			// myhbuf cannot load negative values!
-			*myhbuf = max(0, DisplayMap->GetField(Y,X));
+			*myhbuf = max(0, (int)DisplayMap->GetField(Y,X));
 			if (*myhbuf!=TERRAIN_INVALID) {
 				// if (*myhbuf>maxalt) maxalt=*myhbuf;
 				if (*myhbuf<minalt) minalt=*myhbuf;
@@ -1291,75 +1281,24 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 			// invisible terrain
 			*myhbuf = TERRAIN_INVALID;
 		}
-#else
-			*myhbuf = max(0, DisplayMap->GetField(Y,X));
-		} else {
-			// this is setting water color at all effects
-			*myhbuf = 0;
-		}
-#endif
-
 
 	}
   }
-  #if LKSHADING
   if (!terrain_minalt[TerrainRamp]) minalt=0;	//@ 101110
-  #endif
-
-  #if NEWRASTER
-  // StartupStore(_T("... MinAlt=%d MaxAlt=%d Multiplier=%.3f\n"),minalt,maxalt, (double)((double)maxalt/(double)(maxalt-minalt))); 
-  #endif
-  #else	// OPTIMIZE 100304
-  // This code is quicker than quicker, but
-  // I don't really have the time to check if it is working, it was made under Laphroaig effect
-  // calculating screen (X * Y) / 4^2 = 19200 on a 640x480 screen
-  const int cost = ifastcosine(DisplayAngle);
-  const int sint = ifastsine(DisplayAngle);
-  const double costInvDrawScale=cost*InvDrawScale;
-  const double sintInvDrawScale=sint*InvDrawScale;
-
-  double X,Y;
-  double Pan_ycostInvDrawScale;
-  int x, ysint;
-
-  for (int y = Y0; y<Y1; y+= dtquant) {
-
-	if (y<rect_visible.top || y>rect_visible.bottom) {
-		// use setmem, but it is dangerous..
-		for ( x = X0; x<X1; x+= dtquant, myhbuf++) *myhbuf = 0;
-		continue;
-	}
-
-	ysint = y*sint;
-	Pan_ycostInvDrawScale = PanLatitude - (y * costInvDrawScale);
-
-	for (x = X0; x<X1; x+= dtquant, myhbuf++) {
-		if ((x>= rect_visible.left) && (x<= rect_visible.right)) {
-			#ifdef DEBUG
-			ASSERT(myhbuf<hBufTop);
-			#endif
-			Y = Pan_ycostInvDrawScale  - (x* sintInvDrawScale);
-			X = PanLongitude + (x*cost-ysint)*invfastcosine(Y)*InvDrawScale;
-
-			*myhbuf = max(0, DisplayMap->GetField(Y,X));
+  if (TerrainRamp==13) {
+	if (!GPS_INFO.NAVWarning) {
+		if (CALCULATED_INFO.Flying) {
+			minalt=(unsigned short)GPS_INFO.Altitude-150; // 500ft
 		} else {
-			*myhbuf = 0;
+			minalt=(unsigned short)GPS_INFO.Altitude+100; // 330ft
 		}
-	}
-    }
-  #endif
- 
-  #else	// SLOW STUFF
-  // This code is marginally slower but readable
-  double X, Y;
-  for (int y = Y0; y<Y1; y+= dtquant) {
-	for (int x = X0; x<X1; x+= dtquant) {
-		MapWindow::Screen2LatLon(x,y,X,Y);
-		*myhbuf++ = max(0, DisplayMap->GetField(Y, X));
+	} else {
+		minalt+=150;
 	}
   }
-  #endif
 
+  // StartupStore(_T("... MinAlt=%d MaxAlt=%d Multiplier=%.3f\n"),minalt,maxalt, (double)((double)maxalt/(double)(maxalt-minalt))); 
+ 
 }
 
 // JMW: if zoomed right in (e.g. one unit is larger than terrain
@@ -1386,9 +1325,7 @@ void Slope(const int sx, const int sy, const int sz) {
   BGRColor* imageBuf = sbuf->GetBuffer();
   if (!imageBuf) return;
 
-// StartupStore(_T("... ciys=%d epx=%d iysbottom=%d\n"),ciys,iepx,iysbottom); // REMOVE
-
-  short h;
+  unsigned short h;
 
   #ifdef DEBUG
   unsigned short* hBufTop = hBuf+cixs*ciys;
@@ -1425,8 +1362,6 @@ void Slope(const int sx, const int sy, const int sz) {
 
 		// FIX here Netherland dutch terrain problem
 		// if >=0 then the sea disappears...
-		#if LKTOPO
-		#if NEWRASTER
 		if ((h = *thBuf) != TERRAIN_INVALID ) { 
 			// if (h==0 && LKWaterThreshold==0) { // no LKM coasts, and water altitude
 			if (h==LKWaterThreshold) { // see above.. h cannot be -1000.. so only when LKW is 0 h can be equal
@@ -1434,13 +1369,6 @@ void Slope(const int sx, const int sy, const int sz) {
 				continue;
 			}
 			h=h-minalt+1;
-		#else
-		// but Buf cannot hold negative values.. so ?? We are never painting water? UHM. never mind
-		if ((h = *thBuf) >LKWaterThreshold ) { 
-		#endif
-		#else
-		if ((h = *thBuf) >0 ) { 
-		#endif
 
 			int p20, p22;
 
@@ -1558,7 +1486,6 @@ void ColorTable() {
 	for (int mag= -64; mag<64; mag++) {
 		BYTE r, g, b; 
 		// NEWRASTER i=255 means TERRAIN_INVALID
-		#if NEWRASTER
 		if (i == 255) {
 			// do_water set by weather, also for no weather, normally we never use this
 			// because water is colored now in Slope
@@ -1573,39 +1500,9 @@ void ColorTable() {
 			// height_scale, color_ramp interp_levels  used only for weather
 			// ColorRampLookup is preparing terrain color to pass to TerrainShading for mixing
 			ColorRampLookup(i<<height_scale, r, g, b, color_ramp, NUM_COLOR_RAMP_LEVELS, interp_levels);
-			#if LKSHADING
 			if (do_shading) TerrainShading(mag, r, g, b); //@ 101122
-			#else
-			TerrainShading(mag, r, g, b);
-			#endif
 			colorBuf[i+(mag+64)*256] = BGRColor(r,g,b);
 		}
-		#else
-		if (i == 255) {
-			// do_water set by weather, also for no weather
-			if (do_water) {
-				// water colours
-				r = 85;
-				g = 160;
-				b = 255;
-			} else {
-				r = 255;
-				g = 255;
-				b = 255;
-				// ColorRampLookup(0, r, g, b, color_ramp, NUM_COLOR_RAMP_LEVELS, interp_levels); UNUSED
-			}
-		} else {
-			// height_scale, color_ramp interp_levels  used only for weather
-			// ColorRampLookup is preparing terrain color to pass to TerrainShading for mixing
-			ColorRampLookup(i<<height_scale, r, g, b, color_ramp, NUM_COLOR_RAMP_LEVELS, interp_levels);
-			#if LKSHADING
-			if (do_shading)TerrainShading(mag, r, g, b);
-			#else
-			TerrainShading(mag, r, g, b);
-			#endif
-		}
-		colorBuf[i+(mag+64)*256] = BGRColor(r,g,b);
-		#endif
 	}
   }
 }
@@ -1645,18 +1542,6 @@ void DrawTerrain( const HDC hdc, const RECT rc,
   (void)sunelevation; // TODO feature: sun-based rendering option
   (void)rc;
 
-  #ifdef TERRAIN_OPTIMIZE	// 100319
-  static bool flipflop=false;
-  static bool wasFullScreen=false; // 100320
-  // Handle map geometry changes, forcing calculations
-  if ( (DisplayMode == dmCircling) || MapWindow::EnablePan || (MapWindow::IsMapFullScreen() != wasFullScreen) ) {
-	flipflop=true;
-	wasFullScreen=MapWindow::IsMapFullScreen();
-  } else {
-  	if (flipflop) flipflop=false; else flipflop=true;
-  }
-  #endif
-
   if (!RasterTerrain::isTerrainLoaded()) {
     return;
   }
@@ -1669,7 +1554,6 @@ void DrawTerrain( const HDC hdc, const RECT rc,
     return;
   }
 
-#ifdef LKSHADING
   // load terrain shading parameters
   // Make them instead dynamically calculated based on previous average terrain illumination
   tshadow_r= terrain_shadow[TerrainRamp].r;
@@ -1681,25 +1565,7 @@ void DrawTerrain( const HDC hdc, const RECT rc,
   thighlight_g= terrain_highlight[TerrainRamp].g;
   thighlight_b= terrain_highlight[TerrainRamp].b;
   thighlight_h= terrain_highlight[TerrainRamp].h;
-#endif
 
-#ifdef TERRAIN_OPTIMIZE		
-  static int sx, sy, sz;
-  static int oldsunazimuth=1234567;
-  // Calculate color table only if azimuth changed more than 5deg
-  // if ( flipflop && ( ((int)sunazimuth != oldsunazimuth) || (RasterTerrain::render_weather))) {
-  if ( flipflop && ( ( abs((int)sunazimuth - oldsunazimuth) >5) || (RasterTerrain::render_weather))) {
-	oldsunazimuth=(int)sunazimuth;
-	double fudgeelevation = (10.0+80.0*TerrainBrightness/255.0);
-
-	sx = (int)(255*(fastcosine(fudgeelevation)*fastsine(sunazimuth)));
-	sy = (int)(255*(fastcosine(fudgeelevation)*fastcosine(sunazimuth)));
-	sz = (int)(255*fastsine(fudgeelevation));
-
-	// This is calling ColorRampLookup
-	trenderer->ColorTable();
-  }
-#else
   // step 1: calculate sunlight vector
   int sx, sy, sz;
   double fudgeelevation = (10.0+80.0*TerrainBrightness/255.0);
@@ -1708,16 +1574,10 @@ void DrawTerrain( const HDC hdc, const RECT rc,
   sy = (int)(255*(fastcosine(fudgeelevation)*fastcosine(sunazimuth)));
   sz = (int)(255*fastsine(fudgeelevation));
 
-  #if LKSHADING
   trenderer->SetShading();
-  #endif
   trenderer->ColorTable();
-#endif
   // step 2: fill height buffer
 
-  #ifdef TERRAIN_OPTIMIZE
-  if (flipflop)
-  #endif
   trenderer->Height(); 
 
   // step 3: calculate derivatives of height buffer
@@ -1730,52 +1590,6 @@ void DrawTerrain( const HDC hdc, const RECT rc,
   misc_tick_count = GetTickCount()-misc_tick_count;
 }
 
-#ifndef LK8000_OPTIMIZE
-static void DrawSpotHeight_Internal(const HDC hdc, TCHAR *Buffer, POINT pt) {
-  int size = _tcslen(Buffer);
-  if (size==0) {
-    return;
-  }
-  POINT orig = MapWindow::GetOrigScreen();
-  SIZE tsize;
-  RECT brect;
-  GetTextExtentPoint(hdc, Buffer, size, &tsize);
-  
-  pt.x+= 2+orig.x;
-  pt.y+= 2+orig.y;
-  brect.left = pt.x;
-  brect.right = brect.left+tsize.cx;
-  brect.top = pt.y;
-  brect.bottom = brect.top+tsize.cy;
-
-  if (!MapWindow::checkLabelBlock(brect))
-    return;
-  
-  ExtTextOut(hdc, pt.x, pt.y, 0, NULL,
-             Buffer, size, NULL);
-}
-
-void DrawSpotHeights(const HDC hdc) {
-  // JMW testing, display of spot max/min
-  if (!RasterTerrain::render_weather) 
-    return;
-  if (!trenderer) 
-    return;
-
-  extern HFONT  TitleWindowFont;
-  HFONT old_font = (HFONT)SelectObject(hdc, TitleWindowFont);
-
-  TCHAR Buffer[20];
-
-  RASP.ValueToText(Buffer, trenderer->spot_max_val);
-  DrawSpotHeight_Internal(hdc, Buffer, trenderer->spot_max_pt);
-
-  RASP.ValueToText(Buffer, trenderer->spot_min_val);
-  DrawSpotHeight_Internal(hdc, Buffer, trenderer->spot_min_pt);
-
-  SelectObject(hdc, old_font);
-}
-#endif
 
 #include "wcecompat/ts_string.h"
 // TODO code: check ts_string does the right thing
@@ -1785,13 +1599,11 @@ void OpenTopology() {
   CreateProgressDialog(gettext(TEXT("_@M902_"))); // Loading Topology File...
 
   // Start off by getting the names and paths
-  static TCHAR  szOrigFile[MAX_PATH] = TEXT("\0");
-  static TCHAR  szFile[MAX_PATH] = TEXT("\0");
-  static  TCHAR Directory[MAX_PATH] = TEXT("\0");
+  static TCHAR szOrigFile[MAX_PATH] = TEXT("\0");
+  static TCHAR szFile[MAX_PATH] = TEXT("\0");
+  static TCHAR Directory[MAX_PATH] = TEXT("\0");
 
-  #if LKTOPO
   LKTopo=0;
-  #endif
 
   LockTerrainDataGraphics();
 
@@ -1807,11 +1619,7 @@ void OpenTopology() {
   // remove it in case it causes a crash (will restore later)
   SetRegistryString(szRegistryTopologyFile, TEXT("\0"));
 
-#if LKTOPO
   if (1) {
-#else
-  if (_tcslen(szFile)==0) {
-#endif
 
     // file is blank, so look for it in a map file
     static TCHAR  szMapFile[MAX_PATH] = TEXT("\0");
@@ -1824,21 +1632,18 @@ void OpenTopology() {
 
     // Look for the file within the map zip file...
     _tcscpy(Directory,szMapFile);
-    wcscat(Directory,TEXT("/"));
+    _tcscat(Directory,TEXT("/"));
     szFile[0]=0;
-    wcscat(szFile,Directory);
-    wcscat(szFile,TEXT("topology.tpl"));
+    _tcscat(szFile,Directory);
+    _tcscat(szFile,TEXT("topology.tpl"));
 
   } else {
     ExtractDirectory(Directory,szFile);
   }
 
   // Ready to open the file now..
-
-  static ZZIP_FILE* zFile;
-  char zfilename[MAX_PATH];
-  unicode2ascii(szFile, zfilename, MAX_PATH);
-  zFile = zzip_fopen(zfilename, "rt");
+  ZZIP_FILE* zFile = zzip_fopen(szFile, "rt");
+  
   if (!zFile) {
     UnlockTerrainDataGraphics();
     StartupStore(TEXT(". No topology file <%s>%s"), szFile,NEWLINE);
@@ -1854,11 +1659,8 @@ void OpenTopology() {
   TCHAR wShapeFilename[MAX_PATH];
   TCHAR *Stop;
   int numtopo = 0;
-  char ShapeFilename[MAX_PATH];
-  #if LKTOPO
   int shapeIndex=0;
   LKWaterThreshold=0;
-  #endif
 
   while(ReadString(zFile,READLINE_LENGTH,TempString)) {
       
@@ -1874,19 +1676,13 @@ void OpenTopology() {
         
         _tcscpy(wShapeFilename, Directory);
 
-        wcscat(wShapeFilename,ShapeName);
-        wcscat(wShapeFilename,TEXT(".shp"));
-        
-        WideCharToMultiByte( CP_ACP, 0, wShapeFilename,
-                             _tcslen(wShapeFilename)+1, 
-                             ShapeFilename,   
-                             200, NULL, NULL);
+        _tcscat(wShapeFilename,ShapeName);
+        _tcscat(wShapeFilename,TEXT(".shp"));
         
         // Shape range
         PExtractParameter(TempString, ctemp, 1);
         ShapeRange = StrToDouble(ctemp,NULL);
 
-#if LKTOPO
 	// Normally ShapeRange is indicating km threshold for items to be drawn.
 	// If over 5000, we identify an LKmap topology and subtract 5000 to get the type.
 	// 
@@ -1984,7 +1780,6 @@ void OpenTopology() {
 		LKTopo=-1;
 	}
 
-#endif
         
         // Shape icon
         PExtractParameter(TempString, ctemp, 2);
@@ -2024,11 +1819,11 @@ void OpenTopology() {
         
         if (ShapeField<0) {
           Topology* newtopo;
-          newtopo = new Topology(ShapeFilename, RGB(red,green,blue));
+          newtopo = new Topology(wShapeFilename, RGB(red,green,blue));
           TopoStore[numtopo] = newtopo;
         } else {
           TopologyLabel *newtopol;
-          newtopol = new TopologyLabel(ShapeFilename, 
+          newtopol = new TopologyLabel(wShapeFilename, 
                                        RGB(red,green,blue),
                                        ShapeField);
           TopoStore[numtopo] = newtopol;
@@ -2036,8 +1831,6 @@ void OpenTopology() {
         if (ShapeIcon!=0) 
           TopoStore[numtopo]->loadBitmap(ShapeIcon);
         
-
-	#if LKTOPO
         TopoStore[numtopo]->scaleCategory = shapeIndex;
         TopoStore[numtopo]->scaleDefaultThreshold = ShapeRange;
 	TopoStore[numtopo]->scaleThreshold = ShapeRange;
@@ -2060,10 +1853,6 @@ void OpenTopology() {
 		TopoStore[numtopo]->scaleThreshold,TopoStore[numtopo]->scaleDefaultThreshold,NEWLINE);
 	#endif
 
-	#else
-        TopoStore[numtopo]->scaleThreshold = ShapeRange;
-	#endif
-        
         numtopo++;
       }
   }
@@ -2074,13 +1863,11 @@ void OpenTopology() {
   // file was OK, so save it
   SetRegistryString(szRegistryTopologyFile, szOrigFile);
 
-  #if LKTOPO
   if (LKTopo>0) {
 	StartupStore(_T(". LKMAPS Advanced Topology file found%s"),NEWLINE);
   } else {
 	LKTopo=0;
   }
-  #endif
 
   UnlockTerrainDataGraphics();
 

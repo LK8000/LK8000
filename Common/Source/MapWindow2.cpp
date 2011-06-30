@@ -12,9 +12,8 @@
 #include "Defines.h"
 
 #include "MapWindow.h"
-#include "OnLineContest.h"
 #include "Utils.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "LKUtils.h"
 #include "Utils2.h"
 #include "Units.h"
@@ -35,14 +34,17 @@
 #include "Terrain.h"
 #include "RasterTerrain.h"
 
-#include "GaugeCDI.h"
-#include "GaugeFLARM.h"
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
+#include "LKAirspace.h"
+using std::min;
+using std::max;
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
 #endif
+
+#include "utils/heapcheck.h"
 
 #ifdef DEBUG
 #if (WINDOWSPC<1)
@@ -53,84 +55,17 @@ extern int misc_tick_count;
 #endif
 #endif
 
-extern HWND hWndCDIWindow;
 extern HFONT MapLabelFont;
 extern HFONT  MapWindowBoldFont;
 
 #define TASKINDEX    Task[ActiveWayPoint].Index
-
-#ifndef NOCDIGAUGE
-void MapWindow::DrawCDI() {
-  bool dodrawcdi = false;
-
-  if (DerivedDrawInfo.Circling) {
-    if (EnableCDICircling) {
-      dodrawcdi = true;
-    }
-  } else {
-    if (EnableCDICruise) {
-      dodrawcdi = true;
-    }    
-  }
-
-  if (dodrawcdi) {
-    ShowWindow(hWndCDIWindow, SW_SHOW);
-    
-    // JMW changed layout here to fit reorganised display
-    // insert waypoint bearing ".<|>." into CDIScale string"
-    
-    TCHAR CDIScale[] = TEXT("330..340..350..000..010..020..030..040..050..060..070..080..090..100..110..120..130..140..150..160..170..180..190..200..210..220..230..240..250..260..270..280..290..300..310..320..330..340..350..000..010..020..030..040.");
-    TCHAR CDIDisplay[25] = TEXT("");
-    int j;
-    int CDI_WP_Bearing = (int)DerivedDrawInfo.WaypointBearing/2;
-    CDIScale[CDI_WP_Bearing + 9] = 46;
-    CDIScale[CDI_WP_Bearing + 10] = 60;
-    CDIScale[CDI_WP_Bearing + 11] = 124; // "|" character
-    CDIScale[CDI_WP_Bearing + 12] = 62; 
-    CDIScale[CDI_WP_Bearing + 13] = 46;
-    for (j=0;j<24;j++) CDIDisplay[j] = CDIScale[(j + (int)(DrawInfo.TrackBearing)/2)];
-    CDIDisplay[24] = _T('\0');
-    // JMW fix bug! This indicator doesn't always display correctly!
-    
-    // JMW added arrows at end of CDI to point to track if way off..
-    int deltacdi = iround(DerivedDrawInfo.WaypointBearing-DrawInfo.TrackBearing);
-    
-    while (deltacdi>180) {
-      deltacdi-= 360;
-    }
-    while (deltacdi<-180) {
-      deltacdi+= 360;
-    }
-    if (deltacdi>20) {
-      CDIDisplay[21]='>';
-      CDIDisplay[22]='>';
-      CDIDisplay[23]='>';
-    }
-    if (deltacdi<-20) {
-      CDIDisplay[0]='<';
-      CDIDisplay[1]='<';
-      CDIDisplay[2]='<';
-    }
-    
-    SetWindowText(hWndCDIWindow,CDIDisplay);
-    // end of new code to display CDI scale
-  } else {
-    ShowWindow(hWndCDIWindow, SW_HIDE);
-  }
-}
-#endif
-
 
 double MapWindow::findMapScaleBarSize(const RECT rc) {
 
   int range = rc.bottom-rc.top;
 //  int nbars = 0;
 //  int nscale = 1;
-#ifndef MAP_ZOOM
-  double pixelsize = MapScale/GetMapResolutionFactor(); // km/pixel
-#else /* MAP_ZOOM */
   double pixelsize = zoom.Scale()/GetMapResolutionFactor(); // km/pixel
-#endif /* MAP_ZOOM */
   
   // find largest bar size that will fit in display
 
@@ -152,145 +87,6 @@ double MapWindow::findMapScaleBarSize(const RECT rc) {
   return 0.1/pixelsize;
 }
 
-#ifndef LK8000_OPTIMIZE
-void MapWindow::DrawMapScale2(HDC hDC, const RECT rc, 
-			      const POINT Orig_Aircraft)
-{
-  if (Appearance.MapScale2 == apMs2None) return;
-
-  HPEN hpOld   = (HPEN)SelectObject(hDC, hpMapScale);
-  HPEN hpWhite = (HPEN)GetStockObject(WHITE_PEN);
-  HPEN hpBlack = (HPEN)GetStockObject(BLACK_PEN);
-
-  bool color = false;
-  POINT Start, End={0,0};
-  bool first=true;
-
-  int barsize = iround(findMapScaleBarSize(rc));
-
-  Start.x = rc.right-1;
-  for (Start.y=Orig_Aircraft.y; Start.y<rc.bottom+barsize; Start.y+= barsize) {
-    if (color) {
-      SelectObject(hDC, hpWhite);
-    } else {
-      SelectObject(hDC, hpBlack);
-    }
-    if (!first) {
-      DrawSolidLine(hDC,Start,End, rc);
-    } else {
-      first=false;
-    }
-    End = Start;
-    color = !color;
-  }
-
-  color = true;
-  first = true;
-  for (Start.y=Orig_Aircraft.y; Start.y>rc.top-barsize; Start.y-= barsize) {
-    if (color) {
-      SelectObject(hDC, hpWhite);
-    } else {
-      SelectObject(hDC, hpBlack);
-    }
-    if (!first) {
-      DrawSolidLine(hDC,Start,End, rc);
-    } else {
-      first=false;
-    }
-    End = Start;
-    color = !color;
-  }
-
-  // draw text as before
-  
-  SelectObject(hDC, hpOld);
-
-}
-#endif
-
-
-#if 0
-// new version, using estimated IAS
-void MapWindow::DrawSpeedToFly(HDC hDC, RECT rc) {
-  POINT chevron[3];
-  double ias;
-
-  HPEN hpOld;
-  HBRUSH hbOld;
-
-  int i;
-
-#ifndef _SIM_
-  #if 0
-  if (!(DrawInfo.AirspeedAvailable && DrawInfo.VarioAvailable)) {
-    return;
-  }
-  #endif
-  // we use estimated airspeed now
-  if (!(DrawInfo.AirspeedAvailable && DrawInfo.VarioAvailable)) 
-	ias=DerivedDrawInfo.IndicatedAirspeedEstimated;
-  else
-	ias=DrawInfo.IndicatedAirspeed;
-#else
-  ias=DerivedDrawInfo.IndicatedAirspeedEstimated;
-#endif
-
-  hbOld = (HBRUSH)SelectObject(hDC, GetStockObject(WHITE_BRUSH));
-  hpOld = (HPEN)SelectObject(hDC, hpBearing);
-
-  double vdiff;
-  int vsize = (rc.bottom-rc.top)/2;
-
-  vdiff = (DerivedDrawInfo.VOpt - ias)/40.0;
-  // 25.0 m/s is maximum scale
-  vdiff = max(-0.5,min(0.5,vdiff)); // limit it
-  
-  int yoffset=0;
-  int hyoffset=0;
-  vsize = iround(fabs(vdiff*vsize));
-  int xoffset = rc.right-NIBLSCALE(25);
-  int ycenter = (rc.bottom+rc.top)/2;
-
-  int k=0;
-
-  for (k=0; k<2; k++) {
-
-    for (i=0; i< vsize; i+= 5) {
-      if (vdiff>0) {
-        yoffset = i+ycenter+k;
-        hyoffset = NIBLSCALE(4);
-      } else {
-        yoffset = -i+ycenter-k;
-        hyoffset = -NIBLSCALE(4);
-      }
-      chevron[0].x = xoffset;
-      chevron[0].y = yoffset;
-      chevron[1].x = xoffset+NIBLSCALE(10);
-      chevron[1].y = yoffset+hyoffset;
-      chevron[2].x = xoffset+NIBLSCALE(20);
-      chevron[2].y = yoffset;
-      
-      _Polyline(hDC, chevron, 3, rc);
-    }
-    if (vdiff>0) {
-      hpOld = (HPEN)SelectObject(hDC, hpSpeedSlow);
-    } else {
-      hpOld = (HPEN)SelectObject(hDC, hpSpeedFast);
-    }
-  }
-
-  SelectObject(hDC, hpBearing);
-  chevron[0].x = xoffset-NIBLSCALE(3);
-  chevron[0].y = ycenter;
-  chevron[1].x = xoffset+NIBLSCALE(3+20);
-  chevron[1].y = ycenter;
-  _Polyline(hDC, chevron, 2, rc);
-    
-  SelectObject(hDC, hbOld);
-  SelectObject(hDC, hpOld);
-
-}
-#endif
 
 #define fSnailColour(cv) max(0,min((short)(NUMSNAILCOLORS-1), (short)((cv+1.0)/2.0*NUMSNAILCOLORS)))
 
@@ -525,26 +321,7 @@ void MapWindow::ScanVisibility(rectObj *bounds_active) {
   }
 
   // far visibility for airspace
-
-  if (AirspaceCircle) {
-    for (AIRSPACE_CIRCLE* circ = AirspaceCircle;
-         circ < AirspaceCircle+NumberOfAirspaceCircles; circ++) {
-      circ->FarVisible = 
-        (msRectOverlap(&circ->bounds, bounds_active) == MS_TRUE) ||
-        (msRectContained(bounds_active, &circ->bounds) == MS_TRUE) ||
-        (msRectContained(&circ->bounds, bounds_active) == MS_TRUE);
-    }
-  }
-
-  if (AirspaceArea) {
-    for(AIRSPACE_AREA *area = AirspaceArea;
-        area < AirspaceArea+NumberOfAirspaceAreas; area++) {
-      area->FarVisible = 
-        (msRectOverlap(&area->bounds, bounds_active) == MS_TRUE) ||
-        (msRectContained(bounds_active, &area->bounds) == MS_TRUE) ||
-        (msRectContained(&area->bounds, bounds_active) == MS_TRUE);
-    }
-  }
+  CAirspaceManager::Instance().SetFarVisible( *bounds_active );
 
 }
 
@@ -581,106 +358,10 @@ void MapWindow::CalculateScreenPositionsThermalSources() {
   }
 }
 
-
-void MapWindow::CalculateScreenPositionsAirspaceCircle(AIRSPACE_CIRCLE &circ) {
-  circ.Visible = false;
-  if (!circ.FarVisible) return;
-  if (iAirspaceMode[circ.Type]%2 == 1) {
-    double basealt;
-    double topalt;
-    if (circ.Base.Base != abAGL) {
-      basealt = circ.Base.Altitude;
-    } else {
-      basealt = circ.Base.AGL + CALCULATED_INFO.TerrainAlt;
-    }
-    if (circ.Top.Base != abAGL) {
-      topalt = circ.Top.Altitude;
-    } else {
-      topalt = circ.Top.AGL + CALCULATED_INFO.TerrainAlt;
-    }
-    if(CheckAirspaceAltitude(basealt, topalt)) {
-      if (msRectOverlap(&circ.bounds, &screenbounds_latlon) 
-          || msRectContained(&screenbounds_latlon, &circ.bounds)) {
-
-	if (!circ._NewWarnAckNoBrush &&
-	    !(iAirspaceBrush[circ.Type] == NUMAIRSPACEBRUSHES-1)) {
-	  circ.Visible = 2;
-	} else {
-	  circ.Visible = 1;
-	}
-
-        LatLon2Screen(circ.Longitude, 
-                      circ.Latitude, 
-                      circ.Screen);
-#ifndef MAP_ZOOM
-        circ.ScreenR = iround(circ.Radius*ResMapScaleOverDistanceModify);
-#else /* MAP_ZOOM */
-        circ.ScreenR = iround(circ.Radius*zoom.ResScaleOverDistanceModify());
-#endif /* MAP_ZOOM */
-      }
-    }
-  }
+void MapWindow::CalculateScreenPositionsAirspace()
+{
+  CAirspaceManager::Instance().CalculateScreenPositionsAirspace(screenbounds_latlon, iAirspaceMode, iAirspaceBrush, zoom.ResScaleOverDistanceModify());
 }
-
-void MapWindow::CalculateScreenPositionsAirspaceArea(AIRSPACE_AREA &area) {
-  area.Visible = false;
-  if (!area.FarVisible) return;
-  if (iAirspaceMode[area.Type]%2 == 1) {
-    double basealt;
-    double topalt;
-    if (area.Base.Base != abAGL) {
-      basealt = area.Base.Altitude;
-    } else {
-      basealt = area.Base.AGL + CALCULATED_INFO.TerrainAlt;
-    }
-    if (area.Top.Base != abAGL) {
-      topalt = area.Top.Altitude;
-    } else {
-      topalt = area.Top.AGL + CALCULATED_INFO.TerrainAlt;
-    }
-    if(CheckAirspaceAltitude(basealt, topalt)) {
-      if (msRectOverlap(&area.bounds, &screenbounds_latlon) 
-          || msRectContained(&screenbounds_latlon, &area.bounds)) {
-        AIRSPACE_POINT *ap= AirspacePoint+area.FirstPoint;
-        const AIRSPACE_POINT *ep= ap+area.NumPoints;
-        POINT* sp= AirspaceScreenPoint+area.FirstPoint;
-        while (ap < ep) {
-	  // JMW optimise!
-            LatLon2Screen(ap->Longitude, 
-                          ap->Latitude, 
-                          *sp);
-            ap++;
-            sp++;
-        }               
-
-	if (!area._NewWarnAckNoBrush &&
-	    !(iAirspaceBrush[area.Type] == NUMAIRSPACEBRUSHES-1)) {
-	  area.Visible = 2;
-	} else {
-	  area.Visible = 1;
-	}
-      }
-    }
-  }
-}
-
-void MapWindow::CalculateScreenPositionsAirspace() {
-  
-  
-  if (AirspaceCircle) {
-    for (AIRSPACE_CIRCLE* circ = AirspaceCircle;
-         circ < AirspaceCircle+NumberOfAirspaceCircles; circ++) {
-      CalculateScreenPositionsAirspaceCircle(*circ);
-    }
-  }
-  if (AirspaceArea) {
-    for(AIRSPACE_AREA *area = AirspaceArea;
-        area < AirspaceArea+NumberOfAirspaceAreas; area++) {
-      CalculateScreenPositionsAirspaceArea(*area);
-    }
-  }
-}
-
 
 void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc, 
                                          POINT *Orig_Aircraft)
@@ -689,11 +370,7 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
 
   Orig_Screen = Orig;
 
-#ifndef MAP_ZOOM
-  if (!EnablePan) {
-#else /* MAP_ZOOM */
   if (!mode.AnyPan()) {
-#endif /* MAP_ZOOM */
   
     if (GliderCenter 
         && DerivedDrawInfo.Circling 
@@ -836,11 +513,7 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
         LatLon2Screen(Task[i].AATFinishLon, Task[i].AATFinishLat, Task[i].AATFinish);
       }
       if (AATEnabled && (((int)i==ActiveWayPoint) || 
-#ifndef MAP_ZOOM
-			 (TargetPan && ((int)i==TargetPanIndex)))) {
-#else /* MAP_ZOOM */
 			 (mode.Is(Mode::MODE_TARGET_PAN) && ((int)i==TargetPanIndex)))) {
-#endif /* MAP_ZOOM */
 
 	for (int j=0; j<MAXISOLINES; j++) {
 	  if (TaskStats[i].IsoLine_valid[j]) {
@@ -859,52 +532,31 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
 
 
 // JMW to be used for target preview
-#ifndef MAP_ZOOM
-bool MapWindow::SetTargetPan(bool do_pan, int target_point) {
-#else /* MAP_ZOOM */
 void MapWindow::SetTargetPan(bool do_pan, int target_point)
 {
-#endif /* MAP_ZOOM */
   static double old_latitude;
   static double old_longitude;
-#ifndef MAP_ZOOM
-  static bool old_pan=false;
-#endif /* ! MAP_ZOOM */
+#if USEIBOX
   static bool old_fullscreen=false;
+#endif
 
-#ifndef MAP_ZOOM
-  if (!TargetPan || (TargetPanIndex != target_point)) {
-#else /* MAP_ZOOM */
   if (!mode.Is(Mode::MODE_TARGET_PAN) || (TargetPanIndex != target_point)) {
-#endif /* MAP_ZOOM */
     TargetDrag_State = 0;
   }
 
   TargetPanIndex = target_point;
 
-#ifndef MAP_ZOOM
-  if (do_pan && !TargetPan) {
-#else /* MAP_ZOOM */
   if (do_pan && !mode.Is(Mode::MODE_TARGET_PAN)) {
-#endif /* MAP_ZOOM */
     old_latitude = PanLatitude;
     old_longitude = PanLongitude;
-#ifndef MAP_ZOOM
-    old_pan = EnablePan;
-    EnablePan = true;
-    TargetPan = do_pan;
-#else /* MAP_ZOOM */
     mode.Special(do_pan ? Mode::MODE_SPECIAL_TARGET_PAN : Mode::MODE_SPECIAL_PAN, true);
-#endif /* MAP_ZOOM */
+#if USEIBOX
     old_fullscreen = RequestFullScreen;
     if (RequestFullScreen) {
       RequestFullScreen = false;
     }
-#ifndef MAP_ZOOM
-    SwitchZoomClimb();
-#else /* MAP_ZOOM */
+#endif
     zoom.SwitchMode();
-#endif /* MAP_ZOOM */
   }
   if (do_pan) {
     LockTaskData();
@@ -912,9 +564,9 @@ void MapWindow::SetTargetPan(bool do_pan, int target_point)
       PanLongitude = WayPointList[Task[target_point].Index].Longitude;
       PanLatitude = WayPointList[Task[target_point].Index].Latitude;
       if (target_point==0) {
-        TargetZoomDistance = max(2e3, StartRadius*2);
+        TargetZoomDistance = max(2e3, (double)StartRadius*2);
       } else if (!ValidTaskPoint(target_point+1)) {
-        TargetZoomDistance = max(2e3, FinishRadius*2);
+        TargetZoomDistance = max(2e3, (double)FinishRadius*2);
       } else if (AATEnabled) {
         if (Task[target_point].AATType == SECTOR) {
           TargetZoomDistance = max(2e3, Task[target_point].AATSectorRadius*2);
@@ -922,44 +574,23 @@ void MapWindow::SetTargetPan(bool do_pan, int target_point)
           TargetZoomDistance = max(2e3, Task[target_point].AATCircleRadius*2);
         }
       } else {
-        TargetZoomDistance = max(2e3, SectorRadius*2);
+        TargetZoomDistance = max(2e3, (double)SectorRadius*2);
       }
     }
     UnlockTaskData();
-#ifndef MAP_ZOOM
-  } else if (TargetPan) {
-#else /* MAP_ZOOM */
   }
   else if (mode.Is(Mode::MODE_TARGET_PAN)) {
-#endif /* MAP_ZOOM */
     PanLongitude = old_longitude;
     PanLatitude = old_latitude;
-#ifndef MAP_ZOOM
-    EnablePan = old_pan;
-    TargetPan = do_pan;
-    if (old_fullscreen) {
-#else /* MAP_ZOOM */
     mode.Special(Mode::MODE_SPECIAL_TARGET_PAN, do_pan);
+#if USEIBOX
     if (old_fullscreen)
-#endif /* MAP_ZOOM */
       RequestFullScreen = true;
-#ifdef MAP_ZOOM
+#endif
     zoom.SwitchMode();
-#endif /* MAP_ZOOM */
     }
-#ifndef MAP_ZOOM
-    SwitchZoomClimb();
-#else /* MAP_ZOOM */
   mode.Special(Mode::MODE_SPECIAL_TARGET_PAN, do_pan);
-#endif /* MAP_ZOOM */
   }
-#ifndef MAP_ZOOM
-  TargetPan = do_pan;
-  return old_pan;
-};
-#else /* MAP_ZOOM */
-
-#endif /* MAP_ZOOM */
 
 // Draw bearing line to target
 void MapWindow::DrawGreatCircle(HDC hdc,
@@ -987,37 +618,13 @@ void MapWindow::DrawGreatCircle(HDC hdc,
 
 int MapWindow::iSnailNext=0;
 
-extern OLCOptimizer olc;
 
 void MapWindow::DrawTrailFromTask(HDC hdc, const RECT rc, 
 				  const double TrailFirstTime) {
-  static POINT ptin[MAXCLIPPOLYGON];
 
-#ifndef MAP_ZOOM
-  if((TrailActive!=3) || (DisplayMode == dmCircling) || (TrailFirstTime<0))
-#else /* MAP_ZOOM */
   if((TrailActive!=3) || mode.Is(Mode::MODE_CIRCLING) || (TrailFirstTime<0))
-#endif /* MAP_ZOOM */
     return;
 
-  const double mTrailFirstTime = TrailFirstTime - DerivedDrawInfo.TakeOffTime;
-  // since olc keeps track of time wrt takeoff
-
-  olc.SetLine();
-  int n = min(MAXCLIPPOLYGON,olc.getN());
-  int i, j=0;
-  for (i=0; i<n; i++) {
-    if (olc.getTime(i)>= mTrailFirstTime) 
-      break;
-    LatLon2Screen(olc.getLongitude(i), 
-                  olc.getLatitude(i), 
-                  ptin[j]);
-    j++;
-  }
-  if (j>=2) {
-    SelectObject(hdc,hSnailPens[NUMSNAILCOLORS/2]);
-    ClipPolygon(hdc, ptin, j, rc, false);
-  }
 }
 
 extern HFONT  TitleWindowFont;
@@ -1086,11 +693,7 @@ void MapWindow::DrawProjectedTrack(HDC hdc, const RECT rc, const POINT Orig) {
   if ((ActiveWayPoint<=0) || !ValidTaskPoint(ActiveWayPoint) || !AATEnabled) { 
     return;
   }
-  #ifndef NOTASKABORT
-  if (DerivedDrawInfo.Circling || TaskIsTemporary()) {
-  #else
   if (DerivedDrawInfo.Circling) {
-  #endif
     // don't display in various modes
     return;
   }
@@ -1124,11 +727,7 @@ void MapWindow::DrawProjectedTrack(HDC hdc, const RECT rc, const POINT Orig) {
     // too short to have valid data
   }
   POINT pt[2] = {{0,-75},{0,-400}};
-#ifndef MAP_ZOOM
-  if (TargetPan) {
-#else /* MAP_ZOOM */
   if (mode.Is(Mode::MODE_TARGET_PAN)) {
-#endif /* MAP_ZOOM */
     double screen_range = GetApproxScreenRange();
     double flow = 0.4;
     double fhigh = 1.5;
@@ -1209,11 +808,7 @@ void MapWindow::DrawThermalBand(HDC hDC, const RECT rc)
   POINT GliderBand[5] = { {0,0},{23,0},{22,0},{24,0},{0,0} };
   
   if ((DerivedDrawInfo.TaskAltitudeDifference>50)
-#ifndef MAP_ZOOM
-      &&(DisplayMode == dmFinalGlide)) {
-#else /* MAP_ZOOM */
       &&(mode.Is(Mode::MODE_FINAL_GLIDE))) {
-#endif /* MAP_ZOOM */
     return;
   }
 
@@ -1230,7 +825,7 @@ void MapWindow::DrawThermalBand(HDC hDC, const RECT rc)
 #define TBSCALEX 20
   
   // calculate height above safety altitude
-  double hoffset = SAFETYALTITUDEBREAKOFF+DerivedDrawInfo.TerrainBase;
+  double hoffset = DerivedDrawInfo.TerrainBase;
   h = DerivedDrawInfo.NavAltitude-hoffset;
 
   bool draw_start_height = ((ActiveWayPoint==0) && (ValidTaskPoint(0)) 
@@ -1247,15 +842,19 @@ void MapWindow::DrawThermalBand(HDC hDC, const RECT rc)
   }
 
   short lkvariooffset;
+#if USEIBOX
   // vario is displayed only in fullscreen mode, if enabled
   if (IsMapFullScreen())
 	lkvariooffset=rc.left + LKVarioBar?(LKVarioSize+1):0; //@ 091118
   else
 	lkvariooffset=rc.left;
+#else
+  lkvariooffset=rc.left + LKVarioBar?(LKVarioSize+1):0; 
+#endif
 
   // calculate top/bottom height
   maxh = max(h, mth);
-  minh = min(h, 0);
+  minh = min(h, 0.0);
 
   if (draw_start_height) {
     maxh = max(maxh, hstart);
@@ -1368,7 +967,7 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 
   SIZE           TextSize;
 
-  if (NewMap&&(GlideBarMode == (GlideBarMode_t)gbDisabled)) {
+  if ((GlideBarMode == (GlideBarMode_t)gbDisabled)) {
 	GlideBarOffset=0;
 	return;
   }
@@ -1386,7 +985,11 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
   int i;
   int lkVarioOffset=0, minBar, maxBar;
 
-  if (Look8000&&IsMapFullScreen()&&LKVarioBar) //@ 091115
+#if USEIBOX
+  if (IsMapFullScreen()&&LKVarioBar) //@ 091115
+#else
+  if (LKVarioBar)
+#endif
 	lkVarioOffset=LKVarioSize+NIBLSCALE(2); //@ 091114
 
   // 091114
@@ -1421,12 +1024,23 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
   #endif
 
 	const int y0 = ( (rc.bottom - rc.top )/2)+rc.top;
+
+	#if 110609
+	if ( ValidTaskPoint(1) && OvertargetMode == OVT_TASK && GlideBarMode == (GlideBarMode_t)gbFinish ) {
+		Offset = ((int)DerivedDrawInfo.TaskAltitudeDifference)/8; 
+		Offset0 = ((int)DerivedDrawInfo.TaskAltitudeDifference0)/8; 
+	} else {
+		Offset=(int)WayPointCalc[barindex].AltArriv[AltArrivMode];
+		Offset0=Offset;
+	}
+	#else
+	// This is wrong, we are painting values relative to MC and ignoring safetyMC
 	if (OvertargetMode != OVT_TASK) { //@ 101004
 		Offset=(int)WayPointCalc[barindex].AltArriv[AltArrivMode];
 		Offset0=Offset;
 	} else {
 		// 60 units is size, div by 8 means 60*8 = 480 meters.
-		if ( (GlideBarMode == (GlideBarMode_t)gbFinish) || !NewMap) {
+		if ( (GlideBarMode == (GlideBarMode_t)gbFinish)) {
 			Offset = ((int)DerivedDrawInfo.TaskAltitudeDifference)/8; 
 			Offset0 = ((int)DerivedDrawInfo.TaskAltitudeDifference0)/8; 
 		} else {
@@ -1434,6 +1048,8 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 			Offset0 = ((int)DerivedDrawInfo.NextAltitudeDifference0)/8; 
 		}
 	}
+	#endif
+
 	// TODO feature: should be an angle if in final glide mode
 
 	if(Offset > maxBar) Offset = maxBar;
@@ -1531,7 +1147,7 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 		// JMW draw x on final glide bar if unreachable at current Mc
 		// hpAircraftBorder
 
-		if ( (GlideBarMode == (GlideBarMode_t)gbFinish) || !NewMap) {
+		if ( (GlideBarMode == (GlideBarMode_t)gbFinish) ) {
 			if ((DerivedDrawInfo.TaskTimeToGo>0.9*ERROR_TIME) || 
 			((MACCREADY<0.01) && (DerivedDrawInfo.TaskAltitudeDifference<0))) {
 				SelectObject(hDC, hpAircraftBorder);
@@ -1557,20 +1173,27 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 		}
 	}
 
-	// this is the only used choice: draw boxed value in the center
-	if (Appearance.IndFinalGlide == fgFinalGlideDefault){
 
+	// draw boxed value in the center
 		if (OvertargetMode == OVT_TASK ) { //@ 101004
-			if ((GlideBarMode == (GlideBarMode_t)gbFinish) || !NewMap) {
+			// A task is made of at least 2 tps, otherwise its a goto
+			if (( (GlideBarMode == (GlideBarMode_t)gbFinish) && ValidTaskPoint(1)) ) {
 				if ( (ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeDifference) <ALTDIFFLIMIT) //@ 091114
 					_stprintf(Value,TEXT(" --- "));
 				else
 					_stprintf(Value,TEXT("%1.0f "), ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeDifference);
 			} else {
+				if ( (ALTITUDEMODIFY*WayPointCalc[barindex].AltArriv[AltArrivMode]) < ALTDIFFLIMIT)
+					_stprintf(Value,TEXT(" --- "));
+				else
+					_stprintf(Value,TEXT("%1.0f "), ALTITUDEMODIFY*WayPointCalc[barindex].AltArriv[AltArrivMode]);
+				/*
+				 * Well this was the reason why the glidebar value was out of sync with overlays
 				if ( (ALTITUDEMODIFY*DerivedDrawInfo.NextAltitudeDifference) < ALTDIFFLIMIT) //@ 091114
 					_stprintf(Value,TEXT(" --- "));
 				else
 					_stprintf(Value,TEXT("%1.0f "), ALTITUDEMODIFY*DerivedDrawInfo.NextAltitudeDifference);
+				*/
 			}
 		} else {
 			if ( (ALTITUDEMODIFY*WayPointCalc[barindex].AltArriv[AltArrivMode]) < ALTDIFFLIMIT)
@@ -1590,53 +1213,12 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 		}
 		// VENTA10
 		GetTextExtentPoint(hDC, Value, _tcslen(Value), &TextSize); 
-		GlideBarOffset=max(NIBLSCALE(11),TextSize.cx) - NIBLSCALE(2);
+		GlideBarOffset=max(NIBLSCALE(11),(int)TextSize.cx) - NIBLSCALE(2);
  
 		TextInBoxMode_t TextInBoxMode = {1|8};
 		// boxed numbers are a bit too much on the left, so increase the offset
 		TextInBox(hDC, Value, lkVarioOffset+NIBLSCALE(1), (int)Offset, 0, TextInBoxMode); //@ 091114
 
-	} else {
-		// This part is unused
-#if 0
-		if (Appearance.IndFinalGlide == fgFinalGlideAltA){
-
-			HFONT oldFont;
-			int y = GlideBar[3].y;
-			// was ((rc.bottom - rc.top )/2)-rc.top-
-			//            Appearance.MapWindowBoldFont.CapitalHeight/2-1;
-			int x = GlideBar[2].x+NIBLSCALE(1);
-			HBITMAP Bmp;
-			POINT  BmpPos;
-			POINT  BmpSize;
-
-			if ((GlideBarMode == (GlideBarMode_t)gbFinish)||!NewMap) {
-				_stprintf(Value, TEXT("%1.0f"), Units::ToUserAltitude(DerivedDrawInfo.TaskAltitudeDifference));
-			} else {
-				_stprintf(Value, TEXT("%1.0f"), Units::ToUserAltitude(DerivedDrawInfo.NextAltitudeDifference));
-			}
-          
-			oldFont = (HFONT)SelectObject(hDC, MapWindowBoldFont);
-			GetTextExtentPoint(hDC, Value, _tcslen(Value), &TextSize);
-          
-			SelectObject(hDC, GetStockObject(WHITE_BRUSH));
-			SelectObject(hDC, GetStockObject(WHITE_PEN));
-			Rectangle(hDC, x, y, x+NIBLSCALE(1)+TextSize.cx, y+Appearance.MapWindowBoldFont.CapitalHeight+NIBLSCALE(2));
-          
-			ExtTextOut(hDC, x+NIBLSCALE(1), y+Appearance.MapWindowBoldFont.CapitalHeight
-				 -Appearance.MapWindowBoldFont.AscentHeight+NIBLSCALE(1), 0, NULL, Value, _tcslen(Value), NULL);
-          
-			if (Units::GetUnitBitmap(Units::GetUserAltitudeUnit(), &Bmp, &BmpPos, &BmpSize, 0)){
-				HBITMAP oldBitMap = (HBITMAP)SelectObject(hDCTemp, Bmp);
-				DrawBitmapX(hDC, x+TextSize.cx+NIBLSCALE(1), y, BmpSize.x, BmpSize.y, hDCTemp, BmpPos.x, BmpPos.y, SRCCOPY);
-				SelectObject(hDCTemp, oldBitMap);
-			}
-          
-			SelectObject(hDC, oldFont);
-		}
-#endif
-          
-	}
 	SelectObject(hDC, hbOld);
 	SelectObject(hDC, hpOld);
     } else GlideBarOffset=0; 	// 091125 BUGFIX glidebaroffset is zero when no task point
@@ -1656,33 +1238,9 @@ void MapWindow::DrawCompass(HDC hDC, const RECT rc)
   HPEN hpOld;
   HBRUSH hbOld; 
 
-  if (Appearance.CompassAppearance == apCompassDefault){
-
-	    Start.y = NIBLSCALE(19)+rc.top;
-	    Start.x = rc.right - NIBLSCALE(19);
-
-    if (EnableVarioGauge && MapRectBig.right == rc.right)
-        Start.x -= InfoBoxLayout::ControlWidth;
-
-    POINT Arrow[5] = { {0,-18}, {-6,10}, {0,0}, {6,10}, {0,-18}};
-
-    hpOld = (HPEN)SelectObject(hDC, hpCompass);
-    hbOld = (HBRUSH)SelectObject(hDC, hbCompass);
-
-    // North arrow
-    PolygonRotateShift(Arrow, 5, Start.x, Start.y, -DisplayAngle);
-    Polygon(hDC,Arrow,5);
-
-    SelectObject(hDC, hbOld);
-    SelectObject(hDC, hpOld);
-
-  } else
-  if (Appearance.CompassAppearance == apCompassAltA){
-
     static double lastDisplayAngle = 9999.9;
     static int lastRcRight = 0, lastRcTop = 0;
     static POINT Arrow[5] = { {0,-11}, {-5,9}, {0,3}, {5,9}, {0,-11}};
-    extern bool EnableVarioGauge;
 
 
     if (lastDisplayAngle != DisplayAngle || lastRcRight != rc.right || lastRcTop != rc.top){
@@ -1698,28 +1256,9 @@ void MapWindow::DrawCompass(HDC hDC, const RECT rc)
       Arrow[4].x  = 0;
       Arrow[4].y  = -11;
 
-	#if NEWPNAV
 	// no more clock, no need to have different compass position
 	Start.y = rc.top + NIBLSCALE(11); 
 	Start.x = rc.right - NIBLSCALE(11);
-	#else
-	if (InfoBoxLayout::landscape) {
-	      Start.y = rc.top + NIBLSCALE(11); 
-	      Start.x = rc.right - NIBLSCALE(11);
-	} else {
-		if (MapWindow::IsMapFullScreen() && (Look8000==(Look8000_t)lxcAdvanced) ) {
-		      Start.y = rc.top + NIBLSCALE(35); 
-		      Start.x = rc.right - NIBLSCALE(11);
-		} else {
-		      Start.y = rc.top + NIBLSCALE(11);
-		      Start.x = rc.right - NIBLSCALE(11);
-		}
-	}
-	#endif
-
-      if (EnableVarioGauge && MapRectBig.right == rc.right) {
-        Start.x -= InfoBoxLayout::ControlWidth;
-      }
 
       // North arrow
       PolygonRotateShift(Arrow, 5, Start.x, Start.y, 
@@ -1740,8 +1279,6 @@ void MapWindow::DrawCompass(HDC hDC, const RECT rc)
     SelectObject(hDC, hbOld);
     SelectObject(hDC, hpOld);
 
-  }
-
 }
 
 void MapWindow::ClearAirSpace(bool fill) {
@@ -1759,116 +1296,236 @@ void MapWindow::ClearAirSpace(bool fill) {
   }
 }
 
+void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Aircraft)
+{
+  static short int label_sequencing_divider = 0;
+  CAirspaceList::const_iterator it;
+  const CAirspaceList airspaces_to_draw = CAirspaceManager::Instance().GetAirspacesForWarningLabels();
+  
+  if (label_sequencing_divider) --label_sequencing_divider;
+
+  // Draw warning position and label on top of all airspaces
+  if (1) {
+  CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+  for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
+        if ((*it)->WarningLevel() > awNone) {
+          POINT sc;
+          double lon;
+          double lat;
+          int vdist;
+          AirspaceWarningDrawStyle_t vlabeldrawstyle, hlabeldrawstyle;
+          bool distances_ready = (*it)->GetWarningPoint(lon, lat, hlabeldrawstyle, vdist, vlabeldrawstyle);
+          TCHAR hbuf[NAME_SIZE+16], vDistanceText[16];
+          TextInBoxMode_t TextDisplayMode = {0};
+          bool hlabel_draws = false;
+          bool vlabel_draws = false;
+          
+          // Horizontal warning point
+          if (distances_ready && (hlabeldrawstyle > awsHidden) && PointVisible(lon, lat)) {
+
+              LatLon2Screen(lon, lat, sc);
+              DrawBitmapIn(hdc, sc, hAirspaceWarning);
+              
+              Units::FormatUserAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
+              _tcscpy(hbuf, (*it)->Name());
+              wcscat(hbuf, TEXT(" "));
+              wcscat(hbuf, vDistanceText);
+              
+              switch (hlabeldrawstyle) {
+                default:
+                case awsHidden:
+                case awsBlack:
+                  TextDisplayMode.AsFlag.Color = TEXTBLACK;
+                  break;
+                case awsAmber:
+                  TextDisplayMode.AsFlag.Color = TEXTORANGE;
+                  break;
+                case awsRed:
+                  TextDisplayMode.AsFlag.Color = TEXTRED;
+                  break;
+              } // sw
+              TextDisplayMode.AsFlag.SetTextColor = 1;
+              TextDisplayMode.AsFlag.AlligneCenter = 1;
+              if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
+                  TextDisplayMode.AsFlag.Border = 1;
+              } else {
+                  TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
+              }
+
+              hlabel_draws = TextInBox(hdc, hbuf, sc.x, sc.y+NIBLSCALE(15), 0, TextDisplayMode, true);
+           }
+           
+          // Vertical warning point
+          if (distances_ready && vlabeldrawstyle > awsHidden) {
+
+              //DrawBitmapIn(hdc, Orig_Aircraft, hAirspaceWarning);
+              
+              Units::FormatUserAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
+              _tcscpy(hbuf, (*it)->Name());
+              wcscat(hbuf, TEXT(" "));
+              wcscat(hbuf, vDistanceText);
+              
+              switch (vlabeldrawstyle) {
+                default:
+                case awsHidden:
+                case awsBlack:
+                  TextDisplayMode.AsFlag.Color = TEXTBLACK;
+                  break;
+                case awsAmber:
+                  TextDisplayMode.AsFlag.Color = TEXTORANGE;
+                  break;
+                case awsRed:
+                  TextDisplayMode.AsFlag.Color = TEXTRED;
+                  break;
+              } // sw
+              TextDisplayMode.AsFlag.SetTextColor = 1;
+              TextDisplayMode.AsFlag.AlligneCenter = 1;
+              if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
+                  TextDisplayMode.AsFlag.Border = 1;
+              } else {
+                  TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
+              }
+
+              vlabel_draws = TextInBox(hdc, hbuf, Orig_Aircraft.x, Orig_Aircraft.y+NIBLSCALE(15), 0, TextDisplayMode, true);
+           }
+           if (!label_sequencing_divider) CAirspaceManager::Instance().AirspaceWarningLabelPrinted(**it, hlabel_draws || vlabel_draws);
+           
+         }// if warnlevel>awnone
+  }//for
+  }// if(1) mutex
+  if (!label_sequencing_divider) label_sequencing_divider=3;		// Do label sequencing slower than update rate
+}
+
 // TODO code: optimise airspace drawing
 void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
 {
   COLORREF whitecolor = RGB(0xff,0xff,0xff);
-  unsigned int i;
-  
+  CAirspaceList::const_iterator it;
+  CAirspaceList::const_reverse_iterator itr;
+  const CAirspaceList& airspaces_to_draw = CAirspaceManager::Instance().GetNearAirspacesRef();
+  int airspace_type;
   bool found = false;
-
-  if (GetAirSpaceFillType() != asp_fill_none) {
-    if (AirspaceCircle) {
-      // draw without border
-      for(i=0;i<NumberOfAirspaceCircles;i++) {
-        if (AirspaceCircle[i].Visible==2) {
-	  if (!found) {
-            ClearAirSpace(true);
-            found = true;
-          }
-          // this color is used as the black bit
-          SetTextColor(hDCTemp,
-                       Colours[iAirspaceColour[AirspaceCircle[i].Type]]);
-          // get brush, can be solid or a 1bpp bitmap
-          SelectObject(hDCTemp,
-                       hAirspaceBrushes[iAirspaceBrush[AirspaceCircle[i].Type]]);
-          Circle(hDCTemp,
-                 AirspaceCircle[i].Screen.x ,
-                 AirspaceCircle[i].Screen.y ,
-                 AirspaceCircle[i].ScreenR ,rc, true, true);
-        }
-      }
-    }
-
-    if (AirspaceArea) {
-      for(i=0;i<NumberOfAirspaceAreas;i++) {
-        if(AirspaceArea[i].Visible ==2) {
-          if (!found) {
-            ClearAirSpace(true);
-            found = true;
-          }
-          // this color is used as the black bit
-          SetTextColor(hDCTemp, 
-                       Colours[iAirspaceColour[AirspaceArea[i].Type]]);
-          SelectObject(hDCTemp,
-                       hAirspaceBrushes[iAirspaceBrush[AirspaceArea[i].Type]]);         
-          ClipPolygon(hDCTemp,
-                      AirspaceScreenPoint+AirspaceArea[i].FirstPoint,
-                      AirspaceArea[i].NumPoints, rc, true);
-        }      
-      }
-    }
+  bool borders_only = (GetAirSpaceFillType() == asp_fill_patterns_borders);
+  HDC hdcbuffer = NULL;
+  HBITMAP hbbufferold = NULL, hbbuffer = NULL;
+  
+  if (borders_only) {
+    // Prepare layers
+    hdcbuffer = CreateCompatibleDC(hdc);
+    hbbuffer = CreateCompatibleBitmap(hdc, rc.right - rc.left, rc.bottom - rc.top);
+    hbbufferold = (HBITMAP)SelectObject(hdcbuffer, hbbuffer);
+    BitBlt(hdcbuffer, rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, NULL, rc.left, rc.top, BLACKNESS );
+    SelectObject(hdcbuffer, GetStockObject(NULL_PEN));
+  
+    BitBlt(hDCMask, rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, NULL, rc.left, rc.top, BLACKNESS );
+    SelectObject(hDCMask, hAirspaceBorderPen);
+    SelectObject(hDCMask, GetStockObject(HOLLOW_BRUSH));
   }
   
+  if (GetAirSpaceFillType() != asp_fill_border_only) {
+    if (1) {
+    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+    if (borders_only) {
+       // Draw in reverse order!
+       // The idea behind this, is lower top level airspaces are smaller. (statistically)
+       // They have to be draw later, because inside border area have to be in correct color,
+       // not the color of the bigger airspace above this small one.
+      for (itr=airspaces_to_draw.rbegin(); itr != airspaces_to_draw.rend(); ++itr) {
+          if ((*itr)->DrawStyle() == adsFilled) {
+            airspace_type = (*itr)->Type();
+            if (!found) {
+              ClearAirSpace(true);
+              found = true;
+            }
+            // this color is used as the black bit
+            SetTextColor(hdcbuffer, Colours[iAirspaceColour[airspace_type]]);
+            // get brush, can be solid or a 1bpp bitmap
+            SelectObject(hdcbuffer, hAirspaceBrushes[iAirspaceBrush[airspace_type]]);
+            (*itr)->Draw(hdcbuffer, rc, true);
+            (*itr)->Draw(hDCMask, rc, false);
+        }
+      }//for
+    } else {
+      for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
+          if ((*it)->DrawStyle() == adsFilled) {
+            airspace_type = (*it)->Type();
+            if (!found) {
+              ClearAirSpace(true);
+              found = true;
+            }
+            // this color is used as the black bit
+            SetTextColor(hDCTemp, Colours[iAirspaceColour[airspace_type]]);
+            // get brush, can be solid or a 1bpp bitmap
+            SelectObject(hDCTemp, hAirspaceBrushes[iAirspaceBrush[airspace_type]]);
+            (*it)->Draw(hDCTemp, rc, true);
+        }
+      }//for
+    }
+    }
+  }
   // draw it again, just the outlines
 
   if (found) {
+    if (borders_only) {
+        SetTextColor(hdcbuffer, RGB_BLACK);
+        #if (WINDOWSPC<1)
+        TransparentImage(hdcbuffer,
+                rc.left,rc.top,
+                rc.right-rc.left,rc.bottom-rc.top,
+                hDCMask,
+                rc.left,rc.top,
+                rc.right-rc.left,rc.bottom-rc.top,
+                RGB_WHITE
+                );
+        TransparentImage(hDCTemp,
+                rc.left,rc.top,
+                rc.right-rc.left,rc.bottom-rc.top,
+                hdcbuffer,
+                rc.left,rc.top,
+                rc.right-rc.left,rc.bottom-rc.top,
+                RGB_BLACK
+                );
+        #else
+        TransparentBlt(hdcbuffer,
+                      rc.left,rc.top,
+                      rc.right-rc.left,rc.bottom-rc.top,
+                      hDCMask,
+                      rc.left,rc.top,
+                      rc.right-rc.left,rc.bottom-rc.top,
+                      RGB_WHITE
+                      );
+        TransparentBlt(hDCTemp,
+                      rc.left,rc.top,
+                      rc.right-rc.left,rc.bottom-rc.top,
+                      hdcbuffer,
+                      rc.left,rc.top,
+                      rc.right-rc.left,rc.bottom-rc.top,
+                      RGB_BLACK
+                      );
+        #endif
+    }
     SelectObject(hDCTemp, GetStockObject(HOLLOW_BRUSH));
     SelectObject(hDCTemp, GetStockObject(WHITE_PEN));
   }
 
-  if (AirspaceCircle) {
-    for(i=0;i<NumberOfAirspaceCircles;i++) {
-      if (AirspaceCircle[i].Visible) {
-	if (!found) {
-	  ClearAirSpace(false);
-	  found = true;
-	}
-        if (bAirspaceBlackOutline) {
-          SelectObject(hDCTemp, GetStockObject(BLACK_PEN));
-        } else {
-          SelectObject(hDCTemp, hAirspacePens[AirspaceCircle[i].Type]);
+    if (1) {
+    CCriticalSection::CGuard guard(CAirspaceManager::Instance().MutexRef());
+      for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
+        if ((*it)->DrawStyle()) {
+          airspace_type = (*it)->Type();
+          if (!found) {
+            ClearAirSpace(true);
+            found = true;
+          }
+          if (bAirspaceBlackOutline) {
+            SelectObject(hDCTemp, GetStockObject(BLACK_PEN));
+          } else {
+            SelectObject(hDCTemp, hAirspacePens[airspace_type]);
+          }
+          (*it)->Draw(hDCTemp, rc, false);
         }
-        Circle(hDCTemp,
-               AirspaceCircle[i].Screen.x ,
-               AirspaceCircle[i].Screen.y ,
-               AirspaceCircle[i].ScreenR ,rc, true, false);
-      }
+      }//for
     }
-  }
-
-  if (AirspaceArea) {
-    for(i=0;i<NumberOfAirspaceAreas;i++) {
-      if(AirspaceArea[i].Visible) {
-	if (!found) {
-	  ClearAirSpace(false);
-	  found = true;
-	}
-        if (bAirspaceBlackOutline) {
-          SelectObject(hDCTemp, GetStockObject(BLACK_PEN));
-        } else {
-          SelectObject(hDCTemp, hAirspacePens[AirspaceArea[i].Type]);
-        }
-
-	POINT *pstart = AirspaceScreenPoint+AirspaceArea[i].FirstPoint;
-        ClipPolygon(hDCTemp, pstart,
-                    AirspaceArea[i].NumPoints, rc, false);
-
-	if (AirspaceArea[i].NumPoints>2) {
-	  // JMW close if open
-	  if ((pstart[0].x != pstart[AirspaceArea[i].NumPoints-1].x) ||
-	      (pstart[0].y != pstart[AirspaceArea[i].NumPoints-1].y)) {
-	    POINT ps[2];
-	    ps[0] = pstart[0];
-	    ps[1] = pstart[AirspaceArea[i].NumPoints-1];
-	    _Polyline(hDCTemp, ps, 2, rc);
-	  }
-	}
-
-      }      
-    }
-  }
-
 
   if (found) {
     // need to do this to prevent drawing of colored outline
@@ -1893,10 +1550,19 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
                    whitecolor
                    );
   #endif
+    
     // restore original color
     //    SetTextColor(hDCTemp, origcolor);
     SetBkMode(hDCTemp,OPAQUE);
   }
+  
+  if (borders_only) {
+    // Free up GDI resources
+    SelectObject(hdcbuffer, hbbufferold);
+    DeleteObject(hbbuffer);
+    DeleteDC(hdcbuffer);
+  }
+  
 }
 
 
@@ -1904,9 +1570,6 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
                              const bool ScaleChangeFeedback)
 {
   static short terrainwarning=0;
-
-
-  if ((Appearance.MapScale == apMsDefault) || NewMap){
 
     TCHAR Scale[80];
     TCHAR Scale2[80];
@@ -1932,7 +1595,6 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     DrawSolidLine(hDC,Start,End, rc);
 
      Start.y = Start.y - NIBLSCALE(42); End.y = Start.y;
-    //Start.y = Start.y - NIBLSCALE(30); End.y = Start.y; // 091116 BUGFIX MapScale NO we keep same scale, and change value 091117
     DrawSolidLine(hDC,Start,End, rc);
 
     SelectObject(hDC, hpOld);
@@ -1952,26 +1614,23 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 	}
     } else terrainwarning=0;
 
-#ifndef MAP_ZOOM
-    if (AutoZoom) {
-#else /* MAP_ZOOM */
+    if (ActiveMap) {
+      _tcscat(Scale2, gettext(TEXT("_@M1661_"))); // ACT
+    }
     if (zoom.AutoZoom()) {
-#endif /* MAP_ZOOM */
 		// LKTOKEN _@M1337_ " AZM"
       _tcscat(Scale2, gettext(TEXT("_@M1337_")));
     }
-#ifndef MAP_ZOOM
-    if (EnablePan) {
-#else /* MAP_ZOOM */
     if (mode.AnyPan()) {
-#endif /* MAP_ZOOM */
 		// LKTOKEN _@M1338_ " PAN"
       _tcscat(Scale2, gettext(TEXT("_@M1338_")));
     }
+#if USEIBOX
     if (EnableAuxiliaryInfo) {
 		// LKTOKEN _@M1339_ " iAUX"
       _tcscat(Scale2, gettext(TEXT("_@M1339_")));
     }
+#endif
 
     if (DrawBottom) {
 	switch(BottomMode) {
@@ -2030,28 +1689,22 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
       _tcscat(Scale2, TEMP);
     }
 
+#if USEWEATHER
     TCHAR Buffer[20];
     RASP.ItemLabel(RasterTerrain::render_weather, Buffer);
     if (_tcslen(Buffer)) {
       _tcscat(Scale,TEXT(" ")); 
       _tcscat(Scale, Buffer);
     }
+#endif
 
     _tcscpy(Scale,TEXT(""));
-#ifndef MAP_ZOOM
-    double mapScale=MapScale*1.4; // FIX 091117
-#else /* MAP_ZOOM */
     double mapScale=zoom.Scale()*1.4; // FIX 091117
-#endif /* MAP_ZOOM */
     if (ISPARAGLIDER) {
 	if ((mapScale) <1.0) {
 		_stprintf(Scale,TEXT("%1.2f"),mapScale);
 	}
-#ifndef MAP_ZOOM
-	else if((MapScale*3) <3) {
-#else /* MAP_ZOOM */
 	else if((mapScale*3) <3) {
-#endif /* MAP_ZOOM */
 		_stprintf(Scale,TEXT("%1.1f"),mapScale);
 	}
 	else {
@@ -2107,7 +1760,6 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 
     SelectObject(hDC, hpOld);
 
-  }
 
 }
 
@@ -2142,11 +1794,7 @@ void MapWindow::DrawGlideThroughTerrain(HDC hDC, const RECT rc) {
   // draw red cross obstacles only if destination looks reachable!
   // only if using OVT_TASK of course!
 
-#ifdef _SIM_ 
-  if ( (OvertargetMode == OVT_TASK) && ValidTaskPoint(ActiveWayPoint) )  // 100930
-#else
-  if ( (OvertargetMode==OVT_TASK) && DerivedDrawInfo.Flying && ValidTaskPoint(ActiveWayPoint)) // 100930
-#endif
+  if ( (OvertargetMode==OVT_TASK) && DerivedDrawInfo.Flying && ValidTaskPoint(ActiveWayPoint))
   if (WayPointCalc[TASKINDEX].AltArriv[AltArrivMode] >0) { 
 
 	POINT sc;

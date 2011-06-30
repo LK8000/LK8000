@@ -19,6 +19,10 @@
 
 #include "windmeasurementlist.h"
 
+#include "utils/heapcheck.h"
+
+using std::min;
+using std::max;
 
 WindMeasurementList::WindMeasurementList(){
   nummeasurementlist = 0;

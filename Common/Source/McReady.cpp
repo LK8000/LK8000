@@ -8,16 +8,20 @@
 
 #include "StdAfx.h"
 #include "options.h"
+#include "Sizes.h"
 #include "McReady.h"
 #include "externs.h"
 
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "device.h"
 
 #include <math.h>
 #include <windows.h>
 
-double GlidePolar::RiskGamma = 0.0;
+#include "utils/heapcheck.h"
+using std::min;
+using std::max;
+
 double GlidePolar::polar_a;
 double GlidePolar::polar_b;
 double GlidePolar::polar_c;
@@ -31,31 +35,14 @@ double GlidePolar::WingArea = 0.0;
 double GlidePolar::WingLoading = 0.0;
 double GlidePolar::WeightOffset = 0.0; 
 
+double GlidePolar::FlapsPos[MAX_FLAPS];
+TCHAR  GlidePolar::FlapsName[MAX_FLAPS][MAXFLAPSNAME+1];
+int GlidePolar::FlapsPosCount = 0;
+double GlidePolar::FlapsMass = 0.0;
+
 double GlidePolar::SafetyMacCready= 0.5;
-bool GlidePolar::AbortSafetyUseCurrent = false;
 
 static int iSAFETYSPEED=0;
-
-double GlidePolar::AbortSafetyMacCready() {
-#if (1)
-  if (AbortSafetyUseCurrent) {
-    return MACCREADY;
-  } else {
-    return SafetyMacCready;
-  }
-#else
-	switch(AltArrivMode) {
-		case ALTA_MC:
-			return MACCREADY;
-		case ALTA_MC0:
-			return 0;
-		case ALTA_SMC:
-			return SafetyMacCready;
-		default:
-			return 9; // something to notice!
-	}
-#endif
-}
 
 // GetAUW is returning gross weight of glider, with pilot and current ballast. 
 // We now also add the offset to match chosen wing loading, just like a non-dumpable ballast
@@ -118,27 +105,6 @@ void GlidePolar::SetBallast() {
     }
   UnlockFlightData();
 
-  int polar_ai = iround((polar_a*10)*4096);
-  int polar_bi = iround((polar_b)*4096);
-  int polar_ci = iround((polar_c/10)*4096);
-  int minsinki = -iround(minsink*10);
-  int vbestldi = iround(Vbestld*10);
-  int bestldi = iround(bestld*10);
-
-  if (GPS_INFO.VarioAvailable) {
-
-    TCHAR nmeabuf[100];
-    wsprintf(nmeabuf,TEXT("PDVGP,%d,%d,%d,%d,%d,%d,0"),
-	     polar_ai,
-	     polar_bi,
-	     polar_ci,
-	     minsinki,
-	     vbestldi,
-	     bestldi);
-
-    VarioWriteNMEA(nmeabuf);
-  }
-
 }
 
 
@@ -165,7 +131,7 @@ double GlidePolar::SinkRate(double V, double n) {
   double w0 = SinkRate(polar_a,polar_b,polar_c,0.0,0.0,V);
   n = max(0.1,fabs(n));
   //  double v1 = V/max(1,Vbestld);
-  double v2 = Vbestld/max(Vbestld/2,V);
+  double v2 = Vbestld/max((double)Vbestld/2,V);
   return w0-(V/(2*bestld))* (n*n-1)*(v2*v2);
 }
 
@@ -759,30 +725,3 @@ double GlidePolar::MacCreadyAltitude(double emcready,
 
 }
 
-static double FRiskFunction(double x, double k) {
-  return 2.0/(1.0+exp(-x*k))-1.0;
-}
-
-double GlidePolar::MacCreadyRisk(double HeightAboveTerrain, 
-                                 double MaxThermalHeight, 
-                                 double MC) {
-  double riskmc = MC;
-
-  double hthis = max(1.0, HeightAboveTerrain);
-  double hmax = max(hthis, MaxThermalHeight);
-  double x = hthis/hmax;
-  double f;
-  
-  if (RiskGamma<0.1) {
-    return MC;
-  } else if (RiskGamma>0.9) {
-    f = x;
-  } else {
-    double k;
-    k = 1.0/(RiskGamma*RiskGamma)-1.0;
-    f = FRiskFunction(x, k)/FRiskFunction(1.0, k);
-  }
-  double mmin = 0; // min(MC,AbortSafetyMacCready());
-  riskmc = f*riskmc+(1-f)*mmin;
-  return riskmc;
-}

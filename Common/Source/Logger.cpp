@@ -18,7 +18,11 @@
 #include "InputEvents.h"
 #include "Parser.h"
 
+#include "utils/heapcheck.h"
 
+
+using std::min;
+using std::max;
 
 HINSTANCE GRecordDLLHandle = NULL;
 
@@ -153,7 +157,6 @@ void StopLogger(void) {
     if (LoggerClearFreeSpace()) {
 
 
-#if NOSIM
     if (!SIMMODE && LoggerGActive())
 	{
 	  BOOL bFileValid = true;
@@ -178,33 +181,6 @@ void StopLogger(void) {
 	  GRecordAppendGRecordToFile(bFileValid); 
 	}
 
-#else
-#ifndef _SIM_
-    if (LoggerGActive())
-	{
-	  BOOL bFileValid = true;
-	  TCHAR OldGRecordBuff[MAX_IGC_BUFF];
-
-	  TCHAR NewGRecordBuff[MAX_IGC_BUFF];
-
-	  GRecordFinalizeBuffer();  // buffer is appended w/ each igc file write
-	  GRecordGetDigest(OldGRecordBuff); // read record built by individual file writes
-
-	  // now calc from whats in the igc file on disk
-	  GRecordInit();
-	  GRecordSetFileName(szLoggerFileName);
-	  GRecordLoadFileToBuffer();
-	  GRecordFinalizeBuffer();
-	  GRecordGetDigest(NewGRecordBuff);
-
-	  for (unsigned int i = 0; i < 128; i++)
-	    if (OldGRecordBuff[i] != NewGRecordBuff[i] )
-	      bFileValid = false;
-
-	  GRecordAppendGRecordToFile(bFileValid); 
-	}
-#endif
-#endif
 
       int imCount=0;
       const int imMax=3;
@@ -336,8 +312,8 @@ void LogPointToFile(double Latitude, double Longitude, double Altitude,
   char NoS, EoW;
 
   if ((Altitude<0) && (BaroAltitude<0)) return;
-  Altitude = max(0,Altitude);
-  BaroAltitude = max(0,BaroAltitude);
+  Altitude = max(0.0,Altitude);
+  BaroAltitude = max(0.0,BaroAltitude);
 
   DegLat = (int)Latitude;
   MinLat = Latitude - DegLat;
@@ -406,7 +382,6 @@ void LogPoint(double Latitude, double Longitude, double Altitude,
 bool LogFRecordToFile(int SatelliteIDs[], short Hour, short Minute, short Second, bool bAlways)
 { // bAlways forces write when completing header for restart
   // only writes record if constallation has changed unless bAlways set
-#if NOSIM
   if (SIMMODE) return true;
   char szFRecord[MAX_IGC_BUFF];
   static bool bFirst = true;
@@ -468,72 +443,6 @@ bool LogFRecordToFile(int SatelliteIDs[], short Hour, short Minute, short Second
   }
   return bRetVal;
 
-#else
-#if !defined(_SIM_)
-
-  char szFRecord[MAX_IGC_BUFF];
-  static bool bFirst = true;
-  int eof=0;
-  int iNumberSatellites=0;
-  bool bRetVal = false;
-
-  if (bFirst)
-  {
-    bFirst = false;
-    ResetFRecord_Internal();
-  }
-
-
-  sprintf(szFRecord,"F%02d%02d%02d", Hour, Minute, Second);
-  eof=7;
-
-  for (int i=0; i < MAXSATELLITES; i++)
-  {
-    if (SatelliteIDs[i] > 0)
-    {
-      sprintf(szFRecord+eof, "%02d",SatelliteIDs[i]);
-      eof +=2;
-      iNumberSatellites++;
-    }
-  }
-  sprintf(szFRecord+ eof,"\r\n");
-
-  // only write F Record if it has changed since last time
-  // check every 4.5 minutes to see if it's changed.  Transient changes are not tracked.
-  if (!bAlways 
-        && strcmp(szFRecord + 7, szLastFRecord + 7) == 0
-        && strlen(szFRecord) == strlen(szLastFRecord) )
-  { // constellation has not changed 
-      if (iNumberSatellites >=3)
-        bRetVal=true;  // if the last FRecord had 3+ sats, then return true
-                      //  and this causes 5-minute counter to reset
-      else
-        bRetVal=false;  // non-2d fix, don't reset 5-minute counter so
-                        // we keep looking for changed constellations
-  }
-  else
-  { // constellation has changed
-    if (IGCWriteRecord(szFRecord))
-    {
-      strcpy(szLastFRecord, szFRecord);
-      if (iNumberSatellites >=3)
-        bRetVal=true;  // if we log an FRecord with a 3+ sats, then return true
-                      //  and this causes 5-minute counter to reset
-      else
-        bRetVal=false;  // non-2d fix, log it, and don't reset 5-minute counter so
-                        // we keep looking for changed constellations
-    }
-    else
-    {  // IGCwrite failed 
-      bRetVal = false;
-    }
-
-  }
-  return bRetVal;
-#else
-  return true;
-#endif
-#endif
 }
 
 
@@ -604,19 +513,11 @@ void StartLogger(TCHAR *astrAssetNumber)
 #endif
 
 
-#if NOSIM
   if (!SIMMODE) {
 	LinkGRecordDLL();
 	if (LoggerGActive()) GRecordInit();
   }
 
-#else
-#ifndef _SIM_
-  LinkGRecordDLL(); // try to link DLL if it exists
-  if (LoggerGActive())
-    GRecordInit();
-#endif
-#endif
   
   for(i=1;i<99;i++)
     {
@@ -940,6 +841,14 @@ void LoggerDeviceDeclare() {
   Declaration_t Decl;
   int i;
 
+  #if 0
+  if (CALCULATED_INFO.Flying) {
+    // LKTOKEN  _@M1423_ = "Forbidden during flight!"
+    MessageBoxX(hWndMapWindow, gettext(TEXT("_@M1423_")), _T(""), MB_OK| MB_ICONINFORMATION);
+    return;
+  }
+  #endif
+
   GetRegistryString(szRegistryPilotName, Decl.PilotName, 64);
   GetRegistryString(szRegistryAircraftType, Decl.AircraftType, 32);
   GetRegistryString(szRegistryAircraftRego, Decl.AircraftRego, 32);
@@ -1074,7 +983,7 @@ bool ReplayLogger::ScanBuffer(TCHAR *buffer, double *Time, double *Latitude,
     }
 
   }
-  return (lfound>0);
+  return (lfound==11 && (*Latitude!=0 && *Longitude!=0) );
 }
 
 
@@ -1084,11 +993,21 @@ bool ReplayLogger::ReadPoint(double *Time,
 			     double *Altitude)
 {
   TCHAR buffer[200];
+/*
+  // This is creating problems with the interpolator and calculations based on differential times
+  // such as variometer derived from altitude differences. Probably due to vario lowpass filters.
   while(ReadLine(buffer)) {
     if(ScanBuffer(buffer, Time, Latitude, Longitude, Altitude))
       return true;
   }
   return false;
+*/
+  bool found=false;
+  while(ReadLine(buffer) &&!found) {
+    if(ScanBuffer(buffer, Time, Latitude, Longitude, Altitude))
+      found=true;
+  }
+  return found;
 }
 
 
@@ -1223,7 +1142,7 @@ public:
     return p[0].t;
   }
   double GetMaxTime(void) {
-    return max(0,max(p[0].t, max(p[1].t, max(p[2].t, p[3].t))));
+    return max(0.0,max(p[0].t, max(p[1].t, max(p[2].t, p[3].t))));
   }
   double GetAverageTime(void) {
     double tav= 0;
@@ -1574,7 +1493,6 @@ bool LoggerClearFreeSpace(void) {
 
 bool IsValidIGCChar(char c) //returns 1 if valid char for IGC files
 {//                                 
-  //int iRetVal = 0; REMOVE
 
   if ( c >=0x20  && c <= 0x7E &&
        c != 0x0D &&
@@ -1633,16 +1551,9 @@ bool IGCWriteRecord(char *szIn)
       for (i = 0; (i <= iLen) && (i < MAX_IGC_BUFF); i++)
 	buffer[i] = (TCHAR)charbuffer[i];
 
-#if NOSIM
 	if (!SIMMODE) {
 		if (LoggerGActive()) GRecordAppendRecordToBuffer(pbuffer);
 	}
-#else
-#ifndef _SIM_
-      if (LoggerGActive())
-	GRecordAppendRecordToBuffer(pbuffer);
-#endif
-#endif
 
       FlushFileBuffers(hFile);
       CloseHandle(hFile);
@@ -1654,13 +1565,6 @@ bool IGCWriteRecord(char *szIn)
 
 }
 
-// VENTA3 TODO: if ifdef PPC2002 load correct dll. Put the dll inside
-// XCSoarData, so users can place their executable XCS wherever they
-// want.
-//
-// JMW: not sure that would work, I think dll has to be in OS
-// directory or same directory as exe
-
 void LinkGRecordDLL(void)
 {
   static bool bFirstTime = true;
@@ -1671,18 +1575,7 @@ void LinkGRecordDLL(void)
     {
       bFirstTime=false;
 
-      StartupStore(TEXT(". Searching for GRecordDLL%s"),NEWLINE);
-#ifdef GNAV
-      if (FileExistsW(TEXT("\\NOR Flash\\GRecordDLL.dat"))) {
-	StartupStore(TEXT("Updating GRecordDLL.DLL%s"),NEWLINE);
-	DeleteFile(TEXT("\\NOR Flash\\GRecordDLL.DLL"));
-	MoveFile(TEXT("\\NOR Flash\\GRecordDLL.dat"),
-		 TEXT("\\NOR Flash\\GRecordDLL.DLL"));
-      }
-      GRecordDLLHandle = LoadLibrary(TEXT("\\NOR Flash\\GRecordDLL.DLL"));
-#else
       GRecordDLLHandle = LoadLibrary(TEXT("GRecordDLL.DLL"));
-#endif
       if (GRecordDLLHandle != NULL)
         {
 	  BOOL bLoadOK = true;  // if any pointers don't link, disable entire library
@@ -1808,11 +1701,11 @@ void LinkGRecordDLL(void)
       else {
 #if (WINDOWSPC<1)
 	_tcscpy(szLoadResults,TEXT("... Can't load GRecordDLL\r\n"));
-#else
-	_tcscpy(szLoadResults,TEXT(". Can't load GRecordDLL. On PC version this is normal.\r\n"));
 #endif
       }
+#if (WINDOWSPC<1)
       StartupStore(szLoadResults);
+#endif
 
     }
 }

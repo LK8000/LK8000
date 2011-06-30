@@ -64,7 +64,7 @@ class RasterMap {
   short GetField(const double &Latitude, 
                  const double &Longitude);
 
-  virtual bool Open(char* filename) = 0;
+  virtual bool Open(const TCHAR* filename) = 0;
   virtual void Close() = 0;
   virtual void Lock() = 0;
   virtual void Unlock() = 0;
@@ -123,7 +123,7 @@ class RasterMapCache: public RasterMap {
   short LookupTerrainCacheFile(const long &SeekPos);
   void OptimizeCash(void);
 
-  virtual bool Open(char* filename);
+  virtual bool Open(const TCHAR* filename);
   virtual void Close();
   void Lock();
   void Unlock();
@@ -155,7 +155,7 @@ class RasterMapRaw: public RasterMap {
   }
   short *TerrainMem;
   virtual void SetFieldRounding(double xr, double yr);
-  virtual bool Open(char* filename);
+  virtual bool Open(const TCHAR* filename);
   virtual void Close();
   void Lock();
   void Unlock();
@@ -177,14 +177,14 @@ class RasterMapJPG2000: public RasterMap {
   void SetViewCenter(const double &Latitude, 
                      const double &Longitude);
   virtual void SetFieldRounding(double xr, double yr);
-  virtual bool Open(char* filename);
+  virtual bool Open(const TCHAR* filename);
   virtual void Close();
   void Lock();
   void Unlock();
   void ServiceFullReload(double lat, double lon);
 
  protected:
-  char jp2_filename[MAX_PATH];
+  TCHAR jp2_filename[MAX_PATH*2];
   virtual short _GetFieldAtXY(unsigned int lx,
                               unsigned int ly);
   bool TriggerJPGReload;
@@ -210,7 +210,7 @@ public:
     return terrain_initialised;
   }
   static RasterMap* TerrainMap;
-  static bool CreateTerrainMap(char *zfilename);
+  static bool CreateTerrainMap(const TCHAR *zfilename);
 
  public:
   static void Lock(void);
@@ -228,9 +228,12 @@ public:
   static bool WaypointIsInTerrainRange(double latitude, double longitude);
   static bool GetTerrainCenter(double *latitude,
                                double *longitude);
+#if USEWEATHER
   static int render_weather;
+#endif
 };
 
+#if USEWEATHER
 #define MAX_WEATHER_MAP 16
 #define MAX_WEATHER_TIMES 48
 
@@ -255,7 +258,7 @@ public:
   void Reload(double lat, double lon);
   int weather_time;
   RasterMap* weather_map[MAX_WEATHER_MAP];
-  void RASP_filename(char* rasp_filename, const TCHAR* name);
+  void RASP_filename(TCHAR* rasp_filename, const TCHAR* name);
   bool LoadItem(int item, const TCHAR* name);
   void SetViewCenter(double lat, double lon);
   void ServiceFullReload(double lat, double lon);
@@ -269,5 +272,6 @@ public:
 };
 
 extern RasterWeather RASP;
+#endif // USEWEATHER
 
 #endif

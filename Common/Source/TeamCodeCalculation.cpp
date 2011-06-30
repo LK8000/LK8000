@@ -10,6 +10,8 @@
 #include "TeamCodeCalculation.h"
 #include "math.h"
 
+#include "utils/heapcheck.h"
+
 
 void ConvertHeadingToTeamCode(double heading, TCHAR *code);
 void NumberToTeamCode(double value, TCHAR *code, int minCiffers);

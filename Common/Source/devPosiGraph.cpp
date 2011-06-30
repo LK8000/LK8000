@@ -28,6 +28,8 @@
 
 #include "devPosiGraph.h"
 
+#include "utils/heapcheck.h"
+
 
 static BOOL GPWIN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 

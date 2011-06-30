@@ -6,8 +6,6 @@
    $Id: device.cpp,v 8.6 2010/12/13 10:21:06 root Exp root $
 */
 
-// 20070413:sgi add NmeaOut support, allow nmea chaining an double port platforms
-
 #include "StdAfx.h"
 
 #include "options.h"
@@ -20,6 +18,8 @@
 #include "device.h"
 #include "MapWindow.h"
 
+#include "utils/heapcheck.h"
+
 // A note about locking.
 //  The ComPort RX threads lock using FlightData critical section.
 //  ComPort::StopRxThread and ComPort::Close both wait for these threads to
@@ -31,7 +31,6 @@
 //  of deadlock.  So, FlightData must never be locked after Comm.  Ever.
 //  Thankfully WinCE "critical sections" are recursive locks.
 
-#define debugIGNORERESPONCE 0
 
 //  remember that so still COMM port definitions have to be duplicated also inside dlgConfiguration... 
 //  change COMn: to \\.\COMn  without :  so that we can use COM10-COM99 devices
@@ -52,16 +51,6 @@ static  DWORD SpeedIndex2 = 2;
 static  DWORD Bit1Index = (BitIndex_t)bit8N1;
 static  DWORD Bit2Index = (BitIndex_t)bit8N1;
 // static  DWORD Bit3Index = (BitIndex_t)bit8N1;
-
-#if NOSIM
-
-#else
-#ifdef _SIM_
-static BOOL fSimMode = TRUE;
-#else
-static BOOL fSimMode = FALSE;
-#endif
-#endif
 
 DeviceRegister_t   DeviceRegister[NUMREGDEV];
 DeviceDescriptor_t DeviceList[NUMDEV];
@@ -84,7 +73,6 @@ BOOL devHasBaroSource(void) {
   }
 }
 
-// LK need to fix the problem of dual baro sources
 BOOL devGetBaroAltitude(double *Value){
   // hack, just return GPS_INFO->BaroAltitude
   if (Value == NULL)
@@ -114,9 +102,6 @@ BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token){
 
   }
 
-  #if debugIGNORERESPONCE > 0
-  return(TRUE);
-  #endif
   return(FALSE);
 
 }
@@ -141,6 +126,14 @@ BOOL devRegisterGetName(int Index, TCHAR *Name){
   return(TRUE);
 }
 
+// This device is not available if Disabled
+// Index 0 or 1 
+bool devIsDisabled(int Index) {
+  if (Index < 0 || Index >1)
+	return (true);
+	
+  return DeviceList[Index].Disabled;
+}
 
 static int devIsFalseReturn(PDeviceDescriptor_t d){
   (void)d;
@@ -151,7 +144,7 @@ static int devIsFalseReturn(PDeviceDescriptor_t d){
 
 BOOL devInit(LPTSTR CommandLine){
   int i;
-  TCHAR DeviceName[DEVNAMESIZE];
+  TCHAR DeviceName[DEVNAMESIZE+1];
   PDeviceDescriptor_t pDevNmeaOut = NULL;
   static bool doinit=true;
 
@@ -183,6 +176,7 @@ BOOL devInit(LPTSTR CommandLine){
     DeviceList[i].PutFreqActive = NULL;
     DeviceList[i].PutFreqStandby = NULL;
     DeviceList[i].IsCondor = devIsFalseReturn;
+    DeviceList[i].Disabled = true;
 
     ComPortStatus[i]=CPS_UNUSED; // 100210
     ComPortHB[i]=0; // counter
@@ -201,17 +195,26 @@ BOOL devInit(LPTSTR CommandLine){
   pDevSecondaryBaroSource=NULL;
 
   ReadDeviceSettings(0, DeviceName);
-  StartupStore(_T(". Device A is <%s>%s"),DeviceName,NEWLINE); // 100526
-#ifdef GNAV
-  PortIndex1 = 2; SpeedIndex1 = 5;
-#else
+  #ifdef DEBUG_DEVSETTING
+  StartupStore(_T(".......... ReadDeviceSetting 0, DeviceName=<%s>\n"),DeviceName);
+  #endif
+	
   PortIndex1 = 0; SpeedIndex1 = 2; Bit1Index=(BitIndex_t)bit8N1;
-#endif
   ReadPort1Settings(&PortIndex1,&SpeedIndex1,&Bit1Index);
 
-  for (i=DeviceRegisterCount-1; i>=0; i--) {
+  //if (_tcslen(DeviceName)>0) // removed 110530
+  if (wcscmp(DeviceName,_T(DEV_DISABLED_NAME))!=0) {
+	DeviceList[0].Disabled=false;
+	StartupStore(_T(". Device A is <%s> Port=%s%s"),DeviceName,COMMPort[PortIndex1],NEWLINE);
+  } else {
+	DeviceList[0].Disabled=true;
+	StartupStore(_T(". Device A is DISABLED.%s"),NEWLINE);
+  }
 
-    if ((_tcscmp(DeviceRegister[i].Name, DeviceName) == 0) || (i==0)) {
+  for (i=DeviceRegisterCount-1; i>=0; i--) {
+    if (DeviceList[0].Disabled) break;
+
+    if ((_tcscmp(DeviceRegister[i].Name, DeviceName) == 0)) {
 
       ComPort *Com = new ComPort(0);
 
@@ -247,21 +250,28 @@ BOOL devInit(LPTSTR CommandLine){
     }
   }
 
-
   ReadDeviceSettings(1, DeviceName);
-  StartupStore(_T(". Device B is <%s>%s"),DeviceName,NEWLINE); // 100526
-#ifdef GNAV
-  PortIndex2 = 0; SpeedIndex2 = 5;
-#else
+  #ifdef DEBUG_DEVSETTING
+  StartupStore(_T(".......... ReadDeviceSetting 1, DeviceName=<%s>\n"),DeviceName);
+  #endif
+
   PortIndex2 = 0; SpeedIndex2 = 2, Bit2Index=(BitIndex_t)bit8N1;
-#endif
   ReadPort2Settings(&PortIndex2,&SpeedIndex2, &Bit2Index);
 
-  for (i=DeviceRegisterCount-1; i>=0; i--) {
-    if (PortIndex1 == PortIndex2)
-      break;
+  //if (_tcslen(DeviceName)>0) // removed 110530
+  if (wcscmp(DeviceName,_T(DEV_DISABLED_NAME))!=0) {
+	DeviceList[1].Disabled=false;
+	StartupStore(_T(". Device B is <%s> Port=%s%s"),DeviceName,COMMPort[PortIndex2],NEWLINE);
+  } else {
+	DeviceList[1].Disabled=true;
+	StartupStore(_T(". Device B is DISABLED.%s"),NEWLINE);
+  }
 
-    if ((_tcscmp(DeviceRegister[i].Name, DeviceName) == 0) || (i==0)) {
+  for (i=DeviceRegisterCount-1; i>=0; i--) {
+    if (PortIndex1 == PortIndex2) break;
+    if (DeviceList[1].Disabled) break;
+
+    if ((_tcscmp(DeviceRegister[i].Name, DeviceName) == 0)) {
       ComPort *Com = new ComPort(1);
 
 	// this is port 2, so index 1 for us
@@ -294,85 +304,6 @@ BOOL devInit(LPTSTR CommandLine){
 
       break;
     }
-  }
-
-  CommandLine = LOGGDEVCOMMANDLINE;
-
-  if (CommandLine != NULL){
-    TCHAR *pC, *pCe;
-    TCHAR wcLogFileName[MAX_PATH];
-    TCHAR sTmp[128];
-
-    pC = _tcsstr(CommandLine, TEXT("-logA="));
-    if (pC != NULL){
-      pC += strlen("-logA=");
-      if (*pC == '"'){
-        pC++;
-        pCe = pC;
-        while (*pCe != '"' && *pCe != '\0') pCe++;
-      } else{
-        pCe = pC;
-        while (*pCe != ' ' && *pCe != '\0') pCe++;
-      }
-      if (pCe != NULL && pCe-1 > pC){
-
-        _tcsncpy(wcLogFileName, pC, pCe-pC);
-        wcLogFileName[pCe-pC] = '\0';
-
-        if (devOpenLog(devA(), wcLogFileName)){
-          _stprintf(sTmp, TEXT("Device A logs to\r\n%s"), wcLogFileName);
-          MessageBox (hWndMainWindow, sTmp,
-	// LKTOKEN  _@M356_ = "Information" 
-                      gettext(TEXT("_@M356_")), 
-                      MB_OK|MB_ICONINFORMATION);
-        } else {
-          _stprintf(sTmp, 
-                    TEXT("Unable to open log\r\non device A\r\n%s"), wcLogFileName);
-          MessageBox (hWndMainWindow, sTmp,
-	// LKTOKEN  _@M266_ = "Error" 
-                      gettext(TEXT("_@M266_")), 
-                      MB_OK|MB_ICONWARNING);
-        }
-
-      }
-
-    }
-
-    pC = _tcsstr(CommandLine, TEXT("-logB="));
-    if (pC != NULL){
-      pC += strlen("-logA=");
-      if (*pC == '"'){
-        pC++;
-        pCe = pC;
-        while (*pCe != '"' && *pCe != '\0') pCe++;
-      } else{
-        pCe = pC;
-        while (*pCe != ' ' && *pCe != '\0') pCe++;
-      }
-      if (pCe != NULL && pCe > pC){
-
-        _tcsncpy(wcLogFileName, pC, pCe-pC);
-        wcLogFileName[pCe-pC] = '\0';
-
-        if (devOpenLog(devB(), wcLogFileName)){
-          _stprintf(sTmp, TEXT("Device B logs to\r\n%s"), wcLogFileName);
-          MessageBox (hWndMainWindow, sTmp,
-	// LKTOKEN  _@M356_ = "Information" 
-                      gettext(TEXT("_@M356_")), 
-                      MB_OK|MB_ICONINFORMATION);
-        } else {
-          _stprintf(sTmp, TEXT("Unable to open log\r\non device B\r\n%s"), 
-                    wcLogFileName);
-          MessageBox (hWndMainWindow, sTmp,
-	// LKTOKEN  _@M266_ = "Error" 
-                      gettext(TEXT("_@M266_")), 
-                      MB_OK|MB_ICONWARNING);
-        }
-
-      }
-
-    }
-
   }
 
   if (pDevNmeaOut != NULL){
@@ -483,11 +414,7 @@ BOOL devPutMacCready(PDeviceDescriptor_t d, double MacCready)
 {
   BOOL result = TRUE;
 
-  #if NOSIM
   if (SIMMODE)
-  #else
-  if (fSimMode)
-  #endif
     return TRUE;
   LockComm();
   if (d != NULL && d->PutMacCready != NULL)
@@ -501,11 +428,7 @@ BOOL devPutBugs(PDeviceDescriptor_t d, double Bugs)
 {
   BOOL result = TRUE;
 
-  #if NOSIM
   if (SIMMODE)
-  #else
-  if (fSimMode)
-  #endif
     return TRUE;
   LockComm();
   if (d != NULL && d->PutBugs != NULL)
@@ -519,11 +442,7 @@ BOOL devPutBallast(PDeviceDescriptor_t d, double Ballast)
 {
   BOOL result = TRUE;
 
-  #if NOSIM
   if (SIMMODE)
-  #else
-  if (fSimMode)
-  #endif
     return TRUE;
   LockComm();
   if (d != NULL && d->PutBallast != NULL)
@@ -581,11 +500,7 @@ BOOL devLinkTimeout(PDeviceDescriptor_t d)
 {
   BOOL result = FALSE;
 
-  #if NOSIM
   if (SIMMODE)
-  #else
-  if (fSimMode)
-  #endif
     return TRUE;
   LockComm();
   if (d == NULL){
@@ -605,38 +520,11 @@ BOOL devLinkTimeout(PDeviceDescriptor_t d)
 }
 
 
-#if !110101
-BOOL devPutVoice(PDeviceDescriptor_t d, TCHAR *Sentence)
-{
-  BOOL result = FALSE;
-
-  LockComm();
-  if (d == NULL){
-    for (int i=0; i<NUMDEV; i++){
-      d = &DeviceList[i];
-      if (d->PutVoice != NULL)
-        d->PutVoice(d, Sentence);
-    }
-    result = TRUE;
-  } else {
-    if (d->PutVoice != NULL)
-      result = d->PutVoice(d, Sentence);
-  }
-  UnlockComm();
-
-  return FALSE;
-}
-#endif
-
 BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
 {
   BOOL result = FALSE;
 
-  #if NOSIM
   if (SIMMODE)
-  #else
-  if (fSimMode)
-  #endif
     return TRUE;
   
   const unsigned BUFF_LEN = 128;
@@ -816,55 +704,12 @@ void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
   UnlockComm();
 }
 
-void VarioWriteNMEA(const TCHAR *text)
-{
-  TCHAR tmp[512];
-
-  devFormatNMEAString(tmp, 512, text);
-
-  LockComm();
-  for (int i = 0; i < NUMDEV; i++)
-    if (_tcscmp(DeviceList[i].Name, TEXT("Vega")) == 0)
-      if (DeviceList[i].Com)
-        DeviceList[i].Com->WriteString(tmp);
-  UnlockComm();
-}
-
-void VarioWriteSettings(void)
-{
-  if (GPS_INFO.VarioAvailable) {
-    // JMW experimental
-    TCHAR mcbuf[100];
-    wsprintf(mcbuf, TEXT("PDVMC,%d,%d,%d,%d,%d"),
-	     iround(MACCREADY*10),
-	     iround(CALCULATED_INFO.VOpt*10),
-	     CALCULATED_INFO.Circling,
-	     iround(CALCULATED_INFO.TerrainAlt),
-	     iround(QNH*10));
-    VarioWriteNMEA(mcbuf);
-  }
-}
-
-#if !110101
-PDeviceDescriptor_t devVarioFindVega(void)
-{
-  for (int i = 0; i < NUMDEV; i++)
-    if (_tcscmp(DeviceList[i].Name, TEXT("Vega")) == 0)
-      return &DeviceList[i];
-  return NULL;
-}
-#endif
-
 
 BOOL devPutVolume(PDeviceDescriptor_t d, int Volume)
 {
   BOOL result = TRUE;
 
-  #if NOSIM
   if (SIMMODE)
-  #else
-  if (fSimMode)
-  #endif
     return TRUE;
   LockComm();
   if (d != NULL && d->PutVolume != NULL)
@@ -878,11 +723,7 @@ BOOL devPutFreqActive(PDeviceDescriptor_t d, double Freq)
 {
   BOOL result = TRUE;
 
-  #if NOSIM
   if (SIMMODE)
-  #else
-  if (fSimMode)
-  #endif
     return TRUE;
   LockComm();
   if (d != NULL && d->PutFreqActive != NULL)
@@ -896,11 +737,7 @@ BOOL devPutFreqStandby(PDeviceDescriptor_t d, double Freq)
 {
   BOOL result = TRUE;
 
-  #if NOSIM
   if (SIMMODE)
-  #else
-  if (fSimMode)
-  #endif
     return TRUE;
   LockComm();
   if (d != NULL && d->PutFreqStandby != NULL)

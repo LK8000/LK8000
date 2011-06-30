@@ -16,7 +16,7 @@
 #include <windows.h>
 #include "Sizes.h"
 #include "Utils.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "Airspace.h"
 #include "Parser.h"
 #include "Calculations.h"
@@ -67,14 +67,6 @@
 #define TEXTLIGHTGREY 15
 #define TEXTLIGHTORANGE 16
 
-#ifndef MAP_ZOOM
-typedef enum {dmNone, dmCircling, dmCruise, dmFinalGlide} DisplayMode_t;
-
-extern DisplayMode_t UserForceDisplayMode;
-extern DisplayMode_t DisplayMode;
-
-
-#endif /* ! MAP_ZOOM */
 // VENTA3 note> probably it would be a good idea to separate static WP data to dynamic values,
 // by moving things like Reachable, AltArival , etc to WPCALC
 // Currently at 5.2.2 the whole structure is saved into the task file, so everytime we 
@@ -89,11 +81,7 @@ typedef struct _WAYPOINT_INFO
   double Altitude;
   int Flags;
   TCHAR Name[NAME_SIZE + 1];
-#if CUPCOM
   TCHAR *Comment;
-#else
-  TCHAR Comment[COMMENT_SIZE + 1];
-#endif
   POINT	Screen;
   int Zoom;
   BOOL Reachable;
@@ -103,7 +91,6 @@ typedef struct _WAYPOINT_INFO
   TCHAR *Details;
   bool FarVisible;
   int FileNum; // which file it is in, or -1 to delete
-#ifdef CUPSUP
   // waypoint original format, LKW_DAT CUP etc.
   short Format;
   TCHAR Code[CUPSIZE_CODE+1];
@@ -112,7 +99,6 @@ typedef struct _WAYPOINT_INFO
   int   RunwayDir;
   TCHAR Country[CUPSIZE_COUNTRY+1];
   short Style;
-#endif
 } WAYPOINT;
 
 // This struct is separated from _WAYPOINT_INFO and will not be used in task files.  
@@ -152,7 +138,6 @@ typedef struct _SNAIL_POINT
 } SNAIL_POINT;
 
 
-
 typedef union{
   unsigned int AsInt;
   struct{
@@ -165,6 +150,7 @@ typedef union{
     unsigned WhiteBold:1;
     unsigned NoSetFont:1;  // VENTA5
     unsigned Color:5;
+	unsigned SetTextColor:1;	// Set text color in border mode
   }AsFlag;
 }TextInBoxMode_t;
   // mode are flags
@@ -176,7 +162,6 @@ typedef union{
 
 class MapWindow {
  public:
-#ifdef MAP_ZOOM
   /** 
    * @brief Class responsible for handling all Map Zoom activities
    * 
@@ -330,7 +315,6 @@ class MapWindow {
     bool AnyPan() const { return _mode & (MODE_SPECIAL_PAN | MODE_SPECIAL_TARGET_PAN); }
   };
   
-#endif /* MAP_ZOOM */
 
   static bool IsDisplayRunning();
   static int iAirspaceMode[AIRSPACECLASSCOUNT];
@@ -355,6 +339,7 @@ class MapWindow {
  private:
   // 12 is number of airspace types
   static HPEN hAirspacePens[AIRSPACECLASSCOUNT];
+  static HPEN hAirspaceBorderPen;
   static HPEN hSnailPens[NUMSNAILCOLORS];
   static COLORREF hSnailColours[NUMSNAILCOLORS];
   static HBRUSH hAirspaceBrushes[NUMAIRSPACEBRUSHES];
@@ -368,27 +353,13 @@ class MapWindow {
   static DWORD timestamp_newdata;
   static bool RequestFullScreen;
   static bool LandableReachable;
-#ifndef MAP_ZOOM
-  static void ModifyMapScale();
-  static double ResMapScaleOverDistanceModify; // speedup
-#endif /* ! MAP_ZOOM */
 
  public:
-#ifndef MAP_ZOOM
-
-  // These two values were private.. moved to public VNT 090621
-  static double MapScaleOverDistanceModify; // speedup
-  static double RequestMapScale;
-#else /* MAP_ZOOM */
   static Zoom zoom;
   static Mode mode;
-#endif /* MAP_ZOOM */
 
   static RECT MapRect;
   static RECT MapRectBig;
-#ifndef MAP_ZOOM
-  static double MapScale;
-#endif /* ! MAP_ZOOM */
   static bool ForceVisibilityScan;
 
   static bool MapDirty;
@@ -402,11 +373,6 @@ class MapWindow {
 
   static void UpdateTimeStats(bool start);
 
-#ifndef MAP_ZOOM
-  static bool isAutoZoom();
-  static bool isPan();
-
-#endif /* ! MAP_ZOOM */
   // Drawing primitives
   static void DrawDashLine(HDC , const int , const POINT , const POINT , 
 			   const COLORREF , 
@@ -451,15 +417,8 @@ class MapWindow {
   static bool IsMapFullScreen();
 
   // input events or reused code
-#ifndef MAP_ZOOM
-  static void Event_SetZoom(double value);
-  static void Event_ScaleZoom(int vswitch);
-#endif /* ! MAP_ZOOM */
   static void Event_Pan(int vswitch);
   static void Event_TerrainTopology(int vswitch);
-#ifndef MAP_ZOOM
-  static void Event_AutoZoom(int vswitch);
-#endif /* ! MAP_ZOOM */
   static void Event_PanCursor(int dx, int dy);
   static bool Event_InteriorAirspaceDetails(double lon, double lat);
   static bool Event_NearestWaypointDetails(double lon, double lat, double range, bool pan);
@@ -469,24 +428,13 @@ class MapWindow {
   static rectObj CalculateScreenBounds(double scale);
   static void ScanVisibility(rectObj *bounds_active);
 
-#ifndef MAP_ZOOM
-  static void SwitchZoomClimb(void);
-
-#endif /* ! MAP_ZOOM */
  private:
   static void CalculateScreenPositions(POINT Orig, RECT rc, 
                                        POINT *Orig_Aircraft);
   static void CalculateScreenPositionsGroundline();
   static void CalculateScreenPositionsAirspace();
-  static void CalculateScreenPositionsAirspaceCircle(AIRSPACE_CIRCLE& circ);
-  static void CalculateScreenPositionsAirspaceArea(AIRSPACE_AREA& area);
   static void CalculateScreenPositionsThermalSources();
-  #if MULTICALC
   static void LKCalculateWaypointReachable(short multicalc_slot, short numslots);
-  #else
-  static void CalculateWaypointReachable(void);
-  static void CalculateWaypointReachableNew(void);
-  #endif
   
   static bool PointVisible(const POINT &P);
   static bool PointVisible(const double &lon, const double &lat);
@@ -506,12 +454,13 @@ class MapWindow {
   //  static void DrawWindAtAircraft(HDC hdc, POINT Orig, RECT rc);
   static void DrawWindAtAircraft2(HDC hdc, POINT Orig, RECT rc);
   static void DrawAirSpace(HDC hdc, const RECT rc);
+  static void DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Aircraft);
   static void DrawWaypoints(HDC hdc, const RECT rc);
   static void DrawWaypointsNew(HDC hdc, const RECT rc);
   static void DrawLook8000(HDC hdc, const RECT rc);
   static void DrawMapSpace(HDC hdc, const RECT rc);
   static void DrawNearest(HDC hdc, const RECT rc);
-  static void DrawNearestTurnpoint(HDC hdc, const RECT rc);
+  static void DrawAspNearest(HDC hdc, const RECT rc);
   static void DrawCommon(HDC hdc, const RECT rc);
   static void DrawInfoPage(HDC hdc, const RECT rc, const bool forceinit);
   static void DrawTraffic(HDC hdc, const RECT rc);
@@ -522,6 +471,7 @@ class MapWindow {
   static void LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
   static void LKFormatGR(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
   static void LKFormatAltDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
+  static void LKUpdateOlc(void);
 //  static void LKWriteText(HDC hDC, const TCHAR* wText, int x, int y, int maxsize, const bool mode, const short align, COLORREF rgb_tex, bool invertable);
 
 #ifdef CPUSTATS
@@ -534,6 +484,7 @@ class MapWindow {
   static void DrawLKStatus(HDC hdc, const RECT rc);
   static void DrawFlightMode(HDC hdc, const RECT rc);
   static void DrawGPSStatus(HDC hdc, const RECT rc);
+  static void DrawLKAlarms(HDC hdc, const RECT rc);
   static double DrawTrail(HDC hdc, const POINT Orig, const RECT rc);
   static double LKDrawTrail(HDC hdc, const POINT Orig, const RECT rc);
   static void DrawTeammate(HDC hdc, const RECT rc);
@@ -560,9 +511,7 @@ class MapWindow {
   static void DrawThermalBand(HDC hDC, const RECT rc);
   static void DrawGlideThroughTerrain(HDC hDC, const RECT rc);
   static void DrawTerrainAbove(HDC hDC, const RECT rc);
-  static void DrawCDI();
-    static void DrawSpeedToFly(HDC hDC, RECT rc); // VNT9
-  static void DrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft);
+  static void DrawSpeedToFly(HDC hDC, RECT rc); // VNT9
   static void LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft);
   static void LKDrawVario(HDC hDC, RECT rc);
     
@@ -590,17 +539,10 @@ class MapWindow {
   static HANDLE hDrawThread;
   static double DisplayAngle;
   static double DisplayAircraftAngle;
-#ifndef MAP_ZOOM
-  static double DrawScale;
-  static double InvDrawScale;
-#endif /* ! MAP_ZOOM */
   
  public:
   static void RefreshMap(); // set public VENTA
   static HANDLE hRenderEvent;
-#ifndef MAP_ZOOM
-  static bool EnablePan; // sorry need this public for virtual keys
-#endif /* ! MAP_ZOOM */
 
   static rectObj screenbounds_latlon;
   
@@ -611,30 +553,20 @@ class MapWindow {
 
   static bool WaypointInRange(int i);
 
-#ifndef MAP_ZOOM
-  static bool SetTargetPan(bool dopan, int task_index);
-#else /* MAP_ZOOM */
   static void SetTargetPan(bool dopan, int task_index);
-#endif /* MAP_ZOOM */
 
   static double GetPanLatitude() { return PanLatitude; }
   static double GetPanLongitude() { return PanLongitude; }
-#ifndef MAP_ZOOM
-  static double GetInvDrawScale() { return InvDrawScale; }
-#else /* MAP_ZOOM */
   static double GetInvDrawScale() { return zoom.InvDrawScale(); }
-#endif /* MAP_ZOOM */
   static double GetDisplayAngle() { return DisplayAngle; }
-  #if AUTORIENT
   static void SetAutoOrientation(bool doreset);
-  #endif
 
  private:
   static HBITMAP 
     hTurnPoint, hSmall, hInvTurnPoint, hInvSmall, hCruise, hClimb,
     hFinalGlide, hAutoMacCready, hTerrainWarning, hGPSStatus1, hGPSStatus2,
     hAbort, hLogger, hLoggerOff, hFLARMTraffic;
-
+	static HBITMAP hAirspaceWarning;
   static HBRUSH   hBackgroundBrush;
   static COLORREF BackgroundColor;
 
@@ -649,9 +581,7 @@ class MapWindow {
   static      HPEN hpBestCruiseTrack;
   static      HPEN hpCompass;
   static	HPEN hpThermalCircle;
-  #if OVERTARGET
   static      HPEN hpOvertarget;
-  #endif
   static      HPEN hpThermalBand;
   static      HPEN hpThermalBandGlider;
   static      HPEN hpFinalGlideAbove;
@@ -686,9 +616,6 @@ class MapWindow {
 
   // static void DisplayAirspaceWarning(int Type, TCHAR *Name , AIRSPACE_ALT Base, AIRSPACE_ALT Top ); REMOVE 110102
 
-#ifndef MAP_ZOOM
-  static void UpdateMapScale();
-#endif /* ! MAP_ZOOM */
   static void CalculateOrigin(const RECT rc, POINT *Orig);
 
 
@@ -758,29 +685,18 @@ class MapWindow {
   static HBITMAP hBmpUnitFt;
   static HBITMAP hBmpUnitMpS;
 
-#ifndef MAP_ZOOM
-  static bool TargetPan;
-#endif /* ! MAP_ZOOM */
   static double TargetZoomDistance;
   static int TargetPanIndex; 
   static void ClearAirSpace(bool fill);
 
  public:
-#ifndef MAP_ZOOM
-  static bool isTargetPan(void);
-  static bool AutoZoom;
-#endif /* ! MAP_ZOOM */
   #if TOPOFASTLABEL
   static bool checkLabelBlock(RECT *rc);
   #else
   static bool checkLabelBlock(RECT rc);
   #endif
   static bool RenderTimeAvailable();
-#ifndef MAP_ZOOM
-  static bool BigZoom;
-#endif /* ! MAP_ZOOM */
   static int SnailWidthScale; 
-  static int WindArrowStyle;
   static bool TargetDragged(double *longitude, double *latitude);
 
  private:

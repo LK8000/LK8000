@@ -25,6 +25,8 @@
 #include <errno.h>
 #include "internal.h"
 
+#include "utils/heapcheck.h"
+
 
 // Compare two 64-bit values.
 // Returns:

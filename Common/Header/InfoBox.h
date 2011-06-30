@@ -5,9 +5,10 @@
 
    $Id: InfoBox.h,v 8.1 2009/06/21 13:29:13 venta Exp root $
 */
+#if USEIBOX
 
 #include "Units.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "Dialogs.h"
 
 #define BORDERTOP    (1<<bkTop)
@@ -132,3 +133,5 @@ class InfoBox{
     HDC GetHdcBuf(void);
 
 };
+
+#endif // USEIBOX

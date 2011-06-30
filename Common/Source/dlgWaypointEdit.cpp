@@ -15,6 +15,8 @@
 #include "InfoBoxLayout.h"
 #include "Waypointparser.h"
 
+#include "utils/heapcheck.h"
+
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 static WAYPOINT *global_wpt=NULL;
@@ -38,8 +40,6 @@ static void UpdateButtons(void) {
 	buttonName->SetCaption(text);
   }
   if (buttonComment) {
-	#if CUPCOM
-	//@ 101219
 	if ((global_wpt->Comment==NULL) || (_tcslen(global_wpt->Comment)<=0) ) {
 		// LKTOKEN  _@M190_ = "Comment" 
 		_stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M190_")),
@@ -50,19 +50,6 @@ static void UpdateButtons(void) {
 		_stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M190_")),
 		global_wpt->Comment);
 	}
-	#else
-	// 101219 this was crashing since forgot CUPCOM!
-	if (_tcslen(global_wpt->Comment)<=0) {
-		// LKTOKEN  _@M190_ = "Comment" 
-		_stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M190_")),
-		// LKTOKEN  _@M7_ = "(blank)" 
-		gettext(TEXT("_@M7_")));
-	} else {
-		// LKTOKEN  _@M190_ = "Comment" 
-		_stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M190_")),
-		global_wpt->Comment);
-	}
-	#endif
 	buttonComment->SetCaption(text);
   }
 }
@@ -79,7 +66,6 @@ static void OnNameClicked(WindowControl *Sender) {
 
 static void OnCommentClicked(WindowControl *Sender) {
 	(void)Sender;
-  #if CUPCOM
   if (buttonComment) {
 	//@ 101219
 	TCHAR comment[COMMENT_SIZE*2];
@@ -101,11 +87,6 @@ static void OnCommentClicked(WindowControl *Sender) {
 		}
 	}
   }
-  #else
-  if (buttonComment) {
-	dlgTextEntryShowModal(global_wpt->Comment, COMMENT_SIZE);
-  }
-  #endif
   UpdateButtons();
 }
 

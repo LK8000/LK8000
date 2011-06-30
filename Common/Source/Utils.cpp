@@ -15,6 +15,8 @@
 #if (WINDOWSPC<1)
 #include "projects.h"
 #endif
+#else
+#include "wcecompat/ts_string.h"
 #endif
 
 #include "Defines.h" // VENTA3
@@ -26,23 +28,25 @@
 #include "externs.h"
 #include "device.h"
 #include "uniqueid.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "Topology.h"
 #include "Terrain.h"
 #include "Units.h"
 #include "Calculations.h"
-#include "GaugeFLARM.h"
 #include "McReady.h"
 #include "NavFunctions.h"
 #include "WaveThread.h"
+#include "LKMapWindow.h"
 
 #include "FlarmIdFile.h"
 // Warning, this is initialising class, loading flarmnet IDs before anything else in the LK is even started..
 FlarmIdFile file; 
 
-#if defined(PNA) || defined(FIVV)
+#if USEIBOX
 #include "InfoBoxLayout.h"
 #endif
+
+#include "utils/heapcheck.h"
 
 // JMW not required in newer systems?
 #ifdef __MINGW32__
@@ -51,8 +55,6 @@ FlarmIdFile file;
 #define min(x, y)   (x < y ? x : y)
 #endif
 #endif
-
-bool EnableAnimation=false;
 
 bool ReadWinPilotPolarInternal(int i);
 
@@ -87,7 +89,8 @@ const TCHAR *szRegistryColour[] =     { TEXT("Colour0"),
 				  TEXT("Colour11"),
 				  TEXT("Colour12"),
 				  TEXT("Colour13"),
-				  TEXT("Colour14")
+                  TEXT("Colour14"),
+                  TEXT("Colour15")
 }; // pL
 
 
@@ -105,7 +108,8 @@ const TCHAR *szRegistryBrush[] =     {  TEXT("Brush0"),
 				  TEXT("Brush11"),
 				  TEXT("Brush12"),
 				  TEXT("Brush13"),
-				  TEXT("Brush14")
+                  TEXT("Brush14"),
+                  TEXT("Brush15")
 }; // pL
 
 const TCHAR *szRegistryAirspaceMode[] =     {  TEXT("AirspaceMode0"),
@@ -122,7 +126,8 @@ const TCHAR *szRegistryAirspaceMode[] =     {  TEXT("AirspaceMode0"),
 					       TEXT("AirspaceMode11"),
 					       TEXT("AirspaceMode12"),
 					       TEXT("AirspaceMode13"),
-					       TEXT("AirspaceMode14")
+                           TEXT("AirspaceMode14"),
+                           TEXT("AirspaceMode15")
 }; // pL
 
 
@@ -140,14 +145,19 @@ const TCHAR *szRegistryAirspacePriority[] = {  TEXT("AirspacePriority0"),
 					 TEXT("AirspacePriority11"),
 					 TEXT("AirspacePriority12"),
 					 TEXT("AirspacePriority13"),
-					 TEXT("AirspacePriority14")
+                     TEXT("AirspacePriority14"),
+                     TEXT("AirspacePriority15")
 }; // pL
 
 
 const TCHAR szRegistryAirspaceWarning[]= TEXT("AirspaceWarn");
-const TCHAR szRegistryAirspaceBlackOutline[]= TEXT("AirspaceBlackOutline");
+const TCHAR szRegistryAirspaceBlackOutline[]= TEXT("AirspaceBlackOutline1");
 const TCHAR szRegistryAirspaceFillType[]= TEXT("AirspaceFillType");
 const TCHAR szRegistryAirspaceOpacity[]= TEXT("AirspaceOpacity");
+const TCHAR szRegistryAirspaceWarningRepeatTime[]= TEXT("AirspaceWarningRepeatTime1");
+const TCHAR szRegistryAirspaceWarningVerticalMargin[]= TEXT("AirspaceWarningVerticalMargin");
+const TCHAR szRegistryAirspaceWarningDlgTimeout[]= TEXT("AirspaceWarningDlgTimeout");
+const TCHAR szRegistryAirspaceWarningMapLabels[]= TEXT("AirspaceWarningMapLabels");
 const TCHAR szRegistryAltMargin[]=	   TEXT("AltMargin");
 const TCHAR szRegistryAltMode[]=  TEXT("AltitudeMode");
 const TCHAR szRegistrySafetyAltitudeMode[]=  TEXT("SafetyAltitudeMode");
@@ -167,13 +177,11 @@ const TCHAR szRegistryAlternate1[]= TEXT("Alternate1"); // VENTA3
 const TCHAR szRegistryAlternate2[]= TEXT("Alternate2");
 const TCHAR szRegistryLiftUnitsValue[] = TEXT("Lift");
 const TCHAR szRegistryLatLonUnits[] = TEXT("LatLonUnits");
-const TCHAR szRegistryPolarID[] = TEXT("Polar"); // pL
 const TCHAR szRegistryPort1Index[]= TEXT("PortIndex");
 const TCHAR szRegistryPort2Index[]= TEXT("Port2Index");
 // const TCHAR szRegistryPort3Index[]= TEXT("Port3Index");
 const TCHAR szRegistryRegKey[]=				 TEXT("RegKey");
 const TCHAR szRegistrySafetyAltitudeArrival[] =     TEXT("SafetyAltitudeArrival");
-const TCHAR szRegistrySafetyAltitudeBreakOff[] =     TEXT("SafetyAltitudeBreakOff");
 const TCHAR szRegistrySafetyAltitudeTerrain[] =     TEXT("SafetyAltitudeTerrain");
 const TCHAR szRegistrySafteySpeed[] =          TEXT("SafteySpeed");
 const TCHAR szRegistryWindCalcSpeed[] =          TEXT("WindCalcSpeed");
@@ -182,7 +190,6 @@ const TCHAR szRegistrySectorRadius[]=          TEXT("Radius");
 const TCHAR szRegistrySnailTrail[]=		 TEXT("SnailTrail");
 const TCHAR szRegistryTrailDrift[]=		 TEXT("TrailDrift");
 const TCHAR szRegistryThermalLocator[]=	 TEXT("ThermalLocator");
-const TCHAR szRegistryAnimation[]=		 TEXT("Animation");
 const TCHAR szRegistrySpeed1Index[]=		 TEXT("SpeedIndex");
 const TCHAR szRegistrySpeed2Index[]=		 TEXT("Speed2Index");
 //const TCHAR szRegistrySpeed3Index[]=		 TEXT("Speed3Index");
@@ -219,39 +226,27 @@ const TCHAR szRegistryCompetitionClass[]=  TEXT("CompetitionClass");
 const TCHAR szRegistryCompetitionID[]=  TEXT("CompetitionID");
 const TCHAR szRegistryLoggerID[]=  TEXT("LoggerID");
 const TCHAR szRegistryLoggerShort[]=  TEXT("LoggerShortName");
-const TCHAR szRegistrySoundVolume[]=  TEXT("SoundVolume");
-const TCHAR szRegistrySoundDeadband[]=  TEXT("SoundDeadband");
-const TCHAR szRegistrySoundAudioVario[]=  TEXT("AudioVario");
-const TCHAR szRegistrySoundTask[]=  TEXT("SoundTask");
-const TCHAR szRegistrySoundModes[]=  TEXT("SoundModes");
-const TCHAR szRegistryNettoSpeed[]= TEXT("NettoSpeed");
-const TCHAR szRegistryAccelerometerZero[]= TEXT("AccelerometerZero");
-const TCHAR szRegistryCDICruise[]= TEXT("CDICruise");
-const TCHAR szRegistryCDICircling[]= TEXT("CDICircling");
 
 const TCHAR szRegistryDeviceA[]= TEXT("DeviceA");
 const TCHAR szRegistryDeviceB[]= TEXT("DeviceB");
 const TCHAR szRegistryDeviceC[]= TEXT("DeviceC");
 
-const TCHAR szRegistryAutoBlank[]= TEXT("AutoBlank");
 const TCHAR szRegistryAutoBacklight[]= TEXT("AutoBacklight");
 const TCHAR szRegistryAutoSoundVolume[]= TEXT("AutoSoundVolume");
 const TCHAR szRegistryAircraftCategory[]= TEXT("AircraftCategory");
 const TCHAR szRegistryExtendedVisualGlide[]= TEXT("ExtVisualGlide");
 const TCHAR szRegistryLook8000[]= TEXT("Look8000");
 const TCHAR szRegistryAltArrivMode[]= TEXT("AltArrivMode");
-const TCHAR szRegistryUseMapLock[]= TEXT("UseMapLock");
 const TCHAR szRegistryActiveMap[]= TEXT("ActiveMap"); // 100318
 const TCHAR szRegistryBestWarning[]= TEXT("BestWarning");
 const TCHAR szRegistryThermalBar[]= TEXT("ThermalBar");
 const TCHAR szRegistryMcOverlay[]= TEXT("McOverlay2");
 const TCHAR szRegistryTrackBar[]= TEXT("TrackBar");
-const TCHAR szRegistryNewMap[]= TEXT("NewMap");
 const TCHAR szRegistryIphoneGestures[]= TEXT("IphoneGestures");
 const TCHAR szRegistryPollingMode[]= TEXT("PollingMode");
 const TCHAR szRegistryLKVarioBar[]= TEXT("LKVarioBar");
+const TCHAR szRegistryLKVarioVal[]= TEXT("LKVarioVal");
 const TCHAR szRegistryHideUnits[]= TEXT("HideUnits");
-const TCHAR szRegistryVirtualKeys[]= TEXT("VirtualKeys");
 const TCHAR szRegistryGlideBarMode[]= TEXT("GlideBarMode");
 const TCHAR szRegistryOutlinedTp[]= TEXT("OutlinedTp");
 const TCHAR szRegistryOverColor[]= TEXT("OverColor");
@@ -262,19 +257,15 @@ const TCHAR szRegistryArrivalValue[]= TEXT("ArrivalValue");
 const TCHAR szRegistryNewMapDeclutter[]= TEXT("NewMapDeclutter");
 const TCHAR szRegistryAverEffTime[]= TEXT("AverEffTime");
 const TCHAR szRegistryBgMapColor[]= TEXT("BgMapColor");
-const TCHAR szRegistryVarioGauge[]= TEXT("VarioGauge");
 
 const TCHAR szRegistryDebounceTimeout[]= TEXT("DebounceTimeout");
 
 const TCHAR szRegistryPGCruiseZoom[]= TEXT("PGCruiseZoom");
 const TCHAR szRegistryPGClimbZoom[]= TEXT("PGClimbZoom");
-#if AUTORIENT
 const TCHAR szRegistryAutoOrientScale[]= TEXT("AutoOrientScale");
-#endif
 const TCHAR szRegistryPGOpenTimeH[]= TEXT("PGOpenTimeH");
 const TCHAR szRegistryPGOpenTimeM[]= TEXT("PGOpenTimeM");
 const TCHAR szRegistryPGNumberOfGates[]= TEXT("PGNumberOfGates");
-#if LKTOPO
 const TCHAR szRegistryLKTopoZoomCat05[]= TEXT("LKTopoZoomCat05");
 const TCHAR szRegistryLKTopoZoomCat10[]= TEXT("LKTopoZoomCat10");
 const TCHAR szRegistryLKTopoZoomCat20[]= TEXT("LKTopoZoomCat20");
@@ -287,37 +278,25 @@ const TCHAR szRegistryLKTopoZoomCat80[]= TEXT("LKTopoZoomCat80");
 const TCHAR szRegistryLKTopoZoomCat90[]= TEXT("LKTopoZoomCat90");
 const TCHAR szRegistryLKTopoZoomCat100[]= TEXT("LKTopoZoomCat100");
 const TCHAR szRegistryLKTopoZoomCat110[]= TEXT("LKTopoZoomCat110");
-#endif
 const TCHAR szRegistryLKMaxLabels[]= TEXT("LKMaxLabels");
 const TCHAR szRegistryOverlaySize[]= TEXT("OverlaySize");
 const TCHAR szRegistryBarOpacity[]= TEXT("BarOpacity");
-const TCHAR szRegistryFontRenderer[]= TEXT("FontRenderer");
+const TCHAR szRegistryFontRenderer[]= TEXT("FontRenderer2");
 const TCHAR szRegistryPGGateIntervalTime[]= TEXT("PGGateIntervalTime");
 const TCHAR szRegistryPGStartOut[]= TEXT("PGStartOut");
 
-const TCHAR szRegistryAppIndFinalGlide[] = TEXT("AppIndFinalGlide");
 const TCHAR szRegistryAppIndLandable[] = TEXT("AppIndLandable");
 const TCHAR szRegistryAppInverseInfoBox[] = TEXT("AppInverseInfoBox2");
-const TCHAR szRegistryAppGaugeVarioSpeedToFly[] = TEXT("AppGaugeVarioSpeedToFly");
-const TCHAR szRegistryAppGaugeVarioAvgText[] = TEXT("AppGaugeVarioAvgText");
-const TCHAR szRegistryAppGaugeVarioMc[] = TEXT("AppGaugeVarioMc");
-const TCHAR szRegistryAppGaugeVarioBugs[] = TEXT("AppGaugeVarioBugs");
-const TCHAR szRegistryAppGaugeVarioBallast[] = TEXT("AppGaugeVarioBallast");
-const TCHAR szRegistryAppGaugeVarioGross[] = TEXT("AppGaugeVarioGross");
-const TCHAR szRegistryAppCompassAppearance[] = TEXT("AppCompassAppearance");
-const TCHAR szRegistryAppStatusMessageAlignment[] = TEXT("AppStatusMessageAlignment");
-const TCHAR szRegistryAppTextInputStyle[] = TEXT("AppTextInputStyle");
-const TCHAR szRegistryAppInfoBoxColors[] = TEXT("AppInfoBoxColors");
 const TCHAR szRegistryAppDefaultMapWidth[] = TEXT("AppDefaultMapWidth");
 const TCHAR szRegistryTeamcodeRefWaypoint[] = TEXT("TeamcodeRefWaypoint");
-const TCHAR szRegistryAppInfoBoxBorder[] = TEXT("AppInfoBoxBorder");
 
+#if USEIBOX
 const TCHAR szRegistryAppInfoBoxGeom[] = TEXT("AppInfoBoxGeom");
+#endif
 const TCHAR szRegistryAppInfoBoxModel[] = TEXT("AppInfoBoxModel"); 
 const TCHAR szRegistryGpsAltitudeOffset[] = TEXT("GpsAltitudeOffset");
 const TCHAR szRegistryUseGeoidSeparation[] = TEXT("UseGeoidSeparation");
 const TCHAR szRegistryPressureHg[] = TEXT("PressureHg");
-//const TCHAR szRegistryShortcutIbox[] = TEXT("ShortcutIbox");
 const TCHAR szRegistryCustomKeyTime[] = TEXT("CustomKeyTime");
 const TCHAR szRegistryCustomKeyModeCenter[] = TEXT("CustomKeyModeCenter");
 const TCHAR szRegistryCustomKeyModeLeft[] = TEXT("CustomKeyModeLeft");
@@ -326,11 +305,8 @@ const TCHAR szRegistryCustomKeyModeAircraftIcon[] = TEXT("CustomKeyModeAircraftI
 const TCHAR szRegistryCustomKeyModeLeftUpCorner[] = TEXT("CustomKeyModeLeftUpCorner");
 const TCHAR szRegistryCustomKeyModeRightUpCorner[] = TEXT("CustomKeyModeRightUpCorner");
 
-const TCHAR szRegistryAppAveNeedle[] = TEXT("AppAveNeedle");
-
 const TCHAR szRegistryAutoAdvance[] = TEXT("AutoAdvance");
 const TCHAR szRegistryUTCOffset[] = TEXT("UTCOffset");
-const TCHAR szRegistryBlockSTF[] = TEXT("BlockSpeedToFly");
 const TCHAR szRegistryAutoZoom[] = TEXT("AutoZoom");
 const TCHAR szRegistryMenuTimeout[] = TEXT("MenuTimeout");
 const TCHAR szRegistryLockSettingsInFlight[] = TEXT("LockSettingsInFlight");
@@ -338,20 +314,13 @@ const TCHAR szRegistryTerrainContrast[] = TEXT("TerrainContrast");
 const TCHAR szRegistryTerrainBrightness[] = TEXT("TerrainBrightness");
 const TCHAR szRegistryTerrainRamp[] = TEXT("TerrainRamp");
 const TCHAR szRegistryEnableFLARMMap[] = TEXT("EnableFLARMDisplay");
-const TCHAR szRegistryEnableFLARMGauge[] = TEXT("EnableFLARMGauge");
-const TCHAR szRegistryFLARMGaugeBearing[] = TEXT("FLARMGaugeBearing");
 const TCHAR szRegistryGliderScreenPosition[] = TEXT("GliderScreenPosition");
 const TCHAR szRegistrySetSystemTimeFromGPS[] = TEXT("SetSystemTimeFromGPS");
 const TCHAR szRegistryAutoForceFinalGlide[] = TEXT("AutoForceFinalGlide");
 
-const TCHAR szRegistryVoiceClimbRate[]= TEXT("VoiceClimbRate");
-const TCHAR szRegistryVoiceTerrain[]= TEXT("VoiceTerrain");
-const TCHAR szRegistryVoiceWaypointDistance[]= TEXT("VoiceWaypointDistance");
-const TCHAR szRegistryVoiceTaskAltitudeDifference[]= TEXT("VoiceTaskAltitudeDifference");
-const TCHAR szRegistryVoiceMacCready[]= TEXT("VoiceMacCready");
-const TCHAR szRegistryVoiceNewWaypoint[]= TEXT("VoiceNewWaypoint");
-const TCHAR szRegistryVoiceInSector[]= TEXT("VoiceInSector");
-const TCHAR szRegistryVoiceAirspace[]= TEXT("VoiceAirspace");
+const TCHAR szRegistryAlarmMaxAltitude1[]= TEXT("AlarmMaxAltitude1");
+const TCHAR szRegistryAlarmMaxAltitude2[]= TEXT("AlarmMaxAltitude3");
+const TCHAR szRegistryAlarmMaxAltitude3[]= TEXT("AlarmMaxAltitude4");
 
 const TCHAR szRegistryFinishMinHeight[]= TEXT("FinishMinHeight");
 const TCHAR szRegistryStartMaxHeight[]= TEXT("StartMaxHeight");
@@ -362,23 +331,41 @@ const TCHAR szRegistryStartHeightRef[] = TEXT("StartHeightRef");
 const TCHAR szRegistryEnableNavBaroAltitude[] = TEXT("EnableNavBaroAltitude");
 const TCHAR szRegistryOrbiter[] = TEXT("Orbiter");
 const TCHAR szRegistryShading[] = TEXT("Shading");
+const TCHAR szRegistryConfBB1[] = TEXT("ConfBB1");
+const TCHAR szRegistryConfBB2[] = TEXT("ConfBB2");
+const TCHAR szRegistryConfBB3[] = TEXT("ConfBB3");
+const TCHAR szRegistryConfBB4[] = TEXT("ConfBB4");
+const TCHAR szRegistryConfBB5[] = TEXT("ConfBB5");
+const TCHAR szRegistryConfBB6[] = TEXT("ConfBB6");
+const TCHAR szRegistryConfBB7[] = TEXT("ConfBB7");
+const TCHAR szRegistryConfBB8[] = TEXT("ConfBB8");
+const TCHAR szRegistryConfBB9[] = TEXT("ConfBB9");
+
+const TCHAR szRegistryConfIP11[] = TEXT("ConfIP11");
+const TCHAR szRegistryConfIP12[] = TEXT("ConfIP12");
+const TCHAR szRegistryConfIP13[] = TEXT("ConfIP13");
+const TCHAR szRegistryConfIP14[] = TEXT("ConfIP14");
+const TCHAR szRegistryConfIP15[] = TEXT("ConfIP15");
+const TCHAR szRegistryConfIP16[] = TEXT("ConfIP16");
+const TCHAR szRegistryConfIP21[] = TEXT("ConfIP21");
+const TCHAR szRegistryConfIP22[] = TEXT("ConfIP22");
+const TCHAR szRegistryConfIP23[] = TEXT("ConfIP23");
+const TCHAR szRegistryConfIP24[] = TEXT("ConfIP24");
+const TCHAR szRegistryConfIP31[] = TEXT("ConfIP31");
+const TCHAR szRegistryConfIP32[] = TEXT("ConfIP32");
+
 const TCHAR szRegistryOverlayClock[] = TEXT("OverlayClock");
 
 const TCHAR szRegistryLoggerTimeStepCruise[]= TEXT("LoggerTimeStepCruise");
 const TCHAR szRegistryLoggerTimeStepCircling[]= TEXT("LoggerTimeStepCircling");
 
 const TCHAR szRegistrySafetyMacCready[] = TEXT("SafetyMacCready");
-const TCHAR szRegistryAbortSafetyUseCurrent[] = TEXT("AbortSafetyUseCurrent");
 const TCHAR szRegistryAutoMcMode[] = TEXT("AutoMcMode");
 const TCHAR szRegistryWaypointsOutOfRange[] = TEXT("WaypointsOutOfRange2"); // 101020 2nd version, reset needed
 const TCHAR szRegistryEnableExternalTriggerCruise[] = TEXT("EnableExternalTriggerCruise");
 const TCHAR szRegistryFAIFinishHeight[] = TEXT("FAIFinishHeight");
-const TCHAR szRegistryOLCRules[] = TEXT("OLCRules");
 const TCHAR szRegistryHandicap[] = TEXT("Handicap");
 const TCHAR szRegistrySnailWidthScale[] = TEXT("SnailWidthScale");
-const TCHAR szRegistryUserLevel[] = TEXT("UserLevel");
-const TCHAR szRegistryRiskGamma[] = TEXT("RiskGamma");
-const TCHAR szRegistryWindArrowStyle[] = TEXT("WindArrowStyle");
 const TCHAR szRegistryDisableAutoLogger[] = TEXT("DisableAutoLogger");
 const TCHAR szRegistryMapFile[]=	 TEXT("MapFile"); // pL
 const TCHAR szRegistryBallastSecsToEmpty[]=	 TEXT("BallastSecsToEmpty"); 
@@ -429,17 +416,6 @@ void CheckInfoTypes() {
 
 
 void ResetInfoBoxes(void) {
-#ifdef GNAV
-  InfoType[0]=873336334;
-  InfoType[1]=856820491;
-  InfoType[2]=822280982;
-  InfoType[3]=2829105;
-  InfoType[4]=103166000;
-  InfoType[5]=421601569;
-  InfoType[6]=657002759;
-  InfoType[7]=621743887;
-  InfoType[8]=439168301;
-#else
   InfoType[0] = 921102;
   InfoType[1] = 725525;
   InfoType[2] = 262144;
@@ -448,53 +424,15 @@ void ResetInfoBoxes(void) {
   InfoType[5] = 2236963;
   InfoType[6] = 394758;
   InfoType[7] = 1644825;
-  InfoType[8] = 1644825; // TESTFIX BUGFIX 091015 missing
-#endif
+  InfoType[8] = 1644825;
 }
 
 void SetRegistryStringIfAbsent(const TCHAR* name,
 			       const TCHAR* value) {
 
   // VENTA force fonts registry rewrite in PNAs 
-#if defined(PNA) || defined(FIVV) // VENTA TODO WARNING should really delete the key before creating it TODO
+  // VENTA TODO WARNING should really delete the key before creating it TODO
   SetRegistryString(name, value);
-#else
-  TCHAR temp[MAX_PATH];
-  if (GetRegistryString(name, temp, MAX_PATH)) {  // 0==ERROR_SUCCESS 
-    SetRegistryString(name, value);
-  }
-#endif 
-}
-
-void DefaultRegistrySettingsAltair(void)
-{  // RLD left GNAV Altair settings untouched.  
-   // these are redundant b/c they're also added to "InitialiseFontsHardCoded"
-  SetRegistryStringIfAbsent(TEXT("InfoWindowFont"),
-   TEXT("24,0,0,0,700,0,0,0,0,0,0,3,2,RasterGothicTwentyFourCond"));
-  SetRegistryStringIfAbsent(TEXT("TitleWindowFont"),
-   TEXT("10,0,0,0,500,0,0,0,0,0,0,3,2,RasterGothicNineCond"));
-  SetRegistryStringIfAbsent(TEXT("CDIWindowFont"),
-   TEXT("19,0,0,0,700,0,0,0,0,0,0,3,2,RasterGothicEighteenCond"));
-  SetRegistryStringIfAbsent(TEXT("MapLabelFont"),
-   TEXT("13,0,0,0,500,0,0,0,0,0,0,3,2,RasterGothicTwelveCond"));
-  SetRegistryStringIfAbsent(TEXT("StatisticsFont"),
-   TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,RasterGothicFourteenCond"));
-  SetRegistryStringIfAbsent(TEXT("MapWindowFont"),
-   TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,RasterGothicFourteenCond"));
-  SetRegistryStringIfAbsent(TEXT("MapWindowBoldFont"),
-   TEXT("15,0,0,0,700,0,0,0,0,0,0,3,2,RasterGothicFourteenCond"));
-  SetRegistryStringIfAbsent(TEXT("BugsBallastFont"),
-   TEXT("24,0,0,0,750,0,0,0,0,0,0,3,2,RasterGothicTwentyFourCond"));
-  SetRegistryStringIfAbsent(TEXT("AirspacePressFont"),
-   TEXT("24,0,0,0,750,0,0,0,0,0,0,3,2,RasterGothicTwentyFourCond"));
-  SetRegistryStringIfAbsent(TEXT("AirspaceColourDlgFont"),
-   TEXT("14,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"));
-  SetRegistryStringIfAbsent(TEXT("TeamCodeFont"),
-   TEXT("19,0,0,0,700,0,0,0,0,0,0,3,2,RasterGothicEighteenCond"));
-#if 0
-  SetRegistryStringIfAbsent(TEXT("ScaleList"),
-   TEXT("0.5,1,2,5,10,20,50,100,150,200,500,1000"));
-#endif
 }
 
 
@@ -518,10 +456,6 @@ void ReadRegistrySettings(void)
   int i;
 
   StartupStore(TEXT(". Read registry settings%s"),NEWLINE);
-
-#if defined(GNAV) || defined(PCGNAV) || defined(GNAV_FONTEST)
-  DefaultRegistrySettingsAltair();
-#endif
 
   for (i=0; i<AIRSPACECLASSCOUNT; i++) {
     Temp=0;
@@ -639,6 +573,22 @@ void ReadRegistrySettings(void)
   if(GetFromRegistry(szRegistryAltMargin,&Temp)==ERROR_SUCCESS)
     AltWarningMargin = Temp;
 
+  Temp=AirspaceWarningRepeatTime;
+  if(GetFromRegistry(szRegistryAirspaceWarningRepeatTime,&Temp)==ERROR_SUCCESS)
+    AirspaceWarningRepeatTime = Temp;
+
+  Temp=AirspaceWarningVerticalMargin;
+  if(GetFromRegistry(szRegistryAirspaceWarningVerticalMargin,&Temp)==ERROR_SUCCESS)
+    AirspaceWarningVerticalMargin = Temp;
+
+  Temp=AirspaceWarningDlgTimeout;
+  if(GetFromRegistry(szRegistryAirspaceWarningDlgTimeout,&Temp)==ERROR_SUCCESS)
+    AirspaceWarningDlgTimeout = Temp;
+
+  Temp=AirspaceWarningMapLabels;
+  if(GetFromRegistry(szRegistryAirspaceWarningMapLabels,&Temp)==ERROR_SUCCESS)
+    AirspaceWarningMapLabels = Temp;
+	
   Temp=SafetyAltitudeMode;
   if(GetFromRegistry(szRegistrySafetyAltitudeMode,&Temp)==ERROR_SUCCESS)
     SafetyAltitudeMode = Temp;
@@ -646,10 +596,6 @@ void ReadRegistrySettings(void)
   Temp=(DWORD)SAFETYALTITUDEARRIVAL;
   GetFromRegistry(szRegistrySafetyAltitudeArrival,&Temp);
   SAFETYALTITUDEARRIVAL = (double)Temp;
-
-  Temp=(DWORD)SAFETYALTITUDEBREAKOFF;
-  GetFromRegistry(szRegistrySafetyAltitudeBreakOff,&Temp);
-  SAFETYALTITUDEBREAKOFF = (double)Temp;
 
   Temp=(DWORD)SAFETYALTITUDETERRAIN;
   GetFromRegistry(szRegistrySafetyAltitudeTerrain,&Temp);
@@ -681,11 +627,6 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistrySectorRadius,
 		  &SectorRadius);
 
-  Temp=37; // discus 2a
-  GetFromRegistry(szRegistryPolarID,
-		  &Temp); 
-  POLARID = (int)Temp;
-
   GetRegistryString(szRegistryRegKey, strRegKey, 65);
 
   for(i=0;i<AIRSPACECLASSCOUNT;i++)
@@ -712,7 +653,7 @@ void ReadRegistrySettings(void)
 
   Temp = MapWindow::GetAirSpaceFillType();
   if(GetFromRegistry(szRegistryAirspaceFillType,&Temp) == ERROR_SUCCESS)
-    MapWindow::SetAirSpaceFillType(Temp);
+    MapWindow::SetAirSpaceFillType((MapWindow::EAirspaceFillType)Temp);
 
   Temp = MapWindow::GetAirSpaceOpacity();
   if(GetFromRegistry(szRegistryAirspaceOpacity,&Temp) == ERROR_SUCCESS)
@@ -734,11 +675,6 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryThermalLocator,&Temp);
   EnableThermalLocator = Temp;
 
-  //Temp = EnableAnimation;
-  Temp=0; // disabled by default VNT9
-  GetFromRegistry(szRegistryAnimation,&Temp);
-  EnableAnimation = (Temp==1);
-
   Temp  = EnableTopology;
   GetFromRegistry(szRegistryDrawTopology,&Temp);
   EnableTopology = (Temp == 1);
@@ -755,17 +691,9 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryAutoWind,&Temp);
   AutoWindMode = Temp;
 
-#ifndef MAP_ZOOM
-  Temp  = CircleZoom;
-#else /* MAP_ZOOM */
   Temp  = MapWindow::zoom.CircleZoom();
-#endif /* MAP_ZOOM */
   GetFromRegistry(szRegistryCircleZoom,&Temp);
-#ifndef MAP_ZOOM
-  CircleZoom = (Temp == 1);
-#else /* MAP_ZOOM */
   MapWindow::zoom.CircleZoom(Temp == 1);
-#endif /* MAP_ZOOM */
 
   Temp  = WindUpdateMode;
   GetFromRegistry(szRegistryWindUpdateMode,&Temp);
@@ -782,19 +710,15 @@ void ReadRegistrySettings(void)
   Temp = Alternate1;
   if (GetFromRegistry(szRegistryAlternate1,&Temp)==ERROR_SUCCESS) {
     Alternate1 = (signed int) Temp;
-    OnAlternate1=true;
   } else {
     Alternate1 = -1;
-    OnAlternate1=false;
   }
 
   Temp = Alternate2;
   if (GetFromRegistry(szRegistryAlternate2,&Temp)==ERROR_SUCCESS) {
     Alternate2 = (signed int) Temp; // 100429
-    OnAlternate2=true;
   } else {
     Alternate2 = -1;
-    OnAlternate2=false;
   }
 
 
@@ -822,58 +746,17 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryFinishRadius,&Temp);
   FinishRadius = Temp;
 
-  Temp = 0;
+  Temp = AIRSPACEWARNINGS;
   GetFromRegistry(szRegistryAirspaceWarning,&Temp);
   AIRSPACEWARNINGS = Temp;
 
-  Temp = 30;
+  Temp = WarningTime;
   GetFromRegistry(szRegistryWarningTime,&Temp);
   WarningTime = max(10,Temp);
 
-  Temp = 30;
+  Temp = AcknowledgementTime;
   GetFromRegistry(szRegistryAcknowledgementTime,&Temp);
   AcknowledgementTime = max(10,Temp);
-
-  Temp = 80;
-  GetFromRegistry(szRegistrySoundVolume,&Temp);
-  SoundVolume = Temp;
-
-  Temp = 4;
-  GetFromRegistry(szRegistrySoundDeadband,&Temp);
-  SoundDeadband = Temp;
-
-  Temp = 1;
-  GetFromRegistry(szRegistrySoundAudioVario,&Temp);
-  EnableSoundVario = (Temp == 1);
-
-  Temp = 1;
-  GetFromRegistry(szRegistrySoundTask,&Temp);
-  EnableSoundTask = (Temp == 1);
-
-  Temp = 1;
-  GetFromRegistry(szRegistrySoundModes,&Temp);
-  EnableSoundModes = (Temp == 1);
-
-  Temp = 500;
-  GetFromRegistry(szRegistryNettoSpeed,&Temp);
-  NettoSpeed = Temp;
-
-  EnableCDICruise = 0;
-  EnableCDICircling = 0;
-
-  /* JMW temporarily disabled these because they are not updated for 4.7+
-  Temp = 0;
-  GetFromRegistry(szRegistryCDICruise,&Temp);
-  EnableCDICruise = (Temp == 1);
-
-  Temp = 0;
-  GetFromRegistry(szRegistryCDICircling,&Temp);
-  EnableCDICircling = (Temp == 1);
-  */
-
-  Temp = 0;
-  GetFromRegistry(szRegistryAutoBlank,&Temp);
-  EnableAutoBlank = (Temp == 1);
 
   Temp = 1;
   GetFromRegistry(szRegistryAutoBacklight,&Temp); // VENTA4
@@ -884,15 +767,17 @@ void ReadRegistrySettings(void)
   EnableAutoSoundVolume = (Temp == 1);
 
   Temp = 0;
-  GetFromRegistry(szRegistryAircraftCategory,&Temp); // VENTA4
+  GetFromRegistry(szRegistryAircraftCategory,&Temp);
   AircraftCategory = Temp;
+  if (ISPARAGLIDER) {
+	AATEnabled=TRUE;
+  }
 
   Temp = 0;
   GetFromRegistry(szRegistryExtendedVisualGlide,&Temp); // VENTA4
   ExtendedVisualGlide = Temp;
 
-  // Do not allow LK8000 mode be disabled. Allow only temporary disabling, and permanent setting for normal/advanced
-  #if NEWPNAV
+  // Do not allow LK8000 mode be disabled. The reserved (0) mode is unused right now.
   if (ScreenLandscape) {
 	Temp = (Look8000_t)lxcAdvanced;  
 	GetFromRegistry(szRegistryLook8000,&Temp);
@@ -903,12 +788,6 @@ void ReadRegistrySettings(void)
 	if (Temp == 0) Temp = (Look8000_t)lxcStandard;
   }
   Look8000 = Temp;
-  #else
-  Temp = (Look8000_t)lxcAdvanced;  
-  GetFromRegistry(szRegistryLook8000,&Temp);
-  if (Temp == 0) Temp = (Look8000_t)lxcAdvanced;  // FIX 091020
-  Look8000 = Temp;
-  #endif
 
   // AltArriv registry disabled 
 #if (0)
@@ -917,14 +796,6 @@ void ReadRegistrySettings(void)
   AltArrivMode = Temp;
 #endif
 
-  // NewMap forced on, ignore registry setting
-#if (0)
-  Temp = 1; 
-  GetFromRegistry(szRegistryNewMap,&Temp); 
-  NewMap = Temp;
-#else
-  NewMap = 1; 
-#endif
   Temp = 1; 
   GetFromRegistry(szRegistryCheckSum,&Temp); 
   CheckSum = Temp;
@@ -935,11 +806,9 @@ void ReadRegistrySettings(void)
   Temp=1;
   GetFromRegistry(szRegistryPGClimbZoom,&Temp);
   PGClimbZoom=Temp;
-  #if AUTORIENT
   Temp=10;
   GetFromRegistry(szRegistryAutoOrientScale,&Temp);
   AutoOrientScale=Temp;
-  #endif
 
   Temp=12;
   GetFromRegistry(szRegistryPGOpenTimeH,&Temp);
@@ -961,7 +830,6 @@ void ReadRegistrySettings(void)
   PGCloseTime=PGOpenTime+(PGGateIntervalTime*PGNumberOfGates*60);
   if (PGCloseTime>86399) PGCloseTime=86399; // 23:59:59
 
-  #if LKTOPO
   Temp=9999;
   GetFromRegistry(szRegistryLKTopoZoomCat05,&Temp);
   LKTopoZoomCat05=Temp;
@@ -998,7 +866,6 @@ void ReadRegistrySettings(void)
   Temp=9999;
   GetFromRegistry(szRegistryLKTopoZoomCat110,&Temp);
   LKTopoZoomCat110=Temp;
-  #endif
 
   Temp=70;
   GetFromRegistry(szRegistryLKMaxLabels,&Temp);
@@ -1012,17 +879,17 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryPollingMode,&Temp);
   PollingMode = Temp;
 
-  #if NEWPNAV
   if (ScreenLandscape)
 	//Temp = (LKVarioBar_t)vBarVarioColor;
 	Temp = (LKVarioBar_t)vBarDisabled;
   else
 	Temp = (LKVarioBar_t)vBarDisabled;
-  #else
-  Temp = (LKVarioBar_t)vBarVarioColor;
-  #endif
   GetFromRegistry(szRegistryLKVarioBar,&Temp);
   LKVarioBar = Temp;
+
+  Temp = (LKVarioVal_t)vValVarioVario;
+  GetFromRegistry(szRegistryLKVarioVal,&Temp);
+  LKVarioVal = Temp;
 
   Temp = (OutlinedTp_t)otLandable;  // VENTA6
   GetFromRegistry(szRegistryOutlinedTp,&Temp); 
@@ -1048,8 +915,12 @@ void ReadRegistrySettings(void)
   Temp = 60; // black bottom bar by default
   GetFromRegistry(szRegistryBarOpacity,&Temp); 
   BarOpacity = Temp;
-  
-  Temp = 0; 
+
+  #ifdef PPC2002  
+  Temp = 1;  // AntiAliasing
+  #else
+  Temp = 0;  // ClearType Compatible
+  #endif
   GetFromRegistry(szRegistryFontRenderer,&Temp); 
   FontRenderer = Temp;
 
@@ -1072,7 +943,7 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryPressureHg,&Temp); 
   PressureHg = Temp;
 
-  #if 0
+  #if 0  // REMOVE
   Temp = 0;
   GetFromRegistry(szRegistryShortcutIbox,&Temp); 
   ShortcutIbox = Temp;
@@ -1113,17 +984,6 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryHideUnits,&Temp); 
   HideUnits = (Temp==1);
 
-  Temp=0; // 100724 OFF by default
-  GetFromRegistry(szRegistryVirtualKeys,&Temp); 
-  VirtualKeys = Temp;
-
-  if ( AircraftCategory == (AircraftCategory_t)umParaglider )
-  	Temp = 1;
-  else
-  	Temp = 0;
-  GetFromRegistry(szRegistryUseMapLock,&Temp); 
-  UseMapLock = (Temp==1);
-
   Temp = 0;
   GetFromRegistry(szRegistryActiveMap,&Temp); 
   ActiveMap = (Temp==1);
@@ -1144,16 +1004,11 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryTrackBar,&Temp); 
   TrackBar=Temp;
 
-  #if NEWPNAV
   if (ScreenLandscape)
 	//Temp = (GlideBarMode_t)gbFinish;
 	Temp = (GlideBarMode_t)gbDisabled;
   else
 	Temp = (GlideBarMode_t)gbDisabled;
-  #else
-  // For most of us flying cross country with long tasks, this is the correct settings.
-  Temp = (GlideBarMode_t)gbFinish;  // 100219
-  #endif
   GetFromRegistry(szRegistryGlideBarMode,&Temp); 
   GlideBarMode = Temp;
 
@@ -1179,32 +1034,11 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryBgMapColor,&Temp); 
   BgMapColor = Temp;
 
-  /*
-  Temp = 0;
-  GetFromRegistry(szRegistryVarioGauge,&Temp);
-  EnableVarioGauge = (Temp == 1);
-  */
-
   Temp = 250;
   GetFromRegistry(szRegistryDebounceTimeout, &Temp);
   debounceTimeout = Temp;
 
-  Temp = 100;
-  GetFromRegistry(szRegistryAccelerometerZero,&Temp);
-  AccelerometerZero = Temp;
-  if (AccelerometerZero==0.0) {
-    AccelerometerZero= 100.0;
-    Temp = 100;
-    SetToRegistry(szRegistryAccelerometerZero,Temp);
-  }
-
   // new appearance variables
-
-  //Temp = Appearance.IndFinalGlide;
-  Temp=(IndFinalGlide_t)fgFinalGlideDefault; // VNT9 default
-  GetFromRegistry(szRegistryAppIndFinalGlide, &Temp);
-  //Appearance.IndFinalGlide = (IndFinalGlide_t)Temp;
-  Appearance.IndFinalGlide = (IndFinalGlide_t)fgFinalGlideDefault; // VENTA9 FIX final glide bar mode set to default
 
   Temp = (IndLandable_t)wpLandableAltA;
   GetFromRegistry(szRegistryAppIndLandable, &Temp);
@@ -1214,46 +1048,15 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryAppInverseInfoBox, &Temp);
   Appearance.InverseInfoBox = (Temp != 0);
 
-  Temp = Appearance.GaugeVarioSpeedToFly;
-  GetFromRegistry(szRegistryAppGaugeVarioSpeedToFly, &Temp);
-  Appearance.GaugeVarioSpeedToFly = (Temp != 0);
-
-  Temp = Appearance.GaugeVarioAvgText;
-  GetFromRegistry(szRegistryAppGaugeVarioAvgText, &Temp);
-  Appearance.GaugeVarioAvgText = (Temp != 0);
-
-  Temp = Appearance.GaugeVarioMc;
-  GetFromRegistry(szRegistryAppGaugeVarioMc, &Temp);
-  Appearance.GaugeVarioMc = (Temp != 0);
-
-  Temp = Appearance.GaugeVarioBugs;
-  GetFromRegistry(szRegistryAppGaugeVarioBugs, &Temp);
-  Appearance.GaugeVarioBugs = (Temp != 0);
-
-  Temp = Appearance.GaugeVarioBallast;
-  GetFromRegistry(szRegistryAppGaugeVarioBallast, &Temp);
-  Appearance.GaugeVarioBallast = (Temp != 0);
-
-  Temp = Appearance.GaugeVarioGross;
-  GetFromRegistry(szRegistryAppGaugeVarioGross, &Temp);
-  Appearance.GaugeVarioGross = (Temp != 0);
-
-  Appearance.CompassAppearance = (CompassAppearance_t)apCompassAltA; // 091114 FIXED SMALL OUTLINED COMPASS
-  
-
-  //Temp = Appearance.InfoBoxBorder;
-  Temp=(InfoBoxBorderAppearance_t)apIbBox; // VNT9 default
-  GetFromRegistry(szRegistryAppInfoBoxBorder, &Temp);
-  Appearance.InfoBoxBorder = (InfoBoxBorderAppearance_t)Temp;
-
+ #if USEIBOX
 // VENTA2-ADDON Geometry change and PNA custom font settings
 // depending on infobox geometry and model type
 // I had to move here the font setting because I needed first to 
 // know the screen geometry, in the registry!
-#if defined(PNA) || defined(FIVV)
   Temp = Appearance.InfoBoxGeom;
   GetFromRegistry(szRegistryAppInfoBoxGeom, &Temp);
   Appearance.InfoBoxGeom = (InfoBoxGeomAppearance_t)Temp;
+ #endif // USEIBOX
 
   if (GlobalModelType == MODELTYPE_PNA_HP31X ) {
 			needclipping=true;
@@ -1295,42 +1098,10 @@ void ReadRegistrySettings(void)
   Temp = Appearance.InfoBoxModel;
   GetFromRegistry(szRegistryAppInfoBoxModel, &Temp);
   Appearance.InfoBoxModel = (InfoBoxModelAppearance_t)Temp;
-#endif
-
-  Temp = Appearance.StateMessageAlligne;
-  GetFromRegistry(szRegistryAppStatusMessageAlignment, &Temp);
-  Appearance.StateMessageAlligne = (StateMessageAlligne_t)Temp;
-
-  Temp = (TextInputStyle_t)tiKeyboard;
-  GetFromRegistry(szRegistryAppTextInputStyle, &Temp);
-  Appearance.TextInputStyle = (TextInputStyle_t)Temp;
 
   Temp = Appearance.DefaultMapWidth;
   GetFromRegistry(szRegistryAppDefaultMapWidth, &Temp);
   Appearance.DefaultMapWidth = Temp;
-
-  //Temp = Appearance.InfoBoxColors;
-  Temp=1; // true as default VNT9
-  GetFromRegistry(szRegistryAppInfoBoxColors, &Temp);
-  Appearance.InfoBoxColors = (Temp != 0);
-
-  Temp = Appearance.GaugeVarioAveNeedle;
-  GetFromRegistry(szRegistryAppAveNeedle, &Temp);
-  Appearance.GaugeVarioAveNeedle = (Temp != 0);
-
-  // StateMessageAlligne : center, topleft
-  // DefaultMapWidth: 206?
-  // CompassAppearance (north arrow)
-  // 
-  // DontShowLoggerIndicator
-  // FlightModeIcon
-  // DontShowAutoMacCready
-  // MapScale
-  // MapScale2
-  // BestCruiseTrack
-  // Aircraft
-  // IndFinalGlide
-  // IndLandable
 
   Temp = 1;
   GetFromRegistry(szRegistryAutoAdvance,&Temp);
@@ -1343,10 +1114,6 @@ void ReadRegistrySettings(void)
   Temp = WaypointsOutOfRange;
   GetFromRegistry(szRegistryWaypointsOutOfRange,&Temp);
   WaypointsOutOfRange = Temp;
-
-  Temp = OLCRules;
-  GetFromRegistry(szRegistryOLCRules,&Temp);
-  OLCRules = Temp;
 
   Temp = EnableFAIFinishHeight;
   GetFromRegistry(szRegistryFAIFinishHeight,&Temp);
@@ -1368,16 +1135,8 @@ void ReadRegistrySettings(void)
   }
 
   Temp = 0;
-  GetFromRegistry(szRegistryBlockSTF,&Temp);
-  EnableBlockSTF = (Temp == 1);
-
-  Temp = 0;
   GetFromRegistry(szRegistryAutoZoom,&Temp);
-#ifndef MAP_ZOOM
-  MapWindow::AutoZoom = (Temp == 1);
-#else /* MAP_ZOOM */
   MapWindow::zoom.AutoZoom(Temp == 1);
-#endif /* MAP_ZOOM */
 
   Temp = MenuTimeoutMax;
   GetFromRegistry(szRegistryMenuTimeout,&Temp);
@@ -1395,12 +1154,6 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryEnableFLARMMap,&Temp);
   EnableFLARMMap = Temp;
 
-  #ifndef NOFLARMGAUGE
-  Temp = EnableFLARMGauge;
-  GetFromRegistry(szRegistryEnableFLARMGauge,&Temp);
-  EnableFLARMGauge = false;
-  #endif
-
   Temp = TerrainContrast;
   GetFromRegistry(szRegistryTerrainContrast,&Temp);
   TerrainContrast = (short)Temp;
@@ -1416,9 +1169,7 @@ void ReadRegistrySettings(void)
   Temp = MapWindow::GliderScreenPosition;
   GetFromRegistry(szRegistryGliderScreenPosition,&Temp);
   MapWindow::GliderScreenPosition = (int)Temp;
-  #ifdef NEWMOVEICON
   MapWindow::GliderScreenPositionY = MapWindow::GliderScreenPosition;
-  #endif
 
 
   Temp = BallastSecsToEmpty;
@@ -1439,40 +1190,17 @@ void ReadRegistrySettings(void)
   UseCustomFonts = (Temp == 0 ? 0 : 1);
   SetToRegistry(szRegistryUseCustomFonts, UseCustomFonts);  
 
+  Temp = AlarmMaxAltitude1;
+  GetFromRegistry(szRegistryAlarmMaxAltitude1,&Temp);
+  AlarmMaxAltitude1 = Temp; // saved *1000, /1000 when used
 
-#ifdef VEGAVOICE
-  Temp = EnableVoiceClimbRate; 
-  GetFromRegistry(szRegistryVoiceClimbRate,&Temp);
-  EnableVoiceClimbRate = (Temp!=0);
+  Temp = AlarmMaxAltitude2;
+  GetFromRegistry(szRegistryAlarmMaxAltitude2,&Temp);
+  AlarmMaxAltitude2 = Temp; // saved *1000, /1000 when used
 
-  Temp = EnableVoiceTerrain; 
-  GetFromRegistry(szRegistryVoiceTerrain,&Temp);
-  EnableVoiceTerrain = (Temp!=0);
-
-  Temp = EnableVoiceWaypointDistance; 
-  GetFromRegistry(szRegistryVoiceWaypointDistance,&Temp);
-  EnableVoiceWaypointDistance = (Temp!=0);
-
-  Temp = EnableVoiceTaskAltitudeDifference; 
-  GetFromRegistry(szRegistryVoiceTaskAltitudeDifference,&Temp);
-  EnableVoiceTaskAltitudeDifference = (Temp!=0);
-
-  Temp = EnableVoiceMacCready; 
-  GetFromRegistry(szRegistryVoiceMacCready,&Temp);
-  EnableVoiceMacCready = (Temp!=0);
-
-  Temp = EnableVoiceNewWaypoint; 
-  GetFromRegistry(szRegistryVoiceNewWaypoint,&Temp);
-  EnableVoiceNewWaypoint = (Temp!=0);
-
-  Temp = EnableVoiceInSector; 
-  GetFromRegistry(szRegistryVoiceInSector,&Temp);
-  EnableVoiceInSector = (Temp!=0);
-
-  Temp = EnableVoiceAirspace; 
-  GetFromRegistry(szRegistryVoiceAirspace,&Temp);
-  EnableVoiceAirspace = (Temp!=0);
-#endif
+  Temp = AlarmMaxAltitude3;
+  GetFromRegistry(szRegistryAlarmMaxAltitude3,&Temp);
+  AlarmMaxAltitude3 = Temp; // saved *1000, /1000 when used
 
   Temp = FinishMinHeight;
   GetFromRegistry(szRegistryFinishMinHeight,&Temp);
@@ -1504,11 +1232,9 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryEnableNavBaroAltitude,&Temp);
   EnableNavBaroAltitude = (Temp!=0);
 
-  #if ORBITER
   Temp = 1;
   GetFromRegistry(szRegistryOrbiter,&Temp);
   Orbiter = (Temp!=0);
-  #endif
   Temp = 1;
   GetFromRegistry(szRegistryShading,&Temp);
   Shading = Temp;
@@ -1516,6 +1242,71 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryOverlayClock,&Temp);
   OverlayClock = Temp;
 
+  // default BB and IP is all ON
+  Temp = 1;
+  GetFromRegistry(szRegistryConfBB1,&Temp);
+  ConfBB1 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfBB2,&Temp);
+  ConfBB2 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfBB3,&Temp);
+  ConfBB3 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfBB4,&Temp);
+  ConfBB4 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfBB5,&Temp);
+  ConfBB5 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfBB6,&Temp);
+  ConfBB6 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfBB7,&Temp);
+  ConfBB7 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfBB8,&Temp);
+  ConfBB8 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfBB9,&Temp);
+  ConfBB9 = Temp;
+
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP11,&Temp);
+  ConfIP11 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP12,&Temp);
+  ConfIP12 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP13,&Temp);
+  ConfIP13 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP14,&Temp);
+  ConfIP14 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP15,&Temp);
+  ConfIP15 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP16,&Temp);
+  ConfIP16 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP21,&Temp);
+  ConfIP21 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP22,&Temp);
+  ConfIP22 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP23,&Temp);
+  ConfIP23 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP24,&Temp);
+  ConfIP24 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP31,&Temp);
+  ConfIP31 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP32,&Temp);
+  ConfIP32 = Temp;
 
   Temp = LoggerTimeStepCruise;
   GetFromRegistry(szRegistryLoggerTimeStepCruise,&Temp);
@@ -1525,26 +1316,9 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryLoggerTimeStepCircling,&Temp);
   LoggerTimeStepCircling = Temp;
 
-  Temp = GlidePolar::AbortSafetyUseCurrent;
-  GetFromRegistry(szRegistryAbortSafetyUseCurrent, &Temp);
-  GlidePolar::AbortSafetyUseCurrent = (Temp != 0);
-
   Temp = iround(GlidePolar::SafetyMacCready*10);
   GetFromRegistry(szRegistrySafetyMacCready,&Temp);
   GlidePolar::SafetyMacCready = Temp/10.0;
-
-  Temp  = UserLevel;
-  GetFromRegistry(szRegistryUserLevel,&Temp);
-  UserLevel = Temp;
-
-  Temp  = iround(GlidePolar::RiskGamma*10);
-  GetFromRegistry(szRegistryRiskGamma,&Temp);
-  GlidePolar::RiskGamma = Temp/10.0;
-
-  //Temp = MapWindow::WindArrowStyle;
-  Temp=(CompassAppearance_t)apCompassAltA; // VNT9 default
-  GetFromRegistry(szRegistryWindArrowStyle,&Temp);
-  MapWindow::WindArrowStyle = Temp;
 
   Temp = DisableAutoLogger;
   GetFromRegistry(szRegistryDisableAutoLogger,&Temp);
@@ -1552,6 +1326,13 @@ void ReadRegistrySettings(void)
     DisableAutoLogger = true;
   else 
     DisableAutoLogger = false;
+
+  LKalarms[0].triggervalue=(int)AlarmMaxAltitude1/1000;
+  LKalarms[1].triggervalue=(int)AlarmMaxAltitude2/1000;
+  LKalarms[2].triggervalue=(int)AlarmMaxAltitude3/1000;
+  UpdateConfBB();
+  UpdateConfIP();
+
 }
 
 //
@@ -2073,128 +1854,6 @@ double DoubleDistance(double lat1, double lon1, double lat2, double lon2,
 }
 
 
-
-/*
-double Distance(double lat1, double lon1, double lat2, double lon2)
-{
-    R = earth's radius = 6371000
-    dlat = lat2-lat1;
-    dlon = long2-long1
-    a= sin^2(dlat/2)+cos(lat1)*cos(lat2)*sin^2(dlong/2)
-    c= 2*atan2(sqrt(a),sqrt(1.0-a));
-    d = R.c
-
-  lat1 *= DEG_TO_RAD;
-  lat2 *= DEG_TO_RAD;
-  lon1 *= DEG_TO_RAD;
-  lon2 *= DEG_TO_RAD;
-
-  double dlat = lat2-lat1;
-  double dlon = lon2-lon1;
-  double s1 = sin(dlat/2);
-  double s2 = sin(dlon/2);
-  double a= s1*s1+cos(lat1)*cos(lat2)*s2*s2;
-  double c= 2.0*atan2(sqrt(a),sqrt(1.0-a));
-  return 6371000.0*c;
-
-  // Old code... broken
-  double distance, dTmp;
-
-  dTmp =  sin(lat1)*sin(lat2) +
-			cos(lat1)*cos(lat2) * cos(lon1-lon2);
-
-  if (dTmp > 1.0)         // be shure we dont call acos with
-    distance = 0;         // values greater than 1 (like 1.0000000000001)
-  else
-    distance = (double)acos(dTmp) * (double)(RAD_TO_DEG * 111194.9267);
-  return (double)(distance);
-}
-  */
-
-/*
-double Bearing(double lat1, double lon1, double lat2, double lon2)
-{
-//    theta = atan2(sin(dlong)*cos(lat2),
-  //    cos(lat1)*sin(lat2)-sin(lat1)*cos(lat2)*cos(dlong));
-
-  lat1 *= DEG_TO_RAD;
-  lat2 *= DEG_TO_RAD;
-  lon1 *= DEG_TO_RAD;
-  lon2 *= DEG_TO_RAD;
-
-  double clat1 = cos(lat1);
-  double clat2 = cos(lat2);
-  double slat1 = sin(lat1);
-  double slat2 = sin(lat2);
-  double dlat = lat2-lat1;
-  double dlon = lon2-lon1;
-
-  double theta = 
-    atan2(sin(dlon)*clat2,
-          clat1*slat2-slat1*clat2*cos(dlon))*RAD_TO_DEG;
-  while (theta>360.0) {
-    theta-= 360.0;
-  }
-  while (theta<0.0) {
-    theta+= 360.0;
-  }
-  return theta;
-
-  // old code
-  #ifdef HAVEEXCEPTIONS
-  __try{
-  #endif
-
-  double angle;
-  double d;
-
-  d = (slat1*slat2 +  clat1*clat2 * cos(lon1-lon2) );
-  if(d>1) d = 0.99999999999999;
-  if(d<-1) d = -0.99999999999999;
-  d = acos(d);
-
-  if(sin(lon1-lon2)<0 )
-    {
-      angle = (((slat2-slat1)
-		* cos(d) ) / (sin(d)*clat1));
-
-      if(angle >1) angle = 1;
-      if(angle<-1) angle = -1;
-      angle = acos(angle);
-
-      // JMW Redundant code?
-      //if(lat1>lat2)
-//	angle = angle * (180/pi);
-  //    else
-	//angle = angle * (180/pi);
-      //
-      angle *= RAD_TO_DEG;
-    }
-  else
-    {
-      if (d != 0 && clat1 != 0){
-        angle=(( (slat2-slat1)
-          * cos(d) ) / (sin(d)*clat1));
-        if(angle >1) angle = 1;
-        if(angle<-1) angle = -1;
-        angle = acos(angle);
-      } else
-        angle = 0;
-
-      angle = 360 - (angle * RAD_TO_DEG);
-    }
-  #ifdef HAVEEXCEPTIONS
-  }__except(EXCEPTION_EXECUTE_HANDLER ){
-    return(0);
-  }
-  #endif
-
-  return (double)angle;
-  
-}
-*/
-
-
 double Reciprocal(double InBound)
 {
   return AngleLimit360(InBound+180);
@@ -2394,6 +2053,9 @@ bool ReadWinPilotPolar(void) {
   __try{
 #endif
 
+    // LS3 values, overwritten by loaded values
+    // *LS-3  WinPilot POLAR file: MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3
+    // 403, 101, 115.03, -0.86, 174.04, -1.76, 212.72,	-3.4
     ww[0]= 403.0; // 383
     ww[1]= 101.0; // 121
     POLARV[0]= 115.03;
@@ -2404,21 +2066,20 @@ bool ReadWinPilotPolar(void) {
     POLARW[2]= -3.4;
 
     GetRegistryString(szRegistryPolarFile, szFile, MAX_PATH);
-    ExpandLocalPath(szFile);
+    if (_tcscmp(szFile,_T(""))==0) {
+	StartupStore(_T("... Empty polar file, using Default%s"),NEWLINE);
+	wcscpy(szFile,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
+    }
 
-    #ifndef HAVEEXCEPTIONS
-    SetRegistryString(szRegistryPolarFile, TEXT("\0"));
-    #endif
+    ExpandLocalPath(szFile);
+    StartupStore(_T(". Loading polar file <%s>%s"),szFile,NEWLINE);
 
     hFile = CreateFile(szFile,GENERIC_READ,0,(LPSECURITY_ATTRIBUTES)NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
 
     if (hFile != INVALID_HANDLE_VALUE ){
-
 #ifdef HAVEEXCEPTIONS
       __try{
 #endif
-      int *p=NULL; // test, force an exception
-      p=0;
 
         while(ReadString(hFile,READLINE_LENGTH,TempString) && (!foundline)){
 
@@ -2450,22 +2111,65 @@ bool ReadWinPilotPolar(void) {
 
 		_stprintf(ctemp,_T(""));
               	PExtractParameter(TempString, ctemp, 8);
-#if 100201
 		if ( _tcscmp(ctemp,_T("")) != 0) {
               		GlidePolar::WingArea = StrToDouble(ctemp,NULL);
-			StartupStore(_T(". Winpilot custom polar has special wing area=%f\n"),GlidePolar::WingArea);
-		} else
+			// StartupStore(_T(". Polar file has wing area=%f%s"),GlidePolar::WingArea,NEWLINE);
+		} else {
 	      		GlidePolar::WingArea = 0.0;
-#endif
+			StartupStore(_T("... WARNING Polar file has NO wing area%s"),NEWLINE);
+		}
 		
               PolarWinPilot2XCSoar(POLARV, POLARW, ww);
-#if 0
-	      GlidePolar::WingArea = 0.0;
-#endif
 
               foundline = true;
             }
         }
+
+	int i;
+
+	// Reset flaps values after loading a new polar, and init FlapsPos for the first time
+	for (i=0; i<MAX_FLAPS; i++) {
+		GlidePolar::FlapsPos[i]=0.0;
+		wcscpy(GlidePolar::FlapsName[i],_T("???"));
+	}
+	GlidePolar::FlapsPosCount=0;
+	GlidePolar::FlapsMass=0.0;
+
+	// Unless we check valid string, even with empty string currentFlapsPos will be positive,
+	// and thus force Flaps calculations even with no extended polar.
+	// Let's allow empty lines and comments in the polar file, before the flaps line is found.
+	// 
+	do {
+	   if (_tcslen(TempString) <10) continue;
+	   if(_tcsstr(TempString,TEXT("*")) == TempString) continue;
+    	   // try to read flaps configuration line
+     	   PExtractParameter(TempString, ctemp, 0);
+     	   GlidePolar::FlapsMass = StrToDouble(ctemp,NULL);
+     	   PExtractParameter(TempString, ctemp, 1);
+     	   int flapsCount = (int) StrToDouble(ctemp,NULL);
+
+     	   // int currentFlapsPos = 0;
+     	   // GlidePolar::FlapsPos[currentFlapsPos][0] = 0.0;  // no need, already initialised
+
+     	   int currentFlapsPos=1;
+     	   for (i=2; i <= flapsCount*2; i=i+2) {
+	        PExtractParameter(TempString, ctemp, i);
+	        GlidePolar::FlapsPos[currentFlapsPos] = StrToDouble(ctemp,NULL);	
+	        PExtractParameter(TempString, ctemp, i+1);
+		ctemp[MAXFLAPSNAME]='\0';
+		if (ctemp[_tcslen(ctemp)-1]=='\r' || ctemp[_tcslen(ctemp)-1]=='\n')
+			ctemp[_tcslen(ctemp)-1]='\0'; // remove trailing cr
+		wcscpy(GlidePolar::FlapsName[currentFlapsPos],ctemp);
+		if (currentFlapsPos >= (MAX_FLAPS-1)) break; // safe check
+	        currentFlapsPos++;
+       	   }
+	   wcscpy(GlidePolar::FlapsName[0],GlidePolar::FlapsName[1]);
+           GlidePolar::FlapsPos[currentFlapsPos] = SPEEDMODIFY*MAXSPEED;
+           wcscpy(GlidePolar::FlapsName[currentFlapsPos],ctemp);
+           currentFlapsPos++;
+           GlidePolar::FlapsPosCount = currentFlapsPos; 
+	   break;
+	} while(ReadString(hFile,READLINE_LENGTH,TempString));
 
         // file was OK, so save it
         if (foundline) {
@@ -2478,6 +2182,9 @@ bool ReadWinPilotPolar(void) {
       {
         CloseHandle (hFile);
       }
+    } 
+    else {
+	StartupStore(_T("... Polar file <%s> not found!%s"),szFile,NEWLINE);
     }
 #ifdef HAVEEXCEPTIONS
   }__except(EXCEPTION_EXECUTE_HANDLER){
@@ -2488,8 +2195,6 @@ bool ReadWinPilotPolar(void) {
 
 }
 
-// *LS-3	WinPilot POLAR file: MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3
-// 403, 101, 115.03, -0.86, 174.04, -1.76, 212.72,	-3.4
 
 
 typedef double PolarCoefficients_t[3];
@@ -2499,79 +2204,27 @@ typedef double WeightCoefficients_t[3];
 void CalculateNewPolarCoef(void)
 {
 
-  StartupStore(TEXT(". Calculate New Polar Coef%s"),NEWLINE);
-
-  static PolarCoefficients_t Polars[7] =
-    {
-      {-0.0538770500225782443497, 0.1323114348, -0.1273364037098239098543},
-      {-0.0532456270195884696748, 0.1509454717, -0.1474304674787072275183},
-      {-0.0598306909918491529791, 0.1896480967, -0.1883344146619101871894},
-      {-0.0303118230885946660507, 0.0771466019, -0.0799469636558217515699},
-      {-0.0222929913566948641563, 0.0318771616, -0.0307925896846546928318},
-      {-0.0430828898445299480353, 0.0746938776, -0.0487285153053357557183},
-      {0.0, 0.0, 0.0}
-
-    };
-
-
-  /* Weights:
-     0 Pilot Weight?
-     1 Glider Weight
-     2 BallastWeight
-  */
-
-  static WeightCoefficients_t Weights[7] = { {70,190,1},
-                                             {70,250,100},
-                                             {70,240,285},
-                                             {70,287,165},  // w ok!
-                                             {70,400,120},  //
-                                             {70,527,303},
-                                             {0,0,0}
-  };
-  static double WingAreas[7] = { 
-    12.4,  // Ka6
-    11.0,  // ASW19
-    10.5,  // LS8
-    9.0,   // ASW27
-    11.4,  // LS6C-18
-    16.31, // ASW22
-    0};
-  int i;
-
-  ASSERT(sizeof(Polars)/sizeof(Polars[0]) == sizeof(Weights)/sizeof(Weights[0]));
+  // StartupStore(TEXT(". Calculate New Polar Coef%s"),NEWLINE);
 
   GlidePolar::WeightOffset=0; // 100131 
 
-  if (POLARID < (int)(sizeof(Polars)/sizeof(Polars[0])) ){ // 100207 fixed (int)
-    for(i=0;i<3;i++){
-      POLAR[i] = Polars[POLARID][i];
-      WEIGHTS[i] = Weights[POLARID][i];
-    }
-    GlidePolar::WingArea = WingAreas[POLARID];
-  }
-  if (POLARID==POLARUSEWINPILOTFILE) {
-    if (ReadWinPilotPolar())
-    // polar data gets from winpilot file
-      return;
-  } else if (POLARID>POLARUSEWINPILOTFILE){
-    if (ReadWinPilotPolarInternal(POLARID-7))
-      // polar data get from build in table
-      return;
-  } else if (POLARID<POLARUSEWINPILOTFILE){
-    // polar data get from historical table
-    return;
-  }
+  // Load polar file
+  if (ReadWinPilotPolar()) return;
 
-  // ups
-  // error reading winpilot file
+  // Polar File error, we load a Ka6 just to be safe
 
-  POLARID = 2;              // do it again with default polar (LS8)
+  POLAR[0]=-0.0538770500225782443497;
+  POLAR[1]=0.1323114348;
+  POLAR[2]=-0.1273364037098239098543;
+  WEIGHTS[0]=70;
+  WEIGHTS[1]=190;
+  WEIGHTS[2]=1;
+  GlidePolar::WingArea = 12.4;
 
-  CalculateNewPolarCoef();
+  // Probably called from wrong thread - check
   MessageBoxX(NULL, 
-              gettext(TEXT("_@M920_")), // Error loading Polar file!\r\nUse LS8 Polar.
-	// LKTOKEN  _@M791_ = "Warning" 
-              gettext(TEXT("_@M791_")),
+              gettext(TEXT("_@M920_")), // Error loading Polar file!
+              gettext(TEXT("_@M791_")), // Warning
               MB_OK|MB_ICONERROR);
 
 }
@@ -2889,43 +2542,6 @@ int DrawArc(HDC hdc, long x, long y, int radius, RECT rc,
   return TRUE;
 }
 
-
-void ConvertFlightLevels(void)
-{
-  unsigned i;
-
-  // TODO accuracy: Convert flightlevels is inaccurate!
-
-  for(i=0;i<NumberOfAirspaceCircles;i++)
-    {
-      if(AirspaceCircle[i].Base.FL  != 0)
-	{
-	  AirspaceCircle[i].Base.Altitude = (AirspaceCircle[i].Base.FL * 100) + ((QNH-1013)*30);
-	  AirspaceCircle[i].Base.Altitude = AirspaceCircle[i].Base.Altitude / TOFEET;
-	}
-      if(AirspaceCircle[i].Top.FL  != 0)
-	{
-	  AirspaceCircle[i].Top.Altitude = (AirspaceCircle[i].Top.FL * 100) + ((QNH-1013)*30);
-	  AirspaceCircle[i].Top.Altitude = AirspaceCircle[i].Top.Altitude / TOFEET;
-	}
-    }
-
-
-  for(i=0;i<NumberOfAirspaceAreas;i++)
-    {
-      if(AirspaceArea[i].Base.FL  != 0)
-	{
-	  AirspaceArea[i].Base.Altitude = (AirspaceArea[i].Base.FL * 100) + ((QNH-1013)*30);
-	  AirspaceArea[i].Base.Altitude = AirspaceArea[i].Base.Altitude / TOFEET;
-	}
-      if(AirspaceArea[i].Top.FL  != 0)
-	{
-	  AirspaceArea[i].Top.Altitude = (AirspaceArea[i].Top.FL * 100) + ((QNH-1013)*30);
-	  AirspaceArea[i].Top.Altitude = AirspaceArea[i].Top.Altitude / TOFEET;
-	}
-    }
-}
-
 BOOL PolygonVisible(const POINT *lpPoints, int nCount, RECT rc)
 {
   BOOL Sector[9] = {FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE};
@@ -3093,14 +2709,6 @@ void ReadAssetNumber(void)
       return;
     }
 
-  ReadCompaqID();
-  if(strAssetNumber[0] != '\0')
-    {
-      StartupStore(strAssetNumber);
-      StartupStore(TEXT(" (compaq)%s"),NEWLINE);
-      return;
-    }
-  
   ReadUUID();
   if(strAssetNumber[0] != '\0')
     {
@@ -3117,31 +2725,6 @@ void ReadAssetNumber(void)
   StartupStore(TEXT(" (fallback)%s"),NEWLINE);
   
   return;
-}
-
-void ReadCompaqID(void)
-{
-  PROCESS_INFORMATION pi;
-  HANDLE hInFile;// = INVALID_HANDLE_VALUE;
-  DWORD dwBytesRead;
-
-  if(strAssetNumber[0] != '\0')
-    {
-      return;
-    }
-
-  CreateProcess(TEXT("\\windows\\CreateAssetFile.exe"), NULL, NULL, NULL, FALSE, 0, NULL, NULL, NULL, &pi);
-
-  hInFile = CreateFile(TEXT("\\windows\\cpqAssetData.dat"), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
-  if (hInFile == INVALID_HANDLE_VALUE)
-    {
-      //	    MessageBox(hWnd, TEXT("Unable to open asset data file."), TEXT("Error!"), MB_OK);
-      return;
-    }
-  SetFilePointer(hInFile, 976, NULL, FILE_BEGIN);
-  memset(strAssetNumber, 0, 64 * sizeof(TCHAR));
-  ReadFile(hInFile, &strAssetNumber, 64, &dwBytesRead, (OVERLAPPED *)NULL);
-  CloseHandle(hInFile);
 }
 
 
@@ -3235,79 +2818,6 @@ void ReadUUID(void)
 #endif
   return;
 }
-
-
-#if 0
-void ReadUUIDold(void)
-{
-#ifndef __MINGW32__
-  BOOL fRes;
-  DWORD dwBytesReturned =0;
-  DEVICE_ID DevID;
-  int wSize;
-  int i;
-
-  GUID Guid;
-
-  unsigned long temp, Asset;
-
-  memset(&Guid, 0, sizeof(GUID));
-
-  memset(&DevID, 0, sizeof(DEVICE_ID));
-  DevID.dwSize = sizeof(DEVICE_ID);
-
-  fRes = KernelIoControl( IOCTL_HAL_GET_DEVICEID, NULL, 0,
-			  &DevID, sizeof( DEVICE_ID ), &dwBytesReturned );
-
-  wSize = DevID.dwSize;
-
-  if( (FALSE != fRes) || (ERROR_INSUFFICIENT_BUFFER != GetLastError()))
-    return;
-
-  memset(&DevID, 0, sizeof(wSize));
-  DevID.dwSize = wSize;
-
-  fRes = KernelIoControl( IOCTL_HAL_GET_DEVICEID, NULL, 0,
-			  &DevID, wSize, &dwBytesReturned );
-
-  if((FALSE == fRes) || (ERROR_INSUFFICIENT_BUFFER == GetLastError()) )
-    return;
-
-  BYTE* pDat = (BYTE*)&Guid.Data1;
-  BYTE* pSrc = (BYTE*)(&DevID) + DevID.dwPresetIDOffset;
-  memcpy(pDat, pSrc, DevID.dwPresetIDBytes);
-  pDat +=  DevID.dwPresetIDBytes;
-  pSrc =  (BYTE*)(&DevID) + DevID.dwPlatformIDOffset;
-  memcpy(pDat, pSrc, DevID.dwPlatformIDBytes);
-
-  temp = Guid.Data2; temp = temp << 16;
-  temp += Guid.Data3 ;
-
-  Asset = temp ^ Guid.Data1 ;
-
-  temp = 0;
-  for(i=0;i<4;i++)
-    {
-      temp = temp << 8;
-      temp += Guid.Data4[i];
-    }
-
-  Asset = Asset ^ temp;
-
-  temp = 0;
-  for(i=0;i<4;i++)
-    {
-      temp = temp << 8;
-      temp += Guid.Data4[i+4];
-    }
-
-  Asset = Asset ^ temp;
-
-  _stprintf(strAssetNumber,TEXT("%08X%08X"),Asset,Guid.Data1 );
-  return;
-#endif
-}
-#endif
 
 void WriteFileRegistryString(HANDLE hFile, TCHAR *instring) {
     int len;
@@ -3414,6 +2924,8 @@ void FormatWarningString(int Type, TCHAR *Name , AIRSPACE_ALT Base, AIRSPACE_ALT
     case WAVE:				
 	// LKTOKEN  _@M794_ = "Wave" 
       _tcscpy(szTitleBuffer,gettext(TEXT("_@M794_"))); break;
+    case CLASSTMZ:            
+      _tcscpy(szTitleBuffer,TEXT("TMZ")); break;
     default:					
 	// LKTOKEN  _@M765_ = "Unknown" 
       _tcscpy(szTitleBuffer,gettext(TEXT("_@M765_")));
@@ -3630,7 +3142,10 @@ void InitSineTable(void)
     }
 }
 
-
+/*
+ * WARNING: if you are using Stop pointer, remember that you MUST set it equal to *Source before
+   calling this function, because in case of null result, it will not be set!!
+ */
 double StrToDouble(TCHAR *Source, TCHAR **Stop)
 {
   int index = 0;
@@ -3649,7 +3164,8 @@ double StrToDouble(TCHAR *Source, TCHAR **Stop)
       index ++;
     }
   if (index>= StringLength) {
-    return 0.0; // error!
+	// WARNING> we are not setting Stop here!!
+    return 0.0; // Set 0.0 as error, probably not the best thing to do. TOFIX 110307
   }
   if (Source[index]=='-') {
     neg=1;
@@ -3745,15 +3261,6 @@ double HexStrToDouble(TCHAR *Source, TCHAR **Stop)
 }
 
 
-void SaveSoundSettings()
-{
-  SetToRegistry(szRegistrySoundVolume, (DWORD)SoundVolume);
-  SetToRegistry(szRegistrySoundDeadband, (DWORD)SoundDeadband);
-  SetToRegistry(szRegistrySoundAudioVario, EnableSoundVario);
-  SetToRegistry(szRegistrySoundTask, EnableSoundTask);
-  SetToRegistry(szRegistrySoundModes, EnableSoundModes);
-}
-
 #ifndef NOWINDREGISTRY
 void SaveWindToRegistry() {
   DWORD Temp;
@@ -3785,18 +3292,13 @@ void ReadDeviceSettings(const int devIdx, TCHAR *Name){
 
   if (devIdx == 0){
     GetRegistryString(szRegistryDeviceA , Name, DEVNAMESIZE);
-    return;
   }
 
   if (devIdx == 1){
     GetRegistryString(szRegistryDeviceB , Name, DEVNAMESIZE);
-    return;
   }
-
-  if (devIdx == 2){
-    GetRegistryString(szRegistryDeviceC , Name, DEVNAMESIZE);
+    if (_tcslen(Name)==0) _tcscpy(Name,_T(DEV_DISABLED_NAME));
     return;
-  }
 
 }
 
@@ -4211,24 +3713,24 @@ static bool LoadRegistryFromFile_inner(const TCHAR *szFile, bool wide=true)
     } else {
       while (fgets(inval, nMaxValueValueSize, fp)) {
         if (sscanf(inval, "%[^#=\r\n ]=\"%[^\r\n\"]\"[\r\n]", name, value) == 2) {
-	  if (strlen(name)>0) {
-	    mbstowcs(wname, name, strlen(name)+1);
-	    mbstowcs(wvalue, value, strlen(value)+1);
-	    SetRegistryString(wname, wvalue);
-	    found = true;
-	  }
+          if (strlen(name)>0) {
+            utf2unicode(name, wname, nMaxValueValueSize);
+            utf2unicode(value, wvalue, nMaxValueValueSize);
+            SetRegistryString(wname, wvalue);
+            found = true;
+          }
         } else if (sscanf(inval, "%[^#=\r\n ]=%d[\r\n]", name, &j) == 2) {
-	  if (strlen(name)>0) {
-	    mbstowcs(wname, name, strlen(name)+1);
-	    SetToRegistry(wname, j);
-	    found = true;
-	  }
+          if (strlen(name)>0) {
+            utf2unicode(name, wname, nMaxValueValueSize);
+            SetToRegistry(wname, j);
+            found = true;
+          }
         } else if (sscanf(inval, "%[^#=\r\n ]=\"\"[\r\n]", name) == 1) {
-	  if (strlen(name)>0) {
-	    mbstowcs(wname, name, strlen(name)+1);
-	    SetRegistryString(wname, TEXT(""));
-	    found = true;
-	  }
+          if (strlen(name)>0) {
+            utf2unicode(name, wname, nMaxValueValueSize);
+            SetRegistryString(wname, TEXT(""));
+            found = true;
+          }
         } else {
 	  //		ASSERT(false);	// Invalid line reached
         }
@@ -4258,6 +3760,7 @@ void SaveRegistryToFile(const TCHAR *szFile)
   TCHAR lpstrName[nMaxKeyNameSize+1];
 //  char sName[nMaxKeyNameSize+1];
 //  char sValue[nMaxValueValueSize+1];
+  
   //  TCHAR lpstrClass[nMaxClassSize+1];
 #ifdef __MINGW32__
   union {
@@ -4325,34 +3828,37 @@ void SaveRegistryToFile(const TCHAR *szFile)
       } else
       // XXX SCOTT - Check that the output data (lpstrName and pValue) do not contain \r or \n
       if (nType==1) { // text
-	if (nValueSize>0) {
+        if (nValueSize>0) {
 #ifdef __MINGW32__
-	  uValue.pValue[nValueSize]= 0; // null terminate, just in case
-	  uValue.pValue[nValueSize+1]= 0; // null terminate, just in case
-	  if (_tcslen((TCHAR*)uValue.pValue)>0) {
-	    fprintf(fp,"%S=\"%S\"\r\n", lpstrName, (wchar_t *) uValue.pValue); // 100228 FIX
-	  } else {
-	    fprintf(fp,"%S=\"\"\r\n", lpstrName);
-	  }
+          if (_tcslen((TCHAR*)uValue.pValue)>0) {
+            char sValue[nMaxValueValueSize+1];
+            
+            uValue.pValue[nValueSize]= 0; // null terminate, just in case
+            uValue.pValue[nValueSize+1]= 0; // null terminate, just in case
+            unicode2utf((TCHAR*) uValue.pValue, sValue, sizeof(sValue));
+            fprintf(fp,"%S=\"%s\"\r\n", lpstrName, sValue);
+          } else {
+            fprintf(fp,"%S=\"\"\r\n", lpstrName);
+          }
 #else
-	  if (_tcslen((TCHAR*)pValue)>0) {
-	    pValue[nValueSize]= 0; // null terminate, just in case
-	    pValue[nValueSize+1]= 0; // null terminate, just in case
-	    wcstombs(sName,lpstrName,nMaxKeyNameSize+1);
-	    wcstombs(sValue,(TCHAR*)pValue,nMaxKeyNameSize+1);
-	    fprintf(fp,"%s=\"%s\"\r\n", sName, sValue);
-	  } else {
-	    wcstombs(sName,lpstrName,nMaxKeyNameSize+1);
-	    fprintf(fp,"%s=\"\"\r\n", sName);
-	  }
+          if (_tcslen((TCHAR*)pValue)>0) {
+            pValue[nValueSize]= 0; // null terminate, just in case
+            pValue[nValueSize+1]= 0; // null terminate, just in case
+            wcstombs(sName,lpstrName,nMaxKeyNameSize+1);
+            wcstombs(sValue,(TCHAR*)pValue,nMaxKeyNameSize+1);
+            fprintf(fp,"%s=\"%s\"\r\n", sName, sValue);
+          } else {
+            wcstombs(sName,lpstrName,nMaxKeyNameSize+1);
+            fprintf(fp,"%s=\"\"\r\n", sName);
+          }
 #endif
-	} else {
+        } else {
 #ifdef __MINGW32__
-	  fprintf(fp,"%S=\"\"\r\n", lpstrName);
+          fprintf(fp,"%S=\"\"\r\n", lpstrName);
 #else
-	  fprintf(fp,"%s=\"\"\r\n", lpstrName);
+          fprintf(fp,"%s=\"\"\r\n", lpstrName);
 #endif
-	}
+        }
       }
     }
 
@@ -4376,7 +3882,7 @@ TCHAR* StringMallocParse(TCHAR* old_string) {
   TCHAR* new_string;
   unsigned int used = 0;
   unsigned int i;
-  for (i = 0; i < wcslen(old_string); i++) {
+  for (i = 0; i < _tcslen(old_string); i++) {
     if (used < 2045) {
       if (old_string[i] == '\\' ) {
         if (old_string[i + 1] == 'r') {
@@ -4398,8 +3904,8 @@ TCHAR* StringMallocParse(TCHAR* old_string) {
   };
   buffer[used++] =_T('\0');
   
-  new_string = (TCHAR *)malloc((wcslen(buffer)+1)*sizeof(TCHAR));
-  wcscpy(new_string, buffer);
+  new_string = (TCHAR *)malloc((_tcslen(buffer)+1)*sizeof(TCHAR));
+  _tcscpy(new_string, buffer);
   
   return new_string;
 }
@@ -4414,33 +3920,27 @@ TCHAR* StringMallocParse(TCHAR* old_string) {
 //
 void LocalPath(TCHAR* buffer, const TCHAR* file, int loc) {
 
-#if defined (PNA) && (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
+  #if (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
 
-// check this is still valid 101212
-// For PNAs the localpath is taken from the application exec path
-// example> \sdmmc\bin\Program.exe  results in localpath=\sdmmc\XCSoarData
-// Then the basename is searched for an underscore char, which is
-// used as a separator for getting the model type.  example>
-// program_pna.exe results in GlobalModelType=pna
+  // For PNAs the localpath is taken from the application exec path
+  // example> \sdmmc\bin\Program.exe  results in localpath=\sdmmc\LK8000
+  // Then the basename is searched for an underscore char, which is
+  // used as a separator for getting the model type.  example>
+  // program_pna.exe results in GlobalModelType=pna
   
 	_stprintf(buffer,TEXT("%s%S"),gmfpathname(), XCSDATADIR );
-
-#elif defined (FIVV) && (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
-
-  _stprintf(buffer,TEXT("%s%S"),gmfpathname(), XCSDATADIR );
-
-#else
+  #else
 	// get the MyDocuments directory
 	SHGetSpecialFolderPath(hWndMainWindow, buffer, loc, false);
 
 	_tcscat(buffer,TEXT("\\"));
 	_tcscat(buffer,TEXT(XCSDATADIR));
-#endif
+  #endif
 
-	if (_tcslen(file)>0) {
-		wcsncat(buffer, TEXT("\\"), MAX_PATH);    
-		wcsncat(buffer, file, MAX_PATH);
-	}
+  if (_tcslen(file)>0) {
+	_tcsncat(buffer, TEXT("\\"), MAX_PATH);    
+	_tcsncat(buffer, file, MAX_PATH);
+  }
 }
 
 
@@ -4588,7 +4088,7 @@ void propGetFontSettings(TCHAR *Name, LOGFONT* lplf) {
   ASSERT(Name[0] != '\0');
   ASSERT(lplf != NULL);
 
-#if (WINDOWSPC>0) && !defined(PCGNAV)
+#if (WINDOWSPC>0) 
   // Don't load font settings from registry values for windows version
   return; // TODO FIX let font settings be read by windows PC also! 091021 
 #endif
@@ -4639,30 +4139,6 @@ int propGetScaleList(double *List, size_t Size){
 }
 
 long GetUTCOffset(void) {
-/*
-#ifndef GNAV
-  long utcoffset=0;
-  // returns offset in seconds
-  TIME_ZONE_INFORMATION TimeZoneInformation;
-  DWORD tzi = GetTimeZoneInformation(&TimeZoneInformation);
-
-  utcoffset = -TimeZoneInformation.Bias*60;
-
-  if (tzi==TIME_ZONE_ID_STANDARD) {
-    utcoffset -= TimeZoneInformation.StandardBias*60;
-  }
-  if (tzi==TIME_ZONE_ID_DAYLIGHT) {
-    utcoffset -= TimeZoneInformation.DaylightBias*60;
-  }
-#if (WINDOWSPC>0)
-  return UTCOffset;
-#else
-  return utcoffset;
-#endif
-#else
-  return UTCOffset;
-#endif
-*/
   return UTCOffset;
 }
 
@@ -4714,11 +4190,12 @@ void RestoreRegistry(void) {
 void StoreRegistry(void) {
   StartupStore(TEXT(". Store registry%s"),NEWLINE);
   // save registry backup first (try a few places)
-  SaveRegistryToFile(startProfileFile);
+  if (!CheckClubVersion())
+	SaveRegistryToFile(startProfileFile);
   SaveRegistryToFile(defaultProfileFile);
 }
 
-void XCSoarGetOpts(LPTSTR CommandLine) {
+void LK8000GetOpts(LPTSTR CommandLine) {
   (void)CommandLine;
 
 //  LocalPath(defaultProfileFile,TEXT(XCSPROFILE));  
@@ -4864,9 +4341,19 @@ void XCSoarGetOpts(LPTSTR CommandLine) {
       SCREENWIDTH=320;
       SCREENHEIGHT=240;
     }
+    pC = _tcsstr(MyCommandLine, TEXT("-320x234"));
+    if (pC != NULL){
+      SCREENWIDTH=320;
+      SCREENHEIGHT=234;
+    }
     pC = _tcsstr(MyCommandLine, TEXT("-240x320"));
     if (pC != NULL){
       SCREENWIDTH=240;
+      SCREENHEIGHT=320;
+    }
+    pC = _tcsstr(MyCommandLine, TEXT("-234x320"));
+    if (pC != NULL){
+      SCREENWIDTH=234;
       SCREENHEIGHT=320;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-272x480"));
@@ -4899,13 +4386,14 @@ bool CheckRectOverlap(RECT rc1, RECT rc2) {
 #endif
 
 
-#if !defined(GNAV) || (WINDOWSPC>0)
+#if (WINDOWSPC>0)
 typedef DWORD (_stdcall *GetIdleTimeProc) (void);
 GetIdleTimeProc GetIdleTime;
 #endif
 
+#if DEBUG_MEM
 int MeasureCPULoad() {
-#if (!defined(GNAV) || (WINDOWSPC>0)) && !defined(__MINGW32__)
+#if (WINDOWSPC>0) && !defined(__MINGW32__)
   static bool init=false;
   if (!init) {
     // get the pointer to the function
@@ -4917,10 +4405,6 @@ int MeasureCPULoad() {
   if (!GetIdleTime) return 0;
 #endif
 
-#if defined(GNAV) && defined(__MINGW32__)
-  // JMW GetIdleTime() not defined?
-  return 100;
-#else
   static int pi;
   static int PercentIdle;
   static int PercentLoad;
@@ -4942,8 +4426,8 @@ int MeasureCPULoad() {
   start = !start;
   PercentLoad = 100-PercentIdle;
   return PercentLoad;
-#endif
 }
+#endif
 
 
 
@@ -4962,126 +4446,12 @@ typedef struct WinPilotPolarInternal {
 
 
 // REMEMBER: add new polars at the bottom, or old configuration will get a different polar value
-// Also remember, currently 200 items limit in WindowControls.h DFE_  enums.
+// Also remember, currently 300 items limit in WindowControls.h DFE_  enums.
+// THIS IS NOW UNUSED
 WinPilotPolarInternal WinPilotPolars[] = 
 {
-  {TEXT("1-26E"), 315, 0, 82.3, -1.04, 117.73, -1.88, 156.86, -3.8, 14.87},
-  {TEXT("1-34"), 354, 0, 89.82, -0.8, 143.71, -2.1, 179.64, -3.8, 14.03},
-  {TEXT("1-35A"), 381, 179, 98.68, -0.74, 151.82, -1.8, 202.87, -3.9, 9.64},
-  {TEXT("1-36 Sprite"), 322, 0, 75.98, -0.68, 132.96, -2, 170.95, -4.1, 13.10},
-  {TEXT("604"), 570, 100, 112.97, 0.72, 150.64, -1.42, 207.13, -4.1, 16.26},
-  {TEXT("ASH-25M 2"), 750, 121, 130.01, -0.78, 169.96, -1.4, 219.94, -2.6, 16.31},
-  {TEXT("ASH-25M 1"), 660, 121, 121.3, -0.73, 159.35, -1.31, 206.22, -2.4, 16.31},
-  {TEXT("ASH-25 (PAS)"), 693, 120, 105.67, -0.56, 163.25, -1.34, 211.26, -2.5, 16.31},
-  {TEXT("ASH-25 (PIL)"), 602, 120, 98.5, -0.52, 152.18, -1.25, 196.93, -2.3, 16.31},
-  {TEXT("Astir CS"), 330, 90, 75.0, -0.7, 93.0, -0.74, 185.00, -3.1, 12.40},
-  {TEXT("ASK-21"), 450, 0, 100.0, -0.82, 120.0, -1.10, 150.00, -1.9, 17.95},
-  {TEXT("ASK-23"), 330, 0, 100.0, -0.85, 120.0, -1.19, 150.00, -2.02, 12.9},
-  {TEXT("ASW-12"), 948, 189, 95, -0.57, 148, -1.48, 183.09, -2.6, 13.00},
-  {TEXT("ASW-15"), 349, 91, 97.56, -0.77, 156.12, -1.9, 195.15, -3.4, 11.0},
-  {TEXT("ASW-17"), 522, 151, 114.5, -0.7, 169.05, -1.68, 206.5, -2.9, 14.84},
-  {TEXT("ASW-19"), 363, 125, 97.47, -0.74, 155.96, -1.64, 194.96, -3.1, 11.0},
-  {TEXT("ASW-20"), 377, 159, 116.2, -0.77, 174.3, -1.89, 213.04, -3.3, 10.5},
-  {TEXT("ASW-24"), 350, 159, 108.82, -0.73, 142.25, -1.21, 167.41, -1.8, 10.0},
-  {TEXT("ASW-27 Wnglts"), 357, 165, 108.8, -0.64, 156.4, -1.18, 211.13, -2.5, 9.0},
-  {TEXT("Std Cirrus"), 337, 80, 93.23, -0.74, 149.17, -1.71, 205.1, -4.2, 10.04},
-  {TEXT("Cobra (SZD-36)"), 350, 30, 70.8, -0.60, 94.5, -0.69, 148.1, -1.83, 11.6},
-  {TEXT("DG-400 (15m)"), 440, 90, 115, -0.76, 160.53, -1.22, 210.22, -2.3, 10.0},
-  {TEXT("DG-400 (17m)"), 444, 90, 118.28, -0.68, 163.77, -1.15, 198.35, -1.8, 10.57},
-  {TEXT("DG-500M PAS"), 750, 100, 121.6, -0.75, 162.12, -1.37, 202.66, -2.5, 18.29},
-  {TEXT("DG-500M PIL"), 659, 100, 115.4, -0.71, 152.01, -1.28, 190.02, -2.3, 18.29},
-  {TEXT("DG-500 PAS"), 660, 160, 115.5, -0.72, 152.16, -1.28, 190.22, -2.3, 18.29},
-  {TEXT("DG-500 PIL"), 570, 160, 107.5, -0.66, 141.33, -1.19, 176.66, -2.1, 18.29},
-  {TEXT("DG-800 15m"), 468, 120, 133.9, -0.88, 178.87, -1.53, 223.59, -2.5, 10.68},
-  {TEXT("DG-800 18m Wnglts"), 472, 120, 106, -0.62, 171.75, -1.47, 214.83, -2.4, 11.81},
-  {TEXT("Discus A"), 350, 182, 103.77, -0.72, 155.65, -1.55, 190.24, -3.1, 10.58},
-  {TEXT("Discus 2a"), 330, 195, 110.0, -0.728, 155.00, -1.26, 200.00, -2.26, 10.16},
-  {TEXT("Duo Discus (PAS)"), 628, 201, 106.5, -0.79, 168.11, -1.54, 201.31, -2.9, 16.40},
-  {TEXT("Duo Discus (PIL)"), 537, 201, 94.06, -0.72, 155.49, -1.43, 188.21, -2.7, 16.40},
-  {TEXT("Genesis II"), 374, 151, 94, -0.61, 141.05, -1.18, 172.4, -2.0, 11.24},
-  {TEXT("Grob G-103 Twin II (PAS)"), 580, 0, 99, -0.8, 175.01, -1.95, 225.02, -3.8, 17.52},
-  {TEXT("Grob G-103 Twin II (PIL)"), 494, 0, 90.75, -0.74, 161.42, -1.8, 207.54, -3.5, 17.52},
-  {TEXT("H-201 Std Libelle"), 304, 50, 97, -0.79, 152.43, -1.91, 190.54, -3.3, 9.8},
-  {TEXT("H-301 Libelle"), 300, 50, 94, -0.68, 147.71, -2.03, 184.64, -4.1, 9.8},
-  {TEXT("IS-29D2 Lark"), 360, 0, 100, -0.82, 135.67, -1.55, 184.12, -3.3, 10.4},
-  {TEXT("Jantar 2 (SZD-42A)"), 482, 191, 109.5, -0.66, 157.14, -1.47, 196.42, -2.7, 14.27},
-  {TEXT("Janus B (18.2m PAS)"), 603, 170, 115.5, -0.76, 171.79, -1.98, 209.96, -4.0, 17.4},
-  {TEXT("Janus B (18.2m PIL)"), 508, 170, 105.7, -0.7, 157.65, -1.82, 192.68, -3.6, 17.4},
-  {TEXT("Ka-6CR"), 310, 0, 87.35, -0.81, 141.92, -2.03, 174.68, -3.5, 12.4},
-  {TEXT("L-33 SOLO"), 330, 0, 87.2, -0.8, 135.64, -1.73, 174.4, -3.4, 11.0},
-  {TEXT("LS-1C"), 350, 91, 115.87, -1.02, 154.49, -1.84, 193.12, -3.3, 9.74},
-  {TEXT("LS-3"),  383, 121, 93.0, -0.64, 127.0, -0.93, 148.2, -1.28, 10.5},
-  {TEXT("LS-4a"), 361, 121, 114.9, -0.80, 172.3, -2.33, 210.59, -4.5, 10.35},
-  {TEXT("LS7wl"), 350, 150, 103.77, -0.73, 155.65, -1.47, 180.00, -2.66, 9.80},
-  {TEXT("Nimbus 2"), 493, 159, 119.83, -0.75, 179.75, -2.14, 219.69, -3.8, 14.41},
-  {TEXT("Nimbus 3DM (PAS)"), 820, 168, 114.97, -0.57, 157.42, -0.98, 222.24, -2.3, 16.70},
-  {TEXT("Nimbus 3D (PAS)"), 712, 168, 93.64, -0.46, 175.42, -1.48, 218.69, -2.5, 16.70},
-  {TEXT("Nimbus 3D (PIL)"), 621, 168, 87.47, -0.43, 163.86, -1.38, 204.27, -2.3, 16.70},
-  {TEXT("Nimbus 3"), 527, 159, 116.18, -0.67, 174.28, -1.81, 232.37, -3.8, 16.70},
-  {TEXT("Nimbus 3T"), 577, 310, 141.7, -0.99, 182.35, -1.89, 243.13, -4.0, 16.70},
-  {TEXT("Nimbus 4DM (PAS)"), 820, 168, 100.01, -0.48, 150.01, -0.87, 190.76, -1.6, 17.8},
-  {TEXT("Nimbus 4DM (PIL)"), 729, 168, 94.31, -0.46, 141.47, -0.82, 179.9, -1.5, 17.8},
-  {TEXT("Nimbus 4D PAS"), 743, 303, 107.5, -0.5, 142.74, -0.83, 181.51, -1.6, 17.8},
-  {TEXT("Nimbus 4D PIL"), 652, 303, 99, -0.46, 133.73, -0.78, 170.07, -1.5, 17.8},
-  {TEXT("Nimbus 4"), 597, 303, 85.1, -0.41, 127.98, -0.75, 162.74, -1.4, 17.8},
-  {TEXT("PIK-20B"), 354, 144, 102.5, -0.69, 157.76, -1.59, 216.91, -3.6, 10.0},
-  {TEXT("PIK-20D"), 348, 144, 100, -0.69, 156.54, -1.78, 215.24, -4.2, 10.0},
-  {TEXT("PIK-20E"), 437, 80, 109.61, -0.83, 166.68, -2, 241.15, -4.7, 10.0},
-  {TEXT("PIK-30M"), 460, 0, 123.6, -0.78, 152.04, -1.12, 200.22, -2.2, 10.63},
-  {TEXT("PW-5 Smyk"), 300, 0, 99.5, -0.95, 158.48, -2.85, 198.1, -5.1, 10.16},
-  {TEXT("Russia AC-4"), 250, 0, 99.3, -0.92, 140.01, -1.8, 170.01, -2.9, 7.70},
-  {TEXT("Stemme S-10 PAS"), 850, 0, 133.47, -0.83, 167.75, -1.41, 205.03, -2.3, 18.70},
-  {TEXT("Stemme S-10 PIL"), 759, 0, 125.8, -0.82, 158.51, -1.33, 193.74, -2.2, 18.70},
-  {TEXT("SZD-55-1"), 350, 200, 100.0, -0.66, 120, -0.86, 150, -1.4, 9.60},
-  {TEXT("Ventus A/B (16.6m)"), 358, 151, 100.17, -0.64, 159.69, -1.47, 239.54, -4.3, 9.96},
-  {TEXT("Ventus B (15m)"), 341, 151, 97.69, -0.68, 156.3, -1.46, 234.45, -3.9, 9.51},
-  {TEXT("Ventus 2C (18m)"), 385, 180, 80.0, -0.5, 120.0, -0.73, 180.0, -2.0, 11.03},
-  {TEXT("Ventus 2Cx (18m)"), 385, 215, 80.0, -0.5, 120.0, -0.73, 180.0, -2.0, 11.03},
-  {TEXT("Zuni II"), 358, 182, 110, -0.88, 167, -2.21, 203.72, -3.6, 10.13},
-  {TEXT("Speed Astir"),351,  90,  90, -0.63, 105, -0.72, 157, -2.00, 11.5},   // BestLD40@105
-  {TEXT("LS-6-18W"),   330, 140,  90, -0.51, 100, -0.57, 183, -2.00, 11.4},   // BestLD48@100
-  {TEXT("LS-8-15"),    325, 185,  70, -0.51, 115, -0.85, 173, -2.00, 10.5},   // BestLD42.5@97kph
-  {TEXT("LS-8-18"),    325, 185,  80, -0.51,  94, -0.56, 173, -2.00, 11.4},   // BestLD48
-  {TEXT("ASH-26E"),    435,  90,  90, -0.51,  96, -0.53, 185, -2.00, 11.7},   // BestLD50@96kph
-  {TEXT("ASG29-18"),   355, 225,  85, -0.47,  90, -0.48, 185, -2.00, 10.5},   // BestLD52@90kph
-  {TEXT("ASW28-18"),   345, 190,  65, -0.47, 107, -0.67, 165, -2.00, 10.5},   // BestLD48@90kph
-  {TEXT("LS-6-15"),    327, 160,  90, -0.6,  100, -0.658, 183, -1.965, 10.53},   // BestLD42@?
-  {TEXT("ASG29E-18"),   400, 200,  90, -0.499,  95.5, -0.510, 196.4, -2.12, 10.5},   // BestLD52@90kph
-  {TEXT("Ventus CM (17.6m)"),   430, 0,  100.17, -0.6,  159.7, -1.32, 210.54, -2.5, 10.14}, 
-  {TEXT("Duo Discus XT (PIL)"), 580,	170,	100,	-0.605,	150,	-1.271,	200,	-2.668, 16.40},
-  {TEXT("Duo Discus XT (PAS)"), 700,	50,	110,	-0.664,	155,	-1.206,	200,	-2.287, 16.40},
-  {TEXT("Lak17A-18"), 298,	180,	115,	-0.680,	158,	-1.379,	200,	-2.975, 9.80},
-  {TEXT("Lak17A-15"), 285,	180,	95,	-0.574,	148,	-1.310,	200,	-2.885, 9.06},
-  {TEXT("DG-300"), 340,	65,	95.0,	-0.65,	140.0,	-1.29,	160.0,	-1.84, 10.27},
-  {TEXT("Para EN A/DHV1"), 100,	0, 29.0, -1.1,	34.0,	-1.3,	44.0,	-2.30, 0},
-  {TEXT("Para EN B/DHV12"), 100, 0, 29.5, -1.1,	37.0,	-1.2,	50.0,	-2.30, 0},
-  {TEXT("Para EN C/DHV2"), 100,	0, 33.0, -1.1,	39.0,	-1.2,	56.0,	-2.30, 0},
-  {TEXT("Para EN D/DHV23"), 100, 0, 33.0, -1.1,	41.0,	-1.2,	58.0,	-2.30,  0},
-  {TEXT("Para Competition"), 100, 0, 39.0, -1.0, 45.0,	-1.1,	64.0,	-2.30,  0},
-  {TEXT("Delta USHPA-2"), 100, 0, 30, -1.10, 44.3,	-1.52,	58.0,	-3.60,  0}, // 091217
-  {TEXT("Delta USHPA-3"), 100, 0, 37, -0.95, 48.1,	-1.15,	73.0,	-3.60,  0}, // 091217
-  {TEXT("Delta USHPA-4"), 100, 0, 37, -0.89, 48.3,	-1.02,	76.5,	-3.30,  0}, // 091217
-  {TEXT("ASG29-15"), 362,	165,	108.8,	-0.635,	156.4,	-1.182,	211.13,	-2.540, 9.20},
-  {TEXT("Ventus 2CT (18m)"), 470, 130, 100.0, -0.56, 150.0, -1.13, 200.0, -2.28, 11.03},
-  {TEXT("Ventus 2CxT (18m)"), 470, 130, 100.0, -0.56, 150.0, -1.13, 200.0, -2.28, 11.03},
-  {TEXT("Blanik L13"), 472, 0, 85.0, -0.84, 143.0, -3.32, 200.0, -9.61, 19.1},
-  {TEXT("Blanik L23"), 510, 0, 95.0, -0.94, 148.0, -2.60, 200.0, -6.37, 19.1},
-  {TEXT("DG1000-20M (PIL)"), 490, 160, 100.0, -0.59, 120.0, -0.86, 150.0, -1.65, 17.51},
-  {TEXT("DG1000-20M (PAS)"), 613, 160, 106.0, -0.62, 153.0, -1.53, 200.0, -3.2, 17.51},
-  {TEXT("Mosquito"), 450, 0, 100.0, -0.68, 120.0, -0.92, 150.0, -1.45, 9.85},
-  {TEXT("DuoDiscus T (PAS)"), 615, 80, 103, -0.64, 152, -1.25, 200, -2.51, 16.4},
-  {TEXT("Jantar Std 48-2"), 375, 150, 100, -0.73, 120, -0.95, 150, -1.60, 10.66},
-  {TEXT("Mini Nimbus"), 345, 155, 100, -0.69, 120, -0.92, 150, -1.45, 9.86},
-  {TEXT("Pegase 101A"), 344, 120, 85.0, -0.62, 105, -0.75, 175, -2.54, 10.5},
-
-  {TEXT("SZD-30 Pirat"), 340,0,75,-0.7,83,-0.739,150,-2.46,13.8},
-  {TEXT("SZD-48-3 Jantar 3"),  326,150,95,-0.66,180,-2.24,220,-3.85,10.66},
-  {TEXT("SZD-51-1 Junior"), 333,0,70,-0.58,130,-1.6,180,-3.6,12.51},
-  {TEXT("SZD-9bis 1E Bocian"), 540,0,70,-0.83,90,-1.00,140,-2.53,20},
+  {TEXT("ERROR"), 670,100,100,-1.29,120,-1.61,150,-2.45,15.3},
   }; //   0-x
-  // 101219 Total: 112
-  // 101212 Total: 108
-
 
 TCHAR* GetWinPilotPolarInternalName(int i) {
   if ( (unsigned) i >= (sizeof(WinPilotPolars)/sizeof(WinPilotPolarInternal)) ) {
@@ -5119,26 +4489,8 @@ bool ReadWinPilotPolarInternal(int i) {
 #define GdiFlush() do { } while (0)
 #endif
 
-////////////////////////////////////////////////////////////////////////////
-//
-// FUNCTION:    DrawWireRects
-//
-// DESCRIPTION: Creates exploding wire rectanges
-//
-// INPUTS:  LPRECT lprcFrom      Source Rectangle
-//          LPRECT lprcTo        Destination Rectangle
-//          UINT nMilliSecSpeed  Speed in millisecs for animation
-//
-// RETURN:    None
-// NOTES:    None
-//
-//  Maintenance Log
-//  Author      Date    Version     Notes
-//  NT Almond   011199  1.0         Origin
-//  CJ Maunder  010899  1.1         Modified rectangle transition code
-//
-/////////////////////////////////////////////////////////////////////////
 
+#if 0 // REMOVE ANIMATION
 static RECT AnimationRectangle = {0,0,0,0};
 
 void SetSourceRectangle(RECT fromRect) {
@@ -5148,65 +4500,9 @@ void SetSourceRectangle(RECT fromRect) {
 
 RECT WINAPI DrawWireRects(LPRECT lprcTo, UINT nMilliSecSpeed)
 {
-  if (!EnableAnimation)
     return AnimationRectangle;
-
-  LPRECT lprcFrom = &AnimationRectangle;
-  const int nNumSteps = 10;
-  
-  GdiFlush();
-  Sleep(10);  // Let the desktop window sort itself out
-  
-  // if hwnd is null - "you have the CON".
-  HDC hDC = ::GetDC(NULL);
-  
-  // Pen size, urmmm not too thick
-  HPEN hPen = ::CreatePen(PS_SOLID, 2, RGB(0,0,0));
-  
-  int nMode = ::SetROP2(hDC, R2_NOT);
-  HPEN hOldPen = (HPEN) ::SelectObject(hDC, hPen);
-  
-  for (int i = 0; i < nNumSteps; i++)
-    {
-      double dFraction = (double) i / (double) nNumSteps;
-      
-      RECT transition;
-      transition.left   = lprcFrom->left + 
-	(int)((lprcTo->left - lprcFrom->left) * dFraction);
-      transition.right  = lprcFrom->right + 
-	(int)((lprcTo->right - lprcFrom->right) * dFraction);
-      transition.top    = lprcFrom->top + 
-	(int)((lprcTo->top - lprcFrom->top) * dFraction);
-      transition.bottom = lprcFrom->bottom + 
-	(int)((lprcTo->bottom - lprcFrom->bottom) * dFraction);
-      
-      POINT pt[5];
-      pt[0].x = transition.left; pt[0].y= transition.top;
-      pt[1].x = transition.right; pt[1].y= transition.top;
-      pt[2].x = transition.right; pt[2].y= transition.bottom;
-      pt[3].x = transition.left; pt[3].y= transition.bottom;
-      pt[4].x = transition.left; pt[4].y= transition.top;
-      
-      // We use Polyline because we can determine our own pen size
-      // Draw Sides
-      ::Polyline(hDC,pt,5);
-
-      GdiFlush();
-      
-      Sleep(nMilliSecSpeed);
-      
-      // UnDraw Sides
-      ::Polyline(hDC,pt,5);
-      
-      GdiFlush();
-    }
-  
-  ::SetROP2(hDC, nMode);
-  ::SelectObject(hDC, hOldPen);
-  ::DeleteObject(hPen);
-  ::ReleaseDC(NULL,hDC);
-  return AnimationRectangle;
 }
+#endif // REMOVE
 
 // FLARM FUNCTIONS
 
@@ -5509,27 +4805,34 @@ unsigned long CheckFreeRam(void) {
 
 // check maximum allocatable heap block
 unsigned long CheckMaxHeapBlock(void) {
-  // try allocate maximum block (of course on PC with disk swapping, we will not
-  // try maximum block, function just returns something near to initial top value)
-  size_t top = 100*1024*1024; // start with 100MB/2
-  size_t btm = 0;
-  
-  void*  addr;
-  size_t size;
-  
-  while ((size = (btm + top) / 2) != 0) { // ~ btm + (top - btm) / 2
-    addr = malloc(size);
-    if (addr == NULL)
-      top = size;
-    else {
-      free(addr);
-      if ((top - btm) < 1024) // 1 KB accuracy
-        return(size);
-      btm = size;
+  #if defined(HC_DMALLOC) ||  defined(HC_DUMA)
+    // when using heap checker, do not try allocate maximum size - malloc() can
+    // return NULL which heap checker recognizes as an error and will terminate
+    // program immediately when configured so (can be confusing for developer)
+    return(0xFFFFFFFF);
+  #else  
+    // try allocate maximum block (of course on PC with disk swapping, we will not
+    // try maximum block, function just returns something near to initial top value)
+    size_t top = 100*1024*1024; // start with 100MB/2
+    size_t btm = 0;
+    
+    void*  addr;
+    size_t size;
+    
+    while ((size = (btm + top) / 2) != 0) { // ~ btm + (top - btm) / 2
+      addr = malloc(size);
+      if (addr == NULL)
+        top = size;
+      else {
+        free(addr);
+        if ((top - btm) < 1024) // 1 KB accuracy
+          return(size);
+        btm = size;
+      }
     }
-  }
-  
-  return(0);
+    
+    return(0);
+  #endif
 }
 
 
@@ -5572,7 +4875,7 @@ void MemLeakCheck() {
 // memory defragmentation, since on pocket pc platforms there is no
 // automatic defragmentation.
 void MyCompactHeaps() {
-#if (WINDOWSPC>0)||(defined(GNAV) && !defined(__MINGW32__))
+#if (WINDOWSPC>0)
   HeapCompact(GetProcessHeap(),0);
 #else
   typedef DWORD (_stdcall *CompactAllHeapsFn) (void);
@@ -5635,7 +4938,7 @@ BOOL PlayResource (const TCHAR* lpName)
 
   // TODO code: Modify to allow use of WAV Files and/or Embedded files
 
-  if (wcsstr(lpName, TEXT(".wav"))) {
+  if (_tcsstr(lpName, TEXT(".wav"))) {
     bRtn = sndPlaySound (lpName, SND_ASYNC | SND_NODEFAULT ); 
 
   } else {
@@ -5703,7 +5006,7 @@ bool InterfaceTimeoutCheck(void) {
   }
 }
 
-bool FileExistsW(TCHAR *FileName){
+bool FileExists(TCHAR *FileName){
 
   HANDLE hFile = CreateFileW(FileName, GENERIC_READ, 0, NULL,
                  OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
@@ -5714,32 +5017,16 @@ bool FileExistsW(TCHAR *FileName){
   CloseHandle(hFile);
 
   return(TRUE);
-
-}
-
-bool FileExistsA(char *FileName){
-
-#if (WINDOWSPC>0)
-  HANDLE hFile = CreateFileA(FileName, GENERIC_READ, 0, NULL,
-                 OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
-  if( hFile == INVALID_HANDLE_VALUE)
-    return(FALSE);
-
-  CloseHandle(hFile);
-
-  return(TRUE);
-#else
-  FILE *file = fopen(FileName, "r");
+  
+  /*
+  FILE *file = _tfopen(FileName, _T("r"));
   if (file != NULL) {
     fclose(file);
     return(TRUE);
   }
   return FALSE;
-#endif
-
+  */
 }
-
-
 
 bool RotateScreen() {
 #if (WINDOWSPC>0)
@@ -5748,7 +5035,7 @@ bool RotateScreen() {
   //
   // Change the orientation of the screen
   //
-#ifdef GNAV  
+#if 0
   DEVMODE DeviceMode;
     
   memset(&DeviceMode, 0, sizeof(DeviceMode));
@@ -5794,4 +5081,112 @@ void ExtTextOutClip(HDC hDC, int x, int y, TCHAR *text, int width) {
              text, len, NULL);
 }
 
+void UpdateConfBB(void) {
+
+  ConfBB[0]=true; // thermal always on automatically
+  ConfBB[1]=ConfBB1;
+  ConfBB[2]=ConfBB2;
+  ConfBB[3]=ConfBB3;
+  ConfBB[4]=ConfBB4;
+  ConfBB[5]=ConfBB5;
+  ConfBB[6]=ConfBB6;
+  ConfBB[7]=ConfBB7;
+  ConfBB[8]=ConfBB8;
+  ConfBB[9]=ConfBB9;
+
+  if (ConfBB2==false && ConfBB3==false &&
+      ConfBB4==false && ConfBB5==false &&
+      ConfBB6==false && ConfBB7==false &&
+      ConfBB8==false && ConfBB9==false)
+
+		// we need at least one bottom bar stripe available (thermal apart)
+		ConfBB[1]=true;
+
+}
+
+void UpdateConfIP(void) {
+
+  // MAP MODE always available
+  ConfIP[0][0]=true; 
+  ConfIP[0][1]=true; 
+  ConfMP[0]=true; // map mode
+
+  // LKMODE_INFOMODE is 1
+  ConfIP[1][0]=ConfIP11;
+  ConfIP[1][1]=ConfIP12;
+  ConfIP[1][2]=ConfIP13;
+  ConfIP[1][3]=ConfIP14;
+  ConfIP[1][4]=ConfIP15;
+  ConfIP[1][5]=ConfIP16;
+
+  // WPMODE
+  ConfIP[2][0]=ConfIP21;
+  ConfIP[2][1]=ConfIP22;
+  ConfIP[2][2]=ConfIP23;
+  ConfIP[2][3]=ConfIP24;
+
+  // COMMONS
+  ConfIP[3][0]=ConfIP31;
+  ConfIP[3][1]=ConfIP32;
+
+  // TRAFFIC always on if available
+  ConfIP[4][0]=true;
+  ConfIP[4][1]=true;
+  ConfIP[4][2]=true;
+  ConfMP[4]=true; // traffic mode
+
+  // Check if we have INFOMODE
+  if (ConfIP[1][0]==false && ConfIP[1][1]==false 
+	&& ConfIP[1][2]==false && ConfIP[1][3]==false 
+	&& ConfIP[1][4]==false && ConfIP[1][5]==false) {
+	ConfMP[1]=false;
+  } else
+	ConfMP[1]=true;
+
+  // Check if we have NEAREST pages
+  if (ConfIP[2][0]==false && ConfIP[2][1]==false 
+	&& ConfIP[2][2]==false && ConfIP[2][3]==false ) {
+	ConfMP[2]=false;
+  } else
+	ConfMP[2]=true;
+
+  // Check if we have COMMONS
+  if (ConfIP[3][0]==false && ConfIP[3][1]==false ) {
+	ConfMP[3]=false;
+  } else
+	ConfMP[3]=true;
+
+  /*
+  // Verify that we have at least one menu
+  if (ConfMP[1]==false && ConfMP[2]==false && ConfMP[3]==false ) {
+	ConfIP[1][0]=true;
+	ConfMP[1]=true;
+  }
+  */
+  SetInitialModeTypes();
+
+}
+
+void SetInitialModeTypes(void) {
+
+  // Update the initial values for each mapspace, keeping the first valid value. We search backwards.
+  // INFOMODE 1  
+  if (ConfIP[LKMODE_INFOMODE][IM_TRI]) ModeType[LKMODE_INFOMODE]=IM_TRI;
+  if (ConfIP[LKMODE_INFOMODE][IM_CONTEST]) ModeType[LKMODE_INFOMODE]=IM_CONTEST;
+  if (ConfIP[LKMODE_INFOMODE][IM_AUX]) ModeType[LKMODE_INFOMODE]=IM_AUX;
+  if (ConfIP[LKMODE_INFOMODE][IM_TASK]) ModeType[LKMODE_INFOMODE]=IM_TASK;
+  if (ConfIP[LKMODE_INFOMODE][IM_THERMAL]) ModeType[LKMODE_INFOMODE]=IM_THERMAL;
+  if (ConfIP[LKMODE_INFOMODE][IM_CRUISE]) ModeType[LKMODE_INFOMODE]=IM_CRUISE;
+
+  // WP NEAREST MODE 2  
+  if (ConfIP[LKMODE_WP][WP_NEARTPS]) ModeType[LKMODE_WP]=WP_NEARTPS;
+  if (ConfIP[LKMODE_WP][WP_LANDABLE]) ModeType[LKMODE_WP]=WP_LANDABLE;
+  if (ConfIP[LKMODE_WP][WP_AIRPORTS]) ModeType[LKMODE_WP]=WP_AIRPORTS;
+
+  // COMMONS MODE 3
+  if (ConfIP[LKMODE_NAV][NV_HISTORY]) ModeType[LKMODE_WP]=NV_HISTORY;
+  if (ConfIP[LKMODE_NAV][NV_COMMONS]) ModeType[LKMODE_WP]=NV_COMMONS;
+
+
+}
 

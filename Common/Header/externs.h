@@ -9,28 +9,23 @@
 #ifndef EXTERNS_H
 #define EXTERNS_H
 
-extern TCHAR XCSoar_Version[256];
-
-#if !defined(AFX_EXTERNS_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
-#define AFX_EXTERNS_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_
+extern TCHAR LK8000_Version[256];
 
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
 
 #include "Sizes.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "Parser.h"
 #include "Calculations.h"
 #include "MapWindow.h"
 #include "Task.h"
 #include "Statistics.h"
 #include "Dialogs.h"
+#include "Utils2.h"
+#include "ContestMgr.h"
 #include "device.h" // 100210
-
-#if (EXPERIMENTAL > 0)
-//JMW#include "BlueSMS.h"
-#endif
 
 
 typedef enum {psInitInProgress=0, psInitDone=1, psFirstDrawDone=2, psNormalOp=3} StartupState_t;
@@ -48,10 +43,8 @@ extern StartupState_t ProgramStarted;
 
 extern int UTCOffset;
 
-#if defined(PNA) || defined(FIVV)  // VENTA2- ADD GlobalEllipse
 extern int	GlobalModelType; 
 extern TCHAR	GlobalModelName[];
-extern float	GlobalEllipse;
 extern TCHAR *	gmfpathname();
 extern TCHAR *	gmfbasename();
 extern int		GetGlobalModelName();
@@ -60,14 +53,12 @@ extern short		InstallSystem();
 extern bool		CheckRootDir();
 extern bool		CheckDataDir();
 extern bool		CheckLanguageDir();
+extern bool		CheckPolarsDir();
 extern bool		CheckRegistryProfile();
 extern void		ConvToUpper( TCHAR *);
 
-#endif
 
-#if LKSTARTUP
 extern BYTE RUN_MODE;
-#endif
 
 // asset/registration data
 extern TCHAR strAssetNumber[];
@@ -84,8 +75,14 @@ extern int  InfoType[MAXINFOWINDOWS]; //
 extern HWND hWndInfoWindow[MAXINFOWINDOWS];
 extern int  InfoFocus;
 extern bool DisplayLocked; // if infoboxes are locked
+
+#if USEIBOX
 extern SCREEN_INFO Data_Options[];
-extern int NUMSELECTSTRINGS;
+#else
+extern DATAOPTIONS Data_Options[];
+#endif
+
+extern int NumDataOptions;
 extern BOOL InfoBoxesHidden;
 extern int numInfoWindows;
 
@@ -97,9 +94,6 @@ extern int Alternate1; // VENTA3
 extern int Alternate2;
 extern int BestAlternate;
 extern int ActiveAlternate;
-extern bool  OnBestAlternate;
-extern bool  OnAlternate1;
-extern bool  OnAlternate2;
 
 extern WAYPOINT *WayPointList;
 extern WPCALC   *WayPointCalc; // VENTA3 additional calculated infos on WPs
@@ -146,20 +140,16 @@ extern bool ResumeSession;
 extern double QFEAltitudeOffset; // VENTA3
 extern int OnAirSpace; // VENTA3 toggle DrawAirSpace
 extern bool WasFlying; // used by auto QFE.. 
-extern double LastFlipBoxTime; // used by XCSoar and Calculations
 extern double LastRangeLandableTime;
-#if defined(PNA) || defined(FIVV)
 extern bool needclipping;
-#endif
-extern bool EnableAutoBacklight; // VENTA4
-extern bool EnableAutoSoundVolume; // VENTA4
-extern short AircraftCategory; // VENTA4
+extern bool EnableAutoBacklight;
+extern bool EnableAutoSoundVolume;
+extern DWORD EnableFLARMMap;
+extern short AircraftCategory;
 extern bool ExtendedVisualGlide;
 extern short Look8000;
-extern bool NewMap;
 extern bool CheckSum;
 extern bool HideUnits;
-extern bool VirtualKeys;
 extern short OutlinedTp;
 extern int  OverColor;
 extern COLORREF OverColorRef;
@@ -169,15 +159,13 @@ extern short GlideBarMode;
 extern short ArrivalValue;
 extern short NewMapDeclutter;
 extern short AverEffTime;
-extern bool MapLock;	// map locking status
-extern bool UseMapLock;
 extern bool ActiveMap; // 100318
 extern bool DrawBottom;
 extern short BottomMode; // Stripe number
 extern short BottomSize; // Height of bottom stripe
 extern short TopSize;
-extern short SortBoxY;
-extern short SortBoxX[];
+extern short SortBoxY[MSM_TOP+1];
+extern short SortBoxX[MSM_TOP+1][MAXSORTBOXES+1];
 extern short BottomGeom; // registry saved lk8000 navboxes geometry
 extern short GlideBarOffset; // offset to the right for drawing LK8000 with GB active
 extern bool  EngineeringMenu; // not saved in registry
@@ -188,10 +176,12 @@ extern short DeclutterMode;
 extern int PGClimbZoom;
 extern int PGCruiseZoom;
 extern int LKVarioBar;
+extern int LKVarioVal;
 
 extern short OverlaySize;
 extern short BarOpacity;
 extern short FontRenderer;
+extern bool LockModeStatus;
 
 extern short GestureSize;
 extern bool IphoneGestures;
@@ -203,13 +193,10 @@ extern int LKVarioSize;
 extern bool PGZoomTrigger;
 extern double  LastZoomTrigger;
 extern double  LastDoTraffic;
+extern double  LastDoAirspaces;
 extern double LastDoNearest;
 // extern double LastDoNearestTp;
 extern double LastDoCommon;
-#ifndef MAP_ZOOM
-extern double  CruiseMapScale;
-extern double  ClimbMapScale;
-#endif /* ! MAP_ZOOM */
 extern int LKwdlgConfig;
 extern double NmeaTime;
 extern int NmeaHours, NmeaMinutes, NmeaSeconds;
@@ -239,6 +226,10 @@ extern int LKSortedTraffic[FLARM_MAX_TRAFFIC+1];
 extern int LKTargetIndex;
 extern int LKTargetType;
 
+extern LKAirspace_Nearest_Item LKAirspaces[MAXNEARAIRSPACES+1];
+extern int LKNumAirspaces;
+extern int LKSortedAirspaces[MAXNEARAIRSPACES+1];
+
 extern int PGOpenTimeH;
 extern int PGOpenTimeM;
 extern int PGOpenTime;
@@ -248,7 +239,6 @@ extern int PGNumberOfGates;
 extern bool PGStartOut;
 extern int ActiveGate;
 
-#if LKTOPO
 extern int LKTopo;
 extern short LKWaterThreshold;
 extern double LKTopoZoomCat05;
@@ -263,11 +253,8 @@ extern double LKTopoZoomCat80;
 extern double LKTopoZoomCat90;
 extern double LKTopoZoomCat100;
 extern double LKTopoZoomCat110;
-#endif
 extern int LKMaxLabels;
-#if OVERTARGET
 extern short OvertargetMode;
-#endif
 // Simulator mode Turn rate, degrees per second (positive or negative)
 extern double	SimTurn;
 extern double ThLatitude;
@@ -307,6 +294,7 @@ extern short CommonNumpages;
 // extern short TurnpointNumraws; 101222
 // extern short TurnpointNumpages;
 extern short TrafficNumpages;
+extern short AspNumpages;
 extern short ModeIndex;
 
 // LK8000 sync flags
@@ -324,14 +312,8 @@ extern bool LKDoNotResetComms;
 
 extern ldrotary_s rotaryLD;
 extern windrotary_s rotaryWind;
+extern lkalarms_s LKalarms[];
 // airspace data
-extern AIRSPACE_AREA *AirspaceArea;
-extern AIRSPACE_POINT *AirspacePoint;
-extern POINT *AirspaceScreenPoint;
-extern AIRSPACE_CIRCLE *AirspaceCircle;
-extern unsigned int NumberOfAirspacePoints;
-extern unsigned int NumberOfAirspaceAreas;
-extern unsigned int NumberOfAirspaceCircles;
 
 extern short AltArrivMode;
 extern bool GlobalRunning;
@@ -366,7 +348,8 @@ extern int Cpu_Aver;
 
 extern double	NearestAirspaceHDist;
 extern double	NearestAirspaceVDist;
-extern TCHAR	NearestAirspaceName[NAME_SIZE+1];
+extern TCHAR    NearestAirspaceName[NAME_SIZE+1];
+extern TCHAR    NearestAirspaceVName[NAME_SIZE+1];
 
 // Ready to use for experiments
 extern double Experimental1;
@@ -396,9 +379,10 @@ extern DWORD StartMaxHeightMargin;
 extern DWORD StartMaxSpeed;
 extern DWORD StartMaxSpeedMargin;
 extern int StartHeightRef;
-extern int OLCRules;
-extern int Handicap;
-extern bool EnableOLC;
+
+extern DWORD AlarmMaxAltitude1;
+extern DWORD AlarmMaxAltitude2;
+extern DWORD AlarmMaxAltitude3;
 
 // master flight data
 extern NMEA_INFO GPS_INFO;
@@ -423,6 +407,7 @@ extern double POLAR[POLARSIZE];
 extern double WEIGHTS[POLARSIZE];
 extern int BallastSecsToEmpty;
 extern bool BallastTimerActive;
+extern int Handicap;
 
 extern bool InfoWindowActive;
 
@@ -440,64 +425,76 @@ extern int LoggerTimeStepCircling;
 extern double MACCREADY;
 extern bool   AutoMacCready;
 extern int  AutoMcMode;
-extern double AccelerometerZero;
 extern double SAFETYALTITUDEARRIVAL;
-extern double SAFETYALTITUDEBREAKOFF;
 extern double SAFETYALTITUDETERRAIN;
 extern double SAFTEYSPEED;
 
 extern int WindUpdateMode; // unused
 extern double QNH;
 extern int NettoSpeed;
-extern bool EnableCalibration;
-extern bool EnableAutoBlank;
 extern bool EnableAuxiliaryInfo;
 extern int debounceTimeout;
 extern bool SetSystemTimeFromGPS;
 extern bool ForceFinalGlide;
 extern bool AutoForceFinalGlide;
 
+extern CContestMgr::CResult OlcResults[CContestMgr::TYPE_NUM];
+
 // user interface options
 extern bool bAirspaceBlackOutline;
 extern int TrailActive;
 extern int VisualGlide; // VENTA3
-#ifndef MAP_ZOOM
-extern bool CircleZoom;
-#endif /* ! MAP_ZOOM */
 extern bool EnableTopology;
 extern bool EnableTerrain;
 extern int FinalGlideTerrain;
 extern int AutoWindMode;
 extern bool EnableNavBaroAltitude;
-#if ORBITER
 extern short Orbiter;
-#endif
 extern short Shading;
+extern bool ConfBB[10];
+extern bool ConfBB1;
+extern bool ConfBB2;
+extern bool ConfBB3;
+extern bool ConfBB4;
+extern bool ConfBB5;
+extern bool ConfBB6;
+extern bool ConfBB7;
+extern bool ConfBB8;
+extern bool ConfBB9;
+extern bool ConfMP[10];
+extern bool ConfIP[10][10];
+extern bool ConfIP11;
+extern bool ConfIP12;
+extern bool ConfIP13;
+extern bool ConfIP14;
+extern bool ConfIP15;
+extern bool ConfIP16;
+extern bool ConfIP21;
+extern bool ConfIP22;
+extern bool ConfIP23;
+extern bool ConfIP24;
+extern bool ConfIP31;
+extern bool ConfIP32;
+
 extern bool OverlayClock;
-extern bool EnableSoundVario;
-extern bool EnableSoundTask;
 extern bool EnableSoundModes;
-extern int SoundVolume;
-extern int SoundDeadband;
 extern int DisplayOrientation;
-#if AUTORIENT
 extern int OldDisplayOrientation;
 extern int AutoOrientScale;
-#endif
 extern int DisplayTextType;
 extern int AIRSPACEWARNINGS;
 extern int WarningTime;
 extern int AcknowledgementTime;
+extern int AirspaceWarningRepeatTime;			// warning repeat time if not acknowledged
+extern int AirspaceWarningVerticalMargin;		// vertical distance used to calculate too close condition
+extern int AirspaceWarningDlgTimeout;           // airspace warning dialog auto closing in x secs
+extern int AirspaceWarningMapLabels;            // airspace warning labels showed on map
 extern int AltitudeMode;
 extern int SafetyAltitudeMode;
 extern int ClipAltitude;
 extern int AltWarningMargin;
-extern bool EnableCDICruise;
-extern bool EnableCDICircling;
-extern bool EnableVarioGauge;
 extern int AutoAdvance;
 extern bool AdvanceArmed;
-extern bool EnableBlockSTF; // block speed to fly instead of dolphin
 extern int MenuTimeoutMax;
 extern int EnableThermalLocator;
 //
@@ -541,13 +538,13 @@ extern bool DisableAutoLogger;
 extern StatusMessageSTRUCT StatusMessageData[];
 extern int StatusMessageData_Size;
 
+#if USEOLDASPWARNINGS
 extern bool RequestAirspaceWarningDialog;
-
-extern int UserLevel;
-extern int UseCustomFonts;
-#if (EXPERIMENTAL > 0)
-extern BlueDialupSMS bsms;
 #endif
+
+extern bool LKLanguageReady;
+
+extern int UseCustomFonts;
 
 #if (WINDOWSPC>0) 
 extern int SCREENWIDTH;
@@ -556,4 +553,3 @@ extern int SCREENHEIGHT;
 
 #endif
 
-#endif

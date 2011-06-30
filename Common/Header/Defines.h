@@ -87,10 +87,9 @@
  * Global defines
  */
 
-#define LKNAME		"XCSoar"
 #define LKFORK		"LK8000"
 #define LKVERSION	"2"
-#define LKRELEASE	"1c"
+#define LKRELEASE	"3c0"
 
 #define REGKEYNAME	"Software\\COOL\\LK8000"
 #define XCSDATADIR	"LK8000"
@@ -190,6 +189,8 @@
 // Commons are both 1 page of commons and HISTORY as well! HISTORY is sized MAXCOMMON!
 #define MAXCOMMON		50
 #define MAXTRAFFIC		FLARM_MAX_TRAFFIC
+// Max number of airspaces handled by 2.4 nearest airspace page. Basically, the 50 nearest.
+#define MAXNEARAIRSPACES	50
 
 // Max number of pages in mapspacemode. 
 // Large enough to contain MAXNEAREST/numrows (numraws min 5 on some devices)
@@ -199,6 +200,7 @@
 #define MAXNUMPAGES		9	// the nearest
 #define MAXCOMMONNUMPAGES	9
 #define MAXTRAFFICNUMPAGES	9
+#define MAXAIRSPACENUMPAGES	9
 
 // Nearest Update time: wait for some seconds before updating nearest pages with
 // new calculations. 5 seconds is far enough, could even be more..
@@ -218,21 +220,13 @@
 // Position 1 is for testing
 // moving waypoints will have assigned fixed slots and positions
 // LKUtils.h defines contents for RESWP_ 
-#if NEWVIRTUALS
 #define NUMRESWP		4
-#else
-#define NUMRESWP		1
-#endif
 
 // Number of background colors available in MapWindow.h for NON-terrain maps
 #define LKMAXBACKGROUNDS        10
 
 // Task format version
-#if CUPCOM
 #define LKTASKVERSION	'3'
-#else
-#define LKTASKVERSION	'2'
-#endif
 // How many chars at the beginning of file are reserved
 #define LKPREAMBOLSIZE	50
 
@@ -252,3 +246,25 @@
 #define ALTA_AVEFF	3	// Altitude arrival at current average efficiency
 #define ALTA_TOP	3
 #define ALTA_SIZE	4
+
+// Fixed text for a disabled device. Cannot be used for translations.
+#define DEV_DISABLED_NAME	"DISABLED"
+
+// Max number of existing LK Alarms
+#define MAXLKALARMS	3
+#define MAXLKALARMSTRIGGERS	30	// max number of triggered events per alarm
+#define LKALARMSINTERVAL	60	// seconds of interval for LK alarms
+
+// Analysys pages can be called directly
+#define ANALYSYS_PAGE_DEFAULT	  -1	
+#define ANALYSIS_PAGE_BAROGRAPH    0
+#define ANALYSIS_PAGE_CLIMB        1
+#define ANALYSIS_PAGE_TASK_SPEED   2
+#define ANALYSIS_PAGE_WIND         3
+#define ANALYSIS_PAGE_POLAR        4
+#define ANALYSIS_PAGE_TEMPTRACE    5
+#define ANALYSIS_PAGE_TASK         6
+#define ANALYSIS_PAGE_CONTEST      7
+#define ANALYSIS_PAGE_AIRSPACE     8
+
+

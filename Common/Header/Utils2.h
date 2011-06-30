@@ -8,10 +8,8 @@
 #if !defined(LK8000_UTILS2_H_)
 #define LK8000_UTILS2_H_
 
-#if EQMC
 #if !defined(AFX_CALCULATIONS_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
 #include "Calculations.h"
-#endif
 #endif
 
 #include "MapWindow.h"
@@ -43,11 +41,7 @@ void	InsertRotaryBuffer(ifilter_s *buf, int value);
 
 bool	InitLDRotary(ldrotary_s *buf);
 void	InsertLDRotary(ldrotary_s *buf, int distance, int altitude);
-#if EQMC
 double	CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated);
-#else
-int	CalculateLDRotary(ldrotary_s *buf);
-#endif
 
 // TrueWind functions
 void	InitWindRotary(windrotary_s *wbuf);
@@ -62,20 +56,14 @@ TCHAR*  GetSizeSuffix(void);
 void	LKRunStartEnd(bool);
 
 void	InitNewMap();
-#ifndef MAP_ZOOM
-void	InitAircraftCategory();
-#endif /* ! MAP_ZOOM */
 void	InitScreenSize();
 void	InitLK8000();
-void	LockMap();
-void	UnlockMap();
 int   GetFontRenderer();
+bool	LockMode(short lmode);
+void	BottomBarChange(bool advance);
+void	InfoPageChange(bool advance);
 int	roundupdivision(int a, int b);
 void	Cpustats(int *acc, FILETIME *a, FILETIME *b, FILETIME *c, FILETIME *d);
-#ifdef FIVV
-void	CidContest();
-void	CidInit();
-#endif
 void	InitModeTable();
 void	SetModeType(short modeindex, short modetype);
 void	NextModeType();
@@ -87,29 +75,21 @@ void	SoundModeIndex();
 void	SelectMapSpace(short i);
 void	UnselectMapSpace(short i);
 int	GetInfoboxType(int i);
-#ifndef MAP_ZOOM
-int	GetInfoboxIndex(int i, short dmMode);
-#else /* MAP_ZOOM */
 int	GetInfoboxIndex(int i, MapWindow::Mode::TModeFly dmMode);
-#endif /* MAP_ZOOM */
 double	GetMacCready(int wpindex, short wpmode);
 void	unicodetoascii(TCHAR *text, int tsize, char *atext);
 
 int ProcessVirtualKey(int x, int y, long keytime, short vkmode);
 
-#if OVERTARGET
 extern int GetOvertargetIndex(void);
 extern void GetOvertargetName(TCHAR *overtargetname);
 extern TCHAR * GetOvertargetHeader(void);
 extern void RotateOvertarget(void);
 extern void ToggleOverlays(void);
-#endif
 extern bool CheckClubVersion(void);
 extern void ClubForbiddenMsg(void);
 
-#if ORBITER
 extern void CalculateOrbiter(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-#endif
 
 extern HFONT                                   LK8UnitFont;
 extern HFONT					LK8TitleFont;
@@ -180,8 +160,11 @@ extern HFONT					LK8PanelUnitFont;
 #define MSM_INFO_TRF		13
 // target page for traffic with graphics
 #define MSM_INFO_TARGET		14
-// turnaround point is TOP (equal to last TRI define), remember that arrays must count from zero, so MSM_TOP+1
-#define MSM_TOP			14
+#define MSM_INFO_CONTEST	15
+#define MSM_AIRSPACES		16
+// turnaround point is TOP (equal to last TRI define), 
+// remember that arrays must count from zero, so MSM_TOP+1
+#define MSM_TOP			16
 //
 // THIS CONFIGURATION GIVES THE ORDER OF MENUs. ALL ITEMS MUST ALSO BE ADDED INSIDE INITMODETABLE()
 // in Utils2.cpp WHERE each mode is paired with an MSM_xxx item.
@@ -191,7 +174,7 @@ extern HFONT					LK8PanelUnitFont;
 #define LKMODE_INFOMODE		1
 #define LKMODE_WP		2
 #define LKMODE_NAV		3
-#define LKMODE_TRF		4
+#define LKMODE_TRF		4	// TRF page must be the last one
 #define LKMODE_TOP		4
 //
 // Map mode
@@ -205,7 +188,8 @@ extern HFONT					LK8PanelUnitFont;
 #define WP_AIRPORTS		0
 #define WP_LANDABLE		1
 #define WP_NEARTPS		2
-#define WP_TOP			2
+#define WP_AIRSPACES		3
+#define WP_TOP			3
 //
 // InfoMode 
 //
@@ -213,8 +197,9 @@ extern HFONT					LK8PanelUnitFont;
 #define IM_THERMAL		1
 #define IM_TASK			2
 #define IM_AUX			3
-#define IM_TRI			4
-#define IM_TOP			4
+#define IM_CONTEST		4
+#define IM_TRI			5
+#define IM_TOP			5	// THIS IS THE ABSOLUTE MAX NUMBER OF PAGES IN ALL MODES, ALSO!
 //
 // Navigation mode
 //
@@ -228,6 +213,11 @@ extern HFONT					LK8PanelUnitFont;
 #define IM_TRF			1
 #define IM_TARGET		2
 #define TF_TOP			2
+
+//
+// How many sort boxes in nearest pages we can have, on the top line, normally 0-4 plus 1 spare
+#define MAXSORTBOXES		6
+
 //
 extern short ModeTable[LKMODE_TOP+1][MSM_TOP+1];
 extern short ModeType[LKMODE_TOP+1];
@@ -321,7 +311,7 @@ extern short ModeTableTop[LKMODE_TOP+1];
 #define LK_SPEEDTASK_ACH	61		//
 #define LK_AA_DELTATIME		62		//
 #define LK_TC_ALL		63		// Average of all thermals so far
-#define LK_VARIO_DIST		64		//
+#define LK_RESERVED5		64		// UNUSED, AVAILABLE
 #define LK_BATTERY		65		//
 #define LK_FIN_GR		66		//
 #define LK_ALTERNATESGR		67		// not a mistake: let it here before the alternates GR
@@ -339,7 +329,7 @@ extern short ModeTableTop[LKMODE_TOP+1];
 #define LK_ALTERN2_ARRIV	76		//
 #define LK_BESTALTERN_ARRIV	77		//
 #define LK_HOMERADIAL		78		//
-#define LK_AIRSPACEDIST		79		//
+#define LK_AIRSPACEHDIST	79		//
 #define LK_EXTBATTBANK		80		//
 #define LK_EXTBATT1VOLT		81		//
 #define LK_EXTBATT2VOLT		82		//
@@ -352,7 +342,43 @@ extern short ModeTableTop[LKMODE_TOP+1];
 // quick usage values
 #define LK_EXP1			88		//	--
 #define LK_EXP2			89		//	--
-// Non-infobox values
+
+// Non-infobox values - since 2.1 all values are no more available on Infoboxes (IBOX mode)
+
+#define LK_OLC_CLASSIC_DIST		90		//  not for ibox 
+#define LK_OLC_FAI_DIST			91		//  not for ibox 
+#define LK_OLC_LEAGUE_DIST		92		//  not for ibox 
+#define LK_OLC_3TPS_DIST		93		//  not for ibox 
+#define LK_OLC_CLASSIC_PREDICTED_DIST	94		//  not for ibox 
+#define LK_OLC_FAI_PREDICTED_DIST	95		//  not for ibox 
+#define LK_OLC_3TPS_PREDICTED_DIST	96		//  not for ibox 
+
+#define LK_OLC_CLASSIC_SPEED		97		//  not for ibox 
+#define LK_OLC_FAI_SPEED		98		//  not for ibox 
+#define LK_OLC_LEAGUE_SPEED		99		//  not for ibox 
+#define LK_OLC_3TPS_SPEED		100		//  not for ibox 
+#define LK_OLC_CLASSIC_PREDICTED_SPEED	101		//  not for ibox 
+#define LK_OLC_FAI_PREDICTED_SPEED	102		//  not for ibox 
+#define LK_OLC_3TPS_PREDICTED_SPEED	103		//  not for ibox 
+
+#define LK_OLC_CLASSIC_SCORE		104		//  not for ibox 
+#define LK_OLC_FAI_SCORE		105		//  not for ibox 
+#define LK_OLC_LEAGUE_SCORE		106		//  not for ibox 
+#define LK_OLC_3TPS_SCORE		107		//  not for ibox 
+#define LK_OLC_CLASSIC_PREDICTED_SCORE	108		//  not for ibox 
+#define LK_OLC_FAI_PREDICTED_SCORE	109		//  not for ibox 
+#define LK_OLC_3TPS_PREDICTED_SCORE	110		//  not for ibox 
+
+#define LK_OLC_PLUS_SCORE		111		//  not for ibox 
+#define LK_OLC_PLUS_PREDICTED_SCORE	112		//  not for ibox 
+#define LK_FLAPS			113   		// not for ibox
+#define LK_AIRSPACEVDIST		114		// not for ibox
+
+#define LK_HOME_ARRIVAL 115 // not for ibox
+
+
+// The following values are not available for custom configuration
+
 #define LK_WIND			131		//
 #define LK_FIN_ALTDIFF0		132		// final (task) altitude difference at MC=0
 #define LK_LKFIN_ETE		133		// real ETE 

@@ -26,11 +26,20 @@
 #include <string.h>
 #include <windows.h>
 
+#include "utils/stringext.h"
 
-void ascii2unicode(const char* ascii, WCHAR* unicode);
-void unicode2ascii(const WCHAR* unicode, char* ascii);
-void ascii2unicode(const char* ascii, WCHAR* unicode, int maxChars);
-void unicode2ascii(const WCHAR* unicode, char* ascii, int maxChars);
+
+// return Unicode string length, -1 on conversion error
+inline int ascii2unicode(const char* ascii, wchar_t* unicode)
+{
+  return(ascii2unicode(ascii, unicode, 0xffffff));
+}
+
+// return ASCII string length, -1 on conversion error
+inline int unicode2ascii(const wchar_t* unicode, char* ascii)
+{
+  return(unicode2ascii(unicode, ascii, 0xffffff));
+}
 
 
 //

@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <errno.h>
 
+#include "utils/heapcheck.h"
+
 
 void perror(const char *prefix)
 {

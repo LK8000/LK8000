@@ -9,13 +9,16 @@
 #include "StdAfx.h"
 #include <aygshell.h>
 
-#include "XCSoar.h"
+#include "lk8000.h"
 
 #include "Statistics.h"
 #include "externs.h"
 #include "dlgTools.h"
 #include "Logger.h"
 #include "InfoBoxLayout.h"
+#include "LKMapWindow.h"
+
+#include "utils/heapcheck.h"
 
 static int twItemIndex= 0;
 static WndForm *wf=NULL;
@@ -106,6 +109,8 @@ static void SetValues(bool first=false) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFAISector"));
   if (wp) {
+    // 110223 CAN ANYONE PLEASE CHECK WHAT THE HACK IS A BOOL FOR BILL GATES? BECAUSE IF FALSE IS -1 THEN
+    // WE HAVE MANY PROBLEMS! I THINK IT IS TIME TO GO BACK TO bool AND GET RID OF MS BOOLS!!
     wp->SetVisible(AATEnabled==0);
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
@@ -150,28 +155,35 @@ static void SetValues(bool first=false) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpMinTime"));
   if (wp) {
-    wp->SetVisible(AATEnabled>0);
+    wp->SetVisible(AATEnabled>0 && !ISPARAGLIDER);
     wp->GetDataField()->SetAsFloat(AATTaskLength);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpEnableMultipleStartPoints"));
   if (wp) {
+    wp->SetVisible(!ISPARAGLIDER);
     wp->GetDataField()->Set(EnableMultipleStartPoints);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAATEnabled"));
   if (wp) {
-    bool aw = (AATEnabled != 0);
-    wp->GetDataField()->Set(aw);
-    wp->RefreshDisplay();
+	if (ISPARAGLIDER) {
+		wp->SetVisible(false);
+		AATEnabled=TRUE;
+		wp->RefreshDisplay(); 
+	} else {
+		bool aw = (AATEnabled != 0);
+		wp->GetDataField()->Set(aw);
+		wp->RefreshDisplay(); 
+	}
   }
 
   WndButton* wb;
   wb = (WndButton *)wf->FindByName(TEXT("EditStartPoints"));
   if (wb) {
-    wb->SetVisible(EnableMultipleStartPoints!=0);
+    wb->SetVisible(EnableMultipleStartPoints!=0 && !ISPARAGLIDER);
   }
 
 }
@@ -295,6 +307,7 @@ static void ReadValues(void) {
   if (wp) {
     CHECK_CHANGED(AATEnabled,
                   wp->GetDataField()->GetAsInteger());
+	if (ISPARAGLIDER) AATEnabled=true; // force it on
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishLine"));
@@ -492,6 +505,11 @@ void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly){
                         filename, 
                         hWndMainWindow,
                         TEXT("IDR_XML_TASKWAYPOINT"));    
+  }
+
+  if (ISPARAGLIDER) {
+	AATEnabled=TRUE;
+	EnableMultipleStartPoints=false;
   }
 
   twItemIndex = itemindex;

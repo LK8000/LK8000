@@ -1,0 +1,4 @@
+* LK8000 polar for: Zuni II
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+ 358, 182, 110, -0.88, 167, -2.21, 203.72, -3.6, 10.13
+

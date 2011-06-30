@@ -17,7 +17,9 @@
 #include "StdAfx.h"
 
 #include "windstore.h"
-#include "XCSoar.h"
+#include "lk8000.h"
+
+#include "utils/heapcheck.h"
 
 WindStore::WindStore() {
   //create the lists

@@ -1,0 +1,4 @@
+* LK8000 polar for: ASH-25M 1
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+ 660, 121, 121.3, -0.73, 159.35, -1.31, 206.22, -2.4, 16.31
+

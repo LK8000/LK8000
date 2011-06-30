@@ -27,16 +27,7 @@
 
 #include "devCaiGpsNav.h"
 
-#if NOSIM
-
-#else
-#ifdef _SIM_
-static BOOL fSimMode = TRUE;
-#else
-static BOOL fSimMode = FALSE;
-#endif
-#endif
-
+#include "utils/heapcheck.h"
 
 #define  CtrlC  0x03
 #define  swap(x)      x = ((((x<<8) & 0xff00) | ((x>>8) & 0x00ff)) & 0xffff)
@@ -44,11 +35,7 @@ static BOOL fSimMode = FALSE;
 
 BOOL caiGpsNavOpen(PDeviceDescriptor_t d, int Port){
 
-  #if NOSIM
   if (!SIMMODE) {
-  #else
-  if (!fSimMode){
-  #endif
 	  d->Com->WriteString(TEXT("\x03"));
 	  Sleep(50);
 	  d->Com->WriteString(TEXT("NMEA\r"));

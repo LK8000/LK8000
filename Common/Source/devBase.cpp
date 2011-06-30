@@ -12,17 +12,7 @@
 #include "options.h"
 #include "devBase.h"
 
-//______________________________________________________________________defines_
-
-// Wide2Ascii converts non-ascii characters to '_', define flag for WC2MB()
-#if (WINDOWSPC>0)
-  #define W2A_USE_DEFAULT_CHAR WC_NO_BEST_FIT_CHARS
-#else
-  #define W2A_USE_DEFAULT_CHAR WC_DEFAULTCHAR
-#endif
-
-/// US-ASCII (7-bit) character set for WC2MB()
-#define W2A_ASCII_CHARSET 20127
+#include "utils/heapcheck.h"
 
 //____________________________________________________________class_definitions_
 
@@ -161,42 +151,6 @@ bool DevBase::CheckWPCount(const Declaration_t& decl,
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Converts TCHAR[] string into ASCII string (writing as much as possible
-/// characters into @p output).
-/// Output string will always be terminated by '\0'.
-///
-/// @param input    wide character string
-/// @param outSize  output buffer size
-/// @param output   output buffer
-///
-/// @retval true  all characters copied
-/// @retval false some characters could not be copied due to buffer size
-///
-//static
-bool DevBase::Wide2Ascii(const TCHAR* input, int outSize, char* output)
-{
-  char tmp[512];
-  int len = _tcslen(input);
-
-  output[0] = '\0';
-
-  if (len != 0)
-  {
-    // convert to us-ascii characters only (7-bit), replace other chars with '_'
-    len = WideCharToMultiByte(W2A_ASCII_CHARSET, W2A_USE_DEFAULT_CHAR, input, len, tmp, sizeof(tmp), "_", NULL);
-
-    if (len == 0)
-      return(false);
-  }
-
-  tmp[len] = '\0';
-  strncat(output, tmp, outSize - 1);
-
-  return(len <= outSize);
-} // Wide2Ascii()
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Stops port Rx thread.
 ///
 /// @param d           device descriptor
@@ -325,6 +279,19 @@ bool DevBase::ComWrite(PDeviceDescriptor_t d,
 {
   return(ComWrite(d, &character, 1, errBufSize, errBuf));
 } // ComWrite()
+
+
+///
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// Flushes COM port output buffers.
+///
+/// @param d           device descriptor
+///
+//static
+void DevBase::ComFlush(PDeviceDescriptor_t d)
+{
+  d->Com->Flush();
+}
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

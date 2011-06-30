@@ -1,0 +1,4 @@
+* LK8000 polar for: Delta USHPA-2
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+ 100, 0, 30, -1.10, 44.3,	-1.52,	58.0,	-3.60,  0 // 091217
+

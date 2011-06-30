@@ -15,7 +15,7 @@
 #include "Parser.h"
 #include "compatibility.h"
 #ifdef OLDPPC
-#include "XCSoarProcess.h"
+#include "LK8000Process.h"
 #else
 #include "Process.h"
 #endif
@@ -35,7 +35,7 @@
 #include "ThermalLocator.h"
 #include "windanalyser.h"
 #include "Atmosphere.h"
-#include "OnLineContest.h"
+#include "ContestMgr.h"
 #include "AATDistance.h"
 #include "NavFunctions.h" // used for team code
 #include "Calculations2.h"
@@ -46,12 +46,19 @@
 #include "ClimbAverageCalculator.h" // JMW new
 #endif
 #include "Waypointparser.h"
+#include "LKAirspace.h"
+using std::min;
+using std::max;
+
+#include "utils/heapcheck.h"
+
+using std::min;
+using std::max;
 
 //#define DEBUGTGATES	1
 //#define DEBUGATE	1
 
 WindAnalyser *windanalyser = NULL;
-OLCOptimizer olc;
 AATDistance aatdistance;
 static DERIVED_INFO Finish_Derived_Info;
 static ThermalLocator thermallocator;
@@ -65,9 +72,7 @@ int AutoWindMode= D_AUTOWIND_CIRCLING;
 // 3: Both
 
 bool EnableNavBaroAltitude=false;
-#if ORBITER
 short Orbiter=1;
-#endif
 int EnableExternalTriggerCruise=false;
 bool ExternalTriggerCruise= false;
 bool ExternalTriggerCircling= false;
@@ -84,11 +89,12 @@ bool BallastTimerActive = false;
 
 #define THERMAL_TIME_MIN 45.0
 double CRUISE_EFFICIENCY = 1.0;
-#ifndef MAP_ZOOM
-#define MAPMODE8000    MapWindow::IsMapFullScreen()&&NewMap&&Look8000&&!MapWindow::EnablePan&&MapSpaceMode==MSM_MAP
-#else /* MAP_ZOOM */
-#define MAPMODE8000    MapWindow::IsMapFullScreen()&&NewMap&&Look8000&&!MapWindow::mode.AnyPan()&&MapSpaceMode==MSM_MAP
-#endif /* MAP_ZOOM */
+
+#if USEIBOX
+#define MAPMODE8000    MapWindow::IsMapFullScreen()&&!MapWindow::mode.AnyPan()&&MapSpaceMode==MSM_MAP
+#else
+#define MAPMODE8000    !MapWindow::mode.AnyPan()&&MapSpaceMode==MSM_MAP
+#endif
 
 
 static double SpeedHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -97,6 +103,7 @@ static void Vario(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void LD(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void CruiseLD(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+static void Flaps(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void Average30s(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void AverageThermal(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -117,9 +124,7 @@ static void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const dou
 static void InSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static bool  InFinishSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const int i);
 static bool  InTurnSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const int i);
-//static void FinalGlideAlert(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void PredictNextPosition(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-static void AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void AATStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 static void ThermalBand(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -127,9 +132,6 @@ static void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
 
 static void TerrainHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-#ifndef NOTASKABORT
-static void SortLandableWaypoints(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
-#endif
 
 static void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
@@ -151,11 +153,6 @@ extern void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWayp
 int getFinalWaypoint() {
   int i;
   i=max(-1,min(MAXTASKPOINTS,ActiveWayPoint));
-  #ifndef NOTASKABORT
-  if (TaskAborted) {
-    return i;
-  } 
-  #endif
 
   i++;
   LockTaskData();
@@ -195,11 +192,6 @@ static void CheckTransitionFinalGlide(NMEA_INFO *Basic,
 static void CheckForceFinalGlide(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   // Auto Force Final Glide forces final glide mode
   // if above final glide...
-  #ifndef NOTASKABORT
-  if (TaskAborted) {
-    ForceFinalGlide = false;
-  } else {
-  #endif
     if (AutoForceFinalGlide) {
       if (!Calculated->FinalGlide) {
         if (Calculated->TaskAltitudeDifference>120) {
@@ -215,9 +207,6 @@ static void CheckForceFinalGlide(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
         }
       }
     }
-  #ifndef NOTASKABORT
-  }
-  #endif
 }
 
 // wp is misleading, this is a task index really!
@@ -239,16 +228,12 @@ double FAIFinishHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int wp) {
     wp_alt = 0;
   }
 
-  #ifndef NOTASKABORT
-  if (!TaskIsTemporary() && (wp==FinalWayPoint)) {
-  #else
   if (wp==FinalWayPoint) {
-  #endif
     if (EnableFAIFinishHeight && !AATEnabled) {
-      return max(max(FinishMinHeight/1000, safetyaltitudearrival)+ wp_alt, 
+      return max(max(FinishMinHeight/1000.0, safetyaltitudearrival)+ wp_alt, 
                  Calculated->TaskStartAltitude-1000.0);
     } else {
-      return max(FinishMinHeight/1000, safetyaltitudearrival)+wp_alt;
+      return max(FinishMinHeight/1000.0, safetyaltitudearrival)+wp_alt;
     }
   } else {
     return wp_alt + safetyaltitudearrival;
@@ -313,14 +298,12 @@ DWORD FinishRadius=1000;
 
 
 void RefreshTaskStatistics(void) {
-  //  LockFlightData();
   LockTaskData();
   TaskStatistics(&GPS_INFO, &CALCULATED_INFO, MACCREADY);
   AATStats(&GPS_INFO, &CALCULATED_INFO);
   TaskSpeed(&GPS_INFO, &CALCULATED_INFO, MACCREADY);
   IterateEffectiveMacCready(&GPS_INFO, &CALCULATED_INFO);
   UnlockTaskData();
-  //  UnlockFlightData();
 }
 
 
@@ -340,45 +323,12 @@ extern int FastLogNum; // number of points to log at high rate
 
 void AnnounceWayPointSwitch(DERIVED_INFO *Calculated, bool do_advance) {
   if (ActiveWayPoint == 0) {
-    #if 1 
     InputEvents::processGlideComputer(GCE_TASK_START); // 101014
-    #else  // TOREMOVE 1103 remove this #if code anytime from march 2011
-    // This is bad, called from wrong thread, moved to Service event. ?
-    TCHAR TempTime[40];
-    TCHAR TempAlt[40];
-    TCHAR TempSpeed[40];
-    Units::TimeToText(TempTime, (int)TimeLocal((int)Calculated->TaskStartTime));
-    _stprintf(TempAlt, TEXT("%.0f %s"),
-              Calculated->TaskStartAltitude*ALTITUDEMODIFY,
-              Units::GetAltitudeName());    
-    _stprintf(TempSpeed, TEXT("%.0f %s"),
-             Calculated->TaskStartSpeed*TASKSPEEDMODIFY,
-             Units::GetTaskSpeedName());
-
-    TCHAR TempAll[120];
-    _stprintf(TempAll, TEXT("\r\nAltitude: %s\r\nSpeed:%s\r\nTime: %s"), TempAlt, TempSpeed, TempTime); // FIXV2
-
-	// LKTOKEN  _@M692_ = "Task Start" 
-    DoStatusMessage(gettext(TEXT("_@M692_")), TempAll);
-	if (EnableSoundModes) {
-		LKSound(_T("LK_TASKSTART.WAV"));
-	}
-    #endif
 
   } else if (Calculated->ValidFinish && IsFinalWaypoint()) {
     InputEvents::processGlideComputer(GCE_TASK_FINISH);
-	#if 0 // TOREMOVE 1103
-	if (EnableSoundModes) {
-		LKSound(_T("LK_TASKFINISH.WAV"));
-	}
-	#endif
   } else {
     InputEvents::processGlideComputer(GCE_TASK_NEXTWAYPOINT);
-	#if 0 // TOREMOVE 1103
-	if (EnableSoundModes) {
-		LKSound(_T("LK_TASKPOINT.WAV"));
-	}
-	#endif
   }
 
   if (do_advance) {
@@ -399,6 +349,9 @@ double LowPassFilter(double y_last, double x_in, double fact) {
 }
 
 
+//
+// Sollfarh / Dolphin Speed calculator
+//
 void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   double n;
   // get load factor
@@ -408,34 +361,14 @@ void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     n = fabs(Calculated->Gload);
   }
 
-  // calculate optimum cruise speed in current track direction
-  // this still makes use of mode, so it should agree with
-  // Vmcready if the track bearing is the best cruise track
-  // this does assume g loading of 1.0
-  
-  // this is basically a dolphin soaring calculator
-  
   double delta_mc;
-  double risk_mc;
-  if (Calculated->TaskAltitudeDifference> -120) {
-    risk_mc = MACCREADY;
-  } else {
-    risk_mc = 
-      GlidePolar::MacCreadyRisk(Calculated->NavAltitude+Calculated->EnergyHeight
-                                -SAFETYALTITUDEBREAKOFF-Calculated->TerrainBase,
-                                Calculated->MaxThermalHeight,
-                                MACCREADY);
-  }
-  Calculated->MacCreadyRisk = risk_mc;
+  double current_mc = MACCREADY;
 
-  if (EnableBlockSTF) {
-    delta_mc = risk_mc;
-  } else {
-    delta_mc = risk_mc-Calculated->NettoVario;
-  }
+  delta_mc = current_mc-Calculated->NettoVario;
 
-  if (1 || (Calculated->Vario <= risk_mc)) {
-    // thermal is worse than mc threshold, so find opt cruise speed
+  // TODO FIX should we use this approach?
+  if (1 || (Calculated->Vario <= current_mc)) {
+    // airmass value is worse than mc threshold, so find opt cruise speed
 
     double VOptnew;
     
@@ -464,23 +397,21 @@ void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     
     // put low pass filter on VOpt so display doesn't jump around
     // too much
-    if (Calculated->Vario <= risk_mc) {
+    if (Calculated->Vario <= current_mc) {
       Calculated->VOpt = max(Calculated->VOpt,
 			     GlidePolar::Vminsink*sqrt(n));
     } else {
       Calculated->VOpt = max(Calculated->VOpt,
-			     GlidePolar::Vminsink);
+			     (double)GlidePolar::Vminsink);
     }
     Calculated->VOpt = LowPassFilter(Calculated->VOpt,VOptnew, 0.6);
     
   } else {
-    // this thermal is better than maccready, so fly at minimum sink
-    // speed
+    // this air mass is better than maccready, so fly at minimum sink speed
     // calculate speed of min sink adjusted for load factor 
     Calculated->VOpt = GlidePolar::Vminsink*sqrt(n);
   }
 
-  Calculated->STFMode = !Calculated->Circling;
 }
 
 
@@ -500,15 +431,9 @@ void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   double glider_sink_rate;    
   if (Basic->AirspeedAvailable && replay_disabled) {
-	glider_sink_rate= GlidePolar::SinkRate(max(GlidePolar::Vminsink, Basic->IndicatedAirspeed), n);
+    glider_sink_rate= GlidePolar::SinkRate(max((double)GlidePolar::Vminsink, Basic->IndicatedAirspeed), n);
   } else {
-	glider_sink_rate= GlidePolar::SinkRate(max(GlidePolar::Vminsink, Calculated->IndicatedAirspeedEstimated), n);
-#if 0
-	StartupStore(_T(".... sink old/new:  %f / %f\n"), 
-		GlidePolar::SinkRate(max(GlidePolar::Vminsink, Basic->Speed), n),
-		glider_sink_rate);
-#endif
-
+    glider_sink_rate= GlidePolar::SinkRate(max((double)GlidePolar::Vminsink, Calculated->IndicatedAirspeedEstimated), n);
   }
   Calculated->GliderSinkRate = glider_sink_rate;
 
@@ -524,53 +449,12 @@ void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 }
 
 
-void AudioVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
-  /* JMW disabled, no longer used
-#define AUDIOSCALE 100/7.5  // +/- 7.5 m/s range
-
-  if (
-      (Basic->AirspeedAvailable && 
-       (Basic->IndicatedAirspeed >= NettoSpeed))
-      || 
-      (!Basic->AirspeedAvailable &&
-       (Basic->Speed >= NettoSpeed))
-      ) {
-
-    //    VarioSound_SetV((short)((Calculated->NettoVario-GlidePolar::minsink)*AUDIOSCALE));
-
-  } else {
-    if (Basic->VarioAvailable && !ReplayLogger::IsEnabled()) {
-      //      VarioSound_SetV((short)(Basic->Vario*AUDIOSCALE));
-    } else {
-      //      VarioSound_SetV((short)(Calculated->Vario*AUDIOSCALE));
-    }
-  }
-
-  double vdiff;
-
-  if (Basic->AirspeedAvailable) {
-    if (Basic->AirspeedAvailable) {
-      vdiff = 100*(1.0-Calculated->VOpt/(Basic->IndicatedAirspeed+0.01));
-    } else {
-      vdiff = 100*(1.0-Calculated->VOpt/(Basic->Speed+0.01));
-    }
-    //    VarioSound_SetVAlt((short)(vdiff));
-  }
-
-  //  VarioSound_SoundParam();
-  */
-}
-
-
 BOOL DoCalculationsVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   static double LastTime = 0;
 
   NettoVario(Basic, Calculated);
   SpeedToFly(Basic, Calculated);
-#ifndef DISABLEAUDIOVARIO
-  AudioVario(Basic, Calculated);
-#endif
 
   // has GPS time advanced?
   if(Basic->Time <= LastTime)
@@ -582,9 +466,6 @@ BOOL DoCalculationsVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   return TRUE;
 }
-
-
-bool EnableCalibration = false;
 
 
 void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
@@ -635,7 +516,6 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       atan2(Calculated->GPSVario-Calculated->Vario,
            Calculated->TrueAirspeedEstimated);
 */
-	// VENTA FIX QUI REMOVE AND REPLACE OLD PitchAngle
 	// should be used as here only when no real vario available
     Calculated->PitchAngle = RAD_TO_DEG*	
       atan2(Calculated->Vario,
@@ -680,19 +560,11 @@ void  SetWindEstimate(const double wind_speed,
   Vector v_wind;
   v_wind.x = wind_speed*cos(wind_bearing*3.1415926/180.0);
   v_wind.y = wind_speed*sin(wind_bearing*3.1415926/180.0);
-#if 0	// 100118 changed to 0 100725
-  if (windanalyser) {
-	LockFlightData();
-	windanalyser->slot_newEstimate(&GPS_INFO, &CALCULATED_INFO, v_wind, quality);
-	UnlockFlightData();
-  }
-#else
   LockFlightData();
   if (windanalyser) {
     windanalyser->slot_newEstimate(&GPS_INFO, &CALCULATED_INFO, v_wind, quality);
   }
   UnlockFlightData();
-#endif
 }
 
 
@@ -700,18 +572,11 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   static double LastOptimiseTime = 0;
   static double LastSearchBestTime = 0; 
-  static double lastTime = 0;
   static bool	validHomeWaypoint=false;
 
   // See also same redundant check inside AirspaceWarning
-  if (NumberOfAirspaceAreas+NumberOfAirspaceCircles >0) {
-  	if (Basic->Time<= lastTime) {
-    lastTime = Basic->Time-6;
- 	 } else {
- 	   // calculate airspace warnings every 6 seconds
- 	   AirspaceWarning(Basic, Calculated);
- 	 }
-   }
+  // calculate airspace warnings - multicalc approach embedded in CAirspaceManager
+    CAirspaceManager::Instance().AirspaceWarning( Basic, Calculated);
 
 
    if (FinalGlideTerrain)
@@ -733,19 +598,12 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	// should account 25km more than what we really want for range search each second 
 	// Only if no data available, force action every 3 seconds
 	// We are updating every 3 minutes, which makes it good also for GA 
-	#if 0
-	if (  (RangeLandableNumber<=0 && RangeTurnpointNumber<=0 && (Basic->Time > (LastRangeLandableTime + 3.0))) ||
-	      (Basic->Time > (LastRangeLandableTime + 300.0)) ) {   // TODO FIX EXPERIMENT TEST 090928 every 5 minutes
-	#endif
-	#if 100227
 	if (  (RangeLandableNumber<=0 && RangeTurnpointNumber<=0 && (Basic->Time > (LastRangeLandableTime + 3.0))) ||
 	      (Basic->Time > (LastRangeLandableTime + 180.0)) ||
 		((!validHomeWaypoint) && (Basic->Time > (LastRangeLandableTime + 15.0))) 
 	) {  
 
 		if (HomeWaypoint!=-1) validHomeWaypoint=true;
-
-	#endif
 		// Should not be needed.
 		if ( DoRangeWaypointList(Basic,Calculated) )
 			LastRangeLandableTime=Basic->Time;
@@ -753,20 +611,11 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 	// watchout for replay files 
 	if (LastSearchBestTime > Basic->Time ) LastSearchBestTime=Basic->Time-(BESTALTERNATEINTERVAL+10);
-	if ( (OnBestAlternate == true) && (Basic->Time > LastSearchBestTime+BESTALTERNATEINTERVAL) )
+	if ( Basic->Time > LastSearchBestTime+BESTALTERNATEINTERVAL )
 	{
 		LastSearchBestTime = Basic->Time;
-		// if (!ISPARAGLIDER) // disabled search bestalternate for paragliders
-		// 110210 BestAlternate always calculated, eventually for PGs nothing to calculate
-		// Warning is selectable in any case separately
 		SearchBestAlternate(Basic, Calculated);
-		//else 
-		//	OnBestAlternate=false; // 091111 JUST FOR SAFETY PG TOTALLY DISABLED BESTALTERNATE
 	}
-
-
-    // If using a replay IGC file, current time is in the past and LastFlipBoxTime becomes unreachable!
-    if ( LastFlipBoxTime > Basic->Time ) LastFlipBoxTime = Basic->Time;
 
 }
 
@@ -792,54 +641,79 @@ void DistanceToHome(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 }
 
-void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated, 
-                      bool full=true) {
+//
+// This is called only by calculations thread, at init, at restart of a replay flight, and also on takeoff
+// IT SHOULD NEVER HAPPEN DURING REAL FLIGHT, AFTER TAKEOFF!
+// PLEASE NOTICE THAT TAKEOFF IS NOT NECESSARILY THE START OF FREEFLIGHT
+// We reset some values at start of free flight in LKCalculations
+// 
+void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   int i;
   (void)Basic;
 
   CRUISE_EFFICIENCY = 1.0;
 
-  if (full) {
-    olc.ResetFlight();
+    #if ALPHADEBUG
+    // StartupStore(_T("... ResetFlightStats\n"));
+    #endif
+    // It is better to reset it even if UseContestEngine() if false, because we might
+    // change aircraft type during runtime. We never know.
+    CContestMgr::Instance().Reset(Handicap);
     flightstats.Reset();
     aatdistance.Reset();
     CRUISE_EFFICIENCY = 1.0;
+
     Calculated->FlightTime = 0;
     Calculated->TakeOffTime = 0;
+    Calculated->FreeFlying=false;
+    Calculated->Flying=FALSE;
+    Calculated->Circling = FALSE;
+    Calculated->FinalGlide = false;
     Calculated->timeCruising = 0;
     Calculated->timeCircling = 0;
-    Calculated->TotalHeightClimb = 0;
 
+    Calculated->TotalHeightClimb = 0;
     Calculated->CruiseStartTime = -1;
+    Calculated->CruiseStartAlt = 0;
+    Calculated->CruiseStartLong = 0;
+    Calculated->CruiseStartLat = 0;
+
     Calculated->ClimbStartTime = -1;
+    Calculated->ClimbStartAlt = 0;
+    Calculated->ClimbStartLong = 0;
+    Calculated->ClimbStartLat = 0;
+
+    Calculated->AverageThermal = 0;
+    Calculated->Average30s = 0;
+    Calculated->NettoAverage30s = 0;
+    Calculated->ThermalGain = 0;
+    Calculated->LastThermalAverage = 0;
+    Calculated->LastThermalGain = 0;
+    Calculated->LastThermalTime = 0;
 
     Calculated->LDFinish = INVALID_GR;
-    Calculated->GRFinish = INVALID_GR;  // VENTA-ADDON GR to final destination
+    Calculated->GRFinish = INVALID_GR;
     Calculated->CruiseLD = INVALID_GR;
     Calculated->AverageLD = INVALID_GR;
     Calculated->LDNext = INVALID_GR;
     Calculated->LD = INVALID_GR;
     Calculated->LDvario = INVALID_GR;
-    Calculated->AverageThermal = 0;
     Calculated->Odometer = 0; // 091228
+    wcscpy(Calculated->Flaps,_T("???"));
 
     for (i=0; i<200; i++) {
       Calculated->AverageClimbRate[i]= 0;
       Calculated->AverageClimbRateN[i]= 0;
     }
-  }
 
-  Calculated->MaxThermalHeight = 0;
-  for (i=0; i<NUMTHERMALBUCKETS; i++) {
-    Calculated->ThermalProfileN[i]=0;
-    Calculated->ThermalProfileW[i]=0;
-  }
-  // clear thermal sources for first time.
-  for (i=0; i<MAX_THERMAL_SOURCES; i++) {
-    Calculated->ThermalSources[i].LiftRate= -1.0;
-  }
+    for (int i=0; i<=NUMTERRAINSWEEPS; i++) {
+      Calculated->GlideFootPrint[i].x = 0;
+      Calculated->GlideFootPrint[i].y = 0;
+    }
+    Calculated->TerrainWarningLatitude = 0.0;
+    Calculated->TerrainWarningLongitude = 0.0;
 
-  if (full) {
+    // Task system reset
     Calculated->ValidFinish = false;
     Calculated->ValidStart = false;
     Calculated->TaskStartTime = 0;
@@ -848,7 +722,23 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     Calculated->LegStartTime = 0;
     Calculated->MinAltitude = 0;
     Calculated->MaxHeightGain = 0;
-  }
+
+    if ( ISPARAGLIDER || ISCAR ) {
+	// paragliders can takeoff at 5kmh ground with some head wind!
+	TakeOffSpeedThreshold=1.39; 
+    } else {
+	TakeOffSpeedThreshold=11.12; // 40kmh
+    }
+
+    Calculated->MaxThermalHeight = 0;
+    for (i=0; i<NUMTHERMALBUCKETS; i++) {
+      Calculated->ThermalProfileN[i]=0;
+      Calculated->ThermalProfileW[i]=0;
+    }
+    // clear thermal sources for first time.
+    for (i=0; i<MAX_THERMAL_SOURCES; i++) {
+      Calculated->ThermalSources[i].LiftRate= -1.0;
+    }
 }
 
 
@@ -856,12 +746,12 @@ bool FlightTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static double LastTime = 0;
 
   if ((Basic->Time != 0) && (Basic->Time <= LastTime)) {
-  // 20060519:sgi added (Basic->Time != 0) dueto alwas return here
-  // if no GPS time available
-
 	if ((Basic->Time<LastTime) && (!Basic->NAVWarning)) {
 		// Reset statistics.. (probably due to being in IGC replay mode)
+		StartupStore(_T("... Time is in the past! Flight reset.%s"),NEWLINE);
 		ResetFlightStats(Basic, Calculated);
+		time_in_flight=0;
+		time_on_ground=0;
 	}
 
 	LastTime = Basic->Time; 
@@ -904,14 +794,16 @@ void StartTask(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   Calculated->CruiseStartAlt = Calculated->NavAltitude;
   Calculated->CruiseStartTime = Basic->Time;
 
+  aatdistance.Reset();
+
   // JMW TODO accuracy: Get time from aatdistance module since this is
   // more accurate
 
   // JMW clear thermal climb average on task start
   flightstats.ThermalAverage.Reset();
   flightstats.Task_Speed.Reset();
-  Calculated->AverageThermal = 0; // VNT for some reason looked uninitialised
-  Calculated->WaypointBearing=0; // VNT TEST
+  Calculated->AverageThermal = 0;
+  Calculated->WaypointBearing=0;
 
   // JMW reset time cruising/time circling stats on task start
   Calculated->timeCircling = 0;
@@ -944,42 +836,19 @@ void CloseCalculations() {
 
 void InitCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   StartupStore(TEXT(". Init Calculations%s"),NEWLINE);
-  // CalibrationInit();
-  ResetFlightStats(Basic, Calculated, true);
-  // LoadCalculationsPersist(Calculated); // confusing people
-  // DeleteCalculationsPersist(); 
 
-  // WARNING USING m/s 
-  if ( ISPARAGLIDER || ISCAR ) {
-	TakeOffSpeedThreshold=1.39; // paragliders can takeoff at 5kmh ground with some head wind!
-  } else {
-	TakeOffSpeedThreshold=11.12; // 40kmh
-  }
+  ResetFlightStats(Basic, Calculated);
 
-
-  ResetFlightStats(Basic, Calculated, false);
-  Calculated->Flying = false;
-  Calculated->Circling = false;
-  Calculated->FinalGlide = false;
-  for (int i=0; i<=NUMTERRAINSWEEPS; i++) {
-    Calculated->GlideFootPrint[i].x = 0;
-    Calculated->GlideFootPrint[i].y = 0;
-  }
-  Calculated->TerrainWarningLatitude = 0.0;
-  Calculated->TerrainWarningLongitude = 0.0;
-
-  // Initialise calculations, DoInit will make it and return
+  // Initialise calculations, on first run DoInit will make it and return
   DoRangeWaypointList(Basic,Calculated);
   DoTraffic(Basic,Calculated);
+  DoAirspaces(Basic,Calculated);
+
+  InitAlarms();
 
   LockFlightData();
-
   if (!windanalyser) {
     windanalyser = new WindAnalyser();
-    
-    //JMW TODO enhancement: seed initial wind store with start conditions
-    // SetWindEstimate(Calculated->WindSpeed,Calculated->WindBearing, 1);
-
   }
   UnlockFlightData();
 
@@ -1017,33 +886,6 @@ void AverageClimbRate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 }
 
 
-#ifdef DEBUGTASKSPEED
-void DebugTaskCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
-{
-  if ((Calculated->TaskStartTime>0) 
-      && (Basic->Time-Calculated->TaskStartTime>0)) {
-      if (Calculated->Flying) {
-        
-        double effective_mc = EffectiveMacCready(Basic, Calculated);
-        DebugStore("%g %g %g %g %g %g %g %g %g %g %d %g %g # taskspeed\r\n",
-                Basic->Time-Calculated->TaskStartTime,
-                Calculated->TaskDistanceCovered,
-                Calculated->TaskDistanceToGo,
-                Calculated->TaskAltitudeRequired,
-                Calculated->NavAltitude,
-                Calculated->TaskSpeedAchieved,
-                Calculated->TaskSpeed,
-                Calculated->TaskSpeedInstantaneous,
-                MACCREADY,
-                effective_mc,
-                ActiveWayPoint,
-                Calculated->DistanceVario,
-                Calculated->GPSVario);
-      }
-    }
-}
-#endif
-
 extern bool TargetDialogOpen;
 
 BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
@@ -1054,24 +896,19 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   Heading(Basic, Calculated);
   DistanceToNext(Basic, Calculated);
   DistanceToHome(Basic, Calculated);
-  DoLogging(Basic, Calculated); // moved here to reduce latency 091201
-  Vario(Basic,Calculated); // moved here to reduce latency 091201
+  DetectFreeFlying(Calculated);	// check ongoing powerless flight
+  DoLogging(Basic, Calculated);
+  Vario(Basic,Calculated);
   TerrainHeight(Basic, Calculated);
   AltitudeRequired(Basic, Calculated, MACCREADY);
-  DoAlternates(Basic,Calculated,TASKINDEX);  // 091005
+  DoAlternates(Basic,Calculated,TASKINDEX); 
   if (MAPMODE8000) {
-	DoAlternates(Basic,Calculated,RESWP_LASTTHERMAL);  // 100930
-	DoAlternates(Basic,Calculated,RESWP_TEAMMATE);     // 100930
-	DoAlternates(Basic,Calculated,RESWP_FLARMTARGET);  // 101001
+	DoAlternates(Basic,Calculated,RESWP_LASTTHERMAL);
+	DoAlternates(Basic,Calculated,RESWP_TEAMMATE);
+	DoAlternates(Basic,Calculated,RESWP_FLARMTARGET);
+	DoAlternates(Basic,Calculated,HomeWaypoint); 	
   }
 
-  // Vario(Basic,Calculated); moved up to reduce latency 091201
-
-  #ifndef NOTASKABORT
-  if (TaskAborted) {
-    SortLandableWaypoints(Basic, Calculated);
-  } 
-  #endif
   if (!TargetDialogOpen) {
     // don't calculate these if optimise function being invoked or
     // target is being adjusted
@@ -1089,11 +926,12 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   Turning(Basic, Calculated);
   LD(Basic,Calculated);
   CruiseLD(Basic,Calculated);
-  #if EQMC
+
+  // We calculate flaps settings only if the polar is extended.
+  // We do assume that GA planes will NOT use extended polars
+  if (GlidePolar::FlapsPosCount >0) Flaps(Basic,Calculated);
+
   Calculated->AverageLD=CalculateLDRotary(&rotaryLD,Calculated); 
-  #else
-  Calculated->AverageLD=CalculateLDRotary(&rotaryLD); // AverageLD
-  #endif
   Average30s(Basic,Calculated);
   AverageThermal(Basic,Calculated);
   AverageClimbRate(Basic,Calculated);
@@ -1104,20 +942,14 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   PredictNextPosition(Basic, Calculated);
 
-  #if ORBITER
   if (Orbiter) CalculateOrbiter(Basic,Calculated);
-  #endif
 
   CalculateOwnTeamCode(Basic, Calculated);
   CalculateTeammateBearingRange(Basic, Calculated);
 
   BallastDump();
 
-  #ifndef NOTASKABORT
-  if (!TaskIsTemporary()) {
-  #else
   if (ValidTaskPoint(ActiveWayPoint)) {
-  #endif
 	// only if running a real task
 	if (ValidTaskPoint(1)) InSector(Basic, Calculated);
 	DoAutoMacCready(Basic, Calculated);
@@ -1129,17 +961,16 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	DoAutoMacCready(Basic, Calculated); // will set only EqMC 
   }
 
-  // TODO avoid calculating alternates if in MSM_COMMON mode and maybe other too
-  if ( OnAlternate1 == true ) DoAlternates(Basic, Calculated,Alternate1); 
-  if ( OnAlternate2 == true ) DoAlternates(Basic, Calculated,Alternate2); 
-  if ( OnBestAlternate == true ) DoAlternates(Basic, Calculated,BestAlternate); 
+  DoAlternates(Basic, Calculated,Alternate1); 
+  DoAlternates(Basic, Calculated,Alternate2); 
+  DoAlternates(Basic, Calculated,BestAlternate); 
 
   // Calculate nearest landing when needed
-#ifndef MAP_ZOOM
-  if ( MapWindow::IsMapFullScreen() && !MapWindow::EnablePan && NewMap && Look8000 && DrawBottom && (MapSpaceMode>MSM_MAP) ) {
-#else /* MAP_ZOOM */
-  if ( MapWindow::IsMapFullScreen() && !MapWindow::mode.AnyPan() && NewMap && Look8000 && DrawBottom && (MapSpaceMode>MSM_MAP) ) {
-#endif /* MAP_ZOOM */
+#if USEIBOX
+  if ( MapWindow::IsMapFullScreen() && !MapWindow::mode.AnyPan() && DrawBottom && (MapSpaceMode>MSM_MAP) ) {
+#else
+  if ( !MapWindow::mode.AnyPan() && DrawBottom && (MapSpaceMode>MSM_MAP) ) {
+#endif
 	switch(MapSpaceMode) {
 		case MSM_LANDABLE:
 		case MSM_AIRPORTS:
@@ -1152,11 +983,6 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 		case MSM_RECENT:
 			DoRecent(Basic,Calculated);
 			break;
-/* 101222 REMOVE
-		case MSM_NEARTPS:
-			DoNearestTurnpoint(Basic,Calculated);
-			break;
-*/
 	}
   }
 
@@ -1165,7 +991,9 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   return TRUE;
 }
 
-
+//
+// Simply returns gps or baro altitude, no total energy in use within LK
+//
 void EnergyHeightNavAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated) 
 {
 
@@ -1176,7 +1004,8 @@ void EnergyHeightNavAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     Calculated->NavAltitude = Basic->Altitude;
   }
 
-#if (0)
+  #if (0)
+  // 110627 This was the old Total Energy calculator. It is disabled now.
   double ias_to_tas;
   double V_tas;
 
@@ -1193,9 +1022,10 @@ void EnergyHeightNavAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   double V_target = max(V_bestld_tas, V_mc_tas);
   Calculated->EnergyHeight = 
     (V_tas*V_tas-V_target*V_target)/(9.81*2.0);
-#else
+  #else
+  // Total Energy is unused right now in LK
   Calculated->EnergyHeight = 0.0;
-#endif
+  #endif
 }
 
 
@@ -1204,47 +1034,26 @@ void Vario(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   static double LastTime = 0;
   static double LastAlt = 0;
-  static double LastAltTE = 0;
-  static double h0last = 0;
-  double myTime;  // 091201
+  double myTime;
 
-  myTime=Basic->Time; // 091201 
+  myTime=Basic->Time; 
 
-  // if(Basic->Time <= LastTime) { 091201
   if(myTime <= LastTime) {
-    //LastTime = Basic->Time; 091201
     LastTime = myTime;
-    LastAlt = Calculated->NavAltitude; // 091201 BUGFIX TESTFIX added was causing vario to be wrong at intervals
+    LastAlt = Calculated->NavAltitude;
   } else {
     double Gain = Calculated->NavAltitude - LastAlt;
     double dT = (Basic->Time - LastTime);
-    // estimate value from GPS   091201 or baro!
     Calculated->GPSVario = Gain / dT;
-    Calculated->GPSVarioTE = Gain;
-
-    double dv = (Calculated->TaskAltitudeDifference-h0last)
-      /(myTime-LastTime); // 091201
-    Calculated->DistanceVario = LowPassFilter(Calculated->DistanceVario, 
-                                              dv, 0.1);
-
-    h0last = Calculated->TaskAltitudeDifference;
-
     LastAlt = Calculated->NavAltitude;
-    LastAltTE = LastAlt;
-    LastTime = myTime; // 091201
-
+    LastTime = myTime;
   }
 
   if (!Basic->VarioAvailable || ReplayLogger::IsEnabled()) {
     Calculated->Vario = Calculated->GPSVario;
-
   } else {
     // get value from instrument
     Calculated->Vario = Basic->Vario;
-    // we don't bother with sound here as it is polled at a 
-    // faster rate in the DoVarioCalcs methods
-
-    // CalibrationUpdate(Basic, Calculated);
   }
 }
 
@@ -1333,15 +1142,6 @@ void Average30s(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       Calculated->NettoAverage30s = 
         LowPassFilter(Calculated->NettoAverage30s,NVave,0.8);
 
-#ifdef DEBUGAVERAGER
-      if (Calculated->Flying) {
-        DebugStore("%d %g %g %g # averager\r\n",
-                num_samples,
-                Calculated->Vario, 
-                Calculated->Average30s, Calculated->NettoAverage30s);
-      }
-#endif
-
     }
   else
     {
@@ -1374,6 +1174,7 @@ void AverageThermal(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 void MaxHeightGain(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   if (!Calculated->Flying) return;
+  if (!Calculated->FreeFlying && (ISGLIDER||ISPARAGLIDER)) return;
 
   if (Calculated->MinAltitude>0) {
     double height_gain = Calculated->NavAltitude - Calculated->MinAltitude;
@@ -1477,6 +1278,25 @@ void LD(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   }
 }
 
+void Flaps(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
+{	
+	double speed = 0.0;
+	if (GlidePolar::FlapsMass<=0) return; // avoid division by zero crashes
+	if (Basic->AirspeedAvailable) {
+		speed = (int)(SPEEDMODIFY*Basic->IndicatedAirspeed);
+	} else {
+		speed = (int)(SPEEDMODIFY*Calculated->IndicatedAirspeedEstimated);
+	}
+
+	double massCorrectionFactor = sqrt(GlidePolar::GetAUW()/GlidePolar::FlapsMass);
+
+	for (int i=0;i<GlidePolar::FlapsPosCount-1;i++) {
+		if (speed >= GlidePolar::FlapsPos[i]*massCorrectionFactor 
+			&& speed < GlidePolar::FlapsPos[i+1]*massCorrectionFactor) {
+			wcscpy(Calculated->Flaps,GlidePolar::FlapsName[i]);
+		}
+	}	
+}
 
 void CruiseLD(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
@@ -1572,8 +1392,21 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   if (!Calculated->Flying) return;
 
+  // Back in time in IGC replay mode?
   if(Basic->Time <= LastTime) {
+    #if ALPHADEBUG
+    StartupStore(_T("...... Turning back in time: reset\n"));
+    #endif
     LastTime = Basic->Time;
+    LastTrack = 0;
+    StartTime  = 0;
+    StartLong = 0;
+    StartLat = 0;
+    StartAlt = 0;
+    StartEnergyHeight = 0;
+    LastTime = 0;
+    MODE = CRUISE;
+    LEFT = FALSE;
     return;
   }
   dT = Basic->Time - LastTime;
@@ -1623,11 +1456,6 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   rate_ave /= 60;
   
   Calculated->Essing = fabs(rate_ave)*100/MinTurnRate;
-  #if 0	//@ 101101
-  if (fabs(rate_ave)< MinTurnRate*2) {
-    //    Calculated->Essing = rate_ave;
-  }
-  #endif
 
   Rate = LowPassFilter(LastRate,Rate,0.3);
   LastRate = Rate;
@@ -1666,6 +1494,8 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   switch(MODE) {
   case CRUISE:
     if((Rate >= MinTurnRate)||(forcecircling)) {
+      // This is initialising the potential thermalling start
+      // We still dont know if we are really circling for thermal
       StartTime = Basic->Time;
       StartLong = Basic->Longitude;
       StartLat  = Basic->Latitude;
@@ -1684,10 +1514,20 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       break;
     }
     if((Rate >= MinTurnRate)||(forcecircling)) {
-      if( (!ISCAR && ((Basic->Time  - StartTime) > CruiseClimbSwitch))|| forcecircling) { // 101205 ISCAR
+      // WE CANNOT do this, because we also may need Circling mode to detect FF!!
+      // if( (Calculated->FreeFlying && ((Basic->Time  - StartTime) > CruiseClimbSwitch))|| forcecircling) {
+       if( (!ISCAR && !ISGAAIRCRAFT && ((Basic->Time  - StartTime) > CruiseClimbSwitch))|| forcecircling) { 
         Calculated->Circling = TRUE;
         // JMW Transition to climb
         MODE = CLIMB;
+	// Probably a replay flight, with fast forward with no cruise init
+	if (StartTime==0) {
+	      StartTime = Basic->Time;
+	      StartLong = Basic->Longitude;
+	      StartLat  = Basic->Latitude;
+	      StartAlt  = Calculated->NavAltitude;
+	      StartEnergyHeight  = Calculated->EnergyHeight;
+	}
         Calculated->ClimbStartLat = StartLat;
         Calculated->ClimbStartLong = StartLong;
         Calculated->ClimbStartAlt = StartAlt+StartEnergyHeight;
@@ -1698,16 +1538,11 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
           // we will catch the takeoff height as the base.
 
           flightstats.Altitude_Base.
-            least_squares_update(max(0,Calculated->ClimbStartTime
+            least_squares_update(max(0.0, Calculated->ClimbStartTime
                                      - Calculated->TakeOffTime)/3600.0,
                                  StartAlt);
         }
         
-        // consider code: InputEvents GCE - Move this to InputEvents 
-        // Consider a way to take the CircleZoom and other logic
-        // into InputEvents instead?
-        // JMW: NO.  Core functionality must be built into the
-        // main program, unable to be overridden.
         SwitchZoomClimb(Basic, Calculated, true, LEFT);
         InputEvents::processGlideComputer(GCE_FLIGHTMODE_CLIMB);
       }
@@ -1748,6 +1583,13 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
         
         // Transition to cruise
         MODE = CRUISE;
+      if (StartTime==0) {
+        StartTime = Basic->Time;
+        StartLong = Basic->Longitude;
+        StartLat  = Basic->Latitude;
+        StartAlt  = Calculated->NavAltitude;
+        StartEnergyHeight  = Calculated->EnergyHeight;
+      }
         Calculated->CruiseStartLat  = StartLat;
         Calculated->CruiseStartLong = StartLong;
         Calculated->CruiseStartAlt  = StartAlt;
@@ -1763,18 +1605,13 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	InitWindRotary(&rotaryWind); // 100103
         
         flightstats.Altitude_Ceiling.
-          least_squares_update(max(0,Calculated->CruiseStartTime
+          least_squares_update(max(0.0, Calculated->CruiseStartTime
                                    - Calculated->TakeOffTime)/3600.0,
                                Calculated->CruiseStartAlt);
         
         SwitchZoomClimb(Basic, Calculated, false, LEFT);
         InputEvents::processGlideComputer(GCE_FLIGHTMODE_CRUISE);
       }
-
-      //if ((Basic->Time  - StartTime) > ClimbCruiseSwitch/3) {
-      // reset thermal locator if changing thermal cores
-      // thermallocator.Reset();
-      //}
 
     } else {
       // JMW Transition back to climb, because we are turning again
@@ -1934,11 +1771,7 @@ void DistanceToNext(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
       Calculated->ZoomDistance = Calculated->WaypointDistance;
 
-      #ifndef NOTASKABORT
-      if (AATEnabled && !TaskIsTemporary()
-      #else
       if (AATEnabled
-      #endif
 	  && (ActiveWayPoint>0) && 
           ValidTaskPoint(ActiveWayPoint+1)) {
 
@@ -1958,11 +1791,7 @@ void DistanceToNext(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
         }
 
       } else if ((ActiveWayPoint==0) && (ValidTaskPoint(ActiveWayPoint+1))
-#ifndef NOTASKABORT
-                 && (Calculated->IsInSector) && !TaskIsTemporary()) {
-#else
                  && (Calculated->IsInSector) ) {
-#endif
 
         // JMW set waypoint bearing to start direction if in start sector
 
@@ -2012,9 +1841,7 @@ void AltitudeRequired(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 			true,
 			NULL, height_above_wp, CRUISE_EFFICIENCY
                         );
-      // JMW CHECK FGAMT
 
-	// VENTA6
 	if (this_maccready==0 ) Calculated->NextAltitudeRequired0=Calculated->NextAltitudeRequired;
         else
 	      Calculated->NextAltitudeRequired0 = GlidePolar::MacCreadyAltitude(0,
@@ -2737,7 +2564,6 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
 			}
 			// now check for special alerts on countdown, only on current armed start
 			if (gatetimediff==3600 && ((PGGateIntervalTime>=70)||ActiveGate==0) ) { 
-				// DoStatusMessage(_T("FIRST GATE OPEN IN 1 HOUR")); // REMOVE FIXV2
 				//  850  FIRST GATE OPEN IN 1 HOUR
 				DoStatusMessage(gettext(TEXT("_@M850_")));
 				if (EnableSoundModes) {
@@ -2745,7 +2571,6 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
 				}
 			}
 			if (gatetimediff==1800 && ((PGGateIntervalTime>=45)||ActiveGate==0) ) { 
-				// DoStatusMessage(_T("FIRST GATE OPEN IN 30 MINUTES")); // REMOVE FIXV2
 				//  851  FIRST GATE OPEN IN 30 MINUTES
 				DoStatusMessage(gettext(TEXT("_@M851_")));
 				if (EnableSoundModes) {
@@ -2753,7 +2578,6 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
 				}
 			}
 			if (gatetimediff==600 && ((PGGateIntervalTime>=15)||ActiveGate==0) ) { // 10 minutes to go
-				// DoStatusMessage(_T("10 MINUTES TO GO")); // REMOVE FIXV2
 				//  852  10 MINUTES TO GO
 				DoStatusMessage(gettext(TEXT("_@M852_")));
 				if (EnableSoundModes) {
@@ -2761,7 +2585,6 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
 				}
 			}
 			if (gatetimediff==300 && ((PGGateIntervalTime>=10)||ActiveGate==0)) { // 5 minutes to go
-				// DoStatusMessage(_T("5 MINUTES TO GO")); // REMOVE FIXV2
 				//  853  5 MINUTES TO GO
 				DoStatusMessage(gettext(TEXT("_@M853_")));
 				if (EnableSoundModes) {
@@ -2886,17 +2709,6 @@ static BOOL CheckRestart(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   if((Basic->Time - Calculated->TaskStartTime < 3600)
      &&(ActiveWayPoint<=1)) {
 
-    /*
-    BOOL StartCrossed;
-    if(InStartSector(Basic, Calculated, *LastStartSector, &StartCrossed)) {
-      Calculated->IsInSector = true;
-      
-      // this allows restart if returned to start sector before
-      // 10 minutes after task start
-      ActiveWayPoint = 0;
-      return TRUE;
-    }
-    */
     CheckStart(Basic, Calculated, LastStartSector);
   }
   return FALSE;
@@ -3011,7 +2823,6 @@ static void TerrainHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
                                         Basic->Longitude);
   RasterTerrain::Unlock();
 
-  #if NEWRASTER	// 101017
   if(Alt!=TERRAIN_INVALID) { // terrain invalid is now positive  ex. 32767
 	Calculated->TerrainValid = true;
 	if (Alt>=0) {
@@ -3024,19 +2835,6 @@ static void TerrainHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	Calculated->TerrainValid = false; 
 	Calculated->TerrainAlt = 0;
   }
-  #else
-  if(Alt<0) {
-	if (Alt <= TERRAIN_INVALID) {
-		Calculated->TerrainValid = false; 
-	} else {
-		Calculated->TerrainValid = true; 
-	}
-	Calculated->TerrainAlt = 0;
-  } else {
-	Calculated->TerrainValid = true;
-	Calculated->TerrainAlt = Alt;
-  }
-  #endif
   Calculated->AltitudeAGL = Calculated->NavAltitude - Calculated->TerrainAlt;
   if (!FinalGlideTerrain) {
 	Calculated->TerrainBase = Calculated->TerrainAlt;
@@ -3191,9 +2989,6 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
   double TotalTime=0, TotalDistance=0, Vfinal=0;
 
   if (!ValidTaskPoint(ActiveWayPoint)) return;
-  #ifndef NOTASKABORT
-  if (TaskIsTemporary()) return;
-  #endif
   if (Calculated->ValidFinish) return;
   if (!Calculated->Flying) return;
 
@@ -3239,7 +3034,7 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
     // total height required from start (takes safety arrival alt
     // and finish waypoint altitude into account)
     
-    double h1 = max(0,Calculated->NavAltitude-hf);
+    double h1 = max(0.0, Calculated->NavAltitude-hf);
     // height above target
 
     double dFinal;
@@ -3256,7 +3051,7 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
     }
 
     // JB's task speed...
-    double hx = max(0,SpeedHeight(Basic, Calculated));
+    double hx = max(0.0, SpeedHeight(Basic, Calculated));
     double t1mod = t1-hx/MacCreadyOrAvClimbRate(Basic, Calculated, this_maccready);
     // only valid if flown for 5 minutes or more
     if (t1mod>300.0) {
@@ -3283,7 +3078,7 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
       dFinal = 0;
     }
 
-    double dc = max(0,dr-dFinal); 
+    double dc = max(0.0, dr-dFinal); 
     // amount of extra distance to travel in cruise/climb before final glide
 
     // equivalent distance to end of final glide
@@ -3329,8 +3124,6 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
 	termikLigaPoints = konst*(0.015*0.001*d1-(400.0/(0.001*d1))+12.0)*v1*3.6*100.0/(double)Handicap;
       }
     
-    Calculated->TermikLigaPoints = termikLigaPoints;
-
     if(Basic->Time < LastTime) {
       LastTime = Basic->Time;
     } else if (Basic->Time-LastTime >=1.0) {
@@ -3375,13 +3168,13 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
       vthis /= AirDensityRatio(Calculated->NavAltitude);
       
       dr_last = Calculated->LegDistanceCovered;
-      double ttg = max(1,Calculated->LegTimeToGo);
+      double ttg = max(1.0, Calculated->LegTimeToGo);
       //      double Vav = d0/max(1.0,t0); 
       double Vrem = Calculated->LegDistanceToGo/ttg;
       double Vref = // Vav;
 	Vrem;
       double sr = -GlidePolar::SinkRate(Vstar);
-      double height_diff = max(0,-Calculated->TaskAltitudeDifference);
+      double height_diff = max(0.0, -Calculated->TaskAltitudeDifference);
       
       if (Calculated->timeCircling>30) {
 	mc_safe = max(this_maccready, 
@@ -3393,11 +3186,11 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
       double time_climb = height_diff/mc_safe;
 
       // calculate amount of time in cruise/climb glide
-      double rho_c = max(0,min(1,time_climb/ttg));
+      double rho_c = max(0.0, min(1.0, time_climb/ttg));
 
       if (Calculated->FinalGlide) {
 	if (rho_climb>0) {
-	  rho_c = max(0,min(1,rho_c/rho_climb));
+	  rho_c = max(0.0, min(1.0, rho_c/rho_climb));
 	}
 	if (!Calculated->Circling) {
 	  if (Calculated->TaskAltitudeDifference>0) {
@@ -3442,9 +3235,9 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
 	    tsi_av/= n_av;
             flightstats.Task_Speed.
               least_squares_update(
-                                   max(0,
+                                   max(0.0,
                                        Basic->Time-Calculated->TaskStartTime)/3600.0,
-                                   max(0,min(100.0,tsi_av)));
+                                   max(0.0, min(100.0,tsi_av)));
             LastTimeStats = Basic->Time;
 	    tsi_av = 0;
 	    n_av = 0;
@@ -3504,10 +3297,9 @@ static void CheckGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 		Calculated->TerrainWarningLatitude = lat;
 		Calculated->TerrainWarningLongitude = lon;
 
-#if 1
 		Calculated->ObstacleDistance = distance_soarable;
 
-		Calculated->ObstacleHeight =  max(0,RasterTerrain::GetTerrainHeight(lat,lon));
+		Calculated->ObstacleHeight =  max((short)0, RasterTerrain::GetTerrainHeight(lat,lon));
 		if (Calculated->ObstacleHeight == TERRAIN_INVALID) Calculated->ObstacleHeight=0; //@ 101027 FIX
 
 		// how much height I will loose to get there
@@ -3525,8 +3317,7 @@ static void CheckGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 			 - SAFETYALTITUDETERRAIN;
 
 		// Reminder: we already have a glide range on destination.
-		// start searching for obstacles with a virtual altitude = now+50m
-		minaltitude=CALCULATED_INFO.NavAltitude+50;
+		minaltitude=CALCULATED_INFO.NavAltitude;
 		maxaltitude=minaltitude*2;
 
 		// if no far obstacle will be found, we shall use the first obstacle. 
@@ -3564,9 +3355,8 @@ static void CheckGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 		Calculated->FarObstacle_Lon = oldfarlon;
 		Calculated->FarObstacle_Dist = oldfardist;
 		// 0-50m positive rounding
-		Calculated->FarObstacle_AltArriv = -1*(newaltitude-minaltitude);
+		Calculated->FarObstacle_AltArriv = minaltitude - newaltitude;
 
-#endif
 
 	} else {
 		Calculated->TerrainWarningLatitude = 0.0;
@@ -3578,27 +3368,6 @@ static void CheckGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   }
 }
 
-/* 091123 unused REMOVE
-static void CheckFinalGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated, double LegToGo, double LegBearing) {
-  // Final glide through terrain updates
-  if (Calculated->FinalGlide) {
-	double lat, lon;
-	bool out_of_range;
-	double distance_soarable = FinalGlideThroughTerrain(LegBearing, Basic, Calculated, &lat, &lon, LegToGo, &out_of_range, NULL);
- 
-	if ((!out_of_range)&&(distance_soarable< LegToGo)) {
-		Calculated->TerrainWarningLatitude = lat;
-		Calculated->TerrainWarningLongitude = lon;
-	} else {
-		Calculated->TerrainWarningLatitude = 0.0;
-		Calculated->TerrainWarningLongitude = 0.0;
-	}
-  } else {
-	Calculated->TerrainWarningLatitude = 0.0;
-	Calculated->TerrainWarningLongitude = 0.0;
-  }
-}
-*/
 
 void LDNext(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double LegToGo) {
   double height_above_leg = Calculated->NavAltitude+Calculated->EnergyHeight
@@ -3678,11 +3447,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   double w0lat;
   double w0lon;
   
-  #ifndef NOTASKABORT    
-  if (AATEnabled && (ActiveWayPoint>0) && !TaskIsTemporary() && (ValidTaskPoint(ActiveWayPoint+1))) {
-  #else
   if (AATEnabled && (ActiveWayPoint>0) && (ValidTaskPoint(ActiveWayPoint+1))) {
-  #endif
     w1lat = Task[ActiveWayPoint].AATTargetLat;
     w1lon = Task[ActiveWayPoint].AATTargetLon;
   } else {
@@ -3697,27 +3462,15 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                   &LegToGo, &LegBearing);
 
   if (AATEnabled && (ActiveWayPoint>0) && ValidTaskPoint(ActiveWayPoint+1)
-      #ifndef NOTASKABORT
-      && Calculated->IsInSector && (this_maccready>0.1) && !TaskIsTemporary()) {
-      #else
       && Calculated->IsInSector && (this_maccready>0.1) ) {
-      #endif
     calc_turning_now = true;
   } else {
     calc_turning_now = false;
   }
 
-  #ifndef NOTASKABORT
-  if ((ActiveWayPoint<1) || TaskIsTemporary()) {
-  #else
   if (ActiveWayPoint<1) {
-  #endif
     LegCovered = 0;
-    #ifndef NOTASKABORT
-    if (!TaskIsTemporary() && ValidTaskPoint(ActiveWayPoint+1)) {  // BUGFIX 091221
-    #else
     if (ValidTaskPoint(ActiveWayPoint+1)) {  // BUGFIX 091221
-    #endif
       LegToGo=0;
     }
    } else {
@@ -3745,7 +3498,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
       // Correct speed calculations for radius
       // JMW TODO accuracy: legcovered replace this with more accurate version
       // LegDistance -= StartRadius;
-      LegCovered = max(0,LegCovered-StartRadius);
+      LegCovered = max(0.0, LegCovered-StartRadius);
     }
   }
   
@@ -3763,10 +3516,6 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   // Now add distances for start to previous waypoint
  
-  #ifndef NOTASKABORT 
-  if (!TaskIsTemporary()) {
-  #endif
-
     if (!AATEnabled) {
       for(int i=0;i< ActiveWayPoint-1; i++)
         {
@@ -3791,9 +3540,6 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                                     Basic->Latitude,
                                     ActiveWayPoint);
     }
-  #ifndef NOTASKABORT
-  }
-  #endif 
 
   CheckTransitionFinalGlide(Basic, Calculated);
 
@@ -3819,9 +3565,6 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   double StartBestCruiseTrack = -1; 
 
-  #ifndef NOTASKABORT
-  if (!TaskIsTemporary()) {
-  #endif
     while ((task_index>ActiveWayPoint) && (ValidTaskPoint(task_index))) {
       double this_LegTimeToGo;
       bool this_is_final = (task_index==FinalWayPoint)
@@ -3917,18 +3660,11 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
       
       task_index--;
     }
-  #ifndef NOTASKABORT
-  }
-  #endif
 
 
   // current waypoint, do this last!
 
-  #ifndef NOTASKABORT
-  if (AATEnabled && !TaskIsTemporary() && (ActiveWayPoint>0) && ValidTaskPoint(ActiveWayPoint+1) && Calculated->IsInSector) {
-  #else
   if (AATEnabled && (ActiveWayPoint>0) && ValidTaskPoint(ActiveWayPoint+1) && Calculated->IsInSector) {
-  #endif
 	if (Calculated->WaypointDistance<AATCloseDistance()*3.0) {
 		LegBearing = AATCloseBearing(Basic, Calculated);
 	}
@@ -3965,11 +3701,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   // fix problem of blue arrow wrong in task sector
   if (StartBestCruiseTrack>=0)  // use it only if assigned, workaround
-        #ifndef NOTASKABORT
-	if (Calculated->IsInSector && (ActiveWayPoint==0) && !TaskIsTemporary()) {
-	#else
 	if (Calculated->IsInSector && (ActiveWayPoint==0)) {
-	#endif
 		// set best cruise track to first leg bearing when in start sector
 		Calculated->BestCruiseTrack = StartBestCruiseTrack;
 	} 
@@ -4021,16 +3753,6 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                                   total_energy_height-final_height,
                                   0.5);
 
-  // VENTA-ADDON Classic geometric GR calculation without Total Energy
-  /*
-   * Paolo Ventafridda> adding a classic standard glide ratio
-   * computation based on a geometric path with no total energy and
-   * wind. This value is auto limited to a reasonable level which can
-   * be useful during flight, currently 200. Over 200, you are no more
-   * gliding to the final destination I am afraid, even on an ETA
-   * . The infobox value has a decimal point if it is between 1 and
-   * 99, otherwise it's a simple integer.
-   */
   double GRsafecalc = Calculated->NavAltitude - final_height;
   if (GRsafecalc <=0) Calculated->GRFinish = INVALID_GR;
   else {
@@ -4047,14 +3769,12 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 		Calculated->LKTaskETE=0;
 
   }
-  // END VENTA-ADDON
 
-  CheckGlideThroughTerrain(Basic, Calculated); // BUGFIX 091123
+  CheckGlideThroughTerrain(Basic, Calculated);
   
   CheckForceFinalGlide(Basic, Calculated);
   
   UnlockTaskData();
-  //  UnlockFlightData();
 
 }
 
@@ -4071,23 +3791,12 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   double mc_new = MACCREADY;
   static bool first_mc = true;
 
-  #if EQMC
   if ( AutoMcMode==3 ) {
 	if (Calculated->EqMc>=0) 
 		MACCREADY = LowPassFilter(MACCREADY,Calculated->EqMc,0.8);
 	UnlockTaskData();
 	return;
   }
-  #endif
-  /*
-  // 101219 NO NEED
-  if ( AutoMcMode==1 ) {
-	if (av_thermal>0) mc_new = av_thermal;
-	MACCREADY = LowPassFilter(MACCREADY,mc_new,0.15);
-	UnlockTaskData();
-	return;
-  }
-  */
 
   // otherwise, if AutoMc for finalglide or "both", return if no goto
   if (!ValidTaskPoint(ActiveWayPoint)) {
@@ -4095,7 +3804,7 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	return;
   }
 
-  if (Calculated->FinalGlide && ActiveIsFinalWaypoint()) {  // TESTFIX 091230 FAILED 100120
+  if (Calculated->FinalGlide && ActiveIsFinalWaypoint()) {  
     is_final_glide = true;
   } else {
     first_mc = true;
@@ -4122,18 +3831,7 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     }
   } else if ( ((AutoMcMode==0)||(AutoMcMode==2)) && is_final_glide) {
 
-    double time_remaining = Basic->Time-Calculated->TaskStartTime-9000;
-    if (EnableOLC 
-	&& (OLCRules==0) 
-	&& (Calculated->NavAltitude>Calculated->TaskStartAltitude)
-	&& (time_remaining>0)) {
-      
-      mc_new = MacCreadyTimeLimit(Basic, Calculated,
-				  Calculated->WaypointBearing,
-				  time_remaining,
-				  Calculated->TaskStartAltitude);
-      
-    } else if (Calculated->TaskAltitudeDifference0>0) {
+      if (Calculated->TaskAltitudeDifference0>0) {
 	
       // only change if above final glide with zero Mc
       // otherwise when we are well below, it will wind Mc back to
@@ -4224,169 +3922,6 @@ void PredictNextPosition(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 }
 
 
-bool GlobalClearAirspaceWarnings = false;
-
-// JMW this code is deprecated
-bool ClearAirspaceWarnings(const bool acknowledge, const bool ack_all_day) {
-  unsigned int i;
-  if (acknowledge) {
-    GlobalClearAirspaceWarnings = true;
-    if (AirspaceCircle) {
-      for (i=0; i<NumberOfAirspaceCircles; i++) {
-        if (AirspaceCircle[i].WarningLevel>0) {
-          AirspaceCircle[i].Ack.AcknowledgementTime = GPS_INFO.Time;
-          if (ack_all_day) {
-            AirspaceCircle[i].Ack.AcknowledgedToday = true;
-          }
-          AirspaceCircle[i].WarningLevel = 0;
-        }
-      }
-    }
-    if (AirspaceArea) {
-      for (i=0; i<NumberOfAirspaceAreas; i++) {
-        if (AirspaceArea[i].WarningLevel>0) {
-          AirspaceArea[i].Ack.AcknowledgementTime = GPS_INFO.Time;
-          if (ack_all_day) {
-            AirspaceArea[i].Ack.AcknowledgedToday = true;
-          }
-          AirspaceArea[i].WarningLevel = 0;
-        }
-      }
-    }
-    return Message::Acknowledge(MSG_AIRSPACE);
-  }
-  return false;
-}
-
-
-void AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated){
-  unsigned int i;
-
-  if(!AIRSPACEWARNINGS)
-      return;
-
-  if ( (NumberOfAirspaceAreas+NumberOfAirspaceCircles) <= 0 ) return;
-  static bool position_is_predicted = false;
-
-  //  LockFlightData(); Not necessary, airspace stuff has its own locking
-
-  if (GlobalClearAirspaceWarnings == true) {
-    GlobalClearAirspaceWarnings = false;
-    Calculated->IsInAirspace = false;
-  }
-
-  position_is_predicted = !position_is_predicted; 
-  // every second time step, do predicted position rather than
-  // current position
-
-  double alt;
-  double agl;
-  double lat;
-  double lon;
-
-  // int hdist=0;
-  // int mindist=-1;
-#if 0 // 100207
-  bool as_area=false;
-  int as_index=1;
-#endif
-
-
-  if (position_is_predicted) {
-    alt = Calculated->NextAltitude;
-    agl = Calculated->NextAltitudeAGL;
-    lat = Calculated->NextLatitude;
-    lon = Calculated->NextLongitude;
-  } else {
-    // We may use NavAltitude
-    if (Basic->BaroAltitudeAvailable) {
-      alt = Basic->BaroAltitude;
-    } else {
-      alt = Basic->Altitude;
-    }
-    agl = Calculated->AltitudeAGL;
-    lat = Basic->Latitude;
-    lon = Basic->Longitude;
-  }
-
-  // JMW TODO enhancement: FindAirspaceCircle etc should sort results, return 
-  // the most critical or closest. 
-
-  if (AirspaceCircle) {
-    for (i=0; i<NumberOfAirspaceCircles; i++) {
-
-#if (0)
-       hdist=LKAirspaceDistance(Basic, Calculated, position_is_predicted, 1, i, false); FIX TODO 090921
-       if (mindist==-1) mindist=hdist;
-	else if (hdist<mindist||mindist==0){
-		mindist=hdist;
-		as_index=i;
-	}
-#endif
-
-      if ((((AirspaceCircle[i].Base.Base != abAGL) && (alt >= AirspaceCircle[i].Base.Altitude))
-           || ((AirspaceCircle[i].Base.Base == abAGL) && (agl >= AirspaceCircle[i].Base.AGL)))
-          && (((AirspaceCircle[i].Top.Base != abAGL) && (alt < AirspaceCircle[i].Top.Altitude))
-           || ((AirspaceCircle[i].Top.Base == abAGL) && (agl < AirspaceCircle[i].Top.AGL)))) {
-        
-        if ((MapWindow::iAirspaceMode[AirspaceCircle[i].Type] >= 2) &&
-	    InsideAirspaceCircle(lon, lat, i)) { 
-
-          AirspaceWarnListAdd(Basic, Calculated, position_is_predicted, 1, i, false);
-        }
-        
-      }
-      
-    }
-  }
-
-  // repeat process for areas
-
-  if (AirspaceArea) {
-    for (i=0; i<NumberOfAirspaceAreas; i++) {
-#if (0)      
-       hdist=LKAirspaceDistance(Basic, Calculated, position_is_predicted, 0, i, false);
-       if (mindist==-1) mindist=hdist;
-	else if (hdist<mindist) {
-		mindist=hdist;
-		as_area=true;
-		as_index=i;
-	}
-#endif
-
-      if ((((AirspaceArea[i].Base.Base != abAGL) && (alt >= AirspaceArea[i].Base.Altitude))
-           || ((AirspaceArea[i].Base.Base == abAGL) && (agl >= AirspaceArea[i].Base.AGL)))
-          && (((AirspaceArea[i].Top.Base != abAGL) && (alt < AirspaceArea[i].Top.Altitude))
-           || ((AirspaceArea[i].Top.Base == abAGL) && (agl < AirspaceArea[i].Top.AGL)))) {
-        
-        if ((MapWindow::iAirspaceMode[AirspaceArea[i].Type] >= 2) 
-            && InsideAirspaceArea(lon, lat, i)){
-
-          AirspaceWarnListAdd(Basic, Calculated, position_is_predicted, 0, i, false);
-        }
-        
-      }
-    }
-  }
-
-  AirspaceWarnListProcess(Basic, Calculated);
-
-  //  UnlockFlightData();  
-
-#if 0	
-	// 101210 TODO finish this long unterminated stuff!!!
-  // 10s padding is damn wrong remember
-  if (as_area)
- 	 wsprintf(NearestAirspaceName, TEXT("%10s"), AirspaceArea[as_index].Name);
-  else
- 	 wsprintf(NearestAirspaceName, TEXT("%10s"), AirspaceCircle[as_index].Name);
-
-  // NearestAirspaceHDist=mindist; TODO FIX 090921
-#endif
-  NearestAirspaceHDist=0;
-
-}
-
 void AATStats_Time(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   // Task time to go calculations
 
@@ -4406,7 +3941,7 @@ void AATStats_Time(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
       Calculated->AATTimeToGo = aat_tasklength_seconds;
     }
   } else if (aat_tasktime_elapsed>=0) {
-    Calculated->AATTimeToGo = max(0,
+    Calculated->AATTimeToGo = max(0.0,
 				  aat_tasklength_seconds 
 				  - aat_tasktime_elapsed);
   }
@@ -4563,9 +4098,7 @@ void ThermalBand(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   // JMW TODO accuracy: Should really work out dt here, 
   //           but i'm assuming constant time steps
-  double dheight = Calculated->NavAltitude
-    -SAFETYALTITUDEBREAKOFF
-    -Calculated->TerrainBase; // JMW EXPERIMENTAL
+  double dheight = Calculated->NavAltitude -Calculated->TerrainBase; 
 
   int index, i, j;
 
@@ -4592,7 +4125,7 @@ void ThermalBand(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     // calculate new buckets so glider is below max
     double hbuk = Calculated->MaxThermalHeight/NUMTHERMALBUCKETS;
   
-    max_thermal_height_new = max(1, Calculated->MaxThermalHeight);
+    max_thermal_height_new = max(1.0, Calculated->MaxThermalHeight);
     while (max_thermal_height_new<dheight) {
       max_thermal_height_new += hbuk;
     }
@@ -4686,7 +4219,7 @@ double CalculateWaypointArrivalAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculat
 	// then calculate ETE for reaching the cylinder. Also working when we are 
 	// in the wrong side of cylinder
 	if (UseGates()) {
-		if (ActiveWayPoint==0) { 
+		if (ActiveWayPoint==0 && i==Task[0].Index ) { 
 			if (PGStartOut) {
 				if (CorrectSide()) {
 					// start out,  from outside cylinder
@@ -4772,10 +4305,8 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if (done_autoqnh==10) {
 	double fixaltitude = Calculated->TerrainAlt;
 
-#if 1
 	// if we have a valid fix, and a valid home waypoint, then if we are close to it assume we are at home
 	// and use known altitude, instead of presumed terrain altitude which is always approximated
-	#if 0
 	double hdist=0;
 	if (ValidWayPoint(HomeWaypoint)) {
 		DistanceBearing(Basic->Latitude, Basic->Longitude, 
@@ -4791,10 +4322,9 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 				StartupStore(_T(". AutoQNH: cannot set QNH, impossible terrain altitude%s"),NEWLINE);
 		}
 	} else {
-	#endif
 		// 101121 extend search for nearest wp
 		int i=FindNearestWayPoint(Basic->Longitude, Basic->Latitude, 2000);
-		if ( (i>=0) && (WayPointList[i].Altitude>0) ) { 
+		if ( (i>RESWP_END) && (WayPointList[i].Altitude>0) ) {  // avoid using TAKEOFF wp
 			fixaltitude=WayPointList[i].Altitude;
 			#if ALPHADEBUG
 			StartupStore(_T(". AutoQNH: setting QNH to nearest <%s> waypoint altitude=%.0f m%s"),
@@ -4808,9 +4338,8 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 				StartupStore(_T(". AutoQNH: cannot set QNH, impossible terrain altitude%s"),NEWLINE);
 			#endif
 		}
-	//}
-#endif
-	if (fixaltitude!=0) { // 100430 BUGFIX
+	}
+	if (fixaltitude!=0) {
 		QNH = FindQNH(Basic->BaroAltitude, fixaltitude);
 		TCHAR qmes[80];
 		if (PressureHg) 
@@ -4820,8 +4349,7 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			_stprintf(qmes,_T("QNH set to %.2f, Altitude %.0f%s"),QNH,fixaltitude,
 			Units::GetUnitName(Units::GetUserAltitudeUnit()));
 		DoStatusMessage(qmes);
-
-		AirspaceQnhChangeNotify(QNH);
+		CAirspaceManager::Instance().QnhChangeNotify(QNH);
 	}
   }
 }
@@ -4862,16 +4390,14 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			_tcscpy(WayPointList[RESWP_TAKEOFF].Comment,_T("LAST GROUND POSITION"));
 			WayPointList[RESWP_TAKEOFF].Reachable=TRUE;
 			WayPointList[RESWP_TAKEOFF].Visible=TRUE;
-			if ( (!ValidWayPoint(HomeWaypoint)) || ISPARAGLIDER ) { // 100227
+			if ( (!ValidWayPoint(HomeWaypoint)) || ISPARAGLIDER ) {
 				HomeWaypoint=RESWP_TAKEOFF;
 				TakeOffWayPoint=true;
 			}
 			if ((HomeWaypoint!=RESWP_TAKEOFF) && !ISPARAGLIDER) {
 				TakeOffWayPoint=false;
 			}
-			#ifdef CUPSUP
-			WayPointList[RESWP_TAKEOFF].Format = LKW_VIRTUAL; // 100212
-			#endif
+			WayPointList[RESWP_TAKEOFF].Format = LKW_VIRTUAL; 
 			
 		}
 			
@@ -4910,12 +4436,17 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if (!Calculated->Flying) {
 	// detect takeoff
 	if (time_in_flight>10) {
-		Calculated->Flying = TRUE;
-		WasFlying=true; // VENTA3
 		InputEvents::processGlideComputer(GCE_TAKEOFF);
+
+		#if ALPHADEBUG
+		StartupStore(_T(". TAKEOFF\n"));
+		#endif
+
 		// reset stats on takeoff
 		ResetFlightStats(Basic, Calculated);
- 
+
+		Calculated->Flying = TRUE;
+		WasFlying=true;
 		Calculated->TakeOffTime= Basic->Time;
 		TakeOffWayPoint=true;
 		// wait before getting a new takeoff until we are no more flying
@@ -4936,6 +4467,10 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	if (time_in_flight==0 && !ISCAR) { 
 		// have been stationary for a minute
 		InputEvents::processGlideComputer(GCE_LANDING);
+
+		#if ALPHADEBUG
+		StartupStore(_T(". LANDING\n"));
+		#endif
 
 		// JMWX  restore data calculated at finish so
 		// user can review flight as at finish line
@@ -4987,31 +4522,10 @@ int FindFlarmSlot(TCHAR *flarmCN)
   return -1;
 }
 
-#if 101001
 bool IsFlarmTargetCNInRange()
 {
   return false;
 }
-
-#else
-bool IsFlarmTargetCNInRange()
-{
-  bool FlarmTargetContact = false;
-  for(int z = 0; z < FLARM_MAX_TRAFFIC; z++)
-    {
-      if (GPS_INFO.FLARM_Traffic[z].ID != 0)
-	{
-	  if (GPS_INFO.FLARM_Traffic[z].ID == TeamFlarmIdTarget)
-	    {
-	      TeamFlarmIdTarget = GPS_INFO.FLARM_Traffic[z].ID;
-	      FlarmTargetContact = true;
-	      break;
-	    }
-	}
-    }
-  return FlarmTargetContact;
-}
-#endif
 
  
  int BallastSecsToEmpty = 120;
@@ -5025,16 +4539,16 @@ bool IsFlarmTargetCNInRange()
      if (GPS_INFO.Time > BallastTimeLast+5) {
        double BALLAST_last = BALLAST;
        double dt = GPS_INFO.Time - BallastTimeLast;
-       double percent_per_second = 1.0/max(10.0, BallastSecsToEmpty);
+       double percent_per_second = 1.0/max(10, BallastSecsToEmpty);
        BALLAST -= dt*percent_per_second;
        if (BALLAST<0) {
          BallastTimerActive = false;
          BALLAST = 0.0;
-         GlidePolar::SetBallast(); // BUGFIX 101002 missing last polar update on ballast empty
+         GlidePolar::SetBallast(); 
          devPutBallast(devA(), BALLAST); // 
          devPutBallast(devB(), BALLAST); //
        }
-       if (fabs(BALLAST-BALLAST_last)>0.05) { // JMW update on 5 percent!
+       if (fabs(BALLAST-BALLAST_last)>0.05) { 
          GlidePolar::SetBallast();
          devPutBallast(devA(), BALLAST);
          devPutBallast(devB(), BALLAST);

@@ -9,14 +9,14 @@
 #include "StdAfx.h"
 #include <aygshell.h>
 
-#include "XCSoar.h"
+#include "lk8000.h"
 
 #include "externs.h"
 #include "dlgTools.h"
 
 #include "compatibility.h"
 #ifdef OLDPPC
-#include "XCSoarProcess.h"
+#include "LK8000Process.h"
 #else
 #include "Process.h"
 #endif
@@ -25,6 +25,8 @@
 #include "LKMapWindow.h"
 
 #include "Utils.h"
+
+#include "utils/heapcheck.h"
 
 void AddConfList( DataFieldEnum* dfe);
 
@@ -66,7 +68,6 @@ static void setVariables(void) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
 	AddConfList(dfe);
-	//#include "LKinclude_confcuskey.cpp" REMOVE
 	dfe->Set(CustomKeyModeLeftUpCorner);
 	wp->RefreshDisplay();
   }
@@ -75,7 +76,6 @@ static void setVariables(void) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
 	AddConfList(dfe);
-	//#include "LKinclude_confcuskey.cpp" REMOVE
 	dfe->Set(CustomKeyModeRightUpCorner);
 	dfe->Set(CustomKeyModeRightUpCorner);
 	if (ISPARAGLIDER) wp->SetReadOnly(true);
@@ -88,7 +88,6 @@ static void setVariables(void) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
 	AddConfList(dfe);
-	//#include "LKinclude_confcuskey.cpp" REMOVE
 	dfe->Set(CustomKeyModeCenter);
 	wp->RefreshDisplay();
   }
@@ -98,7 +97,6 @@ static void setVariables(void) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
 	AddConfList(dfe);
-	//#include "LKinclude_confcuskey.cpp" REMOVE
 	dfe->Set(CustomKeyModeLeft);
 	wp->RefreshDisplay();
   }
@@ -107,7 +105,6 @@ static void setVariables(void) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
 	AddConfList(dfe);
-	//#include "LKinclude_confcuskey.cpp" // REMOVE
 	dfe->Set(CustomKeyModeRight);
 	wp->RefreshDisplay();
   }
@@ -115,7 +112,6 @@ static void setVariables(void) {
   if (wp) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
-	//#include "LKinclude_confcuskey.cpp" // REMOVE
 	AddConfList(dfe);
 	dfe->addEnumText(TEXT("Toggle IBOX"));
 	dfe->Set(CustomKeyModeAircraftIcon);
@@ -225,6 +221,8 @@ void dlgCustomKeysShowModal(void){
 
 void AddConfList( DataFieldEnum* dfe) {
 
+	// Careful, order must respect the enum list in lk8000.h CustomKeyMode_t
+
 	// LKTOKEN  _@M239_ = "Disabled" 
     dfe->addEnumText(gettext(TEXT("_@M239_")));
 	// LKTOKEN  _@M435_ = "Menu" 
@@ -271,6 +269,15 @@ void AddConfList( DataFieldEnum* dfe) {
 	// LKTOKEN  _@M130_ = "Basic Setup menu" 
     dfe->addEnumText(gettext(TEXT("_@M130_")));
     dfe->addEnumText(TEXT("SIMulation menu"));
+    dfe->addEnumText(gettext(TEXT("_@M1652_"))); // Airspace Analysis
+    dfe->addEnumText(gettext(TEXT("_@M1653_"))); // toggle map Airspace 
+    dfe->addEnumText(gettext(TEXT("_@M1657_"))); // zoom in
+    dfe->addEnumText(gettext(TEXT("_@M1658_"))); // zoom out
+    dfe->addEnumText(gettext(TEXT("_@M1659_"))); // zoom in more
+    dfe->addEnumText(gettext(TEXT("_@M1660_"))); // zoom out more
+
+	// Last ckToggleInfobox is automatically added at the bottom of this list. 
+	// Do not add it manually here.
 
 }
 

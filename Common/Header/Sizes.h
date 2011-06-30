@@ -25,11 +25,7 @@
 #define MAX_NMEA_PARAMS		40
 
 // max length of waypoint comment names
-#if CUPSUP
 #define COMMENT_SIZE 250
-#else
-#define COMMENT_SIZE 150
-#endif
 
 #define WAY_POINT_ID_SIZE 20
 
@@ -41,6 +37,8 @@
 
 #define POLARSIZE 3
 
+#define MAXFLAPSNAME 10
+
 #if LKCLIP
 // this value is used also by DrawTrail, to be optimized!
 #define MAXCLIPPOLYGON 5000
@@ -51,8 +49,8 @@
 // #define FLARM_MAX_TRAFFIC 15
 #define MAXSATELLITES 12
 
-#define DESCRIPTION_SIZE 30
-#define TITLE_SIZE 30
+#define DESCRIPTION_SIZE 40			// Infobox descriptions aka LK DataOptions
+#define TITLE_SIZE 20				// Infobox titles  aka LK DataOptions
 #define FORMAT_SIZE 20
 // task points enlarged from 10 to 20 
 #define MAXTASKPOINTS 20
@@ -96,13 +94,7 @@
 
 // size of terrain cache
 #if (WINDOWSPC>0) 
-
-#if _REALTHING_
 #define MAXTERRAINCACHE 4096 
-#else
-#define MAXTERRAINCACHE 8192*2
-#endif
-
 #else
 #define MAXTERRAINCACHE 4096 
 #endif
@@ -139,11 +131,7 @@
 #define DISPLAYTIMEOUTMAX 60*4
 
 // invalid value for terrain, we can store inside terrain altitude being unsigned short
-#if NEWRASTER
 #define TERRAIN_INVALID 32767
-#else
-#define TERRAIN_INVALID -1000
-#endif
 
 #define NUMAIRSPACECOLORS 16
 #define NUMAIRSPACEBRUSHES 8

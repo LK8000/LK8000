@@ -22,6 +22,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "utils/heapcheck.h"
+
 
 _CRTIMP int __cdecl _stricmp(const char* s1, const char* s2)
 {

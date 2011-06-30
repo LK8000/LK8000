@@ -14,12 +14,8 @@
 #define wpTerrainBoundsNo     102
 #define wpTerrainBoundsNoAll  103
 
-#ifdef CUPSUP
 // for extended formats, returns the type of file
 int ReadWayPointFile(HANDLE hFile);
-#else
-void ReadWayPointFile(HANDLE hFile);
-#endif
 void ReadWayPoints(void);
 void SetHome(bool reset);
 int FindNearestWayPoint(double X, double Y, double MaxRange, bool exhaustive=false);

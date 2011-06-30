@@ -1,0 +1,4 @@
+* LK8000 polar for: SZD-55-2 Diana 2
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+ 270, 250, 100.4700979, -0.557321508, 146.3286293, -1.146988324, 185.6359405, -2.146055459, 8.66
+ 350, 7, 0, 28, 75, 21, 80, 14, 87.5, 8, 109, 3, 156, 0, 188.5, -2

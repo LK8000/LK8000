@@ -18,7 +18,7 @@
 #endif
 #include "options.h"
 #include "externs.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "InfoBoxLayout.h"
 #include "Utils2.h"
 #include "Cpustats.h"
@@ -26,7 +26,6 @@
 #include "Logger.h"
 #include "Parser.h"
 #include "WaveThread.h"
-#include "GaugeFLARM.h"
 #include "LKUtils.h"
 #include "Message.h"
 #include "McReady.h"
@@ -34,12 +33,15 @@
 
 #include <ctype.h>
 
+#include "utils/stringext.h"
+#include "utils/heapcheck.h"
+
 
 // #define DEBUG_GETTEXT	1
 #define LKD_LANGUAGE	"_Language"
 #define MAX_HELP	1024	// complete help including several lines, and also for each single line
 
-#define MAX_MESSAGES		1500 // Max number of MSG items
+#define MAX_MESSAGES		1700 // Max number of MSG items
 #define MAX_MESSAGE_SIZE	150 // just for setting a limit
 
 bool LKLoadMessages(bool fillup);
@@ -108,10 +110,8 @@ TCHAR *LKgethelptext(const TCHAR *TextIn) {
 	TCHAR sNum[10];
 	_stprintf(sNum,_T("%d"),inumber);
 
-	HANDLE hHelpFile;
-	hHelpFile = INVALID_HANDLE_VALUE;
-	hHelpFile = CreateFile(sFile, GENERIC_READ,0,NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,NULL);
-	if( hHelpFile == INVALID_HANDLE_VALUE) {
+  ZZIP_FILE *helpFile = zzip_fopen(sFile, "rb");
+	if (helpFile == NULL) {
 		#if ALPHADEBUG
 		StartupStore(_T("... Missing HELP FILE <%s>%s"),sFile,NEWLINE);
 		#endif
@@ -120,11 +120,9 @@ TCHAR *LKgethelptext(const TCHAR *TextIn) {
 		return (sHelp);
 	}
 
-	short filetype=FileIsUTF16(hHelpFile);
-
 	// search for beginning of code index   @000
 	bool found=false;
-	while ( ReadUString(hHelpFile,READLINE_LENGTH-1,sTmp,filetype) ) {
+	while (ReadULine(helpFile, sTmp, countof(sTmp))) {
 		int slen=_tcslen(sTmp); // includes cr or lf or both
 		if (slen<3|| slen>8) {
 			#if DEBUG_GETTEXT
@@ -176,14 +174,14 @@ TCHAR *LKgethelptext(const TCHAR *TextIn) {
 		StartupStore(_T("... index <%s> not found in help file <%s>\n"),sNum,sFile);
 		#endif
 		_stprintf(sHelp,_T("ERROR: index <%s> not found in language help file:\r\n%s\r\n"),sNum,sFile);
-		CloseHandle(hHelpFile);
+		zzip_fclose(helpFile);
 		return (sHelp);
 	}
 
 	// now load the help text for this index
 	_tcscpy(sHelp,_T(""));
 	int hlen=0;
-	while ( ReadUString(hHelpFile,READLINE_LENGTH-1,sTmp,filetype) ) {
+	while (ReadULine(helpFile, sTmp, countof(sTmp))) {
 
 		int slen=_tcslen(sTmp); // including cr or lf or both
 		if (slen==0 || sTmp[0]=='#') continue;
@@ -218,7 +216,7 @@ TCHAR *LKgethelptext(const TCHAR *TextIn) {
 		_tcscat(sHelp,_T("\r\n"));
 	}
 
-	CloseHandle(hHelpFile);
+	zzip_fclose(helpFile);
 	return (sHelp);
 
   } // end ttype == H
@@ -298,10 +296,8 @@ void LKReadLanguageFile() {
   ExpandLocalPath(szFile1);
   // SetRegistryString(szRegistryLanguageFile, TEXT("\0")); // ?
 
-  HANDLE hLangFile;
-  hLangFile = INVALID_HANDLE_VALUE;
-  hLangFile = CreateFile(szFile1, GENERIC_READ,0,NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,NULL);
-  if( hLangFile == INVALID_HANDLE_VALUE) {
+  ZZIP_FILE *langFile = zzip_fopen(szFile1, "rb");
+	if (langFile == NULL) {
 	if (english) {
 		StartupStore(_T("--- CRITIC, NO ENGLISH LANGUAGE FILES!%s"),NEWLINE);
 		// critic point, no default language! BIG PROBLEM here!
@@ -318,12 +314,11 @@ void LKReadLanguageFile() {
 	}
 	return;
   }
-  short filetype=FileIsUTF16(hLangFile);
 
   bool found=false;
   TCHAR sTmp[200];
   TCHAR mylang[30];
-  while ( ReadUString(hLangFile,199,sTmp,filetype) ) {
+  while (ReadULine(langFile, sTmp, countof(sTmp))) {
 	if (_tcslen(sTmp)<3) continue;
 	if ((sTmp[0]=='L')&&(sTmp[1]=='=')) {
 		_tcscpy(mylang,&sTmp[2]);
@@ -368,7 +363,7 @@ void LKReadLanguageFile() {
 		}
 	}
   }
-  CloseHandle(hLangFile);
+  zzip_fclose(langFile);
   return;
 }
 
@@ -435,10 +430,8 @@ bool LKLoadMessages(bool fillup) {
   _tcscpy(suffix,_T("_MSG.TXT"));
   _stprintf(sFile,_T("%s\\%s%s"),sPath,LKLangSuffix,suffix);
 
-  HANDLE hFile;
-  hFile = INVALID_HANDLE_VALUE;
-  hFile = CreateFile(sFile, GENERIC_READ,0,NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,NULL);
-  if( hFile == INVALID_HANDLE_VALUE) {
+  ZZIP_FILE *hFile = zzip_fopen(sFile, "rb");
+	if (hFile == NULL) {
 	StartupStore(_T("... LoadText Missing Language File: <%s>%s"),sFile,NEWLINE);
 	return false;
   } else {
@@ -448,8 +441,6 @@ bool LKLoadMessages(bool fillup) {
 		StartupStore(_T(". Language load file: <%s>%s"),sFile,NEWLINE);
   }
 
-  short filetype=FileIsUTF16(hFile);
-
   // search for beginning of code index, in the range _@M1_  _@M9999_ 
   TCHAR sTmp[300];
   char snum[6];
@@ -457,7 +448,7 @@ bool LKLoadMessages(bool fillup) {
   TCHAR scaptraw[MAX_MESSAGE_SIZE+1];
 
   bool havewarned=false;
-  while ( ReadUString(hFile,299,sTmp,filetype) ) {
+  while (ReadULine(hFile, sTmp, countof(sTmp))) {
 
 	unsigned int slen=_tcslen(sTmp); // includes cr or lf or both
 	if (slen<9) continue;
@@ -598,74 +589,6 @@ bool LKLoadMessages(bool fillup) {
   }
   #endif
 
-  CloseHandle(hFile);
+  zzip_fclose(hFile);
   return true;
-
-
 }
-
-
-
-// return -1  if file is UTF16-LE
-// return  0  if file is not UTF16
-// return  1  if file is UTF16-BE
-// If error, 0 is returned assuming the calling function will perform its own checks in any case
-// UTF-32 is not even considered, and BOM is required for UTF16. 
-
-// #define DEBUG_UTF16	1
-short FileIsUTF16(HANDLE hFile) {	// 101221
-
-  DWORD dwNumBytesRead=0;
-  char buffer[10];
-
-  if (hFile == INVALID_HANDLE_VALUE) {
-	#if DEBUG_UTF16
-	StartupStore(_T("... Invalid hFile, No UTF16\n"));
-	#endif
-	return(0);
-  }
-  SetFilePointer(hFile, 0, NULL, FILE_BEGIN);
-
-  // file is empty?
-  if (ReadFile(hFile, buffer, sizeof(buffer)-1, &dwNumBytesRead, (OVERLAPPED *)NULL) == 0) {
-	#if DEBUG_UTF16
-	StartupStore(_T("... Readfile 0, empty? No UTF16\n"));
-	#endif
-	return(0);
-  }
-  SetFilePointer(hFile, 0, NULL, FILE_BEGIN);
-
-  #if DEBUG_UTF16
-  buffer[dwNumBytesRead-1]='\0';
-  StartupStore(_T("UTFcheck <%S>\n"),buffer);
-  #endif
-
-
-  // 0xff 0xfe 0x30 0x00 0x00 0x00  the minimum UTF16 begin string!
-  if (dwNumBytesRead<6) {
-	#if DEBUG_UTF16
-	StartupStore(_T("... Short (%d) header line, no UTF16\n"),dwNumBytesRead);
-	#endif
-	return(0);
-  }
-
-  if ( (buffer[0]==(char)0xff) && (buffer[1]==(char)0xfe) ) {
-	#if DEBUG_UTF16
-	StartupStore(_T("... UTF-16 LE\n"));
-	#endif
-	return(-1);
-  }
-  if ( (buffer[0]==(char)0xfe) && (buffer[1]==(char)0xff) ) {
-	#if DEBUG_UTF16
-	StartupStore(_T("... UTF-16 BE\n"));
-	#endif
-	return(1);
-  }
-
-  #if DEBUG_UTF16
-  StartupStore(_T("... No encoding , no UTF16\n"));
-  #endif
-  return(0);
-}
-
-

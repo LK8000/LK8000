@@ -15,6 +15,8 @@
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 
+#include "utils/heapcheck.h"
+
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 
@@ -40,13 +42,6 @@ static void OnPaintComboPopupListItem(WindowControl * Sender, HDC hDC){
 	int w;
 
 	w=Sender->GetWidth();
-	#if NO_LKWINCONTROL
-	if (w<-1) {
-		w=RescaleWidth(w);
-		StartupStore(_T("..... OnPaintCombo GetWidth=%d rescaled to %d\n"),Sender->GetWidth(),w); // REMOVE 100515
-	}
-	#endif
-	
 
 	ExtTextOutClip(hDC, 2*InfoBoxLayout::scale, 
 		2*InfoBoxLayout::scale,

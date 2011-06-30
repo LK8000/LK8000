@@ -9,7 +9,7 @@
 #include "StdAfx.h"
 #include "options.h"
 #include "Cpustats.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "compatibility.h"
 #include "McReady.h"
 #include "externs.h"
@@ -20,13 +20,13 @@
 #include "LKMapWindow.h"
 #include "buildnumber.h"
 #include "Utils2.h"
-#if LKOBJ
 #include "LKObjects.h"
-#endif
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
 #endif
+
+#include "utils/heapcheck.h"
 
 extern void DrawGlideCircle(HDC hdc, POINT Orig, RECT rc );
 extern void MapWaypointLabelAdd(TCHAR *Name, int X, int Y, TextInBoxMode_t Mode, int AltArivalAGL, bool inTask, 
@@ -35,7 +35,7 @@ extern int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *ele
 
 extern void DrawMapSpace(HDC hdc, RECT rc);
 extern void DrawNearest(HDC hdc, RECT rc);
-extern void DrawNearestTurnpoint(HDC hdc, RECT rc);
+extern void DrawAspNearest(HDC hdc, RECT rc);
 extern void DrawCommon(HDC hdc, RECT rc);
 extern void DrawTraffic(HDC hdc, RECT rc);
 extern void DrawWelcome8000(HDC hdc, RECT rc);
@@ -95,7 +95,7 @@ void MapWindow::DrawGlideCircle(HDC hdc, POINT Orig, RECT rc )
   maxcruise=(GlidePolar::bestld); 
   mincruise=(GlidePolar::bestld/4);
 
-  cruise= CALCULATED_INFO.AverageLD; 
+  cruise= DerivedDrawInfo.AverageLD; 
 
   if ( cruise <= 0 ) cruise = GlidePolar::bestld; // 091215 let cruise be always reasonable
   if ( cruise < mincruise ) return;
@@ -142,33 +142,16 @@ void MapWindow::DrawGlideCircle(HDC hdc, POINT Orig, RECT rc )
      * TRACKUP, NORTHUP, NORTHCIRCLE, TRACKCIRCLE, NORTHTRACK
      */
 	if ( ((DisplayOrientation == TRACKUP) || (DisplayOrientation == NORTHCIRCLE) || (DisplayOrientation == TRACKCIRCLE))
-#ifndef MAP_ZOOM
-		&& (DisplayMode != dmCircling) ) {
-
-#else /* MAP_ZOOM */
            && (!mode.Is(MapWindow::Mode::MODE_CIRCLING)) ) {
-#endif /* MAP_ZOOM */
 		if ( VisualGlide == 1 ) {
-#ifndef MAP_ZOOM
-			tmp = i*gunit*cruise*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
 			tmp = i*gunit*cruise*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
 			DrawArc(hdc, Orig.x, Orig.y,(int)tmp, rc, 315, 45);
 		} else {
-#ifndef MAP_ZOOM
-			tmp = i*gunit*cruise*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
 			tmp = i*gunit*cruise*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
 			DrawArc(hdc, Orig.x, Orig.y,(int)tmp, rc, 330+spread, 30+spread);
 		}
 	} else {
-#ifndef MAP_ZOOM
-		tmp = i*gunit*cruise*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
 		tmp = i*gunit*cruise*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
 		Circle(hdc, Orig.x,Orig.y,(int)tmp, rc, true, false);
 	}
 
@@ -224,28 +207,10 @@ void MapWindow::DrawHeading(HDC hdc, POINT Orig, RECT rc ) {
 
    if (GPS_INFO.NAVWarning) return; // 100214
 
-#ifndef MAP_ZOOM
-   if (MapScale>5 || (DisplayMode == dmCircling)) return;
-#else /* MAP_ZOOM */
    if (zoom.Scale()>5 || mode.Is(MapWindow::Mode::MODE_CIRCLING)) return;
-#endif /* MAP_ZOOM */
    POINT p2;
 
-   #if 0
-   if ( !( DisplayOrientation == TRACKUP || DisplayOrientation == NORTHCIRCLE || DisplayOrientation == TRACKCIRCLE )) return;
-#ifndef MAP_ZOOM
-   double tmp = 12000*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
    double tmp = 12000*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
-   p2.x=Orig.x;
-   p2.y=Orig.y-(int)tmp;
-   #else
-#ifndef MAP_ZOOM
-   double tmp = 12000*ResMapScaleOverDistanceModify;
-#else /* MAP_ZOOM */
-   double tmp = 12000*zoom.ResScaleOverDistanceModify();
-#endif /* MAP_ZOOM */
    if ( !( DisplayOrientation == TRACKUP || DisplayOrientation == NORTHCIRCLE || DisplayOrientation == TRACKCIRCLE )) {
 	double trackbearing = DrawInfo.TrackBearing;
 	p2.y= Orig.y - (int)(tmp*fastcosine(trackbearing));
@@ -254,7 +219,6 @@ void MapWindow::DrawHeading(HDC hdc, POINT Orig, RECT rc ) {
 	p2.x=Orig.x;
 	p2.y=Orig.y-(int)tmp;
    }
-   #endif
 
    if (BlackScreen)
 	   _DrawLine(hdc, PS_SOLID, NIBLSCALE(1), Orig, p2, RGB_INVDRAW, rc); // 091109
@@ -276,7 +240,6 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
   static bool doinit=true;
   static POINT p[10];
 
-  #if LKOBJ
   if (MapSpaceMode==MSM_WELCOME) {
 	if (INVERTCOLORS)
 		hB=LKBrush_Petrol;
@@ -288,17 +251,8 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
 	  else
 		hB=LKBrush_Mlight;
   }
-  #else
-  if (INVERTCOLORS)
-	hB=CreateSolidBrush(RGB_MDARK);
-  else
-	hB=CreateSolidBrush(RGB_MLIGHT);
-  #endif
   oldfont = (HFONT)SelectObject(hdc, LKINFOFONT); // save font
   FillRect(hdc,&rc, hB); 
-  #ifndef LKOBJ
-  DeleteObject(hB);
-  #endif
   //oldbkmode=SetBkMode(hdc,TRANSPARENT);
 
   if (doinit) {
@@ -308,6 +262,17 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
 	p[6].x=rc.right-1; p[6].y=0; p[7].x=rc.right-1; p[7].y=rc.bottom-BottomSize-NIBLSCALE(2); // 091230 right-1
 
 //	p[8].x=0; p[8].y=rc.bottom-BottomSize-NIBLSCALE(2); p[9].x=rc.right; p[9].y=p[8].y;
+
+/*
+StartupStore(_T("DOINIT DRAWMAPSPACE 21=%d=%d 22=%d=%d 23=%d=%d 24=%d=%d 31=%d=%d 32=%d=%d\n"),
+ConfIP[LKMODE_WP][0],ConfIP21,
+ConfIP[LKMODE_WP][1],ConfIP22,
+ConfIP[LKMODE_WP][2],ConfIP23,
+ConfIP[LKMODE_WP][3],ConfIP24,
+ConfIP[LKMODE_NAV][0],ConfIP31,
+ConfIP[LKMODE_NAV][1],ConfIP32);
+*/
+
 	doinit=false; 
   }
 
@@ -328,9 +293,16 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
   if (LKevent==LKEVENT_NEWRUN) dodrawlkstatus=true;
 #endif
 
+  // We are entering mapspacemodes with no initial check on configured subpages.
+  // Thus we need to ensure that the page is really available, or find the first valid.
+  // However, this will prevent direct customkey access to pages!
+  // Instead, we do it when we call next page from InfoPageChange
+  // if (!ConfIP[ModeIndex][CURTYPE]) NextModeType();
+
   switch (MapSpaceMode) {
 	case MSM_WELCOME:
 #if (1)
+		// if (!GPS_INFO.NAVWarning) { // optional
 		static double firsttime=GPS_INFO.Time;
 		// delayed automatic exit from welcome mode
 		if ( GPS_INFO.Time > (firsttime+1.0) ) {
@@ -338,19 +310,18 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
 			LKevent=LKEVENT_NONE;
 			break;
 		}
+		// }
 #endif
 		DrawWelcome8000(hdc, rc);
 		break;
 	case MSM_LANDABLE:
-	case MSM_AIRPORTS:
 	case MSM_NEARTPS:
+	case MSM_AIRPORTS:
 		DrawNearest(hdc, rc);
 		break;
-/* 101222 REMOVE
-	case MSM_NEARTPS:
-		DrawNearestTurnpoint(hdc, rc);
+	case MSM_AIRSPACES:
+		DrawAspNearest(hdc, rc);
 		break;
-*/
 	case MSM_COMMON:
 	case MSM_RECENT:
 		DrawCommon(hdc, rc);
@@ -364,6 +335,7 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
 	case MSM_INFO_TRI:
 	case MSM_INFO_TRF:
 	case MSM_INFO_TARGET:
+	case MSM_INFO_CONTEST:
 		DrawInfoPage(hdc,rc, false);
 		break;
 	case MSM_TRAFFIC:
@@ -424,17 +396,10 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
   //SelectObject(hdc, LK8InfoBigFont);
   SelectObject(hdc, LK8TitleFont);
   _stprintf(Buffer,TEXT("%s v%s.%s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE));
-#if NOSIM
   if (SIMMODE) _tcscat(Buffer,_T(" (Simulator)"));
-#else
-#ifdef _SIM_
-  _tcscat(Buffer,_T(" (Simulator)"));
-#endif
-#endif
   LKWriteText(hdc, Buffer, middlex, contenttop+(textSize.cy*1) , 0, WTMODE_OUTLINED, WTALIGN_CENTER,RGB_AMBER, false);
 
 
-  //_stprintf(Buffer,TEXT("Click on center screen to begin")); // REMOVE FIXV2
   _stprintf(Buffer,gettext(TEXT("_@M874_"))); // Click on center screen to begin
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
   LKWriteText(hdc, Buffer, middlex, ((rc.bottom-rc.top)-textSize.cy)/2 , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_SWHITE, false);
@@ -449,11 +414,11 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
 	_stprintf(Buffer,TEXT("FONTS WILL NOT BE GOOD OR UNUSABLE"));
 	LKWriteText(hdc, Buffer, middlex, bottomlines+textSize.cy , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_SWHITE, false);
   } else {
-	_stprintf(Buffer,TEXT("%s build#%d"), XCSoar_Version,BUILDNUMBER);
+	_stprintf(Buffer,TEXT("%s build#%d"), LK8000_Version,BUILDNUMBER);
 	GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
 	bottomlines=rc.bottom-BottomSize-(textSize.cy*3);
 	LKWriteText(hdc, Buffer, middlex, bottomlines , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITE, false);
-	_stprintf(Buffer,TEXT("WWW.LK8000.IT by Paolo Ventafridda (coolwind@lk8000.it)"));
+	_stprintf(Buffer,TEXT("HTTP://WWW.LK8000.IT  email:info@lk8000.it"));
 	LKWriteText(hdc, Buffer, middlex, bottomlines+textSize.cy , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_SWHITE, false);
  }
 
@@ -752,34 +717,17 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   if (GPS_INFO.Speed <5.5) disabled=true; 
 
   if (disabled) {
-	#if LKOBJ
 	hpBlack = LKPen_Grey_N1;
 	hbBlack = LKBrush_Grey;
-	#else
-	hpBlack = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_GREY);
-	hbBlack = (HBRUSH)CreateSolidBrush(RGB_GREY);
-	#endif
   } else {
-	#if LKOBJ
 	hpBlack = LKPen_Black_N1;
 	hbBlack = LKBrush_Black;
-	#else
-	hpBlack = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_BLACK);
-	hbBlack = (HBRUSH)CreateSolidBrush(RGB_BLACK);
-	#endif
   	beta = DerivedDrawInfo.BankAngle;
   }
-  #if LKOBJ
   hpWhite = LKPen_White_N1;
   hbWhite = LKBrush_White;
   hpBorder = LKPen_Grey_N2;
   hbBorder = LKBrush_Grey;
-  #else
-  hpWhite = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_WHITE);
-  hbWhite = (HBRUSH)CreateSolidBrush( RGB_WHITE);
-  hpBorder = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_GREY);
-  hbBorder = (HBRUSH)CreateSolidBrush( RGB_GREY);
-  #endif
 
   hpOld = (HPEN)SelectObject(hDC, hpWhite);
   hbOld = (HBRUSH)SelectObject(hDC, hbWhite);
@@ -863,14 +811,6 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
 
   SelectObject(hDC, hbOld);
   SelectObject(hDC, hpOld);
-  #ifndef LKOBJ
-  DeleteObject((HPEN)hpBlack);
-  DeleteObject((HBRUSH)hbBlack);
-  DeleteObject((HPEN)hpWhite);
-  DeleteObject((HBRUSH)hbWhite);
-  DeleteObject((HPEN)hpBorder);
-  DeleteObject((HBRUSH)hbBorder);
-  #endif
 }
 
 

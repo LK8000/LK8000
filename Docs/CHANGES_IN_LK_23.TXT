@@ -1,0 +1,348 @@
+======================
+Changes in LK8000 v2.3
+======================
+
+Version 2.3c
+
+
+
+NEW
+
+. New ALTITUDE ALARMS in Menu Config 15
+
+    There are 3 available altitude (height, really) alarms available.
+    An alarm will be triggered everytime the configured altitude is reached or crossed.
+    The alarm will not be repeated within the next 60 seconds.
+    After 1 minute, if altitude has been lower than Max Altitude and then becomes higher again, alarm will sound again.
+    To disable this alarm, set it to 0.
+    The altitude used for alarm is the one chosen in Config menu 5 "Use baro altitude".
+    Multiple alarms set at the same altitude will have no effect.
+    Glider pilots should be careful not to set alarms below a safety altitude, during critical phases of flight.
+    Each alarm can be repeated max 30 times. After 30 times, an alarm will automatically self disable for the current flight.
+    The visual alarm message automatically disappears after 12 seconds.
+    Each alarm has a custom sound that can be changed inside _System _Sounds folder.
+    They are named LK_ALARM_ALTx.WAV
+    Default is 0 (no alarm).
+
+. New device driver for Westerboer VW1150
+
+. New customkeys: Airspace Analysis and Toggle Map<>Airspaces page
+
+. New customkeys: Zoom in, Zoom in more, Zoom out, Zoom out more.
+
+. New Airspace details page, two new buttons for SELECT and ANALYSIS.
+
+   SELECT is used to choose an airspace to be monitored for Hdist and Vdist infoboxes.
+   We call the Selected airspace "Preferred".
+   
+. New airspace 2.4 page flags (the * column on the right)
+  E = Enabled
+  D = Disabled
+  S = Selected
+  F = Fly-In modality
+
+. New airspace 2.4 colors, following red and yellow alerting situation.
+. New airspace drawing options for drawing airspaces with borders and outlines
+
+. Support 320x234 and 234x320 screen resolutions. Preliminary.
+
+. Add ACT indicator in mapscale for ActiveMap status
+  ActiveMap can be enabled/disabled with both a customkey and menu button.
+  When it is enabled, the indicator appears near the map scale.
+
+
+. New extended polars with flaps extensions for flaps support:
+	SZD-38A Jantar
+	LS-6-15
+	Lak17A-15
+	Lak17A-18
+	Nimbus 4
+	SZD-56-2 Diana2
+	Ventus 2Cx (18m)
+
+
+
+
+CHANGES
+
+. Enable Contest Engine also for non-glider aircrafts, IF infopage 1.5 is enabled.
+
+    This means that using glider mode will not require 1.5 to be enabled.
+    But using paragliding, GA or Car mode will require 1.5 to BE ENABLED otherwise the
+    calculation engine will NOT run.
+    Be careful enabling during flight calculation engine, because all previous point since the
+    takeoff will not be valid, and the freeflight detection will be wrong of course.
+    (This feature was really added in 2.3B but forgotten to be mentioned!)
+
+. Show overlay BEARING while circling.
+    We could not display bearing difference while thermalling, because it was constantly changing.
+
+. Use manually selected airspace for distance infoboxes. 
+  In order to see Hdist and Vdist infoboxes, an airspace must be selected from Airspace details page.
+
+. Airspace warnings working only after 1 minute have passed since takeoff
+  This is to reduce pilot overload during critical phases of flight.
+
+. (2.3) ArSpcH Airspace Horizontal distance below 1000m (~3300ft) will display 2 decimals.
+  Example, instead of 0.7km it will show 743m  .
+
+. Following configuration items were REMOVED from Engineering mode, thus becoming PERMANENTLY removed from LK:
+
+	- VirtualKeys
+	VirtualKeys were obsoleted when the new SIM system was active. No need to use them anymore.
+	They were basically used at the very beginning of LK to change altitude and speed in infoboxes
+	for simulations. Active map is now available on demand by a simple button at runtime.
+
+	- MapLock
+	The old maplock system is permanently removed from the code.
+	Paragliders have a new screen locking mechanism, much better.
+
+	- STF Risk Factor
+	- Block Speed To Fly
+	- Text Input Style 
+	- Animation
+	- Status Message alignement
+	- WindArrow
+
+. Following configuration items are MOVED to Engineering mode, thus becoming candidated for permanent removal from LK:
+
+	. ActiveMap
+	ActiveMap is a good candidate for no configuration. There is a button to activate active map on demand.
+	There is also a customkey for it.
+
+
+
+
+FIXES
+
+
+. Fixed (2.3) "unknown airspace warning message" when a message gets repeated during flying outside a fly zone
+
+. Fixed no nearest turnpoints showing if no landables were available in at least on waypoint file.
+  Bug introduced when nearest turnpoint pages and landables were unified at code level. Very old.
+
+. Fix (2.3) dlgairspacedetails range field, displaying "to enter" or "to leave" based on horiz ditance, not inside, which includes altitude as well.
+
+. Fix bug AAT next waypoint target bearing and bearing diff wrong .
+  They were always related to waypoint center, and not to the target
+
+. Task Edit / Analysis  will bring to task analysis page, which was not working.
+
+. Fix glidebar painting arrow based on a value that was ignoring safetyMC in some cases.
+
+. Fix LK not checking battery with LKBatteryManager while inside infopages. This might result in delayed warnings about battery.
+
+. Fix (2.3) Flaps using characters for name, and not a number. This was a real problem, since you could not assign for
+  example S1 to a flap position related to a IAS speed, for example.
+
+. Fix (2.3) bug in infopage traffic, not advancing beyond first page.
+
+. Fix airspace parser arc and sector calc
+  If someone wants to make an arc within  0-7.5degree or (360-7.5)-360 degree range nothing added to the polygon list...
+
+. Fix replay logger problem not resetting some variables in flightstats
+
+    This will not solve at 100% all replay problems when replaying several IGC files. Currently the only safe solution is
+    to restart LK to be sure all statistics are reset correctly.
+
+. Fix bug not calculating TC.Avg and Th.All at flight startup.
+
+    LKCalculation freeflight detection was resetting StartClimbMode and this was bad.
+    Because StartClimbMode is set before we actually start climbing, and discarded if
+    after a few turns we are not really circling.
+    FF engine is also using the first thermal to detect FF, and this was causing a sort of a loop.
+    The problem was more likely to appear only in IGC flight replay mode in simulation.
+    However, even in real flight there was 1/100 of chances to get this (minor) problem.
+
+
+
+
+
+-------------------
+Version 2.3b 110609
+
+NEW
+
+. Menu 15 in config, for Alarms - still not operational
+
+
+CHANGES
+
+. Orbiter enabled only after 50m thermal gain achieved. Below this gain, we assume the thermal center is not valid.
+  Orbiter will autodisable after 700m thermal gain. Thus it is now working in the 50-700m th.gain range.
+. 2.4 nearest airspace page contains airspaces in maximum 100km range
+. Airspace nearest vertical distance infobox shows vertical distance to an airspace directly above or below at current position (or to leave a fly zone)
+. Airspace nearest horizontal distance infobox shows horizontal distance to an airspace at the current altitude (or to leave a fly zone)
+
+. Config menu 15 Task rules moved to Menu 14 as a button
+
+FIXES
+
+. Fix a bug in 2.3a causing again sometimes the "White Screen of Pain" problem on startup.
+. Fix Airspace parser, coordinate parsing fails if coords given in DD:MM:SS<spc><spc>X format
+
+
+-------------------
+Version 2.3a 110603
+
+NEW
+
+. New configuration for Polars (requires reconfiguring polar type!)
+. Many new polars
+
+. New FLAPS setting calculator , for extended polars 
+
+. New IMI ERIXX logger support, also for task declaration
+
+. New configurable BottomBar.
+    System config menu 10 let you configure individually each bottombar stripe.
+    While rotating, only desired stripes will be shown.
+    Even if all bars are set off, NAV1 is shown.
+    Thermal mode will keep showing THR 0 bar.
+
+. New configurable Infopages.
+    System config menu 10 let you configure individually each infopage, except traffic.
+    If all pages of a branch (for example, all 2.x pages) are OFF, then that branch will not be selected
+    during rotation.
+    Direct access to pages through custom keys is always possible, bypassing this configuration.
+    Traffic pages 4.x - when Flarm is detected - are always available. If you don't want traffic informations, 
+    then please disable these traffic data being sent by flarm in its protocol, and save CPU.
+
+. New Color scheme for GA: relative terrain.
+    This scheme will show red any terrain above current altitude.
+    Anything below, up to 500ft below, will be graded to yellow.
+    This scheme is NOT good for gliders, because it does not consider the loss of altitude while gliding.
+    It is intended to be used by general aviation mode, optionally activated by a button.
+
+. New Info Status System indicators for :
+	Simulator mode
+	GPS device in use for fix
+	Software version
+
+. New infobox Home Arrival altitude
+
+. ------- New AIRSPACE handling ENGINE ----------
+
+  . NEW 2.4 nearest airspace page
+
+  . New airspace storage classes (CAirspace, CAirspaceCicrle, CAirspaceArea)
+  . New CAirspaceManager singleton class for managing airspace operations
+  . New openair parser based on the old one
+  . New airspace distance calculation algorithms
+  . New TMZ airspace class for handling TMZ zones separated from OTHER zones
+
+  . NOFLY/FLY airspaces introduced.
+    . NOFLY zones - works like the old airspaces. You are in a wrong position when you are inside a nofly zone.
+      Warning events based on this, so if you try to enter a nofly zone you get warnings to not do that.
+    . FLY zones - Zones you should be in to be safe. You are in a good position when you are inside a fly zone.
+      Warning event based on to remain in a fly zone, so if you try to leave it you get warnings to not do that.
+      Flying to an adjacent fly zone is permitted, in that case no warnings issued. (For ex. corridors beetween
+      different fly zones)
+      In the openair file the AF sentence defines a zone as fly, or you can change it from the UI.
+
+  . Current / predicted position
+    Predicted position of the aircraft calculated by lk. This calculation based on current mode (circling/cruise),
+    ground and vertical speed, and the configured warning time. This is the time before an airspace warning event
+    is estimated at which the system will warn the pilot. Warning messages based on predicted and current position
+    as well.
+
+  . Warning levels, warning messages
+    . Yellow warning:
+      Your current position near a warning situation. This means that you have a possibility to be in a wrong position
+      in the given warning time. (30sec by default). There are two types of yellow situation:
+      Predicted warning situation - your predicted posititon in a wrong zone (same as old airspaces case)
+      Near to a warning situation - You too close horizontally or vertically to a warning position.
+      (Too close comes from actual speed and nearest warning point distance and from the configured warning time)
+    . Red warning:
+      Your current position is wrong, you shouldn't be there because that position violates airspace rules.
+      (For example you enter a nofly zone, or you leave a fly zone)
+    . New airspace warning dialog
+      . Shows the reason of the message, warning level, name of airspace, horizontal and vertical distance, airspace
+        base and top altitude
+      . Dialog auto closes after a configured time automatically, or you can close it
+      . There is a possibility to acknowledge the given warning level for a configured time to not show up again.
+      . The old one still accessible under Info1/Analysis/Airspace/Warnings button
+    . Acknowledging
+      . Each airspace has a warning level and a corresponding ack level. 
+      . Actual warning level calculated by LK based on distances, fly/nofly zones, etc.
+      . Ack level set by the user, by acknowledging warning messages.
+      . The warning message appears only if the warning level increases above the ack level. Lets see a few examples:
+          1.You are circling in a position where a no warning/yellow warning situation flipping. When a yellow warning
+            situation occurs a warning dialog appears. If you do not press the ack button then in every circle the new
+            warning dlg will appear beacuse warning level > ack level. But if you ack the yellow warning then the dialog
+            not shows up again in the yellow warning case for a configured time. If the ack time (120s) expires, then the
+            ack level goes back to zero, so the warning will appear again.
+          2.The same case if you are circling at a nofly zone border. Half circle inside the zone. This is a yellow/red
+            warning flipping. If you ack the red warning for a time, then you won't get a new warning message on every circle.
+      . Daily acknowledging - enable/disable an airspace
+        There is a possibility to disable an airspace (until lk restart). You can do that from airspace
+        details dialog (long click on map), pressing the Disable button. Disabling an airspace means that warning
+        dialog will never appear for that airspace, and it is not shown on the map as well.
+    . Warning dialog messages can be:
+      . "Predicted leaving FLY zone" : Current position inside, predicted position outside a flyzone (YELLOW)
+      . "Near leaving FLY zone" : Current position inside a flyzone, but you are too close to the border to leave it (YELLOW)
+      . "Leaving FLY zone" : You have just leaved the fly zone (RED)
+      . "Predicted entering NOFLY zone" : Current position outside, predicted position inside a nofly zone (YELLOW)
+      . "Near entering NOFLY zone" : Current position outside a flyzone, but you are too close to the border to enter it (YELLOW)
+      . "Entering NOFLY zone" : You have just entered the nofly zone (RED)
+    . New airspace info messages
+      . When leaving a nonfly zone
+      . When entering a (new)fly zone
+
+  . New UI features
+    . Long click on the map shows an extended airspace details dialog. 
+      . In the type field FLY/NOFLY displayed
+      . There is a new button to set an airspace to FLY/NOFLY.
+      . Daily Ack changed to Enable/Disable
+      . Enable/Disable and Fly/Nofly buttons do not close the dialog automatically, and do not pop up a confirmation dialog 
+      . The order of the airspaces sorted by top altitude. Lowest first.
+    . Airspace warning labels on map
+      . Can be disabled from config page2/Warnings
+      . Shows a red mark on the nearest posititon to a warning situation
+      . Shows airspace name, and the vertical distance to the border
+      . Vertical distance negative if airspace border above, positive if below your current altitude. (like in landables case)
+      . Label color means:
+        - Black - vertical distance ok, you are in good position vertically
+        - Red - vertical distance wrong against that nofly zone
+        - Orange - vartical distance wrong against that fly zone
+
+    . New infobox showing nearest vertical distance to an airspace (or to leave a fly zone)
+    . New infobox showing nearest horizontal distance to an airspace (or to leave a fly zone)
+
+
+CHANGES
+
+. Polars are now files inside _Polars folder, and can be viewed and edited.
+. Extended polars are possible for use of FLAPS settings indicator. See Example.plr  file in _Polars.
+
+. Device configuration has type "DISABLED", no more confusion.
+
+. Changes regarding airspaces:
+  . Drawing order of airspaces changed. They are draw from lowest top altitude first.
+  . Daily acked (now disabled) airspaces are not drawed on the map
+  . Infobox nearest airspace shows the horizontal distance to the nearest airspace (or to leave a fly zone)
+  . In airspace details dialog (long click on map) ACKDay button behaviour changed, now it shows a simple question to toggle actual ackday setting.
+  . Airspace ACK Day functionality changed to disabled/enabled
+  . Enable/Disable and Fly/Nofly buttons do not close the dialog automatically, and do not pop up a confirmation dialog 
+  . Config page 2 reordered, some parameters moved under page accessible by pressing the "Warnings" button
+
+. Paragliders screen unlock is valid by doubleclicking only on lower right screen corner.
+    Previously any position was good, leading to possible false unlocks during takeoffs.
+
+
+BUG FIX
+
+. Fix bug in 4.1 traffic page: using this page for a long time may lead to system locks. This is a critical fix.
+
+. Fix AutoQNH problem. Takeoff wp was used in place of Home first!
+    Correct mode now is: look for home, if no home nearby, look for another known waypoint near 2km.
+    Do not consider TAKEOFF as a valid waypoint for QNH because it is itself assigned an altitude!
+    If no waypoints nearby, and no home, use terrain altitude if available.
+
+. Fix a possible problem of UTF8 characters on very old devices, that may show as funny tokens appearing in place of text.
+  This was due to missing UTF8 support on some old operating system like Windows CE 3.0. The patch has been tested on
+  CE 3.0 Ipaq 3630.
+
+. Fix cheap chinese PNA bugs, when system messages appear lk is crashing with exception 0xC000001C
+
+

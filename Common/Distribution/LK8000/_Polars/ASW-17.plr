@@ -1,0 +1,4 @@
+* LK8000 polar for: ASW-17
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+ 522, 151, 114.5, -0.7, 169.05, -1.68, 206.5, -2.9, 14.84
+

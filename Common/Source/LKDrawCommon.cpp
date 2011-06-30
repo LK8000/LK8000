@@ -9,7 +9,7 @@
 #include "StdAfx.h"
 #include "options.h"
 #include "Cpustats.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "Utils2.h"
 #include "compatibility.h"
 #include "MapWindow.h"
@@ -32,6 +32,8 @@
 #include <wingdi.h>
 #endif
 
+#include "utils/heapcheck.h"
+
 extern void DrawGlideCircle(HDC hdc, POINT Orig, RECT rc );
 extern void MapWaypointLabelAdd(TCHAR *Name, int X, int Y, TextInBoxMode_t Mode, int AltArivalAGL, bool inTask, 
 	bool isLandable, bool isAirport, bool isExcluded, int index);
@@ -39,7 +41,6 @@ extern int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *ele
 
 extern void DrawMapSpace(HDC hdc, RECT rc);
 extern void DrawNearest(HDC hdc, RECT rc);
-extern void DrawNearestTurnpoint(HDC hdc, RECT rc);
 extern void DrawCommon(HDC hdc, RECT rc);
 extern void DrawWelcome8000(HDC hdc, RECT rc);
 #ifdef CPUSTATS
@@ -98,6 +99,8 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
   #define INTERRAW	1
   #define HEADRAW	NIBLSCALE(6)	
   RECT invsel;
+
+  short curmapspace=MapSpaceMode;
 
   static bool doinit=true;
   
@@ -181,7 +184,8 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
   else s_sortBox[0].right=left+WPTextSize.cx-NIBLSCALE(10);
   s_sortBox[0].top=0;
   s_sortBox[0].bottom=p1.y;
-  SortBoxX[0]=s_sortBox[0].right;
+  SortBoxX[MSM_COMMON][0]=s_sortBox[0].right;
+  SortBoxX[MSM_RECENT][0]= SortBoxX[MSM_COMMON][0];
 
   // Distance
   if ( ScreenSize < (ScreenSize_t)sslandscape ) s_sortBox[1].left=Column1+afterwpname-INTERBOX;
@@ -189,30 +193,35 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
   s_sortBox[1].right=Column2+INTERBOX;
   s_sortBox[1].top=0;
   s_sortBox[1].bottom=p1.y;
-  SortBoxX[1]=s_sortBox[1].right;
+  SortBoxX[MSM_COMMON][1]=s_sortBox[1].right;
+  SortBoxX[MSM_RECENT][1]= SortBoxX[MSM_COMMON][1];
 
   // Bearing
   s_sortBox[2].left=Column2+INTERBOX;
   s_sortBox[2].right=Column3+INTERBOX;
   s_sortBox[2].top=0;
   s_sortBox[2].bottom=p1.y;
-  SortBoxX[2]=s_sortBox[2].right;
+  SortBoxX[MSM_COMMON][2]=s_sortBox[2].right;
+  SortBoxX[MSM_RECENT][2]= SortBoxX[MSM_COMMON][2];
 
   // reqE
   s_sortBox[3].left=Column3+INTERBOX;
   s_sortBox[3].right=Column4+INTERBOX;
   s_sortBox[3].top=0;
   s_sortBox[3].bottom=p1.y;
-  SortBoxX[3]=s_sortBox[3].right;
+  SortBoxX[MSM_COMMON][3]=s_sortBox[3].right;
+  SortBoxX[MSM_RECENT][3]= SortBoxX[MSM_COMMON][3];
 
   // AltArr
   s_sortBox[4].left=Column4+INTERBOX;
   s_sortBox[4].right=Column5+INTERBOX;
   s_sortBox[4].top=0;
   s_sortBox[4].bottom=p1.y;
-  SortBoxX[4]=s_sortBox[4].right;
+  SortBoxX[MSM_COMMON][4]=s_sortBox[4].right;
+  SortBoxX[MSM_RECENT][4]= SortBoxX[MSM_COMMON][4];
 
-  SortBoxY=p1.y;
+  SortBoxY[MSM_COMMON]=p1.y;
+  SortBoxY[MSM_RECENT]=SortBoxY[MSM_COMMON];
 
   // Caution: could be wrong? no..
   //CommonNumpages=(short)ceil( (float)MAXCOMMON / (float)CommonNumraws );
@@ -222,7 +231,9 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 
   // set the initial highlighted item to the first, in each MapSpace
   SelectedRaw[MSM_COMMON]=0; 
+  SelectedRaw[MSM_RECENT]=0; 
   SelectedPage[MSM_COMMON]=0;
+  SelectedPage[MSM_RECENT]=0;
 
   doinit=false;
   return;
@@ -230,7 +241,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 
   int *pNumber;
   int *pIndex;
-  switch(MapSpaceMode) {
+  switch(curmapspace) {
 	case MSM_COMMON:
 			pNumber=&CommonNumber;
 			pIndex=CommonIndex;
@@ -249,11 +260,11 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
   if (CommonNumpages>MAXCOMMONNUMPAGES) CommonNumpages=MAXCOMMONNUMPAGES;
   else if (CommonNumpages<1) CommonNumpages=1;
   // current page in use by current mapspacemode
-  curpage=SelectedPage[MapSpaceMode];
+  curpage=SelectedPage[curmapspace];
   if (curpage<0||curpage>=MAXCOMMONNUMPAGES) {
 	DoStatusMessage(_T("ERR-092 current page invalid!")); // TODO FIX this to happen
 	// immediate action to resolve this problem, take it back to normality
-	SelectedPage[MapSpaceMode]=0;
+	SelectedPage[curmapspace]=0;
 	LKevent=LKEVENT_NONE;
 	return;
   }
@@ -265,8 +276,8 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 	case LKEVENT_NONE:
 		break;
 	case LKEVENT_ENTER:
-		// i=CommonIndex[SelectedRaw[MapSpaceMode] + (curpage*CommonNumraws)]; OLD
-		i=pIndex[SelectedRaw[MapSpaceMode] + (curpage*CommonNumraws)];
+		// i=CommonIndex[SelectedRaw[curmapspace] + (curpage*CommonNumraws)]; OLD
+		i=pIndex[SelectedRaw[curmapspace] + (curpage*CommonNumraws)];
 
 		if ( !ValidWayPoint(i)) {
 			// dont say error if empty list and an enter was pressed
@@ -283,12 +294,12 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 		return;
 		break;
 	case LKEVENT_DOWN:
-		if (++SelectedRaw[MapSpaceMode] >=CommonNumraws) SelectedRaw[MapSpaceMode]=0;
+		if (++SelectedRaw[curmapspace] >=CommonNumraws) SelectedRaw[curmapspace]=0;
 		LastDoCommon=GPS_INFO.Time+PAGINGTIMEOUT-1.0; //@ 101003
 		// Event to be cleared at the end
 		break;
 	case LKEVENT_UP:
-		if (--SelectedRaw[MapSpaceMode] <0) SelectedRaw[MapSpaceMode]=CommonNumraws-1;
+		if (--SelectedRaw[curmapspace] <0) SelectedRaw[curmapspace]=CommonNumraws-1;
 		LastDoCommon=GPS_INFO.Time+PAGINGTIMEOUT-1.0; //@ 101003
 		break;
 	case LKEVENT_PAGEUP:
@@ -330,7 +341,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 	LKWriteText(hdc, Buffer, LEFTLIMITER, rc.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 	SelectObject(hdc, LK8InfoNormalFont);
 
-	if (MapSpaceMode == MSM_COMMON )
+	if (curmapspace == MSM_COMMON )
 		// LKTOKEN _@M1309_ "COMN"
   		_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1309_")), curpage+1, CommonNumpages); 
 	else
@@ -365,7 +376,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 	SelectObject(hdc, LK8InfoNormalFont);
 
 	if ( (ScreenSize == (ScreenSize_t)ss640x480) || (ScreenSize == (ScreenSize_t)ss320x240) || ScreenSize == ss896x672 ) {
-		if (MapSpaceMode == MSM_COMMON )
+		if (curmapspace == MSM_COMMON )
 			// LKTOKEN _@M1309_ "COMN"
 			_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1309_")), curpage+1,CommonNumpages); 
 		else
@@ -389,7 +400,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 		_stprintf(Buffer,gettext(TEXT("_@M1308_"))); 
 		LKWriteText(hdc, Buffer, Column5, HEADRAW , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 	} else {
-		if (MapSpaceMode==MSM_COMMON)
+		if (curmapspace==MSM_COMMON)
 			// LKTOKEN _@M1309_ "COMN"
 			_stprintf(Buffer,TEXT("%s %d/%d"), gettext(TEXT("_@M1309_")), curpage+1,CommonNumpages); 
 		else
@@ -423,7 +434,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
   // try to reduce conflicts, as task thread could change it while we are using it here.
   // so we copy it and clear it here once forever in this run
   bool ndr;
-  switch (MapSpaceMode) {
+  switch (curmapspace) {
 	case MSM_COMMON:
   		ndr=CommonDataReady;
   		CommonDataReady=false;
@@ -464,11 +475,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 
 		// relative bearing
 
-#ifndef MAP_ZOOM
-		if (DisplayMode != dmCircling) {
-#else /* MAP_ZOOM */
 		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
 			Value = WayPointCalc[rli].Bearing -  GPS_INFO.TrackBearing;
 
 			if (Value < -180.0)
@@ -563,27 +570,27 @@ KeepOldValues:
   // BOXOUT SELECTED ITEM
     if (drawn_items_onpage>0) { 
 
-	if (SelectedRaw[MapSpaceMode] <0 || SelectedRaw[MapSpaceMode]>(CommonNumraws-1)) {
+	if (SelectedRaw[curmapspace] <0 || SelectedRaw[curmapspace]>(CommonNumraws-1)) {
 		LKevent=LKEVENT_NONE;
 		return;
 	}
 	// avoid boxing and selecting nonexistent items
 	// selectedraw starts from 0, drawnitems from 1...
 	// In this case we set the first one, or last one, assuming we are rotating forward or backward
-	if (SelectedRaw[MapSpaceMode] >= drawn_items_onpage) {
-		if (LKevent==LKEVENT_DOWN) SelectedRaw[MapSpaceMode]=0;
+	if (SelectedRaw[curmapspace] >= drawn_items_onpage) {
+		if (LKevent==LKEVENT_DOWN) SelectedRaw[curmapspace]=0;
 		else 
 		// up from top to bottom, bottom empty, look for the last valid one (ie first going back from bottom)
-		if (LKevent==LKEVENT_UP) SelectedRaw[MapSpaceMode]=drawn_items_onpage-1;
+		if (LKevent==LKEVENT_UP) SelectedRaw[curmapspace]=drawn_items_onpage-1;
 		else {
-			DoStatusMessage(_T("Cant find valid raw"));
-			SelectedRaw[MapSpaceMode]=0;
+			// DoStatusMessage(_T("Cant find valid raw")); // no more needed
+			SelectedRaw[curmapspace]=0;
 		}
 	}
 	invsel.left=left;
 	invsel.right=right;
-	invsel.top=TopSize+(rawspace*SelectedRaw[MapSpaceMode])+NIBLSCALE(2);
-	invsel.bottom=TopSize+(rawspace*(SelectedRaw[MapSpaceMode]+1))-NIBLSCALE(1);
+	invsel.top=TopSize+(rawspace*SelectedRaw[curmapspace])+NIBLSCALE(2);
+	invsel.bottom=TopSize+(rawspace*(SelectedRaw[curmapspace]+1))-NIBLSCALE(1);
 	InvertRect(hdc,&invsel);
   } 
 

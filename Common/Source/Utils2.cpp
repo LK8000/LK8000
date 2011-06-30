@@ -18,7 +18,7 @@
 #endif
 #include "options.h"
 #include "externs.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "InfoBoxLayout.h"
 #include "Utils2.h"
 #include "Cpustats.h"
@@ -26,12 +26,16 @@
 #include "Logger.h"
 #include "Parser.h"
 #include "WaveThread.h"
-#include "GaugeFLARM.h"
 #include "LKUtils.h"
 #include "Message.h"
 #include "McReady.h"
 #include "InputEvents.h"
 #include "MapWindow.h"
+#include "LKMapWindow.h"
+
+#include "utils/heapcheck.h"
+using std::min;
+using std::max;
 
 extern void NextMapSpace();
 extern void PreviousMapSpace();
@@ -76,14 +80,10 @@ FILE *fp;
 	for (i=0; i<MAXLDROTARYSIZE; i++) {
 		buf->distance[i]=0;
 		buf->altitude[i]=0;
-		#if EQMC
 		buf->ias[i]=0;
-		#endif
 	}
 	buf->totaldistance=0;
-	#if EQMC
 	buf->totalias=0;
-	#endif
 	buf->start=-1;
 	buf->size=bsize;
 	buf->valid=false;
@@ -155,13 +155,10 @@ FILE *fp;
 	// need to fill up buffer before starting to empty it
 	if ( buf->valid == true) {
 		buf->totaldistance-=buf->distance[buf->start];
-		#if EQMC
 		buf->totalias-=buf->ias[buf->start];
-		#endif
 	}
 	buf->totaldistance+=distance;
 	buf->distance[buf->start]=distance;
-	#if EQMC
 	// insert IAS in the rotary buffer, either real or estimated
 	if (GPS_INFO.AirspeedAvailable) {
                 buf->totalias += (int)GPS_INFO.IndicatedAirspeed;
@@ -170,7 +167,6 @@ FILE *fp;
                 buf->totalias += (int)CALCULATED_INFO.IndicatedAirspeedEstimated;
                 buf->ias[buf->start] = (int)CALCULATED_INFO.IndicatedAirspeedEstimated;
 	}
-	#endif
 	buf->altitude[buf->start]=altitude;
 #ifdef DEBUG_ROTARY
 	sprintf(ventabuffer,"insert buf[%d/%d], distance=%d totdist=%d\r\n",buf->start, buf->size-1, distance,buf->totaldistance);
@@ -183,11 +179,7 @@ FILE *fp;
  * returns 0 if invalid, 999 if too high
  * EqMc is negative when no value is available, because recalculated and buffer still not usable
  */
-#if EQMC
 double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
-#else
-int CalculateLDRotary(ldrotary_s *buf ) {
-#endif
 
 	int altdiff;
 	double eff;
@@ -196,10 +188,8 @@ int CalculateLDRotary(ldrotary_s *buf ) {
 	char ventabuffer[200];
 	FILE *fp;
 #endif
-	#if EQMC
 	double averias;
 	double avertas;
-	#endif
 
 	if ( CALCULATED_INFO.Circling == TRUE || CALCULATED_INFO.OnGround == TRUE) {
 #ifdef DEBUG_ROTARY
@@ -207,10 +197,8 @@ int CalculateLDRotary(ldrotary_s *buf ) {
 		if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
 			    {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
 #endif
-		#if EQMC
 		// StartupStore(_T("... Circling or grounded, EqMc -2 (---)\n"));
 		Calculated->EqMc = -1;
-		#endif
 		return(0);
 	}
 
@@ -220,10 +208,8 @@ int CalculateLDRotary(ldrotary_s *buf ) {
 		if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
 			    {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
 #endif
-		#if EQMC
 		// StartupStore(_T("... Invalid buf start, EqMc -2 (---)\n"));
 		Calculated->EqMc = -1;
-		#endif
 		return(0);
 	}
 
@@ -232,10 +218,8 @@ int CalculateLDRotary(ldrotary_s *buf ) {
 
 	if (bc.valid == false ) {
 		if (bc.start==0) {
-			#if EQMC
 			// StartupStore(_T("... bc.valid is false, EqMc -2 (---)\n"));
 			Calculated->EqMc = -1;
-			#endif
 			return(0); // unavailable
 		}
 		bcold=0;
@@ -249,8 +233,6 @@ int CalculateLDRotary(ldrotary_s *buf ) {
 
 	altdiff= bc.altitude[bcold] - bc.altitude[bc.start];
 
-	#if EQMC
-	// StartupStore(_T("... bcold=%d bcstart=%d  old-start=%d\n"), bcold, bc.start, bcold-bc.start); // REMOVE
 	// if ( bc.valid == true ) {
 	// bcsize<=0  should NOT happen, but we check it for safety
 	if ( (bc.valid == true) && bc.size>0 ) {
@@ -271,7 +253,6 @@ int CalculateLDRotary(ldrotary_s *buf ) {
 		//GlidePolar::sinkratecache[GlidePolar::Vbestld], GlidePolar::Vbestld*TOKPH);
 
 	}
-	#endif
 
 	if (altdiff == 0 ) {
 		return(INVALID_GR); // infinitum
@@ -293,6 +274,7 @@ int CalculateLDRotary(ldrotary_s *buf ) {
 }
 
 #if 0
+// Example code used for rotary buffering
 bool InitFilterBuffer(ifilter_s *buf, short bsize) {
 short i;
 	if (bsize <3 || bsize>RASIZE) return false;
@@ -401,12 +383,13 @@ main(int argc, char *argv[])
 // however we consider a down as up, and viceversa
 int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
+#define UNGESTURES 1
 #define VKTIMELONG 1500
-#ifndef MAP_ZOOM
-#define DONTDRAWTHEMAP MapWindow::IsMapFullScreen()&&NewMap&&Look8000&&!MapWindow::EnablePan&&MapSpaceMode!=1
-#else /* MAP_ZOOM */
-#define DONTDRAWTHEMAP MapWindow::IsMapFullScreen()&&NewMap&&Look8000&&!MapWindow::mode.AnyPan()&&MapSpaceMode!=1
-#endif /* MAP_ZOOM */
+#if USEIBOX
+#define DONTDRAWTHEMAP MapWindow::IsMapFullScreen()&&!MapWindow::mode.AnyPan()&&MapSpaceMode!=1
+#else
+#define DONTDRAWTHEMAP !MapWindow::mode.AnyPan()&&MapSpaceMode!=1
+#endif
 
 	#if 100228
 	static int AIRCRAFTMENUSIZE=0;
@@ -443,10 +426,8 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		// same for bottom navboxes: they do not exist in infobox mode
 		s_bottomY=(MapWindow::MapRect.bottom-MapWindow::MapRect.top)-BottomSize-NIBLSCALE(2); // bugfix era 15, troppo 090731
 
-		#if 100228
 		#define _NOCOMPASSINCLUDE
 		#include "./LKinclude_menusize.cpp"
-		#endif
 
 		doinit=false;
 	}
@@ -457,7 +438,11 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	// yup and ydown are used normally on nearest page item selection, but also for real VK
 	// that currently are almost unused. 
 
-	if (NewMap&&DrawBottom&&MapWindow::IsMapFullScreen()) {
+	#if USEIBOX
+	if (DrawBottom&&MapWindow::IsMapFullScreen()) {
+	#else
+	if (DrawBottom) {
+	#endif
 		// Native LK mode: always fullscreen mode
 		// If long click, we are processing an Enter, and we want a wider valid center area
 		if ( keytime>=(VKSHORTCLICK*2)) { 
@@ -472,10 +457,6 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		yup=(short)(sizeup/2.7)+MapWindow::MapRect.top;
 		ydown=(short)(MapWindow::MapRect.bottom-(sizeup/2.7));
 	}
-//	TCHAR buf[100];  VENTA REMOVE
-//	wsprintf(buf,_T("sizeup=%d BottomSize=%d yup=%d ydown=%d"),
-//		sizeup, BottomSize, yup, ydown);
-//	DoStatusMessage(buf);
 
 	#ifdef DEBUG_PROCVK
 	TCHAR buf[100];
@@ -483,27 +464,12 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 	// Handle fullscreen 8000 mode 
 	// sound clicks require some attention here
-#ifndef MAP_ZOOM
-	if (NewMap &&  DrawBottom && !MapWindow::EnablePan && vkmode==LKGESTURE_NONE) { 
-#else /* MAP_ZOOM */
-	if (NewMap &&  DrawBottom && !MapWindow::mode.AnyPan() && vkmode==LKGESTURE_NONE) { 
-#endif /* MAP_ZOOM */
+	if (DrawBottom && !MapWindow::mode.AnyPan() && vkmode==LKGESTURE_NONE) { 
 		//
 		// CLICKS on NAVBOXES, any MapSpaceMode ok
 		//
 		if (Y>= s_bottomY ) { // TESTFIX 090930
 
-			if ( UseMapLock ) {
-				if (MapLock==false) {
-#ifndef MAP_ZOOM
-					if (!MapWindow::EnablePan ) LockMap();
-#else /* MAP_ZOOM */
-					if (!MapWindow::mode.AnyPan()) LockMap();
-#endif /* MAP_ZOOM */
-					MapWindow::RefreshMap();
-					return 0;
-				}
-			}
 			if ( X>s_xright ) {
 				// standard configurable mode
 				if (keytime >=CustomKeyTime) {
@@ -514,25 +480,8 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				wsprintf(buf,_T("RIGHT in limit=%d"),sizeup-BottomSize-NIBLSCALE(20));
 				DoStatusMessage(buf);
 				#endif
-				if (  (BottomMode+1) >BM_LAST ) {
-#ifndef MAP_ZOOM
-					if ( DisplayMode == dmCircling)
-#else /* MAP_ZOOM */
-					if ( MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
-#endif /* MAP_ZOOM */
-						BottomMode=BM_TRM;
-					else
-						BottomMode=BM_FIRST;
-					BottomSounds();
-					MapWindow::RefreshMap();
-					return 0;
-				} else ++BottomMode;
-				BottomSounds(); // 100402
-/*
-				#ifndef DISABLEAUDIO
-			        if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-				#endif
-*/
+				BottomBarChange(true); // advance
+				BottomSounds();
 				MapWindow::RefreshMap();
 				return 0;
 			}
@@ -546,47 +495,8 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				wsprintf(buf,_T("LEFT in limit=%d"),sizeup-BottomSize-NIBLSCALE(20));
 				DoStatusMessage(buf);
 				#endif
-				if ((BottomMode-1) == BM_TRM) {
-#ifndef MAP_ZOOM
-					if (DisplayMode != dmCircling) BottomMode=BM_LAST;
-#else /* MAP_ZOOM */
-					if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) BottomMode=BM_LAST;
-#endif /* MAP_ZOOM */
-					else {
-						BottomMode=BM_TRM;
-						/*
-						#ifndef DISABLEAUDIO
-                                        	if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
-						#endif
-						*/
-						BottomSounds();
-						MapWindow::RefreshMap();
-						return 0;
-					}
-				}
-				else if ((BottomMode-1)<0) {
-					BottomMode=BM_LAST;
-#ifndef MAP_ZOOM
-				} else if ( ((BottomMode-1)==BM_FIRST)&& (DisplayMode!=dmCircling)) {
-#else /* MAP_ZOOM */
-				} else if ( ((BottomMode-1)==BM_FIRST)&& !MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-#endif /* MAP_ZOOM */
-					/*
-					#ifndef DISABLEAUDIO
-                                       	if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
-					#endif
-					*/
-					BottomMode--;
-					BottomSounds();
-					MapWindow::RefreshMap();
-					return 0;
-				} else BottomMode--;
-				BottomSounds(); // 100402
-/*
-				#ifndef DISABLEAUDIO
-			        if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-				#endif
-*/
+				BottomBarChange(false); // backwards
+				BottomSounds();
 				MapWindow::RefreshMap();
 				return 0;
 			}
@@ -676,12 +586,13 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		} else 
 		// CLICK ON SORTBOX line at the top, only with no map and only for nearest
 		if ( (MapSpaceMode == MSM_LANDABLE || MapSpaceMode==MSM_AIRPORTS || 
-			MapSpaceMode==MSM_NEARTPS || MapSpaceMode==MSM_TRAFFIC) && Y<=SortBoxY ) {
+			MapSpaceMode==MSM_NEARTPS || MapSpaceMode==MSM_TRAFFIC ||
+			MapSpaceMode==MSM_AIRSPACES) && Y<=SortBoxY[MapSpaceMode] ) {
 
 			// only search for 1-3, otherwise it's the fourth (fifth really)
 			// we don't use 0 now
 			for (i=0, j=4; i<4; i++) { // i=1 original 090925 FIX
-				if (X <SortBoxX[i]) {
+				if (X <SortBoxX[MapSpaceMode][i]) {
 					j=i;
 					break;
 				}
@@ -704,6 +615,14 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 							if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 							#endif
 							break;
+				case MSM_AIRSPACES:
+							SortedMode[MapSpaceMode]=j;
+							LastDoAirspaces=0;
+							#ifndef DISABLEAUDIO
+							if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+							#endif
+							break;
+							
 				default:
 							DoStatusMessage(_T("ERR-022 UNKNOWN MSM in VK"));
 							break;
@@ -743,6 +662,9 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			case MSM_RECENT:
 						LKForceDoRecent=true;
 						numpages=CommonNumpages;
+						break;
+			case MSM_AIRSPACES:
+						numpages=AspNumpages;
 						break;
 			case MSM_TRAFFIC:
 						numpages=TrafficNumpages;
@@ -791,6 +713,9 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				MapWindow::RefreshMap();
 				return 0;
 			case LKGESTURE_RIGHT:
+#if UNGESTURES
+gesture_right:
+#endif
 				NextModeType();
 				MapWindow::RefreshMap();
 				#ifndef DISABLEAUDIO
@@ -806,6 +731,9 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				break;
 
 			case LKGESTURE_LEFT:
+#if UNGESTURES
+gesture_left:
+#endif
 				PreviousModeType();
 				MapWindow::RefreshMap();
 				#ifndef DISABLEAUDIO
@@ -869,24 +797,29 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		else
 			return 40;
 	}
+#if UNGESTURES
+	if (dontdrawthemap && ModeIndex == LKMODE_INFOMODE) {
+		if (X<=s_xleft) goto gesture_left;
+		if (X>=s_xright) goto gesture_right;
+	}
+#endif
+
+
 	// no click for already clicked events
 
 	//  Swap white and black colours on LK8000 : working only with virtual keys on, map mode
 	//  Currently as of 2.1 virtual keys are almost obsoleted, and it is very unlikely that 
 	//  someone will ever use this feature, which is also undocumented!!
 	if (keytime>=VKTIMELONG && !dontdrawthemap) {
-		if (NewMap&&Look8000) {
 			static short oldOutline=OutlinedTp;
 			if (OutlinedTp>(OutlinedTp_t)otDisabled) OutlinedTp=(OutlinedTp_t)otDisabled;
 			else
 				OutlinedTp=oldOutline;
-			// TODO CHECK EXPERIMENTAL
 			Appearance.InverseInfoBox = !Appearance.InverseInfoBox;
 			#ifndef DISABLEAUDIO
 			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 			#endif
 			MapWindow::RefreshMap();
-		}
 		return 0;
 
 		// return 27; virtual ESC 
@@ -908,30 +841,12 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		}
 */
 
-#if NOSIM
 		if (SIMMODE) {
-#ifndef MAP_ZOOM
-			if ( MapWindow::EnablePan  && ISPARAGLIDER) return 99; // 091221 return impossible value
-#else /* MAP_ZOOM */
 			if ( MapWindow::mode.AnyPan() && ISPARAGLIDER) return 99; // 091221 return impossible value
-#endif /* MAP_ZOOM */
 			else return 0;
 		} else {
 			return 0;
 		}
-#else
-#if _SIM_
-#ifndef MAP_ZOOM
-		if ( MapWindow::EnablePan  && ISPARAGLIDER) return 99; // 091221 return impossible value
-#else /* MAP_ZOOM */
-		if ( MapWindow::mode.AnyPan() && ISPARAGLIDER) return 99; // 091221 return impossible value
-#endif /* MAP_ZOOM */
-			else return 0;
-#else
-		// if we want to emulate a return key, return 13;
-		return 0;
-#endif
-#endif
 	}
 	DoStatusMessage(_T("VirtualKey Error")); 
 	return 0;
@@ -939,8 +854,32 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 void InitNewMap()
 {
-
+  static bool doinit=true;
   StartupStore(_T(". InitNewMap%s"),NEWLINE); // 091213
+
+  if (doinit) {
+  	LK8TargetFont	= (HFONT)NULL;
+  	LK8BigFont	= NULL;
+  	LK8ValueFont	= NULL;
+  	LK8TitleFont	= NULL;
+  	LK8MapFont	= NULL;
+  	LK8TitleNavboxFont	= NULL;
+  	LK8UnitFont	= NULL;
+  	LK8SymbolFont	= NULL;
+  	LK8MediumFont	= NULL;
+  	LK8SmallFont	= NULL;
+  	LK8InfoBigFont	= NULL;
+  	LK8InfoBigItalicFont	= NULL;
+  	LK8InfoNormalFont	= NULL;
+  	LK8InfoSmallFont	= NULL;
+  	LK8PanelBigFont	= NULL;
+  	LK8PanelMediumFont	= NULL;
+  	LK8PanelSmallFont	= NULL;
+  	LK8PanelUnitFont	= NULL;
+
+	doinit=false;
+  }
+
 
   LOGFONT logfontTarget;	// StatisticsWindow
   LOGFONT logfontBig;		// InfoWindow
@@ -1282,11 +1221,7 @@ void InitNewMap()
 	///////////////       Portrait  mode        ////////////////
 
 	case (ScreenSize_t)ss240x320:		// PASSED DEV-1 090701  DEV-2 101005
-		#if NEWPNAV
 		splitter=3;
-		#else
-		splitter=5;
-		#endif
 			#if (WINDOWSPC>0)
 			propGetFontSettingsFromString(TEXT("30,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontBig); // 29 600 101005
 			#else
@@ -1358,13 +1293,8 @@ void InitNewMap()
 		break;
 
 	case (ScreenSize_t)ss272x480:
-		#if NEWPNAV
 		splitter=3;
 		propGetFontSettingsFromString(TEXT("36,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontBig);
-		#else
-		splitter=5;
-		propGetFontSettingsFromString(TEXT("34,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontBig);
-		#endif
 			propGetFontSettingsFromString(TEXT("12,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontSymbol);
 			propGetFontSettingsFromString(TEXT("20,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontMedium);
 			propGetFontSettingsFromString(TEXT("8,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), &logfontSmall);
@@ -1412,11 +1342,7 @@ void InitNewMap()
 // InfoNormal:  Dist Eff ReqE top line
 
 	case (ScreenSize_t)ss480x640:		// PASSED DEV-1 090701 VENTA
-		#if NEWPNAV
 		splitter=3;
-		#else
-		splitter=5;
-		#endif
 		#if (WINDOWSPC>0)
 		propGetFontSettingsFromString(TEXT("60,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontBig);
 		#else
@@ -1475,11 +1401,7 @@ void InitNewMap()
 		break;
 
 	case (ScreenSize_t)ss480x800:		// 100410
-		#if NEWPNAV
 		splitter=3;
-		#else
-		splitter=5;
-		#endif
 		#if (WINDOWSPC>0)
 		propGetFontSettingsFromString(TEXT("62,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontBig);
 		#else
@@ -1560,7 +1482,6 @@ void InitNewMap()
 		BottomSize=38; // Title+Value-4
 		break;
   }
-
   logfontTarget.lfQuality = GetFontRenderer(); 
   logfontBig.lfQuality = GetFontRenderer(); 
   logfontValue.lfQuality = GetFontRenderer(); 
@@ -1580,6 +1501,25 @@ void InitNewMap()
   logfontPanelMedium.lfQuality= GetFontRenderer();
   logfontPanelSmall.lfQuality= GetFontRenderer();
   logfontPanelUnit.lfQuality= GetFontRenderer();
+
+  if (LK8TargetFont!=NULL) DeleteObject(LK8TargetFont);
+  if (LK8BigFont!=NULL) DeleteObject(LK8BigFont);
+  if (LK8ValueFont!=NULL) DeleteObject(LK8ValueFont);
+  if (LK8TitleFont!=NULL) DeleteObject(LK8TitleFont);
+  if (LK8MapFont!=NULL) DeleteObject(LK8MapFont);
+  if (LK8TitleNavboxFont!=NULL) DeleteObject(LK8TitleNavboxFont);
+  if (LK8UnitFont!=NULL) DeleteObject(LK8UnitFont);
+  if (LK8SymbolFont!=NULL) DeleteObject(LK8SymbolFont);
+  if (LK8MediumFont!=NULL) DeleteObject(LK8MediumFont);
+  if (LK8SmallFont!=NULL) DeleteObject(LK8SmallFont);
+  if (LK8InfoBigFont!=NULL) DeleteObject(LK8InfoBigFont);
+  if (LK8InfoBigItalicFont!=NULL) DeleteObject(LK8InfoBigItalicFont);
+  if (LK8InfoNormalFont!=NULL) DeleteObject(LK8InfoNormalFont);
+  if (LK8InfoSmallFont!=NULL) DeleteObject(LK8InfoSmallFont);
+  if (LK8PanelBigFont!=NULL) DeleteObject(LK8PanelBigFont);
+  if (LK8PanelMediumFont!=NULL) DeleteObject(LK8PanelMediumFont);
+  if (LK8PanelSmallFont!=NULL) DeleteObject(LK8PanelSmallFont);
+  if (LK8PanelUnitFont!=NULL) DeleteObject(LK8PanelUnitFont);
 
   LK8TargetFont	= CreateFontIndirect (&logfontTarget); 
   LK8BigFont	= CreateFontIndirect (&logfontBig);
@@ -1638,10 +1578,12 @@ void InitScreenSize() {
   ScreenSize=0;
 
   if (iWidth == 240 && iHeight == 320) ScreenSize=(ScreenSize_t)ss240x320; // QVGA      portrait
+  if (iWidth == 234 && iHeight == 320) ScreenSize=(ScreenSize_t)ss240x320; // QVGA      portrait
   if (iWidth == 272 && iHeight == 480) ScreenSize=(ScreenSize_t)ss272x480;
   if (iWidth == 480 && iHeight == 640) ScreenSize=(ScreenSize_t)ss480x640; //  VGA
   if (iWidth == 640 && iHeight == 480) ScreenSize=(ScreenSize_t)ss640x480; //   VGA
   if (iWidth == 320 && iHeight == 240) ScreenSize=(ScreenSize_t)ss320x240; //  QVGA
+  if (iWidth == 320 && iHeight == 234) ScreenSize=(ScreenSize_t)ss320x240; //  QVGA
   if (iWidth == 720 && iHeight == 408) ScreenSize=(ScreenSize_t)ss720x408;
   if (iWidth == 480 && iHeight == 800) ScreenSize=(ScreenSize_t)ss480x800;
   if (iWidth == 400 && iHeight == 240) ScreenSize=(ScreenSize_t)ss400x240; // landscape
@@ -1666,80 +1608,6 @@ void InitScreenSize() {
 
 }
 
-#ifndef MAP_ZOOM
-void InitAircraftCategory()
-{
-
- switch (AircraftCategory) {
-
-	case (AircraftCategory_t)umGlider:
-	case (AircraftCategory_t)umGAaircraft:
-	case (AircraftCategory_t)umCar:
-
-		MapWindow::RequestMapScale = 4; 
-		MapWindow::MapScale = 4;
-		MapWindow::MapScaleOverDistanceModify = 4/DISTANCEMODIFY;
-		break;
-
-	case (AircraftCategory_t)umParaglider:
-		TCHAR buf[100];
-		wsprintf(buf,_T(". PGCruiseZoom set to %d%s"),PGCruiseZoom,NEWLINE); // 091119
-		StartupStore(buf);
-		switch(PGCruiseZoom) { // 091108
-			case 0:
-				MapWindow::RequestMapScale = 0.10;  // 088
-				MapWindow::MapScale = 0.10;
-				break;
-			case 1:
-				MapWindow::RequestMapScale = 0.12;  // 117
-				MapWindow::MapScale = 0.12;
-				break;
-			case 2:
-				MapWindow::RequestMapScale = 0.14;  // 205
-				MapWindow::MapScale = 0.14;
-				break;
-			case 3:
-				MapWindow::RequestMapScale = 0.16;  // 293
-				MapWindow::MapScale = 0.16;
-				break;
-			case 4:
-				MapWindow::RequestMapScale = 0.18; 
-				MapWindow::MapScale = 0.18;
-				break;
-			case 5:
-				MapWindow::RequestMapScale = 0.20; 
-				MapWindow::MapScale = 0.20;
-				break;
-			case 6:
-				MapWindow::RequestMapScale = 0.23; 
-				MapWindow::MapScale = 0.23;
-				break;
-			case 7:
-				MapWindow::RequestMapScale = 0.25; 
-				MapWindow::MapScale = 0.25;
-				break;
-			case 8:
-			default:
-				MapWindow::RequestMapScale = 0.3; 
-				MapWindow::MapScale = 0.3;
-				break;
-		}
-		MapWindow::MapScaleOverDistanceModify = MapWindow::RequestMapScale/DISTANCEMODIFY;
-				
-		break;
-
-	default:
-		// make it an evident problem
-		MapWindow::RequestMapScale = 50;
-		MapWindow::MapScale = 50;
-		MapWindow::MapScaleOverDistanceModify = 50/DISTANCEMODIFY;
-		break;
- }
-
-
-}
-#endif /* ! MAP_ZOOM */
-
 // Requires restart if activated from config menu
 void InitLK8000() 
 {
@@ -1747,14 +1615,6 @@ void InitLK8000()
 	LoadRecentList();
 
 	InitModeTable();
-	// 110210 ON for everybody in anycase
-//	if ( AircraftCategory != (AircraftCategory_t)umParaglider ) {
-		// Normal alternates forced on for LK8000. In MapWindow3 if not valid they WERE reset off
-		// Currently in lk8000 they should be all the times on, calculation time is irrelevant
-		OnAlternate1=true;
-		OnAlternate2=true;
-		OnBestAlternate=true;
-//	}
 
 	// By default, h=v=size/6 and here we set it better
 	switch (ScreenSize) { 
@@ -1828,30 +1688,6 @@ void InitLK8000()
 			break;
 	}
 
-}
-
-void LockMap(){
-	if (MapLock==false) {
-		// DoStatusMessage(_T("MAP LOCKED"));
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) 
-		        PlayResource(TEXT("IDR_WAV_GREEN"));
-		#endif
-		DefocusInfoBox();
-	}
-	MapLock=true;
-}
-
-void UnlockMap(){
-	if (MapLock) {
-		// DoStatusMessage(_T("MAP UNLOCKED")); // annoying
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) 
-		        LKSound(_T("UNLOCKMAP.WAV"));
-		#endif
-	}
-
-	MapLock=false;
 }
 
 // colorcode is taken from a 5 bit AsInt union
@@ -2030,19 +1866,6 @@ bool SetModelName(DWORD Temp) {
 #endif
 
 
-#if defined(PNA) || defined(FIVV)  // VENTA-ADDON gmfpathname & C.
-
-/* 
-	Paolo Ventafridda 1 feb 08 
-	Get pathname & c. from GetModuleFilename (gmf)
-	In case of problems, always return \ERRORxx\  as path name
-	It will be displayed at startup and users will know that
-	something is wrong reporting the error code to us.
-	Approach not followed: It works but we don't know why
-	Approach followed: It doesn't work and we DO know why
-
-	These are temporary solutions to be improved
- */
 
 #define MAXPATHBASENAME MAX_PATH
 
@@ -2163,7 +1986,6 @@ int GetGlobalModelName ()
   
 }
 
-#endif   // PNA
 
 /*
  * Convert to uppercase a TCHAR array
@@ -2180,7 +2002,6 @@ void ConvToUpper( TCHAR *str )
 	return ;
 }
 
-#ifdef FIVV
 BOOL DelRegistryKey(const TCHAR *szDelKey)
 {
    HKEY tKey;
@@ -2191,7 +2012,6 @@ BOOL DelRegistryKey(const TCHAR *szDelKey)
    RegCloseKey(tKey);
    return true;
 }
-#endif
 
 #ifdef PNA
 void CleanRegistry()
@@ -2215,13 +2035,11 @@ void CleanRegistry()
 #endif
 
 #ifdef PNA 	
-/* Paolo Ventafridda Apr 23th 2009 VENTA4
+/* 
  * SetBacklight for PNA devices. There is no standard way of managing backlight on CE,
  * and every device may have different value names and settings. Microsoft did not set 
  * a standard and thus we need a custom solution for each device.
  * But the approach is always the same: change a value and call an event.
- * We do this in XCSoar.cpp at the beginning, no need to make these settings configurable:
- * max brightness and no timeout if on power is the rule. Otherwise, do it manually..
  */
 bool SetBacklight() // VENTA4
 {
@@ -2306,26 +2124,6 @@ bool SetSoundVolume() // VENTA4
 
 #endif
 
-#if defined(FIVV) || defined(PNA)
-// VENTA2-ADDON fonts install
-/*
- * Get the localpath, enter XCSoarData/Config, see if there are fonts to copy,
- * check that they have not already been copied in \Windows\Fonts,
- * and eventually copy everything in place.
- *
- * 0 if nothing needed, and all is ok
- * 1 if made action, and all is ok
- * errors if >1
- * 
- * These are currently fonts used by PDA:
- *
-	DejaVuSansCondensed2.ttf
-	DejaVuSansCondensed-Bold2.ttf
-	DejaVuSansCondensed-BoldOblique2.ttf
-	DejaVuSansCondensed-Oblique2.ttf
- *
- *
- */
 
 // This will NOT be called from PC versions
 short InstallSystem() {
@@ -2641,6 +2439,22 @@ bool CheckLanguageDir() {
   return true;
 }
 
+bool CheckPolarsDir() {
+  TCHAR srcdir[MAX_PATH];
+  TCHAR srcfile[MAX_PATH];
+  LocalPath(srcdir, _T(LKD_POLARS));
+  _stprintf(srcfile,TEXT("%s\\_POLARS"),srcdir);
+  if (  GetFileAttributes(srcfile) == 0xffffffff ) {
+	return false;
+  }
+
+  LocalPath(srcdir, _T(LKD_POLARS));
+  _stprintf(srcfile,TEXT("%s\\Default.plr"),srcdir);
+  if (  GetFileAttributes(srcfile) == 0xffffffff ) return false;
+
+  return true;
+}
+
 bool CheckRegistryProfile() {
 	TCHAR srcpath[MAX_PATH];
 	if ( GlobalModelType == MODELTYPE_PNA_HP31X ) return false;
@@ -2649,7 +2463,6 @@ bool CheckRegistryProfile() {
 	if (  GetFileAttributes(srcpath) == 0xffffffff) return false;
 	return true;
 }
-#endif
 
 
 int roundupdivision(int a, int b) {
@@ -2698,11 +2511,11 @@ void Cpustats(int *accounting, FILETIME *kernel_old, FILETIME *kernel_new, FILET
 //
 void InitModeTable() {
 
-	short i;
+	short i,j;
 	StartupStore(_T(". Init ModeTable for LK8000: "));
 
 	for (i=0; i<=LKMODE_TOP; i++)
-		for (short j=0; j<=MSM_TOP; j++)
+		for (j=0; j<=MSM_TOP; j++)
 			ModeTable[i][j]=INVALID_VALUE;
 
 
@@ -2713,11 +2526,13 @@ void InitModeTable() {
 	ModeTable[LKMODE_WP][WP_AIRPORTS]	=	MSM_AIRPORTS;
 	ModeTable[LKMODE_WP][WP_LANDABLE]	=	MSM_LANDABLE;
 	ModeTable[LKMODE_WP][WP_NEARTPS]	=	MSM_NEARTPS;
+	ModeTable[LKMODE_WP][WP_AIRSPACES]	=	MSM_AIRSPACES;
 
 	ModeTable[LKMODE_INFOMODE][IM_CRUISE]	=	MSM_INFO_CRUISE;
 	ModeTable[LKMODE_INFOMODE][IM_THERMAL]	=	MSM_INFO_THERMAL;
 	ModeTable[LKMODE_INFOMODE][IM_TASK]	=	MSM_INFO_TASK;
 	ModeTable[LKMODE_INFOMODE][IM_AUX]	=	MSM_INFO_AUX;
+	ModeTable[LKMODE_INFOMODE][IM_CONTEST]	=	MSM_INFO_CONTEST;
 	ModeTable[LKMODE_INFOMODE][IM_TRI]	=	MSM_INFO_TRI;
 
 	ModeTable[LKMODE_NAV][NV_COMMONS]	=	MSM_COMMON;
@@ -2729,10 +2544,11 @@ void InitModeTable() {
 
 	// startup mode
 	ModeIndex=LKMODE_MAP;
-	// startup values for each mode
+	// startup values for each mode. we shall update these defaults using current profile settings
+	// for ConfIP real values. 
 	ModeType[LKMODE_MAP]	=	MP_WELCOME;
-	ModeType[LKMODE_WP]	=	WP_AIRPORTS;
 	ModeType[LKMODE_INFOMODE]=	IM_CRUISE;
+	ModeType[LKMODE_WP]	=	WP_AIRPORTS;
 	ModeType[LKMODE_NAV]	=	NV_COMMONS;
 	ModeType[LKMODE_TRF]	=	TF_LIST;
 
@@ -2744,11 +2560,10 @@ void InitModeTable() {
 
 	// set all sorting type to distance (default) even for unconventional modes just to be sure
 	for (i=0; i<=MSM_TOP; i++) SortedMode[i]=1;
-
-	for (i=0; i<MAXNEAREST;i++) 
-		SortedTurnpointIndex[i]=-1;
+	SortedMode[MSM_AIRSPACES]=2; // Airspaces have a different layout
 
 	for (i=0; i<MAXNEAREST;i++) {
+		SortedTurnpointIndex[i]=-1;
 		SortedLandableIndex[i]=-1;
 		SortedAirportIndex[i]=-1;
 	}
@@ -2756,6 +2571,12 @@ void InitModeTable() {
 	for (i=0; i<MAXCOMMON; i++) 
 		CommonIndex[i]= -1;
 
+	for (i=0; i<=MSM_TOP; i++) {
+		SortBoxY[i]=0;
+		for (j=0; j<=MAXSORTBOXES; j++) SortBoxX[i][j]=0;
+	}
+
+	SetInitialModeTypes();
 
 	StartupStore(_T("Ok%s"),NEWLINE);
 }
@@ -2776,6 +2597,7 @@ void SetModeType(short modeindex, short modetype) {
 void NextModeType() {
 
 	UnselectMapSpace( ModeTable[ModeIndex][CURTYPE] );
+	short curtype_entry=CURTYPE;
 redo:
 	if ( CURTYPE >= ModeTableTop[ModeIndex] ) {
 		// point to first
@@ -2783,9 +2605,16 @@ redo:
 	} else {
 		CURTYPE++;
 	}
-	if (ISPARAGLIDER) {
-		if (CURTYPE == IM_TRI) goto redo;
+
+	// if we are at the beginning point, we keep it
+	if (CURTYPE == curtype_entry) goto finish;
+
+	if (!ConfIP[ModeIndex][CURTYPE]) goto redo;
+
+	if (CURTYPE == IM_CONTEST) {
+		if (!UseContestEngine()) goto redo;
 	}
+finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 }
 
@@ -2793,16 +2622,24 @@ redo:
 void PreviousModeType() {
 // usare ifcircling per decidere se 0 o 1
 	UnselectMapSpace( ModeTable[ModeIndex][CURTYPE] );
+	short curtype_entry=CURTYPE;
 redo:
 	if ( CURTYPE <= 0 ) {
 		// point to last
 		CURTYPE=ModeTableTop[ModeIndex]; 
 	} else {
 		CURTYPE--;
+
 	}
-	if (ISPARAGLIDER) {
-		if (CURTYPE == IM_TRI) goto redo;
+	// if we are at the beginning point, we keep it
+	if (CURTYPE == curtype_entry) goto finish;
+
+	if (!ConfIP[ModeIndex][CURTYPE]) goto redo;
+
+	if (!UseContestEngine()) {
+		if (CURTYPE == IM_CONTEST) goto redo;
 	}
+finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 }
 
@@ -2813,17 +2650,7 @@ redo:
 //
 void NextModeIndex() {
 	UnselectMapSpace(ModeTable[ModeIndex][CURTYPE]);
-	if ( GPS_INFO.FLARM_Available ) { // 100325
-		if ( (ModeIndex+1)>LKMODE_TOP)
-			ModeIndex=LKMODE_MAP;
-		else
-			ModeIndex++;
-	} else {
-		if ( (ModeIndex+1)>(LKMODE_TOP-1))
-			ModeIndex=LKMODE_MAP;
-		else
-			ModeIndex++;
-	}
+	InfoPageChange(true);
 	SelectMapSpace(ModeTable[ModeIndex][CURTYPE]);
 }
 
@@ -2890,17 +2717,9 @@ void BottomSounds() {
 #endif
 }
 
-// This is currently unused.. we need a button!
 void PreviousModeIndex() {
   UnselectMapSpace(ModeTable[ModeIndex][CURTYPE]);
-  if ( (ModeIndex-1)<0) {
-	if ( GPS_INFO.FLARM_Available ) { // 100325
-		ModeIndex=LKMODE_TOP;
-	} else {
-		ModeIndex=LKMODE_TOP-1;
-	}
-  } else
-	ModeIndex--;
+  InfoPageChange(false);
   SelectMapSpace(ModeTable[ModeIndex][CURTYPE]);
 }
 
@@ -2945,6 +2764,11 @@ void SelectMapSpace(short i) {
 			SelectedPage[MapSpaceMode]=0;
 			SelectedRaw[MapSpaceMode]=0;
 			break;
+		case MSM_AIRSPACES:
+			LKevent=LKEVENT_NEWRUN;
+			SelectedPage[MapSpaceMode]=0;
+			SelectedRaw[MapSpaceMode]=0;
+			break;
 		case MSM_COMMON:
 			LKForceDoCommon=true;
 			LKevent=LKEVENT_NEWRUN;
@@ -2977,27 +2801,14 @@ int GetInfoboxType(int i) {
 	if (i<=8)
 		retval = (InfoType[i-1] >> 24) & 0xff; // auxiliary
 	else {
-#ifndef MAP_ZOOM
-		switch ( DisplayMode ) {
-			case dmCruise:
-#else /* MAP_ZOOM */
 		switch ( MapWindow::mode.Fly() ) {
 			case MapWindow::Mode::MODE_FLY_CRUISE:
-#endif /* MAP_ZOOM */
 				retval = (InfoType[i-9] >> 8) & 0xff;
 				break;
-#ifndef MAP_ZOOM
-			case dmFinalGlide:
-#else /* MAP_ZOOM */
 			case MapWindow::Mode::MODE_FLY_FINAL_GLIDE:
-#endif /* MAP_ZOOM */
 				retval = (InfoType[i-9] >> 16) & 0xff;
 				break;
-#ifndef MAP_ZOOM
-			case dmCircling:
-#else /* MAP_ZOOM */
 			case MapWindow::Mode::MODE_FLY_CIRCLING:
-#endif /* MAP_ZOOM */
 				retval = (InfoType[i-9]) & 0xff; 
 				break;
 			default:
@@ -3007,40 +2818,24 @@ int GetInfoboxType(int i) {
 		}
 	}
 
-	return min(NUMSELECTSTRINGS-1,retval);
+	return min(NumDataOptions-1,retval);
 }
 
 // Returns the LKProcess index value for configured infobox (0-8) for dmCruise, dmFinalGlide, Auxiliary, dmCircling
 // The function name is really stupid...
 // dmMode is an enum, we simply use for commodity
-#ifndef MAP_ZOOM
-int GetInfoboxIndex(int i, short dmMode) {
-#else /* MAP_ZOOM */
 int GetInfoboxIndex(int i, MapWindow::Mode::TModeFly dmMode) {
-#endif /* MAP_ZOOM */
 	int retval = 0;
 	if (i<0||i>8) return LK_ERROR;
 
 	switch(dmMode) {
-#ifndef MAP_ZOOM
-		case dmCruise:
-#else /* MAP_ZOOM */
 		case MapWindow::Mode::MODE_FLY_CRUISE:
-#endif /* MAP_ZOOM */
 			retval = (InfoType[i-1] >> 8) & 0xff;
 			break;
-#ifndef MAP_ZOOM
-		case dmFinalGlide:
-#else /* MAP_ZOOM */
 		case MapWindow::Mode::MODE_FLY_FINAL_GLIDE:
-#endif /* MAP_ZOOM */
 			retval = (InfoType[i-1] >> 16) & 0xff;
 			break;
-#ifndef MAP_ZOOM
-		case dmCircling:
-#else /* MAP_ZOOM */
 		case MapWindow::Mode::MODE_FLY_CIRCLING:
-#endif /* MAP_ZOOM */
 			retval = (InfoType[i-1]) & 0xff; 
 			break;
 		default:
@@ -3048,7 +2843,7 @@ int GetInfoboxIndex(int i, MapWindow::Mode::TModeFly dmMode) {
 			retval = (InfoType[i-1] >> 24) & 0xff; 
 			break;
 	}
-	return min(NUMSELECTSTRINGS-1,retval);
+	return min(NumDataOptions-1,retval);
 }
 
 
@@ -3746,6 +3541,34 @@ bool CustomKeyHandler(const int key) {
   switch(ckeymode) {
 	case ckDisabled:
 		break;
+	case ckZoomIn:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		MapWindow::zoom.EventScaleZoom(1);
+		return true;
+		break;
+	case ckZoomInMore:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		MapWindow::zoom.EventScaleZoom(2);
+		return true;
+		break;
+	case ckZoomOut:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		MapWindow::zoom.EventScaleZoom(-1);
+		return true;
+		break;
+	case ckZoomOutMore:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		MapWindow::zoom.EventScaleZoom(-2);
+		return true;
+		break;
 	case ckMenu:
 		#ifndef DISABLEAUDIO
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
@@ -3841,7 +3664,9 @@ bool CustomKeyHandler(const int key) {
 		#ifndef DISABLEAUDIO
 		if (EnableSoundModes) LKSound(_T("LK_BELL.WAV"));
 		#endif
+#if USEIBOX
 		MapWindow::RequestToggleFullScreen();
+#endif
 		return true;
 	case ckTimeGates:
 		#ifndef DISABLEAUDIO
@@ -3917,6 +3742,20 @@ bool CustomKeyHandler(const int key) {
 		#endif
 		InputEvents::setMode(_T("SIMMENU"));
 		return true;
+	case ckToggleMapAirspace:
+		if (ModeIndex==LKMODE_MAP)
+			SetModeType(LKMODE_WP,WP_AIRSPACES);
+		else
+			SetModeIndex(LKMODE_MAP);
+		MapWindow::RefreshMap();
+		SoundModeIndex();
+		return true;
+	case ckAirspaceAnalysis:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		InputEvents::eventSetup(_T("AspAnalysis"));
+		return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		FailStore(_T("ERR-726 INVALID CUSTOMKEY=%d"),ckeymode);
@@ -3926,40 +3765,6 @@ bool CustomKeyHandler(const int key) {
   return false;
 
 }
-
-#ifndef MAP_ZOOM
-// set Climb and Cruis MapScale accordingly to PGClimbZoom, everytime it changes.
-// Needed to avoid software restart to bypass doinit in MapWindow
-void SetMapScales() {
-
-  if (ISPARAGLIDER) {
-	CruiseMapScale = MapWindow::RequestMapScale;
-
-	switch(PGClimbZoom) {
-		case 0:
-			ClimbMapScale = 0.05;
-			break;
-		case 1:
-			ClimbMapScale = 0.07;
-			break;
-		case 2:
-			ClimbMapScale = 0.09;
-			break;
-		case 3:
-			ClimbMapScale = 0.14;
-			break;
-		case 4:
-		default:
-			ClimbMapScale = 0.03;
-			break;
-	}
-  } else {
-	CruiseMapScale = MapWindow::RequestMapScale*2;
-	ClimbMapScale = MapWindow::RequestMapScale/30; // 110104
-  }
-
-}
-#endif /* ! MAP_ZOOM */
 
 #ifdef PNA
 bool LoadModelFromProfile()
@@ -3975,8 +3780,7 @@ bool LoadModelFromProfile()
   StartupStore(_T(". Searching modeltype inside default profile <%s>%s"),tmpTbuf,NEWLINE);
 
   FILE *fp=NULL;
-  sprintf(tmpbuf,"%S",tmpTbuf);
-  fp = fopen(tmpbuf, "rb");
+  fp = _tfopen(tmpTbuf, _T("rb"));
   if(fp == NULL) {
 	StartupStore(_T("... No default profile found%s"),NEWLINE);
 	return false;
@@ -4053,7 +3857,6 @@ void CreateRecursiveDirectory(TCHAR *fullpath)
 #endif
 
 
-#if OVERTARGET
 // return current overtarget waypoint index, or -1 if not available
 int GetOvertargetIndex(void) {
   int index;
@@ -4226,7 +4029,6 @@ void RotateOvertarget(void) {
 
 }
 
-#endif
 
 //
 void ToggleOverlays() {
@@ -4264,16 +4066,168 @@ void ClubForbiddenMsg() {
         return;
 }
 
-int GetFontRenderer() // Karim
-{
-  if (FontRenderer == 0)
-  {
-    return ANTIALIASED_QUALITY;
+int GetFontRenderer() { 
+
+
+  switch(FontRenderer) {
+	case 0:
+		return CLEARTYPE_COMPAT_QUALITY;
+		break;
+	case 1:
+		return ANTIALIASED_QUALITY;
+		break;
+	case 2:
+		return DEFAULT_QUALITY;
+		break;
+	case 3:
+		return NONANTIALIASED_QUALITY;
+		break;
+	default:
+		return CLEARTYPE_COMPAT_QUALITY;
+		break;
   }
-  else return CLEARTYPE_COMPAT_QUALITY;
+
+}
+
+// Are we using lockmode? What is the current status?
+bool LockMode(const short lmode) {
+
+  switch(lmode) {
+	case 0:		// query availability of LockMode
+		if (ISPARAGLIDER)
+			return true;
+		else
+			return false;
+		break;
+
+	case 1:		// query lock/unlock status
+		return LockModeStatus;
+		break;
+
+	case 2:		// invert lock status
+		LockModeStatus = !LockModeStatus;
+		return LockModeStatus;
+		break;
+
+	case 3:		// query button is usable or not, assuming ISPARAGLIDER
+		// Positive if not flying
+		return CALCULATED_INFO.Flying==TRUE?false:true;
+		break;
+
+	case 9:		// Check if we can unlock the screen
+		if (CALCULATED_INFO.Flying == TRUE) {
+			if ( (GPS_INFO.Time - CALCULATED_INFO.TakeOffTime)>10) {
+				LockModeStatus=false;
+			}
+		}
+		return LockModeStatus;
+		break;
+
+	default:
+		return false;
+		break;
+  }
+
+  return 0;
 
 }
 
 
+// We assume that at least ConfBB[1] will be ON!
+// We cannot have all OFF!
+void BottomBarChange(bool advance) {
+
+  short wanted;
+  if (!advance) goto bbc_previous;
+
+  wanted=BottomMode+1;
+  while (true) {
+    if (wanted >BM_LAST) {
+	if ( MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+		wanted=BM_TRM;
+		break;
+	} else {
+		wanted=BM_FIRST;
+		continue;
+	}
+    }
+    if (ConfBB[wanted]) break;
+    wanted++;
+  }
+  BottomMode=wanted;
+  return;
+
+bbc_previous:
+  wanted=BottomMode-1;
+  while (true) {
+    if (wanted == BM_TRM) {
+	if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+		break;
+	} else {
+		wanted=BM_LAST;
+		continue;
+	}
+    }
+    if (wanted<0) {
+	wanted=BM_LAST;
+	continue;
+    }
+    if (ConfBB[wanted]) break;
+    wanted--;
+  }
+  BottomMode=wanted;
+  return;
+
+}
+
+
+void InfoPageChange(bool advance) {
+
+  short wanted;
+  if (!advance) goto ipc_previous;
+
+  wanted=ModeIndex+1;
+  while (true) {
+    if (wanted >LKMODE_TOP) {
+	wanted=LKMODE_MAP;
+	break;
+    }
+    if (wanted == LKMODE_TRF) {
+	if ( GPS_INFO.FLARM_Available ) break; // always ON if available
+	wanted++;
+	continue;
+    }
+    if (ConfMP[wanted]) break;
+    wanted++;
+  }
+  ModeIndex=wanted;
+  // Here we set the correct subpage initially. Only DrawInfoPage is checking CURTYPE, while
+  // DrawNearest and commons use MapSpaceMode. It's a bit confusing, but both things are good.
+  if (!ConfIP[ModeIndex][CURTYPE]) NextModeType();
+
+  return;
+
+ipc_previous:
+
+  wanted=ModeIndex-1;
+  while (true) {
+    if (wanted <LKMODE_MAP) {
+	wanted=LKMODE_TOP;
+	continue;
+    }
+    if (wanted == LKMODE_TRF) {
+	if ( GPS_INFO.FLARM_Available ) break; // always ON if available
+	wanted--;
+	continue;
+    }
+    if (ConfMP[wanted]) break;
+    wanted--;
+  }
+
+  ModeIndex=wanted;
+  if (!ConfIP[ModeIndex][CURTYPE]) PreviousModeType();
+  return;
+
+}
 
 

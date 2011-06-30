@@ -12,18 +12,26 @@
 #include "Defines.h" // VENTA3
 #include "compatibility.h"
 #ifdef OLDPPC
-#include "XCSoarProcess.h"
+#include "LK8000Process.h"
 #else
 #include "Process.h"
 #endif
 #include "externs.h"
+
+#if USEIBOX
 #include "Utils.h"
 #include "Utils2.h"
 #include "device.h"
 #include "Dialogs.h"
 #include "Port.h"
 #include "Atmosphere.h"
+#endif
+
 #include "AATDistance.h"
+
+#include "utils/heapcheck.h"
+using std::min;
+using std::max;
 
 extern AATDistance aatdistance;
 
@@ -31,155 +39,22 @@ extern int PDABatteryPercent;
 extern int PDABatteryStatus;
 extern int PDABatteryFlag;
 
-// JMW added key codes,
-// so -1 down
-//     1 up
-//     0 enter
 
+#if USEIBOX
 void	AirspeedProcessing(int UpDown)
 {
-#if 0
-  if (UpDown==0) {
-    EnableCalibration = !EnableCalibration;
-	// XXX InputEvents - Is this an automatic or user thing - either way, needs moving
-    if (EnableCalibration) 
-      DoStatusMessage(TEXT("Calibrate ON"));
-    else 
-      DoStatusMessage(TEXT("Calibrate OFF"));
-  }
-#endif
 }
 
 void	TeamCodeProcessing(int UpDown)
 {	
-#if 0
-	int tryCount = 0;
-	int searchSlot = FindFlarmSlot(TeamFlarmIdTarget);
-	int newFlarmSlot = -1;
-
-
-	while (tryCount < FLARM_MAX_TRAFFIC)
-	{
-		if (UpDown == 1)
-		{
-			searchSlot++;
-			if (searchSlot > FLARM_MAX_TRAFFIC - 1)
-			{
-				searchSlot = 0;
-			}
-		}
-		else if (UpDown == -1)
-		{
-			searchSlot--;
-			if (searchSlot < 0)
-			{
-				searchSlot = FLARM_MAX_TRAFFIC - 1;
-			}
-		}
-
-		if (GPS_INFO.FLARM_Traffic[searchSlot].ID != 0)
-		{
-			newFlarmSlot = searchSlot;
-			break; // a new flarmSlot with a valid flarm traffic record was found !
-		}
-		tryCount++;
-	}
-
-	if (newFlarmSlot != -1)
-	{
-		TeamFlarmIdTarget = GPS_INFO.FLARM_Traffic[newFlarmSlot].ID;
-
-		if (wcslen(GPS_INFO.FLARM_Traffic[newFlarmSlot].Name) != 0)
-		{			
-			// copy the 3 first chars from the name to TeamFlarmCNTarget
-			for (int z = 0; z < 3; z++)
-			{
-				if (GPS_INFO.FLARM_Traffic[newFlarmSlot].Name[z] != 0)
-				{
-					TeamFlarmCNTarget[z] = GPS_INFO.FLARM_Traffic[newFlarmSlot].Name[z];
-				}
-				else
-				{
-					TeamFlarmCNTarget[z] = 32; // add space char
-				}
-			}
-			TeamFlarmCNTarget[3] = 0;
-		}
-		else
-		{		
-			TeamFlarmCNTarget[0] = 0;
-		}
-	}
-	else
-	{
-			// no flarm traffic to select!
-			TeamFlarmIdTarget = 0;
-			TeamFlarmCNTarget[0] = 0;
-			return;		
-	}
-#endif
 }
 
 void	AltitudeProcessing(int UpDown)
 {
-#if 0
-  #if NOSIM
-  if (SIMMODE) {
-	if(UpDown==1) {
-	  GPS_INFO.Altitude += (100/ALTITUDEMODIFY);
-	}	else if (UpDown==-1)
-	  {
-	    GPS_INFO.Altitude -= (100/ALTITUDEMODIFY);
-	    if(GPS_INFO.Altitude < 0)
-	      GPS_INFO.Altitude = 0;
-	  } else if (UpDown==-2) {
-	  DirectionProcessing(-1);
-	} else if (UpDown==2) {
-	  DirectionProcessing(1);
-	}
-   }
-   #else
-	#ifdef _SIM_
-	if(UpDown==1) {
-	  GPS_INFO.Altitude += (100/ALTITUDEMODIFY);
-	}	else if (UpDown==-1)
-	  {
-	    GPS_INFO.Altitude -= (100/ALTITUDEMODIFY);
-	    if(GPS_INFO.Altitude < 0)
-	      GPS_INFO.Altitude = 0;
-	  } else if (UpDown==-2) {
-	  DirectionProcessing(-1);
-	} else if (UpDown==2) {
-	  DirectionProcessing(1);
-	}
-	#endif
-  #endif
-	return;
-#endif
 }
 
-// VENTA3 QFE
 void	QFEAltitudeProcessing(int UpDown)
 {
-#if 0
-	short step;
-	if ( ( CALCULATED_INFO.NavAltitude - QFEAltitudeOffset ) <10 ) step=1; else step=10;
-	if(UpDown==1) {
-	   QFEAltitudeOffset -= (step/ALTITUDEMODIFY);
-	}	else if (UpDown==-1)
-	  {
-	    QFEAltitudeOffset += (step/ALTITUDEMODIFY);
-/*
-	    if(QFEAltitudeOffset < 0)
-	      QFEAltitudeOffset = 0;
-*/
-	  } else if (UpDown==-2) {
-	  DirectionProcessing(-1);
-	} else if (UpDown==2) {
-	  DirectionProcessing(1);
-	}
-	return;
-#endif
 }
 
 // VENTA3 Alternates processing updown 
@@ -207,7 +82,6 @@ void BestAlternateProcessing(int UpDown)
 
 void	SpeedProcessing(int UpDown)
 {
-  #if NOSIM
   if (SIMMODE) {
 		if(UpDown==1)
 			GPS_INFO.Speed += (10/SPEEDMODIFY);
@@ -222,38 +96,9 @@ void	SpeedProcessing(int UpDown)
 			DirectionProcessing(1);
 		}
   } 
-  #else
-	#ifdef _SIM_
-		if(UpDown==1)
-			GPS_INFO.Speed += (10/SPEEDMODIFY);
-		else if (UpDown==-1)
-		{
-			GPS_INFO.Speed -= (10/SPEEDMODIFY);
-			if(GPS_INFO.Speed < 0)
-				GPS_INFO.Speed = 0;
-		} else if (UpDown==-2) {
-			DirectionProcessing(-1);
-		} else if (UpDown==2) {
-			DirectionProcessing(1);
-		}
-	#endif
-  #endif
 	return;
 }
-
-
-void	AccelerometerProcessing(int UpDown)
-{
-  DWORD Temp;
-  if (UpDown==0) {
-    AccelerometerZero*= GPS_INFO.Gload;
-    if (AccelerometerZero<1) {
-      AccelerometerZero = 100;
-    }
-    Temp = (int)AccelerometerZero;
-    SetToRegistry(szRegistryAccelerometerZero,Temp);
-  }
-}
+#endif // USEIBOX
 
 void	WindDirectionProcessing(int UpDown)
 {
@@ -309,9 +154,9 @@ void	WindSpeedProcessing(int UpDown)
 	return;
 }
 
+#if USEIBOX
 void	DirectionProcessing(int UpDown)
 {
-  #if NOSIM
   if (SIMMODE) {
 		if(UpDown==1)
 		{
@@ -331,28 +176,9 @@ void	DirectionProcessing(int UpDown)
 		}
 
   }
-  #else
-	#ifdef _SIM_
-		if(UpDown==1)
-		{
-			GPS_INFO.TrackBearing   += 5;
-			while (GPS_INFO.TrackBearing  >= 360)
-			{
-				GPS_INFO.TrackBearing  -= 360;
-			}
-		}
-		else if (UpDown==-1)
-		{
-			GPS_INFO.TrackBearing  -= 5;
-			while (GPS_INFO.TrackBearing  < 0)
-			{
-				GPS_INFO.TrackBearing  += 360;
-			}
-		}
-	#endif
-  #endif
 	return;
 }
+#endif // USEIBOX
 
 void	MacCreadyProcessing(int UpDown)
 {
@@ -410,7 +236,7 @@ void	MacCreadyProcessing(int UpDown)
   return;
 }
 
-
+#if USEIBOX
 void	ForecastTemperatureProcessing(int UpDown)
 {
   if (UpDown==1) {
@@ -421,8 +247,9 @@ void	ForecastTemperatureProcessing(int UpDown)
   }
 }
 
-
 extern void PopupWaypointDetails();
+
+#endif // USEIBOX
 
 /*
 	1	Next waypoint
@@ -510,6 +337,7 @@ void NextUpDown(int UpDown)
 }
 
 
+#if USEIBOX
 void NoProcessing(int UpDown)
 {
   (void)UpDown;
@@ -523,17 +351,15 @@ void FormatterLowWarning::AssignValue(int i) {
     minimum = ALTITUDEMODIFY*SAFETYALTITUDETERRAIN;
     break;
   case 2:
-    minimum = 0.5*LIFTMODIFY*CALCULATED_INFO.MacCreadyRisk;
+    minimum = 0.5*LIFTMODIFY*MACCREADY;
     break;
   case 21:
-    minimum = 0.667*LIFTMODIFY*CALCULATED_INFO.MacCreadyRisk;
+    minimum = 0.667*LIFTMODIFY*MACCREADY;
     break;
   default:
     break;
   }
 }
-
-
 void FormatterTime::SecsToDisplayTime(int d) {
   bool negative = (d<0);
   int dd = abs(d) % (3600*24);
@@ -554,6 +380,7 @@ void FormatterTime::SecsToDisplayTime(int d) {
   Valid = TRUE;
 }
 
+#endif
 
 int TimeLocal(int localtime) {
   localtime += GetUTCOffset();
@@ -619,7 +446,7 @@ int DetectStartTime(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   return max(0,lastflighttime);
 }
 
-
+#if USEIBOX
 void FormatterTime::AssignValue(int i) {
   switch (i) {
   case 9:
@@ -653,7 +480,7 @@ void FormatterAATTime::AssignValue(int i) {
         &&(ActiveWayPoint>0)) {
       dd += GPS_INFO.Time-CALCULATED_INFO.TaskStartTime;
     }
-    dd= max(0,min(24.0*3600.0,dd))-AATTaskLength*60;
+    dd= max(0.0,min(24.0*3600.0,dd))-AATTaskLength*60;
     if (dd<0) {
       status = 1; // red
     } else {
@@ -1004,7 +831,9 @@ int index;
     }
     break;
   case 64:
-    Value = LIFTMODIFY*CALCULATED_INFO.DistanceVario;
+    // UNUSED
+    // Value = LIFTMODIFY*CALCULATED_INFO.DistanceVario;
+    Value=999;
     if (ActiveWayPoint>=1) {
       Valid = ValidTaskPoint(ActiveWayPoint);
     } else {
@@ -1013,7 +842,6 @@ int index;
     break;
   case 65: // battery voltage
 #if (WINDOWSPC<1)
-#ifndef GNAV
    #if 100228
    if (PDABatteryFlag==BATTERY_FLAG_CHARGING || PDABatteryStatus==AC_LINE_ONLINE) {
 	_tcscpy(Format,TEXT("%2.0f%%C"));  // 100228
@@ -1026,14 +854,6 @@ int index;
    Value = PDABatteryPercent;
    Valid = true;
    #endif
-#else
-    Value = GPS_INFO.SupplyBatteryVoltage;
-    if (Value>0.0) {
-      Valid = true;
-    } else {
-      Valid = false;
-    }
-#endif
 #else	// on PC no battery value
     Value = 0.0;
     Valid = false;
@@ -1117,7 +937,7 @@ int index;
 	Valid = false;
       }
     break;
-  case LK_AIRSPACEDIST:
+  case LK_AIRSPACEHDIST:
 	if (NearestAirspaceHDist >0) {
         	Value = DISTANCEMODIFY*NearestAirspaceHDist;
        		Valid = true;
@@ -1198,44 +1018,6 @@ int index;
 		Valid=true;
 	}
     break;
-/* REMOVE
-  case 75:
-	Valid=false;
-	if ( ValidWayPoint(Alternate1)) {
-              Value=ALTITUDEMODIFY*WayPointCalc[Alternate1].AltArriv;
-              if ( (Value >ALTDIFFLIMIT) && (Value <9999) ) Valid=true;
-	}
-    break;
-  case 76:
-	Valid=false;
-	if ( ValidWayPoint(Alternate2)) {
-              Value=ALTITUDEMODIFY*WayPointCalc[Alternate2].AltArriv;
-              if ( (Value >ALTDIFFLIMIT) && (Value <9999) ) Valid=true;
-	}
-    break;
-  case 77:
-	Valid=false;
-	if ( ValidWayPoint(BestAlternate)) {
-              Value=ALTITUDEMODIFY*WayPointCalc[BestAlternate].AltArriv;
-              if ( (Value >ALTDIFFLIMIT) && (Value <9999) ) Valid=true;
-	}
-    break;
-*/
-
-/*
-  case xx: // termik liga points
-    if (CALCULATED_INFO.TermikLigaPoints != 0)
-      {
-	Value = CALCULATED_INFO.TermikLigaPoints;
-	Valid = true;
-      }
-    else
-      {
-	Value = 0.0;
-	Valid = false;
-      }
-    break;
-*/
 
   case LK_EXP1:
         Value = Experimental1/1000;
@@ -1251,7 +1033,6 @@ int index;
     break;
   };
 }
-
 
 TCHAR *InfoBoxFormatter::GetCommentText(void) {
   return CommentText;
@@ -1485,10 +1266,9 @@ TCHAR *FormatterAlternate::RenderTitle(int *color) {
 }
 
 /*
- * Currently even if set for FIVV, colors are not used.
+ * Currently even if set, colors are not used.
  */
 TCHAR *FormatterAlternate::Render(int *color) {
- //int active=ActiveAlternate; REMOVE
   LockTaskData();
   if(Valid && ValidWayPoint(ActiveAlternate)) {
 	switch (WayPointCalc[ActiveAlternate].VGR ) {
@@ -1497,18 +1277,10 @@ TCHAR *FormatterAlternate::Render(int *color) {
 			*color = 5; 
 			break;
 		case 1:
-#ifdef FIVV
-			*color = 0; // green
-#else
-			*color = 0; // blue
-#endif
+			*color = 0;
 			break;
 		case 2:
-#ifdef FIVV
 			*color = 0; // yellow 4
-#else
-			*color = 0; // normale white
-#endif
 			break;
 		case 3:
 			*color = 1; // red
@@ -1519,7 +1291,6 @@ TCHAR *FormatterAlternate::Render(int *color) {
 			break;
 	}
 
-//	Value=WayPointCalc[ActiveAlternate].GR;    BUGFIX 090918
 
 	_stprintf(Text,Format,Value);
   } else {
@@ -1535,58 +1306,28 @@ void FormatterAlternate::AssignValue(int i) {
   LockTaskData();
    switch (i) {
 	case 67:
-		if (OnAlternate1 == false ) { // first run, activate calculations
-			OnAlternate1 = true;	
-        		Value=INVALID_GR;
-		} else {
-			if ( ValidWayPoint(Alternate1) ) Value=WayPointCalc[Alternate1].GR; 
-			else Value=INVALID_GR;
-		}
+		if ( ValidWayPoint(Alternate1) ) Value=WayPointCalc[Alternate1].GR; 
+		else Value=INVALID_GR;
 		break;
 	case 75:
-		if (OnAlternate1 == false ) {
-			OnAlternate1 = true;	
-        		Value=INVALID_DIFF; 
-		} else {
-			if ( ValidWayPoint(Alternate1) ) Value=WayPointCalc[Alternate1].AltArriv[AltArrivMode]; 
-			else Value=INVALID_DIFF;
-		}
+		if ( ValidWayPoint(Alternate1) ) Value=WayPointCalc[Alternate1].AltArriv[AltArrivMode]; 
+		else Value=INVALID_DIFF;
 		break;
 	case 68:
-		if (OnAlternate2 == false ) { 
-			OnAlternate2 = true;	
-        		Value=INVALID_GR;
-		} else {
-			if ( ValidWayPoint(Alternate2) ) Value=WayPointCalc[Alternate2].GR; 
-			else Value=INVALID_GR;
-		}
+		if ( ValidWayPoint(Alternate2) ) Value=WayPointCalc[Alternate2].GR; 
+		else Value=INVALID_GR;
 		break;
 	case 76:
-		if (OnAlternate2 == false ) {
-			OnAlternate2 = true;	
-        		Value=INVALID_DIFF; 
-		} else {
-			if ( ValidWayPoint(Alternate2) ) Value=WayPointCalc[Alternate2].AltArriv[AltArrivMode]; 
-			else Value=INVALID_DIFF;
-		}
+		if ( ValidWayPoint(Alternate2) ) Value=WayPointCalc[Alternate2].AltArriv[AltArrivMode]; 
+		else Value=INVALID_DIFF;
 		break;
 	case 69:
-		if (OnBestAlternate == false ) { // first run, waiting for slowcalculation loop
-			OnBestAlternate = true;		// activate it
-        		Value=INVALID_GR;
-		} else {
-			if ( ValidWayPoint(BestAlternate)) Value=WayPointCalc[BestAlternate].GR;
-			else Value=INVALID_GR;
-		}
+		if ( ValidWayPoint(BestAlternate)) Value=WayPointCalc[BestAlternate].GR;
+		else Value=INVALID_GR;
 		break;
 	case 77:
-		if (OnBestAlternate == false ) { 
-			OnBestAlternate = true;	
-        		Value=INVALID_DIFF;
-		} else {
-			if ( ValidWayPoint(BestAlternate) ) Value=WayPointCalc[BestAlternate].AltArriv[AltArrivMode]; 
-			else Value=INVALID_DIFF;
-		}
+		if ( ValidWayPoint(BestAlternate) ) Value=WayPointCalc[BestAlternate].AltArriv[AltArrivMode]; 
+		else Value=INVALID_DIFF;
 		break;
 	default:
 		Value=66.6; // something evil to notice..
@@ -1733,3 +1474,5 @@ InfoBoxFormatter::InfoBoxFormatter(TCHAR *theformat) {
   Text[0] = 0;
   CommentText[0] = 0;
 }
+
+#endif // USEIBOX

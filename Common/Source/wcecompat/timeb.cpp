@@ -21,6 +21,8 @@
 
 #include <sys/timeb.h>
 
+#include "utils/heapcheck.h"
+
 
 int ftime(struct timeb* tp)
 {

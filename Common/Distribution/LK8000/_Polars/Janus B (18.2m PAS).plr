@@ -1,0 +1,4 @@
+* LK8000 polar for: Janus B (18.2m PAS)
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+ 603, 170, 115.5, -0.76, 171.79, -1.98, 209.96, -4.0, 17.4
+

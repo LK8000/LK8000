@@ -12,46 +12,34 @@
 #include "Defines.h" // VENTA3
 #include "options.h"
 #include "WindowControls.h"
-#ifndef ALTAIRSYNC
 #include "Message.h"
 #include "MapWindow.h"
 #include "InfoBoxLayout.h"
-#endif
 #include "Utils.h"
 #include "compatibility.h"
 #include "LKObjects.h"
 
-#ifndef ALTAIRSYNC
 #include "externs.h" 
 
 extern int DisplayTimeOut;
-#ifndef GNAV
 #if (WINDOWSPC<1)
 #ifndef __MINGW32__
 #include <projects.h>
 #endif
 #endif
-#endif
-#endif
 
-#ifdef ALTAIRSYNC
-#define ISCALE 1
-void SetSourceRectangle(RECT fromRect) {};
-RECT WINAPI DrawWireRects(LPRECT lprcTo, UINT nMilliSecSpeed) {
-  return *lprcTo;
-}
+#include "utils/heapcheck.h"
 
-#else
 #define ISCALE InfoBoxLayout::scale
-#endif
 
 #define DEFAULTBORDERPENWIDTH 1*ISCALE
 #define SELECTORWIDTH         4*ISCALE
 
-#if FIXDC
+using std::min;
+using std::max;
+
 HDC sHdc;
 HDC  GetTempDeviceContext(void){return(sHdc);};
-#endif
 
 // utility functions
 
@@ -89,12 +77,8 @@ void DrawLine2(const HDC&hdc, int x1, int y1, int x2, int y2, int x3, int y3) {
 }
 
 extern int dlgComboPicker(WndProperty* theProperty);
-#ifdef GNAV
-#define ENABLECOMBO false // master on/off for combo popup
-#else
 #define ENABLECOMBO true // master on/off for combo popup
 // Must be off if no touchscreen
-#endif
 
 // returns true if it is a long press,
 // otherwise returns false
@@ -948,9 +932,6 @@ void DataFieldInteger::Dec(void){
 int DataFieldInteger::SpeedUp(bool keyup){
   int res=1;  
 
-#ifdef GNAV
-  return res;
-#endif
 
   if (GetDisableSpeedUp() == true) 
     return 1;
@@ -1083,9 +1064,6 @@ void DataFieldFloat::Dec(void){
 double DataFieldFloat::SpeedUp(bool keyup){
   double res=1.0;
 
-#ifdef GNAV
-  return res;
-#endif
 
   if (GetDisableSpeedUp() == true) 
     return 1;
@@ -1301,15 +1279,9 @@ WindowControl::WindowControl(WindowControl *Owner,
   mColorFore = fgColor; // WHITE
 
   if (InstCount == 0){
-	#if FIXDC
 	hBrushDefaultBk = LKBrush_Petrol;
 	hPenDefaultBorder = LKPen_White_N1;
 	hPenDefaultSelector = LKPen_Petrol_C2;
-	#else
-	hBrushDefaultBk = (HBRUSH)CreateSolidBrush(mColorBack);
-	hPenDefaultBorder = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH, mColorFore); // NIBLSCCALE 1 White
-	hPenDefaultSelector = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH+2, RGB_LISTHIGHLIGHTCORNER); // NIBS(1)+2, PETROL
-	#endif
   }
   InstCount++;
 
@@ -1344,11 +1316,6 @@ WindowControl::WindowControl(WindowControl *Owner,
   SetWindowLong(mHWnd, GWL_WNDPROC, (LONG) WindowControlWndProc);
 
   mHdc = GetDC(mHWnd);
-  #if FIXDC
-  // mHdcTemp = CreateCompatibleDC(mHdc);  // 101205 made public, initialized by drawscrollbar
-  #else
-  mHdcTemp = CreateCompatibleDC(mHdc); 
-  #endif
 
   #if FIXGDI
   if (mhBrushBk != hBrushDefaultBk) { //@ 101117
@@ -1400,14 +1367,10 @@ void WindowControl::Destroy(void){
   }
 
   ReleaseDC(mHWnd, mHdc);
-  #if FIXDC
   if (sHdc!=NULL) {
 	DeleteDC(sHdc);
 	sHdc=NULL;
   }
-  #else
-  DeleteDC(mHdcTemp); 
-  #endif
   SetWindowLong(mHWnd, GWL_WNDPROC, (LONG) mSavWndProcedure);
   SetWindowLong(mHWnd, GWL_USERDATA, (long)0);
 
@@ -1416,14 +1379,6 @@ void WindowControl::Destroy(void){
   DestroyWindow(mHWnd);
 
   InstCount--;
-  if (InstCount==0){
-	#if FIXDC		// 101205
-	#else
-	DeleteObject(hBrushDefaultBk);
-	DeleteObject(hPenDefaultBorder);
-	DeleteObject(hPenDefaultSelector);
-	#endif
-  }
 
 }
 
@@ -1534,7 +1489,6 @@ void WindowControl::AddClient(WindowControl *Client){
   if (Client->mHeight == -888) Client->mHeight=ScreenSizeY;
   #endif
   // Rescale mWidth
-  #if LKWINCONTROL
   if (Client->mWidth<-1) {
 	int i=RescaleWidth(Client->mWidth);
 	Client->mWidth=i;
@@ -1543,10 +1497,10 @@ void WindowControl::AddClient(WindowControl *Client){
 		Client->mWidth, Client->mHeight,
 		SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
   }
-  #endif
 	
 }
 
+// 110411 This is always set true because we don't use UserLevel anymore
 void WindowControl::FilterAdvanced(bool advanced){
   if (_tcsstr(mCaption, TEXT("*")) != NULL) {
     if (advanced) {
@@ -1634,7 +1588,9 @@ bool WindowControl::SetFocused(bool Value, HWND FromTo){
       rc.bottom = GetHeight();
       InvalidateRect(GetHandle(), &rc, false);
       // todo, only paint the selector edges
+#ifndef WINE
       UpdateWindow(GetHandle());
+#endif /* WINE */
       // Paint(GetDeviceContext());
     }
 
@@ -1806,16 +1762,10 @@ void WindowControl::Redraw(void){
 }
 
 
-#ifdef ALTAIRSYNC
-#else
 extern void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText);
-#endif
 
 
 int WindowControl::OnHelp() {
-#ifdef ALTAIRSYNC
-    return(0); // undefined. return 1 if defined
-#else
     if (mHelpText) {
       dlgHelpShowModal(mCaption, mHelpText);
       return(1);
@@ -1827,7 +1777,6 @@ int WindowControl::OnHelp() {
 	return(0);
       }
     }
-#endif
 };
 
 void WindowControl::Paint(HDC hDC){
@@ -1845,23 +1794,13 @@ void WindowControl::Paint(HDC hDC){
 
   // JMW added highlighting, useful for lists
   if (!mDontPaintSelector && mCanFocus && mHasFocus){
-    #if FIXDC
     HBRUSH hB = LKBrush_DarkYellow2;
-    //HBRUSH hB = LKBrush_LcdDarkGreen;
-    #else
-    COLORREF ff = RGB_LISTHIGHLIGHTBG;
-    HBRUSH hB = (HBRUSH)CreateSolidBrush(ff);
-    #endif
     rc.left += 0;
     rc.right -= 2;
     rc.top += 0;
     rc.bottom -= 2;
     FillRect(hDC, &rc, hB);
 
-      #if FIXDC
-      #else
-      DeleteObject(hB);
-      #endif
   }
 
   if (mBorderKind != 0){
@@ -2123,11 +2062,7 @@ WndForm::WndForm(HWND Parent, const TCHAR *Name, const TCHAR *Caption,
 
   mhTitleFont = GetFont();
 
-  #if FIXDC
   mhBrushTitle = LKBrush_Black; // 101204
-  #else
-  mhBrushTitle = (HBRUSH)CreateSolidBrush(mColorTitle);
-  #endif
 
   mClientWindow = new WindowControl(this, GetHandle(), TEXT(""), 20, 20, Width, Height);
   mClientWindow->SetBackColor(RGB_WINBACKGROUND);
@@ -2162,10 +2097,6 @@ void WndForm::Destroy(void){
   KillTimer(GetHandle(),cbTimerID);
 
   DestroyAcceleratorTable(mhAccelTable);
-  #if FIXDC
-  #else
-  DeleteObject(mhBrushTitle);
-  #endif
 
   WindowControl::Destroy();  // delete all childs
 
@@ -2245,13 +2176,13 @@ int WndForm::ShowModal(bool bEnableMap) {
 
   enterTime = ::GetTickCount();
 
-#ifndef ALTAIRSYNC
   Message::BlockRender(true);
-#endif
 
   RECT mRc;
   GetWindowRect(GetHandle(), &mRc);
+  #if 0 // REMOVE ANIMATION
   DrawWireRects(&mRc, 5);
+  #endif
 
   SetVisible(true);
 
@@ -2295,7 +2226,6 @@ int WndForm::ShowModal(bool bEnableMap) {
           || msg.message == WM_LBUTTONDBLCLK
         )  // screen event
         && msg.hwnd != GetHandle() && !IsChild(GetHandle(), msg.hwnd)  // not current window or child
-#ifndef GNAV
         &&  !( // exception
               bEnableMap
               && msg.hwnd == hWndMapWindow
@@ -2305,7 +2235,6 @@ int WndForm::ShowModal(bool bEnableMap) {
                 || msg.message == WM_MOUSEMOVE
               )
          )
-#endif
     )
       continue;   // make it modal
 
@@ -2415,7 +2344,6 @@ int WndForm::ShowModal(bool bEnableMap) {
     // TODO code: maybe this should block all key handlers to avoid 
     // accidental key presses
     if (!hastimed) {
-#if !defined(GNAV) && !defined(NOKEYDEBONCE)
 	#if defined(PNA) || (WINDOWSPC>0) 
 	if (::GetTickCount()-enterTime<400) { // 091217
 	#else
@@ -2425,7 +2353,6 @@ int WndForm::ShowModal(bool bEnableMap) {
 	} else {
 		hastimed = true;
 	}
-#endif
     }
   } // End Modal Loop
   WndForm::timeAnyOpenClose = GetTickCount(); // static.  this is current open/close or child open/close
@@ -2444,12 +2371,8 @@ int WndForm::ShowModal(bool bEnableMap) {
 
   SetFocus(oldFocusHwnd);
 
-#ifndef ALTAIRSYNC
-  // JMW added to make sure screen is redrawn
   MapWindow::RequestFastRefresh();
-
   Message::BlockRender(false);
-#endif
 
   return(mModalResult);
 
@@ -2721,7 +2644,9 @@ int WndButton::OnLButtonUp(WPARAM wParam, LPARAM lParam){
     if (mOnClickNotify != NULL) {
       RECT mRc;
       GetWindowRect(GetHandle(), &mRc);
+      #if 0 // REMOVE ANIMATION
       SetSourceRectangle(mRc);
+      #endif
       (mOnClickNotify)(this);
     }
   }
@@ -2738,10 +2663,6 @@ int WndButton::OnKeyDown(WPARAM wParam, LPARAM lParam){
 	DoStatusMessage(ventabuffer);
 #endif
   switch (wParam){
-#ifdef GNAV
-    // JMW added this to make data entry easier
-    case VK_F4:
-#endif
     case VK_RETURN:
     case VK_SPACE:
       if (!mDown){
@@ -2756,10 +2677,6 @@ int WndButton::OnKeyDown(WPARAM wParam, LPARAM lParam){
 int WndButton::OnKeyUp(WPARAM wParam, LPARAM lParam){
 	(void)lParam;
   switch (wParam){
-#ifdef GNAV
-    // JMW added this to make data entry easier
-    case VK_F4:
-#endif
     case VK_RETURN:
     case VK_SPACE:
       if (!Debounce()) return(1); // prevent false trigger
@@ -2769,7 +2686,9 @@ int WndButton::OnKeyUp(WPARAM wParam, LPARAM lParam){
         if (mOnClickNotify != NULL) {
           RECT mRc;
           GetWindowRect(GetHandle(), &mRc);
+	  #if 0 // REMOVE ANIMATION
           SetSourceRectangle(mRc);
+	  #endif
           (mOnClickNotify)(this);
         }
       }
@@ -3416,7 +3335,11 @@ void WndProperty::Paint(HDC hDC){
   r.bottom = GetHeight();
 
   SetTextColor(hDC, GetForeColor());
-
+#ifdef WINE
+  // JMW make it look nice on wine
+  if (!GetFocused())
+    SetBkColor(hDC, GetBackColor());
+#endif /* WINE */
   SetBkMode(hDC, TRANSPARENT);
   HFONT oldFont = (HFONT)SelectObject(hDC, GetFont());
 
@@ -3575,7 +3498,9 @@ int WndFrame::OnKeyDown(WPARAM wParam, LPARAM lParam){
   if (mIsListItem && GetOwner()!=NULL){
     RECT mRc;
     GetWindowRect(GetHandle(), &mRc);
+    #if 0 // REMOVE ANIMATION
     SetSourceRectangle(mRc);
+    #endif
     return(((WndListFrame*)GetOwner())->OnItemKeyDown(this, wParam, lParam));
   }
   return(1);
@@ -3716,42 +3641,6 @@ void WndListFrame::Paint(HDC hDC){
 
 	HDC HdcTemp = CreateCompatibleDC(hDC);
 
-	#if NO_LKWINCONTROL // -----------------------------  100515
-	int ri=mClients[0]->GetWidth();
-	if (ri <-1) {
-		StartupStore(_T("........ rescaling Paint width mClients =%d\n"),ri); // REMOVE
-		mClients[0]->SetWidth(RescaleWidth(ri));
-		StartupStore(_T("........ new rescaled Paint width mClients =%d\n"),mClients[0]->GetWidth()); // REMOVE
-	}
-	HBITMAP BmpMem = CreateCompatibleBitmap(hDC,
-               mClients[0]->GetWidth(),
-               mClients[0]->GetHeight());
-
-	HBITMAP oldBmp = (HBITMAP)SelectObject(HdcTemp, BmpMem);
-
-	for (i=0; i<mListInfo.ItemInViewCount; i++){
- 
-		HFONT oldFont = (HFONT)SelectObject(HdcTemp, mClients[0]->GetFont());
-
-		if (mOnListCallback != NULL){
-			mListInfo.DrawIndex = mListInfo.TopIndex + i;
-			if (mListInfo.DrawIndex == mListInfo.ItemIndex) continue;
-			mOnListCallback(this, &mListInfo);
-		}
-
-		mClients[0]->PaintSelector(true);
-		mClients[0]->Paint(HdcTemp);
-		mClients[0]->PaintSelector(false);
-
-		BitBlt(hDC,
-			mClients[0]->GetLeft(), i*mClients[0]->GetHeight(),
-			mClients[0]->GetWidth(), mClients[0]->GetHeight(),
-			HdcTemp,
-			0,0,
-			SRCCOPY
-		);
-
-	#else  // --------------------------------------
     HBITMAP BmpMem = CreateCompatibleBitmap(hDC,
                mClients[0]->GetWidth(),
                mClients[0]->GetHeight());
@@ -3780,7 +3669,6 @@ void WndListFrame::Paint(HDC hDC){
           0,0,
           SRCCOPY
         );
-	#endif // --------------------------  not LKWINCONTROL
 
       SelectObject(HdcTemp, oldFont);
 
@@ -3807,9 +3695,6 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
   static HBITMAP hScrollBarBitmapTop = NULL;
   static HBITMAP hScrollBarBitmapMid = NULL;
   static HBITMAP hScrollBarBitmapBot = NULL;
-  #ifndef FIXDC
-  static HBITMAP hScrollBarBitmapFill = NULL; //101205
-  #endif
   RECT rc;
   HPEN hP, hP3;
   HBITMAP oldBmp;
@@ -3832,46 +3717,22 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
 	}
   }
 
-  #if NO_LKWINCONTROL
-  int w;
-  if (GetWidth()<-1) 
-	w = RescaleWidth(GetWidth()) - (ScrollbarWidth);
-  else 
-	w = GetWidth()- (ScrollbarWidth);
-  #else
 
   int w = GetWidth()- (ScrollbarWidth);
-  #endif
   int h = GetHeight() - ScrollbarTop;
 
-  #if FIXDC
   if ( (sHdc==NULL) || (hScrollBarBitmapTop == NULL)) {
-	//StartupStore(_T("... sHdc Create\n")); // REMOVE
 	sHdc = CreateCompatibleDC(hDC); 
   }
   if (hScrollBarBitmapTop == NULL) {
 	hScrollBarBitmapTop=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARTOP));
   }
-  #else
-  if (hScrollBarBitmapTop == NULL) 
-	hScrollBarBitmapTop=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARTOP));
-  #endif
   if (hScrollBarBitmapMid == NULL)
 	hScrollBarBitmapMid=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARMID));
   if (hScrollBarBitmapBot == NULL)
 	hScrollBarBitmapBot=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARBOT));
-  #ifndef FIXDC // 101205
-  if (hScrollBarBitmapFill == NULL)
-	hScrollBarBitmapFill=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARFILL));
-  #endif
 
-  #if FIXDC	// 101205
   hP = LKPen_Black_N1;
-
-  #else	// ------  REMOVABLE 1/1/2011
-  hP = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH, RGB_SCROLLBARBORDER);
-  #endif // -------- END REMOVABLE
-
   SelectObject(hDC, hP);
 
   // ENTIRE SCROLLBAR AREA
@@ -3887,10 +3748,6 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
   rcScrollBar.bottom=rc.bottom;
 
   if (mListInfo.BottomIndex == mListInfo.ItemCount) { // don't need scroll bar if one page only
-	#if FIXDC
-        #else
-	DeleteObject(hP);
-	#endif
 	return;
   }
 
@@ -3983,22 +3840,12 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
 	}
 
 	// box around slider rect
-	#if FIXDC
 	hP3=LKPen_Black_N2;
-
-	#else // ------- REMOVABLE
-	hP3 = (HPEN)CreatePen(PS_SOLID, DEFAULTBORDERPENWIDTH * 2, RGB_SCROLLBARBOX); 
-	#endif // -------- REMOVABLE
-
 	int iBorderOffset = 1;  // set to 1 if BORDERWIDTH >2, else 0
 	SelectObject(hDC, hP3);
 	// just left line of scrollbar
 	DrawLine2(hDC, rc.left+iBorderOffset, rc.top, rc.left+iBorderOffset, rc.bottom, rc.right, rc.bottom); 
 	DrawLine2(hDC, rc.right, rc.bottom, rc.right, rc.top, rc.left+iBorderOffset, rc.top); // just left line of scrollbar
-	#if FIXDC  
-	#else
-	DeleteObject(hP3);
-	#endif
 
   } // more items than fit on screen
 
@@ -4009,10 +3856,6 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
   rcScrollBarButton.top=rc.top;
   rcScrollBarButton.bottom=rc.bottom;
 
-  #if FIXDC
-  #else
-  DeleteObject(hP);
-  #endif
 }
 
 
@@ -4111,10 +3954,6 @@ int WndListFrame::OnItemKeyDown(WindowControl *Sender, WPARAM wParam, LPARAM lPa
 	(void)Sender;
 	(void)lParam;
   switch (wParam){
-#ifdef GNAV
-    // JMW added this to make data entry easier
-    case VK_F4:
-#endif
   case VK_RETURN:
     if (mOnListEnterCallback) {
       mOnListEnterCallback(this, &mListInfo);
@@ -4122,7 +3961,6 @@ int WndListFrame::OnItemKeyDown(WindowControl *Sender, WPARAM wParam, LPARAM lPa
       return(0);
     } else 
       return(1);
-    //#ifndef GNAV
   case VK_LEFT:
     if ((mListInfo.ScrollIndex>0)
 	&&(mListInfo.ItemCount>mListInfo.ItemInPageCount)) {
@@ -4283,7 +4121,7 @@ void WndListFrame::SelectItemFromScreen(int xPos, int yPos,
 int WndListFrame::OnMouseMove(WPARAM wParam, LPARAM lParam) {  
   static bool bMoving = false;
 
-  if ( (GetTickCount()) >= LastMouseMoveTime )
+  if ( (GetTickCount()) >= (unsigned int)LastMouseMoveTime )
   {
     bMoving=true;
 
@@ -4293,7 +4131,7 @@ int WndListFrame::OnMouseMove(WPARAM wParam, LPARAM lParam) {
 
     if (mMouseDown && PtInRect(&rcScrollBar, Pos))
     {
-      int iScrollBarTop = max(1, Pos.y - mMouseScrollBarYOffset);
+      int iScrollBarTop = max(1, (int)Pos.y - mMouseScrollBarYOffset);
 
       int iScrollIndex = GetScrollIndexFromScrollBarTop(iScrollBarTop);
 
@@ -4323,7 +4161,7 @@ int WndListFrame::OnLButtonDown(WPARAM wParam, LPARAM lParam) {
     
   if (PtInRect(&rcScrollBarButton, Pos))  // see if click is on scrollbar handle
   {
-    mMouseScrollBarYOffset = max(0, Pos.y - rcScrollBarButton.top);  // start mouse drag
+    mMouseScrollBarYOffset = max(0, (int)Pos.y - (int)rcScrollBarButton.top);  // start mouse drag
     mMouseDown=true;
 
   }
@@ -4401,7 +4239,6 @@ inline int WndListFrame::GetScrollBarTopFromScrollIndex()
 }
 
 
-#ifndef ALTAIRSYNC
 #include "InputEvents.h"
 
 void WndEventButton_OnClickNotify(WindowControl *Sender) {
@@ -4441,6 +4278,3 @@ WndEventButton::WndEventButton(WindowControl *Parent, const TCHAR *Name,
 }
 
 
-// 
-// 
-#endif

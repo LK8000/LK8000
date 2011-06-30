@@ -26,11 +26,9 @@ void TopologyInitialiseMarks();
 void TopologyCloseMarks();
 void OpenTopology();
 void CloseTopology();
-#if LKTOPO
 void ChangeZoomTopology(int iCategory, double newScale, short cztmode);
 double ReadZoomTopology(int iCategory);
 bool HaveZoomTopology(int iCategory);
-#endif
 void DrawTopology(const HDC hdc, const RECT rc);
 void DrawTerrain(const HDC hdc, const RECT rc, const double sunazimuth, const double sunelevation);
 void DrawSpotHeights(const HDC hdc);

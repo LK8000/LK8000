@@ -1,5 +1,5 @@
 # LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  110131
+# MASTER UPDATED:  110419
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -8,8 +8,10 @@
 # Please note that ENG_MSG.TXT is the english master language for LK8000
 # and it should always exist. Do not change ENG_MSG.TXT!
 #
+# ATTENTION> Max number of tokens is defined in LKLanguage as MAX_MESSAGES
+#
 # All lines that are empty, or starting with a # , are ignored.
-# DEVELOPERS ADDING NEW MESSAGES HERE SHOULD REQUEST A NUMBERING SLOT TO PAOLO
+# DEVELOPERS ADDING NEW MESSAGES HERE SHOULD REQUEST A NUMBERING SLOT ON GITHUB
 
 _@M1_ " Diff"
 _@M2_ " Dist"
@@ -26,6 +28,7 @@ _@M12_ "11 Appearance"
 _@M13_ "12 Fonts"
 _@M14_ "13 Map Overlays "
 _@M15_ "14 Task"
+# UNUSED M16
 _@M16_ "15 Task rules"
 _@M17_ "15 seconds"
 _@M18_ "16 InfoBox Cruise"
@@ -37,7 +40,7 @@ _@M23_ "2 minutes"
 _@M24_ "20 Logger"
 _@M25_ "21 Waypoint Edit"
 _@M26_ "22 System"
-_@M27_ "23 Paragliders/Delta specials"
+_@M27_ "23 Para/Hang Gliders specials"
 _@M28_ "3 Map Display"
 _@M29_ "3 minutes"
 _@M30_ "30 seconds"
@@ -62,7 +65,7 @@ _@M48_ "Accept"
 _@M49_ "Achieved MacCready"
 _@M50_ "Achieved Speed"
 _@M51_ "Acknowledge for day?"
-_@M52_ "Acknowledge time*"
+_@M52_ "Acknowledge time "
 _@M53_ "Active Map "
 _@M54_ "Add Waypoint"
 _@M55_ "Advanced.."
@@ -104,11 +107,13 @@ _@M90_ "Always use MC=0"
 _@M91_ "Always use safety MC"
 _@M92_ "Amber"
 _@M93_ "Analysis"
+# 94 REMOVED after v2.3
 _@M94_ "Animation"
 _@M95_ "Append to task"
 _@M96_ "Arm start"
 _@M97_ "Arm"
 _@M98_ "ArrivalAltitude"
+# 99 REMOVED after v2.3
 _@M99_ "Arrow head"
 _@M100_ "Ask"
 _@M101_ "Assigned task time"
@@ -156,6 +161,7 @@ _@M142_ "Big cities "
 _@M143_ "Big roads "
 _@M144_ "Black"
 _@M145_ "Blank!"
+# 146 REMOVED after v2.3
 _@M146_ "Block speed to fly "
 _@M147_ "Blue lake"
 _@M148_ "Both (Fin+Ave)"
@@ -186,6 +192,7 @@ _@M172_ "Circling Zoom OFF"
 _@M173_ "Circling Zoom ON"
 _@M174_ "Circling zoom "
 _@M175_ "Circling"
+# 176 UNUSED after v2.3
 _@M176_ "Classic"
 _@M177_ "Clear Alternates"
 _@M178_ "Clear task"
@@ -203,6 +210,7 @@ _@M189_ "Colours"
 _@M190_ "Comment"
 _@M191_ "Comment: "
 _@M192_ "Commons"
+_@M193_ "Comms with Volkslogger"
 _@M194_ "CompeGPS Waypoint"
 _@M195_ "Configuration"
 _@M196_ "Configure Custom Keys"
@@ -319,6 +327,7 @@ _@M306_ "Flight time"
 _@M307_ "Free"
 _@M308_ "Freq"
 _@M309_ "Friend code "
+# 310 REMOVED after v2.3
 _@M310_ "Full arrow"
 _@M311_ "Full overlay"
 _@M312_ "Full"
@@ -350,6 +359,7 @@ _@M337_ "Hide units "
 _@M338_ "High Alps"
 _@M339_ "High"
 _@M340_ "HighContrast"
+# 341 REMOVED after v2.3
 _@M341_ "HighScore Style"
 _@M342_ "Higher"
 _@M343_ "IN (Exit)"
@@ -379,6 +389,7 @@ _@M366_ "KEEP AIRSPEED CONSTANT LONGER PLEASE"
 _@M367_ "KEEP HEADING LONGER PLEASE"
 _@M368_ "KEEP SPEED AND HEADING LONGER PLEASE"
 _@M369_ "KEEP SPEED LONGER PLEASE"
+# 370 REMOVED after v2.3
 _@M370_ "Keyboard"
 _@M371_ "L/D Average period "
 _@M372_ "LAST GATE IS OPEN"
@@ -428,6 +439,7 @@ _@M415_ "Lower"
 _@M416_ "MacCready value "
 _@M417_ "Magenta"
 _@M418_ "Manual"
+# 419 no more used after 2.3
 _@M419_ "Map Locking "
 _@M420_ "Map file "
 _@M421_ "Map labels OFF"
@@ -455,6 +467,7 @@ _@M442_ "Move wp down"
 _@M443_ "Move wp up"
 _@M444_ "Move"
 _@M445_ "Moving"
+# 446 REMOVED after v2.3
 _@M446_ "Msg window"
 _@M447_ "Multitarget menu"
 _@M448_ "Multitarget rotate"
@@ -510,7 +523,7 @@ _@M497_ "ON/Scaled"
 _@M498_ "OUT (Enter)"
 _@M499_ "Off"
 _@M500_ "OnLine Contest"
-_@M501_ "Online contest "
+_@M501_ "OnLine contest"
 _@M502_ "Only LKMaps can be configured, sorry!"
 _@M503_ "Operation forbidden on CLUB devices"
 _@M504_ "Optimise"
@@ -529,7 +542,7 @@ _@M516_ "PROFILE"
 _@M517_ "Page Back"
 _@M518_ "Pan to center"
 _@M519_ "Panorama trigger"
-_@M520_ "Paraglider/Delta"
+_@M520_ "Paraglider/HangGlider"
 _@M521_ "Paste"
 _@M522_ "Petrol"
 _@M523_ "Picker"
@@ -581,6 +594,7 @@ _@M568_ "Right "
 _@M569_ "SIM"
 _@M570_ "SIMULATE"
 _@M571_ "START"
+# 572 REMOVED after v2.3
 _@M572_ "STF risk factor"
 _@M573_ "STOP DUMPING"
 _@M574_ "Safety Mc "
@@ -642,6 +656,7 @@ _@M629_ "Speed average"
 _@M630_ "Speed estimated"
 _@M631_ "Speed remaining"
 _@M632_ "Speed"
+# 633 UNUSED after v2.3
 _@M633_ "Sprint"
 _@M634_ "Standard"
 _@M635_ "Start "
@@ -719,6 +734,7 @@ _@M706_ "Terrain file "
 _@M707_ "Terrain height "
 _@M708_ "Terrain"
 _@M709_ "Terrain\nOFF"
+# 710 REMOVED in v2.3
 _@M710_ "Text Input Style "
 _@M711_ "Text:"
 _@M712_ "Thermal Bar "
@@ -751,6 +767,7 @@ _@M738_ "Traffic"
 _@M739_ "Trail drift "
 _@M740_ "Trail length "
 _@M741_ "Trail width "
+# 742 UNUSED after v2.3
 _@M742_ "Triangle"
 _@M743_ "True Type"
 _@M744_ "TrueWind IAS "
@@ -780,7 +797,7 @@ _@M767_ "Use HBar on/off"
 _@M768_ "Use MacCready"
 _@M769_ "Use aver.efficiency"
 _@M770_ "Use baro altitude "
-_@M771_ "Use black outline*"
+_@M771_ "Use black outline "
 _@M772_ "V ach"
 _@M773_ "V rem"
 _@M774_ "V rough air "
@@ -796,10 +813,11 @@ _@M783_ "Vario red+blue"
 _@M784_ "Vario"
 _@M785_ "Variometer Bar "
 _@M786_ "Very High"
+# REMOVED after v2.3
 _@M787_ "Virtual Keys "
 _@M788_ "Volume "
 _@M789_ "Warn"
-_@M790_ "Warning time*"
+_@M790_ "Warning time "
 _@M791_ "Warning"
 _@M792_ "Warnings "
 _@M793_ "Water labels "
@@ -828,6 +846,7 @@ _@M815_ "White outline"
 _@M816_ "White"
 _@M817_ "Will this be the finish?"
 _@M818_ "Wind Settings"
+# 819 REMOVED after 2.3
 _@M819_ "Wind arrow"
 _@M820_ "Wind at Altitude"
 _@M821_ "Wing load "
@@ -945,16 +964,51 @@ _@M938_ "Competition ID"
 _@M939_ "Competition ID: "
 _@M940_ "Filling "
 _@M941_ "Outlines only"
-_@M942_ "Patterns"
+_@M942_ "Pattern"
 _@M943_ "Semi-Transparent"
 _@M944_ "Opacity "
+_@M945_ "Pattern, borders only"
+_@M946_ "Semi-Transparent, borders only"
+
 _@M950_ "BottomBar Opacity "
 _@M951_ "Cannot stop RX thread!"
 _@M952_ "Cannot write data to Port!"
 _@M953_ "Transparent"
-_@M954_ "Font Renderer "
+_@M954_ "Font Smoothing "
 _@M955_ "ClearType"
 _@M956_ "Anti Aliasing"
+# Page 1.5 name, keep short:
+_@M957_ "Contest"
+
+# ON/OFF in dialog windows (not Menu)
+_@M958_ "ON"
+_@M959_ "OFF"
+
+#
+# Paragliding lock/unlock screen feature
+#
+_@M960_ "CONFIRM SCREEN UNLOCK?"
+_@M961_ "CONFIRM SCREEN LOCK?"
+# 962 max 35 characters!
+_@M962_ "SCREEN IS LOCKED UNTIL TAKEOFF"
+# 963 unused since 2.3
+_@M963_ "DOUBLE-CLICK ON SCREEN TO FORCE UNLOCK"
+_@M964_ "SCREEN IS UNLOCKED"
+#
+# Menu buttons, MAX 8 character per line! Keep \n !
+_@M965_ "UNLOCK\nSCREEN"
+_@M966_ "LOCK\nSCREEN"
+
+#
+# GPS and COM port warnings
+#
+_@M970_ " GPS: NO VALID FIX "
+_@M971_ " GPS: No ComPort "
+_@M972_ " GPS: No Data Rx "
+_@M973_ " GPS is missing "
+_@M974_ " GPS not connected "
+_@M975_ " GPS data error "
+
 
 #
 # Infoboxes in Description / Tile order. 
@@ -1088,6 +1142,7 @@ _@M1125_ "AA Delta Time"
 _@M1126_ "AAdT"
 _@M1127_ "Thermal All"
 _@M1128_ "Th.All"
+# 1129 and 1130 unused, can be used again
 _@M1129_ "Distance Vario"
 _@M1130_ "DVario"
 _@M1131_ "Battery Percent"
@@ -1118,8 +1173,8 @@ _@M1155_ "BestAlternate Arrival"
 _@M1156_ "BAtnArr"
 _@M1157_ "Home Radial"
 _@M1158_ "Radial"
-_@M1159_ "Airspace Distance"
-_@M1160_ "ArSpace"
+_@M1159_ "Airspace Horizontal Dist"
+_@M1160_ "ArSpcH"
 _@M1161_ "Ext.Batt.Bank"
 _@M1162_ "xBnk#"
 _@M1163_ "Ext.Batt.1 Voltage"
@@ -1218,6 +1273,60 @@ _@M1237_ "A"
 _@M1238_ "L"
 _@M1239_ "T"
 
+# dlgLKAirspaceWarning - Airspace warning messages
+_@M1240_ "Entering"
+_@M1241_ "Leaving"
+_@M1242_ "Flying inside FLY zone"
+_@M1243_ "Predicted leaving FLY zone"
+_@M1244_ "Near leaving FLY zone"
+_@M1245_ "Leaving FLY zone"
+_@M1246_ "Predicted entering FLY zone"
+_@M1247_ "Entering FLY zone"
+_@M1248_ "Flying outside FLY zone"
+_@M1249_ "Flying outside NOFLY zone"
+_@M1250_ "Predicted entering NOFLY zone"
+_@M1251_ "Near entering NOFLY zone"
+_@M1252_ "Entering NOFLY zone"
+_@M1253_ "Flying inside NOFLY zone"
+_@M1254_ "Leaving NOFLY zone"
+_@M1255_ "YELLOW WARNING"
+_@M1256_ "RED WARNING"
+_@M1257_ "to leave"
+_@M1258_ "to enter"
+_@M1259_ "Too far, not calculated"
+_@M1260_ "below"
+_@M1261_ "above"
+_@M1262_ "Message"
+_@M1263_ "WarnLevel"
+_@M1264_ "HDist"
+_@M1265_ "VDist"
+
+# dlgAirspaceDetails - Airspace details
+_@M1266_ "AckLevel"
+_@M1267_ "Yellow acknowledged"
+_@M1268_ "Red acknowledged"
+_@M1269_ "Disabled"
+_@M1270_ "FLY-IN"
+_@M1271_ "FLY-OUT"
+_@M1272_ "Set as FLY zone?"
+_@M1273_ "Set as NOFLY zone?"
+
+# dlgConfig - Airspace warnings
+_@M1274_ "Warnings"
+_@M1275_ "Airspace warning parameters"
+_@M1276_ "Airspace warning parameters saved."
+_@M1277_ "Msg repeat time "
+_@M1278_ "Vertical margin "
+_@M1279_ "Msg timeout "
+_@M1280_ "Enable this airspace?"
+_@M1281_ "Map labels "
+_@M1282_ "ENABLE"
+_@M1283_ "DISABLE"
+_@M1284_ "Disable this airspace?"
+
+# new airspace infobox
+_@M1285_ "Airspace Vertical Dist"
+_@M1286_ "ArSpcV"
 
 # LK info page headers, try to use the same or less number of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!
@@ -1237,6 +1346,7 @@ _@M1312_ "LNDB"
 _@M1313_ "APT"
 _@M1314_ "APTS"
 _@M1315_ "TPS"
+# ASP for nearest airspaces is M1642
 
 # Reserved waypoint names, comments
 _@M1316_ "TAKEOFF"
@@ -1308,3 +1418,166 @@ _@M1415_ "Declaration not accepted!"
 _@M1420_ "Error while declaring"
 _@M1421_ "Task description"
 _@M1422_ "Start and Finish"
+
+_@M1423_ "Forbidden during flight!"
+
+#
+# Variometer Bar
+#
+_@M1424_ "VarioBar mode"
+_@M1425_ "Vario in thermal and cruise"
+_@M1426_ "Vario in thermal, Netto in cruise"
+_@M1427_ "Vario in thermal, STF in cruise"
+
+#
+# Contests
+#
+_@M1450_ "Contest"
+_@M1451_ "Change"
+_@M1452_ "FREE FLIGHT START detected"
+
+#
+# Contest infoboxes, full name and abbreviated name for boxes
+# We need OLC ahead of full names, to keep ordering in infobox list during configuration
+#
+# League predicted is not used
+#
+_@M1455_ "OLC Classic Distance"
+_@M1456_ "OLC dis"
+_@M1457_ "OLC FAI Triangle Distance"
+_@M1458_ "FAI dis"
+_@M1459_ "OLC League Distance"
+_@M1460_ "LEA dis"
+_@M1461_ "OLC FAI 3 TPs Distance"
+_@M1462_ "3TP dis"
+
+_@M1463_ "OLC Classic*Predicted Distance"
+_@M1464_ "OLC*dis"
+_@M1465_ "OLC FAI Triangle*Predicted Distance"
+_@M1466_ "FAI*dis"
+_@M1467_ "OLC League*Predicted Distance"
+_@M1468_ "LEA*dis"
+_@M1469_ "OLC FAI 3 TPs*Predicted Distance"
+_@M1470_ "3TP*dis"
+
+_@M1471_ "OLC Classic Speed"
+_@M1472_ "OLC spd"
+_@M1473_ "OLC FAI Triangle Speed"
+_@M1474_ "FAI spd"
+_@M1475_ "OLC League Speed"
+_@M1476_ "LEA spd"
+_@M1477_ "OLC FAI 3 TPs Speed"
+_@M1478_ "3TP spd"
+
+_@M1479_ "OLC Classic*Predicted Speed"
+_@M1480_ "OLC*spd"
+_@M1481_ "OLC FAI Triangle*Predicted Speed"
+_@M1482_ "FAI*spd"
+_@M1483_ "OLC League*Predicted Speed"
+_@M1484_ "LEA*spd"
+_@M1485_ "OLC FAI 3 TPs*Predicted Speed"
+_@M1486_ "3TP*spd"
+
+_@M1487_ "OLC Classic Score"
+_@M1488_ "OLC scr"
+_@M1489_ "OLC FAI Triangle Score"
+_@M1490_ "FAI scr"
+_@M1491_ "OLC League Score"
+_@M1492_ "LEA scr"
+_@M1493_ "OLC FAI 3 TPs Score"
+_@M1494_ "3TP scr"
+
+_@M1495_ "OLC Classic*Predicted Score"
+_@M1496_ "OLC*scr"
+_@M1497_ "OLC FAI Triangle*Predicted Score"
+_@M1498_ "FAI*scr"
+_@M1499_ "OLC League*Predicted Score"
+_@M1500_ "LEA*scr"
+_@M1501_ "OLC FAI 3 TPs*Predicted Score"
+_@M1502_ "3TP*scr"
+
+_@M1503_ "OLC Plus Score"
+_@M1504_ "PLS scr"
+_@M1505_ "OLC Plus*Predicted Score"
+_@M1506_ "PLS*scr"
+
+# #############################
+# NEW 2.4 messages
+# #############################
+
+# Device name for "no device"
+_@M1600_ "DISABLED"
+# Ex-963, new message for screen unlock
+_@M1601_ "Double-Click on Low-Right Corner to UNLOCK"
+
+# Config system menu page 
+_@M1602_ "Configure Bottom Bar"
+_@M1603_ "Configure Info Pages"
+_@M1604_ "Configure xxxx"
+_@M1605_ "Bottom Bar"
+_@M1606_ "Info Pages"
+_@M1607_ "Bottom Bar Config Saved"
+_@M1608_ "Info Pages Config Saved"
+
+# Config InfoPages
+_@M1610_ "1.1 Cruise "
+_@M1611_ "1.2 Thermal "
+_@M1612_ "1.3 Task "
+_@M1613_ "1.4 Custom "
+_@M1614_ "1.5 Contest "
+_@M1615_ "1.6 Turn "
+_@M1616_ "2.1 APT "
+_@M1617_ "2.2 LND "
+_@M1618_ "2.3 TPS "
+_@M1619_ "2.4 ASP "
+_@M1620_ "3.1 COMN "
+_@M1621_ "3.2 HIST "
+
+# New airspace messages
+_@M1630_ "Height margin "
+
+# Navboxes
+_@M1640_ "Current Flaps"
+_@M1641_ "Flaps"
+
+# Header nearest Airspaces
+_@M1642_ "ASP"
+
+_@M1643_ "ENABLED"
+
+_@M1644_ "Home Alt.Arrival"
+_@M1645_ "HomeArr"
+
+# Menu Config 15, Alarms
+_@M1646_ "15 Alarms"
+_@M1647_ "Max Altitude 1 "
+_@M1648_ "Max Altitude 2 "
+_@M1649_ "Max Altitude 3 "
+
+# "ALARM x ALTITUDE 1234"   warning message
+_@M1650_ "ALARM"
+_@M1651_ "ALTITUDE"
+
+# customkey for airspace analysis
+_@M1652_ "Airspace Analysis"
+_@M1653_ "Toggle Map<>Airspace infopage"
+
+# Airspace details buttons
+_@M1654_ "SELECT"
+_@M1655_ "ANALYSIS"
+_@M1656_ "*SELECTED*"
+
+# customkeys zoom 
+_@M1657_ "Zoom In"
+_@M1658_ "Zoom Out"
+_@M1659_ "Zoom In More"
+_@M1660_ "Zoom Out More"
+
+# Active map indicator in map scale (with AZM, NAV1 etc.), 3 letters!
+_@M1661_ "ACT"
+
+# Error message
+_@M1662_ "SYSTEM ERROR"
+_@M1663_ "NOT ENOUGH MEMORY"
+
+# Note for developers: LKLanguage MAX_MESSAGE  1700: 0-1699 !

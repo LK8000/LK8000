@@ -1,19 +1,51 @@
 Things to be fixed in LK languages files/tokens:
 
+>>>>>>>>>>>> DO NOT REMOVE OR CHANGE EXISTING TOKENS!!!!!!!!!!!!!! <<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>> DO NOT REMOVE OR CHANGE EXISTING TOKENS!!!!!!!!!!!!!! <<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>> DO NOT REMOVE OR CHANGE EXISTING TOKENS!!!!!!!!!!!!!! <<<<<<<<<<<<<<<<<<<<<<<<<
+
+  WE DO A DIFF AGAINST PREVIOUS OFFICIAL VERSION TO GET THE DIFFERENCES FOR TRANSLATORS
+  WE DO A DIFF AGAINST PREVIOUS OFFICIAL VERSION TO GET THE DIFFERENCES FOR TRANSLATORS
+  WE DO A DIFF AGAINST PREVIOUS OFFICIAL VERSION TO GET THE DIFFERENCES FOR TRANSLATORS
+
+  THIS IS ONLY A MEMO
+  THIS IS ONLY A MEMO
+  THIS IS ONLY A MEMO
+
   HLP FIELDS
   ----------
 
 - H864 is missing, old issue from xcs. Check if we really need this infobox.
 - New 890 and 891     
 - New 900 
+- New 1208,1209,1210
+- Changed H1200, airspace filling options
+- 110523  CHANGE HELP FOR AIRSPACE 879 
+- 110525  CHANGED AIRSPACE TOKENS 1159 1160
+          CHANGED HELP 879
 
   NEW MSG TOKENS
   --------------
 
+
 - New Logger fields: _@M936_ - _@M939_  
 - New Airspace filling: _@M940 to  _@M944
+- New Airspace drawing options: M945,946
 - New bar opacity M950
+- New 1.5 Contest M957
 - New fields: _@M1001_ - _@M1400_ for calculated values and infobox abbrev. translations, 
   see details in ENG_MSG
 - New Logger declarations Error Handling fields: _@M1400_ - _@M1429_
-- _@M193_ to remove
+- _@M1240_ - _@M1284_ to translate
+- remove * from _@M771_ _@M790_ _@M52_
+- _@M1285_ - _@M1286_ to translate, airspace vertical distance infobox
+- _@M1159_ - _@M1160_ changed to airspace horizontal distance
+
+  MENU files to be checked and translated?
+
+110227 moved H890 to H1200
+             H891 to H1201
+             H900 to H1202
+             H901 to H1203
+
+

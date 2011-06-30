@@ -1,36 +1,38 @@
 
   CREDITS FOR LK8000  www.lk8000.it 
-  Updated on 110115
+  Updated on 110518
 
 
-  Concept, design and development of LK8000 by Paolo Ventafridda, ITALY
-  Copyright (C) 2009-2010-2011
-
-  Other developers have also contributed to the LK project so far:
-
+  Original concept, design and development of LK8000 Project by Paolo Ventafridda, Italy
+  LK8000 Project Copyright (C) by:
 	Oren Cohen
+	Kuba Kubrynski
 	Richard Pecl
 	Mateusz Pusz
 	Kalman Rozsahegyi
+	Karim Trojette
+	Paolo Ventafridda
+
+
 
   LK8000 was forked off Xcsoar in year 2009.
-  Copyright (C) 2000 - 2010 XCSoar Authors from the 5.2.2/5.2.3 version:
+  Copyright (C) 2000 - 2009 XCSoar Authors from the 5.2.2/5.2.3 version:
 
   	M Roberts (original release)
-	Robin Birch <robinb@ruffnready.co.uk>
-	Samuel Gisiger <samuel.gisiger@triadis.ch>
-	Jeff Goodenough <jeff@enborne.f2s.com>
-	Alastair Harrison <aharrison@magic.force9.co.uk>
-	Scott Penrose <scottp@dd.com.au>
-	John Wharington <jwharington@gmail.com>
-	Lars H <lars_hn@hotmail.com>
-	Rob Dunning <rob@raspberryridgesheepfarm.com>
-	Russell King <rmk@arm.linux.org.uk>
-	Paolo Ventafridda <coolwind@email.it> 
-	Tobias Lohner <tobias@lohner-net.de>
+	Robin Birch
+	Samuel Gisiger
+	Jeff Goodenough
+	Alastair Harrison
+	Scott Penrose
+	John Wharington
+	Lars H
+	Rob Dunning
+	Russell King 
+	Paolo Ventafridda
+	Tobias Lohner
 
 
-  Other contributors may be missing from this file, and will be added on demand.
+  Other contributors may be missing from the old xcsoar file, and will be added on demand.
   
 
   This program is free software; you can redistribute it and/or

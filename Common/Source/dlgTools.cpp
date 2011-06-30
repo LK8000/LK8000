@@ -17,6 +17,8 @@
 #include "Dialogs.h"
 #include "externs.h" // 091214
 
+#include "utils/heapcheck.h"
+
 
 int DLGSCALE(int x) {
   int iRetVal = x;
@@ -182,11 +184,6 @@ int WINAPI MessageBoxX(HWND hWnd, LPCTSTR lpText, LPCTSTR lpCaption, UINT uType)
 
   delete wf;
 
-#ifdef ALTAIRSYNC
-  // force a refresh of the window behind
-  InvalidateRect(hWnd,NULL,true);
-  UpdateWindow(hWnd);
-#endif
   return(res);
 
 }
@@ -618,9 +615,6 @@ void LoadChildsFromXML(WindowControl *Parent,
       Caption[0] = '\0';
       W->SetReadOnly(ReadOnly != 0);
 
-//#if LKTOPO
-//	if (!ReadOnly) {
-//#endif
       if (childNode.nChildNode(TEXT("DataField")) > 0){
 
         TCHAR DataType[32];
@@ -679,7 +673,7 @@ void LoadChildsFromXML(WindowControl *Parent,
         }
         if (_tcsicmp(DataType, TEXT("boolean"))==0){
           W->SetDataField(
-            new DataFieldBoolean(EditFormat, DisplayFmt, false, gettext(TEXT("_@M894_")), gettext(TEXT("_@M491_")), // ON OFF
+            new DataFieldBoolean(EditFormat, DisplayFmt, false, gettext(TEXT("_@M958_")), gettext(TEXT("_@M959_")), // ON OFF
               (DataField::DataAccessCallback_t) CallBackLookup(LookUpTable, OnDataAccess))
           );
         }
@@ -703,9 +697,6 @@ void LoadChildsFromXML(WindowControl *Parent,
         }
 
       }
-//#if LKTOPO
-      //  } // if !ReadOnly
-//#endif
 
     }else
 
@@ -724,7 +715,6 @@ void LoadChildsFromXML(WindowControl *Parent,
     }else
 
 
-#ifndef ALTAIRSYNC
 
     if (_tcscmp(childNode.getName(), TEXT("WndEventButton")) == 0){
 
@@ -746,7 +736,6 @@ void LoadChildsFromXML(WindowControl *Parent,
 
     }else
 
-#endif
 
 
     if (_tcscmp(childNode.getName(), TEXT("WndOwnerDrawFrame")) == 0){

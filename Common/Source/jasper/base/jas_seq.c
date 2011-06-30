@@ -79,6 +79,8 @@
 #include "jasper/jas_malloc.h"
 #include "jasper/jas_math.h"
 
+#include "utils/heapcheck.h"
+
 /******************************************************************************\
 * Constructors and destructors.
 \******************************************************************************/

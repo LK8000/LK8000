@@ -1,0 +1,4 @@
+* LK8000 polar for: Pegase 101A
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+ 344, 120, 85.0, -0.62, 105, -0.75, 175, -2.54, 10.5
+

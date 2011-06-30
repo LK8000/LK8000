@@ -1,4 +1,4 @@
-# LK8000 ENG_HLP.TXT 101210
+# LK8000 ENG_HLP.TXT 110405
 #
 # A single text line can be max 500 characters long
 # An entire help can be max 1024 characters total
@@ -43,6 +43,7 @@ The file name of the secondary airspace file.
 For each airfield, you can add additional informations inside this file located in _Waypoints subdirectory.
 Here you can change this default file name to something else.
 
+# 108 OBSOLETED BY 1250 in 2.3
 @108
 Controls filtering of airspace for display and warnings.  The airspace filter button also allows filtering of display and warnings independently for each airspace class.
 [All on] All is displayed.
@@ -53,6 +54,7 @@ Controls filtering of airspace for display and warnings.  The airspace filter bu
 @109
 For clip airspace mode, this is the altitude below which airspace is displayed.
 
+# 110 OBSOLETED BY 1251 in 2.3
 @110
 For auto airspace mode, this is the altitude above/below which airspace is included.
 
@@ -198,8 +200,7 @@ There is a tolerance of 30% relative to this parameter.
 
 @142
 This option defines which auto MacCready algorithm is used.
-[Final glide] adjusts Mc for fastest arrival.  For OLC sprint tasks,
- the MacCready is adjusted in order to cover the greatest distance in the remaining time and reach the finish height.
+[Final glide] adjusts Mc for fastest arrival.
 [Average] sets Mc to the average climb rate across all climbs.
 [Both] Uses average during task, then fastest arrival when in final glide mode.
 [Equivalent MC] Use MC calculated on your current average speed. See the manual. 
@@ -235,11 +236,10 @@ Otherwise GPS altitude is used.
 
 
 @148
-This contains a selection of gliders of different performance classes, as well as a special entry for WinPilot custom File.
+[THIS HELP IS UNUSED - do not translate]
 
 @149
-When WinPilot File is the polar type, this is the name of the file containing the glide polar data.
-Polars must be placed inside _Polars subfolder.
+[THIS HELP IS UNUSED - do not translate]
 
 @150
 The maximum manoeuvring speed can be entered on this page to prevent the glide computer from commanding unrealistic cruise speeds.
@@ -347,8 +347,9 @@ The UTC offset field allows the UTC local time offset to be specified.  The loca
 @178
 If ON, short clicking on the map will show the nearest waypoint's details.
 If OFF, short clicking in the upper half area of the map will zoom in, in the lower part will zoom out.
-Default is OFF  with Virtual Keys OFF as well, to get a faster click response..
+Default is OFF.
 
+# 179 REMOVED after v2.3
 @179
 When enabled, the map screen is divided in three virtual parts. Pressing for about 1 second on the upper part will result in a UP key, in the lower part into a DOWN key, and in the middle part into an ENTER key.
 These up down and enter keys may be applied to change IBOX values such as MC, destination waypoint in a task, etc. 
@@ -365,6 +366,7 @@ For example, a gesture from left to right is a TURN PAGE LEFT on Iphones and man
 The same gesture otherwise will result in a TURN PAGE RIGHT.
 Default is INVERTED, opposite to Iphone usage.
 
+# 181 REMOVED after 2.3
 @181
 If enabled, clicking on a navbox will lock the moving map preventing waypoint selection or zoom actions. Double click on the moving map (NOT on navboxes) will unlock the map.
 This feature can be useful to PG and delta pilots, and by default it is OFF. 
@@ -423,6 +425,7 @@ The obstacle is indicated together with a boxed value, which is the altitude you
 This altitude takes into account the terrain safety margin you have configured in safety menu.
 NOTICE: Glide terrain SHADE is shown ONLY during flight. When on ground, it is NOT displayed.
 
+# 195 UNUSED SINCE 2.4
 @195
 Glide bar can be relative to Task Finish or to the next turnpoint, or it can be disabled. This bar is drawn on the left side of the screen.
 Value is calculated for current MC, being a task value: if you dont have a task but only a single goto, 
@@ -557,15 +560,18 @@ This is the time interval between logged points when not circling.
 @227
 This is the time interval between logged points when circling.
 
+# 228 REMOVED after v2.3
 @228
 Determines whether to draw window animations when dialogs open/close.
 
 @229
 If you want Visual Glide to display also moving circles or arcs, in addition to the steady mode then select Extended.
 
+# 230 REMOVED after v2.3
 @230
 Defines the alignment of the status message box, either centered or in the top left corner.
 
+# 231 REMOVED after v2.3
 @231
 Determines the way the wind arrow is drawn on the map.
 [Arrow head] Draws an arrow head only
@@ -576,14 +582,17 @@ Geometry values range 0-7 but  only some of them are really available.
 ATTENTION: LK8000 only supports 5 boxes on the right if in landscape mode, and classic top and bottom lines if in portrait mode. 
 If you use other geometries, the LK8000 will not work properly.
 
+# 233 REMOVED after v2.3
 @233
 The STF risk factor reduces the MacCready setting used to calculate speed to fly as the glider gets low, in order to compensate for risk. 
 Set to 0.0 for no compensation, 1.0 scales Mc linearly with height.
 
+# 234 REMOVED after v2.3
 @234
 If enabled, the command speed in cruise is set to the MacCready speed to fly in no vertical air-mass movement. 
 If disabled, the command speed in cruise is set to the dolphin speed to fly, equivalent to the MacCready speed with vertical air-mass movement.
 
+# 235 REMOVED after v2.3
 @235
 Determines how the user is prompted for text input (filename, teamcode etc.)
 
@@ -945,7 +954,7 @@ Negative convergence (divergence) produces subsiding vertical motion, creating l
 
 
 #
-# INFOBOXES
+# INFOBOXES 800 - 1199
 #
 
 @800
@@ -1295,9 +1304,11 @@ Arrival altitude difference over alternate. Press ENTER or RETURN after selectin
 Radial to home waypoint, if available.
 
 @879
-[Airspace Distance]
-CURRENTLY NOT AVAILABLE. Distance to the nearest Airspace. Even if airspace is not appearing on the map, disabled or acknowldged already, distance remains. 
-If 0, you are inside an airspace, use Nearest Airspace menu to know more about it.
+[Airspace Horizontal Distance]
+Horizontal distance to the SELECTED airspace. To SELECT an airspace go inside 2.4 airspace page and pull details,
+there is a button for selection. Once selected the airspace will be monitored for distance in this infobox.
+If no airspace is selected, OR if you are already INSIDE the airspace for this distance, --- is shown.
+In case of flyzones, the nearest distance is calculated where you can leave that flyzone.
 
 @880
 [Ext.Batt.Bank ]
@@ -1341,18 +1352,122 @@ If you have no AirSpeed probe, Estimated Airspeed will be used. See the manual f
 No help available on this item!
 
 @890
+[OLC CLASSIC] distance
+Current distance calculated around 5 turnpoints. 
+
+@891
+[FAI TRIANGLE] distance
+FAI triangle maximum distance achieved so far.
+
+@892
+[OLC LEAGUE] distance
+Max distance calculated around 3 turnpoints, made in 2.5 hours.
+
+@893
+[FAI 3TPs] distance
+Current distance calculated around 3 turnpoints. 
+
+@894
+[OLC CLASSIC] predicted distance
+Current distance calculated around 5 turnpoints assuming the last one
+will be the starting point.
+
+@895
+[FAI TRIANGLE] predicted distance
+FAI triangle maximum distance achieved so far, assuming the last point
+will be the starting point.
+
+@896
+[FAI 3TPs] predicted distance
+Current distance calculated around 3 turnpoints assuming the last one
+will be the starting point.
+
+@897
+[OLC CLASSIC] speed
+
+@898
+[FAI TRIANGLE] speed
+
+@899
+[OLC LEAGUE] speed
+
+@900
+[FAI 3TPs] speed
+
+@901
+[OLC CLASSIC] predicted speed
+
+@902
+[FAI TRIANGLE] predicted speed
+
+@903
+[FAI 3TPs] predicted speed
+
+@904
+[OLC CLASSIC] score
+
+@905
+[FAI TRIANGLE] score
+
+@906
+[OLC LEAGUE] score
+
+@907
+[FAI 3TPs] score
+
+@908
+[OLC CLASSIC] predicted score
+
+@909
+[FAI TRIANGLE] predicted score
+
+@910
+[FAI 3TPs] predicted score
+
+@911
+[OLC PLUS] score
+The sum of OLC Classic score and FAI triangle score.
+
+@912
+[OLC PLUS] predicted score
+The sum of OLC Classic predicted score and FAI triangle predicted score.
+
+@913
+[FLAP SETTINGS]
+Show current optimum flap setting based on extended polar file and current wing loading.
+See the example polar file inside _Polars folder, for help on how to create an extended polar.
+
+@914
+[Airspace Vertical Distance]
+Vertical distance to the SELECTED airspace. To SELECT an airspace go inside 2.4 airspace page and pull details,
+there is a button for selection. Once selected the airspace will be monitored for distance in this infobox.
+Negative values means that airspace altitude is below, positive means that is above you. (Like arrival altitudes)
+If no airspace is selected, OR if you are already INSIDE the airspace for this distance, --- is shown.
+In case of flyzones, the nearest distance is calculated where you can leave that flyzone.
+
+@915
+[Home Altitude Arrival]
+Arrival altitude at the Home airfield. Calculated for current MC, uses safetyAlt and safetyMC.
+
+#
+# END INFOBOXES 800 - 1199
+#
+
+@1200
 [Airspace area filling]
 Airspace area can be denoted by outlines only, pattern filling, or semi-transparent colors.
 [Outlines only] there will be only lines on airspace area borders 
 [Pattern] airspace area will be filled with selected pattern of selected color
+[Pattern, borders only] airspace border area will be filled with selected pattern of selected color
 [Semi-Transparent] airspace area will be filled with selected solid semi-transparent color (opacity of the color can be set in 'Opacity' item) . 
+[Semi-Transparent, borders only] airspace border area will be filled with selected solid semi-transparent color (opacity of the color can be set in 'Opacity' item) . 
 Transparency may not be available on some hardware devices.
 
-@891
+@1201
 [Opacity of semi-transparent airspace]
 Defines how much transparent (->0%) / opaque (->100%) will be airspace area filled with solid semi-transparent color.
 
-@900
+@1202
 [Bottom Bar Opacity]
 Defines how much transparent (->0%) / opaque (->100%) will be the bottom bar area on the map .
 Normally the bar is black with white text, and can be reverted to white with black text on it.
@@ -1365,12 +1480,128 @@ Default is 60%.
 ATTENTION: some devices do not support opacity control. In this case, opacity has no effect
 and the bottom bar will be always full black or full white.
 
-@901
-[Font Renderer]
-Anti Aliasing or ClearType Quality. On some devices like old 3850 Anti Aliasing is not working. 
-Also on PNA like MIO400 portrait mode is better visible with Cleartype selected.
+@1203
+[Font Smoothing]
+Font smoothing will make characters appearing with better quality.
+[None] will force disabling font smoothing
+[Normal] will use default quality
+[Anti Aliasing] normal quality
+[ClearType] advanced quality. 
+Please note that on some devices like old 3850 Anti Aliasing is not working. 
+On some PNAs in portrait mode, and on PPC2002, Antialiasing will work better.
+Otherwise, by default LK8000 is using ClearType.
+You must exit and restart LK8000 to see the effect of changes.
+
+@1204
+[VarioBar mode]
+Choose the vario value and relative bar display on the left, if enabled.
+In thermal mode, only vario can be shown.
+In cruise mode, also nettovario or Speed To Fly (Sollfart).
+If STF is selected, the desired IAS is printed, and the bar is indicating
+if you must push or pull the stick to reach that value.
+
+The value is printed with a suffix letter indicating:
+NT for netto
+SF for STF
+
+@1205
+[Aircraft category]
+Select your aircraft type here, and possibly change the polar file also accordingly.
+Each aircraft mode has unique features, please visit the website or read the latest
+manual to discover differences.
+After changing category, you must restart LK in order to notice all differences.
+
+# 1206 OBSOLETED BY 1208 in 2.3
+@1206
+[Aircraft type]
+This contains a selection of aircrafts and wings of different performance classes.
+If you want to use your own polar file, choose Custom Polar File here 
+and then select it from the next configuration box.
+
+# 1207 UNUSED in 2.3
+@1207
+[Custom polar file]
+When Custom Polar File is the polar type, this is the name of the file containing the glide polar data.
+Polars must be placed inside _Polars subfolder.
+Creating a polar file is not trivial, because you need actual sink rate values and a precise
+aircraft weight. Read the manual to know more about all of this. 
+
+@1208
+[Aircraft type]
+This contains a selection of aircrafts and wings of different performance classes.
+
+@1209
+[Airspace warning message repeat time]
+This is the time when airspace warning messages are repeated if not acknowledged.
+If you flying in a forbidden airspace without acknowledging the warning message, then after this time elapses warning message pops up again.
+
+@1210
+[Airspace vertical distance margin]
+If your vertical distance to an airspace base or top drops below this limit, then the yellow warning message dialog pops up.
+This also affects how airspace warning icons draws on the map. 
+If vertical distance (altitude difference) to airspace base or top is below this limit,
+then the warning icon is displayed directly above the glider symbol to warn you. 
+
+@1211
+[Airspace warning dialog timeout]
+If this time elapses, airspace warning dialog closes automatically, without pressing the close button.
+In airspace warning dialog, you can see a decrementing counter on the close button caption showing the remaining time to close.
+
+@1212
+[Airspace warning map labels]
+If this is on, airspace warning labels shows on the map indicating airspace name and vertical distance.
+
+@1220
+[Bottom Bar configuration]
+Enable or disable each bottom bar stripe while rotating navboxes.
+If all bars are disabled, NAV1 is always shown automatically.
+During thermal mode the THR 0 infobar is always shown, also.
+
+@1221
+[InfoPages rotation configuration]
+Enable or disable each page in the rotating sequence.
+If all items in a page are disabled, then this page will be skipped.
+A page will be still reachable with a custom keys, eventually.
+Attention: non-gliders aircrafts such as paragliders and GA that are disabling the 1.5 Contest infopage 
+will also disable all contest calculations.  If you want contest calculations, you NEED to activate 1.5.
+If you are using Glider aircraft mode, then you can also disable 1.5 because calculations are made in any case.
+
+@1250
+Controls filtering of airspace for display and warnings.  The airspace filter button also allows filtering of display and warnings independently for each airspace class.
+[All on] All is displayed.
+[Clip] Only airspace below the clip altitude.
+[Auto] All within a height margin of the glider.
+[All below] All airspace below the glider and within height margin above.
+
+@1251
+Height margin used to control airspace display filtering on the moving map used only in AUTO and ALL BELOW modes. For AUTO it determines the height above and below the glider for which airspaces should be shown. 
+ALL BELLOW mode will show airspaces up to specified height above the glider and all airspaces below it.
+
+@1252
+Even if you have acknowledged an airspace, after this time it will be back "active" for warnings.
+You may want to be warned again while flying back home and crossing an airspace you have crossed in the morning, for example!
+By default, after 15 minutes airspaces will be back "armed" for warnings.
+
+@1253
+[Alarm Max Altitude] An alarm will be triggered everytime this altitude is reached and crossed.
+The alarm will not be repeated within the next 60 seconds.
+After 1 minute, if altitude has been lower than Max Altitude and then becomes higher again, alarm will sound again.
+To disable this alarm, set it to 0. 
+The altitude used for alarm is the one chosen in Config menu 5 "Use baro altitude".
+Multiple alarms set at the same altitude will have no effect.
+Glider pilots should be careful not to set alarms below a safety altitude, during critical phases of flight.
+Each alarm can be repeated max 30 times. After 30 times, an alarm will automatically self disable for the current flight.
+The visual alarm message automatically disappears after 12 seconds.
+Each alarm has a custom sound that can be changed inside _System _Sounds folder.
+They are named LK_ALARM_ALTx.WAV
+Default is 0 (no alarm).
+
+# ex 195
+@1254
+Glide bar can be relative to Task Finish or to the next turnpoint, or it can be disabled. This bar is drawn on the left side of the screen.
+When using next waypoint, or task waypoint with only final waypoint to go, then this value will be equal to the one shown on overlays.
+
+@196
 
 @9999
 No help available on this item!
-
-

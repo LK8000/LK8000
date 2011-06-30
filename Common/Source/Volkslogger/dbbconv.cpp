@@ -21,6 +21,8 @@
 #include <memory.h>
 #include <string.h>
 
+#include "utils/heapcheck.h"
+
 
 DBB::DBB() { // Konstruktor: leeren Datenbank-Block erzeugen
 	memset(this,0xff,sizeof *this);

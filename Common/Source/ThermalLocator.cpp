@@ -7,11 +7,15 @@
 */
 
 #include "StdAfx.h"
-#include "XCSoar.h"
+#include "lk8000.h"
 #include "ThermalLocator.h"
 #include "RasterTerrain.h"
 #include "Utils.h"
 #include <math.h>
+
+#include "utils/heapcheck.h"
+using std::min;
+using std::max;
 
 int EnableThermalLocator = 1;
 

@@ -24,7 +24,8 @@
 #endif
 #include "LKObjects.h"
 
-#if LKOBJ
+#include "utils/heapcheck.h"
+
 void LKObjects_Create() {
 
   // STOCK BRUSHES
@@ -135,6 +136,3 @@ void LKObjects_Delete() {
 
 }
 
-
-
-#endif

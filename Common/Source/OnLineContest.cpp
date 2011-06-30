@@ -7,12 +7,15 @@
 */
 
 #include "StdAfx.h"
-#include "XCSoar.h"
-#include "OnLineContest.h"
+#include "lk8000.h"
 #include "Utils.h"
 #include "McReady.h"
 #include <math.h>
 
+#include "utils/heapcheck.h"
+
+using std::min;
+using std::max;
 
 #define CONST_D_FAK 6371000.0
 #define DISTANCETHRESHOLD 1000

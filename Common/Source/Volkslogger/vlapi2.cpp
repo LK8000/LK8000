@@ -28,6 +28,10 @@
 
 #include "Volkslogger/utils.h"
 
+#include "utils/heapcheck.h"
+using std::min;
+using std::max;
+
 extern int noninteractive;
 
 // sizes of VL memory regions
@@ -797,8 +801,8 @@ VLA_ERROR VLAPI::read_directory() {
 
 }
 
-VLA_ERROR VLAPI::read_igcfile(char *filename, int index, int secmode) {
-  FILE *outfile = fopen(filename,"wt");
+VLA_ERROR VLAPI::read_igcfile(TCHAR *filename, int index, int secmode) {
+  FILE *outfile = _tfopen(filename, _T("wt"));
   if(!outfile)
     return VLA_ERR_FILE;
 	

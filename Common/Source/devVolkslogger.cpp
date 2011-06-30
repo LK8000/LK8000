@@ -20,6 +20,10 @@
 #include "Volkslogger/vlapi2.h"
 #include "Volkslogger/vlapihlp.h"
 
+#include "utils/heapcheck.h"
+using std::min;
+using std::max;
+
 // RMN: Volkslogger
 // Source data:
 // $PGCS,1,0EC0,FFF9,0C6E,02*61
@@ -161,8 +165,8 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
   switch(StartLine) {
   case 0: // cylinder
     vl.declaration.task.startpoint.oztyp = VLAPI_DATA::DCLWPT::OZTYP_CYLSKT;
-    vl.declaration.task.startpoint.lw = min(1500,StartRadius);
-    vl.declaration.task.startpoint.rz = min(1500,StartRadius);
+    vl.declaration.task.startpoint.lw = min(1500,(int)StartRadius);
+    vl.declaration.task.startpoint.rz = min(1500,(int)StartRadius);
     vl.declaration.task.startpoint.rs = 0;
     break;
   case 1: // line
@@ -173,9 +177,9 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
     break;
   case 2: // fai sector
     vl.declaration.task.startpoint.oztyp = VLAPI_DATA::DCLWPT::OZTYP_CYLSKT;
-    vl.declaration.task.startpoint.lw = min(15000,StartRadius);
+    vl.declaration.task.startpoint.lw = min(15000,(int)StartRadius);
     vl.declaration.task.startpoint.rz = 0;
-    vl.declaration.task.startpoint.rs = min(15000,StartRadius);
+    vl.declaration.task.startpoint.rs = min(15000,(int)StartRadius);
     break;
   }
   vl.declaration.task.startpoint.ws = 360;
@@ -186,14 +190,14 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
     switch (SectorType) {
     case 0: // cylinder
       vl.declaration.task.turnpoints[i].oztyp = VLAPI_DATA::DCLWPT::OZTYP_CYLSKT;
-      vl.declaration.task.turnpoints[i].rz = min(1500,SectorRadius);
+      vl.declaration.task.turnpoints[i].rz = min(1500,(int)SectorRadius);
       vl.declaration.task.turnpoints[i].rs = 0;
       vl.declaration.task.turnpoints[i].lw = 0;
       break;
     case 1: // sector
       vl.declaration.task.turnpoints[i].oztyp = VLAPI_DATA::DCLWPT::OZTYP_CYLSKT;
       vl.declaration.task.turnpoints[i].rz = 0;
-      vl.declaration.task.turnpoints[i].rs = min(15000,SectorRadius);
+      vl.declaration.task.turnpoints[i].rs = min(15000,(int)SectorRadius);
       vl.declaration.task.turnpoints[i].lw = 0;
       break;
     case 2: // German DAe 0.5/10
@@ -211,8 +215,8 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
   switch(FinishLine) {
   case 0: // cylinder
     vl.declaration.task.finishpoint.oztyp = VLAPI_DATA::DCLWPT::OZTYP_CYLSKT;
-    vl.declaration.task.finishpoint.lw = min(1500,FinishRadius);
-    vl.declaration.task.finishpoint.rz = min(1500,FinishRadius);
+    vl.declaration.task.finishpoint.lw = min(1500,(int)FinishRadius);
+    vl.declaration.task.finishpoint.rz = min(1500,(int)FinishRadius);
     vl.declaration.task.finishpoint.rs = 0;
     break;
   case 1: // line
@@ -223,9 +227,9 @@ BOOL VLDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
     break;
   case 2: // fai sector
     vl.declaration.task.finishpoint.oztyp = VLAPI_DATA::DCLWPT::OZTYP_CYLSKT;
-    vl.declaration.task.finishpoint.lw = min(15000,FinishRadius);
+    vl.declaration.task.finishpoint.lw = min(15000,(int)FinishRadius);
     vl.declaration.task.finishpoint.rz = 0;
-    vl.declaration.task.finishpoint.rs = min(15000,FinishRadius);
+    vl.declaration.task.finishpoint.rs = min(15000,(int)FinishRadius);
     break;
   }
   vl.declaration.task.finishpoint.ws = 360;

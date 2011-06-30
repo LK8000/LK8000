@@ -1,0 +1,4 @@
+* LK8000 polar for: Grob G-103 Twin II (PAS)
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+ 580, 0, 99, -0.8, 175.01, -1.95, 225.02, -3.8, 17.52
+

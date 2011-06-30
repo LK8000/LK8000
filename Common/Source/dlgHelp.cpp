@@ -13,6 +13,8 @@
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 
+#include "utils/heapcheck.h"
+
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
 
@@ -54,7 +56,6 @@ void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText) {
   if (wf) {
 
     TCHAR fullcaption[100];
-    // _stprintf(fullcaption,TEXT("Help: %s"), Caption); // REMOVE FIXV2
     _stprintf(fullcaption,TEXT("%s: %s"), gettext(TEXT("_@M336_")), Caption); // Help
 
     wf->SetCaption(fullcaption);

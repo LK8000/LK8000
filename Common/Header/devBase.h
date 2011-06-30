@@ -76,11 +76,7 @@ class DevBase
     static void ShowProgress(DeclDlg dlgType);
 
     /// Checks minimum and maximum waypoint count limits.
-   static bool CheckWPCount(const Declaration_t& decl, int minCount, int maxCount, unsigned errBufSize, TCHAR errBuf[]);
-
-    /// Converts TCHAR[] string into ASCII string (writing as much as possible
-    /// characters into @p output). Output string will always be terminated by '\0'.
-    static bool Wide2Ascii(const TCHAR* input,  int outSize, char* output);
+    static bool CheckWPCount(const Declaration_t& decl, int minCount, int maxCount, unsigned errBufSize, TCHAR errBuf[]);
 
     /// Stops port Rx thread.
     static bool StopRxThread(PDeviceDescriptor_t d, unsigned errBufSize, TCHAR errBuf[]);
@@ -96,6 +92,9 @@ class DevBase
 
     /// Writes given character to COM port and checks the result.
     static bool ComWrite(PDeviceDescriptor_t d, char character, unsigned errBufSize, TCHAR errBuf[]);
+
+    /// Flushes COM port output buffers.
+    static void ComFlush(PDeviceDescriptor_t d);
 
     /// Reads data from COM port and checks if they contain expected data.
     static bool ComExpect(PDeviceDescriptor_t d,

@@ -1,16 +1,16 @@
-# Language HUNGARIAN
+ï»¿# Language HUNGARIAN
 # LK8000
-# 
-# Author: Kalman Rozsahegyi, 2011.01.31. rkalman@hansaaut.hu
 #
-# Megjegyzések (Notes):
-#   - Pár technikai dolgot nem fordítottam le (mint Truewind, VisualGlide, Zoom, Orbiter, stb.) 
-#     egyrészt nem találtam frappáns kifejezést, másrészt túl hosszú sem lehet a fordított szöveg, de várom a jó javaslatokat
-#   - Amikor a fordítás készült, néhány a programban lévõ cimkének nem volt megfelelõje a nyelvi fájlban,
-#     így ezek továbbra is angol nyelvûek maradtak, ha ez zavaró jelezzétek
-#   - A súgó szövegek esetében is várok javaslatokat, ha valami túl bonyolultra sikerült.
+# Author: Kalman Rozsahegyi, rkalman@hansaaut.hu
 #
-# Updated: January 2011
+# MegjegyzÃ©sek (Notes):
+#   - PÃ¡r technikai dolgot nem fordÃ­tottam le (mint Truewind, VisualGlide, Zoom, Orbiter, stb.)
+#     egyrÃ©szt nem talÃ¡ltam frappÃ¡ns kifejezÃ©st, mÃ¡srÃ©szt tÃºl hosszÃº sem lehet a fordÃ­tott szÃ¶veg, de vÃ¡rom a jÃ³ javaslatokat
+#   - Amikor a fordÃ­tÃ¡s kÃ©szÃ¼lt, nÃ©hÃ¡ny a programban lÃ©vÅ‘ cimkÃ©nek nem volt megfelelÅ‘je a nyelvi fÃ¡jlban,
+#     Ã­gy ezek tovÃ¡bbra is angol nyelvÅ±ek maradtak, ha ez zavarÃ³ jelezzÃ©tek
+#   - A sÃºgÃ³ szÃ¶vegek esetÃ©ben is vÃ¡rok javaslatokat, ha valami tÃºl bonyolultra sikerÃ¼lt.
+#
+# Updated: 2011.03.21.
 
 R=1
 L=HUN
