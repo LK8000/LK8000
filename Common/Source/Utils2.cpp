@@ -385,7 +385,11 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 #define UNGESTURES 1
 #define VKTIMELONG 1500
+#if USEIBOX
 #define DONTDRAWTHEMAP MapWindow::IsMapFullScreen()&&!MapWindow::mode.AnyPan()&&MapSpaceMode!=1
+#else
+#define DONTDRAWTHEMAP !MapWindow::mode.AnyPan()&&MapSpaceMode!=1
+#endif
 
 	#if 100228
 	static int AIRCRAFTMENUSIZE=0;
@@ -434,7 +438,11 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	// yup and ydown are used normally on nearest page item selection, but also for real VK
 	// that currently are almost unused. 
 
+	#if USEIBOX
 	if (DrawBottom&&MapWindow::IsMapFullScreen()) {
+	#else
+	if (DrawBottom) {
+	#endif
 		// Native LK mode: always fullscreen mode
 		// If long click, we are processing an Enter, and we want a wider valid center area
 		if ( keytime>=(VKSHORTCLICK*2)) { 
@@ -3656,7 +3664,9 @@ bool CustomKeyHandler(const int key) {
 		#ifndef DISABLEAUDIO
 		if (EnableSoundModes) LKSound(_T("LK_BELL.WAV"));
 		#endif
+#if USEIBOX
 		MapWindow::RequestToggleFullScreen();
+#endif
 		return true;
 	case ckTimeGates:
 		#ifndef DISABLEAUDIO

@@ -943,7 +943,7 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryPressureHg,&Temp); 
   PressureHg = Temp;
 
-  #if 0
+  #if 0  // REMOVE
   Temp = 0;
   GetFromRegistry(szRegistryShortcutIbox,&Temp); 
   ShortcutIbox = Temp;

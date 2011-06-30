@@ -337,8 +337,10 @@ int ActiveAlternate = -1; // VENTA3
 double GPSAltitudeOffset = 0; // VENTA3
 bool	UseGeoidSeparation=false;
 bool	PressureHg=false;
+#if USEIBOX
 // 100413 shortcut on aircraft icon for ibox switching with medium click
 // bool	ShortcutIbox=true;
+#endif
 int	CustomKeyTime=700;
 int	CustomKeyModeCenter=(CustomKeyMode_t)ckDisabled;
 int	CustomKeyModeLeft=(CustomKeyMode_t)ckDisabled;
@@ -2051,8 +2053,9 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   // find unique ID of this PDA
   ReadAssetNumber();
 
-
+#if USEIBOX
   MapWindow::RequestOnFullScreen();
+#endif
 
   // Da-da, start everything now
   StartupStore(TEXT(". ProgramStarted=InitDone%s"),NEWLINE);
@@ -4952,7 +4955,11 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   }
 
   if (_tcsstr(OutBuffer, TEXT("$(BoxMode)"))) {
+	#if USEIBOX
 	if ( MapWindow::IsMapFullScreen() ) invalid = true;
+	#else
+	invalid=true;
+	#endif
 	ReplaceInString(OutBuffer, TEXT("$(BoxMode)"), TEXT(""), Size);
 	if (--items<=0) goto label_ret; // 100517
   }
@@ -5121,7 +5128,11 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
 
+#if USEIBOX
   CondReplaceInString(MapWindow::IsMapFullScreen(), OutBuffer, TEXT("$(FullScreenToggleActionName)"), gettext(TEXT("_@M894_")), gettext(TEXT("_@M491_")), Size);
+#else
+  CondReplaceInString(1, OutBuffer, TEXT("$(FullScreenToggleActionName)"), gettext(TEXT("_@M894_")), gettext(TEXT("_@M491_")), Size);
+#endif
   CondReplaceInString(MapWindow::zoom.AutoZoom(), OutBuffer, TEXT("$(ZoomAutoToggleActionName)"), gettext(TEXT("_@M418_")), gettext(TEXT("_@M897_")), Size);
   CondReplaceInString(EnableTopology, OutBuffer, TEXT("$(TopologyToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
   CondReplaceInString(EnableTerrain, OutBuffer, TEXT("$(TerrainToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
@@ -5154,6 +5165,8 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   CondReplaceInString(CALCULATED_INFO.AutoMacCready != 0, OutBuffer, TEXT("$(MacCreadyToggleActionName)"), gettext(TEXT("_@M418_")), gettext(TEXT("_@M897_")), Size);
 #if USEIBOX
   CondReplaceInString(EnableAuxiliaryInfo, OutBuffer, TEXT("$(AuxInfoToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
+#else
+  CondReplaceInString(0, OutBuffer, TEXT("$(AuxInfoToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
 #endif
   {
   MapWindow::Mode::TModeFly userForcedMode = MapWindow::mode.UserForcedMode();

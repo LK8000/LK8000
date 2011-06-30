@@ -105,7 +105,9 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   static int ySizeLK8MediumFont;
   static int ySizeLK8TargetFont;
   static short tlenFullScreen;
+#if USEIBOX
   static short tlenHalfScreen;
+#endif
   // position Y of text in navboxes
   static short yRow2Title=0;	// higher row in portrait, unused in landscape
   static short yRow2Value=0;
@@ -122,16 +124,24 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
   // This is going to be the START 1/3  name replacing waypoint name when gates are running
   TCHAR StartGateName[12]; // 100506
+#if USEIBOX
   static TCHAR StartGateNameHS[12];
+#endif
   static TCHAR StartGateNameFS[12];
 
+#if USEIBOX
   if (!IsMapFullScreen()) return; // 101203
+#endif
 
 
   redwarning=false;
   oldfont = (HFONT)SelectObject(hdc, LKINFOFONT); // FIXFONT
 
+#if USEIBOX
   if ( IsMapFullScreen() && !mode.AnyPan() )
+#else
+  if ( !mode.AnyPan() )
+#endif
 	DrawBottom=true; // TODO maybe also !TargetPan
   else
 	DrawBottom=false;
@@ -217,6 +227,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 				tlenFullScreen=8;
 				break;
 		}
+#if USEIBOX
 		switch (ScreenSize) {			// portrait not fullscreen
 			case (ScreenSize_t)ss240x320:
 				_tcscpy(StartGateNameHS,_T("ST "));
@@ -227,6 +238,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 				tlenHalfScreen=8;
 				break;
 		}
+#endif // USEIBOX
 	} else  {
 		switch (ScreenSize) {			// landscape fullscreen
 			case (ScreenSize_t)ss800x480:
@@ -256,6 +268,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 				tlenFullScreen=9;
 				break;
 		}
+#if USEIBOX
 		switch (ScreenSize) {			// landscape not fullscreen
 			case (ScreenSize_t)ss480x272:
 			case (ScreenSize_t)ss720x408:
@@ -272,6 +285,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 				tlenHalfScreen=7;
 				break;
 		}
+#endif // USEIBOX
 	}
 	
 	if (ScreenLandscape) {
@@ -307,6 +321,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   }
 
 
+#if USEIBOX
   if ( MapWindow::IsMapFullScreen() ) {
 	tlen=tlenFullScreen;
 	_tcscpy(StartGateName,StartGateNameFS);
@@ -314,11 +329,19 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 	tlen=tlenHalfScreen;
 	_tcscpy(StartGateName,StartGateNameHS);
   }
+#else
+  tlen=tlenFullScreen;
+  _tcscpy(StartGateName,StartGateNameFS);
+#endif
 
 
   // First we draw flight related values such as instant efficiency, altitude, new infoboxes etc.
 
+#if USEIBOX
   if (MapWindow::IsMapFullScreen() && LKVarioBar && !mode.AnyPan()) { // 091214 Vario non available in pan mode
+#else
+  if (LKVarioBar && !mode.AnyPan()) { // 091214 Vario non available in pan mode
+#endif
 	leftmargin=(LKVarioSize+NIBLSCALE(3)); // VARIOWIDTH + middle separator right extension
 	tlen-=2; // 091115
 	
@@ -444,6 +467,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
 		if ( (!OverlayClock || Look8000==lxcStandard) && ScreenLandscape && (!(ISPARAGLIDER && UseGates())) ) {
 			_stprintf(BufferValue,_T("%s %s"),BufferValue,BufferUnit);
+			#if USEIBOX
 			if (MapWindow::IsMapFullScreen() ) {
 				SelectObject(hdc, LK8TargetFont); 
 				LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(30),rc.top+NIBLSCALE(1), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
@@ -451,6 +475,10 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 				SelectObject(hdc, LK8MediumFont); 
 				LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(28),rc.top+NIBLSCALE(1), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 			}
+			#else
+			SelectObject(hdc, LK8TargetFont); 
+			LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(30),rc.top+NIBLSCALE(1), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
+			#endif
 		} else
 			LKWriteText(hdc,BufferValue, rcx+NIBLSCALE(2), rcy+ ySizeLK8TargetFont, 0, WTMODE_OUTLINED, WTALIGN_LEFT, distcolor, true);
 
@@ -836,6 +864,7 @@ drawOverlay:
 		// 101005 Do not display CLOCK in portrait mode anymore
 	} else {
 		if (OverlayClock || (ISPARAGLIDER && UseGates()) ) {
+			#if USEIBOX
 			if (MapWindow::IsMapFullScreen() ) {
 				SelectObject(hdc, LK8TargetFont); 
 				LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(30),rc.top+NIBLSCALE(1), 0, 
@@ -845,6 +874,11 @@ drawOverlay:
 				LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(28),rc.top+NIBLSCALE(1), 0, 
 					WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 			}
+			#else
+			SelectObject(hdc, LK8TargetFont); 
+			LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(30),rc.top+NIBLSCALE(1), 0, 
+				WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
+			#endif
 		}
 	}
 

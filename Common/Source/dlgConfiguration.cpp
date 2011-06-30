@@ -3260,7 +3260,7 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  #if 0
+  #if 0 // REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpShortcutIbox"));
   if (wp) {
     wp->GetDataField()->Set(ShortcutIbox);
@@ -4503,7 +4503,7 @@ void dlgConfigurationShowModal(void){
 	}
   }
 
-  #if 0
+  #if 0 // REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpShortcutIbox"));
   if (wp) {
 	if (ShortcutIbox != (wp->GetDataField()->GetAsInteger())) {

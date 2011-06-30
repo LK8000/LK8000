@@ -999,7 +999,10 @@ void InputEvents::eventActiveMap(const TCHAR *misc) {
   }  
 }
 
+
 void InputEvents::eventScreenModes(const TCHAR *misc) {
+
+#if USEIBOX 	// ScreenModes can be removed from events and xci
   // toggle switches like this:
   //  -- normal infobox
   //  -- auxiliary infobox
@@ -1008,7 +1011,6 @@ void InputEvents::eventScreenModes(const TCHAR *misc) {
 
   if (_tcscmp(misc, TEXT("normal")) == 0) {
     MapWindow::RequestOffFullScreen();
-#if USEIBOX
     EnableAuxiliaryInfo = false;
   } else if (_tcscmp(misc, TEXT("auxilary")) == 0) {
     MapWindow::RequestOffFullScreen();
@@ -1016,7 +1018,6 @@ void InputEvents::eventScreenModes(const TCHAR *misc) {
   } else if (_tcscmp(misc, TEXT("toggleauxiliary")) == 0) {
     MapWindow::RequestOffFullScreen();
     EnableAuxiliaryInfo = !EnableAuxiliaryInfo;
-#endif
   } else if (_tcscmp(misc, TEXT("full")) == 0) {
     MapWindow::RequestOnFullScreen();
   } else if (_tcscmp(misc, TEXT("togglefull")) == 0) {
@@ -1028,10 +1029,8 @@ void InputEvents::eventScreenModes(const TCHAR *misc) {
   } else if (_tcscmp(misc, TEXT("show")) == 0) { // not used
     if (MapWindow::IsMapFullScreen()) 
       DoStatusMessage(TEXT("Screen Mode Full")); 
-#if USEIBOX
     else if (EnableAuxiliaryInfo)
       DoStatusMessage(TEXT("Screen Mode Auxiliary")); 
-#endif
     else 
       DoStatusMessage(TEXT("Screen Mode Normal")); 
   } else if (_tcscmp(misc, TEXT("togglebiginfo")) == 0) {
@@ -1051,6 +1050,7 @@ void InputEvents::eventScreenModes(const TCHAR *misc) {
 				MapWindow::RequestToggleFullScreen();
 		}
   }
+#endif // USEIBOX
 }
 
 

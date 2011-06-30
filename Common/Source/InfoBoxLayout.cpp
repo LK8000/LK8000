@@ -44,9 +44,9 @@ bool geometrychanged = false;
 #endif
 
 bool InfoBoxLayout::landscape = false;
-bool InfoBoxLayout::fullscreen = false;
 
 #if USEIBOX
+bool InfoBoxLayout::fullscreen = false;
 bool InfoBoxLayout::square = false;
 #endif
 

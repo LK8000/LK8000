@@ -76,8 +76,13 @@ extern void DrawDebug(HDC hdc, RECT rc );
 
 #define NUMSNAILRAMP 6
 
+#if USEIBOX
 #define DONTDRAWTHEMAP IsMapFullScreen()&&!mode.AnyPan()&&MapSpaceMode!=MSM_MAP
 #define MAPMODE8000    IsMapFullScreen()&&!mode.AnyPan()&&MapSpaceMode==MSM_MAP
+#else
+#define DONTDRAWTHEMAP !mode.AnyPan()&&MapSpaceMode!=MSM_MAP
+#define MAPMODE8000    !mode.AnyPan()&&MapSpaceMode==MSM_MAP
+#endif
 
 
 extern int GetOvertargetIndex(void);
@@ -130,7 +135,9 @@ POINT MapWindow::Orig_Screen;
 
 RECT MapWindow::MapRect;
 RECT MapWindow::MapRectBig;
+#if USEIBOX
 RECT MapWindow::MapRectSmall;
+#endif
 
 HBITMAP MapWindow::hDrawBitMap = NULL;
 HBITMAP MapWindow::hDrawBitMapTmp = NULL;
@@ -261,8 +268,12 @@ COLORREF MapWindow::BackgroundColor = RGB_WHITE;
 
 bool MapWindow::MapDirty = true;
 DWORD MapWindow::fpsTime0 = 0;
+
+#if USEIBOX
 bool MapWindow::MapFullScreen = false;
 bool MapWindow::RequestFullScreen = false;
+#endif
+
 bool MapWindow::ForceVisibilityScan = false;
 
 
@@ -734,13 +745,13 @@ void MapWindow::RefreshMap() {
   SetEvent(drawTriggerEvent);
 }
 
+#if USEIBOX
 bool MapWindow::IsMapFullScreen() {
   // SDP - Seems that RequestFullScreen
   // is always more accurate (MapFullSCreen is delayed)
   return RequestFullScreen;
   // return  MapFullScreen;
 }
-
 
 void MapWindow::ToggleFullScreenStart() {
 
@@ -751,15 +762,11 @@ void MapWindow::ToggleFullScreenStart() {
 
   if (MapFullScreen) {
     MapRect = MapRectBig;
-#if USEIBOX
     HideInfoBoxes();    
     DefocusInfoBox(); // BUGFIX 091115 BgColor
-#endif
   } else {
     MapRect = MapRectSmall;
-#if USEIBOX
     ShowInfoBoxes(); // VENTA FIX QUI
-#endif
   }
 }
 
@@ -779,6 +786,7 @@ void MapWindow::RequestOffFullScreen() {
   RefreshMap();
 }
 
+#endif // USEIBOX
 
 
 extern BOOL extGPSCONNECT;
@@ -864,6 +872,7 @@ void MapWindow::Event_TerrainTopology(int vswitch) {
 }
 
 
+#if USEIBOX
 void MapWindow::StoreRestoreFullscreen(bool store) {
   static bool oldfullscreen = 0;
   static bool SuperPan = false;
@@ -882,19 +891,23 @@ void MapWindow::StoreRestoreFullscreen(bool store) {
     }
   }
 }
-
+#endif
 
 void MapWindow::Event_Pan(int vswitch) {
   //  static bool oldfullscreen = 0;  never assigned!
   bool oldPan = mode.AnyPan();
   if (vswitch == -2) { // superpan, toggles fullscreen also
 
+#if USEIBOX
     StoreRestoreFullscreen(!mode.AnyPan());
+#endif
     // new mode
     mode.Special(Mode::MODE_SPECIAL_PAN, !oldPan);
+#if USEIBOX
     if (mode.AnyPan()) { // pan now on, so go fullscreen
       RequestFullScreen = true;
     }
+#endif
 
   } else if (vswitch == -1) {
     mode.Special(Mode::MODE_SPECIAL_PAN, !oldPan);
@@ -1660,7 +1673,11 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 	// if clicking on navboxes, process fast virtual keys
 	// maybe check LK8000 active?
 	// This point is selected when in MapSpaceMode==MSM_MAP, i.e. lk8000 with moving map on.
+#if USEIBOX
 	if (  DrawBottom && IsMapFullScreen() && (Y >= (rc.bottom-BottomSize)) && !mode.AnyPan() ) {
+#else
+	if (  DrawBottom && (Y >= (rc.bottom-BottomSize)) && !mode.AnyPan() ) {
+#endif
 		wParam=ProcessVirtualKey(X,Y,dwInterval,LKGESTURE_NONE);
                 #ifdef DEBUG_MAPINPUT
 		DoStatusMessage(_T("DBG-034 navboxes")); 
@@ -1695,7 +1712,11 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 
       // Process faster clicks here and no precision, but let DBLCLK pass through
       // VK are used in the bottom line in this case, forced on for this situation.
+#if USEIBOX
       if (  DrawBottom && IsMapFullScreen() && (Y >= (rc.bottom-BottomSize)) ) {
+#else
+      if (  DrawBottom && (Y >= (rc.bottom-BottomSize)) ) {
+#endif
 		// DoStatusMessage(_T("Click on hidden map ignored")); 
 
 		// do not process virtual key if it is timed as a DBLCLK
@@ -2404,7 +2425,11 @@ QuickRedraw: // 100318 speedup redraw
   // Draw traffic and other specifix LK gauges
   	LKDrawFLARMTraffic(hdc, rc, Orig_Aircraft);
 	if ( !mode.AnyPan()) DrawLook8000(hdc,rc); 
+#if USEIBOX
 	if (LKVarioBar && IsMapFullScreen() && !mode.AnyPan()) // 091214 do not draw Vario when in Pan mode
+#else
+	if (LKVarioBar && !mode.AnyPan()) // 091214 do not draw Vario when in Pan mode
+#endif
 		LKDrawVario(hdc,rc); // 091111
   
   // finally, draw you!
@@ -2586,9 +2611,13 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
   GetClientRect(hWndMapWindow, &MapRectBig);
 
   UpdateTimeStats(true);
-  
+
+#if USEIBOX  
   MapRectSmall = MapRect;
   MapRect = MapRectSmall;
+#else
+  MapRect = MapRectBig;
+#endif
   
   SetBkMode(hdcDrawWindow,TRANSPARENT);
   SetBkMode(hDCTemp,OPAQUE);
@@ -2647,9 +2676,11 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 
       MapWindow::UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
 
+#if USEIBOX
       if (RequestFullScreen != MapFullScreen) {
 	ToggleFullScreenStart();
       }
+#endif
 
       RenderMapWindow(MapRect);
     
