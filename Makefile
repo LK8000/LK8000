@@ -60,7 +60,7 @@ endif
 ############# build and CPU info
 
 ifeq ($(CONFIG_PC),y)
-TCPATH		:=i386-mingw32-
+TCPATH		:=mingw32-
 CPU		:=i586
 MCPU		:= -mcpu=$(CPU) 
 else
@@ -201,9 +201,9 @@ CPPFLAGS	+= -DNDEBUG -DFIVV
 #CPPFLAGS	+= -Wchar-subscripts -Wformat -Winit-self -Wimplicit -Wmissing-braces -Wparentheses -Wreturn-type 
 #CPPFLAGS	+= -Wunused-label -Wunused-variable -Wunused-value -Wuninitialized 
 
-CPPFLAGS	+= -Wall -Wno-write-strings -Wno-char-subscripts
-#CPPFLAGS	+= -Wall -Wno-non-virtual-dtor 
-#CPPFLAGS	+= -Wno-char-subscripts -Wno-switch
+CPPFLAGS += -Wall -Wno-write-strings -Wno-char-subscripts -Wno-switch
+#CPPFLAGS += -Wall -Wno-non-virtual-dtor
+#CPPFLAGS += -Wno-char-subscripts -Wno-switch
 
 #CPPFLAGS	+= -Wshadow 
 #CPPFLAGS	+= -Wsign-compare -Wsign-conversion 
@@ -241,11 +241,13 @@ ifeq ($(CONFIG_PC),y)
 LDFLAGS		+=-Wl,-subsystem,windows
 endif
 LDFLAGS		+=$(PROFILE)
-
+ifeq ($(CONFIG_PNA),y)
+LDFLAGS   +=-Wl,--enable-auto-import
+endif
 ifeq ($(CONFIG_PC),y)
-LDLIBS		:= -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32
+LDLIBS		:= -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32 -lstdc++
 else
-  LDLIBS		:= -Wl,-Bstatic -lstdc++  -Wl,-Bdynamic -lcommctrl
+  LDLIBS		:= -lcommctrl -lstdc++ -static-libgcc -L.
   ifeq ($(MINIMAL),n)
     LDLIBS		+= -laygshell 
     ifneq ($(TARGET),PNA)
@@ -253,6 +255,11 @@ else
     endif
   endif
 endif
+
+###### Wichtig, wenn man mingw32ce benutzt muss hier die lib libstdc++ statisch gelinkt werden.
+###### mit dem -static-libgcc -L. wird der Link verwendet der mit ln -s angelgt wurde. deshalb
+###### findet der compiler die richtig statische lib und keine falsche
+###### 	ln -s /opt/mingw32ce/arm-mingw32ce/lib/libstdc++.a libstdc++.a
 
 ####### compiler target
 
@@ -377,6 +384,9 @@ VOLKS	:=\
 #	$(SRC)/dlgFlarmTraffic.cpp \
 #	$(SRC)/dlgSwitches.cpp \
 #	$(SRC)/dlgBrightness.cpp \
+
+SRC_ROTATE :=\
+	$(SRC)/LKRotate.cpp
 
 SRC_FILES :=\
 	$(SRC)/AATDistance.cpp 		$(SRC)/AirfieldDetails.cpp \
@@ -536,8 +546,19 @@ LK8000-$(TARGET).exe: LK8000-$(TARGET)-ns.exe
 
 LK8000-$(TARGET)-ns.exe: $(OBJS)
 	@$(NQ)echo "  LINK    $@"
+ifeq ($(CONFIG_PNA),y)
+	@$(NQ)echo "Erstelle Symlink fuer PNA Compile$@"
+	ln -s /opt/mingw32ce/arm-mingw32ce/lib/libstdc++.a libstdc++.a
+endif	
 	$(Q)$(CC) $(LDFLAGS) $(TARGET_ARCH) $^ $(LOADLIBES) $(LDLIBS) -o $@
+ifeq ($(CONFIG_PNA),y)
+	@$(NQ)echo "Loesche Symlink fuer PNA Compile$@"
+	rm libstdc++.a
+endif
 
+#
+# Create libraries for zzip, jasper and compatibility stuff
+#
 $(BIN)/zzip.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(ZZIP)) $(patsubst $(SRC)%.c,$(BIN)%.o,$(ZZIP))
 	@$(NQ)echo "  AR      $@"
 	$(Q)$(AR) $(ARFLAGS) $@ $^
