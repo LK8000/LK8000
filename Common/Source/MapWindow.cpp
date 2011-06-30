@@ -134,8 +134,8 @@ HBITMAP MapWindow::hBmpMapScale=NULL;
 POINT MapWindow::Orig_Screen;
 
 RECT MapWindow::MapRect;
-RECT MapWindow::MapRectBig;
 #if USEIBOX
+RECT MapWindow::MapRectBig;
 RECT MapWindow::MapRectSmall;
 #endif
 
@@ -2608,15 +2608,17 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
   for (short nvi=0; nvi<SCREENVSLOTS; nvi++) nVLabelBlocks[nvi]=0;
   #endif
 
+  #if USEIBOX
   GetClientRect(hWndMapWindow, &MapRectBig);
+  #else
+  GetClientRect(hWndMapWindow, &MapRect);
+  #endif
 
   UpdateTimeStats(true);
 
 #if USEIBOX  
   MapRectSmall = MapRect;
   MapRect = MapRectSmall;
-#else
-  MapRect = MapRectBig;
 #endif
   
   SetBkMode(hdcDrawWindow,TRANSPARENT);
@@ -2625,11 +2627,19 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 
   // paint draw window black to start
   SelectObject(hdcDrawWindow, GetStockObject(BLACK_PEN));
+#if USEIBOX
   Rectangle(hdcDrawWindow,MapRectBig.left,MapRectBig.top,
             MapRectBig.right,MapRectBig.bottom);
 
   BitBlt(hdcScreen, 0, 0, MapRectBig.right-MapRectBig.left,
          MapRectBig.bottom-MapRectBig.top, 
+#else
+  Rectangle(hdcDrawWindow,MapRect.left,MapRect.top,
+            MapRect.right,MapRect.bottom);
+
+  BitBlt(hdcScreen, 0, 0, MapRect.right-MapRect.left,
+         MapRect.bottom-MapRect.top, 
+#endif
          hdcDrawWindow, 0, 0, SRCCOPY);
 
   // This is just here to give fully rendered start screen
@@ -2666,8 +2676,13 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 
       if (!MapDirty && !first) {
 	// redraw old screen, must have been a request for fast refresh
+#if USEIBOX
 	BitBlt(hdcScreen, 0, 0, MapRectBig.right-MapRectBig.left,
 	       MapRectBig.bottom-MapRectBig.top, 
+#else
+	BitBlt(hdcScreen, 0, 0, MapRect.right-MapRect.left,
+	       MapRect.bottom-MapRect.top, 
+#endif
 	       hdcDrawWindow, 0, 0, SRCCOPY);
 	continue;
       } else {
@@ -2686,8 +2701,13 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
     
       if (!first) {
 	BitBlt(hdcScreen, 0, 0, 
+#if USEIBOX
 	       MapRectBig.right-MapRectBig.left,
 	       MapRectBig.bottom-MapRectBig.top, 
+#else
+	       MapRect.right-MapRect.left,
+	       MapRect.bottom-MapRect.top, 
+#endif
 	       hdcDrawWindow, 0, 0, SRCCOPY);
 	InvalidateRect(hWndMapWindow, &MapRect, false);
       }
@@ -3759,8 +3779,13 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
 
 
 double MapWindow::GetApproxScreenRange() {
+#if USEIBOX
   return (zoom.Scale() * max(MapRectBig.right-MapRectBig.left,
                          MapRectBig.bottom-MapRectBig.top))
+#else
+  return (zoom.Scale() * max(MapRect.right-MapRect.left,
+                         MapRect.bottom-MapRect.top))
+#endif
     *1000.0/GetMapResolutionFactor();
 }
 

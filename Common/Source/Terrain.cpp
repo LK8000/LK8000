@@ -1173,6 +1173,7 @@ public:
     #endif
 
     POINT orig = MapWindow::GetOrigScreen();
+#if USEIBOX
     rect_visible.left = max((long)MapWindow::MapRectBig.left,
                             (long)(MapWindow::MapRect.left-(long)epx*dtquant))-orig.x;
     rect_visible.right = min((long)MapWindow::MapRectBig.right,
@@ -1181,6 +1182,12 @@ public:
                            (long)(MapWindow::MapRect.top-(long)epx*dtquant))-orig.y;
     rect_visible.bottom = min((long)MapWindow::MapRectBig.bottom,
                               (long)(MapWindow::MapRect.bottom+(long)epx*dtquant))-orig.y;
+#else
+    rect_visible.left = max((long)MapWindow::MapRect.left, (long)(MapWindow::MapRect.left-(long)epx*dtquant))-orig.x;
+    rect_visible.right = min((long)MapWindow::MapRect.right, (long)(MapWindow::MapRect.right+(long)epx*dtquant))-orig.x;
+    rect_visible.top = max((long)MapWindow::MapRect.top, (long)(MapWindow::MapRect.top-(long)epx*dtquant))-orig.y;
+    rect_visible.bottom = min((long)MapWindow::MapRect.bottom, (long)(MapWindow::MapRect.bottom+(long)epx*dtquant))-orig.y;
+#endif
 
     FillHeightBuffer(X0-orig.x, Y0-orig.y, X1-orig.x, Y1-orig.y);
 
@@ -1547,7 +1554,11 @@ void DrawTerrain( const HDC hdc, const RECT rc,
   }
 
   if (!trenderer) {
+#if USEIBOX
     trenderer = new TerrainRenderer(MapWindow::MapRectBig);
+#else
+    trenderer = new TerrainRenderer(MapWindow::MapRect);
+#endif
   }
 
   if (!trenderer->SetMap()) {
@@ -1585,7 +1596,11 @@ void DrawTerrain( const HDC hdc, const RECT rc,
   trenderer->Slope(sx, sy, sz); 
   
   // step 5: draw
+#if USEIBOX
   trenderer->Draw(hdc, MapWindow::MapRectBig);
+#else
+  trenderer->Draw(hdc, MapWindow::MapRect);
+#endif
 
   misc_tick_count = GetTickCount()-misc_tick_count;
 }

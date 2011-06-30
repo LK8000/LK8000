@@ -351,7 +351,9 @@ class MapWindow {
   static BOOL Initialised;
   static bool GliderCenter;
   static DWORD timestamp_newdata;
+#if USEIBOX
   static bool RequestFullScreen;
+#endif
   static bool LandableReachable;
 
  public:
@@ -359,7 +361,9 @@ class MapWindow {
   static Mode mode;
 
   static RECT MapRect;
+#if USEIBOX
   static RECT MapRectBig;
+#endif
   static bool ForceVisibilityScan;
 
   static bool MapDirty;
@@ -609,8 +613,10 @@ class MapWindow {
   static      HBRUSH hbFinalGlideAbove;
   static      HBRUSH hbWind;
 
+#if USEIBOX
   static RECT MapRectSmall;
   static bool MapFullScreen;
+#endif
 
   static DWORD fpsTime0;
 

@@ -749,8 +749,13 @@ void MapWindow::DrawProjectedTrack(HDC hdc, const RECT rc, const POINT Orig) {
     // too small an error to bother
     return;
   } else {
+#if USEIBOX
     pt[1].y = (long)(-max(MapRectBig.right-MapRectBig.left,
 			  MapRectBig.bottom-MapRectBig.top)*1.2);
+#else
+    pt[1].y = (long)(-max(MapRect.right-MapRect.left,
+			  MapRect.bottom-MapRect.top)*1.2);
+#endif
     PolygonRotateShift(pt, 2, Orig.x, Orig.y, 
 		       bearing-DisplayAngle);
   }
