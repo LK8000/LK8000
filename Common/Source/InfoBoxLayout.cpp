@@ -213,14 +213,12 @@ void InfoBoxLayout::ScreenGeometry(RECT rc) {
   }
   #endif
 
-#ifdef NEWIBLSCALE
   int i;
   if (IntScaleFlag) {
   	for (i=0; i<=MAXIBLSCALE; i++) LKIBLSCALE[i]=(int)(i*scale);
   } else {
   	for (i=0; i<=MAXIBLSCALE;i++) LKIBLSCALE[i]=(int)(i*dscale);
   }
-#endif
 
 #if USEIBOX
   if (rc.bottom<rc.right) {

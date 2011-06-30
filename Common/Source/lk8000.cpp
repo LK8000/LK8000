@@ -631,9 +631,7 @@ int Cpu_Port=0;
 int Cpu_Aver=0;
 #endif
 
-#ifdef NEWIBLSCALE
 int LKIBLSCALE[MAXIBLSCALE+1];
-#endif
 double Experimental1=0, Experimental2=0;
 
 double NearestAirspaceHDist=-1;

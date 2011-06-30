@@ -216,9 +216,7 @@ extern double WpHome_Lat;
 extern double WpHome_Lon;
 extern double LKHearthBeats;
 extern int PortMonitorMessages;
-#ifdef NEWIBLSCALE
 extern int LKIBLSCALE[MAXIBLSCALE+1];
-#endif
 extern int FlarmNetCount;
 extern FLARM_TRAFFIC LKTraffic[FLARM_MAX_TRAFFIC+1];
 extern int LKNumTraffic;

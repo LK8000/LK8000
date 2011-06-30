@@ -43,9 +43,6 @@
  #define LK_CACHECALC_MCA 60
  // #define LK_CACHECALC_MCA_STAT 1
 
- // NEWIBLSCALE  to be used only for NUMBERS between 0 and MAXIBLSCALE !!!!
- #define NEWIBLSCALE	1
-
  // New topology OPTIMIZE options
  #define TOPOFAST	1
  #define TOPOFASTLABEL	1
@@ -54,14 +51,10 @@
 // No instrument thread. However it is here ready to be used for anything.
 #define NOINSTHREAD	1
 
-#ifdef NEWIBLSCALE
- #define IBLSCALE(x) (   (InfoBoxLayout::IntScaleFlag) ? ((x)*InfoBoxLayout::scale) : ((int)((x)*InfoBoxLayout::dscale)))
- #define NIBLSCALE(x) (LKIBLSCALE[x])
- #define MAXIBLSCALE	100
-#else
- #define IBLSCALE(x) (   (InfoBoxLayout::IntScaleFlag) ? ((x)*InfoBoxLayout::scale) : ((int)((x)*InfoBoxLayout::dscale)))
- #define NIBLSCALE(x) (   (InfoBoxLayout::IntScaleFlag) ? ((x)*InfoBoxLayout::scale) : ((int)((x)*InfoBoxLayout::dscale)))
-#endif
+
+#define IBLSCALE(x) (   (InfoBoxLayout::IntScaleFlag) ? ((x)*InfoBoxLayout::scale) : ((int)((x)*InfoBoxLayout::dscale)))
+#define NIBLSCALE(x) (LKIBLSCALE[x])
+#define MAXIBLSCALE	100	// CAREFUL! NIBLSCALE can be used only UP TO MAXIBLSCALE!
 
 #define NOWINDREGISTRY	1	// Configurable: load and save wind from registry
 
