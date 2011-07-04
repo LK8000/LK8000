@@ -5,7 +5,6 @@
 
    $Id: lk8000.cpp,v 1.1 2010/12/15 11:30:56 root Exp root $
 */
-
 #include "StdAfx.h"
 #include "wcecompat/ts_string.h"
 #include "options.h"
@@ -183,24 +182,24 @@ HFONT                                   CDIWindowFont; // New
 HFONT                                   MapLabelFont;
 HFONT                                   StatisticsFont;
 
-HFONT                                   LK8UnitFont;
-HFONT                                   LK8TitleFont;
-HFONT                                   LK8MapFont;
-HFONT                                   LK8TitleNavboxFont;
-HFONT                                   LK8ValueFont;
-HFONT                                   LK8TargetFont;
-HFONT                                   LK8BigFont;
-HFONT                                   LK8MediumFont;
-HFONT                                   LK8SmallFont;
-HFONT					LK8SymbolFont;
-HFONT					LK8InfoBigFont;
-HFONT					LK8InfoBigItalicFont;
-HFONT					LK8InfoNormalFont;
-HFONT					LK8InfoSmallFont;
-HFONT					LK8PanelBigFont;
-HFONT					LK8PanelMediumFont;
-HFONT					LK8PanelSmallFont;
-HFONT					LK8PanelUnitFont;
+HFONT                                   LK8UnitFont=(HFONT)NULL;
+HFONT                                   LK8TitleFont=(HFONT)NULL;
+HFONT                                   LK8MapFont=(HFONT)NULL;
+HFONT                                   LK8TitleNavboxFont=(HFONT)NULL;
+HFONT                                   LK8ValueFont=(HFONT)NULL;
+HFONT                                   LK8TargetFont=(HFONT)NULL;
+HFONT                                   LK8BigFont=(HFONT)NULL;
+HFONT                                   LK8MediumFont=(HFONT)NULL;
+HFONT                                   LK8SmallFont=(HFONT)NULL;
+HFONT					LK8SymbolFont=(HFONT)NULL;
+HFONT					LK8InfoBigFont=(HFONT)NULL;
+HFONT					LK8InfoBigItalicFont=(HFONT)NULL;
+HFONT					LK8InfoNormalFont=(HFONT)NULL;
+HFONT					LK8InfoSmallFont=(HFONT)NULL;
+HFONT					LK8PanelBigFont=(HFONT)NULL;
+HFONT					LK8PanelMediumFont=(HFONT)NULL;
+HFONT					LK8PanelSmallFont=(HFONT)NULL;
+HFONT					LK8PanelUnitFont=(HFONT)NULL;
 
 LOGFONT                                   autoInfoWindowLogFont; // these are the non-custom parameters
 LOGFONT                                   autoTitleWindowLogFont;
@@ -210,7 +209,6 @@ LOGFONT                                   autoMapWindowBoldLogFont;
 LOGFONT                                   autoCDIWindowLogFont; // New
 LOGFONT                                   autoMapLabelLogFont;
 LOGFONT                                   autoStatisticsLogFont;
-
 int  UseCustomFonts;
 
 #if USEIBOX
@@ -2446,7 +2444,7 @@ void InitialiseFontsHardCoded(RECT rc,
 
 }
 
-#if USEIBOX
+#if USEAUTOFONTS
 void InitialiseFontsAuto(RECT rc,
                         LOGFONT * ptrautoInfoWindowLogFont,
                         LOGFONT * ptrautoTitleWindowLogFont,
@@ -2618,7 +2616,7 @@ void InitialiseFontsAuto(RECT rc,
   memcpy ((void *)ptrautoTitleSmallWindowLogFont, &logfont, sizeof (LOGFONT));
 }
 
-#endif // USEIBOX
+#endif // USEAUTOFONTS
 
 
 void InitialiseFonts(RECT rc)
@@ -2634,7 +2632,7 @@ void InitialiseFonts(RECT rc)
   DeleteObject(MapLabelFont);
   DeleteObject(StatisticsFont);
 
-  #if USEIBOX
+  #if USEAUTOFONTS
 
   memset ((char *)&autoInfoWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)&autoTitleWindowLogFont, 0, sizeof (LOGFONT));
@@ -2656,7 +2654,7 @@ void InitialiseFonts(RECT rc)
                         &autoCDIWindowLogFont, // New
                         &autoMapLabelLogFont,
                         &autoStatisticsLogFont);
-  #endif
+  #endif // USEAUTOFONTS
 
   LOGFONT hardInfoWindowLogFont;
   LOGFONT hardTitleWindowLogFont;
@@ -2744,8 +2742,6 @@ void InitialiseFonts(RECT rc)
                         szRegistryFontMapWindowFont, 
                         autoMapWindowLogFont,
                         NULL);
-  SendMessage(hWndMapWindow,WM_SETFONT,
-              (WPARAM)MapWindowFont,MAKELPARAM(TRUE,0));
 
   InitializeOneFont (&MapWindowBoldFont, 
                         szRegistryFontMapWindowBoldFont, 
@@ -2756,13 +2752,17 @@ void InitialiseFonts(RECT rc)
                         szRegistryFontTitleSmallWindowFont, 
                         autoTitleSmallWindowLogFont,
                         NULL);
+
+  SendMessage(hWndMapWindow,WM_SETFONT,
+              (WPARAM)MapWindowFont,MAKELPARAM(TRUE,0));
+
 }
 
-
-#if (WINDOWSPC>0) 
-int SCREENWIDTH=640;
-int SCREENHEIGHT=480;
+#if (WINDOWSPC>0)
+int SCREENWIDTH=800;
+int SCREENHEIGHT=400;
 #endif
+
 
 //
 //  FUNCTION: InitInstance(HANDLE, int)
@@ -2795,8 +2795,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       SetForegroundWindow((HWND)((ULONG) hWndMainWindow | 0x00000001));
       return 0;
     }
-  InitScreenSize();
-  InitNewMap(); // causing problems with CreateButtonLabels?
+  InitLKScreen();
+  InitLKFonts(); // causing problems with CreateButtonLabels?
   PreloadInitialisation(true);
 
   MyRegisterClass(hInst, szWindowClass);
@@ -2865,7 +2865,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   ButtonLabel::SetLabelText(0,TEXT("MODE"));
 
   InitialiseFonts(rc);
-  InitNewMap();	// reload updating LK fonts after loading profile
+// LK fonts cannot be configured in profile, so no need to call this
+//   InitLKFonts();	// reload updating LK fonts after loading profile  REMOVE 110704 not needed
 
   ButtonLabel::SetFont(MapWindowBoldFont);
 

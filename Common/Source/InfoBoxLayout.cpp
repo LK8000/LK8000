@@ -653,7 +653,7 @@ void ButtonLabel::GetButtonPosition(int i, RECT rc,
 			} else {
 				// BOTTOM MENUS
 
-				// warning, these values are a copy of those in Utils2, inside InitNewMap.
+				// warning, these values are a copy of those in Utils2, inside InitLKFonts.
 				// Since that function has not been called yet when we are here, we need to load them manually.
 				// In any case, even changing those values, only cosmetic issue is rised.
 				switch(ScreenSize) {

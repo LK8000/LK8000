@@ -55,8 +55,8 @@ bool	LoadModelFromProfile(void);
 TCHAR*  GetSizeSuffix(void);
 void	LKRunStartEnd(bool);
 
-void	InitNewMap();
-void	InitScreenSize();
+void	InitLKFonts();
+void	InitLKScreen();
 void	InitLK8000();
 int   GetFontRenderer();
 bool	LockMode(short lmode);

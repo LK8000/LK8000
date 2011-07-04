@@ -852,11 +852,13 @@ gesture_left:
 	return 0;
 }
 
-void InitNewMap()
+// Called after InitLKScreen, normally
+void InitLKFonts()
 {
-  static bool doinit=true;
-  StartupStore(_T(". InitNewMap%s"),NEWLINE); // 091213
+  StartupStore(_T(". InitLKFonts%s"),NEWLINE); // 091213
 
+/* REMOVE ALREADY INIT IN GLOBAL ASSIGN
+  static bool doinit=true;
   if (doinit) {
   	LK8TargetFont	= (HFONT)NULL;
   	LK8BigFont	= NULL;
@@ -879,6 +881,7 @@ void InitNewMap()
 
 	doinit=false;
   }
+*/
 
 
   LOGFONT logfontTarget;	// StatisticsWindow
@@ -1557,8 +1560,11 @@ void InitNewMap()
 
 }
 
-
-void InitScreenSize() {
+// InitLKScreen can be called anytime, and should be called upon screen changed from portrait to landscape,
+// or windows size is changed for any reason. We dont support dynamic resize of windows, though, because each
+// resolution has its own tuned settings. This is thought for real devices, not for PC emulations.
+// Attention: after InitLKScreen, also InitLKFonts should be called. 
+void InitLKScreen() {
 
 #if (WINDOWSPC>0)
   int iWidth=SCREENWIDTH;
@@ -1633,10 +1639,10 @@ void InitScreenSize() {
 
   TCHAR tbuf[80];
   if (ScreenSize==0) {
-        wsprintf(tbuf,_T(". InitScreenSize: ++++++ ERROR UNKNOWN RESOLUTION %dx%d !%s"),iWidth,iHeight,NEWLINE); // 091119
+        wsprintf(tbuf,_T(". InitLKScreen: ++++++ ERROR UNKNOWN RESOLUTION %dx%d !%s"),iWidth,iHeight,NEWLINE); // 091119
         StartupStore(tbuf);
   } else {
-        wsprintf(tbuf,_T(". InitScreenSize: %dx%d%s"),iWidth,iHeight,NEWLINE); // 091213
+        wsprintf(tbuf,_T(". InitLKScreen: %dx%d%s"),iWidth,iHeight,NEWLINE); // 091213
         StartupStore(tbuf);
   }
 
@@ -1645,6 +1651,77 @@ void InitScreenSize() {
   else
 	ScreenLandscape=false;
 
+  // By default, h=v=size/6 and here we set it better
+  switch (ScreenSize) { 
+	case (ScreenSize_t)ss800x480:
+		GestureSize=50;
+		LKVarioSize=50;
+		// dscale=480/240=2  800/dscale=400 -(70+2+2)=  326 x dscale = 652
+		LKwdlgConfig=652;
+		break;
+	case (ScreenSize_t)ss400x240:
+		GestureSize=50;
+		LKVarioSize=25;
+		// dscale=240/240=1  400/dscale=400 -(70+2+2)=  326 x dscale = 326
+		LKwdlgConfig=326;
+		break;
+	case (ScreenSize_t)ss640x480:
+		GestureSize=50;
+		LKVarioSize=40;
+		// dscale=480/240=2  640/dscale=320 -(70+2+2)=  246 x dscale = 492
+		LKwdlgConfig=492;
+		break;
+	case (ScreenSize_t)ss896x672:
+		GestureSize=50;
+		LKVarioSize=56;
+		// dscale=672/240=2.8  896/dscale=320 -(70+2+2)=  246 x dscale = 689
+		LKwdlgConfig=689;
+		break;
+	case (ScreenSize_t)ss480x272:
+		GestureSize=50;
+		LKVarioSize=30;
+		// dscale=272/240=1.133  480/dscale=424 -(70+2+2)=  350 x dscale = 397
+		LKwdlgConfig=395;
+		break;
+	case (ScreenSize_t)ss720x408:
+		GestureSize=50;
+		LKVarioSize=45;
+		// dscale=408/240=1.133  720/dscale=423 -(70+2+2)=  350 x dscale = 594
+		LKwdlgConfig=594;
+		break;
+	case (ScreenSize_t)ss480x234:
+		GestureSize=50;
+		LKVarioSize=30;
+		// dscale=234/240=0.975  480/dscale=492 -(70+2+2)=  418 x dscale = 407
+		LKwdlgConfig=405;
+		break;
+	case (ScreenSize_t)ss320x240:
+		GestureSize=50;
+		LKVarioSize=20;
+		// dscale=240/240=1  320/dscale=320 -(70+2+2)=  246 x dscale = 246
+		// but 246 is too long..
+		LKwdlgConfig=244;
+		break;
+	// PORTRAIT MODES
+	case (ScreenSize_t)ss480x640:
+		GestureSize=50;
+		LKVarioSize=30;
+		break;
+	case (ScreenSize_t)ss480x800:
+		GestureSize=50;
+		LKVarioSize=30;
+		// dscale=240/240=1  400/dscale=400 -(70+2+2)=  326 x dscale = 326
+		LKwdlgConfig=324;
+		break;
+	case (ScreenSize_t)ss240x320:
+		GestureSize=50;
+		LKVarioSize=15;
+		break;
+	default:
+		GestureSize=50;
+		LKVarioSize=30;
+		break;
+  }
 }
 
 // Requires restart if activated from config menu
@@ -1654,79 +1731,6 @@ void InitLK8000()
 	LoadRecentList();
 
 	InitModeTable();
-
-	// By default, h=v=size/6 and here we set it better
-	switch (ScreenSize) { 
-		case (ScreenSize_t)ss800x480:
-			GestureSize=50;
-			LKVarioSize=50;
-			// dscale=480/240=2  800/dscale=400 -(70+2+2)=  326 x dscale = 652
-			LKwdlgConfig=652;
-			break;
-		case (ScreenSize_t)ss400x240:
-			GestureSize=50;
-			LKVarioSize=25;
-			// dscale=240/240=1  400/dscale=400 -(70+2+2)=  326 x dscale = 326
-			LKwdlgConfig=326;
-			break;
-		case (ScreenSize_t)ss640x480:
-			GestureSize=50;
-			LKVarioSize=40;
-			// dscale=480/240=2  640/dscale=320 -(70+2+2)=  246 x dscale = 492
-			LKwdlgConfig=492;
-			break;
-		case (ScreenSize_t)ss896x672:
-			GestureSize=50;
-			LKVarioSize=56;
-			// dscale=672/240=2.8  896/dscale=320 -(70+2+2)=  246 x dscale = 689
-			LKwdlgConfig=689;
-			break;
-		case (ScreenSize_t)ss480x272:
-			GestureSize=50;
-			LKVarioSize=30;
-			// dscale=272/240=1.133  480/dscale=424 -(70+2+2)=  350 x dscale = 397
-			LKwdlgConfig=395;
-			break;
-		case (ScreenSize_t)ss720x408:
-			GestureSize=50;
-			LKVarioSize=45;
-			// dscale=408/240=1.133  720/dscale=423 -(70+2+2)=  350 x dscale = 594
-			LKwdlgConfig=594;
-			break;
-		case (ScreenSize_t)ss480x234:
-			GestureSize=50;
-			LKVarioSize=30;
-			// dscale=234/240=0.975  480/dscale=492 -(70+2+2)=  418 x dscale = 407
-			LKwdlgConfig=405;
-			break;
-		case (ScreenSize_t)ss320x240:
-			GestureSize=50;
-			LKVarioSize=20;
-			// dscale=240/240=1  320/dscale=320 -(70+2+2)=  246 x dscale = 246
-                        // but 246 is too long..
-			LKwdlgConfig=244;
-			break;
-		// PORTRAIT MODES
-		case (ScreenSize_t)ss480x640:
-			GestureSize=50;
-			LKVarioSize=30;
-			break;
-		case (ScreenSize_t)ss480x800:
-			GestureSize=50;
-			LKVarioSize=30;
-			// dscale=240/240=1  400/dscale=400 -(70+2+2)=  326 x dscale = 326
-			LKwdlgConfig=324;
-			break;
-		case (ScreenSize_t)ss240x320:
-			GestureSize=50;
-			LKVarioSize=15;
-			break;
-		default:
-			GestureSize=50;
-			LKVarioSize=30;
-			break;
-	}
-
 }
 
 // colorcode is taken from a 5 bit AsInt union
