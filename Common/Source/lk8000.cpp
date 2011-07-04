@@ -1654,6 +1654,7 @@ void AfterStartup() {
   // Trigger first redraw
   GpsUpdated = true;
   MapWindow::MapDirty = true;
+  MapWindow::zoom.Reset(); 
   FullScreen();
   SetEvent(drawTriggerEvent);
 }
