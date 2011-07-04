@@ -303,6 +303,7 @@ void SwitchToMapWindow(void);
 typedef enum{
   ssnone=0,
   ss240x320,
+  ss240x400,
   ss272x480,
   ss480x640,
   ss480x800,

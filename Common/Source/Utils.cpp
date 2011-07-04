@@ -4326,11 +4326,6 @@ void LK8000GetOpts(LPTSTR CommandLine) {
       SCREENWIDTH=480;
       SCREENHEIGHT=640;
     }
-    pC = _tcsstr(MyCommandLine, TEXT("-square"));
-    if (pC != NULL){
-      SCREENWIDTH=480;
-      SCREENHEIGHT=480;
-    }
     pC = _tcsstr(MyCommandLine, TEXT("-small"));
     if (pC != NULL){
       SCREENWIDTH/= 2;
@@ -4355,6 +4350,11 @@ void LK8000GetOpts(LPTSTR CommandLine) {
     if (pC != NULL){
       SCREENWIDTH=234;
       SCREENHEIGHT=320;
+    }
+    pC = _tcsstr(MyCommandLine, TEXT("-240x400"));
+    if (pC != NULL){
+      SCREENWIDTH=240;
+      SCREENHEIGHT=400;
     }
     pC = _tcsstr(MyCommandLine, TEXT("-272x480"));
     if (pC != NULL){
