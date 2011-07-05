@@ -2643,6 +2643,8 @@ void InputEvents::eventRun(const TCHAR *misc) {
   }
 
   ::WaitForSingleObject(pi.hProcess, INFINITE);
+  ::CloseHandle(pi.hProcess);
+  ::CloseHandle(pi.hThread);
   StartupStore(_T("... RUN TERMINATED%s"),NEWLINE);
 }
 
