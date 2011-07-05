@@ -1871,6 +1871,8 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
   CAirspaceList::iterator it;
 
   if ( _airspaces_near.size() == 0 ) return;
+   // We need a valid GPS fix in FLY mode
+   if (Basic->NAVWarning && !SIMMODE) return;
   
   #ifdef DEBUG_AIRSPACE
   int starttick = GetTickCount();

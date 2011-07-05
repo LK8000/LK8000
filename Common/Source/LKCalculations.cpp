@@ -2017,8 +2017,12 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    //if ( Basic->Time < (LastDoAirspaces+PAGINGTIMEOUT) ) { 
    //  return false;
    //}
-   LastDoAirspaces=Basic->Time;
 
+   // We need a valid GPS fix in FLY mode
+   if (Basic->NAVWarning && !SIMMODE) return true;
+
+   LastDoAirspaces=Basic->Time;
+   
    #ifdef DEBUG_LKT
    StartupStore(_T("... DoAirspaces step%d started\n"),step);
    #endif
