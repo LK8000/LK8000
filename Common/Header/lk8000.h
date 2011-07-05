@@ -339,6 +339,7 @@ typedef enum{
   bit7E1,
 }BitIndex_t;
 
+#if USEIBOX
 // VENTA-ADDON GEOM
 typedef enum{
   apIg0=0,
@@ -350,6 +351,7 @@ typedef enum{
   apIg6,
   apIg7
 }InfoBoxGeomAppearance_t;
+#endif
 
 // VENTA-ADDON MODEL
 typedef enum{
@@ -572,6 +574,7 @@ typedef struct {
 
 typedef struct{
   int DefaultMapWidth;
+#if USEIBOX
   // THESE ARE USED BY INFOBOX ONLY TO HAVE SIZES READY
   FontHeightInfo_t TitleWindowFont;
   FontHeightInfo_t MapWindowFont;
@@ -582,10 +585,13 @@ typedef struct{
   FontHeightInfo_t MapLabelFont;
   FontHeightInfo_t TitleSmallWindowFont;
   // 
+#endif
   BestCruiseTrack_t BestCruiseTrack;
   IndLandable_t IndLandable;	// landable icon style
   bool InverseInfoBox;		// InfoBox black or white inverted, used also by LK styles
+#if USEIBOX
   InfoBoxGeomAppearance_t InfoBoxGeom; 
+#endif
   InfoBoxModelAppearance_t InfoBoxModel;
 } Appearance_t;
 

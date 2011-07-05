@@ -1000,7 +1000,7 @@ double MapWindow::FindMapScale(double Value){
   return(Value);
 }
 
-
+#if USEIBOX
 static void SetFontInfo(HDC hDC, FontHeightInfo_t *FontHeightInfo){
   TEXTMETRIC tm;
   int x,y=0;
@@ -1041,6 +1041,7 @@ static void SetFontInfo(HDC hDC, FontHeightInfo_t *FontHeightInfo){
     FontHeightInfo->CapitalHeight = tm.tmAscent - 1 -(tm.tmHeight/10);
 
 }
+#endif
 
 
 LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
@@ -1085,6 +1086,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hMaskBitMap = CreateBitmap(width+1, height+1, 1, 1, NULL);
       SelectObject(hDCMask, (HBITMAP)hMaskBitMap);
 
+#if USEIBOX
       {
 	HFONT      oldFont;
 
@@ -1115,6 +1117,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 
 	SelectObject(hDCTemp, oldFont);
       }
+#endif
 
       break;
 

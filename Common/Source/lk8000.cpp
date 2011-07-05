@@ -96,6 +96,7 @@ static std::map<TCHAR*, TCHAR*> unusedTranslations;
 
 Appearance_t Appearance = {
   206,
+#if USEIBOX
   {0,0,0},
   {0,0,0},
   {0,0,0},
@@ -104,10 +105,13 @@ Appearance_t Appearance = {
   {0,0,0},
   {0,0,0},
   {0,0,0},
+#endif
   ctBestCruiseTrackAltA,
   wpLandableDefault,
   false,
+#if USEIBOX
   apIg0,  // VENTA-ADDON GEOM
+#endif
   apImPnaGeneric
 };
 
@@ -2284,6 +2288,7 @@ void InitialiseFontsHardCoded(RECT rc,
 
   else if (ScreenSize==(ScreenSize_t)ss800x480) {// e.g. ipaq 31x {
 
+#if USEIBOX
     switch (Appearance.InfoBoxGeom) {	
       case 0:
       case 1:
@@ -2311,6 +2316,10 @@ void InitialiseFontsHardCoded(RECT rc,
           //}
             break;
     } // special geometry cases for 31x
+#else
+    propGetFontSettingsFromString(TEXT("56,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
+    propGetFontSettingsFromString(TEXT("20,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
+#endif
 
 
     propGetFontSettingsFromString(TEXT("16,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont);
@@ -2326,6 +2335,7 @@ void InitialiseFontsHardCoded(RECT rc,
   // added 091204
   else if (ScreenSize==(ScreenSize_t)ss400x240) {
 
+#if USEIBOX
     switch (Appearance.InfoBoxGeom) {	
       case 0:
       case 1:
@@ -2353,6 +2363,10 @@ void InitialiseFontsHardCoded(RECT rc,
           //}
             break;
     } 
+#else
+            propGetFontSettingsFromString(TEXT("28,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
+            propGetFontSettingsFromString(TEXT("10,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
+#endif
 
 
     propGetFontSettingsFromString(TEXT("8,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont);
