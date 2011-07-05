@@ -654,7 +654,7 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   CRUISE_EFFICIENCY = 1.0;
 
     #if ALPHADEBUG
-    // StartupStore(_T("... ResetFlightStats\n"));
+    StartupStore(_T(". Reset flight statistics\n"));
     #endif
     // It is better to reset it even if UseContestEngine() if false, because we might
     // change aircraft type during runtime. We never know.

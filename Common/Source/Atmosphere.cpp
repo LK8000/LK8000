@@ -29,6 +29,7 @@ CuSondeLevel CuSonde::cslevels[CUSONDE_NUMLEVELS];
 
 // TODO accuracy: recalculate thermal index etc if maxGroundTemp changes
 
+#if 0
 void CuSonde::test() {
   CALCULATED_INFO.Flying= true;
   GPS_INFO.TemperatureAvailable = true;
@@ -48,6 +49,7 @@ void CuSonde::test() {
     updateMeasurements(&GPS_INFO, &CALCULATED_INFO);      
   }
 }
+#endif
 
 void CuSonde::setForecastTemperature(double val) {
   maxGroundTemperature= val;
