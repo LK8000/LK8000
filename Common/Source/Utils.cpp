@@ -179,7 +179,6 @@ const TCHAR szRegistryLiftUnitsValue[] = TEXT("Lift");
 const TCHAR szRegistryLatLonUnits[] = TEXT("LatLonUnits");
 const TCHAR szRegistryPort1Index[]= TEXT("PortIndex");
 const TCHAR szRegistryPort2Index[]= TEXT("Port2Index");
-// const TCHAR szRegistryPort3Index[]= TEXT("Port3Index");
 const TCHAR szRegistryRegKey[]=				 TEXT("RegKey");
 const TCHAR szRegistrySafetyAltitudeArrival[] =     TEXT("SafetyAltitudeArrival");
 const TCHAR szRegistrySafetyAltitudeTerrain[] =     TEXT("SafetyAltitudeTerrain");
@@ -192,10 +191,13 @@ const TCHAR szRegistryTrailDrift[]=		 TEXT("TrailDrift");
 const TCHAR szRegistryThermalLocator[]=	 TEXT("ThermalLocator");
 const TCHAR szRegistrySpeed1Index[]=		 TEXT("SpeedIndex");
 const TCHAR szRegistrySpeed2Index[]=		 TEXT("Speed2Index");
-//const TCHAR szRegistrySpeed3Index[]=		 TEXT("Speed3Index");
+#if USEPORT3
+const TCHAR szRegistryPort3Index[]= TEXT("Port3Index");
+const TCHAR szRegistrySpeed3Index[]=		 TEXT("Speed3Index");
+const TCHAR szRegistryBit3Index[]=		 TEXT("Bit3Index");
+#endif
 const TCHAR szRegistryBit1Index[]=		 TEXT("Bit1Index");
 const TCHAR szRegistryBit2Index[]=		 TEXT("Bit2Index");
-//const TCHAR szRegistryBit3Index[]=		 TEXT("Bit3Index");
 const TCHAR szRegistryCheckSum[]=		 TEXT("CheckSum");
 const TCHAR szRegistrySpeedUnitsValue[] =      TEXT("Speed");
 const TCHAR szRegistryTaskSpeedUnitsValue[] =      TEXT("TaskSpeed");
@@ -1513,7 +1515,7 @@ void WritePort2Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit2Index)
   SetToRegistry(szRegistryBit2Index, Bit2Index);
 }
 
-#if 0
+#if USEPORT3
 void ReadPort3Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit3Index)
 {
   DWORD Temp=0;
