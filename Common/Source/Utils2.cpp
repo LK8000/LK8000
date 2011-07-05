@@ -1845,6 +1845,10 @@ void SmartGlobalModelType() {
 					GlobalModelType=MODELTYPE_PNA_MIO;
 			}
 		else
+			if ( !_tcscmp(GlobalModelName,_T("FUNTREK"))) {
+					GlobalModelType=MODELTYPE_PNA_FUNTREK;
+			}
+		else
 			_tcscpy(GlobalModelName,_T("UNKNOWN") );
 	} else	
 		_tcscpy(GlobalModelName, _T("UNKNOWN") );
@@ -1903,6 +1907,9 @@ bool SetModelName(DWORD Temp) {
     return true;
   case MODELTYPE_PNA_NAVIGON:
     _tcscpy(GlobalModelName,_T("NAVIGON"));
+    return true;
+  case MODELTYPE_PNA_FUNTREK:
+    _tcscpy(GlobalModelName,_T("FUNTREK"));
     return true;
   default:
     _tcscpy(GlobalModelName,_T("UNKNOWN"));

@@ -297,6 +297,7 @@ void SwitchToMapWindow(void);
 #define MODELTYPE_PNA_NAVIGO	11800
 #define MODELTYPE_PNA_NOKIA	12000
 #define MODELTYPE_PNA_NOKIA_500	12001 // 480x272
+#define MODELTYPE_PNA_FUNTREK	14001 // 400x240 240x400
 
 
 // This could be also used for PDA in landscape.. 
@@ -362,6 +363,7 @@ typedef enum{
 	apImPnaNokia500,
 	apImPnaPn6000,
 	apImPnaNavigon,
+	apImPnaFuntrek,
 }InfoBoxModelAppearance_t;
 
 typedef enum{

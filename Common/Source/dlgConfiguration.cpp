@@ -2509,6 +2509,7 @@ static void setVariables(void) {
     dfe->addEnumText(TEXT("Nokia500")); // VENTA3
     dfe->addEnumText(TEXT("PN6000"));
     dfe->addEnumText(TEXT("Navigon"));
+    dfe->addEnumText(TEXT("Holux FunTrek GM-130"));
 	
 	int iTmp;
 	switch (GlobalModelType) {
@@ -2532,6 +2533,9 @@ static void setVariables(void) {
 				break;
 		case MODELTYPE_PNA_NAVIGON:
 				iTmp=(InfoBoxModelAppearance_t)apImPnaNavigon;
+				break;
+		case MODELTYPE_PNA_FUNTREK:
+				iTmp=(InfoBoxModelAppearance_t)apImPnaFuntrek;
 				break;
 		default:
 				iTmp=(InfoBoxModelAppearance_t)apImPnaGeneric;
@@ -4604,6 +4608,9 @@ void dlgConfigurationShowModal(void){
 	break;
       case apImPnaNavigon:
 	GlobalModelType = MODELTYPE_PNA_NAVIGON;
+	break;
+      case apImPnaFuntrek:
+	GlobalModelType = MODELTYPE_PNA_FUNTREK;
 	break;
       default:
 	GlobalModelType = MODELTYPE_UNKNOWN; // Can't happen, troubles ..
