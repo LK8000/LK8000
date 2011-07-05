@@ -1458,10 +1458,11 @@ Arrival altitude at the Home airfield. Calculated for current MC, uses safetyAlt
 Airspace area can be denoted by outlines only, pattern filling, or semi-transparent colors.
 [Outlines only] there will be only lines on airspace area borders 
 [Pattern] airspace area will be filled with selected pattern of selected color
-[Pattern, borders only] airspace border area will be filled with selected pattern of selected color
+[Pattern, borders only] airspace border area will be filled with selected pattern of selected color (warning, see below)
 [Semi-Transparent] airspace area will be filled with selected solid semi-transparent color (opacity of the color can be set in 'Opacity' item) . 
-[Semi-Transparent, borders only] airspace border area will be filled with selected solid semi-transparent color (opacity of the color can be set in 'Opacity' item) . 
+[Semi-Transparent, borders only] airspace border area will be filled with selected solid semi-transparent color (opacity of the color can be set in 'Opacity' item) (warning, see below)
 Transparency may not be available on some hardware devices.
+Drawing airspace borders only can slow down devices with high screen resolution or slow processor. Use with caution!
 
 @1201
 [Opacity of semi-transparent airspace]
