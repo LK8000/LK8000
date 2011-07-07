@@ -475,6 +475,8 @@ bool ReducedMapSize(void);
 void InitAlarms(void);
 bool CheckAlarms(unsigned short al);
 
+void MasterTimeReset(void);
+
 void MemCheckPoint();
 void MemLeakCheck();
 void MyCompactHeaps();

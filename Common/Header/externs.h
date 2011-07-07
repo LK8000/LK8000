@@ -195,11 +195,8 @@ extern double  LastZoomTrigger;
 extern double  LastDoTraffic;
 extern double  LastDoAirspaces;
 extern double LastDoNearest;
-// extern double LastDoNearestTp;
 extern double LastDoCommon;
 extern int LKwdlgConfig;
-extern double NmeaTime;
-extern int NmeaHours, NmeaMinutes, NmeaSeconds;
 extern bool PollingMode;
 
 extern bool BestWarning;

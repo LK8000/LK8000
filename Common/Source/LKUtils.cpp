@@ -751,3 +751,21 @@ bool CheckAlarms(unsigned short al) {
 }
 
 
+//
+// Master Time Reset
+// This function is called when a valid GPS time (or a time taken from an IGC replay log)
+// is verified to be gone back in time, or more than 2 hours have passed since last GPS
+// fix was received.
+// This is normally happening when the device was switched off and back on some time later.
+// What we do, is disable logging, resetting some functions etc.
+//
+void MasterTimeReset(void) {
+
+  StartupStore(_T("... MASTER TIME RESET%s"),NEWLINE);
+  DoStatusMessage(_T("MASTER TIME RESET")); // no translation
+
+  // Remember to lock anything needed to be locked
+
+
+
+}

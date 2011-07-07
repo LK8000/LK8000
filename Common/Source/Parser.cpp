@@ -13,15 +13,10 @@
 #include "externs.h"
 #include "Utils.h"
 #include "Utils2.h"
-#include "externs.h"
 #include "Logger.h"
 #include "Parser.h"
 #include "device.h"
 #include "Geoid.h"
-//#include "FlarmIdFile.h"
-#include "TeamCodeCalculation.h"
-#include "Message.h"
-#include "Cpustats.h"
 
 #include "FlarmCalculations.h"
 FlarmCalculations flarmCalculations;
@@ -66,7 +61,6 @@ void NMEAParser::_Reset(void) {
   RMAAltitude = 0;
   
   LastTime = 0;
-  NmeaTime=0;
 }
 
 void NMEAParser::Reset(void) {
@@ -443,16 +437,6 @@ double NorthOrSouth(double in, TCHAR NoS)
     return in;
 }
 
-/*
-double LeftOrRight(double in, TCHAR LoR)
-{
-  if(LoR == 'L')
-    return -in;
-  else
-    return in;
-}
-*/
-
 int NAVWarn(TCHAR c)
 {
   if(c=='A')
@@ -481,7 +465,10 @@ double MixedFormatToDegrees(double mixed)
   return degrees+mins;
 }
 
-// AND.. what if your gps is sending a 00:00 date and time?? 091129
+//
+// Make time absolute, over 86400seconds when day is changing
+// We need a valid date to use it. We are relying on StartDay.
+//
 double NMEAParser::TimeModify(double FixTime, NMEA_INFO* GPS_INFO)
 {
   double hours, mins,secs;
@@ -516,42 +503,13 @@ double NMEAParser::TimeModify(double FixTime, NMEA_INFO* GPS_INFO)
   return FixTime;
 }
 
-// convert to double , missing wraparound midnight
-double NMEAParser::TimeConvert(double FixTime, NMEA_INFO* GPS_INFO)
-{
-  double hours, mins,secs;
-  hours = FixTime / 10000;
-  NmeaHours = (int)hours;
-  mins = FixTime / 100;
-  mins = mins - (NmeaHours*100);
-  NmeaMinutes = (int)mins;
-  secs = FixTime - (NmeaHours*10000) - (NmeaMinutes*100);
-  NmeaSeconds = (int)secs;
-  FixTime = secs + (NmeaMinutes*60) + (NmeaHours*3600);
-
-  if ((StartDay== -1) && (GPS_INFO->Day != 0)) {
-	StartDay = GPS_INFO->Day;
-  }
-  if (StartDay != -1) {
-	if (GPS_INFO->Day < StartDay) {
-		// detect change of month (e.g. day=1, startday=31)
-		StartDay = GPS_INFO->Day-1;
-	}
-	int day_difference = GPS_INFO->Day-StartDay;
-	if (day_difference>0) {
-		FixTime += day_difference * 86400;
-	}
-  }
-
-  return FixTime;
-}
-
 bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *GPS_INFO) {
 
   // If simulating, we might be in the future already...
   if(ThisTime< LastTime) {
     LastTime = ThisTime;
     StartDay = -1; // reset search for the first day
+    MasterTimeReset();
     return false;
   } else {
     GPS_INFO->Time = ThisTime;
@@ -564,8 +522,8 @@ BOOL NMEAParser::GSA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 {
   int iSatelliteCount =0;
 
-  GSAAvailable = TRUE; // 100213 MISSING BUGFIX 
-  if (!activeGPS) return TRUE; // 100213 BUGFIX
+  GSAAvailable = TRUE;
+  if (!activeGPS) return TRUE;
 
   if (ReplayLogger::IsEnabled()) {
     return TRUE;

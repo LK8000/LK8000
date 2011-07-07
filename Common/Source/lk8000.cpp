@@ -455,9 +455,6 @@ double LKHearthBeats=0;
 // number of reporting messages from Portmonitor.
 int PortMonitorMessages=0;
 
-// Time in use by Nmea parser, updated realtime
-double NmeaTime=0;
-int NmeaHours=0, NmeaMinutes=0, NmeaSeconds=0;
 bool PollingMode=false;
 #if  (LK_CACHECALC && LK_CACHECALC_MCA_STAT)
 int  Cache_Calls_MCA=0;
