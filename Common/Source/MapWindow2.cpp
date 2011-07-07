@@ -636,11 +636,15 @@ void MapWindow::CalculateScreenPositionsGroundline(void) {
   }
 }
 
-
+//
+// Draw the opaque glide amoeba
+//
 void MapWindow::DrawTerrainAbove(HDC hDC, const RECT rc) {
 
   if (!DerivedDrawInfo.Flying &&
 	!(SIMMODE && DerivedDrawInfo.AltitudeAGL>100) ) return;
+
+  if (!DerivedDrawInfo.FreeFlying) return;
 
   COLORREF whitecolor = RGB(0xff,0xff,0xff);
   COLORREF graycolor = RGB(0xf0,0xf0,0xf0);

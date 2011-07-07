@@ -1855,9 +1855,8 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
   }
 
   backtrue:
-  #if DEBUG_DFF
+  if (SIMMODE)
   DoStatusMessage(gettext(TEXT("_@M1452_")));  // LKTOKEN  _@M1452_ = "Free flight detected"
-  #endif
   ffDetected=true;
   Calculated->FreeFlying=true;
   ResetFreeFlightStats(Calculated);
