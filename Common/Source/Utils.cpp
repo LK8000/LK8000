@@ -37,6 +37,9 @@
 #include "NavFunctions.h"
 #include "WaveThread.h"
 #include "LKMapWindow.h"
+#ifdef PNA
+#include "LKHolux.h"
+#endif
 
 #include "FlarmIdFile.h"
 // Warning, this is initialising class, loading flarmnet IDs before anything else in the LK is even started..
@@ -4934,6 +4937,12 @@ BOOL PlayResource (const TCHAR* lpName)
 #ifdef DISABLEAUDIO
   return false;
 #else
+  #ifdef PNA
+  if (DeviceIsGM130) {
+	MessageBeep(0xffffffff);
+	return true;
+  }
+  #endif
   BOOL bRtn;
   LPTSTR lpRes;
   HANDLE hResInfo, hRes;

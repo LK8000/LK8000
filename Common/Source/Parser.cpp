@@ -18,6 +18,10 @@
 #include "device.h"
 #include "Geoid.h"
 
+#ifdef PNA
+#include "LKHolux.h"
+#endif
+
 #include "FlarmCalculations.h"
 FlarmCalculations flarmCalculations;
 
@@ -670,6 +674,24 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   GPSCONNECT = TRUE;    
   RMCAvailable=true; // 100409
 
+  #ifdef PNA
+  if (DeviceIsGM130) {
+
+	RMZAltitude = GM130BarAltitude();
+	RMZAltitude = AltitudeToQNHAltitude(RMZAltitude);
+	RMZAvailable = TRUE;
+
+	// if no device declared to have baro, we can use RMZ even if not activeGPS
+	// OR if the declared device failed to provide baro!!
+	if (!devHasBaroSource() || !GPS_INFO->BaroAltitudeAvailable) {
+		if (!ReplayLogger::IsEnabled()) {
+			GPS_INFO->BaroAltitudeAvailable = true;
+			GPS_INFO->BaroAltitude = RMZAltitude;
+		}
+	}
+  }
+  #endif // PNA
+
   if (!activeGPS) return TRUE; // 091205 BUGFIX true
 
   // if no valid fix, we dont get speed either!
@@ -793,6 +815,9 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 		GPS_INFO->BaroAltitudeAvailable = true;
 		GPS_INFO->BaroAltitude = RMAAltitude;
 	}
+	#ifdef PNA
+
+	#endif
   }
   if (!GGAAvailable) {
 	// update SatInUse, some GPS receiver dont emmit GGA sentance

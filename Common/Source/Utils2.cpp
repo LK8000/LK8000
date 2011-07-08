@@ -33,6 +33,10 @@
 #include "MapWindow.h"
 #include "LKMapWindow.h"
 
+#ifdef PNA
+#include "LKHolux.h"
+#endif
+
 #include "utils/heapcheck.h"
 using std::min;
 using std::max;
@@ -566,6 +570,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				return 0;
 			}
 #endif
+
 			// REAL USAGE, ALWAYS ACTIVATE 
 			#if (1)
 			// standard configurable mode
@@ -2101,16 +2106,16 @@ bool SetBacklight() // VENTA4
   HKEY    hKey;
   DWORD   Disp=0;
   HRESULT hRes;
-  bool doevent=false;
 
   if (EnableAutoBacklight == false ) return false;
 
-  hRes = RegOpenKeyEx(HKEY_CURRENT_USER, _T("ControlPanel\\Backlight"), 0,  0, &hKey);
-  if (hRes != ERROR_SUCCESS) return false;
 
   switch (GlobalModelType)
   {
 	case MODELTYPE_PNA_HP31X:
+
+ 		hRes = RegOpenKeyEx(HKEY_CURRENT_USER, _T("ControlPanel\\Backlight"), 0,  0, &hKey);
+ 		if (hRes != ERROR_SUCCESS) return false;
 
 		Disp=20; // max backlight
 		// currently we ignore hres, if registry entries are spoiled out user is already in deep troubles
@@ -2120,20 +2125,28 @@ bool SetBacklight() // VENTA4
 		Disp=0;
 		hRes = RegSetValueEx(hKey, _T("UseExt"),0,REG_DWORD, (LPBYTE)&Disp, sizeof(DWORD));
 		RegDeleteValue(hKey,_T("ACTimeout"));
-		doevent=true;
+  		RegCloseKey(hKey);
+		HANDLE BLEvent;
+		BLEvent = CreateEvent(NULL, FALSE, FALSE, TEXT("BacklightChangeEvent")); 
+		if ( SetEvent(BLEvent) == 0)
+			return false;
+		else
+			CloseHandle(BLEvent);
+
 		break;
 
+	case MODELTYPE_PNA_FUNTREK:
+
+		GM130MaxBacklight();
+
+		break;
 	default:
-		doevent=false;
+		return false;
 		break;
   }
 
-  RegCloseKey(hKey); if (doevent==false) return false;
+  return true;
 
-  HANDLE BLEvent = CreateEvent(NULL, FALSE, FALSE, TEXT("BacklightChangeEvent")); 
-  if ( SetEvent(BLEvent) == 0) doevent=false;
-  	else CloseHandle(BLEvent);
-  return doevent;
 }
 
 bool SetSoundVolume() // VENTA4
@@ -2141,18 +2154,17 @@ bool SetSoundVolume() // VENTA4
 
   if (EnableAutoSoundVolume == false ) return false;
 
-/*
- * This does not work, dunno why
- *
-  HKEY    hKey;
-  DWORD   Disp=0;
-  HRESULT hRes;
-
-  hRes = RegOpenKeyEx(HKEY_CURRENT_USER, _T("ControlPanel\\Volume"), 0,  0, &hKey);
-  if (hRes != ERROR_SUCCESS) return false;
   switch (GlobalModelType)
   {
+	#if 0 // does not work, no idea why - paolo
 	case MODELTYPE_PNA_HP31X:
+		HKEY    hKey;
+		DWORD   Disp=0;
+		HRESULT hRes;
+
+		hRes = RegOpenKeyEx(HKEY_CURRENT_USER, _T("ControlPanel\\Volume"), 0,  0, &hKey);
+		if (hRes != ERROR_SUCCESS) return false;
+
 		Disp=0xFFFFFFFF; // max volume
 		hRes = RegSetValueEx(hKey, _T("Volume"),0,REG_DWORD, (LPBYTE)&Disp, sizeof(DWORD));
 		Disp=65538;
@@ -2164,14 +2176,19 @@ bool SetSoundVolume() // VENTA4
 		SendMessage(HWND_BROADCAST, WM_WININICHANGE, 0xF2, 0); 
 	        RegCloseKey(hKey); 
 		break;
+	#endif // disabled code for HP314
+
+	case MODELTYPE_PNA_FUNTREK:
+		GM130MaxSoundVolume();
+		break;
 
 	default:
+		// A general approach normally working fine.
+		// (should we enter critical section ?  probably... )
+		waveOutSetVolume(0, 0xffff); // this is working for all platforms
 		break;
   }
- */
 
-  // should we enter critical section ?  probably... 
-  waveOutSetVolume(0, 0xffff); // this is working for all platforms
 
   return true;
 }
@@ -4283,6 +4300,35 @@ ipc_previous:
   if (!ConfIP[ModeIndex][CURTYPE]) PreviousModeType();
   return;
 
+}
+
+
+//
+// This is called by lk8000.cpp on init, only once
+//
+void InitCustomHardware(void) {
+
+  #ifdef PNA
+  if (GlobalModelType == MODELTYPE_PNA_FUNTREK) {
+	Init_GM130();
+	// if (!DeviceIsGM130) return;
+	// todo set to General devicetype if Init failed
+  }
+  #endif
+
+  return;
+}
+
+//
+// This is called by lk8000.cpp on exit, only once
+//
+void DeInitCustomHardware(void) {
+
+  #ifdef PNA
+  if (DeviceIsGM130) DeInit_GM130();
+  #endif
+
+  return;
 }
 
 

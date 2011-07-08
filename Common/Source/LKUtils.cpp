@@ -31,6 +31,9 @@
 #include "McReady.h"
 #include "InputEvents.h"
 #include "LKMapWindow.h"
+#ifdef PNA
+#include "LKHolux.h"
+#endif
 
 #include "utils/stringext.h"
 #include "utils/heapcheck.h"
@@ -243,6 +246,13 @@ void LKSound(const TCHAR *lpName) {
   #ifdef DISABLEAUDIO
   return false;
   #else
+
+  #ifdef PNA
+  if (DeviceIsGM130) {
+	MessageBeep(0xffffffff); // default
+	return;
+  }
+  #endif   
   static bool doinit=true;
   static bool working=false;
   static TCHAR sDir[MAX_PATH];

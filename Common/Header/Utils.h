@@ -434,6 +434,9 @@ TCHAR *LKgethelptext(const TCHAR *TextIn);
 bool LKloadtext(void);
 TCHAR *LKGetText(const TCHAR *TextIn);
 
+void InitCustomHardware(void);
+void DeInitCustomHardware(void);
+
 
 void SetSourceRectangle(RECT fromRect);
 RECT WINAPI DrawWireRects(LPRECT lprcTo, UINT nMilliSecSpeed);

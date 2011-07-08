@@ -75,6 +75,9 @@
 #include "Message.h"
 #include "Atmosphere.h"
 #include "Geoid.h"
+#ifdef PNA
+#include "LKHolux.h"
+#endif
 
 #if USEIBOX
 #include "InfoBox.h"
@@ -1828,6 +1831,11 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 
   OpenGeoid();
 
+  // Load special libraries and init hardware. Anything custom should happen after here.
+  // Note that this is subjected to GlobalModelType.
+  // To initialise low level devices such as screen, we should do it much earlier.
+  InitCustomHardware();
+
   PreloadInitialisation(false); // calls dlgStartup
 
   GPS_INFO.NAVWarning = true; // default, no gps at all!
@@ -3178,6 +3186,7 @@ void Shutdown(void) {
   CloseCalculations();
 
   CloseGeoid();
+  DeInitCustomHardware();
 
   StartupStore(TEXT(". Close Windows%s"),NEWLINE);
   DestroyWindow(hWndMapWindow);
@@ -4591,6 +4600,15 @@ void UpdateBatteryInfos(void) {
   BATTERYINFO BatteryInfo; 
   BatteryInfo.acStatus = 0;
 
+  #ifdef PNA
+  if (DeviceIsGM130) {
+	PDABatteryPercent = GM130PowerLevel();
+	PDABatteryStatus =  GM130PowerStatus();
+	PDABatteryFlag =    GM130PowerFlag();
+
+	PDABatteryTemperature = 0;
+  } else 
+  #endif
   if (GetBatteryInfo(&BatteryInfo)) {
     PDABatteryPercent = BatteryInfo.BatteryLifePercent;
     PDABatteryTemperature = BatteryInfo.BatteryTemperature; 

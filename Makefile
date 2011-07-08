@@ -218,11 +218,11 @@ LDFLAGS		+=$(PROFILE)
 ifeq ($(CONFIG_PC),y)
   LDLIBS := -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32
 else
-  LDLIBS := -Wl,-Bstatic -lstdc++  -Wl,-Bdynamic -lcommctrl
+  LDLIBS := -Wl,-Bstatic -lstdc++  -Wl,-Bdynamic -lcommctrl -lgm130api
   ifeq ($(MINIMAL),n)
-    LDLIBS		+= -laygshell
+    LDLIBS		+= -laygshell 
     ifneq ($(TARGET),PNA)
-      LDLIBS		+= -limgdecmp
+      LDLIBS		+= -limgdecmp 
     endif
   endif
 endif
@@ -372,7 +372,7 @@ SRC_FILES :=\
 	$(SRC)/LKDrawCommon.cpp 	$(SRC)/LKDrawAspNearest.cpp\
 	$(SRC)/LKDrawInfoPage.cpp	$(SRC)/LKDrawWaypoints.cpp\
 	$(SRC)/LKDrawTraffic.cpp	$(SRC)/LKSimulator.cpp\
-	$(SRC)/LKBestAlternate.cpp \
+	$(SRC)/LKBestAlternate.cpp	$(SRC)/LKHolux.cpp \
 	$(SRC)/MapWindow.cpp 		$(SRC)/MapWindow2.cpp \
 	$(SRC)/MapWindow3.cpp 		$(SRC)/MapWindowA.cpp \
 	$(SRC)/MapWindowZoom.cpp        $(SRC)/MapWindowMode.cpp \
