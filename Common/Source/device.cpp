@@ -834,21 +834,10 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
   _stprintf(Buffer,TEXT("PFLAC,S,ADDWP,0000000N,00000000E,LANDING"));
   if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
 
-  // PFLAC,S,KEY,VALUE
-  // Expect
-  // PFLAC,A,blah
-  // PFLAC,,COPIL:
-  // PFLAC,,COMPID:
-  // PFLAC,,COMPCLASS:
-
-  // PFLAC,,NEWTASK:
-  // PFLAC,,ADDWP:
-
-  // TODO bug: JMW, FLARM Declaration checks
-  // Note: FLARM must be power cycled to activate a declaration!
-  // Only works on IGC approved devices
-  // Total data size must not surpass 183 bytes
-  // probably will issue PFLAC,ERROR if a problem?
+  // Reboot flarm to make declaration active, according to specs
+  Sleep(1000);
+  devFormatNMEAString(Buffer, 512, TEXT("PFLAR,0") );
+  d->Com->WriteString(tmp);
 
   d->Com->SetRxTimeout(RXTIMEOUT);                       // clear timeout
   d->Com->StartRxThread();                       // restart RX thread
