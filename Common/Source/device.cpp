@@ -837,7 +837,7 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
   // Reboot flarm to make declaration active, according to specs
   Sleep(1000);
   devFormatNMEAString(Buffer, 512, TEXT("PFLAR,0") );
-  d->Com->WriteString(tmp);
+  d->Com->WriteString(Buffer);
 
   d->Com->SetRxTimeout(RXTIMEOUT);                       // clear timeout
   d->Com->StartRxThread();                       // restart RX thread

@@ -4438,9 +4438,8 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	if (time_in_flight>10) {
 		InputEvents::processGlideComputer(GCE_TAKEOFF);
 
-		#if ALPHADEBUG
-		StartupStore(_T(". TAKEOFF\n"));
-		#endif
+		#include "./LKincludetexttime.cpp"
+		StartupStore(_T(". TAKEOFF %s%s"), time_temp,NEWLINE);
 
 		// reset stats on takeoff
 		ResetFlightStats(Basic, Calculated);
@@ -4468,9 +4467,8 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		// have been stationary for a minute
 		InputEvents::processGlideComputer(GCE_LANDING);
 
-		#if ALPHADEBUG
-		StartupStore(_T(". LANDING\n"));
-		#endif
+		#include "./LKincludetexttime.cpp"
+		StartupStore(_T(". LANDED %s%s"), time_temp,NEWLINE);
 
 		// JMWX  restore data calculated at finish so
 		// user can review flight as at finish line

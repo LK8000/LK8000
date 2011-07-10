@@ -3045,7 +3045,8 @@ void Shutdown(void) {
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
   CreateProgressDialog(gettext(TEXT("_@M1219_")));
 
-  StartupStore(TEXT(". Entering shutdown...%s"),NEWLINE);
+  #include "./LKincludetexttime.cpp"
+  StartupStore(_T(". Entering shutdown %s%s"), time_temp,NEWLINE);
   StartupLogFreeRamAndStorage();
 
   // turn off all displays
@@ -3391,8 +3392,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	if (ProgramStarted==psFirstDrawDone) {
 	  AfterStartup();
 	  ProgramStarted = psNormalOp;
-          StartupStore(TEXT(". ProgramStarted=NormalOp%s"),NEWLINE);
+          #include "./LKincludetexttime.cpp"
+          StartupStore(_T(". ProgramStarted=NormalOp %s%s"), time_temp,NEWLINE);
           StartupLogFreeRamAndStorage();
+
 	}
       }
       break;
