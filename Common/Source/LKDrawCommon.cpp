@@ -262,7 +262,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
   // current page in use by current mapspacemode
   curpage=SelectedPage[curmapspace];
   if (curpage<0||curpage>=MAXCOMMONNUMPAGES) {
-	DoStatusMessage(_T("ERR-092 current page invalid!")); // TODO FIX this to happen
+	// DoStatusMessage(_T("ERR-092 current page invalid!")); // selection while waiting for data ready
 	// immediate action to resolve this problem, take it back to normality
 	SelectedPage[curmapspace]=0;
 	LKevent=LKEVENT_NONE;
@@ -280,9 +280,11 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 		i=pIndex[SelectedRaw[curmapspace] + (curpage*CommonNumraws)];
 
 		if ( !ValidWayPoint(i)) {
+			#if 0 // selection while waiting for data ready
 			// dont say error if empty list and an enter was pressed
 			if (*pNumber) 
 				DoStatusMessage(_T("ERR-018 Invalid selection"));
+			#endif
 			break;
 		}
 		SelectedWaypoint=i;

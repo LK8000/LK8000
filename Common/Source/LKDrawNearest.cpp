@@ -253,7 +253,7 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 
   curpage=SelectedPage[curmapspace];
   if (curpage<0||curpage>=MAXNUMPAGES) { // TODO also >Numpages
-	DoStatusMessage(_T("ERR-091 curpage invalid!")); 
+	// DoStatusMessage(_T("ERR-091 curpage invalid!"));  // selection while waiting for data ready
 	SelectedPage[curmapspace]=0;
 	LKevent=LKEVENT_NONE;
 	return;
@@ -278,8 +278,10 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 		}
 
 		if ( !ValidWayPoint(i)) {
+			#if 0 // selection while waiting for data ready
 			if (SortedNumber>0)
 				DoStatusMessage(_T("ERR-019 Invalid selection")); 
+			#endif
 			break;
 		}
 		SelectedWaypoint=i;

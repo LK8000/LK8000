@@ -230,7 +230,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 
 		if ( !ValidAirspace(i)) {
 			// todo only if numairspace>0
-			DoStatusMessage(_T("ERR-039 Invalid ASP selection")); 
+			// DoStatusMessage(_T("ERR-039 Invalid ASP selection")); 
 			break;
 		}
 		LastDoAirspaces = GPS_INFO.Time+NEARESTONHOLD; 

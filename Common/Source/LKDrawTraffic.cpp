@@ -213,7 +213,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 
   curpage=SelectedPage[curmapspace];
   if (curpage<0||curpage>=MAXTRAFFICNUMPAGES) {
-	DoStatusMessage(_T("ERR-041 traffic curpage invalid!")); 
+	// DoStatusMessage(_T("ERR-041 traffic curpage invalid!"));  // selection while waiting for data ready
 	SelectedPage[curmapspace]=0;
 	LKevent=LKEVENT_NONE;
 	return;
@@ -227,8 +227,10 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 		i=LKSortedTraffic[SelectedRaw[curmapspace]+(curpage*TrafficNumraws)];
 
 		if ( (i<0) || (i>=MAXTRAFFIC) || (LKTraffic[i].ID<=0) ) {
+			#if 0 // selection while waiting for data ready
 			if (LKNumTraffic>0)
 				DoStatusMessage(_T("ERR-045 Invalid selection")); 
+			#endif
 			break;
 		}
 		LKevent=LKEVENT_NONE; 
