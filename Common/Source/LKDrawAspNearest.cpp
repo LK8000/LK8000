@@ -99,6 +99,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   	_stprintf(Buffer,TEXT("ABCDEF GHIJK-LM"));  
 	// now resize for tuning on resolutions
 	if (ScreenSize == ss320x240) s_maxnlname=9;
+	if (ScreenSize == ss400x240) s_maxnlname=10;
   }
   Buffer[s_maxnlname]='\0';
 
