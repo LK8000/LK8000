@@ -746,9 +746,11 @@ bool FlightTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static double LastTime = 0;
 
   if ((Basic->Time != 0) && (Basic->Time <= LastTime)) {
-	if ((Basic->Time<LastTime) && (!Basic->NAVWarning)) {
+	if ( (LastTime - Basic->Time >30 ) && (!Basic->NAVWarning)) {
 		// Reset statistics.. (probably due to being in IGC replay mode)
-		StartupStore(_T("... Time is in the past! Flight reset.%s"),NEWLINE);
+		#include "./LKincludetexttime.cpp"
+		StartupStore(_T("... Time is in the past! %s%s"), time_temp,NEWLINE);QQUI
+
 		ResetFlightStats(Basic, Calculated);
 		time_in_flight=0;
 		time_on_ground=0;

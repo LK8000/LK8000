@@ -771,8 +771,11 @@ bool CheckAlarms(unsigned short al) {
 //
 void MasterTimeReset(void) {
 
-  StartupStore(_T("... MASTER TIME RESET%s"),NEWLINE);
-  DoStatusMessage(_T("MASTER TIME RESET")); // no translation
+  #include "./LKincludetexttime.cpp"
+  StartupStore(_T("... Master Time Reset %s%s"), time_temp,NEWLINE);
+  #if ALPHADEBUG
+  DoStatusMessage(_T("MASTER TIME RESET")); // no translation please
+  #endif
 
   // Remember to lock anything needed to be locked
 

@@ -510,7 +510,7 @@ double NMEAParser::TimeModify(double FixTime, NMEA_INFO* GPS_INFO)
 bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *GPS_INFO) {
 
   // If simulating, we might be in the future already...
-  if(ThisTime< LastTime) {
+  if(ThisTime< LastTime) {	// watchout on some GPS it is possible to get ThisTime=LastTime sometimes
     LastTime = ThisTime;
     StartDay = -1; // reset search for the first day
     MasterTimeReset();
@@ -681,13 +681,9 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 	RMZAltitude = AltitudeToQNHAltitude(RMZAltitude);
 	RMZAvailable = TRUE;
 
-	// if no device declared to have baro, we can use RMZ even if not activeGPS
-	// OR if the declared device failed to provide baro!!
-	if (!devHasBaroSource() || !GPS_INFO->BaroAltitudeAvailable) {
-		if (!ReplayLogger::IsEnabled()) {
-			GPS_INFO->BaroAltitudeAvailable = true;
-			GPS_INFO->BaroAltitude = RMZAltitude;
-		}
+	if (!ReplayLogger::IsEnabled()) {
+		GPS_INFO->BaroAltitudeAvailable = true;
+		GPS_INFO->BaroAltitude = RMZAltitude;
 	}
   }
   #endif // PNA
