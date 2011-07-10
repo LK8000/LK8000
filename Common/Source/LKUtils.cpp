@@ -31,6 +31,7 @@
 #include "McReady.h"
 #include "InputEvents.h"
 #include "LKMapWindow.h"
+#include "Process.h"
 #ifdef PNA
 #include "LKHolux.h"
 #endif
