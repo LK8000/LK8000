@@ -11,7 +11,6 @@
 #include "compatibility.h"
 #include "lk8000.h"
 #include "buildnumber.h"
-#include "Cpustats.h"
 #include "MapWindow.h"
 #include "Parser.h"
 #include "Calculations.h"
@@ -1733,7 +1732,11 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 
   // registry deleted at startup also for PC
   if ( RegDeleteKey(HKEY_CURRENT_USER, _T(REGKEYNAME))== ERROR_SUCCESS )  // 091213
+        {
+	#if TESTBENCH
 	StartupStore(_T(". Registry key was correctly deleted%s"),NEWLINE);
+	#endif
+	}
   else
 	StartupStore(_T(". Registry key could NOT be deleted, this is normal after a reset.%s"),NEWLINE);
 
@@ -1872,7 +1875,9 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   LoadWindFromRegistry();
   #endif
   CalculateNewPolarCoef();
+  #if TESTBENCH
   StartupStore(TEXT(". GlidePolar::SetBallast%s"),NEWLINE);
+  #endif
   GlidePolar::SetBallast();
 
 // VENTA-ADDON
@@ -2030,7 +2035,9 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
 
 
   // re-set polar in case devices need the data
+  #if TESTBENCH
   StartupStore(TEXT(". GlidePolar::SetBallast%s"),NEWLINE);
+  #endif
   GlidePolar::SetBallast();
 
   // LKTOKEN _@M1218_ "Initialising display"
@@ -3067,7 +3074,9 @@ void Shutdown(void) {
   // Save settings
   StoreRegistry();
 
+  #if TESTBENCH
   StartupStore(TEXT(". Save_Recent_WP_history%s"),NEWLINE);
+  #endif
   SaveRecentList();
   // Stop sound
 
@@ -3088,10 +3097,14 @@ void Shutdown(void) {
   // Clear data
   // LKTOKEN _@M1222_ "Shutdown, saving task..."
   CreateProgressDialog(gettext(TEXT("_@M1222_")));
+  #if TESTBENCH
   StartupStore(TEXT(". Save default task%s"),NEWLINE);
+  #endif
   SaveDefaultTask();
 
+  #if TESTBENCH
   StartupStore(TEXT(". Clear task data%s"),NEWLINE);
+  #endif
 
   LockTaskData();
   Task[0].Index = -1;  ActiveWayPoint = -1; 

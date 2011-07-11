@@ -82,9 +82,6 @@ static BOOL flymasterf1Install(PDeviceDescriptor_t d){
 
 
 BOOL flymasterf1Register(void){
-  #if ALPHADEBUG
-  StartupStore(_T(". FlymasterF1 device registered%s"),NEWLINE);
-  #endif
   return(devRegister(
     TEXT("FlymasterF1"),
     (1l << dfGPS)

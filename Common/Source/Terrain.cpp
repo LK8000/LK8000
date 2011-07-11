@@ -20,7 +20,6 @@
 #include "InfoBoxLayout.h"
 #include "Sizes.h"
 #include "options.h"
-#include "Cpustats.h"
 
 #include "utils/heapcheck.h"
 

@@ -67,7 +67,7 @@ static BOOL CondorLinkTimeout(PDeviceDescriptor_t d){
 
 static BOOL condorInstall(PDeviceDescriptor_t d){
 
-  // StartupStore(_T(". Condor device installed%s"),NEWLINE);
+  StartupStore(_T(". Condor device installed%s"),NEWLINE);
   _tcscpy(d->Name, TEXT("Condor"));
   d->ParseNMEA = CondorParseNMEA;
   d->PutMacCready = NULL;

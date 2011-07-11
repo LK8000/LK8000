@@ -14,7 +14,6 @@
 #define VENTA_DEBUG_KEY   // activates scan key codes, so you know what an hardware key is mapped to
                           // the HW key scan code is displayed on the screen!
 #define DEBUG_ROTARY      // write in DEBUG.TXT located in the same place of .exe , append mode
-#define CPUSTATS          // activate cpu thread profiling stuff also in Cpustat.h
 #define DEBUG_DEV_COM     // log device communication through DevBase class methods
 #define DEBUG_GPS         //  Parser.cpp will show more debug messages about wrong fixes
 #define DEBUGNPM          // port monitor and hearthbeats in Parser

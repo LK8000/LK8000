@@ -11,7 +11,6 @@
 #include "Defines.h"
 #include "LKUtils.h"
 #include "options.h"
-#include "Cpustats.h"
 #include "MapWindow.h"
 #include "LKMapWindow.h"
 #include "Utils.h"

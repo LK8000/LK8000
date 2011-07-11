@@ -7,7 +7,6 @@
 */
 
 #include "StdAfx.h"
-#include "Cpustats.h"
 #include "Sizes.h"
 #include "Port.h"
 #include "externs.h"

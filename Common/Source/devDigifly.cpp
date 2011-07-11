@@ -66,9 +66,7 @@ static BOOL DigiflyLinkTimeout(PDeviceDescriptor_t d){
 
 static BOOL DigiflyInstall(PDeviceDescriptor_t d){
 
-  #if ALPHADEBUG
   StartupStore(_T(". DIGIFLY device installed%s"),NEWLINE);
-  #endif
 
   _tcscpy(d->Name, TEXT("Digifly"));
   d->ParseNMEA = DigiflyParseNMEA;
@@ -89,9 +87,6 @@ static BOOL DigiflyInstall(PDeviceDescriptor_t d){
 
 
 BOOL DigiflyRegister(void){
-  #if ALPHADEBUG
-  StartupStore(_T(". Digifly device registered%s"),NEWLINE);
-  #endif
   return(devRegister(
     TEXT("Digifly"),
     (1l << dfGPS)

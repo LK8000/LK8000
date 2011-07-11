@@ -8,7 +8,6 @@
 
 #include "StdAfx.h"
 #include "options.h"
-#include "Cpustats.h"
 #include "lk8000.h"
 #include "Utils2.h"
 #include "compatibility.h"

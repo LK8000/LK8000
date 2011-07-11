@@ -21,7 +21,6 @@
 #include "lk8000.h"
 #include "InfoBoxLayout.h"
 #include "Utils2.h"
-#include "Cpustats.h"
 #include "device.h"
 #include "Logger.h"
 #include "Parser.h"
@@ -860,7 +859,9 @@ gesture_left:
 // Called after InitLKScreen, normally
 void InitLKFonts()
 {
+  #if TESTBENCH
   StartupStore(_T(". InitLKFonts%s"),NEWLINE); // 091213
+  #endif
 
 /* REMOVE ALREADY INIT IN GLOBAL ASSIGN
   static bool doinit=true;
@@ -1737,7 +1738,9 @@ void InitLKScreen() {
 // Requires restart if activated from config menu
 void InitLK8000() 
 {
+        #if TESTBENCH
 	StartupStore(_T(". Init LK8000%s"),NEWLINE);
+        #endif
 	LoadRecentList();
 
 	InitModeTable();
@@ -2584,7 +2587,9 @@ void Cpustats(int *accounting, FILETIME *kernel_old, FILETIME *kernel_new, FILET
 void InitModeTable() {
 
 	short i,j;
+	#if TESTBENCH
 	StartupStore(_T(". Init ModeTable for LK8000: "));
+	#endif
 
 	for (i=0; i<=LKMODE_TOP; i++)
 		for (j=0; j<=MSM_TOP; j++)
@@ -2649,8 +2654,9 @@ void InitModeTable() {
 	}
 
 	SetInitialModeTypes();
-
+	#if TESTBENCH
 	StartupStore(_T("Ok%s"),NEWLINE);
+	#endif
 }
 
 

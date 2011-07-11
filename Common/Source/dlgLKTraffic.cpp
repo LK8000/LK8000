@@ -13,7 +13,6 @@
 #include "externs.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
-#include "Cpustats.h"
 #include "Utils2.h"
 
 #include "utils/heapcheck.h"

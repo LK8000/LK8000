@@ -57,7 +57,9 @@ static int WaypointOutOfTerrainRangeDontAskAgain = -1;
 
 
 void CloseWayPoints() {
+  #if TESTBENCH
   StartupStore(TEXT(". CloseWayPoints%s"),NEWLINE);
+  #endif
   unsigned int i;
   if (NumberOfWayPoints>0) { // we must free also RESWps comments!
 	StartupStore(TEXT(". Waypoint list was not empty, closing.%s"),NEWLINE);
@@ -151,7 +153,9 @@ static bool WaypointInTerrainRange(WAYPOINT *List) {
 bool AllocateWaypointList(void) {
   if (!WayPointList) {
     NumberOfWayPoints = 0;
+    #if TESTBENCH
     StartupStore(_T(". AllocateWaypointList: "));
+    #endif
     WayPointList = (WAYPOINT *)LocalAlloc(LPTR, 50 * sizeof(WAYPOINT));
     if(WayPointList == NULL) 
       {
@@ -163,9 +167,11 @@ bool AllocateWaypointList(void) {
                     gettext(TEXT("_@M266_")),MB_OK|MB_ICONSTOP);
         return 0;
       }
+    #if TESTBENCH
     StartupStore(_T("OK%s"),NEWLINE);
-
     StartupStore(_T(". AllocateWayPointCalc..."));
+    #endif
+
     WayPointCalc = (WPCALC *)LocalAlloc(LPTR, 50 * sizeof(WPCALC));
     if(WayPointCalc == NULL) 
       {
@@ -177,7 +183,9 @@ bool AllocateWaypointList(void) {
                     gettext(TEXT("_@M266_")),MB_OK|MB_ICONSTOP);
         return 0;
       }
+    #if TESTBENCH
     StartupStore(_T("OK%s"),NEWLINE);
+    #endif
     return true;
   }
   return true;
@@ -1000,7 +1008,9 @@ void ReadWayPoints(void)
 void SetHome(bool reset)
 {
 
+  #if TESTBENCH
   StartupStore(TEXT(". SetHome%s"),NEWLINE);
+  #endif
 
   unsigned int i;
 
@@ -1686,7 +1696,9 @@ void AddReservedWaypoints()
 void InitVirtualWaypoints()	// 091102
 {
 
+  #if TESTBENCH
   StartupStore(_T(". InitVirtualWaypoints: start%s"),NEWLINE);
+  #endif
     LockTaskData();
 
   if (!AllocateWaypointList()) {
@@ -1701,7 +1713,9 @@ void InitVirtualWaypoints()	// 091102
 	NumberOfWayPoints=NUMRESWP;
 	StartupStore(_T(". InitVirtualWaypoints: done (%d vwp)%s"),NUMRESWP,NEWLINE);
   } else {
+	#if TESTBENCH
 	StartupStore(_T(".. InitVirtualWaypoints: already done, skipping.%s"),NEWLINE);
+        #endif
   }
 
     UnlockTaskData();

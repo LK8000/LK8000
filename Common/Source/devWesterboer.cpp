@@ -68,9 +68,6 @@ static BOOL WesterboerInstall(PDeviceDescriptor_t d){
 
 
 BOOL WesterboerRegister(void){
-  #if ALPHADEBUG
-  StartupStore(_T(". Westerboer device registered%s"),NEWLINE);
-  #endif
   return(devRegister(
     TEXT("Westerboer VW1150"),
     (1l << dfBaroAlt)

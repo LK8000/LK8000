@@ -21,7 +21,6 @@
 #include "lk8000.h"
 #include "InfoBoxLayout.h"
 #include "Utils2.h"
-#include "Cpustats.h"
 #include "device.h"
 #include "Logger.h"
 #include "Parser.h"

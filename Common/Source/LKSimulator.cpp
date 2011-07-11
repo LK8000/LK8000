@@ -10,7 +10,6 @@
 #include "StdAfx.h"
 #include "options.h"
 #include "lk8000.h"
-#include "Cpustats.h"
 #include "MapWindow.h"
 #include "Calculations.h"
 #include "Calculations2.h"

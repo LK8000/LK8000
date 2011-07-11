@@ -13,7 +13,6 @@
 #include "Defines.h"
 #include "LKUtils.h"
 #include "options.h"
-#include "Cpustats.h"
 #include "Utils.h"
 #include <windows.h>
 #include <math.h>

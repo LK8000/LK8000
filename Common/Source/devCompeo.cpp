@@ -53,7 +53,7 @@ static BOOL CompeoLinkTimeout(PDeviceDescriptor_t d){
 
 static BOOL CompeoInstall(PDeviceDescriptor_t d){
 
-  // StartupStore(_T(". FLYTEC/COMPEO device installed%s"),NEWLINE);
+  StartupStore(_T(". FLYTEC/COMPEO device installed%s"),NEWLINE);
 
   _tcscpy(d->Name, TEXT("Brauniger/Compeo 5030"));
   d->ParseNMEA = CompeoParseNMEA;
@@ -74,7 +74,6 @@ static BOOL CompeoInstall(PDeviceDescriptor_t d){
 
 
 BOOL CompeoRegister(void){
-  // StartupStore(_T(". Flytec/Compeo device registered%s"),NEWLINE);
   return(devRegister(
     TEXT("Brauniger/Compeo 5030"),
     (1l << dfGPS)
