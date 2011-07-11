@@ -84,7 +84,7 @@
 #define WINE
 #endif
 
-#define USEGOINIT		1	// expire 1.7.2011, it is disabled and should be removed
+// #define USEGOINIT		1	// expire 1.8.2011, it is disabled and should be removed?
 
 //#define USEWEATHER		1	// we dont use rasp weather - hangarware
 //#define USEOLDASPWARNINGS	1	// we dont use old airspace warning system
