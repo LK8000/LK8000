@@ -178,6 +178,7 @@ FILE *fp;
 #endif
 }
 
+//#define DEBUG_EQMC 1
 /*
  * returns 0 if invalid, 999 if too high
  * EqMc is negative when no value is available, because recalculated and buffer still not usable
@@ -200,7 +201,9 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 		if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
 			    {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
 #endif
-		// StartupStore(_T("... Circling or grounded, EqMc -2 (---)\n"));
+		#if DEBUG_EQMC
+		StartupStore(_T("... Circling or grounded, EqMc -1 (---)\n"));
+		#endif
 		Calculated->EqMc = -1;
 		return(0);
 	}
@@ -211,7 +214,9 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 		if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
 			    {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
 #endif
-		// StartupStore(_T("... Invalid buf start, EqMc -2 (---)\n"));
+		#if DEBUG_EQMC
+		StartupStore(_T("... Invalid buf start <0, EqMc -1 (---)\n"));
+		#endif
 		Calculated->EqMc = -1;
 		return(0);
 	}
@@ -221,7 +226,9 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 
 	if (bc.valid == false ) {
 		if (bc.start==0) {
-			// StartupStore(_T("... bc.valid is false, EqMc -2 (---)\n"));
+			#if DEBUG_EQMC
+			StartupStore(_T("... bc.valid is false, bc.start is 0, EqMc -1 (---)\n"));
+			#endif
 			Calculated->EqMc = -1;
 			return(0); // unavailable
 		}
@@ -251,11 +258,18 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 		double dtmp= avertas/GlidePolar::Vbestld;
 
 		Calculated->EqMc = -1*GlidePolar::sinkratecache[GlidePolar::Vbestld] * ( (dtmp*dtmp*dtmp) - ( GlidePolar::Vbestld/avertas));
-		//StartupStore(_T(".. eMC=%.2f (=%.1f)  Averias=%f Avertas=%f kmh, sinktas=%.1f ms  sinkmc0=%.1f ms Vbestld=%.1f\n"),
-		//Calculated->EqMc, Calculated->EqMc, averias*TOKPH, avertas*TOKPH,-1*GlidePolar::sinkratecache[(int)avertas], 
-		//GlidePolar::sinkratecache[GlidePolar::Vbestld], GlidePolar::Vbestld*TOKPH);
+		#if DEBUG_EQMC
+		StartupStore(_T(".. eMC=%.2f (=%.1f)  Averias=%f Avertas=%f kmh, sinktas=%.1f ms  sinkmc0=%.1f ms Vbestld=%.1f\n"),
+		Calculated->EqMc, Calculated->EqMc, averias*TOKPH, avertas*TOKPH,-1*GlidePolar::sinkratecache[(int)avertas], 
+		GlidePolar::sinkratecache[GlidePolar::Vbestld], GlidePolar::Vbestld*TOKPH);
+		#endif
 
 	}
+	#if DEBUG_EQMC
+	else {
+		StartupStore(_T(".... bc.valid=%d bc.size=%d <=0, no eqMc\n"), bc.valid,bc.start);
+	}
+	#endif
 
 	if (altdiff == 0 ) {
 		return(INVALID_GR); // infinitum
