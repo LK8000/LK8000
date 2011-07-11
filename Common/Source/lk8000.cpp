@@ -748,15 +748,19 @@ bool goInitDevice=false;
 #endif
 // bool goCalculating=false;
 
+#if 0 // REMOVE
 // Battery status for SIMULATOR mode
 //	30% reminder, 20% exit, 30 second reminders on warnings
-
 #define BATTERY_WARNING 30
 #define BATTERY_EXIT 20
 #define BATTERY_REMINDER 30000
 DWORD BatteryWarningTime = 0;
+#endif
 
-char dedicated[]="Dedicated to my father Vittorio";
+// Developers dedicates..
+// Use rot13 under linux to code and decode strings
+char dedicated_by_paolo[]="Qrqvpngrq gb zl sngure Ivggbevb";
+// char dedicated_by_{yourname}="....";
 
 #define NUMDATAOPTIONS_MAX			130
 
