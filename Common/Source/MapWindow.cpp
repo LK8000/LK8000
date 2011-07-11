@@ -3820,13 +3820,8 @@ double MapWindow::GetApproxScreenRange() {
     *1000.0/GetMapResolutionFactor();
 }
 
-
-
-
-extern bool ScreenBlanked;
-
 bool MapWindow::IsDisplayRunning() {
-  return (THREADRUNNING && GlobalRunning && !ScreenBlanked && ProgramStarted);
+  return (THREADRUNNING && GlobalRunning && ProgramStarted);
 }
 
 

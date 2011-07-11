@@ -682,7 +682,6 @@ bool EnableTerrain = true;  // 091105
 int FinalGlideTerrain = 1;
 bool EnableSoundModes = true;
 bool OverlayClock = false;
-bool ScreenBlanked = false;
 bool LKLanguageReady = false;
 
 
@@ -3024,12 +3023,6 @@ bool Debounce(void) {
 
   DisplayTimeOut = 0;
   InterfaceTimeoutReset();
-
-  if (ScreenBlanked) {
-    // prevent key presses working if screen is blanked,
-    // so a key press just triggers turning the display on again
-    return false;
-  }
 
   if (dT>(unsigned int)debounceTimeout) {
     fpsTimeLast = fpsTimeThis;
