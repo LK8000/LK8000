@@ -150,6 +150,7 @@ public:
   static bool UnLoadUnitBitmap(void);
 
   static void TimeToText(TCHAR* text, int d);
+  static void TimeToTextSimple(TCHAR* text, int d);
   static bool TimeToTextDown(TCHAR* text, int d);
   static void TimeToTextS(TCHAR* text, int d);
 

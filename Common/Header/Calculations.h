@@ -31,6 +31,22 @@ typedef struct _THERMAL_SOURCE_INFO
   double Time;
 } THERMAL_SOURCE_INFO;
 
+typedef struct _THERMAL_HISTORY
+{
+  bool   Valid;
+  TCHAR  Name[8];	// L.1223
+  double Time;		// start circling clock
+  double Latitude;
+  double Longitude;
+  double HBase;		// thermal base
+  double HTop;		// total thermal gain
+  double Lift;		// Avg lift rate
+
+  double Distance;	// recalculated values
+  double Bearing;
+  double Arrival;
+} THERMAL_HISTORY;
+
 
 typedef struct _DERIVED_INFO
 {
@@ -302,6 +318,9 @@ bool ValidStartSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 bool InsideStartHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated, DWORD Margin);
 bool ValidStartSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, DWORD Margin);
 
+void InsertThermalHistory(double ThTime,  double ThLat, double ThLon, double ThBase,double ThTop, double ThAvg);
+void InitThermalHistory(void);
+
 double FinalGlideThroughTerrain(const double bearing, NMEA_INFO *Basic, 
                                 DERIVED_INFO *Calculated,
                                 double *retlat, double *retlon,
@@ -325,7 +344,7 @@ double AltitudeNeededToPassObstacles(const double startLat, const double startLo
 
 void BallastDump();
 
-#define TAKEOFFSPEEDTHRESHOLD (0.5*GlidePolar::Vminsink)
+// #define TAKEOFFSPEEDTHRESHOLD (0.5*GlidePolar::Vminsink) REMOVE
 
 int FindFlarmSlot(const int flarmId);
 int FindFlarmSlot(const TCHAR *flarmCN);

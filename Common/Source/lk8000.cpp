@@ -452,6 +452,9 @@ TCHAR WpHome_Name[NAME_SIZE+1];
 double WpHome_Lat=0;
 double WpHome_Lon=0;
 
+// The Thermal History internal database
+THERMAL_HISTORY ThermalHistory[MAX_THERMAL_HISTORY+1];
+
 // LK8000 Hearth beats at 2Hz
 double LKHearthBeats=0;
 // number of reporting messages from Portmonitor.

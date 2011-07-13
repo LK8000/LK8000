@@ -225,6 +225,8 @@ extern LKAirspace_Nearest_Item LKAirspaces[MAXNEARAIRSPACES+1];
 extern int LKNumAirspaces;
 extern int LKSortedAirspaces[MAXNEARAIRSPACES+1];
 
+extern THERMAL_HISTORY	ThermalHistory[];
+
 extern int PGOpenTimeH;
 extern int PGOpenTimeM;
 extern int PGOpenTime;

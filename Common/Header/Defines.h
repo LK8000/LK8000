@@ -233,6 +233,9 @@
 // 101003 SetRxtimeout default, in ms
 #define RXTIMEOUT	10
 
+// Max number of thermals remembered for the Nearest Thermals page.
+#define MAX_THERMAL_HISTORY	100
+
 #define SIMMODE	(RUN_MODE==RUN_SIM)
 
 #define CUPSIZE_COUNTRY	10

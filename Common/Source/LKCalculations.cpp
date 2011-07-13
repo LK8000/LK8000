@@ -29,6 +29,7 @@
 #include "Message.h"
 #include "Logger.h"
 #include "LKMapWindow.h"
+#include "Units.h"
 
 #include "utils/heapcheck.h"
 using std::min;
@@ -2156,5 +2157,79 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    #endif
 
    return ret;
+}
+
+// 
+// Thermal History functions
+//
+#define DEBUG_THISTORY 1
+
+void InitThermalHistory(void) {
+  int i;
+  for (i=0; i<MAX_THERMAL_HISTORY; i++) {
+	ThermalHistory[i].Valid=false;
+  }
+  #if DEBUG_THISTORY
+  StartupStore(_T("... Init Thermal History done\n"));
+  #endif
+}
+
+
+// This function is called upon exiting a thermal, just before input event to cruise mode is issued
+// Functions using the ThermalHistory array should always check for Valid flag at each step,
+// and in any case never use the array while Circling. Because anytime we may change a value, in case
+// (very rare) the 100 limit is passed and we are reusing a value.
+void InsertThermalHistory(double ThTime,  double ThLat, double ThLon, double ThBase,double ThTop, double ThAvg) {
+
+  int i;
+
+  for (i=0; i<MAX_THERMAL_HISTORY; i++) {
+	if (ThermalHistory[i].Valid == false) break;
+  }
+
+  if (i==MAX_THERMAL_HISTORY) {
+	#if DEBUG_THISTORY
+	StartupStore(_T("... no more space in thermal history\n"));
+	#endif
+	int oldest=0; // lets assume the 0 is the oldest, to begin
+  	for (i=1; i<MAX_THERMAL_HISTORY; i++) {
+		if ( ThermalHistory[i].Time < ThermalHistory[oldest].Time ) {
+			oldest=i;
+			continue;
+		}
+	}
+	#if DEBUG_THISTORY
+	StartupStore(_T(".... oldest thermal in history is n.%d\n"),oldest);
+	#endif
+	i=oldest;
+  }
+
+  if (i<0 || i>=MAX_THERMAL_HISTORY) {
+	#if DEBUG_THISTORY
+	StartupStore(_T("..... Insert thermal history out of range: <%d>!\n"),i);
+	#endif
+	return;
+  }
+
+  ThermalHistory[i].Valid=false;
+
+  TCHAR tstring[10];
+  Units::TimeToTextSimple(tstring,(int)ThTime);
+  
+  _stprintf(ThermalHistory[i].Name,_T("L.%s"),tstring);
+  ThermalHistory[i].Time = ThTime;
+  ThermalHistory[i].Latitude = ThLat;
+  ThermalHistory[i].Longitude = ThLon;
+  ThermalHistory[i].Longitude = ThLon;
+  ThermalHistory[i].HBase = ThBase;
+  ThermalHistory[i].HTop = ThTop;
+  ThermalHistory[i].Lift = ThAvg;
+  ThermalHistory[i].Valid=true;
+
+  #if DEBUG_THISTORY
+  StartupStore(_T("... Insert new thermal in history[%d]: <%s> Base=%.0f Top=%.0f Lift=%.1f\n"),
+	i, ThermalHistory[i].Name, ThBase, ThTop, ThAvg);
+  #endif
+
 }
 

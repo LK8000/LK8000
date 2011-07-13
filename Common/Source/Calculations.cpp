@@ -739,6 +739,10 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     for (i=0; i<MAX_THERMAL_SOURCES; i++) {
       Calculated->ThermalSources[i].LiftRate= -1.0;
     }
+
+    // Reset Thermal History
+    InitThermalHistory();
+
 }
 
 
@@ -1575,33 +1579,46 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       break;
     }
   case WAITCRUISE:
+
     if (forcecircling) {
       MODE = CLIMB;
       break;
     }
+
+    //
+    // Exiting climb mode?
+    //
     if((Rate < MinTurnRate) || forcecruise) {
+
       if( ((Basic->Time  - StartTime) > ClimbCruiseSwitch) || forcecruise) {
-        Calculated->Circling = FALSE;
-        
-        // Transition to cruise
-        MODE = CRUISE;
-      if (StartTime==0) {
-        StartTime = Basic->Time;
-        StartLong = Basic->Longitude;
-        StartLat  = Basic->Latitude;
-        StartAlt  = Calculated->NavAltitude;
-        StartEnergyHeight  = Calculated->EnergyHeight;
-      }
+
+	// We are no more in climb mode
+
+        if (StartTime==0) {
+          StartTime = Basic->Time;
+          StartLong = Basic->Longitude;
+          StartLat  = Basic->Latitude;
+          StartAlt  = Calculated->NavAltitude;
+          StartEnergyHeight  = Calculated->EnergyHeight;
+        }
         Calculated->CruiseStartLat  = StartLat;
         Calculated->CruiseStartLong = StartLong;
         Calculated->CruiseStartAlt  = StartAlt;
         Calculated->CruiseStartTime = StartTime;
 
+	// Here we assign automatically this last thermal to the L> multitarget
 	if (Calculated->ThermalGain >100) {
 		WayPointList[RESWP_LASTTHERMAL].Latitude  = Calculated->ClimbStartLat;
 		WayPointList[RESWP_LASTTHERMAL].Longitude = Calculated->ClimbStartLong;
 		WayPointList[RESWP_LASTTHERMAL].Altitude  = Calculated->ClimbStartAlt;
 	}
+
+	// Force immediate calculation of average thermal, it would be made
+	// during next cycle, but we need it here immediately
+	AverageThermal(Basic,Calculated);
+
+	InsertThermalHistory(Calculated->ClimbStartTime, Calculated->ClimbStartLat, Calculated->ClimbStartLong, 
+		Calculated->ClimbStartAlt, Calculated->NavAltitude, Calculated->AverageThermal);
 	
 	InitLDRotary(&rotaryLD);
 	InitWindRotary(&rotaryWind); // 100103
@@ -1611,12 +1628,15 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
                                    - Calculated->TakeOffTime)/3600.0,
                                Calculated->CruiseStartAlt);
         
+        // Finally do the transition to cruise
+        Calculated->Circling = FALSE;
+        MODE = CRUISE;
         SwitchZoomClimb(Basic, Calculated, false, LEFT);
         InputEvents::processGlideComputer(GCE_FLIGHTMODE_CRUISE);
-      }
 
-    } else {
-      // JMW Transition back to climb, because we are turning again
+      } // climbcruiseswitch time in range
+
+    } else { // Rate>Minturnrate, back to climb, turning again
       MODE = CLIMB;
     }
     break;
