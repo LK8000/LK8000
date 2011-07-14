@@ -113,6 +113,12 @@ static void setVariables(void) {
     dfb->Set(ConfIP32);
     wp->RefreshDisplay();
   }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpIP33"));
+  if (wp) {
+    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    dfb->Set(ConfIP33);
+    wp->RefreshDisplay();
+  }
 
 }
 
@@ -245,6 +251,15 @@ void dlgInfoPagesShowModal(void){
 	if (ConfIP32 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP32 = (wp->GetDataField()->GetAsBoolean());
 		SetToRegistry(szRegistryConfIP32, (DWORD)(ConfIP32));
+		changed=true;
+	}
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpIP33"));
+  if (wp) {
+	if (ConfIP33 != (wp->GetDataField()->GetAsBoolean())) {
+		ConfIP33 = (wp->GetDataField()->GetAsBoolean());
+		SetToRegistry(szRegistryConfIP33, (DWORD)(ConfIP33));
 		changed=true;
 	}
   }

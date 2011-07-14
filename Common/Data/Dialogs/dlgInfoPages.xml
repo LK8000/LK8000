@@ -37,7 +37,10 @@
 <WndProperty Name="prpIP31" Caption="_@M1620_" X=0 Y=-997 Width=119 Height=22 CaptionWidth=70 Font=3 Help="_@H1221_">
 <DataField name="" DataType="boolean" />
 </WndProperty>
-<WndProperty Name="prpIP32" Caption="_@M1621_" X=119 Y=-999 Width=119 Height=22 CaptionWidth=70 Font=3 Help="_@H1221_">
+<WndProperty Name="prpIP33" Caption="_@M1622_" X=119 Y=-999 Width=119 Height=22 CaptionWidth=70 Font=3 Help="_@H1221_">
+<DataField name="" DataType="boolean" />
+</WndProperty>
+<WndProperty Name="prpIP32" Caption="_@M1621_" X=0 Y=-1 Width=119 Height=22 CaptionWidth=70 Font=3 Help="_@H1221_">
 <DataField name="" DataType="boolean" />
 </WndProperty>
 

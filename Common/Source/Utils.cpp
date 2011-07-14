@@ -358,6 +358,7 @@ const TCHAR szRegistryConfIP23[] = TEXT("ConfIP23");
 const TCHAR szRegistryConfIP24[] = TEXT("ConfIP24");
 const TCHAR szRegistryConfIP31[] = TEXT("ConfIP31");
 const TCHAR szRegistryConfIP32[] = TEXT("ConfIP32");
+const TCHAR szRegistryConfIP33[] = TEXT("ConfIP33");
 
 const TCHAR szRegistryOverlayClock[] = TEXT("OverlayClock");
 
@@ -1312,6 +1313,9 @@ void ReadRegistrySettings(void)
   Temp = 1;
   GetFromRegistry(szRegistryConfIP32,&Temp);
   ConfIP32 = Temp;
+  Temp = 1;
+  GetFromRegistry(szRegistryConfIP33,&Temp);
+  ConfIP33 = Temp;
 
   Temp = LoggerTimeStepCruise;
   GetFromRegistry(szRegistryLoggerTimeStepCruise,&Temp);
@@ -5151,6 +5155,7 @@ void UpdateConfIP(void) {
   // COMMONS
   ConfIP[3][0]=ConfIP31;
   ConfIP[3][1]=ConfIP32;
+  ConfIP[3][2]=ConfIP33;
 
   // TRAFFIC always on if available
   ConfIP[4][0]=true;
@@ -5174,7 +5179,7 @@ void UpdateConfIP(void) {
 	ConfMP[2]=true;
 
   // Check if we have COMMONS
-  if (ConfIP[3][0]==false && ConfIP[3][1]==false ) {
+  if (ConfIP[3][0]==false && ConfIP[3][1]==false && ConfIP[3][2]==false ) {
 	ConfMP[3]=false;
   } else
 	ConfMP[3]=true;

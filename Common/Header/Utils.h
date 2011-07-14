@@ -214,6 +214,7 @@ extern const TCHAR szRegistryConfIP23[];
 extern const TCHAR szRegistryConfIP24[];
 extern const TCHAR szRegistryConfIP31[];
 extern const TCHAR szRegistryConfIP32[];
+extern const TCHAR szRegistryConfIP33[];
 
 
 extern const TCHAR szRegistrySafetyMacCready[];

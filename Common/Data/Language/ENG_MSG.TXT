@@ -1532,6 +1532,7 @@ _@M1618_ "2.3 TPS "
 _@M1619_ "2.4 ASP "
 _@M1620_ "3.1 COMN "
 _@M1621_ "3.2 HIST "
+_@M1622_ "3.3 THERM "
 
 # New airspace messages
 _@M1630_ "Height margin "
@@ -1579,5 +1580,8 @@ _@M1661_ "ACT"
 # Error message
 _@M1662_ "SYSTEM ERROR"
 _@M1663_ "NOT ENOUGH MEMORY"
+
+# Header Thermal History
+_@M1670_ "THE"
 
 # Note for developers: LKLanguage MAX_MESSAGE  1700: 0-1699 !

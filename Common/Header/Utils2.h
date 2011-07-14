@@ -162,9 +162,10 @@ extern HFONT					LK8PanelUnitFont;
 #define MSM_INFO_TARGET		14
 #define MSM_INFO_CONTEST	15
 #define MSM_AIRSPACES		16
+#define MSM_THERMALS		17
 // turnaround point is TOP (equal to last TRI define), 
 // remember that arrays must count from zero, so MSM_TOP+1
-#define MSM_TOP			16
+#define MSM_TOP			17
 //
 // THIS CONFIGURATION GIVES THE ORDER OF MENUs. ALL ITEMS MUST ALSO BE ADDED INSIDE INITMODETABLE()
 // in Utils2.cpp WHERE each mode is paired with an MSM_xxx item.
@@ -205,7 +206,8 @@ extern HFONT					LK8PanelUnitFont;
 //
 #define NV_COMMONS		0
 #define NV_HISTORY		1
-#define NV_TOP			1
+#define NV_THERMALS		2
+#define NV_TOP			2
 // 
 // Traffic mode
 // 

@@ -478,6 +478,7 @@ extern bool ConfIP23;
 extern bool ConfIP24;
 extern bool ConfIP31;
 extern bool ConfIP32;
+extern bool ConfIP33;
 
 extern bool OverlayClock;
 extern bool EnableSoundModes;
