@@ -196,6 +196,7 @@ extern double  LastDoTraffic;
 extern double  LastDoAirspaces;
 extern double LastDoNearest;
 extern double LastDoCommon;
+extern double LastDoThermalH;
 extern int LKwdlgConfig;
 extern bool PollingMode;
 
@@ -225,7 +226,10 @@ extern LKAirspace_Nearest_Item LKAirspaces[MAXNEARAIRSPACES+1];
 extern int LKNumAirspaces;
 extern int LKSortedAirspaces[MAXNEARAIRSPACES+1];
 
-extern THERMAL_HISTORY	ThermalHistory[];
+extern THERMAL_HISTORY	ThermalHistory[MAX_THERMAL_HISTORY+1];
+extern THERMAL_HISTORY	CopyThermalHistory[MAX_THERMAL_HISTORY+1];
+extern int LKNumThermals;
+extern int LKSortedThermals[MAX_THERMAL_HISTORY+1];
 
 extern int PGOpenTimeH;
 extern int PGOpenTimeM;
@@ -292,6 +296,7 @@ extern short CommonNumpages;
 // extern short TurnpointNumpages;
 extern short TrafficNumpages;
 extern short AspNumpages;
+extern short THistoryNumpages;
 extern short ModeIndex;
 
 // LK8000 sync flags

@@ -1581,7 +1581,12 @@ _@M1661_ "ACT"
 _@M1662_ "SYSTEM ERROR"
 _@M1663_ "NOT ENOUGH MEMORY"
 
-# Header Thermal History
-_@M1670_ "THE"
+# Header Thermal History keep short!
+_@M1670_ "THR"
+# average lift 
+_@M1671_ "ThAvg"
+// overlay name for L>THERMAL when it is the last one automatically selected
+// No more than 7 characters! Do NOT change TH. , only LAST.
+_@M1672_ "TH.LAST"
 
 # Note for developers: LKLanguage MAX_MESSAGE  1700: 0-1699 !

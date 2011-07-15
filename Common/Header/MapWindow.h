@@ -468,6 +468,7 @@ class MapWindow {
   static void DrawCommon(HDC hdc, const RECT rc);
   static void DrawInfoPage(HDC hdc, const RECT rc, const bool forceinit);
   static void DrawTraffic(HDC hdc, const RECT rc);
+  static void DrawThermalHistory(HDC hdc, const RECT rc);
   static void WriteInfo(HDC hdc, bool *showunit, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle,
                                 short *columnvalue, short *columntitle, short *row1, short *row2, short *row3);
   static bool LKFormatValue(const short fvindex, const bool longtitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle);

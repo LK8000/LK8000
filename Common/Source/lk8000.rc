@@ -166,6 +166,7 @@ IDR_XML_TARGET          XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTarget.xml"
 IDR_XML_TASKRULES       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTaskRules.xml"
 IDR_XML_AIRSPACEDETAILS XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgAirspaceDetails.xml"
 IDR_XML_LKTRAFFICDETAILS XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgLKTraffic.xml"
+IDR_XML_THERMALDETAILS XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgThermalDetails.xml"
 
 IDR_XML_CHECKLIST_L     XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgChecklist_L.xml"
 IDR_XML_WAYPOINTDETAILS_L XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWayPointDetails_L.xml"

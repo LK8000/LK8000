@@ -34,8 +34,8 @@ typedef struct _THERMAL_SOURCE_INFO
 typedef struct _THERMAL_HISTORY
 {
   bool   Valid;
-  TCHAR  Name[8];	// L.1223
-  double Time;		// start circling clock
+  TCHAR  Name[10];	// L.1223
+  double Time;		// start circling time
   double Latitude;
   double Longitude;
   double HBase;		// thermal base
@@ -247,6 +247,9 @@ void DoCommon(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 bool DoTarget(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
+bool DoThermalHistory(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
+bool IsThermalMultitarget(int idx);
+void SetThermalMultitarget(int idx);
 void DoRecent(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 bool DoCommonList(NMEA_INFO *Basic, DERIVED_INFO *Calculated);

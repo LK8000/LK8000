@@ -37,6 +37,7 @@ extern void DrawNearest(HDC hdc, RECT rc);
 extern void DrawAspNearest(HDC hdc, RECT rc);
 extern void DrawCommon(HDC hdc, RECT rc);
 extern void DrawTraffic(HDC hdc, RECT rc);
+extern void DrawThermalHistory(HDC hdc, RECT rc);
 extern void DrawWelcome8000(HDC hdc, RECT rc);
 #ifdef CPUSTATS
 extern void DrawCpuStats(HDC hdc, RECT rc);
@@ -339,6 +340,9 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 		break;
 	case MSM_TRAFFIC:
 		DrawTraffic(hdc,rc);
+		break;
+	case MSM_THERMALS:
+		DrawThermalHistory(hdc,rc);
 		break;
 	default:
 		TextDisplayMode.AsInt = 0;

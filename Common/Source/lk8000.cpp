@@ -454,6 +454,11 @@ double WpHome_Lon=0;
 
 // The Thermal History internal database
 THERMAL_HISTORY ThermalHistory[MAX_THERMAL_HISTORY+1];
+// Copy of runtime thermal history structure for instant use
+THERMAL_HISTORY CopyThermalHistory[MAX_THERMAL_HISTORY+1];
+// Number of Thermals updated from DoThermalHistory
+int LKNumThermals=0;
+int LKSortedThermals[MAX_THERMAL_HISTORY+1];
 
 // LK8000 Hearth beats at 2Hz
 double LKHearthBeats=0;
@@ -509,6 +514,7 @@ short Numpages;
 short CommonNumpages;
 short TrafficNumpages;
 short AspNumpages;
+short THistoryNumpages;
 //  mapspace sort mode: 0 wp name  1 distance  2 bearing  3 reff  4 altarr
 //  UNUSED on MSM_COMMON etc. however it is dimensioned on mapspacemodes
 short SortedMode[MSM_TOP+1];
@@ -543,6 +549,7 @@ double  LastDoAirspaces=0;
 // double  LastDoNearestTp=0; 101222
 double  LastDoCommon=0;
 // double  LastDoTarget=0; unused 
+double LastDoThermalH=0;
 
 // These are not globals to allow SetMapScales in Utils2 operate..
 double  CruiseMapScale=1;

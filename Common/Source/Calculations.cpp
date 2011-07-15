@@ -849,6 +849,7 @@ void InitCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   DoRangeWaypointList(Basic,Calculated);
   DoTraffic(Basic,Calculated);
   DoAirspaces(Basic,Calculated);
+  DoThermalHistory(Basic,Calculated);
 
   InitAlarms();
 
@@ -1608,20 +1609,18 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
 	// Here we assign automatically this last thermal to the L> multitarget
 	if (Calculated->ThermalGain >100) {
-		WayPointList[RESWP_LASTTHERMAL].Latitude  = Calculated->ClimbStartLat;
-		WayPointList[RESWP_LASTTHERMAL].Longitude = Calculated->ClimbStartLong;
-		WayPointList[RESWP_LASTTHERMAL].Altitude  = Calculated->ClimbStartAlt;
+
+		// Force immediate calculation of average thermal, it would be made
+		// during next cycle, but we need it here immediately
+		AverageThermal(Basic,Calculated);
+
+		InsertThermalHistory(Calculated->ClimbStartTime, Calculated->ClimbStartLat, Calculated->ClimbStartLong, 
+		Calculated->ClimbStartAlt, Calculated->NavAltitude, Calculated->AverageThermal);
+
 	}
 
-	// Force immediate calculation of average thermal, it would be made
-	// during next cycle, but we need it here immediately
-	AverageThermal(Basic,Calculated);
-
-	InsertThermalHistory(Calculated->ClimbStartTime, Calculated->ClimbStartLat, Calculated->ClimbStartLong, 
-		Calculated->ClimbStartAlt, Calculated->NavAltitude, Calculated->AverageThermal);
-	
 	InitLDRotary(&rotaryLD);
-	InitWindRotary(&rotaryWind); // 100103
+	InitWindRotary(&rotaryWind);
         
         flightstats.Altitude_Ceiling.
           least_squares_update(max(0.0, Calculated->CruiseStartTime

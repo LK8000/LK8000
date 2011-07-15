@@ -183,6 +183,9 @@
 #define MAXRANGETURNPOINT	500
 #define DSTRANGETURNPOINT	75
 
+// How many thermals we shall remember
+#define MAX_THERMAL_HISTORY	100
+
 // Nearest calculations are made on this list
 // if we enlarge, resize also MAXNUMPAGES
 #define MAXNEAREST		50
@@ -191,6 +194,8 @@
 #define MAXTRAFFIC		FLARM_MAX_TRAFFIC
 // Max number of airspaces handled by 2.4 nearest airspace page. Basically, the 50 nearest.
 #define MAXNEARAIRSPACES	50
+// Max number of thermals in the Nearest Thermals page (out of MAX_THERMAL_HISTORY, normally much larger)
+#define MAXTHISTORY		50
 
 // Max number of pages in mapspacemode. 
 // Large enough to contain MAXNEAREST/numrows (numraws min 5 on some devices)
@@ -201,6 +206,7 @@
 #define MAXCOMMONNUMPAGES	9
 #define MAXTRAFFICNUMPAGES	9
 #define MAXAIRSPACENUMPAGES	9
+#define MAXTHISTORYNUMPAGES	9
 
 // Nearest Update time: wait for some seconds before updating nearest pages with
 // new calculations. 5 seconds is far enough, could even be more..
@@ -233,8 +239,6 @@
 // 101003 SetRxtimeout default, in ms
 #define RXTIMEOUT	10
 
-// Max number of thermals remembered for the Nearest Thermals page.
-#define MAX_THERMAL_HISTORY	100
 
 #define SIMMODE	(RUN_MODE==RUN_SIM)
 

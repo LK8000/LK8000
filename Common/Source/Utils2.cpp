@@ -602,10 +602,11 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			return 0;
 		// End click on navboxes 
 		} else 
-		// CLICK ON SORTBOX line at the top, only with no map and only for nearest
+		// CLICK ON SORTBOX line at the top, only with no map and only for enabled pages
 		if ( (MapSpaceMode == MSM_LANDABLE || MapSpaceMode==MSM_AIRPORTS || 
 			MapSpaceMode==MSM_NEARTPS || MapSpaceMode==MSM_TRAFFIC ||
-			MapSpaceMode==MSM_AIRSPACES) && Y<=SortBoxY[MapSpaceMode] ) {
+			MapSpaceMode==MSM_AIRSPACES || MapSpaceMode==MSM_THERMALS)
+			&& Y<=SortBoxY[MapSpaceMode] ) {
 
 			// only search for 1-3, otherwise it's the fourth (fifth really)
 			// we don't use 0 now
@@ -640,7 +641,15 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 							if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 							#endif
 							break;
-							
+
+				case MSM_THERMALS:
+							SortedMode[MapSpaceMode]=j;
+							// force immediate resorting
+							LastDoThermalH=0;
+							#ifndef DISABLEAUDIO
+							if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+							#endif
+							break;
 				default:
 							DoStatusMessage(_T("ERR-022 UNKNOWN MSM in VK"));
 							break;
@@ -686,6 +695,9 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 						break;
 			case MSM_TRAFFIC:
 						numpages=TrafficNumpages;
+						break;
+			case MSM_THERMALS:
+						numpages=THistoryNumpages;
 						break;
 			default:
 						break;

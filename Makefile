@@ -218,7 +218,7 @@ LDFLAGS		+=$(PROFILE)
 ifeq ($(CONFIG_PC),y)
   LDLIBS := -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32
 else
-  LDLIBS := -Wl,-Bstatic -lstdc++  -Wl,-Bdynamic -lcommctrl -lgm130api
+  LDLIBS := -Wl,-Bstatic -lstdc++  -Wl,-Bdynamic -lcommctrl
   ifeq ($(MINIMAL),n)
     LDLIBS		+= -laygshell 
     ifneq ($(TARGET),PNA)
@@ -344,6 +344,7 @@ DLGS	:=\
 	$(SRC)/dlgBottomBar.cpp \
 	$(SRC)/dlgInfoPages.cpp \
 	$(SRC)/dlgProfiles.cpp \
+	$(SRC)/dlgThermalDetails.cpp \
 
 VOLKS	:=\
 	$(SRC)/Volkslogger/dbbconv.cpp \
@@ -372,6 +373,7 @@ SRC_FILES :=\
 	$(SRC)/LKDrawCommon.cpp 	$(SRC)/LKDrawAspNearest.cpp\
 	$(SRC)/LKDrawInfoPage.cpp	$(SRC)/LKDrawWaypoints.cpp\
 	$(SRC)/LKDrawTraffic.cpp	$(SRC)/LKSimulator.cpp\
+	$(SRC)/LKDrawThermalHistory.cpp \
 	$(SRC)/LKBestAlternate.cpp	$(SRC)/LKHolux.cpp \
 	$(SRC)/MapWindow.cpp 		$(SRC)/MapWindow2.cpp \
 	$(SRC)/MapWindow3.cpp 		$(SRC)/MapWindowA.cpp \
