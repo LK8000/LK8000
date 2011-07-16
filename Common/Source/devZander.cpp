@@ -19,7 +19,8 @@
 
 static BOOL PZAN1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *aGPS_INFO);
 static BOOL PZAN2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *aGPS_INFO);
-
+static BOOL PZAN3(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *aGPS_INFO);
+static BOOL PZAN4(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *aGPS_INFO);
 
 static BOOL ZanderParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *aGPS_INFO){
   (void)d;
@@ -32,7 +33,15 @@ static BOOL ZanderParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *aGP
     {
       return PZAN2(d, &String[7], aGPS_INFO);
     } 
-
+  if(_tcsncmp(TEXT("$PZAN3"), String, 6)==0)
+    {
+      return PZAN3(d, &String[7], aGPS_INFO);
+    } 
+  if(_tcsncmp(TEXT("$PZAN4"), String, 6)==0)
+    {
+      return PZAN4(d, &String[7], aGPS_INFO);
+    } 
+    
   return FALSE;
 
 }
@@ -139,3 +148,68 @@ static BOOL PZAN2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *aGPS_INFO)
 
   return TRUE;
 }
+
+static BOOL PZAN3(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *aGPS_INFO)
+{
+  //$PZAN3,+,026,A,321,035,V*cc
+  //Windkomponente (+=Rückenwind, -=Gegenwind)
+  //A=active (Messung Windkomponente ok) / V=void (Messung nicht verwendbar)
+  //Windrichtung (true, Wind aus dieser Richtung))
+  //Windstärke (km/h)
+  //A=active (Windmessung ok) / V=void (Windmessung nicht verwendbar)
+  //Windmessung im Geradeausflug: mit ZS1-Kompass A,A, ohne Kompass A,V
+  //Windmessung im Kreisflug: V,A
+    
+  TCHAR ctemp[80];
+  double wspeed, wfrom;
+  char wind_usable;
+   
+  NMEAParser::ExtractParameter(String,ctemp,3);
+  wfrom=StrToDouble(ctemp,NULL);
+  
+  NMEAParser::ExtractParameter(String,ctemp,4);
+  wspeed=StrToDouble(ctemp,NULL);
+  
+  NMEAParser::ExtractParameter(String,ctemp,5);
+  wind_usable=ctemp[0]; 
+  
+
+  if (wind_usable == 'A') {
+
+	//wfrom+=180;
+	//if (wfrom==360) wfrom=0;
+	//if (wfrom>360) wfrom-=360;
+	wspeed/=3.6;
+
+	// do not update if it has not changed
+	if ( (wspeed!=CALCULATED_INFO.WindSpeed) || (wfrom != CALCULATED_INFO.WindBearing) ) {
+
+		SetWindEstimate(wspeed, wfrom,9);
+		CALCULATED_INFO.WindSpeed=wspeed;
+		CALCULATED_INFO.WindBearing=wfrom;
+
+	}
+  }
+    
+  return true;
+}
+
+static BOOL PZAN4(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *aGPS_INFO)
+{
+  //$PZAN4,1.5,+,20,39,45*cc
+  //Einstellungen am ZS1:
+  //MacCready (m/s)
+  //windcomponent (km/h)
+  //wing loading (kp/m2)
+  //best glide ratio
+    
+  TCHAR ctemp[80];
+  
+  NMEAParser::ExtractParameter(String,ctemp,0);
+  MACCREADY = StrToDouble(ctemp,NULL);
+   
+  
+  return true;
+}
+
+
