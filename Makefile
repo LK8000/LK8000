@@ -3,16 +3,16 @@ SRC=Common/Source
 HDR=Common/Header
 BIN=Bin/$(TARGET)
 
-# enable/disable heap checking (dmalloc.h libdmalloc.a must be in ../dmalloc)
-DMALLOC=n
-
-PROFILE		:=
+#
+PROFILE		:= 
 OPTIMIZE	:=-O2
 #OPTIMIZE	:=-O3 -funroll-all-loops
 CONFIG_PPC2002	:=n
 CONFIG_PPC2003	:=n
+CONFIG_ALTAIR	:=n
 CONFIG_PC	:=n
 CONFIG_WINE	:=n
+ALTAIR_PORTRAIT :=n
 CONFIG_PNA	:=n
 MINIMAL		:=n
 XSCALE		:=n
@@ -35,6 +35,17 @@ else
         ifeq ($(TARGET),WINE)
           CONFIG_WINE :=y
         else
+          ifeq ($(TARGET),ALTAIR)
+            CONFIG_ALTAIR	:=y  
+	    MINIMAL       :=y
+	    XSCALE	:=y
+          endif
+          ifeq ($(TARGET),ALTAIRPORTRAIT)
+            CONFIG_ALTAIR	:=y
+	    ALTAIR_PORTRAIT :=y
+	    MINIMAL       :=y
+	    XSCALE	:=y
+          endif
 	  ifeq ($(TARGET),PNA)
 	    CONFIG_PNA := y
 	    CONFIG_PPC2003 := y
@@ -49,20 +60,20 @@ endif
 ############# build and CPU info
 
 ifeq ($(CONFIG_PC),y)
-TCPATH		:=i386-mingw32-
+TCPATH		:=mingw32-
 CPU		:=i586
-MCPU		:= -mcpu=$(CPU)
+MCPU		:= -mcpu=$(CPU) 
 else
 ifeq ($(CONFIG_WINE),y)
 TCPATH		:=wine
 CPU		:=i586
-MCPU		:= -mcpu=$(CPU)
+MCPU		:= -mcpu=$(CPU) 
 else
 TCPATH		:=arm-mingw32ce-
 
 ifeq ($(XSCALE),y)
 CPU		:=xscale
-MCPU		:= -mcpu=$(CPU)
+MCPU		:= -mcpu=$(CPU) 
 else
 CPU		:=
 MCPU		:=
@@ -102,6 +113,18 @@ endif
 #CE_MINOR	:=00
 #CE_PLATFORM	:=500
 #endif
+
+ifeq ($(CONFIG_ALTAIR),y)
+# armv4i
+CE_MAJOR	:=5
+CE_MINOR	:=00
+CE_PLATFORM	:=500
+TARGET		:=ALTAIR
+ifeq ($(ALTAIR_PORTRAIT),y)
+TARGET          :=ALTAIRPORTRAIT
+endif
+
+endif
 
 ifeq ($(CONFIG_PC),y)
 # armv4i
@@ -144,18 +167,19 @@ EBROWSE         :=ebrowse
 ######## windows definitions
 
 ifeq ($(CONFIG_PC),y)
-CE_DEFS		:=-D_WIN32_WINDOWS=$(CE_VERSION) -DWINVER=$(CE_VERSION)
-CE_DEFS		+=-D_WIN32_IE=$(CE_VERSION) -DWINDOWSPC=1
+CE_DEFS		:=-D_WIN32_WINDOWS=$(CE_VERSION) -DWINVER=$(CE_VERSION) 
+CE_DEFS		+=-D_WIN32_IE=$(CE_VERSION) -DWINDOWSPC=1 
+CE_DEFS		+=-D_REALTHING_
 else
 CE_DEFS		:=-D_WIN32_WCE=$(CE_VERSION) -D_WIN32_IE=$(CE_VERSION)
 CE_DEFS		+=-DWIN32_PLATFORM_PSPC=$(CE_PLATFORM)
 endif
 
 ifeq ($(CONFIG_PPC2002),y)
-CE_DEFS		+=-DPPC2002=1
+CE_DEFS		+=-DPPC2002=1 
 endif
 ifeq ($(CONFIG_PPC2003),y)
-CE_DEFS		+=-DPPC2003=1
+CE_DEFS		+=-DPPC2003=1 
 endif
 
 
@@ -164,43 +188,46 @@ UNICODE		:= -DUNICODE -D_UNICODE
 ######## paths
 
 ifeq ($(CONFIG_WINE),y)
-INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR) -I$(SRC)
+INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR) -I$(SRC) 
 else
-INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR) -I$(SRC)
+INCLUDES	:= -I$(HDR)/mingw32compat -I$(HDR) -I$(SRC) 
 endif
 
 ######## compiler flags
 
-CPPFLAGS	:= $(INCLUDES) $(CE_DEFS)
-CPPFLAGS	+= -DNDEBUG 
+CPPFLAGS	:= $(INCLUDES) $(CE_DEFS) 
+CPPFLAGS	+= -DNDEBUG -DFIVV
 #CPPFLAGS	+= -DFLARM_AVERAGE  NOW INSIDE options.h
-#CPPFLAGS	+= -Wchar-subscripts -Wformat -Winit-self -Wimplicit -Wmissing-braces -Wparentheses -Wreturn-type
-#CPPFLAGS	+= -Wunused-label -Wunused-variable -Wunused-value -Wuninitialized
+#CPPFLAGS	+= -Wchar-subscripts -Wformat -Winit-self -Wimplicit -Wmissing-braces -Wparentheses -Wreturn-type 
+#CPPFLAGS	+= -Wunused-label -Wunused-variable -Wunused-value -Wuninitialized 
 
-CPPFLAGS	+= -Wall -Wno-write-strings -Wno-char-subscripts
-#CPPFLAGS	+= -Wall -Wno-non-virtual-dtor
-#CPPFLAGS	+= -Wno-char-subscripts -Wno-switch
+CPPFLAGS += -Wall -Wno-write-strings -Wno-char-subscripts -Wno-switch
+#CPPFLAGS += -Wall -Wno-non-virtual-dtor
+#CPPFLAGS += -Wno-char-subscripts -Wno-switch
 
-#CPPFLAGS	+= -Wshadow
-#CPPFLAGS	+= -Wsign-compare -Wsign-conversion
+#CPPFLAGS	+= -Wshadow 
+#CPPFLAGS	+= -Wsign-compare -Wsign-conversion 
 ifeq ($(CONFIG_PNA),y)
-CPPFLAGS	+= -DCECORE -DPNA
+#CPPFLAGS	+= -DBIGDISPLAY -DCECORE -DPNA -DNOLINETO 
+CPPFLAGS	+= -DCECORE -DPNA 
 endif
 
 ifeq ($(CONFIG_PC),y)
 CPPFLAGS	+= -D_WINDOWS -D_MBCS -DWIN32 -DCECORE -DUNDER_CE=300 $(UNICODE)
   ifeq ($(CONFIG_WINE),y)
-CPPFLAGS	+= -D__MINGW32__
-# -mno-cygwin
+CPPFLAGS	+= -D__MINGW32__ 
+# -mno-cygwin 
   else
 CPPFLAGS	+= $(UNICODE)
   endif
 else
 CPPFLAGS	+= -D_ARM_ $(UNICODE)
-endif
-
-ifeq ($(DMALLOC),y)
-  CPPFLAGS += -DHC_DMALLOC
+  ifeq ($(CONFIG_ALTAIR),y)
+CPPFLAGS 	+=-IPPC2005 -DGNAV
+    ifeq ($(ALTAIR_PORTRAIT),y)
+CPPFLAGS	+= -DFORCEPORTRAIT
+    endif
+  endif
 endif
 
 CXXFLAGS	:=$(OPTIMIZE) -fno-exceptions $(PROFILE)
@@ -214,11 +241,13 @@ ifeq ($(CONFIG_PC),y)
 LDFLAGS		+=-Wl,-subsystem,windows
 endif
 LDFLAGS		+=$(PROFILE)
-
+ifeq ($(CONFIG_PNA),y)
+LDFLAGS   +=-Wl,--enable-auto-import
+endif
 ifeq ($(CONFIG_PC),y)
-  LDLIBS := -Wl,-Bstatic -lstdc++  -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32
+LDLIBS		:= -lmingw32 -lcomctl32 -lkernel32 -luser32 -lgdi32 -ladvapi32 -lwinmm -lmsimg32 -lstdc++
 else
-  LDLIBS := -Wl,-Bstatic -lstdc++  -Wl,-Bdynamic -lcommctrl
+  LDLIBS		:= -lcommctrl -lstdc++ -static-libgcc -L.
   ifeq ($(MINIMAL),n)
     LDLIBS		+= -laygshell 
     ifneq ($(TARGET),PNA)
@@ -227,9 +256,10 @@ else
   endif
 endif
 
-ifeq ($(DMALLOC),y)
-  LDLIBS += -L../dmalloc -ldmalloc
-endif
+###### Wichtig, wenn man mingw32ce benutzt muss hier die lib libstdc++ statisch gelinkt werden.
+###### mit dem -static-libgcc -L. wird der Link verwendet der mit ln -s angelgt wurde. deshalb
+###### findet der compiler die richtig statische lib und keine falsche
+###### 	ln -s /opt/mingw32ce/arm-mingw32ce/lib/libstdc++.a libstdc++.a
 
 ####### compiler target
 
@@ -244,6 +274,9 @@ endif
 
 endif
 WINDRESFLAGS	:=-I$(HDR) -I$(SRC) $(CE_DEFS) -D_MINGW32_
+ifeq ($(CONFIG_ALTAIR),y)
+WINDRESFLAGS	+=-DGNAV
+endif
 MAKEFLAGS	+=-r
 
 ####### build verbosity
@@ -270,9 +303,6 @@ endif
 
 ####### sources
 
-UTILS	:=\
-	$(SRC)/utils/stringext.cpp
-  
 DEVS	:=\
 	$(SRC)/devBorgeltB50.cpp \
 	$(SRC)/devCAI302.cpp \
@@ -284,7 +314,6 @@ DEVS	:=\
 	$(SRC)/devCompeo.cpp \
 	$(SRC)/devDigifly.cpp \
 	$(SRC)/devGeneric.cpp \
-	$(SRC)/devDisabled.cpp \
 	$(SRC)/devBase.cpp \
 	$(SRC)/devLX.cpp \
 	$(SRC)/devLXNano.cpp \
@@ -295,20 +324,16 @@ DEVS	:=\
 	$(SRC)/devZander.cpp \
 	$(SRC)/devIlec.cpp \
 	$(SRC)/devDSX.cpp \
-	$(SRC)/devIMI.cpp \
-	$(SRC)/devWesterboer.cpp \
 	$(SRC)/devFlytec.cpp \
 	$(SRC)/devLKext1.cpp \
 
 DLGS	:=\
 	$(SRC)/dlgAirspace.cpp \
-	$(SRC)/dlgAirspaceWarningParams.cpp \
 	$(SRC)/dlgAirspaceColours.cpp \
 	$(SRC)/dlgAirspaceDetails.cpp \
 	$(SRC)/dlgAirspacePatterns.cpp \
 	$(SRC)/dlgAirspaceSelect.cpp \
 	$(SRC)/dlgAirspaceWarning.cpp \
-	$(SRC)/dlgLKAirspaceWarning.cpp \
 	$(SRC)/dlgBasicSettings.cpp \
 	$(SRC)/dlgChecklist.cpp \
 	$(SRC)/dlgConfiguration.cpp \
@@ -328,6 +353,7 @@ DLGS	:=\
 	$(SRC)/dlgTopology.cpp \
 	$(SRC)/dlgTaskWaypoint.cpp \
 	$(SRC)/dlgTeamCode.cpp \
+	$(SRC)/dlgTextEntry.cpp \
 	$(SRC)/dlgTextEntry_Keyboard.cpp \
 	$(SRC)/dlgTools.cpp \
 	$(SRC)/dlgWayPointDetails.cpp \
@@ -341,8 +367,6 @@ DLGS	:=\
 	$(SRC)/dlgFontEdit.cpp \
 	$(SRC)/dlgLKTraffic.cpp \
 	$(SRC)/dlgCustomKeys.cpp \
-	$(SRC)/dlgBottomBar.cpp \
-	$(SRC)/dlgInfoPages.cpp \
 	$(SRC)/dlgProfiles.cpp \
 	$(SRC)/dlgThermalDetails.cpp \
 
@@ -355,11 +379,20 @@ VOLKS	:=\
 	$(SRC)/Volkslogger/vlconv.cpp \
 	$(SRC)/Volkslogger/vlutils.cpp
 
+#	$(SRC)/dlgConfigurationVario.cpp \
+#	$(SRC)/dlgVoice.cpp \
+#	$(SRC)/dlgVegaDemo.cpp \
+#	$(SRC)/dlgFlarmTraffic.cpp \
+#	$(SRC)/dlgSwitches.cpp \
+#	$(SRC)/dlgBrightness.cpp \
+
+SRC_ROTATE :=\
+	$(SRC)/LKRotate.cpp
+
 SRC_FILES :=\
-	$(SRC)/LKAirspace.cpp \
 	$(SRC)/AATDistance.cpp 		$(SRC)/AirfieldDetails.cpp \
-	$(SRC)/Airspace.cpp 		\
-	$(SRC)/Atmosphere.cpp 		\
+	$(SRC)/Airspace.cpp 		$(SRC)/AirspaceColourDlg.cpp \
+	$(SRC)/AirspaceWarning.cpp 	$(SRC)/Atmosphere.cpp \
 	$(SRC)/Calculations.cpp 	$(SRC)/Calculations2.cpp \
 	$(SRC)/ClimbAverageCalculator.cpp $(SRC)/LKCalculations.cpp \
 	$(SRC)/ConditionMonitor.cpp 	$(SRC)/device.cpp \
@@ -370,7 +403,7 @@ SRC_FILES :=\
 	$(SRC)/InputEvents.cpp 		$(SRC)/leastsqs.cpp \
 	$(SRC)/Logger.cpp 		$(SRC)/LKMapWindow.cpp \
 	$(SRC)/LKDrawLook8000.cpp 	$(SRC)/LKDrawNearest.cpp\
-	$(SRC)/LKDrawCommon.cpp 	$(SRC)/LKDrawAspNearest.cpp\
+	$(SRC)/LKDrawCommon.cpp 	\
 	$(SRC)/LKDrawInfoPage.cpp	$(SRC)/LKDrawWaypoints.cpp\
 	$(SRC)/LKDrawTraffic.cpp	$(SRC)/LKSimulator.cpp\
 	$(SRC)/LKDrawThermalHistory.cpp \
@@ -380,7 +413,7 @@ SRC_FILES :=\
 	$(SRC)/MapWindowZoom.cpp        $(SRC)/MapWindowMode.cpp \
 	$(SRC)/Utils2.cpp \
 	$(SRC)/McReady.cpp 		$(SRC)/Message.cpp \
-	$(SRC)/NavFunctions.cpp		\
+	$(SRC)/NavFunctions.cpp		$(SRC)/OnLineContest.cpp \
 	$(SRC)/Parser.cpp		$(SRC)/Port.cpp \
 	$(SRC)/Process.cpp 		$(SRC)/dlgComboPicker.cpp \
 	$(SRC)/RasterTerrain.cpp	$(SRC)/rscalc.cpp \
@@ -395,7 +428,6 @@ SRC_FILES :=\
 	$(SRC)/windanalyser.cpp		$(SRC)/windmeasurementlist.cpp \
 	$(SRC)/windstore.cpp 		$(SRC)/WindowControls.cpp \
 	$(SRC)/WindZigZag.cpp 		$(SRC)/xmlParser.cpp \
-	$(SRC)/ContestMgr.cpp 		$(SRC)/Trace.cpp \
 	\
 	$(SRC)/mapbits.cpp \
 	$(SRC)/maperror.cpp 		$(SRC)/mapprimitive.cpp \
@@ -403,7 +435,6 @@ SRC_FILES :=\
 	$(SRC)/maptree.cpp              $(SRC)/mapxbase.cpp \
 	\
 	$(SRC)/lk8000.cpp \
-	$(UTILS) \
 	$(DEVS) \
 	$(DLGS) \
 	$(VOLKS)
@@ -449,18 +480,13 @@ COMPAT	:=\
 	$(COMPATSRC)/errno.cpp 		$(COMPATSRC)/string_extras.cpp \
 	$(COMPATSRC)/ts_string.cpp 	$(COMPATSRC)/wtoi.c
 
-#ifneq ($(CONFIG_PC),y)
-#COMPAT	:=$(COMPAT) \
-#   $(COMPATSRC)/redir.cpp
-#endif
-
 
 ####### compilation outputs
 
 OBJS 	:=\
 	$(patsubst $(SRC)%.cpp,$(BIN)%.o,$(SRC_FILES)) \
-	$(BIN)/zzip.a \
 	$(BIN)/jasper.a \
+	$(BIN)/zzip.a \
 	$(BIN)/compat.a \
 	$(BIN)/lk8000.rsc
 
@@ -485,7 +511,7 @@ all:	$(OUTPUTS)
 clean: cleani
 	@$(NQ)echo "  CLEAN   $(BIN)"
 	$(Q)$(FIND) $(BIN) $(IGNORE) \( -name '*.[oa]' -o -name '*.rsc' -o -name '.*.d' \) -type f -print | xargs -r $(RM)
-	$(Q)$(RM) LK8000-$(TARGET)-ns.exe
+	$(Q)$(RM) LK8000-$(TARGET)-ns.exe 
 
 cleani:
 	@$(NQ)echo "  CLEANI"
@@ -522,8 +548,19 @@ LK8000-$(TARGET).exe: LK8000-$(TARGET)-ns.exe
 
 LK8000-$(TARGET)-ns.exe: $(OBJS)
 	@$(NQ)echo "  LINK    $@"
+ifeq ($(CONFIG_PNA),y)
+	@$(NQ)echo "Erstelle Symlink fuer PNA Compile$@"
+	ln -s /opt/mingw32ce/arm-mingw32ce/lib/libstdc++.a libstdc++.a
+endif	
 	$(Q)$(CC) $(LDFLAGS) $(TARGET_ARCH) $^ $(LOADLIBES) $(LDLIBS) -o $@
+ifeq ($(CONFIG_PNA),y)
+	@$(NQ)echo "Loesche Symlink fuer PNA Compile$@"
+	rm libstdc++.a
+endif
 
+#
+# Create libraries for zzip, jasper and compatibility stuff
+#
 $(BIN)/zzip.a: $(patsubst $(SRC)%.cpp,$(BIN)%.o,$(ZZIP)) $(patsubst $(SRC)%.c,$(BIN)%.o,$(ZZIP))
 	@$(NQ)echo "  AR      $@"
 	$(Q)$(AR) $(ARFLAGS) $@ $^
