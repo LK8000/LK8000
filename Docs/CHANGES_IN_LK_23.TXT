@@ -8,6 +8,45 @@ Version 2.3c
 
 NEW
 
+. New page 3.3 Thermal History
+
+  This page can be also disabled as usual. It will list up to 50 thermals, out of a max 100,
+  related to current flight. Thermals cannot be saved! 
+  Each thermal listed is showing usual values as in the nearest page, and the average lift.
+  You can sort by distance, bearing, lift and name.
+
+  The thermal name is the local time you entered the thermal , example: h1437 if you entered
+  this thermal at 2:37pm .
+
+  Selecting as usual a thermal will pop up a page where you can SELECT it.
+  Once selected, the thermal is assigned to the L> multitarget, and you are instantly brought
+  to L> moving map.
+
+  After a new thermal is detected (after thermalling), this thermal is automatically assigned to
+  the L> multitarget.
+
+  The L> is always showing the thermal name, ex. H1237  and no more a simple "THERMAL".
+  In the 3.3 page, the selected thermal has its name leaded by a > .
+  Example:      >H1237
+  
+  The 3.3 page is listing red and italic all thermals that are currently unreachable.
+
+  >> The thermal position is assigned using the aircraft position just after started thermalling,
+     and its altitude. Thus you will be pointed exactly to the place you were (right or wrong)
+     just before you started climbing. <<
+
+    When selecting multitarget L> in map mode, a circle will appear around the
+    center of the selected thermal, at high zoom levels.
+    The circle will not appear at low zoom levels, being not enough visible on
+    a small screen.
+    The circle is drawn around the thermal center, while the multipoint L> target
+    is slightly different because it is indicating the point you have actually
+    entered the thermal, and its altitude.
+    Thus on the moving map you will see both the entering point, and the thermal center,
+    giving you an exact idea of how you started thermalling there, and were you ended up to.
+
+
+
 . New ALTITUDE ALARMS in Menu Config 15
 
     There are 3 available altitude (height, really) alarms available.
@@ -41,11 +80,17 @@ NEW
   S = Selected
   F = Fly-In modality
 
-. New airspace 2.4 colors, following red and yellow alerting situation.
+  When flying inside an airspace, the Distance instead of 0 is showing IN 
+  When flying near an airspace in yellow condition, the Distance is showing a trailing "!".
+
+  All 2.4 rows are painted white, red or yellow (light colors)  following alerting situation.
+
 . New airspace drawing options for drawing airspaces with borders and outlines
+  This will actually tell you at a glance where is the internal side of airspace.
   (Warning, this can slow down devices with high screen resolution or slow processor, use with caution!)
 
 . Support 320x234 and 234x320 screen resolutions. Preliminary.
+. Support for 240x400 portrait mode
 
 . Add ACT indicator in mapscale for ActiveMap status
   ActiveMap can be enabled/disabled with both a customkey and menu button.
@@ -61,10 +106,30 @@ NEW
 	SZD-56-2 Diana2
 	Ventus 2Cx (18m)
 
+.   Add PREROTATE and ENDROTATE external execution programs.
+    PREROTATE1.exe PREROTATE2.exe and PREROTATE3.exe will be executed before anything else.
+    On exit, ENDROTATE1.exe ENDROTATE2.exe ENDROTATE3.exe will be executed before ENDLOAD_99.EXE .
+    Example of how to make the screen rotate 90 degrees on startup, and make it back normal on exit:
+    - Copy rotate.exe from System CEUtils folder of LK in the LK8000 folder, where LK8000-PNA.exe is.
+    - Rename rotate.exe into  PREROTATE1.exe
+    - Copy rotate.exe again, and rename to ENDROTATE1.exe
+    - Copy rotate.exe again, and rename to ENDROTATE2.exe
+    - Copy rotate.exe again, and rename to ENDROTATE3.exe
+
+    This way, screen is rotate to 90 degrees on startup, and by 270 degrees on exit.
+
+.   Reset FLARM after a task declaration.
+
 
 
 
 CHANGES
+
+. Huge code cleanup, smaller executable size.
+
+. IBOX mode is no more available (button still there, but no effect)
+
+. WEATHER support for RASP is no more available.
 
 . Enable Contest Engine also for non-glider aircrafts, IF infopage 1.5 is enabled.
 
@@ -86,6 +151,12 @@ CHANGES
 
 . (2.3) ArSpcH Airspace Horizontal distance below 1000m (~3300ft) will display 2 decimals.
   Example, instead of 0.7km it will show 743m  .
+
+. Glide terrain shadow appearing also when not flying, in SIM mode and with an altitude over terrain >100m.
+
+. Enlarge fonts for 400x240 resolution. Nearest pages have now 6 rows.
+  Better visibility on small screens.
+
 
 . Following configuration items were REMOVED from Engineering mode, thus becoming PERMANENTLY removed from LK:
 
@@ -116,8 +187,12 @@ CHANGES
 
 FIXES
 
+. Fix problem with HP314 resetting flight stats
+
+. Fix possible crash upon switching off and back on after some hours the PNA during flight.
 
 . Fixed (2.3) "unknown airspace warning message" when a message gets repeated during flying outside a fly zone
+. Fixed (2.3)  Do not calculate airspace data when no valid gps fix
 
 . Fixed no nearest turnpoints showing if no landables were available in at least on waypoint file.
   Bug introduced when nearest turnpoint pages and landables were unified at code level. Very old.
