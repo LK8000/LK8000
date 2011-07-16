@@ -1614,8 +1614,10 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 		// during next cycle, but we need it here immediately
 		AverageThermal(Basic,Calculated);
 
-		InsertThermalHistory(Calculated->ClimbStartTime, Calculated->ClimbStartLat, Calculated->ClimbStartLong, 
-		Calculated->ClimbStartAlt, Calculated->NavAltitude, Calculated->AverageThermal);
+		InsertThermalHistory(Calculated->ClimbStartTime, 
+			// Calculated->ClimbStartLat, Calculated->ClimbStartLong, 
+			Calculated->ThermalEstimate_Latitude, Calculated->ThermalEstimate_Longitude,
+			Calculated->ClimbStartAlt, Calculated->NavAltitude, Calculated->AverageThermal);
 
 	}
 

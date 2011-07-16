@@ -2418,9 +2418,17 @@ bool IsThermalMultitarget(int idx) {
 
 void SetThermalMultitarget(int idx) {
 
-  if (idx<0||idx>MAX_THERMAL_HISTORY)
+  if (idx<0||idx>=MAX_THERMAL_HISTORY)
 	return;
 
   ThermalMultitarget=idx;
   return;
 }
+
+int GetThermalMultitarget(void) {
+  if (ThermalMultitarget<0||ThermalMultitarget>=MAX_THERMAL_HISTORY)
+	return -1;
+
+  return ThermalMultitarget;
+}
+

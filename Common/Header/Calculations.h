@@ -250,6 +250,7 @@ bool DoTarget(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 bool DoThermalHistory(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 bool IsThermalMultitarget(int idx);
 void SetThermalMultitarget(int idx);
+int  GetThermalMultitarget(void);
 void DoRecent(NMEA_INFO *Basic, DERIVED_INFO *Calculated); 
 bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 bool DoCommonList(NMEA_INFO *Basic, DERIVED_INFO *Calculated);

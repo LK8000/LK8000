@@ -2369,6 +2369,7 @@ QuickRedraw: // 100318 speedup redraw
 	}
 
   DrawThermalEstimate(hdc, rc);
+  if (OvertargetMode==OVT_THER) DrawThermalEstimateMultitarget(hdc, rc);
  
   if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) { // 100503
 	DrawTask(hdc, rc, Orig_Aircraft);

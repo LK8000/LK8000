@@ -1,12 +1,12 @@
 <PMML>
-<WndForm Type="Dialog" X=1 Y=1 Width=238 Height=238 Caption="Thermal Details" Font=2 >
+<WndForm Type="Dialog" X=1 Y=1 Width=238 Height=238 Caption="_@M1672_" PopUp="1" Font=2 >
 
 <WndProperty Name="prpName" Caption="_@M720_" X=2 Y=2  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
 <WndProperty Name="prpHTop" Caption="_@M729_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
 <WndProperty Name="prpHBase" Caption="_@M128_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
 <WndProperty Name="prpLift" Caption="_@M1671_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
 
-<WndButton Name="cmdSelect" Caption="_@M1654_" X=2 Y=-997 Width=238  Height=52 Font=2 Tag=0 OnClickNotify="OnSelectClicked" />
-<WndButton Name="cmdClose" Caption="_@M156_" X=2 Y=-997 Width=238  Height=52 Font=2 Tag=0 OnClickNotify="OnCloseClicked" />
+<WndButton Name="cmdSelect" Caption="_@M1654_" X=2 Y=-997 Width=234  Height=52 Font=2 Tag=0 OnClickNotify="OnSelectClicked" />
+<WndButton Name="cmdClose" Caption="_@M156_" X=2 Y=-997 Width=234  Height=52 Font=2 Tag=0 OnClickNotify="OnCloseClicked" />
 </WndForm>    
 </PMML>

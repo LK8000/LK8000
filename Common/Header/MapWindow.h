@@ -500,6 +500,7 @@ class MapWindow {
                               POINT &End, int Index);
   static void DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft);
   static void DrawThermalEstimate(HDC hdc, const RECT rc);
+  static void DrawThermalEstimateMultitarget(HDC hdc, const RECT rc);
   static void DrawTaskAAT(HDC hdc, const RECT rc);
   static void DrawAbortedTask(HDC hdc, const RECT rc, const POINT Orig);
   static void DrawBearing(HDC hdc, const RECT rc);

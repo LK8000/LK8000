@@ -1585,8 +1585,6 @@ _@M1663_ "NOT ENOUGH MEMORY"
 _@M1670_ "THR"
 # average lift 
 _@M1671_ "ThAvg"
-// overlay name for L>THERMAL when it is the last one automatically selected
-// No more than 7 characters! Do NOT change TH. , only LAST.
-_@M1672_ "TH.LAST"
+_@M1672_ "Thermal Details"
 
 # Note for developers: LKLanguage MAX_MESSAGE  1700: 0-1699 !
