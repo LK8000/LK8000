@@ -1586,5 +1586,6 @@ _@M1670_ "THR"
 # average lift 
 _@M1671_ "ThAvg"
 _@M1672_ "Thermal Details"
+_@M1673_ "Avg"
 
 # Note for developers: LKLanguage MAX_MESSAGE  1700: 0-1699 !

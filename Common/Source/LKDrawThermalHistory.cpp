@@ -312,7 +312,7 @@ void MapWindow::DrawThermalHistory(HDC hdc, RECT rc) {
 	else
 		LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-	_stprintf(Buffer, gettext(TEXT("_@M1671_")));  // Avg
+	_stprintf(Buffer, gettext(TEXT("_@M1673_")));  // Avg
 	if (cursortbox==3)
 		LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 	else
@@ -355,7 +355,7 @@ void MapWindow::DrawThermalHistory(HDC hdc, RECT rc) {
 		else
 			LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer, gettext(TEXT("_@M1671_")));  // Avg
+		_stprintf(Buffer, gettext(TEXT("_@M1673_")));  // Avg
 		if (cursortbox==3)
 			LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
@@ -393,7 +393,7 @@ void MapWindow::DrawThermalHistory(HDC hdc, RECT rc) {
 		else
 			LKWriteText(hdc, Buffer, Column3, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, false);
 
-		_stprintf(Buffer, gettext(TEXT("_@M1671_")));  // Avg
+		_stprintf(Buffer, gettext(TEXT("_@M1673_")));  // Avg
 		if (cursortbox==3)
 			LKWriteText(hdc, Buffer, Column4, HEADRAW , 0,WTMODE_NORMAL, WTALIGN_RIGHT, RGB_BLACK, false);
 		else
