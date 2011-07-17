@@ -593,6 +593,7 @@ int  LKMaxLabels=0;
 
 // current mode of overtarget 0=task 1=alt1, 2=alt2, 3=best alt
 short OvertargetMode=0;
+// Simulator has one thermal at a time with these values
 double SimTurn=0;
 double ThLatitude=1;
 double ThLongitude=1;

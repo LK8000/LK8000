@@ -82,6 +82,18 @@ void LKSimulator(void) {
 	}
 	if (ALTITUDE==0)
 		if (CALCULATED_INFO.TerrainValid) ALTITUDE= CALCULATED_INFO.TerrainAlt;
+
+	// Add a couple of thermals for the boys
+	InsertThermalHistory(GPS_INFO.Time-1887, GPS_INFO.Latitude-0.52, GPS_INFO.Longitude-0.52, 873, 1478,1.5);
+	InsertThermalHistory(GPS_INFO.Time-987, GPS_INFO.Latitude-0.41, GPS_INFO.Longitude-0.41, 762, 1367,1.8);
+	InsertThermalHistory(GPS_INFO.Time-100, GPS_INFO.Latitude-0.02, GPS_INFO.Longitude-0.02, 650, 1542,2.2);
+	WayPointList[RESWP_LASTTHERMAL].Latitude  = GPS_INFO.Latitude-0.022;
+	WayPointList[RESWP_LASTTHERMAL].Longitude = GPS_INFO.Longitude-0.022;
+	WayPointList[RESWP_LASTTHERMAL].Altitude  = 650;
+	ThLatitude=GPS_INFO.Latitude-0.022;
+	ThLongitude=GPS_INFO.Longitude-0.022;
+
+
 	doinit=false;
   }
 

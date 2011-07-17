@@ -4464,8 +4464,10 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		#include "./LKincludetexttime.cpp"
 		StartupStore(_T(". TAKEOFF %s%s"), time_temp,NEWLINE);
 
-		// reset stats on takeoff
-		ResetFlightStats(Basic, Calculated);
+		// Reset stats on takeoff, but not in SIM mode 
+		// If replaying a file, we do reset of course.
+		if (!SIMMODE || ReplayLogger::IsEnabled())
+		  ResetFlightStats(Basic, Calculated);
 
 		Calculated->Flying = TRUE;
 		WasFlying=true;
