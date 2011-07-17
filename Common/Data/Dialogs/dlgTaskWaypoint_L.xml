@@ -22,7 +22,7 @@
 <DataField name="" DataType="boolean" ReadOnly=0 OnDataAccess="OnAATEnabled"/>
 </WndProperty>
 <WndProperty Name="prpMinTime" Caption="_@M41_" X=2 Y=-1  Width=240 Height=22 CaptionWidth=150 Font=2 ReadOnly=0 Help="_@H504_">
-<DataField name="" DataType="double" DisplayFormat="%.0f min" Min=0 Max=600 Step=10 EditFormat="%.0f"/>
+<DataField name="" DataType="double" DisplayFormat="%.0f min" Min=0 Max=600 Step=5 EditFormat="%.0f"/>
 </WndProperty>
 <WndProperty Name="prpTaskFAISector" Caption="_@M589_" X=2 Y=-1   Width=240 Height=22 CaptionWidth=150 Font=2   Help="_@H505_">
 <DataField name="" DataType="enum"  Min=0 Max=50 Step=1/>

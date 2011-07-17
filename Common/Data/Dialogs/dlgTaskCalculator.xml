@@ -4,7 +4,7 @@
 <WndButton   Caption="_@M161_"    X=55 Y=2 Width=50  Height=22 Font=2 OnClickNotify="OnCancelClicked" Tag=2/>
 <WndButton  Name="Optimise" Caption="_@M504_"    X=108 Y=2 Width=65  Height=22 Font=2 OnClickNotify="OnOptimiseClicked" Tag=3/>
 <WndButton  Name="Target" Caption="_@M684_"    X=175 Y=2 Width=60  Height=22 Font=2 OnClickNotify="OnTargetClicked" Tag=4/>
-<WndProperty Name="prpAATTime" Caption="_@M101_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=150 Font=2 ReadOnly=1 min=0 max=600 step=10>
+<WndProperty Name="prpAATTime" Caption="_@M101_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=150 Font=2 ReadOnly=1 min=0 max=600 step=5>
 <DataField name="" DataType="double" DisplayFormat="%.0f min" EditFormat="%.0f" readonly=1/>
 </WndProperty>
 <WndProperty Name="prpAATEst" Caption="_@M267_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=150 Font=2 ReadOnly=1 min=0 max=600 step=10>
