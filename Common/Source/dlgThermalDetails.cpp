@@ -14,6 +14,8 @@
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 #include "Utils2.h"
+#include "NavFunctions.h"
+#include "TeamCodeCalculation.h"
 
 #include "utils/heapcheck.h"
 
@@ -112,6 +114,27 @@ static void SetValues(int indexid) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpLift"));
   if (wp) {
 	_stprintf(buffer,_T("%+.1f %s"),ThermalHistory[indexid].Lift*LIFTMODIFY, Units::GetVerticalSpeedName());
+	wp->SetText(buffer);
+	wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpTeamCode"));
+  if (wp) {
+	// Taken from CalculateTeamBear..
+	if (!WayPointList) return;
+	if (TeamCodeRefWaypoint < 0) return;
+
+	double distance=0, bearing=0;
+
+	LL_to_BearRange( WayPointList[TeamCodeRefWaypoint].Latitude,
+           WayPointList[TeamCodeRefWaypoint].Longitude,
+           ThermalHistory[indexid].Latitude,
+           ThermalHistory[indexid].Longitude,
+           &bearing, &distance);
+
+	GetTeamCode(buffer, bearing, distance);
+
+	buffer[5]='\0';
 	wp->SetText(buffer);
 	wp->RefreshDisplay();
   }

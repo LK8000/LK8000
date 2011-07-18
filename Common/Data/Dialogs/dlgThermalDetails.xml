@@ -5,8 +5,9 @@
 <WndProperty Name="prpHTop" Caption="_@M729_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
 <WndProperty Name="prpHBase" Caption="_@M128_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
 <WndProperty Name="prpLift" Caption="_@M1671_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=2 ReadOnly=1 />
+<WndProperty Name="prpTeamCode" Caption="_@M1112_" X=2 Y=-1  Width=238 Height=22 CaptionWidth=70 Font=1 ReadOnly=1 />
 
-<WndButton Name="cmdSelect" Caption="_@M1654_" X=2 Y=-997 Width=234  Height=52 Font=2 Tag=0 OnClickNotify="OnSelectClicked" />
-<WndButton Name="cmdClose" Caption="_@M156_" X=2 Y=-997 Width=234  Height=52 Font=2 Tag=0 OnClickNotify="OnCloseClicked" />
+<WndButton Name="cmdSelect" Caption="_@M1654_" X=2 Y=-998 Width=233  Height=52 Font=2 Tag=0 OnClickNotify="OnSelectClicked" />
+<WndButton Name="cmdClose" Caption="_@M156_" X=2 Y=-1 Width=233  Height=52 Font=2 Tag=0 OnClickNotify="OnCloseClicked" />
 </WndForm>    
 </PMML>
