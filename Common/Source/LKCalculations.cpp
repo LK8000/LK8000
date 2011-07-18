@@ -1344,6 +1344,13 @@ bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	return true;
    }
 
+   // Wait for n seconds before updating again, to avoid data change too often
+   // distracting the pilot.
+   static double lastRunTime=0;
+   if (  lastRunTime > Basic->Time ) lastRunTime=Basic->Time;
+   if (  (Basic->Time < (lastRunTime+NEARESTUPDATETIME)) && (LastDoTraffic>0)) {
+        return false;
+   }
 
    // DoTraffic is called from MapWindow, in real time. We have enough CPU power there now
    // Consider replay mode...
@@ -1352,6 +1359,7 @@ bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	return false;
    }
    LastDoTraffic=Basic->Time;
+   lastRunTime=Basic->Time;
 
    #ifdef DEBUG_LKT
    StartupStore(_T("... DoTraffic Copy LKTraffic and reset LKSortedTraffic\n"));
