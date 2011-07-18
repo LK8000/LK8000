@@ -13,17 +13,10 @@
 #include "compatibility.h"
 #include "MapWindow.h"
 #include "Units.h"
-#include "McReady.h"
 #include "externs.h"
-#include "InputEvents.h"
 #include <windows.h>
 #include <math.h>
 #include <tchar.h>
-#include "InfoBoxLayout.h"
-#include "Logger.h"
-#include "Process.h"
-#include "RasterTerrain.h" 
-#include "LKUtils.h"
 #include "LKMapWindow.h"
 #include "LKObjects.h"
 
@@ -32,17 +25,6 @@
 #endif
 
 #include "utils/heapcheck.h"
-
-#ifdef CPUSTATS
-extern void DrawCpuStats(HDC hdc, RECT rc);
-#endif
-#ifdef DRAWDEBUG
-extern void DrawDebug(HDC hdc, RECT rc);
-#endif
-
-extern void WriteInfo(HDC hdc, bool *showunit, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle, 
-				short *columnvalue, short *columntitle, short *row1, short *row2, short *row3);
-extern void ConvToUpper(TCHAR *str);
 
 void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 

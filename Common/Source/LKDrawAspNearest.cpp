@@ -13,17 +13,10 @@
 #include "compatibility.h"
 #include "MapWindow.h"
 #include "Units.h"
-#include "McReady.h"
 #include "externs.h"
-#include "InputEvents.h"
 #include <windows.h>
 #include <math.h>
 #include <tchar.h>
-#include "InfoBoxLayout.h"
-#include "Logger.h"
-#include "Process.h"
-#include "RasterTerrain.h"
-#include "LKUtils.h"
 #include "LKMapWindow.h"
 #include "LKObjects.h"
 #include "LKAirspace.h"
@@ -34,7 +27,6 @@
 
 #include "utils/heapcheck.h"
 
-extern void ConvToUpper(TCHAR *str);
 extern bool ValidAirspace(int i);
 
 void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {

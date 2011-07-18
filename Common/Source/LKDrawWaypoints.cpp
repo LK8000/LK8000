@@ -13,16 +13,10 @@
 #include "compatibility.h"
 #include "MapWindow.h"
 #include "Units.h"
-#include "McReady.h"
 #include "externs.h"
-#include "InputEvents.h"
 #include <windows.h>
 #include <math.h>
 #include <tchar.h>
-#include "InfoBoxLayout.h"
-#include "Logger.h"
-#include "Process.h"
-#include "RasterTerrain.h" // 091109
 #include "LKUtils.h"
 #include "LKMapWindow.h"
 
@@ -32,29 +26,11 @@
 
 #include "utils/heapcheck.h"
 
-extern void DrawGlideCircle(HDC hdc, POINT Orig, RECT rc );
+extern int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 );
 extern void MapWaypointLabelAdd(TCHAR *Name, int X, int Y, TextInBoxMode_t Mode, int AltArivalAGL, bool inTask, 
 	bool isLandable, bool isAirport, bool isExcluded, int index);
-extern int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 );
 
-extern void DrawMapSpace(HDC hdc, RECT rc);
-extern void DrawNearest(HDC hdc, RECT rc);
-extern void DrawCommon(HDC hdc, RECT rc);
-extern void DrawWelcome8000(HDC hdc, RECT rc);
-#ifdef CPUSTATS
-extern void DrawCpuStats(HDC hdc, RECT rc);
-#endif
-#ifdef DRAWDEBUG
-extern void DrawDebug(HDC hdc, RECT rc);
-#endif
-
-extern void WriteInfo(HDC hdc, bool *showunit, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle, 
-				short *columnvalue, short *columntitle, short *row1, short *row2, short *row3);
-
-extern int PDABatteryPercent;
-extern int PDABatteryTemperature;
 extern int MapWaypointLabelListCount;
-extern void ConvToUpper(TCHAR *str);
 
 typedef struct{
   TCHAR Name[NAME_SIZE+1];
