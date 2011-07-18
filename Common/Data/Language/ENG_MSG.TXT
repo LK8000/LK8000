@@ -1588,4 +1588,7 @@ _@M1671_ "ThAvg"
 _@M1672_ "Thermal Details"
 _@M1673_ "Avg"
 
+# Auto MC configuration
+_@M1674_ "Auto Mc "
+
 # Note for developers: LKLanguage MAX_MESSAGE  1700: 0-1699 !

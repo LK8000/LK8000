@@ -1602,7 +1602,9 @@ Default is 0 (no alarm).
 Glide bar can be relative to Task Finish or to the next turnpoint, or it can be disabled. This bar is drawn on the left side of the screen.
 When using next waypoint, or task waypoint with only final waypoint to go, then this value will be equal to the one shown on overlays.
 
-@196
+@1255
+Automatic Mac Cready setting, can be on or off. It can also be enabled and disabled during flight.
+This is the default value. 
 
 @9999
 No help available on this item!

@@ -257,7 +257,7 @@ double        QNH = (double)1013.25; // 100413 changed to .25
 double        BUGS = 1;
 double        BALLAST = 0;
 
-bool          AutoMacCready = false;
+bool          AutoMacCready = true;
 
 int          NettoSpeed = 1000;
 

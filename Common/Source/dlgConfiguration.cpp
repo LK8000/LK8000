@@ -1959,6 +1959,11 @@ static void setVariables(void) {
     wp->GetDataField()->Set(Orbiter);
     wp->RefreshDisplay();
   }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAutoMcStatus"));
+  if (wp) {
+    wp->GetDataField()->Set(AutoMacCready);
+    wp->RefreshDisplay();
+  }
   wp = (WndProperty*)wf->FindByName(TEXT("prpShading"));
   if (wp) {
     wp->GetDataField()->Set(Shading);
@@ -3860,6 +3865,14 @@ void dlgConfigurationShowModal(void){
     if (Orbiter != wp->GetDataField()->GetAsBoolean()) {
       Orbiter = wp->GetDataField()->GetAsBoolean();
       SetToRegistry(szRegistryOrbiter, Orbiter);
+      changed = true;
+    }
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAutoMcStatus"));
+  if (wp) {
+    if (AutoMacCready != wp->GetDataField()->GetAsBoolean()) {
+      AutoMacCready = wp->GetDataField()->GetAsBoolean();
+      SetToRegistry(szRegistryAutoMcStatus, AutoMacCready);
       changed = true;
     }
   }

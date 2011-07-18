@@ -219,6 +219,7 @@ extern const TCHAR szRegistryConfIP33[];
 
 extern const TCHAR szRegistrySafetyMacCready[];
 extern const TCHAR szRegistryAutoMcMode[];
+extern const TCHAR szRegistryAutoMcStatus[];
 extern const TCHAR szRegistryWaypointsOutOfRange[];
 extern const TCHAR szRegistryEnableExternalTriggerCruise[];
 extern const TCHAR szRegistryFAIFinishHeight[];

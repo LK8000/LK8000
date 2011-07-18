@@ -70,6 +70,14 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   static short yRow1Value=0;
   static short yRow1Unit=0;
 
+  #if 0 // Not yet used - todo after USEIBOX is removed permanently
+  // position of AutoMC indicator
+  static short xLeft_AutoMc=0;
+  static short xRight_AutoMc=0;
+  static short yTop_AutoMc=0;
+  static short yBottom_AutoMc=0;
+  #endif
+
   static int splitoffset;
 
   static int splitoffset2; // second raw, which really is the first from top!
@@ -251,6 +259,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		// splitoffset2= (rc.right-rc.left)/splitter;
 		splitoffset2= splitoffset;
 	}
+
 	// set correct initial bottombar stripe
 	short ii;
 	for (ii=BM_FIRST; ii<=BM_LAST;ii++) {
@@ -734,6 +743,19 @@ drawOverlay:
 	rcy=yrightoffset -ySizeLK8BigFont-ySizeLK8BigFont;
 	rcx=rc.right-NIBLSCALE(10);
 	LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
+
+	if (DerivedDrawInfo.AutoMacCready == true) {
+	  if (OverlaySize==0) {
+	    SelectObject(hdc, LK8TitleFont);
+	    Rectangle(hdc,rcx,rcy+ySizeLK8MediumFont/2-2,  rc.right, rcy+ySizeLK8MediumFont+ySizeLK8MediumFont/2);
+	    LKWriteText(hdc, _T("A"), rc.right,rcy+ySizeLK8MediumFont/2, 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, true);
+	  } else {
+	    SelectObject(hdc, LK8TitleFont);
+	    Rectangle(hdc,rcx,rcy+ySizeLK8MediumFont/4,  rc.right, rcy+ySizeLK8MediumFont+ySizeLK8MediumFont/4);
+	    LKWriteText(hdc, _T("A"), rc.right,rcy+ySizeLK8MediumFont/4, 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, true);
+	  }
+	}
+
   }
   if ( Look8000 == (Look8000_t)lxcNoOverlay ) goto Drawbottom;
 

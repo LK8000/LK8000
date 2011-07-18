@@ -272,6 +272,9 @@
 <WndProperty Name="prpWindCalcTime" Caption="_@M745_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H141_">
 <DataField name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min=5 Max=20 Step=1/>
 </WndProperty>
+<WndProperty Name="prpAutoMcStatus" Caption="_@M109_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1255_">
+<DataField name="" DataType="boolean"/>
+</WndProperty>
 <WndProperty Name="prpAutoMcMode" Caption="_@M109_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H142_">
 <DataField name="" DataType="enum" Min=0 Max=50 Step=1/>
 </WndProperty>
