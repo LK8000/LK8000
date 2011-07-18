@@ -771,7 +771,7 @@ void ButtonLabel::CreateButtonLabels(RECT rc) {
 			TEXT("STATIC"), TEXT("\0"),
 			WS_CHILD|WS_TABSTOP
 			|SS_CENTER|SS_NOTIFY
-			|WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_BORDER|WS_SIZEBOX,
+			|WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_BORDER,
 			rc.left, rc.top, 
 			buttonWidth, buttonHeight, hWndMainWindow, NULL, hInst, NULL);
 			break;
