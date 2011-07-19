@@ -31,6 +31,7 @@ extern NMEAParser nmeaParser2;
 void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 {
   HFONT		oldfont=0;
+  HBRUSH	oldbrush=0;
   SIZE TextSize, TextSize2;
   TCHAR Buffer[LKSIZEBUFFERLARGE];
   TCHAR BufferValue[LKSIZEBUFFERVALUE];
@@ -97,7 +98,8 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
 
   redwarning=false;
-  oldfont = (HFONT)SelectObject(hdc, LKINFOFONT); // FIXFONT
+  oldfont = (HFONT)SelectObject(hdc, LKINFOFONT);
+  oldbrush=(HBRUSH)SelectObject(hdc, LKBrush_Black);
 
 #if USEIBOX
   if ( IsMapFullScreen() && !mode.AnyPan() )
@@ -745,12 +747,11 @@ drawOverlay:
 	LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
 
 	if (DerivedDrawInfo.AutoMacCready == true) {
+	  SelectObject(hdc, LK8TitleFont);
 	  if (OverlaySize==0) {
-	    SelectObject(hdc, LK8TitleFont);
 	    Rectangle(hdc,rcx,rcy+ySizeLK8MediumFont/2-2,  rc.right, rcy+ySizeLK8MediumFont+ySizeLK8MediumFont/2);
 	    LKWriteText(hdc, _T("A"), rc.right,rcy+ySizeLK8MediumFont/2, 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, true);
 	  } else {
-	    SelectObject(hdc, LK8TitleFont);
 	    Rectangle(hdc,rcx,rcy+ySizeLK8MediumFont/4,  rc.right, rcy+ySizeLK8MediumFont+ySizeLK8MediumFont/4);
 	    LKWriteText(hdc, _T("A"), rc.right,rcy+ySizeLK8MediumFont/4, 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, true);
 	  }
@@ -1466,7 +1467,8 @@ afterWind:
 
 TheEnd:
 
-  // restore font and return
+  // restore objects and return
+  SelectObject(hdc, oldbrush); 
   SelectObject(hdc, oldfont); 
 
 
