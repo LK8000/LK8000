@@ -72,13 +72,16 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   static short yRow1Value=0;
   static short yRow1Unit=0;
 
-  #if 0 // Not yet used - todo after USEIBOX is removed permanently
+//  #if 0 // Not yet used - todo after USEIBOX is removed permanently
+  #define ssSizeScreenSize 20
   // position of AutoMC indicator
-  static short xLeft_AutoMc=0;
-  static short xRight_AutoMc=0;
-  static short yTop_AutoMc=0;
-  static short yBottom_AutoMc=0;
-  #endif
+  static short rectLeft_AutoMc[ssSizeScreenSize];
+  static short rectRight_AutoMc[ssSizeScreenSize];
+  static short rectTop_AutoMc[ssSizeScreenSize];
+  static short rectBottom_AutoMc[ssSizeScreenSize];
+  static short writeX_AutoMc[ssSizeScreenSize];
+  static short writeY_AutoMc[ssSizeScreenSize];
+//  #endif
 
   static int splitoffset;
 
@@ -264,8 +267,222 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		splitoffset2= splitoffset;
 	}
 
-	// set correct initial bottombar stripe
 	short ii;
+	// Set tuned positions for AutoMC indicator
+	for (ii=0; ii<ssSizeScreenSize; ii++) {
+	  rectLeft_AutoMc[ii]=0;
+	  rectRight_AutoMc[ii]=0;
+	  rectTop_AutoMc[ii]=0;
+	  rectBottom_AutoMc[ii]=0;
+	  writeX_AutoMc[ii]=0;
+	  writeY_AutoMc[ii]=0;
+	}
+	//
+	// Big fonts
+	//
+	if (OverlaySize==0) {
+	  // ss240x320 OK
+	  rectLeft_AutoMc[ss240x320]=231;
+	  rectRight_AutoMc[ss240x320]=240;
+	  rectTop_AutoMc[ss240x320]=43;
+	  rectBottom_AutoMc[ss240x320]=60;
+	  writeX_AutoMc[ss240x320]=239;
+	  writeY_AutoMc[ss240x320]=45;
+
+	  // ss240x400 Not yet used, because 240x400 is set as ss240x320 temporarily
+	  if (ScreenSizeX==240 && ScreenSizeY==400) { // OK
+	  rectLeft_AutoMc[ss240x320]=231;
+	  rectRight_AutoMc[ss240x320]=240;
+	  rectTop_AutoMc[ss240x320]=70;
+	  rectBottom_AutoMc[ss240x320]=87;
+	  writeX_AutoMc[ss240x320]=239;
+	  writeY_AutoMc[ss240x320]=72;
+	  }
+
+	  // ss272x480 OK
+	  rectLeft_AutoMc[ss272x480]=262;
+	  rectRight_AutoMc[ss272x480]=272;
+	  rectTop_AutoMc[ss272x480]=86;
+	  rectBottom_AutoMc[ss272x480]=106;
+	  writeX_AutoMc[ss272x480]=272;
+	  writeY_AutoMc[ss272x480]=87;
+
+	  // ss480x640 OK
+	  rectLeft_AutoMc[ss480x640]=462;
+	  rectRight_AutoMc[ss480x640]=480;
+	  rectTop_AutoMc[ss480x640]=89;
+	  rectBottom_AutoMc[ss480x640]=121;
+	  writeX_AutoMc[ss480x640]=478;
+	  writeY_AutoMc[ss480x640]=92;
+
+	  // ss480x800
+	  rectLeft_AutoMc[ss480x800]=462;
+	  rectRight_AutoMc[ss480x800]=480;
+	  rectTop_AutoMc[ss480x800]=138;
+	  rectBottom_AutoMc[ss480x800]=171;
+	  writeX_AutoMc[ss480x800]=478;
+	  writeY_AutoMc[ss480x800]=140;
+
+	  // ss320x240 OK
+	  rectLeft_AutoMc[ss320x240]=310;
+	  rectRight_AutoMc[ss320x240]=320;
+	  rectTop_AutoMc[ss320x240]=54;
+	  rectBottom_AutoMc[ss320x240]=73;
+	  writeX_AutoMc[ss320x240]=319;
+	  writeY_AutoMc[ss320x240]=55;
+
+	  // ss400x240 OK
+	  rectLeft_AutoMc[ss400x240]=390;
+	  rectRight_AutoMc[ss400x240]=400;
+	  rectTop_AutoMc[ss400x240]=45;
+	  rectBottom_AutoMc[ss400x240]=66;
+	  writeX_AutoMc[ss400x240]=400;
+	  writeY_AutoMc[ss400x240]=46;
+
+	  // ss480x234 OK
+	  rectLeft_AutoMc[ss480x234]=470;
+	  rectRight_AutoMc[ss480x234]=480;
+	  rectTop_AutoMc[ss480x234]=42;
+	  rectBottom_AutoMc[ss480x234]=64;
+	  writeX_AutoMc[ss480x234]=480;
+	  writeY_AutoMc[ss480x234]=43;
+
+	  // ss480x272 OK
+	  rectLeft_AutoMc[ss480x272]=469;
+	  rectRight_AutoMc[ss480x272]=480;
+	  rectTop_AutoMc[ss480x272]=40;
+	  rectBottom_AutoMc[ss480x272]=68;
+	  writeX_AutoMc[ss480x272]=480;
+	  writeY_AutoMc[ss480x272]=44;
+
+	  // ss640x480 OK
+	  rectLeft_AutoMc[ss640x480]=620;
+	  rectRight_AutoMc[ss640x480]=640;
+	  rectTop_AutoMc[ss640x480]=108;
+	  rectBottom_AutoMc[ss640x480]=144;
+	  writeX_AutoMc[ss640x480]=639;
+	  writeY_AutoMc[ss640x480]=108;
+
+	  // ss800x480 OK
+	  rectLeft_AutoMc[ss800x480]=781;
+	  rectRight_AutoMc[ss800x480]=800;
+	  rectTop_AutoMc[ss800x480]=95;
+	  rectBottom_AutoMc[ss800x480]=134;
+	  writeX_AutoMc[ss800x480]=800;
+	  writeY_AutoMc[ss800x480]=95;
+
+	  // ss896x672 OK
+	  rectLeft_AutoMc[ss896x672]=871;
+	  rectRight_AutoMc[ss896x672]=896;
+	  rectTop_AutoMc[ss896x672]=153;
+	  rectBottom_AutoMc[ss896x672]=200;
+	  writeX_AutoMc[ss896x672]=895;
+	  writeY_AutoMc[ss896x672]=155;
+
+	} else {
+	//
+	// Small fonts
+	//
+
+	  // ss240x320
+	  rectLeft_AutoMc[ss240x320]=230;
+	  rectRight_AutoMc[ss240x320]=240;
+	  rectTop_AutoMc[ss240x320]=56;
+	  rectBottom_AutoMc[ss240x320]=72;
+	  writeX_AutoMc[ss240x320]=240;
+	  writeY_AutoMc[ss240x320]=56;
+	
+	  // ss240x400
+	  rectLeft_AutoMc[ss240x400]=230;
+	  rectRight_AutoMc[ss240x400]=240;
+	  rectTop_AutoMc[ss240x400]=83;
+	  rectBottom_AutoMc[ss240x400]=99;
+	  writeX_AutoMc[ss240x400]=240;
+	  writeY_AutoMc[ss240x400]=83;
+
+	  // ss272x480
+	  rectLeft_AutoMc[ss272x480]=261;
+	  rectRight_AutoMc[ss272x480]=272;
+	  rectTop_AutoMc[ss272x480]=98;
+	  rectBottom_AutoMc[ss272x480]=118;
+	  writeX_AutoMc[ss272x480]=272;
+	  writeY_AutoMc[ss272x480]=98;
+
+	  // ss480x640
+	  rectLeft_AutoMc[ss480x640]=460;
+	  rectRight_AutoMc[ss480x640]=480;
+	  rectTop_AutoMc[ss480x640]=109;
+	  rectBottom_AutoMc[ss480x640]=141;
+	  writeX_AutoMc[ss480x640]=480;
+	  writeY_AutoMc[ss480x640]=109;
+
+	  // ss480x800
+	  rectLeft_AutoMc[ss480x800]=460;
+	  rectRight_AutoMc[ss480x800]=480;
+	  rectTop_AutoMc[ss480x800]=162;
+	  rectBottom_AutoMc[ss480x800]=194;
+	  writeX_AutoMc[ss480x800]=480;
+	  writeY_AutoMc[ss480x800]=162;
+
+	  // ss320x240
+	  rectLeft_AutoMc[ss320x240]=310;
+	  rectRight_AutoMc[ss320x240]=320;
+	  rectTop_AutoMc[ss320x240]=66;
+	  rectBottom_AutoMc[ss320x240]=82;
+	  writeX_AutoMc[ss320x240]=320;
+	  writeY_AutoMc[ss320x240]=66;
+
+	  // ss400x240
+	  rectLeft_AutoMc[ss400x240]=390;
+	  rectRight_AutoMc[ss400x240]=400;
+	  rectTop_AutoMc[ss400x240]=59;
+	  rectBottom_AutoMc[ss400x240]=80;
+	  writeX_AutoMc[ss400x240]=400;
+	  writeY_AutoMc[ss400x240]=59;
+
+	  // ss480x234
+	  rectLeft_AutoMc[ss480x234]=470;
+	  rectRight_AutoMc[ss480x234]=480;
+	  rectTop_AutoMc[ss480x234]=57;
+	  rectBottom_AutoMc[ss480x234]=81;
+	  writeX_AutoMc[ss480x234]=480;
+	  writeY_AutoMc[ss480x234]=57;
+
+	  // ss480x272
+	  rectLeft_AutoMc[ss480x272]=469;
+	  rectRight_AutoMc[ss480x272]=480;
+	  rectTop_AutoMc[ss480x272]=67;
+	  rectBottom_AutoMc[ss480x272]=93;
+	  writeX_AutoMc[ss480x272]=480;
+	  writeY_AutoMc[ss480x272]=67;
+
+	  // ss640x480
+	  rectLeft_AutoMc[ss640x480]=620;
+	  rectRight_AutoMc[ss640x480]=640;
+	  rectTop_AutoMc[ss640x480]=136;
+	  rectBottom_AutoMc[ss640x480]=168;
+	  writeX_AutoMc[ss640x480]=640;
+	  writeY_AutoMc[ss640x480]=136;
+
+	  // ss800x480
+	  rectLeft_AutoMc[ss800x480]=780;
+	  rectRight_AutoMc[ss800x480]=800;
+	  rectTop_AutoMc[ss800x480]=122;
+	  rectBottom_AutoMc[ss800x480]=163;
+	  writeX_AutoMc[ss800x480]=800;
+	  writeY_AutoMc[ss800x480]=122;
+
+	  // ss896x672
+	  rectLeft_AutoMc[ss896x672]=869;
+	  rectRight_AutoMc[ss896x672]=896;
+	  rectTop_AutoMc[ss896x672]=196;
+	  rectBottom_AutoMc[ss896x672]=240;
+	  writeX_AutoMc[ss896x672]=896;
+	  writeY_AutoMc[ss896x672]=196;
+
+	}
+
+	// set correct initial bottombar stripe
 	for (ii=BM_FIRST; ii<=BM_LAST;ii++) {
 		if (ConfBB[ii]) break;
 	}
@@ -750,14 +967,36 @@ drawOverlay:
 
 	if (DerivedDrawInfo.AutoMacCready == true) {
 	  SelectObject(hdc, LK8TitleFont);
+
+	  Rectangle(hdc, 
+		rectLeft_AutoMc[ScreenSize],
+	  	rectTop_AutoMc[ScreenSize],
+	  	rectRight_AutoMc[ScreenSize],
+	  	rectBottom_AutoMc[ScreenSize]);
+
+	  LKWriteText(hdc, _T("A"), writeX_AutoMc[ScreenSize], writeY_AutoMc[ScreenSize], 
+		0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, true);
+
+	  // Sampling mode only - this will autoset positions, but still need fine tuning
+	  // Adding a resolution or changing fonts will require retuning for them.
+	  #if 0 
 	  if (OverlaySize==0) {
 	    Rectangle(hdc,rcx,rcy+ySizeLK8MediumFont/2-2,  rc.right, rcy+ySizeLK8MediumFont+ySizeLK8MediumFont/2);
 	    LKWriteText(hdc, _T("A"), rc.right,rcy+ySizeLK8MediumFont/2, 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, true);
+		StartupStore(_T(".... Oversize0: rectleft=%d recttop=%d  rectright=%d rectbottom=%d\n"),
+		    rcx,rcy+ySizeLK8MediumFont/2-2,  rc.right, rcy+ySizeLK8MediumFont+ySizeLK8MediumFont/2);
+		StartupStore(_T(".... Oversize0: writex=%d writey=%d\n"),
+		    rc.right,rcy+ySizeLK8MediumFont/2);
 	  } else {
 	    Rectangle(hdc,rcx,rcy+ySizeLK8MediumFont/4,  rc.right, rcy+ySizeLK8MediumFont+ySizeLK8MediumFont/4);
+		StartupStore(_T(".... Oversize1: rectleft=%d recttop=%d  rectright=%d rectbottom=%d\n"),
+	    rcx,rcy+ySizeLK8MediumFont/4,  rc.right, rcy+ySizeLK8MediumFont+ySizeLK8MediumFont/4);
+		StartupStore(_T(".... Oversize1: writex=%d writey=%d\n"),
+	    rc.right,rcy+ySizeLK8MediumFont/4);
 	    LKWriteText(hdc, _T("A"), rc.right,rcy+ySizeLK8MediumFont/4, 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, true);
 	  }
-	}
+	  #endif
+	} // AutoMacCready true
 
   }
   if ( Look8000 == (Look8000_t)lxcNoOverlay ) goto Drawbottom;
