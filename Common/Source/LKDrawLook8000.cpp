@@ -32,6 +32,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 {
   HFONT		oldfont=0;
   HBRUSH	oldbrush=0;
+  HPEN		oldpen=0;
   SIZE TextSize, TextSize2;
   TCHAR Buffer[LKSIZEBUFFERLARGE];
   TCHAR BufferValue[LKSIZEBUFFERVALUE];
@@ -100,6 +101,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   redwarning=false;
   oldfont = (HFONT)SelectObject(hdc, LKINFOFONT);
   oldbrush=(HBRUSH)SelectObject(hdc, LKBrush_Black);
+  oldpen=(HPEN)SelectObject(hdc, LKPen_Black_N1);
 
 #if USEIBOX
   if ( IsMapFullScreen() && !mode.AnyPan() )
@@ -1468,6 +1470,7 @@ afterWind:
 TheEnd:
 
   // restore objects and return
+  SelectObject(hdc, oldpen); 
   SelectObject(hdc, oldbrush); 
   SelectObject(hdc, oldfont); 
 
