@@ -2685,9 +2685,7 @@ void ReadAssetNumber(void)
   memset(strAssetNumber, 0, MAX_LOADSTRING*sizeof(TCHAR));
   // JMW clear this first just to be safe.
 
-  #if TESTBENCH
   StartupStore(TEXT(". Asset ID: "));
-  #endif
 
 #if (WINDOWSPC>0)
 	strAssetNumber[0]= _T('L');
@@ -2711,10 +2709,8 @@ void ReadAssetNumber(void)
     }
     if (ifound>=3) {
 // TODO metti a 0 l'ultimo byte per chiudere la stringa
-      #if TESTBENCH
       StartupStore(strAssetNumber);
       StartupStore(TEXT(" (reg)%s"),NEWLINE);
-      #endif
       return;
     }
   }
@@ -2726,20 +2722,16 @@ void ReadAssetNumber(void)
 
   if(strAssetNumber[0] != '\0')
     {
-      #if TESTBENCH
       StartupStore(strAssetNumber);
       StartupStore(TEXT(" (?)%s"),NEWLINE);
-      #endif
       return;
     }
 
   ReadUUID();
   if(strAssetNumber[0] != '\0')
     {
-      #if TESTBENCH
       StartupStore(strAssetNumber);
       StartupStore(TEXT(" (uuid)%s"),NEWLINE);
-      #endif
       return;
     }
   
@@ -2747,10 +2739,8 @@ void ReadAssetNumber(void)
   strAssetNumber[1]= _T('A');
   strAssetNumber[2]= _T('A');
 
-  #if TESTBENCH 
   StartupStore(strAssetNumber);
   StartupStore(TEXT(" (fallback)%s"),NEWLINE);
-  #endif
   
   return;
 }
