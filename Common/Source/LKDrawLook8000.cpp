@@ -326,10 +326,10 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 	  // ss320x240 OK
 	  rectLeft_AutoMc[ss320x240]=310;
 	  rectRight_AutoMc[ss320x240]=320;
-	  rectTop_AutoMc[ss320x240]=54;
-	  rectBottom_AutoMc[ss320x240]=73;
+	  rectTop_AutoMc[ss320x240]=53;
+	  rectBottom_AutoMc[ss320x240]=72;
 	  writeX_AutoMc[ss320x240]=319;
-	  writeY_AutoMc[ss320x240]=55;
+	  writeY_AutoMc[ss320x240]=54;
 
 	  // ss400x240 OK
 	  rectLeft_AutoMc[ss400x240]=390;
@@ -350,8 +350,8 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 	  // ss480x272 OK
 	  rectLeft_AutoMc[ss480x272]=469;
 	  rectRight_AutoMc[ss480x272]=480;
-	  rectTop_AutoMc[ss480x272]=40;
-	  rectBottom_AutoMc[ss480x272]=68;
+	  rectTop_AutoMc[ss480x272]=42;
+	  rectBottom_AutoMc[ss480x272]=67;
 	  writeX_AutoMc[ss480x272]=480;
 	  writeY_AutoMc[ss480x272]=44;
 
