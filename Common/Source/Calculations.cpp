@@ -78,7 +78,7 @@ bool ExternalTriggerCruise= false;
 bool ExternalTriggerCircling= false;
 bool ForceFinalGlide= false;
 bool AutoForceFinalGlide= false;
-int  AutoMcMode = 0;
+int  AutoMcMode = amcEquivalent;
 bool EnableFAIFinishHeight = false;
 bool BallastTimerActive = false;
 //static double TakeOffSpeedThreshold; 091101
@@ -2987,8 +2987,8 @@ double MacCreadyOrAvClimbRate(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
   if ((mc_val<0.1) || 
       (Calculated->AutoMacCready && 
-       ((AutoMcMode==0) ||
-        ((AutoMcMode==2)&&(is_final_glide))
+       ((AutoMcMode==amcFinalGlide) ||
+        ((AutoMcMode==amcFinalAndClimb)&&(is_final_glide))
         ))
       ) {
 
@@ -3814,7 +3814,7 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   double mc_new = MACCREADY;
   static bool first_mc = true;
 
-  if ( AutoMcMode==3 ) {
+  if ( AutoMcMode==amcEquivalent ) {
 	if (Calculated->EqMc>=0) 
 		MACCREADY = LowPassFilter(MACCREADY,Calculated->EqMc,0.8);
 	UnlockTaskData();
@@ -3852,7 +3852,7 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     if (av_thermal>0) {
       mc_new = av_thermal;
     }
-  } else if ( ((AutoMcMode==0)||(AutoMcMode==2)) && is_final_glide) {
+  } else if ( ((AutoMcMode==amcFinalGlide)||(AutoMcMode==amcFinalAndClimb)) && is_final_glide) {
 
       if (Calculated->TaskAltitudeDifference0>0) {
 	
@@ -3875,7 +3875,7 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	if (mc_pirker >= mc_new) {
 	  mc_new = mc_pirker;
 	  first_mc = false;
-	} else if (AutoMcMode==2) {
+	} else if (AutoMcMode==amcFinalAndClimb) {
 	  // revert to averager based auto Mc
 	  if (av_thermal>0) {
 	    mc_new = av_thermal;
@@ -3885,14 +3885,14 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	mc_new = mc_pirker;
       }
     } else { // below final glide at zero Mc, never achieved final glide
-      if (first_mc && (AutoMcMode==2)) {
+      if (first_mc && (AutoMcMode==amcFinalAndClimb)) {
 	// revert to averager based auto Mc
 	if (av_thermal>0) {
 	  mc_new = av_thermal;
 	}
       }
     }
-  } else if ( (AutoMcMode==1) || ((AutoMcMode==2)&& !is_final_glide) ) {
+  } else if ( (AutoMcMode==amcAverageClimb) || ((AutoMcMode==amcFinalAndClimb)&& !is_final_glide) ) {
     if (av_thermal>0) {
       mc_new = av_thermal;
     }

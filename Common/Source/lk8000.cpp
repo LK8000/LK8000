@@ -4987,8 +4987,8 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   // if using Final glide or "both", available only when we have a goto active
   if (_tcsstr(OutBuffer, TEXT("$(CheckAutoMc)"))) {
     if (!ValidTaskPoint(ActiveWayPoint) 
-        && ((AutoMcMode==0)
-	    || (AutoMcMode==2))) {
+        && ((AutoMcMode==amcFinalGlide)
+	    || (AutoMcMode==amcFinalAndClimb))) {
       invalid = true;
     }
     ReplaceInString(OutBuffer, TEXT("$(CheckAutoMc)"), TEXT(""), Size);

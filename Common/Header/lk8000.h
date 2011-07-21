@@ -320,6 +320,13 @@ typedef enum{
 }ScreenSize_t;
 
 typedef enum{
+  amcFinalGlide=0,
+  amcAverageClimb,
+  amcFinalAndClimb,
+  amcEquivalent,
+} AutoMacCready_t;
+
+typedef enum{
   ctBestCruiseTrackDefault=0,
   ctBestCruiseTrackAltA,
 }BestCruiseTrack_t;

@@ -102,9 +102,15 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
 
   redwarning=false;
-  oldfont = (HFONT)SelectObject(hdc, LKINFOFONT);
-  oldbrush=(HBRUSH)SelectObject(hdc, LKBrush_Black);
-  oldpen=(HPEN)SelectObject(hdc, LKPen_Black_N1);
+  if (!Appearance.InverseInfoBox) {
+    oldfont = (HFONT)SelectObject(hdc, LKINFOFONT);
+    oldbrush=(HBRUSH)SelectObject(hdc, LKBrush_White);
+    oldpen=(HPEN)SelectObject(hdc, LKPen_Grey_N1);
+  } else {
+    oldfont = (HFONT)SelectObject(hdc, LKINFOFONT);
+    oldbrush=(HBRUSH)SelectObject(hdc, LKBrush_Black);
+    oldpen=(HPEN)SelectObject(hdc, LKPen_Grey_N1);
+  }
 
 #if USEIBOX
   if ( IsMapFullScreen() && !mode.AnyPan() )
@@ -974,7 +980,29 @@ drawOverlay:
 	  	rectRight_AutoMc[ScreenSize],
 	  	rectBottom_AutoMc[ScreenSize]);
 
-	  LKWriteText(hdc, _T("A"), writeX_AutoMc[ScreenSize], writeY_AutoMc[ScreenSize], 
+	  TCHAR amcmode[2];
+	  switch(AutoMcMode) {
+		case amcFinalGlide:
+			wcscpy(amcmode,_T("F"));
+			break;
+		case amcAverageClimb:
+			wcscpy(amcmode,_T("A"));
+			break;
+		case amcFinalAndClimb:
+			if (CALCULATED_INFO.FinalGlide)
+				wcscpy(amcmode,_T("F"));
+			else
+				wcscpy(amcmode,_T("A"));
+			break;
+		case amcEquivalent:
+			wcscpy(amcmode,_T("E"));
+			break;
+		default:
+			wcscpy(amcmode,_T("?"));
+			break;
+	 }
+
+	  LKWriteText(hdc, amcmode, writeX_AutoMc[ScreenSize], writeY_AutoMc[ScreenSize], 
 		0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_WHITE, true);
 
 	  // Sampling mode only - this will autoset positions, but still need fine tuning
