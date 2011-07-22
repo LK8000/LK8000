@@ -1997,7 +1997,7 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M148_")));
 	// LKTOKEN  _@M262_ = "Equivalent MC" 
     dfe->addEnumText(gettext(TEXT("_@M262_")));
-    wp->GetDataField()->Set(AutoMcMode);
+    wp->GetDataField()->Set(AutoMcMode_Config);
     wp->RefreshDisplay();
   }
 
@@ -3825,9 +3825,10 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoMcMode"));
   if (wp) {
-    if (AutoMcMode != wp->GetDataField()->GetAsInteger()) {
-      AutoMcMode = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryAutoMcMode, AutoMcMode);
+    if (AutoMcMode_Config != wp->GetDataField()->GetAsInteger()) {
+      AutoMcMode_Config = wp->GetDataField()->GetAsInteger();
+      SetToRegistry(szRegistryAutoMcMode, AutoMcMode_Config);
+	AutoMcMode=AutoMcMode_Config;
       changed = true;
     }
   }
@@ -3870,9 +3871,10 @@ void dlgConfigurationShowModal(void){
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoMcStatus"));
   if (wp) {
-    if (AutoMacCready != wp->GetDataField()->GetAsBoolean()) {
-      AutoMacCready = wp->GetDataField()->GetAsBoolean();
+    if (AutoMacCready != wp->GetDataField()->GetAsInteger()) {
+      AutoMacCready = wp->GetDataField()->GetAsInteger();
       SetToRegistry(szRegistryAutoMcStatus, AutoMacCready);
+      CALCULATED_INFO.AutoMacCready=AutoMacCready;
       changed = true;
     }
   }

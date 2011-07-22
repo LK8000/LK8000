@@ -1114,8 +1114,9 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryAutoAdvance,&Temp);
   AutoAdvance = (Temp == 1);
 
-  Temp = AutoMcMode;
+  Temp = AutoMcMode_Config;
   GetFromRegistry(szRegistryAutoMcMode,&Temp);
+  AutoMcMode_Config = Temp;
   AutoMcMode = Temp;
 
   Temp = AutoMacCready;

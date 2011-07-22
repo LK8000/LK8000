@@ -78,7 +78,8 @@ bool ExternalTriggerCruise= false;
 bool ExternalTriggerCircling= false;
 bool ForceFinalGlide= false;
 bool AutoForceFinalGlide= false;
-int  AutoMcMode = amcEquivalent;
+int  AutoMcMode_Config = amcEquivalent;	// this is the config saved value
+int  AutoMcMode = amcEquivalent; 	// this is temporary runtime
 bool EnableFAIFinishHeight = false;
 bool BallastTimerActive = false;
 //static double TakeOffSpeedThreshold; 091101
