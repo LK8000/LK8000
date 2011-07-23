@@ -812,6 +812,7 @@ void guiStartLogger(bool noAsk) {
 	// LKTOKEN  _@M637_ = "Start Logger" 
 	if(noAsk || (MessageBoxX(hWndMapWindow,TaskMessage,gettext(TEXT("_@M637_")), MB_YESNO|MB_ICONQUESTION) == IDYES))
 	{
+		IGCWriteLock=true; // Lock ASAP
 		if (LoggerClearFreeSpace()) {
 	  
 			StartLogger(strAssetNumber);
@@ -822,7 +823,8 @@ void guiStartLogger(bool noAsk) {
 				// ResetFRecord ??  TODO 
 			} else {
 				LoggerHeader();
-				LoggerActive = true; // start logger after Header is completed.  Concurrency
+				// THIS IS HAPPENING TOO EARLY, and we still have concurrency with F record!
+				// LoggerActive = true; // start logger after Header is completed.  Concurrency
 	  
 				int ntp=0;
 				for(i=0;i<MAXTASKPOINTS;i++)
@@ -844,6 +846,7 @@ void guiStartLogger(bool noAsk) {
 					WayPointList[Task[i].Index].Name );
 				}
 				EndDeclaration();
+				LoggerActive = true; // start logger now
 				ResetFRecord(); // reset timer & lastRecord string so if logger is restarted, FRec appears at top of file
 			} 
 		} else {
@@ -854,6 +857,7 @@ void guiStartLogger(bool noAsk) {
 			gettext(TEXT("_@M404_")), MB_OK| MB_ICONERROR);
 			StartupStore(TEXT("------ Logger not started: Insufficient Storage%s"),NEWLINE);
 		}
+		IGCWriteLock=false; 
 	}
 	FullScreen();
   }

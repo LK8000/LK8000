@@ -75,6 +75,7 @@
 
 #define TESTBENCH		1	// THIS IS USING MORE MESSAGES, AND IT IS GOOD FOR DEVELOPMENT VERSIONS
 					// For example, all dev.vers have CPUSTATS activated by this define, automatically
+					// COMMENT BEFORE PUBLIC RELEASE, NO EXCEPTIONS: INTERNAL USE ONLY!
 
 #if TESTBENCH
 #define CPUSTATS		1	// Show cpu stats in inverted text mode inside map mode

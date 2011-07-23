@@ -428,6 +428,7 @@ extern int TrailLock;
 extern bool LoggerActive;
 extern int LoggerTimeStepCruise;
 extern int LoggerTimeStepCircling;
+extern bool IGCWriteLock;
 
 // user controls/parameters
 extern double MACCREADY;

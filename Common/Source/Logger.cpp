@@ -20,6 +20,7 @@
 
 #include "utils/heapcheck.h"
 
+bool IGCWriteLock=false; // workaround, but not a real solution
 
 using std::min;
 using std::max;
@@ -156,8 +157,11 @@ void StopLogger(void) {
     LoggerActive = false;
     if (LoggerClearFreeSpace()) {
 
-
+    #if TESTBENCH
+    if (LoggerGActive())
+    #else
     if (!SIMMODE && LoggerGActive())
+    #endif
 	{
 	  BOOL bFileValid = true;
 	  TCHAR OldGRecordBuff[MAX_IGC_BUFF];
@@ -382,7 +386,10 @@ void LogPoint(double Latitude, double Longitude, double Altitude,
 bool LogFRecordToFile(int SatelliteIDs[], short Hour, short Minute, short Second, bool bAlways)
 { // bAlways forces write when completing header for restart
   // only writes record if constallation has changed unless bAlways set
+  #if TESTBENCH
+  #else
   if (SIMMODE) return true;
+  #endif
   char szFRecord[MAX_IGC_BUFF];
   static bool bFirst = true;
   int eof=0;
@@ -512,12 +519,15 @@ void StartLogger(TCHAR *astrAssetNumber)
 	DeleteFile(szLoggerFileName);
 #endif
 
-
+  #if TESTBENCH
+	LinkGRecordDLL();
+	if (LoggerGActive()) GRecordInit();
+  #else
   if (!SIMMODE) {
 	LinkGRecordDLL();
 	if (LoggerGActive()) GRecordInit();
   }
-
+  #endif
   
   for(i=1;i<99;i++)
     {
@@ -1534,6 +1544,7 @@ bool IGCWriteRecord(char *szIn)
   int i=0, iLen=0;
   static BOOL bWriting = false;
 
+  // THIS IS NOT A SOLUTION. DATA LOSS GRANTED.
   if ( !bWriting )
     {
       bWriting = true;
@@ -1551,9 +1562,13 @@ bool IGCWriteRecord(char *szIn)
       for (i = 0; (i <= iLen) && (i < MAX_IGC_BUFF); i++)
 	buffer[i] = (TCHAR)charbuffer[i];
 
+        #if TESTBENCH
+		if (LoggerGActive()) GRecordAppendRecordToBuffer(pbuffer);
+	#else
 	if (!SIMMODE) {
 		if (LoggerGActive()) GRecordAppendRecordToBuffer(pbuffer);
 	}
+	#endif
 
       FlushFileBuffers(hFile);
       CloseHandle(hFile);

@@ -138,8 +138,30 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     } else {
       balt = Basic->Altitude;
     }
-    LogPoint(Basic->Latitude , Basic->Longitude , Basic->Altitude,
-             balt);
+
+    // 110723 this is not a solution, only a workaround.
+    // Problem is that different threads are using indirectly IGCWrite in Logger.cpp
+    // That function as an internal sort-of locking, which probably may be much better
+    // to remove, resulting currently in data loss inside IGC.
+    // Since at takeoff calculation and main thread are using IGCWrite, we want to be sure
+    // that the initial declaration is completed before proceeding with F and B records here!
+    static bool dowarn=true;
+    if (IGCWriteLock) {
+	unsigned short loop=0;
+	while (++loop<50) {
+		Sleep(10); //  500 ms delay max
+		if (!IGCWriteLock) break;
+	}
+	if (IGCWriteLock) {
+		if (dowarn) StartupStore(_T("..... LogPoint failed, IGCWriteLock!%s"),NEWLINE);
+	} else {
+		if (dowarn) StartupStore(_T("..... LogPoint delayed by IGCWriteLock, ok.%s"),NEWLINE);
+		LogPoint(Basic->Latitude , Basic->Longitude , Basic->Altitude, balt);
+	}
+	dowarn=false;
+    } else
+	LogPoint(Basic->Latitude , Basic->Longitude , Basic->Altitude, balt);
+
     LogLastTime += dtLog;
     if (LogLastTime< Basic->Time-dtLog) {
       LogLastTime = Basic->Time-dtLog;

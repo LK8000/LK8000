@@ -2099,7 +2099,10 @@ void InputEvents::eventBallast(const TCHAR *misc) {
 
 
 void InputEvents::eventAutoLogger(const TCHAR *misc) {
+  #if TESTBENCH
+  #else
   if (SIMMODE) return;
+  #endif
   if (!DisableAutoLogger) {
     eventLogger(misc);
   }
