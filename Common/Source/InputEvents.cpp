@@ -44,6 +44,7 @@ using std::max;
 #define MAX_EVENTS 2048
 #define MAX_LABEL NUMBUTTONLABELS
 
+#define ISPARAGLIDER (AircraftCategory == (AircraftCategory_t)umParaglider)
 
 // Current modes - map mode to integer (primitive hash)
 static TCHAR mode_current[MAX_MODE_STRING] = TEXT("default");		// Current mode
@@ -1984,7 +1985,8 @@ void InputEvents::eventService(const TCHAR *misc) {
 		mtext, _T(""),
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
 			if (LockMode(2)) { // invert LockMode
-				DoStatusMessage(gettext(_T("_@M962_"))); // SCREEN IS LOCKED UNTIL TAKEOFF
+				if (ISPARAGLIDER)
+					DoStatusMessage(gettext(_T("_@M962_"))); // SCREEN IS LOCKED UNTIL TAKEOFF
 				DoStatusMessage(gettext(_T("_@M1601_"))); // DOUBLECLICK TO UNLOCK
 			} else
 				DoStatusMessage(gettext(_T("_@M964_"))); // SCREEN IS UNLOCKED

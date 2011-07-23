@@ -4199,10 +4199,7 @@ bool LockMode(const short lmode) {
 
   switch(lmode) {
 	case 0:		// query availability of LockMode
-		if (ISPARAGLIDER)
-			return true;
-		else
-			return false;
+		return true;
 		break;
 
 	case 1:		// query lock/unlock status
@@ -4214,15 +4211,20 @@ bool LockMode(const short lmode) {
 		return LockModeStatus;
 		break;
 
-	case 3:		// query button is usable or not, assuming ISPARAGLIDER
-		// Positive if not flying
-		return CALCULATED_INFO.Flying==TRUE?false:true;
+	case 3:		// query button is usable or not
+		if (ISPARAGLIDER)
+			// Positive if not flying
+			return CALCULATED_INFO.Flying==TRUE?false:true;
+		else return true;
 		break;
 
 	case 9:		// Check if we can unlock the screen
-		if (CALCULATED_INFO.Flying == TRUE) {
-			if ( (GPS_INFO.Time - CALCULATED_INFO.TakeOffTime)>10) {
-				LockModeStatus=false;
+		if (ISPARAGLIDER) {
+			// Automatic unlock
+			if (CALCULATED_INFO.Flying == TRUE) {
+				if ( (GPS_INFO.Time - CALCULATED_INFO.TakeOffTime)>10) {
+					LockModeStatus=false;
+				}
 			}
 		}
 		return LockModeStatus;

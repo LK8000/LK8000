@@ -3079,7 +3079,8 @@ goto_DrawLockModeStatus:
 	TextInBoxModeL.AsFlag.AlligneCenter = 1;
 	TextInBoxModeL.AsFlag.WhiteBorder = 1;
 	TextInBoxModeL.AsFlag.Border = 1;
-	TextInBox(hDC, gettext(_T("_@M962_")), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/3), 0, TextInBoxModeL);
+	if (ISPARAGLIDER)
+	  TextInBox(hDC, gettext(_T("_@M962_")), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/3), 0, TextInBoxModeL);
 	SelectObject(hDC,LK8MapFont);
 	TextInBox(hDC, gettext(_T("_@M1601_")), (rc.right-rc.left)/2, rc.bottom-((rc.bottom-rc.top)/5), 0, TextInBoxModeL);
   }
