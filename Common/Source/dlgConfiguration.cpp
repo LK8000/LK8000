@@ -1961,7 +1961,7 @@ static void setVariables(void) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoMcStatus"));
   if (wp) {
-    wp->GetDataField()->Set(AutoMacCready);
+    wp->GetDataField()->Set(AutoMacCready_Config);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpShading"));
@@ -3867,10 +3867,10 @@ void dlgConfigurationShowModal(void){
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoMcStatus"));
   if (wp) {
-    if (AutoMacCready != wp->GetDataField()->GetAsInteger()) {
-      AutoMacCready = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryAutoMcStatus, AutoMacCready);
-      CALCULATED_INFO.AutoMacCready=AutoMacCready;
+    if (AutoMacCready_Config != wp->GetDataField()->GetAsInteger()) {
+      AutoMacCready_Config = wp->GetDataField()->GetAsInteger();
+      SetToRegistry(szRegistryAutoMcStatus, AutoMacCready_Config);
+      CALCULATED_INFO.AutoMacCready=AutoMacCready_Config;
       changed = true;
     }
   }

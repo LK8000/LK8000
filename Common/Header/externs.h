@@ -431,7 +431,7 @@ extern int LoggerTimeStepCircling;
 
 // user controls/parameters
 extern double MACCREADY;
-extern bool   AutoMacCready;
+extern bool   AutoMacCready_Config;
 extern int    AutoMcMode;
 extern int    AutoMcMode_Config;
 extern double SAFETYALTITUDEARRIVAL;

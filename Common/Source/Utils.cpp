@@ -1119,11 +1119,11 @@ void ReadRegistrySettings(void)
   AutoMcMode_Config = Temp;
   AutoMcMode = Temp;
 
-  Temp = AutoMacCready;
+  Temp = AutoMacCready_Config;
   GetFromRegistry(szRegistryAutoMcStatus,&Temp);
-  AutoMacCready = Temp;
+  AutoMacCready_Config = Temp;
   // AutoMacCready in calculations.h is an int, should be a bool
-  CALCULATED_INFO.AutoMacCready = AutoMacCready==true?1:0;
+  CALCULATED_INFO.AutoMacCready = AutoMacCready_Config==true?1:0;
 
   Temp = WaypointsOutOfRange;
   GetFromRegistry(szRegistryWaypointsOutOfRange,&Temp);
