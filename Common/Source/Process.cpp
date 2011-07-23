@@ -229,6 +229,21 @@ void	MacCreadyProcessing(int UpDown)
 	if (MACCREADY<0) MACCREADY=0; 
       
     }
+  else if (UpDown==-5)
+    {
+      CALCULATED_INFO.AutoMacCready = true;
+      AutoMcMode=amcFinalGlide;
+    }
+  else if (UpDown==-6)
+    {
+      CALCULATED_INFO.AutoMacCready = true;
+      AutoMcMode=amcAverageClimb;
+    }
+  else if (UpDown==-7)
+    {
+      CALCULATED_INFO.AutoMacCready = true;
+      AutoMcMode=amcEquivalent;
+    }
   
   devPutMacCready(devA(), MACCREADY); 
   devPutMacCready(devB(), MACCREADY);

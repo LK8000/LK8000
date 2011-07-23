@@ -1492,6 +1492,12 @@ void InputEvents::eventMacCready(const TCHAR *misc) {
     MacCreadyProcessing(+2);
   } else if (_tcscmp(misc, TEXT("auto off")) == 0) {
     MacCreadyProcessing(-2);
+  } else if (_tcscmp(misc, TEXT("auto final")) == 0) {
+    MacCreadyProcessing(-5);
+  } else if (_tcscmp(misc, TEXT("auto climb")) == 0) {
+    MacCreadyProcessing(-6);
+  } else if (_tcscmp(misc, TEXT("auto equiv")) == 0) {
+    MacCreadyProcessing(-7);
   } else if (_tcscmp(misc, TEXT("auto show")) == 0) {
     if (CALCULATED_INFO.AutoMacCready) {
       DoStatusMessage(gettext(TEXT("_@M860_"))); // Auto MacCready ON

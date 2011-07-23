@@ -4775,10 +4775,29 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   if (_tcsstr(OutBuffer, TEXT("$(MacCreadyMode)"))) { // 091214
 
 	TCHAR tbuf[10];
-	if (CALCULATED_INFO.AutoMacCready) 
-		// LKTOKEN _@M1202_ "Auto"
-		_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1202_")));
-	else
+	if (CALCULATED_INFO.AutoMacCready)  {
+		switch(AutoMcMode) {
+			case amcFinalGlide:
+				_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1681_")));
+				break;
+			case amcAverageClimb:
+				_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1682_")));
+				break;
+			case amcEquivalent:
+				_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1683_")));
+				break;
+			case amcFinalAndClimb:
+				if (CALCULATED_INFO.FinalGlide)
+					_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1681_")));
+				else
+					_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1682_")));
+				break;
+			default:
+				// LKTOKEN _@M1202_ "Auto"
+				_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1202_")));
+				break;
+		}
+	} else
 		// LKTOKEN _@M1201_ "Man"
 		_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1201_")));
 	ReplaceInString(OutBuffer, TEXT("$(MacCreadyMode)"), tbuf, Size);
@@ -4984,6 +5003,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
 
+  /* REMOVE
   // if using Final glide or "both", available only when we have a goto active
   if (_tcsstr(OutBuffer, TEXT("$(CheckAutoMc)"))) {
     if (!ValidTaskPoint(ActiveWayPoint) 
@@ -4994,6 +5014,8 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     ReplaceInString(OutBuffer, TEXT("$(CheckAutoMc)"), TEXT(""), Size);
 	if (--items<=0) goto label_ret; // 100517
   }
+  */
+
   if (_tcsstr(OutBuffer, TEXT("$(HBARAVAILABLE)"))) {
     if (!GPS_INFO.BaroAltitudeAvailable) {
       invalid = true;
@@ -5237,6 +5259,12 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_NONE, OutBuffer, TEXT("$(DispModeAutoShortIndicator)"), TEXT("_"), TEXT(""), Size);
   CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_FINAL_GLIDE, OutBuffer, TEXT("$(DispModeFinalShortIndicator)"), TEXT("_"), TEXT(""), Size);
   }
+
+    CondReplaceInString(CALCULATED_INFO.AutoMacCready && AutoMcMode==amcFinalGlide, OutBuffer, TEXT("$(amcIsFinal)"), TEXT("_"), TEXT(""), Size);
+    CondReplaceInString(CALCULATED_INFO.AutoMacCready && AutoMcMode==amcAverageClimb, OutBuffer, TEXT("$(amcIsClimb)"), TEXT("_"), TEXT(""), Size);
+    CondReplaceInString(CALCULATED_INFO.AutoMacCready && AutoMcMode==amcEquivalent, OutBuffer, TEXT("$(amcIsEquiv)"), TEXT("_"), TEXT(""), Size);
+    CondReplaceInString(CALCULATED_INFO.AutoMacCready, OutBuffer, TEXT("$(CheckManMc)"), TEXT(""),TEXT("_"), Size);
+
 
   if (_tcsstr(OutBuffer, TEXT("$(AirspaceMode)"))) {
     switch(AltitudeMode) {

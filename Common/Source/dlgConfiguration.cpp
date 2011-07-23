@@ -1989,14 +1989,10 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M290_ = "Final glide" 
-    dfe->addEnumText(gettext(TEXT("_@M290_")));
-	// LKTOKEN  _@M118_ = "Average climb" 
-    dfe->addEnumText(gettext(TEXT("_@M118_")));
-	// LKTOKEN  _@M148_ = "Both (Fin+Ave)" 
-    dfe->addEnumText(gettext(TEXT("_@M148_")));
-	// LKTOKEN  _@M262_ = "Equivalent MC" 
-    dfe->addEnumText(gettext(TEXT("_@M262_")));
+    dfe->addEnumText(gettext(TEXT("_@M290_")));  // Final Glide
+    dfe->addEnumText(gettext(TEXT("_@M1684_"))); // Average thermal
+    dfe->addEnumText(gettext(TEXT("_@M1685_"))); // Final + Average
+    dfe->addEnumText(gettext(TEXT("_@M262_")));  // Equivalent
     wp->GetDataField()->Set(AutoMcMode_Config);
     wp->RefreshDisplay();
   }

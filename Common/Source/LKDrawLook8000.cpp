@@ -983,19 +983,19 @@ drawOverlay:
 	  TCHAR amcmode[2];
 	  switch(AutoMcMode) {
 		case amcFinalGlide:
-			wcscpy(amcmode,_T("F"));
+			wcscpy(amcmode,gettext(_T("_@M1676_")));
 			break;
 		case amcAverageClimb:
-			wcscpy(amcmode,_T("A"));
+			wcscpy(amcmode,gettext(_T("_@M1678_")));
 			break;
 		case amcFinalAndClimb:
 			if (CALCULATED_INFO.FinalGlide)
-				wcscpy(amcmode,_T("F"));
+				wcscpy(amcmode,gettext(_T("_@M1676_")));
 			else
-				wcscpy(amcmode,_T("A"));
+				wcscpy(amcmode,gettext(_T("_@M1678_")));
 			break;
 		case amcEquivalent:
-			wcscpy(amcmode,_T("E"));
+			wcscpy(amcmode,gettext(_T("_@M1680_")));
 			break;
 		default:
 			wcscpy(amcmode,_T("?"));

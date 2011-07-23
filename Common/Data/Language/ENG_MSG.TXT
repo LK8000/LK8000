@@ -1590,5 +1590,20 @@ _@M1673_ "Avg"
 
 # Auto MC configuration
 _@M1674_ "Auto Mc "
+# Menu buttons MacCready, keep very short! - F C E are the overlay indicators
+# Fin Th Equ  are fron button shortcuts, max 3 letters!
+_@M1675_ "Final"
+_@M1676_ "F"
+_@M1677_ "ThAll"
+_@M1678_ "T"
+_@M1679_ "Equiv"
+_@M1680_ "E"
+_@M1681_ "Fin"
+_@M1682_ "Th"
+_@M1683_ "Eq"
+# Change 118 average climb with average thermal
+_@M1684_ "Average thermal (Th.All)"
+# Change 148 with 1685
+_@M1685_ "Both Final+Average"
 
 # Note for developers: LKLanguage MAX_MESSAGE  1700: 0-1699 !
