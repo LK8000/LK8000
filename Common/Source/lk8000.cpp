@@ -5038,15 +5038,13 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
 
+  #if USEIBOX
   if (_tcsstr(OutBuffer, TEXT("$(BoxMode)"))) {
-	#if USEIBOX
 	if ( MapWindow::IsMapFullScreen() ) invalid = true;
-	#else
-	invalid=true;
-	#endif
 	ReplaceInString(OutBuffer, TEXT("$(BoxMode)"), TEXT(""), Size);
 	if (--items<=0) goto label_ret; // 100517
   }
+  #endif
 
   if (_tcsstr(OutBuffer, TEXT("$(WCSpeed)"))) {
 	TCHAR tbuf[10];
@@ -5214,8 +5212,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
 #if USEIBOX
   CondReplaceInString(MapWindow::IsMapFullScreen(), OutBuffer, TEXT("$(FullScreenToggleActionName)"), gettext(TEXT("_@M894_")), gettext(TEXT("_@M491_")), Size);
-#else
-  CondReplaceInString(1, OutBuffer, TEXT("$(FullScreenToggleActionName)"), gettext(TEXT("_@M894_")), gettext(TEXT("_@M491_")), Size);
+  // CondReplaceInString(1, OutBuffer, TEXT("$(FullScreenToggleActionName)"), gettext(TEXT("_@M894_")), gettext(TEXT("_@M491_")), Size);
 #endif
   CondReplaceInString(MapWindow::zoom.AutoZoom(), OutBuffer, TEXT("$(ZoomAutoToggleActionName)"), gettext(TEXT("_@M418_")), gettext(TEXT("_@M897_")), Size);
   CondReplaceInString(EnableTopology, OutBuffer, TEXT("$(TopologyToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
@@ -5249,8 +5246,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   CondReplaceInString(CALCULATED_INFO.AutoMacCready != 0, OutBuffer, TEXT("$(MacCreadyToggleActionName)"), gettext(TEXT("_@M418_")), gettext(TEXT("_@M897_")), Size);
 #if USEIBOX
   CondReplaceInString(EnableAuxiliaryInfo, OutBuffer, TEXT("$(AuxInfoToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
-#else
-  CondReplaceInString(0, OutBuffer, TEXT("$(AuxInfoToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
+  // CondReplaceInString(0, OutBuffer, TEXT("$(AuxInfoToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
 #endif
   {
   MapWindow::Mode::TModeFly userForcedMode = MapWindow::mode.UserForcedMode();
