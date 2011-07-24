@@ -9,6 +9,7 @@ extern bool Init_GM130(void);
 extern void DeInit_GM130(void);
 
 extern int  GM130BarAltitude(void);
+extern float  GM130BarPressure(void);
 extern int  GM130PowerLevel(void);
 extern int  GM130PowerStatus(void);
 extern int  GM130PowerFlag(void);

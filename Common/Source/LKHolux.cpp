@@ -33,6 +33,10 @@ int GM130BarAltitude(void) {
   return 0;
 }
 
+float GM130BarPressure(void) {
+  return 1013.25;
+}
+
 int GM130PowerLevel(void) {
   return 0;
 }

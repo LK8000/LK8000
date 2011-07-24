@@ -677,8 +677,15 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   #ifdef PNA
   if (DeviceIsGM130) {
 
+	#if 1
+	double ps = GM130BarPressure();
+	RMZAltitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
+	// StartupStore(_T("....... Pressure=%.0f QNH=%.2f Altitude=%.1f\n"),ps,QNH,RMZAltitude);
+	#else
 	RMZAltitude = GM130BarAltitude();
 	RMZAltitude = AltitudeToQNHAltitude(RMZAltitude);
+	#endif
+
 	RMZAvailable = TRUE;
 
 	if (!ReplayLogger::IsEnabled()) {
