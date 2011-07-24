@@ -767,13 +767,15 @@ bool CheckAlarms(unsigned short al) {
 // is verified to be gone back in time, or more than 2 hours have passed since last GPS
 // fix was received.
 // This is normally happening when the device was switched off and back on some time later.
-// What we do, is disable logging, resetting some functions etc.
+// What we might do, is disable logging, resetting some functions etc.
+// But this is happening also after switching ON a PNA with no time battery, and thus a full reset.
+// Time is appearing as 1/1/2000 12:00am , some times. So we only log the event.
 //
 void MasterTimeReset(void) {
 
   #include "./LKincludetexttime.cpp"
   StartupStore(_T("... Master Time Reset %s%s"), time_temp,NEWLINE);
-  #if ALPHADEBUG
+  #if TESTBENCH
   DoStatusMessage(_T("MASTER TIME RESET")); // no translation please
   #endif
 
