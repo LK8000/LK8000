@@ -431,6 +431,21 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
    int scx_aircraft, scy_aircraft;
    LatLon2Flat(Basic->Longitude, Basic->Latitude, &scx_aircraft, &scy_aircraft);
 
+  // Initialise turnpoint and landable range distance to default 
+  static int dstrangeturnpoint=DSTRANGETURNPOINT;
+  static int dstrangelandable=DSTRANGELANDABLE;
+  // Number of attempts to recalculate distances to reduce range, for huge cup files
+  // This will reduce number of waypoints in range, and fit them, but will never grow up again.
+  #define MAXRETUNEDST	4
+  static short retunecount=0;
+  bool retunedst_tps;
+  bool retunedst_lnd;
+
+_retunedst:
+
+  retunedst_tps=false;
+  retunedst_lnd=false;
+
   for (i=0; i<MAXRANGELANDABLE; i++) {
 	RangeLandableNumber=0;
 	RangeLandableIndex[i]= -1;
@@ -439,6 +454,7 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	RangeAirportIndex[i]= -1;
 	rangeAirportDistance[i] = 0;
   }
+
   for (i=0; i<MAXRANGETURNPOINT; i++) {
 	RangeTurnpointNumber=0;
 	RangeTurnpointIndex[i]= -1;
@@ -450,7 +466,7 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	int approx_distance = CalculateWaypointApproxDistance(scx_aircraft, scy_aircraft, i);
 
 	// Size a reasonable distance, wide enough 
-	if ( approx_distance > DSTRANGETURNPOINT ) goto LabelLandables;
+	if ( approx_distance > dstrangeturnpoint ) goto LabelLandables;
 
 	// Get only non landables
 	if (
@@ -464,18 +480,27 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			#if DEBUG_DORANGE
 			StartupStore(_T(".. insert turnpoint <%s>\n"),WayPointList[i].Name); 
 			#endif
-		}
-		#if DEBUG_DORANGE
-		else {
+		} else {
+			#if TESTBENCH
 			StartupStore(_T("... OVERFLOW RangeTurnpoint cannot insert <%s> in list\n"),WayPointList[i].Name);
+			#endif
+			// Attempt to reduce range since we have a huge concentration of waypoints
+			// This can only happen "count" times, and it is not reversible: it wont grow up anymore.
+			if (retunecount <MAXRETUNEDST) {
+				#if TESTBENCH
+				StartupStore(_T("... Retunedst attempt %d of %d\n"),retunecount+1,MAXRETUNEDST);
+				#endif
+				retunedst_tps=true;
+				retunecount++;
+				break;
+			}
 		}
-		#endif
 	}
 
 
 LabelLandables:
 
-	if ( approx_distance > DSTRANGELANDABLE ) continue;
+	if ( approx_distance > dstrangelandable ) continue;
 
 	// Skip non landable waypoints that are between DSTRANGETURNPOINT and DSTRANGELANDABLE
 	if (!WayPointCalc[i].IsLandable )
@@ -488,11 +513,19 @@ LabelLandables:
 		StartupStore(_T(".. insert landable <%s>\n"),WayPointList[i].Name); 
 		#endif
 	}
-	#if DEBUG_DORANGE
 	else {
+		#if TESTBENCH
 		StartupStore(_T("... OVERFLOW RangeLandable cannot insert <%s> in list\n"),WayPointList[i].Name);
+		#endif
+		if (retunecount <MAXRETUNEDST) {
+			#if TESTBENCH
+			StartupStore(_T("... Retunedst attempt %d of %d\n"),retunecount+1,MAXRETUNEDST);
+			#endif
+			retunedst_lnd=true;
+			retunecount++;
+			break;
+		}
 	}
-	#endif
 
 	// If it's an Airport then we also take it into account separately
 	if ( WayPointCalc[i].IsAirport )
@@ -501,15 +534,46 @@ LabelLandables:
 			RangeAirportIndex[ka++]=i;
 			RangeAirportNumber++;
 		}
-		#if DEBUG_DORANGE
 		else {
+			#if TESTBENCH
 			StartupStore(_T("... OVERFLOW RangeAirport cannot insert <%s> in list\n"),WayPointList[i].Name);
+			#endif
+			if (retunecount <MAXRETUNEDST) {
+				#if TESTBENCH
+				StartupStore(_T("... Retunedst attempt %d of %d\n"),retunecount+1,MAXRETUNEDST);
+				#endif
+				retunedst_lnd=true;
+				retunecount++;
+				break;
+			}
 		}
-		#endif
 	}
 
 
    } // for i
+
+   if (retunedst_tps) {
+	dstrangeturnpoint-=20; // 75km --> 55km --> 40km
+	if (dstrangeturnpoint<40) dstrangeturnpoint=40; // min 40km radius
+	#if ALPHADEBUG
+	StartupStore(_T("... Retuning dstrangeturnpoint to %d km \n"),dstrangeturnpoint);
+	#endif
+	#if TESTBENCH
+	DoStatusMessage(_T("WAIT RECALCULATING WAYPOINTS"));
+	#endif
+	goto _retunedst;
+  }
+   if (retunedst_lnd) {
+	dstrangelandable-=30; // 150km --> 120km --> 90km -->60km
+	if (dstrangelandable<60) dstrangelandable=60; // min 60km radius
+	#if ALPHADEBUG
+	StartupStore(_T("... Retuning dstrangelandable to %d km \n"),dstrangelandable);
+	#endif
+	#if TESTBENCH
+	DoStatusMessage(_T("WAIT RECALCULATING WAYPOINTS"));
+	#endif
+	goto _retunedst;
+  }
 
 	// We have filled the list... which was too small 
 	// this cannot happen with UNSORTED RANGE
