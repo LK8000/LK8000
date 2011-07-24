@@ -34,7 +34,8 @@ typedef struct _THERMAL_SOURCE_INFO
 typedef struct _THERMAL_HISTORY
 {
   bool   Valid;
-  TCHAR  Name[10];	// L.1223
+  TCHAR  Name[10];	// TH1055
+  TCHAR  Near[20];	// nearby waypoint, if available
   double Time;		// start circling time
   double Latitude;
   double Longitude;

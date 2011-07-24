@@ -30,6 +30,7 @@
 #include "Logger.h"
 #include "LKMapWindow.h"
 #include "Units.h"
+#include "Waypointparser.h"
 
 #include "utils/heapcheck.h"
 using std::min;
@@ -2295,21 +2296,37 @@ void InsertThermalHistory(double ThTime,  double ThLat, double ThLon, double ThB
   TCHAR tstring[10];
   Units::TimeToTextSimple(tstring,TimeLocal((int)ThTime));
   
-  _stprintf(ThermalHistory[i].Name,_T("h%s"),tstring);
+  _stprintf(ThermalHistory[i].Name,_T("th%s"),tstring);
   ThermalHistory[i].Time = ThTime;
   ThermalHistory[i].Latitude = ThLat;
-  ThermalHistory[i].Longitude = ThLon;
   ThermalHistory[i].Longitude = ThLon;
   ThermalHistory[i].HBase = ThBase;
   ThermalHistory[i].HTop = ThTop;
   ThermalHistory[i].Lift = ThAvg;
   ThermalHistory[i].Valid=true;
 
+  int j=FindNearestFarVisibleWayPoint(ThLon,ThLat,15000);
+  if (j>0) {
+	#if DEBUG_THISTORY
+	StartupStore(_T("..... Thermal is near wp.%d <%s>\n"),j,WayPointList[j].Name);
+	#endif
+	TCHAR wpnear[NAME_SIZE+1];
+	wcscpy(wpnear,WayPointList[j].Name);
+	wpnear[19]='\0'; // sized 20 chars
+	wcscpy(ThermalHistory[i].Near,wpnear);
+  } else {
+	wcscpy(ThermalHistory[i].Near,_T(""));
+  }
+
   LockTaskData();
   WayPointList[RESWP_LASTTHERMAL].Latitude  = CALCULATED_INFO.ClimbStartLat;
   WayPointList[RESWP_LASTTHERMAL].Longitude = CALCULATED_INFO.ClimbStartLong;
   WayPointList[RESWP_LASTTHERMAL].Altitude  = CALCULATED_INFO.ClimbStartAlt;
-  wcscpy(WayPointList[RESWP_LASTTHERMAL].Name,ThermalHistory[i].Name);
+  if (j>0)
+  	wcscpy(WayPointList[RESWP_LASTTHERMAL].Comment,ThermalHistory[i].Name);
+  else
+	wcscpy(WayPointList[RESWP_LASTTHERMAL].Comment, gettext(TEXT("_@M1320_"))); // last good thermal
+
   UnlockTaskData();
 
   // Update holder selected L> 

@@ -1097,7 +1097,7 @@ void SetHome(bool reset)
   SetToRegistry(szRegistryTeamcodeRefWaypoint,TeamCodeRefWaypoint);
 }
 
-// 101121 TODO use Range sorted list
+// This is slow, careful!
 int FindNearestWayPoint(double X, double Y, double MaxRange,
                         bool exhaustive)
 {
@@ -2288,3 +2288,47 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
  return true;
 
  }
+
+
+// Returns -1 if no result
+int FindNearestFarVisibleWayPoint(double X, double Y, double maxRange)
+{
+  unsigned int i;
+  int nearestIndex = -1;
+  double nearestDistance, dist;
+
+  #if TESTBENCH
+  int farvisibles=0;
+  #endif
+
+  if(NumberOfWayPoints <= NUMRESWP ) return -1;
+  nearestDistance = maxRange;
+
+  for(i=NUMRESWP;i<NumberOfWayPoints;i++) {
+
+	if (!WayPointList[i].FarVisible) continue;
+
+	#if TESTBENCH
+	farvisibles++;
+	#endif
+
+	DistanceBearing(Y,X, WayPointList[i].Latitude, WayPointList[i].Longitude, &dist, NULL);
+
+	if(dist < nearestDistance) {
+		nearestIndex = i;
+		nearestDistance = dist;
+	}
+  }
+
+  #if TESTBENCH
+  StartupStore(_T("...... Checked %d farvisibles waypoints\n"),farvisibles);
+  #endif
+
+  if(nearestDistance < maxRange) {
+	return nearestIndex;
+  } else {
+	return -1;
+  }
+}
+
+

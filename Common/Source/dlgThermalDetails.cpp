@@ -157,6 +157,16 @@ void dlgThermalDetails(int indexid) {
 
   s_selected=indexid;
 
+  if (wcslen(ThermalHistory[indexid].Near) >0) {
+	TCHAR tcap[100];
+	wsprintf(tcap,_T("%s %s: %s"),
+		gettext(_T("_@M905_")), // Thermal
+		gettext(_T("_@M456_")), // Near
+		ThermalHistory[indexid].Near
+	);
+	wf->SetCaption(tcap);
+  }
+
   wf->ShowModal();
 
   delete wf;
