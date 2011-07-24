@@ -592,7 +592,7 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
    }
 	// If we started a replay, we need to reset last time
 	if (ReplayLogger::IsEnabled()) {
-		if ( (Basic->Time - LastRangeLandableTime) <0 ) LastRangeLandableTime=0;
+		if ( (Basic->Time - LastDoRangeWaypointListTime) <0 ) LastDoRangeWaypointListTime=0;
 	}
 
 	// Update search list only every x minutes :
@@ -600,9 +600,9 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	// should account 25km more than what we really want for range search each second 
 	// Only if no data available, force action every 3 seconds
 	// We are updating every 3 minutes, which makes it good also for GA 
-	if (  (RangeLandableNumber<=0 && RangeTurnpointNumber<=0 && (Basic->Time > (LastRangeLandableTime + 3.0))) ||
-	      (Basic->Time > (LastRangeLandableTime + 180.0)) ||
-		((!validHomeWaypoint) && (Basic->Time > (LastRangeLandableTime + 15.0)))
+	if (  (RangeLandableNumber<=0 && RangeTurnpointNumber<=0 && (Basic->Time > (LastDoRangeWaypointListTime + 3.0))) ||
+	      (Basic->Time > (LastDoRangeWaypointListTime + 180.0)) ||
+		((!validHomeWaypoint) && (Basic->Time > (LastDoRangeWaypointListTime + 15.0)))
 	) {  
 
 
@@ -613,7 +613,7 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		if (HomeWaypoint!=-1) validHomeWaypoint=true;
 
 		if ( DoRangeWaypointList(Basic,Calculated) )
-			LastRangeLandableTime=Basic->Time;
+			LastDoRangeWaypointListTime=Basic->Time;
 
 		if ( !GPS_INFO.NAVWarning ) gotValidFix=true;
 	} else {
@@ -626,7 +626,7 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 				StartupStore(_T("...... Got first valid FIX, we need to DoRangeWaypoint!\n"));
 				#endif
 				if ( DoRangeWaypointList(Basic,Calculated) )
-					LastRangeLandableTime=Basic->Time;
+					LastDoRangeWaypointListTime=Basic->Time;
 
 				gotValidFix=true;
 			}

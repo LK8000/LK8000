@@ -1849,7 +1849,7 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 							DoStatusMessage(gettext(TEXT("_@M204_")));
 							GPS_INFO.Latitude=PanLatitude;
 							GPS_INFO.Longitude=PanLongitude;
-							LastRangeLandableTime=0; // force DoRange
+							LastDoRangeWaypointListTime=0; // force DoRange
 							break;
 						}
 						// if we are not long clicking in center screen, before setting new position
@@ -1863,7 +1863,7 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 						DoStatusMessage(gettext(TEXT("_@M204_")));
 						GPS_INFO.Latitude=PanLatitude;
 						GPS_INFO.Longitude=PanLongitude;
-						LastRangeLandableTime=0;
+						LastDoRangeWaypointListTime=0;
 						break;
 					}
 				}

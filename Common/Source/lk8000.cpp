@@ -356,7 +356,7 @@ double QFEAltitudeOffset = 0;
 int OnAirSpace=1; // VENTA3 toggle DrawAirSpace, normal behaviour is "true"
 bool WasFlying = false; // VENTA3 used by auto QFE: do not reset QFE if previously in flight. So you can check QFE
 			//   on the ground, otherwise it turns to zero at once!
-double LastRangeLandableTime=0;
+double LastDoRangeWaypointListTime=0;
 bool needclipping=false; // flag to activate extra clipping for some PNAs
 bool EnableAutoBacklight=true;
 bool EnableAutoSoundVolume=true;
@@ -1228,7 +1228,7 @@ void SettingsLeave() {
 		CommonNumber=0;
 		SortedNumber=0;
 		// SortedTurnpointNumber=0; 101222
-		LastRangeLandableTime=0; // 110102
+		LastDoRangeWaypointListTime=0;
 		LKForceDoCommon=true;
 		LKForceDoNearest=true;
 		LKForceDoRecent=true;

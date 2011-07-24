@@ -4426,7 +4426,7 @@ void dlgConfigurationShowModal(void){
 	(wp->GetDataField()->GetAsInteger());
       SetToRegistry(szRegistryTpFilter,
 		    (DWORD)(TpFilter));
-      LastRangeLandableTime=0;
+      LastDoRangeWaypointListTime=0;
       changed = true;
     }
   }

@@ -140,7 +140,7 @@ extern bool ResumeSession;
 extern double QFEAltitudeOffset; // VENTA3
 extern int OnAirSpace; // VENTA3 toggle DrawAirSpace
 extern bool WasFlying; // used by auto QFE.. 
-extern double LastRangeLandableTime;
+extern double LastDoRangeWaypointListTime;
 extern bool needclipping;
 extern bool EnableAutoBacklight;
 extern bool EnableAutoSoundVolume;
