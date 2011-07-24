@@ -574,6 +574,7 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static double LastOptimiseTime = 0;
   static double LastSearchBestTime = 0; 
   static bool	validHomeWaypoint=false;
+  static bool	gotValidFix=false;
 
   // See also same redundant check inside AirspaceWarning
   // calculate airspace warnings - multicalc approach embedded in CAirspaceManager
@@ -601,13 +602,36 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	// We are updating every 3 minutes, which makes it good also for GA 
 	if (  (RangeLandableNumber<=0 && RangeTurnpointNumber<=0 && (Basic->Time > (LastRangeLandableTime + 3.0))) ||
 	      (Basic->Time > (LastRangeLandableTime + 180.0)) ||
-		((!validHomeWaypoint) && (Basic->Time > (LastRangeLandableTime + 15.0))) 
+		((!validHomeWaypoint) && (Basic->Time > (LastRangeLandableTime + 15.0)))
 	) {  
 
+
+		// We are assigning TAKEOFF to Homewaypoint, so this is practically always true
+		// but better keep it because we might not assign TAKEOFF all the times
+		// Basically before a valid GPS fix is found, we are assigning either the DEM middle terrain position
+		// or a real home waypoint position. Which is OK, but only until a real FIX is found!
 		if (HomeWaypoint!=-1) validHomeWaypoint=true;
-		// Should not be needed.
+
 		if ( DoRangeWaypointList(Basic,Calculated) )
 			LastRangeLandableTime=Basic->Time;
+
+		if ( !GPS_INFO.NAVWarning ) gotValidFix=true;
+	} else {
+		// So we should not recalculate, apparently.. But did we ever get a valid fix?
+		if (!gotValidFix) { // nope!
+			if ( !GPS_INFO.NAVWarning ) { // and do we have a valid fix now?
+				// YES, so recalculate to update the very first position and avoid waiting for 
+				// 3 minutes until next pass!
+				#if TESTBENCH
+				StartupStore(_T("...... Got first valid FIX, we need to DoRangeWaypoint!\n"));
+				#endif
+				if ( DoRangeWaypointList(Basic,Calculated) )
+					LastRangeLandableTime=Basic->Time;
+
+				gotValidFix=true;
+			}
+		}
+		// else we should consider SIMMODE and PAN repositions , here! TODO
 	}
 
 	// watchout for replay files 
