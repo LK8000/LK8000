@@ -2511,6 +2511,7 @@ static void setVariables(void) {
     dfe->addEnumText(TEXT("PN6000"));
     dfe->addEnumText(TEXT("Navigon"));
     dfe->addEnumText(TEXT("Holux FunTrek GM-130"));
+    dfe->addEnumText(TEXT("Medion S3747 / Royaltek BV-3200"));
 	
 	int iTmp;
 	switch (GlobalModelType) {
@@ -2537,6 +2538,9 @@ static void setVariables(void) {
 				break;
 		case MODELTYPE_PNA_FUNTREK:
 				iTmp=(InfoBoxModelAppearance_t)apImPnaFuntrek;
+				break;
+		case MODELTYPE_PNA_ROYALTEK3200:
+				iTmp=(InfoBoxModelAppearance_t)apImPnaRoyaltek3200;
 				break;
 		default:
 				iTmp=(InfoBoxModelAppearance_t)apImPnaGeneric;
@@ -4622,6 +4626,9 @@ void dlgConfigurationShowModal(void){
 	break;
       case apImPnaFuntrek:
 	GlobalModelType = MODELTYPE_PNA_FUNTREK;
+	break;
+      case apImPnaRoyaltek3200:
+	GlobalModelType = MODELTYPE_PNA_ROYALTEK3200;
 	break;
       default:
 	GlobalModelType = MODELTYPE_UNKNOWN; // Can't happen, troubles ..

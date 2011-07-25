@@ -1715,6 +1715,10 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   #endif
   #endif
 
+  #if TESTBENCH
+  StartupStore(TEXT(". TESTBENCH option enabled%s"),NEWLINE);
+  #endif
+
   StartupLogFreeRamAndStorage();
 
   // PRELOAD ANYTHING HERE
