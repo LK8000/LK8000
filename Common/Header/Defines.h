@@ -90,7 +90,7 @@
 #define LKNAME		"XCSoar"
 #define LKFORK		"LK8000"
 #define LKVERSION	"2"
-#define LKRELEASE	"2d"
+#define LKRELEASE	"2e"
 
 #define REGKEYNAME	"Software\\COOL\\LK8000"
 #define XCSDATADIR	"LK8000"
