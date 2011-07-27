@@ -375,6 +375,7 @@ SRC_FILES :=\
 	$(SRC)/LKDrawTraffic.cpp	$(SRC)/LKSimulator.cpp\
 	$(SRC)/LKDrawThermalHistory.cpp \
 	$(SRC)/LKBestAlternate.cpp	$(SRC)/LKHolux.cpp \
+	$(SRC)/LKRoyaltek3200.cpp	\
 	$(SRC)/MapWindow.cpp 		$(SRC)/MapWindow2.cpp \
 	$(SRC)/MapWindow3.cpp 		$(SRC)/MapWindowA.cpp \
 	$(SRC)/MapWindowZoom.cpp        $(SRC)/MapWindowMode.cpp \

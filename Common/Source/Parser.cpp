@@ -20,6 +20,7 @@
 
 #ifdef PNA
 #include "LKHolux.h"
+#include "LKRoyaltek3200.h"
 #endif
 
 #include "FlarmCalculations.h"
@@ -692,6 +693,25 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 		GPS_INFO->BaroAltitudeAvailable = true;
 		GPS_INFO->BaroAltitude = RMZAltitude;
 	}
+  }
+  if (DeviceIsRoyaltek3200) {
+	if (Royaltek3200_ReadBarData()) {
+		double ps = Royaltek3200_GetPressure();
+		RMZAltitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
+
+		#if 0
+		GPS_INFO->TemperatureAvailable=true;
+		GPS_INFO->OutsideAirTemperature = Royaltek3200_GetTemperature();
+		#endif
+	}
+
+	RMZAvailable = TRUE;
+
+	if (!ReplayLogger::IsEnabled()) {
+		GPS_INFO->BaroAltitudeAvailable = true;
+		GPS_INFO->BaroAltitude = RMZAltitude;
+	}
+
   }
   #endif // PNA
 

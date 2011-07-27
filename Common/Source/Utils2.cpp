@@ -34,6 +34,7 @@
 
 #ifdef PNA
 #include "LKHolux.h"
+#include "LKRoyaltek3200.h"
 #endif
 
 #include "utils/heapcheck.h"
@@ -4384,6 +4385,9 @@ void InitCustomHardware(void) {
 	// if (!DeviceIsGM130) return;
 	// todo set to General devicetype if Init failed
   }
+  if (GlobalModelType == MODELTYPE_PNA_ROYALTEK3200) {
+	Init_Royaltek3200();
+  }
   #endif
 
   return;
@@ -4396,6 +4400,7 @@ void DeInitCustomHardware(void) {
 
   #ifdef PNA
   if (DeviceIsGM130) DeInit_GM130();
+  if (DeviceIsRoyaltek3200) DeInit_Royaltek3200();
   #endif
 
   return;
