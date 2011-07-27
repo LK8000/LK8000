@@ -87,21 +87,27 @@ void CTrace::Push(CPoint *point)
       delete _front;
       _size--;
       
-      CPointCostSet::iterator nextIt = _compressionCostSet.find(next);
-      if(nextIt == _compressionCostSet.end()) {
+      if(next != _back) {
+        // _back and _front are not stored in a _compressionCostSet so skip below actions when next == _back
+        CPointCostSet::iterator nextIt = _compressionCostSet.find(next);
+        if(nextIt == _compressionCostSet.end()) {
 #ifndef TEST_CONTEST
         StartupStore(_T("%s:%u - ERROR: next not found!!\n"), _T(__FILE__), __LINE__);
 #endif
-        _valid = false;
-        return;
+          _valid = false;
+        }
+        _compressionCostSet.erase(nextIt);
       }
-      _compressionCostSet.erase(nextIt);
       
       _front = next;
       _front->_prevDistance = 0;
       _front->_distanceCost = 0;
       _front->_timeCost = 0;
       _front->_prev = 0;
+      
+      if(!_valid)
+        // interrupt further operations
+        return;
     }
   }
   
