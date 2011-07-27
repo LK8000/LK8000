@@ -826,7 +826,6 @@ void guiStartLogger(bool noAsk) {
 				// ResetFRecord ??  TODO 
 			} else {
 				LoggerHeader();
-				LoggerActive = true; // start logger after Header is completed.  Concurrency
 	  
 				int ntp=0;
 				for(i=0;i<MAXTASKPOINTS;i++)
@@ -848,6 +847,7 @@ void guiStartLogger(bool noAsk) {
 					WayPointList[Task[i].Index].Name );
 				}
 				EndDeclaration();
+				LoggerActive = true; // start logger after Header is completed.  Concurrency
 				ResetFRecord(); // reset timer & lastRecord string so if logger is restarted, FRec appears at top of file
 			} 
 		} else {
