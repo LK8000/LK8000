@@ -3649,6 +3649,9 @@ void MapWindow::RenderMapWindow(  RECT rc)
   if (DONTDRAWTHEMAP) {
   	DrawFlightMode(hdcDrawWindow, rc);
   	DrawGPSStatus(hdcDrawWindow, rc);
+	#if (WINDOWSPC<1)
+	LKBatteryManager();
+	#endif
 
 	return;
   }
