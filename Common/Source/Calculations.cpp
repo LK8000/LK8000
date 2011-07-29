@@ -939,6 +939,7 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	DoAlternates(Basic,Calculated,RESWP_TEAMMATE);
 	DoAlternates(Basic,Calculated,RESWP_FLARMTARGET);
 	DoAlternates(Basic,Calculated,HomeWaypoint); 	
+	if (DoOptimizeRoute()) DoAlternates(Basic,Calculated,RESWP_OPTIMIZED); 	
   }
 
   if (!TargetDialogOpen) {
@@ -980,6 +981,9 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   CalculateTeammateBearingRange(Basic, Calculated);
 
   BallastDump();
+
+  // reminder: Paragliders have AAT always on
+  CalculateOptimizedTargetPos(Basic,Calculated);
 
   if (ValidTaskPoint(ActiveWayPoint)) {
 	// only if running a real task

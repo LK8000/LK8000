@@ -545,9 +545,12 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   // PRINT WP TARGET NAME
   if ( ISPARAGLIDER && UseGates() && ActiveWayPoint==0) {
 	// if running a task, use the task index normally
-	if ( ValidTaskPoint(ActiveWayPoint) != false )
-		index = Task[ActiveWayPoint].Index;
-	else
+	if ( ValidTaskPoint(ActiveWayPoint) != false ) {
+		if (DoOptimizeRoute())
+			index = RESWP_OPTIMIZED;
+		else
+			index = Task[ActiveWayPoint].Index;
+	} else
 		index=-1;
   } else {
 	index = GetOvertargetIndex();

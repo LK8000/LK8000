@@ -28,6 +28,8 @@ bool TaskModified = false;
 bool TargetModified = false;
 int StartHeightRef = 0; // MSL
 
+#define TASKINDEX    Task[ActiveWayPoint].Index
+
 TCHAR LastTaskFileName[MAX_PATH]= TEXT("\0");
 extern bool TargetDialogOpen;
 
@@ -35,7 +37,10 @@ extern AATDistance aatdistance;
 
 void ResetTaskWaypoint(int j) {
   Task[j].Index = -1;
-  Task[j].AATTargetOffsetRadius = 0.0;
+  if (ISPARAGLIDER)
+  	Task[j].AATTargetOffsetRadius = -100.0;
+  else
+  	Task[j].AATTargetOffsetRadius = 0.0;
   Task[j].AATTargetOffsetRadial = 0.0;
   Task[j].AATTargetLocked = false;
   Task[j].AATSectorRadius = SectorRadius;
@@ -231,7 +236,10 @@ void RemoveTaskPoint(int index) {
     Task[i] = Task[i+1];
   }
   Task[MAXTASKPOINTS-1].Index = -1;
-  Task[MAXTASKPOINTS-1].AATTargetOffsetRadius= 0.0;
+  if (ISPARAGLIDER)
+  	Task[MAXTASKPOINTS-1].AATTargetOffsetRadius= -100.0;
+  else
+  	Task[MAXTASKPOINTS-1].AATTargetOffsetRadius= 0.0;
 
   RefreshTask();
   UnlockTaskData();
@@ -381,7 +389,10 @@ void RefreshTask() {
 	TaskStats[i].LengthPercent = Task[i].Leg/lengthtotal;
 	if (!ValidTaskPoint(i+1)) {
           // this is the finish waypoint
-	  Task[i].AATTargetOffsetRadius = 0.0;
+	  if (ISPARAGLIDER)
+	  	Task[i].AATTargetOffsetRadius = -100.0;
+	  else
+	  	Task[i].AATTargetOffsetRadius = 0.0;
 	  Task[i].AATTargetOffsetRadial = 0.0;
 	  Task[i].AATTargetLat = WayPointList[Task[i].Index].Latitude;
 	  Task[i].AATTargetLon = WayPointList[Task[i].Index].Longitude;
@@ -1195,7 +1206,10 @@ void ClearTask(void) {
     Task[i].AATSectorRadius = SectorRadius; // JMW added default
     Task[i].AATCircleRadius = SectorRadius; // JMW added default
     Task[i].AATTargetOffsetRadial = 0;
-    Task[i].AATTargetOffsetRadius = 0;
+    if (ISPARAGLIDER)
+      Task[i].AATTargetOffsetRadius = -100;
+    else
+      Task[i].AATTargetOffsetRadius = 0;
     Task[i].AATTargetLocked = false;
     for (int j=0; j<MAXISOLINES; j++) {
       TaskStats[i].IsoLine_valid[j] = false;
@@ -1581,4 +1595,143 @@ void SaveDefaultTask(void) {
     SaveTask(buffer);
   UnlockTaskData();
 }
+
+#include "NavFunctions.h"
+
+/*
+ * THANKS to Donato, Digifly Europe, for code and help!
+ */
+
+float _correct(float value_f)
+{
+value_f=value_f - (2.0 * PI) * (int)(value_f / (2.0 * PI)); //***Devi arrotondare
+if ( value_f < (-1.0 * PI))
+value_f=value_f + 2.0*PI;
+else if (value_f > PI)
+value_f=value_f - 2.0 * PI;
+return (value_f);
+} 
+
+//----------------------------------------------------------------------------
+// controllo campo e normalizzazione angolo nel range 0-360.0 gradi
+// input and output in degrees
+//----------------------------------------------------------------------------
+float nice_brg(float brg_f)
+{
+if(brg_f < -1080.0 || brg_f > 1080.0) return(0.0);
+if(brg_f < 0.0) while(brg_f < 0.0) brg_f=brg_f+360.0;
+else
+  while(brg_f >= 360.0) brg_f=brg_f-360.0;
+return(brg_f);
+}
+
+
+//----------------------------------------------------------------------------
+// inverte la direzione di un bearing (range 0-360.0 degrees)
+//----------------------------------------------------------------------------
+float RecipCse(float curcse_f)
+{
+float recipcse_f;
+
+recipcse_f = curcse_f - 180.0;
+if(recipcse_f < 0.0) recipcse_f = recipcse_f + 360.0;
+return(recipcse_f);
+}
+
+
+
+// #define DEBUGOTP	1
+
+void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
+
+  if (!DoOptimizeRoute()) return;
+
+  int stdwp; // std for current standard wp
+  int nxtwp; // nxt for next after current wp
+
+  stdwp=Task[ActiveWayPoint].Index;
+  nxtwp=Task[ActiveWayPoint+1].Index;
+  #if DEBUGOTP
+  StartupStore(_T("...... ----------------------------------------- \n"));
+  #endif
+
+  double stdlat, stdlon;
+  double stddst, stdbrg;
+  double nxtlat, nxtlon;
+  double nxtdst, nxtbrg;
+
+  stdlat = WayPointList[stdwp].Latitude;
+  stdlon = WayPointList[stdwp].Longitude;
+  DistanceBearing(Basic->Latitude, Basic->Longitude, stdlat, stdlon, &stddst, &stdbrg);
+
+  #if DEBUGOTP
+  StartupStore(_T("...... (std <%s>) brg=%.0f\n"),WayPointList[stdwp].Name,stdbrg);
+  #endif
+
+  // nxt for next after current target wp
+  nxtlat = WayPointList[nxtwp].Latitude;
+  nxtlon = WayPointList[nxtwp].Longitude;
+  DistanceBearing(stdlat, stdlon, nxtlat, nxtlon, &nxtdst, &nxtbrg);
+  #if DEBUGOTP
+  StartupStore(_T("...... (nxt <%s>) brg=%.0f\n"),WayPointList[nxtwp].Name,nxtbrg);
+  #endif
+
+  double obrg_f;
+
+  obrg_f = (stdbrg + 180.0 + nxtbrg) / 2.0;
+  obrg_f = nice_brg(obrg_f); 
+  if(stdbrg > nxtbrg) obrg_f=RecipCse(obrg_f);
+
+  #if DEBUGOTP
+  StartupStore(_T("...... stdbrg=%.0f nxtbrg=%0.f >> obrg=%.0f\n"),stdbrg,nxtbrg,obrg_f);
+  #endif
+
+  double dist_ui;
+  if (ActiveWayPoint==0)
+	dist_ui=StartRadius;
+  else
+	dist_ui=Task[ActiveWayPoint].AATCircleRadius;
+
+  dist_ui-=30; // 30m margin
+
+  double dist_f=(float)dist_ui *TONAUTICALMILES;
+
+  double fixlat_F= Basic->Latitude * DEG_TO_RAD;
+  if (fixlat_F == 90 || fixlat_F == 270) return;
+  double x_ad_f = fabs(sin(obrg_f*DEG_TO_RAD) * dist_f / 3437.74) / cos(fixlat_F);
+  double y_ad_f = fabs(cos(obrg_f*DEG_TO_RAD) * dist_f / 3437.74);
+
+  double tlat_f, tlon_f;
+
+  if(obrg_f <= 90.0 || obrg_f >= 270)
+	tlat_f = (stdlat * DEG_TO_RAD) + y_ad_f;
+  else
+	tlat_f = (stdlat * DEG_TO_RAD) - y_ad_f;
+
+  if(obrg_f > 0.0 && obrg_f < 180.0)
+	tlon_f = (stdlon * DEG_TO_RAD) + x_ad_f;
+  else
+	tlon_f = (stdlon * DEG_TO_RAD) - x_ad_f;
+
+  double optlat, optlon;
+
+  optlat=tlat_f * RAD_TO_DEG;
+  optlon=_correct(tlon_f) * RAD_TO_DEG;
+
+  Task[ActiveWayPoint].AATTargetLat= optlat;
+  Task[ActiveWayPoint].AATTargetLon= optlon;
+  Task[ActiveWayPoint].AATTargetLocked=true;
+
+  WayPointList[RESWP_OPTIMIZED].Latitude=optlat;
+  WayPointList[RESWP_OPTIMIZED].Longitude=optlon;
+  WayPointList[RESWP_OPTIMIZED].Altitude= WayPointList[stdwp].Altitude;
+  wsprintf(WayPointList[RESWP_OPTIMIZED].Name, _T("!%s"),WayPointList[stdwp].Name);
+
+  #if DEBUGOTP
+  StartupStore(_T("...... <%s> range=%.3f optlon=%.5f optlat=%.5f\n"),
+	WayPointList[RESWP_OPTIMIZED].Name,dist_ui,optlon,optlat);
+  #endif
+
+}
+
 

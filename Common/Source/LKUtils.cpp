@@ -781,6 +781,19 @@ void MasterTimeReset(void) {
 
   // Remember to lock anything needed to be locked
 
+}
 
+
+bool DoOptimizeRoute() {
+
+  if (AircraftCategory != (AircraftCategory_t)umParaglider) return false;
+  if (!PGOptimizeRoute) return false;
+
+  if (!ValidTaskPoint(ActiveWayPoint)) return false;
+  if (! (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(ActiveWayPoint+1))) return false;
+
+  return true;
 
 }
+
+

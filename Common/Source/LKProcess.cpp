@@ -183,11 +183,12 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-				index = Task[ActiveWayPoint].Index;
+				if (DoOptimizeRoute()) index=RESWP_OPTIMIZED;
+				else index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
 					if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING))
 					{
-						if (AATEnabled)
+						if (AATEnabled && !DoOptimizeRoute())
 							value=DerivedDrawInfo.WaypointBearing -  DrawInfo.TrackBearing;
 						else
 							value = WayPointCalc[index].Bearing -  DrawInfo.TrackBearing;
@@ -370,6 +371,14 @@ goto_bearing:
 		// B11
 		case LK_NEXT_DIST:
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
+			   if (DoOptimizeRoute()) {
+				value=WayPointCalc[RESWP_OPTIMIZED].Distance*DISTANCEMODIFY;
+				valid=true;
+				if (value>99)
+					sprintf(text,"%.0f",value);
+				else
+					sprintf(text,"%.1f",value);
+			   } else {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
 					value=DerivedDrawInfo.WaypointDistance*DISTANCEMODIFY;
@@ -381,6 +390,7 @@ goto_bearing:
 				} else {
 					strcpy(text,NULLMEDIUM); // 091221
 				}
+			   }
 			} else {
 				strcpy(text,NULLMEDIUM); // 091221
 			}
@@ -677,7 +687,8 @@ goto_bearing:
 				// LKTOKEN  _@M1145_ = "Next Req.Efficiency", _@M1146_ = "Req.E"
 				_stprintf(BufferTitle, gettext(TEXT("_@M1146_")));
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-				index = Task[ActiveWayPoint].Index;
+				if (DoOptimizeRoute()) index=RESWP_OPTIMIZED;
+				else index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
 					value=WayPointCalc[index].GR;
 					if (value <1 || value >=ALTERNATE_MAXVALIDGR )
@@ -733,7 +744,8 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-				index = Task[ActiveWayPoint].Index;
+				if (DoOptimizeRoute()) index=RESWP_OPTIMIZED;
+				else index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
 					// don't use current MC...
 					value=ALTITUDEMODIFY*WayPointCalc[index].AltArriv[AltArrivMode];

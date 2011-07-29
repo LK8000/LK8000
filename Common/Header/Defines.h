@@ -222,11 +222,10 @@
 
 // Number of reserved waypoints at the beginning of WP struct. 
 // All loops with NumberOfWayPoints should start from NUMRESWP in place of the old 0
-// Position 0 is takeoff
-// Position 1 is for testing
+// Position 0 is takeoff, etc
 // moving waypoints will have assigned fixed slots and positions
 // LKUtils.h defines contents for RESWP_ 
-#define NUMRESWP		4
+#define NUMRESWP		5
 
 // Number of background colors available in MapWindow.h for NON-terrain maps
 #define LKMAXBACKGROUNDS        10

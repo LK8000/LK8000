@@ -355,7 +355,10 @@ static void OnTaskListEnter(WindowControl * Sender,
       if (res != -1){
         Task[ItemIndex].Index = res;
       }
-      Task[ItemIndex].AATTargetOffsetRadius = 0.0;
+      if (ISPARAGLIDER)
+      	Task[ItemIndex].AATTargetOffsetRadius = -100.0;
+      else
+      	Task[ItemIndex].AATTargetOffsetRadius = 0.0;
       Task[ItemIndex].AATTargetOffsetRadial = 0.0;
       Task[ItemIndex].AATSectorRadius = SectorRadius;
       Task[ItemIndex].AATCircleRadius = SectorRadius;

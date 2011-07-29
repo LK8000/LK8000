@@ -2818,6 +2818,19 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpPGOptimizeRoute"));
+  if (wp) {
+    DataFieldEnum* dfe;
+    dfe = (DataFieldEnum*)wp->GetDataField();
+	// LKTOKEN  _@M239_ = "Disabled" 
+    dfe->addEnumText(gettext(TEXT("_@M239_")));
+	// LKTOKEN  _@M259_ = "Enabled" 
+    dfe->addEnumText(gettext(TEXT("_@M259_")));
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->Set(PGOptimizeRoute);
+    wp->RefreshDisplay();
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpTrackBar")); // 091122
   if (wp) {
     DataFieldEnum* dfe;
@@ -4407,7 +4420,14 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
-
+  wp = (WndProperty*)wf->FindByName(TEXT("prpPGOptimizeRoute"));
+  if (wp) {
+    if (PGOptimizeRoute != (wp->GetDataField()->GetAsInteger())) {
+      PGOptimizeRoute = (wp->GetDataField()->GetAsInteger());
+      SetToRegistry(szRegistryPGOptimizeRoute, (DWORD)(PGOptimizeRoute));
+      changed = true;
+    }
+  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpOutlinedTp")); // VENTA6
   if (wp) {

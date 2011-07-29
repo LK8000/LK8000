@@ -1606,4 +1606,7 @@ _@M1684_ "Average thermal (Th.All)"
 # Change 148 with 1685
 _@M1685_ "Both Final+Average"
 
+# Optimized routes for paraglider
+_@M1686_ "Optimized route"
+
 # Note for developers: LKLanguage MAX_MESSAGE  1700: 0-1699 !

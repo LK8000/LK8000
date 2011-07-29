@@ -104,6 +104,7 @@ extern const TCHAR szRegistryActiveMap[];
 extern const TCHAR szRegistryCheckSum[]; 
 extern const TCHAR szRegistryBestWarning[];
 extern const TCHAR szRegistryThermalBar[];
+extern const TCHAR szRegistryPGOptimizeRoute[];
 extern const TCHAR szRegistryTrackBar[];
 extern const TCHAR szRegistryMcOverlay[];
 extern const TCHAR szRegistryHideUnits[]; // VENTA5
@@ -481,6 +482,7 @@ void InitAlarms(void);
 bool CheckAlarms(unsigned short al);
 
 void MasterTimeReset(void);
+bool DoOptimizeRoute(void);
 
 void MemCheckPoint();
 void MemLeakCheck();

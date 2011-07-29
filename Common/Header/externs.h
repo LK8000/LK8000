@@ -178,6 +178,8 @@ extern int PGCruiseZoom;
 extern int LKVarioBar;
 extern int LKVarioVal;
 
+extern bool PGOptimizeRoute;
+
 extern short OverlaySize;
 extern short BarOpacity;
 extern short FontRenderer;

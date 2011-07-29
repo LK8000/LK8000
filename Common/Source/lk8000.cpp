@@ -422,6 +422,7 @@ bool BestWarning=false;
 bool ThermalBar=false;
 bool McOverlay=true; // 101031 fixed true
 bool TrackBar=false;
+bool PGOptimizeRoute=true;
 
 double WindCalcSpeed=0;
 int WindCalcTime=WCALC_TIMEBACK; 

@@ -4004,7 +4004,11 @@ int GetOvertargetIndex(void) {
   switch (OvertargetMode) {
 	case OVT_TASK: // task 
 		if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-			index = Task[ActiveWayPoint].Index;
+			if (DoOptimizeRoute())
+				index=RESWP_OPTIMIZED;
+			else {
+				index = Task[ActiveWayPoint].Index;
+			}
 			if ( index >=0 ) return index;
 		}
 		return -1;

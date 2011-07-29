@@ -21,5 +21,6 @@ double MacCreadyTimeLimit(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 
 void CalculateOwnTeamCode(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 void CalculateTeammateBearingRange(NMEA_INFO *Basic, DERIVED_INFO *Calculated) ;
+void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
 #endif

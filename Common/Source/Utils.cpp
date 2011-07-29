@@ -247,6 +247,7 @@ const TCHAR szRegistryBestWarning[]= TEXT("BestWarning");
 const TCHAR szRegistryThermalBar[]= TEXT("ThermalBar");
 const TCHAR szRegistryMcOverlay[]= TEXT("McOverlay2");
 const TCHAR szRegistryTrackBar[]= TEXT("TrackBar");
+const TCHAR szRegistryPGOptimizeRoute[]= TEXT("PGOptimizeRoute");
 const TCHAR szRegistryIphoneGestures[]= TEXT("IphoneGestures");
 const TCHAR szRegistryPollingMode[]= TEXT("PollingMode");
 const TCHAR szRegistryLKVarioBar[]= TEXT("LKVarioBar");
@@ -1010,6 +1011,10 @@ void ReadRegistrySettings(void)
   Temp=1;
   GetFromRegistry(szRegistryTrackBar,&Temp); 
   TrackBar=Temp;
+
+  Temp=1;
+  GetFromRegistry(szRegistryPGOptimizeRoute,&Temp); 
+  PGOptimizeRoute=Temp;
 
   if (ScreenLandscape)
 	//Temp = (GlideBarMode_t)gbFinish;

@@ -1689,6 +1689,29 @@ void AddReservedWaypoints()
 	WayPointCalc[RESWP_FLARMTARGET].IsAirport = false;
 	WayPointCalc[RESWP_FLARMTARGET].IsOutlanding = false;
 	WayPointList[RESWP_FLARMTARGET].Format= LKW_VIRTUAL;  //@ bugfix 101110
+
+	WayPointList[RESWP_OPTIMIZED].Number=RESWP_OPTIMIZED+1;
+	WayPointList[RESWP_OPTIMIZED].Latitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_OPTIMIZED].Longitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_OPTIMIZED].Altitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_OPTIMIZED].Flags=TURNPOINT;
+	// name will be assigned by function dynamically
+	_tcscpy(WayPointList[RESWP_OPTIMIZED].Name, _T("OPTIMIZED") );
+	WayPointList[RESWP_OPTIMIZED].Comment = (TCHAR*)NULL;
+	WayPointList[RESWP_OPTIMIZED].Zoom=0;
+	WayPointList[RESWP_OPTIMIZED].Reachable=FALSE;
+	WayPointList[RESWP_OPTIMIZED].AltArivalAGL=0.0;
+	WayPointList[RESWP_OPTIMIZED].Visible=FALSE;
+	WayPointList[RESWP_OPTIMIZED].InTask=false;
+	WayPointList[RESWP_OPTIMIZED].Details=(TCHAR *)NULL;
+	WayPointList[RESWP_OPTIMIZED].FarVisible=false;
+	WayPointList[RESWP_OPTIMIZED].FileNum=-1;
+
+	WayPointCalc[RESWP_OPTIMIZED].WpType = WPT_TURNPOINT;
+	WayPointCalc[RESWP_OPTIMIZED].IsLandable = false;
+	WayPointCalc[RESWP_OPTIMIZED].IsAirport = false;
+	WayPointCalc[RESWP_OPTIMIZED].IsOutlanding = false;
+	WayPointList[RESWP_OPTIMIZED].Format= LKW_VIRTUAL;
 }
 
 
