@@ -8,6 +8,11 @@ Version 2.3c
 
 NEW
 
+. New support for Medion S3747 aka Royaltek BV-3200 aka other brands. Baro altitude is managed.
+
+. New support for Holux FunTrek aka CompeGps rebranded device, full support for battery power,
+  resolution, baro altitude etc.
+
 . New page 3.3 Thermal History
 
   This page can be also disabled as usual. It will list up to 50 thermals, out of a max 100,
@@ -15,12 +20,18 @@ NEW
   Each thermal listed is showing usual values as in the nearest page, and the average lift.
   You can sort by distance, bearing, lift and name.
 
-  The thermal name is the local time you entered the thermal , example: h1437 if you entered
+  The thermal name is the local time you entered the thermal , example: th1437 if you entered
   this thermal at 2:37pm .
 
   Selecting as usual a thermal will pop up a page where you can SELECT it.
   Once selected, the thermal is assigned to the L> multitarget, and you are instantly brought
   to L> moving map.
+
+  - In the thermal details page, a Team Code is shown in order to let you broadcast via radio
+    the position of this thermal to friends.
+
+  - A nearby location is shown also in thermal details title window
+    The nearest waypoint within 15km is used for this purpose.
 
   After a new thermal is detected (after thermalling), this thermal is automatically assigned to
   the L> multitarget.
@@ -45,7 +56,9 @@ NEW
     Thus on the moving map you will see both the entering point, and the thermal center,
     giving you an exact idea of how you started thermalling there, and were you ended up to.
 
-
+    Some thermals are added for the simulator, appearing in 3.3 in SIM mode only.
+    The closest thermal is .. real for the SIM, meaning that going to that
+    thermal will show real sink and lift!
 
 . New ALTITUDE ALARMS in Menu Config 15
 
@@ -63,11 +76,41 @@ NEW
     They are named LK_ALARM_ALTx.WAV
     Default is 0 (no alarm).
 
+.   Optimized routes for paragliders.
+    Draft, but fully working. Leaning on AAT locked target and virtual waypoints, a pretty effective result.
+    THANKS to Donato, DigiFly Europe, for some important parts of the code, help, and support!
+
+    Optimization can be enabled in Paragliders config menu 23, and as a customkey.
+    When enabled, the T> overlay, the Next waypoint distance, altitude diff, bearing etc.
+    are all related to the optimized turn point on the cylinder.
+    The correct optimized point of turn is visualized also.
+    The optimized turnpoint is named with a "!" leading. Example: turnpoint name is "JACKHILL"
+    as optimized point it will appear as T>!JACKHILL   and also in turnpoint list and nearest pages.
+    This is a virtual waypoint, like thermal, takeoff etc.
+
+    Since Optimized Route (O.R.) rely on the internal AAT engine for gliders, it is better that
+    paragliders check the TARGET  cylinder radius to be at -100% , in order to let the calculator
+    consider the max radius as a turnpoint. By default, but only when you create a new task as
+    paraglider with this version, all radius are set to -100%. To check, menu NAV 2/3 and then
+    "Target" , then select turnpoints exluding first and last (start and finish).
+    Check that Range is -100%, and Radial is 0.
+
+. New Configurable AutoMC on/off on startup, and new overlay indicators aside MC overlay.
+  When autoMC is enabled, an "A" is painted aside MC overlay.
+  AutoMC indicator is : F (Final glide) A (Average climb)  E (Equivalent)
+
+. New AutoMC buttons and configuration. It is possible to change AutoMC type at runtime now.
+  The AutoMC mode is shown as overlay indicator, and through MC buttons a pilot can change
+  on the fly MC among manual and all auto modes. Configuration is kept for default value.
+
 . New device driver for Westerboer VW1150
 
 . New customkeys: Airspace Analysis and Toggle Map<>Airspaces page
 
 . New customkeys: Zoom in, Zoom in more, Zoom out, Zoom out more.
+
+. New customkey: Toggle Optimize Route
+  Optimize route is a function for paragliders only, right now.
 
 . New Airspace details page, two new buttons for SELECT and ANALYSIS.
 
@@ -92,10 +135,16 @@ NEW
 . Support 320x234 and 234x320 screen resolutions. Preliminary.
 . Support for 240x400 portrait mode
 
+. LOCK mode (Config 1, Lock Mode button) is available for all aircraft modes.
+  Paragliding/Hanggliding mode will automatically unlock the device a few seconds after takeoff.
+  Other modes (car, GA, gliding) will keep device locked until manually unlocked.
+  This is useful on some devices that are pocket-sized such as Funtrek.
+
 . Add ACT indicator in mapscale for ActiveMap status
   ActiveMap can be enabled/disabled with both a customkey and menu button.
   When it is enabled, the indicator appears near the map scale.
 
+. New support for Zander ZS1 including MC and Wind 
 
 . New extended polars with flaps extensions for flaps support:
 	SZD-38A Jantar
@@ -130,6 +179,8 @@ CHANGES
 . IBOX mode is no more available (button still there, but no effect)
 
 . WEATHER support for RASP is no more available.
+
+. Weather button no more available in menu.
 
 . Enable Contest Engine also for non-glider aircrafts, IF infopage 1.5 is enabled.
 
@@ -182,14 +233,30 @@ CHANGES
 	ActiveMap is a good candidate for no configuration. There is a button to activate active map on demand.
 	There is also a customkey for it.
 
+. AAT min time step is now 5 minutes, and no more 10
 
+. Traffic page updated for data only every 5 seconds, like all nearest pages.
 
 
 FIXES
 
 . Fix problem with HP314 resetting flight stats
 
+. Fix do not allow resizing menu buttons on PNA 800x480 devices
+
+. Bugfix Logger problem: it may not write correctly the entire task declaration to IGC file.
+
 . Fix possible crash upon switching off and back on after some hours the PNA during flight.
+
+. Fix problem with huge waypoint files, when turnpoints and landables > 500 in the range of 75km (tps) or 150km (lnd).
+  This is a borderline situation, but may happen expecially with turnpoints since we use flat land distance approximation.
+  We are talking about having more than 500 waypoint around us, in 75km radius.
+
+. Fix update in-range waypoint list when we get first valid GPS fix! Update also on SIMMODE pan reposition.
+  This was an annoying problem: the nearest pages were made using a range waypoint list that was using
+  as a current position our homewaypoint, or our center-terrain (assigned as Takeoff, which was assigned to HomeWaypoint).
+  This is ok, but only until we do get a real valid fix. Now as soon as we get the first valid fix, we
+  recalculate the in-range waypoints.
 
 . Fixed (2.3) "unknown airspace warning message" when a message gets repeated during flying outside a fly zone
 . Fixed (2.3)  Do not calculate airspace data when no valid gps fix
