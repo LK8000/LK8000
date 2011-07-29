@@ -3897,6 +3897,12 @@ bool CustomKeyHandler(const int key) {
 		#endif
 		InputEvents::eventSetup(_T("AspAnalysis"));
 		return true;
+	case ckOptimizeRoute:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		PGOptimizeRoute=!PGOptimizeRoute;
+		return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		FailStore(_T("ERR-726 INVALID CUSTOMKEY=%d"),ckeymode);

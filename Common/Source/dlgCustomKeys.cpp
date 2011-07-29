@@ -275,6 +275,7 @@ void AddConfList( DataFieldEnum* dfe) {
     dfe->addEnumText(gettext(TEXT("_@M1658_"))); // zoom out
     dfe->addEnumText(gettext(TEXT("_@M1659_"))); // zoom in more
     dfe->addEnumText(gettext(TEXT("_@M1660_"))); // zoom out more
+    dfe->addEnumText(gettext(TEXT("_@M1687_"))); // toggle optimize route
 
 	// Last ckToggleInfobox is automatically added at the bottom of this list. 
 	// Do not add it manually here.
