@@ -3549,6 +3549,56 @@ cont:
 	/* NOTREACHED */
 }
 
+// Same As strtok_r but not skeep leading delimiter ...
+TCHAR *strsep_r(TCHAR *s, TCHAR *delim, TCHAR **lasts){
+// "s" MUST be a pointer to an array, not to a string!!!
+// (ARM92, Win emulator cause access violation if not)
+
+	TCHAR *spanp;
+	int   c, sc;
+	TCHAR *tok = NULL;
+
+
+	if (s == NULL && (s = *lasts) == NULL)
+		return (NULL);
+
+	// return empty string if s start with delimiter
+	c = *s++;
+	for (spanp = delim; (sc = *spanp++) != 0;) {
+		if (c == sc) {
+			*lasts = s;
+			s[-1] = 0;
+			return (s - 1);
+		}
+	}
+
+	if (c == 0) {		/* no non-delimiter characters */
+		*lasts = NULL;
+		return (NULL);
+	}
+	tok = s - 1;
+
+	/*
+	 * Scan token (scan for delimiters: s += strcspn(s, delim), sort of).
+	 * Note that delim must have one NUL; we stop if we see that, too.
+	 */
+	for (;;) {
+		c = *s++;
+		spanp = (TCHAR *)delim;
+		do {
+			if ((sc = *spanp++) == c) {
+				if (c == 0)
+					s = NULL;
+				else
+					s[-1] = 0;  // causes access violation in some configs if s is a pointer instead of an array
+				*lasts = s;
+				return (tok);
+			}
+		} while (sc != 0);
+	}
+	/* NOTREACHED */
+}
+
 
 void StatusFileInit() {
   StartupStore(TEXT(". StatusFileInit%s"),NEWLINE);

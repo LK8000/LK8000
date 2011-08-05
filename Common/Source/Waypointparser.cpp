@@ -43,6 +43,7 @@ TCHAR *strtok_r(TCHAR *s, TCHAR *delim, TCHAR **lasts);
 static int ParseWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
 static bool ParseCUPWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
 static bool ParseCOMPEWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
+static bool ParseOZIWayPointString(TCHAR *mTempString,WAYPOINT *Temp);
 static double CUPToLat(TCHAR *temp);
 static double CUPToLon(TCHAR *temp);
 static double CalculateAngle(TCHAR *temp);
@@ -278,6 +279,9 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 
   new_waypoint = WayPointList+NumberOfWayPoints;
 
+
+  memset(nTemp2String, 0, sizeof(nTemp2String)); // clear Temp Buffer
+
   // check file format
   bool fempty=true;
   int  slen=0; // 100204 WIP
@@ -318,6 +322,16 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 		fileformat=LKW_CUP;
 		break;
 	}
+
+	if ( ( _tcsstr(nTemp2String, _T("OziExplorer Waypoint File")) == nTemp2String )||
+			   // consider UCS header, 3 bytes in fact. This is a workaround.
+			(_tcsstr(_T("OziExplorer Waypoint File"),&nTemp2String[3]) == 0) ) {
+		StartupStore(_T(". Waypoint file %d format: OziExplorer%s"),globalFileNum+1,NEWLINE);
+		fempty=false;
+		fileformat=LKW_OZI;
+		break;
+	}
+
 	// consider also the case of empty file, when a waypoint if saved starting with numbering after
 	// the virtual wps (including the 0);
 	TCHAR virtualdatheader[3];
@@ -345,6 +359,8 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
   // a real shame, too lazy to change into do while loop
   // Skip already read lines containing header, unless we are using DAT, which has no header
   if ( fileformat==LKW_DAT) goto goto_inloop; 
+
+  memset(nTemp2String, 0, sizeof(nTemp2String)); // clear Temp Buffer
 
   while(ReadString(fp, READLINE_LENGTH, nTemp2String)){
 goto_inloop:    
@@ -427,6 +443,30 @@ goto_inloop:
 			}
 		}
 	}
+
+	if(fileformat == LKW_OZI){
+		// Ignore first four header lines
+		if(nLineNumber <= 3)
+			continue;
+
+		if(ParseOZIWayPointString(nTemp2String, new_waypoint)){
+			if ( (_tcscmp(new_waypoint->Name, gettext(TEXT(RESWP_TAKEOFF_NAME)))==0) && (new_waypoint->Number==RESWP_ID)) {
+				StartupStore(_T("... FOUND TAKEOFF (%s) INSIDE WAYPOINTS FILE%s"), gettext(TEXT(RESWP_TAKEOFF_NAME)), NEWLINE);
+				memcpy(WayPointList,new_waypoint,sizeof(WAYPOINT));
+				continue;
+			}
+
+			if (WaypointInTerrainRange(new_waypoint)) {
+				new_waypoint = GrowWaypointList();
+				if (!new_waypoint) {
+					return -1; // failed to allocate
+				}
+				new_waypoint++; // we want the next blank one
+			}
+		}
+	}
+
+	memset(nTemp2String, 0, sizeof(nTemp2String)); // clear Temp Buffer
 
 	continue;
 
@@ -2355,3 +2395,134 @@ int FindNearestFarVisibleWayPoint(double X, double Y, double maxRange)
 }
 
 
+bool ParseOZIWayPointString(TCHAR *String,WAYPOINT *Temp){
+
+	Temp->Visible = true; // default all waypoints visible at start
+	Temp->FarVisible = true;
+	Temp->Format = LKW_OZI;
+	Temp->Number = NumberOfWayPoints;
+	Temp->FileNum = globalFileNum;
+	Temp->Flags = TURNPOINT;
+
+	memset(Temp->Name, 0, sizeof(Temp->Name)); // clear Name
+
+	TCHAR TempString[READLINE_LENGTH];
+	memset(TempString, 0, sizeof(TempString)); // clear TempString
+
+	_tcscpy(TempString, String);
+
+	// strtok_r skip empty field, It's not compatible with OziExplorer Waypoint File Version 1.1
+	// use strsep_r instead of ( cf. Utils.h )
+
+	TCHAR *pToken = NULL;
+	TCHAR *Stop= NULL;
+
+	TCHAR *pWClast = TempString;
+
+
+	//	Field 1 : Number - this is the location in the array (max 1000), must be unique, usually start at 1 and increment. Can be set to -1 (minus 1) and the number will be auto generated.
+	if ((pToken = strsep_r(TempString, TEXT(","), &pWClast)) == NULL)
+		return false;
+	//	Temp->Number = _tcstol(pToken, &Zoom, 10);
+
+	//	Field 2 : Name - the waypoint name, use the correct length name to suit the GPS type.
+	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+		return false;
+
+	// guard against overrun
+	if (_tcslen(pToken)>NAME_SIZE) {
+		pToken[NAME_SIZE-1]= _T('\0');
+	}
+
+	_tcscpy(Temp->Name, pToken);
+
+	//	Field 3 : Latitude - decimal degrees.
+	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+		return false;
+
+	Temp->Latitude = (double)StrToDouble(pToken, &Stop);
+
+	if((Temp->Latitude > 90) || (Temp->Latitude < -90)) {
+		return false;
+	}
+
+	//	Field 4 : Longitude - decimal degrees.
+	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+		return false;
+
+	Temp->Longitude  = (double)StrToDouble(pToken, &Stop);
+	if((Temp->Longitude  > 180) || (Temp->Longitude  < -180)) {
+		return false;
+	}
+	//	Field 5 : Date - see Date Format below, if blank a preset date will be used
+	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+		return false;
+
+	//	Field 6 : Symbol - 0 to number of symbols in GPS
+	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+		return false;
+
+	//	Field 7 : Status - always set to 1
+	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+		return false;
+
+	//	Field 8 : Map Display Format
+	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+		return false;
+
+	//	Field 9 : Foreground Color (RGB value)
+	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+		return false;
+
+	//	Field 10 : Background Color (RGB value)
+	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+		return false;
+
+	//	Field 11 : Description (max 40), no commas
+	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+		return false;
+
+    if (_tcslen(pToken) >0 ) {
+    	if (Temp->Comment) {
+    		free(Temp->Comment);
+    	}
+    	Temp->Comment = (TCHAR*)malloc((_tcslen(pToken)+1)*sizeof(TCHAR));
+    	_tcscpy(Temp->Comment, pToken);
+    }
+    else {
+    	Temp->Comment = NULL; // useless
+    }
+
+	//	Field 12 : Pointer Direction
+	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+		return false;
+
+	//	Field 13 : Garmin Display Format
+	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+		return false;
+
+	//	Field 14 : Proximity Distance - 0 is off any other number is valid
+	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+		return false;
+
+	//	Field 15 : Altitude - in feet (-777 if not valid)
+	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)
+		return false;
+
+	Temp->Altitude = (double)StrToDouble(pToken, &Stop)/TOFEET;
+	if(Temp->Altitude <= 0) {
+		WaypointAltitudeFromTerrain(Temp);
+	}
+
+	//	Field 16 : Font Size - in points
+	//	Field 17 : Font Style - 0 is normal, 1 is bold.
+	//	Field 18 : Symbol Size - 17 is normal size
+	//	Field 19 : Proximity Symbol Position
+	//	Field 20 : Proximity Time
+	//	Field 21 : Proximity or Route or Both
+	//	Field 22 : File Attachment Name
+	//	Field 23 : Proximity File Attachment Name
+	//	Field 24 : Proximity Symbol Name
+
+	return true;
+}
