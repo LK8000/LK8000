@@ -3445,7 +3445,7 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 	// JMW AAT!
 	double bearing = Task[i].OutBound;
 	POINT sct1, sct2;
-	if (AATEnabled && !mode.Is(Mode::MODE_TARGET_PAN)) {
+	if (AATEnabled) {
 	  LatLon2Screen(Task[i].AATTargetLon, 
 			Task[i].AATTargetLat, 
 			sct1);
