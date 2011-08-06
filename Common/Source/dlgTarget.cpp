@@ -34,6 +34,8 @@ static double Radial = 0;
 static int target_point = 0;
 static bool TargetMoveMode = false;
 
+static DWORD dlgSize = 0;
+
 bool TargetDialogOpen = false;
 
 
@@ -479,7 +481,7 @@ static void RefreshTargetPoint(void) {
   LockTaskData();
   target_point = max(target_point, ActiveWayPoint);
   if (ValidTaskPoint(target_point)) {
-    MapWindow::SetTargetPan(true, target_point);
+    MapWindow::SetTargetPan(true, target_point, dlgSize);
     Range = Task[target_point].AATTargetOffsetRadius;
     Radial = Task[target_point].AATTargetOffsetRadial;
   } else {
@@ -581,20 +583,23 @@ void dlgTarget(void) {
   TargetDialogOpen = true;
   TargetMoveMode = false;
 
+  WndFrame *wf2 = (WndFrame*)wf->FindByName(TEXT("frmTarget"));
+  if (wf2) {
 #if USEIBOX
-  if (InfoBoxLayout::landscape) 
+    if (InfoBoxLayout::landscape) 
 #else
-  if (ScreenLandscape) 
+    if (ScreenLandscape) 
 #endif
-  {// make flush right in landscape mode (at top in portrait mode)
-    WndFrame *wf2 = (WndFrame*)wf->FindByName(TEXT("frmTarget"));
-    if (wf2) 
-    {
+    {// make flush right in landscape mode (at top in portrait mode)
+      dlgSize = wf2->GetWidth();
 #if USEIBOX
-      wf->SetLeft(MapWindow::MapRectBig.right- wf2->GetWidth());
+      wf->SetLeft(MapWindow::MapRectBig.right- dlgSize);
 #else
-      wf->SetLeft(MapWindow::MapRect.right- wf2->GetWidth());
+      wf->SetLeft(MapWindow::MapRect.right- dlgSize);
 #endif
+    }
+    else {
+      dlgSize = wf2->GetHeight();
     }
   }
 

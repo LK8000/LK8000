@@ -532,13 +532,16 @@ void MapWindow::CalculateScreenPositions(POINT Orig, RECT rc,
 
 
 // JMW to be used for target preview
-void MapWindow::SetTargetPan(bool do_pan, int target_point)
+void MapWindow::SetTargetPan(bool do_pan, int target_point, DWORD dlgSize /* = 0 */)
 {
   static double old_latitude;
   static double old_longitude;
 #if USEIBOX
   static bool old_fullscreen=false;
 #endif
+
+  if(dlgSize)
+    targetPanSize = dlgSize;
 
   if (!mode.Is(Mode::MODE_TARGET_PAN) || (TargetPanIndex != target_point)) {
     TargetDrag_State = 0;

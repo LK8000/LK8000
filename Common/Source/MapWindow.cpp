@@ -175,6 +175,8 @@ HANDLE MapWindow::hDrawThread;
 double MapWindow::DisplayAngle = 0.0;
 double MapWindow::DisplayAircraftAngle = 0.0;
 
+DWORD MapWindow::targetPanSize = 0;
+
 bool MapWindow::LandableReachable = false;
 
 HBITMAP MapWindow::hTurnPoint;
@@ -2044,7 +2046,17 @@ void MapWindow::CalculateOrigin(const RECT rc, POINT *Orig)
 	CalculateOrientationNormal();
   }
   
-  if ( mode.AnyPan() || mode.Is(Mode::MODE_CIRCLING)) {
+  if(mode.Is(Mode::MODE_TARGET_PAN)) {
+    if (ScreenLandscape) {
+      Orig->x = (rc.left + rc.right - targetPanSize)/2;
+      Orig->y = (rc.bottom + rc.top)/2;
+    }
+    else {
+      Orig->x = (rc.left + rc.right)/2;
+      Orig->y = (rc.bottom + rc.top + targetPanSize)/2;
+    }
+  }
+  else if(mode.Is(Mode::MODE_PAN) || mode.Is(Mode::MODE_CIRCLING)) {
 	Orig->x = (rc.left + rc.right)/2;
 	Orig->y = (rc.bottom + rc.top)/2;
   } else {

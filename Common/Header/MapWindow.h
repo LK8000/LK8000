@@ -545,6 +545,7 @@ class MapWindow {
   static HANDLE hDrawThread;
   static double DisplayAngle;
   static double DisplayAircraftAngle;
+  static DWORD targetPanSize;
   
  public:
   static void RefreshMap(); // set public VENTA
@@ -559,7 +560,7 @@ class MapWindow {
 
   static bool WaypointInRange(int i);
 
-  static void SetTargetPan(bool dopan, int task_index);
+  static void SetTargetPan(bool dopan, int task_index, DWORD dlgSize = 0);
 
   static double GetPanLatitude() { return PanLatitude; }
   static double GetPanLongitude() { return PanLongitude; }
