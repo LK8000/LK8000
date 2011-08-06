@@ -3713,7 +3713,6 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
 
 void MapWindow::DrawBearing(HDC hdc, const RECT rc)
 {
-
   int overindex=GetOvertargetIndex();
   if (overindex<0) return;
 
@@ -3724,8 +3723,14 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
 
   if (overindex>OVT_TASK) {
   	LockTaskData();
-	targetLat = WayPointList[overindex].Latitude;
-	targetLon = WayPointList[overindex].Longitude; 
+        if(AATEnabled && (ActiveWayPoint>0) && ValidTaskPoint(ActiveWayPoint+1)) {
+          targetLat = Task[ActiveWayPoint].AATTargetLat;
+          targetLon = Task[ActiveWayPoint].AATTargetLon;
+        }
+        else {
+          targetLat = WayPointList[overindex].Latitude;
+          targetLon = WayPointList[overindex].Longitude;
+        }
 	UnlockTaskData();
 	//  DrawGreatCircle(hdc, startLon, startLat, targetLon, targetLat, rc);
 	//HPEN hpOld = (HPEN)SelectObject(hdc, hpOvertarget);
