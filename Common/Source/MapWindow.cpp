@@ -151,9 +151,9 @@ rectObj MapWindow::screenbounds_latlon;
 double MapWindow::PanLatitude = 0.0;
 double MapWindow::PanLongitude = 0.0;
 
-int MapWindow::TargetDrag_State = 0;
-double MapWindow::TargetDrag_Latitude = 0;
-double MapWindow::TargetDrag_Longitude = 0;
+bool MapWindow::targetMoved = false;
+double MapWindow::targetMovedLat = 0;
+double MapWindow::targetMovedLon = 0;
 
 int MapWindow::TargetPanIndex = 0;
 double MapWindow::TargetZoomDistance = 500.0;
@@ -1429,30 +1429,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 
       LKevent=LKEVENT_NONE; // CHECK FIX TODO VENTA10  probably useless 090915
 
-      LockTaskData();
-      if (AATEnabled && mode.Is(Mode::MODE_TARGET_PAN)) {
-	if (ValidTaskPoint(TargetPanIndex)) {
-	  POINT tscreen;
-	  LatLon2Screen(Task[TargetPanIndex].AATTargetLon, 
-			Task[TargetPanIndex].AATTargetLat, 
-			tscreen);
-	  distance = isqrt4((long)((XstartScreen-tscreen.x)
-				   *(XstartScreen-tscreen.x)+
-				   (YstartScreen-tscreen.y)
-				   *(YstartScreen-tscreen.y)))
-#if USEIBOX
-	    /InfoBoxLayout::scale;
-#else
-	    /ScreenScale;
-#endif
-
-	  if (distance<10) {
-	    TargetDrag_State = 1;
-	  }
-	}
-      }
-      UnlockTaskData();
-
       FullScreen();
       break;
 
@@ -1755,11 +1731,11 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 
       Screen2LatLon(X, Y, Xlat, Ylat);
     
-      if (AATEnabled && mode.Is(Mode::MODE_TARGET_PAN) && (TargetDrag_State>0)) {
+      if (AATEnabled && mode.Is(Mode::MODE_TARGET_PAN)) {
 	LockTaskData();
-	TargetDrag_State = 2;
-	TargetDrag_Latitude = Ylat;
-	TargetDrag_Longitude = Xlat;
+	targetMoved = true;
+	targetMovedLat = Ylat;
+	targetMovedLon = Xlat;
 	UnlockTaskData();
 	break;
       } else if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN) && (distance>36)) { // TODO FIX should be IBLSCALE 36 instead?

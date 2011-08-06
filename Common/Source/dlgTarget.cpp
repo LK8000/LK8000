@@ -134,7 +134,7 @@ static void MoveTarget(double adjust_angle) {
 }
 
 
-static void DragTarget(double target_longitude, double target_latitude) {
+static void MoveTarget(double target_longitude, double target_latitude) {
   if (!AATEnabled) return;
   if (target_point==0) return;
   if (!ValidTaskPoint(target_point)) return;
@@ -371,8 +371,8 @@ static void RefreshCalculator(void) {
 static int OnTimerNotify(WindowControl * Sender) {
   (void)Sender;
   double lon, lat;
-  if (MapWindow::TargetDragged(&lon, &lat)) {
-    DragTarget(lon, lat);
+  if (MapWindow::TargetMoved(lon, lat)) {
+    MoveTarget(lon, lat);
   }
   if (TargetModified) {
     RefreshCalculator();

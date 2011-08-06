@@ -544,7 +544,7 @@ void MapWindow::SetTargetPan(bool do_pan, int target_point, DWORD dlgSize /* = 0
     targetPanSize = dlgSize;
 
   if (!mode.Is(Mode::MODE_TARGET_PAN) || (TargetPanIndex != target_point)) {
-    TargetDrag_State = 0;
+    targetMoved = false;
   }
 
   TargetPanIndex = target_point;
@@ -771,13 +771,13 @@ void MapWindow::DrawProjectedTrack(HDC hdc, const RECT rc, const POINT Orig) {
 }
 
 
-bool MapWindow::TargetDragged(double *longitude, double *latitude) {
+bool MapWindow::TargetMoved(double &longitude, double &latitude) {
   bool retval = false;
   LockTaskData();
-  if (TargetDrag_State==2) {
-    *longitude = TargetDrag_Longitude;
-    *latitude = TargetDrag_Latitude;
-    TargetDrag_State = 0;
+  if (targetMoved) {
+    longitude = targetMovedLon;
+    latitude = targetMovedLat;
+    targetMoved = false;
     retval = true;
   }
   UnlockTaskData();

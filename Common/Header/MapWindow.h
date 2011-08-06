@@ -706,7 +706,7 @@ class MapWindow {
   #endif
   static bool RenderTimeAvailable();
   static int SnailWidthScale; 
-  static bool TargetDragged(double *longitude, double *latitude);
+  static bool TargetMoved(double &longitude, double &latitude);
 
  private:
   static NMEA_INFO DrawInfo;
@@ -717,9 +717,9 @@ class MapWindow {
 
   static POINT Groundline[NUMTERRAINSWEEPS+1];
 
-  static int TargetDrag_State;
-  static double TargetDrag_Latitude;
-  static double TargetDrag_Longitude;
+  static bool targetMoved;
+  static double targetMovedLat;
+  static double targetMovedLon;
 
   // include declaration for alpha blended drawing
   #include "MapWindowA.h"
