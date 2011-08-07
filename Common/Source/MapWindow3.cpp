@@ -20,6 +20,7 @@
 #include "buildnumber.h"
 #include "Utils2.h"
 #include "LKObjects.h"
+#include "Logger.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -443,9 +444,7 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
 
   _stprintf(Buffer, _T(""));
   if (GPSAltitudeOffset != 0) _stprintf(Buffer, _T("(GpsOffset %+.0f)"), GPSAltitudeOffset/1000*ALTITUDEMODIFY); // 100429 /1000
-#ifndef WINDOWSPC
   if (!LoggerGActive()) _tcscat(Buffer,_T(" (No GRecord)"));
-#endif
   LKWriteText(hdc, Buffer, middlex, bottomlines-(textSize.cy*2)-NIBLSCALE(2) , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_SWHITE, false);
 
   if (WarningHomeDir) {

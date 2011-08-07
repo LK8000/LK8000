@@ -1169,7 +1169,7 @@ public:
     if (epx> min(ixs,iys)/4) { 
       do_shading = false;
     } 
-    #ifndef WINDOWSPC
+    #if (WINDOWSPC<1)
     else {
 	if (MapWindow::MapScale>12) do_shading=false;
     }
