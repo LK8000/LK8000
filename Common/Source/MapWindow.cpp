@@ -151,9 +151,9 @@ rectObj MapWindow::screenbounds_latlon;
 double MapWindow::PanLatitude = 0.0;
 double MapWindow::PanLongitude = 0.0;
 
-int MapWindow::TargetDrag_State = 0;
-double MapWindow::TargetDrag_Latitude = 0;
-double MapWindow::TargetDrag_Longitude = 0;
+bool MapWindow::targetMoved = false;
+double MapWindow::targetMovedLat = 0;
+double MapWindow::targetMovedLon = 0;
 
 int MapWindow::TargetPanIndex = 0;
 double MapWindow::TargetZoomDistance = 500.0;
@@ -174,6 +174,8 @@ HANDLE MapWindow::hDrawThread;
 
 double MapWindow::DisplayAngle = 0.0;
 double MapWindow::DisplayAircraftAngle = 0.0;
+
+DWORD MapWindow::targetPanSize = 0;
 
 bool MapWindow::LandableReachable = false;
 
@@ -1427,30 +1429,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 
       LKevent=LKEVENT_NONE; // CHECK FIX TODO VENTA10  probably useless 090915
 
-      LockTaskData();
-      if (AATEnabled && mode.Is(Mode::MODE_TARGET_PAN)) {
-	if (ValidTaskPoint(TargetPanIndex)) {
-	  POINT tscreen;
-	  LatLon2Screen(Task[TargetPanIndex].AATTargetLon, 
-			Task[TargetPanIndex].AATTargetLat, 
-			tscreen);
-	  distance = isqrt4((long)((XstartScreen-tscreen.x)
-				   *(XstartScreen-tscreen.x)+
-				   (YstartScreen-tscreen.y)
-				   *(YstartScreen-tscreen.y)))
-#if USEIBOX
-	    /InfoBoxLayout::scale;
-#else
-	    /ScreenScale;
-#endif
-
-	  if (distance<10) {
-	    TargetDrag_State = 1;
-	  }
-	}
-      }
-      UnlockTaskData();
-
       FullScreen();
       break;
 
@@ -1753,11 +1731,11 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 
       Screen2LatLon(X, Y, Xlat, Ylat);
     
-      if (AATEnabled && mode.Is(Mode::MODE_TARGET_PAN) && (TargetDrag_State>0)) {
+      if (AATEnabled && mode.Is(Mode::MODE_TARGET_PAN)) {
 	LockTaskData();
-	TargetDrag_State = 2;
-	TargetDrag_Latitude = Ylat;
-	TargetDrag_Longitude = Xlat;
+	targetMoved = true;
+	targetMovedLat = Ylat;
+	targetMovedLon = Xlat;
 	UnlockTaskData();
 	break;
       } else if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN) && (distance>36)) { // TODO FIX should be IBLSCALE 36 instead?
@@ -2009,30 +1987,22 @@ void MapWindow::CalculateOrientationNormal(void) {
 
 
 void MapWindow::CalculateOrientationTargetPan(void) {
-  // Target pan mode, show track up when looking at current task point,
-  // otherwise north up.  If circling, orient towards target.
+  // Target pan mode, show target up when looking at current task point,
+  // otherwise north up.
   GliderCenter = true;
   if ((ActiveWayPoint==TargetPanIndex)
       &&(DisplayOrientation != NORTHUP)
       &&(DisplayOrientation != NORTHSMART) // 100419
-      &&(DisplayOrientation != NORTHTRACK)
-      )    {
-    if (mode.Is(Mode::MODE_CIRCLING)) {
-      // target-up
-      DisplayAngle = DerivedDrawInfo.WaypointBearing;
-      DisplayAircraftAngle = 
-        DrawInfo.TrackBearing-DisplayAngle;
-    } else {
-      // track up
-      DisplayAngle = DrawInfo.TrackBearing;
-      DisplayAircraftAngle = 0.0;
-    }
-  } else {
+      &&(DisplayOrientation != NORTHTRACK)) {
+    // target-up
+    DisplayAngle = DerivedDrawInfo.WaypointBearing;
+    DisplayAircraftAngle = DrawInfo.TrackBearing-DisplayAngle;
+  }
+  else {
     // North up
     DisplayAngle = 0.0;
     DisplayAircraftAngle = DrawInfo.TrackBearing;
   }
- 
 }
 
 
@@ -2044,7 +2014,17 @@ void MapWindow::CalculateOrigin(const RECT rc, POINT *Orig)
 	CalculateOrientationNormal();
   }
   
-  if ( mode.AnyPan() || mode.Is(Mode::MODE_CIRCLING)) {
+  if(mode.Is(Mode::MODE_TARGET_PAN)) {
+    if (ScreenLandscape) {
+      Orig->x = (rc.left + rc.right - targetPanSize)/2;
+      Orig->y = (rc.bottom + rc.top)/2;
+    }
+    else {
+      Orig->x = (rc.left + rc.right)/2;
+      Orig->y = (rc.bottom + rc.top + targetPanSize)/2;
+    }
+  }
+  else if(mode.Is(Mode::MODE_PAN) || mode.Is(Mode::MODE_CIRCLING)) {
 	Orig->x = (rc.left + rc.right)/2;
 	Orig->y = (rc.bottom + rc.top)/2;
   } else {
@@ -2525,17 +2505,17 @@ void MapWindow::RenderMapWindow(  RECT rc)
   DrawMapScale(hdcDrawWindow,rc, zoom.BigZoom());
 
   DrawCompass(hdcDrawWindow, rc);
-
+  
   DrawFlightMode(hdcDrawWindow, rc);
-
-  // REMINDER TODO let it be configurable for not circling also, as before
-  if ((mode.Is(Mode::MODE_CIRCLING)) )
-	if (ThermalBar) DrawThermalBand(hdcDrawWindow, rc); // 091122
-
-
-  if (!mode.AnyPan()) // 091214
-  DrawFinalGlide(hdcDrawWindow,rc);
-
+  
+  if (!mode.AnyPan()) {
+    // REMINDER TODO let it be configurable for not circling also, as before
+    if ((mode.Is(Mode::MODE_CIRCLING)) )
+      if (ThermalBar) DrawThermalBand(hdcDrawWindow, rc); // 091122
+    
+    DrawFinalGlide(hdcDrawWindow,rc);
+  }
+  
   // DrawSpeedToFly(hdcDrawWindow, rc);  // Usable
 
   DrawGPSStatus(hdcDrawWindow, rc);
@@ -3445,7 +3425,7 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 	// JMW AAT!
 	double bearing = Task[i].OutBound;
 	POINT sct1, sct2;
-	if (AATEnabled && !mode.Is(Mode::MODE_TARGET_PAN)) {
+	if (AATEnabled) {
 	  LatLon2Screen(Task[i].AATTargetLon, 
 			Task[i].AATTargetLat, 
 			sct1);
@@ -3713,7 +3693,6 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
 
 void MapWindow::DrawBearing(HDC hdc, const RECT rc)
 {
-
   int overindex=GetOvertargetIndex();
   if (overindex<0) return;
 
@@ -3723,68 +3702,78 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
   double targetLon;
 
   if (overindex>OVT_TASK) {
-  	LockTaskData();
-	targetLat = WayPointList[overindex].Latitude;
-	targetLon = WayPointList[overindex].Longitude; 
-	UnlockTaskData();
-	//  DrawGreatCircle(hdc, startLon, startLat, targetLon, targetLat, rc);
-	//HPEN hpOld = (HPEN)SelectObject(hdc, hpOvertarget);
-	HPEN hpOld = (HPEN)SelectObject(hdc, hpBearing);
-	POINT pt[2];
-	LatLon2Screen(startLon, startLat, pt[0]);
-	LatLon2Screen(targetLon, targetLat, pt[1]);
-	ClipPolygon(hdc, pt, 2, rc, false);
-	SelectObject(hdc, hpOld);
-	return; // remove return to let multiple destination lines drawn
-  }
-  if (!ValidTaskPoint(ActiveWayPoint)) {
-	return; 
-  }
-  LockTaskData();
-
-  if (AATEnabled && (ActiveWayPoint>0) && ValidTaskPoint(ActiveWayPoint+1)) {
-    targetLat = Task[ActiveWayPoint].AATTargetLat;
-    targetLon = Task[ActiveWayPoint].AATTargetLon; 
-  } else {
-    targetLat = WayPointList[Task[ActiveWayPoint].Index].Latitude;
-    targetLon = WayPointList[Task[ActiveWayPoint].Index].Longitude; 
-  }
-  UnlockTaskData();
-
-  DrawGreatCircle(hdc, startLon, startLat,
-                  targetLon, targetLat, rc);
-
-  if (mode.Is(Mode::MODE_TARGET_PAN)) {
-    // Draw all of task if in target pan mode
-    startLat = targetLat;
-    startLon = targetLon;
-
     LockTaskData();
-    for (int i=ActiveWayPoint+1; i<MAXTASKPOINTS; i++) {
-      if (ValidTaskPoint(i)) {
-
-        if (AATEnabled && ValidTaskPoint(i+1)) {
-          targetLat = Task[i].AATTargetLat;
-          targetLon = Task[i].AATTargetLon; 
-        } else {
-          targetLat = WayPointList[Task[i].Index].Latitude;
-          targetLon = WayPointList[Task[i].Index].Longitude; 
-        }
-       
-        DrawGreatCircle(hdc, startLon, startLat,
-                        targetLon, targetLat, rc);
-
-        startLat = targetLat;
-        startLon = targetLon;
-      }
+    if(AATEnabled && (ActiveWayPoint>0) && ValidTaskPoint(ActiveWayPoint+1)) {
+      targetLat = Task[ActiveWayPoint].AATTargetLat;
+      targetLon = Task[ActiveWayPoint].AATTargetLon;
     }
+    else {
+      targetLat = WayPointList[overindex].Latitude;
+      targetLon = WayPointList[overindex].Longitude;
+    }
+    UnlockTaskData();
+    //  DrawGreatCircle(hdc, startLon, startLat, targetLon, targetLat, rc);
+    //HPEN hpOld = (HPEN)SelectObject(hdc, hpOvertarget);
+    HPEN hpOld = (HPEN)SelectObject(hdc, hpBearing);
+    POINT pt[2];
+    LatLon2Screen(startLon, startLat, pt[0]);
+    LatLon2Screen(targetLon, targetLat, pt[1]);
+    ClipPolygon(hdc, pt, 2, rc, false);
+    SelectObject(hdc, hpOld);
+  }
+  else {
+    if (!ValidTaskPoint(ActiveWayPoint)) {
+      return; 
+    }
+    LockTaskData();
 
-    // JMW draw symbol at target, makes it easier to see
+    if (AATEnabled && (ActiveWayPoint>0) && ValidTaskPoint(ActiveWayPoint+1)) {
+      targetLat = Task[ActiveWayPoint].AATTargetLat;
+      targetLon = Task[ActiveWayPoint].AATTargetLon; 
+    } else {
+      targetLat = WayPointList[Task[ActiveWayPoint].Index].Latitude;
+      targetLon = WayPointList[Task[ActiveWayPoint].Index].Longitude; 
+    }
+    UnlockTaskData();
 
-    if (AATEnabled) {
+    DrawGreatCircle(hdc, startLon, startLat,
+                    targetLon, targetLat, rc);
+
+    if (mode.Is(Mode::MODE_TARGET_PAN)) {
+      // Draw all of task if in target pan mode
+      startLat = targetLat;
+      startLon = targetLon;
+
+      LockTaskData();
       for (int i=ActiveWayPoint+1; i<MAXTASKPOINTS; i++) {
+        if (ValidTaskPoint(i)) {
+
+          if (AATEnabled && ValidTaskPoint(i+1)) {
+            targetLat = Task[i].AATTargetLat;
+            targetLon = Task[i].AATTargetLon; 
+          } else {
+            targetLat = WayPointList[Task[i].Index].Latitude;
+            targetLon = WayPointList[Task[i].Index].Longitude; 
+          }
+       
+          DrawGreatCircle(hdc, startLon, startLat,
+                          targetLon, targetLat, rc);
+
+          startLat = targetLat;
+          startLon = targetLon;
+        }
+      }
+      UnlockTaskData();
+    }
+  }
+
+  if (AATEnabled) {
+    // draw symbol at target, makes it easier to see
+    LockTaskData();
+    if(mode.Is(Mode::MODE_TARGET_PAN)) {
+      for(int i=ActiveWayPoint+1; i<MAXTASKPOINTS; i++) {
         if(ValidTaskPoint(i) && ValidTaskPoint(i+1)) {
-          if (i>= ActiveWayPoint) {
+          if(i>= ActiveWayPoint) {
             POINT sct;
             LatLon2Screen(Task[i].AATTargetLon, 
                           Task[i].AATTargetLat, 
@@ -3794,14 +3783,7 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
         }
       }
     }
-
-    UnlockTaskData();
-
-  }
-
-  if (AATEnabled) {
-    LockTaskData();
-    if (ValidTaskPoint(ActiveWayPoint+1) && (ActiveWayPoint>0)) {
+    if(ValidTaskPoint(ActiveWayPoint+1) && (ActiveWayPoint>0)) {
       POINT sct;
       LatLon2Screen(Task[ActiveWayPoint].AATTargetLon, 
                     Task[ActiveWayPoint].AATTargetLat, 

@@ -32,7 +32,7 @@ MapWindow::Zoom::Zoom():
 void MapWindow::Zoom::CalculateTargetPanZoom()
 {
   // set scale exactly so that waypoint distance is the zoom factor across the screen
-  *_requestedScale = LimitMapScale(TargetZoomDistance * DISTANCEMODIFY / 4.0);
+  *_requestedScale = LimitMapScale(TargetZoomDistance * DISTANCEMODIFY / 6.0);
 }
 
 
