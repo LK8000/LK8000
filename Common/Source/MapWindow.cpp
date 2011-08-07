@@ -1987,30 +1987,22 @@ void MapWindow::CalculateOrientationNormal(void) {
 
 
 void MapWindow::CalculateOrientationTargetPan(void) {
-  // Target pan mode, show track up when looking at current task point,
-  // otherwise north up.  If circling, orient towards target.
+  // Target pan mode, show target up when looking at current task point,
+  // otherwise north up.
   GliderCenter = true;
   if ((ActiveWayPoint==TargetPanIndex)
       &&(DisplayOrientation != NORTHUP)
       &&(DisplayOrientation != NORTHSMART) // 100419
-      &&(DisplayOrientation != NORTHTRACK)
-      )    {
-    if (mode.Is(Mode::MODE_CIRCLING)) {
-      // target-up
-      DisplayAngle = DerivedDrawInfo.WaypointBearing;
-      DisplayAircraftAngle = 
-        DrawInfo.TrackBearing-DisplayAngle;
-    } else {
-      // track up
-      DisplayAngle = DrawInfo.TrackBearing;
-      DisplayAircraftAngle = 0.0;
-    }
-  } else {
+      &&(DisplayOrientation != NORTHTRACK)) {
+    // target-up
+    DisplayAngle = DerivedDrawInfo.WaypointBearing;
+    DisplayAircraftAngle = DrawInfo.TrackBearing-DisplayAngle;
+  }
+  else {
     // North up
     DisplayAngle = 0.0;
     DisplayAircraftAngle = DrawInfo.TrackBearing;
   }
- 
 }
 
 
