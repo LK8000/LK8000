@@ -3706,7 +3706,7 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
 
   if (overindex>OVT_TASK) {
     LockTaskData();
-    if(AATEnabled && (ActiveWayPoint>0) && ValidTaskPoint(ActiveWayPoint+1)) {
+    if(OvertargetMode == OVT_TASK && AATEnabled && (ActiveWayPoint>0) && ValidTaskPoint(ActiveWayPoint+1)) {
       targetLat = Task[ActiveWayPoint].AATTargetLat;
       targetLon = Task[ActiveWayPoint].AATTargetLon;
     }
