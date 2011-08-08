@@ -2,9 +2,42 @@
 Changes in LK8000 v2.3
 ======================
 
-Version 2.3c
+Current version
+
+AAT Rework by Mat, changes & fixes in progress:
+
+. Drawing of thermal bar disabled for Target PAN map mode
+. Target PAN sectors position set to the screen center
+. AAT target symbols printing fixed
+. Drawing of a AAT task fixed for Target PAN screen
+. Drawing of bearing to the target instead of waypoint fixed for AAT task
+
+. Target dragging switched to clicking for AAT Target PAN dialog
+  Dragging a small circle on the screen is not a turbulence proof interface.
+  It is extremely hard to do it during a turbulent flight. Now a click is
+  enough to move AAT target inside the AAT area.
+
+. Target PAN zoom level increased a bit to make it easier to move the target
+. Orientation of active waypoint fixed in Target PAN to not rotate the screen constantly while selecting AAT target
+. Multitarget bearing line fixed for non-waypoint overlays in AAT task
 
 
+NEW
+
+. OziExplorer waypoint format supported
+
+CHANGES
+
+. Initial circling zoom increased a bit
+
+
+FIXES
+
+
+
+
+--------------------------
+Version 2.3c  July 31 2011
 
 NEW
 
