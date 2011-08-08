@@ -1485,6 +1485,16 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 		// end dontdrawthemap and inside mapscreen looking for a gesture
 	} 
 
+        if (AATEnabled && mode.Is(Mode::MODE_TARGET_PAN)) {
+          Screen2LatLon(X, Y, Xlat, Ylat);
+          LockTaskData();
+          targetMoved = true;
+          targetMovedLat = Ylat;
+          targetMovedLon = Xlat;
+          UnlockTaskData();
+          break;
+        }
+
       // Process Active Icons
 	if (doinit) {
 		#include "./LKinclude_menusize.cpp"
@@ -1731,14 +1741,7 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 
       Screen2LatLon(X, Y, Xlat, Ylat);
     
-      if (AATEnabled && mode.Is(Mode::MODE_TARGET_PAN)) {
-	LockTaskData();
-	targetMoved = true;
-	targetMovedLat = Ylat;
-	targetMovedLon = Xlat;
-	UnlockTaskData();
-	break;
-      } else if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN) && (distance>36)) { // TODO FIX should be IBLSCALE 36 instead?
+      if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN) && (distance>36)) { // TODO FIX should be IBLSCALE 36 instead?
 	PanLongitude += Xstart-Xlat;
 	PanLatitude  += Ystart-Ylat;
 	RefreshMap();
