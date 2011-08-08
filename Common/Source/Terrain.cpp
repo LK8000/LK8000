@@ -1171,7 +1171,7 @@ public:
     } 
     #if (WINDOWSPC<1)
     else {
-	if (MapWindow::MapScale>12) do_shading=false;
+      if (MapWindow::zoom.Scale()>12) do_shading=false;
     }
     #endif
 
