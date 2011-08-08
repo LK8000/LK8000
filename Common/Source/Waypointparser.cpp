@@ -1451,6 +1451,35 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	return;
   }
 
+  if(filemode == LKW_OZI) {
+
+	if (wpt->Comment!=NULL)
+		_tcscpy(comment,wpt->Comment);
+	else
+		_tcscpy(comment,_T(""));
+
+	if(_tcslen(comment) > 40){
+		comment[40] = _T('\0');
+	}
+
+	// Calc Waypoint pos in file
+	int nWaypointPos = 1;
+	for(int i = NUMRESWP; i < (wpt-WayPointList); i++) {
+		if(WayPointList[i].FileNum == wpt->FileNum)
+			nWaypointPos++;
+	}
+
+	fprintf(fp, "%d,%S,%.6f,%.6f,,0,1,3,0,65635,%S,0,0,0,%d,6,0,17\r\n",
+			nWaypointPos,// position in file
+			wpt->Name,
+			wpt->Latitude,
+			wpt->Longitude,
+			comment,
+			iround(wpt->Altitude*TOFEET));
+
+  }
+
+
   StartupStore(_T("...... Invalid filemode=%d file=%d wp=%d%s"), filemode,globalFileNum,wpt->Number ,NEWLINE);
 
 }
@@ -1476,6 +1505,13 @@ void WriteWayPointFile(FILE *fp) {
 	if ( WpFileType[globalFileNum+1] == LKW_COMPE ) { // 100212
 	 fprintf(fp,"G  WGS 84\r\n");
 	 fprintf(fp,"U  1\r\n");
+	}
+	if ( WpFileType[globalFileNum+1] == LKW_OZI ) {
+		//Always Use V1.1 file format
+	 	fprintf(fp,"OziExplorer Waypoint File Version 1.1\r\n");
+	 	fprintf(fp,"WGS 84\r\n");
+	 	fprintf(fp,"Reserved 2\r\n");
+	 	fprintf(fp,"Reserved 3\r\n");
 	}
   } else {
 	StartupStore(_T("... WriteWayPointFile: invalid globalFileNum%s"),NEWLINE);
@@ -2434,6 +2470,9 @@ bool ParseOZIWayPointString(TCHAR *String,WAYPOINT *Temp){
 		pToken[NAME_SIZE-1]= _T('\0');
 	}
 
+	// remove trailing spaces
+	for (int i=_tcslen(pToken)-1; i>1; i--) if (pToken[i]==' ') pToken[i]=0; else break;
+
 	_tcscpy(Temp->Name, pToken);
 
 	//	Field 3 : Latitude - decimal degrees.
@@ -2483,6 +2522,9 @@ bool ParseOZIWayPointString(TCHAR *String,WAYPOINT *Temp){
 		return false;
 
     if (_tcslen(pToken) >0 ) {
+    	// remove trailing spaces
+    	for (int i=_tcslen(pToken)-1; i>1; i--) if (pToken[i]==' ') pToken[i]=0; else break;
+
     	if (Temp->Comment) {
     		free(Temp->Comment);
     	}
