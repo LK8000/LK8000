@@ -39,6 +39,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   static TCHAR Buffer3[MAXNEARAIRSPACES][MAXAIRSPACENUMPAGES][10];
   static TCHAR Buffer4[MAXNEARAIRSPACES][MAXAIRSPACENUMPAGES][12], Buffer5[MAXNEARAIRSPACES][MAXAIRSPACENUMPAGES][12];
   static short s_maxnlname;
+  static TCHAR s_trailspace[3];
   short i, k, iRaw, wlen, rli=0, curpage, drawn_items_onpage;
   double value;
   COLORREF rcolor;
@@ -112,8 +113,8 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   _stprintf(Buffer,TEXT("CTRA")); 
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &TYTextSize);
 
-  // Active can only be 0 or 1  
-  _stprintf(Buffer,TEXT("00")); 
+  // Flags can be SFE, three chars
+  _stprintf(Buffer,TEXT("SFE")); 
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &ACTextSize);
 
   SelectObject(hdc, LK8InfoNormalFont);
@@ -143,6 +144,8 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   	AspNumraws=(bottom - TopSize) / (ASPTextSize.cy+(INTERRAW*2));
   	if (AspNumraws>MAXNEARAIRSPACES) AspNumraws=MAXNEARAIRSPACES;
   	s_rawspace=(ASPTextSize.cy+INTERRAW);
+	Column5=rc.right-NIBLSCALE(1)-1;
+	_tcscpy(s_trailspace,L"");
   } else {
   	TopSize=rc.top+HEADRAW*2+HLTextSize.cy;
   	p1.x=0; p1.y=TopSize; p2.x=rc.right; p2.y=p1.y;
@@ -150,6 +153,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   	AspNumraws=(bottom - TopSize) / (ASPTextSize.cy+INTERRAW);
   	if (AspNumraws>MAXNEARAIRSPACES) AspNumraws=MAXNEARAIRSPACES;
   	s_rawspace=(ASPTextSize.cy+INTERRAW);
+	_tcscpy(s_trailspace,L" ");
   }
 
 #define INTERBOX intercolumn/2
@@ -487,10 +491,10 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 		// AIRSPACE FLAGS
 		//
 		TCHAR aspflags[5];
-		wsprintf(aspflags,_T("%s%s%s"),
+		wsprintf(aspflags,_T("%s%s%s%s"),
 			LKAirspaces[rli].Selected ? _T("S") : _T(""),
 			LKAirspaces[rli].Flyzone  ? _T("F") : _T("  "),
-			LKAirspaces[rli].Enabled  ? _T("E ") : _T("D "));
+			LKAirspaces[rli].Enabled  ? _T("E") : _T("D"), s_trailspace);
 
 		_stprintf(Buffer5[i][curpage], TEXT("%s"), aspflags);
 
