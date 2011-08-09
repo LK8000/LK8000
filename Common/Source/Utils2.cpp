@@ -47,6 +47,8 @@ extern void ShowMenu();
 
 void BottomSounds();
 
+extern void ApplyClearType(LOGFONT *logfont);
+
 #define CURTYPE	ModeType[ModeIndex]
 #define ISPARAGLIDER (AircraftCategory == (AircraftCategory_t)umParaglider)
 
@@ -1523,25 +1525,25 @@ void InitLKFonts()
 		BottomSize=38; // Title+Value-4
 		break;
   }
-  logfontTarget.lfQuality = GetFontRenderer(); 
-  logfontBig.lfQuality = GetFontRenderer(); 
-  logfontValue.lfQuality = GetFontRenderer(); 
-  logfontTitle.lfQuality = GetFontRenderer(); 
-  logfontMap.lfQuality = GetFontRenderer(); 
-  logfontTitleNavbox.lfQuality = GetFontRenderer(); 
-  logfontUnit.lfQuality = GetFontRenderer(); 
-  logfontMedium.lfQuality = GetFontRenderer(); 
-  logfontSmall.lfQuality = GetFontRenderer(); 
-  logfontInfoBig.lfQuality = GetFontRenderer(); 
-  logfontInfoBigItalic.lfQuality = GetFontRenderer(); 
-  logfontInfoNormal.lfQuality = GetFontRenderer(); 
-  logfontInfoSmall.lfQuality = GetFontRenderer(); 
-  logfontSymbol.lfQuality = GetFontRenderer(); 
+  ApplyClearType(&logfontTarget);
+  ApplyClearType(&logfontBig);
+  ApplyClearType(&logfontValue);
+  ApplyClearType(&logfontTitle);
+  ApplyClearType(&logfontMap);
+  ApplyClearType(&logfontTitleNavbox);
+  ApplyClearType(&logfontUnit);
+  ApplyClearType(&logfontMedium);
+  ApplyClearType(&logfontSmall);
+  ApplyClearType(&logfontInfoBig);
+  ApplyClearType(&logfontInfoBigItalic);
+  ApplyClearType(&logfontInfoNormal);
+  ApplyClearType(&logfontInfoSmall);
+  ApplyClearType(&logfontSymbol);
   logfontSymbol.lfCharSet = SYMBOL_CHARSET; // careful
-  logfontPanelBig.lfQuality= GetFontRenderer();
-  logfontPanelMedium.lfQuality= GetFontRenderer();
-  logfontPanelSmall.lfQuality= GetFontRenderer();
-  logfontPanelUnit.lfQuality= GetFontRenderer();
+  ApplyClearType(&logfontPanelBig);
+  ApplyClearType(&logfontPanelMedium);
+  ApplyClearType(&logfontPanelSmall);
+  ApplyClearType(&logfontPanelUnit);
 
   if (LK8TargetFont!=NULL) DeleteObject(LK8TargetFont);
   if (LK8BigFont!=NULL) DeleteObject(LK8BigFont);

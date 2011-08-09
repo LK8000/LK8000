@@ -2191,7 +2191,7 @@ void ApplyClearType(LOGFONT *logfont) {
 
   // this has to be checked on PPC and old 2002 CE devices: using ANTIALIASED quality could be better
   // 110120  .. and in fact on ppc2002 no cleartype available
-  logfont->lfQuality = GetFontRenderer(); //was logfont->lfQuality = LKFONT_QUALITY;
+  logfont->lfQuality = GetFontRenderer();
 }
 
 bool IsNullLogFont(LOGFONT logfont) {

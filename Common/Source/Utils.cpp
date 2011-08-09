@@ -51,6 +51,8 @@ FlarmIdFile file;
 
 #include "utils/heapcheck.h"
 
+extern void ApplyClearType(LOGFONT *logfont);
+
 // JMW not required in newer systems?
 #ifdef __MINGW32__
 #ifndef max
@@ -4139,7 +4141,11 @@ void propGetFontSettingsFromString(TCHAR *Buffer1, LOGFONT* lplf)
   // CLEARTYPE_COMPAT_QUALITY 6
 
   if ((pToken = strtok_r(NULL, TEXT(","), &pWClast)) == NULL) return;
+  #if USEAUTOFONTS
   lfTmp.lfQuality = (unsigned char)_tcstol(pToken, NULL, 10); 
+  #else
+  ApplyClearType(&lfTmp);
+  #endif
 
   if ((pToken = strtok_r(NULL, TEXT(","), &pWClast)) == NULL) return;
   lfTmp.lfPitchAndFamily = (unsigned char)_tcstol(pToken, NULL, 10);
@@ -4164,7 +4170,8 @@ void propGetFontSettings(TCHAR *Name, LOGFONT* lplf) {
 
 #if (WINDOWSPC>0) 
   // Don't load font settings from registry values for windows version
-  return; // TODO FIX let font settings be read by windows PC also! 091021 
+  // 110809 lets make PC as much similar to PNA as possible
+  // return; 
 #endif
 
   if (GetRegistryString(Name, Buffer, sizeof(Buffer)/sizeof(TCHAR)) == 0) {
