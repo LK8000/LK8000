@@ -355,6 +355,10 @@ BOOL NMEAParser::ParseNMEAString_Internal(TCHAR *String, NMEA_INFO *GPS_INFO)
 	{
 	  return RMZ(&String[7], params + 1, n_params, GPS_INFO);
 	}
+      if(_tcscmp(params[0] + 1,TEXT("PLKAS"))==0)
+        {
+          return PLKAS(&String[7], params + 1, n_params, GPS_INFO);
+        }
       return FALSE;
     }
 
@@ -957,6 +961,25 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   // This was causing old altitude recorded in new pos fix.
   TriggerGPSUpdate(); 
   return TRUE;
+}
+
+// LK8000 IAS , in m/s*10  example: 346 for 34.6 m/s  which is = 124.56 km/h
+BOOL NMEAParser::PLKAS(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *GPS_INFO)
+{
+  (void)GPS_INFO;
+
+  double vias=StrToDouble(params[0],NULL)/10.0;
+  if (vias >1) {
+    GPS_INFO->TrueAirspeed = vias*AirDensityRatio(CALCULATED_INFO.NavAltitude);
+    GPS_INFO->IndicatedAirspeed = vias;
+  } else {
+    GPS_INFO->TrueAirspeed = 0;
+    GPS_INFO->IndicatedAirspeed = 0;
+  }
+
+  GPS_INFO->AirspeedAvailable = TRUE;
+
+  return FALSE;
 }
 
 

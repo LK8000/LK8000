@@ -207,9 +207,11 @@ class NMEAParser {
   BOOL WP1(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL WP2(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
 
-  // Additional sentances
+  // Additional sentences
   BOOL PTAS1(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);  // RMN: Tasman instruments.  TAS, Vario, QNE-altitude
-  
+
+  // LK8000 custom special sentences, always active
+  BOOL PLKAS(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   // FLARM sentances
   BOOL PFLAU(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
   BOOL PFLAA(TCHAR *String, TCHAR **, size_t, NMEA_INFO *GPS_INFO);
