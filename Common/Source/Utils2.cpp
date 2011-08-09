@@ -928,7 +928,6 @@ void InitLKFonts()
   LOGFONT logfontUnit;		// TitleSmallWindow
   LOGFONT logfontSmall;
   LOGFONT logfontMedium;
-  LOGFONT logfontSymbol;
   LOGFONT logfontInfoBig;
   LOGFONT logfontInfoBigItalic;
   LOGFONT logfontInfoNormal;
@@ -948,7 +947,6 @@ void InitLKFonts()
   memset ((char *)&logfontUnit, 0, sizeof (LOGFONT) );
   memset ((char *)&logfontSmall, 0, sizeof (LOGFONT) );
   memset ((char *)&logfontMedium, 0, sizeof (LOGFONT) );
-  memset ((char *)&logfontSymbol, 0, sizeof (LOGFONT) );
   memset ((char *)&logfontInfoBig, 0, sizeof (LOGFONT) );
   memset ((char *)&logfontInfoBigItalic, 0, sizeof (LOGFONT) );
   memset ((char *)&logfontInfoNormal, 0, sizeof (LOGFONT) );
@@ -972,7 +970,6 @@ void InitLKFonts()
 	case (ScreenSize_t)ss800x480:		// PASSED DEV-1 090701 VENTA
 		splitter=6;
 		propGetFontSettingsFromString(TEXT("72,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontBig);	// 64 600
-		propGetFontSettingsFromString(TEXT("48,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontSymbol);
 		propGetFontSettingsFromString(TEXT("41,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontMedium);	// 40 600
 		propGetFontSettingsFromString(TEXT("18,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontSmall);
 
@@ -999,7 +996,6 @@ void InitLKFonts()
 		splitter=6;
 		propGetFontSettingsFromString(TEXT("36,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontBig); // v2.2
 		propGetFontSettingsFromString(TEXT("38,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontBig); 
-		propGetFontSettingsFromString(TEXT("24,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontSymbol);
 		propGetFontSettingsFromString(TEXT("21,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontMedium);	// 40 600
 		propGetFontSettingsFromString(TEXT("9,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontSmall);
 
@@ -1034,7 +1030,6 @@ void InitLKFonts()
 		// propGetFontSettingsFromString(TEXT("44,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), &logfontBig); changed 100910
 		propGetFontSettingsFromString(TEXT("48,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontBig);
 		#endif
-		propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontSymbol);
 		propGetFontSettingsFromString(TEXT("26,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontMedium);
 		propGetFontSettingsFromString(TEXT("10,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontSmall);
 		#if 0
@@ -1074,7 +1069,6 @@ void InitLKFonts()
 	case (ScreenSize_t)ss720x408:
 		splitter=5;
 		propGetFontSettingsFromString(TEXT("72,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontBig);
-		propGetFontSettingsFromString(TEXT("33,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontSymbol);
 		propGetFontSettingsFromString(TEXT("39,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontMedium);
 		propGetFontSettingsFromString(TEXT("15,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontSmall);
 		propGetFontSettingsFromString(TEXT("30,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontTitle);
@@ -1101,7 +1095,6 @@ void InitLKFonts()
 		#else
 		propGetFontSettingsFromString(TEXT("38,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), &logfontBig);
 		#endif
-		propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontSymbol);
 		propGetFontSettingsFromString(TEXT("24,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontMedium);
 		propGetFontSettingsFromString(TEXT("10,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontSmall);
 		#if 0
@@ -1147,7 +1140,6 @@ void InitLKFonts()
 		#else
 		propGetFontSettingsFromString(TEXT("34,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontBig);
 		#endif
-		propGetFontSettingsFromString(TEXT("16,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontSymbol);
 		propGetFontSettingsFromString(TEXT("16,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontMedium);
 		propGetFontSettingsFromString(TEXT("8,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontSmall);
 		#if 0
@@ -1187,7 +1179,6 @@ void InitLKFonts()
 		#else
 		propGetFontSettingsFromString(TEXT("64,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), &logfontBig);
 		#endif
-		propGetFontSettingsFromString(TEXT("32,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontSymbol);
 		propGetFontSettingsFromString(TEXT("32,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontMedium);
 		propGetFontSettingsFromString(TEXT("14,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontSmall);
 		#if 0
@@ -1227,7 +1218,6 @@ void InitLKFonts()
 		#else
 		propGetFontSettingsFromString(TEXT("89,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), &logfontBig);
 		#endif
-		propGetFontSettingsFromString(TEXT("45,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontSymbol);
 		propGetFontSettingsFromString(TEXT("44,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontMedium);
 		propGetFontSettingsFromString(TEXT("20,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontSmall);
 		if (splitter==6) {
@@ -1270,7 +1260,6 @@ void InitLKFonts()
 			#else
 			propGetFontSettingsFromString(TEXT("30,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), &logfontBig);
 			#endif
-			propGetFontSettingsFromString(TEXT("11,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontSymbol);
 			propGetFontSettingsFromString(TEXT("16,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontMedium);
 			propGetFontSettingsFromString(TEXT("6,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontSmall);
 
@@ -1338,7 +1327,6 @@ void InitLKFonts()
 	case (ScreenSize_t)ss272x480:
 		splitter=3;
 		propGetFontSettingsFromString(TEXT("36,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontBig);
-			propGetFontSettingsFromString(TEXT("12,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontSymbol);
 			propGetFontSettingsFromString(TEXT("20,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontMedium);
 			propGetFontSettingsFromString(TEXT("8,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), &logfontSmall);
 		if (splitter==3) {
@@ -1391,7 +1379,6 @@ void InitLKFonts()
 		#else
 		propGetFontSettingsFromString(TEXT("60,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), &logfontBig);
 		#endif
-		propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontSymbol);
 		propGetFontSettingsFromString(TEXT("32,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontMedium);
 		propGetFontSettingsFromString(TEXT("10,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontSmall);
 
@@ -1450,7 +1437,6 @@ void InitLKFonts()
 		#else
 		propGetFontSettingsFromString(TEXT("62,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), &logfontBig);
 		#endif
-		propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), &logfontSymbol);
 		propGetFontSettingsFromString(TEXT("32,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontMedium);
 		propGetFontSettingsFromString(TEXT("10,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontSmall);
 
@@ -1538,8 +1524,6 @@ void InitLKFonts()
   ApplyClearType(&logfontInfoBigItalic);
   ApplyClearType(&logfontInfoNormal);
   ApplyClearType(&logfontInfoSmall);
-  ApplyClearType(&logfontSymbol);
-  logfontSymbol.lfCharSet = SYMBOL_CHARSET; // careful
   ApplyClearType(&logfontPanelBig);
   ApplyClearType(&logfontPanelMedium);
   ApplyClearType(&logfontPanelSmall);
@@ -1552,7 +1536,6 @@ void InitLKFonts()
   if (LK8MapFont!=NULL) DeleteObject(LK8MapFont);
   if (LK8TitleNavboxFont!=NULL) DeleteObject(LK8TitleNavboxFont);
   if (LK8UnitFont!=NULL) DeleteObject(LK8UnitFont);
-  if (LK8SymbolFont!=NULL) DeleteObject(LK8SymbolFont);
   if (LK8MediumFont!=NULL) DeleteObject(LK8MediumFont);
   if (LK8SmallFont!=NULL) DeleteObject(LK8SmallFont);
   if (LK8InfoBigFont!=NULL) DeleteObject(LK8InfoBigFont);
@@ -1571,7 +1554,6 @@ void InitLKFonts()
   LK8MapFont	= CreateFontIndirect (&logfontMap);
   LK8TitleNavboxFont	= CreateFontIndirect (&logfontTitleNavbox);
   LK8UnitFont	= CreateFontIndirect (&logfontUnit);
-  LK8SymbolFont	= CreateFontIndirect (&logfontSymbol);
   LK8MediumFont	= CreateFontIndirect (&logfontMedium);
   LK8SmallFont	= CreateFontIndirect (&logfontSmall);
   LK8InfoBigFont	= CreateFontIndirect (&logfontInfoBig);

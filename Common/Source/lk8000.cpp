@@ -197,7 +197,6 @@ HFONT                                   LK8TargetFont=(HFONT)NULL;
 HFONT                                   LK8BigFont=(HFONT)NULL;
 HFONT                                   LK8MediumFont=(HFONT)NULL;
 HFONT                                   LK8SmallFont=(HFONT)NULL;
-HFONT					LK8SymbolFont=(HFONT)NULL;
 HFONT					LK8InfoBigFont=(HFONT)NULL;
 HFONT					LK8InfoBigItalicFont=(HFONT)NULL;
 HFONT					LK8InfoNormalFont=(HFONT)NULL;

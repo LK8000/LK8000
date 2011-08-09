@@ -100,7 +100,6 @@ extern HFONT                                   LK8TargetFont;
 extern HFONT                                   LK8BigFont;
 extern HFONT                                   LK8SmallFont;
 extern HFONT                                   LK8MediumFont;
-extern HFONT                                   LK8SymbolFont;
 extern HFONT                                   LK8InfoBigFont;
 extern HFONT                                   LK8InfoBigItalicFont;
 extern HFONT                                   LK8InfoNormalFont;
