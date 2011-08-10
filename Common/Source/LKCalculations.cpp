@@ -2319,6 +2319,7 @@ void InsertThermalHistory(double ThTime,  double ThLat, double ThLon, double ThB
   }
 
   LockTaskData();
+  wcscpy(WayPointList[RESWP_LASTTHERMAL].Name , ThermalHistory[i].Name);
   WayPointList[RESWP_LASTTHERMAL].Latitude  = CALCULATED_INFO.ClimbStartLat;
   WayPointList[RESWP_LASTTHERMAL].Longitude = CALCULATED_INFO.ClimbStartLong;
   WayPointList[RESWP_LASTTHERMAL].Altitude  = CALCULATED_INFO.ClimbStartAlt;

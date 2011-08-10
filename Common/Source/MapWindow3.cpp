@@ -444,6 +444,9 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
 
   _stprintf(Buffer, _T(""));
   if (GPSAltitudeOffset != 0) _stprintf(Buffer, _T("(GpsOffset %+.0f)"), GPSAltitudeOffset/1000*ALTITUDEMODIFY); // 100429 /1000
+  #if TESTBENCH
+  _tcscat(Buffer,_T(" TESTBENCH! "));
+  #endif
   if (!LoggerGActive()) _tcscat(Buffer,_T(" (No GRecord)"));
   LKWriteText(hdc, Buffer, middlex, bottomlines-(textSize.cy*2)-NIBLSCALE(2) , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_SWHITE, false);
 
