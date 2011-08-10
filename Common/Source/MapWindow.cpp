@@ -1759,7 +1759,10 @@ extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, do
 		if ( (CALCULATED_INFO.TerrainValid) && ( CALCULATED_INFO.AltitudeAGL <0 ))
 			GPS_INFO.Altitude=CALCULATED_INFO.TerrainAlt;
 		GPS_INFO.Altitude+=200;
-		GPS_INFO.Speed = min(100.0,max(minspeed,distance/3));
+		if (ISPARAGLIDER)
+		  GPS_INFO.Speed = min(16.0,max(minspeed,distance/9));
+		else
+		  GPS_INFO.Speed = min(100.0,max(minspeed,distance/3));
 	} 
 	GPS_INFO.TrackBearing = newbearing;
 	TriggerGPSUpdate();
