@@ -1275,6 +1275,7 @@ void Statistics::RenderWind(HDC hdc, const RECT rc)
 
   //
 
+
   ResetScale();
 
   ScaleXFromData(rc, &windstats_mag);
@@ -2025,7 +2026,10 @@ static int OnTimerNotify(WindowControl *Sender)
     return 0;
   
   // run once per second
-  Update();
+  // Only for OLC page
+  if(page == ANALYSIS_PAGE_CONTEST){
+	  Update();
+  }
   return 0;
 }
 
