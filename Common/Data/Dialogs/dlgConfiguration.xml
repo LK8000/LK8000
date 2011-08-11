@@ -578,10 +578,10 @@
 <WndProperty Name="prpPGNumberOfGates" Caption="_@M748_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H216_">
 <DataField name="" DataType="double" DisplayFormat="%.0f" EditFormat="%.0f" Min=0 Max=20 Step=1/>
 </WndProperty>
-<WndProperty Name="prpPGOpenTimeH" Caption="_@M747_" X=2 Y=66 Width=200 Height=22 CaptionWidth=150 Font=2 Help="_@H217_">
+<WndProperty Name="prpPGOpenTimeH" Caption="_@M747_" X=2 Y=-1 Width=200 Height=22 CaptionWidth=150 Font=2 Help="_@H217_">
 <DataField name="" DataType="double" DisplayFormat="h %.0f" EditFormat="%.0f" Min=0 Max=23 Step=1/>
 </WndProperty>
-<WndProperty Name="prpPGOpenTimeM" Caption=":"  X=200 Y=66  Width=53 Height=22 CaptionWidth=5 Font=2 Help="_@H218_">
+<WndProperty Name="prpPGOpenTimeM" Caption=":"  X=200 Y=-999  Width=53 Height=22 CaptionWidth=5 Font=2 Help="_@H218_">
 <DataField name="" DataType="double" DisplayFormat="%02.0f" EditFormat="%.0f" Min=0 Max=59 Step=1/>
 </WndProperty>
 <WndProperty Name="prpPGGateIntervalTime" Caption="_@M320_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H219_">
