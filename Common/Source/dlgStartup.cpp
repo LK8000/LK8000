@@ -19,7 +19,6 @@
 
 extern HFONT MapWindowFont;
 extern HFONT TitleWindowFont;
-extern HFONT InfoWindowFont;
 extern void Shutdown(void);
 
 static WndForm *wf=NULL;
@@ -27,18 +26,17 @@ static WndOwnerDrawFrame *wSplash=NULL;
 extern HINSTANCE hInst;
 
 // lines are: 0 - 9
-// fsize 0 small 1 normal 2 big
+// fsize 0 small 1 normal 2 big (unavailable)
 void RawWrite(TCHAR *text, int line, short fsize) { 
    HDC hDC = GetWindowDC(hWndMainWindow);
    HFONT oldfont=(HFONT)SelectObject(hDC,MapWindowFont);
    switch(fsize) {
 	case 0:
-		oldfont=(HFONT)SelectObject(hDC,TitleWindowFont);
+		SelectObject(hDC,TitleWindowFont);
 		break;
 	case 1:
 		break;
 	case 2:
-		oldfont=(HFONT)SelectObject(hDC,InfoWindowFont);
 		break;
    }
    SetBkMode(hDC,TRANSPARENT);
