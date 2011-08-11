@@ -2106,7 +2106,9 @@ void CleanRegistry()
 	RegDeleteValue(tKey,_T("MapWindowBoldFont"));
 	RegDeleteValue(tKey,_T("MapWindowFont"));
 	RegDeleteValue(tKey,_T("StatisticsFont"));
+#if USEIBOX
 	RegDeleteValue(tKey,_T("TitleSmallWindowFont"));
+#endif
 	RegDeleteValue(tKey,_T("TitleWindowFont"));
 	RegDeleteValue(tKey,_T("BugsBallastFont"));
 	RegDeleteValue(tKey,_T("TeamCodeFont"));

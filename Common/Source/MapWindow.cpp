@@ -295,7 +295,9 @@ extern HFONT  InfoWindowFont;
 extern HFONT  CDIWindowFont;
 extern HFONT  StatisticsFont;
 extern HFONT  MapLabelFont; // VENTA6
+#if USEIBOX
 extern HFONT  TitleSmallWindowFont; // VENTA6
+#endif
 
 
 

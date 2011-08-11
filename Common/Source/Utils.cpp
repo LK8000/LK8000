@@ -383,7 +383,9 @@ const TCHAR szRegistryUseCustomFonts[]=	 TEXT("UseCustomFonts");
 const TCHAR szRegistryFontInfoWindowFont[]=	 TEXT("InfoWindowFont"); 
 const TCHAR szRegistryFontTitleWindowFont[]=	 TEXT("TitleWindowFont"); 
 const TCHAR szRegistryFontMapWindowFont[]=	 TEXT("MapWindowFont"); 
+#if USEIBOX
 const TCHAR szRegistryFontTitleSmallWindowFont[]=	 TEXT("TeamCodeFont"); 
+#endif
 const TCHAR szRegistryFontMapWindowBoldFont[]=	 TEXT("MapWindowBoldFont"); 
 const TCHAR szRegistryFontCDIWindowFont[]=	 TEXT("CDIWindowFont"); 
 const TCHAR szRegistryFontMapLabelFont[]=	 TEXT("MapLabelFont"); 

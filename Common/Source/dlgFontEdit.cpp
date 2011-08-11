@@ -23,7 +23,9 @@ extern void InitializeOneFont (HFONT * theFont,
 extern HFONT InfoWindowFont;
 extern HFONT TitleWindowFont;
 extern HFONT MapWindowFont;
+#if USEIBOX
 extern HFONT TitleSmallWindowFont;
+#endif
 extern HFONT MapWindowBoldFont;
 extern HFONT CDIWindowFont; // New
 extern HFONT MapLabelFont;

@@ -472,10 +472,6 @@
 </WndProperty>
 <WndButton Name="cmdCDIWindowFont" Caption="_@M252_" X=180 Y=169 Width=50  Height=22 Font=2 OnClickNotify="OnEditCDIWindowFontClicked">
 </WndButton> 
-<WndProperty Name="prpTitleSmallWindowFont" Caption="_@M352_" X=2 Y=192  width=180 Height=22 CaptionWidth=180 Font=2 ReadOnly=1>
-</WndProperty>
-<WndButton   Name="cmdTitleSmallWindowFont" Caption="_@M252_" X=180 Y=192 Width=50  Height=22 Font=2 OnClickNotify="OnEditTitleSmallWindowFontClicked">
-</WndButton> 
 </WndFrame>
 <WndFrame Name="frmVarioAppearance" X=70 Y=0 Width=-246 Height=222 Font=2>
 <WndProperty Name="prpLook8000" Caption="_@M585_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H193_">

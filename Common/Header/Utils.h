@@ -235,7 +235,9 @@ extern const TCHAR szRegistryUseCustomFonts[];
 extern const TCHAR szRegistryFontInfoWindowFont[]; 
 extern const TCHAR szRegistryFontTitleWindowFont[]; 
 extern const TCHAR szRegistryFontMapWindowFont[];
+#if USEIBOX
 extern const TCHAR szRegistryFontTitleSmallWindowFont[];
+#endif
 extern const TCHAR szRegistryFontMapWindowBoldFont[];
 extern const TCHAR szRegistryFontCDIWindowFont[];
 extern const TCHAR szRegistryFontMapLabelFont[];
