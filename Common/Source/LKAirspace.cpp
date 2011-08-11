@@ -1520,7 +1520,8 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
         break;
       
       case _T('V'):
-        p++; p++; //skip V and space
+        p++; //skip V
+        if (*p==' ') p++;   //skip space if present
         if(StartsWith(p, TEXT("X="))) {
             if (ReadCoords(p+2,&CenterX, &CenterY))
               break;
