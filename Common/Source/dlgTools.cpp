@@ -37,7 +37,6 @@ extern HFONT  TitleWindowFont;
 extern HFONT  MapWindowFont;
 extern HFONT  MapWindowBoldFont;
 extern HFONT  CDIWindowFont;
-extern HFONT  InfoWindowFont;
 
 
 static void OnButtonClick(WindowControl * Sender){
@@ -250,12 +249,13 @@ void *CallBackLookup(CallBackTableEntry_t *LookUpTable, TCHAR *Name){
 
 void LoadChildsFromXML(WindowControl *Parent, CallBackTableEntry_t *LookUpTable, XMLNode *Node, int Font);
 
+// The Font=n in dialogs.  0-4, 4 unused kept for compat issue with very old code
 static HFONT FontMap[5] = {
     TitleWindowFont,
     MapWindowFont,
     MapWindowBoldFont,
     CDIWindowFont,
-    InfoWindowFont
+    CDIWindowFont, // was InfoWindow 
   };
 
 
@@ -452,7 +452,7 @@ WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const char *FileName,
   FontMap[1] = MapWindowFont;
   FontMap[2] = MapWindowBoldFont;
   FontMap[3] = CDIWindowFont;
-  FontMap[4] = InfoWindowFont;
+  FontMap[4] = CDIWindowFont;
 
   if (!xNode.isEmpty()){
     int X,Y,Width,Height,Popup,Font;

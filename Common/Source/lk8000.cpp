@@ -179,7 +179,9 @@ COLORREF ColorOK = RGB_BLUE;
 COLORREF ColorButton = RGB_BUTTONS;  
 
 // Display Gobals
+#if USEIBOX
 HFONT                                   InfoWindowFont;
+#endif
 HFONT                                   TitleWindowFont;
 HFONT                                   MapWindowFont;
 #if USEIBOX
@@ -208,7 +210,9 @@ HFONT					LK8PanelMediumFont=(HFONT)NULL;
 HFONT					LK8PanelSmallFont=(HFONT)NULL;
 HFONT					LK8PanelUnitFont=(HFONT)NULL;
 
+#if USEIBOX
 LOGFONT                                   autoInfoWindowLogFont; // these are the non-custom parameters
+#endif
 LOGFONT                                   autoTitleWindowLogFont;
 LOGFONT                                   autoMapWindowLogFont;
 #if USEIBOX
@@ -2244,7 +2248,9 @@ void InitializeOneFont (HFONT * theFont,
 }
 
 void InitialiseFontsHardCoded(RECT rc,
+#if USEIBOX
                         LOGFONT * ptrhardInfoWindowLogFont,
+#endif
                         LOGFONT * ptrhardTitleWindowLogFont,
                         LOGFONT * ptrhardMapWindowLogFont,
 #if USEIBOX
@@ -2257,7 +2263,9 @@ void InitialiseFontsHardCoded(RECT rc,
 
 
 
+#if USEIBOX
   memset ((char *)ptrhardInfoWindowLogFont, 0, sizeof (LOGFONT));
+#endif
   memset ((char *)ptrhardTitleWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)ptrhardMapWindowLogFont, 0, sizeof (LOGFONT));
 #if USEIBOX
@@ -2288,7 +2296,9 @@ void InitialiseFontsHardCoded(RECT rc,
 
    // If you set a font here for a specific resolution, no automatic font generation is used.
   if (ScreenSize==(ScreenSize_t)ss480x272) { // WQVGA  e.g. MIO
+#if USEIBOX
     propGetFontSettingsFromString(TEXT("34,0,0,0,800,0,0,0,0,0,0,4,2,TahomaBD"), ptrhardInfoWindowLogFont); // 28 091120
+#endif
     propGetFontSettingsFromString(TEXT("14,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardTitleWindowLogFont); // 16 091120
 #if USEIBOX
     propGetFontSettingsFromString(TEXT("28,0,0,0,400,1,0,0,0,0,0,4,2,Tahoma"), ptrhardTitleSmallWindowLogFont); 
@@ -2302,7 +2312,9 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("19,0,0,0,500,0,0,0,0,0,0,6,2,Tahoma"), ptrhardMapWindowBoldLogFont); 
   }
   else if (ScreenSize==(ScreenSize_t)ss720x408) { // WQVGA  e.g. MIO
+#if USEIBOX
     propGetFontSettingsFromString(TEXT("51,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // 28 091120
+#endif
     propGetFontSettingsFromString(TEXT("21,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont); // 16 091120
 #if USEIBOX
     propGetFontSettingsFromString(TEXT("42,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont); 
@@ -2315,7 +2327,9 @@ void InitialiseFontsHardCoded(RECT rc,
   }
 
   else if (ScreenSize==(ScreenSize_t)ss480x234) { // e.g. Messada 2440
+#if USEIBOX
     propGetFontSettingsFromString(TEXT("32,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
+#endif
     propGetFontSettingsFromString(TEXT("12,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
 #if USEIBOX
     propGetFontSettingsFromString(TEXT("28,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont);
@@ -2361,7 +2375,9 @@ void InitialiseFontsHardCoded(RECT rc,
             break;
     } // special geometry cases for 31x
 #else
+	#if USEIBOX
     propGetFontSettingsFromString(TEXT("56,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
+	#endif
     propGetFontSettingsFromString(TEXT("20,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
 #endif
 
@@ -2409,7 +2425,9 @@ void InitialiseFontsHardCoded(RECT rc,
             break;
     } 
 #else
+	#if USEIBOX
             propGetFontSettingsFromString(TEXT("28,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
+	#endif
             propGetFontSettingsFromString(TEXT("10,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
 #endif
 
@@ -2426,7 +2444,9 @@ void InitialiseFontsHardCoded(RECT rc,
 
   }
   else if (ScreenSize==(ScreenSize_t)ss640x480) { // real VGA, not fake VGA
+	#if USEIBOX
     propGetFontSettingsFromString(TEXT("54,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // infobox values
+	#endif
     propGetFontSettingsFromString(TEXT("19,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);  // infobox titles
 #if USEIBOX
     propGetFontSettingsFromString(TEXT("40,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont); // teamcode?
@@ -2440,7 +2460,9 @@ void InitialiseFontsHardCoded(RECT rc,
 										// and all messages and menus
   }
   else if (ScreenSize==(ScreenSize_t)ss896x672) { // real VGA, not fake VGA
+	#if USEIBOX
     propGetFontSettingsFromString(TEXT("75,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // infobox values
+	#endif
     propGetFontSettingsFromString(TEXT("25,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);  // infobox titles
 #if USEIBOX
     propGetFontSettingsFromString(TEXT("56,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont); // teamcode?
@@ -2453,7 +2475,9 @@ void InitialiseFontsHardCoded(RECT rc,
 										// and all messages and menus
   }
   else if (ScreenSize==(ScreenSize_t)ss320x240) { // also applies for fake VGA where all values are doubled stretched
+	#if USEIBOX
     propGetFontSettingsFromString(TEXT("26,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
+	#endif
     propGetFontSettingsFromString(TEXT("12,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
 #if USEIBOX
     propGetFontSettingsFromString(TEXT("21,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont);
@@ -2465,7 +2489,9 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
   }
   else if (ScreenSize==(ScreenSize_t)ss240x320) { // also applies for fake VGA where all values are doubled stretched
+	#if USEIBOX
     propGetFontSettingsFromString(TEXT("24,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
+	#endif
     propGetFontSettingsFromString(TEXT("12,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
 #if USEIBOX
     propGetFontSettingsFromString(TEXT("21,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont);
@@ -2477,7 +2503,9 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("16,0,0,0,500,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont);
   }
   else if (ScreenSize==(ScreenSize_t)ss272x480) { 
+	#if USEIBOX
     propGetFontSettingsFromString(TEXT("24,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardInfoWindowLogFont);
+	#endif
     propGetFontSettingsFromString(TEXT("12,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
 #if USEIBOX
     propGetFontSettingsFromString(TEXT("21,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont);
@@ -2489,7 +2517,9 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("18,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
   }
   else if (ScreenSize==(ScreenSize_t)ss480x640) { // real VGA, not fake VGA
+	#if USEIBOX
     propGetFontSettingsFromString(TEXT("48,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // infobox values
+	#endif
     propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);  // infobox titles
 #if USEIBOX
     propGetFontSettingsFromString(TEXT("40,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont); // teamcode?
@@ -2502,7 +2532,9 @@ void InitialiseFontsHardCoded(RECT rc,
 										// and all messages and menus
   }
   else if (ScreenSize==(ScreenSize_t)ss480x800) { // real VGA, not fake VGA
+	#if USEIBOX
     propGetFontSettingsFromString(TEXT("48,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // infobox values
+	#endif
     propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);  // infobox titles
 #if USEIBOX
     propGetFontSettingsFromString(TEXT("40,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont); // teamcode?
@@ -2522,7 +2554,9 @@ void InitialiseFontsHardCoded(RECT rc,
 
 #if USEAUTOFONTS
 void InitialiseFontsAuto(RECT rc,
+	#if USEIBOX
                         LOGFONT * ptrautoInfoWindowLogFont,
+	#endif
                         LOGFONT * ptrautoTitleWindowLogFont,
                         LOGFONT * ptrautoMapWindowLogFont,
 #if USEIBOX
@@ -2538,7 +2572,9 @@ void InitialiseFontsAuto(RECT rc,
   int fontsz2 = (rc.right - rc.left );
 
 
+	#if USEIBOX
   memset ((char *)ptrautoInfoWindowLogFont, 0, sizeof (LOGFONT));
+	#endif
   memset ((char *)ptrautoTitleWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)ptrautoMapWindowLogFont, 0, sizeof (LOGFONT));
 #if USEIBOX
@@ -2607,7 +2643,9 @@ void InitialiseFontsAuto(RECT rc,
   iFontHeight++;
   logfont.lfHeight = iFontHeight;
 
+	#if USEIBOX
  memcpy ((void *)ptrautoInfoWindowLogFont, &logfont, sizeof (LOGFONT));
+	#endif
 
 
   // next font..
@@ -2704,8 +2742,9 @@ void InitialiseFontsAuto(RECT rc,
 void InitialiseFonts(RECT rc)
 { //this routine must be called only at start/restart b/c there are many pointers to these fonts
 
- 
+#if USEIBOX 
   DeleteObject(InfoWindowFont);  
+#endif
   DeleteObject(TitleWindowFont);
   DeleteObject(MapWindowFont);
 #if USEIBOX
@@ -2718,7 +2757,9 @@ void InitialiseFonts(RECT rc)
 
   #if USEAUTOFONTS
 
+#if USEIBOX
   memset ((char *)&autoInfoWindowLogFont, 0, sizeof (LOGFONT));
+#endif
   memset ((char *)&autoTitleWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)&autoMapWindowLogFont, 0, sizeof (LOGFONT));
 #if USEIBOX
@@ -2732,7 +2773,9 @@ void InitialiseFonts(RECT rc)
 
   // we dont need fonts auto because LK has embedded fonts tuned
   InitialiseFontsAuto(rc, 
+#if USEIBOX
                         &autoInfoWindowLogFont,
+#endif
                         &autoTitleWindowLogFont,
                         &autoMapWindowLogFont,
 #if USEIBOX
@@ -2744,7 +2787,9 @@ void InitialiseFonts(RECT rc)
                         &autoStatisticsLogFont);
   #endif // USEAUTOFONTS
 
+#if USEIBOX
   LOGFONT hardInfoWindowLogFont;
+#endif
   LOGFONT hardTitleWindowLogFont;
   LOGFONT hardMapWindowLogFont;
 #if USEIBOX
@@ -2755,7 +2800,9 @@ void InitialiseFonts(RECT rc)
   LOGFONT hardMapLabelLogFont;
   LOGFONT hardStatisticsLogFont;
 
+#if USEIBOX
   memset ((char *)&hardInfoWindowLogFont, 0, sizeof (LOGFONT));
+#endif
   memset ((char *)&hardTitleWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)&hardMapWindowLogFont, 0, sizeof (LOGFONT));
 #if USEIBOX
@@ -2767,7 +2814,9 @@ void InitialiseFonts(RECT rc)
   memset ((char *)&hardStatisticsLogFont, 0, sizeof (LOGFONT));
 
   InitialiseFontsHardCoded(rc,
+#if USEIBOX
                         &hardInfoWindowLogFont,
+#endif
                         &hardTitleWindowLogFont,
                         &hardMapWindowLogFont,
 #if USEIBOX
@@ -2782,8 +2831,10 @@ void InitialiseFonts(RECT rc)
   // Merge the "hard" into the "auto" if one exists 
   //
 
+#if USEIBOX
   if (!IsNullLogFont(hardInfoWindowLogFont))
     autoInfoWindowLogFont = hardInfoWindowLogFont;
+#endif
 
   if (!IsNullLogFont(hardTitleWindowLogFont))
     autoTitleWindowLogFont = hardTitleWindowLogFont;
@@ -2809,10 +2860,12 @@ void InitialiseFonts(RECT rc)
     autoStatisticsLogFont = hardStatisticsLogFont;
 
 
+#if USEIBOX
   InitializeOneFont (&InfoWindowFont, 
                         szRegistryFontInfoWindowFont, 
                         autoInfoWindowLogFont,
                         NULL);
+#endif
 
   InitializeOneFont (&TitleWindowFont, 
                         szRegistryFontTitleWindowFont, 
@@ -3230,7 +3283,9 @@ void Shutdown(void) {
   DeleteObject(hBrushUnselected);
   DeleteObject(hBrushButton);
   
+#if USEIBOX
   DeleteObject(InfoWindowFont);
+#endif
   DeleteObject(TitleWindowFont);
   DeleteObject(CDIWindowFont);
   DeleteObject(MapLabelFont);

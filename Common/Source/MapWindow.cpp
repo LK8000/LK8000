@@ -291,7 +291,9 @@ extern void ShowMenu();
 extern HFONT  TitleWindowFont;
 extern HFONT  MapWindowFont;
 extern HFONT  MapWindowBoldFont;
+#if USEIBOX
 extern HFONT  InfoWindowFont;
+#endif
 extern HFONT  CDIWindowFont;
 extern HFONT  StatisticsFont;
 extern HFONT  MapLabelFont; // VENTA6

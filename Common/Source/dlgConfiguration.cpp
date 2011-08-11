@@ -37,7 +37,9 @@
 
 #include "utils/heapcheck.h"
 
+#if USEIBOX
 static HFONT TempInfoWindowFont;
+#endif
 static HFONT TempTitleWindowFont;
 static HFONT TempMapWindowFont;
 #if USEIBOX
@@ -49,7 +51,9 @@ static HFONT TempMapLabelFont;
 static HFONT TempStatisticsFont;
 static HFONT TempUseCustomFontsFont;
 
+#if USEIBOX
 extern LOGFONT autoInfoWindowLogFont;
+#endif
 extern LOGFONT autoTitleWindowLogFont;
 extern LOGFONT autoMapWindowLogFont;
 #if USEIBOX
@@ -563,11 +567,12 @@ static void ResetFonts(bool bUseCustom) {
                         NULL);
 
 
-
+#if USEIBOX
   InitializeOneFont (&TempInfoWindowFont, 
                         szRegistryFontInfoWindowFont, 
                         autoInfoWindowLogFont,
                         NULL);
+#endif
 
   InitializeOneFont (&TempTitleWindowFont, 
                         szRegistryFontTitleWindowFont, 
@@ -611,10 +616,12 @@ static void ResetFonts(bool bUseCustom) {
 
 static void ShowFontEditButtons(bool bVisible) {
   WndProperty * wp;
+#if USEIBOX
   wp = (WndProperty*)wf->FindByName(TEXT("cmdInfoWindowFont"));
   if (wp) {
     wp->SetVisible(bVisible);
   }
+#endif
   wp = (WndProperty*)wf->FindByName(TEXT("cmdTitleWindowFont"));
   if (wp) {
     wp->SetVisible(bVisible);
@@ -665,12 +672,14 @@ static void RefreshFonts(void) {
   }
 
 // now set SampleTexts on the Fonts frame
+#if USEIBOX
   wp = (WndProperty*)wf->FindByName(TEXT("prpInfoWindowFont"));
   if (wp) {
     wp->SetFont(TempInfoWindowFont);
     wp->SetVisible(false);
     wp->SetVisible(true);
   }
+#endif
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTitleWindowFont"));
   if (wp) {
@@ -765,9 +774,11 @@ static void GetFontDescription(TCHAR Description[], TCHAR * prpName, int iMaxLen
   }
 }
 
+#define MAX_EDITFONT_DESC_LEN 100
+
+#if USEIBOX
 static void OnEditInfoWindowFontClicked(WindowControl *Sender) {
   // updates registry for font info and updates LogFont values
-#define MAX_EDITFONT_DESC_LEN 100
   TCHAR FontDesc[MAX_EDITFONT_DESC_LEN];
   GetFontDescription(FontDesc, TEXT("prpInfoWindowFont"), MAX_EDITFONT_DESC_LEN);
   if (dlgFontEditShowModal(FontDesc,
@@ -777,6 +788,7 @@ static void OnEditInfoWindowFontClicked(WindowControl *Sender) {
     RefreshFonts(); 
   }
 }
+#endif
 
 static void OnEditTitleWindowFontClicked(WindowControl *Sender) {
   TCHAR FontDesc[MAX_EDITFONT_DESC_LEN];
@@ -1340,7 +1352,9 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnDeviceBData),
 
   DeclareCallBackEntry(OnUseCustomFontData),
+#if USEIBOX
   DeclareCallBackEntry(OnEditInfoWindowFontClicked),
+#endif
   DeclareCallBackEntry(OnEditTitleWindowFontClicked),
   DeclareCallBackEntry(OnEditMapWindowFontClicked),
 #if USEIBOX
@@ -4694,7 +4708,9 @@ void dlgConfigurationShowModal(void){
   }
   DeleteObject(TempUseCustomFontsFont);
 
+#if USEIBOX
   DeleteObject (TempInfoWindowFont);
+#endif
   DeleteObject (TempTitleWindowFont);
   DeleteObject (TempMapWindowFont);
 #if USEIBOX

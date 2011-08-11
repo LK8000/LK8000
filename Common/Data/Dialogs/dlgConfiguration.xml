@@ -448,10 +448,6 @@
 </WndProperty>
 <WndButton   Name="cmdTitleWindowFont" Caption="_@M252_" X=180 Y=25 Width=50  Height=22 Font=2 OnClickNotify="OnEditTitleWindowFontClicked">
 </WndButton> 
-<WndProperty Name="prpInfoWindowFont" Caption="_@M353_" X=2 Y=49  width=180 Height=22 Captionwidth=180 Font=2 ReadOnly=1>
-</WndProperty>
-<WndButton   Name="cmdInfoWindowFont" Caption="_@M252_" X=180 Y=49 Width=50  Height=22 Font=2 OnClickNotify="OnEditInfoWindowFontClicked">
-</WndButton> 
 <WndProperty Name="prpMapWindowFont" Caption="_@M424_" X=2 Y=73  width=180 Height=22 Captionwidth=180 Font=2 ReadOnly=1>
 </WndProperty>
 <WndButton   Name="cmdMapWindowFont" Caption="_@M252_" X=180 Y=73 Width=50  Height=22 Font=2 OnClickNotify="OnEditMapWindowFontClicked">

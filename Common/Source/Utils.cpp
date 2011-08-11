@@ -380,7 +380,9 @@ const TCHAR szRegistryDisableAutoLogger[] = TEXT("DisableAutoLogger");
 const TCHAR szRegistryMapFile[]=	 TEXT("MapFile"); // pL
 const TCHAR szRegistryBallastSecsToEmpty[]=	 TEXT("BallastSecsToEmpty"); 
 const TCHAR szRegistryUseCustomFonts[]=	 TEXT("UseCustomFonts"); 
+#if USEIBOX
 const TCHAR szRegistryFontInfoWindowFont[]=	 TEXT("InfoWindowFont"); 
+#endif
 const TCHAR szRegistryFontTitleWindowFont[]=	 TEXT("TitleWindowFont"); 
 const TCHAR szRegistryFontMapWindowFont[]=	 TEXT("MapWindowFont"); 
 #if USEIBOX
