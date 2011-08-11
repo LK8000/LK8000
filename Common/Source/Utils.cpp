@@ -2178,7 +2178,10 @@ bool ReadWinPilotPolar(void) {
      	   int currentFlapsPos=1;
      	   for (i=2; i <= flapsCount*2; i=i+2) {
 	        PExtractParameter(TempString, ctemp, i);
-	        GlidePolar::FlapsPos[currentFlapsPos] = StrToDouble(ctemp,NULL);	
+	        GlidePolar::FlapsPos[currentFlapsPos] = StrToDouble(ctemp,NULL);				
+			if (GlidePolar::FlapsPos[currentFlapsPos] > 0) {
+			  GlidePolar::FlapsPos[currentFlapsPos] = GlidePolar::FlapsPos[currentFlapsPos]/TOKPH;
+			}
 	        PExtractParameter(TempString, ctemp, i+1);
 		ctemp[MAXFLAPSNAME]='\0';
 		if (ctemp[_tcslen(ctemp)-1]=='\r' || ctemp[_tcslen(ctemp)-1]=='\n')
@@ -2188,7 +2191,7 @@ bool ReadWinPilotPolar(void) {
 	        currentFlapsPos++;
        	   }
 	   wcscpy(GlidePolar::FlapsName[0],GlidePolar::FlapsName[1]);
-           GlidePolar::FlapsPos[currentFlapsPos] = SPEEDMODIFY*MAXSPEED;
+           GlidePolar::FlapsPos[currentFlapsPos] = MAXSPEED;
            wcscpy(GlidePolar::FlapsName[currentFlapsPos],ctemp);
            currentFlapsPos++;
            GlidePolar::FlapsPosCount = currentFlapsPos; 
