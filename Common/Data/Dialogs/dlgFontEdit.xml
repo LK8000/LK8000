@@ -15,9 +15,6 @@
 <WndProperty Name="prpFontPitchAndFamily" Caption="_@M526_"     X=2 Y=-1  Width=235 Height=22 CaptionWidth=78 Font=2 Help="Variable or fixed pitch">
 <DataField name="" DataType="enum"  OnDataAccess="OnFontPitchAndFamilyData"/>
 </WndProperty>
-<WndProperty Name="prpFontTrueType" Caption="_@M743_"     X=2 Y=-1  Width=235 Height=22 CaptionWidth=78 Font=2 Help="Use True type font">
-<DataField name="" DataType="boolean"  OnDataAccess="OnFontTrueTypeData"/>
-</WndProperty>
 <WndProperty Name="prpFontSample" Caption="Abcd 123"  X=2 Y=-1  Width=235 Height=40 CaptionWidth=235 Font=2 readonly=1 Help="">
 </WndProperty>
 <WndButton   Caption="Ok"    X=2 Y=185 Width=70  Height=22 Font=2 OnClickNotify="OnCloseClicked">

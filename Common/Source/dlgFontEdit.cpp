@@ -92,6 +92,7 @@ static void RedrawSampleFont(void)
     NewLogFont.lfPitchAndFamily=wp->GetDataField()->GetAsInteger();
   }
 
+/* UNUSED
   //KT
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontTrueType"));
   if(wp) {
@@ -114,6 +115,7 @@ static void RedrawSampleFont(void)
       NewLogFont.lfQuality = NONANTIALIASED_QUALITY;
     }
   }
+*/
   
   DeleteObject(NewFont);
 
@@ -219,6 +221,7 @@ static void OnFontItalicData(DataField *Sender, DataField::DataAccessKind_t Mode
   }
 }
 
+/* REMOVE
 static void OnFontTrueTypeData(DataField *Sender, DataField::DataAccessKind_t Mode){
   switch(Mode){
     case DataField::daGet:
@@ -237,6 +240,7 @@ static void OnFontTrueTypeData(DataField *Sender, DataField::DataAccessKind_t Mo
     break;
   }
 }
+*/
 static void OnFontPitchAndFamilyData(DataField *Sender, DataField::DataAccessKind_t Mode){
   switch(Mode){
     case DataField::daGet:
@@ -261,7 +265,7 @@ static void OnFontPitchAndFamilyData(DataField *Sender, DataField::DataAccessKin
 
 static CallBackTableEntry_t CallBackTable[]={
 
-  DeclareCallBackEntry(OnFontTrueTypeData),
+//  DeclareCallBackEntry(OnFontTrueTypeData), REMOVE
   DeclareCallBackEntry(OnFontPitchAndFamilyData),
   DeclareCallBackEntry(OnFontItalicData),
   DeclareCallBackEntry(OnFontWeightData),
@@ -409,6 +413,7 @@ void LoadGUI()
     wp->RefreshDisplay();
   }
 
+/* UNUSED REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontTrueType"));
   if (wp) {
     DataFieldBoolean* dfb;
@@ -419,6 +424,9 @@ void LoadGUI()
     }
     wp->RefreshDisplay();
   }
+*/
+  // This is useless, because we ApplyClearType later on. We always use a general common quality.
+  NewLogFont.lfQuality= GetFontRenderer();
 
   IsInitialized=true;
 
