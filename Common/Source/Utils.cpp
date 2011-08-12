@@ -409,38 +409,6 @@ void StoreType(int Index,int infoType)
 }
 
 
-
-
-// This function checks to see if Final Glide mode infoboxes have been
-// initialised.  If all are zero, then the current configuration was
-// using XCSoarV3 infoboxes, so copy settings from cruise mode.
-void CheckInfoTypes() {
-  int i;
-  char iszero=0;
-  for (i=0; i<MAXINFOWINDOWS; i++) {
-    iszero |= (InfoType[i] >> 16) & 0xff;
-  }
-  if (iszero==0) {
-    for (i=0; i<MAXINFOWINDOWS; i++) {
-      InfoType[i] += (InfoType[i] & 0xff)<<16;
-      StoreType(i,InfoType[i]);
-    }
-  }
-}
-
-
-void ResetInfoBoxes(void) {
-  InfoType[0] = 921102;
-  InfoType[1] = 725525;
-  InfoType[2] = 262144;
-  InfoType[3] = 74518;
-  InfoType[4] = 657930;
-  InfoType[5] = 2236963;
-  InfoType[6] = 394758;
-  InfoType[7] = 1644825;
-  InfoType[8] = 1644825;
-}
-
 void SetRegistryStringIfAbsent(const TCHAR* name,
 			       const TCHAR* value) {
 
@@ -546,9 +514,6 @@ void ReadRegistrySettings(void)
       GetFromRegistry(szRegistryDisplayType[i],&Temp);
       InfoType[i] = Temp;
     }
-
-  // check against V3 infotypes
-  CheckInfoTypes();
 
   Temp=0;
   GetFromRegistry(szRegistryDisplayUpValue,&Temp);

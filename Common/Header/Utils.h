@@ -372,9 +372,6 @@ void *bsearch(void *key, void *base0, size_t nmemb, size_t size, int (*compar)(c
 TCHAR *strtok_r(TCHAR *s, TCHAR *delim, TCHAR **lasts);
 TCHAR *strsep_r(TCHAR *s, TCHAR *delim, TCHAR **lasts);
 
-
-void ResetInfoBoxes(void);
-
 void SaveRegistryToFile(const TCHAR* szFile); 
 void LoadRegistryFromFile(const TCHAR* szFile); 
 
