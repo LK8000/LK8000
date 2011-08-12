@@ -148,9 +148,6 @@
 <WndProperty Name="prpInfoBoxCruise7" Caption="8"     X=2 Y=-1  Width=-246 Height=22 CaptionWidth=20 Font=2 OnHelp="OnInfoBoxHelp">
 <DataField name="" DataType="enum"  Min=0 Max=100 Step=1/>
 </WndProperty>
-<WndProperty Name="prpInfoBoxCruise8" Caption="9"     X=2 Y=-1  Width=-246 Height=22 CaptionWidth=20 Font=2 OnHelp="OnInfoBoxHelp">
-<DataField name="" DataType="enum"  Min=0 Max=100 Step=1/>
-</WndProperty>
 </WndFrame>
 <WndFrame Name="frmInfoBoxCircling" X=70 Y=0 Width=-246 Height=222 Font=2>
 
@@ -176,9 +173,6 @@
 <DataField name="" DataType="enum"  Min=0 Max=100 Step=1/>
 </WndProperty>
 <WndProperty Name="prpInfoBoxCircling7" Caption="8"     X=2 Y=-1  Width=-246 Height=22 CaptionWidth=20 Font=2 OnHelp="OnInfoBoxHelp">
-<DataField name="" DataType="enum"  Min=0 Max=100 Step=1/>
-</WndProperty>
-<WndProperty Name="prpInfoBoxCircling8" Caption="9"     X=2 Y=-1  Width=-246 Height=22 CaptionWidth=20 Font=2 OnHelp="OnInfoBoxHelp">
 <DataField name="" DataType="enum"  Min=0 Max=100 Step=1/>
 </WndProperty>
 </WndFrame>
@@ -208,9 +202,6 @@
 <WndProperty Name="prpInfoBoxFinalGlide7" Caption="8"     X=2 Y=-1  Width=-246 Height=22 CaptionWidth=20 Font=2 OnHelp="OnInfoBoxHelp">
 <DataField name="" DataType="enum"  Min=0 Max=100 Step=1/>
 </WndProperty>
-<WndProperty Name="prpInfoBoxFinalGlide8" Caption="9"     X=2 Y=-1  Width=-246 Height=22 CaptionWidth=20 Font=2 OnHelp="OnInfoBoxHelp">
-<DataField name="" DataType="enum"  Min=0 Max=100 Step=1/>
-</WndProperty>
 </WndFrame>
 <WndFrame Name="frmInfoBoxAuxiliary" X=70 Y=0 Width=-246 Height=222 Font=2>
 
@@ -236,9 +227,6 @@
 <DataField name="" DataType="enum"  Min=0 Max=100 Step=1/>
 </WndProperty>
 <WndProperty Name="prpInfoBoxAux7" Caption="8"     X=2 Y=-1  Width=-246 Height=22 CaptionWidth=20 Font=2 OnHelp="OnInfoBoxHelp">
-<DataField name="" DataType="enum"  Min=0 Max=100 Step=1/>
-</WndProperty>
-<WndProperty Name="prpInfoBoxAux8" Caption="9"     X=2 Y=-1  Width=-246 Height=22 CaptionWidth=20 Font=2 OnHelp="OnInfoBoxHelp">
 <DataField name="" DataType="enum"  Min=0 Max=100 Step=1/>
 </WndProperty>
 </WndFrame>

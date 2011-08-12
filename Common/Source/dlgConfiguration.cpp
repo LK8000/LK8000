@@ -1075,7 +1075,7 @@ static void OnCopy(WindowControl *Sender) {
     return;
   }
 
-  for (int item=0; item<9; item++) {
+  for (int item=0; item<8; item++) {
     InfoBoxPropName(name, item, mode);
     WndProperty *wp;
     wp = (WndProperty*)wf->FindByName(name);
@@ -1100,7 +1100,7 @@ static void OnPaste(WindowControl *Sender) {
 		 gettext(TEXT("_@M354_")),
 		 MB_YESNO|MB_ICONQUESTION) == IDYES) {
 
-    for (int item=0; item<9; item++) {
+    for (int item=0; item<8; item++) {
       InfoBoxPropName(name, item, mode);
       WndProperty *wp;
       wp = (WndProperty*)wf->FindByName(name);
@@ -3357,7 +3357,7 @@ static void setVariables(void) {
   }
 
   for (i=0; i<4; i++) {
-    for (int j=0; j<9; j++) {
+    for (int j=0; j<8; j++) {
       SetInfoBoxSelector(j, i);
     }
   }
@@ -5001,7 +5001,7 @@ void dlgConfigurationShowModal(void){
 
   int i,j;
   for (i=0; i<4; i++) {
-    for (j=0; j<9; j++) {
+    for (j=0; j<8; j++) {
       GetInfoBoxSelector(j, i);
     }
   }
