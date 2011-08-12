@@ -1902,19 +1902,40 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
   PAINTSTRUCT ps;            // structure for paint info
   HDC hDC;                   // handle to graphics device context,
 
+  HDC Memhdc;
+  HBITMAP Membitmap;
+  HGDIOBJ Oldbitmap;
+  HWND hWnd;
+  RECT Client_Rect;
+  int win_width;
+  int win_height;
+
   switch (uMsg){
-
-
     case WM_ERASEBKGND:
       // we don't need one, we just paint over the top
     return TRUE;
 
     case WM_PAINT:
-      hDC = BeginPaint(GetHandle(), &ps);
-      Paint(hDC);
+    	hWnd = GetHandle();
 
-      DeleteDC(hDC);
-      EndPaint(GetHandle(), &ps);
+    	hDC = BeginPaint(hWnd, &ps);
+
+		GetClientRect(hWnd,&Client_Rect);
+		win_width = Client_Rect.right - Client_Rect.left;
+		win_height = Client_Rect.bottom + Client_Rect.left;
+		Memhdc = CreateCompatibleDC(hDC);
+		Membitmap = CreateCompatibleBitmap(hDC, win_width, win_height);
+		Oldbitmap = SelectObject(Memhdc, Membitmap);
+
+   	  	Paint(Memhdc);
+
+   	  	BitBlt(hDC, 0, 0, win_width, win_height, Memhdc, 0, 0, SRCCOPY);
+		SelectObject(Memhdc, Oldbitmap);
+   	  	DeleteObject(Membitmap);
+   	 	DeleteDC    (Memhdc);
+
+		DeleteDC(hDC);
+		EndPaint(hWnd, &ps);
     return(0);
 
     case WM_WINDOWPOSCHANGED:
