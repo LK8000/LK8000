@@ -3788,15 +3788,15 @@ bool CustomKeyHandler(const int key) {
 		#endif
 		InputEvents::eventInvertColor(NULL);
 		return true;
+#if USEIBOX
 	// Only used for aircraft icon
 	case ckToggleInfobox:
 		#ifndef DISABLEAUDIO
 		if (EnableSoundModes) LKSound(_T("LK_BELL.WAV"));
 		#endif
-#if USEIBOX
 		MapWindow::RequestToggleFullScreen();
-#endif
 		return true;
+#endif
 	case ckTimeGates:
 		#ifndef DISABLEAUDIO
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
@@ -3890,6 +3890,12 @@ bool CustomKeyHandler(const int key) {
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 		#endif
 		PGOptimizeRoute=!PGOptimizeRoute;
+		return true;
+	case ckLockScreen:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		InputEvents::eventService(_T("LOCKMODE"));
 		return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));

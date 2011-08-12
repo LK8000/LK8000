@@ -1611,4 +1611,7 @@ _@M1685_ "Both Final+Average"
 _@M1686_ "Optimized route "
 _@M1687_ "Toggle Optimize Route"
 
+# Customkey name
+_@M1688_ "Screen Lock"
+
 # Note for developers: LKLanguage MAX_MESSAGE  1700: 0-1699 !

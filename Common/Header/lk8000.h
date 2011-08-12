@@ -425,8 +425,11 @@ typedef enum{
 	ckZoomInMore,
 	ckZoomOutMore,
 	ckOptimizeRoute,
+	ckLockScreen,
+#if USEIBOX
 	// ToggleInfobox MUST be the last one, used only for Aircraft Icons..
 	ckToggleInfobox,
+#endif
 } CustomKeyMode_t;
 
 typedef enum{
