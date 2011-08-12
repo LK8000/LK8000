@@ -23,15 +23,13 @@ extern void InitializeOneFont (HFONT * theFont,
 #if USEIBOX
 extern HFONT InfoWindowFont;
 #endif
-extern HFONT TitleWindowFont;
 extern HFONT MapWindowFont;
 #if USEIBOX
 extern HFONT TitleSmallWindowFont;
 #endif
-extern HFONT MapWindowBoldFont;
-extern HFONT CDIWindowFont; // New
+//extern HFONT MapWindowBoldFont; REMOVE
 extern HFONT MapLabelFont;
-extern HFONT StatisticsFont;
+// extern HFONT StatisticsFont; REMOVE
 
 static WndForm *wf=NULL;
 static LOGFONT OriginalLogFont;

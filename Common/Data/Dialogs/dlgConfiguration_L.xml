@@ -433,29 +433,13 @@
 <WndProperty Name="prpUseCustomFonts" Caption="_@M208_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H192_">
 <DataField name="" DataType="boolean" Min=0 Max=50 Step=1  OnDataAccess="OnUseCustomFontData"/>
 </WndProperty>
-<WndProperty Name="prpTitleWindowFont" Caption="_@M351_" X=2 Y=27  Width=180 Height=22 CaptionWidth=180 Font=2 ReadOnly=1>
+<WndProperty Name="prpMapWindowFont" Caption="_@M424_" X=2 Y=-997  Width=180 Height=22 CaptionWidth=180 Font=2 ReadOnly=1>
 </WndProperty>
-<WndButton   Name="cmdTitleWindowFont" Caption="_@M252_"    X=180 Y=27 Width=50  Height=22 Font=2 OnClickNotify="OnEditTitleWindowFontClicked">
+<WndButton   Name="cmdMapWindowFont" Caption="_@M252_" X=180 Y=-999 Width=50  Height=22 Font=2 OnClickNotify="OnEditMapWindowFontClicked">
 </WndButton> 
-<WndProperty Name="prpMapWindowFont" Caption="_@M424_" X=2 Y=77  Width=180 Height=22 CaptionWidth=180 Font=2 ReadOnly=1>
+<WndProperty Name="prpMapLabelFont" Caption="_@M734_" X=2 Y=-997  Width=180 Height=22 CaptionWidth=180 Font=2 ReadOnly=1>
 </WndProperty>
-<WndButton   Name="cmdMapWindowFont" Caption="_@M252_"    X=180 Y=77 Width=50  Height=22 Font=2 OnClickNotify="OnEditMapWindowFontClicked">
-</WndButton> 
-<WndProperty Name="prpMapLabelFont" Caption="_@M734_" X=2 Y=102  Width=180 Height=22 CaptionWidth=180 Font=2 ReadOnly=1>
-</WndProperty>
-<WndButton   Name="cmdMapLabelFont" Caption="_@M252_"    X=180 Y=102 Width=50  Height=22 Font=2 OnClickNotify="OnEditMapLabelFontClicked">
-</WndButton> 
-<WndProperty Name="prpMapWindowBoldFont" Caption="_@M235_" X=2 Y=127  Width=180 Height=22 CaptionWidth=180 Font=2 ReadOnly=1>
-</WndProperty>
-<WndButton   Name="cmdMapWindowBoldFont" Caption="_@M252_"    X=180 Y=127 Width=50  Height=22 Font=2 OnClickNotify="OnEditMapWindowBoldFontClicked">
-</WndButton> 
-<WndProperty Name="prpStatisticsFont" Caption="_@M658_" X=2 Y=152  Width=180 Height=22 CaptionWidth=180 Font=2 ReadOnly=1>
-</WndProperty>
-<WndButton Name="cmdStatisticsFont"   Caption="_@M252_"    X=180 Y=152 Width=50  Height=22 Font=2 OnClickNotify="OnEditStatisticsFontClicked">
-</WndButton> 
-<WndProperty Name="prpCDIWindowFont" Caption="_@M321_" X=2 Y=177  Width=180 Height=22 CaptionWidth=180 Font=2 ReadOnly=1>
-</WndProperty>
-<WndButton Name="cmdCDIWindowFont" Caption="_@M252_"    X=180 Y=177 Width=50  Height=22 Font=2 OnClickNotify="OnEditCDIWindowFontClicked">
+<WndButton   Name="cmdMapLabelFont" Caption="_@M252_" X=180 Y=-999 Width=50  Height=22 Font=2 OnClickNotify="OnEditMapLabelFontClicked">
 </WndButton> 
 </WndFrame>
 <WndFrame Name="frmVarioAppearance" X=0 Y=0 Width=235 Height=222 Font=2>
