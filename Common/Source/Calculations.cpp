@@ -3844,8 +3844,18 @@ void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   static bool first_mc = true;
 
   if ( AutoMcMode==amcEquivalent ) {
-	if (Calculated->EqMc>=0) 
-		MACCREADY = LowPassFilter(MACCREADY,Calculated->EqMc,0.8);
+	if ( CALCULATED_INFO.Circling != TRUE && CALCULATED_INFO.OnGround != TRUE) {
+		if (Calculated->EqMc>=0) {
+			// MACCREADY = LowPassFilter(MACCREADY,Calculated->EqMc,0.8); 
+			MACCREADY = Calculated->EqMc;
+		} else {
+			// -1.0 is used as an invalid flag. Normally flying at -1 MC means almost flying
+			// at stall speed, which is pretty unusual. Maybe in wave conditions?
+			if (Calculated->EqMc >-1) {
+				MACCREADY=Calculated->EqMc*-1;
+			}
+		}
+	}
 	UnlockTaskData();
 	return;
   }
