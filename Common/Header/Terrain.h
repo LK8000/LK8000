@@ -14,8 +14,9 @@ typedef struct _COLORRAMP
 extern short TerrainContrast;
 extern short TerrainBrightness;
 extern short TerrainRamp;
+#if USETOPOMARKS
 extern bool reset_marks;
-
+#endif
 void ColorRampLookup(short h, BYTE &r, BYTE &g, BYTE &b,
 		     const COLORRAMP* ramp_colors, 
                      const int numramp,

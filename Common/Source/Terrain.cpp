@@ -36,7 +36,9 @@ TopologyWriter *topo_marks = NULL;
 
 #define MINRANGE 0.2
 
+#if USETOPOMARKS
 bool reset_marks = false;
+#endif
 
 BYTE tshadow_r, tshadow_g, tshadow_b, tshadow_h;
 BYTE thighlight_r, thighlight_g, thighlight_b, thighlight_h;

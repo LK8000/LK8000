@@ -851,7 +851,9 @@ void InputEvents::processGo(int eventid) {
 // TODO code: Keep marker text for use in log file etc.
 void InputEvents::eventMarkLocation(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("reset")) == 0) {
+	#if USETOPOMARKS
 	reset_marks = true;
+	#endif
   } else {
 	#ifndef DISABLEAUDIO
 	if (EnableSoundModes) LKSound(TEXT("DROPMARKER.WAV"));
