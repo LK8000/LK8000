@@ -80,8 +80,9 @@ class Topology {
  protected:
 
   void flushCache();
-
+#if USETOPOMARKS
   bool append;
+#endif
   bool in_scale;
   HPEN hPen;
   HBRUSH hbBrush;
@@ -98,7 +99,7 @@ class Topology {
  
 };
 
-
+#if USETOPOMARKS
 class TopologyWriter: public Topology {
  public:
   TopologyWriter(const TCHAR *shpname, COLORREF thecolor);
@@ -109,7 +110,7 @@ class TopologyWriter: public Topology {
   void CreateFiles(void);
   void DeleteFiles(void);
 };
-
+#endif
 
 
 class TopologyLabel: public Topology {

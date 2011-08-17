@@ -10,6 +10,7 @@
 //
 #include "StdAfx.h"
 #include "Terrain.h"
+#include "options.h"
 #include "RasterTerrain.h"
 #include "MapWindow.h"
 #include "Topology.h"
@@ -19,7 +20,6 @@
 #include "Utils.h"
 #include "InfoBoxLayout.h"
 #include "Sizes.h"
-#include "options.h"
 
 #include "utils/heapcheck.h"
 
@@ -30,7 +30,9 @@ unsigned short minalt=9999;
 
 Topology* TopoStore[MAXTOPOLOGY];
 
+#if USETOPOMARKS
 TopologyWriter *topo_marks = NULL;
+#endif
 
 #define MINRANGE 0.2
 
@@ -94,9 +96,11 @@ void SetTopologyBounds(const RECT rcin, const bool force) {
 	TopoStore[z]->triggerUpdateCache=true;          
       }
     }
+    #if USETOPOMARKS
     if (topo_marks) {
       topo_marks->triggerUpdateCache = true;
     }
+    #endif
 
     // now update visibility of objects in the map window
     MapWindow::ScanVisibility(&bounds_active);
@@ -111,10 +115,11 @@ void SetTopologyBounds(const RECT rcin, const bool force) {
   }
 
   // ok, now update the caches
-  
+  #if USETOPOMARKS 
   if (topo_marks) {
     topo_marks->updateCache(bounds_active);
   }
+  #endif
   
   if (EnableTopology) {
     // check if any needs to have cache updates because wasnt 
@@ -143,6 +148,7 @@ void SetTopologyBounds(const RECT rcin, const bool force) {
   }
 }
 
+#if USETOPOMARKS
 // inititalise shapes for markers, not the text file surviving restarts
 void TopologyInitialiseMarks() {
 
@@ -156,7 +162,6 @@ void TopologyInitialiseMarks() {
   //  ConvertTToC(buffer, LocalPath(TEXT("xcsoar-marks")));
   // DISABLED LocalPath
   // JMW localpath does NOT work for the shapefile renderer!
-
   if (topo_marks) {
     topo_marks->DeleteFiles();
     delete topo_marks;
@@ -174,7 +179,7 @@ void TopologyInitialiseMarks() {
   }
   UnlockTerrainDataGraphics();
 }
-
+#endif
 
 void CloseTopology() {
   StartupStore(TEXT(". CloseTopology%s"),NEWLINE);
@@ -188,7 +193,7 @@ void CloseTopology() {
   UnlockTerrainDataGraphics();
 }
 
-
+#if USETOPOMARKS
 void TopologyCloseMarks() {
   StartupStore(TEXT(". CloseMarks%s"),NEWLINE);
   LockTerrainDataGraphics();
@@ -199,16 +204,18 @@ void TopologyCloseMarks() {
   }
   UnlockTerrainDataGraphics();
 }
-
+#endif
 
 void MarkLocation(const double lon, const double lat)
 {
+  #if USETOPOMARKS
   LockTerrainDataGraphics();
   if (topo_marks) {
     topo_marks->addPoint(lon, lat);
     topo_marks->triggerUpdateCache = true;
   }
   UnlockTerrainDataGraphics();
+  #endif
 
   char message[160];
 
@@ -226,6 +233,7 @@ void MarkLocation(const double lon, const double lat)
 
 }
 
+#if USETOPOMARKS
 void DrawMarks (const HDC hdc, const RECT rc)
 {
 
@@ -240,7 +248,7 @@ void DrawMarks (const HDC hdc, const RECT rc)
   UnlockTerrainDataGraphics();
 
 }
-
+#endif
 
 void DrawTopology(const HDC hdc, const RECT rc)
 {

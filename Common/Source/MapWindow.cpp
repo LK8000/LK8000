@@ -2452,8 +2452,10 @@ QuickRedraw: // 100318 speedup redraw
 	if (TrackBar) DrawHeading(hdc, Orig, rc); 
   }
 
+  #if USETOPOMARKS
   // marks on top...
   DrawMarks(hdc, rc);
+  #endif
 
   if (ISGAAIRCRAFT) DrawHSI(hdc,Orig,rc); 
 

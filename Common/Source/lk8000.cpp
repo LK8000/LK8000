@@ -2001,7 +2001,9 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   CAirspaceManager::Instance().ReadAirspaces();
   CAirspaceManager::Instance().SortAirspaces();
   OpenTopology();
+  #if USETOPOMARKS
   TopologyInitialiseMarks();
+  #endif
 
   OpenFLARMDetails();
 
@@ -3239,9 +3241,9 @@ void Shutdown(void) {
   RasterTerrain::CloseTerrain();
 
   CloseTopology();
-
+  #if USETOPOMARKS
   TopologyCloseMarks();
-
+  #endif
   CloseTerrainRenderer();
 
   // Stop COM devices

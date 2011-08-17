@@ -89,6 +89,8 @@
 
 //#define USEWEATHER		1	// we dont use rasp weather - hangarware
 //#define USEOLDASPWARNINGS	1	// we dont use old airspace warning system
+//#define USETOPOMARKS	1	// TopologyWriter for adding topo labels dynamically, previously used for markers
+				// May be sill used for custom user's topology, so let's keep it for a while.
 
 
 

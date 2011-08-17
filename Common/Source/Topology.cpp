@@ -8,8 +8,8 @@
 
 #include "StdAfx.h"
 #include <ctype.h> // needed for Wine
-#include "Topology.h"
 #include "options.h"
+#include "Topology.h"
 #include "externs.h"
 #include "wcecompat/ts_string.h"
 
@@ -47,7 +47,9 @@ void Topology::loadBitmap(const int xx) {
 // thecolor is relative to shapes, not to labels
 Topology::Topology(const TCHAR* shpname, COLORREF thecolor, bool doappend) {
 
+  #if USETOPOMARKS
   append = doappend;
+  #endif
   memset((void*)&shpfile, 0 ,sizeof(shpfile));
   shapefileopen = false;
   triggerUpdateCache = false;
@@ -164,17 +166,21 @@ void Topology::initCache()
 void Topology::Open() {
   shapefileopen = false;
 
+  #if USETOPOMARKS
   if (append) {
     if (msSHPOpenFile(&shpfile, (char*)"rb+", filename) == -1) {
       // StartupStore(_T(". Topology: Open: append failed for <%s> (this can be normal)%s"),filename,NEWLINE);
       return;
     }
   } else {
+  #endif
     if (msSHPOpenFile(&shpfile, (char*)"rb", filename) == -1) {
       StartupStore(_T("------ Topology: Open FAILED for <%s>%s"),filename,NEWLINE);
       return;
     }
+  #if USETOPOMARKS
   }
+  #endif
   // StartupStore(_T(". Topology: Open <%s>%s"),filename,NEWLINE);
 
   scaleThreshold = 1000.0;
@@ -776,7 +782,11 @@ void XShapeLabel::clear() {
 
 //       wsprintf(Scale,TEXT("%1.2f%c"),MapScale, autozoomstring);
 
-
+// //////////////////////////////////////////////////////////////
+// TOPOLOGY WRITER USED ONLY BY OLD MARKERS, not by LK anymore
+// //////////////////////////////////////////////////////////////
+#if USETOPOMARKS
+//
 TopologyWriter::~TopologyWriter() {
   if (shapefileopen) {
     Close();
@@ -790,7 +800,6 @@ TopologyWriter::TopologyWriter(const TCHAR* shpname, COLORREF thecolor):
 
   Reset();
 }
-
 
 void TopologyWriter::DeleteFiles(void) {
   // Delete all files, since zziplib interface doesn't handle file modes
@@ -809,7 +818,6 @@ void TopologyWriter::DeleteFiles(void) {
   }
 }
 
-
 void TopologyWriter::CreateFiles(void) {
   // by default, now, this overwrites previous contents
   if (msSHPCreateFile(&shpfile, filename, SHP_POINT) == -1) {
@@ -826,18 +834,14 @@ void TopologyWriter::CreateFiles(void) {
   }
 }
 
-
 void TopologyWriter::Reset(void) {
   if (shapefileopen) {
     Close();
   }
-
   DeleteFiles();
   CreateFiles();
-  
   Open();
 }
-
 
 void TopologyWriter::addPoint(double x, double y) {
   pointObj p = {x,y};
@@ -849,7 +853,8 @@ void TopologyWriter::addPoint(double x, double y) {
   Open();
 
 }
-
+#endif // USETOPOMARKS
+// //////////////////////////////////////////////////////////////
 
 
 
