@@ -232,10 +232,13 @@ void MarkLocation(const double lon, const double lat, const double altitude)
   char message[160];
 
   FILE *stream;
+  TCHAR tstring[50];
   bool dopreambol=false;
   TCHAR fname[MAX_PATH];
   LocalPath(fname,TEXT(LKD_WAYPOINTS));
-  _tcscat(fname,_T("\\")); _tcscat(fname,_T(LKF_MARKS));
+  _tcscat(fname,_T("\\")); 
+  wsprintf(tstring,_T("LK%04d%02d%02d.cup"), GPS_INFO.Year,GPS_INFO.Month,GPS_INFO.Day);
+  _tcscat(fname,tstring);
 
   stream = _wfopen(fname,TEXT("r"));
   if (stream == NULL)
@@ -251,7 +254,6 @@ void MarkLocation(const double lon, const double lat, const double altitude)
 		fwrite(message,strlen(message),1,stream);
 	}
 
-	TCHAR tstring[50];
 	char marktime[10], slat[20], slon[20], snear[50];
 	Units::TimeToTextSimple(tstring,TimeLocal((int)GPS_INFO.Time));
 	unicodetoascii(tstring,_tcslen(tstring),marktime);
@@ -267,10 +269,10 @@ void MarkLocation(const double lon, const double lat, const double altitude)
         	tstring[19]='\0'; // sized 20 chars
 		unicodetoascii(tstring,_tcslen(tstring),snear);
 	} else {
-		strcpy(snear,"?");
+		strcpy(snear,"unknown");
 	}
 
-	sprintf(message,"MK%s%02d,LK8000,,%s,%s,%d.0m,1,,,,Created on %02d-%02d-%04d at H%s near: %s\r\n",
+	sprintf(message,"MK%s%02d,LK8000,,%s,%s,%d.0m,1,,,,Created on %02d-%02d-%04d at h%s near: %s\r\n",
 		marktime,GPS_INFO.Second,slat,slon, iround((int)CALCULATED_INFO.NavAltitude),
 		GPS_INFO.Day,GPS_INFO.Month,GPS_INFO.Year, marktime, snear );
 
