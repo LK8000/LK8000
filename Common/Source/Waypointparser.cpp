@@ -695,8 +695,6 @@ static double CalculateAngle(TCHAR *temp)
   return Degrees;
 }
 
-#define BUGFIXCUP	1
-
 static double CUPToLat(TCHAR *temp)
 {
   TCHAR *dot, td;
@@ -705,12 +703,8 @@ static double CUPToLat(TCHAR *temp)
   unsigned int slen;
   bool north=false;
 
-  #ifndef BUGFIXCUP
-  if (_tcslen(temp)!=9) return -9999;
-  #else
   // lat is 4555.0X minimum
   if (_tcslen(temp)<7||_tcslen(temp)>9) return -9999;
-  #endif
   // check there is a dot, to be sure
   dot = _tcschr(temp,'.');
   if(!dot) return -9999;
@@ -720,21 +714,14 @@ static double CUPToLat(TCHAR *temp)
   _tcscpy(tsec,dot);
   slen=_tcslen(tsec);
   
-  #ifndef BUGFIXCUP
-  if (slen!=4) return -9999;
-  td= tsec[3];
-  #else
   // seconds are 0X minimum including the letter
   if (slen<2 || slen>4) return -9999;
   td= tsec[slen-1];
-  #endif
 
   if ( (td != _T('N')) && ( td != _T('S')) ) return -9999;
   if ( td == _T('N') ) north=true;
 
-  #ifdef BUGFIXCUP
   td='\0';
-  #endif
 
   tdeg[0]=temp[0];
   tdeg[1]=temp[1];
@@ -748,7 +735,6 @@ static double CUPToLat(TCHAR *temp)
   mins     = (double)_tcstol(tmin, NULL, 10);
   secs     = (double)_tcstol(tsec, NULL, 10);
 
-  #ifdef BUGFIXCUP // 100419
   // if seconds are only a decimal, for example 3 , they really are 300
   switch (slen) {
 	case 2:
@@ -762,7 +748,6 @@ static double CUPToLat(TCHAR *temp)
 	default:
 		break;
   }
-  #endif
 
   mins += secs / 1000.0;
   degrees += mins / 60.0;
@@ -780,12 +765,8 @@ static double CUPToLon(TCHAR *temp)
   unsigned int slen;
   bool east=false;
 
-  #ifndef BUGFIXCUP
-  if (_tcslen(temp)!=10) return -9999;
-  #else
   // longit can be 01234.5X
   if (_tcslen(temp)<8 || _tcslen(temp)>10) return -9999;
-  #endif
 
   // check there is a dot, to be sure
   dot = _tcschr(temp,'.');
@@ -795,21 +776,14 @@ static double CUPToLon(TCHAR *temp)
 
   _tcscpy(tsec,dot);
   slen=_tcslen(tsec);
-  #ifndef BUGFIXCUP
-  if (slen!=4) return -9999;
-  td= tsec[3];
-  #else
   // seconds are 0X minimum including the letter
   if (slen<2 || slen>4) return -9999;
   td= tsec[slen-1];
-  #endif
 
   if ( (td != _T('E')) && ( td != _T('W')) ) return -9999;
   if ( td == _T('E') ) east=true;
 
-  #ifdef BUGFIXCUP
   td='\0';
-  #endif
 
   tdeg[0]=temp[0];
   tdeg[1]=temp[1];
@@ -824,7 +798,6 @@ static double CUPToLon(TCHAR *temp)
   mins     = (double)_tcstol(tmin, NULL, 10);
   secs     = (double)_tcstol(tsec, NULL, 10);
 
-  #ifdef BUGFIXCUP // 100419
   // if seconds are only a decimal, for example 3 , they really are 300
   switch (slen) {
 	case 2:
@@ -838,7 +811,6 @@ static double CUPToLon(TCHAR *temp)
 	default:
 		break;
   }
-  #endif
 
   mins += secs / 1000.0;
   degrees += mins / 60.0;
