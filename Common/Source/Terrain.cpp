@@ -1223,12 +1223,13 @@ public:
     // do not shade terrain when using high zoom
     if (epx> min(ixs,iys)/4) { 
       do_shading = false;
-    } 
-    #if (WINDOWSPC<1)
-    else {
+    } else {
+      #if (WINDOWSPC>0)
+      if (MapWindow::zoom.Scale()>18) do_shading=false;
+      #else
       if (MapWindow::zoom.Scale()>12) do_shading=false;
+      #endif
     }
-    #endif
 
     POINT orig = MapWindow::GetOrigScreen();
 #if USEIBOX
