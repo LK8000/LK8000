@@ -860,7 +860,11 @@ void InputEvents::eventMarkLocation(const TCHAR *misc) {
 	#endif
 
 	LockFlightData();
+	#if USETOPOMARKS
 	MarkLocation(GPS_INFO.Longitude, GPS_INFO.Latitude);
+	#else
+	MarkLocation(GPS_INFO.Longitude, GPS_INFO.Latitude, CALCULATED_INFO.NavAltitude );
+	#endif
 	UnlockFlightData();
   }
 }

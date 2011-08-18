@@ -37,7 +37,9 @@ void DrawTerrain(const HDC hdc, const RECT rc, const double sunazimuth, const do
 void DrawSpotHeights(const HDC hdc);
 #if USETOPOMARKS
 void DrawMarks(const HDC hdc, const RECT rc);
-#endif
 void MarkLocation(const double lon, const double lat);
+#else
+void MarkLocation(const double lon, const double lat, const double altitude);
+#endif
 void CloseTerrainRenderer();
 #endif

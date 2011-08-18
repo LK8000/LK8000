@@ -2988,7 +2988,6 @@ double GetMacCready(int wpindex, short wpmode)
 
 }
 
-// UNUSED 091023
 void unicodetoascii(TCHAR *utext, int utextsize, char *atext) {
 
 	int i,j;

@@ -144,7 +144,7 @@
  */
 #define LKF_RECENTS	"History.txt"
 #define LKF_DEFAULTASK	"Default.tsk"
-#define LKF_MARKS	"Markers.txt"
+#define LKF_MARKS	"Markers.cup"
 #define LKF_SMARKS	"Markers"
 #define LKF_FLARMIDS	"IDFLARM.txt"
 #define LKF_RUNLOG	"RUNTIME.log"
