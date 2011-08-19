@@ -618,12 +618,18 @@ bool DoCommonList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		InsertCommonList(Task[i].Index);
    }
 
-   // And now we add the markers
-   for (i=RESWP_FIRST_MARKER; i<=RESWP_LAST_MARKER; i++) {
-	if (WayPointList[i].Latitude==RESWP_INVALIDNUMBER) continue;
-   	InsertCommonList(i);
-   }
+   extern int CurrentMarker;
 
+   // We insert Markers in common list in reverse order, Last in first out
+   if (CurrentMarker>=RESWP_FIRST_MARKER || CurrentMarker<=RESWP_LAST_MARKER) {
+	for (short j=0, i=CurrentMarker; j<NUMRESMARKERS; j++) {
+
+		if (WayPointList[i].Latitude!=RESWP_INVALIDNUMBER)
+   			InsertCommonList(i);
+
+		if (--i<RESWP_FIRST_MARKER) i=RESWP_LAST_MARKER;
+	}
+   }
    UnlockTaskData();
    return true;
 }
