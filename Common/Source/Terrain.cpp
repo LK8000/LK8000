@@ -278,6 +278,25 @@ void MarkLocation(const double lon, const double lat, const double altitude)
 
 	fwrite(message,strlen(message),1,stream);
 	fclose(stream);
+
+extern int GetVirtualWaypointMarkerSlot(void);
+
+	j=GetVirtualWaypointMarkerSlot();
+
+	WayPointList[j].Latitude=lat;
+	WayPointList[j].Longitude=lon;
+	WayPointList[j].Altitude=CALCULATED_INFO.NavAltitude;
+	WayPointList[j].Visible=TRUE;
+	WayPointList[j].FarVisible=TRUE;
+
+	wsprintf(WayPointList[j].Name,_T("MK%S%02d"),marktime,GPS_INFO.Second);
+	wsprintf(WayPointList[j].Comment,_T("Near: %S"),snear);
+
+	WayPointCalc[j].WpType=WPT_TURNPOINT;
+
+	// Force updating DoRange otherwise it will pass up to 3 minutes
+	// before this marker appears in the 2.3 tps page
+	LastDoRangeWaypointListTime=0; 
   }
 
 }

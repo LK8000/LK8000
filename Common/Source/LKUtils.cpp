@@ -796,4 +796,14 @@ bool DoOptimizeRoute() {
 
 }
 
+// Returns the waypoint index to use
+int GetVirtualWaypointMarkerSlot(void) {
+  static int s_currentmarker=RESWP_FIRST_MARKER-1;
+
+  if (s_currentmarker==RESWP_LAST_MARKER) 
+	s_currentmarker=RESWP_FIRST_MARKER-1;
+
+  return ++s_currentmarker;
+}
+
 

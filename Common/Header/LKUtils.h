@@ -127,7 +127,9 @@
 #define RESWP_FLARMTARGET	3
 #define RESWP_FLARMTARGET_NAME	"_@M1319_"			// LKTOKEN _@M1319_ "TARGET"
 #define RESWP_OPTIMIZED		4	// optimized virtual waypoint as target turnpoint for overlays
-#define RESWP_END		4
+#define RESWP_FIRST_MARKER	5
+#define RESWP_LAST_MARKER	RESWP_FIRST_MARKER+NUMRESMARKERS-1	// 14
+#define RESWP_END		RESWP_LAST_MARKER
 // WayPointList .Number int identifier 
 #define RESWP_ID		9999
 

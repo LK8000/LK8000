@@ -854,6 +854,14 @@ void InputEvents::eventMarkLocation(const TCHAR *misc) {
 	#if USETOPOMARKS
 	reset_marks = true;
 	#endif
+	for (short i=RESWP_FIRST_MARKER; i<=RESWP_LAST_MARKER; i++) {
+        	WayPointList[i].Latitude=RESWP_INVALIDNUMBER;
+        	WayPointList[i].Longitude=RESWP_INVALIDNUMBER;
+        	WayPointList[i].Altitude=RESWP_INVALIDNUMBER;
+	        WayPointList[i].Visible=FALSE;
+	        WayPointList[i].FarVisible=FALSE;
+	        WayPointCalc[i].WpType = WPT_UNKNOWN;
+	}
   } else {
 	#ifndef DISABLEAUDIO
 	if (EnableSoundModes) LKSound(TEXT("DROPMARKER.WAV"));

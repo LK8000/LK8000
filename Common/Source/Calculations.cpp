@@ -940,6 +940,10 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	DoAlternates(Basic,Calculated,RESWP_FLARMTARGET);
 	DoAlternates(Basic,Calculated,HomeWaypoint); 	
 	if (DoOptimizeRoute()) DoAlternates(Basic,Calculated,RESWP_OPTIMIZED); 	
+	for (int i=RESWP_FIRST_MARKER; i<=RESWP_LAST_MARKER; i++) {
+		if (WayPointList[i].Latitude==RESWP_INVALIDNUMBER) continue;
+		DoAlternates(Basic,Calculated,i);
+	}
   }
 
   if (!TargetDialogOpen) {

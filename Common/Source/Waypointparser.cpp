@@ -1760,6 +1760,32 @@ void AddReservedWaypoints()
 	WayPointCalc[RESWP_OPTIMIZED].IsAirport = false;
 	WayPointCalc[RESWP_OPTIMIZED].IsOutlanding = false;
 	WayPointList[RESWP_OPTIMIZED].Format= LKW_VIRTUAL;
+
+   for (short i=RESWP_FIRST_MARKER; i<=RESWP_LAST_MARKER; i++) {
+	WayPointList[i].Number=i+1;
+	WayPointList[i].Latitude=RESWP_INVALIDNUMBER;
+	WayPointList[i].Longitude=RESWP_INVALIDNUMBER;
+	WayPointList[i].Altitude=RESWP_INVALIDNUMBER;
+	WayPointList[i].Flags=TURNPOINT;
+	_tcscpy(WayPointList[i].Name, _T("LKMARKER"));
+	WayPointList[i].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
+	_tcscpy(WayPointList[i].Comment, _T(""));
+	WayPointList[i].Zoom=0;
+	WayPointList[i].Reachable=FALSE;
+	WayPointList[i].AltArivalAGL=0.0;
+	WayPointList[i].Visible=FALSE;
+	WayPointList[i].InTask=false;
+	WayPointList[i].Details=(TCHAR *)NULL;
+	WayPointList[i].FarVisible=FALSE;
+	WayPointList[i].FileNum=-1;
+
+	WayPointCalc[i].WpType = WPT_UNKNOWN;
+	WayPointCalc[i].IsLandable = false;
+	WayPointCalc[i].IsAirport = false;
+	WayPointCalc[i].IsOutlanding = false;
+	WayPointList[i].Format= LKW_VIRTUAL;
+   }
+
 }
 
 

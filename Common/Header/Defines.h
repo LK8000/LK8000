@@ -227,7 +227,8 @@
 // Position 0 is takeoff, etc
 // moving waypoints will have assigned fixed slots and positions
 // LKUtils.h defines contents for RESWP_ 
-#define NUMRESWP		5
+#define NUMRESMARKERS		10
+#define NUMRESWP		5+NUMRESMARKERS
 
 // Number of background colors available in MapWindow.h for NON-terrain maps
 #define LKMAXBACKGROUNDS        10
