@@ -571,8 +571,8 @@ class MapWindow {
  private:
   static HBITMAP 
     hTurnPoint, hSmall, hInvTurnPoint, hInvSmall, hCruise, hClimb,
-    hFinalGlide, hAutoMacCready, hTerrainWarning, hGPSStatus1, hGPSStatus2,
-    hAbort, hLogger, hLoggerOff, hFLARMTraffic;
+    hFinalGlide, hAutoMacCready, hTerrainWarning,
+    hLogger, hLoggerOff, hFLARMTraffic;
 	static HBITMAP hAirspaceWarning;
   static HBRUSH   hBackgroundBrush;
   static COLORREF BackgroundColor;
@@ -684,9 +684,6 @@ class MapWindow {
 
  private:
   static POINT Orig_Screen;
-  static HBITMAP hBmpMapScale;
-  static HBITMAP hBmpCompassBg;
-  static HBITMAP hBmpClimbeAbort;
   static HBITMAP hBmpUnitKm;
   static HBITMAP hBmpUnitSm;
   static HBITMAP hBmpUnitNm;

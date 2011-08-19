@@ -96,7 +96,6 @@ END
 // Bitmap
 //
 
-IDB_ABORT               BITMAP  DISCARDABLE     "../Data/Bitmaps/abort.bmp"
 IDB_LOGGER              BITMAP  DISCARDABLE     "../Data/Bitmaps/logging.bmp"
 IDB_LOGGEROFF           BITMAP  DISCARDABLE     "../Data/Bitmaps/loggingoff.bmp"
 IDB_FLARMTRAFFIC        BITMAP  DISCARDABLE     "../Data/Bitmaps/flarmtra.bmp"
@@ -237,9 +236,6 @@ IDB_LKVERYSMALLTOWN     BITMAP  DISCARDABLE     "../Data/Bitmaps/verysmalltown.b
 IDB_MARK                BITMAP  DISCARDABLE     "../Data/Bitmaps/mark.bmp"
 IDB_TERRAINWARNING      BITMAP  DISCARDABLE     "../Data/Bitmaps/terrainw.bmp"
 IDB_AIRSPACEWARNING     BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace_warning.bmp"
-IDB_PEAKHIGH            BITMAP  DISCARDABLE     "../Data/Bitmaps/peakhigh.bmp"
-IDB_PEAKLOW             BITMAP  DISCARDABLE     "../Data/Bitmaps/peaklow.bmp"
-IDB_MAPSCALE_A          BITMAP  DISCARDABLE     "../Data/Bitmaps/MapScale_A.bmp"
 IDB_UNIT_KM             BITMAP  DISCARDABLE     "../Data/Bitmaps/UnitKm.bmp"
 IDB_UNIT_SM             BITMAP  DISCARDABLE     "../Data/Bitmaps/UnitSm.bmp"
 IDB_UNIT_NM             BITMAP  DISCARDABLE     "../Data/Bitmaps/UnitNm.bmp"
@@ -289,7 +285,5 @@ IDB_AIRSPACE0           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace0.bmp"
 IDB_AIRSPACE1           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace1.bmp"
 IDB_AIRSPACE2           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace2.bmp"
 IDB_SWIFT               BITMAP  DISCARDABLE     "../Data/Bitmaps/LKstartup.bmp" 	// 124x85
-IDB_GPSSTATUS1          BITMAP  DISCARDABLE     "../Data/Bitmaps/20x20_gpslost_1.bmp"
-IDB_GPSSTATUS2          BITMAP  DISCARDABLE     "../Data/Bitmaps/20x20_gpslost_2.bmp"
 
 #endif    // English (Australia) resources

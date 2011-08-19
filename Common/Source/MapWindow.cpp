@@ -126,9 +126,6 @@ HBITMAP MapWindow::hBmpUnitMpS;
 int MapWindow::ScaleListCount = 0;
 double MapWindow::ScaleList[];
 int MapWindow::ScaleCurrent;
-HBITMAP MapWindow::hBmpCompassBg = NULL;
-HBITMAP MapWindow::hBmpClimbeAbort = NULL;
-HBITMAP MapWindow::hBmpMapScale=NULL;
 
 POINT MapWindow::Orig_Screen;
 
@@ -189,9 +186,6 @@ HBITMAP MapWindow::hFinalGlide;
 HBITMAP MapWindow::hTerrainWarning;
 HBITMAP MapWindow::hAirspaceWarning;
 HBITMAP MapWindow::hFLARMTraffic;
-HBITMAP MapWindow::hGPSStatus1;
-HBITMAP MapWindow::hGPSStatus2;
-HBITMAP MapWindow::hAbort;
 HBITMAP MapWindow::hLogger;
 HBITMAP MapWindow::hLoggerOff;
 
@@ -1154,8 +1148,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hInvTurnPoint=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_INVTURNPOINT));
       hSmall=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SMALL));
       hInvSmall=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_INVSMALL));
-      hGPSStatus1=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_GPSSTATUS1));
-      hGPSStatus2=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_GPSSTATUS2));
       hLogger=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_LOGGER));
       hLoggerOff=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_LOGGEROFF));
       hBmpTeammatePosition = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TEAMMATE_POS));
@@ -1164,16 +1156,11 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 	hCruise=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_CRUISEPARA));
 	hClimb=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_CLIMBPARA));
 	hFinalGlide=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_FINALGLIDEPARA));
-	hAbort=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_ABORT));
       } else {
 	hCruise=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_CRUISE));
 	hClimb=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_CLIMB));
 	hFinalGlide=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_FINALGLIDE));
-	hAbort=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_ABORT));
       }
-
-      //hBmpCompassBg = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_COMPASSBG));
-
 
       // airspace brushes and colours
 
@@ -1279,8 +1266,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       ScaleListCount = propGetScaleList(ScaleList, sizeof(ScaleList)/sizeof(ScaleList[0]));
       zoom.RequestedScale(LimitMapScale(zoom.RequestedScale()));
 
-      hBmpMapScale = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_MAPSCALE_A));
-
       hBrushFlyingModeAbort = LKBrush_Red;
 
       if (Appearance.IndLandable == wpLandableDefault){
@@ -1325,9 +1310,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       DeleteObject(hFLARMTraffic);
       DeleteObject(hTerrainWarning);
       DeleteObject(hAirspaceWarning);
-      DeleteObject(hGPSStatus1);
-      DeleteObject(hGPSStatus2);
-      DeleteObject(hAbort);
       DeleteObject(hLogger);
       DeleteObject(hLoggerOff);
     
@@ -1346,10 +1328,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       DeleteObject((HPEN)hpVisualGlideHeavyRed); // VENTA3
       DeleteObject((HPEN)hpVisualGlideHeavyBlack); // VENTA3
       DeleteObject((HPEN)hpFinalGlideBelowLandable);
-
-      DeleteObject(hBmpMapScale);
-      DeleteObject(hBmpCompassBg);
-      DeleteObject(hBmpClimbeAbort);
 
       DeleteObject((HPEN)hpCompassBorder);
 

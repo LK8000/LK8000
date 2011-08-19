@@ -82,8 +82,8 @@
 #define IDB_SWIFT                       251
 #define IDD_GPSSTATUS                   252
 #define IDD_MAPDISPLAY                  255
-#define IDB_GPSSTATUS1                  256
-#define IDB_GPSSTATUS2                  257
+#define IDB_GPSSTATUS1                  256	// unused
+#define IDB_GPSSTATUS2                  257	// unused
 #define IDD_MAPFILES                    258
 #define IDD_ANALYSIS                    259
 #define IDD_INTERFACEFILES              260
@@ -96,14 +96,14 @@
 #define IDB_ABORT                       269
 #define IDB_LOGGER                      271
 #define IDB_LOGGEROFF                   272
-#define IDB_PEAKHIGH                    273
-#define IDB_PEAKLOW                     274
+#define IDB_PEAKHIGH                    273	// unused
+#define IDB_PEAKLOW                     274	// unused
 #define IDB_VARIOSCALE                  277
 #define IDB_FLARMTRAFFIC                278
 #define IDB_AIRSPACE3                   280
 #define IDB_DLGBUTTONLEFT16             281
 #define IDB_DLGBUTTONLEFT32             282
-#define IDB_MAPSCALE_A                  283
+#define IDB_MAPSCALE_A                  283	// unused
 #define IDB_UNIT_KM                     284
 #define IDB_UNIT_SM                     285
 #define IDB_UNIT_NM                     286
