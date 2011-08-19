@@ -1683,7 +1683,10 @@ bool WindowControl::SetReadOnly(bool Value){
   bool res = mReadOnly;
   if (mReadOnly != Value){
     mReadOnly = Value;
-    Paint(GetDeviceContext());
+
+   	RECT rc = {0,0,0,0};
+   	GetClientRect(mHWnd, &rc);
+   	InvalidateRect(mHWnd,&rc,false);
   }
   return(res);
 }
@@ -1692,8 +1695,11 @@ COLORREF WindowControl::SetForeColor(COLORREF Value){
   COLORREF res = mColorFore;
   if (mColorFore != Value){
     mColorFore = Value;
-    if (mVisible)
-      Paint(GetDeviceContext());
+    if (mVisible){
+    	RECT rc = {0,0,0,0};
+    	GetClientRect(mHWnd, &rc);
+    	InvalidateRect(mHWnd,&rc,false);
+    }
   }
   return(res);
 }
@@ -1708,8 +1714,11 @@ COLORREF WindowControl::SetBackColor(COLORREF Value){
 		DeleteObject(mhBrushBk);
 	}
 	mhBrushBk = (HBRUSH)CreateSolidBrush(mColorBack);
-	if (mVisible)
-		Paint(GetDeviceContext());
+	if (mVisible){
+    	RECT rc = {0,0,0,0};
+    	GetClientRect(mHWnd, &rc);
+    	InvalidateRect(mHWnd,&rc,false);
+	}
   }
   #else
   if (mColorBack != Value){
@@ -1720,8 +1729,11 @@ COLORREF WindowControl::SetBackColor(COLORREF Value){
 		DeleteObject(mhBrushBk);
 	}
 	mhBrushBk = (HBRUSH)CreateSolidBrush(mColorBack);
-	if (mVisible)
-		Paint(GetDeviceContext());
+	if (mVisible){
+    	RECT rc = {0,0,0,0};
+    	GetClientRect(mHWnd, &rc);
+    	InvalidateRect(mHWnd,&rc,false);
+	}
   }
   #endif
   return(res);
@@ -1909,6 +1921,9 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
   RECT Client_Rect;
   int win_width;
   int win_height;
+  
+  POINT ptOffset;
+  HWND hChildWnd;
 
   switch (uMsg){
     case WM_ERASEBKGND:
@@ -1928,6 +1943,17 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 		Oldbitmap = SelectObject(Memhdc, Membitmap);
 
    	  	Paint(Memhdc);
+
+   	  	ptOffset.x = Client_Rect.left;
+   	  	ptOffset.y = Client_Rect.top;
+   	  	ClientToScreen(hWnd, &ptOffset);
+   	  	if((hChildWnd = GetWindow(hWnd, GW_CHILD)) != NULL) {
+			if(IsWindowVisible(hChildWnd)){
+				GetWindowRect(hChildWnd, &Client_Rect);
+				OffsetRect(&Client_Rect, -ptOffset.x, -ptOffset.y);
+				ExcludeClipRect( hDC,Client_Rect.left, Client_Rect.top, Client_Rect.right, Client_Rect.bottom );
+			}
+   	  	}
 
    	  	BitBlt(hDC, 0, 0, win_width, win_height, Memhdc, 0, 0, SRCCOPY);
 		SelectObject(Memhdc, Oldbitmap);
@@ -2657,7 +2683,11 @@ int WndButton::OnLButtonUp(WPARAM wParam, LPARAM lParam){
   (void)wParam;
 
   mDown = false;
-  Paint(GetDeviceContext());
+
+  RECT rc = {0,0,0,0};
+  GetClientRect(mHWnd, &rc);
+  InvalidateRect(mHWnd,&rc,false);
+
   ReleaseCapture();
 
   Pos.x = lParam & 0x0000ffff; 
@@ -2692,7 +2722,9 @@ int WndButton::OnKeyDown(WPARAM wParam, LPARAM lParam){
     case VK_SPACE:
       if (!mDown){
         mDown = true;
-        Paint(GetDeviceContext());
+    	RECT rc = {0,0,0,0};
+    	GetClientRect(mHWnd, &rc);
+    	InvalidateRect(mHWnd,&rc,false);
       }
     return(0);
   }
@@ -2707,8 +2739,12 @@ int WndButton::OnKeyUp(WPARAM wParam, LPARAM lParam){
       if (!Debounce()) return(1); // prevent false trigger
       if (mDown){
         mDown = false;
-        Paint(GetDeviceContext());
-        if (mOnClickNotify != NULL) {
+
+        RECT rc = {0,0,0,0};
+    	GetClientRect(mHWnd, &rc);
+    	InvalidateRect(mHWnd,&rc,false);
+
+    	if (mOnClickNotify != NULL) {
           RECT mRc;
           GetWindowRect(GetHandle(), &mRc);
 	  #if 0 // REMOVE ANIMATION
