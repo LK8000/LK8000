@@ -2976,6 +2976,10 @@ WndProperty::WndProperty(WindowControl *Parent,
 			  GetHandle(), NULL, hInst, NULL);
 #endif
   }
+  
+  if(mEditSize.x <= 0) {
+	  ShowWindow(mhEdit, SW_HIDE);
+  }
 
   SetWindowLong(mhEdit, GWL_USERDATA, (long)this);
   mEditWindowProcedure = (WNDPROC)SetWindowLong(mhEdit, GWL_WNDPROC, (LONG) WndPropertyEditWndProc);
