@@ -549,6 +549,11 @@ void ButtonLabel::GetButtonPosition(int i, RECT rc,
 			*sizey = NIBLSCALE(37);
 			*x = rc.left-(*sizex); // JMW make it offscreen for now
 			*y = (rc.bottom-(*sizey));
+		} else if (i>=10) {
+				*sizex = NIBLSCALE(57);
+				*sizey = NIBLSCALE(45);
+				*x = rc.left+2+hwidth*(i-10);
+				*y = rc.top+NIBLSCALE(2);
 		} else {
 			if (i<5) {
 				// BOTTOM MENU NAV INFO CONFIG DISPLAY
@@ -716,8 +721,13 @@ void ButtonLabel::GetButtonPosition(int i, RECT rc,
 						voffset=1;
 						break;
 				}
-				*x = rc.left+hwidth*(i-5)+ hoffset;
-				*y = (rc.bottom-(*sizey))- voffset; 
+				if (i>=10) {
+					*x = rc.left+hoffset+hwidth*(i-10);
+					*y = rc.top+NIBLSCALE(1);
+				} else {
+					*x = rc.left+hwidth*(i-5)+ hoffset;
+					*y = (rc.bottom-(*sizey))- voffset; 
+				}
 			}
 		}
 		break;
