@@ -19,6 +19,7 @@
 #include <tchar.h>
 #include "LKUtils.h"
 #include "LKMapWindow.h"
+#include "LKStyle.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -27,23 +28,11 @@
 #include "utils/heapcheck.h"
 
 extern int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 );
+
 extern void MapWaypointLabelAdd(TCHAR *Name, int X, int Y, TextInBoxMode_t Mode, int AltArivalAGL, bool inTask, 
-	bool isLandable, bool isAirport, bool isExcluded, int index);
+	bool isLandable, bool isAirport, bool isExcluded, int index, short style);
 
 extern int MapWaypointLabelListCount;
-
-typedef struct{
-  TCHAR Name[NAME_SIZE+1];
-  POINT Pos;
-  TextInBoxMode_t Mode;
-  int AltArivalAGL;
-  bool inTask;
-  bool isLandable; // VENTA5
-  bool isAirport; // VENTA5
-  bool isExcluded;
-  int  index;
-}MapWaypointLabel_t;
-
 
 extern MapWaypointLabel_t MapWaypointLabelList[];
 
@@ -422,7 +411,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 				    WayPointList[i].Screen.y,
 				    TextDisplayMode,
 				    (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY),
-				    intask,islandable,isairport,excluded,i);
+				    intask,islandable,isairport,excluded,i,WayPointList[i].Style);
 	      }
 	    } // end if intask
       
@@ -468,10 +457,15 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		else
 	 		 SelectObject(hDCTemp,hSmall);
 	} else {
-		if (BlackScreen) // 091109
-	  		SelectObject(hDCTemp,hInvTurnPoint);
-		else
-	  		SelectObject(hDCTemp,hTurnPoint);
+		// We should use a general function for this, if we want to use more icons
+		if (E->style == STYLE_MARKER) {
+			SelectObject(hDCTemp,hBmpMarker);
+		} else {
+			if (BlackScreen)
+				SelectObject(hDCTemp,hInvTurnPoint);
+			else
+				SelectObject(hDCTemp,hTurnPoint);
+		}
 	}
 
 	DrawBitmapX(hdc,

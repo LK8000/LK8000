@@ -15,6 +15,7 @@
 #include <windows.h>
 #include <math.h>
 #include <tchar.h>
+#include "MapWindow.h"
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
 #include "buildnumber.h"
@@ -29,9 +30,6 @@
 #include "utils/heapcheck.h"
 
 extern void DrawGlideCircle(HDC hdc, POINT Orig, RECT rc );
-extern void MapWaypointLabelAdd(TCHAR *Name, int X, int Y, TextInBoxMode_t Mode, int AltArivalAGL, bool inTask, 
-	bool isLandable, bool isAirport, bool isExcluded, int index);
-extern int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 );
 
 extern void DrawMapSpace(HDC hdc, RECT rc);
 extern void DrawNearest(HDC hdc, RECT rc);
@@ -50,25 +48,7 @@ extern void DrawDebug(HDC hdc, RECT rc);
 extern void WriteInfo(HDC hdc, bool *showunit, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle, 
 				short *columnvalue, short *columntitle, short *row1, short *row2, short *row3);
 
-extern int PDABatteryPercent;
-extern int PDABatteryTemperature;
-extern int MapWaypointLabelListCount;
 extern void ConvToUpper(TCHAR *str);
-
-typedef struct{
-  TCHAR Name[NAME_SIZE+1];
-  POINT Pos;
-  TextInBoxMode_t Mode;
-  int AltArivalAGL;
-  bool inTask;
-  bool isLandable; // VENTA5
-  bool isAirport; // VENTA5
-  bool isExcluded;
-  int  index;
-}MapWaypointLabel_t;
-
-
-extern MapWaypointLabel_t MapWaypointLabelList[];
 
 
 /*

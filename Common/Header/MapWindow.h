@@ -160,6 +160,22 @@ typedef union{
   // bit 3 == landable TP label          / 8
   // bit 4 == center alligned
 
+
+
+typedef struct{
+  TCHAR Name[NAME_SIZE+1];
+  POINT Pos;
+  TextInBoxMode_t Mode;
+  int AltArivalAGL;
+  bool inTask;
+  bool isLandable; // VENTA5
+  bool isAirport; // VENTA5
+  bool isExcluded;
+  int  index;
+  short style;
+}MapWaypointLabel_t;
+
+
 class MapWindow {
  public:
   /** 
@@ -653,6 +669,7 @@ class MapWindow {
   static HBITMAP hBmpFieldUnReachable;
   static HBITMAP hBmpThermalSource;
   static HBITMAP hBmpTarget;
+  static HBITMAP hBmpMarker;
   static HBITMAP hBmpTeammatePosition;
 
 

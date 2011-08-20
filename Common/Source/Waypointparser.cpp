@@ -16,6 +16,7 @@
 #include "Utils.h"
 #include "Utils2.h"
 #include "LKUtils.h"
+#include "LKStyle.h"
 #include "WindowControls.h"
 #include "MapWindow.h"
 #include <math.h>
@@ -1778,6 +1779,7 @@ void AddReservedWaypoints()
 	WayPointList[i].Details=(TCHAR *)NULL;
 	WayPointList[i].FarVisible=FALSE;
 	WayPointList[i].FileNum=-1;
+	WayPointList[i].Style = STYLE_MARKER;
 
 	WayPointCalc[i].WpType = WPT_UNKNOWN;
 	WayPointCalc[i].IsLandable = false;

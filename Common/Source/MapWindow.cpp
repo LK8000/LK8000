@@ -110,6 +110,7 @@ HBITMAP MapWindow::hBmpThermalSource;
 HBITMAP MapWindow::hBmpTarget;
 HBITMAP MapWindow::hBmpTeammatePosition;
 HBITMAP MapWindow::hAboveTerrainBitmap;
+HBITMAP MapWindow::hBmpMarker;
 HBRUSH  MapWindow::hAboveTerrainBrush;
 
 HPEN    MapWindow::hpCompassBorder;
@@ -1144,6 +1145,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hLogger=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_LOGGER));
       hLoggerOff=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_LOGGEROFF));
       hBmpTeammatePosition = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TEAMMATE_POS));
+      hBmpMarker = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_MARK));
 
       if ( ISPARAGLIDER ) {
 	hCruise=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_CRUISEPARA));
@@ -1331,6 +1333,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       DeleteObject(hBmpThermalSource);
       DeleteObject(hBmpTarget);
       DeleteObject(hBmpTeammatePosition);
+      DeleteObject(hBmpMarker);
 
       for(i=0;i<NUMAIRSPACEBRUSHES;i++)
 	{
@@ -3130,26 +3133,10 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
 
 }
 
-
-typedef struct{
-  TCHAR Name[NAME_SIZE+1];
-  POINT Pos;
-  TextInBoxMode_t Mode;
-  int AltArivalAGL;
-  bool inTask;
-  bool isLandable; // VENTA5
-  bool isAirport; // VENTA5
-  bool isExcluded;
-  int index;
-}MapWaypointLabel_t;
-
 bool MapWindow::WaypointInTask(int ind) {
   if (!WayPointList) return false;
   return WayPointList[ind].InTask;
 }
-
-void MapWaypointLabelAdd(TCHAR *Name, int X, int Y, TextInBoxMode_t Mode, int AltArivalAGL, bool inTask, bool isLandable, bool isAirport, bool isExcluded, int index);
-int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 );
 
 MapWaypointLabel_t MapWaypointLabelList[200]; 
 int MapWaypointLabelListCount=0;
@@ -3173,7 +3160,7 @@ int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 ){
 
 void MapWaypointLabelAdd(TCHAR *Name, int X, int Y, 
 			 TextInBoxMode_t Mode, 
-			 int AltArivalAGL, bool inTask, bool isLandable, bool isAirport, bool isExcluded, int index){
+			 int AltArivalAGL, bool inTask, bool isLandable, bool isAirport, bool isExcluded, int index, short style){
   MapWaypointLabel_t *E;
 
   if ((X<MapWindow::MapRect.left-WPCIRCLESIZE)
@@ -3198,6 +3185,8 @@ void MapWaypointLabelAdd(TCHAR *Name, int X, int Y,
   E->isLandable = isLandable;
   E->isAirport  = isAirport;
   E->isExcluded = isExcluded;
+  E->index = index;
+  E->style = style;
 
   MapWaypointLabelListCount++;
 
