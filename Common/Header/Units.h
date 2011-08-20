@@ -62,8 +62,10 @@ typedef struct{
   const TCHAR   *Name;
   double  ToUserFact;
   double  ToUserOffset;
+#if USEIBOX
   HBITMAP hBitmap;
   POINT   BitMapSize;
+#endif
 }UnitDescriptor_t;
 
 class Units {
@@ -76,9 +78,9 @@ private:
   static Units_t UserVerticalSpeedUnit;
   static Units_t UserWindSpeedUnit;
   static Units_t UserTaskSpeedUnit;
-
+#if USEIBOX
   static void setupUnitBitmap(Units_t Unit, HINSTANCE hInst, WORD IDB, int Width, int Height);
-
+#endif
 public:
 
   static CoordinateFormats_t CoordinateFormat;
@@ -144,11 +146,11 @@ public:
 
   static double ToUserDistance(double Distance);
   static double ToSysDistance(double Distance);
-
+#if USEIBOX
   static bool GetUnitBitmap(Units_t Unit, HBITMAP *HBmp, POINT *Org, POINT *Size, int Kind);
   static bool LoadUnitBitmap(HINSTANCE hInst);
   static bool UnLoadUnitBitmap(void);
-
+#endif
   static void TimeToText(TCHAR* text, int d);
   static void TimeToTextSimple(TCHAR* text, int d);
   static bool TimeToTextDown(TCHAR* text, int d);

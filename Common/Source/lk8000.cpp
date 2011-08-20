@@ -3007,9 +3007,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   #endif
 
   LKObjects_Create(); 
-
+  #if USEIBOX
   Units::LoadUnitBitmap(hInstance);
-
+  #endif
   #if USEIBOX
   InfoBoxLayout::CreateInfoBoxes(rc);
   #endif
@@ -3258,9 +3258,9 @@ void Shutdown(void) {
 
   StartupStore(TEXT(". Close Messages%s"),NEWLINE);
   Message::Destroy();
-  
+  #if USEIBOX 
   Units::UnLoadUnitBitmap();
-
+  #endif
   #if USEIBOX
   StartupStore(TEXT(". Destroy Info Boxes%s"),NEWLINE);
   InfoBoxLayout::DestroyInfoBoxes();

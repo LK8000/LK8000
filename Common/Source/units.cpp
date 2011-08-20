@@ -633,7 +633,7 @@ double Units::ToSysDistance(double Distance){
   return(Distance);
 }
 
-
+#if USEIBOX
 void Units::setupUnitBitmap(Units_t Unit, HINSTANCE lhInst, WORD IDB, int Width, int Height){
 
   UnitDescriptors[Unit].hBitmap = LoadBitmap(lhInst, MAKEINTRESOURCE(IDB));
@@ -681,6 +681,8 @@ bool Units::UnLoadUnitBitmap(void){
   return(true);
 
 }
+
+#endif
 
 void Units::TimeToText(TCHAR* text, int d) {
   int hours, mins;
@@ -767,7 +769,7 @@ void Units::TimeToTextS(TCHAR* text, int d) {
   }
 }
 
-
+#if USEIBOX
 bool Units::GetUnitBitmap(Units_t Unit, HBITMAP *HBmp, POINT *Org, POINT *Size, int Kind){
 
   if (HideUnits==(HideUnits_t)huEnabled) return false; // VNT
@@ -798,4 +800,4 @@ bool Units::GetUnitBitmap(Units_t Unit, HBITMAP *HBmp, POINT *Org, POINT *Size, 
   return(pU->hBitmap != NULL);
 
 }
-
+#endif // USEIBOX

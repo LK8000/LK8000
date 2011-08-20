@@ -116,13 +116,6 @@ HPEN    MapWindow::hpCompassBorder;
 HBRUSH  MapWindow::hBrushFlyingModeAbort;
 int MapWindow::SnailWidthScale = 16;
 
-HBITMAP MapWindow::hBmpUnitKm;
-HBITMAP MapWindow::hBmpUnitSm;
-HBITMAP MapWindow::hBmpUnitNm;
-HBITMAP MapWindow::hBmpUnitM;
-HBITMAP MapWindow::hBmpUnitFt;
-HBITMAP MapWindow::hBmpUnitMpS;
-
 int MapWindow::ScaleListCount = 0;
 double MapWindow::ScaleList[];
 int MapWindow::ScaleCurrent;

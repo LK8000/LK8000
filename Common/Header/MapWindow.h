@@ -684,13 +684,6 @@ class MapWindow {
 
  private:
   static POINT Orig_Screen;
-  static HBITMAP hBmpUnitKm;
-  static HBITMAP hBmpUnitSm;
-  static HBITMAP hBmpUnitNm;
-  static HBITMAP hBmpUnitM;
-  static HBITMAP hBmpUnitFt;
-  static HBITMAP hBmpUnitMpS;
-
   static double TargetZoomDistance;
   static int TargetPanIndex; 
   static void ClearAirSpace(bool fill);
