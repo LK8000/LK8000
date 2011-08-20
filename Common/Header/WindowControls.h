@@ -752,7 +752,7 @@ class WndFrame:public WindowControl{
     int mLastDrawTextHeight;
     UINT mCaptionStyle;
 
-    void Paint(HDC hDC);
+    virtual void Paint(HDC hDC);
 
 };
 
@@ -815,7 +815,7 @@ class WndListFrame:public WndFrame{
     OnListCallback_t mOnListCallback;
     OnListCallback_t mOnListEnterCallback;
     ListInfo_t mListInfo;
-    void Paint(HDC hDC);
+    virtual void Paint(HDC hDC);
 	  RECT rcScrollBarButton;
 	  RECT rcScrollBar;
     int mMouseScrollBarYOffset; // where in the scrollbar button was mouse down at
@@ -852,7 +852,7 @@ class WndOwnerDrawFrame:public WndFrame{
   protected:
 
     OnPaintCallback_t mOnPaintCallback;
-    void Paint(HDC hDC);
+    virtual void Paint(HDC hDC);
 
 };
 
@@ -886,7 +886,7 @@ class WndForm:public WindowControl{
 
     int OnUnhandledMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-    void Paint(HDC hDC);
+    virtual void Paint(HDC hDC);
     int cbTimerID;
 
   public:
@@ -949,7 +949,7 @@ class WndButton:public WindowControl{
 
   private:
 
-    void Paint(HDC hDC);
+    virtual void Paint(HDC hDC);
     bool mDown;
     bool mDefault;
     int mLastDrawTextHeight;
@@ -1000,7 +1000,7 @@ class WndProperty:public WindowControl{
     bool mDownDown;
     bool mUpDown;
 
-    void Paint(HDC hDC);
+    virtual void Paint(HDC hDC);
     void (*mOnClickUpNotify)(WindowControl * Sender);
     void (*mOnClickDownNotify)(WindowControl * Sender);
 
