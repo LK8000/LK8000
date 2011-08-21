@@ -498,7 +498,7 @@ This option, if enabled sets the clock of the computer to the GPS time once a fi
 This is only necessary if your computer does not have a real-time clock with battery backup or your computer frequently runs out of battery power or otherwise loses time.
 
 @211
-WORKING ONLY FOR HP31X: Set automatic backlight for this device. Max brightness and no timeout if on external power, otherwise max brightneess and a 5 minutes timeout on batteries. After timeout screen blanks to save energy.
+Set automatic backlight for this device. Max brightness and no timeout if on external power, otherwise max brightneess and a 5 minutes timeout on batteries. After timeout screen blanks to save energy. This is working for HP31x, Funtrek and Royaltek devices.
 
 @212
 On some devices only, Set maximum sound volume automatically.
