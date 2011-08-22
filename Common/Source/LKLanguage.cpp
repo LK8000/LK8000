@@ -40,7 +40,7 @@
 #define LKD_LANGUAGE	"_Language"
 #define MAX_HELP	1024	// complete help including several lines, and also for each single line
 
-#define MAX_MESSAGES		1700 // Max number of MSG items
+#define MAX_MESSAGES		2130 // Max number of MSG items
 #define MAX_MESSAGE_SIZE	150 // just for setting a limit
 
 bool LKLoadMessages(bool fillup);

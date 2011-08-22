@@ -3925,11 +3925,14 @@ void SaveRegistryToFile(const TCHAR *szFile)
   ::RegCloseKey(hkFrom);
 }
 
+
 TCHAR* StringMallocParse(TCHAR* old_string) {
   TCHAR buffer[2048];	// Note - max size of any string we cope with here !
   TCHAR* new_string;
   unsigned int used = 0;
   unsigned int i;
+
+  // Transcode special characters 
   for (i = 0; i < _tcslen(old_string); i++) {
     if (used < 2045) {
       if (old_string[i] == '\\' ) {
@@ -3951,12 +3954,53 @@ TCHAR* StringMallocParse(TCHAR* old_string) {
     }
   };
   buffer[used++] =_T('\0');
-  
+
+  TCHAR *pstart;
+  pstart = _tcsstr(buffer, _T("_@M"));
+  if (pstart==NULL) {
+	goto _notoken;
+  }
+
+  TCHAR *pend, *ptmp;
+
+  ptmp=pstart;
+  pend=NULL;
+  while (++ptmp != NULL) {
+	if (*ptmp != _T('_')) continue;
+	pend=ptmp;
+	break;
+  }
+  if (pend==NULL) {
+	StartupStore(_T("...... Menu Label incorrect, no pend: <%s>%s"),buffer,NEWLINE);
+	goto _notoken;
+  }
+  if ((pend-pstart)>9) {
+	StartupStore(_T("...... Menu Label incorrect, token too big: <%s>%s"),buffer,NEWLINE);
+	goto _notoken;
+  }
+
+  TCHAR lktoken[10];
+  ptmp=pstart;
+  i=0;
+  while (ptmp<=pend) {
+	lktoken[i++]=*ptmp++;
+  }
+  lktoken[i]='\0';
+  *pstart='\0';
+  TCHAR newbuffer[2048];
+  wsprintf(newbuffer,_T("%s%s%s"), buffer, gettext(lktoken), pend+1);
+
+  new_string = (TCHAR *)malloc((_tcslen(newbuffer)+1)*sizeof(TCHAR));
+  _tcscpy(new_string, newbuffer);
+  return new_string;
+
+_notoken:
   new_string = (TCHAR *)malloc((_tcslen(buffer)+1)*sizeof(TCHAR));
   _tcscpy(new_string, buffer);
-  
   return new_string;
 }
+
+
 
 //
 //	Get local My Documents path - optionally include file to add and location

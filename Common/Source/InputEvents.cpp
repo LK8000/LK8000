@@ -465,12 +465,12 @@ int InputEvents::makeEvent(void (*event)(const TCHAR *), const TCHAR *misc, int 
 void InputEvents::makeLabel(int mode_id, const TCHAR* label, int location, int event_id) {
 
   if ((mode_id >= 0) && (mode_id < MAX_MODE) && (ModeLabel_count[mode_id] < MAX_LABEL)) {
-    ModeLabel[mode_id][ModeLabel_count[mode_id]].label = LKGetText(label);
+    ModeLabel[mode_id][ModeLabel_count[mode_id]].label = label;
     ModeLabel[mode_id][ModeLabel_count[mode_id]].location = location;
     ModeLabel[mode_id][ModeLabel_count[mode_id]].event = event_id;
     ModeLabel_count[mode_id]++;
   } else {
-    ASSERT(0);
+	ASSERT(0);
   }
 }
 
