@@ -163,7 +163,7 @@ void InputEvents::readFile() {
 	if ( _tcslen(LKLangSuffix)<3) return;
 	TCHAR xcipath[MAX_PATH];
 	LocalPath(xcipath,_T(LKD_LANGUAGE));
-	_stprintf(xcifile,_T("%s\\%s_MENU.TXT"), xcipath,LKLangSuffix);
+	_stprintf(xcifile,_T("%s\\DEFAULT_MENU.TXT"), xcipath);
 	fp=zzip_fopen(xcifile, "rb");
 	if (fp == NULL) {
 		StartupStore(_T(". No language menu <%s>, using internal XCI\n"),xcifile);
