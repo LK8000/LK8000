@@ -80,6 +80,12 @@ CHANGES
   We can have different menus for GA, Paragliders, gliders now.
   Old ENG_MENU  FRA_MENU  etc. are no longer used. Translators will need to only work on a single MSG file.
 
+. Fix FL (Flight Level) using standard pressure altitude.
+  Current altitude (Baro if available, otherwise Gps altitude) is transformed into pressure relative to the
+  current QNH stored, and then this pressure is converted back to altitude using 1013.25 QNE pressure.
+  The resulting altitude -QNE Altitude- is converted to feet, and divided by 100. The integer part of this
+  number is the Flight Level.
+
 
 
 FIXES
