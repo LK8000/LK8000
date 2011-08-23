@@ -26,12 +26,75 @@ NEW
 
 . OziExplorer waypoint format supported
 
+. New PLKAS nmea sentence.
+    The syntax is:
+    $PLKAS,nnn,*checksum
+    where nnn is the Indicated Air Speed in m/s *10
+    and checksum is the NMEA checksum
+    Example for nnn  346 = 34.6 m/s  which is = 124.56 km/h
+    This sentence can be sent anytime, with any device connected.
+    It is normally a sub sentence of the LK8EX1 device.
+
+. New customkey Screen Lock
+
+. New Location Markers 
+
+  To mark the current position in a waypoint, use the button on the main menu or the customkey.
+  A virtual waypoint called MK123456  will be created , assuming in the example that the time
+  was 12:34.45 (local time). 
+  The waypoint detail's description field will report the nearest known waypoint 
+  (for example   Near: London).
+  Markers will appear as waypoint inside both 2.3 TPS and 3.1 COMMON pages.
+  Markers are inserted in the COMMON 3.1 pages as Last-in First-out.
+  They are inserted after the usual commons (home, bestalternate, alternates, task points..).
+  Up to 10 virtual waypoints for markers are allowed. Creating a new marker beyond this number
+  will overwrite the oldest existing marker.
+  On the moving map, markers will appear with a yellow Flag icon.
+
+  All markers are also saved to a CUP file called with the current date, like LKyyyymmdd.cup .
+  So each flight in a different day will have its own markers cup file, that can be reloaded as
+  an ordinary waypoint file anytime.
+
+
 CHANGES
 
 . Initial circling zoom increased a bit
+. Fix simulator mode speed for paragliders.
+  Dragging the aircraft was causing the ground speed to raise too much
+
+. Airspace support for airspace files containing V sentences
+  with no space beetween V and X characters (for example, Rieti's official airspaces)
+
+. Reduced config page 12.Font edit
+    Only Map waypoints and Topology labels can be changed for fonts.
+    Anything else is under control of fine tuned configuration.
+
+. Fix sticky AutoMC problem using EqMC.
+    Leaving a thermal, EqMC wouldnt be set valid if flying below MC 0 speed. In this case, AutoMC would not
+    be set with a valid EqMC and thus would remain sticky to the old value, in use before entering the thermal.
+    Now we accept negative MC between >-1.0 and we assume for example that a -0.3MC is really a 0.3.
+
+. Old HomeWaypoint no longer valid, due to change of internal waypoint structure
+
+. Using DEFAULT_MENU.TXT common for all languages.
+  We can have different menus for GA, Paragliders, gliders now.
+  Old ENG_MENU  FRA_MENU  etc. are no longer used. Translators will need to only work on a single MSG file.
+
 
 
 FIXES
+
+. (2.3) Fix align flags chars in 2.4 nearest asp page, SFE chars overwriting brg in some portrait mode
+. (2.3) Fix 2.3 bug Font Smoothing no more working correctly.  Apply font smoothing changes work also on PC version.
+. (2.3) Fix L> last thermal name not updated.
+        It was correctly pointing to the new thermal, but the name was not updated.
+
+. (2.3) Fix for determining flaps settings when using different units than kph
+
+. (2.3) Fix system setup bug: Number of time gates wrong position, missing header
+
+. (2.3)   remove screen flicker on all Dialog
+
 
 
 
