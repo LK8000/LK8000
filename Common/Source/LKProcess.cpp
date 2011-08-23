@@ -1179,17 +1179,36 @@ goto_bearing:
 
 		// B73
 		case LK_FL:
-			if (lktitle)
-				// LKTOKEN  _@M1147_ = "Flight Level", _@M1148_ = "FL"
-				_stprintf(BufferTitle, gettext(TEXT("_@M1148_")));
+			_stprintf(BufferTitle, gettext(TEXT("_@M1148_")));
+			// Cant use NavAltitude, because FL should use Baro if available, despite
+			// user settings.
+			if (GPS_INFO.BaroAltitudeAvailable)
+				value=(TOFEET*(AltitudeToQNEAltitude(DrawInfo.BaroAltitude)))/100.0;
 			else
-				// LKTOKEN  _@M1147_ = "Flight Level", _@M1148_ = "FL"
-				_stprintf(BufferTitle, gettext(TEXT("_@M1148_")));
-			value=(TOFEET*DerivedDrawInfo.NavAltitude)/100.0;
-			valid=true;
-			sprintf(text,"%d",(int)value);
-			wsprintf(BufferValue, TEXT("%S"),text);
-			//_stprintf(BufferUnit,TEXT(""));
+				value=(TOFEET*(AltitudeToQNEAltitude(DrawInfo.Altitude)))/100.0;
+
+			#if 0
+	if (GPS_INFO.BaroAltitudeAvailable) {
+	StartupStore(_T(".... FL BARO: GPSAlt=%.0f BaroAlt=%.0f QNH=%.2f QNEAlt=%.0f FLAlt=%.0f FL=%d\n"),
+		DrawInfo.Altitude,DrawInfo.BaroAltitude,QNH, 
+		AltitudeToQNEAltitude(DrawInfo.BaroAltitude),
+		TOFEET*AltitudeToQNEAltitude(DrawInfo.BaroAltitude),(int)value);
+	} else {
+	StartupStore(_T(".... FL GPS: GPSAlt=%.0f BaroAlt=%.0f QNH=%.2f QNEAlt=%.0f FLAlt=%.0f FL=%d\n"),
+		DrawInfo.Altitude,DrawInfo.Altitude,QNH, 
+		AltitudeToQNEAltitude(DrawInfo.Altitude),
+		TOFEET*AltitudeToQNEAltitude(DrawInfo.Altitude),(int)value);
+	}
+			#endif
+
+			if (value>=1) {
+				valid=true;
+				sprintf(text,"%d",(int)value);
+				wsprintf(BufferValue, TEXT("%S"),text);
+			} else {
+				valid=true;
+				wsprintf(BufferValue, TEXT("--"));
+			}
 			break;
 
 		// B131

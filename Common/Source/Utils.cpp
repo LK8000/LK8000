@@ -4846,6 +4846,19 @@ double AltitudeToQNHAltitude(double alt) {
   return StaticPressureToAltitude(ps);
 }
 
+// LK convert QNH altitude to QNE altitude
+double StaticPressureToQNEAltitude(double ps) {
+  // http://wahiduddin.net/calc/density_altitude.htm
+  const double k1=0.190263;
+  const double k2=8.417286e-5;
+  return (pow(1013.25,k1) - pow(ps/100.0, k1))/k2;
+}
+double AltitudeToQNEAltitude(double alt) {
+
+  return StaticPressureToQNEAltitude(QNHAltitudeToStaticPressure(alt));
+
+}
+
 
 double FindQNH(double alt_raw, double alt_known) {
   // find QNH so that the static pressure gives the specified altitude

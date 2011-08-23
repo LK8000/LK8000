@@ -1278,10 +1278,12 @@ This is a pure geometric calculation, equal to Garmin, Naviter and most of commo
 @873
 [Flight Level]
 Altitude Flight Level indicator. FL is expressed in hundreds of feets. 
-This indicator uses current altitude which is NOT necessarily barometric, and in any case non necessarily calculated on the standard atmosphere.
-In other words, it is not accurate and can be wrong even of some hundreds feet!
-So use it as an approximated indicator.
-Caution, no warranty!
+This indicator uses the standard atmosphere altitude (1013.25hPa).
+If no barometric altitude is available, the GPS altitude will be used.
+In this case, it must be adjusted for QNH, by inserting the correct QNH in Basic Settings.
+
+There is no temperature compensation, so the FL might be inaccurate.
+Use it as an approximated indicator. 
 
 @874
 [Task Distance Covered]
