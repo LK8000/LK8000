@@ -2556,11 +2556,24 @@ bool CheckLanguageDir() {
   if (  GetFileAttributes(srcfile) == 0xffffffff ) {
 	return false;
   }
+  return true;
+}
 
+bool CheckLanguageEngMsg() {
+  TCHAR srcdir[MAX_PATH];
+  TCHAR srcfile[MAX_PATH];
   LocalPath(srcdir, _T(LKD_LANGUAGE));
   _stprintf(srcfile,TEXT("%s\\ENG_MSG.TXT"),srcdir);
   if (  GetFileAttributes(srcfile) == 0xffffffff ) return false;
+  return true;
+}
 
+bool CheckSystemDefaultMenu() {
+  TCHAR srcdir[MAX_PATH];
+  TCHAR srcfile[MAX_PATH];
+  LocalPath(srcdir, _T(LKD_SYSTEM));
+  _stprintf(srcfile,TEXT("%s\\DEFAULT_MENU.TXT"),srcdir);
+  if (  GetFileAttributes(srcfile) == 0xffffffff ) return false;
   return true;
 }
 

@@ -25,6 +25,9 @@ static WndForm *wf=NULL;
 static WndOwnerDrawFrame *wSplash=NULL;
 extern HINSTANCE hInst;
 
+extern bool CheckSystemDefaultMenu(void);
+extern bool CheckLanguageEngMsg(void);
+
 // lines are: 0 - 9
 // fsize 0 small 1 normal 2 big (unavailable)
 void RawWrite(TCHAR *text, int line, short fsize) { 
@@ -388,10 +391,31 @@ bool dlgStartupShowModal(void){
 	_stprintf(mes,_T("%s"),mydir);
 	RawWrite(_T("Directory or configuration files missing"),8,1);
 	RawWrite(mes,9,0);
-	MessageBoxX(hWndMainWindow, _T("NO LANGUAGE DIRECTORY\nCheck Language Install"), _T("FATAL ERROR 002"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(hWndMainWindow, _T("LANGUAGE DIRECTORY CHECK FAIL\nCheck Language Install"), _T("FATAL ERROR 002"), MB_OK|MB_ICONQUESTION);
 	MessageBoxX(hWndMainWindow, mes, _T("NO LANGUAGE DIRECTORY"), MB_OK|MB_ICONQUESTION);
 	Shutdown();
   }
+  if  (!CheckLanguageEngMsg()) {
+	TCHAR mydir[MAX_PATH];
+	TCHAR mes[MAX_PATH];
+	StartupStore(_T("... CHECK LANGUAGE ENG_MSG FAILED!%s"),NEWLINE);
+	LocalPath(mydir,_T(LKD_LANGUAGE));
+	_stprintf(mes,_T("%s/ENG_MSG.TXT"),mydir);
+	MessageBoxX(hWndMainWindow, _T("ENG_MSG.TXT MISSING in LANGUAGE\nCheck Language Install"), _T("FATAL ERROR 012"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(hWndMainWindow, mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION);
+	Shutdown();
+  }
+  if  (!CheckSystemDefaultMenu()) {
+	TCHAR mydir[MAX_PATH];
+	TCHAR mes[MAX_PATH];
+	StartupStore(_T("... CHECK SYSTEM DEFAULT_MENU.TXT FAILED!%s"),NEWLINE);
+	LocalPath(mydir,_T(LKD_SYSTEM));
+	_stprintf(mes,_T("%s/DEFAULT_MENU.TXT"),mydir);
+	MessageBoxX(hWndMainWindow, _T("DEFAULT_MENU.TXT MISSING in SYSTEM\nCheck System Install"), _T("FATAL ERROR 022"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(hWndMainWindow, mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION);
+	Shutdown();
+  }
+
   if  (!CheckPolarsDir()) {
 	TCHAR mydir[MAX_PATH];
 	TCHAR mes[MAX_PATH];

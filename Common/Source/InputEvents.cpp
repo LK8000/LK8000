@@ -160,16 +160,19 @@ void InputEvents::readFile() {
   if (fp == NULL) {
 	// no special XCI in engineering, or nonexistent file.. go ahead with language check
 
-	if ( _tcslen(LKLangSuffix)<3) return;
+	// if ( _tcslen(LKLangSuffix)<3) return; // No more needed since DEFAULT
 	TCHAR xcipath[MAX_PATH];
-	LocalPath(xcipath,_T(LKD_LANGUAGE));
+	LocalPath(xcipath,_T(LKD_SYSTEM));
+	// DEFAULT_MENU existance is checked upon startup.
+	// In the near future we can change it dynamically during setup, depending on
+	// LK usage mode.
 	_stprintf(xcifile,_T("%s\\DEFAULT_MENU.TXT"), xcipath);
 	fp=zzip_fopen(xcifile, "rb");
 	if (fp == NULL) {
-		StartupStore(_T(". No language menu <%s>, using internal XCI\n"),xcifile);
+		StartupStore(_T(". No menu <%s>, using internal XCI\n"),xcifile);
 		return;
 	} else
-		StartupStore(_T(". Loaded language menu <%s>\n"),xcifile);
+		StartupStore(_T(". Loaded menu <%s>\n"),xcifile);
   }
 
   // TODO code - Safer sizes, strings etc - use C++ (can scanf restrict length?)
