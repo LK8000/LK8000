@@ -44,7 +44,7 @@ static void OnButtonClick(WindowControl * Sender){
   ((WndForm *)Sender->GetOwner()->GetOwner())->SetModalResult(Sender->GetTag());
 }
 
-int WINAPI MessageBoxX(HWND hWnd, LPCTSTR lpText, LPCTSTR lpCaption, UINT uType){
+int WINAPI MessageBoxX(HWND hWnd, LPCTSTR lpText, LPCTSTR lpCaption, UINT uType, bool wfullscreen){
 
   WndForm *wf=NULL;
   WndFrame *wText=NULL;
@@ -64,6 +64,10 @@ int WINAPI MessageBoxX(HWND hWnd, LPCTSTR lpText, LPCTSTR lpCaption, UINT uType)
 
   GetClientRect(hWnd, &rc);
 
+  if (wfullscreen) {
+	Width = rc.right;
+	Height = rc.bottom;
+  } else
   if (ScreenLandscape) {
 	Width = DLGSCALE(280);
 	Height = DLGSCALE(160);

@@ -28,6 +28,6 @@ MessageBoxX(
     HWND hWnd ,
     LPCWSTR lpText,
     LPCWSTR lpCaption,
-    UINT uType);
+    UINT uType, bool wfullscreen=false);
 
 #endif

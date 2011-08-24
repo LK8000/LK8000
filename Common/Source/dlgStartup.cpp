@@ -361,7 +361,7 @@ bool dlgStartupShowModal(void){
 	RawWrite(_T("Directory or configuration files missing"),8,1);
 	RawWrite(mes,9,0);
 	MessageBoxX(hWndMainWindow, _T("NO LK8000 DIRECTORY\nCheck Installation!"), _T("FATAL ERROR 000"), MB_OK|MB_ICONQUESTION);
-	MessageBoxX(hWndMainWindow, mes, _T("NO LK8000 DIRECTORY"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(hWndMainWindow, mes, _T("NO LK8000 DIRECTORY"), MB_OK|MB_ICONQUESTION, true);
 	Shutdown();
   }
 
@@ -376,7 +376,7 @@ bool dlgStartupShowModal(void){
 	RawWrite(_T("Directory or configuration files missing"),8,1);
 	RawWrite(mes,9,0);
 	MessageBoxX(hWndMainWindow, _T("NO SYSTEM DIRECTORY\nCheck Installation!"), _T("FATAL ERROR 001"), MB_OK|MB_ICONQUESTION);
-	MessageBoxX(hWndMainWindow, mes, _T("NO SYSTEM DIRECTORY"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(hWndMainWindow, mes, _T("NO SYSTEM DIRECTORY"), MB_OK|MB_ICONQUESTION, true);
 	Shutdown();
   }
 
@@ -392,7 +392,7 @@ bool dlgStartupShowModal(void){
 	RawWrite(_T("Directory or configuration files missing"),8,1);
 	RawWrite(mes,9,0);
 	MessageBoxX(hWndMainWindow, _T("LANGUAGE DIRECTORY CHECK FAIL\nCheck Language Install"), _T("FATAL ERROR 002"), MB_OK|MB_ICONQUESTION);
-	MessageBoxX(hWndMainWindow, mes, _T("NO LANGUAGE DIRECTORY"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(hWndMainWindow, mes, _T("NO LANGUAGE DIRECTORY"), MB_OK|MB_ICONQUESTION, true);
 	Shutdown();
   }
   if  (!CheckLanguageEngMsg()) {
@@ -402,7 +402,7 @@ bool dlgStartupShowModal(void){
 	LocalPath(mydir,_T(LKD_LANGUAGE));
 	_stprintf(mes,_T("%s/ENG_MSG.TXT"),mydir);
 	MessageBoxX(hWndMainWindow, _T("ENG_MSG.TXT MISSING in LANGUAGE\nCheck Language Install"), _T("FATAL ERROR 012"), MB_OK|MB_ICONQUESTION);
-	MessageBoxX(hWndMainWindow, mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(hWndMainWindow, mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION, true);
 	Shutdown();
   }
   if  (!CheckSystemDefaultMenu()) {
@@ -412,7 +412,7 @@ bool dlgStartupShowModal(void){
 	LocalPath(mydir,_T(LKD_SYSTEM));
 	_stprintf(mes,_T("%s/DEFAULT_MENU.TXT"),mydir);
 	MessageBoxX(hWndMainWindow, _T("DEFAULT_MENU.TXT MISSING in SYSTEM\nCheck System Install"), _T("FATAL ERROR 022"), MB_OK|MB_ICONQUESTION);
-	MessageBoxX(hWndMainWindow, mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(hWndMainWindow, mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION, true);
 	Shutdown();
   }
 
@@ -428,7 +428,7 @@ bool dlgStartupShowModal(void){
 	RawWrite(_T("Directory or configuration files missing"),8,1);
 	RawWrite(mes,9,0);
 	MessageBoxX(hWndMainWindow, _T("NO POLARS DIRECTORY\nCheck Install"), _T("FATAL ERROR 003"), MB_OK|MB_ICONQUESTION);
-	MessageBoxX(hWndMainWindow, mes, _T("NO POLARS DIRECTORY"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(hWndMainWindow, mes, _T("NO POLARS DIRECTORY"), MB_OK|MB_ICONQUESTION, true);
 	Shutdown();
   }
   wf->ShowModal();
