@@ -178,8 +178,8 @@ const TCHAR szRegistryFAISector[] = TEXT("FAISector");
 const TCHAR szRegistryFinalGlideTerrain[]= TEXT("FinalGlideTerrain");
 const TCHAR szRegistryAutoWind[]= TEXT("AutoWind");
 const TCHAR szRegistryHomeWaypoint[]= TEXT("HomeWaypoint1");
-const TCHAR szRegistryAlternate1[]= TEXT("Alternate1"); // VENTA3
-const TCHAR szRegistryAlternate2[]= TEXT("Alternate2");
+const TCHAR szRegistryAlternate1[]= TEXT("Alternate1a");
+const TCHAR szRegistryAlternate2[]= TEXT("Alternate2a");
 const TCHAR szRegistryLiftUnitsValue[] = TEXT("Lift");
 const TCHAR szRegistryLatLonUnits[] = TEXT("LatLonUnits");
 const TCHAR szRegistryPort1Index[]= TEXT("PortIndex");
@@ -296,7 +296,7 @@ const TCHAR szRegistryPGStartOut[]= TEXT("PGStartOut");
 const TCHAR szRegistryAppIndLandable[] = TEXT("AppIndLandable");
 const TCHAR szRegistryAppInverseInfoBox[] = TEXT("AppInverseInfoBox2");
 const TCHAR szRegistryAppDefaultMapWidth[] = TEXT("AppDefaultMapWidth");
-const TCHAR szRegistryTeamcodeRefWaypoint[] = TEXT("TeamcodeRefWaypoint");
+const TCHAR szRegistryTeamcodeRefWaypoint[] = TEXT("TeamcodeRefWaypoint1");
 
 #if USEIBOX
 const TCHAR szRegistryAppInfoBoxGeom[] = TEXT("AppInfoBoxGeom");
