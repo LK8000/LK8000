@@ -26,7 +26,7 @@ NEW
 
 . OziExplorer waypoint format supported
 
-. New PLKAS nmea sentence.
+. New PLKAS   NMEA sentence.
     The syntax is:
     $PLKAS,nnn,*checksum
     where nnn is the Indicated Air Speed in m/s *10
@@ -74,11 +74,12 @@ CHANGES
     be set with a valid EqMC and thus would remain sticky to the old value, in use before entering the thermal.
     Now we accept negative MC between >-1.0 and we assume for example that a -0.3MC is really a 0.3.
 
-. Old HomeWaypoint no longer valid, due to change of internal waypoint structure
+. Old HomeWaypoint, Alternates and TeamReference waypoint  no longer valid, due to change of internal waypoint structure
 
 . Using DEFAULT_MENU.TXT common for all languages.
   We can have different menus for GA, Paragliders, gliders now.
   Old ENG_MENU  FRA_MENU  etc. are no longer used. Translators will need to only work on a single MSG file.
+  DEFAULT_MENU.TXT is now positioned inside the System folder and it is not supposed to be edited by users.
 
 . Fix FL (Flight Level) using standard pressure altitude.
   Current altitude (Baro if available, otherwise Gps altitude) is transformed into pressure relative to the
