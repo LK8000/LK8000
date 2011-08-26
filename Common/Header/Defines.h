@@ -89,7 +89,7 @@
 
 #define LKFORK		"LK8000"
 #define LKVERSION	"2"
-#define LKRELEASE	"3d0"
+#define LKRELEASE	"3d"
 
 #define REGKEYNAME	"Software\\COOL\\LK8000"
 #define XCSDATADIR	"LK8000"

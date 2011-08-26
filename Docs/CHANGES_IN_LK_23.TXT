@@ -2,9 +2,10 @@
 Changes in LK8000 v2.3
 ======================
 
-Current version
+--------------------------
+Version 2.3d  August 26 2011
 
-AAT Rework by Mat, changes & fixes in progress:
+AAT Rework by Mat, changes & fixes:
 
 . Drawing of thermal bar disabled for Target PAN map mode
 . Target PAN sectors position set to the screen center
@@ -100,7 +101,7 @@ FIXES
 
 . (2.3) Fix system setup bug: Number of time gates wrong position, missing header
 
-. (2.3)   remove screen flicker on all Dialog
+. (2.3) remove screen flicker on all Dialog
 
 
 
