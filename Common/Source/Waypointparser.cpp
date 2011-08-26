@@ -326,7 +326,7 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 
 	if ( ( _tcsstr(nTemp2String, _T("OziExplorer Waypoint File")) == nTemp2String )||
 			   // consider UCS header, 3 bytes in fact. This is a workaround.
-			(_tcsstr(_T("OziExplorer Waypoint File"),&nTemp2String[3]) == 0) ) {
+			(_tcsstr(&nTemp2String[3], _T("OziExplorer Waypoint File")) == &nTemp2String[3]) ) {
 		StartupStore(_T(". Waypoint file %d format: OziExplorer%s"),globalFileNum+1,NEWLINE);
 		fempty=false;
 		fileformat=LKW_OZI;
