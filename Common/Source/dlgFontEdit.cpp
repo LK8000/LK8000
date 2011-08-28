@@ -30,6 +30,7 @@ extern HFONT TitleSmallWindowFont;
 //extern HFONT MapWindowBoldFont; REMOVE
 extern HFONT MapLabelFont;
 // extern HFONT StatisticsFont; REMOVE
+extern void ApplyClearType(LOGFONT *logfont);
 
 static WndForm *wf=NULL;
 static LOGFONT OriginalLogFont;
@@ -426,7 +427,7 @@ void LoadGUI()
   }
 */
   // This is useless, because we ApplyClearType later on. We always use a general common quality.
-  NewLogFont.lfQuality= GetFontRenderer();
+  ApplyClearType(&NewLogFont);
 
   IsInitialized=true;
 
