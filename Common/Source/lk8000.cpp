@@ -3018,8 +3018,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   ButtonLabel::SetLabelText(0,TEXT("MODE"));
 
   InitialiseFonts(rc);
-// LK fonts cannot be configured in profile, so no need to call this
-//   InitLKFonts();	// reload updating LK fonts after loading profile  REMOVE 110704 not needed
+  InitLKFonts();	// reload updating LK fonts after loading profile for fontquality
 
   ButtonLabel::SetFont(MapWindowBoldFont);
 
@@ -3450,7 +3449,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         SHHandleWMActivate(hWnd, wParam, lParam, &s_sai, FALSE);
       } else {
         #ifdef ALPHADEBUG
-        StartupStore(TEXT("SHHandleWMActivate not available%s"),NEWLINE);
+        StartupStore(TEXT("... SHHandleWMActivate not available%s"),NEWLINE);
         #endif
         return DefWindowProc(hWnd, message, wParam, lParam);
       }
@@ -3463,7 +3462,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
       } else {
         #ifdef ALPHADEBUG
-        StartupStore(TEXT("SHHandleWMSettingChange not available%s"),NEWLINE);
+        StartupStore(TEXT("... SHHandleWMSettingChange not available%s"),NEWLINE);
         #endif
         return DefWindowProc(hWnd, message, wParam, lParam);
       }
