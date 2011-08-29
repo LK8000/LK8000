@@ -1546,36 +1546,23 @@ goto_menu:
 
 		if ((dwInterval >= DOUBLECLICKINTERVAL) ) {
 
-extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);
-
 			// if we are running a real task, with gates, and we could still start
 			// if only 1 time gate, and we passed valid start, no reason to resettask
 			int acceptreset=2;
 			if (PGNumberOfGates==1) acceptreset=1;
+
 			if (UseGates() && ValidTaskPoint(1) && ActiveWayPoint<acceptreset) { // 100507 101110
+				//
+				// Reset task
+				//
 				InputEvents::eventResetTask(_T(""));
 			} else {
-			int utmzone; char utmchar;
-			double easting, northing;
-			TCHAR mbuf[80];
-			#ifndef DISABLEAUDIO
-			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-			#endif
-			LatLonToUtmWGS84 ( utmzone, utmchar, easting, northing, GPS_INFO.Latitude, GPS_INFO.Longitude );
-			_stprintf(mbuf,_T("UTM %d%c  %.0f  %.0f"), utmzone, utmchar, easting, northing);
-			Message::Lock(); // 091211
-			Message::AddMessage(60000, 1, mbuf);
-			TCHAR sLongitude[16];
-			TCHAR sLatitude[16];
-			Units::LongitudeToString(GPS_INFO.Longitude, sLongitude, sizeof(sLongitude)-1);
-			Units::LatitudeToString(GPS_INFO.Latitude, sLatitude, sizeof(sLatitude)-1);
-			_stprintf(mbuf,_T("%s %s"), sLatitude, sLongitude);
-			Message::AddMessage(60000, 1, mbuf);
-			Message::Unlock();
-
+				//
+				// Report UTM position
+				//
+				InputEvents::eventService(_T("UTMPOS"));
+			}
 			break;
-
-			} // real UTM, no reset task
 		}
 
 	} // End compass icon check

@@ -426,6 +426,7 @@ typedef enum{
 	ckZoomOutMore,
 	ckOptimizeRoute,
 	ckLockScreen,
+	ckWhereAmI,
 #if USEIBOX
 	// ToggleInfobox MUST be the last one, used only for Aircraft Icons..
 	ckToggleInfobox,

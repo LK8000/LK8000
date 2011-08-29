@@ -1613,6 +1613,7 @@ _@M1687_ "Toggle Optimize Route"
 
 # Customkey name
 _@M1688_ "Screen Lock"
+_@M1689_ "Where Am I"
 
 ############################################################
 #                  - MENU MESSAGES - 

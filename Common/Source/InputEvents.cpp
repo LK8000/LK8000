@@ -2011,6 +2011,27 @@ void InputEvents::eventService(const TCHAR *misc) {
 	return;
   }
 
+  if (_tcscmp(misc, TEXT("UTMPOS")) == 0) {
+	extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);
+	int utmzone; char utmchar;
+	double easting, northing;
+	TCHAR mbuf[80];
+	#ifndef DISABLEAUDIO
+	if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+	#endif
+	LatLonToUtmWGS84 ( utmzone, utmchar, easting, northing, GPS_INFO.Latitude, GPS_INFO.Longitude );
+	_stprintf(mbuf,_T("UTM %d%c  %.0f  %.0f"), utmzone, utmchar, easting, northing);
+	Message::Lock();
+	Message::AddMessage(60000, 1, mbuf);
+	TCHAR sLongitude[16];
+	TCHAR sLatitude[16];
+	Units::LongitudeToString(GPS_INFO.Longitude, sLongitude, sizeof(sLongitude)-1);
+	Units::LatitudeToString(GPS_INFO.Latitude, sLatitude, sizeof(sLatitude)-1);
+	_stprintf(mbuf,_T("%s %s"), sLatitude, sLongitude);
+	Message::AddMessage(60000, 1, mbuf);
+	Message::Unlock();
+	return;
+  }
 
   // we should not get here
   DoStatusMessage(_T("Unknown Service: "),misc);
