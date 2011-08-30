@@ -358,6 +358,7 @@ int	CustomKeyModeRight=(CustomKeyMode_t)ckDisabled;
 int	CustomKeyModeAircraftIcon=(CustomKeyMode_t)ckDisabled;
 int	CustomKeyModeLeftUpCorner=(CustomKeyMode_t)ckDisabled;
 int	CustomKeyModeRightUpCorner=(CustomKeyMode_t)ckDisabled;
+int	CustomKeyModeCenterScreen=(CustomKeyMode_t)ckDisabled;
 bool ResumeSession=false;
 double QFEAltitudeOffset = 0;
 int OnAirSpace=1; // VENTA3 toggle DrawAirSpace, normal behaviour is "true"

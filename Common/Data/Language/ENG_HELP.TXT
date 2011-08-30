@@ -647,13 +647,14 @@ Set to forecast ground temperature.  Used by convection estimator (temperature t
 #
 
 @400
-Custom keys are obtained by clicking on the bottom bar for at least some time.
+Some custom keys are obtained by clicking on the bottom bar for at least some time.
 Below this time, the click will rotate as usual the LK8000 pages.
 Here you define how long you must AT LEAST keep pressed in order to call up Custom key instead of normal page rotation.
 This time is expressed in milliseconds, and it changes device by device so you may experiment yourself.
 Default is 700ms, which is good for HP314 and other devices.
 If no action is defined for any custom key, then this parameter is not used.
 Top screen custom keys do not use this value because they are instantly selected.
+Center screen custom key requires a long click on the map center, also.
 
 @401
 Custom TOP LEFT key is obtained by clicking on the top left corner of the screen.
@@ -661,7 +662,8 @@ See the manual for all combinations.  Default is Multitarget.
 
 @402
 Custom TOP RIGHT key is obtained by clicking on the top right corner of the screen.
-This key is NOT AVAILABLE FOR PARAGLIDERS, see the manual.
+This key is NOT AVAILABLE FOR PARAGLIDERS, because it is reserved for task reset during time gates
+and for UTM position reporting upon emergencies (read manual for paragliders).
 See the manual for all combinations.  Default is no action. 
 
 @403
@@ -670,7 +672,7 @@ Below this time, the click will rotate as usual the LK8000 bottombar stripes.
 See the manual for all combinations.  Default is no action.
 
 @404
-Custom Center key is obtained by clicking on the center bottom bar for at least some time.
+Custom Bottom Center key is obtained by clicking on the center bottom bar for at least some time.
 Below this time, the click will rotate as usual the LK8000 pages.
 Here you define what action should be performed when using the Custom Key.
 See the manual for all combinations.  Default is no action.
@@ -684,6 +686,12 @@ See the manual for all combinations.  Default is no action.
 This key is obtained by clicking on the bottom bar Aircraft Icon for at least some time.
 Below this time, the click will call up menu, as usual.
 See the manual for all combinations.  Default is no action. 
+
+@407
+This key is obtained by long clicking in the center of the map (basically screen center).
+If ActiveMap is enabled, this customkey can be sometimes overridden by an underlying airspace
+which is selected for details by a long click as well.
+See the manual for all combinations.  Default is Where Am I function.
 
 #
 # LOGGER REPLAY

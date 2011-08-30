@@ -92,6 +92,15 @@ static void setVariables(void) {
 	wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeCenterScreen"));
+  if (wp) {
+	DataFieldEnum* dfe;
+	dfe = (DataFieldEnum*)wp->GetDataField();
+	AddConfList(dfe);
+	dfe->Set(CustomKeyModeCenterScreen);
+	wp->RefreshDisplay();
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeLeft"));
   if (wp) {
 	DataFieldEnum* dfe;
@@ -170,6 +179,14 @@ void dlgCustomKeysShowModal(void){
 	if (CustomKeyModeCenter != (wp->GetDataField()->GetAsInteger())) {
 		CustomKeyModeCenter = (wp->GetDataField()->GetAsInteger());
 		SetToRegistry(szRegistryCustomKeyModeCenter, (DWORD)(CustomKeyModeCenter));
+		changed=true;
+	}
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpCustomKeyModeCenterScreen"));
+  if (wp) {
+	if (CustomKeyModeCenterScreen != (wp->GetDataField()->GetAsInteger())) {
+		CustomKeyModeCenterScreen = (wp->GetDataField()->GetAsInteger());
+		SetToRegistry(szRegistryCustomKeyModeCenterScreen, (DWORD)(CustomKeyModeCenterScreen));
 		changed=true;
 	}
   }

@@ -24,6 +24,8 @@ Things to be fixed in LK languages files/tokens:
 - 110525  CHANGED AIRSPACE TOKENS 1159 1160
           CHANGED HELP 879
 
+- Changed H400-407
+
   NEW MSG TOKENS
   --------------
 

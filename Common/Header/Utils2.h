@@ -498,6 +498,7 @@ extern short ModeTableTop[LKMODE_TOP+1];
 #define CKI_BOTTOMICON		3
 #define CKI_TOPLEFT		4
 #define CKI_TOPRIGHT		5
+#define CKI_CENTERSCREEN	6
 
 // LK8000 run modes, BYTE format 0x00 - 0xff
 #define RUN_WELCOME		0x00

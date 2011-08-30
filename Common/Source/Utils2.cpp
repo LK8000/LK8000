@@ -866,9 +866,9 @@ gesture_left:
 			MapWindow::RefreshMap();
 			return 0;
 		}
-		// do not process enter in panmode, unused
 /*
-		if ( !MapWindow::EnablePan ) {
+		// do not process enter in panmode, unused
+		if ( !MapWindow::mode.AnyPan() ) {
 	             DoStatusMessage(_T("Virtual ENTER")); 
 		     return 13;
 		}
@@ -3672,6 +3672,9 @@ bool CustomKeyHandler(const int key) {
 		break;
 	case CKI_TOPRIGHT:
 		ckeymode=CustomKeyModeRightUpCorner;
+		break;
+	case CKI_CENTERSCREEN:
+		ckeymode=CustomKeyModeCenterScreen;
 		break;
 	default:
 		DoStatusMessage(_T("ERR-725 UNKNWOWN CUSTOMKEY"));

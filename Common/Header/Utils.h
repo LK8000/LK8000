@@ -138,6 +138,7 @@ extern const TCHAR szRegistryCustomKeyModeRight[];
 extern const TCHAR szRegistryCustomKeyModeAircraftIcon[];
 extern const TCHAR szRegistryCustomKeyModeLeftUpCorner[];
 extern const TCHAR szRegistryCustomKeyModeRightUpCorner[];
+extern const TCHAR szRegistryCustomKeyModeCenterScreen[];
 extern const TCHAR szRegistryAppAveNeedle[];
 extern const TCHAR szRegistryAutoAdvance[];
 extern const TCHAR szRegistryUTCOffset[];

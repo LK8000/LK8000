@@ -312,6 +312,7 @@ const TCHAR szRegistryCustomKeyModeRight[] = TEXT("CustomKeyModeRight");
 const TCHAR szRegistryCustomKeyModeAircraftIcon[] = TEXT("CustomKeyModeAircraftIcon");
 const TCHAR szRegistryCustomKeyModeLeftUpCorner[] = TEXT("CustomKeyModeLeftUpCorner");
 const TCHAR szRegistryCustomKeyModeRightUpCorner[] = TEXT("CustomKeyModeRightUpCorner");
+const TCHAR szRegistryCustomKeyModeCenterScreen[] = TEXT("CustomKeyModeCenterScreen");
 
 const TCHAR szRegistryAutoAdvance[] = TEXT("AutoAdvance");
 const TCHAR szRegistryUTCOffset[] = TEXT("UTCOffset");
@@ -949,6 +950,9 @@ void ReadRegistrySettings(void)
   Temp = (CustomKeyMode_t)ckMultitargetMenu;
   GetFromRegistry(szRegistryCustomKeyModeRightUpCorner,&Temp); 
   CustomKeyModeRightUpCorner = Temp;
+  Temp = (CustomKeyMode_t)ckWhereAmI;
+  GetFromRegistry(szRegistryCustomKeyModeCenterScreen,&Temp); 
+  CustomKeyModeCenterScreen = Temp;
 
   Temp = (MapBox_t)mbBoxed;  // VENTA6
   GetFromRegistry(szRegistryMapBox,&Temp); 

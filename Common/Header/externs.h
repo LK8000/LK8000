@@ -136,6 +136,7 @@ extern int  CustomKeyModeRight;
 extern int  CustomKeyModeAircraftIcon;
 extern int  CustomKeyModeLeftUpCorner;
 extern int  CustomKeyModeRightUpCorner;
+extern int  CustomKeyModeCenterScreen;
 extern bool ResumeSession;
 extern double QFEAltitudeOffset; // VENTA3
 extern int OnAirSpace; // VENTA3 toggle DrawAirSpace
