@@ -4056,7 +4056,7 @@ int GetOvertargetIndex(void) {
 		return -1;
 		break;
 	case OVT_HOME: // home waypoint
-		if (ValidNotResWayPoint(HomeWaypoint)) {
+		if (ValidWayPoint(HomeWaypoint)) {
 			index = HomeWaypoint;
 			if ( index >=0 ) return index;
 		}
