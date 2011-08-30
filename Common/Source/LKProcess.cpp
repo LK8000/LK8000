@@ -34,6 +34,8 @@ using std::max;
 #define NULLTIME	"--:--"
 #define INFINVAL	"oo"
 
+#define ISPARAGLIDER (AircraftCategory == (AircraftCategory_t)umParaglider)
+
 extern int PDABatteryPercent;
 extern int PDABatteryFlag;
 extern int PDABatteryStatus;
@@ -383,10 +385,18 @@ goto_bearing:
 				if (index>=0) {
 					value=DerivedDrawInfo.WaypointDistance*DISTANCEMODIFY;
 					valid=true;
-					if (value>99)
+					if (value>99 || value==0)
 						sprintf(text,"%.0f",value);
-					else
-						sprintf(text,"%.1f",value);
+					else {
+						if (ISPARAGLIDER) {
+							if (value>10)
+								sprintf(text,"%.1f",value);
+							else 
+								sprintf(text,"%.3f",value);
+						} else {
+							sprintf(text,"%.1f",value);
+						}
+					}
 				} else {
 					strcpy(text,NULLMEDIUM); // 091221
 				}
@@ -496,7 +506,7 @@ goto_bearing:
 					value=(DerivedDrawInfo.WaypointDistance-StartRadius)*DISTANCEMODIFY;
 					if (value<0) value*=-1; // 101112 BUGFIX
 					valid=true;
-					if (value>99)
+					if (value>99 || value==0)
 						sprintf(text,"%.0f",value);
 					else {
 						if (value>10) {
@@ -2712,10 +2722,18 @@ void MapWindow::LKFormatDist(const int wpindex, const bool wpvirtual, TCHAR *Buf
   }
   if (index>=0) {
 	value=WayPointCalc[index].Distance*DISTANCEMODIFY;
-	if (value>99)
+	if (value>99 || value==0)
 		sprintf(text,"%.0f",value);
-	else
-		sprintf(text,"%.1f",value);
+	else {
+		if (ISPARAGLIDER) {
+			if (value>10)
+				sprintf(text,"%.1f",value);
+			else 
+				sprintf(text,"%.3f",value);
+		} else {
+			sprintf(text,"%.1f",value);
+		}
+	}
   } else {
 	strcpy(text,NULLMEDIUM);
   }
