@@ -31,6 +31,7 @@
 #include "InputEvents.h"
 #include "LKMapWindow.h"
 #include "Process.h"
+#include "Waypointparser.h"
 #ifdef PNA
 #include "LKHolux.h"
 #endif
@@ -807,6 +808,79 @@ int GetVirtualWaypointMarkerSlot(void) {
   return ++CurrentMarker;
 }
 
+TCHAR *DegreesToText(double brg) {
+  static TCHAR sDeg[3];
+
+  if (brg<23||brg>=338) {; _tcscpy(sDeg,_T("North")); return(sDeg); }
+  if (brg<68) {; _tcscpy(sDeg,_T("North-West")); return(sDeg); }
+  if (brg<113) {; _tcscpy(sDeg,_T("West")); return(sDeg); }
+  if (brg<158) {; _tcscpy(sDeg,_T("South-West")); return(sDeg); }
+  if (brg<203) {; _tcscpy(sDeg,_T("South")); return(sDeg); }
+  if (brg<248) {; _tcscpy(sDeg,_T("South-East")); return(sDeg); }
+  if (brg<293) {; _tcscpy(sDeg,_T("East")); return(sDeg); }
+  if (brg<338) {; _tcscpy(sDeg,_T("North-East")); return(sDeg); }
+
+  return(_T("??"));
+
+}
+
+TCHAR *AltDiffToText(double youralt, double wpalt) {
+  static TCHAR sAdiff[20];
+
+  int altdiff=(int) (youralt - wpalt);
+  if (altdiff >=0)
+	_tcscpy(sAdiff,_T("over"));
+  else
+	_tcscpy(sAdiff,_T("below"));
+
+ return (sAdiff);
+
+}
+
+void WhereAmI(void) {
+
+  TCHAR toracle[400];
+  TCHAR ttmp[100];
+  double dist,brg;
+
+  wcscpy(toracle,_T(""));
+
+  int j=FindNearestFarVisibleWayPoint(GPS_INFO.Longitude,GPS_INFO.Latitude,50000);
+  if (!ValidNotResWayPoint(j)) goto _after_nearestwp;
+
+  DistanceBearing( WayPointList[j].Latitude,WayPointList[j].Longitude,
+	GPS_INFO.Latitude,GPS_INFO.Longitude,&dist,&brg);
+
+  _tcscat(toracle,_T("The Oracle answered:\n\n"));
+  _tcscat(toracle,_T("You are "));
+
+  // nn km south
+  if (dist>2000) {
+	if (ISPARAGLIDER)
+		_stprintf(ttmp,_T("%.1f %s %s "), dist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg));
+	else
+		_stprintf(ttmp,_T("%.0f %s %s "), dist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg));
+
+	_tcscat(toracle,ttmp);
+
+  }
+  // over/below
+  _stprintf(ttmp,_T("%s "),AltDiffToText(GPS_INFO.Altitude, WayPointList[j].Altitude));
+  _tcscat(toracle,ttmp);
+
+  // waypoint name
+  _stprintf(ttmp,_T("<%s>"), WayPointList[j].Name);
+  _tcscat(toracle,ttmp);
+
+  _stprintf(toracle,_T("%s\n%s"),toracle,_T(".... and much more!"));
+  goto _end;
+
+_after_nearestwp:
+
+  wsprintf(toracle,_T("%s"), _T("NO WAYPOINT NEAR YOU"));
+
+_end:
+  MessageBoxX(hWndMainWindow, toracle, _T("WHERE AM I ?"), MB_OK|MB_ICONQUESTION, true);
 
 
-
+}

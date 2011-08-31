@@ -79,7 +79,10 @@ int WINAPI MessageBoxX(HWND hWnd, LPCTSTR lpText, LPCTSTR lpCaption, UINT uType,
   X = ((rc.right-rc.left) - Width)/2;
   Y = ((rc.bottom-rc.top) - Height)/2;
 
-  y = DLGSCALE(100);
+  if (wfullscreen)
+	y = DLGSCALE(160);
+  else
+	y = DLGSCALE(100);
   w = DLGSCALE(60);
   h = DLGSCALE(32);
 

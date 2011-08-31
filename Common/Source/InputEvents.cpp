@@ -2033,6 +2033,12 @@ void InputEvents::eventService(const TCHAR *misc) {
 	return;
   }
 
+  if (_tcscmp(misc, TEXT("WHEREAMI")) == 0) {
+	extern void WhereAmI(void);
+	WhereAmI();
+	return;
+  }
+
   // we should not get here
   DoStatusMessage(_T("Unknown Service: "),misc);
 
