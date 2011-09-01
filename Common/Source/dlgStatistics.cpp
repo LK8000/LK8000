@@ -2066,9 +2066,31 @@ void dlgAnalysisShowModal(int inpage){
 
   wGrid = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmGrid"));
   wInfo = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmInfo"));
-  ((WndButton *)wf->FindByName(TEXT("cmdClose")))->SetOnClickNotify(OnCloseClicked);
-
+  
   wCalc = ((WndButton *)wf->FindByName(TEXT("cmdCalc")));
+
+  WndButton *wClose = (WndButton *)wf->FindByName(TEXT("cmdClose"));
+  if(wClose) {
+    wClose->SetOnClickNotify(OnCloseClicked);
+  }
+
+  /*
+    Does Not Work, Because wf->GetHeigth() Is WindowHeight and ClientRect Is Calculated By OnPaint
+    Why WndForm Do Not Use NonClientArea for Border and Caption ?
+  */
+  /*
+  WndFrame *wBtFrm = (WndFrame*)wf->FindByName(TEXT("frmButton"));
+  if(wBtFrm) {
+    wBtFrm->SetTop(wf->GetHeigth()- wBtFrm->GetHeight());
+    if(wInfo) {
+      wInfo->SetHeight(wBtFrm->GetTop()-wInfo->GetTop());
+    }
+  }
+  */
+
+  if(wGrid) {
+    wGrid->SetWidth( wf->GetWidth() - wGrid->GetLeft()-6);
+  }
 
   wf->SetTimerNotify(OnTimerNotify);
 
