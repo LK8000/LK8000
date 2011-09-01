@@ -2435,6 +2435,7 @@ void WndForm::Paint(HDC hDC){
   SIZE tsize;
   HPEN oldPen;
   HBRUSH oldBrush;
+  HFONT oldFont;
 
   if (!GetVisible()) return;
 
@@ -2449,7 +2450,7 @@ void WndForm::Paint(HDC hDC){
   SetBkColor(hDC, mColorTitle);
   SetBkMode(hDC, TRANSPARENT);
 
-  SelectObject(hDC, mhTitleFont);
+  oldFont = (HFONT)SelectObject(hDC, mhTitleFont);
   GetTextExtentPoint(hDC, mCaption, _tcslen(mCaption), &tsize);
   if (_tcslen(mCaption)==0) tsize.cy=0; //@ 101115 BUGFIX
 
@@ -2483,6 +2484,7 @@ void WndForm::Paint(HDC hDC){
 
   SelectObject(hDC, oldBrush);
   SelectObject(hDC, oldPen);
+  SelectObject(hDC, oldFont);
 
 }
 

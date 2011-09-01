@@ -99,7 +99,9 @@ void CTrace::Push(CPoint *point)
 #endif
           _valid = false;
         }
-        _compressionCostSet.erase(nextIt);
+        else {
+          _compressionCostSet.erase(nextIt);
+        }
       }
       
       _front = next;
