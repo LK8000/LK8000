@@ -4026,11 +4026,22 @@ void LocalPath(TCHAR* buffer, const TCHAR* file, int loc) {
   
 	_stprintf(buffer,TEXT("%s%S"),gmfpathname(), XCSDATADIR );
   #else
-	// get the MyDocuments directory
-	SHGetSpecialFolderPath(hWndMainWindow, buffer, loc, false);
+	//
+	// Windows PC environment
+	//
+	// Do we have a valid _System/_SYSTEM locally?
+	extern TCHAR *gmfcurrentpath();
+	_stprintf(buffer,_T("%s\\%S\\_SYSTEM"),gmfcurrentpath(),LKD_SYSTEM);
+	if (  GetFileAttributes(buffer) != 0xffffffff )  {
+		// Yes, so we use the current path folder
+		_tcscpy(buffer,gmfcurrentpath());
+	} else {
+		// No, we use MyDocuments directory
+		SHGetSpecialFolderPath(hWndMainWindow, buffer, loc, false);
 
-	_tcscat(buffer,TEXT("\\"));
-	_tcscat(buffer,TEXT(XCSDATADIR));
+		_tcscat(buffer,TEXT("\\"));
+		_tcscat(buffer,TEXT(XCSDATADIR));
+	}
   #endif
 
   if (_tcslen(file)>0) {

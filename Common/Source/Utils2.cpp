@@ -1984,7 +1984,7 @@ TCHAR * gmfpathname ()
 
 /*
  * gmfbasename returns the filename of the current executed program, without leading path.
- * Example:  xcsoar.exe 
+ * Example:  lk8000.exe
  */
 TCHAR * gmfbasename ()
 {
@@ -1992,11 +1992,11 @@ TCHAR * gmfbasename ()
   TCHAR *p, *lp;
   
   if (GetModuleFileName(NULL, gmfbasename_buffer, MAXPATHBASENAME) <= 0) {
-    StartupStore(TEXT("++++++ CRITIC- gmfbasename returned null GetModuleFileName%s"),NEWLINE); // 091119
+//    StartupStore(TEXT("++++++ CRITIC- gmfbasename returned null GetModuleFileName%s"),NEWLINE); // 091119
     return(_T("ERROR_04") );
   }
   if (gmfbasename_buffer[0] != '\\' ) {
-    StartupStore(TEXT("++++++ CRITIC- gmfbasename starting without a leading backslash%s"),NEWLINE); // 091119
+//    StartupStore(TEXT("++++++ CRITIC- gmfbasename starting without a leading backslash%s"),NEWLINE); // 091119
     return(_T("ERROR_05"));
   }
   for (p=gmfbasename_buffer+1, lp=NULL; *p != '\0'; p++)
@@ -2007,6 +2007,30 @@ TCHAR * gmfbasename ()
       }
     }
   return  lp;
+}
+
+// Windows CE does not have a "current path" concept, and there is no library function to know
+// where is the program running. 
+// Returns the current execution path like C:\Documents and Settings\username\Desktop
+TCHAR * gmfcurrentpath ()
+{
+  static TCHAR gmfbasename_buffer[MAXPATHBASENAME];
+  TCHAR *p, *lp;
+  
+  if (GetModuleFileName(NULL, gmfbasename_buffer, MAXPATHBASENAME) <= 0) {
+    return(_T("ERROR_04") );
+  }
+  for (p=gmfbasename_buffer+1, lp=NULL; *p != '\0'; p++)
+    {
+      if ( *p == '\\' ) {
+	lp=++p;
+	continue;
+      }
+    }
+
+  *lp=_T('\0');
+  *--lp=_T('\0'); // also remove trailing backslash
+  return  gmfbasename_buffer;
 }
 
 /*
