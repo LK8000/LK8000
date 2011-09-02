@@ -1045,6 +1045,7 @@ void ReadRegistrySettings(void)
   Appearance.InfoBoxGeom = (InfoBoxGeomAppearance_t)Temp;
  #endif // USEIBOX
 
+#if (WINDOWSPC<1)
   if (GlobalModelType == MODELTYPE_PNA_HP31X ) {
 			needclipping=true;
 			// key transcoding for this one
@@ -1080,6 +1081,7 @@ void ReadRegistrySettings(void)
 	}
 	else
 		StartupStore(TEXT(". No special regsets for this device%s"),NEWLINE); // VENTA2
+#endif
 
 // VENTA-ADDON Model change
   Temp = Appearance.InfoBoxModel;
