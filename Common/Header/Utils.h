@@ -488,6 +488,7 @@ bool CheckAlarms(unsigned short al);
 
 void MasterTimeReset(void);
 bool DoOptimizeRoute(void);
+TCHAR * WhatTimeIsIt(void);
 
 void MemCheckPoint();
 void MemLeakCheck();

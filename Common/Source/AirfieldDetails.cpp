@@ -222,8 +222,9 @@ void ParseAirfieldDetails() {
 
 
 void ReadAirfieldFile() {
-
+  #if TESTBENCH
   StartupStore(TEXT(". ReadAirfieldFile%s"),NEWLINE);
+  #endif
 
 	// LKTOKEN  _@M400_ = "Loading Waypoint Notes File..." 
   CreateProgressDialog(gettext(TEXT("_@M400_")));

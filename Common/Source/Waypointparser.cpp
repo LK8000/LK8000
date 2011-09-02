@@ -80,7 +80,9 @@ void CloseWayPoints() {
  
   // here we should not have any memory allocated for wps including Reswp
   if(WayPointList != NULL) {
+	#if TESTBENCH
 	StartupStore(TEXT(". WayPointList not null, LocalFree on.%s"),NEWLINE);
+	#endif
 	LocalFree((HLOCAL)WayPointList);
 	WayPointList = NULL;
 	LocalFree((HLOCAL)WayPointCalc); // VENTA3
@@ -1810,7 +1812,9 @@ void InitVirtualWaypoints()	// 091102
   if (NumberOfWayPoints<=NUMRESWP) {
 	AddReservedWaypoints();
 	NumberOfWayPoints=NUMRESWP;
+	#if TESTBENCH
 	StartupStore(_T(". InitVirtualWaypoints: done (%d vwp)%s"),NUMRESWP,NEWLINE);
+	#endif
   } else {
 	#if TESTBENCH
 	StartupStore(_T(".. InitVirtualWaypoints: already done, skipping.%s"),NEWLINE);

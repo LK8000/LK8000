@@ -774,8 +774,7 @@ bool CheckAlarms(unsigned short al) {
 //
 void MasterTimeReset(void) {
 
-  #include "./LKincludetexttime.cpp"
-  StartupStore(_T("... Master Time Reset %s%s"), time_temp,NEWLINE);
+  StartupStore(_T("... Master Time Reset %s%s"), WhatTimeIsIt(),NEWLINE);
   #if TESTBENCH
   DoStatusMessage(_T("MASTER TIME RESET")); // no translation please
   #endif
@@ -835,6 +834,18 @@ TCHAR *AltDiffToText(double youralt, double wpalt) {
 
  return (sAdiff);
 
+}
+
+TCHAR *WhatTimeIsIt(void) {
+  static TCHAR time_temp[60];
+  TCHAR tlocal[20];
+  TCHAR tutc[20];
+
+  Units::TimeToText(tlocal, (int)TimeLocal((int)(GPS_INFO.Time))),
+  Units::TimeToText(tutc, (int)GPS_INFO.Time);
+  wsprintf(time_temp, _T("h%s (UTC %s)"), tlocal, tutc);
+
+  return (time_temp);
 }
 
 void WhereAmI(void) {

@@ -1592,7 +1592,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
   }
 
   CCriticalSection::CGuard guard(_csairspaces);
-  StartupStore(TEXT(". Readed %d airspaces%s"), _airspaces.size(), NEWLINE);
+  StartupStore(TEXT(". Read %d airspaces%s"), _airspaces.size(), NEWLINE);
   // For debugging, dump all readed airspaces to runtime.log
   //CAirspaceList::iterator it;
   //for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) (*it)->Dump();
@@ -1830,7 +1830,9 @@ bool airspace_sorter(CAirspace *a, CAirspace *b)
 
 void CAirspaceManager::SortAirspaces(void)
 {
+  #if TESTBENCH
   StartupStore(TEXT(". SortAirspace%s"),NEWLINE);
+  #endif
 
   // Sort by top altitude for drawing
   CCriticalSection::CGuard guard(_csairspaces);

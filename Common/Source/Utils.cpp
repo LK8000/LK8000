@@ -438,7 +438,9 @@ void ReadRegistrySettings(void)
   //DWORD Temp2 = 0; // 091207
   int i;
 
+  #if TESTBENCH
   StartupStore(TEXT(". Read registry settings%s"),NEWLINE);
+  #endif
 
   for (i=0; i<AIRSPACECLASSCOUNT; i++) {
     Temp=0;
@@ -3581,7 +3583,9 @@ TCHAR *strsep_r(TCHAR *s, TCHAR *delim, TCHAR **lasts){
 
 
 void StatusFileInit() {
+  #if TESTBENCH
   StartupStore(TEXT(". StatusFileInit%s"),NEWLINE);
+  #endif
 
   // DEFAULT - 0 is loaded as default, and assumed to exist
   StatusMessageData[0].key = TEXT("DEFAULT");
@@ -4295,7 +4299,9 @@ TCHAR defaultProfileFile[MAX_PATH];
 TCHAR failsafeProfileFile[MAX_PATH];
 
 void RestoreRegistry(void) {
+  #if TESTBENCH
   StartupStore(TEXT(". Restore registry%s"),NEWLINE);
+  #endif
   // load registry backup if it exists
   LoadRegistryFromFile(failsafeProfileFile);
   LoadRegistryFromFile(startProfileFile);

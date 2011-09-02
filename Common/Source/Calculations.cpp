@@ -777,8 +777,7 @@ bool FlightTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if ((Basic->Time != 0) && (Basic->Time <= LastTime)) {
 	if ( (LastTime - Basic->Time >30 ) && (!Basic->NAVWarning)) {
 		// Reset statistics.. (probably due to being in IGC replay mode)
-		#include "./LKincludetexttime.cpp"
-		StartupStore(_T("... Time is in the past! %s%s"), time_temp,NEWLINE);
+		StartupStore(_T("... Time is in the past! %s%s"), WhatTimeIsIt(),NEWLINE);
 
 		ResetFlightStats(Basic, Calculated);
 		time_in_flight=0;
@@ -4504,8 +4503,7 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	if (time_in_flight>10) {
 		InputEvents::processGlideComputer(GCE_TAKEOFF);
 
-		#include "./LKincludetexttime.cpp"
-		StartupStore(_T(". TAKEOFF %s%s"), time_temp,NEWLINE);
+		StartupStore(_T(". TAKEOFF %s%s"), WhatTimeIsIt(),NEWLINE);
 
 		// Reset stats on takeoff, but not in SIM mode 
 		// If replaying a file, we do reset of course.
@@ -4535,8 +4533,7 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		// have been stationary for a minute
 		InputEvents::processGlideComputer(GCE_LANDING);
 
-		#include "./LKincludetexttime.cpp"
-		StartupStore(_T(". LANDED %s%s"), time_temp,NEWLINE);
+		StartupStore(_T(". LANDED %s%s"), WhatTimeIsIt(),NEWLINE);
 
 		// JMWX  restore data calculated at finish so
 		// user can review flight as at finish line

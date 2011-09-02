@@ -1947,8 +1947,7 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
   #endif
   DoStatusMessage(gettext(TEXT("_@M1452_")));  // LKTOKEN  _@M1452_ = "Free flight detected"
 
-  #include "./LKincludetexttime.cpp"
-  StartupStore(_T(". Free Flight started %s%s"), time_temp,NEWLINE);
+  StartupStore(_T(". Free Flight started %s%s"), WhatTimeIsIt(),NEWLINE);
 
   ffDetected=true;
   Calculated->FreeFlying=true;

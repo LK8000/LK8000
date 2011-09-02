@@ -2023,7 +2023,9 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   // LKTOKEN _@M1217_ "Starting devices"
   // Please check that the number of devices is not exceeding NUMREGDEV in device.h
   CreateProgressDialog(gettext(TEXT("_@M1217_")));
+  #if TESTBENCH
   StartupStore(TEXT(". Register serial devices%s"),NEWLINE);
+  #endif
   disRegister(); // must be first
   genRegister(); // must be second, since we Sort(2) in dlgConfiguration
   cai302Register();
@@ -3181,8 +3183,7 @@ void Shutdown(void) {
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
   CreateProgressDialog(gettext(TEXT("_@M1219_")));
 
-  #include "./LKincludetexttime.cpp"
-  StartupStore(_T(". Entering shutdown %s%s"), time_temp,NEWLINE);
+  StartupStore(_T(". Entering shutdown %s%s"), WhatTimeIsIt(),NEWLINE);
   StartupLogFreeRamAndStorage();
 
   // turn off all displays
@@ -3243,7 +3244,9 @@ void Shutdown(void) {
 
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
   CreateProgressDialog(gettext(TEXT("_@M1219_")));
+  #if TESTBENCH
   StartupStore(TEXT(". CloseTerrainTopology%s"),NEWLINE);
+  #endif
 
 #if USEWEATHER
   RASP.Close();
@@ -3265,8 +3268,9 @@ void Shutdown(void) {
   ProgramStarted = psInitInProgress;
 
   // Kill windows
-
+  #if TESTBENCH
   StartupStore(TEXT(". Close Messages%s"),NEWLINE);
+  #endif
   Message::Destroy();
   #if USEIBOX 
   Units::UnLoadUnitBitmap();
@@ -3275,11 +3279,14 @@ void Shutdown(void) {
   StartupStore(TEXT(". Destroy Info Boxes%s"),NEWLINE);
   InfoBoxLayout::DestroyInfoBoxes();
   #endif
-  
+  #if TESTBENCH 
   StartupStore(TEXT(". Destroy Button Labels%s"),NEWLINE);
+  #endif
   ButtonLabel::Destroy();
 
+  #if TESTBENCH
   StartupStore(TEXT(". Delete Objects%s"),NEWLINE);
+  #endif
   
   //  CommandBar_Destroy(hWndCB);
 
@@ -3328,8 +3335,9 @@ void Shutdown(void) {
   StartupStore(TEXT(". Close Progress Dialog%s"),NEWLINE);
 
   CloseProgressDialog();
-
+  #if TESTBENCH
   StartupStore(TEXT(". Close Calculations%s"),NEWLINE);
+  #endif
   CloseCalculations();
 
   CloseGeoid();
@@ -3356,7 +3364,7 @@ void Shutdown(void) {
 		ComPortStatus[i], ComPortRx[i],ComPortTx[i], ComPortErrRx[i],ComPortErrTx[i],ComPortErrors[i],NEWLINE);
 	}
   }
-  StartupStore(TEXT(". Finished shutdown%s"),NEWLINE);
+  StartupStore(_T(". Finished shutdown %s%s"), WhatTimeIsIt(),NEWLINE);
   LKRunStartEnd(false);
   // quitting PC version while menus are up will not terminate correctly. this is a workaround
   #if (WINDOWSPC>0)
@@ -3538,8 +3546,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	if (ProgramStarted==psFirstDrawDone) {
 	  AfterStartup();
 	  ProgramStarted = psNormalOp;
-          #include "./LKincludetexttime.cpp"
-          StartupStore(_T(". ProgramStarted=NormalOp %s%s"), time_temp,NEWLINE);
+          StartupStore(_T(". ProgramStarted=NormalOp %s%s"), WhatTimeIsIt(),NEWLINE);
           StartupLogFreeRamAndStorage();
 
 	}
