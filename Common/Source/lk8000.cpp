@@ -1224,6 +1224,7 @@ void SettingsLeave() {
 	SaveDefaultTask(); //@ 101020 BUGFIX
 	ClearTask();
 	ReadWayPoints();
+	StartupStore(_T(". Total %d waypoints%s"),NumberOfWayPoints,NEWLINE);
 	InitWayPointCalc();
 	ReadAirfieldFile();
 	SetHome(true); // force home reload
@@ -1988,6 +1989,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   RasterTerrain::OpenTerrain();
 
   ReadWayPoints();
+  StartupStore(_T(". Total %d waypoints%s"),NumberOfWayPoints,NEWLINE);
   InitWayPointCalc(); 
   InitLDRotary(&rotaryLD); 
   InitWindRotary(&rotaryWind); // 100103
