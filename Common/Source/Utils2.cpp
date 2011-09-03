@@ -831,7 +831,9 @@ gesture_left:
 			return 40;
 	}
 #if UNGESTURES
-	if (dontdrawthemap && ModeIndex == LKMODE_INFOMODE) {
+	// No need to use gestures if clicking on right or left center border screen
+	// This will dramatically speed up the user interface in turbulence
+	if (dontdrawthemap) {
 		if (X<=s_xleft) goto gesture_left;
 		if (X>=s_xright) goto gesture_right;
 	}
