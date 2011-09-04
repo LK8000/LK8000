@@ -1719,3 +1719,5 @@ void CheckBackTarget(int flarmslot) {
   }
 }
 
+#include "LKSimTraffic.cpp"
+

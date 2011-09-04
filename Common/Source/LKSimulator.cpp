@@ -69,11 +69,13 @@ void LKSimulator(void) {
   #if SIMLANDING
   static bool crashed=false, landedwarn=true;
   #endif
-  static bool doinit=true, landing=false, stallwarn=true, circling=false;
+  static bool doinit=true, landing=false, stallwarn=true, circling=false, flarmwasinit=false;
   static short counter=0;
 
   double tdistance, tbearing;
   double thermalstrength=0, sinkstrength=0;
+
+  extern void SimFlarmTraffic(long id, double offset);
 
   if (doinit||!CALCULATED_INFO.TerrainValid) {
 	if (counter++<3) {
@@ -93,13 +95,40 @@ void LKSimulator(void) {
 	ThLatitude=GPS_INFO.Latitude-0.022;
 	ThLongitude=GPS_INFO.Longitude-0.022;
 
-
+	if (EnableFLARMMap) {
+		srand( GetTickCount());
+		SimFlarmTraffic(0xdd8951,22.0+(double)(rand()/1000.0));
+		SimFlarmTraffic(0xdd8944,31.0+(double)(rand()/1000.0));
+		SimFlarmTraffic(0xdd8a43,16.0+(double)(rand()/1000.0));
+		SimFlarmTraffic(0xdd8a42,41.0+(double)(rand()/1000.0));
+	}
 	doinit=false;
   }
 
 
+
   if (ISGAAIRCRAFT) {
 	// todo: fuel consumption, engine efficiency etc.
+  }
+
+  // We cannot use doinit for flarm, because it could be enabled from configuration AFTER startup,
+  // and it must work all the way the same in order not to confuse users.
+  if (EnableFLARMMap) {
+	if (!flarmwasinit) {
+		srand( GetTickCount());
+		// Add a poker of traffic for the boys
+		SimFlarmTraffic(0xdd8951,22.0+(double)(rand()/1000.0));
+		SimFlarmTraffic(0xdd8944,31.0+(double)(rand()/1000.0));
+		SimFlarmTraffic(0xdd8a43,16.0+(double)(rand()/1000.0));
+		SimFlarmTraffic(0xdd8a42,41.0+(double)(rand()/1000.0));
+		DoStatusMessage(gettext(TEXT("_@M279_"))); // FLARM DETECTED (in sim)
+		flarmwasinit=true;
+	} else {
+		// Let one of the objects be a ghost and a zombie, and keep the rest real
+		SimFlarmTraffic(0xdd8951,0);
+		SimFlarmTraffic(0xdd8944,0);
+		SimFlarmTraffic(0xdd8a43,0);
+	}
   }
 
   if (ISPARAGLIDER || ISGLIDER) {
