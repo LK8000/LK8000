@@ -2034,8 +2034,8 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
 
   if (_tcscmp(misc, TEXT("WHEREAMI")) == 0) {
-	extern void WhereAmI(void);
-	WhereAmI();
+	extern void dlgOracleShowModal(void);
+	dlgOracleShowModal();
 	return;
   }
 

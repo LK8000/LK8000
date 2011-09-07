@@ -274,31 +274,31 @@ UTILS	:=\
 	$(SRC)/utils/stringext.cpp
   
 DEVS	:=\
+	$(SRC)/devBase.cpp \
 	$(SRC)/devBorgeltB50.cpp \
 	$(SRC)/devCAI302.cpp \
 	$(SRC)/devCaiGpsNav.cpp \
+	$(SRC)/devCompeo.cpp \
 	$(SRC)/devCondor.cpp \
+	$(SRC)/devDigifly.cpp \
+	$(SRC)/devDisabled.cpp \
+	$(SRC)/devDSX.cpp \
 	$(SRC)/devEW.cpp \
 	$(SRC)/devEWMicroRecorder.cpp \
 	$(SRC)/devFlymasterF1.cpp \
-	$(SRC)/devCompeo.cpp \
-	$(SRC)/devDigifly.cpp \
+	$(SRC)/devFlytec.cpp \
 	$(SRC)/devGeneric.cpp \
-	$(SRC)/devDisabled.cpp \
-	$(SRC)/devBase.cpp \
+	$(SRC)/devIlec.cpp \
+	$(SRC)/devIMI.cpp \
+	$(SRC)/devNmeaOut.cpp \
+	$(SRC)/devLKext1.cpp \
 	$(SRC)/devLX.cpp \
 	$(SRC)/devLXNano.cpp \
-	$(SRC)/devNmeaOut.cpp \
 	$(SRC)/devPosiGraph.cpp \
 	$(SRC)/devVolkslogger.cpp \
 	$(SRC)/devXCOM760.cpp \
 	$(SRC)/devZander.cpp \
-	$(SRC)/devIlec.cpp \
-	$(SRC)/devDSX.cpp \
-	$(SRC)/devIMI.cpp \
 	$(SRC)/devWesterboer.cpp \
-	$(SRC)/devFlytec.cpp \
-	$(SRC)/devLKext1.cpp \
 
 DLGS	:=\
 	$(SRC)/dlgAirspace.cpp \
@@ -308,14 +308,22 @@ DLGS	:=\
 	$(SRC)/dlgAirspacePatterns.cpp \
 	$(SRC)/dlgAirspaceSelect.cpp \
 	$(SRC)/dlgAirspaceWarning.cpp \
-	$(SRC)/dlgLKAirspaceWarning.cpp \
 	$(SRC)/dlgBasicSettings.cpp \
+	$(SRC)/dlgBottomBar.cpp \
 	$(SRC)/dlgChecklist.cpp \
 	$(SRC)/dlgConfiguration.cpp \
 	$(SRC)/dlgConfiguration2.cpp \
+	$(SRC)/dlgCustomKeys.cpp \
+	$(SRC)/dlgFontEdit.cpp \
 	$(SRC)/dlgHelp.cpp \
+	$(SRC)/dlgInfoPages.cpp \
+	$(SRC)/dlgLKAirspaceWarning.cpp \
+	$(SRC)/dlgLKTraffic.cpp \
 	$(SRC)/dlgLoggerReplay.cpp \
+	$(SRC)/dlgOracle.cpp \
+	$(SRC)/dlgProfiles.cpp \
 	$(SRC)/dlgStartPoint.cpp \
+	$(SRC)/dlgStartTask.cpp \
 	$(SRC)/dlgStartup.cpp \
 	$(SRC)/dlgStatistics.cpp \
 	$(SRC)/dlgStatus.cpp \
@@ -329,6 +337,7 @@ DLGS	:=\
 	$(SRC)/dlgTaskWaypoint.cpp \
 	$(SRC)/dlgTeamCode.cpp \
 	$(SRC)/dlgTextEntry_Keyboard.cpp \
+	$(SRC)/dlgThermalDetails.cpp \
 	$(SRC)/dlgTools.cpp \
 	$(SRC)/dlgWayPointDetails.cpp \
 	$(SRC)/dlgWayQuick.cpp \
@@ -337,14 +346,6 @@ DLGS	:=\
 	$(SRC)/dlgWaypointOutOfTerrain.cpp \
 	$(SRC)/dlgWeather.cpp \
 	$(SRC)/dlgWindSettings.cpp \
-	$(SRC)/dlgStartTask.cpp \
-	$(SRC)/dlgFontEdit.cpp \
-	$(SRC)/dlgLKTraffic.cpp \
-	$(SRC)/dlgCustomKeys.cpp \
-	$(SRC)/dlgBottomBar.cpp \
-	$(SRC)/dlgInfoPages.cpp \
-	$(SRC)/dlgProfiles.cpp \
-	$(SRC)/dlgThermalDetails.cpp \
 
 VOLKS	:=\
 	$(SRC)/Volkslogger/dbbconv.cpp \

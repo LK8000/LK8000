@@ -848,6 +848,8 @@ TCHAR *WhatTimeIsIt(void) {
   return (time_temp);
 }
 
+
+// This is called by the Draw thread 
 void WhereAmI(void) {
 
   TCHAR toracle[400];
@@ -862,7 +864,6 @@ void WhereAmI(void) {
   DistanceBearing( WayPointList[j].Latitude,WayPointList[j].Longitude,
 	GPS_INFO.Latitude,GPS_INFO.Longitude,&dist,&brg);
 
-  _tcscat(toracle,_T("The Oracle answered:\n\n"));
   _tcscat(toracle,_T("You are "));
 
   // nn km south
@@ -883,7 +884,7 @@ void WhereAmI(void) {
   _stprintf(ttmp,_T("<%s>"), WayPointList[j].Name);
   _tcscat(toracle,ttmp);
 
-  _stprintf(toracle,_T("%s\n%s"),toracle,_T(".... and much more!"));
+  _stprintf(toracle,_T("%s\n%s"),toracle,_T(".. work in progress .."));
   goto _end;
 
 _after_nearestwp:
@@ -891,7 +892,7 @@ _after_nearestwp:
   wsprintf(toracle,_T("%s"), _T("NO WAYPOINT NEAR YOU"));
 
 _end:
-  MessageBoxX(hWndMainWindow, toracle, _T("WHERE AM I ?"), MB_OK|MB_ICONQUESTION, true);
-
+  MessageBoxX(hWndMainWindow, toracle, gettext(_T("_@M1690_")), MB_OK|MB_ICONQUESTION, true);
 
 }
+

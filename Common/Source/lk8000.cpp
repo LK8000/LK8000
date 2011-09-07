@@ -347,6 +347,11 @@ int ActiveAlternate = -1; // VENTA3
 double GPSAltitudeOffset = 0; // VENTA3
 bool	UseGeoidSeparation=false;
 bool	PressureHg=false;
+
+// This will calculate nearest topology without painting it, for 1s only.
+// It will be automatically cleared by Terrain  DrawTopology()
+bool ForceNearestTopologyCalculation=false; 
+
 #if USEIBOX
 // 100413 shortcut on aircraft icon for ibox switching with medium click
 // bool	ShortcutIbox=true;

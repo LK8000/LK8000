@@ -18,6 +18,7 @@ using std::min;
 using std::max;
 
 extern HFONT MapLabelFont;
+extern bool ForceNearestTopologyCalculation;
 
 XShape::XShape() {
   hide=false;
@@ -234,10 +235,18 @@ Topology::~Topology() {
 
 
 bool Topology::CheckScale(void) {
+  // Special case: all topology items are loaded ignoring their scaleThresholds
+  if (ForceNearestTopologyCalculation) {
+	if ( scaleCategory==10|| (scaleCategory>=70 && scaleCategory<=100))
+		return true;
+	else
+		return false;
+  }
+
   if (scaleCategory==10)
-    return (MapWindow::zoom.Scale() <= scaleDefaultThreshold);
+	return (MapWindow::zoom.Scale() <= scaleDefaultThreshold);
   else
-  return (MapWindow::zoom.Scale() <= scaleThreshold);
+	return (MapWindow::zoom.Scale() <= scaleThreshold);
 }
 
 void Topology::TriggerIfScaleNowVisible(void) {
@@ -688,13 +697,24 @@ XShape* TopologyLabel::addShape(const int i) {
   return theshape;
 }
 
+bool XShapeLabel::nearestItem(int category, double lat, double lon, bool flag) {
+
+  // Only an example, we should instead create the nearest topology list
+  TCHAR Temp[100];
+  int size = MultiByteToWideChar(CP_ACP, 0, label, -1, Temp, 100) - 1;
+  if (size <= 0) return false;	
+  StartupStore(_T("... [%d] cat=%d, <%s> lat=%f lon=%f\n"),flag,category, Temp,lat,lon);
+  return true;
+
+}
+
 // Print topology labels
 bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
   if (label && ((MapWindow::DeclutterLabels==MAPLABELS_ALLON)||(MapWindow::DeclutterLabels==MAPLABELS_ONLYTOPO))) {
 
 	TCHAR Temp[100];
-	int size = MultiByteToWideChar(CP_ACP, 0, label, -1, Temp, 100) - 1;			//ANSI to UNICODE
-	if (size <= 0) return false;													//Do not waste time with null labels
+	int size = MultiByteToWideChar(CP_ACP, 0, label, -1, Temp, 100) - 1;	//ANSI to UNICODE
+	if (size <= 0) return false;						//Do not waste time with null labels
 
 	SetBkMode(hDC,TRANSPARENT);
 
@@ -1396,3 +1416,85 @@ tb_boundOut:
 }
 
 #endif
+
+
+
+void Topology::SearchNearest(RECT rc) {
+
+  if (!shapefileopen) return;
+
+  int iskip = 1;
+  rectObj screenRect = MapWindow::screenbounds_latlon;
+  static POINT pt[MAXCLIPPOLYGON];
+
+  for (int ixshp = 0; ixshp < shpfile.numshapes; ixshp++) {
+    
+	XShape *cshape = shpCache[ixshp];
+	if (!cshape || cshape->hide) continue;    
+	shapeObj *shape = &(cshape->shape);
+
+	switch(shape->type) {
+
+	   case(MS_SHAPE_POINT):
+
+		if (checkVisible(*shape, screenRect)) {
+			for (int tt = 0; tt < shape->numlines; tt++) {
+				for (int jj=0; jj< shape->line[tt].numpoints; jj++) {
+					cshape->nearestItem(scaleCategory, shape->line[tt].point[jj].x, shape->line[tt].point[jj].y, 1);
+				}
+			}
+		}
+		break;
+
+	   case(MS_SHAPE_LINE):
+/*
+		if (checkVisible(*shape, screenRect)) {
+			for (int tt = 0; tt < shape->numlines; tt ++) {
+          
+				int minx = rc.right;
+				int miny = rc.bottom;
+				int msize = min(shape->line[tt].numpoints, MAXCLIPPOLYGON);
+
+				MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize, 1);
+				for (int jj=0; jj< msize; jj++) {
+					if (pt[jj].x<=minx) {
+						minx = pt[jj].x;
+						miny = pt[jj].y;
+					}
+				}
+
+				cshape->nearestItem(scaleCategory, shape->line[tt].point[0].x, shape->line[tt].point[0].y, 1);
+			}
+		}
+*/
+		break;
+      
+	   case(MS_SHAPE_POLYGON):
+
+		if (checkVisible(*shape, screenRect)) {
+			for (int tt = 0; tt < shape->numlines; tt ++) {
+				int minx = rc.right;
+				int miny = rc.bottom;
+				int msize = min(shape->line[tt].numpoints/iskip, MAXCLIPPOLYGON);
+
+				MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize*iskip, iskip);
+
+				for (int jj=0; jj< msize; jj++) {
+					if (pt[jj].x<=minx) {
+						minx = pt[jj].x;
+						miny = pt[jj].y;
+					}
+				}
+
+	  			cshape->nearestItem(scaleCategory, shape->line[tt].point[0].x, shape->line[tt].point[0].y, 0);
+			}
+		}
+		break;
+      
+	   default:
+		break;
+
+    } // switch type of shape
+  } // for all shapes in this category
+} // Topology SearchNearest
+

@@ -22,6 +22,7 @@ class XShape {
   virtual void load(shapefileObj* shpfile, int i);
   virtual void clear();
   virtual bool renderSpecial(HDC hdc, int x, int y, bool RetVal) { (void)x; (void)y; (void)hdc; return(RetVal);};
+  virtual bool nearestItem(int category, double lat, double lon, bool flag) { (void)category; (void)lat; (void)lon; return(flag);};
 
   bool hide;
   shapeObj shape;
@@ -39,6 +40,7 @@ class XShapeLabel: public XShape {
   char *label;
   void setlabel(const char* src);
   virtual bool renderSpecial(HDC hdc, int x, int y, bool RetVal);
+  virtual bool nearestItem(int category, double lat, double lon, bool flag);
 };
 
 
@@ -55,6 +57,7 @@ class Topology {
 
   void updateCache(rectObj thebounds, bool purgeonly=false);
   void Paint(HDC hdc, RECT rc);
+  void SearchNearest(RECT rc);
 
   double scaleThreshold;
   double scaleDefaultThreshold;

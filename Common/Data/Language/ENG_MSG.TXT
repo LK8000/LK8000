@@ -1613,7 +1613,13 @@ _@M1687_ "Toggle Optimize Route"
 
 # Customkey name
 _@M1688_ "Screen Lock"
-_@M1689_ "Where Am I ?"
+_@M1689_ "Oracle"
+
+# ORACLE
+_@M1690_ "THE LK8000 ORACLE"
+_@M1691_ "THE ORACLE IS THINKING"
+_@M1692_ "PLEASE WAIT..."
+
 
 ############################################################
 #                  - MENU MESSAGES - 

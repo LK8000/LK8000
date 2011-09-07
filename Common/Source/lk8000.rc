@@ -133,6 +133,8 @@ IDR_XML_CONFIGURATION   XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgConfiguratio
 IDR_XML_FONTEDIT        XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgFontEdit.xml"
 IDR_XML_LOGGERREPLAY    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgLoggerReplay.xml"
 IDR_XML_STARTUP         XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgStartup.xml"
+IDR_XML_ORACLE         XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgOracle.xml"
+IDR_XML_ORACLE_L       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgOracle_L.xml"
 IDR_XML_FLYSIM         XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgFlySim.xml"
 IDR_XML_FLYSIM_L         XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgFlySim_L.xml"
 IDR_XML_STATUS          XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgStatus.xml"
