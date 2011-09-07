@@ -1,0 +1,9 @@
+<PMML>
+<WndForm Name="frmOracle" Type="Dialog" Caption="_@M1690_" X=0 Y=0 Width=320 Height=240 BackColor=0 Font=2  >
+<WndProperty Name="a" Caption="_@M1691_" X=50 Y=50 Width=235 Height=22 CaptionWidth=235 Font=3 ReadOnly=1 >
+</WndProperty>
+<WndProperty Name="b" Caption="_@M1692_" X=50 Y=-997 Width=235 Height=22 CaptionWidth=235 Font=3 ReadOnly=1 >
+</WndProperty>
+</WndForm>    
+</PMML>
+
