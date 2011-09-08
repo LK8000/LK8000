@@ -77,13 +77,14 @@ void LKSimulator(void) {
 
   extern void SimFlarmTraffic(long id, double offset);
 
-  if (doinit||!CALCULATED_INFO.TerrainValid) {
-	if (counter++<3) {
+  if (doinit) {
+	if (counter++<4) {
 		UnlockFlightData();
 		return;
 	}
-	if (ALTITUDE==0)
-		if (CALCULATED_INFO.TerrainValid) ALTITUDE= CALCULATED_INFO.TerrainAlt;
+	#if TESTBENCH
+	StartupStore(_T(". SIMULATOR: real init%s"),NEWLINE);
+	#endif
 
 	// Add a couple of thermals for the boys
 	InsertThermalHistory(GPS_INFO.Time-1887, GPS_INFO.Latitude-0.52, GPS_INFO.Longitude-0.52, 873, 1478,1.5);
@@ -105,6 +106,9 @@ void LKSimulator(void) {
 	doinit=false;
   }
 
+  // First Aircraft min altitude is at ground level
+  if (ALTITUDE==0)
+	if (CALCULATED_INFO.TerrainValid) ALTITUDE= CALCULATED_INFO.TerrainAlt;
 
 
   if (ISGAAIRCRAFT) {

@@ -2424,7 +2424,7 @@ int FindNearestFarVisibleWayPoint(double X, double Y, double maxRange)
   }
 
   #if TESTBENCH
-  StartupStore(_T("...... Checked %d farvisibles waypoints\n"),farvisibles);
+  StartupStore(_T("...... Checked %d farvisibles waypoints for maxRange=%f\n"),farvisibles,maxRange);
   #endif
 
   if(nearestDistance < maxRange) {
