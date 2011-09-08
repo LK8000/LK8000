@@ -111,7 +111,10 @@ int WINAPI MessageBoxX(HWND hWnd, LPCTSTR lpText, LPCTSTR lpCaption, UINT uType,
   /* TODO code: this doesnt work to set font height 
   dY = wText->GetLastDrawTextHeight() - Height;
   */
-  dY = DLGSCALE(-40);
+  if (wfullscreen)
+	dY=0;
+  else
+	dY = DLGSCALE(-40);
   // wText->SetHeight(wText->GetLastDrawTextHeight()+5);
   wf->SetHeight(wf->GetHeight() + dY);
 
