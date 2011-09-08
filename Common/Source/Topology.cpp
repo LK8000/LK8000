@@ -782,7 +782,7 @@ bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
 		if (!MapWindow::checkLabelBlock(brect)) return false;
 		#endif
 	}
-	SetTextColor(hDC, RGB_PETROL);
+	SetTextColor(hDC, RGB(0,33,33)); // PETROL /2
     
 	ExtTextOut(hDC, x, y, 0, NULL, Temp, size, NULL);
 	return true; // 101016
