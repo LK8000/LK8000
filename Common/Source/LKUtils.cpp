@@ -818,15 +818,14 @@ int GetVirtualWaypointMarkerSlot(void) {
 
 TCHAR *DegreesToText(double brg) {
   static TCHAR sDeg[3];
-
   if (brg<23||brg>=338) {; _tcscpy(sDeg,_T("North")); return(sDeg); }
-  if (brg<68) {; _tcscpy(sDeg,_T("North-West")); return(sDeg); }
-  if (brg<113) {; _tcscpy(sDeg,_T("West")); return(sDeg); }
-  if (brg<158) {; _tcscpy(sDeg,_T("South-West")); return(sDeg); }
+  if (brg<68) {; _tcscpy(sDeg,_T("North-East")); return(sDeg); }
+  if (brg<113) {; _tcscpy(sDeg,_T("East")); return(sDeg); }
+  if (brg<158) {; _tcscpy(sDeg,_T("South-East")); return(sDeg); }
   if (brg<203) {; _tcscpy(sDeg,_T("South")); return(sDeg); }
-  if (brg<248) {; _tcscpy(sDeg,_T("South-East")); return(sDeg); }
-  if (brg<293) {; _tcscpy(sDeg,_T("East")); return(sDeg); }
-  if (brg<338) {; _tcscpy(sDeg,_T("North-East")); return(sDeg); }
+  if (brg<248) {; _tcscpy(sDeg,_T("South-West")); return(sDeg); }
+  if (brg<293) {; _tcscpy(sDeg,_T("West")); return(sDeg); }
+  if (brg<338) {; _tcscpy(sDeg,_T("North-West")); return(sDeg); }
 
   return(_T("??"));
 
@@ -871,18 +870,18 @@ void WhereAmI(void) {
 
   #if TESTBENCH
   if (NearestCity.Valid)
-	StartupStore(_T("... NEAREST CITY <%s>  at %.0f km\n"),NearestCity.Name,NearestCity.Distance/1000);
+	StartupStore(_T("... NEAREST CITY <%s>  at %.0f km brg=%.0f\n"),NearestCity.Name,NearestCity.Distance/1000,NearestCity.Bearing);
   if (NearestSmallCity.Valid)
-	StartupStore(_T("... NEAREST TOWN <%s>  at %.0f km\n"),NearestSmallCity.Name,NearestSmallCity.Distance/1000);
+	StartupStore(_T("... NEAREST TOWN <%s>  at %.0f km brg=%.0f\n"),NearestSmallCity.Name,NearestSmallCity.Distance/1000,NearestSmallCity.Bearing);
   if (NearestWaterArea.Valid)
-	StartupStore(_T("... NEAREST WATER AREA <%s>  at %.0f km\n"),NearestWaterArea.Name,NearestWaterArea.Distance/1000);
+	StartupStore(_T("... NEAREST WATER AREA <%s>  at %.0f km brg=%.0f\n"),NearestWaterArea.Name,NearestWaterArea.Distance/1000,NearestWaterArea.Bearing);
   #endif
 
 
   _stprintf(toracle,_T("%s\n\n"), _T("POSITION:"));
 
   if (NearestCity.Valid && NearestSmallCity.Valid) {
-	// calculate TODO middle distance
+	
 	if ( (NearestCity.Distance - NearestSmallCity.Distance) <=3000) 
 		item=&NearestCity;
 	else
@@ -903,9 +902,9 @@ void WhereAmI(void) {
 		// 2km South of city
 		//
 		if (ISPARAGLIDER)
-			_stprintf(ttmp,_T("%.1f %s %s %s "), dist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg),_T("of"));
+			_stprintf(ttmp,_T("%.1f %s %s %s "), dist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg),_T("of the city"));
 		else
-			_stprintf(ttmp,_T("%.0f %s %s %s "), dist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg),_T("of"));
+			_stprintf(ttmp,_T("%.0f %s %s %s "), dist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg),_T("of the city"));
 
 		_tcscat(toracle,ttmp);
 
@@ -913,11 +912,11 @@ void WhereAmI(void) {
 		//
 		//  Over city
 		//
-  		_stprintf(ttmp,_T("%s "),_T("Over "));
+  		_stprintf(ttmp,_T("%s "),_T("Over the city of"));
  		 _tcscat(toracle,ttmp);
 		over=true;
 	  }
-	  _stprintf(ttmp,_T("%s"), item->Name);
+	  _stprintf(ttmp,_T("<%s>"), item->Name);
 	  _tcscat(toracle,ttmp);
 	  found=true;
   }
@@ -995,9 +994,37 @@ void WhereAmI(void) {
 
   found=true;
 
-  DistanceBearing( WayPointList[j].Latitude,WayPointList[j].Longitude,
-	GPS_INFO.Latitude,GPS_INFO.Longitude,&wpdist,&brg);
+  DistanceBearing( 
+WayPointList[j].Latitude,WayPointList[j].Longitude, 
+GPS_INFO.Latitude, GPS_INFO.Longitude, 
+	&wpdist,&brg);
 
+  TCHAR wptype[30];
+  switch(WayPointList[j].Style) {
+	case 2:
+	case 4:
+ 		_stprintf(wptype,_T("%s "), _T("the airfield"));
+		break;
+	case 3:
+ 		_stprintf(wptype,_T("%s "), _T("the field"));
+		break;
+	case 5:
+ 		_stprintf(wptype,_T("%s "), _T("the airport"));
+		break;
+	default:
+		_tcscpy(wptype,_T(""));
+		break;
+  }
+
+  if ( (_tcslen(wptype)==0) && WayPointCalc[j].IsLandable) {
+	if (WayPointCalc[j].IsAirport)  {
+ 		 _stprintf(wptype,_T("%s "), _T("the airfield"));
+	} else {
+ 		 _stprintf(wptype,_T("%s "), _T("the field"));
+	}
+  } else {
+	if (_tcslen(wptype)==0 ) _tcscpy(wptype,_T(""));
+  }
 
   // nn km south
   if (wpdist>2000) {
@@ -1012,7 +1039,7 @@ void WhereAmI(void) {
 
 	_tcscat(toracle,ttmp);
 
- 	 _stprintf(ttmp,_T("%s %s"), _T("of"),WayPointList[j].Name);
+ 	 _stprintf(ttmp,_T("%s %s<%s>"), _T("of"),wptype,WayPointList[j].Name);
  	 _tcscat(toracle,ttmp);
 
   } else {
@@ -1027,24 +1054,24 @@ void WhereAmI(void) {
 				// Over city and lake
 				// near waypoint
 
-	 			_stprintf(ttmp,_T("\n%s %s"), _T("near to"),WayPointList[j].Name);
+	 			_stprintf(ttmp,_T("\n%s %s<%s>"), _T("near to"),wptype,WayPointList[j].Name);
 	 			_tcscat(toracle,ttmp);
 			} else {
 				// Over city 
 				// near lake and waypoint
 
-	 			_stprintf(ttmp,_T(" %s %s"), _T("and"),WayPointList[j].Name);
+	 			_stprintf(ttmp,_T(" %s %s<%s>"), _T("and"),wptype,WayPointList[j].Name);
 	 			_tcscat(toracle,ttmp);
 			}
 		} else {
- 			_stprintf(ttmp,_T("\n%s %s"), _T("near to"),WayPointList[j].Name);
+ 			_stprintf(ttmp,_T("\n%s %s<%s>"), _T("near to"),wptype,WayPointList[j].Name);
  			_tcscat(toracle,ttmp);
 		}
 	} else {
 		//
 		// Near waypoint (because "over" could be wrong, we have altitudes in wp!)
 		// 
- 		_stprintf(ttmp,_T("%s %s"), _T("Near to"),WayPointList[j].Name);
+ 		_stprintf(ttmp,_T("%s %s<%s>"), _T("Near to"),wptype,WayPointList[j].Name);
  		_tcscat(toracle,ttmp);
 	}
   }

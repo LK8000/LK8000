@@ -732,7 +732,7 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) {
   Temp[MAXNEARESTTOPONAME-1]=_T('\0');
 
   double distance, bearing;
-  DistanceBearing(lat,lon,GPS_INFO.Latitude, GPS_INFO.Longitude, 
+  DistanceBearing(lat,lon,GPS_INFO.Latitude, GPS_INFO.Longitude,
 	&distance, &bearing);
 
   // If first time, use it 
