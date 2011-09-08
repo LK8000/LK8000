@@ -860,6 +860,8 @@ TCHAR *WhatTimeIsIt(void) {
 
 
 // This is called by the Draw thread 
+// This is still a draft, to find out what's best to tell and how.
+// It should be recoded once the rules are clear.
 void WhereAmI(void) {
 
   TCHAR toracle[400];
@@ -878,7 +880,7 @@ void WhereAmI(void) {
   #endif
 
 
-  _stprintf(toracle,_T("%s\n\n"), _T("POSITION:"));
+  _stprintf(toracle,_T("%s\n\n"), _T("YOUR POSITION:"));
 
   if (NearestCity.Valid && NearestSmallCity.Valid) {
 	
@@ -1003,13 +1005,13 @@ GPS_INFO.Latitude, GPS_INFO.Longitude,
   switch(WayPointList[j].Style) {
 	case 2:
 	case 4:
- 		_stprintf(wptype,_T("%s "), _T("the airfield"));
+ 		_stprintf(wptype,_T("%s "), _T("the airfield of"));
 		break;
 	case 3:
- 		_stprintf(wptype,_T("%s "), _T("the field"));
+ 		_stprintf(wptype,_T("%s "), _T("the field of"));
 		break;
 	case 5:
- 		_stprintf(wptype,_T("%s "), _T("the airport"));
+ 		_stprintf(wptype,_T("%s "), _T("the airport of"));
 		break;
 	default:
 		_tcscpy(wptype,_T(""));
@@ -1018,9 +1020,9 @@ GPS_INFO.Latitude, GPS_INFO.Longitude,
 
   if ( (_tcslen(wptype)==0) && WayPointCalc[j].IsLandable) {
 	if (WayPointCalc[j].IsAirport)  {
- 		 _stprintf(wptype,_T("%s "), _T("the airfield"));
+ 		 _stprintf(wptype,_T("%s "), _T("the airfield of"));
 	} else {
- 		 _stprintf(wptype,_T("%s "), _T("the field"));
+ 		 _stprintf(wptype,_T("%s "), _T("the field of"));
 	}
   } else {
 	if (_tcslen(wptype)==0 ) _tcscpy(wptype,_T(""));
@@ -1078,7 +1080,7 @@ GPS_INFO.Latitude, GPS_INFO.Longitude,
 
 _end:
 
-  if (!found) wsprintf(toracle,_T("%s"), _T("POSITION UNKNOWN, SORRY!"));
+  if (!found) wsprintf(toracle,_T("%s"), _T("\n\nVERY SORRY\n\nYOUR POSITION IS UNKNOWN!"));
 
   MessageBoxX(hWndMainWindow, toracle, gettext(_T("_@M1690_")), MB_OK|MB_ICONQUESTION, true);
 

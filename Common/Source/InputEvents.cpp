@@ -2035,6 +2035,9 @@ void InputEvents::eventService(const TCHAR *misc) {
 
   if (_tcscmp(misc, TEXT("ORACLE")) == 0) {
 	extern void dlgOracleShowModal(void);
+	#ifndef DISABLEAUDIO
+	if (EnableSoundModes) LKSound(TEXT("LK_CHIME.WAV"));
+	#endif
 	dlgOracleShowModal();
 	return;
   }

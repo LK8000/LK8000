@@ -3941,9 +3941,7 @@ bool CustomKeyHandler(const int key) {
 		InputEvents::eventService(_T("LOCKMODE"));
 		return true;
 	case ckWhereAmI:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-		#endif
+		// no sound here, chime is played by service event
 		InputEvents::eventService(_T("ORACLE"));
 		return true;
 	default:

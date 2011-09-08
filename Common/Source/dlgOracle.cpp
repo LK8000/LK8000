@@ -32,7 +32,8 @@ static int OnTimerNotify(WindowControl *Sender)
   // Dont come back here anymore!
   wf->SetTimerNotify(NULL);
 
-  // Print results
+  // Bell, and print results
+  if (EnableSoundModes) LKSound(TEXT("LK_BELL.WAV"));
   WhereAmI();
 
   // Remember to force exit from showmodal, because there is no Close button
@@ -56,7 +57,6 @@ void dlgOracleShowModal(void){
   }
 
   if (!wf) return;
-
 
   // Since the topology search is made in the cache, and the cache has only items that
   // are ok to be printed for the current scale, and we want also items for high zoom,
