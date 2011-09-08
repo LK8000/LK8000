@@ -16,6 +16,7 @@ static WndForm *wf=NULL;
 extern bool ForceNearestTopologyCalculation;
 extern void WhereAmI(void);
 
+extern void ResetNearestTopology();
 
 static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(NULL)
@@ -67,6 +68,9 @@ void dlgOracleShowModal(void){
   // is available.  Cant do better than this by now. 
   MapWindow::zoom.EventSetZoom(2);
   MapWindow::RefreshMap(); // maybe fastrefresh is better
+
+  // Make the current nearest invalid
+  ResetNearestTopology();
 
   // We set the flag to start nearest topology calculation
   ForceNearestTopologyCalculation=true;

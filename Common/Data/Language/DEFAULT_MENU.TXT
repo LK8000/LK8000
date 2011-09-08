@@ -1195,8 +1195,9 @@ location=4
 mode=Info1
 type=key
 data=6
+event=Service ORACLE
 event=Mode default
-label=_@M2058_$(DISABLED)
+label=_@M2058_
 location=5
 
 mode=Info1

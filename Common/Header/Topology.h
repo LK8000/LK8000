@@ -22,7 +22,7 @@ class XShape {
   virtual void load(shapefileObj* shpfile, int i);
   virtual void clear();
   virtual bool renderSpecial(HDC hdc, int x, int y, bool RetVal) { (void)x; (void)y; (void)hdc; return(RetVal);};
-  virtual bool nearestItem(int category, double lat, double lon, bool flag) { (void)category; (void)lat; (void)lon; return(flag);};
+  virtual bool nearestItem(int category, double lon, double lat) { (void)category; (void)lon; (void)lat; return(true);};
 
   bool hide;
   shapeObj shape;
@@ -40,7 +40,7 @@ class XShapeLabel: public XShape {
   char *label;
   void setlabel(const char* src);
   virtual bool renderSpecial(HDC hdc, int x, int y, bool RetVal);
-  virtual bool nearestItem(int category, double lat, double lon, bool flag);
+  virtual bool nearestItem(int category, double lon, double lat);
 };
 
 

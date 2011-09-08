@@ -671,6 +671,10 @@ double NearestAirspaceVDist=0;
 TCHAR NearestAirspaceName[NAME_SIZE+1] = {0};
 TCHAR NearestAirspaceVName[NAME_SIZE+1] = {0};
 
+NearestTopoItem NearestCity;
+NearestTopoItem NearestSmallCity;
+NearestTopoItem NearestWaterArea;
+
 // Flarmnet tools
 int FlarmNetCount=0;
 

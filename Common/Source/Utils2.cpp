@@ -44,6 +44,7 @@ using std::max;
 extern void NextMapSpace();
 extern void PreviousMapSpace();
 extern void ShowMenu();
+extern void ResetNearestTopology();
 
 void BottomSounds();
 
@@ -1757,6 +1758,7 @@ void InitLK8000()
 	LoadRecentList();
 
 	InitModeTable();
+	ResetNearestTopology();
 }
 
 // colorcode is taken from a 5 bit AsInt union

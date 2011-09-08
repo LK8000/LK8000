@@ -697,14 +697,60 @@ XShape* TopologyLabel::addShape(const int i) {
   return theshape;
 }
 
-bool XShapeLabel::nearestItem(int category, double lat, double lon, bool flag) {
+bool XShapeLabel::nearestItem(int category, double lon, double lat) {
 
-  // Only an example, we should instead create the nearest topology list
+  NearestTopoItem *item;
   TCHAR Temp[100];
   int size = MultiByteToWideChar(CP_ACP, 0, label, -1, Temp, 100) - 1;
   if (size <= 0) return false;	
-  StartupStore(_T("... [%d] cat=%d, <%s> lat=%f lon=%f\n"),flag,category, Temp,lat,lon);
-  return true;
+
+  #if DEBUG_NEARESTTOPO
+  StartupStore(_T("... cat=%d, <%s> lat=%f lon=%f mylat=%f mylon=%f\n"),category, Temp,lat,lon,
+	GPS_INFO.Latitude, GPS_INFO.Longitude);
+  #endif
+
+  switch(category) {
+	case 10:
+		item=&NearestWaterArea;
+		break;
+	case 70:
+	case 80:
+	case 90:
+		item=&NearestCity;
+		break;
+	case 100:
+		item=&NearestSmallCity;
+		break;
+	default:
+		#if TESTBENCH
+		StartupStore(_T("...... Cannot use nearestItem cat=%d <%s>%s"),category,Temp,NEWLINE);
+		#endif
+		return false;
+		break;
+  }
+
+  Temp[MAXNEARESTTOPONAME-1]=_T('\0');
+
+  double distance, bearing;
+  DistanceBearing(lat,lon,GPS_INFO.Latitude, GPS_INFO.Longitude, 
+	&distance, &bearing);
+
+  // If first time, use it 
+  if (!item->Valid || (item->Distance > distance)) {
+	item->Latitude=lat;
+	item->Longitude=lon;
+	_tcscpy(item->Name,Temp);
+	item->Distance=distance;
+	item->Bearing=bearing;
+	item->Valid=true;
+
+	#if DEBUG_NEARESTTOPO
+	StartupStore(_T(".... cat=%d, <%s> dist=%f nearer\n"),category, Temp,distance);
+	#endif
+	return true;
+  }
+
+  return false;
 
 }
 
@@ -1440,7 +1486,7 @@ void Topology::SearchNearest(RECT rc) {
 		if (checkVisible(*shape, screenRect)) {
 			for (int tt = 0; tt < shape->numlines; tt++) {
 				for (int jj=0; jj< shape->line[tt].numpoints; jj++) {
-					cshape->nearestItem(scaleCategory, shape->line[tt].point[jj].x, shape->line[tt].point[jj].y, 1);
+					cshape->nearestItem(scaleCategory, shape->line[tt].point[jj].x, shape->line[tt].point[jj].y);
 				}
 			}
 		}
@@ -1463,7 +1509,7 @@ void Topology::SearchNearest(RECT rc) {
 					}
 				}
 
-				cshape->nearestItem(scaleCategory, shape->line[tt].point[0].x, shape->line[tt].point[0].y, 1);
+				cshape->nearestItem(scaleCategory, shape->line[tt].point[0].x, shape->line[tt].point[0].y);
 			}
 		}
 */
@@ -1486,7 +1532,7 @@ void Topology::SearchNearest(RECT rc) {
 					}
 				}
 
-	  			cshape->nearestItem(scaleCategory, shape->line[tt].point[0].x, shape->line[tt].point[0].y, 0);
+	  			cshape->nearestItem(scaleCategory, shape->line[tt].point[0].x, shape->line[tt].point[0].y);
 			}
 		}
 		break;

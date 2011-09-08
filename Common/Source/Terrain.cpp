@@ -327,8 +327,8 @@ void DrawTopology(const HDC hdc, const RECT rc)
 
   LockTerrainDataGraphics();
 
-  // Ok I explain what is the logic here. We want the nearest, and so we force calculation of them
-  // The WhereAmI aka Oracle function is zoomin in to 2km scale and this is causing reload of topology
+  // Ok I explain what is the logic here. We want the nearest, which is triggered by dlgOracle.
+  // The dlgOracle function is zoomin in to 2km scale and this is causing reload of topology
   // up to very small cities details without including far away points.
   // At the same time, it is setting ForceNearestTopologyCalculation to true.
   // The oracle page is over the map now, and we dont paint topology: we calculate nearest instead.

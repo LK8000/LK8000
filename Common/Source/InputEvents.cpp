@@ -2033,7 +2033,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 	return;
   }
 
-  if (_tcscmp(misc, TEXT("WHEREAMI")) == 0) {
+  if (_tcscmp(misc, TEXT("ORACLE")) == 0) {
 	extern void dlgOracleShowModal(void);
 	dlgOracleShowModal();
 	return;

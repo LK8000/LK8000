@@ -587,6 +587,14 @@ typedef struct {
 	short triggerscount;	// how many times alarm was issued
 } lkalarms_s;
 
+typedef struct {
+  double Latitude;
+  double Longitude;
+  TCHAR  Name[MAXNEARESTTOPONAME+1];
+  bool   Valid;
+  double Distance;
+  double Bearing;
+} NearestTopoItem;
 
 typedef struct{
   int DefaultMapWidth;

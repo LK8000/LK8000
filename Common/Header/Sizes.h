@@ -148,6 +148,8 @@
 // (NOTE: This is used for all the caches for now - temporary)
 #define MAXSTATUSMESSAGECACHE 1000
 
+#define MAXNEARESTTOPONAME 20
+
 #define MAXISOLINES 32
 
 #define ERROR_TIME 1.0e6

@@ -48,6 +48,15 @@ extern int PDABatteryFlag;
 
 extern bool GiveBatteryWarnings(int numwarn);
 
+void ResetNearestTopology(void) {
+  #if TESTBENCH
+  StartupStore(_T(". ResetNearestTopology%s"),NEWLINE);
+  #endif
+  NearestCity.Valid=false;
+  NearestSmallCity.Valid=false;
+  NearestWaterArea.Valid=false;
+}
+
 void LKBatteryManager() {
 
   static bool doinit=true;
@@ -823,6 +832,7 @@ TCHAR *DegreesToText(double brg) {
 
 }
 
+#if 0 // this is confusing 
 TCHAR *AltDiffToText(double youralt, double wpalt) {
   static TCHAR sAdiff[20];
 
@@ -835,6 +845,7 @@ TCHAR *AltDiffToText(double youralt, double wpalt) {
  return (sAdiff);
 
 }
+#endif
 
 TCHAR *WhatTimeIsIt(void) {
   static TCHAR time_temp[60];
@@ -854,44 +865,194 @@ void WhereAmI(void) {
 
   TCHAR toracle[400];
   TCHAR ttmp[100];
-  double dist,brg;
+  double dist,wpdist,brg;
+  NearestTopoItem *item=NULL;
+  bool found=false, over=false, saynear=false;
 
-  wcscpy(toracle,_T(""));
+  #if TESTBENCH
+  if (NearestCity.Valid)
+	StartupStore(_T("... NEAREST CITY <%s>  at %.0f km\n"),NearestCity.Name,NearestCity.Distance/1000);
+  if (NearestSmallCity.Valid)
+	StartupStore(_T("... NEAREST TOWN <%s>  at %.0f km\n"),NearestSmallCity.Name,NearestSmallCity.Distance/1000);
+  if (NearestWaterArea.Valid)
+	StartupStore(_T("... NEAREST WATER AREA <%s>  at %.0f km\n"),NearestWaterArea.Name,NearestWaterArea.Distance/1000);
+  #endif
+
+
+  _stprintf(toracle,_T("%s\n\n"), _T("POSITION:"));
+
+  if (NearestCity.Valid && NearestSmallCity.Valid) {
+	// calculate TODO middle distance
+	if ( (NearestCity.Distance - NearestSmallCity.Distance) <=3000) 
+		item=&NearestCity;
+	else
+		item=&NearestSmallCity;
+  } else {
+	if (NearestCity.Valid)
+		item=&NearestCity;
+	else
+		if (NearestSmallCity.Valid)
+			item=&NearestSmallCity;
+  }
+
+  if (item) {
+	 dist=item->Distance;
+	 brg=item->Bearing;
+ 	 if (dist>1500) {
+		//
+		// 2km South of city
+		//
+		if (ISPARAGLIDER)
+			_stprintf(ttmp,_T("%.1f %s %s %s "), dist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg),_T("of"));
+		else
+			_stprintf(ttmp,_T("%.0f %s %s %s "), dist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg),_T("of"));
+
+		_tcscat(toracle,ttmp);
+
+	  } else {
+		//
+		//  Over city
+		//
+  		_stprintf(ttmp,_T("%s "),_T("Over "));
+ 		 _tcscat(toracle,ttmp);
+		over=true;
+	  }
+	  _stprintf(ttmp,_T("%s"), item->Name);
+	  _tcscat(toracle,ttmp);
+	  found=true;
+  }
+
+  // Careful, some wide water areas have the center far away from us even if we are over them.
+  // We can only check for 2-5km distances max.
+  if (NearestWaterArea.Valid) {
+  	if (found) {
+		if (NearestWaterArea.Distance<2000) {
+			if (over) {
+				//
+				// Over city and lake
+				//
+	 			_stprintf(ttmp,_T(" %s %s"), _T("and"),NearestWaterArea.Name);
+	 			_tcscat(toracle,ttmp);
+				saynear=true;
+			} else {
+				//
+				// 2km South of city 
+				// over lake
+				//
+	 			_stprintf(ttmp,_T("\n%s %s"), _T("over"),NearestWaterArea.Name);
+	 			_tcscat(toracle,ttmp);
+				saynear=true;
+			}
+		} else {
+			if (NearestWaterArea.Distance<6000) {
+				if (over) {
+					//
+					// Over city 
+					// near lake
+					//
+	 				_stprintf(ttmp,_T("\n%s %s"), _T("near to"),NearestWaterArea.Name);
+	 				_tcscat(toracle,ttmp);
+				} else {
+					//
+					// 2km South of city
+					// near lake
+					//
+	 				_stprintf(ttmp,_T("\n%s %s"), _T("over"),NearestWaterArea.Name);
+	 				_tcscat(toracle,ttmp);
+				}
+			}
+			// else no mention to water area, even if it is the only item. Not accurate!
+		}
+	} else {
+		if (NearestWaterArea.Distance>2000) {
+			brg=NearestWaterArea.Bearing;
+			//
+			// 2km North of lake
+			// 
+			if (ISPARAGLIDER)
+				_stprintf(ttmp,_T("%.1f %s %s "), NearestWaterArea.Distance*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg));
+			else
+				_stprintf(ttmp,_T("%.0f %s %s "), NearestWaterArea.Distance*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg));
+
+			_tcscat(toracle,ttmp);
+		 	_stprintf(ttmp,_T("%s %s"), _T("of"),NearestWaterArea.Name);
+ 			_tcscat(toracle,ttmp);
+		} else {
+			//
+			// Over lake
+			// 
+ 			_stprintf(ttmp,_T("%s %s"), _T("over"),NearestWaterArea.Name);
+ 			_tcscat(toracle,ttmp);
+			over=true;
+		}
+		found=true;
+	}
+  }
+
 
   int j=FindNearestFarVisibleWayPoint(GPS_INFO.Longitude,GPS_INFO.Latitude,50000);
-  if (!ValidNotResWayPoint(j)) goto _after_nearestwp;
+  if (!ValidNotResWayPoint(j)) goto _end;
+
+  found=true;
 
   DistanceBearing( WayPointList[j].Latitude,WayPointList[j].Longitude,
-	GPS_INFO.Latitude,GPS_INFO.Longitude,&dist,&brg);
+	GPS_INFO.Latitude,GPS_INFO.Longitude,&wpdist,&brg);
 
-  _tcscat(toracle,_T("You are "));
 
   // nn km south
-  if (dist>2000) {
+  if (wpdist>2000) {
+	//
+	// 2km South of city 
+	// and/over lake
+	// 4 km SW of waypoint
 	if (ISPARAGLIDER)
-		_stprintf(ttmp,_T("%.1f %s %s "), dist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg));
+		_stprintf(ttmp,_T("\n%.1f %s %s "), wpdist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg));
 	else
-		_stprintf(ttmp,_T("%.0f %s %s "), dist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg));
+		_stprintf(ttmp,_T("\n%.0f %s %s "), wpdist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg));
 
 	_tcscat(toracle,ttmp);
 
+ 	 _stprintf(ttmp,_T("%s %s"), _T("of"),WayPointList[j].Name);
+ 	 _tcscat(toracle,ttmp);
+
+  } else {
+	if (found) {
+		if (over) {
+			if (saynear) {
+				//
+				// 2km South of city 
+				// over lake
+				// near waypoint
+				// ----
+				// Over city and lake
+				// near waypoint
+
+	 			_stprintf(ttmp,_T("\n%s %s"), _T("near to"),WayPointList[j].Name);
+	 			_tcscat(toracle,ttmp);
+			} else {
+				// Over city 
+				// near lake and waypoint
+
+	 			_stprintf(ttmp,_T(" %s %s"), _T("and"),WayPointList[j].Name);
+	 			_tcscat(toracle,ttmp);
+			}
+		} else {
+ 			_stprintf(ttmp,_T("\n%s %s"), _T("near to"),WayPointList[j].Name);
+ 			_tcscat(toracle,ttmp);
+		}
+	} else {
+		//
+		// Near waypoint (because "over" could be wrong, we have altitudes in wp!)
+		// 
+ 		_stprintf(ttmp,_T("%s %s"), _T("Near to"),WayPointList[j].Name);
+ 		_tcscat(toracle,ttmp);
+	}
   }
-  // over/below
-  _stprintf(ttmp,_T("%s "),AltDiffToText(GPS_INFO.Altitude, WayPointList[j].Altitude));
-  _tcscat(toracle,ttmp);
-
-  // waypoint name
-  _stprintf(ttmp,_T("<%s>"), WayPointList[j].Name);
-  _tcscat(toracle,ttmp);
-
-  _stprintf(toracle,_T("%s\n%s"),toracle,_T(".. work in progress .."));
-  goto _end;
-
-_after_nearestwp:
-
-  wsprintf(toracle,_T("%s"), _T("NO WAYPOINT NEAR YOU"));
 
 _end:
+
+  if (!found) wsprintf(toracle,_T("%s"), _T("POSITION UNKNOWN, SORRY!"));
+
   MessageBoxX(hWndMainWindow, toracle, gettext(_T("_@M1690_")), MB_OK|MB_ICONQUESTION, true);
 
 }
