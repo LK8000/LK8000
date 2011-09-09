@@ -868,7 +868,7 @@ void WhereAmI(void) {
   TCHAR ttmp[100];
   double dist,wpdist,brg;
   NearestTopoItem *item=NULL;
-  bool found=false, over=false, saynear=false, needmorewp=false;
+  bool found=false, over=false, saynear=false, needmorewp=false, secondwpdone=false;
 
   #if TESTBENCH
   if (NearestCity.Valid)
@@ -996,9 +996,11 @@ void WhereAmI(void) {
 
   found=true;
 
+_dowp:
+
   DistanceBearing( 
-WayPointList[j].Latitude,WayPointList[j].Longitude, 
-GPS_INFO.Latitude, GPS_INFO.Longitude, 
+	WayPointList[j].Latitude,WayPointList[j].Longitude, 
+	GPS_INFO.Latitude, GPS_INFO.Longitude, 
 	&wpdist,&brg);
 
   TCHAR wptype[30];
@@ -1023,13 +1025,16 @@ GPS_INFO.Latitude, GPS_INFO.Longitude,
   if ( (_tcslen(wptype)==0) && WayPointCalc[j].IsLandable) {
 	if (WayPointCalc[j].IsAirport)  {
  		 _stprintf(wptype,_T("%s "), _T("the airfield of"));
+		needmorewp=false;
 	} else {
  		 _stprintf(wptype,_T("%s "), _T("the field of"));
 		needmorewp=true;
 	}
   } else {
-	if (_tcslen(wptype)==0 ) _tcscpy(wptype,_T(""));
-	needmorewp=true;
+	if (_tcslen(wptype)==0 ) {
+		_tcscpy(wptype,_T(""));
+		needmorewp=true;
+	}
   }
 
   // nn km south
@@ -1081,6 +1086,15 @@ GPS_INFO.Latitude, GPS_INFO.Longitude,
  		_tcscat(toracle,ttmp);
 	}
   }
+
+  if (!needmorewp) goto _end;
+  if (secondwpdone) goto _end;
+
+  j=FindNearestFarVisibleWayPoint(GPS_INFO.Longitude,GPS_INFO.Latitude,70000,WPT_AIRPORT);
+  if (!ValidNotResWayPoint(j)) goto _end;
+  secondwpdone=true;
+  goto _dowp;
+
 
 _end:
 

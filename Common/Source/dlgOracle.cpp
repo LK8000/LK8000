@@ -32,6 +32,15 @@ static int OnTimerNotify(WindowControl *Sender)
   // Dont come back here anymore!
   wf->SetTimerNotify(NULL);
 
+  // Extend a wide search of farvisible items 
+  // We do it now that nearestTopology has been calculated,
+  // because WhereAmI will issue some Nearest search on waypoints
+  // and we need to include airports a bit more far away
+  MapWindow::zoom.EventSetZoom(10);
+  MapWindow::ForceVisibilityScan=true;
+  MapWindow::RefreshMap();
+  Sleep(1000); // We need a cycle to recalculate it
+
   // Bell, and print results
   if (EnableSoundModes) LKSound(TEXT("LK_BELL.WAV"));
   WhereAmI();
@@ -87,8 +96,6 @@ void dlgOracleShowModal(void){
   // And force rescan of topology in the cache
   MapWindow::ForceVisibilityScan=true;
   MapWindow::RefreshMap();
-
-  //FullScreen(); not needed I think
 
 }
 
