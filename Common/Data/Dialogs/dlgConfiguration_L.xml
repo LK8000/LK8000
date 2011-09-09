@@ -482,19 +482,19 @@
 <DataField name="" DataType="enum"  Min=0 Max=50 Step=1/>
 </WndProperty>
 <WndProperty Name="prpTaskStartRadius" Caption="_@M649_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=100 Font=2 Help="_@H202_">
-<DataField name="" DataType="double" DisplayFormat="%.1f %s" EditFormat="%.1f" Min=0 Max=100 Step="0.5" Fine=1/>
+<DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min=0 Max=100 Step="0.05" />
 </WndProperty>
 <WndProperty Name="prpTaskFAISector" Caption="_@M588_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=100 Font=2 Help="_@H203_">
 <DataField name="" DataType="enum"  Min=0 Max=50 Step=1/>
 </WndProperty>
 <WndProperty Name="prpTaskSectorRadius" Caption="_@M586_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=100 Font=2 Help="_@H204_">
-<DataField name="" DataType="double" DisplayFormat="%.1f %s" EditFormat="%.1f" Min=0 Max=100 Step="0.5" Fine=1/>
+<DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min=0 Max=100 Step="0.05" />
 </WndProperty>
 <WndProperty Name="prpTaskFinishLine" Caption="_@M297_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=100 Font=2 Help="_@H205_">
 <DataField name="" DataType="enum"  Min=0 Max=50 Step=1/>
 </WndProperty>
 <WndProperty Name="prpTaskFinishRadius" Caption="_@M295_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=100 Font=2 Help="_@H206_">
-<DataField name="" DataType="double" DisplayFormat="%.1f %s" EditFormat="%.1f" Min=0 Max=100 Step="0.5" Fine=1/>
+<DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min=0 Max=100 Step="0.05" />
 </WndProperty>
 <WndButton Name="cmdTaskRules" Caption="_@M690_" X=70 Y=-997 Width=180  Height=30 Font=2 OnClickNotify="OnTaskRulesClicked" />
 </WndFrame>

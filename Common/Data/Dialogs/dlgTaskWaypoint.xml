@@ -12,7 +12,7 @@
 <DataField name="" DataType="enum"  Min=0 Max=50 Step=1/>
 </WndProperty>
 <WndProperty Name="prpTaskStartRadius" Caption="_@M650_" X=2 Y=-1  Width=240 Height=22 CaptionWidth=150 Font=2 Help="_@H501_">
-<DataField name="" DataType="double" DisplayFormat="%.1f %s" EditFormat="%.1f" Min=0 Max=100 Step="0.5" Fine=1/>
+<DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min=0 Max=100 Step="0.05"/>
 </WndProperty>
 <WndProperty Name="prpEnableMultipleStartPoints" Caption="_@M86_" X=2 Y=-1  Width=240 Height=22 CaptionWidth=150 Font=2 ReadOnly=0 Help="_@H502_">
 <DataField name="" DataType="boolean" ReadOnly=0 OnDataAccess="OnAATEnabled"/>
@@ -28,7 +28,7 @@
 <DataField name="" DataType="enum"  Min=0 Max=50 Step=1/>
 </WndProperty>
 <WndProperty Name="prpTaskSectorRadius" Caption="_@M587_"  X=2 Y=-1 Width=240 Height=22 CaptionWidth=150 Font=2 Help="_@H506_">
-<DataField name="" DataType="double" DisplayFormat="%.1f %s" EditFormat="%.1f" Min=0 Max=100 Step="0.5" Fine=1/>
+<DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min=0 Max=100 Step="0.05"/>
 </WndProperty>
 <WndProperty Name="prpAutoAdvance" Caption="_@M112_" X=2 Y=-1 Width=240 Height=22 CaptionWidth=150 Font=2 Help="_@H507_">
 <DataField name="" DataType="enum" Min=0 Max=50 Step=1/>
@@ -42,10 +42,10 @@
 <DataField name="" DataType="enum"  Min=0 Max=50 Step=1 OnDataAccess="OnAATEnabled"/>
 </WndProperty>
 <WndProperty Name="prpAATCircleRadius" Caption="_@M171_"  X=2 Y=-1   Width=240 Height=22 CaptionWidth=150 Font=2 Help="_@H509_">
-<DataField name="" DataType="double" DisplayFormat="%.1f %s" EditFormat="%.1f" Min=0 Max=100 Step="0.5" Fine=1/>
+<DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min=0 Max=100 Step="0.05"/>
 </WndProperty>
 <WndProperty Name="prpAATSectorRadius" Caption="_@M587_" X=2 Y=-1   Width=240 Height=22 CaptionWidth=150 Font=2 Help="_@H510_">
-<DataField name="" DataType="double" DisplayFormat="%.1f %s" EditFormat="%.1f" Min=0 Max=100 Step="0.5" Fine=1/>
+<DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min=0 Max=100 Step="0.05" />
 </WndProperty>
 <WndProperty Name="prpAATStartRadial" Caption="_@M648_"  X=2 Y=-1 Width=240 Height=22 CaptionWidth=150 Font=2 Help="_@H511_">
 <DataField name="" DataType="double" DisplayFormat="%.0f°" EditFormat="%.0f" Min=0 Max=360 Step=1/>
@@ -59,7 +59,7 @@
 <DataField name="" DataType="enum"  Min=0 Max=50 Step=1/>
 </WndProperty>
 <WndProperty Name="prpTaskFinishRadius" Caption="_@M296_" X=2 Y=-1 Width=240 Height=22 CaptionWidth=150 Font=2 Help="_@H514_">
-<DataField name="" DataType="double" DisplayFormat="%.1f %s" EditFormat="%.1f" Min=0 Max=100 Step="0.5" Fine=1/>
+<DataField name="" DataType="double" DisplayFormat="%.2f %s" EditFormat="%.2f" Min=0 Max=100 Step="0.05"/>
 </WndProperty>
 </WndFrame>
 </WndForm>    

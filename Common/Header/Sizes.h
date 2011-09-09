@@ -6,7 +6,7 @@
 #endif // _MSC_VER > 1000
 
 
-#define DISTANCE_ROUNDING 10.0
+#define DISTANCE_ROUNDING 20.0
 // Rounding of task distances for entry (sector radius etc)
 // 10.0 means rounding to 0.1 user units
 
