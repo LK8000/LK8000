@@ -2394,7 +2394,7 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
 
 
 // Returns -1 if no result
-int FindNearestFarVisibleWayPoint(double X, double Y, double maxRange)
+int FindNearestFarVisibleWayPoint(double X, double Y, double maxRange, short wpType)
 {
   unsigned int i;
   int nearestIndex = -1;
@@ -2410,6 +2410,7 @@ int FindNearestFarVisibleWayPoint(double X, double Y, double maxRange)
   for(i=NUMRESWP;i<NumberOfWayPoints;i++) {
 
 	if (!WayPointList[i].FarVisible) continue;
+	if (wpType && (WayPointCalc[i].WpType != wpType)) continue;
 
 	#if TESTBENCH
 	farvisibles++;
@@ -2424,7 +2425,7 @@ int FindNearestFarVisibleWayPoint(double X, double Y, double maxRange)
   }
 
   #if TESTBENCH
-  StartupStore(_T("...... Checked %d farvisibles waypoints for maxRange=%f\n"),farvisibles,maxRange);
+  StartupStore(_T("...... Checked %d farvisibles waypoints for maxRange=%f, type=%d\n"),farvisibles,maxRange,wpType);
   #endif
 
   if(nearestDistance < maxRange) {

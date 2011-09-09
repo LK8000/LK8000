@@ -2316,7 +2316,7 @@ void InsertThermalHistory(double ThTime,  double ThLat, double ThLon, double ThB
   ThermalHistory[i].Lift = ThAvg;
   ThermalHistory[i].Valid=true;
 
-  int j=FindNearestFarVisibleWayPoint(ThLon,ThLat,15000);
+  int j=FindNearestFarVisibleWayPoint(ThLon,ThLat,15000,WPT_UNKNOWN);
   if (j>0) {
 	#if DEBUG_THISTORY
 	StartupStore(_T("..... Thermal is near wp.%d <%s>\n"),j,WayPointList[j].Name);

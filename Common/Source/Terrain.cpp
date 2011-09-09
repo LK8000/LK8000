@@ -265,7 +265,7 @@ void MarkLocation(const double lon, const double lat, const double altitude)
 	LongitudeToCUPString(lon,tstring);
 	unicodetoascii(tstring,_tcslen(tstring),slon);
 
-	int j=FindNearestFarVisibleWayPoint(lon,lat,15000);
+	int j=FindNearestFarVisibleWayPoint(lon,lat,15000,WPT_UNKNOWN);
 	if (j>0) {
         	wcscpy(tstring,WayPointList[j].Name); // Name is sized NAME_SIZE, 30, so ok with tstring[50]
         	tstring[19]='\0'; // sized 20 chars
