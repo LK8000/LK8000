@@ -759,8 +759,9 @@ bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
   if (label && ((MapWindow::DeclutterLabels==MAPLABELS_ALLON)||(MapWindow::DeclutterLabels==MAPLABELS_ONLYTOPO))) {
 
 	TCHAR Temp[100];
-	int size = MultiByteToWideChar(CP_ACP, 0, label, -1, Temp, 100) - 1;	//ANSI to UNICODE
-	if (size <= 0) return false;						//Do not waste time with null labels
+	int size = MultiByteToWideChar(CP_ACP, 0, label, -1, Temp, 100) - 1;
+	//Do not waste time with null labels
+	if (size <= 0) return false;						
 
 	SetBkMode(hDC,TRANSPARENT);
 
