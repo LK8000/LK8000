@@ -2,6 +2,93 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3e September 10 2011
+------------------------------
+
+NEW
+
+. The Oracle
+  Oracle is printing informations about your position, by examining both topology and waypoints,
+  and figuring out a reasonable position reporting to be used via the radio.
+  Oracle is creating a verbose description of your position.
+  You can call the oracle with a button in INFO 1/2  and also with a customkey that you can 
+  configure. By default it is assigned to the new CENTER SCREEN customkey.
+
+
+. New customkey CENTER SCREEN, and changes in airspace selection.
+    Center Screen is a customkey called by clicking for at least 1 second
+    in the map center area (with some good tolerance). By default this CK
+    is assigned with the "Oracle" function.
+    If PAN mode is enabled, this key will not work.
+    >>Airspace details now are possible by clicking on them only if ActiveMap is enabled.
+
+. PC version using current execution directory as LK8000 folder, if _System/_SYSTEM folder and file are found.
+    If no directory _System is found , or there is no _SYSTEM file inside, then we go using the old classic
+    Documents LK8000 folder, as usual, which is the old default folder.
+
+. Ungestures: in 2.x 3.x 4.x pages, an alternate mode for advancing through pages (aside gestures, still valid) is to
+    simply click on the left and right screen border, in the center.
+    +-----------------+
+    |                 |
+    |                 |
+    |X               X|
+    |                 |
+    |                 |
+    +-----------------+
+
+    Gestures are still available of course, but this facility is speeding up page flipping a lot!
+
+
+. Add FLARM traffic to simulator, if FLARM on Map is enabled in system config menu 13.
+    Four flarm objects are added around the plane. One of them will become a ghost and a zombie quite soon.
+    Objects are moving a bit, but just to let you experiment with traffic on LK.
+    Page 4.1 TRF is of course enabled, and FlarmNet is used as in real life.
+    Overlay multitarget F> is also enabled, and need an object selected in 4.1.
+    Selecting a target in 4.1 will show it in page 4.3 and 4.2 .
+    All of this is useful for making practice with FLARM traffic and explore the 4.3 sight page.
+    Do not expect to have a videogame, because traffic is not moving as in real life.
+
+    >> If you dont want FLARM simulation, please disable "Flarm on Map" in config menu 13
+
+
+CHANGES
+
+. E.20s added one decimal for LD value
+. Airspace details now are possible by clicking on them ONLY if ActiveMap is enabled.
+
+. Custom key selection list is now alpha-sorted.
+. Overlay distances for paragliders have always 3 decimal digits, when the distance is not 0 and below 99.
+
+. Topology labels using a darker PETROL color, for better contrast on the moving map
+
+. Radius size in task setting has now a 0.05 step for better precision
+  So it is now possible to use correct cylinder sizes expressed in imperial
+  units like miles.
+
+. MC buttons will hide AutoMC buttons if manual changes are selected.
+  This will show screen overlays in landscape mode.
+  Pressing on Manual, will make them appear again.
+
+
+FIXES
+
+. Analisys page correctly working full screen with better visibility
+. (2.3) Font quality not applied correctly (antialiasing)
+. Fix 2.3 paraglider Home overlay H> no more working using TAKEOFF
+
+. Fix topology problem making small towns not appear immediately on the map
+  and appearing back only after some zooms.
+  (Bug due to accelerator engine which is now temporarily disabled until fixed:
+   some huge topology files may run slower now, until the accelerator is back).
+
+. Fix Simulator problem when no valid terrain available.
+  Looping into creation of thermals and flarm objects !!
+
+
+
+
+
+
 --------------------------
 Version 2.3d  August 26 2011
 
