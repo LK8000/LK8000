@@ -3765,40 +3765,34 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     Calculated->TaskTimeToGoTurningNow = -1;
   }
 
+
   double final_height = FAIFinishHeight(Basic, Calculated, -1);
-  
-  double total_energy_height = Calculated->NavAltitude 
-    + Calculated->EnergyHeight;
+  double total_energy_height = Calculated->NavAltitude + Calculated->EnergyHeight;
   
   Calculated->TaskAltitudeRequired = TaskAltitudeRequired + final_height;
   
   TaskAltitudeRequired0 += final_height;
   
-  Calculated->TaskAltitudeDifference = total_energy_height
-    - Calculated->TaskAltitudeRequired; 
-  
-  Calculated->TaskAltitudeDifference0 = total_energy_height
-    - TaskAltitudeRequired0;
+  Calculated->TaskAltitudeDifference = total_energy_height - Calculated->TaskAltitudeRequired; 
+  Calculated->TaskAltitudeDifference0 = total_energy_height - TaskAltitudeRequired0;
+  Calculated->NextAltitudeDifference0 = total_energy_height - Calculated->NextAltitudeRequired0;
 
-  // VENTA6
-  Calculated->NextAltitudeDifference0 = total_energy_height
-    - Calculated->NextAltitudeRequired0;
+  double havailable = total_energy_height - final_height;
+  if (havailable <=0) {
+	Calculated->GRFinish = INVALID_GR;
+  } else {
+	Calculated->GRFinish = Calculated->TaskDistanceToGo / havailable;
 
-  double GRsafecalc = Calculated->NavAltitude - final_height;
-  if (GRsafecalc <=0) Calculated->GRFinish = INVALID_GR;
-  else {
-	Calculated->GRFinish = Calculated->TaskDistanceToGo / GRsafecalc;
 	if ( Calculated->GRFinish >ALTERNATE_MAXVALIDGR || Calculated->GRFinish <0 )
 		Calculated->GRFinish = INVALID_GR;
 	else
-		if ( Calculated->GRFinish <1 ) Calculated->GRFinish = 1;
+		if ( Calculated->GRFinish <1 )
+			Calculated->GRFinish = 1;
 
-	// Brand new LK calculations with not strange assumptions
 	if (Calculated->TaskSpeedAchieved >0)
 		Calculated->LKTaskETE = Calculated->TaskDistanceToGo/Calculated->TaskSpeedAchieved;
 	else
 		Calculated->LKTaskETE=0;
-
   }
 
   CheckGlideThroughTerrain(Basic, Calculated);
