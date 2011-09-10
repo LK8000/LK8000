@@ -1619,7 +1619,10 @@ goto_bearing:
 				if ( ValidTaskPoint(ActiveWayPoint) ) {
 					value = TASKSPEEDMODIFY*DerivedDrawInfo.TaskSpeedInstantaneous;
 					if (value<=0||value>999) value=0; else valid=true;
-					sprintf(text,"%d",(int)value);
+					if (value<99)
+						sprintf(text,"%.1f",value);
+					else
+						sprintf(text,"%d",(int)value);
 					wsprintf(BufferValue, TEXT("%S"),text);
 				}
 			}
@@ -1639,7 +1642,10 @@ goto_bearing:
 				if ( ValidTaskPoint(ActiveWayPoint) ) {
 					value = TASKSPEEDMODIFY*DerivedDrawInfo.TaskSpeedAchieved;
 					if (value<0||value>999) value=0; else valid=true;
-					sprintf(text,"%d",(int)value);
+					if (value<99)
+						sprintf(text,"%.1f",value);
+					else
+						sprintf(text,"%d",(int)value);
 					wsprintf(BufferValue, TEXT("%S"),text);
 				}
 			}
@@ -1659,7 +1665,10 @@ goto_bearing:
 				if ( ValidTaskPoint(ActiveWayPoint) ) {
 					value = TASKSPEEDMODIFY*DerivedDrawInfo.TaskSpeed;
 					if (value<=0||value>999) value=0; else valid=true;
-					sprintf(text,"%d",(int)value);
+					if (value<99)
+						sprintf(text,"%.1f",value);
+					else
+						sprintf(text,"%d",(int)value);
 					wsprintf(BufferValue, TEXT("%S"),text);
 				}
 			}
