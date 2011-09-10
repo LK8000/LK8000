@@ -4285,7 +4285,7 @@ double CalculateWaypointArrivalAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculat
 
         // we should build a function for this since it is used also in lkcalc
 	WayPointCalc[i].AltReqd[AltArrivMode]  = altReqd+safetyaltitudearrival+WayPointList[i].Altitude; 
-	WayPointCalc[i].AltArriv[AltArrivMode] = Calculated->NavAltitude 
+	WayPointCalc[i].AltArriv[AltArrivMode] = Calculated->NavAltitude + Calculated->EnergyHeight
 						- altReqd 
 						- WayPointList[i].Altitude 
 						- safetyaltitudearrival;
