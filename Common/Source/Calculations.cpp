@@ -3789,11 +3789,12 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 		if ( Calculated->GRFinish <1 )
 			Calculated->GRFinish = 1;
 
-	if (Calculated->TaskSpeedAchieved >0)
-		Calculated->LKTaskETE = Calculated->TaskDistanceToGo/Calculated->TaskSpeedAchieved;
-	else
-		Calculated->LKTaskETE=0;
   }
+
+  if (Calculated->TaskSpeedAchieved >0)
+	Calculated->LKTaskETE = Calculated->TaskDistanceToGo/Calculated->TaskSpeedAchieved;
+  else
+	Calculated->LKTaskETE=0;
 
   CheckGlideThroughTerrain(Basic, Calculated);
   
