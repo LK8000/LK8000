@@ -3941,17 +3941,10 @@ void PredictNextPosition(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
                             &Calculated->NextLatitude,
                             &Calculated->NextLongitude);
 
-      // This is useless, since NavAltitude could already use BaroAltitude and in any case you may have chosen
-      // not to use Baro Altitude at all... 
-      if (Basic->BaroAltitudeAvailable) {
-        Calculated->NextAltitude = 
-          Basic->BaroAltitude + Calculated->Average30s * WarningTime;
-      } else {
-        Calculated->NextAltitude = 
-          Calculated->NavAltitude + Calculated->Average30s * WarningTime;
-      }
+       Calculated->NextAltitude = Calculated->NavAltitude + Calculated->Average30s * WarningTime;
     }
-    // MJJ TODO Predict terrain altitude
+    // We are assuming that terrain altitude will not change much, not accurate though.
+    // This is used by airspace engine.
     Calculated->NextAltitudeAGL = Calculated->NextAltitude - Calculated->TerrainAlt;
 
 }
