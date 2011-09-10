@@ -3597,8 +3597,9 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   
   int FinalWayPoint = getFinalWaypoint();
 
-  double height_above_finish = Calculated->NavAltitude+
-    Calculated->EnergyHeight-FAIFinishHeight(Basic, Calculated, -1);
+  double final_height = FAIFinishHeight(Basic, Calculated, -1);
+  double total_energy_height = Calculated->NavAltitude + Calculated->EnergyHeight;
+  double height_above_finish = total_energy_height - final_height;
   
   // Now add it for remaining waypoints
   int task_index= FinalWayPoint;
@@ -3766,8 +3767,6 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   }
 
 
-  double final_height = FAIFinishHeight(Basic, Calculated, -1);
-  double total_energy_height = Calculated->NavAltitude + Calculated->EnergyHeight;
   
   Calculated->TaskAltitudeRequired = TaskAltitudeRequired + final_height;
   
