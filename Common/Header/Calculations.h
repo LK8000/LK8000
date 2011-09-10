@@ -100,8 +100,6 @@ typedef struct _DERIVED_INFO
   double TaskAltitudeDifference;
   double TaskAltitudeDifference0; // difference with mc=0
   double TaskAltitudeRequiredFromStart;
-  double LDFinish;
-  double LDNext;
   double LegDistanceToGo;
   double LegDistanceCovered;
   double LegTimeToGo;

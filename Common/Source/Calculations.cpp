@@ -119,7 +119,6 @@ static void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                       const double this_maccready);
 static void AltitudeRequired(NMEA_INFO *Basic, DERIVED_INFO *Calculated, 
 			     const double this_maccready);
-static void LDNext(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double LegToGo);
 
 static void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_maccready);
 static void InSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -716,11 +715,9 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     Calculated->LastThermalGain = 0;
     Calculated->LastThermalTime = 0;
 
-    Calculated->LDFinish = INVALID_GR;
     Calculated->GRFinish = INVALID_GR;
     Calculated->CruiseLD = INVALID_GR;
     Calculated->AverageLD = INVALID_GR;
-    Calculated->LDNext = INVALID_GR;
     Calculated->LD = INVALID_GR;
     Calculated->LDvario = INVALID_GR;
     Calculated->Odometer = 0; // 091228
@@ -3424,16 +3421,6 @@ static void CheckGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 }
 
 
-void LDNext(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double LegToGo) {
-  double height_above_leg = Calculated->NavAltitude+Calculated->EnergyHeight
-    - FAIFinishHeight(Basic, Calculated, ActiveWayPoint);
-
-  Calculated->LDNext = UpdateLD(Calculated->LDNext,
-                                LegToGo,
-                                height_above_leg,
-                                0.5);
-}
-
 void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated, 
                     const double this_maccready)
 {
@@ -3466,9 +3453,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     Calculated->TerrainWarningLatitude = 0.0;
     Calculated->TerrainWarningLongitude = 0.0;
 
-    Calculated->LDFinish = INVALID_GR;
     Calculated->GRFinish = INVALID_GR;
-    Calculated->LDNext = INVALID_GR;
    
 
     Calculated->FinalGlide = 0;
@@ -3725,8 +3710,6 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 	}
   }
 
-  // JMW TODO accuracy: use mc based on risk? no!
-
   double LegAltitude = 
     GlidePolar::MacCreadyAltitude(this_maccready, 
                                   LegToGo, 
@@ -3762,8 +3745,6 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 	} 
 
   // JMW TODO accuracy: Use safetymc where appropriate
-
-  LDNext(Basic, Calculated, LegToGo);
 
   if (LegTime0>= 0.9*ERROR_TIME) {
     // can't make it, so assume flying at current mc
@@ -3802,11 +3783,6 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   // VENTA6
   Calculated->NextAltitudeDifference0 = total_energy_height
     - Calculated->NextAltitudeRequired0;
-
-  Calculated->LDFinish = UpdateLD(Calculated->LDFinish,
-                                  Calculated->TaskDistanceToGo,
-                                  total_energy_height-final_height,
-                                  0.5);
 
   double GRsafecalc = Calculated->NavAltitude - final_height;
   if (GRsafecalc <=0) Calculated->GRFinish = INVALID_GR;

@@ -1587,60 +1587,6 @@ goto_bearing:
 			}
 			break;
 
-
-		// B19
-		case LK_FIN_LD:
-			wsprintf(BufferValue,_T(NULLLONG));
-			//_stprintf(BufferUnit,TEXT(""));
-			if (lktitle)
-				// LKTOKEN  _@M1039_ = "_Reserved 1", _@M1040_ = "OLD fLD"
-				_stprintf(BufferTitle, gettext(TEXT("_@M1040_")));
-			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-				index = Task[ActiveWayPoint].Index;
-				if (index>=0) {
-					if (DerivedDrawInfo.ValidFinish) {
-						value = 0;
-					} else {
-						value = DerivedDrawInfo.LDFinish;
-					}
-					if (value <1 || value >=ALTERNATE_MAXVALIDGR )
-						strcpy(text,NULLMEDIUM);
-					else {
-						valid=true;
-						if (value >= 100) sprintf(text,"%.0lf",value);
-							else sprintf(text,"%.1lf",value);
-					}
-					wsprintf(BufferValue, TEXT("%S"),text);
-				}
-			}
-			break;
-
-		// B38
-		case LK_NEXT_LD:
-			wsprintf(BufferValue,_T(NULLMEDIUM)); // 091221
-			if (lktitle)
-				// LKTOKEN  _@M1077_ = "_Reserved 2", _@M1078_ = "OLD nLD"
-				_stprintf(BufferTitle, gettext(TEXT("_@M1078_")));
-			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-				index = Task[ActiveWayPoint].Index;
-				if (index>=0) {
-					value = DerivedDrawInfo.LDNext;
-					if (value <1 || value >=ALTERNATE_MAXVALIDGR )
-						strcpy(text,NULLMEDIUM);
-					else {
-						valid=true;
-						if (value >= 100) sprintf(text,"%.0lf",value);
-							else sprintf(text,"%.1lf",value);
-					}
-					wsprintf(BufferValue, TEXT("%S"),text);
-				}
-			}
-			break;
-
 		// B53
 		case LK_LD_VARIO:
 			wsprintf(BufferValue,_T(NULLMEDIUM));
@@ -2681,6 +2627,8 @@ olc_score:
 			wsprintf(BufferTitle, TEXT(""));
 			break;
 		case LK_ERROR:
+		case LK_RESERVED1:
+		case LK_RESERVED2:
 		case LK_RESERVED5:
 			// let it be shown entirely to understand the problem
 			valid=true;
