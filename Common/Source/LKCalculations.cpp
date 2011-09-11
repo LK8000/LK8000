@@ -49,9 +49,8 @@ extern void RemoveRecentList(int newwp);
 
 /*
  * Used by Alternates and BestAlternate
- * Colors VGR are disabled, but available
+ * Colors VGR are used by DrawNearest &c.
  */
-
 void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint) {
 
   // handle virtual wps as alternates
@@ -60,47 +59,26 @@ void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint) {
   } else {
 	if (!ValidWayPoint(AltWaypoint)) return;
   }
-  double w1lat = WayPointList[AltWaypoint].Latitude;
-  double w1lon = WayPointList[AltWaypoint].Longitude;
-  double w0lat = Basic->Latitude;
-  double w0lon = Basic->Longitude;
-  double *altwp_dist = &WayPointCalc[AltWaypoint].Distance;
-  double *altwp_gr   = &WayPointCalc[AltWaypoint].GR;
-  double *altwp_arrival = &WayPointCalc[AltWaypoint].AltArriv[AltArrivMode];
-  short  *altwp_vgr  = &WayPointCalc[AltWaypoint].VGR;
-  double GRsafecalc;
 
-  DistanceBearing(w1lat, w1lon,
-                  w0lat, w0lon,
+  double *altwp_dist	= &WayPointCalc[AltWaypoint].Distance;
+  double *altwp_gr	= &WayPointCalc[AltWaypoint].GR;
+  double *altwp_arrival	= &WayPointCalc[AltWaypoint].AltArriv[AltArrivMode];
+
+  DistanceBearing(WayPointList[AltWaypoint].Latitude, WayPointList[AltWaypoint].Longitude,
+                  Basic->Latitude, Basic->Longitude,
                   altwp_dist, NULL);
 
-  if (SafetyAltitudeMode==0 && !WayPointCalc[AltWaypoint].IsLandable)
-	GRsafecalc = Calculated->NavAltitude + Calculated->EnergyHeight - WayPointList[AltWaypoint].Altitude;
-  else 
-	GRsafecalc = Calculated->NavAltitude + Calculated->EnergyHeight - WayPointList[AltWaypoint].Altitude - SAFETYALTITUDEARRIVAL;
-
-  if (GRsafecalc <=0) *altwp_gr = INVALID_GR;
-  else {
-	*altwp_gr = *altwp_dist / GRsafecalc;
-	if ( *altwp_gr >ALTERNATE_MAXVALIDGR || *altwp_gr <0 ) *altwp_gr = INVALID_GR;
-	else if ( *altwp_gr <1 ) *altwp_gr = 1;
-  }
-
+  *altwp_gr = CalculateGlideRatio( *altwp_dist,
+	Calculated->NavAltitude - WayPointList[AltWaypoint].Altitude - GetSafetyAltitude(AltWaypoint));
 
   // We need to calculate arrival also for BestAlternate, since the last "reachable" could be
   // even 60 seconds old and things may have changed drastically
-
   *altwp_arrival = CalculateWaypointArrivalAltitude(Basic, Calculated, AltWaypoint);
-  if ( (*altwp_arrival - ALTERNATE_OVERSAFETY) >0 ) {
-  	if ( *altwp_gr <= (GlidePolar::bestld *SAFELD_FACTOR) ) *altwp_vgr = 1; // full green vgr
-  	else 
-  		if ( *altwp_gr <= GlidePolar::bestld ) *altwp_vgr = 2; // yellow vgr
-		else *altwp_vgr =3; // RED vgr
-  } else 
-  {
-	*altwp_vgr = 3; // full red
-  }
-}
+
+  WayPointCalc[AltWaypoint].VGR = GetVisualGlideRatio(*altwp_arrival, *altwp_gr);
+} 
+
+
 
 // Fill Calculated values for waypoint, assuming that DistanceBearing has already been performed!
 // Assumes that waypoint IS VALID
@@ -108,35 +86,18 @@ void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint) {
 
 void DoNearestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint) { 
 
-  double *altwp_dist = &WayPointCalc[AltWaypoint].Distance;
-  double *altwp_gr   = &WayPointCalc[AltWaypoint].GR;
-  double *altwp_arrival = &WayPointCalc[AltWaypoint].AltArriv[AltArrivMode];
-  short  *altwp_vgr  = &WayPointCalc[AltWaypoint].VGR;
-  double GRsafecalc;
+  double *altwp_gr	= &WayPointCalc[AltWaypoint].GR;
+  double *altwp_arrival	= &WayPointCalc[AltWaypoint].AltArriv[AltArrivMode];
 
-  if (SafetyAltitudeMode==0 && !WayPointCalc[AltWaypoint].IsLandable)
-	GRsafecalc = Calculated->NavAltitude + Calculated->EnergyHeight - WayPointList[AltWaypoint].Altitude;
-  else
-	GRsafecalc = Calculated->NavAltitude + Calculated->EnergyHeight - WayPointList[AltWaypoint].Altitude - SAFETYALTITUDEARRIVAL;
-
-  if (GRsafecalc <=0) *altwp_gr = INVALID_GR;
-  else {
-	*altwp_gr = *altwp_dist / GRsafecalc;
-	if ( *altwp_gr >ALTERNATE_MAXVALIDGR || *altwp_gr <0 ) *altwp_gr = INVALID_GR;
-	else if ( *altwp_gr <1 ) *altwp_gr = 1;
-  }
+  *altwp_gr = CalculateGlideRatio( WayPointCalc[AltWaypoint].Distance,
+	Calculated->NavAltitude - WayPointList[AltWaypoint].Altitude - GetSafetyAltitude(AltWaypoint));
 
   *altwp_arrival = CalculateWaypointArrivalAltitude(Basic, Calculated, AltWaypoint);
-  if ( (*altwp_arrival - ALTERNATE_OVERSAFETY) >0 ) {
-  	if ( *altwp_gr <= (GlidePolar::bestld *SAFELD_FACTOR) ) *altwp_vgr = 1; // full green vgr
-  	else 
-  		if ( *altwp_gr <= GlidePolar::bestld ) *altwp_vgr = 2; // yellow vgr
-		else *altwp_vgr =3; // RED vgr
-  } else 
-  {
-	*altwp_vgr = 3; // full red
-  }
+
+  WayPointCalc[AltWaypoint].VGR = GetVisualGlideRatio(*altwp_arrival, *altwp_gr);
 }
+
+
 
 // Partially rewritten on december 2010 to make use of unsorted data from Range
 // CAREFUL> SortedLandablexxx sized MAXNEAREST!!
@@ -1661,9 +1622,9 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 	WayPointCalc[i].Bearing=waypointBearing;
 
 	if (SafetyAltitudeMode==0 && !WayPointCalc[i].IsLandable)
-		dtmp=DerivedDrawInfo.NavAltitude + DerivedDrawInfo.EnergyHeight - WayPointList[i].Altitude;
+		dtmp=DerivedDrawInfo.NavAltitude - WayPointList[i].Altitude;
 	else
-		dtmp=DerivedDrawInfo.NavAltitude + DerivedDrawInfo.EnergyHeight - SAFETYALTITUDEARRIVAL - WayPointList[i].Altitude;
+		dtmp=DerivedDrawInfo.NavAltitude - SAFETYALTITUDEARRIVAL - WayPointList[i].Altitude;
 
 	if (dtmp>0) {
 		WayPointCalc[i].GR = waypointDistance / dtmp;
@@ -2534,3 +2495,62 @@ int GetThermalMultitarget(void) {
   return ThermalMultitarget;
 }
 
+//
+// Notice: GR should not consider total energy. This is a mere geometric value.
+// 
+double CalculateGlideRatio(const double grdistance, const double havailable) {
+  double ratio=0;
+  if (havailable <=0) {
+	ratio=INVALID_GR;
+  } else {
+	ratio= grdistance / havailable;
+
+	if ( ratio >ALTERNATE_MAXVALIDGR || ratio <0 )
+		ratio=INVALID_GR;
+	else
+		if ( ratio <1 )
+			ratio=1;
+  }
+  return ratio;
+}
+
+
+//
+// Assumes that wpindex IS already checked for existance!
+// SafetyAltitudeMode:  0=landables only,  1=landables and turnpoints
+//
+bool CheckSafetyAltitudeApplies(const int wpindex) {
+  #if TESTBENCH
+  if (!ValidWayPoint(wpindex)) {
+	StartupStore(_T("..... CheckSafetyAlt for invalid wp=%d !%s"),wpindex,NEWLINE);
+	return false;
+  }
+  #endif
+  //
+  if (SafetyAltitudeMode==0 && !WayPointCalc[wpindex].IsLandable)
+	return false;
+  else
+	return true;
+}
+
+double GetSafetyAltitude(const int wpindex) {
+
+  if (CheckSafetyAltitudeApplies(wpindex))
+	return SAFETYALTITUDEARRIVAL;
+  else
+	return 0;
+
+}
+
+// Returns a Green, Yellow or Red condition for the glide
+short GetVisualGlideRatio(const double arrival, const double gr) {
+  // Greeen requires 100m more height
+  if ( (arrival - ALTERNATE_OVERSAFETY) >0 ) {
+  	if ( gr <= (GlidePolar::bestld *SAFELD_FACTOR) )
+		return 1; // full green vgr
+  	else 
+  		if ( gr <= GlidePolar::bestld )
+			return 2; // yellow vgr
+  } 
+  return 3; // full red
+}

@@ -3776,19 +3776,7 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   Calculated->TaskAltitudeDifference0 = total_energy_height - TaskAltitudeRequired0;
   Calculated->NextAltitudeDifference0 = total_energy_height - Calculated->NextAltitudeRequired0;
 
-  double havailable = total_energy_height - final_height;
-  if (havailable <=0) {
-	Calculated->GRFinish = INVALID_GR;
-  } else {
-	Calculated->GRFinish = Calculated->TaskDistanceToGo / havailable;
-
-	if ( Calculated->GRFinish >ALTERNATE_MAXVALIDGR || Calculated->GRFinish <0 )
-		Calculated->GRFinish = INVALID_GR;
-	else
-		if ( Calculated->GRFinish <1 )
-			Calculated->GRFinish = 1;
-
-  }
+  Calculated->GRFinish= CalculateGlideRatio(Calculated->TaskDistanceToGo, Calculated->NavAltitude - final_height);
 
   if (Calculated->TaskSpeedAchieved >0)
 	Calculated->LKTaskETE = Calculated->TaskDistanceToGo/Calculated->TaskSpeedAchieved;
@@ -4586,4 +4574,3 @@ bool IsFlarmTargetCNInRange()
    }
  }
  
-
