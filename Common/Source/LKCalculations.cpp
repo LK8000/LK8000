@@ -1661,9 +1661,9 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 	WayPointCalc[i].Bearing=waypointBearing;
 
 	if (SafetyAltitudeMode==0 && !WayPointCalc[i].IsLandable)
-		dtmp=DerivedDrawInfo.NavAltitude + Calculated->EnergyHeight - WayPointList[i].Altitude;
+		dtmp=DerivedDrawInfo.NavAltitude + DerivedDrawInfo.EnergyHeight - WayPointList[i].Altitude;
 	else
-		dtmp=DerivedDrawInfo.NavAltitude + Calculated->EnergyHeight - SAFETYALTITUDEARRIVAL - WayPointList[i].Altitude;
+		dtmp=DerivedDrawInfo.NavAltitude + DerivedDrawInfo.EnergyHeight - SAFETYALTITUDEARRIVAL - WayPointList[i].Altitude;
 
 	if (dtmp>0) {
 		WayPointCalc[i].GR = waypointDistance / dtmp;
@@ -1682,7 +1682,7 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 
 	WayPointCalc[i].AltReqd[AltArrivMode] = altitudeRequired; 
 
-	altitudeDifference = DerivedDrawInfo.NavAltitude + Calculated->EnergyHeight - altitudeRequired; 
+	altitudeDifference = DerivedDrawInfo.NavAltitude + DerivedDrawInfo.EnergyHeight - altitudeRequired; 
 	WayPointList[i].AltArivalAGL = altitudeDifference;
       
 	if(altitudeDifference >=0){
@@ -1731,7 +1731,7 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 			else
                 		altitudeRequired = altitudeRequired + SAFETYALTITUDEARRIVAL + WayPointList[i].Altitude ;
 
-               		altitudeDifference = DerivedDrawInfo.NavAltitude + Calculated->EnergyHeight - altitudeRequired;                                      
+               		altitudeDifference = DerivedDrawInfo.NavAltitude + DerivedDrawInfo.EnergyHeight - altitudeRequired;                                      
                 	WayPointList[i].AltArivalAGL = altitudeDifference;
 
 			WayPointCalc[i].AltReqd[AltArrivMode] = altitudeRequired; // VENTA6
