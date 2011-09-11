@@ -1581,7 +1581,6 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 {
   unsigned int i;
   double waypointDistance, waypointBearing,altitudeRequired,altitudeDifference;
-  double dtmp;
 
   // LandableReachable is used only by the thermal bar indicator in MapWindow2, after here
   // apparently, is used to tell you if you are below final glide but in range for a landable wp
@@ -1621,32 +1620,19 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 	WayPointCalc[i].Distance=waypointDistance; 
 	WayPointCalc[i].Bearing=waypointBearing;
 
-	if (SafetyAltitudeMode==0 && !WayPointCalc[i].IsLandable)
-		dtmp=DerivedDrawInfo.NavAltitude - WayPointList[i].Altitude;
-	else
-		dtmp=DerivedDrawInfo.NavAltitude - SAFETYALTITUDEARRIVAL - WayPointList[i].Altitude;
+	CalculateGlideRatio(waypointDistance,
+		 DerivedDrawInfo.NavAltitude - WayPointList[i].Altitude - GetSafetyAltitude(i));
 
-	if (dtmp>0) {
-		WayPointCalc[i].GR = waypointDistance / dtmp;
-		if (WayPointCalc[i].GR > INVALID_GR) WayPointCalc[i].GR=INVALID_GR; else
-		if (WayPointCalc[i].GR <1) WayPointCalc[i].GR=1;
-	} else
-		WayPointCalc[i].GR = INVALID_GR;
 
-	altitudeRequired = GlidePolar::MacCreadyAltitude (GetMacCready(i,0), waypointDistance, waypointBearing,  // 091221
-						DerivedDrawInfo.WindSpeed, DerivedDrawInfo.WindBearing, 0,0,true,0);
+	altitudeRequired = GlidePolar::MacCreadyAltitude (GetMacCready(i,0), waypointDistance, waypointBearing, 
+						DerivedDrawInfo.WindSpeed, DerivedDrawInfo.WindBearing, 0,0,true,0) 
+			+ WayPointList[i].Altitude + GetSafetyAltitude(i) - DerivedDrawInfo.EnergyHeight;
 
-	if (SafetyAltitudeMode==0 && !WayPointCalc[i].IsLandable)
-		altitudeRequired = altitudeRequired + WayPointList[i].Altitude ;
-	else
-		altitudeRequired = altitudeRequired + SAFETYALTITUDEARRIVAL + WayPointList[i].Altitude ;
 
-	WayPointCalc[i].AltReqd[AltArrivMode] = altitudeRequired; 
-
-	altitudeDifference = DerivedDrawInfo.NavAltitude + DerivedDrawInfo.EnergyHeight - altitudeRequired; 
-	WayPointList[i].AltArivalAGL = altitudeDifference;
+	WayPointCalc[i].AltReqd[AltArrivMode] = altitudeRequired;
+	WayPointList[i].AltArivalAGL = DerivedDrawInfo.NavAltitude - altitudeRequired; 
       
-	if(altitudeDifference >=0){
+	if(WayPointList[i].AltArivalAGL >=0){
 
 		WayPointList[i].Reachable = TRUE;
 
@@ -1685,17 +1671,13 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 		if (waypointDistance<100000.0) {
 
 			altitudeRequired = GlidePolar::MacCreadyAltitude (GetMacCready(i,0), waypointDistance, waypointBearing,  // 091221
-					DerivedDrawInfo.WindSpeed, DerivedDrawInfo.WindBearing, 0,0,true,0);
+					DerivedDrawInfo.WindSpeed, DerivedDrawInfo.WindBearing, 0,0,true,0)
+					+ WayPointList[i].Altitude + GetSafetyAltitude(i);
                   
-			if (SafetyAltitudeMode==0 && !WayPointCalc[i].IsLandable)
-                		altitudeRequired = altitudeRequired + WayPointList[i].Altitude ;
-			else
-                		altitudeRequired = altitudeRequired + SAFETYALTITUDEARRIVAL + WayPointList[i].Altitude ;
-
                		altitudeDifference = DerivedDrawInfo.NavAltitude + DerivedDrawInfo.EnergyHeight - altitudeRequired;                                      
                 	WayPointList[i].AltArivalAGL = altitudeDifference;
 
-			WayPointCalc[i].AltReqd[AltArrivMode] = altitudeRequired; // VENTA6
+			WayPointCalc[i].AltReqd[AltArrivMode] = altitudeRequired;
 
                 	if(altitudeDifference >=0){
 
