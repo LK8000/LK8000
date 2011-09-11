@@ -209,26 +209,36 @@ static void CheckForceFinalGlide(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     }
 }
 
-// wp is misleading, this is a task index really!
-double FAIFinishHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int wp) {
-  int FinalWayPoint = getFinalWaypoint();
+//
+// twp is a task index reference, not a waypoint index
+// CAREFUL> FAIFinishHeight is considering SafetyAltitude if enabled for the wp type.
+// in Calculations  height_above_finish is the difference between first and last task wp,
+// but they may have different safetyaltitude appliances! This is why it should not be
+// allowed to enter a landable inside a task until we get rid of this stuff.
+//
+double FAIFinishHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int twp) {
 
+  int FinalWayPoint = getFinalWaypoint();
 
   double safetyaltitudearrival=SAFETYALTITUDEARRIVAL; 
 
-  if (wp== -1) {
-    wp = FinalWayPoint;
+  if (twp== -1) {
+    twp = FinalWayPoint;
   }
+
   double wp_alt;
-  if(ValidTaskPoint(wp)) {
-    wp_alt = WayPointList[Task[wp].Index].Altitude;
-	  if (SafetyAltitudeMode==0 && !WayPointCalc[Task[wp].Index].IsLandable) safetyaltitudearrival=0; 
+
+  if(ValidTaskPoint(twp)) {
+    wp_alt = WayPointList[Task[twp].Index].Altitude;
+    if (!CheckSafetyAltitudeApplies(Task[twp].Index) safetyaltitudearrival=0;
   } else {
-	// TODO in case no valid waypoint in task, altitude arrival is zero and we keep safety ?
+    #if TESTBENCH
+    StartupStore(_T("..... FAIFinishHeight invalid twp=%d%s"),twp,NEWLINE);
+    #endif
     wp_alt = 0;
   }
 
-  if (wp==FinalWayPoint) {
+  if (twp==FinalWayPoint) {
     if (EnableFAIFinishHeight && !AATEnabled) {
       return max(max(FinishMinHeight/1000.0, safetyaltitudearrival)+ wp_alt, 
                  Calculated->TaskStartAltitude-1000.0);
