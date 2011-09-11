@@ -4217,16 +4217,11 @@ double CalculateWaypointArrivalAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculat
 
   double altReqd;
   double wDistance, wBearing;
-  double wStartDistance=0, wStartBearing=0; // 100510
+  double wStartDistance=0, wStartBearing=0;
   double safetyaltitudearrival;
-  //double usedMC;
 
-  if (SafetyAltitudeMode==0 && !WayPointCalc[i].IsLandable)
-	safetyaltitudearrival=0;
-  else
-	safetyaltitudearrival=SAFETYALTITUDEARRIVAL;
+  safetyaltitudearrival=GetSafetyAltitude(i);
 
-  //usedMC=GetMacCready(i,GMC_DEFAULT);
 
   DistanceBearing(Basic->Latitude, 
                   Basic->Longitude,
@@ -4282,7 +4277,7 @@ double CalculateWaypointArrivalAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculat
 	}
 
         // we should build a function for this since it is used also in lkcalc
-	WayPointCalc[i].AltReqd[AltArrivMode]  = altReqd+safetyaltitudearrival+WayPointList[i].Altitude; 
+	WayPointCalc[i].AltReqd[AltArrivMode]  = altReqd+safetyaltitudearrival+WayPointList[i].Altitude -Calculated->EnergyHeight; 
 	WayPointCalc[i].AltArriv[AltArrivMode] = Calculated->NavAltitude + Calculated->EnergyHeight
 						- altReqd 
 						- WayPointList[i].Altitude 
