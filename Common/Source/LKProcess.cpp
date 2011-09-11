@@ -2635,6 +2635,14 @@ olc_score:
 			//wsprintf(BufferUnit, TEXT(""));
 			wsprintf(BufferTitle, TEXT(""));
 			break;
+
+		case LK_EXP1:
+			_stprintf(BufferTitle, TEXT("hTE"));
+			_stprintf(BufferValue, TEXT("%3.0f"),DerivedDrawInfo.EnergyHeight);
+			wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
+			valid=true;
+			break;
+
 		case LK_ERROR:
 		case LK_RESERVED1:
 		case LK_RESERVED2:

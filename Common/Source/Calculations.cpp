@@ -1050,10 +1050,8 @@ void EnergyHeightNavAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     Calculated->NavAltitude = Basic->Altitude;
   }
 
-  ////////////////////////////////////////////////////////////////////////
-  #if (0) // OLD TOTAL ENERGY CALCULATION
-
-  // 110627 This was the old Total Energy calculator. It is disabled now.
+  /* /////////////////////////////////////////////////////////////////////
+  // 110627 This was the old Total Energy calculator. 
   double ias_to_tas;
   double V_tas;
 
@@ -1072,7 +1070,7 @@ void EnergyHeightNavAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   Calculated->EnergyHeight = (V_tas*V_tas-V_target*V_target)/(9.81*2.0);
 
   #endif // OLD TOTAL ENERGY CALCULATION
-  ////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////// */
 
   #if (0) // NEW TOTAL ENERGY
   double ias_to_tas;
@@ -1081,24 +1079,18 @@ void EnergyHeightNavAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   if (Basic->AirspeedAvailable && (Basic->IndicatedAirspeed>0)) {
     ias_to_tas = Basic->TrueAirspeed/Basic->IndicatedAirspeed;
     V_tas = Basic->TrueAirspeed;
-    wastefactor=0.8;
+    wastefactor=0.82;
   } else {
     ias_to_tas = 1.0;
     V_tas = Calculated->TrueAirspeedEstimated;
-    wastefactor=0.7;
+    wastefactor=0.69;
   }
   double V_min_tas = GlidePolar::Vbestld*ias_to_tas;
   V_tas = max(V_tas, V_min_tas);
 
-  Calculated->EnergyHeight = ( (V_tas*V_tas-V_min_tas*V_min_tas)/(9.81*2.0)*wastefactor)-30;
-  if (Calculated->EnergyHeight <0) Calculated->EnergyHeight=0;
+  Calculated->EnergyHeight = ( (V_tas*V_tas-V_min_tas*V_min_tas)/(9.81*2.0)*wastefactor);
 
-  //#if TESTBENCH
-  //if (Calculated->EnergyHeight>0) StartupStore(_T("... EnergyH=%.0f\n"),Calculated->EnergyHeight);
-  //#endif
-
-  #else	// DO NOT USE TOTALENERGY
-  // Total Energy is unused right now in LK
+  #else	// No total energy
   Calculated->EnergyHeight = 0.0;
   #endif
 }
