@@ -68,6 +68,7 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 
   if (!WayPointList) return;
 
+  // We are not considering total energy here, forbidden for safety reasons
   double searchrange=(Calculated->NavAltitude-SAFETYALTITUDEARRIVAL)* GlidePolar::bestld /1000;
   if (searchrange <= 0) 
 	searchrange=2; // lock to home airport at once

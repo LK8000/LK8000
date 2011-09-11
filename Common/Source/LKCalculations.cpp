@@ -75,9 +75,9 @@ void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint) {
                   altwp_dist, NULL);
 
   if (SafetyAltitudeMode==0 && !WayPointCalc[AltWaypoint].IsLandable)
-	GRsafecalc = Calculated->NavAltitude - WayPointList[AltWaypoint].Altitude;
+	GRsafecalc = Calculated->NavAltitude + Calculated->EnergyHeight - WayPointList[AltWaypoint].Altitude;
   else 
-	GRsafecalc = Calculated->NavAltitude - WayPointList[AltWaypoint].Altitude - SAFETYALTITUDEARRIVAL;
+	GRsafecalc = Calculated->NavAltitude + Calculated->EnergyHeight - WayPointList[AltWaypoint].Altitude - SAFETYALTITUDEARRIVAL;
 
   if (GRsafecalc <=0) *altwp_gr = INVALID_GR;
   else {
@@ -115,9 +115,9 @@ void DoNearestAlternate(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypo
   double GRsafecalc;
 
   if (SafetyAltitudeMode==0 && !WayPointCalc[AltWaypoint].IsLandable)
-	GRsafecalc = Calculated->NavAltitude - WayPointList[AltWaypoint].Altitude;
+	GRsafecalc = Calculated->NavAltitude + Calculated->EnergyHeight - WayPointList[AltWaypoint].Altitude;
   else
-	GRsafecalc = Calculated->NavAltitude - WayPointList[AltWaypoint].Altitude - SAFETYALTITUDEARRIVAL;
+	GRsafecalc = Calculated->NavAltitude + Calculated->EnergyHeight - WayPointList[AltWaypoint].Altitude - SAFETYALTITUDEARRIVAL;
 
   if (GRsafecalc <=0) *altwp_gr = INVALID_GR;
   else {
@@ -1359,6 +1359,7 @@ bool DoTarget(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
    //double height_above_target = Calculated->NavAltitude - LKTARG.Altitude;
 
+   // We DONT use EnergyHeight here because we are not considering the Target's TE either
    LKTARG.AltArriv = Calculated->NavAltitude - GlidePolar::MacCreadyAltitude(MACCREADY,
 	distance,
 	bearing,
@@ -1660,9 +1661,9 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 	WayPointCalc[i].Bearing=waypointBearing;
 
 	if (SafetyAltitudeMode==0 && !WayPointCalc[i].IsLandable)
-		dtmp=DerivedDrawInfo.NavAltitude - WayPointList[i].Altitude;
+		dtmp=DerivedDrawInfo.NavAltitude + Calculated->EnergyHeight - WayPointList[i].Altitude;
 	else
-		dtmp=DerivedDrawInfo.NavAltitude - SAFETYALTITUDEARRIVAL - WayPointList[i].Altitude;
+		dtmp=DerivedDrawInfo.NavAltitude + Calculated->EnergyHeight - SAFETYALTITUDEARRIVAL - WayPointList[i].Altitude;
 
 	if (dtmp>0) {
 		WayPointCalc[i].GR = waypointDistance / dtmp;
@@ -1681,7 +1682,7 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 
 	WayPointCalc[i].AltReqd[AltArrivMode] = altitudeRequired; 
 
-	altitudeDifference = DerivedDrawInfo.NavAltitude - altitudeRequired; 
+	altitudeDifference = DerivedDrawInfo.NavAltitude + Calculated->EnergyHeight - altitudeRequired; 
 	WayPointList[i].AltArivalAGL = altitudeDifference;
       
 	if(altitudeDifference >=0){
@@ -1730,7 +1731,7 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 			else
                 		altitudeRequired = altitudeRequired + SAFETYALTITUDEARRIVAL + WayPointList[i].Altitude ;
 
-               		altitudeDifference = DerivedDrawInfo.NavAltitude - altitudeRequired;                                      
+               		altitudeDifference = DerivedDrawInfo.NavAltitude + Calculated->EnergyHeight - altitudeRequired;                                      
                 	WayPointList[i].AltArivalAGL = altitudeDifference;
 
 			WayPointCalc[i].AltReqd[AltArrivMode] = altitudeRequired; // VENTA6
@@ -2426,7 +2427,7 @@ bool DoThermalHistory(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
                 0, 0, true, NULL);
 
 	// These values are available only in the mapwindow thread, i.e. in the Copy.
-	CopyThermalHistory[i].Arrival= Calculated->NavAltitude - altReqd - CopyThermalHistory[i].HBase;
+	CopyThermalHistory[i].Arrival= Calculated->NavAltitude + Calculated->EnergyHeight - altReqd - CopyThermalHistory[i].HBase;
 	CopyThermalHistory[i].Distance=distance;
 	CopyThermalHistory[i].Bearing=bearing;
    }
