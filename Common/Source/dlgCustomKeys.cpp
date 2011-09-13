@@ -298,6 +298,7 @@ void AddConfList( DataFieldEnum* dfe) {
     dfe->addEnumText(gettext(TEXT("_@M1688_"))); // screen lock
     dfe->addEnumText(gettext(TEXT("_@M1689_"))); // where am I
     dfe->addEnumText(gettext(TEXT("_@M1669_"))); // Toggle Total Energy
+    dfe->addEnumText(gettext(TEXT("_@M2063_"))); // Nodepad
     dfe->Sort(0);
 #if USEIBOX
 	// Last ckToggleInfobox is automatically added at the bottom of this list. 

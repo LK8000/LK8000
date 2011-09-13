@@ -428,6 +428,7 @@ typedef enum{
 	ckLockScreen,
 	ckWhereAmI,
 	ckUseTotalEnergy,
+	ckNotepad,
 #if USEIBOX
 	// ToggleInfobox MUST be the last one, used only for Aircraft Icons..
 	ckToggleInfobox,
