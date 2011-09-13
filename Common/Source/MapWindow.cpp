@@ -1803,7 +1803,7 @@ goto_menu:
 						}
 						// if we are not long clicking in center screen, before setting new position
 						// we check if we are on an airspace for informations, if activemap is on
-						if (ActiveMap && OnAirSpace && Event_InteriorAirspaceDetails(Xstart, Ystart)) {
+						if (OnAirSpace && Event_InteriorAirspaceDetails(Xstart, Ystart)) {
 							break;
 						}
 						// Ok, so we reposition the aircraft
@@ -1817,8 +1817,8 @@ goto_menu:
 					}
 				}
 				if (!mode.AnyPan()) {
-					// Select airspace on moving map only if they are visible, and activemap
-					if (ActiveMap && OnAirSpace && Event_InteriorAirspaceDetails(Xstart, Ystart))
+					// Select airspace on moving map only if they are visible, (and activemap optionally!)
+					if (OnAirSpace && Event_InteriorAirspaceDetails(Xstart, Ystart))
 						break;
 
 					// match only center screen
