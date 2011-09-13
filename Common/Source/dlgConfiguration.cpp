@@ -1891,12 +1891,11 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M959_ = "OFF" 
-    dfe->addEnumText(gettext(TEXT("_@M959_")));
-	// LKTOKEN  _@M496_ = "ON/Fixed" 
-    dfe->addEnumText(gettext(TEXT("_@M496_")));
-	// LKTOKEN  _@M497_ = "ON/Scaled" 
-    dfe->addEnumText(gettext(TEXT("_@M497_")));
+    dfe->addEnumText(gettext(TEXT("_@M239_"))); // Disabled
+    dfe->addEnumText(gettext(TEXT("_@M259_"))); // Enabled
+    // dfe->addEnumText(gettext(TEXT("_@M959_"))); // OFF
+    // dfe->addEnumText(gettext(TEXT("_@M496_"))); // ON fixed
+    // dfe->addEnumText(gettext(TEXT("_@M497_"))); // ON scaled
     dfe->Set(EnableFLARMMap);
     wp->RefreshDisplay();
   }

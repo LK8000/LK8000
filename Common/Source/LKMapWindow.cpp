@@ -126,8 +126,10 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
   displaymode.AsInt = 0;
   displaymode.AsFlag.NoSetFont = 1;
 
+  #if 0
   double screenrange = GetApproxScreenRange();
   double scalefact = screenrange/6000.0; // FIX 100820
+  #endif
 
   HBRUSH redBrush = LKBrush_Red;
   HBRUSH yellowBrush = LKBrush_Yellow;
@@ -152,6 +154,7 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
 		target_lon = DrawInfo.FLARM_Traffic[i].Longitude;
 		target_lat = DrawInfo.FLARM_Traffic[i].Latitude;
 
+		#if (0) // No scaling, wrong
 		if ((EnableFLARMMap==2)&&(scalefact>1.0)) {
 
 			double distance;
@@ -160,6 +163,7 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
 			DistanceBearing(DrawInfo.Latitude, DrawInfo.Longitude, target_lat, target_lon, &distance, &bearing);
 			FindLatitudeLongitude(DrawInfo.Latitude, DrawInfo.Longitude, bearing, distance*scalefact, &target_lat, &target_lon);
 		}
+		#endif
       
 		POINT sc, sc_name, sc_av;
 		LatLon2Screen(target_lon, target_lat, sc);

@@ -442,10 +442,8 @@ Track line does not appear on low zoom levels.
 
 @199
 This enables the display of FLARM traffic on the map window
-[OFF] No Flarm objects will be shown on map
-[ON/Fixed] Flarm object will appear on the map in their real position
-[ON/Scaled] FLARM targets on the map display are scaled so that when the map is at large zoom levels, targets are still visible. 
-Scaled mode is confusing, because objects will appear around your aircraft on the map, but not in their real position. If in doubt, use Fixed.
+[Enabled] No Flarm objects will be shown on map
+[Disabled] Flarm object will appear on the map in their real position
 
 @200
 Determines how waypoints are advanced when flying the task.
