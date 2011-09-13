@@ -378,8 +378,16 @@ goto_bearing:
 				valid=true;
 				if (value>99)
 					sprintf(text,"%.0f",value);
-				else
-					sprintf(text,"%.1f",value);
+				else {
+					if (ISPARAGLIDER) {
+						if (value>10)
+							sprintf(text,"%.1f",value);
+						else 
+							sprintf(text,"%.2f",value);
+					} else {
+						sprintf(text,"%.1f",value);
+					}
+				}
 			   } else {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
@@ -392,7 +400,7 @@ goto_bearing:
 							if (value>10)
 								sprintf(text,"%.1f",value);
 							else 
-								sprintf(text,"%.3f",value);
+								sprintf(text,"%.2f",value);
 						} else {
 							sprintf(text,"%.1f",value);
 						}
@@ -2687,6 +2695,7 @@ void MapWindow::LKFormatDist(const int wpindex, const bool wpvirtual, TCHAR *Buf
   }
   if (index>=0) {
 	value=WayPointCalc[index].Distance*DISTANCEMODIFY;
+	if (value<0.001) value=0;
 	if (value>99 || value==0)
 		sprintf(text,"%.0f",value);
 	else {

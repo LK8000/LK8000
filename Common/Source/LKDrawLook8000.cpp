@@ -629,7 +629,13 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		 } else {
 			switch (OvertargetMode) {
 				case OVT_TASK:
-		 			LKFormatValue(LK_NEXT_DIST, false, BufferValue, BufferUnit, BufferTitle);
+					// Using FormatDist will give PGs 3 decimal units on overlay only
+					// because changing FormatValue to 3 digits would bring them also
+					// on bottom bar, and there is no space for 1.234km on the bottom bar.
+					if (DoOptimizeRoute() )
+		 				LKFormatDist(RESWP_OPTIMIZED, true, BufferValue, BufferUnit);
+					else 
+		 				LKFormatDist(index, false, BufferValue, BufferUnit);
 					break;
 				case OVT_ALT1:
 		 			LKFormatDist(Alternate1, false, BufferValue, BufferUnit);
