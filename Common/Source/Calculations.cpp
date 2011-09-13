@@ -1070,7 +1070,8 @@ void EnergyHeightNavAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	V_tas = max(V_tas, V_min_tas);
 
 	Calculated->EnergyHeight = ( (V_tas*V_tas-V_min_tas*V_min_tas)/(9.81*2.0)*wastefactor);
-  }
+  } else 
+	Calculated->EnergyHeight = 0;
 
 }
 

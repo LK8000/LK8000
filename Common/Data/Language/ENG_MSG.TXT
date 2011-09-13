@@ -1583,6 +1583,10 @@ _@M1662_ "SYSTEM ERROR"
 _@M1663_ "NOT ENOUGH MEMORY"
 
 # Total energy configuration 
+# Toggle is for customkey config
+_@M1666_ "Toggle TotalEnergy"
+_@M1667_ "TOTAL ENERGY IN USE!"
+_@M1668_ "TOTAL ENERGY OFF"
 _@M1669_ "Use TotalEnergy"
 
 # Header Thermal History keep short!

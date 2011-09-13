@@ -3944,6 +3944,12 @@ bool CustomKeyHandler(const int key) {
 		// no sound here, chime is played by service event
 		InputEvents::eventService(_T("ORACLE"));
 		return true;
+	case ckUseTotalEnergy:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		InputEvents::eventService(_T("TOTALEN"));
+		return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		FailStore(_T("ERR-726 INVALID CUSTOMKEY=%d"),ckeymode);

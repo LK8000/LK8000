@@ -2042,6 +2042,14 @@ void InputEvents::eventService(const TCHAR *misc) {
 	return;
   }
 
+  if (_tcscmp(misc, TEXT("TOTALEN")) == 0) {
+	UseTotalEnergy=!UseTotalEnergy;
+	if (UseTotalEnergy)
+		DoStatusMessage(gettext(TEXT("_@M1667_"))); // TOTAL ENERGY ON
+	else
+		DoStatusMessage(gettext(TEXT("_@M1668_"))); // TOTAL ENERGY OFF
+	return;
+  }
   // we should not get here
   DoStatusMessage(_T("Unknown Service: "),misc);
 
@@ -2541,7 +2549,7 @@ void InputEvents::eventAdjustForecastTemperature(const TCHAR *misc) {
 
 // Run
 // Runs an external program of the specified filename.
-// Note that XCSoar will wait until this program exits.
+// Note that LK will wait until this program exits.
 void InputEvents::eventRun(const TCHAR *misc) {
   bool doexec=false;
   TCHAR path[MAX_PATH];
