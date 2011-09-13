@@ -307,6 +307,10 @@ double SAFETYALTITUDEARRIVAL = 300;
 double SAFETYALTITUDETERRAIN = 50;
 double SAFTEYSPEED = 50.0;
 
+// Total Energy usage, config and runtime separated
+bool UseTotalEnergy=false;
+bool UseTotalEnergy_Config=false;
+
 double POLAR[POLARSIZE] = {0,0,0};
 double POLARV[POLARSIZE] = {21,27,40};
 double POLARLD[POLARSIZE] = {33,30,20};

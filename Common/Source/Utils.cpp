@@ -372,6 +372,7 @@ const TCHAR szRegistryLoggerTimeStepCircling[]= TEXT("LoggerTimeStepCircling");
 const TCHAR szRegistrySafetyMacCready[] = TEXT("SafetyMacCready");
 const TCHAR szRegistryAutoMcMode[] = TEXT("AutoMcMode");
 const TCHAR szRegistryAutoMcStatus[] = TEXT("AutoMcStatus");
+const TCHAR szRegistryUseTotalEnergy[] = TEXT("UseTotalEnergy");
 const TCHAR szRegistryWaypointsOutOfRange[] = TEXT("WaypointsOutOfRange2"); // 101020 2nd version, reset needed
 const TCHAR szRegistryEnableExternalTriggerCruise[] = TEXT("EnableExternalTriggerCruise");
 const TCHAR szRegistryFAIFinishHeight[] = TEXT("FAIFinishHeight");
@@ -1108,6 +1109,11 @@ void ReadRegistrySettings(void)
   AutoMacCready_Config = Temp;
   // AutoMacCready in calculations.h is an int, should be a bool
   CALCULATED_INFO.AutoMacCready = AutoMacCready_Config==true?1:0;
+
+  Temp = UseTotalEnergy_Config;
+  GetFromRegistry(szRegistryUseTotalEnergy,&Temp);
+  UseTotalEnergy_Config=Temp;
+  UseTotalEnergy = UseTotalEnergy_Config;
 
   Temp = WaypointsOutOfRange;
   GetFromRegistry(szRegistryWaypointsOutOfRange,&Temp);

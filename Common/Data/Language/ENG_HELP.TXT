@@ -1616,5 +1616,11 @@ When using next waypoint, or task waypoint with only final waypoint to go, then 
 Automatic Mac Cready setting, can be on or off. It can also be enabled and disabled during flight.
 This is the default value. 
 
+@1256
+[Total Energy] When TotalEnergy is in use, LK will calculate the height you would gain by pulling up the aircraft at the current speed, up until the speed becomes the optimal for best glide. 
+For example if you are flying at 200kmh with a discus with no ballast, the speed energy would be calculated as if you would pull up and slow down to 100kmh: you would certainly climb to a better altitude of course.
+This speed height will be added to all arrival altitudes. By default this feature is DISABLED, for safety reasons.
+If you are in doubt, leave this setting OFF.
+
 @9999
 No help available on this item!

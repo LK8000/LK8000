@@ -1038,7 +1038,10 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 }
 
 //
-// Simply returns gps or baro altitude, no total energy in use within LK
+// Simply returns gps or baro altitude, and total energy in use within LK
+// Using total energy means adding a speed energy calculated here as 
+// EnergyHeight to the arrival altitudes. It won't change glide ratios.
+// As of 110913 this is totally experimental.
 //
 void EnergyHeightNavAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated) 
 {
@@ -1050,49 +1053,25 @@ void EnergyHeightNavAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     Calculated->NavAltitude = Basic->Altitude;
   }
 
-  /* /////////////////////////////////////////////////////////////////////
-  // 110627 This was the old Total Energy calculator. 
-  double ias_to_tas;
-  double V_tas;
+  if (UseTotalEnergy) {
+	double ias_to_tas;
+	double V_tas, wastefactor;
 
-  if (Basic->AirspeedAvailable && (Basic->IndicatedAirspeed>0)) {
-    ias_to_tas = Basic->TrueAirspeed/Basic->IndicatedAirspeed;
-    V_tas = Basic->TrueAirspeed;
-  } else {
-    ias_to_tas = 1.0;
-    V_tas = Calculated->TrueAirspeedEstimated;
+	if (Basic->AirspeedAvailable && (Basic->IndicatedAirspeed>0)) {
+		ias_to_tas = Basic->TrueAirspeed/Basic->IndicatedAirspeed;
+		V_tas = Basic->TrueAirspeed;
+		wastefactor=0.82;
+	} else {
+		ias_to_tas = 1.0;
+		V_tas = Calculated->TrueAirspeedEstimated;
+		wastefactor=0.71;
+	}
+	double V_min_tas = GlidePolar::Vbestld*ias_to_tas;
+	V_tas = max(V_tas, V_min_tas);
+
+	Calculated->EnergyHeight = ( (V_tas*V_tas-V_min_tas*V_min_tas)/(9.81*2.0)*wastefactor);
   }
-  double V_bestld_tas = GlidePolar::Vbestld*ias_to_tas;
 
-  double V_mc_tas = Calculated->VMacCready*ias_to_tas;
-  V_tas = max(V_tas, V_bestld_tas);
-  double V_target = max(V_bestld_tas, V_mc_tas);
-  Calculated->EnergyHeight = (V_tas*V_tas-V_target*V_target)/(9.81*2.0);
-
-  #endif // OLD TOTAL ENERGY CALCULATION
-  ///////////////////////////////////////////////////////////////////// */
-
-  #if (0) // NEW TOTAL ENERGY
-  double ias_to_tas;
-  double V_tas, wastefactor;
-
-  if (Basic->AirspeedAvailable && (Basic->IndicatedAirspeed>0)) {
-    ias_to_tas = Basic->TrueAirspeed/Basic->IndicatedAirspeed;
-    V_tas = Basic->TrueAirspeed;
-    wastefactor=0.82;
-  } else {
-    ias_to_tas = 1.0;
-    V_tas = Calculated->TrueAirspeedEstimated;
-    wastefactor=0.69;
-  }
-  double V_min_tas = GlidePolar::Vbestld*ias_to_tas;
-  V_tas = max(V_tas, V_min_tas);
-
-  Calculated->EnergyHeight = ( (V_tas*V_tas-V_min_tas*V_min_tas)/(9.81*2.0)*wastefactor);
-
-  #else	// No total energy
-  Calculated->EnergyHeight = 0.0;
-  #endif
 }
 
 

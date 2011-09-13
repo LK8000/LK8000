@@ -1630,6 +1630,9 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     if (ActiveMap) {
       _tcscat(Scale2, gettext(TEXT("_@M1661_"))); // ACT
     }
+    if (UseTotalEnergy) {
+      _tcscat(Scale2, TEXT("[TE]")); // Total Energy indicator
+    }
     if (zoom.AutoZoom()) {
 		// LKTOKEN _@M1337_ " AZM"
       _tcscat(Scale2, gettext(TEXT("_@M1337_")));

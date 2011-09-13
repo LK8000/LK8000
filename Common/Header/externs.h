@@ -442,6 +442,8 @@ extern double MACCREADY;
 extern bool   AutoMacCready_Config;
 extern int    AutoMcMode;
 extern int    AutoMcMode_Config;
+extern bool   UseTotalEnergy;
+extern bool   UseTotalEnergy_Config;
 extern double SAFETYALTITUDEARRIVAL;
 extern double SAFETYALTITUDETERRAIN;
 extern double SAFTEYSPEED;

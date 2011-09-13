@@ -2828,6 +2828,16 @@ static void setVariables(void) {
     dfe->Set(BestWarning);
     wp->RefreshDisplay();
   }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpUseTotalEnergy"));
+  if (wp) {
+    DataFieldEnum* dfe;
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->addEnumText(gettext(TEXT("_@M239_"))); // disabled
+    dfe->addEnumText(gettext(TEXT("_@M259_"))); // enabled
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->Set(UseTotalEnergy_Config);
+    wp->RefreshDisplay();
+  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpThermalBar")); // 091122
   if (wp) {
@@ -4441,6 +4451,15 @@ void dlgConfigurationShowModal(void){
     if (BestWarning != (wp->GetDataField()->GetAsInteger())) {
       BestWarning = (wp->GetDataField()->GetAsInteger());
       SetToRegistry(szRegistryBestWarning, (DWORD)(BestWarning));
+      changed = true;
+    }
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpUseTotalEnergy"));
+  if (wp) {
+    if (UseTotalEnergy_Config != (wp->GetDataField()->GetAsInteger())) {
+      UseTotalEnergy_Config = (wp->GetDataField()->GetAsInteger());
+      SetToRegistry(szRegistryUseTotalEnergy, (DWORD)(UseTotalEnergy_Config));
+      UseTotalEnergy=UseTotalEnergy_Config;
       changed = true;
     }
   }

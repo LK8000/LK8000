@@ -1582,6 +1582,9 @@ _@M1661_ "ACT"
 _@M1662_ "SYSTEM ERROR"
 _@M1663_ "NOT ENOUGH MEMORY"
 
+# Total energy configuration 
+_@M1669_ "Use TotalEnergy"
+
 # Header Thermal History keep short!
 _@M1670_ "THR"
 # average lift 
