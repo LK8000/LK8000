@@ -1000,7 +1000,9 @@ location=11
 mode=Config2
 type=key
 data=APP1
-label=
+event=Service TOTALEN
+event=Mode default
+label=_@M2115_\n$(UseTE)
 location=1
 
 mode=Config2

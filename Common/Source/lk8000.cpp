@@ -5275,6 +5275,18 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
 
+  if (_tcsstr(OutBuffer, TEXT("$(UseTE)"))) {
+    switch(UseTotalEnergy) {
+    case 0:
+      ReplaceInString(OutBuffer, TEXT("$(UseTE)"), gettext(TEXT("_@M894_")), Size); // ON
+      break;
+    case 1:
+      ReplaceInString(OutBuffer, TEXT("$(UseTE)"), gettext(TEXT("_@M491_")), Size); // OFF
+      break;
+    }
+	if (--items<=0) goto label_ret;
+  }
+
 // VENTA3 AirSpace event
   if (_tcsstr(OutBuffer, TEXT("$(AirSpaceToggleName)"))) {
     switch(OnAirSpace) {

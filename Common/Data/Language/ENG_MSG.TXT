@@ -1750,5 +1750,7 @@ _@M2111_ "H>\nHome"
 _@M2112_ "Speed"
 _@M2113_ "Alt"
 _@M2114_ "Turn"
+# better not to translate this TE button!
+_@M2115_ "TEnergy"
 
 # Note for developers: remember LKLanguage MAX_MESSAGE limit
