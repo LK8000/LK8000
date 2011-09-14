@@ -959,10 +959,6 @@ void ColorRampLookup(const short h,
 }
 
 
-short TerrainContrast = 140;   // 100228
-short TerrainBrightness = 115; // 100928
-short TerrainRamp = 0;
-
 #define MIX(x,y,i) (BYTE)((x*i+y*((1<<7)-i))>>7)
 
 inline void TerrainShading(const short illum, BYTE &r, BYTE &g, BYTE &b)

@@ -45,7 +45,6 @@ extern void NextMapSpace();
 extern void PreviousMapSpace();
 extern void ShowMenu();
 extern void ResetNearestTopology();
-extern short TerrainRamp;
 
 void BottomSounds();
 

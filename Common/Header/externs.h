@@ -449,6 +449,9 @@ extern double SAFETYALTITUDEARRIVAL;
 extern double SAFETYALTITUDETERRAIN;
 extern double SAFTEYSPEED;
 
+// Terrain
+extern short TerrainRamp_Config;
+
 extern int WindUpdateMode; // unused
 extern double QNH;
 extern int NettoSpeed;

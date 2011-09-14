@@ -1166,9 +1166,10 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryTerrainBrightness,&Temp);
   TerrainBrightness = (short)Temp;
 
-  Temp = TerrainRamp;
+  Temp = TerrainRamp_Config;
   GetFromRegistry(szRegistryTerrainRamp,&Temp);
-  TerrainRamp = (short)Temp;
+  TerrainRamp_Config = (short)Temp;
+  TerrainRamp=TerrainRamp_Config;
 
   Temp = MapWindow::GliderScreenPosition;
   GetFromRegistry(szRegistryGliderScreenPosition,&Temp);

@@ -3187,7 +3187,7 @@ static void setVariables(void) {
 	// LKTOKEN  _@M340_ = "HighContrast" 
     dfe->addEnumText(gettext(TEXT("_@M340_")));
     dfe->addEnumText(TEXT("GA Relative"));
-    dfe->Set(TerrainRamp);
+    dfe->Set(TerrainRamp_Config);
     wp->RefreshDisplay();
   }
 
@@ -4852,9 +4852,10 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTerrainRamp"));
   if (wp) {
-    if (TerrainRamp != wp->GetDataField()->GetAsInteger()) {
-      TerrainRamp = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryTerrainRamp, TerrainRamp);
+    if (TerrainRamp_Config != wp->GetDataField()->GetAsInteger()) {
+      TerrainRamp_Config = wp->GetDataField()->GetAsInteger();
+      SetToRegistry(szRegistryTerrainRamp, TerrainRamp_Config);
+      TerrainRamp=TerrainRamp_Config;
       changed = true;
     }
   }

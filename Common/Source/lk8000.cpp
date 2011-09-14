@@ -266,6 +266,11 @@ double        BALLAST = 0;
 
 bool          AutoMacCready_Config = true;
 
+short TerrainContrast	= 140;
+short TerrainBrightness = 115;
+short TerrainRamp = 0;
+short TerrainRamp_Config = 0;
+
 int          NettoSpeed = 1000;
 
 NMEA_INFO     GPS_INFO;
