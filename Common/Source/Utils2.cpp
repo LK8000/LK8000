@@ -45,6 +45,7 @@ extern void NextMapSpace();
 extern void PreviousMapSpace();
 extern void ShowMenu();
 extern void ResetNearestTopology();
+extern short TerrainRamp;
 
 void BottomSounds();
 
@@ -3955,6 +3956,12 @@ bool CustomKeyHandler(const int key) {
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 		#endif
 		InputEvents::eventChecklist(_T(""));
+		return true;
+	case ckTerrainColors:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		InputEvents::eventService(_T("TERRCOL"));
 		return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));

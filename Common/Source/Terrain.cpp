@@ -577,6 +577,7 @@ const COLORRAMP weather_colors[6][NUM_COLOR_RAMP_LEVELS] = {
 
 #endif // USEWEATHER
 
+// If you change NUMRAMPS, also change the InputEvent SERVICE TERRCOL because I am lazy
 #define NUMRAMPS	14
 
 // terrain shadowing and highlight relative to type

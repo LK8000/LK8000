@@ -44,6 +44,8 @@ using std::max;
 #define MAX_EVENTS 2048
 #define MAX_LABEL NUMBUTTONLABELS
 
+extern short TerrainRamp;
+
 #define ISPARAGLIDER (AircraftCategory == (AircraftCategory_t)umParaglider)
 
 // Current modes - map mode to integer (primitive hash)
@@ -2050,6 +2052,17 @@ void InputEvents::eventService(const TCHAR *misc) {
 		DoStatusMessage(gettext(TEXT("_@M1668_"))); // TOTAL ENERGY OFF
 	return;
   }
+
+  if (_tcscmp(misc, TEXT("TERRCOL")) == 0) {
+	if (TerrainRamp+1>13)
+		TerrainRamp=0;  // 13 = NUMRAMPS -1
+	else
+		++TerrainRamp;
+	MapWindow::RefreshMap();
+	return;
+  }
+
+
   // we should not get here
   DoStatusMessage(_T("Unknown Service: "),misc);
 

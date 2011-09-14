@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 5 , 110909
+# Release 5 , 110914
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -665,7 +665,8 @@ location=11
 mode=Display1
 type=key
 data=APP1
-label=
+event=Service TERRCOL
+label=_@M2116_
 location=1
 
 mode=Display1

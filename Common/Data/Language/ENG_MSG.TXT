@@ -1627,6 +1627,8 @@ _@M1690_ "THE LK8000 ORACLE"
 _@M1691_ "THE ORACLE IS THINKING"
 _@M1692_ "PLEASE WAIT..."
 
+# Customkey
+_@M1693_ "Change Terrain Colors"
 
 ############################################################
 #                  - MENU MESSAGES - 
@@ -1752,5 +1754,6 @@ _@M2113_ "Alt"
 _@M2114_ "Turn"
 # better not to translate this TE button!
 _@M2115_ "TEnergy"
+_@M2116_ "Change\nTerrain"
 
 # Note for developers: remember LKLanguage MAX_MESSAGE limit
