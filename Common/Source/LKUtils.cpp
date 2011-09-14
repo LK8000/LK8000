@@ -52,6 +52,7 @@ void ResetNearestTopology(void) {
   #if TESTBENCH
   StartupStore(_T(". ResetNearestTopology%s"),NEWLINE);
   #endif
+  NearestBigCity.Valid=false;
   NearestCity.Valid=false;
   NearestSmallCity.Valid=false;
   NearestWaterArea.Valid=false;
@@ -858,6 +859,48 @@ TCHAR *WhatTimeIsIt(void) {
   return (time_temp);
 }
 
+//
+// Modes
+// 0 big city
+//
+TCHAR *OracleFormatDistance(TCHAR *name,TCHAR *ntype,const double dist,const double brg,const short mode) {
+
+  static TCHAR ttmp[100];
+  double dist_over=0, dist_near=0;
+  
+  switch(mode) {
+	case 0:		// big city
+	default:
+		if (ISPARAGLIDER) {
+			dist_over=1500;
+			dist_near=3000;
+		} else {
+			dist_over=1500;
+			dist_near=3000;
+		}
+		break;
+  }
+
+  // 5km west of  the city <abcd>
+  if (dist>dist_near) {
+	_stprintf(ttmp,_T("%.0f %s %s %s %s <%s>"), 
+		dist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg), _T("of"),ntype,name);
+	return ttmp;
+  }
+
+  // near 
+  if (dist>dist_over) {
+	_stprintf(ttmp,_T("%s %s <%s>"),_T("Near"), ntype,name);
+	return ttmp;
+  }
+
+  _stprintf(ttmp,_T("%s %s <%s>"),_T("Over"), ntype,name);
+  return ttmp;
+
+}
+
+
+
 
 // This is called by the Draw thread 
 // This is still a draft, to find out what's best to tell and how.
@@ -871,16 +914,28 @@ void WhereAmI(void) {
   bool found=false, over=false, saynear=false, needmorewp=false, secondwpdone=false;
 
   #if TESTBENCH
+  if (NearestBigCity.Valid)
+	StartupStore(_T("... NEAREST BIG CITY <%s>  at %.0f km brg=%.0f\n"),
+		NearestBigCity.Name,NearestBigCity.Distance/1000,NearestBigCity.Bearing);
   if (NearestCity.Valid)
-	StartupStore(_T("... NEAREST CITY <%s>  at %.0f km brg=%.0f\n"),NearestCity.Name,NearestCity.Distance/1000,NearestCity.Bearing);
+	StartupStore(_T("... NEAREST CITY <%s>  at %.0f km brg=%.0f\n"),
+		NearestCity.Name,NearestCity.Distance/1000,NearestCity.Bearing);
   if (NearestSmallCity.Valid)
-	StartupStore(_T("... NEAREST TOWN <%s>  at %.0f km brg=%.0f\n"),NearestSmallCity.Name,NearestSmallCity.Distance/1000,NearestSmallCity.Bearing);
+	StartupStore(_T("... NEAREST TOWN <%s>  at %.0f km brg=%.0f\n"),
+		NearestSmallCity.Name,NearestSmallCity.Distance/1000,NearestSmallCity.Bearing);
   if (NearestWaterArea.Valid)
-	StartupStore(_T("... NEAREST WATER AREA <%s>  at %.0f km brg=%.0f\n"),NearestWaterArea.Name,NearestWaterArea.Distance/1000,NearestWaterArea.Bearing);
+	StartupStore(_T("... NEAREST WATER AREA <%s>  at %.0f km brg=%.0f\n"),
+		NearestWaterArea.Name,NearestWaterArea.Distance/1000,NearestWaterArea.Bearing);
   #endif
 
 
   _stprintf(toracle,_T("%s\n\n"), _T("YOUR POSITION:"));
+
+  if (NearestBigCity.Valid) {
+	_tcscat(toracle, OracleFormatDistance(NearestBigCity.Name,_T("the city of"), NearestBigCity.Distance, NearestBigCity.Bearing,0));
+	_tcscat(toracle, _T("\n"));
+  }
+
 
   if (NearestCity.Valid && NearestSmallCity.Valid) {
 	
@@ -899,15 +954,12 @@ void WhereAmI(void) {
   if (item) {
 	 dist=item->Distance;
 	 brg=item->Bearing;
+
  	 if (dist>1500) {
 		//
 		// 2km South of city
 		//
-		if (ISPARAGLIDER)
-			_stprintf(ttmp,_T("%.1f %s %s %s "), dist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg),_T("of the city"));
-		else
-			_stprintf(ttmp,_T("%.0f %s %s %s "), dist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg),_T("of the city"));
-
+		_stprintf(ttmp,_T("%.0f %s %s %s "), dist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg),_T("of the city"));
 		_tcscat(toracle,ttmp);
 
 	  } else {
@@ -920,6 +972,7 @@ void WhereAmI(void) {
 	  }
 	  _stprintf(ttmp,_T("<%s>"), item->Name);
 	  _tcscat(toracle,ttmp);
+
 	  found=true;
   }
 
@@ -970,11 +1023,7 @@ void WhereAmI(void) {
 			//
 			// 2km North of lake
 			// 
-			if (ISPARAGLIDER)
-				_stprintf(ttmp,_T("%.1f %s %s "), NearestWaterArea.Distance*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg));
-			else
-				_stprintf(ttmp,_T("%.0f %s %s "), NearestWaterArea.Distance*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg));
-
+			_stprintf(ttmp,_T("%.0f %s %s "), NearestWaterArea.Distance*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg));
 			_tcscat(toracle,ttmp);
 		 	_stprintf(ttmp,_T("%s %s"), _T("of"),NearestWaterArea.Name);
  			_tcscat(toracle,ttmp);
@@ -990,6 +1039,7 @@ void WhereAmI(void) {
 	}
   }
 
+  _tcscat(toracle,_T("\n"));
 
   int j=FindNearestFarVisibleWayPoint(GPS_INFO.Longitude,GPS_INFO.Latitude,70000,WPT_UNKNOWN);
   if (!ValidNotResWayPoint(j)) goto _end;
@@ -1043,11 +1093,7 @@ _dowp:
 	// 2km South of city 
 	// and/over lake
 	// 4 km SW of waypoint
-	if (ISPARAGLIDER)
-		_stprintf(ttmp,_T("\n%.1f %s %s "), wpdist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg));
-	else
-		_stprintf(ttmp,_T("\n%.0f %s %s "), wpdist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg));
-
+	_stprintf(ttmp,_T("\n%.0f %s %s "), wpdist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg));
 	_tcscat(toracle,ttmp);
 
  	 _stprintf(ttmp,_T("%s %s<%s>"), _T("of"),wptype,WayPointList[j].Name);
@@ -1100,6 +1146,7 @@ _end:
 
   if (!found) wsprintf(toracle,_T("%s"), _T("\n\nVERY SORRY\n\nYOUR POSITION IS UNKNOWN!"));
 
+  ConvToUpper(toracle);
   MessageBoxX(hWndMainWindow, toracle, gettext(_T("_@M1690_")), MB_OK|MB_ICONQUESTION, true);
 
 }

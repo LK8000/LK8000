@@ -704,17 +704,14 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) {
   int size = MultiByteToWideChar(CP_ACP, 0, label, -1, Temp, 100) - 1;
   if (size <= 0) return false;	
 
-  #if DEBUG_NEARESTTOPO
-  StartupStore(_T("... cat=%d, <%s> lat=%f lon=%f mylat=%f mylon=%f\n"),category, Temp,lat,lon,
-	GPS_INFO.Latitude, GPS_INFO.Longitude);
-  #endif
-
   switch(category) {
 	case 10:
 		item=&NearestWaterArea;
 		break;
 	case 70:
 	case 80:
+		item=&NearestBigCity;
+		break;
 	case 90:
 		item=&NearestCity;
 		break;
@@ -734,6 +731,11 @@ bool XShapeLabel::nearestItem(int category, double lon, double lat) {
   double distance, bearing;
   DistanceBearing(lat,lon,GPS_INFO.Latitude, GPS_INFO.Longitude,
 	&distance, &bearing);
+
+  #if DEBUG_NEARESTTOPO
+  StartupStore(_T("... cat=%d, <%s> lat=%f lon=%f mylat=%f mylon=%f distance=%.2f\n"),category, Temp,lat,lon,
+	GPS_INFO.Latitude, GPS_INFO.Longitude, distance/1000);
+  #endif
 
   // If first time, use it 
   if (!item->Valid || (item->Distance > distance)) {

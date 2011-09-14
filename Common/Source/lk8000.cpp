@@ -675,6 +675,7 @@ double NearestAirspaceVDist=0;
 TCHAR NearestAirspaceName[NAME_SIZE+1] = {0};
 TCHAR NearestAirspaceVName[NAME_SIZE+1] = {0};
 
+NearestTopoItem NearestBigCity;
 NearestTopoItem NearestCity;
 NearestTopoItem NearestSmallCity;
 NearestTopoItem NearestWaterArea;

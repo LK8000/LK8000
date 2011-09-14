@@ -234,6 +234,7 @@ extern THERMAL_HISTORY	CopyThermalHistory[MAX_THERMAL_HISTORY+1];
 extern int LKNumThermals;
 extern int LKSortedThermals[MAX_THERMAL_HISTORY+1];
 
+extern NearestTopoItem NearestBigCity;
 extern NearestTopoItem NearestCity;
 extern NearestTopoItem NearestSmallCity;
 extern NearestTopoItem NearestWaterArea;
