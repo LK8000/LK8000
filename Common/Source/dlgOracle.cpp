@@ -42,7 +42,7 @@ static int OnTimerNotify(WindowControl *Sender)
   Sleep(1000); // We need a cycle to recalculate it
 
   // Bell, and print results
-  if (EnableSoundModes) LKSound(TEXT("LK_BELL.WAV"));
+  if (EnableSoundModes) LKSound(TEXT("LK_GREEN.WAV"));
   WhereAmI();
 
   // Remember to force exit from showmodal, because there is no Close button
