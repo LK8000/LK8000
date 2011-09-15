@@ -932,7 +932,7 @@ void WhereAmI(void) {
   _stprintf(toracle,_T("%s\n\n"), _T("YOUR POSITION:"));
 
   if (NearestBigCity.Valid) {
-	_tcscat(toracle, OracleFormatDistance(NearestBigCity.Name,_T("the city of"), NearestBigCity.Distance, NearestBigCity.Bearing,0));
+	_tcscat(toracle, OracleFormatDistance(NearestBigCity.Name,_T("the city"), NearestBigCity.Distance, NearestBigCity.Bearing,0));
 	_tcscat(toracle, _T("\n"));
   }
 
@@ -966,7 +966,7 @@ void WhereAmI(void) {
 		//
 		//  Over city
 		//
-  		_stprintf(ttmp,_T("%s "),_T("Over the city of"));
+  		_stprintf(ttmp,_T("%s "),_T("Over the city"));
  		 _tcscat(toracle,ttmp);
 		over=true;
 	  }
@@ -1025,13 +1025,13 @@ void WhereAmI(void) {
 			// 
 			_stprintf(ttmp,_T("%.0f %s %s "), NearestWaterArea.Distance*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg));
 			_tcscat(toracle,ttmp);
-		 	_stprintf(ttmp,_T("%s %s"), _T("of"),NearestWaterArea.Name);
+		 	_stprintf(ttmp,_T("%s <%s>"), _T("of"),NearestWaterArea.Name);
  			_tcscat(toracle,ttmp);
 		} else {
 			//
 			// Over lake
 			// 
- 			_stprintf(ttmp,_T("%s %s"), _T("over"),NearestWaterArea.Name);
+ 			_stprintf(ttmp,_T("%s <%s>"), _T("over"),NearestWaterArea.Name);
  			_tcscat(toracle,ttmp);
 			over=true;
 		}
