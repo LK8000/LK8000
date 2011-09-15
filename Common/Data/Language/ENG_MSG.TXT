@@ -1630,6 +1630,9 @@ _@M1692_ "PLEASE WAIT..."
 # Customkey
 _@M1693_ "Change Terrain Colors"
 
+# Safety Altitude indicator on overlay
+_@M1694_ "+ SAFETY"
+
 ############################################################
 #                  - MENU MESSAGES - 
 #

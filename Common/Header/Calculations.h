@@ -358,5 +358,6 @@ double CalculateGlideRatio(const double d, const double h);
 bool CheckSafetyAltitudeApplies(const int wpindex);
 double GetSafetyAltitude(const int wpindex);
 short GetVisualGlideRatio(const double arrival, const double gr);
+bool IsSafetyAltitudeInUse(const int wpindex);
 
 #endif

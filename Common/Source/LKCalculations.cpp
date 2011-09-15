@@ -2536,3 +2536,21 @@ short GetVisualGlideRatio(const double arrival, const double gr) {
   } 
   return 3; // full red
 }
+
+//
+// Like CheckSafetyAltitudeApplies, but we check for valid wpindex AND we also
+// check that there is a valid Safetyaltitude!
+// This is used by overlay in LKDrawLook
+bool IsSafetyAltitudeInUse(const int wpindex) {
+
+  // Virtual wps are not landables, correct? Hope so!
+  if (!ValidWayPoint(wpindex))
+	return false;
+  if (!CheckSafetyAltitudeApplies(wpindex))
+	return false;
+  if (SAFETYALTITUDEARRIVAL<50)
+	return false;
+
+  return true;
+}
+

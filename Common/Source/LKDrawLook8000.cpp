@@ -72,16 +72,15 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   static short yRow1Value=0;
   static short yRow1Unit=0;
 
-//  #if 0 // Not yet used - todo after USEIBOX is removed permanently
   #define ssSizeScreenSize 20
-  // position of AutoMC indicator
+
+  // position of AutoMC and Safety ALtitude indicators
   static short rectLeft_AutoMc[ssSizeScreenSize];
   static short rectRight_AutoMc[ssSizeScreenSize];
   static short rectTop_AutoMc[ssSizeScreenSize];
   static short rectBottom_AutoMc[ssSizeScreenSize];
   static short writeX_AutoMc[ssSizeScreenSize];
   static short writeY_AutoMc[ssSizeScreenSize];
-//  #endif
 
   static int splitoffset;
 
@@ -373,7 +372,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 	  rectLeft_AutoMc[ss800x480]=781;
 	  rectRight_AutoMc[ss800x480]=800;
 	  rectTop_AutoMc[ss800x480]=95;
-	  rectBottom_AutoMc[ss800x480]=134;
+	  rectBottom_AutoMc[ss800x480]=rectTop_AutoMc[ss800x480]+39; // 134
 	  writeX_AutoMc[ss800x480]=800;
 	  writeY_AutoMc[ss800x480]=95;
 
@@ -816,6 +815,11 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 			else
 				LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, 
 					WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
+
+			if (IsSafetyAltitudeInUse(GetOvertargetIndex())) {
+				SelectObject(hdc, LK8SmallFont); 
+				LKWriteBoxedText(hdc, gettext(_T("_@M1694_")), rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
+			}
 		}
 
 	} // index>0
@@ -902,6 +906,10 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		else
 			LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
 
+		if (IsSafetyAltitudeInUse(GetOvertargetIndex())) {
+			SelectObject(hdc, LK8SmallFont); 
+			LKWriteBoxedText(hdc, gettext(_T("_@M1694_")), rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
+		}
 	} // end no UseGates()
   } // is paraglider
 

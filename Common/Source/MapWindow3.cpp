@@ -1389,3 +1389,41 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
   }
 
 }
+
+//
+// Box black, text white, or inverted
+//
+void MapWindow::LKWriteBoxedText(HDC hDC, const TCHAR* wText, int x, int y, int maxsize, const short align ) {
+
+	SIZE tsize;
+	if (maxsize==0) maxsize=_tcslen(wText);
+  
+	GetTextExtentPoint(hDC, wText, maxsize, &tsize);
+
+	// HBRUSH oldBrush=(HBRUSH)SelectObject(hDC,LKBrush_DarkGreen);
+	Rectangle(hDC, x-tsize.cx-NIBLSCALE(8), y+tsize.cy+NIBLSCALE(2)+1, x, y);
+
+	y += NIBLSCALE(1);
+	switch(align) {
+		case WTALIGN_RIGHT:
+			x -= (tsize.cx+NIBLSCALE(4));
+			break;
+		case WTALIGN_CENTER:
+			x -= (tsize.cx/2 +NIBLSCALE(4));
+			y -= tsize.cy/2;
+			break;
+	}
+
+	if (INVERTCOLORS)
+		SetTextColor(hDC,RGB_WHITE); 
+	else
+		SetTextColor(hDC,RGB_BLACK); 
+	ExtTextOut(hDC, x, y, ETO_OPAQUE, NULL, wText, maxsize, NULL);
+
+	SetTextColor(hDC,RGB_BLACK); 
+	
+	// SelectObject(hDC,oldBrush);
+	return;
+
+}
+
