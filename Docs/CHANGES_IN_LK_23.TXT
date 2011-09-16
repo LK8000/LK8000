@@ -2,6 +2,64 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3f September 16 2011
+------------------------------
+
+NEW
+
+. New Total Energy configuration in Safety parameters
+    When TotalEnergy is in use, LK will calculate the height you would gain by pulling up the aircraft at the current speed, up
+    until the speed becomes the optimal for best glide.
+    For example if you are flying at 200kmh with a discus with no ballast, the speed energy would be calculated as if you would
+    pull up and slow down to 100kmh: you would certainly climb to a better altitude of course.
+    This speed height will be added to all arrival altitudes. By default this feature is DISABLED, for safety reasons.
+
+    The totalenergy in LK does not affect glide ratio values. Only arrival altitudes.
+
+. New Total Energy button in Config 2/3 menu
+
+. New customkey Toggle Total Energy
+. New customkey Notepad
+
+. New Button DISPLAY 1/3 and CustomKey "Change Terrain Color".
+    It will rotate among the available terrain colors, in real time.
+    So it's now possible to adapt map colors to the current terrain.
+
+. New +SAFETY overlay indicator on map display.
+    When the multitarget is a landable waypoint, and safetyaltitude is in use,
+    and safetyaltitude was set as at least 50m, then the +SAFETY is printed
+    below the arrival altitude.
+
+
+CHANGES
+
+. Task speeds <99 are now printed with one decimal value.
+    Airspace selection back available with a long click on them on the moving map, even if
+    no activemap is enabled. Airspace selection has priority over all customkeys, as it was before.
+
+. Overlay distance for paragliders using 3 decimals.
+    Bottom bar using max 2 decimals, even for paragliders.
+    Lets remember that the gps fix precision is not better than 4-5 meters
+    in the best of cases! When logging for a competition with another logger,
+    the two gps may have different distances to the waypoint, and using 3
+    decimals will result in a false reading.
+
+. Removed FLARM on MAP/Scaled mode: confusing, and never fixed.
+    If an icon is painted on the map, it should be in its correct position.
+    Scaled mode was an earlier radar mode in fact, but LK has no radar mode implemented.
+
+. Oracle 2, "The Oracle Strikes Back" (more serious sounds, using also big cities, more informations, all uppercase)
+
+
+
+FIXES
+
+. Bugfix TaskETE was not calculated when not enough height to complete the task.
+    Task ETE is a simple DistanceToGo / SpeedAchievedSoFar
+
+
+
+
 Version 2.3e September 10 2011
 ------------------------------
 
