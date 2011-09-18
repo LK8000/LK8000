@@ -25,6 +25,8 @@ Things to be fixed in LK languages files/tokens:
           CHANGED HELP 879
           CHANGED HELP 1203
 
+- Changed  M513  Delta is changed to HG (Hang Glider)
+
 - Changed H400-407
 - Changed HELP 199 FLarm on Map
 

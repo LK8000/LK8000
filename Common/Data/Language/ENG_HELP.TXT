@@ -211,7 +211,7 @@ The real distance covered second by second in this period is divided by the fina
 So if for example you go and return back to the same point after 2 minutes, and you have set 2 minutes as period, 
 averageLD will consider the total distance covered in those two minutes , 
 and NOT the distance between your position 2 minutes before and your current position, that in this case could be almost zero! 
-Normally for gliders a good value is 90-120 seconds, and for paragliders 15 seconds. 
+Normally for gliders a good value is 90-120 seconds, and for PG/HG 15 seconds. 
 Lower values will give as a result pretty much the same as LD Instant , 
 while higher values will look like LD Cruise. Other commercial instruments and software use 2 minutes. 
 
@@ -660,7 +660,7 @@ See the manual for all combinations.  Default is Multitarget.
 
 @402
 Custom TOP RIGHT key is obtained by clicking on the top right corner of the screen.
-This key is NOT AVAILABLE FOR PARAGLIDERS, because it is reserved for task reset during time gates
+This key is NOT AVAILABLE FOR PARAGLIDERS or HANG GLIDERS, because it is reserved for task reset during time gates
 and for UTM position reporting upon emergencies (read manual for paragliders).
 See the manual for all combinations.  Default is no action. 
 
@@ -847,7 +847,7 @@ Radius of the finish cylinder or half length of the finish line.
 A time gate is a fixed local time which virtually open the task start, just like for boats.
 Set to 0 if you dont have a start time.
 Set at least to 1 if your race has a start time.
-TIME GATES WORK ONLY FOR PARAGLIDERS AND DELTA MODE 
+TIME GATES WORK ONLY FOR PARAGLIDERS AND HANG GLIDERS MODE 
 
 @531
 For task races with at least 1 time gate, set the start local time. If gate number is 0, this value will be ignored.
@@ -1573,7 +1573,7 @@ During thermal mode the THR 0 infobar is always shown, also.
 Enable or disable each page in the rotating sequence.
 If all items in a page are disabled, then this page will be skipped.
 A page will be still reachable with a custom keys, eventually.
-Attention: non-gliders aircrafts such as paragliders and GA that are disabling the 1.5 Contest infopage 
+Attention: non-gliders aircrafts such as PG/HG and GA that are disabling the 1.5 Contest infopage 
 will also disable all contest calculations.  If you want contest calculations, you NEED to activate 1.5.
 If you are using Glider aircraft mode, then you can also disable 1.5 because calculations are made in any case.
 
