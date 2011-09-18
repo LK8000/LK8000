@@ -359,8 +359,10 @@ class MapWindow {
   static HPEN hSnailPens[NUMSNAILCOLORS];
   static COLORREF hSnailColours[NUMSNAILCOLORS];
   static HBRUSH hAirspaceBrushes[NUMAIRSPACEBRUSHES];
+/* REMOVE
   static HBITMAP hAirspaceBitmap[NUMAIRSPACEBRUSHES];
   static HBITMAP hAboveTerrainBitmap;
+*/
   static HBRUSH hAboveTerrainBrush;
   static COLORREF Colours[NUMAIRSPACECOLORS];
 
@@ -586,11 +588,14 @@ class MapWindow {
   static void SetAutoOrientation(bool doreset);
 
  private:
+/* REMOVE
   static HBITMAP 
     hTurnPoint, hSmall, hInvTurnPoint, hInvSmall, hCruise, hClimb,
     hFinalGlide, hAutoMacCready, hTerrainWarning,
-    hLogger, hLoggerOff, hFLARMTraffic;
+    hLogger, hLoggerOff, hFLARMTraffic,
+    hBatteryFull;
 	static HBITMAP hAirspaceWarning;
+*/
   static HBRUSH   hBackgroundBrush;
   static COLORREF BackgroundColor;
 
@@ -664,6 +669,7 @@ class MapWindow {
   static HPEN    hpCompassBorder;
   static HBRUSH  hBrushFlyingModeAbort;
 
+/* REMOVE
   static HBITMAP hBmpAirportReachable;
   static HBITMAP hBmpAirportUnReachable;
   static HBITMAP hBmpFieldReachable;
@@ -672,7 +678,7 @@ class MapWindow {
   static HBITMAP hBmpTarget;
   static HBITMAP hBmpMarker;
   static HBITMAP hBmpTeammatePosition;
-
+*/
 
   #if TOPOFASTLABEL
   // How many slots in screen, divided by horizontal blocks on vertical positions

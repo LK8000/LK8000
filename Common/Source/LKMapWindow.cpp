@@ -38,6 +38,7 @@
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
 #include "LKObjects.h"
+#include "Bitmaps.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>

@@ -20,6 +20,7 @@
 #include "LKUtils.h"
 #include "LKMapWindow.h"
 #include "LKStyle.h"
+#include "Bitmaps.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>

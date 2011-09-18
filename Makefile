@@ -357,7 +357,7 @@ VOLKS	:=\
 	$(SRC)/Volkslogger/vlutils.cpp
 
 SRC_FILES :=\
-	$(SRC)/LKAirspace.cpp \
+	$(SRC)/LKAirspace.cpp		$(SRC)/Bitmaps.cpp \
 	$(SRC)/AATDistance.cpp 		$(SRC)/AirfieldDetails.cpp \
 	$(SRC)/Airspace.cpp 		\
 	$(SRC)/Atmosphere.cpp 		\

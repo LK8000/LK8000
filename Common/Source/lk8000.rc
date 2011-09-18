@@ -243,6 +243,12 @@ IDB_AIRPORT_UNREACHABLE BITMAP  DISCARDABLE     "../Data/Bitmaps/UnreachableAirp
 IDB_OUTFILED_REACHABLE  BITMAP  DISCARDABLE     "../Data/Bitmaps/LandableField.bmp"
 IDB_OUTFILED_UNREACHABLE BITMAP  DISCARDABLE    "../Data/Bitmaps/UnreachableField.bmp"
 
+IDB_BATTERY_FULL_SMALL  BITMAP DISCARDABLE	"../Data/Bitmaps/battery_full_22x11.bmp"
+IDB_BATTERY_70_SMALL  BITMAP DISCARDABLE	"../Data/Bitmaps/battery_70_22x11.bmp"
+IDB_BATTERY_50_SMALL  BITMAP DISCARDABLE	"../Data/Bitmaps/battery_50_22x11.bmp"
+IDB_BATTERY_25_SMALL  BITMAP DISCARDABLE	"../Data/Bitmaps/battery_25_22x11.bmp"
+IDB_BATTERY_15_SMALL  BITMAP DISCARDABLE	"../Data/Bitmaps/battery_15_22x11.bmp"
+
 #endif    // English (U.K.) resources
 
 

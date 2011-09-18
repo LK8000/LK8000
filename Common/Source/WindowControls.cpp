@@ -18,6 +18,7 @@
 #include "Utils.h"
 #include "compatibility.h"
 #include "LKObjects.h"
+#include "Bitmaps.h"
 
 #include "externs.h" 
 
@@ -2996,8 +2997,10 @@ WndProperty::WndProperty(WindowControl *Parent,
   SetBackColor(GetOwner()->GetBackColor());
 
   if (InstCount == 0){
+/* REMOVE
     hBmpLeft32 = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_DLGBUTTONLEFT32));
     hBmpRight32 = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_DLGBUTTONRIGHT32));
+*/
   }
   InstCount++;
 
@@ -3014,8 +3017,10 @@ void WndProperty::Destroy(void){
 
   InstCount--;
   if (InstCount == 0){
+/* REMOVE
     DeleteObject(hBmpLeft32);
     DeleteObject(hBmpRight32);
+*/
   }
 
   if (mDataField != NULL){
@@ -3758,10 +3763,11 @@ void WndListFrame::Redraw(void){
 
 
 void WndListFrame::DrawScrollBar(HDC hDC) {
-
+/* REMOVE
   static HBITMAP hScrollBarBitmapTop = NULL;
   static HBITMAP hScrollBarBitmapMid = NULL;
   static HBITMAP hScrollBarBitmapBot = NULL;
+*/
   RECT rc;
   HPEN hP, hP3;
   HBITMAP oldBmp;
@@ -3799,6 +3805,7 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
   if ( (sHdc==NULL) || (hScrollBarBitmapTop == NULL)) {
 	sHdc = CreateCompatibleDC(hDC); 
   }
+/* REMOVE
   if (hScrollBarBitmapTop == NULL) {
 	hScrollBarBitmapTop=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARTOP));
   }
@@ -3806,6 +3813,7 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
 	hScrollBarBitmapMid=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARMID));
   if (hScrollBarBitmapBot == NULL)
 	hScrollBarBitmapBot=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARBOT));
+*/
 
   hP = LKPen_Black_N1;
   SelectObject(hDC, hP);

@@ -147,6 +147,11 @@
 #define IDB_FINALGLIDEPARA              403
 #define IDB_LKSMALLTOWN			501
 #define IDB_LKVERYSMALLTOWN		502
+#define IDB_BATTERY_FULL_SMALL		503
+#define IDB_BATTERY_70_SMALL		504
+#define IDB_BATTERY_50_SMALL		505
+#define IDB_BATTERY_25_SMALL		506
+#define IDB_BATTERY_15_SMALL		507
 #define IDC_AAT                         1001
 #define IDC_AATTIME                     1002
 #define IDC_AATTIMESPIN                 1003

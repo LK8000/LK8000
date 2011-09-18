@@ -25,7 +25,7 @@
 // #include <assert.h>
 #include <windows.h>
 #include <math.h>
-#include <Message.h> // 091112
+#include <Message.h>
 
 #include <tchar.h>
 
@@ -37,10 +37,11 @@
 #include "InfoBoxLayout.h"
 #include "RasterTerrain.h"
 #include "Utils2.h"
-#include "externs.h" // 091110
+// #include "externs.h" // 091110 REMOVE
 #include "LKAirspace.h"
-using std::min;
-using std::max;
+#include "Bitmaps.h"
+
+
 using std::min;
 using std::max;
 #if (WINDOWSPC>0)
@@ -50,6 +51,10 @@ using std::max;
 #include "utils/heapcheck.h"
 
 #include "LKGeneralAviation.h"
+
+extern int PDABatteryPercent;
+extern int PDABatteryFlag;
+extern int PDABatteryStatus;
 
 
 DWORD misc_tick_count=0;
@@ -102,6 +107,7 @@ const COLORRAMP snail_colors[] = {
 MapWindow::Zoom MapWindow::zoom;
 MapWindow::Mode MapWindow::mode;
 
+/* REMOVE
 HBITMAP MapWindow::hBmpAirportReachable;
 HBITMAP MapWindow::hBmpAirportUnReachable;
 HBITMAP MapWindow::hBmpFieldReachable;
@@ -111,6 +117,7 @@ HBITMAP MapWindow::hBmpTarget;
 HBITMAP MapWindow::hBmpTeammatePosition;
 HBITMAP MapWindow::hAboveTerrainBitmap;
 HBITMAP MapWindow::hBmpMarker;
+*/
 HBRUSH  MapWindow::hAboveTerrainBrush;
 
 HPEN    MapWindow::hpCompassBorder;
@@ -170,6 +177,7 @@ DWORD MapWindow::targetPanSize = 0;
 
 bool MapWindow::LandableReachable = false;
 
+/* REMOVE
 HBITMAP MapWindow::hTurnPoint;
 HBITMAP MapWindow::hInvTurnPoint;
 HBITMAP MapWindow::hSmall;
@@ -182,6 +190,12 @@ HBITMAP MapWindow::hAirspaceWarning;
 HBITMAP MapWindow::hFLARMTraffic;
 HBITMAP MapWindow::hLogger;
 HBITMAP MapWindow::hLoggerOff;
+HBITMAP MapWindow::hBatteryFull;
+HBITMAP MapWindow::hBattery70;
+HBITMAP MapWindow::hBattery50;
+HBITMAP MapWindow::hBattery25;
+HBITMAP MapWindow::hBattery15;
+*/
 
 HPEN MapWindow::hSnailPens[NUMSNAILCOLORS];
 COLORREF MapWindow::hSnailColours[NUMSNAILCOLORS];
@@ -204,7 +218,9 @@ HBRUSH  MapWindow::hBackgroundBrush;
 HBRUSH  MapWindow::hInvBackgroundBrush[LKMAXBACKGROUNDS];
 
 HBRUSH  MapWindow::hAirspaceBrushes[NUMAIRSPACEBRUSHES];
+/* REMOVE
 HBITMAP MapWindow::hAirspaceBitmap[NUMAIRSPACEBRUSHES];
+*/
 
 COLORREF MapWindow::Colours[NUMAIRSPACECOLORS] =
   {RGB(0xFF,0x00,0x00), RGB(0x00,0xFF,0x00),
@@ -1122,6 +1138,8 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hDCMask = CreateCompatibleDC(hdcDrawWindow);
   
       AlphaBlendInit();
+
+      LKLoadBitmaps();
     
       hBackgroundBrush = LKBrush_White;
       hInvBackgroundBrush[0] = LKBrush_White;
@@ -1135,6 +1153,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hInvBackgroundBrush[8] = LKBrush_RifleGrey;
       hInvBackgroundBrush[9] = LKBrush_Black;
 
+/* REMOVE
       hFLARMTraffic=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_FLARMTRAFFIC));
       hTerrainWarning=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TERRAINWARNING));
       hAirspaceWarning=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACEWARNING));
@@ -1146,6 +1165,8 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hLoggerOff=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_LOGGEROFF));
       hBmpTeammatePosition = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TEAMMATE_POS));
       hBmpMarker = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_MARK));
+      //hBatteryFull=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BATTERY_FULL_SMALL));
+      hBatteryFull=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BATTERY_FULL_SMALL));
 
       if ( ISPARAGLIDER ) {
 	hCruise=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_CRUISEPARA));
@@ -1169,6 +1190,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hAirspaceBitmap[7]=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACE7));
 
       hAboveTerrainBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_ABOVETERRAIN));
+*/
 
       for (i=0; i<NUMAIRSPACEBRUSHES; i++) {
 	hAirspaceBrushes[i] =
@@ -1262,7 +1284,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       zoom.RequestedScale(LimitMapScale(zoom.RequestedScale()));
 
       hBrushFlyingModeAbort = LKBrush_Red;
-
+/* REMOVE
       if (Appearance.IndLandable == wpLandableDefault){
 	hBmpAirportReachable = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_REACHABLE));
 	hBmpAirportUnReachable = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_LANDABLE));
@@ -1278,6 +1300,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 
       hBmpThermalSource = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_THERMALSOURCE));
       hBmpTarget = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TARGET));
+*/
 
       // Signal that draw thread can run now
       Initialised = TRUE;
@@ -1295,6 +1318,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 
       AlphaBlendDestroy();
 
+/* REMOVE
       DeleteObject(hTurnPoint);
       DeleteObject(hSmall);
       DeleteObject(hInvTurnPoint);
@@ -1307,6 +1331,8 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       DeleteObject(hAirspaceWarning);
       DeleteObject(hLogger);
       DeleteObject(hLoggerOff);
+      DeleteObject(hBatteryFull);
+*/
     
       DeleteObject((HPEN)hpWindThick);
 
@@ -1326,6 +1352,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 
       DeleteObject((HPEN)hpCompassBorder);
 
+/* REMOVE
       DeleteObject(hBmpAirportReachable);
       DeleteObject(hBmpAirportUnReachable);
       DeleteObject(hBmpFieldReachable);
@@ -1334,15 +1361,18 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       DeleteObject(hBmpTarget);
       DeleteObject(hBmpTeammatePosition);
       DeleteObject(hBmpMarker);
+*/
 
       for(i=0;i<NUMAIRSPACEBRUSHES;i++)
 	{
 	  DeleteObject(hAirspaceBrushes[i]);
-	  DeleteObject(hAirspaceBitmap[i]);
+//	  DeleteObject(hAirspaceBitmap[i]); REMOVE
 	}
 
+/* REMOVE
       DeleteObject(hAboveTerrainBitmap);
       DeleteObject(hAboveTerrainBrush);
+*/
 
       for (i=0; i<AIRSPACECLASSCOUNT; i++) {
 	DeleteObject(hAirspacePens[i]);
@@ -1353,6 +1383,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 	DeleteObject(hSnailPens[i]);
       }
     
+      LKUnloadBitmaps(); // After removing brushes using Bitmaps
       PostQuitMessage (0);
 
       break;
@@ -3063,79 +3094,114 @@ goto_DrawLockModeStatus:
 
 void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
 {
-  static bool flip= true;
-  static double LastTime = 0;
-  bool drawlogger = true;
-  static bool lastLoggerActive=false;
+  static bool flip= true; 
   int offset = -1;
 
-    //
-    // Logger indicator
-    //
+  //
+  // Logger indicator
+  //
 
-	// has GPS time advanced?
-	if(DrawInfo.Time <= LastTime) {
-		LastTime = DrawInfo.Time;
+  if (!DisableAutoLogger || LoggerActive) {
+	if (LoggerActive) {
+		SelectObject(hDCTemp,hLogger);
 	} else {
-
 		flip = !flip;
-		// don't bother drawing logger if not active for more than one second
-		if ((!LoggerActive)&&(!lastLoggerActive)) {
-			drawlogger = false;
-		}
-		lastLoggerActive = LoggerActive;
-	}
-
-	if (drawlogger) {
-		offset -= 7;
-
-		if (LoggerActive && flip) {
+		if (flip)
 			SelectObject(hDCTemp,hLogger);
-		} else {
+		else
 			SelectObject(hDCTemp,hLoggerOff);
-		}
-
-		DrawBitmapX(hdc, rc.right+IBLSCALE(offset),
-                  	rc.bottom - BottomSize+NIBLSCALE(1),
-			7,7, hDCTemp, 0,0,SRCPAINT);
-
-		DrawBitmapX(hdc, rc.right+IBLSCALE(offset),
-                  	rc.bottom-BottomSize+NIBLSCALE(1),
-			7,7, hDCTemp, 7,0,SRCAND);
-
-		// not really needed if we remove offset next on
-		offset +=7;
 	}
 
-    //
-    // Flight mode Icon
-    //
+	offset -= 7;
 
-      if (mode.Is(Mode::MODE_CIRCLING)) {
-        SelectObject(hDCTemp,hClimb);
-      } else if (mode.Is(Mode::MODE_FINAL_GLIDE)) {
-        SelectObject(hDCTemp,hFinalGlide);
-      } else {
-        SelectObject(hDCTemp,hCruise);
-      }
+	DrawBitmapX(hdc, rc.right+IBLSCALE(offset),
+               	rc.bottom - BottomSize+NIBLSCALE(4),
+		7,7, hDCTemp, 0,0,SRCPAINT);
 
-    offset -= 24;
+	DrawBitmapX(hdc, rc.right+IBLSCALE(offset),
+               	rc.bottom-BottomSize+NIBLSCALE(4),
+		7,7, hDCTemp, 7,0,SRCAND);
 
-    DrawBitmapX(hdc,
-                rc.right+IBLSCALE(offset-1),
-                rc.bottom+IBLSCALE(-20-1),
-                24,20,
-                hDCTemp,
-                0,0,SRCPAINT);
+	offset +=7;
+  }
+
+  //
+  // Flight mode Icon
+  //
+
+  if (mode.Is(Mode::MODE_CIRCLING)) {
+	SelectObject(hDCTemp,hClimb);
+  } else
+	if (mode.Is(Mode::MODE_FINAL_GLIDE)) {
+		SelectObject(hDCTemp,hFinalGlide);
+	} else {
+		SelectObject(hDCTemp,hCruise);
+	}
+
+  offset -= 24;
+
+  DrawBitmapX(hdc,
+	rc.right+IBLSCALE(offset-1),
+	rc.bottom+IBLSCALE(-20-1),
+	24,20,
+	hDCTemp,
+	0,0,SRCPAINT);
     
-    DrawBitmapX(hdc,
-                rc.right+IBLSCALE(offset-1),
-                rc.bottom+IBLSCALE(-20-1),
-                24,20,
-                hDCTemp,
-                24,0,SRCAND);
+  DrawBitmapX(hdc,
+	rc.right+IBLSCALE(offset-1),
+	rc.bottom+IBLSCALE(-20-1),
+	24,20,
+	hDCTemp,
+	24,0,SRCAND);
+
+
+  //
+  // Battery indicator
+  // 
+  // PDABatteryPercent-=5; if (PDABatteryPercent<0) PDABatteryPercent=100; // Test battery
+
+  if (PDABatteryPercent==0 && PDABatteryStatus==AC_LINE_ONLINE && PDABatteryFlag!=BATTERY_FLAG_CHARGING) {
+	SelectObject(hDCTemp,hBatteryFull);
+	goto _drawbattery;
+  }
+
+  if (PDABatteryPercent<20) {
+	SelectObject(hDCTemp,hBattery15);
+	goto _drawbattery;
+  }
+  if (PDABatteryPercent<45) {
+	SelectObject(hDCTemp,hBattery25);
+	goto _drawbattery;
+  }
+  if (PDABatteryPercent<65) {
+	SelectObject(hDCTemp,hBattery50);
+	goto _drawbattery;
+  }
+  if (PDABatteryPercent<90) {
+	SelectObject(hDCTemp,hBattery70);
+	goto _drawbattery;
+  }
+  SelectObject(hDCTemp,hBatteryFull);
+
+_drawbattery:
+  if (!DisableAutoLogger || LoggerActive) offset-=5;
+  DrawBitmapX(hdc,
+	rc.right+IBLSCALE(offset-1),
+	rc.bottom - BottomSize + NIBLSCALE(2),
+	22,11,
+	hDCTemp,
+	0,0,SRCPAINT);
+    
+  DrawBitmapX(hdc,
+	rc.right+IBLSCALE(offset-1),
+	rc.bottom - BottomSize + NIBLSCALE(2),
+	22,11,
+	hDCTemp,
+	22,0,SRCAND);
 
 }
+
+
 
 bool MapWindow::WaypointInTask(int ind) {
   if (!WayPointList) return false;

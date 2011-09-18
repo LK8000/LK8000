@@ -26,6 +26,7 @@
 #include "InputEvents.h"
 #include <windows.h>
 #include <math.h>
+#include "Bitmaps.h"
 
 #include <tchar.h>
 
