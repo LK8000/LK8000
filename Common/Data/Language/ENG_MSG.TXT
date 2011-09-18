@@ -375,6 +375,7 @@ _@M351_ "Info box titles"
 _@M352_ "Info box values small"
 _@M353_ "Info box values"
 _@M354_ "InfoBox paste"
+# 355 REMOVED after v2.3
 _@M355_ "Infobox Geometry"
 _@M356_ "Information"
 _@M357_ "Insert Waypoint"
