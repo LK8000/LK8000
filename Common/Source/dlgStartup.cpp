@@ -458,11 +458,7 @@ bool dlgStartupShowModal(void){
 
   wf = NULL;
 
-  if (RUN_MODE==RUN_FLY) {
-	if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
-	return false;
-  }
-  if (RUN_MODE==RUN_SIM) {
+  if (RUN_MODE==RUN_FLY || RUN_MODE==RUN_SIM) {
 	if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
 	return false;
   }

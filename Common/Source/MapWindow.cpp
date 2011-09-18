@@ -40,7 +40,7 @@
 // #include "externs.h" // 091110 REMOVE
 #include "LKAirspace.h"
 #include "Bitmaps.h"
-
+#include "LKSwitches.h"
 
 using std::min;
 using std::max;
@@ -1139,7 +1139,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
   
       AlphaBlendInit();
 
-      LKLoadBitmaps();
+      LKLoadFixedBitmaps();
     
       hBackgroundBrush = LKBrush_White;
       hInvBackgroundBrush[0] = LKBrush_White;
@@ -1383,7 +1383,8 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 	DeleteObject(hSnailPens[i]);
       }
     
-      LKUnloadBitmaps(); // After removing brushes using Bitmaps
+      LKUnloadFixedBitmaps(); // After removing brushes using Bitmaps
+      LKUnloadProfileBitmaps(); 
       PostQuitMessage (0);
 
       break;
@@ -2684,6 +2685,15 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
       if ((!THREADRUNNING) || (!GlobalRunning)) {
 	Sleep(100);
 	continue;
+      }
+
+      if (LKSW_ReloadProfileBitmaps) {
+	#if TESTBENCH
+	StartupStore(_T(".... SWITCH: ReloadProfileBitmaps detected\n"));
+	#endif
+	LKUnloadProfileBitmaps();
+	LKLoadProfileBitmaps();
+	LKSW_ReloadProfileBitmaps=false;
       }
 
 #ifdef CPUSTATS

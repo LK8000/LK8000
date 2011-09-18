@@ -30,13 +30,19 @@
 extern HINSTANCE hInst;      // The current instance
 
 //
+// Load bitmaps that have no profile dependencies
+//
 // This is called once per session, at startup by the CREATE draw thread
 // We are still missing TOPOLOGY shape icons to be added here in an array
 // Kalman or Richard? I think it will speed up map drawing a bit.
 //
-// Then we shall load all bitmaps from the filesystem, and drop internal resources.
+// Soon we shall load all bitmaps from the filesystem, and drop internal resources.
 //
-void LKLoadBitmaps(void) {
+void LKLoadFixedBitmaps(void) {
+
+  #if TESTBENCH
+  StartupStore(_T("... Load Fixed Bitmaps\n"));
+  #endif
 
   hFLARMTraffic=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_FLARMTRAFFIC));
   hTerrainWarning=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TERRAINWARNING));
@@ -55,16 +61,6 @@ void LKLoadBitmaps(void) {
   hBattery25=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BATTERY_25_SMALL));
   hBattery15=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BATTERY_15_SMALL));
 
-  if ( ISPARAGLIDER ) {
-	hCruise=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_CRUISEPARA));
-	hClimb=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_CLIMBPARA));
-	hFinalGlide=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_FINALGLIDEPARA));
-  } else {
-	hCruise=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_CRUISE));
-	hClimb=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_CLIMB));
-	hFinalGlide=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_FINALGLIDE));
-  }
-
   // airspace brushes and colours
 
   hAirspaceBitmap[0]=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACE0));
@@ -77,6 +73,82 @@ void LKLoadBitmaps(void) {
   hAirspaceBitmap[7]=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACE7));
 
   hAboveTerrainBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_ABOVETERRAIN));
+
+  hBmpThermalSource = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_THERMALSOURCE));
+  hBmpTarget = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TARGET));
+
+  hBmpLeft32 = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_DLGBUTTONLEFT32));
+  hBmpRight32 = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_DLGBUTTONRIGHT32));
+
+  hScrollBarBitmapTop=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARTOP));
+  hScrollBarBitmapMid=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARMID));
+  hScrollBarBitmapBot=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARBOT));
+
+
+}
+
+
+//
+// Unloading bitmaps can be done only after removing brushes!
+// No need to set them NULL, because they are removed on exit.
+//
+void LKUnloadFixedBitmaps(void) {
+
+  #if TESTBENCH
+  StartupStore(_T("... Unload Fixed Bitmaps\n"));
+  #endif
+
+  DeleteObject(hTurnPoint);
+  DeleteObject(hSmall);
+  DeleteObject(hInvTurnPoint);
+  DeleteObject(hInvSmall);
+  DeleteObject(hFLARMTraffic);
+  DeleteObject(hTerrainWarning);
+  DeleteObject(hAirspaceWarning);
+  DeleteObject(hLogger);
+  DeleteObject(hLoggerOff);
+  DeleteObject(hBatteryFull);
+  DeleteObject(hBattery70);
+  DeleteObject(hBattery50);
+  DeleteObject(hBattery25);
+  DeleteObject(hBattery15);
+    
+  DeleteObject(hBmpThermalSource);
+  DeleteObject(hBmpTarget);
+  DeleteObject(hBmpTeammatePosition);
+  DeleteObject(hBmpMarker);
+
+  for(short i=0;i<NUMAIRSPACEBRUSHES;i++)
+	DeleteObject(hAirspaceBitmap[i]);
+
+  DeleteObject(hAboveTerrainBitmap);
+
+  DeleteObject(hBmpLeft32);
+  DeleteObject(hBmpRight32);
+
+  DeleteObject(hScrollBarBitmapTop);
+  DeleteObject(hScrollBarBitmapMid);
+  DeleteObject(hScrollBarBitmapBot);
+}
+
+//
+// Load bitmaps that are affected by a profile 
+//
+void LKLoadProfileBitmaps(void) {
+
+  #if TESTBENCH
+  StartupStore(_T("... Load Profile Bitmaps\n"));
+  #endif
+
+  if ( ISPARAGLIDER ) {
+	hCruise=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_CRUISEPARA));
+	hClimb=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_CLIMBPARA));
+	hFinalGlide=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_FINALGLIDEPARA));
+  } else {
+	hCruise=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_CRUISE));
+	hClimb=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_CLIMB));
+	hFinalGlide=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_FINALGLIDE));
+  }
 
   //
   // Landables icons
@@ -100,63 +172,40 @@ void LKLoadBitmaps(void) {
 		break;
 
   }
-
-  hBmpThermalSource = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_THERMALSOURCE));
-  hBmpTarget = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TARGET));
-
-  hBmpLeft32 = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_DLGBUTTONLEFT32));
-  hBmpRight32 = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_DLGBUTTONRIGHT32));
-
-  hScrollBarBitmapTop=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARTOP));
-  hScrollBarBitmapMid=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARMID));
-  hScrollBarBitmapBot=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARBOT));
-
-
 }
 
 
-//
-// Unloading bitmaps can be done only after removing brushes!
-//
-void LKUnloadBitmaps(void) {
+void LKUnloadProfileBitmaps(void) {
 
-  DeleteObject(hTurnPoint);
-  DeleteObject(hSmall);
-  DeleteObject(hInvTurnPoint);
-  DeleteObject(hInvSmall);
-  DeleteObject(hCruise);
-  DeleteObject(hClimb);
-  DeleteObject(hFinalGlide);
-  DeleteObject(hFLARMTraffic);
-  DeleteObject(hTerrainWarning);
-  DeleteObject(hAirspaceWarning);
-  DeleteObject(hLogger);
-  DeleteObject(hLoggerOff);
-  DeleteObject(hBatteryFull);
-  DeleteObject(hBattery70);
-  DeleteObject(hBattery50);
-  DeleteObject(hBattery25);
-  DeleteObject(hBattery15);
-    
-  DeleteObject(hBmpAirportReachable);
-  DeleteObject(hBmpAirportUnReachable);
-  DeleteObject(hBmpFieldReachable);
-  DeleteObject(hBmpFieldUnReachable);
-  DeleteObject(hBmpThermalSource);
-  DeleteObject(hBmpTarget);
-  DeleteObject(hBmpTeammatePosition);
-  DeleteObject(hBmpMarker);
+  #if TESTBENCH
+  StartupStore(_T("... Unload Profile Bitmaps\n"));
+  #endif
 
-  for(short i=0;i<NUMAIRSPACEBRUSHES;i++)
-	DeleteObject(hAirspaceBitmap[i]);
+  if (hBmpAirportReachable!=NULL)
+	DeleteObject(hBmpAirportReachable);
+  if (hBmpAirportUnReachable!=NULL)
+	DeleteObject(hBmpAirportUnReachable);
+  if (hBmpFieldReachable!=NULL)
+	DeleteObject(hBmpFieldReachable);
+  if (hBmpFieldUnReachable!=NULL)
+	DeleteObject(hBmpFieldUnReachable);
 
-  DeleteObject(hAboveTerrainBitmap);
+  if (hCruise!=NULL)
+	DeleteObject(hCruise);
+  if (hClimb!= NULL)
+	DeleteObject(hClimb);
+  if (hFinalGlide!= NULL)
+	DeleteObject(hFinalGlide);
 
-  DeleteObject(hBmpLeft32);
-  DeleteObject(hBmpRight32);
+  hBmpAirportReachable=NULL;
+  hBmpAirportUnReachable=NULL;
+  hBmpFieldReachable=NULL;
+  hBmpFieldUnReachable=NULL;
 
-  DeleteObject(hScrollBarBitmapTop);
-  DeleteObject(hScrollBarBitmapMid);
-  DeleteObject(hScrollBarBitmapBot);
+  hCruise=NULL;
+  hClimb=NULL;
+  hFinalGlide=NULL;
+
+
 }
 

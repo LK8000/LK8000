@@ -96,6 +96,12 @@ static std::map<TCHAR*, TCHAR*> unusedTranslations;
 
 #include "utils/heapcheck.h"
 
+
+#define STATIC_SWITCHES
+#include "LKSwitches.h"
+
+
+
 Appearance_t Appearance = {
   206,
 #if USEIBOX
@@ -243,6 +249,7 @@ bool                                            AdvanceArmed = false;
 int                                             SafetyAltitudeMode = 0;
 
 bool GlobalRunning = false; 
+
 
 int	GlobalModelType=MODELTYPE_PNA_PNA;
 TCHAR	GlobalModelName[MAX_PATH]; // there are currently no checks.. TODO check it fits here
@@ -633,6 +640,9 @@ bool LKForceDoRecent=false;
 short LKevent=LKEVENT_NONE;
 bool LKForceComPortReset=false; 
 bool LKDoNotResetComms=false;
+bool LKReloadProfileBitmaps=false;
+
+
 ldrotary_s rotaryLD;
 windrotary_s rotaryWind;
 
@@ -1634,25 +1644,25 @@ void CreateCalculationThread() {
 
 
 void PreloadInitialisation(bool ask) {
-  //SetToRegistry(TEXT("XCV"), 1);
   SetToRegistry(TEXT("LKV"), 3);
   LKLanguageReady=false;
   LKReadLanguageFile();
   FillDataOptions(); // Load infobox list
 
-  // Registery (early)
-
   if (ask) {
+    // Load default profile and status file: we are at an early stage
     RestoreRegistry();
     ReadRegistrySettings();
     StatusFileInit();
-
-
   } else {
     FullScreen();
     while (dlgStartupShowModal());
+
     RestoreRegistry();
     ReadRegistrySettings();
+
+    // Force reload of bitmaps in the Draw thread 
+    LKSW_ReloadProfileBitmaps=true;
 
     // LKTOKEN _@M1206_ "Initialising..."
 	CreateProgressDialog(gettext(TEXT("_@M1206_"))); 
