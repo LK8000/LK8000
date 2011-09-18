@@ -1500,6 +1500,8 @@ Please note that on some devices like old 3850 Anti Aliasing is not working.
 On some PNAs in portrait mode, and on PPC2002, Antialiasing will work better.
 Otherwise, by default LK8000 is using ClearType.
 You must exit and restart LK8000 to see the effect of changes.
+IMPORTANT: font smoothing configuration is loaded at startup from the
+DEFAULT profile, BEFORE you select any other profile. 
 
 @1204
 [VarioBar mode]

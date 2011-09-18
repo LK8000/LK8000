@@ -2861,6 +2861,9 @@ void WriteFileRegistryString(HANDLE hFile, TCHAR *instring) {
 
 void WriteProfile(const TCHAR *szFile)
 {
+  #if TESTBENCH
+  StartupStore(_T("... WriteProfile <%s>%s"),szFile,NEWLINE);
+  #endif
   SaveRegistryToFile(szFile);
 }
 
@@ -2880,6 +2883,9 @@ void ReadFileRegistryString(HANDLE hFile, TCHAR *instring) {
 
 void ReadProfile(const TCHAR *szFile)
 {
+  #if TESTBENCH
+  StartupStore(_T("... ReadProfile <%s>%s"),szFile,NEWLINE);
+  #endif
   LoadRegistryFromFile(szFile);
 
   WAYPOINTFILECHANGED = TRUE;
@@ -3723,6 +3729,9 @@ const static int nMaxKeyNameSize = MAX_PATH + 6;
 
 static bool LoadRegistryFromFile_inner(const TCHAR *szFile, bool wide=true)
 {
+  #if TESTBENCH
+  StartupStore(_T(".... LoadRegistryFromFile <%s>%s"),szFile,NEWLINE);
+  #endif
   bool found = false;
   FILE *fp=NULL;
   if (_tcslen(szFile)>0)
@@ -3825,6 +3834,9 @@ void SaveRegistryToFile(const TCHAR *szFile)
   TCHAR lpstrName[nMaxKeyNameSize+1];
 //  char sName[nMaxKeyNameSize+1];
 //  char sValue[nMaxValueValueSize+1];
+  #if TESTBENCH
+  StartupStore(_T(".... SaveRegistryToFile <%s>%s"),szFile,NEWLINE);
+  #endif
   
   //  TCHAR lpstrClass[nMaxClassSize+1];
 #ifdef __MINGW32__
@@ -4303,38 +4315,26 @@ int TextToLineOffsets(TCHAR* text, int* LineOffsets, int maxLines) {
 
 TCHAR startProfileFile[MAX_PATH];
 TCHAR defaultProfileFile[MAX_PATH];
-TCHAR failsafeProfileFile[MAX_PATH];
 
 void RestoreRegistry(void) {
   #if TESTBENCH
-  StartupStore(TEXT(". Restore registry%s"),NEWLINE);
+  StartupStore(TEXT(". Restore registry from startProfile <%s>%s"),startProfileFile,NEWLINE);
   #endif
-  // load registry backup if it exists
-  LoadRegistryFromFile(failsafeProfileFile);
   LoadRegistryFromFile(startProfileFile);
 }
 
 void StoreRegistry(void) {
   StartupStore(TEXT(". Store registry%s"),NEWLINE);
-  // save registry backup first (try a few places)
+  #if 0 
+  // DO NOT SAVE to the startup chosen profile, anymore
   if (!CheckClubVersion())
 	SaveRegistryToFile(startProfileFile);
+  #endif
   SaveRegistryToFile(defaultProfileFile);
 }
 
 void LK8000GetOpts(LPTSTR CommandLine) {
   (void)CommandLine;
-
-//  LocalPath(defaultProfileFile,TEXT(XCSPROFILE));  
-//  LocalPath(failsafeProfileFile,TEXT(XCSPROFILE));  // CHECK, STRANO
-//  _tcscpy(startProfileFile, defaultProfileFile);
-
-/*
-  091101 this approach does NOT work!
-  TCHAR ubuffer[LKSIZEBUFFERPATH];
-  _stprintf(ubuffer,_T("%s\\%s%s"),LKD_LOGS,XCSPROFILE,NEWLINE);
-  StartupStore(ubuffer);
-*/
 
   TCHAR buffer[MAX_PATH];
 #if (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
@@ -4352,7 +4352,6 @@ void LK8000GetOpts(LPTSTR CommandLine) {
   _tcscat(buffer,_T(XCSPROFILE)); // 091101
 #endif
   _tcscpy(defaultProfileFile,buffer);
-  _tcscpy(failsafeProfileFile, defaultProfileFile);
   _tcscpy(startProfileFile, defaultProfileFile);
 
 #if (WINDOWSPC>0) 

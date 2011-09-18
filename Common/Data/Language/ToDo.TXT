@@ -23,6 +23,7 @@ Things to be fixed in LK languages files/tokens:
 - 110523  CHANGE HELP FOR AIRSPACE 879 
 - 110525  CHANGED AIRSPACE TOKENS 1159 1160
           CHANGED HELP 879
+          CHANGED HELP 1203
 
 - Changed H400-407
 - Changed HELP 199 FLarm on Map
