@@ -1426,17 +1426,19 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
             p++; // skip C
             if (parsing_state==10) { // New airspace begin, store the old one, reset parser
               newairspace = NULL;
-              if (Radius>0) {
-                // Last one was a circle
-                newairspace = new CAirspace_Circle(Longitude, Latitude, Radius);
-              } else {
-                  // Last one was an area
-                  CorrectGeoPoints(points);
-                  // Skip it if we dont have minimum 3 points
-                  if (points.size()>3) {
-                    newairspace = new CAirspace_Area;
-                    newairspace->SetPoints(points);
-                  }
+              if (Name[0]!='\0') {  // FIX: do not add airspaces with no name defined.
+                if (Radius>0) {
+                  // Last one was a circle
+                  newairspace = new CAirspace_Circle(Longitude, Latitude, Radius);
+                } else {
+                    // Last one was an area
+                    CorrectGeoPoints(points);
+                    // Skip it if we dont have minimum 3 points
+                    if (points.size()>3) {
+                      newairspace = new CAirspace_Area;
+                      newairspace->SetPoints(points);
+                    }
+                }
               }
               if (newairspace!=NULL) {
                 newairspace->Init(Name, Type, Base, Top, flyzone);
