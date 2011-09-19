@@ -1629,7 +1629,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
   }
 
   CCriticalSection::CGuard guard(_csairspaces);
-  StartupStore(TEXT(". Read %d airspaces%s"), _airspaces.size(), NEWLINE);
+  StartupStore(TEXT(". Now we have %d airspaces%s"), _airspaces.size(), NEWLINE);
   // For debugging, dump all readed airspaces to runtime.log
   //CAirspaceList::iterator it;
   //for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) (*it)->Dump();
