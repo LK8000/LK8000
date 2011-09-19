@@ -1894,6 +1894,20 @@ goto_bearing:
 			}
 			break;
 
+		// B64
+		case LK_LOGGER:
+			_tcscpy(BufferTitle, gettext(TEXT("_@M1695_")));
+			if (LoggerActive)
+				wsprintf(BufferValue,gettext(_T("_@M1700_"))); // ON
+			else {
+				if (DisableAutoLogger)
+					wsprintf(BufferValue,gettext(_T("_@M1701_"))); // no!
+				else
+					wsprintf(BufferValue,gettext(_T("_@M1696_"))); // auto
+			}
+			valid = true;
+			break;
+
 		// B65 FIXED 100125
 		case LK_BATTERY:
 			wsprintf(BufferValue,_T(NULLMEDIUM));
@@ -2518,6 +2532,10 @@ goto_bearing:
 			wsprintf(BufferValue, TEXT("%S"),text);
 			break;
 
+		// B38
+		// case LK_MTG_BRG:
+		// 			TODO
+
 
 		// B90 B91 B92 B93 B94 B95 B96
 		case LK_OLC_CLASSIC_DIST:
@@ -2639,6 +2657,7 @@ olc_score:
 			break;
 
 		case LK_EMPTY:
+		case LK_MTG_BRG:
 			wsprintf(BufferValue, TEXT(""));
 			//wsprintf(BufferUnit, TEXT(""));
 			wsprintf(BufferTitle, TEXT(""));
@@ -2653,8 +2672,6 @@ olc_score:
 
 		case LK_ERROR:
 		case LK_RESERVED1:
-		case LK_RESERVED2:
-		case LK_RESERVED5:
 			// let it be shown entirely to understand the problem
 			valid=true;
 			wsprintf(BufferValue, TEXT("000"));

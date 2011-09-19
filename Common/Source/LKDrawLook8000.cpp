@@ -1582,7 +1582,8 @@ Drawbottom:
 		wsprintf(BufferTitle, gettext(TEXT("_@M1200_")));
 		break;
 	case BM_SYS:
-		showunit=LKFormatValue(LK_EMPTY, true, BufferValue, BufferUnit, BufferTitle); // 100221
+		//showunit=LKFormatValue(LK_EMPTY, true, BufferValue, BufferUnit, BufferTitle); // 100221
+		showunit=LKFormatValue(LK_LOGGER, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_ALT:
 		if (ScreenLandscape) {
@@ -1650,9 +1651,9 @@ Drawbottom:
 		break;
 	case BM_SYS:
 		if (LoggerGActive()) {
-  			wsprintf(BufferValue, TEXT("OK"));
+  			wsprintf(BufferValue, gettext(_T("_@M1700_")));
 		} else {
-  			wsprintf(BufferValue, TEXT("NO!"));
+  			wsprintf(BufferValue, gettext(_T("_@M1701_")));
 		}
   		wsprintf(BufferTitle, TEXT("GRec"));
   		wsprintf(BufferUnit, TEXT("")); // 100221

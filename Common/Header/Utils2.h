@@ -286,7 +286,7 @@ extern short ModeTableTop[LKMODE_TOP+1];
 #define LK_PRCCLIMB		35		//
 #define LK_TIMEFLIGHT		36		//
 #define LK_GLOAD		37		//
-#define LK_RESERVED2		38		// AVAILABLE FOR A NEW INFOBOX 
+#define LK_MTG_BRG		38		// 
 #define LK_TIME_LOCAL		39		//
 #define LK_TIME_UTC		40		//
 #define LK_FIN_ETE		41		//
@@ -312,7 +312,7 @@ extern short ModeTableTop[LKMODE_TOP+1];
 #define LK_SPEEDTASK_ACH	61		//
 #define LK_AA_DELTATIME		62		//
 #define LK_TC_ALL		63		// Average of all thermals so far
-#define LK_RESERVED5		64		// AVAILABLE FOR A NEW INFOBOX
+#define LK_LOGGER		64		// 
 #define LK_BATTERY		65		//
 #define LK_FIN_GR		66		//
 #define LK_ALTERNATESGR		67		// not a mistake: let it here before the alternates GR

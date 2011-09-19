@@ -1128,9 +1128,9 @@ Time elapsed since takeoff was detected.
 Magnitude of G loading reported by a supported external intelligent vario.  This value is negative for pitch-down manoeuvres.
 
 @838
-[Next L/D]
-Do NOT use this value, it's here only for compatibility issue with old versions.
-Use NEXT EFF instead.
+[Multitarget BRG]
+The Bearing to the current selected multitarget.
+Currently this is NOT available.
 
 @839
 [Time local]
@@ -1241,6 +1241,13 @@ Difference between estimated task time and AAT minimum time.  Colored red if neg
 @863
 [Thermal All]
 Time-average climb rate in all thermals.
+
+@864
+[Logger]
+Show logger status.
+Auto: logger will automatically start on takeoff
+Manual: logger is disabled, and need to be activated manually
+ON: logger is currently active and logging
 
 @865
 [Battery]

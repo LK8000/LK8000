@@ -99,8 +99,9 @@ void FillDataOptions()
 	SetDataOption(36, ugNone,           TEXT("_@M1073_"), TEXT("_@M1074_"));
 	// LKTOKEN  _@M1075_ = "G load", _@M1076_ = "G"
 	SetDataOption(37, ugNone,           TEXT("_@M1075_"), TEXT("_@M1076_"));
-	// LKTOKEN  _@M1077_ = "_Reserved 2", _@M1078_ = "OLD nLD"
-	SetDataOption(38, ugNone,           TEXT("_@M1077_"), TEXT("_@M1078_"));
+
+	SetDataOption(38, ugNone,           TEXT("_@M1698_"), TEXT("_@M1699_")); // MTG BRG
+
 	// LKTOKEN  _@M1079_ = "Time local", _@M1080_ = "Time"
 	SetDataOption(39, ugNone,           TEXT("_@M1079_"), TEXT("_@M1080_"));
 	// LKTOKEN  _@M1081_ = "Time UTC", _@M1082_ = "UTC"
@@ -152,7 +153,7 @@ void FillDataOptions()
 	// LKTOKEN  _@M1127_ = "Thermal All", _@M1128_ = "Th.All"
 	SetDataOption(63, ugVerticalSpeed,  TEXT("_@M1127_"), TEXT("_@M1128_"));
 
-	SetDataOption(64, ugVerticalSpeed,  TEXT("_Reserved 5"), TEXT("Rsrv5"));
+	SetDataOption(64, ugNone,  TEXT("_@M1695_"), TEXT("_@M1695_"));
 
 	// LKTOKEN  _@M1131_ = "Battery Percent", _@M1132_ = "Battery"
 	SetDataOption(65, ugNone,           TEXT("_@M1131_"), TEXT("_@M1132_"));
