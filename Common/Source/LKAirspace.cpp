@@ -15,7 +15,7 @@
 
 #include "wcecompat/ts_string.h"
 #include <Point2D.h>
-
+#include "md5.h"
 
 using std::min;
 using std::max;
@@ -100,6 +100,12 @@ void CAirspace::Dump() const
   StartupStore(TEXT(" bounds.minx,miny:%lf,%lf%s"),_bounds.minx,_bounds.miny,NEWLINE);
   StartupStore(TEXT(" bounds.maxx,maxy:%lf,%lf%s"),_bounds.maxx,_bounds.maxy,NEWLINE);
    
+}
+
+// Calculate unique hash code for this airspace - prototype, normally never called
+void CAirspace::Hash(char *hashout, int maxbufsize) const
+{
+  *hashout=0;
 }
 
 void CAirspace::AirspaceAGLLookup(double av_lat, double av_lon) 
@@ -659,6 +665,21 @@ void CAirspace_Circle::Dump() const
   CAirspace::Dump();
 }
 
+// Calculate unique hash code for this airspace
+void CAirspace_Circle::Hash(char *hashout, int maxbufsize) const
+{
+  MD5 md5;
+  md5.Update((unsigned char*)&_type, sizeof(_type));
+  md5.Update((unsigned char*)_name, _tcslen(_name)*sizeof(TCHAR));
+  md5.Update((unsigned char*)&_base, sizeof(_base));
+  md5.Update((unsigned char*)&_top, sizeof(_top));
+  md5.Update((unsigned char*)&_latcenter, sizeof(_latcenter));
+  md5.Update((unsigned char*)&_loncenter, sizeof(_loncenter));
+  md5.Update((unsigned char*)&_radius, sizeof(_radius));
+  md5.Final();
+  memcpy(hashout,md5.digestChars,min(maxbufsize,33));
+}
+
 // Check if the given coordinate is inside the airspace
 bool CAirspace_Circle::IsHorizontalInside(const double &longitude, const double &latitude) const
 {
@@ -769,6 +790,20 @@ void CAirspace_Area::Dump() const
   }
 }
 
+// Calculate unique hash code for this airspace
+void CAirspace_Area::Hash(char *hashout, int maxbufsize) const
+{
+  MD5 md5;
+  md5.Update((unsigned char*)&_type, sizeof(_type));
+  md5.Update((unsigned char*)_name, _tcslen(_name)*sizeof(TCHAR));
+  md5.Update((unsigned char*)&_base, sizeof(_base));
+  md5.Update((unsigned char*)&_top, sizeof(_top));
+  for (CPoint2DArray::const_iterator it = _geopoints.begin(); it != _geopoints.end(); ++it) {
+    md5.Update((unsigned char*)&(*it), sizeof(CPoint2D));
+  }
+  md5.Final();
+  memcpy(hashout,md5.digestChars,min(maxbufsize,33));
+}
 
 ///////////////////////////////////////////////////
 
@@ -1665,9 +1700,9 @@ void CAirspaceManager::ReadAirspaces()
 void CAirspaceManager::CloseAirspaces()
 {
   CAirspaceList::iterator it;
-  
   CCriticalSection::CGuard guard(_csairspaces);
   if (_airspaces.size()==0) return;
+  SaveSettings();
   _selected_airspace = NULL;
   _user_warning_queue.clear();
   _airspaces_near.clear();
@@ -2457,4 +2492,46 @@ void CAirspaceManager::AirspaceSetSelect(CAirspace &airspace)
   _selected_airspace = &airspace;
   if (_selected_airspace != NULL) _selected_airspace->Selected(true);
 }
+
+// Save airspace settings
+void CAirspaceManager::SaveSettings() const
+{
+  char hashbuf[33];
+  FILE *f;
+  TCHAR szFileName[MAX_PATH];
+  char buf[MAX_PATH+1];
+  TCHAR ubuf[(MAX_PATH*2)+1];
+
+  LocalPath(szFileName, TEXT(LKF_AIRSPACE_SETTINGS));
+  f=_tfopen(szFileName, TEXT("w"));
+  if (f!=NULL) {  
+    // File header
+    fprintf(f,"# LK8000 AIRSPACE SETTINGS\n");
+    fprintf(f,"# THIS FILE IS GENERATED AUTOMATICALLY ON LK SHUTDOWN - DO NOT ALTER BY HAND, DO NOT COPY BEETWEEN DEVICES!\n");
+    
+    CCriticalSection::CGuard guard(_csairspaces);
+    for (CAirspaceList::const_iterator it = _airspaces.begin(); it != _airspaces.end(); ++it) {
+      (*it)->Hash(hashbuf,33);
+      //Asp hash
+      fprintf(f,"%32s ",hashbuf);
+      
+      //Settings chr1 - Flyzone or not
+      if ((*it)->Flyzone()) fprintf(f,"F"); else fprintf(f,"-"); 
+      //Settings chr2 - Enabled or not
+      if ((*it)->Enabled()) fprintf(f,"E"); else fprintf(f,"-"); 
+      //Settings chr3 - Selected or not
+      if ((*it)->Selected()) fprintf(f,"S"); else fprintf(f,"-"); 
+      
+      //Comment
+      wsprintf(ubuf,TEXT(" #%s"),(*it)->Name());
+      unicode2utf(ubuf,buf,sizeof(buf));
+      fprintf(f,"%s",buf); 
+      //Newline
+      fprintf(f,"\n");
+    }
+    StartupStore(TEXT(". Airspace settings saved to file %s%s"),szFileName,NEWLINE);
+    fclose(f);
+  } else StartupStore(TEXT("Failed to save airspace setting to file %s%s"),szFileName,NEWLINE);
+}
+
 

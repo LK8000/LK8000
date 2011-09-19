@@ -118,6 +118,8 @@ public:
   virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const {}
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
   virtual double Range(const double &longitude, const double &latitude, double &bearing) const { return 0.0; }
+  // Calculate unique hash code for this airspace
+  virtual void Hash(char *hashout, int maxbufsize) const;
   // QNH change nofitier, called when global qhn changed
   void QnhChangeNotify();
 
@@ -259,6 +261,8 @@ public:
   virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const;
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
   virtual double Range(const double &longitude, const double &latitude, double &bearing) const;
+  // Calculate unique hash code for this airspace
+  virtual void Hash(char *hashout, int maxbufsize) const;
 
 private:
   CPoint2DArray _geopoints;        // polygon points
@@ -289,6 +293,8 @@ public:
   virtual void Draw(HDC hDCTemp, const RECT &rc, bool param1) const;
   // Calculate nearest horizontal distance and bearing to the airspace from a given point
   virtual double Range(const double &longitude, const double &latitude, double &bearing) const;
+  // Calculate unique hash code for this airspace
+  virtual void Hash(char *hashout, int maxbufsize) const;
   
 private:
   POINT _screencenter;        // center point in screen coordinates
@@ -408,7 +414,9 @@ private:
   bool CalculateArc(TCHAR *Text, CPoint2DArray *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const;
   bool CalculateSector(TCHAR *Text, CPoint2DArray *_geopoints, double &CenterX, const double &CenterY, const int &Rotation) const;
   void CorrectGeoPoints(CPoint2DArray &points);
-  
+
+  //Airspace setting save/restore functions
+  void SaveSettings() const;
 
 };
 
