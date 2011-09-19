@@ -1696,6 +1696,8 @@ void CAirspaceManager::ReadAirspaces()
   } else {
     StartupStore(TEXT("... No airspace file 1%s"),NEWLINE);
   }
+  
+  LoadSettings();
 }
 
 
@@ -2531,9 +2533,77 @@ void CAirspaceManager::SaveSettings() const
       //Newline
       fprintf(f,"\n");
     }
-    StartupStore(TEXT(". Airspace settings saved to file %s%s"),szFileName,NEWLINE);
+    StartupStore(TEXT(". Settings for %d airspaces saved to file <%s>%s"), _airspaces.size(), szFileName, NEWLINE);
     fclose(f);
-  } else StartupStore(TEXT("Failed to save airspace setting to file %s%s"),szFileName,NEWLINE);
+  } else StartupStore(TEXT("Failed to save airspace settings to file <%s>%s"),szFileName,NEWLINE);
 }
+
+// Load airspace settings
+void CAirspaceManager::LoadSettings()
+{
+  char linebuf[MAX_PATH+1];
+  char hash[MAX_PATH+1];
+  char flagstr[MAX_PATH+1];
+  FILE *f;
+  TCHAR szFileName[MAX_PATH];
+  typedef struct _asp_data_struct {
+    CAirspace* airspace;
+    char hash[33];
+  } asp_data_struct;
+  asp_data_struct *asp_data;
+  unsigned int i,retval;
+  unsigned int airspaces_restored = 0;
+    
+  LocalPath(szFileName, TEXT(LKF_AIRSPACE_SETTINGS));
+  f=_tfopen(szFileName, TEXT("r"));
+  if (f!=NULL) {  
+    // Generate hash map on loaded airspaces
+    CCriticalSection::CGuard guard(_csairspaces);
+    asp_data = (asp_data_struct*)malloc(sizeof(asp_data_struct) * _airspaces.size());
+    if (asp_data==NULL) {
+      StartupStore(TEXT("Failed to allocate memory on airspace settings loading, settings not loaded.%s"),NEWLINE);
+      return;
+    }
+    i = 0;
+    for (CAirspaceList::iterator it = _airspaces.begin(); it != _airspaces.end(); ++it, ++i) {
+      (*it)->Hash(asp_data[i].hash,33);
+      asp_data[i].airspace = *it;
+    }
+
+    while (fgets(linebuf, MAX_PATH, f) != NULL) {
+      //Parse next line
+      retval = sscanf(linebuf,"%s %s",hash,flagstr);
+      if (retval==2 && hash[0]!='#') {
+        // Get the airspace pointer associated with the hash
+        for (i=0; i<_airspaces.size(); ++i) {
+          if (asp_data[i].airspace==NULL) continue;
+          if (strcmp(hash,asp_data[i].hash) == 0) {
+            //Match, restore settings
+            //chr1 F=Flyzone
+            if (flagstr[0]=='F') {
+              if (!asp_data[i].airspace->Flyzone()) asp_data[i].airspace->FlyzoneToggle();
+            } else {
+              if (asp_data[i].airspace->Flyzone()) asp_data[i].airspace->FlyzoneToggle();
+            }
+            //chr2 E=Enabled
+            if (flagstr[1]=='E') asp_data[i].airspace->Enabled(true); else asp_data[i].airspace->Enabled(false);
+            //chr3 S=Selected
+            if (flagstr[2]=='S') AirspaceSetSelect(*(asp_data[i].airspace));
+            
+            // This line is readed, never needed anymore
+            //StartupStore(TEXT(". Airspace settings loaded for %s%s"),asp_data[i].airspace->Name(),NEWLINE);
+            asp_data[i].airspace = NULL;
+            airspaces_restored++;
+          }
+        }
+      }
+    }
+    
+    free(asp_data);
+    StartupStore(TEXT(". Settings for %d of %d airspaces loaded from file <%s>%s"), airspaces_restored, _airspaces.size(), szFileName, NEWLINE);
+    fclose(f);
+  } else StartupStore(TEXT("Failed to load airspace settings from file <%s>%s"),szFileName,NEWLINE);
+}
+
 
 

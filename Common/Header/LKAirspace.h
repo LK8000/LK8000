@@ -417,6 +417,7 @@ private:
 
   //Airspace setting save/restore functions
   void SaveSettings() const;
+  void LoadSettings();
 
 };
 
