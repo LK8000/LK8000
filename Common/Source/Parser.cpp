@@ -515,9 +515,9 @@ double NMEAParser::TimeModify(double FixTime, NMEA_INFO* GPS_INFO)
 bool NMEAParser::TimeHasAdvanced(double ThisTime, NMEA_INFO *GPS_INFO) {
 
   // If simulating, we might be in the future already.
-  // 110911 Remember that a GPS source fallback may bring a fix 1 second old, maybe because
-  // the NMEA streams are not synced for time! So we now check for <=
-  if(ThisTime<= LastTime) {
+  // We CANNOT check for <= because this check may be done by several GGA RMC GLL etc. sentences
+  // among the same quantum time
+  if(ThisTime< LastTime) {
     LastTime = ThisTime;
     StartDay = -1; // reset search for the first day
     MasterTimeReset();
