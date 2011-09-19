@@ -671,8 +671,12 @@ void CAirspace_Circle::Hash(char *hashout, int maxbufsize) const
   MD5 md5;
   md5.Update((unsigned char*)&_type, sizeof(_type));
   md5.Update((unsigned char*)_name, _tcslen(_name)*sizeof(TCHAR));
-  md5.Update((unsigned char*)&_base, sizeof(_base));
-  md5.Update((unsigned char*)&_top, sizeof(_top));
+  if (_base.Base == abFL) md5.Update((unsigned char*)&_base.FL, sizeof(_base.FL));
+  if (_base.Base == abAGL) md5.Update((unsigned char*)&_base.AGL, sizeof(_base.AGL));
+  if (_base.Base == abMSL) md5.Update((unsigned char*)&_base.Altitude, sizeof(_base.Altitude));
+  if (_top.Base == abFL) md5.Update((unsigned char*)&_top.FL, sizeof(_top.FL));
+  if (_top.Base == abAGL) md5.Update((unsigned char*)&_top.AGL, sizeof(_top.AGL));
+  if (_top.Base == abMSL) md5.Update((unsigned char*)&_top.Altitude, sizeof(_top.Altitude));
   md5.Update((unsigned char*)&_latcenter, sizeof(_latcenter));
   md5.Update((unsigned char*)&_loncenter, sizeof(_loncenter));
   md5.Update((unsigned char*)&_radius, sizeof(_radius));
@@ -794,12 +798,21 @@ void CAirspace_Area::Dump() const
 void CAirspace_Area::Hash(char *hashout, int maxbufsize) const
 {
   MD5 md5;
+  double dtemp;
+  
   md5.Update((unsigned char*)&_type, sizeof(_type));
   md5.Update((unsigned char*)_name, _tcslen(_name)*sizeof(TCHAR));
-  md5.Update((unsigned char*)&_base, sizeof(_base));
-  md5.Update((unsigned char*)&_top, sizeof(_top));
+  if (_base.Base == abFL) md5.Update((unsigned char*)&_base.FL, sizeof(_base.FL));
+  if (_base.Base == abAGL) md5.Update((unsigned char*)&_base.AGL, sizeof(_base.AGL));
+  if (_base.Base == abMSL) md5.Update((unsigned char*)&_base.Altitude, sizeof(_base.Altitude));
+  if (_top.Base == abFL) md5.Update((unsigned char*)&_top.FL, sizeof(_top.FL));
+  if (_top.Base == abAGL) md5.Update((unsigned char*)&_top.AGL, sizeof(_top.AGL));
+  if (_top.Base == abMSL) md5.Update((unsigned char*)&_top.Altitude, sizeof(_top.Altitude));
   for (CPoint2DArray::const_iterator it = _geopoints.begin(); it != _geopoints.end(); ++it) {
-    md5.Update((unsigned char*)&(*it), sizeof(CPoint2D));
+    dtemp = it->Latitude();
+    md5.Update((unsigned char*)&dtemp, sizeof(dtemp));
+    dtemp = it->Longitude();
+    md5.Update((unsigned char*)&dtemp, sizeof(dtemp));
   }
   md5.Final();
   memcpy(hashout,md5.digestChars,min(maxbufsize,33));
