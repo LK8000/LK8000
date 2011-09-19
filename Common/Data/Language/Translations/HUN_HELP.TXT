@@ -1368,15 +1368,15 @@ Maximális távolság 3 fordulópont körül amit az elmúlt 2.5 órában érté
 Az aktuális távolság a 3 fordulópont között számítva.
 
 @894
-[OLC CLASSIC] Előrevetített távolság
+[OLC CLASSIC] Várt távolság
 Az aktuális távolság az 5 fordulópont között számítva, úgy mintha az utolsó lenne az indulási pont.
 
 @895
-[FAI Háromszög] Előrevetített távolság
+[FAI Háromszög] Várt távolság
 A FAI háromszög feladatban eddig elért távolság, mintha az utolsó pont lenne az indulási pont.
 
 @896
-[FAI 3 FP-os] Előrevetített távolság
+[FAI 3 FP-os] Várt távolság
 Az aktuális távolság a 3 fordulópont között számítva, úgy mintha az utolsó lenne az indulási pont.
 
 @897
@@ -1392,13 +1392,13 @@ Az aktuális távolság a 3 fordulópont között számítva, úgy mintha az uto
 [FAI 3 FP-os] sebesség
 
 @901
-[OLC CLASSIC] Előrevetített sebesség
+[OLC CLASSIC] Várt sebesség
 
 @902
-[FAI Háromszög] Előrevetített sebesség
+[FAI Háromszög] Várt sebesség
 
 @903
-[FAI 3 FP-os] Előrevetített sebesség
+[FAI 3 FP-os] Várt sebesség
 
 @904
 [OLC CLASSIC] pontszám
@@ -1413,21 +1413,38 @@ Az aktuális távolság a 3 fordulópont között számítva, úgy mintha az uto
 [FAI 3 FP-os] pontszám
 
 @908
-[OLC CLASSIC] Előrevetített pontszám
+[OLC CLASSIC] Várt pontszám
 
 @909
-[FAI Háromszög] Előrevetített pontszám
+[FAI Háromszög] Várt pontszám
 
 @910
-[FAI 3 FP-os] Előrevetített pontszám
+[FAI 3 FP-os] Várt pontszám
 
 @911
 [OLC PLUS] pontszám
 Az OLC Classic pontszám és a FAI Háromszög pontszám összege.
 
 @912
-[OLC PLUS] Előrevetített pontszám
+[OLC PLUS] Várt pontszám
 Az OLC Classic előrevetített pontszám és a FAI Háromszög előrevetített pontszám összege.
+
+@913
+[Javasolt ívelőlap állás]
+Megmutatja a jelenlegi optimális ívelőlap állást a kiterjesztet gép poláris fájl és a felületi terhelés alapján.
+Nézd meg a példaként adott polár fájlt a _Polars könyvtárban segítségképpen hogy hogyan készíts el egy kiterjesztett géppoláris fájlt.
+
+@914
+HLégtér [Airspace Vertical Distance]
+Vertikális távolság (magasságkülönbség) a KIVÁLASZTOTT légtérhez. Egy légtér kiválsztásához menj a 2.4 infólapra
+és a légtér részletei között megtalálod a kiválsztáshoz szükséges gombot. A kiválsztás után ehhez a légtérhez számított
+távolság megjelenik ebben az infoboxban. Negatív értékek a feletted lévő légtérhatárt, pozitívak az alattad lévőt
+jelentik ugyanúgy mint az érkezési magasságok tekintetében. Ha nincs légtér kiválsztva, vagy a kiválsztott légtéren belül vagy
+akkor --- jelenik meg. FLY zónák esetén a távolságok a legközelebbi elhagyási pontot mutatják. 
+
+@915
+HOthÉrk [Home Altitude Arrival]
+Érkezési magasság a hazai reptérre. A számítás figyelembe veszi a MC beállítást, használja a biztonsági magasságot és a biztonsági MC értéket is.
 
 
 #
@@ -1484,18 +1501,92 @@ Minden repülőgép kategóriának megvannak a sajátosságai, látogasd meg a w
 kezelési utasítást a különbségek megértéséhez.
 A gépkategória megváltoztatása után újra kell indítanod a programot hogy minden változás érvényre jusson.
 
+# 1206 OBSOLETED BY 1208 in 2.3
 @1206
 [Repülőgép tipus]
 Itt állíthatod be a repülőgéped vagy siklóernyőd pontos tipusát. Ez meghatározza a polárist, amivel a program a számításokat elvégzi.
 Ha saját poláris fájlt szeretnél használni, válaszd az [Egyéni poláris fájl] elemet, és add meg a fájl nevét a konfigurációban ezen beállítás értékénél.
 (következő sorban)
 
+# 1207 UNUSED in 2.3
 @1207
 [Egyéni poláris fájl]
 Amikor a repülőgép tipusát [Egyéni poláris fájl]-ra állítod, akkor itt adhatod meg melyik poláris fájlt használja a program.
 A géppoláris fájlokat a _Polars alkönyvtárban kell elhelyezned hogy kiválaszthatók legyenek.
 Egy poláris fájl elkészítése nem triviális, szükséges a merülősebesség mértéke különböző siklási sebességeknél, és a repülőgép tömege is.
 A kezelési leírásban több információ található erről.
+
+1208
+[Repülőgép tipus]
+Itt állíthatod be a repülőgéped vagy siklóernyőd pontos tipusát.
+
+@1209
+[Légtér figyelmeztetés ismétlési ideje]
+Ennyi idő múlva a program megismétli a légtér riasztést, ha nem lett lenyugtázva.
+Ha olyan helyen repülsz ahol a légterek nem engedik meg, és nem nyugtázod a riasztásokat, akkor a program ennyi idő után újra riaszt majd.
+
+@1210
+[Légtér vertikális távolság határ]
+Ha a beállított értéknél vertikálisan jobban megközelíted a tiltott légteret, akkor a sárga légtér riasztás érvénybe lép, a légtér üzenet megjelenik.
+Ez befolyásolja azt is hogyan jelennek meg a légterekhez tartozó cimkék a térképen.
+Ha a vertikális távolság (magasságkülönbség) a légtérhez képest ezen határ alá csökken, akkor a riasztás szimbóluma a térképen közvetlenül
+a repülőgép ikonja felett jelenik meg, hogy figyelmeztessen.
+
+@1211
+[Légtér figyelmeztető ablak timeout]
+Ezen idő letelte után a figyelmeztető ablak magától bezáródik, a bezárás gomb megnyomása nélkül is.
+A bezárásik hátralévő idő a bezárás gomb szövegében megjelenik, visszaszámláló formában.
+
+@1212
+[Légtér riasztások térkép cimkéi]
+Ha bekapcsolt, a légtér riasztásokhoz tartozó információk megjelennek a térképen, megmutatva a légtér nevét és a magasságkülönbséget.
+
+@1220
+[Alsó sor beállítása]
+Engedélyezheted vagy tilthatod az alsó sorok megjelenítését. Ha mindengyiket letiltod, akkor a NAV1 fog megjelenni, illetve körözés közben
+a TRM0 automatikusan megjelenik.
+
+@1221
+[Infólapok beállítása]
+Engedélyezheted vagy tilthatod az egyes infólapok megjelenését. Ha az adott csoporthoz tartozó összes lapot letiltod, akkor a csoport nem jelenik meg.
+A saját gombok segytségével a lap ennek ellenére elérhető marad. Figyelem, a nem vitorlázó módban (pl. siklóernyő vagy motoros) az 1.5 Verseny oldal letiltása
+a verseny adatok számítását is letiltja. Ha szeretnél verseny adatokat látni akkor engedélyezned kell az 1.5 oldalt. Vitorlázó esetben a verseny adatok mindíg számításra kerülnek.
+
+@1250
+Légterek megjelenítésének alapbeállítása. A szűrő gombbal további szűrési feltételeket (megjelenítés, figyelmeztetések) lehet megadni a légterekre osztályonként.
+[Mind be] Minden légtér megjelenik
+[Vágás] Csak a vágási határ alatt lévő légterek jelennek meg
+[Auto] A jelenlegi magasság +/- a beállított határon belül lévők megjelenítése
+[Mind alul] Minden légtér ami a jelenlegi magasság alatt van, és ami a jelenlegi magasság fölött a beállított határig
+
+@1251
+Magassági határ amit a légterek megjelenítésénél használ a program. (AUTO és Mind alul módokban)
+Auto esetben a jelenlegi magasság +/- a határ által behatárolt légterek, Mind alul esetén a felszíntől a jelenlegi magasság+határ szerinti légterek jelennek meg.
+
+@1252
+Ha nyugtáztad a légtér által okozott risztást, ennyi idő múlva törlődik a nyugtázásod. Ekkor ha a riasztás még mindig fennáll új üzenetet ad a program.
+
+@1253
+[Max magasság risztás] 
+Risztást ad a program ha a beállított magasságot elérted vagy átlépted. A risztás nem ismétlődik meg a következő 60 másodpercben.
+Ezután ha a magasság alacsonyabb mint a határérték és aztán újra magasabb lesz akkor a risztás újra érvényre jut.
+A letiltáshoz 0-t kell beállítani.
+A riasztáshoz használt magasság a beállítások menu 5 "Baro magasság használata" pont alapján kerül meghatározásra.
+A több ugyanarra a magasságra állított határérték nem csinál semmit.
+A vitorlázó pilótáknak nem javasolt a riasztás határértékét a biztonsági magasság alá állítani, a repülés kritikus szakaszában.
+Minden riasztás 30-szor ismétlődhet, ezután automatikusan tiltja magát a leszállásig.
+A vizuális riasztási üzenet automatikusan eltűnik 12sec után. Minden riasztásnak saját hangja van, ami megváltoztatható a _System _Sounds könyvtárban
+lévő LK_ALARM_ALTx.WAV kicserélésével. Az alapbeállítás 0, azaz tiltva.
+
+# ex 195
+@1254
+A siklópálya jelző mutathatja a feladat célpontja vagy a következő fordulópontra vonatkozó siklópálya értékeit, vagy ki is lehet kapcsolni.
+Ez a képernyő a bal oldalán jelenik meg.
+Amikor a következő fordulópont a cél vagy már csak az utolsó fordulópont van hátra akkor ez az érték megegyezik azzal ami a matricán is megjelenik.
+
+@1255
+Automatikus MacCready beállítás, lehet bekapcsolt vagy kikapcsolt. Ezt repülés közben is lehet változtatni.
+Ez az alapbeállítás.
 
 @9999
 Ezen az elemen nem áll rendelkezésre súgó.
