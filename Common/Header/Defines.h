@@ -159,6 +159,7 @@
 #define LKF_WAYPOINTS1	"waypoints1.dat"
 #define LKF_WAYPOINTS2	"waypoints2.dat"
 #define LKF_AIRSPACES	"airspace.txt"
+#define LKF_AIRSPACE_SETTINGS "_Airspaces\\AspConfig.LK"
 
 
 // Rotary buffers and filters, except TrueWind
