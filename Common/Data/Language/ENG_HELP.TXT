@@ -1245,8 +1245,8 @@ Time-average climb rate in all thermals.
 @864
 [Logger]
 Show logger status.
-Auto: logger will automatically start on takeoff
-Manual: logger is disabled, and need to be activated manually
+auto: logger will automatically start on takeoff
+no!: logger is disabled, and need to be activated manually
 ON: logger is currently active and logging
 
 @865
