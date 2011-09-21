@@ -956,6 +956,12 @@ _@M953_ "Átlátszó"
 _@M954_ "Font simítás "
 _@M955_ "ClearType"
 _@M956_ "Anti Aliasing"
+# Page 1.5 name, keep short:
+_@M957_ "Verseny"
+
+# ON/OFF in dialog windows (not Menu)
+_@M958_ "BE"
+_@M959_ "KI"
 
 #
 # Paragliding lock/unlock screen feature
@@ -1244,6 +1250,61 @@ _@M1237_ "R"
 _@M1238_ "L"
 _@M1239_ "F"
 
+# dlgLKAirspaceWarning - Airspace warning messages
+_@M1240_ "Belépés"
+_@M1241_ "Elhagyás"
+_@M1242_ "Repülés FLY zónában"
+_@M1243_ "Hamarosan FLY zóna elhagyás"
+_@M1244_ "Közel a FLY zóna határ"
+_@M1245_ "FLY zóna elhagyva"
+_@M1246_ "Hamarosan FLY zónába lépés"
+_@M1247_ "FLY zónába lépés"
+_@M1248_ "Repülés FLY zónán kívül"
+_@M1249_ "Repülés NOFLY zónán kívül"
+_@M1250_ "Hamarosan NOFLY zónába lépés"
+_@M1251_ "Közel a NOFLY zóna határ"
+_@M1252_ "NOFLY zónába lépés"
+_@M1253_ "Repülés NOFLY zónában"
+_@M1254_ "NOFLY zóna elhagyva"
+_@M1255_ "SÁRGA RIASZTÁS"
+_@M1256_ "PIROS RIASZTÁS"
+_@M1257_ "elhagyni"
+_@M1258_ "belépni"
+_@M1259_ "Túl messze van, nincs számítva"
+_@M1260_ "alatta"
+_@M1261_ "fölötte"
+_@M1262_ "Üzenet"
+_@M1263_ "Riasztási szint"
+_@M1264_ "Hor.táv"
+_@M1265_ "Vert.táv"
+
+# dlgAirspaceDetails - Airspace details
+_@M1266_ "Nyugta szint"
+_@M1267_ "Sárga nyugtázva"
+_@M1268_ "Piros nyugtázva"
+_@M1269_ "Tiltva"
+_@M1270_ "FLY-IN"
+_@M1271_ "FLY-OUT"
+_@M1272_ "Beállítod FLY zónának?"
+_@M1273_ "Beállítod NOFLY (tiltott) zónának?"
+
+# dlgConfig - Airspace warnings
+_@M1274_ "Riasztások"
+_@M1275_ "Légtér riasztási paraméterek"
+_@M1276_ "Légtér riasztási paraméterek elmentve."
+_@M1277_ "Üzenet ism. idő "
+_@M1278_ "Vertikális határ "
+_@M1279_ "Üzenet timeout "
+_@M1280_ "Engedélyezed ezt a légteret?"
+_@M1281_ "Térkép cimkék "
+_@M1282_ "ENGED"
+_@M1283_ "TILT"
+_@M1284_ "Letiltod ezt a légteret (a program figyelmen kívül fogja hagyni)?"
+
+# new airspace infobox
+_@M1285_ "H Légtér vertikális távolsága"
+_@M1286_ "HLégtér"
+
 # LK info page headers, try to use the same or less number of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!
 _@M1300_ "Táv"
@@ -1262,6 +1323,7 @@ _@M1312_ "LSZL"
 _@M1313_ "RPTR"
 _@M1314_ "RPTR"
 _@M1315_ "FP"
+# ASP for nearest airspaces is M1642
 
 # Reserved waypoint names, comments
 _@M1316_ "FELSZÁLL"
@@ -1350,7 +1412,7 @@ _@M1427_ "Vario termik, VMcOpt siklás módban"
 #
 _@M1450_ "Verseny"
 _@M1451_ "Váltás"
-_@M1452_ "Motornélküli repülés érzékelve"
+_@M1452_ "Motornélküli repülés kezdete érzékelve"
 
 #
 # Contest infoboxes, full name and abbreviated name for boxes
@@ -1367,13 +1429,13 @@ _@M1460_ "LEA táv"
 _@M1461_ "OLC FAI 3 FP-os Táv"
 _@M1462_ "3TP táv"
 
-_@M1463_ "OLC Classic*Előrevetített Táv"
+_@M1463_ "OLC Classic*Várt Táv"
 _@M1464_ "OLC*táv"
-_@M1465_ "OLC FAI Háromszög*Előrevetített Táv"
+_@M1465_ "OLC FAI Háromszög*Várt Táv"
 _@M1466_ "FAI*táv"
-_@M1467_ "OLC League*Előrevetített Táv"
+_@M1467_ "OLC League*Várt Táv"
 _@M1468_ "LEA*táv"
-_@M1469_ "OLC FAI 3 FP-os*Előrevetített Táv"
+_@M1469_ "OLC FAI 3 FP-os*Várt Táv"
 _@M1470_ "3TP*táv"
 
 _@M1471_ "OLC Classic Sebesség"
@@ -1385,13 +1447,13 @@ _@M1476_ "LEA seb"
 _@M1477_ "OLC FAI 3 FP-os Sebesség"
 _@M1478_ "3TP seb"
 
-_@M1479_ "OLC Classic*Előrevetített Sebesség"
+_@M1479_ "OLC Classic*Várt Sebesség"
 _@M1480_ "OLC*seb"
-_@M1481_ "OLC FAI Háromszög*Előrevetített Sebesség"
+_@M1481_ "OLC FAI Háromszög*Várt Sebesség"
 _@M1482_ "FAI*seb"
-_@M1483_ "OLC League*Előrevetített Sebesség"
+_@M1483_ "OLC League*Várt Sebesség"
 _@M1484_ "LEA*seb"
-_@M1485_ "OLC FAI 3 FP-os*Előrevetített Sebesség"
+_@M1485_ "OLC FAI 3 FP-os*Várt Sebesség"
 _@M1486_ "3TP*seb"
 
 _@M1487_ "OLC Classic Pontszám"
@@ -1403,18 +1465,260 @@ _@M1492_ "LEA pnt"
 _@M1493_ "OLC FAI 3 FP-os Pontszám"
 _@M1494_ "3TP pnt"
 
-_@M1495_ "OLC Classic*Előrevetített Pontszám"
+_@M1495_ "OLC Classic*Várt Pontszám"
 _@M1496_ "OLC*pnt"
-_@M1497_ "OLC FAI Háromszög*Előrevetített Pontszám"
+_@M1497_ "OLC FAI Háromszög*Várt Pontszám"
 _@M1498_ "FAI*pnt"
-_@M1499_ "OLC League*Előrevetített Pontszám"
+_@M1499_ "OLC League*Várt Pontszám"
 _@M1500_ "LEA*pnt"
-_@M1501_ "OLC FAI 3 FP-os*Előrevetített Pontszám"
+_@M1501_ "OLC FAI 3 FP-os*Várt Pontszám"
 _@M1502_ "3TP*pnt"
 
 _@M1503_ "OLC Plus Pontszám"
 _@M1504_ "PLS pnt"
-_@M1505_ "OLC Plus*Előrevetített Pontszám"
+_@M1505_ "OLC Plus*Várt Pontszám"
 _@M1506_ "PLS*pnt"
+
+# #############################
+# NEW 2.4 messages
+# #############################
+
+# Device name for "no device"
+_@M1600_ "NEM HASZNÁLT"
+# Ex-963, new message for screen unlock
+_@M1601_ "Dupla klikk a jobb alsó sarokba a feloldáshoz"
+
+# Config system menu page 
+_@M1602_ "Alsó sor beállítása"
+_@M1603_ "Infó lapok beállítása"
+_@M1604_ "xxxx beállítása"
+_@M1605_ "Alsó sor"
+_@M1606_ "Info lapok"
+_@M1607_ "Alsó sor beállításai elmentve"
+_@M1608_ "Info lapok beállításai elmentve"
+
+# Config InfoPages
+_@M1610_ "1.1 Siklás "
+_@M1611_ "1.2 Termik "
+_@M1612_ "1.3 Feladat "
+_@M1613_ "1.4 Egyéb "
+_@M1614_ "1.5 Verseny "
+_@M1615_ "1.6 Fordul "
+_@M1616_ "2.1 RPTR "
+_@M1617_ "2.2 LSZL "
+_@M1618_ "2.3 FP "
+_@M1619_ "2.4 LTÉR "
+_@M1620_ "3.1 KÖZ "
+_@M1621_ "3.2 HIST "
+_@M1622_ "3.3 TERM "
+
+# New airspace messages
+_@M1630_ "Magasság határ "
+
+# Navboxes
+_@M1640_ "Javasolt ívelőlap állás"
+_@M1641_ "Ívelő"
+
+# Header nearest Airspaces
+_@M1642_ "LTÉR"
+
+_@M1643_ "ENGEDVE"
+
+_@M1644_ "H Hazaérkezési magasság"
+_@M1645_ "HOthÉrk"
+
+# Menu Config 15, Alarms
+_@M1646_ "15 Riasztások"
+_@M1647_ "Max magasság 1 "
+_@M1648_ "Max magasság 2 "
+_@M1649_ "Max magasság 3 "
+
+# "ALARM x ALTITUDE 1234"   warning message
+_@M1650_ "RIASZTÁS"
+_@M1651_ "MAGASSÁG"
+
+# customkey for airspace analysis
+_@M1652_ "Légtér analízis"
+_@M1653_ "Térkép<>Légtér info váltás"
+
+# Airspace details buttons
+_@M1654_ "KIVÁLASZT"
+_@M1655_ "ANALÍZIS"
+_@M1656_ "*VÁLASZTVA*"
+
+# customkeys zoom 
+_@M1657_ "Nagyít"
+_@M1658_ "Kicsinyít"
+_@M1659_ "Nagyít még"
+_@M1660_ "Kicsinyít még"
+
+# Active map indicator in map scale (with AZM, NAV1 etc.), 3 letters!
+_@M1661_ "ACT"
+
+# Error message
+_@M1662_ "RENDSZERHIBA"
+_@M1663_ "NINCS ELÉG MEMÓRIA"
+
+# Header Thermal History keep short!
+_@M1670_ "TERM"
+# average lift 
+_@M1671_ "W átl"
+_@M1672_ "Termik részletek"
+_@M1673_ "Átl"
+
+# Auto MC configuration
+_@M1674_ "Auto Mc "
+# Menu buttons MacCready, keep very short! - F C E are the overlay indicators
+# Fin Th Equ  are fron button shortcuts, max 3 letters!
+_@M1675_ "Végsik"
+_@M1676_ "V"
+_@M1677_ "WNapÁtl"
+_@M1678_ "W"
+_@M1679_ "Equiv"
+_@M1680_ "E"
+_@M1681_ "Vég"
+_@M1682_ "Wná"
+_@M1683_ "Eq"
+# Change 118 average climb with average thermal
+_@M1684_ "Átlagos emelés (WNapÁtl)"
+# Change 148 with 1685
+_@M1685_ "Mindkettő (Vég+Átl)"
+
+# Optimized routes for paraglider
+_@M1686_ "Optimált útvonal "
+_@M1687_ "Optimált útvonal váltása"
+
+# Customkey name
+_@M1688_ "Képernyőzár"
+_@M1689_ "Oracle"
+
+# ORACLE
+_@M1690_ "THE LK8000 ORACLE"
+_@M1691_ "AZ ORACLE SZÁMOL"
+_@M1692_ "KÉRLEK VÁRJ..."
+
+
+############################################################
+#                  - MENU MESSAGES - 
+#
+#             DO NOT REMOVE OR CHANGE \n  
+#       it means New Line, for line splitting!!
+#
+############################################################
+
+_@M2001_ "Nagyí-\ntás"
+_@M2002_ "Kicsi-\nnyítés"
+_@M2003_ "Legköz.\nford.pont"
+_@M2004_ "Mozgatás\n"
+_@M2005_ "Teljes\nképernyő"
+_@M2006_ "Kijelzés\n1/3"
+_@M2007_ "Kijelzés\n2/3"
+_@M2008_ "Kijelzés\n3/3"
+_@M2009_ "Zoom"
+_@M2010_ "Navigáció\n1/3"
+_@M2011_ "Mégsem"
+_@M2012_ "Vissza"
+_@M2013_ "Feladat\nszámítás"
+_@M2014_ "Előrelép\n"
+_@M2015_ "Ford.pont\nkeresés"
+_@M2016_ "Navigáció\n2/3"
+_@M2017_ "Feladat\nszerkeszt"
+_@M2018_ "Feladat\ntörlése"
+_@M2019_ "Feladat\nújraindít"
+_@M2020_ "Cél\nadatai"
+_@M2021_ "Csapat\nkód"
+_@M2022_ "Navigáció\n3/3"
+_@M2023_ "Fenn\tartva"
+_@M2024_ "Idő\nkapuk"
+_@M2025_ "Multi\nTarget"
+_@M2026_ "Cimkék"
+_@M2027_ "Topológia"
+_@M2028_ "Terep"
+_@M2029_ "Légterek"
+_@M2030_ "VisualGld"
+_@M2031_ "Termik"
+_@M2032_ "Siklás"
+_@M2033_ "Végsikl"
+_@M2034_ "Auto"
+_@M2035_ "Nyomvonl"
+_@M2036_ "Inverz\nszinek"
+_@M2037_ "Topo hát-\ntérszín"
+_@M2038_ "Térkép\nhelyzete"
+_@M2039_ "Beállítás\n1/3"
+_@M2040_ "Beállítás\n2/3"
+_@M2041_ "Beállítás\n3/3"
+_@M2042_ "Alap be-\nállítások"
+_@M2043_ "Szél be-\nállítások"
+_@M2044_ "ActivMap"
+_@M2045_ "N.alapja"
+_@M2046_ "Rendszer\nbeállítás"
+_@M2047_ "Jelölők\ntörlése"
+_@M2048_ "Logger"
+_@M2049_ "Logger\nlejátszás"
+_@M2050_ "NMEA\nLogger"
+_@M2051_ "beállítás"
+_@M2052_ "QFE\nnullázás"
+_@M2053_ "Komm.\nreset"
+_@M2054_ "Profilok\nkezelése"
+_@M2055_ "Hangok"
+_@M2056_ "Infók\n1/2"
+_@M2057_ "Infók\n2/2"
+_@M2058_ "Oracle"
+_@M2059_ "Legköz.\nford.pont"
+_@M2060_ "Legköz.\nlégtér"
+_@M2061_ "Stá-\ntuszok"
+_@M2062_ "Analízis\nadatok"
+_@M2063_ "Jegy-\nzetek"
+_@M2064_ "Üzenet\nismétlése"
+_@M2065_ "Orbiter"
+_@M2066_ "Navigáció"
+_@M2067_ "Infók"
+_@M2068_ "Beállítás"
+_@M2069_ "Kijelzés"
+_@M2070_ "Jelölő\nlerakása"
+_@M2071_ "TrueWind\nszámítás"
+_@M2072_ "Kijelző\nNézetek"
+_@M2073_ "Kilépés"
+_@M2074_ "SZIMU-\nLÁTOR"
+_@M2075_ "WNapi"
+_@M2076_ "Equiv"
+_@M2077_ "Kézi"
+_@M2078_ "OK"
+_@M2079_ "Matricák"
+_@M2080_ "Árnyék"
+_@M2081_ "Térkép\nhelyzete"
+_@M2082_ "Mozgatás"
+_@M2083_ "Észak\nfent"
+_@M2084_ "Repirány\nfent"
+_@M2085_ "É fent\nkörözés"
+_@M2086_ "Cél fent\nkörözés"
+_@M2087_ "Észak\nokosan"
+_@M2088_ "REBOOT"
+_@M2089_ "Legkisebb"
+_@M2090_ "Alapérték"
+_@M2091_ "Átlag"
+_@M2092_ "Legtöbb"
+_@M2093_ "BE"
+_@M2094_ "KI"
+_@M2095_ "Normál\nMind be"
+_@M2096_ "Led+Buz\nMind ki"
+_@M2097_ "Led ki\nBuz be"
+_@M2098_ "Led be\nBuz ki"
+_@M2099_ "Repgép\n<< Balra"
+_@M2100_ "Repgép\nFEL"
+_@M2101_ "Középre\nalapba"
+_@M2102_ "Repgép\nLE"
+_@M2103_ "Repgép\nJobbra >>"
+_@M2104_ "L>\nFlarm"
+_@M2105_ "C:\nCs.kódod"
+_@M2106_ "T>\nTermik"
+_@M2107_ "F>\nFeladat"
+_@M2108_ "B>\nBestAlt"
+_@M2109_ "1>\nAltern1"
+_@M2110_ "2>\nAltern2"
+_@M2111_ "H>\nHaza"
+_@M2112_ "Seb."
+_@M2113_ "Mag."
+_@M2114_ "Ford"
 
 
