@@ -290,6 +290,8 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
 
   in_scale = CheckScale();
 
+#ifdef TOPOFASTCACHE
+#else
   if (!in_scale) {
     // not visible, so flush the cache
     // otherwise we waste time on looking up which shapes are in bounds
@@ -297,6 +299,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
     triggerUpdateCache = false;
     return;
   }
+#endif
 
   if (purgeonly) return;
 

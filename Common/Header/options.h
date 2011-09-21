@@ -46,7 +46,7 @@
  // New topology OPTIMIZE options
  #define TOPOFAST	1
  #define TOPOFASTLABEL	1
- //#define TOPOFASTCACHE	1
+ #define TOPOFASTCACHE	1
 
 // Use old IBOX mode, requires also a make inside Data/Input after changing InputEvents.h 
 // with InputEvents.USEIBOX.h - manually!
