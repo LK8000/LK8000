@@ -15,7 +15,7 @@
 
 #include "wcecompat/ts_string.h"
 #include <Point2D.h>
-
+#include "md5.h"
 
 using std::min;
 using std::max;
@@ -100,6 +100,12 @@ void CAirspace::Dump() const
   StartupStore(TEXT(" bounds.minx,miny:%lf,%lf%s"),_bounds.minx,_bounds.miny,NEWLINE);
   StartupStore(TEXT(" bounds.maxx,maxy:%lf,%lf%s"),_bounds.maxx,_bounds.maxy,NEWLINE);
    
+}
+
+// Calculate unique hash code for this airspace - prototype, normally never called
+void CAirspace::Hash(char *hashout, int maxbufsize) const
+{
+  *hashout=0;
 }
 
 void CAirspace::AirspaceAGLLookup(double av_lat, double av_lon) 
@@ -659,6 +665,25 @@ void CAirspace_Circle::Dump() const
   CAirspace::Dump();
 }
 
+// Calculate unique hash code for this airspace
+void CAirspace_Circle::Hash(char *hashout, int maxbufsize) const
+{
+  MD5 md5;
+  md5.Update((unsigned char*)&_type, sizeof(_type));
+  md5.Update((unsigned char*)_name, _tcslen(_name)*sizeof(TCHAR));
+  if (_base.Base == abFL) md5.Update((unsigned char*)&_base.FL, sizeof(_base.FL));
+  if (_base.Base == abAGL) md5.Update((unsigned char*)&_base.AGL, sizeof(_base.AGL));
+  if (_base.Base == abMSL) md5.Update((unsigned char*)&_base.Altitude, sizeof(_base.Altitude));
+  if (_top.Base == abFL) md5.Update((unsigned char*)&_top.FL, sizeof(_top.FL));
+  if (_top.Base == abAGL) md5.Update((unsigned char*)&_top.AGL, sizeof(_top.AGL));
+  if (_top.Base == abMSL) md5.Update((unsigned char*)&_top.Altitude, sizeof(_top.Altitude));
+  md5.Update((unsigned char*)&_latcenter, sizeof(_latcenter));
+  md5.Update((unsigned char*)&_loncenter, sizeof(_loncenter));
+  md5.Update((unsigned char*)&_radius, sizeof(_radius));
+  md5.Final();
+  memcpy(hashout,md5.digestChars,min(maxbufsize,33));
+}
+
 // Check if the given coordinate is inside the airspace
 bool CAirspace_Circle::IsHorizontalInside(const double &longitude, const double &latitude) const
 {
@@ -769,6 +794,29 @@ void CAirspace_Area::Dump() const
   }
 }
 
+// Calculate unique hash code for this airspace
+void CAirspace_Area::Hash(char *hashout, int maxbufsize) const
+{
+  MD5 md5;
+  double dtemp;
+  
+  md5.Update((unsigned char*)&_type, sizeof(_type));
+  md5.Update((unsigned char*)_name, _tcslen(_name)*sizeof(TCHAR));
+  if (_base.Base == abFL) md5.Update((unsigned char*)&_base.FL, sizeof(_base.FL));
+  if (_base.Base == abAGL) md5.Update((unsigned char*)&_base.AGL, sizeof(_base.AGL));
+  if (_base.Base == abMSL) md5.Update((unsigned char*)&_base.Altitude, sizeof(_base.Altitude));
+  if (_top.Base == abFL) md5.Update((unsigned char*)&_top.FL, sizeof(_top.FL));
+  if (_top.Base == abAGL) md5.Update((unsigned char*)&_top.AGL, sizeof(_top.AGL));
+  if (_top.Base == abMSL) md5.Update((unsigned char*)&_top.Altitude, sizeof(_top.Altitude));
+  for (CPoint2DArray::const_iterator it = _geopoints.begin(); it != _geopoints.end(); ++it) {
+    dtemp = it->Latitude();
+    md5.Update((unsigned char*)&dtemp, sizeof(dtemp));
+    dtemp = it->Longitude();
+    md5.Update((unsigned char*)&dtemp, sizeof(dtemp));
+  }
+  md5.Final();
+  memcpy(hashout,md5.digestChars,min(maxbufsize,33));
+}
 
 ///////////////////////////////////////////////////
 
@@ -1391,17 +1439,19 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
             p++; // skip C
             if (parsing_state==10) { // New airspace begin, store the old one, reset parser
               newairspace = NULL;
-              if (Radius>0) {
-                // Last one was a circle
-                newairspace = new CAirspace_Circle(Longitude, Latitude, Radius);
-              } else {
-                  // Last one was an area
-                  CorrectGeoPoints(points);
-                  // Skip it if we dont have minimum 3 points
-                  if (points.size()>3) {
-                    newairspace = new CAirspace_Area;
-                    newairspace->SetPoints(points);
-                  }
+              if (Name[0]!='\0') {  // FIX: do not add airspaces with no name defined.
+                if (Radius>0) {
+                  // Last one was a circle
+                  newairspace = new CAirspace_Circle(Longitude, Latitude, Radius);
+                } else {
+                    // Last one was an area
+                    CorrectGeoPoints(points);
+                    // Skip it if we dont have minimum 3 points
+                    if (points.size()>3) {
+                      newairspace = new CAirspace_Area;
+                      newairspace->SetPoints(points);
+                    }
+                }
               }
               if (newairspace!=NULL) {
                 newairspace->Init(Name, Type, Base, Top, flyzone);
@@ -1592,7 +1642,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
   }
 
   CCriticalSection::CGuard guard(_csairspaces);
-  StartupStore(TEXT(". Read %d airspaces%s"), _airspaces.size(), NEWLINE);
+  StartupStore(TEXT(". Now we have %d airspaces%s"), _airspaces.size(), NEWLINE);
   // For debugging, dump all readed airspaces to runtime.log
   //CAirspaceList::iterator it;
   //for ( it = _airspaces.begin(); it != _airspaces.end(); ++it) (*it)->Dump();
@@ -1659,15 +1709,17 @@ void CAirspaceManager::ReadAirspaces()
   } else {
     StartupStore(TEXT("... No airspace file 1%s"),NEWLINE);
   }
+  
+  LoadSettings();
 }
 
 
 void CAirspaceManager::CloseAirspaces()
 {
   CAirspaceList::iterator it;
-  
   CCriticalSection::CGuard guard(_csairspaces);
   if (_airspaces.size()==0) return;
+  SaveSettings();
   _selected_airspace = NULL;
   _user_warning_queue.clear();
   _airspaces_near.clear();
@@ -2457,4 +2509,114 @@ void CAirspaceManager::AirspaceSetSelect(CAirspace &airspace)
   _selected_airspace = &airspace;
   if (_selected_airspace != NULL) _selected_airspace->Selected(true);
 }
+
+// Save airspace settings
+void CAirspaceManager::SaveSettings() const
+{
+  char hashbuf[33];
+  FILE *f;
+  TCHAR szFileName[MAX_PATH];
+  char buf[MAX_PATH+1];
+  TCHAR ubuf[(MAX_PATH*2)+1];
+
+  LocalPath(szFileName, TEXT(LKF_AIRSPACE_SETTINGS));
+  f=_tfopen(szFileName, TEXT("w"));
+  if (f!=NULL) {  
+    // File header
+    fprintf(f,"# LK8000 AIRSPACE SETTINGS\n");
+    fprintf(f,"# THIS FILE IS GENERATED AUTOMATICALLY ON LK SHUTDOWN - DO NOT ALTER BY HAND, DO NOT COPY BEETWEEN DEVICES!\n");
+    
+    CCriticalSection::CGuard guard(_csairspaces);
+    for (CAirspaceList::const_iterator it = _airspaces.begin(); it != _airspaces.end(); ++it) {
+      (*it)->Hash(hashbuf,33);
+      //Asp hash
+      fprintf(f,"%32s ",hashbuf);
+      
+      //Settings chr1 - Flyzone or not
+      if ((*it)->Flyzone()) fprintf(f,"F"); else fprintf(f,"-"); 
+      //Settings chr2 - Enabled or not
+      if ((*it)->Enabled()) fprintf(f,"E"); else fprintf(f,"-"); 
+      //Settings chr3 - Selected or not
+      if ((*it)->Selected()) fprintf(f,"S"); else fprintf(f,"-"); 
+      
+      //Comment
+      wsprintf(ubuf,TEXT(" #%s"),(*it)->Name());
+      unicode2utf(ubuf,buf,sizeof(buf));
+      fprintf(f,"%s",buf); 
+      //Newline
+      fprintf(f,"\n");
+    }
+    StartupStore(TEXT(". Settings for %d airspaces saved to file <%s>%s"), _airspaces.size(), szFileName, NEWLINE);
+    fclose(f);
+  } else StartupStore(TEXT("Failed to save airspace settings to file <%s>%s"),szFileName,NEWLINE);
+}
+
+// Load airspace settings
+void CAirspaceManager::LoadSettings()
+{
+  char linebuf[MAX_PATH+1];
+  char hash[MAX_PATH+1];
+  char flagstr[MAX_PATH+1];
+  FILE *f;
+  TCHAR szFileName[MAX_PATH];
+  typedef struct _asp_data_struct {
+    CAirspace* airspace;
+    char hash[33];
+  } asp_data_struct;
+  asp_data_struct *asp_data;
+  unsigned int i,retval;
+  unsigned int airspaces_restored = 0;
+    
+  LocalPath(szFileName, TEXT(LKF_AIRSPACE_SETTINGS));
+  f=_tfopen(szFileName, TEXT("r"));
+  if (f!=NULL) {  
+    // Generate hash map on loaded airspaces
+    CCriticalSection::CGuard guard(_csairspaces);
+    asp_data = (asp_data_struct*)malloc(sizeof(asp_data_struct) * _airspaces.size());
+    if (asp_data==NULL) {
+      StartupStore(TEXT("Failed to allocate memory on airspace settings loading, settings not loaded.%s"),NEWLINE);
+      return;
+    }
+    i = 0;
+    for (CAirspaceList::iterator it = _airspaces.begin(); it != _airspaces.end(); ++it, ++i) {
+      (*it)->Hash(asp_data[i].hash,33);
+      asp_data[i].airspace = *it;
+    }
+
+    while (fgets(linebuf, MAX_PATH, f) != NULL) {
+      //Parse next line
+      retval = sscanf(linebuf,"%s %s",hash,flagstr);
+      if (retval==2 && hash[0]!='#') {
+        // Get the airspace pointer associated with the hash
+        for (i=0; i<_airspaces.size(); ++i) {
+          if (asp_data[i].airspace==NULL) continue;
+          if (strcmp(hash,asp_data[i].hash) == 0) {
+            //Match, restore settings
+            //chr1 F=Flyzone
+            if (flagstr[0]=='F') {
+              if (!asp_data[i].airspace->Flyzone()) asp_data[i].airspace->FlyzoneToggle();
+            } else {
+              if (asp_data[i].airspace->Flyzone()) asp_data[i].airspace->FlyzoneToggle();
+            }
+            //chr2 E=Enabled
+            if (flagstr[1]=='E') asp_data[i].airspace->Enabled(true); else asp_data[i].airspace->Enabled(false);
+            //chr3 S=Selected
+            if (flagstr[2]=='S') AirspaceSetSelect(*(asp_data[i].airspace));
+            
+            // This line is readed, never needed anymore
+            //StartupStore(TEXT(". Airspace settings loaded for %s%s"),asp_data[i].airspace->Name(),NEWLINE);
+            asp_data[i].airspace = NULL;
+            airspaces_restored++;
+          }
+        }
+      }
+    }
+    
+    free(asp_data);
+    StartupStore(TEXT(". Settings for %d of %d airspaces loaded from file <%s>%s"), airspaces_restored, _airspaces.size(), szFileName, NEWLINE);
+    fclose(f);
+  } else StartupStore(TEXT("Failed to load airspace settings from file <%s>%s"),szFileName,NEWLINE);
+}
+
+
 
