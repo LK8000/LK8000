@@ -228,50 +228,7 @@ public:
   static bool WaypointIsInTerrainRange(double latitude, double longitude);
   static bool GetTerrainCenter(double *latitude,
                                double *longitude);
-#if USEWEATHER
-  static int render_weather;
-#endif
 };
 
-#if USEWEATHER
-#define MAX_WEATHER_MAP 16
-#define MAX_WEATHER_TIMES 48
-
-class RasterWeather {
-public:
-  RasterWeather() {
-    int i;
-    bsratio = false;
-    for (i=0; i<MAX_WEATHER_MAP; i++) {
-      weather_map[i]= 0;
-    }
-    for (i=0; i<MAX_WEATHER_TIMES; i++) {
-      weather_available[i]= false;
-    }
-    weather_time = 0;
-  }
-  ~RasterWeather() {
-    Close();
-  }
- public:
-  void Close();
-  void Reload(double lat, double lon);
-  int weather_time;
-  RasterMap* weather_map[MAX_WEATHER_MAP];
-  void RASP_filename(TCHAR* rasp_filename, const TCHAR* name);
-  bool LoadItem(int item, const TCHAR* name);
-  void SetViewCenter(double lat, double lon);
-  void ServiceFullReload(double lat, double lon);
-  void ValueToText(TCHAR* Buffer, short val);
-  void ItemLabel(int i, TCHAR* Buffer);
-  void Scan(double lat, double lon);
-  bool weather_available[MAX_WEATHER_TIMES];
-  int IndexToTime(int x);
- private:
-  bool bsratio;
-};
-
-extern RasterWeather RASP;
-#endif // USEWEATHER
 
 #endif

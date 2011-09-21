@@ -344,7 +344,6 @@ DLGS	:=\
 	$(SRC)/dlgWaypointEdit.cpp \
 	$(SRC)/dlgWayPointSelect.cpp \
 	$(SRC)/dlgWaypointOutOfTerrain.cpp \
-	$(SRC)/dlgWeather.cpp \
 	$(SRC)/dlgWindSettings.cpp \
 
 VOLKS	:=\

@@ -287,9 +287,6 @@ void PopupBugsBallast(int updown);
 bool goInstallSystem=false;
 bool goCalculationThread=false;
 bool goInstrumentThread=false;
-#if USEGOINIT
-bool goInitDevice=false; 
-#endif
 // bool goCalculating=false;
 
 // Developers dedicates..
@@ -853,12 +850,6 @@ void RestartCommPorts() {
 
   StartupStore(TEXT(". RestartCommPorts%s"),NEWLINE);
 
-  #if USEGOINIT
-  #ifdef DEBUG_DEVSETTINGS
-  if (!goInitDevice) StartupStore(_T(".......... RestartCommPorts waiting for goInit\n"));
-  #endif
-  while(!goInitDevice) Sleep(50); // 100118 110605 this is potentially a deadlock!
-  #endif
   LockComm();
 
   devClose(devA());
@@ -1510,12 +1501,6 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   RasterTerrain::ServiceFullReload(GPS_INFO.Latitude, 
                                    GPS_INFO.Longitude);
 
-#if USEWEATHER
-  // LKTOKEN _@M1216_ "Scanning weather forecast"  
-  // CreateProgressDialog(gettext(TEXT("_@M1216_")));
-  StartupStore(TEXT(". RASP load%s"),NEWLINE);
-  RASP.Scan(GPS_INFO.Latitude, GPS_INFO.Longitude);
-#endif
   CAirspaceManager::Instance().ReadAirspaces();
   CAirspaceManager::Instance().SortAirspaces();
   OpenTopology();
@@ -1570,10 +1555,6 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   LockComm();
   devInit(TEXT("")); 
   UnlockComm();
-  #if USEGOINIT
-  // we want to be sure that RestartCommPort works on startup ONLY after all devices are inititalized
-  goInitDevice=true; // 100118
-  #endif
 #else
   // I dont remember anymore WHY! Probably it has been fixed already! paolo
   #if (WINDOWSPC>0)
@@ -2749,9 +2730,6 @@ void Shutdown(void) {
   StartupStore(TEXT(". CloseTerrainTopology%s"),NEWLINE);
   #endif
 
-#if USEWEATHER
-  RASP.Close();
-#endif
   RasterTerrain::CloseTerrain();
 
   CloseTopology();

@@ -481,101 +481,6 @@ void ChangeZoomTopology(int iCategory, double newScale, short cztmode)
 
 #define NUM_COLOR_RAMP_LEVELS 13
 
-#if USEWEATHER
-const COLORRAMP weather_colors[6][NUM_COLOR_RAMP_LEVELS] = {
-  { // Blue to red       // vertical speed
-    {   0,       0,     0,     255}, // -200   
-    { 100,       0,     195,   255}, // -100
-    { 200,     52,      192,    11}, // 0
-    { 250,     182,     233,     4}, // 40
-    { 300,     255,     233,     0}, // 80
-    { 360,     255,     209,     0}, // 120
-    { 420,     255,     155,     0}, // 160
-    { 480,     255,     109,     0}, // 200
-    { 540,     255,     35,      0}, // 240
-    { 600,     255,     00,      0}, // 300
-    {1000,         0xFF, 0x00, 0x00},
-    {8000,         0xFF, 0x00, 0x00},
-    {9000,         0xFF, 0x00, 0x00}
-  },
-  {
-    {0,            0xFF, 0xFF, 0xFF},
-    {250,          0x80, 0x80, 0xFF},
-    {500,          0x80, 0xFF, 0xFF},
-    {750,          0xFF, 0xFF, 0x80},
-    {1000,         0xFF, 0x80, 0x80},
-    {1250,         0xFF, 0x80, 0x80},
-    {2000,         0xFF, 0xA0, 0xA0},
-    {3000,         0xFF, 0xA0, 0xA0},
-    {4000,         0xFF, 0x00, 0x00},
-    {5000,         0xFF, 0x00, 0x00},
-    {6000,         0xFF, 0x00, 0x00},
-    {7000,         0xFF, 0x00, 0x00},
-    {8000,         0xFF, 0x00, 0x00}
-  },
-  {
-    {0,            0xFF, 0xFF, 0xFF},
-    {750,          0x80, 0x80, 0xFF},
-    {1500,          0x80, 0xFF, 0xFF},
-    {2250,          0xFF, 0xFF, 0x80},
-    {3000,          0xFF, 0x80, 0x80},
-    {3500,         0xFF, 0x80, 0x80},
-    {6000,         0xFF, 0xA0, 0xA0},
-    {8000,         0xFF, 0xA0, 0xA0},
-    {9000,         0xFF, 0x00, 0x00},
-    {9500,         0xFF, 0x00, 0x00},
-    {9600,         0xFF, 0x00, 0x00},
-    {9700,         0xFF, 0x00, 0x00},
-    {20000,         0xFF, 0x00, 0x00}
-  },
-  { // Blue to Gray, 8 steps
-    {   0,       0,     153,     204},
-    {  12,     102,     229,     255},
-    {  25,     153,     255,     255},
-    {  37,     204,     255,     255},
-    {  50,     229,     229,     229},
-    {  62,     173,     173,     173},
-    {  75,     122,     122,     122},
-    { 100,      81,      81,      81},
-    {5000,      71,      71,      71},
-    {6000,         0xFF, 0x00, 0x00},
-    {7000,         0xFF, 0x00, 0x00},
-    {8000,         0xFF, 0x00, 0x00},
-    {9000,         0xFF, 0x00, 0x00}
-  },
-  { // sfctemp, blue to orange to red
-    {   0,       7,      90,     255},
-    {  30,      50,     118,     255},
-    {  70,      89,     144,     255},
-    {  73,     140,     178,     255},
-    {  76,     191,     212,     255},
-    {  79,     229,     238,     255},
-    {  82,     247,     249,     255},
-    {  85,     255,     255,     204},
-    {  88,     255,     255,     153},
-    {  91,     255,     255,       0},
-    {  95,     255,     204,       0},
-    { 100,     255,     153,       0},
-    { 120,     255,       0,       0}
-  },
-  { // Blue to white to red       // vertical speed (convergence)
-    {   0,       7,      90,     255},
-    { 100,      50,     118,     255},
-    { 140,      89,     144,     255},
-    { 160,     140,     178,     255},
-    { 180,     191,     212,     255},
-    { 190,     229,     238,     255},
-    { 200,     247,     249,     255},
-    { 210,     255,     255,     204},
-    { 220,     255,     255,     153},
-    { 240,     255,     255,       0},
-    { 260,     255,     204,       0},
-    { 300,     255,     153,       0},
-    {1000,     255,     102,       0},
-  },
-};
-
-#endif // USEWEATHER
 
 // If you change NUMRAMPS, also change the InputEvent SERVICE TERRCOL because I am lazy
 #define NUMRAMPS	14
@@ -1098,94 +1003,12 @@ private:
 
 public:
   bool SetMap() {
-#if USEWEATHER
-    if (RasterTerrain::render_weather) {
-      RASP.Reload(GPS_INFO.Latitude, GPS_INFO.Longitude);
-    }
-    interp_levels = 5;
-    switch (RasterTerrain::render_weather) {
-    case 1: // wstar
-      is_terrain = false;
-      do_water = false;
-      height_scale = 2; // max range 256*(2**2) = 1024 cm/s = 10 m/s
-      DisplayMap = RASP.weather_map[RasterTerrain::render_weather-1];
-      color_ramp = (COLORRAMP*)&weather_colors[0][0];
-      break;
-    case 2: // bl wind spd
-      is_terrain = false;
-      do_water = false;
-      height_scale = 3;
-      DisplayMap = RASP.weather_map[RasterTerrain::render_weather-1];
-      color_ramp = (COLORRAMP*)&weather_colors[1][0];
-      break;
-    case 3: // hbl
-      is_terrain = false;
-      do_water = false;
-      height_scale = 4;
-      DisplayMap = RASP.weather_map[RasterTerrain::render_weather-1];
-      color_ramp = (COLORRAMP*)&weather_colors[2][0];
-      break;
-    case 4: // dwcrit
-      is_terrain = false;
-      do_water = false;
-      height_scale = 4;
-      DisplayMap = RASP.weather_map[RasterTerrain::render_weather-1];
-      color_ramp = (COLORRAMP*)&weather_colors[2][0];
-      break;
-    case 5: // blcloudpct
-      is_terrain = false;
-      do_water = true;
-      height_scale = 0;
-      DisplayMap = RASP.weather_map[RasterTerrain::render_weather-1];
-      color_ramp = (COLORRAMP*)&weather_colors[3][0];
-      break;
-    case 6: // sfctemp
-      is_terrain = false;
-      do_water = false;
-      height_scale = 0;
-      DisplayMap = RASP.weather_map[RasterTerrain::render_weather-1];
-      color_ramp = (COLORRAMP*)&weather_colors[4][0];
-      break;
-    case 7: // hwcrit
-      is_terrain = false;
-      do_water = false;
-      height_scale = 4;
-      DisplayMap = RASP.weather_map[RasterTerrain::render_weather-1];
-      color_ramp = (COLORRAMP*)&weather_colors[2][0];
-      break;
-    case 8: // wblmaxmin
-      is_terrain = false;
-      do_water = false;
-      height_scale = 1; // max range 256*(1**2) = 512 cm/s = 5.0 m/s
-      DisplayMap = RASP.weather_map[RasterTerrain::render_weather-1];
-      color_ramp = (COLORRAMP*)&weather_colors[5][0];
-      break;
-    case 9: // blcwbase
-      is_terrain = false;
-      do_water = false;
-      height_scale = 4;
-      DisplayMap = RASP.weather_map[RasterTerrain::render_weather-1];
-      color_ramp = (COLORRAMP*)&weather_colors[2][0];
-      break;
-    default:
-    case 0:
-      interp_levels = 2;
-      is_terrain = true;
-	do_water=false; //@ 101017 we dont use it anymore, water printed always from Slope
-      height_scale = 4;
-      DisplayMap = RasterTerrain::TerrainMap;
-      color_ramp = (COLORRAMP*)&terrain_colors[TerrainRamp][0];
-      break;
-    }
-#else // USEWEATHER
       interp_levels = 2;
       is_terrain = true;
       do_water=false; // we dont use it anymore, water printed always from Slope
       height_scale = 4;
       DisplayMap = RasterTerrain::TerrainMap;
       color_ramp = (COLORRAMP*)&terrain_colors[TerrainRamp][0];
-
-#endif // USEWEATHER
 
     if (is_terrain) {
 	do_shading = true;
@@ -1301,59 +1124,7 @@ public:
 
     DisplayMap->Unlock();
 
-#if USEWEATHER
-    if (RasterTerrain::render_weather) {
-      ScanSpotHeights(X0-orig.x, Y0-orig.y, X1-orig.x, Y1-orig.y);
-    }
-#endif
   }
-
-#if USEWEATHER
-  void ScanSpotHeights(const int X0, const int Y0, const int X1, const int Y1) {
-    unsigned short* myhbuf = hBuf;
-#ifdef DEBUG
-    unsigned short* hBufTop = hBuf+ixs*iys;
-#endif
-
-    spot_max_pt.x = -1;
-    spot_max_pt.y = -1;
-    spot_min_pt.x = -1;
-    spot_min_pt.y = -1;
-    spot_max_val = -1;
-    spot_min_val = 32767;
-
-    RECT rect_spot;
-    rect_spot.left =   rect_visible.left+NIBLSCALE(30);
-    rect_spot.right =  rect_visible.right-NIBLSCALE(30);
-    rect_spot.top =    rect_visible.top+NIBLSCALE(30);
-    rect_spot.bottom = rect_visible.bottom-NIBLSCALE(30);
-
-    for (int y = Y0; y<Y1; y+= dtquant) {
-      for (int x = X0; x<X1; x+= dtquant, myhbuf++) {
-        if ((x>= rect_spot.left) &&
-            (x<= rect_spot.right) &&
-            (y>= rect_spot.top) &&
-            (y<= rect_spot.bottom)) {
-#ifdef DEBUG
-          ASSERT(myhbuf<hBufTop);
-#endif
-
-          short val = *myhbuf;
-          if (val>spot_max_val) {
-            spot_max_val = val;
-            spot_max_pt.x = x;
-            spot_max_pt.y = y;
-          }
-          if (val<spot_min_val) {
-            spot_min_val = val;
-            spot_min_pt.x = x;
-            spot_min_pt.y = y;
-          }
-        }
-      }
-    }
-  }
-#endif // USEWEATHER
 
 void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
     // fill the buffer
