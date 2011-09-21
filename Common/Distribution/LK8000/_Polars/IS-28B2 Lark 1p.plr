@@ -1,0 +1,4 @@
+* LK8000 polar for: IS-28B2 Lark with 1 person
+* Based on HA-5017 operation manual
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+ 520,0,80,-0.67,94,-0.768,180,-3.55,18.24
