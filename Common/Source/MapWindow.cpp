@@ -3112,24 +3112,23 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
 		SelectObject(hDCTemp,hLogger);
 	} else {
 		flip = !flip;
-		if (flip)
+		if (flip) {
 			SelectObject(hDCTemp,hLogger);
-		else
-			SelectObject(hDCTemp,hLoggerOff);
+			offset -= 7;
+
+			DrawBitmapX(hdc, rc.right+IBLSCALE(offset),
+        		       	rc.bottom - BottomSize+NIBLSCALE(4),
+				7,7, hDCTemp, 0,0,SRCPAINT);
+
+			DrawBitmapX(hdc, rc.right+IBLSCALE(offset),
+        		       	rc.bottom-BottomSize+NIBLSCALE(4),
+				7,7, hDCTemp, 7,0,SRCAND);
+
+			offset +=7;
+		}
 	}
-
-	offset -= 7;
-
-	DrawBitmapX(hdc, rc.right+IBLSCALE(offset),
-               	rc.bottom - BottomSize+NIBLSCALE(4),
-		7,7, hDCTemp, 0,0,SRCPAINT);
-
-	DrawBitmapX(hdc, rc.right+IBLSCALE(offset),
-               	rc.bottom-BottomSize+NIBLSCALE(4),
-		7,7, hDCTemp, 7,0,SRCAND);
-
-	offset +=7;
   }
+  
 
   //
   // Flight mode Icon
