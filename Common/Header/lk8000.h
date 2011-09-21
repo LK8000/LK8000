@@ -20,8 +20,10 @@
 #include "Sizes.h"
 #include "Units.h"
 #include "compatibility.h"
+#include "Enums.h"
 
 
+#if USEIBOX
 class InfoBoxFormatter {
  public:
   InfoBoxFormatter(TCHAR *theformat);
@@ -140,6 +142,7 @@ class FormatterDiffBearing: public InfoBoxFormatter {
 
   virtual TCHAR *Render(int *color);
 };
+#endif // USEIBOX
 
 #if USEIBOX
 typedef struct _SCREEN_INFO
@@ -263,6 +266,7 @@ void SwitchToMapWindow(void);
                                  (initially we try to stay below 32767 within a short var)
     types over 100000	are reserved and should not be used
  */
+/* REMOVE
 
 #define MODELTYPE_UNKNOWN		0
 #define MODELTYPE_GENERIC		0
@@ -300,7 +304,9 @@ void SwitchToMapWindow(void);
 #define MODELTYPE_PNA_FUNTREK	14001 // 400x240 240x400
 #define MODELTYPE_PNA_ROYALTEK3200	14101 // 320x240  aka Medion S3747
 
+*/ 
 
+/* --------------------- REMOVE
 // This could be also used for PDA in landscape.. 
 typedef enum{
   ssnone=0,
@@ -538,6 +544,8 @@ typedef enum{
 	avGR,
 	// avDistance,
 } ArrivalValue_t;
+
+---------------------------- */
 
 #define MAPLABELS_ALLON		0
 #define MAPLABELS_ONLYWPS	1

@@ -32,6 +32,8 @@
 #include "MapWindow.h"
 #include "LKMapWindow.h"
 
+#include "Modeltype.h"
+
 #ifdef PNA
 #include "LKHolux.h"
 #include "LKRoyaltek3200.h"

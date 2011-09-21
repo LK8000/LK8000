@@ -1107,7 +1107,6 @@ drawOverlay:
 			LKWriteText(hdc, BufferUnit, rcx+TextSize.cx+NIBLSCALE(2),rcy+(TextSize.cy/3), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
 		}
 	}
-
 	if (!ISGAAIRCRAFT && !ISCAR) {
 		LKFormatValue(LK_GNDSPEED, false, BufferValue, BufferUnit, BufferTitle);
 		SelectObject(hdc, bigFont); 

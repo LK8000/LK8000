@@ -623,12 +623,6 @@ BOOL NMEAParser::RMB(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   return TRUE;
 }
 
-#if (!defined(WINDOWSPC) || (WINDOWSPC==0)) 
-bool SetSystemTimeFromGPS = true; // 091105 was false
-#else
-bool SetSystemTimeFromGPS = false; // 091129
-#endif
-
 BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *GPS_INFO)
 {
   GPSCONNECT = TRUE;

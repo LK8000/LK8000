@@ -79,9 +79,6 @@ void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 }
 
 
-int LoggerTimeStepCruise=1;	//@ 101008 changed to 1 second 
-int LoggerTimeStepCircling=1;
-
 void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static double SnailLastTime=0;
   static double LogLastTime=0;

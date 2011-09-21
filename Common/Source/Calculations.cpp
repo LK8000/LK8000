@@ -62,27 +62,6 @@ WindAnalyser *windanalyser = NULL;
 AATDistance aatdistance;
 static DERIVED_INFO Finish_Derived_Info;
 static ThermalLocator thermallocator;
-#define D_AUTOWIND_CIRCLING 1
-#define D_AUTOWIND_ZIGZAG 2
-int AutoWindMode= D_AUTOWIND_CIRCLING; 
-
-// 0: Manual
-// 1: Circling
-// 2: ZigZag
-// 3: Both
-
-bool EnableNavBaroAltitude=false;
-short Orbiter=1;
-int EnableExternalTriggerCruise=false;
-bool ExternalTriggerCruise= false;
-bool ExternalTriggerCircling= false;
-bool ForceFinalGlide= false;
-bool AutoForceFinalGlide= false;
-int  AutoMcMode_Config = amcEquivalent;	// this is the config saved value
-int  AutoMcMode = amcEquivalent; 	// this is temporary runtime
-bool EnableFAIFinishHeight = false;
-bool BallastTimerActive = false;
-//static double TakeOffSpeedThreshold; 091101
 
 // 0: Final glide only
 // 1: Set to average if in climb mode
@@ -302,9 +281,6 @@ void TerrainFootprint(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   Calculated->Experimental = Calculated->TerrainBase;
 }
 
-
-int FinishLine=1;
-DWORD FinishRadius=1000;
 
 
 void RefreshTaskStatistics(void) {
@@ -4547,8 +4523,6 @@ bool IsFlarmTargetCNInRange()
   return false;
 }
 
- 
- int BallastSecsToEmpty = 120;
  
  void BallastDump ()
  {

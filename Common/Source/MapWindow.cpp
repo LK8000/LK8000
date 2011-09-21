@@ -28,6 +28,7 @@
 #include <Message.h>
 
 #include <tchar.h>
+#include "Modeltype.h"
 
 #include "Terrain.h"
 #include "Task.h"
@@ -66,9 +67,6 @@ DWORD misc_tick_count=0;
 
 #define INVERTCOLORS  (Appearance.InverseInfoBox)
 
-
-int TrailActive = TRUE;
-int VisualGlide = 0;
 
 extern void DrawGlideCircle(HDC hdc, POINT Orig, RECT rc );
 #ifdef CPUSTATS
@@ -286,8 +284,6 @@ extern int DisplayTimeOut;
 
 NMEA_INFO MapWindow::DrawInfo;
 DERIVED_INFO MapWindow::DerivedDrawInfo;
-
-int SelectedWaypoint = -1;
 
 extern int iround(double i);
 extern void ShowMenu();

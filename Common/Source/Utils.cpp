@@ -41,6 +41,8 @@
 #include "LKHolux.h"
 #endif
 
+#include "Modeltype.h"
+
 #include "FlarmIdFile.h"
 // Warning, this is initialising class, loading flarmnet IDs before anything else in the LK is even started..
 FlarmIdFile file; 
@@ -395,7 +397,6 @@ const TCHAR szRegistryFontCDIWindowFont[]=	 TEXT("CDIWindowFont");
 const TCHAR szRegistryFontMapLabelFont[]=	 TEXT("MapLabelFont"); 
 const TCHAR szRegistryFontStatisticsFont[]=	 TEXT("StatisticsFont"); 
 
-int UTCOffset = 0; // used for Altair
 bool LockSettingsInFlight = true;
 bool LoggerShortName = false;
 

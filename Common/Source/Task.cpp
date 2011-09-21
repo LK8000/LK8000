@@ -23,10 +23,8 @@
 using std::min;
 using std::max;
 
-bool EnableMultipleStartPoints = false;
 bool TaskModified = false;
 bool TargetModified = false;
-int StartHeightRef = 0; // MSL
 
 #define TASKINDEX    Task[ActiveWayPoint].Index
 

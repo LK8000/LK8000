@@ -1,9 +1,19 @@
-#if !defined(AFX_SIZES_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
-#define AFX_SIZES_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_
+/*
+   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+   Released under GNU/GPL License v.2
+   See CREDITS.TXT file for authors and copyrights
+
+   $Id$
+*/
+#ifndef SIZES_H
+#define SIZES_H
 
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
+
+// Number of InfoBoxes
+#define NUMDATAOPTIONS_MAX                      130
 
 
 #define DISTANCE_ROUNDING 20.0
@@ -31,6 +41,7 @@
 
 #define MENU_HEIGHT 26
 
+// Max number of Infobox groups configurables, should be 8 +1?
 #define MAXINFOWINDOWS 14
 
 #define REGKEYSIZE 64

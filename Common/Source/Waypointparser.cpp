@@ -54,7 +54,6 @@ static double ReadLength(TCHAR *temp);
 
 static TCHAR nTemp2String[READLINE_LENGTH*2]; // 100205 BUGFIX? NO
 
-int WaypointsOutOfRange = 1; // include by default
 static int WaypointOutOfTerrainRangeDontAskAgain = -1;
 
 

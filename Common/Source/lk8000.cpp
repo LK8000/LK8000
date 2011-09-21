@@ -8,6 +8,8 @@
 #include "StdAfx.h"
 #include "wcecompat/ts_string.h"
 #include "options.h"
+#include "Defines.h"
+#include "externs.h"
 #include "compatibility.h"
 #include "lk8000.h"
 #include "buildnumber.h"
@@ -23,6 +25,8 @@
 #else
 #include "Process.h"
 #endif
+
+#include "Modeltype.h"
 
 #include "Utils.h"
 #include "Utils2.h"
@@ -68,7 +72,6 @@
 #include "devIMI.h"
 #include "devWesterboer.h"
 
-#include "externs.h"
 #include "Units.h"
 #include "InputEvents.h"
 #include "Message.h"
@@ -124,15 +127,7 @@ Appearance_t Appearance = {
 };
 
 
-
-TCHAR LK8000_Version[256] = TEXT("");
-
 bool ForceShutdown = false;
-
-HINSTANCE hInst; // The current instance
-//HWND hWndCB; // The command bar handle
-HWND hWndMainWindow; // Main Windows
-HWND hWndMapWindow;  // MapWindow
 
 #ifdef CPUSTATS
 HANDLE hCalculationThread;
@@ -146,18 +141,6 @@ int numInfoWindows = 9;
 InfoBox *InfoBoxes[MAXINFOWINDOWS];
 #endif
 
-// Default configuration for infoboxes
-int InfoType[MAXINFOWINDOWS] = 
-  {1008146198,
-   1311715074,
-   923929365,
-   975776319,
-   956959267,
-   1178420506,
-   1410419993,
-   1396384771,
-   387389207};
-
 #if USEOLDASPWARNINGS // not really used anyway
 bool RequestAirspaceWarningDialog= false;
 bool RequestAirspaceWarningForce=false;
@@ -169,10 +152,6 @@ bool                                    InfoWindowActive = true;
 bool                                    EnableAuxiliaryInfo = false;
 int                                     InfoBoxFocusTimeOut = 0;
 #endif
-
-int                                     MenuTimeOut = 0;
-int                                     DisplayTimeOut = 0;
-int                                     MenuTimeoutMax = MENUTIMEOUTMAX;
 
 
 HBRUSH hBrushSelected;
@@ -228,62 +207,16 @@ LOGFONT                                   autoMapWindowBoldLogFont;
 LOGFONT                                   autoCDIWindowLogFont; // New
 LOGFONT                                   autoMapLabelLogFont;
 LOGFONT                                   autoStatisticsLogFont;
-int  UseCustomFonts;
 
 #if USEIBOX
 int                                             CurrentInfoType;
 int                                             InfoFocus = 0;
 #endif
 
-int                                             DisplayOrientation = TRACKUP;
-int                                             OldDisplayOrientation = TRACKUP;
-int						AutoOrientScale = 10;
-int                                             DisplayTextType = DISPLAYNONE;
-
-int                                             AltitudeMode = ALLON;
-int                                             ClipAltitude = 1000;
-int                                             AltWarningMargin = 100;
-int                                             AutoAdvance = 1;
-bool                                            AdvanceArmed = false;
-
-int                                             SafetyAltitudeMode = 0;
-
-bool GlobalRunning = false; 
-
-
-int	GlobalModelType=MODELTYPE_PNA_PNA;
-TCHAR	GlobalModelName[MAX_PATH]; // there are currently no checks.. TODO check it fits here
-
-// this controls all displays, to make sure everything is
-// properly initialised.
-
-
-//SI to Local Units
-double        SPEEDMODIFY = TOKNOTS;
-double        LIFTMODIFY  = TOKNOTS;
-double        DISTANCEMODIFY = TONAUTICALMILES;
-double        ALTITUDEMODIFY = TOFEET;
-double        TASKSPEEDMODIFY = TOKPH;
-
-//Flight Data Globals
-double        MACCREADY = 0; // JMW now in SI units (m/s) for consistency
-double        QNH = (double)1013.25; // 100413 changed to .25
-double        BUGS = 1;
-double        BALLAST = 0;
-
-bool          AutoMacCready_Config = true;
-
 short TerrainContrast	= 140;
 short TerrainBrightness = 115;
 short TerrainRamp = 0;
-short TerrainRamp_Config = 0;
 
-int          NettoSpeed = 1000;
-
-NMEA_INFO     GPS_INFO;
-DERIVED_INFO  CALCULATED_INFO;
-
-BOOL GPSCONNECT = FALSE;
 BOOL extGPSCONNECT = FALSE; // this one used by external functions
 
 #if USEIBOX
@@ -291,78 +224,12 @@ bool InfoBoxesDirty= false;
 #endif
 bool DialogActive = false;
 
-// 091011 Used by TakeoffLanding inside Calculation.cpp - limited values careful 
-int time_in_flight=0;
-int time_on_ground=0;
-double TakeOffSpeedThreshold=0.0;
-
-BYTE RUN_MODE=RUN_WELCOME;
-
-DWORD EnableFLARMMap = 1;
-
-// 100210 Comport diagnostics, see Utils2.h
-// Using 0,1, plus +1 for safety 
-int ComPortStatus[NUMDEV+1];
-long ComPortRx[NUMDEV+1];
-long ComPortTx[NUMDEV+1];
-long ComPortErrRx[NUMDEV+1];
-long ComPortErrTx[NUMDEV+1];
-long ComPortErrors[NUMDEV+1];
-// Com ports hearth beats, based on LKHearthBeats
-double ComPortHB[NUMDEV+1];
 
 //Local Static data
 static int iTimerID= 0;
 
-// Final Glide Data
-double SAFETYALTITUDEARRIVAL = 300;
-double SAFETYALTITUDETERRAIN = 50;
-double SAFTEYSPEED = 50.0;
-
-// Total Energy usage, config and runtime separated
-bool UseTotalEnergy=false;
-bool UseTotalEnergy_Config=false;
-
-double POLAR[POLARSIZE] = {0,0,0};
 double POLARV[POLARSIZE] = {21,27,40};
 double POLARLD[POLARSIZE] = {33,30,20};
-double WEIGHTS[POLARSIZE] = {250,70,100};
-int Handicap = 108; // LS-3
-
-// Team code info
-int TeamCodeRefWaypoint = -1;
-TCHAR TeammateCode[10];
-bool TeamFlarmTracking = false;
-TCHAR TeamFlarmCNTarget[4]; // CN of the glider to track
-int TeamFlarmIdTarget;      // FlarmId of the glider to track
-double TeammateLatitude;
-double TeammateLongitude;
-bool TeammateCodeValid = false;
-
-
-// Waypoint Database
-WAYPOINT *WayPointList = NULL;
-WPCALC *WayPointCalc = NULL; // VENTA3 additional infos calculated, parallel to WPs
-unsigned int NumberOfWayPoints = 0;
-int SectorType = 1; // FAI sector
-DWORD SectorRadius = 500;
-int StartLine = TRUE;
-DWORD StartRadius = 3000;
-
-int HomeWaypoint = -1;
-bool TakeOffWayPoint=false;
-int AirfieldsHomeWaypoint = -1; // VENTA3 force Airfields home to be HomeWaypoint if
-                                // an H flag in waypoints file is not available..
-// Alternates
-int Alternate1 = -1; // VENTA3
-int Alternate2 = -1; // VENTA3
-int BestAlternate = -1; // VENTA3
-int ActiveAlternate = -1; // VENTA3
-
-// Specials
-double GPSAltitudeOffset = 0; // VENTA3
-bool	UseGeoidSeparation=false;
-bool	PressureHg=false;
 
 // This will calculate nearest topology without painting it, for 1s only.
 // It will be automatically cleared by Terrain  DrawTopology()
@@ -372,130 +239,8 @@ bool ForceNearestTopologyCalculation=false;
 // 100413 shortcut on aircraft icon for ibox switching with medium click
 // bool	ShortcutIbox=true;
 #endif
-int	CustomKeyTime=700;
-int	CustomKeyModeCenter=(CustomKeyMode_t)ckDisabled;
-int	CustomKeyModeLeft=(CustomKeyMode_t)ckDisabled;
-int	CustomKeyModeRight=(CustomKeyMode_t)ckDisabled;
-int	CustomKeyModeAircraftIcon=(CustomKeyMode_t)ckDisabled;
-int	CustomKeyModeLeftUpCorner=(CustomKeyMode_t)ckDisabled;
-int	CustomKeyModeRightUpCorner=(CustomKeyMode_t)ckDisabled;
-int	CustomKeyModeCenterScreen=(CustomKeyMode_t)ckDisabled;
-bool ResumeSession=false;
-double QFEAltitudeOffset = 0;
-int OnAirSpace=1; // VENTA3 toggle DrawAirSpace, normal behaviour is "true"
-bool WasFlying = false; // VENTA3 used by auto QFE: do not reset QFE if previously in flight. So you can check QFE
-			//   on the ground, otherwise it turns to zero at once!
-double LastDoRangeWaypointListTime=0;
-bool needclipping=false; // flag to activate extra clipping for some PNAs
-bool EnableAutoBacklight=true;
-bool EnableAutoSoundVolume=true;
-short AircraftCategory=0;
-bool ExtendedVisualGlide=false;
-short Look8000=lxcAdvanced;
-bool HideUnits=false;
-bool CheckSum=true;
-short OutlinedTp=0;
-int  OverColor=0;
-COLORREF OverColorRef;
-int  TpFilter=0;
-short MapBox=0;
-bool ActiveMap=true;
-short GlideBarMode=0;
-short OverlaySize=0;
-short BarOpacity=255; // bottom bar transparency if available, black by default
-short FontRenderer=0;
-bool LockModeStatus=false;
-short ArrivalValue=0;
-short NewMapDeclutter=0;
-short Shading=1;
-bool ConfBB[10];
-bool ConfIP[10][10];
-bool ConfMP[10]={1,1,1,1,1,1,1,1,1,1};
-bool ConfBB1=1, ConfBB2=1, ConfBB3=1, ConfBB4=1, ConfBB5=1, ConfBB6=1, ConfBB7=1, ConfBB8=1, ConfBB9=1;
-bool ConfIP11=1, ConfIP12=1, ConfIP13=1, ConfIP14=1, ConfIP15=1, ConfIP16=1, ConfIP21=1, ConfIP22=1;
-bool ConfIP23=1, ConfIP24=1, ConfIP31=1, ConfIP32=1, ConfIP33=1;
-short AverEffTime=0;
-bool DrawBottom=false; // new map's bottom line in landscape mode fullscreen condition
-short BottomMode=BM_FIRST; 
-short BottomSize=1; // Init by MapWindow3  091213 0 to 1
-short TopSize=0;
-short BottomGeom=0; 
-// coordinates of the sort boxes. Each mapspace can have a different layout
-short SortBoxX[MSM_TOP+1][MAXSORTBOXES+1];
-short SortBoxY[MSM_TOP+1];
-// default initialization for gestures. InitLK8000 will fine tune it.
-short GestureSize=60;
-// xml dlgconfiguration value replacing 246 which became 278
-int   LKwdlgConfig=0;
-// normally we do it the unusual way
-bool IphoneGestures=false;
 
-int PGClimbZoom=1;
-int PGCruiseZoom=1;
-// This is the gauge bar on the left for variometer
-int LKVarioBar=0;
-// This is the value to be used for painting the bar
-int LKVarioVal=0;
-// moving map is all black and need white painting - not much used 091109
-bool BlackScreen=false; 
-// if true, LK specific text on map is painted black, otherwise white
-bool LKTextBlack=false;;
-// enumerated value for map background when no terrain is painted, valid for both normal and inverted mode
-// note that all topology text is in black, so this should be a light colour in any case
-short BgMapColor=0;
-bool  BgMapColorTextBlack[LKMAXBACKGROUNDS]={ false, false, false, false, true, true, true, true, true, true };  // 101009
-int LKVarioSize=2; // init by InitLK8000
-// activated by Utils2 in virtual keys, used inside RenderMapWindowBg
-bool PGZoomTrigger=false;
-bool BestWarning=false;
-bool ThermalBar=false;
-bool McOverlay=true; // 101031 fixed true
-bool TrackBar=false;
-bool PGOptimizeRoute=true;
 
-double WindCalcSpeed=0;
-int WindCalcTime=WCALC_TIMEBACK; 
-bool RepeatWindCalc=false;
-// FLARM Traffic is real if <=1min, Shadow if <= etc. If >Zombie it is removed
-int LKTime_Real=15, LKTime_Ghost=60, LKTime_Zombie=180;
-// Copy of runtime traffic for instant use 
-FLARM_TRAFFIC LKTraffic[FLARM_MAX_TRAFFIC+1];
-// Number of IDs (items) of existing traffic updated from DoTraffic
-int LKNumTraffic=0;
-// Pointer to FLARM struct, ordered by DoTraffic, from 0 to LKNumTraffic-1
-int LKSortedTraffic[FLARM_MAX_TRAFFIC+1];
-
-// 100404 index inside FLARM_Traffic of our target, and its type as defined in Utils2
-int LKTargetIndex=-1;
-int LKTargetType=LKT_TYPE_NONE;
-
-// Copy of runtime airspaces for instant use 
-LKAirspace_Nearest_Item LKAirspaces[MAXNEARAIRSPACES+1];
-// Number of asps (items) of existing airspaces updated from DoAirspaces
-int LKNumAirspaces=0;
-// Pointer to ASP struct, ordered by DoAirspaces, from 0 to LKNumAirspaces-1
-int LKSortedAirspaces[MAXNEARAIRSPACES+1];
-
-// type of file format for waypoints files
-int WpFileType[3];
-TCHAR WpHome_Name[NAME_SIZE+1];
-double WpHome_Lat=0;
-double WpHome_Lon=0;
-
-// The Thermal History internal database
-THERMAL_HISTORY ThermalHistory[MAX_THERMAL_HISTORY+1];
-// Copy of runtime thermal history structure for instant use
-THERMAL_HISTORY CopyThermalHistory[MAX_THERMAL_HISTORY+1];
-// Number of Thermals updated from DoThermalHistory
-int LKNumThermals=0;
-int LKSortedThermals[MAX_THERMAL_HISTORY+1];
-
-// LK8000 Hearth beats at 2Hz
-double LKHearthBeats=0;
-// number of reporting messages from Portmonitor.
-int PortMonitorMessages=0;
-
-bool PollingMode=false;
 #if  (LK_CACHECALC && LK_CACHECALC_MCA_STAT)
 int  Cache_Calls_MCA=0;
 int  Cache_Hits_MCA=0;
@@ -510,18 +255,6 @@ int  Cache_Fail_DBE=0;
 int  Cache_False_DBE=0;
 #endif
 
-short GlideBarOffset=0;
-bool	EngineeringMenu=false; // never saved to registry
-short splitter=1; // 091213 0 to 1
-bool iboxtoclick=true; // do a click on a new ibox focus
-// it is called DeclutterMode but it has nothing to do with MapSpaces
-short DeclutterMode;
-
-// current mapspacemode: the internal identifier of a page type
-// should not be used for turning pages, only for direct access
-short MapSpaceMode; 
-// telling you if you are in wpmode, infomode etc..
-short ModeIndex;
 // See Utils2.h for relationship
 // pointers to MapSpacemodes
 // MSM_TOP is used as max size also for each subsets
@@ -531,248 +264,14 @@ short ModeTableTop[LKMODE_TOP+1];
 // remembers for each mode (wp, infopage, map , etc.) the current type
 short ModeType[LKMODE_TOP+1];
 
-// current selected raw in mapspacemodes
-short SelectedRaw[MSM_TOP+1]; 
-// current page in each mapspacemode, reset entering new mapspace: no memory
-// since it doesnt eat memory, it is also used for pages with currently no subpages
-short SelectedPage[MSM_TOP+1];
-// number of raws in mapspacemode screen
-// TODO: check if they can be unsigned
-short Numraws;
-short CommonNumraws;
-short Numpages;
-short CommonNumpages;
-short TrafficNumpages;
-short AspNumpages;
-short THistoryNumpages;
-//  mapspace sort mode: 0 wp name  1 distance  2 bearing  3 reff  4 altarr
-//  UNUSED on MSM_COMMON etc. however it is dimensioned on mapspacemodes
-short SortedMode[MSM_TOP+1];
-
-TCHAR LKLangSuffix[4];
-bool WarningHomeDir=false;
-
-// Fixed Screen Parameters, initialised by InitScreen. Size
-short	ScreenSize=0;
-int  ScreenSizeX=0;
-int  ScreenSizeY=0;
-RECT ScreenSizeR;
-bool ScreenLandscape=false;
-#if USEIBOX
-#else
-double ScreenDScale=1;
-int    ScreenScale=1;
-bool   ScreenIntScale=false;
-#endif
-
-// Default arrival mode calculation type
-// 091016 currently not changed anymore
-short AltArrivMode=ALTA_MC;
-
-// zoomout trigger time handled by MapWindow
-double  LastZoomTrigger=0;
-
-// traffic DoTraffic interval, also reset during key up and down to prevent wrong selections
-double  LastDoTraffic=0;
-double  LastDoNearest=0;
-double  LastDoAirspaces=0;
-// double  LastDoNearestTp=0; 101222
-double  LastDoCommon=0;
-// double  LastDoTarget=0; unused 
-double LastDoThermalH=0;
 
 // These are not globals to allow SetMapScales in Utils2 operate..
 double  CruiseMapScale=1;
 double  ClimbMapScale=1;
 
-// Paraglider's time gates
-// ------------------------------
-// Open and close time, gate 0  ex. 12:00
-// M and H for registry
-int  PGOpenTimeH=0;
-int  PGOpenTimeM=0;
-int  PGOpenTime=0;
-int  PGCloseTime=0;
-// Interval, in minutes
-int	PGGateIntervalTime=0;
-// How many gates, 1-x
-int	PGNumberOfGates=0;
-// Start out or start in?
-bool	PGStartOut=false;
-// Current assigned gate 
-int ActiveGate=-1;
-
-// LKMAPS flag for topology: >0 means ON, and indicating how many topo files are loaded
-int  LKTopo=0;
-// This threshold used in Terrain.cpp to distinguish water altitude
-short  LKWaterThreshold=0;
-double LKTopoZoomCat05=0;
-double LKTopoZoomCat10=0;
-double LKTopoZoomCat20=0;
-double LKTopoZoomCat30=0;
-double LKTopoZoomCat40=0;
-double LKTopoZoomCat50=0;
-double LKTopoZoomCat60=0;
-double LKTopoZoomCat70=0;
-double LKTopoZoomCat80=0;
-double LKTopoZoomCat90=0;
-double LKTopoZoomCat100=0;
-double LKTopoZoomCat110=0;
-// max number of topo and wp labels painted on map, defined by default in Utils
-int  LKMaxLabels=0;
-
-// current mode of overtarget 0=task 1=alt1, 2=alt2, 3=best alt
-short OvertargetMode=0;
-// Simulator has one thermal at a time with these values
-double SimTurn=0;
-double ThLatitude=1;
-double ThLongitude=1;
-double ThermalRadius=0;
-double SinkRadius=0;
-
-// LK8000 sync flags
-bool NearestDataReady=false;
-bool CommonDataReady=false;
-bool RecentDataReady=false;
-bool LKForceDoNearest=false;
-bool LKForceDoCommon=false;
-bool LKForceDoRecent=false;
-short LKevent=LKEVENT_NONE;
-bool LKForceComPortReset=false; 
-bool LKDoNotResetComms=false;
 bool LKReloadProfileBitmaps=false;
 
-
-ldrotary_s rotaryLD;
-windrotary_s rotaryWind;
-
-// Optimization  preprocessing
-int  RangeLandableIndex[MAXRANGELANDABLE+1]; 
-int  RangeLandableNumber=0;
-int  RangeAirportIndex[MAXRANGELANDABLE+1];
-int  RangeAirportNumber=0;
-int  RangeTurnpointIndex[MAXRANGETURNPOINT+1];
-int  RangeTurnpointNumber=0;
-// This list is sorted out of RangeLandableIndex, used by DoNearest
-// cannot be used elsewhere, since it's only updated when in Nearest MapSpaceMode.
-// +1 is for safety...  
-// Also in DoNearestTurnpoint for MSM_NEARTPS 
-int  SortedLandableIndex[MAXNEAREST+1];
-int  SortedAirportIndex[MAXNEAREST+1];
-int  SortedTurnpointIndex[MAXNEAREST+1];
-// Real number of NEAREST items contained in array after removing duplicates, or not enough to fill MAXNEAREST/MAX..
-int  SortedNumber=0;
-
-// Commons are Home, best alternate, alternate1, 2, and task waypoints , all up to MAXCOMMON.
-// It is reset when changing wp file
-int  CommonIndex[MAXCOMMON+1];
-// Number of items 0-n inside CommonIndex
-int  CommonNumber=0;
-
-// History of recent waypoints
-int RecentIndex[MAXCOMMON+1];
-unsigned int RecentChecksum[MAXCOMMON+1];
-int RecentNumber=0;
-// Cpu stats
-#ifdef CPUSTATS
-int Cpu_Draw=0;
-int Cpu_Calc=0;
-int Cpu_Instrument=0;
-int Cpu_Port=0;
-int Cpu_Aver=0;
-#endif
-
-int LKIBLSCALE[MAXIBLSCALE+1];
-double Experimental1=0, Experimental2=0;
-
-double NearestAirspaceHDist=-1;
-double NearestAirspaceVDist=0;
-TCHAR NearestAirspaceName[NAME_SIZE+1] = {0};
-TCHAR NearestAirspaceVName[NAME_SIZE+1] = {0};
-
-NearestTopoItem NearestBigCity;
-NearestTopoItem NearestCity;
-NearestTopoItem NearestSmallCity;
-NearestTopoItem NearestWaterArea;
-
-// Flarmnet tools
-int FlarmNetCount=0;
-
-//Airspace Warnings
-int AIRSPACEWARNINGS = TRUE;
-int WarningTime = 60;
-int AcknowledgementTime = 900;                  // keep ack level for this time, [secs]
-int AirspaceWarningRepeatTime = 300;			// warning repeat time if not acknowledged after 5 minutes
-int AirspaceWarningVerticalMargin = 100;		// vertical distance used to calculate too close condition
-int AirspaceWarningDlgTimeout = 30;             // airspace warning dialog auto closing in x secs
-int AirspaceWarningMapLabels = 1;               // airspace warning map labels showed
-
-lkalarms_s LKalarms[MAXLKALARMS];
-
-// Registration Data
-TCHAR strAssetNumber[MAX_LOADSTRING] = TEXT(""); //4G17DW31L0HY");
-TCHAR strRegKey[MAX_LOADSTRING] = TEXT("");
-
-// Interface Files
-StatusMessageSTRUCT StatusMessageData[MAXSTATUSMESSAGECACHE];
-int StatusMessageData_Size = 0;
-
-//Snail Trial
-SNAIL_POINT SnailTrail[TRAILSIZE];
-int SnailNext = 0;
-
-// OLC COOKED VALUES
-CContestMgr::CResult OlcResults[CContestMgr::TYPE_NUM];
-
-// user interface settings
-int WindUpdateMode = 0;
-bool EnableTopology = true; // 091105
-bool EnableTerrain = true;  // 091105
-int FinalGlideTerrain = 1;
-bool EnableSoundModes = true;
-bool OverlayClock = false;
-bool LKLanguageReady = false;
-
-
-//IGC Logger
-bool LoggerActive = false;
-
-// Others
-
-BOOL COMPORTCHANGED = FALSE;
-BOOL MAPFILECHANGED = FALSE;
-BOOL AIRSPACEFILECHANGED = FALSE;
-BOOL AIRFIELDFILECHANGED = FALSE;
-BOOL WAYPOINTFILECHANGED = FALSE;
-BOOL TERRAINFILECHANGED = FALSE;
-BOOL TOPOLOGYFILECHANGED = FALSE;
-BOOL POLARFILECHANGED = FALSE;
-BOOL LANGUAGEFILECHANGED = FALSE;
-BOOL STATUSFILECHANGED = FALSE;
-BOOL INPUTFILECHANGED = FALSE;
 static bool MenuActive = false;
-
-//Task Information
-Task_t Task = {{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0},{-1,0,0,0,0,0,0,0,0}};
-Start_t StartPoints;
-TaskStats_t TaskStats;
-int ActiveWayPoint = -1;
-
-// Assigned Area Task
-double AATTaskLength = 120;
-BOOL AATEnabled = FALSE;
-DWORD FinishMinHeight = 0;
-DWORD StartMaxHeight = 0;
-DWORD StartMaxSpeed = 0;
-DWORD StartMaxHeightMargin = 0;
-DWORD StartMaxSpeedMargin = 0;
-
-DWORD AlarmMaxAltitude1=0;
-DWORD AlarmMaxAltitude2=0;
-DWORD AlarmMaxAltitude3=0;
-
-// Statistics
-Statistics flightstats;
 
 #if (((UNDER_CE >= 300)||(_WIN32_WCE >= 0x0300)) && (WINDOWSPC<1))
 #define HAVE_ACTIVATE_INFO
@@ -797,29 +296,10 @@ bool goInitDevice=false;
 #endif
 // bool goCalculating=false;
 
-#if 0 // REMOVE
-// Battery status for SIMULATOR mode
-//	30% reminder, 20% exit, 30 second reminders on warnings
-#define BATTERY_WARNING 30
-#define BATTERY_EXIT 20
-#define BATTERY_REMINDER 30000
-DWORD BatteryWarningTime = 0;
-#endif
-
 // Developers dedicates..
 // Use rot13 under linux to code and decode strings
 char dedicated_by_paolo[]="Qrqvpngrq gb zl sngure Ivggbevb";
 // char dedicated_by_{yourname}="....";
-
-#define NUMDATAOPTIONS_MAX			130
-
-#if USEIBOX
-SCREEN_INFO Data_Options[NUMDATAOPTIONS_MAX];
-#else
-DATAOPTIONS Data_Options[NUMDATAOPTIONS_MAX];
-#endif
-
-int NumDataOptions = 0;
 
 
 CRITICAL_SECTION  CritSec_FlightData;
@@ -1679,7 +1159,7 @@ void PreloadInitialisation(bool ask) {
 
 HANDLE drawTriggerEvent;
 
-StartupState_t ProgramStarted = psInitInProgress; 
+///StartupState_t ProgramStarted = psInitInProgress; 
 // 0: not started at all
 // 1: everything is alive
 // 2: done first draw
@@ -1740,6 +1220,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   // use mutex to avoid multiple instances of lk8000 be running
   CreateMutex(NULL,FALSE,_T("LOCK8000"));
   if (GetLastError() == ERROR_ALREADY_EXISTS) return(0);
+
   
   wsprintf(LK8000_Version,_T("%S v%S.%S "), LKFORK, LKVERSION,LKRELEASE);
   wcscat(LK8000_Version, TEXT(__DATE__));
@@ -1757,6 +1238,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   #if TESTBENCH
   StartupStore(TEXT(". TESTBENCH option enabled%s"),NEWLINE);
   #endif
+  Globals_Init();
 
   StartupLogFreeRamAndStorage();
 
@@ -2953,10 +2435,10 @@ void InitialiseFonts(RECT rc)
 
 }
 
-#if (WINDOWSPC>0)
-int SCREENWIDTH=800;
-int SCREENHEIGHT=400;
-#endif
+//#if (WINDOWSPC>0)
+//int SCREENWIDTH=800;
+//int SCREENHEIGHT=400;
+//#endif
 
 
 //
@@ -3176,12 +2658,6 @@ void DoInfoKey(int keycode) {
 }
 #endif // USEIBOX
 
-
-// Debounce input buttons (does not matter which button is pressed)
-// VNT 090702 FIX Careful here: synthetic double clicks and virtual keys require some timing.
-//				See Defines.h DOUBLECLICKINTERVAL . Not sure they are 100% independent.
-
-int debounceTimeout=200;
 
 bool Debounce(void) {
   static DWORD fpsTimeLast= 0;

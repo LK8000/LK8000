@@ -29,6 +29,8 @@
 #include "Process.h"
 #endif
 
+#include "Modeltype.h"
+
 #include "McReady.h"
 #include "Utils.h"
 #include "InfoBoxLayout.h"

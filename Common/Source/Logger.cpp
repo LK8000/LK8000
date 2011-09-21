@@ -20,7 +20,6 @@
 
 #include "utils/heapcheck.h"
 
-bool IGCWriteLock=false; // workaround, but not a real solution
 
 using std::min;
 using std::max;
@@ -63,7 +62,6 @@ GRECORDVERIFYGRECORDINFILE GRecordVerifyGRecordInFile;
 
 
 extern NMEA_INFO GPS_INFO;
-bool DisableAutoLogger = false;
 
 TCHAR NumToIGCChar(int n) {
   if (n<10) {
@@ -83,24 +81,6 @@ int IGCCharToNum(TCHAR c) {
     return 0; // Error!
   }
 }
-
-
-/*
-
-HFDTE141203  <- should be UTC, same as time in filename
-HFFXA100
-HFPLTPILOT:JOHN WHARINGTON
-HFGTYGLIDERTYPE:LS 3
-HFGIDGLIDERID:VH-WUE
-HFDTM100GPSDATUM:WGS84
-HFRFWFIRMWAREVERSION:3.6
-HFRHWHARDWAREVERSION:3.4
-HFFTYFR TYPE:GARRECHT INGENIEURGESELLSCHAFT,VOLKSLOGGER 1.0
-HFCIDCOMPETITIONID:WUE
-HFCCLCOMPETITIONCLASS:FAI
-HFCIDCOMPETITIONID:WUE
-HFCCLCOMPETITIONCLASS:15M
-*/
 
 
 

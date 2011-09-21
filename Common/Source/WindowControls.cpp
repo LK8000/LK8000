@@ -22,6 +22,8 @@
 
 #include "externs.h" 
 
+#include "Modeltype.h"
+
 extern int DisplayTimeOut;
 #if (WINDOWSPC<1)
 #ifndef __MINGW32__

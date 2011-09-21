@@ -17,8 +17,6 @@
 using std::min;
 using std::max;
 
-int EnableThermalLocator = 1;
-
 #define SFACT 111195
 
 void ThermalLocator_Point::Drift(double t_0,

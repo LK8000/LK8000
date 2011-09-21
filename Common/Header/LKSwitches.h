@@ -6,8 +6,8 @@
    $Id$
 */
 
-#if !defined(SWITCHES_H)
-#define SWITCHES_H
+#if !defined(LKSWITCHES_H)
+#define LKSWITCHES_H
 
 #if defined(STATIC_SWITCHES)
 
