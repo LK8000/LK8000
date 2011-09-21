@@ -100,10 +100,6 @@ static std::map<TCHAR*, TCHAR*> unusedTranslations;
 #include "utils/heapcheck.h"
 
 
-#define STATIC_SWITCHES
-#include "LKSwitches.h"
-
-
 
 Appearance_t Appearance = {
   206,

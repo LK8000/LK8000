@@ -6,13 +6,21 @@
    $Id$
 
    PLEASE USE COMMENTS ALSO HERE TO DESCRIBE YOUR GLOBALS!
+   YOU CAN INITIALIZE VALUES TO true,false,zero and NULL, 
+   but do not forget to do it also inside Globals_Init
+
 */
 
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-#if defined(STATIC_GLOBALS)
   #undef  GEXTERN
+  #undef  GEXTTRUE
+  #undef  GEXTFALSE
+  #undef  GEXTNULL
+  #undef  GEXTZERO
+
+#if defined(STATIC_GLOBALS)
   #define GEXTERN 
 
   #include "Sizes.h"
@@ -28,9 +36,18 @@
   #include "device.h"
   #include "Enums.h"
 
+
+  #define GEXTTRUE       = true
+  #define GEXTFALSE      = false
+  #define GEXTNULL       = NULL
+  #define GEXTZERO       = 0
+
 #else
-  #undef  GEXTERN
   #define GEXTERN extern
+  #define GEXTTRUE  
+  #define GEXTFALSE 
+  #define GEXTNULL 
+  #define GEXTZERO 
 
   extern void Globals_Init(void);
 #endif
@@ -91,7 +108,7 @@ GEXTERN int BestAlternate;
 GEXTERN int ActiveAlternate;
 
 GEXTERN unsigned int NumberOfWayPoints;
-GEXTERN int WaypointsOutOfRange;
+GEXTERN int  WaypointsOutOfRange;
 GEXTERN int  RangeLandableIndex[MAXRANGELANDABLE+1]; 
 GEXTERN int  RangeAirportIndex[MAXRANGELANDABLE+1];
 GEXTERN int  RangeTurnpointIndex[MAXRANGETURNPOINT+1];
@@ -682,6 +699,23 @@ GEXTERN int UseCustomFonts;
 GEXTERN int SCREENWIDTH;
 GEXTERN int SCREENHEIGHT;
 #endif
+
+
+
+//
+// ---------------------------------------------------------------------------
+// SWITCHES: switch them on, and something happens. Thread safe.
+// Once the action is performed, they are automatically cleared.
+// ---------------------------------------------------------------------------
+//
+
+// Tell Draw thread to reload bitmaps that are affected by some 
+// changes in profile, such as aircraft icons.
+GEXTERN bool LKSW_ReloadProfileBitmaps GEXTFALSE;
+
+
+
+
 
 #endif
 

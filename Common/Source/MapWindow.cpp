@@ -41,7 +41,6 @@
 // #include "externs.h" // 091110 REMOVE
 #include "LKAirspace.h"
 #include "Bitmaps.h"
-#include "LKSwitches.h"
 
 using std::min;
 using std::max;
