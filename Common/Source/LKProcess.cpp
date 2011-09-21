@@ -40,6 +40,15 @@ extern int PDABatteryPercent;
 extern int PDABatteryFlag;
 extern int PDABatteryStatus;
 
+//
+// CAREFUL CAREFUL CAREFUL here:
+// lkindex can be much over the DataOption size, because some values here are not
+// an option for infobox. In this case CAREFUL not to use DataOption for them.
+// It would result in possible bad crashes, because we are copying a string from 
+// DataOption[].Title : if it does not exist, the random stuff been copied can 
+// simply overflow the BufferValue capacity, resulting in CRASHES or errors!
+//
+
 // Returns true if value is valid, false if not
 // lktitle is shorter and limited to 6 or 7 chars, good for navboxes
 // Units are empty by default, and valid is false by default
@@ -74,12 +83,8 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
 		case LK_TIME_LOCALSEC:
 			Units::TimeToTextS(BufferValue, (int)DetectCurrentTime());
 			valid=true;
-			if (lktitle)
-				// LKTOKEN  _@M1079_ = "Time local", _@M1080_ = "Time"
-				_stprintf(BufferTitle, gettext(TEXT("_@M1080_")));
-			else
-				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-
+			// LKTOKEN  _@M1079_ = "Time local", _@M1080_ = "Time"
+			_stprintf(BufferTitle, gettext(TEXT("_@M1080_")));
 			break;
 		// B39
 		case LK_TIME_LOCAL:
@@ -220,7 +225,9 @@ goto_bearing:
 				}
 			}
 			break;
-#if 0
+
+
+#if 0  // ----------------------------------- start of unused ---------------------------------
 		// B151 UNUSED
 		case LK_ALT1_BRGDIFF:
 			wsprintf(BufferValue,_T(NULLMEDIUM)); 
@@ -368,8 +375,9 @@ goto_bearing:
 				}
 			}
 			break;
+#endif // ----------------------------------- end of unused ---------------------------------
 
-#endif
+
 		// B11
 		case LK_NEXT_DIST:
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
@@ -420,7 +428,9 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
-#if 0
+
+
+#if 0 // ----------------------- unused
 		// B148  UNUSED
 		case LK_ALT1_DIST:
 			if(ValidWayPoint(Alternate1)) {
@@ -504,7 +514,8 @@ goto_bearing:
 			wsprintf(BufferValue, TEXT("%S"),text);
 			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 			break;
-#endif
+#endif // --------------------- end unused --------------------------------
+
 
 		// B147 Distance from the start sector, always available also after start
 		case LK_START_DIST:
@@ -1716,6 +1727,7 @@ goto_bearing:
 				_stprintf(BufferTitle, gettext(TEXT("_@M1084_")));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[LK_FIN_ETE].Title );
+				// ^^ Notice we use LK_FIN_ETE, NOT LK_LKFIN_ETE which does NOT exist in DataOptions!
 
 			if ( ValidTaskPoint(ActiveWayPoint) ) { // 091222
 				if (DerivedDrawInfo.LKTaskETE > 0) { 
@@ -1961,39 +1973,13 @@ goto_bearing:
 			}
 			break;
 
-#if 0
-		// B133  091222 using old ETE corrected now
-		case LK_LKFIN_ETE:
-			wsprintf(BufferValue,_T(NULLLONG));
-			if (lktitle)
-				// LKTOKEN  _@M1083_ = "Task Time To Go", _@M1084_ = "TskETE"
-				_stprintf(BufferTitle, gettext(TEXT("_@M1084_")));
-			else
-				// LKTOKEN  _@M1083_ = "Task Time To Go", _@M1084_ = "TskETE"
-				_stprintf(BufferTitle, gettext(TEXT("_@M1084_")));
-
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) && (DerivedDrawInfo.LKTaskETE< 0.9*ERROR_TIME)) {
-				if (DerivedDrawInfo.LKTaskETE > 0) {
-					Units::TimeToText(BufferValue, (int)DerivedDrawInfo.LKTaskETE);
-					valid=true;
-				} else
-					wsprintf(BufferValue, TEXT(NULLTIME));
-			}
-			wsprintf(BufferUnit, TEXT("h"));
-			break;
-#endif
-
-
 		// B134
 		// Using MC=0!  total energy disabled
 		case LK_NEXT_ALTDIFF0:
 			wsprintf(BufferValue,_T(NULLLONG));
-			if (lktitle)
-				// LKTOKEN  _@M1190_ = "ArrMc0"
-				_stprintf(BufferTitle, gettext(TEXT("_@M1190_")));
-			else
-				// LKTOKEN  _@M1190_ = "ArrMc0"
-				_stprintf(BufferTitle, gettext(TEXT("_@M1190_")));
+			// LKTOKEN  _@M1190_ = "ArrMc0"
+			_stprintf(BufferTitle, gettext(TEXT("_@M1190_")));
+
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
@@ -2683,7 +2669,7 @@ olc_score:
 			valid=false;
 			wsprintf(BufferValue, TEXT(NULLMEDIUM));
 			wsprintf(BufferUnit, TEXT("."));
-			if ( lkindex >=NumDataOptions || lkindex <1 ) 
+			if ( lkindex >=NumDataOptions || lkindex <1 )  // Notice NumDataOptions check!
 				wsprintf(BufferTitle, TEXT("BadErr"));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
