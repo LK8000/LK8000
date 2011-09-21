@@ -282,7 +282,7 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 
   switch (MapSpaceMode) {
 	case MSM_WELCOME:
-#if (0)
+#if (1)
 		// if (!GPS_INFO.NAVWarning) { // optional
 		static double firsttime=GPS_INFO.Time;
 		// delayed automatic exit from welcome mode
