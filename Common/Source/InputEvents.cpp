@@ -1243,18 +1243,6 @@ void InputEvents::eventChecklist(const TCHAR *misc) {
   dlgChecklistShowModal();
 }
 
-#if 0 // REMOVE, unused since xci 4
-// FLARM Traffic
-// Displays the FLARM traffic dialog
-// See the checklist dialog section of the reference manual for more info.
-void InputEvents::eventFlarmTraffic(const TCHAR *misc) {
-	(void)misc;
-#if 0
-  dlgFlarmTrafficShowModal();
-#endif
-}
-#endif
- 
 
 // Displays the task calculator dialog
 //  See the task calculator dialog section of the reference manual
@@ -2486,15 +2474,6 @@ void InputEvents::eventDeclutterLabels(const TCHAR *misc) {
 }
 
 
-
-#if 0 // REMOVE
-void InputEvents::eventBrightness(const TCHAR *misc) {
-	(void)misc;
-#if 0
-  dlgBrightnessShowModal();
-#endif
-}
-#endif
 
 void InputEvents::eventExit(const TCHAR *misc) {
 	(void)misc;

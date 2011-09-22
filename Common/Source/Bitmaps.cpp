@@ -27,7 +27,6 @@
 #include <wingdi.h>
 #endif
 
-/// extern HINSTANCE hInst;      // The current instance REMOVE
 
 //
 // Load bitmaps that have no profile dependencies

@@ -347,8 +347,6 @@ double AltitudeNeededToPassObstacles(const double startLat, const double startLo
 
 void BallastDump();
 
-// #define TAKEOFFSPEEDTHRESHOLD (0.5*GlidePolar::Vminsink) REMOVE
-
 int FindFlarmSlot(const int flarmId);
 int FindFlarmSlot(const TCHAR *flarmCN);
 bool IsFlarmTargetCNInRange(void);

@@ -21,9 +21,7 @@ extern void InitializeOneFont (HFONT * theFont,
                                LOGFONT autoLogFont, 
                                LOGFONT * LogFontUsed);
 extern HFONT MapWindowFont;
-//extern HFONT MapWindowBoldFont; REMOVE
 extern HFONT MapLabelFont;
-// extern HFONT StatisticsFont; REMOVE
 extern void ApplyClearType(LOGFONT *logfont);
 
 static WndForm *wf=NULL;
@@ -216,26 +214,6 @@ static void OnFontItalicData(DataField *Sender, DataField::DataAccessKind_t Mode
   }
 }
 
-/* REMOVE
-static void OnFontTrueTypeData(DataField *Sender, DataField::DataAccessKind_t Mode){
-  switch(Mode){
-    case DataField::daGet:
-    break;
-
-    case DataField::daPut: 
-    break;
-
-    case DataField::daChange:
-      RedrawSampleFont();
-
-    break;
-  case DataField::daInc:
-  case DataField::daDec:
-  case DataField::daSpecial:
-    break;
-  }
-}
-*/
 static void OnFontPitchAndFamilyData(DataField *Sender, DataField::DataAccessKind_t Mode){
   switch(Mode){
     case DataField::daGet:
@@ -260,7 +238,6 @@ static void OnFontPitchAndFamilyData(DataField *Sender, DataField::DataAccessKin
 
 static CallBackTableEntry_t CallBackTable[]={
 
-//  DeclareCallBackEntry(OnFontTrueTypeData), REMOVE
   DeclareCallBackEntry(OnFontPitchAndFamilyData),
   DeclareCallBackEntry(OnFontItalicData),
   DeclareCallBackEntry(OnFontWeightData),
@@ -408,18 +385,6 @@ void LoadGUI()
     wp->RefreshDisplay();
   }
 
-/* UNUSED REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("prpFontTrueType"));
-  if (wp) {
-    DataFieldBoolean* dfb;
-    dfb = (DataFieldBoolean*)wp->GetDataField();
-    if (dfb)
-    {
-      dfb->Set(NewLogFont.lfQuality != NONANTIALIASED_QUALITY); //was dfb->Set(NewLogFont.lfQuality == LKFONT_QUALITY); dont know why
-    }
-    wp->RefreshDisplay();
-  }
-*/
   // This is useless, because we ApplyClearType later on. We always use a general common quality.
   ApplyClearType(&NewLogFont);
 

@@ -889,33 +889,6 @@ void InitLKFonts()
   StartupStore(_T(". InitLKFonts%s"),NEWLINE); // 091213
   #endif
 
-/* REMOVE ALREADY INIT IN GLOBAL ASSIGN
-  static bool doinit=true;
-  if (doinit) {
-  	LK8TargetFont	= (HFONT)NULL;
-  	LK8BigFont	= NULL;
-  	LK8ValueFont	= NULL;
-  	LK8TitleFont	= NULL;
-  	LK8MapFont	= NULL;
-  	LK8TitleNavboxFont	= NULL;
-  	LK8UnitFont	= NULL;
-  	LK8SymbolFont	= NULL;
-  	LK8MediumFont	= NULL;
-  	LK8SmallFont	= NULL;
-  	LK8InfoBigFont	= NULL;
-  	LK8InfoBigItalicFont	= NULL;
-  	LK8InfoNormalFont	= NULL;
-  	LK8InfoSmallFont	= NULL;
-  	LK8PanelBigFont	= NULL;
-  	LK8PanelMediumFont	= NULL;
-  	LK8PanelSmallFont	= NULL;
-  	LK8PanelUnitFont	= NULL;
-
-	doinit=false;
-  }
-*/
-
-
   LOGFONT logfontTarget;	// StatisticsWindow
   LOGFONT logfontBig;		// InfoWindow
   LOGFONT logfontTitle;		// MapWindow

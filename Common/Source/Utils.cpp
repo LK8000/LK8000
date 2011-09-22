@@ -915,12 +915,6 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryPressureHg,&Temp); 
   PressureHg = Temp;
 
-  #if 0  // REMOVE
-  Temp = 0;
-  GetFromRegistry(szRegistryShortcutIbox,&Temp); 
-  ShortcutIbox = Temp;
-  #endif
-
   Temp = 700;
   GetFromRegistry(szRegistryCustomKeyTime,&Temp); 
   CustomKeyTime = Temp;

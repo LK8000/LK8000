@@ -39,20 +39,12 @@
 
 #include "utils/heapcheck.h"
 
-// static HFONT TempTitleWindowFont; REMOVE
 static HFONT TempMapWindowFont;
-// static HFONT TempMapWindowBoldFont; REMOVE
-//static HFONT TempCDIWindowFont; // New // REMOVE
 static HFONT TempMapLabelFont;
-// static HFONT TempStatisticsFont; REMOVE
 static HFONT TempUseCustomFontsFont;
 
-// extern LOGFONT autoTitleWindowLogFont; REMOVE
 extern LOGFONT autoMapWindowLogFont;
-// extern LOGFONT autoMapWindowBoldLogFont; REMOVE
-// extern LOGFONT autoCDIWindowLogFont; // New // REMOVE
 extern LOGFONT autoMapLabelLogFont;
-// extern LOGFONT autoStatisticsLogFont; REMOVE
 
 
 extern void InitializeOneFont (HFONT * theFont, 
@@ -556,81 +548,29 @@ static void ResetFonts(bool bUseCustom) {
                         autoMapWindowLogFont,
                         NULL);
 
-
-/* REMOVE
-  InitializeOneFont (&TempTitleWindowFont, 
-                        szRegistryFontTitleWindowFont, 
-                        autoTitleWindowLogFont,
-                        NULL);
-*/
-
   InitializeOneFont (&TempMapWindowFont, 
                         szRegistryFontMapWindowFont, 
                         autoMapWindowLogFont,
                         NULL);
-
-/* REMOVE
-  InitializeOneFont (&TempMapWindowBoldFont, 
-                        szRegistryFontMapWindowBoldFont, 
-                        autoMapWindowBoldLogFont,
-                        NULL);
-*/
-/* REMOVE
-  InitializeOneFont (&TempCDIWindowFont, 
-                        szRegistryFontCDIWindowFont, 
-                        autoCDIWindowLogFont,
-                        NULL);
-*/
 
   InitializeOneFont (&TempMapLabelFont, 
                         szRegistryFontMapLabelFont, 
                         autoMapLabelLogFont,
                         NULL);
 
-/* REMOVE
-  InitializeOneFont (&TempStatisticsFont, 
-                        szRegistryFontStatisticsFont, 
-                        autoStatisticsLogFont,
-                        NULL);
-*/
-
   UseCustomFonts=UseCustomFontsold;
 }
 
 static void ShowFontEditButtons(bool bVisible) {
   WndProperty * wp;
-/* REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("cmdTitleWindowFont"));
-  if (wp) {
-    wp->SetVisible(bVisible);
-  }
-*/
   wp = (WndProperty*)wf->FindByName(TEXT("cmdMapWindowFont"));
   if (wp) {
     wp->SetVisible(bVisible);
   }
-/* REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("cmdMapWindowBoldFont"));
-  if (wp) {
-    wp->SetVisible(bVisible);
-  }
-*/
-/* REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("cmdCDIWindowFont"));
-  if (wp) {
-    wp->SetVisible(bVisible);
-  }
-*/
   wp = (WndProperty*)wf->FindByName(TEXT("cmdMapLabelFont"));
   if (wp) {
     wp->SetVisible(bVisible);
   }
-/* REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("cmdStatisticsFont"));
-  if (wp) {
-    wp->SetVisible(bVisible);
-  }
-*/
 }
 
 
@@ -650,14 +590,6 @@ static void RefreshFonts(void) {
   }
 
 // now set SampleTexts on the Fonts frame
-/* REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTitleWindowFont"));
-  if (wp) {
-    wp->SetFont(TempTitleWindowFont);
-    wp->SetVisible(false);
-    wp->SetVisible(true);
-  }
-*/
   wp = (WndProperty*)wf->FindByName(TEXT("prpMapWindowFont"));
   if (wp) {
     wp->SetFont(TempMapWindowFont);
@@ -665,51 +597,12 @@ static void RefreshFonts(void) {
     wp->SetVisible(true);
   }
 
-/* REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMapWindowBoldFont"));
-  if (wp) {
-    wp->SetFont(TempMapWindowBoldFont);
-    wp->SetVisible(false);
-    wp->SetVisible(true);
-  }
-*/
-/* REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("prpCDIWindowFont"));
-  if (wp) {
-    wp->SetFont(TempCDIWindowFont);
-    wp->SetVisible(false);
-    wp->SetVisible(true);
-  }
-*/
   wp = (WndProperty*)wf->FindByName(TEXT("prpMapLabelFont"));
   if (wp) {
     wp->SetFont(TempMapLabelFont);
     wp->SetVisible(false);
     wp->SetVisible(true);
   }
-/* REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStatisticsFont"));
-  if (wp) {
-    wp->SetFont(TempStatisticsFont);
-    wp->SetVisible(false);
-    wp->SetVisible(true);
-  }
-*/
-
-  // now fix the rest of the dlgConfiguration fonts:
-  //wf->SetFont(TempMapWindowBoldFont);
-  //wf->SetTitleFont(TempMapWindowBoldFont); REMOVE QUI
-
-  /*
-  wp = (WndProperty*)wf->FindByName(TEXT("cmdNext"));
-  if (wp) {
-    wp->SetFont(TempCDIWindowFont);
-  }
-  wp = (WndProperty*)wf->FindByName(TEXT("cmdPrev"));
-  if (wp) {
-    wp->SetFont(TempCDIWindowFont);
-  }
-  */
 
 }
 
@@ -745,18 +638,6 @@ static void GetFontDescription(TCHAR Description[], TCHAR * prpName, int iMaxLen
 
 #define MAX_EDITFONT_DESC_LEN 100
 
-/* REMOVE
-static void OnEditTitleWindowFontClicked(WindowControl *Sender) {
-  TCHAR FontDesc[MAX_EDITFONT_DESC_LEN];
-  GetFontDescription(FontDesc, TEXT("prpTitleWindowFont"), MAX_EDITFONT_DESC_LEN);
-  if (dlgFontEditShowModal(FontDesc,
-                            szRegistryFontTitleWindowFont, 
-                            autoTitleWindowLogFont)) {
-    FontRegistryChanged=true;
-    RefreshFonts(); 
-  }
-}
-*/
 static void OnEditMapWindowFontClicked(WindowControl *Sender) {
   TCHAR FontDesc[MAX_EDITFONT_DESC_LEN];
   GetFontDescription(FontDesc, TEXT("prpMapWindowFont"), MAX_EDITFONT_DESC_LEN);
@@ -767,30 +648,6 @@ static void OnEditMapWindowFontClicked(WindowControl *Sender) {
     RefreshFonts(); 
   }
 }
-/* REMOVE
-static void OnEditMapWindowBoldFontClicked(WindowControl *Sender) {
-  TCHAR FontDesc[MAX_EDITFONT_DESC_LEN];
-  GetFontDescription(FontDesc, TEXT("prpMapWindowBoldFont"), MAX_EDITFONT_DESC_LEN);
-  if (dlgFontEditShowModal(FontDesc,
-                            szRegistryFontMapWindowBoldFont, 
-                            autoMapWindowBoldLogFont)) {
-    FontRegistryChanged=true;
-    RefreshFonts(); 
-  }
-}
-*/
-/* REMOVE
-static void OnEditCDIWindowFontClicked(WindowControl *Sender) {
-  TCHAR FontDesc[MAX_EDITFONT_DESC_LEN];
-  GetFontDescription(FontDesc, TEXT("prpCDIWindowFont"), MAX_EDITFONT_DESC_LEN);
-  if (dlgFontEditShowModal(FontDesc,
-                            szRegistryFontCDIWindowFont, 
-                            autoCDIWindowLogFont)) {
-    FontRegistryChanged=true;
-    RefreshFonts(); 
-  }
-}
-*/
 static void OnEditMapLabelFontClicked(WindowControl *Sender) {
   TCHAR FontDesc[MAX_EDITFONT_DESC_LEN];
   GetFontDescription(FontDesc, TEXT("prpMapLabelFont"), MAX_EDITFONT_DESC_LEN);
@@ -801,19 +658,6 @@ static void OnEditMapLabelFontClicked(WindowControl *Sender) {
     RefreshFonts(); 
   }
 }
-/* REMOVE
-static void OnEditStatisticsFontClicked(WindowControl *Sender) {
-  TCHAR FontDesc[MAX_EDITFONT_DESC_LEN];
-  GetFontDescription(FontDesc, TEXT("prpStatisticsFont"), MAX_EDITFONT_DESC_LEN);
-  if (dlgFontEditShowModal(FontDesc,
-                            szRegistryFontStatisticsFont, 
-                            autoStatisticsLogFont)) {
-    FontRegistryChanged=true;
-    RefreshFonts(); 
-  }
-}
-*/
-
 
 static void OnAircraftRegoClicked(WindowControl *Sender) {
 	(void)Sender;
@@ -1303,12 +1147,8 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnDeviceBData),
 
   DeclareCallBackEntry(OnUseCustomFontData),
-  // DeclareCallBackEntry(OnEditTitleWindowFontClicked), REMOVE
   DeclareCallBackEntry(OnEditMapWindowFontClicked),
-  // DeclareCallBackEntry(OnEditMapWindowBoldFontClicked), REMOVE
-  // DeclareCallBackEntry(OnEditCDIWindowFontClicked), REMOVE
   DeclareCallBackEntry(OnEditMapLabelFontClicked),
-  // DeclareCallBackEntry(OnEditStatisticsFontClicked), REMOVE
 
   DeclareCallBackEntry(OnSetTopologyClicked),
   DeclareCallBackEntry(OnSetCustomKeysClicked),
@@ -3221,14 +3061,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  #if 0 // REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("prpShortcutIbox"));
-  if (wp) {
-    wp->GetDataField()->Set(ShortcutIbox);
-    wp->RefreshDisplay();
-  }
-  #endif
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpEngineeringMenu")); 
   if (wp) {
     wp->GetDataField()->Set(EngineeringMenu);
@@ -4490,17 +4322,6 @@ void dlgConfigurationShowModal(void){
 	}
   }
 
-  #if 0 // REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("prpShortcutIbox"));
-  if (wp) {
-	if (ShortcutIbox != (wp->GetDataField()->GetAsInteger())) {
-		ShortcutIbox = (wp->GetDataField()->GetAsInteger());
-		SetToRegistry(szRegistryShortcutIbox, (DWORD)(ShortcutIbox));
-		changed=true;
-	}
-  }
-  #endif
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpAverEffTime")); // VENTA6
   if (wp) {
     if (AverEffTime != 
@@ -4604,12 +4425,8 @@ void dlgConfigurationShowModal(void){
   }
   DeleteObject(TempUseCustomFontsFont);
 
-  // DeleteObject (TempTitleWindowFont); REMOVE
   DeleteObject (TempMapWindowFont);
-  // DeleteObject (TempMapWindowBoldFont); REMOVE
-  //DeleteObject (TempCDIWindowFont);  REMOVE
   DeleteObject (TempMapLabelFont);
-  // DeleteObject (TempStatisticsFont);REMOVE
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppIndLandable"));
   if (wp) {

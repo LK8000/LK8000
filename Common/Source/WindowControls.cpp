@@ -2846,21 +2846,9 @@ void WndButton::Paint(HDC hDC){
 
     SelectObject(hDC, oldFont);
 
-//    mLastDrawTextHeight = rc.bottom - rc.top;
 
   }
 
-//  UINT lastAlign = SetTextAlign(hDC, TA_CENTER /*| VTA_CENTER*/);
-//  ExtTextOut(hDC, GetWidth()/2, GetHeight()/2,
-//    /*ETO_OPAQUE | */ETO_CLIPPED, &r, mCaption, _tcslen(mCaption), NULL);
-//  if (lastAlign != GDI_ERROR){
-//    SetTextAlign(hDC, lastAlign);
-//  }
-
-
-// 20060518:sgi old version
-//  ExtTextOut(hDC, org.x, org.y,
-//    /*ETO_OPAQUE | */ETO_CLIPPED, &r, mCaption, _tcslen(mCaption), NULL);
 
 }
 
@@ -2994,12 +2982,6 @@ WndProperty::WndProperty(WindowControl *Parent,
   SetForeColor(GetOwner()->GetForeColor());
   SetBackColor(GetOwner()->GetBackColor());
 
-  if (InstCount == 0){
-/* REMOVE
-    hBmpLeft32 = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_DLGBUTTONLEFT32));
-    hBmpRight32 = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_DLGBUTTONRIGHT32));
-*/
-  }
   InstCount++;
 
   mDownDown = false;
@@ -3014,12 +2996,6 @@ WndProperty::~WndProperty(void){
 void WndProperty::Destroy(void){
 
   InstCount--;
-  if (InstCount == 0){
-/* REMOVE
-    DeleteObject(hBmpLeft32);
-    DeleteObject(hBmpRight32);
-*/
-  }
 
   if (mDataField != NULL){
     if (!mDataField->Unuse()) {
@@ -3761,11 +3737,6 @@ void WndListFrame::Redraw(void){
 
 
 void WndListFrame::DrawScrollBar(HDC hDC) {
-/* REMOVE
-  static HBITMAP hScrollBarBitmapTop = NULL;
-  static HBITMAP hScrollBarBitmapMid = NULL;
-  static HBITMAP hScrollBarBitmapBot = NULL;
-*/
   RECT rc;
   HPEN hP, hP3;
   HBITMAP oldBmp;
@@ -3795,15 +3766,6 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
   if ( (sHdc==NULL) || (hScrollBarBitmapTop == NULL)) {
 	sHdc = CreateCompatibleDC(hDC); 
   }
-/* REMOVE
-  if (hScrollBarBitmapTop == NULL) {
-	hScrollBarBitmapTop=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARTOP));
-  }
-  if (hScrollBarBitmapMid == NULL)
-	hScrollBarBitmapMid=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARMID));
-  if (hScrollBarBitmapBot == NULL)
-	hScrollBarBitmapBot=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SCROLLBARBOT));
-*/
 
   hP = LKPen_Black_N1;
   SelectObject(hDC, hP);

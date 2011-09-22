@@ -359,10 +359,6 @@ class MapWindow {
   static HPEN hSnailPens[NUMSNAILCOLORS];
   static COLORREF hSnailColours[NUMSNAILCOLORS];
   static HBRUSH hAirspaceBrushes[NUMAIRSPACEBRUSHES];
-/* REMOVE
-  static HBITMAP hAirspaceBitmap[NUMAIRSPACEBRUSHES];
-  static HBITMAP hAboveTerrainBitmap;
-*/
   static HBRUSH hAboveTerrainBrush;
   static COLORREF Colours[NUMAIRSPACECOLORS];
 
@@ -582,14 +578,6 @@ class MapWindow {
   static void SetAutoOrientation(bool doreset);
 
  private:
-/* REMOVE
-  static HBITMAP 
-    hTurnPoint, hSmall, hInvTurnPoint, hInvSmall, hCruise, hClimb,
-    hFinalGlide, hAutoMacCready, hTerrainWarning,
-    hLogger, hLoggerOff, hFLARMTraffic,
-    hBatteryFull;
-	static HBITMAP hAirspaceWarning;
-*/
   static HBRUSH   hBackgroundBrush;
   static COLORREF BackgroundColor;
 
@@ -635,8 +623,6 @@ class MapWindow {
 
   static DWORD fpsTime0;
 
-  // static void DisplayAirspaceWarning(int Type, TCHAR *Name , AIRSPACE_ALT Base, AIRSPACE_ALT Top ); REMOVE 110102
-
   static void CalculateOrigin(const RECT rc, POINT *Orig);
 
 
@@ -658,17 +644,6 @@ class MapWindow {
 
   static HPEN    hpCompassBorder;
   static HBRUSH  hBrushFlyingModeAbort;
-
-/* REMOVE
-  static HBITMAP hBmpAirportReachable;
-  static HBITMAP hBmpAirportUnReachable;
-  static HBITMAP hBmpFieldReachable;
-  static HBITMAP hBmpFieldUnReachable;
-  static HBITMAP hBmpThermalSource;
-  static HBITMAP hBmpTarget;
-  static HBITMAP hBmpMarker;
-  static HBITMAP hBmpTeammatePosition;
-*/
 
   #if TOPOFASTLABEL
   // How many slots in screen, divided by horizontal blocks on vertical positions

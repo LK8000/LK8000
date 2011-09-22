@@ -3096,19 +3096,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
 
-  /* REMOVE
-  // if using Final glide or "both", available only when we have a goto active
-  if (_tcsstr(OutBuffer, TEXT("$(CheckAutoMc)"))) {
-    if (!ValidTaskPoint(ActiveWayPoint) 
-        && ((AutoMcMode==amcFinalGlide)
-	    || (AutoMcMode==amcFinalAndClimb))) {
-      invalid = true;
-    }
-    ReplaceInString(OutBuffer, TEXT("$(CheckAutoMc)"), TEXT(""), Size);
-	if (--items<=0) goto label_ret; // 100517
-  }
-  */
-
   if (_tcsstr(OutBuffer, TEXT("$(HBARAVAILABLE)"))) {
     if (!GPS_INFO.BaroAltitudeAvailable) {
       invalid = true;

@@ -38,7 +38,6 @@
 #include "InfoBoxLayout.h"
 #include "RasterTerrain.h"
 #include "Utils2.h"
-// #include "externs.h" // 091110 REMOVE
 #include "LKAirspace.h"
 #include "Bitmaps.h"
 
@@ -98,17 +97,6 @@ const COLORRAMP snail_colors[] = {
 MapWindow::Zoom MapWindow::zoom;
 MapWindow::Mode MapWindow::mode;
 
-/* REMOVE
-HBITMAP MapWindow::hBmpAirportReachable;
-HBITMAP MapWindow::hBmpAirportUnReachable;
-HBITMAP MapWindow::hBmpFieldReachable;
-HBITMAP MapWindow::hBmpFieldUnReachable;
-HBITMAP MapWindow::hBmpThermalSource;
-HBITMAP MapWindow::hBmpTarget;
-HBITMAP MapWindow::hBmpTeammatePosition;
-HBITMAP MapWindow::hAboveTerrainBitmap;
-HBITMAP MapWindow::hBmpMarker;
-*/
 HBRUSH  MapWindow::hAboveTerrainBrush;
 
 HPEN    MapWindow::hpCompassBorder;
@@ -164,26 +152,6 @@ DWORD MapWindow::targetPanSize = 0;
 
 bool MapWindow::LandableReachable = false;
 
-/* REMOVE
-HBITMAP MapWindow::hTurnPoint;
-HBITMAP MapWindow::hInvTurnPoint;
-HBITMAP MapWindow::hSmall;
-HBITMAP MapWindow::hInvSmall;
-HBITMAP MapWindow::hCruise;
-HBITMAP MapWindow::hClimb;
-HBITMAP MapWindow::hFinalGlide;
-HBITMAP MapWindow::hTerrainWarning;
-HBITMAP MapWindow::hAirspaceWarning;
-HBITMAP MapWindow::hFLARMTraffic;
-HBITMAP MapWindow::hLogger;
-HBITMAP MapWindow::hLoggerOff;
-HBITMAP MapWindow::hBatteryFull;
-HBITMAP MapWindow::hBattery70;
-HBITMAP MapWindow::hBattery50;
-HBITMAP MapWindow::hBattery25;
-HBITMAP MapWindow::hBattery15;
-*/
-
 HPEN MapWindow::hSnailPens[NUMSNAILCOLORS];
 COLORREF MapWindow::hSnailColours[NUMSNAILCOLORS];
 
@@ -205,9 +173,6 @@ HBRUSH  MapWindow::hBackgroundBrush;
 HBRUSH  MapWindow::hInvBackgroundBrush[LKMAXBACKGROUNDS];
 
 HBRUSH  MapWindow::hAirspaceBrushes[NUMAIRSPACEBRUSHES];
-/* REMOVE
-HBITMAP MapWindow::hAirspaceBitmap[NUMAIRSPACEBRUSHES];
-*/
 
 COLORREF MapWindow::Colours[NUMAIRSPACECOLORS] =
   {RGB(0xFF,0x00,0x00), RGB(0x00,0xFF,0x00),
@@ -979,45 +944,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hInvBackgroundBrush[8] = LKBrush_RifleGrey;
       hInvBackgroundBrush[9] = LKBrush_Black;
 
-/* REMOVE
-      hFLARMTraffic=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_FLARMTRAFFIC));
-      hTerrainWarning=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TERRAINWARNING));
-      hAirspaceWarning=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACEWARNING));
-      hTurnPoint=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TURNPOINT));
-      hInvTurnPoint=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_INVTURNPOINT));
-      hSmall=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SMALL));
-      hInvSmall=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_INVSMALL));
-      hLogger=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_LOGGER));
-      hLoggerOff=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_LOGGEROFF));
-      hBmpTeammatePosition = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TEAMMATE_POS));
-      hBmpMarker = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_MARK));
-      //hBatteryFull=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BATTERY_FULL_SMALL));
-      hBatteryFull=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BATTERY_FULL_SMALL));
-
-      if ( ISPARAGLIDER ) {
-	hCruise=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_CRUISEPARA));
-	hClimb=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_CLIMBPARA));
-	hFinalGlide=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_FINALGLIDEPARA));
-      } else {
-	hCruise=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_CRUISE));
-	hClimb=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_CLIMB));
-	hFinalGlide=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_FINALGLIDE));
-      }
-
-      // airspace brushes and colours
-
-      hAirspaceBitmap[0]=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACE0));
-      hAirspaceBitmap[1]=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACE1));
-      hAirspaceBitmap[2]=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACE2));
-      hAirspaceBitmap[3]=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACE3));
-      hAirspaceBitmap[4]=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACE4));
-      hAirspaceBitmap[5]=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACE5));
-      hAirspaceBitmap[6]=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACE6));
-      hAirspaceBitmap[7]=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACE7));
-
-      hAboveTerrainBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_ABOVETERRAIN));
-*/
-
       for (i=0; i<NUMAIRSPACEBRUSHES; i++) {
 	hAirspaceBrushes[i] =
 	  CreatePatternBrush((HBITMAP)hAirspaceBitmap[i]);
@@ -1110,23 +1036,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       zoom.RequestedScale(LimitMapScale(zoom.RequestedScale()));
 
       hBrushFlyingModeAbort = LKBrush_Red;
-/* REMOVE
-      if (Appearance.IndLandable == wpLandableDefault){
-	hBmpAirportReachable = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_REACHABLE));
-	hBmpAirportUnReachable = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_LANDABLE));
-	hBmpFieldReachable = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_REACHABLE));
-	hBmpFieldUnReachable = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_LANDABLE));
-      }else
-	if (Appearance.IndLandable == wpLandableAltA){
-	  hBmpAirportReachable = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRPORT_REACHABLE));
-	  hBmpAirportUnReachable = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRPORT_UNREACHABLE));
-	  hBmpFieldReachable = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_OUTFILED_REACHABLE));
-	  hBmpFieldUnReachable = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_OUTFILED_UNREACHABLE));
-	}
-
-      hBmpThermalSource = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_THERMALSOURCE));
-      hBmpTarget = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TARGET));
-*/
 
       // Signal that draw thread can run now
       Initialised = TRUE;
@@ -1144,22 +1053,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 
       AlphaBlendDestroy();
 
-/* REMOVE
-      DeleteObject(hTurnPoint);
-      DeleteObject(hSmall);
-      DeleteObject(hInvTurnPoint);
-      DeleteObject(hInvSmall);
-      DeleteObject(hCruise);
-      DeleteObject(hClimb);
-      DeleteObject(hFinalGlide);
-      DeleteObject(hFLARMTraffic);
-      DeleteObject(hTerrainWarning);
-      DeleteObject(hAirspaceWarning);
-      DeleteObject(hLogger);
-      DeleteObject(hLoggerOff);
-      DeleteObject(hBatteryFull);
-*/
-    
       DeleteObject((HPEN)hpWindThick);
 
       DeleteObject((HPEN)hpThermalBand);
@@ -1178,27 +1071,10 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 
       DeleteObject((HPEN)hpCompassBorder);
 
-/* REMOVE
-      DeleteObject(hBmpAirportReachable);
-      DeleteObject(hBmpAirportUnReachable);
-      DeleteObject(hBmpFieldReachable);
-      DeleteObject(hBmpFieldUnReachable);
-      DeleteObject(hBmpThermalSource);
-      DeleteObject(hBmpTarget);
-      DeleteObject(hBmpTeammatePosition);
-      DeleteObject(hBmpMarker);
-*/
-
       for(i=0;i<NUMAIRSPACEBRUSHES;i++)
 	{
 	  DeleteObject(hAirspaceBrushes[i]);
-//	  DeleteObject(hAirspaceBitmap[i]); REMOVE
 	}
-
-/* REMOVE
-      DeleteObject(hAboveTerrainBitmap);
-      DeleteObject(hAboveTerrainBrush);
-*/
 
       for (i=0; i<AIRSPACECLASSCOUNT; i++) {
 	DeleteObject(hAirspacePens[i]);
