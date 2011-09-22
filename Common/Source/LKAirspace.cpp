@@ -1105,6 +1105,11 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const
 
   while((pToken != NULL) && (*pToken != '\0')){
 
+    //BugFix 110922 
+    //Malformed alt causes the parser to read wrong altitude, for example on line  AL FL65 (MNM ALT 5500ft)
+    //Stop parsing if we have enough info!
+    if ( (Alt->Base != abUndef) && (fHasUnit) && ((Alt->Altitude!=0) || (Alt->FL!=0) || (Alt->AGL!=0)) ) break;
+    
     if (isdigit(*pToken)) {
       double d = (double)StrToDouble(pToken, &Stop);
       if (Alt->Base == abFL){
