@@ -278,8 +278,6 @@ void ProcessTimer    (void);
 void                                            DebugStore(char *Str);
 #endif
 
-#include "FillDataOptions.cpp"
-
 void TriggerGPSUpdate()
 {
   GpsUpdated = true;
@@ -714,6 +712,9 @@ void CreateCalculationThread() {
 #endif
 
 }
+
+extern bool SetDataOption( int index, UnitGroup_t UnitGroup, TCHAR *Description, TCHAR *Title);
+extern void FillDataOptions(void);
 
 
 void PreloadInitialisation(bool ask) {
