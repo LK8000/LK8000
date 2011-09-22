@@ -4137,9 +4137,6 @@ TCHAR *GetOvertargetHeader(void) {
 void RotateOvertarget(void) {
 
   OvertargetMode++;
-  if (ISPARAGLIDER && BestWarning==false) {
-	if (OvertargetMode==OVT_BALT) OvertargetMode++;
-  }
 
   if (OvertargetMode==OVT_FLARM) {
 	if (!GPS_INFO.FLARM_Available) OvertargetMode++;
