@@ -7,7 +7,7 @@
 
    PLEASE USE COMMENTS ALSO HERE TO DESCRIBE YOUR GLOBALS!
    YOU CAN INITIALIZE VALUES TO true,false,zero and NULL, 
-   but do not forget to do it also inside Globals_Init
+   or you can do it also inside Globals_Init.
 
 */
 
@@ -18,6 +18,7 @@
   #undef  GEXTTRUE
   #undef  GEXTFALSE
   #undef  GEXTNULL
+  #undef  GEXTFONTNULL
   #undef  GEXTZERO
 
 #if defined(STATIC_GLOBALS)
@@ -40,6 +41,7 @@
   #define GEXTTRUE       = true
   #define GEXTFALSE      = false
   #define GEXTNULL       = NULL
+  #define GEXTFONTNULL	 =(HFONT)NULL
   #define GEXTZERO       = 0
 
 #else
@@ -47,6 +49,7 @@
   #define GEXTTRUE  
   #define GEXTFALSE 
   #define GEXTNULL 
+  #define GEXTFONTNULL 
   #define GEXTZERO 
 
   extern void Globals_Init(void);
@@ -524,6 +527,9 @@ GEXTERN double BALLAST;
 GEXTERN int POLARID;
 GEXTERN double POLAR[POLARSIZE];
 GEXTERN double WEIGHTS[POLARSIZE];
+GEXTERN double POLARV[POLARSIZE];
+GEXTERN double POLARLD[POLARSIZE];
+
 GEXTERN int BallastSecsToEmpty;
 GEXTERN bool BallastTimerActive;
 GEXTERN int Handicap;
@@ -685,6 +691,94 @@ GEXTERN int SCREENWIDTH;
 GEXTERN int SCREENHEIGHT;
 #endif
 
+GEXTERN short TerrainContrast;
+GEXTERN short TerrainBrightness;
+GEXTERN short TerrainRamp;
+
+
+GEXTERN Appearance_t Appearance;
+
+#ifdef CPUSTATS
+GEXTERN HANDLE hCalculationThread;
+GEXTERN DWORD dwCalcThreadID;
+ #ifndef NOINSTHREAD
+   GEXTERN HANDLE hInstrumentThread;
+   GEXTERN DWORD dwInstThreadID;
+ #endif
+#endif
+
+GEXTERN BOOL extGPSCONNECT;
+GEXTERN bool DialogActive;
+
+GEXTERN HANDLE drawTriggerEvent;
+
+
+#if  (LK_CACHECALC && LK_CACHECALC_MCA_STAT)
+GEXTERN int  Cache_Calls_MCA GEXTZERO;
+GEXTERN int  Cache_Hits_MCA  GEXTZERO;
+GEXTERN int  Cache_Fail_MCA  GEXTZERO;
+GEXTERN int  Cache_False_MCA GEXTZERO;
+GEXTERN int  Cache_Incomplete_MCA GEXTZERO;
+#endif
+#if (LK_CACHECALC)
+GEXTERN int  Cache_Calls_DBE GEXTZERO;
+GEXTERN int  Cache_Hits_DBE  GEXTZERO;
+GEXTERN int  Cache_Fail_DBE  GEXTZERO;
+GEXTERN int  Cache_False_DBE GEXTZERO;
+#endif
+
+
+// Pointers to MapSpacemodes, init by InitModeTable()
+// MSM_TOP is used as max size also for each subsets
+GEXTERN short ModeTable[LKMODE_TOP+1][MSM_TOP+1];
+// top of the list inside each table. Could be a struct with ModeTable
+GEXTERN short ModeTableTop[LKMODE_TOP+1];
+// remembers for each mode (wp, infopage, map , etc.) the current type
+GEXTERN short ModeType[LKMODE_TOP+1];
+
+GEXTERN int PDABatteryPercent;
+GEXTERN int PDABatteryTemperature;
+GEXTERN int PDABatteryStatus;
+GEXTERN int PDABatteryFlag;
+
+GEXTERN TCHAR startProfileFile[MAX_PATH];
+GEXTERN TCHAR defaultProfileFile[MAX_PATH];
+
+//
+// Fonts
+//
+GEXTERN HFONT	TitleWindowFont;
+GEXTERN HFONT   MapWindowFont;
+GEXTERN HFONT   MapWindowBoldFont;
+GEXTERN HFONT   CDIWindowFont;
+GEXTERN HFONT   MapLabelFont;
+GEXTERN HFONT   StatisticsFont;
+
+GEXTERN HFONT   LK8UnitFont GEXTFONTNULL;
+GEXTERN HFONT   LK8TitleFont GEXTFONTNULL;
+GEXTERN HFONT   LK8MapFont GEXTFONTNULL;
+GEXTERN HFONT   LK8TitleNavboxFont GEXTFONTNULL;
+GEXTERN HFONT   LK8ValueFont GEXTFONTNULL;
+GEXTERN HFONT   LK8TargetFont GEXTFONTNULL;
+GEXTERN HFONT   LK8BigFont GEXTFONTNULL;
+GEXTERN HFONT   LK8MediumFont GEXTFONTNULL;
+GEXTERN HFONT   LK8SmallFont GEXTFONTNULL;
+GEXTERN HFONT   LK8InfoBigFont GEXTFONTNULL;
+GEXTERN HFONT   LK8InfoBigItalicFont GEXTFONTNULL;
+GEXTERN HFONT   LK8InfoNormalFont GEXTFONTNULL;
+GEXTERN HFONT   LK8InfoSmallFont GEXTFONTNULL;
+GEXTERN HFONT   LK8PanelBigFont GEXTFONTNULL;
+GEXTERN HFONT   LK8PanelMediumFont GEXTFONTNULL;
+GEXTERN HFONT   LK8PanelSmallFont GEXTFONTNULL;
+GEXTERN HFONT   LK8PanelUnitFont GEXTFONTNULL;
+
+GEXTERN LOGFONT  autoTitleWindowLogFont;
+GEXTERN LOGFONT  autoMapWindowLogFont;
+GEXTERN LOGFONT  autoMapWindowBoldLogFont;
+GEXTERN LOGFONT  autoCDIWindowLogFont;
+GEXTERN LOGFONT  autoMapLabelLogFont;
+GEXTERN LOGFONT  autoStatisticsLogFont;
+
 
 
 //
@@ -697,6 +791,10 @@ GEXTERN int SCREENHEIGHT;
 // Tell Draw thread to reload bitmaps that are affected by some 
 // changes in profile, such as aircraft icons.
 GEXTERN bool LKSW_ReloadProfileBitmaps GEXTFALSE;
+
+// This will calculate nearest topology without painting it, for 1s only.
+// It will be automatically cleared by Terrain  DrawTopology()
+GEXTERN bool LKSW_ForceNearestTopologyCalculation GEXTFALSE;
 
 
 

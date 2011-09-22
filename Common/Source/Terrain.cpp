@@ -28,7 +28,6 @@
 using std::min;
 using std::max;
 
-extern bool ForceNearestTopologyCalculation;
 
 unsigned short minalt=9999;
 
@@ -84,7 +83,7 @@ void SetTopologyBounds(const RECT rcin, const bool force) {
     recompute = true;
   }
 
-  if (recompute || force || ForceNearestTopologyCalculation) {
+  if (recompute || force || LKSW_ForceNearestTopologyCalculation) {
 
     // make bounds bigger than screen
     if (range_real<MINRANGE) {
@@ -335,7 +334,7 @@ void DrawTopology(const HDC hdc, const RECT rc)
   // Then we clear the flag, so we do the calculation only once.
   // The Oracle checks that we have cleared ForceNearestTopologyCalculation here, and that means
   // that data is available from SearchNearest.
-  if (ForceNearestTopologyCalculation) {
+  if (LKSW_ForceNearestTopologyCalculation) {
 	if (lastForceNearest==0) {
 		lastForceNearest=GPS_INFO.Time;
 		goto _exit;
@@ -350,7 +349,7 @@ void DrawTopology(const HDC hdc, const RECT rc)
 				TopoStore[z]->SearchNearest(rc); 
 		}
 	}
-	ForceNearestTopologyCalculation=false; // Done, the Oracle can compute now.
+	LKSW_ForceNearestTopologyCalculation=false; // Done, the Oracle can compute now.
   } else {
 	lastForceNearest=0;
 	for (int z=0; z<MAXTOPOLOGY; z++) {

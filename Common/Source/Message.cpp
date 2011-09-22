@@ -48,8 +48,6 @@ bool Message::hidden=false;
 int Message::nvisible=0;
 
 TCHAR Message::msgText[2000];
-extern HFONT MapWindowBoldFont;
-extern HFONT LK8InfoBigFont;
 
 // Get start time to reduce overrun errors
 DWORD startTime = ::GetTickCount();

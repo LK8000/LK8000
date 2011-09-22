@@ -15,7 +15,7 @@
 #include "xmlParser.h"
 #include "InfoBoxLayout.h"
 #include "Dialogs.h"
-#include "externs.h" // 091214
+#include "externs.h"
 
 #include "utils/heapcheck.h"
 
@@ -25,14 +25,6 @@ int DLGSCALE(int x) {
   iRetVal = (int) ((x)*ScreenDScale);
   return iRetVal;
 }
-
-extern HWND   hWndMainWindow;
-extern HWND   hWndMapWindow;
-
-extern HFONT  TitleWindowFont;
-extern HFONT  MapWindowFont;
-extern HFONT  MapWindowBoldFont;
-extern HFONT  CDIWindowFont;
 
 
 static void OnButtonClick(WindowControl * Sender){
@@ -270,8 +262,6 @@ static HFONT FontMap[5] = {
 
 #include <stdio.h>
 
-
-extern HINSTANCE hInst;
 
 XMLNode xmlLoadFromResource(const TCHAR* lpName,
                             LPCTSTR tag, 

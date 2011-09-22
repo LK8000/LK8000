@@ -50,14 +50,11 @@ using std::max;
 #ifdef DEBUG
 #if (WINDOWSPC<1)
 #define DRAWLOAD
-extern HFONT  MapWindowFont;
 extern int timestats_av;
 extern int misc_tick_count;
 #endif
 #endif
 
-extern HFONT MapLabelFont;
-extern HFONT  MapWindowBoldFont;
 
 #define TASKINDEX    Task[ActiveWayPoint].Index
 
@@ -618,7 +615,6 @@ void MapWindow::DrawTrailFromTask(HDC hdc, const RECT rc,
 
 }
 
-extern HFONT  TitleWindowFont;
 
 void MapWindow::CalculateScreenPositionsGroundline(void) {
   if (FinalGlideTerrain) {

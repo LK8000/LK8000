@@ -17,13 +17,10 @@
 
 #include "utils/heapcheck.h"
 
-extern HFONT MapWindowFont;
-extern HFONT TitleWindowFont;
 extern void Shutdown(void);
 
 static WndForm *wf=NULL;
 static WndOwnerDrawFrame *wSplash=NULL;
-extern HINSTANCE hInst;
 
 extern bool CheckSystemDefaultMenu(void);
 extern bool CheckLanguageEngMsg(void);
@@ -197,8 +194,6 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnSplashPaint),
   DeclareCallBackEntry(NULL)
 };
-
-extern TCHAR startProfileFile[];
 
 
 bool dlgStartupShowModal(void){

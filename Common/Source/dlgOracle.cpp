@@ -13,7 +13,6 @@
 #include "dlgTools.h"
 
 static WndForm *wf=NULL;
-extern bool ForceNearestTopologyCalculation;
 extern void WhereAmI(void);
 
 extern void ResetNearestTopology();
@@ -41,7 +40,7 @@ static int OnTimerNotify(WindowControl *Sender)
 		StartupStore(_T("..... Force Calculation\n"));
 		#endif
 		MapWindow::RefreshMap(); // trigger rescan or we shall wait for 2 seconds more!
-		ForceNearestTopologyCalculation=true;
+		LKSW_ForceNearestTopologyCalculation=true;
 		// set wait times for zoom effective in the background and return
 		rezoom=ORCREZOOM; 
 		limiter=0;
@@ -55,11 +54,11 @@ static int OnTimerNotify(WindowControl *Sender)
   }
 
   // If the Nearest topology calculation is still running we wait
-  if (ForceNearestTopologyCalculation) {
+  if (LKSW_ForceNearestTopologyCalculation) {
 	if (++limiter > 20) {
 		// Something is wrong, lets get out of here because there is no exit button!
 		StartupStore(_T("...... Oracle ForceNearestTopo limit exceeded, aborting search%s"),NEWLINE);
-		ForceNearestTopologyCalculation=false;
+		LKSW_ForceNearestTopologyCalculation=false; // time exceeded, reset forced
 		limiter=0;
 		rezoom=0;
 		goto _end;

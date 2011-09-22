@@ -15,13 +15,10 @@
 
 #include "utils/heapcheck.h"
 
-extern HWND   hWndMainWindow;
 extern void InitializeOneFont (HFONT * theFont, 
                                const TCHAR FontRegKey[] , 
                                LOGFONT autoLogFont, 
                                LOGFONT * LogFontUsed);
-extern HFONT MapWindowFont;
-extern HFONT MapLabelFont;
 extern void ApplyClearType(LOGFONT *logfont);
 
 static WndForm *wf=NULL;

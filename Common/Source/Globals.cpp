@@ -151,9 +151,19 @@ void Globals_Init(void) {
   POLAR[0] = 0;
   POLAR[1] = 0;
   POLAR[2] = 0;
+
   WEIGHTS[0] = 250;
   WEIGHTS[1] = 70;
   WEIGHTS[2] = 100;
+
+  POLARV[0] = 21;
+  POLARV[1] = 27;
+  POLARV[2] = 40;
+
+  POLARLD[0] = 33;
+  POLARLD[1] = 30;
+  POLARLD[2] = 20;
+
 
   Handicap = 108; // LS-3
 
@@ -501,6 +511,27 @@ void Globals_Init(void) {
 
   BallastSecsToEmpty = 120;
 
+  // TODO: cancel Appearance struct and reorganize
+  Appearance.DefaultMapWidth=206;
+  // Only used in MapWindow2, can be de-configured
+  Appearance.BestCruiseTrack=ctBestCruiseTrackAltA;
+  // Landables style
+  Appearance.IndLandable=wpLandableDefault,
+  // Black/White inversion
+  Appearance.InverseInfoBox=false;
+  Appearance.InfoBoxModel=apImPnaGeneric;
+
+  TerrainContrast   = 140;
+  TerrainBrightness = 115;
+  TerrainRamp = 0;
+
+  extGPSCONNECT = FALSE;
+  DialogActive = false;
+
+  PDABatteryPercent = 100;
+  PDABatteryTemperature = 0;
+  PDABatteryStatus=0;
+  PDABatteryFlag=0;
 
 
 

@@ -51,10 +51,6 @@ using std::max;
 
 #include "LKGeneralAviation.h"
 
-extern int PDABatteryPercent;
-extern int PDABatteryFlag;
-extern int PDABatteryStatus;
-
 
 DWORD misc_tick_count=0;
 
@@ -237,14 +233,6 @@ DERIVED_INFO MapWindow::DerivedDrawInfo;
 
 extern int iround(double i);
 extern void ShowMenu();
-
-extern HFONT  TitleWindowFont;
-extern HFONT  MapWindowFont;
-extern HFONT  MapWindowBoldFont;
-extern HFONT  CDIWindowFont;
-extern HFONT  StatisticsFont;
-extern HFONT  MapLabelFont; // VENTA6
-
 
 
 #ifdef DRAWLOAD

@@ -4282,10 +4282,6 @@ int TextToLineOffsets(TCHAR* text, int* LineOffsets, int maxLines) {
 }
 
 
-
-TCHAR startProfileFile[MAX_PATH];
-TCHAR defaultProfileFile[MAX_PATH];
-
 void RestoreRegistry(void) {
   #if TESTBENCH
   StartupStore(TEXT(". Restore registry from startProfile <%s>%s"),startProfileFile,NEWLINE);

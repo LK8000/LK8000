@@ -36,10 +36,6 @@ using std::max;
 
 #define ISPARAGLIDER (AircraftCategory == (AircraftCategory_t)umParaglider)
 
-extern int PDABatteryPercent;
-extern int PDABatteryFlag;
-extern int PDABatteryStatus;
-
 //
 // CAREFUL CAREFUL CAREFUL here:
 // lkindex can be much over the DataOption size, because some values here are not

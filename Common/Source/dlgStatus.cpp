@@ -135,7 +135,6 @@ static CallBackTableEntry_t CallBackTable[]={
 };
 
 static bool first = true;
-extern int PDABatteryPercent;
 
 static void UpdateValuesSystem() {
   static int extGPSCONNECT_last = extGPSCONNECT;

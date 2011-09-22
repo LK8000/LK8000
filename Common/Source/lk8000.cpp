@@ -93,24 +93,6 @@ static std::map<TCHAR*, TCHAR*> unusedTranslations;
 #include "utils/heapcheck.h"
 
 
-
-Appearance_t Appearance = {
-  206,
-  ctBestCruiseTrackAltA,
-  wpLandableDefault,
-  false,
-  apImPnaGeneric
-};
-
-
-#ifdef CPUSTATS
-HANDLE hCalculationThread;
-DWORD dwCalcThreadID;
-HANDLE hInstrumentThread;
-DWORD dwInstThreadID;
-#endif
-
-
 HBRUSH hBrushSelected;
 HBRUSH hBrushUnselected;
 HBRUSH hBrushButton;
@@ -120,89 +102,9 @@ COLORREF ColorWarning = RGB_RED;
 COLORREF ColorOK = RGB_BLUE;
 COLORREF ColorButton = RGB_BUTTONS;  
 
-// Display Gobals
-HFONT                                   TitleWindowFont;
-HFONT                                   MapWindowFont;
-HFONT                                   MapWindowBoldFont;
-HFONT                                   CDIWindowFont; // New
-HFONT                                   MapLabelFont;
-HFONT                                   StatisticsFont;
-
-HFONT                                   LK8UnitFont=(HFONT)NULL;
-HFONT                                   LK8TitleFont=(HFONT)NULL;
-HFONT                                   LK8MapFont=(HFONT)NULL;
-HFONT                                   LK8TitleNavboxFont=(HFONT)NULL;
-HFONT                                   LK8ValueFont=(HFONT)NULL;
-HFONT                                   LK8TargetFont=(HFONT)NULL;
-HFONT                                   LK8BigFont=(HFONT)NULL;
-HFONT                                   LK8MediumFont=(HFONT)NULL;
-HFONT                                   LK8SmallFont=(HFONT)NULL;
-HFONT					LK8InfoBigFont=(HFONT)NULL;
-HFONT					LK8InfoBigItalicFont=(HFONT)NULL;
-HFONT					LK8InfoNormalFont=(HFONT)NULL;
-HFONT					LK8InfoSmallFont=(HFONT)NULL;
-HFONT					LK8PanelBigFont=(HFONT)NULL;
-HFONT					LK8PanelMediumFont=(HFONT)NULL;
-HFONT					LK8PanelSmallFont=(HFONT)NULL;
-HFONT					LK8PanelUnitFont=(HFONT)NULL;
-
-LOGFONT                                   autoTitleWindowLogFont;
-LOGFONT                                   autoMapWindowLogFont;
-LOGFONT                                   autoMapWindowBoldLogFont;
-LOGFONT                                   autoCDIWindowLogFont; // New
-LOGFONT                                   autoMapLabelLogFont;
-LOGFONT                                   autoStatisticsLogFont;
-
-
-short TerrainContrast	= 140;
-short TerrainBrightness = 115;
-short TerrainRamp = 0;
-
-BOOL extGPSCONNECT = FALSE; // this one used by external functions
-
-bool DialogActive = false;
-
 
 //Local Static data
 static int iTimerID= 0;
-
-double POLARV[POLARSIZE] = {21,27,40};
-double POLARLD[POLARSIZE] = {33,30,20};
-
-// This will calculate nearest topology without painting it, for 1s only.
-// It will be automatically cleared by Terrain  DrawTopology()
-bool ForceNearestTopologyCalculation=false; 
-
-
-#if  (LK_CACHECALC && LK_CACHECALC_MCA_STAT)
-int  Cache_Calls_MCA=0;
-int  Cache_Hits_MCA=0;
-int  Cache_Fail_MCA=0;
-int  Cache_False_MCA=0;
-int  Cache_Incomplete_MCA=0;
-#endif
-#if (LK_CACHECALC)
-int  Cache_Calls_DBE=0;
-int  Cache_Hits_DBE=0;
-int  Cache_Fail_DBE=0;
-int  Cache_False_DBE=0;
-#endif
-
-// See Utils2.h for relationship
-// pointers to MapSpacemodes
-// MSM_TOP is used as max size also for each subsets
-short ModeTable[LKMODE_TOP+1][MSM_TOP+1];
-// top of the list inside each table. Could be a struct with ModeTable
-short ModeTableTop[LKMODE_TOP+1];
-// remembers for each mode (wp, infopage, map , etc.) the current type
-short ModeType[LKMODE_TOP+1];
-
-
-// These are not globals to allow SetMapScales in Utils2 operate..
-double  CruiseMapScale=1;
-double  ClimbMapScale=1;
-
-bool LKReloadProfileBitmaps=false;
 
 static bool MenuActive = false;
 
@@ -220,8 +122,9 @@ void PopupBugsBallast(int updown);
 // Give me a go/no-go 
 bool goInstallSystem=false;
 bool goCalculationThread=false;
+#ifndef NOINSTHREAD
 bool goInstrumentThread=false;
-// bool goCalculating=false;
+#endif
 
 // Developers dedicates..
 // Use rot13 under linux to code and decode strings
@@ -261,7 +164,6 @@ void                                                    DisplayText(void);
 void CommonProcessTimer    (void);
 void SIMProcessTimer(void);
 void ProcessTimer    (void);
-//HWND CreateRpCommandBar(HWND hwnd);
 
 #ifdef DEBUG
 void                                            DebugStore(char *Str);
@@ -740,14 +642,6 @@ void PreloadInitialisation(bool ask) {
 
 }
 
-HANDLE drawTriggerEvent;
-
-///StartupState_t ProgramStarted = psInitInProgress; 
-// 0: not started at all
-// 1: everything is alive
-// 2: done first draw
-// 3: normal operation
-
 void AfterStartup() {
 
   StartupStore(TEXT(". CloseProgressDialog%s"),NEWLINE);
@@ -779,7 +673,6 @@ void AfterStartup() {
 }
 
 
-extern int testmain();
 
 void StartupLogFreeRamAndStorage() {
   unsigned long freeram = CheckFreeRam()/1024;
@@ -1588,10 +1481,6 @@ void InitialiseFonts(RECT rc)
 
 }
 
-//#if (WINDOWSPC>0)
-//int SCREENWIDTH=800;
-//int SCREENHEIGHT=400;
-//#endif
 
 
 //
@@ -2210,8 +2099,6 @@ LRESULT MainMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 
-extern int PDABatteryTemperature;
-
 
 #include "winbase.h"
 
@@ -2749,13 +2636,6 @@ DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo)
     return result;
 }
 #endif
-
-
-int PDABatteryPercent = 100;
-int PDABatteryTemperature = 0;
-int PDABatteryStatus=0;
-int PDABatteryFlag=0;
-
 
 
 void UpdateBatteryInfos(void) {

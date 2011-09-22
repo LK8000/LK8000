@@ -17,8 +17,6 @@
 using std::min;
 using std::max;
 
-extern HFONT MapLabelFont;
-extern bool ForceNearestTopologyCalculation;
 
 XShape::XShape() {
   hide=false;
@@ -236,7 +234,7 @@ Topology::~Topology() {
 
 bool Topology::CheckScale(void) {
   // Special case: all topology items are loaded ignoring their scaleThresholds
-  if (ForceNearestTopologyCalculation) {
+  if (LKSW_ForceNearestTopologyCalculation) {
 	if ( scaleCategory==10|| (scaleCategory>=70 && scaleCategory<=100))
 		return true;
 	else

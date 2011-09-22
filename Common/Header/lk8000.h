@@ -53,7 +53,7 @@ extern void UnlockNavBox();
 extern void LockNavBox();
 extern void TriggerGPSUpdate();
 extern void TriggerVarioUpdate();
-extern HANDLE drawTriggerEvent;
+// extern HANDLE drawTriggerEvent; REMOVE
 
 void FocusOnWindow(int i, bool selected);
 void FullScreen();
@@ -186,7 +186,7 @@ typedef struct{
   InfoBoxModelAppearance_t InfoBoxModel;
 } Appearance_t;
 
-extern Appearance_t Appearance;
+//extern Appearance_t Appearance; REMOVE
 
 // ******************************************************************
 

@@ -42,9 +42,6 @@
 
 extern TCHAR LastTaskFileName[MAX_PATH];
 
-extern int PDABatteryPercent;
-extern int PDABatteryStatus;
-extern int PDABatteryFlag;
 
 extern bool GiveBatteryWarnings(int numwarn);
 

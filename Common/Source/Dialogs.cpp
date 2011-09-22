@@ -380,7 +380,6 @@ BOOL SetProgressStepSize(int nSize) {
 
 // New LK8000 Startup splash 
 #define LKSTARTBOTTOMFONT MapWindowBoldFont
-extern HFONT MapWindowBoldFont;
 
 HWND CreateProgressDialog(TCHAR* text) {
 

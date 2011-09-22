@@ -24,7 +24,6 @@
 
 #include "Modeltype.h"
 
-extern int DisplayTimeOut;
 #if (WINDOWSPC<1)
 #ifndef __MINGW32__
 #include <projects.h>
@@ -1209,8 +1208,6 @@ void ComboList::FreeComboPopupItemList(void)
 //----------------------------------------------------------
 
 
-extern HFONT  MapWindowFont;
-extern HINSTANCE hInst;
 WindowControl *ActiveControl = NULL;
 WindowControl *LastFocusControl = NULL;
 
@@ -2212,8 +2209,6 @@ void WndForm::SetToForeground(void)
   SetActiveWindow(GetHandle());
 }
 
-
-extern HWND hWndMapWindow;  // MapWindow
 
 int WndForm::ShowModal(void){
   return ShowModal(false);

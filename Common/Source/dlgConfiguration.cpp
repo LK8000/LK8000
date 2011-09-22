@@ -43,9 +43,6 @@ static HFONT TempMapWindowFont;
 static HFONT TempMapLabelFont;
 static HFONT TempUseCustomFontsFont;
 
-extern LOGFONT autoMapWindowLogFont;
-extern LOGFONT autoMapLabelLogFont;
-
 
 extern void InitializeOneFont (HFONT * theFont, 
                                const TCHAR FontRegKey[] , 
@@ -1161,9 +1158,6 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnLk8000ModeChange),
   DeclareCallBackEntry(NULL)
 };
-
-extern DATAOPTIONS Data_Options[];
-extern int InfoType[];
 
 
 

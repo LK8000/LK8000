@@ -49,8 +49,6 @@
 using std::min;
 using std::max;
 
-extern HFONT MapLabelFont;
-extern HFONT  MapWindowBoldFont;
 
 #define ISPARAGLIDER (AircraftCategory == (AircraftCategory_t)umParaglider)
 #define INVERTCOLORS  (Appearance.InverseInfoBox)

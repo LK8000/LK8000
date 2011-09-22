@@ -18,8 +18,6 @@
 
 #include "utils/heapcheck.h"
 
-extern HFONT                                   StatisticsFont;
-
 
 double Statistics::yscale;
 double Statistics::xscale;

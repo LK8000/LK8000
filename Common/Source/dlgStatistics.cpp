@@ -23,8 +23,6 @@ using std::max;
 
 #define GROUND_COLOUR RGB(157,101,60)
 
-extern HFONT                                   StatisticsFont;
-
 #define MAXPAGE 8
 
 double Statistics::yscale;
@@ -228,8 +226,6 @@ void Statistics::DrawNoData(HDC hdc, RECT rc) {
   SetBkMode(hdc, TRANSPARENT);
 }
 
-
-extern HFONT MapLabelFont;
 
 
 void Statistics::DrawXLabel(HDC hdc, const RECT rc, const TCHAR *text) {

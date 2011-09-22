@@ -11,9 +11,6 @@ typedef struct _COLORRAMP
   unsigned char b;
 } COLORRAMP;
 
-extern short TerrainContrast;
-extern short TerrainBrightness;
-extern short TerrainRamp;
 #if USETOPOMARKS
 extern bool reset_marks;
 #endif
