@@ -116,11 +116,6 @@ HANDLE hInstrumentThread;
 DWORD dwInstThreadID;
 #endif
 
-#if USEOLDASPWARNINGS // not really used anyway
-bool RequestAirspaceWarningDialog= false;
-bool RequestAirspaceWarningForce=false;
-#endif
-
 
 HBRUSH hBrushSelected;
 HBRUSH hBrushUnselected;
@@ -1196,10 +1191,6 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   #else
   while(!(goCalculationThread)) Sleep(50); // 091119
   #endif
-  #if USEOLDASPWARNINGS
-  StartupStore(TEXT(". dlgAirspaceWarningInit%s"),NEWLINE);
-  dlgAirspaceWarningInit();
-  #endif
 
   // find unique ID of this PDA
   ReadAssetNumber();
@@ -1805,11 +1796,6 @@ void Shutdown(void) {
   // turn off all displays
   GlobalRunning = false;
 
-  #if USEOLDASPWARNINGS
-  StartupStore(TEXT(". dlgAirspaceWarningDeInit%s"),NEWLINE);
-  dlgAirspaceWarningDeInit();
-  #endif
-  
   // LKTOKEN _@M1220_ "Shutdown, saving logs..."
   CreateProgressDialog(gettext(TEXT("_@M1220_")));
   // stop logger
@@ -2250,22 +2236,6 @@ void CommonProcessTimer()
   SystemIdleTimerReset();
 #endif
 
-  // VNT Maplock now has full control on focus/defocus on infoboxes
-  if(InfoWindowActive)
-    {
-      #if USEOLDASPWARNINGS
-      if (!dlgAirspaceWarningVisible()) {
-	// JMW prevent switching to map window if in airspace warning dialog
-
-	if(InfoBoxFocusTimeOut >= FOCUSTIMEOUTMAX)
-	  {
-	    SwitchToMapWindow();
-	  }
-	InfoBoxFocusTimeOut ++;
-      }
-      #else
-      #endif
-    }
     if(MenuTimeOut==MenuTimeoutMax) {
       if (!MapWindow::mode.AnyPan()) {
 	InputEvents::setMode(TEXT("default"));
@@ -2291,19 +2261,10 @@ void CommonProcessTimer()
   //
   // maybe block/delay this if a dialog is active?
   // JMW: is done in the message function now.
-  #if USEOLDASPWARNINGS
-  if (!dlgAirspaceWarningVisible()) {
     if (Message::Render()) {
       // turn screen on if blanked and receive a new message 
       DisplayTimeOut=0;
     }
-  }
-  #else
-    if (Message::Render()) {
-      // turn screen on if blanked and receive a new message 
-      DisplayTimeOut=0;
-    }
-  #endif
 
   static int iheapcompact = 0;
   // called 2 times per second, compact heap every minute.

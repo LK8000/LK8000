@@ -307,7 +307,6 @@ DLGS	:=\
 	$(SRC)/dlgAirspaceDetails.cpp \
 	$(SRC)/dlgAirspacePatterns.cpp \
 	$(SRC)/dlgAirspaceSelect.cpp \
-	$(SRC)/dlgAirspaceWarning.cpp \
 	$(SRC)/dlgBasicSettings.cpp \
 	$(SRC)/dlgBottomBar.cpp \
 	$(SRC)/dlgChecklist.cpp \

@@ -676,10 +676,6 @@ GEXTERN bool DisableAutoLogger;
 GEXTERN StatusMessageSTRUCT StatusMessageData[MAXSTATUSMESSAGECACHE];
 GEXTERN int StatusMessageData_Size;
 
-#if USEOLDASPWARNINGS
-GEXTERN bool RequestAirspaceWarningDialog;
-#endif
-
 GEXTERN bool LKLanguageReady;
 
 GEXTERN int UseCustomFonts;

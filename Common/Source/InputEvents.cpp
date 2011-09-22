@@ -1163,42 +1163,6 @@ void InputEvents::eventTerrainTopology(const TCHAR *misc) {
 
 }
 
-#if 0  // REMOVE
-// Do clear warnings IF NONE Toggle Terrain/Topology
-void InputEvents::eventClearWarningsOrTerrainTopology(const TCHAR *misc) {
-	(void)misc;
-  #if USEOLDASPWARNINGS
-  if (0) {
-	// airspace was active, enter was used to acknowledge
-    return;
-  }
-  #endif
-  // Else toggle TerrainTopology - and show the results
-  MapWindow::Event_TerrainTopology(-1);
-  MapWindow::Event_TerrainTopology(0);
-}
-#endif
-
-#if USEOLDASPWARNINGS
-// ClearAirspaceWarnings
-// Clears airspace warnings for the selected airspace
-//     day: clears the warnings for the entire day
-//     ack: clears the warnings for the acknowledgement time
-void InputEvents::eventClearAirspaceWarnings(const TCHAR *misc) {
-  // this is not used anymore.
-}
-#endif
-
-#if 0 // REMOVE
-// ClearStatusMessages
-// Do Clear Event Warnings
-void InputEvents::eventClearStatusMessages(const TCHAR *misc) {
-	(void)misc;
-  ClearStatusMessages();
-  // TODO enhancement: allow selection of specific messages (here we are acknowledging all)
-  Message::Acknowledge(0);
-}
-#endif
 
 
 // ArmAdvance
@@ -2153,11 +2117,6 @@ void InputEvents::eventRepeatStatusMessage(const TCHAR *misc) {
 // If the aircraft is within airspace, this displays the distance and bearing
 // to the nearest exit to the airspace.
 
-#if USEOLDASPWARNINGS
-bool dlgAirspaceWarningIsEmpty(void);
-
-extern bool RequestAirspaceWarningForce;
-#endif
 
 void InputEvents::eventNearestAirspaceDetails(const TCHAR *misc) {
   (void)misc;

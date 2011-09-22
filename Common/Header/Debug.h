@@ -3,9 +3,11 @@
 /* 
  * Use this place to activate DEBUG options, please explain their usage
  *
- * This file is included automatically by options.h
+ * This file is included automatically by options.h.
+ * It works only in TESTBENCH mode
  */
 
+#if TESTBENCH
 /*
 #define DEBUG_DEVSETTING  // startupstore messages to understand sequence of device and com port init
 #define DRAWLOAD          // show cpu load (set by DEBUG mode)
@@ -20,6 +22,6 @@
 #define DEBUG_BESTALTERNATE     // full bestalternate messages inside DEBUG.TXT in home directory
 #define DEBUG_AIRSPACE  // Airspace code debug messages to runtime.log
 */
-
+#endif
 
 #endif
