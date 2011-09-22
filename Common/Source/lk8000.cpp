@@ -20,11 +20,7 @@
 #include "Task.h"
 #include "Dialogs.h"
 
-#ifdef OLDPPCx
-#include "LK8000Process.h"
-#else
 #include "Process.h"
-#endif
 
 #include "Modeltype.h"
 
@@ -106,8 +102,6 @@ Appearance_t Appearance = {
   apImPnaGeneric
 };
 
-
-bool ForceShutdown = false;
 
 #ifdef CPUSTATS
 HANDLE hCalculationThread;
@@ -2133,12 +2127,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_CLOSE:
 
       ASSERT(hWnd==hWndMainWindow);
-      if(ForceShutdown || ((hWnd==hWndMainWindow) && 
+      if((hWnd==hWndMainWindow) && 
          (MessageBoxX(hWndMainWindow,
 		// LKTOKEN  _@M198_ = "Confirm Exit?"
                	gettext(TEXT("_@M198_")),
                       TEXT("LK8000"),
-                      MB_YESNO|MB_ICONQUESTION) == IDYES))) 
+                      MB_YESNO|MB_ICONQUESTION) == IDYES)) 
         {
           if(iTimerID) {
             KillTimer(hWnd,iTimerID);

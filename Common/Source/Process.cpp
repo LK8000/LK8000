@@ -9,13 +9,9 @@
 #include "StdAfx.h"
 #include <windows.h>
 
-#include "Defines.h" // VENTA3
+#include "Defines.h"
 #include "compatibility.h"
-#ifdef OLDPPC
-#include "LK8000Process.h"
-#else
 #include "Process.h"
-#endif
 #include "externs.h"
 
 #include "AATDistance.h"
@@ -25,10 +21,6 @@ using std::min;
 using std::max;
 
 extern AATDistance aatdistance;
-
-extern int PDABatteryPercent;
-extern int PDABatteryStatus;
-extern int PDABatteryFlag;
 
 
 void	WindDirectionProcessing(int UpDown)
