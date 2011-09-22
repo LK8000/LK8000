@@ -33,11 +33,7 @@ extern int DisplayTimeOut;
 
 #include "utils/heapcheck.h"
 
-#if USEIBOX
-#define ISCALE InfoBoxLayout::scale
-#else
 #define ISCALE ScreenScale
-#endif
 
 #define DEFAULTBORDERPENWIDTH 1*ISCALE
 #define SELECTORWIDTH         4*ISCALE
@@ -3784,19 +3780,11 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
 	#define SHRINKSBFACTOR 0.75 
 	#endif
 
-#if USEIBOX
-	ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * InfoBoxLayout::dscale * SHRINKSBFACTOR);  
-#else
 	ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);  
-#endif
 	if (mClientCount > 0) {
 		ScrollbarTop = mClients[0]->GetHeight() + 2;
 	} else {
-#if USEIBOX
-		ScrollbarTop = (int)(18.0 * InfoBoxLayout::dscale + 2);
-#else
 		ScrollbarTop = (int)(18.0 * ScreenDScale + 2);
-#endif
 	}
   }
 

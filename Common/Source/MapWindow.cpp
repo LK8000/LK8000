@@ -77,14 +77,8 @@ extern void DrawDebug(HDC hdc, RECT rc );
 
 #define NUMSNAILRAMP 6
 
-#if USEIBOX
-#define DONTDRAWTHEMAP IsMapFullScreen()&&!mode.AnyPan()&&MapSpaceMode!=MSM_MAP
-#define MAPMODE8000    IsMapFullScreen()&&!mode.AnyPan()&&MapSpaceMode==MSM_MAP
-#else
 #define DONTDRAWTHEMAP !mode.AnyPan()&&MapSpaceMode!=MSM_MAP
 #define MAPMODE8000    !mode.AnyPan()&&MapSpaceMode==MSM_MAP
-#endif
-
 
 extern int GetOvertargetIndex(void);
 
@@ -128,10 +122,6 @@ int MapWindow::ScaleCurrent;
 POINT MapWindow::Orig_Screen;
 
 RECT MapWindow::MapRect;
-#if USEIBOX
-RECT MapWindow::MapRectBig;
-RECT MapWindow::MapRectSmall;
-#endif
 
 HBITMAP MapWindow::hDrawBitMap = NULL;
 HBITMAP MapWindow::hDrawBitMapTmp = NULL;
@@ -271,10 +261,6 @@ COLORREF MapWindow::BackgroundColor = RGB_WHITE;
 bool MapWindow::MapDirty = true;
 DWORD MapWindow::fpsTime0 = 0;
 
-#if USEIBOX
-bool MapWindow::MapFullScreen = false;
-bool MapWindow::RequestFullScreen = false;
-#endif
 
 bool MapWindow::ForceVisibilityScan = false;
 
@@ -290,15 +276,9 @@ extern void ShowMenu();
 extern HFONT  TitleWindowFont;
 extern HFONT  MapWindowFont;
 extern HFONT  MapWindowBoldFont;
-#if USEIBOX
-extern HFONT  InfoWindowFont;
-#endif
 extern HFONT  CDIWindowFont;
 extern HFONT  StatisticsFont;
 extern HFONT  MapLabelFont; // VENTA6
-#if USEIBOX
-extern HFONT  TitleSmallWindowFont; // VENTA6
-#endif
 
 
 
@@ -749,49 +729,6 @@ void MapWindow::RefreshMap() {
   SetEvent(drawTriggerEvent);
 }
 
-#if USEIBOX
-bool MapWindow::IsMapFullScreen() {
-  // SDP - Seems that RequestFullScreen
-  // is always more accurate (MapFullSCreen is delayed)
-  return RequestFullScreen;
-  // return  MapFullScreen;
-}
-
-void MapWindow::ToggleFullScreenStart() {
-
-  // ok, save the state.
-  MapFullScreen = RequestFullScreen;
-
-  // show infoboxes immediately
-
-  if (MapFullScreen) {
-    MapRect = MapRectBig;
-    HideInfoBoxes();    
-    DefocusInfoBox(); // BUGFIX 091115 BgColor
-  } else {
-    MapRect = MapRectSmall;
-    ShowInfoBoxes(); // VENTA FIX QUI
-  }
-}
-
-
-void MapWindow::RequestToggleFullScreen() {
-  RequestFullScreen = !RequestFullScreen;
-  RefreshMap();
-}
-
-void MapWindow::RequestOnFullScreen() {
-  RequestFullScreen = true;
-  RefreshMap();
-}
-
-void MapWindow::RequestOffFullScreen() {
-  RequestFullScreen = false;
-  RefreshMap();
-}
-
-#endif // USEIBOX
-
 
 extern BOOL extGPSCONNECT;
 extern bool DialogActive;
@@ -876,42 +813,13 @@ void MapWindow::Event_TerrainTopology(int vswitch) {
 }
 
 
-#if USEIBOX
-void MapWindow::StoreRestoreFullscreen(bool store) {
-  static bool oldfullscreen = 0;
-  static bool SuperPan = false;
-  if (store) {
-    // pan not active on entry, save fullscreen status
-    SuperPan = true;
-    oldfullscreen = MapWindow::IsMapFullScreen();
-  } else {
-    if (SuperPan) {
-      // pan is active, need to restore
-      if (!oldfullscreen) {
-        // change it if necessary
-        RequestFullScreen = false;
-      }
-      SuperPan = false;
-    }
-  }
-}
-#endif
-
 void MapWindow::Event_Pan(int vswitch) {
   //  static bool oldfullscreen = 0;  never assigned!
   bool oldPan = mode.AnyPan();
   if (vswitch == -2) { // superpan, toggles fullscreen also
 
-#if USEIBOX
-    StoreRestoreFullscreen(!mode.AnyPan());
-#endif
     // new mode
     mode.Special(Mode::MODE_SPECIAL_PAN, !oldPan);
-#if USEIBOX
-    if (mode.AnyPan()) { // pan now on, so go fullscreen
-      RequestFullScreen = true;
-    }
-#endif
 
   } else if (vswitch == -1) {
     mode.Special(Mode::MODE_SPECIAL_PAN, !oldPan);
@@ -1004,50 +912,6 @@ double MapWindow::FindMapScale(double Value){
   return(Value);
 }
 
-#if USEIBOX
-static void SetFontInfo(HDC hDC, FontHeightInfo_t *FontHeightInfo){
-  TEXTMETRIC tm;
-  int x,y=0;
-  RECT  rec;
-  int top, bottom;
-
-  GetTextMetrics(hDC, &tm);
-  FontHeightInfo->Height = tm.tmHeight;
-  FontHeightInfo->AscentHeight = tm.tmAscent;
-  FontHeightInfo->CapitalHeight = 0;
-
-  SetBkMode(hDC, OPAQUE);
-  SetBkColor(hDC,RGB_WHITE);
-  SetTextColor(hDC,RGB_BLACK);
-  rec.left = 0;
-  rec.top = 0;
-  rec.right = tm.tmAveCharWidth;
-  rec.bottom = tm.tmHeight;
-  ExtTextOut(hDC, 0, 0, ETO_OPAQUE, &rec, TEXT("M"), _tcslen(TEXT("M")), NULL);
-
-  top = tm.tmHeight;
-  bottom = 0;
-
-  FontHeightInfo->CapitalHeight = 0;
-  for (x=0; x<tm.tmAveCharWidth; x++){
-    for (y=0; y<tm.tmHeight; y++){
-      if ((GetPixel(hDC, x, y)) != RGB_WHITE){
-        if (top > y)
-          top = y;
-        if (bottom < y)
-          bottom = y;
-      }
-    }
-  }
-
-  // This works for PPC
-  if (FontHeightInfo->CapitalHeight <= 0)
-    FontHeightInfo->CapitalHeight = tm.tmAscent - 1 -(tm.tmHeight/10);
-
-}
-#endif
-
-
 LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
                                         LPARAM lParam)
 {
@@ -1089,39 +953,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 
       hMaskBitMap = CreateBitmap(width+1, height+1, 1, 1, NULL);
       SelectObject(hDCMask, (HBITMAP)hMaskBitMap);
-
-#if USEIBOX
-      {
-	HFONT      oldFont;
-
-	// REMOVE THIS STUFF AFTER REMOVING INFOBOXES
-	oldFont = (HFONT)SelectObject(hDCTemp, TitleWindowFont);
-	SetFontInfo(hDCTemp, &Appearance.TitleWindowFont);
-
-	SelectObject(hDCTemp, MapWindowFont);
-	SetFontInfo(hDCTemp, &Appearance.MapWindowFont);
-
-	SelectObject(hDCTemp, MapWindowBoldFont);
-	SetFontInfo(hDCTemp, &Appearance.MapWindowBoldFont);
-
-	SelectObject(hDCTemp, InfoWindowFont);
-	SetFontInfo(hDCTemp, &Appearance.InfoWindowFont);
-
-	SelectObject(hDCTemp, CDIWindowFont);
-	SetFontInfo(hDCTemp, &Appearance.CDIWindowFont);
-//VENTA6
-	SelectObject(hDCTemp, StatisticsFont);
-	SetFontInfo(hDCTemp, &Appearance.StatisticsFont);
-
-	SelectObject(hDCTemp, MapLabelFont);
-	SetFontInfo(hDCTemp, &Appearance.MapLabelFont);
-
-	SelectObject(hDCTemp, TitleSmallWindowFont);
-	SetFontInfo(hDCTemp, &Appearance.TitleSmallWindowFont);
-
-	SelectObject(hDCTemp, oldFont);
-      }
-#endif
 
       break;
 
@@ -1659,11 +1490,7 @@ goto_menu:
 	// if clicking on navboxes, process fast virtual keys
 	// maybe check LK8000 active?
 	// This point is selected when in MapSpaceMode==MSM_MAP, i.e. lk8000 with moving map on.
-#if USEIBOX
-	if (  DrawBottom && IsMapFullScreen() && (Y >= (rc.bottom-BottomSize)) && !mode.AnyPan() ) {
-#else
 	if (  DrawBottom && (Y >= (rc.bottom-BottomSize)) && !mode.AnyPan() ) {
-#endif
 		wParam=ProcessVirtualKey(X,Y,dwInterval,LKGESTURE_NONE);
                 #ifdef DEBUG_MAPINPUT
 		DoStatusMessage(_T("DBG-034 navboxes")); 
@@ -1682,15 +1509,9 @@ goto_menu:
 
 	// we need to calculate it here only if needed
 	if (gestDist>=0)
-#if USEIBOX
-		distance = gestDist /InfoBoxLayout::scale;
-	else
-		distance = isqrt4((long)((XstartScreen-X)*(XstartScreen-X)+ (YstartScreen-Y)*(YstartScreen-Y))) /InfoBoxLayout::scale;
-#else
 		distance = gestDist /ScreenScale;
 	else
 		distance = isqrt4((long)((XstartScreen-X)*(XstartScreen-X)+ (YstartScreen-Y)*(YstartScreen-Y))) /ScreenScale;
-#endif
 
 	#ifdef DEBUG_VIRTUALKEYS
 	TCHAR buf[80]; char sbuf[80];
@@ -1704,11 +1525,7 @@ goto_menu:
 
       // Process faster clicks here and no precision, but let DBLCLK pass through
       // VK are used in the bottom line in this case, forced on for this situation.
-#if USEIBOX
-      if (  DrawBottom && IsMapFullScreen() && (Y >= (rc.bottom-BottomSize)) ) {
-#else
       if (  DrawBottom && (Y >= (rc.bottom-BottomSize)) ) {
-#endif
 		// DoStatusMessage(_T("Click on hidden map ignored")); 
 
 		// do not process virtual key if it is timed as a DBLCLK
@@ -1763,22 +1580,6 @@ goto_menu:
       }
 
       if (!mode.Is(Mode::MODE_TARGET_PAN)) {
-		// We need to defocus infoboxes on demand here.  
-		// Probably should be a good idea to use it also for standard old map with no VK
-		// We do it also for old standard map with no VK.
-		//
-		#if USEIBOX
-		if ( InfoFocus>=0) { // 
-			// DoStatusMessage(_T("Defocus ibox")); 
-			DefocusInfoBox();
-			SetFocus(hWnd);
-			#ifndef DISABLEAUDIO
-			 if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-			#endif
-			iboxtoclick=true; 
-			break;
-		}
-		#endif
 		
 		//
 		// Finally process normally a click on the moving map.
@@ -2227,24 +2028,8 @@ QuickRedraw: // 100318 speedup redraw
   if (!EnableTerrain || !DerivedDrawInfo.TerrainValid || !RasterTerrain::isTerrainLoaded() ) {
 
     // display border and fill background..
-	#if USEIBOX
-	if(InfoWindowActive) {
-		SelectObject(hdc, hInvBackgroundBrush[BgMapColor]); 
-		SelectObject(hdc, GetStockObject(BLACK_PEN));
-	} else {
-		// Here we are if no terrain is used or available
-		if (INVERTCOLORS) { 
-			SelectObject(hdc, hInvBackgroundBrush[BgMapColor]);
-			SelectObject(hdc, GetStockObject(WHITE_PEN));
-		} else {
-			SelectObject(hdc, hInvBackgroundBrush[BgMapColor]);
-			SelectObject(hdc, GetStockObject(WHITE_PEN));
-		}
-	}
-	#else
 	SelectObject(hdc, hInvBackgroundBrush[BgMapColor]);
 	SelectObject(hdc, GetStockObject(WHITE_PEN));
-	#endif // USEIBOX
 
 	Rectangle(hdc,rc.left,rc.top,rc.right,rc.bottom);
 	// We force LK painting black values on screen depending on the background color in use
@@ -2421,11 +2206,7 @@ QuickRedraw: // 100318 speedup redraw
   // Draw traffic and other specifix LK gauges
   	LKDrawFLARMTraffic(hdc, rc, Orig_Aircraft);
 	if ( !mode.AnyPan()) DrawLook8000(hdc,rc); 
-#if USEIBOX
-	if (LKVarioBar && IsMapFullScreen() && !mode.AnyPan()) // 091214 do not draw Vario when in Pan mode
-#else
 	if (LKVarioBar && !mode.AnyPan()) // 091214 do not draw Vario when in Pan mode
-#endif
 		LKDrawVario(hdc,rc); // 091111
   
   // finally, draw you!
@@ -2606,18 +2387,10 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
   for (short nvi=0; nvi<SCREENVSLOTS; nvi++) nVLabelBlocks[nvi]=0;
   #endif
 
-  #if USEIBOX
-  GetClientRect(hWndMapWindow, &MapRectBig);
-  #else
   GetClientRect(hWndMapWindow, &MapRect);
-  #endif
 
   UpdateTimeStats(true);
 
-#if USEIBOX  
-  MapRectSmall = MapRect;
-  MapRect = MapRectSmall;
-#endif
   
   SetBkMode(hdcDrawWindow,TRANSPARENT);
   SetBkMode(hDCTemp,OPAQUE);
@@ -2625,19 +2398,11 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 
   // paint draw window black to start
   SelectObject(hdcDrawWindow, GetStockObject(BLACK_PEN));
-#if USEIBOX
-  Rectangle(hdcDrawWindow,MapRectBig.left,MapRectBig.top,
-            MapRectBig.right,MapRectBig.bottom);
-
-  BitBlt(hdcScreen, 0, 0, MapRectBig.right-MapRectBig.left,
-         MapRectBig.bottom-MapRectBig.top, 
-#else
   Rectangle(hdcDrawWindow,MapRect.left,MapRect.top,
             MapRect.right,MapRect.bottom);
 
   BitBlt(hdcScreen, 0, 0, MapRect.right-MapRect.left,
          MapRect.bottom-MapRect.top, 
-#endif
          hdcDrawWindow, 0, 0, SRCCOPY);
 
   // This is just here to give fully rendered start screen
@@ -2683,13 +2448,8 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 
       if (!MapDirty && !first) {
 	// redraw old screen, must have been a request for fast refresh
-#if USEIBOX
-	BitBlt(hdcScreen, 0, 0, MapRectBig.right-MapRectBig.left,
-	       MapRectBig.bottom-MapRectBig.top, 
-#else
 	BitBlt(hdcScreen, 0, 0, MapRect.right-MapRect.left,
 	       MapRect.bottom-MapRect.top, 
-#endif
 	       hdcDrawWindow, 0, 0, SRCCOPY);
 	continue;
       } else {
@@ -2698,23 +2458,12 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 
       MapWindow::UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
 
-#if USEIBOX
-      if (RequestFullScreen != MapFullScreen) {
-	ToggleFullScreenStart();
-      }
-#endif
-
       RenderMapWindow(MapRect);
     
       if (!first) {
 	BitBlt(hdcScreen, 0, 0, 
-#if USEIBOX
-	       MapRectBig.right-MapRectBig.left,
-	       MapRectBig.bottom-MapRectBig.top, 
-#else
 	       MapRect.right-MapRect.left,
 	       MapRect.bottom-MapRect.top, 
-#endif
 	       hdcDrawWindow, 0, 0, SRCCOPY);
 	InvalidateRect(hWndMapWindow, &MapRect, false);
       }
@@ -2776,13 +2525,8 @@ void PolygonRotateShift(POINT* poly, const int n, const int xs, const int ys, co
   if(angle != lastangle) {
     lastangle = angle;
     int deg = DEG_TO_INT(AngleLimit360(angle));
-#if USEIBOX
-    cost = ICOSTABLE[deg]*InfoBoxLayout::scale;
-    sint = ISINETABLE[deg]*InfoBoxLayout::scale;
-#else
     cost = ICOSTABLE[deg]*ScreenScale;
     sint = ISINETABLE[deg]*ScreenScale;
-#endif
   }
   const int xxs = xs*1024+512;
   const int yys = ys*1024+512;
@@ -2959,11 +2703,7 @@ void MapWindow::DrawBitmapX(HDC hdc, int x, int y,
                             HDC source,
                             int offsetx, int offsety,
                             DWORD mode) {
-#if USEIBOX
-  if (InfoBoxLayout::scale>1) {
-#else
   if (ScreenScale>1) {
-#endif
     StretchBlt(hdc, x, y, 
                IBLSCALE(sizex), 
                IBLSCALE(sizey), 
@@ -3665,11 +3405,7 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
   Start.y = Orig.y;
   Start.x = Orig.x;
 
-#if USEIBOX
-  int kx = tsize.cx/InfoBoxLayout::scale/2;
-#else
   int kx = tsize.cx/ScreenScale/2;
-#endif
 
   POINT Arrow[7] = { {0,-20}, {-6,-26}, {0,-20}, 
                      {6,-26}, {0,-20}, 
@@ -3688,15 +3424,9 @@ void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {
   POINT Tail[2] = {{0,-20}, {0,-26-min(20,wmag)*3}};
   double angle = AngleLimit360(DerivedDrawInfo.WindBearing-DisplayAngle);
   for(i=0; i<2; i++) {
-#if USEIBOX
-    if (InfoBoxLayout::scale>1) {
-      Tail[i].x *= InfoBoxLayout::scale;
-      Tail[i].y *= InfoBoxLayout::scale;
-#else
     if (ScreenScale>1) {
       Tail[i].x *= ScreenScale;
       Tail[i].y *= ScreenScale;
-#endif
     }
     protateshift(Tail[i], angle, Start.x, Start.y);
   }
@@ -3828,13 +3558,8 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
 
 
 double MapWindow::GetApproxScreenRange() {
-#if USEIBOX
-  return (zoom.Scale() * max(MapRectBig.right-MapRectBig.left,
-                         MapRectBig.bottom-MapRectBig.top))
-#else
   return (zoom.Scale() * max(MapRect.right-MapRect.left,
                          MapRect.bottom-MapRect.top))
-#endif
     *1000.0/GetMapResolutionFactor();
 }
 

@@ -45,17 +45,10 @@ static void OnAirspacePatternsPaintListItem(WindowControl * Sender, HDC hDC){
 		 MapWindow::GetAirspaceBrush(i)); 
     SetTextColor(hDC, RGB(0x00,0x00, 0x00));
     Rectangle(hDC, 
-#if USEIBOX
-              100*InfoBoxLayout::scale, 
-              2*InfoBoxLayout::scale,
-              180*InfoBoxLayout::scale,
-              22*InfoBoxLayout::scale);
-#else
               100*ScreenScale, 
               2*ScreenScale,
               180*ScreenScale,
               22*ScreenScale);
-#endif
   }
 }
 
@@ -103,11 +96,7 @@ int dlgAirspacePatternsShowModal(void){
 
   ItemIndex = -1;
 
-#if USEIBOX
-  if (!InfoBoxLayout::landscape) {
-#else
   if (!ScreenLandscape) {
-#endif
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAirspacePatterns_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 

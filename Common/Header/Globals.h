@@ -80,15 +80,7 @@ GEXTERN HWND hWndMapWindow;            // HWND MapWindow
 // infoboxes
 GEXTERN int  InfoType[MAXINFOWINDOWS];
 
-#if USEIBOX
-GEXTERN bool DisplayLocked; // if infoboxes are locked
-GEXTERN int  CurrentInfoType;          // Used for Popup Menu Select
-GEXTERN HWND hWndInfoWindow[MAXINFOWINDOWS];
-GEXTERN int  InfoFocus;
-GEXTERN SCREEN_INFO Data_Options[NUMDATAOPTIONS_MAX];
-#else
 GEXTERN DATAOPTIONS Data_Options[NUMDATAOPTIONS_MAX];
-#endif
 
 GEXTERN int NumDataOptions;
 GEXTERN BOOL InfoBoxesHidden;
@@ -430,12 +422,9 @@ GEXTERN int ScreenSizeX;
 GEXTERN int ScreenSizeY;
 GEXTERN RECT ScreenSizeR;
 GEXTERN bool ScreenLandscape;
-#if USEIBOX
-#else
 GEXTERN double ScreenDScale;
 GEXTERN int ScreenScale;
 GEXTERN bool ScreenIntScale;
-#endif
 
 // 091011 Used by TakeoffLanding inside Calculation.cpp - limited values careful
 GEXTERN int time_in_flight;

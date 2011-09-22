@@ -60,13 +60,8 @@ static void OnStartPointPaintListItem(WindowControl * Sender, HDC hDC){
       }
     }
     ExtTextOut(hDC,
-#if USEIBOX
-	       2*InfoBoxLayout::scale,
-	       2*InfoBoxLayout::scale,
-#else
 	       2*ScreenScale,
 	       2*ScreenScale,
-#endif
 	       ETO_OPAQUE, NULL,
 	       label,
 	       _tcslen(label),
@@ -170,11 +165,7 @@ void dlgStartPointShowModal(void) {
 
   ItemIndex = -1;
 
-#if USEIBOX
-  if (!InfoBoxLayout::landscape) {
-#else
   if (!ScreenLandscape) {
-#endif
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgStartPoint_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 

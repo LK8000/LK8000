@@ -81,9 +81,6 @@
 #include "LKHolux.h"
 #endif
 
-#if USEIBOX
-#include "InfoBox.h"
-#endif
 #include "RasterTerrain.h"
 extern void LKObjects_Create();
 extern void LKObjects_Delete();
@@ -103,22 +100,9 @@ static std::map<TCHAR*, TCHAR*> unusedTranslations;
 
 Appearance_t Appearance = {
   206,
-#if USEIBOX
-  {0,0,0},
-  {0,0,0},
-  {0,0,0},
-  {0,0,0},
-  {0,0,0},
-  {0,0,0},
-  {0,0,0},
-  {0,0,0},
-#endif
   ctBestCruiseTrackAltA,
   wpLandableDefault,
   false,
-#if USEIBOX
-  apIg0,  // VENTA-ADDON GEOM
-#endif
   apImPnaGeneric
 };
 
@@ -132,21 +116,9 @@ HANDLE hInstrumentThread;
 DWORD dwInstThreadID;
 #endif
 
-#if USEIBOX
-int numInfoWindows = 9;
-InfoBox *InfoBoxes[MAXINFOWINDOWS];
-#endif
-
 #if USEOLDASPWARNINGS // not really used anyway
 bool RequestAirspaceWarningDialog= false;
 bool RequestAirspaceWarningForce=false;
-#endif
-
-#if USEIBOX
-bool                                    DisplayLocked = true;
-bool                                    InfoWindowActive = true;
-bool                                    EnableAuxiliaryInfo = false;
-int                                     InfoBoxFocusTimeOut = 0;
 #endif
 
 
@@ -160,14 +132,8 @@ COLORREF ColorOK = RGB_BLUE;
 COLORREF ColorButton = RGB_BUTTONS;  
 
 // Display Gobals
-#if USEIBOX
-HFONT                                   InfoWindowFont;
-#endif
 HFONT                                   TitleWindowFont;
 HFONT                                   MapWindowFont;
-#if USEIBOX
-HFONT                                   TitleSmallWindowFont;
-#endif
 HFONT                                   MapWindowBoldFont;
 HFONT                                   CDIWindowFont; // New
 HFONT                                   MapLabelFont;
@@ -191,23 +157,13 @@ HFONT					LK8PanelMediumFont=(HFONT)NULL;
 HFONT					LK8PanelSmallFont=(HFONT)NULL;
 HFONT					LK8PanelUnitFont=(HFONT)NULL;
 
-#if USEIBOX
-LOGFONT                                   autoInfoWindowLogFont; // these are the non-custom parameters
-#endif
 LOGFONT                                   autoTitleWindowLogFont;
 LOGFONT                                   autoMapWindowLogFont;
-#if USEIBOX
-LOGFONT                                   autoTitleSmallWindowLogFont;
-#endif
 LOGFONT                                   autoMapWindowBoldLogFont;
 LOGFONT                                   autoCDIWindowLogFont; // New
 LOGFONT                                   autoMapLabelLogFont;
 LOGFONT                                   autoStatisticsLogFont;
 
-#if USEIBOX
-int                                             CurrentInfoType;
-int                                             InfoFocus = 0;
-#endif
 
 short TerrainContrast	= 140;
 short TerrainBrightness = 115;
@@ -215,9 +171,6 @@ short TerrainRamp = 0;
 
 BOOL extGPSCONNECT = FALSE; // this one used by external functions
 
-#if USEIBOX
-bool InfoBoxesDirty= false;
-#endif
 bool DialogActive = false;
 
 
@@ -230,11 +183,6 @@ double POLARLD[POLARSIZE] = {33,30,20};
 // This will calculate nearest topology without painting it, for 1s only.
 // It will be automatically cleared by Terrain  DrawTopology()
 bool ForceNearestTopologyCalculation=false; 
-
-#if USEIBOX
-// 100413 shortcut on aircraft icon for ibox switching with medium click
-// bool	ShortcutIbox=true;
-#endif
 
 
 #if  (LK_CACHECALC && LK_CACHECALC_MCA_STAT)
@@ -276,9 +224,6 @@ static bool api_has_SHHandleWMActivate = false;
 static bool api_has_SHHandleWMSettingChange = false;
 #endif
 
-#if USEIBOX
-BOOL InfoBoxesHidden = false; 
-#endif
 
 void PopupBugsBallast(int updown);
 
@@ -327,314 +272,13 @@ void                                                    DisplayText(void);
 void CommonProcessTimer    (void);
 void SIMProcessTimer(void);
 void ProcessTimer    (void);
-#if USEIBOX
-void                                                    PopUpSelect(int i);
-#endif
 //HWND CreateRpCommandBar(HWND hwnd);
 
 #ifdef DEBUG
 void                                            DebugStore(char *Str);
 #endif
 
-#if USEIBOX
-bool SetDataOption( int index,
-					UnitGroup_t UnitGroup,
-					TCHAR *Description,
-					TCHAR *Title,
-					InfoBoxFormatter *Formatter,
-					void (*Process)(int UpDown),
-					char next_screen,
-					char prev_screen)
-{
-	SCREEN_INFO tag;
-	if (index>=NUMDATAOPTIONS_MAX) return false;
-
-	tag.UnitGroup = UnitGroup;
-	_tcsncpy(tag.Description, gettext(Description), DESCRIPTION_SIZE); 
-	tag.Description[DESCRIPTION_SIZE] = 0;		// buff allocated to DESCRIPITON_SIZE+1
-	_tcsncpy(tag.Title, gettext(Title), TITLE_SIZE);
-	tag.Title[TITLE_SIZE] = 0;;					// buff allocated to TITLE_SIZE+1
-	tag.Formatter = Formatter;
-	tag.Process = Process;
-	tag.next_screen = next_screen;
-	tag.prev_screen = prev_screen;
-
-	memcpy(&Data_Options[index], &tag, sizeof(SCREEN_INFO));
-	if (NumDataOptions<=index) NumDataOptions=index+1;				//No. of items = max index+1
-
-#ifdef DEBUG
-	DebugStore(TEXT("Add data option #%d %s%s"),index,tag.Description,NEWLINE);
-#endif
-	return true;
-}
-
-
-void FillDataOptions()
-{
-	// Groups:
-	//   Altitude 0,1,20,33
-	//   Aircraft info 3,6,23,32,37,47,54
-	//   LD 4,5,19,38,53, 66    VENTA-ADDON added 66 for GR final
-	//   Vario 2,7,8,9,21,22,24,44
-	//   Wind 25,26,48,49,50
-	//   Mcready 10,34,35,43
-	//   Nav 11,12,13,15,16,17,18,27,28,29,30,31
-	//   Waypoint 14,36,39,40,41,42,45,46
-
-	// LKTOKEN  _@M1001_ = "Altitude QNH", _@M1002_ = "Alt"
-	SetDataOption(0, ugAltitude,		TEXT("_@M1001_"), TEXT("_@M1002_"), new InfoBoxFormatter(TEXT("%2.0f")), AltitudeProcessing, 1, 33);
-	// LKTOKEN  _@M1003_ = "Altitude AGL", _@M1004_ = "HAGL"
-	SetDataOption(1, ugAltitude,		TEXT("_@M1003_"), TEXT("_@M1004_"), new FormatterLowWarning(TEXT("%2.0f"),0.0), NoProcessing, 20, 0);
-	// LKTOKEN  _@M1005_ = "Thermal last 30 sec", _@M1006_ = "TC.30\""
-	SetDataOption(2, ugVerticalSpeed,	TEXT("_@M1005_"), TEXT("_@M1006_"), new FormatterLowWarning(TEXT("%-2.1f"),0.0), NoProcessing, 7, 44);
-	// LKTOKEN  _@M1007_ = "Bearing", _@M1008_ = "Brg"
-	SetDataOption(3, ugNone,			TEXT("_@M1007_"), TEXT("_@M1008_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)), NoProcessing, 6, 54);
-	// LKTOKEN  _@M1009_ = "Eff.last 20 sec", _@M1010_ = "E.20\""
-	SetDataOption(4, ugNone,			TEXT("_@M1009_"), TEXT("_@M1010_"), new InfoBoxFormatter(TEXT("%2.0f")), PopupBugsBallast, 5, 38);
-	// LKTOKEN  _@M1011_ = "Eff.cruise last therm", _@M1012_ = "E.Cru"
-	SetDataOption(5, ugNone,            TEXT("_@M1011_"), TEXT("_@M1012_"), new InfoBoxFormatter(TEXT("%2.0f")), PopupBugsBallast, 19, 4);
-	// LKTOKEN  _@M1013_ = "Speed ground", _@M1014_ = "GS"
-	SetDataOption(6, ugHorizontalSpeed, TEXT("_@M1013_"), TEXT("_@M1014_"), new InfoBoxFormatter(TEXT("%2.0f")), SpeedProcessing, 23, 3);
-	// LKTOKEN  _@M1015_ = "Thermal Average Last", _@M1016_ = "TL.Avg"
-	SetDataOption(7, ugVerticalSpeed,   TEXT("_@M1015_"), TEXT("_@M1016_"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 8, 2);
-	// LKTOKEN  _@M1017_ = "Thermal Gain Last", _@M1018_ = "TL.Gain"
-	SetDataOption(8, ugAltitude,        TEXT("_@M1017_"), TEXT("_@M1018_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 9, 7);
-	// LKTOKEN  _@M1019_ = "Thermal Time Last", _@M1020_ = "TL.Time"
-	SetDataOption(9, ugNone,            TEXT("_@M1019_"), TEXT("_@M1020_"), new FormatterTime(TEXT("%04.0f")), NoProcessing, 21, 8);
-	// LKTOKEN  _@M1021_ = "MacCready Setting", _@M1022_ = "MCready"
-	SetDataOption(10, ugVerticalSpeed,  TEXT("_@M1021_"), TEXT("_@M1022_"), new InfoBoxFormatter(TEXT("%2.1f")), MacCreadyProcessing, 34, 43);
-	// LKTOKEN  _@M1023_ = "Next Distance", _@M1024_ = "Dist"
-	SetDataOption(11, ugDistance,       TEXT("_@M1023_"), TEXT("_@M1024_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 12, 31);
-	// LKTOKEN  _@M1025_ = "Next Alt.Arrival", _@M1026_ = "NxtArr"
-	SetDataOption(12, ugAltitude,       TEXT("_@M1025_"), TEXT("_@M1026_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 13, 11);
-	// LKTOKEN  _@M1027_ = "Next Alt.Required", _@M1028_ = "NxtAltR"
-	SetDataOption(13, ugAltitude,       TEXT("_@M1027_"), TEXT("_@M1028_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 15, 12);
-	// LKTOKEN  _@M1029_ = "Next Waypoint", _@M1030_ = "Next"
-	SetDataOption(14, ugNone,           TEXT("_@M1029_"), TEXT("_@M1030_"), new FormatterWaypoint(TEXT("\0")), NextUpDown, 36, 46);
-	// LKTOKEN  _@M1031_ = "Task Alt.Arrival", _@M1032_ = "TskArr"
-	SetDataOption(15, ugAltitude,       TEXT("_@M1031_"), TEXT("_@M1032_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 16, 13);
-	// LKTOKEN  _@M1033_ = "Task Alt.Required", _@M1034_ = "TskAltR"
-	SetDataOption(16, ugAltitude,       TEXT("_@M1033_"), TEXT("_@M1034_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 17, 15);
-	// LKTOKEN  _@M1035_ = "Task Speed Average", _@M1036_ = "TskSpAv"
-	SetDataOption(17, ugTaskSpeed,		TEXT("_@M1035_"), TEXT("_@M1036_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 18, 16);
-	// LKTOKEN  _@M1037_ = "Task Distance", _@M1038_ = "TskDis"
-	SetDataOption(18, ugDistance,       TEXT("_@M1037_"), TEXT("_@M1038_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 27, 17);
-	// LKTOKEN  _@M1039_ = "_Reserved 1", _@M1040_ = "OLD fLD"
-	SetDataOption(19, ugNone,           TEXT("_@M1039_"), TEXT("_@M1040_"), new InfoBoxFormatter(TEXT("%1.0f")), NoProcessing, 38, 5);
-	// LKTOKEN  _@M1041_ = "Terrain Elevation", _@M1042_ = "Gnd"
-	SetDataOption(20, ugAltitude,       TEXT("_@M1041_"), TEXT("_@M1042_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 33, 1);
-	// LKTOKEN  _@M1043_ = "Thermal Average", _@M1044_ = "TC.Avg"
-	SetDataOption(21, ugVerticalSpeed,  TEXT("_@M1043_"), TEXT("_@M1044_"), new FormatterLowWarning(TEXT("%-2.1f"),0.0), NoProcessing, 22, 9);
-	// LKTOKEN  _@M1045_ = "Thermal Gain", _@M1046_ = "TC.Gain"
-	SetDataOption(22, ugAltitude,       TEXT("_@M1045_"), TEXT("_@M1046_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 24, 21);
-	// LKTOKEN  _@M1047_ = "Track", _@M1048_ = "Track"
-	SetDataOption(23, ugNone,           TEXT("_@M1047_"), TEXT("_@M1048_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)), DirectionProcessing, 32, 6);
-	// LKTOKEN  _@M1049_ = "Vario", _@M1050_ = "Vario"
-	SetDataOption(24, ugVerticalSpeed,  TEXT("_@M1049_"), TEXT("_@M1050_"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 44, 22);
-	// LKTOKEN  _@M1051_ = "Wind Speed", _@M1052_ = "WindV"
-	SetDataOption(25, ugWindSpeed,      TEXT("_@M1051_"), TEXT("_@M1052_"), new InfoBoxFormatter(TEXT("%2.0f")), WindSpeedProcessing, 26, 50);
-	// LKTOKEN  _@M1053_ = "Wind Bearing", _@M1054_ = "WindB"
-	SetDataOption(26, ugNone,           TEXT("_@M1053_"), TEXT("_@M1054_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)), WindDirectionProcessing, 48, 25);
-	// LKTOKEN  _@M1055_ = "AA Time", _@M1056_ = "AATime"
-	SetDataOption(27, ugNone,           TEXT("_@M1055_"), TEXT("_@M1056_"), new FormatterAATTime(TEXT("%2.0f")), NoProcessing, 28, 18);
-	// LKTOKEN  _@M1057_ = "AA Distance Max", _@M1058_ = "AADmax"
-	SetDataOption(28, ugDistance,       TEXT("_@M1057_"), TEXT("_@M1058_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 29, 27);
-	// LKTOKEN  _@M1059_ = "AA Distance Min", _@M1060_ = "AADmin"
-	SetDataOption(29, ugDistance,       TEXT("_@M1059_"), TEXT("_@M1060_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 30, 28);
-	// LKTOKEN  _@M1061_ = "AA Speed Max", _@M1062_ = "AAVmax"
-	SetDataOption(30, ugTaskSpeed,      TEXT("_@M1061_"), TEXT("_@M1062_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 31, 29);
-	// LKTOKEN  _@M1063_ = "AA Speed Min", _@M1064_ = "AAVmin"
-	SetDataOption(31, ugTaskSpeed,      TEXT("_@M1063_"), TEXT("_@M1064_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 51, 30);
-	// LKTOKEN  _@M1065_ = "Airspeed IAS", _@M1066_ = "IAS"
-	SetDataOption(32, ugHorizontalSpeed,TEXT("_@M1065_"), TEXT("_@M1066_"), new InfoBoxFormatter(TEXT("%2.0f")), AirspeedProcessing, 37, 23);
-	// LKTOKEN  _@M1067_ = "Altitude BARO", _@M1068_ = "HBAR"
-	SetDataOption(33, ugAltitude,       TEXT("_@M1067_"), TEXT("_@M1068_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 0, 20);
-	// LKTOKEN  _@M1069_ = "Speed MacReady", _@M1070_ = "SpMc"
-	SetDataOption(34, ugHorizontalSpeed,TEXT("_@M1069_"), TEXT("_@M1070_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 35, 10);
-	// LKTOKEN  _@M1071_ = "Percentage clim", _@M1072_ = "%Climb"
-	SetDataOption(35, ugNone,           TEXT("_@M1071_"), TEXT("_@M1072_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 43, 34);
-	// LKTOKEN  _@M1073_ = "Time of flight", _@M1074_ = "FlyTime"
-	SetDataOption(36, ugNone,           TEXT("_@M1073_"), TEXT("_@M1074_"), new FormatterTime(TEXT("%04.0f")), NoProcessing, 39, 14);
-	// LKTOKEN  _@M1075_ = "G load", _@M1076_ = "G"
-	SetDataOption(37, ugNone,           TEXT("_@M1075_"), TEXT("_@M1076_"), new InfoBoxFormatter(TEXT("%2.2f")), NoProcessing, 47, 32);
-	// LKTOKEN  _@M1077_ = "_Reserved 2", _@M1078_ = "OLD nLD"
-	SetDataOption(38, ugNone,           TEXT("_@M1077_"), TEXT("_@M1078_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 53, 19);
-	// LKTOKEN  _@M1079_ = "Time local", _@M1080_ = "Time"
-	SetDataOption(39, ugNone,           TEXT("_@M1079_"), TEXT("_@M1080_"), new FormatterTime(TEXT("%04.0f")), NoProcessing, 40, 36);
-	// LKTOKEN  _@M1081_ = "Time UTC", _@M1082_ = "UTC"
-	SetDataOption(40, ugNone,           TEXT("_@M1081_"), TEXT("_@M1082_"), new FormatterTime(TEXT("%04.0f")), NoProcessing, 41, 39);
-	// LKTOKEN  _@M1083_ = "Task Time To Go", _@M1084_ = "TskETE"
-	SetDataOption(41, ugNone,           TEXT("_@M1083_"), TEXT("_@M1084_"), new FormatterAATTime(TEXT("%04.0f")), NoProcessing, 42, 40);
-	// LKTOKEN  _@M1085_ = "Next Time To Go", _@M1086_ = "NextETE"
-	SetDataOption(42, ugNone,           TEXT("_@M1085_"), TEXT("_@M1086_"), new FormatterAATTime(TEXT("%04.0f")), NoProcessing, 45, 41);
-	// LKTOKEN  _@M1087_ = "Speed To Fly", _@M1088_ = "STF"
-	SetDataOption(43, ugHorizontalSpeed,TEXT("_@M1087_"), TEXT("_@M1088_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 10, 35);
-	// LKTOKEN  _@M1089_ = "Netto Vario", _@M1090_ = "Netto"
-	SetDataOption(44, ugVerticalSpeed,  TEXT("_@M1089_"), TEXT("_@M1090_"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 2, 24);
-	// LKTOKEN  _@M1091_ = "Task Arrival Time", _@M1092_ = "TskETA"
-	SetDataOption(45, ugNone,           TEXT("_@M1091_"), TEXT("_@M1092_"), new FormatterAATTime(TEXT("%04.0f")), NoProcessing, 46, 42);
-	// LKTOKEN  _@M1093_ = "Next Arrival Time", _@M1094_ = "NextETA"
-	SetDataOption(46, ugNone,           TEXT("_@M1093_"), TEXT("_@M1094_"), new FormatterTime(TEXT("%04.0f")), NoProcessing, 14, 45);
-	// LKTOKEN  _@M1095_ = "Bearing Difference", _@M1096_ = "To"
-	SetDataOption(47, ugNone,           TEXT("_@M1095_"), TEXT("_@M1096_"), new FormatterDiffBearing(TEXT("")), NoProcessing, 54, 37);
-	// LKTOKEN  _@M1097_ = "Outside Air Temperature", _@M1098_ = "OAT"
-	SetDataOption(48, ugNone,           TEXT("_@M1097_"), TEXT("_@M1098_"), new InfoBoxFormatter(TEXT("%2.1f")TEXT(DEG)), NoProcessing, 49, 26);
-	// LKTOKEN  _@M1099_ = "Relative Humidity", _@M1100_ = "RelHum"
-	SetDataOption(49, ugNone,           TEXT("_@M1099_"), TEXT("_@M1100_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 50, 48);
-	// LKTOKEN  _@M1101_ = "Forecast Temperature", _@M1102_ = "MaxTemp"
-	SetDataOption(50, ugNone,           TEXT("_@M1101_"), TEXT("_@M1102_"), new InfoBoxFormatter(TEXT("%2.1f")TEXT(DEG)), ForecastTemperatureProcessing, 49, 25);
-	// LKTOKEN  _@M1103_ = "AA Distance Tg", _@M1104_ = "AADtgt"
-	SetDataOption(51, ugDistance,       TEXT("_@M1103_"), TEXT("_@M1104_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 52, 31);
-	// LKTOKEN  _@M1105_ = "AA Speed Tg", _@M1106_ = "AAVtgt"
-	SetDataOption(52, ugTaskSpeed, TEXT("_@M1105_"), TEXT("_@M1106_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 11, 51);
-	// LKTOKEN  _@M1107_ = "L/D vario", _@M1108_ = "L/D vario"
-	SetDataOption(53, ugNone,           TEXT("_@M1107_"), TEXT("_@M1108_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 4, 38);
-	// LKTOKEN  _@M1109_ = "Airspeed TAS", _@M1110_ = "TAS"
-	SetDataOption(54, ugHorizontalSpeed,TEXT("_@M1109_"), TEXT("_@M1110_"), new InfoBoxFormatter(TEXT("%2.0f")), AirspeedProcessing, 3, 47);
-	// LKTOKEN  _@M1111_ = "Team Code", _@M1112_ = "TeamCode"
-	SetDataOption(55, ugNone,           TEXT("_@M1111_"), TEXT("_@M1112_"), new FormatterTeamCode(TEXT("\0")), TeamCodeProcessing, 56, 54);
-	// LKTOKEN  _@M1113_ = "Team Bearing", _@M1114_ = "TmBrng"
-	SetDataOption(56, ugNone,           TEXT("_@M1113_"), TEXT("_@M1114_"), new InfoBoxFormatter(TEXT("%2.0f")TEXT(DEG)), NoProcessing, 57, 55);
-	// LKTOKEN  _@M1115_ = "Team Bearing Diff", _@M1116_ = "TeamBd"
-	SetDataOption(57, ugNone,           TEXT("_@M1115_"), TEXT("_@M1116_"), new FormatterDiffTeamBearing(TEXT("")), NoProcessing, 58, 56);
-	// LKTOKEN  _@M1117_ = "Team Range", _@M1118_ = "TeamDis"
-	SetDataOption(58, ugNone,           TEXT("_@M1117_"), TEXT("_@M1118_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 55, 57);
-	// LKTOKEN  _@M1119_ = "Task Speed Instantaneous", _@M1120_ = "TskSpI"
-	SetDataOption(59, ugTaskSpeed,      TEXT("_@M1119_"), TEXT("_@M1120_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 18, 16);
-	// LKTOKEN  _@M1121_ = "Home Distance", _@M1122_ = "HomeDis"
-	SetDataOption(60, ugDistance,       TEXT("_@M1121_"), TEXT("_@M1122_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 18, 16);
-	// LKTOKEN  _@M1123_ = "Task Speed", _@M1124_ = "TskSp"
-	SetDataOption(61, ugTaskSpeed,      TEXT("_@M1123_"), TEXT("_@M1124_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 18, 16);
-	// LKTOKEN  _@M1125_ = "AA Delta Time", _@M1126_ = "AAdT"
-	SetDataOption(62, ugNone,           TEXT("_@M1125_"), TEXT("_@M1126_"), new FormatterAATTime(TEXT("%2.0f")), NoProcessing, 28, 18);
-	// LKTOKEN  _@M1127_ = "Thermal All", _@M1128_ = "Th.All"
-	SetDataOption(63, ugVerticalSpeed,  TEXT("_@M1127_"), TEXT("_@M1128_"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 8, 2);
-
-	SetDataOption(64, ugVerticalSpeed,  TEXT("_Reserved 5"), TEXT("Rsrv5"), new InfoBoxFormatter(TEXT("%-2.1f")), NoProcessing, 8, 2);
-
-	// LKTOKEN  _@M1131_ = "Battery Percent", _@M1132_ = "Battery"
-	SetDataOption(65, ugNone,           TEXT("_@M1131_"), TEXT("_@M1132_"), new InfoBoxFormatter(TEXT("%2.0f%%")), NoProcessing, 49, 26);
-	// LKTOKEN  _@M1133_ = "Task Req.Efficiency", _@M1134_ = "TskReqE"
-	SetDataOption(66, ugNone,           TEXT("_@M1133_"), TEXT("_@M1134_"), new InfoBoxFormatter(TEXT("%1.1f")), NoProcessing, 38, 5);
-	// LKTOKEN  _@M1135_ = "Alternate1 Req.Efficiency", _@M1136_ = "Atn1.E"
-	SetDataOption(67, ugNone,           TEXT("_@M1135_"), TEXT("_@M1136_"), new FormatterAlternate(TEXT("\0")), Alternate1Processing, 36, 46);
-	// LKTOKEN  _@M1137_ = "Alternate2 Req.Efficiency", _@M1138_ = "Atn2.E"
-	SetDataOption(68, ugNone,           TEXT("_@M1137_"), TEXT("_@M1138_"), new FormatterAlternate(TEXT("\0")), Alternate2Processing, 36, 46);
-	// LKTOKEN  _@M1139_ = "BestAltern Req.Efficiency", _@M1140_ = "BAtn.E"
-	SetDataOption(69, ugNone,           TEXT("_@M1139_"), TEXT("_@M1140_"), new FormatterAlternate(TEXT("\0")), BestAlternateProcessing, 36, 46);
-	// LKTOKEN  _@M1141_ = "Altitude QFE", _@M1142_ = "QFE"
-	SetDataOption(70, ugAltitude,       TEXT("_@M1141_"), TEXT("_@M1142_"), new InfoBoxFormatter(TEXT("%2.0f")), QFEAltitudeProcessing, 1, 33);
-	// LKTOKEN  _@M1143_ = "Average Efficiency", _@M1144_ = "E.Avg"
-	SetDataOption(71, ugNone,           TEXT("_@M1143_"), TEXT("_@M1144_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 19, 4);
-	// LKTOKEN  _@M1145_ = "Next Req.Efficiency", _@M1146_ = "Req.E"
-	SetDataOption(72, ugNone,           TEXT("_@M1145_"), TEXT("_@M1146_"), new InfoBoxFormatter(TEXT("%1.1f")), NoProcessing, 38, 5);
-	// LKTOKEN  _@M1147_ = "Flight Level", _@M1148_ = "FL"
-	SetDataOption(73, ugNone,           TEXT("_@M1147_"), TEXT("_@M1148_"), new InfoBoxFormatter(TEXT("%1.1f")), NoProcessing, 38, 5);
-	// LKTOKEN  _@M1149_ = "Task Covered distance", _@M1150_ = "TskCov"
-	SetDataOption(74, ugDistance,       TEXT("_@M1149_"), TEXT("_@M1150_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 38, 5);
-	// LKTOKEN  _@M1151_ = "Alternate1 Arrival", _@M1152_ = "Atn1Arr"
-	SetDataOption(75, ugAltitude,       TEXT("_@M1151_"), TEXT("_@M1152_"), new FormatterAlternate(TEXT("%2.0f")), Alternate1Processing, 36, 46);
-	// LKTOKEN  _@M1153_ = "Alternate2 Arrival", _@M1154_ = "Atn2Arr"
-	SetDataOption(76, ugAltitude,       TEXT("_@M1153_"), TEXT("_@M1154_"), new FormatterAlternate(TEXT("%2.0f")), Alternate2Processing, 36, 46);
-	// LKTOKEN  _@M1155_ = "BestAlternate Arrival", _@M1156_ = "BAtnArr"
-	SetDataOption(77, ugAltitude,       TEXT("_@M1155_"), TEXT("_@M1156_"), new FormatterAlternate(TEXT("%2.0f")), BestAlternateProcessing, 36, 46);
-	// LKTOKEN  _@M1157_ = "Home Radial", _@M1158_ = "Radial"
-	SetDataOption(78, ugNone,           TEXT("_@M1157_"), TEXT("_@M1158_"), new InfoBoxFormatter(TEXT("%.0f")TEXT(DEG)), NoProcessing, 6, 54);
-	// LKTOKEN  _@M1159_ "Airspace Horizontal Dist", _@M1160_ "ArSpcH"
-	SetDataOption(79, ugDistance,       TEXT("_@M1159_"), TEXT("_@M1160_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 38, 5);
-	// LKTOKEN  _@M1161_ = "Ext.Batt.Bank", _@M1162_ = "xBnk#"
-	SetDataOption(80, ugNone,           TEXT("_@M1161_"), TEXT("_@M1162_"), new InfoBoxFormatter(TEXT("%1.0f")), NoProcessing, 38, 5);
-	// LKTOKEN  _@M1163_ = "Ext.Batt.1 Voltage", _@M1164_ = "xBat1"
-	SetDataOption(81, ugNone,           TEXT("_@M1163_"), TEXT("_@M1164_"), new InfoBoxFormatter(TEXT("%2.1fV")), NoProcessing, 49, 26);
-	// LKTOKEN  _@M1165_ = "Ext.Batt.2 Voltage", _@M1166_ = "xBat2"
-	SetDataOption(82, ugNone,           TEXT("_@M1165_"), TEXT("_@M1166_"), new InfoBoxFormatter(TEXT("%2.1fV")), NoProcessing, 49, 26);
-	// LKTOKEN  _@M1167_ = "Odometer", _@M1168_ = "Odo"
-	SetDataOption(83, ugDistance,       TEXT("_@M1167_"), TEXT("_@M1168_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 49, 26);
-	// LKTOKEN  _@M1169_ = "Altern QNH", _@M1170_ = "aAlt"
-	SetDataOption(84, ugInvAltitude,    TEXT("_@M1169_"), TEXT("_@M1170_"), new InfoBoxFormatter(TEXT("%2.0f")), AltitudeProcessing, 1, 33);
-	// LKTOKEN  _@M1171_ = "Altern AGL", _@M1172_ = "aHAGL"
-	SetDataOption(85, ugInvAltitude,    TEXT("_@M1171_"), TEXT("_@M1172_"), new FormatterLowWarning(TEXT("%2.0f"),0.0), NoProcessing, 20, 0);
-	// LKTOKEN  _@M1173_ = "Altitude GPS", _@M1174_ = "HGPS"
-	SetDataOption(86, ugAltitude,       TEXT("_@M1173_"), TEXT("_@M1174_"), new InfoBoxFormatter(TEXT("%2.0f")), AltitudeProcessing, 1, 33);
-	// LKTOKEN  _@M1175_ = "MacCready Equivalent", _@M1176_ = "eqMC"
-	SetDataOption(87, ugVerticalSpeed,  TEXT("_@M1175_"), TEXT("_@M1176_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 34, 43);
-	// LKTOKEN  _@M1177_ = "_Experimental1", _@M1178_ = "Exp1"
-	SetDataOption(88, ugNone,           TEXT("_@M1177_"), TEXT("_@M1178_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	// LKTOKEN  _@M1179_ = "_Experimental2", _@M1180_ = "Exp2"
-	SetDataOption(89, ugNone,           TEXT("_@M1179_"), TEXT("_@M1180_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-
-	// Distance OLC
-	SetDataOption(90, ugNone,           TEXT("_@M1455_"), TEXT("_@M1456_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	// Distance FAI triangle
-	SetDataOption(91, ugNone,           TEXT("_@M1457_"), TEXT("_@M1458_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	// Distance League
-	SetDataOption(92, ugNone,           TEXT("_@M1459_"), TEXT("_@M1460_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	// Distance FAI 3 TPs
-	SetDataOption(93, ugNone,           TEXT("_@M1461_"), TEXT("_@M1462_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	
-	////////  PREDICTED ////////
-	// Distance OLC
-	SetDataOption(94, ugNone,           TEXT("_@M1463_"), TEXT("_@M1464_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	// Distance FAI triangle
-	SetDataOption(95, ugNone,           TEXT("_@M1465_"), TEXT("_@M1466_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	// Distance FAI 3 TPs
-	SetDataOption(96, ugNone,           TEXT("_@M1469_"), TEXT("_@M1470_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	
-	// Speed OLC
-	SetDataOption(97, ugNone,           TEXT("_@M1471_"), TEXT("_@M1472_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	// Speed FAI triangle
-	SetDataOption(98, ugNone,           TEXT("_@M1473_"), TEXT("_@M1474_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	// Speed League
-	SetDataOption(99, ugNone,           TEXT("_@M1475_"), TEXT("_@M1476_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	// Speed FAI 3 TPs
-	SetDataOption(100, ugNone,           TEXT("_@M1477_"), TEXT("_@M1478_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-
-	////////  PREDICTED ////////
-	// Speed OLC
-	SetDataOption(101, ugNone,           TEXT("_@M1479_"), TEXT("_@M1480_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	// Speed FAI triangle
-	SetDataOption(102, ugNone,           TEXT("_@M1481_"), TEXT("_@M1482_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	// Speed FAI 3 TPs
-	SetDataOption(103, ugNone,           TEXT("_@M1485_"), TEXT("_@M1486_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-
-	// Score OLC
-	SetDataOption(104, ugNone,           TEXT("_@M1487_"), TEXT("_@M1488_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	// Score FAI triangle
-	SetDataOption(105, ugNone,           TEXT("_@M1489_"), TEXT("_@M1490_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	// Score League
-	SetDataOption(106, ugNone,           TEXT("_@M1491_"), TEXT("_@M1492_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	// FAI 3 TPs currently has no score
-	SetDataOption(107, ugNone,           TEXT("_Reserved 3"), TEXT("_@M1494_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-
-	////////  PREDICTED ////////
-	// Score OLC
-	SetDataOption(108, ugNone,           TEXT("_@M1495_"), TEXT("_@M1496_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	// Score FAI triangle
-	SetDataOption(109, ugNone,           TEXT("_@M1497_"), TEXT("_@M1498_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	// FAI 3 TPs currently has no score
-	SetDataOption(110, ugNone,           TEXT("_Reserved 4"), TEXT("_@M1502_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-
-	// Olc Plus Score
-	SetDataOption(111, ugNone,           TEXT("_@M1503_"), TEXT("_@M1504_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-	// Olc Plus Score Predicted
-	SetDataOption(112, ugNone,           TEXT("_@M1505_"), TEXT("_@M1506_"), new InfoBoxFormatter(TEXT("%2.1f")), NoProcessing, 8, 2);
-
-  // Flaps
-  SetDataOption(113, ugNone,           TEXT("_@M1640_"), TEXT("_@M1641_"), new InfoBoxFormatter(TEXT("")), AirspeedProcessing, 8, 2);
-
-  // Vertical distance to airspace
-  SetDataOption(114, ugNone,           TEXT("_@M1285_"), TEXT("_@M1286_"), new InfoBoxFormatter(TEXT("")), NoProcessing, 8, 2);
-
-	// LKTOKEN  _@M1644_ = "Home Alt.Arrival", _@M1645_ = "HomeArr"
-	SetDataOption(115, ugAltitude,       TEXT("_@M1644_"), TEXT("_@M1645_"), new InfoBoxFormatter(TEXT("%2.0f")), NoProcessing, 8, 2);
-
-	//Before adding new items, consider changing NUMDATAOPTIONS_MAX
-
-}
-
-#else
 #include "FillDataOptions.cpp"
-#endif // else USEIBOX
 
 void TriggerGPSUpdate()
 {
@@ -649,16 +293,8 @@ void TriggerVarioUpdate()
 }
 
 void HideMenu() {
-#if USEIBOX
-  // ignore this if the display isn't locked -- must keep menu visible
-  if (DisplayLocked) {
     MenuTimeOut = MenuTimeoutMax;
     DisplayTimeOut = 0;
-  }
-#else
-    MenuTimeOut = MenuTimeoutMax;
-    DisplayTimeOut = 0;
-#endif
 }
 
 void ShowMenu() {
@@ -825,9 +461,6 @@ void FullScreen() {
 #endif
   }
   MapWindow::RequestFastRefresh();
-#if USEIBOX
-  InfoBoxesDirty = true;
-#endif
 }
 
 
@@ -863,30 +496,6 @@ void RestartCommPorts() {
 
 }
 
-
-#if USEIBOX
-void DefocusInfoBox() {
-  FocusOnWindow(InfoFocus,false);
-  InfoFocus = -1;
-  if(MapWindow::mode.Is(MapWindow::Mode::MODE_PAN)) {
-    InputEvents::setMode(TEXT("pan"));
-  } else {
-    InputEvents::setMode(TEXT("default"));
-  }
-  InfoWindowActive = FALSE;
-}
-
-
-void FocusOnWindow(int i, bool selected) {
-    //hWndTitleWindow
-
-  if (i<0) return; // error
-
-  InfoBoxes[i]->SetFocus(selected);
-  // todo defocus all other?
-
-}
-#endif // USEIBOX
 
 
 void TriggerRedraws(NMEA_INFO *nmea_info,
@@ -1022,9 +631,6 @@ DWORD CalculationThread (LPVOID lpvoid) {
         else
           MapWindow::mode.Fly(MapWindow::Mode::MODE_FLY_CRUISE);
       }
-#if USEIBOX
-      InfoBoxesDirty = true;
-#endif
     }
         
     if (MapWindow::CLOSETHREAD) break; // drop out on exit
@@ -1580,10 +1186,6 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   StartupStore(TEXT(". CreateDrawingThread%s"),NEWLINE);
   MapWindow::CreateDrawingThread();
   Sleep(100);
-  #if USEIBOX
-  StartupStore(TEXT(". ShowInfoBoxes%s"),NEWLINE);
-  ShowInfoBoxes();
-  #endif
 
   SwitchToMapWindow();
   StartupStore(TEXT(". CreateCalculationThread%s"),NEWLINE);
@@ -1601,9 +1203,6 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   // find unique ID of this PDA
   ReadAssetNumber();
 
-#if USEIBOX
-  MapWindow::RequestOnFullScreen();
-#endif
 
   // Da-da, start everything now
   StartupStore(TEXT(". ProgramStarted=InitDone%s"),NEWLINE);
@@ -1751,14 +1350,8 @@ void InitializeOneFont (HFONT * theFont,
 }
 
 void InitialiseFontsHardCoded(RECT rc,
-#if USEIBOX
-                        LOGFONT * ptrhardInfoWindowLogFont,
-#endif
                         LOGFONT * ptrhardTitleWindowLogFont,
                         LOGFONT * ptrhardMapWindowLogFont,
-#if USEIBOX
-                        LOGFONT * ptrhardTitleSmallWindowLogFont,
-#endif
                         LOGFONT * ptrhardMapWindowBoldLogFont,
                         LOGFONT * ptrhardCDIWindowLogFont, // New
                         LOGFONT * ptrhardMapLabelLogFont,
@@ -1766,14 +1359,8 @@ void InitialiseFontsHardCoded(RECT rc,
 
 
 
-#if USEIBOX
-  memset ((char *)ptrhardInfoWindowLogFont, 0, sizeof (LOGFONT));
-#endif
   memset ((char *)ptrhardTitleWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)ptrhardMapWindowLogFont, 0, sizeof (LOGFONT));
-#if USEIBOX
-  memset ((char *)ptrhardTitleSmallWindowLogFont, 0, sizeof (LOGFONT));
-#endif
   memset ((char *)ptrhardMapWindowBoldLogFont, 0, sizeof (LOGFONT));
   memset ((char *)ptrhardCDIWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)ptrhardMapLabelLogFont, 0, sizeof (LOGFONT));
@@ -1799,13 +1386,7 @@ void InitialiseFontsHardCoded(RECT rc,
 
    // If you set a font here for a specific resolution, no automatic font generation is used.
   if (ScreenSize==(ScreenSize_t)ss480x272) { // WQVGA  e.g. MIO
-#if USEIBOX
-    propGetFontSettingsFromString(TEXT("34,0,0,0,800,0,0,0,0,0,0,4,2,TahomaBD"), ptrhardInfoWindowLogFont); // 28 091120
-#endif
     propGetFontSettingsFromString(TEXT("14,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardTitleWindowLogFont); // 16 091120
-#if USEIBOX
-    propGetFontSettingsFromString(TEXT("28,0,0,0,400,1,0,0,0,0,0,4,2,Tahoma"), ptrhardTitleSmallWindowLogFont); 
-#endif
     propGetFontSettingsFromString(TEXT("15,0,0,0,400,0,0,0,0,0,0,4,2,TahomaBD"), ptrhardCDIWindowLogFont);
     propGetFontSettingsFromString(TEXT("16,0,0,0,700,1,0,0,0,0,0,4,2,Tahoma"), ptrhardMapLabelLogFont); // 100709
     propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,4,2,Tahoma"), ptrhardStatisticsLogFont);//  (RLD is this used?)
@@ -1815,13 +1396,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("19,0,0,0,500,0,0,0,0,0,0,6,2,Tahoma"), ptrhardMapWindowBoldLogFont); 
   }
   else if (ScreenSize==(ScreenSize_t)ss720x408) { // WQVGA  e.g. MIO
-#if USEIBOX
-    propGetFontSettingsFromString(TEXT("51,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // 28 091120
-#endif
     propGetFontSettingsFromString(TEXT("21,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont); // 16 091120
-#if USEIBOX
-    propGetFontSettingsFromString(TEXT("42,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont); 
-#endif
     propGetFontSettingsFromString(TEXT("23,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardCDIWindowLogFont);
     propGetFontSettingsFromString(TEXT("23,0,0,0,600,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); // 100709
     propGetFontSettingsFromString(TEXT("30,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);//  (RLD is this used?)
@@ -1830,13 +1405,7 @@ void InitialiseFontsHardCoded(RECT rc,
   }
 
   else if (ScreenSize==(ScreenSize_t)ss480x234) { // e.g. Messada 2440
-#if USEIBOX
-    propGetFontSettingsFromString(TEXT("32,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
-#endif
     propGetFontSettingsFromString(TEXT("12,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
-#if USEIBOX
-    propGetFontSettingsFromString(TEXT("28,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont);
-#endif
     propGetFontSettingsFromString(TEXT("15,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardCDIWindowLogFont);
     //propGetFontSettingsFromString(TEXT("13,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); // 14 091120
     propGetFontSettingsFromString(TEXT("16,0,0,0,600,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); // 100709
@@ -1849,44 +1418,7 @@ void InitialiseFontsHardCoded(RECT rc,
 
   else if (ScreenSize==(ScreenSize_t)ss800x480) {// e.g. ipaq 31x {
 
-#if USEIBOX
-    switch (Appearance.InfoBoxGeom) {	
-      case 0:
-      case 1:
-      case 2:
-      case 3:
-      case 6: // standard landscape
-            propGetFontSettingsFromString(TEXT("56,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
-            propGetFontSettingsFromString(TEXT("20,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
-            break;
-      case 4:       
-      case 5:   
-            propGetFontSettingsFromString(TEXT("62,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // 64 091120
-            propGetFontSettingsFromString(TEXT("24,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont); // 26 091120
-            break;
-      case 7:
-            propGetFontSettingsFromString(TEXT("66,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
-            propGetFontSettingsFromString(TEXT("23,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
-		  break;
-
-       // This is a failsafe with an impossible setting so that you know 
-      // something is going very wrong.
-       default:
-            propGetFontSettingsFromString(TEXT("30,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
-            propGetFontSettingsFromString(TEXT("10,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
-          //}
-            break;
-    } // special geometry cases for 31x
-#else
-	#if USEIBOX
-    propGetFontSettingsFromString(TEXT("56,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
-	#endif
     propGetFontSettingsFromString(TEXT("20,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
-#endif
-
-#if USEIBOX
-    propGetFontSettingsFromString(TEXT("16,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont);
-#endif
     propGetFontSettingsFromString(TEXT("28,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCDIWindowLogFont);
     // propGetFontSettingsFromString(TEXT("26,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); pre 100709
     propGetFontSettingsFromString(TEXT("28,0,0,0,600,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); // 100709
@@ -1899,44 +1431,7 @@ void InitialiseFontsHardCoded(RECT rc,
   // added 091204
   else if (ScreenSize==(ScreenSize_t)ss400x240) {
 
-#if USEIBOX
-    switch (Appearance.InfoBoxGeom) {	
-      case 0:
-      case 1:
-      case 2:
-      case 3:
-      case 6: // standard landscape
-            propGetFontSettingsFromString(TEXT("28,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
-            propGetFontSettingsFromString(TEXT("10,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
-            break;
-      case 4:       
-      case 5:   
-            propGetFontSettingsFromString(TEXT("31,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // 64 091120
-            propGetFontSettingsFromString(TEXT("12,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont); // 26 091120
-            break;
-      case 7:
-            propGetFontSettingsFromString(TEXT("33,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
-            propGetFontSettingsFromString(TEXT("11,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
-		  break;
-
-       // This is a failsafe with an impossible setting so that you know 
-      // something is going very wrong.
-       default:
-            propGetFontSettingsFromString(TEXT("15,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
-            propGetFontSettingsFromString(TEXT("5,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
-          //}
-            break;
-    } 
-#else
-	#if USEIBOX
-            propGetFontSettingsFromString(TEXT("28,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
-	#endif
-            propGetFontSettingsFromString(TEXT("10,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
-#endif
-
-#if USEIBOX
-    propGetFontSettingsFromString(TEXT("8,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont);
-#endif
+    propGetFontSettingsFromString(TEXT("10,0,0,0,200,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
     propGetFontSettingsFromString(TEXT("14,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCDIWindowLogFont);
     // propGetFontSettingsFromString(TEXT("13,0,0,0,600,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); //v2.2 topology
     propGetFontSettingsFromString(TEXT("15,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont);
@@ -1947,13 +1442,7 @@ void InitialiseFontsHardCoded(RECT rc,
 
   }
   else if (ScreenSize==(ScreenSize_t)ss640x480) { // real VGA, not fake VGA
-	#if USEIBOX
-    propGetFontSettingsFromString(TEXT("54,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // infobox values
-	#endif
     propGetFontSettingsFromString(TEXT("19,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);  // infobox titles
-#if USEIBOX
-    propGetFontSettingsFromString(TEXT("40,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont); // teamcode?
-#endif
     propGetFontSettingsFromString(TEXT("24,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardCDIWindowLogFont); // waynotes
     // propGetFontSettingsFromString(TEXT("23,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); // old topo labels
     propGetFontSettingsFromString(TEXT("26,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); // 100709 topo labels
@@ -1963,13 +1452,7 @@ void InitialiseFontsHardCoded(RECT rc,
 										// and all messages and menus
   }
   else if (ScreenSize==(ScreenSize_t)ss896x672) { // real VGA, not fake VGA
-	#if USEIBOX
-    propGetFontSettingsFromString(TEXT("75,0,0,0,800,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // infobox values
-	#endif
     propGetFontSettingsFromString(TEXT("25,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);  // infobox titles
-#if USEIBOX
-    propGetFontSettingsFromString(TEXT("56,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont); // teamcode?
-#endif
     propGetFontSettingsFromString(TEXT("33,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardCDIWindowLogFont); // waynotes
     propGetFontSettingsFromString(TEXT("32,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); // topo labels
     propGetFontSettingsFromString(TEXT("28,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);//  (RLD is this used?)
@@ -1978,13 +1461,7 @@ void InitialiseFontsHardCoded(RECT rc,
 										// and all messages and menus
   }
   else if (ScreenSize==(ScreenSize_t)ss320x240) { // also applies for fake VGA where all values are doubled stretched
-	#if USEIBOX
-    propGetFontSettingsFromString(TEXT("26,0,0,0,600,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
-	#endif
     propGetFontSettingsFromString(TEXT("12,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
-#if USEIBOX
-    propGetFontSettingsFromString(TEXT("21,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont);
-#endif
     propGetFontSettingsFromString(TEXT("14,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardCDIWindowLogFont);
     propGetFontSettingsFromString(TEXT("16,0,0,0,500,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); // 100819
     propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);//  (RLD is this used?)
@@ -1992,13 +1469,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("15,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
   }
   else if (ScreenSize==(ScreenSize_t)ss240x320) { // also applies for fake VGA where all values are doubled stretched
-	#if USEIBOX
-    propGetFontSettingsFromString(TEXT("24,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont);
-	#endif
     propGetFontSettingsFromString(TEXT("12,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
-#if USEIBOX
-    propGetFontSettingsFromString(TEXT("21,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont);
-#endif
     propGetFontSettingsFromString(TEXT("12,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardCDIWindowLogFont);
     propGetFontSettingsFromString(TEXT("13,0,0,0,400,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); // RLD 16 works well too
     propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);//  (RLD is this used?)
@@ -2006,13 +1477,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("16,0,0,0,500,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardMapWindowBoldLogFont);
   }
   else if (ScreenSize==(ScreenSize_t)ss272x480) { 
-	#if USEIBOX
-    propGetFontSettingsFromString(TEXT("24,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardInfoWindowLogFont);
-	#endif
     propGetFontSettingsFromString(TEXT("12,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);
-#if USEIBOX
-    propGetFontSettingsFromString(TEXT("21,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont);
-#endif
     propGetFontSettingsFromString(TEXT("12,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardCDIWindowLogFont);
     propGetFontSettingsFromString(TEXT("15,0,0,0,600,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); 
     propGetFontSettingsFromString(TEXT("10,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);
@@ -2020,13 +1485,7 @@ void InitialiseFontsHardCoded(RECT rc,
     propGetFontSettingsFromString(TEXT("18,0,0,0,500,0,0,0,0,0,0,3,2,Tahoma"), ptrhardMapWindowBoldLogFont);
   }
   else if (ScreenSize==(ScreenSize_t)ss480x640) { // real VGA, not fake VGA
-	#if USEIBOX
-    propGetFontSettingsFromString(TEXT("48,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // infobox values
-	#endif
     propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);  // infobox titles
-#if USEIBOX
-    propGetFontSettingsFromString(TEXT("40,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont); // teamcode?
-#endif
     propGetFontSettingsFromString(TEXT("26,0,0,0,100,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardCDIWindowLogFont); // waynotes
     propGetFontSettingsFromString(TEXT("23,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); // topo labels
     propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);//  (RLD is this used?)
@@ -2035,13 +1494,7 @@ void InitialiseFontsHardCoded(RECT rc,
 										// and all messages and menus
   }
   else if (ScreenSize==(ScreenSize_t)ss480x800) { // real VGA, not fake VGA
-	#if USEIBOX
-    propGetFontSettingsFromString(TEXT("48,0,0,0,400,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardInfoWindowLogFont); // infobox values
-	#endif
     propGetFontSettingsFromString(TEXT("22,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleWindowLogFont);  // infobox titles
-#if USEIBOX
-    propGetFontSettingsFromString(TEXT("40,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardTitleSmallWindowLogFont); // teamcode?
-#endif
     propGetFontSettingsFromString(TEXT("26,0,0,0,100,0,0,0,0,0,0,3,2,TahomaBD"), ptrhardCDIWindowLogFont); // waynotes
     propGetFontSettingsFromString(TEXT("23,0,0,0,100,1,0,0,0,0,0,3,2,Tahoma"), ptrhardMapLabelLogFont); // topo labels
     propGetFontSettingsFromString(TEXT("20,0,0,0,400,0,0,0,0,0,0,3,2,Tahoma"), ptrhardStatisticsLogFont);//  (RLD is this used?)
@@ -2057,14 +1510,8 @@ void InitialiseFontsHardCoded(RECT rc,
 
 #if USEAUTOFONTS
 void InitialiseFontsAuto(RECT rc,
-	#if USEIBOX
-                        LOGFONT * ptrautoInfoWindowLogFont,
-	#endif
                         LOGFONT * ptrautoTitleWindowLogFont,
                         LOGFONT * ptrautoMapWindowLogFont,
-#if USEIBOX
-                        LOGFONT * ptrautoTitleSmallWindowLogFont,
-#endif
                         LOGFONT * ptrautoMapWindowBoldLogFont,
                         LOGFONT * ptrautoCDIWindowLogFont, // New
                         LOGFONT * ptrautoMapLabelLogFont,
@@ -2075,14 +1522,8 @@ void InitialiseFontsAuto(RECT rc,
   int fontsz2 = (rc.right - rc.left );
 
 
-	#if USEIBOX
-  memset ((char *)ptrautoInfoWindowLogFont, 0, sizeof (LOGFONT));
-	#endif
   memset ((char *)ptrautoTitleWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)ptrautoMapWindowLogFont, 0, sizeof (LOGFONT));
-#if USEIBOX
-  memset ((char *)ptrautoTitleSmallWindowLogFont, 0, sizeof (LOGFONT));
-#endif
   memset ((char *)ptrautoMapWindowBoldLogFont, 0, sizeof (LOGFONT));
   memset ((char *)ptrautoCDIWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)ptrautoMapLabelLogFont, 0, sizeof (LOGFONT));
@@ -2145,11 +1586,6 @@ void InitialiseFontsAuto(RECT rc,
 
   iFontHeight++;
   logfont.lfHeight = iFontHeight;
-
-	#if USEIBOX
- memcpy ((void *)ptrautoInfoWindowLogFont, &logfont, sizeof (LOGFONT));
-	#endif
-
 
   // next font..
 
@@ -2224,19 +1660,6 @@ void InitialiseFontsAuto(RECT rc,
 
   memcpy ((void *)ptrautoMapWindowBoldLogFont, &logfont, sizeof (LOGFONT));
 
-#if USEIBOX
-  // TODO code: create font settings for this one...
-  memset((char *)&logfont, 0, sizeof (logfont));
-  _tcscpy(logfont.lfFaceName, _T(GLOBALFONT));
-  
-  logfont.lfPitchAndFamily = VARIABLE_PITCH | FF_DONTCARE  ;
-  logfont.lfHeight = IBLSCALE(20);
-  logfont.lfWidth =  IBLSCALE(8);
-  logfont.lfWeight = FW_MEDIUM;
-  ApplyClearType(&logfont); // 110106 missing
-  
-  memcpy ((void *)ptrautoTitleSmallWindowLogFont, &logfont, sizeof (LOGFONT));
-#endif
 }
 
 #endif // USEAUTOFONTS
@@ -2245,14 +1668,8 @@ void InitialiseFontsAuto(RECT rc,
 void InitialiseFonts(RECT rc)
 { //this routine must be called only at start/restart b/c there are many pointers to these fonts
 
-#if USEIBOX 
-  DeleteObject(InfoWindowFont);  
-#endif
   DeleteObject(TitleWindowFont);
   DeleteObject(MapWindowFont);
-#if USEIBOX
-  DeleteObject(TitleSmallWindowFont);
-#endif
   DeleteObject(MapWindowBoldFont);
   DeleteObject(CDIWindowFont);
   DeleteObject(MapLabelFont);
@@ -2260,14 +1677,8 @@ void InitialiseFonts(RECT rc)
 
   #if USEAUTOFONTS
 
-#if USEIBOX
-  memset ((char *)&autoInfoWindowLogFont, 0, sizeof (LOGFONT));
-#endif
   memset ((char *)&autoTitleWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)&autoMapWindowLogFont, 0, sizeof (LOGFONT));
-#if USEIBOX
-  memset ((char *)&autoTitleSmallWindowLogFont, 0, sizeof (LOGFONT));
-#endif
   memset ((char *)&autoMapWindowBoldLogFont, 0, sizeof (LOGFONT));
   memset ((char *)&autoCDIWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)&autoMapLabelLogFont, 0, sizeof (LOGFONT));
@@ -2276,55 +1687,31 @@ void InitialiseFonts(RECT rc)
 
   // we dont need fonts auto because LK has embedded fonts tuned
   InitialiseFontsAuto(rc, 
-#if USEIBOX
-                        &autoInfoWindowLogFont,
-#endif
                         &autoTitleWindowLogFont,
                         &autoMapWindowLogFont,
-#if USEIBOX
-                        &autoTitleSmallWindowLogFont,
-#endif
                         &autoMapWindowBoldLogFont,
                         &autoCDIWindowLogFont, // New
                         &autoMapLabelLogFont,
                         &autoStatisticsLogFont);
   #endif // USEAUTOFONTS
 
-#if USEIBOX
-  LOGFONT hardInfoWindowLogFont;
-#endif
   LOGFONT hardTitleWindowLogFont;
   LOGFONT hardMapWindowLogFont;
-#if USEIBOX
-  LOGFONT hardTitleSmallWindowLogFont;
-#endif
   LOGFONT hardMapWindowBoldLogFont;
   LOGFONT hardCDIWindowLogFont; 
   LOGFONT hardMapLabelLogFont;
   LOGFONT hardStatisticsLogFont;
 
-#if USEIBOX
-  memset ((char *)&hardInfoWindowLogFont, 0, sizeof (LOGFONT));
-#endif
   memset ((char *)&hardTitleWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)&hardMapWindowLogFont, 0, sizeof (LOGFONT));
-#if USEIBOX
-  memset ((char *)&hardTitleSmallWindowLogFont, 0, sizeof (LOGFONT));
-#endif
   memset ((char *)&hardMapWindowBoldLogFont, 0, sizeof (LOGFONT));
   memset ((char *)&hardCDIWindowLogFont, 0, sizeof (LOGFONT));
   memset ((char *)&hardMapLabelLogFont, 0, sizeof (LOGFONT));
   memset ((char *)&hardStatisticsLogFont, 0, sizeof (LOGFONT));
 
   InitialiseFontsHardCoded(rc,
-#if USEIBOX
-                        &hardInfoWindowLogFont,
-#endif
                         &hardTitleWindowLogFont,
                         &hardMapWindowLogFont,
-#if USEIBOX
-                        &hardTitleSmallWindowLogFont,
-#endif
                         &hardMapWindowBoldLogFont,
                         &hardCDIWindowLogFont, // New
                         &hardMapLabelLogFont,
@@ -2334,10 +1721,6 @@ void InitialiseFonts(RECT rc)
   // Merge the "hard" into the "auto" if one exists 
   //
 
-#if USEIBOX
-  if (!IsNullLogFont(hardInfoWindowLogFont))
-    autoInfoWindowLogFont = hardInfoWindowLogFont;
-#endif
 
   if (!IsNullLogFont(hardTitleWindowLogFont))
     autoTitleWindowLogFont = hardTitleWindowLogFont;
@@ -2345,10 +1728,6 @@ void InitialiseFonts(RECT rc)
   if (!IsNullLogFont(hardMapWindowLogFont))
     autoMapWindowLogFont = hardMapWindowLogFont;
 
-#if USEIBOX
-  if (!IsNullLogFont(hardTitleSmallWindowLogFont))
-    autoTitleSmallWindowLogFont = hardTitleSmallWindowLogFont;
-#endif
 
   if (!IsNullLogFont(hardMapWindowBoldLogFont))
     autoMapWindowBoldLogFont = hardMapWindowBoldLogFont;
@@ -2362,13 +1741,6 @@ void InitialiseFonts(RECT rc)
   if (!IsNullLogFont(hardStatisticsLogFont))
     autoStatisticsLogFont = hardStatisticsLogFont;
 
-
-#if USEIBOX
-  InitializeOneFont (&InfoWindowFont, 
-                        szRegistryFontInfoWindowFont, 
-                        autoInfoWindowLogFont,
-                        NULL);
-#endif
 
   InitializeOneFont (&TitleWindowFont, 
                         szRegistryFontTitleWindowFont, 
@@ -2399,13 +1771,6 @@ void InitialiseFonts(RECT rc)
                         szRegistryFontMapWindowBoldFont, 
                         autoMapWindowBoldLogFont,
                         NULL);
-
-#if USEIBOX
-  InitializeOneFont (&TitleSmallWindowFont, 
-                        szRegistryFontTitleSmallWindowFont, 
-                        autoTitleSmallWindowLogFont,
-                        NULL);
-#endif
 
   SendMessage(hWndMapWindow,WM_SETFONT,
               (WPARAM)MapWindowFont,MAKELPARAM(TRUE,0));
@@ -2503,17 +1868,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   rc.bottom = SCREENHEIGHT;
 #endif
 
-  #if USEIBOX
-  InfoBoxLayout::ScreenGeometry(rc);
-  #endif
 
   LKObjects_Create(); 
-  #if USEIBOX
-  Units::LoadUnitBitmap(hInstance);
-  #endif
-  #if USEIBOX
-  InfoBoxLayout::CreateInfoBoxes(rc);
-  #endif
 
   ButtonLabel::CreateButtonLabels(rc);
   ButtonLabel::SetLabelText(0,TEXT("MODE"));
@@ -2549,11 +1905,6 @@ int getInfoType(int i) {
   int retval = 0;
   if (i<0) return 0; // error
 
-#if USEIBOX
-  if (EnableAuxiliaryInfo) {
-    retval = (InfoType[i] >> 24) & 0xff; // auxiliary
-  } else {
-#endif
     switch(MapWindow::mode.Fly()) {
     case MapWindow::Mode::MODE_FLY_CIRCLING:
       retval = InfoType[i] & 0xff; // climb
@@ -2567,9 +1918,6 @@ int getInfoType(int i) {
     case MapWindow::Mode::MODE_FLY_NONE:
       break;
     }
-#if USEIBOX
-  }
-#endif
   return min(NumDataOptions-1,retval);
 }
 
@@ -2577,12 +1925,6 @@ int getInfoType(int i) {
 void setInfoType(int i, char j) {
   if (i<0) return; // error
 
-#if USEIBOX
-  if (EnableAuxiliaryInfo) {
-    InfoType[i] &= 0x00ffffff;
-    InfoType[i] += (j<<24);
-  } else {
-#endif
     switch(MapWindow::mode.Fly()) {
     case MapWindow::Mode::MODE_FLY_CIRCLING:
       InfoType[i] &= 0xffffff00;
@@ -2599,41 +1941,7 @@ void setInfoType(int i, char j) {
     case MapWindow::Mode::MODE_FLY_NONE:
       break;
     }
-#if USEIBOX
-  }
-#endif
 }
-
-
-#if USEIBOX
-void DoInfoKey(int keycode) {
-  int i;
-
-  if (InfoFocus<0) return; // paranoid
-
-  HideMenu();
-
-  LockNavBox();
-  i = getInfoType(InfoFocus);
-
-  // XXX This could crash if MapWindow does not capture
-
-  LockFlightData();
-  Data_Options[min(NumDataOptions-1,i)].Process(keycode);
-  UnlockFlightData();
-
-  UnlockNavBox();
-
-  #if USEIBOX
-  InfoBoxesDirty = true;
-  #endif
-
-  TriggerGPSUpdate(); // emulate update to trigger calculations
-  InfoBoxFocusTimeOut = 0;
-  DisplayTimeOut = 0;
-
-}
-#endif // USEIBOX
 
 
 bool Debounce(void) {
@@ -2751,13 +2059,6 @@ void Shutdown(void) {
   StartupStore(TEXT(". Close Messages%s"),NEWLINE);
   #endif
   Message::Destroy();
-  #if USEIBOX 
-  Units::UnLoadUnitBitmap();
-  #endif
-  #if USEIBOX
-  StartupStore(TEXT(". Destroy Info Boxes%s"),NEWLINE);
-  InfoBoxLayout::DestroyInfoBoxes();
-  #endif
   #if TESTBENCH 
   StartupStore(TEXT(". Destroy Button Labels%s"),NEWLINE);
   #endif
@@ -2769,30 +2070,18 @@ void Shutdown(void) {
   
   //  CommandBar_Destroy(hWndCB);
 
-  #if USEIBOX
-  for (i=0; i<NumDataOptions; i++) {
-    delete Data_Options[i].Formatter;
-  }
-  #endif
-
   // Kill graphics objects
 
   DeleteObject(hBrushSelected);
   DeleteObject(hBrushUnselected);
   DeleteObject(hBrushButton);
   
-#if USEIBOX
-  DeleteObject(InfoWindowFont);
-#endif
   DeleteObject(TitleWindowFont);
   DeleteObject(CDIWindowFont);
   DeleteObject(MapLabelFont);
   DeleteObject(MapWindowFont);
   DeleteObject(MapWindowBoldFont);
   DeleteObject(StatisticsFont);  
-#if USEIBOX
-  DeleteObject(TitleSmallWindowFont);
-#endif
   CAirspaceManager::Instance().CloseAirspaces();
   StartupStore(TEXT(". Delete Critical Sections%s"),NEWLINE);
   
@@ -2971,20 +2260,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       // JMW not sure this ever does anything useful..
       if (ProgramStarted > psInitInProgress) {
 
-#if USEIBOX
-	if(InfoWindowActive) {
-	  
-	  if(DisplayLocked) {
-	    FocusOnWindow(InfoFocus,true);
-	  } else {
-	    FocusOnWindow(InfoFocus,true);
-	  }
-	} else {
-	  DefocusInfoBox();
-	  HideMenu();
-	  SetFocus(hWndMapWindow);
-	}
-#endif
       }
       break;
       // TODO enhancement: Capture KEYDOWN time
@@ -3034,14 +2309,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_INITMENUPOPUP:
       if (ProgramStarted > psInitInProgress) {
-	#if USEIBOX
-	if(DisplayLocked)
 	  CheckMenuItem((HMENU) wParam,IDM_FILE_LOCK,MF_CHECKED|MF_BYCOMMAND);
-	else
-	  CheckMenuItem((HMENU) wParam,IDM_FILE_LOCK,MF_UNCHECKED|MF_BYCOMMAND);
-	#else
-	  CheckMenuItem((HMENU) wParam,IDM_FILE_LOCK,MF_CHECKED|MF_BYCOMMAND);
-	#endif // USEIBOX
 	
 	if(LoggerActive)
 	  CheckMenuItem((HMENU) wParam,IDM_FILE_LOGGER,MF_CHECKED|MF_BYCOMMAND);
@@ -3107,9 +2375,6 @@ LRESULT MainMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   int wmId, wmEvent;
   HWND wmControl;
-#if USEIBOX
-  int i;
-#endif
 
   wmId    = LOWORD(wParam);
   wmEvent = HIWORD(wParam);
@@ -3122,39 +2387,11 @@ LRESULT MainMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
       FullScreen();
 
-      #if USEIBOX      
-      InfoBoxFocusTimeOut = 0;
-      #endif
       /*
       if (!InfoWindowActive) {
         ShowMenu();
       }
       */
-      #if USEIBOX
-      for(i=0;i<numInfoWindows;i++) {
-        if(wmControl == InfoBoxes[i]->GetHandle()) {
-          InfoWindowActive = TRUE;
-                
-          if(DisplayLocked) {
-            if( i!= InfoFocus) {
-              FocusOnWindow(i,true);
-              FocusOnWindow(InfoFocus,false);
-              
-              InfoFocus = i;
-              InfoWindowActive = TRUE;
-            }
-            DisplayText();
-            InputEvents::setMode(TEXT("infobox"));
-            //InputEvents::setMode(TEXT("fullscreen")); 091128 to test
-                    
-          } else {
-            PopUpSelect(i);
-            DisplayText();
-          }
-          return 0;
-        }
-      }
-      #endif
       Message::CheckTouch(wmControl);
         
       if (ButtonLabel::CheckButtonPress(wmControl)) {
@@ -3166,431 +2403,9 @@ LRESULT MainMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-#if USEIBOX
-void    AssignValues(void)
-{
-  if (InfoBoxesHidden) {
-    // no need to assign values
-    return;
-  }
-
-  //  DetectStartTime(); moved to Calculations
-
-  // nothing to do here now!
-}
-#endif
 
 extern int PDABatteryTemperature;
 
-#if USEIBOX
-void DisplayText(void)
-{
-  if (InfoBoxesHidden)
-    return;
-
-  int i;
-  static int DisplayType[MAXINFOWINDOWS];
-  static bool first=true;
-  static int InfoFocusLast = -1;
-  static int DisplayTypeLast[MAXINFOWINDOWS];
-
-  LockNavBox();
-
-  // JMW note: this is updated every GPS time step
-
-  if (InfoFocus != InfoFocusLast) {
-    first = true; // force re-setting title
-  }
-  if ((InfoFocusLast>=0)&&(!InfoWindowActive)) {
-    first = true;
-  }
-  InfoFocusLast = InfoFocus;
-
-  for(i=0;i<numInfoWindows;i++) {
-
-    // VENTA3
-    // All calculations are made in a separate thread. Slow calculations should apply to
-    // the function DoCalculationsSlow() . Do not put calculations here! 
-    
-    DisplayType[i] = getInfoType(i);
-    Data_Options[DisplayType[i]].Formatter->AssignValue(DisplayType[i]);
-    
-    TCHAR sTmp[32];
-    
-    int color = 0;
-
-    bool needupdate = ((DisplayType[i] != DisplayTypeLast[i])||first);
-    
-    int theactive = ActiveWayPoint;
-    if (!ValidTaskPoint(theactive)) {
-      theactive = -1;
-    }
-
-    //
-    // Set Infobox title and middle value. Bottom line comes next
-    //
-    switch (DisplayType[i]) {
-
-    case 67: // VENTA3 alternate1 and 2
-    case 68: 
-    case 69:
-    case 75: // VENTA3 alternate1 and 2
-    case 76: 
-    case 77:
-	if (DisplayType[i]==67 || DisplayType[i]==75) ActiveAlternate=Alternate1; else
-	if (DisplayType[i]==68 || DisplayType[i]==76) ActiveAlternate=Alternate2; 
-		else ActiveAlternate=BestAlternate;
-	InfoBoxes[i]->SetSmallerFont(false);
-	if ( ActiveAlternate != -1 ) {
-		InfoBoxes[i]->SetTitle(Data_Options[DisplayType[i]].Formatter->
-			   RenderTitle(&color));
-		InfoBoxes[i]->SetColor(color);
-		InfoBoxes[i]->SetValue(Data_Options[DisplayType[i]].Formatter->
-			   Render(&color));
-		InfoBoxes[i]->SetColor(color);
-	} else {
-		switch(DisplayType[i]) {
-			case 67:
-				// LKTOKEN  _@M1135_ = "Alternate1 Req.Efficiency", _@M1136_ = "Atn1.E"
-				InfoBoxes[i]->SetTitle(gettext(TEXT("_@M1136_")));
-				break;
-			case 68:
-				// LKTOKEN  _@M1137_ = "Alternate2 Req.Efficiency", _@M1138_ = "Atn2.E"
-				InfoBoxes[i]->SetTitle(gettext(TEXT("_@M1138_")));
-				break;
-			case 69:
-				// LKTOKEN  _@M1139_ = "BestAltern Req.Efficiency", _@M1140_ = "BAtn.E"
-				InfoBoxes[i]->SetTitle(gettext(TEXT("_@M1140_")));
-				break;
-			case 75:
-				// LKTOKEN  _@M1151_ = "Alternate1 Arrival", _@M1152_ = "Atn1Arr"
-				InfoBoxes[i]->SetTitle(gettext(TEXT("_@M1152_")));
-				break;
-			case 76:
-				// LKTOKEN  _@M1153_ = "Alternate2 Arrival", _@M1154_ = "Atn2Arr"
-				InfoBoxes[i]->SetTitle(gettext(TEXT("_@M1154_")));
-				break;
-			case 77:
-				// LKTOKEN  _@M1155_ = "BestAlternate Arrival", _@M1156_ = "BAtnArr"
-				InfoBoxes[i]->SetTitle(gettext(TEXT("_@M1156_")));
-				break;
-			default:
-				InfoBoxes[i]->SetTitle(TEXT("ERR234"));
-				break;
-		}
-		InfoBoxes[i]->SetValue(TEXT("---"));
-		InfoBoxes[i]->SetColor(-1);
-	}
-      if (needupdate)
-	InfoBoxes[i]->SetValueUnit(Units::GetUserUnitByGroup(
-          Data_Options[DisplayType[i]].UnitGroup));
-	break;	
-    case 55:
-      InfoBoxes[i]->SetSmallerFont(true);
-      if (needupdate)
-	InfoBoxes[i]->SetTitle(Data_Options[DisplayType[i]].Title);
-      
-      InfoBoxes[i]->
-	SetValue(Data_Options[DisplayType[i]].Formatter->Render(&color));
-      
-      // to be optimized!
-      if (needupdate)
-	InfoBoxes[i]->
-	  SetValueUnit(Units::GetUserUnitByGroup(
-              Data_Options[DisplayType[i]].UnitGroup)
-	  );
-      InfoBoxes[i]->SetColor(color);
-      break; 
-    case 14: // Next waypoint
-      InfoBoxes[i]->SetSmallerFont(false);
-      if (theactive != -1){
-	InfoBoxes[i]->
-	  SetTitle(Data_Options[DisplayType[i]].Formatter->
-		   Render(&color));
-	InfoBoxes[i]->SetColor(color);
-	InfoBoxes[i]->
-	  SetValue(Data_Options[47].Formatter->Render(&color));
-      }else{
-	// LKTOKEN _@M1030_ "Next"
-	InfoBoxes[i]->SetTitle(gettext(TEXT("_@M1030_")));
-	InfoBoxes[i]->SetValue(TEXT("---"));
-	InfoBoxes[i]->SetColor(-1);
-      }
-      if (needupdate)
-	InfoBoxes[i]->SetValueUnit(Units::GetUserUnitByGroup(
-          Data_Options[DisplayType[i]].UnitGroup)
-      );
-      break;
-    default:
-      InfoBoxes[i]->SetSmallerFont(false);
-      if (needupdate)
-	InfoBoxes[i]->SetTitle(Data_Options[DisplayType[i]].Title);
-      
-      InfoBoxes[i]->
-          SetValue(Data_Options[DisplayType[i]].Formatter->Render(&color));
-      
-      // to be optimized!
-      if (needupdate)
-	InfoBoxes[i]->
-	  SetValueUnit(Units::GetUserUnitByGroup(
-            Data_Options[DisplayType[i]].UnitGroup)
-	  );
-
-      InfoBoxes[i]->SetColor(color);
-    };
-  
-    // 
-    // Infobox bottom line
-    //
-    switch (DisplayType[i]) {
-    case 14: // Next waypoint
-      if (theactive != -1){
-        int index;
-        index = Task[theactive].Index;
-        if (ValidWayPoint(index)) { 
-		if (WayPointList[index].Comment == NULL)
-			InfoBoxes[i]-> SetComment(_T(""));
-		else
-			InfoBoxes[i]-> SetComment(WayPointList[index].Comment);
-        }  else
-		InfoBoxes[i]->SetComment(TEXT(""));
-        break;
-      }
-      InfoBoxes[i]->SetComment(TEXT(""));
-      break;
-    case 79:
-	if (NearestAirspaceHDist>0)
-          InfoBoxes[i]->SetComment(NearestAirspaceName);
-	  break;
-    case 114:
-    if (NearestAirspaceVDist>0)
-          InfoBoxes[i]->SetComment(NearestAirspaceVName);
-      break;
-    case 10:
-      if (CALCULATED_INFO.AutoMacCready)
-		// LKTOKEN _@M1184_ "AutMC"
-		InfoBoxes[i]->SetComment(gettext(TEXT("_@M1184_")));
-      else
-		// LKTOKEN _@M1183_ "ManMC"
-		InfoBoxes[i]->SetComment(gettext(TEXT("_@M1183_")));
-      break;
-    case 0: // GPS Alt
-      Units::FormatAlternateUserAltitude(GPS_INFO.Altitude, 
-					 sTmp, sizeof(sTmp)/sizeof(sTmp[0]));
-      InfoBoxes[i]->SetComment(sTmp);
-      break;
-    case 1: // AGL
-      Units::FormatAlternateUserAltitude(CALCULATED_INFO.AltitudeAGL, 
-					 sTmp, sizeof(sTmp)/sizeof(sTmp[0]));
-      InfoBoxes[i]->SetComment(sTmp);
-      break;
-    case 33:
-      Units::FormatAlternateUserAltitude(GPS_INFO.BaroAltitude, 
-					 sTmp, sizeof(sTmp)/sizeof(sTmp[0]));
-      InfoBoxes[i]->SetComment(sTmp);
-      break;
-    case 27: // AAT time to go
-    case 36: // flight time
-    case 39: // current time
-    case 40: // gps time
-    case 41: // task time to go
-    case 42: // task time to go
-    case 45: // ete 
-    case 46: // leg ete 
-    case 62: // ete 
-      if (Data_Options[DisplayType[i]].Formatter->isValid()) {
-        InfoBoxes[i]->
-          SetComment(Data_Options[DisplayType[i]].Formatter->GetCommentText());
-      } else {
-        InfoBoxes[i]->
-          SetComment(TEXT(""));
-      }
-      break;
-    case 43:
-	// LKTOKEN _@M1196_ "DOLPHIN"
-	InfoBoxes[i]->SetComment(gettext(TEXT("_@M1196_")));
-      break;
-    case 55: // own team code      
-      InfoBoxes[i]->SetComment(TeammateCode);
-      if (TeamFlarmTracking)
-	{
-	  if (IsFlarmTargetCNInRange())
-	    {				
-	      InfoBoxes[i]->SetColorBottom(2);
-	    }
-	  else
-	    {
-	      InfoBoxes[i]->SetColorBottom(1);
-	    }
-	}
-      else
-	{
-	  InfoBoxes[i]->SetColorBottom(0);
-	}           
-      break;
-    case 56: // team bearing
-
-      if (TeamFlarmIdTarget != 0)
-	{
-	  if (wcslen(TeamFlarmCNTarget) != 0)
-	    {
-	      InfoBoxes[i]->SetComment(TeamFlarmCNTarget);
-	    }
-	  else
-	    {
-	      InfoBoxes[i]->SetComment(TEXT("???"));
-	    }
-	}
-      else
-	{
-	  InfoBoxes[i]->SetComment(TEXT("---"));
-	}
-
-      if (IsFlarmTargetCNInRange())
-	{				
-	  InfoBoxes[i]->SetColorBottom(2);
-	}
-      else
-	{
-	  InfoBoxes[i]->SetColorBottom(1);
-	}
-
-      break;
-    case 57: // team bearing dif
-
-      if (TeamFlarmIdTarget != 0)
-	{
-	  if (wcslen(TeamFlarmCNTarget) != 0)
-	    {
-	      InfoBoxes[i]->SetComment(TeamFlarmCNTarget);
-	    }
-	  else
-	    {
-	      InfoBoxes[i]->SetComment(TEXT("???"));
-	    }
-	}
-      else
-	{
-	  InfoBoxes[i]->SetComment(TEXT("---"));
-	}
-      if (IsFlarmTargetCNInRange())
-	{				
-	  InfoBoxes[i]->SetColorBottom(2);
-	}
-      else
-	{
-	  InfoBoxes[i]->SetColorBottom(1);
-	}
-
-      break;
-    case 58: // team range
-
-      if (TeamFlarmIdTarget != 0)
-	{
-	  if (wcslen(TeamFlarmCNTarget) != 0)
-	    {
-	      InfoBoxes[i]->SetComment(TeamFlarmCNTarget);
-	    }
-	  else
-	    {
-	      InfoBoxes[i]->SetComment(TEXT("???"));
-	    }
-	}
-      else
-	{
-	  InfoBoxes[i]->SetComment(TEXT("---"));
-	}
-      if (IsFlarmTargetCNInRange())
-	{				
-	  InfoBoxes[i]->SetColorBottom(2);
-	}
-      else
-	{
-	  InfoBoxes[i]->SetColorBottom(1);
-	}
-
-      break;
-	// VENTA3 wind speed + bearing bottom line
-	case 25:
-		if ( CALCULATED_INFO.WindBearing == 0 )
-		wsprintf(sTmp,_T("0%s"),_T(DEG)); else
-		wsprintf(sTmp,_T("%1.0d%s"),(int)CALCULATED_INFO.WindBearing,_T(DEG));
-		InfoBoxes[i]->SetComment(sTmp);
-		break;
-		
-	// VENTA3 radial
-	case 60: 
-		if ( HomeWaypoint == -1 ) {  // should be redundant
-      			InfoBoxes[i]->SetComment(TEXT(""));
-			break; 
-		}
-		if ( CALCULATED_INFO.HomeRadial == 0 )
-		wsprintf(sTmp,_T("0%s"),_T(DEG)); else
-		wsprintf(sTmp,_T("%1.0d%s"),(int)CALCULATED_INFO.HomeRadial,_T(DEG));
-		InfoBoxes[i]->SetComment(sTmp);
-		break;
-
-	// VENTA3 battery temperature under voltage. There is a good reason to see the temperature,
-	// if available: many PNA/PDA will switch OFF during flight under direct sunlight for several
-	// hours due to battery temperature too high!! The 314 does!
-
-	// TODO: check temperature too high and set a warning flag to be used by an event or something
-	#if (WINDOWSPC<1)
-	case 65:
-		if ( PDABatteryTemperature >0 ) {
-			wsprintf(sTmp,_T("%1.0d%SC"),(int)PDABatteryTemperature,_T(DEG));
-			InfoBoxes[i]->SetComment(sTmp);
-		} else
-      			InfoBoxes[i]->SetComment(TEXT(""));
-		break;
-	#endif
-
-	// VENTA3 alternates
-	case 67:
-	case 68:
-	case 69: 
-		if ( ActiveAlternate == -1 ) {  // should be redundant
-      			InfoBoxes[i]->SetComment(TEXT(""));
-			break; 
-		}
-			Units::FormatUserDistance(WayPointCalc[ActiveAlternate].Distance,
-					 sTmp, sizeof(sTmp)/sizeof(sTmp[0]));
-			InfoBoxes[i]->SetComment(sTmp);
-		break;
-	// VENTA3 alternates
-	case 75:
-	case 76:
-	case 77: 
-		if ( ActiveAlternate == -1 ) {  // should be redundant
-      			InfoBoxes[i]->SetComment(TEXT(""));
-			break; 
-		}
-			Units::FormatUserDistance(WayPointCalc[ActiveAlternate].Distance,
-					 sTmp, sizeof(sTmp)/sizeof(sTmp[0]));
-			InfoBoxes[i]->SetComment(sTmp);
-		break;
-	case 70: // QFE
-		//Units::FormatUserArrival(GPS_INFO.Altitude,
-		Units::FormatUserAltitude(GPS_INFO.Altitude,
-			 sTmp, sizeof(sTmp)/sizeof(sTmp[0]));
-		InfoBoxes[i]->SetComment(sTmp);
-		break;
-
-    default:
-      InfoBoxes[i]->SetComment(TEXT(""));
-    };
-
-    DisplayTypeLast[i] = DisplayType[i];
-    
-  }
-  InfoBoxLayout::Paint();
-
-  first = false;
-
-  UnlockNavBox();
-
-}
-#endif // USEIBOX
 
 #include "winbase.h"
 
@@ -3623,32 +2438,14 @@ void CommonProcessTimer()
 	InfoBoxFocusTimeOut ++;
       }
       #else
-#if USEIBOX
-	if(InfoBoxFocusTimeOut >= FOCUSTIMEOUTMAX)
-	  {
-	    SwitchToMapWindow();
-	  }
-	InfoBoxFocusTimeOut ++;
-#endif
       #endif
     }
-#if USEIBOX
-  if (DisplayLocked) {
     if(MenuTimeOut==MenuTimeoutMax) {
       if (!MapWindow::mode.AnyPan()) {
 	InputEvents::setMode(TEXT("default"));
       }
     }
     MenuTimeOut++;
-  }
-#else
-    if(MenuTimeOut==MenuTimeoutMax) {
-      if (!MapWindow::mode.AnyPan()) {
-	InputEvents::setMode(TEXT("default"));
-      }
-    }
-    MenuTimeOut++;
-#endif // USEIBOX
 
   UpdateBatteryInfos();
 
@@ -3663,13 +2460,6 @@ void CommonProcessTimer()
   }
 
   if (MapWindow::IsDisplayRunning()) {
-#if USEIBOX
-    if (InfoBoxesDirty) {
-      AssignValues();
-      DisplayText();
-      InfoBoxesDirty = false;
-    }
-#endif
   }
 
   //
@@ -3886,18 +2676,10 @@ void SIMProcessTimer(void)
 
 void SwitchToMapWindow(void)
 {
-#if USEIBOX
-  DefocusInfoBox();
-#endif
   SetFocus(hWndMapWindow);
   if (  MenuTimeOut< MenuTimeoutMax) {
     MenuTimeOut = MenuTimeoutMax;
   }
-#if USEIBOX
-  if (  InfoBoxFocusTimeOut< FOCUSTIMEOUTMAX) {
-    InfoBoxFocusTimeOut = FOCUSTIMEOUTMAX;
-  }
-#endif
 }
 
 
@@ -3938,18 +2720,6 @@ void PopupBugsBallast(int UpDown)
 }
 
 
-#if USEIBOX
-void PopUpSelect(int Index)
-{
-  DialogActive = true;
-  CurrentInfoType = InfoType[Index];
-  StoreType(Index, InfoType[Index]);
-  //  ShowWindow(hWndCB,SW_HIDE);
-  FullScreen();
-  SwitchToMapWindow();
-  DialogActive = false;
-}
-#endif
 
 #include <stdio.h>
 
@@ -4165,25 +2935,6 @@ void UnlockEventQueue() {
 }
 
 
-#if USEIBOX
-void HideInfoBoxes() {
-  int i;
-  InfoBoxesHidden = true;
-  for (i=0; i<numInfoWindows+1; i++) {
-    InfoBoxes[i]->SetVisible(false);
-  }
-}
-
-
-void ShowInfoBoxes() {
-  int i;
-  InfoBoxesHidden = false;
-  for (i=0; i<numInfoWindows; i++) {
-    InfoBoxes[i]->SetVisible(true);
-  }
-}
-#endif
-
 #if (WINDOWSPC<1)
 DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo)
 {
@@ -4261,62 +3012,6 @@ void UpdateBatteryInfos(void) {
   } 
   #endif
 }
-
-
-#if USEIBOX
-void Event_SelectInfoBox(int i) {
-//  int oldinfofocus = InfoFocus;
-
-  // must do this
-  InfoBoxFocusTimeOut = 0;
-
-  if (InfoFocus>= 0) {
-    FocusOnWindow(InfoFocus,false);
-  }
-  InfoFocus+= i;
-  if (InfoFocus>=numInfoWindows) {
-    InfoFocus = -1; // deactivate if wrap around
-  }
-  if (InfoFocus<0) {
-    InfoFocus = -1; // deactivate if wrap around
-  }
-  if (InfoFocus<0) {
-    DefocusInfoBox();
-    SwitchToMapWindow();
-    return;
-  }
-
-  //  SetFocus(hWndInfoWindow[InfoFocus]);
-  FocusOnWindow(InfoFocus,true);
-  InfoWindowActive = TRUE;
-  DisplayText();
-
-  InputEvents::setMode(TEXT("infobox"));
-}
-
-
-void Event_ChangeInfoBoxType(int i) {
-  int j=0, k;
-
-  if (InfoFocus<0) {
-    return;
-  }
-
-  k = getInfoType(InfoFocus);
-  if (i>0) {
-    j = Data_Options[k].next_screen;
-  }
-  if (i<0) {
-    j = Data_Options[k].prev_screen;
-  }
-
-  // TODO code: if i==0, go to default or reset
-
-  setInfoType(InfoFocus, j);
-  DisplayText();
-
-}
-#endif // USEIBOX
 
 
 static void ReplaceInString(TCHAR *String, TCHAR *ToReplace, 
@@ -4649,14 +3344,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
 
-  #if USEIBOX
-  if (_tcsstr(OutBuffer, TEXT("$(BoxMode)"))) {
-	if ( MapWindow::IsMapFullScreen() ) invalid = true;
-	ReplaceInString(OutBuffer, TEXT("$(BoxMode)"), TEXT(""), Size);
-	if (--items<=0) goto label_ret; // 100517
-  }
-  #endif
-
   if (_tcsstr(OutBuffer, TEXT("$(WCSpeed)"))) {
 	TCHAR tbuf[10];
 	_stprintf(tbuf,_T("%.0f%s"),SPEEDMODIFY*WindCalcSpeed,Units::GetUnitName(Units::GetUserHorizontalSpeedUnit()) );
@@ -4833,10 +3520,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
 
-#if USEIBOX
-  CondReplaceInString(MapWindow::IsMapFullScreen(), OutBuffer, TEXT("$(FullScreenToggleActionName)"), gettext(TEXT("_@M894_")), gettext(TEXT("_@M491_")), Size);
-  // CondReplaceInString(1, OutBuffer, TEXT("$(FullScreenToggleActionName)"), gettext(TEXT("_@M894_")), gettext(TEXT("_@M491_")), Size);
-#endif
   CondReplaceInString(MapWindow::zoom.AutoZoom(), OutBuffer, TEXT("$(ZoomAutoToggleActionName)"), gettext(TEXT("_@M418_")), gettext(TEXT("_@M897_")), Size);
   CondReplaceInString(EnableTopology, OutBuffer, TEXT("$(TopologyToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
   CondReplaceInString(EnableTerrain, OutBuffer, TEXT("$(TerrainToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
@@ -4867,10 +3550,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   }
 
   CondReplaceInString(CALCULATED_INFO.AutoMacCready != 0, OutBuffer, TEXT("$(MacCreadyToggleActionName)"), gettext(TEXT("_@M418_")), gettext(TEXT("_@M897_")), Size);
-#if USEIBOX
-  CondReplaceInString(EnableAuxiliaryInfo, OutBuffer, TEXT("$(AuxInfoToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
-  // CondReplaceInString(0, OutBuffer, TEXT("$(AuxInfoToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
-#endif
   {
   MapWindow::Mode::TModeFly userForcedMode = MapWindow::mode.UserForcedMode();
   CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_CIRCLING, OutBuffer, TEXT("$(DispModeClimbShortIndicator)"), TEXT("_"), TEXT(""), Size);

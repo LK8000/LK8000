@@ -122,9 +122,6 @@ static void setVariables(void) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
 	AddConfList(dfe);
-#if USEIBOX
-	dfe->addEnumText(TEXT("Toggle IBOX"));
-#endif
 	dfe->Set(CustomKeyModeAircraftIcon);
 	wp->RefreshDisplay();
   }
@@ -302,10 +299,6 @@ void AddConfList( DataFieldEnum* dfe) {
     dfe->addEnumText(gettext(TEXT("_@M1693_"))); // Terrain Colors
 
     dfe->Sort(0);
-#if USEIBOX
-	// Last ckToggleInfobox is automatically added at the bottom of this list. 
-	// Do not add it manually here.
-#endif
 
 }
 

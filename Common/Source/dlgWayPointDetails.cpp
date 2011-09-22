@@ -138,11 +138,7 @@ static void OnPaintDetailsListItem(WindowControl * Sender, HDC hDC){
       nlen--;
     }
     if (nlen>0) {
-#if USEIBOX
-      ExtTextOut(hDC, 2*InfoBoxLayout::scale, 2*InfoBoxLayout::scale,
-#else
       ExtTextOut(hDC, 2*ScreenScale, 2*ScreenScale,
-#endif
 		 ETO_OPAQUE, NULL,
 		 text+nstart,
 		 nlen, 
@@ -367,11 +363,7 @@ void dlgWayPointDetailsShowModal(void){
   int sunsetmins;
   WndProperty *wp;
 
-#if USEIBOX
-  if (!InfoBoxLayout::landscape) {
-#else
   if (!ScreenLandscape) {
-#endif
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgWayPointDetails_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 

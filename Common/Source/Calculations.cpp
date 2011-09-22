@@ -70,11 +70,7 @@ static ThermalLocator thermallocator;
 #define THERMAL_TIME_MIN 45.0
 double CRUISE_EFFICIENCY = 1.0;
 
-#if USEIBOX
-#define MAPMODE8000    MapWindow::IsMapFullScreen()&&!MapWindow::mode.AnyPan()&&MapSpaceMode==MSM_MAP
-#else
 #define MAPMODE8000    !MapWindow::mode.AnyPan()&&MapSpaceMode==MSM_MAP
-#endif
 
 
 static double SpeedHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -988,11 +984,7 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   DoAlternates(Basic, Calculated,BestAlternate); 
 
   // Calculate nearest landing when needed
-#if USEIBOX
-  if ( MapWindow::IsMapFullScreen() && !MapWindow::mode.AnyPan() && DrawBottom && (MapSpaceMode>MSM_MAP) ) {
-#else
   if ( !MapWindow::mode.AnyPan() && DrawBottom && (MapSpaceMode>MSM_MAP) ) {
-#endif
 	switch(MapSpaceMode) {
 		case MSM_LANDABLE:
 		case MSM_AIRPORTS:

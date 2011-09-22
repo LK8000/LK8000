@@ -648,15 +648,9 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
 
     x1 = w0-w1-w2-w3;
 
-#if USEIBOX
-    ExtTextOutClip(hDC, 2*InfoBoxLayout::scale, 2*InfoBoxLayout::scale,
-                   WayPointList[WayPointSelectInfo[i].Index].Name,
-                   x1-InfoBoxLayout::scale*5);
-#else
     ExtTextOutClip(hDC, 2*ScreenScale, 2*ScreenScale,
                    WayPointList[WayPointSelectInfo[i].Index].Name,
                    x1-ScreenScale*5);
-#endif
 
     sTmp[0] = '\0';
     sTmp[1] = '\0';
@@ -685,11 +679,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
     }
 
     // left justified
-#if USEIBOX
-    ExtTextOut(hDC, x1, 2*InfoBoxLayout::scale,
-#else
     ExtTextOut(hDC, x1, 2*ScreenScale,
-#endif
                ETO_OPAQUE, NULL,
                sTmp, _tcslen(sTmp), NULL);
 
@@ -698,11 +688,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
               WayPointSelectInfo[i].Distance,
               Units::GetDistanceName());
     x2 = w0-w3-GetTextWidth(hDC, sTmp);
-#if USEIBOX
-    ExtTextOut(hDC, x2, 2*InfoBoxLayout::scale,
-#else
     ExtTextOut(hDC, x2, 2*ScreenScale,
-#endif
       ETO_OPAQUE, NULL,
       sTmp, _tcslen(sTmp), NULL);
 
@@ -710,11 +696,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
     _stprintf(sTmp, TEXT("%d")TEXT(DEG),  
 	      iround(WayPointSelectInfo[i].Direction));
     x3 = w0-GetTextWidth(hDC, sTmp);
-#if USEIBOX
-    ExtTextOut(hDC, x3, 2*InfoBoxLayout::scale,
-#else
     ExtTextOut(hDC, x3, 2*ScreenScale,
-#endif
                ETO_OPAQUE, NULL,
                sTmp, _tcslen(sTmp), NULL);
 
@@ -722,11 +704,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
     if (DrawListIndex == 0){
 	// LKTOKEN  _@M466_ = "No Match!" 
       _stprintf(sTmp, TEXT("%s"), gettext(TEXT("_@M466_")));
-#if USEIBOX
-      ExtTextOut(hDC, 2*InfoBoxLayout::scale, 2*InfoBoxLayout::scale,
-#else
       ExtTextOut(hDC, 2*ScreenScale, 2*ScreenScale,
-#endif
         ETO_OPAQUE, NULL,
         sTmp, _tcslen(sTmp), NULL);
     }
@@ -844,11 +822,7 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
     DistanceFilterIdx = 1;
   }
 
-#if USEIBOX
-  if (!InfoBoxLayout::landscape) {
-#else
   if (!ScreenLandscape) {
-#endif
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgWayPointSelect_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
@@ -890,11 +864,7 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
    #else
    #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
    #endif
-#if USEIBOX
-   wWayPointList->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * InfoBoxLayout::dscale * SHRINKSBFACTOR);
-#else
    wWayPointList->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
-#endif
 
    }
   wWayPointListEntry->SetWidth(wWayPointList->GetWidth() - wWayPointList->ScrollbarWidth - 5);

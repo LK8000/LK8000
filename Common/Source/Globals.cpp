@@ -310,12 +310,9 @@ void Globals_Init(void) {
   ScreenSizeX=0;
   ScreenSizeY=0;
   ScreenLandscape=false;
-  #if USEIBOX
-  #else
   ScreenDScale=1;
   ScreenScale=1;
   ScreenIntScale=false;
-  #endif
 
   // Default arrival mode calculation type
   // 091016 currently not changed anymore

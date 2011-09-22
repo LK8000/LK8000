@@ -47,9 +47,6 @@
 // Warning, this is initialising class, loading flarmnet IDs before anything else in the LK is even started..
 FlarmIdFile file; 
 
-#if USEIBOX
-#include "InfoBoxLayout.h"
-#endif
 
 #include "utils/heapcheck.h"
 
@@ -300,9 +297,6 @@ const TCHAR szRegistryAppInverseInfoBox[] = TEXT("AppInverseInfoBox2");
 const TCHAR szRegistryAppDefaultMapWidth[] = TEXT("AppDefaultMapWidth");
 const TCHAR szRegistryTeamcodeRefWaypoint[] = TEXT("TeamcodeRefWaypoint1");
 
-#if USEIBOX
-const TCHAR szRegistryAppInfoBoxGeom[] = TEXT("AppInfoBoxGeom");
-#endif
 const TCHAR szRegistryAppInfoBoxModel[] = TEXT("AppInfoBoxModel"); 
 const TCHAR szRegistryGpsAltitudeOffset[] = TEXT("GpsAltitudeOffset");
 const TCHAR szRegistryUseGeoidSeparation[] = TEXT("UseGeoidSeparation");
@@ -384,14 +378,8 @@ const TCHAR szRegistryDisableAutoLogger[] = TEXT("DisableAutoLogger");
 const TCHAR szRegistryMapFile[]=	 TEXT("MapFile"); // pL
 const TCHAR szRegistryBallastSecsToEmpty[]=	 TEXT("BallastSecsToEmpty"); 
 const TCHAR szRegistryUseCustomFonts[]=	 TEXT("UseCustomFonts"); 
-#if USEIBOX
-const TCHAR szRegistryFontInfoWindowFont[]=	 TEXT("InfoWindowFont"); 
-#endif
 const TCHAR szRegistryFontTitleWindowFont[]=	 TEXT("TitleWindowFont"); 
 const TCHAR szRegistryFontMapWindowFont[]=	 TEXT("MapWindowFont"); 
-#if USEIBOX
-const TCHAR szRegistryFontTitleSmallWindowFont[]=	 TEXT("TeamCodeFont"); 
-#endif
 const TCHAR szRegistryFontMapWindowBoldFont[]=	 TEXT("MapWindowBoldFont"); 
 const TCHAR szRegistryFontCDIWindowFont[]=	 TEXT("CDIWindowFont"); 
 const TCHAR szRegistryFontMapLabelFont[]=	 TEXT("MapLabelFont"); 
@@ -1039,15 +1027,6 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryAppInverseInfoBox, &Temp);
   Appearance.InverseInfoBox = (Temp != 0);
 
- #if USEIBOX
-// VENTA2-ADDON Geometry change and PNA custom font settings
-// depending on infobox geometry and model type
-// I had to move here the font setting because I needed first to 
-// know the screen geometry, in the registry!
-  Temp = Appearance.InfoBoxGeom;
-  GetFromRegistry(szRegistryAppInfoBoxGeom, &Temp);
-  Appearance.InfoBoxGeom = (InfoBoxGeomAppearance_t)Temp;
- #endif // USEIBOX
 
 #if (WINDOWSPC<1)
   if (GlobalModelType == MODELTYPE_PNA_HP31X ) {

@@ -25,9 +25,6 @@
 #include "AirfieldDetails.h"
 #include "device.h"
 #include "Units.h"
-#if USEIBOX
-#include "InfoBoxLayout.h"
-#endif
 #include "InputEvents.h"
 #include "Message.h"
 #include "LKObjects.h"

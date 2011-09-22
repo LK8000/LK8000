@@ -23,146 +23,12 @@
 #include "Enums.h"
 
 
-#if USEIBOX
-class InfoBoxFormatter {
- public:
-  InfoBoxFormatter(TCHAR *theformat);
-  virtual ~InfoBoxFormatter() {}
-
-  virtual TCHAR *Render(int *color);
-  virtual TCHAR *RenderTitle(int *color); // VENTA3
-  void RenderInvalid(int *color);
-  BOOL Valid;
-  double Value;
-  TCHAR Format[FORMAT_SIZE+1];
-  TCHAR Text[100];
-  TCHAR CommentText[100];
-
-  virtual void AssignValue(int i);
-  TCHAR *GetCommentText();
-  BOOL isValid();
-};
-
-
-class FormatterTeamCode: public InfoBoxFormatter {
- public:
-  FormatterTeamCode(TCHAR *theformat):InfoBoxFormatter(theformat) {};
-  virtual ~FormatterTeamCode() {}
-
-  virtual TCHAR *Render(int *color);
-};
-
-
-class FormatterDiffTeamBearing: public InfoBoxFormatter {
- public:
-  FormatterDiffTeamBearing(TCHAR *theformat):InfoBoxFormatter(theformat) {};
-  virtual ~FormatterDiffTeamBearing() {}
-
-  virtual TCHAR *Render(int *color);
-};
-
-
-class FormatterWaypoint: public InfoBoxFormatter {
- public:
-  FormatterWaypoint(TCHAR *theformat):InfoBoxFormatter(theformat) {};
-  virtual ~FormatterWaypoint() {}
-
-  virtual TCHAR *Render(int *color);
-};
-
-// VENTA3 / alternates
-class FormatterAlternate: public InfoBoxFormatter {
- public:
-  FormatterAlternate(TCHAR *theformat):InfoBoxFormatter(theformat) {};
-  virtual ~FormatterAlternate() {}
-
-  virtual TCHAR *Render(int *color);
-  virtual TCHAR *RenderTitle(int *color);
-  virtual void AssignValue(int i);
-};
-// VENTA3 bestlanding
-/*
-class FormatterBestLanding: public InfoBoxFormatter {
- public:
-  FormatterBestLanding(TCHAR *theformat):InfoBoxFormatter(theformat) {};
-  virtual TCHAR *Render(int *color);
-  virtual TCHAR *RenderTitle(int *color);
-  virtual void AssignValue(int i);
-};
-*/
-class FormatterLowWarning: public InfoBoxFormatter {
- public:
-  FormatterLowWarning(TCHAR *theformat, double the_minimum)
-#if 101029
-    :InfoBoxFormatter(theformat), minimum(the_minimum) {}
-  virtual ~FormatterLowWarning() {}
-#else
-    :InfoBoxFormatter(theformat) { 
-
-    minimum = the_minimum;
-
-  };
-#endif
-
-  virtual TCHAR *Render(int *color);
-  double minimum;
-  virtual void AssignValue(int i);
-};
-
-
-class FormatterTime: public InfoBoxFormatter {
- public:
-  FormatterTime(TCHAR *theformat):InfoBoxFormatter(theformat) {};
-  virtual ~FormatterTime() {}
-
-  virtual TCHAR *Render(int *color);
-  virtual void AssignValue(int i);
-  int hours;
-  int mins;
-  int seconds;
-  void SecsToDisplayTime(int i);
-};
-
-
-class FormatterAATTime: public FormatterTime {
- public:
-  FormatterAATTime(TCHAR *theformat):FormatterTime(theformat) {};
-  virtual ~FormatterAATTime() {}
-
-  virtual TCHAR *Render(int *color);
-  virtual void AssignValue(int i);
-  int status; 
-};
-
-
-class FormatterDiffBearing: public InfoBoxFormatter {
- public:
-  FormatterDiffBearing(TCHAR *theformat):InfoBoxFormatter(theformat) {};
-  virtual ~FormatterDiffBearing() {}
-
-  virtual TCHAR *Render(int *color);
-};
-#endif // USEIBOX
-
-#if USEIBOX
-typedef struct _SCREEN_INFO
-{
-  UnitGroup_t UnitGroup;
-  TCHAR Description[DESCRIPTION_SIZE +1];
-  TCHAR Title[TITLE_SIZE + 1];
-  InfoBoxFormatter *Formatter;
-  void (*Process)(int UpDown);  
-  char next_screen;
-  char prev_screen;
-} SCREEN_INFO;
-#else
 typedef struct _DATAOPTIONS
 {
   UnitGroup_t UnitGroup;
   TCHAR Description[DESCRIPTION_SIZE +1];
   TCHAR Title[TITLE_SIZE + 1];
 } DATAOPTIONS;
-#endif
 
 
 
@@ -354,20 +220,6 @@ typedef enum{
   bit7E1,
 }BitIndex_t;
 
-#if USEIBOX
-// VENTA-ADDON GEOM
-typedef enum{
-  apIg0=0,
-  apIg1,
-  apIg2,
-  apIg3,
-  apIg4,
-  apIg5,
-  apIg6,
-  apIg7
-}InfoBoxGeomAppearance_t;
-#endif
-
 // VENTA-ADDON MODEL
 typedef enum{
 	apImPnaGeneric=0,
@@ -436,10 +288,6 @@ typedef enum{
 	ckUseTotalEnergy,
 	ckNotepad,
 	ckTerrainColors,
-#if USEIBOX
-	// ToggleInfobox MUST be the last one, used only for Aircraft Icons..
-	ckToggleInfobox,
-#endif
 } CustomKeyMode_t;
 
 typedef enum{
@@ -609,24 +457,9 @@ typedef struct {
 
 typedef struct{
   int DefaultMapWidth;
-#if USEIBOX
-  // THESE ARE USED BY INFOBOX ONLY TO HAVE SIZES READY
-  FontHeightInfo_t TitleWindowFont;
-  FontHeightInfo_t MapWindowFont;
-  FontHeightInfo_t MapWindowBoldFont;
-  FontHeightInfo_t InfoWindowFont;
-  FontHeightInfo_t CDIWindowFont;
-  FontHeightInfo_t StatisticsFont;
-  FontHeightInfo_t MapLabelFont;
-  FontHeightInfo_t TitleSmallWindowFont;
-  // 
-#endif
   BestCruiseTrack_t BestCruiseTrack;
   IndLandable_t IndLandable;	// landable icon style
   bool InverseInfoBox;		// InfoBox black or white inverted, used also by LK styles
-#if USEIBOX
-  InfoBoxGeomAppearance_t InfoBoxGeom; 
-#endif
   InfoBoxModelAppearance_t InfoBoxModel;
 } Appearance_t;
 

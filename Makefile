@@ -367,7 +367,7 @@ SRC_FILES :=\
 	$(SRC)/Dialogs.cpp 		$(SRC)/LKProcess.cpp \
 	$(SRC)/FlarmIdFile.cpp 		$(SRC)/FlarmCalculations.cpp \
 	$(SRC)/Geoid.cpp \
-	$(SRC)/InfoBox.cpp 		$(SRC)/InfoBoxLayout.cpp \
+	$(SRC)/InfoBoxLayout.cpp \
 	$(SRC)/InputEvents.cpp 		$(SRC)/leastsqs.cpp \
 	$(SRC)/Logger.cpp 		$(SRC)/LKMapWindow.cpp \
 	$(SRC)/LKDrawLook8000.cpp 	$(SRC)/LKDrawNearest.cpp\

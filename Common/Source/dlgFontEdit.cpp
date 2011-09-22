@@ -20,13 +20,7 @@ extern void InitializeOneFont (HFONT * theFont,
                                const TCHAR FontRegKey[] , 
                                LOGFONT autoLogFont, 
                                LOGFONT * LogFontUsed);
-#if USEIBOX
-extern HFONT InfoWindowFont;
-#endif
 extern HFONT MapWindowFont;
-#if USEIBOX
-extern HFONT TitleSmallWindowFont;
-#endif
 //extern HFONT MapWindowBoldFont; REMOVE
 extern HFONT MapLabelFont;
 // extern HFONT StatisticsFont; REMOVE

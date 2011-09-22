@@ -490,11 +490,7 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly){
   wf = NULL;
  
-#if USEIBOX 
-  if (!InfoBoxLayout::landscape) {
-#else
   if (!ScreenLandscape) {
-#endif
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgTaskWaypoint_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 

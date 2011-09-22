@@ -234,14 +234,8 @@ extern const TCHAR szRegistryDisableAutoLogger[];
 extern const TCHAR szRegistryMapFile[];
 extern const TCHAR szRegistryBallastSecsToEmpty[];
 extern const TCHAR szRegistryUseCustomFonts[];
-#if USEIBOX
-extern const TCHAR szRegistryFontInfoWindowFont[]; 
-#endif
 extern const TCHAR szRegistryFontTitleWindowFont[]; 
 extern const TCHAR szRegistryFontMapWindowFont[];
-#if USEIBOX
-extern const TCHAR szRegistryFontTitleSmallWindowFont[];
-#endif
 extern const TCHAR szRegistryFontMapWindowBoldFont[];
 extern const TCHAR szRegistryFontCDIWindowFont[];
 extern const TCHAR szRegistryFontMapLabelFont[];

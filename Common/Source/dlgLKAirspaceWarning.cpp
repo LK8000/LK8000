@@ -352,11 +352,7 @@ void ShowAirspaceWarningsToUser()
 
   // show dialog to user if needed
   if (ackdialog_required && (airspace_copy.WarningLevel() == msg.warnlevel)) {
-#if USEIBOX
-    if (!InfoBoxLayout::landscape)
-#else
     if (!ScreenLandscape)
-#endif
       dlg = dlgLoadFromXML(CallBackTable, NULL, hWndMainWindow, TEXT("IDR_XML_LKAIRSPACEWARNING_L"));
     else
       dlg = dlgLoadFromXML(CallBackTable, NULL, hWndMainWindow, TEXT("IDR_XML_LKAIRSPACEWARNING"));

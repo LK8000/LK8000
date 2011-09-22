@@ -537,9 +537,6 @@ void MapWindow::SetTargetPan(bool do_pan, int target_point, DWORD dlgSize /* = 0
 {
   static double old_latitude;
   static double old_longitude;
-#if USEIBOX
-  static bool old_fullscreen=false;
-#endif
 
   if(dlgSize)
     targetPanSize = dlgSize;
@@ -554,12 +551,6 @@ void MapWindow::SetTargetPan(bool do_pan, int target_point, DWORD dlgSize /* = 0
     old_latitude = PanLatitude;
     old_longitude = PanLongitude;
     mode.Special(do_pan ? Mode::MODE_SPECIAL_TARGET_PAN : Mode::MODE_SPECIAL_PAN, true);
-#if USEIBOX
-    old_fullscreen = RequestFullScreen;
-    if (RequestFullScreen) {
-      RequestFullScreen = false;
-    }
-#endif
     zoom.SwitchMode();
   }
   if (do_pan) {
@@ -587,10 +578,6 @@ void MapWindow::SetTargetPan(bool do_pan, int target_point, DWORD dlgSize /* = 0
     PanLongitude = old_longitude;
     PanLatitude = old_latitude;
     mode.Special(Mode::MODE_SPECIAL_TARGET_PAN, do_pan);
-#if USEIBOX
-    if (old_fullscreen)
-      RequestFullScreen = true;
-#endif
     zoom.SwitchMode();
     }
   mode.Special(Mode::MODE_SPECIAL_TARGET_PAN, do_pan);
@@ -758,13 +745,8 @@ void MapWindow::DrawProjectedTrack(HDC hdc, const RECT rc, const POINT Orig) {
     // too small an error to bother
     return;
   } else {
-#if USEIBOX
-    pt[1].y = (long)(-max(MapRectBig.right-MapRectBig.left,
-			  MapRectBig.bottom-MapRectBig.top)*1.2);
-#else
     pt[1].y = (long)(-max(MapRect.right-MapRect.left,
 			  MapRect.bottom-MapRect.top)*1.2);
-#endif
     PolygonRotateShift(pt, 2, Orig.x, Orig.y, 
 		       bearing-DisplayAngle);
   }
@@ -856,15 +838,7 @@ void MapWindow::DrawThermalBand(HDC hDC, const RECT rc)
   }
 
   short lkvariooffset;
-#if USEIBOX
-  // vario is displayed only in fullscreen mode, if enabled
-  if (IsMapFullScreen())
-	lkvariooffset=rc.left + LKVarioBar?(LKVarioSize+1):0; //@ 091118
-  else
-	lkvariooffset=rc.left;
-#else
   lkvariooffset=rc.left + LKVarioBar?(LKVarioSize+1):0; 
-#endif
 
   // calculate top/bottom height
   maxh = max(h, mth);
@@ -999,11 +973,7 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
   int i;
   int lkVarioOffset=0, minBar, maxBar;
 
-#if USEIBOX
-  if (IsMapFullScreen()&&LKVarioBar) //@ 091115
-#else
   if (LKVarioBar)
-#endif
 	lkVarioOffset=LKVarioSize+NIBLSCALE(2); //@ 091114
 
   // 091114
@@ -1642,12 +1612,6 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 		// LKTOKEN _@M1338_ " PAN"
       _tcscat(Scale2, gettext(TEXT("_@M1338_")));
     }
-#if USEIBOX
-    if (EnableAuxiliaryInfo) {
-		// LKTOKEN _@M1339_ " iAUX"
-      _tcscat(Scale2, gettext(TEXT("_@M1339_")));
-    }
-#endif
 
     if (DrawBottom) {
 	switch(BottomMode) {

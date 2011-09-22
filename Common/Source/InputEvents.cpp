@@ -1022,55 +1022,6 @@ void InputEvents::eventActiveMap(const TCHAR *misc) {
 
 void InputEvents::eventScreenModes(const TCHAR *misc) {
 
-#if USEIBOX 	// ScreenModes can be removed from events and xci
-  // toggle switches like this:
-  //  -- normal infobox
-  //  -- auxiliary infobox
-  //  -- full screen
-  //  -- normal infobox
-
-  if (_tcscmp(misc, TEXT("normal")) == 0) {
-    MapWindow::RequestOffFullScreen();
-    EnableAuxiliaryInfo = false;
-  } else if (_tcscmp(misc, TEXT("auxilary")) == 0) {
-    MapWindow::RequestOffFullScreen();
-    EnableAuxiliaryInfo = true;
-  } else if (_tcscmp(misc, TEXT("toggleauxiliary")) == 0) {
-    MapWindow::RequestOffFullScreen();
-    EnableAuxiliaryInfo = !EnableAuxiliaryInfo;
-  } else if (_tcscmp(misc, TEXT("full")) == 0) {
-    MapWindow::RequestOnFullScreen();
-  } else if (_tcscmp(misc, TEXT("togglefull")) == 0) {
-    if (MapWindow::IsMapFullScreen()) {
-      MapWindow::RequestOffFullScreen();
-    } else {
-      MapWindow::RequestOnFullScreen();
-    }
-  } else if (_tcscmp(misc, TEXT("show")) == 0) { // not used
-    if (MapWindow::IsMapFullScreen()) 
-      DoStatusMessage(TEXT("Screen Mode Full")); 
-    else if (EnableAuxiliaryInfo)
-      DoStatusMessage(TEXT("Screen Mode Auxiliary")); 
-    else 
-      DoStatusMessage(TEXT("Screen Mode Normal")); 
-  } else if (_tcscmp(misc, TEXT("togglebiginfo")) == 0) {
-    InfoBoxLayout::fullscreen = !InfoBoxLayout::fullscreen;
-  } else {
-
-		if (MapWindow::IsMapFullScreen()) {
-			MapWindow::RequestToggleFullScreen();
-				#ifndef DISABLEAUDIO  
-				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-				#endif
-		} else {
-			#ifndef DISABLEAUDIO
-			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-			#endif
-			
-				MapWindow::RequestToggleFullScreen();
-		}
-  }
-#endif // USEIBOX
 }
 
 
@@ -1249,29 +1200,6 @@ void InputEvents::eventClearStatusMessages(const TCHAR *misc) {
 }
 #endif
 
-#ifdef USEIBOX
-// SelectInfoBox
-// Selects the next or previous infobox
-void InputEvents::eventSelectInfoBox(const TCHAR *misc) {
-  if (_tcscmp(misc, TEXT("next")) == 0) {
-    Event_SelectInfoBox(1);
-  }
-  if (_tcscmp(misc, TEXT("previous")) == 0) {
-    Event_SelectInfoBox(-1);
-  }
-}
-
-// ChangeInfoBoxType
-// Changes the type of the current infobox to the next/previous type
-void InputEvents::eventChangeInfoBoxType(const TCHAR *misc) {
-  if (_tcscmp(misc, TEXT("next")) == 0) {
-    Event_ChangeInfoBoxType(1);
-  }
-  if (_tcscmp(misc, TEXT("previous")) == 0) {
-    Event_ChangeInfoBoxType(-1);
-  }
-}
-#endif // USEIBOX
 
 // ArmAdvance
 // Controls waypoint advance trigger:
@@ -1329,33 +1257,6 @@ void InputEvents::eventArmAdvance(const TCHAR *misc) {
     }
   }
 }
-
-#if USEIBOX
-// DoInfoKey
-// Performs functions associated with the selected infobox
-//    up: triggers the up event
-//    etc.
-//    Functions associated with the infoboxes are described in the
-//    infobox section in the reference guide
-void InputEvents::eventDoInfoKey(const TCHAR *misc) {
-  if (_tcscmp(misc, TEXT("up")) == 0) {
-    DoInfoKey(1);
-  }
-  if (_tcscmp(misc, TEXT("down")) == 0) {
-    DoInfoKey(-1);
-  }
-  if (_tcscmp(misc, TEXT("left")) == 0) {
-    DoInfoKey(-2);
-  }
-  if (_tcscmp(misc, TEXT("right")) == 0) {
-    DoInfoKey(2);
-  }
-  if (_tcscmp(misc, TEXT("return")) == 0) {
-    DoInfoKey(0);
-  }
-  
-}
-#endif // USEIBOX
 
 // Mode
 // Sets the current event mode.

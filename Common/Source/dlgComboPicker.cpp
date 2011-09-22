@@ -43,17 +43,10 @@ static void OnPaintComboPopupListItem(WindowControl * Sender, HDC hDC){
 
 	w=Sender->GetWidth();
 
-#if USEIBOX
-	ExtTextOutClip(hDC, 2*InfoBoxLayout::scale, 
-		2*InfoBoxLayout::scale,
-		ComboListPopup->ComboPopupItemList[ComboListPopup->ComboPopupDrawListIndex]->StringValueFormatted,
-		w-InfoBoxLayout::scale*5);
-#else
 	ExtTextOutClip(hDC, 2*ScreenScale,
 		2*ScreenScale,
 		ComboListPopup->ComboPopupItemList[ComboListPopup->ComboPopupDrawListIndex]->StringValueFormatted,
 		w-ScreenScale*5);
-#endif
   }
 }
 
@@ -136,11 +129,7 @@ int dlgComboPicker(WndProperty* theProperty){
     ASSERT(theProperty!=NULL);
     wComboPopupWndProperty = theProperty;
 
-#if USEIBOX
-    if (!InfoBoxLayout::landscape) {
-#else
     if (!ScreenLandscape) {
-#endif
       char filename[MAX_PATH]; 
       LocalPathS(filename, TEXT("dlgComboPicker_L.xml"));
       wf = dlgLoadFromXML(CallBackTable, 

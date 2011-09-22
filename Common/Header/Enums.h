@@ -62,20 +62,6 @@ typedef enum{
   bit7E1,
 }BitIndex_t;
 
-#if USEIBOX
-// VENTA-ADDON GEOM
-typedef enum{
-  apIg0=0,
-  apIg1,
-  apIg2,
-  apIg3,
-  apIg4,
-  apIg5,
-  apIg6,
-  apIg7
-}InfoBoxGeomAppearance_t;
-#endif
-
 // VENTA-ADDON MODEL
 typedef enum{
 	apImPnaGeneric=0,
@@ -144,10 +130,6 @@ typedef enum{
 	ckUseTotalEnergy,
 	ckNotepad,
 	ckTerrainColors,
-#if USEIBOX
-	// ToggleInfobox MUST be the last one, used only for Aircraft Icons..
-	ckToggleInfobox,
-#endif
 } CustomKeyMode_t;
 
 typedef enum{

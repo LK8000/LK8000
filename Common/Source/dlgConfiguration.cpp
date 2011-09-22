@@ -39,28 +39,16 @@
 
 #include "utils/heapcheck.h"
 
-#if USEIBOX
-static HFONT TempInfoWindowFont;
-#endif
 // static HFONT TempTitleWindowFont; REMOVE
 static HFONT TempMapWindowFont;
-#if USEIBOX
-static HFONT TempTitleSmallWindowFont;
-#endif
 // static HFONT TempMapWindowBoldFont; REMOVE
 //static HFONT TempCDIWindowFont; // New // REMOVE
 static HFONT TempMapLabelFont;
 // static HFONT TempStatisticsFont; REMOVE
 static HFONT TempUseCustomFontsFont;
 
-#if USEIBOX
-extern LOGFONT autoInfoWindowLogFont;
-#endif
 // extern LOGFONT autoTitleWindowLogFont; REMOVE
 extern LOGFONT autoMapWindowLogFont;
-#if USEIBOX
-extern LOGFONT autoTitleSmallWindowLogFont;
-#endif
 // extern LOGFONT autoMapWindowBoldLogFont; REMOVE
 // extern LOGFONT autoCDIWindowLogFont; // New // REMOVE
 extern LOGFONT autoMapLabelLogFont;
@@ -569,13 +557,6 @@ static void ResetFonts(bool bUseCustom) {
                         NULL);
 
 
-#if USEIBOX
-  InitializeOneFont (&TempInfoWindowFont, 
-                        szRegistryFontInfoWindowFont, 
-                        autoInfoWindowLogFont,
-                        NULL);
-#endif
-
 /* REMOVE
   InitializeOneFont (&TempTitleWindowFont, 
                         szRegistryFontTitleWindowFont, 
@@ -587,13 +568,6 @@ static void ResetFonts(bool bUseCustom) {
                         szRegistryFontMapWindowFont, 
                         autoMapWindowLogFont,
                         NULL);
-
-#if USEIBOX
-  InitializeOneFont (&TempTitleSmallWindowFont, 
-                        szRegistryFontTitleSmallWindowFont, 
-                        autoTitleSmallWindowLogFont,
-                        NULL);
-#endif
 
 /* REMOVE
   InitializeOneFont (&TempMapWindowBoldFont, 
@@ -625,12 +599,6 @@ static void ResetFonts(bool bUseCustom) {
 
 static void ShowFontEditButtons(bool bVisible) {
   WndProperty * wp;
-#if USEIBOX
-  wp = (WndProperty*)wf->FindByName(TEXT("cmdInfoWindowFont"));
-  if (wp) {
-    wp->SetVisible(bVisible);
-  }
-#endif
 /* REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("cmdTitleWindowFont"));
   if (wp) {
@@ -641,12 +609,6 @@ static void ShowFontEditButtons(bool bVisible) {
   if (wp) {
     wp->SetVisible(bVisible);
   }
-#if USEIBOX
-  wp = (WndProperty*)wf->FindByName(TEXT("cmdTitleSmallWindowFont"));
-  if (wp) {
-    wp->SetVisible(bVisible);
-  }
-#endif
 /* REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("cmdMapWindowBoldFont"));
   if (wp) {
@@ -688,14 +650,6 @@ static void RefreshFonts(void) {
   }
 
 // now set SampleTexts on the Fonts frame
-#if USEIBOX
-  wp = (WndProperty*)wf->FindByName(TEXT("prpInfoWindowFont"));
-  if (wp) {
-    wp->SetFont(TempInfoWindowFont);
-    wp->SetVisible(false);
-    wp->SetVisible(true);
-  }
-#endif
 /* REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpTitleWindowFont"));
   if (wp) {
@@ -711,14 +665,6 @@ static void RefreshFonts(void) {
     wp->SetVisible(true);
   }
 
-#if USEIBOX
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTitleSmallWindowFont"));
-  if (wp) {
-    wp->SetFont(TempTitleSmallWindowFont);
-    wp->SetVisible(false);
-    wp->SetVisible(true);
-  }
-#endif
 /* REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpMapWindowBoldFont"));
   if (wp) {
@@ -799,20 +745,6 @@ static void GetFontDescription(TCHAR Description[], TCHAR * prpName, int iMaxLen
 
 #define MAX_EDITFONT_DESC_LEN 100
 
-#if USEIBOX
-static void OnEditInfoWindowFontClicked(WindowControl *Sender) {
-  // updates registry for font info and updates LogFont values
-  TCHAR FontDesc[MAX_EDITFONT_DESC_LEN];
-  GetFontDescription(FontDesc, TEXT("prpInfoWindowFont"), MAX_EDITFONT_DESC_LEN);
-  if (dlgFontEditShowModal(FontDesc,
-                            szRegistryFontInfoWindowFont, 
-                            autoInfoWindowLogFont)) {
-    FontRegistryChanged=true;
-    RefreshFonts(); 
-  }
-}
-#endif
-
 /* REMOVE
 static void OnEditTitleWindowFontClicked(WindowControl *Sender) {
   TCHAR FontDesc[MAX_EDITFONT_DESC_LEN];
@@ -835,18 +767,6 @@ static void OnEditMapWindowFontClicked(WindowControl *Sender) {
     RefreshFonts(); 
   }
 }
-#if USEIBOX
-static void OnEditTitleSmallWindowFontClicked(WindowControl *Sender) {
-  TCHAR FontDesc[MAX_EDITFONT_DESC_LEN];
-  GetFontDescription(FontDesc, TEXT("prpTitleSmallWindowFont"), MAX_EDITFONT_DESC_LEN);
-  if (dlgFontEditShowModal(FontDesc,
-                            szRegistryFontTitleSmallWindowFont, 
-                            autoTitleSmallWindowLogFont)) {
-    FontRegistryChanged=true;
-    RefreshFonts(); 
-  }
-}
-#endif
 /* REMOVE
 static void OnEditMapWindowBoldFontClicked(WindowControl *Sender) {
   TCHAR FontDesc[MAX_EDITFONT_DESC_LEN];
@@ -1383,14 +1303,8 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnDeviceBData),
 
   DeclareCallBackEntry(OnUseCustomFontData),
-#if USEIBOX
-  DeclareCallBackEntry(OnEditInfoWindowFontClicked),
-#endif
   // DeclareCallBackEntry(OnEditTitleWindowFontClicked), REMOVE
   DeclareCallBackEntry(OnEditMapWindowFontClicked),
-#if USEIBOX
-  DeclareCallBackEntry(OnEditTitleSmallWindowFontClicked),
-#endif
   // DeclareCallBackEntry(OnEditMapWindowBoldFontClicked), REMOVE
   // DeclareCallBackEntry(OnEditCDIWindowFontClicked), REMOVE
   DeclareCallBackEntry(OnEditMapLabelFontClicked),
@@ -1408,11 +1322,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(NULL)
 };
 
-#if USEIBOX
-extern SCREEN_INFO Data_Options[];
-#else
 extern DATAOPTIONS Data_Options[];
-#endif
 extern int InfoType[];
 
 
@@ -2512,48 +2422,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-#if USEIBOX
-// VENTA-ADDON Geometry change config menu 11
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxGeom"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-
-#if USEIBOX
-    if (InfoBoxLayout::landscape) {
-#else
-    if (ScreenLandscape) {
-#endif
-
-	
-	dfe->addEnumText(TEXT("vario+9box")); // 0
-	dfe->addEnumText(TEXT("(empty) A"));  // 1 
-	dfe->addEnumText(TEXT("(empty) B"));  // 2 
-	dfe->addEnumText(TEXT("(empty) C"));  // 3
-	dfe->addEnumText(TEXT("8box left"));  // 4
-	dfe->addEnumText(TEXT("8box right")); // 5
-	dfe->addEnumText(TEXT("(empty) D"));  // 6
-	dfe->addEnumText(TEXT("5box right")); // 7
-	dfe->Set(Appearance.InfoBoxGeom);
-	wp->RefreshDisplay();
-
-    } else { 
-	dfe->addEnumText(TEXT("top+bottom")); // 0
-	dfe->addEnumText(TEXT("bottom"));     // 1
-	dfe->addEnumText(TEXT("top"));        // 2 
-	dfe->addEnumText(TEXT("3 free")); // 3
-	dfe->addEnumText(TEXT("4 free"));       // 4
-	dfe->addEnumText(TEXT("5 free"));      // 5
-	dfe->addEnumText(TEXT("6 free"));      // 6
-	dfe->addEnumText(TEXT("7"));          // 7
-	dfe->Set(Appearance.InfoBoxGeom);
-	wp->RefreshDisplay();
-
-    }
-  }
-//
-#endif
-
 #ifdef PNA
 // VENTA-ADDON Model change config menu 11
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxModel"));
@@ -3383,11 +3251,7 @@ void dlgConfigurationShowModal(void){
 
   StartHourglassCursor(); 
 
-#if USEIBOX
-  if (!InfoBoxLayout::landscape) {
-#else
   if (!ScreenLandscape) {
-#endif
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgConfiguration_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
@@ -4672,23 +4536,6 @@ void dlgConfigurationShowModal(void){
     }
   }
 
-#if USEIBOX
-// VENTA-ADDON GEOM
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxGeom"));
-  if (wp) {
-    if (Appearance.InfoBoxGeom != (InfoBoxGeomAppearance_t)
-        (wp->GetDataField()->GetAsInteger())) {
-      Appearance.InfoBoxGeom = (InfoBoxGeomAppearance_t)
-        (wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryAppInfoBoxGeom,
-                    (DWORD)(Appearance.InfoBoxGeom));
-      changed = true;
-      requirerestart = true;
-    }
-  }
-//
-#endif
-
 #if defined(PNA) 
 // VENTA-ADDON MODEL CHANGE
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxModel"));
@@ -4757,14 +4604,8 @@ void dlgConfigurationShowModal(void){
   }
   DeleteObject(TempUseCustomFontsFont);
 
-#if USEIBOX
-  DeleteObject (TempInfoWindowFont);
-#endif
   // DeleteObject (TempTitleWindowFont); REMOVE
   DeleteObject (TempMapWindowFont);
-#if USEIBOX
-  DeleteObject (TempTitleSmallWindowFont);
-#endif
   // DeleteObject (TempMapWindowBoldFont); REMOVE
   //DeleteObject (TempCDIWindowFont);  REMOVE
   DeleteObject (TempMapLabelFont);

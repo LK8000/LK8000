@@ -408,11 +408,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 #define UNGESTURES 1
 #define VKTIMELONG 1500
-#if USEIBOX
-#define DONTDRAWTHEMAP MapWindow::IsMapFullScreen()&&!MapWindow::mode.AnyPan()&&MapSpaceMode!=1
-#else
 #define DONTDRAWTHEMAP !MapWindow::mode.AnyPan()&&MapSpaceMode!=1
-#endif
 
 	#if 100228
 	static int AIRCRAFTMENUSIZE=0;
@@ -461,11 +457,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	// yup and ydown are used normally on nearest page item selection, but also for real VK
 	// that currently are almost unused. 
 
-	#if USEIBOX
-	if (DrawBottom&&MapWindow::IsMapFullScreen()) {
-	#else
 	if (DrawBottom) {
-	#endif
 		// Native LK mode: always fullscreen mode
 		// If long click, we are processing an Enter, and we want a wider valid center area
 		if ( keytime>=(VKSHORTCLICK*2)) { 
@@ -1608,8 +1600,6 @@ void InitLKScreen() {
   ScreenSizeR.left=0;
   ScreenSizeR.right=iWidth-1;
 
-#if USEIBOX
-#else
   int maxsize=0;
   int minsize=0;
   maxsize = max(ScreenSizeR.right-ScreenSizeR.left+1,ScreenSizeR.bottom-ScreenSizeR.top+1);
@@ -1643,7 +1633,6 @@ void InitLKScreen() {
   }
 
   // StartupStore(_T("...... ScreenScale=%d ScreenDScale=%.3f ScreenIntScale=%d\n"),ScreenScale,ScreenDScale,ScreenIntScale);
-#endif // !USEIBOX
 
   ScreenSize=0;
 
@@ -2131,16 +2120,10 @@ void CleanRegistry()
    RegOpenKeyEx(HKEY_CURRENT_USER, szRegistryKey ,0,0,&tKey);
 
 	RegDeleteValue(tKey,_T("CDIWindowFont"));
-#if USEIBOX
-	RegDeleteValue(tKey,_T("InfoWindowFont"));
-#endif
 	RegDeleteValue(tKey,_T("MapLabelFont"));
 	RegDeleteValue(tKey,_T("MapWindowBoldFont"));
 	RegDeleteValue(tKey,_T("MapWindowFont"));
 	RegDeleteValue(tKey,_T("StatisticsFont"));
-#if USEIBOX
-	RegDeleteValue(tKey,_T("TitleSmallWindowFont"));
-#endif
 	RegDeleteValue(tKey,_T("TitleWindowFont"));
 	RegDeleteValue(tKey,_T("BugsBallastFont"));
 	RegDeleteValue(tKey,_T("TeamCodeFont"));
@@ -3833,15 +3816,6 @@ bool CustomKeyHandler(const int key) {
 		#endif
 		InputEvents::eventInvertColor(NULL);
 		return true;
-#if USEIBOX
-	// Only used for aircraft icon
-	case ckToggleInfobox:
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) LKSound(_T("LK_BELL.WAV"));
-		#endif
-		MapWindow::RequestToggleFullScreen();
-		return true;
-#endif
 	case ckTimeGates:
 		#ifndef DISABLEAUDIO
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));

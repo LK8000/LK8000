@@ -868,11 +868,7 @@ label_TRI:
 	VDrawLine(hdc,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_DARKGREEN);
 	DrawTRI(hdc, rc);
 
-#if USEIBOX
-     if (InfoBoxLayout::landscape) {
-#else
      if (ScreenLandscape) {
-#endif
 	showunit=true; // 091219
 	// right
 	LKFormatValue(LK_TRACK, true, BufferValue, BufferUnit, BufferTitle);
@@ -957,11 +953,7 @@ label_Target:
 	// and will not use them after the first run time anymore...
 	DrawTarget(hdc, rc, qrow[3],qrow[15],qcolumn[3],qcolumn[13]);
 
-#if USEIBOX
-     if (InfoBoxLayout::landscape) {
-#else
      if (ScreenLandscape) {
-#endif
 	showunit=false; // 091219
 
 	// left

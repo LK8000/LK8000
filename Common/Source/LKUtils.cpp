@@ -296,11 +296,7 @@ int RescaleWidth(const int rWidth) {
   // Always rescale negative widths
   if (rWidth <-1) {
 	// Special case is when width is also the scale unit, which demonstrate we have a bug to fix here!
-#if USEIBOX
-	if (rWidth == (int)(-246*InfoBoxLayout::dscale)){
-#else
 	if (rWidth == (int)(-246*ScreenDScale)){
-#endif
 		return LKwdlgConfig;
 	}
 	double i=(246.0 / abs(rWidth));
@@ -309,11 +305,7 @@ int RescaleWidth(const int rWidth) {
 		DoStatusMessage(_T("RESCALE ERR-001"));
 		return rWidth;
 	}
-#if USEIBOX
-	int ri=(int)( (LKwdlgConfig/i) *InfoBoxLayout::dscale );
-#else
 	int ri=(int)( (LKwdlgConfig/i) *ScreenDScale );
-#endif
 	// StartupStore(_T("... RescaleWidth(): rescale %d to %d\n"),rWidth, ri);
 	if (ri>ScreenSizeX) return(ScreenSizeX);
 	return (ri);

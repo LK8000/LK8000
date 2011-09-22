@@ -633,57 +633,6 @@ double Units::ToSysDistance(double Distance){
   return(Distance);
 }
 
-#if USEIBOX
-void Units::setupUnitBitmap(Units_t Unit, HINSTANCE lhInst, WORD IDB, int Width, int Height){
-
-  UnitDescriptors[Unit].hBitmap = LoadBitmap(lhInst, MAKEINTRESOURCE(IDB));
-  UnitDescriptors[Unit].BitMapSize.x = Width;
-  UnitDescriptors[Unit].BitMapSize.y = Height;
-
-}
-
-
-bool Units::LoadUnitBitmap(HINSTANCE lhInst){
-
-  UnitDescriptors[unUndef].hBitmap = NULL;
-  UnitDescriptors[unUndef].BitMapSize.x = 0;
-  UnitDescriptors[unUndef].BitMapSize.y = 0;
-
-  setupUnitBitmap(unKiloMeter, lhInst, IDB_UNIT_KM, 5, 11);
-  setupUnitBitmap(unNauticalMiles, lhInst, IDB_UNIT_NM, 5, 11);
-  setupUnitBitmap(unStatuteMiles, lhInst, IDB_UNIT_SM, 5, 11);
-  setupUnitBitmap(unKiloMeterPerHour, lhInst, IDB_UNIT_KMH, 10, 11);
-  setupUnitBitmap(unKnots, lhInst, IDB_UNIT_KT, 5, 11);
-  setupUnitBitmap(unStatuteMilesPerHour, lhInst, IDB_UNIT_MPH, 10, 11);
-  setupUnitBitmap(unMeterPerSecond, lhInst, IDB_UNIT_MS, 5, 11);
-  setupUnitBitmap(unFeetPerMinutes, lhInst, IDB_UNIT_FPM, 5, 11); // FPM
-  setupUnitBitmap(unMeter, lhInst, IDB_UNIT_M, 5, 11);
-  setupUnitBitmap(unFeet, lhInst, IDB_UNIT_FT, 5, 11);
-  setupUnitBitmap(unFligthLevel, lhInst, IDB_UNIT_FL, 5, 11);
-  setupUnitBitmap(unKelvin, lhInst, IDB_UNIT_DegK, 5, 11);
-  setupUnitBitmap(unGradCelcius, lhInst, IDB_UNIT_DegC, 5, 11);
-  setupUnitBitmap(unGradFahrenheit, lhInst, IDB_UNIT_DegF, 5, 11);
-  // setupUnitBitmap(unFeetPerSecond, lhInst, IDB_UNIT_FPS, 5, 11); // problems
-
-  return(true);
-
-}
-
-bool Units::UnLoadUnitBitmap(void){
-
-  unsigned int i;
-
-  for (i=1; i<sizeof(UnitDescriptors)/sizeof(UnitDescriptors[0]); i++){
-    if (UnitDescriptors[unUndef].hBitmap != NULL)
-      DeleteObject(UnitDescriptors[unUndef].hBitmap);
-  }
-
-  return(true);
-
-}
-
-#endif
-
 void Units::TimeToText(TCHAR* text, int d) {
   int hours, mins;
   bool negative = (d<0);
@@ -769,35 +718,3 @@ void Units::TimeToTextS(TCHAR* text, int d) {
   }
 }
 
-#if USEIBOX
-bool Units::GetUnitBitmap(Units_t Unit, HBITMAP *HBmp, POINT *Org, POINT *Size, int Kind){
-
-  if (HideUnits==(HideUnits_t)huEnabled) return false; // VNT
-
-  UnitDescriptor_t *pU = &UnitDescriptors[Unit];
-
-  *HBmp = pU->hBitmap;
-
-  Size->x = pU->BitMapSize.x;
-  Size->y = pU->BitMapSize.y;
-
-  Org->y = 0;
-  switch (Kind){
-    case 1:  // inverse
-      Org->x = pU->BitMapSize.x;
-    break;
-    case 2:  // gray
-      Org->x = pU->BitMapSize.x * 2;
-    break;
-    case 3:  // inverse gray
-      Org->x = pU->BitMapSize.x * 3;
-    break;
-    default:
-      Org->x = 0;
-    break;
-  }
-
-  return(pU->hBitmap != NULL);
-
-}
-#endif // USEIBOX

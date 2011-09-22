@@ -158,11 +158,7 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width)
   }
   max_width = min(MAX_TEXTENTRY, width);
   char filename[MAX_PATH];
-#if USEIBOX
-  if (InfoBoxLayout::landscape) 
-#else
   if (ScreenLandscape) 
-#endif
   {
     LocalPathS(filename, TEXT("frmTextEntry_Keyboard_L.xml"));
     wf = dlgLoadFromXML(CallBackTable, 
