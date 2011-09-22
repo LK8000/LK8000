@@ -2888,7 +2888,11 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
   //
   // Battery indicator
   // 
-  // PDABatteryPercent-=5; if (PDABatteryPercent<0) PDABatteryPercent=100; // Test battery
+
+  #if TESTBENCH
+  // Battery test in Simmode
+  if (SIMMODE) {; PDABatteryPercent-=5; if (PDABatteryPercent<0) PDABatteryPercent=100; }
+  #endif
 
   if (PDABatteryPercent==0 && PDABatteryStatus==AC_LINE_ONLINE && PDABatteryFlag!=BATTERY_FLAG_CHARGING) {
 	SelectObject(hDCTemp,hBatteryFull);
