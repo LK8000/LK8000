@@ -4177,11 +4177,7 @@ void propGetFontSettingsFromString(TCHAR *Buffer1, LOGFONT* lplf)
   // CLEARTYPE_COMPAT_QUALITY 6
 
   if ((pToken = strtok_r(NULL, TEXT(","), &pWClast)) == NULL) return;
-  #if USEAUTOFONTS
-  lfTmp.lfQuality = (unsigned char)_tcstol(pToken, NULL, 10); 
-  #else
   ApplyClearType(&lfTmp);
-  #endif
 
   if ((pToken = strtok_r(NULL, TEXT(","), &pWClast)) == NULL) return;
   lfTmp.lfPitchAndFamily = (unsigned char)_tcstol(pToken, NULL, 10);
