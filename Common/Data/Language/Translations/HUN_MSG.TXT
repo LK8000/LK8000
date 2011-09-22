@@ -270,7 +270,7 @@ _@M256_ "Smaragdzöld"
 _@M257_ "Üres térképszín "
 _@M258_ "Enged"
 _@M259_ "Engedélyezve"
-_@M260_ "Mérnöki Menü*"
+_@M260_ "Mérnöki Menü "
 _@M261_ "Szám beadás"
 _@M262_ "MC ekvivalens"
 _@M263_ "Hiba a feladat mentése közben!"
@@ -554,7 +554,7 @@ _@M540_ "RX szál nem fejeződött be!"
 _@M541_ "Radiál"
 _@M542_ "Vasutak "
 _@M543_ "Hol van"
-_@M544_ "Ráta"
+_@M544_ "Seb."
 _@M545_ "Frissít"
 _@M546_ "Rel. irányszög "
 _@M547_ "Rel.irányszög "
@@ -1404,7 +1404,7 @@ _@M1423_ "Repülés közben tiltva!"
 #
 # Variometer Bar
 #
-_@M1424_ "VarioBar mód"
+_@M1424_ "VarioBar mód "
 _@M1425_ "Vario termik és siklás módban"
 _@M1426_ "Vario termik, Nettó siklás módban"
 _@M1427_ "Vario termik, VMcOpt siklás módban"
@@ -1562,6 +1562,13 @@ _@M1661_ "ACT"
 _@M1662_ "RENDSZERHIBA"
 _@M1663_ "NINCS ELÉG MEMÓRIA"
 
+# Total energy configuration 
+# Toggle is for customkey config
+_@M1666_ "Totálenergia KI/BE váltás"
+_@M1667_ "TOTÁLENERGIA HASZNÁLVA!"
+_@M1668_ "TOTÁLENERGIA KIKAPCSOLVA"
+_@M1669_ "Totálenergia használata "
+
 # Header Thermal History keep short!
 _@M1670_ "TERM"
 # average lift 
@@ -1600,6 +1607,25 @@ _@M1690_ "THE LK8000 ORACLE"
 _@M1691_ "AZ ORACLE SZÁMOL"
 _@M1692_ "KÉRLEK VÁRJ..."
 
+# Customkey
+_@M1693_ "Terep színek váltása"
+
+# Safety Altitude indicator on overlay
+_@M1694_ "+BIZT"
+
+#infobox Logger status
+_@M1695_ "Logger"
+# max 3-4 chars!
+_@M1696_ "auto"
+
+#Multitarget bearing infobox
+_@M1698_ "Irány Multitarget"
+_@M1699_ "IrMulti"
+
+# Logger status
+_@M1700_ "BE"
+_@M1701_ "nem!"
+
 
 ############################################################
 #                  - MENU MESSAGES - 
@@ -1631,7 +1657,7 @@ _@M2019_ "Feladat\nújraindít"
 _@M2020_ "Cél\nadatai"
 _@M2021_ "Csapat\nkód"
 _@M2022_ "Navigáció\n3/3"
-_@M2023_ "Fenn\tartva"
+_@M2023_ "Fenn\ntartva"
 _@M2024_ "Idő\nkapuk"
 _@M2025_ "Multi\nTarget"
 _@M2026_ "Cimkék"
@@ -1723,5 +1749,8 @@ _@M2111_ "H>\nHaza"
 _@M2112_ "Seb."
 _@M2113_ "Mag."
 _@M2114_ "Ford"
+# better not to translate this TE button!
+_@M2115_ "TEnergia"
+_@M2116_ "Topo hát-\ntérszín"
 
 

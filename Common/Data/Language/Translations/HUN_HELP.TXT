@@ -1126,9 +1126,9 @@ G [G load]
 Túlterhelési többes (G), amit a csatlakoztatott külső intelligens varió ad.
 
 @838
-OLD nLD [Next L/D]
-Ne használd ezt at értéket, ez csak az előző verziókkal való kompatibilitás miatt van itt.
-Használd az 'E Köv. ford.pont szükséges siklószám'-ot helyette.
+[Irány Multitarget]
+A jelenleg kiválsztott multitarget irányszöge.
+Jelenleg nem áll rendelkezésre.
 
 @839
 Idő [Time local]
@@ -1242,8 +1242,11 @@ WNapÁtl [Thermal All]
 Átlagolt emelkedősebesség az összes eddigi termikben. (A benne eltöltött időt is figyelembe véve)
 
 @864
-WSVarió [Distance Vario]
-Az eredeti help szöveg hiányzik.
+[Logger státusz]
+Megmutatja a logger állapotát.
+[auto]: A logger automatikusan elindul felszálláskor
+[nem!]: A logger tiltva van, manuálisan kell elindítanod
+[BE]: A logger jelenleg aktív és loggol
 
 @865
 Akku [Battery]
@@ -1600,6 +1603,13 @@ Amikor a következő fordulópont a cél vagy már csak az utolsó fordulópont 
 @1255
 Automatikus MacCready beállítás, lehet bekapcsolt vagy kikapcsolt. Ezt repülés közben is lehet változtatni.
 Ez az alapbeállítás.
+
+@1256
+[Totálenergia]
+Amikor a totálenergia be van kapcsolva, a program kiszámolja hogy mekkora magasságot nyerhetsz amíg a jelenlegi sebességed lecsökkented az optimális siklási sebességre.
+Például ha 200km/h-val repülsz egy Discus-szal vízbalaszt nélkül, amíg lelassítasz 100km/h-ra, addíg némi magasságot nyersz.
+Ez a többletenergiából származó magasságérték hozzáadódik az érkezési magasságokhoz. Biztonsági okokból ez az opció alapból ki van kapcsolva.
+Ha bizonytalan vagy benne, inkább hagyd kikapcsolva.
 
 @9999
 Ezen az elemen nem áll rendelkezésre súgó.
