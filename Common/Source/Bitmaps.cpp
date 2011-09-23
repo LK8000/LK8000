@@ -51,6 +51,7 @@ void LKLoadFixedBitmaps(void) {
   hSmall=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SMALL));
   hInvSmall=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_INVSMALL));
   hLogger=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_LOGGER));
+  hLoggerOff=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_LOGGEROFF));
   hBmpTeammatePosition = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TEAMMATE_POS));
   hBmpMarker = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_MARK));
   hBatteryFull=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BATTERY_FULL_SMALL));
@@ -104,6 +105,7 @@ void LKUnloadFixedBitmaps(void) {
   DeleteObject(hTerrainWarning);
   DeleteObject(hAirspaceWarning);
   DeleteObject(hLogger);
+  DeleteObject(hLoggerOff);
   DeleteObject(hBatteryFull);
   DeleteObject(hBattery70);
   DeleteObject(hBattery50);

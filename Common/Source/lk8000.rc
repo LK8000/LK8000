@@ -96,8 +96,8 @@ END
 // Bitmap
 //
 
-IDB_LOGGER              BITMAP  DISCARDABLE     "../Data/Bitmaps/logging.bmp"
-IDB_LOGGEROFF           BITMAP  DISCARDABLE     "../Data/Bitmaps/loggingoff.bmp"
+IDB_LOGGER              BITMAP  DISCARDABLE     "../Data/Bitmaps/logging_steady.bmp"
+IDB_LOGGEROFF           BITMAP  DISCARDABLE     "../Data/Bitmaps/logging_blink.bmp"
 IDB_FLARMTRAFFIC        BITMAP  DISCARDABLE     "../Data/Bitmaps/flarmtra.bmp"
 IDB_AIRSPACE3           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace3.bmp"
 IDB_AIRSPACE4           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace4.bmp"

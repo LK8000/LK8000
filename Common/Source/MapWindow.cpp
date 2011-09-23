@@ -2697,24 +2697,24 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
   //
 
   if (!DisableAutoLogger || LoggerActive) {
-	if (LoggerActive) {
-		SelectObject(hDCTemp,hLogger);
-	} else {
-		flip = !flip;
-		if (flip) {
+	flip = !flip;
+	if (LoggerActive || flip) {
+		if (LoggerActive)
 			SelectObject(hDCTemp,hLogger);
-			offset -= 7;
+		else
+			SelectObject(hDCTemp,hLoggerOff);
 
-			DrawBitmapX(hdc, rc.right+IBLSCALE(offset),
-        		       	rc.bottom - BottomSize+NIBLSCALE(4),
-				7,7, hDCTemp, 0,0,SRCPAINT);
+		offset -= 7;
 
-			DrawBitmapX(hdc, rc.right+IBLSCALE(offset),
-        		       	rc.bottom-BottomSize+NIBLSCALE(4),
-				7,7, hDCTemp, 7,0,SRCAND);
+		DrawBitmapX(hdc, rc.right+IBLSCALE(offset),
+			rc.bottom - BottomSize+NIBLSCALE(4),
+			7,7, hDCTemp, 0,0,SRCPAINT);
 
-			offset +=7;
-		}
+		DrawBitmapX(hdc, rc.right+IBLSCALE(offset),
+			rc.bottom-BottomSize+NIBLSCALE(4),
+			7,7, hDCTemp, 7,0,SRCAND);
+
+		offset +=7;
 	}
   }
   
