@@ -4138,6 +4138,13 @@ void RotateOvertarget(void) {
 
   OvertargetMode++;
 
+  // For PG/HG, skip BALT overtarget if nothing valid. 
+  // We assume that this means no landables ever seen around, because
+  // the BA function would keep the old one even if invalid.
+  if (ISPARAGLIDER && OvertargetMode==OVT_BALT) {
+	if (!ValidWayPoint(BestAlternate)) OvertargetMode++;
+  }
+
   if (OvertargetMode==OVT_FLARM) {
 	if (!GPS_INFO.FLARM_Available) OvertargetMode++;
   }
