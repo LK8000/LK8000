@@ -150,7 +150,7 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		if (!IGCWriteLock) break;
 	}
 	if (IGCWriteLock) {
-		if (dowarn) StartupStore(_T("..... LogPoint failed, IGCWriteLock!%s"),NEWLINE);
+		if (dowarn) StartupStore(_T("..... LogPoint failed, IGCWriteLock %s!%s"),WhatTimeIsIt(),NEWLINE);
 	} else {
 		if (dowarn) StartupStore(_T("..... LogPoint delayed by IGCWriteLock, ok.%s"),NEWLINE);
 		LogPoint(Basic->Latitude , Basic->Longitude , Basic->Altitude, balt);

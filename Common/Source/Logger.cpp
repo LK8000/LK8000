@@ -198,7 +198,7 @@ void StopLogger(void) {
 
     switch (iLoggerError) { //0=Success 1=NoMoveNoRename 2=NoMoveYesRename 3=NoSpaceNoRename 4=NoSpaceYesRename
     case 0:
-      StartupStore(TEXT(". Logger file successfully moved%s"),NEWLINE);
+      StartupStore(TEXT(". Logger: File saved %s%s"),WhatTimeIsIt(),NEWLINE);
       break;
 
     case 1: // NoMoveNoRename
@@ -580,7 +580,7 @@ void StartLogger(TCHAR *astrAssetNumber)
 	}
   } // end while
 
-  StartupStore(_T(". Logger Started%s"),NEWLINE);
+  StartupStore(_T(". Logger Started %s%s"),WhatTimeIsIt(),NEWLINE);
   StartupStore(_T(". Log file is <%s>%s"),szFLoggerFileName,NEWLINE);
 
 
@@ -1473,7 +1473,9 @@ bool LoggerClearFreeSpace(void) {
     }
   }
   if (kbfree>=LOGGER_MINFREESTORAGE) {
+    #if TESTBENCH
     StartupStore(TEXT(". LoggerFreeSpace returned: true%s"),NEWLINE);
+    #endif
     return true;
   } else {
     StartupStore(TEXT("--- LoggerFreeSpace returned: false%s"),NEWLINE);
