@@ -2,6 +2,78 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3g September 23 2011
+------------------------------
+
+
+NEW
+
+. Airspace 2.4 page settings are now permanently saved to a config file on shutdown.
+  It is now possible to select and airspace, enable/disable a single airspace, and 
+  make these changes permanent.
+  Be careful that changing airspace file will also remove old settings!
+
+. New Battery indicator is appearing in the right bottom corner
+  decreasing in green and becoming red when battery is nearly empty.
+
+. New Logger indicator near the battery indicator in the right bottom corner.
+    If autologger is disabled, and logging was NOT manually enabled, then
+    this indicator will NOT show up. 
+    The logger indicator in fact appear only when logging is automatic or 
+    manually enabled.
+
+    Orange dot blinking means: ready to log as soon as takeoff is detected.
+    Red dot steady (not blinking) means: logging in progress.
+
+. New Logger INFOBOX, showing  ON if logger is active, no!  if disabled and not manually forced, Auto
+    if enabled but not logging because before takeoff.
+
+. New IS28B2 Lark polars
+
+
+
+CHANGES
+
+. Change delta to hang glider in messages
+
+. Fast Topology cache re-enabled after fixing a problem with zoomed topology.
+
+. BestAlternate rotate multitarget available for PG/HG only if a valid bestalternate
+    was ever found so far during the flight. If no landables are configured, or if these
+    landables have never been elected to a bestalternate, then rotation will skip this choice.
+    In other words: if nothing can be found, even if an old bestalternate which is now unreachable,
+    then instead of showing --- we skip it.
+
+
+
+FIXES
+
+. FIX critical problem that could lead to software crash on some PNAs
+
+. FIX 2.3f problem with Master Time Reset on some gps units.
+  Causing severe system malfunctions: no ground thermal detection, no loggin, unusable !!
+
+
+. FIX infobox geometry in engineering menu removed, it was crashing the sw being unused.
+
+. Fix profile saving: on exit, only default profile is rewritten.
+    Selecting on startup a profile will load that profile, and save it as default on exit.
+    If you want to re/write an existing profile, you must do it manually.
+    It will not be automatically overwritten on exit.
+
+. Fix profile problem not loading aircraft type bitmaps, unless using DEFAULT profile.
+    Still changing aircraft type requires software restarts,
+
+. Fix: do not use airspaces with no name defined.
+
+. Fix airspace parser reads wrong altitude
+    Malformed alt specification causes the parser to read wrong values.
+    For ex:
+    AL FL 65 (MNM ALT 5500FT)
+
+
+
+
 Version 2.3f September 16 2011
 ------------------------------
 
