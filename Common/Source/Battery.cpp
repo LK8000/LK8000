@@ -11,21 +11,6 @@
 #include "options.h"
 #include "Defines.h"
 #include "externs.h"
-//#include "compatibility.h" REMOVE
-//#include "lk8000.h"
-//#include "buildnumber.h"
-//#include "MapWindow.h"
-//#include "Parser.h"
-//#include "Calculations.h"
-//#include "Calculations2.h"
-//#include "Task.h"
-//#include "Dialogs.h"
-
-//#include <commctrl.h>
-//#include <aygshell.h>
-//#if (WINDOWSPC<1)
-//#include <sipapi.h>
-//#endif
 
 #ifdef PNA
 #include "LKHolux.h"
