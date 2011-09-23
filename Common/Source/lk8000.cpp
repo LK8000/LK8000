@@ -13,22 +13,9 @@
 #include "compatibility.h"
 #include "lk8000.h"
 #include "buildnumber.h"
-#include "MapWindow.h"
-#include "Parser.h"
-#include "Calculations.h"
-#include "Calculations2.h"
-#include "Task.h"
-#include "Dialogs.h"
-
-#include "Process.h"
-
 #include "Modeltype.h"
-
-#include "Utils.h"
-#include "Utils2.h"
 #include "Port.h"
 #include "Waypointparser.h"
-#include "Airspace.h"
 #include "Logger.h"
 #include "McReady.h"
 #include "AirfieldDetails.h"
@@ -71,15 +58,15 @@
 #include "Units.h"
 #include "InputEvents.h"
 #include "Message.h"
-#include "Atmosphere.h"
 #include "Geoid.h"
 #ifdef PNA
 #include "LKHolux.h"
 #endif
 
 #include "RasterTerrain.h"
-extern void LKObjects_Create();
-extern void LKObjects_Delete();
+
+extern void LKObjects_Create(); //GOEXT
+extern void LKObjects_Delete(); //GOEXT
 #include "LKMainObjects.h"
 
 using std::min;
@@ -639,16 +626,7 @@ void AfterStartup() {
   SetEvent(drawTriggerEvent);
 }
 
-
-
-void StartupLogFreeRamAndStorage() {
-  unsigned long freeram = CheckFreeRam()/1024;
-  TCHAR buffer[MAX_PATH];
-  LocalPath(buffer);
-  unsigned long freestorage = FindFreeSpace(buffer);
-  StartupStore(TEXT(". Free ram=%ld K  storage=%ld K%s"), freeram,freestorage,NEWLINE);
-}
-
+extern void StartupLogFreeRamAndStorage();	 // GOEXT
 
 int WINAPI WinMain(     HINSTANCE hInstance,
                         HINSTANCE hPrevInstance,
@@ -2021,125 +1999,5 @@ void PopupBugsBallast(int UpDown)
   FullScreen();
   SwitchToMapWindow();
   DialogActive = false;
-}
-
-
-
-#include <stdio.h>
-
-void DebugStore(const char *Str, ...)
-{
-#if defined(DEBUG)
-  char buf[MAX_PATH];
-  va_list ap;
-  int len;
-
-  va_start(ap, Str);
-  len = vsprintf(buf, Str, ap);
-  va_end(ap);
-
-  LockFlightData();
-  FILE *stream;
-  TCHAR szFileName[] = TEXT(LKF_DEBUG);
-  static bool initialised = false;
-  if (!initialised) {
-    initialised = true;
-    stream = _wfopen(szFileName,TEXT("w"));
-  } else {
-    stream = _wfopen(szFileName,TEXT("a+"));
-  }
-
-  fwrite(buf,len,1,stream);
-
-  fclose(stream);
-  UnlockFlightData();
-#endif
-}
-
-void FailStore(const TCHAR *Str, ...)
-{
-  TCHAR buf[MAX_PATH];
-  va_list ap;
-
-  va_start(ap, Str);
-  _vstprintf(buf, Str, ap);
-  va_end(ap);
-
-  FILE *stream=NULL;
-  static TCHAR szFileName[MAX_PATH];
-  static bool initialised = false;
-
-  if (!initialised) {
-	LocalPath(szFileName, TEXT(LKF_FAILLOG));
-	stream = _tfopen(szFileName, TEXT("ab+"));
-	if (stream) {
-		fclose(stream);
-	}
-	initialised = true;
-  } 
-  stream = _tfopen(szFileName,TEXT("ab+"));
-  if (stream == NULL) {
-	StartupStore(_T("------ FailStore failed, cannot open <%s>%s"), szFileName, NEWLINE);
-	return;
-  }
-  fprintf(stream, "------%s%04d%02d%02d-%02d:%02d:%02d [%09u] FailStore Start, Version %s%s (%s %s) FreeRam=%ld %s",SNEWLINE,
-	GPS_INFO.Year,GPS_INFO.Month,GPS_INFO.Day, GPS_INFO.Hour,GPS_INFO.Minute,GPS_INFO.Second,
-	(unsigned int)GetTickCount(),LKVERSION, LKRELEASE,
-	"",
-#if WINDOWSPC >0
-	"PC",
-#else
-	#ifdef PNA
-	"PNA",
-	#else
-	"PDA",
-	#endif
-#endif
-
-CheckFreeRam(),SNEWLINE); 
-  fprintf(stream, "Message: %S%s", buf, SNEWLINE);
-  fprintf(stream, "GPSINFO: Latitude=%f Longitude=%f Altitude=%f Speed=%f %s", 
-	GPS_INFO.Latitude, GPS_INFO.Longitude, GPS_INFO.Altitude, GPS_INFO.Speed, SNEWLINE);
-
-  fclose(stream);
-  StartupStore(_T("------ %s%s"),buf,NEWLINE);
-}
-
-
-
-void StartupStore(const TCHAR *Str, ...)
-{
-  TCHAR buf[(MAX_PATH*2)+1]; // 260 chars normally  FIX 100205
-  va_list ap;
-
-  va_start(ap, Str);
-  _vstprintf(buf, Str, ap);
-  va_end(ap);
-
-  CheckAndLockFlightData();
-
-  FILE *startupStoreFile = NULL;
-  static TCHAR szFileName[MAX_PATH];
-
-  static bool initialised = false;
-  if (!initialised) {
-	LocalPath(szFileName, TEXT(LKF_RUNLOG));
-	initialised = true;
-  } 
-
-  startupStoreFile = _tfopen(szFileName, TEXT("ab+"));
-  if (startupStoreFile != NULL) {
-    char sbuf[(MAX_PATH*2)+1]; // FIX 100205
-    
-    int i = unicode2utf(buf, sbuf, sizeof(sbuf));
-    
-    if (i > 0) {
-      if (sbuf[i - 1] == 0x0a && (i == 1 || (i > 1 && sbuf[i-2] != 0x0d)))
-        sprintf(sbuf + i - 1, SNEWLINE);
-      fprintf(startupStoreFile, "[%09u] %s", (unsigned int)GetTickCount(), sbuf);
-    }
-    fclose(startupStoreFile);
-  }
-  CheckAndUnlockFlightData();
 }
 
