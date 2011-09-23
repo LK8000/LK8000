@@ -444,10 +444,8 @@ Az irányjelző vonal nem jelenik meg ha a térkép nagyon ki van nagyítva.
 
 @199
 Ez lehetővé teszi, hogy az FLARM által érzékelt forgalom a térkép ablakban megjelenjen.
-[KI] Az FLARM objektumok nem jelennek meg a térképen
-[BE/Fixált] Az objektumok a valós helyükön jelennek meg a térképen
-[BE/Méretez] FLARM objektumok skálázva jelennek meg úgy, hogy kinagyított térkép esetén is láthatóak maradjanak.
-A méretezett mód zavaró, mert az objektumok a saját géped ikonja körül jelennek meg a térképen, de nem a valós helyükön. Ha kétségeid vannak, használd a BE/Fixált módot.
+[Nem használt] Az FLARM objektumok nem jelennek meg a térképen
+[Engedélyezve] Az objektumok a valós helyükön jelennek meg a térképen
 
 @200
 Meghatározza, hogy a fordulópontok előre léptetése hogyan történjen a feladat repülése közben.
@@ -650,6 +648,7 @@ Ezt az időt ezredmásodpercben kell megadni, de sajnos ez készülékről-kész
 Az alapértelmezés a 700msec, ami jó a HP314 és egyéb eszközök esetén.
 Ha egy alsó egyéni gomb sincs definiálva, akkor ez a paraméter nem csinál semmit.
 A képernyő fenti részére beállítható egyéni gombok nem használják ezt az időzítést, hanem egyből reagálnak.
+A képernyő közepén lévő egyéni gomb aktiválása hosszú klikkelést igényel a térkép közepére.
 
 @401
 A bal felső egyéni gomb a képernyő bal felső részére történő kattintással érhető el.
@@ -659,8 +658,9 @@ Lásd a kézikönyvet az összes kattintási kombinációhoz. Az alapértelmezé
 @402
 A jobb felső egyéni gomb a képernyő jobb felső részére történő kattintással érhető el.
 Itt be tudod állítani milyen művelet történjen az egyéni gomb aktiválásakor.
-Ez a gomb nem áll rendelkezére a siklóernyős és srákányos üzemmódban, lásd a kézikönyvet.
-Lásd a kézikönyvet az összes kattintási kombinációhoz. Az alapértelmezés a 'Multitarget menü'
+Ez a gomb nem áll rendelkezére a siklóernyős és sárkányos üzemmódban, mert ez fent van tartva 
+a feladat újraindításához az idő kapuk közben, és az UTM koordináták lekéréséhez vészhelyzetekben. (lásd a kézikönyvet a siklóernyősőknek)
+Lásd a kézikönyvet az összes kattintási kombinációhoz. Az alapértelmezés a 'Nem használt'
 
 @403
 A bal egyéni gomb a képernyő bal alsó részére (alsó adatsor) történő hosszú kattintással érhető el.
@@ -685,6 +685,13 @@ Az ikon egyéni gomb a képernyő jobb alsó sarkában lévő repülőgép ikonr
 Ha rövidet kattintasz, úgy a menüt fogod előhozni.
 Itt be tudod állítani milyen művelet történjen az egyéni gomb aktiválásakor.
 Lásd a kézikönyvet az összes kattintási kombinációhoz. Az alapértelmezés a 'Nem használt'
+
+@407
+A középső egyéni gomb a képernyő közepére történő hosszú kattintással érhető el.
+Ha az ActivMap engedélyezve van, akkor ezt az egyéni gombot nem mindig lehet előhozni, mivel
+a légterekre történő hosszú kattintás a légtér részleteit fogja megjeleníteni.
+Itt be tudod állítani milyen művelet történjen az egyéni gomb aktiválásakor.
+Lásd a kézikönyvet az összes kattintási kombinációhoz. Az alapértelmezés a 'Oracle', azaz a hol vagyok most funkció.
 
 #
 # LOGGER REPLAY
@@ -1119,9 +1126,9 @@ G [G load]
 Túlterhelési többes (G), amit a csatlakoztatott külső intelligens varió ad.
 
 @838
-OLD nLD [Next L/D]
-Ne használd ezt at értéket, ez csak az előző verziókkal való kompatibilitás miatt van itt.
-Használd az 'E Köv. ford.pont szükséges siklószám'-ot helyette.
+[Irány Multitarget]
+A jelenleg kiválsztott multitarget irányszöge.
+Jelenleg nem áll rendelkezésre.
 
 @839
 Idő [Time local]
@@ -1235,8 +1242,11 @@ WNapÁtl [Thermal All]
 Átlagolt emelkedősebesség az összes eddigi termikben. (A benne eltöltött időt is figyelembe véve)
 
 @864
-WSVarió [Distance Vario]
-Az eredeti help szöveg hiányzik.
+[Logger státusz]
+Megmutatja a logger állapotát.
+[auto]: A logger automatikusan elindul felszálláskor
+[nem!]: A logger tiltva van, manuálisan kell elindítanod
+[BE]: A logger jelenleg aktív és loggol
 
 @865
 Akku [Battery]
@@ -1303,9 +1313,11 @@ HazaIr [Home Radial]
 A hazai reptér (otthon) irányszöge, ha megadtad melyik fordulópont legyen a hazai reptér.
 
 @879
-SLégtér [Airspace Distance]
-JELENLEG NEM ELÉRHETŐ. A legközelebbi légtér távolsága. Ha a légtér nem is jelenik meg a térképen, mert le van tiltva vagy éppen nyugtáztad már, a távolság kijelzése megmarad.
-Ha 0 akkor egy légtérben vagy, használd a Legközelebbi Légtér menüt ha több információt kérsz róla.
+SLégtér [Airspace Horizontal Distance]
+Horizontális távolsága a kiválsztott légtérnek. A légtér kiválsztása megtörténhet a térképről vagy a 2.4-es infólapról is, a légtér részleteit
+megjelenítő ablakból. Egyszerre csak egy légtér lehet kiválasztva. A kiválasztás után a légtér horizontális távolsága megjelenik ebben az infóboxban.
+Ha nincs kiválasztva légtér, vagy túl messze van, vagy már benne vagy akkor --- jelenik meg.
+A FLY zónák esetében a légtér elhagyásához szükséges horizontális távolság jelenik meg.
 
 @880
 KAkku# [Ext.Batt.Bank ]
@@ -1457,6 +1469,8 @@ A légtereket megjelenítheted körvonalként, mintázattal kitöltve vagy féli
 [Csak körvonal] Csak a légterek határán jelenik meg körvonal
 [Mintázat] A légtér osztályához tartozó színnel és mintázattal jelenik meg
 [Félig átlátszó] A légtérhez tartozó színnel lesz kitöltve a terület, és az Elfedés paraméterben megadott mértékben lesz átlátszatlan.
+[Mintázat, csak kerettel] A légtér a körvonallal és egy mintázattal kitöltött belső kerettel jelenik meg
+[Félig átlátszó, csak kerettel] A légtér a körvonallal és egy félig átlátszóan kitöltött belső kerettel jelenik meg
 
 @1201
 [Légtér átlátszósága]
@@ -1484,6 +1498,8 @@ Megjegyzendő, hogy néhány eszközön mint pl. a régi 3850 az Anti Aliasing n
 Néhány PNA-n álló képernyős módban, és PPC2002 esetén az Anti Aliasing jobban működik.
 Egyébként alapértelmezésként az LK8000 a ClearType beállítást használja.
 Miután átállítottad ezt a beállítást, újra kell indítani a programot hogy érvényre jusson.
+FONTOS, hogy ez a beállítás már azelőtt betöltődik, hogy profilt választanál, így mindig
+csak a DEFAULT profilhoz tartozó érték jut érvényre!
 
 @1204
 [VarioBar mód]
@@ -1518,7 +1534,7 @@ A kezelési leírásban több információ található erről.
 
 1208
 [Repülőgép tipus]
-Itt állíthatod be a repülőgéped vagy siklóernyőd pontos tipusát.
+Itt állíthatod be a repülőgéped vagy siklóernyőd pontos tipusát. Ez meghatározza a polárist, amivel a program a számításokat elvégzi.
 
 @1209
 [Légtér figyelmeztetés ismétlési ideje]
@@ -1587,6 +1603,13 @@ Amikor a következő fordulópont a cél vagy már csak az utolsó fordulópont 
 @1255
 Automatikus MacCready beállítás, lehet bekapcsolt vagy kikapcsolt. Ezt repülés közben is lehet változtatni.
 Ez az alapbeállítás.
+
+@1256
+[Totálenergia]
+Amikor a totálenergia be van kapcsolva, a program kiszámolja hogy mekkora magasságot nyerhetsz amíg a jelenlegi sebességed lecsökkented az optimális siklási sebességre.
+Például ha 200km/h-val repülsz egy Discus-szal vízbalaszt nélkül, amíg lelassítasz 100km/h-ra, addíg némi magasságot nyersz.
+Ez a többletenergiából származó magasságérték hozzáadódik az érkezési magasságokhoz. Biztonsági okokból ez az opció alapból ki van kapcsolva.
+Ha bizonytalan vagy benne, inkább hagyd kikapcsolva.
 
 @9999
 Ezen az elemen nem áll rendelkezésre súgó.
