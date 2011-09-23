@@ -131,23 +131,6 @@ bool goInstrumentThread=false;
 char dedicated_by_paolo[]="Qrqvpngrq gb zl sngure Ivggbevb";
 // char dedicated_by_{yourname}="....";
 
-
-CRITICAL_SECTION  CritSec_FlightData;
-bool csFlightDataInitialized = false;
-CRITICAL_SECTION  CritSec_EventQueue;
-bool csEventQueueInitialized = false;
-CRITICAL_SECTION  CritSec_TerrainDataGraphics;
-bool csTerrainDataGraphicsInitialized = false;
-CRITICAL_SECTION  CritSec_TerrainDataCalculations;
-bool csTerrainDataCalculationsInitialized = false;
-CRITICAL_SECTION  CritSec_NavBox;
-bool csNavBoxInitialized = false;
-CRITICAL_SECTION  CritSec_Comm;
-bool csCommInitialized = false;
-CRITICAL_SECTION  CritSec_TaskData;
-bool csTaskDataInitialized = false;
-
-
 static BOOL GpsUpdated;
 static HANDLE dataTriggerEvent;
 static BOOL VarioUpdated;
@@ -224,7 +207,6 @@ void SettingsLeave() {
  
   LockFlightData();
   LockTaskData();
-  LockNavBox();
 
   MenuActive = false;
 
@@ -302,7 +284,6 @@ void SettingsLeave() {
 	SetFocus(hWndMapWindow);
   }
   
-  UnlockNavBox();
   UnlockTaskData();
   UnlockFlightData();
 
@@ -352,20 +333,6 @@ void FullScreen() {
   MapWindow::RequestFastRefresh();
 }
 
-
-void LockComm() {
-#ifdef HAVEEXCEPTIONS
-  if (!csCommInitialized) throw TEXT("LockComm Error");
-#endif
-  EnterCriticalSection(&CritSec_Comm);
-}
-
-void UnlockComm() {
-#ifdef HAVEEXCEPTIONS
-  if (!csCommInitialized) throw TEXT("LockComm Error");
-#endif
-  LeaveCriticalSection(&CritSec_Comm);
-}
 
 
 void RestartCommPorts() {
@@ -823,20 +790,8 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   SHSetAppKeyWndAssoc(VK_APP6, hWndMainWindow);
   #endif
 
-  InitializeCriticalSection(&CritSec_EventQueue);
-  csEventQueueInitialized = true;
-  InitializeCriticalSection(&CritSec_TaskData);
-  csTaskDataInitialized = true;
-  InitializeCriticalSection(&CritSec_FlightData);
-  csFlightDataInitialized = true;
-  InitializeCriticalSection(&CritSec_NavBox);
-  csNavBoxInitialized = true;
-  InitializeCriticalSection(&CritSec_Comm);
-  csCommInitialized = true;
-  InitializeCriticalSection(&CritSec_TerrainDataGraphics);
-  csTerrainDataGraphicsInitialized = true;
-  InitializeCriticalSection(&CritSec_TerrainDataCalculations);
-  csTerrainDataCalculationsInitialized = true;
+  extern void InitCriticalSections(void);
+  InitCriticalSections();
 
   drawTriggerEvent = CreateEvent(NULL, TRUE, FALSE, TEXT("drawTriggerEvent"));
   dataTriggerEvent = CreateEvent(NULL, TRUE, FALSE, TEXT("dataTriggerEvent"));
@@ -1779,21 +1734,9 @@ void Shutdown(void) {
   DeleteObject(StatisticsFont);  
   CAirspaceManager::Instance().CloseAirspaces();
   StartupStore(TEXT(". Delete Critical Sections%s"),NEWLINE);
-  
-  DeleteCriticalSection(&CritSec_EventQueue);
-  csEventQueueInitialized = false;
-  DeleteCriticalSection(&CritSec_TaskData);
-  csTaskDataInitialized = false;
-  DeleteCriticalSection(&CritSec_FlightData);
-  csFlightDataInitialized = false;
-  DeleteCriticalSection(&CritSec_NavBox);
-  csNavBoxInitialized = false;
-  DeleteCriticalSection(&CritSec_Comm);
-  csCommInitialized = false;
-  DeleteCriticalSection(&CritSec_TerrainDataCalculations);
-  csTerrainDataGraphicsInitialized = false;
-  DeleteCriticalSection(&CritSec_TerrainDataGraphics);
-  csTerrainDataCalculationsInitialized = false;
+
+  extern void DeInitCriticalSections(void);
+  DeInitCriticalSections(); 
 
   StartupStore(TEXT(". Close Progress Dialog%s"),NEWLINE);
 
@@ -2480,9 +2423,8 @@ void StartupStore(const TCHAR *Str, ...)
   _vstprintf(buf, Str, ap);
   va_end(ap);
 
-  if (csFlightDataInitialized) {
-	LockFlightData();
-  }
+  CheckAndLockFlightData();
+
   FILE *startupStoreFile = NULL;
   static TCHAR szFileName[MAX_PATH];
 
@@ -2505,101 +2447,6 @@ void StartupStore(const TCHAR *Str, ...)
     }
     fclose(startupStoreFile);
   }
-  if (csFlightDataInitialized) {
-    UnlockFlightData();
-  }
+  CheckAndUnlockFlightData();
 }
-
-
-void LockNavBox() {
-}
-
-void UnlockNavBox() {
-}
-
-static int csCount_TaskData = 0;
-static int csCount_FlightData = 0;
-static int csCount_EventQueue = 0;
-
-void LockTaskData() {
-#ifdef HAVEEXCEPTIONS
-  if (!csTaskDataInitialized) throw TEXT("LockTaskData Error");
-#endif
-  EnterCriticalSection(&CritSec_TaskData);
-  csCount_TaskData++;
-}
-
-void UnlockTaskData() {
-#ifdef HAVEEXCEPTIONS
-  if (!csTaskDataInitialized) throw TEXT("LockTaskData Error");
-#endif
-  if (csCount_TaskData) 
-    csCount_TaskData--;
-  LeaveCriticalSection(&CritSec_TaskData);
-}
-
-
-void LockFlightData() {
-#ifdef HAVEEXCEPTIONS
-  if (!csFlightDataInitialized) throw TEXT("LockFlightData Error");
-#endif
-  EnterCriticalSection(&CritSec_FlightData);
-  csCount_FlightData++;
-}
-
-void UnlockFlightData() {
-#ifdef HAVEEXCEPTIONS
-  if (!csFlightDataInitialized) throw TEXT("LockFlightData Error");
-#endif
-  if (csCount_FlightData)
-    csCount_FlightData--;
-  LeaveCriticalSection(&CritSec_FlightData);
-}
-
-void LockTerrainDataCalculations() {
-#ifdef HAVEEXCEPTIONS
-  if (!csTerrainDataCalculationsInitialized) throw TEXT("LockTerrainDataCalculations Error");
-#endif
-  EnterCriticalSection(&CritSec_TerrainDataCalculations);
-}
-
-void UnlockTerrainDataCalculations() {
-#ifdef HAVEEXCEPTIONS
-  if (!csTerrainDataCalculationsInitialized) throw TEXT("LockTerrainDataCalculations Error");
-#endif
-  LeaveCriticalSection(&CritSec_TerrainDataCalculations);
-}
-
-void LockTerrainDataGraphics() {
-#ifdef HAVEEXCEPTIONS
-  if (!csTerrainDataGraphicsInitialized) throw TEXT("LockTerrainDataGraphics Error");
-#endif
-  EnterCriticalSection(&CritSec_TerrainDataGraphics);
-}
-
-void UnlockTerrainDataGraphics() {
-#ifdef HAVEEXCEPTIONS
-  if (!csTerrainDataGraphicsInitialized) throw TEXT("LockTerrainDataGraphics Error");
-#endif
-  LeaveCriticalSection(&CritSec_TerrainDataGraphics);
-}
-
-
-void LockEventQueue() {
-#ifdef HAVEEXCEPTIONS
-  if (!csEventQueueInitialized) throw TEXT("LockEventQueue Error");
-#endif
-  EnterCriticalSection(&CritSec_EventQueue);
-  csCount_EventQueue++;
-}
-
-void UnlockEventQueue() {
-#ifdef HAVEEXCEPTIONS
-  if (!csEventQueueInitialized) throw TEXT("LockEventQueue Error");
-#endif
-  if (csCount_EventQueue) 
-    csCount_EventQueue--;
-  LeaveCriticalSection(&CritSec_EventQueue);
-}
-
 

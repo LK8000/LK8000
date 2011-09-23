@@ -355,6 +355,7 @@ VOLKS	:=\
 	$(SRC)/Volkslogger/vlutils.cpp
 
 SRC_FILES :=\
+	$(SRC)/Locking.cpp \
 	$(SRC)/ExpandMacros.cpp		$(SRC)/Battery.cpp \
 	$(SRC)/Globals.cpp		$(SRC)/DataOptions.cpp \
 	$(SRC)/LKAirspace.cpp		$(SRC)/Bitmaps.cpp \

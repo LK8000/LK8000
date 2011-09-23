@@ -42,18 +42,17 @@ extern void LockComm();
 extern void UnlockGraphicsData();
 extern void LockGraphicsData();
 extern void UnlockFlightData();
+extern void CheckAndUnlockFlightData();
 extern void LockFlightData();
+extern void CheckAndLockFlightData();
 extern void UnlockTaskData();
 extern void LockTaskData();
 extern void UnlockTerrainDataCalculations();
 extern void LockTerrainDataCalculations();
 extern void UnlockTerrainDataGraphics();
 extern void LockTerrainDataGraphics();
-extern void UnlockNavBox();
-extern void LockNavBox();
 extern void TriggerGPSUpdate();
 extern void TriggerVarioUpdate();
-// extern HANDLE drawTriggerEvent; REMOVE
 
 void FocusOnWindow(int i, bool selected);
 void FullScreen();
@@ -185,10 +184,6 @@ typedef struct{
   bool InverseInfoBox;		// InfoBox black or white inverted, used also by LK styles
   InfoBoxModelAppearance_t InfoBoxModel;
 } Appearance_t;
-
-//extern Appearance_t Appearance; REMOVE
-
-// ******************************************************************
 
 
 bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size);
