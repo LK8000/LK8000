@@ -11,7 +11,6 @@
 void LKReadLanguageFile(void);
 
 void SetWindowText_gettext(HWND hDlg, int entry);
-// TCHAR* gettext(const TCHAR* text);
 #define gettext	LKGetText
 void ClearStatusMessages(void);
 
@@ -19,14 +18,12 @@ void StartupScreen();
 
 HWND CreateProgressDialog(TCHAR *text);
 void CloseProgressDialog();
-void StepProgressDialog();
-BOOL SetProgressStepSize(int nSize);
 void StartHourglassCursor();
 void StopHourglassCursor();
 
 extern void DoStatusMessage(const TCHAR* text, const TCHAR* data = NULL);
 
-#define NUMPOLARS 7 // number of in-built polars
+// #define NUMPOLARS 7 // number of in-built polars REMOVE
 
 #include "dlgTools.h"
 

@@ -529,7 +529,7 @@ void RasterTerrain::OpenTerrain(void)
 
   StartupStore(TEXT(". Loading Terrain... %s"),NEWLINE);
   CreateProgressDialog(gettext(TEXT("_@M900_"))); // Loading Terrain File...
-  SetProgressStepSize(2);
+  // SetProgressStepSize(2); REMOVE
 
   TCHAR szFile[MAX_PATH] = _T("\0");
 

@@ -314,33 +314,6 @@ void WriteMissingTranslations() {
 
 
 
-/*  -------------------------------- start removable part
-   LK8000 1.24 IS NOW USING TOKENIZED LANGUAGE SUPPORT SO WE CAN TRASH THE OLD APPROACH
-   Last time I did tokenized stuff, it was year 1990 for french Minitel!! 
-   Using AT&T 3B-1000 Unix 3.2 !!
-   This comment will self destruct after 1/1/2011 Paolo
-
-TCHAR* gettext(const TCHAR* text) {
-  int i;
-  if (wcscmp(text, L"") == 0) return (TCHAR*)text;
-
-  //find a translation
-  for (i=0; i<GetTextData_Size; i++) {
-	if (!text || !GetTextData[i].key) continue;
-	if (wcscmp(text, GetTextData[i].key) == 0)
-	return GetTextData[i].text;
-  }
-  return (TCHAR*)text;
-}
-
-void SetWindowText_gettext(HWND hDlg, int entry) {
-  TCHAR strTemp[1024];
-  GetWindowText(GetDlgItem(hDlg,entry),strTemp, 1023);
-  SetWindowText(GetDlgItem(hDlg,entry),gettext(strTemp));
-#endif
-}
------------------------   end removable part */
-
 static HWND	hStartupWindow = NULL;
 static HDC	hStartupDC = NULL;
 
@@ -371,12 +344,14 @@ void CloseProgressDialog() {
    doinitprogress=true;
 }
 
-void StepProgressDialog(void) {
-}
+/* REMOVE
+//void StepProgressDialog(void) {
+//}
 
-BOOL SetProgressStepSize(int nSize) {
-  return(TRUE);
-}
+//BOOL SetProgressStepSize(int nSize) {
+//  return(TRUE);
+//}
+*/
 
 // New LK8000 Startup splash 
 #define LKSTARTBOTTOMFONT MapWindowBoldFont
