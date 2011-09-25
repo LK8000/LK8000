@@ -165,7 +165,7 @@ class RasterMapRaw: public RasterMap {
   CRITICAL_SECTION  CritSec_TerrainFile;
 };
 
-
+#ifdef JP2000
 class RasterMapJPG2000: public RasterMap {
  public:
   RasterMapJPG2000();
@@ -192,7 +192,7 @@ class RasterMapJPG2000: public RasterMap {
   static int ref_count;
   RasterTileCache raster_tile_cache;
 };
-
+#endif
 
 class RasterTerrain {
 public:

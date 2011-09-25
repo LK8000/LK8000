@@ -2180,10 +2180,14 @@ static void setVariables(void) {
     dfe = (DataFieldFileReader*)wp->GetDataField();
     _stprintf(tsuf,_T("*%S"),LKS_TERRAINDEM);
     dfe->ScanDirectoryTop(_T(LKD_MAPS),tsuf);
+#if LKMTERRAIN
     _stprintf(tsuf,_T("*%S"),LKS_TERRAINDAT);
     dfe->ScanDirectoryTop(_T(LKD_MAPS),tsuf);
+#endif
+#if JP2000
     _stprintf(tsuf,_T("*%S"),LKS_TERRAINJP2);
     dfe->ScanDirectoryTop(_T(LKD_MAPS),tsuf);
+#endif
     dfe->Lookup(temptext);
     wp->RefreshDisplay();
   }

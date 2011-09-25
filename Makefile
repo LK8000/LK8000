@@ -461,10 +461,12 @@ COMPAT	:=\
 
 ####### compilation outputs
 
+# Add JP2 library for JP2000 unsupported raster maps
+# (BIN)/jasper.a \
+
 OBJS 	:=\
 	$(patsubst $(SRC)%.cpp,$(BIN)%.o,$(SRC_FILES)) \
 	$(BIN)/zzip.a \
-	$(BIN)/jasper.a \
 	$(BIN)/compat.a \
 	$(BIN)/lk8000.rsc
 
