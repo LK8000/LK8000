@@ -355,7 +355,7 @@ VOLKS	:=\
 	$(SRC)/Volkslogger/vlutils.cpp
 
 SRC_FILES :=\
-	$(SRC)/Polar.cpp \
+	$(SRC)/Polar.cpp		$(SRC)/AssetId.cpp \
 	$(SRC)/FlarmTools.cpp		$(SRC)/AirTools.cpp\
 	$(SRC)/MessageLog.cpp		$(SRC)/Registry.cpp\
 	$(SRC)/Locking.cpp		$(SRC)/Fonts.cpp \
