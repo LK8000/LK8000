@@ -992,7 +992,6 @@ private:
   unsigned short *hBuf;
   BGRColor *colorBuf;
   bool do_shading;
-  bool do_water;
   RasterMap *DisplayMap;
   bool is_terrain;
   int interp_levels;
@@ -1003,7 +1002,6 @@ public:
   bool SetMap() {
       interp_levels = 2;
       is_terrain = true;
-      do_water=false; // we dont use it anymore, water printed always from Slope
       height_scale = 4;
       DisplayMap = RasterTerrain::TerrainMap;
       color_ramp = (COLORRAMP*)&terrain_colors[TerrainRamp][0];
@@ -1358,22 +1356,15 @@ void ColorTable() {
   for (int i=0; i<256; i++) {
 	for (int mag= -64; mag<64; mag++) {
 		BYTE r, g, b; 
-		// NEWRASTER i=255 means TERRAIN_INVALID
+		// i=255 means TERRAIN_INVALID. Water is colored in Slope
 		if (i == 255) {
-			// do_water set by weather, also for no weather, normally we never use this
-			// because water is colored now in Slope
-			if (do_water) {
-				// water colours
-				colorBuf[i+(mag+64)*256] = BGRColor(85,160,255); // WATER water
-			} else {
-				// TERRAIN_INVALID
-				colorBuf[i+(mag+64)*256] = BGRColor(194,223,197); // LCD green terrain invalid
-			}
+			colorBuf[i+(mag+64)*256] = BGRColor(194,223,197); // LCD green terrain invalid
 		} else {
 			// height_scale, color_ramp interp_levels  used only for weather
 			// ColorRampLookup is preparing terrain color to pass to TerrainShading for mixing
+
 			ColorRampLookup(i<<height_scale, r, g, b, color_ramp, NUM_COLOR_RAMP_LEVELS, interp_levels);
-			if (do_shading) TerrainShading(mag, r, g, b); //@ 101122
+			if (do_shading) TerrainShading(mag, r, g, b);
 			colorBuf[i+(mag+64)*256] = BGRColor(r,g,b);
 		}
 	}
