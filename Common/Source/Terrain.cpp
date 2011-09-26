@@ -9,14 +9,17 @@
 // omaplibdemo.cpp : Defines the entry point for the application.
 //
 #include "StdAfx.h"
-#include "Terrain.h"
 #include "options.h"
+#include "Defines.h"
+#include "lk8000.h"
+#include "externs.h"
+
+#include "Terrain.h"
 #include "RasterTerrain.h"
 #include "MapWindow.h"
 #include "Topology.h"
 #include "Calculations.h"
 #include "STScreenBuffer.h"
-#include "externs.h"
 #include "Utils.h"
 #include "InfoBoxLayout.h"
 #include "Sizes.h"

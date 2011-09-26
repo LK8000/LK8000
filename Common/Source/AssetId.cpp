@@ -23,8 +23,7 @@
 #include "Defines.h"
 #include "externs.h"
 #include "lk8000.h"
-
-
+#include "uniqueid.h"
 
 
 void ReadAssetNumber(void)

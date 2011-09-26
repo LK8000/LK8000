@@ -34,6 +34,11 @@
 #include "McReady.h"
 #include "NavFunctions.h"
 #include "WaveThread.h"
+#ifdef PNA
+#include "LKHolux.h"
+#endif
+
+
 
 #include "utils/heapcheck.h"
 

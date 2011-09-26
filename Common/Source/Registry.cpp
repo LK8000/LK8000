@@ -25,6 +25,7 @@
 #include "device.h"
 #include "lk8000.h"
 #include "McReady.h"
+#include "Modeltype.h"
 
 
 #ifdef __MINGW32__
