@@ -8,8 +8,193 @@
 
 #include "StdAfx.h"
 #include "NavFunctions.h"
+#include "lk8000.h"
+#include "Utils.h"
 
 #include "utils/heapcheck.h"
+
+
+#ifdef __MINGW32__
+#ifndef max
+#define max(x, y)   (x > y ? x : y)
+#define min(x, y)   (x < y ? x : y)
+#endif
+#endif
+
+
+
+void DistanceBearing(double lat1, double lon1, double lat2, double lon2,
+                     double *Distance, double *Bearing) {
+
+// incomplete, test does not show benefits, low hits
+#if (LK_CACHECALC && LK_CACHECALC_DBE)
+  #define CASIZE_DBE 50
+  static bool doinit=true;
+  static int  cacheIndex;
+  static double cur_checksum;
+  static double cur_lat1, cur_lat2, cur_lon1, cur_lon2;
+  bool cacheFound;
+  int i;
+
+  static double cache_checksum[CASIZE_DBE];
+  static double cache_lat1[CASIZE_DBE];
+  static double cache_lat2[CASIZE_DBE];
+  static double cache_lon1[CASIZE_DBE];
+  static double cache_lon2[CASIZE_DBE];
+  static double cache_Distance[CASIZE_DBE];
+  static double cache_Bearing[CASIZE_DBE];
+
+  if (doinit) {
+	cacheIndex=0;
+	for (i=0; i<CASIZE_DBE; i++) {
+		cache_checksum[i]=0;
+		cache_lat1[i]=0;
+		cache_lat2[i]=0;
+		cache_lon1[i]=0;
+		cache_lon2[i]=0;
+		cache_Distance[i]=0;
+		cache_Bearing[i]=0;
+	}
+	doinit=false;
+  }
+
+  Cache_Calls_DBE++;
+  cur_checksum=lat1+lat2+lon1+lon2;
+  cacheFound=false;
+
+  for (i=0; i<CASIZE_DBE; i++) {
+	if ( cache_checksum[i] != cur_checksum ) continue;
+	if ( cache_lat1[i] != lat1 ) {
+		Cache_False_DBE++;
+		continue;
+	}
+	if ( cache_lat2[i] != lat2 ) {
+		Cache_False_DBE++;
+		continue;
+	}
+	if ( cache_lon1[i] != lon1 ) {
+		Cache_False_DBE++;
+		continue;
+	}
+	if ( cache_lon2[i] != lon2 ) {
+		Cache_False_DBE++;
+		continue;
+	}
+	cacheFound=true;
+	break;
+  }
+
+  if (cacheFound) {
+	Cache_Hits_DBE++;
+  }  else {
+	cur_lat1=lat1;
+	cur_lat2=lat2;
+	cur_lon1=lon1;
+	cur_lon2=lon2;
+  }
+#endif
+   
+
+  lat1 *= DEG_TO_RAD;
+  lat2 *= DEG_TO_RAD;
+  lon1 *= DEG_TO_RAD;
+  lon2 *= DEG_TO_RAD;
+
+  double clat1 = cos(lat1);
+  double clat2 = cos(lat2);
+  double dlon = lon2-lon1;
+
+  if (Distance) {
+    double s1 = sin((lat2-lat1)/2);
+    double s2 = sin(dlon/2);
+    double a= max(0.0,min(1.0,s1*s1+clat1*clat2*s2*s2));
+    *Distance = 6371000.0*2.0*atan2(sqrt(a),sqrt(1.0-a));
+  }
+  if (Bearing) {
+    double y = sin(dlon)*clat2;
+    double x = clat1*sin(lat2)-sin(lat1)*clat2*cos(dlon);
+    *Bearing = (x==0 && y==0) ? 0:AngleLimit360(atan2(y,x)*RAD_TO_DEG);
+  }
+
+#if (LK_CACHECALC && LK_CACHECALC_DBE)
+  if (!cacheFound) {
+	if (++cacheIndex==CASIZE_DBE) cacheIndex=0;
+	cache_checksum[cacheIndex]=cur_checksum;
+	cache_lat1[cacheIndex]=cur_lat1;
+	cache_lat2[cacheIndex]=cur_lat2;
+	cache_lon1[cacheIndex]=cur_lon1;
+	cache_lon2[cacheIndex]=cur_lon2;
+  }
+#endif
+
+}
+
+
+double DoubleDistance(double lat1, double lon1, double lat2, double lon2,
+		      double lat3, double lon3) {
+
+  lat1 *= DEG_TO_RAD;
+  lat2 *= DEG_TO_RAD;
+  lat3 *= DEG_TO_RAD;
+  lon1 *= DEG_TO_RAD;
+  lon2 *= DEG_TO_RAD;
+  lon3 *= DEG_TO_RAD;
+
+  double clat1 = cos(lat1);
+  double clat2 = cos(lat2);
+  double clat3 = cos(lat3);
+  double dlon21 = lon2-lon1;
+  double dlon32 = lon3-lon2;
+
+  double s21 = sin((lat2-lat1)/2);
+  double sl21 = sin(dlon21/2);
+  double s32 = sin((lat3-lat2)/2);
+  double sl32 = sin(dlon32/2);
+
+  double a12 = max(0.0,min(1.0,s21*s21+clat1*clat2*sl21*sl21));
+  double a23 = max(0.0,min(1.0,s32*s32+clat2*clat3*sl32*sl32));
+  return 6371000.0*2.0*(atan2(sqrt(a12),sqrt(1.0-a12))
+			+atan2(sqrt(a23),sqrt(1.0-a23)));
+
+}
+
+
+
+
+void FindLatitudeLongitude(double Lat, double Lon, 
+                           double Bearing, double Distance,
+                           double *lat_out, double *lon_out)
+{
+  double result;
+
+  Lat *= DEG_TO_RAD;
+  Lon *= DEG_TO_RAD;
+  Bearing *= DEG_TO_RAD;
+  Distance = Distance/6371000;
+
+  double sinDistance = sin(Distance);
+  double cosLat = cos(Lat);
+
+  if (lat_out) {
+    result = (double)asin(sin(Lat)*cos(Distance)
+                          +cosLat*sinDistance*cos(Bearing));
+    result *= RAD_TO_DEG;
+    *lat_out = result;
+  }
+  if (lon_out) {
+    if(cosLat==0)
+      result = Lon;
+    else {
+      result = Lon+(double)asin(sin(Bearing)*sinDistance/cosLat);
+      result = (double)fmod((result+M_PI),(M_2PI));
+      result = result - M_PI;
+    }
+    result *= RAD_TO_DEG;
+    *lon_out = result;
+  }
+}
+
+
 
 void xXY_to_LL(double Lat_TP, double Long_TP, double X_int, double Y_int, double *Lat, double *Long)
 {

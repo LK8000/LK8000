@@ -65,8 +65,11 @@ extern void PopupAnalysis();
 extern void RestartCommPorts();
 extern bool Debounce();
 
-#define DEG_TO_RAD .0174532925199432958
-#define RAD_TO_DEG 57.2957795131
+#ifndef DEG_TO_RAD
+#define DEG_TO_RAD                                      0.0174532925199432958
+#define RAD_TO_DEG                                      57.2957795131
+#endif
+
 #if defined(M_PI)
   #undef M_PI
 #endif
