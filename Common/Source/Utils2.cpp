@@ -3725,8 +3725,8 @@ bool CustomKeyHandler(const int key) {
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 		#endif
 		InputEvents::setMode(_T("TrueWind"));
-//		MenuTimeOut = 0;
-//		DisplayTimeOut = 0;
+//		MenuTimeOut = 0; REMOVE
+//		DisplayTimeOut = 0; REMOVE
 		return true;
 
 	case ckTeamCode:

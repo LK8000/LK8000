@@ -1276,7 +1276,12 @@ void InputEvents::eventStatus(const TCHAR *misc) {
 // for more info.
 void InputEvents::eventAnalysis(const TCHAR *misc) {
 	(void)misc;
-  PopupAnalysis();
+
+  // DialogActive = true; REMOVE
+  dlgAnalysisShowModal(ANALYSYS_PAGE_DEFAULT);
+  // DialogActive = false; REMOVE
+
+//  PopupAnalysis(); REMOVE
 }
 
 // WaypointDetails
@@ -2698,6 +2703,43 @@ void InputEvents::eventOrientation(const TCHAR *misc){
 	*/
   }
   MapWindow::SetAutoOrientation(true); // 101008 reset it
+}
+
+
+void SwitchToMapWindow(void)
+{
+  SetFocus(hWndMapWindow);
+  if (MenuTimeOut< MenuTimeoutMax) {
+	MenuTimeOut = MenuTimeoutMax;
+  }
+}
+
+
+void PopupWaypointDetails()
+{
+  // Quick is returning  0 for cancel or error, 1 for details, 2 for goto, 3 and 4 for alternates
+  short ret= dlgWayQuickShowModal();
+  // StartupStore(_T("... Quick ret=%d\n"),ret);
+  switch(ret) {
+	case 1:
+		dlgWayPointDetailsShowModal();
+		break;
+	case 2:
+		SetModeType(LKMODE_MAP,MP_MOVING);
+		break;
+	default:
+		break;
+  }
+}
+
+
+void PopupBugsBallast(int UpDown)
+{
+  (void)UpDown;
+  // DialogActive = true; REMOVE
+  FullScreen();
+  SwitchToMapWindow();
+  // DialogActive = false; REMOVE
 }
 
 

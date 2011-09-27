@@ -91,7 +91,7 @@ void Globals_Init(void) {
   MenuTimeOut=0;			// Runtime
 
   // good candidate to be removed !
-  DisplayTimeOut=0;
+  // DisplayTimeOut=0; REMOVE
 
   // TODO check!!
   DisplayOrientation = TRACKUP;
@@ -526,7 +526,7 @@ void Globals_Init(void) {
   TerrainRamp = 0;
 
   extGPSCONNECT = FALSE;
-  DialogActive = false;
+  // DialogActive = false; // REMOVE
 
   PDABatteryPercent = 100;
   PDABatteryTemperature = 0;

@@ -227,7 +227,7 @@ DWORD MapWindow::fpsTime0 = 0;
 bool MapWindow::ForceVisibilityScan = false;
 
 
-extern int DisplayTimeOut;
+// extern int DisplayTimeOut; REMOVE
 
 NMEA_INFO MapWindow::DrawInfo;
 DERIVED_INFO MapWindow::DerivedDrawInfo;
@@ -684,8 +684,8 @@ void MapWindow::RefreshMap() {
 }
 
 
-extern BOOL extGPSCONNECT;
-extern bool DialogActive;
+// extern BOOL extGPSCONNECT; REMOVE
+//extern bool DialogActive; REMOVE
 
 
 
@@ -1114,7 +1114,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       DoStatusMessage(_T("BUTTONDOWN MapWindow")); 
       #endif
       if (LockModeStatus) break;
-      DisplayTimeOut = 0;
+      // DisplayTimeOut = 0; REMOVE
       dwDownTime = GetTickCount();
       // After calling a menu, on exit as we touch the screen we fall back here
       if (ignorenext) {
@@ -1549,7 +1549,7 @@ goto_menu:
       wsprintf(ventabuffer,TEXT("WMKEY uMsg=%d wParam=%ld lParam=%ld"), uMsg, wParam,lParam);
       DoStatusMessage(ventabuffer);
       #endif
-      DisplayTimeOut = 0;
+      // DisplayTimeOut = 0; REMOVE
       InterfaceTimeoutReset();
 
       #if defined(PNA)

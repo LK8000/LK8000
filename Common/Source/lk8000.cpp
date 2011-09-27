@@ -154,13 +154,13 @@ void TriggerVarioUpdate()
 
 void HideMenu() {
     MenuTimeOut = MenuTimeoutMax;
-    DisplayTimeOut = 0;
+    // DisplayTimeOut = 0; REMOVE
 }
 
 void ShowMenu() {
   InputEvents::setMode(TEXT("Menu"));
   MenuTimeOut = 0;
-  DisplayTimeOut = 0;
+  // DisplayTimeOut = 0; REMOVE
 }
 
 
@@ -1276,7 +1276,7 @@ bool Debounce(void) {
   DWORD fpsTimeThis = ::GetTickCount();
   DWORD dT = fpsTimeThis-fpsTimeLast;
 
-  DisplayTimeOut = 0;
+  // DisplayTimeOut = 0; REMOVE
   InterfaceTimeoutReset();
 
   if (dT>(unsigned int)debounceTimeout) {
@@ -1664,7 +1664,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 
-/* JMW no longer needed
+/* JMW no longer needed REMOVE
 HWND CreateRpCommandBar(HWND hwnd)
 {
   SHMENUBARINFO mbi;
@@ -1697,7 +1697,7 @@ LRESULT MainMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   if(wmControl != NULL) {
     if (ProgramStarted==psNormalOp) {
 
-      DialogActive = false;
+      // DialogActive = false; REMOVE
 
       FullScreen();
 
@@ -1745,8 +1745,9 @@ void CommonProcessTimer()
 
   UpdateBatteryInfos();
 
-  if (!DialogActive) {
-    DisplayTimeOut++;
+  /* REMOVE
+  if (!DialogActive) { 
+    DisplayTimeOut++; // REMOVE
   } else {
     // JMW don't let display timeout while a dialog is active,
     // but allow button presses to trigger redisplay
@@ -1754,6 +1755,7 @@ void CommonProcessTimer()
       DisplayTimeOut=1;
     }
   }
+ */
 
   if (MapWindow::IsDisplayRunning()) {
   }
@@ -1763,7 +1765,7 @@ void CommonProcessTimer()
   // JMW: is done in the message function now.
     if (Message::Render()) {
       // turn screen on if blanked and receive a new message 
-      DisplayTimeOut=0;
+      // DisplayTimeOut=0; REMOVE
     }
 
   static int iheapcompact = 0;
@@ -1891,23 +1893,22 @@ int ConnectionProcessTimer(int itimeout) {
   return itimeout;
 }
 
+// Running at 2Hz
 void ProcessTimer(void)
 {
+  static int itimeout = -1;
+  itimeout++;
 
-  if (!GPSCONNECT && (DisplayTimeOut==0)) {
-    // JMW 20071207
-    // re-draw screen every five seconds even if no GPS
-    // this prevents sluggish screen when inside hangar..
-    TriggerGPSUpdate();
-    DisplayTimeOut=1;
+  // if (!GPSCONNECT && (DisplayTimeOut==0)) { REMOVE
+  if (!GPSCONNECT) {
+    if (itimeout % 2 == 0) TriggerGPSUpdate();  // Update screen when no GPS every second
+    // DisplayTimeOut=1; REMOVE
   }
 
   CommonProcessTimer();
 
   // now check GPS status
 
-  static int itimeout = -1;
-  itimeout++;
   
   // also service replay logger
   ReplayLogger::Update();
@@ -1961,6 +1962,7 @@ void SIMProcessTimer(void)
 }
 
 
+/* REMOVE
 void SwitchToMapWindow(void)
 {
   SetFocus(hWndMapWindow);
@@ -1969,12 +1971,11 @@ void SwitchToMapWindow(void)
   }
 }
 
-
 void PopupAnalysis()
 {
-  DialogActive = true;
+  // DialogActive = true; REMOVE
   dlgAnalysisShowModal(ANALYSYS_PAGE_DEFAULT);
-  DialogActive = false;
+  // DialogActive = false; REMOVE
 }
 
 
@@ -1999,10 +2000,11 @@ void PopupWaypointDetails()
 void PopupBugsBallast(int UpDown)
 {
 	(void)UpDown;
-  DialogActive = true;
-  //  ShowWindow(hWndCB,SW_HIDE);
+  // DialogActive = true; REMOVE
+  //  ShowWindow(hWndCB,SW_HIDE); REMOVE
   FullScreen();
   SwitchToMapWindow();
-  DialogActive = false;
+  // DialogActive = false; REMOVE
 }
+*/
 
