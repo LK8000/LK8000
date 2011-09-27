@@ -73,25 +73,4 @@ extern void ClubForbiddenMsg(void);
 
 extern void CalculateOrbiter(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
-/* REMOVE
-extern HFONT                                   LK8UnitFont;
-extern HFONT					LK8TitleFont;
-extern HFONT					LK8TitleNavboxFont;
-extern HFONT					LK8MapFont;
-extern HFONT                                   LK8ValueFont;
-extern HFONT                                   LK8TargetFont;
-extern HFONT                                   LK8BigFont;
-extern HFONT                                   LK8SmallFont;
-extern HFONT                                   LK8MediumFont;
-extern HFONT                                   LK8InfoBigFont;
-extern HFONT                                   LK8InfoBigItalicFont;
-extern HFONT                                   LK8InfoNormalFont;
-extern HFONT					LK8InfoSmallFont;
-extern HFONT					LK8PanelBigFont;
-extern HFONT					LK8PanelMediumFont;
-extern HFONT					LK8PanelSmallFont;
-extern HFONT					LK8PanelUnitFont;
-*/
-
-
 #endif // LK8000_UTILS2_H_

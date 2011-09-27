@@ -15,7 +15,6 @@
 #include "options.h"
 #include "Utils.h"
 #include "Utils2.h"
-#include "LKUtils.h"
 #include "LKStyle.h"
 #include "WindowControls.h"
 #include "MapWindow.h"
@@ -257,7 +256,6 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 {
   WAYPOINT *new_waypoint;
   TCHAR szTemp[100];
-  // int nTrigger=10; REMOVE
   DWORD fSize, fPos=0;
   int nLineNumber=0;
   short fileformat=LKW_DAT;
@@ -356,7 +354,6 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 
   // SetFilePointer(hFile,0,NULL,FILE_BEGIN);
   fPos = 0;
-//  nTrigger = (fSize/10);   REMOVE
 
   // a real shame, too lazy to change into do while loop
   // Skip already read lines containing header, unless we are using DAT, which has no header
@@ -372,13 +369,6 @@ goto_inloop:
 	nTemp2String[READLINE_LENGTH-2]=_T('\r');
 	fPos += _tcslen(nTemp2String);
    
-/* REMOVE 
-	if (nTrigger < (int)fPos){
-		nTrigger += (fSize/10);
-		StepProgressDialog();
-	}
-*/
-    
 	if (_tcsstr(nTemp2String, TEXT("**")) == nTemp2String) // Look For Comment
 		continue;
 

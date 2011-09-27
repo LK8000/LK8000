@@ -158,7 +158,6 @@ void ParseAirfieldDetails() {
   bool hasDetails = false;
   int i, n;
   unsigned int j;
-  // int k=0; REMOVE
 
   while(ReadString(zAirfieldDetails,READLINE_LENGTH,TempString))
     {
@@ -181,13 +180,6 @@ void ParseAirfieldDetails() {
 	Name[i-1]= 0;
 
 	inDetails = true;
-
-	/* REMOVE
-        if (k % 20 == 0) {
-          StepProgressDialog();
-        }
-        k++;
-	*/
 
       } else {
 	// VENTA3: append text to details string

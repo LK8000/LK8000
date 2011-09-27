@@ -19,7 +19,6 @@
 #include <tchar.h>
 #include "Logger.h"
 #include "Process.h"
-#include "LKUtils.h"
 #include "LKMapWindow.h"
 #include "LKObjects.h"
 #include "RGB.h"

@@ -614,8 +614,6 @@ bool InputEvents::processButton(int bindex) {
 bool InputEvents::processKey(int dWord) {
   if (!(ProgramStarted==psNormalOp)) return false;
 
-  // InterfaceTimeoutReset(); REMOVE
-
   int event_id;
 
   // Valid input ?
@@ -703,8 +701,6 @@ bool InputEvents::processNmea(int ne_id) {
 bool InputEvents::processNmea_real(int ne_id) {
   if (!(ProgramStarted==psNormalOp)) return false;
   int event_id = 0;
-
-  // InterfaceTimeoutReset(); REMOVE
 
   // Valid input ?
   if ((ne_id < 0) || (ne_id >= NE_COUNT))
@@ -1277,11 +1273,8 @@ void InputEvents::eventStatus(const TCHAR *misc) {
 void InputEvents::eventAnalysis(const TCHAR *misc) {
 	(void)misc;
 
-  // DialogActive = true; REMOVE
   dlgAnalysisShowModal(ANALYSYS_PAGE_DEFAULT);
-  // DialogActive = false; REMOVE
 
-//  PopupAnalysis(); REMOVE
 }
 
 // WaypointDetails
@@ -2736,10 +2729,8 @@ void PopupWaypointDetails()
 void PopupBugsBallast(int UpDown)
 {
   (void)UpDown;
-  // DialogActive = true; REMOVE
   FullScreen();
   SwitchToMapWindow();
-  // DialogActive = false; REMOVE
 }
 
 

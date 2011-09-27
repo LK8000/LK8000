@@ -25,7 +25,6 @@
 #include "Logger.h"
 #include "Parser.h"
 #include "WaveThread.h"
-#include "LKUtils.h"
 #include "Message.h"
 #include "McReady.h"
 #include "InputEvents.h"
@@ -3725,8 +3724,6 @@ bool CustomKeyHandler(const int key) {
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 		#endif
 		InputEvents::setMode(_T("TrueWind"));
-//		MenuTimeOut = 0; REMOVE
-//		DisplayTimeOut = 0; REMOVE
 		return true;
 
 	case ckTeamCode:

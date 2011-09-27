@@ -12,7 +12,6 @@
 #include "options.h"
 #include "Defines.h"
 
-#include "LKUtils.h"
 #include "MapWindow.h"
 #include "LKMapWindow.h"
 #include "Utils.h"
@@ -90,8 +89,6 @@ void Globals_Init(void) {
   MenuTimeoutMax = MENUTIMEOUTMAX;	// Config
   MenuTimeOut=0;			// Runtime
 
-  // good candidate to be removed !
-  // DisplayTimeOut=0; REMOVE
 
   // TODO check!!
   DisplayOrientation = TRACKUP;
@@ -526,7 +523,6 @@ void Globals_Init(void) {
   TerrainRamp = 0;
 
   extGPSCONNECT = FALSE;
-  // DialogActive = false; // REMOVE
 
   PDABatteryPercent = 100;
   PDABatteryTemperature = 0;

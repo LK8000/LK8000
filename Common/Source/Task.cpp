@@ -16,7 +16,6 @@
 #include "Calculations.h"
 #include "Waypointparser.h"
 #include "McReady.h"
-#include "LKUtils.h"
 #include "LKMapWindow.h"
 
 #include "utils/heapcheck.h"

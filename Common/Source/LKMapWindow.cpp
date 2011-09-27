@@ -15,7 +15,6 @@
 #include "MapWindow.h"
 #include "Utils.h"
 #include "lk8000.h"
-#include "LKUtils.h"
 #include "Utils2.h"
 #include "Units.h"
 #include "Logger.h"

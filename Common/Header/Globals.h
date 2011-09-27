@@ -640,8 +640,6 @@ GEXTERN bool AdvanceArmed;
 GEXTERN int MenuTimeoutMax;   // config
 GEXTERN int MenuTimeOut;      // runtime
 
-GEXTERN int DisplayTimeOut;
-
 
 GEXTERN int EnableThermalLocator;
 

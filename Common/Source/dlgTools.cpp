@@ -9,7 +9,6 @@
 #include "StdAfx.h"
 #include <limits.h>
 
-#include "LKUtils.h"
 #include "WindowControls.h"
 #include "dlgTools.h"
 #include "xmlParser.h"

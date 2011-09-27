@@ -1497,7 +1497,7 @@ RECT WINAPI DrawWireRects(LPRECT lprcTo, UINT nMilliSecSpeed)
 {
     return AnimationRectangle;
 }
-#endif // REMOVE
+#endif 
 
 
 unsigned long CheckFreeRam(void) {
@@ -1691,29 +1691,6 @@ void CreateDirectoryIfAbsent(TCHAR *filename) {
   }
 
 }
-
-/* REMOVE
-static int interface_timeout;
-
-bool InterfaceTimeoutZero(void) {
-  return (interface_timeout==0);
-}
-
-void InterfaceTimeoutReset(void) {
-  interface_timeout = 0;
-}
-
-
-bool InterfaceTimeoutCheck(void) {
-  if (interface_timeout > 60*10) {
-    interface_timeout = 0;
-    return true;
-  } else {
-    interface_timeout++;
-    return false;
-  }
-}
-*/
 
 bool FileExists(TCHAR *FileName){
 

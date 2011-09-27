@@ -66,8 +66,6 @@
 
 #include "RasterTerrain.h"
 
-// extern void LKObjects_Create(); //GOEXT
-// extern void LKObjects_Delete(); //GOEXT REMOVE
 #include "LKObjects.h"
 
 using std::min;
@@ -154,13 +152,11 @@ void TriggerVarioUpdate()
 
 void HideMenu() {
     MenuTimeOut = MenuTimeoutMax;
-    // DisplayTimeOut = 0; REMOVE
 }
 
 void ShowMenu() {
   InputEvents::setMode(TEXT("Menu"));
   MenuTimeOut = 0;
-  // DisplayTimeOut = 0; REMOVE
 }
 
 
@@ -1276,9 +1272,6 @@ bool Debounce(void) {
   DWORD fpsTimeThis = ::GetTickCount();
   DWORD dT = fpsTimeThis-fpsTimeLast;
 
-  // DisplayTimeOut = 0; REMOVE
-  // InterfaceTimeoutReset(); REMOVE
-
   if (dT>(unsigned int)debounceTimeout) {
     fpsTimeLast = fpsTimeThis;
     return true;
@@ -1390,8 +1383,6 @@ void Shutdown(void) {
   StartupStore(TEXT(". Delete Objects%s"),NEWLINE);
   #endif
   
-  //  CommandBar_Destroy(hWndCB); // REMOVE
-
   // Kill graphics objects
 
   DeleteObject(hBrushSelected);
@@ -1400,14 +1391,6 @@ void Shutdown(void) {
 
   extern void DeInitialiseFonts(void);
   DeInitialiseFonts();  
-/* REMOVE
-  DeleteObject(TitleWindowFont);
-  DeleteObject(CDIWindowFont);
-  DeleteObject(MapLabelFont);
-  DeleteObject(MapWindowFont);
-  DeleteObject(MapWindowBoldFont);
-  DeleteObject(StatisticsFont);  
-*/
   CAirspaceManager::Instance().CloseAirspaces();
   StartupStore(TEXT(". Delete Critical Sections%s"),NEWLINE);
 
@@ -1571,36 +1554,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case WM_SETFOCUS:
-      // JMW not sure this ever does anything useful..
       if (ProgramStarted > psInitInProgress) {
-
+	// TODO REMOVE
       }
       break;
-      // TODO enhancement: Capture KEYDOWN time
-      // 	- Pass that (otpionally) to processKey, allowing
-      // 	  processKey to handle long events - at any length
-      // 	- Not sure how to do double click... (need timer call back
-      // 	process unless reset etc... tricky)
-      // we do this in WindowControls
-    case WM_KEYUP: // JMW was keyup
-
-      // InterfaceTimeoutReset(); REMOVE
-
-      /* DON'T PROCESS KEYS HERE WITH NEWINFOBOX, IT CAUSES CRASHES! */
+    case WM_KEYUP:
       break;
-	  //VENTA DBG
-#ifdef VENTA_DEBUG_EVENT
-	case WM_KEYDOWN:	
-
-		DoStatusMessage(TEXT("DBG KDOWN 1")); // VENTA
-		// InterfaceTimeoutReset(); REMOVE
-	      break;
-	case WM_SYSKEYDOWN:	
-		DoStatusMessage(TEXT("DBG SYSKDOWN 1")); // VENTA
-		// InterfaceTimeoutReset(); REMOVE
-	      break;
-#endif
-	//END VENTA DBG
 
     case WM_TIMER:
 	// WM_TIMER is run at about 2hz.
@@ -1664,27 +1623,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 
-/* JMW no longer needed REMOVE
-HWND CreateRpCommandBar(HWND hwnd)
-{
-  SHMENUBARINFO mbi;
-
-  memset(&mbi, 0, sizeof(SHMENUBARINFO));
-  mbi.cbSize     = sizeof(SHMENUBARINFO);
-  mbi.hwndParent = hwnd;
-  mbi.dwFlags = SHCMBF_EMPTYBAR|SHCMBF_HIDDEN;
-  mbi.nToolBarId = IDM_MENU;
-  mbi.hInstRes   = hInst;
-  mbi.nBmpId     = 0;
-  mbi.cBmpImages = 0;
-
-  if (!SHCreateMenuBar(&mbi))
-    return NULL;
-
-  return mbi.hwndMB;
-}
-*/
-
 LRESULT MainMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   int wmId, wmEvent;
@@ -1697,15 +1635,8 @@ LRESULT MainMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   if(wmControl != NULL) {
     if (ProgramStarted==psNormalOp) {
 
-      // DialogActive = false; REMOVE
-
       FullScreen();
 
-      /*
-      if (!InfoWindowActive) {
-        ShowMenu();
-      }
-      */
       Message::CheckTouch(wmControl);
         
       if (ButtonLabel::CheckButtonPress(wmControl)) {
@@ -1717,294 +1648,4 @@ LRESULT MainMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-/* REMOVE
-
-#include "winbase.h"
-
-
-void CommonProcessTimer()
-{
-
-  // service the GCE and NMEA queue
-  if (ProgramStarted==psNormalOp) {
-    InputEvents::DoQueuedEvents();
-	  // only shows the dialog if needed.
-	  ShowAirspaceWarningsToUser();
-  }
-
-#if (WINDOWSPC<1)
-  SystemIdleTimerReset();
-#endif
-
-    if(MenuTimeOut==MenuTimeoutMax) {
-      if (!MapWindow::mode.AnyPan()) {
-	InputEvents::setMode(TEXT("default"));
-      }
-    }
-    MenuTimeOut++;
-
-  UpdateBatteryInfos();
-
-  [* REMOVE
-  if (!DialogActive) { 
-    DisplayTimeOut++; // REMOVE
-  } else {
-    // JMW don't let display timeout while a dialog is active,
-    // but allow button presses to trigger redisplay
-    if (DisplayTimeOut>1) {
-      DisplayTimeOut=1;
-    }
-  }
- *]
-
-  if (MapWindow::IsDisplayRunning()) {
-  }
-
-  //
-  // maybe block/delay this if a dialog is active?
-  // JMW: is done in the message function now.
-    if (Message::Render()) {
-      // turn screen on if blanked and receive a new message 
-      // DisplayTimeOut=0; REMOVE
-    }
-
-  static int iheapcompact = 0;
-  // called 2 times per second, compact heap every minute.
-  iheapcompact++;
-  if (iheapcompact == 120) {
-    MyCompactHeaps();
-    iheapcompact = 0;
-  }
-}
-
-// this part should be rewritten
-int ConnectionProcessTimer(int itimeout) {
-  LockComm();
-  NMEAParser::UpdateMonitor();
-  UnlockComm();
-  
-  static BOOL LastGPSCONNECT = FALSE;
-  static BOOL CONNECTWAIT = FALSE;
-  static BOOL LOCKWAIT = FALSE;
-  
-  //
-  // replace bool with BOOL to correct warnings and match variable
-  // declarations RB
-  //
-  BOOL gpsconnect = GPSCONNECT;
-  
-  if (GPSCONNECT) {
-    extGPSCONNECT = TRUE;
-  } 
-
-  if (!extGPSCONNECT) {
-    // if gps is not connected, set navwarning to true so
-    // calculations flight timers don't get updated
-    LockFlightData();
-    GPS_INFO.NAVWarning = true;
-    UnlockFlightData();
-  }
-
-  GPSCONNECT = FALSE;
-  BOOL navwarning = (BOOL)(GPS_INFO.NAVWarning);
-
-  if (gpsconnect && navwarning) {
-	if (InterfaceTimeoutCheck()) {
-		// do something when no gps fix since 1 hour.. *see Utils
-	}
-  }
-
-  if((gpsconnect == FALSE) && (LastGPSCONNECT == FALSE)) {
-	// re-draw screen every five seconds even if no GPS
-	TriggerGPSUpdate();
-      
-	devLinkTimeout(devAll());
-
-	if(LOCKWAIT == TRUE) {
-		// gps was waiting for fix, now waiting for connection
-		LOCKWAIT = FALSE;
-	}
-	if(!CONNECTWAIT) {
-		// gps is waiting for connection first time
-		extGPSCONNECT = FALSE;
-  
-		CONNECTWAIT = TRUE;
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) LKSound(TEXT("LK_GREEN.WAV"));
-		#endif
-		FullScreen();
-	} else {
-		// restart comm ports on timeouts, but not during managed special communications with devices
-		// that will not provide NMEA stream, for example during a binary conversation for task declaration
-		// or during a restart. Very careful, it shall be set to zero by the same function who
-		// set it to true.
-		if ((itimeout % 60 == 0) && !LKDoNotResetComms ) { 
-			// no activity for 60/2 seconds (running at 2Hz), then reset.
-			// This is needed only for virtual com ports..
-			extGPSCONNECT = FALSE;
-			if (!(devIsDisabled(0) && devIsDisabled(1))) {
-			  InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
-			  RestartCommPorts();
-			}
-	  
-			itimeout = 0;
-		}
-	}
-  }
-
-  // Force RESET of comm ports on demand
-  if (LKForceComPortReset) {
-	StartupStore(_T(". ComPort RESET ordered%s"),NEWLINE);
-	LKForceComPortReset=false;
-	LKDoNotResetComms=false;
-	if (MapSpaceMode != MSM_WELCOME)
-		InputEvents::processGlideComputer(GCE_COMMPORT_RESTART);
-
-	RestartCommPorts();
-  }
-  
-  if((gpsconnect == TRUE) && (LastGPSCONNECT == FALSE)) {
-	itimeout = 0; // reset timeout
-      
-	if(CONNECTWAIT) {
-		TriggerGPSUpdate();
-		CONNECTWAIT = FALSE;
-	}
-  }
-  
-  if((gpsconnect == TRUE) && (LastGPSCONNECT == TRUE)) {
-	if((navwarning == TRUE) && (LOCKWAIT == FALSE)) {
-		TriggerGPSUpdate();
-	  
-		LOCKWAIT = TRUE;
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) LKSound(TEXT("LK_GREEN.WAV")); // 100404
-		#endif
-		FullScreen();
-	} else {
-		if((navwarning == FALSE) && (LOCKWAIT == TRUE)) {
-			TriggerGPSUpdate();
-			LOCKWAIT = FALSE;
-		}
-	}
-  }
-  
-  LastGPSCONNECT = gpsconnect;
-  return itimeout;
-}
-
-// Running at 2Hz
-void ProcessTimer(void)
-{
-  static int itimeout = -1;
-  itimeout++;
-
-  // if (!GPSCONNECT && (DisplayTimeOut==0)) { REMOVE
-  if (!GPSCONNECT) {
-    if (itimeout % 2 == 0) TriggerGPSUpdate();  // Update screen when no GPS every second
-    // DisplayTimeOut=1; REMOVE
-  }
-
-  CommonProcessTimer();
-
-  // now check GPS status
-
-  
-  // also service replay logger
-  ReplayLogger::Update();
-  if (ReplayLogger::IsEnabled()) {
-    static double timeLast = 0;
-	if (GPS_INFO.Time-timeLast>=1.0) {
-	TriggerGPSUpdate();
-    }
-    timeLast = GPS_INFO.Time;
-    GPSCONNECT = TRUE;
-    extGPSCONNECT = TRUE;
-    GPS_INFO.NAVWarning = FALSE;
-    GPS_INFO.SatellitesUsed = 6;
-    return;
-  }
-  
-  if (itimeout % 10 == 0) {
-    // check connection status every 5 seconds
-    itimeout = ConnectionProcessTimer(itimeout);
-  }
-}
-
-void SIMProcessTimer(void)
-{
-
-  CommonProcessTimer();
-
-  GPSCONNECT = TRUE;
-  extGPSCONNECT = TRUE;
-  static int i=0;
-  i++;
-
-  if (!ReplayLogger::Update()) {
-
-    // Process timer is run at 2hz, so this is bringing it back to 1hz
-    if (i%2==0) return;
-
-    extern void LKSimulator(void);
-    LKSimulator();
-  }
-
-  if (i%2==0) return;
-
-#ifdef DEBUG
-  // use this to test FLARM parsing/display
-  NMEAParser::TestRoutine(&GPS_INFO);
-#endif
-
-  TriggerGPSUpdate();
-
-}
-*/ // END REMOVE TIMER
-
-/* REMOVE
-void SwitchToMapWindow(void)
-{
-  SetFocus(hWndMapWindow);
-  if (  MenuTimeOut< MenuTimeoutMax) {
-    MenuTimeOut = MenuTimeoutMax;
-  }
-}
-
-void PopupAnalysis()
-{
-  // DialogActive = true; REMOVE
-  dlgAnalysisShowModal(ANALYSYS_PAGE_DEFAULT);
-  // DialogActive = false; REMOVE
-}
-
-
-void PopupWaypointDetails()
-{
-  // Quick is returning  0 for cancel or error, 1 for details, 2 for goto, 3 and 4 for alternates
-  short ret= dlgWayQuickShowModal();
-  // StartupStore(_T("... Quick ret=%d\n"),ret);
-  switch(ret) {
-	case 1:
-		dlgWayPointDetailsShowModal();
-		break;
-	case 2:
-		SetModeType(LKMODE_MAP,MP_MOVING);
-		break;
-	default:
-		break;
-  }
-}
-
-
-void PopupBugsBallast(int UpDown)
-{
-	(void)UpDown;
-  // DialogActive = true; REMOVE
-  //  ShowWindow(hWndCB,SW_HIDE); REMOVE
-  FullScreen();
-  SwitchToMapWindow();
-  // DialogActive = false; REMOVE
-}
-*/
 

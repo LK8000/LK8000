@@ -493,10 +493,6 @@ bool MatchesExtension(const TCHAR *filename, const TCHAR* extension);
 BOOL PlayResource (const TCHAR* lpName);
 void CreateDirectoryIfAbsent(TCHAR *filename);
 
-bool InterfaceTimeoutZero(void);
-void InterfaceTimeoutReset(void);
-bool InterfaceTimeoutCheck(void);
-
 #ifdef __cplusplus
 extern "C"{
 #endif

@@ -9,7 +9,6 @@
 #include "StdAfx.h"
 #include "compatibility.h"
 #include "Defines.h"
-#include "LKUtils.h"
 #include "options.h"
 #include "MapWindow.h"
 #include "LKMapWindow.h"

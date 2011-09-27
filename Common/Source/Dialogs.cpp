@@ -345,14 +345,6 @@ void CloseProgressDialog() {
    doinitprogress=true;
 }
 
-/* REMOVE
-//void StepProgressDialog(void) {
-//}
-
-//BOOL SetProgressStepSize(int nSize) {
-//  return(TRUE);
-//}
-*/
 
 // New LK8000 Startup splash 
 #define LKSTARTBOTTOMFONT MapWindowBoldFont

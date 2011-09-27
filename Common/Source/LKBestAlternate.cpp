@@ -8,7 +8,6 @@
 
 #include "StdAfx.h"
 #include "Defines.h" 
-#include "LKUtils.h"
 #include "Calculations.h"
 #include "compatibility.h"
 #ifdef OLDPPC

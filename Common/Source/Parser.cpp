@@ -563,8 +563,6 @@ BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   if (!activeGPS) return TRUE;
 
   if (ReplayLogger::IsEnabled()) {
-    // block actual GPS signal
-	// InterfaceTimeoutReset(); REMOVE
 	return TRUE;
   }
   

@@ -17,7 +17,6 @@
 #include <windows.h>
 #include <math.h>
 #include <tchar.h>
-#include "LKUtils.h"
 #include "LKMapWindow.h"
 #include "LKStyle.h"
 #include "Bitmaps.h"

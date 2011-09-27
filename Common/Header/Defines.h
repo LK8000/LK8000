@@ -226,7 +226,6 @@
 // All loops with NumberOfWayPoints should start from NUMRESWP in place of the old 0
 // Position 0 is takeoff, etc
 // moving waypoints will have assigned fixed slots and positions
-// LKUtils.h defines contents for RESWP_ 
 #define NUMRESMARKERS		10
 #define NUMRESWP		5+NUMRESMARKERS
 

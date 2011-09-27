@@ -191,12 +191,4 @@ typedef struct{
 
 bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size);
 
-/* REMOVE
-#ifndef __MINGW32__
-#define DEG "°"
-#else
-#define DEG "Â°"
-#endif
-*/
-
 #endif 

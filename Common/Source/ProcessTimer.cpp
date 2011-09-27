@@ -69,9 +69,6 @@
 
 #include "Message.h"
 #include "InputEvents.h"
-// extern void LKObjects_Create(); //GOEXT
-// extern void LKObjects_Delete(); //GOEXT REMOVE
-// #include "LKObjects.h"
 
 using std::min;
 using std::max;
@@ -109,28 +106,11 @@ void CommonProcessTimer()
 
   UpdateBatteryInfos();
 
-  /* REMOVE
-  if (!DialogActive) { 
-    DisplayTimeOut++; // REMOVE
-  } else {
-    // JMW don't let display timeout while a dialog is active,
-    // but allow button presses to trigger redisplay
-    if (DisplayTimeOut>1) {
-      DisplayTimeOut=1;
-    }
-  }
- */
-
   if (MapWindow::IsDisplayRunning()) {
   }
 
-  //
-  // maybe block/delay this if a dialog is active?
-  // JMW: is done in the message function now.
-    if (Message::Render()) {
-      // turn screen on if blanked and receive a new message 
-      // DisplayTimeOut=0; REMOVE
-    }
+  if (Message::Render()) {
+  }
 
   static int iheapcompact = 0;
   // called 2 times per second, compact heap every minute.
@@ -171,14 +151,6 @@ int ConnectionProcessTimer(int itimeout) {
 
   GPSCONNECT = FALSE;
   BOOL navwarning = (BOOL)(GPS_INFO.NAVWarning);
-
-  /* REMOVE
-  if (gpsconnect && navwarning) {
-	if (InterfaceTimeoutCheck()) {
-		// do something when no gps fix since 1 hour.. *see Utils
-	}
-  }
-  */
 
   if((gpsconnect == FALSE) && (LastGPSCONNECT == FALSE)) {
 	// re-draw screen every five seconds even if no GPS
@@ -265,10 +237,8 @@ void ProcessTimer(void)
   static int itimeout = -1;
   itimeout++;
 
-  // if (!GPSCONNECT && (DisplayTimeOut==0)) { REMOVE
   if (!GPSCONNECT) {
     if (itimeout % 2 == 0) TriggerGPSUpdate();  // Update screen when no GPS every second
-    // DisplayTimeOut=1; REMOVE
   }
 
   CommonProcessTimer();
