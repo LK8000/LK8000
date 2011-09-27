@@ -4348,10 +4348,12 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static bool getTakeOffPosition=true;
 
+  /* REMOVE
   if (Basic->Speed>1.0) {
 	// stop system from shutting down if moving
 	InterfaceTimeoutReset();
   }
+  */
   if (!Basic->NAVWarning) {
 
 	if ( Basic->Speed> TakeOffSpeedThreshold ) {

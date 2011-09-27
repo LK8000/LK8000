@@ -172,11 +172,13 @@ int ConnectionProcessTimer(int itimeout) {
   GPSCONNECT = FALSE;
   BOOL navwarning = (BOOL)(GPS_INFO.NAVWarning);
 
+  /* REMOVE
   if (gpsconnect && navwarning) {
 	if (InterfaceTimeoutCheck()) {
 		// do something when no gps fix since 1 hour.. *see Utils
 	}
   }
+  */
 
   if((gpsconnect == FALSE) && (LastGPSCONNECT == FALSE)) {
 	// re-draw screen every five seconds even if no GPS
@@ -324,4 +326,9 @@ void SIMProcessTimer(void)
   TriggerGPSUpdate();
 
 }
+
+
+
+
+
 

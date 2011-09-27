@@ -1277,7 +1277,7 @@ bool Debounce(void) {
   DWORD dT = fpsTimeThis-fpsTimeLast;
 
   // DisplayTimeOut = 0; REMOVE
-  InterfaceTimeoutReset();
+  // InterfaceTimeoutReset(); REMOVE
 
   if (dT>(unsigned int)debounceTimeout) {
     fpsTimeLast = fpsTimeThis;
@@ -1584,7 +1584,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       // we do this in WindowControls
     case WM_KEYUP: // JMW was keyup
 
-      InterfaceTimeoutReset();
+      // InterfaceTimeoutReset(); REMOVE
 
       /* DON'T PROCESS KEYS HERE WITH NEWINFOBOX, IT CAUSES CRASHES! */
       break;
@@ -1593,11 +1593,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_KEYDOWN:	
 
 		DoStatusMessage(TEXT("DBG KDOWN 1")); // VENTA
-		InterfaceTimeoutReset();
+		// InterfaceTimeoutReset(); REMOVE
 	      break;
 	case WM_SYSKEYDOWN:	
 		DoStatusMessage(TEXT("DBG SYSKDOWN 1")); // VENTA
-		InterfaceTimeoutReset();
+		// InterfaceTimeoutReset(); REMOVE
 	      break;
 #endif
 	//END VENTA DBG

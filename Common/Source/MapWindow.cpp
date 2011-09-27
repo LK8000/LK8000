@@ -1550,7 +1550,7 @@ goto_menu:
       DoStatusMessage(ventabuffer);
       #endif
       // DisplayTimeOut = 0; REMOVE
-      InterfaceTimeoutReset();
+      // InterfaceTimeoutReset(); REMOVE
 
       #if defined(PNA)
 

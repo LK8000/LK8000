@@ -614,7 +614,7 @@ bool InputEvents::processButton(int bindex) {
 bool InputEvents::processKey(int dWord) {
   if (!(ProgramStarted==psNormalOp)) return false;
 
-  InterfaceTimeoutReset();
+  // InterfaceTimeoutReset(); REMOVE
 
   int event_id;
 
@@ -704,7 +704,7 @@ bool InputEvents::processNmea_real(int ne_id) {
   if (!(ProgramStarted==psNormalOp)) return false;
   int event_id = 0;
 
-  InterfaceTimeoutReset();
+  // InterfaceTimeoutReset(); REMOVE
 
   // Valid input ?
   if ((ne_id < 0) || (ne_id >= NE_COUNT))

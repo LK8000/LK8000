@@ -1692,6 +1692,7 @@ void CreateDirectoryIfAbsent(TCHAR *filename) {
 
 }
 
+/* REMOVE
 static int interface_timeout;
 
 bool InterfaceTimeoutZero(void) {
@@ -1712,6 +1713,7 @@ bool InterfaceTimeoutCheck(void) {
     return false;
   }
 }
+*/
 
 bool FileExists(TCHAR *FileName){
 

@@ -1977,7 +1977,7 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
     break;
 
     case WM_LBUTTONDBLCLK:
-      InterfaceTimeoutReset();
+      // InterfaceTimeoutReset(); REMOVE
       if (!OnLButtonDoubleClick(wParam, lParam)) {
         // DisplayTimeOut = 0; REMOVE
         return(0);
@@ -1985,7 +1985,7 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
     break;
 
     case WM_LBUTTONDOWN:
-      InterfaceTimeoutReset();
+      // InterfaceTimeoutReset(); REMOVE
       if (!OnLButtonDown(wParam, lParam)) {
         // DisplayTimeOut = 0; REMOVE
         return(0);
@@ -1994,7 +1994,7 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
     break;
 
     case WM_LBUTTONUP:
-      InterfaceTimeoutReset();
+      // InterfaceTimeoutReset(); REMOVE
       if (!OnLButtonUp(wParam, lParam)) {
         // DisplayTimeOut = 0; REMOVE
         return(0);
@@ -2002,7 +2002,7 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
     break;
 
     case WM_KEYDOWN:
-      InterfaceTimeoutReset();
+      // InterfaceTimeoutReset(); REMOVE
       // JMW: HELP
       KeyTimer(true, wParam & 0xffff);
 
@@ -2016,7 +2016,7 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 
     case WM_KEYUP:
       // DisplayTimeOut = 0; REMOVE
-      InterfaceTimeoutReset();
+      // InterfaceTimeoutReset(); REMOVE
       // JMW: detect long enter release
       // VENTA4: PNAs don't have Enter, so it should be better to find an alternate solution
 	if (KeyTimer(false, wParam & 0xffff)) {
@@ -2257,9 +2257,11 @@ int WndForm::ShowModal(bool bEnableMap) {
     }
     */
 
+    /* REMOVE
     if (msg.message == WM_KEYDOWN) {
       InterfaceTimeoutReset();
     }
+    */
 
     if ((msg.message == WM_KEYDOWN) && ((msg.wParam & 0xffff) == VK_ESCAPE))
       mModalResult = mrCancle;
@@ -2573,7 +2575,7 @@ int WndForm::OnUnhandledMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
   if (msg.message == WM_KEYUP){
   }
   if (msg.message == WM_KEYDOWN){
-    InterfaceTimeoutReset();
+    // InterfaceTimeoutReset(); REMOVE
     if (mOnKeyDownNotify != NULL)
       if (!(mOnKeyDownNotify)(this, msg.wParam, msg.lParam))
         return(0);
@@ -2586,7 +2588,7 @@ int WndForm::OnUnhandledMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
   }
   if (msg.message == WM_LBUTTONUP){
     bLButtonDown=false;
-    InterfaceTimeoutReset();
+    // InterfaceTimeoutReset(); REMOVE
     if (mOnLButtonUpNotify != NULL)
       if (!(mOnLButtonUpNotify)(this, msg.wParam, msg.lParam))
         return(0);
@@ -2602,7 +2604,7 @@ int WndForm::OnUnhandledMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
   }
 
   if (uMsg == WM_KEYDOWN){
-    InterfaceTimeoutReset();
+    // InterfaceTimeoutReset(); REMOVE
     if (ActiveControl != NULL){
       switch(wParam & 0xffff){
         case VK_UP:
@@ -3103,7 +3105,7 @@ int WndProperty::WndProcEditControl(HWND hwnd, UINT uMsg,
     case WM_KEYDOWN:
       if ((wParam & 0xffff) == VK_RETURN || (wParam & 0xffff) == VK_F23) { // Compaq uses VKF23
         if (this->mDialogStyle) {
-          InterfaceTimeoutReset();
+          // InterfaceTimeoutReset(); REMOVE
           if (!OnLButtonDown(wParam, lParam)) {
             // DisplayTimeOut = 0; REMOVE
             return(0);
@@ -3142,7 +3144,7 @@ int WndProperty::WndProcEditControl(HWND hwnd, UINT uMsg,
     case WM_LBUTTONDOWN:
       // if it's an Combopicker field, then call the combopicker routine
       if (this->mDialogStyle) {
-        InterfaceTimeoutReset();
+        // InterfaceTimeoutReset(); REMOVE
         if (!OnLButtonDown(wParam, lParam)) {
           // DisplayTimeOut = 0; REMOVE
           return(0);
