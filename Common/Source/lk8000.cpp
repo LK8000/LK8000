@@ -1717,7 +1717,7 @@ LRESULT MainMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-
+/* REMOVE
 
 #include "winbase.h"
 
@@ -1745,7 +1745,7 @@ void CommonProcessTimer()
 
   UpdateBatteryInfos();
 
-  /* REMOVE
+  [* REMOVE
   if (!DialogActive) { 
     DisplayTimeOut++; // REMOVE
   } else {
@@ -1755,7 +1755,7 @@ void CommonProcessTimer()
       DisplayTimeOut=1;
     }
   }
- */
+ *]
 
   if (MapWindow::IsDisplayRunning()) {
   }
@@ -1960,7 +1960,7 @@ void SIMProcessTimer(void)
   TriggerGPSUpdate();
 
 }
-
+*/ // END REMOVE TIMER
 
 /* REMOVE
 void SwitchToMapWindow(void)

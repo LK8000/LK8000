@@ -355,6 +355,7 @@ VOLKS	:=\
 	$(SRC)/Volkslogger/vlutils.cpp
 
 SRC_FILES :=\
+	$(SRC)/lk8000.cpp		$(SRC)/ProcessTimer.cpp \
 	$(SRC)/TimeFunctions.cpp	$(SRC)/StringFunctions.cpp\
 	$(SRC)/Polar.cpp		$(SRC)/AssetId.cpp \
 	$(SRC)/FlarmTools.cpp		$(SRC)/PressureFunctions.cpp\
@@ -409,7 +410,6 @@ SRC_FILES :=\
 	$(SRC)/mapsearch.cpp		$(SRC)/mapshape.cpp \
 	$(SRC)/maptree.cpp              $(SRC)/mapxbase.cpp \
 	\
-	$(SRC)/lk8000.cpp \
 	$(UTILS) \
 	$(DEVS) \
 	$(DLGS) \
