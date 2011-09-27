@@ -40,6 +40,7 @@
 #include "Utils2.h"
 #include "LKAirspace.h"
 #include "Bitmaps.h"
+#include "RGB.h"
 
 using std::min;
 using std::max;

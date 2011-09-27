@@ -27,6 +27,7 @@
 #include "LKUtils.h"
 #include "LKObjects.h"
 #include "externs.h"
+#include "RGB.h"
 
 #include "utils/heapcheck.h"
 

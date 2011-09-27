@@ -21,7 +21,11 @@
 #if (WINDOWSPC>0)
 #include <wingdi.h>
 #endif
+
+#define STATIC_LKOBJECTS
 #include "LKObjects.h"
+
+#include "RGB.h"
 
 #include "utils/heapcheck.h"
 

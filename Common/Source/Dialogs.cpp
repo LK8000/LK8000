@@ -28,6 +28,7 @@
 #include "InputEvents.h"
 #include "Message.h"
 #include "LKObjects.h"
+#include "RGB.h"
 
 #ifdef DEBUG_TRANSLATIONS
 #include <map>

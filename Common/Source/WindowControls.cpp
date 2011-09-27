@@ -19,6 +19,7 @@
 #include "compatibility.h"
 #include "LKObjects.h"
 #include "Bitmaps.h"
+#include "RGB.h"
 
 #include "externs.h" 
 

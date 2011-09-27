@@ -16,6 +16,7 @@
 #include "InfoBoxLayout.h"
 #include "Dialogs.h"
 #include "externs.h"
+#include "RGB.h"
 
 #include "utils/heapcheck.h"
 

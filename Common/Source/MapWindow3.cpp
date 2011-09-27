@@ -22,6 +22,7 @@
 #include "Utils2.h"
 #include "LKObjects.h"
 #include "Logger.h"
+#include "RGB.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>

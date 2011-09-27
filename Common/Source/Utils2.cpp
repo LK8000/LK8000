@@ -31,6 +31,7 @@
 #include "InputEvents.h"
 #include "MapWindow.h"
 #include "LKMapWindow.h"
+#include "RGB.h"
 
 #include "Modeltype.h"
 

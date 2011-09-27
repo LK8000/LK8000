@@ -25,6 +25,7 @@
 #include "Sizes.h"
 #include "Process.h"
 #include "Waypointparser.h"
+#include "RGB.h"
 
 #include "utils/heapcheck.h"
 

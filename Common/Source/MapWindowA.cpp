@@ -15,6 +15,7 @@
 #include "externs.h"
 #include "Terrain.h"
 #include "LKAirspace.h"
+#include "RGB.h"
 
 #include "utils/heapcheck.h"
 

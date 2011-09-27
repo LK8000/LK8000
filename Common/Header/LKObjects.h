@@ -1,52 +1,72 @@
-//#if !defined(LKOBJECTS_H)
-//#define LKOBJECTS_H
+/*
+   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+   Released under GNU/GPL License v.2
+   See CREDITS.TXT file for authors and copyrights
+
+   $Id$
+*/
+
+#if !defined(LKOBJECTS_H)
+#define LKOBJECTS_H
+
+#if defined(STATIC_LKOBJECTS)
+  #define OEXTERN
+  #undef  STATIC_LKOBJECTS
+
+#else
+  #undef  OEXTERN
+  #define OEXTERN extern
+  extern void LKObjects_Create(); 
+  extern void LKObjects_Delete();
+
+#endif
 
 // Reusable objects for LK
-extern	HBRUSH	LKBrush_White;
-extern	HBRUSH	LKBrush_Black;
-extern	HBRUSH	LKBrush_Petrol;
-extern	HBRUSH	LKBrush_LightGreen;
-extern	HBRUSH	LKBrush_DarkGreen;
-extern	HBRUSH	LKBrush_Ndark;
-extern	HBRUSH  LKBrush_Nlight;
-extern	HBRUSH	LKBrush_Mdark;
-extern	HBRUSH  LKBrush_Mlight;
-extern	HBRUSH	LKBrush_Red;
-extern	HBRUSH	LKBrush_Yellow;
-extern	HBRUSH	LKBrush_Green;
-extern	HBRUSH	LKBrush_DarkYellow2;
-extern	HBRUSH	LKBrush_Orange;
-extern	HBRUSH	LKBrush_Lake;
-extern	HBRUSH	LKBrush_Blue;
-extern	HBRUSH	LKBrush_Indigo;
-extern	HBRUSH	LKBrush_LightGrey;
-extern	HBRUSH	LKBrush_LcdGreen;
-extern	HBRUSH	LKBrush_LcdDarkGreen;
-extern	HBRUSH	LKBrush_Grey;
-extern	HBRUSH	LKBrush_Emerald;
-extern	HBRUSH	LKBrush_DarkSlate;
-extern	HBRUSH	LKBrush_RifleGrey;
-extern	HBRUSH	LKBrush_LightCyan;
+OEXTERN	HBRUSH	LKBrush_White;
+OEXTERN	HBRUSH	LKBrush_Black;
+OEXTERN	HBRUSH	LKBrush_Petrol;
+OEXTERN	HBRUSH	LKBrush_LightGreen;
+OEXTERN	HBRUSH	LKBrush_DarkGreen;
+OEXTERN	HBRUSH	LKBrush_Ndark;
+OEXTERN	HBRUSH  LKBrush_Nlight;
+OEXTERN	HBRUSH	LKBrush_Mdark;
+OEXTERN	HBRUSH  LKBrush_Mlight;
+OEXTERN	HBRUSH	LKBrush_Red;
+OEXTERN	HBRUSH	LKBrush_Yellow;
+OEXTERN	HBRUSH	LKBrush_Green;
+OEXTERN	HBRUSH	LKBrush_DarkYellow2;
+OEXTERN	HBRUSH	LKBrush_Orange;
+OEXTERN	HBRUSH	LKBrush_Lake;
+OEXTERN	HBRUSH	LKBrush_Blue;
+OEXTERN	HBRUSH	LKBrush_Indigo;
+OEXTERN	HBRUSH	LKBrush_LightGrey;
+OEXTERN	HBRUSH	LKBrush_LcdGreen;
+OEXTERN	HBRUSH	LKBrush_LcdDarkGreen;
+OEXTERN	HBRUSH	LKBrush_Grey;
+OEXTERN	HBRUSH	LKBrush_Emerald;
+OEXTERN	HBRUSH	LKBrush_DarkSlate;
+OEXTERN	HBRUSH	LKBrush_RifleGrey;
+OEXTERN	HBRUSH	LKBrush_LightCyan;
 
-extern	HPEN	LKPen_Black_N0;
-extern	HPEN	LKPen_Black_N1;
-extern	HPEN	LKPen_Black_N2;
-extern	HPEN	LKPen_Black_N3;
-extern	HPEN	LKPen_Black_N4;
-extern	HPEN	LKPen_Black_N5;
-extern	HPEN	LKPen_White_N0;
-extern	HPEN	LKPen_White_N1;
-extern	HPEN	LKPen_White_N2;
-extern	HPEN	LKPen_White_N3;
-extern	HPEN	LKPen_White_N4;
-extern	HPEN	LKPen_White_N5;
+OEXTERN	HPEN	LKPen_Black_N0;
+OEXTERN	HPEN	LKPen_Black_N1;
+OEXTERN	HPEN	LKPen_Black_N2;
+OEXTERN	HPEN	LKPen_Black_N3;
+OEXTERN	HPEN	LKPen_Black_N4;
+OEXTERN	HPEN	LKPen_Black_N5;
+OEXTERN	HPEN	LKPen_White_N0;
+OEXTERN	HPEN	LKPen_White_N1;
+OEXTERN	HPEN	LKPen_White_N2;
+OEXTERN	HPEN	LKPen_White_N3;
+OEXTERN	HPEN	LKPen_White_N4;
+OEXTERN	HPEN	LKPen_White_N5;
 
-extern	HPEN	LKPen_Green_N1;
-extern	HPEN	LKPen_Red_N1;
-extern	HPEN	LKPen_Blue_N1;
-extern	HPEN	LKPen_Grey_N1;
-extern	HPEN	LKPen_Grey_N2;
-extern	HPEN	LKPen_Petrol_C2;
-extern	HPEN	LKPen_GABRG;
+OEXTERN	HPEN	LKPen_Green_N1;
+OEXTERN	HPEN	LKPen_Red_N1;
+OEXTERN	HPEN	LKPen_Blue_N1;
+OEXTERN	HPEN	LKPen_Grey_N1;
+OEXTERN	HPEN	LKPen_Grey_N2;
+OEXTERN	HPEN	LKPen_Petrol_C2;
+OEXTERN	HPEN	LKPen_GABRG;
 
-//#endif
+#endif

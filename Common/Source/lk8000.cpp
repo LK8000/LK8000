@@ -62,12 +62,13 @@
 #ifdef PNA
 #include "LKHolux.h"
 #endif
+#include "RGB.h"
 
 #include "RasterTerrain.h"
 
-extern void LKObjects_Create(); //GOEXT
-extern void LKObjects_Delete(); //GOEXT
-#include "LKMainObjects.h"
+// extern void LKObjects_Create(); //GOEXT
+// extern void LKObjects_Delete(); //GOEXT REMOVE
+#include "LKObjects.h"
 
 using std::min;
 using std::max;

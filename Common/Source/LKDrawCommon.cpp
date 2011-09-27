@@ -18,7 +18,7 @@
 #include <math.h>
 #include <tchar.h>
 #include "LKMapWindow.h"
-
+#include "RGB.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>

@@ -27,6 +27,7 @@
 #include <windows.h>
 #include <math.h>
 #include "Bitmaps.h"
+#include "RGB.h"
 
 #include <tchar.h>
 

@@ -20,6 +20,7 @@
 #include "LKMapWindow.h"
 #include "LKObjects.h"
 #include "LKAirspace.h"
+#include "RGB.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>

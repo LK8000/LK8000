@@ -281,3 +281,40 @@
 #define D_AUTOWIND_CIRCLING 1
 #define D_AUTOWIND_ZIGZAG 2
 
+
+// WriteText modalities
+#define WTALIGN_LEFT	0
+#define WTALIGN_RIGHT	1
+#define WTALIGN_CENTER	2
+// modes, currently a bool!
+#define WTMODE_NORMAL	0
+#define WTMODE_OUTLINED	1
+
+
+// Waypoint TYPE definition
+#define WPT_UNKNOWN		0
+#define WPT_AIRPORT		1
+#define WPT_OUTLANDING		2
+#define WPT_TURNPOINT		3
+
+// Reserved Waypoints positions
+// ATTENTION!! Adjust also in Defines.h   NUMRESWP !!!
+#define RESWP_INVALIDNUMBER	1.23	// an invalid number for latitude, longitude, altitude etc.
+#define RESWP_TAKEOFF		0
+#define RESWP_TAKEOFF_NAME		"_@M1316_"			// LKTOKEN _@M1316_ "TAKEOFF"
+#define RESWP_LASTTHERMAL	1
+#define RESWP_LASTTHERMAL_NAME	"_@M1317_"			// LKTOKEN _@M1317_ "THERMAL"
+#define RESWP_TEAMMATE		2
+#define RESWP_TEAMMATE_NAME		"_@M1318_"			// LKTOKEN _@M1318_ "TEAMMATE"
+#define RESWP_FLARMTARGET	3
+#define RESWP_FLARMTARGET_NAME	"_@M1319_"			// LKTOKEN _@M1319_ "TARGET"
+#define RESWP_OPTIMIZED		4	// optimized virtual waypoint as target turnpoint for overlays
+#define RESWP_FIRST_MARKER	5
+#define RESWP_LAST_MARKER	RESWP_FIRST_MARKER+NUMRESMARKERS-1	// 14
+#define RESWP_END		RESWP_LAST_MARKER
+// WayPointList .Number int identifier 
+#define RESWP_ID		9999
+
+
+
+

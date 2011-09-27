@@ -14,6 +14,7 @@
 #include "InfoBoxLayout.h"
 #include "MapWindow.h"
 #include "Utils2.h"
+#include "RGB.h"
 
 #include "utils/heapcheck.h"
 

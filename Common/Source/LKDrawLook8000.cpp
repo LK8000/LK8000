@@ -22,6 +22,7 @@
 #include "LKUtils.h"
 #include "LKMapWindow.h"
 #include "LKObjects.h"
+#include "RGB.h"
 
 #include "utils/heapcheck.h"
 
