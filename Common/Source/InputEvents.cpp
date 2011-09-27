@@ -46,7 +46,6 @@ using std::max;
 
 extern short TerrainRamp;
 
-#define ISPARAGLIDER (AircraftCategory == (AircraftCategory_t)umParaglider)
 
 // Current modes - map mode to integer (primitive hash)
 static TCHAR mode_current[MAX_MODE_STRING] = TEXT("default");		// Current mode

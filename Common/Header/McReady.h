@@ -5,10 +5,12 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+/* REMOVE
 #define MAXSAFETYSPEED  100	// 360kmh
 #define MAXSPEED	100	// 360kmh = 100ms
 
 #define MAX_FLAPS 10 // max flaps positions count
+*/
 
 class GlidePolar {
  public:

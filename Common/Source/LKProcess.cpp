@@ -34,7 +34,6 @@ using std::max;
 #define NULLTIME	"--:--"
 #define INFINVAL	"oo"
 
-#define ISPARAGLIDER (AircraftCategory == (AircraftCategory_t)umParaglider)
 
 //
 // CAREFUL CAREFUL CAREFUL here:

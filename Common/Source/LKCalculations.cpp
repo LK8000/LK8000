@@ -43,8 +43,6 @@ extern void InsertCommonList(int newwp);
 extern void InsertRecentList(int newwp);
 extern void RemoveRecentList(int newwp);
 
-#define TASKINDEX	Task[ActiveWayPoint].Index
-#define ISPARAGLIDER (AircraftCategory == (AircraftCategory_t)umParaglider)
 
 
 /*

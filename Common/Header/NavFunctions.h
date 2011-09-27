@@ -8,7 +8,7 @@
 #include <math.h>
 
 
-
+/* REMOVE
 //#define   BAM_270_DEG       0xc0000000L    // BAM representation of 270 deg 
 //#define   BAM_180_DEG       0x80000000L    // BAM representation of 180 deg 
 //#define   NOT_BAM_180_DEG   0x7fffffffL    // BAM representation of 180 deg-
@@ -33,6 +33,7 @@
 #define DEG_TO_RAD					0.0174532925199432958
 #define RAD_TO_DEG					57.2957795131
 #endif
+*/ // END REMOVE
 
 	void xXY_to_LL(double Lat_TP, double Lon_TP, double X_int, double Y_int, double *Lat, double *Lon);
 	void xLL_to_XY(double Lat_TP, double Lon_TP, double Lat_Pnt, double Lon_Pnt, double *X, double *Y);

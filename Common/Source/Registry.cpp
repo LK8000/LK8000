@@ -36,8 +36,6 @@
 #endif
 
 
-#define ISPARAGLIDER (AircraftCategory == (AircraftCategory_t)umParaglider)
-
 const TCHAR szRegistryKey[] = TEXT(REGKEYNAME);
 const TCHAR *szRegistryDisplayType[MAXINFOWINDOWS] =     { TEXT("Info0"),
 				       TEXT("Info1"),

@@ -50,9 +50,6 @@ using std::min;
 using std::max;
 
 
-#define ISPARAGLIDER (AircraftCategory == (AircraftCategory_t)umParaglider)
-#define INVERTCOLORS  (Appearance.InverseInfoBox)
-
 
 // This is painting traffic icons on the screen.
 void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {

@@ -53,8 +53,6 @@ void BottomSounds();
 
 extern void ApplyClearType(LOGFONT *logfont);
 
-#define CURTYPE	ModeType[ModeIndex]
-#define ISPARAGLIDER (AircraftCategory == (AircraftCategory_t)umParaglider)
 
 bool InitLDRotary(ldrotary_s *buf) {
 short i, bsize;

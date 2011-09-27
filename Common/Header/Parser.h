@@ -9,6 +9,7 @@
 #include "Sizes.h"
 #include "Flarm.h"
 
+/* REMOVE
 #define NAUTICALMILESTOMETRES (double)1851.96
 #define KNOTSTOMETRESSECONDS (double)0.5144
 
@@ -23,6 +24,7 @@
 #define TOKILOMETER     (double)0.001
 #define TOFEET          (double)3.281
 #define TOMETER         (double)1.0
+*/
 
 typedef struct _FLARM_TRAFFIC
 {
