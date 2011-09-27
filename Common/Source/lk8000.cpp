@@ -1390,20 +1390,24 @@ void Shutdown(void) {
   StartupStore(TEXT(". Delete Objects%s"),NEWLINE);
   #endif
   
-  //  CommandBar_Destroy(hWndCB);
+  //  CommandBar_Destroy(hWndCB); // REMOVE
 
   // Kill graphics objects
 
   DeleteObject(hBrushSelected);
   DeleteObject(hBrushUnselected);
   DeleteObject(hBrushButton);
-  
+
+  extern void DeInitialiseFonts(void);
+  DeInitialiseFonts();  
+/* REMOVE
   DeleteObject(TitleWindowFont);
   DeleteObject(CDIWindowFont);
   DeleteObject(MapLabelFont);
   DeleteObject(MapWindowFont);
   DeleteObject(MapWindowBoldFont);
   DeleteObject(StatisticsFont);  
+*/
   CAirspaceManager::Instance().CloseAirspaces();
   StartupStore(TEXT(". Delete Critical Sections%s"),NEWLINE);
 

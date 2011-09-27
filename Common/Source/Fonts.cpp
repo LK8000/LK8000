@@ -227,7 +227,16 @@ void InitialiseFontsHardCoded(RECT rc,
 
 }
 
+void DeInitialiseFonts(void) {
 
+  DeleteObject(TitleWindowFont);
+  DeleteObject(MapWindowFont);
+  DeleteObject(MapWindowBoldFont);
+  DeleteObject(CDIWindowFont);
+  DeleteObject(MapLabelFont);
+  DeleteObject(StatisticsFont);
+
+}
 
 void InitialiseFonts(RECT rc)
 { //this routine must be called only at start/restart b/c there are many pointers to these fonts
