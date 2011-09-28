@@ -9,7 +9,7 @@
 
 #include "StdAfx.h"
 #include "Utils.h"
-#include "Sizes.h"
+#include "Defines.h"
 #include "externs.h"
 #include "Dialogs.h"
 #include "Utils.h"

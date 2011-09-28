@@ -7,7 +7,7 @@
 */
 
 #include "StdAfx.h"
-#include "Sizes.h"
+#include "Defines.h"
 #include "Port.h"
 #include "externs.h"
 #include "lk8000.h"

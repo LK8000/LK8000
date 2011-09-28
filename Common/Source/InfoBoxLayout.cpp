@@ -6,7 +6,7 @@
   $Id: InfoBoxLayout.cpp,v 8.4 2010/12/11 00:28:41 root Exp root $
 */
 #include "StdAfx.h"
-#include "Sizes.h"
+#include "Defines.h"
 #include "MapWindow.h"
 #include "InfoBoxLayout.h"
 #include "Dialogs.h"

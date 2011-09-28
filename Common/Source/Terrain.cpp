@@ -22,7 +22,6 @@
 #include "STScreenBuffer.h"
 #include "Utils.h"
 #include "InfoBoxLayout.h"
-#include "Sizes.h"
 #include "Process.h"
 #include "Waypointparser.h"
 #include "RGB.h"

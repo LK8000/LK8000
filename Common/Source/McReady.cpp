@@ -9,7 +9,6 @@
 #include "StdAfx.h"
 #include "options.h"
 #include "Defines.h"
-#include "Sizes.h"
 #include "McReady.h"
 #include "externs.h"
 
