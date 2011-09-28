@@ -116,8 +116,11 @@ char dedicated_by_paolo[]="Qrqvpngrq gb zl sngure Ivggbevb";
 
 static BOOL GpsUpdated;
 static HANDLE dataTriggerEvent;
+
+#ifndef NOINSTHREAD
 static BOOL VarioUpdated;
 static HANDLE varioTriggerEvent;
+#endif
 
 // Forward declarations of functions included in this code module:
 ATOM                                                    MyRegisterClass (HINSTANCE, LPTSTR);
@@ -141,11 +144,17 @@ void TriggerGPSUpdate()
   SetEvent(dataTriggerEvent);
 }
 
+#ifndef NOINSTHREAD
 void TriggerVarioUpdate()
 {
   VarioUpdated = true;
   PulseEvent(varioTriggerEvent);
 }
+#else
+void TriggerVarioUpdate()
+{
+}
+#endif
 
 
 
@@ -308,7 +317,9 @@ DWORD CalculationThread (LPVOID lpvoid) {
       if (GpsUpdated) {
 	if (DoCalculationsVario(&tmp_GPS_INFO,&tmp_CALCULATED_INFO)) {
 	}
+	#ifndef NOINSTHREAD
 	TriggerVarioUpdate(); // emulate vario update
+	#endif
       }
     }
     
@@ -622,7 +633,9 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 
   drawTriggerEvent = CreateEvent(NULL, TRUE, FALSE, TEXT("drawTriggerEvent"));
   dataTriggerEvent = CreateEvent(NULL, TRUE, FALSE, TEXT("dataTriggerEvent"));
+  #ifndef NOINSTHREAD
   varioTriggerEvent = CreateEvent(NULL, TRUE, FALSE, TEXT("varioTriggerEvent"));
+  #endif
 
   // Initialise main blackboard data
 
@@ -1224,7 +1237,9 @@ void Shutdown(void) {
   StartupStore(TEXT(". Close Event Handles%s"),NEWLINE);
   CloseHandle(drawTriggerEvent);
   CloseHandle(dataTriggerEvent);
+  #ifndef NOINSTHREAD
   CloseHandle(varioTriggerEvent);
+  #endif
 
 #ifdef DEBUG_TRANSLATIONS
   StartupStore(TEXT(".. Writing missing translations%s"),NEWLINE);
