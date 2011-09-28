@@ -1887,6 +1887,11 @@ void InputEvents::eventService(const TCHAR *misc) {
 
   if (_tcscmp(misc, TEXT("ORACLE")) == 0) {
 	extern void dlgOracleShowModal(void);
+	if (GPS_INFO.NAVWarning) {
+		DoStatusMessage(gettext(TEXT("_@M1702_"))); // Oracle wants gps fix
+		return;
+	}
+
 	#ifndef DISABLEAUDIO
 	if (EnableSoundModes) LKSound(TEXT("LK_BELL.WAV"));
 	#endif
