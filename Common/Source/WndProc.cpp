@@ -408,3 +408,30 @@ void Shutdown(void) {
 #endif
 }
 
+
+LRESULT MainMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+  int wmId, wmEvent;
+  HWND wmControl;
+
+  wmId    = LOWORD(wParam);
+  wmEvent = HIWORD(wParam);
+  wmControl = (HWND)lParam;
+
+  if(wmControl != NULL) {
+    if (ProgramStarted==psNormalOp) {
+
+      FullScreen();
+
+      Message::CheckTouch(wmControl);
+
+      if (ButtonLabel::CheckButtonPress(wmControl)) {
+        return TRUE; // don't continue processing..
+      }
+
+    }
+  }
+  return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+
