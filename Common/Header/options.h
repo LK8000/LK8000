@@ -47,9 +47,6 @@
  #define TOPOFASTLABEL	1
  #define TOPOFASTCACHE	1
 
- // No instrument thread. However it is here ready to be used for anything.
- #define NOINSTHREAD	1
-
  #define IBLSCALE(x) (   (ScreenIntScale) ? ((x)*ScreenScale) : ((int)((x)*ScreenDScale)))
  #define NIBLSCALE(x) (LKIBLSCALE[x])
  #define MAXIBLSCALE	100	// CAREFUL! NIBLSCALE can be used only UP TO MAXIBLSCALE!

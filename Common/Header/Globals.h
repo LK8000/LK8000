@@ -699,10 +699,6 @@ GEXTERN Appearance_t Appearance;
 #ifdef CPUSTATS
 GEXTERN HANDLE hCalculationThread;
 GEXTERN DWORD dwCalcThreadID;
- #ifndef NOINSTHREAD
-   GEXTERN HANDLE hInstrumentThread;
-   GEXTERN DWORD dwInstThreadID;
- #endif
 #endif
 
 GEXTERN BOOL extGPSCONNECT;

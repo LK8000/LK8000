@@ -101,9 +101,7 @@ DWORD CalculationThread (LPVOID lpvoid) {
       if (GpsUpdated) {
 	if (DoCalculationsVario(&tmp_GPS_INFO,&tmp_CALCULATED_INFO)) {
 	}
-	#ifndef NOINSTHREAD
 	TriggerVarioUpdate(); // emulate vario update
-	#endif
       }
     }
     
@@ -186,24 +184,6 @@ void CreateCalculationThread() {
   } else {
 	ASSERT(1);
   }
-
-#ifndef NOINSTHREAD
-
-  #ifndef CPUSTATS
-  HANDLE hInstrumentThread;
-  DWORD dwInstThreadID;
-  #endif
-
-  if ((hInstrumentThread = CreateThread (NULL, 0, (LPTHREAD_START_ROUTINE )InstrumentThread, 0, 0, &dwInstThreadID)) != NULL)
-  {
-	SetThreadPriority(hInstrumentThread, THREAD_PRIORITY_NORMAL); 
-	#ifndef CPUSTATS
-	CloseHandle (hInstrumentThread);
-	#endif
-  } else {
-	ASSERT(1);
-  }
-#endif
 
 }
 

@@ -105,9 +105,6 @@ static bool api_has_SHHandleWMSettingChange = false;
 // Give me a go/no-go 
 bool goInstallSystem=false;
 bool goCalculationThread=false;
-#ifndef NOINSTHREAD
-bool goInstrumentThread=false;
-#endif
 
 // Developers dedicates..
 // Use rot13 under linux to code and decode strings
@@ -117,10 +114,6 @@ char dedicated_by_paolo[]="Qrqvpngrq gb zl sngure Ivggbevb";
 BOOL GpsUpdated;
 HANDLE dataTriggerEvent;
 
-#ifndef NOINSTHREAD
-static BOOL VarioUpdated;
-static HANDLE varioTriggerEvent;
-#endif
 
 // Forward declarations of functions included in this code module:
 ATOM                                                    MyRegisterClass (HINSTANCE, LPTSTR);
@@ -144,17 +137,10 @@ void TriggerGPSUpdate()
   SetEvent(dataTriggerEvent);
 }
 
-#ifndef NOINSTHREAD
-void TriggerVarioUpdate()
-{
-  VarioUpdated = true;
-  PulseEvent(varioTriggerEvent);
-}
-#else
+// This is currently doing nothing.
 void TriggerVarioUpdate()
 {
 }
-#endif
 
 
 
@@ -424,9 +410,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 
   drawTriggerEvent = CreateEvent(NULL, TRUE, FALSE, TEXT("drawTriggerEvent"));
   dataTriggerEvent = CreateEvent(NULL, TRUE, FALSE, TEXT("dataTriggerEvent"));
-  #ifndef NOINSTHREAD
-  varioTriggerEvent = CreateEvent(NULL, TRUE, FALSE, TEXT("varioTriggerEvent"));
-  #endif
 
   // Initialise main blackboard data
 
@@ -659,11 +642,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   SwitchToMapWindow();
   StartupStore(TEXT(". CreateCalculationThread%s"),NEWLINE);
   CreateCalculationThread();
-  #ifndef NOINSTHREAD
-  while(!(goCalculationThread && goInstrumentThread)) Sleep(50); // 091119
-  #else
-  while(!(goCalculationThread)) Sleep(50); // 091119
-  #endif
+  while(!(goCalculationThread)) Sleep(50);
 
   // find unique ID of this PDA
   ReadAssetNumber();
@@ -1028,9 +1007,6 @@ void Shutdown(void) {
   StartupStore(TEXT(". Close Event Handles%s"),NEWLINE);
   CloseHandle(drawTriggerEvent);
   CloseHandle(dataTriggerEvent);
-  #ifndef NOINSTHREAD
-  CloseHandle(varioTriggerEvent);
-  #endif
 
 #ifdef DEBUG_TRANSLATIONS
   StartupStore(TEXT(".. Writing missing translations%s"),NEWLINE);
