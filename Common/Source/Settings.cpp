@@ -18,8 +18,6 @@
 #include "AirfieldDetails.h"
 
 
-bool MenuActive = false;
-
 
 void SettingsEnter() {
   MenuActive = true;

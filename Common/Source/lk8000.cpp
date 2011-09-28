@@ -91,7 +91,6 @@ COLORREF ColorButton = RGB_BUTTONS;
 //Local Static data
 static int iTimerID= 0;
 
-extern bool MenuActive;
 
 #if (((UNDER_CE >= 300)||(_WIN32_WCE >= 0x0300)) && (WINDOWSPC<1))
 #define HAVE_ACTIVATE_INFO
@@ -101,18 +100,12 @@ static bool api_has_SHHandleWMSettingChange = false;
 #endif
 
 
-// System boot specific flags 
-// Give me a go/no-go 
-bool goInstallSystem=false;
-bool goCalculationThread=false;
 
 // Developers dedicates..
 // Use rot13 under linux to code and decode strings
 char dedicated_by_paolo[]="Qrqvpngrq gb zl sngure Ivggbevb";
 // char dedicated_by_{yourname}="....";
 
-BOOL GpsUpdated;
-HANDLE dataTriggerEvent;
 
 
 // Forward declarations of functions included in this code module:
@@ -130,60 +123,6 @@ void ProcessTimer    (void);
 #ifdef DEBUG
 void                                            DebugStore(char *Str);
 #endif
-
-void TriggerGPSUpdate()
-{
-  GpsUpdated = true;
-  SetEvent(dataTriggerEvent);
-}
-
-// This is currently doing nothing.
-void TriggerVarioUpdate()
-{
-}
-
-
-
-void FullScreen() {
-  if (!MenuActive) {
-    SetForegroundWindow(hWndMainWindow);
-#if (WINDOWSPC>0)
-    SetWindowPos(hWndMainWindow,HWND_TOP,
-                 0, 0, 0, 0,
-                 SWP_SHOWWINDOW|SWP_NOMOVE|SWP_NOSIZE);
-#else
-#ifndef CECORE
-    SHFullScreen(hWndMainWindow, SHFS_HIDETASKBAR|SHFS_HIDESIPBUTTON|SHFS_HIDESTARTICON);
-#endif
-    SetWindowPos(hWndMainWindow,HWND_TOP,
-                 0,0,
-                 GetSystemMetrics(SM_CXSCREEN),
-                 GetSystemMetrics(SM_CYSCREEN),
-                 SWP_SHOWWINDOW);
-#endif
-  }
-  MapWindow::RequestFastRefresh();
-}
-
-
-
-void RestartCommPorts() {
-
-  StartupStore(TEXT(". RestartCommPorts%s"),NEWLINE);
-
-  LockComm();
-
-  devClose(devA());
-  devClose(devB());
-
-  NMEAParser::Reset();
-
-  devInit(TEXT(""));      
-
-  UnlockComm();
-
-}
-
 
 
 extern void FillDataOptions(void);
@@ -855,21 +794,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   UpdateWindow(hWndMainWindow);
     
   return TRUE;
-}
-
-
-
-bool Debounce(void) {
-  static DWORD fpsTimeLast= 0;
-  DWORD fpsTimeThis = ::GetTickCount();
-  DWORD dT = fpsTimeThis-fpsTimeLast;
-
-  if (dT>(unsigned int)debounceTimeout) {
-    fpsTimeLast = fpsTimeThis;
-    return true;
-  } else {
-    return false;
-  }
 }
 
 

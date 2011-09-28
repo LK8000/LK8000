@@ -55,6 +55,17 @@
   extern void Globals_Init(void);
 #endif
 
+GEXTERN bool MenuActive GEXTFALSE;
+GEXTERN BOOL GpsUpdated;
+GEXTERN HANDLE dataTriggerEvent;
+
+// System boot specific flags
+// Give me a go/no-go
+GEXTERN bool goInstallSystem GEXTFALSE;
+GEXTERN bool goCalculationThread GEXTFALSE;
+
+
+
 
 GEXTERN TCHAR LK8000_Version[256];
 

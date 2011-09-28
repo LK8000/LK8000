@@ -20,11 +20,6 @@ static std::map<TCHAR*, TCHAR*> unusedTranslations;
 #endif
 
 
-extern bool goCalculationThread;
-extern BOOL GpsUpdated;
-extern HANDLE dataTriggerEvent;
-
-
 
 // PulseEvent is unreliable. But it does not matter anymore, since we should
 // change approach for compatibility with unix.

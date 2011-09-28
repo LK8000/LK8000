@@ -39,7 +39,6 @@
 #endif
 
 
-
 #include "utils/heapcheck.h"
 
 
@@ -1875,5 +1874,50 @@ void SetInitialModeTypes(void) {
   if (ConfIP[LKMODE_NAV][NV_COMMONS]) ModeType[LKMODE_WP]=NV_COMMONS;
 
 
+}
+
+
+void RestartCommPorts() {
+
+  StartupStore(TEXT(". RestartCommPorts%s"),NEWLINE);
+
+  LockComm();
+
+  devClose(devA());
+  devClose(devB());
+
+  NMEAParser::Reset();
+
+  devInit(TEXT(""));
+
+  UnlockComm();
+
+}
+
+
+void TriggerGPSUpdate()
+{
+  GpsUpdated = true;
+  SetEvent(dataTriggerEvent);
+}
+
+// This is currently doing nothing.
+void TriggerVarioUpdate()
+{
+}
+
+
+
+bool Debounce(void) {
+  static DWORD fpsTimeLast= 0;
+  DWORD fpsTimeThis = ::GetTickCount();
+  DWORD dT = fpsTimeThis-fpsTimeLast;
+
+  if (dT>(unsigned int)debounceTimeout) {
+    fpsTimeLast = fpsTimeThis;
+    return true;
+  } else {
+    return false;
+  }
 }
 

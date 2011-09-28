@@ -44,9 +44,6 @@ using std::max;
 #define MAX_EVENTS 2048
 #define MAX_LABEL NUMBUTTONLABELS
 
-extern short TerrainRamp;
-
-
 // Current modes - map mode to integer (primitive hash)
 static TCHAR mode_current[MAX_MODE_STRING] = TEXT("default");		// Current mode
 static TCHAR mode_map[MAX_MODE][MAX_MODE_STRING];					// Map mode to location
@@ -2738,21 +2735,6 @@ void PopupBugsBallast(int UpDown)
   SwitchToMapWindow();
 }
 
-/* REMOVE
-void SystemConfiguration(void) {
-  if (!SIMMODE) {
-	if (LockSettingsInFlight && CALCULATED_INFO.Flying) {
-		DoStatusMessage(TEXT("Settings locked in flight"));
-		return;
-	}
-  }
-
-  SettingsEnter();
-  dlgConfigurationShowModal();
-  SettingsLeave();
-}
-*/
-
 void HideMenu() {
     MenuTimeOut = MenuTimeoutMax;
 }
@@ -2760,5 +2742,26 @@ void HideMenu() {
 void ShowMenu() {
   InputEvents::setMode(TEXT("Menu"));
   MenuTimeOut = 0;
+}
+
+
+
+void FullScreen() {
+  if (!MenuActive) {
+    SetForegroundWindow(hWndMainWindow);
+#if (WINDOWSPC>0)
+    SetWindowPos(hWndMainWindow,HWND_TOP, 0, 0, 0, 0, SWP_SHOWWINDOW|SWP_NOMOVE|SWP_NOSIZE);
+#else
+#ifndef CECORE
+    SHFullScreen(hWndMainWindow, SHFS_HIDETASKBAR|SHFS_HIDESIPBUTTON|SHFS_HIDESTARTICON);
+#endif
+    SetWindowPos(hWndMainWindow,HWND_TOP,
+                 0,0,
+                 GetSystemMetrics(SM_CXSCREEN),
+                 GetSystemMetrics(SM_CYSCREEN),
+                 SWP_SHOWWINDOW);
+#endif
+  }
+  MapWindow::RequestFastRefresh();
 }
 
