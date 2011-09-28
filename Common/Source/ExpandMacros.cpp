@@ -546,6 +546,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_FINAL_GLIDE, OutBuffer, TEXT("$(DispModeFinalShortIndicator)"), TEXT("_"), TEXT(""), Size);
   }
 
+    CondReplaceInString(CALCULATED_INFO.AutoMacCready && AutoMcMode==amcFinalAndClimb, OutBuffer, TEXT("$(amcIsBoth)"), TEXT("_"), TEXT(""), Size);
     CondReplaceInString(CALCULATED_INFO.AutoMacCready && AutoMcMode==amcFinalGlide, OutBuffer, TEXT("$(amcIsFinal)"), TEXT("_"), TEXT(""), Size);
     CondReplaceInString(CALCULATED_INFO.AutoMacCready && AutoMcMode==amcAverageClimb, OutBuffer, TEXT("$(amcIsClimb)"), TEXT("_"), TEXT(""), Size);
     CondReplaceInString(CALCULATED_INFO.AutoMacCready && AutoMcMode==amcEquivalent, OutBuffer, TEXT("$(amcIsEquiv)"), TEXT("_"), TEXT(""), Size);

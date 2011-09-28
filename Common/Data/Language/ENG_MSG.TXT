@@ -1774,5 +1774,7 @@ _@M2114_ "Turn"
 # better not to translate this TE button!
 _@M2115_ "TEnergy"
 _@M2116_ "Change\nTerrain"
+# Auto MC thermal+final glide mode, keep max 7 chars!
+_@M2117_ "Thr+Fin"
 
 # Note for developers: remember LKLanguage MAX_MESSAGE limit

@@ -1365,6 +1365,8 @@ void InputEvents::eventMacCready(const TCHAR *misc) {
     MacCreadyProcessing(-6);
   } else if (_tcscmp(misc, TEXT("auto equiv")) == 0) {
     MacCreadyProcessing(-7);
+  } else if (_tcscmp(misc, TEXT("auto both")) == 0) {
+    MacCreadyProcessing(-8);
   } else if (_tcscmp(misc, TEXT("auto show")) == 0) {
     if (CALCULATED_INFO.AutoMacCready) {
       DoStatusMessage(gettext(TEXT("_@M860_"))); // Auto MacCready ON
