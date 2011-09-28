@@ -355,6 +355,7 @@ VOLKS	:=\
 	$(SRC)/Volkslogger/vlutils.cpp
 
 SRC_FILES :=\
+	$(SRC)/WndProc.cpp\
 	$(SRC)/Settings.cpp		$(SRC)/Thread_Calculation.cpp\
 	$(SRC)/lk8000.cpp		$(SRC)/ProcessTimer.cpp \
 	$(SRC)/TimeFunctions.cpp	$(SRC)/StringFunctions.cpp\
