@@ -144,33 +144,54 @@ void InputEvents::readFile() {
   TCHAR szFile1[MAX_PATH] = TEXT("\0");
   ZZIP_FILE *fp=NULL;
 
-  // Open file from registry
-  // This is used by LK engineering mode only, and has priority
+  //
+  // ENGINEERING MODE: SELECTED XCI HAS PRIORITY
+  //
   GetRegistryString(szRegistryInputFile, szFile1, MAX_PATH);
   ExpandLocalPath(szFile1);
   SetRegistryString(szRegistryInputFile, TEXT("\0"));
-	
+
   if (_tcslen(szFile1)>0) {
     fp=zzip_fopen(szFile1, "rb");
   }
 
   TCHAR xcifile[MAX_PATH];
   if (fp == NULL) {
-	// no special XCI in engineering, or nonexistent file.. go ahead with language check
+	// No special XCI in engineering, or nonexistent file.. go ahead with language check
+	// Remember: DEFAULT_MENU existance is already been checked upon startup.
 
-	// if ( _tcslen(LKLangSuffix)<3) return; // No more needed since DEFAULT
 	TCHAR xcipath[MAX_PATH];
 	LocalPath(xcipath,_T(LKD_SYSTEM));
-	// DEFAULT_MENU existance is checked upon startup.
-	// In the near future we can change it dynamically during setup, depending on
-	// LK usage mode.
-	_stprintf(xcifile,_T("%s\\DEFAULT_MENU.TXT"), xcipath);
+
+	switch(AircraftCategory) {
+		case umGlider:
+			_stprintf(xcifile,_T("%s\\GLIDER_MENU.TXT"), xcipath);
+			break;
+		case umParaglider:
+			_stprintf(xcifile,_T("%s\\PARAGLIDER_MENU.TXT"), xcipath);
+			break;
+		case umCar:
+			_stprintf(xcifile,_T("%s\\CAR_MENU.TXT"), xcipath);
+			break;
+		case umGAaircraft:
+			_stprintf(xcifile,_T("%s\\GA_MENU.TXT"), xcipath);
+			break;
+		default:
+			_stprintf(xcifile,_T("%s\\UNKNOWN_MENU.TXT"), xcipath);
+			break;
+	}
 	fp=zzip_fopen(xcifile, "rb");
 	if (fp == NULL) {
-		StartupStore(_T(". No menu <%s>, using internal XCI\n"),xcifile);
-		return;
-	} else
-		StartupStore(_T(". Loaded menu <%s>\n"),xcifile);
+		StartupStore(_T(".. No menu <%s>, using DEFAULT\n"),xcifile);
+		_stprintf(xcifile,_T("%s\\DEFAULT_MENU.TXT"), xcipath);
+		fp=zzip_fopen(xcifile, "rb");
+		if (fp == NULL) {
+			// This cannot happen
+			StartupStore(_T("..... No default menu <%s>, using internal XCI\n"),xcifile);
+			return;
+		} else
+			StartupStore(_T(". Loaded menu <%s>\n"),xcifile);
+	}
   }
 
   // TODO code - Safer sizes, strings etc - use C++ (can scanf restrict length?)
@@ -203,8 +224,7 @@ void InputEvents::readFile() {
   ) {
     line++;
 
-    // experimental: if the first line is "#CLEAR" then the whole default config is cleared
-    //               and can be overwritten by file  
+    // if the first line is "#CLEAR" then the whole default config is cleared and can be overwritten by file  
     if ((line == 1) && (_tcsstr(buffer, TEXT("#CLEAR")))){
       memset(&Key2Event, 0, sizeof(Key2Event));
       memset(&GC2Event, 0, sizeof(GC2Event));
@@ -390,11 +410,6 @@ int InputEvents::findKey(const TCHAR *data) {
     return VK_F9;
   else if (_tcscmp(data, TEXT("F10")) == 0)
     return VK_F10;
-// VENTA-TEST HANDLING EXTRA HW KEYS ON HX4700 and HP31X
-//  else if (_tcscmp(data, TEXT("F11")) == 0)
-//  return VK_F11;
-// else if (_tcscmp(data, TEXT("F12")) == 0)
-//    return VK_F12;
   else if (_tcscmp(data, TEXT("LEFT")) == 0)
     return VK_LEFT;
   else if (_tcscmp(data, TEXT("RIGHT")) == 0)
