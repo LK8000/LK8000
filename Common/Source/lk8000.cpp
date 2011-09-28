@@ -13,7 +13,6 @@
 #include "compatibility.h"
 #include "lk8000.h"
 #include "buildnumber.h"
-#include "Modeltype.h"
 #include "Port.h"
 #include "Waypointparser.h"
 #include "Logger.h"
@@ -55,7 +54,7 @@
 #include "devIMI.h"
 #include "devWesterboer.h"
 
-#include "Units.h"
+//#include "Units.h"
 #include "InputEvents.h"
 #include "Message.h"
 #include "Geoid.h"
@@ -92,7 +91,7 @@ COLORREF ColorButton = RGB_BUTTONS;
 //Local Static data
 static int iTimerID= 0;
 
-static bool MenuActive = false;
+extern bool MenuActive;
 
 #if (((UNDER_CE >= 300)||(_WIN32_WCE >= 0x0300)) && (WINDOWSPC<1))
 #define HAVE_ACTIVATE_INFO
@@ -101,8 +100,6 @@ static bool api_has_SHHandleWMActivate = false;
 static bool api_has_SHHandleWMSettingChange = false;
 #endif
 
-
-void PopupBugsBallast(int updown);
 
 // System boot specific flags 
 // Give me a go/no-go 
@@ -148,150 +145,6 @@ void TriggerVarioUpdate()
 {
   VarioUpdated = true;
   PulseEvent(varioTriggerEvent);
-}
-
-void HideMenu() {
-    MenuTimeOut = MenuTimeoutMax;
-}
-
-void ShowMenu() {
-  InputEvents::setMode(TEXT("Menu"));
-  MenuTimeOut = 0;
-}
-
-
-void SettingsEnter() {
-  MenuActive = true;
-
-  MapWindow::SuspendDrawingThread();
-  // This prevents the map and calculation threads from doing anything
-  // with shared data while it is being changed.
-
-  MAPFILECHANGED = FALSE;
-  AIRSPACEFILECHANGED = FALSE;
-  AIRFIELDFILECHANGED = FALSE;
-  WAYPOINTFILECHANGED = FALSE;
-  TERRAINFILECHANGED = FALSE;
-  TOPOLOGYFILECHANGED = FALSE;
-  POLARFILECHANGED = FALSE;
-  LANGUAGEFILECHANGED = FALSE;
-  STATUSFILECHANGED = FALSE;
-  INPUTFILECHANGED = FALSE;
-  COMPORTCHANGED = FALSE;
-}
-
-
-void SettingsLeave() {
-  if (!GlobalRunning) return; 
-
-  SwitchToMapWindow();
-
-  // Locking everything here prevents the calculation thread from running,
-  // while shared data is potentially reloaded.
- 
-  LockFlightData();
-  LockTaskData();
-
-  MenuActive = false;
-
-  // 101020 LKmaps contain only topology , so no need to force total reload!
-  if(MAPFILECHANGED) {
-	if (LKTopo==0) {
-		AIRSPACEFILECHANGED = TRUE;
-		AIRFIELDFILECHANGED = TRUE;
-		WAYPOINTFILECHANGED = TRUE;
-		TERRAINFILECHANGED  = TRUE;
-	}
-	TOPOLOGYFILECHANGED = TRUE;
-  } 
-
-  if (TERRAINFILECHANGED) {
-	RasterTerrain::CloseTerrain();
-	RasterTerrain::OpenTerrain();
-	SetHome(WAYPOINTFILECHANGED==TRUE);
-	RasterTerrain::ServiceFullReload(GPS_INFO.Latitude, GPS_INFO.Longitude);
-	MapWindow::ForceVisibilityScan = true;
-  }
-
-  if((WAYPOINTFILECHANGED) || (AIRFIELDFILECHANGED)) {
-	SaveDefaultTask(); //@ 101020 BUGFIX
-	ClearTask();
-	ReadWayPoints();
-	StartupStore(_T(". Total %d waypoints%s"),NumberOfWayPoints,NEWLINE);
-	InitWayPointCalc();
-	ReadAirfieldFile();
-	SetHome(true); // force home reload
-
-	if (WAYPOINTFILECHANGED) {
-		SaveRecentList();
-		LoadRecentList();
-		RangeLandableNumber=0;
-		RangeAirportNumber=0;
-		RangeTurnpointNumber=0;
-		CommonNumber=0;
-		SortedNumber=0;
-		// SortedTurnpointNumber=0; 101222
-		LastDoRangeWaypointListTime=0;
-		LKForceDoCommon=true;
-		LKForceDoNearest=true;
-		LKForceDoRecent=true;
-		// LKForceDoNearestTurnpoint=true; 101222
-	}
-	InputEvents::eventTaskLoad(_T(LKF_DEFAULTASK)); //@ BUGFIX 101020
-  } 
-
-  if (TOPOLOGYFILECHANGED) {
-	CloseTopology();
-	OpenTopology();
-	MapWindow::ForceVisibilityScan = true;
-  }
-  
-  if(AIRSPACEFILECHANGED) {
-	CAirspaceManager::Instance().CloseAirspaces();
-	CAirspaceManager::Instance().ReadAirspaces();
-	CAirspaceManager::Instance().SortAirspaces();
-	MapWindow::ForceVisibilityScan = true;
-  }  
-  
-  if (POLARFILECHANGED) {
-	CalculateNewPolarCoef();
-	GlidePolar::SetBallast();
-  }
-  
-  if (AIRFIELDFILECHANGED
-      || AIRSPACEFILECHANGED
-      || WAYPOINTFILECHANGED
-      || TERRAINFILECHANGED
-      || TOPOLOGYFILECHANGED
-      ) {
-	CloseProgressDialog();
-	SetFocus(hWndMapWindow);
-  }
-  
-  UnlockTaskData();
-  UnlockFlightData();
-
-  if(!SIMMODE && COMPORTCHANGED) {
-      LKForceComPortReset=true;
-      // RestartCommPorts(); 110605
-  }
-
-  MapWindow::ResumeDrawingThread();
-  // allow map and calculations threads to continue on their merry way
-}
-
-
-void SystemConfiguration(void) {
-  if (!SIMMODE) {
-  	if (LockSettingsInFlight && CALCULATED_INFO.Flying) {
-		DoStatusMessage(TEXT("Settings locked in flight"));
-		return;
-	}
-  }
-
-  SettingsEnter();
-  dlgConfigurationShowModal(); 
-  SettingsLeave();
 }
 
 
@@ -555,7 +408,6 @@ void CreateCalculationThread() {
 
 }
 
-extern bool SetDataOption( int index, UnitGroup_t UnitGroup, TCHAR *Description, TCHAR *Title);
 extern void FillDataOptions(void);
 
 
@@ -1222,49 +1074,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   return TRUE;
 }
 
-
-// Obfuscated C code contest winner
-int getInfoType(int i) {
-  int retval = 0;
-  if (i<0) return 0; // error
-
-    switch(MapWindow::mode.Fly()) {
-    case MapWindow::Mode::MODE_FLY_CIRCLING:
-      retval = InfoType[i] & 0xff; // climb
-      break;
-    case MapWindow::Mode::MODE_FLY_FINAL_GLIDE:
-      retval = (InfoType[i] >> 16) & 0xff; //final glide
-      break;
-    case MapWindow::Mode::MODE_FLY_CRUISE:
-      retval = (InfoType[i] >> 8) & 0xff; // cruise
-      break;
-    case MapWindow::Mode::MODE_FLY_NONE:
-      break;
-    }
-  return min(NumDataOptions-1,retval);
-}
-
-
-void setInfoType(int i, char j) {
-  if (i<0) return; // error
-
-    switch(MapWindow::mode.Fly()) {
-    case MapWindow::Mode::MODE_FLY_CIRCLING:
-      InfoType[i] &= 0xffffff00;
-      InfoType[i] += (j);
-      break;
-    case MapWindow::Mode::MODE_FLY_FINAL_GLIDE:
-      InfoType[i] &= 0xff00ffff;
-      InfoType[i] += (j<<16);
-      break;
-    case MapWindow::Mode::MODE_FLY_CRUISE:
-      InfoType[i] &= 0xffff00ff;
-      InfoType[i] += (j<<8);
-      break;
-    case MapWindow::Mode::MODE_FLY_NONE:
-      break;
-    }
-}
 
 
 bool Debounce(void) {

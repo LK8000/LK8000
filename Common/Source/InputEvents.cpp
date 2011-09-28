@@ -2733,4 +2733,27 @@ void PopupBugsBallast(int UpDown)
   SwitchToMapWindow();
 }
 
+/* REMOVE
+void SystemConfiguration(void) {
+  if (!SIMMODE) {
+	if (LockSettingsInFlight && CALCULATED_INFO.Flying) {
+		DoStatusMessage(TEXT("Settings locked in flight"));
+		return;
+	}
+  }
+
+  SettingsEnter();
+  dlgConfigurationShowModal();
+  SettingsLeave();
+}
+*/
+
+void HideMenu() {
+    MenuTimeOut = MenuTimeoutMax;
+}
+
+void ShowMenu() {
+  InputEvents::setMode(TEXT("Menu"));
+  MenuTimeOut = 0;
+}
 
