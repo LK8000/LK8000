@@ -13,11 +13,11 @@
 #include <mmsystem.h>
 
 
-
 #define INTERNAL_WAVEOUT_BUFFER_COUNT 2   // This is one part of the wave output delay
                                           //  if you use e.g. 20ms buffers the delay
                                           //  INTERNAL_WAVEOUT_BUFFER_COUNT * 20ms
 
+/*
 // Used for waveIn callback function
 typedef enum _WAVE_IN_EVENT
 {
@@ -98,7 +98,6 @@ class CWaveOutThread
 public:
 	CWaveOutThread();
 	~CWaveOutThread();
-
    BOOL Init(cbWaveOut pcbWaveOut,
              DWORD dwActiveThreadPriority, 
              WORD wBufferCount, 
@@ -151,4 +150,5 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
+*/
 #endif // !defined(AFX_WAVETHREAD_H__C76FCF03_9877_4C5E_92BA_DEDB09884315__INCLUDED_)
