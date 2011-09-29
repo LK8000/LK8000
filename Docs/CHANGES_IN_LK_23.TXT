@@ -2,15 +2,30 @@
 Changes in LK8000 v2.3
 ======================
 
-Version 2.3h September 23 2011
+Version 2.3h September 29 2011
 ------------------------------
 
+NEW
+
+. Use dedicated aircraft menus: GLIDER_MENU.TXT, PARAGLIDER_MENU.TXT, GA_MENU.TXT, CAR_MENU.TXT and DEFAULT_MENU as fallback.
+  Currently these menu have the same content, to be changed.
+
+. Add new button Auto MC Thermal+Final , missing.
+
+
+CHANGES
+
+. Old JPG2000 terrain files in old XCM maps are no more supported.
+  If you are still using old XCM maps and you want to convert them to LKM 
+  please contact us. NOTE: Norway was already converted over 60 DEG !
+
+. Moved TotalEnergy button in another position
 
 
 
+FIXES
 
-
-
+. Oracle should not work when there is no valid Gps fix.
 
 
 
