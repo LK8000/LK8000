@@ -551,6 +551,8 @@ void RasterTerrain::OpenTerrain(void)
     GetRegistryString(szRegistryMapFile, szMapFile, MAX_PATH);
     ExpandLocalPath(szMapFile);
     _tcscpy(szFile,szMapFile);
+
+    #ifdef JP2000
     _tcscat(szFile, _T("/terrain.jp2")); 
     StartupStore(_T(". Attempting to use JP2 <%s> inside mapfile%s"),szFile,NEWLINE);
 
@@ -564,6 +566,10 @@ void RasterTerrain::OpenTerrain(void)
 		_tcscat(szFile, _T("/terrain.dem")); 
 		StartupStore(_T(". Attempting to use DEM <%s> inside mapfile%s"),szFile,NEWLINE);
 	}
+     #else
+     _tcscat(szFile, _T("/terrain.dem")); 
+     StartupStore(_T(". Attempting to use DEM <%s> inside mapfile%s"),szFile,NEWLINE);
+     #endif
   }
 
   if (CreateTerrainMap(szFile)) {

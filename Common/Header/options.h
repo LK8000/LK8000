@@ -75,7 +75,7 @@
 
  // This stuff will be permanently removed shortly
  // #define JP2000		1	// use JPG2000 terrain files .jp2 and jasper library
- // #define LKMTERRAIN		1	// allow DEM terrain inside dat and lkm topology files
+ #define LKMTERRAIN		1	// allow DEM terrain inside dat and lkm topology files
 
 
 /*
