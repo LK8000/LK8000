@@ -1645,7 +1645,7 @@ _@M1699_ "BrgMtg"
 
 # Logger status
 _@M1700_ "ON"
-_@M1701_ "no!"
+_@M1701_ "no"
 
 _@M1702_ "ORACLE WANTS GPS FIX"
 
