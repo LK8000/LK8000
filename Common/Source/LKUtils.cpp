@@ -1139,3 +1139,62 @@ _end:
 
 }
 
+void TaskStartMessage(void) {
+
+  TCHAR TempTime[40];
+  TCHAR TempAlt[40];
+  TCHAR TempSpeed[40];
+  Units::TimeToText(TempTime, (int)TimeLocal((int)CALCULATED_INFO.TaskStartTime));
+  _stprintf(TempAlt, TEXT("%.0f %s"), CALCULATED_INFO.TaskStartAltitude*ALTITUDEMODIFY, Units::GetAltitudeName());
+  _stprintf(TempSpeed, TEXT("%.0f %s"), CALCULATED_INFO.TaskStartSpeed*TASKSPEEDMODIFY, Units::GetTaskSpeedName());
+
+  TCHAR TempAll[300];
+  _stprintf(TempAll, TEXT("\r\n%s: %s\r\n%s:%s\r\n%s: %s"),
+  // Altitude
+  gettext(TEXT("_@M89_")),
+  TempAlt,
+  // Speed
+  gettext(TEXT("_@M632_")),
+  TempSpeed,
+  // Time
+  gettext(TEXT("_@M720_")),
+  TempTime);
+
+  // ALWAYS issue DoStatusMessage BEFORE sounds, if possible.
+  // LKTOKEN  _@M692_ = "Task Start"
+  DoStatusMessage(gettext(TEXT("_@M692_")), TempAll);
+}
+
+void TaskFinishMessage(void) {
+
+  TCHAR TempTime[40];
+  TCHAR TempAlt[40];
+  TCHAR TempSpeed[40];
+  TCHAR TempTskSpeed[40];
+
+  Units::TimeToText(TempTime, (int)TimeLocal((int)GPS_INFO.Time));
+  _stprintf(TempAlt, TEXT("%.0f %s"), CALCULATED_INFO.NavAltitude*ALTITUDEMODIFY, Units::GetAltitudeName());
+  _stprintf(TempSpeed, TEXT("%.0f %s"), GPS_INFO.Speed*TASKSPEEDMODIFY, Units::GetTaskSpeedName());
+  _stprintf(TempTskSpeed, TEXT("%.2f %s"), CALCULATED_INFO.TaskSpeedAchieved*TASKSPEEDMODIFY, Units::GetTaskSpeedName());
+
+  TCHAR TempAll[300];
+
+  _stprintf(TempAll, TEXT("\r\n%s: %s\r\n%s:%s\r\n%s: %s\r\n%s: %s"),
+  // Altitude
+  gettext(TEXT("_@M89_")),
+  TempAlt,
+  // Speed
+  gettext(TEXT("_@M632_")),
+  TempSpeed,
+  // Time
+  gettext(TEXT("_@M720_")),
+  TempTime,
+  // task speed
+  gettext(TEXT("_@M697_")),
+  TempTskSpeed);
+
+  // LKTOKEN  _@M687_ = "Task Finish"
+  DoStatusMessage(gettext(TEXT("_@M687_")), TempAll);
+
+}
+
