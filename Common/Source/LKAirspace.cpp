@@ -77,6 +77,7 @@ int CAirspace::_hdistancemargin = 0;            // calculated horizontal distanc
 CPoint2D CAirspace::_lastknownpos(0,0);                // last known position saved for calculations
 int CAirspace::_lastknownalt = 0;                // last known alt saved for calculations
 int CAirspace::_lastknownagl = 0;                // last known agl saved for calculations
+int CAirspace::_lastknownheading = 0;            // last known heading saved for calculations
 
 
 //
@@ -206,6 +207,8 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
   // Horizontal distance margin
    _hdistancemargin = (int) (Basic->Speed * WarningTime); // 110518 casting forced
 
+  // Heading
+   _lastknownheading = (int) Calculated->Heading;
 }
 
 // Step2: first pass on all airspace instances
@@ -364,6 +367,7 @@ bool CAirspace::FinishWarning()
     int vdistance_histeresis = 20;            // Vertical distance histeresis to step back awNone
     int hdistance_lookout = 200;              // Horizontal distance to lookout from a flyzone to check what is outside
     int vdistance_lookout = 20;               // Vertical distance to lookout from a flyzone to check what is outside
+    int abs_beardiff = abs((int)AngleLimit180(_lastknownheading - _bearing));
     
     //Calculate warning state based on airspace warning events
     switch (_warnevent) {
@@ -497,9 +501,9 @@ bool CAirspace::FinishWarning()
             // Far away horizontally _or_ vertically
             _warninglevel = awNone;
         }
-        if ( _hdistance < _hdistancemargin ) {
+        if ( (_hdistance < _hdistancemargin) && (abs_beardiff<=90) ) {
           if (IsAltitudeInside(_lastknownalt, _lastknownagl, AirspaceWarningVerticalMargin)) {
-            // Near to inside, modify warnevent to inform user
+            // Near to inside and moving closer, modify warnevent to inform user
             _warninglevel = awYellow;
             _warnevent = aweNearInsideNonfly;
           }
