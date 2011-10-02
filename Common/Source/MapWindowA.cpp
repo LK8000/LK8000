@@ -136,6 +136,8 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   bool borders_only = (GetAirSpaceFillType() == asp_fill_ablend_borders);
   HDC hdcbuffer = NULL;
   HBITMAP hbbufferold = NULL, hbbuffer = NULL;
+  static bool asp_selected_flash = false;
+  asp_selected_flash = !asp_selected_flash;
   
   if (borders_only) {
     // Prepare layers
@@ -240,7 +242,7 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
 	for (it=airspaces_to_draw.begin(); it != airspaces_to_draw.end(); ++it) {
         if ((*it)->DrawStyle()) {
 		  airspace_type = (*it)->Type();
-		  if (bAirspaceBlackOutline) {
+		  if (bAirspaceBlackOutline ^ (asp_selected_flash && (*it)->Selected()) ) {
 			SelectObject(hdc, GetStockObject(BLACK_PEN));
 		  } else {
 			SelectObject(hdc, hAirspacePens[airspace_type]);
