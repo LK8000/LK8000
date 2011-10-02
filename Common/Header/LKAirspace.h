@@ -238,6 +238,7 @@ protected:
   static CPoint2D _lastknownpos;            // last known position saved for calculations
   static int _lastknownalt;                    // last known alt saved for calculations
   static int _lastknownagl;                    // last known agl saved for calculations
+  static int _lastknownheading;                // last known heading saved for calculations
 
 };
 

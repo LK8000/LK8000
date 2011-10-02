@@ -1388,6 +1388,8 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
   bool borders_only = (GetAirSpaceFillType() == asp_fill_patterns_borders);
   HDC hdcbuffer = NULL;
   HBITMAP hbbufferold = NULL, hbbuffer = NULL;
+  static bool asp_selected_flash = false;
+  asp_selected_flash = !asp_selected_flash;
   
   if (borders_only) {
     // Prepare layers
@@ -1497,7 +1499,7 @@ void MapWindow::DrawAirSpace(HDC hdc, const RECT rc)
             ClearAirSpace(true);
             found = true;
           }
-          if (bAirspaceBlackOutline) {
+          if (bAirspaceBlackOutline ^ (asp_selected_flash && (*it)->Selected()) ) {
             SelectObject(hDCTemp, GetStockObject(BLACK_PEN));
           } else {
             SelectObject(hDCTemp, hAirspacePens[airspace_type]);
