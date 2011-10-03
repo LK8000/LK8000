@@ -531,7 +531,6 @@ const TCHAR *TaskFileName(unsigned bufferLen, TCHAR buffer[])
 // Notice that engine Reset() is done in any case.
 //
 bool UseContestEngine(void) {
-
   // Gliding mode always have the engine running
   if (ISGLIDER) return true;
   // All other modes like paragliding, Car and GA, will need 1.5 page to be ON

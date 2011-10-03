@@ -46,6 +46,7 @@
 #endif
 #include "Waypointparser.h"
 #include "LKAirspace.h"
+
 using std::min;
 using std::max;
 
@@ -53,6 +54,7 @@ using std::max;
 
 using std::min;
 using std::max;
+extern void CalculateMagneticVariation();
 
 //#define DEBUGTGATES	1
 //#define DEBUGATE	1
@@ -608,11 +610,16 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 				if ( DoRangeWaypointList(Basic,Calculated) )
 					LastDoRangeWaypointListTime=Basic->Time;
 
+				// Not necessary right now, we dont calculate magnetic bearings
+				// CalculateMagneticVariation();
+
 				gotValidFix=true;
 			}
 		}
 		// else we should consider SIMMODE and PAN repositions , here! TODO
 	}
+
+
 
 	// watchout for replay files 
 	if (LastSearchBestTime > Basic->Time ) LastSearchBestTime=Basic->Time-(BESTALTERNATEINTERVAL+10);
