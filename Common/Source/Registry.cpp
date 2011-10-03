@@ -1880,4 +1880,61 @@ void StoreRegistry(void) {
 }
 
 
+#ifdef PNA
+extern bool SetModelName(DWORD Temp);
+
+bool SetModelType() {
+
+  TCHAR sTmp[100];
+  TCHAR szRegistryInfoBoxModel[]= TEXT("AppInfoBoxModel");
+  DWORD Temp=0;
+
+  GetFromRegistry(szRegistryInfoBoxModel, &Temp);
+  
+  if ( SetModelName(Temp) != true ) {
+	_stprintf(sTmp,_T(". SetModelType failed: probably no registry entry%s"), NEWLINE);
+	StartupStore(sTmp);
+	GlobalModelType=MODELTYPE_PNA_PNA;
+	_tcscpy(GlobalModelName,_T("GENERIC"));  // 100820
+	return false;
+  } else {
+	GlobalModelType = Temp;
+  }
+  
+  _stprintf(sTmp,_T(". SetModelType: Name=<%s> Type=%d%s"),GlobalModelName, GlobalModelType,NEWLINE);
+  StartupStore(sTmp);
+  return true;
+}
+#endif
+
+BOOL DelRegistryKey(const TCHAR *szDelKey)
+{
+   HKEY tKey;
+   RegOpenKeyEx(HKEY_CURRENT_USER, _T(REGKEYNAME),0,0,&tKey);
+   if ( RegDeleteValue(tKey, szDelKey) != ERROR_SUCCESS ) {
+	return false;
+   }
+   RegCloseKey(tKey);
+   return true;
+}
+
+#ifdef PNA
+void CleanRegistry()
+{
+   HKEY tKey;
+   RegOpenKeyEx(HKEY_CURRENT_USER, szRegistryKey ,0,0,&tKey);
+
+	RegDeleteValue(tKey,_T("CDIWindowFont"));
+	RegDeleteValue(tKey,_T("MapLabelFont"));
+	RegDeleteValue(tKey,_T("MapWindowBoldFont"));
+	RegDeleteValue(tKey,_T("MapWindowFont"));
+	RegDeleteValue(tKey,_T("StatisticsFont"));
+	RegDeleteValue(tKey,_T("TitleWindowFont"));
+	RegDeleteValue(tKey,_T("BugsBallastFont"));
+	RegDeleteValue(tKey,_T("TeamCodeFont"));
+
+   RegCloseKey(tKey);
+}
+#endif
+
 
