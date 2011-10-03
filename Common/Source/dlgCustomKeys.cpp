@@ -268,7 +268,7 @@ void AddConfList( DataFieldEnum* dfe) {
     dfe->addEnumText(TEXT("ActiveMap On/Off"));
 	// LKTOKEN  _@M426_ = "Mark Location" 
     dfe->addEnumText(gettext(TEXT("_@M426_")));
-    dfe->addEnumText(TEXT("PG/Delta Time Gates"));
+    dfe->addEnumText(TEXT("PG/HG Time Gates"));
     dfe->addEnumText(TEXT("Thermal Booster"));
 	// LKTOKEN  _@M329_ = "Goto Home" 
     dfe->addEnumText(gettext(TEXT("_@M329_")));
