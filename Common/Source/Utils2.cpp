@@ -3510,8 +3510,17 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
 
   double tas=(iaspeed*TOKPH)*(1+0.02*(averaltitude/0.328/1000));
 
-  double tasns=tas*cos( p_heading / RAD_TO_DEG );
-  double tasew=tas*sin( p_heading / RAD_TO_DEG );
+  extern double CalculateMagneticVariation();
+  double magvar=CalculateMagneticVariation();
+
+  // use true heading instead of magnetic heading
+  double true_heading=p_heading-magvar; // magvar positive for E, negative for W
+  if (true_heading >360) true_heading-=360;
+  if (true_heading == 360) true_heading=0;
+  if (true_heading <0 ) true_heading+=360;
+
+  double tasns=tas*cos( true_heading / RAD_TO_DEG );
+  double tasew=tas*sin( true_heading / RAD_TO_DEG );
 
   double gsns=averspeed * cos(avertrack/ RAD_TO_DEG);
   double gsew=averspeed * sin(avertrack/ RAD_TO_DEG);
