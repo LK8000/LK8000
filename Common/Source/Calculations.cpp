@@ -623,11 +623,30 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 	// watchout for replay files 
 	if (LastSearchBestTime > Basic->Time ) LastSearchBestTime=Basic->Time-(BESTALTERNATEINTERVAL+10);
-	if ( Basic->Time > LastSearchBestTime+BESTALTERNATEINTERVAL )
-	{
+
+#if ( !defined(WINDOWSPC) || WINDOWSPC==0 )
+	if ( Basic->Time > LastSearchBestTime+BESTALTERNATEINTERVAL ) {
 		LastSearchBestTime = Basic->Time;
 		SearchBestAlternate(Basic, Calculated);
 	}
+#else
+	// On PC SIMMODE only, 20 seconds update time
+	if (SIMMODE) {
+		#if TESTBENCH
+		if ( Basic->Time > LastSearchBestTime+20 ) {
+		#else
+		if ( Basic->Time > LastSearchBestTime+30 ) {
+		#endif
+			LastSearchBestTime = Basic->Time;
+			SearchBestAlternate(Basic, Calculated);
+		}
+	} else  {
+		if ( Basic->Time > LastSearchBestTime+BESTALTERNATEINTERVAL ) {
+			LastSearchBestTime = Basic->Time;
+			SearchBestAlternate(Basic, Calculated);
+		}
+	}
+#endif
 
 }
 

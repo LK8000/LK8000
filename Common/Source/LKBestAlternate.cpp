@@ -172,7 +172,7 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 		 * arrival 1m over safety.  That is 2m away from being
 		 * unreachable! So we higher this value to 100m.
 		 */
-		arrival_altitude -= ALTERNATE_OVERSAFETY; 
+		// arrival_altitude -= ALTERNATE_OVERSAFETY;  // UNUSED in 2.3h
 
 		if (scan_airports_slot==0) {
 			if (arrival_altitude<0) {
@@ -257,9 +257,9 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 
   bestalternate=-1;  // reset the good choice
   double safecalc = Calculated->NavAltitude - SAFETYALTITUDEARRIVAL;
-  static double grpolar = GlidePolar::bestld *SAFELD_FACTOR; 
+  double grpolar = GlidePolar::bestld *SAFELD_FACTOR; // use updated polar bestld for current ballast
   int curwp, curbestairport=-1, curbestoutlanding=-1;
-  double curgr=0, curbestgr=INVALID_GR;
+  double curgr=0, curbestgr=INVALID_GR, curbestgr_outlanding=INVALID_GR, curbestgr_preferred=INVALID_GR;;
   if ( safecalc <= 0 ) {
 	/*
 	* We're under the absolute safety altitude at MSL, can't be any better elsewhere!
@@ -284,12 +284,12 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 			// break;  // that list is unsorted !
 		}
 
-		// At the first unsafe landing, stop searching down the list and use the best found or the first
+		// grsafe is the altitude we can spend in a glide
 		double grsafe=safecalc - WayPointList[curwp].Altitude;
 		if ( grsafe <= 0 ) {
 			// We're under the safety altitude for this waypoint. 
-			break;  
-			//continue; 
+			//break;   BUG
+			continue; 
 		}
 
 		WayPointCalc[curwp].GR = WayPointCalc[curwp].Distance / grsafe; grsafe = WayPointCalc[curwp].GR;
@@ -314,7 +314,7 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 
 		if ( (HomeWaypoint >= 0) && (curwp == HomeWaypoint) ) {
 			#ifdef DEBUG_BESTALTERNATE
-			wsprintf(ventabuffer,TEXT("k=%d locking Home"), k);
+			wsprintf(ventabuffer,TEXT("k=%d locking HOME!"), k);
 			if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 			{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
 			#endif
@@ -322,30 +322,34 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 			break;
 		}
 
-		// If we already found a preferred, stop searching for anything but home
-
-		if ( bestalternate >= 0 && WayPointCalc[bestalternate].Preferred) {
-			#ifdef DEBUG_BESTALTERNATE
-			wsprintf(ventabuffer,TEXT("Ignoring:[k=%d]%s because current best <%s> is a PREF"), k, 
-			WayPointList[curwp].Name, WayPointList[bestalternate].Name);
-			if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
-			{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
-			#endif
-			continue;
-		}
-
-		// VENTA5 TODO: extend search on other preferred, choosing the closer one
-
-		// Preferred list has priority, first found is taken (could be smarted)
-
+		// This preferred landable is reachable..
 		if ( WayPointCalc[ curwp ].Preferred ) {
+			// if we already have home selected, forget it
+			if ( bestalternate >=NUMRESWP && bestalternate==HomeWaypoint ) continue;
+			// if we have another better preferred, we dont use this one
+			if (curgr >= curbestgr_preferred) continue;
+
+			// else this preferred is elected best!
 			bestalternate=curwp;
+			curbestgr_preferred=curgr;
+			
 			#ifdef DEBUG_BESTALTERNATE
 			wsprintf(ventabuffer,TEXT("k=%d PREFERRED bestalternate=%d,%s"), k,curwp,
 			WayPointList[curwp].Name );
 			if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 			{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
 			// DoStatusMessage(ventabuffer);
+			#endif
+			continue;
+		}
+
+		// If we already found a preferred, stop searching for anything but home
+		if ( bestalternate >= 0 && WayPointCalc[bestalternate].Preferred) {
+			#ifdef DEBUG_BESTALTERNATE
+			wsprintf(ventabuffer,TEXT("Ignoring:[k=%d]%s because current best <%s> is a PREF"), k, 
+			WayPointList[curwp].Name, WayPointList[bestalternate].Name);
+			if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
+			{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
 			#endif
 			continue;
 		}
@@ -364,10 +368,14 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 				{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
 				#endif
 			} else {
+				// if not better than old outlanding, dont select it
+				if (curgr >= curbestgr_outlanding) continue;
+
+				curbestgr_outlanding=curgr;
 				curbestoutlanding=curwp;
 				#ifdef DEBUG_BESTALTERNATE
-				wsprintf(ventabuffer,TEXT("[k=%d]<%s> (curgr=%d < curbestgr=%d) set as bestoutlanding"), 
-				k, WayPointList[curwp].Name, (int)curgr, (int)curbestgr );
+				wsprintf(ventabuffer,TEXT("[k=%d]<%s> (curgr=%d < curbestgr=%d and <curbestgr_outland=%d) set as bestoutlanding"), 
+				k, WayPointList[curwp].Name, (int)curgr, (int)curbestgr, (int)curbestgr_outlanding );
 				if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 				{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
 				#endif
@@ -503,7 +511,7 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 			 * If safetyaltitude is 300m, then below 500m be quiet.
 			 * If there was no active alternate on entry, and nothing was found, then we
 			 * better be quiet since probably the user had already been alerted previously
-			 * and now he is low..
+			 * and now he is low on terrain..
 			 */
 			if ( bestalternate >0 && ((safecalc-WayPointList[bestalternate].Altitude) >ALTERNATE_QUIETMARGIN)) {
 				if ( WayPointList[bestalternate].AltArivalAGL <100 )
