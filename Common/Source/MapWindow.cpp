@@ -1615,39 +1615,36 @@ bool MapWindow::GliderCenter=false;
 
 void MapWindow::CalculateOrientationNormal(void) {
   double trackbearing = DrawInfo.TrackBearing;
-  //  trackbearing = DerivedDrawInfo.NextTrackBearing;
 
-  if( (DisplayOrientation == NORTHUP) 
-      ||
-      ((DisplayOrientation == NORTHTRACK)
-       &&(!mode.Is(Mode::MODE_CIRCLING)))
-	|| (DisplayOrientation == NORTHSMART)  // 100419
-      || 
-      (
-       ((DisplayOrientation == NORTHCIRCLE)
-        ||(DisplayOrientation==TRACKCIRCLE))
-       && (mode.Is(Mode::MODE_CIRCLING)) )
-      ) {
-	if (mode.Is(Mode::MODE_CIRCLING))
-		GliderCenter=true;
-	else
-		GliderCenter=false;
+  if( (DisplayOrientation == NORTHUP) ||
+      ((DisplayOrientation == NORTHTRACK) &&(!mode.Is(Mode::MODE_CIRCLING)))
+	|| (DisplayOrientation == NORTHSMART) || 
+	( ((DisplayOrientation == NORTHCIRCLE) ||(DisplayOrientation==TRACKCIRCLE)) && (mode.Is(Mode::MODE_CIRCLING)) ) )
+  {
+		if (mode.Is(Mode::MODE_CIRCLING))
+			GliderCenter=true;
+		else
+			GliderCenter=false;
     
-    if (DisplayOrientation == TRACKCIRCLE) {
-      DisplayAngle = DerivedDrawInfo.WaypointBearing;
-      DisplayAircraftAngle = trackbearing-DisplayAngle;
-    } else {
-      DisplayAngle = 0.0;
-      DisplayAircraftAngle = trackbearing;
-    }
+		if (DisplayOrientation == TRACKCIRCLE) {
+			DisplayAngle = DerivedDrawInfo.WaypointBearing;
+			DisplayAircraftAngle = trackbearing-DisplayAngle;
+		} else {
+			DisplayAngle = 0.0;
+			DisplayAircraftAngle = trackbearing;
+		}
+
   } else {
-    // normal, glider forward
-    GliderCenter = false;
-    DisplayAngle = trackbearing;
-    DisplayAircraftAngle = 0.0;    
+
+	// normal, glider forward
+	GliderCenter = false;
+	DisplayAngle = trackbearing;
+	DisplayAircraftAngle = 0.0;    
   }
+
   DisplayAngle = AngleLimit360(DisplayAngle);
   DisplayAircraftAngle = AngleLimit360(DisplayAircraftAngle);
+
 }
 
 
