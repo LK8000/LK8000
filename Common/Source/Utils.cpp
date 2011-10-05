@@ -1921,3 +1921,10 @@ bool Debounce(void) {
   }
 }
 
+//
+// Let's get rid of BOOOOls soon!!!
+bool BOOL2bool(BOOL a) {
+  if (a==TRUE) return true;
+  return false;
+}
+

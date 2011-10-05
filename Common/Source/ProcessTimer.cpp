@@ -29,7 +29,7 @@ static std::map<TCHAR*, TCHAR*> unusedTranslations;
 #include "winbase.h"
 
 extern int ConnectionProcessTimer(int itimeout);
-
+extern bool BOOL2bool(BOOL a);
 
 //
 // This is common to both real and SIM modes, and thus it is running at 2Hz
@@ -99,82 +99,72 @@ void ProcessTimer(void)
 // Running at 2Hz, set and called by WndProc
 void SIMProcessTimer(void)
 {
+  static int i=0;
+  i++;
 
   CommonProcessTimer();
 
   GPSCONNECT = TRUE;
   extGPSCONNECT = TRUE;
-  static int i=0;
-  i++;
 
   if (!ReplayLogger::Update()) {
-
-    // Process timer is run at 2hz, so this is bringing it back to 1hz
-    if (i%2==0) return;
-
-    extern void LKSimulator(void);
-    LKSimulator();
+	if (i%2==0) return;
+	// Process timer is run at 2hz, so this is bringing it back to 1hz
+	extern void LKSimulator(void);
+	LKSimulator();
   }
 
   if (i%2==0) return;
-
-#ifdef DEBUG
-  // use this to test FLARM parsing/display
-  NMEAParser::TestRoutine(&GPS_INFO);
-#endif
 
   TriggerGPSUpdate();
 
 }
 
 
-// Running of course at 2Hz
+
+// Running at 0.1hz every 10 seconds
 // (this part should be rewritten)
 int ConnectionProcessTimer(int itimeout) {
   LockComm();
   NMEAParser::UpdateMonitor();
   UnlockComm();
   
-  static BOOL LastGPSCONNECT = FALSE;
-  static BOOL CONNECTWAIT = FALSE;
-  static BOOL LOCKWAIT = FALSE;
+  static bool s_lastGpsConnect = false;
+  static bool s_connectWait = false;
+  static bool s_lockWait = false;
   
-  //
-  // replace bool with BOOL to correct warnings and match variable
-  // declarations RB
-  //
-  BOOL gpsconnect = GPSCONNECT;
+  bool gpsconnect = BOOL2bool(GPSCONNECT);
   
   if (GPSCONNECT) {
     extGPSCONNECT = TRUE;
   } 
 
-  if (!extGPSCONNECT) {
-    // if gps is not connected, set navwarning to true so
-    // calculations flight timers don't get updated
-    LockFlightData();
-    GPS_INFO.NAVWarning = true;
-    UnlockFlightData();
+  if (extGPSCONNECT == FALSE) {
+	// If gps is not connected, set navwarning to true so
+	// calculations flight timers don't get updated
+	LockFlightData();
+	GPS_INFO.NAVWarning = true;
+	UnlockFlightData();
   }
 
   GPSCONNECT = FALSE;
-  BOOL navwarning = (BOOL)(GPS_INFO.NAVWarning);
+  bool navwarning = (bool)(GPS_INFO.NAVWarning);
 
-  if((gpsconnect == FALSE) && (LastGPSCONNECT == FALSE)) {
+  if((gpsconnect == false) && (s_lastGpsConnect == false)) {
 	// re-draw screen every five seconds even if no GPS
 	TriggerGPSUpdate();
       
 	devLinkTimeout(devAll());
 
-	if(LOCKWAIT == TRUE) {
+	if(s_lockWait == true) {
 		// gps was waiting for fix, now waiting for connection
-		LOCKWAIT = FALSE;
+		s_lockWait = false;
 	}
-	if(!CONNECTWAIT) {
+	if(!s_connectWait) {
 		// gps is waiting for connection first time
 		extGPSCONNECT = FALSE;
   
-		CONNECTWAIT = TRUE;
+		s_connectWait = true;
 		#ifndef DISABLEAUDIO
 		if (EnableSoundModes) LKSound(TEXT("LK_GREEN.WAV"));
 		#endif
@@ -209,33 +199,33 @@ int ConnectionProcessTimer(int itimeout) {
 	RestartCommPorts();
   }
   
-  if((gpsconnect == TRUE) && (LastGPSCONNECT == FALSE)) {
+  if((gpsconnect == true) && (s_lastGpsConnect == false)) {
 	itimeout = 0; // reset timeout
       
-	if(CONNECTWAIT) {
+	if(s_connectWait) {
 		TriggerGPSUpdate();
-		CONNECTWAIT = FALSE;
+		s_connectWait = false;
 	}
   }
   
-  if((gpsconnect == TRUE) && (LastGPSCONNECT == TRUE)) {
-	if((navwarning == TRUE) && (LOCKWAIT == FALSE)) {
+  if((gpsconnect == true) && (s_lastGpsConnect == true)) {
+	if((navwarning == true) && (s_lockWait == false)) {
 		TriggerGPSUpdate();
 	  
-		LOCKWAIT = TRUE;
+		s_lockWait = true;
 		#ifndef DISABLEAUDIO
 		if (EnableSoundModes) LKSound(TEXT("LK_GREEN.WAV")); // 100404
 		#endif
 		FullScreen();
 	} else {
-		if((navwarning == FALSE) && (LOCKWAIT == TRUE)) {
+		if((navwarning == false) && (s_lockWait == true)) {
 			TriggerGPSUpdate();
-			LOCKWAIT = FALSE;
+			s_lockWait = false;
 		}
 	}
   }
   
-  LastGPSCONNECT = gpsconnect;
+  s_lastGpsConnect = gpsconnect;
   return itimeout;
 }
 
