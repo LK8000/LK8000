@@ -12,60 +12,7 @@
 #include "externs.h"
 #include "compatibility.h"
 #include "lk8000.h"
-/*
-#include "buildnumber.h"
-#include "Modeltype.h"
-#include "Port.h"
-#include "Waypointparser.h"
-#include "McReady.h"
-#include "AirfieldDetails.h"
-#include "InfoBoxLayout.h"
-*/
 #include "Logger.h"
-
-/*
-#include <commctrl.h>
-#include <aygshell.h>
-#if (WINDOWSPC<1)
-#include <sipapi.h>
-#endif
-#include "Terrain.h"
-#include "device.h"
-
-#include "devCAI302.h"
-#include "devCaiGpsNav.h"
-#include "devEW.h"
-#include "devGeneric.h"
-#include "devDisabled.h"
-#include "devNmeaOut.h"
-#include "devPosiGraph.h"
-#include "devBorgeltB50.h"
-#include "devVolkslogger.h"
-#include "devEWMicroRecorder.h"
-#include "devLX.h"
-#include "devLXNano.h"
-#include "devZander.h"
-#include "devFlymasterF1.h"
-#include "devCompeo.h"
-#include "devFlytec.h"
-#include "devLK8EX1.h"
-#include "devDigifly.h"
-#include "devXCOM760.h"
-#include "devCondor.h"
-#include "devIlec.h"
-#include "devDSX.h"
-#include "devIMI.h"
-#include "devWesterboer.h"
-
-#include "Geoid.h"
-#include "Units.h"
-#ifdef PNA
-#include "LKHolux.h"
-#endif
-#include "RGB.h"
-
-#include "RasterTerrain.h"
-*/
 
 #include "Message.h"
 #include "InputEvents.h"
@@ -83,43 +30,49 @@ static std::map<TCHAR*, TCHAR*> unusedTranslations;
 #include "winbase.h"
 
 
+//
+// This is common to both real and SIM modes, and thus it is running at 2Hz
+//
 void CommonProcessTimer()
 {
+  static unsigned short cp_twohzcounter = 0; // good up to 256 on all platforms
+  cp_twohzcounter++;
 
-  // service the GCE and NMEA queue
+  // Service the GCE and NMEA queue
   if (ProgramStarted==psNormalOp) {
-    InputEvents::DoQueuedEvents();
-	  // only shows the dialog if needed.
-	  ShowAirspaceWarningsToUser();
+	InputEvents::DoQueuedEvents();
   }
 
-#if (WINDOWSPC<1)
-  SystemIdleTimerReset();
-#endif
+  // Automatically exit menu buttons mode
+  // Note that MenuTimeoutMax is necessarily 2x the users choice, because we are at 2hz here
+  if(MenuTimeOut==MenuTimeoutMax) {
+	if (!MapWindow::mode.AnyPan()) {
+		InputEvents::setMode(TEXT("default"));
+		ShowAirspaceWarningsToUser(); // only shows the dialog if needed. OK at 2Hz.
+	}
+  }
+  // setMode in InputEvents is checking that current mode is different from wanted mode.
+  // So when we reach timeoutmax, we do call setMode, really, but we exit since we normally
+  // are already in default mode. We can live with this solution.
+  MenuTimeOut++;
 
-    if(MenuTimeOut==MenuTimeoutMax) {
-      if (!MapWindow::mode.AnyPan()) {
-	InputEvents::setMode(TEXT("default"));
-      }
-    }
-    MenuTimeOut++;
-
-  UpdateBatteryInfos();
-
-  if (MapWindow::IsDisplayRunning()) {
+  if (ProgramStarted==psNormalOp) {
+	// 1 Hz routines
+	if (cp_twohzcounter %2 == 0) {
+		UpdateBatteryInfos();
+	}
   }
 
-  if (Message::Render()) {
-  }
+  Message::Render();
 
-  static int iheapcompact = 0;
-  // called 2 times per second, compact heap every minute.
-  iheapcompact++;
-  if (iheapcompact == 120) {
-    MyCompactHeaps();
-    iheapcompact = 0;
+  // Compact heap every minute.
+  // We then reset the counter for everybody
+  if (cp_twohzcounter == 120) {
+	MyCompactHeaps();
+	cp_twohzcounter = 0;
   }
 }
+
 
 // this part should be rewritten
 int ConnectionProcessTimer(int itimeout) {
@@ -231,7 +184,7 @@ int ConnectionProcessTimer(int itimeout) {
   return itimeout;
 }
 
-// Running at 2Hz
+// Running at 2Hz, set and called by WndProc
 void ProcessTimer(void)
 {
   static int itimeout = -1;
