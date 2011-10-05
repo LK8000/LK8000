@@ -439,8 +439,8 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
 	oldBrush=(HBRUSH)SelectObject(hDC,GetStockObject(NULL_BRUSH));
   } else {
 	oldBrush=(HBRUSH)SelectObject(hDC,hInvBackgroundBrush[BgMapColor]);
+  	Rectangle(hDC,vrc.left, vrc.top, vrc.right, vrc.bottom);
   }
-  Rectangle(hDC,vrc.left, vrc.top, vrc.right, vrc.bottom);
 
 
   // draw middle separator for 0 scale indicator
