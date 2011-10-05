@@ -138,7 +138,7 @@ static bool first = true;
 
 static void UpdateValuesSystem() {
   static int extGPSCONNECT_last = extGPSCONNECT;
-  static int NAVWarning_last = GPS_INFO.NAVWarning;
+  static bool NAVWarning_last = GPS_INFO.NAVWarning;
   static int SatellitesUsed_last = GPS_INFO.SatellitesUsed;
   static int VarioAvailable_last = GPS_INFO.VarioAvailable;
   static int FLARM_Available_last = GPS_INFO.FLARM_Available;

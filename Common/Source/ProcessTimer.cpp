@@ -148,7 +148,7 @@ int ConnectionProcessTimer(int itimeout) {
   }
 
   GPSCONNECT = FALSE;
-  bool navwarning = (bool)(GPS_INFO.NAVWarning);
+  bool navwarning = GPS_INFO.NAVWarning;
 
   if((gpsconnect == false) && (s_lastGpsConnect == false)) {
 	// re-draw screen every five seconds even if no GPS

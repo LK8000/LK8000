@@ -83,7 +83,7 @@ typedef struct _NMEA_INFO
   int Month;
   int Day;
   int Year;
-  int NAVWarning;
+  bool NAVWarning;
   double IndicatedAirspeed;
   double TrueAirspeed;
   double BaroAltitude;

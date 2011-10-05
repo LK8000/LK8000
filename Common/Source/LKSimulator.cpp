@@ -59,7 +59,7 @@ void LKSimulator(void) {
   LockFlightData();
 
   // 
-  GPS_INFO.NAVWarning = FALSE;
+  GPS_INFO.NAVWarning = false;
   GPS_INFO.SatellitesUsed = 6;
   // Even on ground, we can turn the glider in the hangar
   BEARING += SimTurn; 
