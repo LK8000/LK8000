@@ -206,7 +206,7 @@ void InitLKScreen() {
 		break;
 	case (ScreenSize_t)ss240x320:
 		GestureSize=50;
-		LKVarioSize=15;
+		LKVarioSize=13;
 		break;
 	default:
 		GestureSize=50;
