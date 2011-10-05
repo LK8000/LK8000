@@ -786,7 +786,7 @@ bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
 		if (!MapWindow::checkLabelBlock(brect)) return false;
 		#endif
 	}
-	SetTextColor(hDC, RGB(0,33,33)); // PETROL /2
+	SetTextColor(hDC, RGB(0,50,50)); // PETROL too light at 66
     
 	ExtTextOut(hDC, x, y, 0, NULL, Temp, size, NULL);
 	return true; // 101016
