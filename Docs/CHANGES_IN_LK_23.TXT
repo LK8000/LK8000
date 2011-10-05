@@ -12,6 +12,8 @@ NEW
 
 . Add new button Auto MC Thermal+Final , missing.
 
+. Magnetic declination internal calculator for truewind and maybe in the future for true bearings
+
 
 CHANGES
 
@@ -21,11 +23,40 @@ CHANGES
 
 . Moved TotalEnergy button in another position
 
+. Selected airspace has flashing borders
+
+. Airspace warning generation fine-tuning nonfly zone warning messages
+    In the following scenario asp warning generation was wrong:
+    1.Flying under a nonfly zone, with vertical distance>margin from the base of the airspace
+    2.Leaving the zone horizontally, actually flying away from it
+    3.Climbing, that vertical distance to base < margin
+    4.Because horizontal distance is still low, and vertical distance gets low, warning msg generated.
+
+. Change +SAFETY with + safety altitude arrival  numerical value on overlays
+
+. Reduced vario width for 240x320 portrait resolution
+  Only a small reduction, otherwise it becomes invisible in real use
+
+. Transparent vario bar has no borders, for better transparency
+
+. Reduced Topology label character width 700 to 600 in 480x272. Changed label colors making them lighter a bit.
+  On sept,9th I had darkened them too much.
+
+
 
 
 FIXES
 
 . Oracle should not work when there is no valid Gps fix.
+
+. Fix TrueWind using Magnetic declination to correct true heading
+
+. (minor) Correct PG/Delta Time Gates into PG/HG
+
+. FIX BestAlternate search bugs, excluding nearest outlanding when low on terrain and choosing not the best.
+  OVERSAFETY altitude (100m) no more used, because of too conservative results. We use only 70% glide best capability
+  and safety altitude.
+
 
 
 
