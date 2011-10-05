@@ -26,8 +26,9 @@ static std::map<TCHAR*, TCHAR*> unusedTranslations;
 #endif
 
 #include "utils/heapcheck.h"
-
 #include "winbase.h"
+
+extern int ConnectionProcessTimer(int itimeout);
 
 
 //
@@ -41,6 +42,7 @@ void CommonProcessTimer()
   // Service the GCE and NMEA queue
   if (ProgramStarted==psNormalOp) {
 	InputEvents::DoQueuedEvents();
+	ShowAirspaceWarningsToUser(); // only shows the dialog if needed. OK at 2Hz.
   }
 
   // Automatically exit menu buttons mode
@@ -48,7 +50,6 @@ void CommonProcessTimer()
   if(MenuTimeOut==MenuTimeoutMax) {
 	if (!MapWindow::mode.AnyPan()) {
 		InputEvents::setMode(TEXT("default"));
-		ShowAirspaceWarningsToUser(); // only shows the dialog if needed. OK at 2Hz.
 	}
   }
   // setMode in InputEvents is checking that current mode is different from wanted mode.
@@ -56,17 +57,14 @@ void CommonProcessTimer()
   // are already in default mode. We can live with this solution.
   MenuTimeOut++;
 
-  if (ProgramStarted==psNormalOp) {
-	// 1 Hz routines
-	if (cp_twohzcounter %2 == 0) {
-		UpdateBatteryInfos();
-	}
+  // 1 Hz routines
+  if (cp_twohzcounter %2 == 0) {
+	UpdateBatteryInfos();
   }
 
   Message::Render();
 
-  // Compact heap every minute.
-  // We then reset the counter for everybody
+  // Compact heap every minute, then reset the counter for everybody
   if (cp_twohzcounter == 120) {
 	MyCompactHeaps();
 	cp_twohzcounter = 0;
@@ -74,7 +72,64 @@ void CommonProcessTimer()
 }
 
 
-// this part should be rewritten
+
+// Running at 2Hz, set and called by WndProc
+void ProcessTimer(void)
+{
+  static int itimeout = -1;
+  itimeout++;
+  static int p_twohzcounter = 0;
+  p_twohzcounter++;
+
+  if (!GPSCONNECT) {
+	// Update screen when no GPS every second
+	if (p_twohzcounter % 2 == 0) TriggerGPSUpdate();
+  }
+
+  CommonProcessTimer();
+
+  // Check connection status every 5 seconds
+  if (itimeout % 10 == 0) {
+	itimeout = ConnectionProcessTimer(itimeout);
+  }
+}
+
+
+
+// Running at 2Hz, set and called by WndProc
+void SIMProcessTimer(void)
+{
+
+  CommonProcessTimer();
+
+  GPSCONNECT = TRUE;
+  extGPSCONNECT = TRUE;
+  static int i=0;
+  i++;
+
+  if (!ReplayLogger::Update()) {
+
+    // Process timer is run at 2hz, so this is bringing it back to 1hz
+    if (i%2==0) return;
+
+    extern void LKSimulator(void);
+    LKSimulator();
+  }
+
+  if (i%2==0) return;
+
+#ifdef DEBUG
+  // use this to test FLARM parsing/display
+  NMEAParser::TestRoutine(&GPS_INFO);
+#endif
+
+  TriggerGPSUpdate();
+
+}
+
+
+// Running of course at 2Hz
+// (this part should be rewritten)
 int ConnectionProcessTimer(int itimeout) {
   LockComm();
   NMEAParser::UpdateMonitor();
@@ -183,75 +238,4 @@ int ConnectionProcessTimer(int itimeout) {
   LastGPSCONNECT = gpsconnect;
   return itimeout;
 }
-
-// Running at 2Hz, set and called by WndProc
-void ProcessTimer(void)
-{
-  static int itimeout = -1;
-  itimeout++;
-
-  if (!GPSCONNECT) {
-    if (itimeout % 2 == 0) TriggerGPSUpdate();  // Update screen when no GPS every second
-  }
-
-  CommonProcessTimer();
-
-  // now check GPS status
-
-  
-  // also service replay logger
-  ReplayLogger::Update();
-  if (ReplayLogger::IsEnabled()) {
-    static double timeLast = 0;
-	if (GPS_INFO.Time-timeLast>=1.0) {
-	TriggerGPSUpdate();
-    }
-    timeLast = GPS_INFO.Time;
-    GPSCONNECT = TRUE;
-    extGPSCONNECT = TRUE;
-    GPS_INFO.NAVWarning = FALSE;
-    GPS_INFO.SatellitesUsed = 6;
-    return;
-  }
-  
-  if (itimeout % 10 == 0) {
-    // check connection status every 5 seconds
-    itimeout = ConnectionProcessTimer(itimeout);
-  }
-}
-
-void SIMProcessTimer(void)
-{
-
-  CommonProcessTimer();
-
-  GPSCONNECT = TRUE;
-  extGPSCONNECT = TRUE;
-  static int i=0;
-  i++;
-
-  if (!ReplayLogger::Update()) {
-
-    // Process timer is run at 2hz, so this is bringing it back to 1hz
-    if (i%2==0) return;
-
-    extern void LKSimulator(void);
-    LKSimulator();
-  }
-
-  if (i%2==0) return;
-
-#ifdef DEBUG
-  // use this to test FLARM parsing/display
-  NMEAParser::TestRoutine(&GPS_INFO);
-#endif
-
-  TriggerGPSUpdate();
-
-}
-
-
-
-
-
 
