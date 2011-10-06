@@ -26,8 +26,6 @@
 <WndButton Name="cmdReplace" Caption="_@M555_" X=30 Y=-998 Width=190  Height=44 Font=2 />
 <WndButton Name="cmdGoto" Caption="_@M236_" X=30 Y=-998 Width=190  Height=44 Font=2 />
 </WndFrame>
-<WndOwnerDrawFrame Name="frmImage" X=0 Y=0 Width=240 Height=240 Font=2 Visible=0>
-</WndOwnerDrawFrame>
 <WndFrame Name="frmSpecial" X=0 Y=0 Width=240 Height=240 Font=2 Visible=0>
 
 <WndButton Name="cmdSetAlternate1"   Caption="_@M602_"  X=30 Y=2 Width=190  Height=44 Font=2 />

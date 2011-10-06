@@ -404,7 +404,7 @@ SRC_FILES :=\
 	$(SRC)/Terrain.cpp		$(SRC)/ThermalLocator.cpp \
 	$(SRC)/Topology.cpp		$(SRC)/units.cpp \
 	$(SRC)/Utils.cpp		$(SRC)/Utm.cpp \
-	$(SRC)/VOIMAGE.cpp		$(SRC)/LKObjects.cpp \
+	$(SRC)/LKObjects.cpp \
 	$(SRC)/Waypointparser.cpp  	$(SRC)/LKUtils.cpp \
 	$(SRC)/LKLanguage.cpp		$(SRC)/LKGeneralAviation.cpp \
 	$(SRC)/windanalyser.cpp		$(SRC)/windmeasurementlist.cpp \

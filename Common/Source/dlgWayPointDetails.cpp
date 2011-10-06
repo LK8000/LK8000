@@ -24,10 +24,6 @@
 
 extern void DrawJPG(HDC hdc, RECT rc);
 
-#ifndef CECORE
-#include "VOIMAGE.h"
-#endif
-
 static int page=0;
 static WndForm *wf=NULL;
 static WndListFrame *wDetails=NULL;
@@ -35,19 +31,6 @@ static WndOwnerDrawFrame *wDetailsEntry = NULL;
 static WndFrame *wInfo=NULL;
 static WndFrame *wCommand=NULL;
 static WndFrame *wSpecial=NULL; // VENTA3
-static WndOwnerDrawFrame *wImage=NULL;
-static BOOL hasimage1 = false;
-static BOOL hasimage2 = false;
-
-#ifndef CECORE
-static CVOImage jpgimage1;
-static CVOImage jpgimage2;
-#endif
-
-static TCHAR path_modis[MAX_PATH];
-static TCHAR path_google[MAX_PATH];
-static TCHAR szWaypointFile[MAX_PATH] = TEXT("\0");
-static TCHAR Directory[MAX_PATH];
 
 #define MAXLINES 100
 static int LineOffsets[MAXLINES];
@@ -84,18 +67,10 @@ static void NextPage(int Step){
       page_ok = true;
       break;
     case 4:
-      if (!hasimage1) {
         page += Step;
-      } else {
-        page_ok = true;
-      }
       break;
     case 5:
-      if (!hasimage2) {
         page += Step;
-      } else {
-        page_ok = true;
-      }
       break;
     default:
       page_ok = true;
@@ -109,7 +84,6 @@ static void NextPage(int Step){
   wDetails->SetVisible(page == 1);
   wCommand->SetVisible(page == 2);
   wSpecial->SetVisible(page == 3);
-  wImage->SetVisible(page > 4);
 
   if (page==1) {
     wDetails->ResetList();
@@ -331,19 +305,6 @@ static void OnRemoveFromTaskClicked(WindowControl * Sender){
   wf->SetModalResult(mrOK);
 }
 
-static void OnImagePaint(WindowControl * Sender, HDC hDC){
-  (void)Sender;
-
-#ifndef CECORE
-  if (page == 3)
-    jpgimage1.Draw(hDC, 0, 0, -1, -1);
-
-  if (page == 4)
-    jpgimage2.Draw(hDC, 0, 0, -1, -1);
-
-#endif
-}
-
 
 static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnNextClicked),
@@ -383,17 +344,6 @@ void dlgWayPointDetailsShowModal(void){
   nTextLines = 0;
 
   if (!wf) return;
-
-  GetRegistryString(szRegistryWayPointFile, szWaypointFile, MAX_PATH);
-  ExpandLocalPath(szWaypointFile);
-  ExtractDirectory(Directory, szWaypointFile);
-
-  _stprintf(path_modis,TEXT("%s\\modis-%03d.jpg"),
-           Directory,
-           SelectedWaypoint+1);
-  _stprintf(path_google,TEXT("%s\\google-%03d.jpg"),
-           Directory,
-           SelectedWaypoint+1);
 
   // if SeeYou waypoint
   if (WPLSEL.Format == LKW_CUP) { 
@@ -528,14 +478,12 @@ void dlgWayPointDetailsShowModal(void){
 
   wInfo    = ((WndFrame *)wf->FindByName(TEXT("frmInfos")));
   wCommand = ((WndFrame *)wf->FindByName(TEXT("frmCommands")));
-  wSpecial = ((WndFrame *)wf->FindByName(TEXT("frmSpecial"))); // VENTA3
-  wImage   = ((WndOwnerDrawFrame *)wf->FindByName(TEXT("frmImage")));
+  wSpecial = ((WndFrame *)wf->FindByName(TEXT("frmSpecial")));
   wDetails = (WndListFrame*)wf->FindByName(TEXT("frmDetails"));
 
   ASSERT(wInfo!=NULL);
   ASSERT(wCommand!=NULL);
-  ASSERT(wSpecial!=NULL); // VENTA3
-  ASSERT(wImage!=NULL);
+  ASSERT(wSpecial!=NULL);
   ASSERT(wDetails!=NULL);
 
   wDetailsEntry = 
@@ -546,22 +494,14 @@ void dlgWayPointDetailsShowModal(void){
   nTextLines = TextToLineOffsets(WayPointList[SelectedWaypoint].Details,
 				 LineOffsets,
 				 MAXLINES);
-  /* TODO enhancement: wpdetails
-  wp = ((WndProperty *)wf->FindByName(TEXT("prpWpDetails")));
-  wp->SetText(WayPointList[SelectedWaypoint].Details);
-  */
 
   wInfo->SetBorderKind(BORDERLEFT);
   wCommand->SetBorderKind(BORDERLEFT);
   wSpecial->SetBorderKind(BORDERLEFT);
-  wImage->SetBorderKind(BORDERLEFT | BORDERTOP | BORDERBOTTOM | BORDERRIGHT);
   wDetails->SetBorderKind(BORDERLEFT);
 
   wCommand->SetVisible(false);
   wSpecial->SetVisible(false);
-	// LKTOKEN  _@M145_ = "Blank!" 
-  wImage->SetCaption(gettext(TEXT("_@M145_")));
-  wImage->SetOnPaintNotify(OnImagePaint);
 
   WndButton *wb;
 
@@ -616,14 +556,9 @@ void dlgWayPointDetailsShowModal(void){
   if (wb) 
     wb->SetOnClickNotify(OnRemoveFromTaskClicked);
 
-#ifndef CECORE
-  hasimage1 = jpgimage1.Load(wImage->GetDeviceContext() ,path_modis );
-  hasimage2 = jpgimage2.Load(wImage->GetDeviceContext() ,path_google );
-#endif
-
   page = 0;
 
-  NextPage(0); // JMW just to turn proper pages on/off
+  NextPage(0);
 
   wf->ShowModal();
 

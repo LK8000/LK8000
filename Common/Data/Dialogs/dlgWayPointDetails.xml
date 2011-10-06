@@ -27,8 +27,6 @@ OnListInfo="OnDetailsListInfo">
 <WndButton Name="cmdReplace" Caption="_@M555_" X=50 Y=136 Width=150  Height=40 Font=2 />
 <WndButton Name="cmdGoto" Caption="_@M236_" X=50 Y=180 Width=150  Height=40 Font=2 />
 </WndFrame>
-<WndOwnerDrawFrame Name="frmImage" X=70 Y=0 Width=246 Height=222 Font=2 Visible=0>
-</WndOwnerDrawFrame>
 <WndFrame Name="frmSpecial" X=70 Y=0 Width=246 Height=222 Font=2 Visible=0>
 
 <WndButton Name="cmdSetAlternate1"   Caption="_@M602_"  X=50 Y=4 Width=150  Height=40 Font=2 />

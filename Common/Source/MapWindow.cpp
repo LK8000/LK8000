@@ -1979,10 +1979,7 @@ QuickRedraw: // 100318 speedup redraw
 	}
   
   if(TrailActive) {
-    // TODO enhancement: For some reason, the shadow drawing of the 
-    // trail doesn't work in portrait mode.  No idea why.
-
-      double TrailFirstTime = 
+	// NEED REWRITING
 	LKDrawTrail(hdc, Orig_Aircraft, rc);
   }
 
