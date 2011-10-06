@@ -607,15 +607,6 @@ void MapWindow::DrawGreatCircle(HDC hdc,
 int MapWindow::iSnailNext=0;
 
 
-void MapWindow::DrawTrailFromTask(HDC hdc, const RECT rc, 
-				  const double TrailFirstTime) {
-
-  if((TrailActive!=3) || mode.Is(Mode::MODE_CIRCLING) || (TrailFirstTime<0))
-    return;
-
-}
-
-
 void MapWindow::CalculateScreenPositionsGroundline(void) {
   if (FinalGlideTerrain) {
     LatLon2Screen(DerivedDrawInfo.GlideFootPrint,

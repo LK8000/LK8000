@@ -1984,7 +1984,6 @@ QuickRedraw: // 100318 speedup redraw
 
       double TrailFirstTime = 
 	LKDrawTrail(hdc, Orig_Aircraft, rc);
-        DrawTrailFromTask(hdc, rc, TrailFirstTime);
   }
 
  	if (DONTDRAWTHEMAP) { // 100319

@@ -499,10 +499,10 @@ class MapWindow {
   static void DrawFlightMode(HDC hdc, const RECT rc);
   static void DrawGPSStatus(HDC hdc, const RECT rc);
   static void DrawLKAlarms(HDC hdc, const RECT rc);
-  static double DrawTrail(HDC hdc, const POINT Orig, const RECT rc);
+  // static double DrawTrail(HDC hdc, const POINT Orig, const RECT rc); REMOVE
   static double LKDrawTrail(HDC hdc, const POINT Orig, const RECT rc);
   static void DrawTeammate(HDC hdc, const RECT rc);
-  static void DrawTrailFromTask(HDC hdc, const RECT rc, const double);
+  // static void DrawTrailFromTask(HDC hdc, const RECT rc, const double); REMOVE
   static void DrawOffTrackIndicator(HDC hdc, const RECT rc);
   static void DrawProjectedTrack(HDC hdc, const RECT rc, const POINT Orig);
   static void DrawStartSector(HDC hdc, const RECT rc, POINT &Start,
