@@ -219,6 +219,12 @@ DWORD MapWindow::fpsTime0 = 0;
 
 bool MapWindow::ForceVisibilityScan = false;
 
+const double MapWindow::Zoom::SCALE_CRUISE_INIT      = 4.0;
+const double MapWindow::Zoom::SCALE_CIRCLING_INIT    = 4.0 / 50;
+const double MapWindow::Zoom::SCALE_PANORAMA_INIT    = 7.0;
+const double MapWindow::Zoom::SCALE_PG_PANORAMA_INIT = 5.0;
+const double MapWindow::Zoom::SCALE_INVALID_INIT     = 50.0;
+
 
 NMEA_INFO MapWindow::DrawInfo;
 DERIVED_INFO MapWindow::DerivedDrawInfo;

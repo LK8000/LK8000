@@ -50,7 +50,7 @@ zzip_filesize(int fd)
 }
 
 
-#if defined(__MINGW32__) && (WINDOWSPC<1)
+#if (WINDOWSPC<1)
 
 #include <fcntl.h>
 
@@ -141,7 +141,7 @@ int winpc_open(zzip_char_t* filename, int flags, ...)
 
 static const struct zzip_plugin_io default_io =
 {
-#if defined(__MINGW32__) && (WINDOWSPC<1)
+#if (WINDOWSPC<1)
     &wince_open,
 #else
     &winpc_open,

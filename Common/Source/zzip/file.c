@@ -28,7 +28,11 @@
 
 #include "utils/heapcheck.h"
 
-#if defined(__MINGW32__)
+#ifdef _MSC_VER
+#include <windows.h>
+#endif
+
+#if defined(__MINGW32__) || defined(_MSC_VER)
 //(WINDOWSPC>0)&&
 // JMW needed otherwise seek/tell won't work!
 #undef _fmode

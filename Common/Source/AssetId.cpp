@@ -98,7 +98,7 @@ void ReadAssetNumber(void)
 
 void ReadUUID(void) 
 {
-#if !(defined(__MINGW32__) && (WINDOWSPC>0))
+#if !(defined(__MINGW32__) && (WINDOWSPC>0)) && !defined(_MSC_VER)
   BOOL fRes;
   
 #define GUIDBuffsize 100

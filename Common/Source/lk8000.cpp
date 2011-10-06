@@ -82,10 +82,17 @@ extern void PreloadInitialisation(bool ask);
 
 
 
+#if defined(_MSC_VER) && (WINDOWSPC>0)
 int WINAPI WinMain(     HINSTANCE hInstance,
-                        HINSTANCE hPrevInstance,
-                        LPTSTR    lpCmdLine,
-                        int       nCmdShow)
+				   HINSTANCE hPrevInstance,
+				   LPSTR    lpCmdLine,
+				   int       nCmdShow)
+#else
+int WINAPI WinMain(     HINSTANCE hInstance,
+				   HINSTANCE hPrevInstance,
+				   LPTSTR    lpCmdLine,
+				   int       nCmdShow)
+#endif
 {
   MSG msg;
   HACCEL hAccelTable;
@@ -197,7 +204,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   CreateDirectoryIfAbsent(TEXT(LKD_MAPS));
   CreateDirectoryIfAbsent(TEXT(LKD_WAYPOINTS));
 
-  LK8000GetOpts(lpCmdLine);
+  LK8000GetOpts();
 
   icc.dwSize = sizeof(INITCOMMONCONTROLSEX);
   icc.dwICC = ICC_UPDOWN_CLASS;

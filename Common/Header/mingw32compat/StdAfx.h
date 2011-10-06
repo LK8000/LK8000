@@ -13,6 +13,11 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 
+#ifdef _MSC_VER
+	#define min min
+	#define max max
+#endif
+
 // Windows Header Files:
 #include <windows.h>
 #include <tchar.h>
@@ -36,13 +41,13 @@ typedef unsigned char byte;
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifndef __WINE__
-_CRTIMP int __cdecl     _wtoi (const wchar_t *);
-	void __cdecl	TransparentImage(HDC, ...);
-
-  // JMW _CRTIMP int __cdecl	SHSetAppKeyWndAssoc(int, HWND);
-_CRTIMP void __cdecl	SystemIdleTimerReset(void);
+#ifndef _MSC_VER
+	#ifndef __WINE__
+		_CRTIMP int __cdecl     _wtoi (const wchar_t *);
+		void __cdecl	TransparentImage(HDC, ...);
+	#endif
+	  // JMW _CRTIMP int __cdecl	SHSetAppKeyWndAssoc(int, HWND);
+	_CRTIMP void __cdecl	SystemIdleTimerReset(void);
 #endif
 
 #ifdef __cplusplus

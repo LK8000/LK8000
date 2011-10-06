@@ -188,11 +188,11 @@ class MapWindow {
   class Zoom {
   private:
     // initial fixed zoom factors
-    static const double SCALE_CRUISE_INIT      = 4.0;
-    static const double SCALE_CIRCLING_INIT    = 4.0 / 50;
-    static const double SCALE_PANORAMA_INIT    = 7.0;
-    static const double SCALE_PG_PANORAMA_INIT = 5.0;
-    static const double SCALE_INVALID_INIT     = 50.0;
+    static const double SCALE_CRUISE_INIT;
+    static const double SCALE_CIRCLING_INIT;
+    static const double SCALE_PANORAMA_INIT;
+    static const double SCALE_PG_PANORAMA_INIT;
+    static const double SCALE_INVALID_INIT;
     
     enum TMapScaleType {
       SCALE_CRUISE,             /**< @brief Basic zoom for flight mode used for:

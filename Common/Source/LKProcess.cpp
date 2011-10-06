@@ -214,9 +214,10 @@ goto_bearing:
 						_stprintf(BufferValue, TEXT("«%2.0f°"), -value);
 						else
 							_tcscpy(BufferValue, TEXT("«»"));
+#endif					
 					}
 					else goto goto_bearing;
-#endif
+
 				}
 			}
 			break;

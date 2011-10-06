@@ -376,7 +376,7 @@ void StartArc(HDC hdc,
                   latitude1, longitude1,
                   &radius,
                   &bearing);
-  double angle = 360*min(1, arclength/(2.0*3.1415926*radius));
+  double angle = 360*std::min(1.0, arclength/(2.0*3.1415926*radius));
   int i0 = (int)(bearing+angle/2);
   int i1 = (int)(bearing-angle/2);
   int i;
@@ -1256,8 +1256,7 @@ long GetUTCOffset(void) {
 }
 
 
-void LK8000GetOpts(LPTSTR CommandLine) {
-  (void)CommandLine;
+void LK8000GetOpts() {
 
   TCHAR buffer[MAX_PATH];
 #if (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
@@ -1759,7 +1758,7 @@ void ExtTextOutClip(HDC hDC, int x, int y, TCHAR *text, int width) {
   RECT rc;
   rc.left = x;
   rc.top = y;
-  rc.right = x + min(width,tsize.cx);
+  rc.right = x + std::min((LONG)width,tsize.cx);
   rc.bottom = y + tsize.cy;
 
   ExtTextOut(hDC, x, y, /* ETO_OPAQUE | */ ETO_CLIPPED, &rc,

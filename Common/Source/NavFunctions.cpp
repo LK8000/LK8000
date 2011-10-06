@@ -107,7 +107,7 @@ void DistanceBearing(double lat1, double lon1, double lat2, double lon2,
   if (Distance) {
     double s1 = sin((lat2-lat1)/2);
     double s2 = sin(dlon/2);
-    double a= max(0.0,min(1.0,s1*s1+clat1*clat2*s2*s2));
+	double a= std::max(0.0,std::min(1.0,s1*s1+clat1*clat2*s2*s2));
     *Distance = 6371000.0*2.0*atan2(sqrt(a),sqrt(1.0-a));
   }
   if (Bearing) {
@@ -151,8 +151,8 @@ double DoubleDistance(double lat1, double lon1, double lat2, double lon2,
   double s32 = sin((lat3-lat2)/2);
   double sl32 = sin(dlon32/2);
 
-  double a12 = max(0.0,min(1.0,s21*s21+clat1*clat2*sl21*sl21));
-  double a23 = max(0.0,min(1.0,s32*s32+clat2*clat3*sl32*sl32));
+  double a12 = std::max(0.0,std::min(1.0,s21*s21+clat1*clat2*sl21*sl21));
+  double a23 = std::max(0.0,std::min(1.0,s32*s32+clat2*clat3*sl32*sl32));
   return 6371000.0*2.0*(atan2(sqrt(a12),sqrt(1.0-a12))
 			+atan2(sqrt(a23),sqrt(1.0-a23)));
 
