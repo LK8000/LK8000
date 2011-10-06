@@ -14,15 +14,6 @@
 #include "utils/heapcheck.h"
 
 
-#ifdef __MINGW32__
-#ifndef max
-#define max(x, y)   (x > y ? x : y)
-#define min(x, y)   (x < y ? x : y)
-#endif
-#endif
-
-
-
 void DistanceBearing(double lat1, double lon1, double lat2, double lon2,
                      double *Distance, double *Bearing) {
 

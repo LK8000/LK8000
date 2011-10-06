@@ -42,14 +42,6 @@
 #include "utils/heapcheck.h"
 
 
-#ifdef __MINGW32__
-#ifndef max
-#define max(x, y)   (x > y ? x : y)
-#define min(x, y)   (x < y ? x : y)
-#endif
-#endif
-
-
 #ifdef PNA
 BOOL GetFontPath(TCHAR *pPos)
 {

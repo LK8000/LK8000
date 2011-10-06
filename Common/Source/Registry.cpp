@@ -28,14 +28,6 @@
 #include "Modeltype.h"
 
 
-#ifdef __MINGW32__
-#ifndef max
-#define max(x, y)   (x > y ? x : y)
-#define min(x, y)   (x < y ? x : y)
-#endif
-#endif
-
-
 const TCHAR szRegistryKey[] = TEXT(REGKEYNAME);
 const TCHAR *szRegistryDisplayType[MAXINFOWINDOWS] =     { TEXT("Info0"),
 				       TEXT("Info1"),
