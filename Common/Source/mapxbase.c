@@ -11,7 +11,6 @@
 
    $Id$
 */
-
 #include "StdAfx.h"
 #include "options.h"
 #include "mapprimitive.h"
@@ -37,6 +36,7 @@ static void * SfRealloc( void * pMem, int nNewSize )
         return( (void *) realloc(pMem,nNewSize) );
 }
 
+#if USETOPOMARKS
 /************************************************************************/
 /*                           writeHeader()                              */
 /*                                                                      */
@@ -113,6 +113,7 @@ static void flushRecord( DBFHandle psDBF )
 	fwrite( psDBF->pszCurrentRecord, psDBF->nRecordLength, 1, psDBF->fp );
     }
 }
+#endif // USETOPOMARKS
 
 /************************************************************************/
 /*                              msDBFOpen()                             */
@@ -236,11 +237,14 @@ void  msDBFClose(DBFHandle psDBF)
   /* -------------------------------------------------------------------- */
   /*      Write out header if not already written.                        */
   /* -------------------------------------------------------------------- */
+    #if USETOPOMARKS
     if( psDBF->bNoHeader )
         writeHeader( psDBF );
 
     flushRecord( psDBF );
+    #endif
 
+    #if USETOPOMARKS
     /* -------------------------------------------------------------------- */
     /*      Update last access date, and number of records if we have       */
     /*	write access.                					    */ 
@@ -264,6 +268,7 @@ void  msDBFClose(DBFHandle psDBF)
 	fseek( psDBF->fp, 0, 0 );
 	fwrite( abyFileHeader, 32, 1, psDBF->fp );
     }
+    #endif
 
     /* -------------------------------------------------------------------- */
     /*      Close, and free resources.                                      */
@@ -293,6 +298,7 @@ void  msDBFClose(DBFHandle psDBF)
     free( psDBF );
 }
 
+#if USETOPOMARKS
 /************************************************************************/
 /*                             msDBFCreate()                            */
 /*                                                                      */
@@ -444,6 +450,7 @@ int	msDBFAddField(DBFHandle psDBF, const char * pszFieldName, DBFFieldType eType
 
     return( psDBF->nFields-1 );
 }
+#endif // USETOPOMARKS
 
 /************************************************************************/
 /*                          msDBFReadAttribute()                        */
@@ -477,7 +484,9 @@ static char *msDBFReadAttribute(DBFHandle psDBF, int hEntity, int iField )
     /* -------------------------------------------------------------------- */
     if( psDBF->nCurrentRecord != hEntity )
     {
+	#if USETOPOMARKS
 	flushRecord( psDBF );
+	#endif
 
 	nRecordOffset = psDBF->nRecordLength * hEntity + psDBF->nHeaderLength;
 
@@ -624,6 +633,7 @@ DBFFieldType msDBFGetFieldInfo( DBFHandle psDBF, int iField, char * pszFieldName
     }
 }
 
+#if USETOPOMARKS
 /************************************************************************/
 /*                         msDBFWriteAttribute()                        */
 /*									*/
@@ -746,6 +756,9 @@ int msDBFWriteStringAttribute( DBFHandle psDBF, int iRecord, int iField, const c
 {
   return( msDBFWriteAttribute( psDBF, iRecord, iField, (void *) pszValue ) );
 }
+
+#endif // USETOPOMARKS
+
 
 int m_strcasecmp(const char *s1, const char*s2) {
   unsigned int i;

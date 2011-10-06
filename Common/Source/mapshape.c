@@ -87,6 +87,7 @@ void * SfRealloc( void * pMem, int nNewSize )
     return( (void *) realloc(pMem,nNewSize) );
 }
 
+#if USETOPOMARKS
 /************************************************************************/
 /*                          writeHeader()                               */
 /*                                                                      */
@@ -198,6 +199,8 @@ static void writeHeader( SHPHandle psSHP )
   
   free( panSHX );
 }
+
+#endif // USETOPOMARKS
 
 /************************************************************************/
 /*                              msSHPOpen()                             */
@@ -388,12 +391,14 @@ SHPHandle msSHPOpen( const TCHAR * pszLayer, const char * pszAccess )
 /************************************************************************/
 void msSHPClose(SHPHandle psSHP )
 {
+  #if USETOPOMARKS
   /* -------------------------------------------------------------------- */
   /*	Update the header if we have modified anything.		    	  */
   /* -------------------------------------------------------------------- */
   if( psSHP->bUpdated)
     writeHeader( psSHP );
   // JMW, only for write files!
+  #endif 
   
   /* -------------------------------------------------------------------- */
   /*      Free all resources, and close files.                            */
@@ -430,6 +435,7 @@ void msSHPGetInfo(SHPHandle psSHP, int * pnEntities, int * pnShapeType )
     *pnShapeType = psSHP->nShapeType;
 }
 
+#if USETOPOMARKS
 /************************************************************************/
 /*                             msSHPCreate()                            */
 /*                                                                      */
@@ -538,7 +544,9 @@ SHPHandle msSHPCreate( const TCHAR * pszLayer, int nShapeType )
   
   return( msSHPOpen( pszLayer, "rb+" ) );
 }
+#endif // USETOPOMARKS
 
+#if USETOPOMARKS
 /************************************************************************/
 /*                           writeBounds()                              */
 /*                                                                      */
@@ -578,7 +586,9 @@ static void writeBounds( uchar * pabyRec, shapeObj *shape, int nVCount )
   ByteCopy( &dXMax, pabyRec + 16, 8 );
   ByteCopy( &dYMax, pabyRec + 24, 8 );
 }
+#endif // USETOPOMARKS
 
+#if USETOPOMARKS
 int msSHPWritePoint(SHPHandle psSHP, pointObj *point )
 {
   int nRecordOffset, nRecordSize=0;
@@ -923,6 +933,7 @@ int msSHPWriteShape(SHPHandle psSHP, shapeObj *shape )
   
   return( psSHP->nRecords - 1 );
 }
+#endif // USETOPOMARKS
 
 /*
 ** msSHPReadPoint() - Reads a single point from a POINT shape file.
@@ -1340,6 +1351,7 @@ int msSHPOpenFile(shapefileObj *shpfile, char *mode, const TCHAR *filename)
   return(0); /* all o.k. */
 }
 
+#if USETOPOMARKS
 // Creates a new shapefile
 int msSHPCreateFile(shapefileObj *shpfile, const TCHAR *filename, int type)
 {
@@ -1368,6 +1380,7 @@ int msSHPCreateFile(shapefileObj *shpfile, const TCHAR *filename, int type)
   shpfile->hDBF = NULL; // XBase file is NOT created here...
   return(0);
 }
+#endif
 
 void msSHPCloseFile(shapefileObj *shpfile)
 {
