@@ -287,7 +287,6 @@ double DoubleDistance(double lat1, double lon1, double lat2, double lon2,
 double Reciprocal(double InBound);
 double BiSector(double InBound, double OutBound);
 double HalfAngle(double Angle0, double Angle1);
-void SectorEndPoint(double StartLat, double StartLon, double  Radial, double Dist, double *EndLat, double *EndLon);
 void CalculateNewPolarCoef(void);
 void FindLatitudeLongitude(double Lat, double Lon, 
                            double Bearing, double Distance, 
