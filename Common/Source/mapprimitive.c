@@ -1,38 +1,39 @@
-
 /*
-Copyright_License {
+   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+   Released under GNU/GPL License v.2
+   See CREDITS.TXT file for authors and copyrights
 
-  XCSoar Glide Computer - http://xcsoar.sourceforge.net/
-  Copyright (C) 2000 - 2005  
+   $Id$
 
-  	M Roberts (original release)
-	Robin Birch <robinb@ruffnready.co.uk>
-	Samuel Gisiger <samuel.gisiger@triadis.ch>
-	Jeff Goodenough <jeff@enborne.f2s.com>
-	Alastair Harrison <aharrison@magic.force9.co.uk>
-	Scott Penrose <scottp@dd.com.au>
-	John Wharington <jwharington@bigfoot.com>
+   This part of the code is taken from ShapeLib 1.1.5
+   Copyright (c) 1999, Frank Warmerdam
 
-  This program is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public License
-  as published by the Free Software Foundation; either version 2
-  of the License, or (at your option) any later version.
+   This software is available under the following "MIT Style" license, or at the option 
+   of the licensee under the LGPL (see LICENSE.LGPL). 
+   This option is discussed in more detail in shapelib.html.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+   Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
+   and associated documentation files (the "Software"), to deal in the Software without restriction, 
+   including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+   and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
+   subject to the following conditions:
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+   The above copyright notice and this permission notice shall be included in all copies 
+   or substantial portions of the Software.
 
-}
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+   FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
+   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 */
 #include "StdAfx.h"
-
+#include "options.h"
 #include "mapprimitive.h"
+#if MAPSHAPEERROR
 #include "maperror.h"
+#endif
 
 #include "utils/heapcheck.h"
 
@@ -67,6 +68,7 @@ void msFreeCharArray(char **array, int num_items)
   return;
 }
 
+#if MAPSHAPEERROR
 void msPrintShape(shapeObj *p) 
 {
   int i,j;
@@ -79,6 +81,7 @@ void msPrintShape(shapeObj *p)
     }
   }
 }
+#endif
 
 void msInitShape(shapeObj *shape)
 {
@@ -173,7 +176,9 @@ int msAddLine(shapeObj *p, lineObj *new_line)
 
   /* Create an extended line array */
   if((extended_line = (lineObj *)malloc((p->numlines + 1) * sizeof(lineObj))) == NULL) {
+    #if MAPSHAPEERROR
     msSetError(MS_MEMERR, NULL, "msAddLine()");
+    #endif
     return(-1);
   }
 
@@ -185,7 +190,9 @@ int msAddLine(shapeObj *p, lineObj *new_line)
   c= p->numlines;
   extended_line[c].numpoints = new_line->numpoints;  
   if((extended_line[c].point = (pointObj *)malloc(new_line->numpoints * sizeof(pointObj))) == NULL) {
+    #if MAPSHAPEERROR
     msSetError(MS_MEMERR, NULL, "msAddLine()");
+    #endif
     return(-1);
   }
 

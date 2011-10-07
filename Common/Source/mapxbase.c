@@ -1,23 +1,41 @@
 /*
-** This code is entirely based on the previous work of Frank Warmerdam. It is
-** essentially shapelib 1.1.5. However, there were enough changes that it was
-** incorporated into the MapServer source to avoid confusion. See the README 
-** for licence details.
-*/
-/*
    LK8000 Tactical Flight Computer -  WWW.LK8000.IT
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
    $Id$
+
+   This part of the code is taken from ShapeLib 1.1.5
+   Copyright (c) 1999, Frank Warmerdam
+
+   This software is available under the following "MIT Style" license, or at the option 
+   of the licensee under the LGPL (see LICENSE.LGPL). 
+   This option is discussed in more detail in shapelib.html.
+
+   Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
+   and associated documentation files (the "Software"), to deal in the Software without restriction, 
+   including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+   and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
+   subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included in all copies 
+   or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+   FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
+   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 */
 #include "StdAfx.h"
 #include "options.h"
 #include "mapprimitive.h"
 #include "mapshape.h"
+#if MAPSHAPEERROR
 #include "maperror.h"
-
-#include <ctype.h>	// 091016 missing
+#endif
+#include <ctype.h>
 
 #include "utils/heapcheck.h"
 
@@ -469,13 +487,17 @@ static char *msDBFReadAttribute(DBFHandle psDBF, int hEntity, int iField )
     /* -------------------------------------------------------------------- */
     if( iField < 0 || iField >= psDBF->nFields ) 
     {
+	#if MAPSHAPEERROR
         msSetError(MS_DBFERR, "Invalid field index %d.", "msDBFGetItemIndex()",iField );
+        #endif
         return( NULL );
     }
 
     if( hEntity < 0 || hEntity >= psDBF->nRecords )
     {
+	#if MAPSHAPEERROR
         msSetError(MS_DBFERR, "Invalid record number %d.", "msDBFGetItemIndex()",hEntity );
+        #endif
         return( NULL );
     }
 
@@ -792,7 +814,9 @@ int msDBFGetItemIndex(DBFHandle dbffile, char *name)
   char fName[32]; /* field name */
 
   if(!name) {
+    #if MAPSHAPEERROR
     msSetError(MS_MISCERR, "NULL item name passed.", "msGetItemIndex()");    
+    #endif
     return(-1);
   }
 
@@ -803,7 +827,9 @@ int msDBFGetItemIndex(DBFHandle dbffile, char *name)
       return(i);
   }
 
+  #if MAPSHAPEERROR
   msSetError(MS_DBFERR, "Item '%s' not found.", "msDBFGetItemIndex()",name);  
+  #endif
   return(-1); /* item not found */
 }
 
@@ -817,12 +843,16 @@ char **msDBFGetItems(DBFHandle dbffile)
   char fName[32];
 
   if((nFields = msDBFGetFieldCount(dbffile)) == 0) {
+    #if MAPSHAPEERROR
     msSetError(MS_DBFERR, "File contains no data.", "msGetDBFItems()");
+    #endif
     return(NULL);
   }
 
   if((items = (char **)malloc(sizeof(char *)*nFields)) == NULL) {
+    #if MAPSHAPEERROR
     msSetError(MS_MEMERR, NULL, "msGetDBFItems()");
+    #endif
     return(NULL);
   }
 
@@ -843,12 +873,16 @@ char **msDBFGetValues(DBFHandle dbffile, int record)
   int i, nFields;
 
   if((nFields = msDBFGetFieldCount(dbffile)) == 0) {
+    #if MAPSHAPEERROR
     msSetError(MS_DBFERR, "File contains no data.", "msGetDBFValues()");
+    #endif
     return(NULL);
   }
 
   if((values = (char **)malloc(sizeof(char *)*nFields)) == NULL) {
+    #if MAPSHAPEERROR
     msSetError(MS_MEMERR, NULL, "msGetAllDBFValues()");
+    #endif
     return(NULL);
   }
 
@@ -866,7 +900,9 @@ int *msDBFGetItemIndexes(DBFHandle dbffile, char **items, int numitems)
 
   itemindexes = (int *)malloc(sizeof(int)*numitems);
   if(!itemindexes) {
+    #if MAPSHAPEERROR
     msSetError(MS_MEMERR, NULL, "msGetItemIndexes()");
+    #endif
     return(NULL);
   }
 
@@ -890,7 +926,9 @@ char **msDBFGetValueList(DBFHandle dbffile, int record, int *itemindexes, int nu
   if(numitems == 0) return(NULL);
 
   if((values = (char **)malloc(sizeof(char *)*numitems)) == NULL) {
+    #if MAPSHAPEERROR
     msSetError(MS_MEMERR, NULL, "msGetSomeDBFValues()");
+    #endif
     return(NULL);
   }
 

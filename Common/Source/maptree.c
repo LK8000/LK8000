@@ -1,45 +1,41 @@
 /*
-** This code is based in part on the previous work of Frank Warmerdam. See
-** the README for licence details.
+   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+   Released under GNU/GPL License v.2
+   See CREDITS.TXT file for authors and copyrights
+
+   $Id$
+
+   This part of the code is taken from ShapeLib 1.1.5
+   Copyright (c) 1999, Frank Warmerdam
+
+   This software is available under the following "MIT Style" license, or at the option 
+   of the licensee under the LGPL (see LICENSE.LGPL). 
+   This option is discussed in more detail in shapelib.html.
+
+   Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
+   and associated documentation files (the "Software"), to deal in the Software without restriction, 
+   including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+   and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
+   subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included in all copies 
+   or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+   FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
+   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 */
-/*
-Copyright_License {
-
-  XCSoar Glide Computer - http://xcsoar.sourceforge.net/
-  Copyright (C) 2000 - 2005  
-
-  	M Roberts (original release)
-	Robin Birch <robinb@ruffnready.co.uk>
-	Samuel Gisiger <samuel.gisiger@triadis.ch>
-	Jeff Goodenough <jeff@enborne.f2s.com>
-	Alastair Harrison <aharrison@magic.force9.co.uk>
-	Scott Penrose <scottp@dd.com.au>
-	John Wharington <jwharington@bigfoot.com>
-
-  This program is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public License
-  as published by the Free Software Foundation; either version 2
-  of the License, or (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-}
-*/
-
 #include <tchar.h>
-
 #include <stdlib.h>
 #include <string.h>
-//#include "map.h"
+#include "options.h"
 #include "maptree.h"
+#if MAPSHAPEERROR
 #include "maperror.h"
+#endif
 
 #include "utils/heapcheck.h"
 
@@ -163,12 +159,14 @@ SHPTreeHandle msSHPDiskTreeOpen(const TCHAR* pszTree, int debug)
   /*     will be set to 0. So,we will test with the number of shapes (bytes */
   /*     1,2,3,4) that cannot be more than 65535 too.                       */
   /* ---------------------------------------------------------------------- */
+      #if MAPSHAPEERROR
       if (debug)
       {
           msDebug("WARNING in msSHPDiskTreeOpen(): %ls is in old index format "
                   "which has been deprecated.  It is strongly recommended to "
                   "regenerate it in new format.\n", pszTree);
       }
+      #endif
       if((pabyBuf[4] == 0 && pabyBuf[5] == 0 && 
           pabyBuf[6] == 0 && pabyBuf[7] == 0))
       {
@@ -425,7 +423,9 @@ char *msSearchTree(treeObj *tree, rectObj aoi)
 
   status = msAllocBitArray(tree->numshapes);
   if(!status) {
+    #if MAPSHAPEERROR
     msSetError(MS_MEMERR, NULL, "msSearchTree()");
+    #endif
     return(NULL);
   }
   
@@ -530,15 +530,19 @@ char *msSearchDiskTree(const TCHAR *filename, rectObj aoi, int debug)
   disktree = msSHPDiskTreeOpen (filename, debug);
   if(!disktree) {
 
+    #if MAPSHAPEERROR
     // only set this error IF debugging is turned on, gets annoying otherwise
     if(debug) msSetError(MS_IOERR, "Unable to open spatial index for %ls. In most cases you can safely ignore this message, otherwise check file names and permissions.", "msSearchDiskTree()", filename);
+    #endif
 
     return(NULL);
   }
 
   status = msAllocBitArray(disktree->nShapes);
   if(!status) {
+    #if MAPSHAPEERROR
     msSetError(MS_MEMERR, NULL, "msSearchDiskTree()");
+    #endif
     msSHPDiskTreeClose( disktree );
     return(NULL);
   }
@@ -593,13 +597,17 @@ treeObj *msReadTree(const TCHAR *filename, int debug)
 
   disktree = msSHPDiskTreeOpen( filename, debug );
   if(!disktree) {
+    #if MAPSHAPEERROR
     msSetError(MS_IOERR, NULL, "msReadTree()");
+    #endif
     return(NULL);
   }
 
   tree = (treeObj *) malloc(sizeof(treeObj));
   if(!tree) {
+    #if MAPSHAPEERROR
     msSetError(MS_MEMERR, NULL, "msReadTree()");
+    #endif
     return(NULL);
   }
   
@@ -634,7 +642,6 @@ static long getSubNodeOffset(treeNodeObj *node)
   
   return(offset);
 }
-
 
 static void writeTreeNode(SHPTreeHandle disktree, treeNodeObj *node) 
 {
@@ -677,6 +684,7 @@ static void writeTreeNode(SHPTreeHandle disktree, treeNodeObj *node)
   
 }
 
+#if USETOPOMARKS
 int msWriteTree(treeObj *tree, const TCHAR *filename, int B_order)
 {
   char		signature[3] = "SQT";
@@ -717,7 +725,9 @@ int msWriteTree(treeObj *tree, const TCHAR *filename, int B_order)
   
   if(!disktree->fp) {
     msFree(disktree);
+    #if MAPSHAPEERROR
     msSetError(MS_IOERR, NULL, "msWriteTree()");
+    #endif
     return(MS_FALSE);
   }
   
@@ -775,6 +785,7 @@ int msWriteTree(treeObj *tree, const TCHAR *filename, int B_order)
 
   return(MS_TRUE);
 }
+#endif // USETOPOMARKS
 
 // Function to filter search results further against feature bboxes
 void msFilterTreeSearch(shapefileObj *shp, char *status, rectObj search_rect)

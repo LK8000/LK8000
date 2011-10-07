@@ -1,46 +1,41 @@
 /*
-** This code is entirely based on the previous work of Frank Warmerdam. It is
-** essentially shapelib 1.1.5. However, there were enough changes that it was
-** incorporated into the MapServer source to avoid confusion. See the README 
-** for licence details.
+   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+   Released under GNU/GPL License v.2
+   See CREDITS.TXT file for authors and copyrights
+
+   $Id$
+
+   This part of the code is taken from ShapeLib 1.1.5
+   Copyright (c) 1999, Frank Warmerdam
+
+   This software is available under the following "MIT Style" license, or at the option 
+   of the licensee under the LGPL (see LICENSE.LGPL). 
+   This option is discussed in more detail in shapelib.html.
+
+   Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
+   and associated documentation files (the "Software"), to deal in the Software without restriction, 
+   including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+   and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
+   subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included in all copies 
+   or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+   FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
+   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 */
-/*
-Copyright_License {
-
-  XCSoar Glide Computer - http://xcsoar.sourceforge.net/
-  Copyright (C) 2000 - 2005  
-
-  	M Roberts (original release)
-	Robin Birch <robinb@ruffnready.co.uk>
-	Samuel Gisiger <samuel.gisiger@triadis.ch>
-	Jeff Goodenough <jeff@enborne.f2s.com>
-	Alastair Harrison <aharrison@magic.force9.co.uk>
-	Scott Penrose <scottp@dd.com.au>
-	John Wharington <jwharington@bigfoot.com>
-
-  This program is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public License
-  as published by the Free Software Foundation; either version 2
-  of the License, or (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-}
-*/
-
 #include "StdAfx.h"
+#include "options.h"
 
 #include "mapshape.h"
-#include "maperror.h"
 #include "maptree.h"
-
+#if MAPSHAPEERROR
+#include "maperror.h"
+#endif
 #include <limits.h>
 
 #include "utils/heapcheck.h"
@@ -945,7 +940,9 @@ int msSHPReadPoint( SHPHandle psSHP, int hEntity, pointObj *point )
     /*      Only valid for point shapefiles                                 */
     /* -------------------------------------------------------------------- */
     if( psSHP->nShapeType != SHP_POINT ) {
+      #if MAPSHAPEERROR
       msSetError(MS_SHPERR, "msSHPReadPoint only operates on point shapefiles.", "msSHPReadPoint()");
+      #endif
       return(MS_FAILURE);
     }
 
@@ -953,12 +950,16 @@ int msSHPReadPoint( SHPHandle psSHP, int hEntity, pointObj *point )
     /*      Validate the record/entity number.                              */
     /* -------------------------------------------------------------------- */
     if( hEntity < 0 || hEntity >= psSHP->nRecords ) {
+      #if MAPSHAPEERROR
       msSetError(MS_SHPERR, "Record index out of bounds.", "msSHPReadPoint()");
+      #endif
       return(MS_FAILURE);
     }
 
     if( psSHP->panRecSize[hEntity] == 4 ) {
+      #if MAPSHAPEERROR
       msSetError(MS_SHPERR, "NULL feature encountered.", "msSHPReadPoint()");
+      #endif
       return(MS_FAILURE);
     }   
 
@@ -1070,7 +1071,9 @@ void msSHPReadShape( SHPHandle psSHP, int hEntity, shapeObj *shape )
       /*      Fill the shape structure.                                       */
       /* -------------------------------------------------------------------- */
       if( (shape->line = (lineObj *)malloc(sizeof(lineObj)*nParts)) == NULL ) {
+        #if MAPSHAPEERROR
 	msSetError(MS_MEMERR, NULL, "SHPReadShape()");
+	#endif
 	return;
       }
 
@@ -1154,7 +1157,9 @@ void msSHPReadShape( SHPHandle psSHP, int hEntity, shapeObj *shape )
       /*      Fill the shape structure.                                       */
       /* -------------------------------------------------------------------- */
       if( (shape->line = (lineObj *)malloc(sizeof(lineObj))) == NULL ) {
+        #if MAPSHAPEERROR
 	msSetError(MS_MEMERR, NULL, "SHPReadShape()");
+	#endif
 	return;
       }
 
@@ -1197,7 +1202,9 @@ void msSHPReadShape( SHPHandle psSHP, int hEntity, shapeObj *shape )
       /*      Fill the shape structure.                                       */
       /* -------------------------------------------------------------------- */
       if( (shape->line = (lineObj *)malloc(sizeof(lineObj))) == NULL ) {
+        #if MAPSHAPEERROR
 	msSetError(MS_MEMERR, NULL, "SHPReadShape()");
+	#endif
 	return;
       }
 
@@ -1301,7 +1308,9 @@ int msSHPOpenFile(shapefileObj *shpfile, char *mode, const TCHAR *filename)
   TCHAR *dbfFilename;
 
   if(!filename) {
+    #if MAPSHAPEERROR
     msSetError(MS_IOERR, "No (NULL) filename provided.", "msSHPOpenFile()");
+    #endif
     return(-1);
   }
 
@@ -1316,7 +1325,9 @@ int msSHPOpenFile(shapefileObj *shpfile, char *mode, const TCHAR *filename)
     shpfile->hSHP = msSHPOpen( filename, mode);
 
   if(!shpfile->hSHP) {
+    #if MAPSHAPEERROR
     msSetError(MS_IOERR, "(%ls)", "msSHPOpenFile()", filename);
+    #endif
     return(-1);
   }
 
@@ -1342,7 +1353,9 @@ int msSHPOpenFile(shapefileObj *shpfile, char *mode, const TCHAR *filename)
   shpfile->hDBF = msDBFOpen(dbfFilename, "rb");
 
   if(!shpfile->hDBF) {
+    #if MAPSHAPEERROR
     msSetError(MS_IOERR, "(%ls)", "msSHPOpenFile()", dbfFilename);    
+    #endif
     free(dbfFilename);
     return(-1);
   }
@@ -1358,7 +1371,9 @@ int msSHPCreateFile(shapefileObj *shpfile, const TCHAR *filename, int type)
   if(type != SHP_POINT && type != SHP_MULTIPOINT && type != SHP_ARC &&
      type != SHP_POLYGON && type != SHP_POINTM && type != SHP_MULTIPOINTM &&
      type != SHP_ARCM && type != SHP_POLYGONM) {
+    #if MAPSHAPEERROR
     msSetError(MS_SHPERR, "Invalid shape type.", "msNewSHPFile()");
+    #endif
     return(-1);
   }
 
@@ -1412,14 +1427,18 @@ int msSHPWhichShapes(shapefileObj *shpfile, rectObj rect, int debug)
   if(msRectContained(&shpfile->bounds, &rect) == MS_TRUE) {
     shpfile->status = msAllocBitArray(shpfile->numshapes);
     if(!shpfile->status) {
+      #if MAPSHAPEERROR
       msSetError(MS_MEMERR, NULL, "msSHPWhichShapes()");
+      #endif
       return(MS_FAILURE);
     }
     for(i=0;i<shpfile->numshapes;i++) 
       msSetBit(shpfile->status, i, 1);
   } else {
     if((filename = (TCHAR *)malloc((_tcslen(shpfile->source)+_tcslen(_T(MS_INDEX_EXTENSION))+1) * sizeof(TCHAR) * 2)) == NULL) {
+      #if MAPSHAPEERROR
       msSetError(MS_MEMERR, NULL, "msSHPWhichShapes()");    
+      #endif
       return(MS_FAILURE);
     }
     _stprintf(filename, _T("%s%s"), shpfile->source, _T(MS_INDEX_EXTENSION));
@@ -1432,7 +1451,9 @@ int msSHPWhichShapes(shapefileObj *shpfile, rectObj rect, int debug)
     else { // no index 
       shpfile->status = msAllocBitArray(shpfile->numshapes);
       if(!shpfile->status) {
+        #if MAPSHAPEERROR
 	msSetError(MS_MEMERR, NULL, "msSHPWhichShapes()");       
+        #endif
 	return(MS_FAILURE);
       }
       
