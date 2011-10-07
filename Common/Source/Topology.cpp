@@ -44,7 +44,11 @@ void Topology::loadBitmap(const int xx) {
 }
 
 // thecolor is relative to shapes, not to labels
+#if USETOPOMARKS
 Topology::Topology(const TCHAR* shpname, COLORREF thecolor, bool doappend) {
+#else
+Topology::Topology(const TCHAR* shpname, COLORREF thecolor) {
+#endif
 
   #if USETOPOMARKS
   append = doappend;

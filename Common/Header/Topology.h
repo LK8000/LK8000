@@ -47,7 +47,11 @@ class XShapeLabel: public XShape {
 class Topology {
 
  public:
+#if USETOPOMARKS
   Topology(const TCHAR* shpname, COLORREF thecolor, bool doappend=false);
+#else
+  Topology(const TCHAR* shpname, COLORREF thecolor);
+#endif
   Topology() {};
   
   virtual ~Topology();
@@ -74,6 +78,7 @@ class Topology {
   bool checkVisible(shapeObj& shape, rectObj &screenRect);
 
   void loadBitmap(const int);
+  void loadPenBrush(const int);
 
   TCHAR filename[MAX_PATH];
 
