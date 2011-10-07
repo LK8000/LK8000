@@ -1683,21 +1683,25 @@ void OpenTopology() {
         
         if (ShapeField<0) {
           Topology* newtopo;
-          newtopo = new Topology(wShapeFilename, RGB(red,green,blue));
+          newtopo = new Topology(wShapeFilename);
           TopoStore[numtopo] = newtopo;
         } else {
           TopologyLabel *newtopol;
-          newtopol = new TopologyLabel(wShapeFilename, 
-                                       RGB(red,green,blue),
-                                       ShapeField);
+          newtopol = new TopologyLabel(wShapeFilename, ShapeField);
           TopoStore[numtopo] = newtopol;
         }
-        if (ShapeIcon!=0) 
-          TopoStore[numtopo]->loadBitmap(ShapeIcon);
-        
+
+
         TopoStore[numtopo]->scaleCategory = shapeIndex;
         TopoStore[numtopo]->scaleDefaultThreshold = ShapeRange;
 	TopoStore[numtopo]->scaleThreshold = ShapeRange;
+
+        if (ShapeIcon!=0) 
+          TopoStore[numtopo]->loadBitmap(ShapeIcon);
+	else {
+	  // Careful not to use hPen and hBrush then! Always check that it is not null
+          TopoStore[numtopo]->loadPenBrush(RGB(red,green,blue));
+	}
 
 	if (shapeIndex ==  5) if ( LKTopoZoomCat05 <=100 ) TopoStore[numtopo]->scaleThreshold = LKTopoZoomCat05;
 	if (shapeIndex == 10) if ( LKTopoZoomCat10 <=100 ) TopoStore[numtopo]->scaleThreshold = LKTopoZoomCat10;

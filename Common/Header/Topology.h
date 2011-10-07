@@ -48,9 +48,9 @@ class Topology {
 
  public:
 #if USETOPOMARKS
-  Topology(const TCHAR* shpname, COLORREF thecolor, bool doappend=false);
+  Topology(const TCHAR* shpname,  bool doappend=false);
 #else
-  Topology(const TCHAR* shpname, COLORREF thecolor);
+  Topology(const TCHAR* shpname);
 #endif
   Topology() {};
   
@@ -78,7 +78,7 @@ class Topology {
   bool checkVisible(shapeObj& shape, rectObj &screenRect);
 
   void loadBitmap(const int);
-  void loadPenBrush(const int);
+  void loadPenBrush(const COLORREF thecolor);
 
   TCHAR filename[MAX_PATH];
 
@@ -110,7 +110,7 @@ class Topology {
 #if USETOPOMARKS
 class TopologyWriter: public Topology {
  public:
-  TopologyWriter(const TCHAR *shpname, COLORREF thecolor);
+  TopologyWriter(const TCHAR *shpname);
   virtual ~TopologyWriter();
   
   void addPoint(double x, double y);
@@ -123,7 +123,7 @@ class TopologyWriter: public Topology {
 
 class TopologyLabel: public Topology {
  public:
-  TopologyLabel(const TCHAR* shpname, COLORREF thecolor, INT field1);
+  TopologyLabel(const TCHAR* shpname, INT field1);
   virtual ~TopologyLabel();
   virtual XShape* addShape(const int i);
   void setField(int i);

@@ -44,10 +44,28 @@ void Topology::loadBitmap(const int xx) {
 }
 
 // thecolor is relative to shapes, not to labels
+void Topology::loadPenBrush(const COLORREF thecolor) {
+  int psize;
+  switch(scaleCategory) {
+	case 30:
+		psize=NIBLSCALE(2);
+		break;
+	case 60:
+		psize=1;
+		break;
+	default:
+		psize=NIBLSCALE(1);
+		break;
+  }
+  hPen = (HPEN)CreatePen(PS_SOLID, psize, thecolor);
+  hbBrush=(HBRUSH)CreateSolidBrush(thecolor);
+
+}
+
 #if USETOPOMARKS
-Topology::Topology(const TCHAR* shpname, COLORREF thecolor, bool doappend) {
+Topology::Topology(const TCHAR* shpname, bool doappend) {
 #else
-Topology::Topology(const TCHAR* shpname, COLORREF thecolor) {
+Topology::Topology(const TCHAR* shpname) {
 #endif
 
   #if USETOPOMARKS
@@ -71,8 +89,6 @@ Topology::Topology(const TCHAR* shpname, COLORREF thecolor) {
 
   // filename aleady points to _MAPS subdirectory!
   _tcscpy( filename, shpname ); 
-  hPen = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), thecolor);
-  hbBrush=(HBRUSH)CreateSolidBrush(thecolor);
   Open();
 }
 
@@ -228,8 +244,10 @@ void Topology::Close() {
 
 Topology::~Topology() {
   Close();
-  DeleteObject((HPEN)hPen);
-  DeleteObject((HBRUSH)hbBrush);    
+  if (hPen) {
+    DeleteObject((HPEN)hPen);
+    DeleteObject((HBRUSH)hbBrush);    
+  }
   if (hBitmap) {
     DeleteObject(hBitmap);
   }
@@ -494,8 +512,13 @@ void Topology::Paint(HDC hdc, RECT rc) {
   HBRUSH hbOld;
   HFONT hfOld;
 
-  hpOld = (HPEN)SelectObject(hdc,hPen);
-  hbOld = (HBRUSH)SelectObject(hdc, hbBrush);
+  if (hPen) {
+    hpOld = (HPEN)SelectObject(hdc,  hPen);
+    hbOld = (HBRUSH)SelectObject(hdc, hbBrush);
+  } else {
+    hpOld = NULL;
+    hbOld = NULL;
+  }
   hfOld = (HFONT)SelectObject(hdc, MapLabelFont);
 
   // get drawing info
@@ -668,21 +691,20 @@ void Topology::Paint(HDC hdc, RECT rc) {
       break;
     }
   }
-        
-  SelectObject(hdc, hbOld);
-  SelectObject(hdc, hpOld);
+  if (hpOld) {
+    SelectObject(hdc, hbOld);
+    SelectObject(hdc, hpOld);
+  }
   SelectObject(hdc, (HFONT)hfOld);
 
 }
 
 
 
-TopologyLabel::TopologyLabel(const TCHAR* shpname, COLORREF thecolor, int field1):Topology(shpname, thecolor) 
+//TopologyLabel::TopologyLabel(const TCHAR* shpname, COLORREF thecolor, int field1):Topology(shpname, thecolor)  REMOVE
+TopologyLabel::TopologyLabel(const TCHAR* shpname, int field1):Topology(shpname) 
 {
-  //sjt 02nov05 - enabled label fields
   setField(max(0,field1)); 
-  // JMW this is causing XCSoar to crash on my system!
-  // If you place the base class constructor inside the function body, then the compiled exe will crash on PNAs
 };
 
 TopologyLabel::~TopologyLabel()
