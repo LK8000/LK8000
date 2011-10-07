@@ -28,14 +28,6 @@
 #include "Modeltype.h"
 
 
-#ifdef __MINGW32__
-#ifndef max
-#define max(x, y)   (x > y ? x : y)
-#define min(x, y)   (x < y ? x : y)
-#endif
-#endif
-
-
 const TCHAR szRegistryKey[] = TEXT(REGKEYNAME);
 const TCHAR *szRegistryDisplayType[MAXINFOWINDOWS] =     { TEXT("Info0"),
 				       TEXT("Info1"),
@@ -698,11 +690,11 @@ void ReadRegistrySettings(void)
 
   Temp = WarningTime;
   GetFromRegistry(szRegistryWarningTime,&Temp);
-  WarningTime = max(10,Temp);
+  WarningTime = std::max(10UL,Temp);
 
   Temp = AcknowledgementTime;
   GetFromRegistry(szRegistryAcknowledgementTime,&Temp);
-  AcknowledgementTime = max(10,Temp);
+  AcknowledgementTime = std::max(10UL,Temp);
 
   Temp = 1;
   GetFromRegistry(szRegistryAutoBacklight,&Temp); // VENTA4
@@ -1738,8 +1730,7 @@ void LoadRegistryFromFile(const TCHAR *szFile) {
 void SaveRegistryToFile(const TCHAR *szFile)
 {
   TCHAR lpstrName[nMaxKeyNameSize+1];
-//  char sName[nMaxKeyNameSize+1];
-//  char sValue[nMaxValueValueSize+1];
+
   #if TESTBENCH
   StartupStore(_T(".... SaveRegistryToFile <%s>%s"),szFile,NEWLINE);
   #endif
@@ -1752,6 +1743,8 @@ void SaveRegistryToFile(const TCHAR *szFile)
   } uValue;
 #else
   BYTE pValue[nMaxValueValueSize+1];
+  char sName[nMaxKeyNameSize+1];
+  char sValue[nMaxValueValueSize+1];
 #endif
 
   HKEY hkFrom;

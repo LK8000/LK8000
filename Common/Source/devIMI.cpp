@@ -18,6 +18,9 @@
 
 #include "utils/heapcheck.h"
 
+#ifdef _MSC_VER
+#define PACKED
+#endif
 
 /* *********************** C O N S T A N T S ************************** */
 

@@ -27,8 +27,9 @@
 extern "C" {
 #endif
 
-
-extern int errno;
+#ifndef errno
+	extern int errno;
+#endif
 
 #define ENOENT	(2)
 #define EBADF	(9)

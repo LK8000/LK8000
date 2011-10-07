@@ -6,7 +6,7 @@
    $Id: $
 */
 
-
+#include "StdAfx.h"
 #include "options.h"
 
 #include "ContestMgr.h"

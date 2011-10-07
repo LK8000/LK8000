@@ -2315,7 +2315,7 @@ void InputEvents::eventDLLExecute(const TCHAR *misc) {
   // Load library, find function, execute, unload library
   hinstLib = _loadDLL(dll_name);
   if (hinstLib != NULL) {
-#if !(defined(__MINGW32__)&&(WINDOWSPC>0))
+#if (WINDOWSPC<1)
     lpfnDLLProc = (DLLFUNC_INPUTEVENT)GetProcAddress(hinstLib, func_name);
 #endif
     if (lpfnDLLProc != NULL) {
@@ -2341,7 +2341,7 @@ HINSTANCE _loadDLL(TCHAR *name) {
       
       // First time setup... (should check version numbers etc...)
       DLLFUNC_SETHINST lpfnDLLProc = NULL;
-#if !(defined(__MINGW32__)&&(WINDOWSPC>0))
+#if (WINDOWSPC<1)
       lpfnDLLProc = (DLLFUNC_SETHINST)
 	GetProcAddress(DLLCache[DLLCache_Count - 1].hinstance, 
 		       TEXT("XCSAPI_SetHInst"));

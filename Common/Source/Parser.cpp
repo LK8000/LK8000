@@ -28,13 +28,6 @@ FlarmCalculations flarmCalculations;
 
 #include "utils/heapcheck.h"
 
-#ifdef __MINGW32__
-#ifndef max
-#define max(x, y)   (x > y ? x : y)
-#define min(x, y)   (x < y ? x : y)
-#endif
-#endif
-
 static double EastOrWest(double in, TCHAR EoW);
 static double NorthOrSouth(double in, TCHAR NoS);
 //static double LeftOrRight(double in, TCHAR LoR);
@@ -863,7 +856,7 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   GPSCONNECT = TRUE;     // 091208
 
   // this will force gps invalid but will NOT assume gps valid!
-  nSatellites = (int)(min(16.0, StrToDouble(params[6], NULL)));
+  nSatellites = (int)(std::min(16.0, StrToDouble(params[6], NULL)));
   if (nSatellites==0) {
 	gpsValid = false;
   }
@@ -1081,7 +1074,7 @@ BOOL NMEAParser::PTAS1(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   double wnet,baralt,vtas;
 
   wnet = (StrToDouble(params[0],NULL)-200)/(10*TOKNOTS);
-  baralt = max(0.0, (StrToDouble(params[2],NULL)-2000)/TOFEET);
+  baralt = std::max(0.0, (StrToDouble(params[2],NULL)-2000)/TOFEET);
   vtas = StrToDouble(params[3],NULL)/TOKNOTS;
   
   GPS_INFO->AirspeedAvailable = TRUE;

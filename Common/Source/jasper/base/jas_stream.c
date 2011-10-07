@@ -280,11 +280,12 @@ jas_stream_t *jas_stream_fopen(const wchar_t *filename, const char *mode)
 	}
 	obj->fd = -1;
 	obj->flags = 0;
-  
-  char utfname[MAX_PATH*2];
-  unicode2utf(filename, utfname, countof(utfname));
-  
-  strncpy(obj->pathname, utfname, DIM_MAX_FILE_NAME); //dima
+
+	{
+		char utfname[MAX_PATH*2];
+		unicode2utf(filename, utfname, countof(utfname));
+		strncpy(obj->pathname, utfname, DIM_MAX_FILE_NAME); //dima
+	}
 
 	stream->obj_ = (void *) obj;
 

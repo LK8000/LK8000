@@ -5,7 +5,7 @@
 
    $Id: ClimbAverageCalculator.cpp,v 8.2 2010/12/10 23:46:41 root Exp root $
 */
-
+#include "StdAfx.h"
 #include "ClimbAverageCalculator.h"
 
 #include "utils/heapcheck.h"

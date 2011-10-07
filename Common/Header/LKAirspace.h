@@ -76,7 +76,6 @@ class CAirspace
 {
 public:
   CAirspace() :
-            _name(),
             _type( 0 ),
             _base(),
             _top(),

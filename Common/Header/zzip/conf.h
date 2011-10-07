@@ -156,7 +156,7 @@ JMW something wrong
 #define _zzip_inline static
 #endif
 
-#if defined _MSC_VER || defined __WATCOMC__ 
+#if defined (_MSC_VER) || defined (__WATCOMC__) 
 #include <io.h>
 #endif
 
