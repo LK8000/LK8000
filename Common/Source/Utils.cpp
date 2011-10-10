@@ -1157,7 +1157,6 @@ void LocalPath(TCHAR* buffer, const TCHAR* file, int loc) {
 }
 
 // This is used by LoadFromXML function only
- #define LKD_DIALOGS   "_System\\_Dialogs"
 void LocalPathS(char *buffer, const TCHAR* file, int loc) {
   TCHAR wbuffer[MAX_PATH];
 
