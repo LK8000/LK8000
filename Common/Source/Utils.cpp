@@ -1156,11 +1156,34 @@ void LocalPath(TCHAR* buffer, const TCHAR* file, int loc) {
   }
 }
 
-
+// This is used by LoadFromXML function only
+ #define LKD_DIALOGS   "_System\\_Dialogs"
 void LocalPathS(char *buffer, const TCHAR* file, int loc) {
   TCHAR wbuffer[MAX_PATH];
-  LocalPath(wbuffer,file,loc);
+
+  LocalPath(wbuffer, TEXT(LKD_DIALOGS));
+  _tcscat(wbuffer,_T("\\"));
+
+  switch(AircraftCategory) {
+	case umGlider:
+		_tcscat(wbuffer,L"GLIDER\\");
+		break;
+	case umParaglider:
+		_tcscat(wbuffer,L"PARAGLIDER\\");
+		break;
+	case umCar:
+		_tcscat(wbuffer,L"CAR\\");
+		break;
+	case umGAaircraft:
+		_tcscat(wbuffer,L"GA\\");
+		break;
+	default:
+		break;
+  }
+  _tcscat(wbuffer,file);
+
   sprintf(buffer,"%S",wbuffer);
+
 }
 
 

@@ -277,11 +277,13 @@ void dlgBasicSettingsShowModal(void){
 
 
   char filename[MAX_PATH];
-  LocalPathS(filename, TEXT("dlgBasicSettings.xml")); // no worry missing _L, it is unused anyway
-  if (!ScreenLandscape) 
+  if (!ScreenLandscape) {
+	LocalPathS(filename, TEXT("dlgBasicSettings_L.xml"));
 	wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_BASICSETTINGS_L"));
-  else
+  } else {
+	LocalPathS(filename, TEXT("dlgBasicSettings.xml"));
 	wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_BASICSETTINGS"));
+  }
 
   WndProperty* wp;
 

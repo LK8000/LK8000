@@ -401,37 +401,30 @@ static XMLNode xmlOpenResourceHelper(const TCHAR *lpszXML, LPCTSTR tag)
 
 
 
-WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const char *FileName, HWND Parent,
-                        const TCHAR* resource) {
+WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const char *filename, HWND Parent,
+                        const TCHAR* raw_resource) {
 
   WndForm *theForm = NULL;
-  //  TCHAR sFileName[128];
-
-//  ASSERT(hWndMainWindow == Parent);  // Airspace warning has MapWindow as parent, 
-  // ist that ok?  JMW: No, I think that it is better to use main UI thread for
-  // everything.  See changes regarding RequestAirspaceDialog in AirspaceWarning.cpp
-
-  // this open and parse the XML file:
-
   XMLNode xMainNode;
 
-  #if 0
-  // LK will not load on production versions any XML from the filesystem, by default
-  #if (WINDOWSPC>0)
-  if (FileExistsA((char*)FileName))   //sgi use window API cals to check if
-                               //file exists, this will supress
-                               //CodeGurad warnings on callinf
-                               //fopen(<unexisting file>)
-    xMainNode=XMLNode::openFileHelper(FileName ,TEXT("PMML"));
-  #endif
-  #endif
+  TCHAR tfilename[MAX_PATH];
+  _stprintf(tfilename,_T("%S"),filename);
 
+  StartupStore(_T("... xmlOpen <%s>\n"),tfilename);
+
+  if (FileExists(tfilename))
+	xMainNode=XMLNode::openFileHelper(tfilename ,TEXT("PMML"));
+
+  //
+  // If nothing available in filesystem, load from internal resources
+  // This is going to be removed in future LK versions.
+  //
   if (xMainNode.isEmpty()) {
-    if (resource) {
-      xMainNode =xmlOpenResourceHelper(resource,
-                                       TEXT("PMML"));
+    if (raw_resource) {
+      xMainNode =xmlOpenResourceHelper(raw_resource, TEXT("PMML"));
     }
   }
+
 
   // TODO code: put in error checking here and get rid of exits in xmlParser
   if (xMainNode.isEmpty()) {
