@@ -3,6 +3,9 @@ SRC=Common/Source
 DEV=Common/Source/Devices
 DLG=Common/Source/Dialogs
 LIB=Common/Source/Library
+TOP=Common/Source/Topology
+SHP=Common/Source/Topology/shapelib
+TER=Common/Source/Terrain
 HDR=Common/Header
 
 BIN=Bin/$(TARGET)
@@ -416,7 +419,7 @@ SRC_FILES :=\
 	$(SRC)/StdAfx.cpp		$(SRC)/STScreenBuffer.cpp \
 	$(SRC)/Task.cpp			$(SRC)/TeamCodeCalculation.cpp \
 	$(SRC)/Terrain.cpp		$(SRC)/ThermalLocator.cpp \
-	$(SRC)/Topology.cpp		$(SRC)/units.cpp \
+	$(SRC)/units.cpp \
 	$(SRC)/Utils.cpp		\
 	$(SRC)/LKObjects.cpp \
 	$(SRC)/Waypointparser.cpp  	$(SRC)/LKUtils.cpp \
@@ -426,10 +429,11 @@ SRC_FILES :=\
 	$(SRC)/WindZigZag.cpp 		\
 	$(SRC)/ContestMgr.cpp 		$(SRC)/Trace.cpp \
 	\
-	$(SRC)/mapbits.cpp \
-	$(SRC)/maperror.cpp 		$(SRC)/mapprimitive.cpp \
-	$(SRC)/mapsearch.cpp		$(SRC)/mapshape.cpp \
-	$(SRC)/maptree.cpp              $(SRC)/mapxbase.cpp \
+	$(TOP)/Topology.cpp		\
+	$(SHP)/mapbits.cpp \
+	$(SHP)/maperror.cpp 		$(SHP)/mapprimitive.cpp \
+	$(SHP)/mapsearch.cpp		$(SHP)/mapshape.cpp \
+	$(SHP)/maptree.cpp              $(SHP)/mapxbase.cpp \
 	\
 	$(LIBRARY) \
 	$(UTILS) \
