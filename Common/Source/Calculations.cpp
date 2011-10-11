@@ -4566,4 +4566,39 @@ bool IsFlarmTargetCNInRange()
      BallastTimeLast = GPS_INFO.Time;
    }
  }
+
+
+int DetectStartTime(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
+  // we want this to display landing time until next takeoff
+
+  static int starttime = -1;
+  static int lastflighttime = -1;
+
+  if (Calculated->Flying) {
+    if (starttime == -1) {
+      // hasn't been started yet
+
+      starttime = (int)GPS_INFO.Time;
+
+      lastflighttime = -1;
+    }
+    return (int)GPS_INFO.Time-starttime;
+
+  } else {
+
+    if (lastflighttime == -1) {
+      // hasn't been stopped yet
+      if (starttime>=0) {
+        lastflighttime = (int)Basic->Time-starttime;
+      } else {
+        return 0; // no last flight time
+      }
+      // reset for next takeoff
+      starttime = -1;
+    }
+  }
+
+  // return last flighttime if it exists
+  return max(0,lastflighttime);
+}
  

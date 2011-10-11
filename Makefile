@@ -2,6 +2,7 @@
 SRC=Common/Source
 DEV=Common/Source/Devices
 DLG=Common/Source/Dialogs
+LIB=Common/Source/Library
 HDR=Common/Header
 
 BIN=Bin/$(TARGET)
@@ -273,6 +274,14 @@ endif
 
 ####### sources
 
+LIBRARY	:=\
+	$(LIB)/magfield.cpp \
+	$(LIB)/NavFunctions.cpp	\
+	$(LIB)/PressureFunctions.cpp\
+	$(LIB)/StringFunctions.cpp\
+	$(LIB)/TimeFunctions.cpp\
+	$(LIB)/Utm.cpp \
+
 UTILS	:=\
 	$(SRC)/utils/stringext.cpp
   
@@ -365,14 +374,13 @@ SRC_FILES :=\
 	$(SRC)/LKInterface.cpp		$(SRC)/LocalPath.cpp\
 	$(SRC)/LKFonts.cpp		$(SRC)/LDRotaryBuffer.cpp\
 	$(SRC)/TrueWind.cpp		$(SRC)/OverTargets.cpp\
-	$(SRC)/magfield.cpp		$(SRC)/VirtualKeys.cpp\
+	$(SRC)/VirtualKeys.cpp\
 	$(SRC)/Thread_Draw.cpp		$(SRC)/Thread_Port.cpp\
 	$(SRC)/WndProc.cpp		$(SRC)/InitFunctions.cpp\
 	$(SRC)/Settings.cpp		$(SRC)/Thread_Calculation.cpp\
 	$(SRC)/lk8000.cpp		$(SRC)/ProcessTimer.cpp \
-	$(SRC)/TimeFunctions.cpp	$(SRC)/StringFunctions.cpp\
 	$(SRC)/Polar.cpp		$(SRC)/AssetId.cpp \
-	$(SRC)/FlarmTools.cpp		$(SRC)/PressureFunctions.cpp\
+	$(SRC)/FlarmTools.cpp		\
 	$(SRC)/MessageLog.cpp		$(SRC)/Registry.cpp\
 	$(SRC)/Locking.cpp		$(SRC)/Fonts.cpp \
 	$(SRC)/ExpandMacros.cpp		$(SRC)/Battery.cpp \
@@ -401,7 +409,6 @@ SRC_FILES :=\
 	$(SRC)/MapWindowZoom.cpp        $(SRC)/MapWindowMode.cpp \
 	$(SRC)/Utils2.cpp \
 	$(SRC)/McReady.cpp 		$(SRC)/Message.cpp \
-	$(SRC)/NavFunctions.cpp		\
 	$(SRC)/Parser.cpp		$(SRC)/Port.cpp \
 	$(SRC)/Process.cpp 		\
 	$(SRC)/RasterTerrain.cpp	$(SRC)/rscalc.cpp \
@@ -409,7 +416,7 @@ SRC_FILES :=\
 	$(SRC)/Task.cpp			$(SRC)/TeamCodeCalculation.cpp \
 	$(SRC)/Terrain.cpp		$(SRC)/ThermalLocator.cpp \
 	$(SRC)/Topology.cpp		$(SRC)/units.cpp \
-	$(SRC)/Utils.cpp		$(SRC)/Utm.cpp \
+	$(SRC)/Utils.cpp		\
 	$(SRC)/LKObjects.cpp \
 	$(SRC)/Waypointparser.cpp  	$(SRC)/LKUtils.cpp \
 	$(SRC)/LKLanguage.cpp		$(SRC)/LKGeneralAviation.cpp \
@@ -423,6 +430,7 @@ SRC_FILES :=\
 	$(SRC)/mapsearch.cpp		$(SRC)/mapshape.cpp \
 	$(SRC)/maptree.cpp              $(SRC)/mapxbase.cpp \
 	\
+	$(LIBRARY) \
 	$(UTILS) \
 	$(DEVS) \
 	$(DLGS) \
