@@ -281,6 +281,7 @@ LIBRARY	:=\
 	$(LIB)/StringFunctions.cpp\
 	$(LIB)/TimeFunctions.cpp\
 	$(LIB)/Utm.cpp \
+	$(LIB)/xmlParser.cpp \
 
 UTILS	:=\
 	$(SRC)/utils/stringext.cpp
@@ -422,7 +423,7 @@ SRC_FILES :=\
 	$(SRC)/LKLanguage.cpp		$(SRC)/LKGeneralAviation.cpp \
 	$(SRC)/windanalyser.cpp		$(SRC)/windmeasurementlist.cpp \
 	$(SRC)/windstore.cpp 		$(SRC)/WindowControls.cpp \
-	$(SRC)/WindZigZag.cpp 		$(SRC)/xmlParser.cpp \
+	$(SRC)/WindZigZag.cpp 		\
 	$(SRC)/ContestMgr.cpp 		$(SRC)/Trace.cpp \
 	\
 	$(SRC)/mapbits.cpp \
@@ -439,7 +440,7 @@ SRC_FILES :=\
 
 ####### libraries
 
-ZZIPSRC	:=$(SRC)/zzip
+ZZIPSRC	:=$(LIB)/zzip
 ZZIP	:=\
 	$(ZZIPSRC)/adler32.c	 	$(ZZIPSRC)/compress.c \
 	$(ZZIPSRC)/crc32.c 		$(ZZIPSRC)/deflate.c \
