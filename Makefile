@@ -355,7 +355,7 @@ VOLKS	:=\
 	$(SRC)/Volkslogger/vlutils.cpp
 
 SRC_FILES :=\
-	$(SRC)/LKInterface.cpp\
+	$(SRC)/LKInterface.cpp		$(SRC)/LocalPath.cpp\
 	$(SRC)/LKFonts.cpp		$(SRC)/LDRotaryBuffer.cpp\
 	$(SRC)/TrueWind.cpp		$(SRC)/OverTargets.cpp\
 	$(SRC)/magfield.cpp		$(SRC)/VirtualKeys.cpp\
