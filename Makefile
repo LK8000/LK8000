@@ -1,6 +1,9 @@
 #
 SRC=Common/Source
+DEV=Common/Source/Devices
+DLG=Common/Source/Dialogs
 HDR=Common/Header
+
 BIN=Bin/$(TARGET)
 
 # enable/disable heap checking (dmalloc.h libdmalloc.a must be in ../dmalloc)
@@ -274,85 +277,89 @@ UTILS	:=\
 	$(SRC)/utils/stringext.cpp
   
 DEVS	:=\
-	$(SRC)/devBase.cpp \
-	$(SRC)/devBorgeltB50.cpp \
-	$(SRC)/devCAI302.cpp \
-	$(SRC)/devCaiGpsNav.cpp \
-	$(SRC)/devCompeo.cpp \
-	$(SRC)/devCondor.cpp \
-	$(SRC)/devDigifly.cpp \
-	$(SRC)/devDisabled.cpp \
-	$(SRC)/devDSX.cpp \
-	$(SRC)/devEW.cpp \
-	$(SRC)/devEWMicroRecorder.cpp \
-	$(SRC)/devFlymasterF1.cpp \
-	$(SRC)/devFlytec.cpp \
-	$(SRC)/devGeneric.cpp \
-	$(SRC)/devIlec.cpp \
-	$(SRC)/devIMI.cpp \
-	$(SRC)/devNmeaOut.cpp \
-	$(SRC)/devLKext1.cpp \
-	$(SRC)/devLX.cpp \
-	$(SRC)/devLXNano.cpp \
-	$(SRC)/devPosiGraph.cpp \
-	$(SRC)/devVolkslogger.cpp \
-	$(SRC)/devXCOM760.cpp \
-	$(SRC)/devZander.cpp \
-	$(SRC)/devWesterboer.cpp \
-
-DLGS	:=\
-	$(SRC)/dlgAirspace.cpp \
-	$(SRC)/dlgAirspaceWarningParams.cpp \
-	$(SRC)/dlgAirspaceColours.cpp \
-	$(SRC)/dlgAirspaceDetails.cpp \
-	$(SRC)/dlgAirspacePatterns.cpp \
-	$(SRC)/dlgAirspaceSelect.cpp \
-	$(SRC)/dlgBasicSettings.cpp \
-	$(SRC)/dlgBottomBar.cpp \
-	$(SRC)/dlgChecklist.cpp \
-	$(SRC)/dlgConfiguration.cpp \
-	$(SRC)/dlgConfiguration2.cpp \
-	$(SRC)/dlgCustomKeys.cpp \
-	$(SRC)/dlgFontEdit.cpp \
-	$(SRC)/dlgHelp.cpp \
-	$(SRC)/dlgInfoPages.cpp \
-	$(SRC)/dlgLKAirspaceWarning.cpp \
-	$(SRC)/dlgLKTraffic.cpp \
-	$(SRC)/dlgLoggerReplay.cpp \
-	$(SRC)/dlgOracle.cpp \
-	$(SRC)/dlgProfiles.cpp \
-	$(SRC)/dlgStartPoint.cpp \
-	$(SRC)/dlgStartTask.cpp \
-	$(SRC)/dlgStartup.cpp \
-	$(SRC)/dlgStatistics.cpp \
-	$(SRC)/dlgStatus.cpp \
-	$(SRC)/dlgStatusSystem.cpp \
-	$(SRC)/dlgTarget.cpp \
-	$(SRC)/dlgTaskCalculator.cpp \
-	$(SRC)/dlgTaskOverview.cpp \
-	$(SRC)/dlgTaskRules.cpp \
-	$(SRC)/dlgTimeGates.cpp \
-	$(SRC)/dlgTopology.cpp \
-	$(SRC)/dlgTaskWaypoint.cpp \
-	$(SRC)/dlgTeamCode.cpp \
-	$(SRC)/dlgTextEntry_Keyboard.cpp \
-	$(SRC)/dlgThermalDetails.cpp \
-	$(SRC)/dlgTools.cpp \
-	$(SRC)/dlgWayPointDetails.cpp \
-	$(SRC)/dlgWayQuick.cpp \
-	$(SRC)/dlgWaypointEdit.cpp \
-	$(SRC)/dlgWayPointSelect.cpp \
-	$(SRC)/dlgWaypointOutOfTerrain.cpp \
-	$(SRC)/dlgWindSettings.cpp \
+	$(DEV)/devBase.cpp \
+	$(DEV)/devBorgeltB50.cpp \
+	$(DEV)/devCAI302.cpp \
+	$(DEV)/devCaiGpsNav.cpp \
+	$(DEV)/devCompeo.cpp \
+	$(DEV)/devCondor.cpp \
+	$(DEV)/devDigifly.cpp \
+	$(DEV)/devDisabled.cpp \
+	$(DEV)/devDSX.cpp \
+	$(DEV)/devEW.cpp \
+	$(DEV)/devEWMicroRecorder.cpp \
+	$(DEV)/devFlymasterF1.cpp \
+	$(DEV)/devFlytec.cpp \
+	$(DEV)/devGeneric.cpp \
+	$(DEV)/devIlec.cpp \
+	$(DEV)/devIMI.cpp \
+	$(DEV)/devNmeaOut.cpp \
+	$(DEV)/devLKext1.cpp \
+	$(DEV)/devLX.cpp \
+	$(DEV)/devLXNano.cpp \
+	$(DEV)/devPosiGraph.cpp \
+	$(DEV)/devVolkslogger.cpp \
+	$(DEV)/devXCOM760.cpp \
+	$(DEV)/devZander.cpp \
+	$(DEV)/devWesterboer.cpp \
+	$(DEV)/LKHolux.cpp \
+	$(DEV)/LKRoyaltek3200.cpp	\
 
 VOLKS	:=\
-	$(SRC)/Volkslogger/dbbconv.cpp \
-	$(SRC)/Volkslogger/grecord.cpp \
-	$(SRC)/Volkslogger/vlapi2.cpp \
-	$(SRC)/Volkslogger/vlapihlp.cpp \
-	$(SRC)/Volkslogger/vlapisys_win.cpp \
-	$(SRC)/Volkslogger/vlconv.cpp \
-	$(SRC)/Volkslogger/vlutils.cpp
+	$(DEV)/Volkslogger/dbbconv.cpp \
+	$(DEV)/Volkslogger/grecord.cpp \
+	$(DEV)/Volkslogger/vlapi2.cpp \
+	$(DEV)/Volkslogger/vlapihlp.cpp \
+	$(DEV)/Volkslogger/vlapisys_win.cpp \
+	$(DEV)/Volkslogger/vlconv.cpp \
+	$(DEV)/Volkslogger/vlutils.cpp
+
+
+DLGS	:=\
+	$(DLG)/dlgAirspace.cpp \
+	$(DLG)/dlgAirspaceWarningParams.cpp \
+	$(DLG)/dlgAirspaceColours.cpp \
+	$(DLG)/dlgAirspaceDetails.cpp \
+	$(DLG)/dlgAirspacePatterns.cpp \
+	$(DLG)/dlgAirspaceSelect.cpp \
+	$(DLG)/dlgBasicSettings.cpp \
+	$(DLG)/dlgBottomBar.cpp \
+	$(DLG)/dlgChecklist.cpp \
+	$(DLG)/dlgComboPicker.cpp \
+	$(DLG)/dlgConfiguration.cpp \
+	$(DLG)/dlgConfiguration2.cpp \
+	$(DLG)/dlgCustomKeys.cpp \
+	$(DLG)/dlgFontEdit.cpp \
+	$(DLG)/dlgHelp.cpp \
+	$(DLG)/dlgInfoPages.cpp \
+	$(DLG)/dlgLKAirspaceWarning.cpp \
+	$(DLG)/dlgLKTraffic.cpp \
+	$(DLG)/dlgLoggerReplay.cpp \
+	$(DLG)/dlgOracle.cpp \
+	$(DLG)/dlgProfiles.cpp \
+	$(DLG)/dlgStartPoint.cpp \
+	$(DLG)/dlgStartTask.cpp \
+	$(DLG)/dlgStartup.cpp \
+	$(DLG)/dlgStatistics.cpp \
+	$(DLG)/dlgStatus.cpp \
+	$(DLG)/dlgStatusSystem.cpp \
+	$(DLG)/dlgTarget.cpp \
+	$(DLG)/dlgTaskCalculator.cpp \
+	$(DLG)/dlgTaskOverview.cpp \
+	$(DLG)/dlgTaskRules.cpp \
+	$(DLG)/dlgTimeGates.cpp \
+	$(DLG)/dlgTopology.cpp \
+	$(DLG)/dlgTaskWaypoint.cpp \
+	$(DLG)/dlgTeamCode.cpp \
+	$(DLG)/dlgTextEntry_Keyboard.cpp \
+	$(DLG)/dlgThermalDetails.cpp \
+	$(DLG)/dlgTools.cpp \
+	$(DLG)/dlgWayPointDetails.cpp \
+	$(DLG)/dlgWayQuick.cpp \
+	$(DLG)/dlgWaypointEdit.cpp \
+	$(DLG)/dlgWayPointSelect.cpp \
+	$(DLG)/dlgWaypointOutOfTerrain.cpp \
+	$(DLG)/dlgWindSettings.cpp \
 
 SRC_FILES :=\
 	$(SRC)/LKInterface.cpp		$(SRC)/LocalPath.cpp\
@@ -388,8 +395,7 @@ SRC_FILES :=\
 	$(SRC)/LKDrawInfoPage.cpp	$(SRC)/LKDrawWaypoints.cpp\
 	$(SRC)/LKDrawTraffic.cpp	$(SRC)/LKSimulator.cpp\
 	$(SRC)/LKDrawThermalHistory.cpp \
-	$(SRC)/LKBestAlternate.cpp	$(SRC)/LKHolux.cpp \
-	$(SRC)/LKRoyaltek3200.cpp	\
+	$(SRC)/LKBestAlternate.cpp	\
 	$(SRC)/MapWindow.cpp 		$(SRC)/MapWindow2.cpp \
 	$(SRC)/MapWindow3.cpp 		$(SRC)/MapWindowA.cpp \
 	$(SRC)/MapWindowZoom.cpp        $(SRC)/MapWindowMode.cpp \
@@ -397,7 +403,7 @@ SRC_FILES :=\
 	$(SRC)/McReady.cpp 		$(SRC)/Message.cpp \
 	$(SRC)/NavFunctions.cpp		\
 	$(SRC)/Parser.cpp		$(SRC)/Port.cpp \
-	$(SRC)/Process.cpp 		$(SRC)/dlgComboPicker.cpp \
+	$(SRC)/Process.cpp 		\
 	$(SRC)/RasterTerrain.cpp	$(SRC)/rscalc.cpp \
 	$(SRC)/StdAfx.cpp		$(SRC)/STScreenBuffer.cpp \
 	$(SRC)/Task.cpp			$(SRC)/TeamCodeCalculation.cpp \
