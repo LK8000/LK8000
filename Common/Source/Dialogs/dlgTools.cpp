@@ -410,7 +410,7 @@ WndForm *dlgLoadFromXML(CallBackTableEntry_t *LookUpTable, const char *filename,
   TCHAR tfilename[MAX_PATH];
   _stprintf(tfilename,_T("%S"),filename);
 
-  StartupStore(_T("... xmlOpen <%s>\n"),tfilename);
+  // StartupStore(_T("... xmlOpen <%s>\n"),tfilename);
 
   if (FileExists(tfilename))
 	xMainNode=XMLNode::openFileHelper(tfilename ,TEXT("PMML"));
