@@ -44,15 +44,95 @@ void Topology::loadBitmap(const int xx) {
 }
 
 // thecolor is relative to shapes, not to labels
+// TODO (maybe): get rid of LKM internal colors defined per shape level,
+// and assign them here dynamically. Easy and fast to do.
 void Topology::loadPenBrush(const COLORREF thecolor) {
   int psize;
   switch(scaleCategory) {
-	case 30:
-		psize=NIBLSCALE(2);
+	case 20: // water lines
+		switch(ScreenSize) {
+			case ss800x480:
+			case ss640x480:
+				psize=3;
+				break;
+			case ss480x272:
+			case ss320x240:
+			case ss400x240:
+			case ss480x640:
+			case ss480x800:
+				psize=2;
+				break;
+			//case ss896x672:
+			//case ss480x234:
+			//case ss240x320:
+			//case ss272x480:
+			default:
+				psize=NIBLSCALE(1);
+				break;
+		}
 		break;
-	case 60:
-		psize=1;
+	case 30: // big roads
+		switch(ScreenSize) {
+			case ss800x480:
+			case ss640x480:
+				psize=3;
+				break;
+			case ss480x272:
+			case ss320x240:
+			case ss400x240:
+			case ss480x640:
+			case ss480x800:
+				psize=2;
+				break;
+			//case ss896x672:
+			//case ss480x234:
+			//case ss240x320:
+			//case ss272x480:
+			default:
+				psize=NIBLSCALE(1);
+				break;
+		}
 		break;
+	case 40: // medium roads
+		switch(ScreenSize) {
+			case ss800x480:
+				psize=3;
+				break;
+			case ss480x272:
+			case ss640x480:
+			case ss480x640:
+			case ss480x800:
+				psize=2;
+				break;
+			//case ss896x672:
+			//case ss480x234:
+			//case ss400x240:
+			//case ss320x240:
+			//case ss240x320:
+			//case ss272x480:
+			default:
+				psize=NIBLSCALE(1);
+				break;
+		}
+		break;
+	case 60: // railroads
+		switch(ScreenSize) {
+			//case ss800x480:
+			//case ss640x480:
+			//case ss896x672:
+			//case ss480x272:
+			//case ss480x234:
+			//case ss400x240:
+			//case ss320x240:
+			//case ss480x640:
+			//case ss480x800:
+			//case ss240x320:
+			//case ss272x480:
+			default:
+				psize=1;
+		}
+		break;
+
 	default:
 		psize=NIBLSCALE(1);
 		break;
