@@ -278,6 +278,8 @@ endif
 ####### sources
 
 LIBRARY	:=\
+	$(LIB)/bsearch.cpp \
+	$(LIB)/Crc.cpp\
 	$(LIB)/DrawFunctions.cpp \
 	$(LIB)/leastsqs.cpp \
 	$(LIB)/magfield.cpp \
