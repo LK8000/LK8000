@@ -381,6 +381,7 @@ DLGS	:=\
 	$(DLG)/dlgWindSettings.cpp \
 
 SRC_FILES :=\
+	$(SRC)/StatusFile.cpp \
 	$(SRC)/CommandLine.cpp \
 	$(SRC)/CpuLoad.cpp \
 	$(SRC)/Memory.cpp \
