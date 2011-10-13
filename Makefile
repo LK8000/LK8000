@@ -278,6 +278,7 @@ endif
 ####### sources
 
 LIBRARY	:=\
+	$(LIB)/leastsqs.cpp \
 	$(LIB)/magfield.cpp \
 	$(LIB)/NavFunctions.cpp	\
 	$(LIB)/PressureFunctions.cpp\
@@ -402,7 +403,7 @@ SRC_FILES :=\
 	$(SRC)/FlarmIdFile.cpp 		$(SRC)/FlarmCalculations.cpp \
 	$(SRC)/Geoid.cpp \
 	$(SRC)/Buttons.cpp \
-	$(SRC)/InputEvents.cpp 		$(SRC)/leastsqs.cpp \
+	$(SRC)/InputEvents.cpp 		\
 	$(SRC)/Logger.cpp 		$(SRC)/LKMapWindow.cpp \
 	$(SRC)/LKDrawLook8000.cpp 	$(SRC)/LKDrawNearest.cpp\
 	$(SRC)/LKDrawCommon.cpp 	$(SRC)/LKDrawAspNearest.cpp\
