@@ -375,6 +375,7 @@ DLGS	:=\
 	$(DLG)/dlgWindSettings.cpp \
 
 SRC_FILES :=\
+	$(SRC)/Oracle.cpp		$(SRC)/Alarms.cpp\
 	$(SRC)/LKInterface.cpp		$(SRC)/LocalPath.cpp\
 	$(SRC)/LKFonts.cpp		$(SRC)/LDRotaryBuffer.cpp\
 	$(SRC)/TrueWind.cpp		$(SRC)/OverTargets.cpp\
