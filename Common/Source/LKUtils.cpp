@@ -19,25 +19,13 @@
 #include "options.h"
 #include "externs.h"
 #include "lk8000.h"
-#include "InfoBoxLayout.h"
-#include "Utils2.h"
-#include "device.h"
-#include "Logger.h"
-#include "Parser.h"
 #include "WaveThread.h"
-#include "Message.h"
-#include "McReady.h"
-#include "InputEvents.h"
-#include "LKMapWindow.h"
 #include "Process.h"
-#include "Waypointparser.h"
 #ifdef PNA
 #include "LKHolux.h"
 #endif
-
 #include "utils/stringext.h"
 #include "utils/heapcheck.h"
-
 
 extern TCHAR LastTaskFileName[MAX_PATH];
 
@@ -237,58 +225,6 @@ void LKRunStartEnd(bool start) {
 }
 
 
-// Reads line from UTF-8 encoded text file.
-// File must be open in binary read mode.
-bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars)
-{
-  unsigned char buf[READLINE_LENGTH * 2];
-
-  long startPos = zzip_tell(fp);
-
-  if (startPos < 0) {
-    StartupStore(_T(". ftell() error = %d%s"), errno, NEWLINE);
-    return(false);
-  }
-
-  size_t nbRead = zzip_fread(buf, 1, sizeof(buf) - 1, fp);
-  
-  if (nbRead == 0)
-    return(false);
-
-  buf[nbRead] = '\0';
-
-  // find new line (CR/LF/CRLF) in the string and terminate string at that position
-  size_t i;
-  for (i = 0; i < nbRead; i++) {
-    if (buf[i] == '\n')
-    {
-      buf[i++] = '\0';
-      if (buf[i] == '\r')
-        i++;
-      break;
-    }
-
-    if (buf[i] == '\r')
-    {
-      buf[i++] = '\0';
-      if (buf[i] == '\n')
-        i++;
-      break;
-    }
-  }
-
-  // next reading will continue after new line
-  zzip_seek(fp, startPos + i, SEEK_SET);
-
-  // skip leading BOM
-  char* begin = (char*) buf;
-  if (buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF)
-    begin += 3;
-
-  return(utf2unicode(begin, unicode, maxChars) >= 0);
-}
-
-
 /** 
  * @brief Returns task file name
  * 
@@ -345,62 +281,7 @@ bool UseContestEngine(void) {
 }
 
 
-/* 
- * Implementation of the _splitpath runtime library function with wide character strings
- * Copyright 2000, 2004 Martin Fuchs -- GPL licensed - WINE project
- */
-void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext)
-{
-	const WCHAR* end; /* end of processed string */
-	const WCHAR* p;	  /* search pointer */
-	const WCHAR* s;	  /* copy pointer */
-
-	/* extract drive name */
-	if (path[0] && path[1]==':') {
-		if (drv) {
-			*drv++ = *path++;
-			*drv++ = *path++;
-			*drv = '\0';
-		}
-	} else if (drv)
-		*drv = '\0';
-
-	/* search for end of string or stream separator */
-	for(end=path; *end && *end!=':'; )
-		end++;
-
-	/* search for begin of file extension */
-	for(p=end; p>path && *--p!='\\' && *p!='/'; )
-		if (*p == '.') {
-			end = p;
-			break;
-		}
-
-	if (ext)
-		for(s=end; (*ext=*s++); )
-			ext++;
-
-	/* search for end of directory name */
-	for(p=end; p>path; )
-		if (*--p=='\\' || *p=='/') {
-			p++;
-			break;
-		}
-
-	if (name) {
-		for(s=p; s<end; )
-			*name++ = *s++;
-
-		*name = '\0';
-	}
-
-	if (dir) {
-		for(s=path; s<p; )
-			*dir++ = *s++;
-
-		*dir = '\0';
-	}
-}
+extern void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext);
 
 //
 // Returns the LKW extension index of the incoming suffix, or -1
