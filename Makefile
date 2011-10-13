@@ -415,7 +415,6 @@ SRC_FILES :=\
 	$(SRC)/Utils2.cpp \
 	$(SRC)/McReady.cpp 		$(SRC)/Message.cpp \
 	$(SRC)/Parser.cpp		$(SRC)/Port.cpp \
-	$(SRC)/Process.cpp 		\
 	$(SRC)/RasterTerrain.cpp	$(SRC)/rscalc.cpp \
 	$(SRC)/StdAfx.cpp		$(SRC)/STScreenBuffer.cpp \
 	$(SRC)/Task.cpp			$(SRC)/TeamCodeCalculation.cpp \
