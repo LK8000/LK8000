@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-  $Id: InfoBoxLayout.cpp,v 8.4 2010/12/11 00:28:41 root Exp root $
+  $Id$
 */
 #include "StdAfx.h"
 #include "Defines.h"
