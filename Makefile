@@ -281,6 +281,7 @@ LIBRARY	:=\
 	$(LIB)/magfield.cpp \
 	$(LIB)/NavFunctions.cpp	\
 	$(LIB)/PressureFunctions.cpp\
+	$(LIB)/rscalc.cpp \
 	$(LIB)/StringFunctions.cpp\
 	$(LIB)/TimeFunctions.cpp\
 	$(LIB)/Utm.cpp \
@@ -415,7 +416,7 @@ SRC_FILES :=\
 	$(SRC)/Utils2.cpp \
 	$(SRC)/McReady.cpp 		$(SRC)/Message.cpp \
 	$(SRC)/Parser.cpp		$(SRC)/Port.cpp \
-	$(SRC)/RasterTerrain.cpp	$(SRC)/rscalc.cpp \
+	$(SRC)/RasterTerrain.cpp	\
 	$(SRC)/StdAfx.cpp		$(SRC)/STScreenBuffer.cpp \
 	$(SRC)/Task.cpp			$(SRC)/TeamCodeCalculation.cpp \
 	$(SRC)/Terrain.cpp		$(SRC)/ThermalLocator.cpp \
