@@ -23,24 +23,7 @@
 #include "Defines.h"
 #include "externs.h"
 #include "lk8000.h"
-#include "Utils.h"
-#include "Utils2.h"
-#include "device.h"
-#include "uniqueid.h"
 #include "Topology.h"
-#include "Terrain.h"
-#include "Units.h"
-#include "Calculations.h"
-#include "McReady.h"
-#include "NavFunctions.h"
-#include "WaveThread.h"
-#ifdef PNA
-#include "LKHolux.h"
-#endif
-
-
-#include "utils/heapcheck.h"
-
 
 #ifdef __MINGW32__
 #ifndef max
@@ -1154,59 +1137,6 @@ unsigned long FindFreeSpace(const TCHAR *path) {
 }
 
 
-
-
-#include "mmsystem.h"
-
-extern HINSTANCE                       hInst; // The current instance
-
-BOOL PlayResource (const TCHAR* lpName)
-{
-#ifdef DISABLEAUDIO
-  return false;
-#else
-  #ifdef PNA
-  if (DeviceIsGM130) {
-	MessageBeep(0xffffffff);
-	return true;
-  }
-  #endif
-  BOOL bRtn;
-  LPTSTR lpRes;
-  HANDLE hResInfo, hRes;
-
-  // TODO code: Modify to allow use of WAV Files and/or Embedded files
-
-  if (_tcsstr(lpName, TEXT(".wav"))) {
-    bRtn = sndPlaySound (lpName, SND_ASYNC | SND_NODEFAULT ); 
-
-  } else {
-    
-    // Find the wave resource.
-    hResInfo = FindResource (hInst, lpName, TEXT("WAVE")); 
-    
-    if (hResInfo == NULL) 
-      return FALSE; 
-    
-    // Load the wave resource. 
-    hRes = LoadResource (hInst, (HRSRC)hResInfo); 
-    
-    if (hRes == NULL) 
-      return FALSE; 
-    
-    // Lock the wave resource and play it. 
-    lpRes = (LPTSTR)LockResource ((HGLOBAL)hRes);
-    
-    if (lpRes != NULL) 
-      { 
-	bRtn = sndPlaySound (lpRes, SND_MEMORY | SND_ASYNC | SND_NODEFAULT ); 
-      } 
-    else 
-      bRtn = 0;
-  }
-  return bRtn; 
-#endif
-}
 
 void CreateDirectoryIfAbsent(TCHAR *filename) {
   TCHAR fullname[MAX_PATH];

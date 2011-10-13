@@ -19,7 +19,6 @@
 #include "options.h"
 #include "externs.h"
 #include "lk8000.h"
-#include "WaveThread.h"
 #include "Process.h"
 #ifdef PNA
 #include "LKHolux.h"
@@ -40,42 +39,6 @@ void ResetNearestTopology(void) {
   NearestWaterArea.Valid=false;
 }
 
-// Play a sound from filesystem
-void LKSound(const TCHAR *lpName) {
-  #ifdef DISABLEAUDIO
-  return false;
-  #else
-
-  #ifdef PNA
-  if (DeviceIsGM130) {
-	MessageBeep(0xffffffff); // default
-	return;
-  }
-  #endif   
-  static bool doinit=true;
-  static bool working=false;
-  static TCHAR sDir[MAX_PATH];
-
-  if (doinit) {
-	TCHAR srcfile[MAX_PATH];
-	LocalPath(sDir,TEXT(LKD_SOUNDS));
-	_stprintf(srcfile,TEXT("%s\\_SOUNDS"),sDir);
-	if (  GetFileAttributes(srcfile) == 0xffffffff ) {
-	        FailStore(_T("ERROR NO SOUNDS DIRECTORY CHECKFILE <%s>%s"),srcfile,NEWLINE);
-		StartupStore(_T("------ LK8000 SOUNDS NOT WORKING!%s"),NEWLINE);
-        } else
-		working=true;
-	doinit=false;
-  }
-
-  if (!working) return;
-  TCHAR sndfile[MAX_PATH];
-  _stprintf(sndfile,_T("%s\\%s"),sDir,lpName);
-  sndPlaySound (sndfile, SND_ASYNC| SND_NODEFAULT );
-  return;
-
-  #endif
-}
 
 // Rescale automatically dialogs, using negative values to force rescaling
 // Notice: SHOULD BE CALLED ONLY IF rWidth is negative, in order to avoid useless SetWindowPos
