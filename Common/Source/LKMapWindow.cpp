@@ -653,7 +653,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 
   double trailFirstTime = -1;
 
-  if (MapWindow::zoom.Scale() <3) {  // 1.5
+  if (MapWindow::zoom.Scale() <2) {  // 1.5 is also quite good
 	usecolors=true;
   }
 
