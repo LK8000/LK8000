@@ -280,6 +280,7 @@ endif
 LIBRARY	:=\
 	$(LIB)/leastsqs.cpp \
 	$(LIB)/magfield.cpp \
+	$(LIB)/MathFunctions.cpp	\
 	$(LIB)/NavFunctions.cpp	\
 	$(LIB)/PressureFunctions.cpp\
 	$(LIB)/rscalc.cpp \
