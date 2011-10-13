@@ -634,58 +634,43 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
 }
 
 
+// #define SKIPPOINTS 1		// skip closer points for drawing, causing flashing
+
 // try not to use colors when over a useless mapscale
 double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 {
+  if(!TrailActive) return -1;
+
   int i, snail_index;
   SNAIL_POINT P1;
-  #if 100303
   int  nearby;
+
   bool usecolors=false;
-  #endif
-
-  double TrailFirstTime = -1;
-
-  if(!TrailActive)
-    return -1;
-
-  #if 0	// 100303
-  if ((DisplayMode == dmCircling) != last_circling) {
-    need_colour = true;
-  }
-  last_circling = (DisplayMode == dmCircling);
-  #endif
-
-  #if 100303
-  if (MapWindow::zoom.Scale() <2.34) { // <3km map zoom
-	usecolors=true;
-  }
-  #endif
-
-  // Trail drift calculations
+  bool trail_is_drifted=false;
 
   double traildrift_lat = 0.0;
   double traildrift_lon = 0.0;
-  
-  if (EnableTrailDrift && MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-    double tlat1, tlon1;
-    
-    FindLatitudeLongitude(DrawInfo.Latitude, 
-                          DrawInfo.Longitude, 
-                          DerivedDrawInfo.WindBearing, 
-                          DerivedDrawInfo.WindSpeed,
-                          &tlat1, &tlon1);
-    traildrift_lat = (DrawInfo.Latitude-tlat1);
-    traildrift_lon = (DrawInfo.Longitude-tlon1);
-  } else {
-    traildrift_lat = 0.0;
-    traildrift_lon = 0.0;
+
+  double trailFirstTime = -1;
+
+  if (MapWindow::zoom.Scale() <1.5) { 
+	usecolors=true;
   }
-  
-  // JMW don't draw first bit from home airport
+
+  if ( EnableTrailDrift && MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && DerivedDrawInfo.WindSpeed >=1 ) {
+
+	trail_is_drifted=true;
+
+	double tlat1, tlon1;
+	FindLatitudeLongitude(DrawInfo.Latitude, DrawInfo.Longitude, 
+		DerivedDrawInfo.WindBearing, DerivedDrawInfo.WindSpeed,
+		&tlat1, &tlon1);
+
+	traildrift_lat = (DrawInfo.Latitude-tlat1);
+	traildrift_lon = (DrawInfo.Longitude-tlon1);
+  }
 
   //  Trail size
-
   int num_trail_max;
   if (TrailActive!=2) {
 	// scan entire trail for sink magnitude
@@ -726,9 +711,11 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   point_lastdrawn.x = 0;
   point_lastdrawn.y = 0;
 
+  #if SKIPPOINTS
   // Average colour display for skipped points
   float vario_av = 0;
   int vario_av_num = 0;
+  #endif
 
   // Constants for speedups
 
@@ -741,11 +728,12 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 
   // NOT a good idea, other functions will assume to be within screen boundaries..
   rectObj bounds_thermal = screenbounds_latlon;
-  screenbounds_latlon.minx -= fabs(60.0*traildrift_lon);
-  screenbounds_latlon.maxx += fabs(60.0*traildrift_lon);
-  screenbounds_latlon.miny -= fabs(60.0*traildrift_lat);
-  screenbounds_latlon.maxy += fabs(60.0*traildrift_lat);
-
+  if (trail_is_drifted) {
+	screenbounds_latlon.minx -= fabs(60.0*traildrift_lon);
+	screenbounds_latlon.maxx += fabs(60.0*traildrift_lon);
+	screenbounds_latlon.miny -= fabs(60.0*traildrift_lat);
+	screenbounds_latlon.maxy += fabs(60.0*traildrift_lat);
+  }
   const rectObj bounds = bounds_thermal;
 
   const int deg = DEG_TO_INT(AngleLimit360(DisplayAngle));
@@ -757,19 +745,16 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   const double mPanLongitude = PanLongitude;
   const double mPanLatitude = PanLatitude;
 
-  // Main loop
-
-#if 100303
-  if (display_circling) {
+  if (usecolors)
 	nearby=NIBLSCALE(1);
-  } else {
-  	if (MapWindow::zoom.Scale() <=1)
-		nearby=NIBLSCALE(1); 
-	else
-		nearby=NIBLSCALE(2);
-  }
-#endif
- 
+  else
+	nearby=NIBLSCALE(4);
+
+  // int skipped=0, painted=0; // test mode
+
+  // 
+  // Main loop
+  //
   for(i=1;i< num_trail_max; ++i) 
   {
     ///// Handle skipping
@@ -798,8 +783,8 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 
     /////// Mark first time of display point
 
-    if (((TrailFirstTime<0) || (P1.Time<TrailFirstTime)) && (P1.Time>=0)) {
-      TrailFirstTime = P1.Time;
+    if (((trailFirstTime<0) || (P1.Time<trailFirstTime)) && (P1.Time>=0)) {
+      trailFirstTime = P1.Time;
     }
 
     //////// Ignoring display elements for modes
@@ -810,13 +795,16 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 	last_visible = false;
         continue;
       }
-    } else {
+    }
+    #if 0
+    else {
       //  if ((P1.Circling)&&( snail_index % 5 != 0 )) {
         // JMW TODO code: This won't work properly!
         // draw only every 5 points from circling when in cruise mode
 	//        continue;
       //      }
     }
+    #endif
 
     ///////// Filter if far visible
 
@@ -842,45 +830,60 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
     // now we know either point is visible, better get screen coords
     // if we don't already.
 
-    double dt = max(0.0,(display_time-P1.Time)*P1.DriftFactor);
-    double this_lon = P1.Longitude+traildrift_lon*dt;
-    double this_lat = P1.Latitude+traildrift_lat*dt;
+    if (trail_is_drifted) {
 
-#if 1
-    // this is faster since many parameters are const
-    int Y = Real2Int((mPanLatitude-this_lat)*mDrawScale);
-    int X = Real2Int((mPanLongitude-this_lon)*fastcosine(this_lat)*mDrawScale);
-    P1.Screen.x = (xxs-X*cost + Y*sint)/1024;
-    P1.Screen.y = (Y*cost + X*sint + yys)/1024;
-#else
-    LatLon2Screen(this_lon, 
-		  this_lat, 
-		  P1.Screen);
-#endif
+	double dt = max(0.0,(display_time-P1.Time)*P1.DriftFactor);
+	double this_lon = P1.Longitude+traildrift_lon*dt;
+	double this_lat = P1.Latitude+traildrift_lat*dt;
 
-    ////////// Determine if we should skip if close to previous point
+	#if 1
+	// this is faster since many parameters are const
+	int Y = Real2Int((mPanLatitude-this_lat)*mDrawScale);
+	int X = Real2Int((mPanLongitude-this_lon)*fastcosine(this_lat)*mDrawScale);
+	P1.Screen.x = (xxs-X*cost + Y*sint)/1024;
+	P1.Screen.y = (Y*cost + X*sint + yys)/1024;
+	#else
+	LatLon2Screen(this_lon, this_lat, P1.Screen);
+	#endif
+    } else {
+	int Y = Real2Int((mPanLatitude-P1.Latitude)*mDrawScale);
+	int X = Real2Int((mPanLongitude-P1.Longitude)*fastcosine(P1.Latitude)*mDrawScale);
+	P1.Screen.x = (xxs-X*cost + Y*sint)/1024;
+	P1.Screen.y = (Y*cost + X*sint + yys)/1024;
+    }
 
-    if (last_visible && this_visible) {
+
+    // skip closer points
+    if (last_visible && this_visible ) {
 	// only average what's visible
-	if ( (abs(P1.Screen.y-point_lastdrawn.y) + abs(P1.Screen.x-point_lastdrawn.x)) <nearby) { // 100303 
+	if ( (abs(P1.Screen.y-point_lastdrawn.y) + abs(P1.Screen.x-point_lastdrawn.x))<=nearby ) {
+		#if SKIPPOINTS
 		if (usecolors) {
 			vario_av += P1.Vario;
 			vario_av_num ++;
 		}
+		#endif
+		// skipped++;
 		continue;
 		// don't draw if very short line
 	}
     }
+    // painted++;
 
     if (usecolors) {
-	float useval;
 	float offval=1.0;
 	int usecol;
 
+	#if SKIPPOINTS
+	float useval;
 	if ( vario_av_num ) useval=vario_av/(vario_av_num+1); else useval=P1.Vario; // 091202 avnum
-
 	if (useval<0) offval=-1;
 	useval=fabs(useval);
+	#else
+	if (P1.Vario<0) offval=-1;
+	const float useval=fabs(P1.Vario);
+	#endif
+
 	
 	if ( useval <0.1 ) {
 		P1.Colour=7;
@@ -904,19 +907,19 @@ go_selcolor:
     SelectObject(hdc, hSnailPens[P1.Colour]);
 
     if (!last_visible) { // draw set cursor at P1
-#ifndef NOLINETO
-      MoveToEx(hdc, P1.Screen.x, P1.Screen.y, NULL);
-#endif
+	#ifndef NOLINETO
+	MoveToEx(hdc, P1.Screen.x, P1.Screen.y, NULL);
+	#endif
     } else {
-#ifndef NOLINETO
-      LineTo(hdc, P1.Screen.x, P1.Screen.y);
-#else
-      DrawSolidLine(hdc, P1.Screen, point_lastdrawn, rc);
-#endif
+	#ifndef NOLINETO
+	LineTo(hdc, P1.Screen.x, P1.Screen.y);
+	#else
+	DrawSolidLine(hdc, P1.Screen, point_lastdrawn, rc);
+	#endif
     }
     point_lastdrawn = P1.Screen;
     last_visible = this_visible;
-  }
+  } // big loop 
 
   // draw final point to glider
   if (last_visible) {
@@ -927,7 +930,9 @@ go_selcolor:
 #endif
   }
 
-  return TrailFirstTime;
+  // StartupStore(_T("....zoom=%.3f trail max=%d  painted=%d   skipped=%d\n"), MapWindow::zoom.Scale(), num_trail_max,painted,skipped);
+
+  return trailFirstTime;
 }
 
 
