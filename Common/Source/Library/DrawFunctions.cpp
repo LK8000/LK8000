@@ -410,3 +410,21 @@ bool CheckRectOverlap(RECT rc1, RECT rc2) {
 }
 #endif
 
+
+void ExtTextOutClip(HDC hDC, int x, int y, TCHAR *text, int width) {
+  int len = _tcslen(text);
+  if (len <=0 ) {
+    return;
+  }
+  SIZE tsize;
+  GetTextExtentPoint(hDC, text, len, &tsize);
+  RECT rc;
+  rc.left = x;
+  rc.top = y;
+  rc.right = x + min(width,tsize.cx);
+  rc.bottom = y + tsize.cy;
+
+  ExtTextOut(hDC, x, y, /* ETO_OPAQUE | */ ETO_CLIPPED, &rc,
+             text, len, NULL);
+}
+
