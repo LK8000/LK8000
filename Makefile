@@ -278,6 +278,7 @@ endif
 ####### sources
 
 LIBRARY	:=\
+	$(LIB)/DrawFunctions.cpp \
 	$(LIB)/leastsqs.cpp \
 	$(LIB)/magfield.cpp \
 	$(LIB)/MathFunctions.cpp	\
