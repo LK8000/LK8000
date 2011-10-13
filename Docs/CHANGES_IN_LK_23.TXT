@@ -2,6 +2,30 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3i October 14, 2011
+------------------------------
+
+NEW
+
+. Topology lines for roads and rivers are now painted with larger line width, on some resolutions.
+
+. Dialogs xml files inside _System/Dialogs/GA  or /GLIDER  /PARAGLIDER /CAR  .
+  These files - if available - have priority over the internal one.
+  It is possible, now, to customise configuration dialogs and menus for each aircraft type.
+
+
+
+FIXES
+
+. Fix snail trail flashing colors. Colors are shown only at a meaningful zoom level, better tuned.
+
+. Fix bug 2.3 Alarms not showing warning message correctly for feet altitude units
+
+
+
+
+
+
 Version 2.3h October 6, 2011
 ------------------------------
 
