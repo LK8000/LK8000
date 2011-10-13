@@ -379,6 +379,7 @@ DLGS	:=\
 	$(DLG)/dlgWindSettings.cpp \
 
 SRC_FILES :=\
+	$(SRC)/CpuLoad.cpp \
 	$(SRC)/Memory.cpp \
 	$(SRC)/Sound.cpp \
 	$(SRC)/Oracle.cpp		$(SRC)/Alarms.cpp\
