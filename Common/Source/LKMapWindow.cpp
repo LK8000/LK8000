@@ -653,7 +653,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 
   double trailFirstTime = -1;
 
-  if (MapWindow::zoom.Scale() <1.5) { 
+  if (MapWindow::zoom.Scale() <3) {  // 1.5
 	usecolors=true;
   }
 
@@ -746,7 +746,7 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
   const double mPanLatitude = PanLatitude;
 
   if (usecolors)
-	nearby=NIBLSCALE(1);
+	nearby=NIBLSCALE(2);
   else
 	nearby=NIBLSCALE(4);
 
