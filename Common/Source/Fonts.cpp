@@ -418,3 +418,24 @@ void propGetFontSettings(TCHAR *Name, LOGFONT* lplf) {
   }
 }
 
+int GetFontRenderer() { 
+
+  switch(FontRenderer) {
+	case 0:
+		return CLEARTYPE_COMPAT_QUALITY;
+		break;
+	case 1:
+		return ANTIALIASED_QUALITY;
+		break;
+	case 2:
+		return DEFAULT_QUALITY;
+		break;
+	case 3:
+		return NONANTIALIASED_QUALITY;
+		break;
+	default:
+		return CLEARTYPE_COMPAT_QUALITY;
+		break;
+  }
+}
+

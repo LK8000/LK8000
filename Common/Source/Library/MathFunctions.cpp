@@ -368,3 +368,9 @@ unsigned int isqrt4(unsigned long val) {
 // http://www.azillionmonkeys.com/qed/sqroot.html
 
 
+int roundupdivision(int a, int b) {
+   int c=a / b;
+   if ( (a%b) >0) return ++c;
+   else return c;
+}
+

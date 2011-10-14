@@ -179,3 +179,141 @@ void ContractLocalPath(TCHAR* filein) {
 }
 
 
+#define MAXPATHBASENAME MAX_PATH
+
+/*
+ * gmfpathname returns the pathname of the current executed program, with leading and trailing slash
+ * example:  \sdmmc\   \SD CARD\
+ * In case of double slash, it is assumed currently as a single "\" .
+ */
+TCHAR * gmfpathname ()
+{
+  static TCHAR gmfpathname_buffer[MAXPATHBASENAME];
+  TCHAR  *p; 
+  
+  if (GetModuleFileName(NULL, gmfpathname_buffer, MAXPATHBASENAME) <= 0) {
+    return(_T("\\ERROR_01\\") );
+  }
+  if (gmfpathname_buffer[0] != '\\' ) {
+    return(_T("\\ERROR_02\\"));
+  }
+  gmfpathname_buffer[MAXPATHBASENAME-1] = '\0';	// truncate for safety
+  
+  for (p=gmfpathname_buffer+1; *p != '\0'; p++)
+    if ( *p == '\\' ) break;	// search for the very first "\"
+  
+  if ( *p == '\0') {
+    return(_T("\\ERROR_03\\"));
+  }
+  *++p = '\0';
+  
+  return (TCHAR *) gmfpathname_buffer;
+}
+
+/*
+ * gmfbasename returns the filename of the current executed program, without leading path.
+ * Example:  lk8000.exe
+ */
+TCHAR * gmfbasename ()
+{
+  static TCHAR gmfbasename_buffer[MAXPATHBASENAME];
+  TCHAR *p, *lp;
+  
+  if (GetModuleFileName(NULL, gmfbasename_buffer, MAXPATHBASENAME) <= 0) {
+    return(_T("ERROR_04") );
+  }
+  if (gmfbasename_buffer[0] != '\\' ) {
+    return(_T("ERROR_05"));
+  }
+  for (p=gmfbasename_buffer+1, lp=NULL; *p != '\0'; p++)
+    {
+      if ( *p == '\\' ) {
+	lp=++p;
+	continue;
+      }
+    }
+  return  lp;
+}
+
+// Windows CE does not have a "current path" concept, and there is no library function to know
+// where is the program running. 
+// Returns the current execution path like C:\Documents and Settings\username\Desktop
+TCHAR * gmfcurrentpath ()
+{
+  static TCHAR gmfbasename_buffer[MAXPATHBASENAME];
+  TCHAR *p, *lp;
+  
+  if (GetModuleFileName(NULL, gmfbasename_buffer, MAXPATHBASENAME) <= 0) {
+    return(_T("ERROR_04") );
+  }
+  for (p=gmfbasename_buffer+1, lp=NULL; *p != '\0'; p++)
+    {
+      if ( *p == '\\' ) {
+	lp=++p;
+	continue;
+      }
+    }
+
+  *lp=_T('\0');
+  *--lp=_T('\0'); // also remove trailing backslash
+  return  gmfbasename_buffer;
+}
+
+
+/*
+ *	A little hack in the executable filename: if it contains an
+ *	underscore, then the following chars up to the .exe is
+ *	considered a modelname
+ *  Returns 0 if failed, 1 if name found
+ */
+int GetGlobalModelName ()
+{
+  TCHAR modelname_buffer[MAXPATHBASENAME];
+  TCHAR *p, *lp, *np;
+  
+  _tcscpy(GlobalModelName, _T(""));
+  
+  if (GetModuleFileName(NULL, modelname_buffer, MAXPATHBASENAME) <= 0) {
+    StartupStore(TEXT("++++++ CRITIC- GetGlobalFileName returned NULL%s"),NEWLINE); // 091119
+    return 0;
+  }
+  if (modelname_buffer[0] != '\\' ) {
+    StartupStore(TEXT("++++++ CRITIC- GetGlobalFileName starting without a leading backslash%s"),NEWLINE); // 091119
+    return 0;
+  }
+  for (p=modelname_buffer+1, lp=NULL; *p != '\0'; p++) 
+    {
+      if ( *p == '\\' ) {
+	lp=++p;
+	continue;
+      }
+    } // assuming \sd\path\xcsoar_pna.exe  we are now at \xcsoar..
+  
+  for (p=lp, np=NULL; *p != '\0'; p++)
+    {
+      if (*p == '_' ) {
+	np=++p;
+	break;
+      }
+    } // assuming xcsoar_pna.exe we are now at _pna..
+  
+  if ( np == NULL ) {
+    return 0;	// VENTA2-bugfix , null deleted
+  }
+  
+  for ( p=np, lp=NULL; *p != '\0'; p++) 
+    {
+      if (*p == '.' ) {
+	lp=p;
+	break;
+      }
+    } // we found the . in pna.exe
+  
+  if (lp == NULL) return 0; // VENTA2-bugfix null return
+  *lp='\0'; // we cut .exe
+  
+  _tcscpy(GlobalModelName, np);
+  
+  return 1;  // we say ok
+  
+}

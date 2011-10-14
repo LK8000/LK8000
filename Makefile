@@ -381,6 +381,8 @@ DLGS	:=\
 	$(DLG)/dlgWindSettings.cpp \
 
 SRC_FILES :=\
+	$(SRC)/LKInstall.cpp 		$(SRC)/Models.cpp\
+	$(SRC)/Backlight.cpp 		$(SRC)/LKInit.cpp\
 	$(SRC)/StatusFile.cpp \
 	$(SRC)/CommandLine.cpp \
 	$(SRC)/CpuLoad.cpp \
