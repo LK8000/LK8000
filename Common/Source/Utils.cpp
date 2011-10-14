@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: Utils.cpp,v 8.17 2010/12/19 16:42:53 root Exp root $
+   $Id$
 */
 
 #include "StdAfx.h"
@@ -12,26 +12,12 @@
 #include "Defines.h"
 #include "externs.h"
 #include "lk8000.h"
+#include "McReady.h"
+#include "RGB.h"
+#include "Modeltype.h"
 
-
-void ExtractDirectory(TCHAR *Dest, TCHAR *Source) {
-  int len = _tcslen(Source);
-  int found = -1;
-  int i;
-  if (len==0) {
-    Dest[0]= 0;
-    return;
-  }
-  for (i=0; i<len; i++) {
-    if ((Source[i]=='/')||(Source[i]=='\\')) {
-      found = i;
-    }
-  }
-  for (i=0; i<=found; i++) {
-    Dest[i]= Source[i];
-  }
-  Dest[i]= 0;
-}
+using std::min;
+using std::max;
 
 
 int propGetScaleList(double *List, size_t Size){
@@ -78,11 +64,6 @@ long GetUTCOffset(void) {
 }
 
 
-#if (WINDOWSPC<1)
-#define GdiFlush() do { } while (0)
-#endif
-
-
 #if 0 // REMOVE ANIMATION
 static RECT AnimationRectangle = {0,0,0,0};
 
@@ -97,45 +78,6 @@ RECT WINAPI DrawWireRects(LPRECT lprcTo, UINT nMilliSecSpeed)
 }
 #endif 
 
-
-
-void CreateDirectoryIfAbsent(TCHAR *filename) {
-  TCHAR fullname[MAX_PATH];
-
-  LocalPath(fullname, filename);
-
-  DWORD fattr = GetFileAttributes(fullname);
-
-  if ((fattr != 0xFFFFFFFF) &&
-      (fattr & FILE_ATTRIBUTE_DIRECTORY)) {
-    // directory exists
-  } else {
-    CreateDirectory(fullname, NULL);
-  }
-
-}
-
-bool FileExists(TCHAR *FileName){
-
-  HANDLE hFile = CreateFileW(FileName, GENERIC_READ, 0, NULL,
-                 OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
-
-  if( hFile == INVALID_HANDLE_VALUE)
-    return(FALSE);
-
-  CloseHandle(hFile);
-
-  return(TRUE);
-  
-  /*
-  FILE *file = _tfopen(FileName, _T("r"));
-  if (file != NULL) {
-    fclose(file);
-    return(TRUE);
-  }
-  return FALSE;
-  */
-}
 
 bool RotateScreen() {
 #if (WINDOWSPC>0)
@@ -170,117 +112,6 @@ int GetTextWidth(HDC hDC, TCHAR *text) {
   SIZE tsize;
   GetTextExtentPoint(hDC, text, _tcslen(text), &tsize);
   return tsize.cx;
-}
-
-
-void UpdateConfBB(void) {
-
-  ConfBB[0]=true; // thermal always on automatically
-  ConfBB[1]=ConfBB1;
-  ConfBB[2]=ConfBB2;
-  ConfBB[3]=ConfBB3;
-  ConfBB[4]=ConfBB4;
-  ConfBB[5]=ConfBB5;
-  ConfBB[6]=ConfBB6;
-  ConfBB[7]=ConfBB7;
-  ConfBB[8]=ConfBB8;
-  ConfBB[9]=ConfBB9;
-
-  if (ConfBB2==false && ConfBB3==false &&
-      ConfBB4==false && ConfBB5==false &&
-      ConfBB6==false && ConfBB7==false &&
-      ConfBB8==false && ConfBB9==false)
-
-		// we need at least one bottom bar stripe available (thermal apart)
-		ConfBB[1]=true;
-
-}
-
-void UpdateConfIP(void) {
-
-  // MAP MODE always available
-  ConfIP[0][0]=true; 
-  ConfIP[0][1]=true; 
-  ConfMP[0]=true; // map mode
-
-  // LKMODE_INFOMODE is 1
-  ConfIP[1][0]=ConfIP11;
-  ConfIP[1][1]=ConfIP12;
-  ConfIP[1][2]=ConfIP13;
-  ConfIP[1][3]=ConfIP14;
-  ConfIP[1][4]=ConfIP15;
-  ConfIP[1][5]=ConfIP16;
-
-  // WPMODE
-  ConfIP[2][0]=ConfIP21;
-  ConfIP[2][1]=ConfIP22;
-  ConfIP[2][2]=ConfIP23;
-  ConfIP[2][3]=ConfIP24;
-
-  // COMMONS
-  ConfIP[3][0]=ConfIP31;
-  ConfIP[3][1]=ConfIP32;
-  ConfIP[3][2]=ConfIP33;
-
-  // TRAFFIC always on if available
-  ConfIP[4][0]=true;
-  ConfIP[4][1]=true;
-  ConfIP[4][2]=true;
-  ConfMP[4]=true; // traffic mode
-
-  // Check if we have INFOMODE
-  if (ConfIP[1][0]==false && ConfIP[1][1]==false 
-	&& ConfIP[1][2]==false && ConfIP[1][3]==false 
-	&& ConfIP[1][4]==false && ConfIP[1][5]==false) {
-	ConfMP[1]=false;
-  } else
-	ConfMP[1]=true;
-
-  // Check if we have NEAREST pages
-  if (ConfIP[2][0]==false && ConfIP[2][1]==false 
-	&& ConfIP[2][2]==false && ConfIP[2][3]==false ) {
-	ConfMP[2]=false;
-  } else
-	ConfMP[2]=true;
-
-  // Check if we have COMMONS
-  if (ConfIP[3][0]==false && ConfIP[3][1]==false && ConfIP[3][2]==false ) {
-	ConfMP[3]=false;
-  } else
-	ConfMP[3]=true;
-
-  /*
-  // Verify that we have at least one menu
-  if (ConfMP[1]==false && ConfMP[2]==false && ConfMP[3]==false ) {
-	ConfIP[1][0]=true;
-	ConfMP[1]=true;
-  }
-  */
-  SetInitialModeTypes();
-
-}
-
-void SetInitialModeTypes(void) {
-
-  // Update the initial values for each mapspace, keeping the first valid value. We search backwards.
-  // INFOMODE 1  
-  if (ConfIP[LKMODE_INFOMODE][IM_TRI]) ModeType[LKMODE_INFOMODE]=IM_TRI;
-  if (ConfIP[LKMODE_INFOMODE][IM_CONTEST]) ModeType[LKMODE_INFOMODE]=IM_CONTEST;
-  if (ConfIP[LKMODE_INFOMODE][IM_AUX]) ModeType[LKMODE_INFOMODE]=IM_AUX;
-  if (ConfIP[LKMODE_INFOMODE][IM_TASK]) ModeType[LKMODE_INFOMODE]=IM_TASK;
-  if (ConfIP[LKMODE_INFOMODE][IM_THERMAL]) ModeType[LKMODE_INFOMODE]=IM_THERMAL;
-  if (ConfIP[LKMODE_INFOMODE][IM_CRUISE]) ModeType[LKMODE_INFOMODE]=IM_CRUISE;
-
-  // WP NEAREST MODE 2  
-  if (ConfIP[LKMODE_WP][WP_NEARTPS]) ModeType[LKMODE_WP]=WP_NEARTPS;
-  if (ConfIP[LKMODE_WP][WP_LANDABLE]) ModeType[LKMODE_WP]=WP_LANDABLE;
-  if (ConfIP[LKMODE_WP][WP_AIRPORTS]) ModeType[LKMODE_WP]=WP_AIRPORTS;
-
-  // COMMONS MODE 3
-  if (ConfIP[LKMODE_NAV][NV_HISTORY]) ModeType[LKMODE_WP]=NV_HISTORY;
-  if (ConfIP[LKMODE_NAV][NV_COMMONS]) ModeType[LKMODE_WP]=NV_COMMONS;
-
-
 }
 
 
@@ -334,4 +165,191 @@ bool BOOL2bool(BOOL a) {
   if (a==TRUE) return true;
   return false;
 }
+
+
+
+// Get the infobox type from configuration, selecting position i
+// From 1-8 auxiliaries
+//     0-16 dynamic page
+//
+int GetInfoboxType(int i) {
+
+	int retval = 0;
+	if (i<1||i>16) return LK_ERROR;
+
+	// it really starts from 0
+	if (i<=8)
+		retval = (InfoType[i-1] >> 24) & 0xff; // auxiliary
+	else {
+		switch ( MapWindow::mode.Fly() ) {
+			case MapWindow::Mode::MODE_FLY_CRUISE:
+				retval = (InfoType[i-9] >> 8) & 0xff;
+				break;
+			case MapWindow::Mode::MODE_FLY_FINAL_GLIDE:
+				retval = (InfoType[i-9] >> 16) & 0xff;
+				break;
+			case MapWindow::Mode::MODE_FLY_CIRCLING:
+				retval = (InfoType[i-9]) & 0xff; 
+				break;
+			default:
+				// impossible case, show twice auxiliaries
+				retval = (InfoType[i-9] >> 24) & 0xff;
+				break;
+		}
+	}
+
+	return min(NumDataOptions-1,retval);
+}
+
+// Returns the LKProcess index value for configured infobox (0-8) for dmCruise, dmFinalGlide, Auxiliary, dmCircling
+// The function name is really stupid...
+// dmMode is an enum, we simply use for commodity
+int GetInfoboxIndex(int i, MapWindow::Mode::TModeFly dmMode) {
+	int retval = 0;
+	if (i<0||i>8) return LK_ERROR;
+
+	switch(dmMode) {
+		case MapWindow::Mode::MODE_FLY_CRUISE:
+			retval = (InfoType[i-1] >> 8) & 0xff;
+			break;
+		case MapWindow::Mode::MODE_FLY_FINAL_GLIDE:
+			retval = (InfoType[i-1] >> 16) & 0xff;
+			break;
+		case MapWindow::Mode::MODE_FLY_CIRCLING:
+			retval = (InfoType[i-1]) & 0xff; 
+			break;
+		default:
+			// default is auxiliary
+			retval = (InfoType[i-1] >> 24) & 0xff; 
+			break;
+	}
+	return min(NumDataOptions-1,retval);
+}
+
+
+double GetMacCready(int wpindex, short wpmode)
+{
+	if (WayPointCalc[wpindex].IsLandable) {
+		if (MACCREADY>GlidePolar::SafetyMacCready) 
+			return MACCREADY;
+		else
+			return GlidePolar::SafetyMacCready;
+	}
+	return MACCREADY;
+
+}
+
+
+void SetOverColorRef() {
+  switch(OverColor) {
+	case OcWhite:
+		OverColorRef=RGB_WHITE;
+		break;
+	case OcBlack:
+		OverColorRef=RGB_SBLACK;
+		break;
+	case OcBlue:
+		OverColorRef=RGB_DARKBLUE;
+		break;
+	case OcGreen:
+		OverColorRef=RGB_GREEN;
+		break;
+	case OcYellow:
+		OverColorRef=RGB_YELLOW;
+		break;
+	case OcCyan:
+		OverColorRef=RGB_CYAN;
+		break;
+	case OcOrange:
+		OverColorRef=RGB_ORANGE;
+		break;
+	case OcGrey:
+		OverColorRef=RGB_GREY;
+		break;
+	case OcDarkGrey:
+		OverColorRef=RGB_DARKGREY;
+		break;
+	case OcDarkWhite:
+		OverColorRef=RGB_DARKWHITE;
+		break;
+	case OcAmber:
+		OverColorRef=RGB_AMBER;
+		break;
+	case OcLightGreen:
+		OverColorRef=RGB_LIGHTGREEN;
+		break;
+	case OcPetrol:
+		OverColorRef=RGB_PETROL;
+		break;
+	default:
+		OverColorRef=RGB_MAGENTA;
+		break;
+  }
+}
+
+
+
+bool CheckClubVersion() {
+  TCHAR srcfile[MAX_PATH];
+  LocalPath(srcfile, _T("CLUB"));
+  if (  GetFileAttributes(srcfile) == 0xffffffff ) return false;
+  return true;
+}
+
+void ClubForbiddenMsg() {
+  MessageBoxX(hWndMapWindow, 
+	// LKTOKEN  _@M503_ = "Operation forbidden on CLUB devices" 
+	gettext(TEXT("_@M503_")),
+	_T("CLUB DEVICE"), 
+	MB_OK|MB_ICONEXCLAMATION);
+        return;
+}
+
+
+// Are we using lockmode? What is the current status?
+bool LockMode(const short lmode) {
+
+  switch(lmode) {
+	case 0:		// query availability of LockMode
+		return true;
+		break;
+
+	case 1:		// query lock/unlock status
+		return LockModeStatus;
+		break;
+
+	case 2:		// invert lock status
+		LockModeStatus = !LockModeStatus;
+		return LockModeStatus;
+		break;
+
+	case 3:		// query button is usable or not
+		if (ISPARAGLIDER)
+			// Positive if not flying
+			return CALCULATED_INFO.Flying==TRUE?false:true;
+		else return true;
+		break;
+
+	case 9:		// Check if we can unlock the screen
+		if (ISPARAGLIDER) {
+			// Automatic unlock
+			if (CALCULATED_INFO.Flying == TRUE) {
+				if ( (GPS_INFO.Time - CALCULATED_INFO.TakeOffTime)>10) {
+					LockModeStatus=false;
+				}
+			}
+		}
+		return LockModeStatus;
+		break;
+
+	default:
+		return false;
+		break;
+  }
+
+  return 0;
+
+}
+
+
 

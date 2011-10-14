@@ -280,6 +280,7 @@ endif
 LIBRARY	:=\
 	$(LIB)/bsearch.cpp \
 	$(LIB)/Crc.cpp\
+	$(LIB)/DirectoryFunctions.cpp \
 	$(LIB)/DrawFunctions.cpp \
 	$(LIB)/leastsqs.cpp \
 	$(LIB)/magfield.cpp \
@@ -425,7 +426,6 @@ SRC_FILES :=\
 	$(SRC)/MapWindow.cpp 		$(SRC)/MapWindow2.cpp \
 	$(SRC)/MapWindow3.cpp 		$(SRC)/MapWindowA.cpp \
 	$(SRC)/MapWindowZoom.cpp        $(SRC)/MapWindowMode.cpp \
-	$(SRC)/Utils2.cpp \
 	$(SRC)/McReady.cpp 		$(SRC)/Message.cpp \
 	$(SRC)/Parser.cpp		$(SRC)/Port.cpp \
 	$(SRC)/RasterTerrain.cpp	\
