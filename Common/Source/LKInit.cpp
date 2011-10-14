@@ -20,6 +20,8 @@
 using std::min;
 using std::max;
 
+extern void ResetNearestTopology();
+
 // InitLKScreen can be called anytime, and should be called upon screen changed from portrait to landscape,
 // or windows size is changed for any reason. We dont support dynamic resize of windows, though, because each
 // resolution has its own tuned settings. This is thought for real devices, not for PC emulations.
@@ -325,4 +327,98 @@ void SetInitialModeTypes(void) {
 
 
 }
+
+
+// Requires restart if activated from config menu
+void InitLK8000() 
+{
+        #if TESTBENCH
+	StartupStore(_T(". Init LK8000%s"),NEWLINE);
+        #endif
+	LoadRecentList();
+
+	InitModeTable();
+	ResetNearestTopology();
+}
+
+
+// Conversion between submenus and global mapspace modes 
+// Basic initialization of global variables and parameters.
+//
+void InitModeTable() {
+
+	short i,j;
+	#if TESTBENCH
+	StartupStore(_T(". Init ModeTable for LK8000: "));
+	#endif
+
+	for (i=0; i<=LKMODE_TOP; i++)
+		for (j=0; j<=MSM_TOP; j++)
+			ModeTable[i][j]=INVALID_VALUE;
+
+
+	// this table is for submenus, order is not important
+	ModeTable[LKMODE_MAP][MP_WELCOME]	=	MSM_WELCOME;
+	ModeTable[LKMODE_MAP][MP_MOVING]	=	MSM_MAP;
+
+	ModeTable[LKMODE_WP][WP_AIRPORTS]	=	MSM_AIRPORTS;
+	ModeTable[LKMODE_WP][WP_LANDABLE]	=	MSM_LANDABLE;
+	ModeTable[LKMODE_WP][WP_NEARTPS]	=	MSM_NEARTPS;
+	ModeTable[LKMODE_WP][WP_AIRSPACES]	=	MSM_AIRSPACES;
+
+	ModeTable[LKMODE_INFOMODE][IM_CRUISE]	=	MSM_INFO_CRUISE;
+	ModeTable[LKMODE_INFOMODE][IM_THERMAL]	=	MSM_INFO_THERMAL;
+	ModeTable[LKMODE_INFOMODE][IM_TASK]	=	MSM_INFO_TASK;
+	ModeTable[LKMODE_INFOMODE][IM_AUX]	=	MSM_INFO_AUX;
+	ModeTable[LKMODE_INFOMODE][IM_CONTEST]	=	MSM_INFO_CONTEST;
+	ModeTable[LKMODE_INFOMODE][IM_TRI]	=	MSM_INFO_TRI;
+
+	ModeTable[LKMODE_NAV][NV_COMMONS]	=	MSM_COMMON;
+	ModeTable[LKMODE_NAV][NV_HISTORY]	=	MSM_RECENT;
+	ModeTable[LKMODE_NAV][NV_THERMALS]	=	MSM_THERMALS;
+
+	ModeTable[LKMODE_TRF][TF_LIST]		=	MSM_TRAFFIC;
+	ModeTable[LKMODE_TRF][IM_TRF]		=	MSM_INFO_TRF;
+	ModeTable[LKMODE_TRF][IM_TARGET]	=	MSM_INFO_TARGET;
+
+	// startup mode
+	ModeIndex=LKMODE_MAP;
+	// startup values for each mode. we shall update these defaults using current profile settings
+	// for ConfIP real values. 
+	ModeType[LKMODE_MAP]	=	MP_WELCOME;
+	ModeType[LKMODE_INFOMODE]=	IM_CRUISE;
+	ModeType[LKMODE_WP]	=	WP_AIRPORTS;
+	ModeType[LKMODE_NAV]	=	NV_COMMONS;
+	ModeType[LKMODE_TRF]	=	TF_LIST;
+
+	ModeTableTop[LKMODE_MAP]=MP_TOP;
+	ModeTableTop[LKMODE_WP]=WP_TOP;
+	ModeTableTop[LKMODE_INFOMODE]=IM_TOP;
+	ModeTableTop[LKMODE_NAV]=NV_TOP;
+	ModeTableTop[LKMODE_TRF]=TF_TOP;
+
+	// set all sorting type to distance (default) even for unconventional modes just to be sure
+	for (i=0; i<=MSM_TOP; i++) SortedMode[i]=1;
+	SortedMode[MSM_AIRSPACES]=2; // Airspaces have a different layout
+
+	for (i=0; i<MAXNEAREST;i++) {
+		SortedTurnpointIndex[i]=-1;
+		SortedLandableIndex[i]=-1;
+		SortedAirportIndex[i]=-1;
+	}
+
+	for (i=0; i<MAXCOMMON; i++) 
+		CommonIndex[i]= -1;
+
+	for (i=0; i<=MSM_TOP; i++) {
+		SortBoxY[i]=0;
+		for (j=0; j<=MAXSORTBOXES; j++) SortBoxX[i][j]=0;
+	}
+
+	SetInitialModeTypes();
+	#if TESTBENCH
+	StartupStore(_T("Ok%s"),NEWLINE);
+	#endif
+}
+
 
