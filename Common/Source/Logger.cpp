@@ -590,7 +590,7 @@ void StartLogger(TCHAR *astrAssetNumber)
 
 void LoggerHeader(void)
 {
-  char datum[]= "HFDTM100Datum: WGS-84\r\n";
+  char datum[]= "HFDTM100GPSDATUM:WGS-84\r\n";
   char temp[100];
   TCHAR PilotName[100];
   TCHAR AircraftType[100];
@@ -637,7 +637,24 @@ void LoggerHeader(void)
   IGCWriteRecord(temp);
 
   // until LK is using xcsoar G signature, we keep XCSOAR as main logger type
-  sprintf(temp,"HFFTYFRTYPE:XCSOAR,%s\r\n", LKFORK);
+  // The comma is currently declared invalid as a igc character, which is probably wrong
+
+  sprintf(temp,"HFFTYFRTYPE:XCSOAR %s\r\n", LKFORK); // default
+
+  #ifdef PNA
+  char pnamodel[MAX_PATH+1];
+  ConvertTToC(pnamodel,GlobalModelName);
+  pnamodel[_tcslen(GlobalModelName)]='\0';
+  sprintf(temp,"HFFTYFRTYPE:XCSOAR %s PNA %s\r\n", LKFORK,pnamodel);
+  #endif
+
+  #ifdef PPC2002 
+  sprintf(temp,"HFFTYFRTYPE:XCSOAR %s PPC2002\r\n", LKFORK);
+  #endif
+  #ifdef PPC2003 
+  sprintf(temp,"HFFTYFRTYPE:XCSOAR %s PPC2003\r\n", LKFORK);
+  #endif
+
   IGCWriteRecord(temp);
 
   sprintf(temp,"HFRFWFIRMWAREVERSION:%s.%s\r\n", LKVERSION, LKRELEASE);
