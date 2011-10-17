@@ -6,14 +6,10 @@
    $Id: Utils.cpp,v 8.17 2010/12/19 16:42:53 root Exp root $
 */
 
-#include "StdAfx.h"
-
-#include "options.h"
-#include "Defines.h"
 #include "externs.h"
-#include "lk8000.h"
 #include "WaveThread.h"
 #ifdef PNA
+#include "Modeltype.h"
 #include "LKHolux.h"
 #endif
 

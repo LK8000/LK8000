@@ -7,11 +7,10 @@
 */
 
 #include "StdAfx.h"
-#include "Airspace.h"
 #include "externs.h"
+#include "Airspace.h"
 #include "Dialogs.h"
 #include "Utils.h"
-#include "lk8000.h"
 #include "MapWindow.h"
 #include "RasterTerrain.h"
 #include <windows.h>
@@ -22,9 +21,9 @@
 #include <tchar.h>
 #include <ctype.h>
 
-#include "wcecompat/ts_string.h"
+//#include "wcecompat/ts_string.h"
 
-#include "utils/heapcheck.h"
+//#include "utils/heapcheck.h"
 
 using std::min;
 using std::max;

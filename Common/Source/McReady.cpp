@@ -6,19 +6,11 @@
    $Id: McReady.cpp,v 8.3 2010/12/12 15:45:59 root Exp root $
 */
 
-#include "StdAfx.h"
-#include "options.h"
-#include "Defines.h"
-#include "McReady.h"
 #include "externs.h"
-
-#include "lk8000.h"
-#include "device.h"
+#include "McReady.h"
 
 #include <math.h>
-#include <windows.h>
 
-#include "utils/heapcheck.h"
 using std::min;
 using std::max;
 

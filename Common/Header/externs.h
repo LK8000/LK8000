@@ -11,31 +11,38 @@
 
 #if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
+#endif
 
+#include "StdAfx.h"
+
+#ifndef __MINGW32__
+ #if defined(CECORE)
+ #include "winbase.h"
+ #endif
+ #if (WINDOWSPC<1)
+ #include "projects.h"
+ #endif
+#else
+ #include "wcecompat/ts_string.h"
+#endif
+
+// options first, then all dependencies
 #include "options.h"
-#include "Defines.h"
 #include "Sizes.h"
+#include "Defines.h"
 #include "lk8000.h"
-#include "Parser.h"
-#include "Calculations.h"
-#include "MapWindow.h"
-#include "Task.h"
+
 #include "Statistics.h"
 #include "Dialogs.h"
 #include "Utils2.h"
 #include "ContestMgr.h"
 #include "device.h"
 
-/*
-typedef enum {psInitInProgress=0, psInitDone=1, psFirstDrawDone=2, psNormalOp=3} StartupState_t;
-// 0: not started at all
-// 1: everything is alive
-// 2: done first draw
-// 3: normal operation
-*/
 #include "Enums.h"
 #include "Globals.h"
+
+// Include header for heap allocation checking
+#include "utils/heapcheck.h"
 
 
 //

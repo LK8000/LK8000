@@ -7,15 +7,13 @@
 */
 
 #include "StdAfx.h"
+#include "externs.h"
 #include <math.h>
-#include "lk8000.h"
 #include "Parser.h"
 #include "Calculations.h"
 #include "Atmosphere.h"
-#include "externs.h"
 #include "RasterTerrain.h"
 
-#include "utils/heapcheck.h"
 using std::min;
 using std::max;
 

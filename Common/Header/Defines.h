@@ -9,8 +9,6 @@
 #ifndef LK8000_DEFINES_H
 #define LK8000_DEFINES_H
 
-// WE LOAD AUTOMATICALLY SIZES.H
-#include "Sizes.h"
 
 // The StartupStore line separator, normally CRLF but previously it was only LF
 #define SNEWLINE        "\r\n"

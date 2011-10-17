@@ -8,11 +8,10 @@
 
 #include "StdAfx.h"
 #include <stdio.h>
-#include "options.h"
 #include "externs.h"
-#include "lk8000.h"
 
 #ifdef PNA
+#include "Modeltype.h"
 #include "LKHolux.h"
 #include "LKRoyaltek3200.h"
 #endif

@@ -7,7 +7,7 @@
 */
 
 #include "StdAfx.h"
-#include "Defines.h" // VENTA3
+#include "externs.h"
 #include "LKMapWindow.h"
 #include "Calculations.h"
 #include "Dialogs.h"
@@ -20,7 +20,6 @@
 #endif
 #include "Utils.h"
 #include "Utils2.h"
-#include "externs.h"
 #include "McReady.h"
 #include "Airspace.h"
 #include "AirspaceWarning.h"

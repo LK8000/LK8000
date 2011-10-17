@@ -6,11 +6,8 @@
    $Id$
 */
 
-#include "StdAfx.h"
 #include <stdio.h>
-#include "options.h"
 #include "externs.h"
-#include "lk8000.h"
 #include "Modeltype.h"
 
 #ifdef PNA

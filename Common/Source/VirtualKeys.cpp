@@ -7,54 +7,15 @@
 
 */
 
-#include "StdAfx.h"
 #include <stdio.h>
-#ifndef __MINGW32__
-#if defined(CECORE)
-#include "winbase.h"
-#endif
-#if (WINDOWSPC<1)
-#include "projects.h"
-#endif
-#endif
-#include "options.h"
-#include "Defines.h"
 #include "externs.h"
-#include "lk8000.h"
-//#include "InfoBoxLayout.h"
-//#include "Utils2.h"
-//#include "device.h"
-//#include "Logger.h"
-//#include "Parser.h"
-//#include "WaveThread.h"
-//#include "Message.h"
-//#include "McReady.h"
-//#include "InputEvents.h"
-//#include "MapWindow.h"
-//#include "LKMapWindow.h" REMOVE REMOVE
-//#include "RGB.h"
-
-//#include "Modeltype.h"
 
 #ifdef PNA
 #include "LKHolux.h"
 #include "LKRoyaltek3200.h"
 #endif
 
-#include "utils/heapcheck.h"
-
-/*
-using std::min;
-using std::max;
-extern void NextMapSpace();
-extern void PreviousMapSpace();
-extern void ShowMenu();
-extern void ResetNearestTopology();
-*/
-
 void BottomSounds();
-
-// extern void ApplyClearType(LOGFONT *logfont);
 
 
 // vkmode 0=normal 1=gesture up 2=gesture down

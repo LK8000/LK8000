@@ -8,8 +8,6 @@
 
 #include "StdAfx.h"
 #include "compatibility.h"
-#include "Defines.h"
-#include "options.h"
 #include "externs.h"
 
 #include <windows.h>
@@ -25,8 +23,6 @@ using std::max;
 #if (WINDOWSPC>0)
 #include <wingdi.h>
 #endif
-
-#include "utils/heapcheck.h"
 
 
 BOOL MapWindow::CLOSETHREAD = FALSE;

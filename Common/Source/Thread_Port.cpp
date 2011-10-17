@@ -3,15 +3,11 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: Port.cpp,v 8.5 2010/12/12 16:18:34 root Exp root $
+   $Id$
 */
 
-#include "StdAfx.h"
-#include "Defines.h"
-#include "Port.h"
 #include "externs.h"
-#include "lk8000.h"
-#include "device.h"
+#include "Port.h"
 #include "Utils2.h"
 
 #include <windows.h>

@@ -6,14 +6,14 @@
 */
 
 #include "StdAfx.h"
-#include "LKAirspace.h"
 #include "externs.h"
+#include "LKAirspace.h"
 #include "RasterTerrain.h"
-// 
+#include "wcecompat/ts_string.h"
+
 #include <tchar.h>
 #include <ctype.h>
 
-#include "wcecompat/ts_string.h"
 #include <Point2D.h>
 #include "md5.h"
 
