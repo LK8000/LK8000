@@ -89,13 +89,13 @@
 #define LKRELEASE	"3j0"
 
 #define REGKEYNAME	"Software\\COOL\\LK8000"
-#define XCSDATADIR	"LK8000"
-#define XCSPROFILE	"DEFAULT_PROFILE.prf"
+#define LKDATADIR	"LK8000"
+#define LKPROFILE	"DEFAULT_PROFILE.prf"
 
 /*
  * LK8000 directories
  */
-#define LKD_HOME	XCSDATADIR
+#define LKD_HOME	LKDATADIR
 #define LKD_LOGS	"_Logger"
 #define LKD_SYSTEM	"_System"
 #define LKD_SOUNDS	"_System\\_Sounds"

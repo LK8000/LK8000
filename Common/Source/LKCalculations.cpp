@@ -625,7 +625,7 @@ bool LoadRecentList() {
 #else
   SHGetSpecialFolderPath(hWndMainWindow, buffer, CSIDL_PERSONAL, false);
   _tcscat(buffer,TEXT("\\"));
-  _tcscat(buffer,TEXT(XCSDATADIR));
+  _tcscat(buffer,TEXT(LKDATADIR));
   _tcscat(buffer,_T("\\"));
   _tcscat(buffer,TEXT(LKD_CONF)); // 091101
   _tcscat(buffer,_T("\\"));
@@ -699,7 +699,7 @@ bool SaveRecentList() {
 #else
   SHGetSpecialFolderPath(hWndMainWindow, buffer, CSIDL_PERSONAL, false);
   _tcscat(buffer,TEXT("\\"));
-  _tcscat(buffer,TEXT(XCSDATADIR));
+  _tcscat(buffer,TEXT(LKDATADIR));
   _tcscat(buffer,_T("\\"));
   _tcscat(buffer,TEXT(LKD_CONF)); // 091101
   _tcscat(buffer,_T("\\"));

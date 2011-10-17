@@ -26,6 +26,46 @@
 
 
 #include "utils/heapcheck.h"
+extern TCHAR *gmfcurrentpath();
+
+
+TCHAR * LKGetLocalPath(void) {
+
+  static bool doinit=true;
+  static TCHAR localpath[MAX_PATH+1];
+
+  if (doinit) {
+	#if (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
+	//
+	// For PNAs the localpath is taken from the application exec path
+	// example> \sdmmc\bin\Program.exe  results in localpath=\sdmmc\LK8000
+	// Then the basename is searched for an underscore char, which is
+	// used as a separator for getting the model type.  example>
+	// program_pna.exe results in GlobalModelType=pna
+	//
+	_stprintf(localpath,TEXT("%s%S"),gmfpathname(), LKDATADIR );
+	#else
+	//
+	// Windows PC environment
+	//
+	// Do we have a valid _System/_SYSTEM locally?
+	_stprintf(localpath,_T("%s\\%S\\_SYSTEM"),gmfcurrentpath(),LKD_SYSTEM);
+	if (  GetFileAttributes(localpath) != 0xffffffff )  {
+		// Yes, so we use the current path folder
+		_tcscpy(localpath,gmfcurrentpath());
+	} else {
+		// No, we use MyDocuments directory
+		SHGetSpecialFolderPath(hWndMainWindow, localpath, CSIDL_PERSONAL, false);
+
+		_tcscat(localpath,TEXT("\\"));
+		_tcscat(localpath,TEXT(LKDATADIR));
+	}
+	#endif
+
+	doinit=false;
+  }
+  return localpath; 
+}
 
 
 #ifdef PNA
@@ -57,52 +97,17 @@ BOOL GetFontPath(TCHAR *pPos)
 }
 #endif
 
-//
-//	Get local My Documents path - optionally include file to add and location
-//	loc = CSIDL_PROGRAMS
-//	File system directory that contains the user's program groups (which are also file system directories).
-//	CSIDL_PERSONAL               File system directory that serves as a common
-//	                             repository for documents.
-//	CSIDL_PROGRAM_FILES 0x0026   The program files folder.
-//
-void LocalPath(TCHAR* buffer, const TCHAR* file, int loc) {
 
-  #if (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
+void LocalPath(TCHAR* buffer, const TCHAR* file) {
 
-  // For PNAs the localpath is taken from the application exec path
-  // example> \sdmmc\bin\Program.exe  results in localpath=\sdmmc\LK8000
-  // Then the basename is searched for an underscore char, which is
-  // used as a separator for getting the model type.  example>
-  // program_pna.exe results in GlobalModelType=pna
-  
-	_stprintf(buffer,TEXT("%s%S"),gmfpathname(), XCSDATADIR );
-  #else
-	//
-	// Windows PC environment
-	//
-	// Do we have a valid _System/_SYSTEM locally?
-	extern TCHAR *gmfcurrentpath();
-	_stprintf(buffer,_T("%s\\%S\\_SYSTEM"),gmfcurrentpath(),LKD_SYSTEM);
-	if (  GetFileAttributes(buffer) != 0xffffffff )  {
-		// Yes, so we use the current path folder
-		_tcscpy(buffer,gmfcurrentpath());
-	} else {
-		// No, we use MyDocuments directory
-		SHGetSpecialFolderPath(hWndMainWindow, buffer, loc, false);
-
-		_tcscat(buffer,TEXT("\\"));
-		_tcscat(buffer,TEXT(XCSDATADIR));
-	}
-  #endif
-
-  if (_tcslen(file)>0) {
-	_tcsncat(buffer, TEXT("\\"), MAX_PATH);    
-	_tcsncat(buffer, file, MAX_PATH);
-  }
+  if (_tcslen(file)>0)
+	_stprintf(buffer,TEXT("%s\\%s"),LKGetLocalPath(),file);
+  else
+	_tcscpy(buffer,LKGetLocalPath());
 }
 
 // This is used by LoadFromXML function only
-void LocalPathS(char *buffer, const TCHAR* file, int loc) {
+void LocalPathS(char *buffer, const TCHAR* file) {
   TCHAR wbuffer[MAX_PATH];
 
   LocalPath(wbuffer, TEXT(LKD_DIALOGS));
@@ -287,7 +292,7 @@ int GetGlobalModelName ()
 	lp=++p;
 	continue;
       }
-    } // assuming \sd\path\xcsoar_pna.exe  we are now at \xcsoar..
+    } // assuming \sd\path\LK8000_pna.exe  we are now at \LK8000..
   
   for (p=lp, np=NULL; *p != '\0'; p++)
     {
@@ -295,10 +300,10 @@ int GetGlobalModelName ()
 	np=++p;
 	break;
       }
-    } // assuming xcsoar_pna.exe we are now at _pna..
+    } // assuming lk8000_pna.exe we are now at _pna..
   
   if ( np == NULL ) {
-    return 0;	// VENTA2-bugfix , null deleted
+    return 0;
   }
   
   for ( p=np, lp=NULL; *p != '\0'; p++) 
@@ -309,7 +314,7 @@ int GetGlobalModelName ()
       }
     } // we found the . in pna.exe
   
-  if (lp == NULL) return 0; // VENTA2-bugfix null return
+  if (lp == NULL) return 0;
   *lp='\0'; // we cut .exe
   
   _tcscpy(GlobalModelName, np);
@@ -317,3 +322,4 @@ int GetGlobalModelName ()
   return 1;  // we say ok
   
 }
+

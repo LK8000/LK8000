@@ -447,7 +447,7 @@ static void OnSaveClicked(WindowControl * Sender, WndListFrame::ListInfo_t *List
 #else
   SHGetSpecialFolderPath(hWndMainWindow, file_name, CSIDL_PERSONAL, false);
   _tcscat(file_name,TEXT("\\"));
-  _tcscat(file_name,TEXT(XCSDATADIR));
+  _tcscat(file_name,TEXT(LKDATADIR));
   _tcscat(file_name,_T("\\"));
   _tcscat(file_name,TEXT(LKD_TASKS)); // 091101
   _tcscat(file_name,_T("\\"));

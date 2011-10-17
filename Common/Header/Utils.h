@@ -403,8 +403,9 @@ typedef struct {
 // Parse string (new lines etc) and malloc the string
 TCHAR* StringMallocParse(TCHAR* old_string);
 
-void LocalPath(TCHAR* buf, const TCHAR* file = TEXT(""), int loc = CSIDL_PERSONAL);
-void LocalPathS(char* buf, const TCHAR* file = TEXT(""), int loc = CSIDL_PERSONAL);
+void LocalPath(TCHAR* buf, const TCHAR* file = TEXT(""));
+void LocalPathS(char* buf, const TCHAR* file = TEXT(""));
+TCHAR *LKGetLocalPath(void);
 
 void ExpandLocalPath(TCHAR* filein);
 void ContractLocalPath(TCHAR* filein);

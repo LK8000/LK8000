@@ -305,7 +305,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
 #ifdef PNA // VENTA-ADDON 
 
 	TCHAR sTmp[MAX_PATH];
-	wsprintf(sTmp,TEXT("Conf=%s%S"), gmfpathname(),XCSDATADIR ); // VENTA2 FIX double backslash
+	wsprintf(sTmp,TEXT("Conf=%s%S"), gmfpathname(),LKDATADIR ); // VENTA2 FIX double backslash
 	CreateProgressDialog(sTmp); 
 
 	wsprintf(sTmp, TEXT("PNA MODEL=%s (%d)"), GlobalModelName, GlobalModelType);

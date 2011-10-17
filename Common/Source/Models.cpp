@@ -123,7 +123,7 @@ bool LoadModelFromProfile()
 
   LocalPath(tmpTbuf,_T(LKD_CONF));
   _tcscat(tmpTbuf,_T("\\"));
-  _tcscat(tmpTbuf,_T(XCSPROFILE));
+  _tcscat(tmpTbuf,_T(LKPROFILE));
 
   StartupStore(_T(". Searching modeltype inside default profile <%s>%s"),tmpTbuf,NEWLINE);
 

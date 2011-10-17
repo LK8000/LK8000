@@ -38,16 +38,16 @@ void LK8000GetOpts(LPTSTR CommandLine) {
 #if (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
   LocalPath(buffer,TEXT(LKD_CONF));
   _tcscat(buffer,TEXT("\\"));
-  _tcscat(buffer,_T(XCSPROFILE)); // 091101
+  _tcscat(buffer,_T(LKPROFILE)); // 091101
 
 #else
   SHGetSpecialFolderPath(hWndMainWindow, buffer, CSIDL_PERSONAL, false);
   _tcscat(buffer,TEXT("\\"));
-  _tcscat(buffer,TEXT(XCSDATADIR));
+  _tcscat(buffer,TEXT(LKDATADIR));
   _tcscat(buffer,_T("\\"));
   _tcscat(buffer,TEXT(LKD_CONF)); // 091101
   _tcscat(buffer,_T("\\"));
-  _tcscat(buffer,_T(XCSPROFILE)); // 091101
+  _tcscat(buffer,_T(LKPROFILE)); // 091101
 #endif
   _tcscpy(defaultProfileFile,buffer);
   _tcscpy(startProfileFile, defaultProfileFile);

@@ -1583,7 +1583,7 @@ void SaveDefaultTask(void) {
 #else
   SHGetSpecialFolderPath(hWndMainWindow, buffer, CSIDL_PERSONAL, false);
   _tcscat(buffer,TEXT("\\"));
-  _tcscat(buffer,TEXT(XCSDATADIR));
+  _tcscat(buffer,TEXT(LKDATADIR));
   _tcscat(buffer,_T("\\"));
   _tcscat(buffer,TEXT(LKD_TASKS)); // 091101
   _tcscat(buffer,_T("\\"));
