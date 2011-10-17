@@ -6,27 +6,13 @@
    $Id: Terrain.cpp,v 8.6 2010/12/17 02:02:27 root Exp root $
 */
 
-// omaplibdemo.cpp : Defines the entry point for the application.
-//
-#include "StdAfx.h"
-#include "options.h"
-#include "Defines.h"
-#include "lk8000.h"
 #include "externs.h"
-
 #include "Terrain.h"
 #include "RasterTerrain.h"
-#include "MapWindow.h"
-#include "Topology.h"
-#include "Calculations.h"
 #include "STScreenBuffer.h"
-#include "Utils.h"
-#include "InfoBoxLayout.h"
 #include "Process.h"
 #include "Waypointparser.h"
 #include "RGB.h"
-
-#include "utils/heapcheck.h"
 
 using std::min;
 using std::max;
@@ -1088,16 +1074,17 @@ public:
     epx = DisplayMap->GetEffectivePixelSize(&pixelsize_d,
                                             ymiddle, xmiddle);
 
-    // do not shade terrain when using high zoom
+    // do not shade terrain when using high or low zoom
     if (epx> min(ixs,iys)/4) { 
       do_shading = false;
     } else {
       #if (WINDOWSPC>0)
       if (MapWindow::zoom.Scale()>18) do_shading=false;
       #else
-      if (MapWindow::zoom.Scale()>12) do_shading=false;
+      if (MapWindow::zoom.Scale()>11) do_shading=false;
       #endif
     }
+
 
     POINT orig = MapWindow::GetOrigScreen();
     rect_visible.left = max((long)MapWindow::MapRect.left, (long)(MapWindow::MapRect.left-(long)epx*dtquant))-orig.x;
