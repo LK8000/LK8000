@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: Utils.cpp,v 8.17 2010/12/19 16:42:53 root Exp root $
+   $Id$
 */
 
 #include "StdAfx.h"
@@ -34,38 +34,19 @@
 void LK8000GetOpts(LPTSTR CommandLine) {
   (void)CommandLine;
 
-  TCHAR buffer[MAX_PATH];
-#if (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
-  LocalPath(buffer,TEXT(LKD_CONF));
-  _tcscat(buffer,TEXT("\\"));
-  _tcscat(buffer,_T(LKPROFILE)); // 091101
-
-#else
-  SHGetSpecialFolderPath(hWndMainWindow, buffer, CSIDL_PERSONAL, false);
-  _tcscat(buffer,TEXT("\\"));
-  _tcscat(buffer,TEXT(LKDATADIR));
-  _tcscat(buffer,_T("\\"));
-  _tcscat(buffer,TEXT(LKD_CONF)); // 091101
-  _tcscat(buffer,_T("\\"));
-  _tcscat(buffer,_T(LKPROFILE)); // 091101
-#endif
-  _tcscpy(defaultProfileFile,buffer);
+  _stprintf(defaultProfileFile,_T("%s\\%s\\%s"),LKGetLocalPath(),_T(LKD_CONF),_T(LKPROFILE));
   _tcscpy(startProfileFile, defaultProfileFile);
 
 #if (WINDOWSPC>0) 
   SCREENWIDTH=800;
   SCREENHEIGHT=480;
 
-#if defined(SCREENWIDTH_)
+  #if defined(SCREENWIDTH_)
   SCREENWIDTH=SCREENWIDTH_;
-#endif
-#if defined(SCREENHEIGHT_)
+  #endif
+  #if defined(SCREENHEIGHT_)
   SCREENHEIGHT=SCREENHEIGHT_;
-#endif
-
-#else
-  return; // don't do anything for PDA platforms
-#endif
+  #endif
 
   TCHAR *MyCommandLine = GetCommandLine();
 
@@ -89,7 +70,7 @@ void LK8000GetOpts(LPTSTR CommandLine) {
         startProfileFile[pCe-pC] = '\0';
       }
     }
-#if (WINDOWSPC>0) 
+
     pC = _tcsstr(MyCommandLine, TEXT("-640x480"));
     if (pC != NULL){
       SCREENWIDTH=640;
@@ -186,7 +167,10 @@ void LK8000GetOpts(LPTSTR CommandLine) {
       SCREENHEIGHT=480;
     }
 
-#endif
   }
+#else
+  return;
+#endif
+
 }
 

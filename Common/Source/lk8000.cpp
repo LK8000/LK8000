@@ -164,10 +164,10 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 
   #if ALPHADEBUG
   extern TCHAR *gmfcurrentpath();
+  #if TESTBENCH
   StartupStore(_T(". Program execution path is <%s>\n"),gmfcurrentpath());
-  TCHAR lpath[MAX_PATH];
-  LocalPath(lpath);
-  StartupStore(_T(". Program data directory is <%s>\n"),lpath);
+  StartupStore(_T(". Program data directory is <%s>\n"),LKGetLocalPath());
+  #endif
   #endif
 
   #if ( !defined(WINDOWSPC) || WINDOWSPC==0 )
