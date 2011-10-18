@@ -6,21 +6,15 @@
    $Id: dlgTaskOverview.cpp,v 8.4 2010/12/13 14:29:46 root Exp root $
 */
 
-#include "StdAfx.h"
+#include "externs.h"
 #include <aygshell.h>
 
-#include "lk8000.h"
-
-#include "Statistics.h"
-#include "externs.h"
-#include "Dialogs.h"
 #include "Logger.h"
 #include "McReady.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
 
-#include "utils/heapcheck.h"
 using std::min;
 using std::max;
 
@@ -580,7 +574,7 @@ void dlgTaskOverviewShowModal(void){
 
   if (!wf) return;
 
-  ASSERT(wf!=NULL);
+  //ASSERT(wf!=NULL);
 
   if (ISPARAGLIDER) {
         AATEnabled=TRUE;
@@ -591,16 +585,16 @@ void dlgTaskOverviewShowModal(void){
   UpdateCaption();
 
   wfAdvanced = ((WndFrame *)wf->FindByName(TEXT("frmAdvanced")));
-  ASSERT(wfAdvanced!=NULL);
+  //ASSERT(wfAdvanced!=NULL);
 
   wTaskList = (WndListFrame*)wf->FindByName(TEXT("frmTaskList"));
-  ASSERT(wTaskList!=NULL);
+  //ASSERT(wTaskList!=NULL);
   wTaskList->SetBorderKind(BORDERLEFT);
   wTaskList->SetEnterCallback(OnTaskListEnter);
   wTaskListEntry = (WndOwnerDrawFrame*)wf->
     FindByName(TEXT("frmTaskListEntry"));
 
-  ASSERT(wTaskListEntry!=NULL);
+  //ASSERT(wTaskListEntry!=NULL);
   wTaskListEntry->SetCanFocus(true);
   // wTaskListEntry->SetWidth(wTaskList->GetWidth() - wTaskList->GetScrollbarWidth() - 5); // patch 091126
 

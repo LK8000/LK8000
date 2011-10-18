@@ -6,14 +6,10 @@
    $Id: Topology.cpp,v 8.5 2010/12/12 23:24:48 root Exp root $
 */
 
-#include "StdAfx.h"
-#include <ctype.h> // needed for Wine
-#include "options.h"
-#include "Topology.h"
 #include "externs.h"
-#include "wcecompat/ts_string.h"
+#include <ctype.h> // needed for Wine
+#include "Topology.h"
 
-#include "utils/heapcheck.h"
 using std::min;
 using std::max;
 

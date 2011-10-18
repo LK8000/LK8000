@@ -6,25 +6,13 @@
    $Id: LKDrawLook8000.cpp,v 1.11 2011/01/06 01:20:11 root Exp root $
 */
 
-#include "StdAfx.h"
-#include "options.h"
-#include "lk8000.h"
-#include "Utils2.h"
-#include "compatibility.h"
-#include "MapWindow.h"
-#include "Units.h"
 #include "externs.h"
-#include <windows.h>
-#include <math.h>
-#include <tchar.h>
+#include "MapWindow.h"
 #include "Logger.h"
 #include "Process.h"
-#include "LKMapWindow.h"
 #include "LKObjects.h"
 #include "RGB.h"
-#include "Units.h"
 
-#include "utils/heapcheck.h"
 
 extern NMEAParser nmeaParser1;
 extern NMEAParser nmeaParser2;

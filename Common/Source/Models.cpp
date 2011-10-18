@@ -6,7 +6,6 @@
    $Id$
 */
 
-#include <stdio.h>
 #include "externs.h"
 #include "Modeltype.h"
 

@@ -6,10 +6,7 @@
    $Id: dlgWaypointEdit.cpp,v 8.2 2010/12/13 16:57:06 root Exp root $
 */
 
-#include "StdAfx.h"
 #include "externs.h"
-#include "Units.h"
-#include "Utils2.h"
 #include "InputEvents.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"

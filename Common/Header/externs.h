@@ -9,11 +9,6 @@
 #ifndef EXTERNS_H
 #define EXTERNS_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif
-
-#include "StdAfx.h"
 
 #ifndef __MINGW32__
  #if defined(CECORE)
@@ -24,12 +19,15 @@
  #endif
 #else
  #include "wcecompat/ts_string.h"
+ #include "mingw32compat/StdAfx.h"
 #endif
 
 // options first, then all dependencies
 #include "options.h"
 #include "Sizes.h"
 #include "Defines.h"
+#include "Enums.h"
+#include "Units.h"
 #include "lk8000.h"
 
 #include "Statistics.h"
@@ -38,7 +36,6 @@
 #include "ContestMgr.h"
 #include "device.h"
 
-#include "Enums.h"
 #include "Globals.h"
 
 // Include header for heap allocation checking

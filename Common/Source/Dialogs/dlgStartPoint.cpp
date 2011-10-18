@@ -6,17 +6,13 @@
    $Id$
 */
 
-#include "StdAfx.h"
+#include "externs.h"
 #include <aygshell.h>
 
-#include "lk8000.h"
-
-#include "externs.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 #include "MapWindow.h"
 
-#include "utils/heapcheck.h"
 
 using std::min;
 using std::max;
@@ -182,18 +178,18 @@ void dlgStartPointShowModal(void) {
   }
   if (!wf) return;
 
-  ASSERT(wf!=NULL);
+  //ASSERT(wf!=NULL);
   
   CheckStartPointInTask();
 
   wStartPointList = (WndListFrame*)wf->FindByName(TEXT("frmStartPointList"));
-  ASSERT(wStartPointList!=NULL);
+  //ASSERT(wStartPointList!=NULL);
   wStartPointList->SetBorderKind(BORDERLEFT);
   wStartPointList->SetEnterCallback(OnStartPointListEnter);
 
   wStartPointListEntry = (WndOwnerDrawFrame*)wf->
     FindByName(TEXT("frmStartPointListEntry"));
-  ASSERT(wStartPointListEntry!=NULL);
+  //ASSERT(wStartPointListEntry!=NULL);
   wStartPointListEntry->SetCanFocus(true);
 
   UpdateList();

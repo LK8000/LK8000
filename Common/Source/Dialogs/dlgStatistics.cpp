@@ -6,17 +6,13 @@
    $Id: dlgStatistics.cpp,v 8.2 2010/12/13 14:24:15 root Exp root $
 */
 
-#include "StdAfx.h"
-#include "lk8000.h"
-#include "InfoBoxLayout.h"
-#include "Statistics.h"
 #include "externs.h"
+#include "InfoBoxLayout.h"
 #include "McReady.h"
 #include "dlgTools.h"
 #include "Atmosphere.h"
 #include "RasterTerrain.h"
 
-#include "utils/heapcheck.h"
 
 using std::min;
 using std::max;

@@ -7,7 +7,6 @@
 
 */
 
-#include <stdio.h>
 #include "externs.h"
 
 #ifdef PNA

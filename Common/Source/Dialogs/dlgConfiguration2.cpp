@@ -6,18 +6,14 @@
    $Id$
 */
 
-#include "StdAfx.h"
+#include "externs.h"
 #include <aygshell.h>
 
-#include "lk8000.h"
-#include "Statistics.h"
-#include "externs.h"
 #include "dlgTools.h"
 #include "Utils.h"
 #include "InfoBoxLayout.h"
 #include "Waypointparser.h"
 
-#include "utils/heapcheck.h"
 
 extern int config_page;
 

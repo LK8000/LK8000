@@ -15,19 +15,13 @@
 #define  LOGSTREAM 0
 
 
-#include <windows.h>
-#include <tchar.h>
-
-
 #include "externs.h"
 #include "Utils.h"
-#include "Utils2.h"
 #include "Parser.h"
 #include "Port.h"
 
 #include "devCAI302.h"
 
-#include "utils/heapcheck.h"
 using std::min;
 using std::max;
 

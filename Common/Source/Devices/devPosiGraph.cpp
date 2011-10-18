@@ -16,11 +16,6 @@
 // adding baro alt sentance paser to support baro source priority  if (d == pDevPrimaryBaroSource){...}
 
 
-
-
-#include "StdAfx.h"
-
-
 #include "externs.h"
 #include "Utils.h"
 #include "Parser.h"
@@ -28,7 +23,6 @@
 
 #include "devPosiGraph.h"
 
-#include "utils/heapcheck.h"
 
 
 static BOOL GPWIN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);

@@ -6,27 +6,12 @@
    $Id: dlgCustomKeys.cpp,v 1.1 2010/12/13 13:32:44 root Exp root $
 */
 
-#include "StdAfx.h"
-#include <aygshell.h>
-
-#include "lk8000.h"
-
 #include "externs.h"
+#include <aygshell.h>
 #include "dlgTools.h"
-
-#include "compatibility.h"
-#ifdef OLDPPC
-#include "LK8000Process.h"
-#else
-#include "Process.h"
-#endif
-
 #include "Terrain.h"
 #include "LKMapWindow.h"
-
 #include "Utils.h"
-
-#include "utils/heapcheck.h"
 
 void AddConfList( DataFieldEnum* dfe);
 

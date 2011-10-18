@@ -1,11 +1,6 @@
 #ifdef PNA
 
-#include "StdAfx.h"
-#include "compatibility.h"
-#include "options.h"
-#include "Defines.h"
 #include "externs.h"
-#include "utils/heapcheck.h"
 
 /*  **********************************************************
  *

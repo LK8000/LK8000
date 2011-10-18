@@ -6,14 +6,9 @@
    $Id$
 */
 
-#include "StdAfx.h"
-#include "compatibility.h"
 #include "externs.h"
 
-#include <windows.h>
-#include <math.h>
 #include <Message.h>
-#include <tchar.h>
 
 #include "Bitmaps.h"
 #include "RGB.h"

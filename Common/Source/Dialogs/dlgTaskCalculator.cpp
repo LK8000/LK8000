@@ -5,12 +5,7 @@
 
    $Id$
 */
-#include "StdAfx.h"
-
-#include "Statistics.h"
-
 #include "externs.h"
-#include "Units.h"
 #include "McReady.h"
 
 #include "dlgTools.h"

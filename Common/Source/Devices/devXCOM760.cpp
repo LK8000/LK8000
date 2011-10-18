@@ -7,8 +7,6 @@
 */
 
 
-#include "StdAfx.h"
-
 #include "externs.h"
 #include "Utils.h"
 #include "Parser.h"
@@ -16,7 +14,6 @@
 
 #include "devXCOM760.h"
 
-#include "utils/heapcheck.h"
 
 
 static BOOL XCOM760IsRadio(PDeviceDescriptor_t d){

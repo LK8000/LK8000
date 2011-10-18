@@ -6,11 +6,8 @@
    $Id: dlgAirspaceDetails.cpp,v 8.3 2010/12/13 12:23:03 root Exp root $
 */
 
-#include "StdAfx.h"
-#include <aygshell.h>
-#include "lk8000.h"
-#include "Statistics.h"
 #include "externs.h"
+#include <aygshell.h>
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 #include "InputEvents.h"

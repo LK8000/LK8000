@@ -6,21 +6,14 @@
    $Id$
 */
 
-#include "StdAfx.h"
-#include "compatibility.h"
-#include "Defines.h"
-#include "options.h"
+#include "externs.h"
+#include "resource.h"
 #include "MapWindow.h"
 #include "LKMapWindow.h"
 #include "Utils.h"
-#include "externs.h"
-#include <windows.h>
-#include <math.h>
 
 #define STATIC_BITMAPS
 #include "Bitmaps.h"
-
-#include <tchar.h>
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>

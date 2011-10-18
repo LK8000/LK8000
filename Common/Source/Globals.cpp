@@ -6,23 +6,11 @@
    $Id$
 */
 
-#include "StdAfx.h"
-#include "compatibility.h"
-
-#include "options.h"
-#include "Defines.h"
-
+#define STATIC_GLOBALS
+#include "externs.h"
 #include "MapWindow.h"
 #include "LKMapWindow.h"
 #include "Utils.h"
-#include <windows.h>
-#include <math.h>
-
-#include <tchar.h>
-
-#define STATIC_GLOBALS
-#include "Globals.h"
-
 #include "Modeltype.h"
 
 #if (WINDOWSPC>0)

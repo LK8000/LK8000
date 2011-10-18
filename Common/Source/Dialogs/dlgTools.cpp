@@ -6,7 +6,7 @@
    $Id: dlgTools.cpp,v 8.6 2010/12/13 14:56:26 root Exp root $
 */
 
-#include "StdAfx.h"
+#include "externs.h"
 #include <limits.h>
 
 #include "WindowControls.h"
@@ -14,10 +14,8 @@
 #include "xmlParser.h"
 #include "InfoBoxLayout.h"
 #include "Dialogs.h"
-#include "externs.h"
 #include "RGB.h"
 
-#include "utils/heapcheck.h"
 
 
 int DLGSCALE(int x) {
@@ -45,10 +43,10 @@ int WINAPI MessageBoxX(HWND hWnd, LPCTSTR lpText, LPCTSTR lpCaption, UINT uType,
   // todo
   
   hWnd = hWndMainWindow;
-  ASSERT(hWnd == hWndMainWindow);
+  //ASSERT(hWnd == hWndMainWindow);
 
-  ASSERT(lpText != NULL);
-  ASSERT(lpCaption != NULL);
+  //ASSERT(lpText != NULL);
+  //ASSERT(lpCaption != NULL);
 
   GetClientRect(hWnd, &rc);
 

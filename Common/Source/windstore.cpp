@@ -14,12 +14,10 @@
 **
 ***********************************************************************/
 
-#include "StdAfx.h"
+#include "externs.h"
 
 #include "windstore.h"
-#include "lk8000.h"
 
-#include "utils/heapcheck.h"
 
 WindStore::WindStore() {
   //create the lists

@@ -6,16 +6,10 @@
    $Id: device.cpp,v 8.6 2010/12/13 10:21:06 root Exp root $
 */
 
-#include "StdAfx.h"
-
-#include "options.h"
-
 #include "externs.h"
 #include "Utils.h"
-#include "Utils2.h"
 #include "Parser.h"
 #include "Port.h"
-#include "device.h"
 #include "MapWindow.h"
 
 #include "utils/heapcheck.h"

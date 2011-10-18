@@ -6,18 +6,13 @@
    $Id: dlgWayPointSelect.cpp,v 8.5 2010/12/13 16:53:07 root Exp root $
 */
 
-#include "StdAfx.h"
+#include "externs.h"
 #include <aygshell.h>
 
-#include "lk8000.h"
-
-#include "Statistics.h"
-#include "externs.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 #include "WindowControls.h"
 
-#include "utils/heapcheck.h"
 
 typedef struct{
   int Index;
@@ -840,7 +835,7 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
 
   if (!wf) return -1;
 
-  ASSERT(wf!=NULL);
+  //ASSERT(wf!=NULL);
 
   wf->SetKeyDownNotify(FormKeyDown);
 
@@ -849,13 +844,13 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
   ((WndButton *)wf->FindByName(TEXT("cmdSelect")))->SetOnClickNotify(OnWPSSelectClicked);
 
   wWayPointList = (WndListFrame*)wf->FindByName(TEXT("frmWayPointList"));
-  ASSERT(wWayPointList!=NULL);
+  //ASSERT(wWayPointList!=NULL);
   wWayPointList->SetBorderKind(BORDERLEFT);
   wWayPointList->SetEnterCallback(OnWaypointListEnter);
   wWayPointList->SetWidth(wf->GetWidth() - wWayPointList->GetLeft()-2);
 
   wWayPointListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmWayPointListEntry"));
-  ASSERT(wWayPointListEntry!=NULL);
+  //ASSERT(wWayPointListEntry!=NULL);
   wWayPointListEntry->SetCanFocus(true);
    // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
    if ( wWayPointList->ScrollbarWidth == -1) {  

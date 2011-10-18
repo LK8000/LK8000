@@ -7,19 +7,13 @@
 */
 
 
-#include "StdAfx.h"
-#include <aygshell.h>
-
-#include "lk8000.h"
-
-#include "Statistics.h"
 #include "externs.h"
+#include <aygshell.h>
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 #include "Airspace.h"
 #include "AirspaceWarning.h"
 
-#include "utils/heapcheck.h"
 
 
 typedef struct{
@@ -692,7 +686,7 @@ void dlgAirspaceSelect(void) {
 
   if (!wf) return;
 
-  ASSERT(wf!=NULL);
+  //ASSERT(wf!=NULL);
 
   wf->SetKeyDownNotify(FormKeyDown);
 
@@ -701,12 +695,12 @@ void dlgAirspaceSelect(void) {
     SetOnClickNotify(OnWPSCloseClicked);
 
   wAirspaceList = (WndListFrame*)wf->FindByName(TEXT("frmAirspaceList"));
-  ASSERT(wAirspaceList!=NULL);
+  //ASSERT(wAirspaceList!=NULL);
   wAirspaceList->SetBorderKind(BORDERLEFT);
   wAirspaceList->SetEnterCallback(OnAirspaceListEnter);
 
   wAirspaceListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmAirspaceListEntry"));
-  ASSERT(wAirspaceListEntry!=NULL);
+  //ASSERT(wAirspaceListEntry!=NULL);
   wAirspaceListEntry->SetCanFocus(true);
 
   wpName = (WndProperty*)wf->FindByName(TEXT("prpFltName"));

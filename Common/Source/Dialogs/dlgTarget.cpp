@@ -6,12 +6,7 @@
    $Id: dlgTarget.cpp,v 8.3 2010/12/13 14:27:35 root Exp root $
 */
 
-#include "StdAfx.h"
-
-#include "Statistics.h"
-
 #include "externs.h"
-#include "Units.h"
 
 #include "dlgTools.h"
 #include "Port.h"

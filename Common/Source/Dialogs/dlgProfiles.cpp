@@ -6,21 +6,14 @@
    $Id: dlgProfiles.cpp,v 1.1 2010/12/13 13:48:50 root Exp root $
 */
 
-#include "StdAfx.h"
+#include "externs.h"
 #include <aygshell.h>
 
-#include "lk8000.h"
-
-#include "Statistics.h"
-#include "externs.h"
-#include "Dialogs.h"
 #include "Logger.h"
 #include "McReady.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
-#include "Utils2.h"
 
-#include "utils/heapcheck.h"
 
 extern void SettingsEnter();
 extern void SettingsLeave();
@@ -214,7 +207,7 @@ void dlgProfilesShowModal(void){
 
   if (!wf) return;
 
-  ASSERT(wf!=NULL);
+  //ASSERT(wf!=NULL);
 
   ((WndButton *)wf->FindByName(TEXT("cmdClose"))) ->SetOnClickNotify(OnCloseClicked);
   ((WndButton *)wf->FindByName(TEXT("cmdLoad"))) ->SetOnClickNotify(OnLoadClicked);

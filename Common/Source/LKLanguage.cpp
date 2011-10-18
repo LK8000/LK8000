@@ -6,22 +6,8 @@
    $Id: LKLanguage.cpp,v 1.4 2010/12/20 23:35:24 root Exp root $
  */
 
-#include "StdAfx.h"
-#include <stdio.h>
-#ifndef __MINGW32__
-#if defined(CECORE)
-#include "winbase.h"
-#endif
-#if (WINDOWSPC<1)
-#include "projects.h"
-#endif
-#endif
-#include "options.h"
 #include "externs.h"
-#include "lk8000.h"
 #include "InfoBoxLayout.h"
-#include "Utils2.h"
-#include "device.h"
 #include "Logger.h"
 #include "Parser.h"
 #include "WaveThread.h"

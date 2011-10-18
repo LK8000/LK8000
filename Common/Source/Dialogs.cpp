@@ -7,24 +7,13 @@
 
 */
 
-#include "StdAfx.h"
+#include "externs.h"
 
 #include <commdlg.h>
 #include <commctrl.h>
 #include "aygshell.h"
-
-#include "compatibility.h"
-
-#include "Dialogs.h"
-#include "Logger.h"
 #include "resource.h"
-#include "Utils.h"
-#include "Utils2.h"
-#include "externs.h"
 #include "Port.h"
-#include "AirfieldDetails.h"
-#include "device.h"
-#include "Units.h"
 #include "InputEvents.h"
 #include "Message.h"
 #include "LKObjects.h"
@@ -37,7 +26,6 @@ static GetTextSTRUCT GetTextData[MAXSTATUSMESSAGECACHE];
 static int GetTextData_Size = 0;
 #endif
 
-#include "utils/heapcheck.h"
 
 void ReadWayPoints(void);
 void ReadAirspace(void);

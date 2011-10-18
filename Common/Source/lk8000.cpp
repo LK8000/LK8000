@@ -5,13 +5,8 @@
 
    $Id: lk8000.cpp,v 1.1 2010/12/15 11:30:56 root Exp root $
 */
-#include "StdAfx.h"
-#include "wcecompat/ts_string.h"
-#include "options.h"
-#include "Defines.h"
 #include "externs.h"
-#include "compatibility.h"
-#include "lk8000.h"
+#include "resource.h"
 #include "buildnumber.h"
 #include "Waypointparser.h"
 #include "Logger.h"
@@ -59,8 +54,6 @@
 
 using std::min;
 using std::max;
-
-#include "utils/heapcheck.h"
 
 
 

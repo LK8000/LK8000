@@ -6,11 +6,8 @@
    $Id: TeamCodeCalculation.cpp,v 8.2 2010/12/12 17:25:17 root Exp root $
 */
 
-#include "StdAfx.h"
+#include "externs.h"
 #include "TeamCodeCalculation.h"
-#include "math.h"
-
-#include "utils/heapcheck.h"
 
 
 void ConvertHeadingToTeamCode(double heading, TCHAR *code);
@@ -20,7 +17,7 @@ double GetRange(TCHAR *code );
 int GetValueFromTeamCode(TCHAR *code, int maxCount);
 
 #define TEAMCODE_COMBINAIONS 1296
-#define DEG_TO_RAD .0174532925199432958
+//#define DEG_TO_RAD .0174532925199432958
 
 void GetTeamCode(TCHAR *code, double bearing, double range)
 {
@@ -153,7 +150,7 @@ int GetValueFromTeamCode(TCHAR *code, int maxCount)
 void CalcTeamMatePos(double ownBear, double ownDist, double mateBear, double mateDist, double *bearToMate, double *distToMate)
 {
 	// define constants
-	double PI = 3.14159265358979;
+	//double PI = 3.14159265358979;
 	double toRad = PI / 180.0;
 	double toDeg = 180.0 / PI;
 

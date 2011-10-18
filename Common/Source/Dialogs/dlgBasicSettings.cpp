@@ -6,19 +6,12 @@
    $Id: dlgBasicSettings.cpp,v 8.3 2010/12/13 12:29:07 root Exp root $
 */
 
-#include "StdAfx.h"
-
-#include "Statistics.h"
-
 #include "externs.h"
-#include "Units.h"
 #include "McReady.h"
 #include "Atmosphere.h"
 #include "dlgTools.h"
-#include "device.h"
 #include "InfoBoxLayout.h"
 
-#include "utils/heapcheck.h"
 
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;

@@ -6,13 +6,9 @@
    $Id: $
 */
 
-#include "options.h"
-
+#include "externs.h"
 #include "Trace.h"
-#include "lk8000.h"
-#include <tchar.h>
 
-#include "utils/heapcheck.h"
 
 
 /** 

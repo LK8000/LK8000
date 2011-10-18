@@ -8,14 +8,10 @@
 //_____________________________________________________________________includes_
 
 #include <time.h>
-
-#include "StdAfx.h"
-#include "utils/stringext.h"
-#include "Dialogs.h"
 #include "externs.h"
+#include "utils/stringext.h"
 #include "devLXNano.h"
 
-#include "utils/heapcheck.h"
 
 //______________________________________________________________________defines_
 

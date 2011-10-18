@@ -6,12 +6,8 @@
    $Id: STScreenBuffer.cpp,v 8.2 2010/12/12 17:09:24 root Exp root $
 */
 
-#include "StdAfx.h"
-#include "STScreenBuffer.h"
-#include "lk8000.h"
 #include "externs.h"
-
-#include "utils/heapcheck.h"
+#include "STScreenBuffer.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -66,8 +62,8 @@ CSTScreenBuffer::~CSTScreenBuffer()
 
 BOOL CSTScreenBuffer::CreateBitmap(int nWidth, int nHeight)
 {
-  ASSERT(nWidth>0);
-  ASSERT(nHeight>0);
+  //ASSERT(nWidth>0);
+  //ASSERT(nHeight>0);
   
   if (m_hBitmap!=NULL) DeleteObject(m_hBitmap);
   
@@ -95,14 +91,14 @@ BOOL CSTScreenBuffer::CreateBitmap(int nWidth, int nHeight)
   
   HDC hDC = ::GetDC(NULL);
   if (!hDC) FailStore(_T("A001 GetDC")); // 100101
-  ASSERT(hDC);
+  //ASSERT(hDC);
   BGRColor **pBuffer = &m_pBuffer;
   m_hBitmap = CreateDIBSection(hDC, (const BITMAPINFO*)dibInfo, DIB_RGB_COLORS, (void**)pBuffer, NULL, 0);
   ::ReleaseDC(NULL, hDC);
   if (!m_hBitmap) FailStore(_T("A002 hBitmap"));
-  ASSERT(m_hBitmap);
+  //ASSERT(m_hBitmap);
   if (!m_pBuffer) FailStore(_T("A003 pBuffer"));
-  ASSERT(m_pBuffer);
+  //ASSERT(m_pBuffer);
   
   m_pBufferTmp = (BGRColor*)malloc(sizeof(BGRColor)*m_nHeight*m_nCorrectedWidth);
   if (!m_pBufferTmp) FailStore(_T("A003/B pBuffer"));
@@ -112,16 +108,16 @@ BOOL CSTScreenBuffer::CreateBitmap(int nWidth, int nHeight)
 
 void CSTScreenBuffer::Create(int nWidth, int nHeight)
 {
-	ASSERT(nWidth>0);
-	ASSERT(nHeight>0);
+	//ASSERT(nWidth>0);
+	//ASSERT(nHeight>0);
 
 	CreateBitmap(nWidth, nHeight);
 }
 
 void CSTScreenBuffer::Create(int nWidth, int nHeight, COLORREF clr)
 {
-	ASSERT(nWidth>0);
-	ASSERT(nHeight>0);
+	//ASSERT(nWidth>0);
+	//ASSERT(nHeight>0);
 
 	CreateBitmap(nWidth, nHeight);
 
@@ -161,7 +157,7 @@ void CSTScreenBuffer::Create(HBITMAP hBitmap)
 void CSTScreenBuffer::Create(HDC *pDC, RECT rect)
 {
   if (!m_pDC) FailStore(_T("A004 pDC"));
-  ASSERT(m_pDC);
+  //ASSERT(m_pDC);
 
   CreateBitmap(rect.right-rect.left, rect.bottom-rect.top);
   BitBlt(m_pDC, 0,0, rect.right-rect.left, rect.bottom-rect.top, 
@@ -170,9 +166,9 @@ void CSTScreenBuffer::Create(HDC *pDC, RECT rect)
 
 void CSTScreenBuffer::CreateRGB(void *pData, int nWidth, int nHeight)
 {
-  ASSERT(pData);
-  ASSERT(nWidth>0);
-  ASSERT(nHeight>0);
+  //ASSERT(pData);
+  //ASSERT(nWidth>0);
+  //ASSERT(nHeight>0);
   
   CreateBitmap(nWidth, nHeight);
   
@@ -195,7 +191,7 @@ void CSTScreenBuffer::CreateRGB(void *pData, int nWidth, int nHeight)
 BOOL CSTScreenBuffer::Draw(HDC* pDC, POINT ptDest)
 {
   if (!m_hBitmap) FailStore(_T("A005"));
-  ASSERT(m_hBitmap);
+  //ASSERT(m_hBitmap);
   ReleaseDC();
   
   POINT Origin = {0,0};
@@ -240,7 +236,7 @@ BOOL CSTScreenBuffer::DrawStretch(HDC* pDC, POINT ptDest,
                                   unsigned int cy)
 {
   if (!m_hBitmap) FailStore(_T("A006"));
-  ASSERT(m_hBitmap);
+  //ASSERT(m_hBitmap);
   ReleaseDC();
   
   POINT Origin = {0,0};

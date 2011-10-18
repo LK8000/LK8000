@@ -7,27 +7,16 @@
 */
 
 
-#include "StdAfx.h"
+#include "externs.h"
 #include <aygshell.h>
 
-#include "lk8000.h"
-#include "Utils2.h"
 #include "MapWindow.h"
 #include "Terrain.h"
+#include "Process.h"
 
 #include "WindowControls.h"
-#include "Statistics.h"
-#include "externs.h"
 #include "McReady.h"
 #include "dlgTools.h"
-#include "device.h"
-
-#include "compatibility.h"
-#ifdef OLDPPC
-#include "LK8000Process.h"
-#else
-#include "Process.h"
-#endif
 
 #include "Modeltype.h"
 
@@ -37,7 +26,6 @@
 #include "Waypointparser.h"
 #include "LKMapWindow.h"
 
-#include "utils/heapcheck.h"
 
 static HFONT TempMapWindowFont;
 static HFONT TempMapLabelFont;
@@ -3132,6 +3120,7 @@ void dlgConfigurationShowModal(void){
   //wConfig26    = ((WndFrame *)wf->FindByName(TEXT("frmEngineering3")));
   //wConfig27    = ((WndFrame *)wf->FindByName(TEXT("frmEngineering4")));
   // ADDPAGE HERE
+/*
   ASSERT(wConfig1!=NULL);
   ASSERT(wConfig2!=NULL);
   ASSERT(wConfig3!=NULL);
@@ -3157,6 +3146,7 @@ void dlgConfigurationShowModal(void){
   ASSERT(wConfig23!=NULL);
   ASSERT(wConfig24!=NULL);
   ASSERT(wConfig25!=NULL);
+*/
   //ASSERT(wConfig26!=NULL);
   //ASSERT(wConfig27!=NULL);
   // ADDPAGE HERE

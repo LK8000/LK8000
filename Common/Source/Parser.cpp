@@ -7,15 +7,10 @@
 
 */
 
-#include "StdAfx.h"
-
-#include "options.h"
 #include "externs.h"
 #include "Utils.h"
-#include "Utils2.h"
 #include "Logger.h"
 #include "Parser.h"
-#include "device.h"
 #include "Geoid.h"
 
 #ifdef PNA

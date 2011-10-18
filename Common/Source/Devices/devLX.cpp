@@ -7,11 +7,9 @@
 */
 //_____________________________________________________________________includes_
 
-#include "StdAfx.h"
 #include "externs.h"
 #include "devLX.h"
 
-#include "utils/heapcheck.h"
 
 //____________________________________________________________class_definitions_
 

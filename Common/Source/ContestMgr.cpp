@@ -7,15 +7,11 @@
 */
 
 
-#include "options.h"
+#include "externs.h"
 
 #include "ContestMgr.h"
-#include "lk8000.h"
-#include "Dialogs.h"
 #include <memory>
-#include <tchar.h>
 
-#include "utils/heapcheck.h"
 
 CContestMgr CContestMgr::_instance;
 

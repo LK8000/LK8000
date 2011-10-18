@@ -5,10 +5,9 @@
 
 */
 
-#include "StdAfx.h"
+#include "externs.h"
 #include "Utils.h"
 
-#include "utils/heapcheck.h"
 
 #define EGM96SIZE 16200
 

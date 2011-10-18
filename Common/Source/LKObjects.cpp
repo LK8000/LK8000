@@ -8,15 +8,8 @@
 
 //  Create common shared graphic objects, from MapWindow
 
-#include "StdAfx.h"
-#include "compatibility.h"
-#include "Defines.h"
-#include "options.h"
-#include "Utils.h"
-#include <windows.h>
-#include <math.h>
-#include <tchar.h>
 #include "externs.h"
+#include "Utils.h"
 #if (WINDOWSPC>0)
 #include <wingdi.h>
 #endif
@@ -26,7 +19,6 @@
 
 #include "RGB.h"
 
-#include "utils/heapcheck.h"
 
 void LKObjects_Create() {
 

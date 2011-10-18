@@ -14,15 +14,8 @@
 //distance      km   nm   ml   nm
 
 
-#include "StdAfx.h"
-
-#include <stdio.h>
-//#include <assert.h>
-
-#include "Units.h"
 #include "externs.h"
 
-#include "utils/heapcheck.h"
 
 CoordinateFormats_t Units::CoordinateFormat;
 

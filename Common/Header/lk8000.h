@@ -10,19 +10,6 @@
 #define LK8000_LK8000_H
 
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#include "StdAfx.h"
-#include "Defines.h"
-#include "resource.h"
-#include "Sizes.h"
-#include "Units.h"
-#include "compatibility.h"
-#include "Enums.h"
-
-
 typedef struct _DATAOPTIONS
 {
   UnitGroup_t UnitGroup;

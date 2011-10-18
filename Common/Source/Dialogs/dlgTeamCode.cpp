@@ -6,12 +6,9 @@
    $Id$
 */
 
-#include "StdAfx.h"
-#include "lk8000.h"
-#include "Utils.h"
-#include "Utils2.h"
-#include "dlgTools.h"
 #include "externs.h"
+#include "Utils.h"
+#include "dlgTools.h"
 #include "InfoBoxLayout.h"
 
 static WndForm *wf=NULL;

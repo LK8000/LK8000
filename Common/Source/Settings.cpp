@@ -7,8 +7,7 @@
 */
 
 
-#include "StdAfx.h"
-#include "lk8000.h"
+#include "externs.h"
 #include "InputEvents.h"
 #include "Terrain.h"
 #include "InfoBoxLayout.h"

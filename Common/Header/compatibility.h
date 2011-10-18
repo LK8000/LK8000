@@ -1,19 +1,10 @@
 #ifndef __COMPATIBILITY_H_
 #define __COMPATIBILITY_H_
 
-// ARH 20/06/2005
-// Compatibility.h
-
 
 #if defined(WIN32_PLATFORM_HPC2000)
-// H/PC 2000
-
-// NOT SUPPORTED
 
 #elif defined(WIN32_PLATFORM_HPCPRO)
-// H/PC Pro
-
-// NOT SUPPORTED
 
 #elif defined(WIN32_PLATFORM_PSPC)
 // Pocket PC
@@ -22,8 +13,6 @@
 	// Pocket PC 2000
                 #define OLDPPC
 
-//#define ASSERT(x) 0
-
 		// App keys
 		#define VK_APP1     0xC1 
 		#define VK_APP2     0xC2 
@@ -31,11 +20,9 @@
 		#define VK_APP4     0xC4
 		#define VK_APP5     0xC5
 		#define VK_APP6     0xC6
-	    // Note - note used on most builds...
 		// #define VK_APP7     0xC7
 		// #define VK_APP8     0xC8
  
-		
 		#ifndef NOCLEARTYPE
 		#define NOCLEARTYPE
 		#endif
@@ -49,7 +36,6 @@
 	#elif (WIN32_PLATFORM_PSPC == 310)
 	// Pocket PC 2002
 
-//#define ASSERT(x) 0
 		#ifndef NOCLEARTYPE
 		#define NOCLEARTYPE
 		#endif

@@ -6,37 +6,25 @@
   $Id: InputEvents.cpp,v 8.11 2011/01/01 23:21:36 root Exp root $
 */
 
-
-#include "StdAfx.h"
-#include "lk8000.h"
+#include "externs.h"
 #include "InputEvents.h"
 #include "Utils.h"
-#include "Utils2.h"
-#include "Dialogs.h"
 #include "Terrain.h"
-#include "compatibility.h"
+
 #include <commctrl.h>
 #include <aygshell.h>
+
 #include "InfoBoxLayout.h"
-#include "Airspace.h"
-#include "LKAirspace.h"
-using std::min;
-using std::max;
-#ifdef OLDPPC
-#include "LK8000Process.h"
-#else
 #include "Process.h"
-#endif
-#include "device.h"
-#include "Message.h"
 #include "Units.h"
 #include "MapWindow.h"
 #include "Atmosphere.h"
 #include "Waypointparser.h"
+#include "Message.h"
 #include "AATDistance.h"
 
-#include "utils/stringext.h"
-#include "utils/heapcheck.h"
+using std::min;
+using std::max;
 
 // Sensible maximums 
 #define MAX_MODE 100
@@ -253,12 +241,14 @@ void InputEvents::readFile() {
 	token = _tcstok(d_mode, TEXT(" "));
 
 	// General errors - these should be true
+	/*
 	ASSERT(d_location >= 0);
 	ASSERT(d_location < 1024);	// Scott arbitrary limit
 	ASSERT(event_id >= 0);
 	ASSERT(d_mode != NULL);
 	ASSERT(d_type != NULL);
 	ASSERT(d_label != NULL);
+	*/
 
 	// These could indicate bad data - thus not an ASSERT (debug only)
 	// ASSERT(_tcslen(d_mode) < 1024);
@@ -269,7 +259,7 @@ void InputEvents::readFile() {
 
 	  // All modes are valid at this point
 	  int mode_id = mode2int(token, true);
-	  ASSERT(mode_id >= 0);
+	  //ASSERT(mode_id >= 0);
 			  
 	  // Make label event
 	  // TODO code: Consider Reuse existing entries...
@@ -467,7 +457,7 @@ int InputEvents::findNE(const TCHAR *data) {
 // without taking up more data - but when loading from file must copy string
 int InputEvents::makeEvent(void (*event)(const TCHAR *), const TCHAR *misc, int next) {
   if (Events_count >= MAX_EVENTS){
-    ASSERT(0);
+    //ASSERT(0);
     return 0;
   }
   Events_count++;	// NOTE - Starts at 1 - 0 is a noop
@@ -490,7 +480,7 @@ void InputEvents::makeLabel(int mode_id, const TCHAR* label, int location, int e
     ModeLabel[mode_id][ModeLabel_count[mode_id]].event = event_id;
     ModeLabel_count[mode_id]++;
   } else {
-	ASSERT(0);
+	//ASSERT(0);
   }
 }
 
@@ -516,7 +506,7 @@ int InputEvents::mode2int(const TCHAR *mode, bool create) {
   }
 
   // Should never reach this point
-  ASSERT(false);
+  //ASSERT(false);
   return -1;
 }
 
@@ -525,7 +515,7 @@ void InputEvents::setMode(const TCHAR *mode) {
   static int lastmode = -1;
   int thismode;
 
-  ASSERT(mode != NULL);
+  //ASSERT(mode != NULL);
 
   _tcsncpy(mode_current, mode, MAX_MODE_STRING);
   mode_current[MAX_MODE_STRING-1]='\0'; // BUGFIX 100331 AND 110202
@@ -1238,7 +1228,7 @@ void InputEvents::eventArmAdvance(const TCHAR *misc) {
 //  The argument is the label of the mode to activate. 
 //  This is used to activate menus/submenus of buttons
 void InputEvents::eventMode(const TCHAR *misc) {
-  ASSERT(misc != NULL);
+  //ASSERT(misc != NULL);
   InputEvents::setMode(misc);
   
   // trigger redraw of screen to reduce blank area under windows

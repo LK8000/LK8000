@@ -15,6 +15,7 @@
  **
  ***********************************************************************/
 
+#include "externs.h"
 #include "Volkslogger/vla_support.h"
 
 #include <stdio.h>

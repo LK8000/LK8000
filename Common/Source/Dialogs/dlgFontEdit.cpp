@@ -6,14 +6,8 @@
    $Id$
 */
 
-#include "StdAfx.h"
-
-
 #include "externs.h"
 #include "Utils.h"
-#include "lk8000.h"
-
-#include "utils/heapcheck.h"
 
 extern void InitializeOneFont (HFONT * theFont, 
                                const TCHAR FontRegKey[] , 

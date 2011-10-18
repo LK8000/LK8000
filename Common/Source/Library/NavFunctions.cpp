@@ -6,12 +6,9 @@
    $Id: NavFunctions.cpp,v 8.2 2010/12/12 15:50:41 root Exp root $
 */
 
-#include "StdAfx.h"
+#include "externs.h"
 #include "NavFunctions.h"
-#include "lk8000.h"
 #include "Utils.h"
-
-#include "utils/heapcheck.h"
 
 
 #ifdef __MINGW32__

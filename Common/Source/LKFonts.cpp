@@ -6,21 +6,7 @@
    $Id$
 */
 
-#include "StdAfx.h"
-#include <stdio.h>
-#ifndef __MINGW32__
-#if defined(CECORE)
-#include "winbase.h"
-#endif
-#if (WINDOWSPC<1)
-#include "projects.h"
-#endif
-#endif
-#include "options.h"
-#include "Defines.h"
 #include "externs.h"
-#include "lk8000.h"
-#include "utils/heapcheck.h"
 
 
 extern void ApplyClearType(LOGFONT *logfont);

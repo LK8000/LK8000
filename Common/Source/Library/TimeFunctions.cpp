@@ -6,12 +6,6 @@
    $Id$
 */
 
-#include "StdAfx.h"
-#include <windows.h>
-
-#include "options.h"
-#include "Defines.h"
-#include "lk8000.h"
 #include "externs.h"
 
 using std::min;

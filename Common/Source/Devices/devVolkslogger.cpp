@@ -8,8 +8,6 @@
 
 // adding baro alt sentance parser to support baro source priority  if (d == pDevPrimaryBaroSource){...}
 
-#include "StdAfx.h"
-
 #include "externs.h"
 #include "Utils.h"
 #include "Parser.h"
@@ -20,7 +18,6 @@
 #include "Volkslogger/vlapi2.h"
 #include "Volkslogger/vlapihlp.h"
 
-#include "utils/heapcheck.h"
 using std::min;
 using std::max;
 

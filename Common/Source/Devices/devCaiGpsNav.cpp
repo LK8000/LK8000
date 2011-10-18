@@ -14,20 +14,13 @@
 
 #define  LOGSTREAM 0
 
-
-#include <windows.h>
-#include <tchar.h>
-
-
 #include "externs.h"
 #include "Utils.h"
-#include "Utils2.h"
 #include "Parser.h"
 #include "Port.h"
 
 #include "devCaiGpsNav.h"
 
-#include "utils/heapcheck.h"
 
 #define  CtrlC  0x03
 #define  swap(x)      x = ((((x<<8) & 0xff00) | ((x>>8) & 0x00ff)) & 0xffff)

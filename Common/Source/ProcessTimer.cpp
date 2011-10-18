@@ -5,13 +5,7 @@
 
    $Id$
 */
-#include "StdAfx.h"
-#include "wcecompat/ts_string.h"
-#include "options.h"
-#include "Defines.h"
 #include "externs.h"
-#include "compatibility.h"
-#include "lk8000.h"
 #include "Logger.h"
 
 #include "Message.h"

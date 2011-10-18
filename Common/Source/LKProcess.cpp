@@ -6,19 +6,10 @@
    $Id: LKProcess.cpp,v 1.8 2010/12/11 19:32:14 root Exp root $
 */
 
-#include "StdAfx.h"
-#include "options.h"
-#include "lk8000.h"
-#include "Utils2.h"
-#include "compatibility.h"
-#include "MapWindow.h"
-#include "Units.h"
-#include "McReady.h"
 #include "externs.h"
+#include "MapWindow.h"
+#include "McReady.h"
 #include "InputEvents.h"
-#include <windows.h>
-#include <math.h>
-#include <tchar.h>
 #include "InfoBoxLayout.h"
 #include "Logger.h"
 #include "Process.h"

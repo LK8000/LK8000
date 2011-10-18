@@ -6,26 +6,10 @@
    $Id$
 */
 
-#include "StdAfx.h"
-
-#ifndef __MINGW32__
-#if defined(CECORE)
-#include "winbase.h"
-#endif
-#if (WINDOWSPC<1)
-#include "projects.h"
-#endif
-#else
-#include "wcecompat/ts_string.h"
-#endif
-#include "Defines.h"
-#include "Utils.h"
-#include "Utils2.h"
 #include "externs.h"
-#include "device.h"
-#include "lk8000.h"
-
+#include "Utils.h"
 #include "FlarmIdFile.h" 
+
 // Warning, this is initialising class, loading flarmnet IDs before anything else in the LK is even started..
 FlarmIdFile file; 
 

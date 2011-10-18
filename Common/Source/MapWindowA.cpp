@@ -6,18 +6,13 @@
    $Id: MapWindow2.cpp,v 8.16 2010/12/26 22:05:15 root Exp root $
 */
 
-#include "StdAfx.h"
-#include "compatibility.h"
-#include "options.h"
-#include "Defines.h"
+#include "externs.h"
 
 #include "MapWindow.h"
-#include "externs.h"
 #include "Terrain.h"
 #include "LKAirspace.h"
 #include "RGB.h"
 
-#include "utils/heapcheck.h"
 
 
 // pointer to AlphaBlend() function (initialized in AlphaBlendInit())

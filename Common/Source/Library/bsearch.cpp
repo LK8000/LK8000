@@ -6,31 +6,7 @@
    $Id$
 */
 
-#include "StdAfx.h"
 #include "externs.h"
-/*
-#ifndef __MINGW32__
-#if defined(CECORE)
-#include "winbase.h"
-#endif
-#if (WINDOWSPC<1)
-#include "projects.h"
-#endif
-#else
-#include "wcecompat/ts_string.h"
-#endif
-
-#include "options.h"
-#include "Defines.h"
-#include "lk8000.h"
-
-#ifdef __MINGW32__
-#ifndef max
-#define max(x, y)   (x > y ? x : y)
-#define min(x, y)   (x < y ? x : y)
-#endif
-#endif
-*/
 
 /*
  * Copyright (c) 1990 Regents of the University of California.

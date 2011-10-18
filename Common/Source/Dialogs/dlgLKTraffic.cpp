@@ -6,16 +6,11 @@
    $Id: dlgLKTraffic.cpp,v 1.1 2010/12/13 13:39:04 root Exp root $
 */
 
-#include "StdAfx.h"
-#include <aygshell.h>
-#include "lk8000.h"
-#include "Statistics.h"
 #include "externs.h"
+#include <aygshell.h>
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
-#include "Utils2.h"
 
-#include "utils/heapcheck.h"
 
 #include "FlarmIdFile.h"
 extern FlarmIdFile file; // in Utils
@@ -354,7 +349,7 @@ void dlgLKTrafficDetails(int indexid) {
 
   if (!wf) return;
 
-  ASSERT(wf!=NULL);
+  //ASSERT(wf!=NULL);
 
   // cmdTarget Caption name is normally "TARGET"
   buttonTarget=((WndButton *)wf->FindByName(TEXT("cmdTarget")));

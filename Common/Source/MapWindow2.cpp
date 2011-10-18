@@ -6,37 +6,20 @@
    $Id: MapWindow2.cpp,v 8.16 2010/12/26 22:05:15 root Exp root $
 */
 
-#include "StdAfx.h"
-#include "compatibility.h"
-#include "options.h"
-#include "Defines.h"
+#include "externs.h"
 
 #include "MapWindow.h"
 #include "Utils.h"
-#include "lk8000.h"
-#include "Utils2.h"
-#include "Units.h"
 #include "Logger.h"
-#include "McReady.h"
-#include "Airspace.h"
 #include "Waypointparser.h"
-#include "Dialogs.h"
-#include "externs.h"
 #include "InputEvents.h"
-#include <windows.h>
-#include <math.h>
 #include "Bitmaps.h"
 #include "RGB.h"
-
-#include <tchar.h>
-
-#include "Task.h"
 
 #include "Terrain.h"
 #include "RasterTerrain.h"
 
 #include "InfoBoxLayout.h"
-#include "LKMapWindow.h"
 #include "LKAirspace.h"
 using std::min;
 using std::max;
@@ -45,7 +28,6 @@ using std::max;
 #include <wingdi.h>
 #endif
 
-#include "utils/heapcheck.h"
 
 #ifdef DEBUG
 #if (WINDOWSPC<1)

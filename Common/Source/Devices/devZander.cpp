@@ -6,8 +6,6 @@
    $Id$
 */
 
-#include "StdAfx.h"
-
 #include "externs.h"
 #include "Utils.h"
 #include "Parser.h"
@@ -15,7 +13,6 @@
 
 #include "devZander.h"
 
-#include "utils/heapcheck.h"
 
 static BOOL PZAN1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *aGPS_INFO);
 static BOOL PZAN2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *aGPS_INFO);

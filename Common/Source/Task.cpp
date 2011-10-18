@@ -6,19 +6,16 @@
    $Id: Task.cpp,v 8.5 2010/12/12 17:24:06 root Exp root $
 */
 
-#include "StdAfx.h"
+#include "externs.h"
 #include "Task.h"
 #include "Logger.h"
-#include "lk8000.h"
 #include "AATDistance.h"
 #include "Utils.h"
-#include "externs.h"
 #include "Calculations.h"
 #include "Waypointparser.h"
 #include "McReady.h"
 #include "LKMapWindow.h"
 
-#include "utils/heapcheck.h"
 using std::min;
 using std::max;
 

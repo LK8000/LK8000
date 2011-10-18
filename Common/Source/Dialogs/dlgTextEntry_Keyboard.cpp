@@ -6,14 +6,11 @@
    $Id$
 */
 
-#include "StdAfx.h"
-#include "lk8000.h"
+#include "externs.h"
 #include "Utils.h"
 #include "dlgTools.h"
-#include "externs.h"
 #include "InfoBoxLayout.h"
 
-#include "utils/heapcheck.h"
 using std::min;
 using std::max;
 

@@ -7,16 +7,12 @@
 */
 
 
-#include "StdAfx.h"
+#include "externs.h"
 #include <aygshell.h>
 
-#include "Defines.h"
-#include "lk8000.h"
-#include "externs.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 
-#include "utils/heapcheck.h"
 
 #define MAXTITLE 200
 #define MAXDETAILS 5000
@@ -287,11 +283,11 @@ void dlgChecklistShowModal(void){
   ((WndButton *)wf->FindByName(TEXT("cmdClose")))->SetOnClickNotify(OnCloseClicked);
 
   wDetails = (WndListFrame*)wf->FindByName(TEXT("frmDetails"));
-  ASSERT(wDetails!=NULL);
+  //ASSERT(wDetails!=NULL);
 
   wDetailsEntry = 
     (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmDetailsEntry"));
-  ASSERT(wDetailsEntry!=NULL);
+  //ASSERT(wDetailsEntry!=NULL);
   wDetailsEntry->SetCanFocus(true);
 
   wDetails->SetBorderKind(BORDERLEFT);

@@ -6,8 +6,6 @@
    $Id$
 */
 
-#include "StdAfx.h"
-
 #include "externs.h"
 #include "Utils.h"
 #include "Parser.h"
@@ -15,7 +13,6 @@
 
 #include "devDigifly.h"
 
-#include "utils/heapcheck.h"
 
 extern double LowPassFilter(double y_last, double x_in, double fact);
 

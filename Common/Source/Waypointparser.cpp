@@ -6,33 +6,15 @@
    $Id: Waypointparser.cpp,v 8.7 2010/12/13 01:13:54 root Exp root $
 */
 
-
-#include "StdAfx.h"
-#include "Waypointparser.h"
 #include "externs.h"
-#include "Dialogs.h"
-// #include "resource.h"
-#include "options.h"
-#include "Utils.h"
-#include "Utils2.h"
+#include "Waypointparser.h"
 #include "LKStyle.h"
-#include "WindowControls.h"
 #include "MapWindow.h"
-#include <math.h>
-#include "Geoid.h"
+#include "resource.h"
 
 #include "RasterTerrain.h"
 
-#include <windows.h>
-#include <commctrl.h>
-#include <aygshell.h>
-
-#include <tchar.h>
-
 #include "xmlParser.h"
-#include "wcecompat/ts_string.h"
-
-#include "utils/heapcheck.h"
 
 
 static int globalFileNum = 0;

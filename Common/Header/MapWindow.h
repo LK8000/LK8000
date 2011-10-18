@@ -9,17 +9,7 @@
 #if !defined(AFX_MAPWINDOW_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
 #define AFX_MAPWINDOW_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#include <windows.h>
-#include "Sizes.h"
-#include "Utils.h"
-#include "lk8000.h"
 #include "Airspace.h"
-#include "Parser.h"
-#include "Calculations.h"
 
 #define NORTHSMART 5
 #define NORTHTRACK 4
@@ -38,13 +28,13 @@
 #define DISPLAYFIRST12 7
 #define DISPLAYNONE 8
 
-#define AIRPORT				0x01
-#define TURNPOINT			0x02
-#define LANDPOINT			0x04
-#define HOME					0x08
-#define START					0x10
-#define FINISH				0x20
-#define RESTRICTED		0x40
+#define AIRPORT		0x01
+#define TURNPOINT	0x02
+#define LANDPOINT	0x04
+#define HOME		0x08
+#define START		0x10
+#define FINISH		0x20
+#define RESTRICTED	0x40
 #define WAYPOINTFLAG	0x80
 
 // Used by MapWindow::TextColor 
@@ -499,10 +489,8 @@ class MapWindow {
   static void DrawFlightMode(HDC hdc, const RECT rc);
   static void DrawGPSStatus(HDC hdc, const RECT rc);
   static void DrawLKAlarms(HDC hdc, const RECT rc);
-  // static double DrawTrail(HDC hdc, const POINT Orig, const RECT rc); REMOVE
   static double LKDrawTrail(HDC hdc, const POINT Orig, const RECT rc);
   static void DrawTeammate(HDC hdc, const RECT rc);
-  // static void DrawTrailFromTask(HDC hdc, const RECT rc, const double); REMOVE
   static void DrawOffTrackIndicator(HDC hdc, const RECT rc);
   static void DrawProjectedTrack(HDC hdc, const RECT rc, const POINT Orig);
   static void DrawStartSector(HDC hdc, const RECT rc, POINT &Start,

@@ -6,27 +6,16 @@
    $Id$
 */
 
-#include "StdAfx.h"
-#include "Defines.h" 
-#include "Calculations.h"
-#include "compatibility.h"
-#ifdef OLDPPC
-#include "LK8000Process.h"
-#else
-#include "Process.h"
-#endif
-#include "Utils.h"
-#include "Utils2.h"
 #include "externs.h"
+#include "Calculations.h"
+#include "Process.h"
+#include "Utils.h"
 #include "McReady.h"
 #include "MapWindow.h"
 #include "RasterTerrain.h"
-#include <math.h>
-#include <tchar.h>
 #include "Calculations2.h"
 #include "Message.h"
 
-#include "utils/heapcheck.h"
 
 extern void LatLon2Flat(double lon, double lat, int *scx, int *scy);
 extern int CalculateWaypointApproxDistance(int scx_aircraft, int scy_aircraft, int i);

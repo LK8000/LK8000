@@ -6,15 +6,12 @@
    $Id$
 */
 
-#include "StdAfx.h"
+#include "externs.h"
 #include <aygshell.h>
 
 #include "InfoBoxLayout.h"
 
-#include "externs.h"
-#include "Units.h"
 #include "MapWindow.h"
-
 
 #include "dlgTools.h"
 #include "CriticalSection.h"

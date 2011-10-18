@@ -6,12 +6,9 @@
    $Id$
 */
 
-#include "StdAfx.h"
+#include "externs.h"
 #include <aygshell.h>
 
-#include "lk8000.h"
-
-#include "externs.h"
 #include "dlgTools.h"
 #include "Utils.h"
 

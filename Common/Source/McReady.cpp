@@ -9,7 +9,6 @@
 #include "externs.h"
 #include "McReady.h"
 
-#include <math.h>
 
 using std::min;
 using std::max;

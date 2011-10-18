@@ -362,7 +362,6 @@ DLGS	:=\
 	$(DLG)/dlgStartup.cpp \
 	$(DLG)/dlgStatistics.cpp \
 	$(DLG)/dlgStatus.cpp \
-	$(DLG)/dlgStatusSystem.cpp \
 	$(DLG)/dlgTarget.cpp \
 	$(DLG)/dlgTaskCalculator.cpp \
 	$(DLG)/dlgTaskOverview.cpp \
@@ -382,6 +381,7 @@ DLGS	:=\
 	$(DLG)/dlgWindSettings.cpp \
 
 SRC_FILES :=\
+	$(SRC)/InputEvents.cpp 		\
 	$(SRC)/LKInstall.cpp 		$(SRC)/Models.cpp\
 	$(SRC)/Backlight.cpp 		$(SRC)/LKInit.cpp\
 	$(SRC)/StatusFile.cpp \
@@ -415,7 +415,6 @@ SRC_FILES :=\
 	$(SRC)/FlarmIdFile.cpp 		$(SRC)/FlarmCalculations.cpp \
 	$(SRC)/Geoid.cpp \
 	$(SRC)/Buttons.cpp \
-	$(SRC)/InputEvents.cpp 		\
 	$(SRC)/Logger.cpp 		$(SRC)/LKMapWindow.cpp \
 	$(SRC)/LKDrawLook8000.cpp 	$(SRC)/LKDrawNearest.cpp\
 	$(SRC)/LKDrawCommon.cpp 	$(SRC)/LKDrawAspNearest.cpp\
@@ -429,7 +428,7 @@ SRC_FILES :=\
 	$(SRC)/McReady.cpp 		$(SRC)/Message.cpp \
 	$(SRC)/Parser.cpp		$(SRC)/Port.cpp \
 	$(SRC)/RasterTerrain.cpp	\
-	$(SRC)/StdAfx.cpp		$(SRC)/STScreenBuffer.cpp \
+	$(SRC)/STScreenBuffer.cpp \
 	$(SRC)/Task.cpp			$(SRC)/TeamCodeCalculation.cpp \
 	$(SRC)/Terrain.cpp		$(SRC)/ThermalLocator.cpp \
 	$(SRC)/units.cpp \

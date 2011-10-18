@@ -7,20 +7,14 @@
 */
 
 
-#include "StdAfx.h"
+#include "externs.h"
 #include <aygshell.h>
 
-#include "lk8000.h"
-
-#include "Statistics.h"
-#include "externs.h"
 #include "McReady.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 #include "Units.h"
-#include "Utils2.h"
 
-#include "utils/heapcheck.h"
 
 extern void DrawJPG(HDC hdc, RECT rc);
 
@@ -481,14 +475,14 @@ void dlgWayPointDetailsShowModal(void){
   wSpecial = ((WndFrame *)wf->FindByName(TEXT("frmSpecial")));
   wDetails = (WndListFrame*)wf->FindByName(TEXT("frmDetails"));
 
-  ASSERT(wInfo!=NULL);
-  ASSERT(wCommand!=NULL);
-  ASSERT(wSpecial!=NULL);
-  ASSERT(wDetails!=NULL);
+  //ASSERT(wInfo!=NULL);
+  //ASSERT(wCommand!=NULL);
+  //ASSERT(wSpecial!=NULL);
+  //ASSERT(wDetails!=NULL);
 
   wDetailsEntry = 
     (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmDetailsEntry"));
-  ASSERT(wDetailsEntry!=NULL);
+  //ASSERT(wDetailsEntry!=NULL);
   wDetailsEntry->SetCanFocus(true);
 
   nTextLines = TextToLineOffsets(WayPointList[SelectedWaypoint].Details,

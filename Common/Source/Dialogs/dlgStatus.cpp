@@ -6,18 +6,11 @@
    $Id: dlgStatus.cpp,v 8.2 2010/12/13 14:25:16 root Exp root $
 */
 
-#include "StdAfx.h"
 
 #include "externs.h"
-#include "Units.h"
 #include "Waypointparser.h"
 #include "Logger.h"
-#include "compatibility.h"
-#ifdef OLDPPC
-#include "LK8000Process.h"
-#else
 #include "Process.h"
-#endif
 #include "buildnumber.h"
 
 
@@ -687,12 +680,12 @@ void dlgStatusShowModal(int start_page){
   wStatus4    = ((WndFrame *)wf->FindByName(TEXT("frmStatusTimes")));
   wStatus5    = ((WndFrame *)wf->FindByName(TEXT("frmStatusExtDevice")));
 
-  ASSERT(wStatus0!=NULL);
-  ASSERT(wStatus1!=NULL);
-  ASSERT(wStatus2!=NULL);
-  ASSERT(wStatus3!=NULL);
-  ASSERT(wStatus4!=NULL);
-  ASSERT(wStatus5!=NULL);
+  //ASSERT(wStatus0!=NULL);
+  //ASSERT(wStatus1!=NULL);
+  //ASSERT(wStatus2!=NULL);
+  //ASSERT(wStatus3!=NULL);
+  //ASSERT(wStatus4!=NULL);
+  //ASSERT(wStatus5!=NULL);
 
   wf->SetTimerNotify(OnTimerNotify);
 

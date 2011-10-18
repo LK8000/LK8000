@@ -5,12 +5,8 @@
 
    $Id$
 */
-#include "StdAfx.h"
-#include "wcecompat/ts_string.h"
-#include "options.h"
-#include "Defines.h"
 #include "externs.h"
-#include "lk8000.h"
+#include "resource.h"
 #include "Waypointparser.h"
 #include "InfoBoxLayout.h"
 #include "Terrain.h"
@@ -20,7 +16,6 @@
 #include "InputEvents.h"
 #include "RGB.h"
 
-#include "utils/heapcheck.h"
 
 HBRUSH hBrushSelected;
 HBRUSH hBrushUnselected;
@@ -177,7 +172,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_CLOSE:
 
-      ASSERT(hWnd==hWndMainWindow);
+      // ASSERT(hWnd==hWndMainWindow);
       if((hWnd==hWndMainWindow) && 
          (MessageBoxX(hWndMainWindow,
 		// LKTOKEN  _@M198_ = "Confirm Exit?"

@@ -6,17 +6,8 @@
    $Id: LKDrawWaypoints.cpp,v 1.2 2010/12/11 19:03:52 root Exp root $
 */
 
-#include "StdAfx.h"
-#include "options.h"
-#include "lk8000.h"
-#include "Utils2.h"
-#include "compatibility.h"
-#include "MapWindow.h"
-#include "Units.h"
 #include "externs.h"
-#include <windows.h>
-#include <math.h>
-#include <tchar.h>
+#include "MapWindow.h"
 #include "LKMapWindow.h"
 #include "LKStyle.h"
 #include "Bitmaps.h"
@@ -383,7 +374,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 
 	      default:
 #if (WINDOWSPC<1)
-		ASSERT(0);
+		//ASSERT(0);
 #endif
 		break;
 

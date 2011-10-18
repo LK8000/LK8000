@@ -6,33 +6,16 @@
    $Id: LKCalculations.cpp,v 1.26 2010/12/22 01:07:44 root Exp root $
 */
 
-#include "StdAfx.h"
-#include "Defines.h" 
-#include "Calculations.h"
-#include "compatibility.h"
-#ifdef OLDPPC
-#include "LK8000Process.h"
-#else
-#include "Process.h"
-#endif
-#include "Utils.h"
-#include "Utils2.h"
 #include "externs.h"
+#include "Process.h"
 #include "McReady.h"
-#include "MapWindow.h"
 #include "RasterTerrain.h"
-#include <math.h>
-#include <tchar.h>
 #include "Calculations.h"
-#include "Calculations2.h"
 #include "Message.h"
 #include "Logger.h"
-#include "LKMapWindow.h"
-#include "Units.h"
 #include "Waypointparser.h"
 #include "magfield.h"
 
-#include "utils/heapcheck.h"
 using std::min;
 using std::max;
 

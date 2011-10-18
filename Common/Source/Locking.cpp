@@ -5,10 +5,6 @@
 
    $Id$
 */
-#include "StdAfx.h"
-#include "wcecompat/ts_string.h"
-#include "options.h"
-#include "Defines.h"
 #include "externs.h"
 
 

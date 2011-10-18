@@ -418,6 +418,7 @@ void propGetFontSettings(TCHAR *Name, LOGFONT* lplf) {
   }
 }
 
+#define CLEARTYPE_COMPAT_QUALITY 	6
 int GetFontRenderer() { 
 
   switch(FontRenderer) {

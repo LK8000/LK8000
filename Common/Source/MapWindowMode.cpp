@@ -7,10 +7,8 @@
 */
 
 
-#include "StdAfx.h"
+#include "externs.h"
 #include "MapWindow.h"
-
-#include "utils/heapcheck.h"
 
 
 MapWindow::Mode::Mode():

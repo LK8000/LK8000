@@ -6,12 +6,7 @@
    $Id$
 */
 
-#include "StdAfx.h"
-
-#include "options.h"
-#include "Defines.h"
 #include "externs.h"
-#include "lk8000.h"
 
 
 void ExtractDirectory(TCHAR *Dest, TCHAR *Source) {

@@ -7,21 +7,14 @@
 */
 
 
-#include "StdAfx.h"
-#include "Utils.h"
-#include "Defines.h"
 #include "externs.h"
-#include "Dialogs.h"
 #include "Utils.h"
-#include "options.h"
 
 #include <aygshell.h>
 
 #include "AirfieldDetails.h"
 #include <zzip/lib.h>
-#include "wcecompat/ts_string.h"
 
-#include "utils/heapcheck.h"
 
 ZZIP_FILE* zAirfieldDetails = NULL;
 

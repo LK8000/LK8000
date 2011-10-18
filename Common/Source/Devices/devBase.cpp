@@ -7,12 +7,9 @@
 */
 //_____________________________________________________________________includes_
 
-#include "StdAfx.h"
-#include "Dialogs.h"
-#include "options.h"
+#include "externs.h"
 #include "devBase.h"
 
-#include "utils/heapcheck.h"
 
 //____________________________________________________________class_definitions_
 

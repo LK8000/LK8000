@@ -6,19 +6,7 @@
    $Id: LKUtils.cpp,v 1.1 2010/12/11 23:45:28 root Exp root $
 */
 
-#include "StdAfx.h"
-#include <stdio.h>
-#ifndef __MINGW32__
-#if defined(CECORE)
-#include "winbase.h"
-#endif
-#if (WINDOWSPC<1)
-#include "projects.h"
-#endif
-#endif
-#include "options.h"
 #include "externs.h"
-#include "lk8000.h"
 #include "Process.h"
 #ifdef PNA
 #include "LKHolux.h"

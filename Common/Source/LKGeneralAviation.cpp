@@ -10,25 +10,11 @@
 
 /////////////////////////////
 
-#include "StdAfx.h"
-
-#ifndef __MINGW32__
-#if defined(CECORE)
-#include "winbase.h"
-#endif
-#if (WINDOWSPC<1)
-#include "projects.h"
-#endif
-#endif
-
-#include "Defines.h"
-#include "Utils.h"
-#include "Utils2.h"
-#include "LKObjects.h"
 #include "externs.h"
+#include "Utils.h"
+#include "LKObjects.h"
 #include "RGB.h"
 
-#include "utils/heapcheck.h"
 
 
 

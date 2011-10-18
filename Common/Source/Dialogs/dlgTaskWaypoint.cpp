@@ -6,19 +6,14 @@
    $Id: dlgTaskWaypoint.cpp,v 8.3 2010/12/13 14:34:22 root Exp root $
 */
 
-#include "StdAfx.h"
+#include "externs.h"
 #include <aygshell.h>
 
-#include "lk8000.h"
-
-#include "Statistics.h"
-#include "externs.h"
 #include "dlgTools.h"
 #include "Logger.h"
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
 
-#include "utils/heapcheck.h"
 
 static int twItemIndex= 0;
 static WndForm *wf=NULL;
@@ -517,7 +512,7 @@ void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly){
 
   if (!wf) return;
 
-  ASSERT(wf!=NULL);
+  //ASSERT(wf!=NULL);
   //  wf->SetKeyDownNotify(FormKeyDown);
 
   wStart     = ((WndFrame *)wf->FindByName(TEXT("frmStart")));
@@ -525,10 +520,10 @@ void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly){
   wAATTurnpoint = ((WndFrame *)wf->FindByName(TEXT("frmAATTurnpoint")));
   wFinish    = ((WndFrame *)wf->FindByName(TEXT("frmFinish")));
 
-  ASSERT(wStart!=NULL);
-  ASSERT(wTurnpoint!=NULL);
-  ASSERT(wAATTurnpoint!=NULL);
-  ASSERT(wFinish!=NULL);
+  //ASSERT(wStart!=NULL);
+  //ASSERT(wTurnpoint!=NULL);
+  //ASSERT(wAATTurnpoint!=NULL);
+  //ASSERT(wFinish!=NULL);
 
   WndButton* wb;
   if (addonly) {

@@ -7,11 +7,9 @@
 */
 
 
-#include "StdAfx.h"
-#include "MapWindow.h"
 #include "externs.h"
+#include "MapWindow.h"
 
-#include "utils/heapcheck.h"
 
 
 MapWindow::Zoom::Zoom():

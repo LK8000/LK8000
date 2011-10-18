@@ -6,17 +6,8 @@
    $Id: LKDrawCommon.cpp,v 1.1 2010/12/11 14:07:24 root Exp root $
 */
 
-#include "StdAfx.h"
-#include "options.h"
-#include "lk8000.h"
-#include "Utils2.h"
-#include "compatibility.h"
-#include "MapWindow.h"
-#include "Units.h"
 #include "externs.h"
-#include <windows.h>
-#include <math.h>
-#include <tchar.h>
+#include "MapWindow.h"
 #include "LKMapWindow.h"
 #include "RGB.h"
 
@@ -24,7 +15,6 @@
 #include <wingdi.h>
 #endif
 
-#include "utils/heapcheck.h"
 
 void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 

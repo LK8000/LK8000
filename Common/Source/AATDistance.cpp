@@ -6,15 +6,12 @@
    $Id: AATDistance.cpp,v 8.2 2010/12/10 22:19:25 root Exp root $
 */
 
-#include "StdAfx.h"
+#include "externs.h"
 #include "AATDistance.h"
 #include "Task.h"
 #include "Airspace.h"
-#include "lk8000.h"
 #include "Calculations.h"
-#include "externs.h"
 
-#include "utils/heapcheck.h"
 using std::min;
 using std::max;
 

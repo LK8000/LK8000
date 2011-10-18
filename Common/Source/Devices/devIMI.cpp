@@ -10,13 +10,10 @@
  * IMI driver methods are based on the source code provided by Juraj Rojko from IMI-Gliding.
  */
 
-#include "StdAfx.h"
-#include "devIMI.h"
-#include "Dialogs.h"
-#include "utils/stringext.h"
 #include "externs.h"
+#include "devIMI.h"
+#include "utils/stringext.h"
 
-#include "utils/heapcheck.h"
 
 
 /* *********************** C O N S T A N T S ************************** */

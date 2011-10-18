@@ -6,24 +6,8 @@
    $Id$
 */
 
-#include "StdAfx.h"
-#ifndef __MINGW32__
-#if defined(CECORE)
-#include "winbase.h"
-#endif
-#if (WINDOWSPC<1)
-#include "projects.h"
-#endif
-#else
-#include "wcecompat/ts_string.h"
-#endif
-#include "options.h"
-#include "Defines.h"
-#include "Utils.h"
-#include "Utils2.h"
 #include "externs.h"
-#include "device.h"
-#include "lk8000.h"
+#include "Utils.h"
 #include "McReady.h"
 #include "Modeltype.h"
 
@@ -1466,12 +1450,10 @@ void WritePort3Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit3Index)
 #endif
 
 
-#define CheckIndex(x, i)    ASSERT((i>=0) && (sizeof(x)/sizeof(x[0]) > i));
 
 void SetRegistryColour(int i, DWORD c)
 {
 
-  CheckIndex(szRegistryColour, i);
 
   SetToRegistry(szRegistryColour[i] ,c) ;
 }
@@ -1479,7 +1461,6 @@ void SetRegistryColour(int i, DWORD c)
 
 void SetRegistryBrush(int i, DWORD c)
 {
-  CheckIndex(szRegistryBrush, i);
 
   SetToRegistry(szRegistryBrush[i] ,c) ;
 }
@@ -1489,8 +1470,6 @@ void SetRegistryBrush(int i, DWORD c)
 void SetRegistryAirspaceMode(int i)
 {
 
-  CheckIndex(MapWindow::iAirspaceMode, i);
-  CheckIndex(szRegistryAirspaceMode, i);
 
   DWORD val = MapWindow::iAirspaceMode[i];
   SetToRegistry(szRegistryAirspaceMode[i], val);
@@ -1498,7 +1477,6 @@ void SetRegistryAirspaceMode(int i)
 
 int GetRegistryAirspaceMode(int i) {
   DWORD Temp= 3; // display + warnings
-  CheckIndex(szRegistryAirspaceMode, i);
   GetFromRegistry(szRegistryAirspaceMode[i],&Temp);
   return Temp;
 }

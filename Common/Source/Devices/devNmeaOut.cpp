@@ -6,15 +6,11 @@
    $Id: devNmeaOut.cpp,v 8.2 2011/01/02 00:32:55 root Exp root $
 */
 
-#include "StdAfx.h"
-
-
 #include "externs.h"
 #include "Utils.h"
 #include "Parser.h"
 #include "Port.h"
 
-#include "utils/heapcheck.h"
 
 
 BOOL nmoParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){

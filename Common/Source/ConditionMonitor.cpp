@@ -6,22 +6,9 @@
    $Id: ConditionMonitor.cpp,v 8.2 2010/12/10 23:51:14 root Exp root $
 */
 
-#include "StdAfx.h"
-#include "Calculations.h"
-#include "Dialogs.h"
-#include "Task.h"
-#include "device.h"
 #include "externs.h"
-
-#include "compatibility.h"
-#ifdef OLDPPC
-#include "LK8000Process.h"
-#else
 #include "Process.h"
-#endif
 #include "InputEvents.h"
-
-#include "utils/heapcheck.h"
 
 
 class ConditionMonitor {

@@ -6,9 +6,7 @@
    $Id: Atmosphere.cpp,v 8.2 2010/12/10 22:23:59 root Exp root $
 */
 
-#include "StdAfx.h"
 #include "externs.h"
-#include <math.h>
 #include "Parser.h"
 #include "Calculations.h"
 #include "Atmosphere.h"

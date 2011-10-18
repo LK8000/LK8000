@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "Port.h"
-#include "Utils2.h"
 
 
 void ComPort_StatusMessage(UINT type, const TCHAR *caption, const TCHAR *fmt, ...)

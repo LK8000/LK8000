@@ -6,16 +6,12 @@
    $Id$
 */
 
-#include "StdAfx.h"
 #include "externs.h"
-#include "Units.h"
-#include "device.h"
 #include "InputEvents.h"
 #include "WindowControls.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 
-#include "utils/heapcheck.h"
 
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;
@@ -126,7 +122,7 @@ int dlgComboPicker(WndProperty* theProperty){
 
   while (bOpenCombo)
   {
-    ASSERT(theProperty!=NULL);
+    //ASSERT(theProperty!=NULL);
     wComboPopupWndProperty = theProperty;
 
     if (!ScreenLandscape) {
@@ -147,26 +143,26 @@ int dlgComboPicker(WndProperty* theProperty){
 
     if (!wf) return -1;
 
-    ASSERT(wf!=NULL);
+    //ASSERT(wf!=NULL);
     //ASSERT(wf->GetWidth() <1200);  // sometimes we have a bogus window, setfocus goes nuts
 
     wf->SetCaption(theProperty->GetCaption());
 
     wComboPopupListFrame = (WndListFrame*)wf->FindByName(TEXT("frmComboPopupList"));
-    ASSERT(wComboPopupListFrame!=NULL);
+    //ASSERT(wComboPopupListFrame!=NULL);
     wComboPopupListFrame->SetBorderKind(BORDERLEFT | BORDERTOP | BORDERRIGHT|BORDERBOTTOM);
     wComboPopupListFrame->SetEnterCallback(OnComboPopupListEnter);
 
     // allow item to be focused / hightlighted
     wComboPopupListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmComboPopupListEntry"));
-    ASSERT(wComboPopupListEntry!=NULL);
+    //ASSERT(wComboPopupListEntry!=NULL);
     wComboPopupListEntry->SetCanFocus(true);
     wComboPopupListEntry->SetFocused(true, wComboPopupWndProperty->GetHandle());
 
 
     ComboPopupDataField = wComboPopupWndProperty->GetDataField();
     ComboListPopup = ComboPopupDataField->GetCombo();
-    ASSERT(ComboPopupDataField!=NULL);
+    //ASSERT(ComboPopupDataField!=NULL);
 
     ComboPopupDataField->CreateComboList();
     wComboPopupListFrame->ResetList();
@@ -215,7 +211,7 @@ int dlgComboPicker(WndProperty* theProperty){
 	ComboPopupDataField->GetCombo()->LastModalResult=0; // Cancel Hit.  Used then calling via SendMessage()
 #endif
 #endif
-      ASSERT(iSavedInitialDataIndex >=0);
+      //ASSERT(iSavedInitialDataIndex >=0);
       if (iSavedInitialDataIndex >=0) {
         ComboPopupDataField->SetFromCombo(iSavedInitialDataIndex, sSavedInitialValue);
       }

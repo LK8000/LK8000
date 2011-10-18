@@ -27,6 +27,8 @@
 #endif
 /////////////////////////////////////////////////////////
 
+#include "compatibility.h"
+
 
 // Disable internally generated sounds
 // #define DISABLEAUDIO

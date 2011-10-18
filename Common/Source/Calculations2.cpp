@@ -6,35 +6,16 @@
    $Id: Calculations2.cpp,v 8.5 2010/12/10 23:45:23 root Exp root $
 */
 
-#include "StdAfx.h"
-#include "Calculations.h"
-#include "Dialogs.h"
-#include "Parser.h"
-#include "Utils.h"
 #include "externs.h"
+#include "Calculations.h"
 #include "McReady.h"
-#include "Airspace.h"
 #include "Logger.h"
-#include <windows.h>
-#include <math.h>
-#include "InputEvents.h"
-#include "Message.h"
 #include "RasterTerrain.h"
 #include "TeamCodeCalculation.h"
-#include "Process.h"
-
-#include <tchar.h>
-
-#include "ThermalLocator.h"
-#include "windanalyser.h"
-#include "Atmosphere.h"
-
-#include "ContestMgr.h"
-#include "AATDistance.h"
-
+#include "InputEvents.h"
 #include "NavFunctions.h" // used for team code
 
-#include "utils/heapcheck.h"
+
 
 using std::min;
 using std::max;

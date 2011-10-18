@@ -6,27 +6,16 @@
    $Id$
 */
 
-#include "StdAfx.h"
+#include "externs.h"
 #include <aygshell.h>
 
-#include "lk8000.h"
-
-#include "externs.h"
 #include "dlgTools.h"
-
-#include "compatibility.h"
-#ifdef OLDPPC
-#include "LK8000Process.h"
-#else
-#include "Process.h"
-#endif
 
 #include "Terrain.h"
 #include "LKMapWindow.h"
 
 #include "Utils.h"
 
-#include "utils/heapcheck.h"
 
 static bool changed = false;
 static WndForm *wf=NULL;

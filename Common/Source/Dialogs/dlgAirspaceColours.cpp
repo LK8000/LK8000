@@ -6,17 +6,13 @@
    $Id$
 */
 
-#include "StdAfx.h"
+#include "externs.h"
 #include <aygshell.h>
 
-#include "lk8000.h"
-
-#include "externs.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 #include "MapWindow.h"
 
-#include "utils/heapcheck.h"
 
 
 static WndForm *wf=NULL;
@@ -117,16 +113,16 @@ int dlgAirspaceColoursShowModal(void){
 
   if (!wf) return -1;
 
-  ASSERT(wf!=NULL);
+  //ASSERT(wf!=NULL);
 
   wAirspaceColoursList = (WndListFrame*)wf->FindByName(TEXT("frmAirspaceColoursList"));
-  ASSERT(wAirspaceColoursList!=NULL);
+  //ASSERT(wAirspaceColoursList!=NULL);
   wAirspaceColoursList->SetBorderKind(BORDERLEFT);
   wAirspaceColoursList->SetEnterCallback(OnAirspaceColoursListEnter);
 
   wAirspaceColoursListEntry = (WndOwnerDrawFrame*)wf->
     FindByName(TEXT("frmAirspaceColoursListEntry"));
-  ASSERT(wAirspaceColoursListEntry!=NULL);
+  //ASSERT(wAirspaceColoursListEntry!=NULL);
   wAirspaceColoursListEntry->SetCanFocus(true);
 
   UpdateList();

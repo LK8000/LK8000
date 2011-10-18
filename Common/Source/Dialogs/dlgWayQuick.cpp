@@ -6,21 +6,10 @@
    $Id: dlgWayQuick.cpp,v 1.1 2010/12/13 16:54:49 root Exp root $
 */
 
-#include "StdAfx.h"
-#include <aygshell.h>
-
-#include "lk8000.h"
-
-//#include "Statistics.h"
 #include "externs.h"
-#include "Dialogs.h"
-#include "Utils2.h"
-//#include "Logger.h"
-//#include "McReady.h"
-//#include "dlgTools.h"
+#include <aygshell.h>
 #include "InfoBoxLayout.h"
 
-#include "utils/heapcheck.h"
 
 
 static WndForm *wf=NULL;
@@ -94,7 +83,7 @@ short dlgWayQuickShowModal(void){
 
   if (!wf) return 0;
 
-  ASSERT(wf!=NULL);
+  //ASSERT(wf!=NULL);
 
   ((WndButton *)wf->FindByName(TEXT("cmdGoto"))) ->SetOnClickNotify(OnGotoClicked);
   ((WndButton *)wf->FindByName(TEXT("cmdSetAlt1"))) ->SetOnClickNotify(OnSetAlt1Clicked);

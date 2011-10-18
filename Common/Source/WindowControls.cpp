@@ -6,22 +6,14 @@
    $Id: WindowControls.cpp,v 8.10 2010/12/13 01:17:08 root Exp root $
 */
 
-#include "StdAfx.h"
-#include "tchar.h"
-#include <stdio.h>
-#include "Defines.h" // VENTA3
-#include "options.h"
-#include "WindowControls.h"
+#include "externs.h"
 #include "Message.h"
 #include "MapWindow.h"
 #include "InfoBoxLayout.h"
 #include "Utils.h"
-#include "compatibility.h"
 #include "LKObjects.h"
 #include "Bitmaps.h"
 #include "RGB.h"
-
-#include "externs.h" 
 
 #include "Modeltype.h"
 
@@ -1145,7 +1137,7 @@ ComboListEntry_t * ComboList::CreateItem(int ItemIndex,
   theItem->DataFieldIndex=0;  // NULL is same as 0, so it fails to set it if index value is 0
   theItem->ItemIndex=0;
   
-  ASSERT(theItem!= NULL);
+  //ASSERT(theItem!= NULL);
 
   theItem->ItemIndex=ItemIndex;
 
@@ -1156,14 +1148,14 @@ ComboListEntry_t * ComboList::CreateItem(int ItemIndex,
   if (StringValue == NULL)
   {
     theItem->StringValue = (TCHAR*)malloc((1) * sizeof(TCHAR));
-    ASSERT(theItem->StringValue != NULL);
+    //ASSERT(theItem->StringValue != NULL);
     theItem->StringValue[0]='\0';
   }
   else
   {
     iLen = _tcslen(StringValue);
     theItem->StringValue = (TCHAR*)malloc((iLen + 1) * sizeof(TCHAR));
-    ASSERT(theItem->StringValue != NULL);
+    //ASSERT(theItem->StringValue != NULL);
     _tcscpy(theItem->StringValue, StringValue);
   }
 
@@ -1172,14 +1164,14 @@ ComboListEntry_t * ComboList::CreateItem(int ItemIndex,
   if (StringValueFormatted == NULL) 
   {
     theItem->StringValueFormatted = (TCHAR*)malloc((1) * sizeof(TCHAR));
-    ASSERT(theItem->StringValueFormatted != NULL);
+    //ASSERT(theItem->StringValueFormatted != NULL);
     theItem->StringValueFormatted[0]='\0';
   }
   else
   {
     iLen = _tcslen(StringValueFormatted);
     theItem->StringValueFormatted = (TCHAR*)malloc((iLen + 1) * sizeof(TCHAR));
-    ASSERT(theItem->StringValueFormatted != NULL);
+    //ASSERT(theItem->StringValueFormatted != NULL);
     _tcscpy(theItem->StringValueFormatted, StringValueFormatted);
   }
 
@@ -2962,7 +2954,7 @@ void WndProperty::Destroy(void){
       delete mDataField;
       mDataField = NULL;
     } else {
-      ASSERT(0);
+      //ASSERT(0);
     }
   }
 

@@ -6,10 +6,7 @@
    $Id$
 */
 
-#include "StdAfx.h"
 #include "externs.h"
-#include "compatibility.h"
-
 #include "Logger.h"
 
 #ifdef DEBUG_TRANSLATIONS

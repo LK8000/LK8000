@@ -6,13 +6,11 @@
    $Id: Message.cpp,v 8.3 2010/12/12 15:48:25 root Exp root $
 */
 
-#include "StdAfx.h"
+#include "externs.h"
 #include "Message.h"
 #include "MapWindow.h"
-#include "externs.h"
 #include "InfoBoxLayout.h"
 
-#include "utils/heapcheck.h"
 
 using std::min;
 using std::max;

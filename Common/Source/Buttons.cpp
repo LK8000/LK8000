@@ -5,17 +5,9 @@
 
   $Id$
 */
-#include "StdAfx.h"
-#include "Defines.h"
-#include "MapWindow.h"
-#include "InfoBoxLayout.h"
-#include "Dialogs.h"
-#include "Utils.h"
 #include "externs.h"
+#include "InfoBoxLayout.h"
 
-
-#include "lk8000.h"
-#include "utils/heapcheck.h"
 using std::min;
 using std::max;
 

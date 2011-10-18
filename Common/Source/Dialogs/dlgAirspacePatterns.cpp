@@ -6,17 +6,13 @@
    $Id$
 */
 
-#include "StdAfx.h"
+#include "externs.h"
 #include <aygshell.h>
 
-#include "lk8000.h"
-
-#include "externs.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 #include "MapWindow.h"
 
-#include "utils/heapcheck.h"
 
 
 static WndForm *wf=NULL;
@@ -115,16 +111,16 @@ int dlgAirspacePatternsShowModal(void){
 
   if (!wf) return -1;
 
-  ASSERT(wf!=NULL);
+  //ASSERT(wf!=NULL);
 
   wAirspacePatternsList = (WndListFrame*)wf->FindByName(TEXT("frmAirspacePatternsList"));
-  ASSERT(wAirspacePatternsList!=NULL);
+  //ASSERT(wAirspacePatternsList!=NULL);
   wAirspacePatternsList->SetBorderKind(BORDERLEFT);
   wAirspacePatternsList->SetEnterCallback(OnAirspacePatternsListEnter);
 
   wAirspacePatternsListEntry = (WndOwnerDrawFrame*)wf->
     FindByName(TEXT("frmAirspacePatternsListEntry"));
-  ASSERT(wAirspacePatternsListEntry!=NULL);
+  //ASSERT(wAirspacePatternsListEntry!=NULL);
   wAirspacePatternsListEntry->SetCanFocus(true);
 
   UpdateList();

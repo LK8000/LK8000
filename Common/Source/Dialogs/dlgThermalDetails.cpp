@@ -6,18 +6,13 @@
    $Id$
 */
 
-#include "StdAfx.h"
-#include <aygshell.h>
-#include "lk8000.h"
-#include "Statistics.h"
 #include "externs.h"
+#include <aygshell.h>
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
-#include "Utils2.h"
 #include "NavFunctions.h"
 #include "TeamCodeCalculation.h"
 
-#include "utils/heapcheck.h"
 
 static WndForm *wf=NULL;
 static void SetValues(int indexid);

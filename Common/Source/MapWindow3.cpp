@@ -6,29 +6,16 @@
    $Id: MapWindow3.cpp,v 8.46 2010/12/12 14:33:14 root Exp root $ BAD
 */
 
-#include "StdAfx.h"
-#include "options.h"
-#include "lk8000.h"
-#include "compatibility.h"
-#include "McReady.h"
 #include "externs.h"
-#include <windows.h>
-#include <math.h>
-#include <tchar.h>
+#include "McReady.h"
 #include "MapWindow.h"
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
 #include "buildnumber.h"
-#include "Utils2.h"
 #include "LKObjects.h"
 #include "Logger.h"
 #include "RGB.h"
 
-#if (WINDOWSPC>0)
-#include <wingdi.h>
-#endif
-
-#include "utils/heapcheck.h"
 
 extern void DrawGlideCircle(HDC hdc, POINT Orig, RECT rc );
 

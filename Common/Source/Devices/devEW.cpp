@@ -9,9 +9,6 @@
 
 // adding baro alt sentance parser to support baro source priority  if (d == pDevPrimaryBaroSource){...}
 
-#include "StdAfx.h"
-
-
 #include "externs.h"
 #include "Utils.h"
 #include "Parser.h"
@@ -19,7 +16,6 @@
 
 #include "devEW.h"
 
-#include "utils/heapcheck.h"
 
 
 #define  USESHORTTPNAME   1       // hack, soulf be configurable

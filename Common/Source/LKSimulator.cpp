@@ -6,36 +6,16 @@
    $Id: LKSimulator.cpp,v 1.2 2010/12/11 19:34:01 root Exp root $
 */
 
-// #ifdef _SIM_
-#include "StdAfx.h"
-#include "options.h"
-#include "lk8000.h"
+#include "externs.h"
 #include "MapWindow.h"
 #include "Calculations.h"
 #include "Calculations2.h"
 #include "LKMapWindow.h"
-#include "Dialogs.h"
-
-#include "Process.h"
 
 #include "Utils.h"
-#include "Utils2.h"
-#include "Logger.h"
 #include "McReady.h"
 
-#include <commctrl.h>
-#include <aygshell.h>
-#if (WINDOWSPC<1)
-#include <sipapi.h>
-#endif
 
-#include "Terrain.h"
-#include "device.h"
-
-#include "externs.h"
-#include "Units.h"
-
-#include "utils/heapcheck.h"
 
 #define IASMS		CALCULATED_INFO.IndicatedAirspeedEstimated
 #define IAS		CALCULATED_INFO.IndicatedAirspeedEstimated*TOKPH
@@ -266,4 +246,3 @@ void LKSimulator(void) {
   UnlockFlightData();
   }
 
-// #endif

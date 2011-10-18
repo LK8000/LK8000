@@ -6,18 +6,10 @@
    $Id$
 */
 
-#include "StdAfx.h"
 
 #include "externs.h"
-#include "Units.h"
-#include "dlgTools.h"
-#ifdef OLDPPC
-#include "LK8000Process.h"
-#else
 #include "Process.h"
-#endif
-
-#include "utils/heapcheck.h"
+#include "dlgTools.h"
 
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;

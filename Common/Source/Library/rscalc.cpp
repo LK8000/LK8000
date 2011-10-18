@@ -4,18 +4,14 @@
 // Jarmo Lammi 1999 - 2001
 // Last update July 21st, 2001
 
-#include "StdAfx.h"
+#include "externs.h"
 
-#define PI 3.1415926
 #define SUN_DIAMETER 0.53     // Sunradius degrees
 #define AIR_REFRACTION 34.0/60.0 // athmospheric refraction degrees //
 
 #include <windows.h>
-#include "lk8000.h"
-#include "externs.h"
 #include "Utils.h"
 
-#include "utils/heapcheck.h"
 
 class SunEphemeris {
 

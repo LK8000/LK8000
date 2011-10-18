@@ -8,7 +8,6 @@
 
 #ifndef PROCESS_H
 #define PROCESS_H
-#include "externs.h"
 
 void	WindSpeedProcessing(int UpDown);
 void	WindDirectionProcessing(int UpDown);

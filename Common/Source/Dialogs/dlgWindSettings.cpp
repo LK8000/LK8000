@@ -6,15 +6,8 @@
    $Id: dlgWindSettings.cpp,v 8.2 2010/12/13 17:31:19 root Exp root $
 */
 
-#include "StdAfx.h"
-
-#include "Statistics.h"
-
 #include "externs.h"
-#include "Units.h"
 #include "dlgTools.h"
-
-#include "utils/heapcheck.h"
 
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;

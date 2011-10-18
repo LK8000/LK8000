@@ -6,14 +6,9 @@
    $Id: RasterTerrain.cpp,v 8.4 2010/12/12 16:31:39 root Exp root $
 */
 
-#include "StdAfx.h"
-#include "RasterTerrain.h"
-#include "lk8000.h"
-#include "Dialogs.h"
-#include "Units.h"
-#include "Process.h"
-#include "options.h"
 #include "externs.h"
+#include "RasterTerrain.h"
+#include "Process.h"
 
 
 #ifdef __MINGW32__

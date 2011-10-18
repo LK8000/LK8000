@@ -7,34 +7,9 @@
 */
 
 
-#include "StdAfx.h"
-#include "compatibility.h"
-#include "options.h"
-#include "Defines.h"
-
-#include "MapWindow.h"
-#include "Utils.h"
-#include "lk8000.h"
-#include "Utils2.h"
-#include "Units.h"
-#include "Logger.h"
-#include "McReady.h"
-#include "Airspace.h"
-#include "Waypointparser.h"
-#include "Dialogs.h"
 #include "externs.h"
+#include "MapWindow.h"
 #include "InputEvents.h"
-#include <windows.h>
-#include <math.h>
-
-#include <tchar.h>
-
-#include "Task.h"
-
-#include "Terrain.h"
-#include "RasterTerrain.h"
-
-#include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
 #include "LKObjects.h"
 #include "Bitmaps.h"
@@ -43,7 +18,6 @@
 #include <wingdi.h>
 #endif
 
-#include "utils/heapcheck.h"
 
 using std::min;
 using std::max;

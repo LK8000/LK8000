@@ -6,14 +6,11 @@
    $Id$
 */
 
-#include "StdAfx.h"
 #include "externs.h"
-#include "Units.h"
 #include "InputEvents.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 
-#include "utils/heapcheck.h"
 
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;

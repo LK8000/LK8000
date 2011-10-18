@@ -8,12 +8,6 @@
 
 #include "externs.h"
 #include "Port.h"
-#include "Utils2.h"
-
-#include <windows.h>
-#include <tchar.h>
-
-#include "utils/heapcheck.h"
 
 
 extern void ComPort_StatusMessage(UINT type, const TCHAR *caption, const TCHAR *fmt, ...);

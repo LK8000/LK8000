@@ -6,15 +6,10 @@
    $Id: Logger.cpp,v 8.4 2010/12/11 23:59:33 root Exp root $
 */
 
-#include "StdAfx.h"
-#include "Logger.h"
 #include "externs.h"
+#include "Logger.h"
 #include "Port.h"
-#include <windows.h>
-#include <tchar.h>
 #include "Utils.h"
-#include "Utils2.h"
-#include "device.h"
 #include "InputEvents.h"
 #include "Parser.h"
 

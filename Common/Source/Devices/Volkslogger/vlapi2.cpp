@@ -19,6 +19,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "externs.h"
 
 #include "Volkslogger/vlapi2.h"
 #include "Volkslogger/vlapierr.h"
@@ -28,7 +29,6 @@
 
 #include "Volkslogger/utils.h"
 
-#include "utils/heapcheck.h"
 using std::min;
 using std::max;
 

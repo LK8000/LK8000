@@ -6,27 +6,14 @@
    $Id: MapWindow.cpp,v 8.29 2011/01/06 02:07:52 root Exp root $
 */
 
-#include "StdAfx.h"
-#include "compatibility.h"
-#include "Defines.h"
-#include "options.h"
-#include "MapWindow.h"
-#include "LKMapWindow.h"
-#include "Utils.h"
-#include "Units.h"
-#include "Logger.h"
-#include "McReady.h"
-#include "Airspace.h"
-#include "Waypointparser.h"
-#include "Dialogs.h"
 #include "externs.h"
+#include "MapWindow.h"
+
+#include "McReady.h"
+#include "Waypointparser.h"
 #include "InputEvents.h"
-// #include <assert.h>
-#include <windows.h>
-#include <math.h>
 #include <Message.h>
 
-#include <tchar.h>
 #include "Modeltype.h"
 
 #include "Terrain.h"
@@ -34,10 +21,7 @@
 #include "AATDistance.h"
 #include "LKObjects.h"
 
-#include "InfoBoxLayout.h"
 #include "RasterTerrain.h"
-#include "Utils2.h"
-#include "LKAirspace.h"
 #include "Bitmaps.h"
 #include "RGB.h"
 
@@ -47,7 +31,6 @@ using std::max;
 #include <wingdi.h>
 #endif
 
-#include "utils/heapcheck.h"
 
 #include "LKGeneralAviation.h"
 

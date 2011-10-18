@@ -6,17 +6,13 @@
    $Id: dlgStartup.cpp,v 8.4 2010/12/13 14:20:57 root Exp root $
 */
 
-#include "StdAfx.h"
-#include "lk8000.h"
-
 #include "externs.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 #include "MapWindow.h"
-#include "Utils2.h"
 #include "RGB.h"
+#include "resource.h"
 
-#include "utils/heapcheck.h"
 
 extern void Shutdown(void);
 

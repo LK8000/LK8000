@@ -5,16 +5,11 @@
 
 */
 
-#include "StdAfx.h"
-#include "lk8000.h"
-#include "options.h"
-#include "Flarm.h"
 #include "externs.h"
+#include "Flarm.h"
 #include "FlarmIdFile.h"
 #include "Utils.h"
-#include "Utils2.h"
 
-#include "utils/heapcheck.h"
 
 FlarmIdFile::FlarmIdFile(void)
 {

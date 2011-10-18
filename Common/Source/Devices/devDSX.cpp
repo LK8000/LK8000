@@ -7,12 +7,8 @@
 */
 
 
-#include "StdAfx.h"
+#include "externs.h"
 #include "devDSX.h"
-#include "device.h"
-#include "Dialogs.h"
-
-#include "utils/heapcheck.h"
 
 extern NMEA_INFO GPS_INFO;
 

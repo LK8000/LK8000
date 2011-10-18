@@ -8,9 +8,6 @@
 
 // adding baro alt sentance parser to support baro source priority  if (d == pDevPrimaryBaroSource){...}
 
-#include "StdAfx.h"
-
-
 #include "externs.h"
 #include "Utils.h"
 #include "Parser.h"
@@ -18,7 +15,6 @@
 
 #include "devEWMicroRecorder.h"
 
-#include "utils/heapcheck.h"
 
 
 // Additional sentance for EW support

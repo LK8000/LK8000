@@ -6,8 +6,6 @@
    $Id$
 */
 
-#include "StdAfx.h"
-
 #include "externs.h"
 #include "Utils.h"
 #include "Parser.h"
@@ -15,7 +13,6 @@
 
 #include "devIlec.h"
 
-#include "utils/heapcheck.h"
 
 static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 

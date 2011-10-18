@@ -6,24 +6,15 @@
    $Id: Airspace.cpp,v 8.3 2010/12/10 22:19:10 root Exp root $
 */
 
-#include "StdAfx.h"
 #include "externs.h"
 #include "Airspace.h"
-#include "Dialogs.h"
 #include "Utils.h"
 #include "MapWindow.h"
 #include "RasterTerrain.h"
-#include <windows.h>
 #include <commctrl.h>
-#include <math.h>
 #include <aygshell.h>
-
-#include <tchar.h>
 #include <ctype.h>
 
-//#include "wcecompat/ts_string.h"
-
-//#include "utils/heapcheck.h"
 
 using std::min;
 using std::max;

@@ -6,25 +6,7 @@
    $Id$
 */
 
-#include "StdAfx.h"
-
-#ifndef __MINGW32__
-
-#if defined(CECORE)
-#include "winbase.h"
-#endif
-#if (WINDOWSPC<1)
-#include "projects.h"
-#endif
-
-#else
-#include "wcecompat/ts_string.h"
-#endif
-
-#include "options.h"
-#include "Defines.h"
 #include "externs.h"
-#include "lk8000.h"
 
 
 

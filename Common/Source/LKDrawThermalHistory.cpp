@@ -6,26 +6,13 @@
    $Id$
 */
 
-#include "StdAfx.h"
-#include "options.h"
-#include "lk8000.h"
-#include "Utils2.h"
-#include "compatibility.h"
-#include "MapWindow.h"
-#include "Units.h"
 #include "externs.h"
-#include <windows.h>
-#include <math.h>
-#include <tchar.h>
+#include "MapWindow.h"
 #include "LKMapWindow.h"
 #include "LKObjects.h"
 #include "RGB.h"
 
-#if (WINDOWSPC>0)
-#include <wingdi.h>
-#endif
 
-#include "utils/heapcheck.h"
 
 void MapWindow::DrawThermalHistory(HDC hdc, RECT rc) {
 

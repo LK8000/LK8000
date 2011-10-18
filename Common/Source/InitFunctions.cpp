@@ -5,13 +5,8 @@
 
    $Id$
 */
-#include "StdAfx.h"
-#include "wcecompat/ts_string.h"
-#include "options.h"
-#include "Defines.h"
 #include "externs.h"
-#include "compatibility.h"
-#include "lk8000.h"
+#include "resource.h"
 #include "Waypointparser.h"
 #include "InfoBoxLayout.h"
 
@@ -29,7 +24,6 @@
 using std::min;
 using std::max;
 
-#include "utils/heapcheck.h"
 
 extern HBRUSH hBrushSelected;
 extern HBRUSH hBrushUnselected;

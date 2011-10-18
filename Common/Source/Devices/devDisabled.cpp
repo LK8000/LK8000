@@ -6,9 +6,6 @@
    $Id$
 */
 
-#include "StdAfx.h"
-
-
 #include "externs.h"
 #include "Utils.h"
 #include "Parser.h"
@@ -16,7 +13,6 @@
 
 #include "devDisabled.h"
 
-#include "utils/heapcheck.h"
 
 
 BOOL disInstall(PDeviceDescriptor_t d){
