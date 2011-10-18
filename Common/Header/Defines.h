@@ -173,13 +173,13 @@
 
 // Optimization preprocessing for LK8000:  We want ALL landables within dst range.
 // Distance is in Km possibly GREATER THAN DSTRANGETURNPOINT but not needed really.
+// The RangeWaypoint calculation will reduct the DST values to fit waypoints within range
+// inside MAXRANGE array, and it will grow the DST when space is available.
 #define MAXRANGELANDABLE        500
 #define DSTRANGELANDABLE        150
-// Same for nearest turnpoints . Since tps are much more than landables, lets try to reduce the number
-// by selecting only those within 75km. It is critical that the number of found tps within 75km is
-// below 500 !
+// Same for nearest turnpoints . 
 #define MAXRANGETURNPOINT	500
-#define DSTRANGETURNPOINT	75
+#define DSTRANGETURNPOINT	100
 
 // How many thermals we shall remember
 #define MAX_THERMAL_HISTORY	100
