@@ -336,12 +336,8 @@ const TCHAR szRegistryDisableAutoLogger[] = TEXT("DisableAutoLogger");
 const TCHAR szRegistryMapFile[]=	 TEXT("MapFile"); // pL
 const TCHAR szRegistryBallastSecsToEmpty[]=	 TEXT("BallastSecsToEmpty"); 
 const TCHAR szRegistryUseCustomFonts[]=	 TEXT("UseCustomFonts"); 
-const TCHAR szRegistryFontTitleWindowFont[]=	 TEXT("TitleWindowFont"); 
-const TCHAR szRegistryFontMapWindowFont[]=	 TEXT("MapWindowFont"); 
-const TCHAR szRegistryFontMapWindowBoldFont[]=	 TEXT("MapWindowBoldFont"); 
-const TCHAR szRegistryFontCDIWindowFont[]=	 TEXT("CDIWindowFont"); 
 const TCHAR szRegistryFontMapLabelFont[]=	 TEXT("MapLabelFont"); 
-const TCHAR szRegistryFontStatisticsFont[]=	 TEXT("StatisticsFont"); 
+const TCHAR szRegistryFontMapWindowFont[]=	 TEXT("MapWindowFont"); 
 
 bool LockSettingsInFlight = true;
 bool LoggerShortName = false;

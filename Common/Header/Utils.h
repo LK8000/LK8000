@@ -234,12 +234,8 @@ extern const TCHAR szRegistryDisableAutoLogger[];
 extern const TCHAR szRegistryMapFile[];
 extern const TCHAR szRegistryBallastSecsToEmpty[];
 extern const TCHAR szRegistryUseCustomFonts[];
-extern const TCHAR szRegistryFontTitleWindowFont[]; 
 extern const TCHAR szRegistryFontMapWindowFont[];
-extern const TCHAR szRegistryFontMapWindowBoldFont[];
-extern const TCHAR szRegistryFontCDIWindowFont[];
 extern const TCHAR szRegistryFontMapLabelFont[];
-extern const TCHAR szRegistryFontStatisticsFont[];
 
 extern bool LockSettingsInFlight;
 extern bool LoggerShortName;

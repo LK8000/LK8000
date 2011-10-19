@@ -93,6 +93,8 @@ void InitialiseFontsHardCoded(RECT rc,
  * MapLabelFont		= Stats, map labels
  * MapWindowFont	= text names on the map, zoom indicator
  * MapWindowBoldFont	= menu buttons, waypoint selection, messages, etc.
+ *
+ * Only MapWindow and MapLabel can be customized as of october 2011
  */
 
 
@@ -281,12 +283,12 @@ void InitialiseFonts(RECT rc)
 
 
   InitializeOneFont (&TitleWindowFont, 
-                        szRegistryFontTitleWindowFont, 
+                        NULL,
                         autoTitleWindowLogFont,
                         NULL);
 
   InitializeOneFont (&CDIWindowFont, 
-                        szRegistryFontCDIWindowFont, 
+                        NULL,
                         autoCDIWindowLogFont,
                         NULL);
 
@@ -296,7 +298,7 @@ void InitialiseFonts(RECT rc)
                         NULL);
 
   InitializeOneFont (&StatisticsFont, 
-                        szRegistryFontStatisticsFont, 
+                        NULL,
                         autoStatisticsLogFont,
                         NULL);
 
@@ -306,7 +308,7 @@ void InitialiseFonts(RECT rc)
                         NULL);
 
   InitializeOneFont (&MapWindowBoldFont, 
-                        szRegistryFontMapWindowBoldFont, 
+                        NULL,
                         autoMapWindowBoldLogFont,
                         NULL);
 

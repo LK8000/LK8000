@@ -105,13 +105,6 @@ static void RedrawSampleFont(void)
 
   NewFont = CreateFontIndirect (&NewLogFont);
 
-  if ( _tcscmp(OriginalFontRegKey, szRegistryFontMapWindowBoldFont) == 0 ) {
-    wf->SetFont(NewFont);
-    wf->SetTitleFont(NewFont);
-    wf->SetVisible(false);
-    wf->SetVisible(true);
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontSample"));
 
   if(wp) {
