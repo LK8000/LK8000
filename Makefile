@@ -312,6 +312,10 @@ DRAW	:=\
 	$(DRW)/MapWindowZoom.cpp \
 	$(DRW)/MapWindowMode.cpp \
 
+TERRAIN	:=\
+	$(TER)/RasterTerrain.cpp	\
+	$(TER)/STScreenBuffer.cpp \
+
 UTILS	:=\
 	$(SRC)/utils/stringext.cpp
   
@@ -439,8 +443,6 @@ SRC_FILES :=\
 	$(SRC)/LKBestAlternate.cpp	\
 	$(SRC)/McReady.cpp 		$(SRC)/Message.cpp \
 	$(SRC)/Parser.cpp		$(SRC)/Port.cpp \
-	$(SRC)/RasterTerrain.cpp	\
-	$(SRC)/STScreenBuffer.cpp \
 	$(SRC)/Task.cpp			$(SRC)/TeamCodeCalculation.cpp \
 	$(SRC)/Terrain.cpp		$(SRC)/ThermalLocator.cpp \
 	$(SRC)/units.cpp \
@@ -461,6 +463,7 @@ SRC_FILES :=\
 	\
 	$(LIBRARY) \
 	$(DRAW) \
+	$(TERRAIN) \
 	$(UTILS) \
 	$(DEVS) \
 	$(DLGS) \
