@@ -313,7 +313,11 @@ DRAW	:=\
 	$(DRW)/MapWindowMode.cpp \
 
 TERRAIN	:=\
+	$(TER)/Cache.cpp	\
+	$(TER)/JP2.cpp	\
+	$(TER)/OpenCreateClose.cpp	\
 	$(TER)/RasterTerrain.cpp	\
+	$(TER)/RAW.cpp	\
 	$(TER)/STScreenBuffer.cpp \
 
 UTILS	:=\
