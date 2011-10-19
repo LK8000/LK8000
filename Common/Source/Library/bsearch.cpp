@@ -8,6 +8,10 @@
 
 #include "externs.h"
 
+//
+// This is currently used only for sorting the terrain cache, if in use
+//
+#if RASTERCACHE
 /*
  * Copyright (c) 1990 Regents of the University of California.
  * All rights reserved.
@@ -73,4 +77,4 @@ void *bsearch(void *key, void *base0, size_t nmemb, size_t size, int (*compar)(c
 	return (NULL);
 }
 
-
+#endif

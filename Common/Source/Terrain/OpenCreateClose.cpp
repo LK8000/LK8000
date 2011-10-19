@@ -132,6 +132,7 @@ bool RasterTerrain::CreateTerrainMap(const TCHAR *zfilename) {
   TerrainMap->Close();
   delete TerrainMap;
 
+  #if RASTERCACHE
   TerrainMap = new RasterMapCache();
   if (!TerrainMap) {
     return false;
@@ -139,6 +140,7 @@ bool RasterTerrain::CreateTerrainMap(const TCHAR *zfilename) {
   if (TerrainMap->Open(zfilename)) {
     return true;
   } 
+  #endif
 
   return false;
 }

@@ -79,6 +79,9 @@
  // #define JP2000		1	// use JPG2000 terrain files .jp2 and jasper library
  #define LKMTERRAIN		1	// allow DEM terrain inside dat and lkm topology files
 
+ // #define RASTERCACHE		1	// fallback to cached dem if it does not fit in memory entirely. 
+					// Does not work. 
+
 
 /*
  * Incomplete work, or stuff that never got into production versions but still interesting

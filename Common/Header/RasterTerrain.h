@@ -19,13 +19,14 @@ typedef struct _TERRAIN_INFO
 } TERRAIN_INFO;
 
 
+#if RASTERCACHE
 typedef struct _TERRAIN_CACHE
 {
   short h;
   long index;
   unsigned int recency;
 } TERRAIN_CACHE;
-
+#endif
 
 class RasterMap {
  public:
@@ -88,7 +89,7 @@ class RasterMap {
                               unsigned int ly) = 0;
 };
 
-
+#if RASTERCACHE
 class RasterMapCache: public RasterMap {
  public:
   RasterMapCache() {
@@ -141,7 +142,7 @@ class RasterMapCache: public RasterMap {
                       unsigned int ly);
   //
 };
-
+#endif // RASTERCACHE
 
 class RasterMapRaw: public RasterMap {
  public:

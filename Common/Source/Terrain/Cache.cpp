@@ -3,10 +3,13 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: RasterTerrain.cpp,v 8.4 2010/12/12 16:31:39 root Exp root $
+   $Id$
 */
 
+
 #include "externs.h"
+
+#if RASTERCACHE
 #include "RasterTerrain.h"
 
 #ifdef __MINGW32__
@@ -257,4 +260,4 @@ void RasterMapCache::Close(void) {
 }
 
 
-
+#endif // RASTERCACHE
