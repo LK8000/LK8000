@@ -3,6 +3,7 @@ SRC=Common/Source
 DEV=Common/Source/Devices
 DLG=Common/Source/Dialogs
 LIB=Common/Source/Library
+DRW=Common/Source/Draw
 TOP=Common/Source/Topology
 SHP=Common/Source/Topology/shapelib
 TER=Common/Source/Terrain
@@ -293,6 +294,24 @@ LIBRARY	:=\
 	$(LIB)/Utm.cpp \
 	$(LIB)/xmlParser.cpp \
 
+DRAW	:=\
+	$(DRW)/LKDrawCommon.cpp \
+	$(DRW)/LKDrawAspNearest.cpp \
+	$(DRW)/LKDrawLook8000.cpp \
+ 	$(DRW)/LKDrawNearest.cpp \
+	$(DRW)/LKDrawInfoPage.cpp \
+	$(DRW)/LKDrawWaypoints.cpp \
+	$(DRW)/LKDrawThermalHistory.cpp \
+	$(DRW)/LKDrawTraffic.cpp \
+	$(DRW)/LKGeneralAviation.cpp \
+	$(DRW)/LKMapWindow.cpp \
+	$(DRW)/MapWindow.cpp \
+	$(DRW)/MapWindow2.cpp \
+	$(DRW)/MapWindow3.cpp \
+	$(DRW)/MapWindowA.cpp \
+	$(DRW)/MapWindowZoom.cpp \
+	$(DRW)/MapWindowMode.cpp \
+
 UTILS	:=\
 	$(SRC)/utils/stringext.cpp
   
@@ -415,16 +434,9 @@ SRC_FILES :=\
 	$(SRC)/FlarmIdFile.cpp 		$(SRC)/FlarmCalculations.cpp \
 	$(SRC)/Geoid.cpp \
 	$(SRC)/Buttons.cpp \
-	$(SRC)/Logger.cpp 		$(SRC)/LKMapWindow.cpp \
-	$(SRC)/LKDrawLook8000.cpp 	$(SRC)/LKDrawNearest.cpp\
-	$(SRC)/LKDrawCommon.cpp 	$(SRC)/LKDrawAspNearest.cpp\
-	$(SRC)/LKDrawInfoPage.cpp	$(SRC)/LKDrawWaypoints.cpp\
-	$(SRC)/LKDrawTraffic.cpp	$(SRC)/LKSimulator.cpp\
-	$(SRC)/LKDrawThermalHistory.cpp \
+	$(SRC)/Logger.cpp 		\
+	$(SRC)/LKSimulator.cpp\
 	$(SRC)/LKBestAlternate.cpp	\
-	$(SRC)/MapWindow.cpp 		$(SRC)/MapWindow2.cpp \
-	$(SRC)/MapWindow3.cpp 		$(SRC)/MapWindowA.cpp \
-	$(SRC)/MapWindowZoom.cpp        $(SRC)/MapWindowMode.cpp \
 	$(SRC)/McReady.cpp 		$(SRC)/Message.cpp \
 	$(SRC)/Parser.cpp		$(SRC)/Port.cpp \
 	$(SRC)/RasterTerrain.cpp	\
@@ -435,7 +447,7 @@ SRC_FILES :=\
 	$(SRC)/Utils.cpp		\
 	$(SRC)/LKObjects.cpp \
 	$(SRC)/Waypointparser.cpp  	$(SRC)/LKUtils.cpp \
-	$(SRC)/LKLanguage.cpp		$(SRC)/LKGeneralAviation.cpp \
+	$(SRC)/LKLanguage.cpp		\
 	$(SRC)/windanalyser.cpp		$(SRC)/windmeasurementlist.cpp \
 	$(SRC)/windstore.cpp 		$(SRC)/WindowControls.cpp \
 	$(SRC)/WindZigZag.cpp 		\
@@ -448,6 +460,7 @@ SRC_FILES :=\
 	$(SHP)/maptree.cpp              $(SHP)/mapxbase.cpp \
 	\
 	$(LIBRARY) \
+	$(DRAW) \
 	$(UTILS) \
 	$(DEVS) \
 	$(DLGS) \
