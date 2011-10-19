@@ -1078,11 +1078,16 @@ public:
     if (epx> min(ixs,iys)/4) { 
       do_shading = false;
     } else {
-      #if (WINDOWSPC>0)
-      if (MapWindow::zoom.Scale()>18) do_shading=false;
+      #ifdef TESTBENCH
+      if (MapWindow::zoom.Scale()>5.6) do_shading=false;
       #else
-      if (MapWindow::zoom.Scale()>11) do_shading=false;
+      #if (WINDOWSPC>0)
+      if (MapWindow::zoom.Scale()>7) do_shading=false;
+      #else
+      if (MapWindow::zoom.Scale()>5.6) do_shading=false;
       #endif
+      #endif
+      // StartupStore(_T("..... scale=%.3f\n"),MapWindow::zoom.Scale());
     }
 
 
