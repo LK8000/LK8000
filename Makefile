@@ -4,6 +4,7 @@ DEV=Common/Source/Devices
 DLG=Common/Source/Dialogs
 LIB=Common/Source/Library
 DRW=Common/Source/Draw
+MAP=Common/Source/MapDraw
 TOP=Common/Source/Topology
 SHP=Common/Source/Topology/shapelib
 TER=Common/Source/Terrain
@@ -320,6 +321,18 @@ TERRAIN	:=\
 	$(TER)/RAW.cpp	\
 	$(TER)/STScreenBuffer.cpp \
 
+TOPOL	:=\
+	$(TOP)/Topology.cpp		\
+
+MAPDRAW	:=\
+	$(MAP)/DrawTerrain.cpp		\
+	$(MAP)/DrawTopology.cpp		\
+	$(MAP)/MarkLocation.cpp		\
+	$(MAP)/OpenCloseTopology.cpp		\
+	$(MAP)/SetTopologyBounds.cpp		\
+	$(MAP)/TopoMarks.cpp		\
+	$(MAP)/ZoomTopology.cpp		\
+
 UTILS	:=\
 	$(SRC)/utils/stringext.cpp
   
@@ -448,7 +461,7 @@ SRC_FILES :=\
 	$(SRC)/McReady.cpp 		$(SRC)/Message.cpp \
 	$(SRC)/Parser.cpp		$(SRC)/Port.cpp \
 	$(SRC)/Task.cpp			$(SRC)/TeamCodeCalculation.cpp \
-	$(SRC)/Terrain.cpp		$(SRC)/ThermalLocator.cpp \
+	$(SRC)/ThermalLocator.cpp \
 	$(SRC)/units.cpp \
 	$(SRC)/Utils.cpp		\
 	$(SRC)/LKObjects.cpp \
@@ -459,7 +472,6 @@ SRC_FILES :=\
 	$(SRC)/WindZigZag.cpp 		\
 	$(SRC)/ContestMgr.cpp 		$(SRC)/Trace.cpp \
 	\
-	$(TOP)/Topology.cpp		\
 	$(SHP)/mapbits.cpp \
 	$(SHP)/maperror.cpp 		$(SHP)/mapprimitive.cpp \
 	$(SHP)/mapsearch.cpp		$(SHP)/mapshape.cpp \
@@ -468,6 +480,8 @@ SRC_FILES :=\
 	$(LIBRARY) \
 	$(DRAW) \
 	$(TERRAIN) \
+	$(TOPOL) \
+	$(MAPDRAW) \
 	$(UTILS) \
 	$(DEVS) \
 	$(DLGS) \

@@ -3,6 +3,7 @@
 #include "StdAfx.h"
 #include "Topology.h"
 
+
 typedef struct _COLORRAMP
 {
   short h;
