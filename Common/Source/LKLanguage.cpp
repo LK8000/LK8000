@@ -23,7 +23,8 @@
 
 // #define DEBUG_GETTEXT	1
 #define LKD_LANGUAGE	"_Language"
-#define MAX_HELP	2048	// complete help including several lines, and also for each single line
+#define MAX_HELP	1500	// complete help including several lines, and also for each single line
+				// Remember there is a limit in ReadULine, always careful with large strings
 
 #define MAX_MESSAGES		2130 // Max number of MSG items
 #define MAX_MESSAGE_SIZE	150 // just for setting a limit

@@ -592,9 +592,14 @@ void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR
 
 // Reads line from UTF-8 encoded text file.
 // File must be open in binary read mode.
+// ATTENTION: if buffer is not large enough, the zzip_fread will fail
+// and ReadULine will return , but you will not be able to know if it returned
+// for a string overflow (managed) or because it reached EOF!
 bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars)
 {
-  unsigned char buf[READLINE_LENGTH * 2];
+  // This is a char, and we need space for at least MAX_HELP TCHARS!
+  // 
+  unsigned char buf[1500 * 2]; 
 
   long startPos = zzip_tell(fp);
 
