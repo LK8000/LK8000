@@ -3,7 +3,7 @@
 #ifndef BUILD_NUMBER_H_ 
 #define BUILD_NUMBER_H_ 
 
-#define BUILDNUMBER 8048
-#define BUILDNUMBER_STR "8048" 
+#define BUILDNUMBER 8052
+#define BUILDNUMBER_STR "8052" 
 
 #endif /* BUILD_NUMBER_H_ */
