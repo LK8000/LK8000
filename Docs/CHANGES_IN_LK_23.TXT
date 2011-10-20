@@ -2,6 +2,39 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3j October 21, 2011
+------------------------------
+
+
+CHANGES
+
+. Add modelname and hw type for logger header
+
+. Waypoint engine retuned and optimized
+
+. Terrain shading disabled at low zoom levels, automatically.
+  Previously too low zoom level, resulting in shading still effective
+  even at resolutions where it actually created visibility problems.
+
+. Topology labels on 480x272 no more in italic by default.
+  On a typical 4.3 inches screen we gain some space and readability.
+
+
+FIXES
+
+. Fix default profile not loading from special local directory on PC.
+  The old classic folder was used to load and save DEFAULT profile, 
+  of course only on PC version.
+
+. Fix font edit problem. Enabling custom fonts would also resume old font settings that were no more tunable.
+  Mainly the button and dialog fonts were affected.
+
+. Fix language help limit of 500 characters per line.
+
+
+
+
+
 Version 2.3i October 14, 2011
 ------------------------------
 
