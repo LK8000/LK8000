@@ -2805,10 +2805,6 @@ void WndButton::Paint(HDC hDC){
 }
 
 
-
-HBITMAP WndProperty::hBmpLeft32=NULL;
-HBITMAP WndProperty::hBmpRight32=NULL;
-
 int     WndProperty::InstCount=0;
 
 
