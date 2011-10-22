@@ -421,6 +421,7 @@ DLGS	:=\
 	$(DLG)/dlgWindSettings.cpp \
 
 SRC_FILES :=\
+	$(SRC)/lk8000.cpp		\
 	$(SRC)/InputEvents.cpp 		\
 	$(SRC)/LKInstall.cpp 		$(SRC)/Models.cpp\
 	$(SRC)/Backlight.cpp 		$(SRC)/LKInit.cpp\
@@ -437,7 +438,7 @@ SRC_FILES :=\
 	$(SRC)/Thread_Draw.cpp		$(SRC)/Thread_Port.cpp\
 	$(SRC)/WndProc.cpp		$(SRC)/InitFunctions.cpp\
 	$(SRC)/Settings.cpp		$(SRC)/Thread_Calculation.cpp\
-	$(SRC)/lk8000.cpp		$(SRC)/ProcessTimer.cpp \
+	$(SRC)/ProcessTimer.cpp \
 	$(SRC)/Polar.cpp		$(SRC)/AssetId.cpp \
 	$(SRC)/FlarmTools.cpp		\
 	$(SRC)/MessageLog.cpp		$(SRC)/Registry.cpp\

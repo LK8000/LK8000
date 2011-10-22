@@ -17,6 +17,8 @@
 #include "RGB.h"
 
 
+
+
 HBRUSH hBrushSelected;
 HBRUSH hBrushUnselected;
 HBRUSH hBrushButton;
@@ -27,6 +29,15 @@ COLORREF ColorOK = RGB_BLUE;
 COLORREF ColorButton = RGB_BUTTONS;  
 
 static int iTimerID= 0;
+
+#if (((UNDER_CE >= 300)||(_WIN32_WCE >= 0x0300)) && (WINDOWSPC<1))
+#define HAVE_ACTIVATE_INFO
+#include <aygshell.h>
+extern SHACTIVATEINFO s_sai;
+extern bool api_has_SHHandleWMActivate;
+extern bool api_has_SHHandleWMSettingChange;
+#endif
+
 
 LRESULT	MainMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 

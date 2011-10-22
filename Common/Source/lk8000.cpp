@@ -73,6 +73,13 @@ extern void StartupLogFreeRamAndStorage();
 extern void PreloadInitialisation(bool ask);
 
 
+#if (((UNDER_CE >= 300)||(_WIN32_WCE >= 0x0300)) && (WINDOWSPC<1))
+#define HAVE_ACTIVATE_INFO
+SHACTIVATEINFO s_sai;
+bool api_has_SHHandleWMActivate = false;
+bool api_has_SHHandleWMSettingChange = false;
+#endif
+
 
 
 int WINAPI WinMain(     HINSTANCE hInstance,
