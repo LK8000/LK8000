@@ -177,7 +177,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   short didsystem;
   didsystem=InstallSystem(); 
   goInstallSystem=true;
-  #if ALPHADEBUG
+  #if TESTBENCH
   StartupStore(_T(". InstallSystem ended, code=%d%s"),didsystem,NEWLINE);
   #endif
   #endif
@@ -285,16 +285,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   StartupStore(TEXT(". GlidePolar::SetBallast%s"),NEWLINE);
   #endif
   GlidePolar::SetBallast();
-
-// VENTA-ADDON
-#ifdef VENTA_DEBUG_KEY
-  CreateProgressDialog(TEXT("DEBUG KEY MODE ACTIVE"));
-  Sleep(1000);
-#endif
-#ifdef VENTA_DEBUG_EVENT
-  CreateProgressDialog(TEXT("DEBUG EVENT MODE ACTIVE"));
-  Sleep(1000);
-#endif
 
 
 if (ScreenSize==0) {
@@ -449,12 +439,16 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   DoSunEphemeris(GPS_INFO.Longitude, GPS_INFO.Latitude);
 
   // Finally ready to go
+  #if ALPHADEBUG
   StartupStore(TEXT(". CreateDrawingThread%s"),NEWLINE);
+  #endif
   MapWindow::CreateDrawingThread();
   Sleep(100);
 
   SwitchToMapWindow();
+  #if ALPHADEBUG
   StartupStore(TEXT(". CreateCalculationThread%s"),NEWLINE);
+  #endif
   CreateCalculationThread();
   while(!(goCalculationThread)) Sleep(50);
 
@@ -482,7 +476,9 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
 	}
   }
   LKObjects_Delete(); //@ 101124
+  #if ALPHADEBUG
   StartupStore(_T(". WinMain terminated%s"),NEWLINE);
+  #endif
 
 #if (WINDOWSPC>0)
 #if _DEBUG

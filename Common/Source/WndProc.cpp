@@ -216,7 +216,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 void AfterStartup() {
 
+  #if TESTBENCH
   StartupStore(TEXT(". CloseProgressDialog%s"),NEWLINE);
+  #endif
   CloseProgressDialog();
 
   // NOTE: Must show errors AFTER all windows ready
@@ -233,7 +235,9 @@ void AfterStartup() {
   StatusMessageData[0].delay_ms = olddelay; 
 
   // Create default task if none exists
+  #if TESTBENCH
   StartupStore(TEXT(". Create default task%s"),NEWLINE);
+  #endif
   DefaultTask();
 
   // Trigger first redraw
@@ -283,8 +287,10 @@ void Shutdown(void) {
   // Stop drawing
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
   CreateProgressDialog(gettext(TEXT("_@M1219_")));
-  
+ 
+  #if ALPHADEBUG 
   StartupStore(TEXT(". CloseDrawingThread%s"),NEWLINE);
+  #endif
   // 100526 this is creating problem in SIM mode when quit is called from X button, and we are in waypoint details
   // or probably in other menu related screens. However it cannot happen from real PNA or PDA because we don't have
   // that X button.
@@ -327,7 +333,9 @@ void Shutdown(void) {
   CloseTerrainRenderer();
 
   // Stop COM devices
+  #if ALPHADEBUG
   StartupStore(TEXT(". Stop COM devices%s"),NEWLINE);
+  #endif
   devCloseAll();
 
   CloseFLARMDetails();
@@ -357,13 +365,15 @@ void Shutdown(void) {
   extern void DeInitialiseFonts(void);
   DeInitialiseFonts();  
   CAirspaceManager::Instance().CloseAirspaces();
+  #if ALPHADEBUG
   StartupStore(TEXT(". Delete Critical Sections%s"),NEWLINE);
-
+  #endif
   extern void DeInitCriticalSections(void);
   DeInitCriticalSections(); 
 
+  #if TESTBENCH
   StartupStore(TEXT(". Close Progress Dialog%s"),NEWLINE);
-
+  #endif
   CloseProgressDialog();
   #if TESTBENCH
   StartupStore(TEXT(". Close Calculations%s"),NEWLINE);
@@ -373,11 +383,14 @@ void Shutdown(void) {
   CloseGeoid();
   DeInitCustomHardware();
 
+  #if ALPHADEBUG
   StartupStore(TEXT(". Close Windows%s"),NEWLINE);
+  #endif
   DestroyWindow(hWndMapWindow);
   DestroyWindow(hWndMainWindow);
-      
+  #if ALPHADEBUG
   StartupStore(TEXT(". Close Event Handles%s"),NEWLINE);
+  #endif
   CloseHandle(drawTriggerEvent);
   CloseHandle(dataTriggerEvent);
 
