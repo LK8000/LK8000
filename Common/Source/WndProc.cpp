@@ -394,11 +394,6 @@ void Shutdown(void) {
   CloseHandle(drawTriggerEvent);
   CloseHandle(dataTriggerEvent);
 
-#ifdef DEBUG_TRANSLATIONS
-  StartupStore(TEXT(".. Writing missing translations%s"),NEWLINE);
-  WriteMissingTranslations();
-#endif
-
   StartupLogFreeRamAndStorage();
   for (i=0;i<NUMDEV;i++) {
 	if (ComPortStatus[i]!=0) {

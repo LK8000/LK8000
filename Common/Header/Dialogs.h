@@ -7,6 +7,7 @@
 
 #include <windows.h>
 #include "LKAirspace.h"
+#include "MapWindow.h"
 
 void LKReadLanguageFile(void);
 
@@ -55,7 +56,6 @@ short dlgWayQuickShowModal(void);
 void dlgTextEntryShowModal(TCHAR *text, int width=0);
 void dlgTeamCodeShowModal(void);
 void dlgStartPointShowModal(void);
-#include "MapWindow.h"
 void dlgWaypointEditShowModal(WAYPOINT *wpt);
 void dlgAirspaceSelect(void);
 void dlgTarget(void);
@@ -74,7 +74,6 @@ void dlgAirspaceWarningParamsShowModal(void);
 
 #if (WINDOWSPC>0)
 #ifdef DEBUG
-//#define DEBUG_TRANSLATIONS
 #pragma warning( disable : 4786 ) 
 #endif
 #endif

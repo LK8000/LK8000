@@ -14,10 +14,6 @@
 using std::min;
 using std::max;
 
-#ifdef DEBUG_TRANSLATIONS
-#include <map>
-static std::map<TCHAR*, TCHAR*> unusedTranslations;
-#endif
 
 #include "utils/heapcheck.h"
 #include "winbase.h"

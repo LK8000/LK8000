@@ -9,12 +9,6 @@
 #include "externs.h"
 #include "Logger.h"
 
-#ifdef DEBUG_TRANSLATIONS
-#include <map>
-static std::map<TCHAR*, TCHAR*> unusedTranslations;
-#endif
-
-
 
 // PulseEvent is unreliable. But it does not matter anymore, since we should
 // change approach for compatibility with unix.

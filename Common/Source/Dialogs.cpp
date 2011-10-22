@@ -19,13 +19,6 @@
 #include "LKObjects.h"
 #include "RGB.h"
 
-#ifdef DEBUG_TRANSLATIONS
-#include <map>
-
-static GetTextSTRUCT GetTextData[MAXSTATUSMESSAGECACHE];
-static int GetTextData_Size = 0;
-#endif
-
 
 void ReadWayPoints(void);
 void ReadAirspace(void);
@@ -249,58 +242,6 @@ void DoStatusMessage(const TCHAR* text, const TCHAR *data) {
 
   Message::Unlock();
 }
-
-
-#ifdef DEBUG_TRANSLATIONS
-/*
-
-  WriteMissingTranslations - write all missing translations found
-  during runtime to a lanuage file in data dir
-
-*/
-template<class _Ty> 
-struct lessTCHAR: public std::binary_function<_Ty, _Ty, bool>
-{	// functor for operator<
-  bool operator()(const _Ty& _Left, const _Ty& _Right) const
-  {	// apply operator< to operands
-    return (_tcscmp(_Left, _Right) < 0);
-  }
-};
-
-std::map<TCHAR*, TCHAR*, lessTCHAR<TCHAR*> > unusedTranslations;
-
-void WriteMissingTranslations() {
-  std::map<TCHAR*, TCHAR*, lessTCHAR<TCHAR*> >::iterator 
-    s=unusedTranslations.begin(),e=unusedTranslations.end();
-
-  TCHAR szFile1[MAX_PATH] = TEXT("%LOCAL_PATH%\\\\localization_todo.xcl\0");
-  FILE *fp=NULL;
-
-  ExpandLocalPath(szFile1);
-  fp  = _tfopen(szFile1, TEXT("w+"));
-  
-  if (fp != NULL) {
-    while (s != e) {
-      TCHAR* p = (s->second);
-      if (p) {
-        while (*p) {
-          if (*p != _T('\n')) {
-            fwprintf(fp, TEXT("%c"), *p);
-          } else {
-            fwprintf(fp, TEXT("\\n"));
-          }
-          p++;
-        }
-        fwprintf(fp, TEXT("=\n"));
-      }
-      s++;
-    }
-    fclose(fp);
-  }
-}
-
-#endif
-
 
 
 static HWND	hStartupWindow = NULL;
