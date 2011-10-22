@@ -641,13 +641,16 @@ void LoggerHeader(void)
   ConvertTToC(pnamodel,GlobalModelName);
   pnamodel[_tcslen(GlobalModelName)]='\0';
   sprintf(temp,"HFFTYFRTYPE:XCSOAR %s PNA %s\r\n", LKFORK,pnamodel);
-  #endif
+  #else
 
   #ifdef PPC2002 
   sprintf(temp,"HFFTYFRTYPE:XCSOAR %s PPC2002\r\n", LKFORK);
   #endif
+  // PNA is also PPC2003..
   #ifdef PPC2003 
   sprintf(temp,"HFFTYFRTYPE:XCSOAR %s PPC2003\r\n", LKFORK);
+  #endif
+
   #endif
 
   IGCWriteRecord(temp);
