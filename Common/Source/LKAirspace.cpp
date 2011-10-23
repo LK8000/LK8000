@@ -2124,7 +2124,6 @@ void CAirspaceManager::SetFarVisible(const rectObj &bounds_active)
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
     // Check if airspace overlaps given bounds
     if ( (msRectOverlap(&bounds_active, &((*it)->Bounds())) == MS_TRUE)
-        && (*it)->Enabled()
        ) _airspaces_near.push_back(*it);
   }
 }
