@@ -1530,6 +1530,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
         p++;
         switch (*p) {
           case _T('A'): //DA - Sector
+            p++; p++; // skip A and space
             if (!CalculateSector(p, &points, CenterX, CenterY, Rotation)) {
               wsprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p );
               // LKTOKEN  _@M68_ = "Airspace" 
