@@ -2506,10 +2506,17 @@ CAirspaceList CAirspaceManager::GetAirspacesForPage24()
   return _airspaces_page24;
 }
 
-// Set or change selected airspace
+// Set or change or deselect selected airspace
 void CAirspaceManager::AirspaceSetSelect(CAirspace &airspace)
 {
   CCriticalSection::CGuard guard(_csairspaces);
+  // Deselect if we get the same asp
+  if (_selected_airspace == &airspace) {
+    _selected_airspace->Selected(false);
+    _selected_airspace = NULL;
+    return;
+  }
+  
   if (_selected_airspace != NULL) _selected_airspace->Selected(false);
   _selected_airspace = &airspace;
   if (_selected_airspace != NULL) _selected_airspace->Selected(true);
