@@ -1530,6 +1530,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
         p++;
         switch (*p) {
           case _T('A'): //DA - Sector
+            p++; p++; // skip A and space
             if (!CalculateSector(p, &points, CenterX, CenterY, Rotation)) {
               wsprintf(sTmp, TEXT("Parse error at line %d\r\n\"%s\"\r\nLine skipped."), linecount, p );
               // LKTOKEN  _@M68_ = "Airspace" 
@@ -2124,7 +2125,6 @@ void CAirspaceManager::SetFarVisible(const rectObj &bounds_active)
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
     // Check if airspace overlaps given bounds
     if ( (msRectOverlap(&bounds_active, &((*it)->Bounds())) == MS_TRUE)
-        && (*it)->Enabled()
        ) _airspaces_near.push_back(*it);
   }
 }
@@ -2507,10 +2507,17 @@ CAirspaceList CAirspaceManager::GetAirspacesForPage24()
   return _airspaces_page24;
 }
 
-// Set or change selected airspace
+// Set or change or deselect selected airspace
 void CAirspaceManager::AirspaceSetSelect(CAirspace &airspace)
 {
   CCriticalSection::CGuard guard(_csairspaces);
+  // Deselect if we get the same asp
+  if (_selected_airspace == &airspace) {
+    _selected_airspace->Selected(false);
+    _selected_airspace = NULL;
+    return;
+  }
+  
   if (_selected_airspace != NULL) _selected_airspace->Selected(false);
   _selected_airspace = &airspace;
   if (_selected_airspace != NULL) _selected_airspace->Selected(true);
