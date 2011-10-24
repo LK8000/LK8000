@@ -2,6 +2,43 @@
 Changes in LK8000 v2.3
 ======================
 
+NEW
+
+
+CHANGES
+
+. Now possible to deselect a selected airspace
+
+
+FIXES
+
+. Fix bug since 2.3e: waypoint search missing left and right arrows for sorting direction, distance etc.
+
+. Fix logger header declaring PPC2003 even for PNAs
+
+. Fix 2.3j problem missing HAVE_ACTIVATE_INFO
+
+. Reapplying bugfix by kalman may 31st 2011
+  Fix cheap chinese PNA bug, when system messages appear lk is crashing with exception 0xC000001C
+
+. Bugfix: missing drawing of an airspace disabled in previous session
+  Disable, shutdown, restart, enable -> asp won't show up on map until zoom in/out
+
+. Bugfix: asp openair parser DA sentences
+
+    On forum Posted by GVACILOTTO on 07/10/2011 :  17:02:22
+    At this version i can't see all cylinder airspaces, like a:
+    AC P
+    AN SBP 541 INDUSTRIAS QUIMICAS
+    AL GND
+    AH 2000AGL
+    V X=25:21:08 S 049:02:36 W
+    DA 0.53,0,360
+
+    Parser bug in DA sentence processing fixed.
+
+
+
 Version 2.3j October 21, 2011
 ------------------------------
 
