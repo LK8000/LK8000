@@ -29,15 +29,6 @@ using std::max;
 #endif
 
 
-#ifdef DEBUG
-#if (WINDOWSPC<1)
-#define DRAWLOAD
-extern int timestats_av;
-extern int misc_tick_count;
-#endif
-#endif
-
-
 #define TASKINDEX    Task[ActiveWayPoint].Index
 
 double MapWindow::findMapScaleBarSize(const RECT rc) {
@@ -1690,13 +1681,6 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     LKWriteText(hDC, Scale2, rc.right-NIBLSCALE(11)-tsize.cx, End.y+NIBLSCALE(3)+tsize.cy, 
 	0, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true); 
 
-
-    #ifdef DRAWLOAD
-    SelectObject(hDC, MapWindowFont);
-    wsprintf(Scale,TEXT("            %d %d ms"), timestats_av,
-             misc_tick_count);
-    ExtTextOut(hDC, rc.left, rc.top, 0, NULL, Scale, _tcslen(Scale), NULL);
-    #endif
 
     // restore original color
     SetTextColor(hDC, origcolor);

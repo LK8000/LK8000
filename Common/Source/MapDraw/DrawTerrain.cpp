@@ -102,7 +102,6 @@ inline void TerrainShading(const short illum, BYTE &r, BYTE &g, BYTE &b)
 // 
 // this is for TerrainInfo.StepSize = 0.0025;
 
-extern DWORD misc_tick_count;
 
 class TerrainRenderer {
 public:
@@ -275,8 +274,6 @@ public:
     // OK, ready to start loading height
 
     DisplayMap->Lock();
-
-    misc_tick_count = GetTickCount();
 
     // TODO code: not needed   RasterTerrain::SetCacheTime();
 
@@ -659,6 +656,5 @@ void DrawTerrain( const HDC hdc, const RECT rc,
   // step 5: draw
   trenderer->Draw(hdc, MapWindow::MapRect);
 
-  misc_tick_count = GetTickCount()-misc_tick_count;
 }
 

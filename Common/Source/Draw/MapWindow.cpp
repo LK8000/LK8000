@@ -35,10 +35,7 @@ using std::max;
 #include "LKGeneralAviation.h"
 
 
-DWORD misc_tick_count=0;
-
 #ifdef DEBUG
-#define DRAWLOAD
 #define DEBUG_VIRTUALKEYS
 #endif
 
@@ -210,39 +207,16 @@ extern int iround(double i);
 extern void ShowMenu();
 
 
-#ifdef DRAWLOAD
-DWORD timestats_av = 0;
-#endif
-
 DWORD MapWindow::timestamp_newdata=0;
 //#ifdef (DEBUG_MEM) 100211
-#if defined DRAWLOAD || defined DEBUG_MEM
+#ifdef DEBUG_MEM
 int cpuload=0;
 #endif
 
-bool timestats_dirty=false;
 
 void MapWindow::UpdateTimeStats(bool start) {
-#ifdef DRAWLOAD
-  static DWORD tottime=0;
-#endif
   if (start) {
     timestamp_newdata = ::GetTickCount();
-    timestats_dirty = false;
-  } else {
-#ifdef DRAWLOAD
-    if (!timestats_dirty) {
-      DWORD time = ::GetTickCount();
-      tottime = (2*tottime+(time-timestamp_newdata))/3;
-      timestats_av = tottime;
-      cpuload=0;
-#ifdef DEBUG_MEM
-      cpuload= MeasureCPULoad();
-      DebugStore("%d # mem\n%d # latency\n", CheckFreeRam()/1024, timestats_av);
-#endif
-    }
-#endif
-    timestats_dirty = false;
   }
 }
 
@@ -653,7 +627,6 @@ void MapWindow::RequestFastRefresh() {
 void MapWindow::RefreshMap() {
   MapDirty = true;
   userasked = true;
-  timestats_dirty = true;
   SetEvent(drawTriggerEvent);
 }
 

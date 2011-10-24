@@ -56,11 +56,7 @@ DWORD CalculationThread (LPVOID lpvoid) {
 #ifdef CPUSTATS
     GetThreadTimes( hCalculationThread, &CreationTime, &ExitTime,&StartKernelTime,&StartUserTime);
 #endif
-    // set timer to determine latency (including calculations)
-    // the UpdateTimeStats was unused and commented, so no reason to keep the if
-    // if (GpsUpdated) { 
-      //      MapWindow::UpdateTimeStats(true);
-    // }
+
     // make local copy before editing...
     LockFlightData();
     if (GpsUpdated) { // timeout on FLARM objects
