@@ -123,7 +123,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         SHHandleWMActivate(hWnd, wParam, lParam, &s_sai, FALSE);
       } else {
         #ifdef ALPHADEBUG
-        StartupStore(TEXT("... SHHandleWMActivate not available%s"),NEWLINE);
+        StartupStore(TEXT(". SHHandleWMActivate not available%s"),NEWLINE);
         #endif
         return DefWindowProc(hWnd, message, wParam, lParam);
       }
@@ -136,7 +136,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
       } else {
         #ifdef ALPHADEBUG
-        StartupStore(TEXT("... SHHandleWMSettingChange not available%s"),NEWLINE);
+        StartupStore(TEXT(". SHHandleWMSettingChange not available%s"),NEWLINE);
         #endif
         return DefWindowProc(hWnd, message, wParam, lParam);
       }

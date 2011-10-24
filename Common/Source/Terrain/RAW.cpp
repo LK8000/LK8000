@@ -115,8 +115,13 @@ bool RasterMapRaw::Open(const TCHAR* zfilename) {
   }
     
   long nsize = TerrainInfo.Rows*TerrainInfo.Columns;
+  #ifdef HC_DMALLOC
   StartupStore(_T(". Terrain size is %ld, max hblock %lu %s"),
     (long)nsize*sizeof(short), CheckMaxHeapBlock(), NEWLINE);
+  #else
+  StartupStore(_T(". Terrain size is %ld%s"),
+    (long)nsize*sizeof(short), NEWLINE);
+  #endif
 
   if (CheckFreeRam()>(unsigned long)(nsize*sizeof(short)+5000000)) {
     // make sure there is 5 meg of ram left after allocating space
