@@ -421,7 +421,7 @@ DLGS	:=\
 	$(DLG)/dlgWindSettings.cpp \
 
 SRC_FILES :=\
-	$(SRC)/lk8000.cpp		\
+	$(SRC)/lk8000.cpp		$(SRC)/Progress.cpp\
 	$(SRC)/InputEvents.cpp 		\
 	$(SRC)/LKInstall.cpp 		$(SRC)/Models.cpp\
 	$(SRC)/Backlight.cpp 		$(SRC)/LKInit.cpp\
