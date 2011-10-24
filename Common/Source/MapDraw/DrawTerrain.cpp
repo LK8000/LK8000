@@ -132,8 +132,7 @@ public:
        5    3    2    192    144     64  48     3072        27648
     */
 
-
-    #if (WINDOWSPC>0)
+    #if ((WINDOWSPC>0) && !TESTBENCH)
     // need at least 2Ghz singlecore CPU here for dtquant 1
     dtquant=2;
     #else
