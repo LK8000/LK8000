@@ -1568,7 +1568,7 @@ _@M1653_ "Toggle Map<>Airspace infopage"
 # Airspace details buttons
 _@M1654_ "SELECT"
 _@M1655_ "ANALYSIS"
-_@M1656_ "*SELECTED*"
+_@M1656_ "*UNSELECT*"
 
 # customkeys zoom 
 _@M1657_ "Zoom In"
