@@ -296,6 +296,8 @@ LIBRARY	:=\
 	$(LIB)/xmlParser.cpp \
 
 DRAW	:=\
+	$(DRW)/DrawAirSpaces.cpp \
+	$(DRW)/DrawAirspaceLabels.cpp \
 	$(DRW)/LKDrawCommon.cpp \
 	$(DRW)/LKDrawAspNearest.cpp \
 	$(DRW)/LKDrawLook8000.cpp \
