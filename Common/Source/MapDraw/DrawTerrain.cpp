@@ -12,6 +12,9 @@
 #include "STScreenBuffer.h"
 #include "RGB.h"
 
+#if RASTERCACHE
+#define USERASTERCACHE 1
+#endif
 
 #define NUM_COLOR_RAMP_LEVELS 13
 // If you change NUMRAMPS, also change the InputEvent SERVICE TERRCOL 
@@ -107,15 +110,15 @@ class TerrainRenderer {
 public:
   TerrainRenderer(RECT rc) {
 
+    #if USERASTERCACHE
     if (!RasterTerrain::IsDirectAccess()) {
       dtquant = 6;
     } else {
 	dtquant = 2; 
-      // on my PDA (600MhZ, 320x240 screen):
-      // dtquant=2, latency=170 ms
-      // dtquant=3, latency=136 ms
-      // dtquant=4, latency= 93 ms
     }
+    #else
+	dtquant = 2; 
+    #endif
     blursize = max((unsigned int)0, (dtquant-1)/2);
     oversampling = max(1,(blursize+1)/2+1);
     if (blursize==0) {
@@ -152,10 +155,11 @@ public:
 
     hBuf = (unsigned short*)malloc(sizeof(unsigned short)*ixs*iys);
 
-    #if 100303
     if (hBuf==NULL)  {
 	StartupStore(_T("------ TerrainRenderer: malloc(%d) failed!%s"),sizeof(unsigned short)*ixs*iys, NEWLINE);
-    } else {
+    } 
+    #if TESTBENCH
+    else {
 	StartupStore(_T(". TerrainRenderer: malloc(%d) ok%s"),sizeof(unsigned short)*ixs*iys, NEWLINE);
     }
     #endif
@@ -237,15 +241,20 @@ public:
     int X1 = (unsigned int)(X0+dtquant*ixs);
     int Y1 = (unsigned int)(Y0+dtquant*iys);
 
+    #if USERASTERCACHE
     unsigned int rfact=1;
+    #endif
 
     if (MapWindow::zoom.BigZoom()) {
       MapWindow::zoom.BigZoom(false);
+      #if USERASTERCACHE
+      // Raster map is always DirectAccess for LK
       if (!RasterTerrain::IsDirectAccess()) {
         // first time displaying this data, so do it at half resolution
         // to avoid too many cache misses
         rfact = 2;
       }
+      #endif
     }
 
     double pixelDX, pixelDY;
@@ -255,18 +264,26 @@ public:
     MapWindow::Screen2LatLon(x, y, X, Y);
     double xmiddle = X;
     double ymiddle = Y;
+    #if USERASTERCACHE
     int dd = (int)lround(dtquant*rfact);
+    #else
+    int dd = dtquant;
+    #endif
 
     x = (X0+X1)/2+dd;
     y = (Y0+Y1)/2;
     MapWindow::Screen2LatLon(x, y, X, Y);
+    #if USERASTERCACHE
     float Xrounding = (float)fabs(X-xmiddle);
+    #endif
     DistanceBearing(ymiddle, xmiddle, Y, X, &pixelDX, NULL);
 
     x = (X0+X1)/2;
     y = (Y0+Y1)/2+dd;
     MapWindow::Screen2LatLon(x, y, X, Y);
+    #if USERASTERCACHE
     float Yrounding = (float)fabs(Y-ymiddle);
+    #endif
     DistanceBearing(ymiddle, xmiddle, Y, X, &pixelDY, NULL);
 
     pixelsize_d = sqrt((pixelDX*pixelDX+pixelDY*pixelDY)/2.0);
@@ -275,15 +292,17 @@ public:
 
     DisplayMap->Lock();
 
-    // TODO code: not needed   RasterTerrain::SetCacheTime();
-
     // set resolution
 
+    #if USERASTERCACHE
     if (DisplayMap->IsDirectAccess()) {
       DisplayMap->SetFieldRounding(0,0);
     } else {
       DisplayMap->SetFieldRounding(Xrounding,Yrounding);
     }
+    #else
+      DisplayMap->SetFieldRounding(0,0);
+    #endif
 
     epx = DisplayMap->GetEffectivePixelSize(&pixelsize_d,
                                             ymiddle, xmiddle);
@@ -331,15 +350,26 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 
   const int cost = ifastcosine(DisplayAngle);
   const int sint = ifastsine(DisplayAngle);
+  #if USERASTERCACHE
+  #else
+  const RECT crect_visible = rect_visible;
+  #endif
   minalt=9999;
   for (int y = Y0; y<Y1; y+= dtquant) {
 	int ycost = y*cost;
 	int ysint = y*sint;
 	for (int x = X0; x<X1; x+= dtquant, myhbuf++) {
+		#if USERASTERCACHE
 		if ((x>= rect_visible.left) &&
 			(x<= rect_visible.right) &&
 			(y>= rect_visible.top) &&
 			(y<= rect_visible.bottom)) {
+		#else
+		if ((x>= crect_visible.left) &&
+			(x<= crect_visible.right) &&
+			(y>= crect_visible.top) &&
+			(y<= crect_visible.bottom)) {
+		#endif
 			#ifdef DEBUG
 			ASSERT(myhbuf<hBufTop);
 			#endif
@@ -361,6 +391,7 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 
 	}
   }
+
   if (!terrain_minalt[TerrainRamp]) minalt=0;	//@ 101110
   if (TerrainRamp==13) {
 	if (!GPS_INFO.NAVWarning) {
@@ -372,7 +403,7 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 	} else {
 		minalt+=150;
 	}
-  }
+  } 
 
   // StartupStore(_T("... MinAlt=%d MaxAlt=%d Multiplier=%.3f\n"),minalt,maxalt, (double)((double)maxalt/(double)(maxalt-minalt))); 
  
