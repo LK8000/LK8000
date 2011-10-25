@@ -10,7 +10,6 @@
 #if TESTBENCH
 /*
 #define DEBUG_DEVSETTING  // startupstore messages to understand sequence of device and com port init
-#define DRAWLOAD          // show cpu load (set by DEBUG mode)
 #define DEBUG_DBLCLK      // show double click is being pressed
 #define VENTA_DEBUG_EVENT // show key events, actually very few.
 #define VENTA_DEBUG_KEY   // activates scan key codes, so you know what an hardware key is mapped to

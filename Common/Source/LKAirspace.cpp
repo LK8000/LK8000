@@ -1664,10 +1664,6 @@ void CAirspaceManager::ReadAirspaces()
   ZZIP_FILE *fp=NULL;
   ZZIP_FILE *fp2=NULL;
 
-#if AIRSPACEUSEBINFILE > 0
-  FILETIME LastWriteTime;
-  FILETIME LastWriteTime2;
-#endif
 
   GetRegistryString(szRegistryAirspaceFile, szFile1, MAX_PATH);
   ExpandLocalPath(szFile1);

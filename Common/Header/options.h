@@ -98,13 +98,6 @@
     #define NEWUTM		// New full UTM support INCOMPLETED
     #define DSX			// only an experimental test feature for sms reception
 
-   //
-   // Very old stuff probably we can clean and remove
-   //
-
-   // use and maintain binary airspace file
-   #define   AIRSPACEUSEBINFILE    0             
-
    // TopologyWriter for adding topo labels dynamically, previously used for markers
    // May be sill used for custom user's topology, so let's keep it for a while.
    #define USETOPOMARKS	1	

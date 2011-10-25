@@ -19,19 +19,6 @@
 using std::min;
 using std::max;
 
-#if AIRSPACEUSEBINFILE
-#define  BINFILEMAGICNUMBER     0x4ab199f0
-#define  BINFILEVERION          0x00000101
-#define  BINFILEHEADER          "XCSoar Airspace File V1.0"
-
-typedef struct{
-  char     Header[32];
-  DWORD    MagicNumber;
-  DWORD    Version;
-  FILETIME LastWriteSourceFile;
-  DWORD    CrcSourceFile;          // not used at the moment
-}BinFileHeader_t;
-#endif
 
 #ifdef DEBUG
 void DumpAirspaceFile(void);
