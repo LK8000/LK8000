@@ -208,10 +208,6 @@ extern void ShowMenu();
 
 
 DWORD MapWindow::timestamp_newdata=0;
-//#ifdef (DEBUG_MEM) 100211
-#ifdef DEBUG_MEM
-int cpuload=0;
-#endif
 
 
 void MapWindow::UpdateTimeStats(bool start) {
@@ -2126,9 +2122,10 @@ void MapWindow::UpdateInfo(NMEA_INFO *nmea_info,
 void MapWindow::UpdateCaches(bool force) {
   // map was dirtied while we were drawing, so skip slow process
   // (unless we haven't done it for 2000 ms)
+  #if RASTERCACHE
   DWORD fpsTimeThis;
   static DWORD fpsTimeMapCenter = 0;
-
+  #endif
 
   if (MapWindow::ForceVisibilityScan) {
     force = true;
@@ -2140,7 +2137,8 @@ void MapWindow::UpdateCaches(bool force) {
   SetTopologyBounds(MapRect, force);
   UnlockTerrainDataGraphics();
 
-  // JMW experimental jpeg2000 rendering/tile management
+  #if RASTERCACHE
+  // JP2 no more supported, however if rastercache will ever be enabled..
   // Must do this even if terrain is not displayed, because
   // raster terrain is used by terrain footprint etc.
 
@@ -2161,6 +2159,7 @@ void MapWindow::UpdateCaches(bool force) {
 		RasterTerrain::ServiceCache();
 	}
   }
+  #endif // RASTERCACHE
 }
 
 
