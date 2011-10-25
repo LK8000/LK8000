@@ -2,12 +2,15 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3k October xx, 2011
+-----------------------------
+
 NEW
 
 
 CHANGES
 
-. Now possible to deselect a selected airspace
+. It is possible to deselect a selected airspace
 
 
 FIXES
@@ -37,6 +40,7 @@ FIXES
 
     Parser bug in DA sentence processing fixed.
 
+. Fix possible problem with CE6 devices, freezing the PNA after reloading terrain in configuration
 
 
 Version 2.3j October 21, 2011
