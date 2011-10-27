@@ -12,6 +12,8 @@ CHANGES
 
 . It is possible to deselect a selected airspace
 
+. Fonts for 320x240 retuned
+
 
 FIXES
 
@@ -19,7 +21,7 @@ FIXES
 
 . Fix logger header declaring PPC2003 even for PNAs
 
-. Fix 2.3j problem missing HAVE_ACTIVATE_INFO
+. Fix 2.3j problem on PPCs, that would not manage hide taskbar correctly, and detect the hardware keys correctly
 
 . Reapplying bugfix by kalman may 31st 2011
   Fix cheap chinese PNA bug, when system messages appear lk is crashing with exception 0xC000001C
