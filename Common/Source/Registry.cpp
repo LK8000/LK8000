@@ -1841,6 +1841,11 @@ void RestoreRegistry(void) {
   StartupStore(TEXT(". Restore registry from startProfile <%s>%s"),startProfileFile,NEWLINE);
   #endif
   LoadRegistryFromFile(startProfileFile);
+  #ifdef NEWPROFILES
+  // purely testing purposes
+  extern bool LKProfileLoad(TCHAR *file);
+  LKProfileLoad(startProfileFile);
+  #endif
 }
 
 void StoreRegistry(void) {

@@ -423,6 +423,9 @@ DLGS	:=\
 	$(DLG)/dlgWindSettings.cpp \
 
 SRC_FILES :=\
+	$(SRC)/LKProfileResetDefault.cpp\
+	$(SRC)/LKProfileLoad.cpp\
+	$(SRC)/LKProfileInitRuntime.cpp\
 	$(SRC)/DLL.cpp \
 	$(SRC)/lk8000.cpp		$(SRC)/Progress.cpp\
 	$(SRC)/InputEvents.cpp 		\
