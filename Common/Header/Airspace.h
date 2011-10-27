@@ -37,7 +37,6 @@
 
 void ReadAirspace(void);
 
-extern int AirspacePriority[AIRSPACECLASSCOUNT];
 
 //*******************************************************************************
 // experimental: new dialog based warning system

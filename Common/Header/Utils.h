@@ -261,7 +261,6 @@ HRESULT SetRegistryString(const TCHAR *szRegValue, const TCHAR *Pos);
 void ReadRegistrySettings(void);
 void SetRegistryColour(int i, DWORD c);
 void SetRegistryBrush(int i, DWORD c);
-void SetRegistryAirspacePriority(int i);
 void SetRegistryAirspaceMode(int i);
 int GetRegistryAirspaceMode(int i);
 void StoreType(int Index,int InfoType);

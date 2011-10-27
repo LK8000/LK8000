@@ -24,8 +24,6 @@ using std::max;
 void DumpAirspaceFile(void);
 #endif
 
-int AirspacePriority[AIRSPACECLASSCOUNT];
-
 #include <LKAirspace.h>
 
 /////////////////////////////

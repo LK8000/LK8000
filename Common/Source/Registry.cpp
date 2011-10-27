@@ -93,24 +93,6 @@ const TCHAR *szRegistryAirspaceMode[] =     {  TEXT("AirspaceMode0"),
 }; // pL
 
 
-const TCHAR *szRegistryAirspacePriority[] = {  TEXT("AirspacePriority0"),
-					 TEXT("AirspacePriority1"),
-					 TEXT("AirspacePriority2"),
-					 TEXT("AirspacePriority3"),
-					 TEXT("AirspacePriority4"),
-					 TEXT("AirspacePriority5"),
-					 TEXT("AirspacePriority6"),
-					 TEXT("AirspacePriority7"),
-					 TEXT("AirspacePriority8"),
-					 TEXT("AirspacePriority9"),
-					 TEXT("AirspacePriority10"),
-					 TEXT("AirspacePriority11"),
-					 TEXT("AirspacePriority12"),
-					 TEXT("AirspacePriority13"),
-                     TEXT("AirspacePriority14"),
-                     TEXT("AirspacePriority15")
-}; // pL
-
 
 const TCHAR szRegistryAirspaceWarning[]= TEXT("AirspaceWarn");
 const TCHAR szRegistryAirspaceBlackOutline[]= TEXT("AirspaceBlackOutline1");
@@ -363,12 +345,6 @@ void SetRegistryStringIfAbsent(const TCHAR* name,
 }
 
 
-void SaveRegistryAirspacePriority() {
-  for (int i=0; i<AIRSPACECLASSCOUNT; i++) {
-    SetToRegistry(szRegistryAirspacePriority[i], AirspacePriority[i]);
-  }
-}
-
 
 void ReadRegistrySettings(void)
 {
@@ -385,12 +361,6 @@ void ReadRegistrySettings(void)
   #if TESTBENCH
   StartupStore(TEXT(". Read registry settings%s"),NEWLINE);
   #endif
-
-  for (i=0; i<AIRSPACECLASSCOUNT; i++) {
-    Temp=0;
-    GetFromRegistry(szRegistryAirspacePriority[i], &Temp);
-    AirspacePriority[i] = Temp;
-  }
 
   Temp = 0;
   GetFromRegistry(szRegistryLatLonUnits, &Temp);
