@@ -52,82 +52,67 @@ void LKProfileResetDefault(void) {
 
   DisplayTextType=0;
 
-  AltitudeMode = Temp;
+  AltitudeMode = ALLON;
+  ClipAltitude = 1000;
+  AltWarningMargin = 100
+  AIRSPACEWARNINGS = TRUE;
+  WarningTime = 60;
+  AcknowledgementTime = 900;	// keep ack level for this time, [secs]
+  AirspaceWarningRepeatTime = 300;            // warning repeat time if not acknowledged after 5 minutes
+  AirspaceWarningVerticalMargin = 100;        // vertical distance used to calculate too close condition
+  AirspaceWarningDlgTimeout = 30;             // airspace warning dialog auto closing in x secs
+  AirspaceWarningMapLabels = 1;               // airspace warning map labels showed
 
-  ClipAltitude = Temp;
+  SafetyAltitudeMode = 0;
 
-  AltWarningMargin = Temp;
+  SAFETYALTITUDEARRIVAL = 300;
+  SAFETYALTITUDETERRAIN = 50;
+  SAFTEYSPEED = 50.0;
 
-  AirspaceWarningRepeatTime = Temp;
-
-  AirspaceWarningVerticalMargin = Temp;
-
-  AirspaceWarningDlgTimeout = Temp;
-
-  AirspaceWarningMapLabels = Temp;
-	
-  SafetyAltitudeMode = Temp;
-
-  SAFETYALTITUDEARRIVAL = (double)Temp;
-
-  SAFETYALTITUDETERRAIN = (double)Temp;
-
-  SAFTEYSPEED=50.0;
-
+  WindCalcTime=WCALC_TIMEBACK;
   WindCalcSpeed=27.778;
 
-  WindCalcTime=Temp;
-
-  SectorType = Temp;
-
+  SectorType = 1;
   SectorRadius = 10000;
 
 
-  for(i=0;i<AIRSPACECLASSCOUNT;i++)
-    {
-      MapWindow::iAirspaceMode[i] = GetRegistryAirspaceMode(i);
+  for(i=0;i<AIRSPACECLASSCOUNT;i++) {
+	MapWindow::iAirspaceMode[i] = 3; // Display + Warning
+	/* 
+	// init is in mapwindow
+	MapWindow::iAirspaceBrush[i] = 
+	MapWindow::iAirspaceColour[i] =	
+	*/
+	if (MapWindow::iAirspaceColour[i]>= NUMAIRSPACECOLORS) {
+		MapWindow::iAirspaceColour[i]= 0;
+	}
+	if (MapWindow::iAirspaceBrush[i]>= NUMAIRSPACEBRUSHES) {
+		MapWindow::iAirspaceBrush[i]= 0;
+	}
+  } 
 
-      Temp= MapWindow::iAirspaceBrush[i];
-      MapWindow::iAirspaceBrush[i] =			(int)Temp;
+  MapWindow::AirspaceFillType = MapWindow::asp_fill_patterns_full;
+  MapWindow::AirspaceOpacity = 30;
 
-      Temp= MapWindow::iAirspaceColour[i];
-      MapWindow::iAirspaceColour[i] =			(int)Temp;
+  MapWindow::bAirspaceBlackOutline = false;
 
-      if (MapWindow::iAirspaceColour[i]>= NUMAIRSPACECOLORS) {
-        MapWindow::iAirspaceColour[i]= 0;
-      }
+  TrailActive = TRUE;
 
-      if (MapWindow::iAirspaceBrush[i]>= NUMAIRSPACEBRUSHES) {
-        MapWindow::iAirspaceBrush[i]= 0;
-      }
+  MapWindow::EnableTrailDrift = false;
 
-    }
+  EnableThermalLocator = 1;
 
-  MapWindow::SetAirSpaceFillType((MapWindow::EAirspaceFillType)Temp);
+  EnableTopology = 1;
 
-  Temp = MapWindow::GetAirSpaceOpacity();
-  MapWindow::SetAirSpaceOpacity(Temp);
+  EnableTerrain = 1;
 
-  Temp = MapWindow::bAirspaceBlackOutline;
-  MapWindow::bAirspaceBlackOutline = (Temp == 1);
+  FinalGlideTerrain = 1;
 
-  TrailActive = Temp;
+  AutoWindMode= D_AUTOWIND_CIRCLING;
 
-  MapWindow::EnableTrailDrift = (Temp==1);
+  MapWindow::zoom.CircleZoom(1);
 
-  EnableThermalLocator = Temp;
-
-  EnableTopology = (Temp == 1);
-
-  EnableTerrain = (Temp == 1);
-
-  FinalGlideTerrain = Temp;
-
-  AutoWindMode = Temp;
-
-  MapWindow::zoom.CircleZoom(Temp == 1);
-
-  WindUpdateMode = Temp;
+  WindUpdateMode = 0;
 
   HomeWaypoint = -1;
 
@@ -135,9 +120,9 @@ void LKProfileResetDefault(void) {
 
   Alternate2 = -1;
 
-  MapWindow::SnailWidthScale = Temp;
+  MapWindow::SnailWidthScale = 16;
 
-  TeamCodeRefWaypoint = Temp;
+  TeamCodeRefWaypoint = -1;
 
   StartLine = 1;
 
@@ -147,22 +132,13 @@ void LKProfileResetDefault(void) {
 
   FinishRadius = 1000;
 
-  AIRSPACEWARNINGS = Temp;
-
-  WarningTime = max(10,Temp);
-
-  AcknowledgementTime = max(10,Temp);
-
   EnableAutoBacklight = 1;
 
   EnableAutoSoundVolume = 1;
 
   AircraftCategory = 0;
 
-  if (ISPARAGLIDER)
-	AATEnabled=TRUE;
-  else
-	AATEnabled=FALSE;
+  AATEnabled=FALSE;
 
   ExtendedVisualGlide = 0;
 
@@ -278,39 +254,36 @@ void LKProfileResetDefault(void) {
 
   debounceTimeout = 250;
 
-  // new appearance variables
-
-  Appearance.IndLandable = (IndLandable_t)wpLandableAltA;
-
-  Appearance.InverseInfoBox = 1;
-
   needclipping=false;
 
-  Appearance.InfoBoxModel = 
+  Appearance.DefaultMapWidth=206;
+  // Landables style
+  Appearance.IndLandable=wpLandableDefault,
+  // Black/White inversion
+  Appearance.InverseInfoBox=false;
+  Appearance.InfoBoxModel=apImPnaGeneric;
 
-  Appearance.DefaultMapWidth = 
 
   AutoAdvance = 1;
 
-  AutoMcMode_Config = 
+  AutoMcMode_Config = amcEquivalent;
 
-  AutoMacCready_Config = 
 
-  UseTotalEnergy_Config=
+  AutoMacCready_Config = true;
 
-  WaypointsOutOfRange = 
+  UseTotalEnergy_Config= false;
 
-  EnableFAIFinishHeight = 
+  WaypointsOutOfRange = 1; // include also wps out of terrain
 
-  Handicap = 
+  EnableFAIFinishHeight = false;
 
-  EnableExternalTriggerCruise = 
+  Handicap = 108;
 
   UTCOffset = 0;
 
   AutoZoom_Config=false;
 
-  MenuTimeoutMax = 
+  MenuTimeoutMax = MENUTIMEOUTMAX;
 
   LockSettingsInFlight = 0;
 

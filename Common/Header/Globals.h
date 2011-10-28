@@ -656,7 +656,6 @@ GEXTERN int EnableThermalLocator;
 
 GEXTERN bool ExternalTriggerCruise;
 GEXTERN bool ExternalTriggerCircling;
-GEXTERN int EnableExternalTriggerCruise;
 
 // statistics
 GEXTERN Statistics flightstats;

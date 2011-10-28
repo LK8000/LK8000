@@ -17,7 +17,14 @@
 #include <wingdi.h>
 #endif
 
-
+//
+// Default globals are NOT necessarily default settings.
+// We had to give them an initialization, but real init
+// is done through ResetProfile. These are the values used
+// BEFORE a profile is loaded at startup, FYI.
+// There are globals that are not configurable of course,
+// and thus are not part of a profile.
+//
 void Globals_Init(void) {
 
   #if TESTBENCH
@@ -479,7 +486,7 @@ void Globals_Init(void) {
 
   EnableNavBaroAltitude=false;
   Orbiter=1;
-  EnableExternalTriggerCruise=false;
+  // EnableExternalTriggerCruise=false; REMOVE
   ExternalTriggerCruise= false;
   ExternalTriggerCircling= false;
   ForceFinalGlide= false;

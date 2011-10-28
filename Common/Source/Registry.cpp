@@ -310,7 +310,6 @@ const TCHAR szRegistryAutoMcMode[] = TEXT("AutoMcMode");
 const TCHAR szRegistryAutoMcStatus[] = TEXT("AutoMcStatus");
 const TCHAR szRegistryUseTotalEnergy[] = TEXT("UseTotalEnergy");
 const TCHAR szRegistryWaypointsOutOfRange[] = TEXT("WaypointsOutOfRange2"); // 101020 2nd version, reset needed
-const TCHAR szRegistryEnableExternalTriggerCruise[] = TEXT("EnableExternalTriggerCruise");
 const TCHAR szRegistryFAIFinishHeight[] = TEXT("FAIFinishHeight");
 const TCHAR szRegistryHandicap[] = TEXT("Handicap");
 const TCHAR szRegistrySnailWidthScale[] = TEXT("SnailWidthScale");
@@ -1018,10 +1017,6 @@ void ReadRegistrySettings(void)
   Temp = Handicap;
   GetFromRegistry(szRegistryHandicap,&Temp);
   Handicap = Temp;
-
-  Temp = EnableExternalTriggerCruise;
-  GetFromRegistry(szRegistryEnableExternalTriggerCruise,&Temp);
-  EnableExternalTriggerCruise = Temp;
 
   Temp = 0;
   GetFromRegistry(szRegistryUTCOffset,&Temp);

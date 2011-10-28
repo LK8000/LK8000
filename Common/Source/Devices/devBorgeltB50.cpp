@@ -158,12 +158,13 @@ BOOL PBB50(TCHAR *String, NMEA_INFO *GPS_INFO) {
 
   // inclimb/incruise 1=cruise,0=climb, OAT
   NMEAParser::ExtractParameter(String,ctemp,6);
-  int climb = lround(StrToDouble(ctemp,NULL));
-
+  
   #if USESWITCHES
+  int climb = lround(StrToDouble(ctemp,NULL));
   GPS_INFO->SwitchState.VarioCircling = (climb==1);
   #endif
 
+  #if 0 // UNUSED EnableExternalTriggerCruise
   if (EnableExternalTriggerCruise) {
     if (climb) {
       ExternalTriggerCruise = false;
@@ -175,6 +176,7 @@ BOOL PBB50(TCHAR *String, NMEA_INFO *GPS_INFO) {
   } else {
     ExternalTriggerCruise = false;
   }
+  #endif
 
   GPS_INFO->AirspeedAvailable = TRUE;
   GPS_INFO->IndicatedAirspeed = vias;

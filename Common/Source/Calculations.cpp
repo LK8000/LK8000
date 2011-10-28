@@ -1521,6 +1521,8 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   bool forcecruise = false;
   bool forcecircling = false;
+
+  #if 0 // UNUSED, EnableExternalTriggerCruise not configurable, set to false since ever
   if (EnableExternalTriggerCruise && !(ReplayLogger::IsEnabled())) {
     if (ExternalTriggerCruise && ExternalTriggerCircling) {
       // this should never happen
@@ -1529,6 +1531,7 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     forcecruise = ExternalTriggerCruise;
     forcecircling = ExternalTriggerCircling;
   }
+  #endif
 
   switch(MODE) {
   case CRUISE:

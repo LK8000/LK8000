@@ -224,7 +224,6 @@ extern const TCHAR szRegistryAutoMcMode[];
 extern const TCHAR szRegistryAutoMcStatus[];
 extern const TCHAR szRegistryUseTotalEnergy[];
 extern const TCHAR szRegistryWaypointsOutOfRange[];
-extern const TCHAR szRegistryEnableExternalTriggerCruise[];
 extern const TCHAR szRegistryFAIFinishHeight[];
 extern const TCHAR szRegistryOLCRules[];
 extern const TCHAR szRegistryHandicap[];

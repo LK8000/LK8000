@@ -31,11 +31,9 @@ void LKProfileInitRuntime(void) {
   MapWindow::SetAutoOrientation(true); // reset old autoorientation
 
 
-
   if (UTCOffset>12*3600) {
     UTCOffset-= 24*3600;
   }
-
 
   // Units
   switch(Speed)
@@ -82,8 +80,8 @@ void LKProfileInitRuntime(void) {
 
   Units::NotifyUnitChanged();
 
-
-
+  MapWindow::SetAirSpaceFillType((MapWindow::EAirspaceFillType) MapWindow::AirspaceFillType);
+  MapWindow::SetAirSpaceOpacity(MapWindow::AirspaceOpacity);
 
   SetOverColorRef();
 
@@ -92,11 +90,14 @@ void LKProfileInitRuntime(void) {
   PGCloseTime=PGOpenTime+(PGGateIntervalTime*PGNumberOfGates*60);
   if (PGCloseTime>86399) PGCloseTime=86399; // 23:59:59
 
-
-  if ( AircraftCategory == (AircraftCategory_t)umParaglider )
+  // NO!
+  if ( ISPARAGLIDER ) {
 	AverEffTime = (AverEffTime_t)ae15seconds;
-  else
+	AATEnabled=TRUE;
+  } else {
 	AverEffTime = (AverEffTime_t)ae2minutes;
+	AATEnabled=FALSE;
+  }
 
   //
   // ModelType specials for PNAs
