@@ -81,7 +81,7 @@ void Globals_Init(void) {
   //
   // Configuration with default values for new profile
   //
-  MenuTimeoutMax = MENUTIMEOUTMAX;	// Config
+  MenuTimeout_Config = MENUTIMEOUTMAX;	// Config
   MenuTimeOut=0;			// Runtime
 
 

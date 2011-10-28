@@ -1029,9 +1029,9 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryAutoZoom,&Temp);
   MapWindow::zoom.AutoZoom(Temp == 1);
 
-  Temp = MenuTimeoutMax;
+  Temp = MenuTimeout_Config;
   GetFromRegistry(szRegistryMenuTimeout,&Temp);
-  MenuTimeoutMax = Temp;
+  MenuTimeout_Config = Temp;
 
   Temp = 0;
   GetFromRegistry(szRegistryLockSettingsInFlight,&Temp);

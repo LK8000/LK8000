@@ -283,21 +283,21 @@ void LKProfileResetDefault(void) {
 
   AutoZoom_Config=false;
 
-  MenuTimeoutMax = MENUTIMEOUTMAX;
+  MenuTimeout_Config = MENUTIMEOUTMAX;
 
   LockSettingsInFlight = 0;
 
   LoggerShortName = 0;
 
-  EnableFLARMMap = 
+  EnableFLARMMap = 1;
 
-  TerrainContrast = 
+  TerrainContrast = 140;
 
-  TerrainBrightness = 
+  TerrainBrightness = 115;
 
-  TerrainRamp_Config = 
+  TerrainRamp_Config = 0;
 
-  MapWindow::GliderScreenPosition = (int)Temp;
+  MapWindow::GliderScreenPosition = 40;
   MapWindow::GliderScreenPositionY = MapWindow::GliderScreenPosition;
 
 

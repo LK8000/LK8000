@@ -1706,7 +1706,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpMenuTimeout"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(MenuTimeoutMax/2);
+    wp->GetDataField()->SetAsFloat(MenuTimeout_Config/2);
     wp->RefreshDisplay();
   }
 
@@ -3550,9 +3550,9 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpMenuTimeout"));
   if (wp) {
-    if (MenuTimeoutMax != wp->GetDataField()->GetAsInteger()*2) {
-      MenuTimeoutMax = wp->GetDataField()->GetAsInteger()*2;
-      SetToRegistry(szRegistryMenuTimeout,MenuTimeoutMax);
+    if (MenuTimeout_Config != wp->GetDataField()->GetAsInteger()*2) {
+      MenuTimeout_Config = wp->GetDataField()->GetAsInteger()*2;
+      SetToRegistry(szRegistryMenuTimeout,MenuTimeout_Config);
       changed = true;
     }
   }

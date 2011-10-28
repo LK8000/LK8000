@@ -36,8 +36,8 @@ void CommonProcessTimer()
   }
 
   // Automatically exit menu buttons mode
-  // Note that MenuTimeoutMax is necessarily 2x the users choice, because we are at 2hz here
-  if(MenuTimeOut==MenuTimeoutMax) {
+  // Note that MenuTimeout_Config is necessarily 2x the users choice, because we are at 2hz here
+  if(MenuTimeOut==MenuTimeout_Config) {
 	if (!MapWindow::mode.AnyPan()) {
 		InputEvents::setMode(TEXT("default"));
 	}

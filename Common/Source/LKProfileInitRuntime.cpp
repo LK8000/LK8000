@@ -30,6 +30,7 @@ void LKProfileInitRuntime(void) {
   DisplayOrientation = DisplayOrientation_Config;
   MapWindow::SetAutoOrientation(true); // reset old autoorientation
 
+  MapWindow::GliderScreenPositionY = MapWindow::GliderScreenPosition;
 
   if (UTCOffset>12*3600) {
     UTCOffset-= 24*3600;

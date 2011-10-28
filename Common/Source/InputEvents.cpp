@@ -2575,8 +2575,8 @@ void InputEvents::eventOrientation(const TCHAR *misc){
 void SwitchToMapWindow(void)
 {
   SetFocus(hWndMapWindow);
-  if (MenuTimeOut< MenuTimeoutMax) {
-	MenuTimeOut = MenuTimeoutMax;
+  if (MenuTimeOut< MenuTimeout_Config) {
+	MenuTimeOut = MenuTimeout_Config;
   }
 }
 
@@ -2607,7 +2607,7 @@ void PopupBugsBallast(int UpDown)
 }
 
 void HideMenu() {
-    MenuTimeOut = MenuTimeoutMax;
+    MenuTimeOut = MenuTimeout_Config;
 }
 
 void ShowMenu() {

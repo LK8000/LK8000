@@ -648,7 +648,7 @@ GEXTERN int AutoAdvance;
 GEXTERN bool AdvanceArmed;
 
 
-GEXTERN int MenuTimeoutMax;   // config
+GEXTERN int MenuTimeout_Config;   // config
 GEXTERN int MenuTimeOut;      // runtime
 
 
