@@ -2,7 +2,7 @@
 Changes in LK8000 v2.3
 ======================
 
-Version 2.3k October xx, 2011
+Version 2.3k October 28, 2011
 -----------------------------
 
 NEW
