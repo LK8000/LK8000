@@ -14,14 +14,14 @@
 #if NEWPROFILES
 
 //
-// Init runtime variables from configuration
+// Init runtime variables from default configuration
 //
 void LKProfileInitRuntime(void) {
 
   //
   // Runtime from Config
   //
-  MapWindow::zoom.AutoZoom(AutoZoom_Config);
+  // MapWindow::zoom.AutoZoom(AutoZoom_Config); NO CHECK
   TerrainRamp = TerrainRamp_Config;
   AutoMcMode = AutoMcMode_Config;
   // AutoMacCready in calculations.h is an int, should be a bool

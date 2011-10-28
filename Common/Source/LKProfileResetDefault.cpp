@@ -10,6 +10,8 @@
 #include "Utils.h"
 #include "McReady.h"
 #include "Modeltype.h"
+#include "Calculations.h"
+//#include "Parser.h"
 
 #if NEWPROFILES
 //
@@ -17,9 +19,11 @@
 // We need to set runtime variables later, that make use of 
 // configuration values. One setting for configuration, and the
 // runtime equivalent of the same setting, for the case when it
-// is possible to change runtime with a button for example such value.
+// is possible to change such runtime value with a button.
 //
 void LKProfileResetDefault(void) {
+
+  int i;
 
   #if TESTBENCH
   StartupStore(TEXT(". ProfileResetDefault%s"),NEWLINE);
@@ -28,11 +32,11 @@ void LKProfileResetDefault(void) {
   Units::CoordinateFormat = (CoordinateFormats_t)cfDDMMSS;
 
   // default Speed unit 
-  Speed=2; 
-  TaskSpeed = 2;
-  Distance=2;
-  Altitude=1;
-  Lift=1;
+  short SpeedUnit_Config=2; 
+  short TaskSpeedUnit_Config = 2;
+  short DistanceUnit_Config=2;
+  short AltitudeUnit_Config=1;
+  short LiftUnit_Config=1;
 
   //
   // Default infobox groups configuration
@@ -54,7 +58,7 @@ void LKProfileResetDefault(void) {
 
   AltitudeMode = ALLON;
   ClipAltitude = 1000;
-  AltWarningMargin = 100
+  AltWarningMargin = 100;
   AIRSPACEWARNINGS = TRUE;
   WarningTime = 60;
   AcknowledgementTime = 900;	// keep ack level for this time, [secs]
@@ -78,11 +82,9 @@ void LKProfileResetDefault(void) {
 
   for(i=0;i<AIRSPACECLASSCOUNT;i++) {
 	MapWindow::iAirspaceMode[i] = 3; // Display + Warning
-	/* 
-	// init is in mapwindow
-	MapWindow::iAirspaceBrush[i] = 
-	MapWindow::iAirspaceColour[i] =	
-	*/
+	// already initialised by mapwindow
+	// MapWindow::iAirspaceBrush[i] = 
+	// MapWindow::iAirspaceColour[i] =	
 	if (MapWindow::iAirspaceColour[i]>= NUMAIRSPACECOLORS) {
 		MapWindow::iAirspaceColour[i]= 0;
 	}
@@ -91,8 +93,8 @@ void LKProfileResetDefault(void) {
 	}
   } 
 
-  MapWindow::AirspaceFillType = MapWindow::asp_fill_patterns_full;
-  MapWindow::AirspaceOpacity = 30;
+  // MapWindow::AirspaceFillType = MapWindow::asp_fill_patterns_full; TODO FIX
+  // MapWindow::AirspaceOpacity = 30; TODO FIX
 
   MapWindow::bAirspaceBlackOutline = false;
 
@@ -281,7 +283,7 @@ void LKProfileResetDefault(void) {
 
   UTCOffset = 0;
 
-  AutoZoom_Config=false;
+  MapWindow::zoom.AutoZoom(false); // CHECK! TODO
 
   MenuTimeout_Config = MENUTIMEOUTMAX;
 
@@ -298,14 +300,16 @@ void LKProfileResetDefault(void) {
   TerrainRamp_Config = 0;
 
   MapWindow::GliderScreenPosition = 40;
-  MapWindow::GliderScreenPositionY = MapWindow::GliderScreenPosition;
 
+  BallastSecsToEmpty =  120;
 
-  BallastSecsToEmpty = Temp;
+  #if (!defined(WINDOWSPC) || (WINDOWSPC==0))
+  SetSystemTimeFromGPS = true;
+  #else
+  SetSystemTimeFromGPS = false;
+  #endif
 
-  SetSystemTimeFromGPS = ?
-
-  AutoForceFinalGlide = ?
+  AutoForceFinalGlide = false;
 
   UseCustomFonts = 0;
 
@@ -317,15 +321,15 @@ void LKProfileResetDefault(void) {
 
   FinishMinHeight = 0;
 
-  StartHeightRef = ?
+  StartHeightRef = 0;
 
-  StartMaxHeight = ?
+  StartMaxHeight = 0;
   
-  StartMaxHeightMargin = 
+  StartMaxHeightMargin = 0;
 
-  StartMaxSpeed = 
+  StartMaxSpeed = 0;
 
-  StartMaxSpeedMargin = 
+  StartMaxSpeedMargin = 0;
 
   EnableNavBaroAltitude = 1;
 
@@ -358,11 +362,11 @@ void LKProfileResetDefault(void) {
   ConfIP32 = 1;
   ConfIP33 = 1;
 
-  LoggerTimeStepCruise = 
+  LoggerTimeStepCruise = 1;
 
-  LoggerTimeStepCircling = 
+  LoggerTimeStepCircling = 1;
 
-  GlidePolar::SafetyMacCready = 
+  GlidePolar::SafetyMacCready = 0.5;
 
   DisableAutoLogger = false;
 
