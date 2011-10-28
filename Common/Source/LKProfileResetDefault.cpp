@@ -25,76 +25,30 @@ void LKProfileResetDefault(void) {
   StartupStore(TEXT(". ProfileResetDefault%s"),NEWLINE);
   #endif
 
-  for (i=0; i<AIRSPACECLASSCOUNT; i++) {
-    Temp=0;
-    GetFromRegistry(szRegistryAirspacePriority[i], &Temp);
-    AirspacePriority[i] = Temp;
-  }
-
-  Units::CoordinateFormat = (CoordinateFormats_t)Temp;
+  Units::CoordinateFormat = (CoordinateFormats_t)cfDDMMSS;
 
   // default Speed unit 
-  Speed=2; // 100219
-  switch(Speed)
-    {
-    case 0 :
-      SPEEDMODIFY = TOMPH;
-      break;
-    case 1 :
-      SPEEDMODIFY = TOKNOTS;
-      break;
-    case 2 :
-      SPEEDMODIFY = TOKPH;
-      break;
-    }
-
+  Speed=2; 
   TaskSpeed = 2;
-  switch(TaskSpeed)
-    {
-    case 0 :
-      TASKSPEEDMODIFY = TOMPH;
-      break;
-    case 1 :
-      TASKSPEEDMODIFY = TOKNOTS;
-      break;
-    case 2 :
-      TASKSPEEDMODIFY = TOKPH;
-      break;
-    }
-
   Distance=2;
-  switch(Distance)
-    {
-    case 0 : DISTANCEMODIFY = TOMILES; break;
-    case 1 : DISTANCEMODIFY = TONAUTICALMILES; break;
-    case 2 : DISTANCEMODIFY = TOKILOMETER; break;
-    }
-
   Altitude=1;
-  switch(Altitude)
-    {
-    case 0 : ALTITUDEMODIFY = TOFEET; break;
-    case 1 : ALTITUDEMODIFY = TOMETER; break;
-    }
+  Lift=1;
 
-  Lift=1; // 100219
-  switch(Lift)
-    {
-    case 0 : LIFTMODIFY = TOKNOTS; break;
-    case 1 : LIFTMODIFY = TOMETER; break;
-    case 2 : LIFTMODIFY = TOKNOTS; break; // 100314
-    }
+  //
+  // Default infobox groups configuration
+  // Should be different for each aircraft category
+  //
+  InfoType[0] = 1008146198;
+  InfoType[1] = 1311715074;
+  InfoType[2] = 923929365;
+  InfoType[3] = 975776319;
+  InfoType[4] = 956959267;
+  InfoType[5] = 1178420506;
+  InfoType[6] = 1410419993;
+  InfoType[7] = 1396384771;
+  InfoType[8] = 387389207;
 
-  Units::NotifyUnitChanged();
-
-  for (i=0;i<MAXINFOWINDOWS;i++)
-    {
-      Temp = InfoType[i];
-      InfoType[i] = Temp;
-    }
-
-  DisplayOrientation=0;
-  OldDisplayOrientation=DisplayOrientation;
+  DisplayOrientation_Config=TRACKUP;
 
   DisplayTextType=0;
 

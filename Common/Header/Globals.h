@@ -629,7 +629,7 @@ GEXTERN bool ConfIP33;
 GEXTERN bool OverlayClock;
 GEXTERN bool EnableSoundModes;
 GEXTERN int DisplayOrientation;
-GEXTERN int OldDisplayOrientation;
+GEXTERN int DisplayOrientation_Config;
 GEXTERN int AutoOrientScale;
 GEXTERN int DisplayTextType;
 GEXTERN int AIRSPACEWARNINGS;

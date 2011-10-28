@@ -1700,7 +1700,7 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M484_")));
 	// LKTOKEN  _@M481_ = "North Smart" 
     dfe->addEnumText(gettext(TEXT("_@M481_"))); // 100417
-    dfe->Set(OldDisplayOrientation);
+    dfe->Set(DisplayOrientation_Config);
     wp->RefreshDisplay();
   }
 
@@ -3539,10 +3539,11 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpOrientation"));
   if (wp) {
-    if (OldDisplayOrientation != wp->GetDataField()->GetAsInteger()) {
-      OldDisplayOrientation = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryDisplayUpValue,OldDisplayOrientation);
-      DisplayOrientation=OldDisplayOrientation;
+    if (DisplayOrientation_Config != wp->GetDataField()->GetAsInteger()) {
+      DisplayOrientation_Config = wp->GetDataField()->GetAsInteger();
+      SetToRegistry(szRegistryDisplayUpValue,DisplayOrientation_Config);
+      DisplayOrientation=DisplayOrientation_Config;
+      MapWindow::SetAutoOrientation(true); // reset
       changed = true;
     }
   }

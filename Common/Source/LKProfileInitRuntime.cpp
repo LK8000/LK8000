@@ -13,20 +13,76 @@
 
 #if NEWPROFILES
 
+//
+// Init runtime variables from configuration
+//
 void LKProfileInitRuntime(void) {
 
-  // Init runtime variables from configuration
-
+  //
+  // Runtime from Config
+  //
   MapWindow::zoom.AutoZoom(AutoZoom_Config);
-  TerrainRamp=TerrainRamp_Config;
+  TerrainRamp = TerrainRamp_Config;
   AutoMcMode = AutoMcMode_Config;
   // AutoMacCready in calculations.h is an int, should be a bool
   CALCULATED_INFO.AutoMacCready = AutoMacCready_Config==true?1:0;
-UseTotalEnergy = UseTotalEnergy_Config;
+  UseTotalEnergy = UseTotalEnergy_Config;
+  DisplayOrientation = DisplayOrientation_Config;
+  MapWindow::SetAutoOrientation(true); // reset old autoorientation
 
- if (UTCOffset>12*3600) {
+
+
+  if (UTCOffset>12*3600) {
     UTCOffset-= 24*3600;
   }
+
+
+  // Units
+  switch(Speed)
+    {
+    case 0 :
+      SPEEDMODIFY = TOMPH;
+      break;
+    case 1 :
+      SPEEDMODIFY = TOKNOTS;
+      break;
+    case 2 :
+      SPEEDMODIFY = TOKPH;
+      break;
+    }
+  switch(TaskSpeed)
+    {
+    case 0 :
+      TASKSPEEDMODIFY = TOMPH;
+      break;
+    case 1 :
+      TASKSPEEDMODIFY = TOKNOTS;
+      break;
+    case 2 :
+      TASKSPEEDMODIFY = TOKPH;
+      break;
+    }
+  switch(Distance)
+    {
+    case 0 : DISTANCEMODIFY = TOMILES; break;
+    case 1 : DISTANCEMODIFY = TONAUTICALMILES; break;
+    case 2 : DISTANCEMODIFY = TOKILOMETER; break;
+    }
+  switch(Altitude)
+    {
+    case 0 : ALTITUDEMODIFY = TOFEET; break;
+    case 1 : ALTITUDEMODIFY = TOMETER; break;
+    }
+  switch(Lift)
+    {
+    case 0 : LIFTMODIFY = TOKNOTS; break;
+    case 1 : LIFTMODIFY = TOMETER; break;
+    case 2 : LIFTMODIFY = TOKNOTS; break;
+    }
+
+  Units::NotifyUnitChanged();
+
+
 
 
   SetOverColorRef();

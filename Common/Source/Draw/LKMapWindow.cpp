@@ -915,15 +915,11 @@ go_selcolor:
 void MapWindow::SetAutoOrientation(bool doreset) {
 
   static bool doinit=true;
+  static int oldDisplayOrientation=0;
 
-  if (doinit) {
-	OldDisplayOrientation=DisplayOrientation;
+  if (doinit||doreset) {
+	oldDisplayOrientation=DisplayOrientation;
 	doinit=false;
-  }
-
-  if (doreset) {
-	OldDisplayOrientation=DisplayOrientation;
-	return;
   }
 
   // 1.4 because of correction if mapscale reported on screen in MapWindow2
@@ -931,7 +927,7 @@ void MapWindow::SetAutoOrientation(bool doreset) {
 	// DisplayOrientation=NORTHSMART; // better to keep the glider centered on low zoom levels
 	DisplayOrientation=NORTHUP;
   } else {
-	DisplayOrientation=OldDisplayOrientation;
+	DisplayOrientation=oldDisplayOrientation;
   }
 }
 

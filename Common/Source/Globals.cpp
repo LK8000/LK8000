@@ -54,9 +54,9 @@ void Globals_Init(void) {
   BgMapColorTextBlack[8] = true;
   BgMapColorTextBlack[9] = true;
 
-
   //
   // Default infobox groups configuration
+  // Real defaults set by ResetDefaults
   //
   InfoType[0] = 1008146198;
   InfoType[1] = 1311715074;
@@ -80,7 +80,7 @@ void Globals_Init(void) {
 
   // TODO check!!
   DisplayOrientation = TRACKUP;
-  OldDisplayOrientation = TRACKUP;
+  DisplayOrientation_Config = TRACKUP;
   AutoOrientScale = 10;
   DisplayTextType = DISPLAYNONE;
 

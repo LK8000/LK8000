@@ -440,18 +440,12 @@ void ReadRegistrySettings(void)
     case NORTHUP : DisplayOrientation = NORTHUP;break;
     case NORTHSMART : 
 		DisplayOrientation = NORTHSMART;
-		/*
-		if (InfoBoxLayout::landscape) // 100417
-			DisplayOrientation = NORTHSMART;
-		else
-			DisplayOrientation = NORTHUP;
-		*/
 		break;
     case NORTHCIRCLE : DisplayOrientation = NORTHCIRCLE;break;
     case TRACKCIRCLE : DisplayOrientation = TRACKCIRCLE;break;
     case NORTHTRACK : DisplayOrientation = NORTHTRACK;break;
     }
-  OldDisplayOrientation=DisplayOrientation; // 101008
+  DisplayOrientation_Config=DisplayOrientation; // Notice it should be inverted since beginning
 
   Temp=0;
   GetFromRegistry(szRegistryDisplayText,&Temp);
