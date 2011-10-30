@@ -1437,6 +1437,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   POINT ground[4];
   HPEN   hpHorizonGround;
   HBRUSH hbHorizonGround;
+  int itemp;
   hpHorizonGround = (HPEN)CreatePen(PS_SOLID, IBLSCALE(1), 
                                     GROUND_COLOUR);
   hbHorizonGround = (HBRUSH)CreateSolidBrush(GROUND_COLOUR);
@@ -1449,11 +1450,14 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
     ground[2].x = iround(j*dx)+x0;
     ground[3].x = ground[2].x;
     ground[0].y = y0;
-    ground[1].y = iround((d_alt[j-1]-hmin)/(hmax-hmin)
-			 *(rc.top-rc.bottom+BORDER_Y))+y0;
-    ground[2].y = iround((d_alt[j]-hmin)/(hmax-hmin)
-			 *(rc.top-rc.bottom+BORDER_Y))+y0;
+    itemp = iround((d_alt[j-1]-hmin)/(hmax-hmin)*(rc.top-rc.bottom+BORDER_Y))+y0;
+    if (itemp>y0) itemp = y0;
+    ground[1].y = itemp;
+    itemp = iround((d_alt[j]-hmin)/(hmax-hmin)*(rc.top-rc.bottom+BORDER_Y))+y0;
+    if (itemp>y0) itemp = y0;
+    ground[2].y = itemp;
     ground[3].y = y0;
+    if ((ground[1].y == y0) && (ground[2].y == y0)) continue;
     Polygon(hdc, ground, 4);
   }
 
