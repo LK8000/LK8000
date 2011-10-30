@@ -1357,7 +1357,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   calc_average30s = CALCULATED_INFO.Average30s;
   UnlockFlightData();
   
-  double hmin = max(0.0, alt-3300);
+  double hmin = max(0.0, alt-2300);
   double hmax = max(3300.0, alt+1000);
   RECT rcd;
 
