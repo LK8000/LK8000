@@ -2,11 +2,10 @@
 <WndForm Type="Dialog" X=0 Y=0 Width=320 Height=240 Caption="_@M93_" Font=2 >
 <WndOwnerDrawFrame Name="frmGrid" X=90 Y=2 Width=224 Height=218 Font=0 OnPaint="OnAnalysisPaint" />
 <WndOwnerDrawFrame Name="frmInfo" X=0 Y=5 Width=90 Height=128 Font=2 />
-<WndFrame WndFrame Name="frmButton" X=0 Y=130 Width=90 Height=90>
-<WndButton Name="cmdCalc"  Caption="_@M160_" X=5 Y=0 Width=80  Height=28 Font=2 OnClickNotify="OnCalcClicked" />
-<WndButton Name="cmdNext"  Caption="&gt;" X=48 Y=30 Width=37  Height=28 Font=3 OnClickNotify="OnNextClicked" Tag=1 />
-<WndButton Name="cmdPrev"  Caption="&lt;" X=5 Y=30 Width=37  Height=28 Font=3 OnClickNotify="OnPrevClicked" Tag=0/>
-<WndButton Name="cmdClose" Caption="_@M186_" X=5 Y=60 Width=80  Height=28 Font=2 Tag=3 />
-</WndFrame>
+<WndButton Name="cmdAspBear" Caption="_@M1287_" X=5 Y=100 Width=80  Height=28 Font=2 OnClickNotify="OnAspBearClicked"  Visible=0 />
+<WndButton Name="cmdCalc"  Caption="_@M160_" X=5 Y=130 Width=80  Height=28 Font=2 OnClickNotify="OnCalcClicked" />
+<WndButton Name="cmdNext"  Caption="&gt;" X=48 Y=160 Width=37  Height=28 Font=3 OnClickNotify="OnNextClicked" Tag=1 />
+<WndButton Name="cmdPrev"  Caption="&lt;" X=5 Y=160 Width=37  Height=28 Font=3 OnClickNotify="OnPrevClicked" Tag=0/>
+<WndButton Name="cmdClose" Caption="_@M186_" X=5 Y=190 Width=80  Height=28 Font=2 Tag=3 />
 </WndForm>    
 </PMML>

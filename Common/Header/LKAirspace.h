@@ -21,7 +21,7 @@
 #include <algorithm>
 
 #define AIRSPACE_SCANSIZE_X 16
-#define AIRSPACE_SCANSIZE_H 16
+#define AIRSPACE_SCANSIZE_H 34
 
 // Define this, if airspace nearest distance infoboxes will use selected airpsace only
 // In this case infoboxes show distance to selected airspace only.

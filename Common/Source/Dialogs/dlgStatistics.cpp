@@ -31,6 +31,7 @@ bool   Statistics::unscaled_x;
 bool   Statistics::unscaled_y;
 
 static HPEN penThinSignal = NULL;
+static bool asp_heading_task = false;
 
 #define BORDER_X 24
 #define BORDER_Y 19
@@ -1343,14 +1344,21 @@ void Statistics::RenderWind(HDC hdc, const RECT rc)
 
 void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   double range = 50.0*1000; // km
-  double aclat, aclon, ach, acb;
+  double aclat, aclon, ach, acb, alt, speed, calc_average30s;
   double fi, fj;
+  
+  LockFlightData();
   aclat = GPS_INFO.Latitude;
   aclon = GPS_INFO.Longitude;
   ach = GPS_INFO.Altitude;
-  acb = GPS_INFO.TrackBearing;
-  double hmin = max(0.0, GPS_INFO.Altitude-3300);
-  double hmax = max(3300.0, GPS_INFO.Altitude+1000);
+  if (asp_heading_task) acb = CALCULATED_INFO.WaypointBearing; else acb = GPS_INFO.TrackBearing;
+  alt = GPS_INFO.Altitude;
+  speed = GPS_INFO.Speed;
+  calc_average30s = CALCULATED_INFO.Average30s;
+  UnlockFlightData();
+  
+  double hmin = max(0.0, alt-2300);
+  double hmax = max(3300.0, alt+1000);
   RECT rcd;
 
   double d_lat[AIRSPACE_SCANSIZE_X];
@@ -1429,6 +1437,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   POINT ground[4];
   HPEN   hpHorizonGround;
   HBRUSH hbHorizonGround;
+  int itemp;
   hpHorizonGround = (HPEN)CreatePen(PS_SOLID, IBLSCALE(1), 
                                     GROUND_COLOUR);
   hbHorizonGround = (HBRUSH)CreateSolidBrush(GROUND_COLOUR);
@@ -1441,20 +1450,23 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
     ground[2].x = iround(j*dx)+x0;
     ground[3].x = ground[2].x;
     ground[0].y = y0;
-    ground[1].y = iround((d_alt[j-1]-hmin)/(hmax-hmin)
-			 *(rc.top-rc.bottom+BORDER_Y))+y0;
-    ground[2].y = iround((d_alt[j]-hmin)/(hmax-hmin)
-			 *(rc.top-rc.bottom+BORDER_Y))+y0;
+    itemp = iround((d_alt[j-1]-hmin)/(hmax-hmin)*(rc.top-rc.bottom+BORDER_Y))+y0;
+    if (itemp>y0) itemp = y0;
+    ground[1].y = itemp;
+    itemp = iround((d_alt[j]-hmin)/(hmax-hmin)*(rc.top-rc.bottom+BORDER_Y))+y0;
+    if (itemp>y0) itemp = y0;
+    ground[2].y = itemp;
     ground[3].y = y0;
+    if ((ground[1].y == y0) && (ground[2].y == y0)) continue;
     Polygon(hdc, ground, 4);
   }
 
   //
   POINT line[4];
 
-  if (GPS_INFO.Speed>10.0) {
-    double t = range/GPS_INFO.Speed;
-    double gfh = (ach+CALCULATED_INFO.Average30s*t-hmin)/(hmax-hmin);
+  if (speed>10.0) {
+    double t = range/speed;
+    double gfh = (ach+calc_average30s*t-hmin)/(hmax-hmin);
     line[0].x = rc.left;
     line[0].y = (int)(fh*(rc.top-rc.bottom+BORDER_Y)+y0)-1;
     line[1].x = rc.right;
@@ -1487,6 +1499,21 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   line[3].y = line[0].y;
   Polygon(hdc, line, 4);
 
+  POINT Start;
+  POINT Arrow[5] = { {0,-11}, {-5,9}, {0,3}, {5,9}, {0,-11}};
+  Start.y = rc.top + NIBLSCALE(11); 
+  Start.x = rc.right - NIBLSCALE(11);
+
+  // Direction arrow
+  PolygonRotateShift(Arrow, 5, Start.x, Start.y, acb);
+  SelectObject(hdc, GetStockObject(WHITE_PEN));
+  SelectObject(hdc, GetStockObject(WHITE_BRUSH));
+  Polygon(hdc,Arrow,5);
+
+  SelectObject(hdc, GetStockObject(BLACK_PEN));
+  Polygon(hdc,Arrow,5);
+
+    
   DrawXLabel(hdc, rc, TEXT("D"));
   DrawYLabel(hdc, rc, TEXT("h"));
 
@@ -1581,6 +1608,14 @@ static void Update(void){
   TCHAR sTmp[1000];
   //  WndProperty *wp;
 
+  // Hide airspace heading switch button by default if not on ASP page
+  if (page != ANALYSIS_PAGE_AIRSPACE) {
+    WndButton *wb = (WndButton *)wf->FindByName(TEXT("cmdAspBear"));
+    if(wb) {
+      wb->SetVisible(false);
+    }
+  }
+  
   switch(page){
     case ANALYSIS_PAGE_BAROGRAPH:
       _stprintf(sTmp, TEXT("%s: %s"),
@@ -1867,7 +1902,17 @@ static void Update(void){
 	// LKTOKEN  _@M68_ = "Airspace" 
               gettext(TEXT("_@M68_")));
     wf->SetCaption(sTmp);
-    wInfo->SetCaption(TEXT(" "));
+    WndButton *wb = (WndButton *)wf->FindByName(TEXT("cmdAspBear"));
+    if(wb) {
+      wb->SetVisible(true);
+      if (asp_heading_task) {
+        wb->SetCaption(gettext(TEXT("_@M1287_")));                               //_@M1287_ "Heading"
+        wInfo->SetCaption(gettext(TEXT("_@M1288_")));                            //_@M1288_ "Showing towards next waypoint"
+      } else {
+        wb->SetCaption(gettext(TEXT("_@M1289_")));                               //_@M1289_ "Next WP"
+        wInfo->SetCaption(gettext(TEXT("_@M1290_")));                            //_@M1290_ "Showing towards heading"
+      }
+    }
     break;
   }
 
@@ -1987,6 +2032,11 @@ static void OnCalcClicked(WindowControl * Sender,
   Update();
 }
 
+static void OnAspBearClicked(WindowControl * Sender){
+  (void)Sender;
+    asp_heading_task = !asp_heading_task;
+    Update();
+}
 
 
 static CallBackTableEntry_t CallBackTable[]={
@@ -1994,6 +2044,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnNextClicked),
   DeclareCallBackEntry(OnPrevClicked),
   DeclareCallBackEntry(OnCalcClicked),
+  DeclareCallBackEntry(OnAspBearClicked),
   DeclareCallBackEntry(NULL)
 };
 
