@@ -1,5 +1,5 @@
 ﻿# LK8000 HUNGARIAN MESSAGES - HUN_MSG.TXT
-# UPDATED:  110321
+# UPDATED:  111031
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -1308,6 +1308,12 @@ _@M1284_ "Letiltod ezt a légteret (a program figyelmen kívül fogja hagyni)?"
 _@M1285_ "H Légtér vertikális távolsága"
 _@M1286_ "HLégtér"
 
+# airspace analysis dialog page
+_@M1287_ "RepIrány"
+_@M1288_ "Köv.FP felé nézve"
+_@M1289_ "Köv.FP"
+_@M1290_ "Repirány felé nézve"
+
 # LK info page headers, try to use the same or less number of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!
 _@M1300_ "Táv"
@@ -1626,6 +1632,7 @@ _@M1699_ "IrMulti"
 _@M1700_ "BE"
 _@M1701_ "nem!"
 
+_@M1702_ "AZ ORACLE-nek GPS JEL KELL"
 
 ############################################################
 #                  - MENU MESSAGES - 
@@ -1752,5 +1759,7 @@ _@M2114_ "Ford"
 # better not to translate this TE button!
 _@M2115_ "TEnergia"
 _@M2116_ "Topo hát-\ntérszín"
+# Auto MC thermal+final glide mode, keep max 7 chars!
+_@M2117_ "Wn+Vég"
 
 

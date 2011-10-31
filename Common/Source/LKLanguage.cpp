@@ -549,6 +549,10 @@ bool LKLoadMessages(bool fillup) {
 		#endif
 		continue;
 	}
+  #if ALPHADEBUG
+  if (fillup)
+    StartupStore(_T("... Fillup: message index %d is missing from translation\n"),inumber);
+  #endif
 	LKMessagesIndex[inumber]=mnumber;
 	LKMessages[mnumber] = (TCHAR *)malloc((wcslen(scapt)+1)*sizeof(TCHAR));
 	_tcscpy(LKMessages[mnumber],scapt);
