@@ -549,7 +549,7 @@ bool LKLoadMessages(bool fillup) {
 		#endif
 		continue;
 	}
-  #if ALPHADEBUG
+  #if TESTBENCH
   if (fillup)
     StartupStore(_T("... Fillup: message index %d is missing from translation\n"),inumber);
   #endif
