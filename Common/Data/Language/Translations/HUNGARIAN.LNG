@@ -1,7 +1,7 @@
 ﻿# Language HUNGARIAN
 # LK8000
 #
-# Author: Kalman Rozsahegyi, rkalman@hansaaut.hu
+# Author: Kalman Rozsahegyi, rkalman@lk8000.it
 #
 # Megjegyzések (Notes):
 #   - Pár technikai dolgot nem fordítottam le (mint Truewind, VisualGlide, Zoom, Orbiter, stb.)
@@ -10,7 +10,7 @@
 #     így ezek továbbra is angol nyelvűek maradtak, ha ez zavaró jelezzétek
 #   - A súgó szövegek esetében is várok javaslatokat, ha valami túl bonyolultra sikerült.
 #
-# Updated: 2011.09.22.
+# Updated: 2011.10.31.
 
 R=1
 L=HUN
