@@ -130,6 +130,7 @@ typedef enum{
 	ckUseTotalEnergy,
 	ckNotepad,
 	ckTerrainColors,
+	ckNearestAirspace,
 } CustomKeyMode_t;
 
 typedef enum{
