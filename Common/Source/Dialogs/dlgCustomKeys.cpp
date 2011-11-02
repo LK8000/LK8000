@@ -279,7 +279,7 @@ void AddConfList( DataFieldEnum* dfe) {
     dfe->addEnumText(gettext(TEXT("_@M1687_"))); // toggle optimize route
     dfe->addEnumText(gettext(TEXT("_@M1688_"))); // screen lock
     dfe->addEnumText(gettext(TEXT("_@M1689_"))); // where am I
-    dfe->addEnumText(gettext(TEXT("_@M1669_"))); // Toggle Total Energy
+    dfe->addEnumText(gettext(TEXT("_@M1666_"))); // Toggle Total Energy
     dfe->addEnumText(gettext(TEXT("_@M2063_"))); // Nodepad
     dfe->addEnumText(gettext(TEXT("_@M1693_"))); // Terrain Colors
 
