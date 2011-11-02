@@ -19,7 +19,6 @@
 #include "Process.h"
 #endif
 #include "Utils.h"
-#include "Utils2.h"
 #include "McReady.h"
 #include "Airspace.h"
 #include "AirspaceWarning.h"
@@ -54,6 +53,10 @@ using std::max;
 using std::min;
 using std::max;
 extern void CalculateMagneticVariation();
+extern int CalculateWindRotary(windrotary_s *wbuf, double iaspeed, double *wfrom, double *wspeed, int windcalctime, int wmode);
+extern double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated);
+extern void InsertLDRotary(ldrotary_s *buf, int distance, int altitude);
+extern void InsertWindRotary(windrotary_s *wbuf, double speed, double track, double altitude);
 
 //#define DEBUGTGATES	1
 //#define DEBUGATE	1
@@ -921,6 +924,8 @@ void AverageClimbRate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
 
 extern bool TargetDialogOpen;
+extern void CalculateOrbiter(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+
 
 BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {

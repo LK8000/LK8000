@@ -15,7 +15,7 @@
 ***********************************************************************/
 
 #include "StdAfx.h"
-#include "Utils.h"
+#include "externs.h"
 
 #include "windmeasurementlist.h"
 

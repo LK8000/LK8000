@@ -11,7 +11,7 @@
 
 
 extern void ComPort_StatusMessage(UINT type, const TCHAR *caption, const TCHAR *fmt, ...);
-
+extern void Cpustats(int *acc, FILETIME *a, FILETIME *b, FILETIME *c, FILETIME *d);
 
 
 DWORD WINAPI ComPort::ThreadProc(LPVOID prt)

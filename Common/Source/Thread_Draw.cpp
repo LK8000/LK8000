@@ -32,8 +32,7 @@ HANDLE MapWindow::hDrawThread;
 extern void DrawCpuStats(HDC hdc, RECT rc );
 #endif
 
-
-
+extern void Cpustats(int *acc, FILETIME *a, FILETIME *b, FILETIME *c, FILETIME *d);
 
 DWORD MapWindow::DrawThread (LPVOID lpvoid)
 {

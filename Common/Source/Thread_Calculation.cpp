@@ -25,6 +25,7 @@ void TriggerRedraws(NMEA_INFO *nmea_info, DERIVED_INFO *derived_info) {
 }
 
 
+extern void Cpustats(int *acc, FILETIME *a, FILETIME *b, FILETIME *c, FILETIME *d);
 
 DWORD CalculationThread (LPVOID lpvoid) {
 	(void)lpvoid;

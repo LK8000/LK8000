@@ -32,7 +32,6 @@
   #include "Task.h"
   #include "Statistics.h"
   #include "Dialogs.h"
-  #include "Utils2.h"
   #include "ContestMgr.h"
   #include "device.h"
   #include "Enums.h"

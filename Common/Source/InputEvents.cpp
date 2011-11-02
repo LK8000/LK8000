@@ -1539,6 +1539,9 @@ void InputEvents::eventAbortTask(const TCHAR *misc) {
   }
 }
 
+
+extern int CalculateWindRotary(windrotary_s *wbuf, double iaspeed, double *wfrom, double *wspeed, int windcalctime, int wmode);
+
 #define RESCHEDTIME 20
 //  if AUTO mode, be quiet and say nothing until successful
 void InputEvents::eventCalcWind(const TCHAR *misc) {

@@ -15,6 +15,8 @@ using std::max;
 
 extern void LatitudeToCUPString(double Latitude, TCHAR *Buffer);
 extern void LongitudeToCUPString(double Latitude, TCHAR *Buffer);
+extern void unicodetoascii(TCHAR *text, int tsize, char *atext);
+
 
 #if USETOPOMARKS
 void MarkLocation(const double lon, const double lat)

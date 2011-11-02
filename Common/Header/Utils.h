@@ -272,6 +272,7 @@ void rotate(double &xin, double &yin, const double &angle);
 void frotate(float &xin, float &yin, const float &angle);
 void rotatescale(double &xin, double &yin, const double &angle, const double &scale);
 void frotatescale(float &xin, float &yin, const float &angle, const float &scale);
+int  roundupdivision(int a, int b);
 
 void DistanceBearing(double lat1, double lon1, double lat2, double lon2,
                      double *Distance, double *Bearing);
@@ -552,5 +553,18 @@ void ExtTextOutClip(HDC hDC, int x, int y, TCHAR *text, int width);
 void UpdateConfBB(void);
 void UpdateConfIP(void);
 void SetInitialModeTypes(void);
+
+bool	InitLDRotary(ldrotary_s *buf);
+void	InitWindRotary(windrotary_s *wbuf);
+
+void	SetOverColorRef();
+TCHAR*  GetSizeSuffix(void);
+void	LKRunStartEnd(bool);
+
+bool	LockMode(short lmode);
+double	GetMacCready(int wpindex, short wpmode);
+
+extern bool CheckClubVersion(void);
+extern void ClubForbiddenMsg(void);
 
 #endif

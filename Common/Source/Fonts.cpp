@@ -13,6 +13,29 @@
 #include "lk8000.h"
 
 
+#define CLEARTYPE_COMPAT_QUALITY 	6
+int GetFontRenderer() { 
+
+  switch(FontRenderer) {
+	case 0:
+		return CLEARTYPE_COMPAT_QUALITY;
+		break;
+	case 1:
+		return ANTIALIASED_QUALITY;
+		break;
+	case 2:
+		return DEFAULT_QUALITY;
+		break;
+	case 3:
+		return NONANTIALIASED_QUALITY;
+		break;
+	default:
+		return CLEARTYPE_COMPAT_QUALITY;
+		break;
+  }
+}
+
+
 void ApplyClearType(LOGFONT *logfont) {
 
   // this has to be checked on PPC and old 2002 CE devices: using ANTIALIASED quality could be better
@@ -398,28 +421,6 @@ void propGetFontSettings(TCHAR *Name, LOGFONT* lplf) {
 
   if (GetRegistryString(Name, Buffer, sizeof(Buffer)/sizeof(TCHAR)) == 0) {
     propGetFontSettingsFromString(Buffer, lplf);
-  }
-}
-
-#define CLEARTYPE_COMPAT_QUALITY 	6
-int GetFontRenderer() { 
-
-  switch(FontRenderer) {
-	case 0:
-		return CLEARTYPE_COMPAT_QUALITY;
-		break;
-	case 1:
-		return ANTIALIASED_QUALITY;
-		break;
-	case 2:
-		return DEFAULT_QUALITY;
-		break;
-	case 3:
-		return NONANTIALIASED_QUALITY;
-		break;
-	default:
-		return CLEARTYPE_COMPAT_QUALITY;
-		break;
   }
 }
 
