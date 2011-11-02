@@ -1653,7 +1653,41 @@ _@M1699_ "BrgMtg"
 _@M1700_ "ON"
 _@M1701_ "no"
 
+# dialogs for The Oracle
 _@M1702_ "ORACLE WANTS GPS FIX"
+_@M1703_ "North"
+_@M1704_ "North-East"
+_@M1705- "East"
+_@M1706_ "South-East"
+_@M1707_ "South"
+_@M1708_ "South-West"
+_@M1709_ "West"
+_@M1710_ "North-West"
+# 3km south-west of ..
+_@M1711_ "of"
+_@M1712_ "Near"
+_@M1713_ "Over"
+_@M1714_ "the city"
+# 2km South of the city
+_@M1715_ "of the city"
+_@M1716_ "Over the city"
+# over the city and (lake)
+_@M1717_ "and"
+# 2km south of city , over (lake)
+_@M1718_ "over"
+_@M1719_ "near to"
+# grass airport, small airport
+_@M1720_ "the airfield of"
+# outlanding field, not an airport/airfield
+_@M1721_ "the field of"
+_@M1722_ "the airport of"
+_@M1723_ "Near to"
+_@M1724_ "YOUR POSITION:"
+_@M1725_ "VERY SORRY"
+_@M1726_ "YOUR POSITION IS UNKNOWN!"
+# 1727-1739 reserved for The Oracle
+# next available is 1740
+
 
 ############################################################
 #                  - MENU MESSAGES - 

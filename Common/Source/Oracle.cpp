@@ -14,20 +14,20 @@
 
 TCHAR *DegreesToText(double brg) {
   static TCHAR sDeg[3];
-  if (brg<23||brg>=338) {; _tcscpy(sDeg,_T("North")); return(sDeg); }
-  if (brg<68) {; _tcscpy(sDeg,_T("North-East")); return(sDeg); }
-  if (brg<113) {; _tcscpy(sDeg,_T("East")); return(sDeg); }
-  if (brg<158) {; _tcscpy(sDeg,_T("South-East")); return(sDeg); }
-  if (brg<203) {; _tcscpy(sDeg,_T("South")); return(sDeg); }
-  if (brg<248) {; _tcscpy(sDeg,_T("South-West")); return(sDeg); }
-  if (brg<293) {; _tcscpy(sDeg,_T("West")); return(sDeg); }
-  if (brg<338) {; _tcscpy(sDeg,_T("North-West")); return(sDeg); }
+  if (brg<23||brg>=338) {; _tcscpy(sDeg,gettext(_T("_@M1703_"))); return(sDeg); } // North
+  if (brg<68)  {; _tcscpy(sDeg,gettext(_T("_@M1704_"))); return(sDeg); }	// North-East
+  if (brg<113) {; _tcscpy(sDeg,gettext(_T("_@M1705_"))); return(sDeg); }	// East
+  if (brg<158) {; _tcscpy(sDeg,gettext(_T("_@M1706_"))); return(sDeg); }	// South-East
+  if (brg<203) {; _tcscpy(sDeg,gettext(_T("_@M1707_"))); return(sDeg); }	// South
+  if (brg<248) {; _tcscpy(sDeg,gettext(_T("_@M1708_"))); return(sDeg); }	// South-West
+  if (brg<293) {; _tcscpy(sDeg,gettext(_T("_@M1709_"))); return(sDeg); }	// West
+  if (brg<338) {; _tcscpy(sDeg,gettext(_T("_@M1710_"))); return(sDeg); }	// North-West
 
   return(_T("??"));
 
 }
 
-#if 0 // this is confusing 
+#if 0 // this is confusing , no translation, unused
 TCHAR *AltDiffToText(double youralt, double wpalt) {
   static TCHAR sAdiff[20];
 
@@ -79,17 +79,17 @@ TCHAR *OracleFormatDistance(TCHAR *name,TCHAR *ntype,const double dist,const dou
   // 5km west of  the city <abcd>
   if (dist>dist_near) {
 	_stprintf(ttmp,_T("%.0f %s %s %s %s <%s>"), 
-		dist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg), _T("of"),ntype,name);
+		dist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg), gettext(_T("_@M1711_")),ntype,name); // of
 	return ttmp;
   }
 
   // near 
   if (dist>dist_over) {
-	_stprintf(ttmp,_T("%s %s <%s>"),_T("Near"), ntype,name);
+	_stprintf(ttmp,_T("%s %s <%s>"),gettext(_T("_@M1712_")), ntype,name); // Near
 	return ttmp;
   }
 
-  _stprintf(ttmp,_T("%s %s <%s>"),_T("Over"), ntype,name);
+  _stprintf(ttmp,_T("%s %s <%s>"),gettext(_T("_@M1713_")), ntype,name); // Over
   return ttmp;
 
 }
@@ -124,10 +124,11 @@ void WhereAmI(void) {
   #endif
 
 
-  _stprintf(toracle,_T("%s\n\n"), _T("YOUR POSITION:"));
+  _stprintf(toracle,_T("%s\n\n"), gettext(_T("_@M1724_"))); // YOUR POSITION:
 
   if (NearestBigCity.Valid) {
-	_tcscat(toracle, OracleFormatDistance(NearestBigCity.Name,_T("the city"), NearestBigCity.Distance, NearestBigCity.Bearing,0));
+	_tcscat(toracle, OracleFormatDistance(NearestBigCity.Name,gettext(_T("_@M1714_")), 
+		NearestBigCity.Distance, NearestBigCity.Bearing,0));	// the city
 	_tcscat(toracle, _T("\n"));
   }
 
@@ -154,14 +155,15 @@ void WhereAmI(void) {
 		//
 		// 2km South of city
 		//
-		_stprintf(ttmp,_T("%.0f %s %s %s "), dist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg),_T("of the city"));
+		_stprintf(ttmp,_T("%.0f %s %s %s "), dist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg),
+			gettext(_T("_@M1715_")));	// of the city
 		_tcscat(toracle,ttmp);
 
 	  } else {
 		//
 		//  Over city
 		//
-  		_stprintf(ttmp,_T("%s "),_T("Over the city"));
+  		_stprintf(ttmp,_T("%s "),gettext(_T("_@M1716_"))); // Over the city
  		 _tcscat(toracle,ttmp);
 		over=true;
 	  }
@@ -180,7 +182,7 @@ void WhereAmI(void) {
 				//
 				// Over city and lake
 				//
-	 			_stprintf(ttmp,_T(" %s %s"), _T("and"),NearestWaterArea.Name);
+	 			_stprintf(ttmp,_T(" %s %s"), gettext(_T("_@M1717_")),NearestWaterArea.Name); // and
 	 			_tcscat(toracle,ttmp);
 				saynear=true;
 			} else {
@@ -188,7 +190,7 @@ void WhereAmI(void) {
 				// 2km South of city 
 				// over lake
 				//
-	 			_stprintf(ttmp,_T("\n%s %s"), _T("over"),NearestWaterArea.Name);
+	 			_stprintf(ttmp,_T("\n%s %s"), gettext(_T("_@M1718_")),NearestWaterArea.Name); // over
 	 			_tcscat(toracle,ttmp);
 				saynear=true;
 			}
@@ -199,14 +201,14 @@ void WhereAmI(void) {
 					// Over city 
 					// near lake
 					//
-	 				_stprintf(ttmp,_T("\n%s %s"), _T("near to"),NearestWaterArea.Name);
+	 				_stprintf(ttmp,_T("\n%s %s"), gettext(_T("_@M1719_")),NearestWaterArea.Name); // near to
 	 				_tcscat(toracle,ttmp);
 				} else {
 					//
 					// 2km South of city
 					// near lake
 					//
-	 				_stprintf(ttmp,_T("\n%s %s"), _T("over"),NearestWaterArea.Name);
+	 				_stprintf(ttmp,_T("\n%s %s"), gettext(_T("_@M1718_")),NearestWaterArea.Name); // over
 	 				_tcscat(toracle,ttmp);
 				}
 			}
@@ -220,13 +222,13 @@ void WhereAmI(void) {
 			// 
 			_stprintf(ttmp,_T("%.0f %s %s "), NearestWaterArea.Distance*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg));
 			_tcscat(toracle,ttmp);
-		 	_stprintf(ttmp,_T("%s <%s>"), _T("of"),NearestWaterArea.Name);
+		 	_stprintf(ttmp,_T("%s <%s>"), gettext(_T("_@M1711_")),NearestWaterArea.Name); // of
  			_tcscat(toracle,ttmp);
 		} else {
 			//
 			// Over lake
 			// 
- 			_stprintf(ttmp,_T("%s <%s>"), _T("over"),NearestWaterArea.Name);
+ 			_stprintf(ttmp,_T("%s <%s>"), gettext(_T("_@M1718_")),NearestWaterArea.Name); // over
  			_tcscat(toracle,ttmp);
 			over=true;
 		}
@@ -252,14 +254,14 @@ _dowp:
   switch(WayPointList[j].Style) {
 	case 2:
 	case 4:
- 		_stprintf(wptype,_T("%s "), _T("the airfield of"));
+ 		_stprintf(wptype,_T("%s "), gettext(_T("_@M1720_")));	// the airfield of
 		break;
 	case 3:
- 		_stprintf(wptype,_T("%s "), _T("the field of"));
+ 		_stprintf(wptype,_T("%s "), gettext(_T("_@M1721_")));	// the field of
 		needmorewp=true;
 		break;
 	case 5:
- 		_stprintf(wptype,_T("%s "), _T("the airport of"));
+ 		_stprintf(wptype,_T("%s "), gettext(_T("_@M1722_")));	// the airport of
 		break;
 	default:
 		_tcscpy(wptype,_T(""));
@@ -269,10 +271,10 @@ _dowp:
 
   if ( (_tcslen(wptype)==0) && WayPointCalc[j].IsLandable) {
 	if (WayPointCalc[j].IsAirport)  {
- 		 _stprintf(wptype,_T("%s "), _T("the airfield of"));
+ 		 _stprintf(wptype,_T("%s "), gettext(_T("_@M1720_")));	// the airfield of
 		needmorewp=false;
 	} else {
- 		 _stprintf(wptype,_T("%s "), _T("the field of"));
+ 		 _stprintf(wptype,_T("%s "), gettext(_T("_@M1721_")));	// the field of
 		needmorewp=true;
 	}
   } else {
@@ -291,7 +293,7 @@ _dowp:
 	_stprintf(ttmp,_T("\n%.0f %s %s "), wpdist*DISTANCEMODIFY, Units::GetDistanceName(), DegreesToText(brg));
 	_tcscat(toracle,ttmp);
 
- 	 _stprintf(ttmp,_T("%s %s<%s>"), _T("of"),wptype,WayPointList[j].Name);
+ 	 _stprintf(ttmp,_T("%s %s<%s>"), gettext(_T("_@M1711_")),wptype,WayPointList[j].Name); // of
  	 _tcscat(toracle,ttmp);
 
   } else {
@@ -306,24 +308,24 @@ _dowp:
 				// Over city and lake
 				// near waypoint
 
-	 			_stprintf(ttmp,_T("\n%s %s<%s>"), _T("near to"),wptype,WayPointList[j].Name);
+	 			_stprintf(ttmp,_T("\n%s %s<%s>"), gettext(_T("_@M1719_")),wptype,WayPointList[j].Name); // near to
 	 			_tcscat(toracle,ttmp);
 			} else {
 				// Over city 
 				// near lake and waypoint
 
-	 			_stprintf(ttmp,_T(" %s %s<%s>"), _T("and"),wptype,WayPointList[j].Name);
+	 			_stprintf(ttmp,_T(" %s %s<%s>"), gettext(_T("_@M1717_")),wptype,WayPointList[j].Name); // and
 	 			_tcscat(toracle,ttmp);
 			}
 		} else {
- 			_stprintf(ttmp,_T("\n%s %s<%s>"), _T("near to"),wptype,WayPointList[j].Name);
+ 			_stprintf(ttmp,_T("\n%s %s<%s>"), gettext(_T("_@M1719_")),wptype,WayPointList[j].Name); // near to
  			_tcscat(toracle,ttmp);
 		}
 	} else {
 		//
 		// Near waypoint (because "over" could be wrong, we have altitudes in wp!)
 		// 
- 		_stprintf(ttmp,_T("%s %s<%s>"), _T("Near to"),wptype,WayPointList[j].Name);
+ 		_stprintf(ttmp,_T("%s %s<%s>"), gettext(_T("_@M1723_")),wptype,WayPointList[j].Name); // Near to
  		_tcscat(toracle,ttmp);
 	}
   }
@@ -338,8 +340,8 @@ _dowp:
 
 
 _end:
-
-  if (!found) wsprintf(toracle,_T("%s"), _T("\n\nVERY SORRY\n\nYOUR POSITION IS UNKNOWN!"));
+  // VERY SORRY - YOUR POSITION IS UNKNOWN!
+  if (!found) wsprintf(toracle,_T("\n\n%s\n\n%s"), gettext(_T("_@M1725_")),gettext(_T("_@M1726_")));
 
   ConvToUpper(toracle);
   MessageBoxX(hWndMainWindow, toracle, gettext(_T("_@M1690_")), MB_OK|MB_ICONQUESTION, true);
