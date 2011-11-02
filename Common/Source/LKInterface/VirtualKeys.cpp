@@ -8,7 +8,7 @@
 */
 
 #include "externs.h"
-
+#include "LKInterface.h"
 #ifdef PNA
 #include "LKHolux.h"
 #include "LKRoyaltek3200.h"

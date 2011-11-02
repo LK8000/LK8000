@@ -6,6 +6,7 @@
    $Id: lk8000.cpp,v 1.1 2010/12/15 11:30:56 root Exp root $
 */
 #include "externs.h"
+#include "LKInterface.h"
 #include "resource.h"
 #include "buildnumber.h"
 #include "Waypointparser.h"

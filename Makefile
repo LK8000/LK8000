@@ -8,6 +8,7 @@ MAP=Common/Source/MapDraw
 TOP=Common/Source/Topology
 SHP=Common/Source/Topology/shapelib
 TER=Common/Source/Terrain
+NTR=Common/Source/LKInterface
 HDR=Common/Header
 
 BIN=Bin/$(TARGET)
@@ -295,6 +296,13 @@ LIBRARY	:=\
 	$(LIB)/Utm.cpp \
 	$(LIB)/xmlParser.cpp \
 
+LKINTER	:=\
+	$(NTR)/LKCustomKeyHandler.cpp\
+	$(NTR)/LKInit.cpp\
+	$(NTR)/LKInterface.cpp \
+	$(NTR)/OverTargets.cpp\
+	$(NTR)/VirtualKeys.cpp\
+
 DRAW	:=\
 	$(DRW)/DrawAirSpaces.cpp \
 	$(DRW)/DrawAirspaceLabels.cpp \
@@ -430,17 +438,16 @@ SRC_FILES :=\
 	$(SRC)/lk8000.cpp		$(SRC)/Progress.cpp\
 	$(SRC)/InputEvents.cpp 		\
 	$(SRC)/LKInstall.cpp 		$(SRC)/Models.cpp\
-	$(SRC)/Backlight.cpp 		$(SRC)/LKInit.cpp\
+	$(SRC)/Backlight.cpp 		\
 	$(SRC)/StatusFile.cpp \
 	$(SRC)/CommandLine.cpp \
 	$(SRC)/CpuLoad.cpp \
 	$(SRC)/Memory.cpp \
 	$(SRC)/Sound.cpp \
 	$(SRC)/Oracle.cpp		$(SRC)/Alarms.cpp\
-	$(SRC)/LKInterface.cpp		$(SRC)/LocalPath.cpp\
+	$(SRC)/LocalPath.cpp\
 	$(SRC)/LKFonts.cpp		$(SRC)/LDRotaryBuffer.cpp\
-	$(SRC)/TrueWind.cpp		$(SRC)/OverTargets.cpp\
-	$(SRC)/VirtualKeys.cpp\
+	$(SRC)/TrueWind.cpp		\
 	$(SRC)/Thread_Draw.cpp		$(SRC)/Thread_Port.cpp\
 	$(SRC)/WndProc.cpp		$(SRC)/InitFunctions.cpp\
 	$(SRC)/Settings.cpp		$(SRC)/Thread_Calculation.cpp\
@@ -478,12 +485,12 @@ SRC_FILES :=\
 	$(SRC)/windstore.cpp 		$(SRC)/WindowControls.cpp \
 	$(SRC)/WindZigZag.cpp 		\
 	$(SRC)/ContestMgr.cpp 		$(SRC)/Trace.cpp \
-	\
 	$(SHP)/mapbits.cpp \
 	$(SHP)/maperror.cpp 		$(SHP)/mapprimitive.cpp \
 	$(SHP)/mapsearch.cpp		$(SHP)/mapshape.cpp \
 	$(SHP)/maptree.cpp              $(SHP)/mapxbase.cpp \
 	\
+	$(LKINTER) \
 	$(LIBRARY) \
 	$(DRAW) \
 	$(TERRAIN) \

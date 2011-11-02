@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "LKInterface.h"
 #include <aygshell.h>
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"

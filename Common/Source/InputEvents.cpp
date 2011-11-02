@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "InputEvents.h"
+#include "LKInterface.h"
 #include "Terrain.h"
 
 #include <commctrl.h>

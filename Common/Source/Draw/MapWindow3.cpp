@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "LKInterface.h"
 #include "McReady.h"
 #include "MapWindow.h"
 #include "InfoBoxLayout.h"

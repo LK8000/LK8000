@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-
+#include "LKInterface.h"
 #include "MapWindow.h"
 #include "Utils.h"
 #include "Logger.h"
