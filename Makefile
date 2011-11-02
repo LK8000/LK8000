@@ -9,6 +9,7 @@ TOP=Common/Source/Topology
 SHP=Common/Source/Topology/shapelib
 TER=Common/Source/Terrain
 NTR=Common/Source/LKInterface
+CLC=Common/Source/Calc
 HDR=Common/Header
 
 BIN=Bin/$(TARGET)
@@ -323,6 +324,25 @@ DRAW	:=\
 	$(DRW)/MapWindowZoom.cpp \
 	$(DRW)/MapWindowMode.cpp \
 
+CALC	:=\
+	$(CLC)/Calculations.cpp \
+ 	$(CLC)/Calculations2.cpp \
+	$(CLC)/ClimbAverageCalculator.cpp\
+	$(CLC)/ContestMgr.cpp\
+	$(CLC)/FlarmCalculations.cpp \
+	$(CLC)/LDRotaryBuffer.cpp\
+	$(CLC)/LKBestAlternate.cpp	\
+	$(CLC)/LKCalculations.cpp \
+	$(CLC)/McReady.cpp\
+	$(CLC)/Task.cpp			\
+	$(CLC)/TeamCodeCalculation.cpp \
+	$(CLC)/ThermalLocator.cpp \
+	$(CLC)/Trace.cpp \
+	$(CLC)/windanalyser.cpp\
+	$(CLC)/windmeasurementlist.cpp \
+	$(CLC)/windstore.cpp 	\
+	$(CLC)/WindZigZag.cpp 	\
+
 TERRAIN	:=\
 	$(TER)/Cache.cpp	\
 	$(TER)/JP2.cpp	\
@@ -446,7 +466,7 @@ SRC_FILES :=\
 	$(SRC)/Sound.cpp \
 	$(SRC)/Oracle.cpp		$(SRC)/Alarms.cpp\
 	$(SRC)/LocalPath.cpp\
-	$(SRC)/LKFonts.cpp		$(SRC)/LDRotaryBuffer.cpp\
+	$(SRC)/LKFonts.cpp		\
 	$(SRC)/TrueWind.cpp		\
 	$(SRC)/Thread_Draw.cpp		$(SRC)/Thread_Port.cpp\
 	$(SRC)/WndProc.cpp		$(SRC)/InitFunctions.cpp\
@@ -462,29 +482,21 @@ SRC_FILES :=\
 	$(SRC)/AATDistance.cpp 		$(SRC)/AirfieldDetails.cpp \
 	$(SRC)/Airspace.cpp 		\
 	$(SRC)/Atmosphere.cpp 		\
-	$(SRC)/Calculations.cpp 	$(SRC)/Calculations2.cpp \
-	$(SRC)/ClimbAverageCalculator.cpp $(SRC)/LKCalculations.cpp \
 	$(SRC)/ConditionMonitor.cpp 	$(SRC)/device.cpp \
 	$(SRC)/Dialogs.cpp 		$(SRC)/LKProcess.cpp \
-	$(SRC)/FlarmIdFile.cpp 		$(SRC)/FlarmCalculations.cpp \
+	$(SRC)/FlarmIdFile.cpp 		\
 	$(SRC)/Geoid.cpp \
 	$(SRC)/Buttons.cpp \
 	$(SRC)/Logger.cpp 		\
 	$(SRC)/LKSimulator.cpp\
-	$(SRC)/LKBestAlternate.cpp	\
-	$(SRC)/McReady.cpp 		$(SRC)/Message.cpp \
+	$(SRC)/Message.cpp \
 	$(SRC)/Parser.cpp		$(SRC)/Port.cpp \
-	$(SRC)/Task.cpp			$(SRC)/TeamCodeCalculation.cpp \
-	$(SRC)/ThermalLocator.cpp \
 	$(SRC)/units.cpp \
 	$(SRC)/Utils.cpp		\
 	$(SRC)/LKObjects.cpp \
 	$(SRC)/Waypointparser.cpp  	$(SRC)/LKUtils.cpp \
 	$(SRC)/LKLanguage.cpp		\
-	$(SRC)/windanalyser.cpp		$(SRC)/windmeasurementlist.cpp \
-	$(SRC)/windstore.cpp 		$(SRC)/WindowControls.cpp \
-	$(SRC)/WindZigZag.cpp 		\
-	$(SRC)/ContestMgr.cpp 		$(SRC)/Trace.cpp \
+	$(SRC)/WindowControls.cpp \
 	$(SHP)/mapbits.cpp \
 	$(SHP)/maperror.cpp 		$(SHP)/mapprimitive.cpp \
 	$(SHP)/mapsearch.cpp		$(SHP)/mapshape.cpp \
@@ -493,6 +505,7 @@ SRC_FILES :=\
 	$(LKINTER) \
 	$(LIBRARY) \
 	$(DRAW) \
+	$(CALC) \
 	$(TERRAIN) \
 	$(TOPOL) \
 	$(MAPDRAW) \
