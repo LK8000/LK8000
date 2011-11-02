@@ -753,7 +753,7 @@ _@M722_ "Toggle Map<>Commons"
 _@M723_ "Toggle Map<>Landables"
 _@M724_ "Toggle Map<>Traffic"
 _@M725_ "Toggle Map<>current page"
-_@M726_ "Toggle overlays"
+_@M726_ "Overlays toggle"
 _@M727_ "Too many waypoints in task!"
 _@M728_ "Top Screen"
 _@M729_ "Top"
@@ -1594,7 +1594,7 @@ _@M1663_ "NOT ENOUGH MEMORY"
 _@M1666_ "TotalEnergy toggle"
 _@M1667_ "TOTAL ENERGY IN USE!"
 _@M1668_ "TOTAL ENERGY OFF"
-_@M1669_ "Use TotalEnergy"
+_@M1669_ "Use TotalEnergy "
 
 # Header Thermal History keep short!
 _@M1670_ "THR"
@@ -1623,7 +1623,7 @@ _@M1685_ "Both Final+Average"
 
 # Optimized routes for paraglider
 _@M1686_ "Optimized route "
-_@M1687_ "Toggle Optimize Route"
+_@M1687_ "Optimized route toggle"
 
 # Customkey name
 _@M1688_ "Screen Lock"
