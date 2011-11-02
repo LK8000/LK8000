@@ -1594,8 +1594,7 @@ _@M1663_ "NOT ENOUGH MEMORY"
 _@M1666_ "TotalEnergy toggle"
 _@M1667_ "TOTAL ENERGY IN USE!"
 _@M1668_ "TOTAL ENERGY OFF"
-#free
-_@M1669_ ""
+_@M1669_ "Use TotalEnergy"
 
 # Header Thermal History keep short!
 _@M1670_ "THR"
