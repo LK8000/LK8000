@@ -325,6 +325,8 @@ DRAW	:=\
 	$(DRW)/MapWindowMode.cpp \
 
 CALC	:=\
+	$(CLC)/AATDistance.cpp 		\
+	$(CLC)/Atmosphere.cpp 		\
 	$(CLC)/Calculations.cpp \
  	$(CLC)/Calculations2.cpp \
 	$(CLC)/ClimbAverageCalculator.cpp\
@@ -479,9 +481,8 @@ SRC_FILES :=\
 	$(SRC)/ExpandMacros.cpp		$(SRC)/Battery.cpp \
 	$(SRC)/Globals.cpp		$(SRC)/DataOptions.cpp \
 	$(SRC)/LKAirspace.cpp		$(SRC)/Bitmaps.cpp \
-	$(SRC)/AATDistance.cpp 		$(SRC)/AirfieldDetails.cpp \
+	$(SRC)/AirfieldDetails.cpp \
 	$(SRC)/Airspace.cpp 		\
-	$(SRC)/Atmosphere.cpp 		\
 	$(SRC)/ConditionMonitor.cpp 	$(SRC)/device.cpp \
 	$(SRC)/Dialogs.cpp 		$(SRC)/LKProcess.cpp \
 	$(SRC)/FlarmIdFile.cpp 		\
