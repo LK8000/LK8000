@@ -12,6 +12,7 @@
 #include "dlgTools.h"
 #include "Atmosphere.h"
 #include "RasterTerrain.h"
+#include "LKInterface.h"
 
 
 using std::min;
@@ -187,6 +188,12 @@ void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
 			    l1, 
 			    l2, 
 			    RGB(0x60,0x60,0x60), rc);    
+    break;
+  case STYLE_WHITETHICK:
+    MapWindow::DrawDashLine(hdc, 3, 
+          l1, 
+          l2, 
+          RGB(255,255,255), rc);
     break;
 
   default:
@@ -1346,16 +1353,34 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   double range = 50.0*1000; // km
   double aclat, aclon, ach, acb, alt, speed, calc_average30s;
   double fi, fj;
+  double wpt_dist;
+  int overindex=-1;
   
   LockFlightData();
   aclat = GPS_INFO.Latitude;
   aclon = GPS_INFO.Longitude;
   ach = GPS_INFO.Altitude;
-  if (asp_heading_task) acb = CALCULATED_INFO.WaypointBearing; else acb = GPS_INFO.TrackBearing;
+  acb = GPS_INFO.TrackBearing;
   alt = GPS_INFO.Altitude;
   speed = GPS_INFO.Speed;
   calc_average30s = CALCULATED_INFO.Average30s;
   UnlockFlightData();
+
+  overindex=GetOvertargetIndex();
+  wpt_dist = 0.0;
+  if (asp_heading_task) {
+    // Show towards target
+    if (overindex>=0) {
+      double wptlon = WayPointList[overindex].Longitude;
+      double wptlat = WayPointList[overindex].Latitude;
+      DistanceBearing(aclat, aclon, wptlat, wptlon, &wpt_dist, &acb);
+      range = max(10.0*1000.0, wpt_dist*1.1);   // 10% more distance to show, minimum 10km
+    } else {
+      // no selected target
+      DrawNoData(hdc, rc);
+      return;
+    }
+  }
   
   double hmin = max(0.0, alt-2300);
   double hmax = max(3300.0, alt+1000);
@@ -1433,6 +1458,19 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
       }
     }
   }
+
+  //
+  POINT line[4];
+
+  // draw target symbolic line
+  if (asp_heading_task) {
+    line[0].x = x0 + ((rc.right - rc.left) / range) * wpt_dist;
+    line[0].y = y0;
+    line[1].x = line[0].x;
+    line[1].y = rc.top;
+    StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
+  }
+  
   // draw ground
   POINT ground[4];
   HPEN   hpHorizonGround;
@@ -1461,8 +1499,6 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
     Polygon(hdc, ground, 4);
   }
 
-  //
-  POINT line[4];
 
   if (speed>10.0) {
     double t = range/speed;
@@ -1907,7 +1943,14 @@ static void Update(void){
       wb->SetVisible(true);
       if (asp_heading_task) {
         wb->SetCaption(gettext(TEXT("_@M1287_")));                               //_@M1287_ "Heading"
-        wInfo->SetCaption(gettext(TEXT("_@M1288_")));                            //_@M1288_ "Showing towards next waypoint"
+        int overindex = GetOvertargetIndex();
+        if (overindex>=0) {
+          _stprintf(sTmp, TEXT("%s: %s"), gettext(TEXT("_@M1288_")), WayPointList[overindex].Name);                //_@M1288_ "Showing towards next waypoint"
+          wInfo->SetCaption(sTmp);
+        } else {
+          _stprintf(sTmp, TEXT("%s: %s"), gettext(TEXT("_@M1288_")), gettext(TEXT("_@M479_")));                    //_@M1288_ "Showing towards next waypoint"  _@M479_ "None"
+          wInfo->SetCaption(sTmp);
+        }
       } else {
         wb->SetCaption(gettext(TEXT("_@M1289_")));                               //_@M1289_ "Next WP"
         wInfo->SetCaption(gettext(TEXT("_@M1290_")));                            //_@M1290_ "Showing towards heading"
