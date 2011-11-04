@@ -72,6 +72,9 @@ LRESULT CALLBACK WndProc (HWND, UINT, WPARAM, LPARAM);
 extern void CreateCalculationThread();
 extern void StartupLogFreeRamAndStorage();
 extern void PreloadInitialisation(bool ask);
+#ifdef PNA
+extern bool LoadModelFromProfile(void);
+#endif
 
 #if (((UNDER_CE >= 300)||(_WIN32_WCE >= 0x0300)) && (WINDOWSPC<1))
 #define HAVE_ACTIVATE_INFO
