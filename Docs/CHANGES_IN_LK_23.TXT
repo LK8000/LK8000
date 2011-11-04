@@ -2,6 +2,31 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3l November 4, 2011
+-----------------------------
+
+NEW
+
+. Analysis airspace page allows now to switch beetween heading and next wp bearing.
+. New customkey "Nearest airspace"
+
+. Oracle's dialogs can be translated
+
+CHANGES
+
+. Improve dlgStatistics airspace page altitude resolution to 100m
+  Limit Y axis range to 3300m in every case.
+
+
+
+FIXES
+
+. Fix dlgStatistics airspace page ground surface drawing - limit terrain alt to diagram lowest point
+
+
+
+
+
 Version 2.3k October 28, 2011
 -----------------------------
 
