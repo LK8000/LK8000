@@ -12,6 +12,7 @@
 #include "Modeltype.h"
 
 #if NEWPROFILES
+#include "LKProfiles.h"
 
 // Set default registry values
 // Open profile, read line, parse line and compare with list

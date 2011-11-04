@@ -17,6 +17,11 @@
 #include <wingdi.h>
 #endif
 
+#if NEWPROFILES
+#define STATIC_GPROFILES
+#include "LKProfiles.h"
+#endif
+
 //
 // Default globals are NOT necessarily default settings.
 // We had to give them an initialization, but real init
