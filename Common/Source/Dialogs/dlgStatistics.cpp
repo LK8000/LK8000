@@ -1374,7 +1374,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
       double wptlon = WayPointList[overindex].Longitude;
       double wptlat = WayPointList[overindex].Latitude;
       DistanceBearing(aclat, aclon, wptlat, wptlon, &wpt_dist, &acb);
-      range = max(10.0*1000.0, wpt_dist*1.1);   // 10% more distance to show, minimum 10km
+      range = max(5.0*1000.0, wpt_dist*1.1);   // 10% more distance to show, minimum 5km
     } else {
       // no selected target
       DrawNoData(hdc, rc);
@@ -1514,9 +1514,17 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   SelectObject(hdc, GetStockObject(WHITE_BRUSH));
   SetTextColor(hdc, RGB(0xff,0xff,0xff));
 
+  double xtick = 1.0;
+  if (range>10.0*1000.0) xtick = 5.0;
+  if (range>50.0*1000.0) xtick = 10.0;
+  if (range>100.0*1000.0) xtick = 20.0;
+  if (range>200.0*1000.0) xtick = 25.0;
+  if (range>250.0*1000.0) xtick = 50.0;
+  if (range>500.0*1000.0) xtick = 100.0;
+  
   DrawXGrid(hdc, rc, 
-            5.0/DISTANCEMODIFY, 0,
-            STYLE_THINDASHPAPER, 5.0, true);
+            xtick/DISTANCEMODIFY, 0,
+            STYLE_THINDASHPAPER, xtick, true);
   DrawYGrid(hdc, rc, 1000.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER,
             1000.0, true);
 
