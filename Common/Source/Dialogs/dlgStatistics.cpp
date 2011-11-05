@@ -13,7 +13,7 @@
 #include "Atmosphere.h"
 #include "RasterTerrain.h"
 #include "LKInterface.h"
-
+#include "RGB.h"
 
 using std::min;
 using std::max;
@@ -1354,6 +1354,8 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   double aclat, aclon, ach, acb, alt, speed, calc_average30s;
   double fi, fj;
   double wpt_dist;
+  double wpt_altarriv;
+  double wpt_altitude;
   int overindex=-1;
   
   LockFlightData();
@@ -1368,13 +1370,17 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
 
   overindex=GetOvertargetIndex();
   wpt_dist = 0.0;
+  wpt_altarriv = 0.0;
+  wpt_altitude = 0.0;
   if (asp_heading_task) {
     // Show towards target
     if (overindex>=0) {
       double wptlon = WayPointList[overindex].Longitude;
       double wptlat = WayPointList[overindex].Latitude;
       DistanceBearing(aclat, aclon, wptlat, wptlon, &wpt_dist, &acb);
-      range = max(5.0*1000.0, wpt_dist*1.1);   // 10% more distance to show, minimum 5km
+      range = max(5.0*1000.0, wpt_dist*1.15);   // 15% more distance to show, minimum 5km
+      wpt_altarriv = WayPointCalc[overindex].AltArriv[AltArrivMode];
+      wpt_altitude = WayPointList[overindex].Altitude;
     } else {
       // no selected target
       DrawNoData(hdc, rc);
@@ -1464,7 +1470,8 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
 
   // draw target symbolic line
   if (asp_heading_task) {
-    line[0].x = x0 + ((rc.right - rc.left) / range) * wpt_dist;
+    // Mark wpt with a vertical marker line
+    line[0].x = x0 + ((rc.right - rc.left - BORDER_X) / range) * wpt_dist;
     line[0].y = y0;
     line[1].x = line[0].x;
     line[1].y = rc.top;
@@ -1500,14 +1507,29 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   }
 
 
+  // Draw estimated gliding line (blue)
   if (speed>10.0) {
-    double t = range/speed;
-    double gfh = (ach+calc_average30s*t-hmin)/(hmax-hmin);
-    line[0].x = rc.left;
-    line[0].y = (int)(fh*(rc.top-rc.bottom+BORDER_Y)+y0)-1;
-    line[1].x = rc.right;
-    line[1].y = (int)(gfh*(rc.top-rc.bottom+BORDER_Y)+y0)-1;
-    StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
+    if (asp_heading_task) {
+      // Draw gliding line to the arrival altitude, if arrivalAGL>0
+      if (wpt_altarriv > ALTDIFFLIMIT) {
+        double altarriv = wpt_altarriv + wpt_altitude;
+        if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
+        double gfh = (altarriv-hmin)/(hmax-hmin);
+        line[0].x = x0;
+        line[0].y = (int)(fh*(rc.top-rc.bottom+BORDER_Y)+y0)-1;
+        line[1].x = x0 + ((rc.right - rc.left - BORDER_X) / range) * wpt_dist;
+        line[1].y = (int)(gfh*(rc.top-rc.bottom+BORDER_Y)+y0)-1;
+        StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
+      }
+    } else {
+      double t = range/speed;
+      double gfh = (ach+calc_average30s*t-hmin)/(hmax-hmin);
+      line[0].x = x0;
+      line[0].y = (int)(fh*(rc.top-rc.bottom+BORDER_Y)+y0)-1;
+      line[1].x = rc.right;
+      line[1].y = (int)(gfh*(rc.top-rc.bottom+BORDER_Y)+y0)-1;
+      StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
+    }
   }
 
   SelectObject(hdc, GetStockObject(WHITE_PEN));
@@ -1528,6 +1550,46 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   DrawYGrid(hdc, rc, 1000.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER,
             1000.0, true);
 
+  //Draw wpt info texts
+  if (asp_heading_task) {
+    line[0].x = x0 + ((rc.right - rc.left - BORDER_X) / range) * wpt_dist;
+
+    SIZE tsize;
+    TCHAR text[80];
+    // Print wpt name next to marker line
+    _tcsncpy(text, WayPointList[overindex].Name, sizeof(text)/sizeof(text[0]));
+    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+    int x = line[0].x - tsize.cx - NIBLSCALE(5);
+    if (x<x0) x = line[0].x + NIBLSCALE(5);   // Show on right side if left not possible
+    int y = rc.top + 3*tsize.cy;
+    SetBkMode(hdc, OPAQUE);
+    SetTextColor(hdc, RGB_WHITE);
+    ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+
+    // Print wpt distance
+    Units::FormatUserDistance(wpt_dist, text, 7);
+    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+    x = line[0].x - tsize.cx - NIBLSCALE(5);
+    if (x<x0) x = line[0].x + NIBLSCALE(5);   // Show on right side if left not possible
+    y += tsize.cy;
+    ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+    
+    // Print arrival altitude
+    if (wpt_altarriv > ALTDIFFLIMIT) {
+      Units::FormatUserArrival(wpt_altarriv, text, 7);
+    } else {
+      _tcsncpy(text, TEXT("---"), sizeof(text)/sizeof(text[0]));
+    }
+    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+    x = line[0].x - tsize.cx - NIBLSCALE(5);
+    if (x<x0) x = line[0].x + NIBLSCALE(5);   // Show on right side if left not possible
+    y += tsize.cy;
+    ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+
+    SetBkMode(hdc, TRANSPARENT);
+  }
+  
+  
   // draw aircraft
   int delta;
   SelectObject(hdc, GetStockObject(WHITE_PEN));
@@ -1553,10 +1615,24 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   SelectObject(hdc, GetStockObject(WHITE_PEN));
   SelectObject(hdc, GetStockObject(WHITE_BRUSH));
   Polygon(hdc,Arrow,5);
-
   SelectObject(hdc, GetStockObject(BLACK_PEN));
   Polygon(hdc,Arrow,5);
 
+  // Print Bearing difference
+  TCHAR BufferValue[LKSIZEBUFFERVALUE];
+  TCHAR BufferUnit[LKSIZEBUFFERUNIT];
+  TCHAR BufferTitle[LKSIZEBUFFERTITLE];
+
+  if (MapWindow::LKFormatValue(LK_BRGDIFF, false, BufferValue, BufferUnit, BufferTitle)) {
+    SIZE tsize;
+    SelectObject(hdc, LK8MediumFont);
+    GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &tsize);
+    SetBkMode(hdc, OPAQUE);
+    SetTextColor(hdc, RGB_WHITE);
+    ExtTextOut(hdc, (rc.left + rc.right - tsize.cx)/2, rc.top, ETO_OPAQUE, NULL, BufferValue, _tcslen(BufferValue), NULL);
+    SetBkMode(hdc, TRANSPARENT);
+  }
+  
     
   DrawXLabel(hdc, rc, TEXT("D"));
   DrawYLabel(hdc, rc, TEXT("h"));
