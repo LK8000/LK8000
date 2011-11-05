@@ -25,7 +25,8 @@ class Statistics {
     STYLE_REDTHICK,
     STYLE_DASHGREEN,
     STYLE_MEDIUMBLACK,
-    STYLE_THINDASHPAPER
+    STYLE_THINDASHPAPER,
+    STYLE_WHITETHICK
   };
 
   LeastSquares ThermalAverage;
