@@ -68,6 +68,7 @@ void RasterTerrain::OpenTerrain(void)
 		StartupStore(_T(". Attempting to use DEM <%s> inside mapfile%s"),szFile,NEWLINE);
 	}
      #else
+     _tcscpy(szFile,szMapFile);
      _tcscat(szFile, _T("/terrain.dem")); 
      StartupStore(_T(". Attempting to use DEM <%s> inside mapfile%s"),szFile,NEWLINE);
      #endif
@@ -108,7 +109,7 @@ void RasterTerrain::OpenTerrain(void)
 	TerrainMap = NULL;
   }
   terrain_initialised = false;
-  StartupStore(_T(". No terrain file available.%s"),NEWLINE);
+  StartupStore(_T(". NO TERRAIN file available.%s"),NEWLINE);
 }
 
 
@@ -129,10 +130,10 @@ bool RasterTerrain::CreateTerrainMap(const TCHAR *zfilename) {
   if (TerrainMap->Open(zfilename)) {
     return true;
   } 
-  TerrainMap->Close();
-  delete TerrainMap;
 
   #if RASTERCACHE
+  TerrainMap->Close();
+  delete TerrainMap;
   TerrainMap = new RasterMapCache();
   if (!TerrainMap) {
     return false;

@@ -97,11 +97,13 @@ bool RasterMapRaw::Open(const TCHAR* zfilename) {
   if (_tcslen(zfilename)<=0) 
     return false;
 
-  StartupStore(_T(". Terrain Open RasterMapRaw <%s>%s"),zfilename,NEWLINE); // 100102
+  #if TESTBENCH
+  StartupStore(_T(". Terrain Open RasterMapRaw <%s>%s"),zfilename,NEWLINE);
+  #endif
 
   fpTerrain = zzip_fopen(zfilename, "rb");
   if (fpTerrain == NULL) {
-	StartupStore(_T(". Terrain RasterMapRaw Open failed%s"),NEWLINE); // 100102
+	StartupStore(_T(". Terrain RasterMapRaw Open failed%s"),NEWLINE);
 	return false;
   }
 
