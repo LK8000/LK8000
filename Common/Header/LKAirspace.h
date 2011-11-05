@@ -239,7 +239,7 @@ protected:
   static int _lastknownalt;                    // last known alt saved for calculations
   static int _lastknownagl;                    // last known agl saved for calculations
   static int _lastknownheading;                // last known heading saved for calculations
-
+  static bool _pred_blindtime;                 // disable predicted position based warnings near takeoff
 };
 
 // 

@@ -12,7 +12,8 @@
 #include "dlgTools.h"
 #include "Atmosphere.h"
 #include "RasterTerrain.h"
-
+#include "LKInterface.h"
+#include "RGB.h"
 
 using std::min;
 using std::max;
@@ -187,6 +188,12 @@ void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
 			    l1, 
 			    l2, 
 			    RGB(0x60,0x60,0x60), rc);    
+    break;
+  case STYLE_WHITETHICK:
+    MapWindow::DrawDashLine(hdc, 3, 
+          l1, 
+          l2, 
+          RGB(255,255,255), rc);
     break;
 
   default:
@@ -1346,16 +1353,40 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   double range = 50.0*1000; // km
   double aclat, aclon, ach, acb, alt, speed, calc_average30s;
   double fi, fj;
+  double wpt_dist;
+  double wpt_altarriv;
+  double wpt_altitude;
+  int overindex=-1;
   
   LockFlightData();
   aclat = GPS_INFO.Latitude;
   aclon = GPS_INFO.Longitude;
   ach = GPS_INFO.Altitude;
-  if (asp_heading_task) acb = CALCULATED_INFO.WaypointBearing; else acb = GPS_INFO.TrackBearing;
+  acb = GPS_INFO.TrackBearing;
   alt = GPS_INFO.Altitude;
   speed = GPS_INFO.Speed;
   calc_average30s = CALCULATED_INFO.Average30s;
   UnlockFlightData();
+
+  overindex=GetOvertargetIndex();
+  wpt_dist = 0.0;
+  wpt_altarriv = 0.0;
+  wpt_altitude = 0.0;
+  if (asp_heading_task) {
+    // Show towards target
+    if (overindex>=0) {
+      double wptlon = WayPointList[overindex].Longitude;
+      double wptlat = WayPointList[overindex].Latitude;
+      DistanceBearing(aclat, aclon, wptlat, wptlon, &wpt_dist, &acb);
+      range = max(5.0*1000.0, wpt_dist*1.15);   // 15% more distance to show, minimum 5km
+      wpt_altarriv = WayPointCalc[overindex].AltArriv[AltArrivMode];
+      wpt_altitude = WayPointList[overindex].Altitude;
+    } else {
+      // no selected target
+      DrawNoData(hdc, rc);
+      return;
+    }
+  }
   
   double hmin = max(0.0, alt-2300);
   double hmax = max(3300.0, alt+1000);
@@ -1433,6 +1464,20 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
       }
     }
   }
+
+  //
+  POINT line[4];
+
+  // draw target symbolic line
+  if (asp_heading_task) {
+    // Mark wpt with a vertical marker line
+    line[0].x = x0 + ((rc.right - rc.left - BORDER_X) / range) * wpt_dist;
+    line[0].y = y0;
+    line[1].x = line[0].x;
+    line[1].y = rc.top;
+    StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
+  }
+  
   // draw ground
   POINT ground[4];
   HPEN   hpHorizonGround;
@@ -1461,29 +1506,90 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
     Polygon(hdc, ground, 4);
   }
 
-  //
-  POINT line[4];
 
+  // Draw estimated gliding line (blue)
   if (speed>10.0) {
-    double t = range/speed;
-    double gfh = (ach+calc_average30s*t-hmin)/(hmax-hmin);
-    line[0].x = rc.left;
-    line[0].y = (int)(fh*(rc.top-rc.bottom+BORDER_Y)+y0)-1;
-    line[1].x = rc.right;
-    line[1].y = (int)(gfh*(rc.top-rc.bottom+BORDER_Y)+y0)-1;
-    StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
+    if (asp_heading_task) {
+      // Draw gliding line to the arrival altitude, if arrivalAGL>0
+      if (wpt_altarriv > ALTDIFFLIMIT) {
+        double altarriv = wpt_altarriv + wpt_altitude;
+        if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
+        double gfh = (altarriv-hmin)/(hmax-hmin);
+        line[0].x = x0;
+        line[0].y = (int)(fh*(rc.top-rc.bottom+BORDER_Y)+y0)-1;
+        line[1].x = x0 + ((rc.right - rc.left - BORDER_X) / range) * wpt_dist;
+        line[1].y = (int)(gfh*(rc.top-rc.bottom+BORDER_Y)+y0)-1;
+        StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
+      }
+    } else {
+      double t = range/speed;
+      double gfh = (ach+calc_average30s*t-hmin)/(hmax-hmin);
+      line[0].x = x0;
+      line[0].y = (int)(fh*(rc.top-rc.bottom+BORDER_Y)+y0)-1;
+      line[1].x = rc.right;
+      line[1].y = (int)(gfh*(rc.top-rc.bottom+BORDER_Y)+y0)-1;
+      StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
+    }
   }
 
   SelectObject(hdc, GetStockObject(WHITE_PEN));
   SelectObject(hdc, GetStockObject(WHITE_BRUSH));
   SetTextColor(hdc, RGB(0xff,0xff,0xff));
 
+  double xtick = 1.0;
+  if (range>10.0*1000.0) xtick = 5.0;
+  if (range>50.0*1000.0) xtick = 10.0;
+  if (range>100.0*1000.0) xtick = 20.0;
+  if (range>200.0*1000.0) xtick = 25.0;
+  if (range>250.0*1000.0) xtick = 50.0;
+  if (range>500.0*1000.0) xtick = 100.0;
+  
   DrawXGrid(hdc, rc, 
-            5.0/DISTANCEMODIFY, 0,
-            STYLE_THINDASHPAPER, 5.0, true);
+            xtick/DISTANCEMODIFY, 0,
+            STYLE_THINDASHPAPER, xtick, true);
   DrawYGrid(hdc, rc, 1000.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER,
             1000.0, true);
 
+  //Draw wpt info texts
+  if (asp_heading_task) {
+    line[0].x = x0 + ((rc.right - rc.left - BORDER_X) / range) * wpt_dist;
+
+    SIZE tsize;
+    TCHAR text[80];
+    // Print wpt name next to marker line
+    _tcsncpy(text, WayPointList[overindex].Name, sizeof(text)/sizeof(text[0]));
+    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+    int x = line[0].x - tsize.cx - NIBLSCALE(5);
+    if (x<x0) x = line[0].x + NIBLSCALE(5);   // Show on right side if left not possible
+    int y = rc.top + 3*tsize.cy;
+    SetBkMode(hdc, OPAQUE);
+    SetTextColor(hdc, RGB_WHITE);
+    ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+
+    // Print wpt distance
+    Units::FormatUserDistance(wpt_dist, text, 7);
+    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+    x = line[0].x - tsize.cx - NIBLSCALE(5);
+    if (x<x0) x = line[0].x + NIBLSCALE(5);   // Show on right side if left not possible
+    y += tsize.cy;
+    ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+    
+    // Print arrival altitude
+    if (wpt_altarriv > ALTDIFFLIMIT) {
+      Units::FormatUserArrival(wpt_altarriv, text, 7);
+    } else {
+      _tcsncpy(text, TEXT("---"), sizeof(text)/sizeof(text[0]));
+    }
+    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+    x = line[0].x - tsize.cx - NIBLSCALE(5);
+    if (x<x0) x = line[0].x + NIBLSCALE(5);   // Show on right side if left not possible
+    y += tsize.cy;
+    ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+
+    SetBkMode(hdc, TRANSPARENT);
+  }
+  
+  
   // draw aircraft
   int delta;
   SelectObject(hdc, GetStockObject(WHITE_PEN));
@@ -1509,10 +1615,24 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   SelectObject(hdc, GetStockObject(WHITE_PEN));
   SelectObject(hdc, GetStockObject(WHITE_BRUSH));
   Polygon(hdc,Arrow,5);
-
   SelectObject(hdc, GetStockObject(BLACK_PEN));
   Polygon(hdc,Arrow,5);
 
+  // Print Bearing difference
+  TCHAR BufferValue[LKSIZEBUFFERVALUE];
+  TCHAR BufferUnit[LKSIZEBUFFERUNIT];
+  TCHAR BufferTitle[LKSIZEBUFFERTITLE];
+
+  if (MapWindow::LKFormatValue(LK_BRGDIFF, false, BufferValue, BufferUnit, BufferTitle)) {
+    SIZE tsize;
+    SelectObject(hdc, LK8MediumFont);
+    GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &tsize);
+    SetBkMode(hdc, OPAQUE);
+    SetTextColor(hdc, RGB_WHITE);
+    ExtTextOut(hdc, (rc.left + rc.right - tsize.cx)/2, rc.top, ETO_OPAQUE, NULL, BufferValue, _tcslen(BufferValue), NULL);
+    SetBkMode(hdc, TRANSPARENT);
+  }
+  
     
   DrawXLabel(hdc, rc, TEXT("D"));
   DrawYLabel(hdc, rc, TEXT("h"));
@@ -1907,7 +2027,14 @@ static void Update(void){
       wb->SetVisible(true);
       if (asp_heading_task) {
         wb->SetCaption(gettext(TEXT("_@M1287_")));                               //_@M1287_ "Heading"
-        wInfo->SetCaption(gettext(TEXT("_@M1288_")));                            //_@M1288_ "Showing towards next waypoint"
+        int overindex = GetOvertargetIndex();
+        if (overindex>=0) {
+          _stprintf(sTmp, TEXT("%s: %s"), gettext(TEXT("_@M1288_")), WayPointList[overindex].Name);                //_@M1288_ "Showing towards next waypoint"
+          wInfo->SetCaption(sTmp);
+        } else {
+          _stprintf(sTmp, TEXT("%s: %s"), gettext(TEXT("_@M1288_")), gettext(TEXT("_@M479_")));                    //_@M1288_ "Showing towards next waypoint"  _@M479_ "None"
+          wInfo->SetCaption(sTmp);
+        }
       } else {
         wb->SetCaption(gettext(TEXT("_@M1289_")));                               //_@M1289_ "Next WP"
         wInfo->SetCaption(gettext(TEXT("_@M1290_")));                            //_@M1290_ "Showing towards heading"

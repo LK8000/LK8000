@@ -75,6 +75,7 @@ CPoint2D CAirspace::_lastknownpos(0,0);                // last known position sa
 int CAirspace::_lastknownalt = 0;                // last known alt saved for calculations
 int CAirspace::_lastknownagl = 0;                // last known agl saved for calculations
 int CAirspace::_lastknownheading = 0;            // last known heading saved for calculations
+bool CAirspace::_pred_blindtime = true;               // disable predicted position based warnings near takeoff
 
 
 //
@@ -206,6 +207,10 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
 
   // Heading
    _lastknownheading = (int) Calculated->Heading;
+   
+  // Predicted position blind time near takeoff
+   _pred_blindtime = false;
+   if ((Calculated->Flying!=TRUE)  || ((Basic->Time - Calculated->TakeOffTime) < 60)) _pred_blindtime = true;
 }
 
 // Step2: first pass on all airspace instances
@@ -426,6 +431,7 @@ bool CAirspace::FinishWarning()
         break;
         
       case awePredictedLeavingFly:
+        if (_pred_blindtime) break;         //Do not count predicted events near takeoff, filters not settled yet
         if ( !(_pred_in_flyzone || _pred_in_acked_nonfly_zone) ) {
               // if predicted position not in other fly or acked nonfly zone, then leaving this one should be wrong
               _warninglevel = awYellow;
@@ -508,6 +514,7 @@ bool CAirspace::FinishWarning()
         break;
         
       case awePredictedEnteringNonfly:
+        if (_pred_blindtime) break;         //Do not count predicted events near takeoff, filters not settled yet
         _warninglevel = awYellow;
         break;
         
@@ -2031,19 +2038,11 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
         for (it=_airspaces_of_interest.begin(); it != _airspaces_of_interest.end(); ++it) {
             there_is_msg = (*it)->FinishWarning();
             if (there_is_msg && AIRSPACEWARNINGS) {     // Pass warning messages only if warnings enabled
-              // Do not give warnings during takeoff. In the future, also during landing.
-              // More generally, do not give warnings in the first 1 minute of flight.
-              // If no takeoff, TakeOffTime is 0  and it is ok to give warnings.
-              if ( ((GPS_INFO.Time - Calculated->TakeOffTime) >= 60) ||
-                // consider midnight possible problems
-                  (GPS_INFO.Time < Calculated->TakeOffTime) ) {
-                  // Add new warning message to queue for dlgLKAirspaceWarning popup
                   AirspaceWarningMessage msg;
                   msg.originator = *it;
                   msg.event = (*it)->WarningEvent();
                   msg.warnlevel = (*it)->WarningLevel();
                   _user_warning_queue.push_back(msg);
-              }
             }
         }
 
