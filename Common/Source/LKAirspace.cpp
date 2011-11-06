@@ -8,6 +8,8 @@
 #include "externs.h"
 #include "LKAirspace.h"
 #include "RasterTerrain.h"
+#include "LKProfiles.h"
+
 
 #include <ctype.h>
 

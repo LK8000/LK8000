@@ -9,9 +9,9 @@
 #include "externs.h"
 #include "Logger.h"
 #include "Port.h"
-#include "Utils.h"
 #include "InputEvents.h"
 #include "Parser.h"
+#include "LKProfiles.h"
 
 #include "utils/heapcheck.h"
 

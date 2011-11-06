@@ -7,10 +7,8 @@
 */
 #include "StdAfx.h"
 #include "wcecompat/ts_string.h"
-#include "options.h"
-#include "Defines.h"
 #include "externs.h"
-#include "lk8000.h"
+#include "LKProfiles.h"
 
 
 #define CLEARTYPE_COMPAT_QUALITY 	6

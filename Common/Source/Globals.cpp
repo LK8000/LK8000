@@ -8,19 +8,16 @@
 
 #define STATIC_GLOBALS
 #include "externs.h"
+#define STATIC_PGLOBALS
+#include "LKProfiles.h"
 #include "MapWindow.h"
 #include "LKMapWindow.h"
-#include "Utils.h"
 #include "Modeltype.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
 #endif
 
-#if NEWPROFILES
-#define STATIC_GPROFILES
-#include "LKProfiles.h"
-#endif
 
 //
 // Default globals are NOT necessarily default settings.

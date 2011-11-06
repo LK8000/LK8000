@@ -12,8 +12,7 @@
 #include "dlgTools.h"
 #include "Terrain.h"
 #include "LKMapWindow.h"
-
-#include "Utils.h"
+#include "LKProfiles.h"
 
 
 static bool changed = false;

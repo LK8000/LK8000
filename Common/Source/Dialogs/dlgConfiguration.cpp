@@ -25,6 +25,7 @@
 #include "InfoBoxLayout.h"
 #include "Waypointparser.h"
 #include "LKMapWindow.h"
+#include "LKProfiles.h"
 
 
 static HFONT TempMapWindowFont;

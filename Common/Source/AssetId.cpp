@@ -24,7 +24,7 @@
 #include "externs.h"
 #include "lk8000.h"
 #include "uniqueid.h"
-
+#include "LKProfiles.h"
 
 void ReadAssetNumber(void)
 {

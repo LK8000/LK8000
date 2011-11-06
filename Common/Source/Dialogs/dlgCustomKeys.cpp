@@ -11,7 +11,7 @@
 #include "dlgTools.h"
 #include "Terrain.h"
 #include "LKMapWindow.h"
-#include "Utils.h"
+#include "LKProfiles.h"
 
 void AddConfList( DataFieldEnum* dfe);
 

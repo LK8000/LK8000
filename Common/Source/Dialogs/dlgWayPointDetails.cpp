@@ -13,6 +13,8 @@
 #include "McReady.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
+#include "LKProfiles.h"
+
 #include "Units.h"
 
 

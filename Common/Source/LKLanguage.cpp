@@ -14,6 +14,7 @@
 #include "Message.h"
 #include "McReady.h"
 #include "InputEvents.h"
+#include "LKProfiles.h"
 
 #include <ctype.h>
 

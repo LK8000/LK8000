@@ -9,7 +9,7 @@
 #include "externs.h"
 #include <aygshell.h>
 #include "InfoBoxLayout.h"
-
+#include "LKProfiles.h"
 
 
 static WndForm *wf=NULL;

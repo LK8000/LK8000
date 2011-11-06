@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "RasterTerrain.h"
+#include "LKProfiles.h"
 
 #ifdef __MINGW32__
 #define int_fast8_t jas_int_fast8_t

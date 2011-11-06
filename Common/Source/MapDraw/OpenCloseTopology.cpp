@@ -11,6 +11,8 @@
 #include "RasterTerrain.h"
 #include "STScreenBuffer.h"
 #include "RGB.h"
+#include "LKProfiles.h"
+
 
 using std::min;
 using std::max;

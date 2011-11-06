@@ -10,6 +10,7 @@
 #include "InputEvents.h"
 #include "LKInterface.h"
 #include "Terrain.h"
+#include "LKProfiles.h"
 
 #include <commctrl.h>
 #include <aygshell.h>
