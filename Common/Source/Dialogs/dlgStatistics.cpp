@@ -1471,7 +1471,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   // draw target symbolic line
   if (asp_heading_task) {
     // Mark wpt with a vertical marker line
-    line[0].x = x0 + ((rc.right - rc.left - BORDER_X) / range) * wpt_dist;
+    line[0].x = (int)(x0 + ((rc.right - rc.left - BORDER_X) / range) * wpt_dist);
     line[0].y = y0;
     line[1].x = line[0].x;
     line[1].y = rc.top;
@@ -1517,7 +1517,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
         double gfh = (altarriv-hmin)/(hmax-hmin);
         line[0].x = x0;
         line[0].y = (int)(fh*(rc.top-rc.bottom+BORDER_Y)+y0)-1;
-        line[1].x = x0 + ((rc.right - rc.left - BORDER_X) / range) * wpt_dist;
+        line[1].x = (int)(x0 + ((rc.right - rc.left - BORDER_X) / range) * wpt_dist);
         line[1].y = (int)(gfh*(rc.top-rc.bottom+BORDER_Y)+y0)-1;
         StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
       }
@@ -1552,7 +1552,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
 
   //Draw wpt info texts
   if (asp_heading_task) {
-    line[0].x = x0 + ((rc.right - rc.left - BORDER_X) / range) * wpt_dist;
+    line[0].x = (int)(x0 + ((rc.right - rc.left - BORDER_X) / range) * wpt_dist);
 
     SIZE tsize;
     TCHAR text[80];
