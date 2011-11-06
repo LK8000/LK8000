@@ -415,6 +415,7 @@ class MapWindow {
   static void LKWriteText(HDC hDC, const TCHAR* wText, int x, int y, int maxsize, const bool mode, const short align, COLORREF rgb_tex, bool invertable);
   static void LKWriteBoxedText(HDC hDC, const TCHAR* wText, int x, int y, int maxsize, const short align );
   static bool LKFormatValue(const short fvindex, const bool longtitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle);
+  static void LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
 
   static LRESULT CALLBACK MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,LPARAM lParam);
 
@@ -473,7 +474,7 @@ class MapWindow {
                                 short *columnvalue, short *columntitle, short *row1, short *row2, short *row3);
   // static bool LKFormatValue(const short fvindex, const bool longtitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle);
   static void LKFormatDist(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
-  static void LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
+  // static void LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
   static void LKFormatGR(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
   static void LKFormatAltDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
   static void LKUpdateOlc(void);

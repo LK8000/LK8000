@@ -1622,8 +1622,47 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   TCHAR BufferValue[LKSIZEBUFFERVALUE];
   TCHAR BufferUnit[LKSIZEBUFFERUNIT];
   TCHAR BufferTitle[LKSIZEBUFFERTITLE];
-
-  if (MapWindow::LKFormatValue(LK_BRGDIFF, false, BufferValue, BufferUnit, BufferTitle)) {
+  bool ret = false;
+  // Borrowed from LKDrawLook8000.cpp
+  switch (OvertargetMode) {
+    case OVT_TASK:
+      // Do not use FormatBrgDiff for TASK, could be AAT!
+      ret = MapWindow::LKFormatValue(LK_BRGDIFF, false, BufferValue, BufferUnit, BufferTitle);
+      break;
+    case OVT_ALT1:
+      MapWindow::LKFormatBrgDiff(Alternate1, false, BufferValue, BufferUnit);
+      ret = true;
+      break;
+    case OVT_ALT2:
+      MapWindow::LKFormatBrgDiff(Alternate2, false, BufferValue, BufferUnit);
+      ret = true;
+      break;
+    case OVT_BALT:
+      MapWindow::LKFormatBrgDiff(BestAlternate, false, BufferValue, BufferUnit);
+      ret = true;
+      break;
+    case OVT_THER:
+      MapWindow::LKFormatBrgDiff(RESWP_LASTTHERMAL, true, BufferValue, BufferUnit);
+      ret = true;
+      break;
+    case OVT_HOME:
+      MapWindow::LKFormatBrgDiff(HomeWaypoint, false, BufferValue, BufferUnit);
+      ret = true;
+      break;
+    case OVT_MATE:
+      MapWindow::LKFormatBrgDiff(RESWP_TEAMMATE, true, BufferValue, BufferUnit);
+      ret = true;
+      break;
+    case OVT_FLARM:
+      MapWindow::LKFormatBrgDiff(RESWP_FLARMTARGET, true, BufferValue, BufferUnit);
+      ret = true;
+      break;
+    default:
+      ret = MapWindow::LKFormatValue(LK_BRGDIFF, false, BufferValue, BufferUnit, BufferTitle);
+      break;
+  }
+  
+  if (ret) {
     SIZE tsize;
     SelectObject(hdc, LK8MediumFont);
     GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &tsize);
