@@ -21,7 +21,6 @@ void BottomSounds();
 // however we consider a down as up, and viceversa
 int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
-#define UNGESTURES 1
 #define VKTIMELONG 1500
 #define DONTDRAWTHEMAP !MapWindow::mode.AnyPan()&&MapSpaceMode!=1
 
@@ -31,12 +30,14 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	#define AIRCRAFTMENUSIZE	NIBLSCALE(28)
 	#endif
 	short yup, ydown;
-	short sizeup;
+	static short sizeup;
 	short i, j;
 	short numpages=0;
 
-	static short s_sizeright=0, s_xright=0, s_xleft=0;
+	static short s_sizeright=0, s_xright=0, s_xleft=0, s_unxright=0, s_unxleft=0;
 	static short s_bottomY=0;
+	static short shortpress_yup, shortpress_ydown;
+	static short longpress_yup, longpress_ydown;
 	static bool doinit=true;
 
 	bool dontdrawthemap=(DONTDRAWTHEMAP);
@@ -48,7 +49,10 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	DoStatusMessage(buf);
 	#endif
 
+
 	if (doinit) {
+
+		sizeup=MapWindow::MapRect.bottom-MapWindow::MapRect.top;
 
 		// bottomline does not exist when infoboxes are painted, so we can make it static
 		s_sizeright=MapWindow::MapRect.right-MapWindow::MapRect.left;
@@ -57,16 +61,24 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		s_xleft=(s_sizeright/2)-(s_sizeright/6);
 		s_xright=(s_sizeright/2)+(s_sizeright/6);
 
+		// used by ungesture fast click on infopages
+		s_unxleft=(s_sizeright/2)-(s_sizeright/3);
+		s_unxright=(s_sizeright/2)+(s_sizeright/3);
+
 		// same for bottom navboxes: they do not exist in infobox mode
 		s_bottomY=(MapWindow::MapRect.bottom-MapWindow::MapRect.top)-BottomSize-NIBLSCALE(2); // bugfix era 15, troppo 090731
 
 		#define _NOCOMPASSINCLUDE
 		#include "./LKinclude_menusize.cpp"
 
+		longpress_yup=(short)((sizeup-BottomSize-TopSize)/3.7)+MapWindow::MapRect.top+TopSize;
+		longpress_ydown=(short)(MapWindow::MapRect.bottom-BottomSize-((sizeup-BottomSize)/3.7));
+		shortpress_yup=(short)((sizeup-BottomSize-TopSize)/2.7)+MapWindow::MapRect.top+TopSize;
+		shortpress_ydown=(short)(MapWindow::MapRect.bottom-BottomSize-((sizeup-BottomSize)/2.7));
+
 		doinit=false;
 	}
 	
-	sizeup=MapWindow::MapRect.bottom-MapWindow::MapRect.top;
 	// do not consider navboxes, they are processed separately
 	// These are coordinates for up down center VKs
 	// yup and ydown are used normally on nearest page item selection, but also for real VK
@@ -76,16 +88,19 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		// Native LK mode: always fullscreen mode
 		// If long click, we are processing an Enter, and we want a wider valid center area
 		if ( keytime>=(VKSHORTCLICK*2)) { 
-			yup=(short)((sizeup-BottomSize-TopSize)/3.7)+MapWindow::MapRect.top+TopSize;
-			ydown=(short)(MapWindow::MapRect.bottom-BottomSize-((sizeup-BottomSize)/3.7));
+			yup=longpress_yup;
+			ydown=longpress_ydown;
 		} else {
-			yup=(short)((sizeup-BottomSize-TopSize)/2.7)+MapWindow::MapRect.top+TopSize;
-			ydown=(short)(MapWindow::MapRect.bottom-BottomSize-((sizeup-BottomSize)/2.7));
+			yup=shortpress_yup;
+			ydown=shortpress_ydown;
 		}
 	} else {
-		// Ibox mode, most likely
-		yup=(short)(sizeup/2.7)+MapWindow::MapRect.top;
-		ydown=(short)(MapWindow::MapRect.bottom-(sizeup/2.7));
+		// This could happen only in Ibox mode. We should never fall here.
+		yup=(short)((MapWindow::MapRect.bottom-MapWindow::MapRect.top)/2.7)+MapWindow::MapRect.top;
+		ydown=(short)(MapWindow::MapRect.bottom-((MapWindow::MapRect.bottom-MapWindow::MapRect.top)/2.7));
+		#if TESTBENCH
+		StartupStore(_T("...... DrawBottom FALSE in virtual key processing!\n"));
+		#endif
 	}
 
 	#ifdef DEBUG_PROCVK
@@ -356,9 +371,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				MapWindow::RefreshMap();
 				return 0;
 			case LKGESTURE_RIGHT:
-#if UNGESTURES
 gesture_right:
-#endif
 				NextModeType();
 				MapWindow::RefreshMap();
 				#ifndef DISABLEAUDIO
@@ -374,9 +387,7 @@ gesture_right:
 				break;
 
 			case LKGESTURE_LEFT:
-#if UNGESTURES
 gesture_left:
-#endif
 				PreviousModeType();
 				MapWindow::RefreshMap();
 				#ifndef DISABLEAUDIO
@@ -395,6 +406,16 @@ gesture_left:
 		}
 
 		return 0;
+	}
+
+	// UNGESTURES: 
+	// No need to use gestures if clicking on right or left center border screen
+	// This will dramatically speed up the user interface in turbulence
+	if (dontdrawthemap) {
+		if (Y>longpress_yup && Y<longpress_ydown) {
+			if (X<=s_unxleft)  goto gesture_left;
+			if (X>=s_unxright) goto gesture_right;
+		}
 	}
 
 	if (Y<yup) {
@@ -440,14 +461,6 @@ gesture_left:
 		else
 			return 40;
 	}
-#if UNGESTURES
-	// No need to use gestures if clicking on right or left center border screen
-	// This will dramatically speed up the user interface in turbulence
-	if (dontdrawthemap) {
-		if (X<=s_xleft) goto gesture_left;
-		if (X>=s_xright) goto gesture_right;
-	}
-#endif
 
 
 	// no click for already clicked events
