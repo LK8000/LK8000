@@ -16,6 +16,7 @@
 #include "dlgTools.h"
 #include "CriticalSection.h"
 #include "LKAirspace.h"
+#include "RGB.h"
 
 extern HWND   hWndMainWindow;
 extern HWND   hWndMapWindow;
@@ -182,6 +183,17 @@ void dlgLKAirspaceFill()
           break;
 
       }//sw
+      switch (airspace_copy.WarningLevel()) {
+        case awYellow:
+            wp->SetBackColor(RGB_YELLOW);
+            wp->SetForeColor(RGB_BLACK);
+          break;
+        case awRed:
+            wp->SetBackColor(RGB_RED);
+          break;
+	default:
+	  break;
+     }
       wp->RefreshDisplay();
     }
 
@@ -201,11 +213,14 @@ void dlgLKAirspaceFill()
         case awYellow:
             // LKTOKEN _@M1255_ "YELLOW WARNING"
             wp->SetText(gettext(TEXT("_@M1255_")));
+            wp->SetBackColor(RGB_YELLOW);
+            wp->SetForeColor(RGB_BLACK);
           break;
         
         case awRed:
             // LKTOKEN _@M1256_ "RED WARNING"
             wp->SetText(gettext(TEXT("_@M1256_")));
+            wp->SetBackColor(RGB_RED);
           break;
       }//sw
       wp->RefreshDisplay();
