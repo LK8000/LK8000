@@ -305,11 +305,17 @@ LKINTER	:=\
 	$(NTR)/VirtualKeys.cpp\
 
 DRAW	:=\
+	$(DRW)/DrawAircraft.cpp \
 	$(DRW)/DrawAirSpaces.cpp \
 	$(DRW)/DrawAirspaceLabels.cpp \
 	$(DRW)/DrawBearing.cpp \
+	$(DRW)/DrawFlightMode.cpp \
+	$(DRW)/DrawGPSStatus.cpp \
 	$(DRW)/DrawTask.cpp \
 	$(DRW)/DrawTaskAAT.cpp \
+	$(DRW)/DrawThermalEstimate.cpp \
+	$(DRW)/DrawWind.cpp \
+	$(DRW)/Draw_Primitives.cpp \
 	$(DRW)/LKDrawCommon.cpp \
 	$(DRW)/LKDrawAspNearest.cpp \
 	$(DRW)/LKDrawLook8000.cpp \
@@ -320,12 +326,14 @@ DRAW	:=\
 	$(DRW)/LKDrawTraffic.cpp \
 	$(DRW)/LKGeneralAviation.cpp \
 	$(DRW)/LKMapWindow.cpp \
+	$(DRW)/MapScale.cpp \
 	$(DRW)/MapWindow.cpp \
 	$(DRW)/MapWindow2.cpp \
 	$(DRW)/MapWindow3.cpp \
 	$(DRW)/MapWindowA.cpp \
-	$(DRW)/MapWindowZoom.cpp \
 	$(DRW)/MapWindowMode.cpp \
+	$(DRW)/MapWindowZoom.cpp \
+	$(DRW)/MapWindow_Events.cpp \
 	$(DRW)/MapWndProc.cpp \
 	$(DRW)/RenderMapWindow.cpp \
 	$(DRW)/RenderMapWindowBg.cpp \
