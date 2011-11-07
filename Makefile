@@ -309,8 +309,10 @@ DRAW	:=\
 	$(DRW)/DrawAirSpaces.cpp \
 	$(DRW)/DrawAirspaceLabels.cpp \
 	$(DRW)/DrawBearing.cpp \
+	$(DRW)/DrawCross.cpp \
 	$(DRW)/DrawFlightMode.cpp \
 	$(DRW)/DrawGPSStatus.cpp \
+	$(DRW)/DrawStartSector.cpp \
 	$(DRW)/DrawTask.cpp \
 	$(DRW)/DrawTaskAAT.cpp \
 	$(DRW)/DrawThermalEstimate.cpp \
@@ -327,17 +329,20 @@ DRAW	:=\
 	$(DRW)/LKGeneralAviation.cpp \
 	$(DRW)/LKMapWindow.cpp \
 	$(DRW)/MapScale.cpp \
-	$(DRW)/MapWindow.cpp \
 	$(DRW)/MapWindow2.cpp \
 	$(DRW)/MapWindow3.cpp \
 	$(DRW)/MapWindowA.cpp \
 	$(DRW)/MapWindowMode.cpp \
 	$(DRW)/MapWindowZoom.cpp \
 	$(DRW)/MapWindow_Events.cpp \
+	$(DRW)/MapWindow_Utils.cpp \
 	$(DRW)/MapWndProc.cpp \
+	$(DRW)/OrigAndOrient.cpp \
 	$(DRW)/RenderMapWindow.cpp \
 	$(DRW)/RenderMapWindowBg.cpp \
+	$(DRW)/ScreenLatLon.cpp \
 	$(DRW)/TextInBox.cpp \
+	$(DRW)/UpdateAndRefresh.cpp \
 
 CALC	:=\
 	$(CLC)/AATDistance.cpp 		\
