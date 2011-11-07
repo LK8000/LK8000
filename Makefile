@@ -308,6 +308,8 @@ DRAW	:=\
 	$(DRW)/DrawAirSpaces.cpp \
 	$(DRW)/DrawAirspaceLabels.cpp \
 	$(DRW)/DrawBearing.cpp \
+	$(DRW)/DrawTask.cpp \
+	$(DRW)/DrawTaskAAT.cpp \
 	$(DRW)/LKDrawCommon.cpp \
 	$(DRW)/LKDrawAspNearest.cpp \
 	$(DRW)/LKDrawLook8000.cpp \
