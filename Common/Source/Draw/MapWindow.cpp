@@ -66,7 +66,6 @@ MapWindow::Mode MapWindow::mode;
 HBRUSH  MapWindow::hAboveTerrainBrush;
 
 HPEN    MapWindow::hpCompassBorder;
-HBRUSH  MapWindow::hBrushFlyingModeAbort;
 int MapWindow::SnailWidthScale = 16;
 
 int MapWindow::ScaleListCount = 0;
@@ -129,7 +128,6 @@ HPEN MapWindow::hAirspacePens[AIRSPACECLASSCOUNT];
 HPEN MapWindow::hAirspaceBorderPen;
 bool MapWindow::bAirspaceBlackOutline = false;
 
-HBRUSH  MapWindow::hBackgroundBrush;
 HBRUSH  MapWindow::hInvBackgroundBrush[LKMAXBACKGROUNDS];
 
 HBRUSH  MapWindow::hAirspaceBrushes[NUMAIRSPACEBRUSHES];
@@ -171,8 +169,6 @@ HPEN MapWindow::hpMapScale;
 HPEN MapWindow::hpMapScale2;
 HPEN MapWindow::hpTerrainLine;
 HPEN MapWindow::hpTerrainLineBg;
-HPEN MapWindow::hpSpeedSlow;
-HPEN MapWindow::hpSpeedFast;
 HPEN MapWindow::hpStartFinishThick;
 HPEN MapWindow::hpStartFinishThin;
 HPEN MapWindow::hpVisualGlideLightBlack; // VENTA3
@@ -181,7 +177,6 @@ HPEN MapWindow::hpVisualGlideLightRed; // VENTA3
 HPEN MapWindow::hpVisualGlideHeavyRed; // VENTA3
 
   
-COLORREF MapWindow::BackgroundColor = RGB_WHITE;
 
 bool MapWindow::MapDirty = true;
 DWORD MapWindow::fpsTime0 = 0;
@@ -850,7 +845,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 
       LKLoadFixedBitmaps();
     
-      hBackgroundBrush = LKBrush_White;
       hInvBackgroundBrush[0] = LKBrush_White;
       hInvBackgroundBrush[1] = LKBrush_LightGrey;
       hInvBackgroundBrush[2] = LKBrush_LcdGreen;
@@ -926,8 +920,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       // TODO enhancement: support red/green Color blind
       hpFinalGlideAbove = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB(0xA0,0xFF,0xA0));
 
-      hpSpeedSlow=LKPen_Red_N1;
-      hpSpeedFast=LKPen_Green_N1;
       hpStartFinishThin=LKPen_Red_N1;
       hpMapScale = LKPen_Black_N1;
 
@@ -953,7 +945,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       ScaleListCount = propGetScaleList(ScaleList, sizeof(ScaleList)/sizeof(ScaleList[0]));
       zoom.RequestedScale(LimitMapScale(zoom.RequestedScale()));
 
-      hBrushFlyingModeAbort = LKBrush_Red;
 
       // Signal that draw thread can run now
       Initialised = TRUE;
