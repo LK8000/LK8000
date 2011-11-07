@@ -501,7 +501,6 @@ class MapWindow {
   static void DrawThermalEstimate(HDC hdc, const RECT rc);
   static void DrawThermalEstimateMultitarget(HDC hdc, const RECT rc);
   static void DrawTaskAAT(HDC hdc, const RECT rc);
-  static void DrawAbortedTask(HDC hdc, const RECT rc, const POINT Orig);
   static void DrawBearing(HDC hdc, const RECT rc);
   static void DrawGreatCircle(HDC hdc,
                               double lon_start, double lat_start,
@@ -516,7 +515,6 @@ class MapWindow {
   static void DrawThermalBand(HDC hDC, const RECT rc);
   static void DrawGlideThroughTerrain(HDC hDC, const RECT rc);
   static void DrawTerrainAbove(HDC hDC, const RECT rc);
-  static void DrawSpeedToFly(HDC hDC, RECT rc); // VNT9
   static void LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft);
   static void LKDrawVario(HDC hDC, RECT rc);
     
@@ -568,8 +566,6 @@ class MapWindow {
   static void SetAutoOrientation(bool doreset);
 
  private:
-  static HBRUSH   hBackgroundBrush;
-  static COLORREF BackgroundColor;
 
   static HBRUSH   hInvBackgroundBrush[LKMAXBACKGROUNDS]; // 091110 fixed number of backgrounds in MapWindow
 
@@ -597,8 +593,6 @@ class MapWindow {
   static      HPEN hpVisualGlideLightBlack; // VENTA3
   static      HPEN hpVisualGlideHeavyBlack; // 
   static      HPEN hpVisualGlideExtra; // future use
-  static      HPEN hpSpeedFast;
-  static      HPEN hpSpeedSlow;
   static      HPEN hpStartFinishThick;
   static      HPEN hpStartFinishThin;
   
@@ -633,7 +627,6 @@ class MapWindow {
   static double FindMapScale(double Value);
 
   static HPEN    hpCompassBorder;
-  static HBRUSH  hBrushFlyingModeAbort;
 
   #if TOPOFASTLABEL
   // How many slots in screen, divided by horizontal blocks on vertical positions
