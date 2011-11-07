@@ -307,6 +307,7 @@ LKINTER	:=\
 DRAW	:=\
 	$(DRW)/DrawAirSpaces.cpp \
 	$(DRW)/DrawAirspaceLabels.cpp \
+	$(DRW)/DrawBearing.cpp \
 	$(DRW)/LKDrawCommon.cpp \
 	$(DRW)/LKDrawAspNearest.cpp \
 	$(DRW)/LKDrawLook8000.cpp \
