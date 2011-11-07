@@ -2652,35 +2652,6 @@ void MapWaypointLabelAdd(TCHAR *Name, int X, int Y,
 }
 
 
-void MapWindow::DrawAbortedTask(HDC hdc, const RECT rc, const POINT me)
-{
-  int i;
-  if (!WayPointList) return;
-  
-  LockTaskData();  // protect from external task changes
-#ifdef HAVEEXCEPTIONS
-  __try{
-#endif
-    for(i=0;i<MAXTASKPOINTS-1;i++)
-      {
-	int index = Task[i].Index;
-	if(ValidWayPoint(index))
-	  {
-	    DrawDashLine(hdc, 1, 
-			 WayPointList[index].Screen,
-			 me,
-			 taskcolor, rc);
-	  }
-      }
-#ifdef HAVEEXCEPTIONS
-  }__finally
-#endif
-     {
-       UnlockTaskData();
-     }
-}
-
-
 void MapWindow::DrawStartSector(HDC hdc, const RECT rc, 
                                 POINT &Start,
                                 POINT &End, int Index) {
