@@ -18,14 +18,70 @@
 
 #include "utils/heapcheck.h"
 
-extern int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 );
 
-extern void MapWaypointLabelAdd(TCHAR *Name, int X, int Y, TextInBoxMode_t Mode, int AltArivalAGL, bool inTask, 
-	bool isLandable, bool isAirport, bool isExcluded, int index, short style);
+MapWaypointLabel_t MapWaypointLabelList[200]; 
 
-extern int MapWaypointLabelListCount;
+int MapWaypointLabelListCount=0;
 
-extern MapWaypointLabel_t MapWaypointLabelList[];
+#define WPCIRCLESIZE        2 // check also duplicate in TextInBox!
+
+
+bool MapWindow::WaypointInRange(int i) {
+  return ((WayPointList[i].Zoom >= zoom.Scale()*10)
+          || (WayPointList[i].Zoom == 0))
+    && (zoom.Scale() <= 10);
+}
+
+
+int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 ){
+
+  // Now sorts elements in task preferentially.
+  if (((MapWaypointLabel_t *)elem1)->AltArivalAGL > ((MapWaypointLabel_t *)elem2)->AltArivalAGL)
+    return (-1);
+  if (((MapWaypointLabel_t *)elem1)->AltArivalAGL < ((MapWaypointLabel_t *)elem2)->AltArivalAGL)
+    return (+1);
+  return (0);
+}
+
+
+void MapWaypointLabelAdd(TCHAR *Name, int X, int Y, 
+			 TextInBoxMode_t Mode, 
+			 int AltArivalAGL, bool inTask, bool isLandable, bool isAirport, bool isExcluded, int index, short style){
+  MapWaypointLabel_t *E;
+
+  if ((X<MapWindow::MapRect.left-WPCIRCLESIZE)
+      || (X>MapWindow::MapRect.right+(WPCIRCLESIZE*3))
+      || (Y<MapWindow::MapRect.top-WPCIRCLESIZE)
+      || (Y>MapWindow::MapRect.bottom+WPCIRCLESIZE)){
+    return;
+  }
+
+  if (MapWaypointLabelListCount >= (( (signed int)(sizeof(MapWaypointLabelList)/sizeof(MapWaypointLabel_t)))-1)){  // BUGFIX 100207
+    return;
+  }
+
+  E = &MapWaypointLabelList[MapWaypointLabelListCount];
+
+  _tcscpy(E->Name, Name);
+  E->Pos.x = X;
+  E->Pos.y = Y;
+  E->Mode = Mode;
+  E->AltArivalAGL = AltArivalAGL;
+  E->inTask = inTask;
+  E->isLandable = isLandable;
+  E->isAirport  = isAirport;
+  E->isExcluded = isExcluded;
+  E->index = index;
+  E->style = style;
+
+  MapWaypointLabelListCount++;
+
+}
+
+
+
+
+
 
 void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 {

@@ -10,7 +10,7 @@
 #include "MapWindow.h"
 #include "RGB.h"
 
-#define WPCIRCLESIZE        2
+#define WPCIRCLESIZE        2 // check also duplicate in LKDrawWaypoint
 
 
 bool TextInBoxMoveInView(POINT *offset, RECT *brect){
