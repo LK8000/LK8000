@@ -326,6 +326,7 @@ DRAW	:=\
 	$(DRW)/MapWindowA.cpp \
 	$(DRW)/MapWindowZoom.cpp \
 	$(DRW)/MapWindowMode.cpp \
+	$(DRW)/MapWndProc.cpp \
 
 CALC	:=\
 	$(CLC)/AATDistance.cpp 		\
