@@ -116,6 +116,7 @@ void MapWindow::ScanVisibility(rectObj *bounds_active) {
 }
 
 
+
 // Used by dlgTarget only
 void MapWindow::SetTargetPan(bool do_pan, int target_point, DWORD dlgSize /* = 0 */)
 {

@@ -29,14 +29,7 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
     targetLat = WayPointList[overindex].Latitude;
     targetLon = WayPointList[overindex].Longitude;
     UnlockTaskData();
-    //  DrawGreatCircle(hdc, startLon, startLat, targetLon, targetLat, rc);
-    //HPEN hpOld = (HPEN)SelectObject(hdc, hpOvertarget);
-    HPEN hpOld = (HPEN)SelectObject(hdc, hpBearing);
-    POINT pt[2];
-    LatLon2Screen(startLon, startLat, pt[0]);
-    LatLon2Screen(targetLon, targetLat, pt[1]);
-    ClipPolygon(hdc, pt, 2, rc, false);
-    SelectObject(hdc, hpOld);
+    DrawGreatCircle(hdc, startLon, startLat, targetLon, targetLat, rc);
   }
   else {
     if (!ValidTaskPoint(ActiveWayPoint)) {
@@ -53,8 +46,7 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
     }
     UnlockTaskData();
 
-    DrawGreatCircle(hdc, startLon, startLat,
-                    targetLon, targetLat, rc);
+    DrawGreatCircle(hdc, startLon, startLat, targetLon, targetLat, rc);
 
     if (mode.Is(Mode::MODE_TARGET_PAN)) {
       // Draw all of task if in target pan mode
