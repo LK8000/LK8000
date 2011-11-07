@@ -24,16 +24,10 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
   double targetLat;
   double targetLon;
 
-  if (overindex>OVT_TASK) {
+  if (OvertargetMode>OVT_TASK) {
     LockTaskData();
-    if(OvertargetMode == OVT_TASK && AATEnabled && (ActiveWayPoint>0) && ValidTaskPoint(ActiveWayPoint+1)) {
-      targetLat = Task[ActiveWayPoint].AATTargetLat;
-      targetLon = Task[ActiveWayPoint].AATTargetLon;
-    }
-    else {
-      targetLat = WayPointList[overindex].Latitude;
-      targetLon = WayPointList[overindex].Longitude;
-    }
+    targetLat = WayPointList[overindex].Latitude;
+    targetLon = WayPointList[overindex].Longitude;
     UnlockTaskData();
     //  DrawGreatCircle(hdc, startLon, startLat, targetLon, targetLat, rc);
     //HPEN hpOld = (HPEN)SelectObject(hdc, hpOvertarget);
