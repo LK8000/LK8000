@@ -128,6 +128,147 @@ bool MapWindow::PointVisible(const POINT &P)
 }
 
 
+
+double MapWindow::findMapScaleBarSize(const RECT rc) {
+
+  int range = rc.bottom-rc.top;
+//  int nbars = 0;
+//  int nscale = 1;
+  double pixelsize = zoom.Scale()/GetMapResolutionFactor(); // km/pixel
+  
+  // find largest bar size that will fit in display
+
+  double displaysize = range*pixelsize/2; // km
+
+  if (displaysize>100.0) {
+    return 100.0/pixelsize;
+  }
+  if (displaysize>10.0) {
+    return 10.0/pixelsize;
+  }
+  if (displaysize>1.0) {
+    return 1.0/pixelsize;
+  }
+  if (displaysize>0.1) {
+    return 0.1/pixelsize;
+  }
+  // this is as far as is reasonable
+  return 0.1/pixelsize;
+}
+
+
+
+void MapWindow::ScanVisibility(rectObj *bounds_active) {
+  // received when the SetTopoBounds determines the visibility
+  // boundary has changed.
+  // This happens rarely, so it is good pre-filtering of what is visible.
+  // (saves from having to do it every screen redraw)
+  const rectObj bounds = *bounds_active;
+
+  // far visibility for snail trail
+
+  SNAIL_POINT *sv= SnailTrail;
+  const SNAIL_POINT *se = sv+TRAILSIZE;
+  while (sv<se) {
+    sv->FarVisible = ((sv->Longitude> bounds.minx) &&
+		      (sv->Longitude< bounds.maxx) &&
+		      (sv->Latitude> bounds.miny) &&
+		      (sv->Latitude< bounds.maxy));
+    sv++;
+  }
+
+  // far visibility for waypoints
+
+  if (WayPointList) {
+    WAYPOINT *wv = WayPointList;
+    const WAYPOINT *we = WayPointList+NumberOfWayPoints;
+    while (wv<we) {
+      // TODO code: optimise waypoint visibility
+	// TODO 110203 make it happen in 3 steps, with MULTICALC approach
+      wv->FarVisible = ((wv->Longitude> bounds.minx) &&
+			(wv->Longitude< bounds.maxx) &&
+			(wv->Latitude> bounds.miny) &&
+			(wv->Latitude< bounds.maxy));
+      wv++;
+    }
+  }
+
+  // far visibility for airspace
+  CAirspaceManager::Instance().SetFarVisible( *bounds_active );
+
+}
+
+
+// JMW to be used for target preview
+void MapWindow::SetTargetPan(bool do_pan, int target_point, DWORD dlgSize /* = 0 */)
+{
+  static double old_latitude;
+  static double old_longitude;
+
+  if(dlgSize)
+    targetPanSize = dlgSize;
+
+  if (!mode.Is(Mode::MODE_TARGET_PAN) || (TargetPanIndex != target_point)) {
+    targetMoved = false;
+  }
+
+  TargetPanIndex = target_point;
+
+  if (do_pan && !mode.Is(Mode::MODE_TARGET_PAN)) {
+    old_latitude = PanLatitude;
+    old_longitude = PanLongitude;
+    mode.Special(do_pan ? Mode::MODE_SPECIAL_TARGET_PAN : Mode::MODE_SPECIAL_PAN, true);
+    zoom.SwitchMode();
+  }
+  if (do_pan) {
+    LockTaskData();
+    if (ValidTaskPoint(target_point)) {
+      PanLongitude = WayPointList[Task[target_point].Index].Longitude;
+      PanLatitude = WayPointList[Task[target_point].Index].Latitude;
+      if (target_point==0) {
+        TargetZoomDistance = max(2e3, (double)StartRadius*2);
+      } else if (!ValidTaskPoint(target_point+1)) {
+        TargetZoomDistance = max(2e3, (double)FinishRadius*2);
+      } else if (AATEnabled) {
+        if (Task[target_point].AATType == SECTOR) {
+          TargetZoomDistance = max(2e3, Task[target_point].AATSectorRadius*2);
+        } else {
+          TargetZoomDistance = max(2e3, Task[target_point].AATCircleRadius*2);
+        }
+      } else {
+        TargetZoomDistance = max(2e3, (double)SectorRadius*2);
+      }
+    }
+    UnlockTaskData();
+  }
+  else if (mode.Is(Mode::MODE_TARGET_PAN)) {
+    PanLongitude = old_longitude;
+    PanLatitude = old_latitude;
+    mode.Special(Mode::MODE_SPECIAL_TARGET_PAN, do_pan);
+    zoom.SwitchMode();
+    }
+  mode.Special(Mode::MODE_SPECIAL_TARGET_PAN, do_pan);
+  }
+
+
+
+
+
+bool MapWindow::TargetMoved(double &longitude, double &latitude) {
+  bool retval = false;
+  LockTaskData();
+  if (targetMoved) {
+    longitude = targetMovedLon;
+    latitude = targetMovedLat;
+    targetMoved = false;
+    retval = true;
+  }
+  UnlockTaskData();
+  return retval;
+}
+
+
+
 // colorcode is taken from a 5 bit AsInt union
 void MapWindow::TextColor(HDC hDC, short colorcode) {
 

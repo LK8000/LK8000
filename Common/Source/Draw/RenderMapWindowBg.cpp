@@ -159,6 +159,7 @@ QuickRedraw: // 100318 speedup redraw
 		SelectObject(hdcDrawWindow, hfOld);
 		goto QuickRedraw;
 	}
+    // shaded terrain unreachable, aka glide amoeba
     if ((FinalGlideTerrain==2) && DerivedDrawInfo.TerrainValid) {
       DrawTerrainAbove(hdc, rc);
     }

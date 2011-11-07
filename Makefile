@@ -305,17 +305,27 @@ LKINTER	:=\
 	$(NTR)/VirtualKeys.cpp\
 
 DRAW	:=\
+	$(DRW)/CalculateScreen.cpp \
 	$(DRW)/DrawAircraft.cpp \
 	$(DRW)/DrawAirSpaces.cpp \
 	$(DRW)/DrawAirspaceLabels.cpp \
 	$(DRW)/DrawBearing.cpp \
+	$(DRW)/DrawBestCruiseTrack.cpp \
+	$(DRW)/DrawCompass.cpp \
 	$(DRW)/DrawCross.cpp \
 	$(DRW)/DrawGreatCircle.cpp \
+	$(DRW)/DrawFinalGlideBar.cpp \
 	$(DRW)/DrawFlightMode.cpp \
+	$(DRW)/DrawGlideThroughTerrain.cpp \
 	$(DRW)/DrawGPSStatus.cpp \
+	$(DRW)/DrawMapScale.cpp \
+	$(DRW)/DrawProjectedTrack.cpp \
 	$(DRW)/DrawStartSector.cpp \
 	$(DRW)/DrawTask.cpp \
 	$(DRW)/DrawTaskAAT.cpp \
+	$(DRW)/DrawTeamMate.cpp \
+	$(DRW)/DrawTerrainAbove.cpp \
+	$(DRW)/DrawThermalBand.cpp \
 	$(DRW)/DrawThermalEstimate.cpp \
 	$(DRW)/DrawWind.cpp \
 	$(DRW)/Draw_Primitives.cpp \
@@ -330,7 +340,6 @@ DRAW	:=\
 	$(DRW)/LKGeneralAviation.cpp \
 	$(DRW)/LKMapWindow.cpp \
 	$(DRW)/MapScale.cpp \
-	$(DRW)/MapWindow2.cpp \
 	$(DRW)/MapWindow3.cpp \
 	$(DRW)/MapWindowA.cpp \
 	$(DRW)/MapWindowMode.cpp \
