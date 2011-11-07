@@ -2068,7 +2068,9 @@ static void Update(void){
         wb->SetCaption(gettext(TEXT("_@M1287_")));                               //_@M1287_ "Heading"
         int overindex = GetOvertargetIndex();
         if (overindex>=0) {
-          _stprintf(sTmp, TEXT("%s: %s"), gettext(TEXT("_@M1288_")), WayPointList[overindex].Name);                //_@M1288_ "Showing towards next waypoint"
+          TCHAR ovtname[LKSIZEBUFFERLARGE];
+          GetOvertargetName(ovtname);
+          _stprintf(sTmp, TEXT("%s: %s"), gettext(TEXT("_@M1288_")), ovtname);                //_@M1288_ "Showing towards next waypoint"
           wInfo->SetCaption(sTmp);
         } else {
           _stprintf(sTmp, TEXT("%s: %s"), gettext(TEXT("_@M1288_")), gettext(TEXT("_@M479_")));                    //_@M1288_ "Showing towards next waypoint"  _@M479_ "None"
