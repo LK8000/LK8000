@@ -327,6 +327,8 @@ DRAW	:=\
 	$(DRW)/MapWindowZoom.cpp \
 	$(DRW)/MapWindowMode.cpp \
 	$(DRW)/MapWndProc.cpp \
+	$(DRW)/RenderMapWindow.cpp \
+	$(DRW)/RenderMapWindowBg.cpp \
 	$(DRW)/TextInBox.cpp \
 
 CALC	:=\
