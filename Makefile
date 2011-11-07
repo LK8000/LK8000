@@ -310,6 +310,7 @@ DRAW	:=\
 	$(DRW)/DrawAirspaceLabels.cpp \
 	$(DRW)/DrawBearing.cpp \
 	$(DRW)/DrawCross.cpp \
+	$(DRW)/DrawGreatCircle.cpp \
 	$(DRW)/DrawFlightMode.cpp \
 	$(DRW)/DrawGPSStatus.cpp \
 	$(DRW)/DrawStartSector.cpp \

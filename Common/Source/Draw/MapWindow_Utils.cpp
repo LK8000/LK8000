@@ -3,35 +3,18 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: MapWindow.cpp,v 8.29 2011/01/06 02:07:52 root Exp root $
+   $Id$
 */
 
 #include "externs.h"
 #include "MapWindow.h"
-#include "Waypointparser.h"
-#include "InputEvents.h"
-#include <Message.h>
-#include "Terrain.h"
-#include "LKObjects.h"
-#include "Bitmaps.h"
 #include "RGB.h"
+
 
 using std::min;
 using std::max;
 
 #define WPCIRCLESIZE        2
-
-extern int iround(double i);
-
-#define DONTDRAWTHEMAP !mode.AnyPan()&&MapSpaceMode!=MSM_MAP
-#define MAPMODE8000    !mode.AnyPan()&&MapSpaceMode==MSM_MAP
-
-rectObj MapWindow::screenbounds_latlon;
-
-
-
-extern bool userasked;
-
 
 bool MapWindow::WaypointInTask(int ind) {
   if (!WayPointList) return false;

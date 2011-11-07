@@ -22,6 +22,7 @@
 using std::min;
 using std::max;
 
+rectObj MapWindow::screenbounds_latlon;
 
 
 // This is painting traffic icons on the screen.

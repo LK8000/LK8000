@@ -376,3 +376,119 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
 
 }
 
+
+
+#if TOPOFASTLABEL
+
+int MapWindow::nLabelBlocks;
+int MapWindow::nVLabelBlocks[SCREENVSLOTS+1];
+RECT MapWindow::LabelBlockCoords[SCREENVSLOTS+1][MAXVLABELBLOCKS+1];
+
+// this slots char array is simply loading the slot number. 
+// A nibble should be enough, but no problems to use 8 bits.
+char * MapWindow::slot;
+
+//
+// Returns true if label can be printed, not overlapping other labels
+//
+bool MapWindow::checkLabelBlock(RECT *rc) {
+  static bool doinit=true;
+
+  // This item is out of screen, probably because zoom was made and we still have old wps
+  // or we panned, or we have a far away takeoff still in the list
+  if (rc->top <0 || rc->top>ScreenSizeY) return false;
+  // we must limit the out of screen of bottom label size to clipped screen
+  if (rc->bottom>ScreenSizeY) rc->bottom=ScreenSizeY;
+
+  if (rc->left>ScreenSizeX) return false;
+  if (rc->right<0) return false;
+
+  if (doinit) {
+	// vertical coordinate Y for bottom size of each slot
+	unsigned int slotbottom[SCREENVSLOTS+1];
+	unsigned int slotsize=ScreenSizeY/SCREENVSLOTS;
+	unsigned int i, j;
+	for (j=0; j<(SCREENVSLOTS-1); j++) {
+		i=(j*slotsize)+slotsize;
+		slotbottom[j]=i;
+	}
+	slotbottom[SCREENVSLOTS-1]=ScreenSizeY;
+
+	slot=(char *)malloc((ScreenSizeY+1)*sizeof(char));
+	// j initially is slot 0; we keep <= for safety
+	for (i=0, j=0; i<=(unsigned int)ScreenSizeY; i++) {
+		if ( i>slotbottom[j] ) j++;
+		// just for safety
+		if (j>(SCREENVSLOTS-1)) j=SCREENVSLOTS-1;
+		slot[i]=(char)j;
+	}
+
+	doinit=false;
+  }
+
+  if (DeclutterMode==(DeclutterMode_t)dmDisabled) return true;
+
+  // Max number of labels on screen
+  if (nLabelBlocks>LKMaxLabels) return false;
+
+  // rc.top is searched in its slot, but the label could also spread to the next slot...
+
+  unsigned int vslot=(char)slot[rc->top];
+
+  #define nvlabelslot nVLabelBlocks[vslot]
+
+  // Check rc.top in its slot
+  for (int i=0; i< nvlabelslot; i++) {
+	// CheckRect is used only here
+	if (CheckRectOverlap(&LabelBlockCoords[vslot][i],rc)) {
+		// When overlapping, DO NOT insert this label in the list! It has not been printed!
+		// StartupStore(_T("... item %d overlapping in slot %d with nvlabels=%d\n"),i,vslot,nvlabelslot);
+		return false;
+	}
+  }
+  // top is ok, now check if using also next slot
+  bool doslot2=false;
+  unsigned int v2slot=(char)slot[rc->bottom];
+  #define nv2labelslot nVLabelBlocks[v2slot]
+  if (v2slot != vslot) {
+	for (int i=0; i< nv2labelslot; i++) {
+		//if (CheckRectOverlap(&LabelBlockCoords[v2slot][i],&rc)) {
+		if (CheckRectOverlap(&LabelBlockCoords[v2slot][i],rc)) {
+			// StartupStore(_T("... item %d overlapping in secondary slot %d with nvlabels=%d\n"),i,v2slot,nv2labelslot);
+			return false;
+		}
+	}
+	doslot2=true;
+  }
+
+  // now insert the label in the list, for next checks
+  if (nvlabelslot <(MAXVLABELBLOCKS-1)) {
+	LabelBlockCoords[vslot][nvlabelslot]= *rc;
+	nLabelBlocks++;
+	nVLabelBlocks[vslot]++;
+	// StartupStore(_T("... added label in slot %d nvlabelslot now=%d tot=%d\n"), vslot,nVLabelBlocks[vslot], nLabelBlocks);
+	if (!doslot2) return true;
+  } else {
+	// if the label cannot be checked because the list is full, don't print the label!
+	// StartupStore(_T("... label list is full vslot=%d, item not added%s"),vslot,NEWLINE);
+	return false;
+  }
+
+  // Now check secondary list, if needed
+  if (nv2labelslot <(MAXVLABELBLOCKS-1)) {
+	LabelBlockCoords[v2slot][nv2labelslot]= *rc;
+	nLabelBlocks++;
+	nVLabelBlocks[v2slot]++;
+	// StartupStore(_T("... added label in slot %d nvlabelslot now=%d tot=%d\n"), vslot,nVLabelBlocks[vslot], nLabelBlocks);
+	return true;
+  } else {
+	// if the label cannot be checked because the list is full, don't print the label!
+	// StartupStore(_T("... second label list is full v2slot=%d, item not added%s"),v2slot,NEWLINE);
+	return false;
+  }
+
+  return true;
+}
+
+#endif
+
