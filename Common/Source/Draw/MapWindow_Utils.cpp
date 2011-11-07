@@ -29,6 +29,8 @@ double MapWindow::GetApproxScreenRange() {
     *1000.0/GetMapResolutionFactor();
 }
 
+
+// Used only by Thread_Calculation main loop
 bool MapWindow::IsDisplayRunning() {
   return (THREADRUNNING && GlobalRunning && ProgramStarted);
 }
@@ -73,36 +75,6 @@ bool MapWindow::PointVisible(const POINT &P)
 }
 
 
-
-double MapWindow::findMapScaleBarSize(const RECT rc) {
-
-  int range = rc.bottom-rc.top;
-//  int nbars = 0;
-//  int nscale = 1;
-  double pixelsize = zoom.Scale()/GetMapResolutionFactor(); // km/pixel
-  
-  // find largest bar size that will fit in display
-
-  double displaysize = range*pixelsize/2; // km
-
-  if (displaysize>100.0) {
-    return 100.0/pixelsize;
-  }
-  if (displaysize>10.0) {
-    return 10.0/pixelsize;
-  }
-  if (displaysize>1.0) {
-    return 1.0/pixelsize;
-  }
-  if (displaysize>0.1) {
-    return 0.1/pixelsize;
-  }
-  // this is as far as is reasonable
-  return 0.1/pixelsize;
-}
-
-
-
 void MapWindow::ScanVisibility(rectObj *bounds_active) {
   // received when the SetTopoBounds determines the visibility
   // boundary has changed.
@@ -144,7 +116,7 @@ void MapWindow::ScanVisibility(rectObj *bounds_active) {
 }
 
 
-// JMW to be used for target preview
+// Used by dlgTarget only
 void MapWindow::SetTargetPan(bool do_pan, int target_point, DWORD dlgSize /* = 0 */)
 {
   static double old_latitude;
