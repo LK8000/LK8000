@@ -1638,6 +1638,8 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 
   // LandableReachable is used only by the thermal bar indicator in MapWindow2, after here
   // apparently, is used to tell you if you are below final glide but in range for a landable wp
+  // Since nov 2011 we dont user LandableReachable in FinalGlide anymore. 
+  // However it is still to be understood what drawbacks we might have by changing calculations here.
   LandableReachable = false;
 
   if (!WayPointList) return;
@@ -1704,6 +1706,8 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
     } // if landable or in task
   } // for all waypoints
 
+  // This is wrong, because multicalc will not necessarily find the LandableReachable at each pass
+  // As of nov 2011 it is better not to change it, and let further investigation after 3.0
   if (!LandableReachable) // indentation wrong here
 
   for(i=scanstart;i<scanend;i++) {

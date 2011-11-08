@@ -254,9 +254,7 @@ QuickRedraw: // 100318 speedup redraw
   DrawTeammate(hdc, rc);
 
   if (extGPSCONNECT) {
-    // TODO enhancement: don't draw offtrack indicator if showing spot heights
     DrawProjectedTrack(hdc, rc, Orig_Aircraft);
-    // DrawOffTrackIndicator(hdc, rc); 
     DrawBestCruiseTrack(hdc, Orig_Aircraft);
     DrawBearing(hdc, rc);
   }

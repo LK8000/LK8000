@@ -162,6 +162,7 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 	// draw actual glide bar
 
 	if (Offset<=0) {
+		#if 0 // 111108 No more use of LandableReachable
 		if (LandableReachable && (OvertargetMode==OVT_TASK)) { //@ 101004
 			hpOld = (HPEN)SelectObject(hDC, hpFinalGlideBelowLandable);
 			hbOld = (HBRUSH)SelectObject(hDC, hbFinalGlideBelowLandable);
@@ -169,12 +170,17 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 			hpOld = (HPEN)SelectObject(hDC, hpFinalGlideBelow);
 			hbOld = (HBRUSH)SelectObject(hDC, hbFinalGlideBelow);
 		}
+		#else
+		hpOld = (HPEN)SelectObject(hDC, hpFinalGlideBelow);
+		hbOld = (HBRUSH)SelectObject(hDC, hbFinalGlideBelow);
+		#endif
 	} else {
 		hpOld = (HPEN)SelectObject(hDC, hpFinalGlideAbove);
 		hbOld = (HBRUSH)SelectObject(hDC, hbFinalGlideAbove);
 	}
 	Polygon(hDC,GlideBar,6);
 
+#if 0
 	// draw glide bar at mc 0 and X  only for OVT_TASK 101004
 	// we dont have mc0 calc ready for other overtargets, not granted at least
 	if (OvertargetMode == OVT_TASK) {
@@ -222,7 +228,7 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 			}
 		}
 	}
-
+#endif
 
 	// draw boxed value in the center
 		if (OvertargetMode == OVT_TASK ) { //@ 101004
