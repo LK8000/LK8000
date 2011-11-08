@@ -15,15 +15,13 @@ void MapWindow::DrawBestCruiseTrack(HDC hdc, const POINT Orig)
   HPEN hpOld;
   HBRUSH hbOld;
 
-  if (ActiveWayPoint<0) {
-    return; // nothing to draw..
-  }
-  if (!ValidTaskPoint(ActiveWayPoint)) {
-    return;
-  }
+  if (OvertargetMode>OVT_TASK) return;
 
-  if (DerivedDrawInfo.WaypointDistance < 0.010)
-    return;
+  if (ActiveWayPoint<0) return; 
+
+  if (!ValidTaskPoint(ActiveWayPoint)) return;
+
+  if (DerivedDrawInfo.WaypointDistance < 0.010) return;
 
   // dont draw bestcruise indicator if not needed
   if (fabs(DerivedDrawInfo.BestCruiseTrack-DerivedDrawInfo.WaypointBearing)<2) { // 091202 10 to 2
