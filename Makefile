@@ -368,17 +368,32 @@ DRAW	:=\
 CALC	:=\
 	$(CLC)/AATDistance.cpp 		\
 	$(CLC)/Atmosphere.cpp 		\
+	$(CLC)/Azimuth.cpp \
+	$(CLC)/BestAlternate.cpp	\
 	$(CLC)/Calculations.cpp \
  	$(CLC)/Calculations2.cpp \
+	$(CLC)/Calculations_Utils.cpp \
+	$(CLC)/CalculateWaypointReachable.cpp \
 	$(CLC)/ClimbAverageCalculator.cpp\
 	$(CLC)/ContestMgr.cpp\
+	$(CLC)/DoAirspaces.cpp \
+	$(CLC)/DoAlternates.cpp \
+	$(CLC)/DoCommon.cpp \
+	$(CLC)/DoNearest.cpp \
+	$(CLC)/DoRangeWaypointList.cpp \
+	$(CLC)/DoRecent.cpp \
+	$(CLC)/DoTarget.cpp \
+	$(CLC)/DoTraffic.cpp \
+	$(CLC)/FarFinalGlideThroughTerrain.cpp\
 	$(CLC)/FlarmCalculations.cpp \
+	$(CLC)/FreeFlight.cpp \
 	$(CLC)/LDRotaryBuffer.cpp\
-	$(CLC)/LKBestAlternate.cpp	\
-	$(CLC)/LKCalculations.cpp \
+	$(CLC)/MagneticVariation.cpp \
 	$(CLC)/McReady.cpp\
+	$(CLC)/Orbiter.cpp \
 	$(CLC)/Task.cpp			\
 	$(CLC)/TeamCodeCalculation.cpp \
+	$(CLC)/ThermalHistory.cpp \
 	$(CLC)/ThermalLocator.cpp \
 	$(CLC)/Trace.cpp \
 	$(CLC)/windanalyser.cpp\

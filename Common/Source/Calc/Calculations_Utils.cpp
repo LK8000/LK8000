@@ -1,0 +1,182 @@
+/*
+   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+   Released under GNU/GPL License v.2
+   See CREDITS.TXT file for authors and copyrights
+
+   $Id: LKCalculations.cpp,v 1.26 2010/12/22 01:07:44 root Exp root $
+*/
+
+#include "externs.h"
+#include "Process.h"
+#include "McReady.h"
+#include "RasterTerrain.h"
+#include "Calculations.h"
+#include "Message.h"
+#include "Logger.h"
+#include "Waypointparser.h"
+#include "magfield.h"
+
+using std::min;
+using std::max;
+
+extern void LatLon2Flat(double lon, double lat, int *scx, int *scy);
+extern int CalculateWaypointApproxDistance(int scx_aircraft, int scy_aircraft, int i);
+
+extern void InsertCommonList(int newwp);
+extern void InsertRecentList(int newwp);
+extern void RemoveRecentList(int newwp);
+
+
+
+
+// AverageLD return 0 if invalid, or 999 if too high...
+// This function will return bestld if too high, and last valid average if invalid because on ground or circling
+double GetCurrentEfficiency(DERIVED_INFO *Calculated, short effmode) {
+
+   static double lastValidValue=GlidePolar::bestld;
+   double cruise=Calculated->AverageLD;
+
+   if ( cruise == INVALID_GR )		return GlidePolar::bestld;
+   if ( cruise == 0 )			return lastValidValue;
+   if ( cruise > 0 && cruise <1)	return 1.0;
+   if ( cruise < 0 || cruise >GlidePolar::bestld ) cruise = GlidePolar::bestld; 
+
+   lastValidValue=cruise;
+   return cruise;
+}
+
+
+
+void ResetTask() {
+
+  CALCULATED_INFO.ValidFinish = false;
+  CALCULATED_INFO.ValidStart = false;
+  CALCULATED_INFO.TaskStartTime = 0;
+  CALCULATED_INFO.TaskStartSpeed = 0;
+  CALCULATED_INFO.TaskStartAltitude = 0;
+  CALCULATED_INFO.LegStartTime = 0;
+  CALCULATED_INFO.MinAltitude = 0;
+  CALCULATED_INFO.MaxHeightGain = 0;
+
+// TaskDistanceCovered
+// TaskDistanceToGo
+// TaskSpeedAchieved
+
+  ActiveWayPoint=0;
+  if (UseGates()) {
+	int i;
+	i=NextGate();
+	if (i<0 || i>PGNumberOfGates) { // just for safety we check also numbgates
+		i=RunningGate();
+		if (i<0) i=PGNumberOfGates-1;
+	}
+	ActiveGate=i;
+  }
+
+	// LKTOKEN  _@M676_ = "TASK RESTART RESET" 
+  DoStatusMessage(gettext(TEXT("_@M676_")));
+
+}
+
+
+
+
+unsigned int GetWpChecksum(unsigned int index) { //@ 101018
+
+  int clon, clat, csum;
+ 
+  if (index<NUMRESWP || index > NumberOfWayPoints) {
+	StartupStore(_T("...... Impossible waypoint number=%d for Checksum%s"),index,NEWLINE);
+	return 0;
+  }
+
+  clon=(int)WayPointList[index].Longitude;
+  clat=(int)WayPointList[index].Latitude;
+  if (clon<0) clon*=-1;
+  if (clat<0) clat*=-1;
+
+  csum= WayPointList[index].Name[0] + ((int)WayPointList[index].Altitude*100) + (clat*1000*clon);
+
+  return csum;
+}
+
+
+
+//
+// Notice: GR should not consider total energy. This is a mere geometric value.
+// 
+double CalculateGlideRatio(const double grdistance, const double havailable) {
+  double ratio=0;
+  if (havailable <=0) {
+	ratio=INVALID_GR;
+  } else {
+	ratio= grdistance / havailable;
+
+	if ( ratio >ALTERNATE_MAXVALIDGR || ratio <0 )
+		ratio=INVALID_GR;
+	else
+		if ( ratio <1 )
+			ratio=1;
+  }
+  return ratio;
+}
+
+
+//
+// Assumes that wpindex IS already checked for existance!
+// SafetyAltitudeMode:  0=landables only,  1=landables and turnpoints
+//
+bool CheckSafetyAltitudeApplies(const int wpindex) {
+  #if TESTBENCH
+  if (!ValidWayPoint(wpindex)) {
+	StartupStore(_T("..... CheckSafetyAlt for invalid wp=%d !%s"),wpindex,NEWLINE);
+	return false;
+  }
+  #endif
+  //
+  if (SafetyAltitudeMode==0 && !WayPointCalc[wpindex].IsLandable)
+	return false;
+  else
+	return true;
+}
+
+double GetSafetyAltitude(const int wpindex) {
+
+  if (CheckSafetyAltitudeApplies(wpindex))
+	return SAFETYALTITUDEARRIVAL;
+  else
+	return 0;
+
+}
+
+// Returns a Green, Yellow or Red condition for the glide
+short GetVisualGlideRatio(const double arrival, const double gr) {
+  // Greeen requires 100m more height
+  if ( (arrival - ALTERNATE_OVERSAFETY) >0 ) {
+  	if ( gr <= (GlidePolar::bestld *SAFELD_FACTOR) )
+		return 1; // full green vgr
+  	else 
+  		if ( gr <= GlidePolar::bestld )
+			return 2; // yellow vgr
+  } 
+  return 3; // full red
+}
+
+//
+// Like CheckSafetyAltitudeApplies, but we check for valid wpindex AND we also
+// check that there is a valid Safetyaltitude!
+// This is used by overlay in LKDrawLook
+bool IsSafetyAltitudeInUse(const int wpindex) {
+
+  // Virtual wps are not landables, correct? Hope so!
+  if (!ValidWayPoint(wpindex))
+	return false;
+  if (!CheckSafetyAltitudeApplies(wpindex))
+	return false;
+  if (SAFETYALTITUDEARRIVAL<50)
+	return false;
+
+  return true;
+}
+
+
