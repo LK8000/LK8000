@@ -144,7 +144,6 @@ HPEN MapWindow::hpVisualGlideLightRed; // VENTA3
 HPEN MapWindow::hpVisualGlideHeavyRed; // VENTA3
 
 bool MapWindow::MapDirty = true;
-DWORD MapWindow::fpsTime0 = 0;
 
 bool MapWindow::ForceVisibilityScan = false;
 

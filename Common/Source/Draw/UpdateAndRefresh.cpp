@@ -10,8 +10,6 @@
 #include "MapWindow.h"
 #include "Terrain.h"
 
-extern bool userasked;
-
 
 
 void MapWindow::RequestFastRefresh() {
@@ -21,7 +19,6 @@ void MapWindow::RequestFastRefresh() {
 
 void MapWindow::RefreshMap() {
   MapDirty = true;
-  userasked = true;
   SetEvent(drawTriggerEvent);
 }
 
