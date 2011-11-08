@@ -7,25 +7,7 @@
 */
 
 #include "externs.h"
-#include "Process.h"
 #include "McReady.h"
-#include "RasterTerrain.h"
-#include "Calculations.h"
-#include "Message.h"
-#include "Logger.h"
-#include "Waypointparser.h"
-#include "magfield.h"
-
-using std::min;
-using std::max;
-
-extern void LatLon2Flat(double lon, double lat, int *scx, int *scy);
-extern int CalculateWaypointApproxDistance(int scx_aircraft, int scy_aircraft, int i);
-
-extern void InsertCommonList(int newwp);
-extern void InsertRecentList(int newwp);
-extern void RemoveRecentList(int newwp);
-
 
 
 
