@@ -13,6 +13,8 @@ using std::max;
 
 int MapWindow::iSnailNext=0;
 
+rectObj MapWindow::screenbounds_latlon;
+
 
 
 rectObj MapWindow::CalculateScreenBounds(double scale) {

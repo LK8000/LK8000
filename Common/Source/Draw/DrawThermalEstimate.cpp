@@ -64,3 +64,51 @@ void MapWindow::DrawThermalEstimate(HDC hdc, const RECT rc) {
   }
 }
 
+
+
+//
+// Paint a circle around thermal multitarget
+// Called only during map mode L>
+//
+void MapWindow::DrawThermalEstimateMultitarget(HDC hdc, const RECT rc) {
+
+  POINT screen;
+  HPEN  oldPen;
+  int idx=0;
+
+  // do not mix old and new thermals 
+  if (mode.Is(Mode::MODE_CIRCLING))
+    return; 
+
+  // draw only when visible , at high zoom level
+  if ( MapWindow::zoom.Scale() >1 ) return;
+
+  idx=GetThermalMultitarget();
+  // no L> target destination
+  if (idx <0)
+    return; 
+
+  LatLon2Screen( ThermalHistory[idx].Longitude, ThermalHistory[idx].Latitude, screen);
+
+  //DrawBitmapIn(hdc, screen, hBmpThermalSource);
+
+  SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+  double tradius;
+  if (ISPARAGLIDER)
+     tradius=100;
+  else
+     tradius=200;
+
+  oldPen=(HPEN)SelectObject(hdc, LKPen_White_N3);
+
+  Circle(hdc, screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
+  SelectObject(hdc, hpAircraftBorder);
+  Circle(hdc, screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify())+NIBLSCALE(2), rc);
+  Circle(hdc, screen.x, screen.y, (int)(tradius*zoom.ResScaleOverDistanceModify()), rc);
+
+  SelectObject(hdc,oldPen);
+
+
+}
+
+

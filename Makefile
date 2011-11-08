@@ -319,6 +319,7 @@ DRAW	:=\
 	$(DRW)/DrawGPSStatus.cpp \
 	$(DRW)/DrawGlideThroughTerrain.cpp \
 	$(DRW)/DrawHeading.cpp \
+	$(DRW)/DrawLKAlarms.cpp \
 	$(DRW)/DrawMapScale.cpp \
 	$(DRW)/DrawProjectedTrack.cpp \
 	$(DRW)/DrawStartSector.cpp \
@@ -335,17 +336,20 @@ DRAW	:=\
 	$(DRW)/LKDrawAspNearest.cpp \
 	$(DRW)/LKDrawCommon.cpp \
 	$(DRW)/LKDrawCpuStatsDebug.cpp \
+	$(DRW)/LKDrawFLARMTraffic.cpp \
 	$(DRW)/LKDrawInfoPage.cpp \
 	$(DRW)/LKDrawLook8000.cpp \
 	$(DRW)/LKDrawMapSpace.cpp \
  	$(DRW)/LKDrawNearest.cpp \
 	$(DRW)/LKDrawTargetTraffic.cpp \
 	$(DRW)/LKDrawThermalHistory.cpp \
+	$(DRW)/LKDrawTrail.cpp \
 	$(DRW)/LKDrawTraffic.cpp \
+	$(DRW)/LKDrawVario.cpp \
 	$(DRW)/LKDrawWaypoints.cpp \
 	$(DRW)/LKDrawWelcome.cpp \
 	$(DRW)/LKGeneralAviation.cpp \
-	$(DRW)/LKMapWindow.cpp \
+	$(DRW)/LKMessages.cpp \
 	$(DRW)/LKWriteText.cpp \
 	$(DRW)/MapScale.cpp \
 	$(DRW)/MapWindowA.cpp \

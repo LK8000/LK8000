@@ -124,3 +124,27 @@ void MapWindow::CalculateOrigin(const RECT rc, POINT *Orig) {
 }
 
 
+
+// change dynamically the map orientation mode
+// set true flag for resetting DisplayOrientation mode and return
+void MapWindow::SetAutoOrientation(bool doreset) {
+
+  static bool doinit=true;
+  static int oldDisplayOrientation=0;
+
+  if (doinit||doreset) {
+	oldDisplayOrientation=DisplayOrientation;
+	doinit=false;
+  }
+
+  // 1.4 because of correction if mapscale reported on screen in MapWindow2
+  if (MapWindow::zoom.Scale() * 1.4 >= AutoOrientScale) {
+	// DisplayOrientation=NORTHSMART; // better to keep the glider centered on low zoom levels
+	DisplayOrientation=NORTHUP;
+  } else {
+	DisplayOrientation=oldDisplayOrientation;
+  }
+}
+
+
+
