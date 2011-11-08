@@ -29,14 +29,12 @@ void MapWindow::UpdateTimeStats(bool start) {
 //
 void MapWindow::RenderMapWindow(RECT rc)
 {
-  bool drawmap = false;
   HFONT hfOld;
   DWORD fpsTime = ::GetTickCount();
 
   // only redraw map part every 800 s unless triggered
   if (((fpsTime-fpsTime0)>800)||(fpsTime0== 0)||(userasked)) {
     fpsTime0 = fpsTime;
-    drawmap = true;
     userasked = false;
   }
   MapWindow::UpdateTimeStats(true);
