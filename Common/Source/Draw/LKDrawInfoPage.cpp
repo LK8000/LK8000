@@ -28,6 +28,8 @@ MapWindow::_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p0, p1, col, rc);
 }
 
 
+
+
 void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 {
   HFONT		oldfont=0;
@@ -1010,6 +1012,73 @@ label_Target:
 label_End:
   // restore font and return
   SelectObject(hdc, oldfont); 
+
+}
+
+
+
+void MapWindow::WriteInfo(HDC hdc, bool *showunit, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle, 
+				short *columnvalue, short *columntitle, short *row1, short *row2, short *row3) {
+
+  static bool doinit=true;
+  static short unitrowoffset=0;
+  if (doinit) {
+	switch(ScreenSize) {
+		case ss896x672:
+			unitrowoffset=6;
+			break;
+		case ss800x480:
+			unitrowoffset=10;
+			break;
+		case ss640x480:
+			unitrowoffset=5;
+			break;
+		case ss400x240:
+			unitrowoffset=7;
+			break;
+		case ss480x272:
+			unitrowoffset=5;
+			break;
+		case ss480x234:
+			unitrowoffset=3;
+			break;
+		case ss320x240:
+			unitrowoffset=3;
+			break;
+		// portrait mode
+		case ss240x320:
+			unitrowoffset=-5;
+			break;
+		case ss272x480:
+			unitrowoffset=-14;
+			break;
+		case ss480x640:
+			unitrowoffset=-8;
+			break;
+		case ss480x800:
+			unitrowoffset=-19;
+			break;
+		case ss720x408:
+			unitrowoffset=8;
+			break;
+		default:
+			break;
+	}
+	doinit=false;
+  }
+
+  SelectObject(hdc, LK8PanelBigFont);
+  if (*showunit)
+	LKWriteText(hdc, BufferValue, *columnvalue,*row1, 0, WTMODE_NORMAL,WTALIGN_RIGHT, RGB_WHITE, false);
+  else
+	LKWriteText(hdc, BufferValue, *columnvalue,*row1, 0, WTMODE_NORMAL,WTALIGN_RIGHT, RGB_AMBER, false);
+
+  if (*showunit==true && !HideUnits) {
+       	SelectObject(hdc, LK8PanelUnitFont); // 091230
+        LKWriteText(hdc, BufferUnit, *columnvalue,*row2+unitrowoffset, 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_WHITE, false);
+  }
+  SelectObject(hdc, LK8PanelSmallFont);
+  LKWriteText(hdc, BufferTitle, *columntitle,*row3, 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_LIGHTGREEN, false);
 
 }
 

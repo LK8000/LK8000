@@ -316,31 +316,38 @@ DRAW	:=\
 	$(DRW)/DrawGreatCircle.cpp \
 	$(DRW)/DrawFinalGlideBar.cpp \
 	$(DRW)/DrawFlightMode.cpp \
-	$(DRW)/DrawGlideThroughTerrain.cpp \
 	$(DRW)/DrawGPSStatus.cpp \
+	$(DRW)/DrawGlideThroughTerrain.cpp \
+	$(DRW)/DrawHeading.cpp \
 	$(DRW)/DrawMapScale.cpp \
 	$(DRW)/DrawProjectedTrack.cpp \
 	$(DRW)/DrawStartSector.cpp \
+	$(DRW)/DrawTRI.cpp \
 	$(DRW)/DrawTask.cpp \
 	$(DRW)/DrawTaskAAT.cpp \
 	$(DRW)/DrawTeamMate.cpp \
 	$(DRW)/DrawTerrainAbove.cpp \
 	$(DRW)/DrawThermalBand.cpp \
 	$(DRW)/DrawThermalEstimate.cpp \
+	$(DRW)/DrawVisualGlide.cpp \
 	$(DRW)/DrawWind.cpp \
 	$(DRW)/Draw_Primitives.cpp \
-	$(DRW)/LKDrawCommon.cpp \
 	$(DRW)/LKDrawAspNearest.cpp \
-	$(DRW)/LKDrawLook8000.cpp \
- 	$(DRW)/LKDrawNearest.cpp \
+	$(DRW)/LKDrawCommon.cpp \
+	$(DRW)/LKDrawCpuStatsDebug.cpp \
 	$(DRW)/LKDrawInfoPage.cpp \
-	$(DRW)/LKDrawWaypoints.cpp \
+	$(DRW)/LKDrawLook8000.cpp \
+	$(DRW)/LKDrawMapSpace.cpp \
+ 	$(DRW)/LKDrawNearest.cpp \
+	$(DRW)/LKDrawTargetTraffic.cpp \
 	$(DRW)/LKDrawThermalHistory.cpp \
 	$(DRW)/LKDrawTraffic.cpp \
+	$(DRW)/LKDrawWaypoints.cpp \
+	$(DRW)/LKDrawWelcome.cpp \
 	$(DRW)/LKGeneralAviation.cpp \
 	$(DRW)/LKMapWindow.cpp \
+	$(DRW)/LKWriteText.cpp \
 	$(DRW)/MapScale.cpp \
-	$(DRW)/MapWindow3.cpp \
 	$(DRW)/MapWindowA.cpp \
 	$(DRW)/MapWindowMode.cpp \
 	$(DRW)/MapWindowZoom.cpp \

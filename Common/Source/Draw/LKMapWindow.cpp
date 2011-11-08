@@ -1064,3 +1064,53 @@ void MapWindow::DrawThermalEstimateMultitarget(HDC hdc, const RECT rc) {
 
 
 }
+
+
+
+
+#ifdef DRAWLKSTATUS
+// LK Status message
+void MapWindow::DrawLKStatus(HDC hdc, RECT rc) {
+
+  TextInBoxMode_t TextDisplayMode;
+  TCHAR Buffer[LKSIZEBUFFERLARGE];
+
+  short bottomlines;
+  short middlex=(rc.right-rc.left)/2;
+  short left=rc.left+NIBLSCALE(5);
+  short contenttop=rc.top+NIBLSCALE(50);
+
+  TextDisplayMode.AsInt = 0;
+  TextDisplayMode.AsFlag.Color = TEXTBLACK;
+  TextDisplayMode.AsFlag.NoSetFont = 1; 
+  //TextDisplayMode.AsFlag.AlligneRight = 0;
+  TextDisplayMode.AsFlag.AlligneCenter = 1;
+  TextDisplayMode.AsFlag.WhiteBold = 1;
+  TextDisplayMode.AsFlag.Border = 1;
+  // HFONT oldfont=(HFONT)SelectObject(hdc, LK8PanelBigFont);
+
+  switch(ModeIndex) {
+	case LKMODE_MAP:
+		wsprintf(Buffer,TEXT("MAP mode, 1 of 1"));
+		break;
+	case LKMODE_INFOMODE:
+		_stprintf(Buffer,TEXT("%d-%d"), ModeIndex,CURTYPE+1);
+		break;
+	case LKMODE_WP:
+		_stprintf(Buffer,TEXT("%d-%d"), ModeIndex,CURTYPE+1);
+		break;
+	case LKMODE_NAV:
+		_stprintf(Buffer,TEXT("%d-%d"), ModeIndex,CURTYPE+1);
+		break;
+	default:
+		wsprintf(Buffer,TEXT("UNKOWN mode"));
+		break;
+  }
+  TextInBox(hdc, Buffer, middlex, 200 , 0, TextDisplayMode, false);
+
+  //SelectObject(hdc, oldfont);
+  return;
+}
+#endif
+
+
