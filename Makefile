@@ -367,6 +367,7 @@ DRAW	:=\
 
 CALC	:=\
 	$(CLC)/AATDistance.cpp 		\
+	$(CLC)/AddSnailPoint.cpp 		\
 	$(CLC)/Atmosphere.cpp 		\
 	$(CLC)/Azimuth.cpp \
 	$(CLC)/BestAlternate.cpp	\
@@ -379,18 +380,21 @@ CALC	:=\
 	$(CLC)/DoAirspaces.cpp \
 	$(CLC)/DoAlternates.cpp \
 	$(CLC)/DoCommon.cpp \
+	$(CLC)/DoLogging.cpp \
 	$(CLC)/DoNearest.cpp \
 	$(CLC)/DoRangeWaypointList.cpp \
 	$(CLC)/DoRecent.cpp \
 	$(CLC)/DoTarget.cpp \
 	$(CLC)/DoTraffic.cpp \
 	$(CLC)/FarFinalGlideThroughTerrain.cpp\
+	$(CLC)/FinalGlideThroughTerrain.cpp\
 	$(CLC)/FlarmCalculations.cpp \
 	$(CLC)/FreeFlight.cpp \
 	$(CLC)/LDRotaryBuffer.cpp\
 	$(CLC)/MagneticVariation.cpp \
 	$(CLC)/McReady.cpp\
 	$(CLC)/Orbiter.cpp \
+	$(CLC)/Pirker.cpp \
 	$(CLC)/Task.cpp			\
 	$(CLC)/TeamCodeCalculation.cpp \
 	$(CLC)/ThermalHistory.cpp \
