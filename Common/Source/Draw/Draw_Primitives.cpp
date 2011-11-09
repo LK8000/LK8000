@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "MapWindow.h"
-
+#include "Topology.h"
 
 
 void MapWindow::DrawBitmapX(HDC hdc, int x, int y,
