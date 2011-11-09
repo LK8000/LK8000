@@ -139,14 +139,16 @@ void TriggerVarioUpdate()
 {
 }
 
+bool Debounce() {
+	return Debounce(debounceTimeout);
+}
 
-
-bool Debounce(void) {
+bool Debounce(int dtime) {
   static DWORD fpsTimeLast= 0;
   DWORD fpsTimeThis = ::GetTickCount();
   DWORD dT = fpsTimeThis-fpsTimeLast;
 
-  if (dT>(unsigned int)debounceTimeout) {
+  if (dT>(unsigned int)dtime) {
     fpsTimeLast = fpsTimeThis;
     return true;
   } else {

@@ -50,7 +50,7 @@ extern void HideInfoBoxes();
 extern void PopupWaypointDetails();
 extern void PopupAnalysis();
 extern void RestartCommPorts();
-extern bool Debounce();
+// extern bool Debounce(); REMOVE
 
 #ifndef DEG_TO_RAD
 #define DEG_TO_RAD                                      0.0174532925199432958

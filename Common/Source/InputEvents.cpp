@@ -640,11 +640,16 @@ bool InputEvents::processKey(int dWord) {
     int lastMode = mode;
     const TCHAR *pLabelText = NULL;
 
-    if (!Debounce()) return true;
-
-	#ifndef DISABLEAUDIO
-	// if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK")); 
+    // Accelerate zoom in/out shortening the debounce time
+    if (dWord==38||dWord==40) {
+	#if (WINDOWSPC>0)
+	if (!Debounce(100)) return true;
+	#else
+	if (!Debounce(100)) return true;
 	#endif
+    } else {
+	if (!Debounce()) return true;
+    }
 
     int i;
     for (i = ModeLabel_count[mode]; i >= 0; i--) {
