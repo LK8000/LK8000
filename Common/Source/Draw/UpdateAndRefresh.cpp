@@ -11,8 +11,12 @@
 #include "Terrain.h"
 
 
-
+//
+// 111109 This will force immediate repaint of the OLD screen.
+// It will NOT update the map or calculations, only repaint
+// an old bitmap image of the screen.
 void MapWindow::RequestFastRefresh() {
+  MapDirty = false;
   SetEvent(drawTriggerEvent);
 }
 
