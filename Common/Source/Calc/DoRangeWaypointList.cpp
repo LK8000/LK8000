@@ -63,7 +63,7 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	return false;
    }
 
-   #if TESTBENCH
+   #if 0
    DoStatusMessage(_T("WAIT RECALCULATING WAYPOINTS"));
    #endif
 
