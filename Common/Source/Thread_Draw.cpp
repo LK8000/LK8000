@@ -114,6 +114,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 	GetThreadTimes( hDrawThread, &CreationTime, &ExitTime,&StartKernelTime,&StartUserTime);
 #endif
 
+      // MapDirty was triggered mainly by gpsupdated
       if (!MapDirty && !first) {
 	// redraw old screen, must have been a request for fast refresh
 	BitBlt(hdcScreen, 0, 0, MapRect.right-MapRect.left,

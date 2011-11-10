@@ -17,10 +17,8 @@ void TriggerRedraws(NMEA_INFO *nmea_info, DERIVED_INFO *derived_info) {
         (void)derived_info;
 
   if (MapWindow::IsDisplayRunning()) {
-	if (GpsUpdated) {
-		MapWindow::MapDirty = true;
-		PulseEvent(drawTriggerEvent);
-	}
+	MapWindow::MapDirty = true;
+	PulseEvent(drawTriggerEvent);
   }
 }
 
@@ -60,9 +58,7 @@ DWORD CalculationThread (LPVOID lpvoid) {
 
     // make local copy before editing...
     LockFlightData();
-    if (GpsUpdated) { // timeout on FLARM objects
-      FLARM_RefreshSlots(&GPS_INFO);
-    }
+    FLARM_RefreshSlots(&GPS_INFO);
     memcpy(&tmp_GPS_INFO,&GPS_INFO,sizeof(NMEA_INFO));
     memcpy(&tmp_CALCULATED_INFO,&CALCULATED_INFO,sizeof(DERIVED_INFO));
 
@@ -79,14 +75,10 @@ DWORD CalculationThread (LPVOID lpvoid) {
     } else {
       // run the function anyway, because this gives audio functions
       // if no vario connected
-      if (GpsUpdated) {
-	if (DoCalculationsVario(&tmp_GPS_INFO,&tmp_CALCULATED_INFO)) {
-	}
+	DoCalculationsVario(&tmp_GPS_INFO,&tmp_CALCULATED_INFO);
 	TriggerVarioUpdate(); // emulate vario update
-      }
     }
     
-    if (GpsUpdated) {
       if(DoCalculations(&tmp_GPS_INFO,&tmp_CALCULATED_INFO)){
         MapWindow::MapDirty = true;
         needcalculationsslow = true;
@@ -98,7 +90,6 @@ DWORD CalculationThread (LPVOID lpvoid) {
         else
           MapWindow::mode.Fly(MapWindow::Mode::MODE_FLY_CRUISE);
       }
-    }
         
     if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
@@ -126,8 +117,6 @@ DWORD CalculationThread (LPVOID lpvoid) {
     LockFlightData();
     memcpy(&CALCULATED_INFO,&tmp_CALCULATED_INFO,sizeof(DERIVED_INFO));
     UnlockFlightData();
-
-    GpsUpdated = false;
 
 #ifdef CPUSTATS
     if ( (GetThreadTimes( hCalculationThread, &CreationTime, &ExitTime,&EndKernelTime,&EndUserTime)) == 0) {

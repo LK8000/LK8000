@@ -683,7 +683,7 @@ void DrawTerrain( const HDC hdc, const RECT rc,
   // step 3: calculate derivatives of height buffer
   // step 4: calculate illumination and colors
   trenderer->Slope(sx, sy, sz); 
-  
+ 
   // step 5: draw
   trenderer->Draw(hdc, MapWindow::MapRect);
 

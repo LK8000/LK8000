@@ -61,7 +61,7 @@ void MapWindow::RenderMapWindow(RECT rc)
 
   hfOld = (HFONT)SelectObject(hdcDrawWindow, MapWindowFont);
   
-  DrawMapScale(hdcDrawWindow,rc, zoom.BigZoom());
+  DrawMapScale(hdcDrawWindow,rc, zoom.BigZoom()); // unused BigZoom 
 
   DrawCompass(hdcDrawWindow, rc);
   

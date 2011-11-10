@@ -130,7 +130,6 @@ void RestartCommPorts() {
 
 void TriggerGPSUpdate()
 {
-  GpsUpdated = true;
   SetEvent(dataTriggerEvent);
 }
 
