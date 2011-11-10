@@ -645,7 +645,7 @@ bool InputEvents::processKey(int dWord) {
 	#if (WINDOWSPC>0)
 	if (!Debounce(100)) return true;
 	#else
-	if (!Debounce(100)) return true;
+	if (!Debounce()) return true;
 	#endif
     } else {
 	if (!Debounce()) return true;
