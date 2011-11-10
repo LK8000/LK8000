@@ -18,16 +18,10 @@ typedef struct _DATAOPTIONS
 } DATAOPTIONS;
 
 
-
-void ProcessChar1 (char c);
-void ProcessChar2 (char c);
-
 extern void UnlockEventQueue();
 extern void LockEventQueue();
 extern void UnlockComm();
 extern void LockComm();
-extern void UnlockGraphicsData();
-extern void LockGraphicsData();
 extern void UnlockFlightData();
 extern void CheckAndUnlockFlightData();
 extern void LockFlightData();
@@ -44,13 +38,9 @@ extern void TriggerVarioUpdate();
 void FocusOnWindow(int i, bool selected);
 void FullScreen();
 
-extern void ShowInfoBoxes();
-extern void HideInfoBoxes();
-
 extern void PopupWaypointDetails();
 extern void PopupAnalysis();
 extern void RestartCommPorts();
-// extern bool Debounce(); REMOVE
 
 #ifndef DEG_TO_RAD
 #define DEG_TO_RAD                                      0.0174532925199432958
@@ -100,10 +90,6 @@ typedef struct
 
 DWORD GetBatteryInfo(BATTERYINFO* pBatteryInfo);
 void UpdateBatteryInfos(void);      
-void DefocusInfoBox(void);
-void Event_SelectInfoBox(int i);
-void Event_ChangeInfoBoxType(int i);
-void DoInfoKey(int keycode);
 void SwitchToMapWindow(void);
 
 

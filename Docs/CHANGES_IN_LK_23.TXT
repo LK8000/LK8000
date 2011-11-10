@@ -2,6 +2,57 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3m November 11, 2011
+-----------------------------
+
+NEW
+
+- Improve dlgStatistics airspace page
+    -New: Show wpt name,distance,arrival altitude
+    -Bugfix: Place wpt vertical marker line to the correct distance
+    -New: Draw blue "estimated gliding line" based on arrival and safety altitude when looking towards selected target
+    -New: Draw target bearing difference to diagram
+
+
+CHANGES
+
+- Show correct target waypoint in asp analysis
+
+    -Show wpt name
+    -Show wpt position with a white dashed line in the diagram
+    -Scale diagram distance according to wpt distance
+    -Draws "no data" when no wpt selected
+
+- Make asp analysis diagram x axis scaling more user friendly
+
+- Add YELLOW and RED colors to airspace warnings.
+
+- Tune ungestures area: the click area for quickly flipping infopages and nearest pages
+    without using gestures is enlarged a bit for better response.
+    Show overtarget prefix in asp analysis page
+
+- Faster zoom in/out for PC
+
+
+
+FIXES
+
+- Bugfix predicted asp warning messages can show up before takeoff
+
+- Print correct bearing value on dlgstatistics asp analysis page
+
+- Fix bug not showing bearing line correctly when assigned TAKEOFF as current multitarget destination.
+
+- Fix BestCruise track indicator is only relative to T> , and should not appear in other
+  multitarget modes.
+
+- Fix final glide bar mode flashing orange and red.
+  The final glide bar will no more indicate X or orange flashing, to simplify things:
+  red for negative altitude, green for positive.
+
+
+
+
 Version 2.3l November 4, 2011
 -----------------------------
 

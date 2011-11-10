@@ -55,7 +55,6 @@
 #endif
 
 GEXTERN bool MenuActive GEXTFALSE;
-GEXTERN BOOL GpsUpdated;
 GEXTERN HANDLE dataTriggerEvent;
 
 // System boot specific flags
