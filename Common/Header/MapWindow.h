@@ -625,7 +625,8 @@ class MapWindow {
   static double ScaleList[SCALELISTSIZE];
   static double StepMapScale(int Step);
   static double FindMapScale(double Value);
-
+  static void FillScaleListForEngineeringUnits(void);
+  
   static HPEN    hpCompassBorder;
 
   #if TOPOFASTLABEL
