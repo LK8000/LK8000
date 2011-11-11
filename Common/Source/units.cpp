@@ -578,8 +578,7 @@ bool Units::FormatUserMapScale(Units_t *Unit, double Distance, TCHAR *Buffer, si
     }
   }
 
-//  _stprintf(sTmp, TEXT("%.*f%s"), prec, value, pU->Name);
-  _stprintf(sTmp, TEXT("%.*f"), prec, value);
+  _stprintf(sTmp, TEXT("%.*f%s"), prec, value, pU->Name);
 
   if (_tcslen(sTmp) < size-1){
     _tcscpy(Buffer, sTmp);

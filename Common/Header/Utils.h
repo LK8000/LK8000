@@ -196,7 +196,9 @@ void ConvertCToT(TCHAR* pszDest, const CHAR* pszSrc);
 
 void propGetFontSettings(TCHAR *Name, LOGFONT* lplf);
 void propGetFontSettingsFromString(TCHAR *Buffer, LOGFONT* lplf);
+#if 0
 int propGetScaleList(double *List, size_t Size);
+#endif
 
 long GetUTCOffset(void);
 int TextToLineOffsets(TCHAR* text, int* LineOffsets, int maxLines);

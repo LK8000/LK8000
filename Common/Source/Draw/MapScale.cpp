@@ -16,23 +16,27 @@ using std::max;
 
 
 double MapWindow::LimitMapScale(double value) {
+  
+  double minreasonable=0.005;
 
-  double minreasonable;
-
-  if ( ISPARAGLIDER ) 
-    minreasonable = 0.005;  // 091017 5m resolution for Para
-  else
-    minreasonable = 0.05; 
-
-  if (zoom.AutoZoom() && !mode.Is(Mode::MODE_CIRCLING)) {
-    if (AATEnabled && (ActiveWayPoint>0)) {
-      if ( ISPARAGLIDER ) minreasonable = 0.005; 
-      else minreasonable = 0.88;
-    } else {
-      if ( ISPARAGLIDER ) minreasonable = 0.005; // 091016 0.01
-      else minreasonable = 0.44; 
-    }
+  if (mode.Is(Mode::MODE_CIRCLING)) {
+      // during circling
+      minreasonable = 0.05;
+      if ( ISPARAGLIDER ) minreasonable = 0.01;
+  } else {
+      // if not circling
+      minreasonable = 0.5;
+      if ( ISPARAGLIDER ) minreasonable = 0.01;
+      if (zoom.AutoZoom()) {
+	if (AATEnabled && (ActiveWayPoint>0)) {
+	  if ( ISPARAGLIDER ) minreasonable = 0.01; else minreasonable = 1.2;
+	} else {
+	  if ( ISPARAGLIDER ) minreasonable = 0.01; else minreasonable = 0.6; 
+	}
+      }
   }
+
+  minreasonable /= 1.4;		// minreasonable value correction to km/miles
 
   if (ScaleListCount>0) {
     return FindMapScale(max(minreasonable,min(160.0,value)));
@@ -97,4 +101,91 @@ double MapWindow::FindMapScale(double Value){
   return(Value);
 }
 
+void MapWindow::FillScaleListForEngineeringUnits(void)
+{
+  int i;
 
+  // Fill up discrete map scales
+  // Consider scalelist size!!!
+  switch (Units::GetUserDistanceUnit()) {
+    default:
+      ScaleListCount = 0;
+      ScaleList[ScaleListCount++] = 0.01;		// km
+      ScaleList[ScaleListCount++] = 0.025;
+      ScaleList[ScaleListCount++] = 0.05;
+      ScaleList[ScaleListCount++] = 0.075;
+      ScaleList[ScaleListCount++] = 0.1;
+      ScaleList[ScaleListCount++] = 0.15;
+      ScaleList[ScaleListCount++] = 0.2;
+      ScaleList[ScaleListCount++] = 0.35;
+      ScaleList[ScaleListCount++] = 0.5;
+      ScaleList[ScaleListCount++] = 0.75;
+      ScaleList[ScaleListCount++] = 1.0;
+      ScaleList[ScaleListCount++] = 1.5;
+      ScaleList[ScaleListCount++] = 2.0;
+      ScaleList[ScaleListCount++] = 3.5;
+      ScaleList[ScaleListCount++] = 5.0;
+      ScaleList[ScaleListCount++] = 7.5;
+      ScaleList[ScaleListCount++] = 10.0;
+      ScaleList[ScaleListCount++] = 15.0;
+      ScaleList[ScaleListCount++] = 20.0;
+      ScaleList[ScaleListCount++] = 25.0;
+      ScaleList[ScaleListCount++] = 40.0;
+      ScaleList[ScaleListCount++] = 50.0;
+      ScaleList[ScaleListCount++] = 75.0;
+      break;
+      
+    case unStatuteMiles:
+      ScaleListCount = 0;
+      ScaleList[ScaleListCount++] = 25.0 * (0.0006214 / 3.281);		// to ft;
+      ScaleList[ScaleListCount++] = 50.0  * (0.0006214 / 3.281);	// to ft
+      ScaleList[ScaleListCount++] = 100.0 * (0.0006214 / 3.281);	// to ft
+      ScaleList[ScaleListCount++] = 250.0 * (0.0006214 / 3.281);	// to ft
+      ScaleList[ScaleListCount++] = 500.0 * (0.0006214 / 3.281);	// to ft
+      ScaleList[ScaleListCount++] = 800.0 * (0.0006214 / 3.281);	// to ft
+      ScaleList[ScaleListCount++] = 0.2;
+      ScaleList[ScaleListCount++] = 0.35;
+      ScaleList[ScaleListCount++] = 0.5;
+      ScaleList[ScaleListCount++] = 0.75;
+      ScaleList[ScaleListCount++] = 1.0;
+      ScaleList[ScaleListCount++] = 1.5;
+      ScaleList[ScaleListCount++] = 2.0;
+      ScaleList[ScaleListCount++] = 3.5;
+      ScaleList[ScaleListCount++] = 5.0;
+      ScaleList[ScaleListCount++] = 7.5;
+      ScaleList[ScaleListCount++] = 10.0;
+      ScaleList[ScaleListCount++] = 15.0;
+      ScaleList[ScaleListCount++] = 20.0;
+      ScaleList[ScaleListCount++] = 25.0;
+      ScaleList[ScaleListCount++] = 40.0;
+      break;
+
+    case unNauticalMiles:
+      ScaleListCount = 0;
+      ScaleList[ScaleListCount++] = 25.0 * (0.00053996 / 3.281);	// to ft;
+      ScaleList[ScaleListCount++] = 50.0  * (0.00053996 / 3.281);	// to ft
+      ScaleList[ScaleListCount++] = 100.0 * (0.00053996 / 3.281);	// to ft
+      ScaleList[ScaleListCount++] = 250.0 * (0.00053996 / 3.281);	// to ft
+      ScaleList[ScaleListCount++] = 500.0 * (0.00053996 / 3.281);	// to ft
+      ScaleList[ScaleListCount++] = 800.0 * (0.00053996 / 3.281);	// to ft
+      ScaleList[ScaleListCount++] = 0.2;
+      ScaleList[ScaleListCount++] = 0.35;
+      ScaleList[ScaleListCount++] = 0.5;
+      ScaleList[ScaleListCount++] = 0.75;
+      ScaleList[ScaleListCount++] = 1.0;
+      ScaleList[ScaleListCount++] = 1.5;
+      ScaleList[ScaleListCount++] = 2.0;
+      ScaleList[ScaleListCount++] = 3.5;
+      ScaleList[ScaleListCount++] = 5.0;
+      ScaleList[ScaleListCount++] = 7.5;
+      ScaleList[ScaleListCount++] = 10.0;
+      ScaleList[ScaleListCount++] = 15.0;
+      ScaleList[ScaleListCount++] = 20.0;
+      ScaleList[ScaleListCount++] = 25.0;
+      ScaleList[ScaleListCount++] = 40.0;
+      break;
+  } //sw units
+  
+  double scalefactor = (double)GetMapResolutionFactor() / (double)IBLSCALE(/*Appearance.DefaultMapWidth*/ MapRect.right) * Units::ToUserDistance(1400.0);
+  for (i=0; i<ScaleListCount; i++) ScaleList[i] /= scalefactor;
+}
