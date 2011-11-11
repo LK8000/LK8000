@@ -16,23 +16,27 @@ using std::max;
 
 
 double MapWindow::LimitMapScale(double value) {
+  
+  double minreasonable=0.005;
 
-  double minreasonable;
-
-  if ( ISPARAGLIDER ) 
-    minreasonable = 0.005;  // 091017 5m resolution for Para
-  else
-    minreasonable = 0.05; 
-
-  if (zoom.AutoZoom() && !mode.Is(Mode::MODE_CIRCLING)) {
-    if (AATEnabled && (ActiveWayPoint>0)) {
-      if ( ISPARAGLIDER ) minreasonable = 0.005; 
-      else minreasonable = 0.88;
-    } else {
-      if ( ISPARAGLIDER ) minreasonable = 0.005; // 091016 0.01
-      else minreasonable = 0.44; 
-    }
+  if (mode.Is(Mode::MODE_CIRCLING)) {
+      // during circling
+      minreasonable = 0.05;
+      if ( ISPARAGLIDER ) minreasonable = 0.01;
+  } else {
+      // if not circling
+      minreasonable = 0.5;
+      if ( ISPARAGLIDER ) minreasonable = 0.01;
+      if (zoom.AutoZoom()) {
+	if (AATEnabled && (ActiveWayPoint>0)) {
+	  if ( ISPARAGLIDER ) minreasonable = 0.01; else minreasonable = 1.2;
+	} else {
+	  if ( ISPARAGLIDER ) minreasonable = 0.01; else minreasonable = 0.6; 
+	}
+      }
   }
+
+  minreasonable /= 1.4;		// minreasonable value correction to km/miles
 
   if (ScaleListCount>0) {
     return FindMapScale(max(minreasonable,min(160.0,value)));
