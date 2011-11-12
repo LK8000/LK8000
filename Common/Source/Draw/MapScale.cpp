@@ -17,31 +17,32 @@ using std::max;
 
 double MapWindow::LimitMapScale(double value) {
   
-  double minreasonable=0.005;
+  double minreasonable=5.0;		// give minreasonable values in system units, in meters! (what you would like to see on the mapscale)
 
   if (mode.Is(Mode::MODE_CIRCLING)) {
       // during circling
-      minreasonable = 0.05;
-      if ( ISPARAGLIDER ) minreasonable = 0.01;
+      minreasonable = 50.0;
+      if ( ISPARAGLIDER ) minreasonable = 10.0;
   } else {
       // if not circling
-      minreasonable = 0.5;
-      if ( ISPARAGLIDER ) minreasonable = 0.01;
+      minreasonable = 500.0;
+      if ( ISPARAGLIDER ) minreasonable = 10.0;
       if (zoom.AutoZoom()) {
 	if (AATEnabled && (ActiveWayPoint>0)) {
-	  if ( ISPARAGLIDER ) minreasonable = 0.01; else minreasonable = 1.2;
+	  if ( ISPARAGLIDER ) minreasonable = 10.0; else minreasonable = 1200.0;
 	} else {
-	  if ( ISPARAGLIDER ) minreasonable = 0.01; else minreasonable = 0.6; 
+	  if ( ISPARAGLIDER ) minreasonable = 10.0; else minreasonable = 600.0; 
 	}
       }
   }
 
-  minreasonable /= 1.4;		// minreasonable value correction to km/miles
-
+  minreasonable = Units::ToUserDistance(minreasonable / 1.4);		// 1.4 for mapscale symbol
+  
+  // return value in user distance units!!!
   if (ScaleListCount>0) {
-    return FindMapScale(max(minreasonable,min(160.0,value)));
+    return FindMapScale(max(minreasonable,min(160.0,value)));		//maximum limit in user distance units!
   } else {
-    return max(minreasonable,min(160.0,value));
+    return max(minreasonable,min(160.0,value));				//maximum limit in user distance units!
   }
 }
 
