@@ -186,6 +186,6 @@ void MapWindow::FillScaleListForEngineeringUnits(void)
       break;
   } //sw units
   
-  double scalefactor = (double)GetMapResolutionFactor() / (double)IBLSCALE(/*Appearance.DefaultMapWidth*/ MapRect.right) * Units::ToUserDistance(1400.0);
+  double scalefactor = (double)GetMapResolutionFactor() / (double)IBLSCALE(/*Appearance.DefaultMapWidth*/ MapRect.right) * 1.4;
   for (i=0; i<ScaleListCount; i++) ScaleList[i] /= scalefactor;
 }

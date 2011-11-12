@@ -133,7 +133,8 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     }
 
     _tcscpy(Scale,TEXT(""));
-    double mapScale=zoom.Scale()*1400.0;	// 1400.0 for mapscale symbol size on map screen
+    double mapScale=Units::ToSysDistance(zoom.Scale()*1.4);	// 1.4 for mapscale symbol size on map screen
+    // zoom.Scale() gives user units, but FormatUserMapScale() needs system distance units
     Units::FormatUserMapScale(NULL, mapScale, Scale, sizeof(Scale)/sizeof(Scale[0]));
 
     SIZE tsize;
