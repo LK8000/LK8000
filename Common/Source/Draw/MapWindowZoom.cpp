@@ -353,9 +353,6 @@ void MapWindow::Zoom::UpdateMapScale()
  */
 void MapWindow::Zoom::ModifyMapScale()
 {
-  if(_scale == *_requestedScale)
-    return;
-  
   // limit zoomed in so doesn't reach silly levels
   *_requestedScale = LimitMapScale(*_requestedScale); // FIX VENTA remove limit
   _scaleOverDistanceModify = *_requestedScale / DISTANCEMODIFY;
