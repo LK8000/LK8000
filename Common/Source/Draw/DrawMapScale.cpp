@@ -133,33 +133,9 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     }
 
     _tcscpy(Scale,TEXT(""));
-    double mapScale=zoom.Scale()*1.4; // FIX 091117
-    if (ISPARAGLIDER) {
-	if ((mapScale) <1.0) {
-		_stprintf(Scale,TEXT("%1.2f"),mapScale);
-	}
-	else if((mapScale*3) <3) {
-		_stprintf(Scale,TEXT("%1.1f"),mapScale);
-	}
-	else {
-		_stprintf(Scale,TEXT("%1.0f"),mapScale);
-	}
-    } else {
-	if (mapScale <0.1)
-	{
-		_stprintf(Scale,TEXT("%1.2f"),mapScale);
-	}
-	else if(mapScale <3)
-	{
-		_stprintf(Scale,TEXT("%1.1f"),mapScale);
-	}
-	else
-	{
-		_stprintf(Scale,TEXT("%1.0f"),mapScale);
-	}
-    }
-   _tcscat(Scale, Units::GetDistanceName()); 
-
+    double mapScale=Units::ToSysDistance(zoom.Scale()*1.4);	// 1.4 for mapscale symbol size on map screen
+    // zoom.Scale() gives user units, but FormatUserMapScale() needs system distance units
+    Units::FormatUserMapScale(NULL, mapScale, Scale, sizeof(Scale)/sizeof(Scale[0]));
 
     SIZE tsize;
 

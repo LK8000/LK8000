@@ -306,8 +306,9 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hbFinalGlideBelowLandable=LKBrush_Orange;
       hbWind=LKBrush_Grey;
 
-      ScaleListCount = propGetScaleList(ScaleList, sizeof(ScaleList)/sizeof(ScaleList[0]));
-      zoom.RequestedScale(LimitMapScale(zoom.RequestedScale()));
+      // Scalelist filled up in DrawThread, in function Mapwindow::FillScaleListForEngineeringUnits()
+      //ScaleListCount = propGetScaleList(ScaleList, sizeof(ScaleList)/sizeof(ScaleList[0]));
+      //zoom.RequestedScale(LimitMapScale(zoom.RequestedScale()));
 
 
       // Signal that draw thread can run now

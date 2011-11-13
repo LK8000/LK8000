@@ -194,6 +194,7 @@ TCHAR szRegistryBgMapColor[]= TEXT("BgMapColor");
 TCHAR szRegistryDebounceTimeout[]= TEXT("DebounceTimeout");
 
 TCHAR szRegistryPGCruiseZoom[]= TEXT("PGCruiseZoom");
+TCHAR szRegistryPGAutoZoomThreshold[]= TEXT("PGAutoZoomThreshold");
 TCHAR szRegistryPGClimbZoom[]= TEXT("PGClimbZoom");
 TCHAR szRegistryAutoOrientScale[]= TEXT("AutoOrientScale");
 TCHAR szRegistryPGOpenTimeH[]= TEXT("PGOpenTimeH");
@@ -425,6 +426,7 @@ extern TCHAR szRegistryBgMapColor[];
 extern TCHAR szRegistryDebounceTimeout[];
 
 extern TCHAR szRegistryPGCruiseZoom[];
+extern TCHAR szRegistryPGAutoZoomThreshold[];
 extern TCHAR szRegistryPGClimbZoom[];
 extern TCHAR szRegistryAutoOrientScale[];
 extern TCHAR szRegistryPGOpenTimeH[];

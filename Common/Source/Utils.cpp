@@ -14,7 +14,7 @@
 using std::min;
 using std::max;
 
-
+#if 0
 int propGetScaleList(double *List, size_t Size){
 
   TCHAR Buffer[128];
@@ -53,6 +53,7 @@ int propGetScaleList(double *List, size_t Size){
   }
   
 }
+#endif
 
 long GetUTCOffset(void) {
   return UTCOffset;
