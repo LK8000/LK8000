@@ -40,9 +40,11 @@ void MapWindow::Zoom::CalculateTargetPanZoom()
 void MapWindow::Zoom::CalculateAutoZoom()
 {
   static int autoMapScaleWaypointIndex = -1;
-  
+  static int wait_for_new_wpt_distance = 0;
   double wpd = DerivedDrawInfo.ZoomDistance; 
-  if(wpd > 0) {
+  
+  if (wait_for_new_wpt_distance>0) wait_for_new_wpt_distance--;		//This counter is needed to get new valid waypoint distance after wp changes
+  if ( (wpd > 0) && (wait_for_new_wpt_distance==0) ) {
     double AutoZoomFactor;
     if( (DisplayOrientation == NORTHTRACK && !mode.Is(Mode::MODE_CIRCLING)) ||
         DisplayOrientation == NORTHUP ||
@@ -52,7 +54,8 @@ void MapWindow::Zoom::CalculateAutoZoom()
     else
       AutoZoomFactor = 4;
     
-    if(wpd < AutoZoomFactor * _scaleOverDistanceModify) {
+    if ( ( !ISPARAGLIDER && (wpd < AutoZoomFactor * _scaleOverDistanceModify) ) ||
+	 ( ISPARAGLIDER  && (wpd < PGAutoZoomThreshold)) ) {
       // waypoint is too close, so zoom in
       _modeScale[SCALE_CRUISE] = LimitMapScale(wpd * DISTANCEMODIFY / AutoZoomFactor);
     }
@@ -72,7 +75,7 @@ void MapWindow::Zoom::CalculateAutoZoom()
       // if the current zoom focused waypoint has changed...
       if(autoMapScaleWaypointIndex != Task[ActiveWayPoint].Index) {
         autoMapScaleWaypointIndex = Task[ActiveWayPoint].Index;
-        
+        wait_for_new_wpt_distance = 3;
         // zoom back out to where we were before
         _modeScale[SCALE_CRUISE] = _modeScale[SCALE_AUTO_ZOOM];
       }

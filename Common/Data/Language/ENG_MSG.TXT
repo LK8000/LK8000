@@ -1645,6 +1645,9 @@ _@M1695_ "Logger"
 # max 3-4 chars!
 _@M1696_ "auto"
 
+# PG autozoom threshold on config page 23
+_@M1697_ "Autozoom threshold "
+
 #Multitarget bearing infobox
 _@M1698_ "Multitarget Bearing"
 _@M1699_ "BrgMtg"

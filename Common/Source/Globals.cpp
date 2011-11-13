@@ -248,6 +248,7 @@ void Globals_Init(void) {
 
   PGClimbZoom=1;
   PGCruiseZoom=1;
+  PGAutoZoomThreshold = 5000;
   // This is the gauge bar on the left for variometer
   LKVarioBar=0;
   // This is the value to be used for painting the bar

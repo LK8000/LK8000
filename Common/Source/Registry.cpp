@@ -393,6 +393,9 @@ void ReadRegistrySettings(void)
   Temp=4;
   GetFromRegistry(szRegistryPGCruiseZoom,&Temp);
   PGCruiseZoom=Temp;
+  Temp=5000;
+  GetFromRegistry(szRegistryPGAutoZoomThreshold,&Temp);
+  PGAutoZoomThreshold=Temp;
   Temp=1;
   GetFromRegistry(szRegistryPGClimbZoom,&Temp);
   PGClimbZoom=Temp;

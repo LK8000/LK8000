@@ -1874,6 +1874,13 @@ static void setVariables(void) {
     // if (!ISPARAGLIDER) wp->SetVisible(false); 
     wp->RefreshDisplay();
   }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpPGAutoZoomThreshold"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(iround(DISTANCEMODIFY*PGAutoZoomThreshold));
+    wp->GetDataField()->SetUnits(Units::GetDistanceName());
+    // if (!ISPARAGLIDER) wp->SetVisible(false); 
+    wp->RefreshDisplay();
+  }
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoOrientScale"));
   if (wp) {
     wp->GetDataField()->SetAsInteger(AutoOrientScale);
@@ -3294,6 +3301,19 @@ void dlgConfigurationShowModal(void){
         requirerestart=true;
     }
   }
+
+  int ival;
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpPGAutoZoomThreshold"));
+  if (wp) {
+    ival = iround(wp->GetDataField()->GetAsFloat()/DISTANCEMODIFY);
+    if ((int)PGAutoZoomThreshold != ival) {
+      PGAutoZoomThreshold = ival;
+      SetToRegistry(szRegistryPGAutoZoomThreshold, PGAutoZoomThreshold);
+      changed = true;
+    }
+  }
+  
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGClimbZoom"));
   if (wp) {
     if ( PGClimbZoom != wp->GetDataField()->GetAsInteger()) {
@@ -3482,8 +3502,6 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
-
-  int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUTCOffset"));
   if (wp) {

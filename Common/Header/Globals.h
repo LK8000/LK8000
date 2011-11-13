@@ -206,6 +206,7 @@ GEXTERN short DeclutterMode;
 
 GEXTERN int PGClimbZoom;
 GEXTERN int PGCruiseZoom;
+GEXTERN DWORD PGAutoZoomThreshold;
 
 // This is the gauge bar on the left for variometer
 GEXTERN int LKVarioBar;
