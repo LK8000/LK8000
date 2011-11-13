@@ -90,7 +90,6 @@ static WndButton *buttonPaste=NULL;
 #define NUMPAGES 25 		// ADDPAGE FIX HERE  27 as of 101126
 
 
-
 static void UpdateButtons(void) {
   TCHAR text[120];
   TCHAR val[100];
@@ -1816,25 +1815,62 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGClimbZoom"));
   if (wp) {
+    TCHAR buf1[32], buf2[64];
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
+    if (MapWindow::zoom.GetPgClimbInitMapScaleText(0, buf1, sizeof(buf1)/sizeof(buf1[0]))) {
+      _stprintf(buf2,TEXT("%s (%s)"),gettext(TEXT("_@M438_")), buf1);
+      dfe->addEnumText(buf2);
+    } else {
 	// LKTOKEN  _@M438_ = "More" 
-    dfe->addEnumText(gettext(TEXT("_@M438_")));
+      dfe->addEnumText(gettext(TEXT("_@M438_")));
+    }
+    if (MapWindow::zoom.GetPgClimbInitMapScaleText(1, buf1, sizeof(buf1)/sizeof(buf1[0]))) {
+      _stprintf(buf2,TEXT("%s (%s)"),gettext(TEXT("_@M634_")), buf1);
+      dfe->addEnumText(buf2);
+    } else {
 	// LKTOKEN  _@M634_ = "Standard" 
-    dfe->addEnumText(gettext(TEXT("_@M634_")));
+      dfe->addEnumText(gettext(TEXT("_@M634_")));
+    }
+    if (MapWindow::zoom.GetPgClimbInitMapScaleText(2, buf1, sizeof(buf1)/sizeof(buf1[0]))) {
+      _stprintf(buf2,TEXT("%s (%s)"),gettext(TEXT("_@M389_")), buf1);
+      dfe->addEnumText(buf2);
+    } else {
 	// LKTOKEN  _@M389_ = "Less" 
-    dfe->addEnumText(gettext(TEXT("_@M389_")));
+      dfe->addEnumText(gettext(TEXT("_@M389_")));
+    }
+    if (MapWindow::zoom.GetPgClimbInitMapScaleText(3, buf1, sizeof(buf1)/sizeof(buf1[0]))) {
+      _stprintf(buf2,TEXT("%s (%s)"),gettext(TEXT("_@M415_")), buf1);
+      dfe->addEnumText(buf2);
+    } else {
 	// LKTOKEN  _@M415_ = "Lower" 
-    dfe->addEnumText(gettext(TEXT("_@M415_")));
+      dfe->addEnumText(gettext(TEXT("_@M415_")));
+    }
+    if (MapWindow::zoom.GetPgClimbInitMapScaleText(4, buf1, sizeof(buf1)/sizeof(buf1[0]))) {
+      _stprintf(buf2,TEXT("%s (%s)"),gettext(TEXT("_@M342_")), buf1);
+      dfe->addEnumText(buf2);
+    } else {
 	// LKTOKEN  _@M342_ = "Higher" 
-    dfe->addEnumText(gettext(TEXT("_@M342_")));
+      dfe->addEnumText(gettext(TEXT("_@M342_")));
+    }
     dfe->Set(PGClimbZoom);
     // if (!ISPARAGLIDER) wp->SetVisible(false); 
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGCruiseZoom"));
   if (wp) {
-    wp->GetDataField()->SetAsInteger(PGCruiseZoom);
+    TCHAR buf1[32];
+    DataFieldEnum* dfe;
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    for (int i=0; i<=8; ++i) {
+      if (MapWindow::zoom.GetPgCruiseInitMapScaleText(i, buf1, sizeof(buf1)/sizeof(buf1[0]))) {
+	dfe->addEnumText(buf1);
+      } else {
+	_stprintf(buf1,TEXT("%d"),i);
+	dfe->addEnumText(buf1);
+      }
+    }
+    dfe->Set(PGCruiseZoom);
     // if (!ISPARAGLIDER) wp->SetVisible(false); 
     wp->RefreshDisplay();
   }

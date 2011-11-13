@@ -177,7 +177,8 @@ class MapWindow {
    */
   class Zoom {
   private:
-    // initial fixed zoom factors
+    // initial fixed zoom factors - in user distance units, km,mi what is selected!
+    // Values are used in dlgConfiguration, to show values in config options
     static const double SCALE_CRUISE_INIT      = 4.0;
     static const double SCALE_CIRCLING_INIT    = 4.0 / 50;
     static const double SCALE_PANORAMA_INIT    = 7.0;
@@ -222,7 +223,10 @@ class MapWindow {
     double ResScaleOverDistanceModify() const { return _resScaleOverDistanceModify; }
     double DrawScale() const             { return _drawScale; }
     double InvDrawScale() const          { return _invDrawScale; }
-    
+
+    double GetPgClimbZoomInitValue(int parameter_number) const;
+    double GetPgCruiseZoomInitValue(int parameter_number) const;
+
   public:
     Zoom();
     void Reset();
@@ -246,6 +250,9 @@ class MapWindow {
     
     void UpdateMapScale();
     void ModifyMapScale();
+
+    bool GetPgClimbInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const;
+    bool GetPgCruiseInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const;
   };
   
 

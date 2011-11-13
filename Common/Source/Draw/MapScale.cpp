@@ -112,8 +112,8 @@ void MapWindow::FillScaleListForEngineeringUnits(void)
     default:
       ScaleListCount = 0;
       ScaleList[ScaleListCount++] = 0.01;		// km
-      ScaleList[ScaleListCount++] = 0.025;
-      ScaleList[ScaleListCount++] = 0.05;
+      ScaleList[ScaleListCount++] = 0.02;
+      ScaleList[ScaleListCount++] = 0.04;
       ScaleList[ScaleListCount++] = 0.075;
       ScaleList[ScaleListCount++] = 0.1;
       ScaleList[ScaleListCount++] = 0.15;
@@ -138,11 +138,11 @@ void MapWindow::FillScaleListForEngineeringUnits(void)
       
     case unStatuteMiles:
       ScaleListCount = 0;
-      ScaleList[ScaleListCount++] = 25.0 * (0.0006214 / 3.281);		// to ft;
-      ScaleList[ScaleListCount++] = 50.0  * (0.0006214 / 3.281);	// to ft
-      ScaleList[ScaleListCount++] = 100.0 * (0.0006214 / 3.281);	// to ft
-      ScaleList[ScaleListCount++] = 250.0 * (0.0006214 / 3.281);	// to ft
-      ScaleList[ScaleListCount++] = 500.0 * (0.0006214 / 3.281);	// to ft
+      ScaleList[ScaleListCount++] = 50.0 * (0.0006214 / 3.281);		// to ft;
+      ScaleList[ScaleListCount++] = 100.0  * (0.0006214 / 3.281);	// to ft
+      ScaleList[ScaleListCount++] = 200.0 * (0.0006214 / 3.281);	// to ft
+      ScaleList[ScaleListCount++] = 400.0 * (0.0006214 / 3.281);	// to ft
+      ScaleList[ScaleListCount++] = 600.0 * (0.0006214 / 3.281);	// to ft
       ScaleList[ScaleListCount++] = 800.0 * (0.0006214 / 3.281);	// to ft
       ScaleList[ScaleListCount++] = 0.2;
       ScaleList[ScaleListCount++] = 0.35;
@@ -163,11 +163,11 @@ void MapWindow::FillScaleListForEngineeringUnits(void)
 
     case unNauticalMiles:
       ScaleListCount = 0;
-      ScaleList[ScaleListCount++] = 25.0 * (0.00053996 / 3.281);	// to ft;
-      ScaleList[ScaleListCount++] = 50.0  * (0.00053996 / 3.281);	// to ft
-      ScaleList[ScaleListCount++] = 100.0 * (0.00053996 / 3.281);	// to ft
-      ScaleList[ScaleListCount++] = 250.0 * (0.00053996 / 3.281);	// to ft
-      ScaleList[ScaleListCount++] = 500.0 * (0.00053996 / 3.281);	// to ft
+      ScaleList[ScaleListCount++] = 50.0 * (0.00053996 / 3.281);	// to ft;
+      ScaleList[ScaleListCount++] = 100.0  * (0.00053996 / 3.281);	// to ft
+      ScaleList[ScaleListCount++] = 200.0 * (0.00053996 / 3.281);	// to ft
+      ScaleList[ScaleListCount++] = 400.0 * (0.00053996 / 3.281);	// to ft
+      ScaleList[ScaleListCount++] = 600.0 * (0.00053996 / 3.281);	// to ft
       ScaleList[ScaleListCount++] = 800.0 * (0.00053996 / 3.281);	// to ft
       ScaleList[ScaleListCount++] = 0.2;
       ScaleList[ScaleListCount++] = 0.35;

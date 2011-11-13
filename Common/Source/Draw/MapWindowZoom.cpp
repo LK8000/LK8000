@@ -85,7 +85,38 @@ void MapWindow::Zoom::CalculateAutoZoom()
      }
 }
 
+double MapWindow::Zoom::GetPgClimbZoomInitValue(int parameter_number) const
+{
+  // Initial PG circling zoom map scales. Parameter number equal to config dlg item index
+  // Values are given in user units, km or mi what is selected.
+  switch(parameter_number) {
+    case 0: return 0.02;
+    case 1: return 0.04;
+    case 2: return 0.075;
+    case 3: return 0.1;
+    case 4: return 0.15;
+    default: return 0.02;
+  }
+}
 
+double MapWindow::Zoom::GetPgCruiseZoomInitValue(int parameter_number) const
+{
+  // Initial PG cruise zoom map scales. Parameter number equal to config dlg item index
+  // Values are given in user units, km or mi what is selected.
+  // These values used to select the best available mapscale from scalelist. See MapWindow::FillScaleListForEngineeringUnits()
+  switch(parameter_number) { // 091108
+    case 0: return 0.05;
+    case 1: return 0.10;
+    case 2: return 0.15;
+    case 3: return 0.20;
+    case 4: return 0.35; 
+    case 5: return 0.50; 
+    case 6: return 0.75; 
+    case 7: return 1.00; 
+    case 8: return 1.50;
+    default: return 0.35; 
+  }
+}
 /** 
  * @brief Resets Map Zoom to initial values
  */
@@ -101,56 +132,8 @@ void MapWindow::Zoom::Reset()
     break;
     
   case umParaglider:
-    switch(PGCruiseZoom) { // 091108
-    case 0:
-      _modeScale[SCALE_CRUISE] = 0.10;  // 088
-      break;
-    case 1:
-      _modeScale[SCALE_CRUISE] = 0.12;  // 117
-      break;
-    case 2:
-      _modeScale[SCALE_CRUISE] = 0.14;  // 205
-      break;
-    case 3:
-      _modeScale[SCALE_CRUISE] = 0.16;  // 293
-      break;
-    case 4:
-      _modeScale[SCALE_CRUISE] = 0.18; 
-      break;
-    case 5:
-      _modeScale[SCALE_CRUISE] = 0.20; 
-      break;
-    case 6:
-      _modeScale[SCALE_CRUISE] = 0.23; 
-      break;
-    case 7:
-      _modeScale[SCALE_CRUISE] = 0.25; 
-      break;
-    case 8:
-    default:
-      _modeScale[SCALE_CRUISE] = 0.3; 
-      break;
-    }
-    
-    switch(PGClimbZoom) {
-    case 0:
-      _modeScale[SCALE_CIRCLING] = 0.05;
-      break;
-    case 1:
-      _modeScale[SCALE_CIRCLING] = 0.07;
-      break;
-    case 2:
-      _modeScale[SCALE_CIRCLING] = 0.09;
-      break;
-    case 3:
-      _modeScale[SCALE_CIRCLING] = 0.14;
-      break;
-    case 4:
-    default:
-      _modeScale[SCALE_CIRCLING] = 0.03;
-      break;
-    }
-    
+    _modeScale[SCALE_CRUISE]   = GetPgCruiseZoomInitValue(PGCruiseZoom);
+    _modeScale[SCALE_CIRCLING] = GetPgClimbZoomInitValue(PGClimbZoom);
     _modeScale[SCALE_PANORAMA] = SCALE_PG_PANORAMA_INIT;
     break;
     
@@ -159,7 +142,14 @@ void MapWindow::Zoom::Reset()
     _modeScale[SCALE_CRUISE] = _modeScale[SCALE_CIRCLING] = _modeScale[SCALE_PANORAMA] = SCALE_INVALID_INIT;
     break;
   }
-  
+
+  // Correct _modeScale[] values for internal use
+  // You have to give values in user units (km,mi, what is selected), we need to divide it by 1.4
+  // because of the size of the mapscale symbol
+  _modeScale[SCALE_CRUISE]   /= 1.4;
+  _modeScale[SCALE_CIRCLING] /= 1.4;
+  _modeScale[SCALE_PANORAMA] /= 1.4;
+
   if(_autoZoom)
     _modeScale[SCALE_AUTO_ZOOM] = _modeScale[SCALE_CRUISE];
   
@@ -362,5 +352,24 @@ void MapWindow::Zoom::ModifyMapScale()
   _drawScale = GetMapResolutionFactor() / _drawScale;
   _invDrawScale = 1.0 / _drawScale;
   _scale = *_requestedScale;
+}
+
+
+bool MapWindow::Zoom::GetPgClimbInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const
+{
+  double mapscale = GetPgClimbZoomInitValue(init_parameter);
+ 
+  // Get nearest discrete value
+  double ms = MapWindow::FindMapScale(mapscale/1.4)*1.4;
+  return Units::FormatUserMapScale(NULL, Units::ToSysDistance(ms), out, size);
+}
+
+bool MapWindow::Zoom::GetPgCruiseInitMapScaleText(int init_parameter, TCHAR *out, size_t size) const
+{
+  double mapscale = GetPgCruiseZoomInitValue(init_parameter);
+ 
+  // Get nearest discrete value
+  double ms = MapWindow::FindMapScale(mapscale/1.4)*1.4;
+  return Units::FormatUserMapScale(NULL, Units::ToSysDistance(ms), out, size);
 }
 
