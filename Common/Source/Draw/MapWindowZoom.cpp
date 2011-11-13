@@ -90,8 +90,8 @@ double MapWindow::Zoom::GetPgClimbZoomInitValue(int parameter_number) const
   // Initial PG circling zoom map scales. Parameter number equal to config dlg item index
   // Values are given in user units, km or mi what is selected.
   switch(parameter_number) {
-    case 0: return 0.02;
-    case 1: return 0.04;
+    case 0: return 0.025;
+    case 1: return 0.05;
     case 2: return 0.075;
     case 3: return 0.1;
     case 4: return 0.15;
@@ -105,7 +105,7 @@ double MapWindow::Zoom::GetPgCruiseZoomInitValue(int parameter_number) const
   // Values are given in user units, km or mi what is selected.
   // These values used to select the best available mapscale from scalelist. See MapWindow::FillScaleListForEngineeringUnits()
   switch(parameter_number) { // 091108
-    case 0: return 0.05;
+    case 0: return 0.075;
     case 1: return 0.10;
     case 2: return 0.15;
     case 3: return 0.20;
