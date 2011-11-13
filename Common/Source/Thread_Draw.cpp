@@ -81,6 +81,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 
   zoom.RequestedScale(zoom.Scale());
   zoom.ModifyMapScale();
+  FillScaleListForEngineeringUnits();
   
   bool first = true;
 

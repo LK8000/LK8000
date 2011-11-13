@@ -546,7 +546,10 @@
 <DataField name="" DataType="enum"  Min=0 Max=2 Step=1/>
 </WndProperty>
 <WndProperty Name="prpPGCruiseZoom" Caption="_@M202_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H215_">
-<DataField name="" DataType="double" DisplayFormat="%.0f" EditFormat="%.0f" Min=0 Max=8 Step=1/>
+<DataField name="" DataType="enum"  Min=0 Max=2 Step=1/>
+</WndProperty>
+<WndProperty Name="prpPGAutoZoomThreshold" Caption="_@M1697_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H1213_">
+<DataField name="" DataType="double" DisplayFormat="%.1f %s" EditFormat="%.1f" Min=1.0 Max=20.0 Step="0.5" />
 </WndProperty>
 <WndProperty Name="prpPGOptimizeRoute" Caption="_@M1686_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H9999_">
 <DataField name="" DataType="boolean"/>
