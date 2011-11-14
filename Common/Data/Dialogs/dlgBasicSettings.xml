@@ -1,6 +1,6 @@
 <PMML>
 <WndForm Name="frmBasicSettingRegular" Type="Dialog" X=5 Y=5 Width=310 Height=230 Caption="_@M129_" Popup="1" Font=2 >
-<WndButton   name="buttonClose" Caption="_@M186_"    X=165 Y=167 Width=143  Height=42 Font=2 OnClickNotify="OnCloseClicked"> </WndButton> 
+<WndButton   name="buttonClose" Caption="_@M583_"    X=165 Y=167 Width=143  Height=42 Font=2 OnClickNotify="OnCloseClicked"> </WndButton> 
 <WndButton   name="buttonDumpBallast" Caption="_@M212_"    X=2 Y=-999 Width=165  Height=42 Font=2 OnClickNotify="OnBallastDump">
 </WndButton> 
 <WndButton   name="buttonStopDump" Caption="_@M573_" X=2 Y=-999 Width=165  Height=42 Font=2 OnClickNotify="OnBallastDump">
