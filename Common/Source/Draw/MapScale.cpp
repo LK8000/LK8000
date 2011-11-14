@@ -25,7 +25,7 @@ double MapWindow::LimitMapScale(double value) {
       if ( ISPARAGLIDER ) minreasonable = 10.0;
   } else {
       // if not circling
-      minreasonable = 500.0;
+      minreasonable = 100.0;
       if ( ISPARAGLIDER ) minreasonable = 10.0;
       if (zoom.AutoZoom()) {
 	if (AATEnabled && (ActiveWayPoint>0)) {
