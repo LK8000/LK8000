@@ -1408,7 +1408,7 @@ BOOL NMEAParser::PDSXT(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   Message::AddMessage(30000, 3, mbuf);
   Message::Unlock();
   #ifndef DISABLEAUDIO
-  if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_TONEUP"));
+  if (EnableSoundModes) LKSound(TEXT("LK_TONEUP.WAV"));
   #endif
 
   return TRUE;

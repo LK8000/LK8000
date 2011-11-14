@@ -73,8 +73,8 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 		Message::Lock();
 	        Message::AddMessage(1000, 3, gettext(TEXT("_@M872_"))); // LANDSCAPE ZOOM FOR 20s
 		Message::Unlock();
-      		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_TONEUP"));
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) LKSound(TEXT("LK_TONEUP.WAV"));
 		#endif
     }
     else {
@@ -87,8 +87,8 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 			Message::Lock(); 
 	        	Message::AddMessage(1500, 3, gettext(TEXT("_@M873_"))); // BACK TO NORMAL ZOOM
 			Message::Unlock();
-      			#ifndef DISABLEAUDIO
-			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_TONEDOWN"));
+			#ifndef DISABLEAUDIO
+			if (EnableSoundModes) LKSound(TEXT("LK_TONEDOWN.WAV"));
 			#endif
 		}
 	}
