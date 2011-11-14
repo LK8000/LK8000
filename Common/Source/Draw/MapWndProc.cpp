@@ -366,10 +366,12 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       break;
 
     case WM_LBUTTONDBLCLK: 
-      // VNT TODO: do not handle this event and remove CS_DBLCLKS in register class.
-      // Only handle timed clicks in BUTTONDOWN with no proximity. 
       //
       // Attention please: a DBLCLK is followed by a simple BUTTONUP with NO buttondown.
+      //
+      // 111110 there is no need to process buttondblclick if the map is unlocked.
+      // So we go directly to buttondown, simulating a non-doubleclick.
+      if (!LockModeStatus) goto _buttondown;
 
       dwDownTime = GetTickCount();  
       XstartScreen = LOWORD(lParam); YstartScreen = HIWORD(lParam);
@@ -395,6 +397,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       break;
 
     case WM_LBUTTONDOWN:
+_buttondown:
       #ifdef DEBUG_DBLCLK
       DoStatusMessage(_T("BUTTONDOWN MapWindow")); 
       #endif
@@ -534,11 +537,15 @@ goto_menu:
 	if (mapmode8000) { 
 	if ( (X <= (MapRect.left + COMPASSMENUSIZE)) && (Y <= (MapRect.top+COMPASSMENUSIZE)) ) {
 		if (!CustomKeyHandler(CKI_TOPLEFT)) {
+			// Well we better NOT play a click while zoomin in and out, because on slow
+			// devices it will slow down the entire process.
+			// Instead, we make a click from InputEvents, debounced.
+			#if 0
 			#ifndef DISABLEAUDIO
          		 if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 			#endif
+			#endif
 			wParam = 0x26; 
-			// we can have problems if fast double clicks?
 			// zoom in
 			InputEvents::processKey(wParam);
 			return TRUE;
@@ -578,11 +585,12 @@ goto_menu:
 	else { 
 		if ( (X > ((MapRect.right-MapRect.left)- COMPASSMENUSIZE)) && (Y <= MapRect.top+COMPASSMENUSIZE) ) {
 			if (!CustomKeyHandler(CKI_TOPRIGHT)) {
+				#if 0
 				#ifndef DISABLEAUDIO
          			if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 				#endif
+				#endif
 				wParam = 0x26; 
-				// we can have problems if fast double clicks?
 				InputEvents::processKey(wParam);
 				return TRUE;
 			}
@@ -757,10 +765,12 @@ goto_menu:
 							break;
 						}
 					}
+					// no sound for zoom clicks
+					#if 0
 					#ifndef DISABLEAUDIO
 					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 					#endif
-
+					#endif
 					InputEvents::processKey(wParam);
 					dwDownTime= 0L;
 					return TRUE; 

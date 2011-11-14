@@ -641,11 +641,25 @@ bool InputEvents::processKey(int dWord) {
     const TCHAR *pLabelText = NULL;
 
     // Accelerate zoom in/out shortening the debounce time
+    static DWORD lastClickTime=0;
     if (dWord==38||dWord==40) {
 	#if (WINDOWSPC>0)
 	if (!Debounce(100)) return true;
+	  #if TESTBENCH
+	  MapWindow::zoom.BigZoom(true);
+	  #endif
 	#else
-	if (!Debounce()) return true;
+	if (!Debounce(100)) return true;
+	MapWindow::zoom.BigZoom(true);
+	#endif
+	//
+	// Sound clicks would delay too much fast zoom: we only play them once
+	//
+	#ifndef DISABLEAUDIO
+	if ((GetTickCount()-lastClickTime)>800) {
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+	}
+	lastClickTime=GetTickCount();
 	#endif
     } else {
 	if (!Debounce()) return true;

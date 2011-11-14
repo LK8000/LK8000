@@ -26,6 +26,9 @@ using std::max;
 
 unsigned short minalt=9999;
 
+#define QUICKDRAW (FastZoom || MapWindow::zoom.BigZoom())
+extern bool FastZoom;
+
 Topology* TopoStore[MAXTOPOLOGY];
 
 BYTE tshadow_r, tshadow_g, tshadow_b, tshadow_h;
@@ -241,12 +244,9 @@ public:
     int X1 = (unsigned int)(X0+dtquant*ixs);
     int Y1 = (unsigned int)(Y0+dtquant*iys);
 
-    #if USERASTERCACHE
     unsigned int rfact=1;
-    #endif
 
-    if (MapWindow::zoom.BigZoom()) {
-      MapWindow::zoom.BigZoom(false);
+    if (QUICKDRAW) {
       #if USERASTERCACHE
       // Raster map is always DirectAccess for LK
       if (!RasterTerrain::IsDirectAccess()) {
@@ -254,6 +254,9 @@ public:
         // to avoid too many cache misses
         rfact = 2;
       }
+      #else
+      // reduce quantization for a fast refresh of the map
+      rfact = 4;
       #endif
     }
 
@@ -264,11 +267,7 @@ public:
     MapWindow::Screen2LatLon(x, y, X, Y);
     double xmiddle = X;
     double ymiddle = Y;
-    #if USERASTERCACHE
     int dd = (int)lround(dtquant*rfact);
-    #else
-    int dd = dtquant;
-    #endif
 
     x = (X0+X1)/2+dd;
     y = (Y0+Y1)/2;
@@ -307,7 +306,15 @@ public:
     epx = DisplayMap->GetEffectivePixelSize(&pixelsize_d,
                                             ymiddle, xmiddle);
 
-    // do not shade terrain when using high or low zoom
+    /*
+    // We might accelerate drawing by disabling shading while quickdrawing,
+    // but really this wouldnt change much the things now in terms of speed, 
+    // while instead creating a confusing effect.
+    if (QUICKDRAW) {
+	do_shading=false;
+    } else ...
+    */
+
     if (epx> min(ixs,iys)/4) { 
       do_shading = false;
     } else {
@@ -322,7 +329,6 @@ public:
       #endif
       // StartupStore(_T("..... scale=%.3f\n"),MapWindow::zoom.Scale());
     }
-
 
     POINT orig = MapWindow::GetOrigScreen();
     rect_visible.left = max((long)MapWindow::MapRect.left, (long)(MapWindow::MapRect.left-(long)epx*dtquant))-orig.x;

@@ -17,7 +17,8 @@
 #define DONTDRAWTHEMAP !mode.AnyPan()&&MapSpaceMode!=MSM_MAP
 #define MAPMODE8000    !mode.AnyPan()&&MapSpaceMode==MSM_MAP
 
-
+#define QUICKDRAW (FastZoom || zoom.BigZoom())
+extern bool FastZoom;
 
 void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 				  const POINT &Orig,
@@ -34,6 +35,13 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 
   // TODO assign numslots with a function, based also on available CPU time
   short numslots=1;
+
+  // If we have a BigZoom request, we serve it immediately without calculating anything
+  // TODO: stretch the old map bitmap to the new zoom, while fastzooming
+  if (QUICKDRAW) {
+	goto fastzoom;
+  }
+
   if (NumberOfWayPoints>200) {
 	numslots=NumberOfWayPoints/400;
 	// keep numslots optimal
@@ -119,16 +127,14 @@ QuickRedraw: // 100318 speedup redraw
 	LKTextBlack=false;
 	BlackScreen=false;
   }
-  
+
+fastzoom:  
+
   SelectObject(hdc, GetStockObject(BLACK_BRUSH));
   SelectObject(hdc, GetStockObject(BLACK_PEN));
   hfOld = (HFONT)SelectObject(hdc, MapWindowFont);
   
   // ground first...
-  
-  if (zoom.BigZoom()) {
-    zoom.BigZoom(false);
-  }
   
   if (DONTDRAWTHEMAP) { // 100319
 	SelectObject(hdcDrawWindow, hfOld);
@@ -142,11 +148,6 @@ QuickRedraw: // 100318 speedup redraw
 	double sunelevation = 40.0;
 	double sunazimuth=GetAzimuth();
 
-    if (MapDirty) {
-      // map has been dirtied since we started drawing, so hurry up
-      zoom.BigZoom(true);
-    }
-
     LockTerrainDataGraphics();
  	if (DONTDRAWTHEMAP) { // 100318
 		UnlockTerrainDataGraphics();
@@ -159,17 +160,26 @@ QuickRedraw: // 100318 speedup redraw
 		SelectObject(hdcDrawWindow, hfOld);
 		goto QuickRedraw;
 	}
-    // shaded terrain unreachable, aka glide amoeba
-    if ((FinalGlideTerrain==2) && DerivedDrawInfo.TerrainValid) {
-      DrawTerrainAbove(hdc, rc);
+    if (!QUICKDRAW) {
+    	// shaded terrain unreachable, aka glide amoeba
+    	if ((FinalGlideTerrain==2) && DerivedDrawInfo.TerrainValid) {
+    	  DrawTerrainAbove(hdc, rc);
+    	}
     }
     UnlockTerrainDataGraphics();
   }
+ 
+  if (QUICKDRAW)  {
+	if ( !mode.AnyPan()) DrawLook8000(hdc,rc); 
+  	SelectObject(hdcDrawWindow, hfOld);
+	return;
+  }
 
- 	if (DONTDRAWTHEMAP) { // 100319
-		SelectObject(hdcDrawWindow, hfOld);
-		goto QuickRedraw;
-	}
+  if (DONTDRAWTHEMAP) { // 100319
+	SelectObject(hdcDrawWindow, hfOld);
+	goto QuickRedraw;
+  }
+
   if (EnableTopology) {
     DrawTopology(hdc, rc); // LOCKED 091105
   }
@@ -310,6 +320,7 @@ QuickRedraw: // 100318 speedup redraw
 #ifdef DRAWDEBUG
   DrawDebug(hdc,rc);
 #endif
+
   SelectObject(hdcDrawWindow, hfOld);
 
 }
