@@ -1247,7 +1247,6 @@ static  TCHAR szTerrainFile[MAX_PATH] = TEXT("\0");
 static  TCHAR szTopologyFile[MAX_PATH] = TEXT("\0");
 static  TCHAR szAirfieldFile[MAX_PATH] = TEXT("\0");
 static  TCHAR szLanguageFile[MAX_PATH] = TEXT("\0");
-static  TCHAR szStatusFile[MAX_PATH] = TEXT("\0");
 static  TCHAR szInputFile[MAX_PATH] = TEXT("\0");
 static  TCHAR szMapFile[MAX_PATH] = TEXT("\0");
 static  DWORD dwPortIndex1 = 0;
@@ -2262,19 +2261,6 @@ static void setVariables(void) {
     dfe = (DataFieldFileReader*)wp->GetDataField();
     _stprintf(tsuf,_T("*%S"),LKS_LANGUAGE);
     dfe->ScanDirectoryTop(_T(LKD_LANGUAGE),tsuf);
-    dfe->Lookup(temptext);
-    wp->RefreshDisplay();
-  }
-
-  GetRegistryString(szRegistryStatusFile, szStatusFile, MAX_PATH);
-  _tcscpy(temptext,szStatusFile);
-  ExpandLocalPath(temptext);
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStatusFile"));
-  if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%S"),LKS_STATUS);
-    dfe->ScanDirectoryTop(_T(LKD_CONF),tsuf);
     dfe->Lookup(temptext);
     wp->RefreshDisplay();
   }
@@ -3928,19 +3914,6 @@ void dlgConfigurationShowModal(void){
       SetRegistryString(szRegistryLanguageFile, temptext);
       requirerestart = true; // restart needed for language load
       // LKReadLanguageFile(); // NO GOOD. MEMORY LEAKS PENDING
-      changed = true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpStatusFile"));
-  if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
-    _tcscpy(temptext, dfe->GetPathFile());
-    ContractLocalPath(temptext);
-    if (_tcscmp(temptext,szStatusFile)) {
-      SetRegistryString(szRegistryStatusFile, temptext);
-      requirerestart = true;
       changed = true;
     }
   }

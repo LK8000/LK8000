@@ -149,7 +149,6 @@ TCHAR szRegistryTopologyFile[]=  TEXT("TopologyFile");
 TCHAR szRegistryWayPointFile[]=  TEXT("WPFile");
 TCHAR szRegistryAdditionalWayPointFile[]=  TEXT("AdditionalWPFile");
 TCHAR szRegistryLanguageFile[]=  TEXT("LanguageFile");
-TCHAR szRegistryStatusFile[]=  TEXT("StatusFile");
 TCHAR szRegistryInputFile[]=  TEXT("InputFile");
 TCHAR szRegistryPilotName[]=  TEXT("PilotName");
 TCHAR szRegistryAircraftType[]=  TEXT("AircraftType");

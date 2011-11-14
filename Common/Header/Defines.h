@@ -130,7 +130,6 @@
 #define LKS_TOPOLOGY	".tpl"
 #define LKS_AIRFIELDS	".txt"
 #define LKS_LANGUAGE	".LNG"
-#define LKS_STATUS	".xcs"
 #define LKS_INPUT	".xci"
 #define LKS_IGC		".igc"
 

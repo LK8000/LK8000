@@ -75,7 +75,6 @@ void PreloadInitialisation(bool ask) {
   // Interface (before interface)
   if (!ask) {
     LKReadLanguageFile();
-    ReadStatusFile();
     InputEvents::readFile();
   }
 

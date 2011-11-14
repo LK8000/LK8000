@@ -577,9 +577,6 @@
 <WndProperty Name="prpInputFile" Caption="_@M268_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=130 Font=2 Help="_@H222_">
 <DataField name="" DataType="filereader" Min=0 Max=200 Step=1/>
 </WndProperty>
-<WndProperty Name="prpStatusFile" Caption="_@M659_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=130 Font=2 Help="_@H224_">
-<DataField name="" DataType="filereader" Min=0 Max=200 Step=1/>
-</WndProperty>
 <WndProperty Name="prpMcOverlay" Caption="_@M416_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H225_">
 <DataField name="" DataType="enum" Min=0 Max=1 Step=1/>
 </WndProperty>

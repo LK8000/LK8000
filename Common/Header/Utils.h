@@ -156,9 +156,7 @@ void LoadRegistryFromFile(const TCHAR* szFile);
    Interface Files !
    ===================================================== */
 
-void ReadStatusFile(void);
 void StatusFileInit(void);
-void _init_Status(int num);
 
 typedef struct {
 	TCHAR *key;		/* English key */
