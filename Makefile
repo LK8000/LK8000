@@ -542,7 +542,6 @@ SRC_FILES :=\
 	$(SRC)/Globals.cpp		$(SRC)/DataOptions.cpp \
 	$(SRC)/LKAirspace.cpp		$(SRC)/Bitmaps.cpp \
 	$(SRC)/AirfieldDetails.cpp \
-	$(SRC)/Airspace.cpp 		\
 	$(SRC)/ConditionMonitor.cpp 	$(SRC)/device.cpp \
 	$(SRC)/Dialogs.cpp 		$(SRC)/LKProcess.cpp \
 	$(SRC)/FlarmIdFile.cpp 		\
