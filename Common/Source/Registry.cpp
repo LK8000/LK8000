@@ -30,6 +30,8 @@ double INVCOSINETABLE[4096];
 int ISINETABLE[4096];
 int ICOSTABLE[4096];
 
+//#define NEWPROFILES 1
+
 void StoreType(int Index,int infoType)
 {
   SetToRegistry(szRegistryDisplayType[Index],(DWORD)infoType); // CHECK BUGFIX 091007
@@ -1505,7 +1507,7 @@ void RestoreRegistry(void) {
   #ifdef NEWPROFILES
   // purely testing purposes
   extern bool LKProfileLoad(TCHAR *file);
-  LKProfileLoad(startProfileFile);
+  LKProfileLoad(_T("TESTBENCH.prf"));
   #endif
 }
 
@@ -1517,6 +1519,11 @@ void StoreRegistry(void) {
 	SaveRegistryToFile(startProfileFile);
   #endif
   SaveRegistryToFile(defaultProfileFile);
+  #ifdef NEWPROFILES
+  // purely testing purposes
+  extern void LKProfileSave(const TCHAR *tfile);
+  LKProfileSave(_T("TESTBENCH.prf"));
+  #endif
 }
 
 

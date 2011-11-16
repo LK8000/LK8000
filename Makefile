@@ -515,6 +515,7 @@ DLGS	:=\
 SRC_FILES :=\
 	$(SRC)/LKProfileResetDefault.cpp\
 	$(SRC)/LKProfileLoad.cpp\
+	$(SRC)/LKProfileSave.cpp\
 	$(SRC)/LKProfileInitRuntime.cpp\
 	$(SRC)/DLL.cpp \
 	$(SRC)/lk8000.cpp		$(SRC)/Progress.cpp\

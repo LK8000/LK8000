@@ -21,6 +21,10 @@
 // runtime equivalent of the same setting, for the case when it
 // is possible to change such runtime value with a button.
 //
+// ALL configurable parameters MUST be listed here. Add new items at the bottom!
+//
+// Let's keep this list alpha sorted like in LKPROFILES.h and load/save functions
+//
 void LKProfileResetDefault(void) {
 
   int i;
@@ -29,9 +33,12 @@ void LKProfileResetDefault(void) {
   StartupStore(TEXT(". ProfileResetDefault%s"),NEWLINE);
   #endif
 
+  AcknowledgementTime = 900;	// keep ack level for this time, [secs]
+  ActiveMap = 0;
+
   Units::CoordinateFormat = (CoordinateFormats_t)cfDDMMSS;
 
-  // default Speed unit 
+  // default Speed unit  TODO
   short SpeedUnit_Config=2; 
   short TaskSpeedUnit_Config = 2;
   short DistanceUnit_Config=2;
@@ -61,7 +68,6 @@ void LKProfileResetDefault(void) {
   AltWarningMargin = 100;
   AIRSPACEWARNINGS = TRUE;
   WarningTime = 60;
-  AcknowledgementTime = 900;	// keep ack level for this time, [secs]
   AirspaceWarningRepeatTime = 300;            // warning repeat time if not acknowledged after 5 minutes
   AirspaceWarningVerticalMargin = 100;        // vertical distance used to calculate too close condition
   AirspaceWarningDlgTimeout = 30;             // airspace warning dialog auto closing in x secs
@@ -231,7 +237,6 @@ void LKProfileResetDefault(void) {
 	HideUnits = 0;
 
 
-  ActiveMap = 0;
 
   BestWarning=1;
 
@@ -371,6 +376,7 @@ void LKProfileResetDefault(void) {
 
   DisableAutoLogger = false;
 
+  // ######### ADD NEW ITEMS ABOVE THIS LINE AND RESPECT ORDER IN SAVE FUNCTION #########
 
 }
 

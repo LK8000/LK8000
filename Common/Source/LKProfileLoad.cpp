@@ -10,7 +10,9 @@
 #include "Utils.h"
 #include "McReady.h"
 #include "Modeltype.h"
+#include "LKProfiles.h"
 
+#define NEWPROFILES 1
 #if NEWPROFILES
 
 // Set default registry values
@@ -26,10 +28,10 @@ void LKReadStringFromProfile(HANDLE hFile, TCHAR *instring) {
     tempFile[_tcslen(tempFile)]= 0;
 }
 
-const static int nMaxValueNameSize = MAX_PATH + 6;	//255 + 1 + /r/n
-const static int nMaxValueValueSize = MAX_PATH*2 + 6;	// max regkey name is 256 chars + " = "
-const static int nMaxClassSize = MAX_PATH + 6;
-const static int nMaxKeyNameSize = MAX_PATH + 6;
+int nMaxValueNameSize = MAX_PATH + 6;	//255 + 1 + /r/n
+int nMaxValueValueSize = MAX_PATH*2 + 6;	// max regkey name is 256 chars + " = "
+int nMaxClassSize = MAX_PATH + 6;
+int nMaxKeyNameSize = MAX_PATH + 6;
 
 
 //
@@ -39,7 +41,7 @@ const static int nMaxKeyNameSize = MAX_PATH + 6;
 bool LKProfileLoad(TCHAR *szFile)
 {
   #if TESTBENCH
-  StartupStore(_T(".... LoadProfile <%s>%s"),szFile,NEWLINE);
+  StartupStore(_T("... LoadProfile <%s>%s"),szFile,NEWLINE);
   #endif
 
   bool found = false;
@@ -121,8 +123,9 @@ parse_utf8:
 			LKParseProfileString(wname, TEXT(""));
 			found = true;
 		}
-	}
+	} 
 	// else crlf, or comment, or invalid line
+	// else StartupStore(_T("...... PARSE INVALID: <%S>\n"),inval);
   }
 
   // if using mingw and nothing found in utf8 file, try with wide chars
@@ -137,11 +140,35 @@ go_return:
 }
 
 
-
+using std::max;
 
 void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
 
+  #if TESTBENCH
   StartupStore(_T("... Parse: <%s> = <%s>\n"),sname,svalue);
+  #endif
+
+  int ival;
+
+  if (!_tcscmp(szRegistryAcknowledgementTime,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	AcknowledgementTime = max(10,ival);
+	StartupStore(_T("ACK time=%d\n"),ival);
+	return;
+  }
+  if (!_tcscmp(szRegistryActiveMap,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	ActiveMap = ival;
+	StartupStore(_T("Activemap=%d\n"),ival);
+	return;
+  }
+  if (!_tcscmp(szRegistryLatLonUnits,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	Units::CoordinateFormat = (CoordinateFormats_t)ival;
+	StartupStore(_T("coordin format=%d\n"),ival);
+	return;
+  }
+
 
 
 }
