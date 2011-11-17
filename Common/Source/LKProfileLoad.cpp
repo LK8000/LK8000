@@ -153,21 +153,119 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   if (!_tcscmp(szRegistryAcknowledgementTime,sname)) {
 	ival=wcstol(svalue, NULL, 10);
 	AcknowledgementTime = max(10,ival);
-	StartupStore(_T("ACK time=%d\n"),ival);
 	return;
   }
   if (!_tcscmp(szRegistryActiveMap,sname)) {
 	ival=wcstol(svalue, NULL, 10);
 	ActiveMap = ival;
-	StartupStore(_T("Activemap=%d\n"),ival);
 	return;
   }
+
+// Todo:
+// AdditionalAirspaceFile
+// AdditionalWPFile
+
+  if (!_tcscmp(szRegistryAircraftCategory,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	AircraftCategory = ival;
+	return;
+  }
+
+//  fprintf(fp,"%S=%d%s", szRegistryAircraftRego, AircraftRego,PNEWLINE); missing global
+//  fprintf(fp,"%S=%d%s", szRegistryAircraftType, AircraftType,PNEWLINE); missing global
+//  fprintf(fp,"%S=%d%s", szRegistryAirfieldFile, AirfieldFile,PNEWLINE); missing global
+
+  if (!_tcscmp(szRegistryAirspaceBlackOutline,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	MapWindow::bAirspaceBlackOutline = ival;
+	return;
+  }
+
+  if (!_tcscmp(szRegistryAirspaceWarningDlgTimeout,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	AirspaceWarningDlgTimeout = ival;
+	return;
+  }
+
+  if (!_tcscmp(szRegistryAirspaceWarningMapLabels,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	AirspaceWarningMapLabels = ival;
+	return;
+  }
+
+  if (!_tcscmp(szRegistryAirspaceWarningRepeatTime,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	AirspaceWarningRepeatTime = ival;
+	return;
+  }
+
+  if (!_tcscmp(szRegistryAirspaceWarningVerticalMargin,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	AirspaceWarningVerticalMargin = ival;
+	return;
+  }
+
+  if (!_tcscmp(szRegistryAirspaceWarning,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	AIRSPACEWARNINGS = ival;
+	return;
+  }
+
+  if (!_tcscmp(szRegistryAlarmMaxAltitude1,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	AlarmMaxAltitude1 = ival;
+	return;
+  }
+
+  if (!_tcscmp(szRegistryAlarmMaxAltitude2,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	AlarmMaxAltitude2 = ival;
+	return;
+  }
+
+  if (!_tcscmp(szRegistryAlarmMaxAltitude3,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	AlarmMaxAltitude3 = ival;
+	return;
+  }
+
+  if (!_tcscmp(szRegistryAltMargin,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	AltWarningMargin = ival;
+	return;
+  }
+
+  if (!_tcscmp(szRegistryAltMode,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	AltitudeMode = ival;
+	return;
+  }
+
+  if (!_tcscmp(szRegistryAlternate1,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	Alternate1 = ival;
+	return;
+  }
+  if (!_tcscmp(szRegistryAlternate2,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	Alternate2 = ival;
+	return;
+  }
+
+
+
+
   if (!_tcscmp(szRegistryLatLonUnits,sname)) {
 	ival=wcstol(svalue, NULL, 10);
 	Units::CoordinateFormat = (CoordinateFormats_t)ival;
-	StartupStore(_T("coordin format=%d\n"),ival);
 	return;
   }
+
+// Todo:
+// AdditionalAirspaceFile
+// AdditionalWPFile
+
+
 
 
 
