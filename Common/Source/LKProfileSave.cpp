@@ -63,7 +63,33 @@ extern int nMaxValueValueSize;
 extern int nMaxClassSize;
 extern int nMaxKeyNameSize;
 
+static FILE *pfp=NULL;
+
 #define PNEWLINE  "\r\n"
+#define rprintf LKWriteToProfile
+
+//
+// Overload write functions
+//
+void LKWriteToProfile(const TCHAR *varname, bool varvalue) {
+  // pfprintf(pfp,"%S=%d (bool)%s", varname, varvalue==1?1:0,PNEWLINE); correct
+  fprintf(pfp,"%S=%d (bool)%s", varname, varvalue,PNEWLINE); // check we dont have fake bools
+}
+void LKWriteToProfile(const TCHAR *varname, int varvalue) {
+  fprintf(pfp,"%S=%d (int)%s", varname, varvalue,PNEWLINE);
+}
+void LKWriteToProfile(const TCHAR *varname, DWORD varvalue) {
+  fprintf(pfp,"%S=%d (DWORD)%s", varname, (unsigned int) varvalue,PNEWLINE);
+}
+void LKWriteToProfile(const TCHAR *varname, double varvalue) {
+  fprintf(pfp,"%S=%.0f (double)%s", varname, varvalue,PNEWLINE);
+}
+void LKWriteToProfile(const TCHAR *varname, TCHAR *varvalue) {
+  char stmp[MAX_PATH];
+  unicode2utf((TCHAR*) varvalue, stmp, sizeof(stmp));
+  fprintf(pfp,"%S=\"%s\" (TCHAR)%s", varname, stmp ,PNEWLINE);
+}
+
 
 
 void LKProfileSave(const TCHAR *szFile)
@@ -73,11 +99,10 @@ void LKProfileSave(const TCHAR *szFile)
   #endif
 
   
-  FILE *fp=NULL;
   if (_tcslen(szFile)>0)
-	fp = _tfopen(szFile, TEXT("wb")); // 'w' will overwrite content, 'b' for no crlf translation
+	pfp = _tfopen(szFile, TEXT("wb")); // 'w' will overwrite content, 'b' for no crlf translation
 
-  if(fp == NULL) {
+  if(pfp == NULL) {
 	StartupStore(_T("...... SaveProfile <%s> open for write FAILED!%s"),szFile,NEWLINE);
 	return;
   }
@@ -85,268 +110,269 @@ void LKProfileSave(const TCHAR *szFile)
   //
   // Standard header
   //
-  fprintf(fp,"### LK8000 PROFILE - DO NOT EDIT%s",PNEWLINE);
-  fprintf(fp,"### THIS FILE IS ENCODED IN UTF8%s",PNEWLINE);
-  fprintf(fp,"LKVERSION=\"%s.%s\"%s",LKVERSION,LKRELEASE,PNEWLINE);
-  fprintf(fp,"PROFILEVERSION=1%s",PNEWLINE);
+  fprintf(pfp,"### LK8000 PROFILE - DO NOT EDIT%s",PNEWLINE);
+  fprintf(pfp,"### THIS FILE IS ENCODED IN UTF8%s",PNEWLINE);
+  fprintf(pfp,"LKVERSION=\"%s.%s\"%s",LKVERSION,LKRELEASE,PNEWLINE);
+  fprintf(pfp,"PROFILEVERSION=1%s",PNEWLINE);
 
   // 
   // RESPECT LKPROFILE.H ALPHA ORDER OR WE SHALL GET LOST SOON!
   // 
-  fprintf(fp,"%S=%d%s", szRegistryAcknowledgementTime, AcknowledgementTime,PNEWLINE);
-  fprintf(fp,"%S=%d%s", szRegistryActiveMap, ActiveMap,PNEWLINE);
+  rprintf(szRegistryAcknowledgementTime, AcknowledgementTime);
+  rprintf(szRegistryActiveMap, ActiveMap);
 
 // Todo:
 // AdditionalAirspaceFile
 // AdditionalWPFile
 
-  fprintf(fp,"%S=%d%s", szRegistryAircraftCategory, AircraftCategory,PNEWLINE);
+  rprintf( szRegistryAircraftCategory, AircraftCategory);
 
-//  fprintf(fp,"%S=%d%s", szRegistryAircraftRego, AircraftRego,PNEWLINE); missing global
-//  fprintf(fp,"%S=%d%s", szRegistryAircraftType, AircraftType,PNEWLINE); missing global
-//  fprintf(fp,"%S=%d%s", szRegistryAirfieldFile, AirfieldFile,PNEWLINE); missing global
+//  rprintf( szRegistryAircraftRego, AircraftRego); missing global
+//  rprintf( szRegistryAircraftType, AircraftType); missing global
+//  rprintf( szRegistryAirfieldFile, AirfieldFile); missing global
 
-  fprintf(fp,"%S=%d%s", szRegistryAirspaceBlackOutline, MapWindow::bAirspaceBlackOutline,PNEWLINE);
+  rprintf( szRegistryAirspaceBlackOutline, MapWindow::bAirspaceBlackOutline);
 
 //  todo: AirspaceFile
-//  fprintf(fp,"%S=%d%s", szRegistryAirspaceFillType, AirspaceFillType,PNEWLINE);  missing global
-//  fprintf(fp,"%S=%d%s", szRegistryAirspaceOpacity, AirspaceOpacity,PNEWLINE); missing global
+//  rprintf( szRegistryAirspaceFillType, AirspaceFillType);  missing global
+//  rprintf( szRegistryAirspaceOpacity, AirspaceOpacity); missing global
 
-  fprintf(fp,"%S=%d%s",szRegistryAirspaceWarningDlgTimeout, AirspaceWarningDlgTimeout,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAirspaceWarningMapLabels, AirspaceWarningMapLabels,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAirspaceWarningRepeatTime, AirspaceWarningRepeatTime,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAirspaceWarningVerticalMargin, AirspaceWarningVerticalMargin,PNEWLINE);
+  rprintf(szRegistryAirspaceWarningDlgTimeout, AirspaceWarningDlgTimeout);
+  rprintf(szRegistryAirspaceWarningMapLabels, AirspaceWarningMapLabels);
+  rprintf(szRegistryAirspaceWarningRepeatTime, AirspaceWarningRepeatTime);
+  rprintf(szRegistryAirspaceWarningVerticalMargin, AirspaceWarningVerticalMargin);
 
-  fprintf(fp,"%S=%d%s",szRegistryAirspaceWarning, AIRSPACEWARNINGS,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAlarmMaxAltitude1, AlarmMaxAltitude1,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAlarmMaxAltitude2, AlarmMaxAltitude2,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAlarmMaxAltitude3, AlarmMaxAltitude3,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAltMargin, AltWarningMargin,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAltMode, AltitudeMode,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAlternate1, Alternate1,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAlternate2, Alternate2,PNEWLINE);
+  rprintf(szRegistryAirspaceWarning, AIRSPACEWARNINGS);
+  rprintf(szRegistryAlarmMaxAltitude1, AlarmMaxAltitude1);
+  rprintf(szRegistryAlarmMaxAltitude2, AlarmMaxAltitude2);
+  rprintf(szRegistryAlarmMaxAltitude3, AlarmMaxAltitude3);
+  rprintf(szRegistryAltMargin, AltWarningMargin);
+  rprintf(szRegistryAltMode, AltitudeMode);
+  rprintf(szRegistryAlternate1, Alternate1);
+  rprintf(szRegistryAlternate2, Alternate2);
 
-  // fprintf(fp,"%S=%d%s",szRegistryAltitudeUnitsValue, AltitudeUnit_Config,PNEWLINE); // todo global
+  // rprintf(szRegistryAltitudeUnitsValue, AltitudeUnit_Config); // todo global
 
-  fprintf(fp,"%S=%d%s",szRegistryAppDefaultMapWidth, Appearance.DefaultMapWidth,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAppIndLandable,Appearance.IndLandable,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAppInfoBoxModel,Appearance.InfoBoxModel,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAppInverseInfoBox,Appearance.InverseInfoBox,PNEWLINE);
+  rprintf(szRegistryAppDefaultMapWidth, Appearance.DefaultMapWidth);
+  rprintf(szRegistryAppIndLandable,Appearance.IndLandable);
+  rprintf(szRegistryAppInfoBoxModel,Appearance.InfoBoxModel);
+  rprintf(szRegistryAppInverseInfoBox,Appearance.InverseInfoBox);
 
-  fprintf(fp,"%S=%d%s",szRegistryArrivalValue,ArrivalValue,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAutoAdvance,AutoAdvance,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAutoBacklight,EnableAutoBacklight,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAutoForceFinalGlide,AutoForceFinalGlide,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAutoMcMode,AutoMcMode,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAutoMcStatus,AutoMacCready_Config,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAutoOrientScale,AutoOrientScale,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAutoSoundVolume,EnableAutoSoundVolume,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAutoWind,AutoWindMode,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAutoZoom,MapWindow::zoom.AutoZoom(),PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryAverEffTime,AverEffTime,PNEWLINE);
+  rprintf(szRegistryArrivalValue,ArrivalValue);
+  rprintf(szRegistryAutoAdvance,AutoAdvance);
+  rprintf(szRegistryAutoBacklight,EnableAutoBacklight);
+  rprintf(szRegistryAutoForceFinalGlide,AutoForceFinalGlide);
+  rprintf(szRegistryAutoMcMode,AutoMcMode);
+  rprintf(szRegistryAutoMcStatus,AutoMacCready_Config);
+  rprintf(szRegistryAutoOrientScale,AutoOrientScale);
+  rprintf(szRegistryAutoSoundVolume,EnableAutoSoundVolume);
+  rprintf(szRegistryAutoWind,AutoWindMode);
+  rprintf(szRegistryAutoZoom,MapWindow::zoom.AutoZoom());
+  rprintf(szRegistryAverEffTime,AverEffTime);
 
-  fprintf(fp,"%S=%d%s",szRegistryBallastSecsToEmpty,BallastSecsToEmpty,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryBarOpacity,BarOpacity,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryBestWarning,BestWarning,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryBgMapColor,BgMapColor,PNEWLINE);
+  rprintf(szRegistryBallastSecsToEmpty,BallastSecsToEmpty);
+  rprintf(szRegistryBarOpacity,BarOpacity);
+  rprintf(szRegistryBestWarning,BestWarning);
+  rprintf(szRegistryBgMapColor,BgMapColor);
 
-  //fprintf(fp,"%S=%d%s",szRegistryBit1Index,Bit1Index,PNEWLINE); // missing global
-  //fprintf(fp,"%S=%d%s",szRegistryBit2Index,Bit2Index,PNEWLINE); // missing global
+  //rprintf(szRegistryBit1Index,Bit1Index); // missing global
+  //rprintf(szRegistryBit2Index,Bit2Index); // missing global
 
-  fprintf(fp,"%S=%d%s",szRegistryCheckSum,CheckSum,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryCircleZoom,MapWindow::zoom.CircleZoom(),PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryClipAlt,ClipAltitude,PNEWLINE);
+  rprintf(szRegistryCheckSum,CheckSum);
+  rprintf(szRegistryCircleZoom,MapWindow::zoom.CircleZoom());
+  rprintf(szRegistryClipAlt,ClipAltitude);
 
   // CompetitionClass  missing global
   // CompetitionID  missing global
 
-  fprintf(fp,"%S=%d%s",szRegistryConfBB1,ConfBB1,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryConfBB2,ConfBB2,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryConfBB3,ConfBB3,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryConfBB4,ConfBB4,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryConfBB5,ConfBB5,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryConfBB6,ConfBB6,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryConfBB7,ConfBB7,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryConfBB8,ConfBB8,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryConfBB9,ConfBB9,PNEWLINE);
+  rprintf(szRegistryConfBB1,ConfBB1);
+  rprintf(szRegistryConfBB2,ConfBB2);
+  rprintf(szRegistryConfBB3,ConfBB3);
+  rprintf(szRegistryConfBB4,ConfBB4);
+  rprintf(szRegistryConfBB5,ConfBB5);
+  rprintf(szRegistryConfBB6,ConfBB6);
+  rprintf(szRegistryConfBB7,ConfBB7);
+  rprintf(szRegistryConfBB8,ConfBB8);
+  rprintf(szRegistryConfBB9,ConfBB9);
 
-  fprintf(fp,"%S=%d%s",szRegistryConfIP11,ConfIP11,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryConfIP12,ConfIP12,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryConfIP13,ConfIP13,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryConfIP14,ConfIP14,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryConfIP15,ConfIP15,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryConfIP16,ConfIP16,PNEWLINE);
+  rprintf(szRegistryConfIP11,ConfIP11);
+  rprintf(szRegistryConfIP12,ConfIP12);
+  rprintf(szRegistryConfIP13,ConfIP13);
+  rprintf(szRegistryConfIP14,ConfIP14);
+  rprintf(szRegistryConfIP15,ConfIP15);
+  rprintf(szRegistryConfIP16,ConfIP16);
 
-  fprintf(fp,"%S=%d%s",szRegistryConfIP21,ConfIP21,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryConfIP22,ConfIP22,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryConfIP23,ConfIP23,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryConfIP24,ConfIP24,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryConfIP31,ConfIP31,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryConfIP32,ConfIP32,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryConfIP33,ConfIP33,PNEWLINE);
+  rprintf(szRegistryConfIP21,ConfIP21);
+  rprintf(szRegistryConfIP22,ConfIP22);
+  rprintf(szRegistryConfIP23,ConfIP23);
+  rprintf(szRegistryConfIP24,ConfIP24);
+  rprintf(szRegistryConfIP31,ConfIP31);
+  rprintf(szRegistryConfIP32,ConfIP32);
+  rprintf(szRegistryConfIP33,ConfIP33);
 
-  fprintf(fp,"%S=%d%s",szRegistryCustomKeyModeAircraftIcon,CustomKeyModeAircraftIcon,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryCustomKeyModeCenterScreen,CustomKeyModeCenterScreen,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryCustomKeyModeCenter,CustomKeyModeCenter,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryCustomKeyModeLeftUpCorner,CustomKeyModeLeftUpCorner,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryCustomKeyModeLeft,CustomKeyModeLeft,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryCustomKeyModeRightUpCorner,CustomKeyModeRightUpCorner,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryCustomKeyModeRight,CustomKeyModeRight,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryCustomKeyTime,CustomKeyTime,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryDebounceTimeout,debounceTimeout,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryDeclutterMode,DeclutterMode,PNEWLINE);
+  rprintf(szRegistryCustomKeyModeAircraftIcon,CustomKeyModeAircraftIcon);
+  rprintf(szRegistryCustomKeyModeCenterScreen,CustomKeyModeCenterScreen);
+  rprintf(szRegistryCustomKeyModeCenter,CustomKeyModeCenter);
+  rprintf(szRegistryCustomKeyModeLeftUpCorner,CustomKeyModeLeftUpCorner);
+  rprintf(szRegistryCustomKeyModeLeft,CustomKeyModeLeft);
+  rprintf(szRegistryCustomKeyModeRightUpCorner,CustomKeyModeRightUpCorner);
+  rprintf(szRegistryCustomKeyModeRight,CustomKeyModeRight);
+  rprintf(szRegistryCustomKeyTime,CustomKeyTime);
+  rprintf(szRegistryDebounceTimeout,debounceTimeout);
+  rprintf(szRegistryDeclutterMode,DeclutterMode);
 
   // DeviceA  missing global
   // DeviceB  missing global
 
-  fprintf(fp,"%S=%d%s",szRegistryDisableAutoLogger,DisableAutoLogger,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryDisplayText,DisplayTextType,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryDisplayUpValue,DisplayOrientation_Config,PNEWLINE);
+  rprintf(szRegistryDisableAutoLogger,DisableAutoLogger);
+  rprintf(szRegistryDisplayText,DisplayTextType);
+  rprintf(szRegistryDisplayUpValue,DisplayOrientation_Config);
 
-  // fprintf(fp,"%S=%d%s",szRegistryDistanceUnitsValue,  ,PNEWLINE);   missing global
+  // rprintf(szRegistryDistanceUnitsValue,  );   missing global
   
-  fprintf(fp,"%S=%d%s",szRegistryDrawTerrain,EnableTerrain,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryDrawTopology,EnableTopology,PNEWLINE);
+  rprintf(szRegistryDrawTerrain,EnableTerrain);
+  rprintf(szRegistryDrawTopology,EnableTopology);
 
-  fprintf(fp,"%S=%d%s",szRegistryEnableFLARMMap,EnableFLARMMap,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryEnableNavBaroAltitude,EnableNavBaroAltitude,PNEWLINE);
+  rprintf(szRegistryEnableFLARMMap,EnableFLARMMap);
+  rprintf(szRegistryEnableNavBaroAltitude,EnableNavBaroAltitude);
 
   // Extended visual to remove
 
-  fprintf(fp,"%S=%d%s",szRegistryFAIFinishHeight,FAIFinishHeight,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryFAISector,SectorType,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryFinalGlideTerrain,FinalGlideTerrain,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryFinishLine,FinishLine,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryFinishMinHeight,FinishMinHeight,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryFinishRadius,FinishRadius,PNEWLINE);
-  // fprintf(fp,"%S=%d%s",szRegistryFontMapLabelFont,MapLabelFont,PNEWLINE); // todo fix missing global
-  // fprintf(fp,"%S=%d%s",szRegistryFontMapWindowFont,MapWindowFont,PNEWLINE); // todo fix missing global
+  rprintf(szRegistryFAIFinishHeight,EnableFAIFinishHeight);
+  rprintf(szRegistryFAISector,SectorType);
+  rprintf(szRegistryFinalGlideTerrain,FinalGlideTerrain);
+  rprintf(szRegistryFinishLine,FinishLine);
+  rprintf(szRegistryFinishMinHeight,FinishMinHeight);
+  rprintf(szRegistryFinishRadius,FinishRadius);
+  // rprintf(szRegistryFontMapLabelFont,MapLabelFont); // todo fix missing global
+  // rprintf(szRegistryFontMapWindowFont,MapWindowFont); // todo fix missing global
 
-  fprintf(fp,"%S=%d%s",szRegistryFontRenderer,FontRenderer,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryGlideBarMode,GlideBarMode,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryGliderScreenPosition,MapWindow::GliderScreenPosition,PNEWLINE);
-  fprintf(fp,"%S=%.0f%s",szRegistryGpsAltitudeOffset,GPSAltitudeOffset,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryHandicap,Handicap,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryHideUnits,HideUnits,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryHomeWaypoint,HomeWaypoint,PNEWLINE);
+  rprintf(szRegistryFontRenderer,FontRenderer);
+  rprintf(szRegistryGlideBarMode,GlideBarMode);
+  rprintf(szRegistryGliderScreenPosition,MapWindow::GliderScreenPosition);
 
-  // fprintf(fp,"%S=%d%s",szRegistryInputFile,InputFile,PNEWLINE);  missing global
+  rprintf(szRegistryGpsAltitudeOffset,GPSAltitudeOffset);
+  rprintf(szRegistryHandicap,Handicap);
+  rprintf(szRegistryHideUnits,HideUnits);
+  rprintf(szRegistryHomeWaypoint,HomeWaypoint);
 
-  fprintf(fp,"%S=%d%s",szRegistryIphoneGestures,IphoneGestures,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryLKMaxLabels,LKMaxLabels,PNEWLINE);
-  fprintf(fp,"%S=%.1f%s",szRegistryLKTopoZoomCat05,LKTopoZoomCat05,PNEWLINE);
-  fprintf(fp,"%S=%.1f%s",szRegistryLKTopoZoomCat100,LKTopoZoomCat100,PNEWLINE);
-  fprintf(fp,"%S=%.1f%s",szRegistryLKTopoZoomCat10,LKTopoZoomCat10,PNEWLINE);
-  fprintf(fp,"%S=%.1f%s",szRegistryLKTopoZoomCat110,LKTopoZoomCat110,PNEWLINE);
-  fprintf(fp,"%S=%.1f%s",szRegistryLKTopoZoomCat20,LKTopoZoomCat20,PNEWLINE);
-  fprintf(fp,"%S=%.1f%s",szRegistryLKTopoZoomCat30,LKTopoZoomCat30,PNEWLINE);
-  fprintf(fp,"%S=%.1f%s",szRegistryLKTopoZoomCat40,LKTopoZoomCat40,PNEWLINE);
-  fprintf(fp,"%S=%.1f%s",szRegistryLKTopoZoomCat50,LKTopoZoomCat50,PNEWLINE);
-  fprintf(fp,"%S=%.1f%s",szRegistryLKTopoZoomCat60,LKTopoZoomCat60,PNEWLINE);
-  fprintf(fp,"%S=%.1f%s",szRegistryLKTopoZoomCat70,LKTopoZoomCat70,PNEWLINE);
-  fprintf(fp,"%S=%.1f%s",szRegistryLKTopoZoomCat80,LKTopoZoomCat80,PNEWLINE);
-  fprintf(fp,"%S=%.1f%s",szRegistryLKTopoZoomCat90,LKTopoZoomCat90,PNEWLINE);
+  // rprintf(szRegistryInputFile,InputFile);  missing global
 
-  fprintf(fp,"%S=%d%s",szRegistryLKVarioBar,LKVarioBar,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryLKVarioVal,LKVarioVal,PNEWLINE);
+  rprintf(szRegistryIphoneGestures,IphoneGestures);
+  rprintf(szRegistryLKMaxLabels,LKMaxLabels);
+  rprintf(szRegistryLKTopoZoomCat05,LKTopoZoomCat05);
+  rprintf(szRegistryLKTopoZoomCat100,LKTopoZoomCat100);
+  rprintf(szRegistryLKTopoZoomCat10,LKTopoZoomCat10);
+  rprintf(szRegistryLKTopoZoomCat110,LKTopoZoomCat110);
+  rprintf(szRegistryLKTopoZoomCat20,LKTopoZoomCat20);
+  rprintf(szRegistryLKTopoZoomCat30,LKTopoZoomCat30);
+  rprintf(szRegistryLKTopoZoomCat40,LKTopoZoomCat40);
+  rprintf(szRegistryLKTopoZoomCat50,LKTopoZoomCat50);
+  rprintf(szRegistryLKTopoZoomCat60,LKTopoZoomCat60);
+  rprintf(szRegistryLKTopoZoomCat70,LKTopoZoomCat70);
+  rprintf(szRegistryLKTopoZoomCat80,LKTopoZoomCat80);
+  rprintf(szRegistryLKTopoZoomCat90,LKTopoZoomCat90);
 
-  // fprintf(fp,"%S=%d%s",szRegistryLanguageFile,,PNEWLINE); missing global
+  rprintf(szRegistryLKVarioBar,LKVarioBar);
+  rprintf(szRegistryLKVarioVal,LKVarioVal);
 
-  fprintf(fp,"%S=%d%s", szRegistryLatLonUnits, Units::CoordinateFormat,PNEWLINE);
+  // rprintf(szRegistryLanguageFile,); missing global
 
-  // fprintf(fp,"%S=%d%s", szRegistryLiftUnitsValue, ,PNEWLINE);  missing global
+  rprintf( szRegistryLatLonUnits, Units::CoordinateFormat);
 
-  fprintf(fp,"%S=%d%s", szRegistryLockSettingsInFlight,LockSettingsInFlight,PNEWLINE);
+  // rprintf( szRegistryLiftUnitsValue, );  missing global
 
-  // fprintf(fp,"%S=%d%s", szRegistryLoggerID,,PNEWLINE); // LoggerID missing
+  rprintf( szRegistryLockSettingsInFlight,LockSettingsInFlight);
 
-  fprintf(fp,"%S=%d%s",szRegistryLoggerShort,LoggerShortName,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryLoggerTimeStepCircling,LoggerTimeStepCircling,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryLoggerTimeStepCruise,LoggerTimeStepCruise,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryLook8000,Look8000,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryMapBox,MapBox,PNEWLINE);
-  // fprintf(fp,"%S=%d%s",szRegistryMapFile,,PNEWLINE); // missing MapFile  global
+  // rprintf( szRegistryLoggerID,); // LoggerID missing
 
-  fprintf(fp,"%S=%d%s",szRegistryMcOverlay,McOverlay,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryMenuTimeout,MenuTimeout_Config,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryNewMapDeclutter,NewMapDeclutter,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryOrbiter,Orbiter,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryOutlinedTp,OutlinedTp,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryOverColor,OverColor,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryOverlayClock,OverlayClock,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryOverlaySize,OverlaySize,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryPGAutoZoomThreshold,PGAutoZoomThreshold,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryPGClimbZoom,PGClimbZoom,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryPGCruiseZoom,PGCruiseZoom,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryPGGateIntervalTime,PGGateIntervalTime,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryPGNumberOfGates,PGNumberOfGates,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryPGOpenTimeH,PGOpenTimeH,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryPGOpenTimeM,PGOpenTimeM,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryPGOptimizeRoute,PGOptimizeRoute,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryPGStartOut,PGStartOut,PNEWLINE);
+  rprintf(szRegistryLoggerShort,LoggerShortName);
+  rprintf(szRegistryLoggerTimeStepCircling,LoggerTimeStepCircling);
+  rprintf(szRegistryLoggerTimeStepCruise,LoggerTimeStepCruise);
+  rprintf(szRegistryLook8000,Look8000);
+  rprintf(szRegistryMapBox,MapBox);
+  // rprintf(szRegistryMapFile,); // missing MapFile  global
 
-  // fprintf(fp,"%S=%d%s",szRegistryPilotName,,PNEWLINE);  missing global
-  // fprintf(fp,"%S=%d%s",szRegistryPolarFile,,PNEWLINE);  missing global
+  rprintf(szRegistryMcOverlay,McOverlay);
+  rprintf(szRegistryMenuTimeout,MenuTimeout_Config);
+  rprintf(szRegistryNewMapDeclutter,NewMapDeclutter);
+  rprintf(szRegistryOrbiter,Orbiter);
+  rprintf(szRegistryOutlinedTp,OutlinedTp);
+  rprintf(szRegistryOverColor,OverColor);
+  rprintf(szRegistryOverlayClock,OverlayClock);
+  rprintf(szRegistryOverlaySize,OverlaySize);
+  rprintf(szRegistryPGAutoZoomThreshold,PGAutoZoomThreshold);
+  rprintf(szRegistryPGClimbZoom,PGClimbZoom);
+  rprintf(szRegistryPGCruiseZoom,PGCruiseZoom);
+  rprintf(szRegistryPGGateIntervalTime,PGGateIntervalTime);
+  rprintf(szRegistryPGNumberOfGates,PGNumberOfGates);
+  rprintf(szRegistryPGOpenTimeH,PGOpenTimeH);
+  rprintf(szRegistryPGOpenTimeM,PGOpenTimeM);
+  rprintf(szRegistryPGOptimizeRoute,PGOptimizeRoute);
+  rprintf(szRegistryPGStartOut,PGStartOut);
 
-  fprintf(fp,"%S=%d%s",szRegistryPollingMode,PollingMode,PNEWLINE);
+  // rprintf(szRegistryPilotName,);  missing global
+  // rprintf(szRegistryPolarFile,);  missing global
 
-  // fprintf(fp,"%S=%d%s",szRegistryPort1Index,,PNEWLINE);  missing global
-  // fprintf(fp,"%S=%d%s",szRegistryPort2Index,,PNEWLINE);  missing global
+  rprintf(szRegistryPollingMode,PollingMode);
 
-  fprintf(fp,"%S=%d%s",szRegistryPressureHg,PressureHg,PNEWLINE);
-  fprintf(fp,"%S=%.0f%s",szRegistrySafetyAltitudeArrival,SAFETYALTITUDEARRIVAL,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistrySafetyAltitudeMode,SafetyAltitudeMode,PNEWLINE);
-  fprintf(fp,"%S=%.0f%s",szRegistrySafetyAltitudeTerrain,SAFETYALTITUDETERRAIN,PNEWLINE);
-  fprintf(fp,"%S=%.0f%s",szRegistrySafetyMacCready,GlidePolar::SafetyMacCready,PNEWLINE);
-  fprintf(fp,"%S=%.0f%s",szRegistrySafteySpeed,SAFTEYSPEED,PNEWLINE);
-  fprintf(fp,"%S=%.0f%s",szRegistrySectorRadius,SectorRadius,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistrySetSystemTimeFromGPS,SetSystemTimeFromGPS,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryShading,Shading,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistrySnailTrail,SnailTrail,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistrySnailWidthScale,MapWindow::SnailWidthScale,PNEWLINE);
+  // rprintf(szRegistryPort1Index,);  missing global
+  // rprintf(szRegistryPort2Index,);  missing global
 
-  // fprintf(fp,"%S=%d%s",szRegistrySpeed1Index,SpeedIndex,PNEWLINE); missing global
-  // fprintf(fp,"%S=%d%s",szRegistrySpeed2Index,Speed2Index,PNEWLINE); missing global
-  // fprintf(fp,"%S=%d%s",szRegistrySpeedUnitsValue,,PNEWLINE); // missing global
+  rprintf(szRegistryPressureHg,PressureHg);
+  rprintf(szRegistrySafetyAltitudeArrival,SAFETYALTITUDEARRIVAL);
+  rprintf(szRegistrySafetyAltitudeMode,SafetyAltitudeMode);
+  rprintf(szRegistrySafetyAltitudeTerrain,SAFETYALTITUDETERRAIN);
+  rprintf(szRegistrySafetyMacCready,GlidePolar::SafetyMacCready);
+  rprintf(szRegistrySafteySpeed,SAFTEYSPEED);
+  rprintf(szRegistrySectorRadius,SectorRadius);
+  rprintf(szRegistrySetSystemTimeFromGPS,SetSystemTimeFromGPS);
+  rprintf(szRegistryShading,Shading);
+  rprintf(szRegistrySnailTrail,TrailActive);
+  rprintf(szRegistrySnailWidthScale,MapWindow::SnailWidthScale);
 
-  fprintf(fp,"%S=%d%s",szRegistryStartHeightRef,StartHeightRef,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryStartLine,StartLine,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryStartMaxHeightMargin,StartMaxHeightMargin,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryStartMaxHeight,StartMaxHeight,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryStartMaxSpeedMargin,StartMaxSpeedMargin,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryStartMaxSpeed,StartMaxSpeed,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryStartRadius,StartRadius,PNEWLINE);
+  // rprintf(szRegistrySpeed1Index,SpeedIndex); missing global
+  // rprintf(szRegistrySpeed2Index,Speed2Index); missing global
+  // rprintf(szRegistrySpeedUnitsValue,); // missing global
 
-  // fprintf(fp,"%S=%d%s",szRegistryTaskSpeedUnitsValue,,PNEWLINE); missing global
+  rprintf(szRegistryStartHeightRef,StartHeightRef);
+  rprintf(szRegistryStartLine,StartLine);
+  rprintf(szRegistryStartMaxHeightMargin,StartMaxHeightMargin);
+  rprintf(szRegistryStartMaxHeight,StartMaxHeight);
+  rprintf(szRegistryStartMaxSpeedMargin,StartMaxSpeedMargin);
+  rprintf(szRegistryStartMaxSpeed,StartMaxSpeed);
+  rprintf(szRegistryStartRadius,StartRadius);
 
-  fprintf(fp,"%S=%d%s",szRegistryTeamcodeRefWaypoint,TeamCodeRefWaypoint,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryTerrainBrightness,TerrainBrightness,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryTerrainContrast,TerrainContrast,PNEWLINE);
+  // rprintf(szRegistryTaskSpeedUnitsValue,); missing global
 
-  // fprintf(fp,"%S=%d%s",szRegistryTerrainFile,,PNEWLINE); missing global
+  rprintf(szRegistryTeamcodeRefWaypoint,TeamCodeRefWaypoint);
+  rprintf(szRegistryTerrainBrightness,TerrainBrightness);
+  rprintf(szRegistryTerrainContrast,TerrainContrast);
 
-  fprintf(fp,"%S=%d%s",szRegistryTerrainRamp,TerrainRamp,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryThermalBar,ThermalBar,PNEWLINE);
+  // rprintf(szRegistryTerrainFile,); missing global
 
-  fprintf(fp,"%S=%d%s",szRegistryThermalLocator,EnableThermalLocator,PNEWLINE);
+  rprintf(szRegistryTerrainRamp,TerrainRamp);
+  rprintf(szRegistryThermalBar,ThermalBar);
 
-  // fprintf(fp,"%S=%d%s",szRegistryTopologyFile,,PNEWLINE); missing global
+  rprintf(szRegistryThermalLocator,EnableThermalLocator);
 
-  fprintf(fp,"%S=%d%s",szRegistryTpFilter,TpFilter,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryTrackBar,TrackBar,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryTrailDrift,MapWindow::EnableTrailDrift,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryUTCOffset,UTCOffset,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryUseCustomFonts,UseCustomFonts,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryUseGeoidSeparation,UseGeoidSeparation,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryUseTotalEnergy,UseTotalEnergy,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryWarningTime,WarningTime,PNEWLINE);
+  // rprintf(szRegistryTopologyFile,); missing global
 
-  // fprintf(fp,"%S=%d%s",szRegistryWayPointFile,,PNEWLINE); missing global
+  rprintf(szRegistryTpFilter,TpFilter);
+  rprintf(szRegistryTrackBar,TrackBar);
+  rprintf(szRegistryTrailDrift,MapWindow::EnableTrailDrift);
+  rprintf(szRegistryUTCOffset,UTCOffset);
+  rprintf(szRegistryUseCustomFonts,UseCustomFonts);
+  rprintf(szRegistryUseGeoidSeparation,UseGeoidSeparation);
+  rprintf(szRegistryUseTotalEnergy,UseTotalEnergy);
+  rprintf(szRegistryWarningTime,WarningTime);
 
-  fprintf(fp,"%S=%d%s",szRegistryWaypointsOutOfRange,WaypointsOutOfRange,PNEWLINE);
-  fprintf(fp,"%S=%.0f%s",szRegistryWindCalcSpeed,WindCalcSpeed,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryWindCalcTime,WindCalcTime,PNEWLINE);
-  fprintf(fp,"%S=%d%s",szRegistryWindUpdateMode,WindUpdateMode,PNEWLINE);
+  // rprintf(szRegistryWayPointFile,); missing global
+
+  rprintf(szRegistryWaypointsOutOfRange,WaypointsOutOfRange);
+  rprintf(szRegistryWindCalcSpeed,WindCalcSpeed);
+  rprintf(szRegistryWindCalcTime,WindCalcTime);
+  rprintf(szRegistryWindUpdateMode,WindUpdateMode);
 
   /*
   // Anything containing non-ascii chars should be treated like this:
@@ -356,12 +382,12 @@ void LKProfileSave(const TCHAR *szFile)
   ExpandLocalPath(szMapFile);
   char stmp[256];
   unicode2utf((TCHAR*) szMapFile, stmp, sizeof(stmp));
-  fprintf(fp,"%S=\"%s\"%s", szRegistryMapFile, stmp ,PNEWLINE);
+  rprintf("%S=\"%s\"%s", szRegistryMapFile, stmp );
   */
-end:
-  fprintf(fp,"\r\n"); // end of file
-  fflush(fp);
-  fclose(fp);
+
+  fprintf(pfp,PNEWLINE); // end of file
+  fflush(pfp);
+  fclose(pfp);
 
 }
 
