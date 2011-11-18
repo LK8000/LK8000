@@ -2,6 +2,49 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3n November 18, 2011
+-----------------------------
+
+NEW
+
+
+. New user friendly map scale zoom levels
+
+. Add new autozoom threshold option for paragliders
+  https://github.com/LK8000/LK8000/issues/40
+  http://www.postfrontal.com/forum/topic.asp?TOPIC_ID=4630
+
+. FastZoom for all devices: quickly clicking on the moving map will trigger
+  a fast zoom request skipping topology painting, for a very fast map redraw.
+  Sound clicks will only happening for the first zoom request, and not for the
+  next fastzoom clicks, because sound clicks are slowing down PNA devices most of the times.
+  The zoom speed is between 5 and 6 times faster than before.
+
+
+
+CHANGES
+
+. Show user friendly mapscale values with changing units as needed
+
+. Show pg initial zoom values as numbers in config page 23
+
+. Modify mapscale precision printed on map, give 2 decimals when using non-metric units
+
+. Change Close button with Save button in basic config
+
+. LK_TONEUP.WAV and TONEDOWN.WAV moved to System sounds folder.
+
+. Remove unneeded texts from pg climb zoom config option
+  As requested by users on forum
+
+
+FIXES
+
+none
+
+
+
+
 Version 2.3m November 11, 2011
 -----------------------------
 

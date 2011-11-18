@@ -30,7 +30,7 @@ double INVCOSINETABLE[4096];
 int ISINETABLE[4096];
 int ICOSTABLE[4096];
 
-#define NEWPROFILES 1
+// #define NEWPROFILES 1
 
 void StoreType(int Index,int infoType)
 {
