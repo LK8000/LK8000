@@ -27,6 +27,9 @@
 // There are globals that are not configurable of course,
 // and thus are not part of a profile.
 //
+// Please LOAD NEW GLOBALS always at the bottom of the file
+// to keep trace of new items.
+//
 void Globals_Init(void) {
 
   #if TESTBENCH
@@ -526,7 +529,20 @@ void Globals_Init(void) {
   PDABatteryStatus=0;
   PDABatteryFlag=0;
 
+  szPolarFile[0] = TEXT('\0');
+  szAirspaceFile[0] = TEXT('\0');
+  szAdditionalAirspaceFile[0] = TEXT('\0');
+  szWaypointFile[0] = TEXT('\0');
+  szAdditionalWaypointFile[0] = TEXT('\0');
+  szTerrainFile[0] = TEXT('\0');
+  szTopologyFile[0] = TEXT('\0');
+  szAirfieldFile[0] = TEXT('\0');
+  szLanguageFile[0] = TEXT('\0');
+  szInputFile[0] = TEXT('\0');
+  szMapFile[0] = TEXT('\0');
 
+
+  // ADD NEW GLOBALS here ^^^ //
 
 }
 

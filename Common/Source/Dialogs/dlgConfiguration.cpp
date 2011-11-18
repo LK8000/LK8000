@@ -1238,17 +1238,7 @@ static void GetInfoBoxSelector(int item, int mode)
   }
 }
 
-static  TCHAR szPolarFile[MAX_PATH] = TEXT("\0");
-static  TCHAR szAirspaceFile[MAX_PATH] = TEXT("\0");
-static  TCHAR szAdditionalAirspaceFile[MAX_PATH] = TEXT("\0");
-static  TCHAR szWaypointFile[MAX_PATH] = TEXT("\0");
-static  TCHAR szAdditionalWaypointFile[MAX_PATH] = TEXT("\0");
-static  TCHAR szTerrainFile[MAX_PATH] = TEXT("\0");
-static  TCHAR szTopologyFile[MAX_PATH] = TEXT("\0");
-static  TCHAR szAirfieldFile[MAX_PATH] = TEXT("\0");
-static  TCHAR szLanguageFile[MAX_PATH] = TEXT("\0");
-static  TCHAR szInputFile[MAX_PATH] = TEXT("\0");
-static  TCHAR szMapFile[MAX_PATH] = TEXT("\0");
+
 static  DWORD dwPortIndex1 = 0;
 static  DWORD dwSpeedIndex1 = 2;
 static  DWORD dwBit1Index = (BitIndex_t)bit8N1;
@@ -2337,18 +2327,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpExtendedVisualGlide"));
-  if (wp) {
-    DataFieldEnum* dfe;
-    dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M480_ = "Normal" 
-    dfe->addEnumText(gettext(TEXT("_@M480_")));
-	// LKTOKEN  _@M273_ = "Extended" 
-    dfe->addEnumText(gettext(TEXT("_@M273_")));
-    dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->Set(ExtendedVisualGlide);
-    wp->RefreshDisplay();
-  }
   wp = (WndProperty*)wf->FindByName(TEXT("prpLook8000"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -4017,18 +3995,6 @@ void dlgConfigurationShowModal(void){
       changed = true;
       requirerestart = true;
 	if (ISPARAGLIDER) AATEnabled=TRUE;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpExtendedVisualGlide")); // VENTA4
-  if (wp) {
-    if (ExtendedVisualGlide != (ExtendedVisualGlide_t)
-	(wp->GetDataField()->GetAsInteger())) {
-      ExtendedVisualGlide = (ExtendedVisualGlide_t)
-	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryExtendedVisualGlide,
-		    (DWORD)(ExtendedVisualGlide));
-      changed = true;
     }
   }
 

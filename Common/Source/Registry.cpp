@@ -30,7 +30,7 @@ double INVCOSINETABLE[4096];
 int ISINETABLE[4096];
 int ICOSTABLE[4096];
 
-//#define NEWPROFILES 1
+#define NEWPROFILES 1
 
 void StoreType(int Index,int infoType)
 {
@@ -364,10 +364,6 @@ void ReadRegistrySettings(void)
   if (ISPARAGLIDER) {
 	AATEnabled=TRUE;
   }
-
-  Temp = 0;
-  GetFromRegistry(szRegistryExtendedVisualGlide,&Temp); // VENTA4
-  ExtendedVisualGlide = Temp;
 
   // Do not allow LK8000 mode be disabled. The reserved (0) mode is unused right now.
   if (ScreenLandscape) {

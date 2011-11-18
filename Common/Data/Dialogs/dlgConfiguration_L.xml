@@ -597,9 +597,6 @@
 <WndProperty Name="prpAppDefaultMapWidth" Caption="_@M226_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2>
 <DataField name="" DataType="double" DisplayFormat="%.0f" EditFormat="%.0f" Min=100 Max=400 Step=5/>
 </WndProperty>
-<WndProperty Name="prpExtendedVisualGlide" Caption="_@M272_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H229_">
-<DataField name="" DataType="boolean"/>
-</WndProperty>
 <WndProperty Name="prpActiveMap" Caption="_@M53_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H178_">
 <DataField name="" DataType="boolean" />
 </WndProperty>

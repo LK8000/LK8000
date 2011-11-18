@@ -121,9 +121,8 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryAcknowledgementTime, AcknowledgementTime);
   rprintf(szRegistryActiveMap, ActiveMap);
 
-// Todo:
-// AdditionalAirspaceFile
-// AdditionalWPFile
+  rprintf(szRegistryAdditionalAirspaceFile, szAdditionalAirspaceFile);
+  rprintf(szRegistryAdditionalWayPointFile, szAdditionalWaypointFile);
 
   rprintf( szRegistryAircraftCategory, AircraftCategory);
 
@@ -132,8 +131,8 @@ void LKProfileSave(const TCHAR *szFile)
 //  rprintf( szRegistryAirfieldFile, AirfieldFile); missing global
 
   rprintf( szRegistryAirspaceBlackOutline, MapWindow::bAirspaceBlackOutline);
+  rprintf(szRegistryAirspaceFile, szAirspaceFile);
 
-//  todo: AirspaceFile
 //  rprintf( szRegistryAirspaceFillType, AirspaceFillType);  missing global
 //  rprintf( szRegistryAirspaceOpacity, AirspaceOpacity); missing global
 
@@ -255,9 +254,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryHandicap,Handicap);
   rprintf(szRegistryHideUnits,HideUnits);
   rprintf(szRegistryHomeWaypoint,HomeWaypoint);
-
-  // rprintf(szRegistryInputFile,InputFile);  missing global
-
+  rprintf(szRegistryInputFile,szInputFile);
   rprintf(szRegistryIphoneGestures,IphoneGestures);
   rprintf(szRegistryLKMaxLabels,LKMaxLabels);
   rprintf(szRegistryLKTopoZoomCat05,LKTopoZoomCat05);
@@ -272,12 +269,9 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryLKTopoZoomCat70,LKTopoZoomCat70);
   rprintf(szRegistryLKTopoZoomCat80,LKTopoZoomCat80);
   rprintf(szRegistryLKTopoZoomCat90,LKTopoZoomCat90);
-
   rprintf(szRegistryLKVarioBar,LKVarioBar);
   rprintf(szRegistryLKVarioVal,LKVarioVal);
-
-  // rprintf(szRegistryLanguageFile,); missing global
-
+  rprintf(szRegistryLanguageFile,szLanguageFile);
   rprintf( szRegistryLatLonUnits, Units::CoordinateFormat);
 
   // rprintf( szRegistryLiftUnitsValue, );  missing global
@@ -291,8 +285,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryLoggerTimeStepCruise,LoggerTimeStepCruise);
   rprintf(szRegistryLook8000,Look8000);
   rprintf(szRegistryMapBox,MapBox);
-  // rprintf(szRegistryMapFile,); // missing MapFile  global
-
+  rprintf(szRegistryMapFile,szMapFile);
   rprintf(szRegistryMcOverlay,McOverlay);
   rprintf(szRegistryMenuTimeout,MenuTimeout_Config);
   rprintf(szRegistryNewMapDeclutter,NewMapDeclutter);
@@ -312,8 +305,8 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryPGStartOut,PGStartOut);
 
   // rprintf(szRegistryPilotName,);  missing global
-  // rprintf(szRegistryPolarFile,);  missing global
 
+  rprintf(szRegistryPolarFile,szPolarFile);
   rprintf(szRegistryPollingMode,PollingMode);
 
   // rprintf(szRegistryPort1Index,);  missing global
@@ -348,16 +341,11 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryTeamcodeRefWaypoint,TeamCodeRefWaypoint);
   rprintf(szRegistryTerrainBrightness,TerrainBrightness);
   rprintf(szRegistryTerrainContrast,TerrainContrast);
-
-  // rprintf(szRegistryTerrainFile,); missing global
-
+  rprintf(szRegistryTerrainFile,szTerrainFile);
   rprintf(szRegistryTerrainRamp,TerrainRamp);
   rprintf(szRegistryThermalBar,ThermalBar);
-
   rprintf(szRegistryThermalLocator,EnableThermalLocator);
-
-  // rprintf(szRegistryTopologyFile,); missing global
-
+  rprintf(szRegistryTopologyFile,szTopologyFile);
   rprintf(szRegistryTpFilter,TpFilter);
   rprintf(szRegistryTrackBar,TrackBar);
   rprintf(szRegistryTrailDrift,MapWindow::EnableTrailDrift);
@@ -366,9 +354,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryUseGeoidSeparation,UseGeoidSeparation);
   rprintf(szRegistryUseTotalEnergy,UseTotalEnergy);
   rprintf(szRegistryWarningTime,WarningTime);
-
-  // rprintf(szRegistryWayPointFile,); missing global
-
+  rprintf(szRegistryWayPointFile,szWaypointFile);
   rprintf(szRegistryWaypointsOutOfRange,WaypointsOutOfRange);
   rprintf(szRegistryWindCalcSpeed,WindCalcSpeed);
   rprintf(szRegistryWindCalcTime,WindCalcTime);
