@@ -550,10 +550,14 @@ bool LKLoadMessages(bool fillup) {
 		#endif
 		continue;
 	}
-  #if TESTBENCH
-  if (fillup)
-    StartupStore(_T("... Fillup: message index %d is missing from translation\n"),inumber);
-  #endif
+	#if TESTBENCH
+	#if (WINDOWSPC>0)
+	// CAUTION, on a PNA this would freeze the device if language file is not updated! 
+	// StartupStore is locking and unlocking threads at each run!!
+	if (fillup)
+		StartupStore(_T("... Fillup: message index %d is missing from translation\n"),inumber);
+	#endif
+	#endif
 	LKMessagesIndex[inumber]=mnumber;
 	LKMessages[mnumber] = (TCHAR *)malloc((wcslen(scapt)+1)*sizeof(TCHAR));
 	_tcscpy(LKMessages[mnumber],scapt);
