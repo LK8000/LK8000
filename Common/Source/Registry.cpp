@@ -1211,31 +1211,6 @@ void ReadProfile(const TCHAR *szFile)
 }
 
 
-#ifndef NOWINDREGISTRY
-void SaveWindToRegistry() {
-  DWORD Temp;
-  Temp = iround(CALCULATED_INFO.WindSpeed);
-  SetToRegistry(szRegistryWindSpeed,Temp);
-  Temp = iround(CALCULATED_INFO.WindBearing);
-  SetToRegistry(szRegistryWindBearing,Temp);
-  SetWindEstimate(CALCULATED_INFO.WindSpeed, CALCULATED_INFO.WindBearing);
-
-}
-
-
-void LoadWindFromRegistry() {
-  StartupStore(TEXT(". Load wind from registry%s"),NEWLINE);
-
-  DWORD Temp;
-  Temp=0;
-  GetFromRegistry(szRegistryWindSpeed,&Temp);
-  CALCULATED_INFO.WindSpeed = Temp;
-  Temp=0;
-  GetFromRegistry(szRegistryWindBearing,&Temp);
-  CALCULATED_INFO.WindBearing = Temp;
-}
-#endif
-
 void ReadDeviceSettings(const int devIdx, TCHAR *Name){
 
   Name[0] = '\0';

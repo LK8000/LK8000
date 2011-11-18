@@ -176,7 +176,6 @@ TCHAR szRegistryDebounceTimeout[]= TEXT("DebounceTimeout");
 TCHAR szRegistryDeclutterMode[]= TEXT("DeclutterMode");
 TCHAR szRegistryDeviceA[]= TEXT("DeviceA");
 TCHAR szRegistryDeviceB[]= TEXT("DeviceB");
-TCHAR szRegistryDeviceC[]= TEXT("DeviceC");
 TCHAR szRegistryDisableAutoLogger[] = TEXT("DisableAutoLogger");
 TCHAR szRegistryDisplayText[] = TEXT("DisplayText2");
 TCHAR szRegistryDisplayUpValue[] = TEXT("DisplayUp");
@@ -219,7 +218,7 @@ TCHAR szRegistryLKTopoZoomCat90[]= TEXT("LKTopoZoomCat90");
 TCHAR szRegistryLKVarioBar[]= TEXT("LKVarioBar");
 TCHAR szRegistryLKVarioVal[]= TEXT("LKVarioVal");
 TCHAR szRegistryLanguageFile[]=  TEXT("LanguageFile");
-TCHAR szRegistryLatLonUnits[] = TEXT("LatLonUnits");				// ---------------------
+TCHAR szRegistryLatLonUnits[] = TEXT("LatLonUnits");
 TCHAR szRegistryLiftUnitsValue[] = TEXT("Lift");
 TCHAR szRegistryLockSettingsInFlight[] = TEXT("LockSettingsInFlight");
 TCHAR szRegistryLoggerID[]=  TEXT("LoggerID");
@@ -228,7 +227,7 @@ TCHAR szRegistryLoggerTimeStepCircling[]= TEXT("LoggerTimeStepCircling");
 TCHAR szRegistryLoggerTimeStepCruise[]= TEXT("LoggerTimeStepCruise");
 TCHAR szRegistryLook8000[]= TEXT("Look8000");
 TCHAR szRegistryMapBox[]= TEXT("MapBox");
-TCHAR szRegistryMapFile[]= TEXT("MapFile");					// ------------------
+TCHAR szRegistryMapFile[]= TEXT("MapFile");
 TCHAR szRegistryMcOverlay[]= TEXT("McOverlay2");
 TCHAR szRegistryMenuTimeout[] = TEXT("MenuTimeout");
 TCHAR szRegistryNewMapDeclutter[]= TEXT("NewMapDeclutter");
@@ -292,10 +291,8 @@ TCHAR szRegistryUseTotalEnergy[] = TEXT("UseTotalEnergy");
 TCHAR szRegistryWarningTime[]=		 TEXT("WarnTime");
 TCHAR szRegistryWayPointFile[]=  TEXT("WPFile");
 TCHAR szRegistryWaypointsOutOfRange[] = TEXT("WaypointsOutOfRange2");
-TCHAR szRegistryWindBearing[] =          TEXT("WindBearing");
 TCHAR szRegistryWindCalcSpeed[] =          TEXT("WindCalcSpeed");
 TCHAR szRegistryWindCalcTime[] =          TEXT("WindCalcTime");
-TCHAR szRegistryWindSpeed[] =            TEXT("WindSpeed");
 TCHAR szRegistryWindUpdateMode[] =       TEXT("WindUpdateMode");
 //
 //
@@ -509,10 +506,8 @@ extern TCHAR szRegistryUseTotalEnergy[];
 extern TCHAR szRegistryWarningTime[];
 extern TCHAR szRegistryWayPointFile[];
 extern TCHAR szRegistryWaypointsOutOfRange[];
-extern TCHAR szRegistryWindBearing[];
 extern TCHAR szRegistryWindCalcSpeed[];
 extern TCHAR szRegistryWindCalcTime[];
-extern TCHAR szRegistryWindSpeed[];
 extern TCHAR szRegistryWindUpdateMode[];
 //
 //
