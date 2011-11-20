@@ -83,7 +83,7 @@ void LKProfileSave(const TCHAR *szFile)
 
 //  rprintf( szRegistryAircraftRego, AircraftRego); missing global
 //  rprintf( szRegistryAircraftType, AircraftType); missing global
-//  rprintf( szRegistryAirfieldFile, AirfieldFile); missing global
+  rprintf( szRegistryAirfieldFile, szAirfieldFile); 
 
   rprintf( szRegistryAirspaceBlackOutline, MapWindow::bAirspaceBlackOutline);
   rprintf(szRegistryAirspaceFile, szAirspaceFile);
