@@ -82,8 +82,7 @@ GEXTERN TCHAR	GlobalModelName[MAX_PATH];
 GEXTERN BYTE RUN_MODE;
 
 // asset/registration data
-GEXTERN TCHAR strAssetNumber[MAX_LOADSTRING];
-GEXTERN TCHAR strRegKey[MAX_LOADSTRING];
+GEXTERN TCHAR strAssetNumber[MAX_ASSETIDSTRING];
 
 // windows
 GEXTERN HWND hWndMainWindow;           // HWND Main Window

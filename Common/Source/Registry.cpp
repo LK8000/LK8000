@@ -219,8 +219,6 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistrySectorRadius,
 		  &SectorRadius);
 
-  GetRegistryString(szRegistryRegKey, strRegKey, 65);
-
   for(i=0;i<AIRSPACECLASSCOUNT;i++)
     {
       MapWindow::iAirspaceMode[i] = GetRegistryAirspaceMode(i);

@@ -72,6 +72,7 @@
 #define MAXSTARTPOINTS 20
 
 #define MAX_LOADSTRING 100
+#define MAX_ASSETIDSTRING	10
 
 #define TRAILSIZE 1000
 // 1000 points at 3.6 seconds average = one hour

@@ -41,7 +41,6 @@ void Globals_Init(void) {
   _tcscpy(LK8000_Version,_T(""));
 
   _tcscpy(strAssetNumber,_T(LOGGER_ASSET_ID));
-  _tcscpy(strRegKey,_T(""));
 
   ProgramStarted = psInitInProgress;
 
