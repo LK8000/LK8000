@@ -11,57 +11,14 @@
 #include "McReady.h"
 #include "Modeltype.h"
 
-// #define NEWPROFILES 1
+#define NEWPROFILES 1
 
 #if NEWPROFILES
 
 #include "LKProfiles.h"
 
 
-#if 0
-void LKWriteFileRegistryString(HANDLE hFile, TCHAR *instring) {
-    int len;
-    char ctempFile[MAX_PATH];
-    TCHAR tempFile[MAX_PATH];
-    DWORD dwBytesWritten;
-    int i;
-
-    tempFile[0]=0;
-    for (i=0; i<MAX_PATH; i++) {
-      tempFile[i]= 0;
-    }
-    GetRegistryString(instring, tempFile, MAX_PATH);
-    WideCharToMultiByte( CP_ACP, 0, tempFile,
-			 _tcslen(tempFile)+1,
-			 ctempFile,
-			 MAX_PATH, NULL, NULL);
-    for (i=0; i<MAX_PATH; i++) {
-      if (ctempFile[i]=='\?') {
-	ctempFile[i]=0;
-      }
-    }
-    len = strlen(ctempFile)+1;
-    ctempFile[len-1]= '\n';
-    WriteFile(hFile,ctempFile,len, &dwBytesWritten, (OVERLAPPED *)NULL);
-}
-
-void WriteProfile(const TCHAR *szFile)
-{
-  #if TESTBENCH
-  StartupStore(_T("... WriteProfile <%s>%s"),szFile,NEWLINE);
-  #endif
-  SaveRegistryToFile(szFile);
-}
-#endif
-
 // wind save TODO
-// deviceA and B name TODO
-
-
-extern int nMaxValueNameSize;
-extern int nMaxValueValueSize;
-extern int nMaxClassSize;
-extern int nMaxKeyNameSize;
 
 static FILE *pfp=NULL;
 
@@ -120,10 +77,8 @@ void LKProfileSave(const TCHAR *szFile)
   // 
   rprintf(szRegistryAcknowledgementTime, AcknowledgementTime);
   rprintf(szRegistryActiveMap, ActiveMap);
-
   rprintf(szRegistryAdditionalAirspaceFile, szAdditionalAirspaceFile);
   rprintf(szRegistryAdditionalWayPointFile, szAdditionalWaypointFile);
-
   rprintf( szRegistryAircraftCategory, AircraftCategory);
 
 //  rprintf( szRegistryAircraftRego, AircraftRego); missing global
@@ -140,7 +95,6 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryAirspaceWarningMapLabels, AirspaceWarningMapLabels);
   rprintf(szRegistryAirspaceWarningRepeatTime, AirspaceWarningRepeatTime);
   rprintf(szRegistryAirspaceWarningVerticalMargin, AirspaceWarningVerticalMargin);
-
   rprintf(szRegistryAirspaceWarning, AIRSPACEWARNINGS);
   rprintf(szRegistryAlarmMaxAltitude1, AlarmMaxAltitude1);
   rprintf(szRegistryAlarmMaxAltitude2, AlarmMaxAltitude2);
@@ -149,14 +103,11 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryAltMode, AltitudeMode);
   rprintf(szRegistryAlternate1, Alternate1);
   rprintf(szRegistryAlternate2, Alternate2);
-
-  // rprintf(szRegistryAltitudeUnitsValue, AltitudeUnit_Config); // todo global
-
+  rprintf(szRegistryAltitudeUnitsValue, AltitudeUnit_Config);
   rprintf(szRegistryAppDefaultMapWidth, Appearance.DefaultMapWidth);
   rprintf(szRegistryAppIndLandable,Appearance.IndLandable);
   rprintf(szRegistryAppInfoBoxModel,Appearance.InfoBoxModel);
   rprintf(szRegistryAppInverseInfoBox,Appearance.InverseInfoBox);
-
   rprintf(szRegistryArrivalValue,ArrivalValue);
   rprintf(szRegistryAutoAdvance,AutoAdvance);
   rprintf(szRegistryAutoBacklight,EnableAutoBacklight);
@@ -168,15 +119,12 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryAutoWind,AutoWindMode);
   rprintf(szRegistryAutoZoom,MapWindow::zoom.AutoZoom());
   rprintf(szRegistryAverEffTime,AverEffTime);
-
   rprintf(szRegistryBallastSecsToEmpty,BallastSecsToEmpty);
   rprintf(szRegistryBarOpacity,BarOpacity);
   rprintf(szRegistryBestWarning,BestWarning);
   rprintf(szRegistryBgMapColor,BgMapColor);
-
-  //rprintf(szRegistryBit1Index,Bit1Index); // missing global
-  //rprintf(szRegistryBit2Index,Bit2Index); // missing global
-
+  rprintf(szRegistryBit1Index,dwBit1Index);
+  rprintf(szRegistryBit2Index,dwBit2Index);
   rprintf(szRegistryCheckSum,CheckSum);
   rprintf(szRegistryCircleZoom,MapWindow::zoom.CircleZoom());
   rprintf(szRegistryClipAlt,ClipAltitude);
@@ -193,14 +141,12 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryConfBB7,ConfBB7);
   rprintf(szRegistryConfBB8,ConfBB8);
   rprintf(szRegistryConfBB9,ConfBB9);
-
   rprintf(szRegistryConfIP11,ConfIP11);
   rprintf(szRegistryConfIP12,ConfIP12);
   rprintf(szRegistryConfIP13,ConfIP13);
   rprintf(szRegistryConfIP14,ConfIP14);
   rprintf(szRegistryConfIP15,ConfIP15);
   rprintf(szRegistryConfIP16,ConfIP16);
-
   rprintf(szRegistryConfIP21,ConfIP21);
   rprintf(szRegistryConfIP22,ConfIP22);
   rprintf(szRegistryConfIP23,ConfIP23);
@@ -208,7 +154,6 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryConfIP31,ConfIP31);
   rprintf(szRegistryConfIP32,ConfIP32);
   rprintf(szRegistryConfIP33,ConfIP33);
-
   rprintf(szRegistryCustomKeyModeAircraftIcon,CustomKeyModeAircraftIcon);
   rprintf(szRegistryCustomKeyModeCenterScreen,CustomKeyModeCenterScreen);
   rprintf(szRegistryCustomKeyModeCenter,CustomKeyModeCenter);
@@ -219,30 +164,23 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryCustomKeyTime,CustomKeyTime);
   rprintf(szRegistryDebounceTimeout,debounceTimeout);
   rprintf(szRegistryDeclutterMode,DeclutterMode);
-
-  // DeviceA  missing global
-  // DeviceB  missing global
-
+  rprintf(szRegistryDeviceA,dwDeviceName1);
+  rprintf(szRegistryDeviceB,dwDeviceName2);
   rprintf(szRegistryDisableAutoLogger,DisableAutoLogger);
   rprintf(szRegistryDisplayText,DisplayTextType);
   rprintf(szRegistryDisplayUpValue,DisplayOrientation_Config);
-
-  // rprintf(szRegistryDistanceUnitsValue,  );   missing global
-  
+  rprintf(szRegistryDistanceUnitsValue,DistanceUnit_Config );
   rprintf(szRegistryDrawTerrain,EnableTerrain);
   rprintf(szRegistryDrawTopology,EnableTopology);
-
   rprintf(szRegistryEnableFLARMMap,EnableFLARMMap);
   rprintf(szRegistryEnableNavBaroAltitude,EnableNavBaroAltitude);
-
-  // Extended visual to remove
-
   rprintf(szRegistryFAIFinishHeight,EnableFAIFinishHeight);
   rprintf(szRegistryFAISector,SectorType);
   rprintf(szRegistryFinalGlideTerrain,FinalGlideTerrain);
   rprintf(szRegistryFinishLine,FinishLine);
   rprintf(szRegistryFinishMinHeight,FinishMinHeight);
   rprintf(szRegistryFinishRadius,FinishRadius);
+
   // rprintf(szRegistryFontMapLabelFont,MapLabelFont); // todo fix missing global
   // rprintf(szRegistryFontMapWindowFont,MapWindowFont); // todo fix missing global
 
@@ -273,9 +211,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryLKVarioVal,LKVarioVal);
   rprintf(szRegistryLanguageFile,szLanguageFile);
   rprintf( szRegistryLatLonUnits, Units::CoordinateFormat);
-
-  // rprintf( szRegistryLiftUnitsValue, );  missing global
-
+  rprintf( szRegistryLiftUnitsValue,LiftUnit_Config );
   rprintf( szRegistryLockSettingsInFlight,LockSettingsInFlight);
 
   // rprintf( szRegistryLoggerID,); // LoggerID missing
@@ -308,10 +244,8 @@ void LKProfileSave(const TCHAR *szFile)
 
   rprintf(szRegistryPolarFile,szPolarFile);
   rprintf(szRegistryPollingMode,PollingMode);
-
-  // rprintf(szRegistryPort1Index,);  missing global
-  // rprintf(szRegistryPort2Index,);  missing global
-
+  rprintf(szRegistryPort1Index,dwPortIndex1);
+  rprintf(szRegistryPort2Index,dwPortIndex2);
   rprintf(szRegistryPressureHg,PressureHg);
   rprintf(szRegistrySafetyAltitudeArrival,SAFETYALTITUDEARRIVAL);
   rprintf(szRegistrySafetyAltitudeMode,SafetyAltitudeMode);
@@ -323,11 +257,9 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryShading,Shading);
   rprintf(szRegistrySnailTrail,TrailActive);
   rprintf(szRegistrySnailWidthScale,MapWindow::SnailWidthScale);
-
-  // rprintf(szRegistrySpeed1Index,SpeedIndex); missing global
-  // rprintf(szRegistrySpeed2Index,Speed2Index); missing global
-  // rprintf(szRegistrySpeedUnitsValue,); // missing global
-
+  rprintf(szRegistrySpeed1Index,dwSpeedIndex1);
+  rprintf(szRegistrySpeed2Index,dwSpeedIndex2);
+  rprintf(szRegistrySpeedUnitsValue,SpeedUnit_Config);
   rprintf(szRegistryStartHeightRef,StartHeightRef);
   rprintf(szRegistryStartLine,StartLine);
   rprintf(szRegistryStartMaxHeightMargin,StartMaxHeightMargin);
@@ -335,9 +267,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryStartMaxSpeedMargin,StartMaxSpeedMargin);
   rprintf(szRegistryStartMaxSpeed,StartMaxSpeed);
   rprintf(szRegistryStartRadius,StartRadius);
-
-  // rprintf(szRegistryTaskSpeedUnitsValue,); missing global
-
+  rprintf(szRegistryTaskSpeedUnitsValue,TaskSpeedUnit_Config);
   rprintf(szRegistryTeamcodeRefWaypoint,TeamCodeRefWaypoint);
   rprintf(szRegistryTerrainBrightness,TerrainBrightness);
   rprintf(szRegistryTerrainContrast,TerrainContrast);

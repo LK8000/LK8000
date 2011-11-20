@@ -541,6 +541,23 @@ void Globals_Init(void) {
   szInputFile[0] = TEXT('\0');
   szMapFile[0] = TEXT('\0');
 
+  // Ports and device settings
+  dwDeviceName1[0]=_T('\0');
+  dwPortIndex1 = 0;
+  dwSpeedIndex1 = 2;
+  dwBit1Index = (BitIndex_t)bit8N1;
+  dwDeviceName2[0]=_T('\0');
+  dwPortIndex2 = 0;
+  dwSpeedIndex2 = 2;
+  dwBit2Index = (BitIndex_t)bit8N1;
+
+  // Units
+  SpeedUnit_Config = 2;		// default is kmh
+  TaskSpeedUnit_Config = 2;	// default is kph
+  DistanceUnit_Config = 2;	// default is km
+  LiftUnit_Config = 1;		// default m/s
+  AltitudeUnit_Config = 1;	// default m
+
 
   // ADD NEW GLOBALS here ^^^ //
 

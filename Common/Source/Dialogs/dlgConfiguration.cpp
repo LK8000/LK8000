@@ -1238,21 +1238,9 @@ static void GetInfoBoxSelector(int item, int mode)
   }
 }
 
-
-static  DWORD dwPortIndex1 = 0;
-static  DWORD dwSpeedIndex1 = 2;
-static  DWORD dwBit1Index = (BitIndex_t)bit8N1;
-static  DWORD dwPortIndex2 = 0;
-static  DWORD dwSpeedIndex2 = 2;
-static  DWORD dwBit2Index = (BitIndex_t)bit8N1;
 static  int dwDeviceIndex1=0;
 static  int dwDeviceIndex2=0;
 static  TCHAR DeviceName[DEVNAMESIZE+1];
-static  DWORD Speed = 2; // default is kmh 100219
-static  DWORD TaskSpeed = 2; // default is kph
-static  DWORD Distance = 2; // default is km
-static  DWORD Lift = 1; // default m/s
-static  DWORD Altitude = 1; //default m
 static  TCHAR temptext[MAX_PATH];
 
 
@@ -1879,8 +1867,8 @@ static void setVariables(void) {
   }
   
 
-  if(GetFromRegistry(szRegistrySpeedUnitsValue,&Speed)!=ERROR_SUCCESS) {
-    SetToRegistry(szRegistrySpeedUnitsValue, Speed);
+  if(GetFromRegistry(szRegistrySpeedUnitsValue,&SpeedUnit_Config)!=ERROR_SUCCESS) {
+    SetToRegistry(szRegistrySpeedUnitsValue, SpeedUnit_Config);
     changed = true;
   } 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsSpeed"));
@@ -1893,7 +1881,7 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M455_")));
 	// LKTOKEN  _@M436_ = "Metric" 
     dfe->addEnumText(gettext(TEXT("_@M436_")));
-    dfe->Set(Speed);
+    dfe->Set(SpeedUnit_Config);
     wp->RefreshDisplay();
   }
 
@@ -1912,8 +1900,8 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  if(GetFromRegistry(szRegistryTaskSpeedUnitsValue,&TaskSpeed)!=ERROR_SUCCESS) {
-    SetToRegistry(szRegistryTaskSpeedUnitsValue, TaskSpeed);
+  if(GetFromRegistry(szRegistryTaskSpeedUnitsValue,&TaskSpeedUnit_Config)!=ERROR_SUCCESS) {
+    SetToRegistry(szRegistryTaskSpeedUnitsValue, TaskSpeedUnit_Config);
     changed = true;
   } 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsTaskSpeed"));
@@ -1926,12 +1914,12 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M455_")));
 	// LKTOKEN  _@M436_ = "Metric" 
     dfe->addEnumText(gettext(TEXT("_@M436_")));
-    dfe->Set(TaskSpeed);
+    dfe->Set(TaskSpeedUnit_Config);
     wp->RefreshDisplay();
   }
 
-  if(GetFromRegistry(szRegistryDistanceUnitsValue,&Distance)!=ERROR_SUCCESS) {
-    SetToRegistry(szRegistryDistanceUnitsValue, Distance);
+  if(GetFromRegistry(szRegistryDistanceUnitsValue,&DistanceUnit_Config)!=ERROR_SUCCESS) {
+    SetToRegistry(szRegistryDistanceUnitsValue, DistanceUnit_Config);
     changed = true;
   } 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsDistance"));
@@ -1944,12 +1932,12 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M455_")));
 	// LKTOKEN  _@M436_ = "Metric" 
     dfe->addEnumText(gettext(TEXT("_@M436_")));
-    dfe->Set(Distance);
+    dfe->Set(DistanceUnit_Config);
     wp->RefreshDisplay();
   }
 
-  if(GetFromRegistry(szRegistryAltitudeUnitsValue,&Altitude)!=ERROR_SUCCESS) {
-    SetToRegistry(szRegistryAltitudeUnitsValue, Altitude);
+  if(GetFromRegistry(szRegistryAltitudeUnitsValue,&AltitudeUnit_Config)!=ERROR_SUCCESS) {
+    SetToRegistry(szRegistryAltitudeUnitsValue, AltitudeUnit_Config);
     changed = true;
   } 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsAltitude"));
@@ -1958,12 +1946,12 @@ static void setVariables(void) {
     dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->addEnumText(gettext(TEXT("feet")));
     dfe->addEnumText(gettext(TEXT("meters")));
-    dfe->Set(Altitude);
+    dfe->Set(AltitudeUnit_Config);
     wp->RefreshDisplay();
   }
 
-  if(GetFromRegistry(szRegistryLiftUnitsValue,&Lift)!=ERROR_SUCCESS) {
-    SetToRegistry(szRegistryLiftUnitsValue, Lift);
+  if(GetFromRegistry(szRegistryLiftUnitsValue,&LiftUnit_Config)!=ERROR_SUCCESS) {
+    SetToRegistry(szRegistryLiftUnitsValue, LiftUnit_Config);
     changed = true;
   } 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsLift"));
@@ -1972,7 +1960,7 @@ static void setVariables(void) {
     dfe = (DataFieldEnum*)wp->GetDataField();
     dfe->addEnumText(gettext(TEXT("knots")));
     dfe->addEnumText(gettext(TEXT("m/s")));
-    dfe->Set(Lift);
+    dfe->Set(LiftUnit_Config);
     wp->RefreshDisplay();
   }
 
@@ -3651,9 +3639,9 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsSpeed"));
   if (wp) {
-    if ((int)Speed != wp->GetDataField()->GetAsInteger()) {
-      Speed = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistrySpeedUnitsValue, Speed);
+    if ((int)SpeedUnit_Config != wp->GetDataField()->GetAsInteger()) {
+      SpeedUnit_Config = wp->GetDataField()->GetAsInteger();
+      SetToRegistry(szRegistrySpeedUnitsValue, SpeedUnit_Config);
       Units::NotifyUnitChanged();
       requirerestart = true;
       changed = true;
@@ -3674,9 +3662,9 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsTaskSpeed"));
   if (wp) {
-    if ((int)TaskSpeed != wp->GetDataField()->GetAsInteger()) {
-      TaskSpeed = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryTaskSpeedUnitsValue, TaskSpeed);
+    if ((int)TaskSpeedUnit_Config != wp->GetDataField()->GetAsInteger()) {
+      TaskSpeedUnit_Config = wp->GetDataField()->GetAsInteger();
+      SetToRegistry(szRegistryTaskSpeedUnitsValue, TaskSpeedUnit_Config);
       Units::NotifyUnitChanged();
       requirerestart = true;
       changed = true;
@@ -3685,9 +3673,9 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsDistance"));
   if (wp) {
-    if ((int)Distance != wp->GetDataField()->GetAsInteger()) {
-      Distance = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryDistanceUnitsValue, Distance);
+    if ((int)DistanceUnit_Config != wp->GetDataField()->GetAsInteger()) {
+      DistanceUnit_Config = wp->GetDataField()->GetAsInteger();
+      SetToRegistry(szRegistryDistanceUnitsValue, DistanceUnit_Config);
       Units::NotifyUnitChanged();
       requirerestart = true;
       changed = true;
@@ -3696,9 +3684,9 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsLift"));
   if (wp) {
-    if ((int)Lift != wp->GetDataField()->GetAsInteger()) {
-      Lift = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryLiftUnitsValue, Lift);
+    if ((int)LiftUnit_Config != wp->GetDataField()->GetAsInteger()) {
+      LiftUnit_Config = wp->GetDataField()->GetAsInteger();
+      SetToRegistry(szRegistryLiftUnitsValue, LiftUnit_Config);
       Units::NotifyUnitChanged();
       requirerestart = true;
       changed = true;
@@ -3707,9 +3695,9 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsAltitude"));
   if (wp) {
-    if ((int)Altitude != wp->GetDataField()->GetAsInteger()) {
-      Altitude = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryAltitudeUnitsValue, Altitude);
+    if ((int)AltitudeUnit_Config != wp->GetDataField()->GetAsInteger()) {
+      AltitudeUnit_Config = wp->GetDataField()->GetAsInteger();
+      SetToRegistry(szRegistryAltitudeUnitsValue, AltitudeUnit_Config);
       Units::NotifyUnitChanged();
       changed = true;
       requirerestart = true;

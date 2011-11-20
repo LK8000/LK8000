@@ -13,6 +13,8 @@
 #include "Calculations.h"
 //#include "Parser.h"
 
+#define NEWPROFILES 1
+
 #if NEWPROFILES
 //
 // Set all default values for configuration.
@@ -38,12 +40,12 @@ void LKProfileResetDefault(void) {
 
   Units::CoordinateFormat = (CoordinateFormats_t)cfDDMMSS;
 
-  // default Speed unit  TODO
-  short SpeedUnit_Config=2; 
-  short TaskSpeedUnit_Config = 2;
-  short DistanceUnit_Config=2;
-  short AltitudeUnit_Config=1;
-  short LiftUnit_Config=1;
+  // Units
+  SpeedUnit_Config = 2;         // default is kmh
+  TaskSpeedUnit_Config = 2;     // default is kph
+  DistanceUnit_Config = 2;      // default is km
+  LiftUnit_Config = 1;          // default m/s
+  AltitudeUnit_Config = 1;      // default m
 
   //
   // Default infobox groups configuration
@@ -376,7 +378,30 @@ void LKProfileResetDefault(void) {
 
   DisableAutoLogger = false;
 
-  // ######### ADD NEW ITEMS ABOVE THIS LINE AND RESPECT ORDER IN SAVE FUNCTION #########
+  szPolarFile[0] = TEXT('\0');
+  szAirspaceFile[0] = TEXT('\0');
+  szAdditionalAirspaceFile[0] = TEXT('\0');
+  szWaypointFile[0] = TEXT('\0');
+  szAdditionalWaypointFile[0] = TEXT('\0');
+  szTerrainFile[0] = TEXT('\0');
+  szTopologyFile[0] = TEXT('\0');
+  szAirfieldFile[0] = TEXT('\0');
+  szLanguageFile[0] = TEXT('\0');
+  szInputFile[0] = TEXT('\0');
+  szMapFile[0] = TEXT('\0');
+
+  // Ports and device settings
+  dwDeviceName1[0]=_T('\0');
+  dwPortIndex1 = 0;
+  dwSpeedIndex1 = 2;
+  dwBit1Index = (BitIndex_t)bit8N1;
+  dwDeviceName2[0]=_T('\0');
+  dwPortIndex2 = 0;
+  dwSpeedIndex2 = 2;
+  dwBit2Index = (BitIndex_t)bit8N1;
+
+
+  // ######### ADD NEW ITEMS ABOVE THIS LINE  #########
 
 }
 

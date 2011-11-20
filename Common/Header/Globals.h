@@ -796,6 +796,26 @@ GEXTERN TCHAR szLanguageFile[MAX_PATH];
 GEXTERN TCHAR szInputFile[MAX_PATH];
 GEXTERN TCHAR szMapFile[MAX_PATH];
 
+// Ports and devices
+
+GEXTERN DWORD dwPortIndex1;
+GEXTERN DWORD dwSpeedIndex1;
+GEXTERN DWORD dwBit1Index;
+GEXTERN DWORD dwPortIndex2;
+GEXTERN DWORD dwSpeedIndex2;
+GEXTERN DWORD dwBit2Index;
+GEXTERN TCHAR dwDeviceName1[DEVNAMESIZE+1];
+GEXTERN TCHAR dwDeviceName2[DEVNAMESIZE+1];
+
+// Units , configurable only in system config
+
+GEXTERN DWORD SpeedUnit_Config;
+GEXTERN DWORD TaskSpeedUnit_Config;
+GEXTERN DWORD DistanceUnit_Config;
+GEXTERN DWORD LiftUnit_Config;
+GEXTERN DWORD AltitudeUnit_Config;
+
+
 //
 // ---------------------------------------------------------------------------
 // SWITCHES: switch them on, and something happens. Thread safe.

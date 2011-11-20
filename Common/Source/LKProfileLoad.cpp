@@ -12,7 +12,7 @@
 #include "Modeltype.h"
 #include "LKProfiles.h"
 
-// #define NEWPROFILES 1
+#define NEWPROFILES 1
 #if NEWPROFILES
 
 // Set default registry values
