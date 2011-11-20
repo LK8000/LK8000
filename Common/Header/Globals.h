@@ -815,6 +815,10 @@ GEXTERN DWORD DistanceUnit_Config;
 GEXTERN DWORD LiftUnit_Config;
 GEXTERN DWORD AltitudeUnit_Config;
 
+// Editable fonts, verbose string
+GEXTERN TCHAR FontDesc_MapWindow[256];
+GEXTERN TCHAR FontDesc_MapLabel[256];
+
 
 //
 // ---------------------------------------------------------------------------

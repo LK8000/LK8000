@@ -180,14 +180,11 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryFinishLine,FinishLine);
   rprintf(szRegistryFinishMinHeight,FinishMinHeight);
   rprintf(szRegistryFinishRadius,FinishRadius);
-
-  // rprintf(szRegistryFontMapLabelFont,MapLabelFont); // todo fix missing global
-  // rprintf(szRegistryFontMapWindowFont,MapWindowFont); // todo fix missing global
-
+  rprintf(szRegistryFontMapLabelFont,FontDesc_MapLabel);
+  rprintf(szRegistryFontMapWindowFont,FontDesc_MapWindow);
   rprintf(szRegistryFontRenderer,FontRenderer);
   rprintf(szRegistryGlideBarMode,GlideBarMode);
   rprintf(szRegistryGliderScreenPosition,MapWindow::GliderScreenPosition);
-
   rprintf(szRegistryGpsAltitudeOffset,GPSAltitudeOffset);
   rprintf(szRegistryHandicap,Handicap);
   rprintf(szRegistryHideUnits,HideUnits);

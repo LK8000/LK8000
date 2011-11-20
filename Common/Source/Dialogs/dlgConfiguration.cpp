@@ -621,12 +621,10 @@ static void GetFontDescription(TCHAR Description[], TCHAR * prpName, int iMaxLen
   }
 }
 
-#define MAX_EDITFONT_DESC_LEN 100
-
 static void OnEditMapWindowFontClicked(WindowControl *Sender) {
-  TCHAR FontDesc[MAX_EDITFONT_DESC_LEN];
-  GetFontDescription(FontDesc, TEXT("prpMapWindowFont"), MAX_EDITFONT_DESC_LEN);
-  if (dlgFontEditShowModal(FontDesc,
+  TCHAR fontDesc[MAX_EDITFONT_DESC_LEN];
+  GetFontDescription(fontDesc, TEXT("prpMapWindowFont"), MAX_EDITFONT_DESC_LEN);
+  if (dlgFontEditShowModal(fontDesc,
                             szRegistryFontMapWindowFont, 
                             autoMapWindowLogFont)) {
     FontRegistryChanged=true;
@@ -634,9 +632,9 @@ static void OnEditMapWindowFontClicked(WindowControl *Sender) {
   }
 }
 static void OnEditMapLabelFontClicked(WindowControl *Sender) {
-  TCHAR FontDesc[MAX_EDITFONT_DESC_LEN];
-  GetFontDescription(FontDesc, TEXT("prpMapLabelFont"), MAX_EDITFONT_DESC_LEN);
-  if (dlgFontEditShowModal(FontDesc,
+  TCHAR fontDesc[MAX_EDITFONT_DESC_LEN];
+  GetFontDescription(fontDesc, TEXT("prpMapLabelFont"), MAX_EDITFONT_DESC_LEN);
+  if (dlgFontEditShowModal(fontDesc,
                             szRegistryFontMapLabelFont, 
                             autoMapLabelLogFont)) {
     FontRegistryChanged=true;

@@ -400,6 +400,8 @@ void LKProfileResetDefault(void) {
   dwSpeedIndex2 = 2;
   dwBit2Index = (BitIndex_t)bit8N1;
 
+  FontDesc_MapWindow[0]=_T('\0');
+  FontDesc_MapLabel [0]=_T('\0');
 
   // ######### ADD NEW ITEMS ABOVE THIS LINE  #########
 

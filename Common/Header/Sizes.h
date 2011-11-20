@@ -169,4 +169,8 @@
 
 #define ERROR_TIME 1.0e6
 
+// Editable font string size
+#define MAX_EDITFONT_DESC_LEN 100
+
+
 #endif

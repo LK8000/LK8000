@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "Utils.h"
+#include "LKProfiles.h"
 
 extern void InitializeOneFont (HFONT * theFont, 
                                const TCHAR FontRegKey[] , 
@@ -247,6 +248,8 @@ void SaveValues(const TCHAR * FontRegKey )
                         NewLogFont.lfPitchAndFamily,
                         NewLogFont.lfFaceName);
   SetRegistryString(FontRegKey, sValue); 
+  if (_tcscmp(FontRegKey,szRegistryFontMapWindowFont)==0) _tcscpy(FontDesc_MapWindow,sValue);
+  if (_tcscmp(FontRegKey,szRegistryFontMapLabelFont)==0) _tcscpy(FontDesc_MapLabel,sValue);
 }
 
 void InitGUI(const TCHAR * FontDescription)
