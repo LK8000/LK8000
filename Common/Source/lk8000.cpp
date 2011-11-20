@@ -455,11 +455,10 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   CreateCalculationThread();
   while(!(goCalculationThread)) Sleep(50);
 
-  // find unique ID of this PDA
-  ReadAssetNumber();
+  // find unique ID of this PDA or create a new one
+  // Currently disabled in LK, we use a dummy ID
+  // CreateAssetNumber();
 
-
-  // Da-da, start everything now
   StartupStore(TEXT(". ProgramStarted=InitDone%s"),NEWLINE);
   ProgramStarted = psInitDone;
 

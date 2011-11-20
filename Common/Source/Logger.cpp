@@ -449,7 +449,7 @@ bool IsAlphaNum (TCHAR c) {
   }
 }
 
-void StartLogger(TCHAR *astrAssetNumber)
+void StartLogger()
 {
   HANDLE hFile;
   int i;
@@ -513,22 +513,24 @@ void StartLogger(TCHAR *astrAssetNumber)
       if (!LoggerShortName) {
         // Long file name
         wsprintf(szFLoggerFileName,
-                 TEXT("%s\\%04d-%02d-%02d-XCS-%c%c%c-%02d.IGC"),
+                 TEXT("%s\\%04d-%02d-%02d-%s-%c%c%c-%02d.IGC"),
                  path,
                  GPS_INFO.Year,
                  GPS_INFO.Month,
                  GPS_INFO.Day,
+		 _T(LOGGER_MANUFACTURER),
                  cAsset[0],
                  cAsset[1],
                  cAsset[2],
                  i);
  
         wsprintf(szFLoggerFileNameRoot,
-                 TEXT("%s\\%04d-%02d-%02d-XCS-%c%c%c-%02d.IGC"),
+                 TEXT("%s\\%04d-%02d-%02d-%s-%c%c%c-%02d.IGC"),
                  TEXT(""), // this creates it in root if MoveFile() fails
                  GPS_INFO.Year,
                  GPS_INFO.Month,
                  GPS_INFO.Day,
+		 _T(LOGGER_MANUFACTURER),
                  cAsset[0],
                  cAsset[1],
                  cAsset[2],
@@ -594,8 +596,10 @@ void LoggerHeader(void)
   TCHAR CompetitionID[100];
   
   // Flight recorder ID number MUST go first..
+  // XCS will be replaced by XLK when we have our own signature key
   sprintf(temp,
-	  "AXCS%C%C%C\r\n",
+	  "A%s%C%C%C\r\n",
+	  LOGGER_MANUFACTURER,
 	  strAssetNumber[0],
 	  strAssetNumber[1],
 	  strAssetNumber[2]);
@@ -607,7 +611,7 @@ void LoggerHeader(void)
 	  GPS_INFO.Year % 100);
   IGCWriteRecord(temp);
 
-  // Example: Paolo Ventafridda
+  // Example: Hanna.Reitsch
   GetRegistryString(szRegistryPilotName, PilotName, 100);
   sprintf(temp,"HFPLTPILOT:%S\r\n", PilotName);
   IGCWriteRecord(temp);

@@ -83,7 +83,6 @@ static WndButton *buttonAircraftType=NULL;
 static WndButton *buttonAircraftRego=NULL;
 static WndButton *buttonCompetitionClass=NULL;
 static WndButton *buttonCompetitionID=NULL;
-static WndButton *buttonLoggerID=NULL;
 static WndButton *buttonCopy=NULL;
 static WndButton *buttonPaste=NULL;
 
@@ -142,16 +141,6 @@ static void UpdateButtons(void) {
 	// LKTOKEN  _@M938_ = "Competition ID" 
     _stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M938_")), val);
     buttonCompetitionID->SetCaption(text);
-  }
-  if (buttonLoggerID) {
-    GetRegistryString(szRegistryLoggerID, val, 100);
-    if (_tcslen(val)<=0) {
-	// LKTOKEN  _@M7_ = "(blank)" 
-      _stprintf(val, gettext(TEXT("_@M7_")));
-    }
-	// LKTOKEN  _@M405_ = "Logger ID" 
-    _stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M405_")), val);
-    buttonLoggerID->SetCaption(text);
   }
 }
 
@@ -707,20 +696,6 @@ static void OnCompetitionIDClicked(WindowControl *Sender)
 }
 
 
-static void OnLoggerIDClicked(WindowControl *Sender) {
-	(void)Sender;
-  TCHAR Temp[100];
-  if (buttonLoggerID) {
-    GetRegistryString(szRegistryLoggerID,Temp,100);
-    dlgTextEntryShowModal(Temp,100);
-    SetRegistryString(szRegistryLoggerID,Temp);
-    changed = true;
-    ReadAssetNumber();
-  }
-  UpdateButtons();
-}
-
-
 static void OnAirspaceColoursClicked(WindowControl * Sender){
 	(void)Sender;
 	bool retval;
@@ -1266,10 +1241,6 @@ static void setVariables(void) {
   buttonCompetitionID = ((WndButton *)wf->FindByName(TEXT("cmdCompetitionID")));
   if (buttonCompetitionID) {
     buttonCompetitionID->SetOnClickNotify(OnCompetitionIDClicked);
-  }
-  buttonLoggerID = ((WndButton *)wf->FindByName(TEXT("cmdLoggerID")));
-  if (buttonLoggerID) {
-    buttonLoggerID->SetOnClickNotify(OnLoggerIDClicked);
   }
 
   buttonCopy = ((WndButton *)wf->FindByName(TEXT("cmdCopy")));

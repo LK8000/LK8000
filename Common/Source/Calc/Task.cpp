@@ -820,7 +820,7 @@ void guiStartLogger(bool noAsk) {
 		IGCWriteLock=true; // Lock ASAP
 		if (LoggerClearFreeSpace()) {
 	  
-			StartLogger(strAssetNumber);
+			StartLogger();
 
 			if (ResumeSession) {
 

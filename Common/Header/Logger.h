@@ -7,7 +7,7 @@
 
 #include <windows.h>
 void DoLogger(TCHAR *strAssetNumber);
-void StartLogger(TCHAR *strAssetNumber);
+void StartLogger(void);
 void LogPoint(double Lattitude, double Longditude, double Altitude,
               double BaroAltitude);
 void AddDeclaration(double Lattitude, double Longditude, TCHAR *ID);
