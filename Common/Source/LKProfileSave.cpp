@@ -80,11 +80,9 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryAdditionalAirspaceFile, szAdditionalAirspaceFile);
   rprintf(szRegistryAdditionalWayPointFile, szAdditionalWaypointFile);
   rprintf( szRegistryAircraftCategory, AircraftCategory);
-
-//  rprintf( szRegistryAircraftRego, AircraftRego); missing global
-//  rprintf( szRegistryAircraftType, AircraftType); missing global
+  rprintf( szRegistryAircraftRego, AircraftRego_Config);
+  rprintf( szRegistryAircraftType, AircraftType_Config);
   rprintf( szRegistryAirfieldFile, szAirfieldFile); 
-
   rprintf( szRegistryAirspaceBlackOutline, MapWindow::bAirspaceBlackOutline);
   rprintf(szRegistryAirspaceFile, szAirspaceFile);
   rprintf( szRegistryAirspaceFillType, MapWindow::GetAirSpaceFillType()); 
@@ -126,10 +124,8 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryCheckSum,CheckSum);
   rprintf(szRegistryCircleZoom,MapWindow::zoom.CircleZoom());
   rprintf(szRegistryClipAlt,ClipAltitude);
-
-  // CompetitionClass  missing global
-  // CompetitionID  missing global
-
+  rprintf(szRegistryCompetitionClass,CompetitionClass_Config);
+  rprintf(szRegistryCompetitionID,CompetitionID_Config);
   rprintf(szRegistryConfBB1,ConfBB1);
   rprintf(szRegistryConfBB2,ConfBB2);
   rprintf(szRegistryConfBB3,ConfBB3);
@@ -205,12 +201,9 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryLKVarioBar,LKVarioBar);
   rprintf(szRegistryLKVarioVal,LKVarioVal);
   rprintf(szRegistryLanguageFile,szLanguageFile);
-  rprintf( szRegistryLatLonUnits, Units::CoordinateFormat);
-  rprintf( szRegistryLiftUnitsValue,LiftUnit_Config );
-  rprintf( szRegistryLockSettingsInFlight,LockSettingsInFlight);
-
-  // rprintf( szRegistryLoggerID,); // LoggerID missing
-
+  rprintf(szRegistryLatLonUnits, Units::CoordinateFormat);
+  rprintf(szRegistryLiftUnitsValue,LiftUnit_Config );
+  rprintf(szRegistryLockSettingsInFlight,LockSettingsInFlight);
   rprintf(szRegistryLoggerShort,LoggerShortName);
   rprintf(szRegistryLoggerTimeStepCircling,LoggerTimeStepCircling);
   rprintf(szRegistryLoggerTimeStepCruise,LoggerTimeStepCruise);
@@ -234,9 +227,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryPGOpenTimeM,PGOpenTimeM);
   rprintf(szRegistryPGOptimizeRoute,PGOptimizeRoute);
   rprintf(szRegistryPGStartOut,PGStartOut);
-
-  // rprintf(szRegistryPilotName,);  missing global
-
+  rprintf(szRegistryPilotName,PilotName_Config);
   rprintf(szRegistryPolarFile,szPolarFile);
   rprintf(szRegistryPollingMode,PollingMode);
   rprintf(szRegistryPort1Index,dwPortIndex1);

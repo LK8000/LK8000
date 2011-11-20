@@ -403,6 +403,13 @@ void LKProfileResetDefault(void) {
   FontDesc_MapWindow[0]=_T('\0');
   FontDesc_MapLabel [0]=_T('\0');
 
+  _tcscpy(PilotName_Config,_T(""));
+  _tcscpy(AircraftType_Config,_T(""));
+  _tcscpy(AircraftRego_Config,_T(""));
+  _tcscpy(CompetitionClass_Config,_T(""));
+  _tcscpy(CompetitionID_Config,_T(""));
+
+
   // ######### ADD NEW ITEMS ABOVE THIS LINE  #########
 
 }
@@ -411,36 +418,6 @@ void LKProfileResetDefault(void) {
 
 #if 0
 
-void ReadPort1Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index)
-{
-  DWORD Temp=0;
-
-  if(GetFromRegistry(szRegistryPort1Index,&Temp)==ERROR_SUCCESS)
-    (*PortIndex) = Temp;
-
-  if(GetFromRegistry(szRegistrySpeed1Index,&Temp)==ERROR_SUCCESS)
-    (*SpeedIndex) = Temp;
-
-  if(GetFromRegistry(szRegistryBit1Index,&Temp)==ERROR_SUCCESS)
-    (*Bit1Index) = Temp;
-}
-
-
-void ReadPort2Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit2Index)
-{
-  DWORD Temp=0;
-
-  if(GetFromRegistry(szRegistryPort2Index,&Temp)==ERROR_SUCCESS)
-    (*PortIndex) = Temp;
-
-  if(GetFromRegistry(szRegistrySpeed2Index,&Temp)==ERROR_SUCCESS)
-    (*SpeedIndex) = Temp;
-
-  if(GetFromRegistry(szRegistryBit2Index,&Temp)==ERROR_SUCCESS)
-    (*Bit2Index) = Temp;
-}
-
-
 
 int GetRegistryAirspaceMode(int i) {
   DWORD Temp= 3; // display + warnings
@@ -448,23 +425,6 @@ int GetRegistryAirspaceMode(int i) {
   return Temp;
 }
 
-
-
-void ReadDeviceSettings(const int devIdx, TCHAR *Name){
-
-  Name[0] = '\0';
-
-  if (devIdx == 0){
-    GetRegistryString(szRegistryDeviceA , Name, DEVNAMESIZE);
-  }
-
-  if (devIdx == 1){
-    GetRegistryString(szRegistryDeviceB , Name, DEVNAMESIZE);
-  }
-    if (_tcslen(Name)==0) _tcscpy(Name,_T(DEV_DISABLED_NAME));
-    return;
-
-}
 
 
 #ifdef PNA

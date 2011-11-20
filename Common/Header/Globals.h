@@ -818,6 +818,13 @@ GEXTERN DWORD AltitudeUnit_Config;
 GEXTERN TCHAR FontDesc_MapWindow[256];
 GEXTERN TCHAR FontDesc_MapLabel[256];
 
+// Logger
+GEXTERN TCHAR PilotName_Config[100];
+GEXTERN TCHAR AircraftType_Config[50];
+GEXTERN TCHAR AircraftRego_Config[50];
+GEXTERN TCHAR CompetitionClass_Config[50];
+GEXTERN TCHAR CompetitionID_Config[50];
+
 
 //
 // ---------------------------------------------------------------------------

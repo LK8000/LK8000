@@ -561,6 +561,14 @@ void Globals_Init(void) {
   FontDesc_MapWindow[0]=_T('\0');
   FontDesc_MapLabel [0]=_T('\0');
 
+  // Logger
+  PilotName_Config[0]=_T('\0');
+  AircraftType_Config[0]=_T('\0');
+  AircraftRego_Config[0]=_T('\0');
+  CompetitionClass_Config[0]=_T('\0');
+  CompetitionID_Config[0]=_T('\0');
+
+
   // ADD NEW GLOBALS here ^^^ //
 
 }

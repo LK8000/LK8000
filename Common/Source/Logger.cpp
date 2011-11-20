@@ -589,11 +589,6 @@ void LoggerHeader(void)
 {
   char datum[]= "HFDTM100GPSDATUM:WGS-84\r\n";
   char temp[100];
-  TCHAR PilotName[100];
-  TCHAR AircraftType[100];
-  TCHAR AircraftRego[100];
-  TCHAR CompetitionClass[100];
-  TCHAR CompetitionID[100];
   
   // Flight recorder ID number MUST go first..
   // XCS will be replaced by XLK when we have our own signature key
@@ -612,27 +607,27 @@ void LoggerHeader(void)
   IGCWriteRecord(temp);
 
   // Example: Hanna.Reitsch
-  GetRegistryString(szRegistryPilotName, PilotName, 100);
-  sprintf(temp,"HFPLTPILOT:%S\r\n", PilotName);
+  GetRegistryString(szRegistryPilotName, PilotName_Config, 100);
+  sprintf(temp,"HFPLTPILOT:%S\r\n", PilotName_Config);
   IGCWriteRecord(temp);
 
   // Example: DG-300
-  GetRegistryString(szRegistryAircraftType, AircraftType, 100);
-  sprintf(temp,"HFGTYGLIDERTYPE:%S\r\n", AircraftType);
+  GetRegistryString(szRegistryAircraftType, AircraftType_Config, 100);
+  sprintf(temp,"HFGTYGLIDERTYPE:%S\r\n", AircraftType_Config);
   IGCWriteRecord(temp);
 
   // Example: D-7176
-  GetRegistryString(szRegistryAircraftRego, AircraftRego, 100);
-  sprintf(temp,"HFGIDGLIDERID:%S\r\n", AircraftRego);
+  GetRegistryString(szRegistryAircraftRego, AircraftRego_Config, 100);
+  sprintf(temp,"HFGIDGLIDERID:%S\r\n", AircraftRego_Config);
   IGCWriteRecord(temp);
 
   // 110117 TOCHECK: maybe a 8 char limit is needed. 
-  GetRegistryString(szRegistryCompetitionClass, CompetitionClass, 100);
-  sprintf(temp,"HFCCLCOMPETITIONCLASS:%S\r\n", CompetitionClass);
+  GetRegistryString(szRegistryCompetitionClass, CompetitionClass_Config, 100);
+  sprintf(temp,"HFCCLCOMPETITIONCLASS:%S\r\n", CompetitionClass_Config);
   IGCWriteRecord(temp);
 
-  GetRegistryString(szRegistryCompetitionID, CompetitionID, 100);
-  sprintf(temp,"HFCIDCOMPETITIONID:%S\r\n", CompetitionID);
+  GetRegistryString(szRegistryCompetitionID, CompetitionID_Config, 100);
+  sprintf(temp,"HFCIDCOMPETITIONID:%S\r\n", CompetitionID_Config);
   IGCWriteRecord(temp);
 
   // until LK is using xcsoar G signature, we keep XCSOAR as main logger type

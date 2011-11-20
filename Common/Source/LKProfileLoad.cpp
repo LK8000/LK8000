@@ -145,7 +145,7 @@ using std::max;
 void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
 
   #if TESTBENCH
-  StartupStore(_T("... Parse: <%s> = <%s>\n"),sname,svalue);
+  //StartupStore(_T("... Parse: <%s> = <%s>\n"),sname,svalue);
   #endif
 
   int ival;
