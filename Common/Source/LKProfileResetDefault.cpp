@@ -101,8 +101,8 @@ void LKProfileResetDefault(void) {
 	}
   } 
 
-  // MapWindow::AirspaceFillType = MapWindow::asp_fill_patterns_full; TODO FIX
-  // MapWindow::AirspaceOpacity = 30; TODO FIX
+  MapWindow::SetAirSpaceFillType(MapWindow::asp_fill_patterns_full);
+  MapWindow::SetAirSpaceOpacity(30);
 
   MapWindow::bAirspaceBlackOutline = false;
 

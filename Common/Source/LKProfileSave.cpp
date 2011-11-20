@@ -87,10 +87,8 @@ void LKProfileSave(const TCHAR *szFile)
 
   rprintf( szRegistryAirspaceBlackOutline, MapWindow::bAirspaceBlackOutline);
   rprintf(szRegistryAirspaceFile, szAirspaceFile);
-
-//  rprintf( szRegistryAirspaceFillType, AirspaceFillType);  missing global
-//  rprintf( szRegistryAirspaceOpacity, AirspaceOpacity); missing global
-
+  rprintf( szRegistryAirspaceFillType, MapWindow::GetAirSpaceFillType()); 
+  rprintf( szRegistryAirspaceOpacity, MapWindow::GetAirSpaceOpacity()); 
   rprintf(szRegistryAirspaceWarningDlgTimeout, AirspaceWarningDlgTimeout);
   rprintf(szRegistryAirspaceWarningMapLabels, AirspaceWarningMapLabels);
   rprintf(szRegistryAirspaceWarningRepeatTime, AirspaceWarningRepeatTime);
@@ -286,6 +284,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryWindCalcSpeed,WindCalcSpeed);
   rprintf(szRegistryWindCalcTime,WindCalcTime);
   rprintf(szRegistryWindUpdateMode,WindUpdateMode);
+
 
   /*
   // Anything containing non-ascii chars should be treated like this:
