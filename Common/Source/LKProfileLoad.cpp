@@ -198,7 +198,7 @@ using std::max;
 #define PREAD SetProfileVariable
 
 //
-// Search for a mtch of the keyname. Profile is NOT necessarily sorted!
+// Search for a match of the keyname. Profile is NOT necessarily sorted!
 // So we must check against all possible values until we find the good one.
 // As soon as we find the match, we can return.
 // 
@@ -213,8 +213,14 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   // 
   // RESPECT LKPROFILE.H ALPHA ORDER OR WE SHALL GET LOST SOON!
   // 
+  // -- USE _CONFIG VARIABLES WHEN A RUNTIME VALUE CAN BE CHANGED --
+  // WE DONT WANT TO SAVE RUNTIME TEMPORARY CONFIGURATIONS, ONLY SYSTEM CONFIG!
+  // FOR EXAMPLE: ActiveMap can be set by default in system config, but also changed
+  // at runtime with a button and with a customkey. We must save in profile ONLY
+  // the _Config, not the temporary setup!
+  //
   PREAD(sname,svalue,szRegistryAcknowledgementTime, &AcknowledgementTime);
-  PREAD(sname,svalue,szRegistryActiveMap, &ActiveMap);
+  PREAD(sname,svalue,szRegistryActiveMap, &ActiveMap_Config);
   PREAD(sname,svalue,szRegistryAdditionalAirspaceFile, &*szAdditionalAirspaceFile);
   PREAD(sname,svalue,szRegistryAdditionalWayPointFile, &*szAdditionalWaypointFile);
   PREAD(sname,svalue,szRegistryAircraftCategory, &AircraftCategory);

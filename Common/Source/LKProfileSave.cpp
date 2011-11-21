@@ -72,9 +72,16 @@ void LKProfileSave(const TCHAR *szFile)
 
   // 
   // RESPECT LKPROFILE.H ALPHA ORDER OR WE SHALL GET LOST SOON!
+  //
+  // -- USE _CONFIG VARIABLES WHEN A RUNTIME VALUE CAN BE CHANGED --
+  // WE DONT WANT TO SAVE RUNTIME TEMPORARY CONFIGURATIONS, ONLY SYSTEM CONFIG!
+  // FOR EXAMPLE: ActiveMap can be set by default in system config, but also changed
+  // at runtime with a button and with a customkey. We must save in profile ONLY
+  // the _Config, not the temporary setup!
   // 
   rprintf(szRegistryAcknowledgementTime, AcknowledgementTime);
-  rprintf(szRegistryActiveMap, ActiveMap);
+  rprintf(szRegistryActiveMap, ActiveMap_Config);
+// -------- VERIFIED FOR RUNTIME/CONFIG SEPARATION UNTIL THIS POINT , ToDo the rest -----------
   rprintf(szRegistryAdditionalAirspaceFile, szAdditionalAirspaceFile);
   rprintf(szRegistryAdditionalWayPointFile, szAdditionalWaypointFile);
   rprintf(szRegistryAircraftCategory, AircraftCategory);

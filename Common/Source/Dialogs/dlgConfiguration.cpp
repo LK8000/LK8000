@@ -2441,7 +2441,7 @@ static void setVariables(void) {
 	// LKTOKEN  _@M259_ = "Enabled" 
     dfe->addEnumText(gettext(TEXT("_@M259_")));
     dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->Set(ActiveMap);
+    dfe->Set(ActiveMap_Config);
     wp->RefreshDisplay();
   }
 
@@ -4047,9 +4047,10 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpActiveMap")); // 100318
   if (wp) {
-    if (ActiveMap != (ActiveMap_t) (wp->GetDataField()->GetAsInteger())) {
-      ActiveMap = (ActiveMap_t) (wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryActiveMap, (DWORD)(ActiveMap));
+    if (ActiveMap_Config != (ActiveMap_t) (wp->GetDataField()->GetAsInteger())) {
+      ActiveMap_Config = (ActiveMap_t) (wp->GetDataField()->GetAsInteger());
+      SetToRegistry(szRegistryActiveMap, (DWORD)(ActiveMap_Config));
+      ActiveMap=ActiveMap_Config;
       changed = true;
     }
   }

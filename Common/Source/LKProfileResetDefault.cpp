@@ -36,7 +36,7 @@ void LKProfileResetDefault(void) {
   #endif
 
   AcknowledgementTime = 900;	// keep ack level for this time, [secs]
-  ActiveMap = 0;
+  ActiveMap_Config = 0;
 
   Units::CoordinateFormat = (CoordinateFormats_t)cfDDMMSS;
 

@@ -572,7 +572,8 @@ void ReadRegistrySettings(void)
 
   Temp = 0;
   GetFromRegistry(szRegistryActiveMap,&Temp); 
-  ActiveMap = (Temp==1);
+  ActiveMap_Config = (Temp==1);
+  ActiveMap=ActiveMap_Config;
 
   Temp=1;
   GetFromRegistry(szRegistryBestWarning,&Temp); 

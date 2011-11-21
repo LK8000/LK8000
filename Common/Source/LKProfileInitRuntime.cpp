@@ -31,6 +31,9 @@ void LKProfileInitRuntime(void) {
   //
   // Runtime from Config
   //
+
+  ActiveMap=ActiveMap_Config;
+
   // MapWindow::zoom.AutoZoom(AutoZoom_Config); NO CHECK
 
   TerrainRamp = TerrainRamp_Config;
