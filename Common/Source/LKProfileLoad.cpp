@@ -476,7 +476,6 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryWindCalcSpeed,&WindCalcSpeed);
   PREAD(sname,svalue,szRegistryWindCalcTime,&WindCalcTime);
-  PREAD(sname,svalue,szRegistryWindUpdateMode,&WindUpdateMode);
 
 
   return;

@@ -290,7 +290,6 @@ TCHAR szRegistryWayPointFile[]=  TEXT("WPFile");
 TCHAR szRegistryWaypointsOutOfRange[] = TEXT("WaypointsOutOfRange2");
 TCHAR szRegistryWindCalcSpeed[] =          TEXT("WindCalcSpeed");
 TCHAR szRegistryWindCalcTime[] =          TEXT("WindCalcTime");
-TCHAR szRegistryWindUpdateMode[] =       TEXT("WindUpdateMode");
 //
 //
 //
@@ -502,7 +501,6 @@ extern TCHAR szRegistryWayPointFile[];
 extern TCHAR szRegistryWaypointsOutOfRange[];
 extern TCHAR szRegistryWindCalcSpeed[];
 extern TCHAR szRegistryWindCalcTime[];
-extern TCHAR szRegistryWindUpdateMode[];
 //
 //
 #endif

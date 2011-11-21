@@ -427,7 +427,6 @@ void Globals_Init(void) {
   //CContestMgr::CResult OlcResults[CContestMgr::TYPE_NUM];
 
   // user interface settings
-  WindUpdateMode = 0;
   EnableTopology = true;
   EnableTopology_Config = true;
   EnableTerrain = true;

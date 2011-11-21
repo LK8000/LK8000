@@ -288,10 +288,6 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryCircleZoom,&Temp);
   MapWindow::zoom.CircleZoom(Temp == 1);
 
-  Temp  = WindUpdateMode;
-  GetFromRegistry(szRegistryWindUpdateMode,&Temp);
-  WindUpdateMode = Temp;
-
   Temp = HomeWaypoint;
   if (GetFromRegistry(szRegistryHomeWaypoint,&Temp)==ERROR_SUCCESS) {
     HomeWaypoint = Temp;

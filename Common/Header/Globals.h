@@ -572,7 +572,6 @@ GEXTERN double SAFTEYSPEED;
 // Terrain
 GEXTERN short TerrainRamp_Config;
 
-GEXTERN int WindUpdateMode; // unused
 GEXTERN double QNH;
 GEXTERN int NettoSpeed;
 GEXTERN int debounceTimeout;

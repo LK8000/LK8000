@@ -278,7 +278,6 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryWaypointsOutOfRange,WaypointsOutOfRange);
   rprintf(szRegistryWindCalcSpeed,WindCalcSpeed);
   rprintf(szRegistryWindCalcTime,WindCalcTime);
-  rprintf(szRegistryWindUpdateMode,WindUpdateMode);
 
 
   /*

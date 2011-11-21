@@ -125,8 +125,6 @@ void LKProfileResetDefault(void) {
 
   MapWindow::zoom.CircleZoom(1);
 
-  WindUpdateMode = 0;
-
   HomeWaypoint = -1;
 
   Alternate1 = -1;
