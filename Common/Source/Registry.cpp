@@ -623,7 +623,8 @@ void ReadRegistrySettings(void)
   else
   	Temp = 2; 
   GetFromRegistry(szRegistryBgMapColor,&Temp); 
-  BgMapColor = Temp;
+  BgMapColor_Config = Temp;
+  BgMapColor=BgMapColor_Config;
 
   Temp = 250;
   GetFromRegistry(szRegistryDebounceTimeout, &Temp);
@@ -637,7 +638,8 @@ void ReadRegistrySettings(void)
 
   Temp = 1; 	// DEFAULT LK8000 091019
   GetFromRegistry(szRegistryAppInverseInfoBox, &Temp);
-  Appearance.InverseInfoBox = (Temp != 0);
+  InverseInfoBox_Config = (Temp != 0);
+  Appearance.InverseInfoBox = InverseInfoBox_Config;
 
 
 #if (WINDOWSPC<1)
@@ -689,7 +691,8 @@ void ReadRegistrySettings(void)
 
   Temp = 1;
   GetFromRegistry(szRegistryAutoAdvance,&Temp);
-  AutoAdvance = (Temp == 1);
+  AutoAdvance_Config = (Temp == 1);
+  AutoAdvance = AutoAdvance_Config;
 
   Temp = AutoMcMode_Config;
   GetFromRegistry(szRegistryAutoMcMode,&Temp);

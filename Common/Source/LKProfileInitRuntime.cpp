@@ -32,12 +32,15 @@ void LKProfileInitRuntime(void) {
   // Runtime from Config
   //
 
-  ActiveMap=ActiveMap_Config;
+  ActiveMap	=	ActiveMap_Config;
+  Appearance.InverseInfoBox = InverseInfoBox_Config;
+  AutoAdvance	=	AutoAdvance_Config;
+  AutoMcMode	=	AutoMcMode_Config;
+  BgMapColor	=	BgMapColor_Config;
 
   // MapWindow::zoom.AutoZoom(AutoZoom_Config); NO CHECK
 
   TerrainRamp = TerrainRamp_Config;
-  AutoMcMode = AutoMcMode_Config;
   CALCULATED_INFO.AutoMacCready = AutoMacCready_Config==true?1:0;
   UseTotalEnergy = UseTotalEnergy_Config;
   DisplayOrientation = DisplayOrientation_Config;

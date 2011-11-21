@@ -2725,7 +2725,7 @@ static void setVariables(void) {
 	// LKTOKEN  _@M144_ = "Black" 
     dfe->addEnumText(gettext(TEXT("_@M144_")));
     dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->Set(BgMapColor);
+    dfe->Set(BgMapColor_Config);
     wp->RefreshDisplay();
  }
 
@@ -2764,7 +2764,7 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M958_")));
 	// LKTOKEN  _@M959_ = "OFF" 
     dfe->addEnumText(gettext(TEXT("_@M959_")));
-    dfe->Set(Appearance.InverseInfoBox);
+    dfe->Set(InverseInfoBox_Config);
     wp->RefreshDisplay();
   }
 
@@ -2915,7 +2915,7 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M97_")));
 	// LKTOKEN  _@M96_ = "Arm start" 
     dfe->addEnumText(gettext(TEXT("_@M96_")));
-    dfe->Set(AutoAdvance);
+    dfe->Set(AutoAdvance_Config);
     wp->RefreshDisplay();
   }
 
@@ -4248,11 +4248,10 @@ void dlgConfigurationShowModal(void){
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpBgMapcolor"));
   if (wp) {
-    if (BgMapColor != 
-	(wp->GetDataField()->GetAsInteger())) {
-      BgMapColor = 
-	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryBgMapColor, (DWORD)(BgMapColor));
+    if (BgMapColor_Config != (wp->GetDataField()->GetAsInteger())) {
+      BgMapColor_Config = (wp->GetDataField()->GetAsInteger());
+      SetToRegistry(szRegistryBgMapColor, (DWORD)(BgMapColor_Config));
+      BgMapColor = BgMapColor_Config;
       changed = true;
     }
   }
@@ -4352,10 +4351,11 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInverseInfoBox"));
   if (wp) {
-    if ((int)(Appearance.InverseInfoBox) != wp->GetDataField()->GetAsInteger()) {
-      Appearance.InverseInfoBox = (wp->GetDataField()->GetAsInteger() != 0);
-      SetToRegistry(szRegistryAppInverseInfoBox,Appearance.InverseInfoBox);
+    if ((int)(InverseInfoBox_Config) != wp->GetDataField()->GetAsInteger()) {
+      InverseInfoBox_Config = (wp->GetDataField()->GetAsInteger() != 0);
+      SetToRegistry(szRegistryAppInverseInfoBox,InverseInfoBox_Config);
       requirerestart = true;
+      Appearance.InverseInfoBox=InverseInfoBox_Config;
       changed = true;
     }
   }
@@ -4468,11 +4468,11 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoAdvance"));
   if (wp) {
-    if (AutoAdvance != wp->GetDataField()->GetAsInteger()) {
-      AutoAdvance = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryAutoAdvance,
-		    AutoAdvance);
+    if (AutoAdvance_Config != wp->GetDataField()->GetAsInteger()) {
+      AutoAdvance_Config = wp->GetDataField()->GetAsInteger();
+      SetToRegistry(szRegistryAutoAdvance, AutoAdvance_Config);
       changed = true;
+      AutoAdvance=AutoAdvance_Config;
     }
   }
 

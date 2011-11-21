@@ -27,6 +27,8 @@
 //
 // Let's keep this list alpha sorted like in LKPROFILES.h and load/save functions
 //
+// After this function is called, Runtime values must be initialised with InitRuntime
+//
 void LKProfileResetDefault(void) {
 
   int i;
@@ -260,7 +262,7 @@ void LKProfileResetDefault(void) {
   // This need AircraftCategory been set !
   AverEffTime = (AverEffTime_t)ae2minutes; 
 
-  BgMapColor = 2;
+  BgMapColor_Config = 2;
 
   debounceTimeout = 250;
 
@@ -270,11 +272,11 @@ void LKProfileResetDefault(void) {
   // Landables style
   Appearance.IndLandable=wpLandableDefault,
   // Black/White inversion
-  Appearance.InverseInfoBox=false;
+  InverseInfoBox_Config=false;
   Appearance.InfoBoxModel=apImPnaGeneric;
 
 
-  AutoAdvance = 1;
+  AutoAdvance_Config = 1;
 
   AutoMcMode_Config = amcEquivalent;
 

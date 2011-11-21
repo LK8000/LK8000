@@ -53,6 +53,7 @@ void Globals_Init(void) {
   RecentNumber=0;
 
   BgMapColor=0;
+  BgMapColor_Config=0;
 
   BgMapColorTextBlack[0] = false;
   BgMapColorTextBlack[1] = false;
@@ -99,6 +100,7 @@ void Globals_Init(void) {
   ClipAltitude = 1000;
   AltWarningMargin = 100;
   AutoAdvance = 1;
+  AutoAdvance_Config = 1;
   AdvanceArmed = false;
 
   SafetyAltitudeMode = 0;
@@ -516,6 +518,7 @@ void Globals_Init(void) {
   Appearance.IndLandable=wpLandableDefault,
   // Black/White inversion
   Appearance.InverseInfoBox=false;
+  InverseInfoBox_Config=false;
   Appearance.InfoBoxModel=apImPnaGeneric;
 
   TerrainContrast   = 140;

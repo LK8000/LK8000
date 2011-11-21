@@ -233,6 +233,7 @@ GEXTERN bool LKTextBlack;
 // enumerated value for map background when no terrain is painted, valid for both normal and inverted mode
 // note that all topology text is in black, so this should be a light colour in any case
 GEXTERN short BgMapColor;
+GEXTERN short BgMapColor_Config;
 GEXTERN bool BgMapColorTextBlack[LKMAXBACKGROUNDS];
 
 GEXTERN int LKVarioSize;
@@ -644,6 +645,7 @@ GEXTERN int SafetyAltitudeMode;
 GEXTERN int ClipAltitude;
 GEXTERN int AltWarningMargin;
 GEXTERN int AutoAdvance;
+GEXTERN int AutoAdvance_Config;
 GEXTERN bool AdvanceArmed;
 
 
@@ -703,6 +705,7 @@ GEXTERN short TerrainRamp;
 
 
 GEXTERN Appearance_t Appearance;
+GEXTERN bool InverseInfoBox_Config;
 
 #ifdef CPUSTATS
 GEXTERN HANDLE hCalculationThread;

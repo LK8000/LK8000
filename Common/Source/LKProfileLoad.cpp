@@ -273,12 +273,12 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
 	return;
   }
 
-  PREAD(sname,svalue,szRegistryAppInverseInfoBox,&Appearance.InverseInfoBox);
+  PREAD(sname,svalue,szRegistryAppInverseInfoBox,&InverseInfoBox_Config);
   PREAD(sname,svalue,szRegistryArrivalValue,&ArrivalValue);
-  PREAD(sname,svalue,szRegistryAutoAdvance,&AutoAdvance);
+  PREAD(sname,svalue,szRegistryAutoAdvance,&AutoAdvance_Config);
   PREAD(sname,svalue,szRegistryAutoBacklight,&EnableAutoBacklight);
   PREAD(sname,svalue,szRegistryAutoForceFinalGlide,&AutoForceFinalGlide);
-  PREAD(sname,svalue,szRegistryAutoMcMode,&AutoMcMode);
+  PREAD(sname,svalue,szRegistryAutoMcMode,&AutoMcMode_Config);
   PREAD(sname,svalue,szRegistryAutoMcStatus,&AutoMacCready_Config);
   PREAD(sname,svalue,szRegistryAutoOrientScale,&AutoOrientScale);
   PREAD(sname,svalue,szRegistryAutoSoundVolume,&EnableAutoSoundVolume);
@@ -294,7 +294,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryBallastSecsToEmpty,&BallastSecsToEmpty);
   PREAD(sname,svalue,szRegistryBarOpacity,&BarOpacity);
   PREAD(sname,svalue,szRegistryBestWarning,&BestWarning);
-  PREAD(sname,svalue,szRegistryBgMapColor,&BgMapColor);
+  PREAD(sname,svalue,szRegistryBgMapColor,&BgMapColor_Config);
   PREAD(sname,svalue,szRegistryBit1Index,&dwBit1Index);
   PREAD(sname,svalue,szRegistryBit2Index,&dwBit2Index);
   PREAD(sname,svalue,szRegistryCheckSum,&CheckSum);
@@ -485,12 +485,15 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
 
 
 // 
-// After loading a profile, adjust some variables with limiters
+// After loading a profile, adjust some variables with limiters.
+// Config->Runtime copy is accomplished by InitRuntime, not here
 //
 void LKProfileAdjustVariables(void) {
 
   AcknowledgementTime = max(10, AcknowledgementTime);
 
+  // TODO CHECK Registry.cpp for more adjusts!!
+  // TODO Add to InitRuntime anything else from Registry!
 
 }
 

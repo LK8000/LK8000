@@ -81,7 +81,6 @@ void LKProfileSave(const TCHAR *szFile)
   // 
   rprintf(szRegistryAcknowledgementTime, AcknowledgementTime);
   rprintf(szRegistryActiveMap, ActiveMap_Config);
-// -------- VERIFIED FOR RUNTIME/CONFIG SEPARATION UNTIL THIS POINT , ToDo the rest -----------
   rprintf(szRegistryAdditionalAirspaceFile, szAdditionalAirspaceFile);
   rprintf(szRegistryAdditionalWayPointFile, szAdditionalWaypointFile);
   rprintf(szRegistryAircraftCategory, AircraftCategory);
@@ -102,28 +101,29 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryAlarmMaxAltitude3, AlarmMaxAltitude3);
   rprintf(szRegistryAltMargin, AltWarningMargin);
   rprintf(szRegistryAltMode, AltitudeMode);
-  rprintf(szRegistryAlternate1, Alternate1);
+  rprintf(szRegistryAlternate1, Alternate1); // these are not part of configuration, but saved all the same
   rprintf(szRegistryAlternate2, Alternate2);
   rprintf(szRegistryAltitudeUnitsValue, AltitudeUnit_Config);
   rprintf(szRegistryAppDefaultMapWidth, Appearance.DefaultMapWidth);
   rprintf(szRegistryAppIndLandable,Appearance.IndLandable);
   rprintf(szRegistryAppInfoBoxModel,Appearance.InfoBoxModel);
-  rprintf(szRegistryAppInverseInfoBox,Appearance.InverseInfoBox);
+  rprintf(szRegistryAppInverseInfoBox,InverseInfoBox_Config);
   rprintf(szRegistryArrivalValue,ArrivalValue);
-  rprintf(szRegistryAutoAdvance,AutoAdvance);
+  rprintf(szRegistryAutoAdvance,AutoAdvance_Config);
   rprintf(szRegistryAutoBacklight,EnableAutoBacklight);
   rprintf(szRegistryAutoForceFinalGlide,AutoForceFinalGlide);
-  rprintf(szRegistryAutoMcMode,AutoMcMode);
+  rprintf(szRegistryAutoMcMode,AutoMcMode_Config);
   rprintf(szRegistryAutoMcStatus,AutoMacCready_Config);
   rprintf(szRegistryAutoOrientScale,AutoOrientScale);
   rprintf(szRegistryAutoSoundVolume,EnableAutoSoundVolume);
   rprintf(szRegistryAutoWind,AutoWindMode);
-  rprintf(szRegistryAutoZoom,MapWindow::zoom.AutoZoom());
+  rprintf(szRegistryAutoZoom,MapWindow::zoom.AutoZoom()); // TODO CHECK IF OK
   rprintf(szRegistryAverEffTime,AverEffTime);
   rprintf(szRegistryBallastSecsToEmpty,BallastSecsToEmpty);
   rprintf(szRegistryBarOpacity,BarOpacity);
   rprintf(szRegistryBestWarning,BestWarning);
-  rprintf(szRegistryBgMapColor,BgMapColor);
+  rprintf(szRegistryBgMapColor,BgMapColor_Config);
+// -------- VERIFIED FOR RUNTIME/CONFIG SEPARATION UNTIL THIS POINT , ToDo the rest -----------
   rprintf(szRegistryBit1Index,dwBit1Index);
   rprintf(szRegistryBit2Index,dwBit2Index);
   rprintf(szRegistryCheckSum,CheckSum);
