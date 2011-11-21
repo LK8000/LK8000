@@ -286,6 +286,11 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryWindCalcSpeed,WindCalcSpeed);
   rprintf(szRegistryWindCalcTime,WindCalcTime);
 
+  for(int i=0;i<AIRSPACECLASSCOUNT;i++) {
+	rprintf(szRegistryAirspaceMode[i],MapWindow::iAirspaceMode[i]);
+	rprintf(szRegistryColour[i],MapWindow::iAirspaceColour[i]);
+	rprintf(szRegistryBrush[i],MapWindow::iAirspaceBrush[i]);
+  }
 
   /*
   // Anything containing non-ascii chars should be treated like this:

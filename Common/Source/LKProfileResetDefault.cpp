@@ -93,15 +93,6 @@ void LKProfileResetDefault(void) {
 
   for(i=0;i<AIRSPACECLASSCOUNT;i++) {
 	MapWindow::iAirspaceMode[i] = 3; // Display + Warning
-	// already initialised by mapwindow
-	// MapWindow::iAirspaceBrush[i] = 
-	// MapWindow::iAirspaceColour[i] =	
-	if (MapWindow::iAirspaceColour[i]>= NUMAIRSPACECOLORS) {
-		MapWindow::iAirspaceColour[i]= 0;
-	}
-	if (MapWindow::iAirspaceBrush[i]>= NUMAIRSPACEBRUSHES) {
-		MapWindow::iAirspaceBrush[i]= 0;
-	}
   } 
 
   MapWindow::SetAirSpaceFillType(MapWindow::asp_fill_patterns_full);

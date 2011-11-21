@@ -15,7 +15,7 @@
 #define NEWPROFILES 1
 #if NEWPROFILES
 
-#define DEBUGPROF	1
+// #define DEBUGPROF	1
 extern void LKParseProfileString(TCHAR *sname, TCHAR *svalue);
 extern void LKProfileAdjustVariables(void);
 extern void LKProfileInitRuntime(void);
@@ -490,6 +490,14 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryWindCalcSpeed,&WindCalcSpeed);
   PREAD(sname,svalue,szRegistryWindCalcTime,&WindCalcTime);
 
+  for(int i=0;i<AIRSPACECLASSCOUNT;i++) {
+	PREAD(sname,svalue,&*szRegistryAirspaceMode[i],&MapWindow::iAirspaceMode[i]);
+	if (matchedstring) return;
+	PREAD(sname,svalue,&*szRegistryColour[i],&MapWindow::iAirspaceColour[i]);
+	if (matchedstring) return;
+	PREAD(sname,svalue,&*szRegistryBrush[i],&MapWindow::iAirspaceBrush[i]);
+	if (matchedstring) return;
+  }
 
   return;
 
