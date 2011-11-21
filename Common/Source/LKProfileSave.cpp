@@ -18,8 +18,6 @@
 #include "LKProfiles.h"
 
 
-// wind save TODO
-
 static FILE *pfp=NULL;
 
 #define PNEWLINE  "\r\n"
@@ -79,14 +77,14 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryActiveMap, ActiveMap);
   rprintf(szRegistryAdditionalAirspaceFile, szAdditionalAirspaceFile);
   rprintf(szRegistryAdditionalWayPointFile, szAdditionalWaypointFile);
-  rprintf( szRegistryAircraftCategory, AircraftCategory);
-  rprintf( szRegistryAircraftRego, AircraftRego_Config);
-  rprintf( szRegistryAircraftType, AircraftType_Config);
-  rprintf( szRegistryAirfieldFile, szAirfieldFile); 
-  rprintf( szRegistryAirspaceBlackOutline, MapWindow::bAirspaceBlackOutline);
+  rprintf(szRegistryAircraftCategory, AircraftCategory);
+  rprintf(szRegistryAircraftRego, AircraftRego_Config);
+  rprintf(szRegistryAircraftType, AircraftType_Config);
+  rprintf(szRegistryAirfieldFile, szAirfieldFile); 
+  rprintf(szRegistryAirspaceBlackOutline, MapWindow::bAirspaceBlackOutline);
   rprintf(szRegistryAirspaceFile, szAirspaceFile);
-  rprintf( szRegistryAirspaceFillType, MapWindow::GetAirSpaceFillType()); 
-  rprintf( szRegistryAirspaceOpacity, MapWindow::GetAirSpaceOpacity()); 
+  rprintf(szRegistryAirspaceFillType, MapWindow::GetAirSpaceFillType()); 
+  rprintf(szRegistryAirspaceOpacity, MapWindow::GetAirSpaceOpacity()); 
   rprintf(szRegistryAirspaceWarningDlgTimeout, AirspaceWarningDlgTimeout);
   rprintf(szRegistryAirspaceWarningMapLabels, AirspaceWarningMapLabels);
   rprintf(szRegistryAirspaceWarningRepeatTime, AirspaceWarningRepeatTime);
