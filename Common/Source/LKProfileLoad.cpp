@@ -15,11 +15,12 @@
 #define NEWPROFILES 1
 #if NEWPROFILES
 
-//#define DEBUGPROF	1
+#define DEBUGPROF	1
 extern void LKParseProfileString(TCHAR *sname, TCHAR *svalue);
 extern void LKProfileAdjustVariables(void);
 extern void LKProfileInitRuntime(void);
 
+static bool matchedstring=false;		// simple accelerator
 
 //
 // Overload read functions
@@ -32,6 +33,7 @@ void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> bool=%d\n"),
   curname,curvalue,lookupname,*lookupvalue);
   #endif
+  matchedstring=true;
 }
 void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, double *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
@@ -40,6 +42,7 @@ void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> double=%.0f\n"),
   curname,curvalue,lookupname,*lookupvalue);
   #endif
+  matchedstring=true;
 }
 void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, DWORD *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
@@ -48,6 +51,7 @@ void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> DWORD=%d\n"),
   curname,curvalue,lookupname,*lookupvalue);
   #endif
+  matchedstring=true;
 }
 void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, int *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
@@ -56,6 +60,7 @@ void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> int=%d\n"),
   curname,curvalue,lookupname,*lookupvalue);
   #endif
+  matchedstring=true;
 }
 void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, short *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
@@ -64,6 +69,7 @@ void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> short=%d\n"),
   curname,curvalue,lookupname,*lookupvalue);
   #endif
+  matchedstring=true;
 }
 void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, TCHAR *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
@@ -76,11 +82,11 @@ void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> tchar=<%s>\n"),
   curname,curvalue,lookupname,lookupvalue);
   //#endif
+  matchedstring=true;
 }
 
 
 int nMaxValueValueSize = MAX_PATH*2 + 6;	// max regkey name is 256 chars + " = "
-static bool matchedstring=false;		// simple accelerator
 
 //
 // Returns true if at least one value was found,
@@ -209,7 +215,6 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   #endif
 
   int ival;
-
   // 
   // RESPECT LKPROFILE.H ALPHA ORDER OR WE SHALL GET LOST SOON!
   // 
@@ -219,6 +224,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   // at runtime with a button and with a customkey. We must save in profile ONLY
   // the _Config, not the temporary setup!
   //
+
   PREAD(sname,svalue,szRegistryAcknowledgementTime, &AcknowledgementTime);
   PREAD(sname,svalue,szRegistryActiveMap, &ActiveMap_Config);
   PREAD(sname,svalue,szRegistryAdditionalAirspaceFile, &*szAdditionalAirspaceFile);
@@ -370,6 +376,13 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryHandicap,&Handicap);
   PREAD(sname,svalue,szRegistryHideUnits,&HideUnits);
   PREAD(sname,svalue,szRegistryHomeWaypoint,&HomeWaypoint);
+
+  // InfoType 
+  for (int i=0;i<MAXINFOWINDOWS;i++) {
+        PREAD(sname,svalue,&*szRegistryDisplayType[i], &InfoType[i]);
+	if (matchedstring) return;
+  }
+
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryInputFile,&*szInputFile);
   PREAD(sname,svalue,szRegistryIphoneGestures,&IphoneGestures);

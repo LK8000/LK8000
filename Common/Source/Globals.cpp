@@ -70,6 +70,7 @@ void Globals_Init(void) {
   // Default infobox groups configuration
   // Real defaults set by ResetDefaults
   //
+  for (int i=0; i<MAXINFOWINDOWS; i++) InfoType[i]=0;
   InfoType[0] = 1008146198;
   InfoType[1] = 1311715074;
   InfoType[2] = 923929365;

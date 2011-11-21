@@ -29,10 +29,10 @@ TCHAR *szRegistryDisplayType[MAXINFOWINDOWS] =     { TEXT("Info0"),
 				       TEXT("Info6"),
 				       TEXT("Info7"),
 				       TEXT("Info8"),
-				       TEXT("Info9")
-				       TEXT("Info10")
-				       TEXT("Info11")
-				       TEXT("Info12")
+				       TEXT("Info9"),
+				       TEXT("Info10"),
+				       TEXT("Info11"),
+				       TEXT("Info12"),
 				       TEXT("Info13")
 };
 

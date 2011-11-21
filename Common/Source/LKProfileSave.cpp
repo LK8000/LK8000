@@ -79,6 +79,9 @@ void LKProfileSave(const TCHAR *szFile)
   // at runtime with a button and with a customkey. We must save in profile ONLY
   // the _Config, not the temporary setup!
   // 
+
+
+
   rprintf(szRegistryAcknowledgementTime, AcknowledgementTime);
   rprintf(szRegistryActiveMap, ActiveMap_Config);
   rprintf(szRegistryAdditionalAirspaceFile, szAdditionalAirspaceFile);
@@ -187,6 +190,10 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryHandicap,Handicap);
   rprintf(szRegistryHideUnits,HideUnits);
   rprintf(szRegistryHomeWaypoint,HomeWaypoint);
+
+  // InfoType for infoboxes configuration
+  for (int i=0;i<MAXINFOWINDOWS;i++) rprintf(szRegistryDisplayType[i], InfoType[i]);
+
   rprintf(szRegistryInputFile,szInputFile);
   rprintf(szRegistryIphoneGestures,IphoneGestures);
   rprintf(szRegistryLKMaxLabels,LKMaxLabels);
