@@ -38,11 +38,18 @@ void LKProfileInitRuntime(void) {
   AutoMcMode	=	AutoMcMode_Config;
   BgMapColor	=	BgMapColor_Config;
 
+  EnableNavBaroAltitude=EnableNavBaroAltitude_Config;
+  EnableTerrain =	EnableTerrain_Config;
+  EnableTopology=	EnableTopology_Config;
+  Orbiter	= 	Orbiter_Config;
+  Shading	=	Shading_Config;
+  TerrainRamp	=	TerrainRamp_Config;
+  TrailActive	=	TrailActive_Config;
+  UseTotalEnergy=	UseTotalEnergy_Config;
+
   // MapWindow::zoom.AutoZoom(AutoZoom_Config); NO CHECK
 
-  TerrainRamp = TerrainRamp_Config;
   CALCULATED_INFO.AutoMacCready = AutoMacCready_Config==true?1:0;
-  UseTotalEnergy = UseTotalEnergy_Config;
   DisplayOrientation = DisplayOrientation_Config;
   MapWindow::SetAutoOrientation(true); // reset old autoorientation
 

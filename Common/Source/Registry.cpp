@@ -253,9 +253,10 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryAirspaceBlackOutline,&Temp);
   MapWindow::bAirspaceBlackOutline = (Temp == 1);
 
-  Temp = TrailActive;
+  Temp = TrailActive_Config;
   GetFromRegistry(szRegistrySnailTrail,&Temp);
-  TrailActive = Temp;
+  TrailActive_Config = Temp;
+  TrailActive = TrailActive_Config;
 
   Temp = MapWindow::EnableTrailDrift;
   GetFromRegistry(szRegistryTrailDrift,&Temp);
@@ -265,13 +266,15 @@ void ReadRegistrySettings(void)
   GetFromRegistry(szRegistryThermalLocator,&Temp);
   EnableThermalLocator = Temp;
 
-  Temp  = EnableTopology;
+  Temp  = EnableTopology_Config;
   GetFromRegistry(szRegistryDrawTopology,&Temp);
-  EnableTopology = (Temp == 1);
+  EnableTopology_Config = (Temp == 1);
+  EnableTopology = EnableTopology_Config;
 
-  Temp  = EnableTerrain;
+  Temp  = EnableTerrain_Config;
   GetFromRegistry(szRegistryDrawTerrain,&Temp);
-  EnableTerrain = (Temp == 1);
+  EnableTerrain_Config = (Temp == 1);
+  EnableTerrain = EnableTerrain_Config;
 
   Temp  = FinalGlideTerrain;
   GetFromRegistry(szRegistryFinalGlideTerrain,&Temp);
@@ -826,14 +829,19 @@ void ReadRegistrySettings(void)
 
   Temp = 1; // 100219
   GetFromRegistry(szRegistryEnableNavBaroAltitude,&Temp);
-  EnableNavBaroAltitude = (Temp!=0);
+  EnableNavBaroAltitude_Config = (Temp!=0);
+  EnableNavBaroAltitude = EnableNavBaroAltitude_Config;
 
   Temp = 1;
   GetFromRegistry(szRegistryOrbiter,&Temp);
-  Orbiter = (Temp!=0);
+  Orbiter_Config = (Temp!=0);
+  Orbiter = Orbiter_Config;
+
   Temp = 1;
   GetFromRegistry(szRegistryShading,&Temp);
-  Shading = Temp;
+  Shading_Config = Temp;
+  Shading = Shading_Config;
+
   Temp = 0;
   GetFromRegistry(szRegistryOverlayClock,&Temp);
   OverlayClock = Temp;

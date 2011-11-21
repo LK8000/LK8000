@@ -27,7 +27,8 @@
 //
 // Let's keep this list alpha sorted like in LKPROFILES.h and load/save functions
 //
-// After this function is called, Runtime values must be initialised with InitRuntime
+// AFTER this function is called, Runtime values must be initialised with INITRUNTIME
+// ----- ---- --------
 //
 void LKProfileResetDefault(void) {
 
@@ -108,15 +109,15 @@ void LKProfileResetDefault(void) {
 
   MapWindow::bAirspaceBlackOutline = false;
 
-  TrailActive = TRUE;
+  TrailActive_Config = TRUE;
 
   MapWindow::EnableTrailDrift = false;
 
   EnableThermalLocator = 1;
 
-  EnableTopology = 1;
+  EnableTopology_Config = 1;
 
-  EnableTerrain = 1;
+  EnableTerrain_Config = 1;
 
   FinalGlideTerrain = 1;
 
@@ -341,10 +342,10 @@ void LKProfileResetDefault(void) {
 
   StartMaxSpeedMargin = 0;
 
-  EnableNavBaroAltitude = 1;
+  EnableNavBaroAltitude_Config = 1;
 
-  Orbiter = 1;
-  Shading = 1;
+  Orbiter_Config = 1;
+  Shading_Config = 1;
   OverlayClock = 0;
 
   // default BB and IP is all ON

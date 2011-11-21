@@ -350,8 +350,8 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryDisplayUpValue,&DisplayOrientation_Config);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryDistanceUnitsValue,&DistanceUnit_Config );
-  PREAD(sname,svalue,szRegistryDrawTerrain,&EnableTerrain);
-  PREAD(sname,svalue,szRegistryDrawTopology,&EnableTopology);
+  PREAD(sname,svalue,szRegistryDrawTerrain,&EnableTerrain_Config);
+  PREAD(sname,svalue,szRegistryDrawTopology,&EnableTopology_Config);
   PREAD(sname,svalue,szRegistryEnableFLARMMap,&EnableFLARMMap);
   PREAD(sname,svalue,szRegistryEnableNavBaroAltitude,&EnableNavBaroAltitude);
   PREAD(sname,svalue,szRegistryFAIFinishHeight,&EnableFAIFinishHeight);
@@ -409,7 +409,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryMenuTimeout,&MenuTimeout_Config);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryNewMapDeclutter,&NewMapDeclutter);
-  PREAD(sname,svalue,szRegistryOrbiter,&Orbiter);
+  PREAD(sname,svalue,szRegistryOrbiter,&Orbiter_Config);
   PREAD(sname,svalue,szRegistryOutlinedTp,&OutlinedTp);
   PREAD(sname,svalue,szRegistryOverColor,&OverColor);
   PREAD(sname,svalue,szRegistryOverlayClock,&OverlayClock);
@@ -438,7 +438,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistrySafteySpeed,&SAFTEYSPEED);
   PREAD(sname,svalue,szRegistrySectorRadius,&SectorRadius);
   PREAD(sname,svalue,szRegistrySetSystemTimeFromGPS,&SetSystemTimeFromGPS);
-  PREAD(sname,svalue,szRegistryShading,&Shading);
+  PREAD(sname,svalue,szRegistryShading,&Shading_Config);
   PREAD(sname,svalue,szRegistrySnailTrail,&TrailActive);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistrySnailWidthScale,&MapWindow::SnailWidthScale);
@@ -458,7 +458,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryTerrainBrightness,&TerrainBrightness);
   PREAD(sname,svalue,szRegistryTerrainContrast,&TerrainContrast);
   PREAD(sname,svalue,szRegistryTerrainFile,&*szTerrainFile);
-  PREAD(sname,svalue,szRegistryTerrainRamp,&TerrainRamp);
+  PREAD(sname,svalue,szRegistryTerrainRamp,&TerrainRamp_Config);
   PREAD(sname,svalue,szRegistryThermalBar,&ThermalBar);
   PREAD(sname,svalue,szRegistryThermalLocator,&EnableThermalLocator);
   PREAD(sname,svalue,szRegistryTopologyFile,&*szTopologyFile);
@@ -469,7 +469,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryUTCOffset,&UTCOffset);
   PREAD(sname,svalue,szRegistryUseCustomFonts,&UseCustomFonts);
   PREAD(sname,svalue,szRegistryUseGeoidSeparation,&UseGeoidSeparation);
-  PREAD(sname,svalue,szRegistryUseTotalEnergy,&UseTotalEnergy);
+  PREAD(sname,svalue,szRegistryUseTotalEnergy,&UseTotalEnergy_Config);
   PREAD(sname,svalue,szRegistryWarningTime,&WarningTime);
   PREAD(sname,svalue,szRegistryWayPointFile,&*szWaypointFile);
   PREAD(sname,svalue,szRegistryWaypointsOutOfRange,&WaypointsOutOfRange);

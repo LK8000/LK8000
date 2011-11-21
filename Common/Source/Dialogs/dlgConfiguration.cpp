@@ -1614,13 +1614,13 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpEnableTerrain"));
   if (wp) {
-    wp->GetDataField()->Set(EnableTerrain);
+    wp->GetDataField()->Set(EnableTerrain_Config);
     wp->RefreshDisplay();
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpEnableTopology"));
   if (wp) {
-    wp->GetDataField()->Set(EnableTopology);
+    wp->GetDataField()->Set(EnableTopology_Config);
     wp->RefreshDisplay();
   }
 
@@ -1686,12 +1686,12 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpEnableNavBaroAltitude"));
   if (wp) {
-    wp->GetDataField()->Set(EnableNavBaroAltitude);
+    wp->GetDataField()->Set(EnableNavBaroAltitude_Config);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpOrbiter"));
   if (wp) {
-    wp->GetDataField()->Set(Orbiter);
+    wp->GetDataField()->Set(Orbiter_Config);
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoMcStatus"));
@@ -1701,7 +1701,7 @@ static void setVariables(void) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpShading"));
   if (wp) {
-    wp->GetDataField()->Set(Shading);
+    wp->GetDataField()->Set(Shading_Config);
     wp->RefreshDisplay();
   }
 
@@ -1985,7 +1985,7 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("_@M612_")));
 	// LKTOKEN  _@M312_ = "Full" 
     dfe->addEnumText(gettext(TEXT("_@M312_")));
-    dfe->Set(TrailActive);
+    dfe->Set(TrailActive_Config);
     wp->RefreshDisplay();
   }
 
@@ -3053,37 +3053,6 @@ void dlgConfigurationShowModal(void){
   wConfig25    = ((WndFrame *)wf->FindByName(TEXT("frmEngineering2")));
   //wConfig26    = ((WndFrame *)wf->FindByName(TEXT("frmEngineering3")));
   //wConfig27    = ((WndFrame *)wf->FindByName(TEXT("frmEngineering4")));
-  // ADDPAGE HERE
-/*
-  ASSERT(wConfig1!=NULL);
-  ASSERT(wConfig2!=NULL);
-  ASSERT(wConfig3!=NULL);
-  ASSERT(wConfig4!=NULL);
-  ASSERT(wConfig5!=NULL);
-  ASSERT(wConfig6!=NULL);
-  ASSERT(wConfig7!=NULL);
-  ASSERT(wConfig8!=NULL);
-  ASSERT(wConfig9!=NULL);
-  ASSERT(wConfig10!=NULL);
-  ASSERT(wConfig11!=NULL);
-  ASSERT(wConfig12!=NULL);
-  ASSERT(wConfig13!=NULL);
-  ASSERT(wConfig14!=NULL);
-  ASSERT(wConfig15!=NULL);
-  ASSERT(wConfig16!=NULL);
-  ASSERT(wConfig17!=NULL);
-  ASSERT(wConfig18!=NULL);
-  ASSERT(wConfig19!=NULL);
-  ASSERT(wConfig20!=NULL);
-  ASSERT(wConfig21!=NULL);
-  ASSERT(wConfig22!=NULL);
-  ASSERT(wConfig23!=NULL);
-  ASSERT(wConfig24!=NULL);
-  ASSERT(wConfig25!=NULL);
-*/
-  //ASSERT(wConfig26!=NULL);
-  //ASSERT(wConfig27!=NULL);
-  // ADDPAGE HERE
 
   wf->FilterAdvanced(1);
 
@@ -3165,10 +3134,11 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTrail"));
   if (wp) {
-    if (TrailActive != wp->GetDataField()->GetAsInteger()) {
-      TrailActive = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistrySnailTrail, TrailActive);
+    if (TrailActive_Config != wp->GetDataField()->GetAsInteger()) {
+      TrailActive_Config = wp->GetDataField()->GetAsInteger();
+      SetToRegistry(szRegistrySnailTrail, TrailActive_Config);
       changed = true;
+      TrailActive = TrailActive_Config;
     }
   }
 
@@ -3457,19 +3427,21 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpEnableTerrain"));
   if (wp) {
-    if (EnableTerrain != wp->GetDataField()->GetAsBoolean()) {
-      EnableTerrain = wp->GetDataField()->GetAsBoolean();
-      SetToRegistry(szRegistryDrawTerrain, EnableTerrain);
+    if (EnableTerrain_Config != wp->GetDataField()->GetAsBoolean()) {
+      EnableTerrain_Config = wp->GetDataField()->GetAsBoolean();
+      SetToRegistry(szRegistryDrawTerrain, EnableTerrain_Config);
       changed = true;
+      EnableTerrain=EnableTerrain_Config;
     }
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpEnableTopology"));
   if (wp) {
-    if (EnableTopology != wp->GetDataField()->GetAsBoolean()) {
-      EnableTopology = wp->GetDataField()->GetAsBoolean();
-      SetToRegistry(szRegistryDrawTopology, EnableTopology);
+    if (EnableTopology_Config != wp->GetDataField()->GetAsBoolean()) {
+      EnableTopology_Config = wp->GetDataField()->GetAsBoolean();
+      SetToRegistry(szRegistryDrawTopology, EnableTopology_Config);
       changed = true;
+      EnableTopology=EnableTopology_Config;
     }
   }
 
@@ -3564,19 +3536,21 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpEnableNavBaroAltitude"));
   if (wp) {
-    if (EnableNavBaroAltitude != wp->GetDataField()->GetAsBoolean()) {
-      EnableNavBaroAltitude = wp->GetDataField()->GetAsBoolean();
-      SetToRegistry(szRegistryEnableNavBaroAltitude, EnableNavBaroAltitude);
+    if (EnableNavBaroAltitude_Config != wp->GetDataField()->GetAsBoolean()) {
+      EnableNavBaroAltitude_Config = wp->GetDataField()->GetAsBoolean();
+      SetToRegistry(szRegistryEnableNavBaroAltitude, EnableNavBaroAltitude_Config);
       changed = true;
+      EnableNavBaroAltitude=EnableNavBaroAltitude_Config;
     }
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpOrbiter"));
   if (wp) {
-    if (Orbiter != wp->GetDataField()->GetAsBoolean()) {
-      Orbiter = wp->GetDataField()->GetAsBoolean();
-      SetToRegistry(szRegistryOrbiter, Orbiter);
+    if (Orbiter_Config != wp->GetDataField()->GetAsBoolean()) {
+      Orbiter_Config = wp->GetDataField()->GetAsBoolean();
+      SetToRegistry(szRegistryOrbiter, Orbiter_Config);
       changed = true;
+      Orbiter=Orbiter_Config;
     }
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoMcStatus"));
@@ -3590,10 +3564,11 @@ void dlgConfigurationShowModal(void){
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpShading"));
   if (wp) {
-    if (Shading != wp->GetDataField()->GetAsBoolean()) {
-      Shading = wp->GetDataField()->GetAsBoolean();
-      SetToRegistry(szRegistryShading, Shading);
+    if (Shading_Config != wp->GetDataField()->GetAsBoolean()) {
+      Shading_Config = wp->GetDataField()->GetAsBoolean();
+      SetToRegistry(szRegistryShading, Shading_Config);
       changed = true;
+      Shading=Shading_Config;
     }
   }
 

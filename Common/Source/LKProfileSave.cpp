@@ -123,7 +123,6 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryBarOpacity,BarOpacity);
   rprintf(szRegistryBestWarning,BestWarning);
   rprintf(szRegistryBgMapColor,BgMapColor_Config);
-// -------- VERIFIED FOR RUNTIME/CONFIG SEPARATION UNTIL THIS POINT , ToDo the rest -----------
   rprintf(szRegistryBit1Index,dwBit1Index);
   rprintf(szRegistryBit2Index,dwBit2Index);
   rprintf(szRegistryCheckSum,CheckSum);
@@ -169,8 +168,8 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryDisplayText,DisplayTextType);
   rprintf(szRegistryDisplayUpValue,DisplayOrientation_Config);
   rprintf(szRegistryDistanceUnitsValue,DistanceUnit_Config );
-  rprintf(szRegistryDrawTerrain,EnableTerrain);
-  rprintf(szRegistryDrawTopology,EnableTopology);
+  rprintf(szRegistryDrawTerrain,EnableTerrain_Config);
+  rprintf(szRegistryDrawTopology,EnableTopology_Config);
   rprintf(szRegistryEnableFLARMMap,EnableFLARMMap);
   rprintf(szRegistryEnableNavBaroAltitude,EnableNavBaroAltitude);
   rprintf(szRegistryFAIFinishHeight,EnableFAIFinishHeight);
@@ -218,7 +217,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryMcOverlay,McOverlay);
   rprintf(szRegistryMenuTimeout,MenuTimeout_Config);
   rprintf(szRegistryNewMapDeclutter,NewMapDeclutter);
-  rprintf(szRegistryOrbiter,Orbiter);
+  rprintf(szRegistryOrbiter,Orbiter_Config);
   rprintf(szRegistryOutlinedTp,OutlinedTp);
   rprintf(szRegistryOverColor,OverColor);
   rprintf(szRegistryOverlayClock,OverlayClock);
@@ -245,8 +244,8 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistrySafteySpeed,SAFTEYSPEED);
   rprintf(szRegistrySectorRadius,SectorRadius);
   rprintf(szRegistrySetSystemTimeFromGPS,SetSystemTimeFromGPS);
-  rprintf(szRegistryShading,Shading);
-  rprintf(szRegistrySnailTrail,TrailActive);
+  rprintf(szRegistryShading,Shading_Config);
+  rprintf(szRegistrySnailTrail,TrailActive_Config);
   rprintf(szRegistrySnailWidthScale,MapWindow::SnailWidthScale);
   rprintf(szRegistrySpeed1Index,dwSpeedIndex1);
   rprintf(szRegistrySpeed2Index,dwSpeedIndex2);
@@ -263,7 +262,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryTerrainBrightness,TerrainBrightness);
   rprintf(szRegistryTerrainContrast,TerrainContrast);
   rprintf(szRegistryTerrainFile,szTerrainFile);
-  rprintf(szRegistryTerrainRamp,TerrainRamp);
+  rprintf(szRegistryTerrainRamp,TerrainRamp_Config);
   rprintf(szRegistryThermalBar,ThermalBar);
   rprintf(szRegistryThermalLocator,EnableThermalLocator);
   rprintf(szRegistryTopologyFile,szTopologyFile);
@@ -273,7 +272,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryUTCOffset,UTCOffset);
   rprintf(szRegistryUseCustomFonts,UseCustomFonts);
   rprintf(szRegistryUseGeoidSeparation,UseGeoidSeparation);
-  rprintf(szRegistryUseTotalEnergy,UseTotalEnergy);
+  rprintf(szRegistryUseTotalEnergy,UseTotalEnergy_Config);
   rprintf(szRegistryWarningTime,WarningTime);
   rprintf(szRegistryWayPointFile,szWaypointFile);
   rprintf(szRegistryWaypointsOutOfRange,WaypointsOutOfRange);

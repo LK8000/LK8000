@@ -575,7 +575,6 @@ GEXTERN short TerrainRamp_Config;
 GEXTERN int WindUpdateMode; // unused
 GEXTERN double QNH;
 GEXTERN int NettoSpeed;
-GEXTERN bool EnableAuxiliaryInfo;
 GEXTERN int debounceTimeout;
 GEXTERN bool SetSystemTimeFromGPS;
 GEXTERN bool ForceFinalGlide;
@@ -586,9 +585,12 @@ GEXTERN CContestMgr::CResult OlcResults[CContestMgr::TYPE_NUM];
 // user interface options
 GEXTERN bool bAirspaceBlackOutline;
 GEXTERN int TrailActive;
-GEXTERN int VisualGlide; // VENTA3
+GEXTERN int TrailActive_Config;
+GEXTERN int VisualGlide;
 GEXTERN bool EnableTopology;
+GEXTERN bool EnableTopology_Config;
 GEXTERN bool EnableTerrain;
+GEXTERN bool EnableTerrain_Config;
 GEXTERN int FinalGlideTerrain;
 
 // 0: Manual
@@ -598,8 +600,11 @@ GEXTERN int FinalGlideTerrain;
 GEXTERN int AutoWindMode;
 
 GEXTERN bool EnableNavBaroAltitude;
+GEXTERN bool EnableNavBaroAltitude_Config;
 GEXTERN short Orbiter;
+GEXTERN short Orbiter_Config;
 GEXTERN short Shading;
+GEXTERN short Shading_Config;
 GEXTERN bool ConfBB[10];
 GEXTERN bool ConfBB1;
 GEXTERN bool ConfBB2;

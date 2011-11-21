@@ -232,6 +232,7 @@ void Globals_Init(void) {
   ArrivalValue=0;
   NewMapDeclutter=0;
   Shading=1;
+  Shading_Config=1;
 
   for (i=0; i<10; i++) ConfMP[i]=1;
 
@@ -428,7 +429,9 @@ void Globals_Init(void) {
   // user interface settings
   WindUpdateMode = 0;
   EnableTopology = true;
+  EnableTopology_Config = true;
   EnableTerrain = true;
+  EnableTerrain_Config = true;
   FinalGlideTerrain = 1;
   EnableSoundModes = true;
   OverlayClock = false;
@@ -481,6 +484,7 @@ void Globals_Init(void) {
 
   SelectedWaypoint = -1;
   TrailActive = TRUE;
+  TrailActive_Config = TRUE;
   VisualGlide = 0;
   DisableAutoLogger = false;
 
@@ -492,7 +496,9 @@ void Globals_Init(void) {
   AutoWindMode= D_AUTOWIND_CIRCLING;
 
   EnableNavBaroAltitude=false;
+  EnableNavBaroAltitude_Config=false;
   Orbiter=1;
+  Orbiter_Config=1;
   // EnableExternalTriggerCruise=false; REMOVE
   ExternalTriggerCruise= false;
   ExternalTriggerCircling= false;
