@@ -15,29 +15,14 @@
 #define NEWPROFILES 1
 #if NEWPROFILES
 
-// Set default registry values
-// Open profile, read line, parse line and compare with list
-
 //#define DEBUGPROF	1
 extern void LKParseProfileString(TCHAR *sname, TCHAR *svalue);
+extern void LKProfileAdjustVariables(void);
 
 
 //
 // Overload read functions
 //
-/*
-void LKReadFromProfile(const TCHAR *varname, DWORD varvalue) {
-  fprintf(pfp,"%S=%d (DWORD)%s", varname, (unsigned int) varvalue,PNEWLINE);
-}
-void LKReadFromProfile(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, TCHAR *lookupvalue) {
-
-  char stmp[MAX_PATH];
-  unicode2utf((TCHAR*) varvalue, stmp, sizeof(stmp));
-  fprintf(pfp,"%S=\"%s\" (TCHAR)%s", varname, stmp ,PNEWLINE);
-}
-*/
-
-
 void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, bool *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
   int ival= wcstol(curvalue, NULL, 10);
@@ -83,7 +68,10 @@ void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname
   if (_tcscmp(curname,lookupname)) return;
   _tcscpy(lookupvalue,curvalue);
   // REMEMBER TO CONVERT FROM UTF8 to UNICODE!!
-  //#if DEBUGPROF
+  // char stmp[MAX_PATH];
+  // unicode2utf((TCHAR*) varvalue, stmp, sizeof(stmp));
+  // fprintf(pfp,"%S=\"%s\" (TCHAR)%s", varname, stmp ,PNEWLINE);
+  //#if DEBUGPROF 
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> tchar=<%s>\n"),
   curname,curvalue,lookupname,lookupvalue);
   //#endif
@@ -197,6 +185,7 @@ parse_utf8:
 go_return:
 
   fclose(fp);
+  if (found) LKProfileAdjustVariables();
   return found;
 }
 
@@ -221,9 +210,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   // RESPECT LKPROFILE.H ALPHA ORDER OR WE SHALL GET LOST SOON!
   // 
   PREAD(sname,svalue,szRegistryAcknowledgementTime, &AcknowledgementTime);
-  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryActiveMap, &ActiveMap);
-  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryAdditionalAirspaceFile, &*szAdditionalAirspaceFile);
   PREAD(sname,svalue,szRegistryAdditionalWayPointFile, &*szAdditionalWaypointFile);
   PREAD(sname,svalue,szRegistryAircraftCategory, &AircraftCategory);
@@ -232,8 +219,23 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryAirfieldFile, &*szAirfieldFile); 
   PREAD(sname,svalue,szRegistryAirspaceBlackOutline, &MapWindow::bAirspaceBlackOutline);
   PREAD(sname,svalue,szRegistryAirspaceFile, &*szAirspaceFile);
-  // PREAD(sname,svalue,szRegistryAirspaceFillType, &MapWindow::GetAirSpaceFillType()); 
-  // PREAD(sname,svalue,szRegistryAirspaceOpacity, &MapWindow::GetAirSpaceOpacity()); 
+  if (matchedstring) return; // every 10 or so PREADs we check for quick return
+
+  // Special cases with no global variable and a function to access the private variable.
+  // This is bad. We want a common global variable approach for the future.
+  // We want a memory area with values, not with function calls.
+
+  if (!_tcscmp(szRegistryAirspaceFillType,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	MapWindow::SetAirSpaceFillType((MapWindow::EAirspaceFillType)ival);
+	return;
+  }
+  if (!_tcscmp(szRegistryAirspaceOpacity,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	MapWindow::SetAirSpaceOpacity(ival);
+	return;
+  }
+
   PREAD(sname,svalue,szRegistryAirspaceWarningDlgTimeout, &AirspaceWarningDlgTimeout);
   PREAD(sname,svalue,szRegistryAirspaceWarningMapLabels, &AirspaceWarningMapLabels);
   PREAD(sname,svalue,szRegistryAirspaceWarningRepeatTime, &AirspaceWarningRepeatTime);
@@ -244,12 +246,23 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryAlarmMaxAltitude3,&AlarmMaxAltitude3);
   PREAD(sname,svalue,szRegistryAltMargin,&AltWarningMargin);
   PREAD(sname,svalue,szRegistryAltMode,&AltitudeMode);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryAlternate1,&Alternate1);
   PREAD(sname,svalue,szRegistryAlternate2,&Alternate2);
   PREAD(sname,svalue,szRegistryAltitudeUnitsValue,&AltitudeUnit_Config);
   PREAD(sname,svalue,szRegistryAppDefaultMapWidth,&Appearance.DefaultMapWidth);
-  // PREAD(sname,svalue,szRegistryAppIndLandable,&Appearance.IndLandable);
-  // PREAD(sname,svalue,szRegistryAppInfoBoxModel,&Appearance.InfoBoxModel);
+
+  if (!_tcscmp(szRegistryAppIndLandable,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	Appearance.IndLandable = (IndLandable_t)ival;
+	return;
+  }
+  if (!_tcscmp(szRegistryAppInfoBoxModel,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	Appearance.InfoBoxModel = (InfoBoxModelAppearance_t)ival;
+	return;
+  }
+
   PREAD(sname,svalue,szRegistryAppInverseInfoBox,&Appearance.InverseInfoBox);
   PREAD(sname,svalue,szRegistryArrivalValue,&ArrivalValue);
   PREAD(sname,svalue,szRegistryAutoAdvance,&AutoAdvance);
@@ -260,7 +273,13 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryAutoOrientScale,&AutoOrientScale);
   PREAD(sname,svalue,szRegistryAutoSoundVolume,&EnableAutoSoundVolume);
   PREAD(sname,svalue,szRegistryAutoWind,&AutoWindMode);
-  // PREAD(sname,svalue,szRegistryAutoZoom,MapWindow::zoom.AutoZoom());
+
+  if (!_tcscmp(szRegistryAutoZoom,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	MapWindow::zoom.AutoZoom(ival == 1);
+	return;
+  }
+
   PREAD(sname,svalue,szRegistryAverEffTime,&AverEffTime);
   PREAD(sname,svalue,szRegistryBallastSecsToEmpty,&BallastSecsToEmpty);
   PREAD(sname,svalue,szRegistryBarOpacity,&BarOpacity);
@@ -269,7 +288,13 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryBit1Index,&dwBit1Index);
   PREAD(sname,svalue,szRegistryBit2Index,&dwBit2Index);
   PREAD(sname,svalue,szRegistryCheckSum,&CheckSum);
-  // PREAD(sname,svalue,szRegistryCircleZoom,MapWindow::zoom.CircleZoom());
+
+  if (!_tcscmp(szRegistryCircleZoom,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	MapWindow::zoom.CircleZoom(ival == 1);
+	return;
+  }
+
   PREAD(sname,svalue,szRegistryClipAlt,&ClipAltitude);
   PREAD(sname,svalue,szRegistryCompetitionClass,&*CompetitionClass_Config);
   PREAD(sname,svalue,szRegistryCompetitionID,&*CompetitionID_Config);
@@ -280,6 +305,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryConfBB5,&ConfBB5);
   PREAD(sname,svalue,szRegistryConfBB6,&ConfBB6);
   PREAD(sname,svalue,szRegistryConfBB7,&ConfBB7);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryConfBB8,&ConfBB8);
   PREAD(sname,svalue,szRegistryConfBB9,&ConfBB9);
   PREAD(sname,svalue,szRegistryConfIP11,&ConfIP11);
@@ -290,6 +316,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryConfIP16,&ConfIP16);
   PREAD(sname,svalue,szRegistryConfIP21,&ConfIP21);
   PREAD(sname,svalue,szRegistryConfIP22,&ConfIP22);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryConfIP23,&ConfIP23);
   PREAD(sname,svalue,szRegistryConfIP24,&ConfIP24);
   PREAD(sname,svalue,szRegistryConfIP31,&ConfIP31);
@@ -300,6 +327,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryCustomKeyModeCenter,&CustomKeyModeCenter);
   PREAD(sname,svalue,szRegistryCustomKeyModeLeftUpCorner,&CustomKeyModeLeftUpCorner);
   PREAD(sname,svalue,szRegistryCustomKeyModeLeft,&CustomKeyModeLeft);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryCustomKeyModeRightUpCorner,&CustomKeyModeRightUpCorner);
   PREAD(sname,svalue,szRegistryCustomKeyModeRight,&CustomKeyModeRight);
   PREAD(sname,svalue,szRegistryCustomKeyTime,&CustomKeyTime);
@@ -310,6 +338,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryDisableAutoLogger,&DisableAutoLogger);
   PREAD(sname,svalue,szRegistryDisplayText,&DisplayTextType);
   PREAD(sname,svalue,szRegistryDisplayUpValue,&DisplayOrientation_Config);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryDistanceUnitsValue,&DistanceUnit_Config );
   PREAD(sname,svalue,szRegistryDrawTerrain,&EnableTerrain);
   PREAD(sname,svalue,szRegistryDrawTopology,&EnableTopology);
@@ -320,6 +349,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryFinalGlideTerrain,&FinalGlideTerrain);
   PREAD(sname,svalue,szRegistryFinishLine,&FinishLine);
   PREAD(sname,svalue,szRegistryFinishMinHeight,&FinishMinHeight);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryFinishRadius,&FinishRadius);
   PREAD(sname,svalue,szRegistryFontMapLabelFont,&*FontDesc_MapLabel);
   PREAD(sname,svalue,szRegistryFontMapWindowFont,&*FontDesc_MapWindow);
@@ -330,6 +360,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryHandicap,&Handicap);
   PREAD(sname,svalue,szRegistryHideUnits,&HideUnits);
   PREAD(sname,svalue,szRegistryHomeWaypoint,&HomeWaypoint);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryInputFile,&*szInputFile);
   PREAD(sname,svalue,szRegistryIphoneGestures,&IphoneGestures);
   PREAD(sname,svalue,szRegistryLKMaxLabels,&LKMaxLabels);
@@ -340,6 +371,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryLKTopoZoomCat20,&LKTopoZoomCat20);
   PREAD(sname,svalue,szRegistryLKTopoZoomCat30,&LKTopoZoomCat30);
   PREAD(sname,svalue,szRegistryLKTopoZoomCat40,&LKTopoZoomCat40);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryLKTopoZoomCat50,&LKTopoZoomCat50);
   PREAD(sname,svalue,szRegistryLKTopoZoomCat60,&LKTopoZoomCat60);
   PREAD(sname,svalue,szRegistryLKTopoZoomCat70,&LKTopoZoomCat70);
@@ -348,7 +380,13 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryLKVarioBar,&LKVarioBar);
   PREAD(sname,svalue,szRegistryLKVarioVal,&LKVarioVal);
   PREAD(sname,svalue,szRegistryLanguageFile,&*szLanguageFile);
-  // PREAD(sname,svalue,szRegistryLatLonUnits, &Units::CoordinateFormat);
+
+  if (!_tcscmp(szRegistryLatLonUnits,sname)) {
+	ival=wcstol(svalue, NULL, 10);
+	Units::CoordinateFormat = (CoordinateFormats_t)ival;
+	return;
+  }
+
   PREAD(sname,svalue,szRegistryLiftUnitsValue,&LiftUnit_Config );
   PREAD(sname,svalue,szRegistryLockSettingsInFlight,&LockSettingsInFlight);
   PREAD(sname,svalue,szRegistryLoggerShort,&LoggerShortName);
@@ -359,6 +397,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryMapFile,&*szMapFile);
   PREAD(sname,svalue,szRegistryMcOverlay,&McOverlay);
   PREAD(sname,svalue,szRegistryMenuTimeout,&MenuTimeout_Config);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryNewMapDeclutter,&NewMapDeclutter);
   PREAD(sname,svalue,szRegistryOrbiter,&Orbiter);
   PREAD(sname,svalue,szRegistryOutlinedTp,&OutlinedTp);
@@ -369,6 +408,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryPGClimbZoom,&PGClimbZoom);
   PREAD(sname,svalue,szRegistryPGCruiseZoom,&PGCruiseZoom);
   PREAD(sname,svalue,szRegistryPGGateIntervalTime,&PGGateIntervalTime);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryPGNumberOfGates,&PGNumberOfGates);
   PREAD(sname,svalue,szRegistryPGOpenTimeH,&PGOpenTimeH);
   PREAD(sname,svalue,szRegistryPGOpenTimeM,&PGOpenTimeM);
@@ -379,6 +419,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryPollingMode,&PollingMode);
   PREAD(sname,svalue,szRegistryPort1Index,&dwPortIndex1);
   PREAD(sname,svalue,szRegistryPort2Index,&dwPortIndex2);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryPressureHg,&PressureHg);
   PREAD(sname,svalue,szRegistrySafetyAltitudeArrival,&SAFETYALTITUDEARRIVAL);
   PREAD(sname,svalue,szRegistrySafetyAltitudeMode,&SafetyAltitudeMode);
@@ -389,6 +430,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistrySetSystemTimeFromGPS,&SetSystemTimeFromGPS);
   PREAD(sname,svalue,szRegistryShading,&Shading);
   PREAD(sname,svalue,szRegistrySnailTrail,&TrailActive);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistrySnailWidthScale,&MapWindow::SnailWidthScale);
   PREAD(sname,svalue,szRegistrySpeed1Index,&dwSpeedIndex1);
   PREAD(sname,svalue,szRegistrySpeed2Index,&dwSpeedIndex2);
@@ -399,6 +441,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryStartMaxHeight,&StartMaxHeight);
   PREAD(sname,svalue,szRegistryStartMaxSpeedMargin,&StartMaxSpeedMargin);
   PREAD(sname,svalue,szRegistryStartMaxSpeed,&StartMaxSpeed);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryStartRadius,&StartRadius);
   PREAD(sname,svalue,szRegistryTaskSpeedUnitsValue,&TaskSpeedUnit_Config);
   PREAD(sname,svalue,szRegistryTeamcodeRefWaypoint,&TeamCodeRefWaypoint);
@@ -409,6 +452,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryThermalBar,&ThermalBar);
   PREAD(sname,svalue,szRegistryThermalLocator,&EnableThermalLocator);
   PREAD(sname,svalue,szRegistryTopologyFile,&*szTopologyFile);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryTpFilter,&TpFilter);
   PREAD(sname,svalue,szRegistryTrackBar,&TrackBar);
   PREAD(sname,svalue,szRegistryTrailDrift,&MapWindow::EnableTrailDrift);
@@ -419,6 +463,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryWarningTime,&WarningTime);
   PREAD(sname,svalue,szRegistryWayPointFile,&*szWaypointFile);
   PREAD(sname,svalue,szRegistryWaypointsOutOfRange,&WaypointsOutOfRange);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryWindCalcSpeed,&WindCalcSpeed);
   PREAD(sname,svalue,szRegistryWindCalcTime,&WindCalcTime);
   PREAD(sname,svalue,szRegistryWindUpdateMode,&WindUpdateMode);
@@ -426,18 +471,15 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
 
   return;
 
-/* work in progress..
+}
+
+
+// 
+// After loading a profile, adjust some variables with limiters
+//
+void LKProfileAdjustVariables(void) {
 
   AcknowledgementTime = max(10, AcknowledgementTime);
-
-  if (!_tcscmp(szRegistryLatLonUnits,sname)) {
-	ival=wcstol(svalue, NULL, 10);
-	Units::CoordinateFormat = (CoordinateFormats_t)ival;
-	return;
-  }
-*/
-
-
 
 
 }
