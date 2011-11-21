@@ -18,6 +18,7 @@
 //#define DEBUGPROF	1
 extern void LKParseProfileString(TCHAR *sname, TCHAR *svalue);
 extern void LKProfileAdjustVariables(void);
+extern void LKProfileInitRuntime(void);
 
 
 //
@@ -185,7 +186,10 @@ parse_utf8:
 go_return:
 
   fclose(fp);
-  if (found) LKProfileAdjustVariables();
+  if (found) {
+	LKProfileAdjustVariables();
+	LKProfileInitRuntime();
+  }
   return found;
 }
 

@@ -11,10 +11,20 @@
 #include "McReady.h"
 #include "Modeltype.h"
 
+//#define NEWPROFILES 1
 #if NEWPROFILES
 
 //
-// Init runtime variables from default configuration
+// Init runtime variables using _Config variables
+// This is needed after loading a new profile, and
+// also on startup after loading a reset configuration.
+//
+// LK8000 is (normally!) separating config values from runtime values.
+// For example, ActiveMap can be configured disabled by default in System Config,
+// but enabled at runtime with a button or a customkey. However the configuration
+// will still be "disabled" and saved as disabled in profile. 
+// It is important to keep runtime and config variables separated, if a config
+// variable can be changed with a button out of System Config!
 //
 void LKProfileInitRuntime(void) {
 
@@ -22,9 +32,9 @@ void LKProfileInitRuntime(void) {
   // Runtime from Config
   //
   // MapWindow::zoom.AutoZoom(AutoZoom_Config); NO CHECK
+
   TerrainRamp = TerrainRamp_Config;
   AutoMcMode = AutoMcMode_Config;
-  // AutoMacCready in calculations.h is an int, should be a bool
   CALCULATED_INFO.AutoMacCready = AutoMacCready_Config==true?1:0;
   UseTotalEnergy = UseTotalEnergy_Config;
   DisplayOrientation = DisplayOrientation_Config;
@@ -156,8 +166,10 @@ void LKProfileInitRuntime(void) {
 
 
 
+#else // NO NEWPROFILES..
 
-
+void LKProfileInitRuntime(void) {
+}
 
 
 #endif // NEWPROFILES
