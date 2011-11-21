@@ -21,14 +21,6 @@
 
 const TCHAR szRegistryKey[] = TEXT(REGKEYNAME);
 
-bool LockSettingsInFlight = true;
-bool LoggerShortName = false;
-
-double COSTABLE[4096];
-double SINETABLE[4096];
-double INVCOSINETABLE[4096];
-int ISINETABLE[4096];
-int ICOSTABLE[4096];
 
 #define NEWPROFILES 1
 

@@ -577,6 +577,18 @@ void Globals_Init(void) {
   CompetitionClass_Config[0]=_T('\0');
   CompetitionID_Config[0]=_T('\0');
 
+  LockSettingsInFlight = false;
+  LoggerShortName = false;
+
+  /* 
+   * These tables are initialized by InitSineTable later than Globals here
+  COSTABLE[4096];
+  SINETABLE[4096];
+  INVCOSINETABLE[4096];
+  ISINETABLE[4096];
+  ICOSTABLE[4096];
+   */
+
 
   // ADD NEW GLOBALS here ^^^ //
 

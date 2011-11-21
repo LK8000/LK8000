@@ -410,6 +410,10 @@ void LKProfileResetDefault(void) {
   _tcscpy(CompetitionClass_Config,_T(""));
   _tcscpy(CompetitionID_Config,_T(""));
 
+  LockSettingsInFlight = false;
+  LoggerShortName = false;
+
+
 
   // ######### ADD NEW ITEMS ABOVE THIS LINE  #########
 

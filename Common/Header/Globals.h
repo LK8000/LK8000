@@ -833,6 +833,16 @@ GEXTERN TCHAR AircraftRego_Config[50];
 GEXTERN TCHAR CompetitionClass_Config[50];
 GEXTERN TCHAR CompetitionID_Config[50];
 
+GEXTERN bool LockSettingsInFlight;
+GEXTERN bool LoggerShortName;
+
+GEXTERN double COSTABLE[4096];
+GEXTERN double SINETABLE[4096];
+GEXTERN double INVCOSINETABLE[4096];
+GEXTERN int ISINETABLE[4096];
+GEXTERN int ICOSTABLE[4096];
+
+
 
 //
 // ---------------------------------------------------------------------------

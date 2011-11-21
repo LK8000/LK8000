@@ -107,12 +107,6 @@ bool ReadULine(ZZIP_FILE* fp, TCHAR *unicode, int maxChars);
 // Fast trig functions
 void InitSineTable(void);
 
-extern double COSTABLE[4096];
-extern double SINETABLE[4096];
-extern double INVCOSINETABLE[4096];
-extern int ISINETABLE[4096];
-extern int ICOSTABLE[4096];
-
 bool AngleInRange(double Angle0, double Angle1, double x, bool is_signed=false);
 double AngleLimit180(double theta);
 double AngleLimit360(double theta);
