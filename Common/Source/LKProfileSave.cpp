@@ -28,21 +28,21 @@ static FILE *pfp=NULL;
 //
 void LKWriteToProfile(const TCHAR *varname, bool varvalue) {
   // pfprintf(pfp,"%S=%d (bool)%s", varname, varvalue==1?1:0,PNEWLINE); correct
-  fprintf(pfp,"%S=%d (bool)%s", varname, varvalue,PNEWLINE); // check we dont have fake bools
+  fprintf(pfp,"%S=%d%s", varname, varvalue,PNEWLINE); // check we dont have fake bools
 }
 void LKWriteToProfile(const TCHAR *varname, int varvalue) {
-  fprintf(pfp,"%S=%d (int)%s", varname, varvalue,PNEWLINE);
+  fprintf(pfp,"%S=%d%s", varname, varvalue,PNEWLINE);
 }
 void LKWriteToProfile(const TCHAR *varname, DWORD varvalue) {
-  fprintf(pfp,"%S=%d (DWORD)%s", varname, (unsigned int) varvalue,PNEWLINE);
+  fprintf(pfp,"%S=%d%s", varname, (unsigned int) varvalue,PNEWLINE);
 }
 void LKWriteToProfile(const TCHAR *varname, double varvalue) {
-  fprintf(pfp,"%S=%.0f (double)%s", varname, varvalue,PNEWLINE);
+  fprintf(pfp,"%S=%.0f%s", varname, varvalue,PNEWLINE);
 }
 void LKWriteToProfile(const TCHAR *varname, TCHAR *varvalue) {
   char stmp[MAX_PATH];
   unicode2utf((TCHAR*) varvalue, stmp, sizeof(stmp));
-  fprintf(pfp,"%S=\"%s\" (TCHAR)%s", varname, stmp ,PNEWLINE);
+  fprintf(pfp,"%S=\"%s\"%s", varname, stmp ,PNEWLINE);
 }
 
 
@@ -99,7 +99,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryAirspaceWarningRepeatTime, AirspaceWarningRepeatTime);
   rprintf(szRegistryAirspaceWarningVerticalMargin, AirspaceWarningVerticalMargin);
   rprintf(szRegistryAirspaceWarning, AIRSPACEWARNINGS);
-  rprintf(szRegistryAlarmMaxAltitude1, AlarmMaxAltitude1);
+  rprintf(szRegistryAlarmMaxAltitude1, AlarmMaxAltitude1); // saved *1000, /1000 when used
   rprintf(szRegistryAlarmMaxAltitude2, AlarmMaxAltitude2);
   rprintf(szRegistryAlarmMaxAltitude3, AlarmMaxAltitude3);
   rprintf(szRegistryAltMargin, AltWarningMargin);
@@ -179,7 +179,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryFAISector,SectorType);
   rprintf(szRegistryFinalGlideTerrain,FinalGlideTerrain);
   rprintf(szRegistryFinishLine,FinishLine);
-  rprintf(szRegistryFinishMinHeight,FinishMinHeight);
+  rprintf(szRegistryFinishMinHeight,FinishMinHeight); // saved *1000, /1000 when used
   rprintf(szRegistryFinishRadius,FinishRadius);
   rprintf(szRegistryFontMapLabelFont,FontDesc_MapLabel);
   rprintf(szRegistryFontMapWindowFont,FontDesc_MapWindow);
@@ -247,8 +247,8 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistrySafetyAltitudeArrival,SAFETYALTITUDEARRIVAL);
   rprintf(szRegistrySafetyAltitudeMode,SafetyAltitudeMode);
   rprintf(szRegistrySafetyAltitudeTerrain,SAFETYALTITUDETERRAIN);
-  rprintf(szRegistrySafetyMacCready,GlidePolar::SafetyMacCready);
-  rprintf(szRegistrySafteySpeed,SAFTEYSPEED);
+  rprintf(szRegistrySafetyMacCready,GlidePolar::SafetyMacCready*10);
+  rprintf(szRegistrySafteySpeed,SAFTEYSPEED*1000); // m/s x1000
   rprintf(szRegistrySectorRadius,SectorRadius);
   rprintf(szRegistrySetSystemTimeFromGPS,SetSystemTimeFromGPS);
   rprintf(szRegistryShading,Shading_Config);
@@ -259,10 +259,10 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistrySpeedUnitsValue,SpeedUnit_Config);
   rprintf(szRegistryStartHeightRef,StartHeightRef);
   rprintf(szRegistryStartLine,StartLine);
-  rprintf(szRegistryStartMaxHeightMargin,StartMaxHeightMargin);
-  rprintf(szRegistryStartMaxHeight,StartMaxHeight);
-  rprintf(szRegistryStartMaxSpeedMargin,StartMaxSpeedMargin);
-  rprintf(szRegistryStartMaxSpeed,StartMaxSpeed);
+  rprintf(szRegistryStartMaxHeightMargin,StartMaxHeightMargin);	// saved *1000, /1000 when used
+  rprintf(szRegistryStartMaxHeight,StartMaxHeight);		// saved *1000, /1000 when used
+  rprintf(szRegistryStartMaxSpeedMargin,StartMaxSpeedMargin);	// saved *1000, /1000 when used
+  rprintf(szRegistryStartMaxSpeed,StartMaxSpeed);		// saved *1000, /1000 when used
   rprintf(szRegistryStartRadius,StartRadius);
   rprintf(szRegistryTaskSpeedUnitsValue,TaskSpeedUnit_Config);
   rprintf(szRegistryTeamcodeRefWaypoint,TeamCodeRefWaypoint);
@@ -283,7 +283,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryWarningTime,WarningTime);
   rprintf(szRegistryWayPointFile,szWaypointFile);
   rprintf(szRegistryWaypointsOutOfRange,WaypointsOutOfRange);
-  rprintf(szRegistryWindCalcSpeed,WindCalcSpeed);
+  rprintf(szRegistryWindCalcSpeed,WindCalcSpeed*1000); // m/s x1000
   rprintf(szRegistryWindCalcTime,WindCalcTime);
 
   for(int i=0;i<AIRSPACECLASSCOUNT;i++) {

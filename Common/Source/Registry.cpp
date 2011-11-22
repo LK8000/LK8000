@@ -22,7 +22,35 @@
 const TCHAR szRegistryKey[] = TEXT(REGKEYNAME);
 
 
-#define NEWPROFILES 1
+//#define NEWPROFILES 1
+
+#if NEWPROFILES
+void SetRegistryAirspaceMode(int i) {};
+void SetRegistryColour(int i, DWORD c) {};
+void SetRegistryBrush(int i, DWORD c) {};
+void StoreType(int Index,int infoType) {};
+void SetRegistryStringIfAbsent(const TCHAR* name, const TCHAR* value) {};
+void ReadRegistrySettings(void) {};
+BOOL GetFromRegistry(const TCHAR *szRegValue, DWORD *pPos) {};
+BOOL GetRegistryString(const TCHAR *szRegValue, TCHAR *pPos, DWORD dwSize) {};
+void SaveRegistryToFile(const TCHAR *szFile) {};
+void LoadRegistryFromFile(const TCHAR *szFile) {};
+void WriteDeviceSettings(const int devIdx, const TCHAR *Name){};
+void ReadDeviceSettings(const int devIdx, TCHAR *Name){};
+HRESULT SetRegistryString(const TCHAR *szRegValue, const TCHAR *Pos) {};
+void WriteProfile(const TCHAR *szFile) {};
+void ReadProfile(const TCHAR *szFile) {};
+void ReadPort1Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {};
+void ReadPort2Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {};
+
+void WritePort1Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {};
+void WritePort2Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {};
+
+HRESULT SetToRegistry(const TCHAR *szRegValue, DWORD Pos) {};
+HRESULT SetToRegistry(const TCHAR *szRegValue, bool bVal) {};
+HRESULT SetToRegistry(const TCHAR *szRegValue, int nVal)  {};
+
+#else
 
 void StoreType(int Index,int infoType)
 {
@@ -1080,31 +1108,6 @@ void WritePort2Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit2Index)
   SetToRegistry(szRegistryBit2Index, Bit2Index);
 }
 
-#if USEPORT3
-void ReadPort3Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit3Index)
-{
-  DWORD Temp=0;
-
-  if(GetFromRegistry(szRegistryPort3Index,&Temp)==ERROR_SUCCESS)
-    (*PortIndex) = Temp;
-
-  if(GetFromRegistry(szRegistrySpeed3Index,&Temp)==ERROR_SUCCESS)
-    (*SpeedIndex) = Temp;
-
-  if(GetFromRegistry(szRegistryBit3Index,&Temp)==ERROR_SUCCESS)
-    (*Bit3Index) = Temp;
-}
-
-
-void WritePort3Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit3Index)
-{
-  SetToRegistry(szRegistryPort3Index, PortIndex);
-  SetToRegistry(szRegistrySpeed3Index, SpeedIndex);
-  SetToRegistry(szRegistryBit3Index, Bit3Index);
-}
-#endif
-
-
 
 void SetRegistryColour(int i, DWORD c)
 {
@@ -1203,6 +1206,7 @@ void ReadProfile(const TCHAR *szFile)
   // assuming all is ok, we can...
   ReadRegistrySettings();
 }
+
 
 
 void ReadDeviceSettings(const int devIdx, TCHAR *Name){
@@ -1466,17 +1470,22 @@ void SaveRegistryToFile(const TCHAR *szFile)
   ::RegCloseKey(hkFrom);
 }
 
-
+#endif // Not NEWPROFILES
 
 void RestoreRegistry(void) {
   #if TESTBENCH
   StartupStore(TEXT(". Restore registry from startProfile <%s>%s"),startProfileFile,NEWLINE);
   #endif
-  LoadRegistryFromFile(startProfileFile);
   #ifdef NEWPROFILES
-  // purely testing purposes
-  extern bool LKProfileLoad(TCHAR *file);
-  LKProfileLoad(_T("TESTBENCH.prf"));
+    // purely testing purposes
+    extern bool LKProfileLoad(TCHAR *file);
+    extern bool LKProfileAdjustVariables(void);
+    extern bool LKProfileInitRuntime(void);
+    LKProfileLoad(_T("TESTBENCH.prf"));
+    LKProfileAdjustVariables();
+    LKProfileInitRuntime();
+  #else
+    LoadRegistryFromFile(startProfileFile);
   #endif
 }
 
@@ -1487,11 +1496,12 @@ void StoreRegistry(void) {
   if (!CheckClubVersion())
 	SaveRegistryToFile(startProfileFile);
   #endif
-  SaveRegistryToFile(defaultProfileFile);
   #ifdef NEWPROFILES
-  // purely testing purposes
-  extern void LKProfileSave(const TCHAR *tfile);
-  LKProfileSave(_T("TESTBENCH.prf"));
+    // purely testing purposes
+    extern void LKProfileSave(const TCHAR *tfile);
+    LKProfileSave(_T("TESTBENCH.prf"));
+  #else
+    SaveRegistryToFile(defaultProfileFile);
   #endif
 }
 

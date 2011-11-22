@@ -27,6 +27,7 @@
 #include "LKMapWindow.h"
 #include "LKProfiles.h"
 
+//#define NEWPROFILES 1
 
 static HFONT TempMapWindowFont;
 static HFONT TempMapLabelFont;
@@ -4560,10 +4561,12 @@ void dlgConfigurationShowModal(void){
   wp = (WndProperty*)wf->FindByName(TEXT("prpEngineeringMenu")); // VENTA9
   if (wp) EngineeringMenu = wp->GetDataField()->GetAsInteger();
 
+  #ifndef NEWPROFILES
   if (COMPORTCHANGED) {
     WritePort1Settings(dwPortIndex1,dwSpeedIndex1, dwBit1Index);
     WritePort2Settings(dwPortIndex2,dwSpeedIndex2, dwBit2Index);
   }
+  #endif
 
   int i,j;
   for (i=0; i<4; i++) {

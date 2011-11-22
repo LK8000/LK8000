@@ -11,7 +11,7 @@
 #include "McReady.h"
 #include "Modeltype.h"
 
-//#define NEWPROFILES 1
+#define NEWPROFILES 1
 #if NEWPROFILES
 
 //
@@ -28,6 +28,15 @@
 //
 void LKProfileInitRuntime(void) {
 
+  // Todo: use _Config values for files, and then we can compare if they changed
+  WAYPOINTFILECHANGED = TRUE;
+  TERRAINFILECHANGED = TRUE;
+  TOPOLOGYFILECHANGED = TRUE;
+  AIRSPACEFILECHANGED = TRUE;
+  AIRFIELDFILECHANGED = TRUE;
+  POLARFILECHANGED = TRUE;
+
+
   //
   // Runtime from Config
   //
@@ -37,8 +46,7 @@ void LKProfileInitRuntime(void) {
   AutoAdvance	=	AutoAdvance_Config;
   AutoMcMode	=	AutoMcMode_Config;
   BgMapColor	=	BgMapColor_Config;
-
-  EnableNavBaroAltitude=EnableNavBaroAltitude_Config;
+  EnableNavBaroAltitude	= EnableNavBaroAltitude_Config;
   EnableTerrain =	EnableTerrain_Config;
   EnableTopology=	EnableTopology_Config;
   Orbiter	= 	Orbiter_Config;
@@ -47,7 +55,7 @@ void LKProfileInitRuntime(void) {
   TrailActive	=	TrailActive_Config;
   UseTotalEnergy=	UseTotalEnergy_Config;
 
-  // MapWindow::zoom.AutoZoom(AutoZoom_Config); NO CHECK
+  // MapWindow::zoom.AutoZoom(AutoZoom_Config); // Not yet using a global!
 
   CALCULATED_INFO.AutoMacCready = AutoMacCready_Config==true?1:0;
   DisplayOrientation = DisplayOrientation_Config;
@@ -55,25 +63,22 @@ void LKProfileInitRuntime(void) {
 
   MapWindow::GliderScreenPositionY = MapWindow::GliderScreenPosition;
 
-  if (UTCOffset>12*3600) {
-    UTCOffset-= 24*3600;
-  }
-
+  //
   // Units
-  switch(Speed)
-    {
+  //
+  switch(SpeedUnit_Config) {
     case 0 :
-      SPEEDMODIFY = TOMPH;
-      break;
+	SPEEDMODIFY = TOMPH;
+	break;
     case 1 :
-      SPEEDMODIFY = TOKNOTS;
-      break;
+	SPEEDMODIFY = TOKNOTS;
+	break;
     case 2 :
-      SPEEDMODIFY = TOKPH;
-      break;
-    }
-  switch(TaskSpeed)
-    {
+    default:
+	SPEEDMODIFY = TOKPH;
+	break;
+  }
+  switch(TaskSpeedUnit_Config) {
     case 0 :
       TASKSPEEDMODIFY = TOMPH;
       break;
@@ -81,31 +86,29 @@ void LKProfileInitRuntime(void) {
       TASKSPEEDMODIFY = TOKNOTS;
       break;
     case 2 :
+    default:
       TASKSPEEDMODIFY = TOKPH;
       break;
-    }
-  switch(Distance)
-    {
+  }
+  switch(DistanceUnit_Config) {
     case 0 : DISTANCEMODIFY = TOMILES; break;
     case 1 : DISTANCEMODIFY = TONAUTICALMILES; break;
+    default:
     case 2 : DISTANCEMODIFY = TOKILOMETER; break;
-    }
-  switch(Altitude)
-    {
+  }
+  switch(AltitudeUnit_Config) {
     case 0 : ALTITUDEMODIFY = TOFEET; break;
+    default:
     case 1 : ALTITUDEMODIFY = TOMETER; break;
-    }
-  switch(Lift)
-    {
+  }
+  switch(LiftUnit_Config) {
     case 0 : LIFTMODIFY = TOKNOTS; break;
-    case 1 : LIFTMODIFY = TOMETER; break;
     case 2 : LIFTMODIFY = TOKNOTS; break;
-    }
+    default:
+    case 1 : LIFTMODIFY = TOMETER; break;
+  }
+  Units::NotifyUnitChanged(); // set unit strings
 
-  Units::NotifyUnitChanged();
-
-  MapWindow::SetAirSpaceFillType((MapWindow::EAirspaceFillType) MapWindow::AirspaceFillType);
-  MapWindow::SetAirSpaceOpacity(MapWindow::AirspaceOpacity);
 
   SetOverColorRef();
 
@@ -114,7 +117,6 @@ void LKProfileInitRuntime(void) {
   PGCloseTime=PGOpenTime+(PGGateIntervalTime*PGNumberOfGates*60);
   if (PGCloseTime>86399) PGCloseTime=86399; // 23:59:59
 
-  // NO!
   if ( ISPARAGLIDER ) {
 	AverEffTime = (AverEffTime_t)ae15seconds;
 	AATEnabled=TRUE;
@@ -166,10 +168,9 @@ void LKProfileInitRuntime(void) {
 
 
 
-
-  LKalarms[0].triggervalue=0;
-  LKalarms[1].triggervalue=0;
-  LKalarms[2].triggervalue=0;
+  LKalarms[0].triggervalue=(int)AlarmMaxAltitude1/1000;
+  LKalarms[1].triggervalue=(int)AlarmMaxAltitude2/1000;
+  LKalarms[2].triggervalue=(int)AlarmMaxAltitude3/1000;
 
   UpdateConfBB();
   UpdateConfIP();

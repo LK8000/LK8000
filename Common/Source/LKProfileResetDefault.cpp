@@ -27,8 +27,9 @@
 //
 // Let's keep this list alpha sorted like in LKPROFILES.h and load/save functions
 //
-// AFTER this function is called, Runtime values must be initialised with INITRUNTIME
-// ----- ---- --------
+// AFTER this function is called:
+// * values must be normalized with ProfileAdjustVariables
+// * Runtime values must be initialised with INITRUNTIME
 //
 void LKProfileResetDefault(void) {
 

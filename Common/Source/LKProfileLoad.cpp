@@ -78,10 +78,10 @@ void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname
   // char stmp[MAX_PATH];
   // unicode2utf((TCHAR*) varvalue, stmp, sizeof(stmp));
   // fprintf(pfp,"%S=\"%s\" (TCHAR)%s", varname, stmp ,PNEWLINE);
-  //#if DEBUGPROF 
+  #if DEBUGPROF 
   StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> tchar=<%s>\n"),
   curname,curvalue,lookupname,lookupvalue);
-  //#endif
+  #endif
   matchedstring=true;
 }
 
@@ -210,9 +210,9 @@ using std::max;
 // 
 void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
 
-  #if DEBUGPROF
-  StartupStore(_T("... Parse: <%s> = <%s>\n"),sname,svalue);
-  #endif
+  //#if DEBUGPROF
+  //StartupStore(_T("... Parse: <%s> = <%s>\n"),sname,svalue);
+  //#endif
 
   int ival;
   // 
@@ -505,15 +505,32 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
 
 
 // 
-// After loading a profile, adjust some variables with limiters.
-// Config->Runtime copy is accomplished by InitRuntime, not here
+// After loading a profile, adjust some variables with limiters or special conversions.
+// Config->Runtime copy is accomplished by InitRuntime, not here!
 //
 void LKProfileAdjustVariables(void) {
 
   AcknowledgementTime = max(10, AcknowledgementTime);
 
-  // TODO CHECK Registry.cpp for more adjusts!!
-  // TODO Add to InitRuntime anything else from Registry!
+  // SAFTEYSPEED is in ms, default 50.0 ie 180kmh
+  // Value is saved multiplied by 1000 to preserve decimal calculations for conversion to knots
+  // do not let SAFTEYSPEED be below 30kmh
+  SAFTEYSPEED = (double)SAFTEYSPEED/1000.0;
+  if (SAFTEYSPEED <8)
+	SAFTEYSPEED=50.0;
+
+  // WindCalcSpeed is INDICATED AIR SPEED in m/s , minimum is 8kmh default is 100kmh
+  WindCalcSpeed = (double)WindCalcSpeed/1000.0;
+  if (WindCalcSpeed <2)
+	WindCalcSpeed=27.778;
+
+  if (UTCOffset>12*3600)
+	UTCOffset-= 24*3600;
+
+  GlidePolar::SafetyMacCready /= 10;
+
+  // TODO: SetModelType  using GlobalModelName
+
 
 }
 
