@@ -11,6 +11,8 @@
 #include "Modeltype.h"
 #include "LKProfiles.h"
 
+#if OLDPROFILES
+
 
 #ifdef __MINGW32__
 #ifndef max
@@ -19,47 +21,6 @@
 #endif
 #endif
 
-
-#if NEWPROFILES
-// REMOVABLE IN SOURCE CODE
-HRESULT SetToRegistry(const TCHAR *szRegValue, DWORD Pos) {; return 0;};
-HRESULT SetToRegistry(const TCHAR *szRegValue, bool bVal) {; return 0;};
-HRESULT SetToRegistry(const TCHAR *szRegValue, int nVal)  {; return 0;};
-
-void ReadDeviceSettings(const int devIdx, TCHAR *Name){
-  Name[0] = '\0';
-  if (devIdx == 0) _tcscpy(Name,dwDeviceName1);
-  if (devIdx == 1) _tcscpy(Name,dwDeviceName2);
-  if (_tcslen(Name)==0) _tcscpy(Name,_T(DEV_DISABLED_NAME));
-}
-
-void WriteDeviceSettings(const int devIdx, const TCHAR *Name){
-  if (devIdx == 0) _tcscpy(dwDeviceName1,Name);
-  if (devIdx == 1) _tcscpy(dwDeviceName2,Name);
-}
-
-void ReadPort1Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {
-  *PortIndex	=dwPortIndex1;
-  *SpeedIndex	=dwSpeedIndex1;
-  *Bit1Index	=dwBit1Index;
-}
-void ReadPort2Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {
-  *PortIndex	=dwPortIndex2;
-  *SpeedIndex	=dwSpeedIndex2;
-  *Bit1Index	=dwBit2Index;
-}
-void WritePort1Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit1Index) {
-  dwPortIndex1	= PortIndex;
-  dwSpeedIndex1 = SpeedIndex;
-  dwBit1Index	= Bit1Index;
-}
-void WritePort2Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit1Index) {
-  dwPortIndex2	= PortIndex;
-  dwSpeedIndex2 = SpeedIndex;
-  dwBit2Index	= Bit1Index;
-}
-
-#else
 
 const TCHAR szRegistryKey[] = TEXT(REGKEYNAME);
 
@@ -1500,35 +1461,6 @@ void StoreRegistry(void) {
     SaveRegistryToFile(defaultProfileFile);
 }
 
-#endif // Not NEWPROFILES
-
-#ifdef PNA
-extern bool SetModelName(DWORD Temp);
-
-bool SetModelType() {
-
-  TCHAR sTmp[100];
-  TCHAR szRegistryInfoBoxModel[]= TEXT("AppInfoBoxModel");
-  DWORD Temp=0;
-
-  GetFromRegistry(szRegistryInfoBoxModel, &Temp);
-  
-  if ( SetModelName(Temp) != true ) {
-	_stprintf(sTmp,_T(". SetModelType failed: probably no registry entry%s"), NEWLINE);
-	StartupStore(sTmp);
-	GlobalModelType=MODELTYPE_PNA_PNA;
-	_tcscpy(GlobalModelName,_T("GENERIC"));  // 100820
-	return false;
-  } else {
-	GlobalModelType = Temp;
-  }
-  
-  _stprintf(sTmp,_T(". SetModelType: Name=<%s> Type=%d%s"),GlobalModelName, GlobalModelType,NEWLINE);
-  StartupStore(sTmp);
-  return true;
-}
-#endif
-
 BOOL DelRegistryKey(const TCHAR *szDelKey)
 {
    HKEY tKey;
@@ -1539,7 +1471,6 @@ BOOL DelRegistryKey(const TCHAR *szDelKey)
    RegCloseKey(tKey);
    return true;
 }
-
 #ifdef PNA
 void CleanRegistry()
 {
@@ -1559,4 +1490,5 @@ void CleanRegistry()
 }
 #endif
 
+#endif // ------------------------------ OLD PROFILES ---------------------------------
 

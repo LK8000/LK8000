@@ -309,4 +309,24 @@ void LKProfileSave(const TCHAR *szFile)
 }
 
 
+void WriteDeviceSettings(const int devIdx, const TCHAR *Name){
+  if (devIdx == 0) _tcscpy(dwDeviceName1,Name);
+  if (devIdx == 1) _tcscpy(dwDeviceName2,Name);
+}
+void WritePort1Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit1Index) {
+  dwPortIndex1	= PortIndex;
+  dwSpeedIndex1 = SpeedIndex;
+  dwBit1Index	= Bit1Index;
+}
+void WritePort2Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit1Index) {
+  dwPortIndex2	= PortIndex;
+  dwSpeedIndex2 = SpeedIndex;
+  dwBit2Index	= Bit1Index;
+}
+
+// REMOVABLE IN SOURCE CODE ONCE NEWPROFILES ARE PERMANENT
+HRESULT SetToRegistry(const TCHAR *szRegValue, DWORD Pos) {; return 0;};
+HRESULT SetToRegistry(const TCHAR *szRegValue, bool bVal) {; return 0;};
+HRESULT SetToRegistry(const TCHAR *szRegValue, int nVal)  {; return 0;};
+
 #endif // NEWPROFILES

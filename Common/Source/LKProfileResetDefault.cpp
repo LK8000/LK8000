@@ -411,36 +411,4 @@ void LKProfileResetDefault(void) {
 }
 
 
-
-#if 0
-#ifdef PNA
-// LOAD ModelType directly at startup
-extern bool SetModelName(DWORD Temp);
-
-bool SetModelType() {
-
-  TCHAR sTmp[100];
-  TCHAR szRegistryInfoBoxModel[]= TEXT("AppInfoBoxModel");
-  DWORD Temp=0;
-
-  GetFromRegistry(szRegistryInfoBoxModel, &Temp);
-  
-  if ( SetModelName(Temp) != true ) {
-	_stprintf(sTmp,_T(". SetModelType failed: probably no registry entry%s"), NEWLINE);
-	StartupStore(sTmp);
-	GlobalModelType=MODELTYPE_PNA_PNA;
-	_tcscpy(GlobalModelName,_T("GENERIC"));  // 100820
-	return false;
-  } else {
-	GlobalModelType = Temp;
-  }
-  
-  _stprintf(sTmp,_T(". SetModelType: Name=<%s> Type=%d%s"),GlobalModelName, GlobalModelType,NEWLINE);
-  StartupStore(sTmp);
-  return true;
-}
-#endif
-#endif // 0
-
-
 #endif // NEWPROFILES

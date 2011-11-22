@@ -536,4 +536,24 @@ void LKProfileAdjustVariables(void) {
 }
 
 
+void ReadDeviceSettings(const int devIdx, TCHAR *Name){
+  Name[0] = '\0';
+  if (devIdx == 0) _tcscpy(Name,dwDeviceName1);
+  if (devIdx == 1) _tcscpy(Name,dwDeviceName2);
+  if (_tcslen(Name)==0) _tcscpy(Name,_T(DEV_DISABLED_NAME));
+}
+void ReadPort1Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {
+  *PortIndex	=dwPortIndex1;
+  *SpeedIndex	=dwSpeedIndex1;
+  *Bit1Index	=dwBit1Index;
+}
+void ReadPort2Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {
+  *PortIndex	=dwPortIndex2;
+  *SpeedIndex	=dwSpeedIndex2;
+  *Bit1Index	=dwBit2Index;
+}
+
+
+
+
 #endif // NEWPROFILES

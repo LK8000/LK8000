@@ -10,9 +10,7 @@
 #include "Modeltype.h"
 
 
-
 #ifdef PNA
-// VENTA-ADDON MODELTYPE
 
 //
 //	Check if the model type is encoded in the executable file name
@@ -106,11 +104,8 @@ bool SetModelName(DWORD Temp) {
 
 }
 
-#endif
 
 
-
-#ifdef PNA
 bool LoadModelFromProfile()
 {
 
@@ -148,7 +143,34 @@ bool LoadModelFromProfile()
   fclose(fp);
   return false;
 }
-#endif
+
+bool SetModelType() {
+
+  DWORD Temp=0;
+
+  #if OLDPROFILES
+  TCHAR szRegistryInfoBoxModel[]= TEXT("AppInfoBoxModel");
+  GetFromRegistry(szRegistryInfoBoxModel, &Temp);
+  #else
+  Temp=Appearance.InfoBoxModel;
+  #endif
+  
+  if ( SetModelName(Temp) != true ) {
+	StartupStore(_T(". SetModelType failed: probably no registry entry%s"), NEWLINE);
+	GlobalModelType=MODELTYPE_PNA_PNA;
+	_tcscpy(GlobalModelName,_T("GENERIC"));
+	return false;
+  } else {
+	GlobalModelType = Temp;
+  }
+  
+  StartupStore(_T(". SetModelType: Name=<%s> Type=%d%s"),GlobalModelName, GlobalModelType,NEWLINE);
+  return true;
+}
+
+
+
+#endif // PNA
 
 
 
