@@ -2288,6 +2288,8 @@ void InputEvents::eventSetup(const TCHAR *misc) {
 #endif
   } else if (_tcscmp(misc,TEXT("AspAnalysis"))==0){
     dlgAnalysisShowModal(ANALYSIS_PAGE_AIRSPACE);
+  } else if (_tcscmp(misc,TEXT("OlcAnalysis"))==0){
+    dlgAnalysisShowModal(ANALYSIS_PAGE_CONTEST);
   } else if (_tcscmp(misc,TEXT("Teamcode"))==0){
     dlgTeamCodeShowModal();
   } else if (_tcscmp(misc,TEXT("Target"))==0){

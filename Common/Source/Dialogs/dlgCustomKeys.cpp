@@ -283,7 +283,8 @@ void AddConfList( DataFieldEnum* dfe) {
     dfe->addEnumText(gettext(TEXT("_@M1666_"))); // Toggle Total Energy
     dfe->addEnumText(gettext(TEXT("_@M2063_"))); // Nodepad
     dfe->addEnumText(gettext(TEXT("_@M1693_"))); // Terrain Colors
-    dfe->addEnumText(gettext(TEXT("_@M871_"))); // Nearest Airspace
+    dfe->addEnumText(gettext(TEXT("_@M871_")));  // Nearest Airspace
+    dfe->addEnumText(gettext(TEXT("_@M1740_"))); // OLC Analysis
 
     dfe->Sort(0);
 

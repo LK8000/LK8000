@@ -301,6 +301,12 @@ bool CustomKeyHandler(const int key) {
 		#endif
 		InputEvents::eventNearestAirspaceDetails(NULL);
 		return true;
+	case ckOlcAnalysis:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		InputEvents::eventSetup(_T("OlcAnalysis"));
+		return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		FailStore(_T("ERR-726 INVALID CUSTOMKEY=%d"),ckeymode);

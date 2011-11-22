@@ -131,6 +131,7 @@ typedef enum{
 	ckNotepad,
 	ckTerrainColors,
 	ckNearestAirspace,
+	ckOlcAnalysis,
 } CustomKeyMode_t;
 
 typedef enum{

@@ -1694,7 +1694,7 @@ _@M1724_ "YOUR POSITION:"
 _@M1725_ "VERY SORRY"
 _@M1726_ "YOUR POSITION IS UNKNOWN!"
 # 1727-1739 reserved for The Oracle
-# next available is 1740
+_@M1740_ "OLC analysis"
 
 
 ############################################################
