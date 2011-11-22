@@ -13,7 +13,6 @@
 #include "Calculations.h"
 //#include "Parser.h"
 
-#define NEWPROFILES 1
 
 #if NEWPROFILES
 //
@@ -36,7 +35,7 @@ void LKProfileResetDefault(void) {
   int i;
 
   #if TESTBENCH
-  StartupStore(TEXT(". ProfileResetDefault%s"),NEWLINE);
+  StartupStore(TEXT("... ProfileResetDefault%s"),NEWLINE);
   #endif
 
   AcknowledgementTime = 900;	// keep ack level for this time, [secs]
@@ -414,16 +413,6 @@ void LKProfileResetDefault(void) {
 
 
 #if 0
-
-
-int GetRegistryAirspaceMode(int i) {
-  DWORD Temp= 3; // display + warnings
-  GetFromRegistry(szRegistryAirspaceMode[i],&Temp);
-  return Temp;
-}
-
-
-
 #ifdef PNA
 // LOAD ModelType directly at startup
 extern bool SetModelName(DWORD Temp);
@@ -451,9 +440,6 @@ bool SetModelType() {
   return true;
 }
 #endif
-
-
-
 #endif // 0
 
 

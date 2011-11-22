@@ -146,7 +146,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   }
   #endif
   
-
+  #if OLDPROFILES
   // registry deleted at startup also for PC
   if ( RegDeleteKey(HKEY_CURRENT_USER, _T(REGKEYNAME))== ERROR_SUCCESS )  // 091213
         {
@@ -156,6 +156,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 	}
   else
 	StartupStore(_T(". Registry key could NOT be deleted, this is normal after a reset.%s"),NEWLINE);
+  #endif
 
 
   bool datadir;
@@ -280,8 +281,10 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   GPS_INFO.Minute = pda_time.wMinute;
   GPS_INFO.Second = pda_time.wSecond;
 
+  #if OLDPROFILES
   #ifndef NOWINDREGISTRY	// 100404
   LoadWindFromRegistry();
+  #endif
   #endif
   CalculateNewPolarCoef();
   #if TESTBENCH

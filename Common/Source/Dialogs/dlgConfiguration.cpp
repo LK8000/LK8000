@@ -27,7 +27,6 @@
 #include "LKMapWindow.h"
 #include "LKProfiles.h"
 
-//#define NEWPROFILES 1
 
 static HFONT TempMapWindowFont;
 static HFONT TempMapLabelFont;
@@ -3670,7 +3669,11 @@ void dlgConfigurationShowModal(void){
       ContractLocalPath(temptext);
 
     if (_tcscmp(temptext,szPolarFile)) {
+      #if OLDPROFILES
       SetRegistryString(szRegistryPolarFile, temptext);
+      #else
+      _tcscpy(szPolarFile,temptext);
+      #endif
       POLARFILECHANGED = true;
       GlidePolar::SetBallast();
       changed = true;
@@ -3684,7 +3687,11 @@ void dlgConfigurationShowModal(void){
     _tcscpy(temptext, dfe->GetPathFile());
     ContractLocalPath(temptext);
     if (_tcscmp(temptext,szWaypointFile)) {
+      #if OLDPROFILES
       SetRegistryString(szRegistryWayPointFile, temptext);
+      #else
+      _tcscpy(szWaypointFile,temptext);
+      #endif
       WAYPOINTFILECHANGED= true;
       changed = true;
     }
@@ -3697,7 +3704,11 @@ void dlgConfigurationShowModal(void){
     _tcscpy(temptext, dfe->GetPathFile());
     ContractLocalPath(temptext);
     if (_tcscmp(temptext,szAdditionalWaypointFile)) {
+      #if OLDPROFILES
       SetRegistryString(szRegistryAdditionalWayPointFile, temptext);
+      #else
+      _tcscpy(szAdditionalWaypointFile,temptext);
+      #endif
       WAYPOINTFILECHANGED= true;
       changed = true;
     }
@@ -3710,7 +3721,11 @@ void dlgConfigurationShowModal(void){
     _tcscpy(temptext, dfe->GetPathFile());
     ContractLocalPath(temptext);
     if (_tcscmp(temptext,szAirspaceFile)) {
+      #if OLDPROFILES
       SetRegistryString(szRegistryAirspaceFile, temptext);
+      #else
+      _tcscpy(szAirspaceFile,temptext);
+      #endif
       AIRSPACEFILECHANGED= true;
       changed = true;
     }
@@ -3723,7 +3738,11 @@ void dlgConfigurationShowModal(void){
     _tcscpy(temptext, dfe->GetPathFile());
     ContractLocalPath(temptext);
     if (_tcscmp(temptext,szAdditionalAirspaceFile)) {
+      #if OLDPROFILES
       SetRegistryString(szRegistryAdditionalAirspaceFile, temptext);
+      #else
+      _tcscpy(szAdditionalAirspaceFile,temptext);
+      #endif
       AIRSPACEFILECHANGED= true;
       changed = true;
     }
@@ -3736,7 +3755,11 @@ void dlgConfigurationShowModal(void){
     _tcscpy(temptext, dfe->GetPathFile());
     ContractLocalPath(temptext);
     if (_tcscmp(temptext,szMapFile)) {
+      #if OLDPROFILES
       SetRegistryString(szRegistryMapFile, temptext);
+      #else
+      _tcscpy(szMapFile,temptext);
+      #endif
       MAPFILECHANGED= true;
       #if LKMTERRAIN
       TERRAINFILECHANGED= true; //for .xcm
@@ -3752,7 +3775,11 @@ void dlgConfigurationShowModal(void){
     _tcscpy(temptext, dfe->GetPathFile());
     ContractLocalPath(temptext);
     if (_tcscmp(temptext,szTerrainFile)) {
+      #if OLDPROFILES
       SetRegistryString(szRegistryTerrainFile, temptext);
+      #else
+      _tcscpy(szTerrainFile,temptext);
+      #endif
       TERRAINFILECHANGED= true;
       changed = true;
     }
@@ -3765,7 +3792,11 @@ void dlgConfigurationShowModal(void){
     _tcscpy(temptext, dfe->GetPathFile());
     ContractLocalPath(temptext);
     if (_tcscmp(temptext,szTopologyFile)) {
+      #if OLDPROFILES
       SetRegistryString(szRegistryTopologyFile, temptext);
+      #else
+      _tcscpy(szTopologyFile,temptext);
+      #endif
       TOPOLOGYFILECHANGED= true;
       changed = true;
     }
@@ -3778,7 +3809,11 @@ void dlgConfigurationShowModal(void){
     _tcscpy(temptext, dfe->GetPathFile());
     ContractLocalPath(temptext);
     if (_tcscmp(temptext,szAirfieldFile)) {
+      #if OLDPROFILES
       SetRegistryString(szRegistryAirfieldFile, temptext);
+      #else
+      _tcscpy(szAirfieldFile,temptext);
+      #endif
       AIRFIELDFILECHANGED= true;
       changed = true;
     }
@@ -3791,7 +3826,11 @@ void dlgConfigurationShowModal(void){
     _tcscpy(temptext, dfe->GetPathFile());
     ContractLocalPath(temptext);
     if (_tcscmp(temptext,szLanguageFile)) {
+      #if OLDPROFILES
       SetRegistryString(szRegistryLanguageFile, temptext);
+      #else
+      _tcscpy(szLanguageFile,temptext);
+      #endif
       requirerestart = true; // restart needed for language load
       // LKReadLanguageFile(); // NO GOOD. MEMORY LEAKS PENDING
       changed = true;
@@ -3805,7 +3844,11 @@ void dlgConfigurationShowModal(void){
     _tcscpy(temptext, dfe->GetPathFile());
     ContractLocalPath(temptext);
     if (_tcscmp(temptext,szInputFile)) {
+      #if OLDPROFILES
       SetRegistryString(szRegistryInputFile, temptext);
+      #else
+      _tcscpy(szInputFile,temptext);
+      #endif
       requirerestart = true;
       changed = true;
     }
@@ -4605,8 +4648,9 @@ void dlgConfigurationShowModal(void){
 	if (PGCloseTime>86399) PGCloseTime=86399; // 23:59:59
 	ActiveGate=-1;
 
-
+    #if OLDPROFILES
     StoreRegistry();
+    #endif
 
     if (!requirerestart) {
       MessageBoxX (hWndMainWindow, 

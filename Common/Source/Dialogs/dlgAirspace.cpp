@@ -216,11 +216,13 @@ bool dlgAirspaceShowModal(bool coloredit){
 
   wf->ShowModal();
 
+  #if OLDPROFILES
   // now retrieve back the properties...
   if (changed) {
     StoreRegistry();
     DoStatusMessage(gettext(TEXT("_@M877_"))); // Configuration saved
   };
+  #endif
 
   delete wf;
 

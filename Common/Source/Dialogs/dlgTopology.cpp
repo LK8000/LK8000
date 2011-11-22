@@ -332,7 +332,7 @@ void dlgTopologyShowModal(void){
 	}
   }
 
-
+  #if OLDPROFILES
   if (changed) {
     StoreRegistry();
     MessageBoxX (hWndMainWindow, 
@@ -340,7 +340,7 @@ void dlgTopologyShowModal(void){
 		 gettext(TEXT("_@M732_")), 
 		 TEXT(""), MB_OK);
   }
-
+  #endif
 
   delete wf;
   wf = NULL;

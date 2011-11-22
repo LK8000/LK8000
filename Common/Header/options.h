@@ -82,6 +82,9 @@
  // #define RASTERCACHE		1	// fallback to cached dem if it does not fit in memory entirely. 
 					// Does not work. 
 
+ // Both can be enabled, so careful while testing
+ #define NEWPROFILES		1	// new lk profile system with no windows registry
+ // #define OLDPROFILES		1	// old lk profile with registry
 
 /*
  * Incomplete work, or stuff that never got into production versions but still interesting

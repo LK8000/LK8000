@@ -15,7 +15,7 @@
 #include "Geoid.h"
 #include "InputEvents.h"
 #include "RGB.h"
-
+#include "LKProfiles.h"
 
 
 
@@ -274,8 +274,11 @@ void Shutdown(void) {
 
   // LKTOKEN _@M1221_ "Shutdown, saving profile..."
   CreateProgressDialog(gettext(TEXT("_@M1221_")));
-  // Save settings
+  #if OLDPROFILES  
   StoreRegistry();
+  #else
+  LKProfileSave(defaultProfileFile);
+  #endif
 
   #if TESTBENCH
   StartupStore(TEXT(". Save_Recent_WP_history%s"),NEWLINE);

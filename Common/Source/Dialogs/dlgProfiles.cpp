@@ -13,7 +13,7 @@
 #include "McReady.h"
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
-
+#include "LKProfiles.h"
 
 extern void SettingsEnter();
 extern void SettingsLeave();
@@ -49,8 +49,11 @@ static void OnSaveExistingClicked(WindowControl * Sender) {
 	// LKTOKEN  _@M509_ = "Overwrite profile?" 
 		gettext(TEXT("_@M509_")), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
-
+		#if OLDPROFILES
 		WriteProfile(dfe->GetPathFile());
+		#else
+		LKProfileSave(dfe->GetPathFile());
+		#endif
 	// LKTOKEN  _@M535_ = "Profile saved!" 
 		MessageBoxX(hWndMapWindow, gettext(TEXT("_@M535_")),_T(""), MB_OK|MB_ICONEXCLAMATION);
 		return;
@@ -98,8 +101,11 @@ static void OnSaveNewClicked(WindowControl * Sender) {
 	// LKTOKEN  _@M579_ = "Save ?" 
 		gettext(TEXT("_@M579_")), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
-
+		#if OLDPROFILES
 		WriteProfile(file_name);
+		#else
+		LKProfileSave(file_name);
+		#endif
 		dfe->addFile(profile_name, file_name);
 
 		MessageBoxX(hWndMapWindow, 
@@ -129,7 +135,11 @@ static void OnSaveNewClicked(WindowControl * Sender) {
 		gettext(TEXT("_@M510_")), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
 
+			#if OLDPROFILES
 			WriteProfile(file_name);
+			#else
+			LKProfileSave(file_name);
+			#endif
 			MessageBoxX(hWndMapWindow, 
 	// LKTOKEN  _@M535_ = "Profile saved!" 
 			gettext(TEXT("_@M535_")),
@@ -172,8 +182,12 @@ static void OnLoadClicked(WindowControl * Sender){
 		gettext(TEXT("_@M397_")), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
 		SettingsEnter();
+		#if OLDPROFILE
 		ReadProfile(dfe->GetPathFile());
 		WAYPOINTFILECHANGED=true;
+		#else
+		LKProfileLoad(dfe->GetPathFile());
+		#endif
 		SettingsLeave();
 		MessageBoxX(hWndMapWindow, 
 	// LKTOKEN  _@M534_ = "Profile loaded!" 

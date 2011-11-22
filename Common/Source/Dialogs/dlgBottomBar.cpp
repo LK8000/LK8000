@@ -195,7 +195,9 @@ void dlgBottomBarShowModal(void){
   }
 
   if (changed) {
+    #if OLDPROFILES
     StoreRegistry();
+    #endif
     UpdateConfBB();
     MessageBoxX (hWndMainWindow,
                  gettext(TEXT("_@M1607_")), // bottom bar config saved

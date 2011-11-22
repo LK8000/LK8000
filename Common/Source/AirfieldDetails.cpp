@@ -25,12 +25,20 @@ void OpenAirfieldDetails() {
 
   zAirfieldDetails = NULL;
 
+  #if OLDPROFILES
   GetRegistryString(szRegistryAirfieldFile, szAirfieldDetailsFile, MAX_PATH);
+  #else
+  _tcscpy(szAirfieldDetailsFile,szAirfieldFile);
+  #endif
 
   if (_tcslen(szAirfieldDetailsFile)>0) {
     ExpandLocalPath(szAirfieldDetailsFile);
     _tcscpy(zfilename, szAirfieldDetailsFile);
+    #if OLDPROFILES
     SetRegistryString(szRegistryAirfieldFile, TEXT("\0"));
+    #else
+    _tcscpy(szAirfieldFile,_T(""));
+    #endif
   } else {
 	#if 0
 	LocalPath(zfilename, _T(KD_WAYPOINTS));
@@ -53,7 +61,11 @@ void CloseAirfieldDetails() {
   }
   // file was OK, so save the registry
   ContractLocalPath(szAirfieldDetailsFile);
+  #if OLDPROFILES
   SetRegistryString(szRegistryAirfieldFile, szAirfieldDetailsFile);
+  #else
+  _tcscpy(szAirfieldFile,szAirfieldDetailsFile);
+  #endif
 
   zzip_fclose(zAirfieldDetails);
   zAirfieldDetails = NULL;

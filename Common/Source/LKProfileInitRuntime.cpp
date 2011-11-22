@@ -11,7 +11,6 @@
 #include "McReady.h"
 #include "Modeltype.h"
 
-#define NEWPROFILES 1
 #if NEWPROFILES
 
 //
@@ -27,6 +26,10 @@
 // variable can be changed with a button out of System Config!
 //
 void LKProfileInitRuntime(void) {
+
+  #if TESTBENCH
+  StartupStore(_T("... LKProfileInitRuntime\n"));
+  #endif
 
   // Todo: use _Config values for files, and then we can compare if they changed
   WAYPOINTFILECHANGED = TRUE;
@@ -175,14 +178,6 @@ void LKProfileInitRuntime(void) {
   UpdateConfBB();
   UpdateConfIP();
 
-}
-
-
-
-
-#else // NO NEWPROFILES..
-
-void LKProfileInitRuntime(void) {
 }
 
 

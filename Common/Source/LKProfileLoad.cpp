@@ -12,13 +12,10 @@
 #include "Modeltype.h"
 #include "LKProfiles.h"
 
-#define NEWPROFILES 1
 #if NEWPROFILES
 
 // #define DEBUGPROF	1
 extern void LKParseProfileString(TCHAR *sname, TCHAR *svalue);
-extern void LKProfileAdjustVariables(void);
-extern void LKProfileInitRuntime(void);
 
 static bool matchedstring=false;		// simple accelerator
 
@@ -509,6 +506,10 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
 // Config->Runtime copy is accomplished by InitRuntime, not here!
 //
 void LKProfileAdjustVariables(void) {
+
+  #if TESTBENCH
+  StartupStore(_T("... LKProfileAdjustVariables\n"));
+  #endif
 
   AcknowledgementTime = max(10, AcknowledgementTime);
 

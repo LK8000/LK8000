@@ -22,30 +22,36 @@
 const TCHAR szRegistryKey[] = TEXT(REGKEYNAME);
 
 
-//#define NEWPROFILES 1
-
 #if NEWPROFILES
 void SetRegistryAirspaceMode(int i) {};
 void SetRegistryColour(int i, DWORD c) {};
 void SetRegistryBrush(int i, DWORD c) {};
 void StoreType(int Index,int infoType) {};
 void SetRegistryStringIfAbsent(const TCHAR* name, const TCHAR* value) {};
-void ReadRegistrySettings(void) {};
+
+//void ReadRegistrySettings(void) {};
+
 BOOL GetFromRegistry(const TCHAR *szRegValue, DWORD *pPos) {};
 BOOL GetRegistryString(const TCHAR *szRegValue, TCHAR *pPos, DWORD dwSize) {};
-void SaveRegistryToFile(const TCHAR *szFile) {};
-void LoadRegistryFromFile(const TCHAR *szFile) {};
+
+//void SaveRegistryToFile(const TCHAR *szFile) {};
+//void LoadRegistryFromFile(const TCHAR *szFile) {};
+
 void WriteDeviceSettings(const int devIdx, const TCHAR *Name){};
 void ReadDeviceSettings(const int devIdx, TCHAR *Name){};
-HRESULT SetRegistryString(const TCHAR *szRegValue, const TCHAR *Pos) {};
-void WriteProfile(const TCHAR *szFile) {};
-void ReadProfile(const TCHAR *szFile) {};
+
+//HRESULT SetRegistryString(const TCHAR *szRegValue, const TCHAR *Pos) {};
+
+//void WriteProfile(const TCHAR *szFile) {};
+//void ReadProfile(const TCHAR *szFile) {};
+
 void ReadPort1Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {};
 void ReadPort2Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {};
 
 void WritePort1Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {};
 void WritePort2Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {};
 
+// REMOVABLE IN SOURCE CODE
 HRESULT SetToRegistry(const TCHAR *szRegValue, DWORD Pos) {};
 HRESULT SetToRegistry(const TCHAR *szRegValue, bool bVal) {};
 HRESULT SetToRegistry(const TCHAR *szRegValue, int nVal)  {};
@@ -1470,23 +1476,12 @@ void SaveRegistryToFile(const TCHAR *szFile)
   ::RegCloseKey(hkFrom);
 }
 
-#endif // Not NEWPROFILES
 
 void RestoreRegistry(void) {
   #if TESTBENCH
   StartupStore(TEXT(". Restore registry from startProfile <%s>%s"),startProfileFile,NEWLINE);
   #endif
-  #ifdef NEWPROFILES
-    // purely testing purposes
-    extern bool LKProfileLoad(TCHAR *file);
-    extern bool LKProfileAdjustVariables(void);
-    extern bool LKProfileInitRuntime(void);
-    LKProfileLoad(_T("TESTBENCH.prf"));
-    LKProfileAdjustVariables();
-    LKProfileInitRuntime();
-  #else
     LoadRegistryFromFile(startProfileFile);
-  #endif
 }
 
 void StoreRegistry(void) {
@@ -1496,15 +1491,10 @@ void StoreRegistry(void) {
   if (!CheckClubVersion())
 	SaveRegistryToFile(startProfileFile);
   #endif
-  #ifdef NEWPROFILES
-    // purely testing purposes
-    extern void LKProfileSave(const TCHAR *tfile);
-    LKProfileSave(_T("TESTBENCH.prf"));
-  #else
     SaveRegistryToFile(defaultProfileFile);
-  #endif
 }
 
+#endif // Not NEWPROFILES
 
 #ifdef PNA
 extern bool SetModelName(DWORD Temp);

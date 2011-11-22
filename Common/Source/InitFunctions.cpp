@@ -10,6 +10,7 @@
 #include "resource.h"
 #include "Waypointparser.h"
 #include "InfoBoxLayout.h"
+#include "LKProfiles.h"
 
 #include <commctrl.h>
 #include <aygshell.h>
@@ -48,22 +49,33 @@ extern void CreateCalculationThread();
 
 
 void PreloadInitialisation(bool ask) {
+  #if OLDPROFILES
   SetToRegistry(TEXT("LKV"), 3);
+  #endif
   LKLanguageReady=false;
   LKReadLanguageFile();
   FillDataOptions(); // Load infobox list
 
   if (ask) {
     // Load default profile and status file: we are at an early stage
-    RestoreRegistry();
+#if OLDPROFILES
+    RestoreRegistry(); // using startProfileFile
     ReadRegistrySettings();
+#else
+    LKProfileResetDefault();
+    LKProfileLoad(startProfileFile);
+#endif
     StatusFileInit();
   } else {
     FullScreen();
     while (dlgStartupShowModal());
 
+#if OLDPROFILES
     RestoreRegistry();
     ReadRegistrySettings();
+#else
+    LKProfileLoad(startProfileFile);
+#endif
 
     // Force reload of bitmaps in the Draw thread 
     LKSW_ReloadProfileBitmaps=true;

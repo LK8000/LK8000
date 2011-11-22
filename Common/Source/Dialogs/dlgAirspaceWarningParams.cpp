@@ -190,7 +190,7 @@ void dlgAirspaceWarningParamsShowModal(void){
     }
   }
 
-
+  #if OLDPROFILES
   if (changed) {
     StoreRegistry();
     MessageBoxX (hWndMainWindow, 
@@ -198,7 +198,7 @@ void dlgAirspaceWarningParamsShowModal(void){
 		 gettext(TEXT("_@M1276_")), 
 		 TEXT(""), MB_OK);
   }
-
+  #endif
 
   delete wf;
   wf = NULL;

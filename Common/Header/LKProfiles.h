@@ -505,4 +505,10 @@ extern TCHAR szRegistryWindCalcTime[];
 //
 #endif
 
+extern void LKProfileResetDefault(void);
+extern void LKProfileAdjustVariables(void);
+extern void LKProfileInitRuntime(void);
+extern bool LKProfileLoad(TCHAR *szFile);
+extern void LKProfileSave(const TCHAR *szFile);
+
 #endif // LKPROFILES_H

@@ -201,6 +201,7 @@ bool dlgTaskRules(void){
     }
   }
 
+  #if OLDPROFILES
   if (changed) {
     StoreRegistry();
 
@@ -209,6 +210,7 @@ bool dlgTaskRules(void){
 		 gettext(TEXT("_@M168_")), 
 		 TEXT(""), MB_OK);
   }
+  #endif
 
   delete wf;
   wf = NULL;
