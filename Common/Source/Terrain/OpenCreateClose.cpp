@@ -34,7 +34,11 @@ void RasterTerrain::OpenTerrain(void)
 
   TCHAR szFile[MAX_PATH] = _T("\0");
 
+  #if OLDPROFILES
   GetRegistryString(szRegistryTerrainFile, szFile, MAX_PATH);
+  #else
+  _tcscpy(szFile,szTerrainFile);
+  #endif
 
   TCHAR szOrigFile[MAX_PATH] = _T("\0");
   ExpandLocalPath(szFile);
@@ -42,17 +46,25 @@ void RasterTerrain::OpenTerrain(void)
   ContractLocalPath(szOrigFile);
 
   // If no terrain will be found, the registry will be invalid on next run
+  #if OLDPROFILES
   // This can be removed when we remove registry functions
   SetRegistryString(szRegistryTerrainFile, TEXT("\0"));
+  #else
+  _tcscpy(szTerrainFile,_T(""));
+  #endif
 
 
 #ifdef LKMTERRAIN
-  static TCHAR  szMapFile[MAX_PATH] = TEXT("\0");
+  static TCHAR  szMFile[MAX_PATH] = TEXT("\0");
   if (_tcslen(szFile)==0) {
     StartupStore(_T(". NO TERRAIN file configured%s"),NEWLINE);
-    GetRegistryString(szRegistryMapFile, szMapFile, MAX_PATH);
-    ExpandLocalPath(szMapFile);
-    _tcscpy(szFile,szMapFile);
+    #if OLDPROFILES
+    GetRegistryString(szRegistryMapFile, szMFile, MAX_PATH);
+    #else
+    _tcscpy(szMFile,szMapFile);
+    #endif
+    ExpandLocalPath(szMFile);
+    _tcscpy(szFile,szMFile);
 
     #ifdef JP2000
     _tcscat(szFile, _T("/terrain.jp2")); 
@@ -64,28 +76,36 @@ void RasterTerrain::OpenTerrain(void)
 		terrain_initialised = true;
 		return;
 	} else {
-   		 _tcscpy(szFile,szMapFile);
+   		 _tcscpy(szFile,szMFile);
 		_tcscat(szFile, _T("/terrain.dem")); 
 		StartupStore(_T(". Attempting to use DEM <%s> inside mapfile%s"),szFile,NEWLINE);
 	}
      #else
-     _tcscpy(szFile,szMapFile);
+     _tcscpy(szFile,szMFile);
      _tcscat(szFile, _T("/terrain.dem")); 
      StartupStore(_T(". Attempting to use DEM <%s> inside mapfile%s"),szFile,NEWLINE);
      #endif
   }
 
   if (CreateTerrainMap(szFile)) {
+	#if OLDPROFILES
 	SetRegistryString(szRegistryTerrainFile, szOrigFile);
+	#else
+	_tcscpy(szTerrainFile,szOrigFile);
+	#endif
 	terrain_initialised = true;
 	return;
   } else {
-	_tcscpy(szFile,szMapFile);
+	_tcscpy(szFile,szMFile);
 	_tcscat(szFile, _T("/terrain.dat")); 
 	StartupStore(_T(". Attempting to use DAT <%s> inside mapfile%s"),szFile,NEWLINE);
 
 	if (CreateTerrainMap(szFile)) {
+		#if OLDPROFILES
 		SetRegistryString(szRegistryTerrainFile, szOrigFile);
+		#else
+		_tcscpy(szTerrainFile,szOrigFile);
+		#endif
 		terrain_initialised = true;
 		return;
 	}
@@ -94,7 +114,11 @@ void RasterTerrain::OpenTerrain(void)
 
   if ( (_tcslen(szFile)>0) && ( _tcsstr(szFile, _T(".DEM")) || _tcsstr(szFile, _T(".dem")) ) ) {
 	if (CreateTerrainMap(szFile)) {
+		#if OLDPROFILES
 		SetRegistryString(szRegistryTerrainFile, szOrigFile);
+		#else
+		_tcscpy(szterrainFile,szOrigFile);
+		#endif
 		terrain_initialised = true;
 		return;
 	} else {

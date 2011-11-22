@@ -607,26 +607,36 @@ void LoggerHeader(void)
   IGCWriteRecord(temp);
 
   // Example: Hanna.Reitsch
+  #if OLDPROFILES
   GetRegistryString(szRegistryPilotName, PilotName_Config, 100);
+  #endif
   sprintf(temp,"HFPLTPILOT:%S\r\n", PilotName_Config);
   IGCWriteRecord(temp);
 
   // Example: DG-300
+  #if OLDPROFILES
   GetRegistryString(szRegistryAircraftType, AircraftType_Config, 100);
+  #endif
   sprintf(temp,"HFGTYGLIDERTYPE:%S\r\n", AircraftType_Config);
   IGCWriteRecord(temp);
 
   // Example: D-7176
+  #if OLDPROFILES
   GetRegistryString(szRegistryAircraftRego, AircraftRego_Config, 100);
+  #endif
   sprintf(temp,"HFGIDGLIDERID:%S\r\n", AircraftRego_Config);
   IGCWriteRecord(temp);
 
   // 110117 TOCHECK: maybe a 8 char limit is needed. 
+  #if OLDPROFILES
   GetRegistryString(szRegistryCompetitionClass, CompetitionClass_Config, 100);
+  #endif
   sprintf(temp,"HFCCLCOMPETITIONCLASS:%S\r\n", CompetitionClass_Config);
   IGCWriteRecord(temp);
 
+  #if OLDPROFILES
   GetRegistryString(szRegistryCompetitionID, CompetitionID_Config, 100);
+  #endif
   sprintf(temp,"HFCIDCOMPETITIONID:%S\r\n", CompetitionID_Config);
   IGCWriteRecord(temp);
 
@@ -853,11 +863,19 @@ void LoggerDeviceDeclare() {
   }
   #endif
 
+  #if OLDPROFILES
   GetRegistryString(szRegistryPilotName, Decl.PilotName, 64);
   GetRegistryString(szRegistryAircraftType, Decl.AircraftType, 32);
   GetRegistryString(szRegistryAircraftRego, Decl.AircraftRego, 32);
   GetRegistryString(szRegistryCompetitionClass, Decl.CompetitionClass, 32);
   GetRegistryString(szRegistryCompetitionID, Decl.CompetitionID, 32);
+  #else
+  _tcscpy(Decl.PilotName, PilotName_Config);		// max 64
+  _tcscpy(Decl.AircraftType,AircraftType_Config);	// max 32
+  _tcscpy(Decl.AircraftRego,AircraftRego_Config);	// max 32
+  _tcscpy(Decl.CompetitionClass,CompetitionClass_Config);   //
+  _tcscpy(Decl.CompetitionID,CompetitionID_Config);	// max 32
+  #endif
   
   for (i = 0; i < MAXTASKPOINTS; i++) {
     if (Task[i].Index == -1)

@@ -273,7 +273,11 @@ void LKReadLanguageFile() {
   bool english=false;
   TCHAR szFile1[MAX_PATH] = TEXT("\0");
   _tcscpy(LKLangSuffix,_T(""));
+  #if OLDPROFILES
   GetRegistryString(szRegistryLanguageFile, szFile1, MAX_PATH);
+  #else
+  _tcscpy(szFile1,szLanguageFile);
+  #endif
   tryeng:
   if (_tcslen(szFile1)==0) {
 	_tcscpy(szFile1,_T("%LOCAL_PATH%\\\\_Language\\ENGLISH.LNG"));
@@ -334,7 +338,11 @@ void LKReadLanguageFile() {
 		} else {
 			StartupStore(_T("... LoadText failed, fallback to english language\n"));
 			_tcscpy(szFile1,_T("%LOCAL_PATH%\\\\_Language\\ENGLISH.LNG"));
+			#if OLDPROFILES
 			SetRegistryString(szRegistryLanguageFile, szFile1); 
+			#else
+			_tcscpy(szLanguageFile,szFile1);
+			#endif
 			_tcscpy(LKLangSuffix,_T("ENG"));
 			LKLoadMessages(false);
 		}

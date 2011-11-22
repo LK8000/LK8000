@@ -247,7 +247,9 @@ void SaveValues(const TCHAR * FontRegKey )
                         NewLogFont.lfQuality,
                         NewLogFont.lfPitchAndFamily,
                         NewLogFont.lfFaceName);
+  #if OLDPROFILES
   SetRegistryString(FontRegKey, sValue); 
+  #endif
   if (_tcscmp(FontRegKey,szRegistryFontMapWindowFont)==0) _tcscpy(FontDesc_MapWindow,sValue);
   if (_tcscmp(FontRegKey,szRegistryFontMapLabelFont)==0) _tcscpy(FontDesc_MapLabel,sValue);
 }

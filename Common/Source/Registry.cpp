@@ -19,44 +19,50 @@
 #endif
 #endif
 
-const TCHAR szRegistryKey[] = TEXT(REGKEYNAME);
-
 
 #if NEWPROFILES
-void SetRegistryAirspaceMode(int i) {};
-void SetRegistryColour(int i, DWORD c) {};
-void SetRegistryBrush(int i, DWORD c) {};
-void StoreType(int Index,int infoType) {};
-void SetRegistryStringIfAbsent(const TCHAR* name, const TCHAR* value) {};
-
-//void ReadRegistrySettings(void) {};
-
-BOOL GetFromRegistry(const TCHAR *szRegValue, DWORD *pPos) {};
-BOOL GetRegistryString(const TCHAR *szRegValue, TCHAR *pPos, DWORD dwSize) {};
-
-//void SaveRegistryToFile(const TCHAR *szFile) {};
-//void LoadRegistryFromFile(const TCHAR *szFile) {};
-
-void WriteDeviceSettings(const int devIdx, const TCHAR *Name){};
-void ReadDeviceSettings(const int devIdx, TCHAR *Name){};
-
-//HRESULT SetRegistryString(const TCHAR *szRegValue, const TCHAR *Pos) {};
-
-//void WriteProfile(const TCHAR *szFile) {};
-//void ReadProfile(const TCHAR *szFile) {};
-
-void ReadPort1Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {};
-void ReadPort2Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {};
-
-void WritePort1Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {};
-void WritePort2Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {};
-
 // REMOVABLE IN SOURCE CODE
 HRESULT SetToRegistry(const TCHAR *szRegValue, DWORD Pos) {};
 HRESULT SetToRegistry(const TCHAR *szRegValue, bool bVal) {};
 HRESULT SetToRegistry(const TCHAR *szRegValue, int nVal)  {};
 
+void ReadDeviceSettings(const int devIdx, TCHAR *Name){
+  Name[0] = '\0';
+  if (devIdx == 0) _tcscpy(Name,dwDeviceName1);
+  if (devIdx == 1) _tcscpy(Name,dwDeviceName2);
+  if (_tcslen(Name)==0) _tcscpy(Name,_T(DEV_DISABLED_NAME));
+}
+
+void WriteDeviceSettings(const int devIdx, const TCHAR *Name){
+  if (devIdx == 0) _tcscpy(dwDeviceName1,Name);
+  if (devIdx == 1) _tcscpy(dwDeviceName2,Name);
+}
+
+void ReadPort1Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {
+  *PortIndex	=dwPortIndex1;
+  *SpeedIndex	=dwSpeedIndex1;
+  *Bit1Index	=dwBit1Index;
+}
+void ReadPort2Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {
+  *PortIndex	=dwPortIndex2;
+  *SpeedIndex	=dwSpeedIndex2;
+  *Bit1Index	=dwBit2Index;
+}
+void WritePort1Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit1Index) {
+  dwPortIndex1	= PortIndex;
+  dwSpeedIndex1 = SpeedIndex;
+  dwBit1Index	= Bit1Index;
+}
+void WritePort2Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit1Index) {
+  dwPortIndex2	= PortIndex;
+  dwSpeedIndex2 = SpeedIndex;
+  dwBit2Index	= Bit1Index;
+}
+
 #else
+
+const TCHAR szRegistryKey[] = TEXT(REGKEYNAME);
+
 
 void StoreType(int Index,int infoType)
 {

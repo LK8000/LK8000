@@ -123,20 +123,26 @@ static void OnAirspaceListEnter(WindowControl * Sender,
       int c = dlgAirspaceColoursShowModal();
       if (c>=0) {
 	MapWindow::iAirspaceColour[ItemIndex] = c; 
+	#if OLDPROFILES
 	SetRegistryColour(ItemIndex,MapWindow::iAirspaceColour[ItemIndex]);
+	#endif
 	changed = true;
       }
       int p = dlgAirspacePatternsShowModal();
       if (p>=0) {
 	MapWindow::iAirspaceBrush[ItemIndex] = p; 
+	#if OLDPROFILES
 	SetRegistryBrush(ItemIndex,MapWindow::iAirspaceBrush[ItemIndex]);
+	#endif
 	changed = true;
       }
     } else {
       int v = (MapWindow::iAirspaceMode[ItemIndex]+1)%4;
       MapWindow::iAirspaceMode[ItemIndex] = v;
       //  wAirspaceList->Redraw();
+      #if OLDPROFILES
       SetRegistryAirspaceMode(ItemIndex);
+      #endif
       changed = true;
     }
   }

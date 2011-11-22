@@ -405,20 +405,24 @@ void propGetFontSettingsFromString(TCHAR *Buffer1, LOGFONT* lplf)
 
 void propGetFontSettings(TCHAR *Name, LOGFONT* lplf) {
 
+ #if NEWPROFILES
+ // Load custom font settings from profile only if relative to
+ // configurable fonts, of course.
+ if (Name==NULL || lplf==NULL) return;
+ if ( !_tcscmp(Name,_T("MapLabelFont")) ) {
+	if (_tcslen(FontDesc_MapLabel)>0)
+		propGetFontSettingsFromString(FontDesc_MapLabel, lplf);
+ }
+ if ( !_tcscmp(Name,_T("MapWindowFont")) ) {
+	if (_tcslen(FontDesc_MapWindow)>0)
+		propGetFontSettingsFromString(FontDesc_MapWindow, lplf);
+ }
+ #else
   TCHAR Buffer[128];
-
-  ASSERT(Name != NULL);
-  ASSERT(Name[0] != '\0');
-  ASSERT(lplf != NULL);
-
-#if (WINDOWSPC>0) 
-  // Don't load font settings from registry values for windows version
-  // 110809 lets make PC as much similar to PNA as possible
-  // return; 
-#endif
 
   if (GetRegistryString(Name, Buffer, sizeof(Buffer)/sizeof(TCHAR)) == 0) {
     propGetFontSettingsFromString(Buffer, lplf);
   }
+ #endif
 }
 

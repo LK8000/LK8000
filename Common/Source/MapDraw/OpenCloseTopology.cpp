@@ -38,28 +38,40 @@ void OpenTopology() {
   for (int z=0; z<MAXTOPOLOGY; z++) {
     TopoStore[z] = 0;
   }
- 
+
+  #if OLDPROFILES 
   GetRegistryString(szRegistryTopologyFile, szFile, MAX_PATH);
+  #else
+  _tcscpy(szFile,szTopologyFile);
+  #endif
   ExpandLocalPath(szFile);
   _tcscpy(szOrigFile,szFile); // make copy of original
   ContractLocalPath(szOrigFile);
 
   // remove it in case it causes a crash (will restore later)
+  #if OLDPROFILES
   SetRegistryString(szRegistryTopologyFile, TEXT("\0"));
+  #else
+  _tcscpy(szTopologyFile,_T(""));
+  #endif
 
   if (1) {
 
     // file is blank, so look for it in a map file
-    static TCHAR  szMapFile[MAX_PATH] = TEXT("\0");
-    GetRegistryString(szRegistryMapFile, szMapFile, MAX_PATH);
-    if (_tcslen(szMapFile)==0) {
+     TCHAR  szmapFile[MAX_PATH] = TEXT("\0");
+    #if OLDPROFILES
+    GetRegistryString(szRegistryMapFile, szmapFile, MAX_PATH);
+    #else
+    _tcscpy(szmapFile,szMapFile);
+    #endif
+    if (_tcslen(szmapFile)==0) {
       UnlockTerrainDataGraphics();
       return;
     }
-    ExpandLocalPath(szMapFile);
+    ExpandLocalPath(szmapFile);
 
     // Look for the file within the map zip file...
-    _tcscpy(Directory,szMapFile);
+    _tcscpy(Directory,szmapFile);
     _tcscat(Directory,TEXT("/"));
     szFile[0]=0;
     _tcscat(szFile,Directory);
@@ -293,7 +305,11 @@ void OpenTopology() {
   zzip_fclose(zFile);
 
   // file was OK, so save it
+  #if LKPROFILES
   SetRegistryString(szRegistryTopologyFile, szOrigFile);
+  #else
+  _tcscpy(szTopologyFile,szOrigFile);
+  #endif
 
   if (LKTopo>0) {
 	StartupStore(_T(". LKMAPS Advanced Topology file found%s"),NEWLINE);
