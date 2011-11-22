@@ -4534,8 +4534,11 @@ void dlgConfigurationShowModal(void){
 	break;
 	
       }
-      SetToRegistry(szRegistryAppInfoBoxModel,
-                    GlobalModelType);
+      #if OLDPROFILES
+      SetToRegistry(szRegistryAppInfoBoxModel, GlobalModelType);
+      #else
+      Appearance.InfoBoxModel = (InfoBoxModelAppearance_t)GlobalModelType;
+      #endif
       changed = true;
       requirerestart = true;
     }

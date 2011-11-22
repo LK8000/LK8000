@@ -66,6 +66,8 @@ void LKProfileInitRuntime(void) {
 
   MapWindow::GliderScreenPositionY = MapWindow::GliderScreenPosition;
 
+  GlobalModelType=Appearance.InfoBoxModel;
+
   //
   // Units
   //

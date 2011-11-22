@@ -260,9 +260,9 @@ void LKProfileResetDefault(void) {
 
   Appearance.DefaultMapWidth=206;
   // Landables style
-  Appearance.IndLandable=wpLandableDefault,
-  // Black/White inversion
-  InverseInfoBox_Config=false;
+  Appearance.IndLandable=wpLandableAltA;
+  // White/Black inversion
+  InverseInfoBox_Config=true; // black
   Appearance.InfoBoxModel=apImPnaGeneric;
 
 

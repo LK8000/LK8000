@@ -105,7 +105,10 @@ bool SetModelName(DWORD Temp) {
 }
 
 
-
+//
+// A special case for preloading a modeltype directly from 
+// Default profile, at the very beginning of runtime.
+//
 bool LoadModelFromProfile()
 {
 
@@ -116,7 +119,9 @@ bool LoadModelFromProfile()
   _tcscat(tmpTbuf,_T("\\"));
   _tcscat(tmpTbuf,_T(LKPROFILE));
 
-  StartupStore(_T(". Searching modeltype inside default profile <%s>%s"),tmpTbuf,NEWLINE);
+  #if TESTBENCH
+  StartupStore(_T("... Searching modeltype inside default profile <%s>%s"),tmpTbuf,NEWLINE);
+  #endif
 
   FILE *fp=NULL;
   fp = _tfopen(tmpTbuf, _T("rb"));
@@ -129,17 +134,20 @@ bool LoadModelFromProfile()
 
 	if (strlen(tmpbuf)<21) continue;
 
-	if (strncmp(tmpbuf,"AppInfoBoxModel",15) == 0) {
+	if (strncmp(tmpbuf,"AppInfoBoxModel",15) == 0) { // MUST MATCH!  szRegistryAppInfoBoxModel
 		int val=atoi(&tmpbuf[16]);
 		GlobalModelType=val;
 		SetModelName(val);
+		#if TESTBENCH
 		StartupStore(_T("... ModelType found: <%s> val=%d%s"),GlobalModelName,GlobalModelType,NEWLINE);
+		#endif
 		fclose(fp);
 		return true;
 	}
   }
-
-  StartupStore(_T(". Modeltype not found in profile, probably Generic PNA is used.\n"));
+  #if TESTBENCH
+  StartupStore(_T("... Modeltype not found in profile, probably Generic PNA is used.\n"));
+  #endif
   fclose(fp);
   return false;
 }
@@ -156,7 +164,9 @@ bool SetModelType() {
   #endif
   
   if ( SetModelName(Temp) != true ) {
-	StartupStore(_T(". SetModelType failed: probably no registry entry%s"), NEWLINE);
+	#if OLDPROFILES
+	StartupStore(_T("... SetModelType failed: probably no registry entry%s"), NEWLINE);
+	#endif
 	GlobalModelType=MODELTYPE_PNA_PNA;
 	_tcscpy(GlobalModelName,_T("GENERIC"));
 	return false;
