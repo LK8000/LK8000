@@ -774,6 +774,23 @@
 // According to GNSS specs 2.5.6.1 - to be changed into XLK
 #define LOGGER_MANUFACTURER "XCS"
 
+// 
+// TouchScreen context status
+//
+#define TCX_NULL                0
+#define TCX_PROC_DOWN           1
+#define TCX_PROC_MOUSEMOVE      2
+#define TCX_PROC_DOUBLECLICK    3
+#define TCX_PROC_UP             4
+#define TCX_PROC_CLOSE          5
+#define TCX_PROC_KEYUP          6
+#define TCX_PROC_KEYDOWN        7
+#define TCX_BUTTON_DOWN         11
+#define TCX_BUTTON_UP           12
+#define TCX_BUTTON_DOUBLECLICK  13
+
+
+
 //
 // SHORTCUTS
 //

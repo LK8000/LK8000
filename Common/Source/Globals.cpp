@@ -590,6 +590,7 @@ void Globals_Init(void) {
   ICOSTABLE[4096];
    */
 
+  TouchContext=0;
 
   // ADD NEW GLOBALS here ^^^ //
 

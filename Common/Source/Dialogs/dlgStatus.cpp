@@ -21,7 +21,6 @@ extern BOOL extGPSCONNECT;
 extern NMEAParser nmeaParser1;
 extern NMEAParser nmeaParser2;
 
-
 #include "dlgTools.h"
 
 #include "utils/heapcheck.h"
@@ -93,6 +92,7 @@ static void OnCloseClicked(WindowControl * Sender){
 static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
 	(void)lParam;
 	(void)Sender;
+
   switch(wParam & 0xffff){
     case VK_LEFT:
     case '6':
@@ -108,6 +108,38 @@ static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
     return(0);
   }
   return(1);
+}
+
+
+static int TouchKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
+	(void)lParam;
+
+ // StartupStore(_T("...... TouchContext=%d\n"),TouchContext);
+
+ // Example on how to use TouchContext. 
+ // X,Y are always relative to the frame you are clicking on! So they are not much
+ // usable because they respect the xml frames, windows, button relative coordinates.
+ // int X,Y;
+ // X = LOWORD(lParam); Y = HIWORD(lParam);
+ // StartupStore(_T("...... Context=%d X=%d Y=%d\n"),TouchContext,X,Y);
+
+ // We can detect a double click, and use it to force -for example- a window close.
+ // But it will not always work because clicking on a readonly button field will 
+ // return MOUSEMOVE for some reason. *to detect, return 1 always!*
+ // if (TouchContext==TCX_PROC_DOUBLECLICK) wf->SetModalResult(mrOK); 
+
+ // So in this Status context we shall advance to enxt page when we have touched
+ // on the screen but NOT on a button. We have Close, Next, Prev buttons.
+ // We shall read TC=PROC_DOWN when clicking on any window position with no button field.
+ // We shall read TC=MOUSEMOVE   when clicking on readonly fields
+ // We shall NOT read TC=DOUBLECLICK when as above, but done quickly, because we return 0;
+ // 
+ if (TouchContext< TCX_PROC_UP) {
+	NextPage(+1);
+        return 0;
+ }
+
+ return 1;
 }
 
 static void OnNextClicked(WindowControl * Sender){
@@ -669,7 +701,11 @@ void dlgStatusShowModal(int start_page){
 
   if (!wf) return;
 
+  // KeyDown notify will intercept ALL touchscreen and then ALSO process them 
+  // normally, such as in buttons. For this reason we must use TouchContext.
   wf->SetKeyDownNotify(FormKeyDown);
+
+  wf->SetLButtonUpNotify(TouchKeyDown);
 
   ((WndButton *)wf->FindByName(TEXT("cmdClose")))->SetOnClickNotify(OnCloseClicked);
 

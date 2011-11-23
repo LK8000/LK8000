@@ -1897,7 +1897,10 @@ LRESULT CALLBACK WindowControlWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
 }
 
 
-
+//#define TRACE_WNDPROC	1
+//
+// This function is called continously!
+//
 int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 
   PAINTSTRUCT ps;            // structure for paint info
@@ -1916,10 +1919,16 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 
   switch (uMsg){
     case WM_ERASEBKGND:
+	#if TRACE_WNDPROC
+	StartupStore(_T(".... WNDPROC> ERASEBKGND\n"));
+	#endif
       // we don't need one, we just paint over the top
     return TRUE;
 
     case WM_PAINT:
+	#if TRACE_WNDPROC
+	StartupStore(_T(".... WNDPROC> PAINT\n"));
+	#endif
     	hWnd = GetHandle();
 
     	hDC = BeginPaint(hWnd, &ps);
@@ -1954,27 +1963,45 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
     return(0);
 
     case WM_WINDOWPOSCHANGED:
+	#if TRACE_WNDPROC
+	StartupStore(_T(".... WNDPROC> POSCHANGED\n"));
+	#endif
       //ib = (WindowControl *)GetWindowLong(hwnd, GWL_USERDATA);
       //ib->Paint(ib->GetDeviceContext());
     return 0;
 
     case WM_CREATE:
+	#if TRACE_WNDPROC
+	StartupStore(_T(".... WNDPROC> CREATE\n"));
+	#endif
     break;
 
     case WM_DESTROY:
+	#if TRACE_WNDPROC
+	StartupStore(_T(".... WNDPROC> DESTROY\n"));
+	#endif
     break;
 
     case WM_COMMAND:
+      // This is called several times per second
       if (OnCommand(wParam, lParam)) return(0);
     break;
 
     case WM_LBUTTONDBLCLK:
+      TouchContext=TCX_PROC_DOUBLECLICK;
+	#if TRACE_WNDPROC
+	StartupStore(_T(".... WNDPROC> DOUBLECLICK\n"));
+	#endif
       if (!OnLButtonDoubleClick(wParam, lParam)) {
         return(0);
       }
     break;
 
     case WM_LBUTTONDOWN:
+	#if TRACE_WNDPROC
+	StartupStore(_T(".... WNDPROC> LBUTTONDOWN\n"));
+	#endif
+      TouchContext=TCX_PROC_DOWN;
       if (!OnLButtonDown(wParam, lParam)) {
         return(0);
       }
@@ -1982,12 +2009,17 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
     break;
 
     case WM_LBUTTONUP:
+      TouchContext=TCX_PROC_UP;
+	#if TRACE_WNDPROC
+	StartupStore(_T(".... WNDPROC> LBUTTONUP\n"));
+	#endif
       if (!OnLButtonUp(wParam, lParam)) {
         return(0);
       }
     break;
 
     case WM_KEYDOWN:
+      TouchContext=TCX_PROC_KEYDOWN;
       KeyTimer(true, wParam & 0xffff);
 
       if (!OnKeyDown(wParam, lParam)) {
@@ -1996,6 +2028,7 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
       break;
 
     case WM_KEYUP:
+        TouchContext=TCX_PROC_KEYUP;
 	if (KeyTimer(false, wParam & 0xffff)) {
 	  // activate tool tips if hit return for long time
 	  if ((wParam & 0xffff) == VK_RETURN) {
@@ -2008,6 +2041,7 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
       break;
 
     case WM_MOUSEMOVE:
+      TouchContext=TCX_PROC_MOUSEMOVE;
       OnMouseMove(wParam, lParam);
       return (0);
       break;
@@ -2032,6 +2066,7 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 
     case WM_QUIT:
     case WM_CLOSE:
+      TouchContext=TCX_PROC_CLOSE;
       Close();
     return(0);
 
@@ -2288,7 +2323,7 @@ int WndForm::ShowModal(bool bEnableMap) {
       }
       if (msg.message == WM_LBUTTONUP){
         if (mOnLButtonUpNotify != NULL)
-          if (!(mOnLButtonUpNotify)(this, msg.wParam, msg.lParam))
+          if (!(mOnLButtonUpNotify)(this, msg.wParam, msg.lParam)) 
             continue;
 
       }
@@ -2635,6 +2670,10 @@ int WndButton::OnLButtonUp(WPARAM wParam, LPARAM lParam){
   POINT Pos;
   (void)wParam;
 
+  #if TRACE_WNDPROC
+  StartupStore(_T(".... WndButton>  UP\n"));
+  #endif
+  TouchContext=TCX_BUTTON_UP;
   mDown = false;
 
   RECT rc = {0,0,0,0};
@@ -2714,6 +2753,10 @@ int WndButton::OnKeyUp(WPARAM wParam, LPARAM lParam){
 int WndButton::OnLButtonDown(WPARAM wParam, LPARAM lParam){
 	(void)lParam; (void)wParam;
   mDown = true;
+  #if TRACE_WNDPROC
+  StartupStore(_T(".... WndButton>  DOWN\n"));
+  #endif
+  TouchContext=TCX_BUTTON_DOWN;
   if (!GetFocused())
     SetFocus(GetHandle());
   else {
@@ -2726,6 +2769,7 @@ int WndButton::OnLButtonDown(WPARAM wParam, LPARAM lParam){
 
 int WndButton::OnLButtonDoubleClick(WPARAM wParam, LPARAM lParam){
 	(void)lParam; (void)wParam;
+  TouchContext=TCX_BUTTON_DOUBLECLICK;
   mDown = true;
   InvalidateRect(GetHandle(), GetBoundRect(), false);
   UpdateWindow(GetHandle());
