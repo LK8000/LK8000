@@ -2228,6 +2228,21 @@ static int OnTimerNotify(WindowControl *Sender)
   return 0;
 }
 
+static int TouchKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
+        (void)lParam;
+
+ int X,Y;
+ X = LOWORD(lParam); Y = HIWORD(lParam);
+ // StartupStore(_T("...... Context=%d X=%d Y=%d\n"),TouchContext,X,Y);
+ // We have conflicts with buttons, solved by a limiter on X
+ if (X<180) return 1;
+
+ if (TouchContext< TCX_PROC_UP) {
+        NextPage(+1);
+        return 0;
+ }
+ return 1;
+}
 
 void dlgAnalysisShowModal(int inpage){
 
@@ -2287,6 +2302,7 @@ void dlgAnalysisShowModal(int inpage){
     wGrid->SetWidth( wf->GetWidth() - wGrid->GetLeft()-6);
   }
 
+  wf->SetLButtonUpNotify(TouchKeyDown);
   wf->SetTimerNotify(OnTimerNotify);
 
   Update();

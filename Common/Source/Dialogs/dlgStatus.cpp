@@ -701,11 +701,11 @@ void dlgStatusShowModal(int start_page){
 
   if (!wf) return;
 
-  // KeyDown notify will intercept ALL touchscreen and then ALSO process them 
+  // LButtonUp notify will intercept ALL touchscreen and then ALSO process them 
   // normally, such as in buttons. For this reason we must use TouchContext.
-  wf->SetKeyDownNotify(FormKeyDown);
-
   wf->SetLButtonUpNotify(TouchKeyDown);
+
+  wf->SetKeyDownNotify(FormKeyDown);
 
   ((WndButton *)wf->FindByName(TEXT("cmdClose")))->SetOnClickNotify(OnCloseClicked);
 
