@@ -126,7 +126,7 @@ void LKProfileInitRuntime(void) {
 	AverEffTime = (AverEffTime_t)ae15seconds;
 	AATEnabled=TRUE;
   } else {
-	AverEffTime = (AverEffTime_t)ae2minutes;
+	AverEffTime = (AverEffTime_t)ae60seconds;
 	AATEnabled=FALSE;
   }
 

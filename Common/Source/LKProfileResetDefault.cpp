@@ -27,8 +27,8 @@
 // Let's keep this list alpha sorted like in LKPROFILES.h and load/save functions
 //
 // AFTER this function is called:
-// * values must be normalized with ProfileAdjustVariables
-// * Runtime values must be initialised with INITRUNTIME
+// * values must be normalized with ProfileAdjustVariables()
+// * Runtime values must be initialised with InitRuntime()
 //
 void LKProfileResetDefault(void) {
 
@@ -154,7 +154,7 @@ void LKProfileResetDefault(void) {
   PGCruiseZoom=4;
   PGAutoZoomThreshold = 5000;
   PGClimbZoom=1;
-  AutoOrientScale=10;
+  AutoOrientScale=7;
 
   PGOpenTimeH=12;
   PGOpenTimeM=0;
@@ -249,8 +249,9 @@ void LKProfileResetDefault(void) {
   // 1 is showing all airports and declutter only unneeded outlandings
   NewMapDeclutter = 1;
 
-  // This need AircraftCategory been set !
-  AverEffTime = (AverEffTime_t)ae2minutes; 
+  // This is set later by InitRuntime, different for aircraft type.
+  // Only a dummy unused value is here.
+  AverEffTime = (AverEffTime_t)ae60seconds; 
 
   BgMapColor_Config = 2;
 
@@ -370,17 +371,26 @@ void LKProfileResetDefault(void) {
 
   DisableAutoLogger = false;
 
-  szPolarFile[0] = TEXT('\0');
-  szAirspaceFile[0] = TEXT('\0');
+  // empty or demo versions
+  //szAirspaceFile[0] = TEXT('\0');
+  //szWaypointFile[0] = TEXT('\0');
+  //szTerrainFile[0] = TEXT('\0');
+  //szAirfieldFile[0] = TEXT('\0');
+  //szMapFile[0] = TEXT('\0');
+  //szPolarFile[0] = TEXT('\0');
+
+
+  _tcscpy(szPolarFile,_T("%LOCAL_PATH%\\\\_Polars\\Ka-6CR.plr"));
+  _tcscpy(szAirspaceFile,_T("%LOCAL_PATH%\\\\_Airspaces\\DEMO.txt"));
   szAdditionalAirspaceFile[0] = TEXT('\0');
-  szWaypointFile[0] = TEXT('\0');
+  _tcscpy(szWaypointFile,_T("%LOCAL_PATH%\\\\_Waypoints\\DEMO.cup"));
   szAdditionalWaypointFile[0] = TEXT('\0');
-  szTerrainFile[0] = TEXT('\0');
+  _tcscpy(szTerrainFile,_T("%LOCAL_PATH%\\\\_Maps\\DEMO.DEM"));
   szTopologyFile[0] = TEXT('\0');
-  szAirfieldFile[0] = TEXT('\0');
+  _tcscpy(szAirfieldFile,_T("%LOCAL_PATH%\\\\_Waypoints\\WAYNOTES.txt"));
   szLanguageFile[0] = TEXT('\0');
   szInputFile[0] = TEXT('\0');
-  szMapFile[0] = TEXT('\0');
+  _tcscpy(szMapFile,_T("%LOCAL_PATH%\\\\_Maps\\DEMO.LKM"));
 
   // Ports and device settings
   dwDeviceName1[0]=_T('\0');
@@ -395,11 +405,11 @@ void LKProfileResetDefault(void) {
   FontDesc_MapWindow[0]=_T('\0');
   FontDesc_MapLabel [0]=_T('\0');
 
-  _tcscpy(PilotName_Config,_T(""));
-  _tcscpy(AircraftType_Config,_T(""));
-  _tcscpy(AircraftRego_Config,_T(""));
-  _tcscpy(CompetitionClass_Config,_T(""));
-  _tcscpy(CompetitionID_Config,_T(""));
+  _tcscpy(PilotName_Config,_T("Hanna"));
+  _tcscpy(AircraftType_Config,_T("Reitsch"));
+  _tcscpy(AircraftRego_Config,_T("D-1912"));
+  _tcscpy(CompetitionClass_Config,_T("CLUB"));
+  _tcscpy(CompetitionID_Config,_T("HR"));
 
   LockSettingsInFlight = false;
   LoggerShortName = false;
