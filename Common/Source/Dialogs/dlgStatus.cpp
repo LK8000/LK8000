@@ -38,6 +38,8 @@ static WndFrame *wStatus5=NULL;
 
 #define NUMPAGES 6
 
+// #define FASTPAGE 1  // DISABLED 
+
 static void NextPage(int Step){
   status_page += Step;
   if (status_page>=NUMPAGES) { status_page=0; }
@@ -110,11 +112,11 @@ static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
   return(1);
 }
 
-
+#if FASTPAGE
 static int TouchKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
 	(void)lParam;
 
- // StartupStore(_T("...... TouchContext=%d\n"),TouchContext);
+ //StartupStore(_T("...... TouchContext=%d\n"),TouchContext);
 
  // Example on how to use TouchContext. 
  // X,Y are always relative to the frame you are clicking on! So they are not much
@@ -128,19 +130,28 @@ static int TouchKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
  // return MOUSEMOVE for some reason. *to detect, return 1 always!*
  // if (TouchContext==TCX_PROC_DOUBLECLICK) wf->SetModalResult(mrOK); 
 
- // So in this Status context we shall advance to enxt page when we have touched
+ // So in this Status context we shall advance to next page when we have touched
  // on the screen but NOT on a button. We have Close, Next, Prev buttons.
  // We shall read TC=PROC_DOWN when clicking on any window position with no button field.
  // We shall read TC=MOUSEMOVE   when clicking on readonly fields
  // We shall NOT read TC=DOUBLECLICK when as above, but done quickly, because we return 0;
  // 
+
+ // UPDATE: on PNAs this does not work. set on hold because we must investigate.
+ // Read-only boxes are creating problems, readouts of 12  (BUTTON_UP)!! This should
+ // not happen, because those boxes are not buttons. 
+ if (Y<32) return(1);
+
  if (TouchContext< TCX_PROC_UP) {
-	NextPage(+1);
-        return 0;
+   NextPage(+1);
+   return 0;
  }
 
- return 1;
+ return (1);
+
 }
+
+#endif // FASTPAGE
 
 static void OnNextClicked(WindowControl * Sender){
 	(void)Sender;
@@ -701,9 +712,11 @@ void dlgStatusShowModal(int start_page){
 
   if (!wf) return;
 
+  #if FASTPAGE
   // LButtonUp notify will intercept ALL touchscreen and then ALSO process them 
   // normally, such as in buttons. For this reason we must use TouchContext.
   wf->SetLButtonUpNotify(TouchKeyDown);
+  #endif
 
   wf->SetKeyDownNotify(FormKeyDown);
 
