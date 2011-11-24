@@ -2238,6 +2238,9 @@ static int TouchKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
  if (X<180) return 1;
 
  if (TouchContext< TCX_PROC_UP) {
+	#ifndef DISABLEAUDIO
+	if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+	#endif
         NextPage(+1);
         return 0;
  }
