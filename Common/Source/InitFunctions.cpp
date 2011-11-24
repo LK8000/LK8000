@@ -74,7 +74,12 @@ void PreloadInitialisation(bool ask) {
     RestoreRegistry();
     ReadRegistrySettings();
 #else
-    LKProfileLoad(startProfileFile);
+    if (_tcscmp(startProfileFile,_T("PROFILE_RESET"))==0) {
+	LKProfileResetDefault();
+	LKProfileAdjustVariables();
+	LKProfileInitRuntime();
+    } else 
+	LKProfileLoad(startProfileFile); // this is calling adjust and InitRuntime itself
 #endif
 
     // Force reload of bitmaps in the Draw thread 

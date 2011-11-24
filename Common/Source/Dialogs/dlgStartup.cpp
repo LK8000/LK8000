@@ -196,7 +196,9 @@ static CallBackTableEntry_t CallBackTable[]={
 bool dlgStartupShowModal(void){
   WndProperty* wp;
 
+  #if TESTBENCH
   StartupStore(TEXT(". Startup dialog, RUN_MODE=%d %s"),RUN_MODE,NEWLINE);
+  #endif
 
   char filename[MAX_PATH];
   strcpy(filename,"");
@@ -322,6 +324,7 @@ bool dlgStartupShowModal(void){
     dfe = (DataFieldFileReader*)wp->GetDataField();
     _stprintf(temp,_T("*%S"),LKS_PRF); 
     dfe->ScanDirectoryTop(_T(LKD_CONF),temp); 
+    dfe->addFile(gettext(_T("_@M1741_")),_T("PROFILE_RESET")); 
     dfe->Lookup(startProfileFile);
 
     wp->SetHeight(PROFHEIGHT);
