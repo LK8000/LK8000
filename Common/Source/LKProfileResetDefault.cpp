@@ -367,7 +367,7 @@ void LKProfileResetDefault(void) {
 
   LoggerTimeStepCircling = 1;
 
-  GlidePolar::SafetyMacCready = 0.5;
+  GlidePolar::SafetyMacCready = 5; // This is saved *10 and loaded /10 in Adjust! So 5=0.5 !
 
   DisableAutoLogger = false;
 
