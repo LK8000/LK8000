@@ -63,7 +63,11 @@ void PreloadInitialisation(bool ask) {
     ReadRegistrySettings();
 #else
     LKProfileResetDefault();
-    LKProfileLoad(startProfileFile);
+    // if DEFAULT PROFILE does not exist, initialize ResetDefaults!
+    if (!LKProfileLoad(startProfileFile)) {
+	LKProfileAdjustVariables();
+	LKProfileInitRuntime();
+    }
 #endif
     StatusFileInit();
   } else {
