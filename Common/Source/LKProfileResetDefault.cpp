@@ -167,7 +167,7 @@ void LKProfileResetDefault(void) {
   LKTopoZoomCat20=9999;
   LKTopoZoomCat30=25;		// Big Roads
   LKTopoZoomCat40=6;		// Medium road
-  LKTopoZoomCat50=9999;
+  LKTopoZoomCat50=3;		// Small road
   LKTopoZoomCat60=8;		// Railroad
   LKTopoZoomCat70=15;		// Big cities
   LKTopoZoomCat80=9999;
