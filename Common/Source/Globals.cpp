@@ -544,7 +544,6 @@ void Globals_Init(void) {
   szWaypointFile[0] = TEXT('\0');
   szAdditionalWaypointFile[0] = TEXT('\0');
   szTerrainFile[0] = TEXT('\0');
-  szTopologyFile[0] = TEXT('\0');
   szAirfieldFile[0] = TEXT('\0');
   szLanguageFile[0] = TEXT('\0');
   szInputFile[0] = TEXT('\0');

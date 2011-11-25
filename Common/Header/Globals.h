@@ -797,7 +797,6 @@ GEXTERN TCHAR szAdditionalAirspaceFile[MAX_PATH];
 GEXTERN TCHAR szWaypointFile[MAX_PATH];
 GEXTERN TCHAR szAdditionalWaypointFile[MAX_PATH];
 GEXTERN TCHAR szTerrainFile[MAX_PATH];
-GEXTERN TCHAR szTopologyFile[MAX_PATH];
 GEXTERN TCHAR szAirfieldFile[MAX_PATH];
 GEXTERN TCHAR szLanguageFile[MAX_PATH];
 GEXTERN TCHAR szInputFile[MAX_PATH];

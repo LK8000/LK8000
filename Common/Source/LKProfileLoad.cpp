@@ -471,7 +471,6 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryTerrainRamp,&TerrainRamp_Config);
   PREAD(sname,svalue,szRegistryThermalBar,&ThermalBar);
   PREAD(sname,svalue,szRegistryThermalLocator,&EnableThermalLocator);
-  PREAD(sname,svalue,szRegistryTopologyFile,&*szTopologyFile);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryTpFilter,&TpFilter);
   PREAD(sname,svalue,szRegistryTrackBar,&TrackBar);

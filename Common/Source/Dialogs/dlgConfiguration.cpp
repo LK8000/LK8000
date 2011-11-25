@@ -2225,21 +2225,6 @@ static void setVariables(void) {
   }
 
   #if OLDPROFILES
-  GetRegistryString(szRegistryTopologyFile, szTopologyFile, MAX_PATH);
-  #endif
-  _tcscpy(temptext,szTopologyFile);
-  ExpandLocalPath(temptext);
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTopologyFile"));
-  if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(tsuf,_T("*%S"),LKS_TOPOLOGY);
-    dfe->ScanDirectoryTop(_T(LKD_MAPS),tsuf);
-    dfe->Lookup(temptext);
-    wp->RefreshDisplay();
-  }
-
-  #if OLDPROFILES
   GetRegistryString(szRegistryAirfieldFile, szAirfieldFile, MAX_PATH);
   #endif
   _tcscpy(temptext,szAirfieldFile);
@@ -3986,23 +3971,6 @@ void dlgConfigurationShowModal(void){
       _tcscpy(szTerrainFile,temptext);
       #endif
       TERRAINFILECHANGED= true;
-      changed = true;
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpTopologyFile"));
-  if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
-    _tcscpy(temptext, dfe->GetPathFile());
-    ContractLocalPath(temptext);
-    if (_tcscmp(temptext,szTopologyFile)) {
-      #if OLDPROFILES
-      SetRegistryString(szRegistryTopologyFile, temptext);
-      #else
-      _tcscpy(szTopologyFile,temptext);
-      #endif
-      TOPOLOGYFILECHANGED= true;
       changed = true;
     }
   }

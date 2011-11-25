@@ -27,7 +27,6 @@ void OpenTopology() {
   CreateProgressDialog(gettext(TEXT("_@M902_"))); // Loading Topology File...
 
   // Start off by getting the names and paths
-  static TCHAR szOrigFile[MAX_PATH] = TEXT("\0");
   static TCHAR szFile[MAX_PATH] = TEXT("\0");
   static TCHAR Directory[MAX_PATH] = TEXT("\0");
 
@@ -39,25 +38,7 @@ void OpenTopology() {
     TopoStore[z] = 0;
   }
 
-  #if OLDPROFILES 
-  GetRegistryString(szRegistryTopologyFile, szFile, MAX_PATH);
-  #else
-  _tcscpy(szFile,szTopologyFile);
-  #endif
-  ExpandLocalPath(szFile);
-  _tcscpy(szOrigFile,szFile); // make copy of original
-  ContractLocalPath(szOrigFile);
-
-  // remove it in case it causes a crash (will restore later)
-  #if OLDPROFILES
-  SetRegistryString(szRegistryTopologyFile, TEXT("\0"));
-  #else
-  _tcscpy(szTopologyFile,_T(""));
-  #endif
-
-  if (1) {
-
-    // file is blank, so look for it in a map file
+     // Topology is inside the LKM map file
      TCHAR  szmapFile[MAX_PATH] = TEXT("\0");
     #if OLDPROFILES
     GetRegistryString(szRegistryMapFile, szmapFile, MAX_PATH);
@@ -77,9 +58,6 @@ void OpenTopology() {
     _tcscat(szFile,Directory);
     _tcscat(szFile,TEXT("topology.tpl"));
 
-  } else {
-    ExtractDirectory(Directory,szFile);
-  }
 
   // Ready to open the file now..
   ZZIP_FILE* zFile = zzip_fopen(szFile, "rt");
@@ -161,19 +139,19 @@ void OpenTopology() {
 				break;
 			case 30:
 				// Big road
-				ShapeRange=15;
+				ShapeRange=25;
 				break;
 			case 40:
 				// Medium road
-				ShapeRange=4;
+				ShapeRange=6;
 				break;
 			case 50:
 				// Small road
-				ShapeRange=2;
+				ShapeRange=3;
 				break;
 			case 60:
 				// Railroad
-				ShapeRange=10;
+				ShapeRange=8;
 				break;
 			case 70:
 				// Big city
@@ -189,7 +167,7 @@ void OpenTopology() {
 				break;
 			case 100:
 				// Very small city
-				ShapeRange=2;
+				ShapeRange=3;
 				break;
 			case 110:
 				// City polyline area
@@ -303,13 +281,6 @@ void OpenTopology() {
   
   //  CloseHandle (hFile);
   zzip_fclose(zFile);
-
-  // file was OK, so save it
-  #if LKPROFILES
-  SetRegistryString(szRegistryTopologyFile, szOrigFile);
-  #else
-  _tcscpy(szTopologyFile,szOrigFile);
-  #endif
 
   if (LKTopo>0) {
 	StartupStore(_T(". LKMAPS Advanced Topology file found%s"),NEWLINE);

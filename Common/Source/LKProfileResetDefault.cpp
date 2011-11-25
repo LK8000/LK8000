@@ -162,6 +162,7 @@ void LKProfileResetDefault(void) {
   PGGateIntervalTime=30;
   PGStartOut=0;
 
+  // These values are used on startup, but on reset change also OpenCloseTopology
   LKTopoZoomCat05=9999;
   LKTopoZoomCat10=9999;
   LKTopoZoomCat20=9999;
@@ -386,7 +387,6 @@ void LKProfileResetDefault(void) {
   _tcscpy(szWaypointFile,_T("%LOCAL_PATH%\\\\_Waypoints\\DEMO.cup"));
   szAdditionalWaypointFile[0] = TEXT('\0');
   _tcscpy(szTerrainFile,_T("%LOCAL_PATH%\\\\_Maps\\DEMO.DEM"));
-  szTopologyFile[0] = TEXT('\0');
   _tcscpy(szAirfieldFile,_T("%LOCAL_PATH%\\\\_Waypoints\\WAYNOTES.txt"));
   szLanguageFile[0] = TEXT('\0');
   szInputFile[0] = TEXT('\0');

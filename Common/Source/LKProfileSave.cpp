@@ -271,7 +271,6 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryTerrainRamp,TerrainRamp_Config);
   rprintf(szRegistryThermalBar,ThermalBar);
   rprintf(szRegistryThermalLocator,EnableThermalLocator);
-  rprintf(szRegistryTopologyFile,szTopologyFile);
   rprintf(szRegistryTpFilter,TpFilter);
   rprintf(szRegistryTrackBar,TrackBar);
   rprintf(szRegistryTrailDrift,MapWindow::EnableTrailDrift);
