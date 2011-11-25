@@ -88,7 +88,7 @@ void LKProfileResetDefault(void) {
   WindCalcSpeed=27.778;
 
   SectorType = 1;
-  SectorRadius = 10000;
+  SectorRadius = 3000;
 
 
   for(i=0;i<AIRSPACECLASSCOUNT;i++) {
@@ -128,11 +128,11 @@ void LKProfileResetDefault(void) {
 
   StartLine = 1;
 
-  StartRadius = 1000;
+  StartRadius = 3000;
 
   FinishLine = 1;
 
-  FinishRadius = 1000;
+  FinishRadius = 3000;
 
   EnableAutoBacklight = 1;
 

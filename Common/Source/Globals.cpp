@@ -176,7 +176,7 @@ void Globals_Init(void) {
 
   NumberOfWayPoints = 0;
   SectorType = 1; // FAI sector
-  SectorRadius = 500;
+  SectorRadius = 3000;
   StartLine = TRUE;
   StartRadius = 3000;
 
@@ -512,7 +512,7 @@ void Globals_Init(void) {
   BallastTimerActive = false;
 
   FinishLine=1;
-  FinishRadius=1000;
+  FinishRadius=3000;
 
   BallastSecsToEmpty = 120;
 
