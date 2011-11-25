@@ -2,6 +2,30 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3o November 25, 2011
+------------------------------
+
+NEW
+
+
+. New profiles engine, will save correctly all parameters to each profile
+  Will solve many load/save problems with previous engine
+  It is no more using windows registry
+
+. New CustomKey  for OLC Analysys
+
+. Advance in Analysis pages clicking on the right part of screen like on Nearest pages.
+
+. Add profile "RESET DEFAULT PROFILE" at startup choice, it will reset factory defaults in LK8000.
+
+
+CHANGES
+
+. Changed defaults: pilot name is hanna reitsch, NorthupAbove changed from 10 to 7. AverEffTime changed from 2 minutes to 60 seconds.
+  All DEMO files are configured back, also. Retuned default zoom levels.
+
+
+
 Version 2.3n November 18, 2011
 -----------------------------
 
