@@ -165,14 +165,14 @@ void LKProfileResetDefault(void) {
   LKTopoZoomCat05=9999;
   LKTopoZoomCat10=9999;
   LKTopoZoomCat20=9999;
-  LKTopoZoomCat30=9999;
-  LKTopoZoomCat40=9999;
+  LKTopoZoomCat30=25;		// Big Roads
+  LKTopoZoomCat40=6;		// Medium road
   LKTopoZoomCat50=9999;
-  LKTopoZoomCat60=9999;
-  LKTopoZoomCat70=9999;
+  LKTopoZoomCat60=8;		// Railroad
+  LKTopoZoomCat70=15;		// Big cities
   LKTopoZoomCat80=9999;
   LKTopoZoomCat90=9999;
-  LKTopoZoomCat100=9999;
+  LKTopoZoomCat100=3;		// Very small cities
   LKTopoZoomCat110=9999;
 
   LKMaxLabels=70;
@@ -405,8 +405,8 @@ void LKProfileResetDefault(void) {
   FontDesc_MapWindow[0]=_T('\0');
   FontDesc_MapLabel [0]=_T('\0');
 
-  _tcscpy(PilotName_Config,_T("Hanna"));
-  _tcscpy(AircraftType_Config,_T("Reitsch"));
+  _tcscpy(PilotName_Config,_T("Hanna.Reitsch"));
+  _tcscpy(AircraftType_Config,_T("KA-6"));
   _tcscpy(AircraftRego_Config,_T("D-1912"));
   _tcscpy(CompetitionClass_Config,_T("CLUB"));
   _tcscpy(CompetitionID_Config,_T("HR"));
