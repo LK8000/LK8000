@@ -212,6 +212,18 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			}
 #endif
 
+#if (0)
+			if (keytime>=CustomKeyTime) {
+				#ifndef DISABLEAUDIO
+				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
+				#endif
+				extern bool RunSignature(void);
+				RunSignature();
+
+				return 0;
+			}
+#endif
+
 			// REAL USAGE, ALWAYS ACTIVATE 
 			#if (1)
 			// standard configurable mode

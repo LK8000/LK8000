@@ -19,6 +19,7 @@
 using std::min;
 using std::max;
 
+#if OLDLOGGER
 HINSTANCE GRecordDLLHandle = NULL;
 
 // Procedures for explicitly loaded (optional) GRecord DLL
@@ -54,7 +55,7 @@ GRECORDREADGRECORDFROMFILE GRecordReadGRecordFromFile;
 
 typedef int (*GRECORDVERIFYGRECORDINFILE)(void);
 GRECORDVERIFYGRECORDINFILE GRecordVerifyGRecordInFile;
-
+#endif
 
 extern NMEA_INFO GPS_INFO;
 
@@ -79,8 +80,9 @@ int IGCCharToNum(TCHAR c) {
 
 
 
-static TCHAR szLoggerFileName[MAX_PATH+1] = TEXT("\0");
-static TCHAR szFLoggerFileName[MAX_PATH+1] = TEXT("\0");
+static TCHAR szLoggerFileName[MAX_PATH+1] = TEXT("\0");	 // LOGGER_TMP.IGC
+static TCHAR szFLoggerFileName[MAX_PATH+1] = TEXT("\0"); // final IGC name
+static TCHAR szSLoggerFileName[MAX_PATH+1] = TEXT("\0"); // LOGGER_SIG.IGC
 static TCHAR szFLoggerFileNameRoot[MAX_PATH+1] = TEXT("\0");
 static double FRecordLastTime = 0;
 static char szLastFRecord[MAX_IGC_BUFF];
@@ -125,9 +127,18 @@ LoggerBuffer_T FirstPoint;
 LoggerBuffer_T LoggerBuffer[MAX_LOGGER_BUFFER];
 
 
+
 void StopLogger(void) {
   TCHAR szMessage[(MAX_PATH*2)+1] = TEXT("\0");
   int iLoggerError=0;  // see switch statement for error handler
+#if OLDLOGGER
+#else
+  TCHAR sztmplogfile[MAX_PATH+1] = TEXT("\0");
+  int retval=0;
+
+  _tcscpy(sztmplogfile,szLoggerFileName); // use LOGGER_TMP, unsigned
+#endif
+
   if (LoggerActive) {
     LoggerActive = false;
     if (LoggerClearFreeSpace()) {
@@ -138,13 +149,16 @@ void StopLogger(void) {
     if (!SIMMODE && LoggerGActive())
     #endif
 	{
+#if OLDLOGGER
 	  BOOL bFileValid = true;
 	  TCHAR OldGRecordBuff[MAX_IGC_BUFF];
 
 	  TCHAR NewGRecordBuff[MAX_IGC_BUFF];
+#endif
 
-	  GRecordFinalizeBuffer();  // buffer is appended w/ each igc file write
-	  GRecordGetDigest(OldGRecordBuff); // read record built by individual file writes
+#if OLDLOGGER
+	  GRecordFinalizeBuffer();		// buffer is appended w/ each igc file write
+	  GRecordGetDigest(OldGRecordBuff);	// read record built by individual file writes
 
 	  // now calc from whats in the igc file on disk
 	  GRecordInit();
@@ -158,14 +172,54 @@ void StopLogger(void) {
 	      bFileValid = false;
 
 	  GRecordAppendGRecordToFile(bFileValid); 
+#else
+	extern int RunSignature();
+	retval = RunSignature();
+	if (retval!=0) {
+		StartupStore(_T(".... LOGGER SIGNATURE ERROR, CODE=%d%s"),retval,NEWLINE);
+		switch(retval) {
+			case -1:
+				StartupStore(_T(".... (EXECUTION FAILURE)%s"),NEWLINE);
+				break;
+			case 4:
+				StartupStore(_T(".... (BAD ENVIRONMENT)%s"),NEWLINE);
+				break;
+			case 11:
+				StartupStore(_T(".... (LOGGER_TMP DISAPPEARED)%s"),NEWLINE);
+				break;
+			case 12:
+				StartupStore(_T(".... (LOGGER_SIG ALREADY EXISTING)%s"),NEWLINE);
+				break;
+			case 21:
+				StartupStore(_T(".... (MUTEX FAILURE=)%s"),NEWLINE);
+				break;
+			case 259:
+				StartupStore(_T(".... (PROCESS DID NOT TERMINATE!)%s"),NEWLINE);
+				break;
+			default:
+				break;
+		}
+		// we shall be moving LOGGER_TMP, and leave LOGGER_SIG untouched. In fact we do not know
+		// if LOGGER_SIG is or will be available.
+	} else {
+		// RunSig ok, change logfile to new logger_sig
+		StartupStore(_T(". Logger OK, IGC signed with G-Record%s"),NEWLINE);
+		DeleteFile(szLoggerFileName);	// remove old LOGGER_TMP
+		_tcscpy(sztmplogfile,szSLoggerFileName); // use LOGGER_SIG, signed
 	}
+#endif
 
+	} // logger active
 
       int imCount=0;
       const int imMax=3;
       for (imCount=0; imCount < imMax; imCount++) {
         // MoveFile() nonzero==Success
-        if (0 != MoveFile( szLoggerFileName, szFLoggerFileName)) {
+#if OLDLOGGER
+        if (0 != MoveFile( szLoggerFileName, szFLoggerFileName)) {	// rename LOGGER_TMP
+#else
+        if (0 != MoveFile( sztmplogfile, szFLoggerFileName)) {
+#endif
           iLoggerError=0;
           break; // success
         }
@@ -173,7 +227,11 @@ void StopLogger(void) {
       }
       if (imCount == imMax) { // MoveFile() failed all attempts
 
+#if OLDLOGGER
         if (0 == MoveFile( szLoggerFileName, szFLoggerFileNameRoot)) { // try rename it and leave in root
+#else
+        if (0 == MoveFile( sztmplogfile, szFLoggerFileNameRoot)) { // try rename it and leave in root
+#endif
           iLoggerError=1; //Fail.  NoMoveNoRename
         }
         else {
@@ -181,9 +239,13 @@ void StopLogger(void) {
         }
       }
 
-    }
+    } // logger clearfreespace
     else { // Insufficient disk space.  // MoveFile() nonzero==Success
+#if OLDLOGGER
       if (0 == MoveFile( szLoggerFileName, szFLoggerFileNameRoot)) { // try rename it and leave in root
+#else
+      if (0 == MoveFile( sztmplogfile, szFLoggerFileNameRoot)) { // try rename it and leave in root
+#endif
         iLoggerError=3; //Fail.  Insufficient Disk Space, NoRename
       }
       else {
@@ -198,7 +260,11 @@ void StopLogger(void) {
 
     case 1: // NoMoveNoRename
       _tcsncpy(szMessage,TEXT("--- Logger file not copied.  It is in the root folder of your device and called "),MAX_PATH);
+#if OLDLOGGER
       _tcsncat(szMessage,szLoggerFileName,MAX_PATH);
+#else
+      _tcsncat(szMessage,sztmplogfile,MAX_PATH);
+#endif
 
       MessageBoxX(hWndMapWindow,
 		gettext(szMessage),
@@ -221,7 +287,11 @@ void StopLogger(void) {
 
     case 3: // Insufficient Storage.  NoRename
       _tcsncpy(szMessage,TEXT("++++++ Insuff. storage. Logger file in device's root folder, called "),MAX_PATH);
+#if OLDLOGGER
       _tcsncat(szMessage,szLoggerFileName,MAX_PATH);
+#else
+      _tcsncat(szMessage,sztmplogfile,MAX_PATH);
+#endif
 
       MessageBoxX(hWndMapWindow,
 		gettext(szMessage),
@@ -466,7 +536,7 @@ void StartLogger()
   }
   wsprintf(szLoggerFileName, TEXT("%s\\LOGGER_TMP.IGC"), path);
 
-#if (1)
+#if OLDLOGGER
 	// Does the file already exist? 
 	if (GetFileAttributes(szLoggerFileName) != 0xffffffff) {
 		StartupStore(_T("------ Existing tmp.IGC found! Attempting recovery..%s"),NEWLINE);
@@ -491,9 +561,23 @@ void StartLogger()
 		}
 	}
 #else
+  wsprintf(szSLoggerFileName, TEXT("%s\\LOGGER_SIG.IGC"), path);
+  TCHAR newfile[MAX_PATH+20];
+  if (GetFileAttributes(szLoggerFileName) != 0xffffffff) {
+	StartupStore(_T("---- Logger recovery: Existing LOGGER_TMP.IGC found, renamed to LOST%s"),NEWLINE);
+	wsprintf(newfile, TEXT("%s\\LOST_%02d%02d%02d.IGC"), path, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
+	CopyFile(szLoggerFileName,newfile,TRUE);
 	DeleteFile(szLoggerFileName);
+  }
+  if (GetFileAttributes(szSLoggerFileName) != 0xffffffff) {
+	StartupStore(_T("---- Logger recovery (G): Existing LOGGER_SIG.IGC found, renamed to LOSTG%s"),NEWLINE);
+	wsprintf(newfile, TEXT("%s\\LOSTG_%02d%02d%02d.IGC"), path, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
+	CopyFile(szSLoggerFileName,newfile,TRUE);
+	DeleteFile(szSLoggerFileName);
+  }
 #endif
 
+#if OLDLOGGER
   #if TESTBENCH
 	LinkGRecordDLL();
 	if (LoggerGActive()) GRecordInit();
@@ -503,6 +587,7 @@ void StartLogger()
 	if (LoggerGActive()) GRecordInit();
   }
   #endif
+#endif
   
   for(i=1;i<99;i++)
     {
@@ -1576,6 +1661,7 @@ bool IGCWriteRecord(char *szIn)
       for (i = 0; (i <= iLen) && (i < MAX_IGC_BUFF); i++)
 	buffer[i] = (TCHAR)charbuffer[i];
 
+#if OLDLOGGER
         #if TESTBENCH
 		if (LoggerGActive()) GRecordAppendRecordToBuffer(pbuffer);
 	#else
@@ -1583,6 +1669,7 @@ bool IGCWriteRecord(char *szIn)
 		if (LoggerGActive()) GRecordAppendRecordToBuffer(pbuffer);
 	}
 	#endif
+#endif
 
       FlushFileBuffers(hFile);
       CloseHandle(hFile);
@@ -1594,6 +1681,7 @@ bool IGCWriteRecord(char *szIn)
 
 }
 
+#if OLDLOGGER
 void LinkGRecordDLL(void)
 {
   static bool bFirstTime = true;
@@ -1738,13 +1826,90 @@ void LinkGRecordDLL(void)
 
     }
 }
+#endif // OLDLOGGER
 
 bool LoggerGActive()
 {
+#if OLDLOGGER
   if (GRecordDLLHandle)
     return true;
   else
     return false;
+#else
+  #if TESTBENCH
+  return true;
+  #else
+   #if (WINDOWSPC>0)
+   return false;
+   #else
+   return true;
+   #endif
+  #endif
+#endif
 }
 
 
+#if OLDLOGGER
+#else
+//
+// The return value is very important!
+//	-1		exec failure
+//	259	still active, very bad
+//	0	is the only OK that we want!
+//	other values, very bad
+//
+int RunSignature() {
+
+  DWORD retval=99;
+
+  TCHAR homedir[MAX_PATH];
+  TCHAR path[MAX_PATH];
+  TCHAR pathparam[MAX_PATH*2];
+
+  LocalPath(path,_T(LKD_SYSTEM));
+  #if (WINDOWSPC>0)
+  _tcscat(path,_T("//GRECORDPC.LK8"));
+  #endif
+  #ifdef PNA
+  _tcscat(path,_T("//GRECORDPNA.LK8"));
+  #endif
+  #ifdef PPC2002
+  _tcscat(path,_T("//GRECORD2002.LK8"));
+  #endif
+  #ifdef PPC2003
+  _tcscat(path,_T("//GRECORD2003.LK8"));
+  #endif
+
+  // if PC and not testbench, 0000 for invalid key usage
+  _stprintf(pathparam,_T("\"%s\" \"%s\""),path,_T("1234")); // key TODO
+
+  LocalPath(homedir,TEXT(LKD_LOGS));
+  #if TESTBENCH
+  StartupStore(_T(".... RunSignature: homedir <%s>%s"),homedir,NEWLINE);
+  StartupStore(_T(".... RunSignature: pathparams <%s>%s"),pathparam,NEWLINE);
+  #endif
+
+  PROCESS_INFORMATION pi;
+  STARTUPINFO si;
+  ZeroMemory(&si,sizeof(STARTUPINFO));
+  si.cb=sizeof(STARTUPINFO);
+  si.wShowWindow= SW_SHOWNORMAL;
+  si.dwFlags = STARTF_USESHOWWINDOW;
+
+  if (!::CreateProcess(path,pathparam, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, homedir, &si, &pi)) {
+	StartupStore(_T(".... RunSignature exec FAILED - Cannot validate IGC log!%s"),NEWLINE);
+	return -1;
+  }
+  ::WaitForSingleObject(pi.hProcess, 5000);
+  GetExitCodeProcess(pi.hProcess,&retval);
+  // STILL_ACTIVE = 259, this retval should be checked for
+
+  #if TESTBENCH
+  StartupStore(_T(".... RunSignature exec terminated, retval=%d%s"),retval,NEWLINE);
+  #endif
+
+  return retval;
+
+}
+
+#endif // newlogger

@@ -53,8 +53,10 @@ short InstallSystem() {
   }
   _tcscpy(maindir,dstdir);
 
+#if OLDLOGGER
   _stprintf(tbuf,_T(". InstallSystem: copy DLL from <%s> to <%s>%s"), srcdir, dstdir,NEWLINE);
   StartupStore(tbuf);
+#endif
 
   // We now test for a single file existing inside the directory, called _DIRECTORYNAME
   // because GetFileAttributes can be very slow or hang if checking a directory. In any case testing a file is 
@@ -71,7 +73,9 @@ short InstallSystem() {
 	failure=true;
 #endif
   } else {
+	#if TESTBENCH
 	StartupStore(_T(". InstallSystem source directory <%s> is available%s"),srcdir,NEWLINE);
+	#endif
   }
 
 #if (0)
@@ -106,10 +110,13 @@ short InstallSystem() {
 #endif
 
   if (  failure ) {
+	#if OLDLOGGER
 	StartupStore(_T("------ WARNING: NO DLL install available (and thus NO G-RECORD FOR VALIDATING IGC FILES)%s"),NEWLINE);
+	#endif
 	StartupStore(_T("------ WARNING: NO font will be installed on device (and thus wrong text size displayed)%s"),NEWLINE);
 	return 5; // 091109
   } else {
+#if OLDLOGGER
 #ifdef PPC2002
 	_stprintf(srcfile,TEXT("%s\\GRECORD2002.XCS"),srcdir);
 #endif
@@ -132,6 +139,7 @@ short InstallSystem() {
 			StartupStore(_T("... GRecordDll.dll installed using <%s>. Great.%s"),srcfile,NEWLINE);
 		}
 	}
+#endif // OLDLOGGER
 
 #ifdef PNA
 	if (GlobalModelType == MODELTYPE_PNA_HP31X) { // 091109
@@ -242,8 +250,7 @@ short InstallSystem() {
   }
   #endif
 
-
-  _stprintf(tbuf,_T(". InstallSystem: Copy Fonts from <%s> to <%s>%s"), srcdir, dstdir,NEWLINE);
+  _stprintf(tbuf,_T(". InstallSystem: Copy/Check Fonts from <%s> to <%s>%s"), srcdir, dstdir,NEWLINE);
   StartupStore(tbuf);
   // on PNAs sometimes FolderPath is reported correctly, but the directory is not existing!
   // this is not needed really on PNA, but doesnt hurt
@@ -253,13 +260,15 @@ short InstallSystem() {
   // we cannot check directory existance without the risk of hanging for many seconds
   // we can only rely on singe real file existance, not on directories
 
-  #if ALPHADEBUG
+  #if TESTBENCH
   StartupStore(_T(". Checking TAHOMA font%s"),NEWLINE);
   #endif
   _stprintf(srcfile,TEXT("%s\\TAHOMA.TTF"),srcdir);
   _stprintf(dstfile,TEXT("%s\\TAHOMA.TTF"),dstdir);
   if (  GetFileAttributes(dstfile) != 0xffffffff ) {
+	#if TESTBENCH
 	StartupStore(_T(". Font TAHOMA.TTF is already installed%s"),NEWLINE);
+	#endif
   } else {
 	if ( !CopyFile(srcfile,dstfile,TRUE))  {
 		StartupStore(_T("------ Could not copy TAHOMA.TTF on device, not good.%s"),NEWLINE);
@@ -271,13 +280,15 @@ short InstallSystem() {
   // not needed, cannot overwrite tahoma while in use! Tahoma bold not used for some reason in this case.
   // Problem solved, look at FontPath !!
 
-  #if ALPHADEBUG
+  #if TESTBENCH
   StartupStore(_T(". Checking TAHOMABD font%s"),NEWLINE);
   #endif
   _stprintf(srcfile,TEXT("%s\\TAHOMABD.TTF"),srcdir);
   _stprintf(dstfile,TEXT("%s\\TAHOMABD.TTF"),dstdir);
   if (  GetFileAttributes(dstfile) != 0xffffffff ) {
+	#if TESTBENCH
 	StartupStore(_T(". Font TAHOMABD.TTF is already installed%s"),NEWLINE);
+	#endif
   } else {
 	if ( !CopyFile(srcfile,dstfile,TRUE))  {
 		StartupStore(_T("------ Could not copy TAHOMABD.TTF on device, not good.%s"),NEWLINE);
@@ -286,7 +297,7 @@ short InstallSystem() {
 		StartupStore(_T("... Font TAHOMABD.TTF installed on device%s"),NEWLINE);
   }
 
-  #if ALPHADEBUG
+  #if TESTBENCH
   StartupStore(_T(". InstallSystem completed OK%s"),NEWLINE);
   #endif
 

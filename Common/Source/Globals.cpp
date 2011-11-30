@@ -203,7 +203,9 @@ void Globals_Init(void) {
   CustomKeyModeRightUpCorner=(CustomKeyMode_t)ckDisabled;
   CustomKeyModeCenterScreen=(CustomKeyMode_t)ckDisabled;
 
+  #if OLDLOGGER
   ResumeSession=false;
+  #endif
   QFEAltitudeOffset = 0;
   OnAirSpace=1;
   WasFlying = false;

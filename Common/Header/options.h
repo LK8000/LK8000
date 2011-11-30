@@ -86,6 +86,8 @@
  #define NEWPROFILES		1	// new lk profile system with no windows registry
  // #define OLDPROFILES		1	// old lk profile with registry
 
+ // #define OLDLOGGER		1	// old DLL Grecord logging system
+
 /*
  * Incomplete work, or stuff that never got into production versions but still interesting
  *

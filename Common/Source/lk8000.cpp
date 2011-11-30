@@ -243,7 +243,9 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 
   InitCalculations(&GPS_INFO,&CALCULATED_INFO);
 
+  #if OLDLOGGER
   LinkGRecordDLL(); // try to link DLL if it exists
+  #endif
 
   OpenGeoid();
 

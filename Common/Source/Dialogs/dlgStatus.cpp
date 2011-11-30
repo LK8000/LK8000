@@ -286,7 +286,9 @@ static void UpdateValuesSystem() {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLogger"));
   if (wp) {
+#if OLDLOGGER
     LinkGRecordDLL();
+#endif
     if (LoggerGActive()) {
       if (LoggerActive) {
 	// LKTOKEN  _@M494_ = "ON (G)" 

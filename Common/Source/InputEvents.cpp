@@ -2028,11 +2028,13 @@ void InputEvents::eventAutoLogger(const TCHAR *misc) {
 // note: the text following the 'note' characters is added to the log file
 void InputEvents::eventLogger(const TCHAR *misc) {
 
+#if TESTBENCH
   TCHAR szMessage[MAX_PATH] = TEXT("\0");
   _tcsncpy(szMessage, TEXT(". eventLogger: "),MAX_PATH);
   _tcsncat(szMessage, misc,MAX_PATH);
   _tcsncat(szMessage,TEXT("\r\n"),MAX_PATH);
   StartupStore(szMessage);
+#endif
 
   if (_tcscmp(misc, TEXT("start ask")) == 0) {
     guiStartLogger();

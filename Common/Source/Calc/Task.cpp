@@ -821,12 +821,14 @@ void guiStartLogger(bool noAsk) {
 		if (LoggerClearFreeSpace()) {
 	  
 			StartLogger();
-
+#if OLDLOGGER
+			// ResumeSession never did work, always false
 			if (ResumeSession) {
 
 				LoggerActive=true;
 				// ResetFRecord ??  TODO 
 			} else {
+#endif
 				LoggerHeader();
 				// THIS IS HAPPENING TOO EARLY, and we still have concurrency with F record!
 				// LoggerActive = true; // start logger after Header is completed.  Concurrency
@@ -853,7 +855,9 @@ void guiStartLogger(bool noAsk) {
 				EndDeclaration();
 				LoggerActive = true; // start logger now
 				ResetFRecord(); // reset timer & lastRecord string so if logger is restarted, FRec appears at top of file
+#if OLDLOGGER
 			} 
+#endif
 		} else {
 
 	// LKTOKEN  _@M408_ = "Logger inactive, insufficient storage!" 
