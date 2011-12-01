@@ -179,7 +179,10 @@ void StopLogger(void) {
 		StartupStore(_T(".... LOGGER SIGNATURE ERROR, CODE=%d%s"),retval,NEWLINE);
 		switch(retval) {
 			case -1:
-				StartupStore(_T(".... (EXECUTION FAILURE)%s"),NEWLINE);
+				StartupStore(_T(".... (EXEQ DEBUG FAILURE)%s"),NEWLINE);
+				break;
+			case 3:
+				StartupStore(_T(".... (EXEQ WITH WRONG ARGUMENTS)%s"),NEWLINE);
 				break;
 			case 4:
 				StartupStore(_T(".... (BAD ENVIRONMENT)%s"),NEWLINE);
@@ -525,6 +528,12 @@ void StartLogger()
   int i;
   TCHAR path[MAX_PATH+1];
   TCHAR cAsset[3];
+#if OLDLOGGER
+#else
+  strAssetNumber[0]=PilotName_Config[0];
+  strAssetNumber[1]=PilotName_Config[1];
+  strAssetNumber[2]=AircraftType_Config[0];
+#endif
   for (i=0; i < 3; i++) { // chars must be legal in file names
     cAsset[i] = IsAlphaNum(strAssetNumber[i]) ? strAssetNumber[i] : _T('A');
   }
@@ -1868,36 +1877,45 @@ int RunSignature() {
 
   LocalPath(path,_T(LKD_SYSTEM));
   #if (WINDOWSPC>0)
-  _tcscat(path,_T("//GRECORDPC.LK8"));
+  _tcscat(path,_T("\\GRECORDPC.LK8"));
   #endif
   #ifdef PNA
-  _tcscat(path,_T("//GRECORDPNA.LK8"));
+  _tcscat(path,_T("\\GRECORDPNA.LK8"));
   #endif
   #ifdef PPC2002
-  _tcscat(path,_T("//GRECORD2002.LK8"));
+  _tcscat(path,_T("\\GRECORD2002.LK8"));
   #endif
   #ifdef PPC2003
-  _tcscat(path,_T("//GRECORD2003.LK8"));
+  _tcscat(path,_T("\\GRECORD2003.LK8"));
   #endif
 
-  // if PC and not testbench, 0000 for invalid key usage
-  _stprintf(pathparam,_T("\"%s\" \"%s\""),path,_T("1234")); // key TODO
-
   LocalPath(homedir,TEXT(LKD_LOGS));
+
+  // inherit current path does not work in createprocess for windows ce.
+  // So we must pass along the homedir. 
+  _stprintf(pathparam,_T("\"%s\" \"%s\""),homedir,_T("1234")); // TODO 1234 is RUN KEY CODE
+
   #if TESTBENCH
   StartupStore(_T(".... RunSignature: homedir <%s>%s"),homedir,NEWLINE);
   StartupStore(_T(".... RunSignature: pathparams <%s>%s"),pathparam,NEWLINE);
   #endif
 
   PROCESS_INFORMATION pi;
+
+  #if (WINDOWSPC>0)
+  // Sadly, some parameters cannot be passed in the CE version
   STARTUPINFO si;
   ZeroMemory(&si,sizeof(STARTUPINFO));
   si.cb=sizeof(STARTUPINFO);
   si.wShowWindow= SW_SHOWNORMAL;
   si.dwFlags = STARTF_USESHOWWINDOW;
 
-  if (!::CreateProcess(path,pathparam, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, homedir, &si, &pi)) {
-	StartupStore(_T(".... RunSignature exec FAILED - Cannot validate IGC log!%s"),NEWLINE);
+  if (!::CreateProcess(path,pathparam, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi)) {
+  #else
+  if (!::CreateProcess(path,pathparam, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, NULL, &pi)) {
+  #endif
+	DWORD lasterr=GetLastError();
+	StartupStore(_T(".... RunSignature exec FAILED, error code=%d - Cannot validate IGC log!%s"),lasterr,NEWLINE);
 	return -1;
   }
   ::WaitForSingleObject(pi.hProcess, 5000);
