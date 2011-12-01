@@ -530,9 +530,21 @@ void StartLogger()
   TCHAR cAsset[3];
 #if OLDLOGGER
 #else
-  strAssetNumber[0]=PilotName_Config[0];
-  strAssetNumber[1]=PilotName_Config[1];
-  strAssetNumber[2]=AircraftType_Config[0];
+
+  // strAsset is initialized with DUM.
+  if (_tcslen(PilotName_Config)>0) {
+	strAssetNumber[0]= IsAlphaNum(PilotName_Config[0]) ? PilotName_Config[0] : _T('A');
+	strAssetNumber[1]= IsAlphaNum(PilotName_Config[1]) ? PilotName_Config[1] : _T('A');
+  } else {
+	strAssetNumber[0]= _T('D');
+	strAssetNumber[1]= _T('U');
+  }
+  if (_tcslen(AircraftType_Config)>0) {
+	strAssetNumber[2]= IsAlphaNum(AircraftType_Config[0]) ? AircraftType_Config[0] : _T('A');
+  } else {
+	strAssetNumber[2]= _T('M');
+  }
+  strAssetNumber[3]= _T('\0');
 #endif
   for (i=0; i < 3; i++) { // chars must be legal in file names
     cAsset[i] = IsAlphaNum(strAssetNumber[i]) ? strAssetNumber[i] : _T('A');
@@ -678,7 +690,9 @@ void StartLogger()
   return;
 }
 
-
+//
+// This is called by Calc/Task thread, after calling StartLogger
+//
 void LoggerHeader(void)
 {
   char datum[]= "HFDTM100GPSDATUM:WGS-84\r\n";
@@ -686,6 +700,13 @@ void LoggerHeader(void)
   
   // Flight recorder ID number MUST go first..
   // XCS will be replaced by XLK when we have our own signature key
+
+  // Do one more check on %C because if one is 0 the string will not be closed by newline
+  // resulting in a wrong header!
+  strAssetNumber[0]= IsAlphaNum(strAssetNumber[0]) ? strAssetNumber[0] : _T('A');
+  strAssetNumber[1]= IsAlphaNum(strAssetNumber[1]) ? strAssetNumber[1] : _T('A');
+  strAssetNumber[2]= IsAlphaNum(strAssetNumber[0]) ? strAssetNumber[2] : _T('A');
+
   sprintf(temp,
 	  "A%s%C%C%C\r\n",
 	  LOGGER_MANUFACTURER,
