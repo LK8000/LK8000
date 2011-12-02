@@ -1922,6 +1922,12 @@ int RunSignature() {
   // So we must pass along the homedir. 
   _stprintf(pathparam,_T("\"%s\" \"%s\""),homedir,_T("1234")); // TODO 1234 is RUN KEY CODE
 
+  /* TODO 
+  char stmp[MAX_PATH];
+  unicode2utf((TCHAR*) pathparam, stmp, sizeof(stmp));
+  _stprintf(pathparam,_T("%S"),stmp);
+  */
+
   #if TESTBENCH
   StartupStore(_T(".... RunSignature: homedir <%s>%s"),homedir,NEWLINE);
   StartupStore(_T(".... RunSignature: pathparams <%s>%s"),pathparam,NEWLINE);
