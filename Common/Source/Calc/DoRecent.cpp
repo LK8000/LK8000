@@ -21,13 +21,14 @@ bool LoadRecentList() {
    int i=0, nwp;
    unsigned int csum;
 
-#if (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
+#if 1
+//#if (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
   LocalPath(buffer,TEXT(LKD_CONF));
   _tcscat(buffer,TEXT("\\"));
   _tcscat(buffer,_T(LKF_RECENTS)); // 091101
 
-#else
-  SHGetSpecialFolderPath(hWndMainWindow, buffer, CSIDL_PERSONAL, false);
+#else // REMOVE
+  SHGetSpecialFolderPath(hWndMainWindow, buffer, CSIDL_PERSONAL, false); // REMOVE
   _tcscat(buffer,TEXT("\\"));
   _tcscat(buffer,TEXT(LKDATADIR));
   _tcscat(buffer,_T("\\"));
@@ -96,12 +97,13 @@ bool SaveRecentList() {
    FILE *fp;
    int i;
 
-#if (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
+#if 1
+// #if (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
   LocalPath(buffer,TEXT(LKD_CONF));
   _tcscat(buffer,TEXT("\\"));
   _tcscat(buffer,_T(LKF_RECENTS)); // 091101
-#else
-  SHGetSpecialFolderPath(hWndMainWindow, buffer, CSIDL_PERSONAL, false);
+#else // REMOVE
+  SHGetSpecialFolderPath(hWndMainWindow, buffer, CSIDL_PERSONAL, false); // REMOVE
   _tcscat(buffer,TEXT("\\"));
   _tcscat(buffer,TEXT(LKDATADIR));
   _tcscat(buffer,_T("\\"));
