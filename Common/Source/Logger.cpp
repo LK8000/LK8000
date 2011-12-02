@@ -544,6 +544,9 @@ void StartLogger()
   } else {
 	strAssetNumber[2]= _T('M');
   }
+  strAssetNumber[0]= towupper(strAssetNumber[0]);
+  strAssetNumber[1]= towupper(strAssetNumber[1]);
+  strAssetNumber[2]= towupper(strAssetNumber[2]);
   strAssetNumber[3]= _T('\0');
 #endif
   for (i=0; i < 3; i++) { // chars must be legal in file names

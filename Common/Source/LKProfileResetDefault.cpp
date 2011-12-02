@@ -405,7 +405,7 @@ void LKProfileResetDefault(void) {
   FontDesc_MapWindow[0]=_T('\0');
   FontDesc_MapLabel [0]=_T('\0');
 
-  _tcscpy(PilotName_Config,_T("Hanna.Reitsch"));
+  _tcscpy(PilotName_Config,_T("HANNA.REITSCH"));
   _tcscpy(AircraftType_Config,_T("KA-6"));
   _tcscpy(AircraftRego_Config,_T("D-1912"));
   _tcscpy(CompetitionClass_Config,_T("CLUB"));
