@@ -1897,7 +1897,6 @@ int RunSignature() {
 
   TCHAR homedir[MAX_PATH];
   TCHAR path[MAX_PATH];
-  TCHAR pathparam[MAX_PATH*2];
 
   LocalPath(path,_T(LKD_SYSTEM));
   #if (WINDOWSPC>0)
@@ -1918,19 +1917,8 @@ int RunSignature() {
 
   LocalPath(homedir,TEXT(LKD_LOGS));
 
-  // inherit current path does not work in createprocess for windows ce.
-  // So we must pass along the homedir. 
-  _stprintf(pathparam,_T("\"%s\" \"%s\""),homedir,_T("1234")); // TODO 1234 is RUN KEY CODE
-
-  /* TODO 
-  char stmp[MAX_PATH];
-  unicode2utf((TCHAR*) pathparam, stmp, sizeof(stmp));
-  _stprintf(pathparam,_T("%S"),stmp);
-  */
-
   #if TESTBENCH
   StartupStore(_T(".... RunSignature: homedir <%s>%s"),homedir,NEWLINE);
-  StartupStore(_T(".... RunSignature: pathparams <%s>%s"),pathparam,NEWLINE);
   #endif
 
   PROCESS_INFORMATION pi;
@@ -1943,9 +1931,9 @@ int RunSignature() {
   si.wShowWindow= SW_SHOWNORMAL;
   si.dwFlags = STARTF_USESHOWWINDOW;
 
-  if (!::CreateProcess(path,pathparam, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi)) {
+  if (!::CreateProcess(path,homedir, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi)) {
   #else
-  if (!::CreateProcess(path,pathparam, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, NULL, &pi)) {
+  if (!::CreateProcess(path,homedir, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, NULL, &pi)) {
   #endif
 	DWORD lasterr=GetLastError();
 	StartupStore(_T(".... RunSignature exec FAILED, error code=%d - Cannot validate IGC log!%s"),lasterr,NEWLINE);
