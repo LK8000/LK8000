@@ -433,13 +433,14 @@ static void OnSaveClicked(WindowControl * Sender, WndListFrame::ListInfo_t *List
 
       _tcscat(task_name, TEXT(LKS_TSK));
 
-#if (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
+#if 1
+//#if (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
   LocalPath(file_name,TEXT(LKD_TASKS));
   _tcscat(file_name,TEXT("\\"));
   _tcscat(file_name,task_name); // 091101
 
-#else
-  SHGetSpecialFolderPath(hWndMainWindow, file_name, CSIDL_PERSONAL, false);
+#else	 // REMOVE
+  SHGetSpecialFolderPath(hWndMainWindow, file_name, CSIDL_PERSONAL, false); // REMOVE
   _tcscat(file_name,TEXT("\\"));
   _tcscat(file_name,TEXT(LKDATADIR));
   _tcscat(file_name,_T("\\"));
