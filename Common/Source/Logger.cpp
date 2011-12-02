@@ -1900,15 +1900,18 @@ int RunSignature() {
   #if (WINDOWSPC>0)
   _tcscat(path,_T("\\GRECORDPC.LK8"));
   #endif
+
+  // CAREFUL!!! PNA is ALSO PPC2003!!
   #ifdef PNA
   _tcscat(path,_T("\\GRECORDPNA.LK8"));
-  #endif
-  #ifdef PPC2002
-  _tcscat(path,_T("\\GRECORD2002.LK8"));
-  #endif
-  #ifdef PPC2003
-  _tcscat(path,_T("\\GRECORD2003.LK8"));
-  #endif
+  #else
+    #ifdef PPC2002
+    _tcscat(path,_T("\\GRECORD2002.LK8"));
+    #endif
+    #ifdef PPC2003
+    _tcscat(path,_T("\\GRECORD2003.LK8"));
+    #endif
+  #endif 
 
   LocalPath(homedir,TEXT(LKD_LOGS));
 
@@ -1937,6 +1940,9 @@ int RunSignature() {
   #endif
 	DWORD lasterr=GetLastError();
 	StartupStore(_T(".... RunSignature exec FAILED, error code=%d - Cannot validate IGC log!%s"),lasterr,NEWLINE);
+	#if TESTBENCH
+	StartupStore(_T(".... RunSignature exec was <%s>%s"),path,NEWLINE);
+	#endif
 	return -1;
   }
   ::WaitForSingleObject(pi.hProcess, 5000);
