@@ -1870,7 +1870,8 @@ bool LoggerGActive()
     return false;
 #else
   #if TESTBENCH
-  return true;
+  // return true; // only for checking Grecord new stuff
+  return false;
   #else
    #if (WINDOWSPC>0)
    return false;
