@@ -2,6 +2,28 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3p December 3, 2011
+------------------------------
+
+NEW
+
+. New G record validation scheme, not using DLL anymore.
+  (Still using xcs key though). 
+  We are adding new files in _System folder with Grecord stuff.
+  This is totally temporary. GRecord validation will not be available
+  for PC versions, only for PDA/PNAs.
+  This version is intended to be obsoleted by 3.0 G record validation soon.
+
+. CHANGES
+  none
+
+. FIXES
+
+  If using a custom folder on PC in place of My Documents/LK8000 (or whatever it is called on your pc),
+  then there were problems with saving task and saving history of gotos.
+
+
+
 Version 2.3o November 25, 2011
 ------------------------------
 
