@@ -20,6 +20,7 @@ static WndForm *wf=NULL;
 static WndOwnerDrawFrame *wSplash=NULL;
 
 extern bool CheckSystemDefaultMenu(void);
+extern bool CheckSystemGRecord(void);
 extern bool CheckLanguageEngMsg(void);
 
 // lines are: 0 - 9
@@ -399,6 +400,17 @@ bool dlgStartupShowModal(void){
 	LocalPath(mydir,_T(LKD_SYSTEM));
 	_stprintf(mes,_T("%s/DEFAULT_MENU.TXT"),mydir);
 	MessageBoxX(hWndMainWindow, _T("DEFAULT_MENU.TXT MISSING in SYSTEM\nCheck System Install"), _T("FATAL ERROR 022"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(hWndMainWindow, mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION, true);
+	Shutdown();
+  }
+
+  if  (!CheckSystemGRecord()) {
+	TCHAR mydir[MAX_PATH];
+	TCHAR mes[MAX_PATH];
+	StartupStore(_T("... CHECK SYSTEM _GRECORD FAILED!%s"),NEWLINE);
+	LocalPath(mydir,_T(LKD_SYSTEM));
+	_stprintf(mes,_T("%s/_GRECORD"),mydir);
+	MessageBoxX(hWndMainWindow, _T("_GRECORD MISSING in SYSTEM\nCheck System Install"), _T("FATAL ERROR 032"), MB_OK|MB_ICONQUESTION);
 	MessageBoxX(hWndMainWindow, mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION, true);
 	Shutdown();
   }

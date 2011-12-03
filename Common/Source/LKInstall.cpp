@@ -354,6 +354,16 @@ bool CheckSystemDefaultMenu() {
   return true;
 }
 
+// We only check for general installation of GRecord files
+bool CheckSystemGRecord() {
+  TCHAR srcdir[MAX_PATH];
+  TCHAR srcfile[MAX_PATH];
+  LocalPath(srcdir, _T(LKD_SYSTEM));
+  _stprintf(srcfile,TEXT("%s\\_GRECORD"),srcdir);
+  if (  GetFileAttributes(srcfile) == 0xffffffff ) return false;
+  return true;
+}
+
 bool CheckPolarsDir() {
   TCHAR srcdir[MAX_PATH];
   TCHAR srcfile[MAX_PATH];
