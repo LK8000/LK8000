@@ -130,6 +130,13 @@ void LKProfileInitRuntime(void) {
 	AATEnabled=FALSE;
   }
 
+  if ( ISPARAGLIDER || ISCAR ) {
+	// paragliders can takeoff at 5kmh ground with some head wind!
+	TakeOffSpeedThreshold=1.39;
+  } else {
+	TakeOffSpeedThreshold=11.12; // 40kmh
+  }
+
   //
   // ModelType specials for PNAs
   //

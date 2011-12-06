@@ -754,13 +754,6 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     Calculated->MinAltitude = 0;
     Calculated->MaxHeightGain = 0;
 
-    if ( ISPARAGLIDER || ISCAR ) {
-	// paragliders can takeoff at 5kmh ground with some head wind!
-	TakeOffSpeedThreshold=1.39; 
-    } else {
-	TakeOffSpeedThreshold=11.12; // 40kmh
-    }
-
     Calculated->MaxThermalHeight = 0;
     for (i=0; i<NUMTHERMALBUCKETS; i++) {
       Calculated->ThermalProfileN[i]=0;
