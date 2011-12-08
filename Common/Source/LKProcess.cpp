@@ -2618,6 +2618,129 @@ olc_score:
 			}
 			break;
 
+		// B116
+		case LK_ALTERN1_BRG:
+		// B117
+		case LK_ALTERN2_BRG:
+		// B118
+		case LK_BESTALTERN_BRG:
+			wsprintf(BufferValue,_T(NULLMEDIUM));
+			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			switch(lkindex) {
+				case LK_ALTERN1_BRG:
+					index=Alternate1;
+					break;
+				case LK_ALTERN2_BRG:
+					index=Alternate2;
+					break;
+				case LK_BESTALTERN_BRG:
+					index=BestAlternate;
+					break;
+				default:
+					index=0;
+					break;
+			}
+
+			if(ValidWayPoint(index))
+			{
+				if ( DisplayTextType == DISPLAYFIRSTTHREE)
+				{
+					 _tcsncpy(BufferTitle,WayPointList[index].Name,3);
+					BufferTitle[3] = '\0';
+				}
+				else if( DisplayTextType == DISPLAYNUMBER) {
+					_stprintf(BufferTitle,TEXT("%d"), WayPointList[index].Number );
+				} else {
+					_tcsncpy(BufferTitle,WayPointList[index].Name, 12);
+					// BufferTitle[(sizeof(Text)/sizeof(TCHAR))-1] = '\0';
+					if (lktitle)
+						BufferTitle[12] = '\0'; // FIX TUNING
+					else
+						BufferTitle[8] = '\0';  // FIX TUNING
+				}
+				value=WayPointCalc[index].Bearing;
+				valid=true;
+			}
+
+			if (valid) {
+				if (value > 1)
+					_stprintf(BufferValue, TEXT("%2.0f°"), value);
+				else if (value < -1)
+					_stprintf(BufferValue, TEXT("%2.0f°"), -value);
+					else
+						_tcscpy(BufferValue, TEXT("0°"));
+			} 
+
+			wsprintf(BufferUnit, TEXT(""));
+			break;
+
+
+
+		// B119
+		case LK_ALTERN1_DIST:
+		// B120
+		case LK_ALTERN2_DIST:
+		// B121
+		case LK_BESTALTERN_DIST:
+			wsprintf(BufferValue,_T(NULLMEDIUM));
+			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			switch(lkindex) {
+				case LK_ALTERN1_DIST:
+					index=Alternate1;
+					break;
+				case LK_ALTERN2_DIST:
+					index=Alternate2;
+					break;
+				case LK_BESTALTERN_DIST:
+					index=BestAlternate;
+					break;
+				default:
+					index=0;
+					break;
+			}
+
+			if(ValidWayPoint(index))
+			{
+				if ( DisplayTextType == DISPLAYFIRSTTHREE)
+				{
+					 _tcsncpy(BufferTitle,WayPointList[index].Name,3);
+					BufferTitle[3] = '\0';
+				}
+				else if( DisplayTextType == DISPLAYNUMBER) {
+					_stprintf(BufferTitle,TEXT("%d"), WayPointList[index].Number );
+				} else {
+					_tcsncpy(BufferTitle,WayPointList[index].Name, 12);
+					// BufferTitle[(sizeof(Text)/sizeof(TCHAR))-1] = '\0';
+					if (lktitle)
+						BufferTitle[12] = '\0'; // FIX TUNING
+					else
+						BufferTitle[8] = '\0';  // FIX TUNING
+				}
+				value=DISTANCEMODIFY*WayPointCalc[index].Distance;
+				valid=true;
+			}
+
+
+			if (valid) {
+				if (value>99 || value==0)
+					sprintf(text,"%.0f",value);
+				else {
+					if (ISPARAGLIDER) {
+						if (value>10)
+							sprintf(text,"%.1f",value);
+						else
+							sprintf(text,"%.2f",value);
+					} else {
+							sprintf(text,"%.1f",value);
+					}
+				}
+				wsprintf(BufferValue, TEXT("%S"),text);
+			}
+			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
+			break;
+
+
+
 		case LK_DUMMY:
 			wsprintf(BufferValue,_T(NULLLONG));
 			if (lktitle)

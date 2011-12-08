@@ -1696,6 +1696,15 @@ _@M1726_ "YOUR POSITION IS UNKNOWN!"
 # 1727-1739 reserved for The Oracle
 _@M1740_ "OLC analysis"
 _@M1741_ "**RESET DEFAULT PROFILE**"
+# free space , to be used 1742-1760
+#
+# These are new infoboxes:
+_@M1761_ "Alternate1 bearing"
+_@M1762_ "Alternate2 bearing"
+_@M1763_ "BestAlternate bearing"
+_@M1764_ "Alternate1 distance"
+_@M1765_ "Alternate2 distance"
+_@M1766_ "BestAlternate distance"
 
 ############################################################
 #                  - MENU MESSAGES - 

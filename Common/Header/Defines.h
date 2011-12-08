@@ -576,7 +576,16 @@
 #define LK_FLAPS			113   		// not for ibox
 #define LK_AIRSPACEVDIST		114		// not for ibox
 
-#define LK_HOME_ARRIVAL 115 // not for ibox
+#define LK_HOME_ARRIVAL			115
+
+#define LK_ALTERNATESBRG		116		// not a mistake
+#define LK_ALTERN1_BRG			116
+#define LK_ALTERN2_BRG			117
+#define LK_BESTALTERN_BRG		118
+#define LK_ALTERNATESDIST		119		// not a mistake
+#define LK_ALTERN1_DIST			119
+#define LK_ALTERN2_DIST			120
+#define LK_BESTALTERN_DIST		121
 
 
 // The following values are not available for custom configuration

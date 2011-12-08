@@ -283,6 +283,14 @@ void FillDataOptions()
 	// LKTOKEN  _@M1644_ = "Home Alt.Arrival", _@M1645_ = "HomeArr"
 	SetDataOption(115, ugAltitude,       TEXT("_@M1644_"), TEXT("_@M1645_"));
 
+	// No reason to have abbreviated name, since normally it is the wp name itself
+	SetDataOption(116, ugNone, TEXT("_@M1761_"), TEXT("Atn1Brg")); // Alternate1 bearing
+	SetDataOption(117, ugNone, TEXT("_@M1762_"), TEXT("Atn2Brg")); // Alternate2 bearing
+	SetDataOption(118, ugNone, TEXT("_@M1763_"), TEXT("BstBrg"));  // BestAlternate bearing
+	SetDataOption(119, ugDistance, TEXT("_@M1764_"), TEXT("Atn1Dst")); // Alternate1 distance
+	SetDataOption(120, ugDistance, TEXT("_@M1765_"), TEXT("Atn2Dst")); // Alternate2 distance
+	SetDataOption(121, ugDistance, TEXT("_@M1766_"), TEXT("BstDst"));  // BestAlternate distance
+
 	//Before adding new items, consider changing NUMDATAOPTIONS_MAX
 
 }

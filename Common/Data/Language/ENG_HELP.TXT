@@ -1464,6 +1464,18 @@ In case of flyzones, the nearest distance is calculated where you can leave that
 [Home Altitude Arrival]
 Arrival altitude at the Home airfield. Calculated for current MC, uses safetyAlt and safetyMC.
 
+@916
+@917
+@918
+[Alternate bearing]
+Bearing to the selected alternate
+
+@919
+@920
+@921
+[Alternate distance]
+Distance to the selected alternate
+
 #
 # END INFOBOXES 800 - 1199
 #
