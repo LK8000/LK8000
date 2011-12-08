@@ -605,6 +605,7 @@ GEXTERN short Orbiter_Config;
 GEXTERN short Shading;
 GEXTERN short Shading_Config;
 GEXTERN bool ConfBB[10];
+GEXTERN bool ConfBB0;
 GEXTERN bool ConfBB1;
 GEXTERN bool ConfBB2;
 GEXTERN bool ConfBB3;

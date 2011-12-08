@@ -218,7 +218,7 @@ void DeInitCustomHardware(void) {
 
 void UpdateConfBB(void) {
 
-  ConfBB[0]=true; // thermal always on automatically
+  ConfBB[0]=ConfBB0; // thermal mode can appear only while circling
   ConfBB[1]=ConfBB1;
   ConfBB[2]=ConfBB2;
   ConfBB[3]=ConfBB3;

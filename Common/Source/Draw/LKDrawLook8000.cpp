@@ -1125,13 +1125,17 @@ Drawbottom:
 
   if ( MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && !wascircling) {
 	// switch to thermal mode
-	OldBottomMode=BottomMode;
-	BottomMode=BM_TRM;
+	if (ConfBB[BM_TRM]) {
+		OldBottomMode=BottomMode;
+		BottomMode=BM_TRM;
+	}
 	wascircling=true;
   }
   if ( !MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && wascircling) {
 	// back to cruise mode
-	BottomMode=OldBottomMode;
+	if (ConfBB[BM_TRM]) {
+		BottomMode=OldBottomMode;
+	}
 	wascircling=false;
   }
 

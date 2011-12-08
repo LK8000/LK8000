@@ -340,6 +340,7 @@ void LKProfileResetDefault(void) {
   OverlayClock = 0;
 
   // default BB and IP is all ON
+  ConfBB0 = 1;
   ConfBB1 = 1;
   ConfBB2 = 1;
   ConfBB3 = 1;

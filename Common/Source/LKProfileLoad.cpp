@@ -311,6 +311,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryClipAlt,&ClipAltitude);
   PREAD(sname,svalue,szRegistryCompetitionClass,&*CompetitionClass_Config);
   PREAD(sname,svalue,szRegistryCompetitionID,&*CompetitionID_Config);
+  PREAD(sname,svalue,szRegistryConfBB0,&ConfBB0);
   PREAD(sname,svalue,szRegistryConfBB1,&ConfBB1);
   PREAD(sname,svalue,szRegistryConfBB2,&ConfBB2);
   PREAD(sname,svalue,szRegistryConfBB3,&ConfBB3);

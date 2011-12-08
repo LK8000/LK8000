@@ -132,6 +132,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryClipAlt,ClipAltitude);
   rprintf(szRegistryCompetitionClass,CompetitionClass_Config);
   rprintf(szRegistryCompetitionID,CompetitionID_Config);
+  rprintf(szRegistryConfBB0,ConfBB0);
   rprintf(szRegistryConfBB1,ConfBB1);
   rprintf(szRegistryConfBB2,ConfBB2);
   rprintf(szRegistryConfBB3,ConfBB3);

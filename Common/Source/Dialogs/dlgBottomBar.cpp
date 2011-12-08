@@ -31,6 +31,12 @@ static void OnCloseClicked(WindowControl * Sender){
 static void setVariables(void) {
   WndProperty *wp;
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB0"));
+  if (wp) {
+    DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
+    dfb->Set(ConfBB0);
+    wp->RefreshDisplay();
+  }
   wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB1"));
   if (wp) {
     DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
@@ -113,6 +119,14 @@ void dlgBottomBarShowModal(void){
 
   wf->ShowModal();
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB0"));
+  if (wp) {
+	if (ConfBB0 != (wp->GetDataField()->GetAsBoolean())) {
+		ConfBB0 = (wp->GetDataField()->GetAsBoolean());
+		SetToRegistry(szRegistryConfBB0, (DWORD)(ConfBB0));
+		changed=true;
+	}
+  }
   wp = (WndProperty*)wf->FindByName(TEXT("prpConfBB1"));
   if (wp) {
 	if (ConfBB1 != (wp->GetDataField()->GetAsBoolean())) {
