@@ -63,7 +63,7 @@ static void setVariables(void) {
 	AddConfList(dfe);
 	dfe->Set(CustomKeyModeRightUpCorner);
 	dfe->Set(CustomKeyModeRightUpCorner);
-	if (ISPARAGLIDER) wp->SetReadOnly(true);
+	// if (ISPARAGLIDER) wp->SetReadOnly(true); 2.3q also PGs can use it
 	wp->RefreshDisplay();
   }
 

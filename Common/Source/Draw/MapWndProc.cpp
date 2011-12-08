@@ -582,7 +582,9 @@ goto_menu:
 	} // End compass icon check
       } // PARAGLIDERs special buttons
 	// else not a paraglider key, process it for gliders
-	else { 
+	// else { 
+	// change in 2.3q: we let paragliders use the CK as well
+	{ 
 		if ( (X > ((MapRect.right-MapRect.left)- COMPASSMENUSIZE)) && (Y <= MapRect.top+COMPASSMENUSIZE) ) {
 			if (!CustomKeyHandler(CKI_TOPRIGHT)) {
 				#if 0
