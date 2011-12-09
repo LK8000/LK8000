@@ -19,6 +19,15 @@
 using std::min;
 using std::max;
 
+// Once done with all validations we can switch to XK8 code
+// #define USEXK8	1
+
+#if USEXK8
+ #define LOGGER_MANUFACTURER	"XK8"
+#else
+ #define LOGGER_MANUFACTURER	"XCS"
+#endif
+
 #if OLDLOGGER
 HINSTANCE GRecordDLLHandle = NULL;
 
@@ -693,6 +702,7 @@ void StartLogger()
   return;
 }
 
+
 //
 // This is called by Calc/Task thread, after calling StartLogger
 //
@@ -702,7 +712,6 @@ void LoggerHeader(void)
   char temp[100];
   
   // Flight recorder ID number MUST go first..
-  // XCS will be replaced by XLK when we have our own signature key
 
   // Do one more check on %C because if one is 0 the string will not be closed by newline
   // resulting in a wrong header!
@@ -761,21 +770,38 @@ void LoggerHeader(void)
   // until LK is using xcsoar G signature, we keep XCSOAR as main logger type
   // The comma is currently declared invalid as a igc character, which is probably wrong
 
+  #if USEXK8
+  sprintf(temp,"HFFTYFRTYPE:%s\r\n", LKFORK); // default
+  #else
   sprintf(temp,"HFFTYFRTYPE:XCSOAR %s\r\n", LKFORK); // default
+  #endif
 
+  // PNAs are also PPC2003, so careful
   #ifdef PNA
   char pnamodel[MAX_PATH+1];
   ConvertTToC(pnamodel,GlobalModelName);
   pnamodel[_tcslen(GlobalModelName)]='\0';
-  sprintf(temp,"HFFTYFRTYPE:XCSOAR %s PNA %s\r\n", LKFORK,pnamodel);
+    #if USEXK8
+    sprintf(temp,"HFFTYFRTYPE:%s PNA %s\r\n", LKFORK,pnamodel);
+    #else
+    sprintf(temp,"HFFTYFRTYPE:XCSOAR %s PNA %s\r\n", LKFORK,pnamodel);
+    #endif
   #else
 
   #ifdef PPC2002 
-  sprintf(temp,"HFFTYFRTYPE:XCSOAR %s PPC2002\r\n", LKFORK);
+    #if USEXK8
+    sprintf(temp,"HFFTYFRTYPE:%s PPC2002\r\n", LKFORK);
+    #else
+    sprintf(temp,"HFFTYFRTYPE:XCSOAR %s PPC2002\r\n", LKFORK);
+    #endif
   #endif
   // PNA is also PPC2003..
   #ifdef PPC2003 
-  sprintf(temp,"HFFTYFRTYPE:XCSOAR %s PPC2003\r\n", LKFORK);
+    #if USEXK8
+    sprintf(temp,"HFFTYFRTYPE:%s PPC2003\r\n", LKFORK);
+    #else
+    sprintf(temp,"HFFTYFRTYPE:XCSOAR %s PPC2003\r\n", LKFORK);
+    #endif
   #endif
 
   #endif
@@ -1870,8 +1896,8 @@ bool LoggerGActive()
     return false;
 #else
   #if TESTBENCH
-  // return true; // only for checking Grecord new stuff
-  return false;
+  // return true;	// THIS IS ONLY for checking Grecord new stuff under testbench
+  return false;		// THIS IS THE CORRECT return
   #else
    #if (WINDOWSPC>0)
    return false;

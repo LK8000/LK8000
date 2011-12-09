@@ -780,8 +780,6 @@
 //
 // Dummy asset id for a dummy igc logger
 #define LOGGER_ASSET_ID	"DUM"
-// According to GNSS specs 2.5.6.1 - to be changed into XLK
-#define LOGGER_MANUFACTURER "XCS"
 
 // 
 // TouchScreen context status
