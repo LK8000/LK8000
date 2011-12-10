@@ -258,7 +258,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryAlarmMaxAltitude2,&AlarmMaxAltitude2);
   PREAD(sname,svalue,szRegistryAlarmMaxAltitude3,&AlarmMaxAltitude3);
   PREAD(sname,svalue,szRegistryAltMargin,&AltWarningMargin);
-  PREAD(sname,svalue,szRegistryAltMode,&AltitudeMode);
+  PREAD(sname,svalue,szRegistryAltMode,&AltitudeMode_Config);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryAlternate1,&Alternate1);
   PREAD(sname,svalue,szRegistryAlternate2,&Alternate2);
@@ -285,13 +285,9 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryAutoMcStatus,&AutoMacCready_Config);
   PREAD(sname,svalue,szRegistryAutoOrientScale,&AutoOrientScale);
   PREAD(sname,svalue,szRegistryAutoSoundVolume,&EnableAutoSoundVolume);
-  PREAD(sname,svalue,szRegistryAutoWind,&AutoWindMode);
+  PREAD(sname,svalue,szRegistryAutoWind,&AutoWindMode_Config);
 
-  if (!_tcscmp(szRegistryAutoZoom,sname)) {
-	ival=wcstol(svalue, NULL, 10);
-	MapWindow::zoom.AutoZoom(ival == 1);
-	return;
-  }
+  PREAD(sname,svalue,szRegistryAutoZoom,&AutoZoom_Config);
 
   PREAD(sname,svalue,szRegistryAverEffTime,&AverEffTime);
   PREAD(sname,svalue,szRegistryBallastSecsToEmpty,&BallastSecsToEmpty);
@@ -475,7 +471,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryTpFilter,&TpFilter);
   PREAD(sname,svalue,szRegistryTrackBar,&TrackBar);
-  PREAD(sname,svalue,szRegistryTrailDrift,&MapWindow::EnableTrailDrift);
+  PREAD(sname,svalue,szRegistryTrailDrift,&EnableTrailDrift_Config);
   PREAD(sname,svalue,szRegistryUTCOffset,&UTCOffset);
   PREAD(sname,svalue,szRegistryUseCustomFonts,&UseCustomFonts);
   PREAD(sname,svalue,szRegistryUseGeoidSeparation,&UseGeoidSeparation);

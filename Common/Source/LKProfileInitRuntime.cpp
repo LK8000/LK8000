@@ -44,21 +44,24 @@ void LKProfileInitRuntime(void) {
   // Runtime from Config
   //
 
-  ActiveMap	=	ActiveMap_Config;
-  Appearance.InverseInfoBox = InverseInfoBox_Config;
-  AutoAdvance	=	AutoAdvance_Config;
-  AutoMcMode	=	AutoMcMode_Config;
-  BgMapColor	=	BgMapColor_Config;
-  EnableNavBaroAltitude	= EnableNavBaroAltitude_Config;
-  EnableTerrain =	EnableTerrain_Config;
-  EnableTopology=	EnableTopology_Config;
-  Orbiter	= 	Orbiter_Config;
-  Shading	=	Shading_Config;
-  TerrainRamp	=	TerrainRamp_Config;
-  TrailActive	=	TrailActive_Config;
-  UseTotalEnergy=	UseTotalEnergy_Config;
+  ActiveMap			= ActiveMap_Config;
+  Appearance.InverseInfoBox	= InverseInfoBox_Config;
+  AutoAdvance			= AutoAdvance_Config;
+  AutoMcMode			= AutoMcMode_Config;
+  BgMapColor			= BgMapColor_Config;
+  EnableNavBaroAltitude		= EnableNavBaroAltitude_Config;
+  EnableTerrain 		= EnableTerrain_Config;
+  EnableTopology		= EnableTopology_Config;
+  Orbiter			= Orbiter_Config;
+  Shading			= Shading_Config;
+  TerrainRamp			= TerrainRamp_Config;
+  TrailActive			= TrailActive_Config;
+  UseTotalEnergy		= UseTotalEnergy_Config;
+  AutoWindMode			= AutoWindMode_Config;
+  MapWindow::EnableTrailDrift	= EnableTrailDrift_Config;
+  AltitudeMode			= AltitudeMode_Config;
 
-  // MapWindow::zoom.AutoZoom(AutoZoom_Config); // Not yet using a global!
+  MapWindow::zoom.AutoZoom(AutoZoom_Config);
 
   CALCULATED_INFO.AutoMacCready = AutoMacCready_Config==true?1:0;
   DisplayOrientation = DisplayOrientation_Config;

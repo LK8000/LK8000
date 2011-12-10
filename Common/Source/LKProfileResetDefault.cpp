@@ -68,7 +68,7 @@ void LKProfileResetDefault(void) {
 
   DisplayTextType=0;
 
-  AltitudeMode = ALLON;
+  AltitudeMode_Config = ALLON;
   ClipAltitude = 1000;
   AltWarningMargin = 100;
   AIRSPACEWARNINGS = TRUE;
@@ -102,7 +102,7 @@ void LKProfileResetDefault(void) {
 
   TrailActive_Config = TRUE;
 
-  MapWindow::EnableTrailDrift = false;
+  EnableTrailDrift_Config = false;
 
   EnableThermalLocator = 1;
 
@@ -112,7 +112,7 @@ void LKProfileResetDefault(void) {
 
   FinalGlideTerrain = 1;
 
-  AutoWindMode= D_AUTOWIND_CIRCLING;
+  AutoWindMode_Config = D_AUTOWIND_CIRCLING;
 
   MapWindow::zoom.CircleZoom(1);
 
@@ -285,7 +285,7 @@ void LKProfileResetDefault(void) {
 
   UTCOffset = 0;
 
-  MapWindow::zoom.AutoZoom(false); // CHECK! TODO
+  AutoZoom_Config=false;
 
   MenuTimeout_Config = MENUTIMEOUTMAX;
 

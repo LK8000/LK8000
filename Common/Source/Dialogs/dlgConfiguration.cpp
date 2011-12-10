@@ -1467,12 +1467,12 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("Auto")));
 	// LKTOKEN  _@M77_ = "All below" 
     dfe->addEnumText(gettext(TEXT("_@M77_")));
-    dfe->Set(AltitudeMode);
+    dfe->Set(AltitudeMode_Config);
     wp->RefreshDisplay();
       wp = (WndProperty*)wf->FindByName(TEXT("prpClipAltitude"));
-      if (wp) wp->SetVisible(AltitudeMode==CLIP);
+      if (wp) wp->SetVisible(AltitudeMode_Config==CLIP);
       wp = (WndProperty*)wf->FindByName(TEXT("prpAltWarningMargin"));
-      if (wp) wp->SetVisible(AltitudeMode==AUTO || AltitudeMode==ALLBELOW);
+      if (wp) wp->SetVisible(AltitudeMode_Config==AUTO || AltitudeMode_Config==ALLBELOW);
   }
 
 
@@ -1597,7 +1597,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoZoom"));
   if (wp) {
-    wp->GetDataField()->Set(MapWindow::zoom.AutoZoom());
+    wp->GetDataField()->Set(AutoZoom_Config);
     wp->RefreshDisplay();
   }
 
@@ -1780,7 +1780,7 @@ static void setVariables(void) {
     dfe->addEnumText(gettext(TEXT("ZigZag")));
 	// LKTOKEN  _@M149_ = "Both" 
     dfe->addEnumText(gettext(TEXT("_@M149_")));
-    wp->GetDataField()->Set(AutoWindMode);
+    wp->GetDataField()->Set(AutoWindMode_Config);
     wp->RefreshDisplay();
   }
 
@@ -2008,7 +2008,7 @@ static void setVariables(void) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTrailDrift"));
   if (wp) {
-    wp->GetDataField()->Set(MapWindow::EnableTrailDrift);
+    wp->GetDataField()->Set(EnableTrailDrift_Config);
     wp->RefreshDisplay();
   }
 
@@ -3199,12 +3199,13 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTrailDrift"));
   if (wp) {
-    if (MapWindow::EnableTrailDrift != wp->GetDataField()->GetAsBoolean()) {
-      MapWindow::EnableTrailDrift = wp->GetDataField()->GetAsBoolean();
+    if (EnableTrailDrift_Config != wp->GetDataField()->GetAsBoolean()) {
+      EnableTrailDrift_Config = wp->GetDataField()->GetAsBoolean();
 #if OLDPROFILES
       SetToRegistry(szRegistryTrailDrift, MapWindow::EnableTrailDrift);
 #endif
       changed = true;
+      MapWindow::EnableTrailDrift = EnableTrailDrift_Config;
     }
   }
 
@@ -3346,11 +3347,12 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceDisplay"));
   if (wp) {
-    if (AltitudeMode != wp->GetDataField()->GetAsInteger()) {
-      AltitudeMode = wp->GetDataField()->GetAsInteger();
+    if (AltitudeMode_Config != wp->GetDataField()->GetAsInteger()) {
+      AltitudeMode_Config = wp->GetDataField()->GetAsInteger();
 #if OLDPROFILES
       SetToRegistry(szRegistryAltMode, AltitudeMode);
 #endif
+      AltitudeMode = AltitudeMode_Config;
       changed = true;
     }
   }
@@ -3484,14 +3486,15 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoZoom"));
   if (wp) {
-    if (MapWindow::zoom.AutoZoom() != 
+    if (AutoZoom_Config != 
 	wp->GetDataField()->GetAsBoolean()) {
-      MapWindow::zoom.AutoZoom(wp->GetDataField()->GetAsBoolean());
+      AutoZoom_Config = wp->GetDataField()->GetAsBoolean();
 #if OLDPROFILES
       SetToRegistry(szRegistryAutoZoom,
 		    MapWindow::zoom.AutoZoom());
 #endif
       changed = true;
+      MapWindow::zoom.AutoZoom(AutoZoom_Config);
     }
   }
 
@@ -3656,11 +3659,12 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoWind"));
   if (wp) {
-    if (AutoWindMode != wp->GetDataField()->GetAsInteger()) {
-      AutoWindMode = wp->GetDataField()->GetAsInteger();
+    if (AutoWindMode_Config != wp->GetDataField()->GetAsInteger()) {
+      AutoWindMode_Config = wp->GetDataField()->GetAsInteger();
 #if OLDPROFILES
       SetToRegistry(szRegistryAutoWind, AutoWindMode);
 #endif
+      AutoWindMode = AutoWindMode_Config;
       changed = true;
     }
   }

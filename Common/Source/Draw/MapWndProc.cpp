@@ -64,7 +64,7 @@ double MapWindow::targetMovedLon = 0;
 
 int MapWindow::TargetPanIndex = 0;
 double MapWindow::TargetZoomDistance = 500.0;
-bool MapWindow::EnableTrailDrift=false;
+bool MapWindow::EnableTrailDrift=false; // initialized again in Globals. This is only the runtime, not the config.
 int MapWindow::GliderScreenPosition = 40; // 20% from bottom
 int MapWindow::GliderScreenPositionX = 50;  // 100216
 int MapWindow::GliderScreenPositionY = 40;

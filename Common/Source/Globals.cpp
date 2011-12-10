@@ -97,7 +97,8 @@ void Globals_Init(void) {
   AutoOrientScale = 10;
   DisplayTextType = DISPLAYNONE;
 
-  AltitudeMode = ALLON;
+  AltitudeMode_Config = ALLON;
+  AltitudeMode = AltitudeMode_Config;
   ClipAltitude = 1000;
   AltWarningMargin = 100;
   AutoAdvance = 1;
@@ -495,7 +496,12 @@ void Globals_Init(void) {
   LoggerTimeStepCruise=1;     //@ 101008 changed to 1 second
   LoggerTimeStepCircling=1;
 
-  AutoWindMode= D_AUTOWIND_CIRCLING;
+  AutoWindMode_Config= D_AUTOWIND_CIRCLING;
+  AutoWindMode= AutoWindMode_Config;
+  EnableTrailDrift_Config = false;
+  MapWindow::EnableTrailDrift=EnableTrailDrift_Config;
+  AutoZoom_Config = false;
+  MapWindow::zoom.AutoZoom(AutoZoom_Config);
 
   EnableNavBaroAltitude=false;
   EnableNavBaroAltitude_Config=false;

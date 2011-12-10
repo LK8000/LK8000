@@ -102,7 +102,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryAlarmMaxAltitude2, AlarmMaxAltitude2);
   rprintf(szRegistryAlarmMaxAltitude3, AlarmMaxAltitude3);
   rprintf(szRegistryAltMargin, AltWarningMargin);
-  rprintf(szRegistryAltMode, AltitudeMode);
+  rprintf(szRegistryAltMode, AltitudeMode_Config);
   rprintf(szRegistryAlternate1, Alternate1); // these are not part of configuration, but saved all the same
   rprintf(szRegistryAlternate2, Alternate2);
   rprintf(szRegistryAltitudeUnitsValue, AltitudeUnit_Config);
@@ -118,8 +118,8 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryAutoMcStatus,AutoMacCready_Config);
   rprintf(szRegistryAutoOrientScale,AutoOrientScale);
   rprintf(szRegistryAutoSoundVolume,EnableAutoSoundVolume);
-  rprintf(szRegistryAutoWind,AutoWindMode);
-  rprintf(szRegistryAutoZoom,MapWindow::zoom.AutoZoom()); // TODO CHECK IF OK
+  rprintf(szRegistryAutoWind,AutoWindMode_Config);
+  rprintf(szRegistryAutoZoom,AutoZoom_Config);
   rprintf(szRegistryAverEffTime,AverEffTime);
   rprintf(szRegistryBallastSecsToEmpty,BallastSecsToEmpty);
   rprintf(szRegistryBarOpacity,BarOpacity);
@@ -274,7 +274,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryThermalLocator,EnableThermalLocator);
   rprintf(szRegistryTpFilter,TpFilter);
   rprintf(szRegistryTrackBar,TrackBar);
-  rprintf(szRegistryTrailDrift,MapWindow::EnableTrailDrift);
+  rprintf(szRegistryTrailDrift,EnableTrailDrift_Config);
   rprintf(szRegistryUTCOffset,UTCOffset);
   rprintf(szRegistryUseCustomFonts,UseCustomFonts);
   rprintf(szRegistryUseGeoidSeparation,UseGeoidSeparation);

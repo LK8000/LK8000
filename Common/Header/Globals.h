@@ -597,6 +597,9 @@ GEXTERN int FinalGlideTerrain;
 // 2: ZigZag
 // 3: Both
 GEXTERN int AutoWindMode;
+GEXTERN int AutoWindMode_Config;
+GEXTERN bool EnableTrailDrift_Config;
+GEXTERN bool AutoZoom_Config;
 
 GEXTERN bool EnableNavBaroAltitude;
 GEXTERN bool EnableNavBaroAltitude_Config;
@@ -646,6 +649,7 @@ GEXTERN int AirspaceWarningVerticalMargin;	// vertical distance used to calculat
 GEXTERN int AirspaceWarningDlgTimeout;          // airspace warning dialog auto closing in x secs
 GEXTERN int AirspaceWarningMapLabels;           // airspace warning labels showed on map
 GEXTERN int AltitudeMode;
+GEXTERN int AltitudeMode_Config;
 GEXTERN int SafetyAltitudeMode;
 GEXTERN int ClipAltitude;
 GEXTERN int AltWarningMargin;
