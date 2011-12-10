@@ -1895,15 +1895,15 @@ bool LoggerGActive()
   else
     return false;
 #else
-  #if TESTBENCH
-  // return true;	// THIS IS ONLY for checking Grecord new stuff under testbench
-  return false;		// THIS IS THE CORRECT return
+  #if (WINDOWSPC>0)
+    #if TESTBENCH
+    // return true;	// THIS IS ONLY for checking Grecord new stuff under testbench
+    return false;	// THIS IS THE CORRECT return also for testbench
+    #else
+    return false;
+    #endif
   #else
-   #if (WINDOWSPC>0)
-   return false;
-   #else
-   return true;
-   #endif
+  return true;
   #endif
 #endif
 }
