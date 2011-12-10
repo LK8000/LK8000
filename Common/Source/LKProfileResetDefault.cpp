@@ -293,7 +293,7 @@ void LKProfileResetDefault(void) {
 
   LoggerShortName = 0;
 
-  EnableFLARMMap = 1;
+  EnableFLARMMap = 0;
 
   TerrainContrast = 140;
 

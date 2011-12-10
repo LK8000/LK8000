@@ -137,7 +137,7 @@ void Globals_Init(void) {
 
   RUN_MODE=RUN_WELCOME;
 
-  EnableFLARMMap = 1;
+  EnableFLARMMap = 0;
 
   // Final Glide Data
   SAFETYALTITUDEARRIVAL = 300;
