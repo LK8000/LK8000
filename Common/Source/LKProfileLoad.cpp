@@ -446,7 +446,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistrySectorRadius,&SectorRadius);
   PREAD(sname,svalue,szRegistrySetSystemTimeFromGPS,&SetSystemTimeFromGPS);
   PREAD(sname,svalue,szRegistryShading,&Shading_Config);
-  PREAD(sname,svalue,szRegistrySnailTrail,&TrailActive);
+  PREAD(sname,svalue,szRegistrySnailTrail,&TrailActive_Config);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistrySnailWidthScale,&MapWindow::SnailWidthScale);
   PREAD(sname,svalue,szRegistrySpeed1Index,&dwSpeedIndex1);
