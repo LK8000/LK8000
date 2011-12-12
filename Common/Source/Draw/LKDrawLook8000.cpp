@@ -1395,7 +1395,7 @@ Drawbottom:
 		BufferTitle[7]='\0';
 		break;
 	case BM_CRU:
-		showunit=LKFormatValue(LK_NEXT_DIST, true, BufferValue, BufferUnit, BufferTitle);
+		showunit=LKFormatValue(LK_TRACK, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_HGH:
 		showunit=LKFormatValue(LK_HAGL, true, BufferValue, BufferUnit, BufferTitle);
@@ -1473,7 +1473,7 @@ Drawbottom:
 		BufferTitle[7]='\0';
 		break;
 	case BM_CRU: 
-		showunit=LKFormatValue(LK_NEXT_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
+		showunit=LKFormatValue(LK_HEADWINDSPEED, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_HGH:
 		showunit=LKFormatValue(LK_FL, true, BufferValue, BufferUnit, BufferTitle);
@@ -1553,13 +1553,13 @@ Drawbottom:
 		BufferTitle[7]='\0';
 		break;
 	case BM_CRU:
-		showunit=LKFormatValue(LK_LD_AVR, true, BufferValue, BufferUnit, BufferTitle);
+		showunit=LKFormatValue(LK_LD_INST, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_HGH:
 		showunit=LKFormatValue(LK_AQNH, true, BufferValue, BufferUnit, BufferTitle); // 100221
 		break;
 	case BM_AUX:
-		showunit=LKFormatValue(LK_LD_CRUISE, true, BufferValue, BufferUnit, BufferTitle); // 100221
+		showunit=LKFormatValue(LK_ODOMETER, true, BufferValue, BufferUnit, BufferTitle); // 100221
 		break;
 	case BM_TSK:
 		showunit=LKFormatValue(LK_SPEEDTASK_ACH, true, BufferValue, BufferUnit, BufferTitle);

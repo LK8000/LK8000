@@ -1220,6 +1220,11 @@ goto_bearing:
 		case LK_HEADWINDSPEED:
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			wsprintf(BufferUnit, TEXT("%s"),Units::GetHorizontalSpeedName());
+
+			if (value=-999) {
+				_stprintf(BufferValue,TEXT(NULLMEDIUM)); 
+				break;
+			}
 			
 			value=DerivedDrawInfo.HeadWind*SPEEDMODIFY;
 			if (value>=1 ) {
