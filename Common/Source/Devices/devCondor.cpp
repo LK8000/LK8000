@@ -147,9 +147,9 @@ static BOOL cLXWP0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO) {
   GPS_INFO->IndicatedAirspeed = airspeed/AirDensityRatio(alt);
   GPS_INFO->TrueAirspeed = airspeed;
 
-  if (d == pDevPrimaryBaroSource){
-    GPS_INFO->BaroAltitudeAvailable = TRUE;
-    GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(alt);
+  if (d == pDevPrimaryBaroSource)
+	{
+      UpdateBaroSource( GPS_INFO, CONDOR, AltitudeToQNHAltitude(alt));
   }
 
   NMEAParser::ExtractParameter(String,ctemp,3);

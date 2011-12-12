@@ -109,9 +109,9 @@ static BOOL PZAN1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *aGPS_INFO)
 {
   TCHAR ctemp[80];
   NMEAParser::ExtractParameter(String,ctemp,0);
-  if (d == pDevPrimaryBaroSource) {
-  	aGPS_INFO->BaroAltitude = AltitudeToQNHAltitude(StrToDouble(ctemp,NULL));
-  	aGPS_INFO->BaroAltitudeAvailable = TRUE;
+  if (d == pDevPrimaryBaroSource)
+	{
+      UpdateBaroSource( aGPS_INFO, ZANDER, AltitudeToQNHAltitude( StrToDouble(ctemp, NULL)));
   }
   return TRUE;
 }
@@ -130,7 +130,10 @@ static BOOL PZAN2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *aGPS_INFO)
   wnet = (StrToDouble(ctemp,NULL)-10000)/100; // cm/s
   aGPS_INFO->Vario = wnet;
 
-  if (aGPS_INFO->BaroAltitudeAvailable) {
+
+//  if (aGPS_INFO->BaroAltitudeAvailable)
+  if (aGPS_INFO->BaroDevice == ZANDER)
+  {
     vias = vtas/AirDensityRatio(aGPS_INFO->BaroAltitude);
   } else {
     vias = 0.0;

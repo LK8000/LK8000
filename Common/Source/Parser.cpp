@@ -40,6 +40,145 @@ void CheckBackTarget(int flarmslot);
 NMEAParser nmeaParser1;
 NMEAParser nmeaParser2;
 
+/* get a device name string dependent of the current selected baro device ID
+ *
+ */
+int GetBaroDeviceName(DEVICE_TYPE eDevice ,TCHAR  szDevName[])
+{
+    switch (eDevice)
+    {
+      case NONE           :   _stprintf(szDevName,TEXT("None"));               break;
+      case HOLUX          :   _stprintf(szDevName,TEXT("HOLUX"));              break;
+      case ROYALTEK3200   :   _stprintf(szDevName,TEXT("ROYALTEK 3200"));      break;
+      case GPS_RMZ        :   _stprintf(szDevName,TEXT("GPS_RMZ"));            break;
+      case GPS_RMA        :   _stprintf(szDevName,TEXT("GPS_RMA"));            break;
+      case GPS_RMC        :   _stprintf(szDevName,TEXT("GPS_RMC"));            break;
+      case LK_EXT1        :   _stprintf(szDevName,TEXT("LK_EXT1"));            break;
+      case NMEA_OUT       :   _stprintf(szDevName,TEXT("NMEA_OUT"));           break;
+      case GENERIC        :   _stprintf(szDevName,TEXT("GENERIC"));            break;
+      case TASMAN         :   _stprintf(szDevName,TEXT("TASMAN"));             break;
+      case BASE           :   _stprintf(szDevName,TEXT("BASE"));               break;
+      case BORGELT500     :   _stprintf(szDevName,TEXT("BORGELT B500"));       break;
+      case CAI302         :   _stprintf(szDevName,TEXT("CAI 302"));            break;
+      case CAI_GPS_NAV    :   _stprintf(szDevName,TEXT("CAI GPS_NAV"));        break;
+      case COMPEO         :   _stprintf(szDevName,TEXT("COMPEO"));             break;
+      case CONDOR         :   _stprintf(szDevName,TEXT("CONDOR"));             break;
+      case DIGIFLY        :   _stprintf(szDevName,TEXT("DIGIFLY"));            break;
+      case DSX            :   _stprintf(szDevName,TEXT("DSX"));                break;
+      case EW             :   _stprintf(szDevName,TEXT("EW"));                 break;
+      case EW_MICRO_REC   :   _stprintf(szDevName,TEXT("EW_MICRO_REC"));       break;
+      case FLYMASTER_F1   :   _stprintf(szDevName,TEXT("FLYMASTER_F1"));       break;
+      case FLYTEC         :   _stprintf(szDevName,TEXT("FLYTEC"));             break;
+      case ILEC           :   _stprintf(szDevName,TEXT("ILEC SN10"));          break;
+      case IMI            :   _stprintf(szDevName,TEXT("IMI"));                break;
+      case LX             :   _stprintf(szDevName,TEXT("LX"));                 break;
+      case LX_NANO        :   _stprintf(szDevName,TEXT("LX_NANO"));            break;
+      case LX16xx         :   _stprintf(szDevName,TEXT("LX 166/1600"));        break;
+      case POSIGRAPH      :   _stprintf(szDevName,TEXT("POSIGRAPH"));          break;
+      case VOLKSLOGGER    :   _stprintf(szDevName,TEXT("Volkslogger"));        break;
+      case WESTERBOER     :   _stprintf(szDevName,TEXT("Westeroer"));          break;
+      case XCOM760        :   _stprintf(szDevName,TEXT("XCOM 760"));           break;
+      case ZANDER         :   _stprintf(szDevName,TEXT("ZANDER"));             break;
+      case FLARM          :   _stprintf(szDevName,TEXT("FLARM"));              break;
+
+      default             :   _stprintf(szDevName,TEXT("unknown"));            break;
+
+    }
+    return 0;
+}
+
+
+/*
+ * Get a time tag in ms to build a baro "age" for "lost" device identification
+ *
+ *
+ */
+#define ms  (1)
+#define sec (1000*ms)
+#define mnt (60*sec)
+#define hr  (60*mnt)
+#define day (24*hr)
+long GetBaroTimeNow(void)
+{
+  SYSTEMTIME sysTime;
+  long lTime=0;
+
+  ::GetSystemTime(&sysTime);
+  lTime =   sysTime.wHour         * hr +
+	        sysTime.wMinute       * mnt+
+	        sysTime.wSecond       * sec+
+	        sysTime.wMilliseconds * ms   ;
+
+  return lTime;
+}
+
+
+
+/* 06.12.2011 by Ulli Heynen
+ *
+ * function to prevent multi altitude toggle
+ *
+ * -All baro altitudes must be reported over this function
+ * -The altitude of the device with the highest priority will be taken
+ * -The device ID of the highest priority device will be stored
+ * -All other device Baro altitudes will be ignored than
+ * -The time (in ms) of the last valid Altitude will be stored
+ *  as well for identify lost devices
+ * -Heartbeat fallback in " NMEAParser::UpdateMonitor(void) "
+ *
+ * if a FLARM was identified the $GPS_RMZ is taken as the FLARM ID
+ *
+ * the priorities of the devices are given by enum DEVICE_TYPE
+ *
+ * FLARM has the highest priority since it is the most common used Baro device (hopefully)
+ *
+ */
+bool UpdateBaroSource( NMEA_INFO* GPS_INFO, DEVICE_TYPE DeviceIdx, double fAlt)
+{
+    if( DeviceIdx == GPS_RMZ)
+	  if(GPS_INFO->FLARM_Available)
+		  DeviceIdx =FLARM;
+
+    if (GPS_INFO->BaroDevice  < DeviceIdx)
+      GPS_INFO->BaroDevice = DeviceIdx;
+
+
+    if (GPS_INFO->BaroDevice == DeviceIdx)
+	{
+	  GPS_INFO->BaroAltitudeAvailable = true;
+	  GPS_INFO->BaroAltitude = fAlt;
+	  GPS_INFO->BaroTime =  GetBaroTimeNow();
+
+	}
+
+	return true;
+
+
+}
+/*
+_@M120_ "BARO ALTITUDE IS AVAILABLE FROM: xxx"
+_@M755_ "USING AVAILABLE BARO ALTITUDE FROM: xxx"
+_@M756_ "USING BARO ALTITUDE FROM: xxx"
+
+*/
+
+/*
+ * little extension of DoStatusMessage to report the selected Baro device
+ *
+ */
+void StatusMessageBaro(TCHAR szStdMsg[],DEVICE_TYPE DeviceIdx)
+{
+TCHAR  szDevice[254];
+TCHAR  szMsg[254];
+
+    GetBaroDeviceName(DeviceIdx,szDevice);
+    _stprintf(szMsg,TEXT("%s\r\n"),szStdMsg);
+    _tcscat(szMsg,szDevice);
+    DoStatusMessage(szMsg);
+}
+
+
+
 
 int NMEAParser::StartDay = -1;
 
@@ -170,6 +309,25 @@ void NMEAParser::UpdateMonitor(void)
   }
   #endif
 
+  if((GetBaroTimeNow() - GPS_INFO.BaroTime ) > 5*sec) /* Baro newer than 5sec ?  */
+  {
+    GPS_INFO.BaroAltitudeAvailable=false;      /* reset Baro device */
+    GPS_INFO.BaroDevice           = NONE;
+    return ;
+  }
+
+  static DEVICE_TYPE lLastBaroDevice = NONE;
+  if(GPS_INFO.BaroDevice != lLastBaroDevice)      /* still the same baro source ? */
+  {
+    lLastBaroDevice = GPS_INFO.BaroDevice;
+    if(GPS_INFO.BaroDevice != NONE)
+      StatusMessageBaro(gettext(TEXT("_@M755_")) , GPS_INFO.BaroDevice );
+    return ;
+  }
+
+
+
+
   // do we really still have a baro altitude available?
   // If some baro source disappeared, let's reset it for safety. Parser will re-enable them immediately if available.
   // Assuming here that if no Baro is available, no airdata is available also
@@ -195,10 +353,10 @@ void NMEAParser::UpdateMonitor(void)
 		StartupStore(_T("... GPS baro source back available%s"),NEWLINE);
 		if (EnableNavBaroAltitude)
 	// LKTOKEN  _@M755_ = "USING AVAILABLE BARO ALTITUDE" 
-			DoStatusMessage(gettext(TEXT("_@M755_")));
+		     StatusMessageBaro(gettext(TEXT("_@M755_")) , GPS_INFO.BaroDevice );
 		else
 	// LKTOKEN  _@M120_ = "BARO ALTITUDE IS AVAILABLE" 
-			DoStatusMessage(gettext(TEXT("_@M120_")));
+	     StatusMessageBaro(gettext(TEXT("_@M120_")) , GPS_INFO.BaroDevice );
 		lastvalidBaro=true;
 	} 
 	else {
@@ -683,8 +841,12 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 	RMZAvailable = TRUE;
 
 	if (!ReplayLogger::IsEnabled()) {
+#ifdef GS_OLD_BARO_HANDLING
 		GPS_INFO->BaroAltitudeAvailable = true;
 		GPS_INFO->BaroAltitude = RMZAltitude;
+#else
+		UpdateBaroSource(GPS_INFO, GPS_RMC,   RMZAltitude);
+#endif
 	}
   }
   if (DeviceIsRoyaltek3200) {
@@ -701,8 +863,12 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 	RMZAvailable = TRUE;
 
 	if (!ReplayLogger::IsEnabled()) {
+#ifdef GS_OLD_BARO_HANDLING
 		GPS_INFO->BaroAltitudeAvailable = true;
 		GPS_INFO->BaroAltitude = RMZAltitude;
+#else
+	  UpdateBaroSource(GPS_INFO, ROYALTEK3200,   RMZAltitude);
+#endif
 	}
 
   }
@@ -823,13 +989,21 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   if (!ReplayLogger::IsEnabled()) {      
 	if(RMZAvailable) {
 		// JMW changed from Altitude to BaroAltitude
+#ifdef GS_OLD_BARO_HANDLING
 		GPS_INFO->BaroAltitudeAvailable = true;
 		GPS_INFO->BaroAltitude = RMZAltitude;
+#else
+		UpdateBaroSource(GPS_INFO, GPS_RMZ,   RMZAltitude);
+#endif
 	}
 	else if(RMAAvailable) {
 	// JMW changed from Altitude to BaroAltitude
+#ifdef GS_OLD_BARO_HANDLING
 		GPS_INFO->BaroAltitudeAvailable = true;
 		GPS_INFO->BaroAltitude = RMAAltitude;
+#else
+	     UpdateBaroSource(GPS_INFO, GPS_RMA,   RMAAltitude);
+#endif
 	}
 	#ifdef PNA
 
@@ -914,6 +1088,7 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   // any NMEA sentence with time can now trigger gps update: the first to detect new time will make trigger.
   // we assume also that any sentence with no time belongs to current time.
   // note that if no time from gps, no use of vario and baro data, but also no fix available.. so no problems
+#ifdef GS_OLD_BARO_HANDLING
   if(RMZAvailable) {
 	GPS_INFO->BaroAltitudeAvailable = true;
 	GPS_INFO->BaroAltitude = RMZAltitude;
@@ -922,7 +1097,20 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 	GPS_INFO->BaroAltitudeAvailable = true;
 	GPS_INFO->BaroAltitude = RMAAltitude;
   }
+#else
 
+  if(RMZAvailable)
+  {
+
+	 UpdateBaroSource(GPS_INFO, GPS_RMZ,   RMZAltitude);
+  }
+  else
+	if(RMAAvailable)
+	{
+
+      UpdateBaroSource(GPS_INFO,GPS_RMA,   RMAAltitude);
+	}
+#endif
   if (!gpsValid) { // 091108 addon BUGFIX GCA
 	// in old mode, GGA had priority over RMC for triggering, so this was needed in case of no signal 
 	TriggerGPSUpdate(); // 091205 TESTFIX
@@ -984,8 +1172,12 @@ BOOL NMEAParser::RMZ(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   // OR if the declared device failed to provide baro!! 
   if (!devHasBaroSource() || !GPS_INFO->BaroAltitudeAvailable) {
     if (!ReplayLogger::IsEnabled()) {      
+#ifdef GS_OLD_BARO_HANDLING
       GPS_INFO->BaroAltitudeAvailable = true;
       GPS_INFO->BaroAltitude = RMZAltitude;
+#else	 
+      UpdateBaroSource(GPS_INFO, GPS_RMZ,   RMZAltitude);
+#endif
     }
   }
 
@@ -1005,8 +1197,13 @@ BOOL NMEAParser::RMA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   if (!devHasBaroSource() || !GPS_INFO->BaroAltitudeAvailable) { // 100213
     if (!ReplayLogger::IsEnabled()) {      
       // JMW no in-built baro sources, so use this generic one
+
+#ifdef GS_OLD_BARO_HANDLING
       GPS_INFO->BaroAltitudeAvailable = true;
       GPS_INFO->BaroAltitude = RMAAltitude;
+#else
+      UpdateBaroSource(GPS_INFO, GPS_RMA,   RMAAltitude);
+#endif
     }
   }
 
@@ -1083,8 +1280,12 @@ BOOL NMEAParser::PTAS1(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
   GPS_INFO->TrueAirspeed = vtas;
   GPS_INFO->VarioAvailable = TRUE;
   GPS_INFO->Vario = wnet;
+#ifdef GS_OLD_BARO_HANDLING
   GPS_INFO->BaroAltitudeAvailable = TRUE;
   GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(baralt);
+#else
+  UpdateBaroSource(GPS_INFO, TASMAN,   AltitudeToQNHAltitude(baralt));
+#endif
   GPS_INFO->IndicatedAirspeed = vtas/AirDensityRatio(baralt);
  
   TASAvailable = true; // 100411 

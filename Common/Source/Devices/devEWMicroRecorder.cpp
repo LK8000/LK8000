@@ -69,9 +69,7 @@ BOOL EWMicroRecorderParseNMEA(PDeviceDescriptor_t d,
   if (!_tcscmp(params[0], TEXT("$PGRMZ")) && nparams >= 3) {
     if (d == pDevPrimaryBaroSource) {
       double altitude = NMEAParser::ParseAltitude(params[1], params[2]);
-
-      GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(altitude);
-      GPS_INFO->BaroAltitudeAvailable = true;
+	  UpdateBaroSource( GPS_INFO, EW_MICRO_REC, AltitudeToQNHAltitude(altitude));
     }
 
     return TRUE;

@@ -100,8 +100,7 @@ static BOOL VARIO(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   NMEAParser::ExtractParameter(String,ctemp,0);
   double ps = StrToDouble(ctemp,NULL);
   if (d == pDevPrimaryBaroSource) {
-  	GPS_INFO->BaroAltitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
-  	GPS_INFO->BaroAltitudeAvailable = TRUE;
+    UpdateBaroSource( GPS_INFO, FLYMASTER_F1,  	 (1 - pow(fabs(ps / QNH), 0.190284)) * 44307.69);
   }
 
   NMEAParser::ExtractParameter(String,ctemp,1);

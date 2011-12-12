@@ -14,7 +14,7 @@
 <WndProperty Name="prpWingLoading" Caption="_@M821_" X=2 Y=-997  Width=165 Height=42 CaptionWidth=78 Font=2 Help="_@H301_">
 <DataField name="" DataType="double" DisplayFormat="%.0f kg/m2" EditFormat="%1.0f" Min=5 Max=100 Step=1.0 OnDataAccess="OnWingLoadingData" />
 </WndProperty>
-<WndProperty Caption="_@M253_"     X=165 Y=-999  Width=143 Height=42 CaptionWidth=78 Font=2 Help="_@H302_">
+<WndProperty  Name="prpBugs" Caption="_@M253_"     X=165 Y=-999  Width=143 Height=42 CaptionWidth=78 Font=2 Help="_@H302_">
 <DataField name="" DataType="double" DisplayFormat="%.0f%%" EditFormat="%.0f" Min=50 Max=100 Step=1  OnDataAccess="OnBugsData"/>
 </WndProperty>
 <WndProperty Name="prpQNH" Caption="QNH "  X=2 Y=-997   Width=165 Height=42 CaptionWidth=78 Font=2 Help="_@H303_">

@@ -111,8 +111,8 @@ static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 
   NMEAParser::ExtractParameter(String,ctemp,2);
   if (d == pDevPrimaryBaroSource) {
-	  GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(StrToDouble(ctemp,NULL));
-	  GPS_INFO->BaroAltitudeAvailable = TRUE;
+
+	 UpdateBaroSource( GPS_INFO, COMPEO, AltitudeToQNHAltitude( StrToDouble(ctemp, NULL)));
   }
 
   NMEAParser::ExtractParameter(String,ctemp,4);

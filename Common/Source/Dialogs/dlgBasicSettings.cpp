@@ -110,21 +110,39 @@ static void SetBallast(bool updateDevices) {
 	devPutBallast(devA(), BALLAST);
 	devPutBallast(devB(), BALLAST);
   }
+	static double foldBallast = BALLAST;
+	if(fabs (foldBallast - BALLAST) > 0.01) /* update on change only */
+	{
   wp = (WndProperty*)wf->FindByName(TEXT("prpBallastPercent"));
-  if (wp) {
+      if (wp)
+      {
     wp->GetDataField()->Set(BALLAST*100);
     wp->RefreshDisplay();
+  	    foldBallast = BALLAST;
   }
+	}
+
+	static double foldLiter = GlidePolar::BallastLitres;
+	if(fabs (foldLiter-GlidePolar::BallastLitres ) > 0.01) /* update on change only */
+	{
   wp = (WndProperty*)wf->FindByName(TEXT("prpBallastLitres"));
-  if (wp) {
-    wp->GetDataField()->
-      SetAsFloat(GlidePolar::BallastLitres);
+	  if (wp)
+	  {
+	    wp->GetDataField()->SetAsFloat(GlidePolar::BallastLitres);
     wp->RefreshDisplay();
+		foldLiter = GlidePolar::BallastLitres ;
   }
+	}
+
+	static double fOldLoad = GlidePolar::WingLoading;
+	if(fabs (fOldLoad-GlidePolar::WingLoading ) > 0.01) /* update on change only */
+	{
   wp = (WndProperty*)wf->FindByName(TEXT("prpWingLoading"));
   if (wp) {
     wp->GetDataField()-> SetAsFloat(GlidePolar::WingLoading);
     wp->RefreshDisplay();
+		fOldLoad = GlidePolar::WingLoading;
+	  }
   }
   // SetFocus( ((WndButton *)wf->FindByName(TEXT("buttonClose")))->GetHandle()); // not needed
 }
@@ -136,9 +154,9 @@ static int OnTimerNotify(WindowControl * Sender) {
   // devices are updates by BallastDump() method when dumping water ballast
   SetBallast(false); 
 
+  WndProperty* wp;
   static double altlast = GPS_INFO.BaroAltitude;
   if (fabs(GPS_INFO.BaroAltitude-altlast)>1) {
-    WndProperty* wp;
     wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
     if (wp) {
       wp->GetDataField()->
@@ -147,6 +165,21 @@ static int OnTimerNotify(WindowControl * Sender) {
     }
   }
   altlast = GPS_INFO.BaroAltitude;
+
+static float  flastBugs=BUGS;
+  if (fabs(flastBugs-BUGS) >= 0.001) /* update on change only */
+  {
+    if(wf)
+    {
+      wp = (WndProperty*)wf->FindByName(gettext(TEXT("prpBugs")));
+	  if (wp)
+	  {
+		wp->GetDataField()->SetAsFloat(BUGS*100);
+		wp->RefreshDisplay();
+		flastBugs = BUGS;
+	  }
+    }
+  }
 
   return 0;
 }
@@ -193,7 +226,8 @@ static void OnBugsData(DataField *Sender, DataField::DataAccessKind_t Mode){
     break;
     case DataField::daChange:
     case DataField::daPut:
-      if (fabs(lastRead-Sender->GetAsFloat()/100.0) >= 0.005){
+      if (fabs(lastRead-Sender->GetAsFloat()/100.0) >= 0.005)
+      {
         lastRead = BUGS = Sender->GetAsFloat()/100.0;
         GlidePolar::SetBallast();
         devPutBugs(devA(), BUGS);

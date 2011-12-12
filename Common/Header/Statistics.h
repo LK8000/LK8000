@@ -40,7 +40,8 @@ class Statistics {
   LeastSquares Altitude_Terrain;
 
   void Reset();
-
+  static int CalcHeightCoordinat(double fHeight, const RECT rc);
+  static int CalcDistanceCoordinat(double fDist, const RECT rc);
   static void DrawBarChart(HDC hdc, const RECT rc, LeastSquares* lsdata);
 
   static void DrawFilledLineGraph(HDC hdc, const RECT rc, 

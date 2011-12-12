@@ -110,8 +110,7 @@ static BOOL GPWIN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   NMEAParser::ExtractParameter(String, ctemp, 2);
 
   if (d == pDevPrimaryBaroSource){
-    GPS_INFO->BaroAltitudeAvailable = TRUE;
-    GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(iround(StrToDouble(ctemp, NULL)/10));
+    UpdateBaroSource( GPS_INFO, POSIGRAPH,   AltitudeToQNHAltitude(  iround(StrToDouble(ctemp, NULL) / 10)));
   }
 
   return FALSE;

@@ -130,10 +130,8 @@ bool DevLX::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
   {
     info->IndicatedAirspeed = airspeed / AirDensityRatio(alt);
 
-    if (d == pDevPrimaryBaroSource)
-    {
-        info->BaroAltitude = AltitudeToQNHAltitude(alt); // 100129
-      info->BaroAltitudeAvailable = TRUE;
+    if (d == pDevPrimaryBaroSource)  {
+      UpdateBaroSource( info, LX,  AltitudeToQNHAltitude(alt));
     }
   }
 

@@ -22,6 +22,7 @@
 #include "Waypointparser.h"
 #include "Message.h"
 #include "AATDistance.h"
+#include "Parser.h"
 
 using std::min;
 using std::max;
@@ -930,7 +931,9 @@ void InputEvents::eventBaroAltitude(const TCHAR *misc) {
   else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (EnableNavBaroAltitude)
 	// LKTOKEN  _@M756_ = "USING BARO ALTITUDE" 
-      DoStatusMessage(gettext(TEXT("_@M756_")));
+      {
+	 StatusMessageBaro(gettext(TEXT("_@M756_")) , GPS_INFO.BaroDevice );
+      }
     else
 	// LKTOKEN  _@M757_ = "USING GPS ALTITUDE" 
       DoStatusMessage(gettext(TEXT("_@M757_")));  

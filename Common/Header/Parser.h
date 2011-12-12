@@ -42,6 +42,42 @@ typedef struct _FLARM_TRAFFIC
   double EIAS;
 } FLARM_TRAFFIC;
 
+typedef enum {
+  NONE,
+  GPS_RMA,
+  GPS_RMZ,
+  GPS_RMC,
+  BASE,
+  BORGELT500,
+  CAI302,
+  CAI_GPS_NAV,
+  COMPEO,
+  CONDOR,
+  DIGIFLY,
+  DSX,
+  EW,
+  EW_MICRO_REC,
+  FLYMASTER_F1,
+  FLYTEC,
+  GENERIC,
+  ILEC,
+  IMI,
+  LK_EXT1,
+  LX,
+  LX16xx,
+  LX_NANO,
+  NMEA_OUT,
+  POSIGRAPH,
+  VOLKSLOGGER,
+  WESTERBOER,
+  XCOM760,
+  ZANDER,
+  HOLUX,
+  TASMAN,
+  ROYALTEK3200,
+  FLARM,
+
+} DEVICE_TYPE;
 
 #if USESWITCHES
 typedef struct _SWITCH_INFO
@@ -89,6 +125,8 @@ typedef struct _NMEA_INFO
   double BaroAltitude;
   double MacReady;
   BOOL BaroAltitudeAvailable;
+  DEVICE_TYPE BaroDevice;
+  long BaroTime;
   BOOL ExternalWindAvailalbe;
   double ExternalWindSpeed;
   double ExternalWindDirection;
@@ -133,6 +171,9 @@ typedef struct _NMEA_INFO
 } NMEA_INFO;
 
 
+void StatusMessageBaro(TCHAR zzMsgID[],DEVICE_TYPE DeviceIdx);
+int GetBaroDeviceName(DEVICE_TYPE eDevice ,TCHAR  szDevName[]);
+bool UpdateBaroSource( NMEA_INFO* GPS_INFO, DEVICE_TYPE DeviceIdx, double fAlt);
 class NMEAParser {
  public:
   NMEAParser();

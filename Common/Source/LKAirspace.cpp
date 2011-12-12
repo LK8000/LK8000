@@ -194,7 +194,9 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
   _now = (int)Basic->Time;
   
   //Save position for further calculations made by gui threads
-  if (Basic->BaroAltitudeAvailable) {
+  if (Basic->BaroAltitudeAvailable &&
+		  EnableNavBaroAltitude
+		  ) {
     _lastknownalt = (int)Basic->BaroAltitude;
   } else {
     _lastknownalt = (int)Basic->Altitude;
@@ -226,7 +228,9 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   
   //Check actual position
   _pos_inside_now = false;
-  if (Basic->BaroAltitudeAvailable) {
+  if (Basic->BaroAltitudeAvailable &&
+		  EnableNavBaroAltitude
+		  ) {
     alt = (int)Basic->BaroAltitude;
   } else {
     alt = (int)Basic->Altitude;
@@ -1046,7 +1050,8 @@ bool CAirspaceManager::CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIR
   double topalt;
   bool base_is_sfc = false;
   
-  if (GPS_INFO.BaroAltitudeAvailable) {
+  if (GPS_INFO.BaroAltitudeAvailable &&
+		  EnableNavBaroAltitude) {
     alt = GPS_INFO.BaroAltitude;
   } else {
     alt = GPS_INFO.Altitude;
@@ -1787,7 +1792,7 @@ void CAirspaceManager::QnhChangeNotify(const double &newQNH)
 
 
 void CAirspaceManager::ScanAirspaceLine(double lats[], double lons[], double heights[], 
-              int airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) const
+		CAirspace* airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) const
 {              
 
   int i,j;
@@ -1821,7 +1826,8 @@ void CAirspaceManager::ScanAirspaceLine(double lats[], double lons[], double hei
                     for (j=0; j<AIRSPACE_SCANSIZE_H; j++) {
                         if ((heights[j]>(*it)->Base()->Altitude)&&
                                 (heights[j]<(*it)->Top()->Altitude)) {
-                            airspacetype[j][i] = (*it)->Type();
+                            airspacetype[j][i] = (*it);
+
                         } // inside height
                     } // finished scanning height
                 } // inside

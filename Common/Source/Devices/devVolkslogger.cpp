@@ -34,21 +34,20 @@ BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   NMEAParser::ExtractParameter(String,ctemp,2); 
   // four characers, hex, barometric altitude
   InternalAltitude = HexStrToDouble(ctemp,NULL);
-
+  double fBaroAltitude =0;
   if (d == pDevPrimaryBaroSource) {
 
     if(InternalAltitude > 60000)
-      GPS_INFO->BaroAltitude = 
+	fBaroAltitude =
         AltitudeToQNHAltitude(InternalAltitude - 65535);  
     // Assuming that altitude has wrapped around.  60 000 m occurs at
     // QNH ~2000 hPa
     else
-      GPS_INFO->BaroAltitude = 
+	fBaroAltitude =
         AltitudeToQNHAltitude(InternalAltitude);  
     // typo corrected 21.04.07
     // Else the altitude is good enough.
-
-    GPS_INFO->BaroAltitudeAvailable = TRUE;
+    UpdateBaroSource( GPS_INFO, VOLKSLOGGER,  fBaroAltitude);
   }
 	
   // ExtractParameter(String,ctemp,3);		

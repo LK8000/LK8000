@@ -142,8 +142,7 @@ static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   }
 
   if (d == pDevPrimaryBaroSource) {
-	GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(altqne);
-	GPS_INFO->BaroAltitudeAvailable = TRUE;
+      UpdateBaroSource( GPS_INFO, WESTERBOER,  AltitudeToQNHAltitude(altqne));
   }
 
 

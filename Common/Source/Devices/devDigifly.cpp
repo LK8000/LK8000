@@ -142,8 +142,7 @@ static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 	}
   }
   if (d == pDevPrimaryBaroSource) {
-	GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(altqne);
-	GPS_INFO->BaroAltitudeAvailable = TRUE;
+    UpdateBaroSource( GPS_INFO, DIGIFLY,  AltitudeToQNHAltitude(altqne));
   }
 
 
@@ -232,8 +231,8 @@ static BOOL PDGFTTL(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 	}
   }
   if (d == pDevPrimaryBaroSource) {
-	GPS_INFO->BaroAltitude = AltitudeToQNHAltitude(altqne);
-	GPS_INFO->BaroAltitudeAvailable = TRUE;
+
+    UpdateBaroSource( GPS_INFO, DIGIFLY,  AltitudeToQNHAltitude(altqne));
   }
 
   NMEAParser::ExtractParameter(String,ctemp,2);
