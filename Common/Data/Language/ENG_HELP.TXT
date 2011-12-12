@@ -1476,6 +1476,24 @@ Bearing to the selected alternate
 [Alternate distance]
 Distance to the selected alternate
 
+@922
+[Max Altitude Reached]
+Max altitude reached during the current flight.
+It is reset at takeoff and at task restart.
+
+@923
+[Max Height Gained]
+This height is calculated using the min and max heights detected AFTER the start of free flight.
+This value is normally used for badges.
+
+@924
+[Head Wind Speed]
+This is the wind component relative to your current track.
+It is the difference between the TAS true airspeed and GS ground speed.
+A positive value indicates a HEAD WIND, and a negative value indicates a TAIL WIND.
+If true airspeed is not available, estimated TAS is used. 
+In this case the value is only guessed against the current wind set.
+
 #
 # END INFOBOXES 800 - 1199
 #

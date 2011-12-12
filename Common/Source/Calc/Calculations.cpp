@@ -686,7 +686,7 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   CRUISE_EFFICIENCY = 1.0;
 
-    #if ALPHADEBUG
+    #if TESTBENCH
     StartupStore(_T(". Reset flight statistics\n"));
     #endif
     // It is better to reset it even if UseContestEngine() if false, because we might
@@ -752,7 +752,10 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     Calculated->TaskStartAltitude = 0;
     Calculated->LegStartTime = 0;
     Calculated->MinAltitude = 0;
+    Calculated->MaxAltitude = 0;
     Calculated->MaxHeightGain = 0;
+
+    Calculated->HeadWind=-999; // invalid values for LKProcess
 
     Calculated->MaxThermalHeight = 0;
     for (i=0; i<NUMTHERMALBUCKETS; i++) {
@@ -842,6 +845,7 @@ void StartTask(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   // reset max height gain stuff on task start
   Calculated->MaxHeightGain = 0;
   Calculated->MinAltitude = 0;
+  Calculated->MaxAltitude = 0;
 
   if (do_announce) {
     AnnounceWayPointSwitch(Calculated, do_advance);
@@ -1021,6 +1025,8 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 			break;
 	}
   }
+
+  CalculateHeadWind(Basic,Calculated);
 
   ConditionMonitorsUpdate(Basic, Calculated);
 
@@ -1220,6 +1226,7 @@ void MaxHeightGain(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     Calculated->MinAltitude = Calculated->NavAltitude;
   }
   Calculated->MinAltitude = min(Calculated->NavAltitude, Calculated->MinAltitude);
+  Calculated->MaxAltitude = max(Calculated->NavAltitude, Calculated->MaxAltitude);
 }
 
 
@@ -4601,4 +4608,28 @@ int DetectStartTime(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   // return last flighttime if it exists
   return max(0,lastflighttime);
 }
- 
+
+// HeadWind error will be shown as -999
+// These values are all in m/s
+// We can have a serious problem when the headwind is so strong that the
+// aircraft is actually flying backwards. 
+// In such case, the heading will show correctly and the pilot should see
+// that there is a problem.
+//
+// A positive value indicates a headwind, and a negative value indicates a tailwind.
+//
+void CalculateHeadWind(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
+
+  if (Basic->NAVWarning) {
+	Calculated->HeadWind  = -999;
+	return;
+  }
+
+  if (Basic->AirspeedAvailable) {
+	Calculated->HeadWind = Basic->TrueAirspeed - Basic->Speed;
+  } else {
+	Calculated->HeadWind = Calculated->TrueAirspeedEstimated - Basic->Speed;
+  }
+
+}
+

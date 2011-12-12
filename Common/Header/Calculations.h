@@ -214,7 +214,10 @@ typedef struct _DERIVED_INFO
   double timeCircling;
 
   double MinAltitude;
+  double MaxAltitude;
   double MaxHeightGain;
+
+  double HeadWind;
 
   // Turn rate in wind coordinates
   double GPSVario;
@@ -357,5 +360,7 @@ bool CheckSafetyAltitudeApplies(const int wpindex);
 double GetSafetyAltitude(const int wpindex);
 short GetVisualGlideRatio(const double arrival, const double gr);
 bool IsSafetyAltitudeInUse(const int wpindex);
+
+void CalculateHeadWind(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
 #endif

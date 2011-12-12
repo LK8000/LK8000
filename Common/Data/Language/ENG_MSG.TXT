@@ -1705,6 +1705,12 @@ _@M1763_ "BestAlternate bearing"
 _@M1764_ "Alternate1 distance"
 _@M1765_ "Alternate2 distance"
 _@M1766_ "BestAlternate distance"
+_@M1767_ "Max Altitude reached"
+_@M1768_ "MaxAlt"
+_@M1769_ "Max Height gained"
+_@M1770_ "Hgain"
+_@M1771_ "Head Wind speed"
+_@M1772_ "HdWind"
 
 ############################################################
 #                  - MENU MESSAGES - 

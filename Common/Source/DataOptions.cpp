@@ -291,6 +291,10 @@ void FillDataOptions()
 	SetDataOption(120, ugDistance, TEXT("_@M1765_"), TEXT("Atn2Dst")); // Alternate2 distance
 	SetDataOption(121, ugDistance, TEXT("_@M1766_"), TEXT("BstDst"));  // BestAlternate distance
 
+	SetDataOption(122, ugAltitude, TEXT("_@M1767_"), TEXT("_@M1768_"));  // Max Altitude reached
+	SetDataOption(123, ugAltitude, TEXT("_@M1769_"), TEXT("_@M1770_"));  // Max Height gained
+	SetDataOption(124, ugWindSpeed, TEXT("_@M1771_"), TEXT("_@M1772_")); // Head wind speed
+
 	//Before adding new items, consider changing NUMDATAOPTIONS_MAX
 
 }

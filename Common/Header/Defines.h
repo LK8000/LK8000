@@ -587,6 +587,10 @@
 #define LK_ALTERN2_DIST			120
 #define LK_BESTALTERN_DIST		121
 
+#define LK_MAXALT			122
+#define LK_MAXHGAINED			123
+#define LK_HEADWINDSPEED		124
+
 
 // The following values are not available for custom configuration
 

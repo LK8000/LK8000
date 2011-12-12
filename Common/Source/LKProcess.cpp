@@ -417,69 +417,6 @@ goto_bearing:
 
 
 #if 0 // ----------------------- unused
-		// B148  UNUSED
-		case LK_ALT1_DIST:
-			if(ValidWayPoint(Alternate1)) {
-				index = Alternate1;
-				if (index>=0) {
-					value=WayPointCalc[index].Distance*DISTANCEMODIFY;
-					valid=true;
-					if (value>99)
-						sprintf(text,"%.0f",value);
-					else
-						sprintf(text,"%.1f",value);
-				} else {
-					strcpy(text,NULLMEDIUM);
-				}
-			} else {
-				strcpy(text,NULLMEDIUM);
-			}
-			wsprintf(BufferValue, TEXT("%S"),text);
-			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
-			break;
-
-		// B149  UNUSED
-		case LK_ALT2_DIST:
-			if(ValidWayPoint(Alternate2)) {
-				index = Alternate2;
-				if (index>=0) {
-					value=WayPointCalc[index].Distance*DISTANCEMODIFY;
-					valid=true;
-					if (value>99)
-						sprintf(text,"%.0f",value);
-					else
-						sprintf(text,"%.1f",value);
-				} else {
-					strcpy(text,NULLMEDIUM);
-				}
-			} else {
-				strcpy(text,NULLMEDIUM);
-			}
-			wsprintf(BufferValue, TEXT("%S"),text);
-			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
-			break;
-
-		// B150  100919 UNUSED
-		case LK_BALT_DIST:
-			if(ValidWayPoint(BestAlternate)) {
-				index = BestAlternate;
-				if (index>=0) {
-					value=WayPointCalc[index].Distance*DISTANCEMODIFY;
-					valid=true;
-					if (value>99)
-						sprintf(text,"%.0f",value);
-					else
-						sprintf(text,"%.1f",value);
-				} else {
-					strcpy(text,NULLMEDIUM);
-				}
-			} else {
-				strcpy(text,NULLMEDIUM);
-			}
-			wsprintf(BufferValue, TEXT("%S"),text);
-			wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
-			break;
-
 		// B154  100919 UNUSED
 		case LK_LASTTHERMAL_DIST:
 			if(ValidResWayPoint(RESWP_LASTTHERMAL)) {
@@ -916,6 +853,26 @@ goto_bearing:
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			break;
 
+		// B122
+		case LK_MAXALT:
+			value=ALTITUDEMODIFY*DerivedDrawInfo.MaxAltitude;
+			valid=true;
+			sprintf(text,"%d",(int)value);
+			wsprintf(BufferValue, TEXT("%S"),text);
+			wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
+			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			break;
+
+		// B123
+		case LK_MAXHGAINED:
+			value=ALTITUDEMODIFY*DerivedDrawInfo.MaxHeightGain;
+			valid=true;
+			sprintf(text,"%d",(int)value);
+			wsprintf(BufferValue, TEXT("%S"),text);
+			wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
+			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			break;
+
 		// B20
 		case LK_HGND:
                         wsprintf(BufferValue,_T(NULLLONG));
@@ -1257,6 +1214,24 @@ goto_bearing:
 			} else {
 				_stprintf(BufferValue,TEXT(NULLMEDIUM)); // 091221
 			}
+			break;
+
+		// B124
+		case LK_HEADWINDSPEED:
+			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
+			wsprintf(BufferUnit, TEXT("%s"),Units::GetHorizontalSpeedName());
+			
+			value=DerivedDrawInfo.HeadWind*SPEEDMODIFY;
+			if (value>=1 ) {
+				_stprintf(BufferValue,TEXT("%+1.0f"), value );
+				valid=true;
+			} else 
+			  if (value<=-1 ) {
+				_stprintf(BufferValue,TEXT("%-1.0f"), value );
+				valid=true;
+			  } else {
+				_stprintf(BufferValue,TEXT(NULLMEDIUM)); 
+			  }
 			break;
 
 		// B26
