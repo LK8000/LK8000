@@ -2767,9 +2767,11 @@ static bool entered = false;
   wf->SetLButtonUpNotify(TouchKeyDown);
   wf->SetTimerNotify(OnTimerNotify);
 
+  page--; // bug, workaround: LButtonUpNotify will be triggered on entry
+  if (inpage!=ANALYSYS_PAGE_DEFAULT) page=inpage;
+
   Update();
 
-  if (inpage!=ANALYSYS_PAGE_DEFAULT) page=inpage;
 
   wf->ShowModal();
 
