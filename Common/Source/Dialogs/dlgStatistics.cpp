@@ -1460,6 +1460,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   BOOL bDrawRightSide =false;
 
   LockFlightData();
+  // Copy required flight info to local variables here, or use proper locking below
   aclat = GPS_INFO.Latitude;
   aclon = GPS_INFO.Longitude;
   ach = GPS_INFO.Altitude;
@@ -1564,7 +1565,7 @@ int iType  [GC_MAX_NO];
       d_airspace[i][j]= NULL; // no airspace
     }
   }
-  CAirspaceManager::Instance().ScanAirspaceLine(d_lat, d_lon, d_h, d_airspace);
+  CAirspaceManager::Instance().ScanAirspaceLine(d_lat, d_lon, d_h, d_alt, d_airspace);
   int type;
 
   double dx = dfj*(rc.right-rc.left-BORDER_X);
