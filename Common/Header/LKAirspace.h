@@ -348,7 +348,7 @@ public:
   void ReadAirspaces();
   void CloseAirspaces();
   void QnhChangeNotify(const double &newQNH);
-  void ScanAirspaceLine(double lats[], double lons[], double heights[], 
+  void ScanAirspaceLine(double lats[AIRSPACE_SCANSIZE_X], double lons[AIRSPACE_SCANSIZE_X], double heights[AIRSPACE_SCANSIZE_H], double terrain_heights[AIRSPACE_SCANSIZE_X],
 		  CAirspace* [AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) const;
   CAirspace* FindNearestAirspace(const double &longitude, const double &latitude,
              double *nearestdistance, double *nearestbearing, double *height = NULL) const;

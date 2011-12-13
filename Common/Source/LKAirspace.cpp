@@ -1791,8 +1791,9 @@ void CAirspaceManager::QnhChangeNotify(const double &newQNH)
 }
 
 
-void CAirspaceManager::ScanAirspaceLine(double lats[], double lons[], double heights[], 
-		CAirspace* airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) const
+void CAirspaceManager::ScanAirspaceLine(double lats[AIRSPACE_SCANSIZE_X], double lons[AIRSPACE_SCANSIZE_X], double heights[AIRSPACE_SCANSIZE_H],
+                                        double terrain_heights[AIRSPACE_SCANSIZE_X],
+                                        CAirspace* airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) const
 {              
 
   int i,j;
@@ -1800,8 +1801,11 @@ void CAirspaceManager::ScanAirspaceLine(double lats[], double lons[], double hei
   double dx = lons[AIRSPACE_SCANSIZE_X-1]-x1;
   double y1 = lats[0];
   double dy = lats[AIRSPACE_SCANSIZE_X-1]-y1;
-  double h_min = heights[0];
-  double h_max = heights[AIRSPACE_SCANSIZE_H-1];
+  int iheights[AIRSPACE_SCANSIZE_H];
+  int iterrain_heights[AIRSPACE_SCANSIZE_X];
+  
+  for (i=0; i<AIRSPACE_SCANSIZE_H; ++i) iheights[i] = (int)heights[i];
+  for (i=0; i<AIRSPACE_SCANSIZE_X; ++i) iterrain_heights[i] = (int)terrain_heights[i];
 
   rectObj lineRect;
   bool inside;
@@ -1815,8 +1819,6 @@ void CAirspaceManager::ScanAirspaceLine(double lats[], double lons[], double hei
   CCriticalSection::CGuard guard(_csairspaces);
 
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-    // ignore if outside scan height
-    if ( !((h_max<=(*it)->Base()->Altitude) || (h_min>=(*it)->Top()->Altitude)) ) {
       const rectObj &pbounds = (*it)->Bounds();
       // ignore if scan line doesn't intersect bounds
       if (msRectOverlap(&lineRect, &pbounds)) {
@@ -1824,16 +1826,15 @@ void CAirspaceManager::ScanAirspaceLine(double lats[], double lons[], double hei
             inside = (*it)->IsHorizontalInside(lons[i], lats[i]);
                 if (inside) {
                     for (j=0; j<AIRSPACE_SCANSIZE_H; j++) {
-                        if ((heights[j]>(*it)->Base()->Altitude)&&
-                                (heights[j]<(*it)->Top()->Altitude)) {
+                        int agl = iheights[j] - iterrain_heights[i];
+                        if (agl<0) agl=0;
+                        if ((*it)->IsAltitudeInside(iheights[j], agl, 0)) {
                             airspacetype[j][i] = (*it);
-
                         } // inside height
                     } // finished scanning height
                 } // inside
         } // finished scanning range
       } // if overlaps bounds
-    }//if inside height
   } // for iterator
 }
 
