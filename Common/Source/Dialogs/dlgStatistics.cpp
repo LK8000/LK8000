@@ -42,8 +42,10 @@ static bool asp_heading_task = false;
 #define ID_NO_LABLE    0
 #define ID_SHORT_LABLE 1
 #define ID_FULL_LABLE  2
-int X=-1,Y=-1;
 
+#if ULLI_ASP_SELECTION
+int X=-1,Y=-1;
+#endif
 
 typedef struct
 {
@@ -2655,6 +2657,18 @@ static int OnTimerNotify(WindowControl *Sender)
 static int TouchKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
         (void)lParam;
 
+  int X,Y;
+  X = LOWORD(lParam), Y = HIWORD(lParam);
+  if (X<180) return 1;
+  if (TouchContext< TCX_PROC_UP) {
+    #ifndef DISABLEAUDIO
+    if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+    #endif
+    NextPage(+1);
+    return 0;
+  }
+
+#if ULLI_ASPSELECTION
  X = LOWORD(lParam);
  Y = HIWORD(lParam);
 
@@ -2675,19 +2689,27 @@ static int TouchKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
  }
    }
  }
+#endif // ULLI
+
  return 1;
 }
 
 void dlgAnalysisShowModal(int inpage){
+#if ULLI_ASP_SELECTION
 static bool entered = false;
 	 if (entered == true) /* prevent re entrance */
 		 return;
+#endif
 
   wf=NULL;
   wGrid=NULL;
   wInfo=NULL;
   wCalc=NULL;
+
+#if ULLI_ASP_SELECTION
  entered = true;
+#endif
+
   if (!ScreenLandscape) {
     char filename[MAX_PATH];
     LocalPathS(filename, TEXT("dlgAnalysis_L.xml"));
@@ -2709,7 +2731,9 @@ static bool entered = false;
 
   penThinSignal = CreatePen(PS_SOLID, 2 , RGB(50,243,45));
 
+#if ULLI_ASP_SELECTION
   wf->SetLButtonUpNotify(TouchKeyDown);
+#endif
   wf->SetKeyDownNotify(FormKeyDown);
 
   wGrid = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmGrid"));
@@ -2740,6 +2764,7 @@ static bool entered = false;
     wGrid->SetWidth( wf->GetWidth() - wGrid->GetLeft()-6);
   }
 
+  wf->SetLButtonUpNotify(TouchKeyDown);
   wf->SetTimerNotify(OnTimerNotify);
 
   Update();
@@ -2756,7 +2781,7 @@ static bool entered = false;
 
   MapWindow::RequestFastRefresh();
   FullScreen();
-  entered = false;
+  // entered = false;
 }
 
 
