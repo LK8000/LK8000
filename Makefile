@@ -448,6 +448,7 @@ DEVS	:=\
 	$(DEV)/devNmeaOut.cpp \
 	$(DEV)/devLKext1.cpp \
 	$(DEV)/devLX.cpp \
+	$(DEV)/devLX16xx.cpp \
 	$(DEV)/devLXNano.cpp \
 	$(DEV)/devPosiGraph.cpp \
 	$(DEV)/devVolkslogger.cpp \

@@ -8,8 +8,8 @@
 //_____________________________________________________________________includes_
 
 #include "externs.h"
-#include "DevLX16xx.h"
-#include "LKINTERFACE.h"
+#include "devLX16xx.h"
+#include "LKInterface.h"
 #include "Parser.h"
 
 
