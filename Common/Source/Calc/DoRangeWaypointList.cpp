@@ -42,6 +42,24 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	return false;
    }
 
+  // Initialise turnpoint and landable range distance to default 
+  // These are reset to defaults at DoInit time, also.
+  static int dstrangeturnpoint=DSTRANGETURNPOINT;
+  static int dstrangelandable=DSTRANGELANDABLE;
+  // Number of attempts to recalculate distances to reduce range, for huge cup files
+  // This will reduce number of waypoints in range, and fit them.
+  #define MAXRETUNEDST	6
+  // Number of attempts to retry the list to grow up again.
+  // This will only happen after a minimum granted interval, so this is really only
+  // safety limit to avoid unusual overloads (100x10m = 1000m = several hours)
+  #define MAXRETRYRETUNEDST 100
+  // The minimum interval after which is worth considering retuning distances.
+  // At 120kmh in 10m we do 20km. Taken.
+  #define MAXRETRYRETUNEINT 600	// 10m, minimum interval in seconds
+  static short retunecount=0;
+  static short retryretunecount=0;
+  static double lastRetryRetuneTime=0;
+
    // Do init and RETURN, caution!
    // We need a locked GPS position to proceed!
 
@@ -57,6 +75,14 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	RangeLandableNumber=0;
 	RangeAirportNumber=0;
 	RangeTurnpointNumber=0;
+
+	// Reset all statics for Master DoInits actions
+	dstrangeturnpoint=DSTRANGETURNPOINT;
+	dstrangelandable=DSTRANGELANDABLE;
+	retunecount=0;
+	retryretunecount=0;
+	lastRetryRetuneTime=0;
+
 	DoInit=false;
 	#if DEBUG_DORANGE
 	StartupStore(_T(".... >> DoRangeWaypointList INIT done, return <<\n"));
@@ -73,22 +99,6 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
    int scx_aircraft, scy_aircraft;
    LatLon2Flat(Basic->Longitude, Basic->Latitude, &scx_aircraft, &scy_aircraft);
 
-  // Initialise turnpoint and landable range distance to default 
-  static int dstrangeturnpoint=DSTRANGETURNPOINT;
-  static int dstrangelandable=DSTRANGELANDABLE;
-  // Number of attempts to recalculate distances to reduce range, for huge cup files
-  // This will reduce number of waypoints in range, and fit them.
-  #define MAXRETUNEDST	6
-  // Number of attempts to retry the list to grow up again.
-  // This will only happen after a minimum granted interval, so this is really only
-  // safety limit to avoid unusual overloads (100x10m = 1000m = several hours)
-  #define MAXRETRYRETUNEDST 100
-  // The minimum interval after which is worth considering retuning distances.
-  // At 120kmh in 10m we do 20km. Taken.
-  #define MAXRETRYRETUNEINT 600	// 10m, minimum interval in seconds
-  static short retunecount=0;
-  static short retryretunecount=0;
-  static double lastRetryRetuneTime=0;
   bool retunedst_tps;
   bool retunedst_lnd;
 
