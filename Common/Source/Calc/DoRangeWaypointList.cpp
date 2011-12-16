@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-
+#include "DoInits.h"
 
 extern int CalculateWaypointApproxDistance(int scx_aircraft, int scy_aircraft, int i);
 extern void LatLon2Flat(double lon, double lat, int *scx, int *scy);
@@ -32,6 +32,7 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
    int i, kl, kt, ka;
    //double arrival_altitude;
    static bool DoInit=true;
+   Assign_DoInits(&DoInit,MDI_DORANGEWAYPOINTLIST);
 
    #if DEBUG_DORANGE
    StartupStore(_T(".... >> DoRangeWaypointList is running! <<\n"));

@@ -53,6 +53,7 @@
 #include "RasterTerrain.h"
 
 #include "LKObjects.h"
+#include "DoInits.h"
 
 using std::min;
 using std::max;
@@ -117,6 +118,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   #if TESTBENCH
   StartupStore(TEXT(". TESTBENCH option enabled%s"),NEWLINE);
   #endif
+  Init_DoInits();
   Globals_Init();
 
   StartupLogFreeRamAndStorage();

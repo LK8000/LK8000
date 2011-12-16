@@ -13,6 +13,7 @@
 #include "LKHolux.h"
 #include "LKRoyaltek3200.h"
 #endif
+#include "DoInits.h"
 
 void BottomSounds();
 
@@ -220,6 +221,16 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				extern bool RunSignature(void);
 				RunSignature();
 
+				return 0;
+			}
+#endif
+
+#if (0)
+			if (keytime>=CustomKeyTime) {
+				#ifndef DISABLEAUDIO
+				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
+				#endif
+				Reset_Single_DoInits(MDI_DORANGEWAYPOINTLIST);
 				return 0;
 			}
 #endif

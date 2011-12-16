@@ -514,6 +514,7 @@ DLGS	:=\
 	$(DLG)/dlgWindSettings.cpp \
 
 SRC_FILES :=\
+	$(SRC)/DoInits.cpp\
 	$(SRC)/LKProfileResetDefault.cpp\
 	$(SRC)/LKProfileLoad.cpp\
 	$(SRC)/LKProfileSave.cpp\
