@@ -12,6 +12,7 @@
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
 #include "WindowControls.h"
+#include "DoInits.h"
 
 
 typedef struct{
@@ -607,6 +608,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
   TCHAR sTmp[12];
 #if 100124
   static bool doinit=true;
+  Assign_DoInits(&doinit,MDI_ONPAINTLISTITEM);
   static int w0;
 
   if (doinit) {

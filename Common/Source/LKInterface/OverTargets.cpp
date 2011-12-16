@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "LKInterface.h"
+#include "DoInits.h"
 
 // return current overtarget waypoint index, or -1 if not available
 int GetOvertargetIndex(void) {
@@ -103,6 +104,8 @@ void GetOvertargetName(TCHAR *overtargetname) {
 // return current overtarget header name
 TCHAR *GetOvertargetHeader(void) {
   static bool doinit=true;
+  Assign_DoInits(&doinit,MDI_GETOVERTARGETHEADER);
+
   // Maxmode + 1 because maxmode does not account pos 0
   static TCHAR targetheader[OVT_MAXMODE+1][OVERTARGETHEADER_MAX+1];
 

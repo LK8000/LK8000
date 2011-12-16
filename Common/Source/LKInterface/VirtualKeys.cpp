@@ -40,6 +40,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	static short shortpress_yup, shortpress_ydown;
 	static short longpress_yup, longpress_ydown;
 	static bool doinit=true;
+	Assign_DoInits(&doinit,MDI_PROCESSVIRTUALKEY);
 
 	bool dontdrawthemap=(DONTDRAWTHEMAP);
 

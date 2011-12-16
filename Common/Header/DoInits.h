@@ -74,6 +74,9 @@
 	MDI_DRAWTRAFFIC,
 	MDI_DRAWVARIO,
 	MDI_MAPWNDPROC,
+	MDI_GETOVERTARGETHEADER,	// needed when changing language
+	MDI_PROCESSVIRTUALKEY,		// resolution change
+	MDI_ONPAINTLISTITEM,		// resolution change
 	MDI_LAST_DOINIT,
  } MDI_t;
 
