@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "DoInits.h"
 
 using std::min;
 using std::max;
@@ -94,6 +95,8 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
 
    static bool doinit=true;
+   Assign_DoInits(&doinit,MDI_DOAIRSPACES);
+
    static int step = 0;
    bool ret = false;
    

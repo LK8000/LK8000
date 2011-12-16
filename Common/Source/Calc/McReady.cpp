@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "McReady.h"
-
+#include "DoInits.h"
 
 using std::min;
 using std::max;
@@ -431,6 +431,7 @@ double GlidePolar::MacCreadyAltitude(double emcready,
 
   #define CASIZE  LK_CACHECALC_MCA
   static bool doinit=true;
+  Assign_DoInits(&doinit,MDI_MCREADYCACHE);
   static int cacheIndex;
 
   bool cacheFound=false;

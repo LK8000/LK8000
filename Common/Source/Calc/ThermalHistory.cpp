@@ -10,7 +10,7 @@
 #include "Process.h"
 #include "McReady.h"
 #include "Waypointparser.h"
-
+#include "DoInits.h"
 
 
 // 
@@ -135,6 +135,7 @@ bool DoThermalHistory(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    double sortedValue[MAX_THERMAL_HISTORY+1];
 
    static bool doinit=true;
+   Assign_DoInits(&doinit,MDI_DOTHERMALHISTORY);
 
    if (doinit) {
 	#ifdef DEBUG_THISTORY

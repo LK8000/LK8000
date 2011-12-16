@@ -7,6 +7,8 @@
 */
 
 #include "externs.h"
+#include "DoInits.h"
+
 
 
 //
@@ -19,7 +21,9 @@ bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    double bearing, distance, sortvalue;
    double sortedValue[MAXTRAFFIC+1];
 
+   static double lastRunTime=0;
    static bool doinit=true;
+   Assign_DoInits(&doinit,MDI_DOTRAFFIC);
 
    if (doinit) {
 	#ifdef DEBUG_LKT
@@ -31,13 +35,13 @@ bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	StartupStore(_T("... DoTraffic Init memset LKSortedTraffic\n"));
 	#endif
 	memset(LKSortedTraffic, -1, sizeof(LKSortedTraffic));
+	lastRunTime=0;
 	doinit=false;
 	return true;
    }
 
    // Wait for n seconds before updating again, to avoid data change too often
    // distracting the pilot.
-   static double lastRunTime=0;
    if (  lastRunTime > Basic->Time ) lastRunTime=Basic->Time;
    if (  (Basic->Time < (lastRunTime+NEARESTUPDATETIME)) && (LastDoTraffic>0)) {
         return false;

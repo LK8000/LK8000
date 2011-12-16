@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "Logger.h"
-
+#include "DoInits.h"
 
 /* 
  * Detect start of free flight (FF) for both towing and winching.
@@ -38,6 +38,7 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
   static int    lastMaxAltitude=-1000;
   static double gndAltitude=0;
   static bool   doinit=true;
+  Assign_DoInits(&doinit,MDI_DETECTFREEFLYING);
   static double vario[8];
   static bool   winchdetected=false;
   static short  wlaunch=0;
@@ -45,6 +46,12 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
 
   if (doinit) {
     for (int i=0; i<8; i++) vario[i]=0;
+    gndAltitude=0;
+    winchdetected=false;
+    wlaunch=0;
+    altLoss=0;
+    ffDetected=false;
+    lastMaxAltitude=-1000;
     doinit=false;
   }
 

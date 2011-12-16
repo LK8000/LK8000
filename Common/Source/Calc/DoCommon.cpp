@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "DoInits.h"
 
 
 extern void InsertCommonList(int newwp);
@@ -83,6 +84,7 @@ void DoCommon(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
    int i;
    static bool doinit=true;
+   Assign_DoInits(&doinit,MDI_DOCOMMON);
    static double LastRunTime=0;
 
    // Safe initialisation, passthrough mode
