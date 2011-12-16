@@ -11,6 +11,7 @@
 #include "LKMapWindow.h"
 #include "LKObjects.h"
 #include "RGB.h"
+#include "DoInits.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -50,6 +51,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   RECT invsel;
 
   static bool doinit=true;
+  Assign_DoInits(&doinit,MDI_DRAWTRAFFIC);
 
   if (INVERTCOLORS) {
   	sortbrush=LKBrush_LightGreen;

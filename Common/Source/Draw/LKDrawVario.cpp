@@ -10,6 +10,7 @@
 #include "externs.h"
 #include "MapWindow.h"
 #include "LKObjects.h"
+#include "DoInits.h"
 
 
 
@@ -35,6 +36,7 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
   static HBRUSH *positiveBrush[NUMVBRICKS/2];
   static HBRUSH *negativeBrush[NUMVBRICKS/2];
   static bool	doinit=true;
+  Assign_DoInits(&doinit,MDI_DRAWVARIO);
 
   static short startInitCounter=0;
   static bool dogaugeinit=true;
@@ -44,6 +46,9 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
   int boxthick;
   int hpixelseparate;
   int vpixelseparate;
+
+  startInitCounter=0;
+  dogaugeinit=true;
 
   // A dirty hack for an impossible division solution
   // lowres devices should have 8 bricks, and not 16 as asked by users!

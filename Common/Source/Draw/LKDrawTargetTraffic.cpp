@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "RGB.h"
+#include "DoInits.h"
 
 
 // This is the 4.x Sight Traffic page aka LK F104 mode
@@ -23,6 +24,7 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
 
 
   static bool doinit=true;
+  Assign_DoInits(&doinit,MDI_DRAWTARGET);
   bool disabled=false,notraffic=false;
 
   static POINT cross_top, cross_bottom, cross_left, cross_right;

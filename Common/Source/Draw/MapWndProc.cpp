@@ -15,6 +15,7 @@
 #include "LKObjects.h"
 #include "Bitmaps.h"
 #include "RGB.h"
+#include "DoInits.h"
 
 using std::min;
 using std::max;
@@ -176,6 +177,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
   // Attention... this is duplicated inside Utils2, I am lazy 
   // apparently only #include is duplicated, so no problems
   static bool doinit=true;
+  Assign_DoInits(&doinit,MDI_MAPWNDPROC);
   static int AIRCRAFTMENUSIZE=0, COMPASSMENUSIZE=0;
 
   navboxesY=(MapWindow::MapRect.bottom-MapWindow::MapRect.top)-BottomSize-NIBLSCALE(2); // BUGFIX 091125

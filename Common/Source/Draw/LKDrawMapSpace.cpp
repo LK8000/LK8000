@@ -10,6 +10,7 @@
 #include "LKInterface.h"
 #include "LKObjects.h"
 #include "RGB.h"
+#include "DoInits.h"
 
 
 
@@ -30,6 +31,8 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
   bool dodrawlkstatus=false;
 #endif
   static bool doinit=true;
+  Assign_DoInits(&doinit,MDI_DRAWMAPSPACE);
+
   static POINT p[10];
 
   if (MapSpaceMode==MSM_WELCOME) {

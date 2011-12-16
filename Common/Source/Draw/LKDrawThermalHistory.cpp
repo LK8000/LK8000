@@ -11,6 +11,7 @@
 #include "LKMapWindow.h"
 #include "LKObjects.h"
 #include "RGB.h"
+#include "DoInits.h"
 
 
 
@@ -46,6 +47,7 @@ void MapWindow::DrawThermalHistory(HDC hdc, RECT rc) {
   RECT invsel;
 
   static bool doinit=true;
+  Assign_DoInits(&doinit,MDI_DRAWTHERMALHISTORY);
 
   if (INVERTCOLORS) {
   	sortbrush=LKBrush_LightGreen;
