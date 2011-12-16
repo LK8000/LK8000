@@ -2,6 +2,70 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3q December 17, 2011
+------------------------------
+
+NEW
+
+.  New infoboxes for Alternates and BestAlternate Distance and Bearing
+
+.  New configurable bottom bar TRM0 in system setup : if disabled, 
+   while circling the bottom bar will not switch automatically to thermal mode.
+
+.  CustomKey TopRight is available for PGs as well.
+
+. New infoboxes for Max Altitude reached, Max Height Gained, Head Wind Speed.
+
+    [Max Altitude Reached]
+    Max altitude reached during the current flight.
+    It is reset at takeoff and at task restart.
+
+    [Max Height Gained]
+    This height is calculated using the min and max heights detected AFTER the start of free flight.
+    This value is normally used for badges.
+
+    [Head Wind Speed]
+    This is the wind component relative to your current track.
+    It is the difference between the TAS true airspeed and GS ground speed.
+    A positive value indicates a HEAD WIND, and a negative value indicates a TAIL WIND.
+    If true airspeed is not available, estimated TAS is used.
+    In this case the value is only guessed against the current wind set.
+
+
+. New support for LX 16xx device
+
+. New priority based automatic selection of baro altitudes, when more than one baro altitude is available 
+
+
+
+CHANGES
+
+. FLARM-on-map objects by default DISABLED, because in simulator it is annoying after a few tests
+
+. Change bottom bar defaults NAV1 and STA3, little changes.
+
+. Modified Airspace sideview in dlgStatistics.cpp
+
+
+
+FIXES
+
+. Fix 2.3p logger not using Grecord
+
+. Fix bug not initialising TakeOffSpeedThreshold when changing profile with a new aircraft modality
+   Bug found by Eric
+
+.Fix screen "flashing" sometimes, painting only terrain.
+
+. Fix Config/Runtime variables for AutoWind, EnableTrailDrift, AutoZoom, AltitudeMode
+   All parameters that can be changed with a button at runtime should not affect the default system setup configuration.
+
+. Fix TrailActive not loaded correctly from new profile, setting only runtime
+
+. Fux bug in dlgStatistics not coming back to previously selected page , calling Analysis button
+
+
+
 Version 2.3p December 3, 2011
 ------------------------------
 
