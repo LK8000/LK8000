@@ -12,6 +12,7 @@
 #include "Modeltype.h"
 #include "LKHolux.h"
 #endif
+#include "DoInits.h"
 
 #include "mmsystem.h"
 
@@ -80,10 +81,13 @@ void LKSound(const TCHAR *lpName) {
   }
   #endif   
   static bool doinit=true;
+  Assign_DoInits(&doinit,MDI_LKSOUND);
+
   static bool working=false;
   static TCHAR sDir[MAX_PATH];
 
   if (doinit) {
+	working=false;
 	TCHAR srcfile[MAX_PATH];
 	LocalPath(sDir,TEXT(LKD_SOUNDS));
 	_stprintf(srcfile,TEXT("%s\\_SOUNDS"),sDir);

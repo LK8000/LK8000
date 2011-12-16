@@ -13,6 +13,7 @@
 #endif
 
 #include "utils/heapcheck.h"
+#include "DoInits.h"
 
 
 #if (WINDOWSPC<1)
@@ -92,6 +93,8 @@ extern bool GiveBatteryWarnings(int numwarn);
 void LKBatteryManager() {
 
   static bool doinit=true;
+  Assign_DoInits(&doinit,MDI_BATTERYMANAGER);
+
   static bool invalid=false, recharging=false;
   static bool warn33=true, warn50=true, warn100=true;
   static double last_time=0, init_time=0;
@@ -101,6 +104,12 @@ void LKBatteryManager() {
 
   if (invalid) return;
   if (doinit) {
+
+	invalid=false, recharging=false;
+	warn33=true, warn50=true, warn100=true;
+	last_time=0, init_time=0;
+	last_percent=0, last_status=0;
+	numwarn=0;
 
 	if (PDABatteryPercent<1 || PDABatteryPercent>100) {
 		StartupStore(_T("... LK BatteryManager V1: internal battery information not available, function disabled%s"), NEWLINE);

@@ -7,6 +7,7 @@
 */
 
 #include "externs.h"
+#include "DoInits.h"
 
 extern TCHAR *gmfcurrentpath();
 
@@ -14,6 +15,8 @@ extern TCHAR *gmfcurrentpath();
 TCHAR * LKGetLocalPath(void) {
 
   static bool doinit=true;
+  Assign_DoInits(&doinit,MDI_GETLOCALPATH);
+
   static TCHAR localpath[MAX_PATH+1];
 
   if (doinit) {
