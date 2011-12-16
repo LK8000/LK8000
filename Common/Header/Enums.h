@@ -132,6 +132,7 @@ typedef enum{
 	ckTerrainColors,
 	ckNearestAirspace,
 	ckOlcAnalysis,
+	ckTerrainColorsBack,
 } CustomKeyMode_t;
 
 typedef enum{

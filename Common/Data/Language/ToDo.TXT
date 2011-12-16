@@ -53,6 +53,8 @@ Things to be fixed in LK languages files/tokens:
 - _@M1287_ - _@M1290_ new airspace analysis page tokens
 - _@M1697_ new pg autozom threshold on config page 23
 - _@M1761 ..  new infoboxes
+- _@M1693 ..  new infoboxes
+- _@M1774 ..  new infoboxes
 
   MENU files to be checked and translated?
 

@@ -307,6 +307,12 @@ bool CustomKeyHandler(const int key) {
 		#endif
 		InputEvents::eventSetup(_T("OlcAnalysis"));
 		return true;
+	case ckTerrainColorsBack:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		InputEvents::eventService(_T("TERRCOLBACK"));
+		return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		FailStore(_T("ERR-726 INVALID CUSTOMKEY=%d"),ckeymode);

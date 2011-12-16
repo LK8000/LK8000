@@ -1906,6 +1906,14 @@ void InputEvents::eventService(const TCHAR *misc) {
 	MapWindow::RefreshMap();
 	return;
   }
+  if (_tcscmp(misc, TEXT("TERRCOLBACK")) == 0) {
+	if (TerrainRamp-1<0)
+		TerrainRamp=13;  
+	else
+		--TerrainRamp;
+	MapWindow::RefreshMap();
+	return;
+  }
 
 
   // we should not get here

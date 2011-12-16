@@ -1640,7 +1640,7 @@ _@M1691_ "THE ORACLE IS THINKING"
 _@M1692_ "PLEASE WAIT..."
 
 # Customkey
-_@M1693_ "Change Terrain Colors"
+_@M1693_ "Change+ Terrain Colors"
 
 # Safety Altitude indicator on overlay
 _@M1694_ "+ SAFETY"
@@ -1711,6 +1711,8 @@ _@M1769_ "Max Height gained"
 _@M1770_ "Hgain"
 _@M1771_ "Head Wind speed"
 _@M1772_ "HdWind"
+# Customkey
+_@M1774_ "Change- Terrain Colors"
 
 ############################################################
 #                  - MENU MESSAGES - 
