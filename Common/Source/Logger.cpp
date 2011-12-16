@@ -1969,7 +1969,7 @@ int RunSignature() {
 	#endif
 	return -1;
   }
-  ::WaitForSingleObject(pi.hProcess, 5000);
+  ::WaitForSingleObject(pi.hProcess, 30000); // 30s
   GetExitCodeProcess(pi.hProcess,&retval);
   // STILL_ACTIVE = 259, this retval should be checked for
 
