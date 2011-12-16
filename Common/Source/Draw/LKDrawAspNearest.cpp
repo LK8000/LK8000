@@ -12,6 +12,7 @@
 #include "LKObjects.h"
 #include "LKAirspace.h"
 #include "RGB.h"
+#include "DoInits.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -57,6 +58,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   RECT invsel;
 
   static bool doinit=true;
+  Assign_DoInits(&doinit,MDI_DRAWASPNEAREST);
 
   if (INVERTCOLORS) {
   	sortbrush=LKBrush_LightGreen;

@@ -10,6 +10,7 @@
 #include "MapWindow.h"
 #include "LKMapWindow.h"
 #include "RGB.h"
+#include "DoInits.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -45,6 +46,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
   short curmapspace=MapSpaceMode;
 
   static bool doinit=true;
+  Assign_DoInits(&doinit,MDI_DRAWCOMMON);
   
   if (doinit) {
 

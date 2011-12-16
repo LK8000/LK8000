@@ -11,6 +11,7 @@
 #include "MapWindow.h"
 #include "LKMapWindow.h"
 #include "RGB.h"
+#include "DoInits.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -43,6 +44,7 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 
   static short tlen=0;
   static bool doinit=true;
+  Assign_DoInits(&doinit,MDI_DRAWINFOPAGE);
   static short	column[PANELCOLUMNS+1], hcolumn[(PANELCOLUMNS*2)+1], qcolumn[(PANELCOLUMNS*4)+1];
   static short	row[PANELROWS+1], hrow[(PANELCOLUMNS*2)+1], qrow[(PANELROWS*4)+1];
 
@@ -1021,6 +1023,7 @@ void MapWindow::WriteInfo(HDC hdc, bool *showunit, TCHAR *BufferValue, TCHAR *Bu
 				short *columnvalue, short *columntitle, short *row1, short *row2, short *row3) {
 
   static bool doinit=true;
+  Assign_DoInits(&doinit,MDI_WRITEINFO);
   static short unitrowoffset=0;
   if (doinit) {
 	switch(ScreenSize) {

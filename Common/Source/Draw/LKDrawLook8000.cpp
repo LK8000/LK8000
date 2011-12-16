@@ -13,6 +13,7 @@
 #include "Process.h"
 #include "LKObjects.h"
 #include "RGB.h"
+#include "DoInits.h"
 
 
 extern NMEAParser nmeaParser1;
@@ -41,8 +42,11 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   short leftmargin=0;
 
   static bool doinit=true;
+  Assign_DoInits(&doinit,MDI_DRAWLOOK8000);
   static bool flipflop=true;
   static short flipflopcount=0;
+  static bool wascircling=false; // init not circling of course
+  static short OldBottomMode=BM_FIRST;
 
   static COLORREF barTextColor=RGB_WHITE; // default bottom bar text color, reversable
 
@@ -106,6 +110,8 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 	bigFont=(HFONT *)LK8TargetFont;
 
   if (doinit) {
+	wascircling=false;
+	OldBottomMode=BM_FIRST;
 	TCHAR Tdummy[]=_T("T");
 	int iconsize;
 	SelectObject(hdc, bigFont); 
@@ -1119,8 +1125,6 @@ Drawbottom:
 
   // NAVBOXES
 
-  static bool wascircling=false; // init not circling of course
-  static short OldBottomMode=BM_FIRST;
   bool showunit=false;
 
   if ( MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && !wascircling) {

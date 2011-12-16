@@ -11,7 +11,7 @@
 #include "MapWindow.h"
 #include "LKObjects.h"
 #include "Bitmaps.h"
-
+#include "DoInits.h"
 
 
 
@@ -24,6 +24,7 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
 
   // init scaled coords for traffic icon
   static bool doinit=true;
+  Assign_DoInits(&doinit,MDI_DRAWFLARMTRAFFIC);
   static short scaler[5];
   static short tscaler=0;
   if (doinit) {

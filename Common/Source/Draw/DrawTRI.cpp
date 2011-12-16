@@ -10,7 +10,7 @@
 #include "LKMapWindow.h"
 #include "LKObjects.h"
 #include "RGB.h"
-
+#include "DoInits.h"
 
 //
 // Turn Rate Indicator
@@ -42,11 +42,20 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   static int innerradius = radius - NIBLSCALE(8);
   static POINT d00[2][2],d15[2][4],d30[2][4], d45[2][4], d60[2][4];
   static bool doinit=true;
+  Assign_DoInits(&doinit,MDI_DRAWTRI);
   TCHAR Buffer[LKSIZEBUFFERVALUE];
   double beta=0.0;
   bool disabled=false;
 
   if (doinit) {
+
+  top=(((rc.bottom-BottomSize-(rc.top+TOPLIMITER)-BOTTOMLIMITER)/PANELROWS)+rc.top+TOPLIMITER)- (rc.top+TOPLIMITER);
+  radius = NIBLSCALE(65);
+  planesize = radius-NIBLSCALE(10);
+  planeradius = NIBLSCALE(6);
+  tailsize = planesize/4+NIBLSCALE(2);
+  innerradius = radius - NIBLSCALE(8);
+
   // [a][b]  a=0 external circle a=1 inner circle  b=1-4
 
   d00[0][0].x= Start.x - radius;

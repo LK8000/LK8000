@@ -230,7 +230,8 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				#ifndef DISABLEAUDIO
 				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
 				#endif
-				Reset_Single_DoInits(MDI_DORANGEWAYPOINTLIST);
+				//Reset_Single_DoInits(MDI_DORANGEWAYPOINTLIST);
+				Reset_All_DoInits();
 				return 0;
 			}
 #endif
