@@ -515,6 +515,7 @@ DLGS	:=\
 
 SRC_FILES :=\
 	$(SRC)/DoInits.cpp\
+	$(SRC)/ChangeScreen.cpp\
 	$(SRC)/LKProfileResetDefault.cpp\
 	$(SRC)/LKProfileLoad.cpp\
 	$(SRC)/LKProfileSave.cpp\

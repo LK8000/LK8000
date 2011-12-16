@@ -14,6 +14,8 @@ NEW
 
 .  CustomKey TopRight is available for PGs as well.
 
+.  New customkey change screen colors backwards
+
 . New infoboxes for Max Altitude reached, Max Height Gained, Head Wind Speed.
 
     [Max Altitude Reached]
