@@ -22,11 +22,12 @@
 #include "Message.h"
 
 #include "LKObjects.h"
+#include "DoInits.h"
 
 using std::min;
 using std::max;
 
-#if 0 // Experimental work in progress
+#if 1 // Experimental work in progress
 
 //
 // Detect if screen resolution and/or orientation has changed
@@ -34,6 +35,8 @@ using std::max;
 bool ScreenHasChanged(void) {
 	return false;
 }
+
+
 
 // TODO TODO WORK IN PROGRESS
 // Reinit screen upon resolution/orientation change detected
@@ -44,17 +47,20 @@ void ReinitScreen(void) {
 
   RECT WindowSize, rc;
 
+  // Detect here the current screen geometry
   WindowSize.left = 0;
   WindowSize.top = 0;
   WindowSize.right = GetSystemMetrics(SM_CXSCREEN);
   WindowSize.bottom = GetSystemMetrics(SM_CYSCREEN);
 
-  // testing only!
-  WindowSize.right = 480;
-  WindowSize.bottom = 272;
-  SCREENWIDTH=480;
-  SCREENHEIGHT=272;
+  // force a test resolution, for testing only!
+  WindowSize.right = 480;	// switch to portrait mode 480x640
+  WindowSize.bottom = 640;
   //
+
+
+  SCREENWIDTH = WindowSize.right;
+  SCREENHEIGHT= WindowSize.bottom;
 
 #if (WINDOWSPC>0)
   WindowSize.right = SCREENWIDTH + 2*GetSystemMetrics( SM_CXFIXEDFRAME);
@@ -63,52 +69,38 @@ void ReinitScreen(void) {
   WindowSize.top = (GetSystemMetrics(SM_CYSCREEN) - WindowSize.bottom) / 2;
 #endif
 
+
+  MoveWindow(hWndMainWindow, WindowSize.left, WindowSize.top, SCREENWIDTH, SCREENHEIGHT, TRUE);
+  UpdateWindow(hWndMainWindow);
+  MoveWindow(hWndMapWindow, 0, 0, SCREENWIDTH, SCREENHEIGHT, TRUE);
+
+  Reset_All_DoInits(); // this is wrong, we should be less drastic!!
+
   InitLKScreen();
   InitLKFonts();
-
-  HWND hWndMainWindow;
-  hWndMainWindow=GetActiveWindow();
-
-  MoveWindow(hWndMainWindow, WindowSize.left, WindowSize.top, 640,480, TRUE);
+  
+  //Reset_All_DoInits(); // this is wrong, we should be less drastic!!
+  Reset_Single_DoInits(MDI_DRAWLOOK8000);
+  Reset_Single_DoInits(MDI_PROCESSVIRTUALKEY);
+  Reset_Single_DoInits(MDI_ONPAINTLISTITEM);
 
   GetClientRect(hWndMainWindow, &rc);
-
 #if (WINDOWSPC>0)
   rc.left = 0;
   rc.right = SCREENWIDTH;
   rc.top = 0;
   rc.bottom = SCREENHEIGHT;
 #endif
-
+  LKObjects_Delete();
+  LKObjects_Create();
   ButtonLabel::CreateButtonLabels(rc);
-
   extern void InitialiseFonts(RECT rc);
   InitialiseFonts(rc);
-  InitLKFonts();	// reload updating LK fonts after loading profile for fontquality
-  extern void Reset_All_DoInits(void);
-  Reset_All_DoInits();
-
+  InitLKFonts();
   ButtonLabel::SetFont(MapWindowBoldFont);
-
   Message::Initialize(rc); // creates window, sets fonts
 
-#if 0
-  ShowWindow(hWndMainWindow, SW_SHOW);
-
-  StartupStore(TEXT(". Create map window%s"),NEWLINE);
-
-  hWndMapWindow = CreateWindow(TEXT("MapWindowClass"),NULL,
-			       WS_VISIBLE | WS_CHILD
-			       | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
-                               0, 0, (rc.right - rc.left),
-			       (rc.bottom-rc.top) ,
-                               hWndMainWindow, NULL ,hInstance,NULL);
-
-  ShowWindow(hWndMainWindow, nCmdShow);
-
-  UpdateWindow(hWndMainWindow);
-#endif
-    
+  UpdateWindow(hWndMapWindow);
   return;
 }
 
