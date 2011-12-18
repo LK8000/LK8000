@@ -129,9 +129,9 @@ void ReinitScreen(void) {
   ButtonLabel::SetFont(MapWindowBoldFont);
   Message::Initialize(rc); // creates window, sets fonts
 
-// RasterTerrain::CloseTerrain();
+  LockTerrainDataGraphics();
   CloseTerrainRenderer();
-// RasterTerrain::OpenTerrain();
+  UnlockTerrainDataGraphics();
 
 
   return;

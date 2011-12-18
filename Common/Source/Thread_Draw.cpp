@@ -113,6 +113,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 	LKUnloadProfileBitmaps();
 	LKLoadProfileBitmaps();
 	LKSW_ReloadProfileBitmaps=false;
+	first=true; // check it
       }
 
 #ifdef CPUSTATS

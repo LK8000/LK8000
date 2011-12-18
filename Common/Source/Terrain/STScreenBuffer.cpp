@@ -51,9 +51,11 @@ CSTScreenBuffer::~CSTScreenBuffer()
 	if (m_hBitmap!=NULL) {
 		ReleaseDC();
 		::DeleteObject(m_hBitmap);
+		m_hBitmap=NULL;
 	}
 	if (m_pBufferTmp) {
 	  free(m_pBufferTmp);
+	  m_pBufferTmp=NULL;
 	}
 	if (memDc) {
 	  DeleteDC(memDc); memDc = NULL;
