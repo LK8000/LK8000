@@ -638,6 +638,7 @@ int Performance = 0;
 void CloseTerrainRenderer() {
   if (trenderer) {
     delete trenderer;
+    trenderer=NULL;
   }
 }
 
