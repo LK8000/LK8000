@@ -85,6 +85,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
   
   bool first = true;
 
+  // This must be moved to LKObjects
   for (int i=0; i<AIRSPACECLASSCOUNT; i++) {
     hAirspacePens[i] =
       CreatePen(PS_SOLID, NIBLSCALE(2), Colours[iAirspaceColour[i]]);
@@ -102,10 +103,13 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 	continue;
       }
 
+      // This is also occuring on resolution change
       if (LKSW_ReloadProfileBitmaps) {
 	#if TESTBENCH
 	StartupStore(_T(".... SWITCH: ReloadProfileBitmaps detected\n"));
 	#endif
+        // This is needed to update resolution change
+        GetClientRect(hWndMapWindow, &MapRect);
 	LKUnloadProfileBitmaps();
 	LKLoadProfileBitmaps();
 	LKSW_ReloadProfileBitmaps=false;

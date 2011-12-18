@@ -11,6 +11,8 @@
 #include "Waypointparser.h"
 #include "InfoBoxLayout.h"
 #include "LKProfiles.h"
+#include "RasterTerrain.h"
+#include "Terrain.h"
 
 #include <commctrl.h>
 #include <aygshell.h>
@@ -27,7 +29,7 @@
 using std::min;
 using std::max;
 
-#if 1 // Experimental work in progress
+#if 0 // Experimental work in progress
 
 //
 // Detect if screen resolution and/or orientation has changed
@@ -47,16 +49,34 @@ void ReinitScreen(void) {
 
   RECT WindowSize, rc;
 
+  //
   // Detect here the current screen geometry
+  //
   WindowSize.left = 0;
   WindowSize.top = 0;
   WindowSize.right = GetSystemMetrics(SM_CXSCREEN);
   WindowSize.bottom = GetSystemMetrics(SM_CYSCREEN);
 
-  // force a test resolution, for testing only!
-  WindowSize.right = 480;	// switch to portrait mode 480x640
-  WindowSize.bottom = 640;
-  //
+  #if 1
+  // Force a test resolution, for testing only!
+  WindowSize.right = 480;	
+  WindowSize.bottom = 272;
+  // 
+  #endif
+
+  #if 0
+  // Toggle landcape portrait test only
+  static bool vhflip=true;
+  if (vhflip) {
+	WindowSize.right = 480;
+	WindowSize.bottom = 800;
+	vhflip=false;
+  } else {
+	WindowSize.right = 800;
+	WindowSize.bottom = 480;
+	vhflip=true;;
+  }
+  #endif
 
 
   SCREENWIDTH = WindowSize.right;
@@ -67,22 +87,28 @@ void ReinitScreen(void) {
   WindowSize.left = (GetSystemMetrics(SM_CXSCREEN) - WindowSize.right) / 2;
   WindowSize.bottom = SCREENHEIGHT + 2*GetSystemMetrics( SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
   WindowSize.top = (GetSystemMetrics(SM_CYSCREEN) - WindowSize.bottom) / 2;
+
+  // We must consider the command bar size on PC window
+  MoveWindow(hWndMainWindow, WindowSize.left, WindowSize.top, WindowSize.right,WindowSize.bottom, TRUE);
+  MoveWindow(hWndMapWindow, 0, 0, SCREENWIDTH, SCREENHEIGHT, FALSE);
+#else
+
+  // Still to be tested!
+  MoveWindow(hWndMainWindow, WindowSize.left, WindowSize.top, SCREENWIDTH, SCREENHEIGHT, TRUE);
+  MoveWindow(hWndMapWindow, 0, 0, SCREENWIDTH, SCREENHEIGHT, FALSE);
+
+
 #endif
 
-
-  MoveWindow(hWndMainWindow, WindowSize.left, WindowSize.top, SCREENWIDTH, SCREENHEIGHT, TRUE);
-  UpdateWindow(hWndMainWindow);
-  MoveWindow(hWndMapWindow, 0, 0, SCREENWIDTH, SCREENHEIGHT, TRUE);
+//  This is not good for fast changes between portrait and landscape mode.
+//  MapWindow::CloseDrawingThread();
+//  MapWindow::CreateDrawingThread();
+//  SwitchToMapWindow();
 
   Reset_All_DoInits(); // this is wrong, we should be less drastic!!
 
   InitLKScreen();
-  InitLKFonts();
-  
-  //Reset_All_DoInits(); // this is wrong, we should be less drastic!!
-  Reset_Single_DoInits(MDI_DRAWLOOK8000);
-  Reset_Single_DoInits(MDI_PROCESSVIRTUALKEY);
-  Reset_Single_DoInits(MDI_ONPAINTLISTITEM);
+  LKSW_ReloadProfileBitmaps=true;
 
   GetClientRect(hWndMainWindow, &rc);
 #if (WINDOWSPC>0)
@@ -93,14 +119,21 @@ void ReinitScreen(void) {
 #endif
   LKObjects_Delete();
   LKObjects_Create();
+
+  ButtonLabel::Destroy();
   ButtonLabel::CreateButtonLabels(rc);
+
   extern void InitialiseFonts(RECT rc);
   InitialiseFonts(rc);
   InitLKFonts();
   ButtonLabel::SetFont(MapWindowBoldFont);
   Message::Initialize(rc); // creates window, sets fonts
 
-  UpdateWindow(hWndMapWindow);
+// RasterTerrain::CloseTerrain();
+  CloseTerrainRenderer();
+// RasterTerrain::OpenTerrain();
+
+
   return;
 }
 
