@@ -194,9 +194,7 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
   _now = (int)Basic->Time;
   
   //Save position for further calculations made by gui threads
-  if (Basic->BaroAltitudeAvailable &&
-		  EnableNavBaroAltitude
-		  ) {
+  if (Basic->BaroAltitudeAvailable && EnableNavBaroAltitude) {
     _lastknownalt = (int)Basic->BaroAltitude;
   } else {
     _lastknownalt = (int)Basic->Altitude;
@@ -228,9 +226,7 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   
   //Check actual position
   _pos_inside_now = false;
-  if (Basic->BaroAltitudeAvailable &&
-		  EnableNavBaroAltitude
-		  ) {
+  if (Basic->BaroAltitudeAvailable && EnableNavBaroAltitude) {
     alt = (int)Basic->BaroAltitude;
   } else {
     alt = (int)Basic->Altitude;
@@ -1050,24 +1046,25 @@ bool CAirspaceManager::CheckAirspaceAltitude(const AIRSPACE_ALT &Base, const AIR
   double topalt;
   bool base_is_sfc = false;
   
-  if (GPS_INFO.BaroAltitudeAvailable &&
-		  EnableNavBaroAltitude) {
+  LockFlightData();
+  if (GPS_INFO.BaroAltitudeAvailable && EnableNavBaroAltitude) {
     alt = GPS_INFO.BaroAltitude;
   } else {
     alt = GPS_INFO.Altitude;
   }
 
-    if (Base.Base != abAGL) {
-      basealt = Base.Altitude;
-    } else {
-      basealt = Base.AGL + CALCULATED_INFO.TerrainAlt;
-      if (Base.AGL <= 0) base_is_sfc = true;
-    }
-    if (Top.Base != abAGL) {
-      topalt = Top.Altitude;
-    } else {
-      topalt = Top.AGL + CALCULATED_INFO.TerrainAlt;
-    }
+  if (Base.Base != abAGL) {
+    basealt = Base.Altitude;
+  } else {
+    basealt = Base.AGL + CALCULATED_INFO.TerrainAlt;
+    if (Base.AGL <= 0) base_is_sfc = true;
+  }
+  if (Top.Base != abAGL) {
+    topalt = Top.Altitude;
+  } else {
+    topalt = Top.AGL + CALCULATED_INFO.TerrainAlt;
+  }
+  UnlockFlightData();
 
   switch (AltitudeMode)
     {
@@ -1831,16 +1828,15 @@ void CAirspaceManager::ScanAirspaceLine(double lats[AIRSPACE_SCANSIZE_X], double
                         if (agl<0) agl=0;
                         if ((*it)->IsAltitudeInside(iheights[j], agl, 0)) {
                             airspacetype[j][i].iType = (*it)->Type();
-                            if(airspacetype[j][i].szAS_Name != NULL)
-         				      _tcsncpy((wchar_t*)  airspacetype[j][i].szAS_Name,  (wchar_t*)(*it)->Name(), NAME_SIZE-1);
-         				    airspacetype[j][i].szAS_Name[NAME_SIZE-1]=0;
-         				    airspacetype[j][i].iIdx = iCnt;
-       				        airspacetype[j][i].bRectAllowed = true ;
-         				    if( (*it)->Top()->Base == abAGL)
-         				      airspacetype[j][i].bRectAllowed = false ;
-         				    airspacetype[j][i].psAS =   (*it);
-         			/*	    if( (*it)->Base()->Base == abAGL)
-           				      airspacetype[j][i].bRectAllowed = false ;*/
+                            if(airspacetype[j][i].szAS_Name != NULL) {
+                              _tcsncpy((wchar_t*)  airspacetype[j][i].szAS_Name,  (wchar_t*)(*it)->Name(), NAME_SIZE-1);
+                              airspacetype[j][i].szAS_Name[NAME_SIZE-1]=0;
+                            }
+                            airspacetype[j][i].iIdx = iCnt;
+                            airspacetype[j][i].bRectAllowed = true ;
+                            if( (*it)->Top()->Base == abAGL) airspacetype[j][i].bRectAllowed = false ;
+                            airspacetype[j][i].psAS =   (*it);
+                            //if( (*it)->Base()->Base == abAGL) airspacetype[j][i].bRectAllowed = false ;
                         } // inside height
                     } // finished scanning height
                 } // inside
@@ -1876,6 +1872,11 @@ CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, const 
   CAirspace *found = NULL;
   int type;
   double dist;
+  double calc_terrainalt;
+  
+  LockFlightData();
+  calc_terrainalt = CALCULATED_INFO.TerrainAlt;
+  UnlockFlightData();
 
   CAirspaceList::const_iterator it;
   CCriticalSection::CGuard guard(_csairspaces);
@@ -1899,13 +1900,13 @@ CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, const 
       if ((*it)->Base()->Base != abAGL) {
         basealt = (*it)->Base()->Altitude;
       } else {
-        basealt = (*it)->Base()->AGL + CALCULATED_INFO.TerrainAlt;
+        basealt = (*it)->Base()->AGL + calc_terrainalt;
         if ((*it)->Base()->AGL <= 0) base_is_sfc = true;
       }
       if ((*it)->Top()->Base != abAGL) {
         topalt = (*it)->Top()->Altitude;
       } else {
-        topalt = (*it)->Top()->AGL + CALCULATED_INFO.TerrainAlt;
+        topalt = (*it)->Top()->AGL + calc_terrainalt;
       }
       altok = (((*height > basealt) || base_is_sfc) && (*height < topalt));
     } else {
