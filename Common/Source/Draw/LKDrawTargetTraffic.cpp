@@ -22,9 +22,6 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
   HPEN   hp, hpOld;
   HBRUSH hb, hbOld;
 
-
-  static bool doinit=true;
-  Assign_DoInits(&doinit,MDI_DRAWTARGET);
   bool disabled=false,notraffic=false;
 
   static POINT cross_top, cross_bottom, cross_left, cross_right;
@@ -36,7 +33,7 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
 
   static int nleft,nright,ntop,nbottom;
   static int ncenterx, ncentery;
-  if (doinit) {
+  if (DoInit[MDI_DRAWTARGET]) {
 
 	nleft=tleft+IBLSCALE(3);
 	nright=tright;
@@ -143,7 +140,7 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
 	altline_right[5].x		=	ncenterx+altw;
 	altline_right[5].y		=	ncentery+(alth*3);
 
-	doinit=false;
+	DoInit[MDI_DRAWTARGET]=false;
   } 
 
   // The flag "disabled" will force no plane to be painted

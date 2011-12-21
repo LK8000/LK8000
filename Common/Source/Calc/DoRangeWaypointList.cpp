@@ -31,8 +31,6 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
    int rangeTurnpointDistance[MAXRANGETURNPOINT+1];
    int i, kl, kt, ka;
    //double arrival_altitude;
-   static bool DoInit=true;
-   Assign_DoInits(&DoInit,MDI_DORANGEWAYPOINTLIST);
 
    #if DEBUG_DORANGE
    StartupStore(_T(".... >> DoRangeWaypointList is running! <<\n"));
@@ -64,7 +62,7 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
    // We need a locked GPS position to proceed!
 
    // TODO FIX LOCK DATA IN DRAWNEAREST when updating this list!
-   if (DoInit) {
+   if (DoInit[MDI_DORANGEWAYPOINTLIST]) {
 	for (i=0; i<MAXRANGELANDABLE; i++) {
 		RangeLandableIndex[i]= -1;
 		RangeAirportIndex[i]= -1;
@@ -83,7 +81,7 @@ bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	retryretunecount=0;
 	lastRetryRetuneTime=0;
 
-	DoInit=false;
+	DoInit[MDI_DORANGEWAYPOINTLIST]=false;
 	#if DEBUG_DORANGE
 	StartupStore(_T(".... >> DoRangeWaypointList INIT done, return <<\n"));
 	#endif

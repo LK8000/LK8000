@@ -176,8 +176,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
   static short navboxesY;
   // Attention... this is duplicated inside Utils2, I am lazy 
   // apparently only #include is duplicated, so no problems
-  static bool doinit=true;
-  Assign_DoInits(&doinit,MDI_MAPWNDPROC);
   static int AIRCRAFTMENUSIZE=0, COMPASSMENUSIZE=0;
 
   navboxesY=(MapWindow::MapRect.bottom-MapWindow::MapRect.top)-BottomSize-NIBLSCALE(2); // BUGFIX 091125
@@ -486,9 +484,9 @@ _buttondown:
         }
 
       // Process Active Icons
-	if (doinit) {
+	if (DoInit[MDI_MAPWNDPROC]) {
 		#include "./LKinclude_menusize.cpp"
-		doinit=false;
+		DoInit[MDI_MAPWNDPROC]=false;
 	}
 
 	short topicon;

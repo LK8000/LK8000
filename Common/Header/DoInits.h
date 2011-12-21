@@ -38,7 +38,7 @@
   extern void Init_DoInits(void);
   extern void Reset_All_DoInits(void);
   extern void Reset_Single_DoInits(int position);
-  extern void Assign_DoInits(bool *location, int position);
+  // extern void Assign_DoInits(bool *location, int position);
 #endif
 
  // Master of Do Inits
@@ -80,7 +80,7 @@
 	MDI_LAST_DOINIT,
  } MDI_t;
 
- GEXTERN bool *MasterDoInits[MDI_LAST_DOINIT+1];
+ GEXTERN bool DoInit[MDI_LAST_DOINIT+1];
 
 #endif // DOINITS_H
 

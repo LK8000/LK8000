@@ -22,10 +22,8 @@ bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    double sortedValue[MAXTRAFFIC+1];
 
    static double lastRunTime=0;
-   static bool doinit=true;
-   Assign_DoInits(&doinit,MDI_DOTRAFFIC);
 
-   if (doinit) {
+   if (DoInit[MDI_DOTRAFFIC]) {
 	#ifdef DEBUG_LKT
 	StartupStore(_T("... DoTraffic Init memset LKTraffic\n"));
 	#endif
@@ -36,7 +34,7 @@ bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	#endif
 	memset(LKSortedTraffic, -1, sizeof(LKSortedTraffic));
 	lastRunTime=0;
-	doinit=false;
+	DoInit[MDI_DOTRAFFIC]=false;
 	return true;
    }
 

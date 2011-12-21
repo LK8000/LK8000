@@ -45,10 +45,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 
   short curmapspace=MapSpaceMode;
 
-  static bool doinit=true;
-  Assign_DoInits(&doinit,MDI_DRAWCOMMON);
-  
-  if (doinit) {
+  if (DoInit[MDI_DRAWCOMMON]) {
 
   // Set screen borders to avoid writing on extreme pixels
   if ( ScreenSize < (ScreenSize_t)sslandscape ) {
@@ -179,7 +176,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
   SelectedPage[MSM_COMMON]=0;
   SelectedPage[MSM_RECENT]=0;
 
-  doinit=false;
+  DoInit[MDI_DRAWCOMMON]=false;
   return;
   } // doinit
 

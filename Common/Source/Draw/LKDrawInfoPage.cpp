@@ -43,20 +43,18 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
   int index=-1;
 
   static short tlen=0;
-  static bool doinit=true;
-  Assign_DoInits(&doinit,MDI_DRAWINFOPAGE);
   static short	column[PANELCOLUMNS+1], hcolumn[(PANELCOLUMNS*2)+1], qcolumn[(PANELCOLUMNS*4)+1];
   static short	row[PANELROWS+1], hrow[(PANELCOLUMNS*2)+1], qrow[(PANELROWS*4)+1];
 
   bool showunit=false;
   _tcscpy(Empty,_T(""));
 
-  if (forceinit) doinit=true;
+  if (forceinit) DoInit[MDI_DRAWINFOPAGE]=true;
 
 	oldfont = (HFONT)SelectObject(hdc, LKINFOFONT); // save font
 
-  if (doinit) {
-	doinit=false;
+  if (DoInit[MDI_DRAWINFOPAGE]) {
+	DoInit[MDI_DRAWINFOPAGE]=false;
 	// function can only be called in fullscreen  and thus can be inited here
 	if ( ScreenSize < (ScreenSize_t)sslandscape ) {
 		switch (ScreenSize) {			// portrait fullscreen
@@ -1022,10 +1020,8 @@ label_End:
 void MapWindow::WriteInfo(HDC hdc, bool *showunit, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle, 
 				short *columnvalue, short *columntitle, short *row1, short *row2, short *row3) {
 
-  static bool doinit=true;
-  Assign_DoInits(&doinit,MDI_WRITEINFO);
   static short unitrowoffset=0;
-  if (doinit) {
+  if (DoInit[MDI_WRITEINFO]) {
 	switch(ScreenSize) {
 		case ss896x672:
 			unitrowoffset=6;
@@ -1067,7 +1063,7 @@ void MapWindow::WriteInfo(HDC hdc, bool *showunit, TCHAR *BufferValue, TCHAR *Bu
 		default:
 			break;
 	}
-	doinit=false;
+	DoInit[MDI_WRITEINFO]=false;
   }
 
   SelectObject(hdc, LK8PanelBigFont);

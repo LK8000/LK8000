@@ -94,13 +94,10 @@ static bool airspace_bearing_sorter( CAirspace *a, CAirspace *b )
 bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
 
-   static bool doinit=true;
-   Assign_DoInits(&doinit,MDI_DOAIRSPACES);
-
    static int step = 0;
    bool ret = false;
    
-   if (doinit) {
+   if (DoInit[MDI_DOAIRSPACES]) {
 	memset(LKAirspaces, 0, sizeof(LKAirspaces));
 	LKNumAirspaces=0;
 	memset(LKSortedAirspaces, -1, sizeof(LKSortedAirspaces));
@@ -108,7 +105,7 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       LKAirspaces[i].Valid = false;
       LKAirspaces[i].Pointer = NULL;
     }
-	doinit=false;
+	DoInit[MDI_DOAIRSPACES]=false;
 	return true;
    }
 

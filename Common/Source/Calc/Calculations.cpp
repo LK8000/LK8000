@@ -459,13 +459,11 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   double x0, y0, mag;
   static double LastTime = 0;
   static double lastHeading = 0;
-  static bool DoInit=true;
-  Assign_DoInits(&DoInit,MDI_HEADING);
 
-  if (DoInit) {
+  if (DoInit[MDI_HEADING]) {
 	LastTime = 0;
 	lastHeading = 0;
-	DoInit=false;
+	DoInit[MDI_HEADING]=false;
   }
 
   if ((Basic->Speed>0)||(Calculated->WindSpeed>0)) {
@@ -569,15 +567,12 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static bool	validHomeWaypoint=false;
   static bool	gotValidFix=false;
 
-  static bool DoInit=true;
-  Assign_DoInits(&DoInit,MDI_DOCALCULATIONSSLOW);
-
-  if (DoInit) {
+  if (DoInit[MDI_DOCALCULATIONSSLOW]) {
 	LastOptimiseTime = 0;
 	LastSearchBestTime = 0; 
 	validHomeWaypoint=false;
 	gotValidFix=false;
-	DoInit=false;
+	DoInit[MDI_DOCALCULATIONSSLOW]=false;
   }
 
   // See also same redundant check inside AirspaceWarning
@@ -1142,14 +1137,11 @@ void Average30s(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   static int num_samples = 0;
   static BOOL lastCircling = false;
 
-  static bool DoInit=true;
-  Assign_DoInits(&DoInit,MDI_AVERAGE30S);
-
-  if (DoInit) {
+  if (DoInit[MDI_AVERAGE30S]) {
 	LastTime = 0;
 	num_samples = 0;
 	lastCircling = false;
-	DoInit=false;
+	DoInit[MDI_AVERAGE30S]=false;
   }
 
   if(Basic->Time > LastTime)
@@ -4330,12 +4322,10 @@ double CalculateWaypointArrivalAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculat
 
 void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static int done_autoqnh = 0;
-  static bool DoInit=true;
-  Assign_DoInits(&DoInit,MDI_DOAUTOQNH);
 
-  if (DoInit) {
+  if (DoInit[MDI_DOAUTOQNH]) {
 	done_autoqnh=0;
-	DoInit=false;
+	DoInit[MDI_DOAUTOQNH]=false;
   }
 
   // Reject if already done

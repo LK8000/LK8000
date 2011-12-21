@@ -16,7 +16,7 @@
 void Init_DoInits(void) {
 
   for (int i=0; i<=MDI_LAST_DOINIT; i++)
-	MasterDoInits[i]=(bool *)NULL;
+	DoInit[i]=true;
 
 
 }
@@ -28,7 +28,7 @@ bool Valid_DoInit_Position(int position) {
 	return true;
 }  
 
-
+#if 0
 //
 // ATTENTION ATTENTION ATTENTION
 // Of course ONLY USE STATIC LOCATIONS!
@@ -44,10 +44,10 @@ void Assign_DoInits(bool *location, int position) {
   MasterDoInits[position]=location;
 
 }
-
+#endif
 
 //
-// This is a master reset, work in progress
+// This is a master reset
 //
 void Reset_All_DoInits(void) {
   #if TESTBENCH
@@ -55,8 +55,7 @@ void Reset_All_DoInits(void) {
   #endif
 
   for (int i=MDI_FIRST_DOINIT; i<=MDI_LAST_DOINIT; i++) {
-	if (MasterDoInits[i]!=(bool *)NULL)
-		*MasterDoInits[i]=true;
+	DoInit[i]=true;
   }
 
 }
@@ -75,8 +74,7 @@ void Reset_Single_DoInits(int position) {
 	return;
   }
 
-  if (MasterDoInits[position]!=(bool *)NULL)
-	*MasterDoInits[position]=true;
+ DoInit[position]=true;
 
 }
 

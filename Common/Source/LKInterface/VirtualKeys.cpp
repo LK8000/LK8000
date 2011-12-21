@@ -39,8 +39,6 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	static short s_bottomY=0;
 	static short shortpress_yup, shortpress_ydown;
 	static short longpress_yup, longpress_ydown;
-	static bool doinit=true;
-	Assign_DoInits(&doinit,MDI_PROCESSVIRTUALKEY);
 
 	bool dontdrawthemap=(DONTDRAWTHEMAP);
 
@@ -52,7 +50,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	#endif
 
 
-	if (doinit) {
+	if (DoInit[MDI_PROCESSVIRTUALKEY]) {
 
 		sizeup=MapWindow::MapRect.bottom-MapWindow::MapRect.top;
 
@@ -78,7 +76,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		shortpress_yup=(short)((sizeup-BottomSize-TopSize)/2.7)+MapWindow::MapRect.top+TopSize;
 		shortpress_ydown=(short)(MapWindow::MapRect.bottom-BottomSize-((sizeup-BottomSize)/2.7));
 
-		doinit=false;
+		DoInit[MDI_PROCESSVIRTUALKEY]=false;
 	}
 	
 	// do not consider navboxes, they are processed separately
