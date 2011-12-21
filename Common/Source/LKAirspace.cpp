@@ -1793,7 +1793,7 @@ void CAirspaceManager::QnhChangeNotify(const double &newQNH)
 
 void CAirspaceManager::ScanAirspaceLine(double lats[AIRSPACE_SCANSIZE_X], double lons[AIRSPACE_SCANSIZE_X], double heights[AIRSPACE_SCANSIZE_H],
                                         double terrain_heights[AIRSPACE_SCANSIZE_X],
-                                        CAirspace* airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) const
+                                        AirSpaceSideViewSTRUCT airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) const
 {              
 
   int i,j;
@@ -1803,7 +1803,7 @@ void CAirspaceManager::ScanAirspaceLine(double lats[AIRSPACE_SCANSIZE_X], double
   double dy = lats[AIRSPACE_SCANSIZE_X-1]-y1;
   int iheights[AIRSPACE_SCANSIZE_H];
   int iterrain_heights[AIRSPACE_SCANSIZE_X];
-  
+  int iCnt =0;
   for (i=0; i<AIRSPACE_SCANSIZE_H; ++i) iheights[i] = (int)heights[i];
   for (i=0; i<AIRSPACE_SCANSIZE_X; ++i) iterrain_heights[i] = (int)terrain_heights[i];
 
@@ -1819,6 +1819,7 @@ void CAirspaceManager::ScanAirspaceLine(double lats[AIRSPACE_SCANSIZE_X], double
   CCriticalSection::CGuard guard(_csairspaces);
 
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
+	  iCnt++;
       const rectObj &pbounds = (*it)->Bounds();
       // ignore if scan line doesn't intersect bounds
       if (msRectOverlap(&lineRect, &pbounds)) {
@@ -1829,7 +1830,17 @@ void CAirspaceManager::ScanAirspaceLine(double lats[AIRSPACE_SCANSIZE_X], double
                         int agl = iheights[j] - iterrain_heights[i];
                         if (agl<0) agl=0;
                         if ((*it)->IsAltitudeInside(iheights[j], agl, 0)) {
-                            airspacetype[j][i] = (*it);
+                            airspacetype[j][i].iType = (*it)->Type();
+                            if(airspacetype[j][i].szAS_Name != NULL)
+         				      _tcsncpy((wchar_t*)  airspacetype[j][i].szAS_Name,  (wchar_t*)(*it)->Name(), NAME_SIZE-1);
+         				    airspacetype[j][i].szAS_Name[NAME_SIZE-1]=0;
+         				    airspacetype[j][i].iIdx = iCnt;
+       				        airspacetype[j][i].bRectAllowed = true ;
+         				    if( (*it)->Top()->Base == abAGL)
+         				      airspacetype[j][i].bRectAllowed = false ;
+         				    airspacetype[j][i].psAS =   (*it);
+         			/*	    if( (*it)->Base()->Base == abAGL)
+           				      airspacetype[j][i].bRectAllowed = false ;*/
                         } // inside height
                     } // finished scanning height
                 } // inside
