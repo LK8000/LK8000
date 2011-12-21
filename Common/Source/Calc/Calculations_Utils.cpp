@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: LKCalculations.cpp,v 1.26 2010/12/22 01:07:44 root Exp root $
+   $Id: Calculations_Utils.cpp,v 1.1 2011/12/21 10:28:45 root Exp root $
 */
 
 #include "externs.h"

@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: dlgTopology.cpp,v 1.1 2010/12/13 16:40:01 root Exp root $
+   $Id: dlgTopology.cpp,v 1.1 2011/12/21 10:29:29 root Exp root $
 */
 
 #include "externs.h"

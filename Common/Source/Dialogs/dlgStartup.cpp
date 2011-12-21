@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: dlgStartup.cpp,v 8.4 2010/12/13 14:20:57 root Exp root $
+   $Id: dlgStartup.cpp,v 1.1 2011/12/21 10:29:29 root Exp root $
 */
 
 #include "externs.h"

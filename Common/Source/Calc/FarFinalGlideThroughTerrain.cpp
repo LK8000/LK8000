@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id$
+   $Id: FarFinalGlideThroughTerrain.cpp,v 1.1 2011/12/21 10:28:45 root Exp root $
 */
 
 #include "externs.h"

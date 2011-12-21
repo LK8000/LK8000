@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: dlgAirspaceSelect.cpp,v 8.3 2010/12/13 12:26:00 root Exp root $
+   $Id: dlgAirspaceSelect.cpp,v 1.1 2011/12/21 10:29:29 root Exp root $
 */
 
 

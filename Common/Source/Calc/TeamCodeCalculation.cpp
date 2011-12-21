@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: TeamCodeCalculation.cpp,v 8.2 2010/12/12 17:25:17 root Exp root $
+   $Id: TeamCodeCalculation.cpp,v 1.1 2011/12/21 10:28:45 root Exp root $
 */
 
 #include "externs.h"

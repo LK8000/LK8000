@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: AATDistance.cpp,v 8.2 2010/12/10 22:19:25 root Exp root $
+   $Id: AATDistance.cpp,v 1.1 2011/12/21 10:28:45 root Exp root $
 */
 
 #include "externs.h"

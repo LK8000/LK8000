@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: Calculations2.cpp,v 8.5 2010/12/10 23:45:23 root Exp root $
+   $Id: Calculations2.cpp,v 1.1 2011/12/21 10:28:45 root Exp root $
 */
 
 #include "externs.h"
