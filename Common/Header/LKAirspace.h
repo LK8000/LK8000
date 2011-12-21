@@ -20,6 +20,9 @@
 #include <list>
 #include <algorithm>
 
+
+
+
 // changed by AlphaLima since we have a second airspace view to next waypoint,
 // the waypoint can be much more far away (e.g.  167km for a 500km FAI triangle)
 // the resolution turns to be too inaccurate
@@ -246,6 +249,16 @@ protected:
   static int _lastknownheading;                // last known heading saved for calculations
   static bool _pred_blindtime;                 // disable predicted position based warnings near takeoff
 };
+typedef struct
+{
+  RECT rc;
+  int iIdx;
+  int aiLable;
+  int iType;
+  BOOL bRectAllowed;
+  TCHAR szAS_Name[NAME_SIZE + 1];
+  CAirspace *psAS;
+} AirSpaceSideViewSTRUCT;
 
 // 
 // AIRSPACE AREA CLASS
@@ -349,7 +362,7 @@ public:
   void CloseAirspaces();
   void QnhChangeNotify(const double &newQNH);
   void ScanAirspaceLine(double lats[AIRSPACE_SCANSIZE_X], double lons[AIRSPACE_SCANSIZE_X], double heights[AIRSPACE_SCANSIZE_H], double terrain_heights[AIRSPACE_SCANSIZE_X],
-		  CAirspace* [AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) const;
+		  AirSpaceSideViewSTRUCT [AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) const;
   CAirspace* FindNearestAirspace(const double &longitude, const double &latitude,
              double *nearestdistance, double *nearestbearing, double *height = NULL) const;
   void SortAirspaces(void);
