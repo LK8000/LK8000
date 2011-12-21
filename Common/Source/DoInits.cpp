@@ -12,15 +12,6 @@
 #include "DoInits.h"
 
 
-
-void Init_DoInits(void) {
-
-  for (int i=0; i<=MDI_LAST_DOINIT; i++)
-	DoInit[i]=true;
-
-
-}
-
 bool Valid_DoInit_Position(int position) {
   if (position<0||position>MDI_LAST_DOINIT)
 	return false;
@@ -28,23 +19,6 @@ bool Valid_DoInit_Position(int position) {
 	return true;
 }  
 
-#if 0
-//
-// ATTENTION ATTENTION ATTENTION
-// Of course ONLY USE STATIC LOCATIONS!
-//
-void Assign_DoInits(bool *location, int position) {
-
-  if (!Valid_DoInit_Position(position)) {
-	#if TESTBENCH
-	StartupStore(_T("... invalid Assign DoInits position=%d\n"),position);
-	#endif
-	return;
-  }
-  MasterDoInits[position]=location;
-
-}
-#endif
 
 //
 // This is a master reset

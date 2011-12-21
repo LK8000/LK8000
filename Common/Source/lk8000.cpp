@@ -53,7 +53,6 @@
 #include "RasterTerrain.h"
 
 #include "LKObjects.h"
-#include "DoInits.h"
 
 using std::min;
 using std::max;
@@ -101,7 +100,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   CreateMutex(NULL,FALSE,_T("LOCK8000"));
   if (GetLastError() == ERROR_ALREADY_EXISTS) return(0);
 
-  
   wsprintf(LK8000_Version,_T("%S v%S.%S "), LKFORK, LKVERSION,LKRELEASE);
   wcscat(LK8000_Version, TEXT(__DATE__));
   StartupStore(_T("%s------------------------------------------------------------%s"),NEWLINE,NEWLINE);
@@ -118,7 +116,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   #if TESTBENCH
   StartupStore(TEXT(". TESTBENCH option enabled%s"),NEWLINE);
   #endif
-  Init_DoInits();
   Globals_Init();
 
   StartupLogFreeRamAndStorage();

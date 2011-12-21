@@ -9,7 +9,12 @@
 #include "Flarm.h"
 #include "FlarmIdFile.h"
 #include "Utils.h"
+#include "DoInits.h"
 
+//
+// This HAS TO BE FIXED some day! We must not init this class with such action.
+// We are getting here before even startup, this is the place where localpath is executed first
+//
 
 FlarmIdFile::FlarmIdFile(void)
 {

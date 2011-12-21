@@ -14,36 +14,10 @@
 #ifndef DOINITS_H
 #define DOINITS_H
 
-  #undef  GEXTERN
-  #undef  GEXTTRUE
-  #undef  GEXTFALSE
-  #undef  GEXTNULL
-  #undef  GEXTFONTNULL
-  #undef  GEXTZERO
-
-#if defined(STATIC_DOINITS)
-  #define GEXTERN 
-  #define GEXTTRUE       = true
-  #define GEXTFALSE      = false
-  #define GEXTNULL       = NULL
-  #define GEXTZERO       = 0
-
-#else
-  #define GEXTERN extern
-  #define GEXTTRUE  
-  #define GEXTFALSE 
-  #define GEXTNULL 
-  #define GEXTZERO 
-
-  extern void Init_DoInits(void);
-  extern void Reset_All_DoInits(void);
-  extern void Reset_Single_DoInits(int position);
-  // extern void Assign_DoInits(bool *location, int position);
-#endif
 
  // Master of Do Inits
  typedef enum {
-	MDI_MASTER,
+	MDI_MASTER,			// #1
 	MDI_FIRST_DOINIT,
 	MDI_DORANGEWAYPOINTLIST,
 	MDI_DOCALCULATIONSSLOW,
@@ -77,10 +51,29 @@
 	MDI_GETOVERTARGETHEADER,	// needed when changing language
 	MDI_PROCESSVIRTUALKEY,		// resolution change
 	MDI_ONPAINTLISTITEM,		// resolution change
-	MDI_LAST_DOINIT,
+	MDI_LAST_DOINIT,		
  } MDI_t;
 
- GEXTERN bool DoInit[MDI_LAST_DOINIT+1];
+#if defined(STATIC_DOINITS)
+  // Careful, we MUST initialize here. Check that MDIs fit in this array.
+  bool DoInit[100]={ 
+	1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,
+  };
+#else
+  extern void Init_DoInits(void);
+  extern void Reset_All_DoInits(void);
+  extern void Reset_Single_DoInits(int position);
+  extern bool DoInit[100];
+#endif
 
 #endif // DOINITS_H
 
