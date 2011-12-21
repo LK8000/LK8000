@@ -1435,10 +1435,13 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   double range = 50.0*1000; // km
   double aclat, aclon, ach, acb, alt, speed, calc_average30s;
   double fi, fj;
+  double wpt_brg;
   double wpt_dist;
   double wpt_altarriv;
   double wpt_altitude;
   double wpt_altarriv_mc0;
+  double calc_terrainalt;
+  double calc_altitudeagl;
   double fMC0 = 0.0f;
   int overindex=-1;
   bool show_mc0= true;
@@ -1449,26 +1452,26 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   BOOL bDrawRightSide =false;
 
   LockFlightData();
-  fMC0 = GlidePolar::SafetyMacCready;
-  aclat = GPS_INFO.Latitude;
-  aclon = GPS_INFO.Longitude;
-  ach = GPS_INFO.Altitude;
-  acb = GPS_INFO.TrackBearing;
+    fMC0 = GlidePolar::SafetyMacCready;
+    aclat = GPS_INFO.Latitude;
+    aclon = GPS_INFO.Longitude;
+    ach = GPS_INFO.Altitude;
+    acb = GPS_INFO.TrackBearing;
 
-  speed = GPS_INFO.Speed;
-  calc_average30s = CALCULATED_INFO.Average30s;
+    speed = GPS_INFO.Speed;
+    calc_average30s = CALCULATED_INFO.Average30s;
 
-  if (GPS_INFO.BaroAltitudeAvailable &&
-		  EnableNavBaroAltitude) {
-    alt = GPS_INFO.BaroAltitude;
-  } else {
-    alt = GPS_INFO.Altitude;
-  }
+    if (GPS_INFO.BaroAltitudeAvailable && EnableNavBaroAltitude) {
+      alt = GPS_INFO.BaroAltitude;
+    } else {
+      alt = GPS_INFO.Altitude;
+    }
+    calc_terrainalt = CALCULATED_INFO.TerrainAlt;
+    calc_altitudeagl = CALCULATED_INFO.AltitudeAGL;
+  UnlockFlightData();
 
-
-
-  overindex=GetOvertargetIndex();
-  double  wpt_brg =  AngleLimit360( GPS_INFO.TrackBearing );
+  overindex = GetOvertargetIndex();
+  wpt_brg = AngleLimit360( acb );
   wpt_dist         = 0.0;
   wpt_altarriv     = 0.0;
   wpt_altarriv_mc0 = 0.0;
@@ -1482,7 +1485,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
       double wptlat = WayPointList[overindex].Latitude;
       DistanceBearing(aclat, aclon, wptlat, wptlon, &wpt_dist, &acb);
 
-      wpt_brg =AngleLimit360(wpt_brg - acb +90);
+      wpt_brg = AngleLimit360(wpt_brg - acb +90);
       range = max(5.0*1000.0, wpt_dist*1.25);   // 20% more distance to show, minimum 5km
       wpt_altarriv     = WayPointCalc[overindex].AltArriv[ALTA_MC ];
       wpt_altarriv_mc0 = WayPointCalc[overindex].AltArriv[ALTA_MC0];
@@ -1492,6 +1495,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
 //if( wpt_altarriv_mc0 >3300) /* BUGFIX calc not calculated somewhere else (init value 3333m indicates not calculated ) */
 // ToDo remove this function when safety Mc als is calculated in calc thread
 {
+      LockFlightData();
       wpt_altarriv_mc0 =   CALCULATED_INFO.NavAltitude -
         GlidePolar::MacCreadyAltitude( fMC0,
                                        wpt_dist,
@@ -1502,7 +1506,6 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
                                        0)  - WayPointList[overindex].Altitude;
       if (IsSafetyAltitudeInUse(overindex)) wpt_altarriv_mc0 -= SAFETYALTITUDEARRIVAL;
 
-
       wpt_altarriv =   CALCULATED_INFO.NavAltitude -
         GlidePolar::MacCreadyAltitude( MACCREADY,
                                        wpt_dist,
@@ -1512,15 +1515,14 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
                                        0, 0, true,
                                        0)  - WayPointList[overindex].Altitude;
       if (IsSafetyAltitudeInUse(overindex)) wpt_altarriv -= SAFETYALTITUDEARRIVAL;
+      UnlockFlightData();
 }
-
     } else {
       // no selected target
       DrawNoData(hdc, rc);
       return;
     }
   }
-  UnlockFlightData();
   
   double hmin = max(0.0, alt-2300);
   double hmax = max(fMaxAltToday, alt+1000);
@@ -1531,7 +1533,6 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   double d_alt[AIRSPACE_SCANSIZE_X];
   double d_h[AIRSPACE_SCANSIZE_H];
   AirSpaceSideViewSTRUCT d_airspace[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X];
-
 
   int i,j,k;
 
@@ -1570,31 +1571,28 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
     }
   }
   CAirspaceManager::Instance().ScanAirspaceLine(d_lat, d_lon, d_h, d_alt, d_airspace);
-  int type;
 
+  int type;
   double dx = dfj*(rc.right-rc.left-BORDER_X);
   int x0 = rc.left+BORDER_X;
   double dy = dfi*(rc.top-rc.bottom+BORDER_Y);
   int y0 = rc.bottom-BORDER_Y;
 
   BOOL bFound = false;
-  for ( k=0 ; k < GC_MAX_NO; k++)
-  {
-	wsprintf(   asDrawn[k].szAS_Name, TEXT(""));
-	asDrawn[k].aiLable = ID_NO_LABLE;
-	asDrawn[k].iType   = -1;
-	asDrawn[k].iIdx    = -1;
-	asDrawn[k].psAS    = NULL;
+  for ( k=0 ; k < GC_MAX_NO; k++) {
+    wsprintf(   asDrawn[k].szAS_Name, TEXT(""));
+    asDrawn[k].aiLable = ID_NO_LABLE;
+    asDrawn[k].iType   = -1;
+    asDrawn[k].iIdx    = -1;
+    asDrawn[k].psAS    = NULL;
     wsprintf( pHandeled[k].szAS_Name, TEXT(""));
     pHandeled[k].aiLable = ID_NO_LABLE;
     pHandeled[k].iType   = -1;
     pHandeled[k].iIdx    = -1;
     pHandeled[k].psAS    = NULL;
-
   }
   int iNoOfDrawnNames =0;
   bool bDrawn = false;
-
 
   HPEN mpen = (HPEN)CreatePen(PS_NULL, 0, RGB(0xf0,0xf0,0xb0));
   HPEN oldpen = (HPEN)SelectObject(hdc, (HPEN)mpen);
@@ -1607,57 +1605,53 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
     { // scan range
       fj = j*dfj;
       type = d_airspace[i][j].iType;
+      if (type>=0)
       {
-        if (type>=0)
+        rcd.left = iround((j-FRACT)*dx)+x0;
+        rcd.right = iround((j+FRACT)*dx)+x0;
+        rcd.bottom = iround(((i)+FRACT)*dy)+y0;
+        rcd.top = iround(((i)-FRACT)*dy)+y0;
+        bFound = false;
+        if(rcd.top > y0) rcd.top = y0;
+
+        if(d_airspace[i][j].bRectAllowed == false)
         {
-	      rcd.left = iround((j-FRACT)*dx)+x0;
-	      rcd.right = iround((j+FRACT)*dx)+x0;
-	      rcd.bottom = iround(((i)+FRACT)*dy)+y0;
-	      rcd.top = iround(((i)-FRACT)*dy)+y0;
-		  bFound = false;
-          if(rcd.top > y0)
-        	rcd.top = y0;
+          SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(type));
+          SetTextColor(hdc, MapWindow::GetAirspaceColourByClass(type));
+          Rectangle(hdc,rcd.left,rcd.top,rcd.right,rcd.bottom);
+        }
 
-		  if(d_airspace[i][j].bRectAllowed == false)
-		  {
-		    SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(type));
-		    SetTextColor(hdc, MapWindow::GetAirspaceColourByClass(type));
-	        Rectangle(hdc,rcd.left,rcd.top,rcd.right,rcd.bottom);
-		  }
-
-          for (k=0 ; k < iNohandeldSpaces; k++)
+        for (k=0 ; k < iNohandeldSpaces; k++)
+        {
+          if(k < GC_MAX_NO)
           {
-            if(k < GC_MAX_NO)
+            if(  pHandeled[k].iIdx  ==  d_airspace[i][j].iIdx )
             {
-			  if(  pHandeled[k].iIdx  ==  d_airspace[i][j].iIdx )
-			  {
-			    bFound = true;
-			    if( rcd.left   < pHandeled[k].rc.left  )  pHandeled[k].rc.left    = rcd.left;
-			    if( rcd.right  > pHandeled[k].rc.right )  pHandeled[k].rc.right   = rcd.right;
-			    if( rcd.bottom < pHandeled[k].rc.bottom)  pHandeled[k].rc.bottom  = rcd.bottom;
-			    if( rcd.top    > pHandeled[k].rc.top   )  pHandeled[k].rc.top     = rcd.top;
-			  }
+              bFound = true;
+              if( rcd.left   < pHandeled[k].rc.left  )  pHandeled[k].rc.left    = rcd.left;
+              if( rcd.right  > pHandeled[k].rc.right )  pHandeled[k].rc.right   = rcd.right;
+              if( rcd.bottom < pHandeled[k].rc.bottom)  pHandeled[k].rc.bottom  = rcd.bottom;
+              if( rcd.top    > pHandeled[k].rc.top   )  pHandeled[k].rc.top     = rcd.top;
             }
           }
-	      if(!bFound)
-	      {
-	        if(iNohandeldSpaces < GC_MAX_NO)
-	        {
-		      pHandeled[iNohandeldSpaces].iType =  d_airspace[i][j].iType;
-		      pHandeled[iNohandeldSpaces].iIdx  =  d_airspace[i][j].iIdx;
-		      pHandeled[iNohandeldSpaces].bRectAllowed =  d_airspace[i][j].bRectAllowed;
-		      pHandeled[iNohandeldSpaces].psAS   = d_airspace[i][j].psAS;
-		      pHandeled[iNohandeldSpaces].rc    =  rcd;
-			  _tcsncpy(pHandeled[iNohandeldSpaces].szAS_Name, d_airspace[i][j].szAS_Name, NAME_SIZE-1);
-		      iNohandeldSpaces++;
-	        }
-	      }
+        }
+        
+        if(!bFound)
+        {
+          if(iNohandeldSpaces < GC_MAX_NO)
+          {
+            pHandeled[iNohandeldSpaces].iType =  d_airspace[i][j].iType;
+            pHandeled[iNohandeldSpaces].iIdx  =  d_airspace[i][j].iIdx;
+            pHandeled[iNohandeldSpaces].bRectAllowed =  d_airspace[i][j].bRectAllowed;
+            pHandeled[iNohandeldSpaces].psAS   = d_airspace[i][j].psAS;
+            pHandeled[iNohandeldSpaces].rc    =  rcd;
+            _tcsncpy(pHandeled[iNohandeldSpaces].szAS_Name, d_airspace[i][j].szAS_Name, NAME_SIZE-1);
+            iNohandeldSpaces++;
+          }
         }
       }
     }
   }
-
-
 
   SelectObject(hdc, (HPEN)mpen);
   for (k=0 ; k < iNohandeldSpaces; k++)
@@ -1680,17 +1674,17 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
 #endif
 	  if(pHandeled[k].bRectAllowed == true)
 	  {
-        int  type = pHandeled[k].iType;
+      int  type = pHandeled[k].iType;
 	    SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(type));
 	    SetTextColor(hdc, MapWindow::GetAirspaceColourByClass(type));
-        RECT rcd =pHandeled[k].rc;
-        Rectangle(hdc,rcd.left,rcd.top,rcd.right,rcd.bottom);
+      RECT rcd =pHandeled[k].rc;
+      Rectangle(hdc,rcd.left,rcd.top,rcd.right,rcd.bottom);
 	  }
 #ifdef FRAMES
       SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
       HPEN Newpen = (HPEN)CreatePen(PS_SOLID, 1, MapWindow::GetAirspaceColourByClass(type));
       SelectObject(hdc, (Newpen));
-	Rectangle(hdc,rcd.left,rcd.top,rcd.right,rcd.bottom);
+      Rectangle(hdc,rcd.left,rcd.top,rcd.right,rcd.bottom);
 #endif
     }
   }
@@ -1738,79 +1732,74 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   DrawYGrid(hdc, rc, 500.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 500.0, true);
 
 
-
   HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont); // LK8MapFont
     for (k=0 ; k < iNohandeldSpaces; k++)
     {
-  	if( pHandeled[k].iIdx != -1)
+      if( pHandeled[k].iIdx != -1)
       {
         bDrawn = false;
         for (i=0; i < iNoOfDrawnNames; i++)
         {
           if( bDrawn == false)
           {
-
-  	      if(_tcsncmp((TCHAR*)asDrawn[i].szAS_Name, (TCHAR*)pHandeled[k].szAS_Name,NAME_SIZE) == 0)
-  //			if(  pHandeled[k].iIdx  ==  asDrawn[i].iIdx )
-  	    	  if(pHandeled[k].iType == asDrawn[i].iType)
-  	           bDrawn = true;
+            if(_tcsncmp((TCHAR*)asDrawn[i].szAS_Name, (TCHAR*)pHandeled[k].szAS_Name,NAME_SIZE) == 0)
+            //if(  pHandeled[k].iIdx  ==  asDrawn[i].iIdx )
+            if(pHandeled[k].iType == asDrawn[i].iType) bDrawn = true;
           }
         }
 
         if(bDrawn == false)
         {
-            int  type = pHandeled[k].iType;
-  		  SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(type));
-  		  SetTextColor(hdc, RGB_MENUTITLEFG);
-  		  RECT rcd =pHandeled[k].rc;
+          int  type = pHandeled[k].iType;
+          SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(type));
+          SetTextColor(hdc, RGB_MENUTITLEFG);
+          RECT rcd =pHandeled[k].rc;
 
-  		  int x = rcd.left + (rcd.right - rcd.left)/2;
-  		  int y = rcd.top  - (rcd.top   - rcd.bottom)/2;
+          int x = rcd.left + (rcd.right - rcd.left)/2;
+          int y = rcd.top  - (rcd.top   - rcd.bottom)/2;
 
-  		  _tcsncpy(text, pHandeled[k].szAS_Name,NAME_SIZE-1/* sizeof(text)/sizeof(text[0])*/);
-  		  GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-  		  x -= tsize.cx/2; // - NIBLSCALE(5);
-  		  y -= tsize.cy;   // - NIBLSCALE(5);
-  		  if( asDrawn[iNoOfDrawnNames].aiLable < ID_FULL_LABLE) /* already drawn ? */
-  			if(tsize.cx < (rcd.right-rcd.left))
-  			  if((y)  < rcd.top)
-  				if((y + tsize.cy)  > rcd.bottom)
-  				{
+          _tcsncpy(text, pHandeled[k].szAS_Name,NAME_SIZE-1/* sizeof(text)/sizeof(text[0])*/);
+          GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+          x -= tsize.cx/2; // - NIBLSCALE(5);
+          y -= tsize.cy;   // - NIBLSCALE(5);
+          if ( (asDrawn[iNoOfDrawnNames].aiLable < ID_FULL_LABLE) && /* already drawn ? */
+               (tsize.cx < (rcd.right-rcd.left)) &&
+               ((y)  < rcd.top) &&
+               ((y + tsize.cy)  > rcd.bottom)
+             ) 
+          {
+            ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 
-  				   ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+            _tcsncpy((wchar_t*)  asDrawn[iNoOfDrawnNames].szAS_Name, (wchar_t*) pHandeled[k].szAS_Name, NAME_SIZE);
+            asDrawn[iNoOfDrawnNames].aiLable = ID_FULL_LABLE;
+            asDrawn[iNoOfDrawnNames].iType = type;
+            asDrawn[iNoOfDrawnNames].iIdx  = pHandeled[k].iIdx;
+            iNoOfDrawnNames++;
+            y = rcd.top  - (rcd.top   - rcd.bottom)/2;
+          }
 
-  				   _tcsncpy((wchar_t*)  asDrawn[iNoOfDrawnNames].szAS_Name, (wchar_t*) pHandeled[k].szAS_Name, NAME_SIZE);
-  				   asDrawn[iNoOfDrawnNames].aiLable = ID_FULL_LABLE;
-  				   asDrawn[iNoOfDrawnNames].iType = type;
-  				   asDrawn[iNoOfDrawnNames].iIdx  = pHandeled[k].iIdx;
-  				   iNoOfDrawnNames++;
-  				   y = rcd.top  - (rcd.top   - rcd.bottom)/2;
-  				}
-
-
-  		  _tcsncpy((wchar_t*)text, (wchar_t*) CAirspaceManager::Instance().GetAirspaceTypeShortText( pHandeled[k].iType), NAME_SIZE);
-  		  GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-  		  x = rcd.left + (rcd.right - rcd.left)/2;
-  		  if( asDrawn[iNoOfDrawnNames].aiLable == ID_NO_LABLE) /* already drawn ? */
-  			if(tsize.cx < (rcd.right-rcd.left))
-  			  if((y)  < rcd.top)
-  				if((y + tsize.cy)  > rcd.bottom)
-  				{
-  				  x -= tsize.cx/2; // - NIBLSCALE(5);
-  				  ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-  				   _tcsncpy((wchar_t*)  asDrawn[iNoOfDrawnNames].szAS_Name, (wchar_t*) pHandeled[k].szAS_Name, NAME_SIZE);
-  				   asDrawn[iNoOfDrawnNames].aiLable = ID_SHORT_LABLE;
-  				   asDrawn[iNoOfDrawnNames].iType = type;
-  				   asDrawn[iNoOfDrawnNames].iIdx  = pHandeled[k].iIdx;
-  				  iNoOfDrawnNames++;
-  				}
-
-        }
-      }
-    }
+          _tcsncpy((wchar_t*)text, (wchar_t*) CAirspaceManager::Instance().GetAirspaceTypeShortText( pHandeled[k].iType), NAME_SIZE);
+          GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+          x = rcd.left + (rcd.right - rcd.left)/2;
+          if ( (asDrawn[iNoOfDrawnNames].aiLable == ID_NO_LABLE)  && /* already drawn ? */
+               (tsize.cx < (rcd.right-rcd.left)) &&
+               ((y)  < rcd.top) &&
+               ((y + tsize.cy)  > rcd.bottom)
+             )
+          {
+            x -= tsize.cx/2; // - NIBLSCALE(5);
+            ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+             _tcsncpy((wchar_t*)  asDrawn[iNoOfDrawnNames].szAS_Name, (wchar_t*) pHandeled[k].szAS_Name, NAME_SIZE);
+             asDrawn[iNoOfDrawnNames].aiLable = ID_SHORT_LABLE;
+             asDrawn[iNoOfDrawnNames].iType = type;
+             asDrawn[iNoOfDrawnNames].iIdx  = pHandeled[k].iIdx;
+            iNoOfDrawnNames++;
+          }
+        } //if bDrawn==false
+      } //if iIdx!=-1
+    } //for k
   SelectObject(hdc, hfOld);
 
-  //
   POINT line[4];
 
   // draw target symbolic line
@@ -1818,16 +1807,17 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   if (asp_heading_task)
   {
     if(WayPointCalc[overindex].IsLandable == 0)
-	{
-    // Mark wpt with a vertical marker line
-    line[0].x = (int)(x0 + ((rc.right - rc.left - BORDER_X) / range) * wpt_dist);
-    line[0].y = y0;
-    line[1].x = line[0].x;
-    line[1].y = rc.top;
-    StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
-  }
-	else
     {
+      // Not landable - Mark wpt with a vertical marker line
+      line[0].x = (int)(x0 + ((rc.right - rc.left - BORDER_X) / range) * wpt_dist);
+      line[0].y = y0;
+      line[1].x = line[0].x;
+      line[1].y = rc.top;
+      StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
+    }
+    else
+    {
+      // Landable
       line[0].x = iWpPos;
       line[0].y = CalcHeightCoordinat( wpt_altitude,   rc);
       line[1].x = line[0].x;
@@ -1837,13 +1827,12 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
       float fArrHight = 0.0f;
       if(wpt_altarriv > 0.0f)
       {
-    	fArrHight = wpt_altarriv;
+        fArrHight = wpt_altarriv;
         line[0].x = iWpPos;
         line[0].y = CalcHeightCoordinat( SAFETYALTITUDEARRIVAL+wpt_altitude,   rc);
         line[1].x = line[0].x;
         line[1].y = CalcHeightCoordinat( SAFETYALTITUDEARRIVAL+wpt_altitude+fArrHight,   rc);
         StyleLine(hdc, line[0], line[1], STYLE_GREENTHICK, rc);
-
       }
       // Mark wpt with a vertical marker line
       line[0].x = iWpPos;
@@ -1857,30 +1846,28 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   // Draw estimated gliding line (blue)
   if (speed>10.0) {
     if (asp_heading_task) {
-
-         double altarriv;
+      double altarriv;
 #define MC0_LINE
 #ifdef MC0_LINE
-        // Draw estimated gliding line MC=0 (green)
-        if( show_mc0 )
-        {
-          altarriv = wpt_altarriv_mc0 + wpt_altitude;
-          if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
-          line[0].x = x0;
-          line[0].y = CalcHeightCoordinat( alt,   rc);
-          line[1].x = (int)(x0 + ((rc.right - rc.left - BORDER_X) / range) * wpt_dist);
-          line[1].y = CalcHeightCoordinat( altarriv ,   rc);
-          StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
-        }
-#endif
-        altarriv = wpt_altarriv + wpt_altitude;
+      // Draw estimated gliding line MC=0 (green)
+      if( show_mc0 )
+      {
+        altarriv = wpt_altarriv_mc0 + wpt_altitude;
         if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
         line[0].x = x0;
         line[0].y = CalcHeightCoordinat( alt,   rc);
         line[1].x = (int)(x0 + ((rc.right - rc.left - BORDER_X) / range) * wpt_dist);
         line[1].y = CalcHeightCoordinat( altarriv ,   rc);
         StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
-
+      }
+#endif
+      altarriv = wpt_altarriv + wpt_altitude;
+      if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
+      line[0].x = x0;
+      line[0].y = CalcHeightCoordinat( alt,   rc);
+      line[1].x = (int)(x0 + ((rc.right - rc.left - BORDER_X) / range) * wpt_dist);
+      line[1].y = CalcHeightCoordinat( altarriv ,   rc);
+      StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
     } else {
       double t = range/speed;
       double gfh = (ach+calc_average30s*t-hmin)/(hmax-hmin);
@@ -1896,20 +1883,16 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   SelectObject(hdc, GetStockObject(WHITE_BRUSH));
   SetTextColor(hdc, RGB(0xff,0xff,0xff));
 
-
   //Draw wpt info texts
   if (asp_heading_task) {
     line[0].x = (int)(x0 + ((rc.right - rc.left - BORDER_X) / range) * wpt_dist);
-
-
 
     // Print wpt name next to marker line
     _tcsncpy(text, WayPointList[overindex].Name, sizeof(text)/sizeof(text[0]));
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
     int x = line[0].x - tsize.cx - NIBLSCALE(5);
 
-    if (x<x0)
-      bDrawRightSide =true;
+    if (x<x0) bDrawRightSide = true;
     if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);
     int y = rc.top + 3*tsize.cy;
 
@@ -1927,7 +1910,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
     if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
 
 
-HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
+    HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
 
     SetTextColor(hdc, RGB_WHITE);
     if (wpt_altarriv_mc0 > ALTDIFFLIMIT)
@@ -1943,10 +1926,11 @@ HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
     if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);   // Show on right side if left not possible
     y += tsize.cy;
 
-    if((wpt_altarriv_mc0 > 0) && (  WayPointList[overindex].Reachable))
+    if((wpt_altarriv_mc0 > 0) && (  WayPointList[overindex].Reachable)) {
   	  SetTextColor(hdc, RGB_GREEN);
-    else
+    } else {
   	  SetTextColor(hdc, RGB_LIGHTORANGE);
+    }
     ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     
     // Print arrival altitude
@@ -1960,10 +1944,11 @@ HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
     }
 
 
-    if(  WayPointList[overindex].Reachable)
+    if(  WayPointList[overindex].Reachable) {
   	  SetTextColor(hdc, RGB_GREEN);
-    else
+    } else {
   	  SetTextColor(hdc, RGB_LIGHTORANGE);
+    }
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
     x = line[0].x - tsize.cx - NIBLSCALE(5);
     if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);   // Show on right side if left not possible
@@ -1974,7 +1959,7 @@ HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
     x = line[0].x + NIBLSCALE(5);   // Show on right side if left not possible
 
 
-    // Print araival Elevation
+    // Print arrival Elevation
     SetTextColor(hdc, RGB_BLACK);
     if(wpt_altitude- hmin > 0)
     {
@@ -1983,12 +1968,13 @@ HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
       _tcscat(text,buffer);
       GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
       y = CalcHeightCoordinat(  (wpt_altitude-hmin),   rc);
-      if(2.4*tsize.cy < (rc.bottom - y))
+      if (2.4*tsize.cy < (rc.bottom - y)) {
         ExtTextOut(hdc, x-tsize.cx/2, rc.bottom -(int)(2.4 * tsize.cy) /* rc.top-tsize.cy*/, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+      }
     }
 
 
-    // Print araival AGL
+    // Print arrival AGL
     altarriv = wpt_altarriv;
     if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
     if(wpt_altarriv  > 10)
@@ -1998,227 +1984,218 @@ HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
       _tcscat(text,buffer);
       y = CalcHeightCoordinat(  altarriv + wpt_altitude ,   rc);
 
-      if(  WayPointList[overindex].Reachable)
-    	SetTextColor(hdc, RGB_GREEN);
-      else
-    	SetTextColor(hdc, RGB_LIGHTORANGE);
+      if(  WayPointList[overindex].Reachable) {
+        SetTextColor(hdc, RGB_GREEN);
+      } else {
+        SetTextColor(hdc, RGB_LIGHTORANGE);
+      }
       ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     }
 
 
-	// Print current Terrain height
+    // Print current Terrain height
     x =  tsize.cx / 2 ; // - NIBLSCALE(5);
     SetTextColor(hdc, RGB_BLACK);
-	altarriv = CALCULATED_INFO.TerrainAlt;
-    if(CALCULATED_INFO.TerrainAlt - hmin > 0)
-	{
-       Units::FormatUserAltitude(CALCULATED_INFO.TerrainAlt, buffer, 7);
+    if(calc_terrainalt - hmin > 0) {
+       Units::FormatUserAltitude(calc_terrainalt, buffer, 7);
        _tcsncpy(text, gettext(TEXT("_@M1743_")), sizeof(text)/sizeof(text[0]));
        _tcscat(text,buffer);
        GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-       y = CalcHeightCoordinat(  (CALCULATED_INFO.TerrainAlt-hmin),   rc);
+       y = CalcHeightCoordinat(calc_terrainalt-hmin, rc);
        x = (int)(x0 + ((rc.right - rc.left - BORDER_X) / range) * wpt_dist);
-       if(x > (tsize.cx))
-    	 if((2.2*tsize.cy) < (rc.bottom - y))
+       if( (x > (tsize.cx)) && ((2.2*tsize.cy) < (rc.bottom - y)) ) {
            ExtTextOut(hdc, x0+IBLSCALE(1), rc.bottom - (int) (2.2* tsize.cy), ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-	}
+       }
+    }
 
 
-	// Print current AGL
-	if(CALCULATED_INFO.AltitudeAGL - hmin > 0)
-	{
-	  SetTextColor(hdc, RGB_LIGHTBLUE);
-	  Units::FormatUserAltitude(CALCULATED_INFO.AltitudeAGL, buffer, 7);
+    // Print current AGL
+    if(calc_altitudeagl - hmin > 0)
+    {
+      SetTextColor(hdc, RGB_LIGHTBLUE);
+      Units::FormatUserAltitude(calc_altitudeagl, buffer, 7);
       _tcsncpy(text, gettext(TEXT("_@M1742_")), sizeof(text)/sizeof(text[0]));
       _tcscat(text,buffer);
       GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-	  y = CalcHeightCoordinat(  (CALCULATED_INFO.TerrainAlt +  CALCULATED_INFO.AltitudeAGL)*0.8,   rc);
-  //    if(x0 > tsize.cx)
-        if((tsize.cy) < ( CalcHeightCoordinat(  CALCULATED_INFO.TerrainAlt, rc)-y))
-	      ExtTextOut(hdc, x0+IBLSCALE(1), y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-	}
+      y = CalcHeightCoordinat(  (CALCULATED_INFO.TerrainAlt +  calc_altitudeagl)*0.8,   rc);
+    //    if(x0 > tsize.cx)
+          if((tsize.cy) < ( CalcHeightCoordinat(  CALCULATED_INFO.TerrainAlt, rc)-y)) {
+            ExtTextOut(hdc, x0+IBLSCALE(1), y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+          }
+    }
     SetBkMode(hdc, TRANSPARENT);
     SelectObject(hdc, hfOld);
-  }
-
+  } // if asp_heading_task
 
   //        _stprintf(text, TEXT("Mc %3.1f: "),wpt_brg);
   
   // draw aircraft
-if (!asp_heading_task)
-{
-  int delta;
-  SelectObject(hdc, GetStockObject(WHITE_PEN));
-  SelectObject(hdc, GetStockObject(WHITE_BRUSH));
-  line[0].x = (int)(rc.left+(rc.right-rc.left-BORDER_X)/16-1);
-  line[0].y = (int)(fh*(rc.top-rc.bottom+BORDER_Y)+rc.bottom-BORDER_Y)-1;
-  line[1].x = rc.left;
-  line[1].y = line[0].y;
-  delta = (line[0].x-line[1].x);
-  line[2].x = line[1].x;
-  line[2].y = line[0].y-delta/2;
-  line[3].x = (line[1].x+line[0].x)/2;
-  line[3].y = line[0].y;
-  Polygon(hdc, line, 4);
-}
-else
-{
-#define NO_AP_PTS 17
-
-
-int deg = DEG_TO_INT(AngleLimit360(wpt_brg));
-double fCos = COSTABLE[deg];
-double fSin = SINETABLE[deg];
-
-
-int TAIL   = 6;
-int PROFIL = 1;
-int FINB   = 3;
-int BODY   = 2;
-int NOSE   = 7;
-int WING   = (int) (22.0 );
-int TUBE   = (int) (14.0  ) ;
-int FINH   = 6+BODY;
-
-  POINT Start;
-int HEAD = TUBE / 2;
- TUBE =  3 * TUBE/ 2;
-  POINT AircraftSide
-  [8] = {
-		  {(int)(fSin * (HEAD+0   )    ), -BODY-1},  // 1
-		  {(int)(fSin * (HEAD+NOSE)    ),  0},       // 2
-		  {(int)(fSin * (HEAD+0   )    ),  BODY+1},  // 3
-		  {(int)(fSin * (-TUBE)        ),  BODY},    // 4   -1
-		  {(int)(fSin * -TUBE          ), -FINH},    // 5
-		  {(int)(fSin * (-TUBE+FINB)   ), -FINH},    // 6
-		  {(int)(fSin * (-TUBE+FINB+3) ), -BODY+1},  // 7  +1
-		  {(int)(fSin * (HEAD+0)       ), -BODY-1}     // 8
-  };
-
-#define  FACT 2
-
-  BODY = (int)((double)(BODY+1) * fCos * fCos);
-
-  int DIA = (BODY + PROFIL);
-
-  /* both wings */
-  POINT AircraftWing
-  [13] = {
-		  {(int)(fCos * BODY              ) ,  -DIA},    // 1
-		  {(int)(fCos * (int)( FACT*BODY) ), -PROFIL},    // 2
-		  {(int)(fCos * WING              ) ,  -PROFIL},    // 3
-		  {(int)(fCos * WING              ), 0* PROFIL},    // 4
-		  {(int)(fCos * (int)( FACT*BODY) ) , PROFIL},    // 5
-		  {(int)(fCos *  BODY             ), DIA},    // 6
-		  {(int)(fCos * -BODY             ) , DIA},    // 7
-		  {(int)(fCos * (int)( -FACT*BODY)), PROFIL},    // 8
-		  {(int)(fCos * -WING             ), 0* PROFIL  },    // 9
-		  {(int)(fCos * -WING             ) , -PROFIL}  ,    // 10
-		  {(int)(fCos * (int)( -FACT*BODY)), -PROFIL},    // 11
-		  {(int)(fCos * -BODY             ) , -DIA},    // 12
-		  {(int)(fCos *  BODY             ), -DIA}    // 13
-  };
-
-
-  POINT AircraftWingL
-  [7] = {
-
-		  {(int)(0 * -BODY             ),  DIA       },    // 1
-		  {(int)(fCos * (int)( -FACT*BODY)),  PROFIL    },    // 2
-		  {(int)(fCos * -WING             ),  0* PROFIL },    // 3
-		  {(int)(fCos * -WING             ), -PROFIL    },    // 4
-		  {(int)(fCos * (int)( -FACT*BODY)), -PROFIL    },    // 5
-		  {(int)(0 * -BODY             ), -DIA       },    // 6
-		  {(int)(0 * -BODY             ),  DIA       }     // 7
-  };
-
-
-  POINT AircraftWingR
-  [7] = {
-		  {(int)(0 * BODY              ) ,  -DIA    },   // 1
-		  {(int)(fCos * (int)( FACT*BODY) ) , -PROFIL  },   // 2
-		  {(int)(fCos * WING              ) ,  -PROFIL },   // 3
-		  {(int)(fCos * WING              ) , 0* PROFIL},   // 4
-		  {(int)(fCos * (int)( FACT*BODY) ) , PROFIL   },   // 5
-		  {(int)(0 *  BODY             ) , DIA      },   // 6
-		  {(int)(0 *  BODY             ) , -DIA     }    // 7
-  };
-
-
-
-  POINT AircraftTail
-  [5] = {
-		  {(int)(fCos *  TAIL - fSin*TUBE), -FINH},    // 1
-		  {(int)(fCos *  TAIL - fSin*TUBE), -FINH +PROFIL},    // 2
-		  {(int)(fCos * -TAIL - fSin*TUBE), -FINH +PROFIL},    // 3
-		  {(int)(fCos * -TAIL - fSin*TUBE), -FINH },    // 4
-		  {(int)(fCos *  TAIL - fSin*TUBE), -FINH},    // 5
-
-  };
-
-
-
-  Start.y =  (int)(fh*(rc.top-rc.bottom+BORDER_Y)+rc.bottom-BORDER_Y)-1;
-  Start.x = rc.left +2* NIBLSCALE(11);
-
-  Start.y =  (int)(fh*(rc.top-rc.bottom+BORDER_Y)+rc.bottom-BORDER_Y)-1;
-  Start.x = rc.left +2* NIBLSCALE(11);
-
-
-  SelectObject(hdc, GetStockObject(WHITE_PEN));
-  SelectObject(hdc, GetStockObject(WHITE_BRUSH));
-//  SelectObject(hdc, GetStockObject(BLACK_PEN));
-  PolygonRotateShift(AircraftWing, 13,  Start.x, Start.y,  0);
-  PolygonRotateShift(AircraftSide, 8,   Start.x, Start.y,  0);
-  PolygonRotateShift(AircraftTail, 5,   Start.x, Start.y,  0);
-  PolygonRotateShift(AircraftWingL, 7,   Start.x, Start.y,  0);
-  PolygonRotateShift(AircraftWingR, 7,   Start.x, Start.y,  0);
-  HBRUSH oldBrush;
-  HBRUSH GreenBrush = CreateSolidBrush(COLORREF RGB_GREEN);
-  HBRUSH RedBrush = CreateSolidBrush(COLORREF RGB_RED);
-  if((wpt_brg < 180))
+  if (!asp_heading_task)
   {
-    oldBrush= (HBRUSH)  SelectObject(hdc, RedBrush);
-	Polygon(hdc,AircraftWingL ,7 );
-
-	SelectObject(hdc, oldBrush);
-	Polygon(hdc,AircraftSide  ,8 );
-
-    oldBrush= (HBRUSH)  SelectObject(hdc, GreenBrush);
-	Polygon(hdc,AircraftWingR ,7 );
-
-	SelectObject(hdc, oldBrush);
+    int delta;
+    SelectObject(hdc, GetStockObject(WHITE_PEN));
+    SelectObject(hdc, GetStockObject(WHITE_BRUSH));
+    line[0].x = (int)(rc.left+(rc.right-rc.left-BORDER_X)/16-1);
+    line[0].y = (int)(fh*(rc.top-rc.bottom+BORDER_Y)+rc.bottom-BORDER_Y)-1;
+    line[1].x = rc.left;
+    line[1].y = line[0].y;
+    delta = (line[0].x-line[1].x);
+    line[2].x = line[1].x;
+    line[2].y = line[0].y-delta/2;
+    line[3].x = (line[1].x+line[0].x)/2;
+    line[3].y = line[0].y;
+    Polygon(hdc, line, 4);
   }
   else
   {
+    #define NO_AP_PTS 17
+    int deg = DEG_TO_INT(AngleLimit360(wpt_brg));
+    double fCos = COSTABLE[deg];
+    double fSin = SINETABLE[deg];
 
-    oldBrush= (HBRUSH)  SelectObject(hdc, GreenBrush);
-	Polygon(hdc,AircraftWingR ,7 );
+    int TAIL   = 6;
+    int PROFIL = 1;
+    int FINB   = 3;
+    int BODY   = 2;
+    int NOSE   = 7;
+    int WING   = (int) (22.0 );
+    int TUBE   = (int) (14.0  ) ;
+    int FINH   = 6+BODY;
 
-    SelectObject(hdc, oldBrush);
-  Polygon(hdc,AircraftSide  ,8 );
+    POINT Start;
+    int HEAD = TUBE / 2;
+    TUBE =  3 * TUBE/ 2;
+    POINT AircraftSide
+    [8] = {
+        {(int)(fSin * (HEAD+0   )    ), -BODY-1},  // 1
+        {(int)(fSin * (HEAD+NOSE)    ),  0},       // 2
+        {(int)(fSin * (HEAD+0   )    ),  BODY+1},  // 3
+        {(int)(fSin * (-TUBE)        ),  BODY},    // 4   -1
+        {(int)(fSin * -TUBE          ), -FINH},    // 5
+        {(int)(fSin * (-TUBE+FINB)   ), -FINH},    // 6
+        {(int)(fSin * (-TUBE+FINB+3) ), -BODY+1},  // 7  +1
+        {(int)(fSin * (HEAD+0)       ), -BODY-1}     // 8
+    };
 
-	oldBrush= (HBRUSH)  SelectObject(hdc, RedBrush);
-	Polygon(hdc,AircraftWingL ,7 );
+    #define  FACT 2
 
-	SelectObject(hdc, oldBrush);
+    BODY = (int)((double)(BODY+1) * fCos * fCos);
+
+    int DIA = (BODY + PROFIL);
+
+    /* both wings */
+    POINT AircraftWing
+    [13] = {
+        {(int)(fCos * BODY              ) ,  -DIA},    // 1
+        {(int)(fCos * (int)( FACT*BODY) ), -PROFIL},    // 2
+        {(int)(fCos * WING              ) ,  -PROFIL},    // 3
+        {(int)(fCos * WING              ), 0* PROFIL},    // 4
+        {(int)(fCos * (int)( FACT*BODY) ) , PROFIL},    // 5
+        {(int)(fCos *  BODY             ), DIA},    // 6
+        {(int)(fCos * -BODY             ) , DIA},    // 7
+        {(int)(fCos * (int)( -FACT*BODY)), PROFIL},    // 8
+        {(int)(fCos * -WING             ), 0* PROFIL  },    // 9
+        {(int)(fCos * -WING             ) , -PROFIL}  ,    // 10
+        {(int)(fCos * (int)( -FACT*BODY)), -PROFIL},    // 11
+        {(int)(fCos * -BODY             ) , -DIA},    // 12
+        {(int)(fCos *  BODY             ), -DIA}    // 13
+    };
+
+
+    POINT AircraftWingL
+    [7] = {
+
+        {(int)(0 * -BODY             ),  DIA       },    // 1
+        {(int)(fCos * (int)( -FACT*BODY)),  PROFIL    },    // 2
+        {(int)(fCos * -WING             ),  0* PROFIL },    // 3
+        {(int)(fCos * -WING             ), -PROFIL    },    // 4
+        {(int)(fCos * (int)( -FACT*BODY)), -PROFIL    },    // 5
+        {(int)(0 * -BODY             ), -DIA       },    // 6
+        {(int)(0 * -BODY             ),  DIA       }     // 7
+    };
+
+
+    POINT AircraftWingR
+    [7] = {
+        {(int)(0 * BODY              ) ,  -DIA    },   // 1
+        {(int)(fCos * (int)( FACT*BODY) ) , -PROFIL  },   // 2
+        {(int)(fCos * WING              ) ,  -PROFIL },   // 3
+        {(int)(fCos * WING              ) , 0* PROFIL},   // 4
+        {(int)(fCos * (int)( FACT*BODY) ) , PROFIL   },   // 5
+        {(int)(0 *  BODY             ) , DIA      },   // 6
+        {(int)(0 *  BODY             ) , -DIA     }    // 7
+    };
 
 
 
- //   Polygon(hdc,AircraftWing  ,13);
+    POINT AircraftTail
+    [5] = {
+        {(int)(fCos *  TAIL - fSin*TUBE), -FINH},    // 1
+        {(int)(fCos *  TAIL - fSin*TUBE), -FINH +PROFIL},    // 2
+        {(int)(fCos * -TAIL - fSin*TUBE), -FINH +PROFIL},    // 3
+        {(int)(fCos * -TAIL - fSin*TUBE), -FINH },    // 4
+        {(int)(fCos *  TAIL - fSin*TUBE), -FINH},    // 5
+
+    };
 
 
-  }
-  if((wpt_brg < 90)|| (wpt_brg > 270))
-    Polygon(hdc,AircraftTail  ,5 );
 
-  DeleteObject(RedBrush);
-  DeleteObject(GreenBrush);
+    Start.y =  (int)(fh*(rc.top-rc.bottom+BORDER_Y)+rc.bottom-BORDER_Y)-1;
+    Start.x = rc.left +2* NIBLSCALE(11);
 
-}
+    Start.y =  (int)(fh*(rc.top-rc.bottom+BORDER_Y)+rc.bottom-BORDER_Y)-1;
+    Start.x = rc.left +2* NIBLSCALE(11);
 
 
-// Draw north arrow
+    SelectObject(hdc, GetStockObject(WHITE_PEN));
+    SelectObject(hdc, GetStockObject(WHITE_BRUSH));
+    //SelectObject(hdc, GetStockObject(BLACK_PEN));
+    PolygonRotateShift(AircraftWing, 13,  Start.x, Start.y,  0);
+    PolygonRotateShift(AircraftSide, 8,   Start.x, Start.y,  0);
+    PolygonRotateShift(AircraftTail, 5,   Start.x, Start.y,  0);
+    PolygonRotateShift(AircraftWingL, 7,   Start.x, Start.y,  0);
+    PolygonRotateShift(AircraftWingR, 7,   Start.x, Start.y,  0);
+    HBRUSH oldBrush;
+    HBRUSH GreenBrush = CreateSolidBrush(COLORREF RGB_GREEN);
+    HBRUSH RedBrush = CreateSolidBrush(COLORREF RGB_RED);
+    if((wpt_brg < 180))
+    {
+      oldBrush= (HBRUSH)  SelectObject(hdc, RedBrush);
+      Polygon(hdc,AircraftWingL ,7 );
+
+      SelectObject(hdc, oldBrush);
+      Polygon(hdc,AircraftSide  ,8 );
+
+      oldBrush= (HBRUSH)  SelectObject(hdc, GreenBrush);
+      Polygon(hdc,AircraftWingR ,7 );
+
+      SelectObject(hdc, oldBrush);
+    }
+    else
+    {
+      oldBrush= (HBRUSH)  SelectObject(hdc, GreenBrush);
+      Polygon(hdc,AircraftWingR ,7 );
+
+      SelectObject(hdc, oldBrush);
+      Polygon(hdc,AircraftSide  ,8 );
+
+      oldBrush= (HBRUSH)  SelectObject(hdc, RedBrush);
+      Polygon(hdc,AircraftWingL ,7 );
+
+      SelectObject(hdc, oldBrush);
+     //Polygon(hdc,AircraftWing  ,13);
+    }
+    if((wpt_brg < 90)|| (wpt_brg > 270)) {
+      Polygon(hdc,AircraftTail  ,5 );
+    }
+
+    DeleteObject(RedBrush);
+    DeleteObject(GreenBrush);
+
+  } //else !asp_heading_task
+
+
+  // Draw north arrow
   POINT Arrow[5] = { {0,-11}, {-5,9}, {0,3}, {5,9}, {0,-11}};
   POINT Start;
   Start.y = rc.top + NIBLSCALE(11);
@@ -2300,8 +2277,6 @@ int HEAD = TUBE / 2;
   DeleteObject(mpen);
   DeleteObject(hpHorizonGround);
   DeleteObject(hbHorizonGround);
-
-
 }
 
 
