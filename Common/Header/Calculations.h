@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: Calculations.h,v 8.2 2010/12/24 00:00:14 root Exp root $
+   $Id: Calculations.h,v 1.1 2011/12/21 10:35:29 root Exp root $
 */
 
 #if !defined(AFX_CALCULATIONS_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)

@@ -8,3 +8,4 @@ make TARGET=PC
 echo "DONE -----------"
 echo "started $start"
 echo "ended `date`"
+echo PLEASE UPDATE BUILDNUMBER

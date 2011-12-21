@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: LKMapWindow.h,v 1.1 2011/12/21 10:35:29 root Exp root $
  */
 
 #if !defined(LKMAPWINDOW_H)

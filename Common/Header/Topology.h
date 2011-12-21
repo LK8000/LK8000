@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: Topology.h,v 8.2 2010/12/15 12:35:45 root Exp root $
+   $Id: Topology.h,v 1.1 2011/12/21 10:35:29 root Exp root $
 */
 
 #ifndef TOPOLOGY_H

@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id$
+   $Id: Globals.h,v 1.1 2011/12/21 10:35:29 root Exp root $
 
    PLEASE USE COMMENTS ALSO HERE TO DESCRIBE YOUR GLOBALS!
    YOU CAN INITIALIZE VALUES TO true,false,zero and NULL, 

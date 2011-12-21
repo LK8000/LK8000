@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id
+   $Id$
 */
 
 #ifndef LKPROFILES_H

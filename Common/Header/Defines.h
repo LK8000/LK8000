@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: Defines.h,v 8.2 2010/12/15 12:27:55 root Exp root $
+   $Id: Defines.h,v 1.1 2011/12/21 10:35:29 root Exp root $
 */
 
 #ifndef LK8000_DEFINES_H
