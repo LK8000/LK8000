@@ -2,7 +2,7 @@
 Changes in LK8000 v2.3
 ======================
 
-Version 2.3q December 17, 2011
+Version 2.3q December 22, 2011
 ------------------------------
 
 NEW
@@ -47,6 +47,8 @@ CHANGES
 . Change bottom bar defaults NAV1 and STA3, little changes.
 
 . Modified Airspace sideview in dlgStatistics.cpp
+
+. Paragliding Race to goal task optimisation update
 
 
 

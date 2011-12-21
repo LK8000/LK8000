@@ -1,6 +1,6 @@
 
   CREDITS FOR LK8000  www.lk8000.it 
-  Updated on 110808
+  Updated on 111221
 
 
   Original concept, design and development of LK8000 Project by Paolo Ventafridda, Italy
@@ -8,6 +8,7 @@
   LK8000 Project Copyrights (c) by:
 
 	Oren Cohen
+	Ulli Heynen
 	Bruno de Lacheisserie
 	Kuba Kubrynski
 	Richard Pecl
