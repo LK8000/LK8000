@@ -357,7 +357,7 @@ void ReplaceWaypoint(int index) {
 }
 
 
-void RefreshTask() {
+void RefreshTask(void) {
   double lengthtotal = 0.0;
   int i;
 
@@ -393,6 +393,7 @@ void RefreshTask() {
 	}
       }
     }
+  }
 
   // Determine if a waypoint is in the task
   if (WayPointList) {
