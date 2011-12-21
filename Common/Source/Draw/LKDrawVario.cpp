@@ -35,13 +35,11 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
   static HBRUSH lakeBrush, blueBrush, indigoBrush;
   static HBRUSH *positiveBrush[NUMVBRICKS/2];
   static HBRUSH *negativeBrush[NUMVBRICKS/2];
-  static bool	doinit=true;
-  Assign_DoInits(&doinit,MDI_DRAWVARIO);
 
   static short startInitCounter=0;
   static bool dogaugeinit=true;
 
-  if (doinit) {
+  if (DoInit[MDI_DRAWVARIO]) {
 
   int boxthick;
   int hpixelseparate;
@@ -206,7 +204,7 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
   }
 
 
-	doinit=false;
+	DoInit[MDI_DRAWVARIO]=false;
   } // END of INIT
 
 

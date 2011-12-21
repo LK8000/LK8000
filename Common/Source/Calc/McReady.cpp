@@ -430,8 +430,6 @@ double GlidePolar::MacCreadyAltitude(double emcready,
 #if (LK_CACHECALC && LK_CACHECALC_MCA)
 
   #define CASIZE  LK_CACHECALC_MCA
-  static bool doinit=true;
-  Assign_DoInits(&doinit,MDI_MCREADYCACHE);
   static int cacheIndex;
 
   bool cacheFound=false;
@@ -459,7 +457,7 @@ double GlidePolar::MacCreadyAltitude(double emcready,
   static double cache_cruise_efficiency[CASIZE];
   static bool   cache_isFinalGlide[CASIZE];
 
-  if (doinit) {
+  if (DoInit[MDI_MCREADYCACHE]) {
 	for (i=0; i<CASIZE; i++) {
 		cache_checksum[i]=0;
 		cache_altitude[i]=0;
@@ -476,7 +474,7 @@ double GlidePolar::MacCreadyAltitude(double emcready,
 		cache_isFinalGlide[i]=false;
 	}
 	cacheIndex=0;
-	doinit=false;
+	DoInit[MDI_MCREADYCACHE]=false;
   }
 
   cur_checksum = emcready+Distance+Bearing+WindSpeed+WindBearing+AltitudeAboveTarget+cruise_efficiency;

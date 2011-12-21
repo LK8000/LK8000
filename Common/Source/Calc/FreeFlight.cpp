@@ -37,14 +37,12 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
   static bool   ffDetected=false;
   static int    lastMaxAltitude=-1000;
   static double gndAltitude=0;
-  static bool   doinit=true;
-  Assign_DoInits(&doinit,MDI_DETECTFREEFLYING);
   static double vario[8];
   static bool   winchdetected=false;
   static short  wlaunch=0;
   static int    altLoss=0;
 
-  if (doinit) {
+  if (DoInit[MDI_DETECTFREEFLYING]) {
     for (int i=0; i<8; i++) vario[i]=0;
     gndAltitude=0;
     winchdetected=false;
@@ -52,7 +50,7 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
     altLoss=0;
     ffDetected=false;
     lastMaxAltitude=-1000;
-    doinit=false;
+    DoInit[MDI_DETECTFREEFLYING]=false;
   }
 
   // reset on ground

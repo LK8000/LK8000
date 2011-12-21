@@ -80,13 +80,11 @@ void LKSound(const TCHAR *lpName) {
 	return;
   }
   #endif   
-  static bool doinit=true;
-  Assign_DoInits(&doinit,MDI_LKSOUND);
 
   static bool working=false;
   static TCHAR sDir[MAX_PATH];
 
-  if (doinit) {
+  if (DoInit[MDI_LKSOUND]) {
 	working=false;
 	TCHAR srcfile[MAX_PATH];
 	LocalPath(sDir,TEXT(LKD_SOUNDS));
@@ -96,7 +94,7 @@ void LKSound(const TCHAR *lpName) {
 		StartupStore(_T("------ LK8000 SOUNDS NOT WORKING!%s"),NEWLINE);
         } else
 		working=true;
-	doinit=false;
+	DoInit[MDI_LKSOUND]=false;
   }
 
   if (!working) return;

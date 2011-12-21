@@ -46,16 +46,13 @@ void MapWindow::DrawThermalHistory(HDC hdc, RECT rc) {
   HBRUSH sortbrush;
   RECT invsel;
 
-  static bool doinit=true;
-  Assign_DoInits(&doinit,MDI_DRAWTHERMALHISTORY);
-
   if (INVERTCOLORS) {
   	sortbrush=LKBrush_LightGreen;
   } else {
   	sortbrush=LKBrush_DarkGreen;
   }
 
-  if (doinit) {
+  if (DoInit[MDI_DRAWTHERMALHISTORY]) {
 
   if ( ScreenSize < (ScreenSize_t)sslandscape ) {
 	left=rc.left+NIBLSCALE(1);
@@ -171,7 +168,7 @@ void MapWindow::DrawThermalHistory(HDC hdc, RECT rc) {
   SelectedRaw[MSM_THERMALS]=0;
   SelectedPage[MSM_THERMALS]=0;
 
-  doinit=false;
+  DoInit[MDI_DRAWTHERMALHISTORY]=false;
   return;
   } // doinit
 

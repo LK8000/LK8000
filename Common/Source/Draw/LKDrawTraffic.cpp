@@ -50,16 +50,13 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   HBRUSH sortbrush;
   RECT invsel;
 
-  static bool doinit=true;
-  Assign_DoInits(&doinit,MDI_DRAWTRAFFIC);
-
   if (INVERTCOLORS) {
   	sortbrush=LKBrush_LightGreen;
   } else {
   	sortbrush=LKBrush_DarkGreen;
   }
 
-  if (doinit) {
+  if (DoInit[MDI_DRAWTRAFFIC]) {
 
   if ( ScreenSize < (ScreenSize_t)sslandscape ) {
 	left=rc.left+NIBLSCALE(1);
@@ -175,7 +172,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   SelectedRaw[MSM_TRAFFIC]=0;
   SelectedPage[MSM_TRAFFIC]=0;
 
-  doinit=false;
+  DoInit[MDI_DRAWTRAFFIC]=false;
   return;
   } // doinit
 

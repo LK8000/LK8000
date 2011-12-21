@@ -14,12 +14,9 @@ extern TCHAR *gmfcurrentpath();
 
 TCHAR * LKGetLocalPath(void) {
 
-  static bool doinit=true;
-  Assign_DoInits(&doinit,MDI_GETLOCALPATH);
-
   static TCHAR localpath[MAX_PATH+1];
 
-  if (doinit) {
+  if (DoInit[MDI_GETLOCALPATH]) {
 	#if (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
 	//
 	// For PNAs the localpath is taken from the application exec path
@@ -47,7 +44,7 @@ TCHAR * LKGetLocalPath(void) {
 	}
 	#endif
 
-	doinit=false;
+	DoInit[MDI_GETLOCALPATH]=false;
   }
   return localpath; 
 }

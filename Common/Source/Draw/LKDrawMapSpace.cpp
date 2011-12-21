@@ -30,8 +30,6 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
 #ifdef DRAWLKSTATUS
   bool dodrawlkstatus=false;
 #endif
-  static bool doinit=true;
-  Assign_DoInits(&doinit,MDI_DRAWMAPSPACE);
 
   static POINT p[10];
 
@@ -50,7 +48,7 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
   FillRect(hdc,&rc, hB); 
   //oldbkmode=SetBkMode(hdc,TRANSPARENT);
 
-  if (doinit) {
+  if (DoInit[MDI_DRAWMAPSPACE]) {
 	p[0].x=0; p[0].y=rc.bottom-BottomSize-NIBLSCALE(2); p[1].x=rc.right-1; p[1].y=p[0].y;
 	p[2].x=0; p[2].y=0; p[3].x=rc.right-1; p[3].y=0; // 091230 right-1
 	p[4].x=0; p[4].y=0; p[5].x=0; p[5].y=rc.bottom-BottomSize-NIBLSCALE(2);
@@ -68,7 +66,7 @@ ConfIP[LKMODE_NAV][0],ConfIP31,
 ConfIP[LKMODE_NAV][1],ConfIP32);
 */
 
-	doinit=false; 
+	DoInit[MDI_DRAWMAPSPACE]=false; 
   }
 
   if (INVERTCOLORS) {

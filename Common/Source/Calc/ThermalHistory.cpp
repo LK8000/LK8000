@@ -134,10 +134,7 @@ bool DoThermalHistory(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    double bearing, distance, sortvalue;
    double sortedValue[MAX_THERMAL_HISTORY+1];
 
-   static bool doinit=true;
-   Assign_DoInits(&doinit,MDI_DOTHERMALHISTORY);
-
-   if (doinit) {
+   if (DoInit[MDI_DOTHERMALHISTORY]) {
 	#ifdef DEBUG_THISTORY
 	StartupStore(_T("... DoTHistory Init memset CopyTHistory\n"));
 	#endif
@@ -147,7 +144,7 @@ bool DoThermalHistory(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	StartupStore(_T("... DoTHistory Init memset LKSortedThermals\n"));
 	#endif
 	memset(LKSortedThermals, -1, sizeof(LKSortedThermals));
-	doinit=false;
+	DoInit[MDI_DOTHERMALHISTORY]=false;
 	return true;
    }
 

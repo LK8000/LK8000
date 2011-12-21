@@ -50,16 +50,13 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
   HBRUSH sortbrush;
   RECT invsel;
 
-  static bool doinit=true;
-  Assign_DoInits(&doinit,MDI_DRAWNEAREST);
-
   if (INVERTCOLORS) {
   	sortbrush=LKBrush_LightGreen;
   } else {
   	sortbrush=LKBrush_DarkGreen;
   }
 
-  if (doinit) {
+  if (DoInit[MDI_DRAWNEAREST]) {
 
   // Set screen borders to avoid writing on extreme pixels
   if ( ScreenSize < (ScreenSize_t)sslandscape ) {
@@ -189,7 +186,7 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
   SelectedRaw[MSM_LANDABLE]=0; SelectedRaw[MSM_AIRPORTS]=0; SelectedRaw[MSM_NEARTPS]=0;
   SelectedPage[MSM_LANDABLE]=0; SelectedPage[MSM_AIRPORTS]=0; SelectedPage[MSM_NEARTPS]=0;
 
-  doinit=false;
+  DoInit[MDI_DRAWNEAREST]=false;
   return;
   } // doinit
 

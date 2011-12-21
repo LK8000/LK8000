@@ -41,8 +41,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
   short leftmargin=0;
 
-  static bool doinit=true;
-  Assign_DoInits(&doinit,MDI_DRAWLOOK8000);
   static bool flipflop=true;
   static short flipflopcount=0;
   static bool wascircling=false; // init not circling of course
@@ -109,7 +107,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   else
 	bigFont=(HFONT *)LK8TargetFont;
 
-  if (doinit) {
+  if (DoInit[MDI_DRAWLOOK8000]) {
 	wascircling=false;
 	OldBottomMode=BM_FIRST;
 	TCHAR Tdummy[]=_T("T");
@@ -443,7 +441,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		if (ConfBB[ii]) break;
 	}
 	BottomMode=ii;
-	doinit=false; 
+	DoInit[MDI_DRAWLOOK8000]=false; 
   } // end doinit
 
   COLORREF overcolor,distcolor;

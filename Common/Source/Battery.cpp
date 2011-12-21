@@ -92,9 +92,6 @@ extern bool GiveBatteryWarnings(int numwarn);
 
 void LKBatteryManager() {
 
-  static bool doinit=true;
-  Assign_DoInits(&doinit,MDI_BATTERYMANAGER);
-
   static bool invalid=false, recharging=false;
   static bool warn33=true, warn50=true, warn100=true;
   static double last_time=0, init_time=0;
@@ -103,7 +100,7 @@ void LKBatteryManager() {
 
 
   if (invalid) return;
-  if (doinit) {
+  if (DoInit[MDI_BATTERYMANAGER]) {
 
 	invalid=false, recharging=false;
 	warn33=true, warn50=true, warn100=true;
@@ -114,13 +111,13 @@ void LKBatteryManager() {
 	if (PDABatteryPercent<1 || PDABatteryPercent>100) {
 		StartupStore(_T("... LK BatteryManager V1: internal battery information not available, function disabled%s"), NEWLINE);
 		invalid=true;
-		doinit=false; // just to be sure
+		DoInit[MDI_BATTERYMANAGER]=false; // just to be sure
 		return;
 	}
 
 	StartupStore(_T(". LK Battery Manager V1 started, current charge=%d%%%s"),PDABatteryPercent,NEWLINE);
 	init_time=GPS_INFO.Time;
-	doinit=false;
+	DoInit[MDI_BATTERYMANAGER]=false;
   }
 
 

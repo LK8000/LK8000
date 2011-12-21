@@ -41,13 +41,11 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   static int tailsize = planesize/4+NIBLSCALE(2);
   static int innerradius = radius - NIBLSCALE(8);
   static POINT d00[2][2],d15[2][4],d30[2][4], d45[2][4], d60[2][4];
-  static bool doinit=true;
-  Assign_DoInits(&doinit,MDI_DRAWTRI);
   TCHAR Buffer[LKSIZEBUFFERVALUE];
   double beta=0.0;
   bool disabled=false;
 
-  if (doinit) {
+  if (DoInit[MDI_DRAWTRI]) {
 
   top=(((rc.bottom-BottomSize-(rc.top+TOPLIMITER)-BOTTOMLIMITER)/PANELROWS)+rc.top+TOPLIMITER)- (rc.top+TOPLIMITER);
   radius = NIBLSCALE(65);
@@ -135,7 +133,7 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   d60[1][3].x= Start.x + (long) (innerradius*fastcosine(60.0));
   d60[1][3].y= Start.y - (long) (innerradius*fastsine(60.0));
 
-  doinit=false;
+  DoInit[MDI_DRAWTRI]=false;
   } // end dirty hack doinit
 
   //if (!CALCULATED_INFO.Flying) {

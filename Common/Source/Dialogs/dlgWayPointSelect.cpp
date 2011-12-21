@@ -607,13 +607,11 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
   int n = UpLimit - LowLimit;
   TCHAR sTmp[12];
 #if 100124
-  static bool doinit=true;
-  Assign_DoInits(&doinit,MDI_ONPAINTLISTITEM);
   static int w0;
 
-  if (doinit) {
+  if (DoInit[MDI_ONPAINTLISTITEM]) {
         w0=wWayPointList->GetWidth() - wWayPointList->ScrollbarWidth - 4;
-	doinit=false;
+	DoInit[MDI_ONPAINTLISTITEM]=false;
   }
 #endif
 

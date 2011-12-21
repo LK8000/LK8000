@@ -23,11 +23,9 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
   if (!DrawInfo.FLARM_Available) return;
 
   // init scaled coords for traffic icon
-  static bool doinit=true;
-  Assign_DoInits(&doinit,MDI_DRAWFLARMTRAFFIC);
   static short scaler[5];
   static short tscaler=0;
-  if (doinit) {
+  if (DoInit[MDI_DRAWFLARMTRAFFIC]) {
 
 	switch (ScreenSize) {
 		case ss480x640:
@@ -67,7 +65,7 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
 	}
 
 
-	doinit=false;
+	DoInit[MDI_DRAWFLARMTRAFFIC]=false;
   }
 
   HPEN hpold;

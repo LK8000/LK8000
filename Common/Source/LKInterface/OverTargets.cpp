@@ -103,13 +103,11 @@ void GetOvertargetName(TCHAR *overtargetname) {
 #define OVERTARGETHEADER_MAX 3
 // return current overtarget header name
 TCHAR *GetOvertargetHeader(void) {
-  static bool doinit=true;
-  Assign_DoInits(&doinit,MDI_GETOVERTARGETHEADER);
 
   // Maxmode + 1 because maxmode does not account pos 0
   static TCHAR targetheader[OVT_MAXMODE+1][OVERTARGETHEADER_MAX+1];
 
-  if (doinit) {
+  if (DoInit[MDI_GETOVERTARGETHEADER]) {
 	// LKTOKEN _@M1323_ "T>"
 	_tcsncpy(targetheader[OVT_TASK], gettext(TEXT("_@M1323_")), OVERTARGETHEADER_MAX);
 	// LKTOKEN _@M1324_ "B>"
@@ -128,7 +126,7 @@ TCHAR *GetOvertargetHeader(void) {
 	_tcsncpy(targetheader[OVT_FLARM], gettext(TEXT("_@M1330_")), OVERTARGETHEADER_MAX);
 
 	for (int i=0; i<OVT_MAXMODE+1; i++) targetheader[i][OVERTARGETHEADER_MAX]='\0';
-	doinit=false;
+	DoInit[MDI_GETOVERTARGETHEADER]=false;
   }
 
   return(targetheader[OvertargetMode]);

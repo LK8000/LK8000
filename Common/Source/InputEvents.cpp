@@ -1691,13 +1691,11 @@ void InputEvents::eventCalcWind(const TCHAR *misc) {
 }
 
 void InputEvents::eventInvertColor(const TCHAR *misc) { // 100114
-  static bool doinit=true;
-  Assign_DoInits(&doinit,MDI_EVENTINVERTCOLOR);
 
   static short oldOutline;
-  if (doinit) {
+  if (DoInit[MDI_EVENTINVERTCOLOR]) {
 	oldOutline=OutlinedTp;
-	doinit=false;
+	DoInit[MDI_EVENTINVERTCOLOR]=false;
   }
 
   if (OutlinedTp>(OutlinedTp_t)otDisabled)
