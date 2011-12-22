@@ -116,6 +116,18 @@ static void OnCloseClicked(WindowControl * Sender){
   wf->SetModalResult(mrOK);
 }
 
+static int OnTimer(WindowControl * Sender){
+  (void)Sender;
+  
+  // Timer events comes at 500ms, we need every second
+  static bool timer_divider = false;
+  timer_divider = !timer_divider;
+  if (timer_divider) return 0;
+  SetValues();
+  return 0;
+}
+
+
 static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnAcknowledgeClicked),
   DeclareCallBackEntry(OnFlyClicked),
@@ -124,6 +136,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnAnalysisClicked),
   DeclareCallBackEntry(NULL)
 };
+
 static void SetValues(void) {
 
   if (airspace==NULL) return;
@@ -307,6 +320,8 @@ void dlgAirspaceDetails(CAirspace *airspace_to_show) {
 		      TEXT("IDR_XML_AIRSPACEDETAILS"));
 
   if (!wf) return;
+  wf->SetTimerNotify(OnTimer);
+  
   airspace = airspace_to_show;
   SetValues();
 
