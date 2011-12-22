@@ -1,5 +1,5 @@
 ﻿# LK8000 HUNGARIAN MESSAGES - HUN_MSG.TXT
-# UPDATED:  111031
+# UPDATED:  111222
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -7,6 +7,8 @@
 #
 # Please note that ENG_MSG.TXT is the english master language for LK8000
 # and it should always exist. Do not change ENG_MSG.TXT!
+#
+# ATTENTION> Max number of tokens is defined in LKLanguage as MAX_MESSAGES
 #
 # All lines that are empty, or starting with a # , are ignored.
 # DEVELOPERS ADDING NEW MESSAGES HERE SHOULD REQUEST A NUMBERING SLOT TO PAOLO
@@ -905,7 +907,7 @@ _@M897_ "Auto"
 _@M898_ "MIND KI"
 _@M899_ "MIND BE"
 _@M900_ "Terep fájl betöltése..."
-_@M901_ "Terep kockák betöltése..."
+_@M901_ "Terep lapok betöltése..."
 _@M902_ "Topológia fájl betöltése..."
 _@M903_ "Fordulópont fájl betöltése..."
 _@M904_ "Taktikai Fedélzeti Számítógép"
@@ -1415,7 +1417,6 @@ _@M1425_ "Vario termik és siklás módban"
 _@M1426_ "Vario termik, Nettó siklás módban"
 _@M1427_ "Vario termik, VMcOpt siklás módban"
 
-
 #
 # Contests
 #
@@ -1624,6 +1625,9 @@ _@M1695_ "Logger"
 # max 3-4 chars!
 _@M1696_ "auto"
 
+# PG autozoom threshold on config page 23
+_@M1697_ "Autozoom határa "
+
 #Multitarget bearing infobox
 _@M1698_ "Irány Multitarget"
 _@M1699_ "IrMulti"
@@ -1633,6 +1637,59 @@ _@M1700_ "BE"
 _@M1701_ "nem!"
 
 _@M1702_ "AZ ORACLE-nek GPS JEL KELL"
+_@M1703_ "Észak"
+_@M1704_ "Észak-kelet"
+_@M1705- "Kelet"
+_@M1706_ "Dél-kelet"
+_@M1707_ "Dél"
+_@M1708_ "Dél-nyugat"
+_@M1709_ "Nyugat"
+_@M1710_ "Észak-nyugat"
+# 3km south-west of ..
+_@M1711_ "-ra"
+_@M1712_ "közelében"
+_@M1713_ "felett"
+_@M1714_ "város"
+# 2km South of the city
+_@M1715_ "várostól"
+_@M1716_ "város felett"
+# over the city and (lake)
+_@M1717_ "és"
+# 2km south of city , over (lake)
+_@M1718_ "felett"
+_@M1719_ "közelében"
+# grass airport, small airport
+_@M1720_ "a reptérnél"
+# outlanding field, not an airport/airfield
+_@M1721_ "a mezőnél"
+_@M1722_ "a reptérnél"
+_@M1723_ "Közelében"
+_@M1724_ "POZICIÓD:"
+_@M1725_ "SAJNÁLOM"
+_@M1726_ "POZICIÓD ISMERETLEN!"
+# 1727-1739 reserved for The Oracle
+_@M1740_ "OLC analízis"
+_@M1741_ "**ALAP PROFIL VISSZAÁLLÍTÁSA**"
+# free space , to be used 1744-1760
+_@M1742_ "AGL:"
+_@M1743_ "ELV:"
+
+#
+# These are new infoboxes:
+_@M1761_ "Irány Alternate1"
+_@M1762_ "Irány Alternate2"
+_@M1763_ "Irány BestAlternate"
+_@M1764_ "S Alternate1 távolsága"
+_@M1765_ "S Alternate2 távolsága"
+_@M1766_ "S BestAlternate távolsága"
+_@M1767_ "H Max elért magasság"
+_@M1768_ "HMax"
+_@M1769_ "H Legtöbb nyert magasság"
+_@M1770_ "Hnyert"
+_@M1771_ "V Szembeszél komponens"
+_@M1772_ "Vszsz"
+# Customkey
+_@M1774_ "Terep színek váltása"
 
 ############################################################
 #                  - MENU MESSAGES - 
