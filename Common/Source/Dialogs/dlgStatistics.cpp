@@ -2853,8 +2853,8 @@ if(page ==ANALYSIS_PAGE_AIRSPACE)
 		  #ifndef DISABLEAUDIO
 		    if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
 		  #endif
-	      CAirspace	 airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(pHandeled[k].psAS);
-		  dlgAirspaceDetails(&airspace_copy);
+       // dlgAirspaceDetails does its own asp instance copying, getting a new copy is not needed here
+       dlgAirspaceDetails(pHandeled[k].psAS);
        return 0;
      }
    }
