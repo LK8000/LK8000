@@ -1,4 +1,4 @@
-﻿# LK8000 HUN_HLP.TXT 110321
+﻿# LK8000 HUN_HLP.TXT 111222
 #
 # A single text line can be max 500 characters long
 # An entire help can be max 1024 characters total
@@ -357,7 +357,6 @@ Ha egy ENTER gombot nyomsz a térképen, akkor invertálja a szöveg színét.
 Ha nem használod az aktív térképet (ActiveMap), akkor jobb ha a virtuális gombokat sem engedélyezed, mert így a térkép nagyítása és kicsinyítése rövidebb kattintást (érintést) igényel.
 
 @180
-
 A 'Gesztusok' mindig engedélyezve vannak az LK8000-ben, de lehet választani, hogy úgy működjenek mint az iPhone esetében vagy fordítva.
 Például, egy gesztus balról jobbra egy lapozás balra parancs az iPhone és sok más hasonló eszköz esetén.
 Invertált esetben ugyanez a gesztus egy lapozás jobbra parancsot ad.
@@ -1458,6 +1457,33 @@ akkor --- jelenik meg. FLY zónák esetén a távolságok a legközelebbi elhagy
 HOthÉrk [Home Altitude Arrival]
 Érkezési magasság a hazai reptérre. A számítás figyelembe veszi a MC beállítást, használja a biztonsági magasságot és a biztonsági MC értéket is.
 
+@916
+@917
+@918
+[Alternatív leszálló irányszöge]
+A kiválasztott alternatív leszállóhely irányszöge
+
+@919
+@920
+@921
+[Alternatív leszálló távolsága]
+A kiválasztott alternatív leszállóhely távolsága
+
+@922
+[Maximális elért magasság]
+A jelenlegi repülés során elért maximális magasság. Felszálláskor és a feladat újraindításakor nullázódik.
+
+@923
+[Legnagyobb nyert magasság]
+A szabad repülés érzékelése óta mért minimális és maximális magasságok különbsége.
+Ez az érték használható a vizsgák magassági követelményeinek megfigyeléséhez.
+
+@924
+[Szembeszél komponens]
+A jelenlegi repülési irányra vetített szembeszél komponens. Ez a TAS valós repülési sebesség és a GS
+földfeletti sebesség különbsége. A pozitív érték szembeszelet, a negatív hátszelet jelent.
+Ha mért TAS nem áll rendelkezésre, akkor a közelítőleg számoltat használja a program.
+Ekkor a mutatott érték csak közelítés és a beállított szél adatokból számol.
 
 #
 # END INFOBOXES 800 - 1199
@@ -1580,12 +1606,12 @@ Magassági határ amit a légterek megjelenítésénél használ a program. (AUT
 Auto esetben a jelenlegi magasság +/- a határ által behatárolt légterek, Mind alul esetén a felszíntől a jelenlegi magasság+határ szerinti légterek jelennek meg.
 
 @1252
-Ha nyugtáztad a légtér által okozott risztást, ennyi idő múlva törlődik a nyugtázásod. Ekkor ha a riasztás még mindig fennáll új üzenetet ad a program.
+Ha nyugtáztad a légtér által okozott riasztást, ennyi idő múlva törlődik a nyugtázásod. Ekkor ha a riasztás még mindig fennáll új üzenetet ad a program.
 
 @1253
-[Max magasság risztás] 
-Risztást ad a program ha a beállított magasságot elérted vagy átlépted. A risztás nem ismétlődik meg a következő 60 másodpercben.
-Ezután ha a magasság alacsonyabb mint a határérték és aztán újra magasabb lesz akkor a risztás újra érvényre jut.
+[Max magasság riasztás]
+Riasztást ad a program ha a beállított magasságot elérted vagy átlépted. A riasztás nem ismétlődik meg a következő 60 másodpercben.
+Ezután ha a magasság alacsonyabb mint a határérték és aztán újra magasabb lesz akkor a riasztás újra érvényre jut.
 A letiltáshoz 0-t kell beállítani.
 A riasztáshoz használt magasság a beállítások menu 5 "Baro magasság használata" pont alapján kerül meghatározásra.
 A több ugyanarra a magasságra állított határérték nem csinál semmit.
