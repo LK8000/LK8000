@@ -493,7 +493,7 @@ void Globals_Init(void) {
 
   IGCWriteLock=false; // workaround, but not a real solution
 
-  LoggerTimeStepCruise=1;     //@ 101008 changed to 1 second
+  LoggerTimeStepCruise=2;     // 111221 using 2 seconds
   LoggerTimeStepCircling=1;
 
   AutoWindMode_Config= D_AUTOWIND_CIRCLING;
