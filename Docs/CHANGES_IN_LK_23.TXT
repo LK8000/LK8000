@@ -50,7 +50,9 @@ CHANGES
 
 . Paragliding Race to goal task optimisation update
 
-
+. Default logger interval during cruise mode for gliders set to 2 seconds, to reduce size of logs
+  This can be eventually changed in engineering menu. Paragliders still keep 1 second.
+  During thermalling 1 seconds for every mode.
 
 FIXES
 
