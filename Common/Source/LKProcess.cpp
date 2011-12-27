@@ -1221,7 +1221,7 @@ goto_bearing:
 			_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			wsprintf(BufferUnit, TEXT("%s"),Units::GetHorizontalSpeedName());
 
-			if (value==-999) {
+			if (DerivedDrawInfo.HeadWind==-999) {
 				_stprintf(BufferValue,TEXT(NULLMEDIUM)); 
 				break;
 			}
