@@ -1699,6 +1699,8 @@ _@M1741_ "**RESET DEFAULT PROFILE**"
 # free space , to be used 1744-1760
 _@M1742_ "AGL:"
 _@M1743_ "ELV:"
+# this was the old V rough air. Leave a trailing space!
+_@M1744_ "Max Speed "
 
 #
 # These are new infoboxes:
