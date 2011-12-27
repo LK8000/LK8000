@@ -551,7 +551,7 @@ SRC_FILES :=\
 	$(SRC)/FlarmIdFile.cpp 		\
 	$(SRC)/Geoid.cpp \
 	$(SRC)/Buttons.cpp \
-	$(SRC)/Logger.cpp 		\
+	$(SRC)/Logger/Logger.cpp 	$(SRC)/Logger/DoSignature.cpp 	\
 	$(SRC)/LKSimulator.cpp\
 	$(SRC)/Message.cpp \
 	$(SRC)/Parser.cpp		$(SRC)/Port.cpp \

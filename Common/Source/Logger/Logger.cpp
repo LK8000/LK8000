@@ -190,6 +190,9 @@ void StopLogger(void) {
 			case -1:
 				StartupStore(_T(".... (EXEQ DEBUG FAILURE)%s"),NEWLINE);
 				break;
+			case 1:
+				StartupStore(_T(".... (SOURCE FILE DISAPPEARED)%s"),NEWLINE);
+				break;
 			case 3:
 				StartupStore(_T(".... (EXEQ WITH WRONG ARGUMENTS)%s"),NEWLINE);
 				break;
@@ -1897,8 +1900,7 @@ bool LoggerGActive()
 #else
   #if (WINDOWSPC>0)
     #if TESTBENCH
-    // return true;	// THIS IS ONLY for checking Grecord new stuff under testbench
-    return false;	// THIS IS THE CORRECT return also for testbench
+    return true;	// THIS IS ONLY for checking Grecord new stuff under testbench
     #else
     return false;
     #endif
@@ -1912,8 +1914,6 @@ bool LoggerGActive()
 #if OLDLOGGER
 #else
 //
-// The return value is very important!
-//	-1		exec failure
 //	259	still active, very bad
 //	0	is the only OK that we want!
 //	other values, very bad
@@ -1927,18 +1927,18 @@ int RunSignature() {
 
   LocalPath(path,_T(LKD_SYSTEM));
   #if (WINDOWSPC>0)
-  _tcscat(path,_T("\\GRECORDPC.LK8"));
+  _tcscat(path,_T("\\GRECORD_PC.LK8"));
   #endif
 
   // CAREFUL!!! PNA is ALSO PPC2003!!
   #ifdef PNA
-  _tcscat(path,_T("\\GRECORDPNA.LK8"));
+  _tcscat(path,_T("\\GRECORD_PNA.LK8"));
   #else
     #ifdef PPC2002
-    _tcscat(path,_T("\\GRECORD2002.LK8"));
+    _tcscat(path,_T("\\GRECORD_2002.LK8"));
     #endif
     #ifdef PPC2003
-    _tcscat(path,_T("\\GRECORD2003.LK8"));
+    _tcscat(path,_T("\\GRECORD_2003.LK8"));
     #endif
   #endif 
 
@@ -1947,6 +1947,7 @@ int RunSignature() {
   #if TESTBENCH
   StartupStore(_T(".... RunSignature: homedir <%s>%s"),homedir,NEWLINE);
   #endif
+
 
   PROCESS_INFORMATION pi;
 
@@ -1963,11 +1964,24 @@ int RunSignature() {
   if (!::CreateProcess(path,homedir, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, NULL, &pi)) {
   #endif
 	DWORD lasterr=GetLastError();
-	StartupStore(_T(".... RunSignature exec FAILED, error code=%d - Cannot validate IGC log!%s"),lasterr,NEWLINE);
+
+	if (lasterr!=2) {
+		// External executable failure, bad !
+		StartupStore(_T(".... RunSignature exec <%s> FAILED, error code=%d"),path,lasterr,NEWLINE);
+		#if TESTBENCH
+		StartupStore(_T(".... Trying with DoSignature\n"));
+		#endif
+	}
+
 	#if TESTBENCH
-	StartupStore(_T(".... RunSignature exec was <%s>%s"),path,NEWLINE);
+	else 
+		StartupStore(_T(".... no executable found, proceeding with DoSignature\n"));
 	#endif
-	return -1;
+
+	extern int DoSignature(TCHAR *hpath);
+	retval=DoSignature(homedir);
+
+	return retval;
   }
   ::WaitForSingleObject(pi.hProcess, 30000); // 30s
   GetExitCodeProcess(pi.hProcess,&retval);
@@ -1976,6 +1990,7 @@ int RunSignature() {
   #if TESTBENCH
   StartupStore(_T(".... RunSignature exec terminated, retval=%d%s"),retval,NEWLINE);
   #endif
+
 
   return retval;
 
