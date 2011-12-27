@@ -353,7 +353,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryDrawTerrain,&EnableTerrain_Config);
   PREAD(sname,svalue,szRegistryDrawTopology,&EnableTopology_Config);
   PREAD(sname,svalue,szRegistryEnableFLARMMap,&EnableFLARMMap);
-  PREAD(sname,svalue,szRegistryEnableNavBaroAltitude,&EnableNavBaroAltitude);
+  PREAD(sname,svalue,szRegistryEnableNavBaroAltitude,&EnableNavBaroAltitude_Config);
   PREAD(sname,svalue,szRegistryFAIFinishHeight,&EnableFAIFinishHeight);
   PREAD(sname,svalue,szRegistryFAISector,&SectorType);
   PREAD(sname,svalue,szRegistryFinalGlideTerrain,&FinalGlideTerrain);

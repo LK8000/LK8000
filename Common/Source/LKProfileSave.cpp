@@ -174,7 +174,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryDrawTerrain,EnableTerrain_Config);
   rprintf(szRegistryDrawTopology,EnableTopology_Config);
   rprintf(szRegistryEnableFLARMMap,EnableFLARMMap);
-  rprintf(szRegistryEnableNavBaroAltitude,EnableNavBaroAltitude);
+  rprintf(szRegistryEnableNavBaroAltitude,EnableNavBaroAltitude_Config);
   rprintf(szRegistryFAIFinishHeight,EnableFAIFinishHeight);
   rprintf(szRegistryFAISector,SectorType);
   rprintf(szRegistryFinalGlideTerrain,FinalGlideTerrain);
