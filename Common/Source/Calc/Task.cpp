@@ -1597,49 +1597,6 @@ void SaveDefaultTask(void) {
 
 #include "NavFunctions.h"
 
-/*
- * THANKS to Donato, Digifly Europe, for code and help!
- */
-
-float _correct(float value_f)
-{
-value_f=value_f - (2.0 * PI) * (int)(value_f / (2.0 * PI)); //***Devi arrotondare
-if ( value_f < (-1.0 * PI))
-value_f=value_f + 2.0*PI;
-else if (value_f > PI)
-value_f=value_f - 2.0 * PI;
-return (value_f);
-} 
-
-//----------------------------------------------------------------------------
-// controllo campo e normalizzazione angolo nel range 0-360.0 gradi
-// input and output in degrees
-//----------------------------------------------------------------------------
-float nice_brg(float brg_f)
-{
-if(brg_f < -1080.0 || brg_f > 1080.0) return(0.0);
-if(brg_f < 0.0) while(brg_f < 0.0) brg_f=brg_f+360.0;
-else
-  while(brg_f >= 360.0) brg_f=brg_f-360.0;
-return(brg_f);
-}
-
-
-//----------------------------------------------------------------------------
-// inverte la direzione di un bearing (range 0-360.0 degrees)
-//----------------------------------------------------------------------------
-float RecipCse(float curcse_f)
-{
-float recipcse_f;
-
-recipcse_f = curcse_f - 180.0;
-if(recipcse_f < 0.0) recipcse_f = recipcse_f + 360.0;
-return(recipcse_f);
-}
-
-
-
-// #define DEBUGOTP	1
 
 void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
@@ -1654,46 +1611,16 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	double stdlat, stdlon;
 	double stddst, stdbrg;
 	double nxtlat, nxtlon;
-	double nxtdst, nxtbrg;
+	double nxtbrg;
 
 	curwp  = ActiveWayPoint;
 	curlat = Basic->Latitude; 
 	curlon = Basic->Longitude; 
 
-
-	if( curwp == 0 )	{
-		stdwp=Task[curwp].Index;
-		nxtwp=Task[curwp+1].Index;
-		if( stdwp == nxtwp && ValidWayPoint(Task[curwp+2].Index)) {
-			nxtwp=Task[curwp+2].Index;
-		}
-
-		stdlat = WayPointList[stdwp].Latitude;
-		stdlon = WayPointList[stdwp].Longitude;
-
-		nxtlat = WayPointList[nxtwp].Latitude;
-		nxtlon = WayPointList[nxtwp].Longitude;
-
-		// From Current Wpt To Next Wpt
-		DistanceBearing(stdlat, stdlon, nxtlat, nxtlon, &nxtdst, &nxtbrg);
-
-		double optlat, optlon;
-		FindLatitudeLongitude(stdlat,stdlon, nxtbrg, StartRadius, &optlat, &optlon);
-		Task[curwp].AATTargetLat= optlat;
-		Task[curwp].AATTargetLon= optlon;
-		Task[curwp].AATTargetLocked=true;
-
-		curwp++;
-		curlat = optlat;
-		curlon = optlon;
-	}
-		
-	
-	//
-
+	bool bCalcPrev = false;
 
 	while(ValidWayPoint(nxtwp=Task[curwp+1].Index)) {
-
+		
 		stdwp=Task[curwp].Index;
 
 		stdlat = WayPointList[stdwp].Latitude;
@@ -1701,44 +1628,107 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 		nxtlat = WayPointList[nxtwp].Latitude;
 		nxtlon = WayPointList[nxtwp].Longitude;
+
+		// if Same Wpt Calc Next before if Exist
+		if(stdwp == nxtwp && ValidWayPoint(Task[curwp+2].Index)){  
+			bCalcPrev = true;
+			Task[curwp].AATTargetLat= stdlat;
+			Task[curwp].AATTargetLon= stdlon;
+			Task[curwp].AATTargetLocked=true;
+			++curwp;
+			continue;
+		}
 
 		// From Current Position To Current Wpt
 		DistanceBearing(curlat, curlon, stdlat, stdlon, &stddst, &stdbrg);
 
 		// From Current Wpt To Next Wpt
-		DistanceBearing(stdlat, stdlon, nxtlat, nxtlon, &nxtdst, &nxtbrg);
+		DistanceBearing(stdlat, stdlon, nxtlat, nxtlon, NULL, &nxtbrg);
 
 		double obrg_f = BiSector(nxtbrg, stdbrg);
 
-		double dist_ui= (curwp>0)?(Task[curwp].AATCircleRadius):StartRadius;
+		double radius= (curwp>0)?(Task[curwp].AATCircleRadius):StartRadius;
 
 		// Why ?? Check if Point is Loged beffore advance to Next WP ...
 //		dist_ui-=30; // 30m margin 
 
 		double optlat, optlon;
-		FindLatitudeLongitude(stdlat,stdlon, obrg_f, dist_ui, &optlat, &optlon);
+		FindLatitudeLongitude(stdlat,stdlon, obrg_f, radius, &optlat, &optlon);
 
-		// Check error 
-		double optdst = DoubleDistance(curlat, curlon, optlat, optlon, nxtlat, nxtlon);
-		if(curwp > 0 && (optdst > (stddst + nxtdst))) {
-			double errbrg; // beraing from current to next
-			DistanceBearing(curlat, curlon, nxtlat, nxtlon, NULL, &errbrg);
+		double errbrg, optbrg; // beraing from current to next
+		DistanceBearing(curlat, curlon, nxtlat, nxtlon, NULL, &errbrg);
+		DistanceBearing(curlat, curlon, optlat, optlon, NULL, &optbrg);
 
-			double dBrg = stdbrg - errbrg;
-			dBrg = M_PI - (dBrg*DEG_TO_RAD) - asin( (stddst*sin(dBrg*DEG_TO_RAD)) / dist_ui );
-			obrg_f = AngleLimit360(dBrg + 180 + stdbrg);
+		double dBrg = (stdbrg - errbrg) * DEG_TO_RAD;
+		if( (sin(fabs(dBrg))) < radius/stddst ) {
 
-			FindLatitudeLongitude(stdlat,stdlon, obrg_f, dist_ui, &optlat, &optlon);
+			if(radius > stddst * sin(dBrg)) {
+
+				if( (dBrg < PI/2) && (radius < stddst)) {
+					dBrg = - dBrg + asin((stddst * sin(dBrg)) / radius);
+				}
+				else{
+					dBrg = PI - dBrg - asin((stddst * sin(dBrg)) / radius);
+				}
+				dBrg *= RAD_TO_DEG;
+				obrg_f = AngleLimit360(dBrg + 180 + stdbrg);
+
+				FindLatitudeLongitude(stdlat,stdlon, obrg_f, radius, &optlat, &optlon);
+			}
 		}
 
 		Task[curwp].AATTargetLat= optlat;
 		Task[curwp].AATTargetLon= optlon;
 		Task[curwp].AATTargetLocked=true;
 
-		curwp++;
-		curlat = optlat;
-		curlon = optlon;
+		if(bCalcPrev) {
+			double errbrg; // beraing from current to optNext
+			DistanceBearing(curlat, curlon, optlat, optlon, NULL, &errbrg);
+			radius= ((curwp-1)>0)?(Task[curwp-1].AATCircleRadius):StartRadius;
+
+			double dBrg = (stdbrg - errbrg) * DEG_TO_RAD;
+			if( (sin(fabs(dBrg))) < radius/stddst ) {
+
+				if(radius > stddst * sin(dBrg)) {
+
+					if( (dBrg < PI/2) && (radius < stddst)) {
+						dBrg = - dBrg + asin((stddst * sin(dBrg)) / radius);
+					}
+					else{
+						dBrg = PI - dBrg - asin((stddst * sin(dBrg)) / radius);
+					}
+					dBrg *= RAD_TO_DEG;
+					obrg_f = AngleLimit360(dBrg + 180 + stdbrg);
+
+					FindLatitudeLongitude(stdlat,stdlon, obrg_f, radius, &optlat, &optlon);
+				}
+			}
+
+
+			Task[curwp-1].AATTargetLat= optlat;
+			Task[curwp-1].AATTargetLon= optlon;
+			Task[curwp-1].AATTargetLocked=true;
+
+			bCalcPrev = false;
+		}
+
+		curlat = Task[curwp].AATTargetLat;
+		curlon = Task[curwp].AATTargetLon;
+		Task[curwp].AATTargetLocked=true;
+		++curwp;
 	}
+
+	// Last radius
+	stdwp=Task[curwp].Index;
+	stdlat = WayPointList[stdwp].Latitude;
+	stdlon = WayPointList[stdwp].Longitude;
+
+	DistanceBearing(stdlat, stdlon, curlat, curlon, NULL, &stdbrg);
+	double dist_ui= (curwp>0)?(Task[curwp].AATCircleRadius):StartRadius;
+	FindLatitudeLongitude(stdlat,stdlon, stdbrg, dist_ui, &(Task[curwp].AATTargetLat), &(Task[curwp].AATTargetLon));
+	Task[curwp].AATTargetLocked=true;
+
+
 
 	stdwp=Task[ActiveWayPoint].Index;
 
@@ -1747,5 +1737,3 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	WayPointList[RESWP_OPTIMIZED].Altitude = WayPointList[stdwp].Altitude;
 	wsprintf(WayPointList[RESWP_OPTIMIZED].Name, _T("!%s"),WayPointList[stdwp].Name);
 }
-
-

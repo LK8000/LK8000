@@ -2282,7 +2282,7 @@ static bool InStartSector(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int &index
   // and within height limits?
   isInSector &= in_height;
 
-  if (UseGates() && PGStartOut) { // 100509
+  if (ISPARAGLIDER && PGStartOut) { // 100509
   	// we crossed the start if we were outside sector and now we are in.
 	*CrossedStart = !LastInSector && isInSector;
   } else {
@@ -2687,7 +2687,7 @@ StartupStore(_T("... CheckStart Timenow=%d OpenTime=%d CloseTime=%d ActiveGate=%
 
   }
 
-  if (UseGates() && PGStartOut) {
+  if (ISPARAGLIDER && PGStartOut) {
 	// start OUT and go in
 	if (!InStartSector(Basic,Calculated,*LastStartSector, &StartCrossed)) {
 		Calculated->IsInSector = false;

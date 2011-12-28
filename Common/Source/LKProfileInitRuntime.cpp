@@ -127,7 +127,7 @@ void LKProfileInitRuntime(void) {
 
   if ( ISPARAGLIDER ) {
 	AverEffTime = (AverEffTime_t)ae15seconds;
-	AATEnabled=FALSE;
+	AATEnabled=TRUE;
 	LoggerTimeStepCruise=1;
   } else {
 	AverEffTime = (AverEffTime_t)ae60seconds;
