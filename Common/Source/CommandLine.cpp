@@ -19,6 +19,9 @@ void LK8000GetOpts(LPTSTR CommandLine) {
   (void)CommandLine;
 
   // THIS STUFF MUST BE MOVED TO ANOTHER PLACE ASAP!
+  #if TESTBENCH
+  // StartupStore(_T(".... startProfileFile=defaultProfileFile\n"));
+  #endif
   _stprintf(defaultProfileFile,_T("%s\\%s\\%s"),LKGetLocalPath(),_T(LKD_CONF),_T(LKPROFILE));
   _tcscpy(startProfileFile, defaultProfileFile);
   _stprintf(defaultAircraftFile,_T("%s\\%s\\%s"),LKGetLocalPath(),_T(LKD_CONF),_T(LKAIRCRAFT));

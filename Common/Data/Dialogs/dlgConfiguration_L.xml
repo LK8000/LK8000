@@ -302,6 +302,15 @@
 <WndProperty Name="prpBallastSecsToEmpty" Caption="_@M246_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H152_">
 <DataField name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min=10 Max=900 Step=10/>
 </WndProperty>
+<WndButton Name="cmdAircraftType" Caption="_@M60_" X=2 Y=-1 Width=235  Height=22 Font=2 />
+<WndButton Name="cmdAircraftRego" Caption="_@M56_" X=2 Y=-1 Width=235  Height=22 Font=2 />
+<WndButton Name="cmdCompetitionClass" Caption="_@M937_" X=2 Y=-1 Width=235  Height=22 Font=2 />
+<WndButton Name="cmdCompetitionID" Caption="_@M939_" X=2 Y=-1 Width=235  Height=22 Font=2 />
+<WndButton Name="cmdPolarSaveAs" Caption="_@M580_" X=2 Y=-1 Width=123  Height=22 Font=2 OnClickNotify="OnPolarSaveAsClicked" />
+<WndButton Name="cmdPolarSaveNew" Caption="_@M582_" X=126 Y=-999 Width=123  Height=22 Font=2 OnClickNotify="OnPolarSaveNewClicked"/>
+<WndProperty Name="prpAircraftFile" Caption="" X=2 Y=-999  Width=0 Height=0 CaptionWidth=0 Font=2 Help="">
+<DataField name="" DataType="filereader" Min=0 Max=200 Step=1/>
+</WndProperty>
 </WndFrame>
 <WndFrame Name="frmComm" X=0 Y=0 Width=235 Height=222 Font=2>
 <WndFrame Name="frmComm" Caption="_@M232_" X=0 Y=0 Width=236 Height=68 Font=2 Border=30>
@@ -502,11 +511,7 @@
 <WndButton Name="cmdTaskRules" Caption="_@M690_" X=70 Y=-997 Width=180  Height=30 Font=2 OnClickNotify="OnTaskRulesClicked" />
 </WndFrame>
 <WndFrame Name="frmLogger" X=0 Y=0 Width=235 Height=222 Font=2>
-<WndButton Name="cmdPilotName" Caption="_@M525_" X=2 Y=-1 Width=235  Height=22 Font=2 />
-<WndButton Name="cmdAircraftType" Caption="_@M60_" X=2 Y=-1 Width=235  Height=22 Font=2 />
-<WndButton Name="cmdAircraftRego" Caption="_@M56_" X=2 Y=-1 Width=235  Height=22 Font=2 />
-<WndButton Name="cmdCompetitionClass" Caption="_@M937_" X=2 Y=-1 Width=235  Height=22 Font=2 />
-<WndButton Name="cmdCompetitionID" Caption="_@M939_" X=2 Y=-1 Width=235  Height=22 Font=2 />
+<WndButton Name="cmdPilotName" Caption="_@M525_" X=2 Y=1 Width=235  Height=22 Font=2 />
 <WndProperty Name="prpLoggerShortName" Caption="_@M611_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H207_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>

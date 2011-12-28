@@ -32,6 +32,7 @@ static HFONT TempMapWindowFont;
 static HFONT TempMapLabelFont;
 static HFONT TempUseCustomFontsFont;
 
+extern void LKAircraftSave(const TCHAR *szFile);
 
 extern void InitializeOneFont (HFONT * theFont, 
                                const TCHAR FontRegKey[] , 
@@ -967,6 +968,129 @@ static void OnPolarFileData(DataField *Sender, DataField::DataAccessKind_t Mode)
 
 }
 
+static void OnPolarSaveAsClicked(WindowControl * Sender) {
+  (void)Sender;
+
+  int file_index; 
+  TCHAR file_name[MAX_PATH];
+  WndProperty* wp;
+  DataFieldFileReader *dfe;
+
+  if ( CheckClubVersion() ) {
+	ClubForbiddenMsg();
+	return;
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAircraftFile"));
+  if (!wp) return;
+
+  HWND hwnd = wp->GetHandle();
+  SendMessage(hwnd,WM_LBUTTONDOWN,0,0);
+  dfe = (DataFieldFileReader*) wp->GetDataField();
+
+  file_index = dfe->GetAsInteger();
+
+  if (file_index>0) {
+	_tcscpy(file_name,dfe->GetAsString());
+	if(MessageBoxX(hWndMapWindow, file_name, 
+	// LKTOKEN  _@M509_ = "Overwrite profile?" 
+		gettext(TEXT("_@M509_")), 
+		MB_YESNO|MB_ICONQUESTION) == IDYES) {
+		LKAircraftSave(dfe->GetPathFile());
+	// LKTOKEN  _@M535_ = "Profile saved!" 
+		MessageBoxX(hWndMapWindow, gettext(TEXT("_@M535_")),_T(""), MB_OK|MB_ICONEXCLAMATION);
+		return;
+	}
+  	dfe->Set(0);
+  } 
+
+}
+
+
+
+static void OnPolarSaveNewClicked(WindowControl * Sender) {
+  (void)Sender;
+
+  int file_index; 
+  TCHAR file_name[MAX_PATH];
+  TCHAR profile_name[MAX_PATH];
+  TCHAR tmptext[MAX_PATH];
+  WndProperty* wp;
+  DataFieldFileReader *dfe;
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAircraftFile"));
+  if (!wp) return;
+  dfe = (DataFieldFileReader*) wp->GetDataField();
+
+  _tcscpy(profile_name,_T(""));
+  dlgTextEntryShowModal(profile_name, 13); // max length including termination 0
+
+  if (_tcslen(profile_name)<=0) return;
+
+
+  _tcscat(profile_name, TEXT(LKS_AIRCRAFT));
+  LocalPath(file_name,TEXT(LKD_CONF));
+  _tcscat(file_name,TEXT("\\"));
+  _tcscat(file_name,profile_name);
+
+  dfe->Lookup(file_name);
+  file_index = dfe->GetAsInteger();
+
+  if (file_index==0) {
+	_stprintf(tmptext, TEXT("%s: %s"), 
+	// LKTOKEN  _@M458_ = "New profile" 
+		gettext(TEXT("_@M458_")), 
+		profile_name);
+
+	if(MessageBoxX(hWndMapWindow, tmptext, 
+	// LKTOKEN  _@M579_ = "Save ?" 
+		gettext(TEXT("_@M579_")), 
+		MB_YESNO|MB_ICONQUESTION) == IDYES) {
+		LKAircraftSave(file_name);
+		dfe->addFile(profile_name, file_name);
+
+		MessageBoxX(hWndMapWindow, 
+	// LKTOKEN  _@M535_ = "Profile saved!" 
+		gettext(TEXT("_@M535_")), 
+		_T(""), MB_OK|MB_ICONEXCLAMATION);
+
+  		dfe->Set(0);
+		return;
+	}
+  }
+
+  if (file_index>0) {
+	_stprintf(tmptext, TEXT("%s: %s"), 
+	// LKTOKEN  _@M533_ = "Profile already exists" 
+		gettext(TEXT("_@M533_")), 	
+		profile_name);
+
+	if (CheckClubVersion() ) {
+		MessageBoxX(hWndMapWindow, tmptext,
+	// LKTOKEN  _@M162_ = "Cannot overwrite!" 
+		gettext(TEXT("_@M162_")),
+		MB_OK|MB_ICONEXCLAMATION);
+	} else {
+		if(MessageBoxX(hWndMapWindow, tmptext, 
+	// LKTOKEN  _@M510_ = "Overwrite?" 
+		gettext(TEXT("_@M510_")), 
+		MB_YESNO|MB_ICONQUESTION) == IDYES) {
+
+			LKAircraftSave(file_name);
+			MessageBoxX(hWndMapWindow, 
+	// LKTOKEN  _@M535_ = "Profile saved!" 
+			gettext(TEXT("_@M535_")),
+			_T(""), MB_OK|MB_ICONEXCLAMATION);
+			return;
+		}
+	}
+  	dfe->Set(0);
+  }
+
+} // Save new
+
+
+
 extern void OnInfoBoxHelp(WindowControl * Sender);
 
 static void OnWaypointNewClicked(WindowControl * Sender){
@@ -1166,6 +1290,9 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnDeviceAData),
   DeclareCallBackEntry(OnDeviceBData),
 
+  DeclareCallBackEntry(OnPolarSaveAsClicked),
+  DeclareCallBackEntry(OnPolarSaveNewClicked),
+
   DeclareCallBackEntry(OnUseCustomFontData),
   DeclareCallBackEntry(OnEditMapWindowFontClicked),
   DeclareCallBackEntry(OnEditMapLabelFontClicked),
@@ -1306,7 +1433,6 @@ static void setVariables(void) {
   if (buttonCompetitionID) {
     buttonCompetitionID->SetOnClickNotify(OnCompetitionIDClicked);
   }
-
   buttonCopy = ((WndButton *)wf->FindByName(TEXT("cmdCopy")));
   if (buttonCopy) {
     buttonCopy->SetOnClickNotify(OnCopy);
@@ -2091,6 +2217,16 @@ static void setVariables(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpBallastSecsToEmpty"));
   if (wp) {
     wp->GetDataField()->Set(BallastSecsToEmpty);
+    wp->RefreshDisplay();
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAircraftFile"));
+  if (wp) {
+    DataFieldFileReader* dfe;
+    dfe = (DataFieldFileReader*)wp->GetDataField();
+    _stprintf(tsuf,_T("*%S"),LKS_AIRCRAFT);
+    dfe->ScanDirectoryTop(_T(LKD_CONF),tsuf);
+    dfe->Set(0);
     wp->RefreshDisplay();
   }
 

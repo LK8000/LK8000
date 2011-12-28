@@ -167,9 +167,6 @@ static void OnCloseClicked(WindowControl * Sender){
 	case RUN_DUALPROF:
 		RUN_MODE=RUN_WELCOME;
 		break;
-	case RUN_PROFILE:
-		RUN_MODE=RUN_DUALPROF;
-		break;
   }
   wf->SetModalResult(mrOK);
 }
@@ -201,6 +198,12 @@ static void OnEXITClicked(WindowControl * Sender){
 static void OnPROFILEClicked(WindowControl * Sender){
 	(void)Sender;
   RUN_MODE=RUN_PROFILE;
+  if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
+  wf->SetModalResult(mrOK);
+}
+static void OnAIRCRAFTClicked(WindowControl * Sender){
+	(void)Sender;
+  RUN_MODE=RUN_AIRCRAFT;
   if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
   wf->SetModalResult(mrOK);
 }
@@ -329,7 +332,7 @@ bool dlgStartupShowModal(void){
   }
 
   if (RUN_MODE==RUN_DUALPROF) {
-	((WndButton *)wf->FindByName(TEXT("cmdAIRCRAFT"))) ->SetOnClickNotify(OnCloseClicked);
+	((WndButton *)wf->FindByName(TEXT("cmdAIRCRAFT"))) ->SetOnClickNotify(OnAIRCRAFTClicked);
 	((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetOnClickNotify(OnPROFILEClicked);
 	((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetOnClickNotify(OnCloseClicked);
 	if (ScreenLandscape) {
@@ -368,7 +371,7 @@ bool dlgStartupShowModal(void){
   }
 
 
-  if (RUN_MODE==RUN_PROFILE) {
+  if (RUN_MODE==RUN_PROFILE || RUN_MODE==RUN_AIRCRAFT) {
 	((WndButton *)wf->FindByName(TEXT("cmdClose"))) ->SetOnClickNotify(OnCloseClicked);
 	if (ScreenLandscape) {
 		PROFWIDTH=IBLSCALE(256);
