@@ -277,6 +277,8 @@ void Shutdown(void) {
   #if OLDPROFILES  
   StoreRegistry();
   #else
+  extern void LKAircraftSave(const TCHAR *szFile);
+  LKAircraftSave(defaultAircraftFile);
   LKProfileSave(defaultProfileFile);
   #endif
 

@@ -248,7 +248,7 @@ bool dlgStartupShowModal(void){
   }
 
   // CHOOSE PROFILE
-  if (RUN_MODE==RUN_PROFILE) {
+  if (RUN_MODE==RUN_PROFILE || RUN_MODE==RUN_AIRCRAFT) {
 	if (!ScreenLandscape) {
 		LocalPathS(filename, TEXT("dlgStartup_L.xml"));
 		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_STARTUP_L"));
@@ -258,19 +258,6 @@ bool dlgStartupShowModal(void){
 	}
 	if (!wf) return false;
   }
-
-/* TODO
-  if (RUN_MODE==RUN_AIRCRAFT) {
-	if (!ScreenLandscape) {
-		LocalPathS(filename, TEXT("dlgProfileAircraft_L.xml"));
-		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_STARTUP_L"));
-	} else {
-		LocalPathS(filename, TEXT("dlgStartup.xml"));
-		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_STARTUP"));
-	}
-	if (!wf) return false;
-  }
-*/
 
   wSplash = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmSplash")); 
   wSplash->SetWidth(ScreenSizeX);
@@ -407,35 +394,22 @@ bool dlgStartupShowModal(void){
   wf->SetHeight(ScreenSizeY);
   wf->SetWidth(ScreenSizeX);
 
-/* TODO
-  wp = ((WndProperty *)wf->FindByName(TEXT("prpAircraft")));
-  if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(temp,_T("*%S"),LKS_PRF); 
-    dfe->ScanDirectoryTop(_T(LKD_CONF),temp); 
-    dfe->addFile(gettext(_T("_@M1741_")),_T("PROFILE_RESET")); 
-    dfe->Lookup(startProfileFile);
-
-    wp->SetHeight(PROFHEIGHT);
-    wp->SetWidth(PROFWIDTH);
-    if (ScreenLandscape)
-    	wp->SetLeft(((ScreenSizeX-PROFWIDTH-PROFSEPARATOR-PROFACCEPTWIDTH)/2)-NIBLSCALE(2));
-    else
-    	wp->SetLeft(0);
-
-    wp->RefreshDisplay();
-  }
-*/
-
   wp = ((WndProperty *)wf->FindByName(TEXT("prpProfile")));
   if (wp) {
     DataFieldFileReader* dfe;
     dfe = (DataFieldFileReader*)wp->GetDataField();
-    _stprintf(temp,_T("*%S"),LKS_PRF); 
-    dfe->ScanDirectoryTop(_T(LKD_CONF),temp); 
-    dfe->addFile(gettext(_T("_@M1741_")),_T("PROFILE_RESET")); 
-    dfe->Lookup(startProfileFile);
+
+    if (RUN_MODE==RUN_PROFILE) {
+	    _stprintf(temp,_T("*%S"),LKS_PRF); 
+	    dfe->ScanDirectoryTop(_T(LKD_CONF),temp); 
+	    dfe->addFile(gettext(_T("_@M1741_")),_T("PROFILE_RESET")); 
+	    dfe->Lookup(startProfileFile);
+    } 
+    if (RUN_MODE==RUN_AIRCRAFT) {
+	    _stprintf(temp,_T("*%S"),LKS_AIRCRAFT); 
+	    dfe->ScanDirectoryTop(_T(LKD_CONF),temp); 
+	    dfe->Lookup(startAircraftFile);
+    }
 
     wp->SetHeight(PROFHEIGHT);
     wp->SetWidth(PROFWIDTH);
@@ -446,6 +420,8 @@ bool dlgStartupShowModal(void){
 
     wp->RefreshDisplay();
   }
+
+
 
   if  (!CheckRootDir()) {
 	TCHAR mydir[MAX_PATH];
@@ -541,27 +517,21 @@ bool dlgStartupShowModal(void){
   }
   wf->ShowModal();
 
-/* TODO
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAircraft"));
-  if (wp) {
-	DataFieldFileReader* dfe;
-	dfe = (DataFieldFileReader*)wp->GetDataField();
-	if (_tcslen(dfe->GetPathFile())>0) {
-		_tcscpy(startProfileFile,dfe->GetPathFile());
-	}
-	if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
-	RUN_MODE=RUN_DUALPROF;
-  }
-*/
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpProfile"));
   if (wp) {
 	DataFieldFileReader* dfe;
 	dfe = (DataFieldFileReader*)wp->GetDataField();
-	if (_tcslen(dfe->GetPathFile())>0) {
-		_tcscpy(startProfileFile,dfe->GetPathFile());
+
+	if (RUN_MODE==RUN_PROFILE) {
+		if (_tcslen(dfe->GetPathFile())>0) {
+			_tcscpy(startProfileFile,dfe->GetPathFile());
+		}
 	}
-	//if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
+	if (RUN_MODE==RUN_AIRCRAFT) {
+		if (_tcslen(dfe->GetPathFile())>0) {
+			_tcscpy(startAircraftFile,dfe->GetPathFile());
+		}
+	}
 	RUN_MODE=RUN_DUALPROF;
   }
   if (RUN_MODE==RUN_EXIT) {

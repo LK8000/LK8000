@@ -757,6 +757,8 @@ GEXTERN int PDABatteryFlag;
 
 GEXTERN TCHAR startProfileFile[MAX_PATH];
 GEXTERN TCHAR defaultProfileFile[MAX_PATH];
+GEXTERN TCHAR startAircraftFile[MAX_PATH];
+GEXTERN TCHAR defaultAircraftFile[MAX_PATH];
 
 //
 // Fonts

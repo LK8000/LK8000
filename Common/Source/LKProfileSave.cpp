@@ -85,9 +85,10 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryActiveMap, ActiveMap_Config);
   rprintf(szRegistryAdditionalAirspaceFile, szAdditionalAirspaceFile);
   rprintf(szRegistryAdditionalWayPointFile, szAdditionalWaypointFile);
-  rprintf(szRegistryAircraftCategory, AircraftCategory);
-  rprintf(szRegistryAircraftRego, AircraftRego_Config);
-  rprintf(szRegistryAircraftType, AircraftType_Config);
+//  >> Moved to AircraftFile <<
+//  rprintf(szRegistryAircraftCategory, AircraftCategory);
+//  rprintf(szRegistryAircraftRego, AircraftRego_Config);
+//  rprintf(szRegistryAircraftType, AircraftType_Config);
   rprintf(szRegistryAirfieldFile, szAirfieldFile); 
   rprintf(szRegistryAirspaceBlackOutline, MapWindow::bAirspaceBlackOutline);
   rprintf(szRegistryAirspaceFile, szAirspaceFile);
@@ -121,7 +122,8 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryAutoWind,AutoWindMode_Config);
   rprintf(szRegistryAutoZoom,AutoZoom_Config);
   rprintf(szRegistryAverEffTime,AverEffTime);
-  rprintf(szRegistryBallastSecsToEmpty,BallastSecsToEmpty);
+//  >> Moved to AircraftFile <<
+//  rprintf(szRegistryBallastSecsToEmpty,BallastSecsToEmpty);
   rprintf(szRegistryBarOpacity,BarOpacity);
   rprintf(szRegistryBestWarning,BestWarning);
   rprintf(szRegistryBgMapColor,BgMapColor_Config);
@@ -130,8 +132,9 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryCheckSum,CheckSum);
   rprintf(szRegistryCircleZoom,MapWindow::zoom.CircleZoom());
   rprintf(szRegistryClipAlt,ClipAltitude);
-  rprintf(szRegistryCompetitionClass,CompetitionClass_Config);
-  rprintf(szRegistryCompetitionID,CompetitionID_Config);
+//  >> Moved to AircraftFile <<
+//  rprintf(szRegistryCompetitionClass,CompetitionClass_Config);
+//  rprintf(szRegistryCompetitionID,CompetitionID_Config);
   rprintf(szRegistryConfBB0,ConfBB0);
   rprintf(szRegistryConfBB1,ConfBB1);
   rprintf(szRegistryConfBB2,ConfBB2);
@@ -187,7 +190,8 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryGlideBarMode,GlideBarMode);
   rprintf(szRegistryGliderScreenPosition,MapWindow::GliderScreenPosition);
   rprintf(szRegistryGpsAltitudeOffset,GPSAltitudeOffset);
-  rprintf(szRegistryHandicap,Handicap);
+//  >> Moved to AircraftFile <<
+//  rprintf(szRegistryHandicap,Handicap);
   rprintf(szRegistryHideUnits,HideUnits);
   rprintf(szRegistryHomeWaypoint,HomeWaypoint);
 
@@ -239,7 +243,8 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryPGOptimizeRoute,PGOptimizeRoute);
   rprintf(szRegistryPGStartOut,PGStartOut);
   rprintf(szRegistryPilotName,PilotName_Config);
-  rprintf(szRegistryPolarFile,szPolarFile);
+//  >> Moved to AircraftFile <<
+//  rprintf(szRegistryPolarFile,szPolarFile);
   rprintf(szRegistryPollingMode,PollingMode);
   rprintf(szRegistryPort1Index,dwPortIndex1);
   rprintf(szRegistryPort2Index,dwPortIndex2);
@@ -248,7 +253,8 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistrySafetyAltitudeMode,SafetyAltitudeMode);
   rprintf(szRegistrySafetyAltitudeTerrain,SAFETYALTITUDETERRAIN);
   rprintf(szRegistrySafetyMacCready,GlidePolar::SafetyMacCready*10);
-  rprintf(szRegistrySafteySpeed,SAFTEYSPEED*1000); // m/s x1000
+//  >> Moved to AircraftFile <<
+//  rprintf(szRegistrySafteySpeed,SAFTEYSPEED*1000); // m/s x1000
   rprintf(szRegistrySectorRadius,SectorRadius);
   rprintf(szRegistrySetSystemTimeFromGPS,SetSystemTimeFromGPS);
   rprintf(szRegistryShading,Shading_Config);
@@ -323,6 +329,61 @@ void WritePort2Settings(DWORD PortIndex, DWORD SpeedIndex, DWORD Bit1Index) {
   dwSpeedIndex2 = SpeedIndex;
   dwBit2Index	= Bit1Index;
 }
+
+
+//
+// Save only Aircraft related parameters
+//
+void LKAircraftSave(const TCHAR *szFile)
+{
+  #if TESTBENCH
+  StartupStore(_T("... AircraftSave <%s>%s"),szFile,NEWLINE);
+  #endif
+
+  
+  if (_tcslen(szFile)>0)
+	pfp = _tfopen(szFile, TEXT("wb")); // 'w' will overwrite content, 'b' for no crlf translation
+
+  if(pfp == NULL) {
+	StartupStore(_T("......  AircraftSaveProfile <%s> open for write FAILED!%s"),szFile,NEWLINE);
+	return;
+  }
+
+  //
+  // Standard header
+  //
+  fprintf(pfp,"### LK8000 AICRAFT PROFILE - DO NOT EDIT%s",PNEWLINE);
+  fprintf(pfp,"### THIS FILE IS ENCODED IN UTF8%s",PNEWLINE);
+  fprintf(pfp,"LKVERSION=\"%s.%s\"%s",LKVERSION,LKRELEASE,PNEWLINE);
+  fprintf(pfp,"PROFILEVERSION=1%s",PNEWLINE);
+
+  rprintf(szRegistryAircraftCategory, AircraftCategory);
+  rprintf(szRegistryPolarFile,szPolarFile);
+  rprintf(szRegistrySafteySpeed,SAFTEYSPEED*1000); // Max speed V rough air m/s x1000
+  rprintf(szRegistryHandicap,Handicap);
+  rprintf(szRegistryBallastSecsToEmpty,BallastSecsToEmpty);
+
+  rprintf(szRegistryAircraftType, AircraftType_Config);
+  rprintf(szRegistryAircraftRego, AircraftRego_Config);
+  rprintf(szRegistryCompetitionClass,CompetitionClass_Config);
+  rprintf(szRegistryCompetitionID,CompetitionID_Config);
+
+
+  fprintf(pfp,PNEWLINE); // end of file
+  fflush(pfp);
+  fclose(pfp);
+
+}
+
+
+
+
+
+
+
+
+
+
 
 // REMOVABLE IN SOURCE CODE ONCE NEWPROFILES ARE PERMANENT
 HRESULT SetToRegistry(const TCHAR *szRegValue, DWORD Pos) {; return 0;};

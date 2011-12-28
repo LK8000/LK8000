@@ -1,0 +1,8 @@
+<PMML>
+<WndForm Name="frmDual" Type="Dialog" X=0 Y=0 Width=240 Height=320 Font=2 BackColor=0 Caption="" >
+<WndOwnerDrawFrame Name="frmSplash" X=0 Y=2 Width=240 Height=260 Font=0 OnPaint="OnSplashPaint" />
+<WndButton Name="cmdAIRCRAFT" Caption="_@M1745_" X=1 Y=230 Width=115  Height=40 Font=2 Tag=3 />
+<WndButton Name="cmdPROFILE" Caption="_@M1746_" X=120 Y=230 Width=115  Height=40 Font=2 Tag=3 />
+<WndButton Name="cmdCLOSE" Caption="_@M156_" X=120 Y=275 Width=115  Height=40 Font=2 Tag=3 />
+</WndForm>
+</PMML>

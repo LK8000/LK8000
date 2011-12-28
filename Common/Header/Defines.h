@@ -89,6 +89,7 @@
 #define REGKEYNAME	"Software\\COOL\\LK8000"
 #define LKDATADIR	"LK8000"
 #define LKPROFILE	"DEFAULT_PROFILE.prf"
+#define LKAIRCRAFT	"DEFAULT_AIRCRAFT.acf"
 
 /*
  * LK8000 directories
@@ -116,6 +117,7 @@
 #define LKS_LOG		".log"
 #define LKS_TXT		".txt"
 #define LKS_PRF		".prf"
+#define LKS_AIRCRAFT	".acf"
 #define LKS_AIRSPACES	".txt"
 #define LKS_POLARS	".plr"
 #define LKS_WP_WINPILOT	".dat"

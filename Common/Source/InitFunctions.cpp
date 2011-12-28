@@ -63,14 +63,18 @@ void PreloadInitialisation(bool ask) {
     ReadRegistrySettings();
 #else
     LKProfileResetDefault();
+    LKProfileLoad(startAircraftFile);
     // if DEFAULT PROFILE does not exist, initialize ResetDefaults!
+    // This is because LKProfileLoad will do this at its end, normally.
     if (!LKProfileLoad(startProfileFile)) {
 	LKProfileAdjustVariables();
 	LKProfileInitRuntime();
     }
+
 #endif
     StatusFileInit();
   } else {
+    // We are in the dialog startup phase
     FullScreen();
     while (dlgStartupShowModal());
 
@@ -82,8 +86,15 @@ void PreloadInitialisation(bool ask) {
 	LKProfileResetDefault();
 	LKProfileAdjustVariables();
 	LKProfileInitRuntime();
-    } else 
+	// Notice: this is also resetting the default Aircraft profile to demo
+    } else  {
+	if (!LKProfileLoad(startAircraftFile)) {
+		#if TESTBENCH
+		StartupStore(_T(". AircraftFile RESET to defaults%s"),NEWLINE);
+		#endif
+	}
 	LKProfileLoad(startProfileFile); // this is calling adjust and InitRuntime itself
+    }
 #endif
 
     // Force reload of bitmaps in the Draw thread 

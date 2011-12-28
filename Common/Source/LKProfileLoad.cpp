@@ -102,8 +102,10 @@ bool LKProfileLoad(TCHAR *szFile)
   if (_tcslen(szFile)>0)
 	fp = _tfopen(szFile, TEXT("rb"));
 
-  if(fp == NULL)
+  if(fp == NULL) {
+	StartupStore(_T(".... LoadProfile <%s> open failed%s"),szFile,NEWLINE);
 	return false;
+  }
 
   TCHAR winval[nMaxValueValueSize];
   TCHAR wname[nMaxValueValueSize];
