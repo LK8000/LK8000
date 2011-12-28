@@ -63,6 +63,10 @@ Things to be fixed in LK languages files/tokens:
              H900 to H1202
              H901 to H1203
 
-
-////////////
-111227:   new @M1744  
+///////////////////////////////
+NEW STUFF FOR 3.0
+december 27 2011
+///////////////////////////////
+@M1744  
+@M1745  
+@M1746  

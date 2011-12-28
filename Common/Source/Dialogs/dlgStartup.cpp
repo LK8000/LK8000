@@ -3,7 +3,7 @@
    Released under GNU/GPL License v.2
    See CREDITS.TXT file for authors and copyrights
 
-   $Id: dlgStartup.cpp,v 1.1 2011/12/21 10:29:29 root Exp root $
+   $Id: dlgStartup.cpp,v 1.1 2011/12/21 10:29:29 root Exp $
 */
 
 #include "externs.h"
@@ -161,8 +161,19 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 
 static void OnCloseClicked(WindowControl * Sender){
 	(void)Sender;
+
+  if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
+  switch(RUN_MODE) {
+	case RUN_DUALPROF:
+		RUN_MODE=RUN_WELCOME;
+		break;
+	case RUN_PROFILE:
+		RUN_MODE=RUN_DUALPROF;
+		break;
+  }
   wf->SetModalResult(mrOK);
 }
+
 static void OnSIMClicked(WindowControl * Sender){
 	(void)Sender;
   RUN_MODE=RUN_SIM;
@@ -176,15 +187,21 @@ static void OnFLYClicked(WindowControl * Sender){
   PortMonitorMessages=0;
   wf->SetModalResult(mrOK);
 }
-static void OnPROFILEClicked(WindowControl * Sender){
+static void OnDUALPROFILEClicked(WindowControl * Sender){
 	(void)Sender;
-  RUN_MODE=RUN_PROFILE;
+  RUN_MODE=RUN_DUALPROF;
   if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
   wf->SetModalResult(mrOK);
 }
 static void OnEXITClicked(WindowControl * Sender){
 	(void)Sender;
   RUN_MODE=RUN_EXIT;
+  wf->SetModalResult(mrOK);
+}
+static void OnPROFILEClicked(WindowControl * Sender){
+	(void)Sender;
+  RUN_MODE=RUN_PROFILE;
+  if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
   wf->SetModalResult(mrOK);
 }
 
@@ -203,6 +220,8 @@ bool dlgStartupShowModal(void){
 
   char filename[MAX_PATH];
   strcpy(filename,"");
+
+  // FLY SIM PROFILE EXIT
   if (RUN_MODE==RUN_WELCOME) {
 	if (!ScreenLandscape) {
 		LocalPathS(filename, TEXT("dlgFlySim_L.xml"));
@@ -214,7 +233,22 @@ bool dlgStartupShowModal(void){
 	if (!wf) {
 		return false;
 	}
-  } else {
+  }
+
+  //  PROFILE AIRCRAFT  CLOSE
+  if (RUN_MODE==RUN_DUALPROF) {
+	if (!ScreenLandscape) {
+		LocalPathS(filename, TEXT("dlgDualProfile_L.xml"));
+		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_DUALPROFILE_L"));
+	} else {
+		LocalPathS(filename, TEXT("dlgDualProfile.xml"));
+		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_DUALPROFILE"));
+	}
+	if (!wf) return false;
+  }
+
+  // CHOOSE PROFILE
+  if (RUN_MODE==RUN_PROFILE) {
 	if (!ScreenLandscape) {
 		LocalPathS(filename, TEXT("dlgStartup_L.xml"));
 		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_STARTUP_L"));
@@ -225,15 +259,29 @@ bool dlgStartupShowModal(void){
 	if (!wf) return false;
   }
 
+/* TODO
+  if (RUN_MODE==RUN_AIRCRAFT) {
+	if (!ScreenLandscape) {
+		LocalPathS(filename, TEXT("dlgProfileAircraft_L.xml"));
+		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_STARTUP_L"));
+	} else {
+		LocalPathS(filename, TEXT("dlgStartup.xml"));
+		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_STARTUP"));
+	}
+	if (!wf) return false;
+  }
+*/
+
   wSplash = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmSplash")); 
   wSplash->SetWidth(ScreenSizeX);
 
 
   int  PROFWIDTH=0, PROFACCEPTWIDTH=0, PROFHEIGHT=0, PROFSEPARATOR=0;
+
   if (RUN_MODE==RUN_WELCOME) {
 	((WndButton *)wf->FindByName(TEXT("cmdFLY"))) ->SetOnClickNotify(OnFLYClicked);
 	((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetOnClickNotify(OnSIMClicked);
-	((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetOnClickNotify(OnPROFILEClicked);
+	((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetOnClickNotify(OnDUALPROFILEClicked);
 	((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetOnClickNotify(OnEXITClicked);
 	if (ScreenLandscape) {
 		
@@ -246,8 +294,8 @@ bool dlgStartupShowModal(void){
 				((WndButton *)wf->FindByName(TEXT("cmdFLY"))) ->SetWidth(IBLSCALE(110));
 				((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetWidth(IBLSCALE(110));
 				((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetLeft(IBLSCALE(208)+PROFWIDTH*3);
-				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetLeft(IBLSCALE(88)+PROFWIDTH);
-				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetWidth(IBLSCALE(92)+PROFWIDTH/6);
+				((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetLeft(IBLSCALE(88)+PROFWIDTH);
+				((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetWidth(IBLSCALE(92)+PROFWIDTH/6);
 				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetLeft(IBLSCALE(161)+PROFWIDTH*2);
 				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetWidth(IBLSCALE(65)+PROFWIDTH/5);
 				break;
@@ -259,10 +307,10 @@ bool dlgStartupShowModal(void){
 				((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetLeft(IBLSCALE(201)+PROFWIDTH*3);
 				((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetHeight(IBLSCALE(38));
 				((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetTop(IBLSCALE(197));
-				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetLeft(IBLSCALE(88)+PROFWIDTH);
-				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetWidth(IBLSCALE(99)+PROFWIDTH/6);
-				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetHeight(IBLSCALE(38));
-				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetTop(IBLSCALE(197));
+				((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetLeft(IBLSCALE(88)+PROFWIDTH);
+				((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetWidth(IBLSCALE(99)+PROFWIDTH/6);
+				((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetHeight(IBLSCALE(38));
+				((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetTop(IBLSCALE(197));
 				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetLeft(IBLSCALE(161)+PROFWIDTH*2);
 				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetWidth(IBLSCALE(65)+PROFWIDTH/5);
 				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetHeight(IBLSCALE(38));
@@ -270,16 +318,16 @@ bool dlgStartupShowModal(void){
 				break;
 			case ss640x480:
 			case ss320x240:
-				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetLeft(IBLSCALE(93)+PROFWIDTH);
-				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetWidth(IBLSCALE(73)+PROFWIDTH/6);
+				((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetLeft(IBLSCALE(93)+PROFWIDTH);
+				((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetWidth(IBLSCALE(73)+PROFWIDTH/6);
 				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetLeft(IBLSCALE(166)+PROFWIDTH*2);
 				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetWidth(IBLSCALE(60)+PROFWIDTH/5);
 				((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetLeft(IBLSCALE(228)+PROFWIDTH*3);
 				((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetWidth(IBLSCALE(88));
 				break;
 			default:
-				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetLeft(IBLSCALE(93)+PROFWIDTH);
-				((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetWidth(IBLSCALE(73)+PROFWIDTH/6);
+				((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetLeft(IBLSCALE(93)+PROFWIDTH);
+				((WndButton *)wf->FindByName(TEXT("cmdDUALPROFILE"))) ->SetWidth(IBLSCALE(73)+PROFWIDTH/6);
 				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetLeft(IBLSCALE(166)+PROFWIDTH*2);
 				((WndButton *)wf->FindByName(TEXT("cmdEXIT"))) ->SetWidth(IBLSCALE(60)+PROFWIDTH/5);
 				((WndButton *)wf->FindByName(TEXT("cmdSIM"))) ->SetLeft(IBLSCALE(228)+PROFWIDTH*3);
@@ -292,6 +340,46 @@ bool dlgStartupShowModal(void){
 		PROFSEPARATOR=NIBLSCALE(2);
 	}
   }
+
+  if (RUN_MODE==RUN_DUALPROF) {
+	((WndButton *)wf->FindByName(TEXT("cmdAIRCRAFT"))) ->SetOnClickNotify(OnCloseClicked);
+	((WndButton *)wf->FindByName(TEXT("cmdPROFILE"))) ->SetOnClickNotify(OnPROFILEClicked);
+	((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetOnClickNotify(OnCloseClicked);
+	if (ScreenLandscape) {
+		
+		PROFWIDTH=(ScreenSizeX-IBLSCALE(320))/3; 
+
+		switch(ScreenSize) {
+			case ss800x480:
+			case ss400x240:
+				((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetWidth(IBLSCALE(60));
+				((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetLeft(IBLSCALE(257)+PROFWIDTH*3);
+				break;
+			case ss480x272:
+				((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetWidth(IBLSCALE(60));
+				((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetLeft(IBLSCALE(257)+PROFWIDTH*3);
+				// ((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetHeight(IBLSCALE(38));
+				// ((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetTop(IBLSCALE(197));
+				break;
+			case ss640x480:
+			case ss320x240:
+				((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetLeft(IBLSCALE(257)+PROFWIDTH*3);
+				((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetWidth(IBLSCALE(60));
+				break;
+			default:
+				((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetLeft(IBLSCALE(257)+PROFWIDTH*2);
+				((WndButton *)wf->FindByName(TEXT("cmdCLOSE"))) ->SetWidth(IBLSCALE(60)+PROFWIDTH/5);
+				break;
+		}	
+
+	} else {
+		PROFWIDTH=IBLSCALE(236);
+		PROFACCEPTWIDTH=NIBLSCALE(45);
+		PROFHEIGHT=NIBLSCALE(25);
+		PROFSEPARATOR=NIBLSCALE(2);
+	}
+  }
+
 
   if (RUN_MODE==RUN_PROFILE) {
 	((WndButton *)wf->FindByName(TEXT("cmdClose"))) ->SetOnClickNotify(OnCloseClicked);
@@ -318,6 +406,27 @@ bool dlgStartupShowModal(void){
 
   wf->SetHeight(ScreenSizeY);
   wf->SetWidth(ScreenSizeX);
+
+/* TODO
+  wp = ((WndProperty *)wf->FindByName(TEXT("prpAircraft")));
+  if (wp) {
+    DataFieldFileReader* dfe;
+    dfe = (DataFieldFileReader*)wp->GetDataField();
+    _stprintf(temp,_T("*%S"),LKS_PRF); 
+    dfe->ScanDirectoryTop(_T(LKD_CONF),temp); 
+    dfe->addFile(gettext(_T("_@M1741_")),_T("PROFILE_RESET")); 
+    dfe->Lookup(startProfileFile);
+
+    wp->SetHeight(PROFHEIGHT);
+    wp->SetWidth(PROFWIDTH);
+    if (ScreenLandscape)
+    	wp->SetLeft(((ScreenSizeX-PROFWIDTH-PROFSEPARATOR-PROFACCEPTWIDTH)/2)-NIBLSCALE(2));
+    else
+    	wp->SetLeft(0);
+
+    wp->RefreshDisplay();
+  }
+*/
 
   wp = ((WndProperty *)wf->FindByName(TEXT("prpProfile")));
   if (wp) {
@@ -432,7 +541,8 @@ bool dlgStartupShowModal(void){
   }
   wf->ShowModal();
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpProfile"));
+/* TODO
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAircraft"));
   if (wp) {
 	DataFieldFileReader* dfe;
 	dfe = (DataFieldFileReader*)wp->GetDataField();
@@ -440,7 +550,19 @@ bool dlgStartupShowModal(void){
 		_tcscpy(startProfileFile,dfe->GetPathFile());
 	}
 	if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
-	RUN_MODE=RUN_WELCOME;
+	RUN_MODE=RUN_DUALPROF;
+  }
+*/
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpProfile"));
+  if (wp) {
+	DataFieldFileReader* dfe;
+	dfe = (DataFieldFileReader*)wp->GetDataField();
+	if (_tcslen(dfe->GetPathFile())>0) {
+		_tcscpy(startProfileFile,dfe->GetPathFile());
+	}
+	//if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
+	RUN_MODE=RUN_DUALPROF;
   }
   if (RUN_MODE==RUN_EXIT) {
 	if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));

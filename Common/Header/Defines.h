@@ -716,7 +716,9 @@
 
 // LK8000 run modes, BYTE format 0x00 - 0xff
 #define RUN_WELCOME		0x00
-#define RUN_PROFILE		0x01
+#define RUN_DUALPROF		0x01
+#define RUN_PROFILE		0x02
+#define RUN_AIRCRAFT		0x03
 #define RUN_FLY			0x11
 #define RUN_FLY_PRIMARY_UNIT	0x11
 #define RUN_FLY_REPEATER	0x12

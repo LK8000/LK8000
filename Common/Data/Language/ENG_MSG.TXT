@@ -1701,6 +1701,9 @@ _@M1742_ "AGL:"
 _@M1743_ "ELV:"
 # this was the old V rough air. Leave a trailing space!
 _@M1744_ "Max Speed "
+# new startup profile buttons
+_@M1745_ "AIRCRAFT"
+_@M1746_ "SYSTEM"
 
 #
 # These are new infoboxes:
