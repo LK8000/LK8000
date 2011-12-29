@@ -281,7 +281,7 @@ void LKProfileResetDefault(void) {
 
   EnableFAIFinishHeight = false;
 
-  Handicap = 108;
+  Handicap = 85; // KA6
 
   UTCOffset = 0;
 
@@ -407,6 +407,7 @@ void LKProfileResetDefault(void) {
   FontDesc_MapLabel [0]=_T('\0');
 
   _tcscpy(PilotName_Config,_T("HANNA.REITSCH"));
+
   _tcscpy(AircraftType_Config,_T("KA-6"));
   _tcscpy(AircraftRego_Config,_T("D-1912"));
   _tcscpy(CompetitionClass_Config,_T("CLUB"));

@@ -165,7 +165,7 @@ void Globals_Init(void) {
   POLARLD[2] = 20;
 
 
-  Handicap = 108; // LS-3
+  Handicap = 85; // KA6CR
 
   // Team code info
   TeamCodeRefWaypoint = -1;
