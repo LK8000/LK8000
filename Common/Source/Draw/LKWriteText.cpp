@@ -93,6 +93,9 @@ void MapWindow::LKWriteText(HDC hDC, const TCHAR* wText, int x, int y,
 				case RGB_DARKGREEN:
 					SetTextColor(hDC,RGB_WHITE);
 					break;
+				case RGB_ICEWHITE:  
+					SetTextColor(hDC,RGB_DARKBLUE);
+					break;
 				default:
 					// this is the default also for white text. Normally we are writing on a 
 					// not-too-light background

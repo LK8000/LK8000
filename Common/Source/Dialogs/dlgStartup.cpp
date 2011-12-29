@@ -12,6 +12,8 @@
 #include "MapWindow.h"
 #include "RGB.h"
 #include "resource.h"
+#include "LKObjects.h"
+#include "LKProfiles.h"
 
 
 extern void Shutdown(void);
@@ -23,52 +25,33 @@ extern bool CheckSystemDefaultMenu(void);
 extern bool CheckSystemGRecord(void);
 extern bool CheckLanguageEngMsg(void);
 
+// Syntax  hdc _Text linenumber fontsize 
 // lines are: 0 - 9
-// fsize 0 small 1 normal 2 big (unavailable)
-void RawWrite(TCHAR *text, int line, short fsize) { 
-   HDC hDC = GetWindowDC(hWndMainWindow);
+// fsize 0 small 1 normal 2 big
+void RawWrite(HDC hDC, TCHAR *text, int line, short fsize,COLORREF rgbcolor,int wtmode) { 
    HFONT oldfont=(HFONT)SelectObject(hDC,MapWindowFont);
    switch(fsize) {
 	case 0:
 		SelectObject(hDC,TitleWindowFont);
 		break;
 	case 1:
+		// MapWindowFont is default
 		break;
 	case 2:
+		SelectObject(hDC,LK8MediumFont);
+		break;
+	case 3:
+		SelectObject(hDC,LK8BigFont);
 		break;
    }
    SetBkMode(hDC,TRANSPARENT);
    SIZE tsize;
    GetTextExtentPoint(hDC, text, _tcslen(text), &tsize);
    int y;
-   switch (line) {
-	case 0:
-		y=tsize.cy;
-		break;
-	case 1:
-		y=(tsize.cy*2);
-		break;
-	case 2:
-		y=(tsize.cy*3);
-		break;
-	case 7:
-		y=ScreenSizeY-(tsize.cy*2);
-		break;
-	case 8:
-		y=ScreenSizeY-(tsize.cy*1);
-		break;
-	case 9:
-		y=ScreenSizeY;
-		break;
-	default:
-		y=0;
-		break;
-   }
+   y=tsize.cy*(line-1) + (tsize.cy/2);
 
-
-   MapWindow::LKWriteText(hDC,text,ScreenSizeX/2,y,0,WTMODE_NORMAL,WTALIGN_CENTER,RGB_AMBER,false);
+   MapWindow::LKWriteText(hDC,text,ScreenSizeX/2,y,0,wtmode,WTALIGN_CENTER,rgbcolor,false);
    SelectObject(hDC,oldfont);
-   ReleaseDC(hWndMainWindow, hDC);
 }
 
 
@@ -78,6 +61,29 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
  TCHAR sDir[MAX_PATH];
  TCHAR srcfile[MAX_PATH];
  bool fullsize=true;
+
+ if (RUN_MODE!=RUN_WELCOME) {
+
+	FillRect(hDC,&ScreenSizeR, LKBrush_Black);
+
+	TCHAR mes[100];
+	_stprintf(mes,_T("LK %s"),gettext(_T("_@M516_")));
+	RawWrite(hDC,mes,1,3, RGB_ICEWHITE,WTMODE_OUTLINED);
+
+	RawWrite(hDC,_T("___________________________________________________________"),2,2, RGB_GREEN,WTMODE_NORMAL);
+
+	_stprintf(mes,_T("%s"),PilotName_Config);
+	RawWrite(hDC,mes,4,2, RGB_ICEWHITE, WTMODE_OUTLINED);
+
+	_stprintf(mes,_T("%s"),AircraftRego_Config);
+	RawWrite(hDC,mes,5,2, RGB_AMBER, WTMODE_NORMAL);
+
+	_stprintf(mes,_T("%s"),AircraftType_Config);
+	RawWrite(hDC,mes,6,2, RGB_AMBER, WTMODE_NORMAL);
+	RawWrite(hDC,_T("___________________________________________________________"),8,2, RGB_GREEN,WTMODE_NORMAL);
+
+	return;
+ }
 
  LocalPath(sDir,TEXT(LKD_BITMAPS));
 
@@ -149,6 +155,7 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 		BitBlt(hDC,(ScreenSizeX-bm.bmWidth)/2,0,bm.bmWidth,IBLSCALE(260),hTempDC, 0, 0, SRCCOPY);
 	  }
   }
+
 
   DeleteObject(hWelcomeBitmap);
   SelectObject(hTempDC, oldBitmap);
@@ -430,12 +437,8 @@ bool dlgStartupShowModal(void){
 	TCHAR mydir[MAX_PATH];
 	TCHAR mes[MAX_PATH];
 
-	_stprintf(mes,_T("%s v%s.%s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE));
-	RawWrite(mes,1,1);
 	LocalPath(mydir,_T(""));
 	_stprintf(mes,_T("%s"),mydir);
-	RawWrite(_T("Directory or configuration files missing"),8,1);
-	RawWrite(mes,9,0);
 	MessageBoxX(hWndMainWindow, _T("NO LK8000 DIRECTORY\nCheck Installation!"), _T("FATAL ERROR 000"), MB_OK|MB_ICONQUESTION);
 	MessageBoxX(hWndMainWindow, mes, _T("NO LK8000 DIRECTORY"), MB_OK|MB_ICONQUESTION, true);
 	Shutdown();
@@ -445,12 +448,8 @@ bool dlgStartupShowModal(void){
 	TCHAR mydir[MAX_PATH];
 	TCHAR mes[MAX_PATH];
 
-	_stprintf(mes,_T("%s v%s.%s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE));
-	RawWrite(mes,1,1);
 	LocalPath(mydir,_T(LKD_SYSTEM));
 	_stprintf(mes,_T("%s"),mydir);
-	RawWrite(_T("Directory or configuration files missing"),8,1);
-	RawWrite(mes,9,0);
 	MessageBoxX(hWndMainWindow, _T("NO SYSTEM DIRECTORY\nCheck Installation!"), _T("FATAL ERROR 001"), MB_OK|MB_ICONQUESTION);
 	MessageBoxX(hWndMainWindow, mes, _T("NO SYSTEM DIRECTORY"), MB_OK|MB_ICONQUESTION, true);
 	Shutdown();
@@ -461,12 +460,8 @@ bool dlgStartupShowModal(void){
 	TCHAR mes[MAX_PATH];
 	StartupStore(_T("... CHECK LANGUAGE DIRECTORY FAILED!%s"),NEWLINE);
 
-	_stprintf(mes,_T("%s v%s.%s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE));
-	RawWrite(mes,1,1);
 	LocalPath(mydir,_T(LKD_LANGUAGE));
 	_stprintf(mes,_T("%s"),mydir);
-	RawWrite(_T("Directory or configuration files missing"),8,1);
-	RawWrite(mes,9,0);
 	MessageBoxX(hWndMainWindow, _T("LANGUAGE DIRECTORY CHECK FAIL\nCheck Language Install"), _T("FATAL ERROR 002"), MB_OK|MB_ICONQUESTION);
 	MessageBoxX(hWndMainWindow, mes, _T("NO LANGUAGE DIRECTORY"), MB_OK|MB_ICONQUESTION, true);
 	Shutdown();
@@ -508,12 +503,8 @@ bool dlgStartupShowModal(void){
 	TCHAR mes[MAX_PATH];
 	StartupStore(_T("... CHECK POLARS DIRECTORY FAILED!%s"),NEWLINE);
 
-	_stprintf(mes,_T("%s v%s.%s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE));
-	RawWrite(mes,1,1);
 	LocalPath(mydir,_T(LKD_POLARS));
 	_stprintf(mes,_T("%s"),mydir);
-	RawWrite(_T("Directory or configuration files missing"),8,1);
-	RawWrite(mes,9,0);
 	MessageBoxX(hWndMainWindow, _T("NO POLARS DIRECTORY\nCheck Install"), _T("FATAL ERROR 003"), MB_OK|MB_ICONQUESTION);
 	MessageBoxX(hWndMainWindow, mes, _T("NO POLARS DIRECTORY"), MB_OK|MB_ICONQUESTION, true);
 	Shutdown();
@@ -527,12 +518,24 @@ bool dlgStartupShowModal(void){
 
 	if (RUN_MODE==RUN_PROFILE) {
 		if (_tcslen(dfe->GetPathFile())>0) {
-			_tcscpy(startProfileFile,dfe->GetPathFile());
+			if (_tcscmp(dfe->GetPathFile(),startProfileFile) ) { // if they are not the same
+				_tcscpy(startProfileFile,dfe->GetPathFile());
+				#if TESTBENCH
+				StartupStore(_T("... Selected new profile, preloading..\n"));
+				#endif
+				LKProfileLoad(startProfileFile);
+			}
 		}
 	}
 	if (RUN_MODE==RUN_AIRCRAFT) {
 		if (_tcslen(dfe->GetPathFile())>0) {
-			_tcscpy(startAircraftFile,dfe->GetPathFile());
+			if (_tcscmp(dfe->GetPathFile(),startAircraftFile) ) { // if they are not the same
+				_tcscpy(startAircraftFile,dfe->GetPathFile());
+				#if TESTBENCH
+				StartupStore(_T("... Selected new aircraft, preloading..\n"));
+				#endif
+				LKProfileLoad(startAircraftFile);
+			}
 		}
 	}
 	RUN_MODE=RUN_DUALPROF;
