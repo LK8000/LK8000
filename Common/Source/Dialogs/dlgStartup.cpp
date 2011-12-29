@@ -69,10 +69,17 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 	FillRect(hDC,&ScreenSizeR, LKBrush_Black);
 
 	TCHAR mes[100];
-	_stprintf(mes,_T("LK %s"),gettext(_T("_@M516_")));
-	RawWrite(hDC,mes,1,3, RGB_ICEWHITE,WTMODE_OUTLINED);
+	_stprintf(mes,_T("%S v%S.%S - %s"),LKFORK,LKVERSION,LKRELEASE,gettext(_T("_@M2054_")));
+	RawWrite(hDC,mes,1,1, RGB_WHITE,WTMODE_NORMAL);
 
-	RawWrite(hDC,_T("___________________________________________________________"),2,2, RGB_GREEN,WTMODE_NORMAL);
+	unsigned long freeram = CheckFreeRam()/1024;
+	TCHAR buffer[MAX_PATH];
+	LocalPath(buffer);
+	unsigned long freestorage = FindFreeSpace(buffer);
+	_stprintf(mes,_T("free ram %.1ldM  storage %.1ldM"), freeram/1024,freestorage/1024);
+	RawWrite(hDC,mes,3,0, RGB_WHITE,WTMODE_NORMAL);
+
+	RawWrite(hDC,_T("_______________________"),2,2, RGB_GREEN,WTMODE_NORMAL);
 
 	_stprintf(mes,_T("%s"),PilotName_Config);
 	RawWrite(hDC,mes,4,2, RGB_ICEWHITE, WTMODE_OUTLINED);
@@ -82,7 +89,15 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 
 	_stprintf(mes,_T("%s"),AircraftType_Config);
 	RawWrite(hDC,mes,6,2, RGB_AMBER, WTMODE_NORMAL);
-	RawWrite(hDC,_T("___________________________________________________________"),8,2, RGB_GREEN,WTMODE_NORMAL);
+
+	extern void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext);
+	LK_wsplitpath(szPolarFile, (WCHAR*) NULL, (WCHAR*) NULL, srcfile, (WCHAR*) NULL);
+
+	_stprintf(mes,_T("%s %s"),gettext(_T("_@M528_")),srcfile);
+	RawWrite(hDC,mes,7,2, RGB_AMBER, WTMODE_NORMAL);
+
+
+	RawWrite(hDC,_T("_______________________"),8,2, RGB_GREEN,WTMODE_NORMAL);
 
 	return;
  }
