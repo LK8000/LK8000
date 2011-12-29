@@ -22,7 +22,9 @@ static WndForm *wf=NULL;
 static WndOwnerDrawFrame *wSplash=NULL;
 
 extern bool CheckSystemDefaultMenu(void);
+#if OLDLOGGER
 extern bool CheckSystemGRecord(void);
+#endif
 extern bool CheckLanguageEngMsg(void);
 
 // Syntax  hdc _Text linenumber fontsize 
@@ -487,6 +489,7 @@ bool dlgStartupShowModal(void){
 	Shutdown();
   }
 
+#if OLDLOGGER
   if  (!CheckSystemGRecord()) {
 	TCHAR mydir[MAX_PATH];
 	TCHAR mes[MAX_PATH];
@@ -497,6 +500,7 @@ bool dlgStartupShowModal(void){
 	MessageBoxX(hWndMainWindow, mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION, true);
 	Shutdown();
   }
+#endif
 
   if  (!CheckPolarsDir()) {
 	TCHAR mydir[MAX_PATH];
