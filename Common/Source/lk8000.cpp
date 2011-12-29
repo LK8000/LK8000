@@ -201,6 +201,12 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   CreateDirectoryIfAbsent(TEXT(LKD_MAPS));
   CreateDirectoryIfAbsent(TEXT(LKD_WAYPOINTS));
 
+  _stprintf(defaultProfileFile,_T("%s\\%s\\%s"),LKGetLocalPath(),_T(LKD_CONF),_T(LKPROFILE));
+  _tcscpy(startProfileFile, defaultProfileFile);
+  _stprintf(defaultAircraftFile,_T("%s\\%s\\%s"),LKGetLocalPath(),_T(LKD_CONF),_T(LKAIRCRAFT));
+  _tcscpy(startAircraftFile, defaultAircraftFile);
+
+
   LK8000GetOpts(lpCmdLine);
 
   icc.dwSize = sizeof(INITCOMMONCONTROLSEX);
