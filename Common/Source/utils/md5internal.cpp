@@ -244,9 +244,11 @@ md5_process_bytes (const void *buffer, size_t len, struct md5_ctx *ctx)
   if (len >= 64)
     {
 #if !_STRING_ARCH_unaligned
-# define alignof(type) offsetof (struct { char c; type x; }, x)
+# define alignof(type) offsetof(struct { char c; type x; }, x)
 # define UNALIGNED_P(p) (((size_t) p) % alignof (md5_uint32) != 0)
-      if (UNALIGNED_P (buffer))
+//      if (UNALIGNED_P (buffer))
+      unsigned int ipbuffer = (unsigned int)(buffer);
+      if ((ipbuffer % 4) != 0)
 	while (len > 64)
 	  {
 	    md5_process_block (memcpy (ctx->buffer, buffer, 64), 64, ctx);
