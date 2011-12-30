@@ -2,6 +2,57 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3r December 31, 2011
+------------------------------
+
+NEW
+
+. DUAL PROFILES: SYSTEM + AIRCRAFT
+  Aircraft parameters (those in config page 7: Category,Polar type, Max Speed, Handicap, Ballast dump time, Aircraft type, Registration,
+  Competition classe, Competition ID) are saved separately from system profiles.
+  They can be saved in the config page 7 (either as new, or overwriting an old one).
+  They can be loaded on startup from the profile subpage in the first start screen.
+  On program termination, aircraft profile is saved to DEFAULT_AIRCRAFT.acf file, like for DEFAULT_PROFILE.prf.
+  If you change anything in the configuration regarding aircraft, it will be automatically be saved into the
+  DEFAULT_AIRCRAFT file. Remember to "save as" or "save new" if you want it to give a name to the aircraft config.
+
+  Aircraft profiles can only be selected on startup, not during runtime.
+
+  Startup screen profile page is showing pilot name and aircraft, and they are updated while changing profiles.
+  However, remember that these choices are saved to defaults ONLY if you enter the program, and NOT if you
+  exit without running really the LK. In that case, in fact, no profile will be saved.
+
+
+
+
+CHANGES
+
+. Changed "V rough air" into "Max speed" .
+  More practical and intuitive.
+
+. Disable old configuration labels inside system profiles. Reconfiguration of page 7 is required!
+
+. Add new button to dlgTaskOverview to access PG timegates dialog
+  http://www.postfrontal.com/forum/topic.asp?TOPIC_ID=5730
+
+. Add optimized route config option to dlgTimegates
+  http://www.postfrontal.com/forum/topic.asp?TOPIC_ID=5730
+
+. Change default pilot to Wolf Hirth with Standard Cirrus
+
+
+
+FIXES
+
+. GRecord logger signature is now embedded, but can be also custom for special contests using a different key.
+
+. Fix minor problem with HeadWind display on startup, showing bad value before a valid GPS signal.
+  Fix bug not saving Use baro altitude in config menu 5
+
+
+
+
+
 Version 2.3q December 22, 2011
 ------------------------------
 
