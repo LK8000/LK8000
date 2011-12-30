@@ -426,7 +426,10 @@ MAPDRAW	:=\
 	$(MAP)/ZoomTopology.cpp		\
 
 UTILS	:=\
-	$(SRC)/utils/stringext.cpp
+	$(SRC)/utils/stringext.cpp \
+	$(SRC)/utils/md5internal.cpp \
+	$(SRC)/utils/md5.cpp
+
   
 DEVS	:=\
 	$(DEV)/devBase.cpp \
