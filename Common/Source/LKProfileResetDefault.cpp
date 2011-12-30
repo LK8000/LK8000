@@ -82,7 +82,7 @@ void LKProfileResetDefault(void) {
 
   SAFETYALTITUDEARRIVAL = 300;
   SAFETYALTITUDETERRAIN = 50;
-  SAFTEYSPEED = 50.0;
+  SAFTEYSPEED = 55.556;
 
   WindCalcTime=WCALC_TIMEBACK;
   WindCalcSpeed=27.778;
@@ -281,7 +281,7 @@ void LKProfileResetDefault(void) {
 
   EnableFAIFinishHeight = false;
 
-  Handicap = 85; // KA6
+  Handicap = 100; // Std Cirrus
 
   UTCOffset = 0;
 
@@ -382,7 +382,7 @@ void LKProfileResetDefault(void) {
   //szPolarFile[0] = TEXT('\0');
 
 
-  _tcscpy(szPolarFile,_T("%LOCAL_PATH%\\\\_Polars\\Ka-6CR.plr"));
+  _tcscpy(szPolarFile,_T("%LOCAL_PATH%\\\\_Polars\\Std Cirrus.plr"));
   _tcscpy(szAirspaceFile,_T("%LOCAL_PATH%\\\\_Airspaces\\DEMO.txt"));
   szAdditionalAirspaceFile[0] = TEXT('\0');
   _tcscpy(szWaypointFile,_T("%LOCAL_PATH%\\\\_Waypoints\\DEMO.cup"));
@@ -406,12 +406,12 @@ void LKProfileResetDefault(void) {
   FontDesc_MapWindow[0]=_T('\0');
   FontDesc_MapLabel [0]=_T('\0');
 
-  _tcscpy(PilotName_Config,_T("HANNA.REITSCH"));
+  _tcscpy(PilotName_Config,_T("WOLF.HIRTH"));
 
-  _tcscpy(AircraftType_Config,_T("KA-6"));
-  _tcscpy(AircraftRego_Config,_T("D-1912"));
+  _tcscpy(AircraftType_Config,_T("CIRRUS-STD"));
+  _tcscpy(AircraftRego_Config,_T("D-1900"));
   _tcscpy(CompetitionClass_Config,_T("CLUB"));
-  _tcscpy(CompetitionID_Config,_T("HR"));
+  _tcscpy(CompetitionID_Config,_T("WH"));
 
   LockSettingsInFlight = false;
   LoggerShortName = false;
