@@ -10,8 +10,16 @@
  */
 
 #include "externs.h"
-#include "LoggerCrypto.h"
+#include "LoggerFileHandlers.h"
+#include "md5.h"
 
+typedef struct
+{
+  MD5 a;
+  MD5 b;
+  MD5 c;
+  MD5 d;
+} md5generators_t;
 
 LineList lines;
 md5generators_t md5gen;
