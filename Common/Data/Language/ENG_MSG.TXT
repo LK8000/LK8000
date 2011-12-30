@@ -1704,6 +1704,8 @@ _@M1744_ "Max Speed "
 # new startup profile buttons
 _@M1745_ "AIRCRAFT"
 _@M1746_ "SYSTEM"
+# new button caption on task overview dialog, appears only in PG/HG mode
+_@M1747_ "Timegates"
 
 #
 # These are new infoboxes:
