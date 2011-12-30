@@ -27,6 +27,7 @@
 #include "LKMapWindow.h"
 #include "LKProfiles.h"
 
+extern void UpdatePolarConfig(void);
 
 static HFONT TempMapWindowFont;
 static HFONT TempMapLabelFont;
@@ -996,6 +997,7 @@ static void OnPolarSaveAsClicked(WindowControl * Sender) {
 	// LKTOKEN  _@M509_ = "Overwrite profile?" 
 		gettext(TEXT("_@M509_")), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
+		UpdatePolarConfig();
 		LKAircraftSave(dfe->GetPathFile());
 	// LKTOKEN  _@M535_ = "Profile saved!" 
 		MessageBoxX(hWndMapWindow, gettext(TEXT("_@M535_")),_T(""), MB_OK|MB_ICONEXCLAMATION);
@@ -1046,6 +1048,7 @@ static void OnPolarSaveNewClicked(WindowControl * Sender) {
 	// LKTOKEN  _@M579_ = "Save ?" 
 		gettext(TEXT("_@M579_")), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
+		UpdatePolarConfig();
 		LKAircraftSave(file_name);
 		dfe->addFile(profile_name, file_name);
 
@@ -3976,6 +3979,7 @@ void dlgConfigurationShowModal(void){
     }
   }
 
+/* REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpHandicap"));
   if (wp) {
     ival  = wp->GetDataField()->GetAsInteger();
@@ -3987,7 +3991,9 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
+*/
 
+/* REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpPolarFile"));
   if (wp) {
     DataFieldFileReader* dfe;
@@ -4009,6 +4015,7 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
+*/
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointFile"));
   if (wp) {
@@ -4167,6 +4174,7 @@ void dlgConfigurationShowModal(void){
     }
   }
 
+/* REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpBallastSecsToEmpty"));
   if (wp) {
     ival = wp->GetDataField()->GetAsInteger();
@@ -4176,6 +4184,7 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
+*/
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWindCalcTime")); // 100113
   if (wp) {
@@ -4187,6 +4196,7 @@ void dlgConfigurationShowModal(void){
 	}
   }
 
+/* REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpMaxManoeuveringSpeed"));
   if (wp) {
     ival = iround((wp->GetDataField()->GetAsInteger()/SPEEDMODIFY)*1000.0);
@@ -4198,6 +4208,7 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
+*/
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWindCalcSpeed")); // 100112
   if (wp) {
@@ -4273,6 +4284,7 @@ void dlgConfigurationShowModal(void){
     }
   }
 
+/* REMOVE
   wp = (WndProperty*)wf->FindByName(TEXT("prpAircraftCategory")); // VENTA4
   if (wp) {
     if (AircraftCategory != (AircraftCategory_t)
@@ -4286,6 +4298,7 @@ void dlgConfigurationShowModal(void){
 	if (ISPARAGLIDER) AATEnabled=TRUE;
     }
   }
+*/
 
   #if (0)
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltArrivMode"));
@@ -4927,6 +4940,9 @@ void dlgConfigurationShowModal(void){
   }
   #endif
 
+
+ UpdatePolarConfig();
+
   int i,j;
   for (i=0; i<4; i++) {
     for (j=0; j<8; j++) {
@@ -4988,3 +5004,81 @@ void dlgConfigurationShowModal(void){
 
 }
 
+//
+// We must call this update also before saving profiles during config showmodal, otherwise we 
+// wont be updating the current set values! This is why we keep separated function for polar.
+//
+void UpdatePolarConfig(void){
+
+ WndProperty *wp;
+ int ival;
+
+ wp = (WndProperty*)wf->FindByName(TEXT("prpAircraftCategory"));
+  if (wp) {
+    if (AircraftCategory != (AircraftCategory_t)
+        (wp->GetDataField()->GetAsInteger())) {
+      AircraftCategory = (AircraftCategory_t)
+        (wp->GetDataField()->GetAsInteger());
+      SetToRegistry(szRegistryAircraftCategory, (DWORD)(AircraftCategory));
+      changed = true;
+      requirerestart = true;
+        if (ISPARAGLIDER) AATEnabled=TRUE; // NOT SURE THIS IS NEEDED ANYMORE. 
+    }
+  }
+
+ wp = (WndProperty*)wf->FindByName(TEXT("prpPolarFile"));
+  if (wp) {
+    DataFieldFileReader* dfe;
+    dfe = (DataFieldFileReader*)wp->GetDataField();
+    _tcscpy(temptext, dfe->GetPathFile());
+    if (_tcscmp(temptext,_T(""))==0) {
+        _tcscpy(temptext,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
+    } else
+      ContractLocalPath(temptext);
+
+    if (_tcscmp(temptext,szPolarFile)) {
+      #if OLDPROFILES
+      SetRegistryString(szRegistryPolarFile, temptext);
+      #else
+      _tcscpy(szPolarFile,temptext);
+      #endif
+      POLARFILECHANGED = true;
+      GlidePolar::SetBallast();
+      changed = true;
+    }
+  }
+
+ wp = (WndProperty*)wf->FindByName(TEXT("prpMaxManoeuveringSpeed"));
+  if (wp) {
+    ival = iround((wp->GetDataField()->GetAsInteger()/SPEEDMODIFY)*1000.0);
+    if ((int)SAFTEYSPEED != (int)iround(ival/1000)) {
+        SAFTEYSPEED=ival/1000.0;
+      GlidePolar::SetBallast();
+      changed = true;
+    }
+  }
+
+ wp = (WndProperty*)wf->FindByName(TEXT("prpHandicap"));
+  if (wp) {
+    ival  = wp->GetDataField()->GetAsInteger();
+    if (Handicap != ival) {
+      Handicap = ival;
+#if OLDPROFILES
+      SetToRegistry(szRegistryHandicap, Handicap);
+#endif
+      changed = true;
+    }
+  }
+
+ wp = (WndProperty*)wf->FindByName(TEXT("prpBallastSecsToEmpty"));
+  if (wp) {
+    ival = wp->GetDataField()->GetAsInteger();
+    if (BallastSecsToEmpty != ival) {
+      BallastSecsToEmpty = ival;
+      SetToRegistry(szRegistryBallastSecsToEmpty,(DWORD)BallastSecsToEmpty);
+      changed = true;
+    }
+  }
+
+
+}
