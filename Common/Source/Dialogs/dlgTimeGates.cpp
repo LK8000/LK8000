@@ -50,6 +50,18 @@ static CallBackTableEntry_t CallBackTable[]={
 static void setVariables(void) {
   WndProperty *wp;
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpPGOptimizeRoute"));
+  if (wp) {
+    DataFieldEnum* dfe;
+    dfe = (DataFieldEnum*)wp->GetDataField();
+  // LKTOKEN  _@M239_ = "Disabled" 
+    dfe->addEnumText(gettext(TEXT("_@M239_")));
+  // LKTOKEN  _@M259_ = "Enabled" 
+    dfe->addEnumText(gettext(TEXT("_@M259_")));
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->Set(PGOptimizeRoute);
+    wp->RefreshDisplay();
+  }
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGNumberOfGates"));
   if (wp) {
     wp->GetDataField()->SetAsInteger(PGNumberOfGates);
@@ -104,6 +116,14 @@ void dlgTimeGatesShowModal(void){
   // TODO enhancement: implement a cancel button that skips all this below after exit.
 
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpPGOptimizeRoute"));
+  if (wp) {
+    if (PGOptimizeRoute != (wp->GetDataField()->GetAsInteger())) {
+      PGOptimizeRoute = (wp->GetDataField()->GetAsInteger());
+      SetToRegistry(szRegistryPGOptimizeRoute, (DWORD)(PGOptimizeRoute));
+      changed = true;
+    }
+  }
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGNumberOfGates"));
   if (wp) {
     if ( PGNumberOfGates != wp->GetDataField()->GetAsInteger()) {
