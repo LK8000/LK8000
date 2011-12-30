@@ -395,6 +395,15 @@ static void OnAnalysisClicked(WindowControl * Sender,
   wf->SetVisible(true);
 }
 
+static void OnTimegatesClicked(WindowControl * Sender, 
+                              WndListFrame::ListInfo_t *ListInfo){
+  (void)Sender;
+  (void)ListInfo;
+
+  wf->SetVisible(false);
+  dlgTimeGatesShowModal();
+  wf->SetVisible(true);
+}
 
 static void OnDeclareClicked(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
 	(void)Sender;
@@ -542,6 +551,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnSaveClicked),
   DeclareCallBackEntry(OnLoadClicked),
   DeclareCallBackEntry(OnAnalysisClicked),
+  DeclareCallBackEntry(OnTimegatesClicked),
   DeclareCallBackEntry(NULL)
 };
 
@@ -577,9 +587,13 @@ void dlgTaskOverviewShowModal(void){
 
   //ASSERT(wf!=NULL);
 
+  WndButton *wb = (WndButton*)wf->FindByName(TEXT("cmdTimegates"));
+  if (wb) wb->SetVisible(false);
+  
   if (ISPARAGLIDER) {
         AATEnabled=TRUE;
         EnableMultipleStartPoints=false;
+        if (wb) wb->SetVisible(true);
   }
 
 
