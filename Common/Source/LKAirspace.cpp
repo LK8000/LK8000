@@ -1819,13 +1819,16 @@ void CAirspaceManager::ScanAirspaceLine(double lats[AIRSPACE_SCANSIZE_X], double
 	  iCnt++;
       const rectObj &pbounds = (*it)->Bounds();
       // ignore if scan line doesn't intersect bounds
+    // if((*it)->Enabled())
       if (msRectOverlap(&lineRect, &pbounds)) {
         for (i=0; i<AIRSPACE_SCANSIZE_X; i++) {
             inside = (*it)->IsHorizontalInside(lons[i], lats[i]);
                 if (inside) {
                     for (j=0; j<AIRSPACE_SCANSIZE_H; j++) {
                         int agl = iheights[j] - iterrain_heights[i];
+
                         if (agl<0) agl=0;
+
                         if ((*it)->IsAltitudeInside(iheights[j], agl, 0)) {
                             airspacetype[j][i].iType = (*it)->Type();
                             if(airspacetype[j][i].szAS_Name != NULL) {
@@ -1834,6 +1837,7 @@ void CAirspaceManager::ScanAirspaceLine(double lats[AIRSPACE_SCANSIZE_X], double
                             }
                             airspacetype[j][i].iIdx = iCnt;
                             airspacetype[j][i].bRectAllowed = true ;
+                            airspacetype[j][i].bEnabled = (*it)->Enabled();
                             if( (*it)->Top()->Base == abAGL) airspacetype[j][i].bRectAllowed = false ;
                             airspacetype[j][i].psAS =   (*it);
                             //if( (*it)->Base()->Base == abAGL) airspacetype[j][i].bRectAllowed = false ;
@@ -1882,6 +1886,7 @@ CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, const 
   CCriticalSection::CGuard guard(_csairspaces);
 
   for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
+  if((*it)->Enabled()){
     type = (*it)->Type();
     //TODO check index
     iswarn = (MapWindow::iAirspaceMode[type]>=2);
@@ -1926,6 +1931,7 @@ CAirspace* CAirspaceManager::FindNearestAirspace(const double &longitude, const 
           }
       }
     }
+  } // enabled
   } //for
   
   if (nearestdistance) *nearestdistance = nearestd;

@@ -256,6 +256,7 @@ typedef struct
   int aiLable;
   int iType;
   BOOL bRectAllowed;
+  BOOL bEnabled;
   TCHAR szAS_Name[NAME_SIZE + 1];
   CAirspace *psAS;
 } AirSpaceSideViewSTRUCT;

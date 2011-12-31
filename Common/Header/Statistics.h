@@ -17,6 +17,15 @@
 #include "leastsqs.h"
 #include "Task.h"
 
+
+
+typedef struct
+{
+  double fXMin, fXMax;
+  double fYMin, fYMax;
+  RECT rc;
+} DiagrammStruct;
+
 class Statistics {
  public:
 
@@ -41,6 +50,7 @@ class Statistics {
   LeastSquares Task_Speed;
   double LegStartTime[MAXTASKPOINTS];
   LeastSquares Altitude_Terrain;
+
 
   void Reset();
   static int CalcHeightCoordinat(double fHeight, const RECT rc);
@@ -71,6 +81,8 @@ class Statistics {
   static void ScaleMakeSquare(const RECT rc);
 
   static void StyleLine(HDC hdc, const POINT l1, const POINT l2, const int Style, const RECT rc);
+
+
 
   static double yscale;
   static double xscale;
@@ -109,6 +121,12 @@ class Statistics {
     static void RenderTemperature(HDC hdc, const RECT rc);
     static void RenderTask(HDC hdc, const RECT rc, const bool olcmode);
     static void RenderSpeed(HDC hdc, const RECT rc);
+
+    static void RenderBearingDiff(HDC hdc, const RECT rc,double brg, DiagrammStruct* psDia );
+    static void RenderPlaneSideview(HDC hdc, const RECT rc,double alt, double fAltitude,double brg, DiagrammStruct* psDia );
+//    static void RenderAirspaceTerrain(HDC hdc, const RECT rc,double lat, double lon,  double dist, long GPS_brg,  DiagrammStruct* psDia );
+    static void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon,  long brg,  DiagrammStruct* psDiag );
+    static void RenderNearAirspace(HDC hdc, const RECT rc) ;
 
 };
 
