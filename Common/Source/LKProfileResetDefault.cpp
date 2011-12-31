@@ -54,15 +54,16 @@ void LKProfileResetDefault(void) {
   // Default infobox groups configuration
   // Should be different for each aircraft category
   //
-  InfoType[0] = 1008146198;
-  InfoType[1] = 1311715074;
-  InfoType[2] = 923929365;
-  InfoType[3] = 975776319;
-  InfoType[4] = 956959267;
-  InfoType[5] = 1178420506;
-  InfoType[6] = 1410419993;
-  InfoType[7] = 1396384771;
-  InfoType[8] = 387389207;
+  InfoType[0] = 1326913302;
+  InfoType[1] = 1915694850;
+  InfoType[2] = 403835669;
+  InfoType[3] = 740895295;
+  InfoType[4] = 1460275747;
+  InfoType[5] = 725435674;
+  InfoType[6] = 168906009;
+  InfoType[7] = 387389207;
+
+  InfoType[8] = 387389207; // totally unused!
 
   DisplayOrientation_Config=TRACKUP;
 
