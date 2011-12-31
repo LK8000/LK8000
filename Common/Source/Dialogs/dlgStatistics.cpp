@@ -1560,8 +1560,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   sDia.fYMin = hmin;
   sDia.fYMax = hmax;
   sDia.rc = rc;
-  RenderAirspaceTerrain( hdc,  rc,  aclat, aclon, (double) acb, ( DiagrammStruct*) &sDia );
-
+  RenderAirspaceTerrain( hdc,  rc,  aclat, aclon, (long int) acb, ( DiagrammStruct*) &sDia );
 
   ResetScale();
   ScaleXFromValue(rc, sDia.fXMin);
@@ -3222,7 +3221,7 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   ScaleYFromValue(rc, sDia.fYMax);
 
   HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
-  RenderAirspaceTerrain( hdc,  rc,  GPSlat, GPSlon, fAS_Bearing, &sDia );
+  RenderAirspaceTerrain( hdc,  rc,  GPSlat, GPSlon, (long int)fAS_Bearing, &sDia );
 
 
   if (near_airspace.WarningLevel() == awRed)
