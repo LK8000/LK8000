@@ -1481,7 +1481,7 @@ Drawbottom:
 		showunit=LKFormatValue(LK_FL, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_AUX:
-		showunit=LKFormatValue(LK_HOMERADIAL, true, BufferValue, BufferUnit, BufferTitle); // 100221
+		showunit=LKFormatValue(LK_MAXALT, true, BufferValue, BufferUnit, BufferTitle); // 100221
 		break;
 	case BM_TSK:
 // TODO MAKE IT LKPROCESS
