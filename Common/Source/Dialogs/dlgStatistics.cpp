@@ -1560,8 +1560,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   sDia.fYMin = hmin;
   sDia.fYMax = hmax;
   sDia.rc = rc;
-  RenderAirspaceTerrain( hdc,  rc,  aclat, aclon, acb, &sDia );
-
+  RenderAirspaceTerrain( hdc,  rc,  aclat, aclon, (double) acb, ( DiagrammStruct*) &sDia );
 
 
   ResetScale();
@@ -3166,7 +3165,7 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(found);
 
   bValid = near_airspace.GetWarningPoint( wptlon,  wptlat,  hdrawstyle,  iAS_VertDistance, vdrawstyle);
-  wpt_brg = AngleLimit360(GPSbrg -fAS_Bearing  +90);
+  wpt_brg = (long)AngleLimit360(GPSbrg -fAS_Bearing  +90.0f);
 
   _stprintf(text, TEXT("%s: %s"), gettext(TEXT("_@M1292_")),near_airspace.Name() );                  //_@M1290_ "Showing towards nearest airspace"´
 
@@ -3211,7 +3210,7 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   ScaleYFromValue(rc, sDia.fYMax);
 
   HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
-  RenderAirspaceTerrain( hdc,  rc,  GPSlat, GPSlon,  fAS_Bearing, &sDia );
+  RenderAirspaceTerrain( hdc,  rc,  GPSlat, GPSlon, (double) fAS_Bearing, &sDia );
 
 
   if (bAS_Inside)
