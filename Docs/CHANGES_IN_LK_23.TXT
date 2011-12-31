@@ -22,6 +22,10 @@ NEW
   However, remember that these choices are saved to defaults ONLY if you enter the program, and NOT if you
   exit without running really the LK. In that case, in fact, no profile will be saved.
 
+. AIRSPACE ANALYSIS  new nearest airspace side view
+  by Ulli, really useful
+
+. Print real version number on splash screen.
 
 
 
@@ -39,6 +43,10 @@ CHANGES
   http://www.postfrontal.com/forum/topic.asp?TOPIC_ID=5730
 
 . Change default pilot to Wolf Hirth with Standard Cirrus
+
+. Change bottom bar STA3 Radial into MaxAlt
+  Max Altitude reached is more requested
+
 
 
 
