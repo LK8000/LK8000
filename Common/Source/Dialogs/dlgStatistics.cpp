@@ -1830,9 +1830,9 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
       _tcscat(text,buffer);
       GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
       x = CalcDistanceCoordinat( 0, rc) - tsize.cx/2;
-      y = CalcHeightCoordinat(  (CALCULATED_INFO.TerrainAlt +  calc_altitudeagl)*0.8,   rc);
+      y = CalcHeightCoordinat(  (calc_terrainalt +  calc_altitudeagl)*0.8,   rc);
     //    if(x0 > tsize.cx)
-          if((tsize.cy) < ( CalcHeightCoordinat(  CALCULATED_INFO.TerrainAlt, rc)-y)) {
+          if((tsize.cy) < ( CalcHeightCoordinat(  calc_terrainalt, rc)-y)) {
             ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
           }
     }
@@ -3106,7 +3106,8 @@ void Statistics::RenderBearingDiff(HDC hdc, const RECT rc,double brg, DiagrammSt
 
 
 
-void Statistics::RenderNearAirspace(HDC hdc, const RECT rc) {
+void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
+{
 
 double range = 50.0*1000; // km
 double GPSlat, GPSlon, GPSalt, GPSbrg, GPSspeed, calc_average30s;
@@ -3154,6 +3155,7 @@ SIZE tsize;
       alt = GPS_INFO.Altitude;
     }
   }
+  UnlockFlightData();
 
 
   found = CAirspaceManager::Instance().FindNearestAirspace(GPSlon, GPSlat, &fAS_HorDistance, &fAS_Bearing );
@@ -3209,7 +3211,6 @@ SIZE tsize;
   ScaleYFromValue(rc, sDia.fYMin);
   ScaleYFromValue(rc, sDia.fYMax);
 
-  UnlockFlightData();
   HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
   RenderAirspaceTerrain( hdc,  rc,  GPSlat, GPSlon,  fAS_Bearing, &sDia );
 
@@ -3303,9 +3304,9 @@ SIZE tsize;
     _tcscat(text,buffer);
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
     line[0].x = CalcDistanceCoordinat(0,  rc)- tsize.cx/2;
-    line[0].y  = CalcHeightCoordinat(  (CALCULATED_INFO.TerrainAlt +  calc_altitudeagl)*0.8,   rc);
+    line[0].y  = CalcHeightCoordinat(  (calc_terrainalt +  calc_altitudeagl)*0.8,   rc);
   //    if(x0 > tsize.cx)
-    if((tsize.cy) < ( CalcHeightCoordinat(  CALCULATED_INFO.TerrainAlt, rc)- line[0].y )) {
+    if((tsize.cy) < ( CalcHeightCoordinat(  calc_terrainalt, rc)- line[0].y )) {
       ExtTextOut(hdc,  line[0].x+IBLSCALE(1),  line[0].y , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     }
   }
