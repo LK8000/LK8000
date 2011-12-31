@@ -64,6 +64,7 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
  TCHAR srcfile[MAX_PATH];
  bool fullsize=true;
 
+
  if (RUN_MODE!=RUN_WELCOME) {
 
 	FillRect(hDC,&ScreenSizeR, LKBrush_Black);
@@ -79,6 +80,7 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 	_stprintf(mes,_T("free ram %.1ldM  storage %.1ldM"), freeram/1024,freestorage/1024);
 	RawWrite(hDC,mes,3,0, RGB_WHITE,WTMODE_NORMAL);
 
+	if ( ScreenSize != ss320x240 && ScreenLandscape )
 	RawWrite(hDC,_T("_______________________"),2,2, RGB_GREEN,WTMODE_NORMAL);
 
 	_stprintf(mes,_T("%s"),PilotName_Config);
@@ -173,6 +175,49 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 	  }
   }
 
+  if (RUN_MODE==RUN_WELCOME) {
+	TCHAR mes[100];
+	int pos=0;
+	switch (ScreenSize) {
+		case ss800x480:
+		case ss400x240:
+			pos=11;
+			break;
+		case ss480x272:
+			pos=10;
+			break;
+		case ss640x480:
+			pos=12;
+			break;
+		case ss320x240:
+			pos=11;
+			break;
+		case ss896x672:
+			pos=12;
+			break;
+		// --------- portrait -------------
+		case ss240x320:
+			pos=14;
+			break;
+		case ss480x640:
+			pos=13;
+			break;
+		case ss272x480:
+			pos=13;
+			break;
+		case ss240x400:
+			pos=15;
+			break;
+		case ss480x800:
+			pos=13;
+			break;
+		default:
+			pos=10;
+			break;
+	}
+	_stprintf(mes,_T("Version %S.%S (%S)"),LKVERSION,LKRELEASE,__DATE__);
+	RawWrite(hDC,mes,pos,1, RGB_DARKWHITE,WTMODE_NORMAL);
+  }
 
   DeleteObject(hWelcomeBitmap);
   SelectObject(hTempDC, oldBitmap);
