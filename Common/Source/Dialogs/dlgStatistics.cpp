@@ -3109,33 +3109,33 @@ void Statistics::RenderBearingDiff(HDC hdc, const RECT rc,double brg, DiagrammSt
 void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
 {
 
-double range = 50.0*1000; // km
-double GPSlat, GPSlon, GPSalt, GPSbrg, GPSspeed, calc_average30s;
-double calc_terrainalt;
-double calc_altitudeagl;
+  double range = 50.0*1000; // km
+  double GPSlat, GPSlon, GPSalt, GPSbrg, GPSspeed, calc_average30s;
+  double calc_terrainalt;
+  double calc_altitudeagl;
 
 
-TCHAR text[80];
-TCHAR buffer[80];
+  TCHAR text[80];
+  TCHAR buffer[80];
 
-//CAirspace warn_airspace;
-AirspaceWarningDrawStyle_t hdrawstyle;
-AirspaceWarningDrawStyle_t vdrawstyle;
-CAirspace near_airspace;
-CAirspace *found =NULL;
+  //CAirspace warn_airspace;
+  AirspaceWarningDrawStyle_t hdrawstyle;
+  AirspaceWarningDrawStyle_t vdrawstyle;
+  CAirspace near_airspace;
+  CAirspace *found =NULL;
 
 
 
-DiagrammStruct sDia;
-int    iAS_VertDistance;
-double fAS_Bearing;
-double fAS_HorDistance;
-bool   bAS_Inside  = false;
-double wptlat, wptlon;
-bool   bValid;
-long wpt_brg = 0;
-POINT line[2];
-SIZE tsize;
+  DiagrammStruct sDia;
+  int    iAS_VertDistance;
+  double fAS_Bearing;
+  double fAS_HorDistance;
+  bool   bAS_Inside  = false;
+  double wptlat, wptlon;
+  bool   bValid;
+  long wpt_brg = 0;
+  POINT line[2];
+  SIZE tsize;
 
   LockFlightData();
   {
@@ -3159,10 +3159,9 @@ SIZE tsize;
 
 
   found = CAirspaceManager::Instance().FindNearestAirspace(GPSlon, GPSlat, &fAS_HorDistance, &fAS_Bearing );
-  if(found == NULL)
-  {
-	DrawNoData(hdc, rc);
-	return;
+  if(found == NULL) {
+    DrawNoData(hdc, rc);
+    return;
   }
   near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(found);
 
@@ -3215,29 +3214,29 @@ SIZE tsize;
   RenderAirspaceTerrain( hdc,  rc,  GPSlat, GPSlon,  fAS_Bearing, &sDia );
 
 
-  if(bAS_Inside)
+  if (bAS_Inside)
   {
-	SetTextColor(hdc, RGB_RED);
-	static int callcnt = 0;
-	callcnt++;
-	SetTextColor(hdc, RGB_RED);
-	_stprintf(text,  gettext(TEXT("_@M1293_")));	// !!! WARNING INSIDE !!
-	if(callcnt%2 == 0)
-	{
-	  ExtTextOut(hdc, 40, 10, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-	}
+    SetTextColor(hdc, RGB_RED);
+    static int callcnt = 0;
+    callcnt++;
+    SetTextColor(hdc, RGB_RED);
+    _stprintf(text,  gettext(TEXT("_@M1293_")));	// !!! WARNING INSIDE !!
+    if(callcnt%2 == 0)
+    {
+      ExtTextOut(hdc, 40, 10, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+    }
   }
 
-  if(  bValid)
+  if (bValid)
   {
-	SetTextColor(hdc, RGB_WHITE);
-	Units::FormatUserAltitude(iAS_VertDistance, buffer, 7);
-	_stprintf(text, TEXT("V-Dist: %s"), buffer );
-	ExtTextOut(hdc, 40, 50, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+    SetTextColor(hdc, RGB_WHITE);
+    Units::FormatUserAltitude(iAS_VertDistance, buffer, 7);
+    _stprintf(text, TEXT("V-Dist: %s"), buffer );
+    ExtTextOut(hdc, 40, 50, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 
-	Units::FormatUserDistance(fAS_HorDistance, buffer, 7);
-	_stprintf(text, TEXT("H-Dist: %s"), buffer );
-	ExtTextOut(hdc, 40, 70, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+    Units::FormatUserDistance(fAS_HorDistance, buffer, 7);
+    _stprintf(text, TEXT("H-Dist: %s"), buffer );
+    ExtTextOut(hdc, 40, 70, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
   }
 
 
@@ -3252,10 +3251,11 @@ SIZE tsize;
   SelectObject(hdc, GetStockObject(WHITE_BRUSH));
   SetTextColor(hdc, RGB(0xff,0xff,0xff));
   DrawXGrid(hdc, rc, xtick/DISTANCEMODIFY, 0, STYLE_THINDASHPAPER, xtick, true);
-  if(Units::GetUserInvAltitudeUnit() == unFeet)
+  if(Units::GetUserInvAltitudeUnit() == unFeet) {
     DrawYGrid(hdc, rc, 500.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 500.0, true);
-  else
-	DrawYGrid(hdc, rc, 1000.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 1000.0, true);
+  } else {
+    DrawYGrid(hdc, rc, 1000.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 1000.0, true);
+  }
   SelectObject(hdc, GetStockObject(WHITE_PEN));
   SelectObject(hdc, GetStockObject(WHITE_BRUSH));
   SetTextColor(hdc, RGB(0xff,0xff,0xff));
@@ -3269,30 +3269,30 @@ SIZE tsize;
   line[1].y = line[0].y;
   StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
 
-  if(  bValid)
+  if (bValid)
   {
-	Units::FormatUserDistance(fAS_HorDistance, buffer, 7);
-	_tcsncpy(text, TEXT(" "), sizeof(text)/sizeof(text[0]));
-	_tcscat(text,buffer);
-	GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-	line[0].x = CalcDistanceCoordinat(fAS_HorDistance / 2,  rc)- tsize.cx/2;
-	line[0].y = CalcHeightCoordinat(  alt,   rc) -  tsize.cy;
-	ExtTextOut(hdc,  line[0].x,  line[0].y , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+    Units::FormatUserDistance(fAS_HorDistance, buffer, 7);
+    _tcsncpy(text, TEXT(" "), sizeof(text)/sizeof(text[0]));
+    _tcscat(text,buffer);
+    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+    line[0].x = CalcDistanceCoordinat(fAS_HorDistance / 2,  rc)- tsize.cx/2;
+    line[0].y = CalcHeightCoordinat(  alt,   rc) -  tsize.cy;
+    ExtTextOut(hdc,  line[0].x,  line[0].y , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 
-	// horizontal distance
-	line[0].x = CalcDistanceCoordinat(fAS_HorDistance,  rc);
-	line[0].y = CalcHeightCoordinat(  alt,   rc);
-	line[1].x = line[0].x;
-	line[1].y = CalcHeightCoordinat(  alt-iAS_VertDistance,   rc);
-	StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
+    // horizontal distance
+    line[0].x = CalcDistanceCoordinat(fAS_HorDistance,  rc);
+    line[0].y = CalcHeightCoordinat(  alt,   rc);
+    line[1].x = line[0].x;
+    line[1].y = CalcHeightCoordinat(  alt-iAS_VertDistance,   rc);
+    StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
 
-	Units::FormatUserAltitude( iAS_VertDistance, buffer, 7);
-	_tcsncpy(text, TEXT(" "), sizeof(text)/sizeof(text[0]));
-	_tcscat(text,buffer);
-	GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-	line[0].x  = line[0].x - tsize.cx;
-	line[0].y = CalcHeightCoordinat(   alt-iAS_VertDistance/2,   rc) -  tsize.cy/2;
-	ExtTextOut(hdc,  line[0].x,  line[0].y , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+    Units::FormatUserAltitude( iAS_VertDistance, buffer, 7);
+    _tcsncpy(text, TEXT(" "), sizeof(text)/sizeof(text[0]));
+    _tcscat(text,buffer);
+    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+    line[0].x  = line[0].x - tsize.cx;
+    line[0].y = CalcHeightCoordinat(   alt-iAS_VertDistance/2,   rc) -  tsize.cy/2;
+    ExtTextOut(hdc,  line[0].x,  line[0].y , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
   }
 
   // Print current AGL
