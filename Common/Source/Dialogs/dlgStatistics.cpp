@@ -3272,15 +3272,16 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
 
   SetBkMode(hdc, OPAQUE);
 
-// vertical distance
-  line[0].x = CalcDistanceCoordinat(0,  rc);
-  line[0].y = CalcHeightCoordinat(  alt,   rc);
-  line[1].x = CalcDistanceCoordinat(fAS_HorDistance,  rc);
-  line[1].y = line[0].y;
-  StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
 
   if (bValid)
   {
+    // vertical distance
+    line[0].x = CalcDistanceCoordinat(0,  rc);
+    line[0].y = CalcHeightCoordinat(  alt,   rc);
+    line[1].x = CalcDistanceCoordinat(fAS_HorDistance,  rc);
+    line[1].y = line[0].y;
+    StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
+    
     Units::FormatUserDistance(fAS_HorDistance, buffer, 7);
     _tcsncpy(text, TEXT(" "), sizeof(text)/sizeof(text[0]));
     _tcscat(text,buffer);
