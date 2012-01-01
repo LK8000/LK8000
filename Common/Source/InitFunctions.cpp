@@ -68,7 +68,6 @@ void PreloadInitialisation(bool ask) {
     // This is because LKProfileLoad will do this at its end, normally.
     // Notice: aircraft file will not be overridden by defaults
     if (!LKProfileLoad(startProfileFile)) {
-	LKProfileAdjustVariables();
 	LKProfileInitRuntime();
     }
 
@@ -86,7 +85,6 @@ void PreloadInitialisation(bool ask) {
     if (_tcscmp(startProfileFile,_T("PROFILE_RESET"))==0) {
 	StartupStore(_T(". USER ASKED PROFILE RESET%s"),NEWLINE);
 	LKProfileResetDefault();
-	LKProfileAdjustVariables();
 	LKProfileInitRuntime();
 	// Notice: this is also resetting the default Aircraft profile to demo settings
     } else  {

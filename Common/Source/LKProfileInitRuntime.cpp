@@ -24,6 +24,8 @@
 // will still be "disabled" and saved as disabled in profile. 
 // It is important to keep runtime and config variables separated, if a config
 // variable can be changed with a button out of System Config!
+// 
+// Be careful, like AdjustVariables this function is called twice or more times on startup
 //
 void LKProfileInitRuntime(void) {
 

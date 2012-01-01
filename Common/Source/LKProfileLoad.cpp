@@ -192,7 +192,6 @@ go_return:
 
   fclose(fp);
   if (found) {
-	LKProfileAdjustVariables();
 	LKProfileInitRuntime();
   }
   return found;
@@ -206,6 +205,12 @@ using std::max;
 // Search for a match of the keyname. Profile is NOT necessarily sorted!
 // So we must check against all possible values until we find the good one.
 // As soon as we find the match, we can return.
+// Important: some parameters are saved multiplied by 10 or 1000, so they must
+// be adjusted here. Example SafetyMacCready
+// Notice that we must check that we are not getting a matchedstring of another match!
+// This is why we do it twice, before and after the PREAD. 
+// Another approach is to use for example  if (!_tcscmp(szRegistryCircleZoom,sname)) {
+// We shall make PREAD return a bool to tell us, next time, and get rid of this terrible stuff.
 // 
 void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
 
@@ -225,6 +230,10 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   //
 
   PREAD(sname,svalue,szRegistryAcknowledgementTime, &AcknowledgementTime);
+  if (matchedstring) {
+	AcknowledgementTime = max(10, AcknowledgementTime);
+	return;
+  }
   PREAD(sname,svalue,szRegistryActiveMap, &ActiveMap_Config);
   PREAD(sname,svalue,szRegistryAdditionalAirspaceFile, &*szAdditionalAirspaceFile);
   PREAD(sname,svalue,szRegistryAdditionalWayPointFile, &*szAdditionalWaypointFile);
@@ -436,15 +445,34 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryPilotName,&*PilotName_Config);
   PREAD(sname,svalue,szRegistryPolarFile,&*szPolarFile);
   PREAD(sname,svalue,szRegistryPollingMode,&PollingMode);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryPort1Index,&dwPortIndex1);
   PREAD(sname,svalue,szRegistryPort2Index,&dwPortIndex2);
-  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryPressureHg,&PressureHg);
   PREAD(sname,svalue,szRegistrySafetyAltitudeArrival,&SAFETYALTITUDEARRIVAL);
   PREAD(sname,svalue,szRegistrySafetyAltitudeMode,&SafetyAltitudeMode);
   PREAD(sname,svalue,szRegistrySafetyAltitudeTerrain,&SAFETYALTITUDETERRAIN);
+
+  // We save SafetyMacCready multiplied by 10, so we adjust it back after loading
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistrySafetyMacCready,&GlidePolar::SafetyMacCready);
+  if (matchedstring) {
+	GlidePolar::SafetyMacCready /= 10;
+	return;
+  }
+
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistrySafteySpeed,&SAFTEYSPEED);
+  if (matchedstring) {
+	SAFTEYSPEED = (double)SAFTEYSPEED/1000.0;
+	if (SAFTEYSPEED <8.0) {
+		#if TESTBENCH
+		StartupStore(_T("... SAFTEYSPEED<8 set to 50 = 180kmh\n"));
+		#endif
+		SAFTEYSPEED=50.0;
+	}
+  }
+
   PREAD(sname,svalue,szRegistrySectorRadius,&SectorRadius);
   PREAD(sname,svalue,szRegistrySetSystemTimeFromGPS,&SetSystemTimeFromGPS);
   PREAD(sname,svalue,szRegistryShading,&Shading_Config);
@@ -474,15 +502,29 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryTpFilter,&TpFilter);
   PREAD(sname,svalue,szRegistryTrackBar,&TrackBar);
   PREAD(sname,svalue,szRegistryTrailDrift,&EnableTrailDrift_Config);
+
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryUTCOffset,&UTCOffset);
+  if (matchedstring) {
+	if (UTCOffset>12*3600)
+		UTCOffset-= 24*3600;
+	return;
+  }
+
   PREAD(sname,svalue,szRegistryUseCustomFonts,&UseCustomFonts);
   PREAD(sname,svalue,szRegistryUseGeoidSeparation,&UseGeoidSeparation);
   PREAD(sname,svalue,szRegistryUseTotalEnergy,&UseTotalEnergy_Config);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryWarningTime,&WarningTime);
   PREAD(sname,svalue,szRegistryWayPointFile,&*szWaypointFile);
   PREAD(sname,svalue,szRegistryWaypointsOutOfRange,&WaypointsOutOfRange);
-  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryWindCalcSpeed,&WindCalcSpeed);
+  if (matchedstring) {
+	WindCalcSpeed = (double)WindCalcSpeed/1000.0;
+	if (WindCalcSpeed <2)
+		WindCalcSpeed=27.778;
+	return;
+  }
   PREAD(sname,svalue,szRegistryWindCalcTime,&WindCalcTime);
 
   for(int i=0;i<AIRSPACECLASSCOUNT;i++) {
@@ -495,41 +537,6 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   }
 
   return;
-
-}
-
-
-// 
-// After loading a profile, adjust some variables with limiters or special conversions.
-// Config->Runtime copy is accomplished by InitRuntime, not here!
-//
-void LKProfileAdjustVariables(void) {
-
-  #if TESTBENCH
-  StartupStore(_T("... LKProfileAdjustVariables\n"));
-  #endif
-
-  AcknowledgementTime = max(10, AcknowledgementTime);
-
-  // SAFTEYSPEED is in ms, default 50.0 ie 180kmh
-  // Value is saved multiplied by 1000 to preserve decimal calculations for conversion to knots
-  // do not let SAFTEYSPEED be below 30kmh
-  SAFTEYSPEED = (double)SAFTEYSPEED/1000.0;
-  if (SAFTEYSPEED <8)
-	SAFTEYSPEED=50.0;
-
-  // WindCalcSpeed is INDICATED AIR SPEED in m/s , minimum is 8kmh default is 100kmh
-  WindCalcSpeed = (double)WindCalcSpeed/1000.0;
-  if (WindCalcSpeed <2)
-	WindCalcSpeed=27.778;
-
-  if (UTCOffset>12*3600)
-	UTCOffset-= 24*3600;
-
-  GlidePolar::SafetyMacCready /= 10;
-
-  // TODO: SetModelType  using GlobalModelName
-
 
 }
 
