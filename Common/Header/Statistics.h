@@ -125,7 +125,7 @@ class Statistics {
     static void RenderBearingDiff(HDC hdc, const RECT rc,double brg, DiagrammStruct* psDia );
     static void RenderPlaneSideview(HDC hdc, const RECT rc,double alt, double fAltitude,double brg, DiagrammStruct* psDia );
 //    static void RenderAirspaceTerrain(HDC hdc, const RECT rc,double lat, double lon,  double dist, long GPS_brg,  DiagrammStruct* psDia );
-    static void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon,  long brg,  DiagrammStruct* psDiag );
+    static void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon,  double brg,  DiagrammStruct* psDiag );
     static void RenderNearAirspace(HDC hdc, const RECT rc) ;
 
 };
