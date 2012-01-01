@@ -1708,7 +1708,7 @@ _@M1744_ "Max Speed "
 _@M1745_ "AIRCRAFT"
 _@M1746_ "SYSTEM"
 # new button caption on task overview dialog, appears only in PG/HG mode
-_@M1747_ "Timegates"
+_@M1747_ "Time Gates"
 
 #
 # These are new infoboxes:

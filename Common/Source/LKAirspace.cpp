@@ -529,6 +529,7 @@ bool CAirspace::FinishWarning()
         break;
         
       case aweLeavingNonFly:
+        _warninglevel = awYellow;
         // Do info message on leaving a nonfly zone
         res = true;
         break;
