@@ -2571,7 +2571,7 @@ static bool entered = false;
 
 
 
-void Statistics::RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon,  long brg,  DiagrammStruct* psDiag )
+void Statistics::RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon,  double brg,  DiagrammStruct* psDiag )
 {
   double range =psDiag->fXMax - psDiag->fXMin; // km
   double fi, fj;
