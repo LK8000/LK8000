@@ -8,7 +8,6 @@
 #include "externs.h"
 #include "LKInterface.h"
 #include "resource.h"
-#include "buildnumber.h"
 #include "Waypointparser.h"
 #include "Logger.h"
 #include "McReady.h"
@@ -104,12 +103,12 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   wcscat(LK8000_Version, TEXT(__DATE__));
   StartupStore(_T("%s------------------------------------------------------------%s"),NEWLINE,NEWLINE);
   #ifdef PNA
-  StartupStore(TEXT(". Starting %s %s build#%d%s"), LK8000_Version,_T("PNA"),BUILDNUMBER,NEWLINE);
+  StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("PNA"),NEWLINE);
   #else
   #if (WINDOWSPC>0)
-  StartupStore(TEXT(". Starting %s %s build#%d%s"), LK8000_Version,_T("PC"),BUILDNUMBER,NEWLINE);
+  StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("PC"),NEWLINE);
   #else
-  StartupStore(TEXT(". Starting %s %s build#%d%s"), LK8000_Version,_T("PDA"),BUILDNUMBER,NEWLINE);
+  StartupStore(TEXT(". Starting %s %s%s"), LK8000_Version,_T("PDA"),NEWLINE);
   #endif
   #endif
 

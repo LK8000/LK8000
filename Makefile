@@ -692,7 +692,6 @@ LK8000-$(TARGET).exe: LK8000-$(TARGET)-ns.exe
 	@$(NQ)echo "  STRIP   $@"
 	$(Q)$(STRIP) $< -o $@
 	$(Q)$(SIZE) $@
-#	./buildnumber
 	$(RM) LK8000-$(TARGET)-ns.exe
 
 LK8000-$(TARGET)-ns.exe: $(OBJS)

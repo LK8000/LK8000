@@ -10,7 +10,6 @@
 #include "LKInterface.h"
 #include "Logger.h"
 #include "RGB.h"
-#include "buildnumber.h"
 
 
 
@@ -69,7 +68,7 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
 	_stprintf(Buffer,TEXT("FONTS WILL NOT BE GOOD OR UNUSABLE"));
 	LKWriteText(hdc, Buffer, middlex, bottomlines+textSize.cy , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_SWHITE, false);
   } else {
-	_stprintf(Buffer,TEXT("%s build#%d"), LK8000_Version,BUILDNUMBER);
+	_stprintf(Buffer,TEXT("%s"), LK8000_Version);
 	GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
 	bottomlines=rc.bottom-BottomSize-(textSize.cy*3);
 	LKWriteText(hdc, Buffer, middlex, bottomlines , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITE, false);

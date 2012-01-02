@@ -11,7 +11,6 @@
 #include "Waypointparser.h"
 #include "Logger.h"
 #include "Process.h"
-#include "buildnumber.h"
 
 
 using std::min;
@@ -324,7 +323,7 @@ static void UpdateValuesSystem() {
   wp = (WndProperty*)wf->FindByName(TEXT("prpVersion"));
   if (wp) {
       TCHAR softversion[100];
-      wsprintf(softversion,_T("%s.%s #%d"),_T(LKVERSION), _T(LKRELEASE), BUILDNUMBER);
+      wsprintf(softversion,_T("%s.%s"),_T(LKVERSION), _T(LKRELEASE));
       wp->SetText(softversion);
       wp->RefreshDisplay();
   }
