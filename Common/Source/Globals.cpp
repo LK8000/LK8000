@@ -121,7 +121,7 @@ void Globals_Init(void) {
 
   MACCREADY = 0; // in m/s
   QNH = (double)1013.25;
-  BUGS = 1;
+  BUGS = 1; // This is the runtime Efficiency that can be changed by basic settings 1=100% 0.5=50%
   BALLAST = 0;
 
   AutoMacCready_Config = true;
@@ -598,6 +598,7 @@ void Globals_Init(void) {
    */
 
   TouchContext=0;
+  BUGS_Config = 1; // equivalent saved in system config and set by default on startup
 
   // ADD NEW GLOBALS here ^^^ //
 

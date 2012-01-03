@@ -243,6 +243,9 @@
 <WndProperty Name="prpSafetyMacCready" Caption="_@M574_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H136_">
 <DataField name="" DataType="double" DisplayFormat="%.1f %s" EditFormat="%.1f" Min=0 Max=10 Step=0.1/>
 </WndProperty>
+<WndProperty  Name="prpBugs" Caption="_@M253_"  X=2 Y=-1  Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1257_">
+<DataField name="" DataType="double" DisplayFormat="%.0f%%" EditFormat="%.0f" Min=50 Max=100 Step=1 />
+</WndProperty>
 <WndProperty Name="prpUseTotalEnergy" Caption="_@M1669_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H1256_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>

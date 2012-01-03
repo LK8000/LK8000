@@ -129,6 +129,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryBgMapColor,BgMapColor_Config);
   rprintf(szRegistryBit1Index,dwBit1Index);
   rprintf(szRegistryBit2Index,dwBit2Index);
+  rprintf(szRegistryBugs,BUGS_Config*100);
   rprintf(szRegistryCheckSum,CheckSum);
   rprintf(szRegistryCircleZoom,MapWindow::zoom.CircleZoom());
   rprintf(szRegistryClipAlt,ClipAltitude);

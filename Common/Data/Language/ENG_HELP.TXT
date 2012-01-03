@@ -622,7 +622,7 @@ This value is NOT saved, and it is reset at each startup to the wing loading cal
 Normally, but not always, your polar has considered a 70kg weight pilot. If you are not sure, leave the default wing loading. 
 
 @302
-How clean the glider is. Set to 100% for clean, lower numbers as the wings pick up bugs or get wet.  50% indicates the glider's sink rate is doubled.
+How clean the glider is. Set to 100% for clean, lower numbers as the wings pick up bugs or get wet.  50% indicates the glider's sink rate is doubled. 
 
 @303
 ONLY for BARO ALTITUDE when available! IF no baro altitude, this config will do nothing!
@@ -1665,6 +1665,11 @@ This is the default value.
 For example if you are flying at 200kmh with a discus with no ballast, the speed energy would be calculated as if you would pull up and slow down to 100kmh: you would certainly climb to a better altitude of course.
 This speed height will be added to all arrival altitudes. By default this feature is DISABLED, for safety reasons.
 If you are in doubt, leave this setting OFF.
+
+@1257
+[Efficiency]
+How clean the glider is. Set to 100% for clean, lower numbers as the wings pick up bugs or get wet.  50% indicates the glider's sink rate is doubled. 
+This is the default value used by Efficiency in Basic Settings menu, loaded on startup. You should normally leave this value to 100% here.
 
 @9999
 No help available on this item!

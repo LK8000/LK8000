@@ -307,6 +307,15 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryBgMapColor,&BgMapColor_Config);
   PREAD(sname,svalue,szRegistryBit1Index,&dwBit1Index);
   PREAD(sname,svalue,szRegistryBit2Index,&dwBit2Index);
+
+  // We save multiplied by 100, so we adjust it back after loading
+  if (matchedstring) return;
+  PREAD(sname,svalue,szRegistryBugs,&BUGS_Config);
+  if (matchedstring) {
+	BUGS_Config /= 100;
+	return;
+  }
+
   PREAD(sname,svalue,szRegistryCheckSum,&CheckSum);
 
   if (!_tcscmp(szRegistryCircleZoom,sname)) {

@@ -65,9 +65,12 @@ Things to be fixed in LK languages files/tokens:
 
 ///////////////////////////////
 NEW STUFF FOR 3.0
-december 27 2011
+since december 27 2011
 ///////////////////////////////
 @M1744  
 @M1745  
 @M1746  
 _@M1747_
+
+H1257  in help file
+

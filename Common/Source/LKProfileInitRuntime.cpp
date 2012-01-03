@@ -62,6 +62,7 @@ void LKProfileInitRuntime(void) {
   AutoWindMode			= AutoWindMode_Config;
   MapWindow::EnableTrailDrift	= EnableTrailDrift_Config;
   AltitudeMode			= AltitudeMode_Config;
+  BUGS				= BUGS_Config;
 
   MapWindow::zoom.AutoZoom(AutoZoom_Config);
 

@@ -2197,6 +2197,12 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpBugs"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(BUGS_Config*100); // we show the value correctly
+    wp->RefreshDisplay();
+  }
+
   wp = (WndProperty*)wf->FindByName(TEXT("prpMaxManoeuveringSpeed"));
   if (wp) {
     wp->GetDataField()->SetAsFloat(iround(SPEEDMODIFY*SAFTEYSPEED));
@@ -3381,6 +3387,16 @@ void dlgConfigurationShowModal(void){
       changed = true;
     }
   }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpBugs"));
+  if (wp) {
+    if (BUGS_Config != wp->GetDataField()->GetAsFloat()/100.0) {
+      BUGS_Config = wp->GetDataField()->GetAsFloat()/100.0;
+      changed = true;
+      requirerestart=true;
+    }
+  }
+
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGCruiseZoom"));
   if (wp) {
