@@ -299,7 +299,6 @@ bool DoOptimizeRoute() {
   if (!PGOptimizeRoute) return false;
 
   if (!ValidTaskPoint(ActiveWayPoint)) return false;
-  if (! (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(ActiveWayPoint+1))) return false;
 
   return true;
 
