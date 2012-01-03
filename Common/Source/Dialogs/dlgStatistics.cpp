@@ -15,8 +15,7 @@
 #include "LKInterface.h"
 #include "LKAirspace.h"
 #include "RGB.h"
-#include "Bitmaps.h"
-#include "MapWindow.h"
+
 
 using std::min;
 using std::max;
@@ -35,7 +34,7 @@ bool   Statistics::unscaled_x;
 bool   Statistics::unscaled_y;
 
 static HPEN penThinSignal = NULL;
-static int asp_heading_task = false;
+static int asp_heading_task = 0;
 
 #define BORDER_X 24
 #define BORDER_Y 19
@@ -2873,23 +2872,6 @@ SIZE tsize;
 
 }
 
-/*
-void Statistics::RenderAirspaceTerrain(HDC hdc, const RECT rc,double lat, double lon,  double dist, long brg,  DiagrammStruct* psDia )
-{
-double Orglat, Orglon;
-DiagrammStruct sOffsetDia;
-
-  FindLatitudeLongitude(lat, lon, brg  , psDia->fXMin , &Orglat, &Orglon);
-  sOffsetDia.rc =  psDia->rc;
-  sOffsetDia.fXMin =  0;
-  sOffsetDia.fXMax =  psDia->fXMax - psDia->fXMin;
-  sOffsetDia.fYMin =  psDia->fYMin;
-  sOffsetDia.fYMax =  psDia->fYMax;
-
-  RenderAirspaceTerrain( hdc,  rc,  Orglat, Orglon,  range,  fAS_Bearing, &sOffsetDia );
-  return;
-}
- */
 
 // draw aircraft
 void Statistics::RenderPlaneSideview(HDC hdc, const RECT rc,double fDist, double fAltitude,double brg, DiagrammStruct* psDia )
@@ -3111,19 +3093,19 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   TCHAR text[80];
   TCHAR buffer[80];
 
-static  CAirspace near_airspace;
-static  CAirspace *found = NULL;
+  CAirspace near_airspace;
+  CAirspace *found = NULL;
 
   DiagrammStruct sDia;
   bool bAS_Inside;
   int iAS_Bearing;
   int iAS_HorDistance;
   int iAS_VertDistance;
-static  double fAS_Bearing;
-static  double fAS_HorDistance;
+  double fAS_Bearing;
+  double fAS_HorDistance;
   bool   bValid;
   long wpt_brg = 0;
-  POINT line[4];
+  POINT line[2];
   POINT TxYPt;
   POINT TxXPt;
   SIZE tsize;
@@ -3316,7 +3298,11 @@ static  double fAS_HorDistance;
     else
       TxXPt.y = CalcHeightCoordinat(  alt,   rc) +  NIBLSCALE(3);
 
-    TxXPt.x = CalcDistanceCoordinat( iAS_HorDistance / 2.0, rc) -tsize.cx/2; ;
+
+    if(tsize.cx > (line[1].x - line[0].x) )
+      TxXPt.x = CalcDistanceCoordinat( iAS_HorDistance , rc) -tsize.cx-  NIBLSCALE(3);
+    else
+      TxXPt.x = CalcDistanceCoordinat( iAS_HorDistance / 2.0, rc) -tsize.cx/2;
     ExtTextOut(hdc,  TxXPt.x,  TxXPt.y , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 
 
