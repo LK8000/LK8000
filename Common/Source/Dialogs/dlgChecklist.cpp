@@ -23,7 +23,7 @@ static WndListFrame *wDetails=NULL;
 static WndOwnerDrawFrame *wDetailsEntry = NULL;
 
 #define MAXLINES 100
-#define MAXLISTS 20
+#define MAXLISTS 300
 static int LineOffsets[MAXLINES];
 static int DrawListIndex=0;
 static int nTextLines=0;
