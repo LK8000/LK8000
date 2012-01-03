@@ -45,7 +45,7 @@ static void NextPage(int Step){
 				 LineOffsets,
 				 MAXLINES);
 
-  _stprintf(buffer, gettext(TEXT("_@M878_"))); // Notepad
+  _stprintf(buffer, _T("%s %d/%d"),gettext(TEXT("_@M878_")),page+1,nLists); // Notepad
 
   if (ChecklistTitle[page] &&
       (_tcslen(ChecklistTitle[page])>0) 
