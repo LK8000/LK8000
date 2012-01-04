@@ -300,7 +300,11 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
   if (_tcsstr(OutBuffer, TEXT("$(OnlyInFly)"))) {
+	#if TESTBENCH
+	invalid=false;
+	#else
 	if (SIMMODE) invalid = true;
+	#endif
 	ReplaceInString(OutBuffer, TEXT("$(OnlyInFly)"), TEXT(""), Size);
 	if (--items<=0) goto label_ret; // 100517
   }

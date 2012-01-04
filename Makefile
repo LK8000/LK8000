@@ -517,6 +517,7 @@ DLGS	:=\
 	$(DLG)/dlgWindSettings.cpp \
 
 SRC_FILES :=\
+	$(SRC)/Logger/LogBook.cpp\
 	$(SRC)/DoInits.cpp\
 	$(SRC)/ChangeScreen.cpp\
 	$(SRC)/LKProfileResetDefault.cpp\
