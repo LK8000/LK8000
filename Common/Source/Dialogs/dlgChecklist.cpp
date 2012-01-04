@@ -14,25 +14,58 @@
 #include "InfoBoxLayout.h"
 
 
-#define MAXTITLE 200
-#define MAXDETAILS 5000
+#define MAXTITLE 200	// max number of characters in a title note
+#define MAXDETAILS 5000	// max size of a note
+#define MAXLINES 200	// max number of lines per note
+#define MAXLISTS 300	// max number of notes
 
-static int page=0;
-static WndForm *wf=NULL;
-static WndListFrame *wDetails=NULL;
-static WndOwnerDrawFrame *wDetailsEntry = NULL;
+int page=0;
+WndForm *wf=NULL;
+WndListFrame *wDetails=NULL;
+WndOwnerDrawFrame *wDetailsEntry = NULL;
+int LineOffsets[MAXLINES+1];
+int DrawListIndex=0;
+int nTextLines=0;
+int nLists=0;
+TCHAR *ChecklistText[MAXLISTS+1];
+TCHAR *ChecklistTitle[MAXLISTS+1];
 
-#define MAXLINES 100
-#define MAXLISTS 300
-static int LineOffsets[MAXLINES];
-static int DrawListIndex=0;
-static int nTextLines=0;
-static int nLists=0;
-static TCHAR *ChecklistText[MAXLISTS];
-static TCHAR *ChecklistTitle[MAXLISTS];
+
+
+static void InitNotepad(void) {
+  page=0;
+  wf=(WndForm *)NULL;
+  wDetails=(WndListFrame *)NULL;
+  wDetailsEntry = (WndOwnerDrawFrame *)NULL;
+  DrawListIndex=0;
+  nTextLines=0;
+  nLists=0;
+  for (int i=0; i<MAXLISTS; i++) {
+	ChecklistText[i]=(TCHAR *)NULL;
+	ChecklistTitle[i]=(TCHAR *)NULL;
+  }
+  for (int i=0; i<MAXLINES; i++) {
+	LineOffsets[i]=0;
+  }
+}
+
+
+static void DeinitNotepad(void) {
+  for (int i=0; i<MAXLISTS; i++) {
+    if (ChecklistText[i]) {
+      free(ChecklistText[i]);
+      ChecklistText[i]= NULL;
+    }
+    if (ChecklistTitle[i]) {
+      free(ChecklistTitle[i]);
+      ChecklistTitle[i]= NULL;
+    }
+  }
+}
+
 
 static void NextPage(int Step){
-  TCHAR buffer[80];
+  TCHAR buffer[200];
   page += Step;
   if (page>=nLists) {
     page=0;
@@ -41,17 +74,15 @@ static void NextPage(int Step){
     page= nLists-1;
   }
 
-  nTextLines = TextToLineOffsets(ChecklistText[page],
-				 LineOffsets,
-				 MAXLINES);
+  nTextLines = TextToLineOffsets(ChecklistText[page], LineOffsets, MAXLINES);
 
   _stprintf(buffer, _T("%s %d/%d"),gettext(TEXT("_@M878_")),page+1,nLists); // Notepad
 
   if (ChecklistTitle[page] &&
       (_tcslen(ChecklistTitle[page])>0) 
       && (_tcslen(ChecklistTitle[page])<60)) {
-    _tcscat(buffer, TEXT(": ")); 
-    _tcscat(buffer, ChecklistTitle[page]); 
+	_tcscat(buffer, TEXT(": ")); 
+	_tcscat(buffer, ChecklistTitle[page]); 
   }
   wf->SetCaption(buffer);
 
@@ -145,33 +176,27 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(NULL)
 };
 
+
 void addChecklist(TCHAR* name, TCHAR* details) {
   if (nLists<MAXLISTS) {
     ChecklistTitle[nLists] = (TCHAR*)malloc((_tcslen(name)+1)*sizeof(TCHAR));
     ChecklistText[nLists] = (TCHAR*)malloc((_tcslen(details)+1)*sizeof(TCHAR));
     _tcscpy(ChecklistTitle[nLists], name);
-    if (_tcslen(name)>=MAXTITLE) // 100315 BUGFIX XCSOAR
+    if (_tcslen(name)>=MAXTITLE)
 	  ChecklistTitle[nLists][MAXTITLE-1]= 0;
     _tcscpy(ChecklistText[nLists], details);
-    if (_tcslen(details)>=MAXDETAILS) // 100315 BUGFIX XCSOAR
+    if (_tcslen(details)>=MAXDETAILS)
 	  ChecklistText[nLists][MAXDETAILS-1]= 0;
     nLists++;
   }
 }
 
-void LoadChecklist(void) {
+// return true if loaded file, false if not loaded
+bool LoadChecklist(void) {
   HANDLE hChecklist;
-  nLists = 0;
-  if (ChecklistText[0]) {
-    free(ChecklistText[0]);
-    ChecklistText[0]= NULL;
-  }
-  if (ChecklistTitle[0]) {
-    free(ChecklistTitle[0]);
-    ChecklistTitle[0]= NULL;
-  }
 
   TCHAR filename[MAX_PATH];
+
   LocalPath(filename, TEXT(LKD_CONF));
   _tcscat(filename,_T("\\"));
   _tcscat(filename,_T(LKF_CHECKLIST));
@@ -183,18 +208,19 @@ void LoadChecklist(void) {
 			  FILE_ATTRIBUTE_NORMAL,NULL);
   if( hChecklist == INVALID_HANDLE_VALUE)
     {
-	StartupStore(_T(". No Notepad file <%s>%s"),filename,NEWLINE);
-	return;
+	StartupStore(_T("... Not found notepad <%s>%s"),filename,NEWLINE);
+	return false;
     }
 
-  StartupStore(_T(". Found Notepad file <%s>%s"),filename,NEWLINE);
+  #if TESTBENCH
+  StartupStore(_T(". Loaded notepad <%s>%s"),filename,NEWLINE);
+  #endif
 
   TCHAR TempString[MAXTITLE];
   TCHAR Details[MAXDETAILS];
   TCHAR Name[100];
   BOOL inDetails = FALSE;
   int i;
-//  int k=0;
 
   Details[0]= 0;
   Name[0]= 0;
@@ -246,17 +272,19 @@ void LoadChecklist(void) {
   CloseHandle(hChecklist);
   hChecklist = NULL;
 
+  #if TESTBENCH
+  StartupStore(_T("... Loaded %d notes\n"),nLists);
+  #endif
+
+  return true;
+
 }
 
 
 void dlgChecklistShowModal(void){
-  static bool first=true;
-  if (first) {
-    LoadChecklist();
-    first=false;
-  }
 
-  //  WndProperty *wp;
+  InitNotepad();
+  LoadChecklist(); // check if loaded really something
 
   if (!ScreenLandscape) {
     char filename[MAX_PATH];
@@ -276,7 +304,7 @@ void dlgChecklistShowModal(void){
 
   nTextLines = 0;
 
-  if (!wf) return;
+  if (!wf) goto deinit;
 
   wf->SetKeyDownNotify(FormKeyDown);
 
@@ -285,8 +313,8 @@ void dlgChecklistShowModal(void){
   wDetails = (WndListFrame*)wf->FindByName(TEXT("frmDetails"));
   //ASSERT(wDetails!=NULL);
   if (wDetails==NULL) {
-	StartupStore(_T("..... NULL frmDetails!\n"));
-	return;
+	StartupStore(_T("..... NOTEPAD ERROR NULL frmDetails!\n"));
+	goto deinit;
   }
   wDetails->SetBorderKind(BORDERLEFT);
   wDetails->SetWidth(wf->GetWidth() - wDetails->GetLeft()-2);
@@ -294,8 +322,8 @@ void dlgChecklistShowModal(void){
   wDetailsEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmDetailsEntry"));
   //ASSERT(wDetailsEntry!=NULL);
   if (wDetailsEntry==NULL) {
-	StartupStore(_T("..... NULL frmDetailsEntry!\n"));
-	return;
+	StartupStore(_T("..... NOTEPAD ERROR NULL frmDetailsEntry!\n"));
+	goto deinit;
   }
   wDetailsEntry->SetCanFocus(true);
    // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
@@ -310,16 +338,18 @@ void dlgChecklistShowModal(void){
    }
   wDetailsEntry->SetWidth(wDetails->GetWidth() - wDetails->ScrollbarWidth - 5);
 
-
   page = 0;
-
-  NextPage(0); // JMW just to turn proper pages on/off
+  NextPage(0);
 
   wf->ShowModal();
 
   delete wf;
-
   wf = NULL;
+
+deinit:
+
+  DeinitNotepad();
+  return;
 
 }
 
