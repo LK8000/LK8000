@@ -1709,6 +1709,9 @@ _@M1745_ "AIRCRAFT"
 _@M1746_ "SYSTEM"
 # new button caption on task overview dialog, appears only in PG/HG mode
 _@M1747_ "Time Gates"
+_@M1748_ "Logbook"
+_@M1749_ "File not found"
+_@M1750_ "Empty"
 
 #
 # These are new infoboxes:

@@ -153,6 +153,8 @@
 #define LKF_PERSIST	"Persist.log"
 #define LKF_FLARMNET	"flarmnet.fln"
 #define LKF_CHECKLIST	"NOTEPAD.txt"
+#define LKF_LOGBOOKTXT	"LogBook.txt"
+#define LKF_LOGBOOKCVS	"LogBook.cvs"
 #define LKF_WAYPOINTS1	"waypoints1.dat"
 #define LKF_WAYPOINTS2	"waypoints2.dat"
 #define LKF_AIRSPACES	"airspace.txt"
@@ -732,7 +734,6 @@
 #define RUN_EXEC		0x04
 #define RUN_PASSIVE		0x21
 #define RUN_EXIT		0x08
-
 
 #define LKINFOFONT      LK8SmallFont            // was InfoWindowFont
 // km for distance, kmh for speed etc.  in map overlay

@@ -1263,7 +1263,7 @@ void InputEvents::eventMode(const TCHAR *misc) {
 //  See the checklist dialog section of the reference manual for more info.
 void InputEvents::eventChecklist(const TCHAR *misc) {
 	(void)misc;
-  dlgChecklistShowModal();
+  dlgChecklistShowModal(0); // 0 for notepad
 }
 
 

@@ -36,7 +36,7 @@ bool dlgAirspaceShowModal(bool colored);
 void dlgBasicSettingsShowModal(void);
 void dlgBrightnessShowModal(void);
 void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText);
-void dlgChecklistShowModal(void);
+void dlgChecklistShowModal(short checklistmode);
 void dlgConfigurationShowModal(void);
 void dlgVegaDemoShowModal(void);
 bool dlgConfigurationVarioShowModal(void);

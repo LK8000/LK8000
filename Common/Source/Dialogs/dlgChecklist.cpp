@@ -29,7 +29,7 @@ int nTextLines=0;
 int nLists=0;
 TCHAR *ChecklistText[MAXLISTS+1];
 TCHAR *ChecklistTitle[MAXLISTS+1];
-
+TCHAR NoteModeTitle[50];
 
 
 static void InitNotepad(void) {
@@ -76,7 +76,10 @@ static void NextPage(int Step){
 
   nTextLines = TextToLineOffsets(ChecklistText[page], LineOffsets, MAXLINES);
 
-  _stprintf(buffer, _T("%s %d/%d"),gettext(TEXT("_@M878_")),page+1,nLists); // Notepad
+  if (nLists>0)
+	_stprintf(buffer, _T("%s %d/%d"),NoteModeTitle,page+1,nLists); 
+  else
+	_stprintf(buffer, _T("%s %s"),NoteModeTitle,gettext(TEXT("_@M1750_"))); // empty
 
   if (ChecklistTitle[page] &&
       (_tcslen(ChecklistTitle[page])>0) 
@@ -192,14 +195,28 @@ void addChecklist(TCHAR* name, TCHAR* details) {
 }
 
 // return true if loaded file, false if not loaded
-bool LoadChecklist(void) {
+bool LoadChecklist(short checklistmode) {
   HANDLE hChecklist;
 
   TCHAR filename[MAX_PATH];
 
-  LocalPath(filename, TEXT(LKD_CONF));
-  _tcscat(filename,_T("\\"));
-  _tcscat(filename,_T(LKF_CHECKLIST));
+  switch(checklistmode) {
+	// notepad
+	case 0:
+		LocalPath(filename, TEXT(LKD_CONF));
+		_tcscat(filename,_T("\\"));
+		_tcscat(filename,_T(LKF_CHECKLIST));
+		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M878_")));  // notepad
+		break;
+	// logbook
+	case 1:
+		LocalPath(filename, TEXT(LKD_LOGS));
+		_tcscat(filename,_T("\\"));
+		_tcscat(filename,_T(LKF_LOGBOOKTXT));
+		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M1748_")));  // logbook
+		break;
+  }
+
 
   hChecklist = INVALID_HANDLE_VALUE;
   hChecklist = CreateFile(filename,
@@ -208,12 +225,12 @@ bool LoadChecklist(void) {
 			  FILE_ATTRIBUTE_NORMAL,NULL);
   if( hChecklist == INVALID_HANDLE_VALUE)
     {
-	StartupStore(_T("... Not found notepad <%s>%s"),filename,NEWLINE);
+	StartupStore(_T("... Not found notes <%s>%s"),filename,NEWLINE);
 	return false;
     }
 
   #if TESTBENCH
-  StartupStore(_T(". Loaded notepad <%s>%s"),filename,NEWLINE);
+  StartupStore(_T(". Loaded notes <%s>%s"),filename,NEWLINE);
   #endif
 
   TCHAR TempString[MAXTITLE];
@@ -280,11 +297,11 @@ bool LoadChecklist(void) {
 
 }
 
-
-void dlgChecklistShowModal(void){
+// checklistmode: 0=notepad 1=logbook 2=...
+void dlgChecklistShowModal(short checklistmode){
 
   InitNotepad();
-  LoadChecklist(); // check if loaded really something
+  LoadChecklist(checklistmode); // check if loaded really something
 
   if (!ScreenLandscape) {
     char filename[MAX_PATH];
