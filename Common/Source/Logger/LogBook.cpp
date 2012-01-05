@@ -57,7 +57,7 @@ bool UpdateLogBookTXT(void) {
   //
   // Takeoff time
   //
-  Units::TimeToText(Temp,(int)TimeLocal((long)CALCULATED_INFO.TakeOffTime));
+  Units::TimeToTextS(Temp,(int)TimeLocal((long)CALCULATED_INFO.TakeOffTime));
   sprintf(line,"%S: %S\r\n",gettext(_T("_@M680_")),Temp);
   fwrite(line,strlen(line),1,stream);
 
@@ -65,7 +65,7 @@ bool UpdateLogBookTXT(void) {
   // Landing time
   //
   if (!CALCULATED_INFO.Flying) {
-	Units::TimeToText(Temp,(int)TimeLocal((long)(CALCULATED_INFO.TakeOffTime+CALCULATED_INFO.FlightTime)));
+	Units::TimeToTextS(Temp,(int)TimeLocal((long)(CALCULATED_INFO.TakeOffTime+CALCULATED_INFO.FlightTime)));
 	sprintf(line,"%S: %S\r\n",gettext(_T("_@M386_")),Temp);
   } else {
   	#if TESTBENCH
@@ -78,7 +78,7 @@ bool UpdateLogBookTXT(void) {
   //
   // Flight time
   //
-  Units::TimeToText(Temp, (int)CALCULATED_INFO.FlightTime);
+  Units::TimeToTextS(Temp, (int)CALCULATED_INFO.FlightTime);
   sprintf(line,"%S: %S\r\n\r\n",gettext(_T("_@M306_")),Temp);
   fwrite(line,strlen(line),1,stream);
 
@@ -88,7 +88,7 @@ bool UpdateLogBookTXT(void) {
 	// FREE FLIGHT DETECTED
 	//
 	if ( CALCULATED_INFO.FreeFlightStartTime>0 ) {
-		Units::TimeToText(Temp, (int)CALCULATED_INFO.FreeFlightStartTime);
+		Units::TimeToTextS(Temp, (int)CALCULATED_INFO.FreeFlightStartTime);
 		sprintf(line,"%S: %S\r\n",gettext(_T("_@M1452_")),Temp);
 		fwrite(line,strlen(line),1,stream);
 	}
@@ -204,11 +204,11 @@ bool UpdateLogBookCSV(void) {
   }
 
 
-  Units::TimeToText(Temp,(int)TimeLocal((long)CALCULATED_INFO.TakeOffTime));
+  Units::TimeToTextS(Temp,(int)TimeLocal((long)CALCULATED_INFO.TakeOffTime));
   sprintf(stakeoff,"%S",Temp);
 
   if (!CALCULATED_INFO.Flying) {
-	Units::TimeToText(Temp,(int)TimeLocal((long)(CALCULATED_INFO.TakeOffTime+CALCULATED_INFO.FlightTime)));
+	Units::TimeToTextS(Temp,(int)TimeLocal((long)(CALCULATED_INFO.TakeOffTime+CALCULATED_INFO.FlightTime)));
 	sprintf(slanding,"%S",Temp);
   } else {
 	#if TESTBENCH
@@ -224,7 +224,7 @@ bool UpdateLogBookCSV(void) {
 	sprintf(solcdist, "---");
   }
 
-  Units::TimeToText(Temp, (int)CALCULATED_INFO.FlightTime);
+  Units::TimeToTextS(Temp, (int)CALCULATED_INFO.FlightTime);
   sprintf(sflighttime,"%S",Temp);
 
   sprintf(line,"%04d,%02d,%02d,%S,%S,%s,%s,%s,%d,%s,%S\r\n",
