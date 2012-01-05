@@ -13,6 +13,7 @@
 
 #include "Process.h"
 #include "LKProfiles.h"
+#include "Calculations2.h"
 
 
 static bool changed = false;
@@ -122,7 +123,17 @@ void dlgTimeGatesShowModal(void){
       PGOptimizeRoute = (wp->GetDataField()->GetAsInteger());
       SetToRegistry(szRegistryPGOptimizeRoute, (DWORD)(PGOptimizeRoute));
       changed = true;
-    }
+
+      if (ISPARAGLIDER) {
+	    if(PGOptimizeRoute) {
+		  changed = !AATEnabled;
+		  AATEnabled = true;
+	    }
+	    else{
+	      ClearOptimizedTargetPos();
+	    }
+	  }
+	}
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGNumberOfGates"));
   if (wp) {

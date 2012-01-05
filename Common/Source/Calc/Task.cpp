@@ -31,7 +31,7 @@ extern AATDistance aatdistance;
 
 void ResetTaskWaypoint(int j) {
   Task[j].Index = -1;
-  if (ISPARAGLIDER)
+  if (DoOptimizeRoute())
   	Task[j].AATTargetOffsetRadius = -100.0;
   else
   	Task[j].AATTargetOffsetRadius = 0.0;
@@ -230,7 +230,7 @@ void RemoveTaskPoint(int index) {
     Task[i] = Task[i+1];
   }
   Task[MAXTASKPOINTS-1].Index = -1;
-  if (ISPARAGLIDER)
+  if (DoOptimizeRoute())
   	Task[MAXTASKPOINTS-1].AATTargetOffsetRadius= -100.0;
   else
   	Task[MAXTASKPOINTS-1].AATTargetOffsetRadius= 0.0;
@@ -383,7 +383,7 @@ void RefreshTask(void) {
 	TaskStats[i].LengthPercent = Task[i].Leg/lengthtotal;
 	if (!ValidTaskPoint(i+1)) {
           // this is the finish waypoint
-	  if (ISPARAGLIDER)
+	  if (DoOptimizeRoute())
 	  	Task[i].AATTargetOffsetRadius = -100.0;
 	  else
 	  	Task[i].AATTargetOffsetRadius = 0.0;
@@ -1204,7 +1204,7 @@ void ClearTask(void) {
     Task[i].AATSectorRadius = SectorRadius; // JMW added default
     Task[i].AATCircleRadius = SectorRadius; // JMW added default
     Task[i].AATTargetOffsetRadial = 0;
-    if (ISPARAGLIDER)
+    if (DoOptimizeRoute())
       Task[i].AATTargetOffsetRadius = -100;
     else
       Task[i].AATTargetOffsetRadius = 0;
@@ -1736,3 +1736,20 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	WayPointList[RESWP_OPTIMIZED].Altitude = WayPointList[stdwp].Altitude;
 	wsprintf(WayPointList[RESWP_OPTIMIZED].Name, _T("!%s"),WayPointList[stdwp].Name);
 }
+
+// Clear PG 
+void ClearOptimizedTargetPos() {
+
+	WayPointList[RESWP_OPTIMIZED].Latitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_OPTIMIZED].Longitude=RESWP_INVALIDNUMBER;
+	WayPointList[RESWP_OPTIMIZED].Altitude=RESWP_INVALIDNUMBER;
+	// name will be assigned by function dynamically
+	_tcscpy(WayPointList[RESWP_OPTIMIZED].Name, _T("OPTIMIZED") );
+
+	for(int i = 0; ValidWayPoint(Task[i].Index); ++i) {
+		Task[i].AATTargetLat = WayPointList[Task[i].Index].Latitude;
+		Task[i].AATTargetLon = WayPointList[Task[i].Index].Longitude;
+		Task[i].AATTargetLocked = false;
+	}
+}
+

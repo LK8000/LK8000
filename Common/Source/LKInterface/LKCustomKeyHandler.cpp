@@ -266,6 +266,9 @@ bool CustomKeyHandler(const int key) {
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 		#endif
 		PGOptimizeRoute=!PGOptimizeRoute;
+		if (ISPARAGLIDER && PGOptimizeRoute) {
+			AATEnabled = true;
+		}
 		return true;
 	case ckLockScreen:
 		#ifndef DISABLEAUDIO
