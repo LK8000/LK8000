@@ -154,7 +154,7 @@
 #define LKF_FLARMNET	"flarmnet.fln"
 #define LKF_CHECKLIST	"NOTEPAD.txt"
 #define LKF_LOGBOOKTXT	"LOGBOOK.TXT"
-#define LKF_LOGBOOKCVS	"LOGBOOK.CVS"
+#define LKF_LOGBOOKCSV	"LOGBOOK.CSV"
 #define LKF_WAYPOINTS1	"waypoints1.dat"
 #define LKF_WAYPOINTS2	"waypoints2.dat"
 #define LKF_AIRSPACES	"airspace.txt"

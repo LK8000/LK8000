@@ -148,8 +148,8 @@ void StopLogger(void) {
   _tcscpy(sztmplogfile,szLoggerFileName); // use LOGGER_TMP, unsigned
 #endif
 
-  extern bool UpdateLogBook(void);
-  UpdateLogBook();
+  UpdateLogBookTXT();
+  UpdateLogBookCSV();
 
   if (LoggerActive) {
     LoggerActive = false;

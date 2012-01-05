@@ -19,6 +19,11 @@ void LoggerDeviceDeclare();
 void EW_Strings(double Lattitude, double Longditude, TCHAR *ID);
 void EW_Download(TCHAR *strAssetNumber);
 
+bool UpdateLogBookTXT(void);
+bool UpdateLogBookCSV(void);
+void ResetLogBook(void);
+
+
 extern bool DeclaredToDevice;
 bool CheckDeclaration(void);
 
