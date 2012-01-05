@@ -164,9 +164,9 @@ static void SetValues(bool first=false) {
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAATEnabled"));
   if (wp) {
-	if (ISPARAGLIDER) {
+	if (ISPARAGLIDER && PGOptimizeRoute) {
 		wp->SetVisible(false);
-		AATEnabled=TRUE;
+		AATEnabled=true;
 		wp->RefreshDisplay(); 
 	} else {
 		bool aw = (AATEnabled != 0);
@@ -302,7 +302,7 @@ static void ReadValues(void) {
   if (wp) {
     CHECK_CHANGED(AATEnabled,
                   wp->GetDataField()->GetAsInteger());
-	if (ISPARAGLIDER) AATEnabled=true; // force it on
+	if (DoOptimizeRoute()) AATEnabled=true; // force it on
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishLine"));
@@ -503,7 +503,8 @@ void dlgTaskWaypointShowModal(int itemindex, int tasktype, bool addonly){
   }
 
   if (ISPARAGLIDER) {
-	AATEnabled=TRUE;
+    if(DoOptimizeRoute()) 
+		AATEnabled=TRUE;
 	EnableMultipleStartPoints=false;
   }
 
