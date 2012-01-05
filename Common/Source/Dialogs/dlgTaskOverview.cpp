@@ -303,7 +303,7 @@ static void OnTaskListEnter(WindowControl * Sender,
       if (res != -1){
         Task[ItemIndex].Index = res;
       }
-      if (ISPARAGLIDER)
+      if (DoOptimizeRoute())
       	Task[ItemIndex].AATTargetOffsetRadius = -100.0;
       else
       	Task[ItemIndex].AATTargetOffsetRadius = 0.0;
@@ -591,7 +591,7 @@ void dlgTaskOverviewShowModal(void){
   if (wb) wb->SetVisible(false);
   
   if (ISPARAGLIDER) {
-        AATEnabled=TRUE;
+	    if (PGOptimizeRoute) AATEnabled=true; // force it on
         EnableMultipleStartPoints=false;
         if (wb) wb->SetVisible(true);
   }

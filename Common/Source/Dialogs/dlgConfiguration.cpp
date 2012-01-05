@@ -26,6 +26,7 @@
 #include "Waypointparser.h"
 #include "LKMapWindow.h"
 #include "LKProfiles.h"
+#include "Calculations2.h"
 
 extern void UpdatePolarConfig(void);
 
@@ -4471,7 +4472,17 @@ void dlgConfigurationShowModal(void){
       PGOptimizeRoute = (wp->GetDataField()->GetAsInteger());
       SetToRegistry(szRegistryPGOptimizeRoute, (DWORD)(PGOptimizeRoute));
       changed = true;
-    }
+
+      if (ISPARAGLIDER) {
+	    if(PGOptimizeRoute) {
+		  changed = !AATEnabled;
+		  AATEnabled = true;
+	    }
+	    else{
+	      ClearOptimizedTargetPos();
+	    }
+	  }
+	}
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpOutlinedTp")); // VENTA6
