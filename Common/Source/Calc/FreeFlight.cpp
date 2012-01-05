@@ -206,6 +206,7 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
 
   ffDetected=true;
   Calculated->FreeFlying=true;
+  Calculated->FreeFlightStartTime=GPS_INFO.Time;
   ResetFreeFlightStats(Calculated);
   return true;
 

@@ -713,6 +713,7 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
     Calculated->FlightTime = 0;
     Calculated->TakeOffTime = 0;
+    Calculated->FreeFlightStartTime = 0;
     Calculated->FreeFlying=false;
     Calculated->Flying=FALSE;
     Calculated->Circling = FALSE;

@@ -197,6 +197,7 @@ typedef struct _DERIVED_INFO
   double TeammateLongitude;
   double FlightTime;
   double TakeOffTime;
+  double FreeFlightStartTime;
 
   double AverageClimbRate[200];
   long AverageClimbRateN[200];
