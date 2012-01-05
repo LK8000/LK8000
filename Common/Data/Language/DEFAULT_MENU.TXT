@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 5 , 110928
+# Release 6 , 120106
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -1291,8 +1291,8 @@ location=5
 mode=Info2
 type=key
 data=7
-event=Mode default
-label=_@M2023_$(DISABLED)
+event=Mode LOGBOOK
+label=_@M2118_
 location=6
 
 mode=Info2
@@ -2698,6 +2698,88 @@ mode=SIMDIR
 type=key
 data=12
 label= 
+event=Null
+location=11
+
+
+# -------------
+# mode=LOGBOOK
+# -------------
+
+mode=LOGBOOK
+type=key
+data=APP1
+label=
+event=Null
+location=1
+
+mode=LOGBOOK
+type=key
+data=APP2
+label=
+event=Null
+location=2
+
+mode=LOGBOOK
+type=key
+data=APP3
+label=
+event=Null
+location=3
+
+mode=LOGBOOK
+type=key
+data=APP4
+label=
+event=Null
+location=4
+
+mode=LOGBOOK
+type=key
+data=6
+label=_@M2119_
+event=Service LOGBVIEW
+location=5
+
+mode=LOGBOOK
+type=key
+data=7
+label=_@M2120_
+event=Service LOGBRESET
+location=6
+
+mode=LOGBOOK
+type=key
+data=8
+label=
+event=Null
+location=7
+
+mode=LOGBOOK
+type=key
+data=9
+label=
+event=Null
+location=8
+
+mode=LOGBOOK
+type=key
+data=0
+event=Mode default
+label=_@M2011_
+location=9
+
+mode=LOGBOOK
+type=key
+data=11
+label=
+event=Null
+location=10
+
+mode=LOGBOOK
+type=key
+data=12
+label=
 event=Null
 location=11
 

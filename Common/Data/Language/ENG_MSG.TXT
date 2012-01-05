@@ -1712,6 +1712,8 @@ _@M1747_ "Time Gates"
 _@M1748_ "Logbook"
 _@M1749_ "File not found"
 _@M1750_ "Empty"
+_@M1751_ "CONFIRM FLIGHT BOOK RESET?"
+_@M1752_ "FLIGHT BOOK RESET"
 
 #
 # These are new infoboxes:
@@ -1857,5 +1859,8 @@ _@M2115_ "TEnergy"
 _@M2116_ "Change\nTerrain"
 # Auto MC thermal+final glide mode, keep max 7 chars!
 _@M2117_ "Thr+Fin"
+_@M2118_ "LogBook"
+_@M2119_ "View\nBook"
+_@M2120_ "Reset\nBook"
 
 # Note for developers: remember LKLanguage MAX_MESSAGE limit

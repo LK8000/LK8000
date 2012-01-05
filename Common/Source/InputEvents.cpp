@@ -24,6 +24,7 @@
 #include "AATDistance.h"
 #include "Parser.h"
 #include "DoInits.h"
+#include "Logger.h"
 
 using std::min;
 using std::max;
@@ -1910,6 +1911,18 @@ void InputEvents::eventService(const TCHAR *misc) {
 	else
 		--TerrainRamp;
 	MapWindow::RefreshMap();
+	return;
+  }
+  if (_tcscmp(misc, TEXT("LOGBVIEW")) == 0) {
+	dlgChecklistShowModal(1); // 1 for logbook
+	return;
+  }
+
+  if (_tcscmp(misc, TEXT("LOGBRESET")) == 0) {
+	if (MessageBoxX(hWndMapWindow, gettext(_T("_@M1751_")), _T(""), MB_YESNO|MB_ICONQUESTION) == IDYES) {
+		ResetLogBook();
+		DoStatusMessage(gettext(_T("_@M1752_"))); // Reset
+	}
 	return;
   }
 
