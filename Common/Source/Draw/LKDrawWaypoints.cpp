@@ -451,6 +451,12 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 				dowrite=false;
 			}
 		}
+
+		if(i==RESWP_OPTIMIZED) {
+			dowrite = DoOptimizeRoute();
+		}
+
+
 	      if (dowrite) { 
 		MapWaypointLabelAdd(
 				    Buffer,
