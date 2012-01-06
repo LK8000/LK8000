@@ -2,6 +2,86 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3s  January 7,  2012
+------------------------------
+
+NEW
+
+. LK Flight LogBook. >> Works only if logger is enabled! << 
+  In the logger folder, two files are created automatically:
+  LOGBOOK.TXT is a notepad formatted file, textual, and it is viewable from within LK
+  using Info 2/2 LogBook menu button. This file is reporting aircraft type, time of takeoff, 
+  landing, flytime, max altitude reached, odometer, OLC distance ,max height gained.
+  The LOGBOOK.TXT can be reset by user request in LK, using reset button in Logbook menu.
+
+  LOGBOOK.CSV is in Comma Separated Value format, and can be open as-is by any spreadsheet.
+  It has fewer informations, and it is never reset by the software.
+
+  A flight is added to the logbook upon a stop-logger event. This normally happens when a
+  landing status is detected automatically or when the pilot is stopping the logger manually.
+  Logger is also forced off on lk program exit, if it was still running.
+  Notice that the LANDING event is detected automatically about 45 seconds after real landing.
+
+  As stated at the beginning: the LogBook requires the logger to be ENABLED!   
+
+
+. New configurable Efficiency parameter in Safety config menu 6.
+  This is the default value for the Basic setting's efficiency
+  and it is loaded on startup.
+
+
+
+CHANGES
+
+. Work in progress with the new Airspace Analysis pages
+
+. Decrease airspace warnlevel to yellow, when leaving a nonfly zone
+
+    This was missing, because the original approach was to not give repeated
+    red warnings when circling on an asp border. However the right behavior
+    should be to give warnings, and the user has to ack it if he doesn't want
+    to see that warning. It is also important if flying near an asp border in
+    parallel with it.
+
+.  Change Timegates to Time Gates on new PG button caption
+
+. Paragliders routes by Bruno:
+
+    Fix : Out Start work only with start gate (only for paraglider)
+
+    Fix PG Task opt.
+    cf. http://www.postfrontal.com/forum/topic.asp?TOPIC_ID=5369&whichpage=2
+
+    Optimize Finish radius if PG Optmize Route
+
+    Draw Bearing to Optimized Start And Finish only if PG Optimize = ON
+
+    Fix Optimisation of very big Cylinder
+
+    Allow Disable AAT for Paraglider
+
+
+. Retuned NOTEPAD window, bigger buttons
+
+. Retune NOTEPAD limits to max 300 notes, each note max 200 lines, and max 5k.
+  Previously the limit was to max 20 notes
+
+
+
+FIXES
+
+.  Fix bug loading some parameters from profiles.
+
+.  SafetyMacCready, SAFTEYSPEED (max speed in polar), WindCalcSpeed (truewind speed calc)
+
+.  Fix NOTEPAD window not fullscreen, text overlapping scrollbar
+
+.  Fix Flarm on map help, inverted Enabled and Disabled meaning
+
+
+
+
+
 Version 2.3r December 31, 2011
 ------------------------------
 
