@@ -16,7 +16,7 @@
 #include "InputEvents.h"
 #include "RGB.h"
 #include "LKProfiles.h"
-
+#include "Logger.h"
 
 
 HBRUSH hBrushSelected;
@@ -269,6 +269,22 @@ void Shutdown(void) {
 
   // LKTOKEN _@M1220_ "Shutdown, saving logs..."
   CreateProgressDialog(gettext(TEXT("_@M1220_")));
+
+  #if TESTBENCH
+  if (CALCULATED_INFO.Flying) {
+  #else
+    // On PC do logbook also in simmode
+    #if (WINDOWSPC>0)
+    if (CALCULATED_INFO.Flying) {
+    #else
+    // Normally, only if really flying
+    if (!SIMMODE && CALCULATED_INFO.Flying) {
+    #endif
+  #endif
+	StartupStore(_T("... Quit LK while still flying! Saving logbook%s"),NEWLINE);
+	UpdateLogBookTXT();
+	UpdateLogBookCSV();
+  }
   // stop logger
   guiStopLogger(true);
 

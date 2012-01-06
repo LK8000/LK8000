@@ -4514,6 +4514,23 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		// have been stationary for a minute
 		InputEvents::processGlideComputer(GCE_LANDING);
 
+		// Well, Flying is always true in fact, here.
+		// But this is identical to WndProc checks
+		#if TESTBENCH
+		if (CALCULATED_INFO.Flying) { 
+		#else
+		  // On PC do logbook also in simmode
+		  #if (WINDOWSPC>0)
+		  if (CALCULATED_INFO.Flying) {
+		  #else
+		  // Normally, only if really flying
+		  if (!SIMMODE && CALCULATED_INFO.Flying) {
+		  #endif
+		#endif
+		  UpdateLogBookTXT();
+		  UpdateLogBookCSV();
+		}
+
 		StartupStore(_T(". LANDED %s%s"), WhatTimeIsIt(),NEWLINE);
 
 		// JMWX  restore data calculated at finish so
