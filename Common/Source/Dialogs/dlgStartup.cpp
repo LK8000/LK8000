@@ -203,7 +203,7 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 			pos=13;
 			break;
 		case ss272x480:
-			pos=13;
+			pos=14;
 			break;
 		case ss240x400:
 			pos=15;
