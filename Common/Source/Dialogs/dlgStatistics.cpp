@@ -3183,6 +3183,10 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   sDia.fXMax = max( 2500.0, iAS_HorDistance * 1.5 );
   sDia.fYMin = max(0.0, alt-2300);
   sDia.fYMax = max(fMaxAltToday, alt+1000);
+
+  if (bValid)
+    sDia.fYMax = max(sDia.fYMax, alt+ abs(iAS_VertDistance) +1000);
+
   range =sDia.fXMax - sDia.fXMin ;
   sDia.rc = rc;
 
@@ -3293,7 +3297,7 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
     _tcscat(text,buffer);
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
 
-    if((alt- sDia.fYMin-calc_terrainalt) < 300)
+    if((alt- sDia.fYMin /*-calc_terrainalt */) < 300)
       TxXPt.y = CalcHeightCoordinat(  alt,   rc) -  tsize.cy;
     else
       TxXPt.y = CalcHeightCoordinat(  alt,   rc) +  NIBLSCALE(3);
@@ -3313,15 +3317,15 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
     line[1].y = CalcHeightCoordinat( alt - (double)iAS_VertDistance, rc);
     StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
 
-    Units::FormatUserAltitude( (double)iAS_VertDistance, buffer, 7);
+    Units::FormatUserAltitude( (double)abs(iAS_VertDistance), buffer, 7);
     _tcsncpy(text, TEXT(" "), sizeof(text)/sizeof(text[0]));
     _tcscat(text,buffer);
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
 
     if ( bLeft )
-      TxYPt.x = CalcDistanceCoordinat(iAS_HorDistance,  rc)- tsize.cx;
+      TxYPt.x = CalcDistanceCoordinat(iAS_HorDistance,  rc)- tsize.cx - NIBLSCALE(3);
     else
-      TxYPt.x = CalcDistanceCoordinat(iAS_HorDistance,  rc)+ NIBLSCALE(3);
+      TxYPt.x = CalcDistanceCoordinat(iAS_HorDistance,  rc)+ NIBLSCALE(5);
     if( abs( line[0].y -  line[1].y) > tsize.cy)
       TxYPt.y = CalcHeightCoordinat( alt - (double)iAS_VertDistance/2.0, rc) -tsize.cy/2 ;
     else
