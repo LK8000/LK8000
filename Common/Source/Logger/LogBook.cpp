@@ -190,7 +190,6 @@ bool UpdateLogBookTXT(bool welandedforsure) {
 //
 void ResetLogBook(void) {
 
-  FILE *stream;
   TCHAR filename[MAX_PATH];
 
   #if TESTBENCH
@@ -198,20 +197,10 @@ void ResetLogBook(void) {
   #endif
 
   wsprintf(filename,_T("%s\\%S\\%S"), LKGetLocalPath(), LKD_LOGS,LKF_LOGBOOKTXT);
-  stream = _wfopen(filename,TEXT("w+"));
-  if (stream == NULL) {
-	StartupStore(_T(".... ERROR resetting LogBookTXT, file open failure!%s"),NEWLINE);
-	return;
-  }
-  fclose(stream);
+  DeleteFile(filename);
 
   wsprintf(filename,_T("%s\\%S\\%S"), LKGetLocalPath(), LKD_LOGS,LKF_LOGBOOKLST);
-  stream = _wfopen(filename,TEXT("w+"));
-  if (stream == NULL) {
-	StartupStore(_T(".... ERROR resetting LogBookLST, file open failure!%s"),NEWLINE);
-	return;
-  }
-  fclose(stream);
+  DeleteFile(filename);
 
 
   return;
