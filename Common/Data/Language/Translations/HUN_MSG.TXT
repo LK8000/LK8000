@@ -1315,6 +1315,9 @@ _@M1287_ "RepIrány"
 _@M1288_ "Köv.FP felé nézve"
 _@M1289_ "Köv.FP"
 _@M1290_ "Repirány felé nézve"
+_@M1291_ "Köz.Légt"
+_@M1292_ "Legköz.légtér felé"
+_@M1293_ "LÉGTÉRBEN"
 
 # LK info page headers, try to use the same or less number of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!
@@ -1669,10 +1672,23 @@ _@M1725_ "SAJNÁLOM"
 _@M1726_ "POZICIÓD ISMERETLEN!"
 # 1727-1739 reserved for The Oracle
 _@M1740_ "OLC analízis"
-_@M1741_ "**ALAP PROFIL VISSZAÁLLÍTÁSA**"
+_@M1741_ "**ALAP PROFIL VISSZA**"
 # free space , to be used 1744-1760
 _@M1742_ "AGL:"
 _@M1743_ "ELV:"
+# this was the old V rough air. Leave a trailing space!
+_@M1744_ "Max sebesség "
+# new startup profile buttons
+_@M1745_ "REPÜLŐGÉP"
+_@M1746_ "RENDSZER"
+# new button caption on task overview dialog, appears only in PG/HG mode
+_@M1747_ "Idő kapuk"
+_@M1748_ "Repülési napló"
+_@M1749_ "Nincs meg a fájl"
+_@M1750_ "üres"
+_@M1751_ "TÖRÖLJEM A REPÜLÉSI NAPLÓT?"
+_@M1752_ "REPNAPLÓ TÖRÖLVE"
+_@M1753_ "Repülések listája"
 
 #
 # These are new infoboxes:
@@ -1818,5 +1834,9 @@ _@M2115_ "TEnergia"
 _@M2116_ "Topo hát-\ntérszín"
 # Auto MC thermal+final glide mode, keep max 7 chars!
 _@M2117_ "Wn+Vég"
+_@M2118_ "Repülési\nnapló"
+_@M2119_ "Repnapló\nrészletek"
+_@M2120_ "Repnapló\ntörlése"
+_@M2121_ "Repnapló\nlista"
 
 
