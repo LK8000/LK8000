@@ -94,6 +94,11 @@ bool UpdateLogBookTXT(bool welandedforsure) {
 	GPS_INFO.Minute);
   fwrite(line,strlen(line),1,stream);
 
+  if (SIMMODE) {
+	sprintf(line,"%S\r\n",gettext(_T("_@M1211_"))); // simulaion
+	fwrite(line,strlen(line),1,stream);
+  }
+
   //
   // D-1234 (Ka6-CR)
   //
@@ -266,7 +271,13 @@ bool UpdateLogBookCSV(bool welandedforsure) {
   Units::TimeToTextS(Temp, (int)CALCULATED_INFO.FlightTime);
   sprintf(sflighttime,"%S",Temp);
 
-  sprintf(line,"%04d,%02d,%02d,%S,%S,%s,%s,%s,%d,%s,%S\r\n",
+  char simmode[8];
+  if (SIMMODE)
+	strcpy(simmode,",SIM");
+  else
+	strcpy(simmode,"");
+
+  sprintf(line,"%04d,%02d,%02d,%S,%S,%s,%s,%s,%d,%s,%S%s\r\n",
         GPS_INFO.Year,
         GPS_INFO.Month,
         GPS_INFO.Day,
@@ -275,7 +286,8 @@ bool UpdateLogBookCSV(bool welandedforsure) {
 	stakeoff, slanding,sflighttime,
 	(int)(DISTANCEMODIFY*CALCULATED_INFO.Odometer),
 	solcdist,
-	Units::GetDistanceName()
+	Units::GetDistanceName(),
+	simmode
   );
 
   fwrite(line,strlen(line),1,stream);
@@ -340,12 +352,18 @@ bool UpdateLogBookLST(bool welandedforsure) {
   Units::TimeToTextS(Temp, (int)CALCULATED_INFO.FlightTime);
   sprintf(sflighttime,"%S",Temp);
 
-  sprintf(line,"%04d/%02d/%02d  %s (%s  %s) %S\r\n",
+  char simmode[8];
+  if (SIMMODE)
+	strcpy(simmode,"  SIM");
+  else
+	strcpy(simmode,"");
+
+  sprintf(line,"%04d/%02d/%02d  %s (%s  %s) %S%s\r\n",
         GPS_INFO.Year,
         GPS_INFO.Month,
         GPS_INFO.Day,
 	sflighttime,stakeoff,slanding,
-	AircraftRego_Config
+	AircraftRego_Config, simmode
   );
 
   fwrite(line,strlen(line),1,stream);
