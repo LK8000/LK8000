@@ -8,10 +8,62 @@
 
 #include "externs.h"
 #include "Process.h"
+#include "Logger.h"
 #include "utils/heapcheck.h"
 
+
+//
+// Called by Calculations at landing detection (not flying anymore)
+// and by WndProc on shutdown, in case we are still flying
+//
+void UpdateLogBook(bool welandedforsure) {
+
+  #if TESTBENCH
+  #else
+
+  #if (WINDOWSPC>0)
+  #else
+  // Only in SIMMODE on pna/ppc we dont log 
+  if (SIMMODE) return;
+  #endif
+
+  #endif // !testbench
+
+  #if TESTBENCH
+  StartupStore(_T("... UpdateLogBook start\n"));
+  #endif
+
+  // If we are called by WndProc then we might be still flying and we
+  // must log. Otherwise if we are not flying, it means that we already
+  // logged at landing detection, so we can return.
+  if (!welandedforsure ) {
+	if (!CALCULATED_INFO.Flying) {
+		#if TESTBENCH
+		StartupStore(_T("... Not flying, no reason to do logbook on exit\n"));
+		#endif
+		return;
+	}
+	#if TESTBENCH
+	else
+		StartupStore(_T("... Still flying! Do LogBook on exit!\n"));
+	#endif
+  }
+
+  if (CALCULATED_INFO.FlightTime<=0) {
+	#if TESTBENCH
+	StartupStore(_T("... UpdateLogBook: flight-time is zero, no log!\n"));
+	#endif
+	return;
+  }
+  UpdateLogBookTXT(welandedforsure);
+  UpdateLogBookCSV(welandedforsure);
+  UpdateLogBookLST(welandedforsure);
+
+}
+
+
 // Returns false if something went wrong
-bool UpdateLogBookTXT(void) {
+bool UpdateLogBookTXT(bool welandedforsure) {
 
   FILE *stream;
   TCHAR filename[MAX_PATH];
@@ -24,12 +76,6 @@ bool UpdateLogBookTXT(void) {
   #if TESTBENCH
   StartupStore(_T("... UpdateLogBookTXT <%s>\n"),filename);
   #endif
-  if (CALCULATED_INFO.FlightTime<=0) {
-	#if TESTBENCH
-	StartupStore(_T("... UpdateLogBookTXT: flight-time is zero!\n"),filename);
-	#endif
-	return true; // no problems, just a no-flight trigger
-  }
 
   stream = _wfopen(filename,TEXT("a+"));
   if (stream == NULL) {
@@ -64,7 +110,7 @@ bool UpdateLogBookTXT(void) {
   //
   // Landing time
   //
-  if (!CALCULATED_INFO.Flying) {
+  if (!CALCULATED_INFO.Flying || welandedforsure ) {
 	Units::TimeToTextS(Temp,(int)TimeLocal((long)(CALCULATED_INFO.TakeOffTime+CALCULATED_INFO.FlightTime)));
 	sprintf(line,"%S: %S\r\n",gettext(_T("_@M386_")),Temp);
   } else {
@@ -139,32 +185,42 @@ bool UpdateLogBookTXT(void) {
 
 }
 
-
-
+//
+// Reset will apply only to TXT and LST, not to the CSV
+//
 void ResetLogBook(void) {
 
   FILE *stream;
   TCHAR filename[MAX_PATH];
 
-  wsprintf(filename,_T("%s\\%S\\%S"), LKGetLocalPath(), LKD_LOGS,LKF_LOGBOOKTXT);
-
   #if TESTBENCH
   StartupStore(_T("... ResetLogBook <%s>\n"),filename);
   #endif
 
+  wsprintf(filename,_T("%s\\%S\\%S"), LKGetLocalPath(), LKD_LOGS,LKF_LOGBOOKTXT);
   stream = _wfopen(filename,TEXT("w+"));
   if (stream == NULL) {
-	StartupStore(_T(".... ERROR resetting LogBook, file open failure!%s"),NEWLINE);
+	StartupStore(_T(".... ERROR resetting LogBookTXT, file open failure!%s"),NEWLINE);
 	return;
   }
   fclose(stream);
+
+  wsprintf(filename,_T("%s\\%S\\%S"), LKGetLocalPath(), LKD_LOGS,LKF_LOGBOOKLST);
+  stream = _wfopen(filename,TEXT("w+"));
+  if (stream == NULL) {
+	StartupStore(_T(".... ERROR resetting LogBookLST, file open failure!%s"),NEWLINE);
+	return;
+  }
+  fclose(stream);
+
+
   return;
 }
 
 //
 // This is the comma separated value logbook, ready for excel and spreadsheets
 //
-bool UpdateLogBookCSV(void) {
+bool UpdateLogBookCSV(bool welandedforsure) {
 
   FILE *stream;
   TCHAR filename[MAX_PATH];
@@ -179,12 +235,6 @@ bool UpdateLogBookCSV(void) {
   #if TESTBENCH
   StartupStore(_T("... UpdateLogBookCSV <%s>\n"),filename);
   #endif
-  if (CALCULATED_INFO.FlightTime<=0) {
-	#if TESTBENCH
-	StartupStore(_T("... UpdateLogBookCSV: flight-time is zero!\n"),filename);
-	#endif
-	return true; // no problems, just a no-flight trigger
-  }
 
   stream = _wfopen(filename,TEXT("r"));
   if (stream == NULL)
@@ -207,7 +257,7 @@ bool UpdateLogBookCSV(void) {
   Units::TimeToTextS(Temp,(int)TimeLocal((long)CALCULATED_INFO.TakeOffTime));
   sprintf(stakeoff,"%S",Temp);
 
-  if (!CALCULATED_INFO.Flying) {
+  if (!CALCULATED_INFO.Flying || welandedforsure) {
 	Units::TimeToTextS(Temp,(int)TimeLocal((long)(CALCULATED_INFO.TakeOffTime+CALCULATED_INFO.FlightTime)));
 	sprintf(slanding,"%S",Temp);
   } else {
@@ -244,3 +294,73 @@ bool UpdateLogBookCSV(void) {
   fclose(stream);
   return true;
 }
+
+
+//
+// This is a simple text list of the logbook
+//
+bool UpdateLogBookLST(bool welandedforsure) {
+
+  FILE *stream;
+  TCHAR filename[MAX_PATH];
+  TCHAR Temp[300];
+  char  line[300];
+  bool dofirstline=false;
+  char stakeoff[20],slanding[20],sflighttime[20];
+
+  wsprintf(filename,_T("%s\\%S\\%S"), LKGetLocalPath(), LKD_LOGS,LKF_LOGBOOKLST);
+
+  #if TESTBENCH
+  StartupStore(_T("... UpdateLogBookLST <%s>\n"),filename);
+  #endif
+
+  stream = _wfopen(filename,TEXT("r"));
+  if (stream == NULL)
+        dofirstline=true;
+  else
+        fclose(stream);
+
+  stream = _wfopen(filename,TEXT("a+"));
+  if (stream == NULL) {
+	StartupStore(_T(".... ERROR updating LogBookLST, file open failure!%s"),NEWLINE);
+	return false;
+  }
+
+  if (dofirstline) {
+	sprintf(line,"Date Duration Takeoff Landing Aircraft\r\n");
+	fwrite(line,strlen(line),1,stream);
+	sprintf(line,"---------------------------------\r\n");
+	fwrite(line,strlen(line),1,stream);
+  }
+
+  Units::TimeToTextS(Temp,(int)TimeLocal((long)CALCULATED_INFO.TakeOffTime));
+  sprintf(stakeoff,"%S",Temp);
+
+  if (!CALCULATED_INFO.Flying || welandedforsure) {
+	Units::TimeToTextS(Temp,(int)TimeLocal((long)(CALCULATED_INFO.TakeOffTime+CALCULATED_INFO.FlightTime)));
+	sprintf(slanding,"%S",Temp);
+  } else {
+	#if TESTBENCH
+	StartupStore(_T(".... LogBookLST, logging but still flying!%s"),NEWLINE);
+	#endif
+	sprintf(slanding,"---");
+  }
+
+  Units::TimeToTextS(Temp, (int)CALCULATED_INFO.FlightTime);
+  sprintf(sflighttime,"%S",Temp);
+
+  sprintf(line,"%04d/%02d/%02d  %s (%s->%s) %S\r\n",
+        GPS_INFO.Year,
+        GPS_INFO.Month,
+        GPS_INFO.Day,
+	sflighttime,stakeoff,slanding,
+	AircraftRego_Config
+  );
+
+  fwrite(line,strlen(line),1,stream);
+
+  fclose(stream);
+  return true;
+}
+
+
