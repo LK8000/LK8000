@@ -1913,8 +1913,12 @@ void InputEvents::eventService(const TCHAR *misc) {
 	MapWindow::RefreshMap();
 	return;
   }
-  if (_tcscmp(misc, TEXT("LOGBVIEW")) == 0) {
-	dlgChecklistShowModal(1); // 1 for logbook
+  if (_tcscmp(misc, TEXT("LOGBTXT")) == 0) {
+	dlgChecklistShowModal(1); // 1 for logbook TXT
+	return;
+  }
+  if (_tcscmp(misc, TEXT("LOGBLST")) == 0) {
+	dlgChecklistShowModal(2); // 2 for logbook LST
 	return;
   }
 

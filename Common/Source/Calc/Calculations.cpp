@@ -4513,9 +4513,9 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	if (time_in_flight==0 && !ISCAR) { 
 		// have been stationary for a minute
 		InputEvents::processGlideComputer(GCE_LANDING);
-		UpdateLogBook(true); // we landed for sure
 
 		StartupStore(_T(". LANDED %s%s"), WhatTimeIsIt(),NEWLINE);
+		UpdateLogBook(true); // we landed for sure
 
 		// JMWX  restore data calculated at finish so
 		// user can review flight as at finish line

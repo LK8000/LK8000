@@ -76,10 +76,24 @@ static void NextPage(int Step){
 
   nTextLines = TextToLineOffsets(ChecklistText[page], LineOffsets, MAXLINES);
 
+  switch(nLists) {
+	case 0:
+		_stprintf(buffer, _T("%s %s"),NoteModeTitle,gettext(TEXT("_@M1750_"))); // empty
+		break;
+	case 1:
+		_stprintf(buffer, _T("%s"),NoteModeTitle); 
+		break;
+	default:
+		_stprintf(buffer, _T("%s %d/%d"),NoteModeTitle,page+1,nLists); 
+		break;
+  }
+
+#if 0 // REMOVE
   if (nLists>0)
 	_stprintf(buffer, _T("%s %d/%d"),NoteModeTitle,page+1,nLists); 
   else
 	_stprintf(buffer, _T("%s %s"),NoteModeTitle,gettext(TEXT("_@M1750_"))); // empty
+#endif
 
   if (ChecklistTitle[page] &&
       (_tcslen(ChecklistTitle[page])>0) 
@@ -208,11 +222,18 @@ bool LoadChecklist(short checklistmode) {
 		_tcscat(filename,_T(LKF_CHECKLIST));
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M878_")));  // notepad
 		break;
-	// logbook
+	// logbook TXT
 	case 1:
 		LocalPath(filename, TEXT(LKD_LOGS));
 		_tcscat(filename,_T("\\"));
 		_tcscat(filename,_T(LKF_LOGBOOKTXT));
+		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M1748_")));  // logbook
+		break;
+	// logbook LST
+	case 2:
+		LocalPath(filename, TEXT(LKD_LOGS));
+		_tcscat(filename,_T("\\"));
+		_tcscat(filename,_T(LKF_LOGBOOKLST));
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M1748_")));  // logbook
 		break;
   }

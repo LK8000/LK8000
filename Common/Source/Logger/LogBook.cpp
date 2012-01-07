@@ -327,9 +327,11 @@ bool UpdateLogBookLST(bool welandedforsure) {
   }
 
   if (dofirstline) {
-	sprintf(line,"Date Duration Takeoff Landing Aircraft\r\n");
+	sprintf(line,"[%S]\r\n",gettext(_T("_@M1753_"))); // List of flights
 	fwrite(line,strlen(line),1,stream);
-	sprintf(line,"---------------------------------\r\n");
+	sprintf(line,"Date  Duration  Takeoff  Landing  Aircraft\r\n");
+	fwrite(line,strlen(line),1,stream);
+	sprintf(line,"_____________________________________________\r\n");
 	fwrite(line,strlen(line),1,stream);
   }
 
@@ -349,7 +351,7 @@ bool UpdateLogBookLST(bool welandedforsure) {
   Units::TimeToTextS(Temp, (int)CALCULATED_INFO.FlightTime);
   sprintf(sflighttime,"%S",Temp);
 
-  sprintf(line,"%04d/%02d/%02d  %s (%s->%s) %S\r\n",
+  sprintf(line,"%04d/%02d/%02d  %s (%s  %s) %S\r\n",
         GPS_INFO.Year,
         GPS_INFO.Month,
         GPS_INFO.Day,

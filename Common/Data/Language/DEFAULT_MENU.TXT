@@ -2737,22 +2737,22 @@ location=4
 mode=LOGBOOK
 type=key
 data=6
-label=_@M2119_
-event=Service LOGBVIEW
+label=_@M2121_
+event=Service LOGBLST
 location=5
 
 mode=LOGBOOK
 type=key
 data=7
-label=_@M2120_
-event=Service LOGBRESET
+label=_@M2119_
+event=Service LOGBTXT
 location=6
 
 mode=LOGBOOK
 type=key
 data=8
-label=
-event=Null
+label=_@M2120_
+event=Service LOGBRESET
 location=7
 
 mode=LOGBOOK
