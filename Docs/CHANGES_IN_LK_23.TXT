@@ -7,22 +7,37 @@ Version 2.3s  January 7,  2012
 
 NEW
 
-. LK Flight LogBook. >> Works only if logger is enabled! << 
-  In the logger folder, two files are created automatically:
-  LOGBOOK.TXT is a notepad formatted file, textual, and it is viewable from within LK
-  using Info 2/2 LogBook menu button. This file is reporting aircraft type, time of takeoff, 
+. LK Flight LogBook. 
+  Each time that a landing status is detected, three files are created/updated automatically inside _Logger folder.
+
+  LOGBOOK.LST is a notepad formatted file, textual, where each flight is saved on a single line.
+  It can be read using Info 2/2 LogBook "LogBook List" menu button.
+  Only relevant informations such as date, flytime, takeoff landing and aircraft rego are written.
+  The pilot has all the flights listed here, similar to other instruments logbooks.
+  In case of SIM mode, a "SIM" field is appended to the flight line.
+  The LOGBOOK.LST can be reset by user request in LK, using reset button in Logbook menu.
+  
+  LOGBOOK.TXT is a notepad formatted file, textual, and it can be read from LK using 
+  Info 2/2 LogBook "LogBook Details" menu button. 
+  This file is reporting aircraft type, time of takeoff, 
   landing, flytime, max altitude reached, odometer, OLC distance ,max height gained.
+  In case of SIM mode, SIMULATION is added also.
+  Each flight is on a single dedicated note page, and it is possible to browse through all flights using the arrow keys.
   The LOGBOOK.TXT can be reset by user request in LK, using reset button in Logbook menu.
 
   LOGBOOK.CSV is in Comma Separated Value format, and can be open as-is by any spreadsheet.
-  It has fewer informations, and it is never reset by the software.
+  It has fewer informations, and it is never reset by the software.  It is made for external
+  usage.
+  In case of SIM mode, a "SIM" field is appended to the flight line.
 
-  A flight is added to the logbook upon a stop-logger event. This normally happens when a
-  landing status is detected automatically or when the pilot is stopping the logger manually.
-  Logger is also forced off on lk program exit, if it was still running.
-  Notice that the LANDING event is detected automatically about 45 seconds after real landing.
+  Notes on LogBook:
+  - A flight is added to the logbook when the landing status is detected.
+  - It is also added on lk program exit, if the aircraft is still flying.
+  - On PNA/PPC versions, Logbook is kept only in FLY mode.
+  - On PC version Logbook is made also in SIM mode.
+  - A Takeoff must be detected, in any case, in order to "start" a flight that can be "closed" with a landing.
+  - Remember that the LANDING event is detected automatically about 45 seconds after real landing.
 
-  As stated at the beginning: the LogBook requires the logger to be ENABLED!   
 
 
 . New configurable Efficiency parameter in Safety config menu 6.
