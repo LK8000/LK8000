@@ -268,7 +268,13 @@ bool LoadChecklist(short checklistmode) {
     {
       int len = _tcslen(TempString);
       if (len>0) {
-	// JMW strip extra \r if it exists
+	if (TempString[len-1]=='\r') {
+	  TempString[len-1]= 0;
+	  len--;
+	}
+      }
+      // On PNA we may have TWO trailing CR
+      if (len>0) {
 	if (TempString[len-1]=='\r') {
 	  TempString[len-1]= 0;
 	}

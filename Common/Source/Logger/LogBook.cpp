@@ -11,6 +11,8 @@
 #include "Logger.h"
 #include "utils/heapcheck.h"
 
+// fwrite adds a linefeed to each CR. We should not use \r\n with fwrite
+#define WNEWLINE	"\n"
 
 //
 // Called by Calculations at landing detection (not flying anymore)
@@ -86,30 +88,30 @@ bool UpdateLogBookTXT(bool welandedforsure) {
   //
   // Header line for new note
   //
-  sprintf(line,"\r\n[%04d-%02d-%02d  @%02d:%02d]\r\n",
+  sprintf(line,"[%04d-%02d-%02d  @%02d:%02d]%s",
 	GPS_INFO.Year,
 	GPS_INFO.Month,
 	GPS_INFO.Day,
 	GPS_INFO.Hour,
-	GPS_INFO.Minute);
+	GPS_INFO.Minute,WNEWLINE);
   fwrite(line,strlen(line),1,stream);
 
   if (SIMMODE) {
-	sprintf(line,"%S\r\n",gettext(_T("_@M1211_"))); // simulaion
+	sprintf(line,"%S%s",gettext(_T("_@M1211_")),WNEWLINE); // simulaion
 	fwrite(line,strlen(line),1,stream);
   }
 
   //
   // D-1234 (Ka6-CR)
   //
-  sprintf(line,"%S (%S)\r\n\r\n", AircraftRego_Config,AircraftType_Config);
+  sprintf(line,"%S (%S)%s%s", AircraftRego_Config,AircraftType_Config,WNEWLINE,WNEWLINE);
   fwrite(line,strlen(line),1,stream);
 
   //
   // Takeoff time
   //
   Units::TimeToTextS(Temp,(int)TimeLocal((long)CALCULATED_INFO.TakeOffTime));
-  sprintf(line,"%S: %S\r\n",gettext(_T("_@M680_")),Temp);
+  sprintf(line,"%S: %S%s",gettext(_T("_@M680_")),Temp,WNEWLINE);
   fwrite(line,strlen(line),1,stream);
 
   //
@@ -117,12 +119,12 @@ bool UpdateLogBookTXT(bool welandedforsure) {
   //
   if (!CALCULATED_INFO.Flying || welandedforsure ) {
 	Units::TimeToTextS(Temp,(int)TimeLocal((long)(CALCULATED_INFO.TakeOffTime+CALCULATED_INFO.FlightTime)));
-	sprintf(line,"%S: %S\r\n",gettext(_T("_@M386_")),Temp);
+	sprintf(line,"%S: %S%s",gettext(_T("_@M386_")),Temp,WNEWLINE);
   } else {
   	#if TESTBENCH
 	StartupStore(_T(".... LogBookTXT, logging but still flying!%s"),NEWLINE);
 	#endif
-	sprintf(line,"%S: -------\r\n",gettext(_T("_@M386_")));
+	sprintf(line,"%S: -------%s",gettext(_T("_@M386_")),WNEWLINE);
   }
   fwrite(line,strlen(line),1,stream);
 
@@ -130,7 +132,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
   // Flight time
   //
   Units::TimeToTextS(Temp, (int)CALCULATED_INFO.FlightTime);
-  sprintf(line,"%S: %S\r\n\r\n",gettext(_T("_@M306_")),Temp);
+  sprintf(line,"%S: %S%s%s",gettext(_T("_@M306_")),Temp,WNEWLINE,WNEWLINE);
   fwrite(line,strlen(line),1,stream);
 
   if (ISGLIDER || ISPARAGLIDER) {
@@ -140,7 +142,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
 	//
 	if ( CALCULATED_INFO.FreeFlightStartTime>0 ) {
 		Units::TimeToTextS(Temp, (int)CALCULATED_INFO.FreeFlightStartTime);
-		sprintf(line,"%S: %S\r\n",gettext(_T("_@M1452_")),Temp);
+		sprintf(line,"%S: %S%s",gettext(_T("_@M1452_")),Temp,WNEWLINE);
 		fwrite(line,strlen(line),1,stream);
 	}
 
@@ -150,7 +152,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
 	ivalue=CContestMgr::TYPE_OLC_CLASSIC;
 	if (OlcResults[ivalue].Type()!=CContestMgr::TYPE_INVALID) {
 		_stprintf(Temp, TEXT("%5.0f"),DISTANCEMODIFY*OlcResults[ivalue].Distance());
-		sprintf(line,"%S: %S %S\r\n",gettext(_T("_@M1455_")),Temp,(Units::GetDistanceName()));
+		sprintf(line,"%S: %S %S%s",gettext(_T("_@M1455_")),Temp,(Units::GetDistanceName()),WNEWLINE);
 		fwrite(line,strlen(line),1,stream);
 	}
 
@@ -160,27 +162,27 @@ bool UpdateLogBookTXT(bool welandedforsure) {
 	ivalue=CContestMgr::TYPE_OLC_FAI;
 	if (OlcResults[ivalue].Type()!=CContestMgr::TYPE_INVALID) {
 		_stprintf(Temp, TEXT("%5.0f"),DISTANCEMODIFY*OlcResults[ivalue].Distance());
-		sprintf(line,"%S: %S %S\r\n",gettext(_T("_@M1457_")),Temp,(Units::GetDistanceName()));
+		sprintf(line,"%S: %S %S%s",gettext(_T("_@M1457_")),Temp,(Units::GetDistanceName()),WNEWLINE);
 		fwrite(line,strlen(line),1,stream);
 	}
 
 	//
 	// Max Altitude gained
 	//
-	sprintf(line,"%S: %.0f %S\r\n",gettext(_T("_@M1769_")),ALTITUDEMODIFY*CALCULATED_INFO.MaxHeightGain,(Units::GetAltitudeName()));
+	sprintf(line,"%S: %.0f %S%s",gettext(_T("_@M1769_")),ALTITUDEMODIFY*CALCULATED_INFO.MaxHeightGain,(Units::GetAltitudeName()),WNEWLINE);
 	fwrite(line,strlen(line),1,stream);
   }
 
   //
   // Max Altitude reached
   //
-  sprintf(line,"%S: %.0f %S\r\n",gettext(_T("_@M1767_")),ALTITUDEMODIFY*CALCULATED_INFO.MaxAltitude,(Units::GetAltitudeName()));
+  sprintf(line,"%S: %.0f %S%s",gettext(_T("_@M1767_")),ALTITUDEMODIFY*CALCULATED_INFO.MaxAltitude,(Units::GetAltitudeName()),WNEWLINE);
   fwrite(line,strlen(line),1,stream);
 
   //
-  // Odometer
+  // Odometer, add a spare CR LF to separate next logfield
   //
-  sprintf(line,"%S: %.0f %S\r\n",gettext(_T("_@M1167_")),DISTANCEMODIFY*CALCULATED_INFO.Odometer,(Units::GetDistanceName()));
+  sprintf(line,"%S: %.0f %S%s%s",gettext(_T("_@M1167_")),DISTANCEMODIFY*CALCULATED_INFO.Odometer,(Units::GetDistanceName()),WNEWLINE,WNEWLINE);
   fwrite(line,strlen(line),1,stream);
 
 
@@ -243,7 +245,7 @@ bool UpdateLogBookCSV(bool welandedforsure) {
   }
 
   if (dofirstline) {
-	sprintf(line,"Year,Month,Day,AircraftRego,AircraftType,Takeoff,Landing,FlyTime,Odometer,OLCdist,DistUnits\r\n");
+	sprintf(line,"Year,Month,Day,AircraftRego,AircraftType,Takeoff,Landing,FlyTime,Odometer,OLCdist,DistUnits%s",WNEWLINE);
 	fwrite(line,strlen(line),1,stream);
   }
 
@@ -277,7 +279,7 @@ bool UpdateLogBookCSV(bool welandedforsure) {
   else
 	strcpy(simmode,"");
 
-  sprintf(line,"%04d,%02d,%02d,%S,%S,%s,%s,%s,%d,%s,%S%s\r\n",
+  sprintf(line,"%04d,%02d,%02d,%S,%S,%s,%s,%s,%d,%s,%S%s%s",
         GPS_INFO.Year,
         GPS_INFO.Month,
         GPS_INFO.Day,
@@ -287,7 +289,7 @@ bool UpdateLogBookCSV(bool welandedforsure) {
 	(int)(DISTANCEMODIFY*CALCULATED_INFO.Odometer),
 	solcdist,
 	Units::GetDistanceName(),
-	simmode
+	simmode, WNEWLINE
   );
 
   fwrite(line,strlen(line),1,stream);
@@ -328,11 +330,11 @@ bool UpdateLogBookLST(bool welandedforsure) {
   }
 
   if (dofirstline) {
-	sprintf(line,"[%S]\r\n",gettext(_T("_@M1753_"))); // List of flights
+	sprintf(line,"[%S]%s",gettext(_T("_@M1753_")),WNEWLINE); // List of flights
 	fwrite(line,strlen(line),1,stream);
-	sprintf(line,"Date  Duration  Takeoff  Landing  Aircraft\r\n");
+	sprintf(line,"Date  Duration  Takeoff  Landing  Aircraft%s",WNEWLINE);
 	fwrite(line,strlen(line),1,stream);
-	sprintf(line,"_____________________________________________\r\n");
+	sprintf(line,"_____________________________________________%s",WNEWLINE);
 	fwrite(line,strlen(line),1,stream);
   }
 
@@ -358,12 +360,12 @@ bool UpdateLogBookLST(bool welandedforsure) {
   else
 	strcpy(simmode,"");
 
-  sprintf(line,"%04d/%02d/%02d  %s (%s  %s) %S%s\r\n",
+  sprintf(line,"%04d/%02d/%02d  %s (%s  %s) %S%s%s",
         GPS_INFO.Year,
         GPS_INFO.Month,
         GPS_INFO.Day,
 	sflighttime,stakeoff,slanding,
-	AircraftRego_Config, simmode
+	AircraftRego_Config, simmode, WNEWLINE
   );
 
   fwrite(line,strlen(line),1,stream);
