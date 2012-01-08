@@ -124,7 +124,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
   	#if TESTBENCH
 	StartupStore(_T(".... LogBookTXT, logging but still flying!%s"),NEWLINE);
 	#endif
-	sprintf(line,"%S: -------%s",gettext(_T("_@M386_")),WNEWLINE);
+	sprintf(line,"%S: ??:??:??%s",gettext(_T("_@M386_")),WNEWLINE);
   }
   fwrite(line,strlen(line),1,stream);
 
@@ -260,7 +260,7 @@ bool UpdateLogBookCSV(bool welandedforsure) {
 	#if TESTBENCH
 	StartupStore(_T(".... LogBookCSV, logging but still flying!%s"),NEWLINE);
 	#endif
-	sprintf(slanding,"---");
+	sprintf(slanding,"???");
   }
 
   ivalue=CContestMgr::TYPE_OLC_CLASSIC;
@@ -332,9 +332,9 @@ bool UpdateLogBookLST(bool welandedforsure) {
   if (dofirstline) {
 	sprintf(line,"[%S]%s",gettext(_T("_@M1753_")),WNEWLINE); // List of flights
 	fwrite(line,strlen(line),1,stream);
-	sprintf(line,"Date  Duration  Takeoff  Landing  Aircraft%s",WNEWLINE);
+	sprintf(line,"Date  Duration  (Takeoff  Landing)  Aircraft%s",WNEWLINE);
 	fwrite(line,strlen(line),1,stream);
-	sprintf(line,"_____________________________________________%s",WNEWLINE);
+	sprintf(line,"__________________________________________________________________________________________________%s",WNEWLINE);
 	fwrite(line,strlen(line),1,stream);
   }
 
@@ -348,7 +348,7 @@ bool UpdateLogBookLST(bool welandedforsure) {
 	#if TESTBENCH
 	StartupStore(_T(".... LogBookLST, logging but still flying!%s"),NEWLINE);
 	#endif
-	sprintf(slanding,"---");
+	sprintf(slanding,"??:??:??");
   }
 
   Units::TimeToTextS(Temp, (int)CALCULATED_INFO.FlightTime);
@@ -356,11 +356,11 @@ bool UpdateLogBookLST(bool welandedforsure) {
 
   char simmode[8];
   if (SIMMODE)
-	strcpy(simmode,"  SIM");
+	strcpy(simmode,"  SIM!");
   else
 	strcpy(simmode,"");
 
-  sprintf(line,"%04d/%02d/%02d  %s (%s  %s) %S%s%s",
+  sprintf(line,"%04d/%02d/%02d  %s (%s  %s)  %S%s%s",
         GPS_INFO.Year,
         GPS_INFO.Month,
         GPS_INFO.Day,
