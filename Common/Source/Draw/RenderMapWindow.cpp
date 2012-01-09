@@ -121,10 +121,6 @@ void MapWindow::RenderMapWindow(RECT rc)
   DrawFlightMode(hdcDrawWindow, rc);
   
   if (!mode.AnyPan()) {
-    // REMINDER TODO let it be configurable for not circling also, as before
-    if ((mode.Is(Mode::MODE_CIRCLING)) )
-      if (ThermalBar) DrawThermalBand(hdcDrawWindow, rc); // 091122
-    
     DrawFinalGlide(hdcDrawWindow,rc);
   }
   

@@ -288,7 +288,15 @@ fastzoom:
 
   // Draw traffic and other specifix LK gauges
   	LKDrawFLARMTraffic(hdc, rc, Orig_Aircraft);
-	if ( !mode.AnyPan()) DrawLook8000(hdc,rc); 
+
+  if (!mode.AnyPan()) {
+    // REMINDER TODO let it be configurable for not circling also, as before
+    if ((mode.Is(Mode::MODE_CIRCLING)) )
+      if (ThermalBar) DrawThermalBand(hdcDrawWindow, rc); // 091122
+    
+    DrawLook8000(hdc,rc); 
+  }
+    
 	if (LKVarioBar && !mode.AnyPan()) // 091214 do not draw Vario when in Pan mode
 		LKDrawVario(hdc,rc); // 091111
   
