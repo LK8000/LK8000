@@ -2052,7 +2052,7 @@ static void Update(void){
                 GlidePolar::GetAUW());
       wf->SetCaption(sTmp);
       if (ScreenLandscape) {
-        _stprintf(sTmp, TEXT("%s:\r\n  %3.0f\r\n  at %3.0f %s\r\n\r\n%s:\r\n%3.2f %s\r\n  at %3.0f %s"),
+        _stprintf(sTmp, TEXT("%s:\r\n  %3.0f\r\n  @ %3.0f %s\r\n\r\n%s:\r\n%3.2f %s\r\n  @ %3.0f %s"),
 	// LKTOKEN  _@M140_ = "Best LD" 
                   gettext(TEXT("_@M140_")),
                   GlidePolar::bestld,
@@ -2066,7 +2066,7 @@ static void Update(void){
                   Units::GetHorizontalSpeedName()
                   );
       } else {
-        _stprintf(sTmp, TEXT("%s:\r\n  %3.0f at %3.0f %s\r\n%s:\r\n  %3.2f %s at %3.0f %s"),
+        _stprintf(sTmp, TEXT("%s:\r\n  %3.0f @ %3.0f %s\r\n%s:\r\n  %3.2f %s @ %3.0f %s"),
 	// LKTOKEN  _@M140_ = "Best LD" 
                   gettext(TEXT("_@M140_")),
                   GlidePolar::bestld,
