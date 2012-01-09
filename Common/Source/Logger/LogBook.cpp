@@ -69,7 +69,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
 
   FILE *stream;
   TCHAR filename[MAX_PATH];
-  TCHAR Temp[300];
+  TCHAR Temp[300], TUtc[20];
   char  line[300];
   int ivalue;
 
@@ -97,10 +97,12 @@ bool UpdateLogBookTXT(bool welandedforsure) {
   fwrite(line,strlen(line),1,stream);
 
   if (SIMMODE) {
-	sprintf(line,"%S%s",gettext(_T("_@M1211_")),WNEWLINE); // simulaion
+	sprintf(line,"%S%s",gettext(_T("_@M1211_")),WNEWLINE); // simulation
 	fwrite(line,strlen(line),1,stream);
   }
 
+  sprintf(line,"%S%s", PilotName_Config,WNEWLINE);
+  fwrite(line,strlen(line),1,stream);
   //
   // D-1234 (Ka6-CR)
   //
@@ -111,7 +113,11 @@ bool UpdateLogBookTXT(bool welandedforsure) {
   // Takeoff time
   //
   Units::TimeToTextS(Temp,(int)TimeLocal((long)CALCULATED_INFO.TakeOffTime));
-  sprintf(line,"%S: %S%s",gettext(_T("_@M680_")),Temp,WNEWLINE);
+  Units::TimeToText(TUtc, (int)CALCULATED_INFO.TakeOffTime);
+
+  sprintf(line,"%S:  %S  (UTC %S)%s",gettext(_T("_@M680_")),Temp,TUtc,WNEWLINE);
+  fwrite(line,strlen(line),1,stream);
+  sprintf(line,"%S:  %S%s",gettext(_T("_@M930_")),TAKEOFFWP_Name,WNEWLINE);
   fwrite(line,strlen(line),1,stream);
 
   //
@@ -119,14 +125,19 @@ bool UpdateLogBookTXT(bool welandedforsure) {
   //
   if (!CALCULATED_INFO.Flying || welandedforsure ) {
 	Units::TimeToTextS(Temp,(int)TimeLocal((long)(CALCULATED_INFO.TakeOffTime+CALCULATED_INFO.FlightTime)));
-	sprintf(line,"%S: %S%s",gettext(_T("_@M386_")),Temp,WNEWLINE);
+	Units::TimeToText(TUtc, (int)(CALCULATED_INFO.TakeOffTime+CALCULATED_INFO.FlightTime));
+	sprintf(line,"%S:  %S  (UTC %S)%s",gettext(_T("_@M386_")),Temp,TUtc,WNEWLINE);
+	fwrite(line,strlen(line),1,stream);
+
+	sprintf(line,"%S:  %S%s",gettext(_T("_@M931_")),LANDINGWP_Name,WNEWLINE);
+	fwrite(line,strlen(line),1,stream);
   } else {
   	#if TESTBENCH
 	StartupStore(_T(".... LogBookTXT, logging but still flying!%s"),NEWLINE);
 	#endif
 	sprintf(line,"%S: ??:??:??%s",gettext(_T("_@M386_")),WNEWLINE);
+	fwrite(line,strlen(line),1,stream);
   }
-  fwrite(line,strlen(line),1,stream);
 
   //
   // Flight time
@@ -224,7 +235,7 @@ bool UpdateLogBookCSV(bool welandedforsure) {
   char  line[300];
   int ivalue;
   bool dofirstline=false;
-  char stakeoff[20],slanding[20],sflighttime[20], solcdist[20];
+  char stakeoff[20],stakeoffutc[20],slanding[20],slandingutc[20],sflighttime[20], solcdist[20];
 
   wsprintf(filename,_T("%s\\%S\\%S"), LKGetLocalPath(), LKD_LOGS,LKF_LOGBOOKCSV);
 
@@ -245,22 +256,27 @@ bool UpdateLogBookCSV(bool welandedforsure) {
   }
 
   if (dofirstline) {
-	sprintf(line,"Year,Month,Day,AircraftRego,AircraftType,Takeoff,Landing,FlyTime,Odometer,OLCdist,DistUnits%s",WNEWLINE);
+	sprintf(line,"Year,Month,Day,Pilot,AircraftRego,AircraftType,TakeoffTime,TakeoffUTC,TakeOffLocation,LandingTime,LandingUTC,LandingLocation,TotalFlyTime,Odometer,OLCdist,DistUnits%s",WNEWLINE);
 	fwrite(line,strlen(line),1,stream);
   }
 
 
   Units::TimeToTextS(Temp,(int)TimeLocal((long)CALCULATED_INFO.TakeOffTime));
   sprintf(stakeoff,"%S",Temp);
+  Units::TimeToTextS(Temp, (int)CALCULATED_INFO.TakeOffTime);
+  sprintf(stakeoffutc,"%S",Temp);
 
   if (!CALCULATED_INFO.Flying || welandedforsure) {
 	Units::TimeToTextS(Temp,(int)TimeLocal((long)(CALCULATED_INFO.TakeOffTime+CALCULATED_INFO.FlightTime)));
 	sprintf(slanding,"%S",Temp);
+	Units::TimeToTextS(Temp, (int)(CALCULATED_INFO.TakeOffTime+CALCULATED_INFO.FlightTime));
+	sprintf(slandingutc,"%S",Temp);
   } else {
 	#if TESTBENCH
 	StartupStore(_T(".... LogBookCSV, logging but still flying!%s"),NEWLINE);
 	#endif
 	sprintf(slanding,"???");
+	sprintf(slandingutc,"???");
   }
 
   ivalue=CContestMgr::TYPE_OLC_CLASSIC;
@@ -279,13 +295,14 @@ bool UpdateLogBookCSV(bool welandedforsure) {
   else
 	strcpy(simmode,"");
 
-  sprintf(line,"%04d,%02d,%02d,%S,%S,%s,%s,%s,%d,%s,%S%s%s",
+  sprintf(line,"%04d,%02d,%02d,%S,%S,%S,%s,%s,%S,%s,%s,%S,%s,%d,%s,%S%s%s",
         GPS_INFO.Year,
         GPS_INFO.Month,
         GPS_INFO.Day,
+	PilotName_Config,
 	AircraftRego_Config,
 	AircraftType_Config,
-	stakeoff, slanding,sflighttime,
+	stakeoff, stakeoffutc,TAKEOFFWP_Name,slanding, slandingutc,LANDINGWP_Name,sflighttime,
 	(int)(DISTANCEMODIFY*CALCULATED_INFO.Odometer),
 	solcdist,
 	Units::GetDistanceName(),
@@ -309,7 +326,8 @@ bool UpdateLogBookLST(bool welandedforsure) {
   TCHAR Temp[300];
   char  line[300];
   bool dofirstline=false;
-  char stakeoff[20],slanding[20],sflighttime[20];
+  char stakeoff[20],stakeoffutc[20],slanding[20],slandingutc[20],sflighttime[20];
+  TCHAR pilotname[100];
 
   wsprintf(filename,_T("%s\\%S\\%S"), LKGetLocalPath(), LKD_LOGS,LKF_LOGBOOKLST);
 
@@ -332,42 +350,58 @@ bool UpdateLogBookLST(bool welandedforsure) {
   if (dofirstline) {
 	sprintf(line,"[%S]%s",gettext(_T("_@M1753_")),WNEWLINE); // List of flights
 	fwrite(line,strlen(line),1,stream);
-	sprintf(line,"Date  Duration  (Takeoff  Landing)  Aircraft%s",WNEWLINE);
-	fwrite(line,strlen(line),1,stream);
-	sprintf(line,"__________________________________________________________________________________________________%s",WNEWLINE);
-	fwrite(line,strlen(line),1,stream);
   }
 
   Units::TimeToTextS(Temp,(int)TimeLocal((long)CALCULATED_INFO.TakeOffTime));
   sprintf(stakeoff,"%S",Temp);
+  Units::TimeToText(Temp, (int)CALCULATED_INFO.TakeOffTime);
+  sprintf(stakeoffutc,"(UTC %S)",Temp);
 
   if (!CALCULATED_INFO.Flying || welandedforsure) {
 	Units::TimeToTextS(Temp,(int)TimeLocal((long)(CALCULATED_INFO.TakeOffTime+CALCULATED_INFO.FlightTime)));
 	sprintf(slanding,"%S",Temp);
+	Units::TimeToText(Temp, (int)(CALCULATED_INFO.TakeOffTime+CALCULATED_INFO.FlightTime));
+	sprintf(slandingutc,"(UTC %S)",Temp);
   } else {
 	#if TESTBENCH
 	StartupStore(_T(".... LogBookLST, logging but still flying!%s"),NEWLINE);
 	#endif
-	sprintf(slanding,"??:??:??");
+	sprintf(slanding,"???");
+	strcpy(slandingutc,"");
   }
 
   Units::TimeToTextS(Temp, (int)CALCULATED_INFO.FlightTime);
   sprintf(sflighttime,"%S",Temp);
 
-  char simmode[8];
-  if (SIMMODE)
-	strcpy(simmode,"  SIM!");
-  else
-	strcpy(simmode,"");
+  if (_tcslen(PilotName_Config)>0) {
+	_tcscpy(pilotname,PilotName_Config);
+	pilotname[20]=0;
+  } else
+	_tcscpy(pilotname,_T(""));
+	
+  if (!dofirstline) {
+	sprintf(line,"__________________________________________________________________________________________________%s",WNEWLINE);
+	fwrite(line,strlen(line),1,stream);
+  }
 
-  sprintf(line,"%04d/%02d/%02d  %s (%s  %s)  %S%s%s",
+  if (SIMMODE) {
+	sprintf(line,"%S%s",gettext(_T("_@M1211_")),WNEWLINE);
+	fwrite(line,strlen(line),1,stream);
+  }
+
+  sprintf(line,"%04d/%02d/%02d   %s  %S %S%s",
         GPS_INFO.Year,
         GPS_INFO.Month,
         GPS_INFO.Day,
-	sflighttime,stakeoff,slanding,
-	AircraftRego_Config, simmode, WNEWLINE
-  );
+	sflighttime,
+	AircraftRego_Config,
+	pilotname,WNEWLINE);
 
+  fwrite(line,strlen(line),1,stream);
+
+  sprintf(line,"  %s  %s  %S%s",stakeoff,stakeoffutc,TAKEOFFWP_Name,WNEWLINE);
+  fwrite(line,strlen(line),1,stream);
+  sprintf(line,"  %s  %s  %S%s",slanding,slandingutc,LANDINGWP_Name,WNEWLINE);
   fwrite(line,strlen(line),1,stream);
 
   fclose(stream);

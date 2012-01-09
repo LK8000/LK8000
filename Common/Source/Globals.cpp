@@ -296,6 +296,10 @@ void Globals_Init(void) {
   WpHome_Lat=0;
   WpHome_Lon=0;
 
+  // Name of nearest wp to takeoff and landings
+  _tcscpy(TAKEOFFWP_Name,_T("")); 
+  _tcscpy(LANDINGWP_Name,_T("")); 
+
   // Number of Thermals updated from DoThermalHistory
   LKNumThermals=0;
 

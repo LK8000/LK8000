@@ -273,6 +273,9 @@ GEXTERN TCHAR WpHome_Name[NAME_SIZE+1];
 GEXTERN double WpHome_Lat;
 GEXTERN double WpHome_Lon;
 
+GEXTERN TCHAR TAKEOFFWP_Name[NAME_SIZE+1];
+GEXTERN TCHAR LANDINGWP_Name[NAME_SIZE+1];
+
 // LK8000 Hearth beats at 2Hz
 GEXTERN double LKHearthBeats;
 // number of reporting messages from Portmonitor.

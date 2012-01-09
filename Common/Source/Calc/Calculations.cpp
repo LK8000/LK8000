@@ -4483,8 +4483,16 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	// detect takeoff
 	if (time_in_flight>10) {
 		InputEvents::processGlideComputer(GCE_TAKEOFF);
+		_tcscpy(LANDINGWP_Name,_T(""));
 
-		StartupStore(_T(". TAKEOFF %s%s"), WhatTimeIsIt(),NEWLINE);
+		int j=FindNearestFarVisibleWayPoint(Basic->Longitude,Basic->Latitude,3000,WPT_UNKNOWN);
+		if (j<0)
+			_tcscpy(TAKEOFFWP_Name,_T("???"));
+		else {
+			_tcscpy(TAKEOFFWP_Name,WayPointList[j].Name);
+		}
+
+		StartupStore(_T(". TAKEOFF @%s from <%s>%s"), WhatTimeIsIt(),TAKEOFFWP_Name,NEWLINE);
 
 		// Reset stats on takeoff, but not in SIM mode 
 		// If replaying a file, we do reset of course.
@@ -4514,7 +4522,14 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		// have been stationary for a minute
 		InputEvents::processGlideComputer(GCE_LANDING);
 
-		StartupStore(_T(". LANDED %s%s"), WhatTimeIsIt(),NEWLINE);
+		int j=FindNearestFarVisibleWayPoint(Basic->Longitude,Basic->Latitude,3000,WPT_UNKNOWN);
+		if (j<0)
+			_tcscpy(LANDINGWP_Name,_T("???"));
+		else {
+			_tcscpy(LANDINGWP_Name,WayPointList[j].Name);
+		}
+
+		StartupStore(_T(". LANDED @%s at <%s>%s"), WhatTimeIsIt(),LANDINGWP_Name,NEWLINE);
 		UpdateLogBook(true); // we landed for sure
 
 		// JMWX  restore data calculated at finish so
