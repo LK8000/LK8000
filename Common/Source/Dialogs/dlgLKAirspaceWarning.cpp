@@ -197,6 +197,7 @@ void dlgLKAirspaceFill()
       wp->RefreshDisplay();
     }
 
+#if 0 // unused but available for sometime
     wp = (WndProperty*)dlg->FindByName(TEXT("prpState"));
     if (wp) {
       switch (airspace_copy.WarningLevel()) {
@@ -225,12 +226,13 @@ void dlgLKAirspaceFill()
       }//sw
       wp->RefreshDisplay();
     }
-      
+     
     wp = (WndProperty*)dlg->FindByName(TEXT("prpName"));
     if (wp) {
       wp->SetText(airspace_copy.Name());
       wp->RefreshDisplay();
     }    
+#endif
 
     int hdist;
     int vdist;
@@ -390,6 +392,9 @@ void ShowAirspaceWarningsToUser()
     #ifndef DISABLEAUDIO
     if (EnableSoundModes) LKSound(_T("LK_AIRSPACE.WAV")); // 100819
     #endif
+
+    _stprintf(msgbuf,_T("%s: %s"),gettext(_T("_@M68_")),airspace_copy.Name());
+    dlg->SetCaption(msgbuf);
 
     dlg->ShowModal();
 
