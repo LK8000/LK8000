@@ -836,7 +836,11 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
 		if (IsSafetyAltitudeInUse(GetOvertargetIndex())) {
 			SelectObject(hdc, LK8SmallFont); 
-			LKWriteBoxedText(hdc, gettext(_T("_@M1694_")), rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
+			// LKWriteBoxedText(hdc, gettext(_T("_@M1694_")), rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
+			_stprintf(BufferValue,_T(" + %.0f %s "),SAFETYALTITUDEARRIVAL*ALTITUDEMODIFY,
+			Units::GetUnitName(Units::GetUserAltitudeUnit()));
+			LKWriteBoxedText(hdc, BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
+
 		}
 	} // end no UseGates()
   } // is paraglider
