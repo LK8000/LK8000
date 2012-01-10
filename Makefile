@@ -517,58 +517,77 @@ DLGS	:=\
 	$(DLG)/dlgWindSettings.cpp \
 
 SRC_FILES :=\
-	$(SRC)/Logger/LogBook.cpp\
-	$(SRC)/DoInits.cpp\
-	$(SRC)/ChangeScreen.cpp\
-	$(SRC)/LKProfileResetDefault.cpp\
-	$(SRC)/LKProfileLoad.cpp\
-	$(SRC)/LKProfileSave.cpp\
-	$(SRC)/LKProfileInitRuntime.cpp\
-	$(SRC)/DLL.cpp \
-	$(SRC)/lk8000.cpp		$(SRC)/Progress.cpp\
-	$(SRC)/InputEvents.cpp 		\
-	$(SRC)/LKInstall.cpp 		$(SRC)/Models.cpp\
-	$(SRC)/Backlight.cpp 		\
-	$(SRC)/StatusFile.cpp \
-	$(SRC)/CommandLine.cpp \
-	$(SRC)/CpuLoad.cpp \
-	$(SRC)/Memory.cpp \
-	$(SRC)/Sound.cpp \
-	$(SRC)/Oracle.cpp		$(SRC)/Alarms.cpp\
-	$(SRC)/LocalPath.cpp\
-	$(SRC)/LKFonts.cpp		\
-	$(SRC)/TrueWind.cpp		\
-	$(SRC)/Thread_Draw.cpp		$(SRC)/Thread_Port.cpp\
-	$(SRC)/WndProc.cpp		$(SRC)/InitFunctions.cpp\
-	$(SRC)/Settings.cpp		$(SRC)/Thread_Calculation.cpp\
-	$(SRC)/ProcessTimer.cpp \
-	$(SRC)/Polar.cpp		\
-	$(SRC)/FlarmTools.cpp		\
-	$(SRC)/MessageLog.cpp		$(SRC)/Registry.cpp\
-	$(SRC)/Locking.cpp		$(SRC)/Fonts.cpp \
-	$(SRC)/ExpandMacros.cpp		$(SRC)/Battery.cpp \
-	$(SRC)/Globals.cpp		$(SRC)/DataOptions.cpp \
-	$(SRC)/LKAirspace.cpp		$(SRC)/Bitmaps.cpp \
 	$(SRC)/AirfieldDetails.cpp \
-	$(SRC)/ConditionMonitor.cpp 	$(SRC)/device.cpp \
-	$(SRC)/Dialogs.cpp 		$(SRC)/LKProcess.cpp \
-	$(SRC)/FlarmIdFile.cpp 		\
-	$(SRC)/Geoid.cpp \
+	$(SRC)/Alarms.cpp\
+	$(SRC)/Backlight.cpp 		\
+	$(SRC)/Battery.cpp \
+	$(SRC)/Bitmaps.cpp \
 	$(SRC)/Buttons.cpp \
-	$(SRC)/Logger/Logger.cpp 	$(SRC)/Logger/DoSignature.cpp 	\
+	$(SRC)/ChangeScreen.cpp\
+	$(SRC)/CommandLine.cpp \
+	$(SRC)/ConditionMonitor.cpp \
+	$(SRC)/CpuLoad.cpp \
+	$(SRC)/DataOptions.cpp \
+	$(SRC)/device.cpp \
+	$(SRC)/Dialogs.cpp\
+	$(SRC)/DLL.cpp \
+	$(SRC)/DoInits.cpp\
+	$(SRC)/ExpandMacros.cpp	\
+	$(SRC)/FlarmIdFile.cpp 		\
+	$(SRC)/FlarmTools.cpp		\
+	$(SRC)/Fonts.cpp \
+	$(SRC)/Geoid.cpp \
+	$(SRC)/Globals.cpp	\
+	$(SRC)/InitFunctions.cpp\
+	$(SRC)/InputEvents.cpp 		\
+	$(SRC)/lk8000.cpp\
+	$(SRC)/LKAirspace.cpp	\
+	$(SRC)/LKFonts.cpp		\
+	$(SRC)/LKInstall.cpp 		\
+	$(SRC)/LKLanguage.cpp		\
+	$(SRC)/LKObjects.cpp \
+	$(SRC)/LKProcess.cpp \
+	$(SRC)/LKProfileInitRuntime.cpp\
+	$(SRC)/LKProfileLoad.cpp\
+	$(SRC)/LKProfileResetDefault.cpp\
+	$(SRC)/LKProfileSave.cpp\
 	$(SRC)/LKSimulator.cpp\
+	$(SRC)/LKUtils.cpp \
+	$(SRC)/LocalPath.cpp\
+	$(SRC)/Locking.cpp\
+	$(SRC)/Logger/DoSignature.cpp 	\
+	$(SRC)/Logger/LogBook.cpp\
+	$(SRC)/Logger/Logger.cpp \
+	$(SHP)/mapbits.cpp \
+	$(SHP)/maperror.cpp 	\
+	$(SHP)/mapprimitive.cpp \
+	$(SHP)/mapsearch.cpp\
+	$(SHP)/mapshape.cpp \
+	$(SHP)/maptree.cpp\
+	$(SHP)/mapxbase.cpp \
+	$(SRC)/Memory.cpp \
 	$(SRC)/Message.cpp \
-	$(SRC)/Parser.cpp		$(SRC)/Port.cpp \
+	$(SRC)/MessageLog.cpp	\
+	$(SRC)/Models.cpp\
+	$(SRC)/Oracle.cpp\
+	$(SRC)/Parser.cpp\
+	$(SRC)/Polar.cpp		\
+	$(SRC)/Port.cpp \
+	$(SRC)/ProcessTimer.cpp \
+	$(SRC)/Progress.cpp\
+	$(SRC)/Registry.cpp\
+	$(SRC)/Settings.cpp\
+	$(SRC)/Sound.cpp \
+	$(SRC)/StatusFile.cpp \
+	$(SRC)/Thread_Calculation.cpp\
+	$(SRC)/Thread_Draw.cpp	\
+	$(SRC)/Thread_Port.cpp\
+	$(SRC)/TrueWind.cpp		\
 	$(SRC)/units.cpp \
 	$(SRC)/Utils.cpp		\
-	$(SRC)/LKObjects.cpp \
-	$(SRC)/Waypointparser.cpp  	$(SRC)/LKUtils.cpp \
-	$(SRC)/LKLanguage.cpp		\
+	$(SRC)/Waypointparser.cpp \
+	$(SRC)/WndProc.cpp\
 	$(SRC)/WindowControls.cpp \
-	$(SHP)/mapbits.cpp \
-	$(SHP)/maperror.cpp 		$(SHP)/mapprimitive.cpp \
-	$(SHP)/mapsearch.cpp		$(SHP)/mapshape.cpp \
-	$(SHP)/maptree.cpp              $(SHP)/mapxbase.cpp \
 	\
 	$(LKINTER) \
 	$(LIBRARY) \
