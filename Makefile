@@ -403,6 +403,7 @@ CALC	:=\
 	$(CLC)/ThermalHistory.cpp \
 	$(CLC)/ThermalLocator.cpp \
 	$(CLC)/Trace.cpp \
+	$(CLC)/Turning.cpp \
 	$(CLC)/windanalyser.cpp\
 	$(CLC)/windmeasurementlist.cpp \
 	$(CLC)/windstore.cpp 	\
