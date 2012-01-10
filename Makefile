@@ -395,6 +395,7 @@ CALC	:=\
 	$(CLC)/McReady.cpp\
 	$(CLC)/Orbiter.cpp \
 	$(CLC)/Pirker.cpp \
+	$(CLC)/TakeoffLanding.cpp			\
 	$(CLC)/Task.cpp			\
 	$(CLC)/TeamCodeCalculation.cpp \
 	$(CLC)/ThermalHistory.cpp \
