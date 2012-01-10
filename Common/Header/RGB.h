@@ -72,7 +72,9 @@
 // LK8000 colors
 #define RGB_LGREEN1	RGB(0xa9,0xda,0xc3)
 #define RGB_LBLUE1	RGB(0xa9,0xd9,0xda)
-#define RGB_PETROL	RGB(0,66,66)
+#define RGB_PETROLGREEN	RGB(0,66,66)
+#define RGB_PETROLBLUE	RGB(28,67,90)
+#define RGB_PETROL	RGB_PETROLBLUE
 
 // -------------  PROGRAM COLORS IN USE ---------------------
 // MessageBox 
