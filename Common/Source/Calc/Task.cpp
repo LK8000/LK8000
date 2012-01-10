@@ -1648,6 +1648,9 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		double obrg_f = BiSector(nxtbrg, stdbrg);
 
 		double radius= (curwp>0)?(Task[curwp].AATCircleRadius):StartRadius;
+		if( radius < stddst) {
+			obrg_f = nxtbrg;
+		}
 
 		// Why ?? Check if Point is Loged beffore advance to Next WP ...
 //		dist_ui-=30; // 30m margin 
@@ -1659,8 +1662,8 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		DistanceBearing(curlat, curlon, nxtlat, nxtlon, NULL, &errbrg);
 		DistanceBearing(curlat, curlon, optlat, optlon, NULL, &optbrg);
 
-		double dBrg = (stdbrg - errbrg) * DEG_TO_RAD;
-		if(dBrg < PI/2 && (sin(fabs(dBrg))) < radius/stddst ) {
+		double dBrg = fabs((stdbrg - errbrg) * DEG_TO_RAD);
+		if( (dBrg < PI/2) && (sin(dBrg) < radius/stddst ) ) {
 
 			if(radius > stddst * sin(dBrg)) {
 
@@ -1686,20 +1689,22 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			DistanceBearing(curlat, curlon, optlat, optlon, NULL, &errbrg);
 			radius= ((curwp-1)>0)?(Task[curwp-1].AATCircleRadius):StartRadius;
 
-			double dBrg = (stdbrg - errbrg) * DEG_TO_RAD;
-			if(dBrg>PI) dBrg -= 2*PI;
-			if( (dBrg > (PI/360)) && (sin(fabs(dBrg))) < radius/stddst && radius > stddst * sin(dBrg)) {
-				if( (dBrg < PI/2) && (radius < stddst)) {
-					dBrg = - dBrg + asin((stddst * sin(dBrg)) / radius);
+			if( radius < stddst) {
+				double dBrg = (stdbrg - errbrg) * DEG_TO_RAD;
+				if(dBrg>PI) dBrg -= 2*PI;
+				if( (dBrg > (PI/360)) && (sin(fabs(dBrg))) < radius/stddst && radius > stddst * sin(dBrg)) {
+					if( (dBrg < PI/2) && (radius < stddst)) {
+						dBrg = - dBrg + asin((stddst * sin(dBrg)) / radius);
+					}
+					else{
+						dBrg = PI - dBrg - asin((stddst * sin(dBrg)) / radius);
+					}
+					dBrg *= RAD_TO_DEG;
+					obrg_f = AngleLimit360(dBrg + 180 + stdbrg);
 				}
-				else{
-					dBrg = PI - dBrg - asin((stddst * sin(dBrg)) / radius);
+				else {
+					obrg_f = AngleLimit360(stdbrg + 180);
 				}
-				dBrg *= RAD_TO_DEG;
-				obrg_f = AngleLimit360(dBrg + 180 + stdbrg);
-			}
-			else {
-				obrg_f = AngleLimit360(stdbrg + 180);
 			}
 			FindLatitudeLongitude(stdlat,stdlon, obrg_f, radius, &optlat, &optlon);
 
