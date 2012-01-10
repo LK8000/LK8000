@@ -125,7 +125,7 @@ Określa jak obracany jest ekran wraz z ruchem statku powietrznego:
 
 @126
 Gdy powiększenie mapy jest większe od ustawionej tu wartości, orientacja mapy przestawi się na "North up".
-Ustawienie bardzo dużej wartości spowoduje, że ta opcja nigdy nie będzie użyta. Wartość domyślna to 10.
+Ustawienie bardzo dużej wartości spowoduje, że ta opcja nigdy nie będzie użyta. Wartość domyślna to 7.
 
 @127
 Automatyczny zoom zmienia powiększenie mapy podczas zbliżania się do następnego PZ zadania.
@@ -447,8 +447,7 @@ Linia nie jest widoczna przy mocnym pomniejszeniu mapy.
 @199
 Określa czy ruch FLARM powinien być rysowany na mapie:
 [Wyłączony] Cele FLARM nie są rysowane na mapie.
-[Rzeczywisty] Cele FLARM pokażą się na mapie w ich rzeczywistych pozycjach.
-[Skalowany] Odległości celów FLARM od statku powietrznego na mapie będą skalowane tak, aby były dobrze widoczne także przy pomniejszonej mapie. Tryb ten może być mylący, gdyż nie pokazuje obiektów w ich rzeczywistym położeniu.
+[Włączony] Cele FLARM są rysowane na mapie.
 
 @200
 Określa jak PZ są zaliczane podczas wykonywania zadania:
@@ -499,8 +498,7 @@ Jeśli model PDA/PNA jest dostępny na liście to należy go wybrać, aby w peł
 Ta opcja umożliwia ustawianie czasu komputera na podstawie odbieranego sygnału GPS.
 
 @211
-DZIAŁA TYLKO NA URZĄDZENIACH HP31X!!!
-Ustawia automatyczne podświetlenie ekranu urządzenia. Gdy zewnętrzne zasilanie jest podłączone to ustawiane jest maksymalne podświetlenie bez żadnych ograniczeń czasowych. W przeciwnym przypadku podświetlenie będzie wyłączane po 5 minutach, aby oszczędzać energię.
+Ustawia automatyczne podświetlenie ekranu urządzenia. Gdy zewnętrzne zasilanie jest podłączone to ustawiane jest maksymalne podświetlenie bez żadnych ograniczeń czasowych. W przeciwnym przypadku podświetlenie będzie wyłączane po 5 minutach, aby oszczędzać energię. Po tym czasie ekran wygasa w celu oszczędzania energii. Ta opcja działa dla urządzeń HP31x, Funtrek and Royaltek.
 
 @212
 Działa tylko na niektórych urządzeniach i ustawia maksymalną głośność odgłosów.
@@ -602,7 +600,6 @@ Gdy parametr jest wyłączony, nakazywana prędkość STF jest ustawiana na prę
 Określa w jaki sposób użytkownik wprowadza tekst (nazwę pliku, kod grupowy, itp).
 
 @236
-
 Określa jak traktowane są PZ poza zasięgiem terenu:
 [Pytaj] Użytkownik będzie pytany co zrobić z każdym PZ poza zasięgiem terenu.
 [Użyj] Każdy PZ będzie zawsze użyty nawet jeśli leży poza zasięgiem terenu.
@@ -631,7 +628,8 @@ Ta wartość NIE JEST zapisywana i jest ustawiana na wartość domyślną po ka�
 Normalnie LK8000 zakłada wagę pilota równą 70kg.
 
 @302
-Określa czystość szybowca. Dla czystego statku powietrznego należy ustawiać 100%, a niższe wartości gdy na profilach pojawiają się muchy lub woda. 50% oznacza dwukrotne zwiększenie opadania szybowca.
+Określa czystość szybowca. Dla czystego statku powietrznego należy ustawiać 100%, a niższe wartości gdy na profilach pojawiają się muchy lub woda.
+50% oznacza dwukrotne zwiększenie opadania szybowca.
 
 @303
 TYLKO dla wysokości BARO! Jeśli ta wysokość nie jest dostępna to ten parametr nic nie będzie robił!
@@ -654,8 +652,11 @@ Parametr używany przez estymator konwekcji (wykres temperatury w oknie Analiz).
 #
 
 @400
-Klawisze użytkownika na dolnym pasku uruchamia się poprzez przytrzymanie ich przynajmniej przez czas zdefiowany tym parametrem.
-Domyślna wartość to 700ms.
+Niektóre klawisze użytkownika są uruchamiane poprzez klikanie na dolnym pasku przez pewien zdefiowany okres czasu. Poniżej tego czasu klikanie będzie przełączać pasek.
+Przycisk centralny też jest obsługiwany tym parametrem.
+Tutaj definiuje się minimalny czas wymagany do przytrzymania przycisku, aby go aktywować.
+Okres czasu wyrażony jest w milisekundach. Domyślna wartość to 700ms.
+Gdy żadna akcja nie jest przypisania do przycisku, ten parametr nie będzie wykorzystywany.
 Górne klawisze nie podlegają temu parametrowi i uruchamiają się natychmiast po kliknięciu.
 
 @401
@@ -664,7 +665,7 @@ Domyślna wartość to "Rotacja celów".
 
 @402
 Definiuje akcję prawego górnego klawisza.
-Ten klawisz jest niedostępny dla paralotniarzy (więcej informacji w instrukcji).
+Ten klawisz jest NIEDOSTĘPNY dla paralotniarzy, ponieważ jest on zarezerwowany do resetowania zadania w podczas okien czasowych oraz do raportowania koordynatów UTM w przypadku niebezpieczeństw (więcej informacji w instrukcji).
 Domyślnie nie ma zdefiniowanej akcji.
 
 @403
@@ -686,6 +687,10 @@ Domyślnie nie ma zdefiniowanej akcji.
 Definiuje akcję klawisza ikony statku powietrznego, który jest uruchamiany poprzez przytrzymanie tej ikony przez określony czas.
 Kliknięcie krótsze od tego czasu będzie włączać menu LK8000. 
 Domyślnie nie ma zdefiniowanej akcji.
+
+@407
+Definiuje akcję dla klawisza w centrum mapy/ekranu. Jeśli Aktywna Mapa jest włączona ten przycisk może być przesłonięty przez strefę, której przytrzymanie wyświetla detale tejże strefy.
+Domyślnie przypisaną akcją jest Wyrocznia.
 
 
 #
@@ -844,7 +849,7 @@ Promień końcowego cylindra lub sektora, albo połowa długości linii mety.
 Okno czasowe to ustalony czas lokalny w którym otwiera się start zadania.
 Jeśli czas startu jest nieokreślony parametr ten powinien być ustawiony na 0.
 W przeciwnym przypadku wartość ta powinn być ustawiona na co najmniej 1.
-OKNA CZASOWE DZIAŁAJĄ WYŁĄCZNIE DLA PILOTÓW PARALOTNI I DELT.
+OKNA CZASOWE DZIAŁAJĄ WYŁĄCZNIE DLA PILOTÓW PARALOTNI I LOTNI.
 
 @531
 Dla zadań z co najmniej jednym oknem czasowym należy ustawić tutaj lokalny czas startu zadania.
@@ -1125,8 +1130,9 @@ Czas jaki upłynął od wykrycia zdarzenia startu ziemnego.
 Przeciążenie raportowane przez podłączone urządzenie zewnętrzne.
 
 @838
-[Reserved]
-NIE UŻYWAĆ tej wartości. Jest ona na tej liście tylko z powodu kompatybilności ze starymi wersjami.
+[Multitarget BRG]
+Kurs do aktualnie wybranego punktu multitarget.
+Aktualnie ta funkcja NIE jest dostępna. 
 
 @839
 [Time local]
@@ -1188,7 +1194,7 @@ Pozostała długość zadania dla wyznaczonych celów w strefach obserwacyjnych 
 
 @852
 [AA Speed Tgt]
-Osiągalna prędkość zadania AAT dla wyznaczonych celów w strefach obserwacyjnych AAT oraz pozostałego czasu zadania.
+Wymagana prędkość podczas reszty zadania AAT niezbędna do ukończenia zadania w jego wyznaczonym czasie minimalnym.
 
 @853
 [L/D vario]
@@ -1236,6 +1242,13 @@ Różnica pomiędzy estymowanym czasem zadania a minimalnym czasem AAT.
 [Thermal All]
 Średnia noszenia ze wszystkich kominów.
 
+@864
+[Logger]
+Wyświetla status logera.
+auto: loger automatycznie wystartuje w czasie startu
+nie: loger jest wyłączony i będzie musiał być ręcznie uruchomiony
+WŁ: logger is currently active and logging
+
 @865
 [Battery Percent]
 Wyświetla pozostały procent pojemności baterii na urządzeniach typu PDA i PNA. 'C' na końcu oznacza, że bateria się ładuje, a 'D' że się rozładowuje.
@@ -1277,8 +1290,12 @@ Dla wartości powyżej 200 wartość nie jest wyświetlana.
 @873
 [Flight Level]
 Aktualny Flight Level (FL) wyrażony w setkach stóp.
-Używa aktualnej wysokości, która może NIE być wysokością BARO, a jeśli tak, to może nie być liczona dla atmosfery standardowej.
-Innymi słowy wartość ta nie jest dokładna! Używać tylko NA WŁASNĄ ODPOWIEDZIALNOŚĆ!
+Używa standardowej wysokości atmosferycznej (1013.25hPa).
+Gdy wysokość barometryczna nie jest dostępna będzie używana wysokość GPS.
+W takim przypadku musi ona być wspierana przez QNH ustawione w oknie Ustawień Podstawowych.
+
+Nie ma kompensacji temperaturowej więc FL może być niedokładny.
+Ten parametr należy traktować wyłącznie jako wartość przybliżoną.
 
 @874
 [Task Covered Distance]
@@ -1302,9 +1319,10 @@ Radial lotniska domowego (jeśli jest ono ustawione).
 
 @879
 [Airspace Horizontal Distance]
-Pozioma odległość do WYBRANEJ strefy. Aby WYBRAĆ strefę należy zaznaczyć ją na stronie 2.4 ze strefami oraz wybrać odpowiedni przycisk ze strony z detalami. Po wybraniu strefa będzie monitorowana przez to pole.
+Pozioma odległość do WYBRANEJ strefy. Aby WYBRAĆ strefę należy zaznaczyć ją na stronie 2.4 ze strefami oraz wybrać odpowiedni przycisk ze strony z detalami.
+Po wybraniu strefa będzie monitorowana przez to pole.
 Jeśli żadna strefa nie jest wybrana, LUB jeśli już jesteś WEWNĄTRZ wybranej strefy to pole będzie pokazywać ---.
-W przypadku stref FLY odległość jest obliczana przed wylotem z tej strefy.
+W przypadku stref typu FLY, odległość jest obliczana do miejsca wylotu z tej strefy.
 
 @880
 [Ext.Batt.Bank]
@@ -1426,20 +1444,51 @@ Suma punktów OLC CLASSIC i punktów FAI TRIANGLE.
 Suma przewidywanych punktów OLC CLASSIC i przewidywanych punktów FAI TRIANGLE.
 
 @913
-[Current Flaps]
+[FLAP SETTINGS]
 Pokazuje aktualne optymalne ustawienie klap. Obliczenia bazują na rozszerzonym pliku biegunowej szybowca i aktualnym obciążeniu skrzydła.
 Aby dowiedzieć się jak stworzyć rozszerzony plik biegunowej zobacz przykładowy plik biegunowej w katalogu _Polars.
 
 @914
 [Airspace Vertical Distance]
-Pionowa odległość do WYBRANEJ strefy. Aby WYBRAĆ strefę należy zaznaczyć ją na stronie 2.4 ze strefami oraz wybrać odpowiedni przycisk ze strony z detalami. Po wybraniu strefa będzie monitorowana przez to pole.
+Pionowa odległość do WYBRANEJ strefy. Aby WYBRAĆ strefę należy zaznaczyć ją na stronie 2.4 ze strefami oraz wybrać odpowiedni przycisk ze strony z detalami.
+Po wybraniu strefa będzie monitorowana przez to pole.
 Ujemna wartość oznacza, że granica strefy jest pod, a dodatnia wartość, że granica jest nad tobą (tak jak w przypadku wysokości dolotu).
 Jeśli żadna strefa nie jest wybrana, LUB jeśli już jesteś WEWNĄTRZ wybranej strefy to pole będzie pokazywać ---.
-W przypadku stref FLY odległość jest obliczana przed wylotem z tej strefy.
+W przypadku stref FLY odległość jest obliczana do punktu wylotu z tej strefy.
 
 @915
 [Home Altitude Arrival]
 Wysokość dolotu do lotniska domowego. Obliczana dla aktualnego MC, używa Wysokość bezpieczną i Bezpieczny MC.
+
+@916
+@917
+@918
+[Alternate bearing]
+Kurs do wybranego lądowiska alternatywnego.
+
+@919
+@920
+@921
+[Alternate distance]
+Odległość do wybranego lądowiska alternatywnego.
+
+@922
+[Max Altitude Reached]
+Maksymalna wysokość osiągnięta podczas aktualnego lotu.
+Jest ona resetowana w czasie startu i podczas restartu zadania.
+
+@923
+[Max Height Gained]
+Ta wysokość jest wyznaczana przy użyciu minimalnej i maksymalnej wysokości wykrytej po rozpoczęciu lotu swobodnego.
+Ta wartość jest normalnie używana do odznak szybowcowych.
+
+@924
+[Head Wind Speed]
+Parametr ten przedstawia składową wiatru w kierunku trasy.
+Wyznaczany jest on jako różnica pomiędzy TAS (True Airspeed) i GS (Ground Speed).
+Dodatnia wartość oznacza wiatr przeciwny ko kierunku lotu, a ujemna zgodny z kierunkiem lotu.
+Gdy TAS jest niedstępna używana jest wartość estymowana.
+W takim przypadku wartość ta powinna być traktowana tylko jako przybliżona.
 
 
 #
@@ -1451,7 +1500,11 @@ Wysokość dolotu do lotniska domowego. Obliczana dla aktualnego MC, używa Wyso
 Obszar stref może być oznaczony za pomocą rysowania konturów, wypełniania wzorem lub półprzezroczystymi kolorami.
 [Tylko kontur] Rysowane będą tylko linie granic stref.
 [Wzór] Obszar stref będzie wypełniany wybranym wzorem w wybranym kolorze.
-[Półprzezroczyste] Obszar stref będzie wypełniany przez wybrany półprzezroczysty kolor (przezroczystość koloru można ustawić w polu "Nieprzezroczystość"). Przezroczystość może nie być dostępna na niektórych urządzeniach.
+[Wzór, tylko granice] Granice stref będą wypełnione przez wybrany wzór w wybranym kolorze.
+[Półprzezroczyste] Obszar stref będzie wypełniany przez wybrany półprzezroczysty kolor (przezroczystość koloru można ustawić w polu "Nieprzezroczystość").
+[Półprzezroczyste, tylko granice] Granice stref będą wypełnione przez wybrany półprzezroczysty kolor (przezroczystość koloru można ustawić w polu "Nieprzezroczystość").
+Przezroczystość może nie być dostępna na niektórych urządzeniach.
+Rysowanie tylko granic obszarów może spowolnić działanie aplikacji na urządzeniach z wyższymi rozdzielczościami lub z wolnymi procesorami. Należy zachować ostrożność przy używaniu!
 
 @1201
 [Nieprzezroczystość półprzezroczystych stref]
@@ -1478,6 +1531,7 @@ Na niektórych urządzeniach jak np. starych 3850 Anti Aliasing nie działa.
 Na niektórych PNA w trybie pionowym, oraz na PPC2002, Anti Aliasing zapewni lepszą jakość.
 W przeciwnym przypadku LK8000 domyślnie używa ClearType.
 Aby zobaczyć zmiany należy ponownie uruchomić LK8000.
+WAŻNE: ustawienia wygładzania czcionek są ładowane tylko w czasie uruchamiania aplikacji.
 
 @1204
 [Tryb paska Vario]
@@ -1531,6 +1585,13 @@ W oknie komunikatu odliczany jest czas do automatycznego zamknięcia okna.
 [Etykiety ostrzeżeń o strefach na mapie]
 Włącza na mapie etykiety ostrzeżeń o strefach prezentujące nazwę strefy i pionową od nich separację.
 
+@1213
+[PG autozoom threshold]
+Podczas używania autozoom w trybie paralotni, autozoom zaczyna pracować tylko, gdy następny PZ znajdzie się bliżej niż ten limit.
+Na przykład jeśli zostanie wybrane 5km to znaczy, że gdy znajdziesz się 5km od następnego PZ autozoom zacznie pracować.
+Zoom ustawi się na 5km i zacznie się zwiększać podczas zbliżania się do PZ.
+Po osiągnięciu PZ, poprzedni zoom dla trybu lotu zostanie przywrócony. Autozoom zacznie znowu działać jak znajdziesz się w odległości 5km od następnego PZ.
+
 @1220
 [Konfiguracja Dolnego Paska]
 Włącza lub wyłącza poszczególne dolne paski tak, że nie będą one prezentowane podczas przewijania pasków.
@@ -1581,6 +1642,22 @@ Określa czy i jak ma być rysowany pasek dolotu:
 [Następny PZ] Dolot jest pokazywany względem każdego z PZ zadania.
 [Meta] Dolot jest pokazywany zawsze względem mety zadania.
 Pasek zależnie od sytuacji może pokazywać 2 wartości. Pełna wstążka paska pokazuje wysokość dla aktualnego MC (nawet gdy mniejszy od "Bezpiecznego MC"), a pusta dla MC=0.
+
+@1255
+Automatyczny MacCready może być ustawiony jako włączony lub wyłączony. Można go także włączyć lub wyłączyć podczas lotu.
+To ustawienie jest traktowane jako wartość domyślna dla lotu.
+
+@1256
+[Total Energy]
+Gdy TotalEnergy jest włączone, LK będzie uwzględniał wysokość jaką uzyskasz w czasie wybrania prędkości do prędkości optymalnej.
+Ta wysokość będzie dodana do wszystkich wysokości dolotu. Domyślnie ta funkcja jest WYŁĄCZONA ze względów bezpieczeństwa.
+W razie wątpliwości lepiej tą opcję wyłączyć.
+
+@1257
+[Sprawność]
+Określa czystość szybowca. Dla czystego statku powietrznego należy ustawiać 100%, a niższe wartości, gdy na profilach pojawiają się muchy lub woda.
+50% oznacza dwukrotne zwiększenie opadania szybowca.
+Jest to domyślna wartość sprawności używanej w oknie Ustawień Podstawowych. 100% jest dobrą wartością domyślną w większości przypadków.
 
 @9999
 Pomoc dla tego elementu nie jest dostępna!
