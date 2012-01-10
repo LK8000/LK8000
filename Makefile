@@ -379,6 +379,7 @@ CALC	:=\
 	$(CLC)/ContestMgr.cpp\
 	$(CLC)/DoAirspaces.cpp \
 	$(CLC)/DoAlternates.cpp \
+	$(CLC)/DoCalculationsSlow.cpp \
 	$(CLC)/DoCommon.cpp \
 	$(CLC)/DoLogging.cpp \
 	$(CLC)/DoNearest.cpp \
