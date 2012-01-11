@@ -23,6 +23,7 @@ extern bool BOOL2bool(BOOL a);
 
 //
 // This is common to both real and SIM modes, and thus it is running at 2Hz
+// Dialogs will be processed in the background, without halting CPT
 //
 void CommonProcessTimer()
 {
@@ -32,7 +33,12 @@ void CommonProcessTimer()
   // Service the GCE and NMEA queue
   if (ProgramStarted==psNormalOp) {
 	InputEvents::DoQueuedEvents();
-	ShowAirspaceWarningsToUser(); // only shows the dialog if needed. OK at 2Hz.
+	// only shows the dialog if needed. Previously up to 2.3s at 2Hz.
+	// We should set it to 1 Hz
+	if (ShowAirspaceWarningsToUser()==1) {
+		// Run Analysis nearest airspace
+		dlgAnalysisShowModal(ANALYSIS_PAGE_AIRSPACE);
+	}
   }
 
   // Automatically exit menu buttons mode

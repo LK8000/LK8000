@@ -16,7 +16,7 @@ static WndForm *wf=NULL;
 #define WPLSEL WayPointList[SelectedWaypoint]
 
 
-short retStatus;
+static short retStatus;
 
 static void OnCancelClicked(WindowControl * Sender){
 (void)Sender;

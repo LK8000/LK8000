@@ -28,6 +28,8 @@ WndForm *dlg=NULL;
 
 void dlgLKAirspaceFill();
 
+static short retStatus;
+
 static void OnAckForTimeClicked(WindowControl * Sender)
 {
   (void)Sender;
@@ -81,11 +83,19 @@ static int OnKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam)
   
 }
 
+static void OnAnalysisClicked(WindowControl * Sender){
+  (void)Sender;
+  retStatus=1;
+  dlg->SetModalResult(mrOK);
+}
+
+
 
 
 static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnAckForTimeClicked),
   DeclareCallBackEntry(OnCloseClicked),
+  DeclareCallBackEntry(OnAnalysisClicked),
   DeclareCallBackEntry(NULL)
 };
 
@@ -314,12 +324,15 @@ void dlgLKAirspaceFill()
 }
 
 // Called periodically to show new airspace warning messages to user
-void ShowAirspaceWarningsToUser()
+// return 1 only for requesting run analysis
+short ShowAirspaceWarningsToUser()
 {
-  if (msg.originator != NULL) return;        // Dialog already open
+  if (msg.originator != NULL) return 0;        // Dialog already open
+
+  retStatus=0;
 
   bool there_is_message = CAirspaceManager::Instance().PopWarningMessage(&msg);
-  if (!there_is_message) return;        // no message to display
+  if (!there_is_message) return 0;        // no message to display
 
   airspace_copy = CAirspaceManager::Instance().GetAirspaceCopy(msg.originator);
 
@@ -373,7 +386,7 @@ void ShowAirspaceWarningsToUser()
 
     if (dlg==NULL) {
       StartupStore(_T("------ LKAirspaceWarning setup FAILED!%s"),NEWLINE); //@ 101027
-      return;
+      return 0;
     }
     
     dlg->SetKeyDownNotify(OnKeyDown);
@@ -403,7 +416,10 @@ void ShowAirspaceWarningsToUser()
   }
   
   msg.originator = NULL;
-  return;
+
+  // If we clicked on Analysis button, we shall return 1 and the calling function will
+  // detect and take care of it.
+  return retStatus;
 }
 
 
