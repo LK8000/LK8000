@@ -65,8 +65,8 @@ static void OnSelectClicked(WindowControl * Sender){
 static void OnAnalysisClicked(WindowControl * Sender){
   (void)Sender;
 
-  InputEvents::eventSetup(_T("AspAnalysis"));
 
+  InputEvents::eventSetup(_T("AspNextAnalysis"));
   if (wf == NULL) return;
   wf->SetModalResult(mrOK);
 

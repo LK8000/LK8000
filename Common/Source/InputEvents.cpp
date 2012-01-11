@@ -1931,7 +1931,7 @@ void InputEvents::eventService(const TCHAR *misc) {
   }
   if (_tcscmp(misc, TEXT("ASPNEAR")) == 0) {
 	// should be fixed by Ulli
-	dlgAnalysisShowModal(ANALYSIS_PAGE_AIRSPACE);
+	dlgAnalysisShowModal(ANALYSIS_PAGE_NEAR_AIRSPACE);
 	return;
   }
 
@@ -2322,7 +2322,9 @@ void InputEvents::eventSetup(const TCHAR *misc) {
     dlgSwitchesShowModal();
 #endif
   } else if (_tcscmp(misc,TEXT("AspAnalysis"))==0){
-    dlgAnalysisShowModal(ANALYSIS_PAGE_AIRSPACE);
+	dlgAnalysisShowModal(ANALYSIS_PAGE_AIRSPACE);
+  } else if (_tcscmp(misc,TEXT("AspNextAnalysis"))==0){
+    dlgAnalysisShowModal(ANALYSIS_PAGE_NEAR_AIRSPACE);
   } else if (_tcscmp(misc,TEXT("OlcAnalysis"))==0){
     dlgAnalysisShowModal(ANALYSIS_PAGE_CONTEST);
   } else if (_tcscmp(misc,TEXT("Teamcode"))==0){

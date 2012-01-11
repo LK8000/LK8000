@@ -10,7 +10,7 @@
 #include <aygshell.h>
 
 #include "InfoBoxLayout.h"
-
+#include "InputEvents.h"
 #include "MapWindow.h"
 
 #include "dlgTools.h"
@@ -85,9 +85,11 @@ static int OnKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam)
 
 static void OnAnalysisClicked(WindowControl * Sender){
   (void)Sender;
-  retStatus=1;
+  InputEvents::eventSetup(_T("AspNextAnalysis"));
+//  retStatus=1;
   dlg->SetModalResult(mrOK);
 }
+
 
 
 

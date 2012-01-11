@@ -21,7 +21,7 @@ using std::min;
 using std::max;
 
 #define GROUND_COLOUR RGB(157,101,60)
-
+#define RGB_TEXT_COLOR RGB_WHITE
 #define MAXPAGE 8
 
 double Statistics::yscale;
@@ -44,7 +44,9 @@ static int asp_heading_task = 0;
 #define ID_SHORT_LABLE 1
 #define ID_FULL_LABLE  2
 
-void DrawTelescope(HDC hdc, const RECT rc, double fAngle );
+void DrawTelescope (HDC hdc, double fAngle, int x, int y);
+void DrawNorthArrow(HDC hdc, double fAngle, int x, int y);
+void DrawWindRoseDirection(HDC hdc, double fAngle, int x, int y);
 TCHAR szNearAS[80];
 
 int iNohandeldSpaces=0;
@@ -1468,7 +1470,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   TCHAR text[80];
   TCHAR buffer[80];
   BOOL bDrawRightSide =false;
-
+  double GPSbrg=0;
   if (asp_heading_task == 2)
 	return RenderNearAirspace( hdc,   rc);
 
@@ -1478,7 +1480,8 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
     aclat = GPS_INFO.Latitude;
     aclon = GPS_INFO.Longitude;
     ach   = GPS_INFO.Altitude;
-    acb   = GPS_INFO.TrackBearing;
+    acb    = GPS_INFO.TrackBearing;
+    GPSbrg = GPS_INFO.TrackBearing;
     speed = GPS_INFO.Speed;
 
     calc_average30s = CALCULATED_INFO.Average30s;
@@ -1681,7 +1684,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
     if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);
     int y = rc.top + 3*tsize.cy;
 
-    SetTextColor(hdc, RGB_WHITE);
+    SetTextColor(hdc, RGB_TEXT_COLOR);
     ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 
     // Print wpt distance
@@ -1696,7 +1699,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
 
 
     HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
-    SetTextColor(hdc, RGB_WHITE);
+    SetTextColor(hdc, RGB_TEXT_COLOR);
     if (wpt_altarriv_mc0 > ALTDIFFLIMIT)
     {
       _stprintf(text, TEXT("Mc %3.1f: "), (LIFTMODIFY*fMC0));
@@ -1796,18 +1799,9 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
     }
 
 
-
-
-
-
-
-
     if(altarriv  > 0)
     {
-
-
     // Print L/D
-
       _stprintf(text, TEXT("1/%i"), (int)fLD);
       GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
       SetTextColor(hdc, RGB_BLUE);
@@ -1815,10 +1809,6 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
       y = CalcHeightCoordinat( (alt + altarriv)/2 + wpt_altitude ,   rc) + tsize.cy;
       ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     }
-
-
-
-
 
     // Print current AGL
     if(calc_altitudeagl - hmin > 0)
@@ -1845,23 +1835,15 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   if (!asp_heading_task)
     wpt_brg =90;
   RenderPlaneSideview( hdc, rc, 0.0f, alt,wpt_brg, &sDia );
-  RenderBearingDiff( hdc,   rc, wpt_brg,  &sDia );
-#ifdef EEEEE
-  // Draw north arrow
-  POINT Arrow[5] = { {0,-11}, {-5,9}, {0,3}, {5,9}, {0,-11}};
-  POINT Start;
-  Start.y = rc.top + NIBLSCALE(11);
-  Start.x = rc.right - NIBLSCALE(11);
+  HFONT hfOld = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
+  SetTextColor(hdc, RGB_TEXT_COLOR);
+  SetBkMode(hdc, OPAQUE);
+  DrawNorthArrow     ( hdc, GPSbrg          , rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(13));
+//  SetTextColor(hdc, RGB_BLACK);
+  DrawTelescope      ( hdc, acb-90.0, rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(38));
+  SelectObject(hdc, hfOld);
 
-  // Direction arrow
-  PolygonRotateShift(Arrow, 5, Start.x, Start.y, AngleLimit360(acb-90));
-  SelectObject(hdc, GetStockObject(WHITE_PEN));
-  SelectObject(hdc, GetStockObject(WHITE_BRUSH));
-  Polygon(hdc,Arrow,5);
-  SelectObject(hdc, GetStockObject(BLACK_PEN));
-  Polygon(hdc,Arrow,5);
-#endif
- DrawTelescope( hdc,   rc,   AngleLimit360(acb-90) );
+  RenderBearingDiff( hdc,   rc, wpt_brg,  &sDia );
   DrawXLabel(hdc, rc, TEXT("D"));
   DrawYLabel(hdc, rc, TEXT("h"));
 
@@ -1894,6 +1876,7 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
   CopyRect(&rcgfx, Sender->GetBoundRect());
 
   // background is painted in the base-class
+//  Sender->SetBackColor(RGB_LIGHTBLUE);
 
   hfOld = (HFONT)SelectObject(hDC, Sender->GetFont());
 
@@ -1933,10 +1916,14 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
     Statistics::RenderTask(hDC, rcgfx, true);
     UnlockTaskData();
     break;
+
+
   case ANALYSIS_PAGE_AIRSPACE:
     SetCalcCaption(gettext(TEXT("_@M888_"))); // Warnings
     Statistics::RenderAirspace(hDC, rcgfx);
     break;
+
+
   case ANALYSIS_PAGE_TASK_SPEED:
     SetCalcCaption(gettext(TEXT("_@M886_"))); // Task calc
     LockTaskData();
@@ -2244,13 +2231,19 @@ static void Update(void){
 
     break;
   case ANALYSIS_PAGE_AIRSPACE:
-    _stprintf(sTmp, TEXT("%s: %s"), 
-	// LKTOKEN  _@M93_ = "Analysis" 
+	if(asp_heading_task == 2)
+	  _stprintf(sTmp, TEXT("%s: %s "),
+	  // LKTOKEN  _@M93_ = "Analysis"
+	                gettext(TEXT("_@M93_")),
+	  // LKTOKEN  _@M68_ = "Airspace"
+	                gettext(TEXT("_@M1292_")));
+	else
+      _stprintf(sTmp, TEXT("%s: %s"),
+	  // LKTOKEN  _@M93_ = "Analysis"
               gettext(TEXT("_@M93_")),
-	// LKTOKEN  _@M68_ = "Airspace" 
+	  // LKTOKEN  _@M68_ = "nearest airspace"
               gettext(TEXT("_@M68_")));
-    if(asp_heading_task == 2)
-     _stprintf(sTmp, TEXT("%s %s"), sTmp ,szNearAS);
+
 
     wf->SetCaption(sTmp);
     WndButton *wb = (WndButton *)wf->FindByName(TEXT("cmdAspBear"));
@@ -2282,7 +2275,7 @@ static void Update(void){
         break;
         case 2:
           wb->SetCaption(gettext(TEXT("_@M1287_")));                               //_@M1287_ "Heading"                              //_@M1287_ "Heading"
-          _stprintf(sTmp, TEXT("%s: %s"), gettext(TEXT("_@M1292_")),szNearAS );                  //_@M1290_ "Showing towards nearest airspace"
+          _stprintf(sTmp, TEXT("%s"), szNearAS );                  //"Showing nearest airspace"
           wInfo->SetCaption(sTmp);//
 
         break;
@@ -2495,6 +2488,11 @@ static bool entered = false;
 	 if (entered == true) /* prevent re entrance */
 		 return;
 
+if(inpage == ANALYSIS_PAGE_NEAR_AIRSPACE)
+{
+  inpage = ANALYSIS_PAGE_AIRSPACE;
+  asp_heading_task = 2;
+}
   wf=NULL;
   wGrid=NULL;
   wInfo=NULL;
@@ -2813,7 +2811,7 @@ SIZE tsize;
           int  type = pHandeled[k].iType;
           SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(type));
           if(pHandeled[k].bEnabled)
-            SetTextColor(hdc, RGB_WHITE); // RGB_MENUTITLEFG
+            SetTextColor(hdc, RGB_TEXT_COLOR); // RGB_MENUTITLEFG
           else
             SetTextColor(hdc, RGB_GGREY);
           RECT rcd =pHandeled[k].rc;
@@ -3075,7 +3073,7 @@ void Statistics::RenderBearingDiff(HDC hdc, const RECT rc,double brg, DiagrammSt
     GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &tsize);
     SetBkMode(hdc, OPAQUE);
     SetBkMode(hdc, TRANSPARENT);
-    SetTextColor(hdc, RGB_WHITE);
+    SetTextColor(hdc, RGB_TEXT_COLOR);
     ExtTextOut(hdc, (rc.left + rc.right - tsize.cx)/2, rc.top, ETO_OPAQUE, NULL, BufferValue, _tcslen(BufferValue), NULL);
     SetBkMode(hdc, TRANSPARENT);
   }
@@ -3130,6 +3128,12 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   }
   UnlockFlightData();
 
+/*
+  HBRUSH BgBrush = CreateSolidBrush(COLORREF RGB_LIGHTBLUE);
+  HBRUSH oldBrush = (HBRUSH)SelectObject(hdc,(HBRUSH)BgBrush);
+  Rectangle(hdc,rc.left+BORDER_X,rc.top,rc.right,rc.bottom-+BORDER_Y);
+  SelectObject(hdc, oldBrush);
+*/
   static int callcnt = 0;
 //  if(callcnt++ > 3)
   {
@@ -3149,8 +3153,16 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   if(bValid)
     _stprintf(szNearAS,TEXT("%s"),  near_airspace.Name() );
   else
-	_stprintf(szNearAS,TEXT(""));
-
+  {
+	_stprintf(text,TEXT("%s"), gettext(TEXT("_@M1259_"))); 	 // LKTOKEN _@M1259_ "Too far, not calculated"
+	GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+	TxYPt.x = (rc.right-rc.left)/2-tsize.cx/2;
+	TxYPt.y = (rc.bottom-rc.top)/2-tsize.cy/2;
+	SetBkMode(hdc, OPAQUE);
+	ExtTextOut(hdc, TxYPt.x, TxYPt.y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+	_stprintf(szNearAS,TEXT("%s"), text);
+	SetBkMode(hdc, TRANSPARENT);
+  }
 
 
 //  bool CAirspace::GetWarningPoint(double &longitude, double &latitude, AirspaceWarningDrawStyle_t &hdrawstyle, int &vDistance, AirspaceWarningDrawStyle_t &vdrawstyle) const
@@ -3184,9 +3196,27 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   sDia.fYMin = max(0.0, alt-2300);
   sDia.fYMax = max(fMaxAltToday, alt+1000);
 
-  if (bValid)
-    sDia.fYMax = max(sDia.fYMax, alt+ abs(iAS_VertDistance) +1000);
 
+#ifdef DDD
+  if (bValid)
+  {
+    double fTmp;
+    if(iAS_VertDistance > 0)
+    {
+      fTmp = alt + iAS_VertDistance + 500 ;
+	  if(fTmp > sDia.fYMax)
+        sDia.fYMax = fTmp;
+    }
+    else
+    {
+ 	  fTmp = alt + iAS_VertDistance - 500 ;
+	  if(fTmp > 0)
+	    if(fTmp < sDia.fYMin)
+          sDia.fYMin = fTmp;
+    }
+//	sDia.fYMin = max(0.0, sDia.fYMin );
+  }
+#endif
   range =sDia.fXMax - sDia.fXMin ;
   sDia.rc = rc;
 
@@ -3201,6 +3231,7 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
 
 
   if (bValid)
+  {
     if (near_airspace.WarningLevel() != awNone )
     {
       if (near_airspace.WarningLevel() == awYellow )
@@ -3218,8 +3249,7 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
         SetTextColor(hdc, RGB_BLACK);
       ExtTextOut(hdc, 50, 10, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     }
-
-
+  }
 
   double xtick = 1.0;
   if (range>10.0*1000.0) xtick = 5.0;
@@ -3239,8 +3269,7 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   }
   SetBkMode(hdc, OPAQUE);
 
-//  iAS_HorDistance, iAS_Bearing, iAS_VertDistance
-  // Print current AGL
+
   if(calc_altitudeagl - sDia.fYMin  > 500)
   {
     SetTextColor(hdc, RGB_LIGHTBLUE);
@@ -3276,7 +3305,7 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
 
   if (bValid)
   {
-	SetTextColor(hdc, RGB_WHITE);
+	SetTextColor(hdc, RGB_TEXT_COLOR);
 	SetBkMode(hdc, OPAQUE);
 	HFONT hfOldU = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
     // horizontal distance
@@ -3335,18 +3364,25 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   }
 
 
-
-
   RenderPlaneSideview( hdc, rc,0 , alt,wpt_brg, &sDia );
+
+  SetTextColor(hdc, RGB_TEXT_COLOR);
+  SetBkMode(hdc, OPAQUE);
+  HFONT hfOld2 = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
+  DrawNorthArrow     ( hdc, GPSbrg          , rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(13));
+//  SetTextColor(hdc, RGB_BLACK);
+  DrawTelescope      ( hdc, iAS_Bearing-90.0, rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(38));
+  SelectObject(hdc, hfOld2);
+
   RenderBearingDiff  ( hdc, rc   , wpt_brg,  &sDia );
-  DrawTelescope      ( hdc, rc   ,  iAS_Bearing-90.0 );
+
 
   SelectObject(hdc, hfOld);
   DrawXLabel(hdc, rc, TEXT("D"));
   DrawYLabel(hdc, rc, TEXT("h"));
 }
 
-void DrawTelescope(HDC hdc, const RECT rc, double fAngle )
+void DrawTelescope(HDC hdc, double fAngle, int x, int y)
 {
 	POINT Telescope[17] = {
 			{  6 ,  7  },    // 1
@@ -3368,13 +3404,11 @@ void DrawTelescope(HDC hdc, const RECT rc, double fAngle )
 			{  4 ,  7  }     // 17
 	};
 
-POINT Start;
-Start.y = rc.top   + NIBLSCALE(13);
-Start.x = rc.right - NIBLSCALE(13);
 
 // Direction arrow
 bool bBlack = true;
-PolygonRotateShift(Telescope, 17, Start.x, Start.y, AngleLimit360( fAngle  ));
+DrawWindRoseDirection( hdc, AngleLimit360( fAngle ),  x,  y + NIBLSCALE(18));
+PolygonRotateShift(Telescope, 17, x, y, AngleLimit360( fAngle  ));
 if (!bBlack)
 {
   SelectObject(hdc, GetStockObject(WHITE_PEN));
@@ -3391,8 +3425,8 @@ if (!bBlack)
   SelectObject(hdc, GetStockObject(BLACK_PEN));
 else
   SelectObject(hdc, GetStockObject(WHITE_PEN));
-Polygon(hdc,Telescope,17);
 
+Polygon(hdc,Telescope,17);
 /*
 
 	POINT Reflect1[5] = {
@@ -3424,3 +3458,56 @@ SelectObject(hdc, oldPen);
 
 
 
+
+void DrawNorthArrow(HDC hdc, double fAngle, int x, int y)
+{
+  // Draw north arrow
+  POINT Arrow[5] = { {0,-11}, {-5,9}, {0,3}, {5,9}, {0,-11}};
+  DrawWindRoseDirection( hdc, AngleLimit360( fAngle ),  x,  y + NIBLSCALE(18));
+  PolygonRotateShift(Arrow, 5, x, y, AngleLimit360( -fAngle));
+  SelectObject(hdc, GetStockObject(WHITE_PEN));
+  SelectObject(hdc, GetStockObject(WHITE_BRUSH));
+  Polygon(hdc,Arrow,5);
+  SelectObject(hdc, GetStockObject(BLACK_PEN));
+  Polygon(hdc,Arrow,5);
+
+}
+
+void DrawWindRoseDirection(HDC hdc, double fAngle, int x, int y)
+{
+TCHAR text[80];
+SIZE tsize;
+#define DEG_RES 45
+int iHead = (int)(AngleLimit360(fAngle+DEG_RES/2) /DEG_RES);
+iHead *= DEG_RES;
+return ; // don't do it
+
+switch (iHead)
+{
+  case 0   : _stprintf(text,TEXT("N"  )); break;
+  case 22  : _stprintf(text,TEXT("NNE")); break;
+  case 45  : _stprintf(text,TEXT("NE" )); break;
+  case 67  : _stprintf(text,TEXT("ENE")); break;
+  case 90  : _stprintf(text,TEXT("E"  )); break;
+  case 112 : _stprintf(text,TEXT("ESE")); break;
+  case 135 : _stprintf(text,TEXT("SE" )); break;
+  case 157 : _stprintf(text,TEXT("SSE")); break;
+  case 180 : _stprintf(text,TEXT("S"  )); break;
+  case 179 : _stprintf(text,TEXT("SSW")); break;
+  case 225 : _stprintf(text,TEXT("SW" )); break;
+  case 247 : _stprintf(text,TEXT("WSW")); break;
+  case 270 : _stprintf(text,TEXT("W"  )); break;
+  case 202 : _stprintf(text,TEXT("WNW")); break;
+  case 315 : _stprintf(text,TEXT("NW" )); break;
+  case 337 : _stprintf(text,TEXT("NNW")); break;
+ default   : _stprintf(text,TEXT("--" )); break;
+};
+GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+ExtTextOut(hdc,  x-tsize.cx/2,  y-tsize.cy/2 , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+/*
+_stprintf(text,TEXT("%i"),iHead);
+GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+ExtTextOut(hdc,  x-tsize.cx/2,  y+ NIBLSCALE(25) , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+*/
+return;
+}
