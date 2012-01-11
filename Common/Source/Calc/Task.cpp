@@ -1648,7 +1648,7 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		double obrg_f = BiSector(nxtbrg, stdbrg);
 
 		double radius= (curwp>0)?(Task[curwp].AATCircleRadius):StartRadius;
-		if( radius < stddst) {
+		if( radius > stddst && !bCalcPrev) {
 			obrg_f = nxtbrg;
 		}
 
@@ -1673,7 +1673,7 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 				else{
 					dBrg = PI - dBrg - asin((stddst * sin(dBrg)) / radius);
 				}
-				dBrg *= RAD_TO_DEG;
+				dBrg *= RAD_TO_DEG * (((stdbrg - errbrg)<0)?-1:1);
 				obrg_f = AngleLimit360(dBrg + 180 + stdbrg);
 
 				FindLatitudeLongitude(stdlat,stdlon, obrg_f, radius, &optlat, &optlon);
