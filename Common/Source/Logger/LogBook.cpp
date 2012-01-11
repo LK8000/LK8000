@@ -146,24 +146,44 @@ bool UpdateLogBookTXT(bool welandedforsure) {
   sprintf(line,"%S: %S%s%s",gettext(_T("_@M306_")),Temp,WNEWLINE,WNEWLINE);
   fwrite(line,strlen(line),1,stream);
 
-  if (ISGLIDER || ISPARAGLIDER) {
 
-	//
-	// FREE FLIGHT DETECTED
-	//
+  //
+  // FREE FLIGHT DETECTION
+  //
+  if (ISGLIDER) {
+	// Attention, FFStartTime is 0 for CAR,SIMMODE and other situations
 	if ( CALCULATED_INFO.FreeFlightStartTime>0 ) {
 		Units::TimeToTextS(Temp, (int)CALCULATED_INFO.FreeFlightStartTime);
-		sprintf(line,"%S: %S%s",gettext(_T("_@M1452_")),Temp,WNEWLINE);
+		sprintf(line,"%S: %S  @%.0f%S QNH%s",
+			gettext(_T("_@M1754_")),
+			Temp,
+			ALTITUDEMODIFY*CALCULATED_INFO.FreeFlightStartQNH,
+			Units::GetAltitudeName(),
+			WNEWLINE);
+		fwrite(line,strlen(line),1,stream);
+
+		Units::TimeToTextS(Temp, (int)(CALCULATED_INFO.FreeFlightStartTime-CALCULATED_INFO.TakeOffTime) );
+		sprintf(line,"%S: %S  @%.0f%S QFE%s%s",
+			gettext(_T("_@M1755_")),
+			Temp,
+			ALTITUDEMODIFY*(CALCULATED_INFO.FreeFlightStartQNH - CALCULATED_INFO.FreeFlightStartQFE),
+			Units::GetAltitudeName(),
+			WNEWLINE,WNEWLINE);
 		fwrite(line,strlen(line),1,stream);
 	}
+  }
 
+  if (ISGLIDER || ISPARAGLIDER) {
 	//
 	// OLC Classic Dist
 	//
 	ivalue=CContestMgr::TYPE_OLC_CLASSIC;
 	if (OlcResults[ivalue].Type()!=CContestMgr::TYPE_INVALID) {
 		_stprintf(Temp, TEXT("%5.0f"),DISTANCEMODIFY*OlcResults[ivalue].Distance());
-		sprintf(line,"%S: %S %S%s",gettext(_T("_@M1455_")),Temp,(Units::GetDistanceName()),WNEWLINE);
+		sprintf(line,"%S: %S %S%s",
+			gettext(_T("_@M1455_")),
+			Temp,
+			(Units::GetDistanceName()),WNEWLINE);
 		fwrite(line,strlen(line),1,stream);
 	}
 
@@ -172,17 +192,22 @@ bool UpdateLogBookTXT(bool welandedforsure) {
 	//
 	ivalue=CContestMgr::TYPE_OLC_FAI;
 	if (OlcResults[ivalue].Type()!=CContestMgr::TYPE_INVALID) {
-		_stprintf(Temp, TEXT("%5.0f"),DISTANCEMODIFY*OlcResults[ivalue].Distance());
-		sprintf(line,"%S: %S %S%s",gettext(_T("_@M1457_")),Temp,(Units::GetDistanceName()),WNEWLINE);
+		_stprintf(Temp, TEXT("%5.0f"), DISTANCEMODIFY*OlcResults[ivalue].Distance());
+		sprintf(line,"%S: %S %S%s",gettext(_T("_@M1457_")),
+			Temp,
+			(Units::GetDistanceName()),WNEWLINE);
 		fwrite(line,strlen(line),1,stream);
 	}
 
 	//
 	// Max Altitude gained
 	//
-	sprintf(line,"%S: %.0f %S%s",gettext(_T("_@M1769_")),ALTITUDEMODIFY*CALCULATED_INFO.MaxHeightGain,(Units::GetAltitudeName()),WNEWLINE);
+	sprintf(line,"%S: %.0f %S%s",gettext(_T("_@M1769_")),
+		ALTITUDEMODIFY*CALCULATED_INFO.MaxHeightGain,
+		(Units::GetAltitudeName()),WNEWLINE);
 	fwrite(line,strlen(line),1,stream);
   }
+
 
   //
   // Max Altitude reached
@@ -256,7 +281,7 @@ bool UpdateLogBookCSV(bool welandedforsure) {
   }
 
   if (dofirstline) {
-	sprintf(line,"Year,Month,Day,Pilot,AircraftRego,AircraftType,TakeoffTime,TakeoffUTC,TakeOffLocation,LandingTime,LandingUTC,LandingLocation,TotalFlyTime,Odometer,OLCdist,DistUnits%s",WNEWLINE);
+	sprintf(line,"Year,Month,Day,Pilot,AircraftRego,AircraftType,TakeoffTime,TakeoffUTC,TakeOffLocation,LandingTime,LandingUTC,LandingLocation,TowingTime,TowingAltitude,AltUnits,TotalFlyTime,Odometer,OLCdist,DistUnits%s",WNEWLINE);
 	fwrite(line,strlen(line),1,stream);
   }
 
@@ -281,7 +306,7 @@ bool UpdateLogBookCSV(bool welandedforsure) {
 
   ivalue=CContestMgr::TYPE_OLC_CLASSIC;
   if (OlcResults[ivalue].Type()!=CContestMgr::TYPE_INVALID) {
-	sprintf(solcdist, "%5.0f",DISTANCEMODIFY*OlcResults[ivalue].Distance());
+	sprintf(solcdist, "%.0f",DISTANCEMODIFY*OlcResults[ivalue].Distance());
   } else {
 	sprintf(solcdist, "---");
   }
@@ -295,14 +320,26 @@ bool UpdateLogBookCSV(bool welandedforsure) {
   else
 	strcpy(simmode,"");
 
-  sprintf(line,"%04d,%02d,%02d,%S,%S,%S,%s,%s,%S,%s,%s,%S,%s,%d,%s,%S%s%s",
+  TCHAR towtime[20];
+  _tcscpy(towtime,_T(""));
+  int towaltitude=0;
+  if (ISGLIDER && (CALCULATED_INFO.FreeFlightStartTime>0)) {
+	Units::TimeToTextS(towtime, (int)(CALCULATED_INFO.FreeFlightStartTime-CALCULATED_INFO.TakeOffTime) );
+	towaltitude=(int) (ALTITUDEMODIFY*(CALCULATED_INFO.FreeFlightStartQNH - CALCULATED_INFO.FreeFlightStartQFE));
+  }
+
+  sprintf(line,"%04d,%02d,%02d,%S,%S,%S,%s,%s,%S,%s,%s,%S,%S,%d,%S,%s,%d,%s,%S%s%s",
         GPS_INFO.Year,
         GPS_INFO.Month,
         GPS_INFO.Day,
 	PilotName_Config,
 	AircraftRego_Config,
 	AircraftType_Config,
-	stakeoff, stakeoffutc,TAKEOFFWP_Name,slanding, slandingutc,LANDINGWP_Name,sflighttime,
+	stakeoff, stakeoffutc,TAKEOFFWP_Name,slanding, slandingutc,LANDINGWP_Name,
+	towtime,
+	towaltitude,
+	Units::GetAltitudeName(),
+	sflighttime,
 	(int)(DISTANCEMODIFY*CALCULATED_INFO.Odometer),
 	solcdist,
 	Units::GetDistanceName(),

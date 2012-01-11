@@ -1715,6 +1715,8 @@ _@M1750_ "Empty"
 _@M1751_ "CONFIRM FLIGHT BOOK RESET?"
 _@M1752_ "FLIGHT BOOK RESET"
 _@M1753_ "List of flights"
+_@M1754_ "Free Flight start"
+_@M1755_ "Towing"
 
 #
 # These are new infoboxes:

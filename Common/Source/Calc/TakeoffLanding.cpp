@@ -119,6 +119,15 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		  ResetFlightStats(Basic, Calculated);
 
 		Calculated->Flying = TRUE;
+
+		// For paragliders assign ff values here, because the ff is not calculated, being always true
+		if (ISPARAGLIDER) {
+			Calculated->FreeFlying=true;
+			Calculated->FreeFlightStartTime=Basic->Time;
+			Calculated->FreeFlightStartQNH=Basic->Altitude;
+			Calculated->FreeFlightStartQFE=Basic->Altitude;
+		}
+
 		WasFlying=true;
 		Calculated->TakeOffTime= Basic->Time;
 		TakeOffWayPoint=true;
