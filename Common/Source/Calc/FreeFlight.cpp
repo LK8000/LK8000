@@ -21,6 +21,8 @@
  * We dont care much, since we need real flight FF detection, and LK
  * is logging always at 1s. So this might actually happen only replaying 
  * an external log file on LK. 
+ * 
+ * FREEFLIGHT DETECTION IS USING GPS ALTITUDE ONLY
  *
  * Called by Calculations thread, each second.
  *
@@ -207,6 +209,8 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
   ffDetected=true;
   Calculated->FreeFlying=true;
   Calculated->FreeFlightStartTime=GPS_INFO.Time;
+  Calculated->FreeFlightStartQNH=GPS_INFO.Altitude;
+  Calculated->FreeFlightStartQFE=gndAltitude;
   ResetFreeFlightStats(Calculated);
   return true;
 

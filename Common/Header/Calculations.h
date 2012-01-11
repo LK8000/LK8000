@@ -198,6 +198,8 @@ typedef struct _DERIVED_INFO
   double FlightTime;
   double TakeOffTime;
   double FreeFlightStartTime;
+  double FreeFlightStartQNH;
+  double FreeFlightStartQFE;
 
   double AverageClimbRate[200];
   long AverageClimbRateN[200];
