@@ -21,7 +21,12 @@ using std::min;
 using std::max;
 
 #define GROUND_COLOUR RGB(157,101,60)
-#define RGB_TEXT_COLOR RGB_WHITE
+//#define INVERT_COLORS
+#ifdef INVERT_COLORS
+  #define RGB_TEXT_COLOR RGB_BLACK
+#else
+  #define RGB_TEXT_COLOR RGB_WHITE
+#endif
 #define MAXPAGE 8
 
 double Statistics::yscale;
@@ -1582,9 +1587,16 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   if (fDist>200.0*1000.0) xtick = 25.0;
   if (fDist>250.0*1000.0) xtick = 50.0;
   if (fDist>500.0*1000.0) xtick = 100.0;
+
+#ifdef INVERT_COLORS
+  SelectObject(hdc, GetStockObject(BLACK_PEN));
+  SelectObject(hdc, GetStockObject(BLACK_BRUSH));
+#else
   SelectObject(hdc, GetStockObject(WHITE_PEN));
   SelectObject(hdc, GetStockObject(WHITE_BRUSH));
-  SetTextColor(hdc, RGB(0xff,0xff,0xff));
+#endif
+  SetTextColor(hdc, RGB_TEXT_COLOR);
+
   DrawXGrid(hdc, rc, xtick/DISTANCEMODIFY, 0,  STYLE_THINDASHPAPER, xtick, true);
   if(Units::GetUserInvAltitudeUnit() == unFeet)
     DrawYGrid(hdc, rc, 500.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 500.0, true);
@@ -1876,8 +1888,9 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
   CopyRect(&rcgfx, Sender->GetBoundRect());
 
   // background is painted in the base-class
-//  Sender->SetBackColor(RGB_LIGHTBLUE);
-
+#ifdef  INVERT_COLORS
+  Sender->SetBackColor(RGB_LIGHTBLUE);
+#endif
   hfOld = (HFONT)SelectObject(hDC, Sender->GetFont());
 
   SetBkMode(hDC, TRANSPARENT);
@@ -3258,9 +3271,14 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   if (range>200.0*1000.0) xtick = 25.0;
   if (range>250.0*1000.0) xtick = 50.0;
   if (range>500.0*1000.0) xtick = 100.0;
+#ifdef INVERT_COLORS
+  SelectObject(hdc, GetStockObject(BLACK_PEN));
+  SelectObject(hdc, GetStockObject(BLACK_BRUSH));
+#else
   SelectObject(hdc, GetStockObject(WHITE_PEN));
   SelectObject(hdc, GetStockObject(WHITE_BRUSH));
-  SetTextColor(hdc, RGB(0xff,0xff,0xff));
+#endif
+  SetTextColor(hdc, RGB_TEXT_COLOR);
   DrawXGrid(hdc, rc, xtick/DISTANCEMODIFY, 0, STYLE_THINDASHPAPER, xtick, true);
   if(Units::GetUserInvAltitudeUnit() == unFeet) {
     DrawYGrid(hdc, rc, 500.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 500.0, true);
@@ -3374,12 +3392,14 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   DrawTelescope      ( hdc, iAS_Bearing-90.0, rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(38));
   SelectObject(hdc, hfOld2);
 
-  RenderBearingDiff  ( hdc, rc   , wpt_brg,  &sDia );
+
 
 
   SelectObject(hdc, hfOld);
   DrawXLabel(hdc, rc, TEXT("D"));
   DrawYLabel(hdc, rc, TEXT("h"));
+
+  RenderBearingDiff  ( hdc, rc   , wpt_brg,  &sDia );
 }
 
 void DrawTelescope(HDC hdc, double fAngle, int x, int y)
