@@ -1929,7 +1929,11 @@ void InputEvents::eventService(const TCHAR *misc) {
 	}
 	return;
   }
-
+  if (_tcscmp(misc, TEXT("ASPNEAR")) == 0) {
+	// should be fixed by Ulli
+	dlgAnalysisShowModal(ANALYSIS_PAGE_AIRSPACE);
+	return;
+  }
 
   // we should not get here
   DoStatusMessage(_T("Unknown Service: "),misc);

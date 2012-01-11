@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 6 , 120106
+# Release 6 , 120111
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -1215,7 +1215,7 @@ mode=Info1
 type=key
 data=8
 event=Mode default
-event=NearestAirspaceDetails
+event=Service ASPNEAR
 label=_@M2060_$(CheckAirspace)
 location=7
 
