@@ -18,6 +18,8 @@
 // maybe because the software has changed and this old parameter must be
 // manually reconfigured by the user, there is a simple solution:
 // change the name of the parameter here, adding a number to keep versioning.
+// This will not load the old parameter on Profileload, and will not save it of course.
+// You are in fact ignoring that old profile token, which will disappear.
 //
 
 TCHAR *szRegistryDisplayType[MAXINFOWINDOWS] =     { TEXT("Info0"),
@@ -245,7 +247,7 @@ TCHAR szRegistryPGOpenTimeH[]= TEXT("PGOpenTimeH");
 TCHAR szRegistryPGOpenTimeM[]= TEXT("PGOpenTimeM");
 TCHAR szRegistryPGOptimizeRoute[]= TEXT("PGOptimizeRoute");
 TCHAR szRegistryPGStartOut[]= TEXT("PGStartOut");
-TCHAR szRegistryPilotName[]=  TEXT("PilotName");
+TCHAR szRegistryPilotName[]=  TEXT("PilotName1");
 TCHAR szRegistryPolarFile[] = TEXT("PolarFile1");
 TCHAR szRegistryPollingMode[]= TEXT("PollingMode");
 TCHAR szRegistryPort1Index[]= TEXT("PortIndex");

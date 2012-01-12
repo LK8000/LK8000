@@ -281,6 +281,8 @@ void Shutdown(void) {
   StoreRegistry();
   #else
   extern void LKAircraftSave(const TCHAR *szFile);
+  extern void LKPilotSave(const TCHAR *szFile);
+  LKPilotSave(defaultPilotFile);
   LKAircraftSave(defaultAircraftFile);
   LKProfileSave(defaultProfileFile);
   #endif

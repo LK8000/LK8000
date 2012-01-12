@@ -64,9 +64,10 @@ void PreloadInitialisation(bool ask) {
 #else
     LKProfileResetDefault();
     LKProfileLoad(startAircraftFile);
+    LKProfileLoad(startPilotFile);
     // if DEFAULT PROFILE does not exist, initialize ResetDefaults!
     // This is because LKProfileLoad will do this at its end, normally.
-    // Notice: aircraft file will not be overridden by defaults
+    // Notice: aircraft and pilot files will not be overridden by defaults
     if (!LKProfileLoad(startProfileFile)) {
 	LKProfileInitRuntime();
     }
@@ -83,11 +84,16 @@ void PreloadInitialisation(bool ask) {
     ReadRegistrySettings();
 #else
     if (_tcscmp(startProfileFile,_T("PROFILE_RESET"))==0) {
-	StartupStore(_T(". USER ASKED PROFILE RESET%s"),NEWLINE);
+	StartupStore(_T(". USER ASKED FOR PROFILE FULL RESET!%s"),NEWLINE);
 	LKProfileResetDefault();
 	LKProfileInitRuntime();
-	// Notice: this is also resetting the default Aircraft profile to demo settings
+	// Notice: this is also resetting the default Aircraft and Pilot profiles to demo settings
     } else  {
+	if (!LKProfileLoad(startPilotFile)) {
+		#if TESTBENCH
+		StartupStore(_T(". PilotFile RESET to defaults%s"),NEWLINE);
+		#endif
+	}
 	if (!LKProfileLoad(startAircraftFile)) {
 		#if TESTBENCH
 		StartupStore(_T(". AircraftFile RESET to defaults%s"),NEWLINE);

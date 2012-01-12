@@ -243,7 +243,8 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryPGOpenTimeM,PGOpenTimeM);
   rprintf(szRegistryPGOptimizeRoute,PGOptimizeRoute);
   rprintf(szRegistryPGStartOut,PGStartOut);
-  rprintf(szRegistryPilotName,PilotName_Config);
+// >> Moved to PilotFile <<
+//  rprintf(szRegistryPilotName,PilotName_Config);
 //  >> Moved to AircraftFile <<
 //  rprintf(szRegistryPolarFile,szPolarFile);
   rprintf(szRegistryPollingMode,PollingMode);
@@ -377,8 +378,39 @@ void LKAircraftSave(const TCHAR *szFile)
 }
 
 
+//
+// Save only Pilot related parameters
+//
+void LKPilotSave(const TCHAR *szFile)
+{
+  #if TESTBENCH
+  StartupStore(_T("... PilotSave <%s>%s"),szFile,NEWLINE);
+  #endif
+
+  if (_tcslen(szFile)>0)
+	pfp = _tfopen(szFile, TEXT("wb")); // 'w' will overwrite content, 'b' for no crlf translation
+
+  if(pfp == NULL) {
+	StartupStore(_T("......  PilotSaveProfile <%s> open for write FAILED!%s"),szFile,NEWLINE);
+	return;
+  }
+
+  //
+  // Standard header
+  //
+  fprintf(pfp,"### LK8000 PILOT PROFILE - DO NOT EDIT%s",PNEWLINE);
+  fprintf(pfp,"### THIS FILE IS ENCODED IN UTF8%s",PNEWLINE);
+  fprintf(pfp,"LKVERSION=\"%s.%s\"%s",LKVERSION,LKRELEASE,PNEWLINE);
+  fprintf(pfp,"PROFILEVERSION=1%s",PNEWLINE);
+
+  rprintf(szRegistryPilotName,PilotName_Config);
 
 
+  fprintf(pfp,PNEWLINE); // end of file
+  fflush(pfp);
+  fclose(pfp);
+
+}
 
 
 

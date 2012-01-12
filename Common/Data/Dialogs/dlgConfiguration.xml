@@ -514,11 +514,16 @@
 </WndFrame>
 <WndFrame Name="frmLogger" X=70 Y=0 Width=-246 Height=222 Font=2>
 <WndButton Name="cmdPilotName" Caption="_@M525_" X=2 Y=1 Width=-246  Height=22 Font=2 />
-<WndProperty Name="prpLoggerShortName" Caption="_@M611_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H207_">
+<WndButton Name="cmdPilotSaveAs" Caption="_@M580_" X=2 Y=-1 Width=123  Height=22 Font=2 OnClickNotify="OnPilotSaveAsClicked"/>
+<WndButton Name="cmdPilotSaveNew" Caption="_@M582_" X=126 Y=-999 Width=123  Height=22 Font=2 OnClickNotify="OnPilotSaveNewClicked"/>
+<WndProperty Name="prpLoggerShortName" Caption="_@M611_" X=2 Y=-2 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H207_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>
 <WndProperty Name="prpDisableAutoLogger" Caption="_@M113_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H208_">
 <DataField name="" DataType="boolean"/>
+</WndProperty>
+<WndProperty Name="prpPilotFile" Caption="" X=2 Y=-999  Width=0 Height=0 CaptionWidth=0 Font=2 Help="">
+<DataField name="" DataType="filereader" Min=0 Max=200 Step=1/>
 </WndProperty>
 </WndFrame>
 <WndFrame Name="frmWaypointEdit" X=70 Y=0 Width=-246 Height=222 Font=2>
