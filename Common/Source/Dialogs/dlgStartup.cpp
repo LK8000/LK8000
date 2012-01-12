@@ -63,51 +63,18 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
  TCHAR sDir[MAX_PATH];
  TCHAR srcfile[MAX_PATH];
  bool fullsize=true;
+ TCHAR fprefix[20];
 
-
- if (RUN_MODE!=RUN_WELCOME) {
-
-	FillRect(hDC,&ScreenSizeR, LKBrush_Black);
-
-	TCHAR mes[100];
-	_stprintf(mes,_T("%S v%S.%S - %s"),LKFORK,LKVERSION,LKRELEASE,gettext(_T("_@M2054_")));
-	RawWrite(hDC,mes,1,1, RGB_WHITE,WTMODE_NORMAL);
-
-	unsigned long freeram = CheckFreeRam()/1024;
-	TCHAR buffer[MAX_PATH];
-	LocalPath(buffer);
-	unsigned long freestorage = FindFreeSpace(buffer);
-	_stprintf(mes,_T("free ram %.1ldM  storage %.1ldM"), freeram/1024,freestorage/1024);
-	RawWrite(hDC,mes,3,0, RGB_WHITE,WTMODE_NORMAL);
-
-	if ( ScreenSize != ss320x240 && ScreenLandscape )
-	RawWrite(hDC,_T("_______________________"),2,2, RGB_GREEN,WTMODE_NORMAL);
-
-	_stprintf(mes,_T("%s"),PilotName_Config);
-	RawWrite(hDC,mes,4,2, RGB_ICEWHITE, WTMODE_OUTLINED);
-
-	_stprintf(mes,_T("%s"),AircraftRego_Config);
-	RawWrite(hDC,mes,5,2, RGB_AMBER, WTMODE_NORMAL);
-
-	_stprintf(mes,_T("%s"),AircraftType_Config);
-	RawWrite(hDC,mes,6,2, RGB_AMBER, WTMODE_NORMAL);
-
-	extern void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext);
-	LK_wsplitpath(szPolarFile, (WCHAR*) NULL, (WCHAR*) NULL, srcfile, (WCHAR*) NULL);
-
-	_stprintf(mes,_T("%s %s"),gettext(_T("_@M528_")),srcfile);
-	RawWrite(hDC,mes,7,2, RGB_AMBER, WTMODE_NORMAL);
-
-
-	RawWrite(hDC,_T("_______________________"),8,2, RGB_GREEN,WTMODE_NORMAL);
-
-	return;
- }
+ if (RUN_MODE==RUN_WELCOME) 
+	_tcscpy(fprefix,_T("LKSTART"));
+ else
+	_tcscpy(fprefix,_T("LKSTART"));
+	// _tcscpy(fprefix,_T("LKPROFILE"));  USE THIS FOR 3.0
 
  LocalPath(sDir,TEXT(LKD_BITMAPS));
 
  // first look for lkstart_480x272.bmp for example
- _stprintf(srcfile,_T("%s\\LKSTART_%s.BMP"),sDir, GetSizeSuffix() );
+ _stprintf(srcfile,_T("%s\\%s_%s.BMP"),sDir, fprefix,GetSizeSuffix() );
 
  if (  GetFileAttributes(srcfile) == 0xffffffff ) {
 	fullsize=false;
@@ -116,28 +83,28 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
                         case ss640x480:
                         case ss720x408:
                         case ss896x672:
-                                _stprintf(srcfile,_T("%s\\LKSTART_LB.BMP"),sDir);
+                                _stprintf(srcfile,_T("%s\\%s_LB.BMP"),sDir,fprefix);
                                 break;
 
                         case ss480x272:
                         case ss480x234:
                         case ss400x240:
                         case ss320x240:
-                                _stprintf(srcfile,_T("%s\\LKSTART_LS.BMP"),sDir);
+                                _stprintf(srcfile,_T("%s\\%s_LS.BMP"),sDir,fprefix);
                                 break;
 
                         case ss480x640:
                         case ss480x800:
-                                _stprintf(srcfile,_T("%s\\LKSTART_PB.BMP"),sDir);
+                                _stprintf(srcfile,_T("%s\\%s_PB.BMP"),sDir,fprefix);
                                 break;
 
                         case ss240x320:
                         case ss272x480:
-                                _stprintf(srcfile,_T("%s\\LKSTART_PS.BMP"),sDir);
+                                _stprintf(srcfile,_T("%s\\%s_PS.BMP"),sDir,fprefix);
                                 break;
 
                         default:
-                                _stprintf(srcfile,_T("%s\\LKSTART_DEFAULT.BMP"),sDir);
+                                _stprintf(srcfile,_T("%s\\%s_LS.BMP"),sDir,fprefix);
                                 break;
 	}
  }
@@ -218,6 +185,46 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 	_stprintf(mes,_T("Version %S.%S (%S)"),LKVERSION,LKRELEASE,__DATE__);
 	RawWrite(hDC,mes,pos,1, RGB_DARKWHITE,WTMODE_NORMAL);
   }
+
+  if (RUN_MODE!=RUN_WELCOME) {
+
+	FillRect(hDC,&ScreenSizeR, LKBrush_Black); // REMOVE FOR 3.0
+
+	TCHAR mes[100];
+	_stprintf(mes,_T("%S v%S.%S - %s"),LKFORK,LKVERSION,LKRELEASE,gettext(_T("_@M2054_")));
+	RawWrite(hDC,mes,1,1, RGB_LIGHTGREY,WTMODE_NORMAL);
+
+	unsigned long freeram = CheckFreeRam()/1024;
+	TCHAR buffer[MAX_PATH];
+	LocalPath(buffer);
+	unsigned long freestorage = FindFreeSpace(buffer);
+	_stprintf(mes,_T("free ram %.1ldM  storage %.1ldM"), freeram/1024,freestorage/1024);
+	RawWrite(hDC,mes,3,0, RGB_LIGHTGREY,WTMODE_NORMAL);
+
+	if ( ScreenSize != ss320x240 && ScreenLandscape )
+	RawWrite(hDC,_T("_______________________"),2,2, RGB_LIGHTGREY,WTMODE_NORMAL);
+
+	_stprintf(mes,_T("%s"),PilotName_Config);
+	RawWrite(hDC,mes,4,2, RGB_ICEWHITE, WTMODE_OUTLINED);
+
+	_stprintf(mes,_T("%s"),AircraftRego_Config);
+	RawWrite(hDC,mes,5,2, RGB_AMBER, WTMODE_OUTLINED);
+
+	_stprintf(mes,_T("%s"),AircraftType_Config);
+	RawWrite(hDC,mes,6,2, RGB_AMBER, WTMODE_OUTLINED);
+
+	extern void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext);
+	LK_wsplitpath(szPolarFile, (WCHAR*) NULL, (WCHAR*) NULL, srcfile, (WCHAR*) NULL);
+
+	_stprintf(mes,_T("%s %s"),gettext(_T("_@M528_")),srcfile);
+	RawWrite(hDC,mes,7,2, RGB_AMBER, WTMODE_OUTLINED);
+
+
+	// RawWrite(hDC,_T("_______________________"),8,2, RGB_LIGHTGREY,WTMODE_NORMAL); // REMOVE FOR THE 3.0
+
+	return;
+  }
+
 
   DeleteObject(hWelcomeBitmap);
   SelectObject(hTempDC, oldBitmap);
