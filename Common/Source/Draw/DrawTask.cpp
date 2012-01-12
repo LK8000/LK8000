@@ -188,28 +188,30 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 	  sct2 = WayPointList[Task[i+1].Index].Screen;
 	}
 
-	if (is_first) {
-	  DrawDashLine(hdc, NIBLSCALE(3), 
-		       sct1, 
-		       sct2, 
-		       taskcolor, rc);
-	} else {
-	  DrawDashLine(hdc, NIBLSCALE(3), 
-		       sct2, 
-		       sct1, 
-		       taskcolor, rc); 
+	if( (DoOptimizeRoute() && i >= ActiveWayPoint) || !DoOptimizeRoute() ){
+		if (is_first) {
+			DrawDashLine(hdc, NIBLSCALE(3), 
+				sct1, 
+				sct2, 
+				taskcolor, rc);
+		} else {
+			DrawDashLine(hdc, NIBLSCALE(3), 
+				sct2, 
+				sct1, 
+				taskcolor, rc); 
+		}
+
+		// draw small arrow along task direction
+		POINT p_p;
+		POINT Arrow[2] = { {6,6}, {-6,6} };
+		ScreenClosestPoint(sct1, sct2, 
+				   Orig_Aircraft, &p_p, NIBLSCALE(25));
+		PolygonRotateShift(Arrow, 2, p_p.x, p_p.y, 
+				   bearing-DisplayAngle);
+
+		_DrawLine(hdc, PS_SOLID, NIBLSCALE(2), Arrow[0], p_p, taskcolor, rc);
+		_DrawLine(hdc, PS_SOLID, NIBLSCALE(2), Arrow[1], p_p, taskcolor, rc);
 	}
-
-	// draw small arrow along task direction
-	POINT p_p;
-	POINT Arrow[2] = { {6,6}, {-6,6} };
-	ScreenClosestPoint(sct1, sct2, 
-			   Orig_Aircraft, &p_p, NIBLSCALE(25));
-	PolygonRotateShift(Arrow, 2, p_p.x, p_p.y, 
-			   bearing-DisplayAngle);
-
-	_DrawLine(hdc, PS_SOLID, NIBLSCALE(2), Arrow[0], p_p, taskcolor, rc);
-	_DrawLine(hdc, PS_SOLID, NIBLSCALE(2), Arrow[1], p_p, taskcolor, rc);
       }
     }
 #ifdef HAVEEXCEPTIONS

@@ -1597,6 +1597,38 @@ void SaveDefaultTask(void) {
 
 #include "NavFunctions.h"
 
+struct Coor{
+	double lat,lon;
+	Coor(double _lat,double _lon):lat(_lat),lon(_lon){}
+};
+struct Vec{
+	double lat,lon;
+	Coor a,b;
+	Vec(Coor _a,Coor _b):a(_a),b(_b)
+	{
+		lat=b.lat-a.lat;
+		lon=b.lon-a.lon;
+	}
+	double vecto(Vec other){
+		return (lat*other.lon-lon*other.lat);
+	}
+	double norme(){
+		return sqrt(lat*lat+lon*lon);
+	}
+};
+
+void CalcIntersection(Coor a1, Coor a2, Coor b1, Coor b2, Coor &Res){
+	Vec A(a1,a2);
+	Vec B(b1,b2);
+
+	double a=A.vecto(Vec(a1,b1))/A.norme(); 
+	double b=A.vecto(Vec(a1,b2))/A.norme(); 
+
+	double newB=B.norme()+(B.norme()*b)/(a-b);
+
+	Res.lat=b1.lat+B.lat*newB/B.norme();
+	Res.lon=b1.lon+B.lon*newB/B.norme();
+}
 
 void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
@@ -1639,44 +1671,64 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			continue;
 		}
 
+		double optlat, optlon;
 		// From Current Position To Current Wpt
 		DistanceBearing(curlat, curlon, stdlat, stdlon, &stddst, &stdbrg);
-
-		// From Current Wpt To Next Wpt
-		DistanceBearing(stdlat, stdlon, nxtlat, nxtlon, NULL, &nxtbrg);
-
-		double obrg_f = BiSector(nxtbrg, stdbrg);
-
 		double radius= (curwp>0)?(Task[curwp].AATCircleRadius):StartRadius;
+		double obrg_f = stdbrg;
 
-		// Why ?? Check if Point is Loged beffore advance to Next WP ...
-//		dist_ui-=30; // 30m margin 
+		if (stdwp == nxtwp) {
+			double radius= (curwp>0)?(Task[curwp].AATCircleRadius):StartRadius;
+			double obrg_f = Reciprocal(stdbrg);
 
-		double optlat, optlon;
-		FindLatitudeLongitude(stdlat,stdlon, obrg_f, radius, &optlat, &optlon);
+			FindLatitudeLongitude(stdlat,stdlon, obrg_f, radius, &optlat, &optlon);
+		}
+		else {
+			// From Current Wpt To Next Wpt
+			DistanceBearing(stdlat, stdlon, nxtlat, nxtlon, NULL, &nxtbrg);
+			double radius= (curwp>0)?(Task[curwp].AATCircleRadius):StartRadius;
 
-		double errbrg, optbrg; // beraing from current to next
-		DistanceBearing(curlat, curlon, nxtlat, nxtlon, NULL, &errbrg);
-		DistanceBearing(curlat, curlon, optlat, optlon, NULL, &optbrg);
+			double obrg_f = nxtbrg;
 
-		double dBrg = (stdbrg - errbrg) * DEG_TO_RAD;
-		if(dBrg < PI/2 && (sin(fabs(dBrg))) < radius/stddst ) {
+			if(radius < stddst || bCalcPrev) {
+				double inlat, inlon;
+				FindLatitudeLongitude(stdlat,stdlon, Reciprocal(stdbrg), radius, &inlat, &inlon);
+			
+				double outlat, outlon;
+				FindLatitudeLongitude(stdlat,stdlon, nxtbrg, radius, &outlat, &outlon);
 
-			if(radius > stddst * sin(dBrg)) {
+				Coor intersec(0,0);
+				CalcIntersection(Coor(curlat,curlon), Coor(outlat, outlon), Coor(nxtlat,nxtlon), Coor(inlat,inlon), intersec);
 
-				if( (dBrg < PI/2) && (radius < stddst)) {
-					dBrg = - dBrg + asin((stddst * sin(dBrg)) / radius);
+				DistanceBearing(stdlat, stdlon, intersec.lat, intersec.lon, NULL, &obrg_f);
+			}
+
+			FindLatitudeLongitude(stdlat,stdlon, obrg_f, radius, &optlat, &optlon);
+
+			double errbrg, optbrg, errdst; // beraing from current to next
+			DistanceBearing(curlat, curlon, nxtlat, nxtlon, &errdst, &errbrg);
+			if(errdst > stddst ) {
+				DistanceBearing(curlat, curlon, optlat, optlon, NULL, &optbrg);
+
+				double dBrg = fabs((stdbrg - errbrg) * DEG_TO_RAD);
+				if( (dBrg < PI/2) && (sin(dBrg) < radius/stddst ) ) {
+
+					if(radius > stddst * sin(dBrg)) {
+
+						if( (dBrg < PI/2) && (radius < stddst)) {
+							dBrg = - dBrg + asin((stddst * sin(dBrg)) / radius);
+						}
+						else{
+							dBrg = PI - dBrg - asin((stddst * sin(dBrg)) / radius);
+						}
+						dBrg *= RAD_TO_DEG * (((stdbrg - errbrg)<0)?-1:1);
+						obrg_f = AngleLimit360(dBrg + 180 + stdbrg);
+
+						FindLatitudeLongitude(stdlat,stdlon, obrg_f, radius, &optlat, &optlon);
+					}
 				}
-				else{
-					dBrg = PI - dBrg - asin((stddst * sin(dBrg)) / radius);
-				}
-				dBrg *= RAD_TO_DEG;
-				obrg_f = AngleLimit360(dBrg + 180 + stdbrg);
-
-				FindLatitudeLongitude(stdlat,stdlon, obrg_f, radius, &optlat, &optlon);
 			}
 		}
-
 		Task[curwp].AATTargetLat= optlat;
 		Task[curwp].AATTargetLon= optlon;
 		Task[curwp].AATTargetLocked=true;
@@ -1686,20 +1738,22 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			DistanceBearing(curlat, curlon, optlat, optlon, NULL, &errbrg);
 			radius= ((curwp-1)>0)?(Task[curwp-1].AATCircleRadius):StartRadius;
 
-			double dBrg = (stdbrg - errbrg) * DEG_TO_RAD;
-			if(dBrg>PI) dBrg -= 2*PI;
-			if( (dBrg > (PI/360)) && (sin(fabs(dBrg))) < radius/stddst && radius > stddst * sin(dBrg)) {
-				if( (dBrg < PI/2) && (radius < stddst)) {
-					dBrg = - dBrg + asin((stddst * sin(dBrg)) / radius);
+			if( radius < stddst) {
+				double dBrg = (stdbrg - errbrg) * DEG_TO_RAD;
+				if(dBrg>PI) dBrg -= 2*PI;
+				if( (dBrg > (PI/360)) && (sin(fabs(dBrg))) < radius/stddst && radius > stddst * sin(dBrg)) {
+					if( (dBrg < PI/2) && (radius < stddst)) {
+						dBrg = - dBrg + asin((stddst * sin(dBrg)) / radius);
+					}
+					else{
+						dBrg = PI - dBrg - asin((stddst * sin(dBrg)) / radius);
+					}
+					dBrg *= RAD_TO_DEG;
+					obrg_f = AngleLimit360(dBrg + 180 + stdbrg);
 				}
-				else{
-					dBrg = PI - dBrg - asin((stddst * sin(dBrg)) / radius);
+				else {
+					obrg_f = AngleLimit360(stdbrg + 180);
 				}
-				dBrg *= RAD_TO_DEG;
-				obrg_f = AngleLimit360(dBrg + 180 + stdbrg);
-			}
-			else {
-				obrg_f = AngleLimit360(stdbrg + 180);
 			}
 			FindLatitudeLongitude(stdlat,stdlon, obrg_f, radius, &optlat, &optlon);
 
