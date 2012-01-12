@@ -90,6 +90,7 @@
 #define LKDATADIR	"LK8000"
 #define LKPROFILE	"DEFAULT_PROFILE.prf"
 #define LKAIRCRAFT	"DEFAULT_AIRCRAFT.acf"
+#define LKPILOT		"DEFAULT_PILOT.acf"
 
 /*
  * LK8000 directories
@@ -118,6 +119,7 @@
 #define LKS_TXT		".txt"
 #define LKS_PRF		".prf"
 #define LKS_AIRCRAFT	".acf"
+#define LKS_PILOT	".plt"
 #define LKS_AIRSPACES	".txt"
 #define LKS_POLARS	".plr"
 #define LKS_WP_WINPILOT	".dat"

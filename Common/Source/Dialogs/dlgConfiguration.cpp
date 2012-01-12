@@ -29,12 +29,14 @@
 #include "Calculations2.h"
 
 extern void UpdatePolarConfig(void);
+// extern void UpdatePilotConfig(void); REMOVE
 
 static HFONT TempMapWindowFont;
 static HFONT TempMapLabelFont;
 static HFONT TempUseCustomFontsFont;
 
 extern void LKAircraftSave(const TCHAR *szFile);
+extern void LKPilotSave(const TCHAR *szFile);
 
 extern void InitializeOneFont (HFONT * theFont, 
                                const TCHAR FontRegKey[] , 
@@ -955,6 +957,7 @@ static void OnUTCData(DataField *Sender, DataField::DataAccessKind_t Mode){
 
 }
 
+#if 0 // REMOVE
 static void OnPolarFileData(DataField *Sender, DataField::DataAccessKind_t Mode){
 
   switch(Mode){
@@ -970,7 +973,26 @@ static void OnPolarFileData(DataField *Sender, DataField::DataAccessKind_t Mode)
 
 }
 
-static void OnPolarSaveAsClicked(WindowControl * Sender) {
+// Probably we can remove this stuff entirely!
+static void OnPilotFileData(DataField *Sender, DataField::DataAccessKind_t Mode){
+
+  switch(Mode){
+    case DataField::daGet:
+    break;
+    case DataField::daPut:
+    case DataField::daChange:
+    break;
+	default: 
+		StartupStore(_T("........... DBG-907%s"),NEWLINE); // 091105
+		break;
+  }
+#endif
+
+
+
+// mode 0: Aircraft aka Polar
+// mode 1: Pilot
+static void OnProfileSaveAs(WindowControl * Sender, short mode) {
   (void)Sender;
 
   int file_index; 
@@ -983,7 +1005,11 @@ static void OnPolarSaveAsClicked(WindowControl * Sender) {
 	return;
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAircraftFile"));
+  if (mode==0)
+	wp = (WndProperty*)wf->FindByName(TEXT("prpAircraftFile"));
+  else
+	wp = (WndProperty*)wf->FindByName(TEXT("prpPilotFile"));
+
   if (!wp) return;
 
   HWND hwnd = wp->GetHandle();
@@ -998,20 +1024,34 @@ static void OnPolarSaveAsClicked(WindowControl * Sender) {
 	// LKTOKEN  _@M509_ = "Overwrite profile?" 
 		gettext(TEXT("_@M509_")), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
-		UpdatePolarConfig();
-		LKAircraftSave(dfe->GetPathFile());
+		if (mode==0) {
+			UpdatePolarConfig();
+			LKAircraftSave(dfe->GetPathFile());
+		} else {
+			// UpdatePilotConfig(); REMOVE
+			LKPilotSave(dfe->GetPathFile());
+		}
 	// LKTOKEN  _@M535_ = "Profile saved!" 
 		MessageBoxX(hWndMapWindow, gettext(TEXT("_@M535_")),_T(""), MB_OK|MB_ICONEXCLAMATION);
 		return;
 	}
   	dfe->Set(0);
   } 
-
 }
 
 
+static void OnPolarSaveAsClicked(WindowControl * Sender) {
+  (void)Sender;
+	OnProfileSaveAs(Sender,0 );
+}
+static void OnPilotSaveAsClicked(WindowControl * Sender) {
+  (void)Sender;
+	OnProfileSaveAs(Sender,1 );
+}
 
-static void OnPolarSaveNewClicked(WindowControl * Sender) {
+// mode 0: Aircraft aka Polar
+// mode 1: Pilot
+static void OnProfileSaveNew(WindowControl * Sender, short mode) {
   (void)Sender;
 
   int file_index; 
@@ -1021,7 +1061,11 @@ static void OnPolarSaveNewClicked(WindowControl * Sender) {
   WndProperty* wp;
   DataFieldFileReader *dfe;
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAircraftFile"));
+  if (mode==0)
+	wp = (WndProperty*)wf->FindByName(TEXT("prpAircraftFile"));
+  else
+	wp = (WndProperty*)wf->FindByName(TEXT("prpPilotFile"));
+
   if (!wp) return;
   dfe = (DataFieldFileReader*) wp->GetDataField();
 
@@ -1030,8 +1074,11 @@ static void OnPolarSaveNewClicked(WindowControl * Sender) {
 
   if (_tcslen(profile_name)<=0) return;
 
+  if (mode==0)
+	_tcscat(profile_name, TEXT(LKS_AIRCRAFT));
+  else
+	_tcscat(profile_name, TEXT(LKS_PILOT));
 
-  _tcscat(profile_name, TEXT(LKS_AIRCRAFT));
   LocalPath(file_name,TEXT(LKD_CONF));
   _tcscat(file_name,TEXT("\\"));
   _tcscat(file_name,profile_name);
@@ -1049,8 +1096,13 @@ static void OnPolarSaveNewClicked(WindowControl * Sender) {
 	// LKTOKEN  _@M579_ = "Save ?" 
 		gettext(TEXT("_@M579_")), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
-		UpdatePolarConfig();
-		LKAircraftSave(file_name);
+		if (mode==0) {
+			UpdatePolarConfig();
+			LKAircraftSave(file_name);
+		} else {
+			// UpdatePilotConfig(); // REMOVE
+			LKPilotSave(file_name);
+		}
 		dfe->addFile(profile_name, file_name);
 
 		MessageBoxX(hWndMapWindow, 
@@ -1080,7 +1132,11 @@ static void OnPolarSaveNewClicked(WindowControl * Sender) {
 		gettext(TEXT("_@M510_")), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
 
-			LKAircraftSave(file_name);
+			if (mode==0) {
+				LKAircraftSave(file_name);
+			} else {
+				LKPilotSave(file_name);
+			}
 			MessageBoxX(hWndMapWindow, 
 	// LKTOKEN  _@M535_ = "Profile saved!" 
 			gettext(TEXT("_@M535_")),
@@ -1093,6 +1149,13 @@ static void OnPolarSaveNewClicked(WindowControl * Sender) {
 
 } // Save new
 
+
+static void OnPolarSaveNewClicked(WindowControl * Sender) {
+	OnProfileSaveNew(Sender,0 );
+}
+static void OnPilotSaveNewClicked(WindowControl * Sender) {
+	OnProfileSaveNew(Sender,1 );
+}
 
 
 extern void OnInfoBoxHelp(WindowControl * Sender);
@@ -1289,10 +1352,13 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnWaypointEditClicked),
   DeclareCallBackEntry(OnWaypointSaveClicked),
 
-  DeclareCallBackEntry(OnPolarFileData),
+//  DeclareCallBackEntry(OnPolarFileData), REMOVE
 
   DeclareCallBackEntry(OnDeviceAData),
   DeclareCallBackEntry(OnDeviceBData),
+
+  DeclareCallBackEntry(OnPilotSaveAsClicked),
+  DeclareCallBackEntry(OnPilotSaveNewClicked),
 
   DeclareCallBackEntry(OnPolarSaveAsClicked),
   DeclareCallBackEntry(OnPolarSaveNewClicked),
@@ -2230,6 +2296,15 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpPilotFile"));
+  if (wp) {
+    DataFieldFileReader* dfe;
+    dfe = (DataFieldFileReader*)wp->GetDataField();
+    _stprintf(tsuf,_T("*%S"),LKS_PILOT);
+    dfe->ScanDirectoryTop(_T(LKD_CONF),tsuf);
+    dfe->Set(0);
+    wp->RefreshDisplay();
+  }
   wp = (WndProperty*)wf->FindByName(TEXT("prpAircraftFile"));
   if (wp) {
     DataFieldFileReader* dfe;
@@ -5106,6 +5181,35 @@ void UpdatePolarConfig(void){
       changed = true;
     }
   }
-
-
 }
+
+
+#if 0 // REMOVE
+void UpdatePilotConfig(void){
+
+ WndProperty *wp;
+ int ival;
+
+#if 0
+static void OnPilotNameClicked(WindowControl *Sender) {
+	(void)Sender;
+  TCHAR Temp[100];
+  if (buttonPilotName) {
+    #if OLDPROFILES
+    GetRegistryString(szRegistryPilotName,Temp,100);
+    #else
+    _tcscpy(Temp,PilotName_Config);
+    #endif
+    dlgTextEntryShowModal(Temp,100);
+    #if OLDPROFILES
+    SetRegistryString(szRegistryPilotName,Temp);
+    #else
+    _tcscpy(PilotName_Config,Temp);
+    #endif
+    changed = true;
+  }
+  UpdateButtons();
+}
+#endif
+}
+#endif // REMOVE
