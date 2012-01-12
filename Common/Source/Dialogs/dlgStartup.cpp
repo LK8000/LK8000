@@ -68,8 +68,7 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
  if (RUN_MODE==RUN_WELCOME) 
 	_tcscpy(fprefix,_T("LKSTART"));
  else
-	_tcscpy(fprefix,_T("LKSTART"));
-	// _tcscpy(fprefix,_T("LKPROFILE"));  USE THIS FOR 3.0
+	 _tcscpy(fprefix,_T("LKPROFILE"));
 
  LocalPath(sDir,TEXT(LKD_BITMAPS));
 
@@ -188,7 +187,7 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 
   if (RUN_MODE!=RUN_WELCOME) {
 
-	FillRect(hDC,&ScreenSizeR, LKBrush_Black); // REMOVE FOR 3.0
+	// FillRect(hDC,&ScreenSizeR, LKBrush_Black); // REMOVE 
 
 	TCHAR mes[100];
 	_stprintf(mes,_T("%S v%S.%S - %s"),LKFORK,LKVERSION,LKRELEASE,gettext(_T("_@M2054_")));
