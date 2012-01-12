@@ -1597,6 +1597,38 @@ void SaveDefaultTask(void) {
 
 #include "NavFunctions.h"
 
+struct Coor{
+	double lat,lon;
+	Coor(double _lat,double _lon):lat(_lat),lon(_lon){}
+};
+struct Vec{
+	double lat,lon;
+	Coor a,b;
+	Vec(Coor _a,Coor _b):a(_a),b(_b)
+	{
+		lat=b.lat-a.lat;
+		lon=b.lon-a.lon;
+	}
+	double vecto(Vec other){
+		return (lat*other.lon-lon*other.lat);
+	}
+	double norme(){
+		return sqrt(lat*lat+lon*lon);
+	}
+};
+
+void CalcIntersection(Coor a1, Coor a2, Coor b1, Coor b2, Coor &Res){
+	Vec A(a1,a2);
+	Vec B(b1,b2);
+
+	double a=A.vecto(Vec(a1,b1))/A.norme(); 
+	double b=A.vecto(Vec(a1,b2))/A.norme(); 
+
+	double newB=B.norme()+(B.norme()*b)/(a-b);
+
+	Res.lat=b1.lat+B.lat*newB/B.norme();
+	Res.lon=b1.lon+B.lon*newB/B.norme();
+}
 
 void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
@@ -1654,16 +1686,22 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		else {
 			// From Current Wpt To Next Wpt
 			DistanceBearing(stdlat, stdlon, nxtlat, nxtlon, NULL, &nxtbrg);
-
-			double obrg_f = BiSector(nxtbrg, stdbrg);
-
 			double radius= (curwp>0)?(Task[curwp].AATCircleRadius):StartRadius;
-			if( radius > stddst && !bCalcPrev) {
-				obrg_f = nxtbrg;
-			}
 
-			// Why ?? Check if Point is Loged beffore advance to Next WP ...
-	//		dist_ui-=30; // 30m margin 
+			double obrg_f = nxtbrg;
+
+			if(radius < stddst || bCalcPrev) {
+				double inlat, inlon;
+				FindLatitudeLongitude(stdlat,stdlon, Reciprocal(stdbrg), radius, &inlat, &inlon);
+			
+				double outlat, outlon;
+				FindLatitudeLongitude(stdlat,stdlon, nxtbrg, radius, &outlat, &outlon);
+
+				Coor intersec(0,0);
+				CalcIntersection(Coor(curlat,curlon), Coor(outlat, outlon), Coor(nxtlat,nxtlon), Coor(inlat,inlon), intersec);
+
+				DistanceBearing(stdlat, stdlon, intersec.lat, intersec.lon, NULL, &obrg_f);
+			}
 
 			FindLatitudeLongitude(stdlat,stdlon, obrg_f, radius, &optlat, &optlon);
 
