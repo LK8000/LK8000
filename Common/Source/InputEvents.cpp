@@ -2138,7 +2138,7 @@ void InputEvents::eventNearestAirspaceDetails(const TCHAR *misc) {
   InputEvents::eventSetup(_T("AspNextAnalysis"));
 
   if (found != NULL) {
-//	dlgAirspaceDetails(found);
+	// dlgAirspaceDetails(found);
 
   }
 }
