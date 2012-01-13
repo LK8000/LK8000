@@ -1869,5 +1869,6 @@ _@M2118_ "LogBook"
 _@M2119_ "LogBook\nDetails"
 _@M2120_ "Reset\nBook"
 _@M2121_ "LogBook\nList"
+_@M2122_ "Save\nSystem"
 
-# Note for developers: remember LKLanguage MAX_MESSAGE limit
+# Note for developers: remember LKLanguage MAX_MESSAGE limit (2130)

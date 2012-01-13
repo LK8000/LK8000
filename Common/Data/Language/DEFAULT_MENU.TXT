@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 6 , 120111
+# Release 6 , 120114
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -1037,9 +1037,9 @@ location=5
 mode=Config2
 type=key
 data=7
-event=StatusMessage ZYX935
-event=MarkLocation reset
-label=_@M2047_
+event=Service PROFILES
+event=Mode default
+label=_@M2122_
 location=6
 
 mode=Config2
@@ -1137,9 +1137,9 @@ location=7
 mode=Config3
 type=key
 data=9
-event=Service PROFILES
-event=Mode default
-label=_@M2054_
+event=StatusMessage ZYX935
+event=MarkLocation reset
+label=_@M2047_
 location=8
 
 mode=Config3
