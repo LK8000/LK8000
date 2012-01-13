@@ -17,6 +17,8 @@ typedef struct _DATAOPTIONS
   TCHAR Title[TITLE_SIZE + 1];
 } DATAOPTIONS;
 
+extern void LockStartupStore();
+extern void UnlockStartupStore();
 
 extern void UnlockEventQueue();
 extern void LockEventQueue();

@@ -22,6 +22,10 @@ CRITICAL_SECTION  CritSec_TaskData;
 bool csTaskDataInitialized = false;
 
 
+CRITICAL_SECTION  CritSec_StartupStore;
+bool csStartupStoreInitialized = false;
+
+
 static int csCount_TaskData = 0;
 static int csCount_FlightData = 0;
 static int csCount_EventQueue = 0;
@@ -42,6 +46,8 @@ void InitCriticalSections() {
   InitializeCriticalSection(&CritSec_TerrainDataCalculations);
   csTerrainDataCalculationsInitialized = true;
 
+  InitializeCriticalSection(&CritSec_StartupStore);
+  csStartupStoreInitialized = true;
 }
 
 void DeInitCriticalSections() {
@@ -59,6 +65,8 @@ void DeInitCriticalSections() {
   DeleteCriticalSection(&CritSec_TerrainDataGraphics);
   csTerrainDataCalculationsInitialized = false;
 
+  DeleteCriticalSection(&CritSec_StartupStore);
+  csStartupStoreInitialized = false;
 }
 
 
@@ -171,4 +179,15 @@ void UnlockEventQueue() {
   LeaveCriticalSection(&CritSec_EventQueue);
 }
 
+void LockStartupStore() {
+	if (csStartupStoreInitialized)	{
+		EnterCriticalSection(&CritSec_StartupStore);
+	}
+}
+
+void UnlockStartupStore() {
+	if (csStartupStoreInitialized)	{
+		LeaveCriticalSection(&CritSec_StartupStore);
+	}
+}
 
