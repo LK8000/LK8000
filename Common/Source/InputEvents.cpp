@@ -2135,8 +2135,10 @@ void InputEvents::eventNearestAirspaceDetails(const TCHAR *misc) {
   // StartHourglassCursor();
   CAirspace *found = CAirspaceManager::Instance().FindNearestAirspace(GPS_INFO.Longitude, GPS_INFO.Latitude,
 		      &nearestdistance, &nearestbearing );
+  InputEvents::eventSetup(_T("AspNextAnalysis"));
+
   if (found != NULL) {
-	dlgAirspaceDetails(found);
+	// dlgAirspaceDetails(found);
   }
 }
 
