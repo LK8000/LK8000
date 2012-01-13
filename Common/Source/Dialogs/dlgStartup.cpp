@@ -27,6 +27,8 @@ extern bool CheckSystemGRecord(void);
 #endif
 extern bool CheckLanguageEngMsg(void);
 
+bool fullresetasked=false;
+
 // Syntax  hdc _Text linenumber fontsize 
 // lines are: 0 - 9
 // fsize 0 small 1 normal 2 big
@@ -181,8 +183,13 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 			pos=10;
 			break;
 	}
-	_stprintf(mes,_T("Version %S.%S (%S)"),LKVERSION,LKRELEASE,__DATE__);
-	RawWrite(hDC,mes,pos,1, RGB_DARKWHITE,WTMODE_NORMAL);
+	if (fullresetasked) {
+		_stprintf(mes,_T("*** %s ***"),gettext(_T("_@M1757_")));
+		RawWrite(hDC,mes,pos,1, RGB_DARKWHITE,WTMODE_NORMAL);
+	} else {
+		_stprintf(mes,_T("Version %S.%S (%S)"),LKVERSION,LKRELEASE,__DATE__);
+		RawWrite(hDC,mes,pos,1, RGB_DARKWHITE,WTMODE_NORMAL);
+	}
   }
 
   if (RUN_MODE!=RUN_WELCOME) {
@@ -203,20 +210,27 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 	if ( ScreenSize != ss320x240 && ScreenLandscape )
 	RawWrite(hDC,_T("_______________________"),2,2, RGB_LIGHTGREY,WTMODE_NORMAL);
 
-	_stprintf(mes,_T("%s"),PilotName_Config);
-	RawWrite(hDC,mes,4,2, RGB_ICEWHITE, WTMODE_OUTLINED);
+	if (fullresetasked) {
+		_stprintf(mes,_T("%s"),gettext(_T("_@M1757_")));	// LK8000 PROFILES RESET
+		RawWrite(hDC,mes,5,2, RGB_ICEWHITE, WTMODE_OUTLINED);
+		_stprintf(mes,_T("%s"),gettext(_T("_@M1759_")));	// SELECTED IN SYSTEM
+		RawWrite(hDC,mes,6,2, RGB_ICEWHITE, WTMODE_OUTLINED);
+	} else {
+		_stprintf(mes,_T("%s"),PilotName_Config);
+		RawWrite(hDC,mes,4,2, RGB_ICEWHITE, WTMODE_OUTLINED);
 
-	_stprintf(mes,_T("%s"),AircraftRego_Config);
-	RawWrite(hDC,mes,5,2, RGB_AMBER, WTMODE_OUTLINED);
+		_stprintf(mes,_T("%s"),AircraftRego_Config);
+		RawWrite(hDC,mes,5,2, RGB_AMBER, WTMODE_OUTLINED);
 
-	_stprintf(mes,_T("%s"),AircraftType_Config);
-	RawWrite(hDC,mes,6,2, RGB_AMBER, WTMODE_OUTLINED);
+		_stprintf(mes,_T("%s"),AircraftType_Config);
+		RawWrite(hDC,mes,6,2, RGB_AMBER, WTMODE_OUTLINED);
 
-	extern void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext);
-	LK_wsplitpath(szPolarFile, (WCHAR*) NULL, (WCHAR*) NULL, srcfile, (WCHAR*) NULL);
+		extern void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext);
+		LK_wsplitpath(szPolarFile, (WCHAR*) NULL, (WCHAR*) NULL, srcfile, (WCHAR*) NULL);
 
-	_stprintf(mes,_T("%s %s"),gettext(_T("_@M528_")),srcfile);
-	RawWrite(hDC,mes,7,2, RGB_AMBER, WTMODE_OUTLINED);
+		_stprintf(mes,_T("%s %s"),gettext(_T("_@M528_")),srcfile);  // polar file
+		RawWrite(hDC,mes,7,2, RGB_AMBER, WTMODE_OUTLINED);
+	}
 
 
 	// RawWrite(hDC,_T("_______________________"),8,2, RGB_LIGHTGREY,WTMODE_NORMAL); // REMOVE FOR THE 3.0
@@ -631,10 +645,20 @@ bool dlgStartupShowModal(void){
 		if (_tcslen(dfe->GetPathFile())>0) {
 			if (_tcscmp(dfe->GetPathFile(),startProfileFile) ) { // if they are not the same
 				_tcscpy(startProfileFile,dfe->GetPathFile());
-				#if TESTBENCH
-				StartupStore(_T("... Selected new profile, preloading..\n"));
-				#endif
-				LKProfileLoad(startProfileFile);
+				if (_tcscmp(startProfileFile,_T("PROFILE_RESET"))==0) {
+					#if TESTBENCH
+					StartupStore(_T("... Selected FULL RESET virtual profile\n"));
+					#endif
+					if (MessageBoxX(NULL, gettext(TEXT("_@M1758_")), 
+						gettext(TEXT("_@M1757_")), MB_OK|MB_ICONQUESTION));
+					fullresetasked=true;
+				} else {
+					#if TESTBENCH
+					StartupStore(_T("... Selected new profile, preloading..\n"));
+					#endif
+					LKProfileLoad(startProfileFile);
+					fullresetasked=false;
+				}
 			}
 		}
 	}
