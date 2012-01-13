@@ -351,6 +351,7 @@ DRAW	:=\
 	$(DRW)/LKGeneralAviation.cpp \
 	$(DRW)/LKMessages.cpp \
 	$(DRW)/LKWriteText.cpp \
+	$(DRW)/LoadSplash.cpp\
 	$(DRW)/MapScale.cpp \
 	$(DRW)/MapWindowA.cpp \
 	$(DRW)/MapWindowMode.cpp \

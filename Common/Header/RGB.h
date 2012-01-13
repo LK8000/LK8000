@@ -9,6 +9,7 @@
 // MapWindow::TextColor() supported colours
 #define RGB_BLACK	RGB(0,0,0)
 #define RGB_WHITE	RGB(255,255,255)
+#define RGB_WHITENOREV	RGB(254,254,254)		// this color will not be reversed
 #define RGB_BLUE	RGB(0x00,0x00,0xff)
 #define RGB_LIGHTBLUE	RGB(179,179,255)
 #define RGB_GREY	RGB(0x99,0x99,0x99)
@@ -28,6 +29,7 @@
 #define RGB_MAGENTA	RGB(255,0,255)
 // unsupported
 #define RGB_AMBER	RGB(0xff,0xbe,0x00)
+#define RGB_AMBERNOREV	RGB(0xff,0xbd,0x01)		// amber not reversed
 #define RGB_INDIGO	RGB(0x4b,0x00,0x82)
 #define RGB_DARKRED	RGB(200,0,0)
 #define RGB_VDARKRED	RGB(160,0,0)

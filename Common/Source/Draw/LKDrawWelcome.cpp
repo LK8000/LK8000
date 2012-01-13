@@ -22,6 +22,7 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
   short middlex=(rc.right-rc.left)/2;
   //short left=rc.left+NIBLSCALE(5);
   short contenttop=rc.top+NIBLSCALE(50);
+  static double freeram=CheckFreeRam()/1000000.0;
 
   switch (LKevent) {
 	case LKEVENT_NONE:
@@ -39,24 +40,24 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
   SelectObject(hdc, LK8BigFont);
   _stprintf(Buffer,TEXT("LK8000"));
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &headerSize);
-  LKWriteText(hdc, Buffer, middlex, (headerSize.cy/2)+NIBLSCALE(2) , 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_SWHITE, false);
+  LKWriteText(hdc, Buffer, middlex, (headerSize.cy/2)+NIBLSCALE(2) , 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITENOREV, false);
 
   _stprintf(Buffer,gettext(TEXT("_@M904_"))); // Tactical Flight Computer
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
   SelectObject(hdc, LK8MediumFont);
-  LKWriteText(hdc, Buffer, middlex, (headerSize.cy/2)+(textSize.cy/2)+NIBLSCALE(4)+1 , 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_SWHITE, false);
+  LKWriteText(hdc, Buffer, middlex, (headerSize.cy/2)+(textSize.cy/2)+NIBLSCALE(4)+1 , 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_WHITENOREV, false);
 
 
   //SelectObject(hdc, LK8InfoBigFont);
   SelectObject(hdc, LK8TitleFont);
   _stprintf(Buffer,TEXT("%s v%s.%s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE));
   if (SIMMODE) _tcscat(Buffer,_T(" (Simulator)"));
-  LKWriteText(hdc, Buffer, middlex, contenttop+(textSize.cy*1) , 0, WTMODE_OUTLINED, WTALIGN_CENTER,RGB_AMBER, false);
+  LKWriteText(hdc, Buffer, middlex, contenttop+(textSize.cy*1) , 0, WTMODE_OUTLINED, WTALIGN_CENTER,RGB_AMBERNOREV, false);
 
 
   _stprintf(Buffer,gettext(TEXT("_@M874_"))); // Click on center screen to begin
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
-  LKWriteText(hdc, Buffer, middlex, ((rc.bottom-rc.top)-textSize.cy)/2 , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_SWHITE, false);
+  LKWriteText(hdc, Buffer, middlex, ((rc.bottom-rc.top)-textSize.cy)/2 , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
 
 
   SelectObject(hdc, LK8UnitFont);
@@ -64,21 +65,22 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
 	_stprintf(Buffer,TEXT("**SCREEN %dx%d NOT SUPPORTED**"),rc.right,rc.bottom );
 	GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
 	bottomlines=rc.bottom-BottomSize-(textSize.cy*3);
-	LKWriteText(hdc, Buffer, middlex, bottomlines , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITE, false);
+	LKWriteText(hdc, Buffer, middlex, bottomlines , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
 	_stprintf(Buffer,TEXT("FONTS WILL NOT BE GOOD OR UNUSABLE"));
-	LKWriteText(hdc, Buffer, middlex, bottomlines+textSize.cy , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_SWHITE, false);
+	LKWriteText(hdc, Buffer, middlex, bottomlines+textSize.cy , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
   } else {
 	_stprintf(Buffer,TEXT("%s"), LK8000_Version);
 	GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
 	bottomlines=rc.bottom-BottomSize-(textSize.cy*3);
 	LKWriteText(hdc, Buffer, middlex, bottomlines , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITE, false);
 	_stprintf(Buffer,TEXT("HTTP://WWW.LK8000.IT  email:info@lk8000.it"));
-	LKWriteText(hdc, Buffer, middlex, bottomlines+textSize.cy , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_SWHITE, false);
+	LKWriteText(hdc, Buffer, middlex, bottomlines+textSize.cy , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
  }
 
   SelectObject(hdc, LK8InfoSmallFont);
 
-  _stprintf(Buffer, _T("%d WPs, %0.1fM free"),NumberOfWayPoints,CheckFreeRam()/1000000.0);
+  //_stprintf(Buffer, _T("%d WPs, %0.1fM free"),NumberOfWayPoints,CheckFreeRam()/1000000.0);
+  _stprintf(Buffer, _T("%d WPs, %0.1fM free"),NumberOfWayPoints,freeram);
   if (PGNumberOfGates>0) _tcscat(Buffer,_T(" (+Tsk Gates)"));
 #ifndef NDEBUG
   _tcscat(Buffer,_T(" (+debug)"));
@@ -87,7 +89,7 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
   _tcscat(Buffer,_T(" (+cpustats)"));
 #endif
   GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
-  LKWriteText(hdc, Buffer, middlex, bottomlines-(textSize.cy)-NIBLSCALE(2) , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_SWHITE, false);
+  LKWriteText(hdc, Buffer, middlex, bottomlines-(textSize.cy)-NIBLSCALE(2) , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
 
   _stprintf(Buffer, _T(""));
   if (GPSAltitudeOffset != 0) _stprintf(Buffer, _T("(GpsOffset %+.0f)"), GPSAltitudeOffset/1000*ALTITUDEMODIFY); // 100429 /1000
@@ -95,7 +97,7 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
   _tcscat(Buffer,_T(" TESTBENCH! "));
   #endif
   if (!LoggerGActive()) _tcscat(Buffer,_T(" (No GRecord)"));
-  LKWriteText(hdc, Buffer, middlex, bottomlines-(textSize.cy*2)-NIBLSCALE(2) , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_SWHITE, false);
+  LKWriteText(hdc, Buffer, middlex, bottomlines-(textSize.cy*2)-NIBLSCALE(2) , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
 
   if (WarningHomeDir) {
 	TCHAR nopath[MAX_PATH];

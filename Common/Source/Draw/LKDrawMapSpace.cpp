@@ -12,7 +12,7 @@
 #include "RGB.h"
 #include "DoInits.h"
 
-
+extern void LoadSplash(HDC hDC, TCHAR *splashfile);
 
 //
 // Called by LKDrawLook8000, this is what happens when there is no map to be drawn:
@@ -45,8 +45,8 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
 		hB=LKBrush_Mlight;
   }
   oldfont = (HFONT)SelectObject(hdc, LKINFOFONT); // save font
-  FillRect(hdc,&rc, hB); 
-  //oldbkmode=SetBkMode(hdc,TRANSPARENT);
+
+  if (MapSpaceMode!=MSM_WELCOME) FillRect(hdc,&rc, hB); 
 
   if (DoInit[MDI_DRAWMAPSPACE]) {
 	p[0].x=0; p[0].y=rc.bottom-BottomSize-NIBLSCALE(2); p[1].x=rc.right-1; p[1].y=p[0].y;
@@ -66,6 +66,7 @@ ConfIP[LKMODE_NAV][0],ConfIP31,
 ConfIP[LKMODE_NAV][1],ConfIP32);
 */
 
+	if (MapSpaceMode==MSM_WELCOME) LoadSplash(hdc,_T("LKPROFILE"));
 	DoInit[MDI_DRAWMAPSPACE]=false; 
   }
 
@@ -151,7 +152,6 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
   // no need to clear dodrawlkstatus, it is already reset at each run
   if (dodrawlkstatus) DrawLKStatus(hdc, rc);
 #endif
-  //SetBkMode(hdc,oldbkmode);
   SelectObject(hdc, oldfont); 
 }
 
