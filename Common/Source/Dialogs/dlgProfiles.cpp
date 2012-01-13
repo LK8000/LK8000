@@ -159,6 +159,7 @@ static void OnCloseClicked(WindowControl * Sender){
 }
 
 
+#if 0 // UNUSED in 3.0
 static void OnLoadClicked(WindowControl * Sender){
 
  TCHAR file_name[MAX_PATH];
@@ -199,14 +200,14 @@ static void OnLoadClicked(WindowControl * Sender){
   }
   
 }
-
+#endif
 
 
 static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnCloseClicked),
   DeclareCallBackEntry(OnSaveNewClicked),
   DeclareCallBackEntry(OnSaveExistingClicked),
-  DeclareCallBackEntry(OnLoadClicked),
+//   DeclareCallBackEntry(OnLoadClicked), // UNUSED in 3.0
   DeclareCallBackEntry(NULL)
 };
 
@@ -224,7 +225,7 @@ void dlgProfilesShowModal(void){
   //ASSERT(wf!=NULL);
 
   ((WndButton *)wf->FindByName(TEXT("cmdClose"))) ->SetOnClickNotify(OnCloseClicked);
-  ((WndButton *)wf->FindByName(TEXT("cmdLoad"))) ->SetOnClickNotify(OnLoadClicked);
+// ((WndButton *)wf->FindByName(TEXT("cmdLoad"))) ->SetOnClickNotify(OnLoadClicked);  Unused in 3.0
   ((WndButton *)wf->FindByName(TEXT("cmdSaveExisting"))) ->SetOnClickNotify(OnSaveExistingClicked);
   ((WndButton *)wf->FindByName(TEXT("cmdSaveNew"))) ->SetOnClickNotify(OnSaveNewClicked);
 
