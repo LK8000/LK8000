@@ -107,7 +107,7 @@ void StartupStore(const TCHAR *Str, ...)
   _vstprintf(buf, Str, ap);
   va_end(ap);
 
-  CheckAndLockFlightData();
+  LockStartupStore();
 
   FILE *startupStoreFile = NULL;
   static TCHAR szFileName[MAX_PATH];
@@ -131,6 +131,6 @@ void StartupStore(const TCHAR *Str, ...)
     }
     fclose(startupStoreFile);
   }
-  CheckAndUnlockFlightData();
+  UnlockStartupStore();
 }
 
