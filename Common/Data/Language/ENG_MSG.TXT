@@ -1698,8 +1698,7 @@ _@M1725_ "VERY SORRY"
 _@M1726_ "YOUR POSITION IS UNKNOWN!"
 # 1727-1739 reserved for The Oracle
 _@M1740_ "OLC analysis"
-_@M1741_ "**RESET DEFAULT PROFILE**"
-# free space , to be used 1744-1760
+_@M1741_ "FULL RESET LK8000 PROFILES!"
 _@M1742_ "AGL:"
 _@M1743_ "ELV:"
 # this was the old V rough air. Leave a trailing space!
@@ -1718,6 +1717,9 @@ _@M1753_ "List of flights"
 _@M1754_ "Free Flight start"
 _@M1755_ "Towing"
 _@M1756_ "PILOT"
+_@M1757_ "LK8000 PROFILES RESET"
+_@M1758_ "THIS WOULD RESET ALL PROFILES TO FACTORY DEFAULTS"
+_@M1759_ "SELECTED IN SYSTEM"
 
 #
 # These are new infoboxes:

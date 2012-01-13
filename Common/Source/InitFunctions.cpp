@@ -85,6 +85,7 @@ void PreloadInitialisation(bool ask) {
 #else
     if (_tcscmp(startProfileFile,_T("PROFILE_RESET"))==0) {
 	StartupStore(_T(". USER ASKED FOR PROFILE FULL RESET!%s"),NEWLINE);
+	DoStatusMessage(gettext(_T("_@M1757_"))); // LK8000 PROFILES RESET
 	LKProfileResetDefault();
 	LKProfileInitRuntime();
 	// Notice: this is also resetting the default Aircraft and Pilot profiles to demo settings
