@@ -1717,6 +1717,7 @@ _@M1752_ "FLIGHT BOOK RESET"
 _@M1753_ "List of flights"
 _@M1754_ "Free Flight start"
 _@M1755_ "Towing"
+_@M1756_ "PILOT"
 
 #
 # These are new infoboxes:
