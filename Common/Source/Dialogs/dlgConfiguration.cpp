@@ -990,7 +990,7 @@ static void OnPilotFileData(DataField *Sender, DataField::DataAccessKind_t Mode)
 
 
 
-// mode 0: Aircraft aka Polar
+// mode 0: Aircraft
 // mode 1: Pilot
 static void OnProfileSaveAs(WindowControl * Sender, short mode) {
   (void)Sender;
@@ -1040,7 +1040,7 @@ static void OnProfileSaveAs(WindowControl * Sender, short mode) {
 }
 
 
-static void OnPolarSaveAsClicked(WindowControl * Sender) {
+static void OnAircraftSaveAsClicked(WindowControl * Sender) {
   (void)Sender;
 	OnProfileSaveAs(Sender,0 );
 }
@@ -1049,7 +1049,7 @@ static void OnPilotSaveAsClicked(WindowControl * Sender) {
 	OnProfileSaveAs(Sender,1 );
 }
 
-// mode 0: Aircraft aka Polar
+// mode 0: Aircraft
 // mode 1: Pilot
 static void OnProfileSaveNew(WindowControl * Sender, short mode) {
   (void)Sender;
@@ -1150,7 +1150,7 @@ static void OnProfileSaveNew(WindowControl * Sender, short mode) {
 } // Save new
 
 
-static void OnPolarSaveNewClicked(WindowControl * Sender) {
+static void OnAircraftSaveNewClicked(WindowControl * Sender) {
 	OnProfileSaveNew(Sender,0 );
 }
 static void OnPilotSaveNewClicked(WindowControl * Sender) {
@@ -1360,8 +1360,8 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnPilotSaveAsClicked),
   DeclareCallBackEntry(OnPilotSaveNewClicked),
 
-  DeclareCallBackEntry(OnPolarSaveAsClicked),
-  DeclareCallBackEntry(OnPolarSaveNewClicked),
+  DeclareCallBackEntry(OnAircraftSaveAsClicked),
+  DeclareCallBackEntry(OnAircraftSaveNewClicked),
 
   DeclareCallBackEntry(OnUseCustomFontData),
   DeclareCallBackEntry(OnEditMapWindowFontClicked),
