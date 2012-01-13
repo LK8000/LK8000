@@ -308,8 +308,8 @@
 <WndButton Name="cmdAircraftRego" Caption="_@M56_" X=2 Y=-1 Width=-246  Height=22 Font=2 />
 <WndButton Name="cmdCompetitionClass" Caption="_@M937_" X=2 Y=-1 Width=-246  Height=22 Font=2 />
 <WndButton Name="cmdCompetitionID" Caption="_@M939_" X=2 Y=-1 Width=-246  Height=22 Font=2 />
-<WndButton Name="cmdPolarSaveAs" Caption="_@M580_" X=2 Y=-1 Width=123  Height=22 Font=2 OnClickNotify="OnPolarSaveAsClicked"/>
-<WndButton Name="cmdPolarSaveNew" Caption="_@M582_" X=126 Y=-999 Width=123  Height=22 Font=2 OnClickNotify="OnPolarSaveNewClicked"/>
+<WndButton Name="cmdPolarSaveAs" Caption="_@M580_" X=2 Y=-1 Width=123  Height=22 Font=2 OnClickNotify="OnAircraftSaveAsClicked"/>
+<WndButton Name="cmdPolarSaveNew" Caption="_@M582_" X=126 Y=-999 Width=123  Height=22 Font=2 OnClickNotify="OnAircraftSaveNewClicked"/>
 <WndProperty Name="prpAircraftFile" Caption="" X=2 Y=-999  Width=0 Height=0 CaptionWidth=0 Font=2 Help="">
 <DataField name="" DataType="filereader" Min=0 Max=200 Step=1/>
 </WndProperty>
