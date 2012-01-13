@@ -28,7 +28,7 @@
 #include "LKProfiles.h"
 #include "Calculations2.h"
 
-extern void UpdatePolarConfig(void);
+extern void UpdateAircraftConfig(void);
 // extern void UpdatePilotConfig(void); REMOVE
 
 static HFONT TempMapWindowFont;
@@ -1025,7 +1025,7 @@ static void OnProfileSaveAs(WindowControl * Sender, short mode) {
 		gettext(TEXT("_@M509_")), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
 		if (mode==0) {
-			UpdatePolarConfig();
+			UpdateAircraftConfig();
 			LKAircraftSave(dfe->GetPathFile());
 		} else {
 			// UpdatePilotConfig(); REMOVE
@@ -1097,7 +1097,7 @@ static void OnProfileSaveNew(WindowControl * Sender, short mode) {
 		gettext(TEXT("_@M579_")), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
 		if (mode==0) {
-			UpdatePolarConfig();
+			UpdateAircraftConfig();
 			LKAircraftSave(file_name);
 		} else {
 			// UpdatePilotConfig(); // REMOVE
@@ -5043,7 +5043,7 @@ void dlgConfigurationShowModal(void){
   #endif
 
 
- UpdatePolarConfig();
+ UpdateAircraftConfig();
 
   int i,j;
   for (i=0; i<4; i++) {
@@ -5110,7 +5110,7 @@ void dlgConfigurationShowModal(void){
 // We must call this update also before saving profiles during config showmodal, otherwise we 
 // wont be updating the current set values! This is why we keep separated function for polar.
 //
-void UpdatePolarConfig(void){
+void UpdateAircraftConfig(void){
 
  WndProperty *wp;
  int ival;
