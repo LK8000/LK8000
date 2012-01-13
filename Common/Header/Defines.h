@@ -90,7 +90,7 @@
 #define LKDATADIR	"LK8000"
 #define LKPROFILE	"DEFAULT_PROFILE.prf"
 #define LKAIRCRAFT	"DEFAULT_AIRCRAFT.acf"
-#define LKPILOT		"DEFAULT_PILOT.acf"
+#define LKPILOT		"DEFAULT_PILOT.plt"
 
 /*
  * LK8000 directories
@@ -728,6 +728,7 @@
 #define RUN_DUALPROF		0x01
 #define RUN_PROFILE		0x02
 #define RUN_AIRCRAFT		0x03
+#define RUN_PILOT		0x04
 #define RUN_FLY			0x11
 #define RUN_FLY_PRIMARY_UNIT	0x11
 #define RUN_FLY_REPEATER	0x12
