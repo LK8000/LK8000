@@ -153,7 +153,7 @@ bool UpdateLogBookTXT(bool welandedforsure) {
   if (ISGLIDER) {
 	// Attention, FFStartTime is 0 for CAR,SIMMODE and other situations
 	if ( CALCULATED_INFO.FreeFlightStartTime>0 ) {
-		Units::TimeToTextS(Temp, (int)CALCULATED_INFO.FreeFlightStartTime);
+		Units::TimeToTextS(Temp, (int)TimeLocal((long)CALCULATED_INFO.FreeFlightStartTime));
 		sprintf(line,"%S: %S  @%.0f%S QNH%s",
 			gettext(_T("_@M1754_")),
 			Temp,
