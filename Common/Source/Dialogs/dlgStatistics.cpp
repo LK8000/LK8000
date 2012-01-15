@@ -50,6 +50,7 @@ COLORREF RGB_TEXT_COLOR = RGB_WHITE;
 void DrawTelescope (HDC hdc, double fAngle, int x, int y);
 void DrawNorthArrow(HDC hdc, double fAngle, int x, int y);
 void DrawWindRoseDirection(HDC hdc, double fAngle, int x, int y);
+long ChangeBrightness(long Color, double fBrightFact);
 TCHAR szNearAS[80];
 
 int iNohandeldSpaces=0;
@@ -173,15 +174,18 @@ void Statistics::ScaleXFromValue(const RECT rc, const double value)
 void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
                            const int Style, const RECT rc) {
   int minwidth = 1;
-  minwidth = 2;
+  minwidth = 3;
   POINT line[2];
   line[0] = l1;
   line[1] = l2;
   HPEN mpen ;
   HPEN oldpen;
-
+  COLORREF COL;
   switch (Style) {
   case STYLE_BLUETHIN:
+	COL = RGB(0,50,255);
+	if(bInvertColors)
+	  COL = ChangeBrightness(COL,0.5);
     MapWindow::DrawDashLine(hdc, 
 			    minwidth, 
 			    l1, 
@@ -189,16 +193,22 @@ void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
 			    RGB(0,50,255), rc);
     break;
   case STYLE_REDTHICK:
-    MapWindow::DrawDashLine(hdc, 2,
+	COL = RGB(250,50,50);
+	if(bInvertColors)
+	  COL = ChangeBrightness(COL,0.7);
+    MapWindow::DrawDashLine(hdc, minwidth,
 			    l1,
 			    l2,
-			    RGB(250,50,50), rc);
+			    COL, rc);
     break;
 
   case STYLE_GREENMEDIUM:
+	  COL =   RGB(0,255,0);
+	  if(bInvertColors)
+		COL = ChangeBrightness(COL,0.7);
 	  line[0].x +=2;
 	  line[1].x +=2;
-      mpen = (HPEN)CreatePen(PS_SOLID, IBLSCALE(2),  RGB(0,255,0));
+      mpen = (HPEN)CreatePen(PS_SOLID, IBLSCALE(2),  COL);
       oldpen = (HPEN)SelectObject(hdc, (HPEN)mpen);
       MapWindow::_Polyline(hdc, line, 2, rc);
       SelectObject(hdc, oldpen);
@@ -206,9 +216,12 @@ void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
     break;
 
   case STYLE_GREENTHICK:
+	  COL =   RGB(0,255,0);
+	  if(bInvertColors)
+		COL = ChangeBrightness(COL,0.7);
 	  line[0].x +=2;
 	  line[1].x +=2;
-      mpen = (HPEN)CreatePen(PS_SOLID, IBLSCALE(4),  RGB(0,255,0));
+      mpen = (HPEN)CreatePen(PS_SOLID, IBLSCALE(4),  COL);
       oldpen = (HPEN)SelectObject(hdc, (HPEN)mpen);
       MapWindow::_Polyline(hdc, line, 2, rc);
       SelectObject(hdc, oldpen);
@@ -216,9 +229,13 @@ void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
     break;
 
   case STYLE_ORANGETHICK:
+	COL =  RGB(255,165,0);
+	if(bInvertColors)
+	  COL = ChangeBrightness(COL,0.7);
+
 	line[0].x +=2;
 	line[1].x +=2;
-    mpen = (HPEN)CreatePen(PS_SOLID, IBLSCALE(4),  RGB(255,165,0));
+    mpen = (HPEN)CreatePen(PS_SOLID, IBLSCALE(4),  COL);
     oldpen = (HPEN)SelectObject(hdc, (HPEN)mpen);
     MapWindow::_Polyline(hdc, line, 2, rc);
     SelectObject(hdc, oldpen);
@@ -226,10 +243,14 @@ void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
   break;
 
   case STYLE_DASHGREEN:
+	COL = RGB(0,255,0);
+	if(bInvertColors)
+	  COL = ChangeBrightness(COL,0.7);
+
     MapWindow::DrawDashLine(hdc, 2, 
 			    line[0], 
 			    line[1], 
-			    RGB(0,255,0), rc);
+			    COL, rc);
     break;
   case STYLE_MEDIUMBLACK:
     SelectObject(hdc, penThinSignal /*GetStockObject(BLACK_PEN)*/);
@@ -242,10 +263,15 @@ void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
 			    RGB(0x60,0x60,0x60), rc);    
     break;
   case STYLE_WHITETHICK:
+	COL =  RGB_WHITE;
+	if(bInvertColors)
+	  COL = ChangeBrightness(COL,0.3);
+
+
     MapWindow::DrawDashLine(hdc, 3, 
           l1, 
           l2, 
-          RGB(255,255,255), rc);
+          COL, rc);
     break;
 
   default:
@@ -263,8 +289,8 @@ void Statistics::DrawLabel(HDC hdc, const RECT rc, const TCHAR *text,
   int x = (int)((xv-x_min)*xscale)+rc.left-tsize.cx/2+BORDER_X;
   int y = (int)((y_max-yv)*yscale)+rc.top-tsize.cy/2;
   SetBkMode(hdc, OPAQUE);
-if(bInvertColors)
-  SelectObject(hdc, GetStockObject(BLACK_PEN));
+  if(bInvertColors)
+    SelectObject(hdc, GetStockObject(BLACK_PEN));
 
 
   ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
@@ -1495,10 +1521,21 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   TCHAR text[80];
   TCHAR buffer[80];
   BOOL bDrawRightSide =false;
+  COLORREF GREEN_COL = RGB_GREEN;
+  COLORREF RED_COL = RGB_LIGHTORANGE;
+  COLORREF BLUE_COL = RGB_BLUE;
+  COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
   double GPSbrg=0;
   if (asp_heading_task == 2)
 	return RenderNearAirspace( hdc,   rc);
 
+  if(bInvertColors)
+  {
+    GREEN_COL     = ChangeBrightness(GREEN_COL     , 0.6);
+    RED_COL       = ChangeBrightness(RGB_RED       , 0.6);;
+    BLUE_COL      = ChangeBrightness(BLUE_COL      , 0.6);;
+    LIGHTBLUE_COL = ChangeBrightness(LIGHTBLUE_COL , 0.4);;
+  }
   LockFlightData();
   {
     fMC0 = GlidePolar::SafetyMacCready;
@@ -1754,9 +1791,9 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
     y += tsize.cy;
 
     if((wpt_altarriv_mc0 > 0) && (  WayPointList[overindex].Reachable)) {
-  	  SetTextColor(hdc, RGB_GREEN);
+  	  SetTextColor(hdc, GREEN_COL);
     } else {
-  	  SetTextColor(hdc, RGB_LIGHTORANGE);
+  	  SetTextColor(hdc, RED_COL);
     }
     ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     
@@ -1771,9 +1808,9 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
     }
 
     if(  WayPointList[overindex].Reachable) {
-  	  SetTextColor(hdc, RGB_GREEN);
+  	  SetTextColor(hdc, GREEN_COL);
     } else {
-  	  SetTextColor(hdc, RGB_LIGHTORANGE);
+  	  SetTextColor(hdc, RED_COL);
     }
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
     x = line[0].x - tsize.cx - NIBLSCALE(5);
@@ -1795,9 +1832,9 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
       if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);
       y = CalcHeightCoordinat(  altarriv + wpt_altitude ,   rc);
       if(  WayPointList[overindex].Reachable) {
-        SetTextColor(hdc, RGB_GREEN);
+        SetTextColor(hdc, GREEN_COL);
       } else {
-        SetTextColor(hdc, RGB_LIGHTORANGE);
+        SetTextColor(hdc, RED_COL);
       }
       ExtTextOut(hdc, x, y-tsize.cy/2, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     }
@@ -1844,7 +1881,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
     // Print L/D
       _stprintf(text, TEXT("1/%i"), (int)fLD);
       GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-      SetTextColor(hdc, RGB_BLUE);
+      SetTextColor(hdc, BLUE_COL);
       x = CalcDistanceCoordinat(wpt_dist/2,  rc)- tsize.cx/2;
       y = CalcHeightCoordinat( (alt + altarriv)/2 + wpt_altitude ,   rc) + tsize.cy;
       ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
@@ -1853,7 +1890,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
     // Print current AGL
     if(calc_altitudeagl - hmin > 0)
     {
-      SetTextColor(hdc, RGB_LIGHTBLUE);
+      SetTextColor(hdc, LIGHTBLUE_COL);
       Units::FormatUserAltitude(calc_altitudeagl, buffer, 7);
       _tcsncpy(text, gettext(TEXT("_@M1742_")), sizeof(text)/sizeof(text[0]));
       _tcscat(text,buffer);
@@ -1925,10 +1962,10 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
   if(bInvertColors)
   {
  //   Sender->SetBackColor(RGB_LIGHTBLUE);
-    Sender->SetBackColor(RGB(210,210,255));
+    Sender->SetBackColor(RGB(200,200,255));
     RGB_TEXT_COLOR = RGB_BLACK;
-    RGB_TEXT_COLOR =   RGB_BLUE;
-    RGB_TEXT_COLOR =  RGB(25, 25, 64);
+    RGB_TEXT_COLOR = RGB_BLUE;
+    RGB_TEXT_COLOR = RGB(25, 25, 64);
   }
   else
     RGB_TEXT_COLOR = RGB_WHITE;
@@ -2633,8 +2670,40 @@ void Statistics::RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, dou
   double hmax = psDiag->fYMax;
   double lat, lon;
   RECT rcd;
+  int i,j,k;
+
+#define GC_NO_INTERCOLOR 50
+
+  double idy = (double)(rc.top - rc.bottom)/(double)GC_NO_INTERCOLOR+0.5f;
+  rcd = rc;
+  rcd.top = rcd.bottom;
+if(bInvertColors)
+{
+  HPEN   hpHorizon;
+  HBRUSH hbHorizon;
+  COLORREF Col = RGB(220,220,255);
 
 
+  double fDiff = 0.010/(double)GC_NO_INTERCOLOR;
+  double fFact = 1.0;
+  for(i=0 ; i < GC_NO_INTERCOLOR ; i++)
+  {
+	rcd.bottom  = rcd.top ;
+	rcd.top     = (long)((double)rcd.bottom + ( idy));
+	Col = ChangeBrightness(Col, fFact);
+	fFact -=fDiff;
+
+    hpHorizon = (HPEN)CreatePen(PS_SOLID, IBLSCALE(1), Col);
+    hbHorizon = (HBRUSH)CreateSolidBrush(Col);
+    SelectObject(hdc, hpHorizon);
+    SelectObject(hdc, hbHorizon);
+
+	Rectangle(hdc,rcd.left,rcd.top,rcd.right,rcd.bottom);
+
+	DeleteObject(hpHorizon);
+	DeleteObject(hbHorizon);
+  }
+}
 
   FindLatitudeLongitude(PosLat, PosLon, brg  , psDiag->fXMin , &lat, &lon);
 
@@ -2646,7 +2715,7 @@ void Statistics::RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, dou
   double d_h[AIRSPACE_SCANSIZE_H];
   AirSpaceSideViewSTRUCT d_airspace[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X];
 
-  int i,j,k;
+
 
   BOOL bFound = false;
   for ( k=0 ; k < GC_MAX_NO; k++) {
@@ -3020,13 +3089,19 @@ void Statistics::RenderPlaneSideview(HDC hdc, const RECT rc,double fDist, double
 
   Start.x = CalcDistanceCoordinat(fDist,  rc);
   Start.y = CalcHeightCoordinat(fAltitude,  rc);
-
+/*
   if(bInvertColors)
-    SelectObject(hdc, GetStockObject(BLACK_PEN));
-  else
+  {
     SelectObject(hdc, GetStockObject(WHITE_PEN));
+    SelectObject(hdc, GetStockObject(BLACK_BRUSH));
+  }
+  else
+*/
+  {
+    SelectObject(hdc, GetStockObject(BLACK_PEN));
+    SelectObject(hdc, GetStockObject(WHITE_BRUSH));
+  }
 
-  SelectObject(hdc, GetStockObject(WHITE_BRUSH));
   //SelectObject(hdc, GetStockObject(BLACK_PEN));
   PolygonRotateShift(AircraftWing, 13,  Start.x, Start.y,  0);
   PolygonRotateShift(AircraftSide, 8,   Start.x, Start.y,  0);
@@ -3162,7 +3237,18 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   POINT TxYPt;
   POINT TxXPt;
   SIZE tsize;
+  COLORREF GREEN_COL     = RGB_GREEN;
+  COLORREF RED_COL       = RGB_LIGHTORANGE;
+  COLORREF BLUE_COL      = RGB_BLUE;
+  COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
 
+  if(bInvertColors)
+  {
+    GREEN_COL     = ChangeBrightness(GREEN_COL     , 0.6);
+    RED_COL       = ChangeBrightness(RGB_RED       , 0.6);;
+    BLUE_COL      = ChangeBrightness(BLUE_COL      , 0.6);;
+    LIGHTBLUE_COL = ChangeBrightness(LIGHTBLUE_COL , 0.4);;
+  }
   LockFlightData();
   {
     GPSlat = GPS_INFO.Latitude;
@@ -3321,14 +3407,15 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   } else {
     DrawYGrid(hdc, rc, 1000.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 1000.0, true);
   }
-  SetBkMode(hdc, OPAQUE);
+  if(!bInvertColors)
+    SetBkMode(hdc, OPAQUE);
 
 
   if(calc_altitudeagl - sDia.fYMin  > 500)
   {
-    SetTextColor(hdc, RGB_LIGHTBLUE);
+    SetTextColor(hdc, LIGHTBLUE_COL);
     Units::FormatUserAltitude(calc_altitudeagl, buffer, 7);
-    _tcsncpy(text, gettext(TEXT("_@M1742_")), sizeof(text)/sizeof(text[0]));
+    _tcsncpy(text, gettext(TEXT("_@M1742_")), sizeof(text)/sizeof(text[0])); // AGL:
     _tcscat(text,buffer);
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
     TxYPt.x = CalcDistanceCoordinat(0,  rc)- tsize.cx/2;
@@ -3359,7 +3446,8 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   if (bValid)
   {
 	SetTextColor(hdc, RGB_TEXT_COLOR);
-	SetBkMode(hdc, OPAQUE);
+	if(!bInvertColors)
+	  SetBkMode(hdc, OPAQUE);
 	HFONT hfOldU = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
     // horizontal distance
     line[0].x = CalcDistanceCoordinat(0,  rc);
@@ -3420,12 +3508,13 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   RenderPlaneSideview( hdc, rc,0 , alt,wpt_brg, &sDia );
 
   SetTextColor(hdc, RGB_TEXT_COLOR);
-  SetBkMode(hdc, OPAQUE);
+  if(!bInvertColors)
+    SetBkMode(hdc, OPAQUE);
   HFONT hfOld2 = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
   DrawNorthArrow     ( hdc, GPSbrg          , rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(13));
   DrawTelescope      ( hdc, iAS_Bearing-90.0, rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(38));
   SelectObject(hdc, hfOld2);
-
+  SetBkMode(hdc, TRANSPARENT);
 
 
 
@@ -3520,9 +3609,18 @@ void DrawNorthArrow(HDC hdc, double fAngle, int x, int y)
   DrawWindRoseDirection( hdc, AngleLimit360( fAngle ),  x,  y + NIBLSCALE(18));
   PolygonRotateShift(Arrow, 5, x, y, AngleLimit360( -fAngle));
   SelectObject(hdc, GetStockObject(WHITE_PEN));
-  SelectObject(hdc, GetStockObject(WHITE_BRUSH));
+  if(bInvertColors)
+   SelectObject(hdc, GetStockObject(BLACK_BRUSH));
+  else
+    SelectObject(hdc, GetStockObject(WHITE_BRUSH));
   Polygon(hdc,Arrow,5);
-  SelectObject(hdc, GetStockObject(BLACK_PEN));
+
+  if(bInvertColors)
+	SelectObject(hdc, GetStockObject(WHITE_PEN));
+  else
+	SelectObject(hdc, GetStockObject(BLACK_PEN));
+
+
   Polygon(hdc,Arrow,5);
 
 }
