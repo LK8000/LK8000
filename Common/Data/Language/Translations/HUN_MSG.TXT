@@ -1,5 +1,5 @@
 ﻿# LK8000 HUNGARIAN MESSAGES - HUN_MSG.TXT
-# UPDATED:  111222
+# UPDATED:  120115
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -1673,7 +1673,6 @@ _@M1726_ "POZICIÓD ISMERETLEN!"
 # 1727-1739 reserved for The Oracle
 _@M1740_ "OLC analízis"
 _@M1741_ "**ALAP PROFIL VISSZA**"
-# free space , to be used 1744-1760
 _@M1742_ "AGL:"
 _@M1743_ "ELV:"
 # this was the old V rough air. Leave a trailing space!
@@ -1689,6 +1688,12 @@ _@M1750_ "üres"
 _@M1751_ "TÖRÖLJEM A REPÜLÉSI NAPLÓT?"
 _@M1752_ "REPNAPLÓ TÖRÖLVE"
 _@M1753_ "Repülések listája"
+_@M1754_ "Szabad rep. kezdete"
+_@M1755_ "Vontatás"
+_@M1756_ "PILÓTA"
+_@M1757_ "LK8000 PROFILOK ALAPBAÁLLÍTÁSA"
+_@M1758_ "VIGYÁZZ, EZ GYÁRI ÉRTÉKRE ÁLLÍTJA AZ ÖSSZES PROFILT!"
+_@M1759_ "VAN KIVÁLASZTVA!"
 
 #
 # These are new infoboxes:
@@ -1838,5 +1843,6 @@ _@M2118_ "Repülési\nnapló"
 _@M2119_ "Repnapló\nrészletek"
 _@M2120_ "Repnapló\ntörlése"
 _@M2121_ "Repnapló\nlista"
+_@M2122_ "Beáll.\nmentése"
 
 
