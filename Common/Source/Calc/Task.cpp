@@ -1711,11 +1711,11 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 				DistanceBearing(curlat, curlon, optlat, optlon, NULL, &optbrg);
 
 				double dBrg = fabs((stdbrg - errbrg) * DEG_TO_RAD);
-				if( (dBrg < PI/2) && (sin(dBrg) < radius/stddst ) ) {
+				if(sin(dBrg) < radius/stddst) {
 
 					if(radius > stddst * sin(dBrg)) {
 
-						if( (dBrg < PI/2) && (radius < stddst)) {
+						if( (dBrg < PI/2) && (radius < stddst) && (PGStartOut || curwp>0)) {
 							dBrg = - dBrg + asin((stddst * sin(dBrg)) / radius);
 						}
 						else{
@@ -1739,7 +1739,7 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			radius= ((curwp-1)>0)?(Task[curwp-1].AATCircleRadius):StartRadius;
 
 			if( radius < stddst) {
-				double dBrg = (stdbrg - errbrg) * DEG_TO_RAD;
+				double dBrg = fabs((stdbrg - errbrg) * DEG_TO_RAD);
 				if(dBrg>PI) dBrg -= 2*PI;
 				if( (dBrg > (PI/360)) && (sin(fabs(dBrg))) < radius/stddst && radius > stddst * sin(dBrg)) {
 					if( (dBrg < PI/2) && (radius < stddst)) {
@@ -1748,7 +1748,7 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 					else{
 						dBrg = PI - dBrg - asin((stddst * sin(dBrg)) / radius);
 					}
-					dBrg *= RAD_TO_DEG;
+					dBrg *= RAD_TO_DEG * (((stdbrg - errbrg)<0)?-1:1);
 					obrg_f = AngleLimit360(dBrg + 180 + stdbrg);
 				}
 				else {
