@@ -500,7 +500,7 @@ bool CAirspace::FinishWarning()
         
       // Events for NON-FLY zones
       case aweMovingOutsideNonfly:
-        if ( (abs_hdistance > (_hdistancemargin + hdistance_histeresis)) ||
+        if ( (_hdistance > (_hdistancemargin + hdistance_histeresis)) ||
              (!IsAltitudeInside(_lastknownalt, _lastknownagl, AirspaceWarningVerticalMargin + vdistance_histeresis))
           ) {
             // Far away horizontally _or_ vertically
