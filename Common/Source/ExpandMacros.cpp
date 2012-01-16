@@ -61,9 +61,9 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 		_tcscpy(tbuf,_T(""));
 		ReplaceInString(OutBuffer, TEXT("$(LOCKMODE)"), tbuf, Size);
 		if (LockMode(1)) // query status
-			_tcscpy(OutBuffer,gettext(_T("_@M965_"))); // UNLOCK\nSCREEN
+			_tcscpy(OutBuffer,MsgToken(965)); // UNLOCK\nSCREEN
 		else
-			_tcscpy(OutBuffer,gettext(_T("_@M966_"))); // LOCK\nSCREEN
+			_tcscpy(OutBuffer,MsgToken(966)); // LOCK\nSCREEN
 		if (!LockMode(3)) invalid=true; // button not usable
 	} else {
 		// This will make the button invisible
@@ -85,28 +85,28 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (CALCULATED_INFO.AutoMacCready)  {
 		switch(AutoMcMode) {
 			case amcFinalGlide:
-				_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1681_")));
+				_stprintf(tbuf,_T("%s"), MsgToken(1681));
 				break;
 			case amcAverageClimb:
-				_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1682_")));
+				_stprintf(tbuf,_T("%s"), MsgToken(1682));
 				break;
 			case amcEquivalent:
-				_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1683_")));
+				_stprintf(tbuf,_T("%s"), MsgToken(1683));
 				break;
 			case amcFinalAndClimb:
 				if (CALCULATED_INFO.FinalGlide)
-					_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1681_")));
+					_stprintf(tbuf,_T("%s"), MsgToken(1681));
 				else
-					_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1682_")));
+					_stprintf(tbuf,_T("%s"), MsgToken(1682));
 				break;
 			default:
 				// LKTOKEN _@M1202_ "Auto"
-				_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1202_")));
+				_stprintf(tbuf,_T("%s"), MsgToken(1202));
 				break;
 		}
 	} else
 		// LKTOKEN _@M1201_ "Man"
-		_stprintf(tbuf,_T("%s"), gettext(TEXT("_@M1201_")));
+		_stprintf(tbuf,_T("%s"), MsgToken(1201));
 	ReplaceInString(OutBuffer, TEXT("$(MacCreadyMode)"), tbuf, Size);
 	if (--items<=0) goto label_ret; // 100517
   }
@@ -118,9 +118,9 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
                           OutBuffer,
                           TEXT("$(WaypointNext)"), 
 	// LKTOKEN  _@M801_ = "Waypoint\nFinish" 
-                          gettext(TEXT("_@M801_")), 
+                          MsgToken(801), 
 	// LKTOKEN  _@M802_ = "Waypoint\nNext" 
-                          gettext(TEXT("_@M802_")), Size);
+                          MsgToken(802), Size);
 	if (--items<=0) goto label_ret; // 100517
       
     } else
@@ -129,7 +129,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
         invalid = !ValidTaskPoint(ActiveWayPoint-1);
         ReplaceInString(OutBuffer, TEXT("$(WaypointPrevious)"), 
 	// LKTOKEN  _@M804_ = "Waypoint\nStart" 
-                        gettext(TEXT("_@M804_")), Size);
+                        MsgToken(804), Size);
 	if (--items<=0) goto label_ret; // 100517
       } else if (EnableMultipleStartPoints) {
         invalid = !ValidTaskPoint(0);
@@ -137,12 +137,12 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
                             OutBuffer, 
                             TEXT("$(WaypointPrevious)"), 
 	// LKTOKEN  _@M803_ = "Waypoint\nPrevious" 
-                            TEXT("StartPoint\nCycle"), gettext(TEXT("_@M803_")), Size);
+                            TEXT("StartPoint\nCycle"), MsgToken(803), Size);
 	if (--items<=0) goto label_ret; // 100517
       } else {
         invalid = (ActiveWayPoint<=0);
 	// LKTOKEN  _@M803_ = "Waypoint\nPrevious" 
-        ReplaceInString(OutBuffer, TEXT("$(WaypointPrevious)"), gettext(TEXT("_@M803_")), Size); 
+        ReplaceInString(OutBuffer, TEXT("$(WaypointPrevious)"), MsgToken(803), Size); 
 	if (--items<=0) goto label_ret; // 100517
       }
     }
@@ -159,11 +159,11 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   if (_tcsstr(OutBuffer, TEXT("$(AdvanceArmed)"))) {
     switch (AutoAdvance) {
     case 0:
-      ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), gettext(TEXT("_@M892_")), Size); // (manual)
+      ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), MsgToken(892), Size); // (manual)
       invalid = true;
       break;
     case 1:
-      ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), gettext(TEXT("_@M893_")), Size); // (auto)
+      ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), MsgToken(893), Size); // (auto)
       invalid = true;
       break;
     case 2:
@@ -171,38 +171,38 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
         if (ValidTaskPoint(ActiveWayPoint+1)) {
           CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"), 
 	// LKTOKEN  _@M161_ = "Cancel" 
-                              gettext(TEXT("_@M161_")), 
+                              MsgToken(161), 
 	// LKTOKEN  _@M678_ = "TURN" 
-				gettext(TEXT("_@M678_")), Size);
+				MsgToken(678), Size);
         } else {
           ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), 
 	// LKTOKEN  _@M8_ = "(finish)" 
-                          gettext(TEXT("_@M8_")), Size);
+                          MsgToken(8), Size);
           invalid = true;
         }
       } else {
         CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"), 
 	// LKTOKEN  _@M161_ = "Cancel" 
-                            gettext(TEXT("_@M161_")), 
+                            MsgToken(161), 
 	// LKTOKEN  _@M571_ = "START" 
-			gettext(TEXT("_@M571_")), Size);
+			MsgToken(571), Size);
       }
       break;
     case 3:
       if (ActiveWayPoint==0) {
         CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"), 
 	// LKTOKEN  _@M161_ = "Cancel" 
-                            gettext(TEXT("_@M161_")), 
+                            MsgToken(161), 
 	// LKTOKEN  _@M571_ = "START" 
-			gettext(TEXT("_@M571_")), Size);
+			MsgToken(571), Size);
       } else if (ActiveWayPoint==1) {
         CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"), 
 	// LKTOKEN  _@M161_ = "Cancel" 
-                            gettext(TEXT("_@M161_")), 
+                            MsgToken(161), 
 	// LKTOKEN  _@M539_ = "RESTART" 
-			gettext(TEXT("_@M539_")), Size);
+			MsgToken(539), Size);
       } else {
-        ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), gettext(TEXT("_@M893_")), Size); // (auto)
+        ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), MsgToken(893), Size); // (auto)
         invalid = true;
       }
       // TODO bug: no need to arm finish
@@ -324,14 +324,14 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   if (_tcsstr(OutBuffer, TEXT("$(TOGGLEHBAR)"))) {
 	if (!GPS_INFO.BaroAltitudeAvailable) {
 		// LKTOKEN _@M1068_ "HBAR"
-		ReplaceInString(OutBuffer, TEXT("$(TOGGLEHBAR)"), gettext(TEXT("_@M1068_")), Size);
+		ReplaceInString(OutBuffer, TEXT("$(TOGGLEHBAR)"), MsgToken(1068), Size);
 	} else {
 		if (EnableNavBaroAltitude)
 			// LKTOKEN _@M1174_ "HGPS"
-			ReplaceInString(OutBuffer, TEXT("$(TOGGLEHBAR)"), gettext(TEXT("_@M1174_")), Size);
+			ReplaceInString(OutBuffer, TEXT("$(TOGGLEHBAR)"), MsgToken(1174), Size);
 		else
 			// LKTOKEN _@M1068_ "HBAR"
-			ReplaceInString(OutBuffer, TEXT("$(TOGGLEHBAR)"), gettext(TEXT("_@M1068_")), Size);
+			ReplaceInString(OutBuffer, TEXT("$(TOGGLEHBAR)"), MsgToken(1068), Size);
 	}
 	if (--items<=0) goto label_ret; // 100517
   }
@@ -375,7 +375,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   }
 
   if (_tcsstr(OutBuffer, TEXT("$(LoggerActive)"))) {
-	CondReplaceInString(LoggerActive, OutBuffer, TEXT("$(LoggerActive)"), gettext(TEXT("_@M670_")), gettext(TEXT("_@M657_")), Size); // Stop Start
+	CondReplaceInString(LoggerActive, OutBuffer, TEXT("$(LoggerActive)"), MsgToken(670), MsgToken(657), Size); // Stop Start
 	if (--items<=0) goto label_ret; // 100517
   }
 
@@ -383,19 +383,19 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     switch(TrailActive) {
     case 0:
 	// LKTOKEN  _@M410_ = "Long" 
-      ReplaceInString(OutBuffer, TEXT("$(SnailTrailToggleName)"), gettext(TEXT("_@M410_")), Size);
+      ReplaceInString(OutBuffer, TEXT("$(SnailTrailToggleName)"), MsgToken(410), Size);
       break;
     case 1:
 	// LKTOKEN  _@M612_ = "Short" 
-      ReplaceInString(OutBuffer, TEXT("$(SnailTrailToggleName)"), gettext(TEXT("_@M612_")), Size);
+      ReplaceInString(OutBuffer, TEXT("$(SnailTrailToggleName)"), MsgToken(612), Size);
       break;
     case 2:
 	// LKTOKEN  _@M312_ = "Full" 
-      ReplaceInString(OutBuffer, TEXT("$(SnailTrailToggleName)"), gettext(TEXT("_@M312_")), Size);
+      ReplaceInString(OutBuffer, TEXT("$(SnailTrailToggleName)"), MsgToken(312), Size);
       break;
     case 3:
 	// LKTOKEN  _@M491_ = "OFF" 
-      ReplaceInString(OutBuffer, TEXT("$(SnailTrailToggleName)"), gettext(TEXT("_@M491_")), Size);
+      ReplaceInString(OutBuffer, TEXT("$(SnailTrailToggleName)"), MsgToken(491), Size);
       break;
     }
 	if (--items<=0) goto label_ret; // 100517
@@ -404,17 +404,17 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   if (_tcsstr(OutBuffer, TEXT("$(VisualGlideToggleName)"))) {
     switch(VisualGlide) {
     case 0:
-      ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), gettext(TEXT("_@M894_")), Size); // ON
+      ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), MsgToken(894), Size); // ON
       break;
     case 1:
 	if (ExtendedVisualGlide)
 		// LKTOKEN _@M1205_ "Moving"
-		ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), gettext(TEXT("_@M1205_")), Size);
+		ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), MsgToken(1205), Size);
 	else
-      		ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), gettext(TEXT("_@M491_")), Size); // OFF
+      		ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), MsgToken(491), Size); // OFF
       break;
     case 2:
-      ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), gettext(TEXT("_@M491_")), Size); // OFF
+      ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), MsgToken(491), Size); // OFF
       break;
     }
 	if (--items<=0) goto label_ret; // 100517
@@ -423,10 +423,10 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   if (_tcsstr(OutBuffer, TEXT("$(UseTE)"))) {
     switch(UseTotalEnergy) {
     case 0:
-      ReplaceInString(OutBuffer, TEXT("$(UseTE)"), gettext(TEXT("_@M894_")), Size); // ON
+      ReplaceInString(OutBuffer, TEXT("$(UseTE)"), MsgToken(894), Size); // ON
       break;
     case 1:
-      ReplaceInString(OutBuffer, TEXT("$(UseTE)"), gettext(TEXT("_@M491_")), Size); // OFF
+      ReplaceInString(OutBuffer, TEXT("$(UseTE)"), MsgToken(491), Size); // OFF
       break;
     }
 	if (--items<=0) goto label_ret;
@@ -436,43 +436,43 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   if (_tcsstr(OutBuffer, TEXT("$(AirSpaceToggleName)"))) {
     switch(OnAirSpace) {
     case 0:
-      ReplaceInString(OutBuffer, TEXT("$(AirSpaceToggleName)"), gettext(TEXT("_@M894_")), Size); // ON
+      ReplaceInString(OutBuffer, TEXT("$(AirSpaceToggleName)"), MsgToken(894), Size); // ON
       break;
     case 1:
-      ReplaceInString(OutBuffer, TEXT("$(AirSpaceToggleName)"), gettext(TEXT("_@M491_")), Size); // OFF
+      ReplaceInString(OutBuffer, TEXT("$(AirSpaceToggleName)"), MsgToken(491), Size); // OFF
       break;
     }
 	if (--items<=0) goto label_ret; // 100517
   }
   if (_tcsstr(OutBuffer, TEXT("$(SHADING)"))) {
     if ( Shading )
-      ReplaceInString(OutBuffer, TEXT("$(SHADING)"), gettext(TEXT("_@M491_")), Size); // OFF
+      ReplaceInString(OutBuffer, TEXT("$(SHADING)"), MsgToken(491), Size); // OFF
     else
-      ReplaceInString(OutBuffer, TEXT("$(SHADING)"), gettext(TEXT("_@M894_")), Size); // ON
+      ReplaceInString(OutBuffer, TEXT("$(SHADING)"), MsgToken(894), Size); // ON
 	if (--items<=0) goto label_ret;
   }
 
   if (_tcsstr(OutBuffer, TEXT("$(PanModeStatus)"))) {
     if ( MapWindow::mode.AnyPan() )
-      ReplaceInString(OutBuffer, TEXT("$(PanModeStatus)"), gettext(TEXT("_@M491_")), Size); // OFF
+      ReplaceInString(OutBuffer, TEXT("$(PanModeStatus)"), MsgToken(491), Size); // OFF
     else
-      ReplaceInString(OutBuffer, TEXT("$(PanModeStatus)"), gettext(TEXT("_@M894_")), Size); // ON
+      ReplaceInString(OutBuffer, TEXT("$(PanModeStatus)"), MsgToken(894), Size); // ON
 	if (--items<=0) goto label_ret; // 100517
   }
 
   if (_tcsstr(OutBuffer, TEXT("$(EnableSoundModes)"))) {
     if (EnableSoundModes)
-      ReplaceInString(OutBuffer, TEXT("$(EnableSoundModes)"), gettext(TEXT("_@M491_")), Size);
+      ReplaceInString(OutBuffer, TEXT("$(EnableSoundModes)"), MsgToken(491), Size);
     else
-      ReplaceInString(OutBuffer, TEXT("$(EnableSoundModes)"), gettext(TEXT("_@M894_")), Size);
+      ReplaceInString(OutBuffer, TEXT("$(EnableSoundModes)"), MsgToken(894), Size);
 	if (--items<=0) goto label_ret; // 100517
   }
 
   if (_tcsstr(OutBuffer, TEXT("$(ActiveMap)"))) {
     if (ActiveMap)
-      ReplaceInString(OutBuffer, TEXT("$(ActiveMap)"), gettext(TEXT("_@M491_")), Size);
+      ReplaceInString(OutBuffer, TEXT("$(ActiveMap)"), MsgToken(491), Size);
     else
-      ReplaceInString(OutBuffer, TEXT("$(ActiveMap)"), gettext(TEXT("_@M894_")), Size);
+      ReplaceInString(OutBuffer, TEXT("$(ActiveMap)"), MsgToken(894), Size);
 	if (--items<=0) goto label_ret; // 100517
   }
 
@@ -484,16 +484,16 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   }
   if (_tcsstr(OutBuffer, TEXT("$(OVERLAY"))) {
 	if (Look8000==(Look8000_t)lxcNoOverlay)
-		ReplaceInString(OutBuffer, TEXT("$(OVERLAY)"), gettext(TEXT("_@M894_")), Size);
+		ReplaceInString(OutBuffer, TEXT("$(OVERLAY)"), MsgToken(894), Size);
 	else
-		ReplaceInString(OutBuffer, TEXT("$(OVERLAY)"), gettext(TEXT("_@M491_")), Size);
+		ReplaceInString(OutBuffer, TEXT("$(OVERLAY)"), MsgToken(491), Size);
 	if (--items<=0) goto label_ret; 
   }
   if (_tcsstr(OutBuffer, TEXT("$(Orbiter"))) {
 	if (!Orbiter)
-		ReplaceInString(OutBuffer, TEXT("$(Orbiter)"), gettext(TEXT("_@M894_")), Size);
+		ReplaceInString(OutBuffer, TEXT("$(Orbiter)"), MsgToken(894), Size);
 	else
-		ReplaceInString(OutBuffer, TEXT("$(Orbiter)"), gettext(TEXT("_@M491_")), Size);
+		ReplaceInString(OutBuffer, TEXT("$(Orbiter)"), MsgToken(491), Size);
 
 	if (!EnableThermalLocator) invalid = true;
 	if (--items<=0) goto label_ret; 
@@ -503,8 +503,8 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   if (_tcsstr(OutBuffer, TEXT("$(FinalForceToggleActionName)"))) {
     CondReplaceInString(ForceFinalGlide, OutBuffer, 
                         TEXT("$(FinalForceToggleActionName)"), 
-                        gettext(TEXT("_@M896_")), // Unforce
-                        gettext(TEXT("_@M895_")), // Force
+                        MsgToken(896), // Unforce
+                        MsgToken(895), // Force
 			Size);
     if (AutoForceFinalGlide) {
       invalid = true;
@@ -512,36 +512,36 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
 
-  CondReplaceInString(MapWindow::zoom.AutoZoom(), OutBuffer, TEXT("$(ZoomAutoToggleActionName)"), gettext(TEXT("_@M418_")), gettext(TEXT("_@M897_")), Size);
-  CondReplaceInString(EnableTopology, OutBuffer, TEXT("$(TopologyToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
-  CondReplaceInString(EnableTerrain, OutBuffer, TEXT("$(TerrainToggleActionName)"), gettext(TEXT("_@M491_")), gettext(TEXT("_@M894_")), Size);
+  CondReplaceInString(MapWindow::zoom.AutoZoom(), OutBuffer, TEXT("$(ZoomAutoToggleActionName)"), MsgToken(418), MsgToken(897), Size);
+  CondReplaceInString(EnableTopology, OutBuffer, TEXT("$(TopologyToggleActionName)"), MsgToken(491), MsgToken(894), Size);
+  CondReplaceInString(EnableTerrain, OutBuffer, TEXT("$(TerrainToggleActionName)"), MsgToken(491), MsgToken(894), Size);
 
   if (_tcsstr(OutBuffer, TEXT("$(MapLabelsToggleActionName)"))) {
     switch(MapWindow::DeclutterLabels) {
     case MAPLABELS_ALLON:
 		// LKTOKEN _@M1203_ "WPTS"
       ReplaceInString(OutBuffer, TEXT("$(MapLabelsToggleActionName)"), 
-                      gettext(TEXT("_@M1203_")), Size);
+                      MsgToken(1203), Size);
 
       break;
     case MAPLABELS_ONLYWPS:
 		// LKTOKEN _@M1204_ "TOPO"
       ReplaceInString(OutBuffer, TEXT("$(MapLabelsToggleActionName)"), 
-                      gettext(TEXT("_@M1204_")), Size);
+                      MsgToken(1204), Size);
       break;
     case MAPLABELS_ONLYTOPO:
       ReplaceInString(OutBuffer, TEXT("$(MapLabelsToggleActionName)"), 
-                      gettext(TEXT("_@M898_")), Size);
+                      MsgToken(898), Size);
       break;
     case MAPLABELS_ALLOFF:
       ReplaceInString(OutBuffer, TEXT("$(MapLabelsToggleActionName)"), 
-                      gettext(TEXT("_@M899_")), Size);
+                      MsgToken(899), Size);
       break;
     }
 	if (--items<=0) goto label_ret; // 100517
   }
 
-  CondReplaceInString(CALCULATED_INFO.AutoMacCready != 0, OutBuffer, TEXT("$(MacCreadyToggleActionName)"), gettext(TEXT("_@M418_")), gettext(TEXT("_@M897_")), Size);
+  CondReplaceInString(CALCULATED_INFO.AutoMacCready != 0, OutBuffer, TEXT("$(MacCreadyToggleActionName)"), MsgToken(418), MsgToken(897), Size);
   {
   MapWindow::Mode::TModeFly userForcedMode = MapWindow::mode.UserForcedMode();
   CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_CIRCLING, OutBuffer, TEXT("$(DispModeClimbShortIndicator)"), TEXT("_"), TEXT(""), Size);
@@ -561,26 +561,26 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     switch(AltitudeMode) {
     case 0:
 	// LKTOKEN  _@M184_ = "Clip" 
-      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), gettext(TEXT("_@M184_")), Size);
+      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), MsgToken(184), Size);
       break;
     case 1:
-      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), gettext(TEXT("_@M897_")), Size); // Auto
+      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), MsgToken(897), Size); // Auto
       break;
     case 2:
 	// LKTOKEN  _@M139_ = "Below" 
-      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), gettext(TEXT("_@M139_")), Size);
+      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), MsgToken(139), Size);
       break;
     case 3:
 	// LKTOKEN  _@M359_ = "Inside" 
-      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), gettext(TEXT("_@M359_")), Size);
+      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), MsgToken(359), Size);
       break;
     case 4:
 	// LKTOKEN  _@M75_ = "All OFF" 
-      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), gettext(TEXT("_@M75_")), Size);
+      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), MsgToken(75), Size);
       break;
     case 5:
 	// LKTOKEN  _@M76_ = "All ON" 
-      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), gettext(TEXT("_@M76_")), Size);
+      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), MsgToken(76), Size);
       break;
     }
 	if (--items<=0) goto label_ret; // 100517
