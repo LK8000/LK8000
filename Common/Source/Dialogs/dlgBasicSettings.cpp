@@ -330,9 +330,20 @@ void dlgBasicSettingsShowModal(void){
       wp->GetDataField()->SetUnits(Units::GetAltitudeName());
       wp->RefreshDisplay();
     }
+
+    wp = (WndProperty*)wf->FindByName(TEXT("prpBallastPercent"));
+    if (wp) {
+      if (WEIGHTS[2]==0) wp->SetReadOnly(1);
+      wp->RefreshDisplay();
+    }
+
     wp = (WndProperty*)wf->FindByName(TEXT("prpBallastLitres"));
     if (wp) {
-      wp->GetDataField()-> SetAsFloat(GlidePolar::BallastLitres);
+      if (WEIGHTS[2]>0) {
+        wp->GetDataField()-> SetAsFloat(GlidePolar::BallastLitres);
+      } else {
+	wp->SetReadOnly(1);
+      }
       wp->RefreshDisplay();
     }
     wp = (WndProperty*)wf->FindByName(TEXT("prpWingLoading"));
