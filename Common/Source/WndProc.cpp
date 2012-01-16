@@ -18,7 +18,6 @@
 #include "LKProfiles.h"
 #include "Logger.h"
 
-
 HBRUSH hBrushSelected;
 HBRUSH hBrushUnselected;
 HBRUSH hBrushButton;
@@ -374,7 +373,7 @@ void Shutdown(void) {
   extern void DeInitialiseFonts(void);
   DeInitialiseFonts();  
   CAirspaceManager::Instance().CloseAirspaces();
-  #if ALPHADEBUG
+  #if TESTBENCH
   StartupStore(TEXT(". Delete Critical Sections%s"),NEWLINE);
   #endif
   extern void DeInitCriticalSections(void);
@@ -392,12 +391,12 @@ void Shutdown(void) {
   CloseGeoid();
   DeInitCustomHardware();
 
-  #if ALPHADEBUG
+  #if TESTBENCH
   StartupStore(TEXT(". Close Windows%s"),NEWLINE);
   #endif
   DestroyWindow(hWndMapWindow);
   DestroyWindow(hWndMainWindow);
-  #if ALPHADEBUG
+  #if TESTBENCH
   StartupStore(TEXT(". Close Event Handles%s"),NEWLINE);
   #endif
   CloseHandle(drawTriggerEvent);

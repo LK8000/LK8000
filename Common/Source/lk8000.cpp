@@ -455,14 +455,14 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   DoSunEphemeris(GPS_INFO.Longitude, GPS_INFO.Latitude);
 
   // Finally ready to go
-  #if ALPHADEBUG
+  #if TESTBENCH
   StartupStore(TEXT(". CreateDrawingThread%s"),NEWLINE);
   #endif
   MapWindow::CreateDrawingThread();
   Sleep(100);
 
   SwitchToMapWindow();
-  #if ALPHADEBUG
+  #if TESTBENCH
   StartupStore(TEXT(". CreateCalculationThread%s"),NEWLINE);
   #endif
   CreateCalculationThread();

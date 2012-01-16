@@ -234,7 +234,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 #endif
 
   if (!goInstallSystem) Sleep(50); // 091119
+  #if TESTBENCH
   StartupStore(TEXT(". Create main window%s"),NEWLINE);
+  #endif
 
   hWndMainWindow = CreateWindow(szWindowClass, szTitle,
                                 WS_SYSMENU
@@ -279,8 +281,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   Message::Initialize(rc); // creates window, sets fonts
 
   ShowWindow(hWndMainWindow, SW_SHOW);
-
+  #if TESTBENCH
   StartupStore(TEXT(". Create map window%s"),NEWLINE);
+  #endif
 
   hWndMapWindow = CreateWindow(TEXT("MapWindowClass"),NULL,
 			       WS_VISIBLE | WS_CHILD

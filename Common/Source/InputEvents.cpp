@@ -103,7 +103,9 @@ const TCHAR *Text2NE[NE_COUNT+1];
 
 // Read the data files
 void InputEvents::readFile() {
+  #if TESTBENCH
   StartupStore(TEXT(". Loading input events file%s"),NEWLINE);
+  #endif
 
   // clear the GCE and NMEA queues
   LockEventQueue();
