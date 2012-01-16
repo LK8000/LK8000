@@ -211,6 +211,7 @@ void WeightOffset(double wload);
 TCHAR *LKgethelptext(const TCHAR *TextIn);
 bool LKloadtext(void);
 TCHAR *LKGetText(const TCHAR *TextIn);
+TCHAR *MsgToken(const unsigned int tindex);
 
 void InitCustomHardware(void);
 void DeInitCustomHardware(void);

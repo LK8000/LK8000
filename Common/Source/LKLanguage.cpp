@@ -259,6 +259,20 @@ TCHAR *LKGetText(const TCHAR *TextIn) {
 
 }
 
+//
+// Direct token access, with range check, faster than LKGetText of course
+//
+TCHAR *MsgToken(const unsigned int inumber) {
+  unsigned int pointer; 
+  if (inumber<=MAX_MESSAGES) {
+	pointer=LKMessagesIndex[inumber];
+        if (pointer<=MAX_MESSAGES) return (TCHAR *)LKMessages[pointer];
+  }
+
+  return(_T("TOKEN_ERROR"));
+}
+
+
 
 void LKReadLanguageFile() {
   static bool doinit=true;
