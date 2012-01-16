@@ -532,7 +532,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 			}
 			if (gateinuse<0) {
 	// LKTOKEN  _@M157_ = "CLOSED" 
-				_tcscpy(Buffer,gettext(TEXT("_@M157_")));
+				_tcscpy(Buffer,MsgToken(157));
 			} else {
 				_stprintf(Buffer,_T("%s%d/%d"),StartGateName,gateinuse+1,PGNumberOfGates);
 			}
@@ -743,7 +743,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
 			if (IsSafetyAltitudeInUse(GetOvertargetIndex())) {
 				SelectObject(hdc, LK8SmallFont); 
-				//LKWriteBoxedText(hdc, gettext(_T("_@M1694_")), rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
+				//LKWriteBoxedText(hdc, gettext(1694), rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
 				_stprintf(BufferValue,_T(" + %.0f %s "),SAFETYALTITUDEARRIVAL*ALTITUDEMODIFY,
 				Units::GetUnitName(Units::GetUserAltitudeUnit()));
 				LKWriteBoxedText(hdc, BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
@@ -836,7 +836,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
 		if (IsSafetyAltitudeInUse(GetOvertargetIndex())) {
 			SelectObject(hdc, LK8SmallFont); 
-			// LKWriteBoxedText(hdc, gettext(_T("_@M1694_")), rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
+			// LKWriteBoxedText(hdc, gettext(1694), rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
 			_stprintf(BufferValue,_T(" + %.0f %s "),SAFETYALTITUDEARRIVAL*ALTITUDEMODIFY,
 			Units::GetUnitName(Units::GetUserAltitudeUnit()));
 			LKWriteBoxedText(hdc, BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
@@ -856,7 +856,7 @@ drawOverlay:
 		_stprintf(BufferValue,_T("START %s"),BufferTitle);
 	} else {
 	// LKTOKEN  _@M316_ = "GATES CLOSED" 
-		_tcscpy(BufferValue,gettext(TEXT("_@M316_")));
+		_tcscpy(BufferValue,MsgToken(316));
 	}
 	rcy=yrightoffset -ySizeLK8BigFont-(ySizeLK8MediumFont*2); // 101112
 	rcx=rc.right-NIBLSCALE(10);
@@ -869,25 +869,25 @@ drawOverlay:
 			// IsInSector works reversed!
 			if (PGStartOut && DerivedDrawInfo.IsInSector) {
 				// LKTOKEN  _@M923_ = "WRONG inSIDE"
-				_tcscpy(BufferValue,gettext(TEXT("_@M923_")));
+				_tcscpy(BufferValue,MsgToken(923));
 			} else {
 				if (!PGStartOut && !DerivedDrawInfo.IsInSector) {
 					// LKTOKEN  _@M924_ = "WRONG outSIDE"
-					_tcscpy(BufferValue,gettext(TEXT("_@M924_")));
+					_tcscpy(BufferValue,MsgToken(924));
 				} else {
 					// LKTOKEN  _@M921_ = "countdown"
-					_tcscpy(BufferValue,gettext(TEXT("_@M921_")));
+					_tcscpy(BufferValue,MsgToken(921));
 				}
 			}
 			if (!DerivedDrawInfo.Flying) {
 				// LKTOKEN  _@M922_ = "NOT FLYING"
-				_tcscpy(BufferValue,gettext(TEXT("_@M922_")));
+				_tcscpy(BufferValue,MsgToken(922));
 			}
 		} else {
 			// gate is open
 			if ( (ActiveGate<(PGNumberOfGates-1)) && (gatechrono<-300)) {
 				// LKTOKEN  _@M314_ = "GATE OPEN" 
-				_tcscpy(BufferValue,gettext(TEXT("_@M314_")));
+				_tcscpy(BufferValue,MsgToken(314));
 			} else {
 				if ( ActiveGate>=(PGNumberOfGates-1) )  {
 					Units::TimeToText(BufferTitle,GateTime(ActiveGate+1)); 
@@ -898,16 +898,16 @@ drawOverlay:
 						_stprintf(BufferValue,_T("NEXT %s"),BufferTitle);
 					} else {
 						// LKTOKEN  _@M314_ = "GATE OPEN" 
-						_tcscpy(BufferValue,gettext(TEXT("_@M314_")));
+						_tcscpy(BufferValue,MsgToken(314));
 					}
 				}
 				// LKTOKEN  _@M314_ = "GATE OPEN" 
-				_tcscpy(BufferValue,gettext(TEXT("_@M314_")));
+				_tcscpy(BufferValue,MsgToken(314));
 			}
 		}
 	} else {
 		// LKTOKEN  _@M925_ = "NO TSK START"
-		_tcscpy(BufferValue,gettext(TEXT("_@M925_")));
+		_tcscpy(BufferValue,MsgToken(925));
 	}
 	LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, distcolor, true);
 
@@ -932,19 +932,19 @@ drawOverlay:
 	  TCHAR amcmode[2];
 	  switch(AutoMcMode) {
 		case amcFinalGlide:
-			wcscpy(amcmode,gettext(_T("_@M1676_")));
+			wcscpy(amcmode,MsgToken(1676));
 			break;
 		case amcAverageClimb:
-			wcscpy(amcmode,gettext(_T("_@M1678_")));
+			wcscpy(amcmode,MsgToken(1678));
 			break;
 		case amcFinalAndClimb:
 			if (CALCULATED_INFO.FinalGlide)
-				wcscpy(amcmode,gettext(_T("_@M1676_")));
+				wcscpy(amcmode,MsgToken(1676));
 			else
-				wcscpy(amcmode,gettext(_T("_@M1678_")));
+				wcscpy(amcmode,MsgToken(1678));
 			break;
 		case amcEquivalent:
-			wcscpy(amcmode,gettext(_T("_@M1680_")));
+			wcscpy(amcmode,MsgToken(1680));
 			break;
 		default:
 			wcscpy(amcmode,_T("?"));
@@ -1311,7 +1311,7 @@ Drawbottom:
   			wsprintf(BufferUnit, TEXT(""));
 			if (SIMMODE) {
 				// LKTOKEN _@M1199_ "Sat"
-				wsprintf(BufferTitle, gettext(TEXT("_@M1199_")));
+				wsprintf(BufferTitle, MsgToken(1199));
 				wsprintf(BufferValue,TEXT("SIM"));
 			} else {
 				Value=DrawInfo.SatellitesUsed;
@@ -1324,14 +1324,14 @@ Drawbottom:
 				}
 				if (nmeaParser1.activeGPS == true)
 					// LKTOKEN _@M1199_ "Sat"
-					wsprintf(BufferTitle, TEXT("%s:A"), gettext(TEXT("_@M1199_")));
+					wsprintf(BufferTitle, TEXT("%s:A"), MsgToken(1199));
 				else {
 					if (nmeaParser2.activeGPS == true)
 						// LKTOKEN _@M1199_ "Sat"
-						wsprintf(BufferTitle, TEXT("%s:B"), gettext(TEXT("_@M1199_")));
+						wsprintf(BufferTitle, TEXT("%s:B"), MsgToken(1199));
 					else
 						// LKTOKEN _@M1199_ "Sat"
-						wsprintf(BufferTitle, TEXT("%s:?"), gettext(TEXT("_@M1199_")));
+						wsprintf(BufferTitle, TEXT("%s:?"), MsgToken(1199));
 				}
 			}
 
@@ -1349,7 +1349,7 @@ Drawbottom:
 		}
   		showunit=false;
 		// LKTOKEN _@M1199_ "Sat"
-  		wsprintf(BufferTitle, gettext(TEXT("_@M1199_")));
+  		wsprintf(BufferTitle, MsgToken(1199));
 		#endif
 		break;
 	case BM_ALT:
@@ -1415,14 +1415,14 @@ Drawbottom:
 		break;
 	case BM_SYS:
 		// LKTOKEN _@M1068_ "HBAR"
-  		wsprintf(BufferTitle, gettext(TEXT("_@M1068_")));
+  		wsprintf(BufferTitle, MsgToken(1068));
 		if (DrawInfo.BaroAltitudeAvailable) {
 			if (EnableNavBaroAltitude)
 				// LKTOKEN _@M894_ "ON"
-				wsprintf(BufferValue,gettext(TEXT("_@M894_")));
+				wsprintf(BufferValue,MsgToken(894));
 			else
 				// LKTOKEN _@M491_ "OFF"
-				wsprintf(BufferValue,gettext(TEXT("_@M491_")));
+				wsprintf(BufferValue,MsgToken(491));
 		} else
 			wsprintf(BufferValue,TEXT("---"));
   		showunit=false;
@@ -1500,7 +1500,7 @@ Drawbottom:
 			showunit=false;
 		}
  		// LKTOKEN _@M1200_ "Start"
-		wsprintf(BufferTitle, gettext(TEXT("_@M1200_")));
+		wsprintf(BufferTitle, MsgToken(1200));
 		break;
 	case BM_SYS:
 		//showunit=LKFormatValue(LK_EMPTY, true, BufferValue, BufferUnit, BufferTitle); // 100221
@@ -1572,9 +1572,9 @@ Drawbottom:
 		break;
 	case BM_SYS:
 		if (LoggerGActive()) {
-  			wsprintf(BufferValue, gettext(_T("_@M1700_")));
+  			wsprintf(BufferValue, MsgToken(1700));
 		} else {
-  			wsprintf(BufferValue, gettext(_T("_@M1701_")));
+  			wsprintf(BufferValue, MsgToken(1701));
 		}
   		wsprintf(BufferTitle, TEXT("GRec"));
   		wsprintf(BufferUnit, TEXT("")); // 100221
