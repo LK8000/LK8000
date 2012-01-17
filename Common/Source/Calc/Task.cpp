@@ -1661,8 +1661,11 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		nxtlat = WayPointList[nxtwp].Latitude;
 		nxtlon = WayPointList[nxtwp].Longitude;
 
+		double radius= (curwp>0)?(Task[curwp].AATCircleRadius):StartRadius;
+		DistanceBearing(curlat, curlon, stdlat, stdlon, &stddst, &stdbrg);
+
 		// if Same Wpt Calc Next before if Exist
-		if(stdwp == nxtwp && ValidWayPoint(Task[curwp+2].Index)){  
+		if(stdwp == nxtwp && stddst > radius && ValidWayPoint(Task[curwp+2].Index)){  
 			bCalcPrev = true;
 			Task[curwp].AATTargetLat= stdlat;
 			Task[curwp].AATTargetLon= stdlon;
@@ -1673,11 +1676,9 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 		double optlat, optlon;
 		// From Current Position To Current Wpt
-		DistanceBearing(curlat, curlon, stdlat, stdlon, &stddst, &stdbrg);
-		double radius= (curwp>0)?(Task[curwp].AATCircleRadius):StartRadius;
 		double obrg_f = stdbrg;
 
-		if (stdwp == nxtwp) {
+		if (stdwp == nxtwp && stddst < radius) {
 			double radius= (curwp>0)?(Task[curwp].AATCircleRadius):StartRadius;
 			double obrg_f = Reciprocal(stdbrg);
 
@@ -1711,11 +1712,11 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 				DistanceBearing(curlat, curlon, optlat, optlon, NULL, &optbrg);
 
 				double dBrg = fabs((stdbrg - errbrg) * DEG_TO_RAD);
-				if( (dBrg < PI/2) && (sin(dBrg) < radius/stddst ) ) {
+				if(radius > stddst || dBrg < PI/2 && sin(dBrg) < radius/stddst) {
 
 					if(radius > stddst * sin(dBrg)) {
 
-						if( (dBrg < PI/2) && (radius < stddst)) {
+						if( (dBrg < PI/2) && (radius < stddst) && (PGStartOut || curwp>0)) {
 							dBrg = - dBrg + asin((stddst * sin(dBrg)) / radius);
 						}
 						else{
@@ -1737,23 +1738,19 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			double errbrg; // beraing from current to optNext
 			DistanceBearing(curlat, curlon, optlat, optlon, NULL, &errbrg);
 			radius= ((curwp-1)>0)?(Task[curwp-1].AATCircleRadius):StartRadius;
-
-			if( radius < stddst) {
-				double dBrg = (stdbrg - errbrg) * DEG_TO_RAD;
-				if(dBrg>PI) dBrg -= 2*PI;
-				if( (dBrg > (PI/360)) && (sin(fabs(dBrg))) < radius/stddst && radius > stddst * sin(dBrg)) {
-					if( (dBrg < PI/2) && (radius < stddst)) {
-						dBrg = - dBrg + asin((stddst * sin(dBrg)) / radius);
-					}
-					else{
-						dBrg = PI - dBrg - asin((stddst * sin(dBrg)) / radius);
-					}
-					dBrg *= RAD_TO_DEG;
-					obrg_f = AngleLimit360(dBrg + 180 + stdbrg);
+			double dBrg = fabs((stdbrg - errbrg) * DEG_TO_RAD);
+			if( (dBrg > (PI/360)) && (sin(dBrg)) < radius/stddst && radius > stddst * sin(dBrg)) {
+				if( (dBrg < PI/2) && (radius < stddst)) {
+					dBrg = - dBrg + asin((stddst * sin(dBrg)) / radius);
 				}
-				else {
-					obrg_f = AngleLimit360(stdbrg + 180);
+				else{
+					dBrg = PI - dBrg - asin((stddst * sin(dBrg)) / radius);
 				}
+				dBrg *= RAD_TO_DEG * (((stdbrg - errbrg)<0)?-1:1);
+				obrg_f = AngleLimit360(dBrg + 180 + stdbrg);
+			}
+			else {
+				obrg_f = AngleLimit360(stdbrg + 180);
 			}
 			FindLatitudeLongitude(stdlat,stdlon, obrg_f, radius, &optlat, &optlon);
 
@@ -1777,8 +1774,7 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	stdlon = WayPointList[stdwp].Longitude;
 
 	DistanceBearing(stdlat, stdlon, curlat, curlon, NULL, &stdbrg);
-	double dist_ui= (curwp>0)?(Task[curwp].AATCircleRadius):StartRadius;
-	FindLatitudeLongitude(stdlat,stdlon, stdbrg, dist_ui, &(Task[curwp].AATTargetLat), &(Task[curwp].AATTargetLon));
+	FindLatitudeLongitude(stdlat,stdlon, stdbrg, FinishRadius, &(Task[curwp].AATTargetLat), &(Task[curwp].AATTargetLon));
 	Task[curwp].AATTargetLocked=true;
 
 

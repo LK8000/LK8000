@@ -778,7 +778,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 			rcy=yrightoffset -TextSize.cy; // 101112
 			LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
 
-			Value=WayPointCalc[Task[0].Index].NextETE-gatechrono;
+			Value=WayPointCalc[DoOptimizeRoute()?RESWP_OPTIMIZED:Task[0].Index].NextETE-gatechrono;
 			Units::TimeToTextDown(BufferValue, (int)Value);
 			if (Value<=0) 
 				LKWriteText(hdc, BufferValue, rcx,rcy+TextSize.cy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_RIGHT,RGB_AMBER, true);
