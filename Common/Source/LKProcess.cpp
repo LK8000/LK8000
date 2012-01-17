@@ -205,9 +205,9 @@ goto_bearing:
 						_stprintf(BufferValue, TEXT("«%2.0f°"), -value);
 						else
 							_tcscpy(BufferValue, TEXT("«»"));
+#endif
 					}
 					else goto goto_bearing;
-#endif
 				}
 			}
 			break;
@@ -443,11 +443,8 @@ goto_bearing:
 		// B147 Distance from the start sector, always available also after start
 		case LK_START_DIST:
 			if ( ValidTaskPoint(0) && ValidTaskPoint(1) ) { // if real task
-				index = Task[0].Index;
-				if (index>=0) {
-					value=(DerivedDrawInfo.WaypointDistance-StartRadius)*DISTANCEMODIFY;
-					if (value<0) value*=-1; // 101112 BUGFIX
-					valid=true;
+				if(DoOptimizeRoute()&& ActiveWayPoint == 0) {
+					value=WayPointCalc[RESWP_OPTIMIZED].Distance*DISTANCEMODIFY;
 					if (value>99 || value==0)
 						sprintf(text,"%.0f",value);
 					else {
@@ -456,8 +453,24 @@ goto_bearing:
 						} else 
 							sprintf(text,"%.3f",value);
 					}
-				} else {
-					strcpy(text,NULLMEDIUM); // 091221
+				}
+				else {
+					index = Task[0].Index;
+					if (index>=0) {
+						value=(DerivedDrawInfo.WaypointDistance-StartRadius)*DISTANCEMODIFY;
+						if (value<0) value*=-1; // 101112 BUGFIX
+						valid=true;
+						if (value>99 || value==0)
+							sprintf(text,"%.0f",value);
+						else {
+							if (value>10) {
+								sprintf(text,"%.1f",value);
+							} else 
+								sprintf(text,"%.3f",value);
+						}
+					} else {
+						strcpy(text,NULLMEDIUM); // 091221
+					}
 				}
 			} else {
 				strcpy(text,NULLMEDIUM); // 091221
