@@ -195,12 +195,12 @@ HWND CreateProgressDialog(TCHAR* text) {
 	}
 
 
-	DeleteObject(hWelcomeBitmap);
 
 	// AA
 
 
 	SelectObject(hTempDC, oldBitmap);
+	DeleteObject(hWelcomeBitmap);
 	if (DeleteDC(hTempDC)==0) StartupStore(_T("**** Cannot delete hTempDC\n"));
   }
 
