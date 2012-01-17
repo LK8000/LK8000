@@ -1774,8 +1774,7 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	stdlon = WayPointList[stdwp].Longitude;
 
 	DistanceBearing(stdlat, stdlon, curlat, curlon, NULL, &stdbrg);
-	double dist_ui= (curwp>0)?(Task[curwp].AATCircleRadius):StartRadius;
-	FindLatitudeLongitude(stdlat,stdlon, stdbrg, dist_ui, &(Task[curwp].AATTargetLat), &(Task[curwp].AATTargetLon));
+	FindLatitudeLongitude(stdlat,stdlon, stdbrg, FinishRadius, &(Task[curwp].AATTargetLat), &(Task[curwp].AATTargetLon));
 	Task[curwp].AATTargetLocked=true;
 
 
