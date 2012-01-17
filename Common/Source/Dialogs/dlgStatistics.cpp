@@ -51,6 +51,8 @@ void DrawTelescope (HDC hdc, double fAngle, int x, int y);
 void DrawNorthArrow(HDC hdc, double fAngle, int x, int y);
 void DrawWindRoseDirection(HDC hdc, double fAngle, int x, int y);
 long ChangeBrightness(long Color, double fBrightFact);
+void RenderSky(HDC hdc, const RECT rc, COLORREF Col1, COLORREF Col2 );
+
 TCHAR szNearAS[80];
 
 int iNohandeldSpaces=0;
@@ -190,7 +192,7 @@ void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
 			    minwidth, 
 			    l1, 
 			    l2, 
-			    RGB(0,50,255), rc);
+			    COL, rc);
     break;
   case STYLE_REDTHICK:
 	COL = RGB(250,50,50);
@@ -206,8 +208,8 @@ void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
 	  COL =   RGB(0,255,0);
 	  if(bInvertColors)
 		COL = ChangeBrightness(COL,0.7);
-	  line[0].x +=2;
-	  line[1].x +=2;
+	  line[0].x +=1;
+	  line[1].x +=1;
       mpen = (HPEN)CreatePen(PS_SOLID, IBLSCALE(2),  COL);
       oldpen = (HPEN)SelectObject(hdc, (HPEN)mpen);
       MapWindow::_Polyline(hdc, line, 2, rc);
@@ -247,7 +249,7 @@ void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
 	if(bInvertColors)
 	  COL = ChangeBrightness(COL,0.7);
 
-    MapWindow::DrawDashLine(hdc, 2, 
+    MapWindow::DrawDashLine(hdc, IBLSCALE(2),
 			    line[0], 
 			    line[1], 
 			    COL, rc);
@@ -430,13 +432,21 @@ void Statistics::DrawLine(HDC hdc, const RECT rc,
 
 void Statistics::DrawBarChart(HDC hdc, const RECT rc, LeastSquares* lsdata) {
   int i;
-
+COLORREF Col;
   if (unscaled_x || unscaled_y) {
     return;
   }
 
-  SelectObject(hdc, GetStockObject(WHITE_PEN));
-  SelectObject(hdc, GetStockObject(WHITE_BRUSH));
+if(bInvertColors)
+  Col = ChangeBrightness(RGB_GREEN, 0.5);
+else
+  Col = RGB_WHITE;
+
+  HPEN    hpBar = (HPEN)CreatePen(PS_SOLID, IBLSCALE(1), Col);
+  HBRUSH  hbBar = (HBRUSH)CreateSolidBrush(Col);
+  HPEN   oldpen   = (HPEN)   SelectObject(hdc, hpBar);
+  HBRUSH oldbrush = (HBRUSH) SelectObject(hdc, hbBar);
+
 
   int xmin, ymin, xmax, ymax;
 
@@ -451,6 +461,9 @@ void Statistics::DrawBarChart(HDC hdc, const RECT rc, LeastSquares* lsdata) {
               xmax,
               ymax);
   }
+
+  SelectObject(hdc, oldpen);
+  SelectObject(hdc, oldbrush);
 
 }
 
@@ -686,8 +699,11 @@ void Statistics::RenderBarograph(HDC hdc, const RECT rc)
   ScaleXFromData(rc, &flightstats.Altitude);
   ScaleYFromData(rc, &flightstats.Altitude);
   ScaleYFromValue(rc, 0);
-  ScaleXFromValue(rc, flightstats.Altitude.x_min+1.0); // in case no data
+  ScaleXFromValue(rc, 1.2f*(flightstats.Altitude.x_min+1.0)); // in case no data
   ScaleXFromValue(rc, flightstats.Altitude.x_min); 
+
+  if(bInvertColors)
+    RenderSky( hdc,   rc, RGB(220,220,255) , RGB(255,255,255) );
 
   for(int j=1;j<MAXTASKPOINTS;j++) {
     if (ValidTaskPoint(j) && (flightstats.LegStartTime[j]>=0)) {
@@ -722,9 +738,12 @@ void Statistics::RenderBarograph(HDC hdc, const RECT rc)
             0.5, flightstats.Altitude.x_min,
             STYLE_THINDASHPAPER, 0.5, true);
 
-  DrawYGrid(hdc, rc, 1000/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER,
-            1000, true);
 
+  if(Units::GetUserInvAltitudeUnit() == unFeet) {
+    DrawYGrid(hdc, rc, 500.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 500.0, true);
+  } else {
+    DrawYGrid(hdc, rc, 1000.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 1000.0, true);
+  }
   DrawLineGraph(hdc, rc, &flightstats.Altitude,
                 STYLE_MEDIUMBLACK);
 
@@ -772,8 +791,13 @@ void Statistics::RenderSpeed(HDC hdc, const RECT rc)
             0.5, flightstats.Task_Speed.x_min,
             STYLE_THINDASHPAPER, 0.5, true);
 
-  DrawYGrid(hdc, rc, 10/TASKSPEEDMODIFY, 0, STYLE_THINDASHPAPER,
-            10, true);
+ /* DrawYGrid(hdc, rc, 10/TASKSPEEDMODIFY, 0, STYLE_THINDASHPAPER,
+            10, true);*/
+  if(Units::GetUserHorizontalSpeedUnit() == unStatuteMilesPerHour) {
+    DrawYGrid(hdc, rc, 5.0/TASKSPEEDMODIFY, 0, STYLE_THINDASHPAPER, 5.0, true);
+  } else {
+    DrawYGrid(hdc, rc, 10/TASKSPEEDMODIFY, 0, STYLE_THINDASHPAPER, 10, true);
+  }
 
   DrawLineGraph(hdc, rc, &flightstats.Task_Speed,
                 STYLE_MEDIUMBLACK);
@@ -794,18 +818,20 @@ void Statistics::RenderClimb(HDC hdc, const RECT rc)
     DrawNoData(hdc, rc);
     return;
   }
-
+  HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
   ResetScale();
   ScaleYFromData(rc, &flightstats.ThermalAverage);
-  ScaleYFromValue(rc, (MACCREADY+0.5));
+  ScaleYFromValue(rc, (MACCREADY+1.0));
   ScaleYFromValue(rc, 0);
 
   ScaleXFromValue(rc, -1);
   ScaleXFromValue(rc, flightstats.ThermalAverage.sum_n);
 
-  DrawYGrid(hdc, rc, 
-            1.0/LIFTMODIFY, 0,
-            STYLE_THINDASHPAPER, 1.0, true);
+  if(Units::GetUserInvAltitudeUnit() == unFeet) {
+    DrawYGrid(hdc, rc, 0.5/LIFTMODIFY, 0, STYLE_THINDASHPAPER, 0.5, true);
+  } else {
+    DrawYGrid(hdc, rc, 1.0/LIFTMODIFY, 0, STYLE_THINDASHPAPER, 1.0, true);
+  }
 
   DrawBarChart(hdc, rc,
                &flightstats.ThermalAverage);
@@ -822,11 +848,12 @@ void Statistics::RenderClimb(HDC hdc, const RECT rc)
   DrawTrendN(hdc, rc,
              &flightstats.ThermalAverage,
              STYLE_BLUETHIN);
-
+  SelectObject(hdc, hfOld);
   DrawXLabel(hdc, rc, TEXT("n"));
   DrawYLabel(hdc, rc, TEXT("w"));
 
 }
+
 
 
 void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
@@ -858,21 +885,23 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
     
     sinkrate0 = GlidePolar::SinkRateFast(0,i);
     sinkrate1 = GlidePolar::SinkRateFast(0,i+1);
+
     DrawLine(hdc, rc,
              i, sinkrate0 , 
              i+1, sinkrate1, 
-             STYLE_MEDIUMBLACK);
+             STYLE_DASHGREEN);
 
     if (CALCULATED_INFO.AverageClimbRateN[i]>0) {
       v1= CALCULATED_INFO.AverageClimbRate[i]
         /CALCULATED_INFO.AverageClimbRateN[i];
-      
+
       if (v0valid) {
 
         DrawLine(hdc, rc,
-                 i0, v0 , 
-                 i, v1, 
-                 STYLE_DASHGREEN);
+                 i0, v0 ,
+                 i, v1,
+                 STYLE_DASHGREEN
+                   );
 
 
       }
@@ -886,6 +915,7 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
   double ff = SAFTEYSPEED/max(1.0, CALCULATED_INFO.VMacCready);
   double sb = GlidePolar::SinkRate(CALCULATED_INFO.VMacCready);
   ff= (sb-MACCREADY)/max(1.0, CALCULATED_INFO.VMacCready);
+
   DrawLine(hdc, rc,
            0, MACCREADY, 
            SAFTEYSPEED,
@@ -897,21 +927,33 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
 
   TCHAR text[80];
   SetBkMode(hdc, OPAQUE);
+  if(bInvertColors)
+    SetTextColor(hdc,RGB(50,50,160));
+  else
+	SetTextColor(hdc,RGB_WHITE);
+  HFONT hfOldU = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
+  extern void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext);
+  LK_wsplitpath(szPolarFile, (WCHAR*) NULL, (WCHAR*) NULL, text, (WCHAR*) NULL);
+
+   ExtTextOut(hdc, rc.left+IBLSCALE(30),
+ 	               rc.bottom-IBLSCALE(90),
+ 	               ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 
   _stprintf(text,TEXT("%s %.0f kg"),  
-	gettext(TEXT("_@M814_")), // Weight
-	    GlidePolar::GetAUW());
+            gettext(TEXT("_@M814_")), // Weight
+	        GlidePolar::GetAUW());
   ExtTextOut(hdc, rc.left+IBLSCALE(30), 
-	     rc.bottom-IBLSCALE(55), 
-	     ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+	              rc.bottom-IBLSCALE(70),
+	              ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 
   _stprintf(text,TEXT("%s %.1f kg/m2"),  
-	gettext(TEXT("_@M821_")), // Wing load
-	    GlidePolar::WingLoading);
+	             gettext(TEXT("_@M821_")), // Wing load
+	             GlidePolar::WingLoading);
   ExtTextOut(hdc, rc.left+IBLSCALE(30), 
-	     rc.bottom-IBLSCALE(40), 
-	     ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+	              rc.bottom-IBLSCALE(50),
+	              ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 
+  SelectObject(hdc, hfOldU);
   SetBkMode(hdc, TRANSPARENT);
 }
 
@@ -995,7 +1037,7 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
     ScaleYFromValue(rc, lat1);
     ScaleXFromValue(rc, lon1);
   }
-
+  HFONT hfOldU = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
   lat_c = (y_max+y_min)/2;
   lon_c = (x_max+x_min)/2;
 
@@ -1145,7 +1187,7 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
 	
 	DrawLine(hdc, rc,
 		 x1, y1, x2, y2,
-		 STYLE_DASHGREEN);
+		 STYLE_BLUETHIN /* STYLE_DASHGREEN*/);
 	
 	TCHAR text[100];
 	if ((i==nwps-1) && (Task[i].Index == Task[0].Index)) {
@@ -1165,6 +1207,8 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
 		   x1, y1, x2, y2,
 		   STYLE_REDTHICK);
 	}
+
+
 	
       }
     }
@@ -1248,11 +1292,13 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
     }
   }
 
+  SelectObject(hdc, hfOldU);
   // Draw aircraft on top
   lat1 = GPS_INFO.Latitude;
   lon1 = GPS_INFO.Longitude;
   x1 = (lon1-lon_c)*fastcosine(lat1);
   y1 = (lat1-lat_c);
+  SetBkMode(hdc, TRANSPARENT);
   DrawLabel(hdc, rc, TEXT("+"), x1, y1);
 }
 
@@ -2031,6 +2077,11 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
 
 static void Update(void){
   TCHAR sTmp[1000];
+
+  TCHAR szPolarName[80];
+  extern void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext);
+  LK_wsplitpath(szPolarFile, (WCHAR*) NULL, (WCHAR*) NULL, szPolarName, (WCHAR*) NULL);
+
   //  WndProperty *wp;
 
   // Hide airspace heading switch button by default if not on ASP page
@@ -2119,10 +2170,11 @@ static void Update(void){
       wInfo->SetCaption(sTmp);
     break;
     case ANALYSIS_PAGE_POLAR:
-      _stprintf(sTmp, TEXT("%s: %s (%s %3.0f kg)"), 
+      _stprintf(sTmp, TEXT("%s: %s %s (%s %3.0f kg)"),
 	// LKTOKEN  _@M93_ = "Analysis" 
                 gettext(TEXT("_@M93_")),
-	// LKTOKEN  _@M325_ = "Glide Polar" 
+	// LKTOKEN  _@M325_ = "Glide Polar"
+                szPolarName,
                 gettext(TEXT("_@M325_")),
                 gettext(TEXT("_@M889_")), // Mass
                 GlidePolar::GetAUW());
@@ -2320,19 +2372,37 @@ static void Update(void){
 
     break;
   case ANALYSIS_PAGE_AIRSPACE:
-	if(asp_heading_task == 2)
-	  _stprintf(sTmp, TEXT("%s: %s "),
+	switch (asp_heading_task )
+	{
+	case 1:
+	   _stprintf(sTmp, TEXT("%s: %s %s"),
 	  // LKTOKEN  _@M93_ = "Analysis"
 	                gettext(TEXT("_@M93_")),
 	  // LKTOKEN  _@M68_ = "Airspace"
-	                gettext(TEXT("_@M1292_")));
-	else
+	                gettext(TEXT("_@M68_")),
+	  //_@M1289_ "Next WP"
+	                gettext(TEXT("_@M1289_"))
+	   );
+	break;
+	case 2:
       _stprintf(sTmp, TEXT("%s: %s"),
 	  // LKTOKEN  _@M93_ = "Analysis"
               gettext(TEXT("_@M93_")),
-	  // LKTOKEN  _@M68_ = "nearest airspace"
-              gettext(TEXT("_@M68_")));
-
+	  // LKTOKEN  _@M1292_ = "Nearest Airspace"
+              gettext(TEXT("_@M1292_")));
+    break;
+	default:
+	case 0:
+      _stprintf(sTmp, TEXT("%s: %s %s"),
+	  // LKTOKEN  _@M93_ = "Analysis"
+              gettext(TEXT("_@M93_")),
+              //_@M1287_ "Heading"
+              gettext(TEXT("_@M1287_")),
+              // LKTOKEN  _@M68_ = "Airspace"
+              gettext(TEXT("_@M68_"))
+              );
+     break;
+	}
 
     wf->SetCaption(sTmp);
     WndButton *wb = (WndButton *)wf->FindByName(TEXT("cmdAspBear"));
@@ -2494,7 +2564,6 @@ static void OnAspBearClicked(WindowControl * Sender){
   (void)Sender;
   asp_heading_task++;
   asp_heading_task %=3;
-  //  asp_heading_task = !asp_heading_task;
     Update();
 }
 
@@ -2574,14 +2643,18 @@ if(page ==ANALYSIS_PAGE_AIRSPACE)
 
 void dlgAnalysisShowModal(int inpage){
 static bool entered = false;
-	 if (entered == true) /* prevent re entrance */
-		 return;
 
 if(inpage == ANALYSIS_PAGE_NEAR_AIRSPACE)
 {
   inpage = ANALYSIS_PAGE_AIRSPACE;
   asp_heading_task = 2;
+  page = ANALYSIS_PAGE_AIRSPACE;
+ // Update();
 }
+  if (entered == true) /* prevent re entrance */
+	return;
+
+
   wf=NULL;
   wGrid=NULL;
   wInfo=NULL;
@@ -2606,7 +2679,10 @@ if(inpage == ANALYSIS_PAGE_NEAR_AIRSPACE)
 
   if (!wf) return;
 
-  penThinSignal = CreatePen(PS_SOLID, 2 , RGB(50,243,45));
+  COLORREF COL = RGB(50,243,45);
+  if(bInvertColors)
+	COL = ChangeBrightness(COL,0.7);
+  penThinSignal = CreatePen(PS_SOLID, IBLSCALE(2) , COL);
 
   wf->SetLButtonUpNotify(TouchKeyDown);
   wf->SetKeyDownNotify(FormKeyDown);
@@ -2659,7 +2735,39 @@ if(inpage == ANALYSIS_PAGE_NEAR_AIRSPACE)
 }
 
 
+void RenderSky(HDC hdc, const RECT rc, COLORREF Col1, COLORREF Col2 )
+{
+RECT rcd;
+int i;
+#define GC_NO_INTERCOLOR 50
+double idy = (double)(rc.top - rc.bottom)/(double)GC_NO_INTERCOLOR+0.5f;
+HPEN   hpHorizon;
+HBRUSH hbHorizon;
+COLORREF Col = Col1;
 
+	rcd = rc;
+	rcd.top = rcd.bottom;
+
+	double fDiff = 0.008/(double)GC_NO_INTERCOLOR;
+	double fFact = 1.0;
+	for(i=0 ; i < GC_NO_INTERCOLOR ; i++)
+	{
+		rcd.bottom  = rcd.top ;
+		rcd.top     = (long)((double)rcd.bottom + ( idy));
+		Col = ChangeBrightness(Col, fFact);
+		fFact -=fDiff;
+
+	  hpHorizon = (HPEN)CreatePen(PS_SOLID, IBLSCALE(1), Col);
+	  hbHorizon = (HBRUSH)CreateSolidBrush(Col);
+	  SelectObject(hdc, hpHorizon);
+	  SelectObject(hdc, hbHorizon);
+
+	  Rectangle(hdc,rcd.left,rcd.top,rcd.right,rcd.bottom);
+
+	  DeleteObject(hpHorizon);
+	  DeleteObject(hbHorizon);
+   }
+}
 
 
 void Statistics::RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon,  double brg,  DiagrammStruct* psDiag )
@@ -2705,16 +2813,14 @@ if(bInvertColors)
   }
 }
 
+
   FindLatitudeLongitude(PosLat, PosLon, brg  , psDiag->fXMin , &lat, &lon);
-
-
 
   double d_lat[AIRSPACE_SCANSIZE_X];
   double d_lon[AIRSPACE_SCANSIZE_X];
   double d_alt[AIRSPACE_SCANSIZE_X];
   double d_h[AIRSPACE_SCANSIZE_H];
   AirSpaceSideViewSTRUCT d_airspace[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X];
-
 
 
   BOOL bFound = false;
@@ -3282,19 +3388,6 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   fAS_HorDistance = fabs(fAS_HorDistance);
   iAS_HorDistance = (int) fAS_HorDistance;
   wpt_brg = (long)AngleLimit360(GPSbrg - fAS_Bearing + 90.0);
-  if(bValid)
-    _stprintf(szNearAS,TEXT("%s"),  near_airspace.Name() );
-  else
-  {
-	_stprintf(text,TEXT("%s"), gettext(TEXT("_@M1259_"))); 	 // LKTOKEN _@M1259_ "Too far, not calculated"
-	GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-	TxYPt.x = (rc.right-rc.left)/2-tsize.cx/2;
-	TxYPt.y = (rc.bottom-rc.top)/2-tsize.cy/2;
-	SetBkMode(hdc, OPAQUE);
-	ExtTextOut(hdc, TxYPt.x, TxYPt.y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-	_stprintf(szNearAS,TEXT("%s"), text);
-	SetBkMode(hdc, TRANSPARENT);
-  }
 
 
 //  bool CAirspace::GetWarningPoint(double &longitude, double &latitude, AirspaceWarningDrawStyle_t &hdrawstyle, int &vDistance, AirspaceWarningDrawStyle_t &vdrawstyle) const
@@ -3358,9 +3451,24 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   ScaleYFromValue(rc, sDia.fYMin);
   ScaleYFromValue(rc, sDia.fYMax);
 
-  HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
+
   RenderAirspaceTerrain( hdc,  rc,  GPSlat, GPSlon, iAS_Bearing, &sDia );
 
+  HFONT hfOld = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
+  if(bValid)
+    _stprintf(szNearAS,TEXT("%s"),  near_airspace.Name() );
+  else
+  {
+	_stprintf(text,TEXT("%s"), gettext(TEXT("_@M1259_"))); 	 // LKTOKEN _@M1259_ "Too far, not calculated"
+	GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+	TxYPt.x = (rc.right-rc.left-tsize.cx)/2;
+	TxYPt.y = (rc.bottom-rc.top)/2;
+	SetBkMode(hdc, TRANSPARENT);
+	ExtTextOut(hdc,TxYPt.x, TxYPt.y-20, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+	_stprintf(szNearAS,TEXT("%s"), text);
+
+  }
+  SelectObject(hdc, hfOld);
 
   if (bValid)
   {
@@ -3379,7 +3487,9 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
       static int callcnt = 0;
       if(callcnt++%2 == 0)
         SetTextColor(hdc, RGB_BLACK);
-      ExtTextOut(hdc, 50, 10, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+      GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
+      TxYPt.x = (rc.right-rc.left-tsize.cx)/2;
+      ExtTextOut(hdc,  TxYPt.x , NIBLSCALE(25), ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     }
   }
 
