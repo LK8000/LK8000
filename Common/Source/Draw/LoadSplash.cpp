@@ -90,9 +90,9 @@ void LoadSplash(HDC hDC, TCHAR *splashfile){
 	  }
   }
 
-  DeleteObject(hWelcomeBitmap);
   SelectObject(hTempDC, oldBitmap);
   DeleteDC(hTempDC);
+  DeleteObject(hWelcomeBitmap);
 
 }
 
