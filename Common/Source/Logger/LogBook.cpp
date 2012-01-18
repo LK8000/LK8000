@@ -417,7 +417,7 @@ bool UpdateLogBookLST(bool welandedforsure) {
 	_tcscpy(pilotname,_T(""));
 	
   if (!dofirstline) {
-	sprintf(line,"__________________________________________________________________________________________________%s",WNEWLINE);
+	sprintf(line,"________________________________________%s",WNEWLINE);
 	fwrite(line,strlen(line),1,stream);
   }
 
