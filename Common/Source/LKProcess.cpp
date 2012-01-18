@@ -1738,7 +1738,7 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
-			index = Task[ActiveWayPoint].Index;
+			index = DoOptimizeRoute()?RESWP_OPTIMIZED:Task[ActiveWayPoint].Index;
 			if ( (ValidTaskPoint(ActiveWayPoint) != false) && (WayPointCalc[index].NextETE < 0.9*ERROR_TIME)) {
 
 				if (WayPointCalc[index].NextETE > 0) {

@@ -3715,7 +3715,7 @@ double CalculateWaypointArrivalAltitude(NMEA_INFO *Basic, DERIVED_INFO *Calculat
 	// if gates are in use with a real task, and we are at start 
 	// then calculate ETE for reaching the cylinder. Also working when we are 
 	// in the wrong side of cylinder
-	if (UseGates()) {
+	if (UseGates() && !DoOptimizeRoute()) {
 		if (ActiveWayPoint==0 && i==Task[0].Index ) { 
 			if (PGStartOut) {
 				if (CorrectSide()) {
