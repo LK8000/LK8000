@@ -17,6 +17,13 @@
 #define DONTDRAWTHEMAP !mode.AnyPan()&&MapSpaceMode!=MSM_MAP
 #define MAPMODE8000    !mode.AnyPan()&&MapSpaceMode==MSM_MAP
 
+#if NEWSMARTZOOM
+// We do smart zoom only with real map painted, and in quickdraw mode
+// Temporarily, work only in Inversemode to test speed difference on PNAs (Inverse works..inverted!)
+#define ONSMARTZOOM   (MAPMODE8000 && QUICKDRAW && !Appearance.InverseInfoBox) 
+#define OFFSMARTZOOM   (DONTDRAWTHEMAP && !QUICKDRAW && !Appearance.InverseInfoBox) 
+#endif
+
 #define QUICKDRAW (FastZoom || zoom.BigZoom())
 extern bool FastZoom;
 
@@ -130,6 +137,14 @@ QuickRedraw: // 100318 speedup redraw
 
 fastzoom:  
 
+  #if NEWSMARTZOOM
+  // Copy the old background map with no overlays if QUICKDRAW (*SHOULDSTRETCH IT!*)
+  if (ONSMARTZOOM) {
+	BitBlt(hdcDrawWindow, 0, 0, MapRect.right-MapRect.left, MapRect.bottom-MapRect.top,
+		hdcQuickDrawWindow, 0, 0, SRCCOPY);
+  }
+  #endif
+
   SelectObject(hdc, GetStockObject(BLACK_BRUSH));
   SelectObject(hdc, GetStockObject(BLACK_PEN));
   hfOld = (HFONT)SelectObject(hdc, MapWindowFont);
@@ -140,6 +155,10 @@ fastzoom:
 	SelectObject(hdcDrawWindow, hfOld);
 	goto QuickRedraw;
   }
+
+  #if NEWSMARTZOOM
+  if (!ONSMARTZOOM) {
+  #endif
 
   if ((EnableTerrain && (DerivedDrawInfo.TerrainValid) 
        && RasterTerrain::isTerrainLoaded())
@@ -168,6 +187,10 @@ fastzoom:
     }
     UnlockTerrainDataGraphics();
   }
+
+  #if NEWSMARTZOOM
+  }
+  #endif
  
   if (QUICKDRAW)  {
 	if ( !mode.AnyPan()) DrawLook8000(hdc,rc); 
@@ -275,6 +298,14 @@ fastzoom:
   } else if (mode.Is(Mode::MODE_TARGET_PAN)) {
     DrawWindAtAircraft2(hdc, Orig, rc);
   }
+
+  #if NEWSMARTZOOM
+  // Copy the current background map with no overlays if !QUICKDRAW
+  if (OFFSMARTZOOM) {
+	BitBlt(hdcQuickDrawWindow, 0, 0, MapRect.right-MapRect.left, MapRect.bottom-MapRect.top,
+		hdcDrawWindow, 0, 0, SRCCOPY);
+  }
+  #endif
 
   // VisualGlide drawn BEFORE lk8000 overlays
   if (!mode.AnyPan() && VisualGlide > 0) {

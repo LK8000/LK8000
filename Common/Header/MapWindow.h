@@ -543,6 +543,10 @@ class MapWindow {
   static HDC hdcScreen;
   static HDC hDCTemp;
   static HDC hDCMask;
+#if NEWSMARTZOOM
+  static HBITMAP hQuickDrawBitMap;
+  static HDC hdcQuickDrawWindow;
+#endif
   static double PanLatitude;
   static double PanLongitude;
   static DWORD  dwDrawThreadID;

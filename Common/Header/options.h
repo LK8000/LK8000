@@ -88,6 +88,8 @@
 
  // #define OLDLOGGER		1	// old DLL Grecord logging system
 
+#define NEWSMARTZOOM		1	// stretch bitmap for fast zoom
+
 /*
  * Incomplete work, or stuff that never got into production versions but still interesting
  *

@@ -56,6 +56,11 @@ HDC MapWindow::hdcScreen = NULL;
 HDC MapWindow::hDCTemp = NULL;
 HDC MapWindow::hDCMask = NULL;
 
+#if NEWSMARTZOOM
+HBITMAP MapWindow::hQuickDrawBitMap = NULL;
+HDC MapWindow::hdcQuickDrawWindow = NULL;
+#endif
+
 double MapWindow::PanLatitude = 0.0;
 double MapWindow::PanLongitude = 0.0;
 
@@ -196,12 +201,19 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hMaskBitMap = CreateBitmap(width+1, height+1, 1, 1, NULL);
       SelectObject(hDCMask, (HBITMAP)hMaskBitMap);
 
+      #if NEWSMARTZOOM
+      hQuickDrawBitMap = CreateCompatibleBitmap (hdcScreen, width, height);
+      SelectObject(hdcQuickDrawWindow, (HBITMAP)hQuickDrawBitMap);
+      #endif
       break;
 
     case WM_CREATE:
 
       hdcScreen = GetDC(hWnd);
       hdcDrawWindow = CreateCompatibleDC(hdcScreen);
+      #if NEWSMARTZOOM
+      hdcQuickDrawWindow = CreateCompatibleDC(hdcScreen);
+      #endif
       hDCTemp = CreateCompatibleDC(hdcDrawWindow);
       hDCMask = CreateCompatibleDC(hdcDrawWindow);
   
@@ -324,6 +336,10 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       DeleteDC(hDCMask);
       DeleteObject(hDrawBitMap);
       DeleteObject(hMaskBitMap);
+      #if NEWSMARTZOOM
+      DeleteDC(hdcQuickDrawWindow);
+      DeleteObject(hQuickDrawBitMap);
+      #endif
 
       AlphaBlendDestroy();
 
