@@ -1712,21 +1712,20 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 				DistanceBearing(curlat, curlon, optlat, optlon, NULL, &optbrg);
 
 				double dBrg = fabs((stdbrg - errbrg) * DEG_TO_RAD);
+				if(dBrg > PI) 
+					dBrg = fabs((stdbrg-errbrg+360) * DEG_TO_RAD);
+
 				if(radius > stddst || dBrg < PI/2 && sin(dBrg) < radius/stddst) {
-
-					if(radius > stddst * sin(dBrg)) {
-
-						if( (dBrg < PI/2) && (radius < stddst) && (PGStartOut || curwp>0)) {
-							dBrg = - dBrg + asin((stddst * sin(dBrg)) / radius);
-						}
-						else{
-							dBrg = PI - dBrg - asin((stddst * sin(dBrg)) / radius);
-						}
-						dBrg *= RAD_TO_DEG * (((stdbrg - errbrg)<0)?-1:1);
-						obrg_f = AngleLimit360(dBrg + 180 + stdbrg);
-
-						FindLatitudeLongitude(stdlat,stdlon, obrg_f, radius, &optlat, &optlon);
+					if( (dBrg < PI/2) && (radius < stddst) && (PGStartOut || curwp>0)) {
+						dBrg = - dBrg + asin((stddst * sin(dBrg)) / radius);
 					}
+					else{
+						dBrg = PI - dBrg - asin((stddst * sin(dBrg)) / radius);
+					}
+					dBrg *= RAD_TO_DEG * (((stdbrg-errbrg)>-180 && (stdbrg-errbrg)<0)?-1:1);
+					obrg_f = AngleLimit360(dBrg + 180 + stdbrg);
+
+					FindLatitudeLongitude(stdlat,stdlon, obrg_f, radius, &optlat, &optlon);
 				}
 			}
 		}
@@ -1739,14 +1738,16 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			DistanceBearing(curlat, curlon, optlat, optlon, NULL, &errbrg);
 			radius= ((curwp-1)>0)?(Task[curwp-1].AATCircleRadius):StartRadius;
 			double dBrg = fabs((stdbrg - errbrg) * DEG_TO_RAD);
-			if( (dBrg > (PI/360)) && (sin(dBrg)) < radius/stddst && radius > stddst * sin(dBrg)) {
-				if( (dBrg < PI/2) && (radius < stddst)) {
+			if(dBrg > PI) 
+				dBrg = fabs((stdbrg-errbrg+360) * DEG_TO_RAD);
+			if( (dBrg > (PI/360)) && (sin(dBrg) < radius/stddst)) {
+				if( (dBrg < PI/2) || (dBrg > 2*PI) && (radius < stddst)) {
 					dBrg = - dBrg + asin((stddst * sin(dBrg)) / radius);
 				}
 				else{
 					dBrg = PI - dBrg - asin((stddst * sin(dBrg)) / radius);
 				}
-				dBrg *= RAD_TO_DEG * (((stdbrg - errbrg)<0)?-1:1);
+				dBrg *= RAD_TO_DEG * (((stdbrg-errbrg)>-180 && (stdbrg-errbrg)<0)?-1:1);
 				obrg_f = AngleLimit360(dBrg + 180 + stdbrg);
 			}
 			else {
