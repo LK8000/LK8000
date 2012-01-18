@@ -37,8 +37,8 @@ void ResetTask() {
   CALCULATED_INFO.TaskStartSpeed = 0;
   CALCULATED_INFO.TaskStartAltitude = 0;
   CALCULATED_INFO.LegStartTime = 0;
-  CALCULATED_INFO.MinAltitude = 0;
-  CALCULATED_INFO.MaxHeightGain = 0;
+//  CALCULATED_INFO.MinAltitude = 0; REMOVE
+//  CALCULATED_INFO.MaxHeightGain = 0; REMOVE
 
 // TaskDistanceCovered
 // TaskDistanceToGo

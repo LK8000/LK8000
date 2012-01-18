@@ -83,3 +83,14 @@ H1257  in help file
 _@1741  RESET DEFAULT --> FULL RESET LK8000
 
 375 changed from "LK8000 Profiles" to "System Profiles"
+
+18/1/2011
+Changed HELP H922 and H923
+
+
+
+
+
+
+
+

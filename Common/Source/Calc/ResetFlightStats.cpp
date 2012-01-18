@@ -97,6 +97,10 @@ void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     Calculated->TaskStartSpeed = 0;
     Calculated->TaskStartAltitude = 0;
     Calculated->LegStartTime = 0;
+
+    // Min and Max Altitude are then updated correctly after FF detection
+    // The MaxHeightGain function wait for FF in flight and will update 
+    // considering 0 as a no-altitude-set-yet .
     Calculated->MinAltitude = 0;
     Calculated->MaxAltitude = 0;
     Calculated->MaxHeightGain = 0;

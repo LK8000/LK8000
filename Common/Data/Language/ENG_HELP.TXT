@@ -1479,11 +1479,11 @@ Distance to the selected alternate
 @922
 [Max Altitude Reached]
 Max altitude reached during the current flight.
-It is reset at takeoff and at task restart.
+It is reset at takeoff.
 
 @923
 [Max Height Gained]
-This height is calculated using the min and max heights detected AFTER the start of free flight.
+This height is calculated using the min height detected AFTER the start of free flight.
 This value is normally used for badges.
 
 @924
