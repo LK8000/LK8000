@@ -14,23 +14,25 @@
 #include "InfoBoxLayout.h"
 
 
-#define MAXTITLE 200	// max number of characters in a title note
-#define MAXDETAILS 5000	// max size of a note
-#define MAXLINES 200	// max number of lines per note
-#define MAXLISTS 300	// max number of notes
+#define MAXNOTETITLE 200	// max number of characters in a title note
+#define MAXNOTEDETAILS 5000	// max size of each note details
+#define MAXNOTELINES 300	// max number of lines in a note, enough for maxnotedetails size!
+#define MAXNOTES 300		// max number of notes
+
+#define MAXNOTELIMITER 50	// character reserved for last line comment on note oversized
+#define NOTECONTINUED		"\r\n          >>>>>\r\n"
 
 int page=0;
 WndForm *wf=NULL;
 WndListFrame *wDetails=NULL;
 WndOwnerDrawFrame *wDetailsEntry = NULL;
-int LineOffsets[MAXLINES+1];
+int LineOffsets[MAXNOTELINES+1];
 int DrawListIndex=0;
 int nTextLines=0;
 int nLists=0;
-TCHAR *ChecklistText[MAXLISTS+1];
-TCHAR *ChecklistTitle[MAXLISTS+1];
+TCHAR *ChecklistText[MAXNOTES+1];
+TCHAR *ChecklistTitle[MAXNOTES+1];
 TCHAR NoteModeTitle[50];
-
 
 static void InitNotepad(void) {
   page=0;
@@ -40,18 +42,18 @@ static void InitNotepad(void) {
   DrawListIndex=0;
   nTextLines=0;
   nLists=0;
-  for (int i=0; i<MAXLISTS; i++) {
+  for (int i=0; i<MAXNOTES; i++) {
 	ChecklistText[i]=(TCHAR *)NULL;
 	ChecklistTitle[i]=(TCHAR *)NULL;
   }
-  for (int i=0; i<MAXLINES; i++) {
+  for (int i=0; i<MAXNOTELINES; i++) {
 	LineOffsets[i]=0;
   }
 }
 
 
 static void DeinitNotepad(void) {
-  for (int i=0; i<MAXLISTS; i++) {
+  for (int i=0; i<MAXNOTES; i++) {
     if (ChecklistText[i]) {
       free(ChecklistText[i]);
       ChecklistText[i]= NULL;
@@ -74,7 +76,7 @@ static void NextPage(int Step){
     page= nLists-1;
   }
 
-  nTextLines = TextToLineOffsets(ChecklistText[page], LineOffsets, MAXLINES);
+  nTextLines = TextToLineOffsets(ChecklistText[page], LineOffsets, MAXNOTELINES);
 
   switch(nLists) {
 	case 0:
@@ -195,15 +197,15 @@ static CallBackTableEntry_t CallBackTable[]={
 
 
 void addChecklist(TCHAR* name, TCHAR* details) {
-  if (nLists<MAXLISTS) {
+  if (nLists<MAXNOTES) {
     ChecklistTitle[nLists] = (TCHAR*)malloc((_tcslen(name)+1)*sizeof(TCHAR));
     ChecklistText[nLists] = (TCHAR*)malloc((_tcslen(details)+1)*sizeof(TCHAR));
     _tcscpy(ChecklistTitle[nLists], name);
-    if (_tcslen(name)>=MAXTITLE)
-	  ChecklistTitle[nLists][MAXTITLE-1]= 0;
+    if (_tcslen(name)>=MAXNOTETITLE)
+	  ChecklistTitle[nLists][MAXNOTETITLE-1]= 0;
     _tcscpy(ChecklistText[nLists], details);
-    if (_tcslen(details)>=MAXDETAILS)
-	  ChecklistText[nLists][MAXDETAILS-1]= 0;
+    if (_tcslen(details)>=MAXNOTEDETAILS)
+	  ChecklistText[nLists][MAXNOTEDETAILS-1]= 0;
     nLists++;
   }
 }
@@ -251,20 +253,20 @@ bool LoadChecklist(short checklistmode) {
     }
 
   #if TESTBENCH
-  StartupStore(_T(". Loaded notes <%s>%s"),filename,NEWLINE);
+  StartupStore(_T(". Loading notes <%s>%s"),filename,NEWLINE);
   #endif
 
-  TCHAR TempString[MAXTITLE];
-  TCHAR Details[MAXDETAILS];
-  TCHAR Name[100];
-  BOOL inDetails = FALSE;
+  TCHAR TempString[MAXNOTETITLE+1];
+  TCHAR Details[MAXNOTEDETAILS+1];
+  TCHAR Name[MAXNOTETITLE+1];
+  bool inDetails = false;
   int i;
 
   Details[0]= 0;
   Name[0]= 0;
   TempString[0]=0;
 
-  while(ReadString(hChecklist,MAXTITLE,TempString))
+  while(ReadString(hChecklist,MAXNOTETITLE,TempString))
     {
       int len = _tcslen(TempString);
       if (len>0) {
@@ -280,17 +282,31 @@ bool LoadChecklist(short checklistmode) {
 	}
       }
 
+      // check that we are not over the limit of the note details size
+      if ( (_tcslen(Details) + len) > (MAXNOTEDETAILS-MAXNOTELIMITER-1)) {
+
+		// unfortunately, yes. So we need to split the note right now.
+		// And we keep the same Name also for next splitted note.
+          	wcscat(Details,TEXT(NOTECONTINUED) );
+		if (_tcslen(Name)>0 && _tcslen(Details)>0) {
+		 	addChecklist(Name, Details);
+		} 
+		Details[0]= 0;
+		inDetails=true;
+      }
+
       if(TempString[0]=='[') { // Look for start
 
+	// we found the beginning of a new note, so we may save the last one, if not empty
 	if (inDetails) {
-	  wcscat(Details,TEXT("\r\n"));
+          wcscat(Details,TEXT("\r\n"));
 	  addChecklist(Name, Details);
 	  Details[0]= 0;
 	  Name[0]= 0;
 	}
 
 	// extract name
-	for (i=1; i<MAXTITLE; i++) {
+	for (i=1; i<MAXNOTETITLE; i++) {
 	  if (TempString[i]==']') {
 	    break;
 	  }
@@ -298,14 +314,15 @@ bool LoadChecklist(short checklistmode) {
 	}
 	Name[i-1]= 0;
 
-	inDetails = TRUE;
+	inDetails = true;
 
       } else {
 	// append text to details string
-	wcsncat(Details,TempString,MAXDETAILS-2);
+	// we already know we have enough space
+	wcsncat(Details,TempString,MAXNOTEDETAILS-2);
 	wcscat(Details,TEXT("\r\n"));
-	// TODO code: check the string is not too long
-      }
+      } // not a new start line
+
     }
 
   if (inDetails) {
@@ -315,10 +332,6 @@ bool LoadChecklist(short checklistmode) {
 
   CloseHandle(hChecklist);
   hChecklist = NULL;
-
-  #if TESTBENCH
-  StartupStore(_T("... Loaded %d notes\n"),nLists);
-  #endif
 
   return true;
 
