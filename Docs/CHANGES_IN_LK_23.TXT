@@ -2,6 +2,79 @@
 Changes in LK8000 v2.3
 ======================
 
+
+NEW
+
+. Support for CUP files with no header line
+
+
+
+
+CHANGES
+
+  Nearest airspace Sideview fixes
+
+   Deactivate ballast buttons in basic config when polar has no ballast
+
+   Work on analysis pages:
+    Polar page
+      Added Glider Name
+      Bigger Font
+      Color adjustments for inverted colors
+
+    Airspace sideview
+      Sky shading in inverted colors mode
+      Color adjustments for inverted colors
+      Added current view name in title
+
+    Nearest AS
+      added too far warning
+
+    Baro page
+      Sky shading in inverted colors mode
+      500m scaling if meter altitudes
+      Color adjustments for inverted colors
+
+    Climb page
+      Sky shading in inverted colors mode
+      0.5 m scaling if m/s climb
+      Color adjustments for inverted colors
+
+    Task
+      Bigger font
+      adjusted colors
+
+
+
+
+
+FIXES
+
+.  Fix: Flying below or above NOFLY ASP zones causes the yellow warning to disappear
+   http://www.postfrontal.com/forum/topic.asp?TOPIC_ID=5868
+
+.  Distance & ETE to Start : use Optimized Wpt when PGOptimize=ON
+   Change Optimized Wp to Correct Side of SG for Exit SG
+
+.  Fix flickering startup problem, workaround.
+   Since 2.2, selecting profile on startup would show for a while the first left button in a wrong position.
+   Use Correct Finish raduis in PGOptimize
+
+.  Fix two critical memory leaks (LoadSplash and CreateProgress)
+
+.  Fix bug in Notepad and Logbook view: long notes would crash the software.
+   Now we split a long note into two or more notes with the same title.
+   Current note sizes are: max 300 notes per file, each note max 200 characters per title, and 5k in size, 
+   and max 300 lines per single note.
+
+.  Fix Max Height Gain should not be reset after task start or restart.
+   It is reset only on free flight detection after takeoff.
+
+
+
+
+
+
 Version 2.3t  January 14,  2012
 ------------------------------
 
