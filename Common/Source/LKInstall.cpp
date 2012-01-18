@@ -354,6 +354,7 @@ bool CheckSystemDefaultMenu() {
   return true;
 }
 
+#if OLDLOGGER
 // We only check for general installation of GRecord files
 bool CheckSystemGRecord() {
   TCHAR srcdir[MAX_PATH];
@@ -363,6 +364,7 @@ bool CheckSystemGRecord() {
   if (  GetFileAttributes(srcfile) == 0xffffffff ) return false;
   return true;
 }
+#endif
 
 bool CheckPolarsDir() {
   TCHAR srcdir[MAX_PATH];
