@@ -330,9 +330,10 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 		fileformat=LKW_DAT;
 		break;
 	}
+	// Otherwise, to make it simple we assume it is a CUP file with no header.
 	fempty=false;
-	fileformat=LKW_DAT;
-	StartupStore(_T("... Unknown WP file %d format identifier (assuming DAT), line 1: <%s>%s"),globalFileNum+1,nTemp2String,NEWLINE);
+	fileformat=LKW_CUP;
+	StartupStore(_T("... Unknown WP file %d format identifier (assuming CUP with no header), line 1: <%s>%s"),globalFileNum+1,nTemp2String,NEWLINE);
 	break;
   }
   if (fempty) {
