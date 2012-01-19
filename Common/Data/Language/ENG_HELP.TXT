@@ -18,9 +18,6 @@ Map files are located inside the _Maps subfolder.
 
 @102
 The name of the file containing digital elevation terrain data, normally a .DEM file. 
-Also .DAT and .JP2 files are valid. 
-Remember that terrain could also be loaded internally from LKM map files. 
-In this case terrain chosen here ovverrides the one preconfigured in LKM.
 This file is inside _Maps subfolder. 
 
 @103
