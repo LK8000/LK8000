@@ -21,6 +21,7 @@
 using std::min;
 using std::max;
 
+long lSonarBingDelay = 0;
 static double alt;
 static double fMaxAltToday=2500.0f;
 
@@ -2039,6 +2040,33 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
 
 }
 
+//#define SONAR_TEST
+#ifdef SONAR_TEST
+static int  iSonarTimerID = 0;
+
+void CALLBACK MyTimerProc(
+    HWND hwnd,        // handle to window for timer messages
+    UINT message,     // WM_TIMER message
+    UINT idTimer,     // timer identifier
+    DWORD dwTime)     // current system time
+{
+  static long lSonarCnt = 0;
+
+  lSonarCnt++;
+
+if(lSonarBingDelay > 0)
+  if(lSonarCnt >lSonarBingDelay )
+  {
+	if(asp_heading_task== 2)
+	  {
+		  LKSound(TEXT("LK_SONAR.WAV"));
+	  lSonarCnt =1;
+
+	  }
+  }
+}
+#endif
+
 
 
 static void Update(void){
@@ -2057,7 +2085,21 @@ static void Update(void){
       wb->SetVisible(false);
     }
   }
-  
+
+#ifdef SONAR_TEST
+
+  if(page ==ANALYSIS_PAGE_AIRSPACE)
+  {
+    if(iSonarTimerID == 0)
+    	iSonarTimerID = SetTimer(hWndMainWindow,1005,500,(TIMERPROC)&MyTimerProc); // 200ms  10 times per second
+  }
+  else
+  {
+	KillTimer(hWndMainWindow,iSonarTimerID);
+	iSonarTimerID =0;
+  }
+#endif
+
   switch(page){
     case ANALYSIS_PAGE_BAROGRAPH:
       _stprintf(sTmp, TEXT("%s: %s"),
@@ -2546,9 +2588,10 @@ static CallBackTableEntry_t CallBackTable[]={
 
 static int OnTimerNotify(WindowControl *Sender)
 {
-  static short i=0;
-  if(i++ % 2 == 0)
-    return 0;
+//  static short i=0;
+
+//  if(i++ % 2 == 0)
+//    return 0;
   
   // run once per second
   Update();
@@ -2649,8 +2692,19 @@ if(page ==ANALYSIS_PAGE_AIRSPACE)
 
 
 
+
+
+
+
+
+
 void dlgAnalysisShowModal(int inpage){
 static bool entered = false;
+
+
+if (entered == true) /* prevent re entrance */
+	return;
+
 
 if(inpage == ANALYSIS_PAGE_NEAR_AIRSPACE)
 {
@@ -2659,9 +2713,11 @@ if(inpage == ANALYSIS_PAGE_NEAR_AIRSPACE)
   page = ANALYSIS_PAGE_AIRSPACE;
  // Update();
 }
-  if (entered == true) /* prevent re entrance */
-	return;
 
+
+
+if (entered == true) /* prevent re entrance */
+	return;
 
   wf=NULL;
   wGrid=NULL;
@@ -2737,6 +2793,11 @@ if(inpage == ANALYSIS_PAGE_NEAR_AIRSPACE)
 
   DeleteObject(penThinSignal);
 
+#ifdef SONAR_TEST
+  KillTimer(hWndMainWindow,iSonarTimerID);
+  iSonarTimerID =0;
+#endif
+
   MapWindow::RequestFastRefresh();
   FullScreen();
   entered = false;
@@ -2763,7 +2824,8 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   DiagrammStruct sDia;
   bool bAS_Inside;
   int iAS_Bearing;
-  int iAS_HorDistance;
+  int iAS_sHorDistance;
+  int iABS_AS_HorDistance;
   int iAS_VertDistance;
   double fAS_Bearing;
   double fAS_HorDistance;
@@ -2813,10 +2875,10 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   }
   near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(found);
 
-  bValid = near_airspace.GetDistanceInfo(bAS_Inside, iAS_HorDistance, iAS_Bearing, iAS_VertDistance);
+  bValid = near_airspace.GetDistanceInfo(bAS_Inside, iAS_sHorDistance, iAS_Bearing, iAS_VertDistance);
  // if(bLeft)
-  fAS_HorDistance = fabs(fAS_HorDistance);
-  iAS_HorDistance = (int) fAS_HorDistance;
+ // fAS_HorDistance = fabs(fAS_HorDistance);
+   iABS_AS_HorDistance = abs( iAS_sHorDistance);
   wpt_brg = (long)AngleLimit360(GPSbrg - fAS_Bearing + 90.0);
 
 
@@ -2844,25 +2906,35 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   //           awNone - no warning condition exists
   //           awYellow - current position is near to a warning position
   //           awRed - current posisiton is forbidden by asp system, we are in a warning position
+  lSonarBingDelay= 0;
+  if(bValid)
+    if((iAS_sHorDistance) < 900)
+      if(abs(iAS_VertDistance) < 400)
+    	lSonarBingDelay = abs(iAS_VertDistance)/40+1;
 
-if((abs(iAS_HorDistance) < 500) && (bValid))
+  if(near_airspace.IsAltitudeInside(alt,calc_altitudeagl,0))
+    if(iAS_sHorDistance > 0)
+      if((iAS_sHorDistance) < 1500)
+        lSonarBingDelay = abs(iAS_sHorDistance)/150+1;
+ // lSonarBingDelay = 15;
+if(((iABS_AS_HorDistance) < 900) && (bValid))
 {
 
-  sDia.fXMin = min(-500.0, iAS_HorDistance * 1.5 );
-  sDia.fXMax = max( 500.0, iAS_HorDistance * 1.5 );
-
+  sDia.fXMin = min(-900.0, iABS_AS_HorDistance * 1.5 );
+  sDia.fXMax = max( 900.0, iABS_AS_HorDistance * 1.5 );
+/*
   if((abs(iAS_HorDistance) < 100))
   {
     sDia.fXMin = min(-100.0, iAS_HorDistance * 1.5 );
     sDia.fXMax = max( 100.0, iAS_HorDistance * 1.5 );
-  }
+  }*/
 }
 else
 {
 //  sDia.fXMin = min(-2500.0 , (double) ((int)((iAS_HorDistance * 1.5)/1000)+1)*1000.0f );
 //  sDia.fXMax = max( 2500.0 , (double) ((int)((iAS_HorDistance * 1.5)/1000)+1)*1000.0f );
-	sDia.fXMin = min(-2500.0 , iAS_HorDistance * 1.5 );
-	sDia.fXMax = max( 2500.0 , iAS_HorDistance * 1.5 );
+	sDia.fXMin = min(-2500.0 , iABS_AS_HorDistance * 1.5 );
+	sDia.fXMax = max( 2500.0 , iABS_AS_HorDistance * 1.5 );
 
 }
 
@@ -2871,7 +2943,16 @@ sDia.fYMax = max(fMaxAltToday, alt+1000);
 if(bValid)
 {
   sDia.fYMax = max(1.2f*(alt+abs(iAS_VertDistance)), (double)sDia.fYMax);
-  if(abs(iAS_VertDistance) < 200)
+  if(abs(iAS_VertDistance) < 250)
+  {
+
+    sDia.fYMax =  ((int)((alt+abs(iAS_VertDistance))/400) + 2) *400 ;
+    sDia.fYMin =  ((int)((alt-abs(iAS_VertDistance))/400) - 1) *400 ;
+    if(sDia.fYMin-200 < 0)
+      sDia.fYMin = 0;
+  }
+
+  if(abs(iAS_VertDistance) < 50)
   {
     sDia.fYMax =  ((int)((alt+abs(iAS_VertDistance))/100) + 2) *100 ;
     sDia.fYMin =  ((int)((alt-abs(iAS_VertDistance))/100) - 1) *100 ;
@@ -2881,26 +2962,7 @@ if(bValid)
 }
 
 
-#ifdef DDD
-  if (bValid)
-  {
-    double fTmp;
-    if(iAS_VertDistance > 0)
-    {
-      fTmp = alt + iAS_VertDistance + 500 ;
-	  if(fTmp > sDia.fYMax)
-        sDia.fYMax = fTmp;
-    }
-    else
-    {
- 	  fTmp = alt + iAS_VertDistance - 500 ;
-	  if(fTmp > 0)
-	    if(fTmp < sDia.fYMin)
-          sDia.fYMin = fTmp;
-    }
-//	sDia.fYMin = max(0.0, sDia.fYMin );
-  }
-#endif
+
   range =sDia.fXMax - sDia.fXMin ;
   sDia.rc = rc;
 
@@ -2953,6 +3015,7 @@ if(bValid)
   }
 
   double xtick = 1.0;
+  if (range>0.01*1000.0) xtick = 0.01;
   if (range>0.1*1000.0) xtick = 0.1;
   if (range>1.0*1000.0) xtick = 1.0;
   if (range>10.0*1000.0) xtick = 5.0;
@@ -2980,7 +3043,7 @@ if(bValid)
   DrawXGrid(hdc, rc, xtick/DISTANCEMODIFY, 0, STYLE_THINDASHPAPER, xtick, true);
   SetTextColor(hdc, RGB_TEXT_COLOR);
   double fScale = 1000;
-  if((sDia.fYMax-sDia.fYMin) <= 500)
+  if((sDia.fYMax-sDia.fYMin) <= 1000)
 	fScale = 200.0f;
   else
 	fScale = 1000.0f;
@@ -3034,7 +3097,7 @@ if(bValid)
     // horizontal distance
     line[0].x = CalcDistanceCoordinat(0,  rc, &sDia);
     line[0].y = CalcHeightCoordinat(  alt,   rc, &sDia );
-    line[1].x = CalcDistanceCoordinat(iAS_HorDistance,  rc, &sDia);
+    line[1].x = CalcDistanceCoordinat(iABS_AS_HorDistance,  rc, &sDia);
     line[1].y = line[0].y;
     StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
 
@@ -3044,7 +3107,7 @@ if(bValid)
     else
       bLeft = true;
 
-    Units::FormatUserDistance(iAS_HorDistance, buffer, 7);
+    Units::FormatUserDistance(iABS_AS_HorDistance, buffer, 7);
     _tcsncpy(text, TEXT(" "), sizeof(text)/sizeof(text[0]));
     _tcscat(text,buffer);
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
@@ -3056,14 +3119,14 @@ if(bValid)
 
 
     if(tsize.cx > (line[1].x - line[0].x) )
-      TxXPt.x = CalcDistanceCoordinat( iAS_HorDistance , rc, &sDia) -tsize.cx-  NIBLSCALE(3);
+      TxXPt.x = CalcDistanceCoordinat( iABS_AS_HorDistance , rc, &sDia) -tsize.cx-  NIBLSCALE(3);
     else
-      TxXPt.x = CalcDistanceCoordinat( iAS_HorDistance / 2.0, rc, &sDia) -tsize.cx/2;
+      TxXPt.x = CalcDistanceCoordinat( iABS_AS_HorDistance / 2.0, rc, &sDia) -tsize.cx/2;
     ExtTextOut(hdc,  TxXPt.x,  TxXPt.y , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 
 
     // vertical distance
-    line[0].x = CalcDistanceCoordinat(iAS_HorDistance ,  rc, &sDia);
+    line[0].x = CalcDistanceCoordinat(iABS_AS_HorDistance ,  rc, &sDia);
     line[0].y = CalcHeightCoordinat( alt, rc, &sDia );
     line[1].x = line[0].x;
     line[1].y = CalcHeightCoordinat( alt - (double)iAS_VertDistance, rc, &sDia );
@@ -3075,9 +3138,9 @@ if(bValid)
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
 
     if ( bLeft )
-      TxYPt.x = CalcDistanceCoordinat(iAS_HorDistance,  rc, &sDia)- tsize.cx - NIBLSCALE(3);
+      TxYPt.x = CalcDistanceCoordinat(iABS_AS_HorDistance,  rc, &sDia)- tsize.cx - NIBLSCALE(3);
     else
-      TxYPt.x = CalcDistanceCoordinat(iAS_HorDistance,  rc, &sDia)+ NIBLSCALE(5);
+      TxYPt.x = CalcDistanceCoordinat(iABS_AS_HorDistance,  rc, &sDia)+ NIBLSCALE(5);
     if( abs( line[0].y -  line[1].y) > tsize.cy)
       TxYPt.y = CalcHeightCoordinat( alt - (double)iAS_VertDistance/2.0, rc, &sDia) -tsize.cy/2 ;
     else
