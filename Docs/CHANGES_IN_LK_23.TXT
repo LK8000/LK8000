@@ -7,6 +7,7 @@ NEW
 
 . Support for CUP files with no header line
 
+. Nearest airspace Sideview rescaled dynamically while approaching an airspace
 
 
 
@@ -70,6 +71,8 @@ FIXES
 .  Fix Max Height Gain should not be reset after task start or restart.
    It is reset only on free flight detection after takeoff.
 
+.  fix PG Optimized Wp with Exit Start
+.  Use Optimized Wp for NextETE if PGOtimize=ON
 
 
 
