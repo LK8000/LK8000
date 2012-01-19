@@ -42,7 +42,6 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
   TCHAR Empty[2]; // 100407
   int index=-1;
 
-  static short tlen=0;
   static short	column[PANELCOLUMNS+1], hcolumn[(PANELCOLUMNS*2)+1], qcolumn[(PANELCOLUMNS*4)+1];
   static short	row[PANELROWS+1], hrow[(PANELCOLUMNS*2)+1], qrow[(PANELROWS*4)+1];
 
@@ -56,35 +55,6 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
   if (DoInit[MDI_DRAWINFOPAGE]) {
 	DoInit[MDI_DRAWINFOPAGE]=false;
 	// function can only be called in fullscreen  and thus can be inited here
-	if ( ScreenSize < (ScreenSize_t)sslandscape ) {
-		switch (ScreenSize) {			// portrait fullscreen
-			case (ScreenSize_t)ss240x320:
-				tlen=6;
-				break;
-			default:
-				tlen=7;
-				break;
-		}
-	} else  {
-		switch (ScreenSize) {			// landscape fullscreen
-			case (ScreenSize_t)ss800x480:
-			case (ScreenSize_t)ss400x240:
-			case (ScreenSize_t)ss480x272:
-			case (ScreenSize_t)ss720x408:
-				tlen=9;
-				break;
-			case (ScreenSize_t)ss320x240:
-			case (ScreenSize_t)ss640x480:
-			case (ScreenSize_t)ss896x672:
-				tlen=9;
-				break;
-			default:
-				tlen=8;
-				break;
-		}
-	}
-
-
 	column[0]=LEFTLIMITER;
 	column[1]=((rc.right-RIGHTLIMITER-LEFTLIMITER)/PANELCOLUMNS)+LEFTLIMITER;
 	column[2]=column[1]*2-LEFTLIMITER;

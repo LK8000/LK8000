@@ -92,7 +92,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 {
   MSG msg;
   HACCEL hAccelTable;
-  INITCOMMONCONTROLSEX icc;
   (void)hPrevInstance;
 
   // use mutex to avoid multiple instances of lk8000 be running
@@ -210,8 +209,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 
   LK8000GetOpts(lpCmdLine);
 
-  icc.dwSize = sizeof(INITCOMMONCONTROLSEX);
-  icc.dwICC = ICC_UPDOWN_CLASS;
   InitCommonControls();
   InitSineTable();
 

@@ -619,6 +619,7 @@ treeObj *msReadTree(const TCHAR *filename, int debug)
   return(tree);
 }
 
+#if USETOPOMARKS
 static long getSubNodeOffset(treeNodeObj *node) 
 {
   int i;
@@ -684,7 +685,6 @@ static void writeTreeNode(SHPTreeHandle disktree, treeNodeObj *node)
   
 }
 
-#if USETOPOMARKS
 int msWriteTree(treeObj *tree, const TCHAR *filename, int B_order)
 {
   char		signature[3] = "SQT";

@@ -259,7 +259,9 @@ const CDevIMI::TMsg *CDevIMI::CMsgParser::Parse(const IMIBYTE buffer[], IMIDWORD
       else {
         if(_msgBufferPos == IMICOMM_MSG_HEADER_SIZE) {
           // verify payload size
-          _msgBytesLeft = ((TMsg *)_msgBuffer)->payloadSize + IMICOMM_CRC_LEN;
+          IMIWORD payloadSize;
+          memmove(&payloadSize, _msgBuffer + offsetof(TMsg, payloadSize), sizeof(payloadSize));
+          _msgBytesLeft = payloadSize + IMICOMM_CRC_LEN;
           if(_msgBytesLeft > COMM_MAX_PAYLOAD_SIZE + IMICOMM_CRC_LEN) {
             // Invalid length
             Reset();

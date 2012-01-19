@@ -1297,7 +1297,6 @@ BOOL NMEAParser::PTAS1(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 
 void FLARM_RefreshSlots(NMEA_INFO *GPS_INFO) {
   int i;
-  bool present = false;
   double passed;
   if (GPS_INFO->FLARM_Available) {
 
@@ -1372,12 +1371,10 @@ void FLARM_RefreshSlots(NMEA_INFO *GPS_INFO) {
 				FLARM_DumpSlot(GPS_INFO,i);
 				#endif
 				GPS_INFO->FLARM_Traffic[i].Status = LKT_GHOST;
-				present = true;
 				continue;
 			}
 
 			// Then it is real traffic
-			present=true;
 			GPS_INFO->FLARM_Traffic[i].Status = LKT_REAL; // 100325 BUGFIX missing
 
 			/*
@@ -1385,7 +1382,6 @@ void FLARM_RefreshSlots(NMEA_INFO *GPS_INFO) {
 				if (GPS_INFO->FLARM_Traffic[i].AlarmLevel>0) {
 					GaugeFLARM::Suppress = false; // NO USE
 				}
-				present = true;
 			}
 			*/
 		}

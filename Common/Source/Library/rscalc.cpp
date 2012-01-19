@@ -83,9 +83,9 @@ class SunEphemeris {
 
   // Display decimal hours in hours and minutes
   void showhrmn(double dhr) {
-    int hr,mn;
-    hr=(int) dhr;
-    mn =(int) (dhr - (double) hr)*60;
+    // int hr,mn;
+    // hr=(int) dhr;
+    // mn =(int) (dhr - (double) hr)*60;
 
     //  printf("%0d:%0d",hr,mn);
   };

@@ -732,13 +732,11 @@ void Topology::Paint(HDC hdc, RECT rc) {
 		if (checkVisible(*shape, screenRect)) {
 			for (int tt = 0; tt < shape->numlines; tt ++) {
 				int minx = rc.right;
-				int miny = rc.bottom;
 				int msize = min(shape->line[tt].numpoints/iskip, MAXCLIPPOLYGON);
 				MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize*iskip, iskip);
 				for (int jj=0; jj< msize; jj++) {
 					if (pt[jj].x<=minx) {
 						minx = pt[jj].x;
-						miny = pt[jj].y;
 					}
 				}
 				ClipPolygon(hdc,pt, msize, rc, true);
@@ -1626,7 +1624,6 @@ void Topology::SearchNearest(RECT rc) {
 		if (checkVisible(*shape, screenRect)) {
 			for (int tt = 0; tt < shape->numlines; tt ++) {
 				int minx = rc.right;
-				int miny = rc.bottom;
 				int msize = min(shape->line[tt].numpoints/iskip, MAXCLIPPOLYGON);
 
 				MapWindow::LatLon2Screen(shape->line[tt].point, pt, msize*iskip, iskip);
@@ -1634,7 +1631,6 @@ void Topology::SearchNearest(RECT rc) {
 				for (int jj=0; jj< msize; jj++) {
 					if (pt[jj].x<=minx) {
 						minx = pt[jj].x;
-						miny = pt[jj].y;
 					}
 				}
 

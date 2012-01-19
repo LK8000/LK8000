@@ -3353,7 +3353,7 @@ int WndProperty::DecValue(void){
 
 void WndProperty::Paint(HDC hDC){
 
-  RECT r;
+  //  RECT r;
   SIZE tsize;
   POINT org;
   HBITMAP oldBmp;
@@ -3363,10 +3363,10 @@ void WndProperty::Paint(HDC hDC){
 
   WindowControl::Paint(hDC);
 
-  r.left = 0;
-  r.top = 0;
-  r.right = GetWidth();
-  r.bottom = GetHeight();
+  // r.left = 0;
+  // r.top = 0;
+  // r.right = GetWidth();
+  // r.bottom = GetHeight();
 
   SetTextColor(hDC, GetForeColor());
 #ifdef WINE
@@ -3792,21 +3792,13 @@ void WndListFrame::DrawScrollBar(HDC hDC) {
   }
 
   unsigned long ctUpDown =0;
-  unsigned long ctScroll =0;
 
   bool bTransparentUpDown = true;
-  bool bTransparentScroll = true;
 
   if (bTransparentUpDown)
 	ctUpDown=SRCAND;  //Combines the colors of the source and destination rectangles by using the Boolean AND operator.
   else
 	ctUpDown=SRCCOPY;  //Copies the source rectangle directly to the destination rectangle.
-
-  if (bTransparentScroll)
-	ctScroll=SRCAND;  //Combines the colors of the source and destination rectangles by using the Boolean AND operator.
-  else
-	ctScroll=SRCCOPY;  //Copies the source rectangle directly to the destination rectangle.
-
 
   // TOP Dn Button 32x32
   // BOT Up Button 32x32
@@ -4142,12 +4134,9 @@ void WndListFrame::SelectItemFromScreen(int xPos, int yPos,
 
 
 int WndListFrame::OnMouseMove(WPARAM wParam, LPARAM lParam) {  
-  static bool bMoving = false;
 
   if ( (GetTickCount()) >= (unsigned int)LastMouseMoveTime )
   {
-    bMoving=true;
-
     POINT Pos;
     Pos.x = LOWORD(lParam); 
     Pos.y = HIWORD(lParam);                     
@@ -4170,7 +4159,6 @@ int WndListFrame::OnMouseMove(WPARAM wParam, LPARAM lParam) {
       mMouseDown = false; // force re-click of scroll bar
     }
     LastMouseMoveTime = GetTickCount();
-    bMoving=false;
   } // Tickcount
   return(1);
 }

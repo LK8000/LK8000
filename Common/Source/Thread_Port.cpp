@@ -214,7 +214,7 @@ BOOL ComPort::StopRxThread()
 // return: TRUE on success, FALSE on error
 BOOL ComPort::StartRxThread(void)
 {
-  DWORD dwThreadID, dwError;
+  DWORD dwThreadID;
 
   if (hPort == INVALID_HANDLE_VALUE) return FALSE;
 
@@ -230,7 +230,7 @@ BOOL ComPort::StartRxThread(void)
 	// Could not create the read thread.
 	// LKTOKEN  _@M761_ = "Unable to Start RX Thread on Port" 
 	ComPort_StatusMessage(MB_OK, TEXT("Error"), TEXT("%s %s"), gettext(TEXT("_@M761_")), sPortName);
-	dwError = GetLastError();
+	//DWORD dwError = GetLastError();
 	return FALSE;
   }
 

@@ -37,7 +37,7 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
     }
     LockTaskData();
 
-    if (AATEnabled && ( DoOptimizeRoute() || (ActiveWayPoint>0) && ValidTaskPoint(ActiveWayPoint+1)) ) {
+    if (AATEnabled && ( DoOptimizeRoute() || ((ActiveWayPoint>0) && ValidTaskPoint(ActiveWayPoint+1))) ) {
       targetLat = Task[ActiveWayPoint].AATTargetLat;
       targetLon = Task[ActiveWayPoint].AATTargetLon; 
     } else {

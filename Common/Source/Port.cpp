@@ -191,7 +191,7 @@ void ComPort::PutChar(BYTE Byte)
   if (hPort == INVALID_HANDLE_VALUE)
     return;
 
-  DWORD dwError, dwNumBytesWritten;
+  DWORD dwNumBytesWritten;
 
   if (!WriteFile(hPort,              // Port handle
                  &Byte,               // Pointer to the data to write 
@@ -201,7 +201,7 @@ void ComPort::PutChar(BYTE Byte)
                  (OVERLAPPED *)NULL)) // Must be NULL for Windows CE
   {
     // WriteFile failed. Report error.
-    dwError = GetLastError();
+    // DWORD dwError = GetLastError();
   }
 }
 
@@ -314,7 +314,6 @@ int ComPort::SetRxTimeout(int Timeout)
 {
   COMMTIMEOUTS CommTimeouts;
   int result;
-  DWORD dwError;
 
   if (hPort == INVALID_HANDLE_VALUE)
     return -1;
@@ -353,7 +352,7 @@ int ComPort::SetRxTimeout(int Timeout)
     ComPort_StatusMessage(MB_OK, TEXT("Error"), TEXT("%s %s"),
 	// LKTOKEN  _@M760_ = "Unable to Set Serial Port Timers" 
                  gettext(TEXT("_@M760_")), sPortName);
-    dwError = GetLastError();
+    //DWORD dwError = GetLastError();
     return -1;
   }
 

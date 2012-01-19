@@ -809,7 +809,6 @@ int m_strcasecmp(const char *s1, const char*s2) {
 int msDBFGetItemIndex(DBFHandle dbffile, char *name)
 {
   int i;
-  DBFFieldType dbfField;
   int fWidth,fnDecimals; /* field width and number of decimals */    
   char fName[32]; /* field name */
 
@@ -822,7 +821,7 @@ int msDBFGetItemIndex(DBFHandle dbffile, char *name)
 
   /* does name exist as a field? */
   for(i=0;i<msDBFGetFieldCount(dbffile);i++) {
-    dbfField = msDBFGetFieldInfo(dbffile,i,fName,&fWidth,&fnDecimals);
+    msDBFGetFieldInfo(dbffile,i,fName,&fWidth,&fnDecimals);
     if(m_strcasecmp(name,fName) == 0) /* found it */
       return(i);
   }
