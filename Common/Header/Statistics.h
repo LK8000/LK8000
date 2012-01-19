@@ -19,12 +19,6 @@
 
 
 
-typedef struct
-{
-  double fXMin, fXMax;
-  double fYMin, fYMax;
-  RECT rc;
-} DiagrammStruct;
 
 class Statistics {
  public:
@@ -53,8 +47,6 @@ class Statistics {
 
 
   void Reset();
-  static int CalcHeightCoordinat(double fHeight, const RECT rc);
-  static int CalcDistanceCoordinat(double fDist, const RECT rc);
   static void DrawBarChart(HDC hdc, const RECT rc, LeastSquares* lsdata);
 
   static void DrawFilledLineGraph(HDC hdc, const RECT rc, 
@@ -122,10 +114,6 @@ class Statistics {
     static void RenderTask(HDC hdc, const RECT rc, const bool olcmode);
     static void RenderSpeed(HDC hdc, const RECT rc);
 
-    static void RenderBearingDiff(HDC hdc, const RECT rc,double brg, DiagrammStruct* psDia );
-    static void RenderPlaneSideview(HDC hdc, const RECT rc,double alt, double fAltitude,double brg, DiagrammStruct* psDia );
-//    static void RenderAirspaceTerrain(HDC hdc, const RECT rc,double lat, double lon,  double dist, long GPS_brg,  DiagrammStruct* psDia );
-    static void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon,  double brg,  DiagrammStruct* psDiag );
     static void RenderNearAirspace(HDC hdc, const RECT rc) ;
 
 };
