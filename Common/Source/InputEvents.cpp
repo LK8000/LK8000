@@ -656,11 +656,18 @@ bool InputEvents::processKey(int dWord) {
     const TCHAR *pLabelText = NULL;
 
     // Accelerate zoom in/out shortening the debounce time
+    // We do this only for the case of zoom in/out virtual key pressed.
+    // The fastzoom process is triggered by BigZoom set.
+    // To get oldstyle zoom simply skip all of this.
     static DWORD lastClickTime=0;
     if (dWord==38||dWord==40) {
 	#if (WINDOWSPC>0)
 	if (!Debounce(100)) return true;
 	  #if TESTBENCH
+	  // Calling BigZoom here will trigger fast redraw several times in a loop,
+	  // until the fastzoomStart time in RenderMapWindow has passed.
+	  // For PC this is not needed, because it is fast enough to redraw everything.
+	  // However in TESTBENCH mode we keep the standard PNA/PPC behaviour
 	  MapWindow::zoom.BigZoom(true);
 	  #endif
 	#else

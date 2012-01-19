@@ -13,18 +13,21 @@
 #include "RasterTerrain.h"
 #include "LKGeneralAviation.h"
 
-
 #define DONTDRAWTHEMAP !mode.AnyPan()&&MapSpaceMode!=MSM_MAP
 #define MAPMODE8000    !mode.AnyPan()&&MapSpaceMode==MSM_MAP
+
+// Remove or uncomment to use real options.h definition
+#undef NEWSMARTZOOM
+
+#define QUICKDRAW (FastZoom || zoom.BigZoom())
 
 #if NEWSMARTZOOM
 // We do smart zoom only with real map painted, and in quickdraw mode
 // Temporarily, work only in Inversemode to test speed difference on PNAs (Inverse works..inverted!)
-#define ONSMARTZOOM   (MAPMODE8000 && QUICKDRAW && !Appearance.InverseInfoBox) 
-#define OFFSMARTZOOM   (DONTDRAWTHEMAP && !QUICKDRAW && !Appearance.InverseInfoBox) 
+#define ONSMARTZOOM	((MAPMODE8000 &&  QUICKDRAW) &&  Appearance.InverseInfoBox )
+#define OFFSMARTZOOM	((MAPMODE8000 && !QUICKDRAW) || !Appearance.InverseInfoBox )
 #endif
 
-#define QUICKDRAW (FastZoom || zoom.BigZoom())
 extern bool FastZoom;
 
 void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
@@ -42,6 +45,10 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 
   // TODO assign numslots with a function, based also on available CPU time
   short numslots=1;
+  #if NEWSMARTZOOM
+  static double quickdrawscale=0.0;
+  static double delta_drawscale=1.0;
+  #endif
 
   // If we have a BigZoom request, we serve it immediately without calculating anything
   // TODO: stretch the old map bitmap to the new zoom, while fastzooming
@@ -138,10 +145,46 @@ QuickRedraw: // 100318 speedup redraw
 fastzoom:  
 
   #if NEWSMARTZOOM
-  // Copy the old background map with no overlays if QUICKDRAW (*SHOULDSTRETCH IT!*)
+  // Copy the old background map with no overlays
   if (ONSMARTZOOM) {
-	BitBlt(hdcDrawWindow, 0, 0, MapRect.right-MapRect.left, MapRect.bottom-MapRect.top,
-		hdcQuickDrawWindow, 0, 0, SRCCOPY);
+
+	if (quickdrawscale>0) {
+		delta_drawscale=zoom.DrawScale() / quickdrawscale;
+	}
+
+// StartupStore(_T("... QuickDrawScale=%.2f new zoom=%.2f  delta=%.2f\n"),quickdrawscale,zoom.DrawScale(),delta_drawscale);
+
+	int dx=MapRect.right-MapRect.left;
+	int dy=MapRect.bottom-MapRect.top;
+
+	// notice: zoom in is always ok.. but zoom out starting from high zoom levels will make the picture
+	// very small and unusable. We can consider to zoom out in fast zoom normally, in such cases?
+	//
+	// Notice 2: the delta is not yet working correctly 
+	//
+	if (delta_drawscale>1.0) {
+		// zoom in
+		StretchBlt(hdcDrawWindow, 
+			0,0,
+			dx,dy, 
+			hdcQuickDrawWindow,
+			(int)((dx/2) - (dx / delta_drawscale)/2),
+			(int)((dy/2) - (dy / delta_drawscale)/2),
+			(int)(dx / delta_drawscale),
+			(int)(dy / delta_drawscale), 
+			SRCCOPY);
+	} else {
+		// zoom out
+		StretchBlt(hdcDrawWindow,
+			(int)((dx/2) - (dx * delta_drawscale)/2),
+			(int)((dy/2) - (dy * delta_drawscale)/2),
+			(int)(dx * delta_drawscale),
+			(int)(dy * delta_drawscale), 
+			hdcQuickDrawWindow,
+			0,0,
+			dx,dy,  
+			SRCCOPY);
+	}
   }
   #endif
 
@@ -157,7 +200,7 @@ fastzoom:
   }
 
   #if NEWSMARTZOOM
-  if (!ONSMARTZOOM) {
+  if ( OFFSMARTZOOM ) {
   #endif
 
   if ((EnableTerrain && (DerivedDrawInfo.TerrainValid) 
@@ -191,7 +234,7 @@ fastzoom:
   #if NEWSMARTZOOM
   }
   #endif
- 
+
   if (QUICKDRAW)  {
 	if ( !mode.AnyPan()) DrawLook8000(hdc,rc); 
   	SelectObject(hdcDrawWindow, hfOld);
@@ -300,8 +343,9 @@ fastzoom:
   }
 
   #if NEWSMARTZOOM
-  // Copy the current background map with no overlays if !QUICKDRAW
-  if (OFFSMARTZOOM) {
+  // Save the current rendered map before painting overlays
+  if ( OFFSMARTZOOM ) {
+	quickdrawscale=zoom.DrawScale();
 	BitBlt(hdcQuickDrawWindow, 0, 0, MapRect.right-MapRect.left, MapRect.bottom-MapRect.top,
 		hdcDrawWindow, 0, 0, SRCCOPY);
   }
