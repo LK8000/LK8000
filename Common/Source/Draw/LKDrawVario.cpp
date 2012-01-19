@@ -28,7 +28,7 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
 
   static RECT	vrc, mrc, hrc, htrc, hbrc;
   static RECT	brc[NUMVBRICKS];
-  static HPEN	blackThickPen, whiteThickPen;
+  static HPEN	blackThickPen;
   static HPEN	blackThinPen, whiteThinPen;
   static HBRUSH blackBrush, whiteBrush;
   static HBRUSH greenBrush, darkyellowBrush, orangeBrush, redBrush;
@@ -73,7 +73,6 @@ void MapWindow::LKDrawVario(HDC hDC, RECT rc) {
   int variowidth=LKVarioSize;
 
 
-  whiteThickPen =  LKPen_White_N2;	// BOXTHICK
   blackThickPen =  LKPen_Black_N2;	// BOXTHICK
   whiteThinPen =   LKPen_White_N0;
   blackThinPen =   LKPen_Black_N0;

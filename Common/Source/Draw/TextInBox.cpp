@@ -110,7 +110,6 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
   SIZE tsize;
   RECT brect;
   HFONT oldFont=0;
-  POINT org;
   bool drawn=false;
 
   if ((x<MapRect.left-WPCIRCLESIZE) || 
@@ -119,9 +118,6 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
       (y>MapRect.bottom+WPCIRCLESIZE)) {
     return drawn; // FIX Not drawn really
   }
-
-  org.x = x;
-  org.y = y;
 
   if (size==0) {
     size = _tcslen(Value);

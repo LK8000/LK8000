@@ -1509,7 +1509,7 @@ void Statistics::RenderWind(HDC hdc, const RECT rc)
 void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
 
   double fDist = 50.0*1000; // km
-  double aclat, aclon, ach, acb, speed, calc_average30s;
+  double aclat, aclon, acb, speed, calc_average30s;
 
   double wpt_brg;
   double wpt_dist;
@@ -1546,7 +1546,6 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
     fMC0 = GlidePolar::SafetyMacCready;
     aclat = GPS_INFO.Latitude;
     aclon = GPS_INFO.Longitude;
-    ach   = GPS_INFO.Altitude;
     acb    = GPS_INFO.TrackBearing;
     GPSbrg = GPS_INFO.TrackBearing;
     speed = GPS_INFO.Speed;
@@ -2750,7 +2749,7 @@ if(inpage == ANALYSIS_PAGE_NEAR_AIRSPACE)
 void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
 {
   double range = 50.0*1000; // km
-  double GPSlat, GPSlon, GPSalt, GPSbrg, GPSspeed, calc_average30s;
+  double GPSlat, GPSlon, GPSbrg;
   double calc_terrainalt;
   double calc_altitudeagl;
 
@@ -2774,14 +2773,12 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   POINT TxXPt;
   SIZE tsize;
   COLORREF GREEN_COL     = RGB_GREEN;
-  COLORREF RED_COL       = RGB_LIGHTORANGE;
   COLORREF BLUE_COL      = RGB_BLUE;
   COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
 
   if(bInvertColors)
   {
     GREEN_COL     = ChangeBrightness(GREEN_COL     , 0.6);
-    RED_COL       = ChangeBrightness(RGB_RED       , 0.6);;
     BLUE_COL      = ChangeBrightness(BLUE_COL      , 0.6);;
     LIGHTBLUE_COL = ChangeBrightness(LIGHTBLUE_COL , 0.4);;
   }
@@ -2789,13 +2786,10 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   {
     GPSlat = GPS_INFO.Latitude;
     GPSlon = GPS_INFO.Longitude;
-    GPSalt = GPS_INFO.Altitude;
     GPSbrg = GPS_INFO.TrackBearing;
-    GPSspeed = GPS_INFO.Speed;
 
     calc_terrainalt  = CALCULATED_INFO.TerrainAlt;
     calc_altitudeagl = CALCULATED_INFO.AltitudeAGL;
-    calc_average30s = CALCULATED_INFO.Average30s;
 
     if (GPS_INFO.BaroAltitudeAvailable && EnableNavBaroAltitude) {
       alt = GPS_INFO.BaroAltitude;
@@ -3117,7 +3111,7 @@ if(bValid)
 void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon,  double brg,  DiagrammStruct* psDiag )
 {
   double range =psDiag->fXMax - psDiag->fXMin; // km
-  double fi, fj;
+  double fj;
   double hmin = psDiag->fYMin;
   double hmax = psDiag->fYMax;
   double lat, lon;
@@ -3213,7 +3207,6 @@ void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon, 
   iNohandeldSpaces=0;
   for (i=0; i< AIRSPACE_SCANSIZE_H; i++)
   { // scan height
-    fi = i*dfi;
     for (j=0; j< AIRSPACE_SCANSIZE_X; j++)
     { // scan range
       fj = j*dfj;

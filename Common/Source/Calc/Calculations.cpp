@@ -2560,12 +2560,6 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
     double dr = Calculated->TaskDistanceToGo;
     // distance remaining
     
-    double t2;
-    // equivalent time elapsed after final glide
-    
-    double d2;
-    // equivalent distance travelled after final glide
-
     double hf = FAIFinishHeight(Basic, Calculated, -1);
     
     double h0 = Calculated->TaskAltitudeRequiredFromStart-hf;
@@ -2619,16 +2613,18 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
     double dc = max(0.0, dr-dFinal); 
     // amount of extra distance to travel in cruise/climb before final glide
 
-    // equivalent distance to end of final glide
-    d2 = d1+dFinal;
-    
-    // time at end of final glide
-    t2 = t1+dFinal/Vfinal;
-    
     // actual task speed achieved so far
     v1 = d1/t1;
     
 #ifdef OLDTASKSPEED  
+    // time at end of final glide
+    // equivalent time elapsed after final glide
+    double t2 = t1+dFinal/Vfinal;
+    
+    // equivalent distance travelled after final glide
+    // equivalent distance to end of final glide
+    double d2 = d1+dFinal;
+    
     // average speed to end of final glide from here
     v2 = d2/t2;
     Calculated->TaskSpeed = max(v1,v2);
@@ -2650,18 +2646,6 @@ void TaskSpeed(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_mac
     Calculated->TaskSpeed = v2;
 #endif
 
-    double konst = 1.1;
-    if (TaskModified)
-      {
-	konst = 1.0;
-      }
-    
-    double termikLigaPoints = 0;	
-    if (d1 > 0)
-      {
-	termikLigaPoints = konst*(0.015*0.001*d1-(400.0/(0.001*d1))+12.0)*v1*3.6*100.0/(double)Handicap;
-      }
-    
     if(Basic->Time < LastTime) {
       LastTime = Basic->Time;
     } else if (Basic->Time-LastTime >=1.0) {

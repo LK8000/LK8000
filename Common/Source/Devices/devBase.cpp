@@ -321,11 +321,15 @@ bool DevBase::ComExpect(PDeviceDescriptor_t d, const void* expected,
   if (length <= 0)
     return(true);
 
+#ifdef DEBUG_DEV_COM
   char prevch = 0;
+#endif
 
   while ((ch = d->Com->GetChar()) != EOF)
   {
+#ifdef DEBUG_DEV_COM
     prevch = ch;
+#endif
 
     if (prx != NULL)
       *prx++ = ch;
@@ -347,10 +351,10 @@ bool DevBase::ComExpect(PDeviceDescriptor_t d, const void* expected,
       break;
   }
 
-  #ifdef DEBUG_DEV_COM
+#ifdef DEBUG_DEV_COM
     StartupStore(_T("ComExpect: ER [%02X] check=%d%s"),
       (prevch == 0) ? (unsigned) ch : (unsigned char) prevch, checkChars, NEWLINE);
-  #endif
+#endif
 
   // LKTOKEN  _@M1414_ = "Device not responsive!"
   _sntprintf(errBuf, errBufSize, _T("%s"), gettext(_T("_@M1414_")));

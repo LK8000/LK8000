@@ -267,7 +267,7 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName,
   LPTSTR lpRes; 
   HRSRC hResInfo;
   HGLOBAL hRes; 
-  int l, len;
+  int l;
 
   // Find the xml resource.
   hResInfo = FindResource (hInst, lpName, TEXT("XMLDialog")); 
@@ -314,7 +314,6 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName,
       strncpy(buf,(char*)lpRes,l);
       buf[l]=0; // need to explicitly null-terminate.
       buf[l+1]=0;
-      len = l;      
       
 #if defined(WIN32) || defined(UNDER_CE)
 #ifdef _UNICODE

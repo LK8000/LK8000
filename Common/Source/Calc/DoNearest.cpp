@@ -41,7 +41,6 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
    double sortedValue[MAXNEAREST+1];
    int *p_sortedIndex;
    int *p_rangeIndex;
-   int dstSortedIndex[MAXNEAREST+1];
    int sortedRangeIndex[MAXNEAREST+1];
 
    // careful, consider MapSpaceMode could change while running!
@@ -74,7 +73,6 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
         SortedTurnpointIndex[i]=-1;
 	sortedRangeIndex[i]=-1;
 	sortedValue[i]=99999; 
-	dstSortedIndex[i]=-1;
    }
 
    // what are we looking at? we shall sort only that data

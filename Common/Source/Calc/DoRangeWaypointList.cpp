@@ -26,9 +26,6 @@ extern void LatLon2Flat(double lon, double lat, int *scx, int *scy);
 
 bool DoRangeWaypointList(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
-   int rangeLandableDistance[MAXRANGELANDABLE+1];
-   int rangeAirportDistance[MAXRANGELANDABLE+1];
-   int rangeTurnpointDistance[MAXRANGETURNPOINT+1];
    int i, kl, kt, ka;
    //double arrival_altitude;
 
@@ -108,16 +105,13 @@ _retunedst:
   for (i=0; i<MAXRANGELANDABLE; i++) {
 	RangeLandableNumber=0;
 	RangeLandableIndex[i]= -1;
-	rangeLandableDistance[i] = 0;
 	RangeAirportNumber=0;
 	RangeAirportIndex[i]= -1;
-	rangeAirportDistance[i] = 0;
   }
 
   for (i=0; i<MAXRANGETURNPOINT; i++) {
 	RangeTurnpointNumber=0;
 	RangeTurnpointIndex[i]= -1;
-	rangeTurnpointDistance[i] = 0;
   }
 
   #if DEBUG_DORANGE

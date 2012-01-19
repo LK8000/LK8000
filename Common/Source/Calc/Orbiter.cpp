@@ -45,7 +45,7 @@ void CalculateOrbiter(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   // StartupStore(_T("*** CalcHeading=%f Track=%f TurnRate=%f Bank=%f \n"), LK_HEADING, LK_MYTRACK,  LK_TURNRATE, LK_BANKING);
 
   double th_center_distance, th_center_bearing;	// thermal center
-  double orbital_distance, orbital_bearing;	// orbital tangent 
+  double orbital_bearing;                 	// orbital tangent 
   double orbital_brgdiff;			// current difference between track and orbital_bearing
   double orbital_warning_angle;			// warning angle difference
 
@@ -106,7 +106,7 @@ void CalculateOrbiter(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   orbital_bearing  = th_center_bearing - (alpha*circlesense); //@ add for CCW
   if (orbital_bearing>359) orbital_bearing-=360;
-  orbital_distance = th_radius / sin(alpha);
+  //  orbital_distance = th_radius / sin(alpha);
 
   // StartupStore(_T("*** tc_dist=%f th_center_bearing=%f  orbital_distance=%f orbital_bearing=%f  alpha=%f  mydir=%f\n"),
   // th_center_distance, th_center_bearing, orbital_distance, orbital_bearing, alpha, LK_HEADING );

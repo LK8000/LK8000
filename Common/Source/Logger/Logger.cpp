@@ -1697,12 +1697,8 @@ bool IGCWriteRecord(char *szIn)
   HANDLE hFile;
   DWORD dwBytesRead;
   char charbuffer[MAX_IGC_BUFF];
-  TCHAR buffer[MAX_IGC_BUFF];
-  TCHAR * pbuffer;
-  pbuffer = buffer;
   bool bRetVal = false;
 
-  int i=0, iLen=0;
   static BOOL bWriting = false;
 
   // THIS IS NOT A SOLUTION. DATA LOSS GRANTED.
@@ -1719,11 +1715,13 @@ bool IGCWriteRecord(char *szIn)
       WriteFile(hFile, charbuffer, strlen(charbuffer), &dwBytesRead,
 		(OVERLAPPED *)NULL);
 
-      iLen = strlen(charbuffer);
-      for (i = 0; (i <= iLen) && (i < MAX_IGC_BUFF); i++)
-	buffer[i] = (TCHAR)charbuffer[i];
 
 #if OLDLOGGER
+      int iLen = strlen(charbuffer);
+      TCHAR buffer[MAX_IGC_BUFF];
+      for (int i = 0; (i <= iLen) && (i < MAX_IGC_BUFF); i++)
+	buffer[i] = (TCHAR)charbuffer[i];
+      TCHAR *pbuffer = buffer;
         #if TESTBENCH
 		if (LoggerGActive()) GRecordAppendRecordToBuffer(pbuffer);
 	#else

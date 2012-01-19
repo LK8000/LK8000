@@ -283,13 +283,11 @@ void WindAnalyser::_calcWind(NMEA_INFO *nmeaInfo,
   double rthismin = 0;
   int jmax= -1;
   int jmin= -1;
-  double rpoint;
   int idiff;
 
   for (j=0; j<numwindsamples; j++) {
 
     rthisp= 0;
-    rpoint = windsamples[j].mag;
 
     for (i=0; i<numwindsamples; i++) {
       if (i== j) continue;

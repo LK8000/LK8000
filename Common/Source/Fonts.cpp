@@ -61,9 +61,8 @@ void InitializeOneFont (HFONT * theFont,
                                LOGFONT * LogFontUsed)
 {
   LOGFONT logfont;
-  int iDelStatus = 0;
   if (GetObjectType(*theFont) == OBJ_FONT) {
-    iDelStatus=DeleteObject(*theFont); // RLD the EditFont screens use the Delete
+    DeleteObject(*theFont); // RLD the EditFont screens use the Delete
   }
 
   memset ((char *)&logfont, 0, sizeof (LOGFONT));

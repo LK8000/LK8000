@@ -20,10 +20,6 @@ double CalculateMagneticVariation() {
   double lat=GPS_INFO.Latitude;
   double lon=GPS_INFO.Longitude;
 
-  #if TESTBENCH
-  bool overflowdetected=false;
-  #endif
-
   if (  GPS_INFO.NAVWarning ||
 	GPS_INFO.Year >2015 || GPS_INFO.Year<2010 ||
 	lat == 0 || lon == 0
@@ -46,7 +42,6 @@ double CalculateMagneticVariation() {
 	if (magvar != magvar) {
 		#if TESTBENCH
 		StartupStore(_T(".... CalculateMagVar OVERFLOW detected\n"));
-		overflowdetected=true;
 		#endif
 		continue;
 	}
