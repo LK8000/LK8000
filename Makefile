@@ -340,7 +340,7 @@ DRAW	:=\
 	$(DRW)/LKDrawInfoPage.cpp \
 	$(DRW)/LKDrawLook8000.cpp \
 	$(DRW)/LKDrawMapSpace.cpp \
- 	$(DRW)/LKDrawNearest.cpp \
+	$(DRW)/LKDrawNearest.cpp \
 	$(DRW)/LKDrawTargetTraffic.cpp \
 	$(DRW)/LKDrawThermalHistory.cpp \
 	$(DRW)/LKDrawTrail.cpp \
@@ -373,7 +373,7 @@ CALC	:=\
 	$(CLC)/Azimuth.cpp \
 	$(CLC)/BestAlternate.cpp	\
 	$(CLC)/Calculations.cpp \
- 	$(CLC)/Calculations2.cpp \
+	$(CLC)/Calculations2.cpp \
 	$(CLC)/Calculations_Utils.cpp \
 	$(CLC)/CalculateWaypointReachable.cpp \
 	$(CLC)/ClimbAverageCalculator.cpp\
@@ -435,7 +435,7 @@ UTILS	:=\
 	$(SRC)/utils/md5internal.cpp \
 	$(SRC)/utils/md5.cpp
 
-  
+
 DEVS	:=\
 	$(DEV)/devBase.cpp \
 	$(DEV)/devBorgeltB50.cpp \
