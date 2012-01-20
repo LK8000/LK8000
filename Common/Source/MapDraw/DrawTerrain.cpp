@@ -322,12 +322,12 @@ public:
       do_shading = false;
     } else {
       #ifdef TESTBENCH
-      if (MapWindow::zoom.Scale()>5.6) do_shading=false;
+      if (MapWindow::zoom.RealScale()>5.6) do_shading=false;
       #else
       #if (WINDOWSPC>0)
-      if (MapWindow::zoom.Scale()>7) do_shading=false;
+      if (MapWindow::zoom.RealScale()>7) do_shading=false;
       #else
-      if (MapWindow::zoom.Scale()>5.6) do_shading=false;
+      if (MapWindow::zoom.RealScale()>5.6) do_shading=false;
       #endif
       #endif
       // StartupStore(_T("..... Scale=%.3f RealScale=%.3f\n"),MapWindow::zoom.Scale(),MapWindow::zoom.RealScale());
