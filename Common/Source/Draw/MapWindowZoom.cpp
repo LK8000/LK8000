@@ -15,7 +15,7 @@
 MapWindow::Zoom::Zoom():
   _inited(false),
   _autoZoom(false), _circleZoom(true), _bigZoom(false),
-  _scale(0), _requestedScale(&_modeScale[SCALE_CRUISE]),
+  _scale(0), _realscale(0),  _requestedScale(&_modeScale[SCALE_CRUISE]),
   _scaleOverDistanceModify(0),
   _resScaleOverDistanceModify(0)
 {
@@ -161,6 +161,7 @@ void MapWindow::Zoom::Reset()
   _requestedScale = &_modeScale[SCALE_CRUISE];
   _scale = *_requestedScale;
   _scaleOverDistanceModify = *_requestedScale / DISTANCEMODIFY;
+  _realscale = *_requestedScale/DISTANCEMODIFY/1000;
   
   _inited = true;
   SwitchMode();
@@ -357,6 +358,7 @@ void MapWindow::Zoom::ModifyMapScale()
   _drawScale = GetMapResolutionFactor() / _drawScale;
   _invDrawScale = 1.0 / _drawScale;
   _scale = *_requestedScale;
+  _realscale = *_requestedScale/DISTANCEMODIFY/1000;
 }
 
 

@@ -330,7 +330,7 @@ public:
       if (MapWindow::zoom.Scale()>5.6) do_shading=false;
       #endif
       #endif
-      // StartupStore(_T("..... scale=%.3f\n"),MapWindow::zoom.Scale());
+      // StartupStore(_T("..... Scale=%.3f RealScale=%.3f\n"),MapWindow::zoom.Scale(),MapWindow::zoom.RealScale());
     }
 
     POINT orig = MapWindow::GetOrigScreen();

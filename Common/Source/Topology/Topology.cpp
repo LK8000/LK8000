@@ -340,9 +340,9 @@ bool Topology::CheckScale(void) {
   }
 
   if (scaleCategory==10)
-	return (MapWindow::zoom.Scale() <= scaleDefaultThreshold);
+	return (MapWindow::zoom.RealScale() <= scaleDefaultThreshold);
   else
-	return (MapWindow::zoom.Scale() <= scaleThreshold);
+	return (MapWindow::zoom.RealScale() <= scaleThreshold);
 }
 
 void Topology::TriggerIfScaleNowVisible(void) {
@@ -571,13 +571,13 @@ void Topology::Paint(HDC hdc, RECT rc) {
   bool nolabels=false;
   if (scaleCategory==10) {
 	// for water areas, use scaleDefault
-	if ( MapWindow::zoom.Scale()>scaleDefaultThreshold) {
+	if ( MapWindow::zoom.RealScale()>scaleDefaultThreshold) {
 		return;
 	}
 	// since we just checked category 10, if we are over scale we set nolabels
-	if ( MapWindow::zoom.Scale()>scaleThreshold) nolabels=true;
+	if ( MapWindow::zoom.RealScale()>scaleThreshold) nolabels=true;
   } else 
-  if (MapWindow::zoom.Scale() > scaleThreshold) return;
+  if (MapWindow::zoom.RealScale() > scaleThreshold) return;
 
   // TODO code: only draw inside screen!
   // this will save time with rendering pixmaps especially
@@ -605,13 +605,13 @@ void Topology::Paint(HDC hdc, RECT rc) {
   // do not skip points, if drawing coast lines which have a scaleThreshold of 100km!
   // != 5 and != 10
   if (scaleCategory>10) { 
-  if (MapWindow::zoom.Scale()>0.25*scaleThreshold) {
+  if (MapWindow::zoom.RealScale()>0.25*scaleThreshold) {
     iskip = 2;
   } 
-  if (MapWindow::zoom.Scale()>0.5*scaleThreshold) {
+  if (MapWindow::zoom.RealScale()>0.5*scaleThreshold) {
     iskip = 3;
   }
-  if (MapWindow::zoom.Scale()>0.75*scaleThreshold) {
+  if (MapWindow::zoom.RealScale()>0.75*scaleThreshold) {
     iskip = 4;
   }
   }
@@ -642,7 +642,7 @@ void Topology::Paint(HDC hdc, RECT rc) {
 	#if 101016
 	// -------------------------- NOT PRINTING ICONS ---------------------------------------------
 	bool dobitmap=false;
-	if (scaleCategory<90 || (MapWindow::zoom.Scale()<2)) dobitmap=true;
+	if (scaleCategory<90 || (MapWindow::zoom.RealScale()<2)) dobitmap=true;
 	// first a latlon overlap check, only approximated because of fastcosine in latlon2screen
 	if (checkVisible(*shape, screenRect))
 		for (int tt = 0; tt < shape->numlines; tt++) {

@@ -207,6 +207,7 @@ class MapWindow {
     bool _circleZoom;                             /**< @brief Stores information if CirclingZoom is enabled */
     bool _bigZoom;                                /**< @brief Stores information if BigZoom was done and special refresh is needed */
     double _scale;                                /**< @brief Current map scale */
+    double _realscale;                            /**< @brief Current map scale /1000 / DISTANCEMODIFY */
     double _modeScale[SCALE_NUM];                 /**< @brief Requested scale for each of scale types */
     double *_requestedScale;                      /**< @brief Requested scale for current scale type */
     
@@ -243,6 +244,7 @@ class MapWindow {
     void SwitchMode();
     
     double Scale() const { return _scale; }
+    double RealScale() const { return _realscale; }
     
     void EventAutoZoom(int vswitch);
     void EventSetZoom(double value);
