@@ -18,6 +18,12 @@
 #include "Sideview.h"
 
 
+//#define SHOW_YELLO_RED_WARNING
+//#define SONAR_TEST
+//#define SONAR_TEST2
+#define NEAR_AS_ZOOM_1000FT
+#define NEAR_AS_ZOOM_1000M
+
 using std::min;
 using std::max;
 
@@ -2040,7 +2046,7 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
 
 }
 
-//#define SONAR_TEST
+
 #ifdef SONAR_TEST
 static int  iSonarTimerID = 0;
 
@@ -2091,7 +2097,7 @@ static void Update(void){
   if(page ==ANALYSIS_PAGE_AIRSPACE)
   {
     if(iSonarTimerID == 0)
-    	iSonarTimerID = SetTimer(hWndMainWindow,1005,500,(TIMERPROC)&MyTimerProc); // 200ms  10 times per second
+    	iSonarTimerID = SetTimer(hWndMainWindow,1005,1000,(TIMERPROC)&MyTimerProc); // 1000ms  10 times per second
   }
   else
   {
@@ -2588,12 +2594,28 @@ static CallBackTableEntry_t CallBackTable[]={
 
 static int OnTimerNotify(WindowControl *Sender)
 {
-//  static short i=0;
+  static short i=0;
 
-//  if(i++ % 2 == 0)
-//    return 0;
-  
-  // run once per second
+#ifdef SONAR_TEST2
+	static long lSonarCnt = 0;
+
+	lSonarCnt++;
+
+	if(lSonarBingDelay > 0)
+	  if(lSonarCnt >lSonarBingDelay )
+	  {
+		if(asp_heading_task== 2)
+		  {
+			  LKSound(TEXT("LK_SONAR.WAV"));
+		  lSonarCnt =1;
+
+		  }
+	  }
+#endif
+
+  if(i++ % 2 == 0) // run once per second
+    return 0;
+
   Update();
   return 0;
 }
@@ -2825,7 +2847,7 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   bool bAS_Inside;
   int iAS_Bearing;
   int iAS_sHorDistance;
-  int iABS_AS_HorDistance;
+  int iABS_AS_HorDistance=0;
   int iAS_VertDistance;
   double fAS_Bearing;
   double fAS_HorDistance;
@@ -2908,35 +2930,51 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   //           awRed - current posisiton is forbidden by asp system, we are in a warning position
   lSonarBingDelay= 0;
   if(bValid)
-    if((iAS_sHorDistance) < 900)
+  {
+    if((iAS_sHorDistance) < 900)                               /* horizontal near or inside */
       if(abs(iAS_VertDistance) < 400)
     	lSonarBingDelay = abs(iAS_VertDistance)/40+1;
 
-  if(near_airspace.IsAltitudeInside(alt,calc_altitudeagl,0))
-    if(iAS_sHorDistance > 0)
-      if((iAS_sHorDistance) < 1500)
+    if(near_airspace.IsAltitudeInside(alt,calc_altitudeagl,0))  /* vertical inside ........ */
+    {
+      if((iAS_sHorDistance) < 2500)
         lSonarBingDelay = abs(iAS_sHorDistance)/150+1;
- // lSonarBingDelay = 15;
-if(((iABS_AS_HorDistance) < 900) && (bValid))
-{
+      if(iAS_sHorDistance < 0)
+         lSonarBingDelay = 1;
+    }
 
-  sDia.fXMin = min(-900.0, iABS_AS_HorDistance * 1.5 );
-  sDia.fXMax = max( 900.0, iABS_AS_HorDistance * 1.5 );
-/*
-  if((abs(iAS_HorDistance) < 100))
+    if(near_airspace.IsAltitudeInside(alt,calc_altitudeagl,0))  /* complete inside ........ */
+	  if( iAS_sHorDistance)
+		lSonarBingDelay = -1;
+  }
+
+
+  sDia.fXMin = -2500.0;
+  sDia.fXMax =  2500.0;
+  /* even when invalid the horizontal distance is calculated correctly */
+  sDia.fXMin = min(-2500.0 , iABS_AS_HorDistance * 1.5 );
+  sDia.fXMax = max( 2500.0 , iABS_AS_HorDistance * 1.5 );
+
+  if(bValid)
   {
-    sDia.fXMin = min(-100.0, iAS_HorDistance * 1.5 );
-    sDia.fXMax = max( 100.0, iAS_HorDistance * 1.5 );
-  }*/
-}
-else
-{
-//  sDia.fXMin = min(-2500.0 , (double) ((int)((iAS_HorDistance * 1.5)/1000)+1)*1000.0f );
-//  sDia.fXMax = max( 2500.0 , (double) ((int)((iAS_HorDistance * 1.5)/1000)+1)*1000.0f );
-	sDia.fXMin = min(-2500.0 , iABS_AS_HorDistance * 1.5 );
-	sDia.fXMax = max( 2500.0 , iABS_AS_HorDistance * 1.5 );
 
-}
+	#ifdef NEAR_AS_ZOOM_1000M
+	if(((iABS_AS_HorDistance) < 900) && (bValid)) // 1km zoom
+	{
+
+	  sDia.fXMin = min(-900.0, iABS_AS_HorDistance * 1.5 );
+	  sDia.fXMax = max( 900.0, iABS_AS_HorDistance * 1.5 );
+
+	}
+	#endif
+	#ifdef NEAR_AS_ZOOM_1000FT
+	  if((abs(iABS_AS_HorDistance) < 333)) // 1000ft zoom
+	  {
+		sDia.fXMin = min(-333.0, iABS_AS_HorDistance * 1.5 );
+		sDia.fXMax = max( 333.0, iABS_AS_HorDistance * 1.5 );
+	  }
+	#endif
+  }
 
 sDia.fYMin = max(0.0, alt-2300);
 sDia.fYMax = max(fMaxAltToday, alt+1000);
@@ -2991,6 +3029,7 @@ if(bValid)
   }
   SelectObject(hdc, hfOld);
 
+#ifdef SHOW_YELLO_RED_WARNING
   if (bValid)
   {
     if (near_airspace.WarningLevel() != awNone )
@@ -3013,7 +3052,7 @@ if(bValid)
       ExtTextOut(hdc,  TxYPt.x , NIBLSCALE(25), ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     }
   }
-
+#endif
   double xtick = 1.0;
   if (range>0.01*1000.0) xtick = 0.01;
   if (range>0.1*1000.0) xtick = 0.1;
