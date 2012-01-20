@@ -2598,18 +2598,23 @@ static int OnTimerNotify(WindowControl *Sender)
 
 #ifdef SONAR_TEST2
 	static long lSonarCnt = 0;
-
 	lSonarCnt++;
-
 	if(lSonarBingDelay > 0)
 	  if(lSonarCnt >lSonarBingDelay )
 	  {
 		if(asp_heading_task== 2)
-		  {
-			  LKSound(TEXT("LK_SONAR.WAV"));
-		  lSonarCnt =1;
+		{
+#define RESOURCE_SOUND
+#ifdef RESOURCE_SOUND
+		  if (EnableSoundModes)
+			PlayResource(TEXT("IDR_WAV_SONAR"));
+#else
+		  if (EnableSoundModes)
+		    LKSound(TEXT("LK_SONAR.WAV"));
+#endif
 
-		  }
+		  lSonarCnt =1;
+		}
 	  }
 #endif
 
@@ -2931,11 +2936,11 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   lSonarBingDelay= 0;
   if(bValid)
   {
-    if((iAS_sHorDistance) < 900)                               /* horizontal near or inside */
+    if((iAS_sHorDistance) < 100)                               /* horizontal near or inside */
       if(abs(iAS_VertDistance) < 400)
     	lSonarBingDelay = abs(iAS_VertDistance)/40+1;
 
-    if(near_airspace.IsAltitudeInside(alt,calc_altitudeagl,0))  /* vertical inside ........ */
+    if(near_airspace.IsAltitudeInside((int)alt,(int)calc_altitudeagl,0))  /* vertical inside ........ */
     {
       if((iAS_sHorDistance) < 2500)
         lSonarBingDelay = abs(iAS_sHorDistance)/150+1;
@@ -2943,20 +2948,20 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
          lSonarBingDelay = 1;
     }
 
-    if(near_airspace.IsAltitudeInside(alt,calc_altitudeagl,0))  /* complete inside ........ */
-	  if( iAS_sHorDistance)
+    if(near_airspace.IsAltitudeInside((int)alt,(int)calc_altitudeagl,0))  /* complete inside ........ */
+	  if( iAS_sHorDistance < 0)
 		lSonarBingDelay = -1;
   }
 
 
-  sDia.fXMin = -2500.0;
-  sDia.fXMax =  2500.0;
+  sDia.fXMin = -15000.0;
+  sDia.fXMax =  15000.0;
   /* even when invalid the horizontal distance is calculated correctly */
-  sDia.fXMin = min(-2500.0 , iABS_AS_HorDistance * 1.5 );
-  sDia.fXMax = max( 2500.0 , iABS_AS_HorDistance * 1.5 );
 
   if(bValid)
   {
+	sDia.fXMin = min(-2500.0 , iABS_AS_HorDistance * 1.5 );
+	sDia.fXMax = max( 2500.0 , iABS_AS_HorDistance * 1.5 );
 
 	#ifdef NEAR_AS_ZOOM_1000M
 	if(((iABS_AS_HorDistance) < 900) && (bValid)) // 1km zoom
@@ -2976,11 +2981,17 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
 	#endif
   }
 
+
 sDia.fYMin = max(0.0, alt-2300);
 sDia.fYMax = max(fMaxAltToday, alt+1000);
+
 if(bValid)
 {
-  sDia.fYMax = max(1.2f*(alt+abs(iAS_VertDistance)), (double)sDia.fYMax);
+  double fTop    = near_airspace.Top()->Altitude;
+  double fBottom = near_airspace.Base()->Altitude;
+  sDia.fYMin = min(fBottom, sDia.fYMin );
+  sDia.fYMax = max(fTop, sDia.fYMax );
+
   if(abs(iAS_VertDistance) < 250)
   {
 
@@ -2997,6 +3008,7 @@ if(bValid)
     if(sDia.fYMin-200 < 0)
       sDia.fYMin = 0;
   }
+  sDia.fYMin = max((double)0.0f,(double) sDia.fYMin);
 }
 
 
