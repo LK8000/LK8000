@@ -1,4 +1,4 @@
-﻿# LK8000 POL_HELP.TXT 110406
+﻿# LK8000 POL_HELP.TXT 120119
 #
 # Pojedyncza linia tekstu może mieć maksymalną długość 500 znaków.
 # Cały tekst pomocy może mieć maksymalnie 1024 znaki
@@ -20,8 +20,7 @@ Pliki map znajdują się w podkatalogu _Maps.
 
 @102
 Nazwa pliku zawierającego cyfrowe dane elewacji TERENU.
-Normalnie te pliki mają rozszerzenie DEM, ale pliki DAT i JP2 są także akceptowane.
-Plik terenu może być także zawarty wewnątrz pliku LKM z mapą. W takim przypadku dane terenu wybrane w tym oknie nadpiszą te z pliku LKM.
+Normalnie te pliki mają rozszerzenie DEM.
 Pliki terenu znajdują się w podkatalogu _Maps.
 
 @103
@@ -1475,11 +1474,11 @@ Odległość do wybranego lądowiska alternatywnego.
 @922
 [Max Altitude Reached]
 Maksymalna wysokość osiągnięta podczas aktualnego lotu.
-Jest ona resetowana w czasie startu i podczas restartu zadania.
+Jest ona resetowana w czasie startu ziemnego.
 
 @923
 [Max Height Gained]
-Ta wysokość jest wyznaczana przy użyciu minimalnej i maksymalnej wysokości wykrytej po rozpoczęciu lotu swobodnego.
+Ta wysokość jest wyznaczana przy użyciu minimalnej wysokości wykrytej po rozpoczęciu lotu swobodnego.
 Ta wartość jest normalnie używana do odznak szybowcowych.
 
 @924

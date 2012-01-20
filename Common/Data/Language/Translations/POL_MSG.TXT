@@ -1,5 +1,5 @@
 ﻿# LK8000 POLISH MESSAGES - POL_MSG.TXT
-# MASTER UPDATED:  110505
+# MASTER UPDATED:  120119
 #
 # Ten plik jest załadowany w czasie startu i wszystkie wiadomości są przechowywane w pamięci urządzenia.
 # Jeśli tłumaczysz ten plik to postaraj się przestrzegać długości wiadomości.
@@ -396,7 +396,7 @@ _@M371_ "Okres uśr. doskonał. "
 _@M372_ "OTWARTO OSTATNIE OKNO CZASOWE"
 _@M373_ "Ciemnozielony LCD"
 _@M374_ "Zielony LCD"
-_@M375_ "Profile LK8000"
+_@M375_ "Profile System."
 _@M376_ "Ruch LK8000"
 _@M377_ "Niziny LKoogle"
 _@M378_ "Góry LKoogle"
@@ -407,7 +407,7 @@ _@M382_ "Tylko lądowiska"
 _@M383_ "Styl lądowisk "
 _@M384_ "Wartość lądowisk "
 _@M385_ "Lądowiska"
-_@M386_ "Czas lądowania"
+_@M386_ "Godz. lądowania"
 _@M387_ "Język "
 _@M388_ "Lewy "
 # 389 UNUSED after v2.3
@@ -709,7 +709,7 @@ _@M676_ "ZADANIE ZRESTARTOWANE"
 _@M677_ "TAK"
 _@M678_ "ZAKRĘT"
 _@M679_ "Zakładka"
-_@M680_ "Start ziemny"
+_@M680_ "Godz. startu z."
 _@M681_ "Prędkość"
 _@M682_ "Target circling"
 _@M683_ "Cel zablokowany"
@@ -1336,7 +1336,7 @@ _@M1286_ "ArSpcV"
 # airspace analysis dialog page
 _@M1287_ "Kierunek"
 _@M1288_ "Następny PZ"
-_@M1289_ "Następny PZ"
+_@M1289_ "Nast. PZ"
 _@M1290_ "Aktualny kierunek"
 _@M1291_ "Strefa"
 _@M1292_ "Najbliższa strefa"
@@ -1697,7 +1697,7 @@ _@M1725_ "BARDZO NAM PRZYKRO"
 _@M1726_ "TWOJA POZYCJA JEST NIEZNANA!"
 # 1727-1739 reserved for The Oracle
 _@M1740_ "Analiza OLC"
-_@M1741_ "**PRZYWRÓĆ DOMYŚLNY PROFIL**"
+_@M1741_ "**USTAWIENIA FABRYCZNE**"
 # free space , to be used 1744-1760
 _@M1742_ "AGL:"
 _@M1743_ "ELV:"
@@ -1714,6 +1714,12 @@ _@M1750_ "Pusty"
 _@M1751_ "POTWIERDŹ WYCZYSZCZENIE KSIĘGI LOTÓW?"
 _@M1752_ "WYCZYŚĆ KSIĘGĘ LOTÓW"
 _@M1753_ "Lista lotów"
+_@M1754_ "Rozpoczęcie lotu swobodnego"
+_@M1755_ "Holowanie"
+_@M1756_ "PILOT"
+_@M1757_ "RESET PROFILI LK8000"
+_@M1758_ "TA OPERACJA ZRESETUJE WSZYSTKIE PROFILE DO USTAWIEŃ DOMYŚLNYCH"
+_@M1759_ "WYBRANE W SYSTEMIE"
 
 #
 # These are new infoboxes:
@@ -1785,7 +1791,7 @@ _@M2042_ "Ustaw.\nPodst."
 _@M2043_ "Ustaw\nWiatr"
 _@M2044_ "Akt. Map."
 _@M2045_ "Wysok."
-_@M2046_ "Ustaw.\nSystem."
+_@M2046_ "USTAW.\nSystem."
 _@M2047_ "Usuń\nMiejsca"
 _@M2048_ "Loger"
 _@M2049_ "Odtwórz\nLog"
@@ -1860,8 +1866,9 @@ _@M2116_ "Zmień\nTeren"
 # Auto MC thermal+final glide mode, keep max 7 chars!
 _@M2117_ "Kom+Dol"
 _@M2118_ "Księga lotów"
-_@M2119_ "Detale\nKsięgi"
+_@M2119_ "Księga\nDetale"
 _@M2120_ "Wyczyść\nKsięgę"
-_@M2121_ "Lista\nKsiąg"
+_@M2121_ "Księga\nLista"
+_@M2122_ "ZAPISZ\nSystem."
 
 # Note for developers: remember LKLanguage MAX_MESSAGE limit
