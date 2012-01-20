@@ -668,11 +668,11 @@ bool InputEvents::processKey(int dWord) {
 	  // until the fastzoomStart time in RenderMapWindow has passed.
 	  // For PC this is not needed, because it is fast enough to redraw everything.
 	  // However in TESTBENCH mode we keep the standard PNA/PPC behaviour
-	  MapWindow::zoom.BigZoom(true);
+	  // MapWindow::zoom.BigZoom(true);
 	  #endif
 	#else
 	if (!Debounce(100)) return true;
-	MapWindow::zoom.BigZoom(true);
+	// MapWindow::zoom.BigZoom(true);
 	#endif
 	//
 	// Sound clicks would delay too much fast zoom: we only play them once
