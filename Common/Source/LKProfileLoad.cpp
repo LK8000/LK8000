@@ -402,18 +402,29 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryIphoneGestures,&IphoneGestures);
   PREAD(sname,svalue,szRegistryLKMaxLabels,&LKMaxLabels);
   PREAD(sname,svalue,szRegistryLKTopoZoomCat05,&LKTopoZoomCat05);
+  if (matchedstring) {; LKTopoZoomCat05/=1000; return;}
   PREAD(sname,svalue,szRegistryLKTopoZoomCat100,&LKTopoZoomCat100);
+  if (matchedstring) {; LKTopoZoomCat100/=1000; return;}
   PREAD(sname,svalue,szRegistryLKTopoZoomCat10,&LKTopoZoomCat10);
+  if (matchedstring) {; LKTopoZoomCat10/=1000; return;}
   PREAD(sname,svalue,szRegistryLKTopoZoomCat110,&LKTopoZoomCat110);
+  if (matchedstring) {; LKTopoZoomCat110/=1000; return;}
   PREAD(sname,svalue,szRegistryLKTopoZoomCat20,&LKTopoZoomCat20);
+  if (matchedstring) {; LKTopoZoomCat20/=1000; return;}
   PREAD(sname,svalue,szRegistryLKTopoZoomCat30,&LKTopoZoomCat30);
+  if (matchedstring) {; LKTopoZoomCat30/=1000; return;}
   PREAD(sname,svalue,szRegistryLKTopoZoomCat40,&LKTopoZoomCat40);
-  if (matchedstring) return;
+  if (matchedstring) {; LKTopoZoomCat40/=1000; return;}
   PREAD(sname,svalue,szRegistryLKTopoZoomCat50,&LKTopoZoomCat50);
+  if (matchedstring) {; LKTopoZoomCat50/=1000; return;}
   PREAD(sname,svalue,szRegistryLKTopoZoomCat60,&LKTopoZoomCat60);
+  if (matchedstring) {; LKTopoZoomCat60/=1000; return;}
   PREAD(sname,svalue,szRegistryLKTopoZoomCat70,&LKTopoZoomCat70);
+  if (matchedstring) {; LKTopoZoomCat70/=1000; return;}
   PREAD(sname,svalue,szRegistryLKTopoZoomCat80,&LKTopoZoomCat80);
+  if (matchedstring) {; LKTopoZoomCat80/=1000; return;}
   PREAD(sname,svalue,szRegistryLKTopoZoomCat90,&LKTopoZoomCat90);
+  if (matchedstring) {; LKTopoZoomCat90/=1000; return;}
   PREAD(sname,svalue,szRegistryLKVarioBar,&LKVarioBar);
   PREAD(sname,svalue,szRegistryLKVarioVal,&LKVarioVal);
   PREAD(sname,svalue,szRegistryLanguageFile,&*szLanguageFile);
@@ -480,6 +491,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
 		#endif
 		SAFTEYSPEED=50.0;
 	}
+	return;
   }
 
   PREAD(sname,svalue,szRegistrySectorRadius,&SectorRadius);
