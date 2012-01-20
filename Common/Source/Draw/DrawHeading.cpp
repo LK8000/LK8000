@@ -17,7 +17,7 @@ void MapWindow::DrawHeading(HDC hdc, POINT Orig, RECT rc ) {
 
    if (GPS_INFO.NAVWarning) return; // 100214
 
-   if (zoom.Scale()>5 || mode.Is(MapWindow::Mode::MODE_CIRCLING)) return;
+   if (zoom.RealScale()>5 || mode.Is(MapWindow::Mode::MODE_CIRCLING)) return;
    POINT p2;
 
    double tmp = 12000*zoom.ResScaleOverDistanceModify();
