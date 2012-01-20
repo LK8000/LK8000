@@ -2,6 +2,8 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3u  January 20,  2012
+-------------------------------
 
 NEW
 
@@ -9,11 +11,18 @@ NEW
 
 . Nearest airspace Sideview rescaled dynamically while approaching an airspace
 
+.  Reset topology zoom levels in configuration to defaults.
+   This is needed because old values in previous profiles were saved as km, not as meters.
+   Changing the name of variable for profile does the job. Old variables are not read, and new variables will be saved.
+
 
 
 CHANGES
 
-  Nearest airspace Sideview fixes
+. Faster zoom in/out with full topology and airspace rendering.
+
+
+.  Nearest airspace Sideview fixes
 
    Deactivate ballast buttons in basic config when polar has no ballast
 
@@ -46,6 +55,8 @@ CHANGES
       adjusted colors
 
 
+. Topology configuration setting steps lowered from 0.5 to 0.1.
+  This is needed to grant compatibility while changing distance units.
 
 
 
@@ -73,6 +84,40 @@ FIXES
 
 .  fix PG Optimized Wp with Exit Start
 .  Use Optimized Wp for NextETE if PGOtimize=ON
+
+.  Fix Topology thresholds
+    There was a big problem derived from Kalman's 407af5370979b3aaeaa2d8e01240ffb126988e3b commit.
+    Many part of the software rely on absolute mapscale values for deciding what to print and how.
+    For example, topology items. The problem was that if we decide to print small towns at 5km mapzoom,
+    with the new system we shall be printing small towns at.. 5nm mapzoom as well. This is resulting
+    in totally messy map if using any distance unit other than metrics.
+
+.  Fix wrong thresholds for moving map painting when using non-metric distances (nautical or statue miles):
+     - max zoom level for shading terrain 
+     - max zoom level for colored snail trail
+     - max zoom level for drawing thermal circles
+     - 
+
+.  Fix RealScale for Activemap nearestwaypoint: on non-metric distance units selected, it was hard to select a waypoint
+   on the moving map clicking on it, not enough tolerance!
+
+.  Fix RealScale for Heading (track) line, appearing wrongly also at low zoom levels when non-metric distance units selected.
+   The heading track line, if activated, should only appear within a reasonable zoom level.
+
+.  Fix RealScale for WaypointInRange: for non metric distance units, more waypoints than necessary were processed for calculations.
+
+.  Fix RealScale for Waypoint printing on the map.
+   For non-metric distance units, waypoints were not correctly printed depending on map scale.
+
+.  Fix problem with non-metric distance unit, setting configurable topology thresholds incorrectly.
+    This was resulting in quite wrong rendering of topology!! Selecting for example 5 for small cities,
+    would show small cities up to 5km in the original intentions, but really it was also showing them
+    up to 5nm , if nautical miles were in use.
+    Now the topology configuration must show corrected scaled values for topology, and convert them
+    between different distance units.
+
+.  Fix problem in topology settings, also in 2.2, not saving decimal values .
+
 
 
 
