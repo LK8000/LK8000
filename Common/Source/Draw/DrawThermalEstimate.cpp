@@ -54,7 +54,7 @@ void MapWindow::DrawThermalEstimate(HDC hdc, const RECT rc) {
 		SelectObject(hdc,oldPen);
 	}
   } else {
-	if (zoom.Scale() <= 4) {
+	if (zoom.RealScale() <= 4) {
 		for (int i=0; i<MAX_THERMAL_SOURCES; i++) {
 			if (DerivedDrawInfo.ThermalSources[i].Visible) {
 				DrawBitmapIn(hdc, DerivedDrawInfo.ThermalSources[i].Screen, hBmpThermalSource);
@@ -81,7 +81,7 @@ void MapWindow::DrawThermalEstimateMultitarget(HDC hdc, const RECT rc) {
     return; 
 
   // draw only when visible , at high zoom level
-  if ( MapWindow::zoom.Scale() >1 ) return;
+  if ( MapWindow::zoom.RealScale() >1 ) return;
 
   idx=GetThermalMultitarget();
   // no L> target destination
