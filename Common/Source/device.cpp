@@ -510,7 +510,7 @@ BOOL devLinkTimeout(PDeviceDescriptor_t d)
   }
   UnlockComm();
 
-  return FALSE;
+  return result;
 }
 
 
@@ -651,7 +651,7 @@ BOOL devPutQNH(DeviceDescriptor_t *d, double NewQNH)
   }
   UnlockComm();
 
-  return FALSE;
+  return result;
 }
 
 BOOL devOnSysTicker(DeviceDescriptor_t *d)

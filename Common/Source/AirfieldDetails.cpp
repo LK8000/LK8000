@@ -81,7 +81,7 @@ void LookupAirfieldDetail(TCHAR *Name, TCHAR *Details) {
   TCHAR NameD[100];
   TCHAR TmpName[100];
 
-  bool isHome, isPreferred, isAvoid;
+  bool isHome, isPreferred;
 
   if (!WayPointList) return;
 
@@ -99,7 +99,6 @@ void LookupAirfieldDetail(TCHAR *Name, TCHAR *Details) {
 
 	isHome=false;
 	isPreferred=false;
-	isAvoid=false;
 
 	_stprintf(TmpName,TEXT("%s=HOME"),UName);
 	if ( (_tcscmp(Name, TmpName)==0) )  isHome=true;

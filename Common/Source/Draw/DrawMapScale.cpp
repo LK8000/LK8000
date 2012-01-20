@@ -24,7 +24,6 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     COLORREF origcolor = SetTextColor(hDC, OverColorRef);
 
     HPEN hpOld;
-    TextInBoxMode_t TextDisplayMode; 
     hpOld = (HPEN)SelectObject(hDC, hpMapScale2);
 
 
@@ -138,13 +137,6 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     Units::FormatUserMapScale(NULL, mapScale, Scale, sizeof(Scale)/sizeof(Scale[0]));
 
     SIZE tsize;
-
-    TextDisplayMode.AsInt = 0;
-    TextDisplayMode.AsFlag.Color = TEXTWHITE;
-    TextDisplayMode.AsFlag.WhiteBold = 1;
-    TextDisplayMode.AsFlag.NoSetFont = 0;
-    TextDisplayMode.AsFlag.AlligneRight = 0;
-    TextDisplayMode.AsFlag.AlligneCenter = 0;
 
     GetTextExtentPoint(hDC, Scale, _tcslen(Scale), &tsize);
     LKWriteText(hDC, Scale, rc.right-NIBLSCALE(11)-tsize.cx, End.y+NIBLSCALE(3), 0, WTMODE_OUTLINED, WTALIGN_LEFT, OverColorRef, true); 

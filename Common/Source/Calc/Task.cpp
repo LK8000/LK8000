@@ -1715,7 +1715,7 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 				if(dBrg > PI) 
 					dBrg = fabs((stdbrg-errbrg+360) * DEG_TO_RAD);
 
-				if(radius > stddst || dBrg < PI/2 && sin(dBrg) < radius/stddst) {
+				if(radius > stddst || (dBrg < PI/2 && sin(dBrg) < radius/stddst)) {
 					if( (dBrg < PI/2) && (radius < stddst) && (PGStartOut || curwp>0)) {
 						dBrg = - dBrg + asin((stddst * sin(dBrg)) / radius);
 					}
@@ -1741,7 +1741,7 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			if(dBrg > PI) 
 				dBrg = fabs((stdbrg-errbrg+360) * DEG_TO_RAD);
 			if( (dBrg > (PI/360)) && (sin(dBrg) < radius/stddst)) {
-				if( (dBrg < PI/2) || (dBrg > 2*PI) && (radius < stddst)) {
+                          if( (dBrg < PI/2) || ((dBrg > 2*PI) && (radius < stddst))) {
 					dBrg = - dBrg + asin((stddst * sin(dBrg)) / radius);
 				}
 				else{

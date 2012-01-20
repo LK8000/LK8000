@@ -203,14 +203,6 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   else
 	_DrawLine(hDC, PS_SOLID, NIBLSCALE(4), a1, a2, RGB_BLACK,rc);
 
-  TextInBoxMode_t Mode;
-  Mode.AsInt=0;
-  Mode.AsFlag.Color = TEXTBLUE;
-  Mode.AsFlag.NoSetFont = 1;
-  Mode.AsFlag.WhiteBold = 0;
-  Mode.AsFlag.AlligneRight = 0;
-  Mode.AsFlag.AlligneCenter = 1;
-
   SelectObject(hDC, LK8TitleFont);
   int bankindy=Start.y+radius/2;
 #ifndef __MINGW32__

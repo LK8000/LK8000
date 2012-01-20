@@ -117,9 +117,15 @@ md5_finish_ctx (struct md5_ctx *ctx, void *resbuf)
   memcpy (&ctx->buffer[bytes], fillbuf, pad);
 
   /* Put the 64-bit file length in *bits* at the end of the buffer.  */
-  *(md5_uint32 *) &ctx->buffer[bytes + pad] = SWAP (ctx->total[0] << 3);
-  *(md5_uint32 *) &ctx->buffer[bytes + pad + 4] = SWAP ((ctx->total[1] << 3) |
-							(ctx->total[0] >> 29));
+  // *(md5_uint32 *) &ctx->buffer[bytes + pad] = SWAP (ctx->total[0] << 3);
+  // *(md5_uint32 *) &ctx->buffer[bytes + pad + 4] = SWAP ((ctx->total[1] << 3) |
+  //       						(ctx->total[0] >> 29));
+  // dereferencing of type-punned pointers above fixed
+  md5_uint32 temp = SWAP (ctx->total[0] << 3);
+  memmove(&ctx->buffer[bytes + pad], &temp, sizeof(temp));
+  temp = SWAP ((ctx->total[1] << 3) | (ctx->total[0] >> 29));
+  memmove(&ctx->buffer[bytes + pad + 4], &temp, sizeof(temp));
+  
 
   /* Process last bytes.  */
   md5_process_block (ctx->buffer, bytes + pad + 8, ctx);
