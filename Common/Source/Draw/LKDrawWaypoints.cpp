@@ -27,9 +27,9 @@ int MapWaypointLabelListCount=0;
 
 
 bool MapWindow::WaypointInRange(int i) {
-  return ((WayPointList[i].Zoom >= zoom.Scale()*10)
+  return ((WayPointList[i].Zoom >= zoom.RealScale()*10)
           || (WayPointList[i].Zoom == 0))
-    && (zoom.Scale() <= 10);
+    && (zoom.RealScale() <= 10);
 }
 
 
