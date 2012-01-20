@@ -483,7 +483,7 @@ void WaypointAltitudeFromTerrain(WAYPOINT* Temp) {
 int ParseWayPointString(TCHAR *String,WAYPOINT *Temp)
 {
   TCHAR ctemp[(COMMENT_SIZE*2)+1]; // 101102 BUGFIX, we let +1 for safety
-  TCHAR *Zoom;
+  TCHAR *Number;
   TCHAR *pWClast = NULL;
   TCHAR *pToken;
   TCHAR TempString[READLINE_LENGTH];
@@ -501,7 +501,7 @@ int ParseWayPointString(TCHAR *String,WAYPOINT *Temp)
   // ExtractParameter(TempString,ctemp,0);
   if ((pToken = strtok_r(TempString, TEXT(","), &pWClast)) == NULL)
     return FALSE;
-  Temp->Number = _tcstol(pToken, &Zoom, 10);
+  Temp->Number = _tcstol(pToken, &Number, 10);
         
   //ExtractParameter(TempString,ctemp,1); //Latitude
   if ((pToken = strtok_r(NULL, TEXT(","), &pWClast)) == NULL)
@@ -560,15 +560,6 @@ int ParseWayPointString(TCHAR *String,WAYPOINT *Temp)
     _tcsncpy(ctemp, pToken, COMMENT_SIZE); //@ 101102 BUGFIX bad. ctemp was not sized correctly!
     ctemp[COMMENT_SIZE] = '\0';
 
-    Temp->Zoom = 0;
-    Zoom = _tcschr(ctemp,'*'); // if it is a home waypoint raise zoom level .. VENTA
-    if(Zoom)
-      {
-        *Zoom = '\0';
-        Zoom +=2;
-        Temp->Zoom = _tcstol(Zoom, &Zoom, 10);
-      }
-
     // sgi, move "panic-stripping" of the comment-field after we extract
     // the zoom factor
     ctemp[COMMENT_SIZE] = '\0';
@@ -583,7 +574,6 @@ int ParseWayPointString(TCHAR *String,WAYPOINT *Temp)
 
   } else {
     Temp->Comment = NULL; // useless
-    Temp->Zoom = 0;
   }
 
   if(Temp->Altitude <= 0) {
@@ -1178,7 +1168,7 @@ int FindNearestWayPoint(double X, double Y, double MaxRange,
 }
 
 
-  // Number,Latitude,Longitude,Altitude,Flags,Name,Comment(,Zoom))
+  // Number,Latitude,Longitude,Altitude,Flags,Name,Comment
   // Number starts at 1
   // Lat/long expressed as D:M:S[N/S/E/W]
   // Altitude as XXXM
@@ -1684,7 +1674,6 @@ void AddReservedWaypoints()
 		WayPointList[RESWP_TAKEOFF].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
 	}
 	_tcscpy(WayPointList[RESWP_TAKEOFF].Comment,_T("WAITING FOR GPS POSITION")); // 100227
-	WayPointList[RESWP_TAKEOFF].Zoom=0;
 	WayPointList[RESWP_TAKEOFF].Reachable=FALSE;
 	WayPointList[RESWP_TAKEOFF].AltArivalAGL=0.0;
 	WayPointList[RESWP_TAKEOFF].Visible=FALSE;
@@ -1704,7 +1693,6 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_LASTTHERMAL].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
 	// LKTOKEN _@M1320_ "LAST GOOD THERMAL"
 	_tcscpy(WayPointList[RESWP_LASTTHERMAL].Comment, gettext(TEXT("_@M1320_")));		
-	WayPointList[RESWP_LASTTHERMAL].Zoom=0;
 	WayPointList[RESWP_LASTTHERMAL].Reachable=FALSE;
 	WayPointList[RESWP_LASTTHERMAL].AltArivalAGL=0.0;
 	WayPointList[RESWP_LASTTHERMAL].Visible=TRUE; // careful! 100929
@@ -1728,7 +1716,6 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_TEAMMATE].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
 	// LKTOKEN _@M1321_ "TEAM MATE"
 	_tcscpy(WayPointList[RESWP_TEAMMATE].Comment, gettext(TEXT("_@M1321_")));
-	WayPointList[RESWP_TEAMMATE].Zoom=0;
 	WayPointList[RESWP_TEAMMATE].Reachable=FALSE;
 	WayPointList[RESWP_TEAMMATE].AltArivalAGL=0.0;
 	WayPointList[RESWP_TEAMMATE].Visible=FALSE;
@@ -1752,7 +1739,6 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_FLARMTARGET].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
 	// LKTOKEN _@M1322_ "FLARM TARGET"
 	_tcscpy(WayPointList[RESWP_FLARMTARGET].Comment, gettext(TEXT("_@M1322_")));
-	WayPointList[RESWP_FLARMTARGET].Zoom=0;
 	WayPointList[RESWP_FLARMTARGET].Reachable=FALSE;
 	WayPointList[RESWP_FLARMTARGET].AltArivalAGL=0.0;
 	WayPointList[RESWP_FLARMTARGET].Visible=FALSE;
@@ -1775,7 +1761,6 @@ void AddReservedWaypoints()
 	// name will be assigned by function dynamically
 	_tcscpy(WayPointList[RESWP_OPTIMIZED].Name, _T("OPTIMIZED") );
 	WayPointList[RESWP_OPTIMIZED].Comment = (TCHAR*)NULL;
-	WayPointList[RESWP_OPTIMIZED].Zoom=0;
 	WayPointList[RESWP_OPTIMIZED].Reachable=FALSE;
 	WayPointList[RESWP_OPTIMIZED].AltArivalAGL=0.0;
 	WayPointList[RESWP_OPTIMIZED].Visible=FALSE;
@@ -1799,7 +1784,6 @@ void AddReservedWaypoints()
 	_tcscpy(WayPointList[i].Name, _T("LKMARKER"));
 	WayPointList[i].Comment = (TCHAR*)malloc(100*sizeof(TCHAR));
 	_tcscpy(WayPointList[i].Comment, _T(""));
-	WayPointList[i].Zoom=0;
 	WayPointList[i].Reachable=FALSE;
 	WayPointList[i].AltArivalAGL=0.0;
 	WayPointList[i].Visible=FALSE;
@@ -2098,10 +2082,8 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
 	#ifdef CUPDEBUG
 	StartupStore(_T("   CUP COMMENT=<%s>%s"),Temp->Comment,NEWLINE);
 	#endif
-	Temp->Zoom = 0;
   } else {
 	Temp->Comment=NULL; // useless
-	Temp->Zoom = 0;
   }
 
   if(Temp->Altitude <= 0) {
@@ -2490,7 +2472,6 @@ bool ParseOZIWayPointString(TCHAR *String,WAYPOINT *Temp){
 	//	Field 1 : Number - this is the location in the array (max 1000), must be unique, usually start at 1 and increment. Can be set to -1 (minus 1) and the number will be auto generated.
 	if ((pToken = strsep_r(TempString, TEXT(","), &pWClast)) == NULL)
 		return false;
-	//	Temp->Number = _tcstol(pToken, &Zoom, 10);
 
 	//	Field 2 : Name - the waypoint name, use the correct length name to suit the GPS type.
 	if ((pToken = strsep_r(NULL, TEXT(","), &pWClast)) == NULL)

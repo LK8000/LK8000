@@ -27,9 +27,7 @@ int MapWaypointLabelListCount=0;
 
 
 bool MapWindow::WaypointInRange(int i) {
-  return ((WayPointList[i].Zoom >= zoom.RealScale()*10)
-          || (WayPointList[i].Zoom == 0))
-    && (zoom.RealScale() <= 10);
+  return (zoom.RealScale() <= 10);
 }
 
 
@@ -171,7 +169,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 
 	islandable=WayPointCalc[i].IsLandable;
 
- 	    // always in range if MapScale <=10  since no zoom in waypoints is documented and .Zoom is always 0. 
+ 	    // always in range if MapScale <=10 
 	    irange = WaypointInRange(i); 
 
 	    if(MapWindow::zoom.Scale() > 20) { 

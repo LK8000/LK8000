@@ -73,7 +73,7 @@ typedef struct _WAYPOINT_INFO
   TCHAR Name[NAME_SIZE + 1];
   TCHAR *Comment;
   POINT	Screen;
-  int Zoom;
+  int UnusedZoom;	// THIS IS UNUSED AND CAN BE REALLOCATED. WE DONT REMOVE TO KEEP COMPATIBILITY WITH OLD TASKS!
   BOOL Reachable;
   double AltArivalAGL;
   BOOL Visible;
