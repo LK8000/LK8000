@@ -1341,8 +1341,10 @@ _@M1288_ "Showing towards next waypoint"
 _@M1289_ "Next WP"
 _@M1290_ "Showing towards heading"
 _@M1291_ "Near AS"
-_@M1292_ "nearest airspace"
-_@M1293_ "INSIDE"
+_@M1292_ "Nearest airspace"
+_@M1293_ "Sonar ON"
+_@M1294_ "Sonar OFF"
+_@M1295_ "Sideview"
 
 # LK info page headers, try to use the same or less number of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!

@@ -19,8 +19,7 @@
 
 
 //#define SHOW_YELLO_RED_WARNING
-//#define SONAR_TEST
-//#define SONAR_TEST2
+#define SONAR_TEST
 #define NEAR_AS_ZOOM_1000FT
 #define NEAR_AS_ZOOM_1000M
 
@@ -45,7 +44,7 @@ bool   Statistics::unscaled_y;
 static HPEN penThinSignal = NULL;
 static int asp_heading_task = 0;
 bool bInvertColors =false;
-
+bool bSonarOn = true;
 COLORREF RGB_TEXT_COLOR = RGB_WHITE;
 
 #define GC_MAX_NO 50 //(AIRSPACE_SCANSIZE_H*AIRSPACE_SCANSIZE_X)
@@ -56,7 +55,7 @@ COLORREF RGB_TEXT_COLOR = RGB_WHITE;
 
 #define GROUND_COLOUR RGB(157,101,60)
 
-#define GROUND_TEXT_COLOUR RGB_WHITE
+#define GROUND_TEXT_COLOUR RGB_LIGHTGREEN
 #define  INV_GROUND_TEXT_COLOUR  RGB(25, 25, 64)
 #define GC_NO_COLOR_STEPS  50
 //#define SKY_SPACE_COL  RGB(180,180,255)
@@ -714,7 +713,7 @@ void Statistics::RenderBarograph(HDC hdc, const RECT rc)
   ScaleXFromValue(rc, 1.2f*(flightstats.Altitude.x_min+1.0)); // in case no data
   ScaleXFromValue(rc, flightstats.Altitude.x_min); 
 
-#ifndef  PC
+#if  (WINDOWSPC > 0)
   if(bInvertColors)
 	RenderSky( hdc,   rc, SKY_HORIZON_COL , SKY_SPACE_COL, GC_NO_COLOR_STEPS );
 #endif
@@ -1516,7 +1515,7 @@ void Statistics::RenderWind(HDC hdc, const RECT rc)
 void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
 
   double fDist = 50.0*1000; // km
-  double aclat, aclon, acb, speed, calc_average30s;
+  double aclat, aclon, ach, acb, speed, calc_average30s;
 
   double wpt_brg;
   double wpt_dist;
@@ -1553,6 +1552,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
     fMC0 = GlidePolar::SafetyMacCready;
     aclat = GPS_INFO.Latitude;
     aclon = GPS_INFO.Longitude;
+    ach   = GPS_INFO.Altitude;
     acb    = GPS_INFO.TrackBearing;
     GPSbrg = GPS_INFO.TrackBearing;
     speed = GPS_INFO.Speed;
@@ -1971,7 +1971,7 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
 
   RECT  rcgfx;
   HFONT hfOld;
-
+  static int iOldSonar=-1;
   CopyRect(&rcgfx, Sender->GetBoundRect());
   hfOld = (HFONT)SelectObject(hDC,LK8PanelUnitFont/* Sender->GetFont()*/);
 
@@ -2027,6 +2027,17 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
 
   case ANALYSIS_PAGE_AIRSPACE:
     SetCalcCaption(gettext(TEXT("_@M888_"))); // Warnings
+    if(asp_heading_task !=2)
+        SetCalcCaption(gettext(TEXT("_@M885_"))); // Settings
+    else
+//      if(bSonarOn != iOldSonar)
+      {
+    	iOldSonar = bSonarOn;
+    	if(bSonarOn)
+          SetCalcCaption(gettext(TEXT("_@M1294_"))); //  _@M1294_ "Sonar Off"
+    	else
+          SetCalcCaption(gettext(TEXT("_@M1293_"))); //  _@M1293_ "Sonar On"
+      }
     Statistics::RenderAirspace(hDC, rcgfx);
     break;
 
@@ -2044,33 +2055,6 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
   SelectObject(hDC, hfOld);
 
 }
-
-
-#ifdef SONAR_TEST
-static int  iSonarTimerID = 0;
-
-void CALLBACK MyTimerProc(
-    HWND hwnd,        // handle to window for timer messages
-    UINT message,     // WM_TIMER message
-    UINT idTimer,     // timer identifier
-    DWORD dwTime)     // current system time
-{
-  static long lSonarCnt = 0;
-
-  lSonarCnt++;
-
-if(lSonarBingDelay > 0)
-  if(lSonarCnt >lSonarBingDelay )
-  {
-	if(asp_heading_task== 2)
-	  {
-		  LKSound(TEXT("LK_SONAR.WAV"));
-	  lSonarCnt =1;
-
-	  }
-  }
-}
-#endif
 
 
 
@@ -2091,19 +2075,6 @@ static void Update(void){
     }
   }
 
-#ifdef SONAR_TEST
-
-  if(page ==ANALYSIS_PAGE_AIRSPACE)
-  {
-    if(iSonarTimerID == 0)
-    	iSonarTimerID = SetTimer(hWndMainWindow,1005,1000,(TIMERPROC)&MyTimerProc); // 1000ms  10 times per second
-  }
-  else
-  {
-	KillTimer(hWndMainWindow,iSonarTimerID);
-	iSonarTimerID =0;
-  }
-#endif
 
   switch(page){
     case ANALYSIS_PAGE_BAROGRAPH:
@@ -2391,18 +2362,21 @@ static void Update(void){
 	   _stprintf(sTmp, TEXT("%s: %s %s"),
 	  // LKTOKEN  _@M93_ = "Analysis"
 	                gettext(TEXT("_@M93_")),
-	  // LKTOKEN  _@M68_ = "Airspace"
-	                gettext(TEXT("_@M68_")),
 	  //_@M1289_ "Next WP"
-	                gettext(TEXT("_@M1289_"))
+	                gettext(TEXT("_@M1289_")),
+	  // LKTOKEN   _@M1295_ "Sideview"
+	                gettext(TEXT("_@M1295_"))
 	   );
 	break;
 	case 2:
-      _stprintf(sTmp, TEXT("%s: %s"),
+      _stprintf(sTmp, TEXT("%s: %s %s"),
 	  // LKTOKEN  _@M93_ = "Analysis"
               gettext(TEXT("_@M93_")),
 	  // LKTOKEN  _@M1292_ = "Nearest Airspace"
-              gettext(TEXT("_@M1292_")));
+              gettext(TEXT("_@M1292_")),
+              // LKTOKEN   _@M1295_ "Sideview"
+              gettext(TEXT("_@M1295_"))
+              );
     break;
 	default:
 	case 0:
@@ -2411,8 +2385,8 @@ static void Update(void){
               gettext(TEXT("_@M93_")),
               //_@M1287_ "Heading"
               gettext(TEXT("_@M1287_")),
-              // LKTOKEN  _@M68_ = "Airspace"
-              gettext(TEXT("_@M68_"))
+              // LKTOKEN   _@M1295_ "Sideview"
+              gettext(TEXT("_@M1295_"))
               );
      break;
 	}
@@ -2465,6 +2439,13 @@ static void Update(void){
 
 static void NextPage(int Step){
   page += Step;
+
+LockFlightData(); /* skip Temperature page if no OAT available */
+  if(page == ANALYSIS_PAGE_TEMPTRACE)
+    if(GPS_INFO.TemperatureAvailable!=TRUE)
+      page += Step;
+UnlockFlightData();
+
   if (page > MAXPAGE)
     page = 0;
   if (page < 0)
@@ -2475,6 +2456,7 @@ static void NextPage(int Step){
 
 static void OnNextClicked(WindowControl * Sender){
 	(void)Sender;
+
   NextPage(+1);
 }
 
@@ -2568,7 +2550,10 @@ static void OnCalcClicked(WindowControl * Sender,
     }
   }
   if (page==ANALYSIS_PAGE_AIRSPACE) {
-    dlgAirspaceWarningParamsShowModal();
+	  if(asp_heading_task != 2)
+	    dlgAirspaceWarningParamsShowModal();
+	  else
+		bSonarOn = !bSonarOn;
   }
   Update();
 }
@@ -2595,7 +2580,7 @@ static int OnTimerNotify(WindowControl *Sender)
 {
   static short i=0;
 
-#ifdef SONAR_TEST2
+#ifdef SONAR_TEST
 	static long lSonarCnt = 0;
 	lSonarCnt++;
 	if(lSonarBingDelay > 0)
@@ -2819,10 +2804,6 @@ if (entered == true) /* prevent re entrance */
 
   DeleteObject(penThinSignal);
 
-#ifdef SONAR_TEST
-  KillTimer(hWndMainWindow,iSonarTimerID);
-  iSonarTimerID =0;
-#endif
 
   MapWindow::RequestFastRefresh();
   FullScreen();
@@ -2837,7 +2818,7 @@ if (entered == true) /* prevent re entrance */
 void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
 {
   double range = 50.0*1000; // km
-  double GPSlat, GPSlon, GPSbrg;
+  double GPSlat, GPSlon, GPSalt, GPSbrg, GPSspeed, calc_average30s;
   double calc_terrainalt;
   double calc_altitudeagl;
 
@@ -2862,12 +2843,14 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   POINT TxXPt;
   SIZE tsize;
   COLORREF GREEN_COL     = RGB_GREEN;
+  COLORREF RED_COL       = RGB_LIGHTORANGE;
   COLORREF BLUE_COL      = RGB_BLUE;
   COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
 
   if(bInvertColors)
   {
     GREEN_COL     = ChangeBrightness(GREEN_COL     , 0.6);
+    RED_COL       = ChangeBrightness(RGB_RED       , 0.6);;
     BLUE_COL      = ChangeBrightness(BLUE_COL      , 0.6);;
     LIGHTBLUE_COL = ChangeBrightness(LIGHTBLUE_COL , 0.4);;
   }
@@ -2875,10 +2858,13 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   {
     GPSlat = GPS_INFO.Latitude;
     GPSlon = GPS_INFO.Longitude;
+    GPSalt = GPS_INFO.Altitude;
     GPSbrg = GPS_INFO.TrackBearing;
+    GPSspeed = GPS_INFO.Speed;
 
     calc_terrainalt  = CALCULATED_INFO.TerrainAlt;
     calc_altitudeagl = CALCULATED_INFO.AltitudeAGL;
+    calc_average30s = CALCULATED_INFO.Average30s;
 
     if (GPS_INFO.BaroAltitudeAvailable && EnableNavBaroAltitude) {
       alt = GPS_INFO.BaroAltitude;
@@ -2897,6 +2883,8 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(found);
 
   bValid = near_airspace.GetDistanceInfo(bAS_Inside, iAS_sHorDistance, iAS_Bearing, iAS_VertDistance);
+//if(bValid)
+//  near_airspace.CalculateDistance(&iAS_sHorDistance,&iAS_VertDistance, &iAS_Bearing);
  // if(bLeft)
  // fAS_HorDistance = fabs(fAS_HorDistance);
    iABS_AS_HorDistance = abs( iAS_sHorDistance);
@@ -2932,12 +2920,12 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   {
     if((iAS_sHorDistance) < 100)                               /* horizontal near or inside */
       if(abs(iAS_VertDistance) < 400)
-    	lSonarBingDelay = abs(iAS_VertDistance)/40+1;
+    	lSonarBingDelay = abs(iAS_VertDistance)/40+2;
 
     if(near_airspace.IsAltitudeInside((int)alt,(int)calc_altitudeagl,0))  /* vertical inside ........ */
     {
       if((iAS_sHorDistance) < 2500)
-        lSonarBingDelay = abs(iAS_sHorDistance)/150+1;
+        lSonarBingDelay = abs(iAS_sHorDistance)/150+22;
       if(iAS_sHorDistance < 0)
          lSonarBingDelay = 1;
     }
@@ -2945,6 +2933,9 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
     if(near_airspace.IsAltitudeInside((int)alt,(int)calc_altitudeagl,0))  /* complete inside ........ */
 	  if( iAS_sHorDistance < 0)
 		lSonarBingDelay = -1;
+
+    if(!bSonarOn)  /* disable Sonar */
+	  lSonarBingDelay = -1;
   }
 
 
@@ -2981,10 +2972,10 @@ sDia.fYMax = max(fMaxAltToday, alt+1000);
 
 if(bValid)
 {
-  double fTop    = near_airspace.Top()->Altitude;
+ // double fTop    = near_airspace.Top()->Altitude;
   double fBottom = near_airspace.Base()->Altitude;
   sDia.fYMin = min(fBottom, sDia.fYMin );
-  sDia.fYMax = max(fTop, sDia.fYMax );
+  sDia.fYMax = max((fBottom*1.2f), sDia.fYMax );
 
   if(abs(iAS_VertDistance) < 250)
   {
@@ -3225,14 +3216,14 @@ if(bValid)
 void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon,  double brg,  DiagrammStruct* psDiag )
 {
   double range =psDiag->fXMax - psDiag->fXMin; // km
-  double fj;
+  double fi, fj;
   double hmin = psDiag->fYMin;
   double hmax = psDiag->fYMax;
   double lat, lon;
   RECT rcd;
   int i,j,k;
 
-#ifndef PC
+#if (WINDOWSPC>0)
   if(bInvertColors)
     RenderSky( hdc, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
 #endif
@@ -3321,6 +3312,7 @@ void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon, 
   iNohandeldSpaces=0;
   for (i=0; i< AIRSPACE_SCANSIZE_H; i++)
   { // scan height
+    fi = i*dfi;
     for (j=0; j< AIRSPACE_SCANSIZE_X; j++)
     { // scan range
       fj = j*dfj;
@@ -3418,6 +3410,8 @@ void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon, 
   SelectObject(hdc, hbHorizonGround);
 
   int  iBottom = rc.bottom;
+  if(psDiag->fYMin < 0.1)
+	Rectangle(hdc,rc.left,rc.bottom,rc.right,rc.bottom-BORDER_Y);
 
   for (j=1; j< AIRSPACE_SCANSIZE_X; j++) { // scan range
     ground[0].x = iround((j-1)*dx)+x0;

@@ -89,6 +89,11 @@ Changed HELP H922 and H923
 
 Changed HELP 102
 
+22.01.2012 changes for sonar ping
+ M1292  Nearest airspace
+ M1293  Sonar ON
+ M1294  Sonar OFF
+ M1295  Sideview
 
 
 

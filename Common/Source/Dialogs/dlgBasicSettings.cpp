@@ -253,7 +253,7 @@ static void OnWingLoadingData(DataField *Sender, DataField::DataAccessKind_t Mod
 	case DataField::daPut:
 		if (fabs(lastRead-Sender->GetAsFloat()) > 0) {
 			lastRead = Sender->GetAsFloat();
-			WeightOffset(lastRead);  
+			WeightOffset(lastRead);
 		}
 		break;
   case DataField::daInc:
