@@ -253,10 +253,16 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 
   fSize = zzip_file_size(fp);
 
+  fileformat=GetWaypointFileFormatType(CurrentWpFileName);
+
+  if (fileformat<0) {
+	StartupStore(_T("... Unknown file format in waypoint file <%s\n"),CurrentWpFileName);
+	// We do NOT return, because first we analyze the content.
+  }
+
   if (fSize <10) {
-	fileformat=GetWaypointFileFormatType(CurrentWpFileName);
 	StartupStore(_T("... ReadWayPointFile: waypoint file %s type=%d is empty%s"), CurrentWpFileName,fileformat,NEWLINE);
-	return fileformat;
+	return -1;
   }
 
   if (!AllocateWaypointList()) {
@@ -330,11 +336,19 @@ int ReadWayPointFile(ZZIP_FILE *fp, TCHAR *CurrentWpFileName)
 		fileformat=LKW_DAT;
 		break;
 	}
-	// Otherwise, to make it simple we assume it is a CUP file with no header.
-	fempty=false;
-	fileformat=LKW_CUP;
-	StartupStore(_T("... Unknown WP file %d format identifier (assuming CUP with no header), line 1: <%s>%s"),globalFileNum+1,nTemp2String,NEWLINE);
-	break;
+	// Otherwise we use the fileformat .xxx suffix. 
+	// Why we did not do it since the beginning? Simply because we should not rely on .xxx suffix
+	// because some formats like CompeGPS and OZI, for example, share the same .WPT suffix.
+	// 
+	if (fileformat<0) {
+		StartupStore(_T(".. Unknown WP header, unknown format in <%s>%s"),nTemp2String,NEWLINE);
+		// leaving fempty true, so no good file available
+		break;
+	} else {
+		fempty=false;
+		StartupStore(_T(".. Unknown WP header, using format %d.  Header: <%s>%s"),fileformat,nTemp2String,NEWLINE);
+		break;
+	}
   }
   if (fempty) {
 	return -1;
