@@ -129,11 +129,9 @@ void LKProfileInitRuntime(void) {
   if (PGCloseTime>86399) PGCloseTime=86399; // 23:59:59
 
   if ( ISPARAGLIDER ) {
-	AverEffTime = (AverEffTime_t)ae15seconds;
 	if(PGOptimizeRoute)	AATEnabled=true;
 	LoggerTimeStepCruise=1;
   } else {
-	AverEffTime = (AverEffTime_t)ae60seconds;
 	AATEnabled=FALSE;
   }
 

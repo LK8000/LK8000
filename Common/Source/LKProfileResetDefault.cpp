@@ -251,8 +251,6 @@ void LKProfileResetDefault(void) {
   // 1 is showing all airports and declutter only unneeded outlandings
   NewMapDeclutter = 1;
 
-  // This is set later by InitRuntime, different for aircraft type.
-  // Only a dummy unused value is here.
   AverEffTime = (AverEffTime_t)ae60seconds; 
 
   BgMapColor_Config = 2;
