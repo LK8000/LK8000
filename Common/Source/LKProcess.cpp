@@ -733,7 +733,8 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-				index = Task[ActiveWayPoint].Index;
+				if (DoOptimizeRoute()) index=RESWP_OPTIMIZED;
+				else index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
 					value=ALTITUDEMODIFY*WayPointCalc[index].AltReqd[AltArrivMode];
 					if (value<10000 && value >-10000) {
@@ -1431,7 +1432,8 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-				index = Task[ActiveWayPoint].Index;
+				if (DoOptimizeRoute()) index=RESWP_OPTIMIZED;
+				else index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
 					value=ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeDifference;
 					if ( value > ALTDIFFLIMIT ) {
@@ -1960,7 +1962,8 @@ goto_bearing:
 			_stprintf(BufferTitle, MsgToken(1190));
 
 			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
-				index = Task[ActiveWayPoint].Index;
+				if (DoOptimizeRoute()) index=RESWP_OPTIMIZED;
+				else index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
 					value=ALTITUDEMODIFY*DerivedDrawInfo.NextAltitudeDifference0;
 					if ( value > ALTDIFFLIMIT ) {
