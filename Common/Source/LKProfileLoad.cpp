@@ -401,6 +401,8 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryInputFile,&*szInputFile);
   PREAD(sname,svalue,szRegistryIphoneGestures,&IphoneGestures);
   PREAD(sname,svalue,szRegistryLKMaxLabels,&LKMaxLabels);
+
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryLKTopoZoomCat05,&LKTopoZoomCat05);
   if (matchedstring) {; LKTopoZoomCat05/=1000; return;}
   PREAD(sname,svalue,szRegistryLKTopoZoomCat100,&LKTopoZoomCat100);
@@ -539,6 +541,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryWarningTime,&WarningTime);
   PREAD(sname,svalue,szRegistryWayPointFile,&*szWaypointFile);
   PREAD(sname,svalue,szRegistryWaypointsOutOfRange,&WaypointsOutOfRange);
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryWindCalcSpeed,&WindCalcSpeed);
   if (matchedstring) {
 	WindCalcSpeed = (double)WindCalcSpeed/1000.0;
@@ -548,6 +551,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   }
   PREAD(sname,svalue,szRegistryWindCalcTime,&WindCalcTime);
 
+  if (matchedstring) return;
   for(int i=0;i<AIRSPACECLASSCOUNT;i++) {
 	PREAD(sname,svalue,&*szRegistryAirspaceMode[i],&MapWindow::iAirspaceMode[i]);
 	if (matchedstring) return;
