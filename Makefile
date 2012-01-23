@@ -520,6 +520,7 @@ DLGS	:=\
 	$(DLG)/dlgWayPointSelect.cpp \
 	$(DLG)/dlgWaypointOutOfTerrain.cpp \
 	$(DLG)/dlgWindSettings.cpp \
+	$(DLG)/RenderAirspace.cpp\
 	$(DLG)/RenderAirspaceTerrain.cpp\
 	$(DLG)/RenderNearAirspace.cpp\
 	$(DLG)/Sideview.cpp \
