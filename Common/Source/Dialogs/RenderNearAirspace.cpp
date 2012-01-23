@@ -43,7 +43,7 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   DiagrammStruct sDia;
   bool bAS_Inside;
   int iAS_Bearing;
-  int iAS_sHorDistance;
+  int iAS_HorDistance;
   int iABS_AS_HorDistance=0;
   int iAS_VertDistance;
   double fAS_Bearing;
@@ -90,12 +90,12 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   }
   near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(found);
 
-  bValid = near_airspace.GetDistanceInfo(bAS_Inside, iAS_sHorDistance, iAS_Bearing, iAS_VertDistance);
+  bValid = near_airspace.GetDistanceInfo(bAS_Inside, iAS_HorDistance, iAS_Bearing, iAS_VertDistance);
 //if(bValid)
 //  near_airspace.CalculateDistance(&iAS_sHorDistance,&iAS_VertDistance, &iAS_Bearing);
  // if(bLeft)
  // fAS_HorDistance = fabs(fAS_HorDistance);
-   iABS_AS_HorDistance = abs( iAS_sHorDistance);
+   iABS_AS_HorDistance = abs( iAS_HorDistance);
   wpt_brg = (long)AngleLimit360(GPSbrg - fAS_Bearing + 90.0);
 
 
@@ -123,30 +123,47 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   //           awNone - no warning condition exists
   //           awYellow - current position is near to a warning position
   //           awRed - current posisiton is forbidden by asp system, we are in a warning position
-  Sonar_lBingDelay= 0;
+
+  /*********************************************************************
+   * calc the sonar delay time
+   *********************************************************************/
+#define GC_HORIZONTAL_TOLERANCE  100
+#define GC_HORIZONTAL_THRESHOLD  2500
+
+#define GC_VERTICAL_THRESHOLD   250
+#define GC_VERTICAL_TOLERANCE   200
+
+#define GC_HORIZONTAL_DELAY_FACT   250.0f
+#define GC_VERTICAL_DELAY_FACT    25.0f
+  Sonar_lBingDelay = 0;
+if(Sonar_IsEnabled)  /* disable Sonar */
   if(bValid)
   {
-    if((iAS_sHorDistance) < 100)                               /* horizontal near or inside */
-      if(abs(iAS_VertDistance) < 400)
-    	Sonar_lBingDelay = abs(iAS_VertDistance)/40+2;
+    if((iAS_HorDistance) < GC_HORIZONTAL_TOLERANCE)                    /* horizontal near or inside */
+      if(abs(iAS_VertDistance) < GC_VERTICAL_THRESHOLD)
+    	Sonar_lBingDelay =(int) (fabs((double)iAS_VertDistance/GC_VERTICAL_DELAY_FACT)+1.0f);
 
-    if(near_airspace.IsAltitudeInside((int)alt,(int)calc_altitudeagl,0))  /* vertical inside ........ */
+    if(near_airspace.IsAltitudeInside((int)alt,(int)calc_altitudeagl,GC_VERTICAL_TOLERANCE))  /* vertically near or inside ? */
     {
-      if((iAS_sHorDistance) < 2500)
-        Sonar_lBingDelay = abs(iAS_sHorDistance)/150+2;
-      if(iAS_sHorDistance < 0)
-         Sonar_lBingDelay = 1;
+      double fTmp =	fabs( (double)iAS_HorDistance/GC_HORIZONTAL_DELAY_FACT)+1.0f;
+	  if((iAS_HorDistance) < GC_HORIZONTAL_THRESHOLD)
+	  {
+		if(Sonar_lBingDelay == 0)             /* no other delay defined      */
+		  Sonar_lBingDelay = (int)fTmp;       /* horizontal delay .......    */
+		if(fTmp  <Sonar_lBingDelay )          /* .. faster than vertical  ?  */
+		  Sonar_lBingDelay = (int)fTmp;       /* yes, take it .........      */
+	  }
     }
 
-    if(near_airspace.IsAltitudeInside((int)alt,(int)calc_altitudeagl,0))  /* complete inside ........ */
-	  if( iAS_sHorDistance < 0)
-		Sonar_lBingDelay = -1;
-
-    if(!Sonar_IsEnabled)  /* disable Sonar */
-	  Sonar_lBingDelay = -1;
+    if(near_airspace.IsAltitudeInside((int)alt,(int)calc_altitudeagl,0))  /* vertically inside ? */
+      if(iAS_HorDistance < 0)                                             /* complete inside, do no beep! */
+    	Sonar_lBingDelay = 0;
   }
 
 
+    /*********************************************************************
+     * calc the horizontal zoom
+     *********************************************************************/
   sDia.fXMin = -15000.0;
   sDia.fXMax =  15000.0;
   /* even when invalid the horizontal distance is calculated correctly */
@@ -174,7 +191,9 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
 	#endif
   }
 
-
+  /*********************************************************************
+   * calc the vertical zoom
+   *********************************************************************/
 sDia.fYMin = max(0.0, alt-2300);
 sDia.fYMax = max(MAXALTTODAY, alt+1000);
 

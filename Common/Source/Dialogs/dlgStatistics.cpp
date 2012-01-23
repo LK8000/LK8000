@@ -1517,7 +1517,7 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
 
   RECT  rcgfx;
   HFONT hfOld;
-  static int iOldSonar=-1;
+
   CopyRect(&rcgfx, Sender->GetBoundRect());
   hfOld = (HFONT)SelectObject(hDC,LK8PanelUnitFont/* Sender->GetFont()*/);
 
@@ -1570,18 +1570,16 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
 
 
   case ANALYSIS_PAGE_AIRSPACE:
-    SetCalcCaption(gettext(TEXT("_@M888_"))); // Warnings
+
     if(Sideview_asp_heading_task !=2)
-        SetCalcCaption(gettext(TEXT("_@M885_"))); // Settings
+      SetCalcCaption(gettext(TEXT("_@M888_"))); // Warnings
     else
-//      if(Sonar_IsEnabled != iOldSonar)
-      {
-    	iOldSonar = Sonar_IsEnabled;
-    	if(Sonar_IsEnabled)
-          SetCalcCaption(gettext(TEXT("_@M1294_"))); //  _@M1294_ "Sonar Off"
-    	else
-          SetCalcCaption(gettext(TEXT("_@M1293_"))); //  _@M1293_ "Sonar On"
-      }
+    {
+      if(Sonar_IsEnabled)
+        SetCalcCaption(gettext(TEXT("_@M1294_"))); //  _@M1294_ "Sonar Off"
+      else
+        SetCalcCaption(gettext(TEXT("_@M1293_"))); //  _@M1293_ "Sonar On"
+    }
     Statistics::RenderAirspace(hDC, rcgfx);
     break;
 
