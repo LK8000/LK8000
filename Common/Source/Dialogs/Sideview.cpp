@@ -11,7 +11,6 @@
 #include "Sideview.h"
 
 
-extern bool bInvertColors;
 using std::min;
 using std::max;
 
@@ -100,13 +99,13 @@ void DrawNorthArrow(HDC hdc, double fAngle, int x, int y)
   DrawWindRoseDirection( hdc, AngleLimit360( fAngle ),  x,  y + NIBLSCALE(18));
   PolygonRotateShift(Arrow, 5, x, y, AngleLimit360( -fAngle));
   SelectObject(hdc, GetStockObject(WHITE_PEN));
-  if(bInvertColors)
+  if(INVERTCOLORS)
    SelectObject(hdc, GetStockObject(BLACK_BRUSH));
   else
     SelectObject(hdc, GetStockObject(WHITE_BRUSH));
   Polygon(hdc,Arrow,5);
 
-  if(bInvertColors)
+  if(INVERTCOLORS)
 	SelectObject(hdc, GetStockObject(WHITE_PEN));
   else
 	SelectObject(hdc, GetStockObject(BLACK_PEN));
@@ -317,7 +316,7 @@ void RenderPlaneSideview(HDC hdc, const RECT rc,double fDist, double fAltitude,d
   Start.x = CalcDistanceCoordinat(fDist,  rc, psDia);
   Start.y = CalcHeightCoordinat(fAltitude,  rc, psDia);
 /*
-  if(bInvertColors)
+  if(INVERTCOLORS)
   {
     SelectObject(hdc, GetStockObject(WHITE_PEN));
     SelectObject(hdc, GetStockObject(BLACK_BRUSH));

@@ -521,6 +521,7 @@ DLGS	:=\
 	$(DLG)/dlgWaypointOutOfTerrain.cpp \
 	$(DLG)/dlgWindSettings.cpp \
 	$(DLG)/RenderAirspaceTerrain.cpp\
+	$(DLG)/RenderNearAirspace.cpp\
 	$(DLG)/Sideview.cpp \
 
 SRC_FILES :=\

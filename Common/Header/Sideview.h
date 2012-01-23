@@ -40,6 +40,8 @@
 #define ID_SHORT_LABLE 1
 #define ID_FULL_LABLE  2
 
+#define ELV_FACT 2.2
+#define MAXALTTODAY   2500.0
 
 
 

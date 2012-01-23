@@ -21,9 +21,7 @@
 using std::min;
 using std::max;
 
-long lSonarBingDelay = 0;
-static double alt;
-static double fMaxAltToday=2500.0f;
+
 
 double Statistics::yscale;
 double Statistics::xscale;
@@ -34,26 +32,24 @@ double Statistics::y_max;
 bool   Statistics::unscaled_x;
 bool   Statistics::unscaled_y;
 
+static double Sideview_alt; // this can be changed probably with NavAltitude
+
 static HPEN penThinSignal = NULL;
 static int asp_heading_task = 0;
-bool bInvertColors =false;
-bool bSonarOn = true;
 
 
 // These are globals, should start with Uppercase, and being non-static (local to this file)
 // they should have a Sideview_ remembering us what are they used for. Otherwise use a class,
 // which is exactly the same.
 
-COLORREF  Sideview_TextColor = RGB_WHITE;
-int	  Sideview_iNoHandeldSpaces=0;
-
 AirSpaceSideViewSTRUCT Sideview_pHandeled[GC_MAX_NO];
 AirSpaceSideViewSTRUCT Sideview_asDrawn[GC_MAX_NO];
 
-
-
-TCHAR szNearAS[80];
-
+COLORREF  Sideview_TextColor = RGB_WHITE;
+int	  Sideview_iNoHandeldSpaces=0;
+long Sonar_lBingDelay = 0;
+bool Sonar_IsEnabled = true;
+TCHAR Sideview_szNearAS[80];
 
 
 
@@ -185,7 +181,7 @@ void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
   switch (Style) {
   case STYLE_BLUETHIN:
 	COL = RGB(0,50,255);
-	if(bInvertColors)
+	if(INVERTCOLORS)
 	  COL = ChangeBrightness(COL,0.5);
     MapWindow::DrawDashLine(hdc, 
 			    minwidth, 
@@ -195,7 +191,7 @@ void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
     break;
   case STYLE_REDTHICK:
 	COL = RGB(250,50,50);
-	if(bInvertColors)
+	if(INVERTCOLORS)
 	  COL = ChangeBrightness(COL,0.7);
     MapWindow::DrawDashLine(hdc, minwidth,
 			    l1,
@@ -205,7 +201,7 @@ void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
 
   case STYLE_GREENMEDIUM:
 	  COL =   RGB(0,255,0);
-	  if(bInvertColors)
+	  if(INVERTCOLORS)
 		COL = ChangeBrightness(COL,0.7);
 	  line[0].x +=1;
 	  line[1].x +=1;
@@ -218,7 +214,7 @@ void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
 
   case STYLE_GREENTHICK:
 	  COL =   RGB(0,255,0);
-	  if(bInvertColors)
+	  if(INVERTCOLORS)
 		COL = ChangeBrightness(COL,0.7);
 	  line[0].x +=2;
 	  line[1].x +=2;
@@ -231,7 +227,7 @@ void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
 
   case STYLE_ORANGETHICK:
 	COL =  RGB(255,165,0);
-	if(bInvertColors)
+	if(INVERTCOLORS)
 	  COL = ChangeBrightness(COL,0.7);
 
 	line[0].x +=2;
@@ -245,7 +241,7 @@ void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
 
   case STYLE_DASHGREEN:
 	COL = RGB(0,255,0);
-	if(bInvertColors)
+	if(INVERTCOLORS)
 	  COL = ChangeBrightness(COL,0.7);
 
     MapWindow::DrawDashLine(hdc, IBLSCALE(2),
@@ -265,7 +261,7 @@ void Statistics::StyleLine(HDC hdc, const POINT l1, const POINT l2,
     break;
   case STYLE_WHITETHICK:
 	COL =  RGB_WHITE;
-	if(bInvertColors)
+	if(INVERTCOLORS)
 	  COL = ChangeBrightness(COL,0.3);
 
 
@@ -290,7 +286,7 @@ void Statistics::DrawLabel(HDC hdc, const RECT rc, const TCHAR *text,
   int x = (int)((xv-x_min)*xscale)+rc.left-tsize.cx/2+BORDER_X;
   int y = (int)((y_max-yv)*yscale)+rc.top-tsize.cy/2;
   SetBkMode(hdc, OPAQUE);
-  if(bInvertColors)
+  if(INVERTCOLORS)
     SelectObject(hdc, GetStockObject(BLACK_PEN));
 
 
@@ -321,7 +317,7 @@ void Statistics::DrawXLabel(HDC hdc, const RECT rc, const TCHAR *text) {
   GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
   int x = rc.right-tsize.cx-IBLSCALE(3);
   int y = rc.bottom-tsize.cy;
-  if(bInvertColors)
+  if(INVERTCOLORS)
     SelectObject(hdc, GetStockObject(BLACK_PEN));
 
   ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
@@ -335,7 +331,7 @@ void Statistics::DrawYLabel(HDC hdc, const RECT rc, const TCHAR *text) {
   GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
   int x = max(2,(int)rc.left-(int)tsize.cx);
   int y = rc.top;
-  if(bInvertColors)
+  if(INVERTCOLORS)
     SelectObject(hdc, GetStockObject(BLACK_PEN));
 
 
@@ -435,7 +431,7 @@ COLORREF Col;
     return;
   }
 
-if(bInvertColors)
+if(INVERTCOLORS)
   Col = ChangeBrightness(RGB_GREEN, 0.5);
 else
   Col = RGB_WHITE;
@@ -520,7 +516,7 @@ void Statistics::DrawXGrid(HDC hdc, const RECT rc,
                            const int Style, 
 			   const double unit_step, bool draw_units) {
 
-  if(bInvertColors)
+  if(INVERTCOLORS)
     SelectObject(hdc, GetStockObject(BLACK_PEN));
 
 
@@ -607,7 +603,7 @@ void Statistics::DrawYGrid(HDC hdc, const RECT rc,
   SIZE tsize;
   double yval;
 
-  if(bInvertColors)
+  if(INVERTCOLORS)
     SelectObject(hdc, GetStockObject(BLACK_PEN));
 
 
@@ -701,7 +697,7 @@ void Statistics::RenderBarograph(HDC hdc, const RECT rc)
   ScaleXFromValue(rc, flightstats.Altitude.x_min); 
 
 #if  (WINDOWSPC > 0)
-  if(bInvertColors)
+  if(INVERTCOLORS)
 	RenderSky( hdc,   rc, SKY_HORIZON_COL , SKY_SPACE_COL, GC_NO_COLOR_STEPS );
 #endif
 
@@ -927,7 +923,7 @@ void Statistics::RenderGlidePolar(HDC hdc, const RECT rc)
 
   TCHAR text[80];
   SetBkMode(hdc, OPAQUE);
-  if(bInvertColors)
+  if(INVERTCOLORS)
     SetTextColor(hdc,RGB(50,50,160));
   else
 	SetTextColor(hdc,RGB_WHITE);
@@ -1527,7 +1523,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   if (asp_heading_task == 2)
 	return RenderNearAirspace( hdc,   rc);
 
-  if(bInvertColors)
+  if(INVERTCOLORS)
   {
     GREEN_COL     = ChangeBrightness(GREEN_COL     , 0.6);
     RED_COL       = ChangeBrightness(RGB_RED       , 0.6);;
@@ -1546,10 +1542,11 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
 
     calc_average30s = CALCULATED_INFO.Average30s;
 
+// TODO FIX CHECK  use NavAltitude instead, no need to use alt
     if (GPS_INFO.BaroAltitudeAvailable && EnableNavBaroAltitude) {
-      alt = GPS_INFO.BaroAltitude;
+      Sideview_alt = GPS_INFO.BaroAltitude;
     } else {
-      alt = GPS_INFO.Altitude;
+      Sideview_alt = GPS_INFO.Altitude;
     }
     calc_terrainalt = CALCULATED_INFO.TerrainAlt;
     calc_altitudeagl = CALCULATED_INFO.AltitudeAGL;
@@ -1602,7 +1599,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
                                        CALCULATED_INFO.WindBearing,
                                        0, 0, true,
                                        0)  - WayPointList[overindex].Altitude;
-      fLD = (int) wpt_dist / (alt-wpt_altarriv+wpt_altitude);
+      fLD = (int) wpt_dist / (Sideview_alt-wpt_altarriv+wpt_altitude);
       if (IsSafetyAltitudeInUse(overindex)) wpt_altarriv -= SAFETYALTITUDEARRIVAL;
 
 
@@ -1616,8 +1613,8 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   }
   
 
-  double hmin = max(0.0, alt-2300);
-  double hmax = max(fMaxAltToday, alt+1000);
+  double hmin = max(0.0, Sideview_alt-2300);
+  double hmax = max(MAXALTTODAY, Sideview_alt+1000);
 
   DiagrammStruct sDia;
   sDia.fXMin =-5000.0f;
@@ -1646,7 +1643,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   if (fDist>250.0*1000.0) xtick = 50.0;
   if (fDist>500.0*1000.0) xtick = 100.0;
 
-  if(bInvertColors)
+  if(INVERTCOLORS)
   {
     SelectObject(hdc, GetStockObject(BLACK_PEN));
     SelectObject(hdc, GetStockObject(BLACK_BRUSH));
@@ -1722,7 +1719,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
         altarriv = wpt_altarriv_mc0 + wpt_altitude;
         if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
         line[0].x = CalcDistanceCoordinat( 0, rc, &sDia);
-        line[0].y = CalcHeightCoordinat  ( alt,   rc, &sDia );
+        line[0].y = CalcHeightCoordinat  ( Sideview_alt,   rc, &sDia );
         line[1].x = CalcDistanceCoordinat( wpt_dist, rc, &sDia);
         line[1].y = CalcHeightCoordinat( altarriv ,   rc, &sDia );
         StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
@@ -1730,7 +1727,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
       altarriv = wpt_altarriv + wpt_altitude;
       if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
       line[0].x = CalcDistanceCoordinat( 0, rc, &sDia);
-      line[0].y = CalcHeightCoordinat( alt,   rc, &sDia );
+      line[0].y = CalcHeightCoordinat( Sideview_alt,   rc, &sDia );
       line[1].x = CalcDistanceCoordinat( wpt_dist, rc, &sDia);
       line[1].y = CalcHeightCoordinat( altarriv ,   rc, &sDia );
       StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
@@ -1738,9 +1735,9 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
       double t = fDist/speed;
 
       line[0].x = CalcDistanceCoordinat( 0, rc, &sDia);
-      line[0].y = CalcHeightCoordinat  ( alt,   rc, &sDia);
+      line[0].y = CalcHeightCoordinat  ( Sideview_alt,   rc, &sDia);
       line[1].x = rc.right;
-      line[1].y = CalcHeightCoordinat  ( alt+calc_average30s*t,   rc, &sDia);
+      line[1].y = CalcHeightCoordinat  ( Sideview_alt+calc_average30s*t,   rc, &sDia);
       StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
     }
   }
@@ -1840,7 +1837,6 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
       }
       ExtTextOut(hdc, x, y-tsize.cy/2, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     }
-#define ELV_FACT 2.2
     // Print current Elevation
     SetTextColor(hdc, RGB_BLACK);
     if((calc_terrainalt- hmin) > 0)
@@ -1885,7 +1881,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
       GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
       SetTextColor(hdc, BLUE_COL);
       x = CalcDistanceCoordinat(wpt_dist/2,  rc, &sDia)- tsize.cx/2;
-      y = CalcHeightCoordinat( (alt + altarriv)/2 + wpt_altitude ,   rc, &sDia ) + tsize.cy;
+      y = CalcHeightCoordinat( (Sideview_alt + altarriv)/2 + wpt_altitude ,   rc, &sDia ) + tsize.cy;
       ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     }
 
@@ -1914,7 +1910,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
 
   if (!asp_heading_task)
     wpt_brg =90;
-  RenderPlaneSideview( hdc, rc, 0.0f, alt,wpt_brg, &sDia );
+  RenderPlaneSideview( hdc, rc, 0.0f, Sideview_alt,wpt_brg, &sDia );
   HFONT hfOld2 = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
   SetTextColor(hdc, Sideview_TextColor);
   SetBkMode(hdc, OPAQUE);
@@ -1965,9 +1961,7 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
   SetBkMode(hDC, TRANSPARENT);
   SetTextColor(hDC, Sender->GetForeColor());
 
-  // background is painted in the base-class
-  bInvertColors = Appearance.InverseInfoBox;
-  if(bInvertColors)
+  if(INVERTCOLORS)
   {
     Sender->SetBackColor(SKY_HORIZON_COL);
     Sideview_TextColor = INV_GROUND_TEXT_COLOUR;
@@ -2017,10 +2011,10 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
     if(asp_heading_task !=2)
         SetCalcCaption(gettext(TEXT("_@M885_"))); // Settings
     else
-//      if(bSonarOn != iOldSonar)
+//      if(Sonar_IsEnabled != iOldSonar)
       {
-    	iOldSonar = bSonarOn;
-    	if(bSonarOn)
+    	iOldSonar = Sonar_IsEnabled;
+    	if(Sonar_IsEnabled)
           SetCalcCaption(gettext(TEXT("_@M1294_"))); //  _@M1294_ "Sonar Off"
     	else
           SetCalcCaption(gettext(TEXT("_@M1293_"))); //  _@M1293_ "Sonar On"
@@ -2408,7 +2402,7 @@ static void Update(void){
         break;
         case 2:
           wb->SetCaption(gettext(TEXT("_@M1287_")));                               //_@M1287_ "Heading"                              //_@M1287_ "Heading"
-          _stprintf(sTmp, TEXT("%s"), szNearAS );                  //"Showing nearest airspace"
+          _stprintf(sTmp, TEXT("%s"), Sideview_szNearAS );                  //"Showing nearest airspace"
           wInfo->SetCaption(sTmp);//
 
         break;
@@ -2540,7 +2534,7 @@ static void OnCalcClicked(WindowControl * Sender,
 	  if(asp_heading_task != 2)
 	    dlgAirspaceWarningParamsShowModal();
 	  else
-		bSonarOn = !bSonarOn;
+		Sonar_IsEnabled = !Sonar_IsEnabled;
   }
   Update();
 }
@@ -2570,8 +2564,8 @@ static int OnTimerNotify(WindowControl *Sender)
 #ifdef SONAR_TEST
 	static long lSonarCnt = 0;
 	lSonarCnt++;
-	if(lSonarBingDelay > 0)
-	  if(lSonarCnt >lSonarBingDelay )
+	if(Sonar_lBingDelay > 0)
+	  if(lSonarCnt >Sonar_lBingDelay )
 	  {
 		if(asp_heading_task== 2)
 		{
@@ -2743,7 +2737,7 @@ if (entered == true) /* prevent re entrance */
   if (!wf) return;
 
   COLORREF COL = RGB(50,243,45);
-  if(bInvertColors)
+  if(INVERTCOLORS)
 	COL = ChangeBrightness(COL,0.7);
   penThinSignal = CreatePen(PS_SOLID, IBLSCALE(2) , COL);
 
@@ -2799,709 +2793,3 @@ if (entered == true) /* prevent re entrance */
 }
 
 
-
-
-
-
-void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
-{
-  double range = 50.0*1000; // km
-  double GPSlat, GPSlon, GPSalt, GPSbrg, GPSspeed, calc_average30s;
-  double calc_terrainalt;
-  double calc_altitudeagl;
-
-  TCHAR text[80];
-  TCHAR buffer[80];
-
-  CAirspace near_airspace;
-  CAirspace *found = NULL;
-
-  DiagrammStruct sDia;
-  bool bAS_Inside;
-  int iAS_Bearing;
-  int iAS_sHorDistance;
-  int iABS_AS_HorDistance=0;
-  int iAS_VertDistance;
-  double fAS_Bearing;
-  double fAS_HorDistance;
-  bool   bValid;
-  long wpt_brg = 0;
-  POINT line[2];
-  POINT TxYPt;
-  POINT TxXPt;
-  SIZE tsize;
-  COLORREF GREEN_COL     = RGB_GREEN;
-  COLORREF RED_COL       = RGB_LIGHTORANGE;
-  COLORREF BLUE_COL      = RGB_BLUE;
-  COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
-
-  if(bInvertColors)
-  {
-    GREEN_COL     = ChangeBrightness(GREEN_COL     , 0.6);
-    RED_COL       = ChangeBrightness(RGB_RED       , 0.6);;
-    BLUE_COL      = ChangeBrightness(BLUE_COL      , 0.6);;
-    LIGHTBLUE_COL = ChangeBrightness(LIGHTBLUE_COL , 0.4);;
-  }
-  LockFlightData();
-  {
-    GPSlat = GPS_INFO.Latitude;
-    GPSlon = GPS_INFO.Longitude;
-    GPSalt = GPS_INFO.Altitude;
-    GPSbrg = GPS_INFO.TrackBearing;
-    GPSspeed = GPS_INFO.Speed;
-
-    calc_terrainalt  = CALCULATED_INFO.TerrainAlt;
-    calc_altitudeagl = CALCULATED_INFO.AltitudeAGL;
-    calc_average30s = CALCULATED_INFO.Average30s;
-
-    if (GPS_INFO.BaroAltitudeAvailable && EnableNavBaroAltitude) {
-      alt = GPS_INFO.BaroAltitude;
-    } else {
-      alt = GPS_INFO.Altitude;
-    }
-  }
-  UnlockFlightData();
-
-
-  found = CAirspaceManager::Instance().FindNearestAirspace(GPSlon, GPSlat, &fAS_HorDistance, &fAS_Bearing );
-  if(found == NULL) {
-	DrawNoData(hdc, rc);
-	return;
-  }
-  near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(found);
-
-  bValid = near_airspace.GetDistanceInfo(bAS_Inside, iAS_sHorDistance, iAS_Bearing, iAS_VertDistance);
-//if(bValid)
-//  near_airspace.CalculateDistance(&iAS_sHorDistance,&iAS_VertDistance, &iAS_Bearing);
- // if(bLeft)
- // fAS_HorDistance = fabs(fAS_HorDistance);
-   iABS_AS_HorDistance = abs( iAS_sHorDistance);
-  wpt_brg = (long)AngleLimit360(GPSbrg - fAS_Bearing + 90.0);
-
-
-//  bool CAirspace::GetWarningPoint(double &longitude, double &latitude, AirspaceWarningDrawStyle_t &hdrawstyle, int &vDistance, AirspaceWarningDrawStyle_t &vdrawstyle) const
-//  if(near_airspace.IsAltitudeInside(alt,calc_altitudeagl,0) && near_airspace.IsAltitudeInside(GPSlon,GPSlat))
-//    bAS_Inside = true;
-/*
-  int iHor,iVer,  iBear;
-   near_airspace.CalculateDistance(&iHor,&iVer, &iBear);
-
-  fAS_HorDistance = (double) iHor;
-  fAS_Bearing     = (double) iBear;
-  iAS_VertDistance= iVer;
-*/
-  // Variables from ASP system here contain the following informations:
-  // fAS_HorDistance - always contains horizontal distance from the asp, negative if horizontally inside (This does not mean that we're inside vertically as well!)
-  // fAS_Bearing - always contains bearing to the nearest horizontal point
-  // bValid - true if bAS_Inside, iAS_HorDistance, iAS_Bearing, iAS_VertDistance contains valid informations
-  //          this will be true if the asp border is close enough to be tracked by the warning system
-  // bAS_Inside - current position is inside in the asp, calculated by the warning system
-  // iAS_HorDistance - horizontal distance to the nearest horizontal border, negative if horizontally inside, calculated by the warning system
-  // iAS_Bearing - bearing to the nearest horizontal border, calculated by the warning system
-  // iAS_VertDistance - vertical distance to the nearest asp border, negative if the border is above us, positive if the border below us, calculated by the warning system
-  // near_airspace.WarningLevel():
-  //           awNone - no warning condition exists
-  //           awYellow - current position is near to a warning position
-  //           awRed - current posisiton is forbidden by asp system, we are in a warning position
-  lSonarBingDelay= 0;
-  if(bValid)
-  {
-    if((iAS_sHorDistance) < 100)                               /* horizontal near or inside */
-      if(abs(iAS_VertDistance) < 400)
-    	lSonarBingDelay = abs(iAS_VertDistance)/40+2;
-
-    if(near_airspace.IsAltitudeInside((int)alt,(int)calc_altitudeagl,0))  /* vertical inside ........ */
-    {
-      if((iAS_sHorDistance) < 2500)
-        lSonarBingDelay = abs(iAS_sHorDistance)/150+2;
-      if(iAS_sHorDistance < 0)
-         lSonarBingDelay = 1;
-    }
-
-    if(near_airspace.IsAltitudeInside((int)alt,(int)calc_altitudeagl,0))  /* complete inside ........ */
-	  if( iAS_sHorDistance < 0)
-		lSonarBingDelay = -1;
-
-    if(!bSonarOn)  /* disable Sonar */
-	  lSonarBingDelay = -1;
-  }
-
-
-  sDia.fXMin = -15000.0;
-  sDia.fXMax =  15000.0;
-  /* even when invalid the horizontal distance is calculated correctly */
-
-  if(bValid)
-  {
-	sDia.fXMin = min(-2500.0 , iABS_AS_HorDistance * 1.5 );
-	sDia.fXMax = max( 2500.0 , iABS_AS_HorDistance * 1.5 );
-
-	#ifdef NEAR_AS_ZOOM_1000M
-	if(((iABS_AS_HorDistance) < 900) && (bValid)) // 1km zoom
-	{
-
-	  sDia.fXMin = min(-900.0, iABS_AS_HorDistance * 1.5 );
-	  sDia.fXMax = max( 900.0, iABS_AS_HorDistance * 1.5 );
-
-	}
-	#endif
-	#ifdef NEAR_AS_ZOOM_1000FT
-	  if((abs(iABS_AS_HorDistance) < 333)) // 1000ft zoom
-	  {
-		sDia.fXMin = min(-333.0, iABS_AS_HorDistance * 1.5 );
-		sDia.fXMax = max( 333.0, iABS_AS_HorDistance * 1.5 );
-	  }
-	#endif
-  }
-
-
-sDia.fYMin = max(0.0, alt-2300);
-sDia.fYMax = max(fMaxAltToday, alt+1000);
-
-if(bValid)
-{
- // double fTop    = near_airspace.Top()->Altitude;
-  double fBottom = near_airspace.Base()->Altitude;
-  sDia.fYMin = min(fBottom, sDia.fYMin );
-  sDia.fYMax = max((fBottom*1.2f), sDia.fYMax );
-
-  if(abs(iAS_VertDistance) < 250)
-  {
-
-    sDia.fYMax =  ((int)((alt+abs(iAS_VertDistance))/400) + 2) *400 ;
-    sDia.fYMin =  ((int)((alt-abs(iAS_VertDistance))/400) - 1) *400 ;
-    if(sDia.fYMin-200 < 0)
-      sDia.fYMin = 0;
-  }
-
-  if(abs(iAS_VertDistance) < 50)
-  {
-    sDia.fYMax =  ((int)((alt+abs(iAS_VertDistance))/100) + 2) *100 ;
-    sDia.fYMin =  ((int)((alt-abs(iAS_VertDistance))/100) - 1) *100 ;
-    if(sDia.fYMin-200 < 0)
-      sDia.fYMin = 0;
-  }
-  sDia.fYMin = max((double)0.0f,(double) sDia.fYMin);
-}
-
-
-
-  range =sDia.fXMax - sDia.fXMin ;
-  sDia.rc = rc;
-
-  ResetScale();
-  ScaleXFromValue(rc, sDia.fXMin);
-  ScaleXFromValue(rc, sDia.fXMax);
-  ScaleYFromValue(rc, sDia.fYMin);
-  ScaleYFromValue(rc, sDia.fYMax);
-
-
-  RenderAirspaceTerrain( hdc,  rc,  GPSlat, GPSlon, iAS_Bearing, &sDia );
-
-  HFONT hfOld = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
-  if(bValid)
-    _stprintf(szNearAS,TEXT("%s"),  near_airspace.Name() );
-  else
-  {
-	_stprintf(text,TEXT("%s"), gettext(TEXT("_@M1259_"))); 	 // LKTOKEN _@M1259_ "Too far, not calculated"
-	GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-	TxYPt.x = (rc.right-rc.left-tsize.cx)/2;
-	TxYPt.y = (rc.bottom-rc.top)/2;
-	SetBkMode(hdc, TRANSPARENT);
-	ExtTextOut(hdc,TxYPt.x, TxYPt.y-20, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-	_stprintf(szNearAS,TEXT("%s"), text);
-
-  }
-  SelectObject(hdc, hfOld);
-
-#ifdef SHOW_YELLO_RED_WARNING
-  if (bValid)
-  {
-    if (near_airspace.WarningLevel() != awNone )
-    {
-      if (near_airspace.WarningLevel() == awYellow )
-      {
-        SetTextColor(hdc, RGB_YELLOW);
-        _stprintf(text,TEXT("!! %s !!"), gettext(TEXT("_@M1255_"))); // _@M1255_ "YELLOW WARNING"
-      }
-      else
-      {
-        SetTextColor(hdc, RGB_RED);
-        _stprintf(text,TEXT("!! %s !!"), gettext(TEXT("_@M1256_"))); 	// _@M1293_ "RED WARNING"
-      }
-      static int callcnt = 0;
-      if(callcnt++%2 == 0)
-        SetTextColor(hdc, RGB_BLACK);
-      GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-      TxYPt.x = (rc.right-rc.left-tsize.cx)/2;
-      ExtTextOut(hdc,  TxYPt.x , NIBLSCALE(25), ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-    }
-  }
-#endif
-  double xtick = 1.0;
-  if (range>0.01*1000.0) xtick = 0.01;
-  if (range>0.1*1000.0) xtick = 0.1;
-  if (range>1.0*1000.0) xtick = 1.0;
-  if (range>10.0*1000.0) xtick = 5.0;
-  if (range>50.0*1000.0) xtick = 10.0;
-  if (range>100.0*1000.0) xtick = 20.0;
-  if (range>200.0*1000.0) xtick = 25.0;
-  if (range>250.0*1000.0) xtick = 50.0;
-  if (range>500.0*1000.0) xtick = 100.0;
-
-  if(bInvertColors)
-  {
-    SelectObject(hdc, GetStockObject(BLACK_PEN));
-    SelectObject(hdc, GetStockObject(BLACK_BRUSH));
-  }
-  else
-  {
-    SelectObject(hdc, GetStockObject(WHITE_PEN));
-    SelectObject(hdc, GetStockObject(WHITE_BRUSH));
-  }
-
-  if(sDia.fYMin == 0)
-    SetTextColor(hdc, GROUND_TEXT_COLOUR);
-  else
-	SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
-  DrawXGrid(hdc, rc, xtick/DISTANCEMODIFY, 0, STYLE_THINDASHPAPER, xtick, true);
-  SetTextColor(hdc, Sideview_TextColor);
-  double fScale = 1000;
-  if((sDia.fYMax-sDia.fYMin) <= 1000)
-	fScale = 200.0f;
-  else
-	fScale = 1000.0f;
-  if (Units::GetUserInvAltitudeUnit() == unFeet)
-	  fScale /= 2;
-
-  DrawYGrid(hdc, rc, fScale/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, fScale, true);
-
-  if(!bInvertColors)
-    SetBkMode(hdc, OPAQUE);
-
-
-  if(calc_altitudeagl - sDia.fYMin  > 500)
-  {
-    SetTextColor(hdc, LIGHTBLUE_COL);
-    Units::FormatUserAltitude(calc_altitudeagl, buffer, 7);
-    _tcsncpy(text, gettext(TEXT("_@M1742_")), sizeof(text)/sizeof(text[0])); // AGL:
-    _tcscat(text,buffer);
-    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-    TxYPt.x = CalcDistanceCoordinat(0,  rc, &sDia)- tsize.cx/2;
-    TxYPt.y  = CalcHeightCoordinat(  (calc_terrainalt + calc_altitudeagl )*0.5,   rc, &sDia );
-    if((tsize.cy) < ( CalcHeightCoordinat(  calc_terrainalt, rc, &sDia )- TxYPt.y )) {
-      ExtTextOut(hdc,  TxYPt.x+IBLSCALE(1),  TxYPt.y , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-    }
-  }
-
-  SetBkMode(hdc, TRANSPARENT);
-
-  // Print current Elevation
-  SetTextColor(hdc, RGB_BLACK);
-  int x,y;
-  if((calc_terrainalt-  sDia.fYMin)  > 0)
-  {
-	Units::FormatUserAltitude(calc_terrainalt, buffer, 7);
-    _tcsncpy(text, gettext(TEXT("_@M1743_")), sizeof(text)/sizeof(text[0]));   // ELV:
-    _tcscat(text,buffer);
-    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-    x = CalcDistanceCoordinat(0,  rc, &sDia) - tsize.cx/2;
-    y = CalcHeightCoordinat( calc_terrainalt, rc, &sDia  );
-    if ((ELV_FACT*tsize.cy) < abs(rc.bottom - y)) {
-      ExtTextOut(hdc, x, rc.bottom -(int)(ELV_FACT * tsize.cy) , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-    }
-  }
-
-  if (bValid)
-  {
-	SetTextColor(hdc, Sideview_TextColor);
-	if(!bInvertColors)
-	  SetBkMode(hdc, OPAQUE);
-	HFONT hfOldU = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
-    // horizontal distance
-    line[0].x = CalcDistanceCoordinat(0,  rc, &sDia);
-    line[0].y = CalcHeightCoordinat(  alt,   rc, &sDia );
-    line[1].x = CalcDistanceCoordinat(iABS_AS_HorDistance,  rc, &sDia);
-    line[1].y = line[0].y;
-    StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
-
-    bool bLeft = false;
-    if( line[0].x < line[1].x)
-      bLeft = false;
-    else
-      bLeft = true;
-
-    Units::FormatUserDistance(iABS_AS_HorDistance, buffer, 7);
-    _tcsncpy(text, TEXT(" "), sizeof(text)/sizeof(text[0]));
-    _tcscat(text,buffer);
-    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-
-    if((alt- sDia.fYMin /*-calc_terrainalt */) < 300)
-      TxXPt.y = CalcHeightCoordinat(  alt,   rc, &sDia ) -  tsize.cy;
-    else
-      TxXPt.y = CalcHeightCoordinat(  alt,   rc, &sDia ) +  NIBLSCALE(3);
-
-
-    if(tsize.cx > (line[1].x - line[0].x) )
-      TxXPt.x = CalcDistanceCoordinat( iABS_AS_HorDistance , rc, &sDia) -tsize.cx-  NIBLSCALE(3);
-    else
-      TxXPt.x = CalcDistanceCoordinat( iABS_AS_HorDistance / 2.0, rc, &sDia) -tsize.cx/2;
-    ExtTextOut(hdc,  TxXPt.x,  TxXPt.y , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-
-
-    // vertical distance
-    line[0].x = CalcDistanceCoordinat(iABS_AS_HorDistance ,  rc, &sDia);
-    line[0].y = CalcHeightCoordinat( alt, rc, &sDia );
-    line[1].x = line[0].x;
-    line[1].y = CalcHeightCoordinat( alt - (double)iAS_VertDistance, rc, &sDia );
-    StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
-
-    Units::FormatUserAltitude( (double)abs(iAS_VertDistance), buffer, 7);
-    _tcsncpy(text, TEXT(" "), sizeof(text)/sizeof(text[0]));
-    _tcscat(text,buffer);
-    GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-
-    if ( bLeft )
-      TxYPt.x = CalcDistanceCoordinat(iABS_AS_HorDistance,  rc, &sDia)- tsize.cx - NIBLSCALE(3);
-    else
-      TxYPt.x = CalcDistanceCoordinat(iABS_AS_HorDistance,  rc, &sDia)+ NIBLSCALE(5);
-    if( abs( line[0].y -  line[1].y) > tsize.cy)
-      TxYPt.y = CalcHeightCoordinat( alt - (double)iAS_VertDistance/2.0, rc, &sDia) -tsize.cy/2 ;
-    else
-      TxYPt.y = min( line[0].y ,  line[1].y) - tsize.cy ;
-    ExtTextOut(hdc,  TxYPt.x,  TxYPt.y , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-	SelectObject(hdc, hfOldU);
-  }
-
-
-  RenderPlaneSideview( hdc, rc,0 , alt,wpt_brg, &sDia );
-
-  SetTextColor(hdc, Sideview_TextColor);
-  if(!bInvertColors)
-    SetBkMode(hdc, OPAQUE);
-  HFONT hfOld2 = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
-  DrawNorthArrow     ( hdc, GPSbrg          , rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(13));
-  DrawTelescope      ( hdc, iAS_Bearing-90.0, rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(38));
-  SelectObject(hdc, hfOld2);
-  SetBkMode(hdc, TRANSPARENT);
-
-
-
-  SelectObject(hdc, hfOld);
-  if(sDia.fYMin == 0)
-    SetTextColor(hdc, GROUND_TEXT_COLOUR);
-  else
-	SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
-  DrawXLabel(hdc, rc, TEXT("D"));
-  SetTextColor(hdc, Sideview_TextColor);
-  DrawYLabel(hdc, rc, TEXT("h"));
-
-  RenderBearingDiff  ( hdc, rc   , wpt_brg,  &sDia );
-}
-
-
-#if 0
-void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon,  double brg,  DiagrammStruct* psDiag )
-{
-  double range =psDiag->fXMax - psDiag->fXMin; // km
-  double fi, fj;
-  double hmin = psDiag->fYMin;
-  double hmax = psDiag->fYMax;
-  double lat, lon;
-  RECT rcd;
-  int i,j,k;
-
-#if (WINDOWSPC>0)
-  if(bInvertColors)
-    RenderSky( hdc, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
-#endif
-
-  FindLatitudeLongitude(PosLat, PosLon, brg  , psDiag->fXMin , &lat, &lon);
-
-  double d_lat[AIRSPACE_SCANSIZE_X];
-  double d_lon[AIRSPACE_SCANSIZE_X];
-  double d_alt[AIRSPACE_SCANSIZE_X];
-  double d_h[AIRSPACE_SCANSIZE_H];
-  AirSpaceSideViewSTRUCT d_airspace[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X];
-
-
-  BOOL bFound = false;
-  for ( k=0 ; k < GC_MAX_NO; k++) {
-    wsprintf(   Sideview_asDrawn[k].szAS_Name, TEXT(""));
-    Sideview_asDrawn[k].aiLable = ID_NO_LABLE;
-    Sideview_asDrawn[k].iType   = -1;
-    Sideview_asDrawn[k].iIdx    = -1;
-    Sideview_pHandeled[k].bEnabled=false;
-    Sideview_asDrawn[k].psAS    = NULL;
-    wsprintf( Sideview_pHandeled[k].szAS_Name, TEXT(""));
-    Sideview_pHandeled[k].aiLable = ID_NO_LABLE;
-    Sideview_pHandeled[k].iType   = -1;
-    Sideview_pHandeled[k].iIdx    = -1;
-    Sideview_pHandeled[k].bEnabled=false;
-    Sideview_pHandeled[k].psAS    = NULL;
-  }
-
-
-
-
-#define FRACT 0.75
-  RasterTerrain::Lock();
-  // want most accurate rounding here
-  RasterTerrain::SetTerrainRounding(0,0);
-
-  for (j=0; j< AIRSPACE_SCANSIZE_X; j++) { // scan range
-    fj = j*1.0/(AIRSPACE_SCANSIZE_X-1);
-    FindLatitudeLongitude(lat, lon, brg, range*fj,
-                          &d_lat[j], &d_lon[j]);
-    d_alt[j] = RasterTerrain::GetTerrainHeight(d_lat[j], d_lon[j]);
-    if (d_alt[j] == TERRAIN_INVALID) d_alt[j]=0; //@ 101027 BUGFIX
-    hmax = max(hmax, d_alt[j]);
-  }
-  RasterTerrain::Unlock();
-
-
-  double dfi = 1.0/(AIRSPACE_SCANSIZE_H-1);
-  double dfj = 1.0/(AIRSPACE_SCANSIZE_X-1);
-
-  for (i=0; i< AIRSPACE_SCANSIZE_H; i++) { // scan height
-    d_h[i] = (hmax-hmin)*i*dfi+hmin;
-  }
-  for (i=0; i< AIRSPACE_SCANSIZE_H; i++) { // scan height
-    for (j=0; j< AIRSPACE_SCANSIZE_X; j++) { // scan range
-      d_airspace[i][j].iType =  -1; // no airspace
-    }
-  }
-  CAirspaceManager::Instance().ScanAirspaceLine(d_lat, d_lon, d_h, d_alt, d_airspace);
-  int type;
-
-  double dx = dfj*(rc.right-rc.left-BORDER_X);
-  double dy = dfi*(rc.top-rc.bottom+BORDER_Y);
-  int x0 = rc.left+BORDER_X;
-  int y0 = rc.bottom-BORDER_Y;
-
-
-  for ( k=0 ; k < GC_MAX_NO; k++)
-  {
-	wsprintf(   Sideview_asDrawn[k].szAS_Name, TEXT(""));
-	Sideview_asDrawn[k].aiLable = ID_NO_LABLE;
-	Sideview_asDrawn[k].iType   = -1;
-	Sideview_asDrawn[k].iIdx    = -1;
-	Sideview_asDrawn[k].psAS    = NULL;
-    wsprintf( Sideview_pHandeled[k].szAS_Name, TEXT(""));
-    Sideview_pHandeled[k].aiLable = ID_NO_LABLE;
-    Sideview_pHandeled[k].iType   = -1;
-    Sideview_pHandeled[k].iIdx    = -1;
-    Sideview_pHandeled[k].psAS    = NULL;
-  }
-
-  HPEN mpen = (HPEN)CreatePen(PS_NULL, 0, RGB(0xf0,0xf0,0xb0));
-  HPEN oldpen = (HPEN)SelectObject(hdc, (HPEN)mpen);
-
-  Sideview_iNoHandeldSpaces=0;
-  for (i=0; i< AIRSPACE_SCANSIZE_H; i++)
-  { // scan height
-    fi = i*dfi;
-    for (j=0; j< AIRSPACE_SCANSIZE_X; j++)
-    { // scan range
-      fj = j*dfj;
-      type = d_airspace[i][j].iType;
-      {
-        if (type>=0)
-        {
-	      rcd.left = iround((j-FRACT)*dx)+x0;
-	      rcd.right = iround((j+FRACT)*dx)+x0;
-	      rcd.bottom = iround(((i)+FRACT)*dy)+y0;
-	      rcd.top = iround(((i)-FRACT)*dy)+y0;
-		  bFound = false;
-          if(rcd.top > y0)
-        	rcd.top = y0;
-          if(d_airspace[i][j].bEnabled)
-		    if(d_airspace[i][j].bRectAllowed == false)
-		    {
-		  	  SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(type));
-			  SetTextColor(hdc, MapWindow::GetAirspaceColourByClass(type));
-			  Rectangle(hdc,rcd.left,rcd.top,rcd.right,rcd.bottom);
-		    }
-
-          for (k=0 ; k < Sideview_iNoHandeldSpaces; k++)
-          {
-            if(k < GC_MAX_NO)
-            {
-			  if(  Sideview_pHandeled[k].iIdx  ==  d_airspace[i][j].iIdx )
-			  {
-			    bFound = true;
-			    if( rcd.left   < Sideview_pHandeled[k].rc.left  )  Sideview_pHandeled[k].rc.left    = rcd.left;
-			    if( rcd.right  > Sideview_pHandeled[k].rc.right )  Sideview_pHandeled[k].rc.right   = rcd.right;
-			    if( rcd.bottom < Sideview_pHandeled[k].rc.bottom)  Sideview_pHandeled[k].rc.bottom  = rcd.bottom;
-			    if( rcd.top    > Sideview_pHandeled[k].rc.top   )  Sideview_pHandeled[k].rc.top     = rcd.top;
-			  }
-            }
-          }
-	      if(!bFound)
-	      {
-	        if(Sideview_iNoHandeldSpaces < GC_MAX_NO)
-	        {
-		      Sideview_pHandeled[Sideview_iNoHandeldSpaces].iType =  d_airspace[i][j].iType;
-		      Sideview_pHandeled[Sideview_iNoHandeldSpaces].iIdx  =  d_airspace[i][j].iIdx;
-		      Sideview_pHandeled[Sideview_iNoHandeldSpaces].bRectAllowed =  d_airspace[i][j].bRectAllowed;
-		      Sideview_pHandeled[Sideview_iNoHandeldSpaces].psAS     = d_airspace[i][j].psAS;
-		      Sideview_pHandeled[Sideview_iNoHandeldSpaces].rc       = rcd;
-		      Sideview_pHandeled[Sideview_iNoHandeldSpaces].bEnabled =  d_airspace[i][j].bEnabled;
-
-			  _tcsncpy(Sideview_pHandeled[Sideview_iNoHandeldSpaces].szAS_Name, d_airspace[i][j].szAS_Name, NAME_SIZE-1);
-			  Sideview_iNoHandeldSpaces++;
-	        }
-	      }
-        }
-      }
-    }
-  }
-
-
-  SelectObject(hdc, (HPEN)mpen);
-  for (k=0 ; k < Sideview_iNoHandeldSpaces; k++)
-  {
-	if( Sideview_pHandeled[k].iIdx != -1)
-    {
-	  int  type = Sideview_pHandeled[k].iType;
-	  RECT rcd =Sideview_pHandeled[k].rc;
-	  if(Sideview_pHandeled[k].bEnabled)
-	  {
-		if(Sideview_pHandeled[k].bRectAllowed == true)
-		{
-		  SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(type));
-		  SetTextColor(hdc, MapWindow::GetAirspaceColourByClass(type));
-		  Rectangle(hdc,rcd.left,rcd.top,rcd.right,rcd.bottom);
-		}
-	  }
-	  else
-	  {
-		//	NULL_BRUSH
-		SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-		long lDisabledColor = ChangeBrightness( MapWindow::GetAirspaceColourByClass(type), 0.4f);
-	//	HPEN Newpen = (HPEN)CreatePen(PS_DOT, 3, lDisabledColor);
-		HPEN Newpen = (HPEN)CreatePen(PS_SOLID, 3, lDisabledColor);
-		HPEN Oldpen = (HPEN)SelectObject(hdc, Newpen);
-		Rectangle(hdc,rcd.left,rcd.top,rcd.right,rcd.bottom);
-		SelectObject(hdc, Oldpen);
-	  }
-    }
-  }
-  // draw ground
-  POINT ground[4];
-  HPEN   hpHorizonGround;
-  HBRUSH hbHorizonGround;
-  int itemp;
-  hpHorizonGround = (HPEN)CreatePen(PS_SOLID, IBLSCALE(1), GROUND_COLOUR);
-  hbHorizonGround = (HBRUSH)CreateSolidBrush(GROUND_COLOUR);
-  SelectObject(hdc, hpHorizonGround);
-  SelectObject(hdc, hbHorizonGround);
-
-  int  iBottom = rc.bottom;
-  if(psDiag->fYMin < 0.1)
-	Rectangle(hdc,rc.left,rc.bottom,rc.right,rc.bottom-BORDER_Y);
-
-  for (j=1; j< AIRSPACE_SCANSIZE_X; j++) { // scan range
-    ground[0].x = iround((j-1)*dx)+x0;
-    ground[1].x = ground[0].x;
-    ground[2].x = iround(j*dx)+x0;
-    ground[3].x = ground[2].x;
-    ground[0].y = iBottom;
-
-    itemp = iround((d_alt[j-1]-hmin)/(hmax-hmin)*(rc.top-rc.bottom+BORDER_Y))+y0;
-    if (itemp>y0) itemp = y0;
-    ground[1].y = itemp;
-    itemp = iround((d_alt[j]-hmin)/(hmax-hmin)*(rc.top-rc.bottom+BORDER_Y))+y0;
-    if (itemp>y0) itemp = y0;
-    ground[2].y = itemp;
-    ground[3].y = iBottom;// y0;
-    if ((ground[1].y == y0) && (ground[2].y == y0)) continue;
-    Polygon(hdc, ground, 4);
-  }
-
-
-BOOL bDrawn ;
-int iNoOfDrawnNames=0;
-_TCHAR text [80];
-SIZE tsize;
-  HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont); // LK8MapFont
-    for (k=0 ; k < Sideview_iNoHandeldSpaces ; k++)
-    {
-      if( Sideview_pHandeled[k].iIdx != -1)
-      {
-        bDrawn = false;
-        for (i=0; i < iNoOfDrawnNames; i++)
-        {
-          if(Sideview_pHandeled[k].bEnabled)
-            if( bDrawn == false)
-            {
-              if(_tcsncmp((TCHAR*)Sideview_asDrawn[i].szAS_Name, (TCHAR*)Sideview_pHandeled[k].szAS_Name,NAME_SIZE) == 0)
-              //if(  Sideview_pHandeled[k].iIdx  ==  Sideview_asDrawn[i].iIdx )
-              if(Sideview_pHandeled[k].iType == Sideview_asDrawn[i].iType) bDrawn = true;
-            }
-        }
-
-        if(bDrawn == false)
-        {
-          int  type = Sideview_pHandeled[k].iType;
-          SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(type));
-          if(Sideview_pHandeled[k].bEnabled)
-            SetTextColor(hdc, Sideview_TextColor); // RGB_MENUTITLEFG
-          else
-            SetTextColor(hdc, RGB_GGREY);
-          RECT rcd =Sideview_pHandeled[k].rc;
-
-          int x = rcd.left + (rcd.right - rcd.left)/2;
-          int y = rcd.top  - (rcd.top   - rcd.bottom)/2;
-
-          _tcsncpy(text, Sideview_pHandeled[k].szAS_Name,NAME_SIZE-1/* sizeof(text)/sizeof(text[0])*/);
-          GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-          x -= tsize.cx/2; // - NIBLSCALE(5);
-          y -= tsize.cy;   // - NIBLSCALE(5);
-          if ( (Sideview_asDrawn[iNoOfDrawnNames].aiLable < ID_FULL_LABLE) && /* already drawn ? */
-               (tsize.cx < (rcd.right-rcd.left)) &&
-               ((y)  < rcd.top) &&
-               ((y + tsize.cy)  > rcd.bottom)
-             )
-          {
-            ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-
-            _tcsncpy((wchar_t*)  Sideview_asDrawn[iNoOfDrawnNames].szAS_Name, (wchar_t*) Sideview_pHandeled[k].szAS_Name, NAME_SIZE);
-            Sideview_asDrawn[iNoOfDrawnNames].aiLable = ID_FULL_LABLE;
-            Sideview_asDrawn[iNoOfDrawnNames].iType = type;
-            Sideview_asDrawn[iNoOfDrawnNames].iIdx  = Sideview_pHandeled[k].iIdx;
-            iNoOfDrawnNames++;
-            y = rcd.top  - (rcd.top   - rcd.bottom)/2;
-          }
-
-          _tcsncpy((wchar_t*)text, (wchar_t*) CAirspaceManager::Instance().GetAirspaceTypeShortText( Sideview_pHandeled[k].iType), NAME_SIZE);
-          GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-          x = rcd.left + (rcd.right - rcd.left)/2;
-          if ( (Sideview_asDrawn[iNoOfDrawnNames].aiLable == ID_NO_LABLE)  && /* already drawn ? */
-               (tsize.cx < (rcd.right-rcd.left)) &&
-               ((y)  < rcd.top) &&
-               ((y + tsize.cy)  > rcd.bottom)
-             )
-          {
-            x -= tsize.cx/2; // - NIBLSCALE(5);
-            ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-             _tcsncpy((wchar_t*)  Sideview_asDrawn[iNoOfDrawnNames].szAS_Name, (wchar_t*) Sideview_pHandeled[k].szAS_Name, NAME_SIZE);
-             Sideview_asDrawn[iNoOfDrawnNames].aiLable = ID_SHORT_LABLE;
-             Sideview_asDrawn[iNoOfDrawnNames].iType = type;
-             Sideview_asDrawn[iNoOfDrawnNames].iIdx  = Sideview_pHandeled[k].iIdx;
-            iNoOfDrawnNames++;
-          }
-        } //if bDrawn==false
-      } //if iIdx!=-1
-    } //for k
-  SelectObject(hdc, hfOld);
-  SetTextColor(hdc, Sideview_TextColor); // RGB_MENUTITLEFG
-
-  SelectObject(hdc, (HPEN)oldpen);
-  DeleteObject(mpen);
-  DeleteObject(hpHorizonGround);
-  DeleteObject(hbHorizonGround);
-
-
-}
-#endif
