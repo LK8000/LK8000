@@ -78,12 +78,7 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
     calc_altitudeagl = CALCULATED_INFO.AltitudeAGL;
     calc_average30s = CALCULATED_INFO.Average30s;
 
-// TODO FIX check use NavAltitude , no need to use alt
-    if (GPS_INFO.BaroAltitudeAvailable && EnableNavBaroAltitude) {
-      alt = GPS_INFO.BaroAltitude;
-    } else {
-      alt = GPS_INFO.Altitude;
-    }
+    alt = CALCULATED_INFO.NavAltitude;
   }
   UnlockFlightData();
 

@@ -21,10 +21,7 @@
 using std::min;
 using std::max;
 
-static double Sideview_alt; // this can be changed probably with NavAltitude
-
 extern int Sideview_asp_heading_task;
-
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[GC_MAX_NO];
 extern AirSpaceSideViewSTRUCT Sideview_asDrawn[GC_MAX_NO];
 extern COLORREF  Sideview_TextColor;
@@ -80,9 +77,9 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
 
 // TODO FIX CHECK  use NavAltitude instead, no need to use alt
     if (GPS_INFO.BaroAltitudeAvailable && EnableNavBaroAltitude) {
-      Sideview_alt = GPS_INFO.BaroAltitude;
+      CALCULATED_INFO.NavAltitude = GPS_INFO.BaroAltitude;
     } else {
-      Sideview_alt = GPS_INFO.Altitude;
+      CALCULATED_INFO.NavAltitude = GPS_INFO.Altitude;
     }
     calc_terrainalt = CALCULATED_INFO.TerrainAlt;
     calc_altitudeagl = CALCULATED_INFO.AltitudeAGL;
@@ -135,7 +132,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
                                        CALCULATED_INFO.WindBearing,
                                        0, 0, true,
                                        0)  - WayPointList[overindex].Altitude;
-      fLD = (int) wpt_dist / (Sideview_alt-wpt_altarriv+wpt_altitude);
+      fLD = (int) wpt_dist / (CALCULATED_INFO.NavAltitude-wpt_altarriv+wpt_altitude);
       if (IsSafetyAltitudeInUse(overindex)) wpt_altarriv -= SAFETYALTITUDEARRIVAL;
 
 
@@ -149,8 +146,8 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   }
   
 
-  double hmin = max(0.0, Sideview_alt-2300);
-  double hmax = max(MAXALTTODAY, Sideview_alt+1000);
+  double hmin = max(0.0, CALCULATED_INFO.NavAltitude-2300);
+  double hmax = max(MAXALTTODAY, CALCULATED_INFO.NavAltitude+1000);
 
   DiagrammStruct sDia;
   sDia.fXMin =-5000.0f;
@@ -255,7 +252,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
         altarriv = wpt_altarriv_mc0 + wpt_altitude;
         if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
         line[0].x = CalcDistanceCoordinat( 0, rc, &sDia);
-        line[0].y = CalcHeightCoordinat  ( Sideview_alt,   rc, &sDia );
+        line[0].y = CalcHeightCoordinat  ( CALCULATED_INFO.NavAltitude,   rc, &sDia );
         line[1].x = CalcDistanceCoordinat( wpt_dist, rc, &sDia);
         line[1].y = CalcHeightCoordinat( altarriv ,   rc, &sDia );
         StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
@@ -263,7 +260,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
       altarriv = wpt_altarriv + wpt_altitude;
       if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
       line[0].x = CalcDistanceCoordinat( 0, rc, &sDia);
-      line[0].y = CalcHeightCoordinat( Sideview_alt,   rc, &sDia );
+      line[0].y = CalcHeightCoordinat( CALCULATED_INFO.NavAltitude,   rc, &sDia );
       line[1].x = CalcDistanceCoordinat( wpt_dist, rc, &sDia);
       line[1].y = CalcHeightCoordinat( altarriv ,   rc, &sDia );
       StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
@@ -271,9 +268,9 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
       double t = fDist/speed;
 
       line[0].x = CalcDistanceCoordinat( 0, rc, &sDia);
-      line[0].y = CalcHeightCoordinat  ( Sideview_alt,   rc, &sDia);
+      line[0].y = CalcHeightCoordinat  ( CALCULATED_INFO.NavAltitude,   rc, &sDia);
       line[1].x = rc.right;
-      line[1].y = CalcHeightCoordinat  ( Sideview_alt+calc_average30s*t,   rc, &sDia);
+      line[1].y = CalcHeightCoordinat  ( CALCULATED_INFO.NavAltitude+calc_average30s*t,   rc, &sDia);
       StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
     }
   }
@@ -417,7 +414,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
       GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
       SetTextColor(hdc, BLUE_COL);
       x = CalcDistanceCoordinat(wpt_dist/2,  rc, &sDia)- tsize.cx/2;
-      y = CalcHeightCoordinat( (Sideview_alt + altarriv)/2 + wpt_altitude ,   rc, &sDia ) + tsize.cy;
+      y = CalcHeightCoordinat( (CALCULATED_INFO.NavAltitude + altarriv)/2 + wpt_altitude ,   rc, &sDia ) + tsize.cy;
       ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     }
 
@@ -446,7 +443,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
 
   if (!Sideview_asp_heading_task)
     wpt_brg =90;
-  RenderPlaneSideview( hdc, rc, 0.0f, Sideview_alt,wpt_brg, &sDia );
+  RenderPlaneSideview( hdc, rc, 0.0f, CALCULATED_INFO.NavAltitude,wpt_brg, &sDia );
   HFONT hfOld2 = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
   SetTextColor(hdc, Sideview_TextColor);
   SetBkMode(hdc, OPAQUE);
