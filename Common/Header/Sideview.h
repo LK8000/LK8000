@@ -18,6 +18,34 @@
 #define BORDER_X 24
 #define BORDER_Y 19
 
+//#define SHOW_YELLO_RED_WARNING
+#define SONAR_TEST
+#define NEAR_AS_ZOOM_1000FT
+#define NEAR_AS_ZOOM_1000M
+
+#define MAXPAGE 8
+
+#define GROUND_COLOUR	RGB(157,101,60)
+#define GROUND_TEXT_COLOUR RGB_LIGHTGREEN
+#define INV_GROUND_TEXT_COLOUR  RGB(25, 25, 64)
+#define GC_NO_COLOR_STEPS  50
+//#define SKY_SPACE_COL  RGB(180,180,255)
+#define SKY_SPACE_COL  RGB(150,150,255)
+//#define SKY_HORIZON_COL  RGB(220,220,220)
+#define SKY_HORIZON_COL  RGB_WHITE
+
+
+#define GC_MAX_NO 50 //(AIRSPACE_SCANSIZE_H*AIRSPACE_SCANSIZE_X)
+#define ID_NO_LABLE    0
+#define ID_SHORT_LABLE 1
+#define ID_FULL_LABLE  2
+
+
+
+
+
+
+
 typedef struct
 {
   double fXMin, fXMax;

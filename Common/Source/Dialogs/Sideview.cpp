@@ -15,11 +15,6 @@ extern bool bInvertColors;
 using std::min;
 using std::max;
 
-#define GROUND_COLOUR RGB(157,101,60)
-#define GC_NO_COLOR_STEPS  150
-
-
-
 
 void DrawTelescope(HDC hdc, double fAngle, int x, int y)
 {

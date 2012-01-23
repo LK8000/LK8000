@@ -18,19 +18,12 @@
 #include "Sideview.h"
 
 
-//#define SHOW_YELLO_RED_WARNING
-#define SONAR_TEST
-#define NEAR_AS_ZOOM_1000FT
-#define NEAR_AS_ZOOM_1000M
-
 using std::min;
 using std::max;
 
 long lSonarBingDelay = 0;
 static double alt;
 static double fMaxAltToday=2500.0f;
-
-#define MAXPAGE 8
 
 double Statistics::yscale;
 double Statistics::xscale;
@@ -45,31 +38,25 @@ static HPEN penThinSignal = NULL;
 static int asp_heading_task = 0;
 bool bInvertColors =false;
 bool bSonarOn = true;
-COLORREF RGB_TEXT_COLOR = RGB_WHITE;
-
-#define GC_MAX_NO 50 //(AIRSPACE_SCANSIZE_H*AIRSPACE_SCANSIZE_X)
-#define ID_NO_LABLE    0
-#define ID_SHORT_LABLE 1
-#define ID_FULL_LABLE  2
 
 
-#define GROUND_COLOUR RGB(157,101,60)
+// These are globals, should start with Uppercase, and being non-static (local to this file)
+// they should have a Sideview_ remembering us what are they used for. Otherwise use a class,
+// which is exactly the same.
 
-#define GROUND_TEXT_COLOUR RGB_LIGHTGREEN
-#define  INV_GROUND_TEXT_COLOUR  RGB(25, 25, 64)
-#define GC_NO_COLOR_STEPS  50
-//#define SKY_SPACE_COL  RGB(180,180,255)
-#define SKY_SPACE_COL  RGB(150,150,255)
+COLORREF  Sideview_TextColor = RGB_WHITE;
+int	  Sideview_iNoHandeldSpaces=0;
 
-//#define SKY_HORIZON_COL  RGB(220,220,220)
-#define SKY_HORIZON_COL  RGB_WHITE
+AirSpaceSideViewSTRUCT Sideview_pHandeled[GC_MAX_NO];
+AirSpaceSideViewSTRUCT Sideview_asDrawn[GC_MAX_NO];
+
 
 
 TCHAR szNearAS[80];
 
-int iNohandeldSpaces=0;
-AirSpaceSideViewSTRUCT pHandeled[GC_MAX_NO];
-AirSpaceSideViewSTRUCT asDrawn[GC_MAX_NO];
+
+
+
 void Statistics::ResetScale() {
   unscaled_y = true;  
   unscaled_x = true;  
@@ -1675,7 +1662,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   else
 	SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
   DrawXGrid(hdc, rc, xtick/DISTANCEMODIFY, 0,  STYLE_THINDASHPAPER, xtick, true);
-  SetTextColor(hdc, RGB_TEXT_COLOR);
+  SetTextColor(hdc, Sideview_TextColor);
   if(Units::GetUserInvAltitudeUnit() == unFeet)
     DrawYGrid(hdc, rc, 500.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 500.0, true);
   else
@@ -1759,7 +1746,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   }
 
 
-  SelectObject(hdc, GetStockObject(RGB_TEXT_COLOR));
+  SelectObject(hdc, GetStockObject(Sideview_TextColor));
   SelectObject(hdc, GetStockObject(WHITE_BRUSH));
 
 
@@ -1776,7 +1763,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
     if (bDrawRightSide) x = line[0].x + NIBLSCALE(5);
     int y = rc.top + 3*tsize.cy;
 
-    SetTextColor(hdc, RGB_TEXT_COLOR);
+    SetTextColor(hdc, Sideview_TextColor);
     ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 
     // Print wpt distance
@@ -1791,7 +1778,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
 
 
 
-    SetTextColor(hdc, RGB_TEXT_COLOR);
+    SetTextColor(hdc, Sideview_TextColor);
     if (wpt_altarriv_mc0 > ALTDIFFLIMIT)
     {
       _stprintf(text, TEXT("Mc %3.1f: "), (LIFTMODIFY*fMC0));
@@ -1929,7 +1916,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
     wpt_brg =90;
   RenderPlaneSideview( hdc, rc, 0.0f, alt,wpt_brg, &sDia );
   HFONT hfOld2 = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
-  SetTextColor(hdc, RGB_TEXT_COLOR);
+  SetTextColor(hdc, Sideview_TextColor);
   SetBkMode(hdc, OPAQUE);
   DrawNorthArrow     ( hdc, GPSbrg          , rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(13));
 //  SetTextColor(hdc, RGB_BLACK);
@@ -1943,7 +1930,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   else
 	SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
   DrawXLabel(hdc, rc, TEXT("D"));
-  SetTextColor(hdc, RGB_TEXT_COLOR);
+  SetTextColor(hdc, Sideview_TextColor);
   DrawYLabel(hdc, rc, TEXT("h"));
 
 }
@@ -1983,12 +1970,12 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
   if(bInvertColors)
   {
     Sender->SetBackColor(SKY_HORIZON_COL);
-    RGB_TEXT_COLOR = INV_GROUND_TEXT_COLOUR;
+    Sideview_TextColor = INV_GROUND_TEXT_COLOUR;
   }
   else
-    RGB_TEXT_COLOR = RGB_WHITE;
+    Sideview_TextColor = RGB_WHITE;
 
-  SetTextColor(hDC, RGB_TEXT_COLOR);
+  SetTextColor(hDC, Sideview_TextColor);
 
   switch (page) {
   case ANALYSIS_PAGE_BAROGRAPH:
@@ -2677,12 +2664,12 @@ if(ulTimeNow - LastClick > 1000*ms)
 
 if(page ==ANALYSIS_PAGE_AIRSPACE)
   if (TouchContext ==  TCX_PROC_UP)
- for (k=0 ; k < iNohandeldSpaces; k++)
+ for (k=0 ; k < Sideview_iNoHandeldSpaces; k++)
  {
 
-   if( pHandeled[k].psAS != NULL)
+   if( Sideview_pHandeled[k].psAS != NULL)
    {
-     RECT rcd =pHandeled[k].rc;
+     RECT rcd =Sideview_pHandeled[k].rc;
 
      if (PtInRect(X,Y,rcd ))
      {
@@ -2690,7 +2677,7 @@ if(page ==ANALYSIS_PAGE_AIRSPACE)
 		    if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
 		  #endif
        // dlgAirspaceDetails does its own asp instance copying, getting a new copy is not needed here
-       dlgAirspaceDetails(pHandeled[k].psAS);
+       dlgAirspaceDetails(Sideview_pHandeled[k].psAS);
        return 0;
      }
    }
@@ -2712,6 +2699,7 @@ if(page ==ANALYSIS_PAGE_AIRSPACE)
 void dlgAnalysisShowModal(int inpage){
 static bool entered = false;
 
+StartupStore(_T("......... ANA\n"));
 
 if (entered == true) /* prevent re entrance */
 	return;
@@ -2925,7 +2913,7 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
     if(near_airspace.IsAltitudeInside((int)alt,(int)calc_altitudeagl,0))  /* vertical inside ........ */
     {
       if((iAS_sHorDistance) < 2500)
-        lSonarBingDelay = abs(iAS_sHorDistance)/150+22;
+        lSonarBingDelay = abs(iAS_sHorDistance)/150+2;
       if(iAS_sHorDistance < 0)
          lSonarBingDelay = 1;
     }
@@ -3077,7 +3065,7 @@ if(bValid)
   else
 	SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
   DrawXGrid(hdc, rc, xtick/DISTANCEMODIFY, 0, STYLE_THINDASHPAPER, xtick, true);
-  SetTextColor(hdc, RGB_TEXT_COLOR);
+  SetTextColor(hdc, Sideview_TextColor);
   double fScale = 1000;
   if((sDia.fYMax-sDia.fYMin) <= 1000)
 	fScale = 200.0f;
@@ -3126,7 +3114,7 @@ if(bValid)
 
   if (bValid)
   {
-	SetTextColor(hdc, RGB_TEXT_COLOR);
+	SetTextColor(hdc, Sideview_TextColor);
 	if(!bInvertColors)
 	  SetBkMode(hdc, OPAQUE);
 	HFONT hfOldU = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
@@ -3188,7 +3176,7 @@ if(bValid)
 
   RenderPlaneSideview( hdc, rc,0 , alt,wpt_brg, &sDia );
 
-  SetTextColor(hdc, RGB_TEXT_COLOR);
+  SetTextColor(hdc, Sideview_TextColor);
   if(!bInvertColors)
     SetBkMode(hdc, OPAQUE);
   HFONT hfOld2 = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
@@ -3205,14 +3193,14 @@ if(bValid)
   else
 	SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
   DrawXLabel(hdc, rc, TEXT("D"));
-  SetTextColor(hdc, RGB_TEXT_COLOR);
+  SetTextColor(hdc, Sideview_TextColor);
   DrawYLabel(hdc, rc, TEXT("h"));
 
   RenderBearingDiff  ( hdc, rc   , wpt_brg,  &sDia );
 }
 
 
-
+#if 0
 void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon,  double brg,  DiagrammStruct* psDiag )
 {
   double range =psDiag->fXMax - psDiag->fXMin; // km
@@ -3239,18 +3227,18 @@ void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon, 
 
   BOOL bFound = false;
   for ( k=0 ; k < GC_MAX_NO; k++) {
-    wsprintf(   asDrawn[k].szAS_Name, TEXT(""));
-    asDrawn[k].aiLable = ID_NO_LABLE;
-    asDrawn[k].iType   = -1;
-    asDrawn[k].iIdx    = -1;
-    pHandeled[k].bEnabled=false;
-    asDrawn[k].psAS    = NULL;
-    wsprintf( pHandeled[k].szAS_Name, TEXT(""));
-    pHandeled[k].aiLable = ID_NO_LABLE;
-    pHandeled[k].iType   = -1;
-    pHandeled[k].iIdx    = -1;
-    pHandeled[k].bEnabled=false;
-    pHandeled[k].psAS    = NULL;
+    wsprintf(   Sideview_asDrawn[k].szAS_Name, TEXT(""));
+    Sideview_asDrawn[k].aiLable = ID_NO_LABLE;
+    Sideview_asDrawn[k].iType   = -1;
+    Sideview_asDrawn[k].iIdx    = -1;
+    Sideview_pHandeled[k].bEnabled=false;
+    Sideview_asDrawn[k].psAS    = NULL;
+    wsprintf( Sideview_pHandeled[k].szAS_Name, TEXT(""));
+    Sideview_pHandeled[k].aiLable = ID_NO_LABLE;
+    Sideview_pHandeled[k].iType   = -1;
+    Sideview_pHandeled[k].iIdx    = -1;
+    Sideview_pHandeled[k].bEnabled=false;
+    Sideview_pHandeled[k].psAS    = NULL;
   }
 
 
@@ -3294,22 +3282,22 @@ void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon, 
 
   for ( k=0 ; k < GC_MAX_NO; k++)
   {
-	wsprintf(   asDrawn[k].szAS_Name, TEXT(""));
-	asDrawn[k].aiLable = ID_NO_LABLE;
-	asDrawn[k].iType   = -1;
-	asDrawn[k].iIdx    = -1;
-	asDrawn[k].psAS    = NULL;
-    wsprintf( pHandeled[k].szAS_Name, TEXT(""));
-    pHandeled[k].aiLable = ID_NO_LABLE;
-    pHandeled[k].iType   = -1;
-    pHandeled[k].iIdx    = -1;
-    pHandeled[k].psAS    = NULL;
+	wsprintf(   Sideview_asDrawn[k].szAS_Name, TEXT(""));
+	Sideview_asDrawn[k].aiLable = ID_NO_LABLE;
+	Sideview_asDrawn[k].iType   = -1;
+	Sideview_asDrawn[k].iIdx    = -1;
+	Sideview_asDrawn[k].psAS    = NULL;
+    wsprintf( Sideview_pHandeled[k].szAS_Name, TEXT(""));
+    Sideview_pHandeled[k].aiLable = ID_NO_LABLE;
+    Sideview_pHandeled[k].iType   = -1;
+    Sideview_pHandeled[k].iIdx    = -1;
+    Sideview_pHandeled[k].psAS    = NULL;
   }
 
   HPEN mpen = (HPEN)CreatePen(PS_NULL, 0, RGB(0xf0,0xf0,0xb0));
   HPEN oldpen = (HPEN)SelectObject(hdc, (HPEN)mpen);
 
-  iNohandeldSpaces=0;
+  Sideview_iNoHandeldSpaces=0;
   for (i=0; i< AIRSPACE_SCANSIZE_H; i++)
   { // scan height
     fi = i*dfi;
@@ -3335,33 +3323,33 @@ void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon, 
 			  Rectangle(hdc,rcd.left,rcd.top,rcd.right,rcd.bottom);
 		    }
 
-          for (k=0 ; k < iNohandeldSpaces; k++)
+          for (k=0 ; k < Sideview_iNoHandeldSpaces; k++)
           {
             if(k < GC_MAX_NO)
             {
-			  if(  pHandeled[k].iIdx  ==  d_airspace[i][j].iIdx )
+			  if(  Sideview_pHandeled[k].iIdx  ==  d_airspace[i][j].iIdx )
 			  {
 			    bFound = true;
-			    if( rcd.left   < pHandeled[k].rc.left  )  pHandeled[k].rc.left    = rcd.left;
-			    if( rcd.right  > pHandeled[k].rc.right )  pHandeled[k].rc.right   = rcd.right;
-			    if( rcd.bottom < pHandeled[k].rc.bottom)  pHandeled[k].rc.bottom  = rcd.bottom;
-			    if( rcd.top    > pHandeled[k].rc.top   )  pHandeled[k].rc.top     = rcd.top;
+			    if( rcd.left   < Sideview_pHandeled[k].rc.left  )  Sideview_pHandeled[k].rc.left    = rcd.left;
+			    if( rcd.right  > Sideview_pHandeled[k].rc.right )  Sideview_pHandeled[k].rc.right   = rcd.right;
+			    if( rcd.bottom < Sideview_pHandeled[k].rc.bottom)  Sideview_pHandeled[k].rc.bottom  = rcd.bottom;
+			    if( rcd.top    > Sideview_pHandeled[k].rc.top   )  Sideview_pHandeled[k].rc.top     = rcd.top;
 			  }
             }
           }
 	      if(!bFound)
 	      {
-	        if(iNohandeldSpaces < GC_MAX_NO)
+	        if(Sideview_iNoHandeldSpaces < GC_MAX_NO)
 	        {
-		      pHandeled[iNohandeldSpaces].iType =  d_airspace[i][j].iType;
-		      pHandeled[iNohandeldSpaces].iIdx  =  d_airspace[i][j].iIdx;
-		      pHandeled[iNohandeldSpaces].bRectAllowed =  d_airspace[i][j].bRectAllowed;
-		      pHandeled[iNohandeldSpaces].psAS     = d_airspace[i][j].psAS;
-		      pHandeled[iNohandeldSpaces].rc       = rcd;
-		      pHandeled[iNohandeldSpaces].bEnabled =  d_airspace[i][j].bEnabled;
+		      Sideview_pHandeled[Sideview_iNoHandeldSpaces].iType =  d_airspace[i][j].iType;
+		      Sideview_pHandeled[Sideview_iNoHandeldSpaces].iIdx  =  d_airspace[i][j].iIdx;
+		      Sideview_pHandeled[Sideview_iNoHandeldSpaces].bRectAllowed =  d_airspace[i][j].bRectAllowed;
+		      Sideview_pHandeled[Sideview_iNoHandeldSpaces].psAS     = d_airspace[i][j].psAS;
+		      Sideview_pHandeled[Sideview_iNoHandeldSpaces].rc       = rcd;
+		      Sideview_pHandeled[Sideview_iNoHandeldSpaces].bEnabled =  d_airspace[i][j].bEnabled;
 
-			  _tcsncpy(pHandeled[iNohandeldSpaces].szAS_Name, d_airspace[i][j].szAS_Name, NAME_SIZE-1);
-			  iNohandeldSpaces++;
+			  _tcsncpy(Sideview_pHandeled[Sideview_iNoHandeldSpaces].szAS_Name, d_airspace[i][j].szAS_Name, NAME_SIZE-1);
+			  Sideview_iNoHandeldSpaces++;
 	        }
 	      }
         }
@@ -3371,15 +3359,15 @@ void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon, 
 
 
   SelectObject(hdc, (HPEN)mpen);
-  for (k=0 ; k < iNohandeldSpaces; k++)
+  for (k=0 ; k < Sideview_iNoHandeldSpaces; k++)
   {
-	if( pHandeled[k].iIdx != -1)
+	if( Sideview_pHandeled[k].iIdx != -1)
     {
-	  int  type = pHandeled[k].iType;
-	  RECT rcd =pHandeled[k].rc;
-	  if(pHandeled[k].bEnabled)
+	  int  type = Sideview_pHandeled[k].iType;
+	  RECT rcd =Sideview_pHandeled[k].rc;
+	  if(Sideview_pHandeled[k].bEnabled)
 	  {
-		if(pHandeled[k].bRectAllowed == true)
+		if(Sideview_pHandeled[k].bRectAllowed == true)
 		{
 		  SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(type));
 		  SetTextColor(hdc, MapWindow::GetAirspaceColourByClass(type));
@@ -3437,40 +3425,40 @@ int iNoOfDrawnNames=0;
 _TCHAR text [80];
 SIZE tsize;
   HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont); // LK8MapFont
-    for (k=0 ; k < iNohandeldSpaces ; k++)
+    for (k=0 ; k < Sideview_iNoHandeldSpaces ; k++)
     {
-      if( pHandeled[k].iIdx != -1)
+      if( Sideview_pHandeled[k].iIdx != -1)
       {
         bDrawn = false;
         for (i=0; i < iNoOfDrawnNames; i++)
         {
-          if(pHandeled[k].bEnabled)
+          if(Sideview_pHandeled[k].bEnabled)
             if( bDrawn == false)
             {
-              if(_tcsncmp((TCHAR*)asDrawn[i].szAS_Name, (TCHAR*)pHandeled[k].szAS_Name,NAME_SIZE) == 0)
-              //if(  pHandeled[k].iIdx  ==  asDrawn[i].iIdx )
-              if(pHandeled[k].iType == asDrawn[i].iType) bDrawn = true;
+              if(_tcsncmp((TCHAR*)Sideview_asDrawn[i].szAS_Name, (TCHAR*)Sideview_pHandeled[k].szAS_Name,NAME_SIZE) == 0)
+              //if(  Sideview_pHandeled[k].iIdx  ==  Sideview_asDrawn[i].iIdx )
+              if(Sideview_pHandeled[k].iType == Sideview_asDrawn[i].iType) bDrawn = true;
             }
         }
 
         if(bDrawn == false)
         {
-          int  type = pHandeled[k].iType;
+          int  type = Sideview_pHandeled[k].iType;
           SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(type));
-          if(pHandeled[k].bEnabled)
-            SetTextColor(hdc, RGB_TEXT_COLOR); // RGB_MENUTITLEFG
+          if(Sideview_pHandeled[k].bEnabled)
+            SetTextColor(hdc, Sideview_TextColor); // RGB_MENUTITLEFG
           else
             SetTextColor(hdc, RGB_GGREY);
-          RECT rcd =pHandeled[k].rc;
+          RECT rcd =Sideview_pHandeled[k].rc;
 
           int x = rcd.left + (rcd.right - rcd.left)/2;
           int y = rcd.top  - (rcd.top   - rcd.bottom)/2;
 
-          _tcsncpy(text, pHandeled[k].szAS_Name,NAME_SIZE-1/* sizeof(text)/sizeof(text[0])*/);
+          _tcsncpy(text, Sideview_pHandeled[k].szAS_Name,NAME_SIZE-1/* sizeof(text)/sizeof(text[0])*/);
           GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
           x -= tsize.cx/2; // - NIBLSCALE(5);
           y -= tsize.cy;   // - NIBLSCALE(5);
-          if ( (asDrawn[iNoOfDrawnNames].aiLable < ID_FULL_LABLE) && /* already drawn ? */
+          if ( (Sideview_asDrawn[iNoOfDrawnNames].aiLable < ID_FULL_LABLE) && /* already drawn ? */
                (tsize.cx < (rcd.right-rcd.left)) &&
                ((y)  < rcd.top) &&
                ((y + tsize.cy)  > rcd.bottom)
@@ -3478,18 +3466,18 @@ SIZE tsize;
           {
             ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 
-            _tcsncpy((wchar_t*)  asDrawn[iNoOfDrawnNames].szAS_Name, (wchar_t*) pHandeled[k].szAS_Name, NAME_SIZE);
-            asDrawn[iNoOfDrawnNames].aiLable = ID_FULL_LABLE;
-            asDrawn[iNoOfDrawnNames].iType = type;
-            asDrawn[iNoOfDrawnNames].iIdx  = pHandeled[k].iIdx;
+            _tcsncpy((wchar_t*)  Sideview_asDrawn[iNoOfDrawnNames].szAS_Name, (wchar_t*) Sideview_pHandeled[k].szAS_Name, NAME_SIZE);
+            Sideview_asDrawn[iNoOfDrawnNames].aiLable = ID_FULL_LABLE;
+            Sideview_asDrawn[iNoOfDrawnNames].iType = type;
+            Sideview_asDrawn[iNoOfDrawnNames].iIdx  = Sideview_pHandeled[k].iIdx;
             iNoOfDrawnNames++;
             y = rcd.top  - (rcd.top   - rcd.bottom)/2;
           }
 
-          _tcsncpy((wchar_t*)text, (wchar_t*) CAirspaceManager::Instance().GetAirspaceTypeShortText( pHandeled[k].iType), NAME_SIZE);
+          _tcsncpy((wchar_t*)text, (wchar_t*) CAirspaceManager::Instance().GetAirspaceTypeShortText( Sideview_pHandeled[k].iType), NAME_SIZE);
           GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
           x = rcd.left + (rcd.right - rcd.left)/2;
-          if ( (asDrawn[iNoOfDrawnNames].aiLable == ID_NO_LABLE)  && /* already drawn ? */
+          if ( (Sideview_asDrawn[iNoOfDrawnNames].aiLable == ID_NO_LABLE)  && /* already drawn ? */
                (tsize.cx < (rcd.right-rcd.left)) &&
                ((y)  < rcd.top) &&
                ((y + tsize.cy)  > rcd.bottom)
@@ -3497,17 +3485,17 @@ SIZE tsize;
           {
             x -= tsize.cx/2; // - NIBLSCALE(5);
             ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-             _tcsncpy((wchar_t*)  asDrawn[iNoOfDrawnNames].szAS_Name, (wchar_t*) pHandeled[k].szAS_Name, NAME_SIZE);
-             asDrawn[iNoOfDrawnNames].aiLable = ID_SHORT_LABLE;
-             asDrawn[iNoOfDrawnNames].iType = type;
-             asDrawn[iNoOfDrawnNames].iIdx  = pHandeled[k].iIdx;
+             _tcsncpy((wchar_t*)  Sideview_asDrawn[iNoOfDrawnNames].szAS_Name, (wchar_t*) Sideview_pHandeled[k].szAS_Name, NAME_SIZE);
+             Sideview_asDrawn[iNoOfDrawnNames].aiLable = ID_SHORT_LABLE;
+             Sideview_asDrawn[iNoOfDrawnNames].iType = type;
+             Sideview_asDrawn[iNoOfDrawnNames].iIdx  = Sideview_pHandeled[k].iIdx;
             iNoOfDrawnNames++;
           }
         } //if bDrawn==false
       } //if iIdx!=-1
     } //for k
   SelectObject(hdc, hfOld);
-  SetTextColor(hdc, RGB_TEXT_COLOR); // RGB_MENUTITLEFG
+  SetTextColor(hdc, Sideview_TextColor); // RGB_MENUTITLEFG
 
   SelectObject(hdc, (HPEN)oldpen);
   DeleteObject(mpen);
@@ -3516,4 +3504,4 @@ SIZE tsize;
 
 
 }
-
+#endif
