@@ -499,6 +499,7 @@ _buttondown:
 	// Otherwise process virtual keys etc. as usual
 	if (MouseWasPanMoving) {
 		MouseWasPanMoving=false;
+		ignorenext=false;
 		RefreshMap();
 		break;
 	}
