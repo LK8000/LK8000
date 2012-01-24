@@ -19,11 +19,12 @@ static BOOL PWES1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 BOOL devWesterboerPutMacCready(PDeviceDescriptor_t d, double Mc);
 BOOL devWesterboerPutBallast(PDeviceDescriptor_t d, double Ballast);
 BOOL devWesterboerPutBugs(PDeviceDescriptor_t d, double Bus);
+BOOL devWesterboerPutWingload(PDeviceDescriptor_t d, double fWingload);
 
-BOOL bValid1 = true;
 int iReceiveSuppress = 0;
 
-
+int iWEST_RxUpdateTime=0;
+int iWEST_TxUpdateTime=0;
 
 int NMEAddCheckSumStrg( TCHAR szStrg[] )
 {
@@ -45,11 +46,9 @@ TCHAR  szCheck[254];
 
 bool RequestInfos(PDeviceDescriptor_t d)
 {
-	static int i =0;
-
-	if(i++==100)
-	  i=0;
-
+static int i =0;
+if (i++ > 10)
+	i=0;
 TCHAR  szTmp[254];
   _stprintf(szTmp, TEXT("$PWES4,1,,,,,,,,"));
   NMEAddCheckSumStrg(szTmp);
@@ -57,17 +56,44 @@ TCHAR  szTmp[254];
 
   return true;
 }
+
+
+
 static BOOL WesterboerParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
 
   (void)d;
-double oldMC =0;
+
+
+
+
+
 /* this is for auto MC calculation, because we do not get a notification on changed
  * MC while changed by auto calac                                                     */
-  if(fabs(oldMC - MACCREADY)> 0.05f)
+
+if(_tcsncmp(TEXT("$PWES0"), String, 6)==0)
+{
+  if(iWEST_RxUpdateTime > 0)
   {
-	oldMC = MACCREADY;
-	devWesterboerPutMacCready( d, MACCREADY);
+	iWEST_RxUpdateTime--;
   }
+  else
+  {
+	static  double oldMC =0;
+    if(fabs(oldMC - MACCREADY)> 0.01f)
+    {
+      oldMC =  MACCREADY;
+	  devWesterboerPutMacCready( d, MACCREADY);
+    }
+
+    static  double fOldWingLoad= -1.0;
+    if( fabs(fOldWingLoad - GlidePolar::WingLoading)> 0.05f)
+    {
+      fOldWingLoad = GlidePolar::WingLoading;
+      devWesterboerPutWingload( d, GlidePolar::WingLoading );
+    }
+  }
+}
+
 
 
   if(_tcsncmp(TEXT("$PWES0"), String, 6)==0)
@@ -269,24 +295,35 @@ static BOOL PWES1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 
   TCHAR ctemp[80];
   double fTemp;
-
+  int iTmp;
 
   // Get MC Ready
   NMEAParser::ExtractParameter(String,ctemp,1);
-
-  fTemp = StrToDouble(ctemp,NULL)/10;
-  if(fabs(fTemp-MACCREADY)> 0.1)
+  iTmp = (int)StrToDouble(ctemp,NULL);
+  fTemp = (double)iTmp/10.0f;
+  if(fabs(fTemp-MACCREADY)> 0.05)
+  {
     MACCREADY = fTemp;
+    iWEST_RxUpdateTime = 5;
+  }
+
   NMEAParser::ExtractParameter(String,ctemp,6);
-  fTemp = StrToDouble(ctemp,NULL);
-  GlidePolar::WingLoading = fTemp/10;
+  iTmp = (int)StrToDouble(ctemp,NULL);
+  fTemp = (double)iTmp/ 10.0f;
+  if(fabs(fTemp-GlidePolar::WingLoading )> 0.05)
+  {
+    GlidePolar::WingLoading = fTemp;
+    iWEST_RxUpdateTime = 5;
+  }
 
   NMEAParser::ExtractParameter(String,ctemp,7);
-  fTemp = StrToDouble(ctemp,NULL);
-  fTemp = (100.0f-fTemp)/100.0f;
+  iTmp = (int) StrToDouble(ctemp,NULL);
+  fTemp = (double)(100-iTmp)/100.0f;
   if(fabs(fTemp-BUGS)> 0.005)
+  {
     BUGS = fTemp;
-
+    iWEST_RxUpdateTime = 5;
+  }
 
   return TRUE;
 }
@@ -296,9 +333,8 @@ static BOOL PWES1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 
 BOOL devWesterboerPutMacCready(PDeviceDescriptor_t d, double Mc){
 	  (void)d;
-if(bValid1 == false)
-  return false;
-iReceiveSuppress = 2;
+
+
 TCHAR  szTmp[254];
   _stprintf(szTmp, TEXT("$PWES4,,%d,,,,,,,"),(int)(Mc*10.0f+0.49f));
   NMEAddCheckSumStrg(szTmp);
@@ -309,13 +345,11 @@ TCHAR  szTmp[254];
 }
 
 
-BOOL devWesterboerPutBallast(PDeviceDescriptor_t d, double Ballast){
+BOOL devWesterboerPutWingload(PDeviceDescriptor_t d, double fWingload){
 	  (void)d;
-if(bValid1 == false)
-  return false;
-iReceiveSuppress = 2;
+
   TCHAR  szTmp[254];
-    _stprintf(szTmp, TEXT("$PWES4,,,,%d,,,,,"),(int)(GlidePolar::WingLoading *10.0f+0.5f));
+    _stprintf(szTmp, TEXT("$PWES4,,,,%d,,,,,"),(int)(fWingload *10.0f+0.5f));
     NMEAddCheckSumStrg(szTmp);
     d->Com->WriteString(szTmp);
 
@@ -323,10 +357,17 @@ iReceiveSuppress = 2;
 
 }
 
+
+BOOL devWesterboerPutBallast(PDeviceDescriptor_t d, double Ballast){
+	  (void)d;
+
+  return(TRUE);
+
+}
+
 BOOL devWesterboerPutBugs(PDeviceDescriptor_t d, double Bug){
 	  (void)d;
-if(bValid1 == false)
-  return false;
+
 iReceiveSuppress = 2;
   TCHAR  szTmp[254];
     _stprintf(szTmp, TEXT("$PWES4,,,,,%d,,,,"),(int)((1.0-Bug)*100.0+0.5));
