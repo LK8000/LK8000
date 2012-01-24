@@ -33,6 +33,9 @@ using std::max;
 
 COLORREF taskcolor = RGB_TASKLINECOL; // 091216
 static bool ignorenext=false;
+#if FASTPAN
+static  bool MouseWasPanMoving=false;
+#endif
 
 MapWindow::Zoom MapWindow::zoom;
 MapWindow::Mode MapWindow::mode;
@@ -151,6 +154,9 @@ HPEN MapWindow::hpVisualGlideLightRed; // VENTA3
 HPEN MapWindow::hpVisualGlideHeavyRed; // VENTA3
 
 bool MapWindow::MapDirty = true;
+#if FASTPAN
+bool PanRefreshed=false;
+#endif
 
 bool MapWindow::ForceVisibilityScan = false;
 
@@ -160,13 +166,13 @@ DERIVED_INFO MapWindow::DerivedDrawInfo;
 extern void ShowMenu();
 
 
+int XstartScreen, YstartScreen, XtargetScreen, YtargetScreen;
 
 LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
                                         LPARAM lParam)
 {
   int i;
   static double Xstart, Ystart;
-  static int XstartScreen, YstartScreen;
   int X,Y;
   int gestX, gestY, gestDir=LKGESTURE_NONE, gestDist=-1;
   double Xlat, Ylat;
@@ -415,18 +421,45 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 
 #if FASTPAN
     case WM_MOUSEMOVE:
+	// Mouse moving!
 	if (wParam==MK_LBUTTON) {
+		// Consider only pure PAN mode, ignore the rest of cases here
 		if (!mode.Is(Mode::MODE_PAN)) break;
 		if (mode.Is(Mode::MODE_TARGET_PAN)) break;
 
 		X = LOWORD(lParam); Y = HIWORD(lParam);
 
-		if ( (abs(XstartScreen-X)+abs(YstartScreen-Y)) > NIBLSCALE(10)) {
+		if (PanRefreshed) {
+			// if map was redrawn, we update our position as well. just like
+			// we just clicked on mouse from here, like in BUTTONDOWN
+			//int offsetX=XstartScreen-X;
+			//int offsetY=YstartScreen-Y;
+			XstartScreen = X; YstartScreen = Y;
+			Screen2LatLon(XstartScreen, YstartScreen, Xstart, Ystart);
+			//X+=offsetX; Y+=offsetY;
+			PanRefreshed=false;
+			dwDownTime=GetTickCount();
+		}
+		// set a min mouse move to trigger panning
+		if ( (abs(XstartScreen-X)+abs(YstartScreen-Y)) > 20) {
 			Screen2LatLon(X, Y, Xlat, Ylat);
 			PanLongitude += (Xstart-Xlat);
 			PanLatitude  += (Ystart-Ylat);
 			ignorenext=true;
-			RefreshMap();
+			// Force full map refresh after this time in ms
+			#if (WINDOWSPC>0)
+			if ( (GetTickCount()-dwDownTime)>0) {	 // on pc force full rendering in real time
+			#else
+			if ( (GetTickCount()-dwDownTime)>800) {
+			#endif
+				dwDownTime=GetTickCount();
+				RefreshMap();
+			} else {
+				XtargetScreen=X; YtargetScreen=Y;
+				// This will force BitBlt operation in RenderMapWindow
+				RequestFastRefresh();
+			}
+			MouseWasPanMoving=true;
 		}
 	}
 	break;
@@ -453,11 +486,23 @@ _buttondown:
 
       LKevent=LKEVENT_NONE; // CHECK FIX TODO VENTA10  probably useless 090915
 
-      FullScreen();
+#if FASTPAN
+#else
+     FullScreen();
+#endif
       break;
 
     case WM_LBUTTONUP:
 	if (LockModeStatus) break;
+#if FASTPAN
+	// Mouse released after panning, quick redraw requested.
+	// Otherwise process virtual keys etc. as usual
+	if (MouseWasPanMoving) {
+		MouseWasPanMoving=false;
+		RefreshMap();
+		break;
+	}
+#endif
 	if (ignorenext||dwDownTime==0) { 
                 #ifdef DEBUG_MAPINPUT
 		if (ignorenext && (dwDownTime==0) )

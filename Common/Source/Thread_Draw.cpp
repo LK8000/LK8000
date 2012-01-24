@@ -28,6 +28,11 @@ BOOL MapWindow::Initialised = FALSE;
 DWORD  MapWindow::dwDrawThreadID;
 HANDLE MapWindow::hDrawThread;
 
+#define FASTPAN 1
+#if FASTPAN
+extern bool PanRefreshed;
+#endif
+
 #ifdef CPUSTATS
 extern void DrawCpuStats(HDC hdc, RECT rc );
 #endif
@@ -128,13 +133,47 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
       //   RefreshMap()      in drawthread generally
       //
       if (!MapDirty && !first) {
+#if FASTPAN
+extern int XstartScreen, YstartScreen, XtargetScreen, YtargetScreen;
+	if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN)) {
+
+		int fromX, fromY;
+		fromX=XstartScreen-XtargetScreen;
+		fromY=YstartScreen-YtargetScreen;
+
+		BitBlt(hdcScreen, 0, 0, MapRect.right-MapRect.left,
+		       MapRect.bottom-MapRect.top, 
+		       hdcDrawWindow, 0, 0, WHITENESS);
+
+
+		BitBlt(hdcScreen, 
+			0, 0,				// destination 
+			MapRect.right-MapRect.left,
+			MapRect.bottom-MapRect.top, 
+			hdcDrawWindow, 
+			fromX,fromY, 				// source
+			SRCCOPY);
+
+	} else {
+		// redraw old screen, must have been a request for fast refresh
+		BitBlt(hdcScreen, 0, 0, MapRect.right-MapRect.left,
+		       MapRect.bottom-MapRect.top, 
+		       hdcDrawWindow, 0, 0, SRCCOPY);
+	}
+#else
 	// redraw old screen, must have been a request for fast refresh
 	BitBlt(hdcScreen, 0, 0, MapRect.right-MapRect.left,
 	       MapRect.bottom-MapRect.top, 
 	       hdcDrawWindow, 0, 0, SRCCOPY);
+#endif
 	continue;
       } else {
 	MapDirty = false;
+#if FASTPAN
+	//if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN)) {
+		PanRefreshed=true; // faster with no checks
+	//}
+#endif
       }
 
       MapWindow::UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
