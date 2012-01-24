@@ -425,6 +425,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 			Screen2LatLon(X, Y, Xlat, Ylat);
 			PanLongitude += (Xstart-Xlat);
 			PanLatitude  += (Ystart-Ylat);
+			ignorenext=true;
 			RefreshMap();
 		}
 	}
