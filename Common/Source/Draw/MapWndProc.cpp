@@ -25,6 +25,7 @@ using std::max;
 #define DEBUG_VIRTUALKEYS
 #endif
 
+#define FASTPAN	1
 
 #define DONTDRAWTHEMAP !mode.AnyPan()&&MapSpaceMode!=MSM_MAP
 #define MAPMODE8000    !mode.AnyPan()&&MapSpaceMode==MSM_MAP
@@ -412,6 +413,24 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       if (ActiveMap) ignorenext=true;
       break;
 
+#if FASTPAN
+    case WM_MOUSEMOVE:
+	if (wParam==MK_LBUTTON) {
+		if (!mode.Is(Mode::MODE_PAN)) break;
+		if (mode.Is(Mode::MODE_TARGET_PAN)) break;
+
+		X = LOWORD(lParam); Y = HIWORD(lParam);
+
+		if ( (abs(XstartScreen-X)+abs(YstartScreen-Y)) > NIBLSCALE(10)) {
+			Screen2LatLon(X, Y, Xlat, Ylat);
+			PanLongitude += (Xstart-Xlat);
+			PanLatitude  += (Ystart-Ylat);
+			RefreshMap();
+		}
+	}
+	break;
+#endif
+
     case WM_LBUTTONDOWN:
 _buttondown:
       #ifdef DEBUG_DBLCLK
@@ -724,7 +743,9 @@ goto_menu:
       if (dontdrawthemap) break;
 
       Screen2LatLon(X, Y, Xlat, Ylat);
-    
+#if FASTPAN 
+      if (SIMMODE && (!mode.Is(Mode::MODE_TARGET_PAN) && (distance>NIBLSCALE(36)))) {
+#else
       if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN) && (distance>36)) { // TODO FIX should be IBLSCALE 36 instead?
 	PanLongitude += Xstart-Xlat;
 	PanLatitude  += Ystart-Ylat;
@@ -733,6 +754,7 @@ goto_menu:
 	break; 
       } 
       else if (SIMMODE && (!mode.Is(Mode::MODE_TARGET_PAN) && (distance>NIBLSCALE(36)))) {
+#endif
 	// This drag moves the aircraft (changes speed and direction)
 	double newbearing;
 	double oldbearing = GPS_INFO.TrackBearing;
