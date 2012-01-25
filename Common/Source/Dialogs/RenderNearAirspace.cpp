@@ -11,20 +11,31 @@
 #include "RGB.h"
 #include "Sideview.h"
 
+#define GC_HORIZONTAL_TOLERANCE      100
+#define GC_HORIZONTAL_THRESHOLD     2500
+#define GC_VERTICAL_THRESHOLD        250
+#define GC_VERTICAL_TOLERANCE        200
+#define GC_HORIZONTAL_DELAY_FACT   250.0f
+#define GC_VERTICAL_DELAY_FACT      25.0f
+
+//#define  SHOW_ALL_AS_DISTANCES
 using std::min;
 using std::max;
 
 
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[GC_MAX_NO];
-extern AirSpaceSideViewSTRUCT Sideview_asDrawn[GC_MAX_NO];
-extern COLORREF Sideview_TextColor;
+
 extern int Sideview_iNoHandeldSpaces;
+extern COLORREF Sideview_TextColor;
 
 extern long Sonar_lBingDelay;
 extern bool Sonar_IsEnabled;
 extern TCHAR Sideview_szNearAS[];
 
 
+
+
+int CalcSonarDelay (int iNoAs, AirSpaceSideViewSTRUCT asAirspaces[]);
 
 void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
 {
@@ -39,6 +50,8 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
 
   CAirspace near_airspace;
   CAirspace *found = NULL;
+
+
 
   DiagrammStruct sDia;
   bool bAS_Inside;
@@ -125,45 +138,15 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   //           awRed - current posisiton is forbidden by asp system, we are in a warning position
 
   /*********************************************************************
-   * calc the sonar delay time
+   * calc sonar delay
    *********************************************************************/
-#define GC_HORIZONTAL_TOLERANCE  100
-#define GC_HORIZONTAL_THRESHOLD  2500
-
-#define GC_VERTICAL_THRESHOLD   250
-#define GC_VERTICAL_TOLERANCE   200
-
-#define GC_HORIZONTAL_DELAY_FACT   250.0f
-#define GC_VERTICAL_DELAY_FACT    25.0f
-  Sonar_lBingDelay = 0;
-if(Sonar_IsEnabled)  /* disable Sonar */
-  if(bValid)
-  {
-    if((iAS_HorDistance) < GC_HORIZONTAL_TOLERANCE)                    /* horizontal near or inside */
-      if(abs(iAS_VertDistance) < GC_VERTICAL_THRESHOLD)
-    	Sonar_lBingDelay =(int) (fabs((double)iAS_VertDistance/GC_VERTICAL_DELAY_FACT)+1.0f);
-
-    if(near_airspace.IsAltitudeInside((int)alt,(int)calc_altitudeagl,GC_VERTICAL_TOLERANCE))  /* vertically near or inside ? */
-    {
-      double fTmp =	fabs( (double)iAS_HorDistance/GC_HORIZONTAL_DELAY_FACT)+1.0f;
-	  if((iAS_HorDistance) < GC_HORIZONTAL_THRESHOLD)
-	  {
-		if(Sonar_lBingDelay == 0)             /* no other delay defined      */
-		  Sonar_lBingDelay = (int)fTmp;       /* horizontal delay .......    */
-		if(fTmp  <Sonar_lBingDelay )          /* .. faster than vertical  ?  */
-		  Sonar_lBingDelay = (int)fTmp;       /* yes, take it .........      */
-	  }
-    }
-
-    if(near_airspace.IsAltitudeInside((int)alt,(int)calc_altitudeagl,0))  /* vertically inside ? */
-      if(iAS_HorDistance < 0)                                             /* complete inside, do no beep! */
-    	Sonar_lBingDelay = 0;
-  }
-
-
-    /*********************************************************************
-     * calc the horizontal zoom
-     *********************************************************************/
+  if(Sonar_IsEnabled)
+    Sonar_lBingDelay = CalcSonarDelay(Sideview_iNoHandeldSpaces, Sideview_pHandeled);
+  else
+	Sonar_lBingDelay = 0;
+  /*********************************************************************
+   * calc the horizontal zoom
+   *********************************************************************/
   sDia.fXMin = -15000.0;
   sDia.fXMax =  15000.0;
   /* even when invalid the horizontal distance is calculated correctly */
@@ -236,7 +219,9 @@ if(bValid)
 
 
   RenderAirspaceTerrain( hdc,  rc,  GPSlat, GPSlon, iAS_Bearing, &sDia );
-
+#ifdef  SHOW_ALL_AS_DISTANCES
+int iDiaBearing = iAS_Bearing;
+#endif
   HFONT hfOld = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
   if(bValid)
     _stprintf(Sideview_szNearAS,TEXT("%s"),  near_airspace.Name() );
@@ -351,9 +336,31 @@ if(bValid)
     }
   }
 
+
+
+#ifdef SHOW_ALL_AS_DISTANCES
+int i;
+for( i =  0 ; i < Sideview_iNoHandeldSpaces ; i++)
+{
+	bValid = false;
+  found =  Sideview_pHandeled[i].psAS;
+  if(found != NULL)
+  {
+    near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(found);
+    bValid = near_airspace.GetDistanceInfo(bAS_Inside, iAS_HorDistance, iAS_Bearing, iAS_VertDistance);
+    iABS_AS_HorDistance =  abs(iAS_HorDistance);
+    if(AngleLimit360(iAS_Bearing - iDiaBearing) < -90)
+    	iABS_AS_HorDistance = -iABS_AS_HorDistance;
+    if(AngleLimit360(iAS_Bearing - iDiaBearing) > 90)
+    	iABS_AS_HorDistance = -iABS_AS_HorDistance;
+  }
+#endif
   if (bValid)
   {
 	SetTextColor(hdc, Sideview_TextColor);
+//	  SetTextColor(hdc, MapWindow::GetAirspaceColourByClass(Sideview_pHandeled[i].iType));
+
+
 	if(!INVERTCOLORS)
 	  SetBkMode(hdc, OPAQUE);
 	HFONT hfOldU = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
@@ -411,7 +418,9 @@ if(bValid)
     ExtTextOut(hdc,  TxYPt.x,  TxYPt.y , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 	SelectObject(hdc, hfOldU);
   }
-
+#ifdef SHOW_ALL_AS_DISTANCES
+}
+#endif
 
   RenderPlaneSideview( hdc, rc,0 , alt,wpt_brg, &sDia );
 
@@ -438,3 +447,76 @@ if(bValid)
   RenderBearingDiff  ( hdc, rc   , wpt_brg,  &sDia );
 }
 
+
+
+
+/*********************************************************************
+ * calc the sonar delay time
+ *********************************************************************/
+int CalcSonarDelay (int iNoAs, AirSpaceSideViewSTRUCT asAirspaces[])
+{
+int iResult = 0;
+int iTmpResult = 0;
+int iAS_HorDist;
+int iAS_VertDist;
+int iAS_Bearing;
+int iAltitude;
+int iAltitudeAGL;
+int i;
+bool bAS_Inside = false;
+bool bOK = false;
+CAirspace SelectedAS;
+CAirspace *Sel_AS_Ptr = NULL;
+
+LockFlightData();
+{
+  iAltitudeAGL = (int)CALCULATED_INFO.AltitudeAGL;
+  iAltitude = (int)CALCULATED_INFO.NavAltitude;
+}
+UnlockFlightData();
+
+
+
+#define UNDEF_RESULT                10000
+
+    iResult=UNDEF_RESULT;
+	for( i =  0 ; i < iNoAs ; i++)
+	{
+	  iTmpResult = UNDEF_RESULT;
+	  Sel_AS_Ptr =  		asAirspaces[i].psAS;
+	  if(Sel_AS_Ptr != NULL)
+	  {
+		SelectedAS = CAirspaceManager::Instance().GetAirspaceCopy( Sel_AS_Ptr );
+		bOK = SelectedAS.GetDistanceInfo(bAS_Inside, iAS_HorDist, iAS_Bearing, iAS_VertDist);
+
+		if(bOK)
+		{
+		  if((iAS_HorDist) < GC_HORIZONTAL_TOLERANCE)                          /* horizontal near or inside */
+			if(abs(iAS_VertDist) < GC_VERTICAL_THRESHOLD)
+				iTmpResult =(int) (fabs((double)iAS_VertDist/GC_VERTICAL_DELAY_FACT)+2.0f);
+
+		  if(SelectedAS.IsAltitudeInside(iAltitude,iAltitudeAGL,GC_VERTICAL_TOLERANCE))  /* vertically near or inside ? */
+		  {
+			double fTmp =	fabs( (double)iAS_HorDist/GC_HORIZONTAL_DELAY_FACT)+2.0f;
+			if((iAS_HorDist) < GC_HORIZONTAL_THRESHOLD)
+			{
+			  if(fTmp  <iTmpResult )            /* .. faster than vertical  ?  */
+				iTmpResult = (int)fTmp;         /* yes, take it .........      */
+			}
+		  }
+
+		  if(SelectedAS.IsAltitudeInside(iAltitude,iAltitudeAGL,0))  /* vertically inside ? */
+			if(iAS_HorDist < 0)                                             /* complete inside, do no beep! */
+				iTmpResult = 0;
+
+		  }
+	  }
+
+	  if(iTmpResult < iResult)
+	    iResult = iTmpResult;
+	}
+
+	if(iResult == UNDEF_RESULT) /* nothing found? */
+	  iResult = 0;
+return iResult;
+}

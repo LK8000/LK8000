@@ -39,8 +39,6 @@ static HPEN penThinSignal = NULL;
 // which is exactly the same.
 
 AirSpaceSideViewSTRUCT Sideview_pHandeled[GC_MAX_NO];
-AirSpaceSideViewSTRUCT Sideview_asDrawn[GC_MAX_NO];
-
 int   Sideview_iNoHandeldSpaces=0;
 int   Sideview_asp_heading_task = 0;
 long  Sonar_lBingDelay = 0;

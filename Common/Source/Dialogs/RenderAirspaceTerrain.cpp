@@ -17,7 +17,6 @@ using std::max;
 
 
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[GC_MAX_NO];
-extern AirSpaceSideViewSTRUCT Sideview_asDrawn[GC_MAX_NO];
 extern COLORREF Sideview_TextColor;
 extern int Sideview_iNoHandeldSpaces;
 
@@ -32,7 +31,7 @@ void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon, 
   double lat, lon;
   RECT rcd;
   int i,j,k;
-
+   AirSpaceSideViewSTRUCT Sideview_asDrawn[GC_MAX_NO];
 #if (WINDOWSPC>0)
   if(INVERTCOLORS)
     RenderSky( hdc, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
