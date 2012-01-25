@@ -320,6 +320,8 @@ void MapWindow::Zoom::EventScaleZoom(int vswitch)
  */
 void MapWindow::Zoom::UpdateMapScale()
 {
+  static bool pg_autozoom_turned_on = false;
+  
   if(mode.Is(Mode::MODE_TARGET_PAN)) {
     // update TARGET_PAN
     CalculateTargetPanZoom();
@@ -328,6 +330,19 @@ void MapWindow::Zoom::UpdateMapScale()
     return;
   }
   
+  // in PG mode if autozoom is set to on, and waypoint distance drops below 
+  // PGAutoZoomThreshold, we should turn on autozoom if it is off. Do this only once, let the user able to turn it off near WP
+  if ( ISPARAGLIDER && AutoZoom_Config && !_autoZoom && (DerivedDrawInfo.ZoomDistance>0) && (DerivedDrawInfo.ZoomDistance < PGAutoZoomThreshold)) {
+    if (!pg_autozoom_turned_on) {
+      EventAutoZoom(1);
+      pg_autozoom_turned_on = true;
+    }
+  }
+  if (DerivedDrawInfo.ZoomDistance > (PGAutoZoomThreshold + 200.0)) {
+    // Set state variable back to false, with some distance hysteresis
+    pg_autozoom_turned_on = false;
+  }
+
   if(_autoZoom &&
      mode.Special() == Mode::MODE_SPECIAL_NONE &&
      !(_circleZoom && mode.Is(Mode::MODE_CIRCLING))) {
