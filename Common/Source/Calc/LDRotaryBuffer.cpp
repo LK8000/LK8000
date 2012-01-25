@@ -18,11 +18,23 @@ FILE *fp;
 #endif
 
 	switch (AverEffTime) {
+		case ae3seconds:
+			bsize=3;	
+			break;
+		case ae5seconds:
+			bsize=5;	
+			break;
+		case ae10seconds:
+			bsize=10;
+			break;
 		case ae15seconds:
 			bsize=15;	// useless, LDinst already there
 			break;
 		case ae30seconds:
 			bsize=30;	// limited useful
+			break;
+		case ae45seconds:
+			bsize=45;	// limited useful
 			break;
 		case ae60seconds:
 			bsize=60;	// starting to be valuable

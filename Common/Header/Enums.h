@@ -225,8 +225,12 @@ typedef enum{
 	gbFinish,
 } GlideBarMode_t;
 typedef enum{
-	ae15seconds=0,
+	ae3seconds=0,
+	ae5seconds,
+	ae10seconds,
+	ae15seconds,
 	ae30seconds,
+	ae45seconds,
 	ae60seconds,
 	ae90seconds,
 	ae2minutes,

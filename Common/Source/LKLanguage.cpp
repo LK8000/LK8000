@@ -268,8 +268,9 @@ TCHAR *MsgToken(const unsigned int inumber) {
 	pointer=LKMessagesIndex[inumber];
         if (pointer<=MAX_MESSAGES) return (TCHAR *)LKMessages[pointer];
   }
-
-  return(_T("TOKEN_ERROR"));
+  static TCHAR terr[30];
+  _stprintf(terr,_T("@M%d"),inumber);
+  return(terr);
 }
 
 

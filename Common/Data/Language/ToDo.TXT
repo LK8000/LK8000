@@ -95,7 +95,8 @@ Changed HELP 102
  M1294  Sonar OFF
  M1295  Sideview
 
-
+25/1/2012
+M1775-1778 new Aver Efficiency intervals
 
 
 

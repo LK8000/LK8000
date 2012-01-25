@@ -1740,6 +1740,13 @@ _@M1772_ "HdWind"
 # Customkey
 _@M1774_ "Change- Terrain Colors"
 
+# New AverEfficiency intervals
+_@M1775_ "3 seconds"
+_@M1776_ "5 seconds"
+_@M1777_ "10 seconds"
+_@M1778_ "45 seconds"
+
+
 ############################################################
 #                  - MENU MESSAGES - 
 #

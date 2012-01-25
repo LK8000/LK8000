@@ -2990,10 +2990,14 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->addEnumText(MsgToken(1775)); // 3 sec
+    dfe->addEnumText(MsgToken(1776)); // 5 sec
+    dfe->addEnumText(MsgToken(1777)); // 10 sec
 	// LKTOKEN  _@M17_ = "15 seconds" 
     dfe->addEnumText(gettext(TEXT("_@M17_")));
 	// LKTOKEN  _@M30_ = "30 seconds" 
     dfe->addEnumText(gettext(TEXT("_@M30_")));
+    dfe->addEnumText(MsgToken(1778)); // 45 sec
 	// LKTOKEN  _@M35_ = "60 seconds" 
     dfe->addEnumText(gettext(TEXT("_@M35_")));
 	// LKTOKEN  _@M39_ = "90 seconds" 
@@ -4689,7 +4693,7 @@ void dlgConfigurationShowModal(void){
 	}
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAverEffTime")); // VENTA6
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAverEffTime"));
   if (wp) {
     if (AverEffTime != 
 	(wp->GetDataField()->GetAsInteger())) {
