@@ -506,6 +506,7 @@ _buttondown:
 		MouseWasPanMoving=false;
 		ignorenext=false;
 		RefreshMap();
+		dwDownTime=0; // otherwise we shall get a fake click passthrough
 		break;
 	}
 #endif
