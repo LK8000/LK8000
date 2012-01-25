@@ -472,6 +472,11 @@ _buttondown:
       #endif
       if (LockModeStatus) break;
       dwDownTime = GetTickCount();
+#if FASTPAN
+      extern bool RedrawHack;
+      // I am not sure at all this is the best place to clear the RedrawHack flag.
+      RedrawHack=false;
+#endif
       // After calling a menu, on exit as we touch the screen we fall back here
       if (ignorenext) {
                 #ifdef DEBUG_MAPINPUT

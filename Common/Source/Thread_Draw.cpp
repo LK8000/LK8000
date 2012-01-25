@@ -132,12 +132,27 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
       //   TriggerRedraws()  in calculations thread
       //   RefreshMap()      in drawthread generally
       //
-      if (!MapDirty && !first) {
+
 #if FASTPAN
+      // Note about RedrawHack
+      // This is a terrible workaround for a lastminute problem I still could not solve.
+      // After using buttons Zoom in/out from Pan mode, we are looped apparently two times
+      // down here, and MapDirty becomes false. This is causing BitBlt operations instead
+      // of zooming. After 2 hours spent trying to track the problem, I decided for a workaround.
+      // At the beginning of Inputevent zoom, we switch on RedrawHack.
+      // We check it here, and we clear the flag from MapWndProc at the first buttondown.
+      // Apparently only those two buttons got problems, and they are solved this way.
+      // However this is far to be a real solution, because the problem is quite untracked yet.
+      // paolo 25/1/2012
+
 extern int XstartScreen, YstartScreen, XtargetScreen, YtargetScreen;
+extern bool RedrawHack;
+
+      if (!MapDirty && !first && !RedrawHack) {
 	if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN)) {
 
-		int fromX, fromY;
+		int fromX=0, fromY=0;
+
 		fromX=XstartScreen-XtargetScreen;
 		fromY=YstartScreen-YtargetScreen;
 
@@ -161,6 +176,7 @@ extern int XstartScreen, YstartScreen, XtargetScreen, YtargetScreen;
 		       hdcDrawWindow, 0, 0, SRCCOPY);
 	}
 #else
+      if (!MapDirty && !first) {
 	// redraw old screen, must have been a request for fast refresh
 	BitBlt(hdcScreen, 0, 0, MapRect.right-MapRect.left,
 	       MapRect.bottom-MapRect.top, 
@@ -170,9 +186,7 @@ extern int XstartScreen, YstartScreen, XtargetScreen, YtargetScreen;
       } else {
 	MapDirty = false;
 #if FASTPAN
-	//if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN)) {
-		PanRefreshed=true; // faster with no checks
-	//}
+	PanRefreshed=true; // faster with no checks
 #endif
       }
 
