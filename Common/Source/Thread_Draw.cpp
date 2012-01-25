@@ -28,7 +28,6 @@ BOOL MapWindow::Initialised = FALSE;
 DWORD  MapWindow::dwDrawThreadID;
 HANDLE MapWindow::hDrawThread;
 
-#define FASTPAN 1
 #if FASTPAN
 extern bool PanRefreshed;
 #endif

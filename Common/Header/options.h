@@ -88,7 +88,9 @@
 
  // #define OLDLOGGER		1	// old DLL Grecord logging system
 
-#define NEWSMARTZOOM		1	// stretch bitmap for fast zoom
+ //#define NEWSMARTZOOM		1	// stretch bitmap for fast zoom, uncompleted work (almost working)
+ //#define USEBIGZOOM		1	// will fast redraw only terrain, with no topology &c.
+ #define FASTPAN		1	// bitblt panning 
 
 /*
  * Incomplete work, or stuff that never got into production versions but still interesting

@@ -25,8 +25,6 @@ using std::max;
 #define DEBUG_VIRTUALKEYS
 #endif
 
-#define FASTPAN	1
-
 #define DONTDRAWTHEMAP !mode.AnyPan()&&MapSpaceMode!=MSM_MAP
 #define MAPMODE8000    !mode.AnyPan()&&MapSpaceMode==MSM_MAP
 

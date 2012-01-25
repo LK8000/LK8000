@@ -16,9 +16,6 @@
 #define DONTDRAWTHEMAP !mode.AnyPan()&&MapSpaceMode!=MSM_MAP
 #define MAPMODE8000    !mode.AnyPan()&&MapSpaceMode==MSM_MAP
 
-// Remove or uncomment to use real options.h definition
-#undef NEWSMARTZOOM
-
 #define QUICKDRAW (FastZoom || zoom.BigZoom())
 
 #if NEWSMARTZOOM
