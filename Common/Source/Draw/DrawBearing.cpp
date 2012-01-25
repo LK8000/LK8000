@@ -87,7 +87,7 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
             LatLon2Screen(Task[i].AATTargetLon, 
                           Task[i].AATTargetLat, 
                           sct);
-            DrawBitmapIn(hdc, sct, hBmpTarget);
+            DrawBitmapIn(hdc, sct, hBmpTarget,true);
           }
         }
       }
@@ -97,7 +97,7 @@ void MapWindow::DrawBearing(HDC hdc, const RECT rc)
       LatLon2Screen(Task[ActiveWayPoint].AATTargetLon, 
                     Task[ActiveWayPoint].AATTargetLat, 
                     sct);
-      DrawBitmapIn(hdc, sct, hBmpTarget);
+      DrawBitmapIn(hdc, sct, hBmpTarget,true);
     }
     UnlockTaskData();
   }

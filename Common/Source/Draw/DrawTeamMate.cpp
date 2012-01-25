@@ -26,13 +26,13 @@ void MapWindow::DrawTeammate(HDC hdc, RECT rc)
 		      point.x-NIBLSCALE(10), 
 		      point.y-NIBLSCALE(10),
 		      20,20,
-		      hDCTemp,0,0,SRCPAINT);
+		      hDCTemp,0,0,SRCPAINT,true);
 	
 	  DrawBitmapX(hdc,
 		      point.x-NIBLSCALE(10), 
 		      point.y-NIBLSCALE(10),
 		      20,20,
-		      hDCTemp,20,0,SRCAND);
+		      hDCTemp,20,0,SRCAND,true);
 	}
     }
 }

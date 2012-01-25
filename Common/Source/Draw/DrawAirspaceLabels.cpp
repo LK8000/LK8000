@@ -49,7 +49,7 @@ void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Airc
           if (distances_ready && (hlabeldrawstyle > awsHidden) && PointVisible(lon, lat)) {
 
               LatLon2Screen(lon, lat, sc);
-              DrawBitmapIn(hdc, sc, hAirspaceWarning);
+              DrawBitmapIn(hdc, sc, hAirspaceWarning,true);
               
               Units::FormatUserAltitude(vdist, vDistanceText, sizeof(vDistanceText)/sizeof(vDistanceText[0]));
               _tcscpy(hbuf, (*it)->Name());

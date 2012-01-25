@@ -35,11 +35,11 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
 
 		DrawBitmapX(hdc, rc.right+IBLSCALE(offset),
 			rc.bottom - BottomSize+NIBLSCALE(4),
-			7,7, hDCTemp, 0,0,SRCPAINT);
+			7,7, hDCTemp, 0,0,SRCPAINT,true);
 
 		DrawBitmapX(hdc, rc.right+IBLSCALE(offset),
 			rc.bottom-BottomSize+NIBLSCALE(4),
-			7,7, hDCTemp, 7,0,SRCAND);
+			7,7, hDCTemp, 7,0,SRCAND,true);
 
 		offset +=7;
 	}
@@ -66,14 +66,14 @@ void MapWindow::DrawFlightMode(HDC hdc, const RECT rc)
 	rc.bottom+IBLSCALE(-20-1),
 	24,20,
 	hDCTemp,
-	0,0,SRCPAINT);
+	0,0,SRCPAINT,true);
     
   DrawBitmapX(hdc,
 	rc.right+IBLSCALE(offset-1),
 	rc.bottom+IBLSCALE(-20-1),
 	24,20,
 	hDCTemp,
-	24,0,SRCAND);
+	24,0,SRCAND,true);
 
 
   //
@@ -115,14 +115,14 @@ _drawbattery:
 	rc.bottom - BottomSize + NIBLSCALE(2),
 	22,11,
 	hDCTemp,
-	0,0,SRCPAINT);
+	0,0,SRCPAINT,true);
     
   DrawBitmapX(hdc,
 	rc.right+IBLSCALE(offset-1),
 	rc.bottom - BottomSize + NIBLSCALE(2),
 	22,11,
 	hDCTemp,
-	22,0,SRCAND);
+	22,0,SRCAND,true);
 
 }
 

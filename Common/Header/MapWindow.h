@@ -397,12 +397,12 @@ class MapWindow {
 	       const POINT ptStart, const POINT ptEnd, 
 	       const COLORREF cr, const RECT rc);
   static void _Polyline(HDC hdc, POINT* pt, const int npoints, const RECT rc);
-  static void DrawBitmapIn(const HDC hdc, const POINT &sc, const HBITMAP h);
-  static void DrawBitmapX(HDC hdc, int top, int right,
-		     int sizex, int sizey,
-		     HDC source,
-		     int offsetx, int offsety,
-		     DWORD mode);
+  static void DrawBitmapIn(const HDC hdc, const POINT &sc, const HBITMAP h, const bool autostretch);
+  static void DrawBitmapX(const HDC hdc, const int top, const int right,
+		     const int sizex, const int sizey,
+		     const HDC source,
+		     const int offsetx, const int offsety,
+		     const DWORD mode,const bool autostretch);
 
   // ...
   static void RequestToggleFullScreen();

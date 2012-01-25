@@ -23,7 +23,7 @@ void MapWindow::DrawThermalEstimate(HDC hdc, const RECT rc) {
   if (mode.Is(Mode::MODE_CIRCLING)) {
 	if (DerivedDrawInfo.ThermalEstimate_R>0) {
 		LatLon2Screen(DerivedDrawInfo.ThermalEstimate_Longitude, DerivedDrawInfo.ThermalEstimate_Latitude, screen);
-		DrawBitmapIn(hdc, screen, hBmpThermalSource);
+		DrawBitmapIn(hdc, screen, hBmpThermalSource,true);
 
 		SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
 		double tradius;
@@ -57,7 +57,7 @@ void MapWindow::DrawThermalEstimate(HDC hdc, const RECT rc) {
 	if (zoom.RealScale() <= 4) {
 		for (int i=0; i<MAX_THERMAL_SOURCES; i++) {
 			if (DerivedDrawInfo.ThermalSources[i].Visible) {
-				DrawBitmapIn(hdc, DerivedDrawInfo.ThermalSources[i].Screen, hBmpThermalSource);
+				DrawBitmapIn(hdc, DerivedDrawInfo.ThermalSources[i].Screen, hBmpThermalSource,true);
 			}
 		}
 	}

@@ -150,7 +150,7 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
 
 		// red circle
 		if ((DrawInfo.FLARM_Traffic[i].AlarmLevel>0) && (DrawInfo.FLARM_Traffic[i].AlarmLevel<4)) {
-			DrawBitmapIn(hDC, sc, hFLARMTraffic);
+			DrawBitmapIn(hDC, sc, hFLARMTraffic,true);
 		}
 #if 0
 		Arrow[0].x = -4;

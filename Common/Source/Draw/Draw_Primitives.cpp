@@ -11,12 +11,13 @@
 #include "Topology.h"
 
 
-void MapWindow::DrawBitmapX(HDC hdc, int x, int y,
-                            int sizex, int sizey,
-                            HDC source,
-                            int offsetx, int offsety,
-                            DWORD mode) {
-  if (ScreenScale>1) {
+void MapWindow::DrawBitmapX(const HDC hdc, const int x, const int y,
+                            const int sizex, const int sizey,
+                            const HDC source,
+                            const int offsetx, const int offsety,
+                            const DWORD mode, const bool autostretch) {
+
+  if (autostretch && ScreenScale>1) {
     StretchBlt(hdc, x, y, 
                IBLSCALE(sizex), 
                IBLSCALE(sizey), 
@@ -24,14 +25,13 @@ void MapWindow::DrawBitmapX(HDC hdc, int x, int y,
                offsetx, offsety, sizex, sizey,
                mode);
   } else {
-    BitBlt(hdc, x, y, sizex, sizey, 
-           source, offsetx, offsety, mode); 
+    BitBlt(hdc, x, y, sizex, sizey, source, offsetx, offsety, mode); 
   }
 }
 
 
 
-void MapWindow::DrawBitmapIn(const HDC hdc, const POINT &sc, const HBITMAP h) {
+void MapWindow::DrawBitmapIn(const HDC hdc, const POINT &sc, const HBITMAP h, const bool autostretch) {
   if (!PointVisible(sc)) return;
 
   SelectObject(hDCTemp, h);
@@ -40,12 +40,12 @@ void MapWindow::DrawBitmapIn(const HDC hdc, const POINT &sc, const HBITMAP h) {
               sc.x-NIBLSCALE(5),
               sc.y-NIBLSCALE(5),
               10,10,
-	      hDCTemp,0,0,SRCPAINT);
+	      hDCTemp,0,0,SRCPAINT, autostretch);
   DrawBitmapX(hdc,
               sc.x-NIBLSCALE(5),
               sc.y-NIBLSCALE(5),
               10,10,
-              hDCTemp,10,0,SRCAND);
+              hDCTemp,10,0,SRCAND, autostretch);
 }
 
 

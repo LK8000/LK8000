@@ -652,7 +652,7 @@ void Topology::Paint(HDC hdc, RECT rc) {
 				if (dobitmap) {
 					// bugfix 101212 missing case for scaleCategory 0 (markers)
 					if (scaleCategory==0||cshape->renderSpecial(hdc, sc.x, sc.y,labelprinted)) 
-						MapWindow::DrawBitmapIn(hdc, sc, hBitmap);
+						MapWindow::DrawBitmapIn(hdc, sc, hBitmap,true);
 				} else {
 					cshape->renderSpecial(hdc, sc.x, sc.y,labelprinted);
 				}
@@ -685,13 +685,13 @@ void Topology::Paint(HDC hdc, RECT rc) {
 				// only paint icon if label is printed too
 				if (noiconwithnolabel) {
 					if (cshape->renderSpecial(hdc, sc.x, sc.y,labelprinted))
-						MapWindow::DrawBitmapIn(hdc, sc, hBitmap);
+						MapWindow::DrawBitmapIn(hdc, sc, hBitmap,true);
 				} else {
-					MapWindow::DrawBitmapIn(hdc, sc, hBitmap);
+					MapWindow::DrawBitmapIn(hdc, sc, hBitmap,true);
 					cshape->renderSpecial(hdc, sc.x, sc.y,labelprinted);
 				}
 				#else
-				MapWindow::DrawBitmapIn(hdc, sc, hBitmap);
+				MapWindow::DrawBitmapIn(hdc, sc, hBitmap,true);
 				cshape->renderSpecial(hdc, sc.x, sc.y);
 				#endif
 			}
