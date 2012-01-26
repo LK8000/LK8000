@@ -38,13 +38,6 @@ using std::max;
 
 extern AATDistance aatdistance;
 
-#define FASTPAN 1
-
-#if FASTPAN
-#include "MapWindow.h"
-bool RedrawHack=false;
-#endif
-
 // Current modes - map mode to integer (primitive hash)
 static TCHAR mode_current[MAX_MODE_STRING] = TEXT("default");	// Current mode
 static TCHAR mode_map[MAX_MODE][MAX_MODE_STRING];		// Map mode to location
@@ -1088,12 +1081,6 @@ void InputEvents::eventZoom(const TCHAR* misc) {
   // 0 means off
   // 1 means on
   float zoom;
-
-#if FASTPAN
-  // See Thread_Draw for an explanation about RedrawHack
-  if (!MapWindow::mode.Is(MapWindow::Mode::MODE_TARGET_PAN) && MapWindow::mode.Is(MapWindow::Mode::MODE_PAN))
-	RedrawHack=true;
-#endif
 
   if (_tcscmp(misc, TEXT("auto toggle")) == 0)
     MapWindow::zoom.EventAutoZoom(-1);

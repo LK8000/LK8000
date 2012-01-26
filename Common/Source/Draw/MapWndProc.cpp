@@ -32,7 +32,8 @@ using std::max;
 COLORREF taskcolor = RGB_TASKLINECOL; // 091216
 static bool ignorenext=false;
 #if FASTPAN
-static  bool MouseWasPanMoving=false;
+static bool MouseWasPanMoving=false;
+bool OnFastPanning=false;
 #endif
 
 MapWindow::Zoom MapWindow::zoom;
@@ -430,11 +431,8 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 		if (PanRefreshed) {
 			// if map was redrawn, we update our position as well. just like
 			// we just clicked on mouse from here, like in BUTTONDOWN
-			//int offsetX=XstartScreen-X;
-			//int offsetY=YstartScreen-Y;
 			XstartScreen = X; YstartScreen = Y;
 			Screen2LatLon(XstartScreen, YstartScreen, Xstart, Ystart);
-			//X+=offsetX; Y+=offsetY;
 			PanRefreshed=false;
 			dwDownTime=GetTickCount();
 		}
@@ -444,36 +442,61 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 			PanLongitude += (Xstart-Xlat);
 			PanLatitude  += (Ystart-Ylat);
 			ignorenext=true;
-			// Force full map refresh after this time in ms
+			MouseWasPanMoving=true;
+
+			// With OnFastPanning we are saying: Since we are dragging the bitmap around,
+			// forget the Redraw requests from other parts of LK, which would cause PanRefreshed.
+			// We have no control on those requests issued for example by Calc thread.
+			// However we force full map refresh after some time in ms
 			#if (WINDOWSPC>0)
-			if ( (GetTickCount()-dwDownTime)>0) {	 // on pc force full rendering in real time
+			// on pc force full rendering in real time, but not in TESTBENCH
+			  #if TESTBENCH
+			if ( (GetTickCount()-dwDownTime)>700) {
+			  #else
+			if (1) {
+			  #endif
 			#else
-			if ( (GetTickCount()-dwDownTime)>800) {
+			if ( (GetTickCount()-dwDownTime)>700) {  // half a second + max 1s
 			#endif
 				dwDownTime=GetTickCount();
+				OnFastPanning=false;
 				RefreshMap();
 			} else {
 				XtargetScreen=X; YtargetScreen=Y;
+				// Lets not forget that if we stop moving the mouse, or we exit the windows while
+				// dragging, or we endup on another window -f.e. a button - then we will NOT
+				// receive any more events in this loop! For this reason we must let the
+				// DrawThread clear this flag. Not thread safe, I know.
+				OnFastPanning=true;
+
 				// This will force BitBlt operation in RenderMapWindow
 				RequestFastRefresh();
 			}
-			MouseWasPanMoving=true;
-		}
-	}
+		} // minimal movement detected
+	} // mouse moved with Lbutton (dragging)
 	break;
-#endif
+/*
+    //
+    // When we are no more moving the mouse on the moving map, we should reset some values for fastpan
+    //
+    case WM_CAPTURECHANGED:
+	if (OnFastPanning) {
+	OnFastPanning=false;
+	RefreshMap();
+	}
+
+	break;
+*/
+#endif // FASTPAN
 
     case WM_LBUTTONDOWN:
 _buttondown:
-      #ifdef DEBUG_DBLCLK
-      DoStatusMessage(_T("BUTTONDOWN MapWindow")); 
-      #endif
       if (LockModeStatus) break;
       dwDownTime = GetTickCount();
 #if FASTPAN
-      extern bool RedrawHack;
-      // I am not sure at all this is the best place to clear the RedrawHack flag.
-      RedrawHack=false;
+      // When we have buttondown these flags should be set off.
+      MouseWasPanMoving=false;
+      OnFastPanning=false;
 #endif
       // After calling a menu, on exit as we touch the screen we fall back here
       if (ignorenext) {
@@ -498,10 +521,11 @@ _buttondown:
     case WM_LBUTTONUP:
 	if (LockModeStatus) break;
 #if FASTPAN
-	// Mouse released after panning, quick redraw requested.
+	// Mouse released DURING panning, full redraw requested.
 	// Otherwise process virtual keys etc. as usual
 	if (MouseWasPanMoving) {
 		MouseWasPanMoving=false;
+		OnFastPanning=false;
 		ignorenext=false;
 		RefreshMap();
 		dwDownTime=0; // otherwise we shall get a fake click passthrough

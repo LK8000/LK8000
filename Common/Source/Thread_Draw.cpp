@@ -133,21 +133,24 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
       //
 
 #if FASTPAN
-      // Note about RedrawHack
-      // This is a terrible workaround for a lastminute problem I still could not solve.
-      // After using buttons Zoom in/out from Pan mode, we are looped apparently two times
-      // down here, and MapDirty becomes false. This is causing BitBlt operations instead
-      // of zooming. After 2 hours spent trying to track the problem, I decided for a workaround.
-      // At the beginning of Inputevent zoom, we switch on RedrawHack.
-      // We check it here, and we clear the flag from MapWndProc at the first buttondown.
-      // Apparently only those two buttons got problems, and they are solved this way.
-      // However this is far to be a real solution, because the problem is quite untracked yet.
-      // paolo 25/1/2012
 
 extern int XstartScreen, YstartScreen, XtargetScreen, YtargetScreen;
-extern bool RedrawHack;
+extern bool OnFastPanning;
 
-      if (!MapDirty && !first && !RedrawHack) {
+      // While we are moving in bitblt mode, ignore RefreshMap requests from LK
+      // unless a timeout was triggered by MapWndProc itself.
+      if (OnFastPanning) {
+		MapDirty=false;
+      } 
+
+      // We must check if we are on FastPanning, because we may be in pan mode even while
+      // the menu buttons are active and we are using them, accessing other functions.
+      // In that case, without checking OnFastPanning, we would fall back here and repaint
+      // with bitblt everytime, while instead we were asked a simple fastrefresh!
+      //
+      // Notice: we could be !MapDirty without OnFastPanning, of course!
+      //
+      if (!MapDirty && !first && OnFastPanning) {
 	if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN)) {
 
 		int fromX=0, fromY=0;
@@ -169,11 +172,17 @@ extern bool RedrawHack;
 			SRCCOPY);
 
 	} else {
-		// redraw old screen, must have been a request for fast refresh
+		//
+		// The map was not dirty, and we are not in fastpanning mode.
+		// FastRefresh!  We simply redraw old bitmap. 
+		//
 		BitBlt(hdcScreen, 0, 0, MapRect.right-MapRect.left,
 		       MapRect.bottom-MapRect.top, 
 		       hdcDrawWindow, 0, 0, SRCCOPY);
 	}
+
+	// Now we can clear the flag. If it was off already, no problems.
+	OnFastPanning=false;
 #else
       if (!MapDirty && !first) {
 	// redraw old screen, must have been a request for fast refresh
@@ -182,12 +191,17 @@ extern bool RedrawHack;
 	       hdcDrawWindow, 0, 0, SRCCOPY);
 #endif
 	continue;
+
       } else {
+	//
+	// Else the map wasy dirty, and we must render it..
+	// Notice: if we were fastpanning, than the map could not be dirty.
+	//
 	MapDirty = false;
 #if FASTPAN
 	PanRefreshed=true; // faster with no checks
 #endif
-      }
+      } // MapDirty
 
       MapWindow::UpdateInfo(&GPS_INFO, &CALCULATED_INFO);
 
