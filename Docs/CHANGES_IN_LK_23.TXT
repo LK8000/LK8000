@@ -13,12 +13,13 @@ NEW
     use in SIM mode also the rotate command for a great user experience while browsing the map.
     Pure HangarWare.
 
-
+(THE SONAR IS NOT AVAILABLE IN 2.3v! NEXT VERSION)
 . Airspaces SONAR
   In the nearest airspace page  (which is available from airspace warning window, or from menu Info 1/2 
   or as a customkey) SONAR mode is making a PING sound proportional to time and distance to the nearest airspace.
   The closer the airspace, the closer the beeps. This can be disabled for the whole flight with the button .
   SONAR is working only in Nearest Airspace page, not externally. At least by now.
+(------------------------------------------------)
 
 . Westerboer support for bidirectional MC, wingload, bugs, ballast dump, auto-MC
 
