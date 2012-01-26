@@ -395,6 +395,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       // So we go directly to buttondown, simulating a non-doubleclick.
       if (!LockModeStatus) goto _buttondown;
 
+StartupStore(_T("......doubleclick\n"));
       dwDownTime = GetTickCount();  
       XstartScreen = LOWORD(lParam); YstartScreen = HIWORD(lParam);
 
@@ -434,10 +435,12 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 			XstartScreen = X; YstartScreen = Y;
 			Screen2LatLon(XstartScreen, YstartScreen, Xstart, Ystart);
 			PanRefreshed=false;
-			dwDownTime=GetTickCount();
+			// NO! This is causing false clicks passing underneath CANCEL button!
+			// dwDownTime=GetTickCount();
+			break;
 		}
 		// set a min mouse move to trigger panning
-		if ( (abs(XstartScreen-X)+abs(YstartScreen-Y)) > 20) {
+		if ( (abs(XstartScreen-X)+abs(YstartScreen-Y)) > NIBLSCALE(10)) {
 			Screen2LatLon(X, Y, Xlat, Ylat);
 			PanLongitude += (Xstart-Xlat);
 			PanLatitude  += (Ystart-Ylat);
@@ -475,18 +478,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 		} // minimal movement detected
 	} // mouse moved with Lbutton (dragging)
 	break;
-/*
-    //
-    // When we are no more moving the mouse on the moving map, we should reset some values for fastpan
-    //
-    case WM_CAPTURECHANGED:
-	if (OnFastPanning) {
-	OnFastPanning=false;
-	RefreshMap();
-	}
-
-	break;
-*/
 #endif // FASTPAN
 
     case WM_LBUTTONDOWN:
@@ -514,6 +505,7 @@ _buttondown:
 
 #if FASTPAN
 #else
+     // This is bringing the map in foreground, and request FastRefresh
      FullScreen();
 #endif
       break;
