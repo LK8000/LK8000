@@ -2,6 +2,60 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3v  January 26,  2012
+-------------------------------
+
+NEW
+
+. Fast PANNING mode
+    In pan mode the map is redrawn dynamically while a bitmap is repainted for a smoothing effect.
+    At the same time, upper and lower map fast zoom are enabled. Entering full screen will allow to
+    use in SIM mode also the rotate command for a great user experience while browsing the map.
+    Pure HangarWare.
+
+
+. Airspaces SONAR
+  In the nearest airspace page  (which is available from airspace warning window, or from menu Info 1/2 
+  or as a customkey) SONAR mode is making a PING sound proportional to time and distance to the nearest airspace.
+  The closer the airspace, the closer the beeps. This can be disabled for the whole flight with the button .
+  SONAR is working only in Nearest Airspace page, not externally. At least by now.
+
+. Westerboer support for bidirectional MC, wingload, bugs, ballast dump, auto-MC
+
+. New average efficiency (glide ratio) intervals in config menu 5: 3s,5s,10s,45s.
+
+. Add polar file for Ka-8b
+
+
+CHANGES
+
+. Turn on autozoom in PG mode, if waypoint distance below autozoom threshold
+  http://www.postfrontal.com/forum/topic.asp?TOPIC_ID=5750
+
+. Faster data exchange on LX16xx instruments
+
+. Analysis pages:
+    - Removed Temperature page if no probe present
+    - Rename Analysis to Sideview
+
+
+FIXES
+
+. Optimized routes for paragliders:
+    . Calc Altitude with terrain for Optimized Wpt
+    . Use Optimized Wpt for ArrMC0, TaskArr, NxrAltR
+
+
+. Fix loading DAT waypoints file.
+
+. Fix bug in Profiles not loading ZoomCat05 (coast areas), and setting it to 0. Same for TrueWind calc speed and the first AirspaceMode
+
+. Fix configuration page 5 not saving average LD time, always set to 60s for gliders and 15s for PGs.
+  Thanks enrico.
+
+
+
+
 Version 2.3u  January 20,  2012
 -------------------------------
 
