@@ -2267,8 +2267,6 @@ if(page ==ANALYSIS_PAGE_AIRSPACE)
 void dlgAnalysisShowModal(int inpage){
 static bool entered = false;
 
-StartupStore(_T("......... ANA\n"));
-
 if (entered == true) /* prevent re entrance */
 	return;
 
