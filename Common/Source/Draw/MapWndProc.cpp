@@ -395,7 +395,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       // So we go directly to buttondown, simulating a non-doubleclick.
       if (!LockModeStatus) goto _buttondown;
 
-StartupStore(_T("......doubleclick\n"));
       dwDownTime = GetTickCount();  
       XstartScreen = LOWORD(lParam); YstartScreen = HIWORD(lParam);
 

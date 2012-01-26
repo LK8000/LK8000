@@ -33,6 +33,10 @@ bool   Statistics::unscaled_y;
 
 static HPEN penThinSignal = NULL;
 
+// #define USESONAR 1
+#ifdef USESONAR
+#define SONAR_TEST
+#endif
 
 // These are globals, should start with Uppercase, and being non-static (local to this file)
 // they should have a Sideview_ remembering us what are they used for. Otherwise use a class,
@@ -42,7 +46,11 @@ AirSpaceSideViewSTRUCT Sideview_pHandeled[GC_MAX_NO];
 int   Sideview_iNoHandeldSpaces=0;
 int   Sideview_asp_heading_task = 0;
 long  Sonar_lBingDelay = 0;
+#if USESONAR
 bool  Sonar_IsEnabled = true;
+#else
+bool  Sonar_IsEnabled = false;
+#endif
 TCHAR Sideview_szNearAS[80];
 
 COLORREF  Sideview_TextColor = RGB_WHITE;
@@ -1568,7 +1576,7 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
 
 
   case ANALYSIS_PAGE_AIRSPACE:
-
+#if USESONAR
     if(Sideview_asp_heading_task !=2)
       SetCalcCaption(gettext(TEXT("_@M888_"))); // Warnings
     else
@@ -1578,6 +1586,9 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
       else
         SetCalcCaption(gettext(TEXT("_@M1293_"))); //  _@M1293_ "Sonar On"
     }
+#else
+      SetCalcCaption(gettext(TEXT("_@M888_"))); // Warnings
+#endif
     Statistics::RenderAirspace(hDC, rcgfx);
     break;
 
@@ -2090,10 +2101,14 @@ static void OnCalcClicked(WindowControl * Sender,
     }
   }
   if (page==ANALYSIS_PAGE_AIRSPACE) {
+	#if USESONAR
 	  if(Sideview_asp_heading_task != 2)
 	    dlgAirspaceWarningParamsShowModal();
 	  else
 		Sonar_IsEnabled = !Sonar_IsEnabled;
+	#else
+	    dlgAirspaceWarningParamsShowModal();
+	#endif
   }
   Update();
 }

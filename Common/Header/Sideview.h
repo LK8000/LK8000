@@ -19,7 +19,6 @@
 #define BORDER_Y 19
 
 //#define SHOW_YELLO_RED_WARNING
-#define SONAR_TEST
 #define NEAR_AS_ZOOM_1000FT
 #define NEAR_AS_ZOOM_1000M
 
