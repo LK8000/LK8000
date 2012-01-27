@@ -63,7 +63,7 @@
  #define ALPHADEBUG		1	// DEBUG STARTUPSTORE MESSAGES FOR ALPHA AND BETA VERSIONS
 					// IN FINAL VERSIONS MAY BE DISABLED.. MAYBE.
 
-// #define TESTBENCH		1	// THIS IS USING MORE MESSAGES, AND IT IS GOOD FOR DEVELOPMENT VERSIONS
+ #define TESTBENCH		1	// THIS IS USING MORE MESSAGES, AND IT IS GOOD FOR DEVELOPMENT VERSIONS
 					// For example, all dev.vers have CPUSTATS activated by this define, automatically
 					// COMMENT BEFORE PUBLIC RELEASE, NO EXCEPTIONS: INTERNAL USE ONLY!
 
@@ -91,6 +91,8 @@
  //#define NEWSMARTZOOM		1	// stretch bitmap for fast zoom, uncompleted work (almost working)
  //#define USEBIGZOOM		1	// will fast redraw only terrain, with no topology &c.
  #define FASTPAN		1	// bitblt panning 
+
+ #define HIRESB			1	// HIRES bitmaps
 
 /*
  * Incomplete work, or stuff that never got into production versions but still interesting
