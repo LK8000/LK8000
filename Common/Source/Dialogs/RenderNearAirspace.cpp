@@ -22,17 +22,18 @@
 using std::min;
 using std::max;
 
+bool   bNearAirspace_CheckAllAirspaces =false;
 
+
+extern AirSpaceSonarLevelStruct sSonarLevel[10];
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[GC_MAX_NO];
 
 extern int Sideview_iNoHandeldSpaces;
 extern COLORREF Sideview_TextColor;
 
-extern long Sonar_lBingDelay;
+extern long iSonarLevel;
 extern bool Sonar_IsEnabled;
 extern TCHAR Sideview_szNearAS[];
-
-
 
 
 int CalcSonarDelay (int iNoAs, AirSpaceSideViewSTRUCT asAirspaces[]);
@@ -41,10 +42,11 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
 {
   double range = 50.0*1000; // km
   double GPSlat, GPSlon, GPSalt, GPSbrg, GPSspeed, calc_average30s;
+  bool GPSValid;
   double calc_terrainalt;
   double calc_altitudeagl;
-  double alt;
-
+ // double alt;
+  int calc_circling;
   TCHAR text[80];
   TCHAR buffer[80];
 
@@ -86,24 +88,20 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
     GPSalt = GPS_INFO.Altitude;
     GPSbrg = GPS_INFO.TrackBearing;
     GPSspeed = GPS_INFO.Speed;
-
+    GPSValid = !GPS_INFO.NAVWarning;
+    calc_circling    = CALCULATED_INFO.Circling;
     calc_terrainalt  = CALCULATED_INFO.TerrainAlt;
     calc_altitudeagl = CALCULATED_INFO.AltitudeAGL;
-    calc_average30s = CALCULATED_INFO.Average30s;
-
-    alt = CALCULATED_INFO.NavAltitude;
+    calc_average30s  = CALCULATED_INFO.Average30s;
   }
   UnlockFlightData();
-
-
+calc_circling = false;
+  bValid = false;
   found = CAirspaceManager::Instance().FindNearestAirspace(GPSlon, GPSlat, &fAS_HorDistance, &fAS_Bearing );
-  if(found == NULL) {
-	DrawNoData(hdc, rc);
-	return;
+  if(found != NULL) {
+    near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(found);
+    bValid = near_airspace.GetDistanceInfo(bAS_Inside, iAS_HorDistance, iAS_Bearing, iAS_VertDistance);
   }
-  near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(found);
-
-  bValid = near_airspace.GetDistanceInfo(bAS_Inside, iAS_HorDistance, iAS_Bearing, iAS_VertDistance);
 //if(bValid)
 //  near_airspace.CalculateDistance(&iAS_sHorDistance,&iAS_VertDistance, &iAS_Bearing);
  // if(bLeft)
@@ -140,10 +138,27 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   /*********************************************************************
    * calc sonar delay
    *********************************************************************/
-  if(Sonar_IsEnabled)
-    Sonar_lBingDelay = CalcSonarDelay(Sideview_iNoHandeldSpaces, Sideview_pHandeled);
-  else
-	Sonar_lBingDelay = 0;
+
+  iSonarLevel = -1;
+  if(bValid)
+    if(Sonar_IsEnabled)
+      if(GPSValid) {
+	    #if TESTBENCH
+	    if(1)
+	    #else
+	    if(CALCULATED_INFO.FreeFlying)
+	    #endif
+	    {
+	      if(bNearAirspace_CheckAllAirspaces)
+	        iSonarLevel = CalcSonarDelay(Sideview_iNoHandeldSpaces, Sideview_pHandeled);
+	      else
+	      {
+	    	AirSpaceSideViewSTRUCT Tmp;
+	    	Tmp.psAS =  &near_airspace;
+    	    iSonarLevel = CalcSonarDelay( 1, &Tmp);
+	      }
+	    }
+      }
   /*********************************************************************
    * calc the horizontal zoom
    *********************************************************************/
@@ -153,6 +168,12 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
 
   if(bValid)
   {
+	double fDist;
+	if(  calc_circling  > 0)
+	  fDist = (double)(iABS_AS_HorDistance/1000+1) * 1500.0f;   // zoom fix
+	else
+	  fDist = (double)(iABS_AS_HorDistance) * 1.5;
+
 	sDia.fXMin = min(-2500.0 , iABS_AS_HorDistance * 1.5 );
 	sDia.fXMax = max( 2500.0 , iABS_AS_HorDistance * 1.5 );
 
@@ -177,29 +198,31 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   /*********************************************************************
    * calc the vertical zoom
    *********************************************************************/
-sDia.fYMin = max(0.0, alt-2300);
-sDia.fYMax = max(MAXALTTODAY, alt+1000);
+sDia.fYMin = max(0.0, GPSalt-2300);
+sDia.fYMax = max(MAXALTTODAY, GPSalt+1000);
 
 if(bValid)
 {
  // double fTop    = near_airspace.Top()->Altitude;
   double fBottom = near_airspace.Base()->Altitude;
-  sDia.fYMin = min(fBottom, sDia.fYMin );
+  sDia.fYMin = min(fBottom*0.8, sDia.fYMin );
+  sDia.fYMin = max(0.0, sDia.fYMin );
+  if(sDia.fYMin < 300) sDia.fYMin =0;
   sDia.fYMax = max((fBottom*1.2f), sDia.fYMax );
 
   if(abs(iAS_VertDistance) < 250)
   {
-
-    sDia.fYMax =  ((int)((alt+abs(iAS_VertDistance))/400) + 2) *400 ;
-    sDia.fYMin =  ((int)((alt-abs(iAS_VertDistance))/400) - 1) *400 ;
+  //  if(ExternalTriggerCircling)
+    sDia.fYMax =  ((int)((GPSalt+abs(iAS_VertDistance))/400) + 2) *400 ;
+    sDia.fYMin =  ((int)((GPSalt-abs(iAS_VertDistance))/400) - 1) *400 ;
     if(sDia.fYMin-200 < 0)
       sDia.fYMin = 0;
   }
 
   if(abs(iAS_VertDistance) < 50)
   {
-    sDia.fYMax =  ((int)((alt+abs(iAS_VertDistance))/100) + 2) *100 ;
-    sDia.fYMin =  ((int)((alt-abs(iAS_VertDistance))/100) - 1) *100 ;
+    sDia.fYMax =  ((int)((GPSalt+abs(iAS_VertDistance))/100) + 2) *100 ;
+    sDia.fYMin =  ((int)((GPSalt-abs(iAS_VertDistance))/100) - 1) *100 ;
     if(sDia.fYMin-200 < 0)
       sDia.fYMin = 0;
   }
@@ -366,7 +389,7 @@ for( i =  0 ; i < Sideview_iNoHandeldSpaces ; i++)
 	HFONT hfOldU = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
     // horizontal distance
     line[0].x = CalcDistanceCoordinat(0,  rc, &sDia);
-    line[0].y = CalcHeightCoordinat(  alt,   rc, &sDia );
+    line[0].y = CalcHeightCoordinat(  GPSalt,   rc, &sDia );
     line[1].x = CalcDistanceCoordinat(iABS_AS_HorDistance,  rc, &sDia);
     line[1].y = line[0].y;
     StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
@@ -382,10 +405,10 @@ for( i =  0 ; i < Sideview_iNoHandeldSpaces ; i++)
     _tcscat(text,buffer);
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
 
-    if((alt- sDia.fYMin /*-calc_terrainalt */) < 300)
-      TxXPt.y = CalcHeightCoordinat(  alt,   rc, &sDia ) -  tsize.cy;
+    if((GPSalt- sDia.fYMin /*-calc_terrainalt */) < 300)
+      TxXPt.y = CalcHeightCoordinat(  GPSalt,   rc, &sDia ) -  tsize.cy;
     else
-      TxXPt.y = CalcHeightCoordinat(  alt,   rc, &sDia ) +  NIBLSCALE(3);
+      TxXPt.y = CalcHeightCoordinat(  GPSalt,   rc, &sDia ) +  NIBLSCALE(3);
 
 
     if(tsize.cx > (line[1].x - line[0].x) )
@@ -397,9 +420,9 @@ for( i =  0 ; i < Sideview_iNoHandeldSpaces ; i++)
 
     // vertical distance
     line[0].x = CalcDistanceCoordinat(iABS_AS_HorDistance ,  rc, &sDia);
-    line[0].y = CalcHeightCoordinat( alt, rc, &sDia );
+    line[0].y = CalcHeightCoordinat( GPSalt, rc, &sDia );
     line[1].x = line[0].x;
-    line[1].y = CalcHeightCoordinat( alt - (double)iAS_VertDistance, rc, &sDia );
+    line[1].y = CalcHeightCoordinat( GPSalt - (double)iAS_VertDistance, rc, &sDia );
     StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
 
     Units::FormatUserAltitude( (double)abs(iAS_VertDistance), buffer, 7);
@@ -412,7 +435,7 @@ for( i =  0 ; i < Sideview_iNoHandeldSpaces ; i++)
     else
       TxYPt.x = CalcDistanceCoordinat(iABS_AS_HorDistance,  rc, &sDia)+ NIBLSCALE(5);
     if( abs( line[0].y -  line[1].y) > tsize.cy)
-      TxYPt.y = CalcHeightCoordinat( alt - (double)iAS_VertDistance/2.0, rc, &sDia) -tsize.cy/2 ;
+      TxYPt.y = CalcHeightCoordinat( GPSalt - (double)iAS_VertDistance/2.0, rc, &sDia) -tsize.cy/2 ;
     else
       TxYPt.y = min( line[0].y ,  line[1].y) - tsize.cy ;
     ExtTextOut(hdc,  TxYPt.x,  TxYPt.y , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
@@ -422,7 +445,7 @@ for( i =  0 ; i < Sideview_iNoHandeldSpaces ; i++)
 }
 #endif
 
-  RenderPlaneSideview( hdc, rc,0 , alt,wpt_brg, &sDia );
+  RenderPlaneSideview( hdc, rc,0 , GPSalt,wpt_brg, &sDia );
 
   SetTextColor(hdc, Sideview_TextColor);
   if(!INVERTCOLORS)
@@ -455,8 +478,6 @@ for( i =  0 ; i < Sideview_iNoHandeldSpaces ; i++)
  *********************************************************************/
 int CalcSonarDelay (int iNoAs, AirSpaceSideViewSTRUCT asAirspaces[])
 {
-int iResult = 0;
-int iTmpResult = 0;
 int iAS_HorDist;
 int iAS_VertDist;
 int iAS_Bearing;
@@ -465,8 +486,13 @@ int iAltitudeAGL;
 int i;
 bool bAS_Inside = false;
 bool bOK = false;
+int iTreadLevel;
 CAirspace SelectedAS;
 CAirspace *Sel_AS_Ptr = NULL;
+
+int	iH_Level = 1000;
+int	iV_Level = 1000;
+int	divider=1;
 
 LockFlightData();
 {
@@ -475,15 +501,12 @@ LockFlightData();
 }
 UnlockFlightData();
 
+	if (ISPARAGLIDER) divider=2;
 
-
-#define UNDEF_RESULT                10000
-
-    iResult=UNDEF_RESULT;
 	for( i =  0 ; i < iNoAs ; i++)
 	{
-	  iTmpResult = UNDEF_RESULT;
-	  Sel_AS_Ptr =  		asAirspaces[i].psAS;
+
+	  Sel_AS_Ptr =	asAirspaces[i].psAS;
 	  if(Sel_AS_Ptr != NULL)
 	  {
 		SelectedAS = CAirspaceManager::Instance().GetAirspaceCopy( Sel_AS_Ptr );
@@ -491,32 +514,61 @@ UnlockFlightData();
 
 		if(bOK)
 		{
+		  int iTmpV_Level = -1;
 		  if((iAS_HorDist) < GC_HORIZONTAL_TOLERANCE)                          /* horizontal near or inside */
-			if(abs(iAS_VertDist) < GC_VERTICAL_THRESHOLD)
-				iTmpResult =(int) (fabs((double)iAS_VertDist/GC_VERTICAL_DELAY_FACT)+2.0f);
+		  {
+			int iTmp =	abs(iAS_VertDist);
 
+			if(iTmp < sSonarLevel[9].iDistantrance/divider)
+			  iTmpV_Level = 9;
+			if(iTmp < sSonarLevel[8].iDistantrance/divider)
+			  iTmpV_Level = 8;
+			if(iTmp < sSonarLevel[7].iDistantrance/divider)
+			  iTmpV_Level = 7;
+			if(iTmp < sSonarLevel[6].iDistantrance/divider)
+			  iTmpV_Level = 6;
+			if(iTmp < sSonarLevel[5].iDistantrance/divider)
+			  iTmpV_Level = 5;
+		  }
+		  if(iTmpV_Level != -1)
+            if(iTmpV_Level < iV_Level )
+        	  iV_Level = iTmpV_Level;
+
+
+		  int iTmpH_Level = -1;
 		  if(SelectedAS.IsAltitudeInside(iAltitude,iAltitudeAGL,GC_VERTICAL_TOLERANCE))  /* vertically near or inside ? */
 		  {
-			double fTmp =	fabs( (double)iAS_HorDist/GC_HORIZONTAL_DELAY_FACT)+2.0f;
-			if((iAS_HorDist) < GC_HORIZONTAL_THRESHOLD)
-			{
-			  if(fTmp  <iTmpResult )            /* .. faster than vertical  ?  */
-				iTmpResult = (int)fTmp;         /* yes, take it .........      */
-			}
+			int iTmp =	abs(iAS_HorDist);
+            if(iTmp < sSonarLevel[4].iDistantrance/divider)
+              iTmpH_Level = 4;
+            if(iTmp < sSonarLevel[3].iDistantrance/divider)
+              iTmpH_Level = 3;
+            if(iTmp < sSonarLevel[2].iDistantrance/divider)
+              iTmpH_Level = 2;
+            if(iTmp < sSonarLevel[1].iDistantrance/divider)
+              iTmpH_Level = 1;
+            if(iTmp < sSonarLevel[0].iDistantrance/divider)
+              iTmpH_Level = 0;
 		  }
+		  if(iTmpH_Level != -1)
+            if(iTmpH_Level < iH_Level )
+        	  iH_Level = iTmpH_Level;
 
 		  if(SelectedAS.IsAltitudeInside(iAltitude,iAltitudeAGL,0))  /* vertically inside ? */
 			if(iAS_HorDist < 0)                                             /* complete inside, do no beep! */
-				iTmpResult = 0;
-
+			{
+			  iV_Level = -1;   /* red allert */
+			  iH_Level = -1;   /* red allert */
+			}
 		  }
 	  }
-
-	  if(iTmpResult < iResult)
-	    iResult = iTmpResult;
 	}
 
-	if(iResult == UNDEF_RESULT) /* nothing found? */
-	  iResult = 0;
-return iResult;
+    iTreadLevel = iV_Level;
+	if(iH_Level > -1)
+	  if((iH_Level+5) <= iV_Level)
+	    iTreadLevel = iH_Level;
+
+    // StartupStore(_T("... HDist=%d Vdist=%d SonarLevel=%d \n"), iAS_HorDist, iAS_VertDist,iTreadLevel);
+return iTreadLevel;
 }

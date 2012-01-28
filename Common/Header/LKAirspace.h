@@ -261,6 +261,19 @@ typedef struct
   CAirspace *psAS;
 } AirSpaceSideViewSTRUCT;
 
+#define VERTICAL    false
+#define HORIZONZTAL true
+typedef struct
+{
+  int iDistantrance;      /* distance to airspace      */
+  int iSoundDelay;        /* delaytime  for repetition */
+  bool bV_H_switch;       /* vert / horiz switch       */
+  TCHAR szSoundFilename[80];
+} AirSpaceSonarLevelStruct;
+
+
+
+
 // 
 // AIRSPACE AREA CLASS
 //

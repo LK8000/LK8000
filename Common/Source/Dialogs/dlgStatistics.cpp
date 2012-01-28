@@ -33,7 +33,7 @@ bool   Statistics::unscaled_y;
 
 static HPEN penThinSignal = NULL;
 
-// #define USESONAR 1
+#define USESONAR 1
 #ifdef USESONAR
 #define SONAR_TEST
 #endif
@@ -45,7 +45,8 @@ static HPEN penThinSignal = NULL;
 AirSpaceSideViewSTRUCT Sideview_pHandeled[GC_MAX_NO];
 int   Sideview_iNoHandeldSpaces=0;
 int   Sideview_asp_heading_task = 0;
-long  Sonar_lBingDelay = 0;
+long  iSonarLevel = 0;
+
 #if USESONAR
 bool  Sonar_IsEnabled = true;
 #else
@@ -56,7 +57,21 @@ TCHAR Sideview_szNearAS[80];
 COLORREF  Sideview_TextColor = RGB_WHITE;
 
 
-
+AirSpaceSonarLevelStruct sSonarLevel[10] = {
+    /* horizontal sonar levels */
+    /* Dist , Delay *0.5s, V/H,      soundfile */
+    {  150,     3,         true, TEXT("LK_SONAR_H1.WAV")},
+    {  330,     3,         true, TEXT("LK_SONAR_H2.WAV")},
+    {  500,     5,         true, TEXT("LK_SONAR_H3.WAV")},
+    {  650,     5,         true, TEXT("LK_SONAR_H4.WAV")},
+    {  850,     7,         true, TEXT("LK_SONAR_H5.WAV")},
+    /* vertical sonar levels */
+    {  40 ,     3,         false, TEXT("LK_SONAR_H1.WAV")},
+    {  80 ,     3,         false, TEXT("LK_SONAR_H2.WAV")},
+    {  120,     5,         false, TEXT("LK_SONAR_H3.WAV")},
+    {  160,     5,         false, TEXT("LK_SONAR_H4.WAV")},
+    {  200,     7,         false, TEXT("LK_SONAR_H5.WAV")}
+   };
 
 void Statistics::ResetScale() {
   unscaled_y = true;  
@@ -2135,27 +2150,20 @@ static int OnTimerNotify(WindowControl *Sender)
 {
   static short i=0;
 
-#ifdef SONAR_TEST
-	static long lSonarCnt = 0;
-	lSonarCnt++;
-	if(Sonar_lBingDelay > 0)
-	  if(lSonarCnt >Sonar_lBingDelay )
-	  {
-		if(Sideview_asp_heading_task== 2)
-		{
-#define RESOURCE_SOUND
-#ifdef RESOURCE_SOUND
-		  if (EnableSoundModes)
-			PlayResource(TEXT("IDR_WAV_SONAR"));
-#else
-		  if (EnableSoundModes)
-		    LKSound(TEXT("LK_SONAR.WAV"));
-#endif
 
-		  lSonarCnt =1;
+static unsigned long lSonarCnt = 0;
+
+   lSonarCnt++;
+
+   if(Sideview_asp_heading_task== 2)
+     if((iSonarLevel >=0) && (iSonarLevel < 10))
+      if( lSonarCnt > (unsigned)sSonarLevel[iSonarLevel].iSoundDelay)
+		{
+		  lSonarCnt = 0;
+                  // StartupStore(_T("... level=%d PLAY <%s>\n"),iSonarLevel,&sSonarLevel[iSonarLevel].szSoundFilename);
+		  LKSound((TCHAR*) &(sSonarLevel[iSonarLevel].szSoundFilename));
 		}
-	  }
-#endif
+
 
   if(i++ % 2 == 0) // run once per second
     return 0;
