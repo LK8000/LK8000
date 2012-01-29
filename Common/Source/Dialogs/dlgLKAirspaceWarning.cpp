@@ -28,7 +28,6 @@ WndForm *dlg=NULL;
 
 void dlgLKAirspaceFill();
 
-static short retStatus;
 
 static void OnAckForTimeClicked(WindowControl * Sender)
 {
@@ -86,7 +85,6 @@ static int OnKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam)
 static void OnAnalysisClicked(WindowControl * Sender){
   (void)Sender;
   InputEvents::eventSetup(_T("AspNextAnalysis"));
-//  retStatus=1;
   dlg->SetModalResult(mrOK);
 }
 
@@ -331,7 +329,6 @@ short ShowAirspaceWarningsToUser()
 {
   if (msg.originator != NULL) return 0;        // Dialog already open
 
-  retStatus=0;
 
   bool there_is_message = CAirspaceManager::Instance().PopWarningMessage(&msg);
   if (!there_is_message) return 0;        // no message to display
@@ -421,7 +418,8 @@ short ShowAirspaceWarningsToUser()
 
   // If we clicked on Analysis button, we shall return 1 and the calling function will
   // detect and take care of it.
-  return retStatus;
+  // 120128 unused, we call directly eventSetup 
+  return 1;
 }
 
 

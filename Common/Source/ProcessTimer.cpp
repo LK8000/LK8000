@@ -35,10 +35,7 @@ void CommonProcessTimer()
 	InputEvents::DoQueuedEvents();
 	// only shows the dialog if needed. Previously up to 2.3s at 2Hz.
 	// We should set it to 1 Hz
-	if (ShowAirspaceWarningsToUser()==1) {
-		// Run Analysis nearest airspace
-		dlgAnalysisShowModal(ANALYSIS_PAGE_AIRSPACE);
-	}
+	ShowAirspaceWarningsToUser();
   }
 
   // Automatically exit menu buttons mode
