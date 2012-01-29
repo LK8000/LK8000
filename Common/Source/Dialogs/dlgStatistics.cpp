@@ -2275,9 +2275,6 @@ if(page ==ANALYSIS_PAGE_AIRSPACE)
 void dlgAnalysisShowModal(int inpage){
 static bool entered = false;
 
-if (entered == true) /* prevent re entrance */
-	return;
-
 
 if(inpage == ANALYSIS_PAGE_NEAR_AIRSPACE)
 {
