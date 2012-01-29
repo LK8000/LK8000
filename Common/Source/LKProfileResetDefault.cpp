@@ -99,7 +99,7 @@ void LKProfileResetDefault(void) {
   #if (WINDOWSPC>0)
   MapWindow::SetAirSpaceFillType(MapWindow::asp_fill_ablend_borders);
   #else
-  MapWindow::SetAirSpaceFillType(MapWindow::asp_fill_patterns_border);
+  MapWindow::SetAirSpaceFillType(MapWindow::asp_fill_patterns_borders);
   #endif
   MapWindow::SetAirSpaceOpacity(30);
 
