@@ -419,7 +419,7 @@ void LKProfileResetDefault(void) {
   LockSettingsInFlight = false;
   LoggerShortName = false;
 
-
+  BUGS_Config=100;
 
   // ######### ADD NEW ITEMS ABOVE THIS LINE  #########
 
