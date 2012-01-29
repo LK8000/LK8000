@@ -65,7 +65,7 @@ void LKProfileResetDefault(void) {
 
   InfoType[8] = 387389207; // totally unused!
 
-  DisplayOrientation_Config=TRACKUP;
+  DisplayOrientation_Config=NORTHCIRCLE;
 
   DisplayTextType=0;
 
@@ -137,7 +137,7 @@ void LKProfileResetDefault(void) {
 
   EnableAutoBacklight = 1;
 
-  EnableAutoSoundVolume = 1;
+  EnableAutoSoundVolume = 0;
 
   AircraftCategory = 0;
 
@@ -398,7 +398,7 @@ void LKProfileResetDefault(void) {
   dwSpeedIndex1 = 2;
   dwBit1Index = (BitIndex_t)bit8N1;
   dwDeviceName2[0]=_T('\0');
-  dwPortIndex2 = 0;
+  dwPortIndex2 = 1;
   dwSpeedIndex2 = 2;
   dwBit2Index = (BitIndex_t)bit8N1;
 
