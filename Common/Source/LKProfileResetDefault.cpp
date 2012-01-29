@@ -96,7 +96,11 @@ void LKProfileResetDefault(void) {
 	MapWindow::iAirspaceMode[i] = 3; // Display + Warning
   } 
 
-  MapWindow::SetAirSpaceFillType(MapWindow::asp_fill_patterns_full);
+  #if (WINDOWSPC>0)
+  MapWindow::SetAirSpaceFillType(MapWindow::asp_fill_ablend_borders);
+  #else
+  MapWindow::SetAirSpaceFillType(MapWindow::asp_fill_patterns_border);
+  #endif
   MapWindow::SetAirSpaceOpacity(30);
 
   MapWindow::bAirspaceBlackOutline = false;
