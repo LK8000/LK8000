@@ -62,16 +62,6 @@ static void OnSelectClicked(WindowControl * Sender){
 
 }
 
-static void OnAnalysisClicked(WindowControl * Sender){
-  (void)Sender;
-
-
-  InputEvents::eventSetup(_T("AspNextAnalysis"));
-  if (wf == NULL) return;
-  wf->SetModalResult(mrOK);
-
-}
-
 
 static void OnAcknowledgeClicked(WindowControl * Sender){
   (void)Sender;
@@ -133,7 +123,6 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnFlyClicked),
   DeclareCallBackEntry(OnCloseClicked),
   DeclareCallBackEntry(OnSelectClicked),
-  DeclareCallBackEntry(OnAnalysisClicked),
   DeclareCallBackEntry(NULL)
 };
 
