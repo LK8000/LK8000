@@ -223,7 +223,7 @@ void LKProfileResetDefault(void) {
   CustomKeyModeRight = (CustomKeyMode_t)ckDisabled;
   CustomKeyModeAircraftIcon = (CustomKeyMode_t)ckDisabled;
   CustomKeyModeLeftUpCorner = (CustomKeyMode_t)ckMultitargetRotate;
-  CustomKeyModeRightUpCorner = (CustomKeyMode_t)ckMultitargetMenu;
+  CustomKeyModeRightUpCorner = (CustomKeyMode_t)ckInvertColors;
   CustomKeyModeCenterScreen = (CustomKeyMode_t)ckWhereAmI;
 
   MapBox = (MapBox_t)mbBoxed; 
