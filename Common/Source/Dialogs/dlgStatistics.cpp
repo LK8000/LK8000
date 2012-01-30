@@ -66,11 +66,11 @@ AirSpaceSonarLevelStruct sSonarLevel[10] = {
     {  650,     5,         true, TEXT("LK_SONAR_H4.WAV")},
     {  850,     7,         true, TEXT("LK_SONAR_H5.WAV")},
     /* vertical sonar levels */
-    {  40 ,     3,         false, TEXT("LK_SONAR_H1.WAV")},
-    {  80 ,     3,         false, TEXT("LK_SONAR_H2.WAV")},
-    {  120,     5,         false, TEXT("LK_SONAR_H3.WAV")},
-    {  160,     5,         false, TEXT("LK_SONAR_H4.WAV")},
-    {  200,     7,         false, TEXT("LK_SONAR_H5.WAV")}
+    {  30 ,     3,         false, TEXT("LK_SONAR_H1.WAV")},
+    {  50 ,     3,         false, TEXT("LK_SONAR_H2.WAV")},
+    {  70,      5,         false, TEXT("LK_SONAR_H3.WAV")},
+    {  90,      5,         false, TEXT("LK_SONAR_H4.WAV")},
+    {  110,     7,         false, TEXT("LK_SONAR_H5.WAV")}
    };
 
 void Statistics::ResetScale() {

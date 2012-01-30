@@ -519,15 +519,15 @@ UnlockFlightData();
 		  {
 			int iTmp =	abs(iAS_VertDist);
 
-			if(iTmp < sSonarLevel[9].iDistantrance/divider)
+			if(iTmp < sSonarLevel[9].iDistantrance)
 			  iTmpV_Level = 9;
-			if(iTmp < sSonarLevel[8].iDistantrance/divider)
+			if(iTmp < sSonarLevel[8].iDistantrance)
 			  iTmpV_Level = 8;
-			if(iTmp < sSonarLevel[7].iDistantrance/divider)
+			if(iTmp < sSonarLevel[7].iDistantrance)
 			  iTmpV_Level = 7;
-			if(iTmp < sSonarLevel[6].iDistantrance/divider)
+			if(iTmp < sSonarLevel[6].iDistantrance)
 			  iTmpV_Level = 6;
-			if(iTmp < sSonarLevel[5].iDistantrance/divider)
+			if(iTmp < sSonarLevel[5].iDistantrance)
 			  iTmpV_Level = 5;
 		  }
 		  if(iTmpV_Level != -1)
