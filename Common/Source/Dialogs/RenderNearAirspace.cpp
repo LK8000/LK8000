@@ -53,16 +53,12 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   CAirspace near_airspace;
   CAirspace *found = NULL;
 
-
-
   DiagrammStruct sDia;
   bool bAS_Inside;
   int iAS_Bearing;
   int iAS_HorDistance;
   int iABS_AS_HorDistance=0;
   int iAS_VertDistance;
-  double fAS_Bearing;
-  double fAS_HorDistance;
   bool   bValid;
   long wpt_brg = 0;
   POINT line[2];
@@ -97,7 +93,7 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   UnlockFlightData();
 calc_circling = false;
   bValid = false;
-  found = CAirspaceManager::Instance().FindNearestAirspace(GPSlon, GPSlat, &fAS_HorDistance, &fAS_Bearing );
+  found = CAirspaceManager::Instance().GetNearestAirspaceForSideview();
   if(found != NULL) {
     near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(found);
     bValid = near_airspace.GetDistanceInfo(bAS_Inside, iAS_HorDistance, iAS_Bearing, iAS_VertDistance);
@@ -107,7 +103,7 @@ calc_circling = false;
  // if(bLeft)
  // fAS_HorDistance = fabs(fAS_HorDistance);
    iABS_AS_HorDistance = abs( iAS_HorDistance);
-  wpt_brg = (long)AngleLimit360(GPSbrg - fAS_Bearing + 90.0);
+  wpt_brg = (long)AngleLimit360(GPSbrg - iAS_Bearing + 90.0);
 
 
 //  bool CAirspace::GetWarningPoint(double &longitude, double &latitude, AirspaceWarningDrawStyle_t &hdrawstyle, int &vDistance, AirspaceWarningDrawStyle_t &vdrawstyle) const
