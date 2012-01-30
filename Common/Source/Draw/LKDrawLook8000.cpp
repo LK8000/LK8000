@@ -352,13 +352,15 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 	  writeX_AutoMc[ss240x320]=240;
 	  writeY_AutoMc[ss240x320]=56;
 	
-	  // ss240x400
-	  rectLeft_AutoMc[ss240x400]=230;
-	  rectRight_AutoMc[ss240x400]=240;
-	  rectTop_AutoMc[ss240x400]=83;
-	  rectBottom_AutoMc[ss240x400]=99;
-	  writeX_AutoMc[ss240x400]=240;
-	  writeY_AutoMc[ss240x400]=83;
+	  // ss240x400 Not yet used, because 240x400 is set as ss240x320 temporarily
+	  if (ScreenSizeX==240 && ScreenSizeY==400) {
+	  rectLeft_AutoMc[ss240x320]=230;
+	  rectRight_AutoMc[ss240x320]=240;
+	  rectTop_AutoMc[ss240x320]=83;
+	  rectBottom_AutoMc[ss240x320]=99;
+	  writeX_AutoMc[ss240x320]=240;
+	  writeY_AutoMc[ss240x320]=83;
+	  }
 
 	  // ss272x480
 	  rectLeft_AutoMc[ss272x480]=261;
