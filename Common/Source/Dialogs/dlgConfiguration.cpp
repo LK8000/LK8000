@@ -27,6 +27,7 @@
 #include "LKMapWindow.h"
 #include "LKProfiles.h"
 #include "Calculations2.h"
+#include "DoInits.h"
 
 extern void UpdateAircraftConfig(void);
 // extern void UpdatePilotConfig(void); REMOVE
@@ -4631,7 +4632,7 @@ void dlgConfigurationShowModal(void){
       SetToRegistry(szRegistryOverlaySize,
 		    (DWORD)(OverlaySize));
       changed = true;
-      requirerestart = true;
+      Reset_Single_DoInits(MDI_DRAWLOOK8000);
     }
   }
 
