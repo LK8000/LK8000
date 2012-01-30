@@ -5100,13 +5100,7 @@ void dlgConfigurationShowModal(void){
     StoreRegistry();
     #endif
 
-    if (!requirerestart) {
-      MessageBoxX (hWndMainWindow, 
-	// LKTOKEN  _@M168_ = "Changes to configuration saved." 
-		   gettext(TEXT("_@M168_")), 
-		   TEXT("Configuration"), MB_OK);
-    } else {
-
+    if (requirerestart) {
       MessageBoxX (hWndMainWindow, 
 	// LKTOKEN  _@M561_ = "Restart LK8000 to apply changes." 
 		   gettext(TEXT("_@M561_")), 
