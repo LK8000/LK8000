@@ -1712,6 +1712,13 @@ _@M1772_ "Vszsz"
 # Customkey
 _@M1774_ "Terep színek váltása"
 
+# New AverEfficiency intervals
+_@M1775_ "3 másodperc"
+_@M1776_ "5 másodperc"
+_@M1777_ "10 másodperc"
+_@M1778_ "45 másodperc"
+
+
 ############################################################
 #                  - MENU MESSAGES - 
 #
