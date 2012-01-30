@@ -2,6 +2,44 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3w  
+-------------------------------
+
+NEW
+
+. Airspaces SONAR
+  In the nearest airspace page  (which is available from airspace warning window, or from menu Info 1/2 
+  or as a customkey) SONAR mode is making a PING sound proportional to the distance to the nearest airspace.
+  Sonar is intended to be used as an instrument to control proximity to airspace.
+  This means it is usuful expecially when for any reason a pilot is compelled to fly
+  near by an airspace without entering it, for example during a competition.
+  In Nearest airspace Mode, the sonar will start alerting when either near to asp horizontally
+  or vertically.
+  The sound will increase in pitch and frequency as much as we get closer to the airspace.
+  The most alerting sound is an almost permanent signal, warning about a very close ASP.
+  Horizontal distance is considered risky between 150m and 0m (500ft to 0).
+  Vertically, distance is considered risky between 40m (120ft) and 0.
+  Pilot are supposed to avoid the risky condition, as soon as they get the permanent sonar sound
+
+
+CHANGES
+
+. Remove analysis button from airspace details window, incorrectly stating to be relative to
+  the airspace, while we still have no "select airspace analysis".
+
+
+FIX
+
+. Fix bug not updating Basic setting efficiency when changing efficiency in config menu.
+  Thanks Enrico.
+
+. Fix minor bug nor resetting to 100% efficiency after full profile reset
+
+
+
+
+
+
 Version 2.3v  January 26,  2012
 -------------------------------
 
