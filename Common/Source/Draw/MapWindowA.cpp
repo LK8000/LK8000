@@ -131,8 +131,19 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
   bool borders_only = (GetAirSpaceFillType() == asp_fill_ablend_borders);
   HDC hdcbuffer = NULL;
   HBITMAP hbbufferold = NULL, hbbuffer = NULL;
+  RECT rc_extended;
   static bool asp_selected_flash = false;
   asp_selected_flash = !asp_selected_flash;
+
+  #ifdef ASP_EXTENDED_CLIP
+  // Extend rc to not show asp borders because of clipping algo - NEEDS TESTING on different hardwares
+  rc_extended.left = rc.left - NIBLSCALE(10);
+  rc_extended.top = rc.top - NIBLSCALE(10);
+  rc_extended.bottom = rc.bottom + NIBLSCALE(10);
+  rc_extended.right = rc.right + NIBLSCALE(10);
+  #else
+  memcpy((void*)&rc_extended, (void*)&rc, sizeof(RECT));
+  #endif
   
   if (borders_only) {
     // Prepare layers
@@ -165,7 +176,7 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
               // set filling brush
               SelectObject(hdcbuffer, GetAirSpaceSldBrushByClass(airspace_type));
               (*itr)->Draw(hdcbuffer, rc, true);
-              (*itr)->Draw(hDCMask, rc, false);
+              (*itr)->Draw(hDCMask, rc_extended, false);
             }
       }//for
     } else {
@@ -242,7 +253,7 @@ void MapWindow::DrawTptAirSpace(HDC hdc, const RECT rc) {
 		  } else {
 			SelectObject(hdc, hAirspacePens[airspace_type]);
 		  }
-		  (*it)->Draw(hdc, rc, false);
+		  (*it)->Draw(hdc, rc_extended, false);
         }
 	}//for
     }

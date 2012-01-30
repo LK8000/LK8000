@@ -98,6 +98,12 @@
  * Incomplete work, or stuff that never got into production versions but still interesting
  *
 
+  // Because of polygon clipping used on airspace border polyline, false lines can appear on the screen borders
+  // this define uses extended screen clipping region by NIBLSCALE(10), to draw these lines outside the screen
+  // leaving the clipping work to GDI - NEEDS TESTING on different hardwares
+  // http://www.postfrontal.com/forum/topic.asp?TOPIC_ID=5926
+  #define ASP_EXTENDED_CLIP   1
+
     #define USESWITCHES	1	// External device switch support / to be completed because unused
 				// Do not remove, it can be worked out with no problems if we want to
 				// support external switches through NMEA input.
