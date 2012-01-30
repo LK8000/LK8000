@@ -78,7 +78,7 @@ int CAirspace::_lastknownalt = 0;                // last known alt saved for cal
 int CAirspace::_lastknownagl = 0;                // last known agl saved for calculations
 int CAirspace::_lastknownheading = 0;            // last known heading saved for calculations
 bool CAirspace::_pred_blindtime = true;               // disable predicted position based warnings near takeoff
-
+CAirspace* CAirspace::_sideview_nearest_instance = NULL;  // collect nearest airspace instance for sideview during warning calculations
 
 //
 // CAIRSPACE CLASS
@@ -186,7 +186,9 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
   _nearesthdistance=100000; 
   _nearestvdistance=100000;
 #endif
-  
+
+  _sideview_nearest_instance = NULL;     // Init nearest instance for sideview
+
   // 110518 PENDING_QUESTION
   // From Paolo to Kalman: casting a double to a signed int won't create problems 
   // if for any reason it overflows the positive sign, going negative?
@@ -277,6 +279,41 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     }
   }
 #endif
+
+  if (_sideview_nearest_instance==NULL) {
+    _sideview_nearest_instance =  this;
+  } else {
+    //Both horizontally outside - horizontal distance counts
+    if ((_sideview_nearest_instance->_hdistance >= 0) && (_hdistance>=0)) {
+      if (abs(_hdistance) < abs(_sideview_nearest_instance->_hdistance)) {
+        _sideview_nearest_instance = this;
+      } else {
+        if (abs(_hdistance) == abs(_sideview_nearest_instance->_hdistance)) {
+          if (abs(_vdistance) < abs(_sideview_nearest_instance->_vdistance)) {
+            _sideview_nearest_instance = this;
+          }
+        }
+      }
+    }
+    //this horizontally inside, candidate outside
+    if ( (_sideview_nearest_instance->_hdistance >= 0) && (_hdistance<0) ) {
+      if (abs(_vdistance) < abs(_sideview_nearest_instance->_hdistance)) {
+        _sideview_nearest_instance = this;
+      }
+    }
+    //candidate horizontally inside, this outside
+    if ( (_sideview_nearest_instance->_hdistance < 0) && (_hdistance>=0) ) {
+      if (abs(_hdistance) < abs(_sideview_nearest_instance->_vdistance)) {
+        _sideview_nearest_instance = this;
+      }
+    }
+    //Both horizontally inside - vertical distance counts
+    if ((_sideview_nearest_instance->_hdistance < 0) && (_hdistance<0)) {
+      if (abs(_vdistance) < abs(_sideview_nearest_instance->_vdistance)) {
+        _sideview_nearest_instance = this;
+      }
+    }
+  }
 
   // We have to calculate with the predicted position
   bool pred_inside_now = false;
@@ -1763,6 +1800,7 @@ void CAirspaceManager::CloseAirspaces()
   if (_airspaces.size()==0) return;
   SaveSettings();
   _selected_airspace = NULL;
+  _sideview_nearest = NULL;
   _user_warning_queue.clear();
   _airspaces_near.clear();
   _airspaces_of_interest.clear();
@@ -2142,6 +2180,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
           NearestAirspaceVDist=0;
         }
 #endif
+        _sideview_nearest = CAirspace::GetSideviewNearestInstance();
         step = 0;
         break;
         
@@ -2680,6 +2719,5 @@ void CAirspaceManager::LoadSettings()
     fclose(f);
   } else StartupStore(TEXT(". Failed to load airspace settings from file <%s>%s"),szFileName,NEWLINE);
 }
-
 
 

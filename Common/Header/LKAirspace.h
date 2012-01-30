@@ -197,6 +197,8 @@ public:
   static int GetNearestVDistance() { return _nearestvdistance; }
 #endif
 
+  static CAirspace* GetSideviewNearestInstance() { return _sideview_nearest_instance; }
+
 protected:
   TCHAR _name[NAME_SIZE + 1];                    // Name
   int _type;                                    // type (class) of airspace
@@ -248,6 +250,7 @@ protected:
   static int _lastknownagl;                    // last known agl saved for calculations
   static int _lastknownheading;                // last known heading saved for calculations
   static bool _pred_blindtime;                 // disable predicted position based warnings near takeoff
+  static CAirspace* _sideview_nearest_instance;         // collect nearest airspace instance for sideview during warning calculations
 };
 typedef struct
 {
@@ -415,6 +418,9 @@ public:
   void CalculateDistancesForPage24();
   CAirspaceList GetAirspacesForPage24();
 
+  //Sideview
+  CAirspace* GetNearestAirspaceForSideview() { return _sideview_nearest; }     // Get nearest instace for sideview drawing (use instance ptr as key only to asp manager (mutex!))
+  
   //Attributes
   unsigned int NumberofAirspaces() { CCriticalSection::CGuard guard(_csairspaces); return _airspaces.size(); }
 
@@ -423,7 +429,7 @@ public:
 
 private:
   static CAirspaceManager _instance;
-  CAirspaceManager(const CAirspaceManager&) { _selected_airspace = NULL; }
+  CAirspaceManager(const CAirspaceManager&) { _selected_airspace = NULL; _sideview_nearest = NULL; }
   CAirspaceManager& operator=(const CAirspaceManager&);
   ~CAirspaceManager() { CloseAirspaces(); }
   
@@ -433,6 +439,7 @@ private:
   CAirspaceList _airspaces_near;        // Near, in reachable range for warnings
   CAirspaceList _airspaces_page24;      // Airspaces for nearest 2.4 page
   CAirspace *_selected_airspace;         // Selected airspace
+  CAirspace *_sideview_nearest;         // Neasrest asp instance for sideview
   
   // Warning system data
   // User warning message queue
