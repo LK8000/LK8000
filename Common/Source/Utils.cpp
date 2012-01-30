@@ -257,7 +257,7 @@ int GetInfoboxIndex(int i, MapWindow::Mode::TModeFly dmMode) {
 	return min(NumDataOptions-1,retval);
 }
 
-
+// Used for calculation, but does not affect IsSafetyMacCreadyInUse so careful
 double GetMacCready(int wpindex, short wpmode)
 {
 	if (WayPointCalc[wpindex].IsLandable) {

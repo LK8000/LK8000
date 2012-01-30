@@ -14,6 +14,7 @@
 #include "LKObjects.h"
 #include "RGB.h"
 #include "DoInits.h"
+#include "McReady.h"
 
 
 extern NMEAParser nmeaParser1;
@@ -70,6 +71,9 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   static short rectBottom_AutoMc[ssSizeScreenSize];
   static short writeX_AutoMc[ssSizeScreenSize];
   static short writeY_AutoMc[ssSizeScreenSize];
+
+  static int yrightoffset;
+  static short smacOffset; // the vertical offset for fine tuning positioning the safetyMc indicator
 
   static int splitoffset;
 
@@ -220,6 +224,8 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 		// splitoffset2= (rc.right-rc.left)/splitter;
 		splitoffset2= splitoffset;
 	}
+
+	smacOffset=NIBLSCALE(2);
 
 	short ii;
 	// Set tuned positions for AutoMC indicator
@@ -436,6 +442,72 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
 	}
 
+  	if (ScreenLandscape)
+		yrightoffset=((rc.bottom + rc.top)/2)-NIBLSCALE(10);
+	  else
+		yrightoffset=((rc.bottom + rc.top)/3)-NIBLSCALE(10);
+
+	// goto only to keep easy indentation.
+	if (OverlaySize!=0) goto smalloverlays;
+
+	//
+	// Big overlay fonts
+	//
+	switch (ScreenSize) {
+		case ss320x240:
+		case ss640x480:
+		case ss400x240:
+		case ss272x480:
+		case ss480x800:
+			smacOffset = yrightoffset -(ySizeLK8BigFont*2) - (ySizeLK8BigFont/6)-NIBLSCALE(1);
+			break;
+		case ss240x320:
+		case ss240x400:
+			smacOffset = yrightoffset -(ySizeLK8BigFont*2) - (ySizeLK8BigFont/6)-NIBLSCALE(2);
+			break;
+		case ss800x480:
+			smacOffset = yrightoffset -(ySizeLK8BigFont*2) - (ySizeLK8BigFont/6)+NIBLSCALE(2);
+			break;
+		case ss480x234:
+		case ss896x672:
+			smacOffset = yrightoffset -(ySizeLK8BigFont*2) - (ySizeLK8BigFont/6)+NIBLSCALE(1);
+			break;
+		case ss480x272:
+			smacOffset = yrightoffset -(ySizeLK8BigFont)- (ySizeLK8BigFont/6)+NIBLSCALE(1);
+			break;
+		default:
+			smacOffset = yrightoffset -(ySizeLK8BigFont*2) - (ySizeLK8BigFont/6);
+			break;
+	}
+	goto nextinit;
+
+smalloverlays:
+	//
+	// Small overlay fonts
+	//
+	switch (ScreenSize) {
+		case ss320x240:
+		case ss640x480:
+		case ss400x240:
+		case ss480x800:
+		case ss480x234:
+		case ss480x272:
+		case ss896x672:
+			smacOffset = yrightoffset -(ySizeLK8BigFont*2) - (ySizeLK8BigFont/6)-NIBLSCALE(5);
+			break;
+		case ss240x320:
+		case ss272x480:
+			smacOffset = yrightoffset -(ySizeLK8BigFont*2) - (ySizeLK8BigFont/6)-NIBLSCALE(6);
+			break;
+		case ss800x480:
+			smacOffset = yrightoffset -(ySizeLK8BigFont*2) - (ySizeLK8BigFont/6)-NIBLSCALE(2);
+			break;
+		default:
+			smacOffset = yrightoffset -(ySizeLK8BigFont*2) - (ySizeLK8BigFont/6)-NIBLSCALE(5);
+			break;
+	}
+
+nextinit:
 	// set correct initial bottombar stripe
 	for (ii=BM_FIRST; ii<=BM_LAST;ii++) {
 		if (ConfBB[ii]) break;
@@ -447,11 +519,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
   COLORREF overcolor,distcolor;
   overcolor=OverColorRef;
   distcolor=OverColorRef;
-  int yrightoffset;
-  if (ScreenLandscape)
-	yrightoffset=((rc.bottom + rc.top)/2)-NIBLSCALE(10);	// 101112
-  else
-	yrightoffset=((rc.bottom + rc.top)/3)-NIBLSCALE(10);	// 101112
 
   if (DrawBottom && MapSpaceMode!= MSM_MAP) {
 	DrawMapSpace(hdc, rc);
@@ -743,7 +810,6 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
 			if (IsSafetyAltitudeInUse(GetOvertargetIndex())) {
 				SelectObject(hdc, LK8SmallFont); 
-				//LKWriteBoxedText(hdc, gettext(1694), rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
 				_stprintf(BufferValue,_T(" + %.0f %s "),SAFETYALTITUDEARRIVAL*ALTITUDEMODIFY,
 				Units::GetUnitName(Units::GetUserAltitudeUnit()));
 				LKWriteBoxedText(hdc, BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
@@ -913,12 +979,21 @@ drawOverlay:
 
   } else
   if (McOverlay && Look8000>lxcNoOverlay && (ISGLIDER || ISPARAGLIDER)) {
+
 	SelectObject(hdc, bigFont); 
 	LKFormatValue(LK_MC, false, BufferValue, BufferUnit, BufferTitle);
 	// rcy=(rc.bottom + rc.top)/2 -ySizeLK8BigFont-NIBLSCALE(10)-ySizeLK8BigFont; VERTICAL CENTERED
 	rcy=yrightoffset -ySizeLK8BigFont-ySizeLK8BigFont;
 	rcx=rc.right-NIBLSCALE(10);
 	LKWriteText(hdc, BufferValue, rcx,rcy, 0, WTMODE_OUTLINED, WTALIGN_RIGHT, overcolor, true);
+
+	extern bool IsSafetyMacCreadyInUse(int val);
+	if (IsSafetyMacCreadyInUse(GetOvertargetIndex())) {
+		SelectObject(hdc, LK8SmallFont); 
+		_stprintf(BufferValue,_T(" %.1f %s "),GlidePolar::SafetyMacCready*LIFTMODIFY,
+		Units::GetUnitName(Units::GetUserVerticalSpeedUnit()));
+		LKWriteBoxedText(hdc, BufferValue, rcx,smacOffset, 0, WTALIGN_RIGHT);
+	}
 
 	if (DerivedDrawInfo.AutoMacCready == true) {
 	  SelectObject(hdc, LK8TitleFont);

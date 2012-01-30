@@ -162,3 +162,20 @@ bool IsSafetyAltitudeInUse(const int wpindex) {
 }
 
 
+
+bool IsSafetyMacCreadyInUse(const int wpindex) {
+
+  // Virtual wps are not landables, correct? Hope so!
+  if (!ValidWayPoint(wpindex))
+	return false;
+
+  if (!WayPointCalc[wpindex].IsLandable)
+	return false;
+
+  if (MACCREADY>GlidePolar::SafetyMacCready)
+	return false;
+
+  return true;
+}
+
+
