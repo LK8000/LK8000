@@ -103,7 +103,7 @@ const TCHAR *Text2NE[NE_COUNT+1];
 // Read the data files
 void InputEvents::readFile() {
   #if TESTBENCH
-  StartupStore(TEXT(". Loading input events file%s"),NEWLINE);
+  StartupStore(TEXT("... Loading input events file%s"),NEWLINE);
   #endif
 
   // clear the GCE and NMEA queues
@@ -156,33 +156,33 @@ void InputEvents::readFile() {
 
 	switch(AircraftCategory) {
 		case umGlider:
-			_stprintf(xcifile,_T("%s\\GLIDER_MENU.TXT"), xcipath);
+			_stprintf(xcifile,_T("%s\\MENU_GLIDER.TXT"), xcipath);
 			break;
 		case umParaglider:
-			_stprintf(xcifile,_T("%s\\PARAGLIDER_MENU.TXT"), xcipath);
+			_stprintf(xcifile,_T("%s\\MENU_PARAGLIDER.TXT"), xcipath);
 			break;
 		case umCar:
-			_stprintf(xcifile,_T("%s\\CAR_MENU.TXT"), xcipath);
+			_stprintf(xcifile,_T("%s\\MENU_CAR.TXT"), xcipath);
 			break;
 		case umGAaircraft:
-			_stprintf(xcifile,_T("%s\\GA_MENU.TXT"), xcipath);
+			_stprintf(xcifile,_T("%s\\MENU_GA.TXT"), xcipath);
 			break;
 		default:
-			_stprintf(xcifile,_T("%s\\UNKNOWN_MENU.TXT"), xcipath);
+			_stprintf(xcifile,_T("%s\\MENU_OTHER.TXT"), xcipath);
 			break;
 	}
 	fp=zzip_fopen(xcifile, "rb");
 	if (fp == NULL) {
-		StartupStore(_T(".. No menu <%s>, using DEFAULT\n"),xcifile);
+		// StartupStore(_T(".. No menu <%s>, using DEFAULT\n"),xcifile);
 		_stprintf(xcifile,_T("%s\\DEFAULT_MENU.TXT"), xcipath);
 		fp=zzip_fopen(xcifile, "rb");
 		if (fp == NULL) {
 			// This cannot happen
-			StartupStore(_T("..... No default menu <%s>, using internal XCI\n"),xcifile);
+			StartupStore(_T("..... NO DEFAULT MENU <%s>, using internal XCI!\n"),xcifile);
 			return;
-		} else
-			StartupStore(_T(". Loaded menu <%s>\n"),xcifile);
+		} 
 	}
+	StartupStore(_T(". Loaded menu <%s>\n"),xcifile);
   }
 
   // TODO code - Safer sizes, strings etc - use C++ (can scanf restrict length?)
