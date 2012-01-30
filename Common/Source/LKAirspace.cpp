@@ -287,6 +287,12 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     if ((_sideview_nearest_instance->_hdistance >= 0) && (_hdistance>=0)) {
       if (abs(_hdistance) < abs(_sideview_nearest_instance->_hdistance)) {
         _sideview_nearest_instance = this;
+      } else {
+        if (abs(_hdistance) == abs(_sideview_nearest_instance->_hdistance)) {
+          if (abs(_vdistance) < abs(_sideview_nearest_instance->_vdistance)) {
+            _sideview_nearest_instance = this;
+          }
+        }
       }
     }
     //this horizontally inside, candidate outside
