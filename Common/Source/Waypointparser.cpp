@@ -1049,13 +1049,28 @@ void SetHome(bool reset)
   #endif
 
   unsigned int i;
+  bool resetalternates=false;
 
   if (reset || !ValidWayPoint(NUMRESWP) || !ValidNotResWayPoint(HomeWaypoint) ) { // BUGFIX 100213 see if really we have wps!
 	    HomeWaypoint = -1;
   }
-  if (reset || !ValidNotResWayPoint(Alternate1) || !ValidNotResWayPoint(Alternate2) ) {
+
+  // If one of the alternates is no longer valid, we reset both of them 
+  if (Alternate1 !=-1 ) {
+ 	 if (!ValidNotResWayPoint(Alternate1) ) {
+	     resetalternates=true;
+ 	 }
+  }
+  if (Alternate2 !=-1 ) {
+ 	 if (!ValidNotResWayPoint(Alternate2) ) {
+	     resetalternates=true;
+ 	 }
+  }
+  if (reset || resetalternates) {
       Alternate1= -1; Alternate2= -1;
   }
+
+
   // check invalid task ref waypoint or forced reset due to file change
   if (reset || !ValidNotResWayPoint(TeamCodeRefWaypoint)) {
     TeamCodeRefWaypoint = -1;
