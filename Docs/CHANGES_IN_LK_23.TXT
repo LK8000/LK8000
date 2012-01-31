@@ -2,7 +2,7 @@
 Changes in LK8000 v2.3
 ======================
 
-Version 2.3w  
+Version 2.3w  February 1, 2012
 -------------------------------
 
 NEW
@@ -21,22 +21,33 @@ NEW
   Vertically, distance is considered risky between 40m (120ft) and 0.
   Pilot are supposed to avoid the risky condition, as soon as they get the permanent sonar sound
 
+. New  safety MacCready indicator on overlay.
+  Like for safetyaltitude, this indicator appears whenever the multitarget is using safety MC.
+  This happens when the current MC is set to a value which is lower than the safety.
+  When the value is higher, safety is ignored being more conservative! In this case no indicator appears.
+
 
 CHANGES
 
 . Remove analysis button from airspace details window, incorrectly stating to be relative to
   the airspace, while we still have no "select airspace analysis".
 
+. Calculate 3d distance on airspaces, and choose nearest for sideview based on this value
+
 
 FIX
+
+. Fix very old bug forgetting alternates1 and alternates2 on exit, if one of them was unassigned.
 
 . Fix bug not updating Basic setting efficiency when changing efficiency in config menu.
   Thanks Enrico.
 
-. Fix minor bug nor resetting to 100% efficiency after full profile reset
+. Fix minor bug not resetting to 100% efficiency after full profile reset
 
+. Fix minor bug in 240x400 resolution, not displaying the MacCready mode overlay indicator in the correct position.
 
-
+. PGs optimized routes:
+   Use TP elevation when terrain is not configured
 
 
 
