@@ -42,6 +42,9 @@ FIX
 . Fix bug not updating Basic setting efficiency when changing efficiency in config menu.
   Thanks Enrico.
 
+. Fix infobox TskETE not taking into account the fast final glide.
+  Committed by Mathias Muench.
+
 . Fix minor bug not resetting to 100% efficiency after full profile reset
 
 . Fix minor bug in 240x400 resolution, not displaying the MacCready mode overlay indicator in the correct position.
