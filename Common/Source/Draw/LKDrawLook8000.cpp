@@ -640,20 +640,20 @@ nextinit:
 					else 
 		 				LKFormatDist(index, false, BufferValue, BufferUnit);
 					break;
+				case OVT_BALT:
+		 			LKFormatDist(BestAlternate, false, BufferValue, BufferUnit);
+					break;
 				case OVT_ALT1:
 		 			LKFormatDist(Alternate1, false, BufferValue, BufferUnit);
 					break;
 				case OVT_ALT2:
 		 			LKFormatDist(Alternate2, false, BufferValue, BufferUnit);
 					break;
-				case OVT_BALT:
-		 			LKFormatDist(BestAlternate, false, BufferValue, BufferUnit);
+				case OVT_HOME:
+		 			LKFormatDist(HomeWaypoint, false, BufferValue, BufferUnit);
 					break;
 				case OVT_THER:
 		 			LKFormatDist(RESWP_LASTTHERMAL, true, BufferValue, BufferUnit);
-					break;
-				case OVT_HOME:
-		 			LKFormatDist(HomeWaypoint, false, BufferValue, BufferUnit);
 					break;
 				case OVT_MATE:
 		 			LKFormatDist(RESWP_TEAMMATE, true, BufferValue, BufferUnit);
@@ -691,20 +691,20 @@ nextinit:
 					// Do not use FormatBrgDiff for TASK, could be AAT!
 		 			LKFormatValue(LK_BRGDIFF, false, BufferValue, BufferUnit, BufferTitle);
 					break;
+				case OVT_BALT:
+		 			LKFormatBrgDiff(BestAlternate, false, BufferValue, BufferUnit);
+					break;
 				case OVT_ALT1:
 		 			LKFormatBrgDiff(Alternate1, false, BufferValue, BufferUnit);
 					break;
 				case OVT_ALT2:
 		 			LKFormatBrgDiff(Alternate2, false, BufferValue, BufferUnit);
 					break;
-				case OVT_BALT:
-		 			LKFormatBrgDiff(BestAlternate, false, BufferValue, BufferUnit);
+				case OVT_HOME:
+		 			LKFormatBrgDiff(HomeWaypoint, false, BufferValue, BufferUnit);
 					break;
 				case OVT_THER:
 		 			LKFormatBrgDiff(RESWP_LASTTHERMAL, true, BufferValue, BufferUnit);
-					break;
-				case OVT_HOME:
-		 			LKFormatBrgDiff(HomeWaypoint, false, BufferValue, BufferUnit);
 					break;
 				case OVT_MATE:
 		 			LKFormatBrgDiff(RESWP_TEAMMATE, true, BufferValue, BufferUnit);
@@ -738,14 +738,14 @@ nextinit:
 				case OVT_TASK:
 		 			LKFormatValue(LK_NEXT_GR, false, BufferValue, BufferUnit, BufferTitle);
 					break;
+				case OVT_BALT:
+		 			LKFormatValue(LK_BESTALTERN_GR, false, BufferValue, BufferUnit, BufferTitle);
+					break;
 				case OVT_ALT1:
 		 			LKFormatValue(LK_ALTERN1_GR, false, BufferValue, BufferUnit, BufferTitle);
 					break;
 				case OVT_ALT2:
 		 			LKFormatValue(LK_ALTERN2_GR, false, BufferValue, BufferUnit, BufferTitle);
-					break;
-				case OVT_BALT:
-		 			LKFormatValue(LK_BESTALTERN_GR, false, BufferValue, BufferUnit, BufferTitle);
 					break;
 				case OVT_HOME:
 		 			LKFormatGR(HomeWaypoint, false, BufferValue, BufferUnit);
@@ -778,14 +778,14 @@ nextinit:
 				case OVT_TASK:
 		 			LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
 					break;
+				case OVT_BALT:
+		 			LKFormatValue(LK_BESTALTERN_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
+					break;
 				case OVT_ALT1:
 		 			LKFormatValue(LK_ALTERN1_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
 					break;
 				case OVT_ALT2:
 		 			LKFormatValue(LK_ALTERN2_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
-					break;
-				case OVT_BALT:
-		 			LKFormatValue(LK_BESTALTERN_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
 					break;
 				case OVT_HOME:
 		 			LKFormatAltDiff(HomeWaypoint, false, BufferValue, BufferUnit);
@@ -872,14 +872,14 @@ nextinit:
 			case OVT_TASK:
 	 			LKFormatValue(LK_NEXT_ALTDIFF, false, BufferValue, BufferUnit, BufferTitle);
 				break;
+			case OVT_BALT:
+	 			LKFormatValue(LK_BESTALTERN_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
+				break;
 			case OVT_ALT1:
 	 			LKFormatValue(LK_ALTERN1_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
 				break;
 			case OVT_ALT2:
 	 			LKFormatValue(LK_ALTERN2_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
-				break;
-			case OVT_BALT:
-	 			LKFormatValue(LK_BESTALTERN_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
 				break;
 			case OVT_HOME:
 				LKFormatAltDiff(HomeWaypoint, false, BufferValue, BufferUnit);
@@ -1247,30 +1247,25 @@ Drawbottom:
 	case BM_TSK:
 		showunit=LKFormatValue(LK_FIN_DIST, true, BufferValue, BufferUnit, BufferTitle);
 		break;
-
-	case BM_SYS:
-		showunit=LKFormatValue(LK_BATTERY, true, BufferValue, BufferUnit, BufferTitle); // 100221
-		break;
-
 	case BM_ALT:
 		showunit=LKFormatValue(LK_BESTALTERN_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
 		BufferTitle[7]='\0';
 		break;
-
-	case BM_CUS:
-		index=GetInfoboxType(1);
-		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+	case BM_SYS:
+		showunit=LKFormatValue(LK_BATTERY, true, BufferValue, BufferUnit, BufferTitle); // 100221
 		break;
-
 	case BM_CUS2:
 		index=GetInfoboxIndex(1,MapWindow::Mode::MODE_FLY_CRUISE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
-		
 	case BM_CUS3:
 		index=GetInfoboxIndex(1,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
+		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		BufferTitle[7]='\0';
+		break;
+	case BM_CUS:
+		index=GetInfoboxType(1);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1315,10 +1310,6 @@ Drawbottom:
 	case BM_TSK:
 		showunit=LKFormatValue(LK_FIN_ALTDIFF, true, BufferValue, BufferUnit, BufferTitle); // 100221
 		break;
-	case BM_SYS:
-		showunit=LKFormatValue(LK_EXTBATT1VOLT, true, BufferValue, BufferUnit, BufferTitle); // 100221
-		break;
-
 	case BM_ALT:
 		if (ScreenLandscape) {
 			showunit=LKFormatValue(LK_BESTALTERN_ARRIV, false, BufferValue, BufferUnit, BufferTitle);
@@ -1328,11 +1319,10 @@ Drawbottom:
 			BufferTitle[7]='\0';
 		}
 		break;
-	case BM_CUS:
-		index=GetInfoboxType(2);
-		showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+	case BM_SYS:
+		showunit=LKFormatValue(LK_EXTBATT1VOLT, true, BufferValue, BufferUnit, BufferTitle); // 100221
 		break;
+
 	case BM_CUS2:
 		index=GetInfoboxIndex(2,MapWindow::Mode::MODE_FLY_CRUISE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
@@ -1342,6 +1332,11 @@ Drawbottom:
 	case BM_CUS3:
 		index=GetInfoboxIndex(2,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		BufferTitle[7]='\0';
+		break;
+	case BM_CUS:
+		index=GetInfoboxType(2);
+		showunit=LKFormatValue(index, false, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
 
@@ -1380,6 +1375,13 @@ Drawbottom:
 		break;
 	case BM_TSK:
 		showunit=LKFormatValue(LK_FIN_ETE, true, BufferValue, BufferUnit, BufferTitle);
+		break;
+	case BM_ALT:
+		if (ScreenLandscape)
+			showunit=LKFormatValue(LK_ALTERN1_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
+		else
+			showunit=LKFormatValue(LK_ALTERN2_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
+		BufferTitle[7]='\0';
 		break;
 	case BM_SYS:
 		// TODO MAKE IT in LKPROCESS
@@ -1429,18 +1431,6 @@ Drawbottom:
   		wsprintf(BufferTitle, MsgToken(1199));
 		#endif
 		break;
-	case BM_ALT:
-		if (ScreenLandscape)
-			showunit=LKFormatValue(LK_ALTERN1_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
-		else
-			showunit=LKFormatValue(LK_ALTERN2_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
-		BufferTitle[7]='\0';
-		break;
-	case BM_CUS:
-		index=GetInfoboxType(3);
-		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
-		break;
 	case BM_CUS2:
 		index=GetInfoboxIndex(3,MapWindow::Mode::MODE_FLY_CRUISE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
@@ -1449,6 +1439,11 @@ Drawbottom:
 		
 	case BM_CUS3:
 		index=GetInfoboxIndex(3,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
+		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		BufferTitle[7]='\0';
+		break;
+	case BM_CUS:
+		index=GetInfoboxType(3);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1490,6 +1485,15 @@ Drawbottom:
 	case BM_TSK:
 		showunit=LKFormatValue(LK_TASK_DISTCOV, true, BufferValue, BufferUnit, BufferTitle);
 		break;
+	case BM_ALT:
+		if (ScreenLandscape) {
+			showunit=LKFormatValue(LK_ALTERN1_ARRIV, true, BufferValue, BufferUnit, BufferTitle); // 100221
+			wcscpy(BufferTitle,_T("<<<"));
+		} else {
+			showunit=LKFormatValue(LK_BESTALTERN_ARRIV, true, BufferValue, BufferUnit, BufferTitle); // 100221
+			wcscpy(BufferTitle,_T(""));
+		}
+		break;
 	case BM_SYS:
 		// LKTOKEN _@M1068_ "HBAR"
   		wsprintf(BufferTitle, MsgToken(1068));
@@ -1504,20 +1508,6 @@ Drawbottom:
 			wsprintf(BufferValue,TEXT("---"));
   		showunit=false;
 		break;
-	case BM_ALT:
-		if (ScreenLandscape) {
-			showunit=LKFormatValue(LK_ALTERN1_ARRIV, true, BufferValue, BufferUnit, BufferTitle); // 100221
-			wcscpy(BufferTitle,_T("<<<"));
-		} else {
-			showunit=LKFormatValue(LK_BESTALTERN_ARRIV, true, BufferValue, BufferUnit, BufferTitle); // 100221
-			wcscpy(BufferTitle,_T(""));
-		}
-		break;
-	case BM_CUS:
-		index=GetInfoboxType(4);
-		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
-		break;
 	case BM_CUS2:
 		index=GetInfoboxIndex(4,MapWindow::Mode::MODE_FLY_CRUISE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
@@ -1526,6 +1516,11 @@ Drawbottom:
 		
 	case BM_CUS3:
 		index=GetInfoboxIndex(4,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
+		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		BufferTitle[7]='\0';
+		break;
+	case BM_CUS:
+		index=GetInfoboxType(4);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1579,10 +1574,6 @@ Drawbottom:
  		// LKTOKEN _@M1200_ "Start"
 		wsprintf(BufferTitle, MsgToken(1200));
 		break;
-	case BM_SYS:
-		//showunit=LKFormatValue(LK_EMPTY, true, BufferValue, BufferUnit, BufferTitle); // 100221
-		showunit=LKFormatValue(LK_LOGGER, true, BufferValue, BufferUnit, BufferTitle);
-		break;
 	case BM_ALT:
 		if (ScreenLandscape) {
 			showunit=LKFormatValue(LK_ALTERN2_GR, true, BufferValue, BufferUnit, BufferTitle); // 100221
@@ -1592,10 +1583,9 @@ Drawbottom:
 			wcscpy(BufferTitle,_T(""));
 		}
 		break;
-	case BM_CUS:
-		index=GetInfoboxType(5);
-		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
+	case BM_SYS:
+		//showunit=LKFormatValue(LK_EMPTY, true, BufferValue, BufferUnit, BufferTitle); // 100221
+		showunit=LKFormatValue(LK_LOGGER, true, BufferValue, BufferUnit, BufferTitle);
 		break;
 	case BM_CUS2:
 		index=GetInfoboxIndex(5,MapWindow::Mode::MODE_FLY_CRUISE);
@@ -1605,6 +1595,11 @@ Drawbottom:
 		
 	case BM_CUS3:
 		index=GetInfoboxIndex(5,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
+		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		BufferTitle[7]='\0';
+		break;
+	case BM_CUS:
+		index=GetInfoboxType(5);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
@@ -1647,6 +1642,13 @@ Drawbottom:
 	case BM_TSK:
 		showunit=LKFormatValue(LK_SPEEDTASK_ACH, true, BufferValue, BufferUnit, BufferTitle);
 		break;
+	case BM_ALT:
+		showunit=LKFormatValue(LK_ALTERN2_ARRIV, true, BufferValue, BufferUnit, BufferTitle); // 100221
+		if (ScreenLandscape)
+			wcscpy(BufferTitle,_T("<<<"));
+		else
+			wcscpy(BufferTitle,_T(""));
+		break;
 	case BM_SYS:
 		if (LoggerGActive()) {
   			wsprintf(BufferValue, MsgToken(1700));
@@ -1657,18 +1659,6 @@ Drawbottom:
   		wsprintf(BufferUnit, TEXT("")); // 100221
 		showunit=true;
 		break;
-	case BM_ALT:
-		showunit=LKFormatValue(LK_ALTERN2_ARRIV, true, BufferValue, BufferUnit, BufferTitle); // 100221
-		if (ScreenLandscape)
-			wcscpy(BufferTitle,_T("<<<"));
-		else
-			wcscpy(BufferTitle,_T(""));
-		break;
-	case BM_CUS:
-		index=GetInfoboxType(6);
-		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
-		BufferTitle[7]='\0';
-		break;
 	case BM_CUS2:
 		index=GetInfoboxIndex(6,MapWindow::Mode::MODE_FLY_CRUISE);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
@@ -1677,6 +1667,11 @@ Drawbottom:
 		
 	case BM_CUS3:
 		index=GetInfoboxIndex(6,MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
+		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
+		BufferTitle[7]='\0';
+		break;
+	case BM_CUS:
+		index=GetInfoboxType(6);
 		showunit=LKFormatValue(index, true, BufferValue, BufferUnit, BufferTitle);
 		BufferTitle[7]='\0';
 		break;
