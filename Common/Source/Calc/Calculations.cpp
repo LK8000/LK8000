@@ -2452,8 +2452,8 @@ static bool TaskAltitudeRequired(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
     TotalAltitude += LegAltitude;
 
     if (LegTime<0) {
-      UnlockTaskData();
-      return false;
+		retval = false;
+		goto OnExit;
     } else {
       *TotalTime += LegTime;
     }
