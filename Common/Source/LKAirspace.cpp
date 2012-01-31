@@ -295,15 +295,14 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
         }
       }
     }
-    //this horizontally inside, candidate outside
-    if ( (_sideview_nearest_instance->_hdistance >= 0) && (_hdistance<0) ) {
-      if (abs(_vdistance) < abs(_sideview_nearest_instance->_hdistance)) {
-        _sideview_nearest_instance = this;
-      }
-    }
-    //candidate horizontally inside, this outside
-    if ( (_sideview_nearest_instance->_hdistance < 0) && (_hdistance>=0) ) {
-      if (abs(_hdistance) < abs(_sideview_nearest_instance->_vdistance)) {
+    //one horizontally inside, other outside
+    if ( (_sideview_nearest_instance->_hdistance >= 0) && (_hdistance<0) ||
+         (_sideview_nearest_instance->_hdistance < 0) && (_hdistance>=0) ) {
+      // Use Pithagoras theory to compare distances
+      double d1 = ((double)_vdistance * (double)_vdistance) + ((double)_hdistance * (double)_hdistance); 
+      double d2 = ((double)_sideview_nearest_instance->_hdistance * (double)_sideview_nearest_instance->_hdistance) +
+                  ((double)_sideview_nearest_instance->_vdistance * (double)_sideview_nearest_instance->_vdistance);
+      if ( d1 < d2 ) {
         _sideview_nearest_instance = this;
       }
     }
