@@ -1784,10 +1784,8 @@ void CalculateOptimizedTargetPos(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 	WayPointList[RESWP_OPTIMIZED].Latitude = Task[ActiveWayPoint].AATTargetLat;
 	WayPointList[RESWP_OPTIMIZED].Longitude = Task[ActiveWayPoint].AATTargetLon;
+	WayPointList[RESWP_OPTIMIZED].Altitude = WayPointList[stdwp].Altitude;
 	WaypointAltitudeFromTerrain(&WayPointList[RESWP_OPTIMIZED]);
-	if(WayPointList[RESWP_OPTIMIZED].Altitude == 0) {
-		WayPointList[RESWP_OPTIMIZED].Altitude = WayPointList[stdwp].Altitude;
-	}
 
 	wsprintf(WayPointList[RESWP_OPTIMIZED].Name, _T("!%s"),WayPointList[stdwp].Name);
 }
