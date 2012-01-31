@@ -2292,9 +2292,9 @@ lkfin_ete:
 				// ^^ Notice we use LK_FIN_ETE, NOT LK_LKFIN_ETE which does NOT exist in DataOptions!
 
 			if ( ValidTaskPoint(ActiveWayPoint) ) { // 091222
-				if (DerivedDrawInfo.LKTaskETE > 0) { 
+				if (DerivedDrawInfo.TaskTimeToGo > 0) { 
 					valid=true;
-					if ( Units::TimeToTextDown(BufferValue, (int)DerivedDrawInfo.LKTaskETE))  // 091112
+					if ( Units::TimeToTextDown(BufferValue, (int)DerivedDrawInfo.TaskTimeToGo))
 						wsprintf(BufferUnit, TEXT("h"));
 					else
 						wsprintf(BufferUnit, TEXT(""));
