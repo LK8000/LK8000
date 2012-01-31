@@ -54,11 +54,11 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   CAirspace *found = NULL;
 
   DiagrammStruct sDia;
-  bool bAS_Inside;
-  int iAS_Bearing;
-  int iAS_HorDistance;
+  bool bAS_Inside=false;
+  int iAS_Bearing=0;
+  int iAS_HorDistance=15000;
   int iABS_AS_HorDistance=0;
-  int iAS_VertDistance;
+  int iAS_VertDistance=0;
   bool   bValid;
   long wpt_brg = 0;
   POINT line[2];
@@ -93,6 +93,9 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
   UnlockFlightData();
 calc_circling = false;
   bValid = false;
+  iAS_HorDistance = 15000;
+  iAS_Bearing     = 0;
+  iAS_VertDistance= 0;
   found = CAirspaceManager::Instance().GetNearestAirspaceForSideview();
   if(found != NULL) {
     near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(found);
@@ -380,7 +383,7 @@ for( i =  0 ; i < Sideview_iNoHandeldSpaces ; i++)
 //	  SetTextColor(hdc, MapWindow::GetAirspaceColourByClass(Sideview_pHandeled[i].iType));
 
 
-	if(!INVERTCOLORS)
+//	if(!INVERTCOLORS)
 	  SetBkMode(hdc, OPAQUE);
 	HFONT hfOldU = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
     // horizontal distance
@@ -444,7 +447,7 @@ for( i =  0 ; i < Sideview_iNoHandeldSpaces ; i++)
   RenderPlaneSideview( hdc, rc,0 , GPSalt,wpt_brg, &sDia );
 
   SetTextColor(hdc, Sideview_TextColor);
-  if(!INVERTCOLORS)
+ // if(!INVERTCOLORS)
     SetBkMode(hdc, OPAQUE);
   HFONT hfOld2 = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
   DrawNorthArrow     ( hdc, GPSbrg          , rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(13));
@@ -462,7 +465,7 @@ for( i =  0 ; i < Sideview_iNoHandeldSpaces ; i++)
   DrawXLabel(hdc, rc, TEXT("D"));
   SetTextColor(hdc, Sideview_TextColor);
   DrawYLabel(hdc, rc, TEXT("h"));
-
+  SetBkMode(hdc, OPAQUE);
   RenderBearingDiff  ( hdc, rc   , wpt_brg,  &sDia );
 }
 
@@ -514,17 +517,21 @@ UnlockFlightData();
 		  if((iAS_HorDist) < GC_HORIZONTAL_TOLERANCE)                          /* horizontal near or inside */
 		  {
 			int iTmp =	abs(iAS_VertDist);
-
-			if(iTmp < sSonarLevel[9].iDistantrance)
+			if(iTmp < sSonarLevel[9].iDistantrance)  {
 			  iTmpV_Level = 9;
-			if(iTmp < sSonarLevel[8].iDistantrance)
-			  iTmpV_Level = 8;
-			if(iTmp < sSonarLevel[7].iDistantrance)
-			  iTmpV_Level = 7;
-			if(iTmp < sSonarLevel[6].iDistantrance)
-			  iTmpV_Level = 6;
-			if(iTmp < sSonarLevel[5].iDistantrance)
-			  iTmpV_Level = 5;
+			  if(iTmp < sSonarLevel[8].iDistantrance)  {
+			    iTmpV_Level = 8;
+			    if(iTmp < sSonarLevel[7].iDistantrance)  {
+			      iTmpV_Level = 7;
+			      if(iTmp < sSonarLevel[6].iDistantrance)  {
+			        iTmpV_Level = 6;
+			        if(iTmp < sSonarLevel[5].iDistantrance)  {
+			          iTmpV_Level = 5;
+			        }
+			      }
+			    }
+			  }
+			}
 		  }
 		  if(iTmpV_Level != -1)
             if(iTmpV_Level < iV_Level )
@@ -535,16 +542,21 @@ UnlockFlightData();
 		  if(SelectedAS.IsAltitudeInside(iAltitude,iAltitudeAGL,GC_VERTICAL_TOLERANCE))  /* vertically near or inside ? */
 		  {
 			int iTmp =	abs(iAS_HorDist);
-            if(iTmp < sSonarLevel[4].iDistantrance/divider)
+            if(iTmp < sSonarLevel[4].iDistantrance/divider)   {
               iTmpH_Level = 4;
-            if(iTmp < sSonarLevel[3].iDistantrance/divider)
-              iTmpH_Level = 3;
-            if(iTmp < sSonarLevel[2].iDistantrance/divider)
-              iTmpH_Level = 2;
-            if(iTmp < sSonarLevel[1].iDistantrance/divider)
-              iTmpH_Level = 1;
-            if(iTmp < sSonarLevel[0].iDistantrance/divider)
-              iTmpH_Level = 0;
+              if(iTmp < sSonarLevel[3].iDistantrance/divider)   {
+                iTmpH_Level = 3;
+                if(iTmp < sSonarLevel[2].iDistantrance/divider)   {
+                  iTmpH_Level = 2;
+                  if(iTmp < sSonarLevel[1].iDistantrance/divider)   {
+                    iTmpH_Level = 1;
+                    if(iTmp < sSonarLevel[0].iDistantrance/divider)   {
+                      iTmpH_Level = 0;
+                    }
+                  }
+                }
+              }
+            }
 		  }
 		  if(iTmpH_Level != -1)
             if(iTmpH_Level < iH_Level )
