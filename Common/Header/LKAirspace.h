@@ -222,6 +222,7 @@ protected:
   bool _distances_ready;        // Distances calculated on this airspace
   int _vdistance;                // vertical distance to actual position
   int _hdistance;                // horizontal distance to actual position
+  int _3ddistance;               // 3d distance to actual position
   int _bearing;                    // bearing from actual position
   short int _labelpriority;            // warning label drawing priority to sequence labels on map
   bool _vwarninglabel_hide;     // Hide vertical warning label
