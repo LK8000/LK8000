@@ -281,35 +281,10 @@ void CAirspace::CalculateWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 #endif
 
   if (_sideview_nearest_instance==NULL) {
-    _sideview_nearest_instance =  this;
+    _sideview_nearest_instance = this;
   } else {
-    //Both horizontally outside - horizontal distance counts
-    if ((_sideview_nearest_instance->_hdistance >= 0) && (_hdistance>=0)) {
-      if (abs(_hdistance) < abs(_sideview_nearest_instance->_hdistance)) {
-        _sideview_nearest_instance = this;
-      } else {
-        if (abs(_hdistance) == abs(_sideview_nearest_instance->_hdistance)) {
-          if (abs(_vdistance) < abs(_sideview_nearest_instance->_vdistance)) {
-            _sideview_nearest_instance = this;
-          }
-        }
-      }
-    }
-    //this horizontally inside, candidate outside
-    if ( (_sideview_nearest_instance->_hdistance >= 0) && (_hdistance<0) ) {
-      if (abs(_vdistance) < abs(_sideview_nearest_instance->_hdistance)) {
-        _sideview_nearest_instance = this;
-      }
-    }
-    //candidate horizontally inside, this outside
-    if ( (_sideview_nearest_instance->_hdistance < 0) && (_hdistance>=0) ) {
-      if (abs(_hdistance) < abs(_sideview_nearest_instance->_vdistance)) {
-        _sideview_nearest_instance = this;
-      }
-    }
-    //Both horizontally inside - vertical distance counts
-    if ((_sideview_nearest_instance->_hdistance < 0) && (_hdistance<0)) {
-      if (abs(_vdistance) < abs(_sideview_nearest_instance->_vdistance)) {
+    if (_3ddistance > 0) {
+      if (_3ddistance < _sideview_nearest_instance->_3ddistance) {
         _sideview_nearest_instance = this;
       }
     }
@@ -645,7 +620,7 @@ bool CAirspace::GetWarningPoint(double &longitude, double &latitude, AirspaceWar
   return false;
 }
 
-// Calculates nearest horizontal and vertical distance to airspace based on last known position
+// Calculates nearest horizontal, vertical and 3d distance to airspace based on last known position
 // Returns true if inside, false if outside
 bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance)
 {
@@ -676,6 +651,27 @@ bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance)
     _vdistance = vDistanceBase;
   else
     _vdistance = vDistanceTop;
+  
+  // 3d distance calculation
+  if (_hdistance>0) {
+    //outside horizontally
+    if (vDistanceBase < 0 || vDistanceTop > 0) {
+      //outside vertically
+      _3ddistance = (int)sqrt(distance*distance + (double)_vdistance*(double)_vdistance);
+    } else {
+      //inside vertically
+      _3ddistance = _hdistance;
+    }
+  } else {
+    //inside horizontally
+    if (vDistanceBase < 0 || vDistanceTop > 0) {
+      //outside vertically
+      _3ddistance = abs(_vdistance);
+    } else {
+      //inside vertically
+      if (abs(_vdistance) < abs(_hdistance)) _3ddistance = -abs(_vdistance); else _3ddistance = _hdistance;
+    }
+  }
   
   if (Bearing) *Bearing = _bearing;
   if (hDistance) *hDistance = _hdistance;
