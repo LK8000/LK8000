@@ -1,5 +1,5 @@
 ﻿# LK8000 HUNGARIAN MESSAGES - HUN_MSG.TXT
-# UPDATED:  120115
+# UPDATED:  120131
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -387,7 +387,7 @@ _@M371_ "Siklószám átlagol. idő "
 _@M372_ "UTOLSÓ KAPU NYITVA"
 _@M373_ "LCD sötétzöld"
 _@M374_ "LCD zöld"
-_@M375_ "LK8000 Profilok"
+_@M375_ "Rendszer profilok"
 _@M376_ "LK8000 Forgalom"
 _@M377_ "LKoogle alföld"
 _@M378_ "LKoogle hegyek"
@@ -1317,7 +1317,9 @@ _@M1289_ "Köv.FP"
 _@M1290_ "Repirány felé nézve"
 _@M1291_ "Köz.Légt"
 _@M1292_ "Legköz.légtér felé"
-_@M1293_ "LÉGTÉRBEN"
+_@M1293_ "Sonár BE"
+_@M1294_ "Sonar KI"
+_@M1295_ "Old.nézet"
 
 # LK info page headers, try to use the same or less number of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!
@@ -1672,7 +1674,7 @@ _@M1725_ "SAJNÁLOM"
 _@M1726_ "POZICIÓD ISMERETLEN!"
 # 1727-1739 reserved for The Oracle
 _@M1740_ "OLC analízis"
-_@M1741_ "**ALAP PROFIL VISSZA**"
+_@M1741_ "PROFILOK TELJES RESETJE!"
 _@M1742_ "AGL:"
 _@M1743_ "ELV:"
 # this was the old V rough air. Leave a trailing space!

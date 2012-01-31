@@ -1,4 +1,4 @@
-﻿# LK8000 HUN_HLP.TXT 111222
+﻿# LK8000 HUN_HLP.TXT 120131
 #
 # A single text line can be max 500 characters long
 # An entire help can be max 1024 characters total
@@ -18,9 +18,6 @@ A térkép fájlok a _Maps alkönyvtárban találhatók.
 
 @102
 A fájl neve ami tartalmazza a digitális terep (domborzat) adatokat, általában egy .DEM fájl.
-A .DAT és a .JP2 fájlok is érvényesek.
-A terep adatokat az LKM térkép fájl is tartalmazhatja.
-Ebben az esetben az itt kiválasztott fájl adatait használja a program.
 Ez a fájl a _Maps alkönyvtárban található.
 
 @103
@@ -124,7 +121,7 @@ Ez a módozat csak landscape módban működik. A portrait módban ugyanaz, mint
 @126
 Ha nagyítási szint nagyobb vagy egyenlő mint ez az érték, térképtájolás vált úgy, hogy az Északi irány legyen fent.
 Ez az érték alatt az eredeti beállítás szerinti térképtájolás jut érvényre.
-Ha túl nagyra állítod, akkor az azt jelenti hogy soha nem használja ezt a funkciót. Az alapbeállítás 10.
+Ha túl nagyra állítod, akkor az azt jelenti hogy soha nem használja ezt a funkciót. Az alapbeállítás 7.
 
 @127
 Az auto zoom megváltoztatja a térkép nagyítás mértékét a repülés folyamán, így a térkép ráközelít az aktív fordulópontra.
@@ -1471,7 +1468,7 @@ A kiválasztott alternatív leszállóhely távolsága
 
 @922
 [Maximális elért magasság]
-A jelenlegi repülés során elért maximális magasság. Felszálláskor és a feladat újraindításakor nullázódik.
+A jelenlegi repülés során elért maximális magasság. Felszálláskor nullázódik.
 
 @923
 [Legnagyobb nyert magasság]
@@ -1583,6 +1580,14 @@ A bezárásik hátralévő idő a bezárás gomb szövegében megjelenik, vissza
 [Légtér riasztások térkép cimkéi]
 Ha bekapcsolt, a légtér riasztásokhoz tartozó információk megjelennek a térképen, megmutatva a légtér nevét és a magasságkülönbséget.
 
+@1213
+[PG Autozoom határa]
+Amikor siklóernyős módban az autozoom-ot használod, az autozoom akkor kezd el működni, mikor ennél a távolságnál
+közeleebb vagy a fordulóponthoz. Például ha 5km-re állítod, akkor mikor 5km-re vagy a fordulóponttól az autozoom
+mód bekapcsol, és mindig olyan zoom értéket választ hogy a fordulópont látható legyen a térképen.
+Miután elérted a fordulópontot a siklásnál használt zoom lesz visszaállítva. Mikor a következő fordulópontot
+közelíted meg 5km-re, az autozoom újra működni kezd.
+
 @1220
 [Alsó sor beállítása]
 Engedélyezheted vagy tilthatod az alsó sorok megjelenítését. Ha mindengyiket letiltod, akkor a NAV1 fog megjelenni, illetve körözés közben
@@ -1636,6 +1641,12 @@ Amikor a totálenergia be van kapcsolva, a program kiszámolja hogy mekkora maga
 Például ha 200km/h-val repülsz egy Discus-szal vízbalaszt nélkül, amíg lelassítasz 100km/h-ra, addíg némi magasságot nyersz.
 Ez a többletenergiából származó magasságérték hozzáadódik az érkezési magasságokhoz. Biztonsági okokból ez az opció alapból ki van kapcsolva.
 Ha bizonytalan vagy benne, inkább hagyd kikapcsolva.
+
+@1257
+[Hatásfok]
+Mennyire tiszta a repülő. Állítsd 100%-ra ha teljesen, és csökkentsd ahogy a szárny bogarakat szed fel vagy vizes lesz.
+50% jelenti hogy a gép merülősebessége a duplájára nőtt. Ez az az alapérték, amely az Alapbeállítások ablakban megjelenik
+a program indításakor. Alapesetben hagyd 100%-on.
 
 @9999
 Ezen az elemen nem áll rendelkezésre súgó.
