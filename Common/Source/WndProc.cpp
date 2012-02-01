@@ -17,6 +17,7 @@
 #include "RGB.h"
 #include "LKProfiles.h"
 #include "Logger.h"
+#include "LiveTracker.h"
 
 HBRUSH hBrushSelected;
 HBRUSH hBrushUnselected;
@@ -340,6 +341,8 @@ void Shutdown(void) {
   #endif
   CloseTerrainRenderer();
 
+  LiveTrackerShutdown();
+  
   // Stop COM devices
   #if ALPHADEBUG
   StartupStore(TEXT(". Stop COM devices%s"),NEWLINE);
