@@ -187,10 +187,12 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
     SelectObject(hdc, GetStockObject(WHITE_BRUSH));
   }
 
-  if(sDia.fYMin == 0)
-    SetTextColor(hdc, GROUND_TEXT_COLOUR);
-  else
-	SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
+  SetTextColor(hdc, GROUND_TEXT_COLOUR);
+  if(INVERTCOLORS)
+    if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
+	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
+
+
   DrawXGrid(hdc, rc, xtick/DISTANCEMODIFY, 0,  STYLE_THINDASHPAPER, xtick, true);
   SetTextColor(hdc, Sideview_TextColor);
   if(Units::GetUserInvAltitudeUnit() == unFeet)
@@ -449,15 +451,16 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
   SetBkMode(hdc, OPAQUE);
   DrawNorthArrow     ( hdc, GPSbrg          , rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(13));
 //  SetTextColor(hdc, RGB_BLACK);
-  DrawTelescope      ( hdc, acb-90.0, rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(38));
+  DrawTelescope      ( hdc, acb-90.0, rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(58));
   SelectObject(hdc, hfOld2);
 
   SelectObject(hdc, hfOld);
   RenderBearingDiff( hdc,   rc, wpt_brg,  &sDia );
-  if(sDia.fYMin == 0)
-    SetTextColor(hdc, GROUND_TEXT_COLOUR);
-  else
-	SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
+  SetTextColor(hdc, GROUND_TEXT_COLOUR);
+  if(INVERTCOLORS)
+    if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
+	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
+
   DrawXLabel(hdc, rc, TEXT("D"));
   SetTextColor(hdc, Sideview_TextColor);
   DrawYLabel(hdc, rc, TEXT("h"));

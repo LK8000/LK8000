@@ -478,7 +478,8 @@ else
 
   SelectObject(hdc, oldpen);
   SelectObject(hdc, oldbrush);
-
+  DeleteObject (hpBar);
+  DeleteObject (hbBar);
 }
 
 
@@ -739,14 +740,14 @@ void Statistics::RenderBarograph(HDC hdc, const RECT rc)
   hpHorizonGround = (HPEN)CreatePen(PS_SOLID, IBLSCALE(1), 
                                     GROUND_COLOUR);
   hbHorizonGround = (HBRUSH)CreateSolidBrush(GROUND_COLOUR);
-  SelectObject(hdc, hpHorizonGround);
-  SelectObject(hdc, hbHorizonGround);
+  HPEN  oldPen = (HPEN) SelectObject(hdc, hpHorizonGround);
+  HBRUSH oldBrush =(HBRUSH) SelectObject(hdc, hbHorizonGround);
 
   DrawFilledLineGraph(hdc, rc, &flightstats.Altitude_Terrain,
                 GROUND_COLOUR);
 
-  SelectObject(hdc, GetStockObject(WHITE_PEN));
-  SelectObject(hdc, GetStockObject(WHITE_BRUSH));
+  SelectObject(hdc, oldPen);
+  SelectObject(hdc, oldBrush);
   DeleteObject(hpHorizonGround);
   DeleteObject(hbHorizonGround);
 

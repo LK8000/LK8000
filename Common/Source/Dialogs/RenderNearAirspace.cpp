@@ -11,6 +11,7 @@
 #include "RGB.h"
 #include "Sideview.h"
 
+
 #define GC_HORIZONTAL_TOLERANCE      100
 #define GC_HORIZONTAL_THRESHOLD     2500
 #define GC_VERTICAL_THRESHOLD        250
@@ -18,7 +19,7 @@
 #define GC_HORIZONTAL_DELAY_FACT   250.0f
 #define GC_VERTICAL_DELAY_FACT      25.0f
 
-//#define  SHOW_ALL_AS_DISTANCES
+
 using std::min;
 using std::max;
 
@@ -239,11 +240,11 @@ if(bValid)
   ScaleYFromValue(rc, sDia.fYMin);
   ScaleYFromValue(rc, sDia.fYMax);
 
-
+  /****************************************************************************************************
+   * draw airspace and terrain elements
+   ****************************************************************************************************/
   RenderAirspaceTerrain( hdc,  rc,  GPSlat, GPSlon, iAS_Bearing, &sDia );
-#ifdef  SHOW_ALL_AS_DISTANCES
-int iDiaBearing = iAS_Bearing;
-#endif
+
   HFONT hfOld = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
   if(bValid)
     _stprintf(Sideview_szNearAS,TEXT("%s"),  near_airspace.Name() );
@@ -253,14 +254,23 @@ int iDiaBearing = iAS_Bearing;
 	GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
 	TxYPt.x = (rc.right-rc.left-tsize.cx)/2;
 	TxYPt.y = (rc.bottom-rc.top)/2;
+/*
 	SetBkMode(hdc, TRANSPARENT);
 	ExtTextOut(hdc,TxYPt.x, TxYPt.y-20, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+*/
 	_stprintf(Sideview_szNearAS,TEXT("%s"), text);
 
   }
   SelectObject(hdc, hfOld);
-
+  /****************************************************************************************************
+   * draw airspace and terrain elements
+   ****************************************************************************************************/
 #ifdef SHOW_YELLO_RED_WARNING
+  /****************************************************************************************************
+   * draw yellow/red warning
+   ****************************************************************************************************/
+
+
   if (bValid)
   {
     if (near_airspace.WarningLevel() != awNone )
@@ -284,6 +294,9 @@ int iDiaBearing = iAS_Bearing;
     }
   }
 #endif
+  /****************************************************************************************************
+   * draw diagram
+   ****************************************************************************************************/
   double xtick = 1.0;
   if (range>0.01*1000.0) xtick = 0.01;
   if (range>0.1*1000.0) xtick = 0.1;
@@ -306,10 +319,11 @@ int iDiaBearing = iAS_Bearing;
     SelectObject(hdc, GetStockObject(WHITE_BRUSH));
   }
 
-  if(sDia.fYMin == 0)
-    SetTextColor(hdc, GROUND_TEXT_COLOUR);
-  else
-	SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
+  SetTextColor(hdc, GROUND_TEXT_COLOUR);
+  if(INVERTCOLORS)
+    if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
+	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
+
   DrawXGrid(hdc, rc, xtick/DISTANCEMODIFY, 0, STYLE_THINDASHPAPER, xtick, true);
   SetTextColor(hdc, Sideview_TextColor);
   double fScale = 1000;
@@ -325,7 +339,9 @@ int iDiaBearing = iAS_Bearing;
   if(!INVERTCOLORS)
     SetBkMode(hdc, OPAQUE);
 
-
+  /****************************************************************************************************
+   * draw AGL
+   ****************************************************************************************************/
   if(calc_altitudeagl - sDia.fYMin  > 500)
   {
     SetTextColor(hdc, LIGHTBLUE_COL);
@@ -334,7 +350,7 @@ int iDiaBearing = iAS_Bearing;
     _tcscat(text,buffer);
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
     TxYPt.x = CalcDistanceCoordinat(0,  rc, &sDia)- tsize.cx/2;
-    TxYPt.y  = CalcHeightCoordinat(  (calc_terrainalt + calc_altitudeagl )*0.5,   rc, &sDia );
+    TxYPt.y  = CalcHeightCoordinat(  (calc_terrainalt + calc_altitudeagl )*0.8,   rc, &sDia );
     if((tsize.cy) < ( CalcHeightCoordinat(  calc_terrainalt, rc, &sDia )- TxYPt.y )) {
       ExtTextOut(hdc,  TxYPt.x+IBLSCALE(1),  TxYPt.y , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     }
@@ -342,7 +358,9 @@ int iDiaBearing = iAS_Bearing;
 
   SetBkMode(hdc, TRANSPARENT);
 
-  // Print current Elevation
+  /****************************************************************************************************
+   * Print current Elevation
+   ****************************************************************************************************/
   SetTextColor(hdc, RGB_BLACK);
   int x,y;
   if((calc_terrainalt-  sDia.fYMin)  > 0)
@@ -359,32 +377,45 @@ int iDiaBearing = iAS_Bearing;
   }
 
 
+  /****************************************************************************************************
+   * draw side elements
+   ****************************************************************************************************/
+  SetTextColor(hdc, Sideview_TextColor);
+ // if(!INVERTCOLORS)
+  SetBkMode(hdc, OPAQUE);
+  HFONT hfOld2 = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
+  DrawNorthArrow     ( hdc, GPSbrg          , rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(13));
+  DrawTelescope      ( hdc, iAS_Bearing-90.0, rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(58));
+  SelectObject(hdc, hfOld2);
+  SetBkMode(hdc, TRANSPARENT);
 
-#ifdef SHOW_ALL_AS_DISTANCES
-int i;
-for( i =  0 ; i < Sideview_iNoHandeldSpaces ; i++)
-{
-	bValid = false;
-  found =  Sideview_pHandeled[i].psAS;
-  if(found != NULL)
-  {
-    near_airspace = CAirspaceManager::Instance().GetAirspaceCopy(found);
-    bValid = near_airspace.GetDistanceInfo(bAS_Inside, iAS_HorDistance, iAS_Bearing, iAS_VertDistance);
-    iABS_AS_HorDistance =  abs(iAS_HorDistance);
-    if(AngleLimit360(iAS_Bearing - iDiaBearing) < -90)
-    	iABS_AS_HorDistance = -iABS_AS_HorDistance;
-    if(AngleLimit360(iAS_Bearing - iDiaBearing) > 90)
-    	iABS_AS_HorDistance = -iABS_AS_HorDistance;
-  }
-#endif
+  SelectObject(hdc, hfOld);
+  SetTextColor(hdc, GROUND_TEXT_COLOUR);
+  if(INVERTCOLORS)
+    if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
+	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
+
+  DrawXLabel(hdc, rc, TEXT("D"));
+  SetTextColor(hdc, Sideview_TextColor);
+  DrawYLabel(hdc, rc, TEXT("h"));
+//  SetBkMode(hdc, OPAQUE);
+  RenderBearingDiff  ( hdc, rc   , wpt_brg,  &sDia );
+
+  /****************************************************************************************************/
+  /****************************************************************************************************/
+  /****************************************************************************************************
+   * draw distances to next airspace
+   ****************************************************************************************************/
+  /****************************************************************************************************/
+  /****************************************************************************************************/
   if (bValid)
   {
+
+	/****************************************************************************************************
+	 * draw horizontal distance to next airspace
+	 ****************************************************************************************************/
 	SetTextColor(hdc, Sideview_TextColor);
-//	  SetTextColor(hdc, MapWindow::GetAirspaceColourByClass(Sideview_pHandeled[i].iType));
-
-
-//	if(!INVERTCOLORS)
-	  SetBkMode(hdc, OPAQUE);
+	SetBkMode(hdc, OPAQUE);
 	HFONT hfOldU = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
     // horizontal distance
     line[0].x = CalcDistanceCoordinat(0,  rc, &sDia);
@@ -417,7 +448,10 @@ for( i =  0 ; i < Sideview_iNoHandeldSpaces ; i++)
     ExtTextOut(hdc,  TxXPt.x,  TxXPt.y , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 
 
-    // vertical distance
+
+	/****************************************************************************************************
+	 * draw vertical distance to next airspace
+	 ****************************************************************************************************/
     line[0].x = CalcDistanceCoordinat(iABS_AS_HorDistance ,  rc, &sDia);
     line[0].y = CalcHeightCoordinat( GPSalt, rc, &sDia );
     line[1].x = line[0].x;
@@ -440,33 +474,13 @@ for( i =  0 ; i < Sideview_iNoHandeldSpaces ; i++)
     ExtTextOut(hdc,  TxYPt.x,  TxYPt.y , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 	SelectObject(hdc, hfOldU);
   }
-#ifdef SHOW_ALL_AS_DISTANCES
-}
-#endif
 
+ /****************************************************************************************************
+  * draw plane sideview at least
+  ****************************************************************************************************/
   RenderPlaneSideview( hdc, rc,0 , GPSalt,wpt_brg, &sDia );
 
-  SetTextColor(hdc, Sideview_TextColor);
- // if(!INVERTCOLORS)
-    SetBkMode(hdc, OPAQUE);
-  HFONT hfOld2 = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
-  DrawNorthArrow     ( hdc, GPSbrg          , rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(13));
-  DrawTelescope      ( hdc, iAS_Bearing-90.0, rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(38));
-  SelectObject(hdc, hfOld2);
-  SetBkMode(hdc, TRANSPARENT);
 
-
-
-  SelectObject(hdc, hfOld);
-  if(sDia.fYMin == 0)
-    SetTextColor(hdc, GROUND_TEXT_COLOUR);
-  else
-	SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
-  DrawXLabel(hdc, rc, TEXT("D"));
-  SetTextColor(hdc, Sideview_TextColor);
-  DrawYLabel(hdc, rc, TEXT("h"));
-  SetBkMode(hdc, OPAQUE);
-  RenderBearingDiff  ( hdc, rc   , wpt_brg,  &sDia );
 }
 
 

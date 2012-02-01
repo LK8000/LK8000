@@ -24,6 +24,7 @@ extern int Sideview_iNoHandeldSpaces;
 
 void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon,  double brg,  DiagrammStruct* psDiag )
 {
+
   double range =psDiag->fXMax - psDiag->fXMin; // km
   double fi, fj;
   double hmin = psDiag->fYMin;
@@ -208,6 +209,12 @@ void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon, 
 	  }
     }
   }
+
+
+
+
+
+  int iBottom = rc.bottom;
   // draw ground
   POINT ground[4];
   HPEN   hpHorizonGround;
@@ -218,9 +225,23 @@ void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon, 
   SelectObject(hdc, hpHorizonGround);
   SelectObject(hdc, hbHorizonGround);
 
-  int  iBottom = rc.bottom;
-  if(psDiag->fYMin < 0.1)
+#ifdef MSL_SEA_DRAW
+  // draw sea
+  if(psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE)
+  {
+	RECT sea= {rc.left,rc.bottom,rc.right,rc.bottom-BORDER_Y};
+	RenderSky( hdc,   sea,  ChangeBrightness(RGB_BLUE,1.4) , RGB_BLUE , 7);
+	iBottom-=BORDER_Y;
+  }
+#else
+  if(psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE)
 	Rectangle(hdc,rc.left,rc.bottom,rc.right,rc.bottom-BORDER_Y);
+#endif
+   y0 = iBottom;
+  SelectObject(hdc, hpHorizonGround);
+  SelectObject(hdc, hbHorizonGround);
+
+
 
   for (j=1; j< AIRSPACE_SCANSIZE_X; j++) { // scan range
     ground[0].x = iround((j-1)*dx)+x0;
@@ -267,7 +288,7 @@ SIZE tsize;
           int  type = Sideview_pHandeled[k].iType;
           SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(type));
           if(Sideview_pHandeled[k].bEnabled)
-            SetTextColor(hdc, Sideview_TextColor); // RGB_MENUTITLEFG
+            SetTextColor(hdc, RGB_BLUE /*ChangeBrightness( Sideview_TextColor, 1.4)*/); // RGB_MENUTITLEFG
           else
             SetTextColor(hdc, RGB_GGREY);
           RECT rcd =Sideview_pHandeled[k].rc;

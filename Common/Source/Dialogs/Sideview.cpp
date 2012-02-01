@@ -38,19 +38,22 @@ void DrawTelescope(HDC hdc, double fAngle, int x, int y)
 	};
 
 
-// Direction arrow
+
 bool bBlack = true;
 DrawWindRoseDirection( hdc, AngleLimit360( fAngle ),  x,  y + NIBLSCALE(18));
 PolygonRotateShift(Telescope, 17, x, y, AngleLimit360( fAngle  ));
+
+HPEN	oldBPen ;
+HBRUSH oldBrush ;
 if (!bBlack)
 {
-  SelectObject(hdc, GetStockObject(WHITE_PEN));
-  SelectObject(hdc, GetStockObject(WHITE_BRUSH));
+  oldBPen  = (HPEN)    SelectObject(hdc, GetStockObject(WHITE_PEN));
+  oldBrush = (HBRUSH)  SelectObject(hdc, GetStockObject(WHITE_BRUSH));
 }
 else
 {
-  SelectObject(hdc, GetStockObject(BLACK_PEN));
-  SelectObject(hdc, GetStockObject(BLACK_BRUSH));
+  oldBPen  = (HPEN)    SelectObject(hdc, GetStockObject(BLACK_PEN));
+  oldBrush = (HBRUSH)  SelectObject(hdc, GetStockObject(BLACK_BRUSH));
 }
 Polygon(hdc,Telescope,17);
 
@@ -60,33 +63,9 @@ else
   SelectObject(hdc, GetStockObject(WHITE_PEN));
 
 Polygon(hdc,Telescope,17);
-/*
 
-	POINT Reflect1[5] = {
-			{  -4 ,  -3 },    // 1
-			{  -4 ,  -2 },    // 2
-			{  -3 ,  -2 },    // 3
-			{  -4 ,  -3 },    // 4
-			{  -4 ,  -3 },    // 5
-	};
-
-	POINT Reflect2[5] = {
-			{  3 ,  -3  },    // 1
-			{  3 ,  -2  },    // 2
-			{  3 ,  -2  },    // 3
-			{  3 ,  -3  },    // 4
-			{  3 ,  -3  },    // 5
-
-	};
-HPEN Newpen = (HPEN)CreatePen(PS_SOLID, 1, RGB(198,198,198));
-HPEN oldPen = (HPEN) SelectObject(hdc,(HPEN) Newpen);
-SelectObject(hdc, Newpen);
-PolygonRotateShift(Reflect1, 5, Start.x, Start.y, AngleLimit360( fAngle  ));
-Polygon(hdc,Reflect1,5);
-PolygonRotateShift(Reflect2, 5, Start.x, Start.y, AngleLimit360( fAngle  ));
-Polygon(hdc,Reflect2,5);
-SelectObject(hdc, oldPen);
-*/
+SelectObject(hdc, oldBrush);
+SelectObject(hdc, oldBPen);
 }
 
 
@@ -98,11 +77,14 @@ void DrawNorthArrow(HDC hdc, double fAngle, int x, int y)
   POINT Arrow[5] = { {0,-11}, {-5,9}, {0,3}, {5,9}, {0,-11}};
   DrawWindRoseDirection( hdc, AngleLimit360( fAngle ),  x,  y + NIBLSCALE(18));
   PolygonRotateShift(Arrow, 5, x, y, AngleLimit360( -fAngle));
-  SelectObject(hdc, GetStockObject(WHITE_PEN));
+
+  HPEN	oldBPen ;
+  HBRUSH oldBrush ;
+  oldBPen= (HPEN) SelectObject(hdc, GetStockObject(WHITE_PEN));
   if(INVERTCOLORS)
-   SelectObject(hdc, GetStockObject(BLACK_BRUSH));
+	  oldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(BLACK_BRUSH));
   else
-    SelectObject(hdc, GetStockObject(WHITE_BRUSH));
+	  oldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(WHITE_BRUSH));
   Polygon(hdc,Arrow,5);
 
   if(INVERTCOLORS)
@@ -113,6 +95,9 @@ void DrawNorthArrow(HDC hdc, double fAngle, int x, int y)
 
   Polygon(hdc,Arrow,5);
 
+  SelectObject(hdc, oldBrush);
+  SelectObject(hdc, oldBPen);
+
 }
 
 void DrawWindRoseDirection(HDC hdc, double fAngle, int x, int y)
@@ -122,7 +107,7 @@ SIZE tsize;
 #define DEG_RES 45
 int iHead = (int)(AngleLimit360(fAngle+DEG_RES/2) /DEG_RES);
 iHead *= DEG_RES;
-return ; // don't do it
+
 
 switch (iHead)
 {
@@ -144,13 +129,16 @@ switch (iHead)
   case 337 : _stprintf(text,TEXT("NNW")); break;
  default   : _stprintf(text,TEXT("--" )); break;
 };
+
+SetBkMode(hdc, TRANSPARENT);
+ if(INVERTCOLORS)
+   SetTextColor(hdc, RGB_BLACK);
+ else
+   SetTextColor(hdc, RGB_WHITE);
+
 GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
 ExtTextOut(hdc,  x-tsize.cx/2,  y-tsize.cy/2 , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-/*
-_stprintf(text,TEXT("%i"),iHead);
-GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
-ExtTextOut(hdc,  x-tsize.cx/2,  y+ NIBLSCALE(25) , ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-*/
+
 return;
 }
 
@@ -209,11 +197,9 @@ void RenderBearingDiff(HDC hdc, const RECT rc,double brg, DiagrammStruct* psDia 
     SIZE tsize;
     SelectObject(hdc, LK8MediumFont);
     GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &tsize);
-    SetBkMode(hdc, OPAQUE);
-    SetBkMode(hdc, TRANSPARENT);
-//    SetTextColor(hdc, RGB_TEXT_COLOR);
+
     ExtTextOut(hdc, (rc.left + rc.right - tsize.cx)/2, rc.top, ETO_OPAQUE, NULL, BufferValue, _tcslen(BufferValue), NULL);
-    SetBkMode(hdc, TRANSPARENT);
+
   }
 }
 
@@ -315,17 +301,19 @@ void RenderPlaneSideview(HDC hdc, const RECT rc,double fDist, double fAltitude,d
 
   Start.x = CalcDistanceCoordinat(fDist,  rc, psDia);
   Start.y = CalcHeightCoordinat(fAltitude,  rc, psDia);
+  HBRUSH oldBrush;
+  HPEN   oldPen;
 /*
   if(INVERTCOLORS)
   {
-    SelectObject(hdc, GetStockObject(WHITE_PEN));
-    SelectObject(hdc, GetStockObject(BLACK_BRUSH));
+    oldPen   = (HPEN)SelectObject(hdc, GetStockObject(WHITE_PEN));
+    oldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(BLACK_BRUSH));
   }
   else
 */
   {
-    SelectObject(hdc, GetStockObject(BLACK_PEN));
-    SelectObject(hdc, GetStockObject(WHITE_BRUSH));
+	oldPen   = (HPEN) SelectObject(hdc, GetStockObject(BLACK_PEN));
+    oldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(WHITE_BRUSH));
   }
 
   //SelectObject(hdc, GetStockObject(BLACK_PEN));
@@ -334,31 +322,31 @@ void RenderPlaneSideview(HDC hdc, const RECT rc,double fDist, double fAltitude,d
   PolygonRotateShift(AircraftTail, 5,   Start.x, Start.y,  0);
   PolygonRotateShift(AircraftWingL, 7,   Start.x, Start.y,  0);
   PolygonRotateShift(AircraftWingR, 7,   Start.x, Start.y,  0);
-  HBRUSH oldBrush;
+
   HBRUSH GreenBrush = CreateSolidBrush(COLORREF RGB_GREEN);
   HBRUSH RedBrush = CreateSolidBrush(COLORREF RGB_RED);
   if((brg < 180))
   {
-    oldBrush= (HBRUSH)  SelectObject(hdc, RedBrush);
+    SelectObject(hdc, RedBrush);
     Polygon(hdc,AircraftWingL ,7 );
 
-    SelectObject(hdc, oldBrush);
+    SelectObject(hdc, GetStockObject(WHITE_BRUSH));
     Polygon(hdc,AircraftSide  ,8 );
 
-    oldBrush= (HBRUSH)  SelectObject(hdc, GreenBrush);
+    SelectObject(hdc, GreenBrush);
     Polygon(hdc,AircraftWingR ,7 );
 
     SelectObject(hdc, oldBrush);
   }
   else
   {
-    oldBrush= (HBRUSH)  SelectObject(hdc, GreenBrush);
+    SelectObject(hdc, GreenBrush);
     Polygon(hdc,AircraftWingR ,7 );
 
-    SelectObject(hdc, oldBrush);
+    SelectObject(hdc, GetStockObject(WHITE_BRUSH));
     Polygon(hdc,AircraftSide  ,8 );
 
-    oldBrush= (HBRUSH)  SelectObject(hdc, RedBrush);
+    SelectObject(hdc, RedBrush);
     Polygon(hdc,AircraftWingL ,7 );
 
     SelectObject(hdc, oldBrush);
@@ -368,6 +356,8 @@ void RenderPlaneSideview(HDC hdc, const RECT rc,double fDist, double fAltitude,d
     Polygon(hdc,AircraftTail  ,5 );
   }
 
+  SelectObject(hdc, oldPen);
+  SelectObject(hdc, oldBrush);
   DeleteObject(RedBrush);
   DeleteObject(GreenBrush);
 
