@@ -391,3 +391,13 @@ bool CheckRegistryProfile() {
 	return true;
 }
 
+
+bool CheckSystemBitmaps() {
+  TCHAR srcdir[MAX_PATH];
+  TCHAR srcfile[MAX_PATH];
+  LocalPath(srcdir, _T(LKD_BITMAPS));
+  _stprintf(srcfile,TEXT("%s\\_BITMAPSH"),srcdir);
+  if (  GetFileAttributes(srcfile) == 0xffffffff ) return false;
+  return true;
+}
+

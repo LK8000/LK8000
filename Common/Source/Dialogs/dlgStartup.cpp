@@ -27,6 +27,7 @@ extern bool CheckSystemDefaultMenu(void);
 extern bool CheckSystemGRecord(void);
 #endif
 extern bool CheckLanguageEngMsg(void);
+extern bool CheckSystemBitmaps(void);
 
 bool fullresetasked=false;
 
@@ -543,6 +544,16 @@ bool dlgStartupShowModal(void){
 	Shutdown();
   }
 #endif
+  if  (!CheckSystemBitmaps()) {
+	TCHAR mydir[MAX_PATH];
+	TCHAR mes[MAX_PATH];
+	StartupStore(_T("... CHECK SYSTEM _BITMAPSH FAILED!%s"),NEWLINE);
+	LocalPath(mydir,_T(LKD_BITMAPS));
+	_stprintf(mes,_T("%s/_BITMAPSH"),mydir);
+	MessageBoxX(hWndMainWindow, _T("_BITMAPSH MISSING in SYSTEM Bitmaps\nCheck System Install"), _T("FATAL ERROR 032"), MB_OK|MB_ICONQUESTION);
+	MessageBoxX(hWndMainWindow, mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION, true);
+	Shutdown();
+  }
 
   if  (!CheckPolarsDir()) {
 	TCHAR mydir[MAX_PATH];
