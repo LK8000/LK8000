@@ -855,6 +855,7 @@ GEXTERN int ISINETABLE[4096];
 GEXTERN int ICOSTABLE[4096];
 
 GEXTERN short TouchContext;
+GEXTERN bool UseHiresBitmap;
 
 
 //

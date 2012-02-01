@@ -218,12 +218,17 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
 // Bitmap
 //
 
+IDB_EMPTY		BITMAP	DISCARDABLE	"../Data/Bitmaps/Empty.bmp"
 IDB_LANDABLE            BITMAP  DISCARDABLE     "../Data/Bitmaps/Landable.bmp"
 IDB_REACHABLE           BITMAP  DISCARDABLE     "../Data/Bitmaps/Reachable.bmp"
 IDB_TURNPOINT           BITMAP  DISCARDABLE     "../Data/Bitmaps/Turnpoint.bmp"
+IDB_TURNPOINTH          BITMAP  DISCARDABLE     "../Data/Bitmaps/TurnpointH.bmp"
 IDB_INVTURNPOINT        BITMAP  DISCARDABLE     "../Data/Bitmaps/InvTurnpoint.bmp"
+IDB_INVTURNPOINTH       BITMAP  DISCARDABLE     "../Data/Bitmaps/InvTurnpointH.bmp"
 IDB_SMALL               BITMAP  DISCARDABLE     "../Data/Bitmaps/Small.bmp"
+IDB_SMALLH              BITMAP  DISCARDABLE    "../Data/Bitmaps/SmallH.bmp"
 IDB_INVSMALL            BITMAP  DISCARDABLE     "../Data/Bitmaps/InvSmall.bmp"
+IDB_INVSMALLH           BITMAP  DISCARDABLE     "../Data/Bitmaps/InvSmallH.bmp"
 IDB_CRUISE              BITMAP  DISCARDABLE     "../Data/Bitmaps/cruise.bmp"
 IDB_CRUISEPARA          BITMAP  DISCARDABLE     "../Data/Bitmaps/cruisepara.bmp"
 IDB_CLIMB               BITMAP  DISCARDABLE     "../Data/Bitmaps/climb.bmp"

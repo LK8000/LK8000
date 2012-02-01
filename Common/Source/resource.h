@@ -35,6 +35,11 @@
 #define IDB_SMALL                       142
 #define IDB_INVSMALL                    143
 #define IDB_INVTURNPOINT                144
+#define IDB_TURNPOINTH                  145
+#define IDB_SMALLH                      146
+#define IDB_INVSMALLH                   147
+#define IDB_INVTURNPOINTH               148
+#define IDB_EMPTY			150
 #define IDD_REGISTER                    180
 #define IDD_BUGSBALLAST                 181
 #define IDD_AIRSPACEALT                 183

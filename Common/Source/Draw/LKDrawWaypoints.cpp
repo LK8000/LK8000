@@ -136,8 +136,8 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		} else continue; // do not draw icons for normal turnpoints here
 	}
 
-	DrawBitmapX(hdc, WayPointList[i].Screen.x-NIBLSCALE(10), WayPointList[i].Screen.y-NIBLSCALE(10), 20,20, hDCTemp,0,0,SRCPAINT,true);
-	DrawBitmapX(hdc, WayPointList[i].Screen.x-NIBLSCALE(10), WayPointList[i].Screen.y-NIBLSCALE(10), 20,20, hDCTemp,20,0,SRCAND,true);
+	DrawBitmapX(hdc, WayPointList[i].Screen.x-NIBLSCALE(10), WayPointList[i].Screen.y-NIBLSCALE(10), 20,20, hDCTemp,0,0,SRCPAINT,false);
+	DrawBitmapX(hdc, WayPointList[i].Screen.x-NIBLSCALE(10), WayPointList[i].Screen.y-NIBLSCALE(10), 20,20, hDCTemp,20,0,SRCAND,false);
 
   } // for all waypoints
 
@@ -500,36 +500,89 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
     MapWaypointLabel_t *E = &MapWaypointLabelList[j];
 
     if (!E->inTask && !E->isLandable ) {
-
       if ( TextInBox(hdc, E->Name, E->Pos.x, E->Pos.y, 0, E->Mode, true) == true) {
+
+	// If we are at low zoom, use a dot for icons, so we dont clutter the screen
 	if(MapWindow::zoom.RealScale() > 4) {
-		if (BlackScreen) // 091109
+		if (BlackScreen) 
 	 		 SelectObject(hDCTemp,hInvSmall);
 		else
 	 		 SelectObject(hDCTemp,hSmall);
 	} else {
-		// We should use a general function for this, if we want to use more icons
-		if (E->style == STYLE_MARKER) {
-			SelectObject(hDCTemp,hBmpMarker);
-		} else {
-			if (BlackScreen)
-				SelectObject(hDCTemp,hInvTurnPoint);
-			else
-				SelectObject(hDCTemp,hTurnPoint);
-		}
-	}
+		// We switch all styles in the correct order, to force a jump table by the compiler
+		// It would be much better to use an array of bitmaps, but no time to do it for 3.0
+		switch(E->style) {
+			case STYLE_NORMAL:
+				goto turnpoint;
+				break;
 
+			// These are not used here in fact
+			case STYLE_AIRFIELDGRASS:
+			case STYLE_OUTLANDING:
+			case STYLE_GLIDERSITE:
+			case STYLE_AIRFIELDSOLID:
+				goto turnpoint;
+				break;
+
+			case STYLE_MTPASS:
+				SelectObject(hDCTemp,hMountpass);
+				break;
+
+			case STYLE_MTTOP:
+				SelectObject(hDCTemp,hMountop);
+				break;
+
+			case STYLE_SENDER:
+			case STYLE_VOR:
+			case STYLE_NDB:
+			case STYLE_COOLTOWER:
+			case STYLE_DAM:
+			case STYLE_TUNNEL:
+				goto turnpoint;
+				break;
+			case STYLE_BRIDGE:
+				SelectObject(hDCTemp,hBridge);
+				break;
+			case STYLE_POWERPLANT:
+			case STYLE_CASTLE:
+				goto turnpoint;
+				break;
+			case STYLE_INTERSECTION:
+				SelectObject(hDCTemp,hIntersect);
+				break;
+			case STYLE_TRAFFIC:
+			case STYLE_THERMAL:
+				goto turnpoint;
+				break;
+
+			case STYLE_MARKER:
+				SelectObject(hDCTemp,hBmpMarker);
+				break;
+
+			default:
+turnpoint:
+				if (BlackScreen)
+					SelectObject(hDCTemp,hInvTurnPoint);
+				else
+					SelectObject(hDCTemp,hTurnPoint);
+				break;
+
+		} // switch estyle
+	} // below zoom threshold
+
+	// We dont do stretching here. We are using different bitmaps for hi res.
+	// The 20x20 size is large enough to make much bigger icons than the old ones.
 	DrawBitmapX(hdc,
 		    E->Pos.x-NIBLSCALE(10), 
 		    E->Pos.y-NIBLSCALE(10),
 		    20,20,
-		    hDCTemp,0,0,SRCPAINT,true);
+		    hDCTemp,0,0,SRCPAINT,false);
         
 	DrawBitmapX(hdc,
 		    E->Pos.x-NIBLSCALE(10), 
 		    E->Pos.y-NIBLSCALE(10),
 		    20,20,
-		    hDCTemp,20,0,SRCAND,true);
+		    hDCTemp,20,0,SRCAND,false);
       }
 
 

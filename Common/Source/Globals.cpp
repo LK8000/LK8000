@@ -604,6 +604,9 @@ void Globals_Init(void) {
   TouchContext=0;
   BUGS_Config = 1; // equivalent saved in system config and set by default on startup
 
+  // Load and use higher resolution bitmaps
+  UseHiresBitmap=false;
+
   // ADD NEW GLOBALS here ^^^ //
 
 }

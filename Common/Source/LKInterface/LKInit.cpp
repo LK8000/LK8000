@@ -73,6 +73,12 @@ void InitLKScreen() {
         for (i=0; i<=MAXIBLSCALE;i++) LKIBLSCALE[i]=(int)(i*ScreenDScale);
   }
 
+  // Initially, this is the default. Eventually retune it for each resolution.
+  // We might in the future also set a UseStretch, with or without Hires.
+  if (ScreenScale>1) {
+	UseHiresBitmap=true;
+  }
+
   // StartupStore(_T("...... ScreenScale=%d ScreenDScale=%.3f ScreenIntScale=%d\n"),ScreenScale,ScreenDScale,ScreenIntScale);
 
   ScreenSize=0;
