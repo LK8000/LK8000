@@ -22,7 +22,9 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
   short middlex=(rc.right-rc.left)/2;
   //short left=rc.left+NIBLSCALE(5);
   short contenttop=rc.top+NIBLSCALE(50);
+#if TESTBENCH
   static double freeram=CheckFreeRam()/1000000.0;
+#endif
 
   switch (LKevent) {
 	case LKEVENT_NONE:
@@ -79,8 +81,11 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
 
   SelectObject(hdc, LK8InfoSmallFont);
 
-  //_stprintf(Buffer, _T("%d WPs, %0.1fM free"),NumberOfWayPoints,CheckFreeRam()/1000000.0);
+#if TESTBENCH
   _stprintf(Buffer, _T("%d WPs, %0.1fM free"),NumberOfWayPoints,freeram);
+#else
+  _tcscpy(Buffer,_T(""));
+#endif
   if (PGNumberOfGates>0) _tcscat(Buffer,_T(" (+Tsk Gates)"));
 #ifndef NDEBUG
   _tcscat(Buffer,_T(" (+debug)"));
