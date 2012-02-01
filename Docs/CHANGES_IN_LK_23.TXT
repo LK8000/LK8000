@@ -26,6 +26,9 @@ NEW
   This happens when the current MC is set to a value which is lower than the safety.
   When the value is higher, safety is ignored being more conservative! In this case no indicator appears.
 
+. New highresolution bitmaps for map objects (and also landables).
+  Supporting icons for CUP styles: turnpoint, bridge, mountain top, mountain pass, intersection.
+
 
 CHANGES
 
@@ -33,6 +36,13 @@ CHANGES
   the airspace, while we still have no "select airspace analysis".
 
 . Calculate 3d distance on airspaces, and choose nearest for sideview based on this value
+
+. Sideview rework.
+    Drawing blue sea level
+    Printing the heading direction N NW E SE etc under the north arrow
+    printint the viewing direction N NW etc under the binocular
+    color optimization for max contrast
+
 
 
 FIX
