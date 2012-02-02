@@ -115,9 +115,36 @@ void LKLoadFixedBitmaps(void) {
   _stprintf(srcfile,_T("%s\\INTERSECT%s.BMP"),sDir,hires_suffix);
   hIntersect=LKLoadBitmap(srcfile);
 
+  _stprintf(srcfile,_T("%s\\TERRWARNING%s.BMP"),sDir,hires_suffix);
+  hTerrainWarning=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\ASPWARNING%s.BMP"),sDir,hires_suffix);
+  hAirspaceWarning=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\TEAMMATEPOS%s.BMP"),sDir,hires_suffix);
+  hBmpTeammatePosition=LKLoadBitmap(srcfile);
+
+  _stprintf(srcfile,_T("%s\\BRUSH_AIRSPACE0.BMP"),sDir);
+  hAirspaceBitmap[0]=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\BRUSH_AIRSPACE1.BMP"),sDir);
+  hAirspaceBitmap[1]=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\BRUSH_AIRSPACE2.BMP"),sDir);
+  hAirspaceBitmap[2]=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\BRUSH_AIRSPACE3.BMP"),sDir);
+  hAirspaceBitmap[3]=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\BRUSH_AIRSPACE4.BMP"),sDir);
+  hAirspaceBitmap[4]=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\BRUSH_AIRSPACE5.BMP"),sDir);
+  hAirspaceBitmap[5]=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\BRUSH_AIRSPACE6.BMP"),sDir);
+  hAirspaceBitmap[6]=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\BRUSH_AIRSPACE7.BMP"),sDir);
+  hAirspaceBitmap[7]=LKLoadBitmap(srcfile);
+
+  _stprintf(srcfile,_T("%s\\BRUSH_ABOVETERR.BMP"),sDir);
+  hAboveTerrainBitmap=LKLoadBitmap(srcfile);
+
 
   if (hTurnPoint==NULL)
-	StartupStore(_T("... MISSING BITMAPS!! CHECK SYSTEM BITMAPS!%s"),NEWLINE);
+	StartupStore(_T("... ERROR! MISSING BITMAPS!! CHECK SYSTEM BITMAPS!%s"),NEWLINE);
 
   //
   // Careful: the LK code using bitmaps will not check if they exist. If a bitmap
@@ -156,27 +183,20 @@ void LKLoadFixedBitmaps(void) {
   if (hBridge==NULL) hBridge=NULLBMP;
   if (hIntersect==NULL) hIntersect=NULLBMP;
 
-  //
-  // Old internal resources bitmaps
-  //
+  if (hTerrainWarning==NULL) hTerrainWarning=NULLBMP;
+  if (hAirspaceWarning==NULL) hAirspaceWarning=NULLBMP;
+  if (hBmpTeammatePosition==NULL) hBmpTeammatePosition=NULLBMP;
 
-  hTerrainWarning=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TERRAINWARNING));
-  hAirspaceWarning=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACEWARNING));
-  hBmpTeammatePosition = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_TEAMMATE_POS));
+  if (hAirspaceBitmap[0]==NULL) hAirspaceBitmap[0]=NULLBMP;
+  if (hAirspaceBitmap[1]==NULL) hAirspaceBitmap[1]=NULLBMP;
+  if (hAirspaceBitmap[2]==NULL) hAirspaceBitmap[2]=NULLBMP;
+  if (hAirspaceBitmap[3]==NULL) hAirspaceBitmap[3]=NULLBMP;
+  if (hAirspaceBitmap[4]==NULL) hAirspaceBitmap[4]=NULLBMP;
+  if (hAirspaceBitmap[5]==NULL) hAirspaceBitmap[5]=NULLBMP;
+  if (hAirspaceBitmap[6]==NULL) hAirspaceBitmap[6]=NULLBMP;
+  if (hAirspaceBitmap[7]==NULL) hAirspaceBitmap[7]=NULLBMP;
 
-  // airspace brushes and colours
-
-  hAirspaceBitmap[0]=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACE0));
-  hAirspaceBitmap[1]=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACE1));
-  hAirspaceBitmap[2]=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACE2));
-  hAirspaceBitmap[3]=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACE3));
-  hAirspaceBitmap[4]=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACE4));
-  hAirspaceBitmap[5]=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACE5));
-  hAirspaceBitmap[6]=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACE6));
-  hAirspaceBitmap[7]=LoadBitmap(hInst, MAKEINTRESOURCE(IDB_AIRSPACE7));
-
-  hAboveTerrainBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_ABOVETERRAIN));
-
+  if (hAboveTerrainBitmap==NULL) hAboveTerrainBitmap=NULLBMP;
 
 }
 
