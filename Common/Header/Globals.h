@@ -698,6 +698,7 @@ GEXTERN TCHAR TeamFlarmCNTarget[4]; // CN of the glider to track
 GEXTERN int TeamFlarmIdTarget;    // FlarmId of the glider to track
 
 GEXTERN bool DisableAutoLogger;
+GEXTERN bool EnableLiveTracker;
 
 // Interface Globals
 GEXTERN StatusMessageSTRUCT StatusMessageData[MAXSTATUSMESSAGECACHE];
@@ -840,6 +841,7 @@ GEXTERN TCHAR FontDesc_MapLabel[256];
 
 // Logger
 GEXTERN TCHAR PilotName_Config[100];
+GEXTERN TCHAR LiveTrackerpwd_Config[100];
 GEXTERN TCHAR AircraftType_Config[50];
 GEXTERN TCHAR AircraftRego_Config[50];
 GEXTERN TCHAR CompetitionClass_Config[50];

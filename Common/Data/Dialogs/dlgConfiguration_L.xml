@@ -523,6 +523,10 @@
 <WndProperty Name="prpDisableAutoLogger" Caption="_@M113_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H208_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>
+<WndProperty Name="prpEnableLiveTracker" Caption="_@M1779_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H1258_">
+<DataField name="" DataType="boolean"/>
+</WndProperty>
+<WndButton Name="cmdLiveTrackerpwd" Caption="_@M1780_" X=2 Y=-1 Width=235  Height=22 Font=2 />
 <WndProperty Name="prpPilotFile" Caption="" X=2 Y=-999  Width=0 Height=0 CaptionWidth=0 Font=2 Help="">
 <DataField name="" DataType="filereader" Min=0 Max=200 Step=1/>
 </WndProperty>
