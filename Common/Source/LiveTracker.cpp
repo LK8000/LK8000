@@ -84,7 +84,7 @@ static time_t yeartoseconds(int y)
   return ret;
 }
 
-unsigned long int mkgmtime(const struct tm *ptmbuf)
+static unsigned long int mkgmtime(const struct tm *ptmbuf)
 {
     time_t t;
     int year = ptmbuf->tm_year + ptmbuf->tm_mon / 12;
@@ -95,7 +95,7 @@ unsigned long int mkgmtime(const struct tm *ptmbuf)
     return t;
 }
 
-char* UrlEncode(char *szText, char* szDst, int bufsize) {
+static char* UrlEncode(char *szText, char* szDst, int bufsize) {
   char ch; 
   char szHex[5];
   int iMax,i,j; 
