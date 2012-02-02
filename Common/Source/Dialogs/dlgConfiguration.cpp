@@ -85,6 +85,7 @@ static WndFrame *wConfig25=NULL;
 //static WndFrame *wConfig27=NULL; 
 // ADDPAGE  HERE
 static WndButton *buttonPilotName=NULL;
+static WndButton *buttonLiveTrackerpwd=NULL;
 static WndButton *buttonAircraftType=NULL;
 static WndButton *buttonAircraftRego=NULL;
 static WndButton *buttonCompetitionClass=NULL;
@@ -112,6 +113,17 @@ static void UpdateButtons(void) {
 	// LKTOKEN  _@M524_ = "Pilot name" 
     _stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M524_")), val);
     buttonPilotName->SetCaption(text);
+  }
+  if (buttonLiveTrackerpwd) {
+    if (_tcslen(LiveTrackerpwd_Config)<=0) {
+       // LKTOKEN  _@M7_ = "(blank)" 
+       // LKTOKEN  _@M1780_ "Live tracker password"
+      _stprintf(text, TEXT("%s:%s"), gettext(TEXT("_@M1780_")), gettext(TEXT("_@M7_")));
+    } else { 
+       // LKTOKEN  _@M1780_ "Live tracker password"
+      _stprintf(text, TEXT("%s:***"), gettext(TEXT("_@M1780_")));
+    }
+    buttonLiveTrackerpwd->SetCaption(text);
   }
   if (buttonAircraftType) {
     #if OLDPROFILES
@@ -722,6 +734,24 @@ static void OnPilotNameClicked(WindowControl *Sender) {
   UpdateButtons();
 }
 
+static void OnLiveTrackerpwdClicked(WindowControl *Sender) {
+  (void)Sender;
+  TCHAR Temp[100];
+  if (buttonLiveTrackerpwd) {
+    #if OLDPROFILES
+    GetRegistryString(szRegistryPilotName,Temp,100);
+    #else
+    _tcscpy(Temp,LiveTrackerpwd_Config);
+    #endif
+    dlgTextEntryShowModal(Temp,100);
+    #if OLDPROFILES
+    #else
+    _tcscpy(LiveTrackerpwd_Config,Temp);
+    #endif
+    changed = true;
+  }
+  UpdateButtons();
+}
 
 static void OnCompetitionClassClicked(WindowControl *Sender)
 {
@@ -1489,6 +1519,10 @@ static void setVariables(void) {
   if (buttonPilotName) {
     buttonPilotName->SetOnClickNotify(OnPilotNameClicked);
   }
+  buttonLiveTrackerpwd = ((WndButton *)wf->FindByName(TEXT("cmdLiveTrackerpwd")));
+  if (buttonLiveTrackerpwd) {
+    buttonLiveTrackerpwd->SetOnClickNotify(OnLiveTrackerpwdClicked);
+  }
   buttonAircraftType = ((WndButton *)wf->FindByName(TEXT("cmdAircraftType")));
   if (buttonAircraftType) {
     buttonAircraftType->SetOnClickNotify(OnAircraftTypeClicked);
@@ -2236,6 +2270,11 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpEnableLiveTracker"));
+  if (wp) {
+    wp->GetDataField()->Set(EnableLiveTracker);
+    wp->RefreshDisplay();
+  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyMacCready"));
   if (wp) {
@@ -3402,6 +3441,14 @@ void dlgConfigurationShowModal(void){
 #if OLDPROFILES
       SetToRegistry(szRegistryDisableAutoLogger, DisableAutoLogger);
 #endif
+      changed = true;
+    }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpEnableLiveTracker"));
+  if (wp) {
+    if (EnableLiveTracker != wp->GetDataField()->GetAsBoolean()) {
+      EnableLiveTracker = (wp->GetDataField()->GetAsBoolean());
       changed = true;
     }
   }

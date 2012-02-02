@@ -374,6 +374,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryDeviceA,&*dwDeviceName1);
   PREAD(sname,svalue,szRegistryDeviceB,&*dwDeviceName2);
   PREAD(sname,svalue,szRegistryDisableAutoLogger,&DisableAutoLogger);
+  PREAD(sname,svalue,szRegistryEnableLiveTracker,&EnableLiveTracker);
   PREAD(sname,svalue,szRegistryDisplayText,&DisplayTextType);
   PREAD(sname,svalue,szRegistryDisplayUpValue,&DisplayOrientation_Config);
   if (matchedstring) return;
@@ -473,6 +474,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryPGOptimizeRoute,&PGOptimizeRoute);
   PREAD(sname,svalue,szRegistryPGStartOut,&PGStartOut);
   PREAD(sname,svalue,szRegistryPilotName,&*PilotName_Config);
+  PREAD(sname,svalue,szRegistryLiveTrackerpwd,&*LiveTrackerpwd_Config);
   PREAD(sname,svalue,szRegistryPolarFile,&*szPolarFile);
   PREAD(sname,svalue,szRegistryPollingMode,&PollingMode);
   if (matchedstring) return;

@@ -1668,5 +1668,11 @@ If you are in doubt, leave this setting OFF.
 How clean the glider is. Set to 100% for clean, lower numbers as the wings pick up bugs or get wet.  50% indicates the glider's sink rate is doubled. 
 This is the default value used by Efficiency in Basic Settings menu, loaded on startup. You should normally leave this value to 100% here.
 
+@1258
+[Live tracker]
+Set this on, if you want to enable sending position data to Leonardo live tracker services over the internet. (http://www.livetrack24.com)
+This requires a GPRS/HSDPA data plan, and an active TCP/IP internet connection to the tracking server. LK uses the pilot name as user name
+to login to the server. Glider type also submitted as well. If unsure, set the default value which is off.
+
 @9999
 No help available on this item!

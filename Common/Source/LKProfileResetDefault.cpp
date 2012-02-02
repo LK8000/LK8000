@@ -375,7 +375,9 @@ void LKProfileResetDefault(void) {
   GlidePolar::SafetyMacCready = 0.5; // This is saved *10 and loaded /10 in Adjust! 
 
   DisableAutoLogger = false;
-
+  
+  EnableLiveTracker = false;
+  
   // empty or demo versions
   //szAirspaceFile[0] = TEXT('\0');
   //szWaypointFile[0] = TEXT('\0');
@@ -410,6 +412,7 @@ void LKProfileResetDefault(void) {
   FontDesc_MapLabel [0]=_T('\0');
 
   _tcscpy(PilotName_Config,_T("WOLF.HIRTH"));
+  _tcscpy(LiveTrackerpwd_Config,_T(""));
 
   _tcscpy(AircraftType_Config,_T("CIRRUS-STD"));
   _tcscpy(AircraftRego_Config,_T("D-1900"));
