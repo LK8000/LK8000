@@ -312,12 +312,12 @@ void Shutdown(void) {
   // LKTOKEN _@M1222_ "Shutdown, saving task..."
   CreateProgressDialog(gettext(TEXT("_@M1222_")));
   #if TESTBENCH
-  StartupStore(TEXT(". Save default task%s"),NEWLINE);
+  StartupStore(TEXT(".... Save default task%s"),NEWLINE);
   #endif
   SaveDefaultTask();
 
   #if TESTBENCH
-  StartupStore(TEXT(". Clear task data%s"),NEWLINE);
+  StartupStore(TEXT(".... Clear task data%s"),NEWLINE);
   #endif
 
   LockTaskData();
@@ -329,7 +329,7 @@ void Shutdown(void) {
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
   CreateProgressDialog(gettext(TEXT("_@M1219_")));
   #if TESTBENCH
-  StartupStore(TEXT(". CloseTerrainTopology%s"),NEWLINE);
+  StartupStore(TEXT(".... CloseTerrainTopology%s"),NEWLINE);
   #endif
 
   RasterTerrain::CloseTerrain();
@@ -352,16 +352,16 @@ void Shutdown(void) {
 
   // Kill windows
   #if TESTBENCH
-  StartupStore(TEXT(". Close Messages%s"),NEWLINE);
+  StartupStore(TEXT(".... Close Messages%s"),NEWLINE);
   #endif
   Message::Destroy();
   #if TESTBENCH 
-  StartupStore(TEXT(". Destroy Button Labels%s"),NEWLINE);
+  StartupStore(TEXT(".... Destroy Button Labels%s"),NEWLINE);
   #endif
   ButtonLabel::Destroy();
 
   #if TESTBENCH
-  StartupStore(TEXT(". Delete Objects%s"),NEWLINE);
+  StartupStore(TEXT(".... Delete Objects%s"),NEWLINE);
   #endif
   
   // Kill graphics objects
@@ -374,17 +374,17 @@ void Shutdown(void) {
   DeInitialiseFonts();  
   CAirspaceManager::Instance().CloseAirspaces();
   #if TESTBENCH
-  StartupStore(TEXT(". Delete Critical Sections%s"),NEWLINE);
+  StartupStore(TEXT(".... Delete Critical Sections%s"),NEWLINE);
   #endif
   extern void DeInitCriticalSections(void);
   DeInitCriticalSections(); 
 
   #if TESTBENCH
-  StartupStore(TEXT(". Close Progress Dialog%s"),NEWLINE);
+  StartupStore(TEXT(".... Close Progress Dialog%s"),NEWLINE);
   #endif
   CloseProgressDialog();
   #if TESTBENCH
-  StartupStore(TEXT(". Close Calculations%s"),NEWLINE);
+  StartupStore(TEXT(".... Close Calculations%s"),NEWLINE);
   #endif
   CloseCalculations();
 
@@ -392,12 +392,12 @@ void Shutdown(void) {
   DeInitCustomHardware();
 
   #if TESTBENCH
-  StartupStore(TEXT(". Close Windows%s"),NEWLINE);
+  StartupStore(TEXT(".... Close Windows%s"),NEWLINE);
   #endif
   DestroyWindow(hWndMapWindow);
   DestroyWindow(hWndMainWindow);
   #if TESTBENCH
-  StartupStore(TEXT(". Close Event Handles%s"),NEWLINE);
+  StartupStore(TEXT(".... Close Event Handles%s"),NEWLINE);
   #endif
   CloseHandle(drawTriggerEvent);
   CloseHandle(dataTriggerEvent);

@@ -1327,7 +1327,9 @@ void SaveTask(TCHAR *szFileName)
 	TaskModified = false; // task successfully saved
 	TargetModified = false;
 	_tcscpy(LastTaskFileName, szFileName);
-	StartupStore(_T(". SaveTask: Ok%s"),NEWLINE);
+	#if TESTBENCH
+	StartupStore(_T(".... SaveTask: Ok%s"),NEWLINE);
+	#endif
 
   } else {
     
