@@ -166,7 +166,7 @@ void LiveTrackerUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   //Check if sending needed (time interval)
   if (Basic->Time >= logtime) { 
-    logtime = Basic->Time + LiveTrackerInterval;
+    logtime = (int)Basic->Time + LiveTrackerInterval;
     if (logtime>=86400) logtime-=86400;
   } else return;
 
@@ -400,7 +400,8 @@ static bool SendLiveTrackerData(livetracker_point_t *sendpoint)
         unicode2ascii(LiveTrackerpwd_Config, txbuf, sizeof(password));
         UrlEncode(txbuf, password, sizeof(username));
         #ifdef PNA
-          UrlEncode(GlobalModelName, phone, sizeof(phone));
+          unicode2ascii(GlobalModelName, txbuf, sizeof(password));
+          UrlEncode(txbuf, phone, sizeof(phone));
         #else
         #if (WINDOWSPC>0)
           UrlEncode("PC", phone, sizeof(phone));
