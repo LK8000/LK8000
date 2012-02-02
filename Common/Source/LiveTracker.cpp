@@ -142,6 +142,7 @@ void LiveTrackerShutdown()
   if (_hThread != NULL) {
     _t_end = false;
     _t_run = false;
+    SetEvent(_hNewDataEvent);
     WaitForSingleObject(_hThread, INFINITE);
     CloseHandle(_hThread);
     StartupStore(TEXT(". LiveTracker closed.%s"),NEWLINE);
@@ -503,7 +504,8 @@ static DWORD WINAPI LiveTrackerThread (LPVOID lpvoid)
   srand(time(NULL));
 
   do {
-    if (WaitForSingleObject(_hNewDataEvent, 2500) == WAIT_OBJECT_0) ResetEvent(_hNewDataEvent);
+    if (WaitForSingleObject(_hNewDataEvent, 5000) == WAIT_OBJECT_0) ResetEvent(_hNewDataEvent);
+    if (!_t_run) break;
     do {
       if (1) {
         sendpoint_valid = false;
