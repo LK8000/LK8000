@@ -159,6 +159,8 @@ void LiveTrackerUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
   livetracker_point_t newpoint;
   static int logtime = 0;
+
+  if (Basic->NAVWarning) return;      // Do not log if no gps fix
   
   CCriticalSection::CGuard guard(_t_mutex);
 
