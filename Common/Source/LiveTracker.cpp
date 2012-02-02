@@ -503,8 +503,7 @@ static DWORD WINAPI LiveTrackerThread (LPVOID lpvoid)
   srand(time(NULL));
 
   do {
-    WaitForSingleObject(_hNewDataEvent, 1100 * _t_logging_interval_secs);
-    ResetEvent(_hNewDataEvent);
+    if (WaitForSingleObject(_hNewDataEvent, 2500) == WAIT_OBJECT_0) ResetEvent(_hNewDataEvent);
     do {
       if (1) {
         sendpoint_valid = false;
