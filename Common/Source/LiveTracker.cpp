@@ -38,7 +38,6 @@ static CCriticalSection _t_mutex;
 static bool _t_run = false;
 static bool _t_end = false;
 static PointQueue _t_points;
-static TCHAR _t_password[32] = TEXT("_testpass");
 static unsigned int _t_userid = 0;
 static unsigned int _t_logging_interval_secs = 5;
 
@@ -357,7 +356,7 @@ static bool SendLiveTrackerData(livetracker_point_t *sendpoint)
       case 0:
         unicode2ascii(PilotName_Config, txbuf, sizeof(username));
         UrlEncode(txbuf, username, sizeof(username));
-        unicode2ascii(_t_password, txbuf, sizeof(password));
+        unicode2ascii(LiveTrackerpwd_Config, txbuf, sizeof(password));
         UrlEncode(txbuf, password, sizeof(username));
         // Connectionless packet
         sprintf(txbuf,"GET /track.php?leolive=1&client=%s&v=%s%s&lat=%.5lf&lon=%.5lf&alt=%.0lf&sog=%.0lf&cog=%.0lf&tm=%lu&user=%sr&pass=%s HTTP/1.0\r\nHost: %s\r\n\r\n",
@@ -396,7 +395,7 @@ static bool SendLiveTrackerData(livetracker_point_t *sendpoint)
         
         unicode2ascii(PilotName_Config, txbuf, sizeof(username)-1);
         UrlEncode(txbuf, username, sizeof(username));
-        unicode2ascii(_t_password, txbuf, sizeof(password));
+        unicode2ascii(LiveTrackerpwd_Config, txbuf, sizeof(password));
         UrlEncode(txbuf, password, sizeof(username));
         #ifdef PNA
           UrlEncode(GlobalModelName, phone, sizeof(phone));
