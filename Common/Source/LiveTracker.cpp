@@ -39,7 +39,6 @@ static bool _t_run = false;
 static bool _t_end = false;
 static PointQueue _t_points;
 static unsigned int _t_userid = 0;
-static unsigned int _t_logging_interval_secs = 5;
 
 static bool InitWinsock();
 static DWORD WINAPI LiveTrackerThread(LPVOID lpvoid);
@@ -160,17 +159,18 @@ void LiveTrackerUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   static int logtime = 0;
 
   if (Basic->NAVWarning) return;      // Do not log if no gps fix
+  if (LiveTrackerInterval==0) return; // Disabled
   
   CCriticalSection::CGuard guard(_t_mutex);
 
   //Check if sending needed (time interval)
   if (Basic->Time >= logtime) { 
-    logtime = Basic->Time + _t_logging_interval_secs;
+    logtime = Basic->Time + LiveTrackerInterval;
     if (logtime>=86400) logtime-=86400;
   } else return;
 
   // Half hour FIFO must be enough
-  if (_t_points.size() > (1800 / _t_logging_interval_secs)) {
+  if (_t_points.size() > (unsigned int)(1800 / LiveTrackerInterval)) {
     // points in queue are full, drop oldest point 
     _t_points.pop_front();
   }
@@ -425,7 +425,7 @@ static bool SendLiveTrackerData(livetracker_point_t *sendpoint)
               LKFORK,LKVERSION,LKRELEASE,
               username, password,
               phone, gps,
-              _t_logging_interval_secs,
+              LiveTrackerInterval,
               vehicle_type,
               vehicle_name,
               LIVETRACKER_SERVER_NAME);
