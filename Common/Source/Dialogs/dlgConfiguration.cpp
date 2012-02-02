@@ -98,6 +98,7 @@ static WndButton *buttonPaste=NULL;
 static void UpdateButtons(void) {
   TCHAR text[120];
   TCHAR val[100];
+
   if (buttonPilotName) {
     #if OLDPROFILES
     GetRegistryString(szRegistryPilotName, val, 100);
@@ -2052,14 +2053,14 @@ static void setVariables(void) {
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGAutoZoomThreshold"));
   if (wp) {
-    wp->GetDataField()->SetAsFloat(iround(DISTANCEMODIFY*PGAutoZoomThreshold));
+    wp->GetDataField()->SetAsFloat(DISTANCEMODIFY*PGAutoZoomThreshold);
     wp->GetDataField()->SetUnits(Units::GetDistanceName());
     // if (!ISPARAGLIDER) wp->SetVisible(false); 
     wp->RefreshDisplay();
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoOrientScale"));
   if (wp) {
-    wp->GetDataField()->SetAsInteger(AutoOrientScale);
+    wp->GetDataField()->SetAsFloat(AutoOrientScale);
     wp->RefreshDisplay();
   }
 
@@ -3501,13 +3502,13 @@ void dlgConfigurationShowModal(void){
     }
   }
 
-  int ival;
+double dval;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpPGAutoZoomThreshold"));
   if (wp) {
-    ival = iround(wp->GetDataField()->GetAsFloat()/DISTANCEMODIFY);
-    if ((int)PGAutoZoomThreshold != ival) {
-      PGAutoZoomThreshold = ival;
+    dval = wp->GetDataField()->GetAsFloat()/DISTANCEMODIFY;
+    if (PGAutoZoomThreshold != dval) {
+      PGAutoZoomThreshold = dval;
 #if OLDPROFILES
       SetToRegistry(szRegistryPGAutoZoomThreshold, PGAutoZoomThreshold);
 #endif
@@ -3530,8 +3531,8 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAutoOrientScale"));
   if (wp) {
-    if ( AutoOrientScale != wp->GetDataField()->GetAsInteger()) {
-      AutoOrientScale = wp->GetDataField()->GetAsInteger();
+    if ( AutoOrientScale != wp->GetDataField()->GetAsFloat()) {
+      AutoOrientScale = wp->GetDataField()->GetAsFloat();
 #if OLDPROFILES
       SetToRegistry(szRegistryAutoOrientScale, AutoOrientScale);
 #endif
@@ -3742,6 +3743,8 @@ void dlgConfigurationShowModal(void){
       MapWindow::zoom.AutoZoom(AutoZoom_Config);
     }
   }
+
+int ival; 
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUTCOffset"));
   if (wp) {

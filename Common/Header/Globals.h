@@ -206,7 +206,7 @@ GEXTERN short DeclutterMode;
 
 GEXTERN int PGClimbZoom;
 GEXTERN int PGCruiseZoom;
-GEXTERN DWORD PGAutoZoomThreshold;
+GEXTERN double PGAutoZoomThreshold;
 
 // This is the gauge bar on the left for variometer
 GEXTERN int LKVarioBar;
@@ -642,7 +642,7 @@ GEXTERN bool OverlayClock;
 GEXTERN bool EnableSoundModes;
 GEXTERN int DisplayOrientation;
 GEXTERN int DisplayOrientation_Config;
-GEXTERN int AutoOrientScale;
+GEXTERN double AutoOrientScale;
 GEXTERN int DisplayTextType;
 GEXTERN int AIRSPACEWARNINGS;
 GEXTERN int WarningTime;

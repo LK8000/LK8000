@@ -117,7 +117,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryAutoForceFinalGlide,AutoForceFinalGlide);
   rprintf(szRegistryAutoMcMode,AutoMcMode_Config);
   rprintf(szRegistryAutoMcStatus,AutoMacCready_Config);
-  rprintf(szRegistryAutoOrientScale,AutoOrientScale);
+  rprintf(szRegistryAutoOrientScale,AutoOrientScale*10);
   rprintf(szRegistryAutoSoundVolume,EnableAutoSoundVolume);
   rprintf(szRegistryAutoWind,AutoWindMode_Config);
   rprintf(szRegistryAutoZoom,AutoZoom_Config);

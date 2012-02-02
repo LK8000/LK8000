@@ -294,7 +294,15 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryAutoForceFinalGlide,&AutoForceFinalGlide);
   PREAD(sname,svalue,szRegistryAutoMcMode,&AutoMcMode_Config);
   PREAD(sname,svalue,szRegistryAutoMcStatus,&AutoMacCready_Config);
+
+  if (matchedstring) return;
   PREAD(sname,svalue,szRegistryAutoOrientScale,&AutoOrientScale);
+  if (matchedstring) {
+	AutoOrientScale/=10;
+	return;
+  }
+
+
   PREAD(sname,svalue,szRegistryAutoSoundVolume,&EnableAutoSoundVolume);
   PREAD(sname,svalue,szRegistryAutoWind,&AutoWindMode_Config);
 

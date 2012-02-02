@@ -101,7 +101,7 @@
 <DataField name="" DataType="enum"  Min=0 Max=50 Step=1/>
 </WndProperty>
 <WndProperty Name="prpAutoOrientScale" Caption="_@M485_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H126_">
-<DataField name="" DataType="double" DisplayFormat="%.1f" EditFormat="%.0f" Min=1 Max=50 Step=0.5/>
+<DataField name="" DataType="double" DisplayFormat="%.1f" EditFormat="%.1f" Min=1 Max=50 Step=0.5/>
 </WndProperty>
 <WndProperty Name="prpAutoZoom" Caption="_@M115_"  X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H127_">
 <DataField name="" DataType="boolean"/>
