@@ -1747,7 +1747,7 @@ _@M1777_ "10 seconds"
 _@M1778_ "45 seconds"
 
 # New livetracker configuration
-_@M1779_ "Live tracker"
+_@M1779_ "Live trker interval"
 _@M1780_ "Live tracker pwd"
 
 ############################################################

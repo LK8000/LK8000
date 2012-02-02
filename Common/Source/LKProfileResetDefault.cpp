@@ -376,7 +376,7 @@ void LKProfileResetDefault(void) {
 
   DisableAutoLogger = false;
   
-  EnableLiveTracker = false;
+  LiveTrackerInterval = 0;
   
   // empty or demo versions
   //szAirspaceFile[0] = TEXT('\0');

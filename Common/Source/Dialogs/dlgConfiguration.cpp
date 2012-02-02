@@ -2270,9 +2270,10 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpEnableLiveTracker"));
+  wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerInterval"));
   if (wp) {
-    wp->GetDataField()->Set(EnableLiveTracker);
+    wp->GetDataField()->SetAsFloat(iround(LiveTrackerInterval));
+    wp->GetDataField()->SetUnits(TEXT("sec"));
     wp->RefreshDisplay();
   }
 
@@ -3445,10 +3446,10 @@ void dlgConfigurationShowModal(void){
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpEnableLiveTracker"));
+  wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerInterval"));
   if (wp) {
-    if (EnableLiveTracker != wp->GetDataField()->GetAsBoolean()) {
-      EnableLiveTracker = (wp->GetDataField()->GetAsBoolean());
+    if (LiveTrackerInterval != wp->GetDataField()->GetAsFloat()) {
+      LiveTrackerInterval = (wp->GetDataField()->GetAsFloat());
       changed = true;
     }
   }

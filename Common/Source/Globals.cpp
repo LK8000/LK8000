@@ -494,7 +494,7 @@ void Globals_Init(void) {
   TrailActive_Config = TRUE;
   VisualGlide = 0;
   DisableAutoLogger = false;
-  EnableLiveTracker = false;
+  LiveTrackerInterval = 0;
   
   IGCWriteLock=false; // workaround, but not a real solution
 
