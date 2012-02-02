@@ -404,7 +404,7 @@ void LKPilotSave(const TCHAR *szFile)
   fprintf(pfp,"PROFILEVERSION=1%s",PNEWLINE);
 
   rprintf(szRegistryPilotName,PilotName_Config);
-  rprintf(szRegistryEnableLiveTracker,EnableLiveTracker);
+  rprintf(szRegistryLiveTrackerInterval,LiveTrackerInterval);
   rprintf(szRegistryLiveTrackerpwd,LiveTrackerpwd_Config);
 
   fprintf(pfp,PNEWLINE); // end of file

@@ -698,7 +698,7 @@ GEXTERN TCHAR TeamFlarmCNTarget[4]; // CN of the glider to track
 GEXTERN int TeamFlarmIdTarget;    // FlarmId of the glider to track
 
 GEXTERN bool DisableAutoLogger;
-GEXTERN bool EnableLiveTracker;
+GEXTERN int LiveTrackerInterval;
 
 // Interface Globals
 GEXTERN StatusMessageSTRUCT StatusMessageData[MAXSTATUSMESSAGECACHE];
