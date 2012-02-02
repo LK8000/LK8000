@@ -324,6 +324,7 @@ static bool SendLiveTrackerData(livetracker_point_t *sendpoint)
   SOCKET s = INVALID_SOCKET;
   char txbuf[500];
   bool send_success = false;
+  static bool send_success_old = false;
   int packettype = -1;
   char phone[64];
   char gps[64];
@@ -481,10 +482,30 @@ static bool SendLiveTrackerData(livetracker_point_t *sendpoint)
   
   send_success = SendDataToServer(s, txbuf, strlen(txbuf));
   closesocket(s);
+
+  //Connection lost to server
+  if (send_success_old && !send_success) {
+    StartupStore(TEXT(". Livetracker connection to server %s lost.%s"), TEXT(LIVETRACKER_SERVER_NAME), NEWLINE);
+  }
+  //Connection established to server
+  if (!send_success_old && send_success) {
+    StartupStore(TEXT(". Livetracker connection to server %s established.%s"), TEXT(LIVETRACKER_SERVER_NAME), NEWLINE);
+  }
+  send_success_old = send_success;
   
   if (send_success) {
     packet_id++;
     flying = sendpoint->flying;
+    switch (packettype) {
+      default:
+        break;
+      case 1:
+        StartupStore(TEXT(". Livetracker new track started.%s"),NEWLINE);
+        break;
+      case 3:
+        StartupStore(TEXT(". Livetracker track finished, sent %d points.%s"), packet_id, NEWLINE);
+        break;
+    }
     //StartupStore(TEXT("LT pid%d sent%s"), packet_id, NEWLINE);
   } //else StartupStore(TEXT("LT pid%d send failed%s"), packet_id, NEWLINE);
   
@@ -519,14 +540,6 @@ static DWORD WINAPI LiveTrackerThread (LPVOID lpvoid)
         sendpoint_success = false;
         do {
           sendpoint_success = SendLiveTrackerData(&sendpoint);
-          //Connection lost to server
-          if (sendpoint_success_old && !sendpoint_success) {
-            StartupStore(TEXT(". Livetracker connection to server %s lost.%s"), TEXT(LIVETRACKER_SERVER_NAME), NEWLINE);
-          }
-          //Connection established to server
-          if (!sendpoint_success_old && sendpoint_success) {
-            StartupStore(TEXT(". Livetracker connection to server %s established.%s"), TEXT(LIVETRACKER_SERVER_NAME), NEWLINE);
-          }
           if (sendpoint_success) {
             CCriticalSection::CGuard guard(_t_mutex);
             _t_points.pop_front();
