@@ -524,7 +524,7 @@
 <DataField name="" DataType="boolean"/>
 </WndProperty>
 <WndProperty Name="prpLiveTrackerInterval" Caption="_@M1779_" X=2 Y=-1 Width=235 Height=22 CaptionWidth=150 Font=2 Help="_@H1258_">
-<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0.0 Max=60.0 Step="5.0" />
+<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0.0 Max=60.0 Step="1.0" />
 </WndProperty>
 <WndButton Name="cmdLiveTrackerusr" Caption="_@M1780_" X=2 Y=-1 Width=123  Height=22 Font=2 />
 <WndButton Name="cmdLiveTrackerpwd" Caption="_@M1781_" X=126 Y=-999 Width=123  Height=22 Font=2 />
