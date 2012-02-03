@@ -39,6 +39,7 @@ static bool _t_run = false;
 static bool _t_end = false;
 static PointQueue _t_points;
 static unsigned int _t_userid = 0;
+static DEVICE_TYPE _t_barodevice;
 
 static bool InitWinsock();
 static DWORD WINAPI LiveTrackerThread(LPVOID lpvoid);
@@ -168,6 +169,8 @@ void LiveTrackerUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   
   CCriticalSection::CGuard guard(_t_mutex);
 
+  _t_barodevice = Basic->BaroDevice;
+  
   //Check if sending needed (time interval)
   if (Basic->Time >= logtime) { 
     logtime = (int)Basic->Time + LiveTrackerInterval;
@@ -337,6 +340,7 @@ static bool SendLiveTrackerData(livetracker_point_t *sendpoint)
   char username[64];
   char password[64];
   int rnd;
+  TCHAR wgps[254];
   
   // Session variables
   static bool flying = false;
@@ -360,11 +364,11 @@ static bool SendLiveTrackerData(livetracker_point_t *sendpoint)
         break;
         
       case 0:
+        // Connectionless packet
         unicode2ascii(LiveTrackerusr_Config, txbuf, sizeof(username));
         UrlEncode(txbuf, username, sizeof(username));
         unicode2ascii(LiveTrackerpwd_Config, txbuf, sizeof(password));
         UrlEncode(txbuf, password, sizeof(username));
-        // Connectionless packet
         sprintf(txbuf,"GET /track.php?leolive=1&client=%s&v=%s%s&lat=%.5lf&lon=%.5lf&alt=%.0lf&sog=%.0lf&cog=%.0lf&tm=%lu&user=%sr&pass=%s HTTP/1.0\r\nHost: %s\r\n\r\n",
               LKFORK,LKVERSION,LKRELEASE,
               sendpoint->latitude,
@@ -420,8 +424,12 @@ static bool SendLiveTrackerData(livetracker_point_t *sendpoint)
           UrlEncode("PDA", phone, sizeof(phone));
         #endif
         #endif
-        if (SIMMODE) UrlEncode("SIMULATOR", gps, sizeof(gps));
-          else UrlEncode("Internal GPS", gps, sizeof(gps));
+        if (SIMMODE) UrlEncode("SIMULATED", gps, sizeof(gps));
+          else {
+            GetBaroDeviceName(_t_barodevice, wgps); 
+            unicode2ascii(wgps, txbuf, sizeof(password));
+            UrlEncode(txbuf, gps, sizeof(gps));
+          }
         
         unicode2ascii(AircraftType_Config, txbuf, sizeof(vehicle_name));
         UrlEncode(txbuf, vehicle_name, sizeof(vehicle_name));
