@@ -44,9 +44,9 @@ static bool InitWinsock();
 static DWORD WINAPI LiveTrackerThread(LPVOID lpvoid);
 
 #define isleap(y) ( !((y) % 400) || (!((y) % 4) && ((y) % 100)) )
-static time_t monthtoseconds(int isleap,int month)
+static long monthtoseconds(int isleap,int month)
 {
-static const long        _secondstomonth[12] = {
+  static const long        _secondstomonth[12] = {
         0,
         24L*60*60*31,
         24L*60*60*(31+28),
@@ -59,32 +59,36 @@ static const long        _secondstomonth[12] = {
         24L*60*60*(31+28+31+30+31+30+31+31+30),
         24L*60*60*(31+28+31+30+31+30+31+31+30+31),
         24L*60*60*(31+28+31+30+31+30+31+31+30+31+30)
-};
-        long ret;
-        if ((month > 11)||(month < 0)) {
-                return 0;
-        }
-        ret = _secondstomonth[month];
-        if (isleap && (month > 1)) {
-                return ret + 24L * 60 * 60;
-        }
-        return ret;
+  };
+  long ret;
+  if ((month > 11)||(month < 0)) {
+          return 0;
+  }
+  ret = _secondstomonth[month];
+  if (isleap && (month > 1)) {
+          return ret + 24L * 60 * 60;
+  }
+  return ret;
 }
 
-static time_t yeartoseconds(int y)
+static unsigned long int yeartoseconds(int y)
 {
-  time_t ret;
+  unsigned long int ret,ltemp;
   if (y < 1970) {
     return 0;
   }
-  ret = (y - 1970)*365L*24*60*60;
-  ret += (((y-1) - 1968) / 4)*24L*60*60;
+  ret = y - 1970;
+  ret *= 365L*24L*60L*60L;
+  ltemp = (y-1) - 1968;
+  ltemp /= 4;
+  ltemp *= 24L*60L*60L;
+  ret += ltemp;
   return ret;
 }
 
 static unsigned long int mkgmtime(const struct tm *ptmbuf)
 {
-    time_t t;
+    unsigned long int t;
     int year = ptmbuf->tm_year + ptmbuf->tm_mon / 12;
     t = yeartoseconds(year+1900);
     t += monthtoseconds(isleap(year+1900), ptmbuf->tm_mon % 12);
