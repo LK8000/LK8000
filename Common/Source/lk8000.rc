@@ -90,29 +90,6 @@ BEGIN
 END
 
 
-//
-// Bitmap
-//
-
-IDB_LOGGER              BITMAP  DISCARDABLE     "../Data/Bitmaps/logging_steady.bmp"
-IDB_LOGGEROFF           BITMAP  DISCARDABLE     "../Data/Bitmaps/logging_blink.bmp"
-IDB_FLARMTRAFFIC        BITMAP  DISCARDABLE     "../Data/Bitmaps/flarmtra.bmp"
-IDB_AIRSPACE3           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace3.bmp"
-IDB_AIRSPACE4           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace4.bmp"
-IDB_AIRSPACE5           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace5.bmp"
-IDB_THERMALSOURCE       BITMAP  DISCARDABLE     "../Data/Bitmaps/thermalsource.bmp"
-IDB_AIRSPACE6           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace6.bmp"
-IDB_AIRSPACE7           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace7.bmp"
-IDB_TARGET              BITMAP  DISCARDABLE     "../Data/Bitmaps/target.bmp"
-IDB_ABOVETERRAIN        BITMAP  DISCARDABLE     "../Data/Bitmaps/aboveterrain.bmp"
-IDB_TEAMMATE_POS        BITMAP  DISCARDABLE     "../Data/Bitmaps/TeammatePosition.bmp"
-IDB_SCROLLBARTOP        BITMAP  DISCARDABLE     "../Data/Bitmaps/scrollbarTop.bmp"
-IDB_SCROLLBARMID        BITMAP  DISCARDABLE     "../Data/Bitmaps/scrollbarMid.bmp"
-IDB_SCROLLBARBOT        BITMAP  DISCARDABLE     "../Data/Bitmaps/scrollbarBot.bmp"
-IDB_SCROLLBARFILL       BITMAP  DISCARDABLE     "../Data/Bitmaps/scrollbarFill.bmp"
-IDB_DLGBUTTONLEFT32     BITMAP  DISCARDABLE     "../Data/Bitmaps/DialogButtonLeft32x32.bmp"
-IDB_DLGBUTTONRIGHT32    BITMAP  DISCARDABLE     "../Data/Bitmaps/DialogButtonRight32x32.bmp"
-
 
 //
 // XMLDIALOG
@@ -214,44 +191,6 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
 #endif //_WIN32
 
 
-//
-// Bitmap
-//
-
-IDB_EMPTY		BITMAP	DISCARDABLE	"../Data/Bitmaps/Empty.bmp"
-IDB_LANDABLE            BITMAP  DISCARDABLE     "../Data/Bitmaps/Landable.bmp"
-IDB_REACHABLE           BITMAP  DISCARDABLE     "../Data/Bitmaps/Reachable.bmp"
-IDB_TURNPOINT           BITMAP  DISCARDABLE     "../Data/Bitmaps/Turnpoint.bmp"
-IDB_TURNPOINTH          BITMAP  DISCARDABLE     "../Data/Bitmaps/TurnpointH.bmp"
-IDB_INVTURNPOINT        BITMAP  DISCARDABLE     "../Data/Bitmaps/InvTurnpoint.bmp"
-IDB_INVTURNPOINTH       BITMAP  DISCARDABLE     "../Data/Bitmaps/InvTurnpointH.bmp"
-IDB_SMALL               BITMAP  DISCARDABLE     "../Data/Bitmaps/Small.bmp"
-IDB_SMALLH              BITMAP  DISCARDABLE    "../Data/Bitmaps/SmallH.bmp"
-IDB_INVSMALL            BITMAP  DISCARDABLE     "../Data/Bitmaps/InvSmall.bmp"
-IDB_INVSMALLH           BITMAP  DISCARDABLE     "../Data/Bitmaps/InvSmallH.bmp"
-IDB_CRUISE              BITMAP  DISCARDABLE     "../Data/Bitmaps/cruise.bmp"
-IDB_CRUISEPARA          BITMAP  DISCARDABLE     "../Data/Bitmaps/cruisepara.bmp"
-IDB_CLIMB               BITMAP  DISCARDABLE     "../Data/Bitmaps/climb.bmp"
-IDB_CLIMBPARA           BITMAP  DISCARDABLE     "../Data/Bitmaps/climbpara.bmp"
-IDB_FINALGLIDE          BITMAP  DISCARDABLE     "../Data/Bitmaps/finalgli.bmp"
-IDB_FINALGLIDEPARA      BITMAP  DISCARDABLE     "../Data/Bitmaps/finalglipara.bmp"
-IDB_TOWN                BITMAP  DISCARDABLE     "../Data/Bitmaps/town.bmp"
-IDB_LKSMALLTOWN         BITMAP  DISCARDABLE     "../Data/Bitmaps/smalltown.bmp"
-IDB_LKVERYSMALLTOWN     BITMAP  DISCARDABLE     "../Data/Bitmaps/verysmalltown.bmp"
-IDB_MARK                BITMAP  DISCARDABLE     "../Data/Bitmaps/mark.bmp"
-IDB_TERRAINWARNING      BITMAP  DISCARDABLE     "../Data/Bitmaps/terrainw.bmp"
-IDB_AIRSPACEWARNING     BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace_warning.bmp"
-IDB_AIRPORT_REACHABLE   BITMAP  DISCARDABLE     "../Data/Bitmaps/LandableAirport.bmp"
-IDB_AIRPORT_UNREACHABLE BITMAP  DISCARDABLE     "../Data/Bitmaps/UnreachableAirport.bmp"
-IDB_OUTFILED_REACHABLE  BITMAP  DISCARDABLE     "../Data/Bitmaps/LandableField.bmp"
-IDB_OUTFILED_UNREACHABLE BITMAP  DISCARDABLE    "../Data/Bitmaps/UnreachableField.bmp"
-
-IDB_BATTERY_FULL_SMALL  BITMAP DISCARDABLE	"../Data/Bitmaps/battery_full_22x11.bmp"
-IDB_BATTERY_70_SMALL  BITMAP DISCARDABLE	"../Data/Bitmaps/battery_70_22x11.bmp"
-IDB_BATTERY_50_SMALL  BITMAP DISCARDABLE	"../Data/Bitmaps/battery_50_22x11.bmp"
-IDB_BATTERY_25_SMALL  BITMAP DISCARDABLE	"../Data/Bitmaps/battery_25_22x11.bmp"
-IDB_BATTERY_15_SMALL  BITMAP DISCARDABLE	"../Data/Bitmaps/battery_15_22x11.bmp"
-
 #endif    // English (U.K.) resources
 
 
@@ -274,13 +213,12 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_AUS
 
 IDI_XCSOARSWIFT         ICON    DISCARDABLE     "../Data/Bitmaps/LKicon.ico"
 
-//
-// Bitmap
-//
+// Bitmaps
 
-IDB_AIRSPACE0           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace0.bmp"
-IDB_AIRSPACE1           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace1.bmp"
-IDB_AIRSPACE2           BITMAP  DISCARDABLE     "../Data/Bitmaps/airspace2.bmp"
-IDB_SWIFT               BITMAP  DISCARDABLE     "../Data/Bitmaps/LKstartup.bmp" 	// 124x85
+IDB_EMPTY               BITMAP  DISCARDABLE     "../Data/Bitmaps/Empty.bmp"
+IDB_TOWN                BITMAP  DISCARDABLE     "../Data/Bitmaps/town.bmp"
+IDB_LKSMALLTOWN         BITMAP  DISCARDABLE     "../Data/Bitmaps/smalltown.bmp"
+IDB_LKVERYSMALLTOWN     BITMAP  DISCARDABLE     "../Data/Bitmaps/verysmalltown.bmp"
+
 
 #endif    // English (Australia) resources
