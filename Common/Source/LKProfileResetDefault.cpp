@@ -412,6 +412,7 @@ void LKProfileResetDefault(void) {
   FontDesc_MapLabel [0]=_T('\0');
 
   _tcscpy(PilotName_Config,_T("WOLF.HIRTH"));
+  _tcscpy(LiveTrackerusr_Config,_T(""));
   _tcscpy(LiveTrackerpwd_Config,_T(""));
 
   _tcscpy(AircraftType_Config,_T("CIRRUS-STD"));
