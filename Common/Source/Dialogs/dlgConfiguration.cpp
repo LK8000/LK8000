@@ -3460,8 +3460,8 @@ void dlgConfigurationShowModal(void){
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerInterval"));
   if (wp) {
-    if (LiveTrackerInterval != wp->GetDataField()->GetAsFloat()) {
-      LiveTrackerInterval = (wp->GetDataField()->GetAsFloat());
+    if (LiveTrackerInterval != (int)wp->GetDataField()->GetAsFloat()) {
+      LiveTrackerInterval = (int)(wp->GetDataField()->GetAsFloat());
       changed = true;
     }
   }
