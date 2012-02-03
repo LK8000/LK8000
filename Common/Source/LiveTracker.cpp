@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+//#define LT_DEBUG  1
+
 #ifdef TESTBENCH
 #define LIVETRACKER_SERVER_NAME  "test.livetrack24.com"
 #else
@@ -38,7 +40,6 @@ static CCriticalSection _t_mutex;
 static bool _t_run = false;
 static bool _t_end = false;
 static PointQueue _t_points;
-static unsigned int _t_userid = 0;
 static DEVICE_TYPE _t_barodevice;
 
 static bool InitWinsock();
@@ -272,25 +273,38 @@ static SOCKET EstablishConnection(char *servername)
   return s;
 }
 
-static bool SendDataToServer(SOCKET s, char *txbuf, unsigned int txbuflen)
+// Do a transaction with server
+// returns received bytes, -1 if transaction failed
+static int DoTransactionToServer(char *txbuf, unsigned int txbuflen, char *rxbuf, unsigned int maxrxbuflen)
 {
+  SOCKET s = INVALID_SOCKET;
   unsigned int sent = 0;
   int tmpres;
-  char rxbuf[BUFSIZ];
   int rxfsm = 0;
+  unsigned int rxlen = 0;
+  char recvbuf[BUFSIZ];
   unsigned char cdata;
+
+  #ifdef LT_DEBUG
+  TCHAR utxbuf[500];
+  ascii2unicode(txbuf,utxbuf,400);
+  StartupStore(TEXT("Livetracker send: %s%s"), utxbuf, NEWLINE);
+  #endif
   
+  s = EstablishConnection(LIVETRACKER_SERVER_NAME);
+  if ( s==INVALID_SOCKET ) return -1;
+
   //Send the query to the server
   while(sent < txbuflen) {
     tmpres = send(s, txbuf+sent, txbuflen-sent, 0);
-    if( tmpres == -1 ) return false;
+    if( tmpres == -1 ) return -1;
     sent += tmpres;
   }
 
   //Receive the page
-  while( (tmpres = recv(s, rxbuf, BUFSIZ, 0)) > 0) {
+  while( (tmpres = recv(s, recvbuf, BUFSIZ, 0)) > 0) {
     for (int i=0; i<tmpres; i++) {
-      cdata = rxbuf[i];
+      cdata = recvbuf[i];
       switch (rxfsm) {
         default:
         case 0:
@@ -305,240 +319,272 @@ static bool SendDataToServer(SOCKET s, char *txbuf, unsigned int txbuflen)
           rxfsm=0;
           break;
         case 3:
-          if (cdata=='\n') { rxfsm++; break; }
+          if (cdata=='\n') { rxfsm++; rxlen=0; break; }
           rxfsm=0;
           break;
         case 4:
-          //Content first chr
-          if (cdata=='O') { rxfsm++; break; }
-          rxfsm=0;
-          break;
-        case 5:
-          //Content second chr
-          if (cdata=='K') { rxfsm++; return true; }
-          rxfsm=0;
-          break;
-        case 6:
+          //Content chr
+          rxbuf[rxlen] = cdata;
+          if (rxlen<maxrxbuflen) rxlen++;
           break;
       }//sw
     } //for
   } //wh
-  return false;
+  closesocket(s);
+  rxbuf[rxlen]=0;
+  #ifdef LT_DEBUG
+  TCHAR urxbuf[500];
+  ascii2unicode(rxbuf,urxbuf,400);
+  StartupStore(TEXT("Livetracker recv len=%d: %s%s"), rxlen, urxbuf, NEWLINE);
+  #endif
+  return rxlen;
 }
 
-static bool SendLiveTrackerData(livetracker_point_t *sendpoint)
+// Get the user id from Leonardo servername
+// returns 0=no id, -1=transaction failed
+static int GetUserIDFromServer()
 {
-  SOCKET s = INVALID_SOCKET;
+  int retval = -1;
+  int rxlen;
+  char txbuf[512];
+  char username[128];
+  char password[128];
+  char rxcontent[32];
+  
+  unicode2ascii(LiveTrackerusr_Config, txbuf, sizeof(username));
+  UrlEncode(txbuf, username, sizeof(username));
+  unicode2ascii(LiveTrackerpwd_Config, txbuf, sizeof(password));
+  UrlEncode(txbuf, password, sizeof(username));
+  sprintf(txbuf,"GET /client.php?op=login&user=%s&pass=%s HTTP/1.0\r\nHost: %s\r\n\r\n",
+        username, password,
+        LIVETRACKER_SERVER_NAME);
+
+  rxlen = DoTransactionToServer(txbuf, strlen(txbuf), rxcontent, sizeof(rxcontent));
+  if ( rxlen > 0) {
+    rxcontent[rxlen]=0;
+    retval = -1;
+    sscanf(rxcontent,"%d",&retval);
+  }
+  return retval;
+}
+
+
+// static bool SendConnectionLessPacket(livetracker_point_t *sendpoint)
+// {
+//   char username[64];
+//   char password[64];
+//   char txbuf[500];
+//   char rxbuf[32];
+//   int rxlen;
+//   
+//   if (1) {
+//     CCriticalSection::CGuard guard(_t_mutex);
+//     unicode2ascii(LiveTrackerusr_Config, txbuf, sizeof(username));
+//     UrlEncode(txbuf, username, sizeof(username));
+//     unicode2ascii(LiveTrackerpwd_Config, txbuf, sizeof(password));
+//     UrlEncode(txbuf, password, sizeof(username));
+//     sprintf(txbuf,"GET /track.php?leolive=1&client=%s&v=%s%s&lat=%.5lf&lon=%.5lf&alt=%.0lf&sog=%.0lf&cog=%.0lf&tm=%lu&user=%sr&pass=%s HTTP/1.0\r\nHost: %s\r\n\r\n",
+//           LKFORK,LKVERSION,LKRELEASE,
+//           sendpoint->latitude,
+//           sendpoint->longitude,
+//           sendpoint->alt,
+//           sendpoint->ground_speed * 3.6,
+//           sendpoint->course_over_ground,
+//           sendpoint->unix_timestamp,
+//           username, password,
+//           LIVETRACKER_SERVER_NAME);
+//   }
+//   
+//   rxlen = DoTransactionToServer(txbuf, strlen(txbuf), rxbuf, sizeof(rxbuf));
+//   if (rxlen==2 && rxbuf[0]=='O' && rxbuf[1]=='K') return true;
+//   return false;
+// }
+
+
+static bool SendStartOfTrackPacket(unsigned int *packet_id, unsigned int *session_id, int userid)
+{
+  char username[64];
+  char password[64];
   char txbuf[500];
-  bool send_success = false;
-  static bool send_success_old = false;
-  int packettype = -1;
+  char rxbuf[32];
+  int rxlen;
   char phone[64];
   char gps[64];
   unsigned int vehicle_type = 8;
   char vehicle_name[64];
-  char username[64];
-  char password[64];
   int rnd;
   TCHAR wgps[254];
   
-  // Session variables
-  static bool flying = false;
-  static unsigned int packet_id = 0;
-  static unsigned int session_id = 0;
-
-  //Which type of packet should we send?
-  if (!flying && sendpoint->flying) packettype = 1; //Start of track packet
-  if (flying && sendpoint->flying) packettype = 2;  //gps point packet
-  if (flying && !sendpoint->flying) packettype = 3; //end of track packet
-  //packettype = 0;     // Connectionless packet
-
-  if (packettype<0) return true;
-  s = EstablishConnection(LIVETRACKER_SERVER_NAME);
-  if ( s==INVALID_SOCKET ) return false;
-
   if (1) {
     CCriticalSection::CGuard guard(_t_mutex);
-    switch (packettype) {
-      default:
-        break;
-        
-      case 0:
-        // Connectionless packet
-        unicode2ascii(LiveTrackerusr_Config, txbuf, sizeof(username));
-        UrlEncode(txbuf, username, sizeof(username));
-        unicode2ascii(LiveTrackerpwd_Config, txbuf, sizeof(password));
-        UrlEncode(txbuf, password, sizeof(username));
-        sprintf(txbuf,"GET /track.php?leolive=1&client=%s&v=%s%s&lat=%.5lf&lon=%.5lf&alt=%.0lf&sog=%.0lf&cog=%.0lf&tm=%lu&user=%sr&pass=%s HTTP/1.0\r\nHost: %s\r\n\r\n",
-              LKFORK,LKVERSION,LKRELEASE,
-              sendpoint->latitude,
-              sendpoint->longitude,
-              sendpoint->alt,
-              sendpoint->ground_speed * 3.6,
-              sendpoint->course_over_ground,
-              sendpoint->unix_timestamp,
-              username, password,
-              LIVETRACKER_SERVER_NAME);
-        break;
-        
-      case 1:
-        // START OF TRACK PACKET
-        // /track.php?leolive=2&sid=42664778&pid=1&client=YourProgramName&v=1&user=yourusername&pass=yourpass&phone=Nokia 2600c&gps=BT GPS&trk1=4&vtype=16388&vname=vehicle name and model
-        // PARAMETERS          
-        // leolive=2  // 2 means this is the start of track packet
-        // sid=42664778 // the session ID , see below on sessionID section for more information
-        // pid=1 // the packet numner of this packet, we start with 1 and increase with each packet send either start/end or with GPS data.
-        // client=YourClientName// fixed value use only alphanumerics no spaces, first Letter of words in capitals
-        // user=yourusername // there is no need to have a registered user, the user can input his preferred username on the fly, he will be displayed in black instead of blue if not registered.
-        // pass=yourpass 
-        // v=1 // version of your program you can use free text like 1.4.5
-        // trk1=4 // the interval in secs that we will be sending gps points
-        // phone=Nokia 2600c // the phone model as it is acquired from a system  call
-        // &gps=BT GPS // the GPS name , use the string Internal GPS for phones with integrated GPS
-        // vname // the brand + name of the vehicle/glider ie Gradient Golden 2 26
-        // 
-        // Values for vtype
-        // 1=>"Paraglider"
-        // 8=>"Glider"
-        // 64=>"Powered flight"
-        // 17100=>"Car"
-        if (_tcslen(LiveTrackerusr_Config)>0 ) {
-          unicode2ascii(LiveTrackerusr_Config, txbuf, sizeof(username)-1);
-        } else {
-          strncpy(txbuf, "guest", sizeof(txbuf));
-        }
-        UrlEncode(txbuf, username, sizeof(username));
-        if (_tcslen(LiveTrackerpwd_Config)>0 ) {
-          unicode2ascii(LiveTrackerpwd_Config, txbuf, sizeof(password));
-        } else {
-          strncpy(txbuf, "guest", sizeof(txbuf));
-        }
-        UrlEncode(txbuf, password, sizeof(username));
-        #ifdef PNA
-          unicode2ascii(GlobalModelName, txbuf, sizeof(password));
-          UrlEncode(txbuf, phone, sizeof(phone));
-        #else
-        #if (WINDOWSPC>0)
-          UrlEncode("PC", phone, sizeof(phone));
-        #else
-          UrlEncode("PDA", phone, sizeof(phone));
-        #endif
-        #endif
-        if (SIMMODE) UrlEncode("SIMULATED", gps, sizeof(gps));
-          else {
-            GetBaroDeviceName(_t_barodevice, wgps); 
-            unicode2ascii(wgps, txbuf, sizeof(password));
-            UrlEncode(txbuf, gps, sizeof(gps));
-          }
-        
-        unicode2ascii(AircraftType_Config, txbuf, sizeof(vehicle_name));
-        UrlEncode(txbuf, vehicle_name, sizeof(vehicle_name));
-        vehicle_type = 8;
-        if (AircraftCategory == umParaglider) vehicle_type = 1;
-        if (AircraftCategory == umCar) vehicle_type = 17100;
-        if (AircraftCategory == umGAaircraft) vehicle_type = 64;
-
-        packet_id = 1;
-        rnd = rand();
-        session_id = ( (rnd<<24) &  0x7F000000 ) | ( _t_userid & 0x00ffffff) | 0x80000000;          
-
-        sprintf(txbuf,"GET /track.php?leolive=2&sid=%u&pid=1&client=%s&v=%s%s&user=%s&pass=%s&phone=%s&gps=%s&trk1=%u&vtype=%u&vname=%s HTTP/1.0\r\nHost: %s\r\n\r\n",
-              session_id,  
-              LKFORK,LKVERSION,LKRELEASE,
-              username, password,
-              phone, gps,
-              LiveTrackerInterval,
-              vehicle_type,
-              vehicle_name,
-              LIVETRACKER_SERVER_NAME);
-      break;
-      
-      case 2:
-        // GPS POINT PACKET
-        //  /track.php?leolive=4&sid=42664778&pid=321&lat=22.3&lon=40.2&alt=23&sog=40&cog=160&tm=1241422845
-        // PARAMETERS
-        // leolive=4  // 4 means this is a gps point
-        // lat=22.3 // the latitude in decimal notation, use negative numbers for west
-        // lon=40.2 // lon in decimal, use negative numbers for south
-        // alt=23 // altitude in meters above the MSL (not the geoid if it is possible) , no decimals
-        // sog=40 // speed over ground in km/h  no decimals
-        // cog=160 // course over ground in degrees 0-360, no decimals
-        // tm=1241422845 // the unixt timestamp in GMT of the GPS time, not the phone's time.
-        sprintf(txbuf,"GET /track.php?leolive=4&sid=%u&pid=%u&lat=%.5lf&lon=%.5lf&alt=%.0lf&sog=%.0lf&cog=%.0lf&tm=%lu HTTP/1.0\r\nHost: %s\r\n\r\n",
-              session_id,
-              packet_id,
-              sendpoint->latitude,
-              sendpoint->longitude,
-              sendpoint->alt,
-              sendpoint->ground_speed * 3.6,
-              sendpoint->course_over_ground,
-              sendpoint->unix_timestamp,
-              LIVETRACKER_SERVER_NAME);
-      break;
-      
-      case 3:
-        // END OF TRACK PACKET
-        //  /track.php?leolive=3&sid=42664778&pid=453&prid=0
-        // PARAMETERS
-        //  leolive=3  // 3 means this is the end of track packet
-        //  prid=0 // the  status of the user
-        //   0-> "Everything OK"
-        //   1-> "Need retrieve"
-        //   2-> "Need some help, nothing broken"
-        //   3-> "Need help, maybe something broken"
-        //   4-> "HELP, SERIOUS INJURY"
-        sprintf(txbuf,"GET /track.php?leolive=3&sid=%u&pid=%u&prid=0 HTTP/1.0\r\nHost: %s\r\n\r\n",
-              session_id,
-              packet_id,
-              LIVETRACKER_SERVER_NAME);
-        break;
-    } //sw
-  }//if(1) mutex
-
-
-//  TCHAR utxbuf[500];
-//  ascii2unicode(txbuf,utxbuf,400);
-//  StartupStore(TEXT("Livetracker: %s%s"), utxbuf, NEWLINE);
-  
-  send_success = SendDataToServer(s, txbuf, strlen(txbuf));
-  closesocket(s);
-
-  //Connection lost to server
-  if (send_success_old && !send_success) {
-    StartupStore(TEXT(". Livetracker connection to server %s lost.%s"), TEXT(LIVETRACKER_SERVER_NAME), NEWLINE);
-  }
-  //Connection established to server
-  if (!send_success_old && send_success) {
-    StartupStore(TEXT(". Livetracker connection to server %s established.%s"), TEXT(LIVETRACKER_SERVER_NAME), NEWLINE);
-  }
-  send_success_old = send_success;
-  
-  if (send_success) {
-    packet_id++;
-    flying = sendpoint->flying;
-    switch (packettype) {
-      default:
-        break;
-      case 1:
-        StartupStore(TEXT(". Livetracker new track started.%s"),NEWLINE);
-        break;
-      case 3:
-        StartupStore(TEXT(". Livetracker track finished, sent %d points.%s"), packet_id, NEWLINE);
-        break;
+    // START OF TRACK PACKET
+    // /track.php?leolive=2&sid=42664778&pid=1&client=YourProgramName&v=1&user=yourusername&pass=yourpass&phone=Nokia 2600c&gps=BT GPS&trk1=4&vtype=16388&vname=vehicle name and model
+    // PARAMETERS          
+    // leolive=2  // 2 means this is the start of track packet
+    // sid=42664778 // the session ID , see below on sessionID section for more information
+    // pid=1 // the packet numner of this packet, we start with 1 and increase with each packet send either start/end or with GPS data.
+    // client=YourClientName// fixed value use only alphanumerics no spaces, first Letter of words in capitals
+    // user=yourusername // there is no need to have a registered user, the user can input his preferred username on the fly, he will be displayed in black instead of blue if not registered.
+    // pass=yourpass 
+    // v=1 // version of your program you can use free text like 1.4.5
+    // trk1=4 // the interval in secs that we will be sending gps points
+    // phone=Nokia 2600c // the phone model as it is acquired from a system  call
+    // &gps=BT GPS // the GPS name , use the string Internal GPS for phones with integrated GPS
+    // vname // the brand + name of the vehicle/glider ie Gradient Golden 2 26
+    // 
+    // Values for vtype
+    // 1=>"Paraglider"
+    // 8=>"Glider"
+    // 64=>"Powered flight"
+    // 17100=>"Car"
+    if (_tcslen(LiveTrackerusr_Config)>0 ) {
+      unicode2ascii(LiveTrackerusr_Config, txbuf, sizeof(username)-1);
+    } else {
+      strncpy(txbuf, "guest", sizeof(txbuf));
     }
-    //StartupStore(TEXT("LT pid%d sent%s"), packet_id, NEWLINE);
-  } //else StartupStore(TEXT("LT pid%d send failed%s"), packet_id, NEWLINE);
+    UrlEncode(txbuf, username, sizeof(username));
+    if (_tcslen(LiveTrackerpwd_Config)>0 ) {
+      unicode2ascii(LiveTrackerpwd_Config, txbuf, sizeof(password));
+    } else {
+      strncpy(txbuf, "guest", sizeof(txbuf));
+    }
+    UrlEncode(txbuf, password, sizeof(username));
+    #ifdef PNA
+      unicode2ascii(GlobalModelName, txbuf, sizeof(password));
+      UrlEncode(txbuf, phone, sizeof(phone));
+    #else
+    #if (WINDOWSPC>0)
+      UrlEncode("PC", phone, sizeof(phone));
+    #else
+      UrlEncode("PDA", phone, sizeof(phone));
+    #endif
+    #endif
+    if (SIMMODE) UrlEncode("SIMULATED", gps, sizeof(gps));
+      else {
+        GetBaroDeviceName(_t_barodevice, wgps); 
+        unicode2ascii(wgps, txbuf, sizeof(password));
+        UrlEncode(txbuf, gps, sizeof(gps));
+      }
+    
+    unicode2ascii(AircraftType_Config, txbuf, sizeof(vehicle_name));
+    UrlEncode(txbuf, vehicle_name, sizeof(vehicle_name));
+    vehicle_type = 8;
+    if (AircraftCategory == umParaglider) vehicle_type = 1;
+    if (AircraftCategory == umCar) vehicle_type = 17100;
+    if (AircraftCategory == umGAaircraft) vehicle_type = 64;
+
+    *packet_id = 1;
+    rnd = rand();
+    *session_id = ( (rnd<<24) &  0x7F000000 ) | ( userid & 0x00ffffff) | 0x80000000;          
+
+    sprintf(txbuf,"GET /track.php?leolive=2&sid=%u&pid=1&client=%s&v=%s%s&user=%s&pass=%s&phone=%s&gps=%s&trk1=%u&vtype=%u&vname=%s HTTP/1.0\r\nHost: %s\r\n\r\n",
+          *session_id,  
+          LKFORK,LKVERSION,LKRELEASE,
+          username, password,
+          phone, gps,
+          LiveTrackerInterval,
+          vehicle_type,
+          vehicle_name,
+          LIVETRACKER_SERVER_NAME);
+  }
   
-  return send_success;
+  rxlen = DoTransactionToServer(txbuf, strlen(txbuf), rxbuf, sizeof(rxbuf));
+  if (rxlen==2 && rxbuf[0]=='O' && rxbuf[1]=='K') {
+    (*packet_id)++;
+    return true;
+  }
+  return false;
 }
+
+
+static bool SendEndOfTrackPacket(unsigned int *packet_id, unsigned int *session_id)
+{
+  char txbuf[500];
+  char rxbuf[32];
+  int rxlen;
+  
+  if (1) {
+    CCriticalSection::CGuard guard(_t_mutex);
+    // END OF TRACK PACKET
+    //  /track.php?leolive=3&sid=42664778&pid=453&prid=0
+    // PARAMETERS
+    //  leolive=3  // 3 means this is the end of track packet
+    //  prid=0 // the  status of the user
+    //   0-> "Everything OK"
+    //   1-> "Need retrieve"
+    //   2-> "Need some help, nothing broken"
+    //   3-> "Need help, maybe something broken"
+    //   4-> "HELP, SERIOUS INJURY"
+    sprintf(txbuf,"GET /track.php?leolive=3&sid=%u&pid=%u&prid=0 HTTP/1.0\r\nHost: %s\r\n\r\n",
+          *session_id,
+          *packet_id,
+          LIVETRACKER_SERVER_NAME);
+  }
+  
+  rxlen = DoTransactionToServer(txbuf, strlen(txbuf), rxbuf, sizeof(rxbuf));
+  if (rxlen==2 && rxbuf[0]=='O' && rxbuf[1]=='K') {
+    (*packet_id)++;
+    return true;
+  }
+  return false;
+}
+
+
+static bool SendGPSPointPacket(unsigned int *packet_id, unsigned int *session_id, livetracker_point_t *sendpoint)
+{
+  char txbuf[500];
+  char rxbuf[32];
+  int rxlen;
+  
+  if (1) {
+    CCriticalSection::CGuard guard(_t_mutex);
+    // GPS POINT PACKET
+    //  /track.php?leolive=4&sid=42664778&pid=321&lat=22.3&lon=40.2&alt=23&sog=40&cog=160&tm=1241422845
+    // PARAMETERS
+    // leolive=4  // 4 means this is a gps point
+    // lat=22.3 // the latitude in decimal notation, use negative numbers for west
+    // lon=40.2 // lon in decimal, use negative numbers for south
+    // alt=23 // altitude in meters above the MSL (not the geoid if it is possible) , no decimals
+    // sog=40 // speed over ground in km/h  no decimals
+    // cog=160 // course over ground in degrees 0-360, no decimals
+    // tm=1241422845 // the unixt timestamp in GMT of the GPS time, not the phone's time.
+    sprintf(txbuf,"GET /track.php?leolive=4&sid=%u&pid=%u&lat=%.5lf&lon=%.5lf&alt=%.0lf&sog=%.0lf&cog=%.0lf&tm=%lu HTTP/1.0\r\nHost: %s\r\n\r\n",
+          *session_id,
+          *packet_id,
+          sendpoint->latitude,
+          sendpoint->longitude,
+          sendpoint->alt,
+          sendpoint->ground_speed * 3.6,
+          sendpoint->course_over_ground,
+          sendpoint->unix_timestamp,
+          LIVETRACKER_SERVER_NAME);
+  }
+  
+  rxlen = DoTransactionToServer(txbuf, strlen(txbuf), rxbuf, sizeof(rxbuf));
+  if (rxlen==2 && rxbuf[0]=='O' && rxbuf[1]=='K') {
+    (*packet_id)++;
+    return true;
+  }
+  return false;
+}
+
+
+
+
+
 
 static DWORD WINAPI LiveTrackerThread (LPVOID lpvoid)
 {
+  int tracker_fsm = 0;
   livetracker_point_t sendpoint;
   bool sendpoint_valid = false;
-  bool sendpoint_success = false;
-  bool sendpoint_success_old = false;
-
+  bool sendpoint_processed = false;
+  bool sendpoint_processed_old = false;
+  // Session variables
+  unsigned int packet_id = 0;
+  unsigned int session_id = 0;               
+  int userid = -1;
+  
   _t_end = false;
   _t_run = true;
 
@@ -556,16 +602,73 @@ static DWORD WINAPI LiveTrackerThread (LPVOID lpvoid)
           sendpoint_valid = true;
         }
       } //mutex
-      if (sendpoint_valid) {
-        sendpoint_success = false;
-        do {
-          sendpoint_success = SendLiveTrackerData(&sendpoint);
-          if (sendpoint_success) {
-            CCriticalSection::CGuard guard(_t_mutex);
-            _t_points.pop_front();
-          } else InterruptibleSleep(2500);
-          sendpoint_success_old = sendpoint_success;
-        } while (!sendpoint_success && _t_run);
+        if (sendpoint_valid) {
+          sendpoint_processed = false;
+          do {
+            switch (tracker_fsm) {
+              default:
+              case 0:   // Wait for flying
+                if (!sendpoint.flying) {
+                  sendpoint_processed = true;
+                  break;
+                }
+                tracker_fsm++;
+                break;
+                  
+              case 1:
+                // Get User ID
+                userid = GetUserIDFromServer();
+                sendpoint_processed = false;
+                if (userid>=0) tracker_fsm++;
+                break;
+                
+              case 2:
+                //Start of track packet
+                sendpoint_processed = SendStartOfTrackPacket(&packet_id, &session_id, userid);
+                if (sendpoint_processed) {
+                  StartupStore(TEXT(". Livetracker new track started.%s"),NEWLINE);
+                  sendpoint_processed_old = true;
+                  tracker_fsm++;
+                }
+                break;
+
+              case 3:
+                //Gps point packet
+                sendpoint_processed = SendGPSPointPacket(&packet_id, &session_id, &sendpoint);
+                
+                //Connection lost to server
+                if (sendpoint_processed_old && !sendpoint_processed) {
+                  StartupStore(TEXT(". Livetracker connection to server %s lost.%s"), TEXT(LIVETRACKER_SERVER_NAME), NEWLINE);
+                }
+                //Connection established to server
+                if (!sendpoint_processed_old && sendpoint_processed) {
+                  CCriticalSection::CGuard guard(_t_mutex);
+                  int queue_size = _t_points.size();
+                  StartupStore(TEXT(". Livetracker connection to server %s established, start sending %d queued packets.%s"), TEXT(LIVETRACKER_SERVER_NAME), queue_size, NEWLINE);
+                }
+                sendpoint_processed_old = sendpoint_processed;
+                
+                if (!sendpoint.flying) {
+                  tracker_fsm++;
+                }
+                break;
+
+              case 4:
+                //End of track packet
+                sendpoint_processed = SendEndOfTrackPacket(&packet_id, &session_id);
+                if (sendpoint_processed) {
+                  StartupStore(TEXT(". Livetracker track finished, sent %d points.%s"), packet_id, NEWLINE);
+                  tracker_fsm=0;
+                }
+                break;
+            }// sw
+            
+            if (sendpoint_processed) {
+              CCriticalSection::CGuard guard(_t_mutex);
+              _t_points.pop_front();
+            } else InterruptibleSleep(2500);
+            sendpoint_processed_old = sendpoint_processed;
+          } while (!sendpoint_processed && _t_run);
       }
     } while (sendpoint_valid && _t_run);
   } while (_t_run);
