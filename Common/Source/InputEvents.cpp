@@ -1773,6 +1773,14 @@ void InputEvents::eventRestartCommPorts(const TCHAR *misc) { // 100211
 // USE SERVICE EVENTS INSTEAD OF CREATING NEW EVENTS!  
 void InputEvents::eventService(const TCHAR *misc) { 
 
+  if (_tcscmp(misc, TEXT("TAKEOFF")) == 0) {
+	// No MESSAGE on screen, only a sound
+        if (EnableSoundModes) {
+                LKSound(_T("LK_TAKEOFF.WAV"));
+        }
+	return;
+  }
+
   if (_tcscmp(misc, TEXT("TASKSTART")) == 0) {
 	extern void TaskStartMessage(void);
 	TaskStartMessage();

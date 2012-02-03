@@ -204,6 +204,11 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
   #endif
   DoStatusMessage(gettext(TEXT("_@M1452_")));  // LKTOKEN  _@M1452_ = "Free flight detected"
 
+  // Always sound
+  if (EnableSoundModes) {
+	LKSound(_T("LK_FREEFLIGHT.WAV"));
+  }
+
   StartupStore(_T(". Free Flight started %s%s"), WhatTimeIsIt(),NEWLINE);
 
   ffDetected=true;
