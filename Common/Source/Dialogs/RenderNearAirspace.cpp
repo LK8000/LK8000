@@ -15,7 +15,7 @@
 #define GC_HORIZONTAL_TOLERANCE      100
 #define GC_HORIZONTAL_THRESHOLD     2500
 #define GC_VERTICAL_THRESHOLD        250
-#define GC_VERTICAL_TOLERANCE        200
+#define GC_VERTICAL_TOLERANCE         50
 #define GC_HORIZONTAL_DELAY_FACT   250.0f
 #define GC_VERTICAL_DELAY_FACT      25.0f
 
@@ -219,6 +219,7 @@ if(bValid)
       sDia.fYMin = 0;
   }
 
+#ifdef VERTICAL_ZOOM_50
   if(abs(iAS_VertDistance) < 50)
   {
     sDia.fYMax =  ((int)((GPSalt+abs(iAS_VertDistance))/100) + 2) *100 ;
@@ -226,6 +227,7 @@ if(bValid)
     if(sDia.fYMin-200 < 0)
       sDia.fYMin = 0;
   }
+#endif
   sDia.fYMin = max((double)0.0f,(double) sDia.fYMin);
 }
 
@@ -555,23 +557,25 @@ UnlockFlightData();
 		  int iTmpH_Level = -1;
 		  if(SelectedAS.IsAltitudeInside(iAltitude,iAltitudeAGL,GC_VERTICAL_TOLERANCE))  /* vertically near or inside ? */
 		  {
-			int iTmp =	abs(iAS_HorDist);
-            if(iTmp < sSonarLevel[4].iDistantrance/divider)   {
-              iTmpH_Level = 4;
-              if(iTmp < sSonarLevel[3].iDistantrance/divider)   {
-                iTmpH_Level = 3;
-                if(iTmp < sSonarLevel[2].iDistantrance/divider)   {
-                  iTmpH_Level = 2;
-                  if(iTmp < sSonarLevel[1].iDistantrance/divider)   {
-                    iTmpH_Level = 1;
-                    if(iTmp < sSonarLevel[0].iDistantrance/divider)   {
-                      iTmpH_Level = 0;
+			int iTmp =	(iAS_HorDist);
+			if(iTmp > 0) {
+              if(iTmp < sSonarLevel[4].iDistantrance/divider)   {
+                iTmpH_Level = 4;
+                if(iTmp < sSonarLevel[3].iDistantrance/divider)   {
+                  iTmpH_Level = 3;
+                  if(iTmp < sSonarLevel[2].iDistantrance/divider)   {
+                    iTmpH_Level = 2;
+                    if(iTmp < sSonarLevel[1].iDistantrance/divider)   {
+                      iTmpH_Level = 1;
+                      if(iTmp < sSonarLevel[0].iDistantrance/divider)   {
+                        iTmpH_Level = 0;
+                      }
                     }
                   }
                 }
               }
-            }
-		  }
+		    }
+		}
 		  if(iTmpH_Level != -1)
             if(iTmpH_Level < iH_Level )
         	  iH_Level = iTmpH_Level;
