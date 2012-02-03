@@ -9,42 +9,48 @@
 #include <stdlib.h>
 #include <string.h>
 
+//Use to log transactions to the startupstore
 //#define LT_DEBUG  1
 
+// Use test server in TESTBENCH mode
 #ifdef TESTBENCH
 #define LIVETRACKER_SERVER_NAME  "test.livetrack24.com"
 #else
 #define LIVETRACKER_SERVER_NAME  "www.livetrack24.com"
 #endif
 
-static bool _ws_inited = false;
-static bool _inited = false;
-static HANDLE _hThread;
-static DWORD _dwThreadID;
-static HANDLE _hNewDataEvent;
+static bool _ws_inited = false;     //Winsock inited
+static bool _inited = false;        //Winsock + thread inited
+static HANDLE _hThread;             //worker thread handle
+static DWORD _dwThreadID;           //worker thread ID
+static HANDLE _hNewDataEvent;       //new data event trigger
 
+// Data point definition to send to the server
 typedef struct {
-  unsigned long int unix_timestamp;
-  int flying;
-  double latitude;
-  double longitude;
-  double alt;
-  double ground_speed;
-  double course_over_ground;
+  unsigned long int unix_timestamp;     // Unix timestamp
+  int flying;                           // true = flying, triggers a new track
+  double latitude;                      // position
+  double longitude;                     // position
+  double alt;                           // altitude MSL [m]
+  double ground_speed;                  // GS [km/h]
+  double course_over_ground;            // Heading [deg]
 } livetracker_point_t;
 
+// Point FIFO beetween calc thread and data server
 typedef std::deque<livetracker_point_t> PointQueue;
 
 //Protected thread storage
-static CCriticalSection _t_mutex;
-static bool _t_run = false;
-static bool _t_end = false;
-static PointQueue _t_points;
-static DEVICE_TYPE _t_barodevice;
+static CCriticalSection _t_mutex;       // Mutex
+static bool _t_run = false;             // Thread run
+static bool _t_end = false;             // Thread end
+static PointQueue _t_points;            // Point FIFO
+static DEVICE_TYPE _t_barodevice;       // GPD device ID
 
+// Prototypes
 static bool InitWinsock();
 static DWORD WINAPI LiveTrackerThread(LPVOID lpvoid);
 
+// Unix timestamp calculation helpers
 #define isleap(y) ( !((y) % 400) || (!((y) % 4) && ((y) % 100)) )
 static long monthtoseconds(int isleap,int month)
 {
@@ -99,6 +105,7 @@ static unsigned long int mkgmtime(const struct tm *ptmbuf)
     return t;
 }
 
+// Encode URLs in a standard form
 static char* UrlEncode(char *szText, char* szDst, int bufsize) {
   char ch; 
   char szHex[5];
@@ -249,6 +256,9 @@ static bool InterruptibleSleep(int msecs)
   return false;
 }
 
+
+// Establish a connection with the data server
+// Returns a valid SOCKET if ok, INVALID_SOCKET if failed 
 static SOCKET EstablishConnection(char *servername)
 {
   SOCKET s;
@@ -570,9 +580,7 @@ static bool SendGPSPointPacket(unsigned int *packet_id, unsigned int *session_id
 
 
 
-
-
-
+// Leonardo Live Tracker (www.livetrack24.com) data exchange thread
 static DWORD WINAPI LiveTrackerThread (LPVOID lpvoid)
 {
   int tracker_fsm = 0;
