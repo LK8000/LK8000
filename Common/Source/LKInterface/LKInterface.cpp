@@ -251,7 +251,7 @@ void BottomBarChange(bool advance) {
   wanted=BottomMode+1;
   while (true) {
     if (wanted >BM_LAST) {
-	if ( MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+	if ( MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && ConfBB[BM_TRM]) {
 		wanted=BM_TRM;
 		break;
 	} else {
@@ -269,7 +269,7 @@ bbc_previous:
   wanted=BottomMode-1;
   while (true) {
     if (wanted == BM_TRM) {
-	if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+	if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING) && ConfBB[BM_TRM]) {
 		break;
 	} else {
 		wanted=BM_LAST;
