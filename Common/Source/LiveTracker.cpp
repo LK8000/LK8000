@@ -136,7 +136,7 @@ void LiveTrackerInit()
     {
       SetThreadPriority(_hThread, THREAD_PRIORITY_NORMAL);
       _inited = true;
-      StartupStore(TEXT(". LiveTracker inited.%s"),NEWLINE);
+      StartupStore(TEXT(". LiveTracker will use server %s if available.%s"), TEXT(LIVETRACKER_SERVER_NAME), NEWLINE);
     }
   }
   if (!_inited) StartupStore(TEXT(". LiveTracker init failed.%s"),NEWLINE);
@@ -638,13 +638,13 @@ static DWORD WINAPI LiveTrackerThread (LPVOID lpvoid)
                 
                 //Connection lost to server
                 if (sendpoint_processed_old && !sendpoint_processed) {
-                  StartupStore(TEXT(". Livetracker connection to server %s lost.%s"), TEXT(LIVETRACKER_SERVER_NAME), NEWLINE);
+                  StartupStore(TEXT(". Livetracker connection to server lost.%s"), NEWLINE);
                 }
                 //Connection established to server
                 if (!sendpoint_processed_old && sendpoint_processed) {
                   CCriticalSection::CGuard guard(_t_mutex);
                   int queue_size = _t_points.size();
-                  StartupStore(TEXT(". Livetracker connection to server %s established, start sending %d queued packets.%s"), TEXT(LIVETRACKER_SERVER_NAME), queue_size, NEWLINE);
+                  StartupStore(TEXT(". Livetracker connection to server established, start sending %d queued packets.%s"), queue_size, NEWLINE);
                 }
                 sendpoint_processed_old = sendpoint_processed;
                 
