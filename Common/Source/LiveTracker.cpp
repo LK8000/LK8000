@@ -394,10 +394,17 @@ static bool SendLiveTrackerData(livetracker_point_t *sendpoint)
         // 8=>"Glider"
         // 64=>"Powered flight"
         // 17100=>"Car"
-        
-        unicode2ascii(PilotName_Config, txbuf, sizeof(username)-1);
+        if (_tcslen(PilotName_Config)>0 ) {
+          unicode2ascii(PilotName_Config, txbuf, sizeof(username)-1);
+        } else {
+          strncpy(txbuf, "guest", sizeof(txbuf));
+        }
         UrlEncode(txbuf, username, sizeof(username));
-        unicode2ascii(LiveTrackerpwd_Config, txbuf, sizeof(password));
+        if (_tcslen(LiveTrackerpwd_Config)>0 ) {
+          unicode2ascii(LiveTrackerpwd_Config, txbuf, sizeof(password));
+        } else {
+          strncpy(txbuf, "guest", sizeof(txbuf));
+        }
         UrlEncode(txbuf, password, sizeof(username));
         #ifdef PNA
           unicode2ascii(GlobalModelName, txbuf, sizeof(password));
