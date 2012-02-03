@@ -85,6 +85,7 @@ static WndFrame *wConfig25=NULL;
 //static WndFrame *wConfig27=NULL; 
 // ADDPAGE  HERE
 static WndButton *buttonPilotName=NULL;
+static WndButton *buttonLiveTrackerusr=NULL;
 static WndButton *buttonLiveTrackerpwd=NULL;
 static WndButton *buttonAircraftType=NULL;
 static WndButton *buttonAircraftRego=NULL;
@@ -148,17 +149,6 @@ static void UpdateButtons(void) {
 	// LKTOKEN  _@M524_ = "Pilot name" 
     _stprintf(text,TEXT("%s: %s"), gettext(TEXT("_@M524_")), val);
     buttonPilotName->SetCaption(text);
-  }
-  if (buttonLiveTrackerpwd) {
-    if (_tcslen(LiveTrackerpwd_Config)<=0) {
-       // LKTOKEN  _@M7_ = "(blank)" 
-       // LKTOKEN  _@M1780_ "Live tracker password"
-      _stprintf(text, TEXT("%s:%s"), gettext(TEXT("_@M1780_")), gettext(TEXT("_@M7_")));
-    } else { 
-       // LKTOKEN  _@M1780_ "Live tracker password"
-      _stprintf(text, TEXT("%s:***"), gettext(TEXT("_@M1780_")));
-    }
-    buttonLiveTrackerpwd->SetCaption(text);
   }
   if (buttonAircraftType) {
     #if OLDPROFILES
@@ -769,12 +759,29 @@ static void OnPilotNameClicked(WindowControl *Sender) {
   UpdateButtons();
 }
 
+static void OnLiveTrackerusrClicked(WindowControl *Sender) {
+  (void)Sender;
+  TCHAR Temp[100];
+  if (buttonLiveTrackerusr) {
+    #if OLDPROFILES
+    #else
+    _tcscpy(Temp,LiveTrackerusr_Config);
+    #endif
+    dlgTextEntryShowModal(Temp,100);
+    #if OLDPROFILES
+    #else
+    _tcscpy(LiveTrackerusr_Config,Temp);
+    #endif
+    changed = true;
+  }
+  UpdateButtons();
+}
+
 static void OnLiveTrackerpwdClicked(WindowControl *Sender) {
   (void)Sender;
   TCHAR Temp[100];
   if (buttonLiveTrackerpwd) {
     #if OLDPROFILES
-    GetRegistryString(szRegistryPilotName,Temp,100);
     #else
     _tcscpy(Temp,LiveTrackerpwd_Config);
     #endif
@@ -1553,6 +1560,10 @@ static void setVariables(void) {
   buttonPilotName = ((WndButton *)wf->FindByName(TEXT("cmdPilotName")));
   if (buttonPilotName) {
     buttonPilotName->SetOnClickNotify(OnPilotNameClicked);
+  }
+  buttonLiveTrackerusr = ((WndButton *)wf->FindByName(TEXT("cmdLiveTrackerusr")));
+  if (buttonLiveTrackerusr) {
+    buttonLiveTrackerusr->SetOnClickNotify(OnLiveTrackerusrClicked);
   }
   buttonLiveTrackerpwd = ((WndButton *)wf->FindByName(TEXT("cmdLiveTrackerpwd")));
   if (buttonLiveTrackerpwd) {

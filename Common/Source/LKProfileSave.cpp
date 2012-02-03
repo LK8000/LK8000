@@ -405,6 +405,7 @@ void LKPilotSave(const TCHAR *szFile)
 
   rprintf(szRegistryPilotName,PilotName_Config);
   rprintf(szRegistryLiveTrackerInterval,LiveTrackerInterval);
+  rprintf(szRegistryLiveTrackerusr,LiveTrackerusr_Config);
   rprintf(szRegistryLiveTrackerpwd,LiveTrackerpwd_Config);
 
   fprintf(pfp,PNEWLINE); // end of file

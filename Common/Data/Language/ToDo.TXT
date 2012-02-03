@@ -99,6 +99,6 @@ Changed HELP 102
 M1775-1778 new Aver Efficiency intervals
 
 02/02/2012
-M1779-1780 new Live tracker config options
+M1779-1781 new Live tracker config options
 H1258 new livetracker help
 
