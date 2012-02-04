@@ -1873,9 +1873,10 @@ void CAirspaceManager::ScanAirspaceLine(double lats[AIRSPACE_SCANSIZE_X], double
                             airspacetype[j][i].iIdx = iCnt;
                             airspacetype[j][i].bRectAllowed = true ;
                             airspacetype[j][i].bEnabled = (*it)->Enabled();
-                            if( (*it)->Top()->Base == abAGL) airspacetype[j][i].bRectAllowed = false ;
+                            if ( ((*it)->Top()->Base == abAGL) ||
+                               ( ((*it)->Base()->Base == abAGL) && ((*it)->Base()->AGL>0) )
+                               ) airspacetype[j][i].bRectAllowed = false ;
                             airspacetype[j][i].psAS =   (*it);
-                            //if( (*it)->Base()->Base == abAGL) airspacetype[j][i].bRectAllowed = false ;
                         } // inside height
                     } // finished scanning height
                 } // inside
