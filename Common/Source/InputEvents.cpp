@@ -1780,6 +1780,13 @@ void InputEvents::eventService(const TCHAR *misc) {
         }
 	return;
   }
+  if (_tcscmp(misc, TEXT("LANDING")) == 0) {
+	DoStatusMessage(MsgToken(931));
+        if (EnableSoundModes) {
+                LKSound(_T("LK_LANDING.WAV"));
+        }
+	return;
+  }
 
   if (_tcscmp(misc, TEXT("TASKSTART")) == 0) {
 	extern void TaskStartMessage(void);

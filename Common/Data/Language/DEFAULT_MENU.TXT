@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 6 , 120203
+# Release 6 , 120204
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -84,13 +84,14 @@ event=TaskLoad Default.tsk
 mode=default
 type=gce
 data=TAKEOFF
-event=AutoLogger start
 event=Service TAKEOFF
+kevent=AutoLogger start
+
 
 mode=default
 type=gce
 data=LANDING
-event=StatusMessage ZYX931
+event=Service LANDING
 event=AutoLogger stop
 
 mode=default
