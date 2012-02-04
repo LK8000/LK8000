@@ -44,6 +44,8 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
   static short  wlaunch=0;
   static int    altLoss=0;
 
+  bool forcereset=LKSW_ForceFreeFlightRestart;
+
   if (DoInit[MDI_DETECTFREEFLYING]) {
     for (int i=0; i<8; i++) vario[i]=0;
     gndAltitude=0;
@@ -64,7 +66,17 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
     winchdetected=false;
     wlaunch=0;
     altLoss=FF_TOWING_ALTLOSS;
+    LKSW_ForceFreeFlightRestart=false;
     return false;
+  }
+
+  if (forcereset) {
+	LKSW_ForceFreeFlightRestart=false;
+	#if TESTBENCH
+	StartupStore(_T("... Forced FreeFlight Restart!\n"));
+	#endif
+	DoStatusMessage(MsgToken(1452),NULL,false);  // LKTOKEN  _@M1452_ = "Free flight detected"
+	goto backtrue;
   }
 
   if (ISPARAGLIDER) {
@@ -202,7 +214,7 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
   #if ( !defined(WINDOWSPC) || WINDOWSPC==0 )
   if (SIMMODE)
   #endif
-  DoStatusMessage(gettext(TEXT("_@M1452_")));  // LKTOKEN  _@M1452_ = "Free flight detected"
+  DoStatusMessage(gettext(TEXT("_@M1452_")),NULL,false);  // LKTOKEN  _@M1452_ = "Free flight detected"
 
   // Always sound
   if (EnableSoundModes) {

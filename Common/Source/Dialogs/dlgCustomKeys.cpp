@@ -286,6 +286,7 @@ void AddConfList( DataFieldEnum* dfe) {
     dfe->addEnumText(gettext(TEXT("_@M871_")));  // Nearest Airspace
     dfe->addEnumText(gettext(TEXT("_@M1740_"))); // OLC Analysis
     dfe->addEnumText(gettext(TEXT("_@M1774_"))); // Change- Terrain colors
+    dfe->addEnumText(MsgToken(1754)); // free flight
 
     dfe->Sort(0);
 

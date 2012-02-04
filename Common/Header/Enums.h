@@ -133,6 +133,7 @@ typedef enum{
 	ckNearestAirspace,
 	ckOlcAnalysis,
 	ckTerrainColorsBack,
+	ckForceFreeFlightRestart,
 } CustomKeyMode_t;
 
 typedef enum{
