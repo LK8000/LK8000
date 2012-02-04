@@ -647,7 +647,7 @@ bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance)
 
   _bearing = (int)fbearing;
   _hdistance = (int)distance;
-  if ((-vDistanceBase > vDistanceTop) && (_base.Base != abAGL))
+  if ((-vDistanceBase > vDistanceTop) && ((_base.Base != abAGL) || (_base.AGL>0)))
     _vdistance = vDistanceBase;
   else
     _vdistance = vDistanceTop;
