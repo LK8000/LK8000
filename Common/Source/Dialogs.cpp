@@ -164,7 +164,7 @@ LRESULT CALLBACK StatusMsgWndTimerProc(HWND hwnd, UINT message,
 //
 // TODO code: (need to discuss) Consider moving almost all this functionality into AddMessage ?
 
-void DoStatusMessage(const TCHAR* text, const TCHAR *data) {
+void DoStatusMessage(const TCHAR* text, const TCHAR *data, const bool playsound) {
   Message::Lock();
 
   StatusMessageSTRUCT LocalMessage;
@@ -178,8 +178,9 @@ void DoStatusMessage(const TCHAR* text, const TCHAR *data) {
       break;
     }
   }
-  
-  if (EnableSoundModes && LocalMessage.doSound)
+
+  // doSound always true, to be removed the StatusFile entirely 
+  if (EnableSoundModes && LocalMessage.doSound &&playsound)
     PlayResource(LocalMessage.sound);
   
   // TODO code: consider what is a sensible size?

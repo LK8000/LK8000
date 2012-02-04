@@ -22,7 +22,7 @@ void CloseProgressDialog();
 void StartHourglassCursor();
 void StopHourglassCursor();
 
-extern void DoStatusMessage(const TCHAR* text, const TCHAR* data = NULL);
+extern void DoStatusMessage(const TCHAR* text, const TCHAR* data = NULL, const bool playsound = true);
 
 
 #include "dlgTools.h"
