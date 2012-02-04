@@ -121,7 +121,10 @@ int ConnectionProcessTimer(int itimeout) {
   LockComm();
   NMEAParser::UpdateMonitor();
   UnlockComm();
-  
+
+  // dont warn on startup
+  static bool s_firstcom=true;
+
   static bool s_lastGpsConnect = false;
   static bool s_connectWait = false;
   static bool s_lockWait = false;
@@ -158,9 +161,8 @@ int ConnectionProcessTimer(int itimeout) {
 		extGPSCONNECT = FALSE;
   
 		s_connectWait = true;
-		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) LKSound(TEXT("LK_GREEN.WAV"));
-		#endif
+
+		if (EnableSoundModes && !s_firstcom) LKSound(TEXT("LK_GPSNOCOM.WAV"));
 		FullScreen();
 	} else {
 		// restart comm ports on timeouts, but not during managed special communications with devices
@@ -194,6 +196,7 @@ int ConnectionProcessTimer(int itimeout) {
   
   if((gpsconnect == true) && (s_lastGpsConnect == false)) {
 	itimeout = 0; // reset timeout
+	s_firstcom=false;
       
 	if(s_connectWait) {
 		TriggerGPSUpdate();
@@ -207,7 +210,7 @@ int ConnectionProcessTimer(int itimeout) {
 	  
 		s_lockWait = true;
 		#ifndef DISABLEAUDIO
-		if (EnableSoundModes) LKSound(TEXT("LK_GREEN.WAV")); // 100404
+		if (EnableSoundModes) LKSound(TEXT("LK_GPSNOFIX.WAV"));
 		#endif
 		FullScreen();
 	} else {

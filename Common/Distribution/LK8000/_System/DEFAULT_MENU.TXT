@@ -58,18 +58,8 @@ event=StatusMessage ZYX926
 
 mode=default
 type=gce
-data=GPS_CONNECTION_WAIT
-event=StatusMessage ZYX927
-
-mode=default
-type=gce
 data=COMMPORT_RESTART
-event=StatusMessage ZYX928
-
-mode=default
-type=gce
-data=GPS_FIX_WAIT
-event=StatusMessage ZYX929
+event=Service GPSRESTART
 
 mode=default
 type=gce
@@ -85,7 +75,7 @@ mode=default
 type=gce
 data=TAKEOFF
 event=Service TAKEOFF
-kevent=AutoLogger start
+event=AutoLogger start
 
 
 mode=default

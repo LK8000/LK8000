@@ -1781,10 +1781,16 @@ void InputEvents::eventService(const TCHAR *misc) {
 	return;
   }
   if (_tcscmp(misc, TEXT("LANDING")) == 0) {
-	DoStatusMessage(MsgToken(931));
+	DoStatusMessage(MsgToken(931),NULL,false);
         if (EnableSoundModes) {
                 LKSound(_T("LK_LANDING.WAV"));
         }
+	return;
+  }
+
+
+  if (_tcscmp(misc, TEXT("GPSRESTART")) == 0) {
+	DoStatusMessage(MsgToken(928),NULL,false);
 	return;
   }
 
