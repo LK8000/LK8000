@@ -2138,6 +2138,8 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
 
         // This is used nowhere.
         Calculated->IsInAirspace = false;
+        // Give the sideview the nearest instance calculated
+        _sideview_nearest = CAirspace::GetSideviewNearestInstance();
 
         // Fill infoboxes - Nearest horizontal
 #ifndef LKAIRSP_INFOBOX_USE_SELECTED 
@@ -2171,13 +2173,16 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
           NearestAirspaceVName[NAME_SIZE]=0;
           NearestAirspaceVDist = _selected_airspace->LastCalculatedVDistance();
         } else {
-          NearestAirspaceName[0]=0;
-          NearestAirspaceHDist=0;
-          NearestAirspaceVName[0]=0;
-          NearestAirspaceVDist=0;
+          //use nearest distances, if no selection
+          _tcsncpy(NearestAirspaceName, _sideview_nearest->Name(), NAME_SIZE);
+          NearestAirspaceName[NAME_SIZE]=0;
+          NearestAirspaceHDist = _sideview_nearest->LastCalculatedHDistance();
+          
+          _tcsncpy(NearestAirspaceVName, _sideview_nearest->Name(), NAME_SIZE);
+          NearestAirspaceVName[NAME_SIZE]=0;
+          NearestAirspaceVDist = _sideview_nearest->LastCalculatedVDistance();
         }
 #endif
-        _sideview_nearest = CAirspace::GetSideviewNearestInstance();
         step = 0;
         break;
         
