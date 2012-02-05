@@ -404,7 +404,7 @@ bool CAirspace::FinishWarning()
           // Check what is outside this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
           double lon = 0;
           double lat =0;
-          double dist = fabs(_hdistance) + hdistance_lookout;
+          double dist = abs(_hdistance) + hdistance_lookout;
           FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &lat, &lon);
           
           if ( !CAirspaceManager::Instance().AirspaceWarningIsGoodPosition(lon, lat, _lastknownalt, _lastknownagl) ) {
@@ -466,7 +466,7 @@ bool CAirspace::FinishWarning()
           // Check what is outside this flyzone. If another flyzone or acked nonfly zone, then we don't have to increase the warn state
           double lon = 0;
           double lat =0;
-          double dist = fabs(_hdistance) + hdistance_lookout;
+          double dist = abs(_hdistance) + hdistance_lookout;
           FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &lat, &lon);
           
           if ( !CAirspaceManager::Instance().AirspaceWarningIsGoodPosition(lon, lat, _lastknownalt, _lastknownagl) ) {
@@ -2171,7 +2171,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
           _tcsncpy(NearestAirspaceVName, _selected_airspace->Name(), NAME_SIZE);
           NearestAirspaceVName[NAME_SIZE]=0;
           NearestAirspaceVDist = _selected_airspace->LastCalculatedVDistance();
-        } else {
+        } else if (_sideview_nearest != NULL){
           //use nearest distances, if no selection
           _tcsncpy(NearestAirspaceName, _sideview_nearest->Name(), NAME_SIZE);
           NearestAirspaceName[NAME_SIZE]=0;
