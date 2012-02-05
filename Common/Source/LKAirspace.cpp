@@ -90,16 +90,16 @@ void CAirspace::Dump() const
   //StartupStore(TEXT("CAirspace Dump%s"),NEWLINE);
   StartupStore(TEXT(" Name:%s%s"),_name,NEWLINE);
   StartupStore(TEXT(" Type:%d (%s)%s"),_type,k_strAreaStart[_type], NEWLINE);
-  StartupStore(TEXT(" Base.Altitude:%lf%s"),_base.Altitude,NEWLINE);
-  StartupStore(TEXT(" Base.FL:%lf%s"),_base.FL,NEWLINE);
-  StartupStore(TEXT(" Base.AGL:%lf%s"),_base.AGL,NEWLINE);
+  StartupStore(TEXT(" Base.Altitude:%f%s"),_base.Altitude,NEWLINE);
+  StartupStore(TEXT(" Base.FL:%f%s"),_base.FL,NEWLINE);
+  StartupStore(TEXT(" Base.AGL:%f%s"),_base.AGL,NEWLINE);
   StartupStore(TEXT(" Base.Base:%d%s"),_base.Base,NEWLINE);
-  StartupStore(TEXT(" Top.Altitude:%lf%s"),_top.Altitude,NEWLINE);
-  StartupStore(TEXT(" Top.FL:%lf%s"),_top.FL,NEWLINE);
-  StartupStore(TEXT(" Top.AGL:%lf%s"),_top.AGL,NEWLINE);
+  StartupStore(TEXT(" Top.Altitude:%f%s"),_top.Altitude,NEWLINE);
+  StartupStore(TEXT(" Top.FL:%f%s"),_top.FL,NEWLINE);
+  StartupStore(TEXT(" Top.AGL:%f%s"),_top.AGL,NEWLINE);
   StartupStore(TEXT(" Top.Base:%d%s"),_top.Base,NEWLINE);
-  StartupStore(TEXT(" bounds.minx,miny:%lf,%lf%s"),_bounds.minx,_bounds.miny,NEWLINE);
-  StartupStore(TEXT(" bounds.maxx,maxy:%lf,%lf%s"),_bounds.maxx,_bounds.maxy,NEWLINE);
+  StartupStore(TEXT(" bounds.minx,miny:%f,%f%s"),_bounds.minx,_bounds.miny,NEWLINE);
+  StartupStore(TEXT(" bounds.maxx,maxy:%f,%f%s"),_bounds.maxx,_bounds.maxy,NEWLINE);
    
 }
 
@@ -704,7 +704,7 @@ CAirspace_Circle::CAirspace_Circle(const double &Center_Latitude, const double &
 // Dumps object instance to Runtime.log
 void CAirspace_Circle::Dump() const
 {
-  StartupStore(TEXT("CAirspace_Circle Dump, CenterLat:%lf, CenterLon:%lf, Radius:%lf%s"), _latcenter, _loncenter, _radius, NEWLINE);
+  StartupStore(TEXT("CAirspace_Circle Dump, CenterLat:%f, CenterLon:%f, Radius:%f%s"), _latcenter, _loncenter, _radius, NEWLINE);
   CAirspace::Dump();
 }
 
@@ -833,7 +833,7 @@ void CAirspace_Area::Dump() const
   StartupStore(TEXT("CAirspace_Area Dump%s"), NEWLINE);
   CAirspace::Dump();
   for (i = _geopoints.begin(); i != _geopoints.end(); ++i) {
-    StartupStore(TEXT("  Point lat:%lf, lon:%lf%s"), i->Latitude(), i->Longitude(), NEWLINE);
+    StartupStore(TEXT("  Point lat:%f, lon:%f%s"), i->Latitude(), i->Longitude(), NEWLINE);
   }
 }
 
