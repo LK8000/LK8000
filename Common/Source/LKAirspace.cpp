@@ -109,7 +109,7 @@ void CAirspace::Hash(char *hashout, int maxbufsize) const
   *hashout=0;
 }
 
-void CAirspace::AirspaceAGLLookup(double av_lat, double av_lon) 
+void CAirspace::AirspaceAGLLookup(double av_lat, double av_lon, double *basealt_out, double *topalt_out) const
 {
   if (((_base.Base == abAGL) || (_top.Base == abAGL))) {
     RasterTerrain::Lock();
@@ -121,20 +121,16 @@ void CAirspace::AirspaceAGLLookup(double av_lat, double av_lon)
     
     if (_base.Base == abAGL) {
       if (_base.AGL>=0) {
-        _base.Altitude = _base.AGL+th;
+        if (basealt_out) *basealt_out = _base.AGL+th;
       } else {
-        // surface, set to zero
-        _base.AGL = 0;
-        _base.Altitude = 0;
+        if (basealt_out) *basealt_out = th;
       }
     }
     if (_top.Base == abAGL) {
       if (_top.AGL>=0) {
-        _top.Altitude = _top.AGL+th;
+        if (topalt_out) *topalt_out = _top.AGL+th;
       } else {
-        // surface, set to zero
-        _top.AGL = 0;
-        _top.Altitude = 0;
+        if (topalt_out) *topalt_out = th;
       }
     }
     // 101027 We still use 0 altitude for no terrain, what else can we do..
@@ -593,17 +589,19 @@ bool CAirspace::GetWarningPoint(double &longitude, double &latitude, AirspaceWar
   if (_distances_ready && _enabled) {
     if (_flyzone && !_pos_inside_now ) return false;    // no warning labels if outside a flyzone
 
+    double dist = abs(_hdistance);
+    double basealt, topalt;
+    FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &latitude, &longitude);
+    AirspaceAGLLookup(latitude, longitude, &basealt, &topalt);
+    
     vdrawstyle = awsBlack;
-    if (IsAltitudeInside(_lastknownalt, _lastknownagl, 0)) {
+    if ( (_lastknownalt >= basealt) && ( _lastknownalt < topalt)) {
           if (!_flyzone) vdrawstyle = awsRed;
     } else {
         if (_flyzone) vdrawstyle = awsAmber;
     }
     hdrawstyle = vdrawstyle;
-
-    double dist = abs(_hdistance);
-    FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), _bearing, dist, &latitude, &longitude);
-
+    
     vDistance = _vdistance;
     //if (abs(_vdistance) > AirspaceWarningVerticalMargin) vdrawstyle = awsHidden;
 
@@ -631,17 +629,18 @@ bool CAirspace::CalculateDistance(int *hDistance, int *Bearing, int *vDistance)
   double distance;
 
   distance = Range(_lastknownpos.Longitude(), _lastknownpos.Latitude(), fbearing);
-  if (distance > 0) inside = false;
-  if (_base.Base != abAGL) {
-      vDistanceBase = _lastknownalt - (int)(_base.Altitude);
+  if (distance > 0) {
+    inside = false;
+    // if outside we need the terrain height at the intersection point
+    double intersect_lat, intersect_lon;
+    FindLatitudeLongitude(_lastknownpos.Latitude(), _lastknownpos.Longitude(), fbearing, distance, &intersect_lat, &intersect_lon);
+    AirspaceAGLLookup(intersect_lat, intersect_lon, &_base.Altitude, &_top.Altitude);
   } else {
-      vDistanceBase = _lastknownagl - (int)(_base.AGL);
+    // if inside we need the terrain height at the current position
+    AirspaceAGLLookup(_lastknownpos.Latitude(), _lastknownpos.Longitude(), &_base.Altitude, &_top.Altitude);
   }
-  if (_top.Base != abAGL) {
-      vDistanceTop  = _lastknownalt - (int)(_top.Altitude);
-  } else {
-      vDistanceTop  = _lastknownagl - (int)(_top.AGL);
-  }
+  vDistanceBase = _lastknownalt - (int)(_base.Altitude);
+  vDistanceTop  = _lastknownalt - (int)(_top.Altitude);
 
   if (vDistanceBase < 0 || vDistanceTop > 0) inside = false;
 
@@ -699,7 +698,7 @@ CAirspace_Circle::CAirspace_Circle(const double &Center_Latitude, const double &
         _radius(Airspace_Radius)
 {
     CalcBounds();
-    AirspaceAGLLookup(Center_Latitude, Center_Longitude); 
+    AirspaceAGLLookup(Center_Latitude, Center_Longitude, &_base.Altitude, &_top.Altitude);
 }
 
 // Dumps object instance to Runtime.log
@@ -991,7 +990,7 @@ void CAirspace_Area::SetPoints(CPoint2DArray &Area_Points)
     _screenpoints.clear();
     for (unsigned int i=0; i<_geopoints.size(); ++i) _screenpoints.push_back(p);
     CalcBounds();
-    AirspaceAGLLookup( (_bounds.miny+_bounds.maxy)/2.0, (_bounds.minx+_bounds.maxx)/2.0 ); 
+    AirspaceAGLLookup( (_bounds.miny+_bounds.maxy)/2.0, (_bounds.minx+_bounds.maxx)/2.0, &_base.Altitude, &_top.Altitude); 
 }
 
 // Calculate airspace bounds

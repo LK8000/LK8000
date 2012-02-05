@@ -102,6 +102,7 @@ public:
             _distances_ready(false),
             _vdistance(0),
             _hdistance(0),
+            _3ddistance(0),
             _bearing(0),
             _labelpriority(0),
             _vwarninglabel_hide(false),
@@ -231,7 +232,7 @@ protected:
   bool _selected;               // Airspace selected (for distance calc infoboxes)
   
   // Private functions
-  void AirspaceAGLLookup(double av_lat, double av_lon);
+  void AirspaceAGLLookup(double av_lat, double av_lon, double *basealt_out, double *topalt_out) const;
 
   // Class attributes
 #ifndef LKAIRSP_INFOBOX_USE_SELECTED 
