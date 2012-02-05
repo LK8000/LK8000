@@ -11,6 +11,7 @@
 #include "LKMapWindow.h"
 #include "LKStyle.h"
 #include "Bitmaps.h"
+#include "DoInits.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -42,21 +43,28 @@ int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 ){
 }
 
 
-void MapWaypointLabelAdd(TCHAR *Name, int X, int Y, 
-			 TextInBoxMode_t Mode, 
-			 int AltArivalAGL, bool inTask, bool isLandable, bool isAirport, bool isExcluded, int index, short style){
+void MapWaypointLabelAdd(const TCHAR *Name, const int X, const int Y, 
+			 const TextInBoxMode_t Mode, 
+			 const int AltArivalAGL, const bool inTask, const bool isLandable, const bool isAirport, 
+			 const bool isExcluded,  const int index, const short style){
   MapWaypointLabel_t *E;
 
-  if ((X<MapWindow::MapRect.left-WPCIRCLESIZE)
-      || (X>MapWindow::MapRect.right+(WPCIRCLESIZE*3))
-      || (Y<MapWindow::MapRect.top-WPCIRCLESIZE)
-      || (Y>MapWindow::MapRect.bottom+WPCIRCLESIZE)){
-    return;
+  static int xLeft,xRight,yTop,yBottom, labelListSize;
+
+  if (DoInit[MDI_MAPWPLABELADD]) {
+	xLeft=MapWindow::MapRect.left-WPCIRCLESIZE;
+	xRight=MapWindow::MapRect.right+(WPCIRCLESIZE*3);
+	yTop=MapWindow::MapRect.top-WPCIRCLESIZE;
+	yBottom=MapWindow::MapRect.bottom+WPCIRCLESIZE;
+
+	labelListSize=(signed int)(sizeof(MapWaypointLabelList)/sizeof(MapWaypointLabel_t))-1;
+
+	DoInit[MDI_MAPWPLABELADD]=false;
   }
 
-  if (MapWaypointLabelListCount >= (( (signed int)(sizeof(MapWaypointLabelList)/sizeof(MapWaypointLabel_t)))-1)){  // BUGFIX 100207
-    return;
-  }
+  if ((X<xLeft) || (X>xRight) || (Y<yTop) || (Y>yBottom)) return;
+
+  if (MapWaypointLabelListCount >= labelListSize) return;
 
   E = &MapWaypointLabelList[MapWaypointLabelListCount];
 
