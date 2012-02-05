@@ -413,8 +413,8 @@ static int GetUserIDFromServer()
 
 static bool SendStartOfTrackPacket(unsigned int *packet_id, unsigned int *session_id, int userid)
 {
-  char username[64];
-  char password[64];
+  char username[128];
+  char password[128];
   char txbuf[500];
   char rxbuf[32];
   int rxlen;
@@ -448,19 +448,19 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id, unsigned int *sessio
     // 64=>"Powered flight"
     // 17100=>"Car"
     if (_tcslen(LiveTrackerusr_Config)>0 ) {
-      unicode2ascii(LiveTrackerusr_Config, txbuf, sizeof(username)-1);
+      unicode2ascii(LiveTrackerusr_Config, txbuf, sizeof(txbuf));
     } else {
       strncpy(txbuf, "guest", sizeof(txbuf));
     }
     UrlEncode(txbuf, username, sizeof(username));
     if (_tcslen(LiveTrackerpwd_Config)>0 ) {
-      unicode2ascii(LiveTrackerpwd_Config, txbuf, sizeof(password));
+      unicode2ascii(LiveTrackerpwd_Config, txbuf, sizeof(txbuf));
     } else {
       strncpy(txbuf, "guest", sizeof(txbuf));
     }
-    UrlEncode(txbuf, password, sizeof(username));
+    UrlEncode(txbuf, password, sizeof(password));
     #ifdef PNA
-      unicode2ascii(GlobalModelName, txbuf, sizeof(password));
+      unicode2ascii(GlobalModelName, txbuf, sizeof(txbuf));
       UrlEncode(txbuf, phone, sizeof(phone));
     #else
     #if (WINDOWSPC>0)
@@ -472,11 +472,11 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id, unsigned int *sessio
     if (SIMMODE) UrlEncode("SIMULATED", gps, sizeof(gps));
       else {
         GetBaroDeviceName(_t_barodevice, wgps); 
-        unicode2ascii(wgps, txbuf, sizeof(password));
+        unicode2ascii(wgps, txbuf, sizeof(txbuf));
         UrlEncode(txbuf, gps, sizeof(gps));
       }
     
-    unicode2ascii(AircraftType_Config, txbuf, sizeof(vehicle_name));
+    unicode2ascii(AircraftType_Config, txbuf, sizeof(txbuf));
     UrlEncode(txbuf, vehicle_name, sizeof(vehicle_name));
     vehicle_type = 8;
     if (AircraftCategory == umParaglider) vehicle_type = 1;
