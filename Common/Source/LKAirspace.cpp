@@ -1539,7 +1539,10 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
 
           case _T('N'): //AN - Airspace name
             p++; p++;
-            if (parsing_state == 10) _tcsncpy(Name, p, NAME_SIZE);
+            if (parsing_state == 10) {
+              _tcsncpy(Name, p, NAME_SIZE);
+              Name[NAME_SIZE]='\0';
+            }
             break;
             
           case _T('L'): //AL - base altitude
