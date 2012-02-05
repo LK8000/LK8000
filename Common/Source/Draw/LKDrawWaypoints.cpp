@@ -581,14 +581,14 @@ turnpoint:
 	// We dont do stretching here. We are using different bitmaps for hi res.
 	// The 20x20 size is large enough to make much bigger icons than the old ones.
 	DrawBitmapX(hdc,
-		    E->Pos.x-NIBLSCALE(10), 
-		    E->Pos.y-NIBLSCALE(10),
+		    E->Pos.x-10,
+		    E->Pos.y-10,
 		    20,20,
 		    hDCTemp,0,0,SRCPAINT,false);
         
 	DrawBitmapX(hdc,
-		    E->Pos.x-NIBLSCALE(10), 
-		    E->Pos.y-NIBLSCALE(10),
+		    E->Pos.x-10,
+		    E->Pos.y-10,
 		    20,20,
 		    hDCTemp,20,0,SRCAND,false);
       }
