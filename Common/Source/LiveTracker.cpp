@@ -393,7 +393,7 @@ static int GetUserIDFromServer()
 //     UrlEncode(txbuf, username, sizeof(username));
 //     unicode2ascii(LiveTrackerpwd_Config, txbuf, sizeof(password));
 //     UrlEncode(txbuf, password, sizeof(username));
-//     sprintf(txbuf,"GET /track.php?leolive=1&client=%s&v=%s%s&lat=%.5lf&lon=%.5lf&alt=%.0lf&sog=%.0lf&cog=%.0lf&tm=%lu&user=%sr&pass=%s HTTP/1.0\r\nHost: %s\r\n\r\n",
+//     sprintf(txbuf,"GET /track.php?leolive=1&client=%s&v=%s%s&lat=%.5f&lon=%.5f&alt=%.0f&sog=%.0f&cog=%.0f&tm=%lu&user=%sr&pass=%s HTTP/1.0\r\nHost: %s\r\n\r\n",
 //           LKFORK,LKVERSION,LKRELEASE,
 //           sendpoint->latitude,
 //           sendpoint->longitude,
@@ -558,7 +558,7 @@ static bool SendGPSPointPacket(unsigned int *packet_id, unsigned int *session_id
     // sog=40 // speed over ground in km/h  no decimals
     // cog=160 // course over ground in degrees 0-360, no decimals
     // tm=1241422845 // the unixt timestamp in GMT of the GPS time, not the phone's time.
-    sprintf(txbuf,"GET /track.php?leolive=4&sid=%u&pid=%u&lat=%.5lf&lon=%.5lf&alt=%.0lf&sog=%.0lf&cog=%.0lf&tm=%lu HTTP/1.0\r\nHost: %s\r\n\r\n",
+    sprintf(txbuf,"GET /track.php?leolive=4&sid=%u&pid=%u&lat=%.5f&lon=%.5f&alt=%.0f&sog=%.0f&cog=%.0f&tm=%lu HTTP/1.0\r\nHost: %s\r\n\r\n",
           *session_id,
           *packet_id,
           sendpoint->latitude,
