@@ -541,23 +541,36 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 				break;
 
 			case STYLE_SENDER:
+				SelectObject(hDCTemp,hSender);
+				break;
+
 			case STYLE_VOR:
 			case STYLE_NDB:
 			case STYLE_COOLTOWER:
+				goto turnpoint;
+				break;
+
 			case STYLE_DAM:
+				SelectObject(hDCTemp,hDam);
+				break;
+
 			case STYLE_TUNNEL:
 				goto turnpoint;
 				break;
+
 			case STYLE_BRIDGE:
 				SelectObject(hDCTemp,hBridge);
 				break;
+
 			case STYLE_POWERPLANT:
 			case STYLE_CASTLE:
 				goto turnpoint;
 				break;
+
 			case STYLE_INTERSECTION:
 				SelectObject(hDCTemp,hIntersect);
 				break;
+
 			case STYLE_TRAFFIC:
 			case STYLE_THERMAL:
 				goto turnpoint;

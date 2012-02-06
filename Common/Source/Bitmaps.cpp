@@ -142,6 +142,10 @@ void LKLoadFixedBitmaps(void) {
   _stprintf(srcfile,_T("%s\\BRUSH_ABOVETERR.BMP"),sDir);
   hAboveTerrainBitmap=LKLoadBitmap(srcfile);
 
+  _stprintf(srcfile,_T("%s\\DAM%s.BMP"),sDir,hires_suffix);
+  hDam=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\SENDER%s.BMP"),sDir,hires_suffix);
+  hSender=LKLoadBitmap(srcfile);
 
   if (hTurnPoint==NULL)
 	StartupStore(_T("... ERROR! MISSING BITMAPS!! CHECK SYSTEM BITMAPS!%s"),NEWLINE);
@@ -198,6 +202,8 @@ void LKLoadFixedBitmaps(void) {
 
   if (hAboveTerrainBitmap==NULL) hAboveTerrainBitmap=NULLBMP;
 
+  if (hDam==NULL) hDam=NULLBMP;
+  if (hSender==NULL) hSender=NULLBMP;
 }
 
 
@@ -248,6 +254,8 @@ void LKUnloadFixedBitmaps(void) {
   if (hMountpass!=NULL) DeleteObject(hMountpass);
   if (hBridge!=NULL) DeleteObject(hBridge);
   if (hIntersect!=NULL) DeleteObject(hIntersect);
+  if (hDam!=NULL) DeleteObject(hDam);
+  if (hSender!=NULL) DeleteObject(hSender);
 }
 
 
