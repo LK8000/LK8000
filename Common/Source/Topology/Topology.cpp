@@ -58,7 +58,10 @@ void Topology::loadPenBrush(const COLORREF thecolor) {
 			case ss480x800:
 				psize=2;
 				break;
-			//case ss896x672:
+			case ss896x672:
+				psize=3;
+				break;
+			//case ss480x272:
 			//case ss480x234:
 			//case ss240x320:
 			//case ss272x480:
@@ -80,7 +83,9 @@ void Topology::loadPenBrush(const COLORREF thecolor) {
 			case ss480x800:
 				psize=2;
 				break;
-			//case ss896x672:
+			case ss896x672:
+				psize=3;
+				break;
 			//case ss480x234:
 			//case ss240x320:
 			//case ss272x480:
@@ -92,15 +97,17 @@ void Topology::loadPenBrush(const COLORREF thecolor) {
 	case 40: // medium roads
 		switch(ScreenSize) {
 			case ss800x480:
-				psize=3;
+				psize=2;
 				break;
 			case ss480x272:
 			case ss640x480:
 			case ss480x640:
 			case ss480x800:
+				psize=NIBLSCALE(1);
+				break;
+			case ss896x672:
 				psize=2;
 				break;
-			//case ss896x672:
 			//case ss480x234:
 			//case ss400x240:
 			//case ss320x240:
