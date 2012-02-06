@@ -144,8 +144,8 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		} else continue; // do not draw icons for normal turnpoints here
 	}
 
-	DrawBitmapX(hdc, WayPointList[i].Screen.x-NIBLSCALE(10), WayPointList[i].Screen.y-NIBLSCALE(10), 20,20, hDCTemp,0,0,SRCPAINT,false);
-	DrawBitmapX(hdc, WayPointList[i].Screen.x-NIBLSCALE(10), WayPointList[i].Screen.y-NIBLSCALE(10), 20,20, hDCTemp,20,0,SRCAND,false);
+	DrawBitmapX(hdc, WayPointList[i].Screen.x-10, WayPointList[i].Screen.y-10, 20,20, hDCTemp,0,0,SRCPAINT,false);
+	DrawBitmapX(hdc, WayPointList[i].Screen.x-10, WayPointList[i].Screen.y-10, 20,20, hDCTemp,20,0,SRCAND,false);
 
   } // for all waypoints
 
