@@ -495,11 +495,38 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
     // draws if they are in task unconditionally,
     // otherwise, does comparison
     if ( E->inTask || (E->isLandable && !E->isExcluded) ) { 
-      TextInBox(hdc, E->Name, E->Pos.x,
-		E->Pos.y, 0, E->Mode, 
-		false); 
+
+	TextInBox(hdc, E->Name, E->Pos.x, E->Pos.y, 0, E->Mode, false); 
+
+	// At low zoom, dont print the bitmap because drawn task would make it look offsetted
+	if(MapWindow::zoom.RealScale() > 2) continue;
+
+    // If we are at low zoom, use a dot for icons, so we dont clutter the screen
+    if(MapWindow::zoom.RealScale() > 1) {
+	if (BlackScreen) 
+ 		 SelectObject(hDCTemp,hInvSmall);
+	else
+ 		 SelectObject(hDCTemp,hSmall);
+    } else {
+	if (BlackScreen)
+		SelectObject(hDCTemp,hInvTurnPoint);
+	else
+		SelectObject(hDCTemp,hTurnPoint);
     }
-  }
+    DrawBitmapX(hdc,
+	    E->Pos.x-10,
+	    E->Pos.y-10,
+	    20,20,
+	    hDCTemp,0,0,SRCPAINT,false);
+        
+    DrawBitmapX(hdc,
+	    E->Pos.x-10,
+	    E->Pos.y-10,
+	    20,20,
+	    hDCTemp,20,0,SRCAND,false);
+
+    } // wp in task
+  } // for all waypoint, searching for those in task
 
   // now draw normal waypoints in order of range (furthest away last)
   // without writing over each other (or the task ones)
