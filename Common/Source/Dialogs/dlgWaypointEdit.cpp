@@ -73,7 +73,10 @@ static void OnCommentClicked(WindowControl *Sender) {
 	dlgTextEntryShowModal(comment, COMMENT_SIZE);
 
 	// in any case free the space
-	if (global_wpt->Comment != NULL) free(global_wpt->Comment);
+	if (global_wpt->Comment != NULL) {
+		free(global_wpt->Comment);
+		global_wpt->Comment=NULL;
+	}
 	if (_tcslen(comment)>0) {
 		// do we have a new comment?
 		global_wpt->Comment = (TCHAR*)malloc((_tcslen(comment)+2)*sizeof(TCHAR));
