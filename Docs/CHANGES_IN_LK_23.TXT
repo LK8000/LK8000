@@ -2,6 +2,64 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3x  February 8, 2012
+-------------------------------
+
+NEW
+
+.  Preliminar support for 854x358 resolution
+
+.  New Customkey FreeFlight Restart for motorgliders
+   Working only after takeoff!
+
+.  Add takeoff and freeflight "cabin chime" sounds, and remove takoeff status message on display
+ 
+
+CHANGES
+
+.  Retune topology lines thickness for smaller sizes.
+
+.  Add map icon for Cup styles "Dam" and "Sender". Adjust size of MtTop for hires, adjust Markers bitmaps
+
+.  Reset forced in configuration for the PGAutoZoomthreshold and AoutOrientScale values, necessary after the change of 2/2
+
+.  AGL referenced asp vertical distances based on intersection point terrain height, not on the current one
+   http://www.postfrontal.com/forum/topic.asp?whichpage=1&TOPIC_ID=5947&#53002
+
+.  Use nearest airspace distances for infoboxes, when no manual selection
+
+
+
+FIXES
+
+.  Fix Waypoint editor bug in new comment. If you pressed comment button and leave it blank, weird chars appearing and possible crash.
+    Thanks michele.
+    As seen in http://www.postfrontal.com/forum/topic.asp?TOPIC_ID=5964
+
+.  Fix task edit dialog not allowing to load more than 12 waypoints.
+
+.  Add missing bitmap for task waypoints, only at high zoom levels
+
+.  Fix in 2.3w bitmap for landables waypoint offsetted in hires devices.
+
+.  Fix map label shifted away from icon on hi resolution devices, since 2.3w
+
+.  Fix small bug not setting language file on first configuration, causing LK to request restart even if not changing language.
+
+.  Fix bug not resetting on full reset BUGS to 100%
+
+.  Asp vertical distance calculation was wrong, when asp base defined in AGL altitude
+   http://www.postfrontal.com/forum/topic.asp?whichpage=1.6&TOPIC_ID=5938
+
+.  Fix bottom bar TRM0 still selectable during thermalling even if disabled by configuration
+
+.  Fix bug in configuraion not saving decimals for PG autozoom threshold, and for North Up Above.
+
+
+
+
+
+
 Version 2.3w  February 1, 2012
 -------------------------------
 
