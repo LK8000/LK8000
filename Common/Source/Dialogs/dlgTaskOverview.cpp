@@ -616,8 +616,23 @@ void dlgTaskOverviewShowModal(void){
   wTaskList = (WndListFrame*)wf->FindByName(TEXT("frmTaskList"));
   wTaskList->SetBorderKind(BORDERLEFT);
   wTaskList->SetEnterCallback(OnTaskListEnter);
-  wTaskListEntry = (WndOwnerDrawFrame*)wf->
-  FindByName(TEXT("frmTaskListEntry"));
+
+  wTaskList->SetWidth(wf->GetWidth() - wTaskList->GetLeft()-2);
+
+  wTaskListEntry = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmTaskListEntry"));
+
+   // ScrollbarWidth is initialised from DrawScrollBar in WindowControls, so it might not be ready here
+  if ( wTaskList->ScrollbarWidth == -1) {
+   #if defined (PNA)
+   #define SHRINKSBFACTOR 1.0 // shrink width factor.  Range .1 to 1 where 1 is very "fat"
+   #else
+   #define SHRINKSBFACTOR 0.75  // shrink width factor.  Range .1 to 1 where 1 is very "fat"
+   #endif
+   wTaskList->ScrollbarWidth = (int) (SCROLLBARWIDTH_INITIAL * ScreenDScale * SHRINKSBFACTOR);
+  }
+  wTaskListEntry->SetWidth(wTaskList->GetWidth() - wTaskList->ScrollbarWidth - 5);
+
+  wTaskListEntry = (WndOwnerDrawFrame*)wf-> FindByName(TEXT("frmTaskListEntry"));
 
   wTaskListEntry->SetCanFocus(true);
 
