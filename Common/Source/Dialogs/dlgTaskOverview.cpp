@@ -29,7 +29,6 @@ static int LowLimit=0;
 
 static int ItemIndex = -1;
 
-
 static int DrawListIndex=0;
 
 static double lengthtotal = 0.0;
@@ -72,6 +71,7 @@ static void UpdateCaption (void) {
 
   wf->SetCaption(title);
 }
+
 
 
 static void OnTaskPaintListItem(WindowControl * Sender, HDC hDC){
@@ -201,7 +201,7 @@ static void OverviewRefreshTask(void) {
   UpLimit = 0;
   lengthtotal = 0;
   for (i=0; i<MAXTASKPOINTS; i++) {
-    if (Task[i].Index != -1) {
+  if (Task[i].Index != -1) {
       lengthtotal += Task[i].Leg;
       UpLimit = i+1;
     }
@@ -263,98 +263,122 @@ static void OnTaskListEnter(WindowControl * Sender,
 		     WndListFrame::ListInfo_t *ListInfo) {
   (void)Sender;
   bool isfinish = false;
-  ItemIndex = ListInfo->ItemIndex; 
 
-  if ((ItemIndex>= UpLimit) || (UpLimit==0)) {
-    if (ItemIndex>=UpLimit) {
-      ItemIndex= UpLimit;
-    }
-    // add new waypoint
-    if (CheckDeclaration()) {
+  ItemIndex = ListInfo->ItemIndex+ListInfo->ScrollIndex;
 
-      if (ItemIndex>0) {
-        if (MessageBoxX(hWndMapWindow,
-	// LKTOKEN  _@M817_ = "Will this be the finish?" 
-                        gettext(TEXT("_@M817_")),
-	// LKTOKEN  _@M54_ = "Add Waypoint" 
-                        gettext(TEXT("_@M54_")),
-                        MB_YESNO|MB_ICONQUESTION) == IDYES) {
-          isfinish = true;
-        } else {
-          isfinish = false;
-        }
-      }
+  // If we are clicking on Add Waypoint
+  if ( (ItemIndex == UpLimit) && UpLimit<MAXTASKPOINTS) {
 
-      LockTaskData();
-      if (ItemIndex>0) {
-	Task[ItemIndex].Index = Task[0].Index;
-      } else {
-	if (ValidWayPoint(HomeWaypoint)) {
-	  Task[ItemIndex].Index = HomeWaypoint;
+	// add new waypoint
+	if (CheckDeclaration()) {
+
+		if (ItemIndex>0) {
+
+			if (MessageBoxX(hWndMapWindow,
+			// LKTOKEN  _@M817_ = "Will this be the finish?" 
+			gettext(TEXT("_@M817_")),
+			// LKTOKEN  _@M54_ = "Add Waypoint" 
+			gettext(TEXT("_@M54_")),
+			MB_YESNO|MB_ICONQUESTION) == IDYES) {
+
+				isfinish = true;
+
+				// Set initial wp as the finish by default, or home if nonex
+				LockTaskData();
+				if (ItemIndex>0) {
+					Task[ItemIndex].Index = Task[0].Index;
+				} else {
+					if (ValidWayPoint(HomeWaypoint)) {
+						Task[ItemIndex].Index = HomeWaypoint;
+					} else {
+						Task[ItemIndex].Index = -1;
+					}
+				}
+				UnlockTaskData();
+
+			} else {
+				isfinish = false;
+			}
+		}
+
+		int res;
+		res = dlgWayPointSelect();
+
+		if (ValidWayPoint(res)){
+
+			LockTaskData();
+			Task[ItemIndex].Index = res;
+
+			if (DoOptimizeRoute())
+				Task[ItemIndex].AATTargetOffsetRadius = -100.0;
+			else
+				Task[ItemIndex].AATTargetOffsetRadius = 0.0;
+
+			Task[ItemIndex].AATTargetOffsetRadial = 0.0;
+			Task[ItemIndex].AATSectorRadius = SectorRadius;
+			Task[ItemIndex].AATCircleRadius = SectorRadius;
+			Task[ItemIndex].AATTargetLocked = false;
+
+			UnlockTaskData();
+
+			if (ItemIndex==0) {
+				dlgTaskWaypointShowModal(ItemIndex, 0, true); // start waypoint
+			} else if (isfinish) {
+				dlgTaskWaypointShowModal(ItemIndex, 2, true); // finish waypoint
+			} else {
+				if (AATEnabled) {
+					// only need to set properties for finish
+					dlgTaskWaypointShowModal(ItemIndex, 1, true); // normal waypoint
+				}
+			}
+
+		} // ValidWaypoint 
+		OverviewRefreshTask();
+	
+	} // CheckDeclaration
+
+	return;
+
+  } // Index==UpLimit, clicking on Add Waypoint
+
+  if (ItemIndex<UpLimit) {
+	if (ItemIndex==0) {
+		dlgTaskWaypointShowModal(ItemIndex, 0); // start waypoint
 	} else {
-	  Task[ItemIndex].Index = -1;
+		if (ItemIndex==UpLimit-1) {
+			dlgTaskWaypointShowModal(ItemIndex, 2); // finish waypoint
+		} else {
+			dlgTaskWaypointShowModal(ItemIndex, 1); // turnpoint
+		}
 	}
-      }
-      UnlockTaskData();
-
-      int res;
-      res = dlgWayPointSelect();
-      LockTaskData();
-      if (res != -1){
-        Task[ItemIndex].Index = res;
-      }
-      if (DoOptimizeRoute())
-      	Task[ItemIndex].AATTargetOffsetRadius = -100.0;
-      else
-      	Task[ItemIndex].AATTargetOffsetRadius = 0.0;
-      Task[ItemIndex].AATTargetOffsetRadial = 0.0;
-      Task[ItemIndex].AATSectorRadius = SectorRadius;
-      Task[ItemIndex].AATCircleRadius = SectorRadius;
-      Task[ItemIndex].AATTargetLocked = false;
-      UnlockTaskData();
-
-      if (ItemIndex==0) {
-	dlgTaskWaypointShowModal(ItemIndex, 0, true); // start waypoint
-      } else if (isfinish) {
-        dlgTaskWaypointShowModal(ItemIndex, 2, true); // finish waypoint
-      } else {
-        if (AATEnabled) {
-          // only need to set properties for finish
-          dlgTaskWaypointShowModal(ItemIndex, 1, true); // normal waypoint
-        }
-      }
-      OverviewRefreshTask();
-    }
-    return;
+	  OverviewRefreshTask();
   }
-  if (ItemIndex==0) {
-    dlgTaskWaypointShowModal(ItemIndex, 0); // start waypoint
-  } else if (ItemIndex==UpLimit-1) {
-    dlgTaskWaypointShowModal(ItemIndex, 2); // finish waypoint
-  } else {
-    dlgTaskWaypointShowModal(ItemIndex, 1); // turnpoint
-  }
-  OverviewRefreshTask();
 
-}
+} // OnTaskListEnter
+
+
 
 
 static void OnTaskListInfo(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
 	(void)Sender;
 
-  if (ListInfo->DrawIndex == -1){
-    ListInfo->ItemCount = UpLimit-LowLimit+1;
+  if (ListInfo->DrawIndex == -1) {
+	ListInfo->ItemCount = UpLimit-LowLimit+2;
   } else {
-    DrawListIndex = ListInfo->DrawIndex; 
-    ItemIndex = ListInfo->ItemIndex;
+	DrawListIndex = ListInfo->DrawIndex +ListInfo->ScrollIndex; 
+	ItemIndex = ListInfo->ItemIndex +ListInfo->ScrollIndex;
   }
 }
+
+
 
 static void OnCloseClicked(WindowControl * Sender){
 	(void)Sender;
   ItemIndex = -1; // to stop FormDown bringing up task details
   wf->SetModalResult(mrOK);
 }
+
+
 
 static void OnClearClicked(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
 	(void)ListInfo; (void)Sender;
@@ -416,6 +440,8 @@ static void OnDeclareClicked(WindowControl * Sender, WndListFrame::ListInfo_t *L
 }
 
 
+
+
 static void OnSaveClicked(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
   (void)ListInfo; (void)Sender;
 
@@ -431,70 +457,54 @@ static void OnSaveClicked(WindowControl * Sender, WndListFrame::ListInfo_t *List
 
   file_index = dfe->GetAsInteger();
 
-  // if (file_index==0) { 
-  if (1) {
+  // TODO enhancement: suggest a good new name not already in the list
+  _tcscpy(task_name,TEXT("NEW"));
+  dlgTextEntryShowModal(task_name, 10); // max length
 
-    // TODO enhancement: suggest a good new name not already in the list
-    _tcscpy(task_name,TEXT("NEW")); // 091216 era 0
-    dlgTextEntryShowModal(task_name, 10); // max length
+  if (_tcslen(task_name)>0) {
 
-    if (_tcslen(task_name)>0) {
+	_tcscat(task_name, TEXT(LKS_TSK));
+	LocalPath(file_name,TEXT(LKD_TASKS));
+	_tcscat(file_name,TEXT("\\"));
+	_tcscat(file_name,task_name); // 091101
 
-      _tcscat(task_name, TEXT(LKS_TSK));
+	dfe->Lookup(file_name);
+	file_index = dfe->GetAsInteger();
 
-#if 1
-//#if (!defined(WINDOWSPC) || (WINDOWSPC <=0) )
-  LocalPath(file_name,TEXT(LKD_TASKS));
-  _tcscat(file_name,TEXT("\\"));
-  _tcscat(file_name,task_name); // 091101
+	if (file_index==0) {
+		// good, this file is unique..
+		dfe->addFile(task_name, file_name);
+		dfe->Lookup(file_name);
+		wp->RefreshDisplay();
+	}
 
-#else	 // REMOVE
-  SHGetSpecialFolderPath(hWndMainWindow, file_name, CSIDL_PERSONAL, false); // REMOVE
-  _tcscat(file_name,TEXT("\\"));
-  _tcscat(file_name,TEXT(LKDATADIR));
-  _tcscat(file_name,_T("\\"));
-  _tcscat(file_name,TEXT(LKD_TASKS)); // 091101
-  _tcscat(file_name,_T("\\"));
-  _tcscat(file_name,task_name); // 091101
-#endif
-
-
-
-      dfe->Lookup(file_name);
-      file_index = dfe->GetAsInteger();
-
-      if (file_index==0) {
-        // good, this file is unique..
-        dfe->addFile(task_name, file_name);
-        dfe->Lookup(file_name);
-        wp->RefreshDisplay();
-      }
-
-    } else {
-      // TODO code: report error, task not saved since no name was given
-      return;
-    }
+  } else {
+	// TODO code: report error, task not saved since no name was given
+	return;
   }
 
   if (file_index>0) {
-    // file already exists! ask if want to overwrite
-
-    _stprintf(file_name, TEXT("%s: '%s'"), 
+	// file already exists! ask if want to overwrite
+	_stprintf(file_name, TEXT("%s: '%s'"), 
 	// LKTOKEN  _@M696_ = "Task file already exists" 
-              gettext(TEXT("_@M696_")),
-              dfe->GetAsString());
-    if(MessageBoxX(hWndMapWindow,
-                   file_name,
-	// LKTOKEN  _@M510_ = "Overwrite?" 
-                   gettext(TEXT("_@M510_")),
-                   MB_YESNO|MB_ICONQUESTION) != IDYES) {
-      return;
-    }
+		gettext(TEXT("_@M696_")),
+		dfe->GetAsString());
+
+		if(MessageBoxX(hWndMapWindow,
+			file_name,
+			// LKTOKEN  _@M510_ = "Overwrite?" 
+			gettext(TEXT("_@M510_")),
+			MB_YESNO|MB_ICONQUESTION) != IDYES) {
+
+			return;
+		}
   }
 
   SaveTask(dfe->GetPathFile());
   UpdateCaption();
 }
+
+
 
 static void OnLoadClicked(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){ // 091216
   (void)ListInfo; (void)Sender;
@@ -534,6 +544,8 @@ static void OnLoadClicked(WindowControl * Sender, WndListFrame::ListInfo_t *List
 }
 
 
+
+
 static void OnAdvancedClicked(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
   (void)Sender; (void)ListInfo;
   showAdvanced = !showAdvanced;
@@ -554,6 +566,8 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnTimegatesClicked),
   DeclareCallBackEntry(NULL)
 };
+
+
 
 
 void dlgTaskOverviewShowModal(void){
@@ -585,13 +599,11 @@ void dlgTaskOverviewShowModal(void){
 
   if (!wf) return;
 
-  //ASSERT(wf!=NULL);
-
   WndButton *wb = (WndButton*)wf->FindByName(TEXT("cmdTimegates"));
   if (wb) wb->SetVisible(false);
   
   if (ISPARAGLIDER) {
-	    if (PGOptimizeRoute) AATEnabled=true; // force it on
+	if (PGOptimizeRoute) AATEnabled=true; // force it on
         EnableMultipleStartPoints=false;
         if (wb) wb->SetVisible(true);
   }
@@ -600,35 +612,28 @@ void dlgTaskOverviewShowModal(void){
   UpdateCaption();
 
   wfAdvanced = ((WndFrame *)wf->FindByName(TEXT("frmAdvanced")));
-  //ASSERT(wfAdvanced!=NULL);
 
   wTaskList = (WndListFrame*)wf->FindByName(TEXT("frmTaskList"));
-  //ASSERT(wTaskList!=NULL);
   wTaskList->SetBorderKind(BORDERLEFT);
   wTaskList->SetEnterCallback(OnTaskListEnter);
   wTaskListEntry = (WndOwnerDrawFrame*)wf->
-    FindByName(TEXT("frmTaskListEntry"));
+  FindByName(TEXT("frmTaskListEntry"));
 
-  //ASSERT(wTaskListEntry!=NULL);
   wTaskListEntry->SetCanFocus(true);
-  // wTaskListEntry->SetWidth(wTaskList->GetWidth() - wTaskList->GetScrollbarWidth() - 5); // patch 091126
 
   WndProperty* wp;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFile"));
   if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
+	DataFieldFileReader* dfe;
+	dfe = (DataFieldFileReader*)wp->GetDataField();
 
-    TCHAR suff[10];
-    _stprintf(suff,_T("*%S"),LKS_TSK);
-    dfe->ScanDirectoryTop(_T(LKD_TASKS),suff); // TESTFIX 091101
-    wp->RefreshDisplay();
+	TCHAR suff[10];
+	_stprintf(suff,_T("*%S"),LKS_TSK);
+	dfe->ScanDirectoryTop(_T(LKD_TASKS),suff);
+	wp->RefreshDisplay();
   }
   UpdateFilePointer();
-
-  // CALCULATED_INFO.AATTimeToGo
-  // 
 
   // initialise and turn on the display
   OverviewRefreshTask();
@@ -646,3 +651,4 @@ void dlgTaskOverviewShowModal(void){
   wf = NULL;
 
 }
+
