@@ -99,6 +99,7 @@ void InitLKScreen() {
   if (iWidth == 480 && iHeight == 234) ScreenSize=(ScreenSize_t)ss480x234; //   iGo
   if (iWidth == 800 && iHeight == 480) ScreenSize=(ScreenSize_t)ss800x480; //  WVGA
   if (iWidth == 896 && iHeight == 672) ScreenSize=(ScreenSize_t)ss896x672; //  PC version only
+  if (iWidth == 854 && iHeight == 358) ScreenSize=(ScreenSize_t)ss480x272; // use the same config 
 
   TCHAR tbuf[80];
   if (ScreenSize==0) {

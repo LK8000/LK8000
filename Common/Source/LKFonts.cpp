@@ -121,7 +121,10 @@ void InitLKFonts()
 		BottomSize=40; // Title+Value-4
 		break;
 	case (ScreenSize_t)ss480x272:		// PASSED SIM-1 090701 VENTA
-		splitter=5;
+		if (ScreenSizeX==854)
+			splitter=6;
+		else
+			splitter=5;
 		propGetFontSettingsFromString(TEXT("48,0,0,0,800,0,0,0,0,0,0,3,2,Tahoma"), &logfontBig);
 		propGetFontSettingsFromString(TEXT("26,0,0,0,600,0,0,0,0,0,0,3,2,Tahoma"), &logfontMedium);
 		propGetFontSettingsFromString(TEXT("10,0,0,0,100,0,0,0,0,0,0,3,2,Tahoma"), &logfontSmall);

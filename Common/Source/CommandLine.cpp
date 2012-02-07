@@ -77,6 +77,11 @@ void LK8000GetOpts(LPTSTR CommandLine) {
       SCREENWIDTH=896;
       SCREENHEIGHT=672;
     }
+    pC = _tcsstr(MyCommandLine, TEXT("-854x358"));
+    if (pC != NULL){
+      SCREENWIDTH=854;
+      SCREENHEIGHT=358;
+    }
     pC = _tcsstr(MyCommandLine, TEXT("-big"));
     if (pC != NULL){
       SCREENWIDTH=896;
