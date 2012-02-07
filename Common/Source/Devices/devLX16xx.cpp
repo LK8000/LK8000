@@ -357,6 +357,8 @@ if(MacCreadyUpdateTimeout > 0)
 	}
   }
 
+/* ToDo can not read back BUGs due to bas resolution risk of circular update an freeze */
+/*
   if (ParToDouble(sentence, 1, &fTmp))
   {
 	fTmp -= 1.0f;
@@ -368,7 +370,7 @@ if(MacCreadyUpdateTimeout > 0)
       iWEST_RxUpdateTime = 5;
     }
   }
-
+*/
   if(ParToDouble(sentence, 2, &fTmp))
   {
 	fTmp = (double) (100-(int)(fTmp+0.5f));
