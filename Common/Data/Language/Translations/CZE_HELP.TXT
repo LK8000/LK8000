@@ -1,4 +1,4 @@
-﻿# LK8000 ENG_HLP.TXT 110405
+# LK8000 ENG_HLP.TXT 110405
 #
 # Jeden textový rádek muže obsahovat max. 500 znaku
 # Celý help muže obsahovat celkem max. 1024 znaku
@@ -18,9 +18,6 @@ Mapové soubory jsou umístěny v adresáři _Maps.
 
 @102
 Název souboru obsahující údaje o nadmořské výšce terénu, standardně soubor .DEM. 
-Také soubory .DAT a .JP2 jsou použitelné. 
-Poznámka: terén lze nahrát interně z mapových souborů LKM. 
-V tomto případě terén zvolený zde překryje terén nakonfigurovaný v LKM.
 Tento soubor je v adresáři _Maps. 
 
 @103
@@ -43,8 +40,10 @@ Název sekundárního souboru s prostory.
 Pro každé letište můžete přidat doplňující informace umístěné v tomto souboru v adresáři _Waypoints.
 Zde můžete změnit výchozí název tohoto souboru na libovolný jiný.
 
+# 108 OBSOLETED BY 1250 in 2.3
 @108
-Filtrace prostoru pro zobrazení a varování. Tlačítko filtrování prostoru umožnuje také nastavení zobrazení a varování nezávisle pro každou třídu vzdušných prostorů.
+Filtrace prostoru pro zobrazení a varování. Tlačítko filtrování prostoru umožnuje také nastavení 
+zobrazení a varování nezávisle pro každou třídu vzdušných prostorů.
 [Vše zap] Zobrazí se všechny prostory.
 [Ořezání] Pouze prostory pod zadanou výškou.
 [Auto] Vše v dosahu kluzáku.
@@ -53,6 +52,7 @@ Filtrace prostoru pro zobrazení a varování. Tlačítko filtrování prostoru 
 @109
 Zadaná výška, pod kterou jsou zobrazovány prostory v módu Výška.
 
+# 110 OBSOLETED BY 1251 in 2.3
 @110
 Pro Auto mód prostorů. Toto je výška pod/nad kterou jsou prostory zahrnuty.
 
@@ -76,7 +76,8 @@ Stínování podle směru větru: návětrná strana světlejší, závětrná t
 Zobrazení topologických útvarů na mapě (cesty, řeky, jezera, atd). Vyžaduje upřesnění v souboru topologie.
 
 @117
-Definuje množství Phongova stínování při vykreslování terénu. Použijte vysoké hodnoty pro zdůraznění svahů. Pokud létáte ve vysokých horách, použijte nižší hodnoty.
+Definuje množství Phongova stínování při vykreslování terénu. Použijte vysoké hodnoty pro zdůraznění svahů. 
+Pokud létáte ve vysokých horách, použijte nižší hodnoty.
 
 @118
 Nastavení jasu (bělost) vykreslování terénu. Tímto se upravuje průměrná světlost terénu.
@@ -91,8 +92,8 @@ Zapnutí nebo vypnutí efektu stínování mapy.
 Barva pozadí mapy, při vypnutém zobrazování terénu. Poznámka: některé barvy jsou vhodné pro zobrazení mapy bez topologie a naopak.
 
 @122
-Nastavení limitu pro počet popisků, včetne topologie, přistávacích ploch a otočných bodů, které budou zobrazeny na mapě.
-Funkce optimalizace zobrazení zajištuje, aby se popisky nepřekrývaly. Toto nastavení je vhodné pro rychlé zobrazování mapy při velké hustotě topologie a otočných bodů na zařízeních s pomalým procesorem.
+Nastavení limitu pro počet popisků, včetně topologie, přistávacích ploch a otočných bodů, které budou zobrazeny na mapě.
+Funkce optimalizace zobrazení zajišťuje, aby se popisky nepřekrývaly. Toto nastavení je vhodné pro rychlé zobrazování mapy při velké hustotě topologie a otočných bodů na zařízeních s pomalým procesorem.
 Za normálních okolností můžete ponechat původní hodnotu 70.
 
 @123
@@ -100,7 +101,7 @@ Nastavení zobrazování popisků otočných bodů:
 [Název] Zobrazení celého názvu každého otočného bodu.
 [Číslo] Zobrazení čísla každého otočného bodu.
 [Žádná] Otočný bod bez popisku.
-[Názvy v úloze] Zobrazení názvu pouze těch otočných bodů, které jsou součástí aktivní úlohy, včetně domovského letište.
+[Názvy v úloze] Zobrazení názvu pouze těch otočných bodů, které jsou součástí aktivní úlohy, včetně domovského letiště.
 [První tři] Zobrazení prvních tří znaků z názvu otočného bodu.
 [Prvních pět] Zobrazení prvních pěti znaků z názvu otočného bodu.
 
@@ -108,12 +109,13 @@ Nastavení zobrazování popisků otočných bodů:
 Zapnutí zobrazení stopy letu kluzáku a její nastavení (šnečí stopa).
 
 @125
-Nastavení orientace mapy vůci letu kluzáku:
+Nastavení orientace mapy vůči letu kluzáku:
 [Sever nahoře] Mapa bude zobrazena vždy severem nahoru a ikona kluzáku se bude otáčet do směru letu.
-[Chytrý sever] Jako zobrazení Sever, přičemž ikona kluzáku se bude automaticky pohybovat po obrazovce tak, aby ve směru letu bylo zobrazeno co nejvíce mapy.
-Tento mód funguje pouze na displeji na šírku. V zobrazení na výšku je tento mód identický jako Sever nahoru.
+[Chytrý sever] Jako zobrazení Sever, přičemž ikona kluzáku se bude automaticky pohybovat po obrazovce tak, 
+aby ve směru letu bylo zobrazeno co nejvíce mapy.
+Tento mód funguje pouze na displeji na šířku. V zobrazení na výšku je tento mód identický jako Sever nahoru.
 V tomto módu není možný manuální pohyb ikonou kluzáku.
-[Trasa nahoře] Směr letu kluzáku je vždy orientován nahoru, pričemž orientace mapy se otáčí.
+[Trasa nahoře] Směr letu kluzáku je vždy orientován nahoru, přičemž orientace mapy se otáčí.
 [Sever nahoře při točení] Směr letu nahoru při klouzání a sever nahoru při kroužení.
 [Cíl nahoře při točení] Směr letu nahoru při klouzání a kurs do cíle nahoře při točení.
 [Sever/let] Sever nahoru při klouzání a směr letu kluzáku při točení.
@@ -121,12 +123,12 @@ V tomto módu není možný manuální pohyb ikonou kluzáku.
 @126
 Jestliže úroveň zoomu je větší nebo rovna této hodnotě, orientace mapy se automaticky přepne do módu Sever nahoru. 
 Jestliže je pod touto hodnotou, orientace mapy bude dle aktuálního nastavení. 
-Zadáním velmi vysoké hodnoty se automatické přepnutí mapového módu vypne. Puvodní hodnota je 10.
+Zadáním velmi vysoké hodnoty se automatické přepnutí mapového módu vypne. Původní hodnota je 7.
 
 @127
-Automatický zoom mění měřítko mapy během letu tak, že při približování se k otočnému bodu měrítko mapy automaticky zmenšuje.  
+Automatický zoom mění měřítko mapy během letu tak, že při přibližování se k otočnému bodu měřítko mapy automaticky zmenšuje.  
 Po dosažení otočného bodu se měřítko mapy automaticky zvetší tak, že se zobrazí následující otočný bod.
-Manuální změnou meřítka mapy se automatický zoom vypne.
+Manuální změnou měřítka mapy se automatický zoom vypne.
 
 @128
 Nastavení vychýlení šnečí stopy ve směru větru v módu kroužení.
@@ -135,24 +137,23 @@ Nastavení vychýlení šnečí stopy ve směru větru v módu kroužení.
 Nastavení šířky šnečí stopy.
 
 @130
-Pri zapnutí se měřítko mapy automaticky zmenší při vstupu do módu kroužení a automaticky zvetší po opuštení módu kroužení.
+Při zapnutí se měřítko mapy automaticky zmenší při vstupu do módu kroužení a automaticky zvetší po opuštění módu kroužení.
 
 @131
-Popisky otočných bodů mají prioritu před popiskama topologie, takže více otočných bodů na mapě potlačí popisky topologie. 
-Zde můžete zadat, jak blízko sebe mohou být popisky otočných bodů, užitím optimalizace zobrazení.
+Popisky otočných body mají prioritu před topologií, takže více otočných bodů na mapě potlačí popisky topologie. Zde můžete zadat, jak blízko sebe mohou být popisky otočných bodů, užitím optimalizace zobrazení.
 ZAKÁZAT zobrazí popisky všech otočných bodů (i navzájem se překrývající),
 NÍZKO zobrazí nepřekrývající se popisky otočných bodů, ale zároveň maximálně vyplní mapu,
 STŘEDNÍ a VYSOKÉ ponechá více prostoru mezi jednotlivými popiskami otočných bodů, čímž vznikne více místa pro popisky topologie,
-VELMI VYSOKÉ značně omezí popisky otočných bodů a dává priporitu popiskám topologie.
+VELMI VYSOKÉ značně omezí popisky otočných bodů a dává prioritu popiskám topologie.
 
 @132
 ZAKÁZAT zobrazí informace o všech dosažitelných otočných bodech a přistávacích plochách, které jsou viditelné na mapě,
-NÍZKÉ nezobrazí přistávací plochy, pokud jsou v dosahu lepší letište,
-VYSOKÉ omezí zobrazení letišť, která jsou v blízkosti lepších dosažitelných letišt.
+NÍZKÉ nezobrazí přistávací plochy, pokud jsou v dosahu lepší letiště,
+VYSOKÉ omezí zobrazení letišť, která jsou v blízkosti lepších dosažitelných letišť.
 
 
 @133
-Výška nad terénem, kterou má kluzák mít při dosažení pro bezpečné přistání. Nezadávejte nulu! Doporučená hodnota je 300m.
+Výška nad terénem, kterou má kluzák mít pro bezpečné přistání. Nezadávejte nulu! Doporučená hodnota je 300m.
 
 @134
 Aplikuje bezpečnou výšku pouze na přistávací plochy anebo také na otočné body. V případě nastavení Pouze přistávací plochy je výška dosažení otočných bodu BEZ zohlednění jakékoliv výškové rezervy.
@@ -166,22 +167,21 @@ Výšková rezerva nad terénem, kterou musí mít kluzák při dokluzu pro pře
 Nastavení MacCready použité pro výpočet výšky dosažení letišť. Doporučená hodnota je 0.5ms.
 
 @137
-Jestliže jsou v dosahu přistávací plochy, funkce BestAlternate Vás na ně bude upozorňovat v případě ztráty posledního dosažitelného letiště,
-nebo v případě změny nejlepší alternativní přistávací plochy. Tato upozornění se nebudou objevovat pod kritickou výškou ve snaze Vás nerozptylovat.
+Jestliže jsou v dosahu přistávací plochy, funkce BestAlternate Vás na ně bude upozorňovat v případě ztráty posledního dosažitelného letiště, nebo v případě změny nejlepší alternativní přistávací plochy. Tato upozornění se nebudou objevovat pod kritickou výškou ve snaze Vás nerozptylovat.
 
 @138
-Volba, jestli možnost nastavení systému má být přístupná během letu.
+Volba, zda možnosti nastavení systému mají být přístupny během letu.
 
 @139
-Vypnutí nebo zapnutí automatického výpočtu větru. Jestliže je výpočet větru vypnut, pilot zadavá vítr odhadem. 
+Vypnutí nebo zapnutí automatického výpočtu větru. Jestliže je výpočet větru vypnut, pilot zadává vítr odhadem. 
 [Točení] Vyžaduje pouze zdroj GPS dat.
 [ZigZag] Vyžaduje elektronické vario s výstupem IAS.
 [Obojí] Použití obou metod.
 
 @140
 Toto je IAS, kterou je nutno v rovném letu udržovat před kliknuntím na kalkulaci směru a síly větru. 
-Udržujte několik vteřin tuto rychlost a zároven kurs S,J,V nebo Z podle kompasu a poté klikněte na Výpočet větru TrueWind. Pokud nemáte rychloměr s výstupem IAS do LK8000,
-LK bude předpokládat, že jste použili nastavenou hodnotu rychlosti.
+Udržujte několik vteřin tuto rychlost a zároveň kurs S,J,V nebo Z podle kompasu a poté klikněte na Výpočet větru TrueWind. 
+Pokud nemáte rychloměr s výstupem IAS do LK8000, LK bude předpokládat, že jste použili nastavenou hodnotu rychlosti.
 Máte-li připojený rychloměr s výstupem IAS, tato hodnota NENÍ použita, protože se automaticky použije aktuální rychlost.
 Minimální rychlost je 5 knotu nebo 10 km/h, výchozí hodnota 100 km/h nebo 54 knotu. 
 
@@ -193,26 +193,26 @@ Tolerance pro tyto parametry je 30%.
 
 @142
 Tento parametr definuje použitý algoritmus pro automatický výpočet hodnoty MacCready.
-[Finální dokluz] Nastaví MC pro nejrychleší dosažení cíle.
-
-[Průměrné stoupání] Nastaví MC na průmernou hodnotu všech dosavadních stoupání.
+[Finální dokluz] Nastaví MC pro nejrychlejší dosažení cíle.
+[Průměrné stoupání] Nastaví MC na průměrnou hodnotu všech dosavadních stoupání.
 [Obojí] Použije Průměr během úlohy a Dokluz při dokluzu.
-[Ekvivalentní MC] Použije vypočtenou hodnotu MC podle aktuální průmerné rychlosti na trati, viz manuál. 
+[Ekvivalentní MC] Použije vypočtenou hodnotu MC podle aktuální průměrné rychlosti na trati, viz manuál. 
 
 @143
 Průměrná efektivita je vždy počítána v REÁLNÉM ČASE. Zde můžete nastavit, pro kolik uplynulých sekund letu je kalkulace počítaná. Jedná se o podíl skutečné vzdálenosti (každou sekundu) tohoto intervalu a konečného rozdílu výšky.
 Příklad: pokud se vrátíte po dvou minutách do stejného bodu (a zároveň jste nastavili dvouminutový interval), průměrná LD bude počítána z celkové vzdálenosti uletěné v těchto dvou minutách a NE ze vzdálenosti současné pozice a pozice před dvěma minutami (protože tato vzdálenost by se blížila nule).
-Pro kluzáky je optimální hodnota ležící mezi 90 a 120 sekundami, pro paraglidy 15 sekund.
-Nižší hodnota bude přinášet výsledky podobné jako LD aktuální. Vyšší hodnota se bude blížit výsledkům LD na přeletu. Ostatní komerční nástroje a softwary běžně používají hodnotu 2 minut.
+Pro kluzáky je optimální hodnota ležící mezi 90 a 120 sekundami, pro paraglidy/rogala 15 sekund.
+Nižší hodnota bude přinášet výsledky podobné jako LD aktuální. Vyšší hodnota se bude blížit výsledkům LD na přeletu. 
+Ostatní komerční nástroje a softwary běžně používají hodnotu 2 minut.
 
 @144
 Odhad středu stoupáku je zobrazen v módu kroužení.
 [VYPNUTO] Značka středu stoupáku je vypnuta.
 [Značka uprostřed] Značka stoupáku je zobrazena v jeho středu.
-[Posun do středu] Značka stoupáku je zobrazene v jeho středu a při kroužení je její pozice posunuta na střed displaye.
+[Posun do středu] Značka stoupáku je zobrazena v jeho středu a při kroužení je její pozice posunuta na střed displaye.
 
 @145
-Pokud je tato volba zvolena a Značka stoupáku je také aktivní, zazní při kroužení tón v okamžiku, kdy bude vhodné změnšit zatáčku a nepatrně jí protáhnout.
+Pokud je tato volba zvolena a Značka stoupáku je také aktivní, zazní při kroužení tón v okamžiku, kdy bude vhodné změnit zatáčku a nepatrně jí protáhnout.
 
 @146
 Pokud povolíte tuto možnost, bude možné vynutit zvolení dokluzového módu v situaci, kdy se letadlo nachází nad finální dokluzovou výškou ještě před dosažením předposledního otočeného bodu. Dokluzový mód je možné zvolit také dříve v menu Úloha.
@@ -249,12 +249,12 @@ Bitový formát, normálně 8
 
 @157
 Typ sekundárního zařízení.
-Sekundární zařízení může být použito jako záloha GPS dat nebo jako zdroj dalších informací (např. z inteligentního variometru). Typ "Generic" může být použit také pro GPS zdroje včetně FLARM informací.
+Sekundární zařízení může být použito jako záloha GPS dat nebo jako zdroj dalších informací (např. z inteligentního variometru). 
+Typ "Generic" může být použit také pro GPS zdroje včetně FLARM informací.
 
 @158
 Korekce výšky geoidu se používá pouze pro GPS výšku, ne pro barometrickou výšku. Pokud používáte barometrickou výšku a zvolíte tuto možnost, výsledek nebude ovlivněn.
-Pokud nepoužíváte barometrickou výšku, měli byste zkontrolovat, zda GPS zdroj sám nekompenzuje odlehlost geoidu. Pokud je na zemi výška stále o zhruba 30 - 50 metrů špatně, měli byste buďto zapnout nebo vypnout tuto možnost. Pokud máte pochyby,
-ponechte aktivní. Některé GPS přístroje již kompenzují odlehlost geoidu.
+Pokud nepoužíváte barometrickou výšku, měli byste zkontrolovat, zda GPS zdroj sám nekompenzuje odlehlost geoidu. Pokud je na zemi výška stále o zhruba 30 - 50 metrů špatně, měli byste buďto zapnout nebo vypnout tuto možnost. Pokud máte pochyby, ponechte aktivní. Některé GPS přístroje již kompenzují odlehlost geoidu.
 Simulátor Condor vyžaduje tuto volbu vypnout!
 Výchozí stav je ZAPNUTO.
 
@@ -262,7 +262,8 @@ Výchozí stav je ZAPNUTO.
 Úprava GPS výšky o fixní hodnotu. Opatrně s tímto nastavením: hodnota, kterou zvolíte bude modifikovat GPS výšku po celou dobu letu! Předtím, než budete tuto hodnotu nastavovat, zkontrolujte, že máte správně nastavenou odlehlost geoidu. Výchozí hodnota je 0. Tato hodnota je uložena v registrech!
 
 @160
-Pokud zaznamenáte zpomalení nebo střídavé výpadky komunikace s Vaším GPS zařízením, zkuste nastavit dotazovací mód (Polling mode). Výchozí hodnota je Normální. Pro PC nemá tato volba žádný efekt.
+Pokud zaznamenáte zpomalení nebo střídavé výpadky komunikace s Vaším GPS zařízením, zkuste nastavit dotazovací mód (Polling mode). 
+Výchozí hodnota je Normální. Pro PC nemá tato volba žádný efekt.
 
 @161
 Výchozí hodnota Povoleno. Pokud tuto volbu zakážete, NMEA chyby budou ignorovány a data budou použita.
@@ -291,7 +292,7 @@ Minimální výška nad zemí při dokončení úlohy. Zvolte 0 pro žádný lim
 Pokud zvolíte tuto možnost, bude vyžadována minimální výška nad zemí při dokončení úlohy vyšší než 1000 metrů pod úrovní startu.
 
 @169
-Pravidla použitá pro optimalizaci výpočetu bodu v OnLine soutěžích.
+Pravidla použitá pro optimalizaci výpočtu bodu v OnLine soutěžích.
 [Sprint]: Odpovídá pravidlům FAI IGC Ligy. Do pěti bodů včetně startu a dokončení v trvání maximálně 2,5 hodiny. Výška dokončení úlohy musí být stejná nebo vyšší, než startovní výška.
 [Trojúhelník]: Odpovídá pravidlům FAI OLC Trojúhelníku. 4 body s normálním startem a finišem. Pro úlohy delší než 500 km nesmí být rameno kratší než 25% a delší než 45%; Pro ostatní úlohy nesmí být rameno kratší než 28% z celku.
 [Klasický]: Odpovídá pravidlům OLC. Do 7 bodů včetně startu a dokončení, výška nad zemí při dokončení úlohy nesmí být nižší než 1000 metrů pod úrovní startu. 80% bodů uděleno na předposledním ramenu, 60% na posledním ramenu.
@@ -309,7 +310,7 @@ Jednotky použité pro vertikální rychlosti (variometr)
 Jednotky použité pro výšky a nadmořskou výšku.
 
 @174
-Jednotky použté pro rychlost úlohy.
+Jednotky použité pro rychlost úlohy.
 
 @175
 Jednotky použité pro zeměpisnou šířku a délku.
@@ -318,22 +319,25 @@ Jednotky použité pro zeměpisnou šířku a délku.
 Jednotky tlaku použité pro nastavení QNH, hPA nebo inHg.
 
 @177
-Nastaví posun místního UTC času. Místní čas je zobrazen níže, aby bylo jednodušší ověřit správnost posunu.
+Nastaví posun místního UTC času. Místní čas je zobrazen níže, aby bylo jednodušší ověřit správnost posunu. U nás v létě +2
 
 @178
 Pokud je ZAPNUTO, krátké kliknutí na mapu zobrazí detaily nejbližšího otočného bodu.
-Pokud je VYPNUTO, krátké kliknutí do horní poloviny obrazovky přiblíží mapu, naopak krátké kliknutí do dolní poloviny mapu oddálí. Výchozí hodnota je VYPNUTO stejně tak jsou vypnuty virtuální klávesy, aby bylo docíleno rychlejší odezvy při kliknutí.
+Pokud je VYPNUTO, krátké kliknutí do horní poloviny obrazovky přiblíží mapu, naopak krátké kliknutí do dolní poloviny mapu oddálí. Výchozí hodnota je VYPNUTO.
 
+# 179 REMOVED after v2.3
 @179
 Pokud tuto volbu povolíte, obrazovka s mapou bude rozdělena do třech virtuálních částí. Kliknutí na obrazovku v délce přibližně 1 sekundy v horní části provede stisknutí klávesy NAHORU, do spodní části klávesy DOLŮ a střední část klávesy ENTER.
 Tímto způsobem můžete modifikovat hodnoty v informačním štítku, jako například MC, otočné body v úloze atd.
-Abyste vybrali otočný bod z mapy, proveďte co nejkratší kliknutí přímo na něj. Mějte na paměti, že delší kliknutí může být vyhodnoceno jako virtuální klávesa. Pro výběr prostoru na mapě by doba stisku měla odpovídat zhruba půl sekundě. Pokud na mapě stlačíte ENTER, převrátíte barvy na invertní. Pokud nepoužíváte aktivní mapu, doporučujeme nepovolovat virtuální klávesy, protože přibližování a oddalovánní vyžaduje velmi krátké kliknutí.
+Abyste vybrali otočný bod z mapy, proveďte co nejkratší kliknutí přímo na něj. Mějte na paměti, že delší kliknutí může být vyhodnoceno jako virtuální klávesa. Pro výběr prostoru na mapě by doba stisku měla odpovídat zhruba půl sekundě. Pokud na mapě stlačíte ENTER, převrátíte barvy na invertní. Pokud nepoužíváte aktivní mapu, doporučujeme nepovolovat virtuální klávesy, protože přibližování a oddalování vyžaduje velmi krátké kliknutí.
 
 @180
-Gesta jsou v LK8000 vždy povolena, ale můžete si vybrat, zda je chcete jako na iPhonu nebo opačně. Například, gesto zleva doprava posune stránku doleva. Opačně doprava. Výchozí hodnota je INVERZNĚ - opačně než jak to je na iPhonu.
+Gesta jsou v LK8000 vždy povolena, ale můžete si vybrat, zda je chcete jako na iPhonu nebo opačně. Například, gesto zleva doprava 
+posune stránku doleva. Opačně doprava. Výchozí hodnota je INVERZNĚ - opačně než jak to je na iPhonu.
 
+# 181 REMOVED after 2.3
 @181
-Pokud tuto volbu povoílte, kliknutí na navigační štítek uzamkne pohyb mapy a zabrání tak výběru otočného bodu nebo přiblížení mapy. Dvojklik do prostoru mapy (NE do navigačního štítku) mapu odemkne. Tato funkcionalita může být vhodná pro piloty závěsných kluzáků nebo paraglidů. Ve výchozím stavu je VYPNUTA.
+Pokud tuto volbu povolíte, kliknutí na navigační štítek uzamkne pohyb mapy a zabrání tak výběru otočného bodu nebo přiblížení mapy. Dvojklik do prostoru mapy (NE do navigačního štítku) mapu odemkne. Tato funkcionalita může být vhodná pro piloty závěsných kluzáků nebo paraglidů. Ve výchozím stavu je VYPNUTA.
 
 @182
 Tato volba stanoví, jak se budou na obrazovce zobrazovat dlouhá menu pokud uživatel neprovede žádnou akci (např. neklikne na tlačítko).
@@ -361,16 +365,16 @@ Nastaví barvu překryvu mapy. Výchozí je bílá, která se automaticky změn�
 
 @190
 LK Strana 2.3 vypisuje nejbližší otočné body. Zde můžete nastavit, co vypisovat.
-NEZOBRAZIT PLOCHY K PŘISTÁNÍ - ve výpisu nezobrazí všechny otočné body, na kterých je také možné přistát - tím pádem části podstránek 2.1 a 2.2. Toto je výchozí nastavení.
-VŠECHNY OTOČÁKY - zobrazí také otočné body s možností přistání, které jsou již vypisovány v 2.1 a 2.2
-DAT OTOČÁKY - zobrazí pouze otočné body s příznakem T. Tato volba se hodí pouze při použití DAT otočných bodů, jelikož SeeYou CUP otočné body jsou vždy označeny tímto příznakem. Tento filtr neovlivňuje žádnou další funkci.
+[NEZOBRAZIT PLOCHY K PŘISTÁNÍ] - ve výpisu nezobrazí všechny otočné body, na kterých je také možné přistát - tím pádem části podstránek 2.1 a 2.2. Toto je výchozí nastavení.
+[VŠECHNY OTOČÁKY] - zobrazí také otočné body s možností přistání, které jsou již vypisovány v 2.1 a 2.2
+[DAT OTOČÁKY] - zobrazí pouze otočné body s příznakem T. Tato volba se hodí pouze při použití DAT otočných bodů, jelikož SeeYou CUP otočné body jsou vždy označeny tímto příznakem. Tento filtr neovlivňuje žádnou další funkci.
 
 @191
 Nezobrazí jednotky (Km, Ft, atd.) v informačních štítcích a v LK8000 módu.
 Tato volba ušetří trochu místa na obrazovce a může být vhodná pro některá zařízení s nízkým rozlišením (např. 320x240 bodů).
 
 @192
-Pouze písma a dilogy spojené s mapou mohou být přizpůsobena (je-li to potřeba). PC verze neumožňuje měnit písma. Specifická písma LK8000 také nemohou být změněna.
+Pouze písma a dialogy spojené s mapou mohou být přizpůsobena (je-li to potřeba). PC verze neumožňuje měnit písma. Specifická písma LK8000 také nemohou být změněna.
 
 @193
 Způsob zobrazení překryvných hodnot na mapě.
@@ -378,29 +382,23 @@ Poloviční mód zobrazí cílový otočný bod a vzdálenost k němu v levém h
 Kompletní mód navíc zobrazí hodiny. Více v manuálu.
 
 @194
-Určuje, jaký se vypočítá rozsah terénu pro plachtění a
-je koncipován jako čára na mapě oblasti:
+Určuje, jaký se vypočítá rozsah terénu pro plachtění a je koncipován jako čára na mapě oblasti:
 [VYPNUTO] Zakáže zobrazení
 [Čára] Kreslí čárkovanou čáru letěné vzdálenosti.
 [Stín] Stíny terénu mimo rozsah letěné vzdálenosti.
 Když je letová oblast zapnuta, ČERVENÝ KŘÍŽ se zobrazí, jestliže je současný
-cíl dosažitelný, pokud jde o klouzavost, ale nedosažitelný
-z důvodu překážky.
-Překážka je indikována spolu s krabicovou hodnotou, kterou je
-nadmořská výška potřebná k překonání překážky.
+cíl dosažitelný, pokud jde o klouzavost, ale nedosažitelný z důvodu překážky.
+Překážka je indikována spolu s krabicovou hodnotou, kterou je nadmořská výška potřebná k překonání překážky.
 Tato výška bere v úvahu terénní bezpečnostní rezervu, kterou máte
 nastavenu v menu bezpečnosti.
 UPOZORNĚNÍ: STÍN letové oblasti je zobrazen POUZE během letu. Pokud jste na
-zemi,
-NENÍ zobrazen.
+zemi, NENÍ zobrazen.
 
+# 195 UNUSED SINCE 2.4
 @195
 Čára letu může být nastavena na koncový bod trati nebo na další otočný bod, nebo může být zakázána.
 Hodnota je počítána pro aktuální MC, hodnotu trati: pokud neletíte
-trať, ale pouze jeden "jít na",
-pak se tato hodnota může lišit od skutečnosti při protnutí otočného bodu,
-protože tato hodnota je vždy vypočtena jak pro současnou MC tak i pro
-bezpečnou MC.
+trať, ale pouze jeden "jít na", pak se tato hodnota může lišit od skutečnosti při protnutí otočného bodu, protože tato hodnota je vždy vypočtena jak pro současnou MC tak i pro bezpečnou MC.
 
 @196
 Sloupec s variem se objeví vlevo na obrazovce. Je použitelné POUZE pokud máte v přístroji připojeno skutečné vario, nebo opravdu rychlý barometrický výškoměr.
@@ -413,13 +411,8 @@ Trať se neobjeví na nízkých úrovních zoomu.
 
 @199
 Umožňuje zobrazení FLARM dopravy na mapě.
-[VYPNUTO] Žádné objekty FLARM se nezobrazí
-[ZAPNUTO / Fixní] FLARM objekt se objeví na mapě v jeho skutečné poloze
-[ZAPNUTO / Měřeno] FLARM cíle jsou v mapě zmenšeny tak, aby při
-velkých úrovních zoomu mapy byly stále viditelné.
-Zmenšený režim je matoucí, protože objekty se objeví kolem
-letadla na mapě, ale ne v jejich skutečné poloze.
-Pokud máte pochyby, použijte Fixní.
+[Zakázáno] Žádné objekty z Flarmu se na mapě neobjeví
+[Povoleno] Objekty z Flarmu se objeví na mapě na jejich skutečné pozici
 
 @200
 Určuje jak budou přepínány otočné body v úloze.
@@ -473,7 +466,7 @@ Toto je nezbytné pokud zařízení ztrácí informaci o čase vlivem vybité ba
 
 
 @211
-FUNKČNÍ POUZE PRO HP31X: Nastaví automatické podsvícení pro toto zařízení. Maximální světlost bez časového omezení pokud je napájeno vnějším zdrojem. Při běhu na baterii je nastavena maximální světlost po dobu 5 minut. Po vypršení této doby dojde k vypnutí obrazovky kvůli úspoře energie.
+Nastaví automatické podsvícení pro toto zařízení. Maximální podsvícení bez vypínání při externím napájení, jinak maximální podsvícení s vypnutím za 5 minut při napájení z baterií. Po pěti minutách se obrazovka vypne pro úsporu energie. Toto nastavení funguje na zařízeních HP31x, Funtrek a Royaltek.
 
 @212
 Pouze u některých zařízení, nastaví automaticky maximální hlasitost.
@@ -505,8 +498,8 @@ Pokud je pouze jedna časová brána uzavírající se ve stanovený čas, nasta
 Pokud je pouze jedna časová brána bez stanoveného času uzavření, nastav čas intervalu na velkou hodnotu jako třeba 480 minut.
 
 @220
-Start DO (Opuštění): když pilot opouští sektor, nebo cylindr z venčí dovnitř.
-Start VEN (Vstup): když pilot opouští sektor, nebo cylindr zevnitř ven.
+Start UVNITŘ (opuštění): když pilot opouští sektor nebo cylindr zevnitř ven.
+Start ZVENKU (vstup): když pilot vstupuje do sektoru nebo cylindru zvenčí dovnitř.
 
 @221
 Toto je minimální doba než systém rozpozná stisk tlačítka.
@@ -531,33 +524,39 @@ Toto je časový interval mezi jednotlivými fixy pokud se nekrouží.
 @227
 Toto je časový interval mezi jednotlivými fixy pokud se krouží.
 
+# 228 REMOVED after v2.3
 @228
 Určuje zda budou dialogová okna animována při otevření/zavření.
 
 @229
 Pokud chcete zobrazit k Vizuálnímu Dokluzu také pohybující se kružnice nebo oblouky, vyberte navíc v menu Rozšířený.
 
+# 230 REMOVED after v2.3
 @230
 Určuje jak budou status zprávy zarovnávány, buď na střed nebo k levému hornímu rohu.
 
+# 231 REMOVED after v2.3
 @231
 Určuje jak bude zobrazována šipka větru na mapě.
 [Hlavička šipky] Vykreslí pouze hlavičku šipky
 [Plná šipka] Vykreslí hlavičku šipky s přerušovanou čárou šipky
 
 @232
-Geometrické hodnoty v rozsahu 0-7, necméně pouze některé z nich jsou skutečně dostupné.
-UPOZORNĚNÍ: LK8000 podporuje pouze 5 ukazatelů na pravo v případě režimu na ležato a dva klasické pruhy, nahoře a dole, v případě režimu na stojato.
+Geometrické hodnoty v rozsahu 0-7, nicméně pouze některé z nich jsou skutečně dostupné.
+UPOZORNĚNÍ: LK8000 podporuje pouze 5 ukazatelů napravo v případě režimu naležato a dva klasické pruhy, nahoře a dole, v případě režimu nastojato.
 Pokud použijete jiné geometrické hodnoty, nebude LK8000 fungovat správně.
 
+# 233 REMOVED after v2.3
 @233
 STF faktor rizik snižuje nastavení MacCready k výpočtu rychlosti letu s tím jak kluzák ztrácí výšku kvůli snížení rizik.
 Nastav na 0.0 pro žádnou kompenzaci a 1.0 pro lineární změnu MC s výškou.
 
+# 234 REMOVED after v2.3
 @234
 Pokud je zapnuto, Speed commander je nastaven na MacCreadyho rychlost pro let v klidném vzduchu.
 Pokud je vypnuto, Speed commander je nastaven na Delfínovací rychlost, stejnou jako nastavení MC s vertikálními pohyby vzduchu.
 
+# 235 REMOVED after v2.3
 @235
 Určuje jak je uživatel vyzván k zadání textového vstupu (název souboru, tým kód ...)
 
@@ -576,7 +575,7 @@ Velikost překrývajícího písma.
 @300
 Určuje kolik vodní zátěže je napuštěno do větroně.
 Celkový objem vodní zátěže je definován v souboru s polárou větroně.
-Zmáčknětě VYPUSTIT ZÁTĚŽ pro spuštění odpočtu vypouštění zátěže. Doba vypouštění zátěže se dá nastavit v nastavení systému.
+Zmáčkněte VYPUSTIT ZÁTĚŽ pro spuštění odpočtu vypouštění zátěže. Doba vypouštění zátěže se dá nastavit v nastavení systému.
 
 @301
 Plošné zatížení kluzáku. Záleží na vaší váze, na instalovaném přídavném
@@ -604,8 +603,8 @@ Běžně nastavte správnou výšku na zemi, a poté nové QNH během letu, jest
 vám služba AFIS ohlásí nové QNH.
 Znovu, je to o Barometrické výšce, a jestliže nemáte zdroj baro výšky k LK,
 nebude to dělat nic.
-Standartní tlak pro výšku QNE je 1013.2 . Toto je standart.
-Jestliže nerozumíte o čem je řeč, neměnte QNH.
+Standardní tlak pro výšku QNE je 1013.2 . Toto je standart.
+Jestliže nerozumíte o čem je řeč, neměňte QNH.
 
 @304
 Změna baro výšky. Samozřejmě potřebujete existující zdroj baro výšky k LK,
@@ -622,51 +621,58 @@ Nastavení teplotní předpovědi povrchu.  Používá se pro odhad stoupavosti
 #
 
 @400
-Vlastní nastavení získáte poklepáním na spodní lištu.
-Po tento čas bude tlačítko rotovat, jak je obvyklé u stránek LK8000.
+Některé vlastní klávesy aktivujete delším kliknutím na spodní lištu.
+Krátké kliknutí způsobí klasickou rotaci infostránek.
 Zde určíte, jak dlouho musíte držet tlačítko stisknuté pro přivolání
 vlastního nastavení namísto normálního otočení stránky.
 Tato doba je vyjádřena v milisekundách, a mění se od přístroje k přístroji,
 takže můžete experimentovat sami.
 Standart je 700ms, který je dobrý pro HP314 a ostatní přístroje.
 Pokud není vyžadováno žádné vlastní nastavení, tento parametr se nepoužívá.
-Vlastní nastavení horní obrazovky nepoužívá tuto hodnotu, protože je okamžitě
-zvolena.
+Vlastní nastavení horní obrazovky nepoužívá tuto hodnotu, protože je okamžitě zvolena.
+Vlastní klávesu na středu obrazovky je také nutno držet delší dobu.
 
 @401
-Vlastní HORNÍ LEVÉ nastavení získáte kliknutím do horního levého rohu obrazovky.
-Použijte manuál pro zjištění všech kombinací. Standartem je Multitarget.
+Vlastní HORNÍ LEVÁ klávesa se aktivuje kliknutím do horního levého rohu
+obrazovky.
+Použijte manuál pro zjištění všech kombinací. Standardem je Multitarget.
 
 @402
-Vlastní HORNÍ PRAVÉ nastavení získáte kliknutím do horního pravého rohu
+Vlastní HORNÍ PRAVÁ klávesa se aktivuje kliknutím do horního pravého rohu
 obrazovky.
-Toto nastavení NENÍ K DISPOZICI PARAGLIDISTŮM, použijte manuál.
-Použijte manuál pro zjištění všech kombinací. Standartně je nastavení
+Toto nastavení NENÍ K DISPOZICI PARAGLIDISTŮM ANI ROGALISTŮM, protože se používá pro reset úlohy při časových branách
+a zjištění UTM pozice při nouzových situacích (viz manuál pro paraglidisty) 
+Použijte manuál pro zjištění všech kombinací. Standardně je nastavení
 neaktivní.
 
 @403
-Vlastní LEVÉ nastavení získáte poklepáním na levý roh spodní lišty.
-Po tento čas bude tlačítko rotovat, jak je obyklé u spodních lišt LK8000.
-Použijte manuál pro zjištění všech kombinací. Standartně je nastavení neaktivní.
+Vlastní LEVÁ klávesa se aktivuje delším kliknutím na levý roh spodní lišty.
+Krátké kliknutí způsobí klasickou rotaci stránek, jak je obvyklé u spodních lišt LK8000.
+Použijte manuál pro zjištění všech kombinací. Standardně je nastavení neaktivní.
 
 @404
-Vlastní STŘEDNÍ nastavení získáte poklepáním na střed spodní lišty.
-Po tento čas bude tlačítko rotovat, jak je obvyklé u stránek LK8000.
+Vlastní SPODNÍ STŘEDOVÁ klávesa se aktivuje delším kliknutím na střed spodní lišty.
+Krátké kliknutí způsobí klasickou rotaci stránek, jak je obvyklé u spodních lišt LK8000.
 Zde určíte, jaké akce by měly být prováděny, pokud použijete Vlastní nastavení.
-Použijte manuál pro zjištění všech kombinací. Standartně je nastavení neaktivní.
+Použijte manuál pro zjištění všech kombinací. Standardně je nastavení neaktivní.
 
 
 @405
-Vlastní PRAVÉ nastavení získáte poklepáním na pravou část spodní lišty.
-Po tento čas bude tlačítko rotovat, jak je obyklé u spodních lišt LK8000.
-Použijte manuál pro zjištění všech kombinací. Standartně je nastavení
+Vlastní PRAVÁ klávesa se aktivuje delším stisknutím pravé části spodní lišty.
+Krátké kliknutí způsobí klasickou rotaci stránek, jak je obvyklé u spodních lišt LK8000.
+Použijte manuál pro zjištění všech kombinací. Standardně je nastavení
 neaktivní.
 
 @406
-Toto nastavení získáte poklepáním na ikonu letadla na spodní liště.
-Kliknutí vyvolá menu jako obvykle.
-Použijte manuál pro zjištění všech kombinací. Standartně je nastavení
+Tuto klávesu aktivujete delším kliknutím na obrázek letadla v pravé části spodní lišty.
+Kratší kliknutí vyvolá menu jako obvykle.
+Použijte manuál pro zjištění všech kombinací. Standardně je nastavení
 neaktivní.
+
+@407
+Tuto klávesu aktivujete delším kliknutím na střed mapy (prakticky střed displaye).
+Pokud je aktivovaná Aktivní Mapa, je tato vlastní klávesa občas přepsána zde ležícím prostorem, jehož detaily se zobrazí taktéž po delším kliknutí.
+Použijte manuál pro zjištění všech kombinací. Standardně je zde nastavena funkce Kde jsem?
 
 
 #
@@ -708,7 +714,7 @@ Pokud je povoleno, cíle umístěné uvnitř oblasti AAT nejsou automaticky upra
 
 @480
 Upravuje Mc hodnotu, použitou v kalkulátoru.  Použij k určení vlivu změn v
-podmínkách k letu na předpokládný čas na trati.
+podmínkách k letu na předpokládaný čas na trati.
 Tato hodnota nebude mít vliv na nastavení hlavního počítače, jestliže bude
 tato akce ukončena stiskem tlačítka Storno.
 
@@ -729,7 +735,7 @@ Méně než 100 odpovídá letu značně mimo trať.
 #
 
 @490
-Maximální povolená rychlost v oblasti pozorovnání. Nastaven na 0 bez limitu.
+Maximální povolená rychlost v oblasti pozorování. Nastaven na 0 bez limitu.
 
 @491
 Maximální výška během startu na trať. Nastaven na 0 bez limitu.
@@ -748,16 +754,15 @@ konci letu byla o více než 1000 m vyšší než odletová výška.
 
 @495
 Povoluje OLC úkoly. Pokud je povoleno je OLC styl spuštění úlohy detekován
-automaticky (nejnižží bod letu po počátečním stoupání).
+automaticky (nejnižší bod letu po počátečním stoupání).
 Auto MacCready nastaví během dokluzu MacCready k získání nejdelší vzdálenosti
 podle zbývající výšky a času pro rychlostní úlohy OLC.
 
 @496
 Pravidla pro výpočet optimálních bodů pro Online Contest.
 [Krátká trať]: Podle pravidel FAI IGC League. Až 5 bodů včetně startu a cíle,
-maximální doba trvání 2,5 hodiny, start and finish, maximum duration 2.5 hours,
-finální výška nesmí být nižší než výška na začátku .
-[Trojúhelník]: Podle pravidel FAI OLC Triangle.
+maximální doba trvání 2,5 hodiny finální výška nesmí být nižší než výška na začátku.
+[Trojúhelník]: Podle pravidel FAI OLC Trojúhelník.
 Čtyři body se společným startem a cílem.
 Pro tratě delší než 500km nesmí být rameno kratší než 25% a delší než 45%
 délky tratě; jinak nesmí být rameno kratší než 28% z celkové délky.
@@ -772,9 +777,7 @@ Boduje se 80% na předposledním úseku a 60% na posledním.
 @500
 Způsob zahájení úlohy.
 [Páska]: Úloha je zahájena při protnutí pásky. Délka pásky se nastavuje pomocí parametru 'Start radius'.
-
 [Cylindr]: Úloha je zahájena při opuštění cylindru. Poloměr cylindru se nastavuje pomocí parametru 'Start radius'.
-
 [FAI Sektor]: Je definován 90 st. sektorem. Úloha je zahájena při protnutí hranic sektoru. Poloměr cylindru se nastavuje pomocí parametru 'Start radius'.
 
 @501
@@ -791,11 +794,8 @@ Minimální čas AAT úlohy v minutách.
 
 @505
 Druhy sektorů pro standardní, ne-AAT, úlohy.
-
 [Cylindr]  Válec o definovaném poloměru.
-
 [FAI Sektor]  90ti stupňový sektor o definovaném poloměru, osově souměrný k ramenům
-
 [DAe 0.5/10] Německý typ sektorů, stejný jako válec o poloměru 0.5 km a FAI sektor s poloměrem 10 km.
 
 @506
@@ -803,20 +803,14 @@ Poloměr pozorovací oblasti ve standardní úloze. Ne AAT.
 
 @507
 Nastavuje jak budou postupně měněny otočné body v úloze.
-
 [Ručně] Ruční změna na další otočný bod
-
 [Auto] Zcela automatická změna ramene na další otočný bod
-
 [Odjištění] Automatická změna ramene na další otočný bod po odjištění tlačítka před otočným bodem.
-
 [Odjištění startu] Automatický start úlohy po odjištění startu.
 
 @508
 Typ AAT pozorovacích sektorů:
-
 [Cylindr]: Válcová AAT pozorovací oblast, poloměr je definován parametrem 'Poloměr kružnice'.
-
 [Sektor]: Výsečová AAT pozorovací oblast, poloměr oblasti je definován jako 'Poloměr výseče', výseč ohraničují dvě radiály s parametry 'Počáteční úhel' a 'Koncový úhel'
 
 @509
@@ -834,33 +828,28 @@ Koncový úhel AAT oblasti výsečového typu
 @513
 Způsob zakončení úlohy.
 [Páska]: Úloha je ukončena při protnutí pásky. Délka pásky je definována parametrem 'Cílový poloměr'
-
 [Cylindr]: Úloha je ukončena při vlétnutí do cylindru. Poloměr cylindru je definován parametrem 'Cílový poloměr'
-
 [FAI Sektor]: Je definován 90 st. sektorem. Úloha je ukončena při protnutí hranic sektoru. Poloměr cylindru se nastavuje pomocí parametru 'Cílový poloměr'.
 
 @H514
-Poloměr cílového cilindru nebo polovina cílové pásky.
+Poloměr cílového cylindru nebo polovina cílové pásky.
 
 #
 # TIME GATES
 #
 
 @530
-Úloha je zahájena otevřením časové brány ve stanovený čas, podobně jako u lodí.
-
+Úloha je zahájena otevřením časové brány ve stanovený čas, podobně jako u závodů lodí.
 Nastav 0 pokud časové brány nejsou.
-
 Nastav alespoň na 1 pokud závod má definován čas startu.
-
-ČASOVÉ BRÁNY FUNGUJÍ POUZE PRO REŽIM PARAGLAJDŮ A ZÁVĚSNÝCH KLUZÁKŮ
+ČASOVÉ BRÁNY FUNGUJÍ POUZE PRO REŽIM PARAGLIDŮ A ZÁVĚSNÝCH KLUZÁKŮ
 
 
 @531
 Pro závod s alespoň jednou časovou brankou nastav čas startu. Pokud je počet časových bran 0 budou ignorovány
 
 @532
-Pukud je vícero časových bran, nastav interval v MINUTÁCH pro ostatní brány.
+Pokud je vícero časových bran, nastav interval v MINUTÁCH pro ostatní brány.
 
 Pokud je pouze jedna časová brána uzavírající se ve stanovený čas, nastav čas intervalu k tomuto času odlišný.
 
@@ -894,8 +883,7 @@ Ruční nastavení rychlosti větru.
 Ruční nastavení směru větru.
 
 @612
-Umožňuje vypnout nebo zaponout automatický algoritmus větru.
-
+Umožňuje vypnout nebo zapnout automatický algoritmus větru.
 Pokud je algoritmus vypnut, je pilot zodpovědný za správné nastavení větru.
 
 [Kroužení] Vyžaduje pouze zdroj GPS dat.
@@ -913,7 +901,7 @@ Stanovuje zda je stopa snášena větrem v režimu kroužení.
 
 @650
 [Terén]
-Zobrazuje teréní podklad na mapě, nezobrazují se údaje o počasí.
+Zobrazuje terénní podklad na mapě, nezobrazují se údaje o počasí.
 
 @651
 [Wstar]
@@ -1004,7 +992,7 @@ Aktuální klouzavost počítaná z podílu rychlosti vůči zemi (GPS rychlosti
 [L/D termika]
 Klouzavost od poslední termiky. Podíl vzdálenosti uletěné od vrcholu poslední termiky a ztráty výšky za tuto dobu.
 
-Záporné hodnoty představují stoupání (výšku získanou od opuštění posleního termiky).
+Záporné hodnoty představují stoupání (výšku získanou od opuštění posledního termiky).
 Pokud se klesání pohybuje blízko nuly, je zobrazeno '---'.
 Pozor: nepřímý let nebo obraty způsobí špatné hodnoty! V takovém případě použijte indikátor průměrného klesání.
 
@@ -1030,7 +1018,7 @@ Současná hodnota MacCready. Tento informační štítek také ukazuje, jestli 
 (Pouze dotyková zařízení a PC): pokud je informační štítek MacCready aktivní, můžete použít kurzorové šipky nahoru/dolů pro nastavení.
 
 @811
-[Další vzádlenost]
+[Další vzdálenost]
 Vzdálenost k právě vybranému otočnému bodu. Pro AAT úlohy se jedná o vzdálenost k cíli v AAT sektoru.
 
 @812
@@ -1045,7 +1033,7 @@ Výška, která je nezbytná k dosažení dalšího otočného bodu se současn�
 [Další otočný bod]
 Jméno aktuálně vybraného otočného bodu. Pokud je tento informační štítek aktivní, kurzorové šipky nahoru/dolů vybírají další/předchozí otočný bod.
 
-(Pouze dotyková zařízení a PC): stlačení klávesy enter zobrazí detail otočného bodu.
+(Pouze dotyková zařízení a PC): stlačení klávesy Enter zobrazí detail otočného bodu.
 
 @815
 [Výška na finále]
@@ -1144,8 +1132,9 @@ Procento času strávené ve stoupání. Tyto statistiky se vynulují při zač�
 Rozsah G násobků reportovaných inteligentním variometrem. Tato hodnota je pro manévry při záporných úhlech náběhu negativní.
 
 @838
-[Další L/D]
-Nepoužívejte tuto hodnotu - je zde pouze z důvodů kompatibility se staršími verzemi. Místo toho použijte EFF!
+[Multitarget BRG]
+Kurz k momentálně zvolenému multitarget
+Momentálně je tato funkce NEDOSTUPNÁ.
 
 @839
 [Místní čas]
@@ -1265,10 +1254,16 @@ byl dosažen sektor a
 Nyní se můžete obrátit s odhadovaným časem příletu větším než AAT čas plus 5
 minut.
 
-
 @863
 [Všechny stoupavé proudy]
 Průměrná rychlost stoupání ve všech stoupavých proudech.
+
+@864
+[Logger]
+Zobrazení funkce loggeru.
+auto: logger se automaticky zapne při vzletu
+ne!: logger je vypnut a je nutno ho aktivovat ručně
+ZAP: logger je aktivován a zapisuje
 
 @865
 [Baterie]
@@ -1278,7 +1273,7 @@ končí D znamená to, že baterie se vybíjí
 
 @866
 [Dokluzová efektivita]
-Výška potřebná pro dokluz do cílovéhé bodu.
+Výška potřebná pro dokluz do cílového bodu.
 Běžně používaná hodnota!
 
 
@@ -1306,18 +1301,16 @@ výpočty, slouží pro pilota pouze informativně.
 
 
 @871
-[Průměrná učinnost]
+[Průměrná účinnost]
 Vzdálenost uletěná v nastaveném časovém období, děleno
 ztrátou nadmořské výšky od té doby.
-Záporné hodnoty jsou zobrazeny jako oo (infin) a uvádějí stoupavost
-zisk výšky). Více než 200 LD hodnota je zobrazena jako oo.
+Záporné hodnoty jsou zobrazeny jako oo (infin) a uvádějí stoupavost zisk výšky). Více než 200 LD hodnota je zobrazena jako oo.
 Můžete nastavit dobu průměrování ve zvláštním config menu.
 Odhadované hodnoty pro toto nastavení jsou 60, 90 nebo 120: nižší hodnoty
 budou uzavřeny pro okamžitou účinnost, a vyšší hodnoty budou uzavřeny
 pro účinnost od posledního stoupavého proudu.
 Všimněte si, že vzdálenost není přímá linka mezi vaší starou a nynější pozicí
-aktuální pozice: je to přesně vzdálenost, kterou jste docíli rovněž hadovitým
-letem.
+aktuální pozice: je to přesně vzdálenost, kterou jste docílili rovněž hadovitým letem.
 Tato hodnota se nevypočítává během kroužení.
 
 @872
@@ -1332,43 +1325,40 @@ většinou jiných příbuzných zařízení.
 @873
 [Letová hladina]
 Indikátor nadmořské výšky letové hladiny. FL je vyjádřena ve stovkách stop.
-Tento ukazatel používá aktuální nadmořskou výšku, která NEMUSÍ nutně být
-barometrická a v žádném případě nepřepočítává na standartní atmosféru.
-Jinými slovy, není to správně a rozdíl může činit až stovky metrů!
-Takže používejte přibližný indikátor.
-Pozor, bez záruky!
+Tento ukazatel používá výšku podle standardní atmosféry (1013.25hPa).
+Pokud není dostupná barometrická výška, pak je použita výška podle GPS.
+V takovém případě musí být výška upřesněna na QNH vložením správného QNH do Základního Nastavení.
 
 @874
-[Uletěná vdálenost traťi]
+[Uletěná vzdálenost trati]
 Vzdálenost uletěná z aktuálního úkolu až do teď.
-Potřebujete mít platný odlet k vytvoření účtu!
+Potřebujete mít platný odlet pro zobrazení hodnoty!
 
 @875
 [Změna příletu]
 Rozdíl příletové výšky u změny. Stiskni ENTER nebo RETUR a poté
-výběrem z infoboxu vyberte relativní waypont menu.
+výběrem z infoboxu vyberte relativní waypoint menu.
 
 @876
 [Změna příletu]
 Rozdíl příletové výšky u změny. Stiskni ENTER nebo RETUR a poté
-výběrem z infoboxu vyberte relativní waypont menu.
+výběrem z infoboxu vyberte relativní waypoint menu.
 
 @877
 [Změna příletu]
-Rozdíl příletové výšky u změny. Stiskni ENTER nebo RETUR a poté
-výběrem z infoboxu vyberte relativní waypont menu.
+Rozdíl příletové výšky u změny. Stiskni ENTER nebo RETURN a poté
+výběrem z infoboxu vyberte relativní waypoint menu.
 
 @878
 [Paprsek domů]
 Paprsek k domovskému bodu, pokud je k dispozici.
 
 @879
-[Vzdálenost vzdušného prostoru]
-NYNÍ NENÍ K DISPOZICI. Vzdálenost k nejbližší vzdušného prostoru. I když
-se vzdušné prostory nezobrazují na mapě, ať jsou již zakázané nebo známé
-vzdálenost zůstává.
-Jestliže je 0, jste uvnitř prostoru, použijte nejbližší Menu vzdušného prostoru
-pro více informací.
+[Horizontální vzdálenost prostoru]
+Horizontální vzdálenost od VYBRANÉHO prostoru. Pro VÝBĚR prostoru přejděte na stranu prostorů 2.4 a klikněte na detaily,
+kde je tlačítko pro výběr. Jakmile je prostor vybrán tak se v tomto infoboxu bude zobrazovat jeho vzdálenost.
+Pokud není vybrán žádný prostor NEBO se nacházíte V OBLASTI vybraného prostoru, je zobrazeno ---.
+V případě letových zón je spočítána nejkratší vzdálenost k bodu kde můžete zónu opustit.
 
 @880
 [Ext.Baterie]
@@ -1419,7 +1409,7 @@ Momentální uletěná vzdálenost spočítaná pro 5 otočných bodů.
 
 @891
 [FAI TRIANGLE] vzdálenost
-Maximální momentální vzdálenost pro FAI trojuhelník.
+Maximální momentální vzdálenost pro FAI trojúhelník.
 
 @892
 [OLC LEAGUE] vzdálenost
@@ -1436,7 +1426,7 @@ bodem bude místo startu.
 
 @895
 [FAI TRIANGLE] předpokládaná vzdálenost
-Maximální momentální vzdálenost pro FAI trojuhelník, za předpokladu že
+Maximální momentální vzdálenost pro FAI trojúhelník, za předpokladu že
 posledním bodem bude místo startu.
 
 @896
@@ -1494,6 +1484,53 @@ Součet bodování z OLC Classic a FAI triangle.
 [OLC PLUS] předpokládané body
 Součet předpokládaných bodování z OLC Classic a FAI triangle.
 
+@913
+[NASTAVENÍ KLAPEK]
+Zobrazí momentální nejlepší nastavení klapek založené na rozšířeném souboru s polárou a současném plošném zatížení.
+Viz ukázkovou poláru ve složce _Polars, kde je ukázáno jak vytvořit rozšířenou poláru.
+
+@914
+[Vertikální vzdálenost prostoru]
+Verikální vzdálenost k VYBRANÉMU prostoru. Pro VÝBĚR prostoru přejděte na infostranu 2.4 a klikněte na detaily,
+jde zde tlačítko pro výběr. Po zvolení prostoru bude v tomto infoboxu zobrazena jeho vzdálenost.
+Záporné hodnoty znamenají že prostor je pod vámi, kladné že je nad vámi. (Jako u výšek příletu)
+Pokud není vybrán žádný prostor, nebo jste již ve výšce tohoto prostoru, ukáže se ---.
+V případě letových zón je spočítána nejkratší vzdálenost k bodu kde můžete zónu opustit.
+
+@915
+[Výška příletu domů]
+Výška příletu na domácí letiště. Spočítána pro současný MC, používá bezpečnostní výšku i MC.
+
+@916
+@917
+@918
+[Kurz k alternativě]
+Kurz k vybrané alternativě
+
+@919
+@920
+@921
+[Vzdálenost od alternativy]
+Vzdálenost od vybrané alternativy
+
+@922
+[Max dosažená výška]
+Max výška dosažená během tohoto letu.
+Je vynulována při vzletu.
+
+@923
+[Max zisk výšky]
+Tato výška je spočítána použitím minimální výšky PO startu volného letu.
+Tato hodnota se používá pro zisk odznaků.
+
+@924
+[Rychlost čelního větru]
+Zde je zobrazena složka větru relativní k vaší současné trase.
+Je zde zobrazen rozdíl mezi vaší TAS - pravou vzdušnou rychlostí a GS - rychlostí vůči zemi.
+Kladná hodnota ukazuje let proti větru, záporná hodnota znamená let po větru.
+Pokud není TAS dostupná, použije se odhadnutá TAS. 
+V takovém případě je tato hodnota pouze odhadnutá v závislosti na směru a síle větru.
+
 
 #
 # END INFOBOXES 800 - 1199
@@ -1501,9 +1538,9 @@ Součet předpokládaných bodování z OLC Classic a FAI triangle.
 
 @1200
 [Výplň vzdušných prostorů]
-Vzdšné prostoru mohou být vyznačeny pouze okrajem, vyšrafováním nebo průsvitnými barvami.
+Vzdušné prostoru mohou být vyznačeny pouze okrajem, vyšrafováním nebo průsvitnými barvami.
 [Pouze okraje] prostor bude označen pouze zvýrazněním jeho okraje
-[Šrafování] prostor bude vyplněm zvoleným šrafováním ve zvolené barvě
+[Šrafování] prostor bude vyplněn zvoleným šrafováním ve zvolené barvě
 [Průsvitný] prostor bude vyplněn zvolenou průsvitnou barvou (míra průsvitnosti se dá nastavit pod položkou 'Průsvitnost') .
 Průsvitnost může být na některých zařízeních nedostupná.
 
@@ -1519,7 +1556,7 @@ Nastavení průsvitnosti <30% udělá spodní lištu téměř průhlednou a barv
 Některé kombinace převrácených barev a úrovní průsvitnosti nemusí být vhodné pro navigaci, ale je zde
 nekonečno kombinací na výběr.
 Použitím 0% nebo 100%  (plná průhlednost nebo neprůhlednost) mírně zrychlí program.
-Ten druhý slavný "8000" přístroj je nastaven na 75% průsvotnost.
+Ten druhý slavný "8000" přístroj je nastaven na 75% průsvitnost.
 Standardních je 60%.
 UPOZORNĚNÍ: Některé přístroje nepodporují kontrolu průsvitnost. V tom případě nemá nastavení průsvitnosti žádný efekt
 a spodní lišta bude buď černá nebo bílá.
@@ -1541,7 +1578,7 @@ Pro změnu efektu musíte restartovat LK8000.
 Vyberte hodnotu varia a příslušné zobrazení lišty nalevo, pokud je povolena. 
 V režimu stoupání je zobrazeno pouze vario.
 Při přeskoku je navíc zobrazeno nettovario nebo Speed To Fly (Sollfart).
-Při výběru STF jezobrazena požadovaná IAS a lišta ukazuje jestli máte
+Při výběru STF je zobrazena požadovaná IAS a lišta ukazuje jestli máte
 přitáhnout nebo potlačit abyste dosáhli této hodnoty.
 
 Hodnota je zobrazena s příponou, která znamená:
@@ -1563,11 +1600,105 @@ a pak si ji zvolte v následujícím konfiguračním boxu.
 
 @1207
 [Soubor vlastní poláry]
-Pokud je v typu poláry nsataveno "Vlastní polára", pak zde vyberte soubor ze
+Pokud je v typu poláry nastaveno "Vlastní polára", pak zde vyberte soubor ze
 kterého bude polára spočítána.
 Polára musí být uložena ve složce _Polars.
 Tvorba poláry není zase tak jednoduchá, jelikož potřebujete přesné hodnoty
 opadání a váhu letadla. Pro více informací si přečtěte manuál.
+
+@1208
+[Typ letadla]
+Zde je obsažen seznam letadel a křídel různých výkonnostních tříd.
+
+@1209
+[Čas opakování varovné hlášky prostorů]
+Zde je nastaven čas, po kterém je znovu zobrazeno varování prostoru, pokud nebyl odsouhlasen.
+Pokud vletíte do zakázaného prostoru bez odsouhlasení varovné hlášky, po uplynutí tohoto času je varovná hláška zobrazena znovu.
+
+@1210
+[Vertikální vzdálenost okraje prostoru]
+Pokud vertikální vzdálenost od horní nebo spodní hranice prostoru klesne pod tento limit, zobrazí se žlutá varovná hláška.
+Zároveň to ovlivní, jakým způsobem jsou varování na prostory zobrazeny v mapě.
+Pokud vertikální vzdálenost (rozdíl výšky) k spodní nebo horní hranici prostoru je pod stanoveným limitem,
+přímo nad kluzákem se zobrazí varovná ikonka.
+
+@1211
+[Trvání varovné hlášky prostoru]
+Pokud tento čas vyprší, varovná hláška prostoru automaticky zmizí, aniž by bylo nutné použít uzavírací tlačítko.
+Uzavírací tlačítko obsahuje odpočet, který signalizuje, za jak dlouho dojde k automatickému uzavření varovné hlášky.
+
+@1212
+[Varovné štítky prostorů v mapě]
+Pokud je zapnuté, v mapě se zobrazí varovné štítky prostorů informující o jménu prostoru a vertikální vzdálenosti.
+
+@1213
+[PG vzdálenost pro autozoom]
+Pokud používáte autozoom v PG módu, autozoom začne pracovat až v okamžiku, kdy se další otočný bod nachází blíže, než tento limit.
+Pokud zvolíte například 5 km limit, znamená to, že když je vaše vzdálenost k dalšímu otočnému bodu nižší než 5 km, autozoom začne pracovat.
+Nastaví rozsah na 5 km a jak se budete přibližovat k otočnému bodu, bude postupně rozsah přibližovat.
+Po dosažení otočného bodu dojde k nastavení původního přeletového zoomu. Jakmile se dostanete na 5 km vzdálenost od dalšího otočného bodu, začne autozoom pracovat znovu.
+
+@1220
+[Nastavení spodního pruhu]
+Povolí nebo zakáže každý spodní pruh při rotaci navigačních štítků.
+Pokud jsou všechny pruhy zakázané, NAV1 je zobrazen vždy.
+Během kroužení je také zobrazen informační štítek THR 0.
+
+@1221
+[Nastavení rotace Info stránek]
+Nastaví nebo zakáže každou stránku v rotační sekvenci.
+Pokud jsou všechny položky stránky zakázané, tato stránka se bude přeskakovat.
+Stránka bude dosažitelná přes vlastní klávesy.
+Pozor: pro neplachtařské letouny (PG/HG a GA), které mají zakázanou infostránku 1.5 Soutěž budou zakázané také všechny soutěžní výpočty. Pokud chcete výpočty soutěží, musíte aktivovat stránku 1.5!
+Pokud používáte plachtařský mód, můžete stránku 1.5 zakázat, protože výpočty jsou prováděny vždy.
+
+@1250
+Ovladače filtrující zobrazení a varování prostorů. Tlačítko pro filtrování prostorů také umožňuje nezávislé nastavení zobrazení a upozornění prostorů různých tříd.
+[VŠE] Všechny prostory jsou zobrazeny.
+[OŘÍZNOUT] Pouze prostory pod ořezovou výškou.
+[AUTO] Všechny prostory, které leží uvnitř výškových okrajů kluzáku.
+[VŠE POD] Všechny prostory pod kluzákem a prostory uvnitř horních výškových okrajů.
+
+@1251
+Výškový okraj (pouze v módu AUTO a VŠE POD) se používá pro filtrování prostorů nad mapou. V režimu AUTO jsou prostory zobrazeny podle výšky nad a pod kluzákem.
+Mód VŠE POD zobrazí všechny prostory od země do nastavené výšky nad kluzákem.
+
+@1252
+I když odsouhlasíte prostor, po tomto čase se stane opět "aktivním" pro varování.
+Je například žádoucí, abyste byli na cestě zpět varováni před prostorem, kterým jste prolétali před několika hodinami!
+Ve výchozím stavu je prostor po 15 minutách opět aktivní pro varování.
+
+@1253
+[Alarm Max Výška] Upozornění bude vždy spuštěno, pokud dosáhnete nebo překročíte tuto výšku.
+Upozornění nebude opakování během následujících 60 sekund.
+Po 1 minutě, pokud výška klesne pod Max Výšku a poté opět stoupne nad tuto výšku, upozornění zazní znovu.
+Pro vypnutí tohoto upozornění nastavte 0.
+Výška použitá pro toto upozornění je ta, kterou jste zvolili v menu 5 Nastavení "Použít Baro výšku".
+Vícenásobná upozornění nastavená na stejnou výšku nebudou mít efekt.
+Piloti kluzáků by měli dát pozor na to, aby nenastavili upozornění pod hranici bezpečné výšky během kritických fází letu.
+Vizuální upozornění automaticky zmizí po 12 sekundách.
+Každé upozornění má vlastní zvuk, který může být změněn v adresáři _System _Sounds.
+Soubory jsou pojmenované LK_ALARM_ALTx.WAV
+Výchozí hodnota je 0 (bez upozornění).
+
+# ex 195
+@1254
+Čára letu může být nastavena na koncový bod trati nebo na další otočný bod, nebo může být zakázána. Tato čára se zobrazuje na levé straně obrazovky.
+Pokud používáte příští otočný bod nebo jste v úloze na dokluzu, tato hodnota bude shodná s hodnotou v překryvech.
+
+@1255
+Automatické nastavení Mac Cready může být Zapnuto nebo Vypnuto. Během letu může být povoleno nebo zakázáno.
+Toto je výchozí hodnota.
+
+@1256
+[Celková Energie] Když se používá Celková Energie, LK bude kalkulovat výšku, kterou byste získali přitažením při současné rychlosti až do okamžiku, kdy by se rychlost stala optimální pro nejlepší klouzavost.
+Například, pokud letíte 200 km/h rychlostí s Discusem bez vody, rychlostní energie bude spočítána tak, jako kdybyste přitáhli a zpomalili na 100 km/h: bezpochyby byste získali lepší výšku.
+Tato rychlostní výška bude přidána do všech příletových výšek. Ve výchozím stavu je tato vlastnost z bezpečnostních důvodů ZAKÁZÁNA! Pokud máte pochyby, ponechte tuto vlastnost vypnutou!
+
+@1257
+[Klouzavost]
+Jak je větroň čistý. Nastavte na 100% pro čistý větroň, nižší čísla pokud jsou křídla mokrá nebo špinavá od mušek.  50% znamená, že opadání větroně se zdvojnásobilo. 
+Toto je původní hodnota používaná klouzavostí v menu Základního nastavení, nahraného při zapnutí. Normálně byste tu měli nechat hodnotu 100%.
 
 @9999
 Pro tuto položku není dostupná nápověda!

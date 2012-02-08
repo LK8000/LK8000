@@ -29,7 +29,7 @@ _@M4_ " Reg"
 _@M5_ " Var"
 
 #_@M6_ "< Prev"
-_@M6_ "< vorher"
+_@M6_ "< Zurück"
 
 #_@M7_ "(blank)"
 _@M7_ "(leer)"
@@ -41,43 +41,43 @@ _@M8_ "(Ziel)"
 _@M9_ "(ungültig)"
 
 #_@M10_ "1 Site"
-_@M10_ "1 Region - Dateien"
+_@M10_ "1 Fluggebiet - Dateien"
 
 #_@M11_ "10 Interface"
-_@M11_ "10 Schnittstelle"
+_@M11_ "10 Bedienung und Auswahl Informationen"
 
 #_@M12_ "11 Appearance"
-_@M12_ "11 Oberfläche"
+_@M12_ "11 Karte Oberfläche"
 
 #_@M13_ "12 Fonts"
-_@M13_ "12 Schriften"
+_@M13_ "12 Schriftarten"
 
 #_@M14_ "13 Map Overlays "
-_@M14_ "13 Karten Overlays"
+_@M14_ "13 Karte Einblendungen"
 
 #_@M15_ "14 Task"
 _@M15_ "14 Aufgabe"
 
 #_@M16_ "15 Task rules"
-_@M16_ "15 Aufgabe Regeln"
+_@M16_ "15 Regeln Aufgabe"
 
 #_@M17_ "15 seconds"
 _@M17_ "15 Sekunden"
 
 #_@M18_ "16 InfoBox Cruise"
-_@M18_ "16 InfoBox Vorflug"
+_@M18_ "16 Infostreifen Vorflug [VFL7]"
 
 #_@M19_ "17 InfoBox Thermal"
-_@M19_ "17 InfoBox Aufwind"
+_@M19_ "17 Infostreifen Aufwind [KRS0]"
 
 #_@M20_ "18 InfoBox Final Glide"
-_@M20_ "18 InfoBox Endanflug"
+_@M20_ "18 Infostreifen Endanflug [EAF8]"
 
 #_@M21_ "19 InfoBox Auxiliary"
-_@M21_ "19 InfoBox Zusatz"
+_@M21_ "19 Infostreifen Aux [AUX9]"
 
 #_@M22_ "2 Airspace"
-_@M22_ "2 Luftraum"
+_@M22_ "2 Lufträume"
 
 #_@M23_ "2 minutes"
 _@M23_ "2 Minuten"
@@ -86,7 +86,7 @@ _@M23_ "2 Minuten"
 _@M24_ "20 Logger"
 
 #_@M25_ "21 Waypoint Edit"
-_@M25_ "21 Wegpunkt Bearbeiten"
+_@M25_ "21 Wegpunkt bearbeiten"
 
 #_@M26_ "22 System"
 _@M26_ "22 System"
@@ -95,7 +95,7 @@ _@M26_ "22 System"
 _@M27_ "23 Gleitschirm- und Drachenflieger"
 
 #_@M28_ "3 Map Display"
-_@M28_ "3 Kartenanzeige"
+_@M28_ "3 Karteninhalte und -anzeige"
 
 #_@M29_ "3 minutes"
 _@M29_ "3 Minuten"
@@ -107,13 +107,13 @@ _@M30_ "30 Dekunden"
 _@M31_ "3D fix"
 
 #_@M32_ "4 Terrain Display"
-_@M32_ "4 Gelände Anzeige"
+_@M32_ "4 Terrain- und Topologie-Darstellung"
 
 #_@M33_ "5 Glide Computer"
 _@M33_ "5 Flugrechner"
 
 #_@M34_ "6 Safety factors"
-_@M34_ "6 Sicherheitsfaktoren"
+_@M34_ "6 Sicherheitsparameter"
 
 #_@M35_ "60 seconds"
 _@M35_ "60 Sekunden"
@@ -122,7 +122,7 @@ _@M35_ "60 Sekunden"
 _@M36_ "7 Flugzeug"
 
 #_@M37_ "8 Devices"
-_@M37_ "8 Geräte"
+_@M37_ "8 Geräte-Kopplung"
 
 #_@M38_ "9 Units"
 _@M38_ "9 Einheiten"
@@ -161,7 +161,7 @@ _@M48_ "Akzeptiere"
 _@M49_ "Erreichter MC-Wert "
 
 #_@M50_ "Achieved Speed"
-_@M50_ "Erzielte Geschw. "
+_@M50_ "Erzielte Geschw "
 
 #_@M51_ "Acknowledge for day?"
 _@M51_ "Für Heute bestätigen?"
@@ -173,7 +173,7 @@ _@M52_ "Bestätigungszeit*"
 _@M53_ "ActiveMap "
 
 #_@M54_ "Add Waypoint"
-_@M54_ "Füge Wegpunkt hinzu"
+_@M54_ "Wegpunkt einfügen"
 
 #_@M55_ "Advanced.."
 _@M55_ "Weiterführend.."
@@ -182,7 +182,7 @@ _@M55_ "Weiterführend.."
 _@M56_ "Flugzeug Id: "
 
 #_@M57_ "Aircraft Reg"
-_@M57_ "Flugzeug Kennz"
+_@M57_ "Flugzeugkennz"
 
 #_@M58_ "Aircraft Status"
 _@M58_ "Flugzeug Status"
@@ -194,7 +194,7 @@ _@M59_ "Flugzeugtyp"
 _@M60_ "Flugzeugtyp: "
 
 #_@M61_ "Aircraft/wind speed "
-_@M61_ "Geschwindigkeiten "
+_@M61_ "Geschwindigkeit "
 
 #_@M62_ "Airfield"
 _@M62_ "Flugplatz"
@@ -209,7 +209,7 @@ _@M64_ "Luftraum 2 "
 _@M65_ "Luftraum Details"
 
 #_@M66_ "Airspace Warnings"
-_@M66_ "Luftraum Warnungen"
+_@M66_ "Luftraumwarnungen"
 
 #_@M67_ "Airspace display "
 _@M67_ "Luftraumanzeige "
@@ -254,15 +254,15 @@ _@M79_ "Alle EIN"
 _@M80_ "Alle Wegpunkte"
 
 #_@M81_ "All white"
-_@M81_ "Alles weiss"
+_@M81_ "Alles weiß"
 
 #_@M82_ "Already going home"
 _@M82_ "Bin schon auf dem Heimweg"
 
 #_@M83_ "Alt diff Mc 0"
-_@M83_ "Höhen-Diff MC 0"
+_@M83_ "Höhen-Diff MC=0"
 
-#_@M83_ "Alt diff Mc 0"
+#_@M84_ "Alt diff Mc current"
 _@M84_ "Höhen Diff MC aktuell"
 
 #_@M85_ "Alt diff Mc safety"
@@ -272,13 +272,13 @@ _@M85_ "Höhen Diff Sicherheits-MC"
 _@M86_ "Alternative Abflugpunkte"
 
 #_@M87_ "Alternate"
-_@M87_ "Alternative"
+_@M87_ "Alternativ"
 
 #_@M88_ "Altitude "
 _@M88_ "Höhe "
 
 #_@M89_ "Altitude"
-_@M89_ "Höhe"
+_@M89_ "Höhe "
 
 #_@M90_ "Always use MC=0"
 _@M90_ "Nutze immer MC=0"
@@ -291,6 +291,8 @@ _@M92_ "Gelb"
 
 #_@M93_ "Analysis"
 _@M93_ "Analyse"
+
+# 94 REMOVED after v2.3
 
 #_@M94_ "Animation"
 _@M94_ "Animation"
@@ -306,6 +308,8 @@ _@M97_ "Lade"
 
 #_@M98_ "ArrivalAltitude"
 _@M98_ "Ankunftshöhe"
+
+# 99 REMOVED after v2.3
 
 #_@M99_ "Arrow head"
 _@M99_ "Pfeilspitze"
@@ -344,7 +348,7 @@ _@M109_ "Autom MC Modus "
 _@M110_ "Autom Lautstärke "
 
 #_@M111_ "Auto advance "
-_@M111_ "Fortschritt "
+_@M111_ "WP-Fortschritt "
 
 #_@M112_ "Auto advance"
 _@M112_ "Fortschritt"
@@ -353,7 +357,7 @@ _@M112_ "Fortschritt"
 _@M113_ "Autom Logger "
 
 #_@M114_ "Auto wind "
-_@M114_ "Windermittlung "
+_@M114_ "Windbestimmung "
 
 #_@M115_ "Auto zoom "
 _@M115_ "Autom Zoom "
@@ -370,7 +374,7 @@ _@M118_ "Steigen mittel"
 #_@M119_ "BACKUP POWER SUPPLY ON"
 _@M119_ "RESERVEBATTERIE EIN"
 
-#_@M120_ "BARO ALTITUDE IS AVAILABLE"
+#_@M120_ "BARO ALTITUDE IS AVAILABLE FROM:"
 _@M120_ "Barometrische Höhe VERFÜGBAR von:"
 
 #_@M121_ "BARO ALTITUDE NOT AVAILABLE"
@@ -401,7 +405,7 @@ _@M128_ "Basis"
 _@M129_ "Grundeinstellungen"
 
 #_@M130_ "Basic Setup menu"
-_@M130_ "Grundeinstellungs-Menue"
+_@M130_ "Grundeinstellungs-Menü"
 
 #_@M131_ "Basic"
 _@M131_ "Basis"
@@ -431,22 +435,24 @@ _@M138_ "Peilung"
 _@M139_ "UnterFlgz"
 
 #_@M140_ "Best LD"
-_@M140_ "Beste Gleizahl"
+_@M140_ "Beste Gleitzahl"
 
 #_@M141_ "BestAlternate Warn "
-_@M141_ "Warnung Beste Altern "
+_@M141_ "Warnung Beste Alternat "
 
 #_@M142_ "Big cities "
-_@M142_ "Grosse Städte "
+_@M142_ "Große Städte "
 
 #_@M143_ "Big roads "
-_@M143_ "Grosse Strassen "
+_@M143_ "Große Strassen "
 
 #_@M144_ "Black"
 _@M144_ "Schwarz"
 
 #_@M145_ "Blank!"
 _@M145_ "Leer!"
+
+# 146 REMOVED after v2.3
 
 #_@M146_ "Block speed to fly "
 _@M146_ "zu fliegende Blockgeschwindigkeit "
@@ -458,19 +464,19 @@ _@M147_ "Blauer See"
 _@M148_ "Beide (MC-A + MC-EA)"
 
 #_@M149_ "Both"
-_@M149_ "Beide"
+_@M149_ "ZickZack+Kreisen"
 
 #_@M150_ "Bottom Bar "
-_@M150_ "Fusszeile "
+_@M150_ "Fußzeile "
 
 #_@M151_ "Box"
 _@M151_ "Rahmen"
 
 #_@M152_ "Boxed, no units"
-_@M152_ "eingerahmt, keine Einheiten"
+_@M152_ "Eingerahmt, keine Einheiten"
 
 #_@M153_ "Boxed, with units"
-_@M153_ "eingerahmt mit Einheiten"
+_@M153_ "Eingerahmt mit Einheiten"
 
 #_@M154_ "Brg"
 _@M154_ "Plg"
@@ -500,13 +506,13 @@ _@M161_ "Abbruch"
 _@M162_ "Kann nicht überschreiben!"
 
 #_@M163_ "Car"
-_@M163_ "Auto"
+_@M163_ "Automobil"
 
 #_@M164_ "Category "
 _@M164_ "Kategorie "
 
 #_@M165_ "Ceiling trend"
-_@M165_ "Basishöhe"
+_@M165_ "Basishöhenänd"
 
 #_@M166_ "Center "
 _@M166_ "Zentrum "
@@ -527,16 +533,18 @@ _@M170_ "Zoom Kreisen "
 _@M171_ "Kreisradius"
 
 #_@M172_ "Circling Zoom OFF"
-_@M172_ "Kreisen Zoom AUS"
+_@M172_ "Zoom Kreisen AUS"
 
 #_@M173_ "Circling Zoom ON"
-_@M173_ "Kreisen Zoom EIN"
+_@M173_ "Zoom Kreisen EIN"
 
 #_@M174_ "Circling zoom "
-_@M174_ "Kreisen Zoom "
+_@M174_ "Zoom beim Kreisen "
 
 #_@M175_ "Circling"
 _@M175_ "Kreisen"
+
+# 176 UNUSED after v2.3
 
 #_@M176_ "Classic"
 _@M176_ "Classic"
@@ -569,7 +577,7 @@ _@M184_ "maxHöhe"
 _@M185_ "Schließen "
 
 #_@M186_ "Close"
-_@M186_ "Ende"
+_@M186_ "Schließen"
 
 #_@M187_ "Cloud base"
 _@M187_ "Wolkenbasis"
@@ -599,7 +607,7 @@ _@M194_ "CompeGPS Wegpunkt"
 _@M195_ "Konfiguration"
 
 #_@M196_ "Configure Custom Keys"
-_@M196_ "Funktionstasten"
+_@M196_ "Konfiguriere Schaltflächen"
 
 #_@M197_ "Configure Topology"
 _@M197_ "Konfiguriere Topologie"
@@ -617,7 +625,7 @@ _@M200_ "Kopiere"
 _@M201_ "Konnte IGC-Datei nicht öffnen!"
 
 #_@M202_ "Cruise Zoom "
-_@M202_ "Zoom Gleiten "
+_@M202_ "Zoom Vorflug "
 
 #_@M203_ "Cruise efficiency"
 _@M203_ "Gleitzahl "
@@ -626,7 +634,7 @@ _@M203_ "Gleitzahl "
 _@M204_ "Aktuelle Position erneuert"
 
 #_@M205_ "Custom Keys"
-_@M205_ "Funktionstasten"
+_@M205_ "Schaltflächen-Funktionen"
 
 #_@M206_ "Custom Polar file "
 _@M206_ "Eigene Polare "
@@ -719,7 +727,7 @@ _@M234_ "Gerät Modell "
 _@M235_ "Dialog Rahmen"
 
 #_@M236_ "Direct Goto"
-_@M236_ "Direct Goto"
+_@M236_ "Sofortiges Ziel"
 
 #_@M237_ "Direction "
 _@M237_ "Richtung "
@@ -728,7 +736,7 @@ _@M237_ "Richtung "
 _@M238_ "Richtung"
 
 #_@M239_ "Disabled"
-_@M239_ "inaktiv"
+_@M239_ "Inaktiv"
 
 #_@M240_ "Disconnected"
 _@M240_ "unterbrochen"
@@ -737,7 +745,7 @@ _@M240_ "unterbrochen"
 _@M241_ "Anzeige"
 
 #_@M242_ "Dist to go"
-_@M242_ "ausstehende Entf"
+_@M242_ "Ausstehende Entfernung"
 
 #_@M243_ "Distance  "
 _@M243_ "Entfernung  "
@@ -788,10 +796,10 @@ _@M257_ "Leere Kartenfarbe "
 _@M258_ "Luftr. wieder aktiv"
 
 #_@M259_ "Enabled"
-_@M259_ "aktiviert"
+_@M259_ "Aktiviert"
 
 #_@M260_ "Engineering Menu*"
-_@M260_ "Entwickler Menue*"
+_@M260_ "Entwickler Menü*"
 
 #_@M261_ "Enter number"
 _@M261_ "Gebe eine Zahl ein"
@@ -851,7 +859,7 @@ _@M278_ "FALSCH"
 _@M279_ "FLARM ERKANNT"
 
 #_@M280_ "FLARM on map "
-_@M280_ "FLARM auf Karte "
+_@M280_ "FLARM-V auf Karte "
 
 #_@M281_ "FLY"
 _@M281_ "FLIEGEN"
@@ -884,7 +892,7 @@ _@M289_ "Erzwungener Endanflug EIN"
 _@M290_ "Endanflug"
 
 #_@M291_ "Finish alt min"
-_@M291_ "Min Zielhöhe"
+_@M291_ "Min Zielhöhe (MSL)"
 
 #_@M292_ "Finish min height "
 _@M292_ "Min Zielhöhe "
@@ -893,25 +901,25 @@ _@M292_ "Min Zielhöhe "
 _@M293_ "Min Zielhöhe"
 
 #_@M294_ "Finish radial"
-_@M294_ "Ziel Radial"
+_@M294_ "Radial Ziel"
 
 #_@M295_ "Finish radius "
-_@M295_ "Ziel Radius "
+_@M295_ "Radius Ziel "
 
 #_@M296_ "Finish radius"
-_@M296_ "Ziel Radius"
+_@M296_ "Radius Ziel"
 
 #_@M297_ "Finish type "
-_@M297_ "Zielart "
+_@M297_ "Ziel-Typ "
 
 #_@M298_ "Finish type"
-_@M298_ "Zielart"
+_@M298_ "Ziel-Typ"
 
 #_@M299_ "Finish"
 _@M299_ "Ziel"
 
 #_@M300_ "Finished"
-_@M300_ "beendet"
+_@M300_ "Beendet"
 
 #_@M301_ "First 3"
 _@M301_ "Die ersten 3"
@@ -983,7 +991,7 @@ _@M322_ "Geoid Höhe "
 _@M323_ "Gost "
 
 #_@M324_ "Glide Bar indicator "
-_@M324_ "Gleitbereichanzeige "
+_@M324_ "Gleitbalkenindikator "
 
 #_@M325_ "Glide Polar"
 _@M325_ "Polare"
@@ -1031,11 +1039,12 @@ _@M338_ "Hochalpen"
 _@M339_ "Hoch"
 
 #_@M340_ "HighContrast"
-_@M340_ "Grosser Kontrast"
+_@M340_ "Großer Kontrast"
 
 #_@M341_ "HighScore Style"
-_@M341_ "HighScore Style"
+_@M341_ "HighScore Stil"
 
+# 342 UNUSED after v2.3
 #_@M342_ "Higher"
 _@M342_ "Höher"
 
@@ -1094,7 +1103,7 @@ _@M359_ "Innerhalb"
 _@M360_ "Ungültiges altes Aufgabenformat!"
 
 #_@M361_ "Inverse b/w colors "
-_@M361_ "Invertiere s/w Farben "
+_@M361_ "Invertiere S/W Farben "
 
 #_@M362_ "Inverse colors "
 _@M362_ "Invertiere Farben "
@@ -1120,11 +1129,12 @@ _@M368_ "HALTE FAHRT UND KURS BITTE LÄNGER"
 #_@M369_ "KEEP SPEED LONGER PLEASE"
 _@M369_ "HALTE DIE FAHRT BITTE LÄNGER"
 
+# 370 REMOVED after v2.3
 #_@M370_ "Keyboard"
 _@M370_ "Tastatur"
 
 #_@M371_ "L/D Average period "
-_@M371_ "Zeit für Gleitzahl "
+_@M371_ "Mittlungszeit für GZ "
 
 #_@M372_ "LAST GATE IS OPEN"
 _@M372_ "DAS LETZTE STARTFENSTER IST OFFEN"
@@ -1151,19 +1161,19 @@ _@M378_ "LKoogle Berge"
 _@M379_ "Bezeichnungen "
 
 #_@M380_ "Landables and Turnpoints"
-_@M380_ "Lande- und Wendepunkte"
+_@M380_ "Landefelder und Wendepunkte"
 
 #_@M381_ "Landables icon "
-_@M381_ "Landefeld-Icon "
+_@M381_ "Stil Landefeld-Symbol "
 
 #_@M382_ "Landables only"
-_@M382_ "nur Landefelder"
+_@M382_ "NUR Landefelder"
 
 #_@M383_ "Landables style "
-_@M383_ "Stil Landefelder "
+_@M383_ "Stil Landefeld-Bez "
 
 #_@M384_ "Landables value "
-_@M384_ "Wert Landefelder "
+_@M384_ "Wert Landefeld-Info "
 
 #_@M385_ "Landables"
 _@M385_ "Landefelder"
@@ -1177,6 +1187,7 @@ _@M387_ "Sprache "
 #_@M388_ "Left "
 _@M388_ "Links "
 
+# 389 UNUSED after v2.3
 #_@M389_ "Less"
 _@M389_ "Weniger"
 
@@ -1255,6 +1266,7 @@ _@M413_ "Flachland"
 #_@M414_ "Low"
 _@M414_ "Gering"
 
+# 415 UNUSED after v2.3
 #_@M415_ "Lower"
 _@M415_ "Tiefer"
 
@@ -1271,7 +1283,7 @@ _@M418_ "Manuell"
 _@M419_ "Kartensperrung "
 
 #_@M420_ "Map file "
-_@M420_ "Landkarte "
+_@M420_ "Topologie (LKM) "
 
 #_@M421_ "Map labels OFF"
 _@M421_ "Bezeichnungen in Karte AUS"
@@ -1301,7 +1313,7 @@ _@M428_ "Max Temp "
 _@M429_ "Max Höhengewinn"
 
 #_@M430_ "Max labels "
-_@M430_ "Max Bez.-Anzahl "
+_@M430_ "Max Bez-Anzahl "
 
 #_@M431_ "Medium cities "
 _@M431_ "Mittlere Städte "
@@ -1313,10 +1325,10 @@ _@M432_ "Mittlere Straßen "
 _@M433_ "Mittel"
 
 #_@M434_ "Menu timeout "
-_@M434_ "Menue Abschaltzeit "
+_@M434_ "Menü Abschaltzeit "
 
 #_@M435_ "Menu"
-_@M435_ "Menue"
+_@M435_ "Menü"
 
 #_@M436_ "Metric"
 _@M436_ "Metrisch"
@@ -1324,6 +1336,7 @@ _@M436_ "Metrisch"
 #_@M437_ "Min sink"
 _@M437_ "Min Sinken"
 
+# 438 UNUSED after v2.3
 #_@M438_ "More"
 _@M438_ "Mehr"
 
@@ -1348,11 +1361,12 @@ _@M444_ "Bewege"
 #_@M445_ "Moving"
 _@M445_ "Bewege"
 
+# 446 REMOVED after v2.3
 #_@M446_ "Msg window"
 _@M446_ "Meldungsfenster"
 
 #_@M447_ "Multitarget menu"
-_@M447_ "MultiTarget-Menue"
+_@M447_ "MultiTarget-Menü"
 
 #_@M448_ "Multitarget rotate"
 _@M448_ "Rotiere MultiTargets"
@@ -1379,7 +1393,7 @@ _@M454_ "Namen"
 _@M455_ "Nautisch"
 
 #_@M456_ "Near"
-_@M456_ "Nächster WegP"
+_@M456_ "Nächster WP"
 
 #_@M457_ "New Waypoint"
 _@M457_ "Neuer Wegpunkt"
@@ -1391,7 +1405,7 @@ _@M458_ "Neues Profil"
 _@M459_ "Neu"
 
 #_@M460_ "Next >"
-_@M460_ "weiter >"
+_@M460_ "Weiter >"
 
 #_@M461_ "Next turnpoint"
 _@M461_ "Nächster Wendepunkt"
@@ -1466,7 +1480,7 @@ _@M483_ "Norden oben"
 _@M484_ "Nord/Kurs"
 
 #_@M485_ "NorthUp above "
-_@M485_ "Karte genordet über "
+_@M485_ "Karte genordet über ZL "
 
 #_@M486_ "Not Enough Memory For Waypoints"
 _@M486_ "Nicht genug Speicher für Wegpunkte"
@@ -1529,7 +1543,7 @@ _@M504_ "Optimiere"
 _@M505_ "Orange"
 
 #_@M506_ "Orientation "
-_@M506_ "Ausrichtung "
+_@M506_ "Kartenausrichtung "
 
 #_@M507_ "Other"
 _@M507_ "Andere"
@@ -1583,10 +1597,10 @@ _@M522_ "Petrol"
 _@M523_ "Picker"
 
 #_@M524_ "Pilot name"
-_@M524_ "Pilotenname"
+_@M524_ "Name Pilot"
 
 #_@M525_ "Pilot name: "
-_@M525_ "Pilotenname: "
+_@M525_ "Name Pilot: "
 
 #_@M526_ "Pitch"
 _@M526_ "Anstellwinkel"
@@ -1604,7 +1618,7 @@ _@M529_ "Abfragen"
 _@M530_ "Port "
 
 #_@M531_ "Pressure "
-_@M531_ "Druck "
+_@M531_ "Luftdruck "
 
 #_@M532_ "Profile "
 _@M532_ "Profil "
@@ -1726,6 +1740,7 @@ _@M570_ "SIMULIERE"
 #_@M571_ "START"
 _@M571_ "START"
 
+# 572 REMOVED after v2.3
 #_@M572_ "STF risk factor"
 _@M572_ "STF Risikofaktor"
 
@@ -1733,16 +1748,16 @@ _@M572_ "STF Risikofaktor"
 _@M573_ "STOPPE ABLASSEN"
 
 #_@M574_ "Safety Mc "
-_@M574_ "Sicherheits-MC "
+_@M574_ "Sicherheits-MC-Wert "
 
 #_@M575_ "Safety alt.mode "
-_@M575_ "Sicherheitshö-Modus "
+_@M575_ "Sicherheitshöhe gilt für "
 
 #_@M576_ "Safety altitude "
 _@M576_ "Sicherheitshöhe "
 
 #_@M577_ "Safety lock "
-_@M577_ "Sicherheitssperrung "
+_@M577_ "Sperrung Konf-M im Flug "
 
 #_@M578_ "Satellites in view"
 _@M578_ "Satelliten in Sicht"
@@ -1751,7 +1766,7 @@ _@M578_ "Satelliten in Sicht"
 _@M579_ "Speichere ?"
 
 #_@M580_ "Save as.."
-_@M580_ "Speichere als.."
+_@M580_ "Speichere als"
 
 #_@M581_ "Save changes to waypoint file?"
 _@M581_ "Änderungen in Wegpunkte-Datei speichern?"
@@ -1760,7 +1775,7 @@ _@M581_ "Änderungen in Wegpunkte-Datei speichern?"
 _@M582_ "Speichere neu"
 
 #_@M583_ "Save"
-_@M583_ "Sichern"
+_@M583_ "Speichern"
 
 #_@M584_ "Score"
 _@M584_ "Punktzahl"
@@ -1769,16 +1784,16 @@ _@M584_ "Punktzahl"
 _@M585_ "Anzeigeinfos "
 
 #_@M586_ "Sector radius "
-_@M586_ "Sektor Radius "
+_@M586_ "Radius Sektor "
 
 #_@M587_ "Sector radius"
-_@M587_ "Sektor Radius"
+_@M587_ "Radius Sektor"
 
 #_@M588_ "Sector type "
-_@M588_ "Sektor Typ "
+_@M588_ "Sektor-Typ "
 
 #_@M589_ "Sector type"
-_@M589_ "Sektor Typ"
+_@M589_ "Sektor-Typ"
 
 #_@M590_ "Sector"
 _@M590_ "Sektor"
@@ -1832,13 +1847,13 @@ _@M605_ "Setze WP als neuen Heimplatz"
 _@M606_ "Verändere Distanz"
 
 #_@M607_ "Set speed remaining"
-_@M607_ "Setze verbleib. Geschw. "
+_@M607_ "Setze verbleib Geschw "
 
 #_@M608_ "Setup ..."
 _@M608_ "Einrichtung ..."
 
 #_@M609_ "Shade"
-_@M609_ "Schattiere"
+_@M609_ "Unschattiert"
 
 #_@M610_ "Shading "
 _@M610_ "Hangschattierung "
@@ -1856,7 +1871,7 @@ _@M613_ "Zeige Lufträume AUS"
 _@M614_ "Zeige Lufträume EIN"
 
 #_@M615_ "Show Clock "
-_@M615_ "Zeige Uhr "
+_@M615_ "Uhrenanzeige "
 
 #_@M616_ "Significant wind change"
 _@M616_ "Deutliche Windänderung"
@@ -1865,7 +1880,7 @@ _@M616_ "Deutliche Windänderung"
 _@M617_ "Kleine Städte "
 
 #_@M618_ "Small roads "
-_@M618_ "Kleine Strassen "
+_@M618_ "Kleine Straßen "
 
 #_@M619_ "Smaller cities "
 _@M619_ "Kleinere Städte "
@@ -1874,13 +1889,13 @@ _@M619_ "Kleinere Städte "
 _@M620_ "Flugweg AUS"
 
 #_@M621_ "SnailTrail ON Full"
-_@M621_ "Flugweg EIN VOLL"
+_@M621_ "Flugwegspur EIN VOLL"
 
 #_@M622_ "SnailTrail ON Long"
-_@M622_ "Flugweg lang EIN"
+_@M622_ "Flugwegspur lang EIN"
 
 #_@M623_ "SnailTrail ON Short"
-_@M623_ "Flugweg kurz EIN"
+_@M623_ "Flugwegspur kurz EIN"
 
 #_@M624_ "Sounds OFF"
 _@M624_ "Sound AUS"
@@ -1892,26 +1907,29 @@ _@M625_ "Sound EIN"
 _@M626_ "V "
 
 #_@M627_ "Speed "
-_@M627_ "Geschw. "
+_@M627_ "Geschw "
 
 #_@M628_ "Speed achieved"
-_@M628_ "Erreichte Geschw."
+_@M628_ "Erreichte Geschw"
 
 #_@M629_ "Speed average"
-_@M629_ "Durchschnittsgeschw."
+_@M629_ "Durchschnittsgeschw"
 
 #_@M630_ "Speed estimated"
-_@M630_ "Geschätzte Geschw."
+_@M630_ "Geschätzte Geschw"
 
 #_@M631_ "Speed remaining"
-_@M631_ "Verbleibende Geschw."
+_@M631_ "Verbleibende Geschw"
 
 #_@M632_ "Speed"
 _@M632_ "Geschw"
 
+# 633 UNUSED after v2.3
+
 #_@M633_ "Sprint"
 _@M633_ "Bundesliga"
 
+# 634 UNUSED after v2.3
 #_@M634_ "Standard"
 _@M634_ "Standard"
 
@@ -1955,13 +1973,13 @@ _@M646_ "Abfluggeschw Abwei "
 _@M647_ "Abflugpunkt"
 
 #_@M648_ "Start radial"
-_@M648_ "Abflug Radial"
+_@M648_ "Abflugradial"
 
 #_@M649_ "Start radius "
-_@M649_ "Abflug Radius "
+_@M649_ "Radius Abflug "
 
 #_@M650_ "Start radius"
-_@M650_ "Abflug Radius "
+_@M650_ "Radius Abflug "
 
 #_@M651_ "Start rules violated"
 _@M651_ "Abflugregeln verletzt"
@@ -1976,10 +1994,10 @@ _@M653_ "Abfluggeschwindigkeit"
 _@M654_ "Abflugzeit"
 
 #_@M655_ "Start type "
-_@M655_ "Abflugart "
+_@M655_ "Abflug-Typ "
 
 #_@M656_ "Start type"
-_@M656_ "Abflugart "
+_@M656_ "Abflug-Typ "
 
 #_@M657_ "Start"
 _@M657_ "Start"
@@ -2012,7 +2030,7 @@ _@M665_ "Status: Aufgabe"
 _@M666_ "Status: Zeiten"
 
 #_@M667_ "Statute"
-_@M667_ "Landmeile"
+_@M667_ "Landmeilen bezogen"
 
 #_@M668_ "Steady"
 _@M668_ "Ständig"
@@ -2084,7 +2102,7 @@ _@M689_ "Wendepunkt "
 _@M690_ "Regeln"
 
 #_@M691_ "Task Speed "
-_@M691_ "Aufgabe Geschw. "
+_@M691_ "Aufgabe Geschw "
 
 #_@M692_ "Task Start"
 _@M692_ "Aufgabenstart"
@@ -2102,10 +2120,10 @@ _@M695_ "Distanz  "
 _@M696_ "Aufgaben-Datei existiert bereits"
 
 #_@M697_ "Task speed"
-_@M697_ "Aufgabe Geschw. "
+_@M697_ "Aufgabe Geschwindigkeit"
 
 #_@M698_ "Task to go"
-_@M698_ "ausstehende Aufgabenstrecke"
+_@M698_ "Restzeit Aufgabe"
 
 #_@M699_ "Task"
 _@M699_ "Aufgabe"
@@ -2120,19 +2138,19 @@ _@M701_ "Temp"
 _@M702_ "Helligkeit Terrain "
 
 #_@M703_ "Terrain colors "
-_@M703_ "Terrainfarben "
+_@M703_ "Terrainfarbschema "
 
 #_@M704_ "Terrain contrast "
 _@M704_ "Kontrast Terrain "
 
 #_@M705_ "Terrain display "
-_@M705_ "Terrain "
+_@M705_ "Terrain-Darst "
 
 #_@M706_ "Terrain file "
-_@M706_ "Gelände "
+_@M706_ "Terrain (DEM) "
 
 #_@M707_ "Terrain height "
-_@M707_ "Geländefreiheit "
+_@M707_ "Mindesthöhe üG "
 
 #_@M708_ "Terrain"
 _@M708_ "Terrain"
@@ -2140,6 +2158,7 @@ _@M708_ "Terrain"
 #_@M709_ "Terrain\nOFF"
 _@M709_ "Terrain\nAUS"
 
+# 710 REMOVED in v2.3
 #_@M710_ "Text Input Style "
 _@M710_ "Texteingabestil "
 
@@ -2150,13 +2169,13 @@ _@M711_ "Text:"
 _@M712_ "Thermikhöhenprofil "
 
 #_@M713_ "Thermal Orbiter "
-_@M713_ "Thermik Orbiter "
+_@M713_ "Zentrierhife (Orbiter) "
 
 #_@M714_ "Thermal height"
 _@M714_ "Höhe Aufwind"
 
 #_@M715_ "Thermal locator "
-_@M715_ "Thermik Locator "
+_@M715_ "Aufwindzentrum "
 
 #_@M716_ "This waypoint is read-only"
 _@M716_ "Dieser Wegpunkt kann nur gelesen werden"
@@ -2168,31 +2187,31 @@ _@M717_ "Zeit "
 _@M718_ "Aufzeichnungsrate Kreisen "
 
 #_@M719_ "Time step cruise "
-_@M719_ "Aufzeichnungsrate Gleiten "
+_@M719_ "Aufzeichnungsrate Vorflug "
 
 #_@M720_ "Time"
 _@M720_ "Zeit"
 
 #_@M721_ "Timing "
-_@M721_ "Zeitwahl "
+_@M721_ "Wählzeit "
 
 #_@M722_ "Toggle Map<>Commons"
-_@M722_ "Wechsele Karte<>Häufige"
+_@M722_ "Wechseln Karte<>Häufige"
 
 #_@M723_ "Toggle Map<>Landables"
-_@M723_ "Wechsele Karte<>Landefelder"
+_@M723_ "Wechseln Karte<>Landefelder"
 
 #_@M724_ "Toggle Map<>Traffic"
-_@M724_ "Wechsele Karte<>Verkehr"
+_@M724_ "Wechseln Karte<>Verkehr"
 
 #_@M725_ "Toggle Map<>current page"
-_@M725_ "Wechsele Karte<>aktuelle Seite"
+_@M725_ "Wechseln Karte<>akt Seite"
 
 #_@M726_ "Toggle overlays"
-_@M726_ "Wechsele Infoebenen"
+_@M726_ "Wechseln Infoebenen"
 
 #_@M727_ "Too many waypoints in task!"
-_@M727_ "Zu viele Wegpunkte in Aufgabe!"
+_@M727_ "Zu viele Wegpunkte in der Aufgabe!"
 
 #_@M728_ "Top Screen"
 _@M728_ "Kopfzeile"
@@ -2210,7 +2229,7 @@ _@M731_ "Topologie Zoom Niveaus"
 _@M732_ "Topologie Konfiguration gespeichert."
 
 #_@M733_ "Topology display "
-_@M733_ "Topologie "
+_@M733_ "Topologie-Darst "
 
 #_@M734_ "Topology labels"
 _@M734_ "Topologie Bezeichnungen"
@@ -2228,14 +2247,15 @@ _@M737_ "Kurs nach oben"
 _@M738_ "Verkehr"
 
 #_@M739_ "Trail drift "
-_@M739_ "Flugwegdrift "
+_@M739_ "Flugwegspurdrift "
 
 #_@M740_ "Trail length "
-_@M740_ "Flugweg "
+_@M740_ "Flugwegspur "
 
 #_@M741_ "Trail width "
-_@M741_ "Flugwegbreite "
+_@M741_ "Flugwegspurbreite "
 
+# 742 UNUSED after v2.3
 #_@M742_ "Triangle"
 _@M742_ "Dreieck"
 
@@ -2264,10 +2284,10 @@ _@M749_ "Wendepunkt"
 _@M750_ "Wendepunkt-Filter "
 
 #_@M751_ "Type "
-_@M751_ "Typ "
+_@M751_ "Polare "
 
 #_@M752_ "Type"
-_@M752_ "Typ"
+_@M752_ "Typ "
 
 #_@M753_ "UNKNOWN! "
 _@M753_ "UNBEKANNT! "
@@ -2275,17 +2295,17 @@ _@M753_ "UNBEKANNT! "
 #_@M754_ "UNLOCK"
 _@M754_ "ENTSPERREN"
 
-#_@M755_ "USING AVAILABLE BARO ALTITUDE"
-_@M755_ "NUTZE VERFÜGBARE BARO-HÖHE VOM:"
+#_@M755_ "USING AVAILABLE BARO ALTITUDE FROM:"
+_@M755_ "NUTZE VERFÜGBARE BARO-HÖHE VON"
 
-#_@M756_ "USING BARO ALTITUDE VOM:"
-_@M756_ "NUTZE BARO-HÖHE"
+#_@M756_ "USING BARO ALTITUDE FROM:"
+_@M756_ "NUTZE BARO-HÖHE VON"
 
 #_@M757_ "USING GPS ALTITUDE"
 _@M757_ "NUTZE GPS-HÖHE"
 
 #_@M758_ "UTC Offset "
-_@M758_ "UTC Offset "
+_@M758_ "UTC Diff/h "
 
 #_@M759_ "Unable to Change Settings on Port"
 _@M759_ "Kann Porteinstellungen nicht ändern"
@@ -2312,7 +2332,7 @@ _@M765_ "Unbekannt"
 _@M766_ "Nutze GPS-Zeit "
 
 #_@M767_ "Use HBar on/off"
-_@M767_ "Nutze HBar ein/aus"
+_@M767_ "Nutze HBar EIN/AUS"
 
 #_@M768_ "Use MacCready"
 _@M768_ "Nutze MacCready"
@@ -2324,7 +2344,7 @@ _@M769_ "Nutze durchschn. Gleitzahl"
 _@M770_ "Nutze Baro-Höhe "
 
 #_@M771_ "Use black outline*"
-_@M771_ "schwarze Kontur*"
+_@M771_ "Schwarze Kontur*"
 
 #_@M772_ "V ach"
 # erreichte Geschwindigkeit
@@ -2346,7 +2366,7 @@ _@M776_ "Gültige Zielankunft"
 _@M777_ "Gültiger Abflug"
 
 #_@M778_ "Values white"
-_@M778_ "Werte weiss"
+_@M778_ "Werte weiß"
 
 #_@M779_ "Variable"
 _@M779_ "Variable"
@@ -2372,6 +2392,7 @@ _@M785_ "Variometeranzeige "
 #_@M786_ "Very High"
 _@M786_ "Sehr hoch"
 
+# REMOVED after v2.3
 #_@M787_ "Virtual Keys "
 _@M787_ "Virtuelle Tasten "
 
@@ -2436,7 +2457,7 @@ _@M806_ "Wegpunkte 1 "
 _@M807_ "Wegpunkte 2 "
 
 #_@M808_ "Waypoints Text style "
-_@M808_ "Wegpunkte-Textstil "
+_@M808_ "Wegpunkte-Textfarbe "
 
 #_@M809_ "Waypoints edited"
 _@M809_ "Wegpunkte editiert"
@@ -2457,16 +2478,18 @@ _@M813_ "Wetter Parameter"
 _@M814_ "Gewicht"
 
 #_@M815_ "White outline"
-_@M815_ "Weisser Rand"
+_@M815_ "Weißer Rand"
 
 #_@M816_ "White"
-_@M816_ "Weiss"
+_@M816_ "Weiß"
 
 #_@M817_ "Will this be the finish?"
-_@M817_ "Ist das das Ende?"
+_@M817_ "Ist das das Ziel?"
 
 #_@M818_ "Wind Settings"
 _@M818_ "Windeingabe"
+
+# 819 REMOVED after 2.3
 
 #_@M819_ "Wind arrow"
 _@M819_ "Windpfeil"
@@ -2484,13 +2507,13 @@ _@M822_ "Winpilot"
 _@M823_ "Arbeitsband"
 
 #_@M824_ "Wpt outside terrain "
-_@M824_ "WP ausserhalb Terrain "
+_@M824_ "WP außerhalb Terrain "
 
 #_@M825_ "Yellow"
 _@M825_ "Gelb"
 
 #_@M826_ "Yes All"
-_@M826_ "Ja ALLES"
+_@M826_ "Ja Alles"
 
 #_@M827_ "Yes"
 _@M827_ "Ja"
@@ -2514,10 +2537,10 @@ _@M832_ "Wegpunkt hinzufügen"
 _@M833_ "auxiliary"
 
 #_@M834_ "circling"
-_@M834_ "kreisen"
+_@M834_ "Kreisen"
 
 #_@M835_ "cruise"
-_@M835_ "gleiten"
+_@M835_ "Vorflug"
 
 #_@M836_ "final glide"
 _@M836_ "Endanflug"
@@ -2535,7 +2558,7 @@ _@M839_ "Die ersten 10"
 _@M840_ "Die ersten 12"
 
 #_@M841_ "Font size "
-_@M841_ "Schriftgrösse "
+_@M841_ "Schriftgröße "
 
 #_@M842_ "Big font "
 _@M842_ "Große Schrift "
@@ -2595,10 +2618,10 @@ _@M865_ "NMEA Log AUS"
 _@M866_ "Qualität"
 
 #_@M867_ "ORBITER ON"
-_@M867_ "Orbiter EIN"
+_@M867_ "Zentrierh EIN"
 
 #_@M868_ "ORBITER OFF"
-_@M868_ "Orbiter AUS"
+_@M868_ "Zentrierh AUS"
 
 #_@M869_ "Inside airspace"
 _@M869_ "Im Luftraum"
@@ -2745,13 +2768,13 @@ _@M915_ "NICHT FÜR IFR"
 _@M916_ "WARNUNG, KEINE LANDEFELDER"
 
 #_@M917_ "Lat/Lon "
-_@M917_ "Lat/Lon "
+_@M917_ "Breite/Länge "
 
 #_@M918_ "Lat/Lon"
-_@M918_ "Lat/Lon "
+_@M918_ "Brei/Län "
 
 #_@M919_ "LatLon"
-_@M919_ "Lat/Lon "
+_@M919_ "Brei/Län "
 
 #_@M920_ "Error loading Polar file!"
 _@M920_ "Fehler beim Laden der Polaren-Datei!"
@@ -2826,10 +2849,16 @@ _@M941_ "Nur Umrandung"
 _@M942_ "Muster"
 
 #_@M943_ "Semi-Transparent"
-_@M943_ "Semi-Transparent"
+_@M943_ "Semi-transparent"
 
 #_@M944_ "Opacity "
 _@M944_ "Deckkraft "
+
+#_@M945_ "Pattern, borders only"
+_@M945_ "Muster, nur Rand"
+
+#_@M946_ "Semi-Transparent, borders only"
+_@M946_ "Semi-transparent, nur Rand"
 
 #_@M950_ "BottomBar Opacity "
 _@M950_ "Deckkraft Fußzeile "
@@ -2844,7 +2873,7 @@ _@M952_ "Kann Daten nicht auf Port schreiben!"
 _@M953_ "Transparent"
 
 #_@M954_ "Font Smoothing "
-_@M954_ "Font Smoothing "
+_@M954_ "Art Schriftglättung "
 
 #_@M955_ "ClearType"
 _@M955_ "ClearType"
@@ -2853,7 +2882,8 @@ _@M955_ "ClearType"
 _@M956_ "Anti Aliasing"
 
 # Page 1.5 name, keep short:
-_@M957_ "Contest"
+#_@M957_ "Contest"
+_@M957_ "Wettbewerb"
 
 # ON/OFF in dialog windows (not Menu)
 #_@M958_ "ON"
@@ -2946,7 +2976,7 @@ _@M1009_ "GZ letzte 20s [GZ.20s]"
 _@M1010_ "GZ.20s"
 
 #_@M1011_ "Eff.cruise last therm"
-_@M1011_ "GZ seit letzt. Aufw."
+_@M1011_ "GZ seit letztem Aufwind [GZ]"
 
 #_@M1012_ "E.Cru"
 _@M1012_ "GZ"
@@ -2976,7 +3006,7 @@ _@M1019_ "Aufwind Dauer le. [lA.Zeit]"
 _@M1020_ "lA.Zeit"
 
 #_@M1021_ "MacCready Setting"
-_@M1021_ "MacCready Wert"
+_@M1021_ "MacCready Wert [AutMC]"
 
 #_@M1022_ "McCready"
 _@M1022_ "McCready"
@@ -3001,10 +3031,10 @@ _@M1027_ "Nä. WP erf. Höhe [WP_erfHö]"
 _@M1028_ "WP_ErfHö"
 
 #_@M1029_ "Next Waypoint"
-_@M1029_ "Nä. Wegpunkt"
+_@M1029_ "Nächster Wegpunkt [Nä_WP]"
 
 #_@M1030_ "Next"
-_@M1030_ "Nächster"
+_@M1030_ "Nä_WP"
 
 #_@M1031_ "Task Alt.Arrival"
 _@M1031_ "Aufgabe Ank.-Höhe [A_Ankhö]"
@@ -3041,7 +3071,7 @@ _@M1039_ "_Reserviert 1"
 _@M1040_ "OLD fLD"
 
 #_@M1041_ "Terrain Elevation"
-_@M1041_ "Höhe Gelände"
+_@M1041_ "Höhe Gelände [Gnd]"
 
 #_@M1042_ "Gnd"
 _@M1042_ "Gnd"
@@ -3073,13 +3103,13 @@ _@M1049_ "Vario"
 _@M1050_ "Vario"
 
 #_@M1051_ "Wind Speed"
-_@M1051_ "Windstärke"
+_@M1051_ "Windgeschwindigkeit [WindV]"
 
 #_@M1052_ "WindV"
 _@M1052_ "WindV"
 
 #_@M1053_ "Wind Bearing"
-_@M1053_ "Windrichtung"
+_@M1053_ "Windrichtung [Windri]"
 
 #_@M1054_ "WindB"
 _@M1054_ "Windri"
@@ -3115,7 +3145,7 @@ _@M1063_ "AAT min. V [AATVmin]"
 _@M1064_ "AATVmin"
 
 #_@M1065_ "Airspeed IAS"
-_@M1065_ "Geschwindigkeit IAS"
+_@M1065_ "Geschwindigkeit IAS [IAS/eIAS]"
 
 #_@M1066_ "IAS"
 _@M1066_ "IAS"
@@ -3127,25 +3157,25 @@ _@M1067_ "Höhe Barometrisch [HBAR]"
 _@M1068_ "HBAR"
 
 #_@M1069_ "Speed MacCready"
-_@M1069_ "MacCready Geschw."
+_@M1069_ "MacCready Geschw.[VMc]"
 
 #_@M1070_ "SpMc"
 _@M1070_ "VMc"
 
 #_@M1071_ "Percentage clim"
-_@M1071_ "Steigen % Anteil"
+_@M1071_ "Steigen % Anteil [Steig%]"
 
 #_@M1072_ "%Climb"
-_@M1072_ "Steigen%"
+_@M1072_ "Steig%"
 
 #_@M1073_ "Time of flight"
-_@M1073_ "Flugzeit"
+_@M1073_ "Flugzeit [FlgZeit]"
 
 #_@M1074_ "FlyTime"
-_@M1074_ "Flugzeit"
+_@M1074_ "Flgzeit"
 
 #_@M1075_ "G load"
-_@M1075_ "Lastvielfache"
+_@M1075_ "Lastvielfache [G]"
 
 #_@M1076_ "G"
 _@M1076_ "G"
@@ -3158,23 +3188,23 @@ _@M1077_ "_Reserviert 2"
 _@M1078_ "OLD nLD"
 
 #_@M1079_ "Time local"
-_@M1079_ "Ortszeit"
+_@M1079_ "Ortszeit [Zeit]"
 
 #_@M1080_ "Time"
 _@M1080_ "Zeit"
 
 #_@M1081_ "Time UTC"
-_@M1081_ "Zeit UTC"
+_@M1081_ "Zeit UTC [UTC]"
 
 #_@M1082_ "UTC"
 _@M1082_ "UTC"
 
 #_@M1083_ "Task Time To Go"
-_@M1083_ "Aufgabe Restzeit"
+_@M1083_ "Aufgabe Restzeit [A_RZ]"
 
 #_@M1084_ "TskETE"
 #Aufgabe Erwartete Endzeit
-_@M1084_ "A_EEZ"
+_@M1084_ "A_RZ"
 
 #_@M1085_ "Next Time To Go"
 _@M1085_ "Nä. WP Zeit bis [WP_EEZ]"
@@ -3184,34 +3214,34 @@ _@M1085_ "Nä. WP Zeit bis [WP_EEZ]"
 _@M1086_ "WP_EEZ"
 
 #_@M1087_ "Speed To Fly"
-_@M1087_ "Sollfahrt Delphin [SFD]"
+_@M1087_ "Sollfahrt [SF]"
 
 #_@M1088_ "STF"
 # Speed to fly - Optimale Fahrt
-_@M1088_ "SFD"
+_@M1088_ "SF"
 
 #_@M1089_ "Netto Vario"
-_@M1089_ "Vario Netto"
+_@M1089_ "Vario Netto [Netto]"
 
 #_@M1090_ "Netto"
 _@M1090_ "Netto"
 
 #_@M1091_ "Task Arrival Time"
-_@M1091_ "Aufgabe Ank.-Zeit [A_erwAZ]"
+_@M1091_ "Aufgabe Ank.-Zeit [A_erwAnkZ]"
 
 #_@M1092_ "TskETA"
 # Aufgabe Erwartete Ankunftszeit
-_@M1092_ "A_erwAZ"
+_@M1092_ "A_erwAnkZ"
 
 #_@M1093_ "Next Arrival Time"
-_@M1093_ "Nä. WP Ank.-Zeit [WP_erwAZ]"
+_@M1093_ "Nä. WP Ank.-Zeit [WP_erwAnkZ]"
 
 #_@M1094_ "NextETA"
 # Nächste Erwartete Ankunftszeit
-_@M1094_ "WP_erwAZ"
+_@M1094_ "WP_erwAnkZ"
 
 #_@M1095_ "Bearing Difference"
-_@M1095_ "Peilung Differenz"
+_@M1095_ "Steuerkurs Differenz [<< >>]"
 
 #_@M1096_ "To"
 _@M1096_ "Nach"
@@ -3224,14 +3254,14 @@ _@M1097_ "Außenlufttemperatur [LTP]"
 _@M1098_ "LTP"
 
 #_@M1099_ "Relative Humidity"
-_@M1099_ "Relative Luftfeuchtigkeit"
+_@M1099_ "Relative Luftfeuchtigkeit [RelFeu]"
 
 #_@M1100_ "RelHum"
-#Relative Luft Feuchtigkeit
+#Relative Luftfeuchtigkeit
 _@M1100_ "RelFeu"
 
 #_@M1101_ "Forecast Temperature"
-_@M1101_ "Vorhersagetemperatur"
+_@M1101_ "Vorhersagetemperatur [MaxTemp]"
 
 #_@M1102_ "MaxTemp"
 _@M1102_ "MaxTemp"
@@ -3249,13 +3279,13 @@ _@M1105_ "AAT mtl. V z. Ziel [AATVzie]"
 _@M1106_ "AATVZie"
 
 #_@M1107_ "L/D vario"
-_@M1107_ "GZ Vario"
+_@M1107_ "GZ Vario [GZ var]"
 
 #_@M1108_ "L/D var"
 _@M1108_ "GZ var"
 
 #_@M1109_ "Airspeed TAS"
-_@M1109_ "Geschwindigkeit TAS"
+_@M1109_ "Geschwindigkeit TAS [TAS/eTAS]"
 
 #_@M1110_ "TAS"
 _@M1110_ "TAS"
@@ -3267,7 +3297,7 @@ _@M1111_ "Team Kode [TmKod]"
 _@M1112_ "TmKod"
 
 #_@M1113_ "Team Bearing"
-_@M1113_ "Team Peilung[TmPlg]"
+_@M1113_ "Team Peilung [TmPlg]"
 
 #_@M1114_ "TmBrng"
 _@M1114_ "TmPlg"
@@ -3292,7 +3322,7 @@ _@M1119_ "Aufgabe moment. V [A_Vmo]"
 _@M1120_ "A_Vmo"
 
 #_@M1121_ "Home Distance"
-_@M1121_ "Dist. Heimatfplz. [HeimDis]"
+_@M1121_ "Distanz Heimatflugpl. [HeimDis]"
 #_@M1122_ "HomeDis"
 # Distanz Heimflugplatz
 _@M1122_ "HeimDis"
@@ -3316,6 +3346,8 @@ _@M1127_ "Steigen gesamt [St.ges]"
 # Steigen gesamt
 _@M1128_ "St.ges"
 
+# 1129 and 1130 unused, can be used again
+
 #_@M1129_ "Distance Vario"
 _@M1129_ "Distanz Vario [DVario]"
 
@@ -3323,10 +3355,10 @@ _@M1129_ "Distanz Vario [DVario]"
 _@M1130_ "DVario"
 
 #_@M1131_ "Battery Percent"
-_@M1131_ "Batterie Prozent"
+_@M1131_ "Batteriestand % [Batt %]"
 
 #_@M1132_ "Battery"
-_@M1132_ "Batterie"
+_@M1132_ "Batt %"
 
 #_@M1133_ "Task Req.Efficiency"
 #Aufgabe Erforderliche Gleitzahl
@@ -3403,19 +3435,19 @@ _@M1155_ "BestAltern Ank.-Hö [BAtn.Ahö]"
 _@M1156_ "BAtn.Ahö"
 
 #_@M1157_ "Home Radial"
-_@M1157_ "Heim Radial [HeimRad]"
+_@M1157_ "Heim Radial [HeimRd]"
 
 #_@M1158_ "Radial"
-_@M1158_ "HeimRad"
+_@M1158_ "HeimRd"
 
 #_@M1159_ "Airspace Distance"
-_@M1159_ "Abstand Luftraum"
+_@M1159_ "Luftraum Horiz. Abstand [LR_HAb]"
 
 #_@M1160_ "ArSpace"
-_@M1160_ "Luftraum"
+_@M1160_ "LR_HAb"
 
 #_@M1161_ "Ext.Batt.Bank"
-_@M1161_ "Ext. Batt. Bank"
+_@M1161_ "Ext. Batt. Bank [xBnk#]"
 
 #_@M1162_ "xBnk#"
 _@M1162_ "xBnk#"
@@ -3617,15 +3649,244 @@ _@M1221_ "Herunterfahren, speichere Profil..."
 _@M1222_ "Herunterfahren, speichere Aufgabe..."
 
 
-# LK info page headers, try to use the same or less number of chars here,
+# Topology options reset msgbox
+#_@M1223_ "Topology reset to default values"
+_@M1223_ "Topologie rücksetzen auf Standardwerte"
 
+# -------------------------------------------------------------------------------------------
+# Waypoint filters 1229 no more than 3 chrs!
+#_@M1224_ "Airport"
+_@M1224_ "Flugplatz"
+
+#_@M1225_ "Landable"
+_@M1225_ "Landefeld"
+
+#_@M1226_ "Turnpoint"
+_@M1226_ "Wendepunkt"
+
+#_@M1227_ "File 1"
+_@M1227_ "Datei 1"
+
+#_@M1228_ "File 2"
+_@M1228_ "Datei 2"
+
+#Übersetzung unklar
+#_@M1229_ "HDG"
+_@M1229_ "HDG"
+
+# TeamCode dialog captions
+#_@M1230_ "Team Ref.: "
+_@M1230_ "Team Ref.: "
+
+#_@M1231_ "Team code: SET REF!"
+_@M1231_ "Team Kode: SETZE REF!"
+
+
+# Waypoint edit dialog (same or less chars!)
+#_@M1232_ "Lat"
+_@M1232_ "Br"
+
+#_@M1233_ "Latitude"
+_@M1233_ "Breite "
+
+#_@M1234_ "Lon"
+_@M1234_ "Lä"
+
+#_@M1235_ "Longitude"
+_@M1235_ "Länge "
+
+# Waypoint list flags (Home,Airport,Landable,Turnpoint) 1chr!
+#_@M1236_ "H"
+_@M1236_ "H"
+
+#_@M1237_ "A"
+_@M1237_ "F"
+
+#_@M1238_ "L"
+_@M1238_ "L"
+
+#_@M1239_ "T"
+_@M1239_ "W"
+
+# dlgLKAirspaceWarning - Airspace warning messages
+#_@M1240_ "Entering"
+_@M1240_ "Einflug"
+
+#_@M1241_ "Leaving"
+_@M1241_ "Ausflug"
+
+#_@M1242_ "Flying inside FLY zone"
+_@M1242_ "Flug in Flugzone"
+
+#_@M1243_ "Predicted leaving FLY zone"
+_@M1243_ "Vorauss Ausflug Flugzone"
+
+#_@M1244_ "Near leaving FLY zone"
+_@M1244_ "Nahe Ausflug Flugzone"
+
+#_@M1245_ "Leaving FLY zone"
+_@M1245_ "Ausflug Flugzone"
+
+#_@M1246_ "Predicted entering FLY zone"
+_@M1246_ "Vorauss Einflug Flugzone"
+
+#_@M1247_ "Entering FLY zone"
+_@M1247_ "Einflug Flugzone"
+
+#_@M1248_ "Flying outside FLY zone"
+_@M1248_ "Flug außerhalb Flugzone"
+
+#_@M1249_ "Flying outside NOFLY zone"
+_@M1249_ "Flug außerhalb Sperrzone"
+
+#_@M1250_ "Predicted entering NOFLY zone"
+_@M1250_ "Vorauss Einflug Sperrzone"
+
+#_@M1251_ "Near entering NOFLY zone"
+_@M1251_ "Nahe Einflug Sperrzone"
+
+#_@M1252_ "Entering NOFLY zone"
+_@M1252_ "Einflug Sperrzone"
+
+#_@M1253_ "Flying inside NOFLY zone"
+_@M1253_ "Flug in Sperrzone"
+
+#_@M1254_ "Leaving NOFLY zone"
+_@M1254_ "Ausflug Sperrzone"
+
+#_@M1255_ "YELLOW WARNING"
+_@M1255_ "WARNUNG GELB"
+
+#_@M1256_ "RED WARNING"
+_@M1256_ "WARNUNG ROT"
+
+#_@M1257_ "to leave"
+_@M1257_ "zu verlassen"
+
+#_@M1258_ "to enter"
+_@M1258_ "einzufliegen"
+
+#_@M1259_ "Too far, not calculated"
+_@M1259_ "zu entfernt, nicht berechnet"
+
+#_@M1260_ "below"
+_@M1260_ "unterhalb"
+
+#_@M1261_ "above"
+_@M1261_ "oberhalb"
+
+#_@M1262_ "Message"
+_@M1262_ "Nachricht"
+
+#_@M1263_ "WarnLevel"
+_@M1263_ "Warnstufe"
+
+#_@M1264_ "HDist"
+_@M1264_ "HDist"
+
+#_@M1265_ "VDist"
+_@M1265_ "VDist"
+
+# dlgAirspaceDetails - Airspace details
+#_@M1266_ "AckLevel"
+_@M1266_ "Bestätigungsstufe"
+
+#_@M1267_ "Yellow acknowledged"
+_@M1267_ "GELB bestätigt"
+
+#_@M1268_ "Red acknowledged"
+_@M1268_ "ROT bestätigt"
+
+#_@M1269_ "Disabled"
+_@M1269_ "Deaktiviert"
+
+#_@M1270_ "FLY-IN"
+_@M1270_ "EINFLUG"
+
+#_@M1271_ "FLY-OUT"
+_@M1271_ "AUSFLUG"
+
+#_@M1272_ "Set as FLY zone?"
+_@M1272_ "Als Flugzone setzen?"
+
+#_@M1273_ "Set as NOFLY zone?"
+_@M1273_ "Als Sperrzone setzen?"
+
+# dlgConfig - Airspace warnings
+#_@M1274_ "Warnings"
+_@M1274_ "Warnungen"
+ 
+#_@M1275_ "Airspace warning parameters"
+_@M1275_ "Parameter Luftraum-Warnungen"
+
+#_@M1276_ "Airspace warning parameters saved."
+_@M1276_ "Parameter Luftraum-Warnungen gespeichert"
+
+#_@M1277_ "Msg repeat time "
+_@M1277_ "Wiederholzeit Nachricht "
+
+#_@M1278_ "Vertical margin "
+_@M1278_ "Oberer Rand "
+
+#_@M1279_ "Msg timeout "
+_@M1279_ "Nachrichtenpause "
+
+#_@M1280_ "Enable this airspace?"
+_@M1280_ "Diesen Luftraum freigeben?"
+
+#_@M1281_ "Map labels "
+_@M1281_ "Karten Bezeichnungen "
+
+#_@M1282_ "ENABLE"
+_@M1282_ "AKTIVIERE"
+
+#_@M1283_ "DISABLE"
+_@M1283_ "DEAKTIVIERE"
+
+#_@M1284_ "Disable this airspace?"
+_@M1284_ "Diesen Luftraum sperren?"
+
+# new airspace infobox
+#_@M1285_ "Airspace Vertical Dist"
+_@M1285_ "Luftraum Vertik Abstand [LR_VAb]"
+
+#_@M1286_ "ArSpcV"
+_@M1286_ "LR_VAb"
+
+# airspace analysis dialog page
+#_@M1287_ "Heading"
+_@M1287_ "Flugrichtung"
+
+#_@M1288_ "Showing towards next waypoint"
+_@M1288_ "Auf nächsten Wegpunkt gerichtet"
+
+#_@M1289_ "Next WP"
+_@M1289_ "Nächster WP"
+
+#_@M1290_ "Showing towards heading"
+_@M1290_ "In Flugrichtung"
+
+
+#_@M1291_ "Near AS"
+_@M1291_ "Nächster LR"
+
+#_@M1292_ "Showing towards nearest airspace"
+_@M1292_ "Zeige Richtung nächster Luftraum"
+
+#_@M1293_ "INSIDE"
+_@M1293_ "INNERHALB"
+
+
+#--------------------------------------------------------------------------------------------------------------------
+
+# LK info page headers, try to use the same or less number of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!
 
 #_@M1300_ "Dist"
 _@M1300_ "Dist"
 
 #_@M1301_ "Dir"
-_@M1301_ "Rich"
+_@M1301_ "Richt"
 
 #_@M1302_ "rEff"
 _@M1302_ "erfGZ"
@@ -3754,7 +4015,7 @@ _@M1335_ " GELÄNDE?"
 #_@M1336_ " T?"
 _@M1336_ " T?"
 
-#_@M1337_ " AZM"
+#_@M1337_ " AZM" bedeutet Autozoom-Modus
 _@M1337_ " AZM"
 
 #_@M1338_ " PAN"
@@ -3770,7 +4031,7 @@ _@M1340_ " KRS0"
 _@M1341_ " NAV1"
 
 #_@M1342_ " ALT2"
-_@M1342_ " ALT2"
+_@M1342_ " HÖH2"
 
 #_@M1343_ " STA3"
 _@M1343_ " STA3"
@@ -3824,10 +4085,10 @@ _@M1357_ "BATTERIE-WARNUNGEN DEAKTIVIERT"
 _@M1400_ "Deklaration Aufgabe"
 
 #_@M1401_ "Enabling declaration mode"
-_@M1401_ "Schalte Deklarationsmodus ein"
+_@M1401_ "Schalte Deklarationsmodus EIN"
 
 #_@M1402_ "Disabling declaration mode"
-_@M1402_ "Schalte Deklarationsmodus aus"
+_@M1402_ "Schalte Deklarationsmodus AUS"
 
 #_@M1403_ "Sending declaration"
 _@M1403_ "Sende Deklaration"
@@ -3876,16 +4137,16 @@ _@M1423_ "Während des Fluges verboten!"
 # Variometer Bar
 #
 #_@M1424_ "VarioBar mode"
-_@M1424_ "Vario Modus"
+_@M1424_ "Vario-Modus "
 
 #_@M1425_ "Vario in thermal and cruise"
-_@M1425_ "Vario beim Kreisen und im Vorflug"
+_@M1425_ "Vario Kreisen und im Vorflug"
 
 #_@M1426_ "Vario in thermal, Netto in cruise"
-_@M1426_ "Vario beim Kreisen, Netto im Vorflug"
+_@M1426_ "Vario Kreisen, Netto im Vorflug"
 
 #_@M1427_ "Vario in thermal, STF in cruise"
-_@M1427_ "Vario beim Kreisen, Sollfahrt im Vorflug"
+_@M1427_ "Vario Kreisen, SF im Vorflug"
 #
 # Contests
 #
@@ -4061,4 +4322,839 @@ _@M1505_ "OLC Plus*vorherges Punkte"
 # OLC-Plus Punkte
 #_@M1506_ "PLS*scr"
 #_@M1506_ "PLS*Pkt"
+
+
+# #############################
+# NEW 2.4 messages
+# #############################
+
+# Device name for "no device"
+#_@M1600_ "DISABLED"
+_@M1600_ "INAKTIV"
+
+# Ex-963, new message for screen unlock
+#_@M1601_ "Double-Click on Low-Right Corner to UNLOCK"
+_@M1601_ "ENTSPERREN mit Doppelklick auf rechte untere Ecke"
+
+# Config system menu page 
+#_@M1602_ "Configure Bottom Bar"
+_@M1602_ "Konfiguriere Fußzeile"
+
+#_@M1603_ "Configure Info Pages"
+_@M1603_ "Konfiguriere Info-Seiten"
+
+#_@M1604_ "Configure xxxx"
+_@M1604_ "Konfiguriere xxxx"
+
+#_@M1605_ "Bottom Bar"
+_@M1605_ "Fußzeile"
+
+#_@M1606_ "Info Pages"
+_@M1606_ "Info-Seiten"
+
+#_@M1607_ "Bottom Bar Config Saved"
+_@M1607_ "Fußzeilenkonfig gespeichert"
+
+#_@M1608_ "Info Pages Config Saved"
+_@M1608_ "Info-Seitenkonfig gespeichert"
+
+# Config InfoPages
+#_@M1610_ "1.1 Cruise "
+_@M1610_ "1.1 Vorfl "
+
+#_@M1611_ "1.2 Thermal "
+_@M1611_ "1.2 Kreisen "
+
+#_@M1612_ "1.3 Task "
+_@M1612_ "1.3 Aufgabe "
+
+#_@M1613_ "1.4 Custom "
+_@M1613_ "1.4 AUX "
+
+#_@M1614_ "1.5 Contest "
+_@M1614_ "1.5 Wettbewerb "
+
+#_@M1615_ "1.6 Turn "
+_@M1615_ "1.6 Wende "
+
+#_@M1616_ "2.1 APT "
+_@M1616_ "2.1 FPLe "
+
+#_@M1617_ "2.2 LND "
+_@M1617_ "2.2 LNDF "
+
+#_@M1618_ "2.3 TPS "
+_@M1618_ "2.3 WDPTe "
+
+#_@M1619_ "2.4 ASP "
+_@M1619_ "2.4 LR "
+
+#_@M1620_ "3.1 COMN "
+_@M1620_ "3.1 HÄUF "
+
+#_@M1621_ "3.2 HIST "
+_@M1621_ "3.2 HIST "
+
+#_@M1622_ "3.3 THERM "
+_@M1622_ "3.3 AUFW "
+
+# New airspace messages
+#_@M1630_ "Height margin "
+_@M1630_ "Obere Begrenzung "
+
+
+# Navboxes
+#_@M1640_ "Current Flaps"
+_@M1640_ "Wölbung [Wölb]"
+
+#_@M1641_ "Flaps"
+_@M1641_ "Wölb"
+
+
+# Header nearest Airspaces
+#_@M1642_ "ASP"
+_@M1642_ "LR"
+
+#_@M1643_ "ENABLED"
+_@M1643_ "AKTIV"
+
+#_@M1644_ "Home Alt.Arrival"
+_@M1644_ "Heim Ank.Höhe [HeimAH]"
+
+#_@M1645_ "HomeArr"
+_@M1645_ "HeimAH"
+
+# Menu Config 15, Alarms
+#_@M1646_ "15 Alarms"
+_@M1646_ "15 Alarme"
+
+#_@M1647_ "Max Altitude 1 "
+_@M1647_ "Max Höhe 1 "
+
+#_@M1648_ "Max Altitude 2 "
+_@M1648_ "Max Höhe 2 "
+
+#_@M1649_ "Max Altitude 3 "
+_@M1649_ "Max Höhe 3 "
+
+# "ALARM x ALTITUDE 1234"   warning message
+#_@M1650_ "ALARM"
+_@M1650_ "ALARM"
+
+#_@M1651_ "ALTITUDE"
+_@M1651_ "HÖHE"
+
+# customkey for airspace analysis
+#_@M1652_ "Airspace Analysis"
+_@M1652_ "Luftraum Analyse"
+
+#_@M1653_ "Toggle Map<>Airspace infopage"
+_@M1653_ "Wechseln Karte<>LR-Seite"
+
+# Airspace details buttons
+#_@M1654_ "SELECT"
+_@M1654_ "WÄHLE"
+
+#_@M1655_ "ANALYSIS"
+_@M1655_ "ANALYSE"
+
+#_@M1656_ "*UNSELECTED*"
+_@M1656_ "*ABGEWÄHLT*"
+
+# customkeys zoom 
+#_@M1657_ "Zoom In"
+_@M1657_ "Zoom hinein"
+
+#_@M1658_ "Zoom Out"
+_@M1658_ "Zoom heraus"
+
+#_@M1659_ "Zoom In More"
+_@M1659_ "Zoom weiter hinein"
+
+#_@M1660_ "Zoom Out More"
+_@M1660_ "Zoom weiter heraus"
+
+# Active map indicator in map scale (with AZM, NAV1 etc.), 3 letters!
+#_@M1661_ "ACT"
+_@M1661_ "ACT"
+
+# Error message
+#_@M1662_ "SYSTEM ERROR"
+_@M1662_ "SYSTEM FEHLER"
+
+#_@M1663_ "NOT ENOUGH MEMORY"
+_@M1663_ "ZUWENIG SPEICHER"
+
+
+# Total energy configuration 
+# Toggle is for customkey config
+#_@M1666_ "Toggle TotalEnergy"
+_@M1666_ "Nutze Gesamtenergie"
+
+#_@M1667_ "TOTAL ENERGY IN USE!"
+_@M1667_ "GESAMTENERGIE WIRD GENUTZT!"
+
+#_@M1668_ "TOTAL ENERGY OFF"
+_@M1668_ "GESAMTENERGIE NICHT GENUTZT"
+
+#_@M1669_ "Use TotalEnergy"
+_@M1669_ "Nutze Gesamtenergie TE "
+
+# Header Thermal History keep short!
+#_@M1670_ "THR"
+_@M1670_ "AHIS"
+
+# average lift 
+#_@M1671_ "ThAvg"
+_@M1671_ "mAfw"
+
+#_@M1672_ "Thermal Details"
+_@M1672_ "Details Aufwind"
+
+#_@M1673_ "Avg"
+_@M1673_ "Dsn"
+
+# Auto MC configuration
+#_@M1674_ "Auto Mc "
+_@M1674_ "Auto Mc "
+
+# Menu buttons MacCready, keep very short! - F C E are the overlay indicators
+# Fin Th Equ  are fron button shortcuts, max 3 letters!
+_@M1675_ "Final"
+
+
+#_@M1676_ "F"
+_@M1676_ "F"
+
+#_@M1677_ "ThAll"
+_@M1677_ "gAfw"
+
+#_@M1678_ "T"
+_@M1678_ "T"
+
+#_@M1679_ "Equiv"
+_@M1679_ "Äquiv"
+
+#_@M1680_ "E"
+_@M1680_ "Ä"
+
+#_@M1681_ "Fin"
+_@M1681_ "Fin"
+
+#_@M1682_ "Th"
+_@M1682_ "Af"
+
+#_@M1683_ "Eq"
+_@M1683_ "Äq"
+
+# Change 118 average climb with average thermal
+#_@M1684_ "Average thermal (Th.All)"
+_@M1684_ "mittlerer Aufwind (m.Afw)"
+
+# Change 148 with 1685
+#_@M1685_ "Both Final+Average"
+_@M1685_ "Beide Final+Durchschn"
+
+# Optimized routes for paraglider
+#_@M1686_ "Optimized route"
+_@M1686_ "Optimierte Strecke"
+
+#_@M1687_ "Toggle Optimize Route"
+_@M1687_ "Wechseln Optimierung Strecke"
+
+
+# Customkey name
+#_@M1688_ "Screen Lock"
+_@M1688_ "Sperre Anzeige"
+
+#_@M1689_ "Oracle"
+_@M1689_ "Orakel"
+
+# ORACLE
+#_@M1690_ "THE LK8000 ORACLE"
+_@M1690_ "Das LK8000-ORAKEL"
+
+#_@M1691_ "THE ORACLE IS THINKING"
+_@M1691_ "DAS ORAKEL DENKT NACH..."
+
+#_@M1692_ "PLEASE WAIT..."
+_@M1692_ "BITTE WARTEN..."
+
+# Customkey
+#_@M1693_ "Change+ Terrain Colors"
+_@M1693_ "Terrainfarbe ändern +"
+
+
+# Safety Altitude indicator on overlay
+#_@M1694_ "+ SAFETY"
+_@M1694_ "+ SICHERHEIT"
+
+#infobox Logger status
+#_@M1695_ "Logger"
+_@M1695_ "Logger"
+
+# max 3-4 chars!
+#_@M1696_ "auto"
+_@M1696_ "auto"
+
+# PG autozoom threshold on config page 23
+#_@M1697_ "Autozoom threshold "
+_@M1697_ "Autozoom Schwelle "
+
+#Multitarget bearing infobox
+#_@M1698_ "Multitarget Bearing"
+_@M1698_ "Multitarget Kurs [MtKurs]"
+
+#_@M1699_ "BrgMtg"
+_@M1699_ "MtKurs"
+
+# Logger status
+#_@M1700_ "ON"
+_@M1700_ "EIN"
+
+#_@M1701_ "no"
+_@M1701_ "nein"
+
+# dialogs for The Oracle
+#_@M1702_ "ORACLE WANTS GPS FIX"
+_@M1702_ "Das ORACLE braucht einen GPS-FIX"
+#_@M1703_ "North"
+_@M1703_ "nordlich"
+
+#_@M1704_ "North-East"
+_@M1704_ "nordöstlich"
+
+#_@M1705_ "East"
+_@M1705_ "östlich"
+
+#_@M1706_ "South-East"
+_@M1706_ "südostlich"
+
+#_@M1707_ "South"
+_@M1707_ "südlich"
+
+#_@M1708_ "South-West"
+_@M1708_ "südwestlich"
+
+#_@M1709_ "West"
+_@M1709_ "westlich"
+
+#_@M1710_ "North-West"
+_@M1710_ "nordwestlich"
+
+# 3km south-west of ..
+#_@M1711_ "of"
+_@M1711_ ""
+#_@M1712_ "Near"
+_@M1712_ "Nahe"
+#_@M1713_ "Over"
+_@M1713_ "Über"
+#_@M1714_ "the city"
+_@M1714_ "der Stadt"
+
+# 2km South of the city
+#_@M1715_ "of the city"
+_@M1715_ "der Stadt"
+#_@M1716_ "Over the city"
+_@M1716_ "Über der Stadt"
+
+# over the city and (lake)
+#_@M1717_ "and"
+_@M1717_ "und"
+
+# 2km south of city , over (lake)
+#_@M1718_ "over"
+_@M1718_ "über"
+#_@M1719_ "near to"
+_@M1719_ "nahe"
+
+# grass airport, small airport
+#_@M1720_ "the airfield of"
+_@M1720_ "des Flugplatzes von"
+
+# outlanding field, not an airport/airfield
+#_@M1721_ "the field of"
+_@M1721_ "des Landefeldes von"
+#_@M1722_ "the airport of"
+_@M1722_ "des Flugplatzes von"
+#_@M1723_ "Near to"
+_@M1723_ "Nahe"
+#_@M1724_ "YOUR POSITION:"
+_@M1724_ "DEINE POSITION:"
+#_@M1725_ "VERY SORRY"
+_@M1725_ "LEIDER, LEIDER"
+#_@M1726_ "YOUR POSITION IS UNKNOWN!"
+_@M1726_ "DEINE POSITION IST NICHT FESTSTELLBAR!"
+
+# 1727-1739 reserved for The Oracle
+# next available is 1740
+
+#_@M1740_ "OLC analysis"
+_@M1740_ "OLC Analyse"
+
+#_@M1741_ "**RESET DEFAULT PROFILE**"
+_@M1741_ "**RÜCKSETZEN AUF STANDARDPROFIL**"
+
+# free space , to be used 1744-1760
+#_@M1742_ "AGL:"
+_@M1742_ "HüG:"
+
+#_@M1743_ "ELV:"
+_@M1743_ "GHö:"
+
+# this was the old V rough air. Leave a trailing space!
+#_@M1744_ "Max Speed "
+_@M1744_ "Maximalfahrt "
+
+# new startup profile buttons
+#_@M1745_ "AIRCRAFT"
+_@M1745_ "FLUGZEUG"
+
+#_@M1746_ "SYSTEM"
+_@M1746_ "SYSTEM"
+
+# new button caption on task overview dialog, appears only in PG/HG mode
+#_@M1747_ "Timegates"
+_@M1747_ "Startfenster"
+
+#_@M1748_ "Logbook"
+_@M1748_ "Logbuch"
+
+#_@M1749_ "File not found"
+_@M1749_ "Datei nicht gefunden"
+
+#_@M1750_ "Empty"
+_@M1750_ "Leere"
+
+#_@M1751_ "CONFIRM FLIGHT BOOK RESET?"
+_@M1751_ "BESTÄTIGE RÜCKSETZEN FLUGBUCH?"
+
+#_@M1752_ "FLIGHT BOOK RESET"
+_@M1752_ "FLUGBUCH RÜCKSETZEN"
+
+#_@M1753_ "List of flights"
+_@M1753_ "Flugliste"
+
+
+# These are new infoboxes:
+#_@M1761_ "Alternate1 bearing"
+_@M1761_ "Peilung Alternative 1 [Name Atn1]"
+
+#_@M1762_ "Alternate2 bearing"
+_@M1762_ "Peilung Alternative 2 [Name Atn2]"
+
+#_@M1763_ "BestAlternate bearing"
+_@M1763_ "Peilung BesteAlternative [Name BA]"
+
+#_@M1764_ "Alternate1 distance"
+_@M1764_ "Distanz Alternative 1 [Name Atn1]"
+
+#_@M1765_ "Alternate2 distance"
+_@M1765_ "Distanz Alternative 2 [Name Atn2]"
+
+#_@M1766_ "BestAlternate distance"
+_@M1766_ "Distanz BesteAlternative [Name BA]"
+
+#_@M1767_ "Max Altitude reached"
+_@M1767_ "Höhe maximal err. [HöheMax]"
+
+#_@M1768_ "MaxAlt"
+_@M1768_ "HöheMax"
+
+#_@M1769_ "Max Height gained"
+_@M1769_ "Höhengewinn max [HöGew]"
+
+#_@M1770_ "Hgain"
+_@M1770_ "HöGew"
+
+#_@M1771_ "Head Wind speed"
+_@M1771_ "Gegenwind [GgWind]"
+
+#_@M1772_ "HdWind"
+_@M1772_ "GgWind"
+
+
+# Customkey
+#_@M1774_ "Change- Terrain Colors"
+_@M1774_ "Terrainfarbe ändern -"
+
+
+
+############################################################
+#                  - MENU MESSAGES - 
+#
+#             DO NOT REMOVE OR CHANGE \n  
+#       it means New Line, for line splitting!!
+#
+############################################################
+
+#_@M2001_ "Zoom\nin"
+_@M2001_ "Zoom\nhinein"
+
+#_@M2002_ "Zoom\nout"
+_@M2002_ "Zoom\nheraus"
+
+#_@M2003_ "Nearest\nWaypoint"
+_@M2003_ "Nächster\nWegpunkt"
+
+#_@M2004_ "Pan\n"
+_@M2004_ "Pan\n"
+
+#_@M2005_ "Full\nScreen"
+_@M2005_ "Voll-\nBild"
+
+#_@M2006_ "Display\n1/3"
+_@M2006_ "Anzeige\n1/3"
+
+#_@M2007_ "Display\n2/3"
+_@M2007_ "Anzeige\n2/3"
+
+#_@M2008_ "Display\n3/3"
+_@M2008_ "Anzeige\n3/3"
+
+#_@M2009_ "Zoom"
+_@M2009_ "Zoom"
+
+#_@M2010_ "Navi\n1/3"
+_@M2010_ "Navigat\n1/3"
+
+#_@M2011_ "Cancel"
+_@M2011_ "Abbruch"
+
+#_@M2012_ "Back"
+_@M2012_ "Zurück"
+
+#_@M2013_ "Task\nCalc"
+_@M2013_ "Aufgabe\nberechnen"
+
+#_@M2014_ "Advance\n"
+_@M2014_ "Fortschritt\n"
+
+#_@M2015_ "Waypoint\nLookup"
+_@M2015_ "Wegpunkt\nSuche"
+
+#_@M2016_ "Nav\n2/3"
+_@M2016_ "Navigat\n2/3"
+
+#_@M2017_ "Task\nEdit"
+_@M2017_ "Aufgabe\neditieren"
+
+#_@M2018_ "Task\nClear"
+_@M2018_ "Aufgabe\nlöschen"
+
+#_@M2019_ "Task\nRestart"
+_@M2019_ "Aufgabe\nNeustart"
+
+#_@M2020_ "Target"
+_@M2020_ "Ziel"
+
+#_@M2021_ "Team\nCode"
+_@M2021_ "Team\nKode"
+
+#_@M2022_ "Nav\n3/3"
+_@M2022_ "Navigat\n3/3"
+
+#_@M2023_ "Reserv"
+_@M2023_ "Reserviert"
+
+#_@M2024_ "Time\nGates"
+_@M2024_ "Zeit-\nFenster"
+
+#_@M2025_ "Multi\nTarget"
+_@M2025_ "Multi\nTarget"
+
+#_@M2026_ "Labels"
+_@M2026_ "Bezeichn"
+
+#_@M2027_ "Topology"
+_@M2027_ "Topologie"
+
+#_@M2028_ "Terrain"
+_@M2028_ "Terrain"
+
+#_@M2029_ "AirSpace"
+_@M2029_ "Luftraum"
+
+#_@M2030_ "VisualGld"
+_@M2030_ "VisualGld"
+
+#_@M2031_ "Thermal"
+_@M2031_ "Kreisen"
+
+#_@M2032_ "Cruise"
+_@M2032_ "Vorflug"
+
+#_@M2033_ "Final"
+_@M2033_ "Endanflug"
+
+#_@M2034_ "Auto"
+_@M2034_ "Auto"
+
+#_@M2035_ "Trail"
+_@M2035_ "Spur"
+
+#_@M2036_ "Invert\nText"
+_@M2036_ "Invertiere\nText"
+
+#_@M2037_ "Topo\nBack"
+_@M2037_ "Farbe\nHintergrund"
+
+#_@M2038_ "Map\nOrient"
+_@M2038_ "Karten-\nAusrichtung"
+
+#_@M2039_ "Config\n1/3"
+_@M2039_ "Konfigur\n1/3"
+
+#_@M2040_ "Config\n2/3"
+_@M2040_ "Konfigur\n2/3"
+
+#_@M2041_ "Config\n3/3"
+_@M2041_ "Konfigur\n3/3"
+
+#_@M2042_ "Setup\nBasic"
+_@M2042_ "Basis\nDaten"
+
+#_@M2043_ "Setup\nWind"
+_@M2043_ "Wind\nEinstellung"
+
+#_@M2044_ "ActivMap"
+_@M2044_ "ActivMap"
+
+#_@M2045_ "Nav by"
+_@M2045_ "Nav mit"
+
+#_@M2046_ "Setup\nSystem"
+_@M2046_ "System-\nEinstellg"
+
+#_@M2047_ "Clear\nMarks"
+_@M2047_ "Lösche\nBoje"
+
+#_@M2048_ "Logger"
+_@M2048_ "Logger"
+
+#_@M2049_ "Logger\nReplay"
+_@M2049_ "Logger\nWiedergabe"
+
+#_@M2050_ "NMEA\nLogger"
+_@M2050_ "NMEA\nLogger"
+
+#_@M2051_ "Setup"
+_@M2051_ "Einstellungen"
+
+#_@M2052_ "Zero\nQFE"
+_@M2052_ "QFE\nsetzen"
+
+#_@M2053_ "Reset\nComms"
+_@M2053_ "Ser-Ports\nrücksetzen"
+
+#_@M2054_ "Profiles"
+_@M2054_ "Profile"
+
+#_@M2055_ "Sounds"
+_@M2055_ "Klänge"
+
+#_@M2056_ "Info\n1/2"
+_@M2056_ "Informat\n1/2"
+
+#_@M2057_ "Info\n2/2"
+_@M2057_ "Informat\n2/2"
+
+#_@M2058_ "Where\nAm I?"
+_@M2058_ "Wo bin\nich?"
+
+#_@M2059_ "Nearest\nWaypoint"
+_@M2059_ "Nächster\nWegpunkt"
+
+#_@M2060_ "Nearest\nAirspace"
+_@M2060_ "Nächster\nLuftraum"
+
+#_@M2061_ "Status"
+_@M2061_ "Status"
+
+#_@M2062_ "Analysis"
+_@M2062_ "Analyse"
+
+#_@M2063_ "Notepad"
+_@M2063_ "Notizen"
+
+#_@M2064_ "Message\nRepeat"
+_@M2064_ "Meldung\nwiederholen"
+
+#_@M2065_ "Orbiter"
+_@M2065_ "Zentrierh"
+
+#_@M2066_ "Nav"
+_@M2066_ "Navigat"
+
+#_@M2067_ "Info"
+_@M2067_ "Informat"
+
+#_@M2068_ "Config"
+_@M2068_ "Konfigur"
+
+#_@M2069_ "Display"
+_@M2069_ "Anzeige"
+
+#_@M2070_ "Location\nMarker"
+_@M2070_ "Setze\nBoje"
+
+#_@M2071_ "TrueWind\nCalc"
+_@M2071_ "TrueWind\nberechnen"
+
+#_@M2072_ "Screen\nViews"
+_@M2072_ "Darstellung"
+
+#_@M2073_ "Exit"
+_@M2073_ "Ende"
+
+#_@M2074_ "SIM\nMENU"
+_@M2074_ "Simulations-\nMenü"
+
+#_@M2075_ "Therm"
+_@M2075_ "Aufw"
+
+#_@M2076_ "Equiv"
+_@M2076_ "Äquiv"
+
+#_@M2077_ "Manual"
+_@M2077_ "Manuell"
+
+#_@M2078_ "OK"
+_@M2078_ "OK"
+
+#_@M2079_ "Overlays"
+_@M2079_ "Overlays"
+
+#_@M2080_ "Shading"
+_@M2080_ "Schattierung"
+
+#_@M2081_ "Set\nMap"
+_@M2081_ "Karte\ndrehen"
+
+#_@M2082_ "PAN"
+_@M2082_ "PAN"
+
+#_@M2083_ "North\nUp"
+_@M2083_ "Nord\noben"
+
+#_@M2084_ "Track\nUp"
+_@M2084_ "Kurs\noben"
+
+#_@M2085_ "North\ncircle"
+_@M2085_ "Nord\nkreisen"
+
+#_@M2086_ "Target\ncircle"
+_@M2086_ "Ziel\nkreisen"
+
+#_@M2087_ "North\nSmart"
+_@M2087_ "Nord\nsmart"
+
+#_@M2088_ "REBOOT"
+_@M2088_ "Neu starten"
+
+#_@M2089_ "Lowest"
+_@M2089_ "Tiefster"
+
+#_@M2090_ "Default"
+_@M2090_ "Standard"
+
+#_@M2091_ "Averag"
+_@M2091_ "Durchschn"
+
+#_@M2092_ "Highest"
+_@M2092_ "Höchster"
+
+#_@M2093_ "ON"
+_@M2093_ "EIN"
+
+#_@M2094_ "OFF"
+_@M2094_ "AUS"
+
+#_@M2095_ "Normal\nALL ON"
+_@M2095_ "Standard\nALLES EIN"
+
+#_@M2096_ "Led+Buz\nALL OFF"
+_@M2096_ "LED+Signal\nALLES AUS"
+
+#_@M2097_ "Led OFF\nBuz ON"
+_@M2097_ "LED AUS\nSignal EIN"
+
+#_@M2098_ "Led ON\nBuz OFF"
+_@M2098_ "LED EIN\nSignal AUS"
+
+#_@M2099_ "<< Left"
+_@M2099_ "<< Links"
+
+#_@M2100_ "UP"
+_@M2100_ "AUF"
+
+#_@M2101_ "Center\nDefault"
+_@M2101_ "Zentriere\nStandard"
+
+#_@M2102_ "DOWN"
+_@M2102_ "AB"
+
+#_@M2103_ "Right >>"
+_@M2103_ "Rechts >>"
+
+#_@M2104_ "F>\nFlarm"
+_@M2104_ "F>\nFLARM"
+
+#_@M2105_ "M>\nTeam"
+_@M2105_ "M>\nTeam"
+
+#_@M2106_ "L>\nThermal"
+_@M2106_ "L>\nAufwind"
+
+#_@M2107_ "T>\nTask"
+_@M2107_ "A>\nAufgabe"
+
+#_@M2108_ "B>\nBestAlt"
+_@M2108_ "B>\nBestAlt"
+
+#_@M2109_ "1>\nAltern1"
+_@M2109_ "1>\nAltern1"
+
+#_@M2110_ "2>\nAltern2"
+_@M2110_ "2>\nAltern2"
+
+#_@M2111_ "H>\nHome"
+_@M2111_ "H>\nHeim"
+
+#_@M2112_ "Speed"
+_@M2112_ "Geschw"
+
+#_@M2113_ "Alt"
+_@M2113_ "Höhe"
+
+#_@M2114_ "Turn"
+_@M2114_ "Wende"
+
+# better not to translate this TE button!
+#_@M2115_ "TEnergy"
+_@M2115_ "TEnergie"
+
+#_@M2116_ "Change\nTerrain"
+_@M2116_ "Ändere\nTerrain"
+
+# Auto MC thermal+final glide mode, keep max 7 chars!
+#_@M2117_ "Thr+Fin"
+_@M2117_ "Krs+EAF"
+
+#_@M2118_ "LogBook"
+_@M2118_ "Logbuch"
+
+#_@M2119_ "LogBook\nDetails"
+_@M2119_ "Logbuch\nDetails"
+
+#_@M2120_ "Reset\nBook"
+_@M2120_ "Lösche\nLogbuch"
+
+#_@M2121_ "LogBook\nList"
+_@M2121_ "Logbuch\nListe"
+
+#_@M2122_ "Save\nSystem"
+_@M2122_ "SystEinst\nspeichern"
+
+# Note for developers: remember LKLanguage MAX_MESSAGE limit
 
