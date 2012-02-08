@@ -76,7 +76,7 @@ int GetBaroDeviceName(DEVICE_TYPE eDevice ,TCHAR  szDevName[])
       case LX16xx         :   _stprintf(szDevName,TEXT("LX 166/1600"));        break;
       case POSIGRAPH      :   _stprintf(szDevName,TEXT("POSIGRAPH"));          break;
       case VOLKSLOGGER    :   _stprintf(szDevName,TEXT("Volkslogger"));        break;
-      case WESTERBOER     :   _stprintf(szDevName,TEXT("Westeroer"));          break;
+      case WESTERBOER     :   _stprintf(szDevName,TEXT("Westerboer"));         break;
       case XCOM760        :   _stprintf(szDevName,TEXT("XCOM 760"));           break;
       case ZANDER         :   _stprintf(szDevName,TEXT("ZANDER"));             break;
       case FLARM          :   _stprintf(szDevName,TEXT("FLARM"));              break;
