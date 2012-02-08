@@ -28,6 +28,21 @@ CHANGES
 
 .  Use nearest airspace distances for infoboxes, when no manual selection
 
+. Changed bitmaps icons for lowres devices
+. Adjust level-1 sonar sound
+
+.  Reset config for terrain contrast and brightness, defaulted to 50, airspace warning acknowledgement time reset 
+   and raised from 15m to 30m.
+
+.  Average efficiency time reset and default to 30s.
+
+.  Near AS search radius changed from 5km to 10km
+
+.  Sideview airspaces with frames.
+   Too far message warning reenabled
+   if no near AS is found, sideview to the right wing instead of East view.
+
+
 
 
 FIXES
@@ -55,6 +70,7 @@ FIXES
 
 .  Fix bug in configuraion not saving decimals for PG autozoom threshold, and for North Up Above.
 
+. Fix NextETA bug for PGs
 
 
 
