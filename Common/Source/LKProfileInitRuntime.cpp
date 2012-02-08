@@ -178,8 +178,10 @@ void LKProfileInitRuntime(void) {
   if (GlobalModelType == MODELTYPE_PNA_PNA ) {
 	StartupStore(TEXT(". Loading default PNA settings%s"),NEWLINE);
   }
+  #if TESTBENCH
   else
 	StartupStore(TEXT(". No special regsets for this device%s"),NEWLINE);
+  #endif
 
   #endif // ModelType specials
 

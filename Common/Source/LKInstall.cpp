@@ -31,7 +31,7 @@ short InstallSystem() {
 #endif
   bool failure=false;
 
-  #if ALPHADEBUG
+  #if TESTBENCH
   StartupStore(_T(". Welcome to InstallSystem v1.2%s"),NEWLINE);
   #endif
   LocalPath(srcdir,TEXT(LKD_SYSTEM));
