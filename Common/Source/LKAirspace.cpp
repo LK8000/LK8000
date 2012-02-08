@@ -2043,7 +2043,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
         // MULTICALC STEP 1
         // Calculate area of interest
         interest_radius = Basic->Speed * WarningTime * 1.25;        // 25% more than required
-        if (interest_radius < 5000) interest_radius = 5000;         // but minimum 5km
+        if (interest_radius < 10000) interest_radius = 10000;         // but minimum 15km
         lon = Basic->Longitude;
         lat = Basic->Latitude;
         bounds.minx = lon;
@@ -2723,5 +2723,7 @@ void CAirspaceManager::LoadSettings()
     fclose(f);
   } else StartupStore(TEXT(". Failed to load airspace settings from file <%s>%s"),szFileName,NEWLINE);
 }
+
+
 
 
