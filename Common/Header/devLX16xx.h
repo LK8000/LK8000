@@ -31,7 +31,7 @@ class DevLX16xx : public DevBase
     static bool PutGPRMB(PDeviceDescriptor_t);
 
     // Send $PFLX2 to request Info from LX.
-    static bool RequestInfos(PDeviceDescriptor_t d);
+    static bool SetupLX_Sentence(PDeviceDescriptor_t d);
 
     static bool SendInfos(PDeviceDescriptor_t d);
   //----------------------------------------------------------------------------
@@ -61,10 +61,14 @@ class DevLX16xx : public DevBase
     /// Parses LXWP3 sentence.
     static bool LXWP3(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
-
+    /// Parses LXWP4 sentence.
+    static bool LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
 }; // DevLX
 
 //______________________________________________________________________________
 
 #endif // __DEVLX16xx_H_
+
+
+

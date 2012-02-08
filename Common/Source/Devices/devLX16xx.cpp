@@ -12,12 +12,11 @@
 #include "LKInterface.h"
 #include "Parser.h"
 
-static int iWEST_RxUpdateTime=0;
-static double oldMC = MACCREADY;
+int iLX16xx_RxUpdateTime=0;
+double oldMC = MACCREADY;
+int  MacCreadyUpdateTimeout = 0;
 
-static int  MacCreadyUpdateTimeout = 0;
-
-double fPolar_a=0.0f, fPolar_b=0.0f, fPolar_c=0.0f, fVolume=0.0f;
+double fPolar_a=0.0, fPolar_b=0.0, fPolar_c=0.0, fVolume=0.0;
 BOOL bValid = false;
 int LX16xxNMEAddCheckSumStrg( TCHAR szStrg[] );
 BOOL LX16xxPutMacCready(PDeviceDescriptor_t d, double MacCready);
@@ -57,7 +56,7 @@ BOOL DevLX16xx::Install(PDeviceDescriptor_t d)
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
   d->PutMacCready = LX16xxPutMacCready;
-  d->PutBugs      = LX16xxPutBugs;
+  d->PutBugs      = LX16xxPutBugs; // removed to prevent cirvular updates
   d->PutBallast   = LX16xxPutBallast;
   d->Open         = NULL;
   d->Close        = NULL;
@@ -95,17 +94,6 @@ const TCHAR* DevLX16xx::GetName()
 //GEXTERN double POLARLD[POLARSIZE];
 
 
-bool DevLX16xx::RequestInfos(PDeviceDescriptor_t d)
-{
-TCHAR  szTmp[254];
-  _stprintf(szTmp, TEXT("$PFLX0,GPGGA,1,GPRMC,1,LXWP0,1,LXWP1,30,LXWP2,30,LXWP3,30,LXWP5,30"));
-  LX16xxNMEAddCheckSumStrg(szTmp);
-  d->Com->WriteString(szTmp);
-
-  return true;
-}
-
-
 
 int LX16xxNMEAddCheckSumStrg( TCHAR szStrg[] )
 {
@@ -118,6 +106,7 @@ TCHAR  szCheck[254];
  iCheckSum = szStrg[1];
   for (i=2; i < (int)_tcslen(szStrg); i++)
   {
+	//  if(szStrgi0] != ' ')
 	    iCheckSum ^= szStrg[i];
   }
   _stprintf(szCheck,TEXT("*%X\r\n"),iCheckSum);
@@ -125,15 +114,40 @@ TCHAR  szCheck[254];
   return iCheckSum;
 }
 
+ void devLX166FormatNMEAString(TCHAR *dst, size_t sz, const TCHAR *text)
+{
+  BYTE chk;
+  int i, len = _tcslen(text);
+
+  for (chk = i = 0; i < len; i++)
+    chk ^= (BYTE)text[i];
+
+  _sntprintf(dst, sz, TEXT("$%s*%02X\r\n"), text, chk);
+}
+
+bool DevLX16xx::SetupLX_Sentence(PDeviceDescriptor_t d)
+{
+TCHAR  szTmp[254];
+
+  _stprintf(szTmp, TEXT("$PFLX0,GPGGA,1,GPRMC,1,LXWP0,1,LXWP1,0,LXWP2,5,LXWP3,17,LXWP4,20,LXWP5,50"));
+  LX16xxNMEAddCheckSumStrg(szTmp);
+  d->Com->WriteString(szTmp);
+
+  return true;
+}
+
+
+
+
 BOOL LX16xxPutMacCready(PDeviceDescriptor_t d, double MacCready){
 TCHAR  szTmp[254];
 if(bValid == false)
   return false;
 
-  _stprintf(szTmp, TEXT("$PFLX2,%4.1f,%4.2f,%d,%4.2f,%4.2f,%4.2f,%d"), MacCready ,(1.0f+BALLAST),(int)((1.0001f-BUGS)*100.0f),fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
+  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%3.1f,%4.2f,%4.2f,%4.2f,%d"), MacCready ,(1.0+BALLAST),(1.00-BUGS)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
   LX16xxNMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
-  MacCreadyUpdateTimeout = 1;
+  MacCreadyUpdateTimeout = 5;
   return true;
 
 }
@@ -145,15 +159,16 @@ if(bValid == false)
   return false;
 
 
-	_stprintf(szTmp, TEXT("$PFLX2,%4.1f,%4.2f,%d,%4.2f,%4.2f,%4.2f,%d"), MACCREADY ,(1.0f+Ballast),(int)((1.0001f-BUGS)*100.0f),fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
+	_stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%3.1f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY ,(1.0+Ballast),(1.00-BUGS)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
 	LX16xxNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
-	MacCreadyUpdateTimeout = 1;
+	MacCreadyUpdateTimeout = 5;
 	return(TRUE);
 
 }
 
-
+// ToDo raw 2.5% may cause circular updates due to inaccurate steps
+// can be solved later update from LX to LK works
 BOOL LX16xxPutBugs(PDeviceDescriptor_t d, double Bugs){
 TCHAR  szTmp[254];
 
@@ -161,12 +176,14 @@ if(bValid == false)
   return false;
 
 
-	_stprintf(szTmp, TEXT("$PFLX2,%4.1f,%4.2f,%d,%4.2f,%4.2f,%4.2f,%d"), MACCREADY , (1.0f+BALLAST),(int)((1.0001f-Bugs)*100.0f),fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
+    if(Bugs < 0.7)
+      Bugs	= 0.7;
+	_stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%03.1f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY , (1.0+BALLAST),(1.00-Bugs)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
 	LX16xxNMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
-	MacCreadyUpdateTimeout = 1;
+	MacCreadyUpdateTimeout = 5;
 
-	return(TRUE);
+    return(TRUE);
 
 }
 
@@ -188,11 +205,11 @@ BOOL DevLX16xx::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* inf
 {
   static int i=40;
 
-  if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
+  if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
   {
-	if(iWEST_RxUpdateTime > 0)
+	if(iLX16xx_RxUpdateTime > 0)
 	{
-	  iWEST_RxUpdateTime--;
+	  iLX16xx_RxUpdateTime--;
 	}
 	else
 	  if(fabs(oldMC - MACCREADY)> 0.005f)
@@ -203,14 +220,16 @@ BOOL DevLX16xx::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* inf
       }
   }
 
+  /* configure LX after 30 GPS positions */
   if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0)
   {
     if(i++ > 10)
     {
-	  RequestInfos(d);
+      SetupLX_Sentence(d);
 	  i=0;
     }
   }
+
 
     if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
       return LXWP0(d, sentence + 7, info);
@@ -223,7 +242,9 @@ BOOL DevLX16xx::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* inf
         else
           if (_tcsncmp(_T("$LXWP3"), sentence, 6) == 0)
             return LXWP3(d, sentence + 7, info);
-
+          else
+            if (_tcsncmp(_T("$LXWP4"), sentence, 6) == 0)
+              return LXWP4(d, sentence + 7, info);
   return(false);
 } // ParseNMEA()
 
@@ -347,40 +368,40 @@ if(MacCreadyUpdateTimeout > 0)
 }
   if (ParToDouble(sentence, 0, &fTmp))
   {
-	iTmp =(int) (fTmp*100.0f+0.5f);
-	fTmp = (double)(iTmp)/100.0f;
+	iTmp =(int) (fTmp*100.0+0.5f);
+	fTmp = (double)(iTmp)/100.0;
 	bValid = true;
-	if(fabs(MACCREADY - fTmp)> 0.001f)
+	if(fabs(MACCREADY - fTmp)> 0.001)
 	{
 	  MACCREADY = fTmp;
-	  iWEST_RxUpdateTime = 5;
+	  iLX16xx_RxUpdateTime =5;
 	}
   }
 
-/* ToDo can not read back BUGs due to bas resolution risk of circular update an freeze */
-/*
+
+
   if (ParToDouble(sentence, 1, &fTmp))
   {
-	fTmp -= 1.0f;
+	fTmp -= 1.0;
 	fTmp  = (fTmp);
 
-	if(  fabs(fTmp -BALLAST) > 0.01)
+	if(  fabs(fTmp -BALLAST) > 0.05)
     {
       BALLAST = fTmp;
-      iWEST_RxUpdateTime = 5;
+      iLX16xx_RxUpdateTime = 5;
     }
   }
-*/
+
+
   if(ParToDouble(sentence, 2, &fTmp))
   {
-	fTmp = (double) (100-(int)(fTmp+0.5f));
-	fTmp =  fTmp/100.0f;
-	if(  fabs(fTmp -BUGS) > 0.001)
+	int iTmp = 100-(int)(fTmp+0.5);
+	fTmp =  (double)iTmp/100.0;
+	if(  fabs(fTmp -BUGS) >= 0.03)
     {
       BUGS = fTmp;
-      iWEST_RxUpdateTime = 5;
+      iLX16xx_RxUpdateTime = 5;
     }
-
   }
 
   if (ParToDouble(sentence, 3, &fTmp))
@@ -407,7 +428,7 @@ if(MacCreadyUpdateTimeout > 0)
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX16xx::LXWP3(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
+bool DevLX16xx::LXWP3(PDeviceDescriptor_t, const TCHAR* sentence, NMEA_INFO*)
 {
   // $LXWP3,altioffset, scmode, variofil, tefilter, televel, varioavg,
   //   variorange, sctab, sclow, scspeed, SmartDiff,
@@ -433,6 +454,30 @@ bool DevLX16xx::LXWP3(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
   // time offset int in hours
 
   // nothing to do
+
+  double fTmp;
+  if(ParToDouble(sentence, 1, &fTmp))
+  {
+	int iTmp = (int)(fTmp+0.05);
+
+	switch (iTmp )
+	{
+	  default:
+		ExternalTriggerCircling = false;
+		ExternalTriggerCruise   = false;
+	  break;
+	  case 0:
+		ExternalTriggerCircling = false;
+		ExternalTriggerCruise   = true;
+	  break;
+
+	  case 1:
+		ExternalTriggerCircling = false;
+		ExternalTriggerCruise   = true;
+	  break;
+	}
+
+  }
   return(true);
 } // LXWP3()
 
@@ -491,4 +536,31 @@ extern WPCALC   *WayPointCalc;
 
 return(true);
 }
+
+
+bool DevLX16xx::LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+{
+
+// $LXWP4 Sc, Netto, Relativ, gl.dif, leg speed, leg time, integrator, flight time, battery voltage*CS<CR><LF>
+// Sc  float (m/s)
+// Netto  float (m/s)
+// Relativ  float (m/s)
+// Distance float (m)
+// gl.dif  int (ft)
+// leg speed (km/h)
+// leg time (km/h)
+// integrator float (m/s)
+// flight time unsigned in seconds
+// battery voltage float (V)
+
+  double Batt;
+
+  if (ParToDouble(sentence, 9, &Batt))
+  {
+	 info->ExtBatt1_Voltage = Batt;
+  }
+
+
+  return(true);
+} // LXWP4()
 
