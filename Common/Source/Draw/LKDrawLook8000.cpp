@@ -339,6 +339,16 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 	  writeX_AutoMc[ss896x672]=895;
 	  writeY_AutoMc[ss896x672]=155;
 
+	  // custom 854x358, preliminar
+	  if (ScreenSizeX==854 && ScreenSizeY==358) { 
+	  rectLeft_AutoMc[ss480x272]=843;
+	  rectRight_AutoMc[ss480x272]=854;
+	  rectTop_AutoMc[ss480x272]=80;
+	  rectBottom_AutoMc[ss480x272]=105;
+	  writeX_AutoMc[ss480x272]=854;
+	  writeY_AutoMc[ss480x272]=82;
+	  }
+
 	} else {
 	//
 	// Small fonts
@@ -442,6 +452,15 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 	  writeX_AutoMc[ss896x672]=896;
 	  writeY_AutoMc[ss896x672]=196;
 
+	  // custom 854x358, preliminar
+	  if (ScreenSizeX==854 && ScreenSizeY==358) { 
+	  rectLeft_AutoMc[ss480x272]=843;
+	  rectRight_AutoMc[ss480x272]=854;
+	  rectTop_AutoMc[ss480x272]=106;
+	  rectBottom_AutoMc[ss480x272]=131;
+	  writeX_AutoMc[ss480x272]=854;
+	  writeY_AutoMc[ss480x272]=108;
+	  }
 	}
 
   	if (ScreenLandscape)

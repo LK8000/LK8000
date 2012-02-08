@@ -82,7 +82,10 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 			pos=11;
 			break;
 		case ss480x272:
-			pos=10;
+			if (ScreenSizeX==854)
+				pos=13;
+			else
+				pos=10;
 			break;
 		case ss640x480:
 			pos=12;
