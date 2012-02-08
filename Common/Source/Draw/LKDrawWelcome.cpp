@@ -102,6 +102,7 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
   _tcscat(Buffer,_T(" TESTBENCH! "));
   #endif
   if (!LoggerGActive()) _tcscat(Buffer,_T(" (No GRecord)"));
+  GetTextExtentPoint(hdc, Buffer, _tcslen(Buffer), &textSize);
   LKWriteText(hdc, Buffer, middlex, bottomlines-(textSize.cy*2)-NIBLSCALE(2) , 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_WHITENOREV, false);
 
   if (WarningHomeDir) {
