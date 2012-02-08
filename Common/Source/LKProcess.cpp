@@ -941,14 +941,24 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) && (DerivedDrawInfo.LegTimeToGo< 0.9*ERROR_TIME)) {
-				if (DerivedDrawInfo.LegTimeToGo > 0) {
-					valid=true;
-					Units::TimeToText(BufferValue, (int)DerivedDrawInfo.LegTimeToGo+DetectCurrentTime());
-				} else
-					wsprintf(BufferValue, TEXT(NULLTIME));
+			if(ISPARAGLIDER) {
+				index = DoOptimizeRoute()?RESWP_OPTIMIZED:Task[ActiveWayPoint].Index;
+				if ( (ValidTaskPoint(ActiveWayPoint) != false) && (WayPointCalc[index].NextETE < 0.9*ERROR_TIME)) {
+					if (WayPointCalc[index].NextETE > 0) {
+						valid=true;
+						Units::TimeToText(BufferValue, (int)(WayPointCalc[index].NextETE+DetectCurrentTime()));
+					} else
+						wsprintf(BufferValue, TEXT(NULLTIME));
+				}
+			} else {
+				if ( (ValidTaskPoint(ActiveWayPoint) != false) && (DerivedDrawInfo.LegTimeToGo< 0.9*ERROR_TIME)) {
+					if (DerivedDrawInfo.LegTimeToGo > 0) {
+						valid=true;
+						Units::TimeToText(BufferValue, (int)DerivedDrawInfo.LegTimeToGo+DetectCurrentTime());
+					} else
+						wsprintf(BufferValue, TEXT(NULLTIME));
+				}
 			}
-			wsprintf(BufferUnit, TEXT("h"));
 			break;
 		// B47
 		case LK_BRGDIFF:
