@@ -15,6 +15,8 @@
 using std::min;
 using std::max;
 
+#define RGB_ROYAL_BLUE  RGB(18,32,139)
+#define RGB_STEEL_BLUE  RGB(70,130,180)
 
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[GC_MAX_NO];
 extern COLORREF Sideview_TextColor;
@@ -193,19 +195,28 @@ void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon, 
 		{
 		  SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(type));
 		  SetTextColor(hdc, MapWindow::GetAirspaceColourByClass(type));
-		  Rectangle(hdc,rcd.left,rcd.top,rcd.right,rcd.bottom);
+		  Rectangle(hdc,rcd.left+1,rcd.top,rcd.right,rcd.bottom);
 		}
 	  }
-	  else
+	//  else
 	  {
 		//	NULL_BRUSH
 		SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-		long lDisabledColor = ChangeBrightness( MapWindow::GetAirspaceColourByClass(type), 0.4f);
+		double fFrameColFact = 1.0;
+    	if(INVERTCOLORS)
+    	  fFrameColFact = 0.8;
+    	else
+      	  fFrameColFact = 1.2;
+		long lDisabledColor = ChangeBrightness( MapWindow::GetAirspaceColourByClass(type), fFrameColFact);
+
+
 	//	HPEN Newpen = (HPEN)CreatePen(PS_DOT, 3, lDisabledColor);
 		HPEN Newpen = (HPEN)CreatePen(PS_SOLID, 3, lDisabledColor);
 		HPEN Oldpen = (HPEN)SelectObject(hdc, Newpen);
-		Rectangle(hdc,rcd.left,rcd.top,rcd.right,rcd.bottom);
+#define LINE_DIFF 2
+		Rectangle(hdc,rcd.left+LINE_DIFF ,rcd.top - LINE_DIFF,rcd.right-LINE_DIFF,rcd.bottom+LINE_DIFF-1);
 		SelectObject(hdc, Oldpen);
+		DeleteObject (Newpen);
 	  }
     }
   }
@@ -225,13 +236,15 @@ void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon, 
   SelectObject(hdc, hpHorizonGround);
   SelectObject(hdc, hbHorizonGround);
 
+
 #ifdef MSL_SEA_DRAW
   // draw sea
   if(psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE)
   {
 	RECT sea= {rc.left,rc.bottom,rc.right,rc.bottom-BORDER_Y};
-	RenderSky( hdc,   sea,  ChangeBrightness(RGB_BLUE,1.4) , RGB_BLUE , 7);
+	RenderSky( hdc,   sea, RGB_STEEL_BLUE, RGB_ROYAL_BLUE  , 7);
 	iBottom-=BORDER_Y;
+
   }
 #else
   if(psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE)
@@ -283,12 +296,20 @@ SIZE tsize;
             }
         }
 
-        if(bDrawn == false)
+//        if(bDrawn == false)
         {
           int  type = Sideview_pHandeled[k].iType;
           SelectObject(hdc, MapWindow::GetAirspaceBrushByClass(type));
           if(Sideview_pHandeled[k].bEnabled)
-            SetTextColor(hdc, RGB_BLUE /*ChangeBrightness( Sideview_TextColor, 1.4)*/); // RGB_MENUTITLEFG
+          {
+        	double fFrameColFact=1.0f;
+          	if(INVERTCOLORS)
+          	  fFrameColFact = 0.9;
+          	else
+          	  fFrameColFact = 1.3;
+
+            SetTextColor(hdc, ChangeBrightness( /*Sideview_TextColor*/  RGB_ROYAL_BLUE , fFrameColFact)); // RGB_MENUTITLEFG
+          }
           else
             SetTextColor(hdc, RGB_GGREY);
           RECT rcd =Sideview_pHandeled[k].rc;
@@ -346,4 +367,5 @@ SIZE tsize;
 
 
 }
+
 

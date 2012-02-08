@@ -469,3 +469,6 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
 
 
 
+
+
+

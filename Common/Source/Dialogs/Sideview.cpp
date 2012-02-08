@@ -403,13 +403,14 @@ bool PtInRect(int X,int Y, RECT rcd )
 
 COLORREF ChangeBrightness(long Color, double fBrightFact)
 {
-BYTE  red    = GetRValue(Color );
-BYTE  green  = GetGValue(Color );
-BYTE  blue   = GetBValue(Color );
-red   = (BYTE)(fBrightFact * (double)red  );
-blue  = (BYTE)(fBrightFact * (double)blue );
-green = (BYTE)(fBrightFact * (double)green);
-COLORREF  result = RGB(red,green, blue);
+int  red    = (int)GetRValue(Color );
+int  green  = (int)GetGValue(Color );
+int  blue   = (int)GetBValue(Color );
+red   = (int)(fBrightFact * (double)red  ); if(red > 255)   red = 255;
+blue  = (int)(fBrightFact * (double)blue ); if(blue > 255)   blue = 255;
+green = (int)(fBrightFact * (double)green); if(green > 255)  green = 255;
+
+COLORREF  result = RGB((BYTE)red,(BYTE)green,(BYTE) blue);
 return(result);
 
 //return(RGB(red,green,blue));
@@ -427,10 +428,10 @@ BYTE  red2    = GetRValue(Color2 );
 BYTE  green2  = GetGValue(Color2 );
 BYTE  blue2   = GetBValue(Color2 );
 
-BYTE  red    = (int)(fFact1 * (double)red1   + fFact2 * (double)red2  ) ;
-BYTE  green  = (int)(fFact1 * (double)green1 + fFact2 * (double)green2) ;
-BYTE  blue   = (int)(fFact1 * (double)blue1  + fFact2 * (double)blue2 ) ;
-COLORREF  result = RGB(red,green, blue);
+int  red    = (int)(fFact1 * (double)red1   + fFact2 * (double)red2  ); if(red   > 255)  red   = 255;
+int  green  = (int)(fFact1 * (double)green1 + fFact2 * (double)green2); if(green > 255)  green = 255;
+int  blue   = (int)(fFact1 * (double)blue1  + fFact2 * (double)blue2 ); if(blue  > 255)  blue  = 255;
+COLORREF  result = RGB((BYTE)red,(BYTE)green,(BYTE) blue);
 return(result);
 
 //return(RGB(red,green,blue));
@@ -477,3 +478,6 @@ HBRUSH OldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(BLACK_BRUSH));
 	  DeleteObject(hbHorizon);
    }
 }
+
+
+
