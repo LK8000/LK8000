@@ -38,7 +38,7 @@ void LKProfileResetDefault(void) {
   StartupStore(TEXT("... ProfileResetDefault%s"),NEWLINE);
   #endif
 
-  AcknowledgementTime = 900;	// keep ack level for this time, [secs]
+  AcknowledgementTime = 1800;	// keep ack level for this time, [secs]
   ActiveMap_Config = 0;
 
   Units::CoordinateFormat = (CoordinateFormats_t)cfDDMMSS;
@@ -255,7 +255,7 @@ void LKProfileResetDefault(void) {
   // 1 is showing all airports and declutter only unneeded outlandings
   NewMapDeclutter = 1;
 
-  AverEffTime = (AverEffTime_t)ae60seconds; 
+  AverEffTime = (AverEffTime_t)ae30seconds; 
 
   BgMapColor_Config = 2;
 
@@ -298,9 +298,9 @@ void LKProfileResetDefault(void) {
 
   EnableFLARMMap = 0;
 
-  TerrainContrast = 140;
+  TerrainContrast = 128;
 
-  TerrainBrightness = 115;
+  TerrainBrightness = 128;
 
   TerrainRamp_Config = 0;
 

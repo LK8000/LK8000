@@ -93,7 +93,7 @@ TCHAR *szRegistryAirspaceMode[] =     {  TEXT("AirspaceMode0"),
                            TEXT("AirspaceMode15")
 };
 
-TCHAR szRegistryAcknowledgementTime[]=	 TEXT("AcknowledgementTime");
+TCHAR szRegistryAcknowledgementTime[]=	 TEXT("AcknowledgementTime1");
 TCHAR szRegistryActiveMap[]= TEXT("ActiveMap");
 TCHAR szRegistryAdditionalAirspaceFile[]=  TEXT("AdditionalAirspaceFile");
 TCHAR szRegistryAdditionalWayPointFile[]=  TEXT("AdditionalWPFile");
@@ -234,7 +234,7 @@ TCHAR szRegistryMcOverlay[]= TEXT("McOverlay2");
 TCHAR szRegistryMenuTimeout[] = TEXT("MenuTimeout");
 TCHAR szRegistryNewMapDeclutter[]= TEXT("NewMapDeclutter");
 TCHAR szRegistryOrbiter[] = TEXT("Orbiter");
-TCHAR szRegistryOutlinedTp[]= TEXT("OutlinedTp");
+TCHAR szRegistryOutlinedTp[]= TEXT("OutlinedTp1");
 TCHAR szRegistryOverColor[]= TEXT("OverColor");
 TCHAR szRegistryOverlayClock[] = TEXT("OverlayClock");
 TCHAR szRegistryOverlaySize[]= TEXT("OverlaySize");
@@ -275,8 +275,8 @@ TCHAR szRegistryStartMaxSpeed[]= TEXT("StartMaxSpeed");
 TCHAR szRegistryStartRadius[]=		 TEXT("StartRadius");
 TCHAR szRegistryTaskSpeedUnitsValue[] =      TEXT("TaskSpeedUnits");
 TCHAR szRegistryTeamcodeRefWaypoint[] = TEXT("TeamcodeRefWaypoint1");
-TCHAR szRegistryTerrainBrightness[] = TEXT("TerrainBrightness");
-TCHAR szRegistryTerrainContrast[] = TEXT("TerrainContrast");
+TCHAR szRegistryTerrainBrightness[] = TEXT("TerrainBrightness1");
+TCHAR szRegistryTerrainContrast[] = TEXT("TerrainContrast1");
 TCHAR szRegistryTerrainFile[]=	 TEXT("TerrainFile");
 TCHAR szRegistryTerrainRamp[] = TEXT("TerrainRamp");
 TCHAR szRegistryThermalBar[]= TEXT("ThermalBar");
