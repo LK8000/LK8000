@@ -1,4 +1,4 @@
-# LK8000 ENG_HLP.TXT 110405
+﻿# LK8000 ENG_HLP.TXT 110405
 #
 # Jeden textový rádek muže obsahovat max. 500 znaku
 # Celý help muže obsahovat celkem max. 1024 znaku

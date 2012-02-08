@@ -1,4 +1,4 @@
-# LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
+﻿# LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
 # MASTER UPDATED:  110811
 #
 # This file is loaded on startup and all messages are stored internally.
