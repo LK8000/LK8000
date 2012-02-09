@@ -58,30 +58,32 @@ void Utf8File::Close()
 bool Utf8File::Open(const TCHAR* fileName, Mode ioMode)
 {
   TCHAR* fmode;
-  
+
   switch (ioMode) {
     case io_read:   fmode = _T("rb"); break;
     case io_append: fmode = _T("a+t"); break;
+    default:
+      return(false);
   }
-  
+
   _tcsncat(path, fileName, countof(path));
-  
+
   fp = _tfopen(fileName, fmode);
-  
+
   return(fp != NULL);
 } // Open()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Reads one line from UTF-8 encoded file and converts it to TCHAR Unicode 
+/// Reads one line from UTF-8 encoded file and converts it to TCHAR Unicode
 /// string.
-/// maxChars-1 characters are returned at most, leaving 1 char for 
+/// maxChars-1 characters are returned at most, leaving 1 char for
 /// terminating '\0'.
 ///
 /// The method strips any newline character ('\r' and '\n').
 ///
-/// @param unicode    output buffer (will be terminated with '\0'); must be 
-///                   large enough to contain full line (otherwise rest 
+/// @param unicode    output buffer (will be terminated with '\0'); must be
+///                   large enough to contain full line (otherwise rest
 ///                   of line will be discarded)
 /// @param maxChars   output buffer size (nb of TCHARs)
 ///
@@ -92,16 +94,16 @@ bool Utf8File::ReadLn(TCHAR* unicode, int maxChars)
 {
   if (fp == NULL)
     return(false);
-  
+
   // in worst case each char can be encoded in 4 bytes
   char cstr[4 * maxChars];
-  
+
   if (fgets(cstr, countof(cstr), fp) == NULL)
     return(false);
-  
+
   // strip new-line separators
   size_t len = strlen(cstr);
-  
+
   while (len > 0) {
     char last = cstr[len - 1];
     if (last == '\r' || last == '\n')
@@ -109,18 +111,18 @@ bool Utf8File::ReadLn(TCHAR* unicode, int maxChars)
     else
       break;
   }
-  
+
   if (utf2unicode(cstr, unicode, maxChars) < 0 && !convErReported) {
     StartupStore(_T("Invalid UTF8-WC conversion for '%s'%s"), path, NEWLINE);
     convErReported = true;
   }
-  
+
   return(true);
 } // ReadLn()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/// Write zero terminated line into the file. 
+/// Write zero terminated line into the file.
 /// Newline character will be added automatically.
 ///
 /// @param unicode    zero terminated string
@@ -129,14 +131,14 @@ void Utf8File::WriteLn(const TCHAR* unicode)
 {
   if (fp == NULL)
     return;
-  
+
   if (unicode != NULL) {
     size_t len = _tcslen(unicode);
     // in worst case each char can be encoded in 4 bytes
     char cstr[4 * len + 1];
-    
-    // (conversion and file error is ignored now, maybe in future it should 
-    // throw exception)  
+
+    // (conversion and file error is ignored now, maybe in future it should
+    // throw exception)
     if (unicode2utf(unicode, cstr, sizeof(cstr)) < 0 && !convErReported) {
       StartupStore(_T("Invalid WC-UTF8 conversion for '%s'%s"), path, NEWLINE);
       convErReported = true;
@@ -147,14 +149,14 @@ void Utf8File::WriteLn(const TCHAR* unicode)
       writeErReported = true;
     }
   }
-  
+
   fputc('\n', fp);
 } // WriteLn()
 
 
-//static 
+//static
 bool Utf8File::Exists(const TCHAR* fileName)
-{ 
+{
   Utf8File file;
   return(file.Open(fileName, io_read));
 } // Exists()
