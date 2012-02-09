@@ -94,6 +94,41 @@ static WndButton *buttonPaste=NULL;
 
 #define NUMPAGES 25 		// ADDPAGE FIX HERE  27 as of 101126
 
+int GlobalToBoxType(int i) {
+	int iTmp;
+	switch (i) {
+		case MODELTYPE_PNA_PNA:
+				iTmp=(InfoBoxModelAppearance_t)apImPnaGeneric;
+				break;
+		case MODELTYPE_PNA_HP31X:
+				iTmp=(InfoBoxModelAppearance_t)apImPnaHp31x;
+				break;
+		case MODELTYPE_PNA_PN6000:
+				iTmp=(InfoBoxModelAppearance_t)apImPnaPn6000;
+				break;
+		case MODELTYPE_PNA_MIO:
+				iTmp=(InfoBoxModelAppearance_t)apImPnaMio;
+				break;
+		case MODELTYPE_PNA_NOKIA_500:
+				iTmp=(InfoBoxModelAppearance_t)apImPnaNokia500;
+				break;
+		case MODELTYPE_PNA_MEDION_P5:
+				iTmp=(InfoBoxModelAppearance_t)apImPnaMedionP5;
+				break;
+		case MODELTYPE_PNA_NAVIGON:
+				iTmp=(InfoBoxModelAppearance_t)apImPnaNavigon;
+				break;
+		case MODELTYPE_PNA_FUNTREK:
+				iTmp=(InfoBoxModelAppearance_t)apImPnaFuntrek;
+				break;
+		case MODELTYPE_PNA_ROYALTEK3200:
+				iTmp=(InfoBoxModelAppearance_t)apImPnaRoyaltek3200;
+				break;
+		default:
+				iTmp=(InfoBoxModelAppearance_t)apImPnaGeneric;
+	}
+	return iTmp;
+}
 
 static void UpdateButtons(void) {
   TCHAR text[120];
@@ -2518,42 +2553,8 @@ static void setVariables(void) {
     dfe->addEnumText(TEXT("Navigon"));
     dfe->addEnumText(TEXT("Holux FunTrek GM-130"));
     dfe->addEnumText(TEXT("Medion S3747 / Royaltek BV-3200"));
-	
-	int iTmp;
-	switch (GlobalModelType) {
-		case MODELTYPE_PNA_PNA:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaGeneric;
-				break;
-		case MODELTYPE_PNA_HP31X:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaHp31x;
-				break;
-		case MODELTYPE_PNA_PN6000:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaPn6000;
-				break;
-		case MODELTYPE_PNA_MIO:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaMio;
-				break;
-		case MODELTYPE_PNA_NOKIA_500:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaNokia500;
-				break;
-		case MODELTYPE_PNA_MEDION_P5:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaMedionP5;
-				break;
-		case MODELTYPE_PNA_NAVIGON:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaNavigon;
-				break;
-		case MODELTYPE_PNA_FUNTREK:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaFuntrek;
-				break;
-		case MODELTYPE_PNA_ROYALTEK3200:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaRoyaltek3200;
-				break;
-		default:
-				iTmp=(InfoBoxModelAppearance_t)apImPnaGeneric;
-				break;
-	}
 
-    dfe->Set(iTmp);
+    dfe->Set(GlobalToBoxType(GlobalModelType));
     wp->RefreshDisplay();
   }
 #else
@@ -4736,8 +4737,10 @@ int ival;
 // VENTA-ADDON MODEL CHANGE
   wp = (WndProperty*)wf->FindByName(TEXT("prpAppInfoBoxModel"));
   if (wp) {
-    if (Appearance.InfoBoxModel != (InfoBoxModelAppearance_t)
+    if (GlobalToBoxType(Appearance.InfoBoxModel) != (InfoBoxModelAppearance_t)
         (wp->GetDataField()->GetAsInteger())) {
+
+      // We temporarily set it to the index 
       Appearance.InfoBoxModel = (InfoBoxModelAppearance_t)
         (wp->GetDataField()->GetAsInteger());
 
@@ -4777,6 +4780,7 @@ int ival;
       #if OLDPROFILES
       SetToRegistry(szRegistryAppInfoBoxModel, GlobalModelType);
       #else
+      // we set it correctly yo global value , ex. 10001
       Appearance.InfoBoxModel = (InfoBoxModelAppearance_t)GlobalModelType;
       #endif
       changed = true;
