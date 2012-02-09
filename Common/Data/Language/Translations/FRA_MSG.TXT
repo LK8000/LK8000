@@ -258,7 +258,7 @@ _@M244_ "Distance "
 _@M245_ "Distance"
 _@M246_ "Tps de Vidange "
 _@M247_ "ETA"
-_@M248_ "EXIT"
+_@M248_ "QUITTER"
 _@M249_ "Editer Police"
 _@M250_ "Editer Départs"
 _@M251_ "Saisie texte"
@@ -941,4 +941,921 @@ _@M933_ "Sous le plan d'arrivée"
 _@M934_ "Relief sur le Plan d'Arrivée"
 _@M935_ "Drapeaux effacés"
 
-# TODO - Translate new tokens below, according to the localized manual, if available
+_@M936_ "Classe de compétition"
+_@M937_ "Classe de compétition: "
+_@M938_ "Compétition ID"
+_@M939_ "Compétition ID: "
+_@M940_ "Remplissage "
+_@M941_ "Descriptions seulement "
+_@M942_ "Motif"
+_@M943_ "Semi-Transparent"
+_@M944_ "Opacité "
+_@M945_ "Motif, bordure seulement"
+_@M946_ "Semi-Transparent, bordure seulement"
+
+_@M950_ "Opacité de la bar du bas"
+_@M951_ "Impossible d'arrêter le processus de réceptions !"
+
+_@M952_ "Impossible d'envoyer les données !"
+_@M953_ "Transparent"
+_@M954_ "Lissage des polices "
+_@M955_ "ClearType"
+_@M956_ "Anti crénelage"
+# Page 1.5 name, keep short:
+_@M957_ "Concours"
+
+#
+# Paragliding lock/unlock screen feature
+#
+_@M960_ "Confirmez le déverrouillage de l'écran ?"
+_@M961_ "Confirmez le verrouillage de l'écran ?"
+# 962 max 35 characters!
+
+_@M962_ "ECRAN VERROUILLE JUSQU'AU DECOLLAGE"
+# 963 unused since 2.3
+_@M963_ "Double-cliquez pour déverrouiller l'écran"
+_@M964_ "L'écran est déverrouillé"
+
+#
+# Menu buttons, MAX 8 character per line! Keep \n !
+_@M965_ "VER.\nECRAN"
+_@M966_ "DEVER.\nECRAN"
+
+#
+# GPS and COM port warnings
+#
+_@M970_ " GPS: PAS DE FIX VALIDE "
+_@M971_ " GPS: Pas de port de communication "
+_@M972_ " GPS: Aucune donnée reçus "
+_@M973_ " GPS absent "
+_@M974_ " GPS déconnecter "
+_@M975_ " Données GPS invalides "
+
+#
+# Infoboxes in Description / Tile order. 
+# In titles use maximum 7 characters
+#
+#TODO: _@M1001_ "Altitude QNH"
+#TODO: _@M1002_ "Alt"
+#TODO: _@M1003_ "Altitude AGL"
+#TODO: _@M1004_ "HAGL"
+#TODO: _@M1005_ "Thermique dernière 30 sec"
+#TODO: _@M1006_ "TC.30s"
+_@M1007_ "Cap"
+_@M1008_ "Cap"
+_@M1009_ "Eff. dernière 20 sec"
+#TODO: _@M1010_ "E.20s"
+_@M1011_ "Eff. Transition depuis le thermique precedent"
+_@M1012_ "E.Trans"
+_@M1013_ "Vitesse Sol"
+_@M1014_ "V.Sol"
+_@M1015_ "Moyenne dernier thermique"
+_@M1016_ "TL.Moy"
+_@M1017_ "Gain dernier thermique"
+#TODO: _@M1018_ "TL.Gain"
+_@M1019_ "Temp dernier thermique"
+#TODO: _@M1020_ "TL.Time"
+_@M1021_ "Réglage MacCready"
+#TODO: _@M1022_ "MCready"
+_@M1023_ "Suivant : Distance"
+#TODO: _@M1024_ "Dist"
+_@M1025_ "Suivant : Alt. d'arrivé"
+#TODO: _@M1026_ "NxtArr"
+_@M1027_ "Suivant : Alt. requise"
+#TODO: _@M1028_ "NxtAltR"
+_@M1029_ "Waypoint suivant"
+_@M1030_ "Suivant"
+_@M1031_ "Circuit : Alt. d'arrivé"
+#TODO: _@M1032_ "TskArr"
+_@M1033_ "Circuit : Alt. requise"
+#TODO: _@M1034_ "TskAltR"
+_@M1035_ "Circuit : Vitesse moyenne"
+#TODO: _@M1036_ "TskSpAv"
+_@M1037_ "Circuit : Distance"
+#TODO: _@M1038_ "TskDis"
+_@M1039_ "_Reservé 1"
+#TODO: _@M1040_ "OLD fLD"
+_@M1041_ "Altitude du Sol"
+#TODO: _@M1042_ "Gnd"
+#TODO: _@M1043_ "Thermal Average"
+#TODO: _@M1044_ "TC.Avg"
+#TODO: _@M1045_ "Thermal Gain"
+#TODO: _@M1046_ "TC.Gain"
+_@M1047_ "Cap"
+_@M1048_ "Cap"
+#TODO: _@M1049_ "Vario"
+#TODO: _@M1050_ "Vario"
+_@M1051_ "Vitesse du vent"
+#TODO: _@M1052_ "WindV"
+_@M1053_ "Direction du Vent"
+#TODO: _@M1054_ "WindB"
+#TODO: _@M1055_ "AA Time"
+#TODO: _@M1056_ "AATime"
+#TODO: _@M1057_ "AA Distance Max"
+#TODO: _@M1058_ "AADmax"
+#TODO: _@M1059_ "AA Distance Min"
+#TODO: _@M1060_ "AADmin"
+_@M1061_ "AA Vitesse Max"
+#TODO: _@M1062_ "AAVmax"
+_@M1063_ "AA Vitesse Min"
+#TODO: _@M1064_ "AAVmin"
+_@M1065_ "Vitesse air IAS"
+#TODO: _@M1066_ "IAS"
+_@M1067_ "Altitude BARO"
+#TODO: _@M1068_ "HBAR"
+_@M1069_ "Vitesse MacReady"
+#TODO: _@M1070_ "SpMc"
+#TODO: _@M1071_ "Percentage clim"
+#TODO: _@M1072_ "%Climb"
+_@M1073_ "Temps de vol"
+#TODO: _@M1074_ "FlyTime"
+#TODO: _@M1075_ "G load"
+#TODO: _@M1076_ "G"
+#_@M1077_ "_Reservé 2"
+#TODO: _@M1078_ "OLD nLD"
+_@M1079_ "Heure local"
+_@M1080_ "Heure"
+_@M1081_ "Heure UTC"
+#TODO: _@M1082_ "UTC"
+_@M1083_ "Circuit : Temps avant arrivé"
+#TODO: _@M1084_ "TskETE"
+_@M1085_ "Suivant :  Temps avant arrivé"
+#TODO: _@M1086_ "NextETE"
+_@M1087_ "Vitesse de vol"
+#TODO: _@M1088_ "STF"
+_@M1089_ "Vario Netto "
+Netto _@M1090_ "Netto"
+_@M1091_ "Task : Heure d'arriver"
+#TODO: _@M1092_ "TskETA"
+_@M1093_ "Suivant :  Heure d'arrivé"
+#TODO: _@M1094_ "NextETA"
+_@M1095_ "Ecart de cap"
+_@M1096_ "Route"
+_@M1097_ "Température de l'air exterieur"
+#TODO: _@M1098_ "OAT"
+_@M1099_ "Humidité relative"
+#TODO: _@M1100_ "RelHum"
+_@M1101_ "Température prevues"
+#TODO: _@M1102_ "MaxTemp"
+#TODO: _@M1103_ "AA Distance Tg"
+#TODO: _@M1104_ "AADtgt"
+#TODO: _@M1105_ "AA Speed Tg"
+#TODO: _@M1106_ "AAVtgt"
+#TODO: _@M1107_ "L/D vario"
+#TODO: _@M1108_ "L/D var"
+_@M1109_ "Vitesse air TAS"
+#TODO: _@M1110_ "TAS"
+_@M1111_ "Code équipes"
+#TODO: _@M1112_ "TeamCod"
+_@M1113_ "Cap equipes"
+_@M1114_ "Tm.Cap"
+_@M1115_ "Ecart de cap équipes"
+#TODO: _@M1116_ "TeamBd"
+#TODO: _@M1117_ "Team Range"
+#TODO: _@M1118_ "TeamDis"
+_@M1119_ "Circuit : Vitesse instantanée"
+#TODO: _@M1120_ "TskSpI"
+#TODO: _@M1121_ "Home Distance"
+#TODO: _@M1122_ "HomeDis"
+_@M1123_ "Circuit : Vitesse"
+_@M1124_ "TskSp"
+#TODO: _@M1125_ "AA Delta Time"
+#TODO: _@M1126_ "AAdT"
+#TODO: _@M1127_ "Thermal All"
+#TODO: _@M1128_ "Th.All"
+
+# 1129 and 1130 unused, can be used again
+#TODO: _@M1129_ "Distance Vario"
+#TODO: _@M1130_ "DVario"
+
+_@M1131_ "Batterie : Pourcentage"
+_@M1132_ "Batterie"
+
+_@M1133_ "Circuit : Efficacité requise"
+#TODO: _@M1134_ "TskReqE"
+_@M1135_ "Alternative 1 : Efficacité requise"
+#TODO: _@M1136_ "Atn1.E"
+_@M1137_ "Alternative 2 : Efficacité requise"
+#TODO: _@M1138_ "Atn2.E"
+_@M1139_ "Meilleur Altern : Efficacité requise"
+#TODO: _@M1140_ "BAtn.E"
+#TODO: _@M1141_ "Altitude QFE"
+#TODO: _@M1142_ "QFE"
+_@M1143_ "Efficacité moyenne"
+_@M1144_ "E.Moy"
+_@M1145_ "Suivant : Efficacité requise"
+#TODO: _@M1146_ "Req.E"
+_@M1147_ "Niveau de vol"
+#TODO: _@M1148_ "FL"
+_@M1149_ "Circuit distance couverte"
+#TODO: _@M1150_ "TskCov"
+_@M1151_ "Alternative 1 : Arrivée"
+#TODO: _@M1152_ "Atn1Arr"
+_@M1153_ "Alternative 2 : Arrivée"
+#TODO: _@M1154_ "Atn2Arr"
+_@M1155_ "Meilleurs Alternative : Arrivée"
+#TODO: _@M1156_ "BAtnArr"
+_@M1157_ "Home Rayon"
+#TODO: _@M1158_ "Radial"
+_@M1159_ "Airspace : Dist Horizontal"
+#TODO: _@M1160_ "ArSpcH"
+#TODO: _@M1161_ "Ext.Batt.Bank"
+#TODO: _@M1162_ "xBnk#"
+#TODO: _@M1163_ "Ext.Batt.1 Voltage"
+#TODO: _@M1164_ "xBat1"
+#TODO: _@M1165_ "Ext.Batt.2 Voltage"
+#TODO: _@M1166_ "xBat2"
+_@M1167_ "Odométre"
+#TODO: _@M1168_ "Odo"
+#TODO: _@M1169_ "Altern QNH"
+#TODO: _@M1170_ "aAlt"
+#TODO: _@M1171_ "Altern AGL"
+#TODO: _@M1172_ "aHAGL"
+#TODO: _@M1173_ "Altitude GPS"
+#TODO: _@M1174_ "HGPS"
+_@M1175_ "Equivalent MacCready"
+#TODO: _@M1176_ "eqMC"
+#TODO: _@M1177_ "_Experimental1"
+#TODO: _@M1178_ "Exp1"
+#TODO: _@M1179_ "_Experimental2"
+#TODO: _@M1180_ "Exp2"
+_@M1181_ "batterie : Voltage"
+_@M1182_ "Batt"
+
+# LK Info pages infobox titles, maximum 7 chars
+#TODO: _@M1183_ "ManMC"
+#TODO: _@M1184_ "AutMC"
+_@M1185_ "Vent"
+#TODO: _@M1186_ "eIAS"
+#TODO: _@M1187_ "ReqE"
+#TODO: _@M1188_ "Arr"
+#TODO: _@M1189_ "Var30"
+#TODO: _@M1190_ "ArrMc0"
+#TODO: _@M1191_ "TskArr0"
+#TODO: _@M1192_ "StDis"
+#TODO: _@M1193_ "RelAlt"
+#TODO: _@M1194_ "Var"
+#TODO: _@M1195_ "BLOCK"
+#TODO: _@M1196_ "DOLPHIN"
+#TODO: _@M1197_ "Bank"
+#TODO: _@M1198_ ""
+#TODO: _@M1199_ "Sat"
+_@M1200_ "Départ"
+
+# McCready mode $(MacCreadyMode) in menu macros, use 3-4 chrs maximum!
+#TODO: _@M1201_ "Man"
+#TODO: _@M1202_ "Auto"
+# Map label modes $(MapLabelsToggleActionName) in menu macros
+#TODO: _@M1203_ "WPTS"
+#TODO: _@M1204_ "TOPO"
+# $(VisualGlideToggleName) if extended VisualGlide is enabled
+#TODO: _@M1205_ "Moving"
+
+# Startup / Shutdown dialog texts
+_@M1206_ "Initialisation ..."
+_@M1207_ "ERREUR RÉSOLUTION INCONNU !"
+_@M1208_ "ERREUR PAS DE REPERTOIRE "
+_@M1209_ "CONTROLE DE L'INSTALLATION !"
+_@M1210_ "MODE PARAPENTE"
+_@M1211_ "simulation"
+_@M1212_ "Control automatique du retroéclairage"
+_@M1213_ "Pas de control automatique du retroéclairage"
+_@M1214_ "Contrôle automatique du niveau sonore"
+_@M1215_ "pas de contrôle automatique du niveau sonore"
+_@M1216_ "Récupération des données météo"
+_@M1217_ "démarrage"
+_@M1218_ "Initialisation de l'affichage"
+_@M1219_ "Arrét en cours, s'il vous plaît patienter ..."
+_@M1220_ "Arrét en cours, sauvegarde des Logs ..."
+_@M1221_ "Arrét en cours, sauvegarde des profiles ..."
+_@M1222_ "Arrét en cours, sauvegarde de la tâche ..."
+
+# Topology options reset msgbox
+_@M1223_  "Topologie restauration des valeurs par défaut"
+
+# Waypoint filters 1229 no more than 3 chrs!
+_@M1224_ "Aéroport"
+_@M1225_ "Posable"
+_@M1226_ "Point de virage"
+_@M1227_ "Fichier 1"
+_@M1228_ "Fichier 2"
+_@M1229_ "HDG"
+
+# TeamCode dialog captions
+#TODO: _@M1230_ "Team Ref.: "
+#TODO: _@M1231_ "Team code: SET REF!"
+
+# Waypoint edit dialog (same or less chars!)
+#TODO: _@M1232_ "Lat"
+#TODO: _@M1233_ "Latitude"
+#TODO: _@M1234_ "Lon"
+#TODO: _@M1235_ "Longitude"
+
+# Waypoint list flags (Home,Airport,Landable,Turnpoint) 1chr!
+#TODO: _@M1236_ "H"
+#TODO: _@M1237_ "A"
+#TODO: _@M1238_ "L"
+#TODO: _@M1239_ "T"
+
+# dlgLKAirspaceWarning - Airspace warning messages
+_@M1240_ "Entrée"
+_@M1241_ "Sortie"
+_@M1242_ "Vol dans une zone autorisée"
+_@M1243_ "Sortie prévue d'une zone autorisée"
+_@M1244_ "Proche de la sortie d'une zone autorisée"
+_@M1245_ "Sortie d'une zone autorisée"
+_@M1246_ "Entrée prévue dans une zone autorisée"
+_@M1247_ "Entrée dans une zone autorisée"
+_@M1248_ "Vol hors d'une zone autorisée"
+_@M1249_ "Vol hors d'une zone interdite"
+_@M1250_ "Entrée prévue dans une zone autorisée"
+_@M1251_ "Proche d'une zone interdite"
+_@M1252_ "Entrée dans une zone interdite"
+_@M1253_ "Vol dans une zone interdite"
+_@M1254_ "Sorties d'une zone interdite"
+_@M1255_ "Alertes jaunes"
+_@M1256_ "Alertes Rouge"
+_@M1257_ "Vers la sorties"
+_@M1258_ "Vers l'entrée"
+_@M1259_ "trop loin, pas calculer"
+
+_@M1260_ "en dessous"
+_@M1261_ "au-dessus"
+_@M1262_ "Message"
+_@M1263_ "Niveaux d'alerte"
+
+#TODO: _@M1264_ "HDist"
+#TODO: _@M1265_ "VDist"
+
+# dlgAirspaceDetails - Airspace details
+#TODO: _@M1266_ "AckLevel"
+_@M1267_ "jaune accepter"
+_@M1268_ "Rougge accepter"
+_@M1269_ "desactiver"
+#TODO: _@M1270_ "FLY-IN"
+#TODO: _@M1271_ "FLY-OUT"
+_@M1272_ "Zone autorisée ?"
+_@M1273_ "Zone interdite ?"
+
+# dlgConfig - Airspace warnings
+_@M1274_ "Alertes"
+_@M1275_ "Paramètres d'alertes d'espace aérien"
+_@M1276_ "Paramètres d'alertes d'espace aérien sauvé"
+_@M1277_ "Airsp.msg delai répétition"
+_@M1278_ "Marge vertical "
+#TODO: _@M1279_ "Msg timeout "
+_@M1280_ "Activer cette espace aérien ?"
+#TODO: _@M1281_ "Map labels "
+_@M1282_ "Activer"
+_@M1283_ "Désactiver"
+_@M1284_ "Désactiver cette espace aérien ?"
+
+# new airspace infobox
+#TODO: _@M1285_ "Airspace Vertical Dist"
+#TODO: _@M1286_ "ArSpcV"
+
+# airspace analysis dialog page
+_@M1287_ "Devant"
+_@M1288_ "Affichée le cap du prochain waypoint"
+_@M1289_ "WP Suivant"
+_@M1290_ "Affichée le cap actuel"
+_@M1291_ "ZA Proche"
+_@M1292_ "Zone la plus proche"
+_@M1293_ "Sonar ON"
+_@M1294_ "Sonar OFF"
+_@M1295_ "Vue latéral"
+
+# LK info page headers, try to use the same or less number of chars here,
+# or test it with different screen reolutions and landscape/portrait mode too!
+#TODO: _@M1300_ "Dist"
+#TODO: _@M1301_ "Dir"
+#TODO: _@M1302_ "rEff"
+#TODO: _@M1303_ "AltA"
+#TODO: _@M1304_ "Distance"
+#TODO: _@M1305_ "Direction"
+#TODO: _@M1306_ "ReqEff"
+#TODO: _@M1307_ "AltArr"
+#TODO: _@M1308_ "Arriv"
+#TODO: _@M1309_ "COMN"
+#TODO: _@M1310_ "HIST"
+#TODO: _@M1311_ "LND"
+#TODO: _@M1312_ "LNDB"
+#TODO: _@M1313_ "APT"
+#TODO: _@M1314_ "APTS"
+#TODO: _@M1315_ "TPS"
+# ASP for nearest airspaces is M1642
+
+# Reserved waypoint names, comments
+#TODO: _@M1316_ "TAKEOFF"
+#TODO: _@M1317_ "THERMAL"
+#TODO: _@M1318_ "TEAMMATE"
+#TODO: _@M1319_ "TARGET"
+#TODO: _@M1320_ "LAST GOOD THERMAL"
+#TODO: _@M1321_ "TEAM MATE"
+#TODO: _@M1322_ "FLARM TARGET"
+
+# Overlay multitarget prefixes, maximum 2chars!
+#TODO: _@M1323_ "T>"
+#TODO: _@M1324_ "B>"
+#TODO: _@M1325_ "1>"
+#TODO: _@M1326_ "2>"
+#TODO: _@M1327_ "H>"
+#TODO: _@M1328_ "L>"
+#TODO: _@M1329_ "M"
+#TODO: _@M1330_ "F>"
+
+# LK traffic page headers, try to use the same or less number of chars here,
+# or test it with different screen reolutions and landscape/portrait mode too!
+#TODO: _@M1331_ "TRF"
+#TODO: _@M1332_ "Var"
+#TODO: _@M1333_ "Vario"
+#TODO: _@M1334_ "Alt"
+
+# Mapwindow texts
+#TODO: _@M1335_ " TERRAIN?"
+#TODO: _@M1336_ " T?"
+#TODO: _@M1337_ " AZM"
+#TODO: _@M1338_ " PAN"
+#TODO: _@M1339_ " iAUX"
+#TODO: _@M1340_ " TRM0"
+#TODO: _@M1341_ " NAV1"
+#TODO: _@M1342_ " ALT2"
+#TODO: _@M1343_ " STA3"
+#TODO: _@M1344_ " TSK4"
+#TODO: _@M1345_ " ATN5"
+#TODO: _@M1346_ " SYS6"
+#TODO: _@M1347_ " CRU7"
+#TODO: _@M1348_ " FIN8"
+#TODO: _@M1349_ " AUX9"
+#TODO: _@M1350_ " REPLAY"
+#TODO: _@M1351_ " BALLAST"
+
+# LKUtils
+_@M1352_ "NIVEAU BATTERIE"
+_@M1353_ "GESTION BATTERIE DESACTIVE"
+_@M1354_ "NIVEAU BATTERIE CRITIQUE !"
+_@M1355_ "NIVEAU BATTERIE TRES BAS !"
+_@M1356_ "NIVEAU BATTERIE BAS !"
+_@M1357_ "ALERTE BATTERIE DESACTIVE"
+
+# Logger task declaration
+#TODO: _@M1400_ "Task declaration"
+#TODO: _@M1401_ "Enabling declaration mode"
+#TODO: _@M1402_ "Disabling declaration mode"
+#TODO: _@M1403_ "Sending declaration"
+#TODO: _@M1404_ "Opening connection"
+#TODO: _@M1405_ "Testing connection"
+#TODO: _@M1406_ "Closing connection"
+#TODO: _@M1410_ "Unknown error"
+#TODO: _@M1411_ "Device not connected!"
+#TODO: _@M1412_ "Not enough waypoints!"
+#TODO: _@M1413_ "Too many waypoints!"
+#TODO: _@M1414_ "Device not responsive!"
+#TODO: _@M1415_ "Declaration not accepted!"
+#TODO: _@M1420_ "Error while declaring"
+#TODO: _@M1421_ "Task description"
+#TODO: _@M1422_ "Start and Finish"
+
+_@M1423_ "perdu pendant le vol !"
+
+#
+# Variometer Bar
+#
+_@M1424_ "Mode vario"
+_@M1425_ "Vario en thermique et en transition"
+_@M1426_ "Vario en thermique, Netto en transition"
+_@M1427_ "Vario en thermique, STF en transition"
+
+#
+# Contests
+#
+_@M1450_ "Concours"
+_@M1451_ "Change"
+_@M1452_ "Départ vol libre detecté"
+
+#
+# Contest infoboxes, full name and abbreviated name for boxes
+# We need OLC ahead of full names, to keep ordering in infobox list during configuration
+#
+# League predicted is not used
+#
+#TODO: _@M1455_ "OLC Classic Distance"
+#TODO: _@M1456_ "OLC dis"
+#TODO: _@M1457_ "OLC FAI Triangle Distance"
+#TODO: _@M1458_ "FAI dis"
+#TODO: _@M1459_ "OLC League Distance"
+#TODO: _@M1460_ "LEA dis"
+#TODO: _@M1461_ "OLC FAI 3 TPs Distance"
+#TODO: _@M1462_ "3TP dis"
+
+#TODO: _@M1463_ "OLC Classic*Predicted Distance"
+#TODO: _@M1464_ "OLC*dis"
+#TODO: _@M1465_ "OLC FAI Triangle*Predicted Distance"
+#TODO: _@M1466_ "FAI*dis"
+#TODO: _@M1467_ "OLC League*Predicted Distance"
+#TODO: _@M1468_ "LEA*dis"
+#TODO: _@M1469_ "OLC FAI 3 TPs*Predicted Distance"
+#TODO: _@M1470_ "3TP*dis"
+
+#TODO: _@M1471_ "OLC Classic Speed"
+#TODO: _@M1472_ "OLC spd"
+#TODO: _@M1473_ "OLC FAI Triangle Speed"
+#TODO: _@M1474_ "FAI spd"
+#TODO: _@M1475_ "OLC League Speed"
+#TODO: _@M1476_ "LEA spd"
+#TODO: _@M1477_ "OLC FAI 3 TPs Speed"
+#TODO: _@M1478_ "3TP spd"
+
+#TODO: _@M1479_ "OLC Classic*Predicted Speed"
+#TODO: _@M1480_ "OLC*spd"
+#TODO: _@M1481_ "OLC FAI Triangle*Predicted Speed"
+#TODO: _@M1482_ "FAI*spd"
+#TODO: _@M1483_ "OLC League*Predicted Speed"
+#TODO: _@M1484_ "LEA*spd"
+#TODO: _@M1485_ "OLC FAI 3 TPs*Predicted Speed"
+#TODO: _@M1486_ "3TP*spd"
+
+#TODO: _@M1487_ "OLC Classic Score"
+#TODO: _@M1488_ "OLC scr"
+#TODO: _@M1489_ "OLC FAI Triangle Score"
+#TODO: _@M1490_ "FAI scr"
+#TODO: _@M1491_ "OLC League Score"
+#TODO: _@M1492_ "LEA scr"
+#TODO: _@M1493_ "OLC FAI 3 TPs Score"
+#TODO: _@M1494_ "3TP scr"
+
+#TODO: _@M1495_ "OLC Classic*Predicted Score"
+#TODO: _@M1496_ "OLC*scr"
+#TODO: _@M1497_ "OLC FAI Triangle*Predicted Score"
+#TODO: _@M1498_ "FAI*scr"
+#TODO: _@M1499_ "OLC League*Predicted Score"
+#TODO: _@M1500_ "LEA*scr"
+#TODO: _@M1501_ "OLC FAI 3 TPs*Predicted Score"
+#TODO: _@M1502_ "3TP*scr"
+
+#TODO: _@M1503_ "OLC Plus Score"
+#TODO: _@M1504_ "PLS scr"
+#TODO: _@M1505_ "OLC Plus*Predicted Score"
+#TODO: _@M1506_ "PLS*scr"
+
+# #############################
+# NEW 2.4 messages
+# #############################
+
+# Device name for "no device"
+_@M1600_ "Desactivé"
+# Ex-963, new message for screen unlock
+_@M1601_ "Double clic en bas à droite pour déverrouiller"
+
+# Config system menu page 
+_@M1602_ "Configuré la Bar du bas"
+_@M1603_ "Configuré les page d'info"
+_@M1604_ "Configuré xxxx"
+_@M1605_ "Bar du bas"
+_@M1606_ "Pages d'info"
+_@M1607_ "Config de la Bar du bas sauvé"
+_@M1608_ "Config des page d'info sauvé"
+
+# Config InfoPages
+_@M1610_ "1.1 Transition "
+_@M1611_ "1.2 Thermique "
+_@M1612_ "1.3 Circuit "
+_@M1613_ "1.4 personalisée "
+_@M1614_ "1.5 Concours "
+_@M1615_ "1.6 Virage "
+#TODO: _@M1616_ "2.1 APT "
+#TODO: _@M1617_ "2.2 LND "
+#TODO: _@M1618_ "2.3 TPS "
+#TODO: _@M1619_ "2.4 ASP "
+#TODO: _@M1620_ "3.1 COMN "
+#TODO: _@M1621_ "3.2 HIST "
+#TODO: _@M1622_ "3.3 THERM "
+
+# New airspace messages
+_@M1630_ "Marge Vertical "
+
+# Navboxes
+_@M1640_ "Flap courant"
+_@M1641_ "Flap"
+
+# Header nearest Airspaces
+_@M1642_ "ASP"
+
+_@M1643_ "ACTIF"
+
+_@M1644_ "Home Alt. d'arrivé"
+#TODO: _@M1645_ "HomeArr"
+
+# Menu Config 15, Alarms
+_@M1646_ "15 Alertes"
+_@M1647_ "Altitude Max 1 "
+_@M1648_ "Altitude Max 2 "
+_@M1649_ "Altitude Max 3 "
+
+# "ALARM x ALTITUDE 1234"   warning message
+_@M1650_ "ALERTE"
+_@M1651_ "ALTITUDE"
+
+# customkey for airspace analysis
+_@M1652_ "Analyse espace aérien"
+_@M1653_ "Basculer Carte<>Espace aérien"
+
+# Airspace details buttons
+_@M1654_ "Sélectionner"
+_@M1655_ "Analyse"
+_@M1656_ "Désélectionner"
+
+# customkeys zoom 
+_@M1657_ "Zoom +"
+_@M1658_ "Zoom -"
+_@M1659_ "Zoom +++"
+_@M1660_ "Zoom ---"
+
+# Active map indicator in map scale (with AZM, NAV1 etc.), 3 letters!
+#TODO: _@M1661_ "ACT"
+
+# Error message
+_@M1662_ "Erreur système"
+_@M1663_ "Pas assez de mémoire"
+
+# Total energy configuration 
+# Toggle is for customkey config
+_@M1666_ "Bascule énergie totale"
+_@M1667_ "énergie totale active !"
+_@M1668_ "énergie totale inactive"
+_@M1669_ "Conso énergie totale "
+
+# Header Thermal History keep short!
+#TODO: _@M1670_ "THR"
+# average lift 
+_@M1671_ "Th.Moy"
+_@M1672_ "Détail thermique"
+_@M1673_ "Moy"
+
+# Auto MC configuration
+_@M1674_ "Mc Auto "
+# Menu buttons MacCready, keep very short! - F C E are the overlay indicators
+# Fin Th Equ  are fron button shortcuts, max 3 letters!
+#TODO: _@M1675_ "Final"
+#TODO: _@M1676_ "F"
+#TODO: _@M1677_ "ThAll"
+#TODO: _@M1678_ "T"
+#TODO: _@M1679_ "Equiv"
+#TODO: _@M1680_ "E"
+#TODO: _@M1681_ "Fin"
+#TODO: _@M1682_ "Th"
+#TODO: _@M1683_ "Eq"
+# Change 118 average climb with average thermal
+#TODO: _@M1684_ "Average thermal (Th.All)"
+# Change 148 with 1685
+#TODO: _@M1685_ "Both Final+Average"
+
+# Optimized routes for paraglider
+_@M1686_ "itinéraire optimisé "
+_@M1687_ "Bascule itinéraire optimisé"
+
+# Customkey name
+_@M1688_ "verrouillage de l'écran"
+_@M1689_ "ORACLE"
+
+# ORACLE
+_@M1690_ "LK8000 ORACLE"
+_@M1691_ "L'ORACLE CHERCHE"
+_@M1692_ "VEUILLEZ PATIENTER..."
+
+# Customkey
+_@M1693_ "+ Couleur du relief"
+
+# Safety Altitude indicator on overlay
+_@M1694_ "+ SECU"
+
+#infobox Logger status
+_@M1695_ "Logger"
+# max 3-4 chars!
+_@M1696_ "auto"
+
+# PG autozoom threshold on config page 23
+_@M1697_ "Seuil zoom auto "
+
+#Multitarget bearing infobox
+_@M1698_ "Cap multi-cible"
+#TODO:_@M1699_ "BrgMtg"
+
+# Logger status
+#TODO: _@M1700_ "ON"
+#TODO: _@M1701_ "no"
+
+# dialogs for The Oracle
+_@M1702_ "ORACLE a besoin d'un fix gps"
+_@M1703_ "Nord"
+_@M1704_ "Nord-Est"
+_@M1705_ "Est"
+_@M1706_ "Sud-Est"
+_@M1707_ "Sud"
+_@M1708_ "Sud-Ouest"
+_@M1709_ "Ouest"
+_@M1710_ "Nord-Ouest"
+# 3km south-west of ..
+_@M1711_ "de"
+_@M1712_ "prés de"
+_@M1713_ "au dessus"
+_@M1714_ "la ville"
+# 2km South of the city
+_@M1715_ "de la ville"
+_@M1716_ "au dessus de la ville"
+# over the city and (lake)
+_@M1717_ "et"
+# 2km south of city , over (lake)
+_@M1718_ "au dessus"
+_@M1719_ "prés de"
+# grass airport, small airport
+_@M1720_ "l'aerodrôme de"
+# outlanding field, not an airport/airfield
+_@M1721_ "du terrain de"
+_@M1722_ "l'aéroport de"
+_@M1723_ "Près de"
+_@M1724_ "VOTRE POSITION:"
+_@M1725_ "DESOLE"
+_@M1726_ "VOTRE POSITION EST INCONNUE!"
+# 1727-1739 reserved for The Oracle
+
+#TODO: _@M1740_ "OLC analysis"
+#TODO: _@M1741_ "FULL RESET LK8000 PROFILES!"
+#TODO: _@M1742_ "AGL:"
+#TODO: _@M1743_ "ELV:"
+# this was the old V rough air. Leave a trailing space!
+_@M1744_ "Vitesse Max "
+# new startup profile buttons
+_@M1745_ "Aéronef"
+_@M1746_ "Systéme"
+# new button caption on task overview dialog, appears only in PG/HG mode
+_@M1747_ "Fenètre de départ"
+#TODO: _@M1748_ "Logbook"
+_@M1749_ "Fichier introuvable"
+_@M1750_ "Vide"
+#TODO: _@M1751_ "CONFIRM FLIGHT BOOK RESET?"
+#TODO: _@M1752_ "FLIGHT BOOK RESET"
+_@M1753_ "Liste des vols"
+_@M1754_ "Départ Vol Libre"
+_@M1755_ "Treuillage"
+_@M1756_ "Pilote"
+#TODO: _@M1757_ "LK8000 PROFILES RESET"
+#TODO: _@M1758_ "THIS WOULD RESET ALL PROFILES TO FACTORY DEFAULTS"
+#TODO: _@M1759_ "SELECTED IN SYSTEM"
+
+#
+# These are new infoboxes:
+_@M1761_ "Cap Alternative 1"
+_@M1762_ "Cap Alternative 2"
+_@M1763_ "Cap Meilleur Alternative"
+_@M1764_ "Distance alternative 1"
+_@M1765_ "Distance alternative 2"
+_@M1766_ "Distance meilleurs alternative"
+_@M1767_ "Altitude max atteinte"
+#TODO: _@M1768_ "MaxAlt"
+_@M1769_ "Hauteur Max acquise"
+#TODO: _@M1770_ "Hgain"
+_@M1771_ "V.Max face au vent"
+#TODO: _@M1772_ "HdWind"
+# Customkey
+_@M1774_ "- Couleur du relief"
+
+# New AverEfficiency intervals
+_@M1775_ "3 secondes"
+_@M1776_ "5 secondes"
+_@M1777_ "10 secondes"
+_@M1778_ "45 secondes"
+
+
+############################################################
+#                  - MENU MESSAGES - 
+#
+#             DO NOT REMOVE OR CHANGE \n  
+#       it means New Line, for line splitting!!
+#
+############################################################
+
+_@M2001_ "Zoom\n+"
+_@M2002_ "Zoom\n-
+_@M2003_ "plus proche\nWaypoint"
+#TODO: _@M2004_ "Pan\n"
+_@M2005_ "plein\nécran"
+_@M2006_ "Affichage\n1/3"
+_@M2007_ "Affichage\n2/3"
+_@M2008_ "Affichage\n3/3"
+_@M2009_ "Zoom"
+_@M2010_ "Nav\n1/3"
+_@M2011_ "Annuler"
+_@M2012_ "Retour"
+_@M2013_ "Calcul\nCircuit"
+_@M2014_ "Avancer\n"
+_@M2015_ "Rechercher\nwaypoint"
+_@M2016_ "Nav\n2/3"
+_@M2017_ "Editer\nCircuit"
+_@M2018_ "Effacer\nCircuit"
+_@M2019_ "Redemarrer\nCircuit"
+_@M2020_ "Cible"
+#TODO: _@M2021_ "Team\nCode"
+#TODO: _@M2022_ "Nav\n3/3"
+#TODO: _@M2023_ "Reserv"
+_@M2024_ "Fenêtre\nde départ"
+_@M2025_ "Multi\nCible"
+#TODO: _@M2026_ "Labels"
+_@M2027_ "Réseaux"
+_@M2028_ "Relief"
+#TODO: _@M2029_ "AirSpace"
+#TODO: _@M2030_ "VisualGld"
+#TODO: _@M2031_ "Thermal"
+_@M2032_ "Transition"
+_@M2033_ "Final"
+_@M2034_ "Auto"
+_@M2035_ "Trace"
+_@M2036_ "Inverser\ntexte"
+#TODO: _@M2037_ "Topo\nBack"
+_@M2038_ "Orient.\nCarte"
+_@M2039_ "Config\n1/3"
+_@M2040_ "Config\n2/3"
+_@M2041_ "Config\n3/3"
+_@M2042_ "Config\nBase"
+_@M2043_ "Config\nVents"
+#TODO: _@M2044_ "ActivMap"
+_@M2045_ "Passer par"
+_@M2046_ "Config\nSystème"
+_@M2047_ "Effacer\nMarque"
+#TODO: _@M2048_ "Logger"
+#TODO: _@M2049_ "Logger\nReplay"
+#TODO: _@M2050_ "NMEA\nLogger"
+#TODO: _@M2051_ "Setup"
+_@M2052_ "Raz\nQFE"
+_@M2053_ "Raz\nComms"
+_@M2054_ "Profiles"
+_@M2055_ "Son"
+_@M2056_ "Info.\n1/2"
+_@M2057_ "Info.\n2/2"
+_@M2058_ "Oracle"
+_@M2059_ "Plus proche\nwaypoint"
+_@M2060_ "Plus proche\nAirspace"
+_@M2061_ "Statut"
+_@M2062_ "Analyse"
+_@M2063_ "Bloc notes"
+_@M2064_ "Répéter\nmessage"
+_@M2065_ "Orbiteur"
+_@M2066_ "Nav"
+_@M2067_ "Info"
+_@M2068_ "Config"
+_@M2069_ "Affichage"
+_@M2070_ "Marquer\nposition"
+#TODO: _@M2071_ "TrueWind\nCalc"
+#TODO: _@M2072_ "Screen\nViews"
+_@M2073_ "Quitter"
+#TODO: _@M2074_ "SIM\nMENU"
+#TODO: _@M2075_ "Therm"
+#TODO: _@M2076_ "Equiv"
+_@M2077_ "Manuel"
+#TODO: _@M2078_ "OK"
+#TODO: _@M2079_ "Overlays"
+_@M2080_ "Ombre"
+#TODO: _@M2081_ "Set\nMap"
+#TODO: _@M2082_ "PAN"
+_@M2083_ "Nord\nEn haut"
+_@M2084_ "Cap\nEn haut"
+_@M2085_ "Nord\nen spirale"
+_@M2086_ "Cible\nen spirale"
+_@M2087_ "Nord\nDyn."
+_@M2088_ "Redémarrer"
+_@M2089_ "Bas"
+_@M2090_ "Défaut"
+_@M2091_ "Moyen"
+_@M2092_ "Haut"
+#TODO: _@M2093_ "ON"
+#TODO: _@M2094_ "OFF"
+#TODO: _@M2095_ "Normal\nALL ON"
+#TODO: _@M2096_ "Led+Buz\nALL OFF"
+#TODO: _@M2097_ "Led OFF\nBuz ON"
+#TODO: _@M2098_ "Led ON\nBuz OFF"
+_@M2099_ "<< Gauche"
+_@M2100_ "Monter"
+_@M2101_ "Centré\nPar défaut"
+_@M2102_ "Descendre"
+_@M2103_ "Droite >>"
+#TODO: _@M2104_ "F>\nFlarm"
+_@M2105_ "M>\nEquipe"
+#TODO: _@M2106_ "L>\nThermal"
+_@M2107_ "T>\nCircuit"
+#TODO: _@M2108_ "B>\nBestAlt"
+#TODO: _@M2109_ "1>\nAltern1"
+#TODO: _@M2110_ "2>\nAltern2"
+#TODO: _@M2111_ "H>\nHome"
+_@M2112_ "Vitesse"
+#TODO: _@M2113_ "Alt"
+#TODO: _@M2114_ "Turn"
+# better not to translate this TE button!
+#TODO: _@M2115_ "TEnergy"
+_@M2116_ "Changer\nRelief"
+# Auto MC thermal+final glide mode, keep max 7 chars!
+#TODO: _@M2117_ "Thr+Fin"
+#TODO: _@M2118_ "LogBook"
+#TODO: _@M2119_ "LogBook\nDetails"
+#TODO: _@M2120_ "Reset\nBook"
+#TODO: _@M2121_ "LogBook\nList"
+_@M2122_ "Sauvegarde\nSystème"
