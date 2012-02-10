@@ -283,6 +283,31 @@ int GetWaypointFileFormatType(const wchar_t* wfilename) {
 //
 void MasterTimeReset(void) {
 
+  static bool silent=false;
+
+  //
+  // We want to avoid the single situation: no gps fix, PNA awaken with old time,
+  // and still no gps fix. In this case, we would get several resets, and we only
+  // give one until the fix is received again. At that time, time will advance normally
+  // and we shall not remain stuck in mastertimereset state.
+  //
+
+  // No fix, and silent = no warning.
+  if (GPS_INFO.NAVWarning && silent) {
+	#if TESTBENCH
+	StartupStore(_T("... (silent!) Master Time Reset %s%s"), WhatTimeIsIt(),NEWLINE);
+	#endif
+	return;
+  }
+
+  if (GPS_INFO.NAVWarning && !silent) {
+	#if TESTBENCH
+	StartupStore(_T("... Master Time Reset going silent, no fix! %s%s"), WhatTimeIsIt(),NEWLINE);
+	#endif
+	silent=true;
+  } else
+	silent=false; // arm it 
+
   StartupStore(_T("... Master Time Reset %s%s"), WhatTimeIsIt(),NEWLINE);
   #if TESTBENCH
   DoStatusMessage(_T("MASTER TIME RESET")); // no translation please
