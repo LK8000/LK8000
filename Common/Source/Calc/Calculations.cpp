@@ -3895,7 +3895,7 @@ bool IsFlarmTargetCNInRange()
          devPutBallast(devA(), BALLAST); // 
          devPutBallast(devB(), BALLAST); //
        }
-       if (fabs(BALLAST-BALLAST_last)>0.05) { 
+       if (fabs(BALLAST-BALLAST_last)>0.01) { // Ulli changed from 5% to 1% because somtimes it stopped at 55%
          GlidePolar::SetBallast();
          devPutBallast(devA(), BALLAST);
          devPutBallast(devB(), BALLAST);
