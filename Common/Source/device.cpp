@@ -534,21 +534,25 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
   CreateProgressDialog(buffer);
 
   LockComm();
+
   /***********************************************************/
   bool isLx16xx=false;
   for (int i=0; i<NUMDEV; i++)
   {
    if ( _tcscmp(DeviceList[i].Name,_T("LX16xx"))==0)
-	 isLx16xx=true;
+     isLx16xx=true;
   }
-  if (isLx16xx) {
+
+  if (isLx16xx)
+  {
     // for LX16xx direct communication
 	// set it to transfer mode
-    devFormatNMEAString(buffer, 512, TEXT("PFLX0,COLIBRI") );
+    devFormatNMEAString(buffer, BUFF_LEN, TEXT("PFLX0,COLIBRI") );
     d->Com->WriteString(buffer);
     Sleep(100);
   }
   /***********************************************************/
+
   if ((d != NULL) && (d->Declare != NULL))
 	result = d->Declare(d, decl, errBufferLen, errBuffer);
   else {
@@ -557,12 +561,12 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
 	}
   }
 
-/***********************************************************/
+ /***********************************************************/
   if (isLx16xx)
   {
-	// exit transfer mode
+    // exit transfer mode
     // and return to normal LX16xx  communication
-    devFormatNMEAString(buffer, 512, TEXT("PFLX0,LX1600") );
+    devFormatNMEAString(buffer, BUFF_LEN, TEXT("PFLX0,LX1600") );
     d->Com->WriteString(buffer);
 
     // check if back with audio demo
@@ -796,8 +800,25 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
   BOOL result = TRUE;
 
   TCHAR Buffer[256];
+
   d->Com->StopRxThread();
   d->Com->SetRxTimeout(500);                     // set RX timeout to 500[ms]
+
+  /***********************************************************/
+  bool isLx16xx=false;
+  for (int i=0; i<NUMDEV; i++)
+  {
+   if ( _tcscmp(DeviceList[i].Name,_T("LX16xx"))==0)
+	 isLx16xx=true;
+  }
+  if (isLx16xx) {
+    // for LX16xx direct communication
+	// set it to transfer mode
+    devFormatNMEAString(Buffer, 512, TEXT("PFLX0,COLIBRI") );
+    d->Com->WriteString(Buffer);
+    Sleep(100);
+  }
+  /***********************************************************/
 
   _stprintf(Buffer,TEXT("PFLAC,S,PILOT,%s"),decl->PilotName);
   if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
@@ -862,6 +883,15 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
   devFormatNMEAString(Buffer, 512, TEXT("PFLAR,0") );
   d->Com->WriteString(Buffer);
 
+  /***********************************************************/
+    if (isLx16xx)
+    {
+  	  // exit transfer mode
+      // and return to normal LX16xx  communication
+      devFormatNMEAString(Buffer, 512, TEXT("PFLX0,LX1600") );
+      d->Com->WriteString(Buffer);
+    }
+    /***********************************************************/
 
   d->Com->SetRxTimeout(RXTIMEOUT);                       // clear timeout
   d->Com->StartRxThread();                       // restart RX thread
