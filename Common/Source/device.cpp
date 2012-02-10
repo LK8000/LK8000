@@ -55,7 +55,7 @@ DeviceDescriptor_t *pDevSecondaryBaroSource=NULL;
 int DeviceRegisterCount = 0;
 
 static BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[]);
-
+static void devFormatNMEAString(TCHAR *dst, size_t sz, const TCHAR *text);
 
 // This function is used to determine whether a generic
 // baro source needs to be used if available
@@ -534,6 +534,21 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
   CreateProgressDialog(buffer);
 
   LockComm();
+  /***********************************************************/
+  bool isLx16xx=false;
+  for (int i=0; i<NUMDEV; i++)
+  {
+   if ( _tcscmp(DeviceList[i].Name,_T("LX16xx"))==0)
+	 isLx16xx=true;
+  }
+  if (isLx16xx) {
+    // for LX16xx direct communication
+	// set it to transfer mode
+    devFormatNMEAString(buffer, 512, TEXT("PFLX0,COLIBRI") );
+    d->Com->WriteString(buffer);
+    Sleep(100);
+  }
+  /***********************************************************/
   if ((d != NULL) && (d->Declare != NULL))
 	result = d->Declare(d, decl, errBufferLen, errBuffer);
   else {
@@ -541,6 +556,20 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
 		result |= FlarmDeclare(d, decl, errBufferLen, errBuffer);
 	}
   }
+
+/***********************************************************/
+  if (isLx16xx)
+  {
+	// exit transfer mode
+    // and return to normal LX16xx  communication
+    devFormatNMEAString(buffer, 512, TEXT("PFLX0,LX1600") );
+    d->Com->WriteString(buffer);
+
+    // check if back with audio demo
+    devFormatNMEAString(buffer, 512, TEXT("PFLX0,AUDIODEMO") );
+    d->Com->WriteString(buffer);
+  }
+  /***********************************************************/
   UnlockComm();
   
   CloseProgressDialog();
@@ -832,6 +861,7 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
   Sleep(1000);
   devFormatNMEAString(Buffer, 512, TEXT("PFLAR,0") );
   d->Com->WriteString(Buffer);
+
 
   d->Com->SetRxTimeout(RXTIMEOUT);                       // clear timeout
   d->Com->StartRxThread();                       // restart RX thread
