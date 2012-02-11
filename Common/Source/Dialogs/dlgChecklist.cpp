@@ -200,6 +200,8 @@ void addChecklist(TCHAR* name, TCHAR* details) {
   if (nLists<MAXNOTES) {
     ChecklistTitle[nLists] = (TCHAR*)malloc((_tcslen(name)+1)*sizeof(TCHAR));
     ChecklistText[nLists] = (TCHAR*)malloc((_tcslen(details)+1)*sizeof(TCHAR));
+    LKASSERT(ChecklistTitle[nLists]!=NULL);
+    LKASSERT(ChecklistText[nLists]!=NULL);
     _tcscpy(ChecklistTitle[nLists], name);
     if (_tcslen(name)>=MAXNOTETITLE)
 	  ChecklistTitle[nLists][MAXNOTETITLE-1]= 0;

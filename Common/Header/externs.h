@@ -40,6 +40,8 @@
 // Include header for heap allocation checking
 #include "utils/heapcheck.h"
 
+// Include assert for LK testbench
+#include "LKAssert.h"
 
 //
 // Functions

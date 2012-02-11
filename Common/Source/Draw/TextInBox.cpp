@@ -411,6 +411,7 @@ bool MapWindow::checkLabelBlock(RECT *rc) {
 	slotbottom[SCREENVSLOTS-1]=ScreenSizeY;
 
 	slot=(char *)malloc((ScreenSizeY+1)*sizeof(char));
+        LKASSERT(slot!=NULL);
 	// j initially is slot 0; we keep <= for safety
 	for (i=0, j=0; i<=(unsigned int)ScreenSizeY; i++) {
 		if ( i>slotbottom[j] ) j++;
