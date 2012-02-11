@@ -304,6 +304,7 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName,
       char *buf= (char*)malloc(l+2);
       if (!buf) {
 	//StartupStore(_T("------ LoadFromRes malloc error%s"),NEWLINE); // 100101
+_errmem:
         MessageBoxX(hWndMainWindow,
                     TEXT("Can't allocate memory"),
                     TEXT("Dialog error"),
@@ -322,7 +323,11 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName,
         {
 #endif
           LPTSTR b2=(LPTSTR)malloc(l*2+2);
-	  if (b2==NULL) StartupStore(_T(".... LoadFromRes Malloc1 failed\n")); // 100101
+	  if (b2==NULL) {
+		StartupStore(_T(".... LoadFromRes Malloc1 failed\n"));
+		free(buf);
+		goto _errmem;
+	  }
           MultiByteToWideChar(CP_ACP,          // code page
                               MB_PRECOMPOSED,  // character-type options
                               buf,             // string to map
@@ -341,7 +346,11 @@ XMLNode xmlLoadFromResource(const TCHAR* lpName,
         {
           l>>=1;
           LPTSTR b2=(LPTSTR)malloc(l+2);
-	  if (b2==NULL) StartupStore(_T(".... LoadFromRes Malloc2 failed\n")); // 100101
+	  if (b2==NULL){
+		StartupStore(_T(".... LoadFromRes Malloc2 failed\n")); // 100101
+		free(buf);
+		goto _errmem;
+	  }
           WideCharToMultiByte(CP_ACP,                      // code page
                               0,                           // performance and mapping flags
                               (const WCHAR*)buf,           // wide-character string
