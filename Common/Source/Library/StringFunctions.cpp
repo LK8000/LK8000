@@ -474,11 +474,19 @@ TCHAR* StringMallocParse(TCHAR* old_string) {
   wsprintf(newbuffer,_T("%s%s%s"), buffer, gettext(lktoken), pend+1);
 
   new_string = (TCHAR *)malloc((_tcslen(newbuffer)+1)*sizeof(TCHAR));
+  if (new_string==NULL) {
+	OutOfMemory(__FILE__,__LINE__);
+	return NULL;
+  }
   _tcscpy(new_string, newbuffer);
   return new_string;
 
 _notoken:
   new_string = (TCHAR *)malloc((_tcslen(buffer)+1)*sizeof(TCHAR));
+  if (new_string==NULL) {
+	OutOfMemory(__FILE__,__LINE__);
+	return NULL;
+  }
   _tcscpy(new_string, buffer);
   return new_string;
 }

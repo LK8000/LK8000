@@ -1144,8 +1144,10 @@ bool ReplayLogger::ScanBuffer(TCHAR *buffer, double *Time, double *Latitude,
     if (fevent) {
       if (found==2) {
 	TCHAR *mmisc = StringMallocParse(misc);
-	fevent(mmisc);
-	free(mmisc);
+	if (mmisc!=NULL) {
+		fevent(mmisc);
+		free(mmisc);
+	}
       } else {
 	fevent(TEXT("\0"));
       }

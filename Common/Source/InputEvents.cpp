@@ -267,6 +267,7 @@ void InputEvents::readFile() {
 	    if (!new_label) {
 	      new_label = StringMallocParse(d_label);
 	    }
+	    LKASSERT(new_label!=NULL);
 	    InputEvents::makeLabel(mode_id, new_label, d_location, event_id);
 	  } 
 
