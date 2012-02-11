@@ -344,10 +344,10 @@ void DataFieldFileReader::addFile(const TCHAR *Text,
   // TODO enhancement: remove duplicates?
   if (nFiles<DFE_MAX_FILES) {
     fields[nFiles].mTextFile = (TCHAR*)malloc((_tcslen(Text)+1)*sizeof(TCHAR));
-    _tcscpy(fields[nFiles].mTextFile, Text);
+    if (fields[nFiles].mTextFile) _tcscpy(fields[nFiles].mTextFile, Text); // MALLOC ALERT
 
     fields[nFiles].mTextPathFile = (TCHAR*)malloc((_tcslen(PText)+1)*sizeof(TCHAR));
-    _tcscpy(fields[nFiles].mTextPathFile, PText);
+    if (fields[nFiles].mTextPathFile) _tcscpy(fields[nFiles].mTextPathFile, PText); // MALLOC ALERT
 
     nFiles++;
   }
@@ -620,6 +620,7 @@ int DataFieldEnum::GetAsInteger(void){
 void DataFieldEnum::addEnumText(const TCHAR *Text) {
   if (nEnums<DFE_MAX_ENUMS-1) {
     mEntries[nEnums].mText = (TCHAR*)malloc((_tcslen(Text)+1)*sizeof(TCHAR));
+    if (mEntries[nEnums].mText == NULL) return; // MALLOC ALERT
     _tcscpy(mEntries[nEnums].mText, Text);
     mEntries[nEnums].index = nEnums;
     nEnums++;
@@ -1134,11 +1135,10 @@ ComboListEntry_t * ComboList::CreateItem(int ItemIndex,
 
   // Copy current strings into structure
   theItem = (ComboListEntry_t*) malloc(sizeof(ComboListEntry_t));
+  LKASSERT(theTime!=NULL); 
   theItem->DataFieldIndex=0;  // NULL is same as 0, so it fails to set it if index value is 0
   theItem->ItemIndex=0;
   
-  //ASSERT(theItem!= NULL);
-
   theItem->ItemIndex=ItemIndex;
 
   if (DataFieldIndex != ComboPopupNULL) { // optional
@@ -1148,14 +1148,14 @@ ComboListEntry_t * ComboList::CreateItem(int ItemIndex,
   if (StringValue == NULL)
   {
     theItem->StringValue = (TCHAR*)malloc((1) * sizeof(TCHAR));
-    //ASSERT(theItem->StringValue != NULL);
+    LKASSERT(theItem->StringValue != NULL); 
     theItem->StringValue[0]='\0';
   }
   else
   {
     iLen = _tcslen(StringValue);
     theItem->StringValue = (TCHAR*)malloc((iLen + 1) * sizeof(TCHAR));
-    //ASSERT(theItem->StringValue != NULL);
+    LKASSERT(theItem->StringValue != NULL);
     _tcscpy(theItem->StringValue, StringValue);
   }
 
@@ -1164,14 +1164,14 @@ ComboListEntry_t * ComboList::CreateItem(int ItemIndex,
   if (StringValueFormatted == NULL) 
   {
     theItem->StringValueFormatted = (TCHAR*)malloc((1) * sizeof(TCHAR));
-    //ASSERT(theItem->StringValueFormatted != NULL);
+    LKASSERT(theItem->StringValueFormatted != NULL);
     theItem->StringValueFormatted[0]='\0';
   }
   else
   {
     iLen = _tcslen(StringValueFormatted);
     theItem->StringValueFormatted = (TCHAR*)malloc((iLen + 1) * sizeof(TCHAR));
-    //ASSERT(theItem->StringValueFormatted != NULL);
+    LKASSERT(theItem->StringValueFormatted != NULL);
     _tcscpy(theItem->StringValueFormatted, StringValueFormatted);
   }
 
