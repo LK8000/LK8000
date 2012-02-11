@@ -261,6 +261,7 @@ bool CheckAlarms(unsigned short al);
 void MasterTimeReset(void);
 bool DoOptimizeRoute(void);
 TCHAR * WhatTimeIsIt(void);
+void OutOfMemory(char *where, int line);
 
 void MemCheckPoint();
 void MemLeakCheck();

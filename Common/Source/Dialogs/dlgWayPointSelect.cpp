@@ -189,10 +189,19 @@ static void PrepareData(void){
   sNameFilter[0]='\0';
   SetWPNameCaption(TEXT("*"));
 
-
   WayPointSelectInfo = (WayPointSelectInfo_t*)malloc(sizeof(WayPointSelectInfo_t) * NumberOfWayPoints);
+  if (WayPointSelectInfo==NULL) {
+	OutOfMemory(__FILE__,__LINE__);
+	return;
+  }
 
   StrIndex = (int*)malloc(sizeof(int)*(NumberOfWayPoints+1));
+  if (StrIndex==NULL) {
+	OutOfMemory(__FILE__,__LINE__);
+	free(WayPointSelectInfo);
+	WayPointSelectInfo=NULL;
+	return;
+  }
 
   for (int i=0; i<(int)NumberOfWayPoints; i++){
     WayPointSelectInfo[i].Index = i;
@@ -869,6 +878,7 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
   wpnewName = (WndButton*)wf->FindByName(TEXT("cmdName"));
 
   PrepareData();
+  if (WayPointSelectInfo==NULL) goto _return; // Will be null also if strindex was null
   UpdateList();
 
   wf->SetTimerNotify(OnTimerNotify);
@@ -882,8 +892,10 @@ int dlgWayPointSelect(double lon, double lat, int type, int FilterNear){
 		ItemIndex = WayPointSelectInfo[LowLimit + ItemIndex].Index;
   }else
 	ItemIndex = -1;
-  free(WayPointSelectInfo);
-  free(StrIndex);
+
+_return:
+  if (WayPointSelectInfo!=NULL) free(WayPointSelectInfo);
+  if (StrIndex!=NULL) free(StrIndex);
 
   delete wf;
 

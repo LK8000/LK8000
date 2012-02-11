@@ -402,3 +402,9 @@ void TaskFinishMessage(void) {
 }
 
 
+void OutOfMemory(char *where, int line) {
+
+  StartupStore(_T(">>> OUT OF MEMORY in <%S> line %d%s"),where,line,NEWLINE);
+  DoStatusMessage(_T("OUT OF MEMORY!"));
+
+}
