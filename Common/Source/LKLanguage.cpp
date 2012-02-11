@@ -583,6 +583,7 @@ bool LKLoadMessages(bool fillup) {
 	#endif
 	LKMessagesIndex[inumber]=mnumber;
 	LKMessages[mnumber] = (TCHAR *)malloc((wcslen(scapt)+1)*sizeof(TCHAR));
+	LKASSERT(LKMessages[mnumber]!=NULL);
 	_tcscpy(LKMessages[mnumber],scapt);
 	mnumber++;
 	if (mnumber>=MAX_MESSAGES) {
