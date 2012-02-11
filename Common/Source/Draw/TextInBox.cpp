@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "MapWindow.h"
 #include "RGB.h"
+#include "DoInits.h"
 
 #define WPCIRCLESIZE        2 // check also duplicate in LKDrawWaypoint
 
@@ -388,7 +389,6 @@ char * MapWindow::slot;
 // Returns true if label can be printed, not overlapping other labels
 //
 bool MapWindow::checkLabelBlock(RECT *rc) {
-  static bool doinit=true;
 
   // This item is out of screen, probably because zoom was made and we still have old wps
   // or we panned, or we have a far away takeoff still in the list
@@ -399,7 +399,7 @@ bool MapWindow::checkLabelBlock(RECT *rc) {
   if (rc->left>ScreenSizeX) return false;
   if (rc->right<0) return false;
 
-  if (doinit) {
+  if (DoInit[MDI_CHECKLABELBLOCK]) {
 	// vertical coordinate Y for bottom size of each slot
 	unsigned int slotbottom[SCREENVSLOTS+1];
 	unsigned int slotsize=ScreenSizeY/SCREENVSLOTS;
@@ -420,7 +420,7 @@ bool MapWindow::checkLabelBlock(RECT *rc) {
 		slot[i]=(char)j;
 	}
 
-	doinit=false;
+	DoInit[MDI_CHECKLABELBLOCK]=false;
   }
 
   if (DeclutterMode==(DeclutterMode_t)dmDisabled) return true;

@@ -53,6 +53,7 @@
 	MDI_ONPAINTLISTITEM,		// resolution change
 	MDI_DRAWMAPSCALE,		// resolution change
 	MDI_MAPWPLABELADD,		// resolution change
+	MDI_CHECKLABELBLOCK,		// resolution change
 	MDI_LAST_DOINIT,		
  } MDI_t;
 
