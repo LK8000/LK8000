@@ -81,7 +81,7 @@ static void OnCommentClicked(WindowControl *Sender) {
 		// do we have a new comment?
 		global_wpt->Comment = (TCHAR*)malloc((_tcslen(comment)+2)*sizeof(TCHAR));
 		if (global_wpt->Comment == NULL) {
-			StartupStore(_T("------ Wp Edit new comment malloc failed for comment <%s>! Memory problem!%s"),comment,NEWLINE);
+			OutOfMemory(__FILE__,__LINE__);
 		} else {
 			_tcscpy(global_wpt->Comment,comment);
 		}
