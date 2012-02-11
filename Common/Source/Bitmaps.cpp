@@ -146,6 +146,10 @@ void LKLoadFixedBitmaps(void) {
   hDam=LKLoadBitmap(srcfile);
   _stprintf(srcfile,_T("%s\\SENDER%s.BMP"),sDir,hires_suffix);
   hSender=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\NDB%s.BMP"),sDir,hires_suffix);
+  hNdb=LKLoadBitmap(srcfile);
+  _stprintf(srcfile,_T("%s\\LKTHERMAL%s.BMP"),sDir,hires_suffix);
+  hLKThermal=LKLoadBitmap(srcfile);
 
   if (hTurnPoint==NULL)
 	StartupStore(_T("... ERROR! MISSING BITMAPS!! CHECK SYSTEM BITMAPS!%s"),NEWLINE);
@@ -204,6 +208,8 @@ void LKLoadFixedBitmaps(void) {
 
   if (hDam==NULL) hDam=NULLBMP;
   if (hSender==NULL) hSender=NULLBMP;
+  if (hNdb==NULL) hNdb=NULLBMP;
+  if (hLKThermal==NULL) hLKThermal=NULLBMP;
 }
 
 
@@ -256,6 +262,8 @@ void LKUnloadFixedBitmaps(void) {
   if (hIntersect!=NULL) DeleteObject(hIntersect);
   if (hDam!=NULL) DeleteObject(hDam);
   if (hSender!=NULL) DeleteObject(hSender);
+  if (hNdb!=NULL) DeleteObject(hNdb);
+  if (hLKThermal!=NULL) DeleteObject(hLKThermal);
 }
 
 

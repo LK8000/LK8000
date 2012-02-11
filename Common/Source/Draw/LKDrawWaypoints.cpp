@@ -572,7 +572,13 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 				break;
 
 			case STYLE_VOR:
+				goto turnpoint;
+				break;
+
 			case STYLE_NDB:
+				SelectObject(hDCTemp,hNdb);
+				break;
+
 			case STYLE_COOLTOWER:
 				goto turnpoint;
 				break;
@@ -599,8 +605,10 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 				break;
 
 			case STYLE_TRAFFIC:
-			case STYLE_THERMAL:
 				goto turnpoint;
+				break;
+			case STYLE_THERMAL:
+				SelectObject(hDCTemp,hLKThermal);
 				break;
 
 			case STYLE_MARKER:
