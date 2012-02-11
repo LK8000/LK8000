@@ -137,7 +137,7 @@ bool RasterMapRaw::Open(const TCHAR* zfilename) {
   }
     
   if (!TerrainMem) {
-    FailStore(_T("Terrain memory malloc failed! Raster map NOT loaded."));
+    OutOfMemory(__FILE__,__LINE__);
     zzip_fclose(fpTerrain);
     terrain_valid = false;
   } else {
