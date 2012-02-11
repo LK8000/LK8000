@@ -2680,7 +2680,7 @@ void CAirspaceManager::LoadSettings()
     CCriticalSection::CGuard guard(_csairspaces);
     asp_data = (asp_data_struct*)malloc(sizeof(asp_data_struct) * _airspaces.size());
     if (asp_data==NULL) {
-      StartupStore(TEXT(".... Failed to allocate memory on airspace settings loading, settings not loaded.%s"),NEWLINE);
+      OutOfMemory(__FILE__,__LINE__);
       return;
     }
     i = 0;
@@ -2717,8 +2717,8 @@ void CAirspaceManager::LoadSettings()
         }
       }
     }
-    
-    free(asp_data);
+   
+    if (asp_data) free(asp_data);
     StartupStore(TEXT(". Settings for %d of %d airspaces loaded from file <%s>%s"), airspaces_restored, _airspaces.size(), szFileName, NEWLINE);
     fclose(f);
   } else StartupStore(TEXT(". Failed to load airspace settings from file <%s>%s"),szFileName,NEWLINE);
