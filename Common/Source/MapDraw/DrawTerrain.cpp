@@ -160,6 +160,7 @@ public:
 
     if (hBuf==NULL)  {
 	StartupStore(_T("------ TerrainRenderer: malloc(%d) failed!%s"),sizeof(unsigned short)*ixs*iys, NEWLINE);
+	OutOfMemory(__FILE__,__LINE__);
     } 
     #if TESTBENCH
     else {
@@ -168,6 +169,9 @@ public:
     #endif
 
     colorBuf = (BGRColor*)malloc(256*128*sizeof(BGRColor));
+    if (colorBuf==NULL)  {
+	OutOfMemory(__FILE__,__LINE__);
+    } 
 
   }
 
@@ -212,6 +216,7 @@ private:
 
 public:
   bool SetMap() {
+      if (hBuf==NULL || colorBuf==NULL) return false;
       interp_levels = 2;
       is_terrain = true;
       height_scale = 4;

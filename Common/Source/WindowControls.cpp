@@ -1135,7 +1135,7 @@ ComboListEntry_t * ComboList::CreateItem(int ItemIndex,
 
   // Copy current strings into structure
   theItem = (ComboListEntry_t*) malloc(sizeof(ComboListEntry_t));
-  LKASSERT(theTime!=NULL); 
+  LKASSERT(theItem!=NULL); 
   theItem->DataFieldIndex=0;  // NULL is same as 0, so it fails to set it if index value is 0
   theItem->ItemIndex=0;
   
