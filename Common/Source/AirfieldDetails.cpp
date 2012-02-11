@@ -128,7 +128,7 @@ void LookupAirfieldDetail(TCHAR *Name, TCHAR *Details) {
 		free(WayPointList[i].Details);
 	      }
 	      WayPointList[i].Details = (TCHAR*)malloc((_tcslen(Details)+1)*sizeof(TCHAR));
-	      _tcscpy(WayPointList[i].Details, Details);
+	      if (WayPointList[i].Details != NULL) _tcscpy(WayPointList[i].Details, Details);
 	    } 
 	    return;
 	  }
