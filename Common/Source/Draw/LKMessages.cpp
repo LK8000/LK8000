@@ -14,7 +14,7 @@ void MSG_NotEnoughMemory(void) {
 
   MessageBoxX(hWndMapWindow,
     gettext(TEXT("_@M1663_")), // NOT ENOUGH MEMORY
-    gettext(TEXT("_@M1662")),  // SYSTEM ERROR
+    gettext(TEXT("_@M1662_")),  // SYSTEM ERROR
     MB_OK|MB_ICONEXCLAMATION);
 
 }

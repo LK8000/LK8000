@@ -171,8 +171,8 @@ static void PrepareData(void){
   AirspaceSelectInfo = (AirspaceSelectInfo_t*)
     malloc(sizeof(AirspaceSelectInfo_t) * NumberOfAirspaces);
 
-  if (AirspaceSelectInfo==NULL) { // 100101
-	StartupStore(_T("------ Airspace malloc SelectInfo Failed!!%s"), NEWLINE);
+  if (AirspaceSelectInfo==NULL) {
+	OutOfMemory(__FILE__,__LINE__);
 	return;
   }
 
@@ -686,8 +686,6 @@ void dlgAirspaceSelect(void) {
 
   if (!wf) return;
 
-  //ASSERT(wf!=NULL);
-
   wf->SetKeyDownNotify(FormKeyDown);
 
   ((WndButton *)wf->
@@ -708,6 +706,10 @@ void dlgAirspaceSelect(void) {
   wpDirection = (WndProperty*)wf->FindByName(TEXT("prpFltDirection"));
 
   PrepareData();
+  if (AirspaceSelectInfo==NULL){
+	StopHourglassCursor();
+	goto _return;
+  }
   UpdateList();
 
   wf->SetTimerNotify(OnTimerNotify);
@@ -715,12 +717,10 @@ void dlgAirspaceSelect(void) {
   StopHourglassCursor();
   wf->ShowModal();
 
-  free(AirspaceSelectInfo);
-
+_return:
+  if (AirspaceSelectInfo!=NULL) free(AirspaceSelectInfo);
   delete wf;
-
   wf = NULL;
-
   return;
 
 }
