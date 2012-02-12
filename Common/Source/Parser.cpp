@@ -1838,6 +1838,7 @@ void LogNMEA(TCHAR* text) {
 	if (wasWriting) {
 		fclose(logfp);
 		wasWriting=false;
+		doinit=true;
 	}
 	return;
   }
