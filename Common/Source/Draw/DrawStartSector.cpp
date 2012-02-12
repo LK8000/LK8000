@@ -16,6 +16,7 @@ void MapWindow::DrawStartSector(HDC hdc, const RECT rc,
                                 POINT &Start,
                                 POINT &End, int Index) {
   double tmp;
+  HPEN oldpen;
 
   if(StartLine) {
     _DrawLine(hdc, PS_SOLID, NIBLSCALE(5), WayPointList[Index].Screen,
@@ -28,8 +29,8 @@ void MapWindow::DrawStartSector(HDC hdc, const RECT rc,
               End, RGB(255,0,0), rc);
   } else {
     tmp = StartRadius*zoom.ResScaleOverDistanceModify();
+    oldpen=(HPEN)SelectObject(hdc, hpStartFinishThick);
     SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-    SelectObject(hdc, hpStartFinishThick);
     Circle(hdc,
            WayPointList[Index].Screen.x,
            WayPointList[Index].Screen.y,(int)tmp, rc, false, false);
@@ -37,6 +38,8 @@ void MapWindow::DrawStartSector(HDC hdc, const RECT rc,
     Circle(hdc,
            WayPointList[Index].Screen.x,
            WayPointList[Index].Screen.y,(int)tmp, rc, false, false);
+
+    SelectObject(hdc,oldpen);
   }
 
 }
