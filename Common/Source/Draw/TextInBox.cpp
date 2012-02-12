@@ -125,7 +125,9 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
   }
   
   HBRUSH hbOld;
+  HPEN   hpOld;
   hbOld = (HBRUSH)SelectObject(hDC, GetStockObject(WHITE_BRUSH));
+  hpOld = (HPEN)SelectObject(hDC,GetStockObject(BLACK_PEN));
 
   if (Mode.AsFlag.Reachable){
     if (Appearance.IndLandable == wpLandableDefault){
@@ -191,7 +193,8 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
       RoundRect(hDC, brect.left, brect.top, brect.right, brect.bottom, 
                 NIBLSCALE(8), NIBLSCALE(8));
       SelectObject(hDC, oldPen);
-	  if (Mode.AsFlag.SetTextColor) TextColor(hDC,Mode.AsFlag.Color); else TextColor(hDC, TEXTBLACK);
+	  //if (Mode.AsFlag.SetTextColor) TextColor(hDC,Mode.AsFlag.Color); else TextColor(hDC, TEXTBLACK); FIX 120212
+	  if (Mode.AsFlag.SetTextColor) SetTextColor(hDC,Mode.AsFlag.Color); else SetTextColor(hDC, TEXTBLACK);
 #if (WINDOWSPC>0)
       SetBkMode(hDC,TRANSPARENT);
       ExtTextOut(hDC, x, y, 0, NULL, Value, size, NULL);
@@ -368,6 +371,7 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
  
   if (!Mode.AsFlag.NoSetFont) SelectObject(hDC, oldFont); // VENTA5
   SelectObject(hDC, hbOld);
+  SelectObject(hDC,hpOld);
 
   return drawn;
 
