@@ -19,6 +19,8 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc)
 
   if (!WayPointList) return;
   if (!AATEnabled) return;
+
+  HPEN oldpen=0;
   
   LockTaskData();  // protect from external task changes
 #ifdef HAVEEXCEPTIONS
@@ -30,7 +32,7 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc)
 
     SelectObject(hDCTemp, (HBITMAP)hDrawBitMapTmp);
 
-    SelectObject(hDCTemp, GetStockObject(WHITE_PEN));
+    oldpen=(HPEN)SelectObject(hDCTemp, GetStockObject(WHITE_PEN));
     SelectObject(hDCTemp, GetStockObject(WHITE_BRUSH));
     Rectangle(hDCTemp,rc.left,rc.top,rc.right,rc.bottom);
     
@@ -54,7 +56,8 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc)
 	      } else {
 		SelectObject(hDCTemp, hAirspaceBrushes[iAirspaceBrush[AATASK]]);
 	      }
-	      SelectObject(hDCTemp, GetStockObject(BLACK_PEN));
+
+	      SelectObject(hDCTemp, hpStartFinishThick);
           
 	      Circle(hDCTemp,
 		     WayPointList[Task[i].Index].Screen.x,
@@ -77,7 +80,7 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc)
 	      } else {
 		SelectObject(hDCTemp, hAirspaceBrushes[iAirspaceBrush[AATASK]]);
 	      }
-	      SelectObject(hDCTemp, GetStockObject(BLACK_PEN));
+	      SelectObject(hDCTemp, hpStartFinishThick);
           
 	      tmp = Task[i].AATSectorRadius*zoom.ResScaleOverDistanceModify();
           
@@ -101,6 +104,7 @@ void MapWindow::DrawTaskAAT(HDC hdc, const RECT rc)
 
     // restore original color
     SetTextColor(hDCTemp, origcolor);
+    SelectObject(hDCTemp, oldpen);
 
 #if (WINDOWSPC<1)
     TransparentImage(hdc,
