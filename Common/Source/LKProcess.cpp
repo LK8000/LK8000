@@ -1742,17 +1742,16 @@ goto_bearing:
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
 			if (NearestAirspaceHDist >0) {
+				value = DISTANCEMODIFY*NearestAirspaceHDist;
+
 				if (NearestAirspaceHDist<1000) {
-					value = ALTITUDEMODIFY*NearestAirspaceHDist;
-					sprintf(text,"%1.0f",value);
-					wsprintf(BufferValue, TEXT("%S"),text);
-					wsprintf(BufferUnit, TEXT("%s"),(Units::GetAltitudeName()));
+					sprintf(text,"%1.3f",value);
 				} else {
-					value = DISTANCEMODIFY*NearestAirspaceHDist;
 					sprintf(text,"%1.1f",value);
-					wsprintf(BufferValue, TEXT("%S"),text);
-					wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 				}
+
+				wsprintf(BufferValue, TEXT("%S"),text);
+				wsprintf(BufferUnit, TEXT("%s"),(Units::GetDistanceName()));
 				valid = true;
 			} else {
 				valid=false;
