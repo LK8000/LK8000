@@ -306,7 +306,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hpMapScale = LKPen_Black_N1;
 
 
-      hpStartFinishThick=(HPEN)CreatePen(PS_SOLID, NIBLSCALE(5), taskcolor);
+      hpStartFinishThick=(HPEN)CreatePen(PS_SOLID, NIBLSCALE(2)+1, taskcolor);
       hpMapScale2 = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1)+1, RGB_BLACK);
       // TerrainLine is for shade, Bg is for perimeter
       hpTerrainLine = (HPEN)CreatePen(PS_DASH, (1), RGB(0x30,0x30,0x30));

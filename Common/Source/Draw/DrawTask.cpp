@@ -56,10 +56,10 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 	  // only draw finish line when past the first
 	  // waypoint. FIXED 110307: or if task is with only 2 tps
 	  if(FinishLine) {
-	    _DrawLine(hdc, PS_SOLID, NIBLSCALE(5), 
+	    _DrawLine(hdc, PS_SOLID, NIBLSCALE(3), 
 		      WayPointList[Task[i].Index].Screen,
 		      Task[i].Start, taskcolor, rc);
-	    _DrawLine(hdc, PS_SOLID, NIBLSCALE(5), 
+	    _DrawLine(hdc, PS_SOLID, NIBLSCALE(3), 
 		      WayPointList[Task[i].Index].Screen,
 		      Task[i].End, taskcolor, rc);
 	    _DrawLine(hdc, PS_SOLID, NIBLSCALE(1), 
@@ -91,7 +91,7 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 	  _DrawLine(hdc, PS_DASH,NIBLSCALE(4), WayPointList[Task[i].Index].Screen, Task[i].End, RGB_MAGENTA, rc); // 091216
 
 	  SelectObject(hdc, GetStockObject(HOLLOW_BRUSH)); 
-	  SelectObject(hdc, hpBearing); // 091216
+	  SelectObject(hdc, hpStartFinishThick);
 	  if(SectorType== 0) {
 	    tmp = SectorRadius*zoom.ResScaleOverDistanceModify();
 
