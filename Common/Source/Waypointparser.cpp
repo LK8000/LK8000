@@ -1733,6 +1733,7 @@ void AddReservedWaypoints()
 	WayPointList[RESWP_LASTTHERMAL].FileNum=-1;
 
 	WayPointCalc[RESWP_LASTTHERMAL].WpType = WPT_TURNPOINT;
+	WayPointList[RESWP_LASTTHERMAL].Style = STYLE_THERMAL;
 	WayPointCalc[RESWP_LASTTHERMAL].IsLandable = false;
 	WayPointCalc[RESWP_LASTTHERMAL].IsAirport = false;
 	WayPointCalc[RESWP_LASTTHERMAL].IsOutlanding = false;
