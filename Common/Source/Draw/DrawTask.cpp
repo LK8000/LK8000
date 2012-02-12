@@ -27,8 +27,11 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 
   COLORREF whitecolor = RGB_WHITE;
   COLORREF origcolor = SetTextColor(hDCTemp, whitecolor);
+  HPEN oldpen=0;
 
   if (!WayPointList) return;
+
+  oldpen=(HPEN)SelectObject(hdc, hpStartFinishThick);
 
   LockTaskData();  // protect from external task changes
 #ifdef HAVEEXCEPTIONS
@@ -87,8 +90,8 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
       // DRAW TASK SECTORS
       if(ValidTaskPoint(i) && ValidTaskPoint(i+1)) { // normal sector
 	if(AATEnabled != TRUE) {
-	  _DrawLine(hdc, PS_DASH,NIBLSCALE(4), WayPointList[Task[i].Index].Screen, Task[i].Start, RGB_MAGENTA, rc); // 091216 127,127,127
-	  _DrawLine(hdc, PS_DASH,NIBLSCALE(4), WayPointList[Task[i].Index].Screen, Task[i].End, RGB_MAGENTA, rc); // 091216
+	  _DrawLine(hdc, PS_DASH,NIBLSCALE(3), WayPointList[Task[i].Index].Screen, Task[i].Start, RGB_PETROL, rc);
+	  _DrawLine(hdc, PS_DASH,NIBLSCALE(3), WayPointList[Task[i].Index].Screen, Task[i].End, RGB_PETROL, rc);
 
 	  SelectObject(hdc, GetStockObject(HOLLOW_BRUSH)); 
 	  SelectObject(hdc, hpStartFinishThick);
@@ -223,6 +226,7 @@ void MapWindow::DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft)
 
   // restore original color
   SetTextColor(hDCTemp, origcolor);
+  SelectObject(hdc, oldpen);
 
 }
 
