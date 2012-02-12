@@ -1,9 +1,9 @@
-﻿# LK8000 ENG_HLP.TXT 101210
+﻿# LK8000 ENG_HLP.TXT 110405
 #
 # A single text line can be max 500 characters long
 # An entire help can be max 1024 characters total
 ##
-# LK8000 HRV_HLP.TXT 110130 (Saša)
+# LK8000 HRV_HLP.TXT 120212 (Saša Mihajlović)
 ##
 
 #
@@ -1150,10 +1150,15 @@ Vrijeme leta. Vrijeme koje je proteklo od detekcije polijetanja.
 [G load]
 Magnituda G opterečenja ukoliko je pametni variometar dostavlja. Negativne vrijednosti predstavljaju negativna opterečenja.
 
+#@838
+#[Next L/D]
+#Nemoj koristiti ovu vrijednost, ona je ovdje zbog #kompatibilnosti sa starim verzijama.
+#Umjesto nje koristi 'Next Req.Efficiency'.
+
 @838
-[Next L/D]
-Nemoj koristiti ovu vrijednost, ona je ovdje zbog kompatibilnosti sa starim verzijama.
-Umjesto nje koristi 'Next Req.Efficiency'.
+[Multitarget BRG]
+Smjer prema trenutno selektiranom cilju (multitarget).
+Trenutno ova opcija NIJE dostupna.
 
 @839
 [Time local]
@@ -1379,86 +1384,101 @@ Za ovu stvku ne postoji uputstvo!
 
 
 @890
-[OLC CLASSIC] distance
-Current distance calculated around 5 turnpoints. 
+[OLC CLASSIC distance] 
+Trenutna udaljenost koja se računa na osnovu 5 okretnih točaka.
 
 @891
-[FAI TRIANGLE] distance
-FAI triangle maximum distance achieved so far.
+[OLC FAI TRIANGLE distance]
+Maksimalna udaljenost ostvarena u FAI trokutu.
 
 @892
-[OLC LEAGUE] distance
-Max distance calculated around 3 turnpoints, made in 2.5 hours.
+[OLC LEAGUE distance]
+Maksksimalna udaljenost koja se računa na osnovi 3 okretne točke, ostvarena u 2.5 sata.
 
 @893
-[FAI 3TPs] distance
-Current distance calculated around 3 turnpoints. 
+[FAI 3TPs distance]
+Trenutna udaljenost koja se računa na osnovu 3 okretne točke.
 
 @894
-[OLC CLASSIC] predicted distance
-Current distance calculated around 5 turnpoints assuming the last one
-will be the starting point.
+[OLC CLASSIC predicted distance]
+Predviđena udaljenost računa se na osnovi trenutne udaljenosti preko 5 okretnih točaka sa pretpostavkom da je zadnja točka jednaka početnoj.
 
 @895
-[FAI TRIANGLE] predicted distance
-FAI triangle maximum distance achieved so far, assuming the last point
-will be the starting point.
+[FAI TRIANGLE predicted distance]
+Predviđena udaljenost ostvarena u FAI trokutu uz pretpostavku da je zadnja točka jednaka početnoj.
 
 @896
-[FAI 3TPs] predicted distance
-Current distance calculated around 3 turnpoints assuming the last one
-will be the starting point.
+[FAI 3TPs predicted distance]
+Predviđena udaljenost ostvarena oko 3 okretne točke uz pretpostavku da je zadnja točka jednaka početnoj.
 
 @897
-[OLC CLASSIC] speed
+[OLC CLASSIC speed]
+brzina
 
 @898
-[FAI TRIANGLE] speed
+[FAI TRIANGLE speed]
+brzina
 
 @899
-[OLC LEAGUE] speed
+[OLC LEAGUE speed]
+brzina
 
 @900
-[FAI 3TPs] speed
+[FAI 3TPs speed]
+brzina
 
 @901
-[OLC CLASSIC] predicted speed
+[OLC CLASSIC predicted speed]
+predviđena brzina
 
 @902
-[FAI TRIANGLE] predicted speed
+[FAI TRIANGLE predicted speed]
+predviđena brzina
 
 @903
-[FAI 3TPs] predicted speed
+[FAI 3TPs predicted speed]
+predviđena brzina
 
 @904
-[OLC CLASSIC] score
+[OLC CLASSIC score]
+bodovi
 
 @905
-[FAI TRIANGLE] score
+[FAI TRIANGLE score]
+bodovi
 
 @906
-[OLC LEAGUE] score
+[OLC LEAGUE score]
+bodovi
 
 @907
-[FAI 3TPs] score
+[FAI 3TPs score]
+bodovi
 
 @908
-[OLC CLASSIC] predicted score
+[OLC CLASSIC predicted score]
+predviđeni bodovi
 
 @909
-[FAI TRIANGLE] predicted score
+[FAI TRIANGLE predicted score]
+predviđeni bodovi
 
 @910
-[FAI 3TPs] predicted score
+[FAI 3TPs predicted score]
+predviđeni bodovi
 
 @911
-[OLC PLUS] score
-The sum of OLC Classic score and FAI triangle score.
+[OLC PLUS score]
+Zbroj OLC Classic bodova i FAI trokut bodova.
 
 @912
-[OLC PLUS] predicted score
-The sum of OLC Classic predicted score and FAI triangle predicted score.
+[OLC PLUS predicted score]
+Zbroj OLC Classic predviđenih bodova i FAI triangle predviđenih bodova.
 
+@913
+[FLAP SETTINGS]
+Pokazuje optimalni položaj flapsa, baziran na proširenoj datoteci polare i trenutnog opterećenja krila.
+U direktoriju _Polars imaš prijer proširene datoteke polare.
 
 #
 # END INFOBOXES 800 - 1199
@@ -1466,66 +1486,61 @@ The sum of OLC Classic predicted score and FAI triangle predicted score.
 
 @1200
 [Airspace area filling]
-Airspace area can be denoted by outlines only, pattern filling, or semi-transparent colors.
-[Outlines only] there will be only lines on airspace area borders 
-[Pattern] airspace area will be filled with selected pattern of selected color
-[Semi-Transparent] airspace area will be filled with selected solid semi-transparent color (opacity of the color can be set in 'Opacity' item) . 
-Transparency may not be available on some hardware devices.
+Zračni prostor može biti označen konturama, mustrom (ispuna određenom teksturom) ili prozirnom bojom.
+[Samo rub (konture)] Rub zračnog prostora iscrtan je linijama.
+[Mustra] Zračni prostor biti će ispunjem odabranom mustrom (uzorkom teksture)
+[Mustra, samo rub] Rub zračnog prostora biti će označen odabranom mustrom (uzorkom teksture). Pogledaj upozorenje na kraju!
+[Polu-proziran] Zračni prostor biti će ispunjem odabranom bojom koja je polu-prozirna. Prozirnost boje može se podesiti opcijom "Prozirnost".
+[Polu-proziran, samo rub] Rub zračnog prostora biti će označen odabranom bojom koja je polu-prozirna. Prozirnost boje može se podesiti opcijom "Prozirnost". 
+Prozirnost nije dostupna na svim uređajima, a iscrtavanje prozirnih rubova zračnog prostora može usporiti uređaje sa velikom rezolucijom ili sporim procesorom. Koristiti pažljivo!
 
 @1201
 [Opacity of semi-transparent airspace]
-Defines how much transparent (->0%) / opaque (->100%) will be airspace area filled with solid semi-transparent color.
+Definira prozirnost (->0%) / neprozirnost (->100%) boje kojom će biti označen zračni prostor.
 
 @1202
 [Bottom Bar Opacity]
-Defines how much transparent (->0%) / opaque (->100%) will be the bottom bar area on the map .
-Normally the bar is black with white text, and can be reverted to white with black text on it.
-Setting <30% opacity the bottom bar will be very transparent, and text color will be forced reversed.
-Some combinations of opacity and reverse colors may not be suitable to navigation, but there are
-infinite combinations to choose from.
-Using 0% or 100%  (full transparency  or full opacity) will speed up the software a bit.
-Another famous 8000 instrument is using 75% opacity.
-Default is 60%.
-ATTENTION: some devices do not support opacity control. In this case, opacity has no effect
-and the bottom bar will be always full black or full white.
+Definira prozirnost (->0%) / neprozirnost (->100%) BottomBar podloge na karti.
+Podloga je standardno crna sa bijelim tekstom, a može se invertirati u bijelu podlogu sa crnim tekstom. Postavkom <30% prozirnosti BottomBar postaje vrlo proziran tako da se boja teksta automatski invertira.
+Neke kombinacije prozirnosti i invertiranih boja nisu pogodne za navigaciju, pa treba biti pažljiv prilikom odabira. 
+Korištenjem prozirnosti 0% ili 100% (puna prozirnost ili neprozirnost) može značajno ubrzati aplikaciju (ovosno o vrsti HW koji se koristi). 
+Jedan drugi poznati 8000 instrument koristi prozirnost 75%.
+Standardna vrijednost je 60%
+UPOZORENJE: neki uređaji ne podržavanju kontrolu prozirnosti. U tom slučaju prozirnost nema efekta, a BottomBar uvijek će se prikazati na crnoj ili bijeloj podlozi.
 
 @1203
 [Font Smoothing]
-Font smoothing will make characters appearing with better quality.
-[None] will force disabling font smoothing
-[Normal] will use default quality
-[Anti Aliasing] normal quality
-[ClearType] advanced quality. 
-Please note that on some devices like old 3850 Anti Aliasing is not working. 
-On some PNAs in portrait mode, and on PPC2002, Antialiasing will work better.
-Otherwise, by default LK8000 is using ClearType.
-You must exit and restart LK8000 to see the effect of changes.
+Font smoothing učinit će da znakovi na ekrani izgledaju bolje.
+[None] Font smoothing je isključen.
+[Normal] Koristi se standardna (default) kvaliteta.
+[Anti Aliasing] Normalna kvaliteta.
+[ClearType] Poboljšana kvaliteta.
+Vodite računa da na nekim starijim uređajima npr. 3850 Anti Aliasing ne radi. Na nekim PNA uređajima u portrait modu i na PPC2002 Antialiasing će raditi bolje. U svim ostalim slučajevima LK8000 za standarnu vrijednost koristi ClearType.
+Da bi vidio efekte ove promjene potrebno je izaći iz LK8000 i ponovo ga pokrenuti.
+VAŽNO: Font Smoothing konfiguracija učitava se iz DEFAULT profila, PRIJE odabira nekog drugog profia.
 
 @1204
 [VarioBar mode]
-Choose the vario value and relative bar display on the left, if enabled.
-In thermal mode, only vario can be shown.
-In cruise mode, also nettovario or Speed To Fly (Sollfart).
-If STF is selected, the desired IAS is printed, and the bar is indicating
-if you must push or pull the stick to reach that value.
-
-The value is printed with a suffix letter indicating:
-NT for netto
-SF for STF
+Način prikaza variometar podataka te vario bara sa lijeve strane ukoliko je omogućen. U termičkom stupu mogu se prikazati samo vario podaci. 
+U preskoku (planiranju) može se prikazati i nettovario ili optimalna brzina kojom treba letjeti (Speed To Fly (Sollfart)).
+Ako je odabran STF, ispisuje se željena IAS brzina, a vario bar pokazje da li moramo potisnuti ili navući palicu da bi postigli željenu brzinu.
+Vrijednosti se ispisuju sa sufiksom slova koja pretstavljaju:
+NT za netto
+SF za STF (Speed To Fly)
 
 @1205
 [Aircraft category]
-Select your aircraft type here, and possibly change the polar file also accordingly.
-Each aircraft mode has unique features, please visit the website or read the latest
-manual to discover differences.
-After changing category, you must restart LK in order to notice all differences.
+Odabir kategorije (vrste) zrakoplova. Svaka kategorija ima posebna svojstva, a detalje o razlikama možete pogledajti na webstranicama ili u dokumentaciji.
+Da bi bi promjene postale vidljive potrebno je restartati LK8000 (izaći iz aplikacije i ponovo je pokrenuti).
 
+# 1206 OBSOLETED BY 1208 in 2.3
 @1206
 [Aircraft type]
 This contains a selection of aircrafts and wings of different performance classes.
 If you want to use your own polar file, choose Custom Polar File here 
 and then select it from the next configuration box.
 
+# 1207 UNUSED in 2.3
 @1207
 [Custom polar file]
 When Custom Polar File is the polar type, this is the name of the file containing the glide polar data.
@@ -1533,6 +1548,89 @@ Polars must be placed inside _Polars subfolder.
 Creating a polar file is not trivial, because you need actual sink rate values and a precise
 aircraft weight. Read the manual to know more about all of this. 
 
+
+@1208
+[Aircraft type]
+Ovdje se bira zrakoplov i krila različitih performansi.
+
+@1209
+[Airspace warning message repeat time]
+Ovo je vrijeme nakon kojeg se upozoravajuće poruke ponavljaju ukliko nisu potvrđene. Ukoliko letite u zabranjenom zr.prostoru bez potvrde poruke upozorenja, nakon tog vremena poruka će se ponoviti.
+
+@1210
+[Airspace vertical distance margin]
+Ukoliko se vertikalna udaljenost od baze ili vrha zračnog prostora smanji ispod ovog limita, prikazat će se dijalog žutog upozorenja (yellow warning).
+Time je uvjetovan i način na koji se ikonica upozorenja prikazuje na karti.
+Ukoliko se vertikalna udaljenost od baze ili vrha zračnog prostora smanji ispod ovog limita, ikonica upozorenja prikazuje se odmah ispod simbola zrakopolova.
+
+@1211
+[Airspace warning dialog timeout]
+Nakon isteka ovog vremena dijalog poruke upozoranja automatski se gasi bez pritiska na tipku Izađi. U dijalogu upozorenja o zračnom prostoru na tipki izađi možeš vidjeti brojač koji se smanjuje prikazujući vrijeme do automatskog zatvaranja dijaloga. 
+
+@1212
+[Airspace warning map labels]
+Ako je ON, na karti se prikazuje ikonica upozorenja sa labelom na kojoj je prikazano ime zračnog prostora te vertikalna udaljenost od njega.
+
+@1213
+[PG autozoom threshold]
+Kada se koristi autozum u PG modu, autozum se aktivira kada se idućoj okretnoj točki približimo više od ovog limita.
+Npr. ako odabereš 5km, to znaći da će autozum počet raditi na 5km od točke.
+Nakon dostizanja točke vraća se zum koji je bio u preskoku do točke. Kada se idućoj točki približiš na 5km autozum će ponovo proraditi.
+
+@1220
+[Bottom Bar configuration]
+Aktivira ili deaktivira pojedinu grupu vrijednosti na BottomBaru, tako da se  prilikom cikličkog mijenjanja grupa prikazuju grupe označene sa ON. Ukoliko su sve grupe isključene, automatski će se prikazati samo grupa NAV1. Za vrijeme kruženja u termičkom stupu automatski se prikazuje grupa THR 0.
+
+@1221
+[InfoPages rotation configuration]
+Aktivira ili deaktivira pojedinu stranicu u InfoStranicama. Ukoliko su sve stranice deaktivirane ova stranica se ne prikazije. Pojedina stranica može se pozvati Mapiranim tipkama bez obzira što je ovdje deaktivirana.
+Upozorenje: Kod zrakoplova koji nije jedrilica PG/HG i GA deaktiviranjem InfoStranice 1.5 Contest isklučuju se svi Contest proračuni. Ukoliko želiš Contest proračune stranica 1.5 mora biti aktivna.
+Ukoliko koristiš Jedrilicu (glider) stranica 1.5 može se isključiti zato što se proračuni obavljaju u svakom slučaju. 
+
+@1250
+Filtriranje zračnih prostora za ekran i upozorenja. Filter mogućava neovisno filtriranje prikaza i upozorenja za svaku klasu zračnog prostora. 
+[Sve uključeno] Sve se prikazuje.
+[Odsjeci] Samo zr.prostor ispod visine odsjecanja.
+[Auto] Sve u okvirima visine zrakoplova.
+[Sve ispod] Sav zr.prostor ispod zrakoplova i do margine po visini iznad. 
+
+@1251
+Margina visine koja se koristi za kontrolu filtriranja zr.prostora na karti u slučaju kada su aktivni modovi [Auto] ili [Sve ispod]. Za AUTO ona određuje visinu iznad i ispod zrakoplova za koju će zr.prostor biti prikazan. U modu [Sve ispod] prikazat će se zr.prostor do specificirane visine iznad zrakoplova i sav zračni prostor ispod zrakoplova.
+
+@1252
+Iako ste potvrdili upozorenje o zračnom prostoru, nakon ovog vremena upozorenje će se ponovo aktivirati. 
+Npr. ukoliko ste jutros proletjeli kroz zračni prostor, bit ćete upozoreni na njega i kada se popodne vraćate kući.
+Inicijalno (def.) vrijeme ponovne aktivacije upozorenja je 15 min.
+
+@1253
+[Alarm Max Altitude] Svaki puta kada se dostigne i prijeđe definirana visina prikazat će se upozorenje i oglasiti alarm o probijanju definirane visine.
+Alarm se neće ponavljati u idućih 60 sekundi. Ukoliko je u zadnjoj minuti visina bila ispod maximalne te je ponovo probijena max visina, alarm će se ponovo oglasiti. Alarm se može isključiti postavkom na 0.
+Visina koja se koristi za alarm je visina koja je odabrana u konfiguracijskom meniju 5 "Koristi baro visinu". Podešavanje više alarma na istu vrijednost aktivira samo 1 alarm.
+Pilot mora biti pažljiv da alarme ne postavi ispod sigurne visine, da ge ne ometaju u kritičnoj fazi leta.
+Svaki alarm može se ponoviti max 30 puta. Nakon 30 ponavljanja, alarm se u tekućem letu više neće aktivirati.
+Alarmna poruka automatski se gasi nakon 12 sekundi.
+Svaki alarm ima svoj zvuk. Datoteka sa zvukom nalazi se u direktoriju _System _Sounds i može se zmjeniti. Ime datoteke je LK_ALARM_ALTx.WAV (x je broj alarma).
+Inicijalna vrijednost je 0 (bez alarma). 
+
+# ex 195
+@1254
+Pokazivač doleta (glide bar) može pokazivati visinu dolata u odnosu na sljedeću točku ili na cilj ili može biti isključen. Pokazivać se iscrtava na lijevoj strani ekrana.
+Kada se koristi sljedeća točka ili točka zadatka sa finalnom točkom tada će prikazana vrijednost biti jednaka vrijednosti prikazanoj na overlay-u sa desne strane. 
+
+@1255
+Automatski Mac Cready (Mc) može biti uključen ili isključen. On se može uključivati i isključivati tokom leta.
+
+@1256
+[Total Energy] Kada se koristi TotalEnergy LK će računati visinu koju možeš ostvariti povlačenjem palice na trenutnoj brzini leta do brzine koja je u tom trenutku optimalna brzina najbolje finese.
+Npr. ako letiš 200kmh sa discus-om bez balasta, energija brzine izračunat će se kao da navućeš palicu i usporiš na 100kmh i pri tom se popneš na veću visinu od trenutne.
+Tako dobivena brzina biti će dodana u sve proračune dolazbne visine.  Standardno ova mogućnost je isključena zbog sigurnosnih razloga.
+Ukoliko si u nedoumisi ostavi ovu opciju na OFF.
+
+@1257
+[Efficiency]
+Koliko je jedrilica čista. Postavka 100% je za potpuno čistu jedrilicu, a manje brojke u slučaju kada su za krila zalijepljene mušice ili kada su krila mokra. 50% znači da se prosječno propadanje jedrilice dvostruko veće od normalnog.
+Ovo je standardna vrijednost koja se koristi za Efikasnost u meniju "Osnove postavke", koja se učitava na početku.
+Uobičajeno je da se ova vrijednost postaviti na 100%.  
 
 @9999
 Za ovu stvku ne postoji uputstvo!

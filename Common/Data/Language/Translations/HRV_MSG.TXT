@@ -1,5 +1,5 @@
 ﻿# LK8000 Croatian MESSAGES - HRV_MSG.TXT
-# MASTER UPDATED: 120205 (Saša Mihajlović)
+# MASTER UPDATED: 120212 (Saša Mihajlović)
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -79,7 +79,7 @@ _@M62_ "Airfield"
 _@M63_ "Zračni pr. 1 "
 _@M64_ "Zračni pr. 2 "
 _@M65_ "Zračni pr. detalji"
-_@M66_ "Zračni pr. Upozorenja"
+_@M66_ "Zračni pr. upozorenja"
 _@M67_ "Prikaz "
 _@M68_ "zračni prostor"
 _@M69_ "Zračni prostor ISPOD"
@@ -695,8 +695,8 @@ _@M660_ "Status"
 _@M661_ "Status: zrakoplov"
 _@M662_ "Status: vanjski uređaj"
 _@M663_ "Status: pravila"
-_@M664_ "Status: sistem"
-_@M665_ "Status: zadatk"
+_@M664_ "Status: sustav"
+_@M665_ "Status: zadatak"
 _@M666_ "Status: vremena"
 _@M667_ "Statute"
 _@M668_ "Ravnomeran"
@@ -825,7 +825,7 @@ _@M787_ "Virtualne tipke "
 _@M788_ "Volumen "
 _@M789_ "Upozori"
 _@M790_ "Upozori prije*"
-_@M791_ "Upozorenje"
+_@M791_ "Oprez"
 _@M792_ "Upozorenja "
 _@M793_ "Ozn. vodenih povr. "
 _@M794_ "Wave"
@@ -917,7 +917,7 @@ _@M884_ "LOCK this target?"
 _@M885_ "Postavke"
 _@M886_ "Računar"
 _@M887_ "Set vjetar"
-_@M888_ "Warnings"
+_@M888_ "Upozorenja"
 _@M889_ "Masa"
 _@M890_ "Ne"
 _@M891_ "Briši stari task i učitaj"
@@ -971,13 +971,13 @@ _@M936_ "Natjecateljska klasa"
 _@M937_ "Natjecateljska klasa: "
 _@M938_ "Natjecateljski ID"
 _@M939_ "Natjecateljski ID: "
-_@M940_ "Popuni "
-_@M941_ "Samo rub"
+_@M940_ "Označi "
+_@M941_ "Samo rub (konture)"
 _@M942_ "Mustra"
-_@M943_ "Semi-transparent"
+_@M943_ "Polu-proziran"
 _@M944_ "Prozirnost "
-_@M945_ "Mustra, samo granice"
-_@M946_ "Semi-transparent, samo granice"
+_@M945_ "Mustra, samo rub"
+_@M946_ "Polu-proziran, samo rub"
 
 _@M950_ "BottomBar prozirnost "
 _@M951_ "Ne može zaustavit RX thread!"
@@ -996,17 +996,17 @@ _@M959_ "OFF"
 #
 # Paragliding lock/unlock screen feature
 #
-_@M960_ "CONFIRM SCREEN UNLOCK?"
-_@M961_ "CONFIRM SCREEN LOCK?"
+_@M960_ "POTVRDI UNLOK EKRANA?"
+_@M961_ "POTVRDI LOK EKRANA?"
 # 962 max 35 characters!
-_@M962_ "SCREEN IS LOCKED UNTIL TAKEOFF"
+_@M962_ "EKRAN JE LOKAN NAKON POLETA"
 # 963 unused since 2.3
-_@M963_ "DOUBLE-CLICK ON SCREEN TO FORCE UNLOCK"
-_@M964_ "SCREEN IS UNLOCKED"
+_@M963_ "DVOSTRUKI-KLIK PO ENRANU ZA UNLOK"
+_@M964_ "EKRAN JE UNLOKAN"
 #
 # Menu buttons, MAX 8 character per line! Keep \n !
-_@M965_ "UNLOCK\nSCREEN"
-_@M966_ "LOCK\nSCREEN"
+_@M965_ "Unlok\nekrana"
+_@M966_ "Lok\nekrana"
 
 #
 # GPS and COM port warnings
@@ -1014,9 +1014,9 @@ _@M966_ "LOCK\nSCREEN"
 _@M970_ " GPS: NO VALID FIX "
 _@M971_ " GPS: No ComPort "
 _@M972_ " GPS: No Data Rx "
-_@M973_ " GPS is missing "
-_@M974_ " GPS not connected "
-_@M975_ " GPS data error "
+_@M973_ " GPS nedostaje "
+_@M974_ " GPS nije spojen "
+_@M975_ " GPS data greška "
 
 
 #
@@ -1283,28 +1283,28 @@ _@M1238_ "L"
 _@M1239_ "T"
 
 # dlgLKAirspaceWarning - Airspace warning messages
-_@M1240_ "Entering"
-_@M1241_ "Leaving"
-_@M1242_ "Flying inside FLY zone"
-_@M1243_ "Predicted leaving FLY zone"
-_@M1244_ "Near leaving FLY zone"
-_@M1245_ "Leaving FLY zone"
-_@M1246_ "Predicted entering FLY zone"
-_@M1247_ "Entering FLY zone"
-_@M1248_ "Flying outside FLY zone"
-_@M1249_ "Flying outside NOFLY zone"
-_@M1250_ "Predicted entering NOFLY zone"
-_@M1251_ "Near entering NOFLY zone"
-_@M1252_ "Entering NOFLY zone"
-_@M1253_ "Flying inside NOFLY zone"
-_@M1254_ "Leaving NOFLY zone"
+_@M1240_ "Ulazi"
+_@M1241_ "Izlazi"
+_@M1242_ "Let unutar FLY zone"
+_@M1243_ "Predviđen izlazak iz FLY zone"
+_@M1244_ "Skori izlazak iz FLY zone"
+_@M1245_ "Izlazak iz FLY zone"
+_@M1246_ "Predviđen ulazak u FLY zonu"
+_@M1247_ "Ulazak u FLY zone"
+_@M1248_ "Let izvan FLY zone"
+_@M1249_ "Let izvan NOFLY zone"
+_@M1250_ "Predviđen ulazak u NOFLY zonu"
+_@M1251_ "Skori ulazak u NOFLY zonu"
+_@M1252_ "Ulazak u NOFLY zonu"
+_@M1253_ "Let unutar NOFLY zone"
+_@M1254_ "Izlazak iz NOFLY zone"
 _@M1255_ "YELLOW WARNING"
 _@M1256_ "RED WARNING"
 _@M1257_ "to leave"
 _@M1258_ "to enter"
-_@M1259_ "Too far, not calculated"
-_@M1260_ "below"
-_@M1261_ "above"
+_@M1259_ "Ne računa se daleko je"
+_@M1260_ "ispod"
+_@M1261_ "iznad"
 _@M1262_ "Message"
 _@M1263_ "WarnLevel"
 _@M1264_ "HDist"
@@ -1314,39 +1314,39 @@ _@M1265_ "VDist"
 _@M1266_ "AckLevel"
 _@M1267_ "Yellow acknowledged"
 _@M1268_ "Red acknowledged"
-_@M1269_ "Disabled"
+_@M1269_ "Onemogućen"
 _@M1270_ "FLY-IN"
 _@M1271_ "FLY-OUT"
 _@M1272_ "Set as FLY zone?"
 _@M1273_ "Set as NOFLY zone?"
 
 # dlgConfig - Airspace warnings
-_@M1274_ "Warnings"
-_@M1275_ "Airspace warning parameters"
-_@M1276_ "Airspace warning parameters saved."
-_@M1277_ "Airsp.msg repeat time "
-_@M1278_ "Vertical margin "
+_@M1274_ "Oprez"
+_@M1275_ "Parametri upozorenja za zr.prostor"
+_@M1276_ "Parametri upozorenja za zr.prostor spremljeni"
+_@M1277_ "Vijeme ponavljnja zr.prostor.msg "
+_@M1278_ "Vertical margina "
 _@M1279_ "Msg timeout "
-_@M1280_ "Enable this airspace?"
-_@M1281_ "Map labels "
-_@M1282_ "ENABLE"
-_@M1283_ "DISABLE"
-_@M1284_ "Disable this airspace?"
+_@M1280_ "Omogući ovaj zr.prostor?"
+_@M1281_ "Labele karte "
+_@M1282_ "OMOGUĆI"
+_@M1283_ "ONEMOGUĆI"
+_@M1284_ "Onemogući ovaj zr.prostor?"
 
 # new airspace infobox
 _@M1285_ "Airspace Vertical Dist"
 _@M1286_ "ArSpcV"
 
 # airspace analysis dialog page
-_@M1287_ "Heading"
-_@M1288_ "Showing towards next waypoint"
-_@M1289_ "Next WP"
-_@M1290_ "Showing towards heading"
-_@M1291_ "Near AS"
-_@M1292_ "Nearest airspace"
+_@M1287_ "Kurs"
+_@M1288_ "Pogled prema idućoj točki"
+_@M1289_ "Iduća točka"
+_@M1290_ "Pogled u smjeru leta"
+_@M1291_ "Najbliži ZR.P"
+_@M1292_ "Najbliži zr. prostor"
 _@M1293_ "Sonar ON"
 _@M1294_ "Sonar OFF"
-_@M1295_ "Sideview"
+_@M1295_ "Pogled sa strane"
 
 # LK info page headers, try to use the same or less number of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!
@@ -1369,13 +1369,13 @@ _@M1315_ "TPS"
 # ASP for nearest airspaces is M1642
 
 # Reserved waypoint names, comments
-_@M1316_ "TAKEOFF"
-_@M1317_ "THERMAL"
+_@M1316_ "POLET"
+_@M1317_ "T.STUP"
 _@M1318_ "TEAMMATE"
-_@M1319_ "TARGET"
-_@M1320_ "LAST GOOD THERMAL"
+_@M1319_ "ODREDIŠTE"
+_@M1320_ "ZADNJI DOBAR T.STUP"
 _@M1321_ "TEAM MATE"
-_@M1322_ "FLARM TARGET"
+_@M1322_ "FLARM ODREDIŠTE"
 
 # Overlay multitarget prefixes, maximum 2chars!
 _@M1323_ "T>"
@@ -1422,24 +1422,24 @@ _@M1356_ "NAPON BATERIJE NIZAK!"
 _@M1357_ "UPOZORENJA O BATERIJI ISKLJUČENA"
 
 # Logger task declaration
-_@M1400_ "Task declaration"
-_@M1401_ "Enabling declaration mode"
-_@M1402_ "Disabling declaration mode"
-_@M1403_ "Sending declaration"
-_@M1404_ "Opening connection"
-_@M1405_ "Testing connection"
-_@M1406_ "Closing connection"
-_@M1410_ "Unknown error"
-_@M1411_ "Device not connected!"
-_@M1412_ "Not enough waypoints!"
-_@M1413_ "Too many waypoints!"
-_@M1414_ "Device not responsive!"
-_@M1415_ "Declaration not accepted!"
-_@M1420_ "Error while declaring"
-_@M1421_ "Task description"
-_@M1422_ "Start and Finish"
+_@M1400_ "Deklaracija zadatka"
+_@M1401_ "Omogućavanje deklaracijskog moda"
+_@M1402_ "ONEmogućavanje deklaracijskog moda"
+_@M1403_ "Šaljem deklaraciju zadatka"
+_@M1404_ "Otvaranje konekcije"
+_@M1405_ "Testiranje konekcije"
+_@M1406_ "Zatvaranje konekcije"
+_@M1410_ "Nepozbnata greška"
+_@M1411_ "Uređaj nije spojen!"
+_@M1412_ "Nema dovoljno točaka!"
+_@M1413_ "Previše točaka!"
+_@M1414_ "Uređaj nije dostupan!"
+_@M1415_ "Deklaracija nije prihvaćena!"
+_@M1420_ "Greška prilikom deklaracije"
+_@M1421_ "Opis zadatka"
+_@M1422_ "Start i Cilj"
 
-_@M1423_ "Forbidden during flight!"
+_@M1423_ "Zabranjeno tokom leta!"
 
 #
 # Variometer Bar
@@ -1453,8 +1453,8 @@ _@M1427_ "Vario u termici, STF u preskoku"
 # Contests
 #
 _@M1450_ "Contest"
-_@M1451_ "Change"
-_@M1452_ "POČETAK SLOBODAN LETA je detektiran"
+_@M1451_ "Promjena"
+_@M1452_ "POČETAK SLOBODNOG LETA je detektiran"
 
 #
 # Contest infoboxes, full name and abbreviated name for boxes
@@ -1526,18 +1526,18 @@ _@M1506_ "PLS*scr"
 # #############################
 
 # Device name for "no device"
-_@M1600_ "DISABLED"
+_@M1600_ "ONEMOGUĆEN"
 # Ex-963, new message for screen unlock
-_@M1601_ "Double-Click on Low-Right Corner to UNLOCK"
+_@M1601_ "Dvostruki-klik dolje-desno za UNLOK"
 
 # Config system menu page 
-_@M1602_ "Configure Bottom Bar"
-_@M1603_ "Configure Info Pages"
-_@M1604_ "Configure xxxx"
-_@M1605_ "Bottom Bar"
-_@M1606_ "Info Pages"
-_@M1607_ "Bottom Bar Config Saved"
-_@M1608_ "Info Pages Config Saved"
+_@M1602_ "BottomBar konfig."
+_@M1603_ "InfoStranice konfig."
+_@M1604_ "Konfiguracija xxxx"
+_@M1605_ "BottomBar"
+_@M1606_ "InfoStranice"
+_@M1607_ "Spremljena BottomBar konf."
+_@M1608_ "Spremljena konf. InfoStranica"
 
 # Config InfoPages
 _@M1610_ "1.1 Cruise "
@@ -1558,7 +1558,7 @@ _@M1622_ "3.3 THERM "
 _@M1630_ "Margina visine "
 
 # Navboxes
-_@M1640_ "Pozicija flapsa"
+_@M1640_ "Current Flaps"
 _@M1641_ "Flaps"
 
 # Header nearest Airspaces
@@ -1580,33 +1580,33 @@ _@M1650_ "ALARM"
 _@M1651_ "VISINA"
 
 # customkey for airspace analysis
-_@M1652_ "Airspace Analysis"
-_@M1653_ "Toggle Map<>Airspace infopage"
+_@M1652_ "Analiza zr.prostora"
+_@M1653_ "Map <> zr.prostor InfoStranica"
 
 # Airspace details buttons
-_@M1654_ "SELECT"
-_@M1655_ "ANALYSIS"
-_@M1656_ "*UNSELECT*"
+_@M1654_ "OZNAČI"
+_@M1655_ "ANALIZA"
+_@M1656_ "*ODZNAČI*"
 
 # customkeys zoom 
-_@M1657_ "Zoom In"
-_@M1658_ "Zoom Out"
-_@M1659_ "Zoom In More"
-_@M1660_ "Zoom Out More"
+_@M1657_ "Zumiraj"
+_@M1658_ "Odzumiraj"
+_@M1659_ "Zumiraj više"
+_@M1660_ "Odzumiraj više"
 
 # Active map indicator in map scale (with AZM, NAV1 etc.), 3 letters!
 _@M1661_ "ACT"
 
 # Error message
-_@M1662_ "SYSTEM ERROR"
-_@M1663_ "NOT ENOUGH MEMORY"
+_@M1662_ "SISTEMSKA GREŠKA"
+_@M1663_ "NEMA DOVOLJNO MEMORIJE"
 
 # Total energy configuration 
 # Toggle is for customkey config
-_@M1666_ "TotalEnergy toggle"
-_@M1667_ "TOTAL ENERGY IN USE!"
+_@M1666_ "prebaci na TotalEnergy"
+_@M1667_ "KORISTI SE TOTAL ENERGY!"
 _@M1668_ "TOTAL ENERGY OFF"
-_@M1669_ "Use TotalEnergy "
+_@M1669_ "Koristi TotalEnergy "
 
 # Header Thermal History keep short!
 _@M1670_ "THR"
@@ -1638,16 +1638,16 @@ _@M1686_ "Optimized route "
 _@M1687_ "Optimized route toggle"
 
 # Customkey name
-_@M1688_ "Screen Lock"
+_@M1688_ "Zaključaj ekran"
 _@M1689_ "Oracle"
 
 # ORACLE
-_@M1690_ "THE LK8000 ORACLE"
-_@M1691_ "THE ORACLE IS THINKING"
-_@M1692_ "PLEASE WAIT..."
+_@M1690_ "LK8000 ORACLE"
+_@M1691_ "ORACLE RAZMIŠLJA"
+_@M1692_ "MOLIM SAČEKAJ..."
 
 # Customkey
-_@M1693_ "Change+ Terrain Colors"
+_@M1693_ "Način prikaza terena"
 
 # Safety Altitude indicator on overlay
 _@M1694_ "+ SAFETY"
@@ -1658,7 +1658,7 @@ _@M1695_ "Logger"
 _@M1696_ "auto"
 
 # PG autozoom threshold on config page 23
-_@M1697_ "Autozoom threshold "
+_@M1697_ "Prag autozuma "
 
 #Multitarget bearing infobox
 _@M1698_ "Multitarget Bearing"
@@ -1669,61 +1669,61 @@ _@M1700_ "ON"
 _@M1701_ "no"
 
 # dialogs for The Oracle
-_@M1702_ "ORACLE WANTS GPS FIX"
-_@M1703_ "North"
-_@M1704_ "North-East"
-_@M1705_ "East"
-_@M1706_ "South-East"
-_@M1707_ "South"
-_@M1708_ "South-West"
-_@M1709_ "West"
-_@M1710_ "North-West"
+_@M1702_ "ORACLE TREBA GPS FIX"
+_@M1703_ "Sjeverno"
+_@M1704_ "Sjevero-istočno"
+_@M1705_ "Istočno"
+_@M1706_ "Jugo-istočno"
+_@M1707_ "Južno"
+_@M1708_ "Jugo-zapadno"
+_@M1709_ "Zapadno"
+_@M1710_ "Sjevero-zapadno"
 # 3km south-west of ..
-_@M1711_ "of"
-_@M1712_ "Near"
-_@M1713_ "Over"
-_@M1714_ "the city"
+_@M1711_ "od"
+_@M1712_ "Blizu"
+_@M1713_ "Iznad"
+_@M1714_ "grada"
 # 2km South of the city
-_@M1715_ "of the city"
-_@M1716_ "Over the city"
+_@M1715_ "od grada"
+_@M1716_ "Iznad grada"
 # over the city and (lake)
-_@M1717_ "and"
+_@M1717_ "i"
 # 2km south of city , over (lake)
-_@M1718_ "over"
-_@M1719_ "near to"
+_@M1718_ "iznad"
+_@M1719_ "blizu"
 # grass airport, small airport
-_@M1720_ "the airfield of"
+_@M1720_ "aerodrom"
 # outlanding field, not an airport/airfield
-_@M1721_ "the field of"
-_@M1722_ "the airport of"
-_@M1723_ "Near to"
-_@M1724_ "YOUR POSITION:"
-_@M1725_ "VERY SORRY"
-_@M1726_ "YOUR POSITION IS UNKNOWN!"
+_@M1721_ "sletište"
+_@M1722_ "zračne luke"
+_@M1723_ "blizu"
+_@M1724_ "TVOJA POZICIJA:"
+_@M1725_ "VEOMA MI JE ŽAO"
+_@M1726_ "TVOJA POZICIJA JE NEPOZNATA!"
 # 1727-1739 reserved for The Oracle
-_@M1740_ "OLC analysis"
-_@M1741_ "FULL RESET LK8000 PROFILES!"
+_@M1740_ "OLC analiza"
+_@M1741_ "PUNI RESET LK8000 PROFILA!"
 _@M1742_ "AGL:"
 _@M1743_ "ELV:"
 # this was the old V rough air. Leave a trailing space!
 _@M1744_ "Max brzina "
 # new startup profile buttons
-_@M1745_ "AIRCRAFT"
-_@M1746_ "SYSTEM"
+_@M1745_ "ZRAKOPLOV"
+_@M1746_ "SUSTAV"
 # new button caption on task overview dialog, appears only in PG/HG mode
 _@M1747_ "Time Gates"
 _@M1748_ "Logbook"
-_@M1749_ "File not found"
-_@M1750_ "Empty"
-_@M1751_ "CONFIRM FLIGHT BOOK RESET?"
-_@M1752_ "FLIGHT BOOK RESET"
-_@M1753_ "List of flights"
-_@M1754_ "Free Flight start"
-_@M1755_ "Towing"
+_@M1749_ "Datoteka nije pronađena"
+_@M1750_ "Prazan"
+_@M1751_ "POTVRDI RESET KNJIGE NALETA?"
+_@M1752_ "RESET KNJIGE NALETA"
+_@M1753_ "Lista letova"
+_@M1754_ "Početak slobodnog leta"
+_@M1755_ "Šlep"
 _@M1756_ "PILOT"
-_@M1757_ "LK8000 PROFILES RESET"
-_@M1758_ "THIS WOULD RESET ALL PROFILES TO FACTORY DEFAULTS"
-_@M1759_ "SELECTED IN SYSTEM"
+_@M1757_ "RESET LK8000 PROFILA"
+_@M1758_ "OVO ĆE SVE PROFILE RESETIRATI NA TVORNIČKE VRIJEDNOSTI"
+_@M1759_ "ODABRAN U SUSTAVU"
 
 #
 # These are new infoboxes:
@@ -1752,8 +1752,8 @@ _@M1778_ "45 sekundi"
 ############################################################
 #                  - MENU MESSAGES - 
 #
-#             DO NOT REMOVE OR CHANGE \n  
-#       it means New Line, for line splitting!!
+#             NEMOJ MIJENJATI ILI BRISATI \n  
+#       to je oznaka novog reda, dijeljenje linije!!
 #
 ############################################################
 
@@ -1819,7 +1819,7 @@ _@M2059_ "Najbliža\ntočka"
 _@M2060_ "Najbliži\nzračni pr."
 _@M2061_ "STATUS"
 _@M2062_ "ANALIZA"
-_@M2063_ "BILJE-\nŠKE"
+_@M2063_ "Bilješke"
 _@M2064_ "Ponovi\nporuku"
 _@M2065_ "Orbiter"
 _@M2066_ "NAV"
@@ -1856,9 +1856,9 @@ _@M2096_ "Led+Zvuk\nsve OFF"
 _@M2097_ "Led OFF\nzvuk ON"
 _@M2098_ "Led ON\nZvuk OFF"
 _@M2099_ "<<\nLijevo"
-_@M2100_ "^\nGore"
+_@M2100_ "Gore"
 _@M2101_ "> o <\nCentar"
-_@M2102_ "v\nDole"
+_@M2102_ "Dole"
 _@M2103_ ">>\nDesno"
 _@M2104_ "F>\nFlarm"
 _@M2105_ "M>\nTeam"
@@ -1878,8 +1878,8 @@ _@M2116_ "Način\nprikaza"
 _@M2117_ "Thr+Fin"
 _@M2118_ "LogBook"
 _@M2119_ "LogBook\ndetalji"
-_@M2120_ "Reset\nBook"
-_@M2121_ "LogBook\nList"
+_@M2120_ "Reset\nbook"
+_@M2121_ "LogBook\nlist"
 _@M2122_ "SPREMI\nsustav"
 
 # Note for developers: remember LKLanguage MAX_MESSAGE limit (2130)
