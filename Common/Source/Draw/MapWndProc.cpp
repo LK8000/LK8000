@@ -286,10 +286,10 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 
       hpWindThick = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(4), RGB(255,220,220));
 
-      if (ISGAAIRCRAFT)
+      //if (ISGAAIRCRAFT)
 	hpBearing = LKPen_GABRG;
-      else
-	hpBearing = LKPen_Black_N2;
+      //else
+	//hpBearing = LKPen_Black_N2;
 
       hpBestCruiseTrack = LKPen_Blue_N1;
       hpCompass = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_BLACK);

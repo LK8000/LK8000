@@ -49,7 +49,6 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
   static double value;
   static int	ivalue;
   static char	text[LKSIZETEXT];
-  static bool   doinit=true;
   static TCHAR	varformat[10];
 
   // By default, invalid return value. Set it to true after assigning value in cases
