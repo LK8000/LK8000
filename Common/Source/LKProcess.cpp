@@ -14,6 +14,7 @@
 #include "Logger.h"
 #include "Process.h"
 #include "Task.h"
+#include "DoInits.h"
 
 #include "utils/heapcheck.h"
 using std::min;
@@ -54,14 +55,14 @@ bool MapWindow::LKFormatValue(const short lkindex, const bool lktitle, TCHAR *Bu
   // By default, invalid return value. Set it to true after assigning value in cases
   bool		valid=false;
 
-  if (doinit) {
+  if (DoInit[MDI_LKPROCESS]) {
 
 	if (LIFTMODIFY==TOFEETPERMINUTE)
 		_stprintf(varformat,TEXT("%%+.0f"));
 	else
 		_stprintf(varformat,TEXT("%%+0.1f"));
 
-	doinit=false;
+	DoInit[MDI_LKPROCESS]=false;
   }
 
 
