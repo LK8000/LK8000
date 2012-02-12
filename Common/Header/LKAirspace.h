@@ -21,16 +21,14 @@
 #include <algorithm>
 
 
-
-
 // changed by AlphaLima since we have a second airspace view to next waypoint,
 // the waypoint can be much more far away (e.g.  167km for a 500km FAI triangle)
 // the resolution turns to be too inaccurate
 // so tha small (<5km airspaced) (e.g. dangerous areas) will not be shown
 // with AIRSPACE_SCANSIZE_X 64 I tried to make a compromise between resolution and speed on slow devices
-#define AIRSPACE_SCANSIZE_X 64
-#define AIRSPACE_SCANSIZE_H 42
-
+#define AIRSPACE_SCANSIZE_X 80
+#define GC_MAX_POLYGON_PTS (2*AIRSPACE_SCANSIZE_X+4)
+#define MAX_NO_SIDE_AS 40
 // Define this, if airspace nearest distance infoboxes will use selected airpsace only
 // In this case infoboxes show distance to selected airspace only.
 // I use this define, because lot of variables and calculations not needed, if we use
@@ -80,6 +78,7 @@ typedef enum {awsHidden, awsBlack, awsAmber, awsRed } AirspaceWarningDrawStyle_t
 // 
 // AIRSPACE BASE CLASS
 //
+
 class CAirspace 
 {
 public:
@@ -254,10 +253,28 @@ protected:
   static bool _pred_blindtime;                 // disable predicted position based warnings near takeoff
   static CAirspace* _sideview_nearest_instance;         // collect nearest airspace instance for sideview during warning calculations
 };
+
+typedef struct
+{
+long x;
+long y;
+} LPOINT;
+
+typedef struct
+{
+long left;
+long top;
+long right;
+long bottom;
+} LRECT;
+
 typedef struct
 {
   RECT rc;
+  POINT apPolygon[GC_MAX_POLYGON_PTS];
+  int iNoPolyPts;
   int iIdx;
+  int iAreaSize;
   int aiLable;
   int iType;
   BOOL bRectAllowed;
@@ -380,8 +397,14 @@ public:
   void ReadAirspaces();
   void CloseAirspaces();
   void QnhChangeNotify(const double &newQNH);
+  /*
   void ScanAirspaceLine(double lats[AIRSPACE_SCANSIZE_X], double lons[AIRSPACE_SCANSIZE_X], double heights[AIRSPACE_SCANSIZE_H], double terrain_heights[AIRSPACE_SCANSIZE_X],
 		  AirSpaceSideViewSTRUCT [AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) const;
+*/
+  int ScanAirspaceLineList(double lats[AIRSPACE_SCANSIZE_X], double lons[AIRSPACE_SCANSIZE_X],
+                        double terrain_heights[AIRSPACE_SCANSIZE_X],
+                        AirSpaceSideViewSTRUCT airspacetype[MAX_NO_SIDE_AS], int) const;
+
   CAirspace* FindNearestAirspace(const double &longitude, const double &latitude,
              double *nearestdistance, double *nearestbearing, double *height = NULL) const;
   void SortAirspaces(void);

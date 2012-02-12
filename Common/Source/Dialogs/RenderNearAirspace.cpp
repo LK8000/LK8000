@@ -27,7 +27,7 @@ bool   bNearAirspace_CheckAllAirspaces =false;
 
 
 extern AirSpaceSonarLevelStruct sSonarLevel[10];
-extern AirSpaceSideViewSTRUCT Sideview_pHandeled[GC_MAX_NO];
+extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 
 extern int Sideview_iNoHandeldSpaces;
 extern COLORREF Sideview_TextColor;

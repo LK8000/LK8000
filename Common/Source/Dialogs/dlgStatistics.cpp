@@ -42,7 +42,7 @@ static HPEN penThinSignal = NULL;
 // they should have a Sideview_ remembering us what are they used for. Otherwise use a class,
 // which is exactly the same.
 
-AirSpaceSideViewSTRUCT Sideview_pHandeled[GC_MAX_NO];
+AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 int   Sideview_iNoHandeldSpaces=0;
 int   Sideview_asp_heading_task = 0;
 long  iSonarLevel = 0;
@@ -2240,25 +2240,24 @@ if(ulTimeNow - LastClick > 1000*ms)
 
 
 if(page ==ANALYSIS_PAGE_AIRSPACE)
+{
   if (TouchContext ==  TCX_PROC_UP)
- for (k=0 ; k < Sideview_iNoHandeldSpaces; k++)
- {
-
-   if( Sideview_pHandeled[k].psAS != NULL)
-   {
-     RECT rcd =Sideview_pHandeled[k].rc;
-
-     if (PtInRect(X,Y,rcd ))
-     {
-		  #ifndef DISABLEAUDIO
-		    if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
-		  #endif
-       // dlgAirspaceDetails does its own asp instance copying, getting a new copy is not needed here
-       dlgAirspaceDetails(Sideview_pHandeled[k].psAS);
-       return 0;
-     }
+  {
+	 for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
+	 {
+	   if( Sideview_pHandeled[k].psAS != NULL)
+	   {
+		 if (PtInRect(X,Y,Sideview_pHandeled[k].rc ))
+		 {
+	       if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
+           dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
+		 }
+	   }
+	 }
    }
-	}
+
+
+}
 #endif // ULLI
 
 

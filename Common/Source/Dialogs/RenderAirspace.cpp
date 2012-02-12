@@ -22,8 +22,8 @@ using std::min;
 using std::max;
 
 extern int Sideview_asp_heading_task;
-extern AirSpaceSideViewSTRUCT Sideview_pHandeled[GC_MAX_NO];
-extern AirSpaceSideViewSTRUCT Sideview_asDrawn[GC_MAX_NO];
+extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
+
 extern COLORREF  Sideview_TextColor;
 
 
