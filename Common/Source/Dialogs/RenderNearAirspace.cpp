@@ -90,12 +90,19 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
     calc_terrainalt  = CALCULATED_INFO.TerrainAlt;
     calc_altitudeagl = CALCULATED_INFO.AltitudeAGL;
     calc_average30s  = CALCULATED_INFO.Average30s;
+    
+    if (GPS_INFO.BaroAltitudeAvailable && EnableNavBaroAltitude) {
+      CALCULATED_INFO.NavAltitude = GPS_INFO.BaroAltitude;
+    } else {
+      CALCULATED_INFO.NavAltitude = GPS_INFO.Altitude;
+    }
+    GPSalt =  CALCULATED_INFO.NavAltitude;
   }
   UnlockFlightData();
 calc_circling = false;
   bValid = false;
-  iAS_HorDistance = 15000;
-  iAS_Bearing     = 0;
+  iAS_HorDistance = 5000;
+  iAS_Bearing     = (int)GPSbrg;
   iAS_VertDistance= 0;
   found = CAirspaceManager::Instance().GetNearestAirspaceForSideview();
   if(found != NULL) {
@@ -162,8 +169,8 @@ calc_circling = false;
   /*********************************************************************
    * calc the horizontal zoom
    *********************************************************************/
-  sDia.fXMin = -15000.0;
-  sDia.fXMax =  15000.0;
+  sDia.fXMin = -5000.0;
+  sDia.fXMax =  5000.0;
   /* even when invalid the horizontal distance is calculated correctly */
 
   if(bValid)
@@ -256,10 +263,10 @@ if(bValid)
 	GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
 	TxYPt.x = (rc.right-rc.left-tsize.cx)/2;
 	TxYPt.y = (rc.bottom-rc.top)/2;
-/*
+
 	SetBkMode(hdc, TRANSPARENT);
 	ExtTextOut(hdc,TxYPt.x, TxYPt.y-20, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
-*/
+
 	_stprintf(Sideview_szNearAS,TEXT("%s"), text);
 
   }
