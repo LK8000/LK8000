@@ -1512,7 +1512,7 @@ La transparence peut ne pas être disponible sur certains périphériques.
 Le dessin des bordures de zones aériennes peut ralentir les appareils avec écran haute résolution ou un processeur lent. Utiliser avec prudence!
 
 @1201
-[Opacité des zones aériennes]
+[Opaciter des zones aéro]
 Définit l'opacité (0% : Opaque / 100% : transparent) du remplissage semi-transparent des zones aériennes. 
 
 @1202
@@ -1592,7 +1592,7 @@ si ce paramétre est activé, une étiquette contenant le nom de la zone et la d
 
 @1213
 [Seuil Zoom Auto]
-lorsque vous utiliser le zoom automatique en mode "Parapente", lorsque la distance au point de virage suvant est infereure a cette limite celui-ci ajuste le niveau de zoom pour maintenir ce point de virage à l'intérieur de l'écran. une fois le point de virage valider, le niveau de zoom est automatiquement restaurer au niveau de zoom du mode transition.
+lorsque vous utiliser le zoom automatique en mode "Parapente", quand la distance au point de virage suivant est inféreure a cette limite le niveau de zoom est ajuster automatiquement pour maintenir ce point de virage à l'intérieur de l'écran. une fois le point de virage valider, le niveau de zoom est automatiquement restaurer au niveau de zoom du mode transition.
 
 @1220
 [bandeau inférieur]
@@ -1601,63 +1601,64 @@ Si tous les bandeaux sont désactivés, NAV1 sera toujours automatiquement affic
 
 @1221
 [InfoPages rotation configuration]
-Enable or disable each page in the rotating sequence.
-If all items in a page are disabled, then this page will be skipped.
-A page will be still reachable with a custom keys, eventually.
-Attention: non-gliders aircrafts such as PG/HG and GA that are disabling the 1.5 Contest infopage 
-will also disable all contest calculations.  If you want contest calculations, you NEED to activate 1.5.
-If you are using Glider aircraft mode, then you can also disable 1.5 because calculations are made in any case.
+Active ou désactive chaqu'une des page d'information.
+Si tous les éléments dans une page sont désactivés, alors cette page sera ignoré.
+Une page désactivée pourra toujours être accessible a l'aide des touches personnalisées.
+Attention: la page d'info "1.5 Epreuve" sera toujours désactiver si le type d'aéronef n'est pas un planeur (Parapente, Delta et Avions).
+seront également désactiver tous les calculs d'épreuve lorsque 1.5 est désactiver.
+Si vous utilisez le mode planeur, même si la page 1.5 est désactivé, les calculs seront toujours effectuer
 
 @1250
-Controls filtering of airspace for display and warnings.  The airspace filter button also allows filtering of display and warnings independently for each airspace class.
-[All on] All is displayed.
-[Clip] Only airspace below the clip altitude.
-[Auto] All within a height margin of the glider.
-[All below] All airspace below the glider and within height margin above.
+Contrôle le filtrage des zones aérienne pour l'affichage et les alertes. Le bouton filtre des zones aérienne permet également le filtrage de l'affichage et des alertes de façon indépendante pour chaque classe de zones.
+[Tous] Toute les zones aérienne sont affiché.
+[Plafonné] seulement les zones aériennes en dessous d'un plafond.
+[Auto] Toutes dans la marge vertical par apport a votre position.
+[Tous dessous] Toutes les zones en dessous de vous et au dessus de la marge vertical.
 
 @1251
-Height margin used to control airspace display filtering on the moving map used only in AUTO and ALL BELOW modes. For AUTO it determines the height above and below the glider for which airspaces should be shown. 
-ALL BELLOW mode will show airspaces up to specified height above the glider and all airspaces below it.
+Marge Vertical utilser pour determiner quelle sont les zones aérienne a afficher sur la carte lorsque vous utiliser les mode de filtrage "auto" ou "tous dessous".
+en mode "auto", sont afficher toute les zones en desous et en dessus de cette limite par rapport a votre altitude.
+en mode "tous dessous", sont afficher toute les zones au dessus de cette Altitude au dessus de vous et toutes les zones en dessous de vous.
 
 @1252
-Even if you have acknowledged an airspace, after this time it will be back "active" for warnings.
-You may want to be warned again while flying back home and crossing an airspace you have crossed in the morning, for example!
-By default, after 15 minutes airspaces will be back "armed" for warnings.
+même si vous avez acquiter une zone, celle-ci redeviendra "Active" apres ce délai, les alertes seront alors de nouveau afficher.
+cela peut, par exemple, etre utile par exemple sur le trajet du retours lorsque que vous croiser des zones que vous avez acquiter a l'aller.
+par defaut ce délai est fixer a 15 minutes.
+
 
 @1253
-[Alarm Max Altitude] An alarm will be triggered everytime this altitude is reached and crossed.
-The alarm will not be repeated within the next 60 seconds.
-After 1 minute, if altitude has been lower than Max Altitude and then becomes higher again, alarm will sound again.
-To disable this alarm, set it to 0. 
-The altitude used for alarm is the one chosen in Config menu 5 "Use baro altitude".
-Multiple alarms set at the same altitude will have no effect.
-Glider pilots should be careful not to set alarms below a safety altitude, during critical phases of flight.
-Each alarm can be repeated max 30 times. After 30 times, an alarm will automatically self disable for the current flight.
-The visual alarm message automatically disappears after 12 seconds.
-Each alarm has a custom sound that can be changed inside _System _Sounds folder.
-They are named LK_ALARM_ALTx.WAV
-Default is 0 (no alarm).
+[Alerte Altitude Max] 
+une alerte sera déclencher chaque fois que cettealtitude sera dépasser.
+le delai minimum entre deux alertes et de 1 minutes.
+pour desactiver ces alerte, mettre cette valeur a 0.
+L'altitude utiliser pour ces alertes est celle qui correspont au paramétre "Utiliser Alti Baro" de la page de configuration n°5.
+Plusieurs alertes définie à la même altitude n'auront aucun effet.
+Les pilote de planeurs doivent veiller a ne pas configuré d'alertes en dessous d'ue altitude de sécurité pendant les phase critique du vol.
+Chaque Alerte peuvent etre répété 30 fois, apres se nombre, celle ci sera automatiquement désactiver pour le reste du vol.
+Les Alertes visuels disparaisent automatiquement apres 12 secondes.
+Chaque Alertes utilisent un son différent, celui peut être changer en remplacent les fichiers LK_ALARM_ALTx.WAV dans le dossiers _System\_Sounds.
+par défaut toutes ces alertes sont a 0 (désactivés).
 
 # ex 195
 @1254
-Glide bar can be relative to Task Finish or to the next turnpoint, or it can be disabled. This bar is drawn on the left side of the screen.
-When using next waypoint, or task waypoint with only final waypoint to go, then this value will be equal to the one shown on overlays.
+L'indicateur d'Arrivée peut etre relative a la fin du circuit, au point de virage suivant ou désactivé.
+Cette indicateur est dessiné a gauche de l'écran.
 
 @1255
-Automatic Mac Cready setting, can be on or off. It can also be enabled and disabled during flight.
-This is the default value. 
+le MacCready automatique peut etre activé ou désactiver, il peut aussi etre activé ou désactivéen cours de vol. 
 
 @1256
-[Total Energy] When TotalEnergy is in use, LK will calculate the height you would gain by pulling up the aircraft at the current speed, up until the speed becomes the optimal for best glide. 
-For example if you are flying at 200kmh with a discus with no ballast, the speed energy would be calculated as if you would pull up and slow down to 100kmh: you would certainly climb to a better altitude of course.
-This speed height will be added to all arrival altitudes. By default this feature is DISABLED, for safety reasons.
-If you are in doubt, leave this setting OFF.
+[Energie Total] 
+Lorsque la le mode énergie total est activé, LK calcul votre gains d'altitude en estimant la hauteur que vous pouvez atteindre si vous tirez sur le manche jusqu'a atteindre la vitesse optimal pour obtenir la finesse maximum.
+le gain d'altitude ainsi calculer sera automatiquement ajouter a toutes les altitudes d'arrivée, par défaut, cette fonctionnalité est désactivée pour des raisons de sécurité.
+si vous avez un doute, laissez ce paramètre désactivée.
 
 @1257
 [Efficiency]
-How clean the glider is. Set to 100% for clean, lower numbers as the wings pick up bugs or get wet.  50% indicates the glider's sink rate is doubled. 
-This is the default value used by Efficiency in Basic Settings menu, loaded on startup. You should normally leave this value to 100% here.
+la valeur de ce paramétre dépend de l'etat de surface de votre planeur, lorque celui-ci est propre, régler cette valeur a 100%, reduiser cette valeur lorsque les ailes sont piquer d'insectes ou mouiller. une valeur de 50% indique que le taux de chute de votre planeur est doublé.
+ce paramétre est utilisé comme valeur par défaut dans les paramétre de base qui sont charger au démarrage.
+vous devriez normalement laisser cette valeur a 100%.
 
 @9999
-No help available on this item!
+aucune aide disponible pour ce paramétre!
 
