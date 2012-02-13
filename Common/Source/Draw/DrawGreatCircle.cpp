@@ -24,6 +24,9 @@ void MapWindow::DrawGreatCircle(HDC hdc, double startLon, double startLat, doubl
 
   ClipPolygon(hdc, pt, 2, rc, false);
 
+    SelectObject(hdc, GetStockObject(BLACK_PEN));
+  ClipPolygon(hdc, pt, 2, rc, false);
+
   SelectObject(hdc, hpOld);
 }
 

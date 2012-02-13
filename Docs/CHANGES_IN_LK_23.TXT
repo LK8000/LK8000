@@ -20,7 +20,7 @@ CHANGES
 .  TASK LINE/CYL/SECTOR COLOR lines adjustments. Thinner lines, dark green colors.
    Previously using hpBearing black colors, and too thick lines.
 
-.  Update FINAL and THERMAL icons by Jiri
+.  Update FINAL, CRUISE  and THERMAL icons by Jiri
 
 .  New sideview airspace handler, allows:
     overlapped AS
@@ -29,6 +29,7 @@ CHANGES
     much faster and more precise
     multiselect AS
 
+.  Pan mode is showing still cross sight , for smoothing effect
 
 
 FIXES
