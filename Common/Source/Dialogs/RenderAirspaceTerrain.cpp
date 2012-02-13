@@ -103,8 +103,7 @@ void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon, 
       Sideview_pHandeled[i].rc.bottom  =  rc.bottom;
 
 	Sideview_pHandeled[i].rc.top     = CalcHeightCoordinat((double)  Sideview_pHandeled[i].rc.top,     rc, psDiag);
- //   if(Sideview_pHandeled[i].rc.top  > y0)
-  //    Sideview_pHandeled[i].rc.top  = y0;
+
 
 	if(Sideview_pHandeled[i].bRectAllowed == false)
       for(j =0 ; j < Sideview_pHandeled[i].iNoPolyPts ; j++)
@@ -114,8 +113,7 @@ void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon, 
           Sideview_pHandeled[i].apPolygon[j].y = CalcHeightCoordinat((double)   Sideview_pHandeled[i].apPolygon[j].y,  rc, psDiag);
         else
           Sideview_pHandeled[i].apPolygon[j].y =  rc.bottom;
- //       if( Sideview_pHandeled[i].apPolygon[j].y  > y0)
-  //        Sideview_pHandeled[i].apPolygon[j].y = y0;
+
       }
   }
 
@@ -177,10 +175,21 @@ void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon, 
 	  }
 
 
+	  /************************************/
+	//  SetBkMode(hdc, OPAQUE);  /* OPAQUE may be better readable but verry ugly
+	  /************************************/
 	  if(Sideview_pHandeled[iSizeIdx].bEnabled)
         SetTextColor(hdc, Sideview_TextColor); // RGB_MENUTITLEFG
       else
         SetTextColor(hdc, RGB_GGREY);
+
+	  /***********************************************
+	   * build view overlap for centering text
+	   ***********************************************/
+      rcd.left   = max(rcd.left   ,rc.left);
+      rcd.right  = min(rcd.right  ,rc.right);
+      rcd.bottom = max(rcd.bottom ,rc.top);
+      rcd.top    = min(rcd.top    ,rc.bottom);
 
       int x = rcd.left + (rcd.right - rcd.left)/2;
       int y = rcd.top  - (rcd.top   - rcd.bottom)/2;
