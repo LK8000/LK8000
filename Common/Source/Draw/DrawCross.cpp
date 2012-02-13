@@ -26,9 +26,9 @@ void MapWindow::DrawCrossHairs(HDC hdc, const POINT Orig,
   o2.y = Orig.y;
 
   if (BlackScreen)
-	  DrawDashLine(hdc, NIBLSCALE(1), o1, o2, RGB_INVDRAW, rc);
+	  _DrawLine(hdc, PS_SOLID, 1, o1, o2, RGB_INVDRAW, rc);
   else
-	  DrawDashLine(hdc, NIBLSCALE(1), o1, o2, RGB_DARKGREY, rc);
+	  _DrawLine(hdc, PS_SOLID, 1, o1, o2, RGB_DARKGREY, rc);
 
   o1.x = Orig.x;
   o2.x = Orig.x;
@@ -36,9 +36,10 @@ void MapWindow::DrawCrossHairs(HDC hdc, const POINT Orig,
   o2.y = Orig.y-20;
 
   if (BlackScreen)
-	  DrawDashLine(hdc, NIBLSCALE(1), o1, o2, RGB_INVDRAW, rc); // 091219
+	  _DrawLine(hdc, PS_SOLID, 1, o1, o2, RGB_INVDRAW, rc); // 091219
   else
-	  DrawDashLine(hdc, NIBLSCALE(1), o1, o2, RGB_DARKGREY, rc); // 091219
+	  _DrawLine(hdc, PS_SOLID, 1, o1, o2, RGB_DARKGREY, rc); // 091219
+
 
 }
 
