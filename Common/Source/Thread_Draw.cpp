@@ -171,6 +171,10 @@ extern bool OnFastPanning;
 			fromX,fromY, 				// source
 			SRCCOPY);
 
+		POINT centerscreen;
+		centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
+		DrawCrossHairs(hdcScreen, centerscreen, MapRect);
+
 	} else {
 		//
 		// The map was not dirty, and we are not in fastpanning mode.
@@ -214,6 +218,15 @@ extern bool OnFastPanning;
 	       hdcDrawWindow, 0, 0, SRCCOPY);
 	InvalidateRect(hWndMapWindow, &MapRect, false);
       }
+
+      // Draw cross sight for pan mode, in the screen center, 
+      // after a full repaint while not fastpanning
+      if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN) && !OnFastPanning) {
+		POINT centerscreen;
+		centerscreen.x=ScreenSizeX/2; centerscreen.y=ScreenSizeY/2;
+		DrawCrossHairs(hdcScreen, centerscreen, MapRect);
+      }
+
       UpdateTimeStats(false);
 
       // we do caching after screen update, to minimise perceived delay

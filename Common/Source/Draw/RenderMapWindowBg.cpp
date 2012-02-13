@@ -372,12 +372,6 @@ fastzoom:
 	if (LKVarioBar && !mode.AnyPan()) // 091214 do not draw Vario when in Pan mode
 		LKDrawVario(hdc,rc); // 091111
   
-  // finally, draw you!
-  // Draw cross air for panmode, instead of aircraft icon
-  if (mode.AnyPan() && !mode.Is(Mode::MODE_TARGET_PAN)) {
-    DrawCrossHairs(hdc, Orig, rc);
-  }
-
   // Draw glider or paraglider
   if (extGPSCONNECT) {
     DrawAircraft(hdc, Orig_Aircraft);
