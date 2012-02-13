@@ -19,30 +19,22 @@ Stelt de mate van gedetailleerdheid van de configuratie-instellingen.
 
 @101
 De naam van het bestand met topologie, en optioneel ook terrein, waypoints, luchtruim.
-Het .LKM bestand is een hernoemd ZIP-bestand. Als u het achtervoegsel .LKM veranderd naar .ZIP kunt u het bestand openen en de inhoud veranderen.
-De kaart bestanden bevinden zich in de _Maps submap.
+Het .LKM bestand is een hernoemd ZIP-bestand. Als u het achtervoegsel .LKM veranderd naar .ZIP kunt u het bestand openen en de inhoud veranderen. De kaart bestanden bevinden zich in de _Maps submap.
 
 #The name of the file containing TOPOLOGY, and only optionally also terrain, waypoints, airspaces. 
 #The .LKM is really a ZIP file, renamed. If you change suffix to ZIP you can open it and change contents.
 #Map files are located inside the _Maps subfolder.
 
 @102
-De naam van het bestand met de gegevens van de digitale hoogteverschillen in het terrein, normaliter een .DEM-bestand.
-Ook .DAT en .JP2 bestanden zijn geldig.
-Vergeet niet dat het terrein ook intern geladen kan worden geladen vanaf .LKM kaart bestand.
-In dit geval wordt het hiergekozen bestand weergegeven, en niet de gegevens van het .LKM bestand.
-Dit bestand bevindt zich in de _Maps submap.
+De naam van het bestand dat de gegevens van de digitale hoogteverschillen  in het terrein bevat, normaliter een .DEM-bestand. Dit bestand bevindt zich in de _Maps submap.
 
 #The name of the file containing digital elevation terrain data, normally a .DEM file. 
-#Also .DAT and .JP2 files are valid. 
-#Remember that terrain could also be loaded internally from LKM map files. 
-#In this case terrain chosen here ovverrides the one preconfigured in LKM.
 #This file is inside _Maps subfolder. 
 
 @103
 Primair keerpunten bestand. Keerpunt-bestanden bevinden zich in de _Waypoints submap.
 U kunt gebruik maken van Winpilot .DAT-bestanden, seeyou .CUP bestanden en COMPEgps .WPT-bestanden.
-LET OP: Wanneer u een nieuw keerpunt wilt creëren, wordt deze opgeslagen in bestand 1, met de bijbehorende indeling.
+LET OP: Wanneer u een nieuw keerpunt wilt creëren, dan wordt deze opgeslagen in bestand 1, met de bijbehorende indeling.
 
 #Primary waypoints file.  Waypoint files are located inside _Waypoints subfolder.
 #You can use Winpilot DAT files, SeeYou CUP files, COMPEgps WPT files.
@@ -69,7 +61,7 @@ De bestandsnaam van het secundaire luchtruim bestand.
 
 @107
 Bij elk vliegveld, kunt u aanvullende informatie in dit bestand in de _Waypoints submap toevoegen.
-Hier kunt u deze standaard bestandsnaam veranderen in iets anders.
+Hier kunt u deze standaard bestandsnaam veranderen.
 
 #For each airfield, you can add additional informations inside this file located in _Waypoints subdirectory.
 #Here you can change this default file name to something else.
@@ -105,7 +97,7 @@ Schakel alle luchtruimwaarschuwingen in/uit.
 #Enable/disable all airspace warnings.
 
 @112
-Dit is de tijd voordat een luchtruimschending wordt gepleegd en het systeem de piloot zal waarschuwen.
+Dit is de geschatte tijd voordat een luchtruimschending plaats vind, en het systeem de piloot zal waarschuwen.
 
 #This is the time before an airspace incursion is estimated at which the system will warn the pilot.
 
@@ -115,13 +107,13 @@ Dit is de periode waarin een erkende luchtruim waarschuwing niet opnieuw zal wor
 #This is the time period in which an acknowledged airspace warning will not be repeated.
 
 @114
-Tekent een zwarte contour rond elke luchtruim in plaats van de luchtruim kleur.
+Tekent een zwarte contour om elk luchtruim in plaats van de luchtruim kleur.
 
 #Draw a black outline around each airspace rather than the airspace color
 
 @115
-Tekent de digitale hoogtes in het terrein op de kaart.
-Dit is de schaduw van de wind richting: bovenwinds is helderder, benedenwinds donkerder.
+Tekent het digitale hoogte terrein op de kaart.
+De schaduw van de wind hangt af van de windrichting: bovenwinds is helderder, benedenwinds donkerder.
 
 #Draws digital elevation terrain on the map.
 #This is shaded by the wind direction: upwind is brighter, downwind darker.
@@ -139,7 +131,7 @@ kleinere waardes voor het vliegen in steile bergen.
 #smaller values if flying in steep mountains.
 
 @118
-Bepaalt de helderheid (wit) van het terrein rendering. Dit regelt de gemiddelde verlichting van het terrein.
+Bepaalt de helderheid (witheid) van het terrein rendering. Dit regelt de gemiddelde verlichting van het terrein.
 
 #Defines the brightness (whiteness) of the terrain rendering.  This controls the average illumination of the terrain.
 
@@ -149,12 +141,12 @@ Bepaalt het kleurenschema dat gebruikt wordt in de terrein rendering.
 #Defines the color ramp used in terrain rendering.
 
 @120
-Schakel het schaduw effect op de moving map aan/uit.
+Schakel het schaduw effect op de moving map in/uit.
 
 #Enable or disable moving map shade effect.
 
 @121
-Als er geen terrein wordt gebruikt, dan is dit de kleur die als achtergrond word gebruikt. 
+Wanneer er geen terrein wordt gebruikt, dan is dit de kleur die als achtergrond word gebruikt. 
 Merk op dat sommige kleuren niet geschikt zijn voor topografisch gebruik en andere kleuren wel, enz
 
 #If NO TERRAIN is used, this is the color to be used as a background. Note that some colors are suitable for no topology use, 
@@ -214,7 +206,7 @@ aan de glider handmatig verplaatsen van de menuknoppen.
 #[North/track] North-up in cruise, glider track-track up in circling
 
 @126
-Als zoomniveau groter is dan of gelijk aan deze waarde, dan zal de kaartoriëntatie veranderen Noord boven.
+Als zoomniveau groter is dan of gelijk aan deze waarde, dan zal de kaartoriëntatie veranderen naar Noord boven.
 Als zoomniveau onder deze waarde ligt, dan zal de kaart normaal worden weergegeven.
 Het instellen van een te hoge waarde zal resulteren in het nooit gebruiken van deze optie. 7 is standaard.
 
@@ -269,7 +261,6 @@ Hoog probeert vliegvelden die dichtbij betere vliegvelden liggen niet weer te ge
 #DISABLE will show informations for all reachable and landable waypoints which are visible on the map, 
 #LOW will not show outlandings if there are better airports available, 
 #HIGH will try to avoid showing airports close to other better airfields.
-
 
 @133
 De minimale aankomsthoogte boven de grond zodat het zweefvliegtuig een veilige landing kan maken.
@@ -349,15 +340,13 @@ Er is een tolerantie van 30% ten opzichte van deze parameter.
 
 @142
 Deze optie bepaalt welk auto MacCready algoritme wordt gebruikt.
-[Final glide] past MC aanvoor de snelste aankomst. Bij OLC sprint opdrachten,
-  word de MacCready aangepast om de grootste afstand in de resterende tijd te behalen en tevens de finish hoogte te bereiken.
+[Final glide] past MC aanvoor de snelste aankomst. 
 [Gemiddelde] Past Mc aan , aan de gemiddelde klimsnelheid van alle klimmen.
 [Beide] Gebruikt gemiddelde in opdracht, dan snelste aankomst bij het in de final glide.
 [Equivalente MC] Gebruik MC berekend op basis van uw huidige gemiddelde snelheid. Zie de handleiding.
 
 #This option defines which auto MacCready algorithm is used.
-#[Final glide] adjusts Mc for fastest arrival.  For OLC sprint tasks,
-# the MacCready is adjusted in order to cover the greatest distance in the remaining time and reach the finish height.
+#[Final glide] adjusts Mc for fastest arrival.  
 #[Average] sets Mc to the average climb rate across all climbs.
 #[Both] Uses average during task, then fastest arrival when in final glide mode.
 #[Equivalent MC] Use MC calculated on your current average speed. See the manual. 
@@ -368,7 +357,7 @@ De afstand die tijdens deze periode word afgelegd, word gedeeld door het verschi
 Bijvoorbeeld: als u wegsteekt en weer terug komt op dezelfde plek na 2 minuten en je hebt 2 minuten als periode ingestelt, 
 dan heb je een efficientie van bijna nul, omdat de horizontaal afgelegde afstand zeer klein is.
 gemiddeldLD zou de totale afgelegde afstand meerekenen, en niet de horizontaal afgelegde afstand.
-Een goede waarde voor zweefvliegtuigen is 90-120 seconden, en voor paragliders 15 seconden.
+Een goede waarde voor zweefvliegtuigen is 90-120 seconden, en voor paragliders/hanggliders 15 seconden.
 Lagere waarden geven als gevolg vrijwel hetzelfde als LD Instant,
 terwijl hogere waarden eruit zullen zien als LD Cruise. Andere commerciële instrumenten en software gebruiken 2 minuten.
 
@@ -377,7 +366,7 @@ terwijl hogere waarden eruit zullen zien als LD Cruise. Andere commerciële inst
 #So if for example you go and return back to the same point after 2 minutes, and you have set 2 minutes as period, 
 #averageLD will consider the total distance covered in those two minutes , 
 #and NOT the distance between your position 2 minutes before and your current position, that in this case could be almost zero! 
-#Normally for gliders a good value is 90-120 seconds, and for paragliders 15 seconds. 
+Normally for gliders a good value is 90-120 seconds, and for PG/HG 15 seconds.
 #Lower values will give as a result pretty much the same as LD Instant , 
 #while higher values will look like LD Cruise. Other commercial instruments and software use 2 minutes. 
 
@@ -416,17 +405,10 @@ Wanneer geactiveerd en aangesloten op een barometrische hoogtemeter, dan zal de 
 
 @148
 [THIS HELP IS UNUSED - do not translate]
-#Dit bevat een selectie van zweefvliegtuigen van verschillende prestatie klasses, eveneens is er een speciaal kopje voor een aangepast WinPilot bestand.
 
-#This contains a selection of gliders of different performance classes, as well as a special entry for WinPilot custom File.
 
 @149
 [THIS HELP IS UNUSED - do not translate]
-#Wanneer het WinPilot bestand het polaire type is, dan bevat de naam van het bestand de polaire gegevens.
-#Polaires moeten in de map _Polars geplaatst worden. 
-
-#When WinPilot File is the polar type, this is the name of the file containing the glide polar data.
-#Polars must be placed inside _Polars subfolder.
 
 @150
 De maximale manoeuvreersnelheid kan op deze pagina worden in gevuld, om te voorkomen dat de vlucht computer onrealistische kruis snelheiden aanbeveeld.
@@ -492,7 +474,7 @@ Standaard instelling is aan.
 @159
 Past de GPS hoogte aan met een vaste waarde. Pas met deze instelling op: de aanpassing blijft permanent toegepast tijdens de vlucht!
 Voor het veranderen van deze waarde, moet worden vastgesteld dat de Geoid hoogte correct wordt toegepast. De standaard waarde is 0.
-Deze waarde wordt opgeslagen in de registry!! 
+Deze waarde wordt opgeslagen in de registry! 
 
 #Adjust GPS altitude with a fixed offset. Be careful with this setting: your offset will modify gps height permanently during the flight!
 #Before changing this value, check that the Geoid altitude separation is applied correctly. Default value is 0.
@@ -665,7 +647,7 @@ Bepaald de locatie van het vliegtuig op het scherm in procenten vanaf de onderka
 #Defines the location of the glider drawn on the screen in percent from the bottom.
 
 @184
-Er zijn twee stijlen beschikbaar: WinPilot stijl (groen en paarse cirkels) of een hoog zichtbare stijl.
+Er zijn twee stijlen beschikbaar: WinPilot stijl (groen en paarse cirkels) of een zeer goed zichtbare stijl.
 
 #Two styles are available: WinPilot style (green and purple circles) or a high visibility style.
 
@@ -804,6 +786,7 @@ Start typen:
 De straal van de sector wordt ingesteld via de 'Start radius' functie.
 
 #Type of the start.
+#[Line]: The task is started when the line is crossed.  The line length is set via the 'Start radius' property.
 #[Cylinder]: The task is started when the glider leaves the cylinder.  The cylinder radius is set via the 'Start radius' property.
 #[FAI Sector]: Defines a 90 degree sector.  The task is started when the glider crosses the sector lines.  
 #The radius of the sector is set via the 'Start radius' property.
@@ -872,9 +855,9 @@ Dit is alleen noodzakelijk als uw computer geen real-time klok met batterij back
 #This is only necessary if your computer does not have a real-time clock with battery backup or your computer frequently runs out of battery power or otherwise loses time.
 
 @211
-WERKT ALLEEN VOOR HP31X: Zet de achtergrondverlichting automatisch op maximaal. Maximale helderheid en geen timeout mits op externe voeding, andersinds maximale helderheid en een timeout van vijf minuten op de battery. Na de timeout zal het scherm donker worden om energie te besparen.
+Deze functie bepaald automatisch de achtergrond verlichting. Maximale helderheid en er geen timeout wanneer men het apparaat op een externe spanningsbron heeft aangesloten. Als men alleen voeding van de interne batterij krijgt, dan zal de achtergrond vijf minuten op maximaal blijfen en daarna zal het scherm op zwart gaan om energie te besparen. Dit werkt alleen voor HP31x, Funtrek en Royaltek apparaten.
 
-#WORKING ONLY FOR HP31X: Set automatic backlight for this device. Max brightness and no timeout if on external power, otherwise max brightneess and a 5 minutes timeout on batteries. After timeout screen blanks to save energy.
+#Set automatic backlight for this device. Max brightness and no timeout if on external power, otherwise max brightneess #and a 5 minutes timeout on batteries. After timeout screen blanks to save energy. This is working for HP31x, Funtrek #and Royaltek devices.
 
 @212
 Werkt op enkele apparaten, zet het geluidsvolume automatisch op maximaal.
@@ -964,7 +947,7 @@ Het status bestand kan gebruikt worden om geluiden te difiniëren als bepaalde g
 #The status file can be used to define sounds to be played when certain events occur, and how long various status messages will appear on screen.
 
 @225
-wanneer ingeschakeld, zal de MacCready waarde recht boven de map onder het kompas worden weergegeven.
+wanneer ingeschakeld, dan zal de MacCready waarde rechts boven in de map onder het kompas worden weergegeven.
 
 #If enabled, the MacCready value currently set is shown on the right top of the map, under the compass.
 
@@ -983,6 +966,7 @@ Dit is het tijdsinterval tussen gelogde punten wanner er gethermiekt wordt.
 Bepaald of er scherm animaties worden getekend wanneer een venster opent of sluit. 
 
 #Determines whether to draw window animations when dialogs open/close.
+
 @229
 Als u Visual Glide ook bewegende cirkels en bogen wilt laten weergeven, als aanvulling op de vaste modus selecteer dan AAN.
 
@@ -1060,19 +1044,20 @@ De grootte van de overlay-letters.
 #
 
 @300
-Water ballast van het zweefvliegtuig. Verhoog deze waarde wanneer de piloot/ballast meer weegt dan dan het referentie gewicht van de polaire.
-(normaliter 75kg) Druk op ENTER in dit vak om het dumpen van ballast volgens de vastgestelde dumpsnelheid in of uit te schakelen.
+Stel hier in hoeveel water ballast in het zweefvliegtuig wordt meegenomen.
+De totale volume van het ballast water wordt bepaald door middel van data in het polaire bestand van het vliegtuig.
+Druk op dump ballast om de funtie in te schakelen die bij houd hoeveel water er gedumpt wordt volgens de in het configuratie systeem bepaalde dump snelheid.
 
-#Ballast of the glider.  Increase this value if the pilot/cockpit load is greater than the reference pilot weight of the glide polar 
-#(typically 75kg).  Press ENTER on this field to toggle count-down of the ballast volume according to the dump rate specified in the configuration settings.
+#Specifies how much of the water ballast is loaded in the glider.
+#The total volume of the water ballast is defined in a glider polar data.
+#Press DUMP BALLAST button to toggle countdown of the ballast volume according to the dump rate specified in system configuration.
 
 @301
-De vleugelbelasting voor dit zweefvliegtuig, dit hangt af van uw gewicht, extra meegenomen apperatuur, etc. De ballast wordt apart meegerekend.
-U behoort de vleugelbelasting in te stellen zonder ballast.
-Deze waarde wordt niet opgeslagen, en wordt bij het opstarten gereset naar de vleugelbelasting die berekend word bij uw polaire.
+De vleugelbelasting voor dit zweefvliegtuig, dit hangt af van uw gewicht, extra meegenomen apperatuur, etc. 
+U moet eerst de vleugelbelasting zonder de extra meegenomen water ballast invoeren.Deze waarde wordt niet opgeslagen, en wordt bij het opstarten gereset naar de vleugelbelasting die berekend word bij uw polaire.
 Normaliter, maar niet altijd, uw polaire neemt een gewicht van 70 kg voor de piloot in acht. Als u niet zeker bent, laat de standaard vleugelbelasting staan.
 
-#Wing loading for this glider. It depends on your weight, on additional equipments installed, etc. Ballast is accounted separately. 
+#Wing loading for this glider. It depends on your weight, on additional equipments installed, etc.
 #You should set Wing Loading with no ballast first.
 #This value is NOT saved, and it is reset at each startup to the wing loading calculated for your polar. 
 #Normally, but not always, your polar has considered a 70kg weight pilot. If you are not sure, leave the default wing loading. 
@@ -1098,7 +1083,7 @@ De standaard druk voor de QNH is 1013,2 mB. Dit is de standaardlucht druk. Als u
 #The standard pressure for the QNE altitude is 1013.2 . This is the default. If you don't understand what we are talking about, do not change the QNH.
 
 @304
-Verander de barometrische hoogte hier. U heeft natuurlijk een barometrische hoogte die wordt doorgegeven aan de LK nodig, anders is deze waarde constant nul.
+Verander de barometrische hoogte hier. U heeft natuurlijk een barometrische hoogte nodig die wordt doorgegeven aan de LK nodig, anders is deze waarde constant nul.
 Het veranderen van deze waarde veranderd tegelijkertijd ook de QNH instelling.
 Als u de QNE hoogte wilt selecteren, stel dan de QNH hoogte in op 1013,2 mB in.
 
@@ -1124,6 +1109,7 @@ Deze tijd wordt uitgedrukt in millisecondes, het varieert van apparaat tot appar
 Standaard is 700ms, wat goed is voor de HP314 en andere apparaten.
 Als er geen functie is ingesteld voor de custom knoppen, dan wordt deze parameter niet gebruikt.
 De custom knoppen boven in het scherm gebruiken deze waarde niet omdat deze direct worden geselecteerd.
+De knop in het midden van het scherm vereist ook een lange klik in het midden van het scherm.
 
 #Custom keys are obtained by clicking on the bottom bar for at least some time.
 #Below this time, the click will rotate as usual the LK8000 pages.
@@ -1132,6 +1118,7 @@ De custom knoppen boven in het scherm gebruiken deze waarde niet omdat deze dire
 #Default is 700ms, which is good for HP314 and other devices.
 #If no action is defined for any custom key, then this parameter is not used.
 #Top screen custom keys do not use this value because they are instantly selected.
+#Center screen custom key requires a long click on the map center, also.
 
 @401
 De custom knop links boven wordt verkregen door in de linker bovenhoek van het scherm te klikken.
@@ -1632,14 +1619,14 @@ GEBRUIK DEZE HOOGTE als voornaamste referentie, omdat dit de hoogte is die door 
 #This is the height above mean sea level reported by the GPS or by the Baro sensor (if pressure altitude is available and if it is selected to be used). 
 #It is the altitude really used internally for all calculations. GPS altitude and Baro altitude infoboxes are available too; one of those two values is used in the QNH altitude. 
 #USE THIS ALTITUDE as main reference, since this is the one being used by LK8000.
-3Touchscreen/PC only: in simulation mode, this value is adjustable with the up/down arrow keys and the right/left arrow keys also cause the glider to turn.
+#Touchscreen/PC only: in simulation mode, this value is adjustable with the up/down arrow keys and the right/left arrow keys also cause the glider to turn.
 
 @801
 [Hoogte AGL]
-Dit is de navigatie hoogte min de terrein hoogte, die verkregen is uit het terrein bestand. Deze waarde wordt rood gekleurd wannneer het toestel onder de veiligheids clearance hoogte is.
+Dit is de navigatie hoogte min de terrein hoogte, die verkregen is uit het terrein bestand. 
 
 #[Altitude AGL]
-#This is the navigation altitude minus the terrain height obtained from the terrain file.  The value is coloured red when the glider is below the terrain safety clearance height.
+#This is the navigation altitude minus the terrain height obtained from the terrain file.  
 
 @802
 [Thermal last 30 sec]
@@ -1684,7 +1671,7 @@ De grond snelheid door de GPS gemeten. Als deze infobox tijdens de simulatie mod
 
 @807
 [Last Thermal Average]
-Totale hoogtewinst/hoogteverlies in de laatste thermiekbeeld gedeeld door de gespendeerde tijd.
+Totale hoogtewinst/hoogteverlies in de laatste thermiekbel gedeeld door de gespendeerde tijd.
 
 #[Last Thermal Average]
 #Total altitude gain/loss in the last thermal divided by the time spent circling.
@@ -1910,13 +1897,13 @@ De grootte van de G kracht verkregen van een ondersteunde intelligente variomete
 #Magnitude of G loading reported by a supported external intelligent vario.  This value is negative for pitch-down manoeuvres.
 
 @838
-[Next L/D]
-GEBRUIK DEZE WAARDE NIET, deze waarde is hier alleen voor het compatibiliteitsprobleem met de oude versies.
-Gebruik in plaats van deze waarde de NEXT EFF.
+[Multitdoel BRG]
+De koers richting de het huidig geselecteerde multidoel.
+Op dit moment is dit nog niet beschikbaar.
 
-#[Next L/D]
-#Do NOT use this value, it's here only for compatibility issue with old versions.
-#Use NEXT EFF instead.
+#[Multitarget BRG]
+#The Bearing to the current selected multitarget.
+#Currently this is NOT available.
 
 @839
 [Locale Tijd]
@@ -1969,21 +1956,21 @@ Het beste is wanneer luchtsnelheid, acceleratiemeters en variometer zijn aangesl
 #Best used if airspeed, accelerometers and vario are connected, otherwise calculations are based on GPS measurements and wind estimates.
 
 @845
-[Task Arrival Time]
+[Opdracht aankomsttijd]
 De geschatte aankomsttijd wanneer de opdracht wordt gefinished, uitgaande van een ideale MacCready klim/kruisvlucht cyclus.
 
 #[Task Arrival Time]
 #Estimated arrival local time at task completion, assuming performance of ideal MacCready cruise/climb cycle.
 
 @846
-[Next Arrival Time]
+[Volgende aankomst tijd]
 De geschattte aankomsttijd bij het volgende keerpunt, uitgaande van een ideale MacCready klim/kruisvlucht cyclus.
 
 #[Next Arrival Time]
 #Estimated arrival local time at next waypoint, assuming performance of ideal MacCready cruise/climb cycle.
 
 @847
-[Bearing Difference]
+[Koers verschil]
 Het verschil tussen de koers van het vliegtuig, en de koers naar het volgende keerpunt. Of voor AAT opdrachten, de koers naar het doel binnen de AAT sector.
 GPS navigatie is gebaseerd op de grondkoers, deze koers kan verschillen met de richting van de neus van het vliegtuig als er wind aanwezig is.
 Chevrons wijzen in de richting waarnaartoe het vliegtuig moet vliegen om het verschil van de koers te corrigeren. Dat is zodat de gevlogen koers naar het volgende keerpunt wijst.
@@ -1996,14 +1983,14 @@ Deze koers houd rekening met de kromming van de aarde.
 #This bearing takes into account the curvature of the Earth.
 
 @848
-[Outside Air Temperature]
+[Buiten temperatuur]
 De gemeten buitengemperatuur, zoals gemeten door een probe als er een ondersteunde intelligente variometer is aangesloten.
 
 #[Outside Air Temperature]
 #Outside air temperature measured by a probe if supported by a connected intelligent variometer.
 
 @849
-[Relative Humidity]
+[Relatieve luchtvochtigheid]
 Relatieve luchtvochtigheid van de lucht in procenten zoals gemeten door een probe als er een ondersteunde intelligente variometer is aangesloten.
 
 #[Relative Humidity]
@@ -2152,7 +2139,7 @@ Boven de 200 word niks weer gegeven, tussen de 100 en 200 wordt een geheel getal
 
 @869
 [BestAlternate]
-Zoekt utomatisch de beste landingsoptie die beschikbaar is. (Het best bereikbaar)
+Zoekt automatisch de beste beschikbare landingsoptie .
 
 #[BestAlternate]
 #Automatic search for the best landing option available.
@@ -2182,35 +2169,39 @@ Deze waarde wordt net berekend tijdens het thermieken.
 #The distance made in the configured period of time , divided by the altitude lost since then.  
 #Negative values are shown as oo (infin) and indicate climbing cruise (height gain). Over 200 of LD the value is shown as oo .
 #You can configure the period of averaging in the Special config menu. 
-#Suggested values for this configuration are 60, 90 or 120: lower values will be closed to Instant efficiency, and higher values will be closed #to Efficiency from last thermal.
-#Notice that the distance is NOT the straight line between you old and current position: it's exactly the distance you have made even in a zigzag #glide.
-3This value is not calculated while circling. 
+#Suggested values for this configuration are 60, 90 or 120: lower values will be closed to Instant efficiency, and #higher values will be closed #to Efficiency from last thermal.
+#Notice that the distance is NOT the straight line between you old and current position: it's exactly the distance you #have made even in a zigzag glide.
+#This value is not calculated while circling. 
 
 @872
 [Next Effciency requirded]
 Het benodigde glijgetal om het volgende keerpunt te kunnen bereiken, berekend door de afstand tot het volgende keerpunt te delen door de benodigde hoogte om aan te komen op de VEILIGHEIDS AANKOMST HOOGTE.
 Boven de 199 en onder de 1 wordt deze waarde nie weergegeven.
-Dit is een puuur geometrische berekeing, gelijk aan Garmin, Naviter en de meeste andere gebruikelijke instrumenten.
+Dit is een puur geometrische berekeing, gelijk aan Garmin, Naviter en de meeste andere gebruikelijke instrumenten.
 
 #[Next Efficiency required]
-#The required glide ratio to reach the next waypoint, given by the distance to next waypoint divided by the height required to arrive at the #SAFETY ARRIVAL ALTITUDE.
+#The required glide ratio to reach the next waypoint, given by the distance to next waypoint divided by the height #required to arrive at the #SAFETY ARRIVAL ALTITUDE.
 #Over 199 and below 1 , no value is shown.
 #This is a pure geometric calculation, equal to Garmin, Naviter and most of common other instruments.
 
 @873
 [Flight Level]
 Hoogte Flight Level indicator. FL wordt uitgedrukt in honderden voeten.
-Deze indicator gebruikt de huidige hoogte, welke niet barrometrisch hoeft te zijn, en in elk geval niet noodzakelijk berekend via de standaard atmosfeer.
-In andere woorden, het is geen accurate indicator en deze kan zelfs een paar honderd voet fout zitten!
-Dus gebruikt het als een indicator.
-PAS OP, er worden geen garanties verleend!
+Deze indicator gebruikt de standaard atmosfeerische hoogt (1013.25 hPa).
+Wanneer er geen barometrische hoogte beschikbaar is, dan zal de GPS hoogte worden gebruikt.
+In dit geval, moet het voor QNH worden aangepast, door de correcte QNH in de basis instellingen in te voeren.
+
+Er is geen temperatuurs correctie, dus mogelijk kan de FL inaccuraat zijn.
+Gebruik dit als een benaderde indicatie.
 
 #[Flight Level]
 #Altitude Flight Level indicator. FL is expressed in hundreds of feets. 
-#This indicator uses current altitude which is NOT necessarily barometric, and in any case non necessarily calculated on the standard atmosphere.
-#In other words, it is not accurate and can be wrong even of some hundreds feet!
-#So use it as an approximated indicator.
-#Caution, no warranty!
+#This indicator uses the standard atmosphere altitude (1013.25hPa).
+#If no barometric altitude is available, the GPS altitude will be used.
+#In this case, it must be adjusted for QNH, by inserting the correct QNH in Basic Settings.
+#
+#There is no temperature compensation, so the FL might be inaccurate.
+#Use it as an approximated indicator. 
 
 @874
 [Task Distance Covered] 
@@ -2513,20 +2504,20 @@ Afstand naar het geselecteerde alternatief.
 @922
 [Max behaalde hoogte]
 De maximaal behaalde hoogte gedurende de huidige vlucht.
-Deze waarde wordt gereset wanneer de vlucht start of wanneer de vlucht wordt gereset.
+Deze waarde wordt gereset wanneer de vlucht start.
 
 #[Max Altitude Reached]
 #Max altitude reached during the current flight.
-#It is reset at takeoff and at task restart.
+#It is reset at takeoff.
 
 @923
 [Max gewonnen hoogte]
-Deze hoogte wordt gerekend door de minimale hoogte en de maximale gedetecteerde hoogte NA de start van de vrije vlucht.
+Deze hoogte wordt berekend met de minimale hoogte NA de start van de vrije vlucht.
 Deze waarde wordt normaliter gebruikt voor badges.
 
 #[Max Height Gained]
-#This height is calculated using the min and max heights detected AFTER the start of free flight.
-#This value is normally used for 
+#This height is calculated using the min height detected AFTER the start of free flight.
+#This value is normally used for badges.
 
 @924
 [Tegenwind snelheid]
@@ -2734,7 +2725,7 @@ Nadat u uw keerpunt heeft bereikt zal de vorige kruis zoom worden hersteld. Wann
 #When using autozoom in PG mode, autozoom gets working only if the next waypoint gets closer than this limit.
 #For example if you choose 5km, it means when you're 5km to the next waypoint the autozoom will start working.
 #It's zoom out to 5km zoom range, and it will keep zoom in as you're approaching the waypoint.
-#After you reach the waypoint the previous Cruise zoom restored. And as soon you reach 5km to the next waypoint #the autozoom start working again.
+#After you reach the waypoint the previous Cruise zoom restored. And as soon you reach 5km to the next waypoint the autozoom start working again.
 
 
 @1220
@@ -2842,6 +2833,10 @@ For example if you are flying at 200kmh with a discus with no ballast, the speed
 This speed height will be added to all arrival altitudes. By default this feature is DISABLED, for safety reasons.
 If you are in doubt, leave this setting OFF.
 
+@1257
+[Efficiency]
+How clean the glider is. Set to 100% for clean, lower numbers as the wings pick up bugs or get wet.  50% indicates the glider's sink rate is doubled. 
+This is the default value used by Efficiency in Basic Settings menu, loaded on startup. You should normally leave this value to 100% here.
 
 @9999
 Geen help beschikbaar
