@@ -86,6 +86,7 @@ double MapWindow::FindMapScale(double Value){
   double DesiredScale = 
     (Value*IBLSCALE(/*Appearance.DefaultMapWidth*/ MapRect.right))/GetMapResolutionFactor();
 
+  LKASSERT(DesiredScale!=0);
   for (i=0; i<ScaleListCount; i++){
     double err = fabs(DesiredScale - ScaleList[i])/DesiredScale;
     if (err < BestFit){

@@ -57,6 +57,7 @@ void MapWindow::Zoom::CalculateAutoZoom()
     if ( ( !ISPARAGLIDER && (wpd < AutoZoomFactor * _scaleOverDistanceModify) ) ||
 	 ( ISPARAGLIDER  && (wpd < PGAutoZoomThreshold)) ) {
       // waypoint is too close, so zoom in
+      LKASSERT(AutoZoomFactor!=0);
       _modeScale[SCALE_CRUISE] = LimitMapScale(wpd * DISTANCEMODIFY / AutoZoomFactor);
     }
   }
@@ -367,9 +368,11 @@ void MapWindow::Zoom::ModifyMapScale()
   // limit zoomed in so doesn't reach silly levels
   *_requestedScale = LimitMapScale(*_requestedScale); // FIX VENTA remove limit
   _scaleOverDistanceModify = *_requestedScale / DISTANCEMODIFY;
+  LKASSERT(_scaleOverDistanceModify!=0);
   _resScaleOverDistanceModify = GetMapResolutionFactor() / _scaleOverDistanceModify;
   _drawScale = _scaleOverDistanceModify;
   _drawScale = _drawScale / 111194;
+  LKASSERT(_drawScale!=0);
   _drawScale = GetMapResolutionFactor() / _drawScale;
   _invDrawScale = 1.0 / _drawScale;
   _scale = *_requestedScale;
