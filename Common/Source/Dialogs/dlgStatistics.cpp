@@ -548,6 +548,7 @@ void Statistics::DrawXGrid(HDC hdc, const RECT rc,
 
   int xmin, ymin, xmax, ymax;
   if (!tic_step) return;
+  LKASSERT(tic_step!=0);
 
   //  bool do_units = ((x_max-zero)/tic_step)<10;
 
@@ -981,6 +982,7 @@ void Statistics::ScaleMakeSquare(const RECT rc) {
   double ar = ((double)(rc.right-rc.left-BORDER_X))
     /(rc.bottom-rc.top-BORDER_Y);
   double ard = (x_max-x_min)/(y_max-y_min);
+  LKASSERT(ar!=0);
   double armod = ard/ar;
   double delta;
 

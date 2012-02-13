@@ -174,6 +174,7 @@ int WINAPI MessageBoxX(HWND hWnd, LPCTSTR lpText, LPCTSTR lpCaption, UINT uType,
     ButtonCount++;
   }
 
+  LKASSERT(ButtonCount!=0);
   d = Width / (ButtonCount);
   x = d/2-w/2;
 

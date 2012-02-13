@@ -566,6 +566,7 @@ UnlockFlightData();
 		  {
 			int iTmp =	(iAS_HorDist);
 			if(iTmp > 0) {
+		LKASSERT(divider!=0);
               if(iTmp < sSonarLevel[4].iDistantrance/divider)   {
                 iTmpH_Level = 4;
                 if(iTmp < sSonarLevel[3].iDistantrance/divider)   {

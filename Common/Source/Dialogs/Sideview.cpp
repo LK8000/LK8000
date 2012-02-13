@@ -375,6 +375,7 @@ int CalcHeightCoordinat(double fHeight, const RECT rc, DiagrammStruct* psDia)
 //  double hmax = max(fMaxAltToday, alt+1000);
   double hmin = psDia->fYMin;
   double hmax = psDia->fYMax;
+  if (hmax==hmin) hmax++; // RECOVER DIVISION BY ZERO!
   double gfh = (fHeight-hmin)/(hmax-hmin);
   int yPos = (int)(gfh*(rc.top-rc.bottom+BORDER_Y)+y0)-1;
 
@@ -384,6 +385,7 @@ int CalcHeightCoordinat(double fHeight, const RECT rc, DiagrammStruct* psDia)
 
 int CalcDistanceCoordinat(double fDist, const RECT rc,  DiagrammStruct* psDia)
 {
+if ( psDia->fXMax == psDia->fXMin) psDia->fXMax++; // RECOVER DIVISION BY ZERO!
 double xscale =   (double) (rc.right - rc.left-BORDER_X)/(psDia->fXMax - psDia->fXMin);
 int	xPos = (int)((fDist- psDia->fXMin)*xscale)+rc.left +BORDER_X;
   return xPos;
@@ -451,6 +453,8 @@ double idy = (double)(rc.top - rc.bottom)/(double)iSteps+0.5f;
 HPEN   hpHorizon;
 HBRUSH hbHorizon;
 COLORREF Col;
+
+LKASSERT(iSteps!=0);
 
 /* just take something in order to store the old brush and pen for restoring them */
 HPEN OldPen     = (HPEN)   SelectObject(hdc, GetStockObject(WHITE_PEN));

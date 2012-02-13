@@ -132,7 +132,13 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
                                        CALCULATED_INFO.WindBearing,
                                        0, 0, true,
                                        0)  - WayPointList[overindex].Altitude;
-      fLD = (int) wpt_dist / (CALCULATED_INFO.NavAltitude-wpt_altarriv+wpt_altitude);
+
+     
+      if ( (CALCULATED_INFO.NavAltitude-wpt_altarriv+wpt_altitude)!=0)
+      	fLD = (int) wpt_dist / (CALCULATED_INFO.NavAltitude-wpt_altarriv+wpt_altitude);
+      else
+	fLD=999;
+
       if (IsSafetyAltitudeInUse(overindex)) wpt_altarriv -= SAFETYALTITUDEARRIVAL;
 
 
@@ -267,7 +273,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
       line[1].y = CalcHeightCoordinat( altarriv ,   rc, &sDia );
       StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
     } else {
-      double t = fDist/speed;
+      double t = fDist/(speed!=0?speed:1);
 
       line[0].x = CalcDistanceCoordinat( 0, rc, &sDia);
       line[0].y = CalcHeightCoordinat  ( CALCULATED_INFO.NavAltitude,   rc, &sDia);

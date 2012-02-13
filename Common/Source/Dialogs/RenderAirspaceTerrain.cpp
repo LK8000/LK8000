@@ -256,6 +256,8 @@ void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon, 
     ground[3].x = ground[2].x;
     ground[0].y = iBottom;
 
+    if (hmax==hmin) hmax++; // RECOVER DIVISION BY ZERO!
+
     itemp = iround((d_h[j-1]-hmin)/(hmax-hmin)*(rc.top-rc.bottom+BORDER_Y))+y0;
     if (itemp>y0) itemp = y0;
     ground[1].y = itemp;
