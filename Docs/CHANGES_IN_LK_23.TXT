@@ -2,6 +2,52 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3y  February 13, 2012
+-------------------------------
+
+NEW
+
+.  Support LX16xx direct logger declaration, no need for manual setup anymore.
+
+.  Added map bitmaps icons for CUP style 10 (NDB) and custom LK style 31 (LKTHERMAL)
+   To use style 31, you need to have cup waypoints with style 31, of course!
+
+
+CHANGES
+
+.  Use MAGENTA color for bearing line, for better visibility and compatible with Garmin instruments
+
+.  TASK LINE/CYL/SECTOR COLOR lines adjustments. Thinner lines, dark green colors.
+   Previously using hpBearing black colors, and too thick lines.
+
+.  Update FINAL and THERMAL icons by Jiri
+
+.  New sideview airspace handler, allows:
+    overlapped AS
+    embedded AS
+    correct display of AGL airspaces
+    much faster and more precise
+    multiselect AS
+
+
+
+FIXES
+
+
+. Fix bug on PNA requesting  LK to be restarted upon exit, even with no reason.
+
+. Fix ballast dump external instrument update, sometimes not updating below 55%.
+  Updates are performed, as usual, max every 5 seconds.
+
+. Many memory management fixes, added "Out of memory" message
+
+. Fix bug printing white text on white background when airport labels were printed on "BlackScreen".
+  Text black is correctly inverted to white, but NOT on white boxes!
+
+
+
+
+
 Version 2.3x  February 8, 2012
 -------------------------------
 
