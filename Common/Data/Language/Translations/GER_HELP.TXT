@@ -31,7 +31,7 @@ Die LKM-Karten-Dateien befinden sich im _Maps Unterordner.
 #In this case terrain chosen here ovverrides the one preconfigured in LKM.
 #This file is inside _Maps subfolder. 
 Dateiname für eine Datei mit Geländehöhendaten, normalerweise mit Endung .DEM aber
-die Endungen .DAT und .JP2 sind auch möglich.
+die Endung .DAT ist auch möglich.
 Geländehöhen können auch in einer LKM-Datei enthalten sein, sie werden aber mit 
 den .DEM-Daten überschrieben werden. Diese Datei befindet sich im _Maps-Unterordner.
 
@@ -1013,7 +1013,7 @@ Vgl. Handbuch für alle Kombinationen, Standard ist keine Aktion.
 #Below this time, the click will rotate as usual the LK8000 bottombar stripes.
 #See the manual for all combinations.  Default is no action.
 Die einstellbare LINKE Taste erreicht man durch langes Klicken auf die linke Ecke der Fußzeile. 
-Bei zu kurzen klicken erfolgt die gewöhnliche Rotation der Infostreifen. 
+Bei zu kurzem klicken erfolgt die gewöhnliche Rotation der Infostreifen. 
 Vgl. Handbuch für alle Kombinationen, Standard ist keine Aktion.
 
 @404

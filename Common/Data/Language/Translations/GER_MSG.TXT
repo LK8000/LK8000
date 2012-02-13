@@ -101,7 +101,7 @@ _@M28_ "3 Karteninhalte und -anzeige"
 _@M29_ "3 Minuten"
 
 #_@M30_ "30 seconds"
-_@M30_ "30 Dekunden"
+_@M30_ "30 Sekunden"
 
 #_@M31_ "3D fix"
 _@M31_ "3D fix"
@@ -164,7 +164,7 @@ _@M49_ "Erreichter MC-Wert "
 _@M50_ "Erzielte Geschw "
 
 #_@M51_ "Acknowledge for day?"
-_@M51_ "Für Heute bestätigen?"
+_@M51_ "Für heute bestätigen?"
 
 #_@M52_ "Acknowledge time*"
 _@M52_ "Bestätigungszeit*"
@@ -444,7 +444,7 @@ _@M141_ "Warnung Beste Alternat "
 _@M142_ "Große Städte "
 
 #_@M143_ "Big roads "
-_@M143_ "Große Strassen "
+_@M143_ "Große Straßen "
 
 #_@M144_ "Black"
 _@M144_ "Schwarz"
@@ -616,7 +616,7 @@ _@M197_ "Konfiguriere Topologie"
 _@M198_ "Programmende bestätigen?"
 
 #_@M199_ "Connected"
-_@M199_ "Verbunden"
+_@M199_ "verbunden"
 
 #_@M200_ "Copy"
 _@M200_ "Kopiere"
@@ -661,7 +661,7 @@ _@M212_ "BALLAST ablassen"
 _@M213_ "ED_D (Danger)"
 
 #_@M214_ "Danger areas"
-_@M214_ "ED_D (Danger) "
+_@M214_ "ED_D (Gefahr) "
 
 #_@M215_ "Dark Grey"
 _@M215_ "Dunkelgrau"
@@ -688,7 +688,7 @@ _@M221_ "Aufgabe stellen?"
 _@M222_ "Logger"
 
 #_@M223_ "Declared"
-_@M223_ "Angemeldet"
+_@M223_ "Aufgabe deklariert"
 
 #_@M224_ "Declutter landings "
 _@M224_ "Entwirre Flugplätze "
@@ -802,7 +802,7 @@ _@M259_ "Aktiviert"
 _@M260_ "Entwickler Menü*"
 
 #_@M261_ "Enter number"
-_@M261_ "Gebe eine Zahl ein"
+_@M261_ "Gib eine Zahl ein"
 
 #_@M262_ "Equivalent MC"
 _@M262_ "Äquivalent MC"
@@ -814,7 +814,7 @@ _@M263_ "Fehler beim Aufgaben speichern!"
 _@M264_ "Fehler in der Aufgaben-Datei!"
 
 #_@M265_ "Error! Task NOT declared!"
-_@M265_ "Fehler! Aufgabe nicht formuliert!"
+_@M265_ "Fehler! Aufgabe nicht deklariert!"
 
 #_@M266_ "Error"
 _@M266_ "Fehler"
@@ -856,7 +856,7 @@ _@M277_ "RÜCKGRIFF, BENUTZE GPS AUF PORT"
 _@M278_ "FALSCH"
 
 #_@M279_ "FLARM DETECTED"
-_@M279_ "FLARM ERKANNT"
+_@M279_ "FLARM ERKANNT!"
 
 #_@M280_ "FLARM on map "
 _@M280_ "FLARM-V auf Karte "
@@ -988,7 +988,7 @@ _@M321_ "Sensoren"
 _@M322_ "Geoid Höhe "
 
 #_@M323_ "Ghost "
-_@M323_ "Gost "
+_@M323_ "Geist "
 
 #_@M324_ "Glide Bar indicator "
 _@M324_ "Gleitbalkenindikator "
@@ -1018,7 +1018,7 @@ _@M331_ "Grün"
 _@M332_ "Grau"
 
 #_@M333_ "Half overlay"
-_@M333_ "Halbes Overlay"
+_@M333_ "Halbe Einblendung"
 
 #_@M334_ "Handicap "
 _@M334_ "Flugzeugindex "
@@ -1030,7 +1030,7 @@ _@M335_ "Höhe"
 _@M336_ "Hilfe"
 
 #_@M337_ "Hide units "
-_@M337_ "Verberge Einheiten "
+_@M337_ "Verbirg Einheiten "
 
 #_@M338_ "High Alps"
 _@M338_ "Hochalpen"
@@ -1061,7 +1061,7 @@ _@M345_ "UNGÜLTIGE FAHRT"
 _@M346_ "IPhone Gesten "
 
 #_@M347_ "IS OPEN"
-_@M347_ "IST GÖFFNET"
+_@M347_ "IST GEÖFFNET"
 
 #_@M348_ "Icon "
 _@M348_ "Icon "
@@ -1106,7 +1106,7 @@ _@M360_ "Ungültiges altes Aufgabenformat!"
 _@M361_ "Invertiere S/W Farben "
 
 #_@M362_ "Inverse colors "
-_@M362_ "Invertiere Farben "
+_@M362_ "Invertierte Farben "
 
 #_@M363_ "Invert colors"
 _@M363_ "Invertiere Farben"
@@ -1145,8 +1145,8 @@ _@M373_ "LCD dunkelgrün"
 #_@M374_ "LCD green"
 _@M374_ "LCD grün"
 
-#_@M375_ "LK8000 Profiles"
-_@M375_ "LK8000 Profile"
+#_@M375_ "System Profiles"
+_@M375_ "System Profile"
 
 #_@M376_ "LK8000 Traffic"
 _@M376_ "LK8000 Verkehr"
@@ -1301,7 +1301,7 @@ _@M424_ "Wegpunkte in Karte"
 _@M425_ "Auto Höhenband "
 
 #_@M426_ "Mark Location"
-_@M426_ "Boje setzen"
+_@M426_ "Marker setzen"
 
 #_@M427_ "Mark center"
 _@M427_ "Markiere Zentrum"
@@ -1489,7 +1489,7 @@ _@M486_ "Nicht genug Speicher für Wegpunkte"
 _@M487_ "Nummer: "
 
 #_@M488_ "Numbers"
-_@M488_ "Zahler"
+_@M488_ "Zahlen"
 
 #_@M489_ "OFF (G)"
 _@M489_ "AUS (G)"
@@ -2003,7 +2003,7 @@ _@M656_ "Abflug-Typ "
 _@M657_ "Start"
 
 #_@M658_ "Statistics screens"
-_@M658_ "Statistische Seiten"
+_@M658_ "Statistikseiten"
 
 #_@M659_ "Status message "
 _@M659_ "Status Meldung "
@@ -2822,7 +2822,7 @@ _@M933_ "Unter dem Endanflug-Gleitpfad"
 _@M934_ "Endanflug durch Gelände"
 
 #_@M935_ "Marks cleared"
-_@M935_ "Bojen gelöscht"
+_@M935_ "Marker gelöscht"
 
 
 # TODO - Translate new tokens below, according to the localized manual, if available
@@ -2895,10 +2895,10 @@ _@M959_ "AUS"
 # Paragliding lock/unlock screen feature
 #
 #_@M960_ "CONFIRM SCREEN UNLOCK?"
-_@M960_ "CONFIRM SCREEN UNLOCK?"
+_@M960_ "ENTSPERRUNG ANZEIGE BESTÄTIGEN?"
 
 #_@M961_ "CONFIRM SCREEN LOCK?"
-_@M961_ "CONFIRM SCREEN LOCK?"
+_@M961_ "SPERRUNG ANZEIGE BESTÄTIGEN?"
 
 # 962 max 35 characters!
 #_@M962_ "SCREEN IS LOCKED UNTIL TAKEOFF"
@@ -2908,7 +2908,7 @@ _@M962_ "ANZEIGE BIS ZUM START GESPERRT"
 _@M963_ "DOPPELKLICK ZUM ERZWUNGENEN ENTSPERREN"
 
 #_@M964_ "SCREEN IS UNLOCKED"
-_@M964_ "ANZEIGE IST GESPERRT"
+_@M964_ "ANZEIGE IST ENTSPERRT"
 
 #
 # Menu buttons, MAX 8 character per line! Keep \n !
@@ -3012,7 +3012,7 @@ _@M1021_ "MacCready Wert [AutMC]"
 _@M1022_ "McCready"
 
 #_@M1023_ "Next Distance"
-_@M1023_ "Nächste WP Distanz [Dist]"
+_@M1023_ "Nächster WP Distanz [Dist]"
 
 #_@M1024_ "Dist"
 _@M1024_ "Dist"
@@ -3858,23 +3858,29 @@ _@M1286_ "LR_VAb"
 _@M1287_ "Flugrichtung"
 
 #_@M1288_ "Showing towards next waypoint"
-_@M1288_ "Auf nächsten Wegpunkt gerichtet"
+_@M1288_ "Auf Wegpunkt gerichtet"
 
 #_@M1289_ "Next WP"
-_@M1289_ "Nächster WP"
+_@M1289_ "Wegpunkt"
 
 #_@M1290_ "Showing towards heading"
 _@M1290_ "In Flugrichtung"
 
 
 #_@M1291_ "Near AS"
-_@M1291_ "Nächster LR"
+_@M1291_ "Nächstg LR"
 
-#_@M1292_ "Showing towards nearest airspace"
-_@M1292_ "Zeige Richtung nächster Luftraum"
+#_@M1292_ "Nearest airspace"
+_@M1292_ "Nächstgelegener Luftraum"
 
-#_@M1293_ "INSIDE"
-_@M1293_ "INNERHALB"
+#_@M1293_ "Sonar ON"
+_@M1293_ "Sonar EIN"
+
+#_@M1294_ "Sonar OFF"
+_@M1294_ "Sonar AUS"
+
+#_@M1295_ "Sideview"
+_@M1295_ "Seitenansicht"
 
 
 #--------------------------------------------------------------------------------------------------------------------
@@ -4693,7 +4699,7 @@ _@M1726_ "DEINE POSITION IST NICHT FESTSTELLBAR!"
 _@M1740_ "OLC Analyse"
 
 #_@M1741_ "**RESET DEFAULT PROFILE**"
-_@M1741_ "**RÜCKSETZEN AUF STANDARDPROFIL**"
+_@M1741_ "**VOLLES RÜCKSETZEN LK8000**"
 
 # free space , to be used 1744-1760
 #_@M1742_ "AGL:"
@@ -4779,6 +4785,18 @@ _@M1772_ "GgWind"
 _@M1774_ "Terrainfarbe ändern -"
 
 
+# New AverEfficiency intervals
+#_@M1775_ "3 seconds"
+_@M1775_ "3 Sekunden"
+
+#_@M1776_ "5 seconds"
+_@M1776_ "5 Sekunden"
+
+#_@M1777_ "10 seconds"
+_@M1777_ "10 Sekunden"
+
+#_@M1778_ "45 seconds"
+_@M1778_ "45 Sekuden"
 
 ############################################################
 #                  - MENU MESSAGES - 
@@ -4927,7 +4945,7 @@ _@M2045_ "Nav mit"
 _@M2046_ "System-\nEinstellg"
 
 #_@M2047_ "Clear\nMarks"
-_@M2047_ "Lösche\nBoje"
+_@M2047_ "Lösche\nMarker"
 
 #_@M2048_ "Logger"
 _@M2048_ "Logger"
@@ -4996,7 +5014,7 @@ _@M2068_ "Konfigur"
 _@M2069_ "Anzeige"
 
 #_@M2070_ "Location\nMarker"
-_@M2070_ "Setze\nBoje"
+_@M2070_ "Setze\nMarker"
 
 #_@M2071_ "TrueWind\nCalc"
 _@M2071_ "TrueWind\nberechnen"
