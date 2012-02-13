@@ -285,6 +285,7 @@ int CalculateWindRotary(windrotary_s *buf, double iaspeed , double *wfrom, doubl
 	}
 	// track quality is number of valid fixes found
 	trackquality=nc;
+	LKASSERT(nc!=0);
 	avertrack=((float)s/nc);
 	averaltitude=alt/nc;
 
