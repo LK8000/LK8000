@@ -13,7 +13,7 @@
 
 
 TCHAR *DegreesToText(double brg) {
-  static TCHAR sDeg[3];
+  static TCHAR sDeg[30];
   if (brg<23||brg>=338) {; _tcscpy(sDeg,gettext(_T("_@M1703_"))); return(sDeg); } // North
   if (brg<68)  {; _tcscpy(sDeg,gettext(_T("_@M1704_"))); return(sDeg); }	// North-East
   if (brg<113) {; _tcscpy(sDeg,gettext(_T("_@M1705_"))); return(sDeg); }	// East
@@ -60,7 +60,7 @@ TCHAR *WhatTimeIsIt(void) {
 //
 TCHAR *OracleFormatDistance(TCHAR *name,TCHAR *ntype,const double dist,const double brg,const short mode) {
 
-  static TCHAR ttmp[100];
+  static TCHAR ttmp[150];
   double dist_over=0, dist_near=0;
   
   switch(mode) {
@@ -102,7 +102,7 @@ TCHAR *OracleFormatDistance(TCHAR *name,TCHAR *ntype,const double dist,const dou
 // It should be recoded once the rules are clear.
 void WhereAmI(void) {
 
-  TCHAR toracle[400];
+  TCHAR toracle[500];
   TCHAR ttmp[100];
   double dist,wpdist,brg;
   NearestTopoItem *item=NULL;
@@ -250,7 +250,7 @@ _dowp:
 	GPS_INFO.Latitude, GPS_INFO.Longitude, 
 	&wpdist,&brg);
 
-  TCHAR wptype[30];
+  TCHAR wptype[100];
   switch(WayPointList[j].Style) {
 	case 2:
 	case 4:
