@@ -154,6 +154,7 @@ Vous pouvez choisir ici l'espacement minimum entre deux noms de waypoint.
 [Bas] N'affiche pas les infos des champs vachables si des aérodromes sont plus accessibles. 
 [Haut] N'affiche les infos que pour les meilleure options de dégagement.
 
+
 @133
 Altitude d'arrivée au dessus du sol pour atterrir en sécurité. Ne PAS mettre à zéro, 3OOm est une valeur correcte.
 
@@ -189,6 +190,7 @@ Si vous n'avez pas de calculateur qui transmet votre vitesse air, LK va considé
 Si vous AVEZ un calculateur qui transmet la vitesse air, cette valeur n'est pas utilisée car déjà connue.
 La vitesse mini est de 10km/h ou 5noeuds, et par défaut de 100km/h et 54 noeuds. 
 
+
 @141
 C'est le temps à tenir en ligne droite à vitesse constante avant de demander un nouveau calcul TrueWind pour le vent. 
 La valeur par défaut est de 10 secondes. 
@@ -211,14 +213,17 @@ Une bonne valeur pour les planeurs est de 90-120 secondes et 15 secondes pour le
 Des valeurs inférieures vous rapprochent de la finesse instantanée, alors que plus élevées vous vous rapprochez de la finesse sur toute la transition.
 D'autres produits commerciaux utilisent 2 minutes. 
 
+
 @144
 Le centre estimé du thermique est affiché en mode thermique..
 [OFF] désactivé.
 [Repère centré]  Une marque est affiché au centre du thermique.
 [Pan au centre] Une marque est aussi affichée mais la carte se déplace pour que le marqueur soit toujours centré.
 
+
 @145
 Si activé et que Thermal Locator l'est aussi, un bip retentit pendant votre spirale au moment où il faut ouvrir quelques instants avant de refermer à nouveau. 
+
 
 @146
 Cette fonction permet de forcer le mode "arrivée" si vous êtes au dessus du plan avant d'avoir passé le dernier point de virage 
@@ -227,7 +232,6 @@ Vous pouvez aussi forcer ce mode depuis le menu.
 @147
 Utilise, si elle est disponible' l'altitude barométrique pour tous les calculs de navigation. 
 Dans le cas contraire l'altitude GPS est utilisée..
-
 
 @148
 Choisissez votre planeur ou  WinPilot File  pour utiliser une polaire personnalisée.
@@ -261,12 +265,14 @@ Bit format, normalement: 8
 Type de la source GPS secondaire.
 Cette source est utilisée en GPS de secours ou pour recevoir d'autres types d'info comme le vent etc....
 
+
 @158
 Applique une correction géoïde sur l'altitude GPS, pas sur une altitude barométrique. .
 Il faut donc vérifier si votre source GPS est déjà compensée ou non.
 Si vous avez une erreur permanente de 30 ou 50m essayez les deux modes. En cas de doute laissez la correction active.
 Utilisez OFF pour utiliser Condor.
 En mode ON par défaut.
+
 
 @159
 Corrige l'altitude GPS d'une valeur fixe. Attention avec ce réglage, il est constant pour tout le vol!
@@ -312,6 +318,7 @@ Pour les circuits de plus de 500km, Pas de branche de moins de 25% ou plus de 45
 L'altitude d'arrivée doit se situer au dessus de l'altitude de départ moins 1000 mètres.
 [Classic]: Règles OLC classique.  Jusqu'à sept points incluant le départ et l'arrivée, L'altitude d'arrivée doit se situer au dessus du départ moins 1000 mètres.
 
+
 @170
 Unité utilisée pour la Vitesse air et la Vitesse sol. Une autre unité peut être utilisée pour la vitesse du circuit.
 
@@ -341,6 +348,7 @@ Si ON, un clic court sur la carte va afficher les détails du waypoint le plus p
 Si OFF, un clic court sur la moitié supérieure de la carte va zoomer, et sur la partie inférieure va dézoomer.
 OFF par défaut comme les touches virtuelles pour une réponse plus rapide aux clics.
 
+# 179 REMOVED after v2.3
 @179
 Si activé: la carte est virtuellement divisée en trois parties. Une pression d'une seconde sur la partie supérieure équivaut à la touche "haut", sur le bas à le touche "bas" et au milieu de la carte à la touche "entrer".
 Ces touches haut, bas et entrer servent à changer la valeur des IBOX comme le MC, la destination, etc... Une fois que l'Infobox a été sélectionnée (en mode IBOX)
@@ -350,11 +358,14 @@ Pour sélectionner un espace aérien, cliquer dessus environ une demi seconde.
 Si vous faites une touche entrer sur la carte, vous inversez la couleur du texte.
 Si vous n'utilisez pas Active map, il est préférable de ne pas activer les touches virtuelles car le zoom nécessitera des clics très courts.
 
+
 @180
 Le glissement des pages est toujours actif, mais vous pouvez choisir si vous le voulez dans le même sens que l'Iphone ou inversé.
 Par exemple, un mouvement de gauche à droite va tourner la page de gauche sur l'Iphone,Comme si vous feuilletez les pages d'un livre.
 C'est l'inverse par défaut: à l'opposé de l'Iphone.
 
+
+# 181 REMOVED after 2.3
 @181
 Si activé: cliquer sur une Navbox va bloquer la carte pour ne pas sélectionner un waypoint ou zoomer. Un double clic sur la carte (pas sur les navbox) débloque la carte.
 Cette option peut être utile pour les parapentes et deltas. Elle est sur OFF par défaut. 
@@ -413,6 +424,7 @@ L'obstacle est indiqué avec une valeur entourée, c'est l'altitude qui vous man
 Cette altitude prend en compte la hauteur sol minimum que vous avez configuré dans le menu Facteurs de sécurité.
 NOTE: l'ombre n'est affichée que pendant le vol.
 
+# 195 UNUSED SINCE 2.4
 @195
 L'indicateur d'arrivée peut se rapporter soit à l'arrivée du circuit soit au point de virage suivant, ou il peut être désactivé. C'est une barre verticale qui s'affiche à gauche de l'écran.
 Cette valeur est calculée pour le MC affiché, celui de votre circuit. Si vous n'avez pas de circuit mais un simple Goto (Aller à ) cette valeur peut être différente de celle de l'infocarte car elle ne tient pas compte du MC de sécurité. Elle peut donc être calculée pour un MC=0.
@@ -496,8 +508,10 @@ Après activation, il faut quitter le menu puis y revenir pour voir ces nouvelle
 @214
 Règle le niveau de zoom par défaut pour les spirales. Vous pouvez le modifier lors de celles-ci en zoomant manuellement, le réglage restera valable pour tout le vol.
 
+
 @215
 Zoom par défaut pour les transitions. Les petites valeurs zooment fort et les grandes zooment moins.
+
 @216
 Le départ régate est le moment où le chronomètre se met en marche pour tous les concurrents.
 Régler à 0 si aucune heure de départ régate n'est spécifiée, chacun prend le départ quand il le souhaite.
@@ -530,6 +544,7 @@ Le fichier des évènements entrant définit le système des menus et comment LK
 @223
 Le fichier langue permet de traduire LK8000 de l'anglais vers d'autres langues. Si ce champ est laissé vide, le logiciel sera en anglais.
 
+
 @224
 Le fichier status peut être utilisé pour designer les sons à jouer lors de certains évènements et la durée d'apparition des messages à l'écran.
 
@@ -542,15 +557,18 @@ Intervalle entre deux points enregistrés en transition.
 @227
 Intervalle entre deux points enregistrés lors des spirales.
 
+# 228 REMOVED after v2.3
 @228
 Présence ou non d'animation à l'ouverture/fermeture  des boites de dialogue.
 
 @229
 Si vous voulez que le visual glide affiche en plus de l'affichage classique des cercles ou des arcs se déplaçant.
 
+# 230 REMOVED after v2.3
 @230
 Définit l'alignement des boites de dialogue: Centrées ou en haut à gauche.
 
+# 231 REMOVED after v2.3
 @231
 Façon dont la flèche du vent est affichée sur la carte.
 [Pointe de flèche] Juste la pointe de la flèche.
@@ -561,19 +579,23 @@ Valeur Géométrique: échelle 0-7 mais seulement quelques une sont réellement 
 ATTENTION: LK8000 ne supporte que  5 boites à droite si en mode paysage et une ligne en haut et en bas si en mode portrait. 
 Si vous utilisez des autres géométries,  LK8000 ne fonctionnera pas correctement.
 
+# 233 REMOVED after v2.3
 @233
 Diminue la valeur du MC utilisé pour calculer la vitesse à tenir à mesure qu'on se rapproche du sol pour s'adapter à la valeur du risque.
 0.0 pour aucun compensation et 1.0 pour une compensation directement proportionnelle à l'altitude.
 
+# 234 REMOVED after v2.3
 @234
 Si activé, le calcul de la vitesse de vol en fonction du MC considère une masse d'air sans mouvements verticaux.
 Si désactivé, le calcul se fait pour le vol en dauphin: en tenant compte de la vitesse verticale de la masse d'air.
 
+# 235 REMOVED after v2.3
 @235
 Définit la façon de saisir du texte (nom de fichiers, code position etc...).
 
 @236
 Ce paramètre définit comment les points  en dehors de la carte sont considérés: Inclus, exclus ou Demander à l'utilisateur lorsque cela arrive.
+
 
 @237
 L'heure locale est affichée. Fonctionne uniquement en mode paysage et  avec toutes les Infoscartes affichées.
@@ -630,6 +652,7 @@ Le réglage par défaut est 700ms, qui fonctionne bien pour l'HP314 et d'autres 
 S'il n'y a aucune action associée aux touches personnalisables, ce réglage n'est pas utilisé.
 Les touches personnalisables du haut de l'écran n'utilisent pas cette  durée car une pression rapide leur suffit.
 
+
 @401
 La touche personnalisable en HAUT à GAUCHE est activé en cliquant sur le coin supérieur gauche de l'écran.
 Voir le manuel pour les différents choix. Défilement Multicible par défaut.
@@ -661,6 +684,17 @@ La touche personnalisable ICONE s'active en appuyant en appuyant sur l'icône de
 En dessous de ce temps, le clic va ouvrir le menu de LK.
 Voir le manuel pour les différents choix.  Rien par défaut.
 
+@407
+Cette touche est accessible par un appui long au centre de la carte (à peut près au centre de l'écran).
+Si le mode "active map" est actif, cette toucheva parfois afficher les détails de l'éspace aérien "cliqué".
+Voir le manuel pour les diférentes combinaisons.
+la fonction par défaut est: "où suis-je?"
+
+This key is obtained by long clicking in the center of the map (basically screen center).
+If ActiveMap is enabled, this customkey can be sometimes overridden by an underlying airspace
+which is selected for details by a long click as well.
+See the manual for all combinations.  Default is Where Am I function.
+
 #
 # LOGGER REPLAY
 #
@@ -668,6 +702,7 @@ Voir le manuel pour les différents choix.  Rien par défaut.
 @450
 Vitesse de lecture du Replay
 0 pour la pause, 1 pour le temps réel. Au delà de x10 les calculs et statistiques seront faux donc juste bon pour arriver à un point intéressant du vol.
+
 
 #
 # TARGET
@@ -683,6 +718,7 @@ Des valeurs faibles déplacent le point cible pour diminuer la longueur du circu
 
 @462
 Pour un circuit AAT, cette fonction peut être utilisée pour ajuster le point cible dans un secteur AAT. Des valeurs positives tournent la ligne dans le sens horaire, les valeurs négatives dans le sens anti-horaire.
+
 
 @463
 Si activé, les cibles à l'intérieur des secteurs AAT ne sont pas positionnés de façon automatique.
@@ -702,6 +738,9 @@ Des valeurs faibles déplacent le point cible pour diminuer la longueur du circu
 
 @482
 Efficacité du vol: 100 indique qu'on réalise exactement la vitesse calculée par la théorie MC, plus que 100 indique qu'on réalise une meilleure performance avec des rues de nuages par exemple, Moins que 100 peut avoir comme cause des grands détours.
+
+
+
 
 #
 # TASK RULES
@@ -735,6 +774,10 @@ Règles utilisées pour le calcul des points OLC.
 Pour les circuits de plus de 500km, pas de branche de moins de 25% ou plus de 45% du total, ou alors pas de branche de moins de 28% du total.
 L'altitude d'arrivée doit se situer au dessus du départ moins 1000 mètres.
 [Classique]: Règles OLC classiques.  Jusqu'à sept points incluant le départ et l'arrivée. L'altitude d'arrivée doit se situer au dessus du départ moins 1000 mètres.
+
+
+
+
 
 #
 # TASK WAYPOINTS
@@ -799,7 +842,6 @@ Type d'arrivé.
 
 @514
 Rayon du cylindre d'arrivé ou moitié de la longueur de la ligne d'arrivé.
-
 
 #
 # TIME GATES
@@ -923,34 +965,50 @@ Negative convergence (divergence) produces subsiding vertical motion, creating l
 
 
 #
-# INFOBOXES
+# INFOBOXES 800 - 1199
 #
 
 @800
 [Altitude QNH]
+C'est l'altitude au dessus du niveau moyen de la mer envoyée par le GPS ou le capteur baromètrique (si celle est disponible et qu'elle a été sélectionnée comme source).
+C'est cette altitude que LK8000 va utilser pour tous ses calculs. Les infobox "altitude GPS" et "altitude baro" sont disponibles et une des ces deux valeurs est utilsée comme altitude QNH.
+IL FAUT UTILISER CETTE ALTITUDE COMME REFERANCE puisque c'est celle qui est utilisée par LK8000.
+En mode simulation, cette valeur est ajustable avec les flèches haut/bas, les flèches droite/gauche faisant tourner le planeur.
+
 This is the height above mean sea level reported by the GPS or by the Baro sensor (if pressure altitude is available and if it is selected to be used). 
 It is the altitude really used internally for all calculations. GPS altitude and Baro altitude infoboxes are available too; one of those two values is used in the QNH altitude. 
 USE THIS ALTITUDE as main reference, since this is the one being used by LK8000.
 Touchscreen/PC only: in simulation mode, this value is adjustable with the up/down arrow keys and the right/left arrow keys also cause the glider to turn.
 
 @801
-[Altitude AGL
+[Altitude AGL]
+Hauteur (par rapport au sol): c'est votre altitude AMSL/QNH moins l'altitude du sol répertorié dans le fichier "relief".
+
 This is the navigation altitude minus the terrain height obtained from the terrain file.
 
 @802
 [Thermal last 30 sec]
+Taux de montée pendant les 30 dernières secondes, basé sur les altitudes reçues ou le vario si celui est disponible.
+
 Climb rate during last 30 seconds, based of the reported GPS altitude, or vario if available.
 
 @803
 [Bearing]
+Cap vrai du prochain waypoint. Pour les AAT c'est le cap du point de virages "cible".
+
 True bearing of the next waypoint.  For AAT tasks, this is the true bearing to the target within the AAT sector.
 
 @804
 [L/D 20\" ]
+Finesse instantanée calculée sur les 20 dernières secondes ( calculée avec la vitesse sol et la vitesse verticale). Une valeur négative indique qu'on monte. "---" indique une valeur proche de zero.
+
 Instantaneous glide ratio, given by the ground speed divided by the vertical speed (GPS speed) over the last 20 seconds.  Negative values indicate climbing cruise. If the vertical speed is close to zero, the displayed value is '---'.
 
 @805
 [L/D Th]
+Finesse depuis la dernière ascendance EN VOL DIRECT. C'est la distance en ligne droite depuis le sommet de la dernière ascendance divisée par la perte d'altitude. Attention, ce n'est donc pas votre finesse réelle: elle va fortement diminuer si vous faites de zigzag ou demi-tour.
+Une valeur négative indique une montée et "---" une vitesse verticale moyenne presque nulle.
+
 The distance from the top of the last thermal, divided by the altitude lost since the top of the last thermal.  
 Negative values indicate climbing cruise (height gain since leaving the last thermal).  
 If the vertical speed is close to zero, the displayed value is '---'.
@@ -958,120 +1016,180 @@ Attention: doing zig zag or turning back will result in wrong values! Use L/D Av
 
 @806
 [Speed ground]
+Vitesse sol mesurée par le GPS. Si cette infobx est active en mode simulation, les touches haut/bas vont la modifier, les touches droite/gauche fnt tourner le planeur.
+
 Ground speed measured by the GPS.  If this infobox is active in simulation mode, pressing the up and down arrows adjusts the speed, and left and right turn the glider.
 
 @807
 [Last Thermal Average]
+Ascendance moyenne de la dernière ascendance thermique: gain total d'altitude (ou perte!) divisée par le temps passé à enrouler la pompe.
+
 Total altitude gain/loss in the last thermal divided by the time spent circling.
 
 @808
-
 [Last Thermal Gain]
+Gain total d'altitude (ou perte!) de la dernière ascendance thermique.
+
 Total altitude gain/loss in the last thermal.
 
 @809
 [Last Thermal Time]
+Temps total passé dans la dernière ascendance thermique.
 Time spent circling in the last thermal.
 
 @810
 [MacCready Setting]
+Calage MacCready actuel. cette infobox indique aussi si le règlage est manuel ou automatique.
+en mode simulation: si l'infobox MC est active, on peut la modifier avec les flèches haut/bas.
+
 The current MacCready setting.  This infobox also shows whether MacCready is manual or auto.  
 (Touchscreen/PC only) Also used to adjust the MacCready Setting if the infobox is active, by using the up/down cursor keys.
 
 @811
 [Next Distance]
+Distance jusqu'au waypoint actuellement sélectionné. Pour les AAT, c'est la distance jusqu'à la cible désigné dans le prochain secteur. 
+
 The distance to the currently selected waypoint. For AAT tasks, this is the distance to the target within the AAT sector.
 
 @812
 [Next Altitude Arrival]
+Hauteur (sol) d'arrivé au prochain waypoint, calculé pour le MC actuel: attention: il ne tient pas compte du MC de sécurité et de l'altitude mini de sécurité si ce n'est pas un point attérrissable (sauf si vous avez configuré le contraire pour l'altitude de sécurité).
+
 Arrival altitude at the next waypoint altitude, calculated for current MC, does NOT use safetyMC and does not use safety altitude if it is not a landing point, unless configured to do so.
 
 @813
 [Next Altitude Required]
+Altitude nécessaire pour atteindre le prochain waypoint en volant au MC actuel.
+
 Altitude required to reach the next turn point, with current MC.
 
 @814
 [Next Waypoint]
+Nom du waypoint actuellement sélectionné.
+
 The name of the currently selected turn point.  When this infobox is active, using the up/down cursor keys selects the next/previous waypoint in the task.  
 (Touchscreen/PC only) Pressing the enter cursor key brings up the waypoint details.
 
 @815
 [Final Altitude Arrival]
+Hauteur d'arrivé au dernier waypoint du circuit (l'arrivé) en tenant compte de l'altitude de sécurité.
+
 Arrival altitude at the final task turn point relative to the safety arrival altitude.
 
 @816
 [Final Altitude Required]
+Altitude nécessaire pour boucler le circuit.
+
 Altitude required to finish the task.
 
 @817
 [Speed Task Average]
+Vitesse moyenne sur le circuit actuel compensée en fonction de l'altitude.
+
 Average cross country speed while on current task, compensated for altitude.
 
 @818
 [Final Distance]
+Distance du circuit restant à parcourir jusqu'à l'arrivée. 
+
 Distance to finish around remaining turn points.
 
 @819
 [Final L/D]
+NE PAS UTILISER CETTE VALEUR, elle est ici uniquement pour permettre la compatibilté avec les autres versions.
+Utiliser Final Eff à la place.
+
 Do NOT use this value, it's here only for compatibility issue with old versions.
 Use Final EFF instead.
 
 @820
 [Terrain Elevation]
+C'est l'altitude du sol à votre verticale. C'est l'altitude contenue dans votre fichier "relief" à votre emplavement GPS actuel. 
+
 This is the elevation of the terrain above mean sea level, obtained from the terrain file at the current GPS location.
 
 @821
 [Thermal Average]
+C'est le vario moyen de l'ascendance actuelle.
+Altitude gagnée/perdue dans l'ascendance thermique actuelle divisée par le temps passé à enrouler.
+
 Altitude gained/lost in the current thermal, divided by time spent thermaling.
 
 @822
 [Thermal Gain]
+C'est l'atitude gagnée (ou perdue!) dans l'ascendance actuelle.
+
 The altitude gained/lost in the current thermal.
 
 @823
 [Track]
+votre route (donnée par le GPS). C'est le cap effectivement suivit par le planeur. Il est différent du cap affiché au compas.
+
 Magnetic track reported by the GPS.  (Touchscreen/PC only) If this infobox is active in simulation mode, pressing the up and down  arrows adjusts the track.
 
 @824
 [Vario]
+Vitesse verticale instantanée transmise par le GPS (ou par le vario à energie total s'il est connecté).
+
 Instantaneous vertical speed, as reported by the GPS, or the intelligent vario total energy vario value if connected to one.
 
 @825
 [Wind Speed]
+Vitesse estimée du vent (via "TrueWind" ou la dérive en ascendance).
+
 Wind speed estimated by LK8000 with TrueWind or while circling . 
 
 @826
 [Wind Bearing]
+Cap estimé du vent via "TrueWind" ou la dérive en ascendance).
+
 Wind bearing estimated by LK8000, either with TrueWind or while circling. 
 
 @827
 [AA Time]
+Temps restant lors d'une AAT, la valeur devient ROUGE si le temps est dépassé.
+
 Assigned Area Task time remaining.  Goes red when time remaining has expired.
 
 @828
 [AA Distance Max]
+Distance maxiumun restant à parcourir lors d'une AAT.
+
 Assigned Area Task maximum distance possible for remainder of task.
 
 @829
 [AA Distance Min]
+Distance minimum restant à parcourir lors d'uine AAT.
+
 Assigned Area Task minimum
  distance possible for remainder of task.
 
 @830
 [AA Speed Max]
+Vitesse  moyenne maximum possible lors d'une AAT si on parcourt la distance maximum restante avec le temps minimum.
+
 Assigned Area Task average speed achievable if flying maximum possible distance remaining in minimum AAT time.
 
 @831
 [AA Speed Min]
+Vitesse moyenne mini possible lors d'une AAT si on parcourt la distance minimum restante avec le temps minimum.
+
 Assigned Area Task average speed achievable if flying minimum possible distance remaining in minimum AAT time.
 
 @832
 [Airspeed IAS]
+Vitesse air "indiqué" transmise par un instrument extèrieur.
+Si aucun instrument n'est branché, cette vitesse est estimée en temps compte du vent et de la densité de l'air à l'altitude actuelle. Dans ce cas elle est affichée "eIAS".
+
 Indicated Airspeed reported by a supported external intelligent vario.
 If no sensor is available, it is estimated using current wind and air density at current altitude. In this case it is entitled eIAS .
 
 @833
 [Barometric Altitude]
+C'est l'altitude Baromètrique transmise par un GPS équipé d'une capsule baromètrique ou par un autre instrument donnant cette information.
+C'est cette altitude qui sera affiché comme QNH si vous sélectionnez "utiliser altitude baromètrique" dans le menu 5 de la configation système.
+De même c'est altitude qui sera utilsée pour tous les calculs internes si elle est sélectionnée
+
 This is the barometric altitude obtained from a GPS equipped with pressure sensor, or a supported external intelligent vario. 
 If you have selected Use Baro Altitude in system config menu 5, then this altitude is also shown as QNH altitude, and used internally for all calculations. 
 
@@ -1081,39 +1199,61 @@ The MacCready equivalent speed. This is NOT the Speed to Fly as intended for Dol
 
 @835
 [Percentage climb]
+Pourcentage du temps passé à enrouler. C'est valeur est remise à zéro à chaque nouveau départ.
+
 Percentage of time spent in climb mode.  These statistics are reset upon starting the task.
 
 @836
 [Time of flight]
+Temps passé depuis que le décollage a été détecté.
+
 Time elapsed since takeoff was detected.
 
 @837
 [G load]
+Nombre de G percu. Info transmise par un appareil externe. Cette valeur peut être négative lorsqu'on pousse sur le manche.
+
 Magnitude of G loading reported by a supported external intelligent vario.  This value is negative for pitch-down manoeuvres.
 
 @838
-[Next L/D]
-Do NOT use this value, it's here only for compatibility issue with old versions.
-Use NEXT EFF instead.
+[Multitarget BRG]
+Cap vers le prochain waypoint selectionné dans le menu multi-cible.
+Fonction pas encore disponible.
+
+The Bearing to the current selected multitarget.
+Currently this is NOT available.
 
 @839
 [Time local]
+Heure locale: transmise via le GPS et convertie en fonction du fuseau horaire.
+
 GPS time expressed in local time zone.
 
 @840
 [Time UTC]
+Heure TU transmise par le GPS.
+
 GPS time expressed in UTC.
 
 @841
 [Task Time To Go]
+Temps estimé pour finir le circuit. Se base sur les performance idéales de croisière et de montée compte tenu du MC affiché.
+
 Estimated time required to complete task, assuming performance of ideal MacCready cruise/climb cycle.
 
 @842
 [Next Time To Go]
+Temps estimé pour atteindre le prochain waypoint. Se base sur les performance idéales de croisière et de montée compte tenu du MC affiché.
+
 Estimated time required to reach next waypoint, assuming performance of ideal MacCready cruise/climb cycle.
 
 @843
 [Speed To Fly, or Speed Dolphin or Sollfarh]
+Vitesse de vol optimum compte tenu du calage actuel du MC et du vario netto (calculé).
+En transition la vitesse est calculée pour un trajectoire globale à altitude constente.
+En finale la vitesse est calculée pour une trajectoire globale descendante pour atteindre l'arrivée. 
+En spirale la vitesse affichée est celle de taux de chute mini compte tenu de la charge alaire (et du facteur de charge si un accélèromètre est connecté).
+
 The instantaneous MacCready speed-to-fly, making use of Netto vario calculations to determine dolphin cruise speed in the glider's current bearing.  
 In cruise flight mode, this speed-to-fly is calculated for maintaining altitude.  
 In final glide mode, this speed-to-fly is calculated for descent.  
@@ -1121,19 +1261,31 @@ In climb mode, this switches to the speed for minimum sink at the current load f
 
 @844
 [Netto Vario]
+Vario instantané de la masse d'air: égal au taux de chute instantané moins taux de chute propre du planeur.
+Fonctione mieux si la vitesse air, un accélèromètre et un vario sont connectés; Sinon les calculs se feront à partir de la vitesse GPS (sol) et de l'astimation du vent.
+
 Instantaneous vertical speed of air-mass, equal to vario value less the glider's estimated sink rate.  
 Best used if airspeed, accelerometers and vario are connected, otherwise calculations are based on GPS measurements and wind estimates.
 
 @845
 [Task Arrival Time]
+Heure d'arrivée estimée du circuit, en se basant des vitesses de croisière et des taux de monté optimum compte tenu du MC sélectionné.
+
 Estimated arrival local time at task completion, assuming performance of ideal MacCready cruise/climb cycle.
 
 @846
 [Next Arrival Time]
+Heure d'arrive estimée au prochain waypoint, en se basant des vitesses de croisière et des taux de monté optimum compte tenu du MC sélectionné.
+
 Estimated arrival local time at next waypoint, assuming performance of ideal MacCready cruise/climb cycle.
 
 @847
 [Bearing Difference]
+Différence de cap entre la route actuellement suivie et la route à suivre pour atteindre le procahin waypoint (ou la cible du secteur pour les AAT).
+La navigation GPS indique la route suivie par rapport au sol. Celle-ci est différente du cap affiché par le planeur à cause de la dérive due au vent.
+Les flèches indiquent le sens dans lequel il faut corriger la trajectoire ainsi que la différence de route.
+La route à suivre tien compte de la géoïde.
+
 The difference between the glider's track bearing, to the bearing of the next waypoint, or for AAT tasks, to the bearing to the target within the AAT sector.  
 GPS navigation is based on the track bearing across the ground, and this track bearing may differ from the glider's heading when there is wind present.  
 Chevrons point to the direction the glider needs to alter course to correct the bearing difference, that is, so that the glider's course made good is pointing directly at the next waypoint.  
@@ -1141,97 +1293,161 @@ This bearing takes into account the curvature of the Earth.
 
 @848
 [Outside Air Temperature]
+Températue extérieure mesurée par une sonde si elle est diponible.
+
 Outside air temperature measured by a probe if supported by a connected intelligent variometer.
 
 @849
 [Relative Humidity]
+Humidité relative de l'air, mesurée par une sonde si elle est diponible.
+
 Relative humidity of the air in percent as measured by a probe if supported by a connected intelligent variometer.
 
 @850
 [Forecast Temperature]
+Température prévue au sol à l'aéroport de "base". Utilisé pour estimer la hauteur de convection et la hauteur de base des nuages compte tenu de la température extérieur et de l'humidité relative.
+
 Forecast temperature of the ground at the home airfield, used in estimating convection height and cloud base in conjunction with outside air temperature and relative humidity probe.  
 (Touchscreen/PC only) Pressing the up/down cursor keys adjusts this forecast temperature.
 
 @851
 [AA Distance Tgt]
+Distance restante lors d'un AAT en tenant compte des points de virages "cibles" selectionnés.
+
 Assigned Area Task distance around target points for remainder of task.
 
 @852
 [AA Speed Tgt]
+Vitesse moyenne atteignable en AAT en virant les points de virage "cibles" des secteur avec le temps minimum restant disponible.
+
 Assigned Area Task average speed achievable around target points remaining in minimum AAT time.
 
 @853
 [L/D vario]
+Finesse instantanée compte tenu de la vitesse air affichée et de la vitesse verticale compensée (lorsque connecté à un vario délivrant l'info).
+Une valeur négative indique qu'on monte, "---" indique un taux de chute presque nul.
+
 Instantaneous glide ratio, given by the indicated airspeed divided by the total energy vertical speed, when connected to an intelligent variometer.  
 Negative values indicate climbing cruise. If the total energy vario speed is close to zero, the displayed value is '---'.
 
 @854
 [Airspeed TAS]
+Vitesse air réelle transmise par un dispositif externe. Si celui-ci n'est pas disponible, cette valeur est calculée en fonction du vent et de la densité de l'air à l'altitude actuelle. Dans ce cas l'intitulé sera eTAS.
+
 True Airspeed reported by a supported external intelligent vario.
 If no sensor is available, it is estimated using current wind and air density at current altitude. In this case it is entitled eTAS .
 
 @855
 [Own Team Code]
+Code de votre position actuelle. C'est le code à donner pour transmettre sa position aux autres membres de son équipe.
+
 The current Team code for this aircraft.  Use this to report to other team members. 
 
 @856
 [Team Bearing]
+Cap vers la dernière position transmise par un autre membre de l'équipe.
+
 The bearing to the team aircraft location at the last team code report. 
 
 @857
 [Team Bearing Diff]
+Ecart de route par rapport à la dernière position transmise par un membre de l'équipe.
+
 The relative bearing to the team aircraft location at the last reported team code. 
 
 @858
 [Team range]
+Distance par rapport à la dernière position transmise par un membre de l'équipe.
+
 The range to the team aircraft location at the last reported team code. 
 
 @859
 [Speed Task Instantaneous]
+Vitesse instantanée sur le circuit. Compensée par rapport à l'altitude.
+
 Instantaneous cross country speed while on current task, compensated for altitude.
 
 @860
 [Distance Home]
+Distance de l'aerodrome "base" (s'il a été défini).
+
 Distance to home waypoint (if defined).
 
 @861
 [Speed Task Achieved]
+Vitesse réalisée sur le circuit actuel. Compensée pour l'altitude. C'est souvent cette valeur qu'on utilise en premier.
+
 Achieved cross country speed while on current task, compensated for altitude.Normally this is used as first choice.
 
 @862
 [AA Delta Time]
+Différence entre le temps d'arrivée estimé et le temps mini restant. sera affiché en ROUGE si négatif: arrivée trop tôt, et en BLEU supérieure à 5 minutes.
+
 Difference between estimated task time and AAT minimum time.  Colored red if negative (expected arrival too early), or blue if in sector and can turn now with estimated arrival time greater than AAT time plus 5 minutes.
 
 @863
 [Thermal All]
+Vario moyen sur tous les thermiques.
+
 Time-average climb rate in all thermals.
+
+@864
+[Logger]
+2tat du logger (enregistreur de vol)
+Auto: démarrage automatique au décollage.
+non!: le dlogger est désactivé et doit être activé manuellement.
+ON: le logger est actif et enregistre le vol qui se déroule actuellement.
+
+Show logger status.
+auto: logger will automatically start on takeoff
+no!: logger is disabled, and need to be activated manually
+ON: logger is currently active and logging
 
 @865
 [Battery]
+Indique la charge restante de la batterie des PNA/PDA. Se termine par un C si elle se charge et par un D si elle se décharge. 
+
 On PDA and PNA systems, this gives the percent battery capacity available. If ending with a C it means that battery is under charge, if ending with a D it means that battery is discharging
 
 @866
 [Final Efficiency]
+Finesse nécessaire pour atteindre l'arrivée à l'altitude requise. Un grand classique.
+
 Efficiency required to the arrival height above the final waypoint. Classic value to use!
 
 @867
 @868
 [Alternate efficiency]
+Finesse nécessaire pour rejoindre le dégagement sélectionné. N'est pas compensé en énergie totale.
+
 Glide ratio to the arrival height above the selected alternate waypoint.  This is not adjusted for total energy.
 Over 200 nothing is shown, between 100 and 200 an integer number is shown, between 1 and 99 a decimal value is shown.
 
 @869
 [BestAlternate]
+Meilleur dégagement automatiquement choisi par LK8000.
+
 Automatic search for the best landing option available.
 
 @870
 [QFE]
+QFE automatique. Cette altitude utilise les données GPS ou baromètriques et est remise en permanace à zéro au sol avant la detection du décollage.
+Après le décollage, cette valeur n'est plus remise à zéro même après un atterrissage.
+Le QFE ne modifie pas le QNH et n'est pas utilisé pour les calculs. Il sert juste comme info pour le pilote.
+
 Automatic QFE. This altitude value is using GPS altitude or Barometric Altitude if available and if selected, and it is constantly reset to 0 on ground BEFORE taking off. 
 After takeoff, it is no more reset automatically even if on ground. 
 Changing QFE does not affect QNH altitudes. QFE is NOT used for calculations, it is only as a reference for the pilot.
 
 @871
 [Average efficiency]
+finesse moyenne: distance totale parcourue divisée par l'altitude perdue pendant la durée configurée.
+Les valeurs négatives ou supérieures à 200 sont indiquées oo (infini).
+La durée de vol pris en compte peut être configurée.
+Nous vous suggerons des valeurs comme 60, 90 ou 120 secondes. Des valeurs inférieures se rapprocheront de la finesse instantanées et des valeurs supérieures se rapprocheront de la finnesse depuis le depuis thermique.
+Notez bien que la distance prise en compte est bien la distance réellement parcourue et pas la ligne droite entre la première et la dernière position. Les zig zag et les virages sont pris en comptes.
+Cette valeur n'est pas calculée lors d'ascendances thermiques.
+
 The distance made in the configured period of time , divided by the altitude lost since then.  
 Negative values are shown as oo (infin) and indicate climbing cruise (height gain). Over 200 of LD the value is shown as oo .
 You can configure the period of averaging in the Special config menu. 
@@ -1241,20 +1457,34 @@ This value is not calculated while circling.
 
 @872
 [Next Efficiency required]
+Finesse nécessaire pour atteindre le prochain point de virage obtenue avec la distance de ce point de virage et l'altitude disponible en EN TENANT COMPTE DE L'ALTITUDE DE SECURITE; En dessous de 1 et au delà de 199 aucune valeur n'est affichée.
+C'est une pure valeur géometrique qui ne tient pas compte du vent etc..
+
 The required glide ratio to reach the next waypoint, given by the distance to next waypoint divided by the height required to arrive at the SAFETY ARRIVAL ALTITUDE.
 Over 199 and below 1 , no value is shown.
 This is a pure geometric calculation, equal to Garmin, Naviter and most of common other instruments.
 
 @873
 [Flight Level]
+Niveau de vol. le FL est exprimé en centaines de pieds.
+Cette valeur utilise l'atmosphère standard (1013,25hPa).
+Si aucune altitude baromètrique n'est disponible, c'est l'altitude GPS qui sera utilisée.
+Dans ce cas, elle sera compensée par le QNH qu'il faut indiquer dans le menu de reglage de base.
+Attention, il n'y a pas de compensation de la température donc le FL ne pourra pas être précis.
+A utiliser comme une valeur approximative.
+
 Altitude Flight Level indicator. FL is expressed in hundreds of feets. 
-This indicator uses current altitude which is NOT necessarily barometric, and in any case non necessarily calculated on the standard atmosphere.
-In other words, it is not accurate and can be wrong even of some hundreds feet!
-So use it as an approximated indicator.
-Caution, no warranty!
+This indicator uses the standard atmosphere altitude (1013.25hPa).
+If no barometric altitude is available, the GPS altitude will be used.
+In this case, it must be adjusted for QNH, by inserting the correct QNH in Basic Settings.
+
+There is no temperature compensation, so the FL might be inaccurate.
+Use it as an approximated indicator. 
 
 @874
 [Task Distance Covered]
+Distance parcourue jusqu'à maintenant sur le circuit. Il faut un départ valide pour obtenir cette valeur.
+
 Distance covered up to now, from the current task. You need a valid start to make it account!
 
 @875
@@ -1271,40 +1501,65 @@ Arrival altitude difference over alternate. Press ENTER or RETURN after selectin
 
 @878
 [Home Radial]
+Radiale depuis l'aéroport "base", s'il a été déclaré.
+
 Radial to home waypoint, if available.
 
 @879
-[Airspace Distance]
-CURRENTLY NOT AVAILABLE. Distance to the nearest Airspace. Even if airspace is not appearing on the map, disabled or acknowldged already, distance remains. 
-If 0, you are inside an airspace, use Nearest Airspace menu to know more about it.
+[Airspace Horizontal Distance]
+Distance horizontale jusqu'à l'espace aérien sélectionné. Pour sélectionner un espace aérien, aller a la page info 2.4 ASP et valider l'espace souhaité puis appuyer sur "select/sélectionner".
+Si aucun espace aérien n'a été sélectionné ou si vous êtes dans l'éspace en question, "---" sera affiché pour la distance.
+Dans le cas d'une FLYzone, c'est la distance la plus courte pour sortir de l'espace qui s'affiche.
+
+Horizontal distance to the SELECTED airspace. To SELECT an airspace go inside 2.4 airspace page and pull details,
+there is a button for selection. Once selected the airspace will be monitored for distance in this infobox.
+If no airspace is selected, OR if you are already INSIDE the airspace for this distance, --- is shown.
+In case of flyzones, the nearest distance is calculated where you can leave that flyzone.
 
 @880
 [Ext.Batt.Bank ]
+Pack de batterie externe utilisé (si disponible).
+
 External device battery bank in use, if available
 
 @881
 [Ext.Batt1.Voltage]
+Tension du pack de batterie 1, si dispo.
+
 External device battery bank 1 voltage, if available
 
 @882
 [Ext.Batt1.Voltage]
+Tension du pack de batterie 2, si dispo.
+
 External device battery bank 2 voltage, if available
 
 @883
 [Odometer]
+Distance parcourue depuis le décollage, calculé seconde par seconde même pendant les spirales. Cette valeur est remise à zéro au décollage et ne peut pas être remise à zéro d'une autre façon. la distance n'est calculée que dans le plan horizontal.
+
 The distance made since TAKEOFF, calculated each second, also while circling. This value is reset to zero at Take Off, and cannot be reset in any other way. This value is calculated just like if you were driving a car on a flat surface!
 
 @884
 [Altern QNH]
+Altitude QNH avec l'autre unitée que celle que vous utilisez: mètres si vous utilisez les pieds et inversement.
+
 QNH altitude with units inverted: if you are using meters, than it will be in feet, if you are using feet than it will be in meters. 
 
 @885
 [Altern AltAGL]
-Altitude above ground level with units inverted: if you are using meters, than it will be in feet, if you are using feet than it will be in meters.
- 
+hauteur sol dans l'autre unité que celle que vous utilisez:  mètres si vous utilisez les pieds et inversement.
 
+Altitude above ground level with units inverted: if you are using meters, than it will be in feet, if you are using feet than it will be in meters. 
+ 
 @886
 [GPS Altitude]
+Altitude donnée par le GPS. Dépend de votre GPS: peut être assez exacte ou parfois particulièrement faux.
+Si vous utilisez un GPS de voiture, cette valeur peut être particulièrement fausse en ascendance.
+Si vous ne disposez pas de données baromètriques ou que vous ne l'avez pas selectionné (config menu 5) c'est cette altitude GPS qui sera utilisée pour tous les calculs.
+L'altitude QNH peut provenir du GPS ou du baromètre.
+Normalement vous devriez toujours tenir compte de l'altitude QNH car c'est celle qui est utilisée dans les calculs.
+
 This is the altitude reported from the GPS. Depending on your GPS device it can be quite accurate or very wrong sometimes. 
 Expecially if you are using a car navigator gps, the reported altitude can be very wrong during thermalling. 
 If you have no Baro Altitude available, or you havent selected it inside config menu 5, then this GPS altitude is going to be used internally for all calculations. 
@@ -1313,65 +1568,85 @@ Normally you should use as main infobox the QNH altitude, because it will always
 
 @887
 [MacCready Equivalent]
+C'est le calage MC que vous suivez actuellement compte tenu de votre vitesse air.
+Cette valeur ne peut être modifiée, elle est calculé sur la même durée que la finesse moyenne.
+Si LK800 ne dispo pas de la vitesse air, celle si sera estimée. Voir le manuel pour plus d'info.
+
 This is the current real McCready you are using based on current average air speed. This value cannot be changed, and it is averaged on the same amount of time of AverageLD. 
 If you have no AirSpeed probe, Estimated Airspeed will be used. See the manual for more informations.
 
 @888
 @889
+Pas d'aide disponible pour cet item!
+
 No help available on this item!
 
 
 @890
 [OLC CLASSIC] distance
+distance actuelle calculée sur 5 points.
+
 Current distance calculated around 5 turnpoints. 
 
 @891
 [FAI TRIANGLE] distance
+distance maximum parcourue jusqu'à présent sur un Triangle FAI.
+
 FAI triangle maximum distance achieved so far.
 
 @892
 [OLC LEAGUE] distance
+Distance max parcourue sur trois points en 2,5 heures.
+
 Max distance calculated around 3 turnpoints, made in 2.5 hours.
 
 @893
 [FAI 3TPs] distance
+Distance actuellement parcourue sur trois points.
+
 Current distance calculated around 3 turnpoints. 
 
 @894
-[OLC CLASSIC] predicted distance
+[OLC CLASSIC] distance estimée.
+Distance parcourue sur 5 points en concidérant que le dermier point sera le point de départ.
+
 Current distance calculated around 5 turnpoints assuming the last one
 will be the starting point.
 
 @895
-[FAI TRIANGLE] predicted distance
+[FAI TRIANGLE] distance estimée.
+distance maximum parcourue jusqu'à présent sur un Triangle FAI en concidérant que le dermier point sera le point de départ.
+
 FAI triangle maximum distance achieved so far, assuming the last point
 will be the starting point.
 
 @896
-[FAI 3TPs] predicted distance
+[FAI 3TPs] distance estimée
+Distance actuellement parcourue sur trois points en concidérant que le dermier point sera le point de départ.
+
 Current distance calculated around 3 turnpoints assuming the last one
 will be the starting point.
 
 @897
-[OLC CLASSIC] speed
+[OLC CLASSIC] vitesse
 
 @898
-[FAI TRIANGLE] speed
+[FAI TRIANGLE] vitesse
 
 @899
-[OLC LEAGUE] speed
+[OLC LEAGUE] vitesse
 
 @900
-[FAI 3TPs] speed
+[FAI 3TPs] vitesse
 
 @901
-[OLC CLASSIC] predicted speed
+[OLC CLASSIC] vitesse estimée
 
 @902
-[FAI TRIANGLE] predicted speed
+[FAI TRIANGLE] vitesse estimée
 
 @903
-[FAI 3TPs] predicted speed
+[FAI 3TPs] vitesse estimée
 
 @904
 [OLC CLASSIC] score
@@ -1386,99 +1661,260 @@ will be the starting point.
 [FAI 3TPs] score
 
 @908
-[OLC CLASSIC] predicted score
+[OLC CLASSIC] score estimé
 
 @909
-[FAI TRIANGLE] predicted score
+[FAI TRIANGLE] score estimé
 
 @910
-[FAI 3TPs] predicted score
+[FAI 3TPs] score estimé
 
 @911
 [OLC PLUS] score
+Total des scores "OLC classic" et "triangle FAI"
+
 The sum of OLC Classic score and FAI triangle score.
 
 @912
-[OLC PLUS] predicted score
+[OLC PLUS] score estimé
+Total estimé des scores "OLC classic" et "triangle FAI"
+
 The sum of OLC Classic predicted score and FAI triangle predicted score.
 
+@913
+[FLAP SETTINGS]
+Affiche le réglage optimum des volets pour la vitesse actuelle en utilisant les fichiers étendus pour les polaires et la charge alaire du moment.
+Voir le fichier exemple dans le répertoire _polars.
+
+Show current optimum flap setting based on extended polar file and current wing loading.
+See the example polar file inside _Polars folder, for help on how to create an extended polar.
+
+@914
+[Airspace Vertical Distance]
+Distance verticlae jusqu'à l'espace aérien sélectionné. Pour sélectionner un espace aérien, aller à la page info 2.4 ASP et valider l'espace souhaité puis appuyer sur "select/sélectionner".
+Une valeur négative s'ignifie que l'espace est en dessous, une valeur positive qu'il est au dessus.
+Si aucun espace aérien n'a été sélectionné ou si vous êtes dans l'espace en question, "---" sera affiché pour la distance.
+Dans le cas d'une FLYzone, c'est la distance la plus courte pour sortir de l'espace qui s'affiche.
+
+Vertical distance to the SELECTED airspace. To SELECT an airspace go inside 2.4 airspace page and pull details,
+there is a button for selection. Once selected the airspace will be monitored for distance in this infobox.
+Negative values means that airspace altitude is below, positive means that is above you. (Like arrival altitudes)
+If no airspace is selected, OR if you are already INSIDE the airspace for this distance, --- is shown.
+In case of flyzones, the nearest distance is calculated where you can leave that flyzone.
+
+@915
+[Home Altitude Arrival]
+Altitude d'arrivée à votre aéroport de "base". calculé avec le MC actuel, utilise l'altitude de sécurité et le safety MC.
+
+Arrival altitude at the Home airfield. Calculated for current MC, uses safetyAlt and safetyMC.
+
+@916
+@917
+@918
+[Alternate bearing]
+Cap vers le dégagement sélectionné.
+
+Bearing to the selected alternate
+
+@919
+@920
+@921
+[Alternate distance]
+Distance vers le dégagement sélectionné.
+
+Distance to the selected alternate
+
+@922
+[Max Altitude Reached]
+Altitude maximum atteinte durant le vol. Remis à zéro au décollage.
+
+Max altitude reached during the current flight.
+It is reset at takeoff.
+
+@923
+[Max Height Gained]
+Gain d'altitude maximum. Prend comme point bas l'altitude minimum atteinte APRES le départ du vol libre.
+Cette donnée est normalement utilisée pour les badges.
+ 
+This height is calculated using the min height detected AFTER the start of free flight.
+This value is normally used for badges.
+
+@924
+[Head Wind Speed]
+C'est la composente du vent sur la route suivie.
+C'est la différence entre la vitesse air réelle et la vitesse sol.
+Une valeur positive indique du vent de face, une valeur négative du vent arrière.
+Si la vitesse air réelle n'est pas disponible, elle sera estimée.
+Dans ce cas la valeur retournée ne sera qu'approximative.
+
+This is the wind component relative to your current track.
+It is the difference between the TAS true airspeed and GS ground speed.
+A positive value indicates a HEAD WIND, and a negative value indicates a TAIL WIND.
+If true airspeed is not available, estimated TAS is used. 
+In this case the value is only guessed against the current wind set.
 
 #
 # END INFOBOXES 800 - 1199
 #
 
 @1200
-[Airspace area filling]
-Airspace area can be denoted by outlines only, pattern filling, or semi-transparent colors.
-[Outlines only] there will be only lines on airspace area borders 
-[Pattern] airspace area will be filled with selected pattern of selected color
-[Semi-Transparent] airspace area will be filled with selected solid semi-transparent color (opacity of the color can be set in 'Opacity' item) . 
-Transparency may not be available on some hardware devices.
+[Remplissage des zones aéro.]
+Les zones aériennes peuvent être représentées par leurs contours, avec un remplissage de motif ou par des plages de couleurs semi-transparentes.
+[bordure seule] Il y aura seulement les lignes sur les frontières de la zone aérienne.
+[Motif] Les zones seront remplies avec le motif et la couleur sélectionnée.
+[Motif, bordure seule] Les bordures de chaque zone seront remplies avec le motif et la couleur sélectionnée (avertissement, voir ci-dessous)
+[Semi-transparent] Les zones seront remplies avec la couleur semi-transparente sélectionnée (l'opacité de la couleur peut être réglée par le paramètre "opacité").
+[Semi-transparent, bordure seule] Les bordures de chaque zone seront remplies avec la couleur semi-transparente sélectionnée (l'opacité de la couleur peut être réglée par le paramètre "opacité") (avertissement, voir ci-dessous)
+La transparence peut ne pas être disponible sur certains périphériques.
+Le dessin des bordures de zones aériennes peut ralentir les appareils avec écran haute résolution ou un processeur lent. Utiliser avec prudence !
 
 @1201
-[Opacity of semi-transparent airspace]
-Defines how much transparent (->0%) / opaque (->100%) will be airspace area filled with solid semi-transparent color.
+[Opacité des zones aéro]
+Définit l'opacité (0% : Opaque / 100% : transparent) du remplissage semi-transparent des zones aériennes.
 
 @1202
-[Bottom Bar Opacity]
-Defines how much transparent (->0%) / opaque (->100%) will be the bottom bar area on the map .
-Normally the bar is black with white text, and can be reverted to white with black text on it.
-Setting <30% opacity the bottom bar will be very transparent, and text color will be forced reversed.
-Some combinations of opacity and reverse colors may not be suitable to navigation, but there are
-infinite combinations to choose from.
-Using 0% or 100%  (full transparency  or full opacity) will speed up the software a bit.
-Another famous 8000 instrument is using 75% opacity.
-Default is 60%.
-ATTENTION: some devices do not support opacity control. In this case, opacity has no effect
-and the bottom bar will be always full black or full white.
+[Opacité du bandeau inférieur]
+Définit l'opacité (0% : Opaque / 100% : transparent) du bandeau inférieur.
+par défaut, le bandeau inférieur est noir écrit blanc, il peut être inversé (blanc écrit noir).
+Si ce paramètre a une valeur inférieure à 30%, le bandeau devient très transparent et la couleur du texte est inversée.
+Toutes les combinaisons opacité / inversion des couleurs ne seront pas utilisables en vol, mais une infinité de combinaisons peut être utilisée.
+l'utilisation d'une valeur de 0% ou 100% peut accélérer le fonctionnement du logiciel.
+Un autre célèbre appareil utilise une opacité de 75%.
+La valeur par défaut et de 60%
+ATTENTION : certains appareils ne supportent pas la transparence.
 
 @1203
-[Font Smoothing]
-Font smoothing will make characters appearing with better quality.
-[None] will force disabling font smoothing
-[Normal] will use default quality
-[Anti Aliasing] normal quality
-[ClearType] advanced quality. 
-Please note that on some devices like old 3850 Anti Aliasing is not working. 
-On some PNAs in portrait mode, and on PPC2002, Antialiasing will work better.
-Otherwise, by default LK8000 is using ClearType.
-You must exit and restart LK8000 to see the effect of changes.
+[Lissage des polices]
+Le lissage des polices permet d'avoir des caractères de meilleure qualité.
+[Aucun] Lissage des polices désactivée.
+[Normal] Utiliser la qualité défaut.
+[Anti crénelage] Qualité standard.
+[ClearType] Qualité avancée.
+Veuillez noter que sur les appareils anciens, comme l'IPAQ 3850, l'anti crénelage n'est pas supporté.
+Sur beaucoup de PNA en mode portrait et sur PPC2002, l'anti-crénelage donne de meilleurs résultats.
+Dans les autre cas, la valeur par défaut est ClearType.
+Pour que la modification de ce paramètre soit prise en compte, vous devez redémarrer LK8000
+IMPORTANT: la configuration du lissage des polices est chargée au démarrage à partir du profil par défaut.
 
 @1204
-[VarioBar mode]
-Choose the vario value and relative bar display on the left, if enabled.
-In thermal mode, only vario can be shown.
-In cruise mode, also nettovario or Speed To Fly (Sollfart).
-If STF is selected, the desired IAS is printed, and the bar is indicating
-if you must push or pull the stick to reach that value.
-
-The value is printed with a suffix letter indicating:
-NT for netto
-SF for STF
+[Mode Vario]
+Permet de choisir la valeur affichée par la barre de Vario à droite de l'écran si elle est active.
+En spirale, la valeur affichée sera toujours le Vario.
+En transition, Vario Netto ou Vitesse de vol (STF) peuvent être utilisés.
+Si vous sélectionnez vitesse de vol, l'IAS désiré est affiché et la barre indique si vous devez pousser ou tirer le manche pour atteindre cette vitesse.
 
 @1205
-[Aircraft category]
-Select your aircraft type here, and possibly change the polar file also accordingly.
-Each aircraft mode has unique features, please visit the website or read the latest
-manual to discover differences.
-After changing category, you must restart LK in order to notice all differences.
+[Catégorie d'aéronef]
+Sélectionner le type d'aéronef, et éventuellement la polaire correspondante.
+Chaque type d'aéronef possède des paramètres spécifiques, se reporter au site web ou au dernier manuel pour connaître ses différences.
+Après avoir modifier le type d'aéronef, vous devez redémarrer LK8000 pour que ses fonctions spécifiques soient disponibles.
 
-@1206
-[Aircraft type]
-This contains a selection of aircrafts and wings of different performance classes.
-If you want to use your own polar file, choose Custom Polar File here 
-and then select it from the next configuration box.
+# 1206 OBSOLETED BY 1208 in 2.3
+#@1206
+#[Aircraft type]
+#This contains a selection of aircrafts and wings of different performance classes.
+#If you want to use your own polar file, choose Custom Polar File here
+#and then select it from the next configuration box.
 
-@1207
-[Custom polar file]
-When Custom Polar File is the polar type, this is the name of the file containing the glide polar data.
-Polars must be placed inside _Polars subfolder.
-Creating a polar file is not trivial, because you need actual sink rate values and a precise
-aircraft weight. Read the manual to know more about all of this. 
+# 1207 UNUSED in 2.3
+#@1207
+#[Custom polar file]
+#When Custom Polar File is the polar type, this is the name of the file containing the glide polar data.
+#Polars must be placed inside _Polars subfolder.
+#Creating a polar file is not trivial, because you need actual sink rate values and a precise
+#aircraft weight. Read the manual to know more about all of this.
 
+
+@1208
+[Type d'aéronef]
+Contient une sélection d'aéronefs et d'ailes dans différentes classes de performances.
+
+@1209
+[Délai répétition des messages de zones aéro]
+Correspond au temps pendant lequel les messages de zones aéro sont répétés s'ils ne sont pas acquittés.
+Si vous volez dans une zone interdite sans acquitter le message d'alerte, ce paramètre définit le temps après lequel le message d'alerte sera de nouveau affiché.
+ 
+@1210
+[Marge verticale]
+Si la distance verticale à la limite haute ou basse d'une zone aérienne est inférieur à cette limite, alors le message d'avertissement jaune apparaît. Dans le même temps sur la carte, une icône d'avertissement apparaît au dessus du planeur pour vous avertir.
+
+@1211
+[Délai attente des message]
+Délai après lequel les messages d'alertes de zones aériennes seront fermés automatiquement.
+Dans le message un compte a rebours apparaît sur le bouton fermer, il affiche le temps restant avant sa fermeture.
+
+@1212
+[Étiquettes de zone aérienne]
+Si ce paramètre est activé, une étiquette contenant le nom de la zone et la distance verticale apparaitra sur la carte.
+
+@1213
+[Seuil Zoom Auto]
+Lorsque vous utilisez le zoom automatique en mode "Parapente", quand la distance au point de virage suivant est inférieure à cette limite, le niveau de zoom est ajusté automatiquement pour maintenir ce point de virage à l'intérieur de l'écran. Une fois le point de virage validé, le niveau de zoom est automatiquement restauré au niveau de zoom du mode transition.
+
+@1220
+[bandeau inférieur]
+Active ou désactive chacun des bandeaux inférieurs.
+Si tous les bandeaux sont désactivés, NAV1 sera toujours automatiquement affiché en transition et THR0 sera toujours automatiquement affiché en spirale.
+
+@1221
+[InfoPages rotation configuration]
+Active ou désactive chacune des pages d'information.
+Si tous les éléments dans une page sont désactivés, alors cette page sera ignorée.
+Une page désactivée pourra toujours être accessible à l'aide des touches personnalisées.
+Attention : la page d'info "1.5 Épreuve" sera toujours désactivée si le type d'aéronef n'est pas un planeur (Parapente, Delta et Avions).
+Seront également désactivés tous les calculs d'épreuve lorsque 1.5 est désactivé.
+Si vous utilisez le mode planeur, même si la page 1.5 est désactivée, les calculs seront toujours effectués.
+
+@1250
+Contrôle le filtrage des zones aériennes pour l'affichage et les alertes. Le bouton filtre des zones aériennes permet également le filtrage de l'affichage et des alertes de façon indépendante pour chaque classe de zones.
+[Tous] Toutes les zones aériennes sont affichées.
+[Plafonné] Seulement les zones aériennes en dessous d'un plafond.
+[Auto] Toutes dans la marge verticale par apport à votre position.
+[Tous dessous] Toutes les zones en dessous de vous et au dessus de la marge verticale.
+
+@1251
+Marge Verticale utilisée pour déterminer quelles sont les zones aériennes à afficher sur la carte lorsque vous utilisez les modes de filtrage "auto" ou "tous dessous".
+En mode "auto", sont affichées toute les zones en dessous et en dessus de cette limite par rapport à votre altitude.
+En mode "tous dessous", sont affichées toute les zones au dessus de cette Altitude au dessus de vous et toutes les zones en dessous de vous.
+
+@1252
+Même si vous avez acquitté une zone, celle-ci redeviendra "Active" après ce délai, les alertes seront alors de nouveau affichées.
+Cela peut, par exemple, être utile sur le trajet du retour lorsque que vous croisez des zones que vous avez acquittées à l'aller.
+Par défaut, ce délai est fixé à 15 minutes.
+
+
+@1253
+[Alerte Altitude Max]
+Une alerte sera déclenchée chaque fois que cette altitude sera dépassée.
+Le délai minimum entre deux alertes est de 1 minutes.
+Pour désactiver ces alertes, mettre cette valeur à 0.
+L'altitude utilisée pour ces alertes est celle qui correspond au paramètre "Utiliser Alti Baro" de la page de configuration n°5.
+Plusieurs alertes définies à la même altitude n'auront aucun effet.
+Les pilotes de planeurs doivent veiller à ne pas configurer d'alertes en dessous d'une altitude de sécurité pendant les phases critiques du vol.
+Chaque Alerte peut être répétée 30 fois. Après ce nombre, l'alerte sera automatiquement désactivée pour le reste du vol.
+Les Alertes visuelles disparaissent automatiquement après 12 secondes.
+Chaque Alerte utilise un son différent, lequel peut être changé en remplacent les fichiers LK_ALARM_ALTx.WAV dans le dossiers _System\_Sounds.
+Par défaut, toutes ces alertes sont à 0 (désactivés).
+
+# ex 195
+@1254
+L'indicateur d'Arrivée peut être relatif à la fin du circuit, au point de virage suivant ou désactivé.
+Cet indicateur est dessiné à gauche de l'écran.
+
+@1255
+Le MacCready automatique peut être activé ou désactivé, il peut aussi être activé ou désactivé en cours de vol.
+
+@1256
+[Énergie Totale]
+Lorsque le mode énergie totale est activé, LK calcule votre gain d'altitude en estimant la hauteur que vous pouvez atteindre si vous tirez sur le manche jusqu’à atteindre la vitesse de finesse maximum.
+Le gain d'altitude ainsi calculé sera automatiquement ajouté à toutes les altitudes d'arrivée. Par défaut, cette fonctionnalité est désactivée pour des raisons de sécurité.
+Si vous avez un doute, laissez ce paramètre désactivée.
+
+@1257
+[Efficiency]
+La valeur de ce paramètre dépend de l’état de surface de votre planeur. Lorsque celui-ci est propre, réglez cette valeur à 100%, réduisez cette valeur lorsque les ailes sont piquées d'insectes ou mouillées. Une valeur de 50% indique que le taux de chute de votre planeur est doublé.
+Ce paramètre est utilisé comme valeur par défaut dans les paramètres de base qui sont chargés au démarrage.
+Vous devriez normalement laisser cette valeur à 100%.
 
 @9999
-No help available on this item!
-
-
-
+Aucune aide disponible pour ce paramètre !
