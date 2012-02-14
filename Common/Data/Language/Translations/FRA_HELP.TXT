@@ -125,7 +125,7 @@ En "Nord dynamique", il n'est pas possible de repositionner l'icône du planeur 
 @126
 Lorsque le zoom sera égal ou plus large que cette valeur, la carte sera affichée avec le nord en haut. 
 En dessous, le réglage choisit est utilisé. 
-Régler une valeur très élevée conduit à ne jamais utiliser cette fonction. La valeur par défaut est de 10
+Régler une valeur très élevée conduit à ne jamais utiliser cette fonction. La valeur par défaut est de 7
 
 @127
 Auto-zoom change le niveau de zoom au fur et à mesure qu'on s'approche du prochain point de virage.
@@ -441,10 +441,13 @@ La route actuelle ne s'affichera pas aux zooms trop larges.
 
 @199
 Active l'affichage sur la carte des trafics détectés par le Flarm.
-[OFF] désactivé, aucun trafic affiché.
-[ON/Fixe] Les appareils détectés sont affichés à leur emplacement réel sur la carte.
-[ON/Ajusté]  Les appareils détectés sont affichés dans une position qui est ajustée pour toujours être visible, même à un zoom large.
-Le mode ajusté est déconcertant car les FLARMS détectés apparaissent autour de votre planeur mais pas à leur position réelle. En cas de doute, utiliser le mode fixe.
+[Désactivé] aucun planeur capté par la FLARM ne sera affiché.
+[Activé] Les planeurs reçus par le FLARM seront affichés sur la carte à leur position exacte.
+
+> This enables the display of FLARM traffic on the map window
+> [Disabled] No Flarm objects will be shown on map
+> [Enabled] Flarm object will appear on the map in their real position
+
 
 @200
 Détermine comment le point de virage visé passe au suivant en circuit. 
@@ -686,8 +689,8 @@ Voir le manuel pour les différents choix.  Rien par défaut.
 
 @407
 Cette touche est accessible par un appui long au centre de la carte (à peut près au centre de l'écran).
-Si le mode "active map" est actif, cette toucheva parfois afficher les détails de l'éspace aérien "cliqué".
-Voir le manuel pour les diférentes combinaisons.
+Si le mode "active map" est actif, cette touche va parfois afficher les détails de l'espace aérien "cliqué".
+Voir le manuel pour les différentes combinaisons.
 la fonction par défaut est: "où suis-je?"
 
 This key is obtained by long clicking in the center of the map (basically screen center).
@@ -970,9 +973,9 @@ Negative convergence (divergence) produces subsiding vertical motion, creating l
 
 @800
 [Altitude QNH]
-C'est l'altitude au dessus du niveau moyen de la mer envoyée par le GPS ou le capteur baromètrique (si celle est disponible et qu'elle a été sélectionnée comme source).
-C'est cette altitude que LK8000 va utilser pour tous ses calculs. Les infobox "altitude GPS" et "altitude baro" sont disponibles et une des ces deux valeurs est utilsée comme altitude QNH.
-IL FAUT UTILISER CETTE ALTITUDE COMME REFERANCE puisque c'est celle qui est utilisée par LK8000.
+C'est l'altitude au dessus du niveau moyen de la mer envoyée par le GPS ou le capteur barométrique (si celle est disponible et qu'elle a été sélectionnée comme source).
+C'est cette altitude que LK8000 va utiliser pour tous ses calculs. Les infobox "altitude GPS" et "altitude baro" sont disponibles et une des ces deux valeurs est utilisée comme altitude QNH.
+IL FAUT UTILISER CETTE ALTITUDE COMME REFERENCE puisque c'est celle qui est utilisée par LK8000.
 En mode simulation, cette valeur est ajustable avec les flèches haut/bas, les flèches droite/gauche faisant tourner le planeur.
 
 This is the height above mean sea level reported by the GPS or by the Baro sensor (if pressure altitude is available and if it is selected to be used). 
@@ -987,25 +990,25 @@ Hauteur (par rapport au sol): c'est votre altitude AMSL/QNH moins l'altitude du 
 This is the navigation altitude minus the terrain height obtained from the terrain file.
 
 @802
-[Thermal last 30 sec]
+[Therm dern 30 sec]
 Taux de montée pendant les 30 dernières secondes, basé sur les altitudes reçues ou le vario si celui est disponible.
 
 Climb rate during last 30 seconds, based of the reported GPS altitude, or vario if available.
 
 @803
-[Bearing]
+[Cap]
 Cap vrai du prochain waypoint. Pour les AAT c'est le cap du point de virages "cible".
 
 True bearing of the next waypoint.  For AAT tasks, this is the true bearing to the target within the AAT sector.
 
 @804
-[L/D 20\" ]
+[Fin.dernière 20 sec ]
 Finesse instantanée calculée sur les 20 dernières secondes ( calculée avec la vitesse sol et la vitesse verticale). Une valeur négative indique qu'on monte. "---" indique une valeur proche de zero.
 
 Instantaneous glide ratio, given by the ground speed divided by the vertical speed (GPS speed) over the last 20 seconds.  Negative values indicate climbing cruise. If the vertical speed is close to zero, the displayed value is '---'.
 
 @805
-[L/D Th]
+[F.Transition depuis dernier thermique]
 Finesse depuis la dernière ascendance EN VOL DIRECT. C'est la distance en ligne droite depuis le sommet de la dernière ascendance divisée par la perte d'altitude. Attention, ce n'est donc pas votre finesse réelle: elle va fortement diminuer si vous faites de zigzag ou demi-tour.
 Une valeur négative indique une montée et "---" une vitesse verticale moyenne presque nulle.
 
@@ -1015,30 +1018,31 @@ If the vertical speed is close to zero, the displayed value is '---'.
 Attention: doing zig zag or turning back will result in wrong values! Use L/D Average instead.
 
 @806
-[Speed ground]
+[Vitesse Sol]
 Vitesse sol mesurée par le GPS. Si cette infobx est active en mode simulation, les touches haut/bas vont la modifier, les touches droite/gauche fnt tourner le planeur.
 
 Ground speed measured by the GPS.  If this infobox is active in simulation mode, pressing the up and down arrows adjusts the speed, and left and right turn the glider.
 
 @807
-[Last Thermal Average]
+[Therm Moyenne du dernier]
 Ascendance moyenne de la dernière ascendance thermique: gain total d'altitude (ou perte!) divisée par le temps passé à enrouler la pompe.
 
 Total altitude gain/loss in the last thermal divided by the time spent circling.
 
 @808
-[Last Thermal Gain]
+[Therm Gain du dernier]
 Gain total d'altitude (ou perte!) de la dernière ascendance thermique.
 
 Total altitude gain/loss in the last thermal.
 
 @809
-[Last Thermal Time]
+[Therm Durée du Dernier]
 Temps total passé dans la dernière ascendance thermique.
+
 Time spent circling in the last thermal.
 
 @810
-[MacCready Setting]
+[Calage MacCready]
 Calage MacCready actuel. cette infobox indique aussi si le règlage est manuel ou automatique.
 en mode simulation: si l'infobox MC est active, on peut la modifier avec les flèches haut/bas.
 
@@ -1046,50 +1050,50 @@ The current MacCready setting.  This infobox also shows whether MacCready is man
 (Touchscreen/PC only) Also used to adjust the MacCready Setting if the infobox is active, by using the up/down cursor keys.
 
 @811
-[Next Distance]
+[Distance prochain Pt]
 Distance jusqu'au waypoint actuellement sélectionné. Pour les AAT, c'est la distance jusqu'à la cible désigné dans le prochain secteur. 
 
 The distance to the currently selected waypoint. For AAT tasks, this is the distance to the target within the AAT sector.
 
 @812
-[Next Altitude Arrival]
+[Alt. Arrivée prochain point]
 Hauteur (sol) d'arrivé au prochain waypoint, calculé pour le MC actuel: attention: il ne tient pas compte du MC de sécurité et de l'altitude mini de sécurité si ce n'est pas un point attérrissable (sauf si vous avez configuré le contraire pour l'altitude de sécurité).
 
 Arrival altitude at the next waypoint altitude, calculated for current MC, does NOT use safetyMC and does not use safety altitude if it is not a landing point, unless configured to do so.
 
 @813
-[Next Altitude Required]
+[Alt. requise prochain point]
 Altitude nécessaire pour atteindre le prochain waypoint en volant au MC actuel.
 
 Altitude required to reach the next turn point, with current MC.
 
 @814
-[Next Waypoint]
+[Pt de vir Suivant]
 Nom du waypoint actuellement sélectionné.
 
 The name of the currently selected turn point.  When this infobox is active, using the up/down cursor keys selects the next/previous waypoint in the task.  
 (Touchscreen/PC only) Pressing the enter cursor key brings up the waypoint details.
 
 @815
-[Final Altitude Arrival]
+[Circuit: Alt.d'arrivé]
 Hauteur d'arrivé au dernier waypoint du circuit (l'arrivé) en tenant compte de l'altitude de sécurité.
 
 Arrival altitude at the final task turn point relative to the safety arrival altitude.
 
 @816
-[Final Altitude Required]
+[Circuit: Alt.d'arrivé Requise]
 Altitude nécessaire pour boucler le circuit.
 
 Altitude required to finish the task.
 
 @817
-[Speed Task Average]
+[Circuit: Vitesse moyenne]
 Vitesse moyenne sur le circuit actuel compensée en fonction de l'altitude.
 
 Average cross country speed while on current task, compensated for altitude.
 
 @818
-[Final Distance]
+[Circuit: Distance]
 Distance du circuit restant à parcourir jusqu'à l'arrivée. 
 
 Distance to finish around remaining turn points.
@@ -1103,26 +1107,26 @@ Do NOT use this value, it's here only for compatibility issue with old versions.
 Use Final EFF instead.
 
 @820
-[Terrain Elevation]
+[Elévation Terrain]
 C'est l'altitude du sol à votre verticale. C'est l'altitude contenue dans votre fichier "relief" à votre emplavement GPS actuel. 
 
 This is the elevation of the terrain above mean sea level, obtained from the terrain file at the current GPS location.
 
 @821
-[Thermal Average]
+[Thermique Moyenne]
 C'est le vario moyen de l'ascendance actuelle.
 Altitude gagnée/perdue dans l'ascendance thermique actuelle divisée par le temps passé à enrouler.
 
 Altitude gained/lost in the current thermal, divided by time spent thermaling.
 
 @822
-[Thermal Gain]
+[Thermique Gain]
 C'est l'atitude gagnée (ou perdue!) dans l'ascendance actuelle.
 
 The altitude gained/lost in the current thermal.
 
 @823
-[Track]
+[Route]
 votre route (donnée par le GPS). C'est le cap effectivement suivit par le planeur. Il est différent du cap affiché au compas.
 
 Magnetic track reported by the GPS.  (Touchscreen/PC only) If this infobox is active in simulation mode, pressing the up and down  arrows adjusts the track.
@@ -1134,19 +1138,19 @@ Vitesse verticale instantanée transmise par le GPS (ou par le vario à energie 
 Instantaneous vertical speed, as reported by the GPS, or the intelligent vario total energy vario value if connected to one.
 
 @825
-[Wind Speed]
+[Vent: vitesse]
 Vitesse estimée du vent (via "TrueWind" ou la dérive en ascendance).
 
 Wind speed estimated by LK8000 with TrueWind or while circling . 
 
 @826
-[Wind Bearing]
+[Vent: direction]
 Cap estimé du vent via "TrueWind" ou la dérive en ascendance).
 
 Wind bearing estimated by LK8000, either with TrueWind or while circling. 
 
 @827
-[AA Time]
+[AA Temps restant]
 Temps restant lors d'une AAT, la valeur devient ROUGE si le temps est dépassé.
 
 Assigned Area Task time remaining.  Goes red when time remaining has expired.
@@ -1159,25 +1163,25 @@ Assigned Area Task maximum distance possible for remainder of task.
 
 @829
 [AA Distance Min]
-Distance minimum restant à parcourir lors d'uine AAT.
+Distance minimum restant à parcourir lors d'une AAT.
 
 Assigned Area Task minimum
  distance possible for remainder of task.
 
 @830
-[AA Speed Max]
+[AA Vitesse Max]
 Vitesse  moyenne maximum possible lors d'une AAT si on parcourt la distance maximum restante avec le temps minimum.
 
 Assigned Area Task average speed achievable if flying maximum possible distance remaining in minimum AAT time.
 
 @831
-[AA Speed Min]
+[AA Vitesse Mini]
 Vitesse moyenne mini possible lors d'une AAT si on parcourt la distance minimum restante avec le temps minimum.
 
 Assigned Area Task average speed achievable if flying minimum possible distance remaining in minimum AAT time.
 
 @832
-[Airspeed IAS]
+[Vitesse air IAS]
 Vitesse air "indiqué" transmise par un instrument extèrieur.
 Si aucun instrument n'est branché, cette vitesse est estimée en temps compte du vent et de la densité de l'air à l'altitude actuelle. Dans ce cas elle est affichée "eIAS".
 
@@ -1185,7 +1189,7 @@ Indicated Airspeed reported by a supported external intelligent vario.
 If no sensor is available, it is estimated using current wind and air density at current altitude. In this case it is entitled eIAS .
 
 @833
-[Barometric Altitude]
+[Altitude Barométrique]
 C'est l'altitude Baromètrique transmise par un GPS équipé d'une capsule baromètrique ou par un autre instrument donnant cette information.
 C'est cette altitude qui sera affiché comme QNH si vous sélectionnez "utiliser altitude baromètrique" dans le menu 5 de la configation système.
 De même c'est altitude qui sera utilsée pour tous les calculs internes si elle est sélectionnée
@@ -1194,24 +1198,24 @@ This is the barometric altitude obtained from a GPS equipped with pressure senso
 If you have selected Use Baro Altitude in system config menu 5, then this altitude is also shown as QNH altitude, and used internally for all calculations. 
 
 @834
-[Speed MacReady]
+[Vitesse MacReady]
 The MacCready equivalent speed. This is NOT the Speed to Fly as intended for Dolphin or Sollfahr speed. 
 
 @835
-[Percentage climb]
+[Pourcentage montée]
 Pourcentage du temps passé à enrouler. C'est valeur est remise à zéro à chaque nouveau départ.
 
 Percentage of time spent in climb mode.  These statistics are reset upon starting the task.
 
 @836
-[Time of flight]
+[Temps de Vol]
 Temps passé depuis que le décollage a été détecté.
 
 Time elapsed since takeoff was detected.
 
 @837
-[G load]
-Nombre de G percu. Info transmise par un appareil externe. Cette valeur peut être négative lorsqu'on pousse sur le manche.
+[G Accélération]
+Facteur de charge: Nombre de G percu. Info transmise par un appareil externe. Cette valeur peut être négative lorsqu'on pousse sur le manche.
 
 Magnitude of G loading reported by a supported external intelligent vario.  This value is negative for pitch-down manoeuvres.
 
@@ -1224,31 +1228,31 @@ The Bearing to the current selected multitarget.
 Currently this is NOT available.
 
 @839
-[Time local]
+[Heure locale]
 Heure locale: transmise via le GPS et convertie en fonction du fuseau horaire.
 
 GPS time expressed in local time zone.
 
 @840
-[Time UTC]
+[Heure UTC]
 Heure TU transmise par le GPS.
 
 GPS time expressed in UTC.
 
 @841
-[Task Time To Go]
+[Temps pour finir le circuit]
 Temps estimé pour finir le circuit. Se base sur les performance idéales de croisière et de montée compte tenu du MC affiché.
 
 Estimated time required to complete task, assuming performance of ideal MacCready cruise/climb cycle.
 
 @842
-[Next Time To Go]
+[Temps pour le Point Suivant]
 Temps estimé pour atteindre le prochain waypoint. Se base sur les performance idéales de croisière et de montée compte tenu du MC affiché.
 
 Estimated time required to reach next waypoint, assuming performance of ideal MacCready cruise/climb cycle.
 
 @843
-[Speed To Fly, or Speed Dolphin or Sollfarh]
+[Vitesse de vol]
 Vitesse de vol optimum compte tenu du calage actuel du MC et du vario netto (calculé).
 En transition la vitesse est calculée pour un trajectoire globale à altitude constente.
 En finale la vitesse est calculée pour une trajectoire globale descendante pour atteindre l'arrivée. 
@@ -1260,7 +1264,7 @@ In final glide mode, this speed-to-fly is calculated for descent.
 In climb mode, this switches to the speed for minimum sink at the current load factor (if an accelerometer is connected).
 
 @844
-[Netto Vario]
+[Vario Netto]
 Vario instantané de la masse d'air: égal au taux de chute instantané moins taux de chute propre du planeur.
 Fonctione mieux si la vitesse air, un accélèromètre et un vario sont connectés; Sinon les calculs se feront à partir de la vitesse GPS (sol) et de l'astimation du vent.
 
@@ -1268,19 +1272,19 @@ Instantaneous vertical speed of air-mass, equal to vario value less the glider's
 Best used if airspeed, accelerometers and vario are connected, otherwise calculations are based on GPS measurements and wind estimates.
 
 @845
-[Task Arrival Time]
+[Heure d'arrivée Circuit]
 Heure d'arrivée estimée du circuit, en se basant des vitesses de croisière et des taux de monté optimum compte tenu du MC sélectionné.
 
 Estimated arrival local time at task completion, assuming performance of ideal MacCready cruise/climb cycle.
 
 @846
-[Next Arrival Time]
+[Heure d'arrivée point suivant]
 Heure d'arrive estimée au prochain waypoint, en se basant des vitesses de croisière et des taux de monté optimum compte tenu du MC sélectionné.
 
 Estimated arrival local time at next waypoint, assuming performance of ideal MacCready cruise/climb cycle.
 
 @847
-[Bearing Difference]
+[Différence de cap]
 Différence de cap entre la route actuellement suivie et la route à suivre pour atteindre le procahin waypoint (ou la cible du secteur pour les AAT).
 La navigation GPS indique la route suivie par rapport au sol. Celle-ci est différente du cap affiché par le planeur à cause de la dérive due au vent.
 Les flèches indiquent le sens dans lequel il faut corriger la trajectoire ainsi que la différence de route.
@@ -1292,32 +1296,32 @@ Chevrons point to the direction the glider needs to alter course to correct the 
 This bearing takes into account the curvature of the Earth.
 
 @848
-[Outside Air Temperature]
+[Temperature Air extérieur]
 Températue extérieure mesurée par une sonde si elle est diponible.
 
 Outside air temperature measured by a probe if supported by a connected intelligent variometer.
 
 @849
-[Relative Humidity]
+[Humidité Relative]
 Humidité relative de l'air, mesurée par une sonde si elle est diponible.
 
 Relative humidity of the air in percent as measured by a probe if supported by a connected intelligent variometer.
 
 @850
-[Forecast Temperature]
+[Température Prévue]
 Température prévue au sol à l'aéroport de "base". Utilisé pour estimer la hauteur de convection et la hauteur de base des nuages compte tenu de la température extérieur et de l'humidité relative.
 
 Forecast temperature of the ground at the home airfield, used in estimating convection height and cloud base in conjunction with outside air temperature and relative humidity probe.  
 (Touchscreen/PC only) Pressing the up/down cursor keys adjusts this forecast temperature.
 
 @851
-[AA Distance Tgt]
+[AA Distance prévue]
 Distance restante lors d'un AAT en tenant compte des points de virages "cibles" selectionnés.
 
 Assigned Area Task distance around target points for remainder of task.
 
 @852
-[AA Speed Tgt]
+[AA Vitesse prévue]
 Vitesse moyenne atteignable en AAT en virant les points de virage "cibles" des secteur avec le temps minimum restant disponible.
 
 Assigned Area Task average speed achievable around target points remaining in minimum AAT time.
@@ -1331,62 +1335,62 @@ Instantaneous glide ratio, given by the indicated airspeed divided by the total 
 Negative values indicate climbing cruise. If the total energy vario speed is close to zero, the displayed value is '---'.
 
 @854
-[Airspeed TAS]
+[Vitesse air TAS]
 Vitesse air réelle transmise par un dispositif externe. Si celui-ci n'est pas disponible, cette valeur est calculée en fonction du vent et de la densité de l'air à l'altitude actuelle. Dans ce cas l'intitulé sera eTAS.
 
 True Airspeed reported by a supported external intelligent vario.
 If no sensor is available, it is estimated using current wind and air density at current altitude. In this case it is entitled eTAS .
 
 @855
-[Own Team Code]
+[Code équipes]
 Code de votre position actuelle. C'est le code à donner pour transmettre sa position aux autres membres de son équipe.
 
 The current Team code for this aircraft.  Use this to report to other team members. 
 
 @856
-[Team Bearing]
+[Cap équipes]
 Cap vers la dernière position transmise par un autre membre de l'équipe.
 
 The bearing to the team aircraft location at the last team code report. 
 
 @857
-[Team Bearing Diff]
+[Ecart de cap équipes]
 Ecart de route par rapport à la dernière position transmise par un membre de l'équipe.
 
 The relative bearing to the team aircraft location at the last reported team code. 
 
 @858
-[Team range]
+[Distance Equipe]
 Distance par rapport à la dernière position transmise par un membre de l'équipe.
 
 The range to the team aircraft location at the last reported team code. 
 
 @859
-[Speed Task Instantaneous]
+[Circuit : Vitesse instantanée]
 Vitesse instantanée sur le circuit. Compensée par rapport à l'altitude.
 
 Instantaneous cross country speed while on current task, compensated for altitude.
 
 @860
-[Distance Home]
+[Base: Distance]
 Distance de l'aerodrome "base" (s'il a été défini).
 
 Distance to home waypoint (if defined).
 
 @861
-[Speed Task Achieved]
+[Circuit : Vitesse]
 Vitesse réalisée sur le circuit actuel. Compensée pour l'altitude. C'est souvent cette valeur qu'on utilise en premier.
 
 Achieved cross country speed while on current task, compensated for altitude.Normally this is used as first choice.
 
 @862
-[AA Delta Time]
+[AA Différence de temps]
 Différence entre le temps d'arrivée estimé et le temps mini restant. sera affiché en ROUGE si négatif: arrivée trop tôt, et en BLEU supérieure à 5 minutes.
 
 Difference between estimated task time and AAT minimum time.  Colored red if negative (expected arrival too early), or blue if in sector and can turn now with estimated arrival time greater than AAT time plus 5 minutes.
 
 @863
-[Thermal All]
+[Thermique : Tous]
 Vario moyen sur tous les thermiques.
 
 Time-average climb rate in all thermals.
@@ -1404,20 +1408,20 @@ no!: logger is disabled, and need to be activated manually
 ON: logger is currently active and logging
 
 @865
-[Battery]
+[Batterie: pourcentage]
 Indique la charge restante de la batterie des PNA/PDA. Se termine par un C si elle se charge et par un D si elle se décharge. 
 
 On PDA and PNA systems, this gives the percent battery capacity available. If ending with a C it means that battery is under charge, if ending with a D it means that battery is discharging
 
 @866
-[Final Efficiency]
+[Circuit Finesse requise]
 Finesse nécessaire pour atteindre l'arrivée à l'altitude requise. Un grand classique.
 
 Efficiency required to the arrival height above the final waypoint. Classic value to use!
 
 @867
 @868
-[Alternate efficiency]
+[Alternative: Finesse requise]
 Finesse nécessaire pour rejoindre le dégagement sélectionné. N'est pas compensé en énergie totale.
 
 Glide ratio to the arrival height above the selected alternate waypoint.  This is not adjusted for total energy.
@@ -1430,7 +1434,7 @@ Meilleur dégagement automatiquement choisi par LK8000.
 Automatic search for the best landing option available.
 
 @870
-[QFE]
+[Altitude QFE]
 QFE automatique. Cette altitude utilise les données GPS ou baromètriques et est remise en permanace à zéro au sol avant la detection du décollage.
 Après le décollage, cette valeur n'est plus remise à zéro même après un atterrissage.
 Le QFE ne modifie pas le QNH et n'est pas utilisé pour les calculs. Il sert juste comme info pour le pilote.
@@ -1440,12 +1444,13 @@ After takeoff, it is no more reset automatically even if on ground.
 Changing QFE does not affect QNH altitudes. QFE is NOT used for calculations, it is only as a reference for the pilot.
 
 @871
-[Average efficiency]
+[Finesse Moyenne]
 finesse moyenne: distance totale parcourue divisée par l'altitude perdue pendant la durée configurée.
 Les valeurs négatives ou supérieures à 200 sont indiquées oo (infini).
 La durée de vol pris en compte peut être configurée.
 Nous vous suggerons des valeurs comme 60, 90 ou 120 secondes. Des valeurs inférieures se rapprocheront de la finesse instantanées et des valeurs supérieures se rapprocheront de la finnesse depuis le depuis thermique.
 Notez bien que la distance prise en compte est bien la distance réellement parcourue et pas la ligne droite entre la première et la dernière position. Les zig zag et les virages sont pris en comptes.
+
 Cette valeur n'est pas calculée lors d'ascendances thermiques.
 
 The distance made in the configured period of time , divided by the altitude lost since then.  
@@ -1456,7 +1461,7 @@ Notice that the distance is NOT the straight line between you old and current po
 This value is not calculated while circling. 
 
 @872
-[Next Efficiency required]
+[Pt Suivant: Finesse requise]
 Finesse nécessaire pour atteindre le prochain point de virage obtenue avec la distance de ce point de virage et l'altitude disponible en EN TENANT COMPTE DE L'ALTITUDE DE SECURITE; En dessous de 1 et au delà de 199 aucune valeur n'est affichée.
 C'est une pure valeur géometrique qui ne tient pas compte du vent etc..
 
@@ -1465,7 +1470,7 @@ Over 199 and below 1 , no value is shown.
 This is a pure geometric calculation, equal to Garmin, Naviter and most of common other instruments.
 
 @873
-[Flight Level]
+[Niveau de vol]
 Niveau de vol. le FL est exprimé en centaines de pieds.
 Cette valeur utilise l'atmosphère standard (1013,25hPa).
 Si aucune altitude baromètrique n'est disponible, c'est l'altitude GPS qui sera utilisée.
@@ -1477,37 +1482,42 @@ Altitude Flight Level indicator. FL is expressed in hundreds of feets.
 This indicator uses the standard atmosphere altitude (1013.25hPa).
 If no barometric altitude is available, the GPS altitude will be used.
 In this case, it must be adjusted for QNH, by inserting the correct QNH in Basic Settings.
-
 There is no temperature compensation, so the FL might be inaccurate.
 Use it as an approximated indicator. 
 
 @874
-[Task Distance Covered]
+[Circuit: distance couverte]
 Distance parcourue jusqu'à maintenant sur le circuit. Il faut un départ valide pour obtenir cette valeur.
 
 Distance covered up to now, from the current task. You need a valid start to make it account!
 
 @875
-[Alternate arrival]
+[Alternative: Altitude d'arrivée]
+Altitude d'arrivée au dessus du dégagement/de l'alternative sélectionné(e). 
+
 Arrival altitude difference over alternate. Press ENTER or RETURN after selecting the infobox in order to pull up its relative waypoint menu.
 
 @876
-[Alternate arrival]
+[Dégagement: ALtitude d'arrivée]
+Altitude d'arrivée au dessus du dégagement sélectionné.
+
 Arrival altitude difference over alternate. Press ENTER or RETURN after selecting the infobox in order to pull up its relative waypoint menu.
 
 @877
-[Alternate arrival]
+[Alternative: Alti d'arrivée]
+Altitude d'arrivée sur la zone de dégagement sélectionné.
+
 Arrival altitude difference over alternate. Press ENTER or RETURN after selecting the infobox in order to pull up its relative waypoint menu.
 
 @878
-[Home Radial]
-Radiale depuis l'aéroport "base", s'il a été déclaré.
+[Base: Radiale]
+Radiale depuis l'aéroport de "base", s'il a été déclaré.
 
 Radial to home waypoint, if available.
 
 @879
-[Airspace Horizontal Distance]
-Distance horizontale jusqu'à l'espace aérien sélectionné. Pour sélectionner un espace aérien, aller a la page info 2.4 ASP et valider l'espace souhaité puis appuyer sur "select/sélectionner".
+[Zone Aéro: Dist Horizontale]
+Distance horizontale jusqu'à l'espace aérien sélectionné. Pour sélectionner un espace aérien, aller a la page info 2.4 Z.AER et valider l'espace souhaité puis appuyer sur "select/sélectionner".
 Si aucun espace aérien n'a été sélectionné ou si vous êtes dans l'éspace en question, "---" sera affiché pour la distance.
 Dans le cas d'une FLYzone, c'est la distance la plus courte pour sortir de l'espace qui s'affiche.
 
@@ -1517,19 +1527,19 @@ If no airspace is selected, OR if you are already INSIDE the airspace for this d
 In case of flyzones, the nearest distance is calculated where you can leave that flyzone.
 
 @880
-[Ext.Batt.Bank ]
+[Batterie Externe ]
 Pack de batterie externe utilisé (si disponible).
 
 External device battery bank in use, if available
 
 @881
-[Ext.Batt1.Voltage]
+[Batterie Externe 2: Tension]
 Tension du pack de batterie 1, si dispo.
 
 External device battery bank 1 voltage, if available
 
 @882
-[Ext.Batt1.Voltage]
+[Batterie Externe 1: Tension]
 Tension du pack de batterie 2, si dispo.
 
 External device battery bank 2 voltage, if available
@@ -1547,13 +1557,13 @@ Altitude QNH avec l'autre unitée que celle que vous utilisez: mètres si vous u
 QNH altitude with units inverted: if you are using meters, than it will be in feet, if you are using feet than it will be in meters. 
 
 @885
-[Altern AltAGL]
+[Altern AGL]
 hauteur sol dans l'autre unité que celle que vous utilisez:  mètres si vous utilisez les pieds et inversement.
 
 Altitude above ground level with units inverted: if you are using meters, than it will be in feet, if you are using feet than it will be in meters. 
  
 @886
-[GPS Altitude]
+[Altitude GPS]
 Altitude donnée par le GPS. Dépend de votre GPS: peut être assez exacte ou parfois particulièrement faux.
 Si vous utilisez un GPS de voiture, cette valeur peut être particulièrement fausse en ascendance.
 Si vous ne disposez pas de données baromètriques ou que vous ne l'avez pas selectionné (config menu 5) c'est cette altitude GPS qui sera utilisée pour tous les calculs.
@@ -1567,7 +1577,7 @@ QNH altitude can use either GPS or Baro altitude.
 Normally you should use as main infobox the QNH altitude, because it will always tell you what is being used internally.
 
 @887
-[MacCready Equivalent]
+[Equivalent MacCready]
 C'est le calage MC que vous suivez actuellement compte tenu de votre vitesse air.
 Cette valeur ne peut être modifiée, elle est calculé sur la même durée que la finesse moyenne.
 Si LK800 ne dispo pas de la vitesse air, celle si sera estimée. Voir le manuel pour plus d'info.
@@ -1691,8 +1701,8 @@ See the example polar file inside _Polars folder, for help on how to create an e
 
 @914
 [Airspace Vertical Distance]
-Distance verticlae jusqu'à l'espace aérien sélectionné. Pour sélectionner un espace aérien, aller à la page info 2.4 ASP et valider l'espace souhaité puis appuyer sur "select/sélectionner".
-Une valeur négative s'ignifie que l'espace est en dessous, une valeur positive qu'il est au dessus.
+Distance verticale jusqu'à l'espace aérien sélectionné. Pour sélectionner un espace aérien, aller à la page info 2.4 Z.AER et valider l'espace souhaité puis appuyer sur "select/sélectionner".
+Une valeur négative signifie que l'espace est en dessous, une valeur positive qu'il est au dessus.
 Si aucun espace aérien n'a été sélectionné ou si vous êtes dans l'espace en question, "---" sera affiché pour la distance.
 Dans le cas d'une FLYzone, c'est la distance la plus courte pour sortir de l'espace qui s'affiche.
 
@@ -1703,7 +1713,7 @@ If no airspace is selected, OR if you are already INSIDE the airspace for this d
 In case of flyzones, the nearest distance is calculated where you can leave that flyzone.
 
 @915
-[Home Altitude Arrival]
+[Altitude d'arrivée sur la base]
 Altitude d'arrivée à votre aéroport de "base". calculé avec le MC actuel, utilise l'altitude de sécurité et le safety MC.
 
 Arrival altitude at the Home airfield. Calculated for current MC, uses safetyAlt and safetyMC.
@@ -1711,7 +1721,7 @@ Arrival altitude at the Home airfield. Calculated for current MC, uses safetyAlt
 @916
 @917
 @918
-[Alternate bearing]
+[Alternative: Cap]
 Cap vers le dégagement sélectionné.
 
 Bearing to the selected alternate
@@ -1725,8 +1735,8 @@ Distance vers le dégagement sélectionné.
 Distance to the selected alternate
 
 @922
-[Max Altitude Reached]
-Altitude maximum atteinte durant le vol. Remis à zéro au décollage.
+[Altitude Max atteinte]
+Altitude maximum atteinte durant le vol. Remise à zéro au décollage.
 
 Max altitude reached during the current flight.
 It is reset at takeoff.
@@ -1741,7 +1751,7 @@ This value is normally used for badges.
 
 @924
 [Head Wind Speed]
-C'est la composente du vent sur la route suivie.
+C'est la composante du vent sur la route suivie.
 C'est la différence entre la vitesse air réelle et la vitesse sol.
 Une valeur positive indique du vent de face, une valeur négative du vent arrière.
 Si la vitesse air réelle n'est pas disponible, elle sera estimée.
