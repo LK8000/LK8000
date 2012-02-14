@@ -78,6 +78,8 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 	int pos=0;
 	switch (ScreenSize) {
 		case ss800x480:
+			pos=13;
+			break;
 		case ss400x240:
 			pos=11;
 			break;
