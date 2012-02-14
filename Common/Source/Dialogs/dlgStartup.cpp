@@ -41,7 +41,7 @@ void RawWrite(HDC hDC, TCHAR *text, int line, short fsize,COLORREF rgbcolor,int 
 		SelectObject(hDC,TitleWindowFont);
 		break;
 	case 1:
-		// MapWindowFont is default
+		SelectObject(hDC,LK8MapFont);
 		break;
 	case 2:
 		SelectObject(hDC,LK8MediumFont);
@@ -78,44 +78,44 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 	int pos=0;
 	switch (ScreenSize) {
 		case ss800x480:
-			pos=13;
+			pos=12;
 			break;
 		case ss400x240:
-			pos=11;
+			pos=12;
 			break;
 		case ss480x272:
 			if (ScreenSizeX==854)
-				pos=13;
+				pos=14;
 			else
-				pos=10;
+				pos=11;
 			break;
 		case ss640x480:
 			pos=12;
 			break;
 		case ss320x240:
-			pos=11;
+			pos=12;
 			break;
 		case ss896x672:
-			pos=12;
+			pos=14;
 			break;
 		// --------- portrait -------------
 		case ss240x320:
-			pos=14;
+			pos=17;
 			break;
 		case ss480x640:
-			pos=13;
+			pos=17;
 			break;
 		case ss272x480:
-			pos=14;
+			pos=18;
 			break;
 		case ss240x400:
-			pos=15;
+			pos=16;
 			break;
 		case ss480x800:
-			pos=13;
+			pos=18;
 			break;
 		default:
-			pos=10;
+			pos=11;
 			break;
 	}
 	if (fullresetasked) {
