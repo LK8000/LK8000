@@ -1,4 +1,4 @@
-﻿# LK8000 HUN_HLP.TXT 120131
+﻿# LK8000 HUN_HLP.TXT 120214
 #
 # A single text line can be max 500 characters long
 # An entire help can be max 1024 characters total
