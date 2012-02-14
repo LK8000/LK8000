@@ -1,6 +1,6 @@
 
   CREDITS FOR LK8000  www.lk8000.it 
-  Updated on 111221
+  Updated on 120215
 
 
   Original concept, design and development of LK8000 Project by Paolo Ventafridda, Italy
@@ -17,6 +17,8 @@
 	Karim Trojette
 	Paolo Ventafridda
 
+  Graphics by Jiri Bergman
+  Complete copyrights and contributors list is available on the main website.
 
 
   LK8000 was forked off Xcsoar in year 2009.
