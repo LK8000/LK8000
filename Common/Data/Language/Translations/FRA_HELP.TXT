@@ -17,8 +17,7 @@ Le fichier .LKM est en fait un fichier .ZIP. Si vous modifiez l'extension en .ZI
 Les fichiers cartes sont dans le répertoire _Maps.
 
 @102
-Fichier .DEM contenant les informations sur le relief. 
-Les fichiers .DAT et .JP2 sont aussi valides. 
+Fichier .DEM contenant les informations sur le relief.  
 Attention, le relief peut aussi être inclus dans le fichier .LKM. 
 Dans ce cas, le fichier sélectionné ici est celui qui est pris en compte.
 Ce fichier se situe dans le répertoire _Maps. 
@@ -532,8 +531,8 @@ Si vous n'avez qu'un seul départ avec une heure de fermeture de la porte. Indiq
 Si vous n'avez qu'un seul départ mais qu'il reste toujours ouvert, indiquer une très grande valeur comme 480 minutes (8 heures!)
 
 @220
-Start IN (Exit): Le départ se prend en sortant du cylindre.
-Start OUT (Enter):Le départ se prend en entrant dans le cylindre.
+DEDANS (Sortie): Le départ se prend en sortant du cylindre.
+DEHORS (Entrée): Le départ se prend en entrant dans le cylindre.
 
 
 @221
@@ -1327,7 +1326,7 @@ Vitesse moyenne atteignable en AAT en virant les points de virage "cibles" des s
 Assigned Area Task average speed achievable around target points remaining in minimum AAT time.
 
 @853
-[L/D vario]
+[Finesse Vario Electrique]
 Finesse instantanée compte tenu de la vitesse air affichée et de la vitesse verticale compensée (lorsque connecté à un vario délivrant l'info).
 Une valeur négative indique qu'on monte, "---" indique un taux de chute presque nul.
 
@@ -1421,7 +1420,7 @@ Efficiency required to the arrival height above the final waypoint. Classic valu
 
 @867
 @868
-[Alternative: Finesse requise]
+[Dégagement:Finesse requise]
 Finesse nécessaire pour rejoindre le dégagement sélectionné. N'est pas compensé en énergie totale.
 
 Glide ratio to the arrival height above the selected alternate waypoint.  This is not adjusted for total energy.
@@ -1452,7 +1451,6 @@ Nous vous suggerons des valeurs comme 60, 90 ou 120 secondes. Des valeurs infér
 Notez bien que la distance prise en compte est bien la distance réellement parcourue et pas la ligne droite entre la première et la dernière position. Les zig zag et les virages sont pris en comptes.
 
 Cette valeur n'est pas calculée lors d'ascendances thermiques.
-
 The distance made in the configured period of time , divided by the altitude lost since then.  
 Negative values are shown as oo (infin) and indicate climbing cruise (height gain). Over 200 of LD the value is shown as oo .
 You can configure the period of averaging in the Special config menu. 
@@ -1492,8 +1490,8 @@ Distance parcourue jusqu'à maintenant sur le circuit. Il faut un départ valide
 Distance covered up to now, from the current task. You need a valid start to make it account!
 
 @875
-[Alternative: Altitude d'arrivée]
-Altitude d'arrivée au dessus du dégagement/de l'alternative sélectionné(e). 
+[Dégagement: Altitude d'arrivée]
+Altitude d'arrivée au dessus du dégagement sélectionné(e). 
 
 Arrival altitude difference over alternate. Press ENTER or RETURN after selecting the infobox in order to pull up its relative waypoint menu.
 
@@ -1504,7 +1502,7 @@ Altitude d'arrivée au dessus du dégagement sélectionné.
 Arrival altitude difference over alternate. Press ENTER or RETURN after selecting the infobox in order to pull up its relative waypoint menu.
 
 @877
-[Alternative: Alti d'arrivée]
+[Dégagement: Alti d'arrivée]
 Altitude d'arrivée sur la zone de dégagement sélectionné.
 
 Arrival altitude difference over alternate. Press ENTER or RETURN after selecting the infobox in order to pull up its relative waypoint menu.
@@ -1692,7 +1690,7 @@ Total estimé des scores "OLC classic" et "triangle FAI"
 The sum of OLC Classic predicted score and FAI triangle predicted score.
 
 @913
-[FLAP SETTINGS]
+[Réglage Volets]
 Affiche le réglage optimum des volets pour la vitesse actuelle en utilisant les fichiers étendus pour les polaires et la charge alaire du moment.
 Voir le fichier exemple dans le répertoire _polars.
 
@@ -1700,7 +1698,7 @@ Show current optimum flap setting based on extended polar file and current wing 
 See the example polar file inside _Polars folder, for help on how to create an extended polar.
 
 @914
-[Airspace Vertical Distance]
+[Zone Aéro: Dist Verticale]
 Distance verticale jusqu'à l'espace aérien sélectionné. Pour sélectionner un espace aérien, aller à la page info 2.4 Z.AER et valider l'espace souhaité puis appuyer sur "select/sélectionner".
 Une valeur négative signifie que l'espace est en dessous, une valeur positive qu'il est au dessus.
 Si aucun espace aérien n'a été sélectionné ou si vous êtes dans l'espace en question, "---" sera affiché pour la distance.
@@ -1721,7 +1719,7 @@ Arrival altitude at the Home airfield. Calculated for current MC, uses safetyAlt
 @916
 @917
 @918
-[Alternative: Cap]
+[Dégagement: Cap]
 Cap vers le dégagement sélectionné.
 
 Bearing to the selected alternate
@@ -1729,7 +1727,7 @@ Bearing to the selected alternate
 @919
 @920
 @921
-[Alternate distance]
+[Dégagement: distance]
 Distance vers le dégagement sélectionné.
 
 Distance to the selected alternate
@@ -1742,7 +1740,7 @@ Max altitude reached during the current flight.
 It is reset at takeoff.
 
 @923
-[Max Height Gained]
+[Gain d'altitude maximum]
 Gain d'altitude maximum. Prend comme point bas l'altitude minimum atteinte APRES le départ du vol libre.
 Cette donnée est normalement utilisée pour les badges.
  
@@ -1750,7 +1748,7 @@ This height is calculated using the min height detected AFTER the start of free 
 This value is normally used for badges.
 
 @924
-[Head Wind Speed]
+[Composante vent de face]
 C'est la composante du vent sur la route suivie.
 C'est la différence entre la vitesse air réelle et la vitesse sol.
 Une valeur positive indique du vent de face, une valeur négative du vent arrière.
