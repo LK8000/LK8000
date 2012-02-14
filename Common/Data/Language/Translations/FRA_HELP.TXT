@@ -1759,61 +1759,61 @@ In this case the value is only guessed against the current wind set.
 
 @1200
 [Remplissage des zones aéro.]
-Les zones aériennes peuvent être représentées par leurs contours, avec un remplissage de motif, ou par des plages de couleurs semi-transparentes.
-[bordure seule] il y aura seulement les lignes sur les frontières de la zone aérienne
-[Motif] les zones seront remplies avec le motif et la couleur sélectionnée
+Les zones aériennes peuvent être représentées par leurs contours, avec un remplissage de motif ou par des plages de couleurs semi-transparentes.
+[bordure seule] Il y aura seulement les lignes sur les frontières de la zone aérienne.
+[Motif] Les zones seront remplies avec le motif et la couleur sélectionnée.
 [Motif, bordure seule] Les bordures de chaque zone seront remplies avec le motif et la couleur sélectionnée (avertissement, voir ci-dessous)
-[Semi-transparent] les zones seront remplies avec la couleur semi-transparente selectionnée (l'opacité de la couleur peut être réglée par le paramétre "opacité").
-[Semi-transparent, bordure seule] Les bordures de chaque zone seront remplies par une avec la couleur semi-transparente selectionnée (l'opacité de la couleur peut être réglée par le paramétre "opacité") (avertissement, voir ci-dessous)
+[Semi-transparent] Les zones seront remplies avec la couleur semi-transparente sélectionnée (l'opacité de la couleur peut être réglée par le paramètre "opacité").
+[Semi-transparent, bordure seule] Les bordures de chaque zone seront remplies avec la couleur semi-transparente sélectionnée (l'opacité de la couleur peut être réglée par le paramètre "opacité") (avertissement, voir ci-dessous)
 La transparence peut ne pas être disponible sur certains périphériques.
-Le dessin des bordures de zones aériennes peut ralentir les appareils avec écran haute résolution ou un processeur lent. Utiliser avec prudence!
+Le dessin des bordures de zones aériennes peut ralentir les appareils avec écran haute résolution ou un processeur lent. Utiliser avec prudence !
 
 @1201
-[Opaciter des zones aéro]
-Définit l'opacité (0% : Opaque / 100% : transparent) du remplissage semi-transparent des zones aériennes. 
+[Opacité des zones aéro]
+Définit l'opacité (0% : Opaque / 100% : transparent) du remplissage semi-transparent des zones aériennes.
 
 @1202
-[Opaciter du bandeau inférieur]
+[Opacité du bandeau inférieur]
 Définit l'opacité (0% : Opaque / 100% : transparent) du bandeau inférieur.
-par défault, le bandeau inférieur est noir écrit blanc, il peut etre inversé (blanc écrit noir).
-Si ce paramétre à une valeur inférieur à 30%, le bandeau devient très transparent et la couleur du texte est inversée. 
-Toutes les combinaisons opacité / inversion des couleurs ne seront pas utilisable en vol, mais une infinité de combinaisons peuvent être utilisée.
-l'utilisation d'une valeur de 0% ou 100% peut accelérer le fonctionnement du logiciel.
+par défaut, le bandeau inférieur est noir écrit blanc, il peut être inversé (blanc écrit noir).
+Si ce paramètre a une valeur inférieure à 30%, le bandeau devient très transparent et la couleur du texte est inversée.
+Toutes les combinaisons opacité / inversion des couleurs ne seront pas utilisables en vol, mais une infinité de combinaisons peut être utilisée.
+l'utilisation d'une valeur de 0% ou 100% peut accélérer le fonctionnement du logiciel.
 Un autre célèbre appareil utilise une opacité de 75%.
 La valeur par défaut et de 60%
 ATTENTION : certains appareils ne supportent pas la transparence.
 
 @1203
 [Lissage des polices]
-Le lissage des polices permet d'avoir des caractères de meilleures qualités.
-[Aucun] Lissage des polices desactivée.
-[Normal] Utiliser de la qualité défaut.
+Le lissage des polices permet d'avoir des caractères de meilleure qualité.
+[Aucun] Lissage des polices désactivée.
+[Normal] Utiliser la qualité défaut.
 [Anti crénelage] Qualité standard.
-[ClearType] Qualité avancée. 
-veuillez noter que sur les appareils anciens comme l'IPAQ 3850 l'anti crénelage n'est pas supporté.
-sur beaucoups de PNA en mode portrait et sur PPC2002 ses l'anti crénelage donnent de meilleurs résultats.
-dans les autre cas, la valeur par défaut est ClearType  
-pour que la modification de ce paramètre soit prise en compte, vous devez redémarrer LK8000
-IMPORTANT: la configuration du lissage des polices est chargée au demarrage à partir du profil par défaut. 
+[ClearType] Qualité avancée.
+Veuillez noter que sur les appareils anciens, comme l'IPAQ 3850, l'anti crénelage n'est pas supporté.
+Sur beaucoup de PNA en mode portrait et sur PPC2002, l'anti-crénelage donne de meilleurs résultats.
+Dans les autre cas, la valeur par défaut est ClearType.
+Pour que la modification de ce paramètre soit prise en compte, vous devez redémarrer LK8000
+IMPORTANT: la configuration du lissage des polices est chargée au démarrage à partir du profil par défaut.
 
 @1204
 [Mode Vario]
-permet de choisir la valeur affichée par la barre de Vario à droite de l'écran si elle est active.
-En spirale, la valeur affiché sera toujours le Vario.
+Permet de choisir la valeur affichée par la barre de Vario à droite de l'écran si elle est active.
+En spirale, la valeur affichée sera toujours le Vario.
 En transition, Vario Netto ou Vitesse de vol (STF) peuvent être utilisés.
-si vous selectionnez vitesse de vol, l'IAS désiré est affiché et la var indique si vous devez pousser ou tirer le manche pour atteindre cette vitesse.
+Si vous sélectionnez vitesse de vol, l'IAS désiré est affiché et la barre indique si vous devez pousser ou tirer le manche pour atteindre cette vitesse.
 
 @1205
 [Catégorie d'aéronef]
-selectionner le type d'aéronef, et éventuellement la polaire correspondante.
-Chaque type d'aéronef posséde de paramètre spécifique, se reporter au site web ou au dernier manuel pour connaitre ses différences.
-Après avoir modifier le type d'aéronef vous devez redémarrer LK8000 pour que ses fonctions spécifiques soient disponibles.
+Sélectionner le type d'aéronef, et éventuellement la polaire correspondante.
+Chaque type d'aéronef possède des paramètres spécifiques, se reporter au site web ou au dernier manuel pour connaître ses différences.
+Après avoir modifier le type d'aéronef, vous devez redémarrer LK8000 pour que ses fonctions spécifiques soient disponibles.
 
 # 1206 OBSOLETED BY 1208 in 2.3
 #@1206
 #[Aircraft type]
 #This contains a selection of aircrafts and wings of different performance classes.
-#If you want to use your own polar file, choose Custom Polar File here 
+#If you want to use your own polar file, choose Custom Polar File here
 #and then select it from the next configuration box.
 
 # 1207 UNUSED in 2.3
@@ -1822,7 +1822,7 @@ Après avoir modifier le type d'aéronef vous devez redémarrer LK8000 pour que 
 #When Custom Polar File is the polar type, this is the name of the file containing the glide polar data.
 #Polars must be placed inside _Polars subfolder.
 #Creating a polar file is not trivial, because you need actual sink rate values and a precise
-#aircraft weight. Read the manual to know more about all of this. 
+#aircraft weight. Read the manual to know more about all of this.
 
 
 @1208
@@ -1830,92 +1830,91 @@ Après avoir modifier le type d'aéronef vous devez redémarrer LK8000 pour que 
 Contient une sélection d'aéronefs et d'ailes dans différentes classes de performances.
 
 @1209
-[Delai répétition des messages de zones aéro]
-Correspond au temps pendant lequel les messages de zones aéro sont répétés s'ils ne sont pas acquités.
-si vous volez dans une zone interdite sans acquiter le message d'alerte, ce paramétre definie le temps apres lequel le message d'alerte sera de nouveau affiché.
+[Délai répétition des messages de zones aéro]
+Correspond au temps pendant lequel les messages de zones aéro sont répétés s'ils ne sont pas acquittés.
+Si vous volez dans une zone interdite sans acquitter le message d'alerte, ce paramètre définit le temps après lequel le message d'alerte sera de nouveau affiché.
  
 @1210
 [Marge verticale]
-Si la distance verticale à la limite haute ou basse d'une zone aérienne est inférieur à cette limite, alors le message d'avertissement jaune apparaît. dans le même temps sur la carte, une icône d'avertissement aparait au dessus du planeur. pour vous avertir.
+Si la distance verticale à la limite haute ou basse d'une zone aérienne est inférieur à cette limite, alors le message d'avertissement jaune apparaît. Dans le même temps sur la carte, une icône d'avertissement apparaît au dessus du planeur pour vous avertir.
 
 @1211
 [Délai attente des message]
-Délais après lequel les messages d'alertes de zones aériennes seront fermés automatiquement.
-dans le message un compte a rebours apparait sur le boutton fermer, il affiche le temps restant avant sa fermeture. 
+Délai après lequel les messages d'alertes de zones aériennes seront fermés automatiquement.
+Dans le message un compte a rebours apparaît sur le bouton fermer, il affiche le temps restant avant sa fermeture.
 
 @1212
-[Etiquettes de zone aérienne]
-si ce paramétre est activé, une étiquette contenant le nom de la zone et la distance verticale apparaitra sur la carte.
+[Étiquettes de zone aérienne]
+Si ce paramètre est activé, une étiquette contenant le nom de la zone et la distance verticale apparaitra sur la carte.
 
 @1213
 [Seuil Zoom Auto]
-lorsque vous utiliser le zoom automatique en mode "Parapente", quand la distance au point de virage suivant est inféreure a cette limite le niveau de zoom est ajuster automatiquement pour maintenir ce point de virage à l'intérieur de l'écran. une fois le point de virage valider, le niveau de zoom est automatiquement restaurer au niveau de zoom du mode transition.
+Lorsque vous utilisez le zoom automatique en mode "Parapente", quand la distance au point de virage suivant est inférieure à cette limite, le niveau de zoom est ajusté automatiquement pour maintenir ce point de virage à l'intérieur de l'écran. Une fois le point de virage validé, le niveau de zoom est automatiquement restauré au niveau de zoom du mode transition.
 
 @1220
 [bandeau inférieur]
-Active ou désactive chacun des bandeaux inférieure.
+Active ou désactive chacun des bandeaux inférieurs.
 Si tous les bandeaux sont désactivés, NAV1 sera toujours automatiquement affiché en transition et THR0 sera toujours automatiquement affiché en spirale.
 
 @1221
 [InfoPages rotation configuration]
-Active ou désactive chaqu'une des page d'information.
-Si tous les éléments dans une page sont désactivés, alors cette page sera ignoré.
-Une page désactivée pourra toujours être accessible a l'aide des touches personnalisées.
-Attention: la page d'info "1.5 Epreuve" sera toujours désactiver si le type d'aéronef n'est pas un planeur (Parapente, Delta et Avions).
-seront également désactiver tous les calculs d'épreuve lorsque 1.5 est désactiver.
-Si vous utilisez le mode planeur, même si la page 1.5 est désactivé, les calculs seront toujours effectuer
+Active ou désactive chacune des pages d'information.
+Si tous les éléments dans une page sont désactivés, alors cette page sera ignorée.
+Une page désactivée pourra toujours être accessible à l'aide des touches personnalisées.
+Attention : la page d'info "1.5 Épreuve" sera toujours désactivée si le type d'aéronef n'est pas un planeur (Parapente, Delta et Avions).
+Seront également désactivés tous les calculs d'épreuve lorsque 1.5 est désactivé.
+Si vous utilisez le mode planeur, même si la page 1.5 est désactivée, les calculs seront toujours effectués.
 
 @1250
-Contrôle le filtrage des zones aérienne pour l'affichage et les alertes. Le bouton filtre des zones aérienne permet également le filtrage de l'affichage et des alertes de façon indépendante pour chaque classe de zones.
-[Tous] Toute les zones aérienne sont affiché.
-[Plafonné] seulement les zones aériennes en dessous d'un plafond.
-[Auto] Toutes dans la marge vertical par apport a votre position.
-[Tous dessous] Toutes les zones en dessous de vous et au dessus de la marge vertical.
+Contrôle le filtrage des zones aériennes pour l'affichage et les alertes. Le bouton filtre des zones aériennes permet également le filtrage de l'affichage et des alertes de façon indépendante pour chaque classe de zones.
+[Tous] Toutes les zones aériennes sont affichées.
+[Plafonné] Seulement les zones aériennes en dessous d'un plafond.
+[Auto] Toutes dans la marge verticale par apport à votre position.
+[Tous dessous] Toutes les zones en dessous de vous et au dessus de la marge verticale.
 
 @1251
-Marge Vertical utilser pour determiner quelle sont les zones aérienne a afficher sur la carte lorsque vous utiliser les mode de filtrage "auto" ou "tous dessous".
-en mode "auto", sont afficher toute les zones en desous et en dessus de cette limite par rapport a votre altitude.
-en mode "tous dessous", sont afficher toute les zones au dessus de cette Altitude au dessus de vous et toutes les zones en dessous de vous.
+Marge Verticale utilisée pour déterminer quelles sont les zones aériennes à afficher sur la carte lorsque vous utilisez les modes de filtrage "auto" ou "tous dessous".
+En mode "auto", sont affichées toute les zones en dessous et en dessus de cette limite par rapport à votre altitude.
+En mode "tous dessous", sont affichées toute les zones au dessus de cette Altitude au dessus de vous et toutes les zones en dessous de vous.
 
 @1252
-même si vous avez acquiter une zone, celle-ci redeviendra "Active" apres ce délai, les alertes seront alors de nouveau afficher.
-cela peut, par exemple, etre utile par exemple sur le trajet du retours lorsque que vous croiser des zones que vous avez acquiter a l'aller.
-par defaut ce délai est fixer a 15 minutes.
+Même si vous avez acquitté une zone, celle-ci redeviendra "Active" après ce délai, les alertes seront alors de nouveau affichées.
+Cela peut, par exemple, être utile sur le trajet du retour lorsque que vous croisez des zones que vous avez acquittées à l'aller.
+Par défaut, ce délai est fixé à 15 minutes.
 
 
 @1253
-[Alerte Altitude Max] 
-une alerte sera déclencher chaque fois que cettealtitude sera dépasser.
-le delai minimum entre deux alertes et de 1 minutes.
-pour desactiver ces alerte, mettre cette valeur a 0.
-L'altitude utiliser pour ces alertes est celle qui correspont au paramétre "Utiliser Alti Baro" de la page de configuration n°5.
-Plusieurs alertes définie à la même altitude n'auront aucun effet.
-Les pilote de planeurs doivent veiller a ne pas configuré d'alertes en dessous d'ue altitude de sécurité pendant les phase critique du vol.
-Chaque Alerte peuvent etre répété 30 fois, apres se nombre, celle ci sera automatiquement désactiver pour le reste du vol.
-Les Alertes visuels disparaisent automatiquement apres 12 secondes.
-Chaque Alertes utilisent un son différent, celui peut être changer en remplacent les fichiers LK_ALARM_ALTx.WAV dans le dossiers _System\_Sounds.
-par défaut toutes ces alertes sont a 0 (désactivés).
+[Alerte Altitude Max]
+Une alerte sera déclenchée chaque fois que cette altitude sera dépassée.
+Le délai minimum entre deux alertes est de 1 minutes.
+Pour désactiver ces alertes, mettre cette valeur à 0.
+L'altitude utilisée pour ces alertes est celle qui correspond au paramètre "Utiliser Alti Baro" de la page de configuration n°5.
+Plusieurs alertes définies à la même altitude n'auront aucun effet.
+Les pilotes de planeurs doivent veiller à ne pas configurer d'alertes en dessous d'une altitude de sécurité pendant les phases critiques du vol.
+Chaque Alerte peut être répétée 30 fois. Après ce nombre, l'alerte sera automatiquement désactivée pour le reste du vol.
+Les Alertes visuelles disparaissent automatiquement après 12 secondes.
+Chaque Alerte utilise un son différent, lequel peut être changé en remplacent les fichiers LK_ALARM_ALTx.WAV dans le dossiers _System\_Sounds.
+Par défaut, toutes ces alertes sont à 0 (désactivés).
 
 # ex 195
 @1254
-L'indicateur d'Arrivée peut etre relative a la fin du circuit, au point de virage suivant ou désactivé.
-Cette indicateur est dessiné a gauche de l'écran.
+L'indicateur d'Arrivée peut être relatif à la fin du circuit, au point de virage suivant ou désactivé.
+Cet indicateur est dessiné à gauche de l'écran.
 
 @1255
-le MacCready automatique peut etre activé ou désactiver, il peut aussi etre activé ou désactivéen cours de vol. 
+Le MacCready automatique peut être activé ou désactivé, il peut aussi être activé ou désactivé en cours de vol.
 
 @1256
-[Energie Total] 
-Lorsque le mode énergie total est activé, LK calcul votre gains d'altitude en estimant la hauteur que vous pouvez atteindre si vous tirez sur le manche jusqu'a atteindre la vitesse optimal pour obtenir la finesse maximum.
-le gain d'altitude ainsi calculer sera automatiquement ajouter a toutes les altitudes d'arrivée, par défaut, cette fonctionnalité est désactivée pour des raisons de sécurité.
-si vous avez un doute, laissez ce paramètre désactivée.
+[Énergie Totale]
+Lorsque le mode énergie totale est activé, LK calcule votre gain d'altitude en estimant la hauteur que vous pouvez atteindre si vous tirez sur le manche jusqu’à atteindre la vitesse de finesse maximum.
+Le gain d'altitude ainsi calculé sera automatiquement ajouté à toutes les altitudes d'arrivée. Par défaut, cette fonctionnalité est désactivée pour des raisons de sécurité.
+Si vous avez un doute, laissez ce paramètre désactivée.
 
 @1257
-[Propreté]
-Propreté du planeur. 100%  pour propre et des valeurs plus basse au fur et à mesure des insectes collés et de la pluie.  50% indique que le taux de chute du planeur est doublé.
-ce paramétre est utilisé comme valeur par défaut dans les paramétre de base qui sont charger au démarrage.
-vous devriez normalement laisser cette valeur a 100%.
+[Efficiency]
+La valeur de ce paramètre dépend de l’état de surface de votre planeur. Lorsque celui-ci est propre, réglez cette valeur à 100%, réduisez cette valeur lorsque les ailes sont piquées d'insectes ou mouillées. Une valeur de 50% indique que le taux de chute de votre planeur est doublé.
+Ce paramètre est utilisé comme valeur par défaut dans les paramètres de base qui sont chargés au démarrage.
+Vous devriez normalement laisser cette valeur à 100%.
 
 @9999
-aucune aide disponible pour ce paramétre!
-
+Aucune aide disponible pour ce paramètre !
