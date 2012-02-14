@@ -2976,10 +2976,10 @@ _@M1009_ "GZ letzte 20s [GZ.20s]"
 _@M1010_ "GZ.20s"
 
 #_@M1011_ "Eff.cruise last therm"
-_@M1011_ "GZ seit letztem Aufwind [GZ]"
+_@M1011_ "GZ seit letztem Aufwind [GZ.lA]"
 
 #_@M1012_ "E.Cru"
-_@M1012_ "GZ"
+_@M1012_ "GZ.lA"
 
 #_@M1013_ "Speed ground"
 _@M1013_ "Geschw. V über Grund [VG]"

@@ -105,7 +105,7 @@ void GetOvertargetName(TCHAR *overtargetname) {
 TCHAR *GetOvertargetHeader(void) {
 
   // Maxmode + 1 because maxmode does not account pos 0
-  static TCHAR targetheader[OVT_MAXMODE+1][OVERTARGETHEADER_MAX+1];
+  static TCHAR targetheader[OVT_MAXMODE+1][OVERTARGETHEADER_MAX+2];
 
   if (DoInit[MDI_GETOVERTARGETHEADER]) {
 	// LKTOKEN _@M1323_ "T>"
