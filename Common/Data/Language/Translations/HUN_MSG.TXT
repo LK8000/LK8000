@@ -1,5 +1,5 @@
 ﻿# LK8000 HUNGARIAN MESSAGES - HUN_MSG.TXT
-# UPDATED:  120131
+# UPDATED:  120214
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -1317,9 +1317,9 @@ _@M1289_ "Köv.FP"
 _@M1290_ "Repirány felé nézve"
 _@M1291_ "Köz.Légt"
 _@M1292_ "Legköz.légtér felé"
-_@M1293_ "Sonár BE"
-_@M1294_ "Sonar KI"
-_@M1295_ "Old.nézet"
+_@M1293_ "Szonár BE"
+_@M1294_ "Szonár KI"
+_@M1295_ "Oldalnézet"
 
 # LK info page headers, try to use the same or less number of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!
