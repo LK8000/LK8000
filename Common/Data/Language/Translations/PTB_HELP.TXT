@@ -9,7 +9,7 @@
 @100
 Seleciona o nível de detalhe dos ajustes de configuração.
 [Básico]: Somente ajustes básicos são mostrados.
-[Avanç]: Mostra ajustes básicos e avançados.
+[Avançado]: Mostra ajustes básicos e avançados.
 
 @101
 Nome do arquivo contendo a TOPOLOGIA e opcionalmente também o terreno, pontos e espaços aéreos.
@@ -1459,8 +1459,97 @@ Polars must be placed inside _Polars subfolder.
 Creating a polar file is not trivial, because you need actual sink rate values and a precise
 aircraft weight. Read the manual to know more about all of this. 
 
+@1208
+[Tipo de Aeronave]
+Contém a seleção de aeronaves e das de diferentes classificações de performance.
+
+@1209
+[Tempo de repetição do alerta de Espaço Aéreo]
+É o tempo que leva para repetir o alerta de repetição até sua aprovação.
+Se você estiver voando dentro de um espaçõ aéreo condicionado sem a aprovação/reconhecimento o alerta retornará depois deste tempo decorrido.
+
+@1210
+[Distancia vertical da margem do Espaço Aéreo]
+Se sua distancia vertical da base ou topo do espaço aéreo tende a interseção, aparecerá um Alerta Amarelo em uma janela de mensagem.
+Isto altera o a forma com que o ícone de alerta de espaço aéreo no mapa.
+Se a distância vertical (diferença de altitude) até a base ou topo deste espaço aéreo for menor que este limite, o ícone de alerta aparecerá acima do simbolo da aeronava alertando você. 
+
+@1211
+[Tempo para saída do aviso de Espaço Aéreo]
+Se este tempo for ultrapassado a janela de aviso de Espaço Aéreo é encerrada.
+
+@1212
+[Nome dos Espaços Aéreos]
+Se estiver ligada, aparecerá um Alerta no mapa indicando o Nome e Distãncia vertical dos limites do mesmo.
+@1213
+[PG autozoom threshold]
+When using autozoom in PG mode, autozoom gets working only if the next waypoint gets closer than this limit.
+For example if you choose 5km, it means when you're 5km to the next waypoint the autozoom will start working.
+It's zoom out to 5km zoom range, and it will keep zoom in as you're approaching the waypoint.
+After you reach the waypoint the previous Cruise zoom restored. And as soon you reach 5km to the next waypoint the autozoom start working again.
+
+@1220
+[Configurações da Barra Inferior]
+Habilita e Desabilita cada uma das palhetas rotáveis da Barra inferior.
+Se todas forem desabilitadas, NAV1 sempre será mostrada automaticamente.
+Durante a subida em térmicas o modo TER será mostrado também.
+
+@1221
+[Configurações da Páginas de Informação]
+Habilita e Desabilita cada uma das palhetas rotáveis da Página de Informações.
+Se todos itens forem desabilitados estas informações serão suprimidas.
+Atenção: aeronaves tipo PG/HG e GA desabilitam automaticamente 1.5 Contest e todos seus cálculos.
+Se você desejar os cálculos, é necessário habilitar 1.5.
+
+@1250
+Controla a filtragem dos Espaços Aéreos e seus alertas.
+O filtro de Espaço Aéreo também permite a apresentação e avisos para cada um dos mesmos independente da classe destes.
+[Todos Ligados] Todos são apresentados.
+[Cortar] Somente Espaços Aéreos abaido da altitude de corte.
+[Auto] Todos com a altura de margem para a aeronave.
+[Todos Abaixo] Todos abaixo da aeronave e com margem de altura acima.
+
+@1251
+Margem de altura usada no filtro de controle de apresentação dos Espaços Aéreos. Só funciona nos modos Auto e Todos Abaixo.
+Para Auto isso determina  a altura acima e abaixo da aeronave que os Espaços Aéreos serão motrados. 
+Todos Abaixo mostrará Espaços Aéreos com o valore especificado acima e abaixo.
+
+@1252
+Também se você tiver reconhecido o Espaço Aéreo, depois deste tempo tornará a ativar os Alertas.
+Você pode precisar que seja alertado novamente quando retornar a ele.
+Por padrão, depois de 15 minutos os espaços aéreos voltam a enviar Alertas.
+
+@1253
+[Alarme de Máxima Altitude] O alrme soará sempre que se aproximar da altitude limite ou ultrapassar a mesmsa.
+O alareme não sera repetido nos próximos 60 segundos.
+Após 1 minuto, se a altitude continuar proximo ou acima, volta a tocar o alarme.
+Para desabilitar, selecione 0. 
+A altitude usada para o alarme é a determinada no menu de configuração 5, usando altitude barométrica.
+Multiple alarms set at the same altitude will have no effect.
+Em momentos crítcos do voo não é possível configurar o mesmo.
+Se tocar mais de 30 vezes o mesmo é desligado
+A mensagem visual desaparece depois de 12segundos.
+Este alarme pode ser alterando na pasta _System_Sounds. LK_ALARM_ALTx.WAV
+O padrão é 0 (Sem Alarmes).
+
+# ex 195
+@1254
+A Barra de Planeio é associada ao Final da Prova ou ao próximo Ponto de Virada.
+Esta é desenhada a esquerda da tela.
+
+@1255
+MacCready Automático, pode ser ligado ou desligado inclusive durante o voo.
+Este é o valor padrão. 
+
+@1256
+[Total Energy] Quando TotalEnergy está em uso, o LK calcula a altura estimada que ganhará se voltar a velocidade de melhor planeio da aeronave.
+O padrão é desabilitado. Se você tiver dúvida mantenha INATIVA esta função.
+
+@1257
+[Efficiência]
+100% se sua taxa de afundamento está dentro os padrões da aeronave. Por exemplo: Se selecionar 50% a taxa de afundamento será dobrada.
+O padrão é usar 100%.Hosw clean the glider is. 
 
 @9999
-Ajuda indisponível para este item!
-
+Não existe ajuda para este item!
 

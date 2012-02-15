@@ -2,6 +2,16 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 2.3z becomes 3.0a on February 15th 2012
+---------------------------------------
+. Fix possible critical bug in Oracle, using non-eng languages
+
+. Fix version number on startup no more using map font, which could be custom.
+
+. Adjust label fonts for 800x480 resolution, making them a bit smaller.
+
+
+
 Version 2.3y  February 13, 2012
 -------------------------------
 
