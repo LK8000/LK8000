@@ -53,14 +53,23 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   double dRate;
   double dT;
 
-  if (!Calculated->Flying) return;
+  if (!Calculated->Flying) {
+	if (MODE!=CRUISE) {
+		#if TESTBENCH
+		StartupStore(_T(".... Not flying, still circling -> Cruise forced!\n"));
+		#endif
+		goto _forcereset;
+	}
+	return;
+  }
 
   // Back in time in IGC replay mode?
   if(Basic->Time <= LastTime) {
     #if ALPHADEBUG
     StartupStore(_T("...... Turning back in time: reset\n"));
     #endif
-    LastTime = Basic->Time;
+_forcereset:
+    LastTime = Basic->Time; // 101216 PV not sure of this.. 
     LastTrack = 0;
     StartTime  = 0;
     StartLong = 0;
@@ -68,8 +77,14 @@ void Turning(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
     StartAlt = 0;
     StartEnergyHeight = 0;
     LastTime = 0;
-    MODE = CRUISE;
     LEFT = FALSE;
+    if (MODE!=CRUISE) {
+	MODE = CRUISE;
+        // Finally do the transition to cruise
+        Calculated->Circling = FALSE;
+        SwitchZoomClimb(Basic, Calculated, false, LEFT);
+        InputEvents::processGlideComputer(GCE_FLIGHTMODE_CRUISE);
+    }
     return;
   }
   dT = Basic->Time - LastTime;
