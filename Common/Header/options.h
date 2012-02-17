@@ -94,6 +94,8 @@
  #define FASTPAN		1	// bitblt panning 
 
  #define HIRESB			1	// HIRES bitmaps
+ 
+ //#define ASCIILOGBOOK // old logbook format encoded in ASCII (new is UTF8)
 
 /*
  * Incomplete work, or stuff that never got into production versions but still interesting

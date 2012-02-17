@@ -12,6 +12,7 @@
 
 #include "dlgTools.h"
 #include "InfoBoxLayout.h"
+#include "utils/fileext.h"
 
 
 #define MAXNOTETITLE 200	// max number of characters in a title note
@@ -212,10 +213,157 @@ void addChecklist(TCHAR* name, TCHAR* details) {
   }
 }
 
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// Add a line pointed to by TempString into checklist.
+static void AddChecklistLine(const TCHAR* TempString, TCHAR* Details, TCHAR* Name, bool& inDetails) {
+  size_t len = _tcslen(TempString);
+  
+  // check that we are not over the limit of the note details size
+  if ((_tcslen(Details) + len) > (MAXNOTEDETAILS-MAXNOTELIMITER-1)) {
+    // unfortunately, yes. So we need to split the note right now.
+    // And we keep the same Name also for next splitted note.
+    wcscat(Details, TEXT(NOTECONTINUED));
+    
+    if (_tcslen(Name)>0 && _tcslen(Details)>0) {
+         addChecklist(Name, Details);
+    } 
+    Details[0]= 0;
+    inDetails=true;
+  }
+
+  if (TempString[0]=='[') { // Look for start
+    // we found the beginning of a new note, so we may save the last one, if not empty
+    if (inDetails) {
+      wcscat(Details,TEXT("\r\n"));
+      addChecklist(Name, Details);
+      Details[0]= 0;
+      Name[0]= 0;
+    }
+
+    // extract name
+    size_t i;
+    for (i=1; i<MAXNOTETITLE; i++) {
+      if (TempString[i]==']') {
+        break;
+      }
+      Name[i-1]= TempString[i];
+    }
+    Name[i-1]= 0;
+
+    inDetails = true;
+
+  } else {
+    // append text to details string
+    // we already know we have enough space
+    wcsncat(Details,TempString,MAXNOTEDETAILS-2);
+    wcscat(Details,TEXT("\r\n"));
+  } // not a new start line
+} // AddChecklistLine
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// Reads checklist from file encoded in system code page.
+///
+/// @retval true  data loaded 
+/// @retval false data load error
+///
+static bool LoadAsciiChecklist(const TCHAR* fileName) {
+  HANDLE hChecklist = CreateFile(
+    fileName, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+  
+  if( hChecklist == INVALID_HANDLE_VALUE) {
+    StartupStore(_T("... Not found notes <%s>%s"),fileName,NEWLINE);
+    return(false);
+  }
+
+  #if TESTBENCH
+  StartupStore(_T(". Loading notes <%s>%s"),fileName,NEWLINE);
+  #endif
+
+  TCHAR TempString[MAXNOTETITLE+1];
+  TCHAR Details[MAXNOTEDETAILS+1];
+  TCHAR Name[MAXNOTETITLE+1];
+  bool inDetails = false;
+
+  Details[0]= 0;
+  Name[0]= 0;
+  TempString[0]=0;
+
+  while (ReadString(hChecklist, MAXNOTETITLE, TempString)) {
+    size_t len = _tcslen(TempString);
+    if (len > 0) {
+      if (TempString[len - 1] == '\r') {
+        TempString[len - 1]= 0;
+        len--;
+      }
+    }
+    // On PNA we may have TWO trailing CR
+    if (len > 0) {
+      if (TempString[len - 1] == '\r') {
+        TempString[len - 1]= 0;
+      }
+    }
+    
+    AddChecklistLine(TempString, Details, Name, inDetails);
+  } // while
+  
+  if (inDetails) {
+    wcscat(Details,TEXT("\r\n"));
+    addChecklist(Name, Details);
+  }
+  
+  CloseHandle(hChecklist);
+  
+  return(true);
+} // LoadAsciiChecklist 
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/// Reads checklist from file encoded in UTF-8.
+///
+/// @retval true  data loaded 
+/// @retval false data load error
+///
+static bool LoadUtfChecklist(const TCHAR* fileName) {
+  Utf8File file;
+  if (!file.Open(fileName, Utf8File::io_read)) {
+    StartupStore(_T("... Not found notes <%s>%s"),fileName,NEWLINE);
+    return(false);
+  }
+
+  #if TESTBENCH
+  StartupStore(_T(". Loading notes <%s>%s"),fileName,NEWLINE);
+  #endif
+
+  TCHAR TempString[MAXNOTETITLE];
+  TCHAR Details[MAXNOTEDETAILS+1];
+  TCHAR Name[MAXNOTETITLE+1];
+  bool inDetails = false;
+
+  Details[0]= 0;
+  Name[0]= 0;
+  TempString[0]=0;
+
+  while (file.ReadLn(TempString, MAXNOTETITLE)) {
+    // skip comment lines
+    if (TempString[0] == _T('#'))
+      continue;
+    
+    AddChecklistLine(TempString, Details, Name, inDetails);
+  } // while
+  
+  if (inDetails) {
+    wcscat(Details,TEXT("\r\n"));
+    addChecklist(Name, Details);
+  }
+ 
+  return(true);
+} // LoadUtfChecklist 
+
+
 // return true if loaded file, false if not loaded
 bool LoadChecklist(short checklistmode) {
-  HANDLE hChecklist;
-
   TCHAR filename[MAX_PATH];
 
   switch(checklistmode) {
@@ -225,118 +373,34 @@ bool LoadChecklist(short checklistmode) {
 		_tcscat(filename,_T("\\"));
 		_tcscat(filename,_T(LKF_CHECKLIST));
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M878_")));  // notepad
-		break;
+    return LoadAsciiChecklist(filename);
 	// logbook TXT
 	case 1:
 		LocalPath(filename, TEXT(LKD_LOGS));
 		_tcscat(filename,_T("\\"));
 		_tcscat(filename,_T(LKF_LOGBOOKTXT));
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M1748_")));  // logbook
-		break;
+    #ifdef ASCIILOGBOOK // old format in ASCII (to be removed after tests)
+    return LoadAsciiChecklist(filename);
+    #else
+    return LoadUtfChecklist(filename);
+    #endif
 	// logbook LST
 	case 2:
 		LocalPath(filename, TEXT(LKD_LOGS));
 		_tcscat(filename,_T("\\"));
 		_tcscat(filename,_T(LKF_LOGBOOKLST));
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M1748_")));  // logbook
+    #ifdef ASCIILOGBOOK // old format in ASCII (to be removed after tests)
+    return LoadAsciiChecklist(filename);
+    #else
+    return LoadUtfChecklist(filename);
+    #endif
 		break;
+  default:
+    StartupStore(_T("... Invalid checklist mode (%d)%s"),checklistmode,NEWLINE);
+    return false;
   }
-
-
-  hChecklist = INVALID_HANDLE_VALUE;
-  hChecklist = CreateFile(filename,
-			  GENERIC_READ,0,NULL,
-			  OPEN_EXISTING,
-			  FILE_ATTRIBUTE_NORMAL,NULL);
-  if( hChecklist == INVALID_HANDLE_VALUE)
-    {
-	StartupStore(_T("... Not found notes <%s>%s"),filename,NEWLINE);
-	return false;
-    }
-
-  #if TESTBENCH
-  StartupStore(_T(". Loading notes <%s>%s"),filename,NEWLINE);
-  #endif
-
-  TCHAR TempString[MAXNOTETITLE+1];
-  TCHAR Details[MAXNOTEDETAILS+1];
-  TCHAR Name[MAXNOTETITLE+1];
-  bool inDetails = false;
-  int i;
-
-  Details[0]= 0;
-  Name[0]= 0;
-  TempString[0]=0;
-
-  while(ReadString(hChecklist,MAXNOTETITLE,TempString))
-    {
-      int len = _tcslen(TempString);
-      if (len>0) {
-	if (TempString[len-1]=='\r') {
-	  TempString[len-1]= 0;
-	  len--;
-	}
-      }
-      // On PNA we may have TWO trailing CR
-      if (len>0) {
-	if (TempString[len-1]=='\r') {
-	  TempString[len-1]= 0;
-	}
-      }
-
-      // check that we are not over the limit of the note details size
-      if ( (_tcslen(Details) + len) > (MAXNOTEDETAILS-MAXNOTELIMITER-1)) {
-
-		// unfortunately, yes. So we need to split the note right now.
-		// And we keep the same Name also for next splitted note.
-          	wcscat(Details,TEXT(NOTECONTINUED) );
-		if (_tcslen(Name)>0 && _tcslen(Details)>0) {
-		 	addChecklist(Name, Details);
-		} 
-		Details[0]= 0;
-		inDetails=true;
-      }
-
-      if(TempString[0]=='[') { // Look for start
-
-	// we found the beginning of a new note, so we may save the last one, if not empty
-	if (inDetails) {
-          wcscat(Details,TEXT("\r\n"));
-	  addChecklist(Name, Details);
-	  Details[0]= 0;
-	  Name[0]= 0;
-	}
-
-	// extract name
-	for (i=1; i<MAXNOTETITLE; i++) {
-	  if (TempString[i]==']') {
-	    break;
-	  }
-	  Name[i-1]= TempString[i];
-	}
-	Name[i-1]= 0;
-
-	inDetails = true;
-
-      } else {
-	// append text to details string
-	// we already know we have enough space
-	wcsncat(Details,TempString,MAXNOTEDETAILS-2);
-	wcscat(Details,TEXT("\r\n"));
-      } // not a new start line
-
-    }
-
-  if (inDetails) {
-    wcscat(Details,TEXT("\r\n"));
-    addChecklist(Name, Details);
-  }
-
-  CloseHandle(hChecklist);
-  hChecklist = NULL;
-
-  return true;
-
 }
 
 // checklistmode: 0=notepad 1=logbook 2=...
