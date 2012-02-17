@@ -657,8 +657,6 @@ See the manual for all combinations.  Default is Multitarget.
 
 @402
 Custom TOP RIGHT key is obtained by clicking on the top right corner of the screen.
-This key is NOT AVAILABLE FOR PARAGLIDERS or HANG GLIDERS, because it is reserved for task reset during time gates
-and for UTM position reporting upon emergencies (read manual for paragliders).
 See the manual for all combinations.  Default is no action. 
 
 @403
