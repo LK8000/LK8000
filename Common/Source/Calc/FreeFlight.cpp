@@ -250,7 +250,9 @@ void ResetFreeFlightStats(DERIVED_INFO *Calculated) {
 
   int i;
 
+  CContestMgr::Instance().Reset(Handicap);
   flightstats.Reset();
+
   Calculated->timeCruising = 0;
   Calculated->timeCircling = 0;
 
@@ -277,7 +279,11 @@ void ResetFreeFlightStats(DERIVED_INFO *Calculated) {
     Calculated->ThermalSources[i].LiftRate= -1.0;
   }
 
-  // MinAltitude is handled separately already taking care of FF
+  // The MaxHeightGain function wait for FF in flight and will update
+  // considering 0 as a no-altitude-set-yet .
+  Calculated->MinAltitude = 0;
+  Calculated->MaxAltitude = 0;
+  Calculated->MaxHeightGain = 0;
 
 
 }
