@@ -85,6 +85,8 @@ static WndFrame *wConfig25=NULL;
 //static WndFrame *wConfig27=NULL; 
 // ADDPAGE  HERE
 static WndButton *buttonPilotName=NULL;
+static WndButton *buttonLiveTrackerusr=NULL;
+static WndButton *buttonLiveTrackerpwd=NULL;
 static WndButton *buttonAircraftType=NULL;
 static WndButton *buttonAircraftRego=NULL;
 static WndButton *buttonCompetitionClass=NULL;
@@ -757,6 +759,41 @@ static void OnPilotNameClicked(WindowControl *Sender) {
   UpdateButtons();
 }
 
+static void OnLiveTrackerusrClicked(WindowControl *Sender) {
+  (void)Sender;
+  TCHAR Temp[100];
+  if (buttonLiveTrackerusr) {
+    #if OLDPROFILES
+    #else
+    _tcscpy(Temp,LiveTrackerusr_Config);
+    #endif
+    dlgTextEntryShowModal(Temp,100);
+    #if OLDPROFILES
+    #else
+    _tcscpy(LiveTrackerusr_Config,Temp);
+    #endif
+    changed = true;
+  }
+  UpdateButtons();
+}
+
+static void OnLiveTrackerpwdClicked(WindowControl *Sender) {
+  (void)Sender;
+  TCHAR Temp[100];
+  if (buttonLiveTrackerpwd) {
+    #if OLDPROFILES
+    #else
+    _tcscpy(Temp,LiveTrackerpwd_Config);
+    #endif
+    dlgTextEntryShowModal(Temp,100);
+    #if OLDPROFILES
+    #else
+    _tcscpy(LiveTrackerpwd_Config,Temp);
+    #endif
+    changed = true;
+  }
+  UpdateButtons();
+}
 
 static void OnCompetitionClassClicked(WindowControl *Sender)
 {
@@ -1524,6 +1561,14 @@ static void setVariables(void) {
   if (buttonPilotName) {
     buttonPilotName->SetOnClickNotify(OnPilotNameClicked);
   }
+  buttonLiveTrackerusr = ((WndButton *)wf->FindByName(TEXT("cmdLiveTrackerusr")));
+  if (buttonLiveTrackerusr) {
+    buttonLiveTrackerusr->SetOnClickNotify(OnLiveTrackerusrClicked);
+  }
+  buttonLiveTrackerpwd = ((WndButton *)wf->FindByName(TEXT("cmdLiveTrackerpwd")));
+  if (buttonLiveTrackerpwd) {
+    buttonLiveTrackerpwd->SetOnClickNotify(OnLiveTrackerpwdClicked);
+  }
   buttonAircraftType = ((WndButton *)wf->FindByName(TEXT("cmdAircraftType")));
   if (buttonAircraftType) {
     buttonAircraftType->SetOnClickNotify(OnAircraftTypeClicked);
@@ -2271,6 +2316,12 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
+  wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerInterval"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(iround(LiveTrackerInterval));
+    wp->GetDataField()->SetUnits(TEXT("sec"));
+    wp->RefreshDisplay();
+  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpSafetyMacCready"));
   if (wp) {
@@ -3403,6 +3454,14 @@ void dlgConfigurationShowModal(void){
 #if OLDPROFILES
       SetToRegistry(szRegistryDisableAutoLogger, DisableAutoLogger);
 #endif
+      changed = true;
+    }
+  }
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpLiveTrackerInterval"));
+  if (wp) {
+    if (LiveTrackerInterval != (int)wp->GetDataField()->GetAsFloat()) {
+      LiveTrackerInterval = (int)(wp->GetDataField()->GetAsFloat());
       changed = true;
     }
   }

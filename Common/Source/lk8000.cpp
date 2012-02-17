@@ -50,6 +50,7 @@
 #include "InputEvents.h"
 #include "Geoid.h"
 #include "RasterTerrain.h"
+#include "LiveTracker.h"
 
 #include "LKObjects.h"
 
@@ -437,6 +438,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   #endif
 #endif
 
+  LiveTrackerInit();
 
   // re-set polar in case devices need the data
   #if TESTBENCH

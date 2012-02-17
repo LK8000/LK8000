@@ -98,8 +98,10 @@ Changed HELP 102
 25/1/2012
 M1775-1778 new Aver Efficiency intervals
 
-
 -----------
 After 3.0a changes...
 -----------
 HELP 402 removed some text
+M1779-1781 new Live tracker config options
+H1258 new livetracker help
+

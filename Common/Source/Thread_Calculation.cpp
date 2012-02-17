@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "Logger.h"
-
+#include "LiveTracker.h"
 
 // PulseEvent is unreliable. But it does not matter anymore, since we should
 // change approach for compatibility with unix.
@@ -118,6 +118,10 @@ DWORD CalculationThread (LPVOID lpvoid) {
     memcpy(&CALCULATED_INFO,&tmp_CALCULATED_INFO,sizeof(DERIVED_INFO));
     UnlockFlightData();
 
+    // update live tracker with new values
+    // this is a nonblocking call, live tracker runs on different thread
+     LiveTrackerUpdate(&tmp_GPS_INFO, &tmp_CALCULATED_INFO);
+    
 #ifdef CPUSTATS
     if ( (GetThreadTimes( hCalculationThread, &CreationTime, &ExitTime,&EndKernelTime,&EndUserTime)) == 0) {
                Cpu_Calc=9999;
