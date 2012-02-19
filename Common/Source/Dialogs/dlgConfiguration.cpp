@@ -85,6 +85,7 @@ static WndFrame *wConfig25=NULL;
 //static WndFrame *wConfig27=NULL; 
 // ADDPAGE  HERE
 static WndButton *buttonPilotName=NULL;
+static WndButton *buttonLiveTrackersrv=NULL;
 static WndButton *buttonLiveTrackerusr=NULL;
 static WndButton *buttonLiveTrackerpwd=NULL;
 static WndButton *buttonAircraftType=NULL;
@@ -753,6 +754,24 @@ static void OnPilotNameClicked(WindowControl *Sender) {
     SetRegistryString(szRegistryPilotName,Temp);
     #else
     _tcscpy(PilotName_Config,Temp);
+    #endif
+    changed = true;
+  }
+  UpdateButtons();
+}
+
+static void OnLiveTrackersrvClicked(WindowControl *Sender) {
+  (void)Sender;
+  TCHAR Temp[100];
+  if (buttonLiveTrackersrv) {
+    #if OLDPROFILES
+    #else
+    _tcscpy(Temp,LiveTrackersrv_Config);
+    #endif
+    dlgTextEntryShowModal(Temp,100);
+    #if OLDPROFILES
+    #else
+    _tcscpy(LiveTrackersrv_Config,Temp);
     #endif
     changed = true;
   }
@@ -1560,6 +1579,10 @@ static void setVariables(void) {
   buttonPilotName = ((WndButton *)wf->FindByName(TEXT("cmdPilotName")));
   if (buttonPilotName) {
     buttonPilotName->SetOnClickNotify(OnPilotNameClicked);
+  }
+  buttonLiveTrackersrv = ((WndButton *)wf->FindByName(TEXT("cmdLiveTrackersrv")));
+  if (buttonLiveTrackersrv) {
+    buttonLiveTrackersrv->SetOnClickNotify(OnLiveTrackersrvClicked);
   }
   buttonLiveTrackerusr = ((WndButton *)wf->FindByName(TEXT("cmdLiveTrackerusr")));
   if (buttonLiveTrackerusr) {
@@ -3462,6 +3485,7 @@ void dlgConfigurationShowModal(void){
   if (wp) {
     if (LiveTrackerInterval != (int)wp->GetDataField()->GetAsFloat()) {
       LiveTrackerInterval = (int)(wp->GetDataField()->GetAsFloat());
+      requirerestart = true;
       changed = true;
     }
   }

@@ -841,6 +841,7 @@ GEXTERN TCHAR FontDesc_MapLabel[256];
 
 // Logger
 GEXTERN TCHAR PilotName_Config[100];
+GEXTERN TCHAR LiveTrackersrv_Config[100];
 GEXTERN TCHAR LiveTrackerusr_Config[100];
 GEXTERN TCHAR LiveTrackerpwd_Config[100];
 GEXTERN TCHAR AircraftType_Config[50];

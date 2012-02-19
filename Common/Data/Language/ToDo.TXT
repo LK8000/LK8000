@@ -102,6 +102,6 @@ M1775-1778 new Aver Efficiency intervals
 After 3.0a changes...
 -----------
 HELP 402 removed some text
-M1779-1781 new Live tracker config options
+M1779-1782 new Live tracker config options
 H1258 new livetracker help
 
