@@ -1341,8 +1341,8 @@ _@M1290_ "Aktualny kierunek"
 _@M1291_ "Strefa"
 _@M1292_ "Najbliższa strefa"
 _@M1293_ "Sonar WŁ"
-_@M1293_ "Sonar WYŁ"
-_@M1294_ "Z boku"
+_@M1294_ "Sonar WYŁ"
+_@M1295_ "Z boku"
 
 # LK info page headers, try to use the same or less number of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!

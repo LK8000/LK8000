@@ -664,7 +664,6 @@ Domyślna wartość to "Rotacja celów".
 
 @402
 Definiuje akcję prawego górnego klawisza.
-Ten klawisz jest NIEDOSTĘPNY dla paralotniarzy, ponieważ jest on zarezerwowany do resetowania zadania w podczas okien czasowych oraz do raportowania koordynatów UTM w przypadku niebezpieczeństw (więcej informacji w instrukcji).
 Domyślnie nie ma zdefiniowanej akcji.
 
 @403
