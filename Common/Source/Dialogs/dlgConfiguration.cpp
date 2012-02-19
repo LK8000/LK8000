@@ -3462,6 +3462,7 @@ void dlgConfigurationShowModal(void){
   if (wp) {
     if (LiveTrackerInterval != (int)wp->GetDataField()->GetAsFloat()) {
       LiveTrackerInterval = (int)(wp->GetDataField()->GetAsFloat());
+      requirerestart = true;
       changed = true;
     }
   }

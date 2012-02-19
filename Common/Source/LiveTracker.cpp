@@ -21,7 +21,7 @@
 
 static bool _ws_inited = false;     //Winsock inited
 static bool _inited = false;        //Winsock + thread inited
-static HANDLE _hThread;             //worker thread handle
+static HANDLE _hThread = NULL;             //worker thread handle
 static DWORD _dwThreadID;           //worker thread ID
 static HANDLE _hNewDataEvent;       //new data event trigger
 
@@ -134,6 +134,12 @@ static char* UrlEncode(char *szText, char* szDst, int bufsize) {
 // Init Live Tracker services, if available
 void LiveTrackerInit()
 {
+  if (LiveTrackerInterval == 0) {
+    // If livetracker is not enabled at startup, we do nothing, 
+    // but in this case LK must be restarted, if user enables it!
+    StartupStore(TEXT(". LiveTracker disabled.%s"), NEWLINE);
+    return;
+  }
   //Init winsock if available
   if (InitWinsock()) {
     _ws_inited = true;
@@ -172,6 +178,7 @@ void LiveTrackerUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   livetracker_point_t newpoint;
   static int logtime = 0;
 
+  if (!_inited) return;               // Do nothing if not inited
   if (Basic->NAVWarning) return;      // Do not log if no gps fix
   if (LiveTrackerInterval==0) return; // Disabled
   
