@@ -664,7 +664,6 @@ Domyślna wartość to "Rotacja celów".
 
 @402
 Definiuje akcję prawego górnego klawisza.
-Ten klawisz jest NIEDOSTĘPNY dla paralotniarzy, ponieważ jest on zarezerwowany do resetowania zadania w podczas okien czasowych oraz do raportowania koordynatów UTM w przypadku niebezpieczeństw (więcej informacji w instrukcji).
 Domyślnie nie ma zdefiniowanej akcji.
 
 @403
@@ -1657,6 +1656,13 @@ W razie wątpliwości lepiej tą opcję wyłączyć.
 Określa czystość szybowca. Dla czystego statku powietrznego należy ustawiać 100%, a niższe wartości, gdy na profilach pojawiają się muchy lub woda.
 50% oznacza dwukrotne zwiększenie opadania szybowca.
 Jest to domyślna wartość sprawności używanej w oknie Ustawień Podstawowych. 100% jest dobrą wartością domyślną w większości przypadków.
+
+@1258
+[Częstotliwość logowania Live tracker]
+Parametr powinien być włączony (>0), jeśli chcesz uruchomić wysyłanie swojej aktualnej pozycji do serwisu Leonardo live tracker (http://www.livetrack24.com) poprzez Internet.
+Wymaga to abonamentu GPRS/HSDPA, oraz aktywnej internetowej sesji TCP/IP do systemu śledzenia. W celu zalogowania się na serwer LK używa podanej nazwy serwera, loginu i hasła.
+Typ statku powietrznego też jest logowany.
+Jeśli nie jesteś pewien do czego ten parametr służy to lepiej ustaw domyślną wartość 0.
 
 @9999
 Pomoc dla tego elementu nie jest dostępna!
