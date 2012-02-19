@@ -525,8 +525,9 @@
 <WndProperty Name="prpLiveTrackerInterval" Caption="_@M1779_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1258_">
 <DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0.0 Max=60.0 Step="1.0" />
 </WndProperty>
-<WndButton Name="cmdLiveTrackerusr" Caption="_@M1780_" X=2 Y=-1 Width=123  Height=25 Font=2 />
-<WndButton Name="cmdLiveTrackerpwd" Caption="_@M1781_" X=126 Y=-999 Width=123  Height=25 Font=2 />
+<WndButton Name="cmdLiveTrackersrv" Caption="_@M1782_" X=2 Y=-1 Width=78  Height=25 Font=2 />
+<WndButton Name="cmdLiveTrackerusr" Caption="_@M1780_" X=81 Y=-999 Width=78  Height=25 Font=2 />
+<WndButton Name="cmdLiveTrackerpwd" Caption="_@M1781_" X=160 Y=-999 Width=78  Height=25 Font=2 />
 <WndProperty Name="prpPilotFile" Caption="" X=2 Y=-999  Width=0 Height=0 CaptionWidth=0 Font=2 Help="">
 <DataField name="" DataType="filereader" Min=0 Max=200 Step=1/>
 </WndProperty>

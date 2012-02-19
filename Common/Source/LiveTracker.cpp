@@ -12,18 +12,13 @@
 //Use to log transactions to the startupstore
 //#define LT_DEBUG  1
 
-// Use test server in TESTBENCH mode
-#ifdef TESTBENCH
-#define LIVETRACKER_SERVER_NAME  "test.livetrack24.com"
-#else
-#define LIVETRACKER_SERVER_NAME  "www.livetrack24.com"
-#endif
-
 static bool _ws_inited = false;     //Winsock inited
 static bool _inited = false;        //Winsock + thread inited
 static HANDLE _hThread = NULL;             //worker thread handle
 static DWORD _dwThreadID;           //worker thread ID
 static HANDLE _hNewDataEvent;       //new data event trigger
+#define SERVERNAME_MAX  100
+static char _server_name[SERVERNAME_MAX];      // server name, or ip
 
 // Data point definition to send to the server
 typedef struct {
@@ -148,8 +143,10 @@ void LiveTrackerInit()
     if ((_hThread = CreateThread (NULL, 0, (LPTHREAD_START_ROUTINE)&LiveTrackerThread, 0, 0, &_dwThreadID)) != NULL)
     {
       SetThreadPriority(_hThread, THREAD_PRIORITY_NORMAL);
+      unicode2ascii(LiveTrackersrv_Config, _server_name, SERVERNAME_MAX);
+      _server_name[SERVERNAME_MAX-1]=0;
+      StartupStore(TEXT(". LiveTracker will use server %s if available.%s"), LiveTrackersrv_Config, NEWLINE);
       _inited = true;
-      StartupStore(TEXT(". LiveTracker will use server %s if available.%s"), TEXT(LIVETRACKER_SERVER_NAME), NEWLINE);
     }
   }
   if (!_inited) StartupStore(TEXT(". LiveTracker init failed.%s"),NEWLINE);
@@ -308,7 +305,7 @@ static int DoTransactionToServer(char *txbuf, unsigned int txbuflen, char *rxbuf
   StartupStore(TEXT("Livetracker send: %s%s"), utxbuf, NEWLINE);
   #endif
   
-  s = EstablishConnection(LIVETRACKER_SERVER_NAME);
+  s = EstablishConnection(_server_name);
   if ( s==INVALID_SOCKET ) return -1;
 
   //Send the query to the server
@@ -374,7 +371,7 @@ static int GetUserIDFromServer()
   UrlEncode(txbuf, password, sizeof(username));
   sprintf(txbuf,"GET /client.php?op=login&user=%s&pass=%s HTTP/1.0\r\nHost: %s\r\n\r\n",
         username, password,
-        LIVETRACKER_SERVER_NAME);
+        _server_name);
 
   rxlen = DoTransactionToServer(txbuf, strlen(txbuf), rxcontent, sizeof(rxcontent));
   if ( rxlen > 0) {
@@ -502,7 +499,7 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id, unsigned int *sessio
           LiveTrackerInterval,
           vehicle_type,
           vehicle_name,
-          LIVETRACKER_SERVER_NAME);
+          _server_name);
   }
   
   rxlen = DoTransactionToServer(txbuf, strlen(txbuf), rxbuf, sizeof(rxbuf));
@@ -535,7 +532,7 @@ static bool SendEndOfTrackPacket(unsigned int *packet_id, unsigned int *session_
     sprintf(txbuf,"GET /track.php?leolive=3&sid=%u&pid=%u&prid=0 HTTP/1.0\r\nHost: %s\r\n\r\n",
           *session_id,
           *packet_id,
-          LIVETRACKER_SERVER_NAME);
+          _server_name);
   }
   
   rxlen = DoTransactionToServer(txbuf, strlen(txbuf), rxbuf, sizeof(rxbuf));
@@ -574,7 +571,7 @@ static bool SendGPSPointPacket(unsigned int *packet_id, unsigned int *session_id
           sendpoint->ground_speed * 3.6,
           sendpoint->course_over_ground,
           sendpoint->unix_timestamp,
-          LIVETRACKER_SERVER_NAME);
+          _server_name);
   }
   
   rxlen = DoTransactionToServer(txbuf, strlen(txbuf), rxbuf, sizeof(rxbuf));

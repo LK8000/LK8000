@@ -1748,8 +1748,9 @@ _@M1778_ "45 seconds"
 
 # New livetracker configuration
 _@M1779_ "Live tracker log interval "
-_@M1780_ "Live tracker user"
-_@M1781_ "password"
+_@M1780_ "User"
+_@M1781_ "Password"
+_@M1782_ "LT Server"
 
 ############################################################
 #                  - MENU MESSAGES - 

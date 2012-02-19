@@ -1669,8 +1669,8 @@ This is the default value used by Efficiency in Basic Settings menu, loaded on s
 @1258
 [Live tracker log interval in seconds]
 Set this on (>0), if you want to enable sending position data to Leonardo live tracker services over the internet. (http://www.livetrack24.com)
-This requires a GPRS/HSDPA data plan, and an active TCP/IP internet connection to the tracking server. LK uses the given user name and
-password to login to the server. Glider type submitted as well. If unsure, set the default value of 0 which means off.
+This requires a GPRS/HSDPA data plan, and an active TCP/IP internet connection to the tracking server. LK uses the given server, user name and
+password to login to the server. Aircraft type submitted as well. If unsure, set the default value of 0 which means off.
 
 @9999
 No help available on this item!

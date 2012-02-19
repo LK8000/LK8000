@@ -585,6 +585,7 @@ void Globals_Init(void) {
 
   // Logger
   PilotName_Config[0]=_T('\0');
+  LiveTrackersrv_Config[0]=_T('\0');
   LiveTrackerusr_Config[0]=_T('\0');
   LiveTrackerpwd_Config[0]=_T('\0');
   AircraftType_Config[0]=_T('\0');
