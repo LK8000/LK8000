@@ -1746,6 +1746,12 @@ _@M1776_ "5 sekund"
 _@M1777_ "10 sekund"
 _@M1778_ "45 sekund"
 
+# New livetracker configuration
+_@M1779_ "Częstotliwość Live Tracker "
+_@M1780_ "Użytkownik"
+_@M1781_ "Hasło"
+_@M1782_ "Serwer LT"
+
 ############################################################
 #                  - MENU MESSAGES - 
 #
