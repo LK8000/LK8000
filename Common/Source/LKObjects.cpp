@@ -188,49 +188,49 @@ void LKObjects_Delete() {
   #endif
 
   // No need to delete stock objects
-  DeleteObject(LKBrush_Petrol);
-  DeleteObject(LKBrush_LightGreen);
-  DeleteObject(LKBrush_DarkGreen);
-  DeleteObject(LKBrush_Ndark);
-  DeleteObject(LKBrush_Nlight);
-  DeleteObject(LKBrush_Mdark);
-  DeleteObject(LKBrush_Mlight);
-  DeleteObject(LKBrush_Red);
-  DeleteObject(LKBrush_Yellow);
-  DeleteObject(LKBrush_Green);
-  DeleteObject(LKBrush_DarkYellow2);
-  DeleteObject(LKBrush_Orange);
-  DeleteObject(LKBrush_Lake);
-  DeleteObject(LKBrush_Blue);
-  DeleteObject(LKBrush_Indigo);
-  DeleteObject(LKBrush_LightGrey);
-  DeleteObject(LKBrush_LcdGreen);
-  DeleteObject(LKBrush_LcdDarkGreen);
-  DeleteObject(LKBrush_Grey);
-  DeleteObject(LKBrush_Emerald);
-  DeleteObject(LKBrush_DarkSlate);
-  DeleteObject(LKBrush_RifleGrey);
-  DeleteObject(LKBrush_LightCyan);
+  if(LKBrush_Petrol) DeleteObject(LKBrush_Petrol);
+  if(LKBrush_LightGreen) DeleteObject(LKBrush_LightGreen);
+  if(LKBrush_DarkGreen) DeleteObject(LKBrush_DarkGreen);
+  if(LKBrush_Ndark) DeleteObject(LKBrush_Ndark);
+  if(LKBrush_Nlight) DeleteObject(LKBrush_Nlight);
+  if(LKBrush_Mdark) DeleteObject(LKBrush_Mdark);
+  if(LKBrush_Mlight) DeleteObject(LKBrush_Mlight);
+  if(LKBrush_Red) DeleteObject(LKBrush_Red);
+  if(LKBrush_Yellow) DeleteObject(LKBrush_Yellow);
+  if(LKBrush_Green) DeleteObject(LKBrush_Green);
+  if(LKBrush_DarkYellow2) DeleteObject(LKBrush_DarkYellow2);
+  if(LKBrush_Orange) DeleteObject(LKBrush_Orange);
+  if(LKBrush_Lake) DeleteObject(LKBrush_Lake);
+  if(LKBrush_Blue) DeleteObject(LKBrush_Blue);
+  if(LKBrush_Indigo) DeleteObject(LKBrush_Indigo);
+  if(LKBrush_LightGrey) DeleteObject(LKBrush_LightGrey);
+  if(LKBrush_LcdGreen) DeleteObject(LKBrush_LcdGreen);
+  if(LKBrush_LcdDarkGreen) DeleteObject(LKBrush_LcdDarkGreen);
+  if(LKBrush_Grey) DeleteObject(LKBrush_Grey);
+  if(LKBrush_Emerald) DeleteObject(LKBrush_Emerald);
+  if(LKBrush_DarkSlate) DeleteObject(LKBrush_DarkSlate);
+  if(LKBrush_RifleGrey) DeleteObject(LKBrush_RifleGrey);
+  if(LKBrush_LightCyan) DeleteObject(LKBrush_LightCyan);
 
-  DeleteObject(LKPen_Black_N0);
-  DeleteObject(LKPen_Black_N1);
-  DeleteObject(LKPen_Black_N2);
-  DeleteObject(LKPen_Black_N3);
-  DeleteObject(LKPen_Black_N4);
-  DeleteObject(LKPen_Black_N5);
-  DeleteObject(LKPen_White_N0);
-  DeleteObject(LKPen_White_N1);
-  DeleteObject(LKPen_White_N2);
-  DeleteObject(LKPen_White_N3);
-  DeleteObject(LKPen_White_N4);
-  DeleteObject(LKPen_White_N5);
-  DeleteObject(LKPen_Petrol_C2);
-  DeleteObject(LKPen_Green_N1);
-  DeleteObject(LKPen_Red_N1);
-  DeleteObject(LKPen_Blue_N1);
-  DeleteObject(LKPen_Grey_N1);
-  DeleteObject(LKPen_Grey_N2);
-  DeleteObject(LKPen_GABRG);
+  if(LKPen_Black_N0) DeleteObject(LKPen_Black_N0);
+  if(LKPen_Black_N1) DeleteObject(LKPen_Black_N1);
+  if(LKPen_Black_N2) DeleteObject(LKPen_Black_N2);
+  if(LKPen_Black_N3) DeleteObject(LKPen_Black_N3);
+  if(LKPen_Black_N4) DeleteObject(LKPen_Black_N4);
+  if(LKPen_Black_N5) DeleteObject(LKPen_Black_N5);
+  if(LKPen_White_N0) DeleteObject(LKPen_White_N0);
+  if(LKPen_White_N1) DeleteObject(LKPen_White_N1);
+  if(LKPen_White_N2) DeleteObject(LKPen_White_N2);
+  if(LKPen_White_N3) DeleteObject(LKPen_White_N3);
+  if(LKPen_White_N4) DeleteObject(LKPen_White_N4);
+  if(LKPen_White_N5) DeleteObject(LKPen_White_N5);
+  if(LKPen_Petrol_C2) DeleteObject(LKPen_Petrol_C2);
+  if(LKPen_Green_N1) DeleteObject(LKPen_Green_N1);
+  if(LKPen_Red_N1) DeleteObject(LKPen_Red_N1);
+  if(LKPen_Blue_N1) DeleteObject(LKPen_Blue_N1);
+  if(LKPen_Grey_N1) DeleteObject(LKPen_Grey_N1);
+  if(LKPen_Grey_N2) DeleteObject(LKPen_Grey_N2);
+  if(LKPen_GABRG) DeleteObject(LKPen_GABRG);
 
   int i;
 
@@ -246,23 +246,22 @@ void LKObjects_Delete() {
   for(i=0;i<NUMAIRSPACEBRUSHES;i++) {
 	if (MapWindow::hAirspaceBrushes[i]) DeleteObject(MapWindow::hAirspaceBrushes[i]);
   }
-  DeleteObject(MapWindow::hAboveTerrainBrush);
-
-  DeleteObject((HPEN)MapWindow::hpStartFinishThick);
-  DeleteObject((HPEN)MapWindow::hpMapScale2);
-  DeleteObject((HPEN)MapWindow::hpWindThick);
-  DeleteObject((HPEN)MapWindow::hpCompass);
-  DeleteObject((HPEN)MapWindow::hpThermalBand);
-  DeleteObject((HPEN)MapWindow::hpThermalBandGlider);
-  DeleteObject((HPEN)MapWindow::hpFinalGlideBelow);
-  DeleteObject((HPEN)MapWindow::hpFinalGlideBelowLandable);
-  DeleteObject((HPEN)MapWindow::hpFinalGlideAbove);
-  DeleteObject((HPEN)MapWindow::hpTerrainLine);
-  DeleteObject((HPEN)MapWindow::hpTerrainLineBg);
-  DeleteObject((HPEN)MapWindow::hpVisualGlideLightBlack);
-  DeleteObject((HPEN)MapWindow::hpVisualGlideHeavyBlack);
-  DeleteObject((HPEN)MapWindow::hpVisualGlideLightRed);
-  DeleteObject((HPEN)MapWindow::hpVisualGlideHeavyRed);
+  if (MapWindow::hAboveTerrainBrush) DeleteObject(MapWindow::hAboveTerrainBrush);
+  if (MapWindow::hpStartFinishThick) DeleteObject((HPEN)MapWindow::hpStartFinishThick);
+  if (MapWindow::hpMapScale2) DeleteObject((HPEN)MapWindow::hpMapScale2);
+  if (MapWindow::hpWindThick) DeleteObject((HPEN)MapWindow::hpWindThick);
+  if (MapWindow::hpCompass) DeleteObject((HPEN)MapWindow::hpCompass);
+  if (MapWindow::hpThermalBand) DeleteObject((HPEN)MapWindow::hpThermalBand);
+  if (MapWindow::hpThermalBandGlider) DeleteObject((HPEN)MapWindow::hpThermalBandGlider);
+  if (MapWindow::hpFinalGlideBelow) DeleteObject((HPEN)MapWindow::hpFinalGlideBelow);
+  if (MapWindow::hpFinalGlideBelowLandable) DeleteObject((HPEN)MapWindow::hpFinalGlideBelowLandable);
+  if (MapWindow::hpFinalGlideAbove) DeleteObject((HPEN)MapWindow::hpFinalGlideAbove);
+  if (MapWindow::hpTerrainLine) DeleteObject((HPEN)MapWindow::hpTerrainLine);
+  if (MapWindow::hpTerrainLineBg) DeleteObject((HPEN)MapWindow::hpTerrainLineBg);
+  if (MapWindow::hpVisualGlideLightBlack) DeleteObject((HPEN)MapWindow::hpVisualGlideLightBlack);
+  if (MapWindow::hpVisualGlideHeavyBlack) DeleteObject((HPEN)MapWindow::hpVisualGlideHeavyBlack);
+  if (MapWindow::hpVisualGlideLightRed) DeleteObject((HPEN)MapWindow::hpVisualGlideLightRed);
+  if (MapWindow::hpVisualGlideHeavyRed) DeleteObject((HPEN)MapWindow::hpVisualGlideHeavyRed);
 
 
 }
