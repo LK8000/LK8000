@@ -234,12 +234,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       hInvBackgroundBrush[8] = LKBrush_RifleGrey;
       hInvBackgroundBrush[9] = LKBrush_Black;
 
-      for (i=0; i<NUMAIRSPACEBRUSHES; i++) {
-	hAirspaceBrushes[i] =
-	  CreatePatternBrush((HBITMAP)hAirspaceBitmap[i]);
-      }
-      hAboveTerrainBrush = CreatePatternBrush((HBITMAP)hAboveTerrainBitmap);
-
       hpCompassBorder = LKPen_Black_N2;
       hpAircraft = LKPen_White_N3;
       hpAircraftBorder = LKPen_Black_N1;
@@ -328,11 +322,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       DeleteObject((HPEN)hpFinalGlideBelowLandable);
 
       DeleteObject((HPEN)hpCompassBorder);
-
-      for(i=0;i<NUMAIRSPACEBRUSHES;i++)
-	{
-	  DeleteObject(hAirspaceBrushes[i]);
-	}
 
       LKUnloadFixedBitmaps(); // After removing brushes using Bitmaps
       LKUnloadProfileBitmaps(); 

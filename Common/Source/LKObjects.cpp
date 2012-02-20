@@ -16,6 +16,7 @@
 
 #define STATIC_LKOBJECTS
 #include "LKObjects.h"
+#include "Bitmaps.h"
 
 #include "RGB.h"
 
@@ -80,8 +81,9 @@ void LKObjects_Create() {
   //
   // MapWindow objects
   //
+  int i;
 
-  for (int i=0; i<AIRSPACECLASSCOUNT; i++) {
+  for (i=0; i<AIRSPACECLASSCOUNT; i++) {
 	MapWindow::hAirspacePens[i] = CreatePen(PS_SOLID, NIBLSCALE(2), MapWindow::Colours[MapWindow::iAirspaceColour[i]]);
   }
   MapWindow::hAirspaceBorderPen = CreatePen(PS_SOLID, NIBLSCALE(10), RGB_WHITE);
@@ -119,6 +121,16 @@ void LKObjects_Create() {
   MapWindow::hSnailPens[12] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[12]);
   MapWindow::hSnailPens[13] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[13]);
   MapWindow::hSnailPens[14] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[14]);
+
+  for (i=0; i<NUMAIRSPACEBRUSHES; i++) {
+	MapWindow::hAirspaceBrushes[i] = CreatePatternBrush((HBITMAP)hAirspaceBitmap[i]);
+  }
+  MapWindow::hAboveTerrainBrush = CreatePatternBrush((HBITMAP)hAboveTerrainBitmap);
+
+
+
+
+
 
 }
 
@@ -173,13 +185,18 @@ void LKObjects_Delete() {
   int i;
 
   for (i=0; i<AIRSPACECLASSCOUNT; i++) {
-	DeleteObject(MapWindow::hAirspacePens[i]);
+	if(MapWindow::hAirspacePens[i]) DeleteObject(MapWindow::hAirspacePens[i]);
   }
   DeleteObject(MapWindow::hAirspaceBorderPen);
 
   for (i=0; i<NUMSNAILCOLORS; i++) {
-	DeleteObject(MapWindow::hSnailPens[i]);
+	if (MapWindow::hSnailPens[i]) DeleteObject(MapWindow::hSnailPens[i]);
   }
+
+  for(i=0;i<NUMAIRSPACEBRUSHES;i++) {
+	if (MapWindow::hAirspaceBrushes[i]) DeleteObject(MapWindow::hAirspaceBrushes[i]);
+  }
+  DeleteObject(MapWindow::hAboveTerrainBrush);
 
 
 
