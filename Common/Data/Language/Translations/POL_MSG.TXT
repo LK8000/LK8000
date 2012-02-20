@@ -1341,8 +1341,8 @@ _@M1290_ "Aktualny kierunek"
 _@M1291_ "Strefa"
 _@M1292_ "Najbliższa strefa"
 _@M1293_ "Sonar WŁ"
-_@M1293_ "Sonar WYŁ"
-_@M1294_ "Z boku"
+_@M1294_ "Sonar WYŁ"
+_@M1295_ "Z boku"
 
 # LK info page headers, try to use the same or less number of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!
@@ -1710,11 +1710,11 @@ _@M1745_ "STATEK POW."
 _@M1746_ "SYSTEM"
 # new button caption on task overview dialog, appears only in PG/HG mode
 _@M1747_ "Okna Czasowe"
-_@M1748_ "Księga lotów"
+_@M1748_ "Chronometraż"
 _@M1749_ "Nie znaleziono pliku"
 _@M1750_ "Pusty"
-_@M1751_ "POTWIERDŹ WYCZYSZCZENIE KSIĘGI LOTÓW?"
-_@M1752_ "WYCZYŚĆ KSIĘGĘ LOTÓW"
+_@M1751_ "POTWIERDŹ WYCZYSZCZENIE CHRONOMETRAŻA?"
+_@M1752_ "WYCZYŚĆ CHRONOMETRAŻ"
 _@M1753_ "Lista lotów"
 _@M1754_ "Rozpoczęcie lotu swobodnego"
 _@M1755_ "Holowanie"
@@ -1745,6 +1745,12 @@ _@M1775_ "3 sekundy"
 _@M1776_ "5 sekund"
 _@M1777_ "10 sekund"
 _@M1778_ "45 sekund"
+
+# New livetracker configuration
+_@M1779_ "Częstotliwość Live Tracker "
+_@M1780_ "Użytkownik"
+_@M1781_ "Hasło"
+_@M1782_ "Serwer LT"
 
 ############################################################
 #                  - MENU MESSAGES - 
@@ -1873,10 +1879,10 @@ _@M2115_ "TEnergy"
 _@M2116_ "Zmień\nTeren"
 # Auto MC thermal+final glide mode, keep max 7 chars!
 _@M2117_ "Kom+Dol"
-_@M2118_ "Księga lotów"
-_@M2119_ "Księga\nDetale"
-_@M2120_ "Wyczyść\nKsięgę"
-_@M2121_ "Księga\nLista"
+_@M2118_ "Chrono"
+_@M2119_ "Chrono\nDetale"
+_@M2120_ "Wyczyść\nChrono"
+_@M2121_ "Chrono\nLista"
 _@M2122_ "ZAPISZ\nSystem."
 
 # Note for developers: remember LKLanguage MAX_MESSAGE limit
