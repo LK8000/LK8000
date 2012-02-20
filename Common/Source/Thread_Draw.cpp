@@ -89,13 +89,6 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
   
   bool first = true;
 
-  // This must be moved to LKObjects
-  for (int i=0; i<AIRSPACECLASSCOUNT; i++) {
-    hAirspacePens[i] =
-      CreatePen(PS_SOLID, NIBLSCALE(2), Colours[iAirspaceColour[i]]);
-  }
-  hAirspaceBorderPen = CreatePen(PS_SOLID, NIBLSCALE(10), RGB_WHITE);
-
   while (!CLOSETHREAD) 
     {
       WaitForSingleObject(drawTriggerEvent, 5000);

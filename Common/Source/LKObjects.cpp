@@ -77,6 +77,11 @@ void LKObjects_Create() {
   LKPen_GABRG = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(3),RGB_MAGENTA);
 
 
+  for (int i=0; i<AIRSPACECLASSCOUNT; i++) {
+	MapWindow::hAirspacePens[i] = CreatePen(PS_SOLID, NIBLSCALE(2), MapWindow::Colours[MapWindow::iAirspaceColour[i]]);
+  }
+  MapWindow::hAirspaceBorderPen = CreatePen(PS_SOLID, NIBLSCALE(10), RGB_WHITE);
+
 }
 
 
@@ -127,6 +132,10 @@ void LKObjects_Delete() {
   DeleteObject(LKPen_Petrol_C2);
   DeleteObject(LKPen_GABRG);
 
+  for (int i=0; i<AIRSPACECLASSCOUNT; i++) {
+	DeleteObject(MapWindow::hAirspacePens[i]);
+  }
+  DeleteObject(MapWindow::hAirspaceBorderPen);
 
 }
 

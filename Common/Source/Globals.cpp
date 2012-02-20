@@ -611,7 +611,12 @@ void Globals_Init(void) {
   // Load and use higher resolution bitmaps
   UseHiresBitmap=false;
 
-  // ADD NEW GLOBALS here ^^^ //
+
+
+
+
+  // ^ ADD NEW GLOBALS up here ^ 
+  // ---------------------------
 
 }
 

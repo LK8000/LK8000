@@ -352,14 +352,6 @@ class MapWindow {
   }
 
  private:
-  // 12 is number of airspace types
-  static HPEN hAirspacePens[AIRSPACECLASSCOUNT];
-  static HPEN hAirspaceBorderPen;
-  static HPEN hSnailPens[NUMSNAILCOLORS];
-  static COLORREF hSnailColours[NUMSNAILCOLORS];
-  static HBRUSH hAirspaceBrushes[NUMAIRSPACEBRUSHES];
-  static HBRUSH hAboveTerrainBrush;
-  static COLORREF Colours[NUMAIRSPACECOLORS];
 
   static BOOL Initialised;
   static bool GliderCenter;
@@ -367,6 +359,16 @@ class MapWindow {
   static bool LandableReachable;
 
  public:
+
+  // 12 is number of airspace types
+  static COLORREF Colours[NUMAIRSPACECOLORS];
+  static HPEN hAirspacePens[AIRSPACECLASSCOUNT];
+  static HPEN hAirspaceBorderPen;
+  static HPEN hSnailPens[NUMSNAILCOLORS];
+  static COLORREF hSnailColours[NUMSNAILCOLORS];
+  static HBRUSH hAirspaceBrushes[NUMAIRSPACEBRUSHES];
+  static HBRUSH hAboveTerrainBrush;
+
   static Zoom zoom;
   static Mode mode;
 

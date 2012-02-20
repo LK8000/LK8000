@@ -93,12 +93,9 @@ COLORREF MapWindow::hSnailColours[NUMSNAILCOLORS];
 POINT MapWindow::Groundline[NUMTERRAINSWEEPS+1];
 
 // 16 is number of airspace types
-int      MapWindow::iAirspaceBrush[AIRSPACECLASSCOUNT] = 
-  {2,0,0,0,3,3,3,3,0,3,2,3,3,3,3,3};
-int      MapWindow::iAirspaceColour[AIRSPACECLASSCOUNT] = 
-  {5,0,0,10,0,0,10,2,0,10,9,3,7,7,7,10};
-int      MapWindow::iAirspaceMode[AIRSPACECLASSCOUNT] =
-  {0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0};
+int      MapWindow::iAirspaceBrush[AIRSPACECLASSCOUNT] = {2,0,0,0,3,3,3,3,0,3,2,3,3,3,3,3};
+int      MapWindow::iAirspaceColour[AIRSPACECLASSCOUNT] = {5,0,0,10,0,0,10,2,0,10,9,3,7,7,7,10};
+int      MapWindow::iAirspaceMode[AIRSPACECLASSCOUNT] = {0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0};
 
 HPEN MapWindow::hAirspacePens[AIRSPACECLASSCOUNT];
 HPEN MapWindow::hAirspaceBorderPen;
@@ -117,7 +114,6 @@ COLORREF MapWindow::Colours[NUMAIRSPACECOLORS] =
    RGB(0x7F,0x00,0x7F), RGB(0x00,0x7F,0x7F),
    RGB(0xFF,0xFF,0xFF), RGB(0xC0,0xC0,0xC0),
    RGB(0x7F,0x7F,0x7F), RGB(0x00,0x00,0x00)};
-
 
 HBRUSH MapWindow::hbCompass;
 HBRUSH MapWindow::hbThermalBand;
@@ -371,11 +367,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 	{
 	  DeleteObject(hAirspaceBrushes[i]);
 	}
-
-      for (i=0; i<AIRSPACECLASSCOUNT; i++) {
-	DeleteObject(hAirspacePens[i]);
-      }
-      DeleteObject(hAirspaceBorderPen);
 
       for (i=0; i<NUMSNAILCOLORS; i++) {
 	DeleteObject(hSnailPens[i]);
