@@ -77,10 +77,48 @@ void LKObjects_Create() {
   LKPen_GABRG = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(3),RGB_MAGENTA);
 
 
+  //
+  // MapWindow objects
+  //
+
   for (int i=0; i<AIRSPACECLASSCOUNT; i++) {
 	MapWindow::hAirspacePens[i] = CreatePen(PS_SOLID, NIBLSCALE(2), MapWindow::Colours[MapWindow::iAirspaceColour[i]]);
   }
   MapWindow::hAirspaceBorderPen = CreatePen(PS_SOLID, NIBLSCALE(10), RGB_WHITE);
+
+  int iwidth;
+  iwidth=IBLSCALE(MapWindow::SnailWidthScale);
+  MapWindow::hSnailColours[0] = RGB_BLACK;
+  MapWindow::hSnailColours[1] = RGB_INDIGO;
+  MapWindow::hSnailColours[2] = RGB_INDIGO;
+  MapWindow::hSnailColours[3] = RGB_BLUE;
+  MapWindow::hSnailColours[4] = RGB_BLUE;
+  MapWindow::hSnailColours[5] = RGB_LAKE;
+  MapWindow::hSnailColours[6] = RGB_LAKE;
+  MapWindow::hSnailColours[7] = RGB_GREY;
+  MapWindow::hSnailColours[8] = RGB_GREEN;
+  MapWindow::hSnailColours[9] = RGB_GREEN;
+  MapWindow::hSnailColours[10] = RGB_ORANGE;
+  MapWindow::hSnailColours[11] = RGB_ORANGE;
+  MapWindow::hSnailColours[12] = RGB_RED;
+  MapWindow::hSnailColours[13] = RGB_RED;
+  MapWindow::hSnailColours[14] = RGB_DARKRED;
+
+  MapWindow::hSnailPens[0] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[0]);
+  MapWindow::hSnailPens[1] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[1]);
+  MapWindow::hSnailPens[2] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[2]);
+  MapWindow::hSnailPens[3] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[3]);
+  MapWindow::hSnailPens[4] = (HPEN)CreatePen(PS_SOLID,  iwidth/NIBLSCALE(2), MapWindow::hSnailColours[4]);
+  MapWindow::hSnailPens[5] = (HPEN)CreatePen(PS_SOLID,  iwidth/NIBLSCALE(4), MapWindow::hSnailColours[5]);
+  MapWindow::hSnailPens[6] = (HPEN)CreatePen(PS_SOLID,  iwidth/NIBLSCALE(4), MapWindow::hSnailColours[6]);
+  MapWindow::hSnailPens[7] = (HPEN)CreatePen(PS_SOLID,  iwidth/NIBLSCALE(6), MapWindow::hSnailColours[7]);
+  MapWindow::hSnailPens[8] = (HPEN)CreatePen(PS_SOLID,  iwidth/NIBLSCALE(4), MapWindow::hSnailColours[8]);
+  MapWindow::hSnailPens[9] = (HPEN)CreatePen(PS_SOLID,  iwidth/NIBLSCALE(4), MapWindow::hSnailColours[9]);
+  MapWindow::hSnailPens[10] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[10]);
+  MapWindow::hSnailPens[11] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[11]);
+  MapWindow::hSnailPens[12] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[12]);
+  MapWindow::hSnailPens[13] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[13]);
+  MapWindow::hSnailPens[14] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), MapWindow::hSnailColours[14]);
 
 }
 
@@ -132,10 +170,20 @@ void LKObjects_Delete() {
   DeleteObject(LKPen_Petrol_C2);
   DeleteObject(LKPen_GABRG);
 
-  for (int i=0; i<AIRSPACECLASSCOUNT; i++) {
+  int i;
+
+  for (i=0; i<AIRSPACECLASSCOUNT; i++) {
 	DeleteObject(MapWindow::hAirspacePens[i]);
   }
   DeleteObject(MapWindow::hAirspaceBorderPen);
+
+  for (i=0; i<NUMSNAILCOLORS; i++) {
+	DeleteObject(MapWindow::hSnailPens[i]);
+  }
+
+
+
+
 
 }
 

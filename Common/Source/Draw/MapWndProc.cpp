@@ -240,40 +240,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       }
       hAboveTerrainBrush = CreatePatternBrush((HBITMAP)hAboveTerrainBitmap);
 
-	int iwidth;
-	iwidth=IBLSCALE(SnailWidthScale);
-	hSnailColours[0] = RGB_BLACK;
-	hSnailColours[1] = RGB_INDIGO;
-	hSnailColours[2] = RGB_INDIGO;
-	hSnailColours[3] = RGB_BLUE;
-	hSnailColours[4] = RGB_BLUE;
-	hSnailColours[5] = RGB_LAKE;
-	hSnailColours[6] = RGB_LAKE;
-	hSnailColours[7] = RGB_GREY;
-	hSnailColours[8] = RGB_GREEN;
-	hSnailColours[9] = RGB_GREEN;
-	hSnailColours[10] = RGB_ORANGE;
-	hSnailColours[11] = RGB_ORANGE;
-	hSnailColours[12] = RGB_RED;
-	hSnailColours[13] = RGB_RED;
-	hSnailColours[14] = RGB_DARKRED;
-
-	hSnailPens[0] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), hSnailColours[0]);
-	hSnailPens[1] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), hSnailColours[1]);
-	hSnailPens[2] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), hSnailColours[2]);
-	hSnailPens[3] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), hSnailColours[3]);
-	hSnailPens[4] = (HPEN)CreatePen(PS_SOLID,  iwidth/NIBLSCALE(2), hSnailColours[4]);
-	hSnailPens[5] = (HPEN)CreatePen(PS_SOLID,  iwidth/NIBLSCALE(4), hSnailColours[5]);
-	hSnailPens[6] = (HPEN)CreatePen(PS_SOLID,  iwidth/NIBLSCALE(4), hSnailColours[6]);
-	hSnailPens[7] = (HPEN)CreatePen(PS_SOLID,  iwidth/NIBLSCALE(6), hSnailColours[7]);
-	hSnailPens[8] = (HPEN)CreatePen(PS_SOLID,  iwidth/NIBLSCALE(4), hSnailColours[8]);
-	hSnailPens[9] = (HPEN)CreatePen(PS_SOLID,  iwidth/NIBLSCALE(4), hSnailColours[9]);
-	hSnailPens[10] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), hSnailColours[10]);
-	hSnailPens[11] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), hSnailColours[11]);
-	hSnailPens[12] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), hSnailColours[12]);
-	hSnailPens[13] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), hSnailColours[13]);
-	hSnailPens[14] = (HPEN)CreatePen(PS_SOLID, iwidth/NIBLSCALE(2), hSnailColours[14]);
-
       hpCompassBorder = LKPen_Black_N2;
       hpAircraft = LKPen_White_N3;
       hpAircraftBorder = LKPen_Black_N1;
@@ -368,10 +334,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 	  DeleteObject(hAirspaceBrushes[i]);
 	}
 
-      for (i=0; i<NUMSNAILCOLORS; i++) {
-	DeleteObject(hSnailPens[i]);
-      }
-    
       LKUnloadFixedBitmaps(); // After removing brushes using Bitmaps
       LKUnloadProfileBitmaps(); 
       PostQuitMessage (0);
