@@ -166,12 +166,12 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
                                         LPARAM lParam)
 {
   static double Xstart, Ystart;
-  int X,Y;
   int gestX, gestY, gestDir=LKGESTURE_NONE, gestDist=-1;
   double Xlat, Ylat;
   double distance;
-  int width = (int) LOWORD(lParam);
-  int height = (int) HIWORD(lParam);
+
+  int lparam_X = (int) LOWORD(lParam);
+  int lparam_Y = (int) HIWORD(lParam);
   
   static DWORD dwDownTime= 0L, dwUpTime= 0L, dwInterval= 0L;
 
@@ -188,17 +188,17 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       return TRUE;
     case WM_SIZE:
 
-      hDrawBitMap = CreateCompatibleBitmap (hdcScreen, width, height);
+      hDrawBitMap = CreateCompatibleBitmap (hdcScreen, lparam_X, lparam_Y);
       SelectObject(hdcDrawWindow, (HBITMAP)hDrawBitMap);
 
-      hDrawBitMapTmp = CreateCompatibleBitmap (hdcScreen, width, height);
+      hDrawBitMapTmp = CreateCompatibleBitmap (hdcScreen, lparam_X, lparam_Y);
       SelectObject(hDCTemp, (HBITMAP)hDrawBitMapTmp);
 
-      hMaskBitMap = CreateBitmap(width+1, height+1, 1, 1, NULL);
+      hMaskBitMap = CreateBitmap(lparam_X+1, lparam_Y+1, 1, 1, NULL);
       SelectObject(hDCMask, (HBITMAP)hMaskBitMap);
 
       #if NEWSMARTZOOM
-      hQuickDrawBitMap = CreateCompatibleBitmap (hdcScreen, width, height);
+      hQuickDrawBitMap = CreateCompatibleBitmap (hdcScreen, lparam_X, lparam_Y);
       SelectObject(hdcQuickDrawWindow, (HBITMAP)hQuickDrawBitMap);
       #endif
       break;
@@ -247,7 +247,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       if (!LockModeStatus) goto _buttondown;
 
       dwDownTime = GetTickCount();  
-      XstartScreen = LOWORD(lParam); YstartScreen = HIWORD(lParam);
+      XstartScreen = lparam_X; YstartScreen = lparam_Y;
 
 	if (LockModeStatus) {
         	ignorenext=true; // do not interpret the second click of the doubleclick as a real click.
@@ -277,12 +277,10 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 		if (!mode.Is(Mode::MODE_PAN)) break;
 		if (mode.Is(Mode::MODE_TARGET_PAN)) break;
 
-		X = LOWORD(lParam); Y = HIWORD(lParam);
-
 		if (PanRefreshed) {
 			// if map was redrawn, we update our position as well. just like
 			// we just clicked on mouse from here, like in BUTTONDOWN
-			XstartScreen = X; YstartScreen = Y;
+			XstartScreen = lparam_X; YstartScreen = lparam_Y;
 			Screen2LatLon(XstartScreen, YstartScreen, Xstart, Ystart);
 			PanRefreshed=false;
 			// NO! This is causing false clicks passing underneath CANCEL button!
@@ -290,8 +288,8 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 			break;
 		}
 		// set a min mouse move to trigger panning
-		if ( (abs(XstartScreen-X)+abs(YstartScreen-Y)) > NIBLSCALE(10)) {
-			Screen2LatLon(X, Y, Xlat, Ylat);
+		if ( (abs(XstartScreen-lparam_X)+abs(YstartScreen-lparam_Y)) > NIBLSCALE(10)) {
+			Screen2LatLon(lparam_X, lparam_Y, Xlat, Ylat);
 			PanLongitude += (Xstart-Xlat);
 			PanLatitude  += (Ystart-Ylat);
 			ignorenext=true;
@@ -315,7 +313,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 				OnFastPanning=false;
 				RefreshMap();
 			} else {
-				XtargetScreen=X; YtargetScreen=Y;
+				XtargetScreen=lparam_X; YtargetScreen=lparam_Y;
 				// Lets not forget that if we stop moving the mouse, or we exit the windows while
 				// dragging, or we endup on another window -f.e. a button - then we will NOT
 				// receive any more events in this loop! For this reason we must let the
@@ -393,12 +391,12 @@ _buttondown:
 
       GetClientRect(hWnd,&rc);
 
-      X = LOWORD(lParam); Y = HIWORD(lParam); 
+      //X = LOWORD(lParam); Y = HIWORD(lParam); 
 
-	gestY=YstartScreen-Y;
-	gestX=XstartScreen-X;
+	gestY=YstartScreen-lparam_Y;
+	gestX=XstartScreen-lparam_X;
 
-	if (  dontdrawthemap && (Y <(rc.bottom-BottomSize)) ) { 
+	if (  dontdrawthemap && (lparam_Y <(rc.bottom-BottomSize)) ) { 
 
 		gestDist=isqrt4((long)((gestX*gestX) + (gestY*gestY)));
 
@@ -426,7 +424,7 @@ _buttondown:
 	} 
 
         if (AATEnabled && mode.Is(Mode::MODE_TARGET_PAN)) {
-          Screen2LatLon(X, Y, Xlat, Ylat);
+          Screen2LatLon(lparam_X, lparam_Y, Xlat, Ylat);
           LockTaskData();
           targetMoved = true;
           targetMovedLat = Ylat;
@@ -446,8 +444,8 @@ _buttondown:
 		else
 			topicon=MapRect.bottom-MapRect.top-AIRCRAFTMENUSIZE;
 
-if ( (X > ((MapRect.right-MapRect.left)- AIRCRAFTMENUSIZE)) &&
-   (Y > topicon) ) {
+if ( (lparam_X > ((MapRect.right-MapRect.left)- AIRCRAFTMENUSIZE)) &&
+   (lparam_Y > topicon) ) {
 
 		// short click on aircraft icon
 		//
@@ -487,7 +485,7 @@ goto_menu:
       // end aircraft icon check				
       } 
 	if (mapmode8000) { 
-	if ( (X <= (MapRect.left + COMPASSMENUSIZE)) && (Y <= (MapRect.top+COMPASSMENUSIZE)) ) {
+	if ( (lparam_X <= (MapRect.left + COMPASSMENUSIZE)) && (lparam_Y <= (MapRect.top+COMPASSMENUSIZE)) ) {
 		if (!CustomKeyHandler(CKI_TOPLEFT)) {
 			// Well we better NOT play a click while zoomin in and out, because on slow
 			// devices it will slow down the entire process.
@@ -508,7 +506,7 @@ goto_menu:
 
       if (ISPARAGLIDER) {
 	// Use the compass to pullup UTM informations to paragliders
-	if ( (X > ((MapRect.right-MapRect.left)- COMPASSMENUSIZE)) && (Y <= MapRect.top+COMPASSMENUSIZE) ) {
+	if ( (lparam_X > ((MapRect.right-MapRect.left)- COMPASSMENUSIZE)) && (lparam_Y <= MapRect.top+COMPASSMENUSIZE) ) {
 
 		if ((dwInterval >= DOUBLECLICKINTERVAL) ) {
 
@@ -537,7 +535,7 @@ goto_menu:
 	// else { 
 	// change in 2.3q: we let paragliders use the CK as well
 	{ 
-		if ( (X > ((MapRect.right-MapRect.left)- COMPASSMENUSIZE)) && (Y <= MapRect.top+COMPASSMENUSIZE) ) {
+		if ( (lparam_X > ((MapRect.right-MapRect.left)- COMPASSMENUSIZE)) && (lparam_Y <= MapRect.top+COMPASSMENUSIZE) ) {
 			if (!CustomKeyHandler(CKI_TOPRIGHT)) {
 				#if 0
 				#ifndef DISABLEAUDIO
@@ -565,26 +563,26 @@ goto_menu:
 	if (dontdrawthemap) {
 
 		if ( gestDir == LKGESTURE_UP) {
-			ProcessVirtualKey(X,Y,dwInterval,LKGESTURE_UP);
+			ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_UP);
 			break;
 		}
 		if ( gestDir == LKGESTURE_DOWN) {
-			ProcessVirtualKey(X,Y,dwInterval,LKGESTURE_DOWN);
+			ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_DOWN);
 			break;
 		}
 		if ( gestDir == LKGESTURE_LEFT) {
-			ProcessVirtualKey(X,Y,dwInterval,LKGESTURE_LEFT);
+			ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_LEFT);
 			break;
 		}
 		if ( gestDir == LKGESTURE_RIGHT) {
-			ProcessVirtualKey(X,Y,dwInterval,LKGESTURE_RIGHT);
+			ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_RIGHT);
 			break;
 		}
 
 
 		// We are here when lk8000, and NO moving map displayed: virtual enter, virtual up/down, or 
 		// navbox operations including center key.
-		wParam=ProcessVirtualKey(X,Y,dwInterval,LKGESTURE_NONE);
+		wParam=ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_NONE);
                 #ifdef DEBUG_MAPINPUT
 		DoStatusMessage(_T("DBG-035 navboxes")); 
                 #endif
@@ -601,8 +599,8 @@ goto_menu:
 	// if clicking on navboxes, process fast virtual keys
 	// maybe check LK8000 active?
 	// This point is selected when in MapSpaceMode==MSM_MAP, i.e. lk8000 with moving map on.
-	if (  DrawBottom && (Y >= (rc.bottom-BottomSize)) && !mode.AnyPan() ) {
-		wParam=ProcessVirtualKey(X,Y,dwInterval,LKGESTURE_NONE);
+	if (  DrawBottom && (lparam_Y >= (rc.bottom-BottomSize)) && !mode.AnyPan() ) {
+		wParam=ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_NONE);
                 #ifdef DEBUG_MAPINPUT
 		DoStatusMessage(_T("DBG-034 navboxes")); 
                 #endif
@@ -622,12 +620,12 @@ goto_menu:
 	if (gestDist>=0)
 		distance = gestDist /ScreenScale;
 	else
-		distance = isqrt4((long)((XstartScreen-X)*(XstartScreen-X)+ (YstartScreen-Y)*(YstartScreen-Y))) /ScreenScale;
+		distance = isqrt4((long)((XstartScreen-lparam_X)*(XstartScreen-lparam_X)+ (YstartScreen-lparam_Y)*(YstartScreen-lparam_Y))) /ScreenScale;
 
 	#ifdef DEBUG_VIRTUALKEYS
 	TCHAR buf[80]; char sbuf[80];
 	sprintf(sbuf,"%.0f",distance);
-	wsprintf(buf,_T("XY=%d,%d dist=%S Up=%ld Down=%ld Int=%ld"),X,Y,sbuf,dwUpTime,dwDownTime,dwInterval);
+	wsprintf(buf,_T("XY=%d,%d dist=%S Up=%ld Down=%ld Int=%ld"),lparam_X,lparam_Y,sbuf,dwUpTime,dwDownTime,dwInterval);
         DoStatusMessage(buf);
 	#endif
 
@@ -636,7 +634,7 @@ goto_menu:
 
       // Process faster clicks here and no precision, but let DBLCLK pass through
       // VK are used in the bottom line in this case, forced on for this situation.
-      if (  DrawBottom && (Y >= (rc.bottom-BottomSize)) ) {
+      if (  DrawBottom && (lparam_Y >= (rc.bottom-BottomSize)) ) {
 		// DoStatusMessage(_T("Click on hidden map ignored")); 
 
 		// do not process virtual key if it is timed as a DBLCLK
@@ -644,13 +642,13 @@ goto_menu:
 		// and avoid triggering unwanted waypoints details
 		if (dwInterval >= ( (DOUBLECLICKINTERVAL/2-30) )) { // fast dblclk required here.
 			#ifdef DEBUG_VIRTUALKEYS // 100320
-			wParam=ProcessVirtualKey(X,Y,dwInterval,LKGESTURE_NONE);
+			wParam=ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_NONE);
 			if (wParam==0) {
 				DoStatusMessage(_T("P00 Virtual Key 0")); 
 				break;
 			}
 			#else
-			ProcessVirtualKey(X,Y,dwInterval,LKGESTURE_NONE);
+			ProcessVirtualKey(lparam_X,lparam_Y,dwInterval,LKGESTURE_NONE);
 			#endif
 			break; 
 		}
@@ -659,7 +657,7 @@ goto_menu:
       }
       if (dontdrawthemap) break;
 
-      Screen2LatLon(X, Y, Xlat, Ylat);
+      Screen2LatLon(lparam_X, lparam_Y, Xlat, Ylat);
 #if FASTPAN 
       if (SIMMODE && (!mode.Is(Mode::MODE_TARGET_PAN) && (distance>NIBLSCALE(36)))) {
 #else
@@ -709,11 +707,11 @@ goto_menu:
 					yup=ytmp+MapWindow::MapRect.top;
 					ydown=MapWindow::MapRect.bottom-BottomSize-ytmp;
 
-					if (Y<yup) {
+					if (lparam_Y<yup) {
 						// pg UP = zoom in
 						wParam = 0x26;
 					} else {
-						if (Y>ydown) {
+						if (lparam_Y>ydown) {
 							// pg DOWN = zoom out
 							wParam = 0x28;
 						} 
@@ -736,8 +734,8 @@ goto_menu:
 				if (SIMMODE) {
 					if (mode.AnyPan()) {
 						// match only center screen
-						if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(5)) && 
-						      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(5)) ) {
+						if (  (abs(lparam_X-((rc.left+rc.right)/2)) <NIBLSCALE(5)) && 
+						      (abs(lparam_Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(5)) ) {
 							// LKTOKEN  _@M204_ = "Current position updated" 
 							DoStatusMessage(gettext(TEXT("_@M204_")));
 							GPS_INFO.Latitude=PanLatitude;
@@ -751,7 +749,7 @@ goto_menu:
 							break;
 						}
 						// Ok, so we reposition the aircraft
-						Screen2LatLon(X,Y,PanLongitude,PanLatitude);
+						Screen2LatLon(lparam_X,lparam_Y,PanLongitude,PanLatitude);
 						// LKTOKEN  _@M204_ = "Current position updated" 
 						DoStatusMessage(gettext(TEXT("_@M204_")));
 						GPS_INFO.Latitude=PanLatitude;
@@ -766,8 +764,8 @@ goto_menu:
 						break;
 
 					// match only center screen
-					if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(100)) && 
-					      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(100)) ) {
+					if (  (abs(lparam_X-((rc.left+rc.right)/2)) <NIBLSCALE(100)) && 
+					      (abs(lparam_Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(100)) ) {
 
 						if (CustomKeyHandler(CKI_CENTERSCREEN)) break;
 					}
