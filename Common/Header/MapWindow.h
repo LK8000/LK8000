@@ -580,10 +580,7 @@ class MapWindow {
   static double GetDisplayAngle() { return DisplayAngle; }
   static void SetAutoOrientation(bool doreset);
 
- private:
-
-  static HBRUSH   hInvBackgroundBrush[LKMAXBACKGROUNDS]; // 091110 fixed number of backgrounds in MapWindow
-
+  static HBRUSH   hInvBackgroundBrush[LKMAXBACKGROUNDS]; // fixed number of backgrounds in MapWindow
 
   static      HPEN hpAircraft;
   static      HPEN hpAircraftBorder;
@@ -619,6 +616,9 @@ class MapWindow {
   static      HBRUSH hbFinalGlideAbove;
   static      HBRUSH hbWind;
 
+  static HPEN    hpCompassBorder;
+
+ private:
 
   static DWORD fpsTime0;
 
@@ -642,7 +642,6 @@ class MapWindow {
   static double FindMapScale(double Value);
   static void FillScaleListForEngineeringUnits(void);
   
-  static HPEN    hpCompassBorder;
 
   #if TOPOFASTLABEL
   // How many slots in screen, divided by horizontal blocks on vertical positions

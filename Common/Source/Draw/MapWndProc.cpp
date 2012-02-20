@@ -166,7 +166,6 @@ int XstartScreen, YstartScreen, XtargetScreen, YtargetScreen;
 LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
                                         LPARAM lParam)
 {
-  int i;
   static double Xstart, Ystart;
   int X,Y;
   int gestX, gestY, gestDir=LKGESTURE_NONE, gestDist=-1;
@@ -222,69 +221,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       AlphaBlendInit();
 
       LKLoadFixedBitmaps();
-    
-      hInvBackgroundBrush[0] = LKBrush_White;
-      hInvBackgroundBrush[1] = LKBrush_LightGrey;
-      hInvBackgroundBrush[2] = LKBrush_LcdGreen;
-      hInvBackgroundBrush[3] = LKBrush_LcdDarkGreen;
-      hInvBackgroundBrush[4] = LKBrush_Grey; 
-      hInvBackgroundBrush[5] = LKBrush_Lake;
-      hInvBackgroundBrush[6] = LKBrush_Emerald;
-      hInvBackgroundBrush[7] = LKBrush_DarkSlate;
-      hInvBackgroundBrush[8] = LKBrush_RifleGrey;
-      hInvBackgroundBrush[9] = LKBrush_Black;
-
-      hpCompassBorder = LKPen_Black_N2;
-      hpAircraft = LKPen_White_N3;
-      hpAircraftBorder = LKPen_Black_N1;
-
-      hpWind = LKPen_Black_N2;
-
-      hpWindThick = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(4), RGB(255,220,220));
-
-      //if (ISGAAIRCRAFT)
-	hpBearing = LKPen_GABRG;
-      //else
-	//hpBearing = LKPen_Black_N2;
-
-      hpBestCruiseTrack = LKPen_Blue_N1;
-      hpCompass = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_BLACK);
-      hpThermalBand = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB(0x40,0x40,0xFF));
-      hpThermalBandGlider = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB(0x00,0x00,0x30));
-
-      hpFinalGlideBelow = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB(0xFF,0xA0,0xA0));	// another light red
-      hpFinalGlideBelowLandable = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB(255,196,0));	// another dark yellow
-
-      // TODO enhancement: support red/green Color blind
-      hpFinalGlideAbove = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB(0xA0,0xFF,0xA0));	// another light green
-
-      hpStartFinishThin=LKPen_Red_N1;
-      hpMapScale = LKPen_Black_N1;
-
-
-      hpStartFinishThick=(HPEN)CreatePen(PS_SOLID, NIBLSCALE(2)+1, taskcolor);
-      hpMapScale2 = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1)+1, RGB_BLACK);
-      // TerrainLine is for shade, Bg is for perimeter
-      hpTerrainLine = (HPEN)CreatePen(PS_DASH, (1), RGB(0x30,0x30,0x30));
-      hpTerrainLineBg = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_LCDDARKGREEN);
-      hpVisualGlideLightBlack = (HPEN)CreatePen(PS_DASH, (1), RGB_BLACK);
-      hpVisualGlideHeavyBlack = (HPEN)CreatePen(PS_DASH, (2), RGB_BLACK);
-      hpVisualGlideLightRed = (HPEN)CreatePen(PS_DASH, (1), RGB_RED);
-      hpVisualGlideHeavyRed = (HPEN)CreatePen(PS_DASH, (2), RGB_RED);
-
-      hbThermalBand=LKBrush_Emerald;
-      hbCompass=LKBrush_White;
-      hbBestCruiseTrack=LKBrush_Blue;
-      hbFinalGlideBelow=LKBrush_Red;
-      hbFinalGlideAbove=LKBrush_Green;
-      hbFinalGlideBelowLandable=LKBrush_Orange;
-      hbWind=LKBrush_Grey;
-
-      // Scalelist filled up in DrawThread, in function Mapwindow::FillScaleListForEngineeringUnits()
-      //ScaleListCount = propGetScaleList(ScaleList, sizeof(ScaleList)/sizeof(ScaleList[0]));
-      //zoom.RequestedScale(LimitMapScale(zoom.RequestedScale()));
-
-
+   
       // Signal that draw thread can run now
       Initialised = TRUE;
 
@@ -304,24 +241,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       #endif
 
       AlphaBlendDestroy();
-
-      DeleteObject((HPEN)hpWindThick);
-
-      DeleteObject((HPEN)hpThermalBand);
-      DeleteObject((HPEN)hpThermalBandGlider);
-      DeleteObject((HPEN)hpFinalGlideAbove);
-      DeleteObject((HPEN)hpFinalGlideBelow);
-      DeleteObject((HPEN)hpTerrainLine);
-      DeleteObject((HPEN)hpTerrainLineBg);
-      DeleteObject((HPEN)hpStartFinishThick);
-
-      DeleteObject((HPEN)hpVisualGlideLightBlack); // VENTA3
-      DeleteObject((HPEN)hpVisualGlideLightRed); // VENTA3
-      DeleteObject((HPEN)hpVisualGlideHeavyRed); // VENTA3
-      DeleteObject((HPEN)hpVisualGlideHeavyBlack); // VENTA3
-      DeleteObject((HPEN)hpFinalGlideBelowLandable);
-
-      DeleteObject((HPEN)hpCompassBorder);
 
       LKUnloadFixedBitmaps(); // After removing brushes using Bitmaps
       LKUnloadProfileBitmaps(); 

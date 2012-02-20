@@ -127,9 +127,51 @@ void LKObjects_Create() {
   }
   MapWindow::hAboveTerrainBrush = CreatePatternBrush((HBITMAP)hAboveTerrainBitmap);
 
+  MapWindow::hInvBackgroundBrush[0] = LKBrush_White;
+  MapWindow::hInvBackgroundBrush[1] = LKBrush_LightGrey;
+  MapWindow::hInvBackgroundBrush[2] = LKBrush_LcdGreen;
+  MapWindow::hInvBackgroundBrush[3] = LKBrush_LcdDarkGreen;
+  MapWindow::hInvBackgroundBrush[4] = LKBrush_Grey;
+  MapWindow::hInvBackgroundBrush[5] = LKBrush_Lake;
+  MapWindow::hInvBackgroundBrush[6] = LKBrush_Emerald;
+  MapWindow::hInvBackgroundBrush[7] = LKBrush_DarkSlate;
+  MapWindow::hInvBackgroundBrush[8] = LKBrush_RifleGrey;
+  MapWindow::hInvBackgroundBrush[9] = LKBrush_Black;
+
+  MapWindow::hpCompassBorder = LKPen_Black_N2;
+  MapWindow::hpAircraft = LKPen_White_N3;
+  MapWindow::hpAircraftBorder = LKPen_Black_N1;
+  MapWindow::hpWind = LKPen_Black_N2;
+  MapWindow::hpBearing = LKPen_GABRG;
+  MapWindow::hpBestCruiseTrack = LKPen_Blue_N1;
+
+  extern COLORREF taskcolor;
+  MapWindow::hpStartFinishThick=(HPEN)CreatePen(PS_SOLID, NIBLSCALE(2)+1, taskcolor);
+  MapWindow::hpMapScale2 = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1)+1, RGB_BLACK);
+  MapWindow::hpWindThick = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(4), RGB(255,220,220));
+  MapWindow::hpCompass = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB_BLACK);
+  MapWindow::hpThermalBand = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB(0x40,0x40,0xFF));
+  MapWindow::hpThermalBandGlider = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB(0x00,0x00,0x30));
+  MapWindow::hpFinalGlideBelow = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB(0xFF,0xA0,0xA0)); // another light red
+  MapWindow::hpFinalGlideBelowLandable = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB(255,196,0));      // another dark yellow
+  MapWindow::hpFinalGlideAbove = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB(0xA0,0xFF,0xA0)); // another light green
+  MapWindow::hpTerrainLine = (HPEN)CreatePen(PS_DASH, (1), RGB(0x30,0x30,0x30)); // shade
+  MapWindow::hpTerrainLineBg = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_LCDDARKGREEN); // perimeter
+  MapWindow::hpVisualGlideLightBlack = (HPEN)CreatePen(PS_DASH, (1), RGB_BLACK);
+  MapWindow::hpVisualGlideHeavyBlack = (HPEN)CreatePen(PS_DASH, (2), RGB_BLACK);
+  MapWindow::hpVisualGlideLightRed = (HPEN)CreatePen(PS_DASH, (1), RGB_RED);
+  MapWindow::hpVisualGlideHeavyRed = (HPEN)CreatePen(PS_DASH, (2), RGB_RED);
 
 
-
+  MapWindow::hpStartFinishThin=LKPen_Red_N1;
+  MapWindow::hpMapScale = LKPen_Black_N1;
+  MapWindow::hbThermalBand=LKBrush_Emerald;
+  MapWindow::hbCompass=LKBrush_White;
+  MapWindow::hbBestCruiseTrack=LKBrush_Blue;
+  MapWindow::hbFinalGlideBelow=LKBrush_Red;
+  MapWindow::hbFinalGlideAbove=LKBrush_Green;
+  MapWindow::hbFinalGlideBelowLandable=LKBrush_Orange;
+  MapWindow::hbWind=LKBrush_Grey;
 
 
 }
@@ -174,12 +216,12 @@ void LKObjects_Delete() {
   DeleteObject(LKPen_White_N3);
   DeleteObject(LKPen_White_N4);
   DeleteObject(LKPen_White_N5);
+  DeleteObject(LKPen_Petrol_C2);
   DeleteObject(LKPen_Green_N1);
   DeleteObject(LKPen_Red_N1);
   DeleteObject(LKPen_Blue_N1);
   DeleteObject(LKPen_Grey_N1);
   DeleteObject(LKPen_Grey_N2);
-  DeleteObject(LKPen_Petrol_C2);
   DeleteObject(LKPen_GABRG);
 
   int i;
@@ -198,9 +240,24 @@ void LKObjects_Delete() {
   }
   DeleteObject(MapWindow::hAboveTerrainBrush);
 
-
-
+  DeleteObject((HPEN)MapWindow::hpStartFinishThick);
+  DeleteObject((HPEN)MapWindow::hpMapScale2);
+  DeleteObject((HPEN)MapWindow::hpWindThick);
+  DeleteObject((HPEN)MapWindow::hpCompass);
+  DeleteObject((HPEN)MapWindow::hpThermalBand);
+  DeleteObject((HPEN)MapWindow::hpThermalBandGlider);
+  DeleteObject((HPEN)MapWindow::hpFinalGlideBelow);
+  DeleteObject((HPEN)MapWindow::hpFinalGlideBelowLandable);
+  DeleteObject((HPEN)MapWindow::hpFinalGlideAbove);
+  DeleteObject((HPEN)MapWindow::hpTerrainLine);
+  DeleteObject((HPEN)MapWindow::hpTerrainLineBg);
+  DeleteObject((HPEN)MapWindow::hpVisualGlideLightBlack);
+  DeleteObject((HPEN)MapWindow::hpVisualGlideHeavyBlack);
+  DeleteObject((HPEN)MapWindow::hpVisualGlideLightRed);
+  DeleteObject((HPEN)MapWindow::hpVisualGlideHeavyRed);
 
 
 }
+
+
 
