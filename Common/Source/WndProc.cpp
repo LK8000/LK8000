@@ -411,11 +411,6 @@ void Shutdown(void) {
   }
   StartupStore(_T(". Finished shutdown %s%s"), WhatTimeIsIt(),NEWLINE);
   LKRunStartEnd(false);
-  // quitting PC version while menus are up will not terminate correctly. this is a workaround
-  #if (WINDOWSPC>0)
-  StartupStore(TEXT(". Program terminated%s"),NEWLINE); 
-  exit(0);
-  #endif 
 
 #ifdef DEBUG
   TCHAR foop[80];
