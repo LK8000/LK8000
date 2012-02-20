@@ -26,13 +26,20 @@ extern void ResetNearestTopology();
 // Attention: after InitLKScreen, also InitLKFonts should be called. 
 void InitLKScreen() {
 
-#if (WINDOWSPC>0)
-  int iWidth=SCREENWIDTH;
-  int iHeight=SCREENHEIGHT;
-#else
-  int iWidth=GetSystemMetrics(SM_CXSCREEN);
-  int iHeight=GetSystemMetrics(SM_CYSCREEN);
-#endif
+  static bool doinit=true;
+  int iWidth=0, iHeight=0;
+
+  // When we change resolution, we dont set defaults
+  if (doinit) {
+	#if (WINDOWSPC>0)
+	iWidth=SCREENWIDTH;
+	iHeight=SCREENHEIGHT;
+	#else
+	iWidth=GetSystemMetrics(SM_CXSCREEN);
+	iHeight=GetSystemMetrics(SM_CYSCREEN);
+	#endif
+	doinit=false;
+  }
 
   ScreenSizeX=iWidth;
   ScreenSizeY=iHeight;
@@ -40,6 +47,7 @@ void InitLKScreen() {
   ScreenSizeR.bottom=iHeight-1;
   ScreenSizeR.left=0;
   ScreenSizeR.right=iWidth-1;
+
 
   int maxsize=0;
   int minsize=0;
@@ -122,42 +130,49 @@ void InitLKScreen() {
 		LKVarioSize=50;
 		// dscale=480/240=2  800/dscale=400 -(70+2+2)=  326 x dscale = 652
 		LKwdlgConfig=652;
+		BottomSize=80; // Title+Value-4
 		break;
 	case (ScreenSize_t)ss400x240:
 		GestureSize=50;
 		LKVarioSize=25;
 		// dscale=240/240=1  400/dscale=400 -(70+2+2)=  326 x dscale = 326
 		LKwdlgConfig=326;
+		BottomSize=40; // Title+Value-4
 		break;
 	case (ScreenSize_t)ss640x480:
 		GestureSize=50;
 		LKVarioSize=40;
 		// dscale=480/240=2  640/dscale=320 -(70+2+2)=  246 x dscale = 492
 		LKwdlgConfig=492;
+		BottomSize=72; // Title+Value-4
 		break;
 	case (ScreenSize_t)ss896x672:
 		GestureSize=50;
 		LKVarioSize=56;
 		// dscale=672/240=2.8  896/dscale=320 -(70+2+2)=  246 x dscale = 689
 		LKwdlgConfig=689;
+		BottomSize=78; // Title+Value-4
 		break;
 	case (ScreenSize_t)ss480x272:
 		GestureSize=50;
 		LKVarioSize=30;
 		// dscale=272/240=1.133  480/dscale=424 -(70+2+2)=  350 x dscale = 397
 		LKwdlgConfig=395;
+		BottomSize=48; // Title+Value-4 plus something more
 		break;
 	case (ScreenSize_t)ss720x408:
 		GestureSize=50;
 		LKVarioSize=45;
 		// dscale=408/240=1.133  720/dscale=423 -(70+2+2)=  350 x dscale = 594
 		LKwdlgConfig=594;
+		BottomSize=72; // Title+Value-4 plus something more
 		break;
 	case (ScreenSize_t)ss480x234:
 		GestureSize=50;
 		LKVarioSize=30;
 		// dscale=234/240=0.975  480/dscale=492 -(70+2+2)=  418 x dscale = 407
 		LKwdlgConfig=405;
+		BottomSize=41; // Title+Value-4
 		break;
 	case (ScreenSize_t)ss320x240:
 		GestureSize=50;
@@ -165,28 +180,46 @@ void InitLKScreen() {
 		// dscale=240/240=1  320/dscale=320 -(70+2+2)=  246 x dscale = 246
 		// but 246 is too long..
 		LKwdlgConfig=244;
+		BottomSize=38;
 		break;
 	// PORTRAIT MODES
 	case (ScreenSize_t)ss480x640:
 		GestureSize=50;
 		LKVarioSize=30;
+		BottomSize=135;
 		break;
 	case (ScreenSize_t)ss480x800:
 		GestureSize=50;
 		LKVarioSize=30;
 		// dscale=240/240=1  400/dscale=400 -(70+2+2)=  326 x dscale = 326
 		LKwdlgConfig=324;
+		BottomSize=135;
 		break;
 	case (ScreenSize_t)ss240x320:
 		GestureSize=50;
 		LKVarioSize=13;
+		BottomSize=68;
+		break;
+	case (ScreenSize_t)ss272x480:
+		GestureSize=50;
+		LKVarioSize=30;
+		BottomSize=80; // Title+Value-4  a bit bigger here
 		break;
 	default:
 		GestureSize=50;
 		LKVarioSize=30;
+		BottomSize=38; // Title+Value-4
 		break;
   }
-}
+
+  // Used by MapWndProc touch key ckecks to know if a key is on the bottombar
+  BottomBarY=(MapWindow::MapRect.bottom-MapWindow::MapRect.top)-BottomSize-NIBLSCALE(2);
+
+
+} // End of LKInitScreen
+
+
+
 
 
 //

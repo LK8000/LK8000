@@ -178,13 +178,9 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
   bool dontdrawthemap=(DONTDRAWTHEMAP);
   bool mapmode8000=(MAPMODE8000);
 
-  static short navboxesY;
   // Attention... this is duplicated inside Utils2, I am lazy 
   // apparently only #include is duplicated, so no problems
   static int AIRCRAFTMENUSIZE=0, COMPASSMENUSIZE=0;
-
-  navboxesY=(MapWindow::MapRect.bottom-MapWindow::MapRect.top)-BottomSize-NIBLSCALE(2); // BUGFIX 091125
-
 
   switch (uMsg)
     {
@@ -264,7 +260,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       // Careful! If you ignorenext, any event timed as double click of course will be affected.
       // and this means also fast clicking on bottombar!!
       // so first lets see if we are in lk8000 text screens.. 
-      if (dontdrawthemap || (mapmode8000 && (YstartScreen >=navboxesY))) {  
+      if (dontdrawthemap || (mapmode8000 && (YstartScreen >=BottomBarY))) {  
 		// do not ignore next, let buttonup get the signal
 		break;
       }

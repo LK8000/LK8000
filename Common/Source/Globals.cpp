@@ -611,7 +611,8 @@ void Globals_Init(void) {
   // Load and use higher resolution bitmaps
   UseHiresBitmap=false;
 
-
+  // Coordinate Y of bottombar area valid for click
+  BottomBarY=0;
 
 
 
