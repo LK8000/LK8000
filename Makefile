@@ -300,6 +300,7 @@ LIBRARY	:=\
 LKINTER	:=\
 	$(NTR)/LKCustomKeyHandler.cpp\
 	$(NTR)/LKInit.cpp\
+	$(NTR)/LKInitScreen.cpp\
 	$(NTR)/LKInterface.cpp \
 	$(NTR)/OverTargets.cpp\
 	$(NTR)/VirtualKeys.cpp\
