@@ -2220,11 +2220,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
         
         // Step1 Init calculations
         CAirspace::StartWarningCalculation( Basic, Calculated );
-        ++step;
-        break;
-        
-    case 1:
-        // MULTICALC STEP 2
+
         // Step2 select airspaces in range, and do warning calculations on it, add to interest list
         _airspaces_of_interest.clear();
         for (it=_airspaces_near.begin(); it != _airspaces_near.end(); ++it) {
@@ -2250,8 +2246,8 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
         ++step;
         break;
         
-    case 2:
-        // MULTICALC STEP 3
+    case 1:
+        // MULTICALC STEP 2
         // Step3 Run warning fsms, refine warnings in fly zones, collect user messages
         bool there_is_msg;
         for (it=_airspaces_of_interest.begin(); it != _airspaces_of_interest.end(); ++it) {
