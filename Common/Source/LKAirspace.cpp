@@ -2301,7 +2301,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
           _tcsncpy(NearestAirspaceVName, _selected_airspace->Name(), NAME_SIZE);
           NearestAirspaceVName[NAME_SIZE]=0;
           NearestAirspaceVDist = _selected_airspace->LastCalculatedVDistance();
-        } else if (_sideview_nearest != NULL){
+        } else if (_sideview_nearest != NULL) {
           //use nearest distances, if no selection
           _tcsncpy(NearestAirspaceName, _sideview_nearest->Name(), NAME_SIZE);
           NearestAirspaceName[NAME_SIZE]=0;
@@ -2310,6 +2310,11 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
           _tcsncpy(NearestAirspaceVName, _sideview_nearest->Name(), NAME_SIZE);
           NearestAirspaceVName[NAME_SIZE]=0;
           NearestAirspaceVDist = _sideview_nearest->LastCalculatedVDistance();
+        } else {
+          NearestAirspaceName[0]=0;
+          NearestAirspaceHDist=0;
+          NearestAirspaceVName[0]=0;
+          NearestAirspaceVDist=0;
         }
 #endif
         step = 0;
