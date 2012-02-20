@@ -111,6 +111,9 @@ void CAirspace::Hash(char *hashout, int maxbufsize) const
 
 void CAirspace::AirspaceAGLLookup(double av_lat, double av_lon, double *basealt_out, double *topalt_out) const
 {
+  double base_out = _base.Altitude;
+  double top_out = _top.Altitude;
+  
   if (((_base.Base == abAGL) || (_top.Base == abAGL))) {
     RasterTerrain::Lock();
     // want most accurate rounding here
@@ -118,24 +121,20 @@ void CAirspace::AirspaceAGLLookup(double av_lat, double av_lon, double *basealt_
     double th = RasterTerrain::GetTerrainHeight(av_lat, av_lon);
 
     if (th==TERRAIN_INVALID) th=0; //@ 101027 FIX
-    
-    if (_base.Base == abAGL) {
-      if (_base.AGL>=0) {
-        if (basealt_out) *basealt_out = _base.AGL+th;
-      } else {
-        if (basealt_out) *basealt_out = th;
-      }
-    }
-    if (_top.Base == abAGL) {
-      if (_top.AGL>=0) {
-        if (topalt_out) *topalt_out = _top.AGL+th;
-      } else {
-        if (topalt_out) *topalt_out = th;
-      }
-    }
     // 101027 We still use 0 altitude for no terrain, what else can we do..
     RasterTerrain::Unlock();
+    
+    if (_base.Base == abAGL) {
+      base_out = th;
+      if (_base.AGL>=0) base_out += _base.AGL;
+    }
+    if (_top.Base == abAGL) {
+      top_out = th;
+      if (_top.AGL>=0) top_out += _top.AGL;
+    }
   }
+  if (basealt_out) *basealt_out = base_out;
+  if (topalt_out) *topalt_out = top_out;
 }
 
 // Called when QNH changed
