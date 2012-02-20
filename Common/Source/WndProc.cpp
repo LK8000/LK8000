@@ -97,12 +97,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       memset (&s_sai, 0, sizeof (s_sai));
       s_sai.cbSize = sizeof (s_sai);
 #endif
-      //if (hWnd==hWndMainWindow) {
       if (iTimerID == 0) {
         iTimerID = SetTimer(hWnd,1000,500,NULL); // 500ms  2 times per second
       }
-
-      //      hWndCB = CreateRpCommandBar(hWnd);
 
       break;
 
@@ -183,7 +180,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_CLOSE:
 
-      // ASSERT(hWnd==hWndMainWindow);
+      LKASSERT(hWnd==hWndMainWindow);
       if((hWnd==hWndMainWindow) && 
          (MessageBoxX(hWndMainWindow,
 		// LKTOKEN  _@M198_ = "Confirm Exit?"
@@ -195,7 +192,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             KillTimer(hWnd,iTimerID);
             iTimerID = 0;
           }
-          
+
           Shutdown();
         }
       break;

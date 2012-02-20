@@ -12,7 +12,6 @@
 #include "McReady.h"
 #include "InputEvents.h"
 #include "Modeltype.h"
-#include "LKObjects.h"
 #include "Bitmaps.h"
 #include "RGB.h"
 #include "DoInits.h"
@@ -220,8 +219,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
   
       AlphaBlendInit();
 
-      LKLoadFixedBitmaps();
-   
       // Signal that draw thread can run now
       Initialised = TRUE;
 
@@ -241,9 +238,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       #endif
 
       AlphaBlendDestroy();
-
-      LKUnloadFixedBitmaps(); // After removing brushes using Bitmaps
-      LKUnloadProfileBitmaps(); 
       PostQuitMessage (0);
 
       break;

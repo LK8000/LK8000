@@ -238,6 +238,9 @@ extern bool OnFastPanning;
 #endif
     
     }
+  #if TESTBENCH
+  StartupStore(_T("... Thread_Draw terminated\n"));
+  #endif
   THREADEXIT = TRUE;
   return 0;
 }
@@ -278,12 +281,18 @@ void MapWindow::ResumeDrawingThread(void)
 
 void MapWindow::CloseDrawingThread(void)
 {
+  #if TESTBENCH
+  StartupStore(_T("... CloseDrawingThread started\n"));
+  #endif
   CLOSETHREAD = TRUE;
   SetEvent(drawTriggerEvent); // wake self up
   LockTerrainDataGraphics();
   SuspendDrawingThread();
   UnlockTerrainDataGraphics();
   while(!THREADEXIT) { Sleep(100); };
+  #if TESTBENCH
+  StartupStore(_T("... CloseDrawingThread finished\n"));
+  #endif
 }
 
 

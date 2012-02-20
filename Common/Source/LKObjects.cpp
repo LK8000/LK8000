@@ -23,6 +23,10 @@
 
 void LKObjects_Create() {
 
+  #if TESTBENCH
+  StartupStore(_T("... LKObjects_Create\n"));
+  #endif
+
   // STOCK BRUSHES
   LKBrush_White = (HBRUSH)GetStockObject(WHITE_BRUSH);
   LKBrush_Black = (HBRUSH)GetStockObject(BLACK_BRUSH);
@@ -178,6 +182,10 @@ void LKObjects_Create() {
 
 
 void LKObjects_Delete() {
+
+  #if TESTBENCH
+  StartupStore(_T("... LKObjects_Delete\n"));
+  #endif
 
   // No need to delete stock objects
   DeleteObject(LKBrush_Petrol);

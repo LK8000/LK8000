@@ -21,6 +21,7 @@
 #include "InputEvents.h"
 #include "Message.h"
 
+#include "Bitmaps.h"
 #include "LKObjects.h"
 
 using std::min;
@@ -103,9 +104,6 @@ void PreloadInitialisation(bool ask) {
 	LKProfileLoad(startProfileFile); // this is calling adjust and InitRuntime itself
     }
 #endif
-
-    // Force reload of bitmaps in the Draw thread 
-    LKSW_ReloadProfileBitmaps=true;
 
     // LKTOKEN _@M1206_ "Initialising..."
 	CreateProgressDialog(gettext(TEXT("_@M1206_"))); 
@@ -267,7 +265,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 #endif
 
 
+  LKLoadFixedBitmaps();
+  LKLoadProfileBitmaps();
   LKObjects_Create(); 
+
 
   ButtonLabel::CreateButtonLabels(rc);
   ButtonLabel::SetLabelText(0,TEXT("MODE"));

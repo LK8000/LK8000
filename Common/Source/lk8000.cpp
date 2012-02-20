@@ -53,6 +53,7 @@
 #include "LiveTracker.h"
 
 #include "LKObjects.h"
+#include "Bitmaps.h"
 
 using std::min;
 using std::max;
@@ -442,7 +443,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
 
   // re-set polar in case devices need the data
   #if TESTBENCH
-  StartupStore(TEXT(". GlidePolar::SetBallast%s"),NEWLINE);
+  StartupStore(TEXT(".... GlidePolar::SetBallast%s"),NEWLINE);
   #endif
   GlidePolar::SetBallast();
 
@@ -455,14 +456,14 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
 
   // Finally ready to go
   #if TESTBENCH
-  StartupStore(TEXT(". CreateDrawingThread%s"),NEWLINE);
+  StartupStore(TEXT(".... WinMain CreateDrawingThread%s"),NEWLINE);
   #endif
   MapWindow::CreateDrawingThread();
   Sleep(100);
 
   SwitchToMapWindow();
   #if TESTBENCH
-  StartupStore(TEXT(". CreateCalculationThread%s"),NEWLINE);
+  StartupStore(TEXT(".... CreateCalculationThread%s"),NEWLINE);
   #endif
   CreateCalculationThread();
   while(!(goCalculationThread)) Sleep(50);
@@ -471,7 +472,9 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   // Currently disabled in LK, we use a dummy ID
   // CreateAssetNumber();
 
-  StartupStore(TEXT(". ProgramStarted=InitDone%s"),NEWLINE);
+  #if TESTBENCH
+  StartupStore(TEXT(".... ProgramStarted=InitDone%s"),NEWLINE);
+  #endif
   ProgramStarted = psInitDone;
 
   GlobalRunning = true;
@@ -481,17 +484,40 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
                            // break on a memory leak
 #endif
 
-  // Main message loop:
-  /* GlobalRunning && */
-  while ( GetMessage(&msg, NULL, 0, 0)) {
+ //
+ // Main message loop
+ //
+
+  #if (1)
+  // Simple approach
+  BOOL bRet;
+  while ( (bRet = GetMessage(&msg, NULL, 0, 0)) != 0) {
+	LKASSERT(bRet!=-1);
 	if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)) {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
   }
-  LKObjects_Delete(); //@ 101124
-  #if ALPHADEBUG
-  StartupStore(_T(". WinMain terminated%s"),NEWLINE);
+  #else
+  // This is an alternate approach.
+  bool bQuit=false;
+  do {
+	while ( PeekMessage(&msg, NULL, 0, 0,PM_REMOVE)) {
+		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)) {
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		if (msg.message == WM_QUIT) bQuit=true;
+	}
+	if (bQuit) break;
+  } while(1);
+  #endif
+
+  LKObjects_Delete();
+  LKUnloadProfileBitmaps();
+  LKUnloadFixedBitmaps();
+  #if TESTBENCH
+  StartupStore(_T(".... WinMain terminated%s"),NEWLINE);
   #endif
 
 #if (WINDOWSPC>0)
