@@ -187,23 +187,27 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
   switch (uMsg)
     {
     case WM_ERASEBKGND:
-      return TRUE;
+	return TRUE;
     case WM_SIZE:
 
-      hDrawBitMap = CreateCompatibleBitmap (hdcScreen, lparam_X, lparam_Y);
-      SelectObject(hdcDrawWindow, (HBITMAP)hDrawBitMap);
+	if (hDrawBitMap) DeleteObject(hDrawBitMap);
+	hDrawBitMap = CreateCompatibleBitmap (hdcScreen, lparam_X, lparam_Y);
+	SelectObject(hdcDrawWindow, (HBITMAP)hDrawBitMap);
 
-      hDrawBitMapTmp = CreateCompatibleBitmap (hdcScreen, lparam_X, lparam_Y);
-      SelectObject(hDCTemp, (HBITMAP)hDrawBitMapTmp);
+	if (hDrawBitMapTmp) DeleteObject(hDrawBitMapTmp);
+	hDrawBitMapTmp = CreateCompatibleBitmap (hdcScreen, lparam_X, lparam_Y);
+	SelectObject(hDCTemp, (HBITMAP)hDrawBitMapTmp);
 
-      hMaskBitMap = CreateBitmap(lparam_X+1, lparam_Y+1, 1, 1, NULL);
-      SelectObject(hDCMask, (HBITMAP)hMaskBitMap);
+	if (hMaskBitMap) DeleteObject(hMaskBitMap);
+	hMaskBitMap = CreateBitmap(lparam_X+1, lparam_Y+1, 1, 1, NULL);
+	SelectObject(hDCMask, (HBITMAP)hMaskBitMap);
 
-      #if NEWSMARTZOOM
-      hQuickDrawBitMap = CreateCompatibleBitmap (hdcScreen, lparam_X, lparam_Y);
-      SelectObject(hdcQuickDrawWindow, (HBITMAP)hQuickDrawBitMap);
-      #endif
-      break;
+	#if NEWSMARTZOOM
+	if (hQuickDrawBitMap) DeleteObject(hQuickDrawBitMap);
+	hQuickDrawBitMap = CreateCompatibleBitmap (hdcScreen, lparam_X, lparam_Y);
+	SelectObject(hdcQuickDrawWindow, (HBITMAP)hQuickDrawBitMap);
+	#endif
+	break;
 
     case WM_CREATE:
 
