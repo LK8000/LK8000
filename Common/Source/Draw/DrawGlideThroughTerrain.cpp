@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "Bitmaps.h"
-
+#include <string.h>
 
 //
 // Glide through terrain will paint a cross over the first and last obstacle to
@@ -22,13 +22,13 @@ void MapWindow::DrawGlideThroughTerrain(HDC hDC, const RECT rc) {
   //double h,dh;
   TCHAR hbuf[10];
   static bool doinit=true;
-  static TextInBoxMode_t tmode;
+  static TextInBoxMode_t tmode = {0};
   bool wrotevalue=false;
 
   if (doinit) {
-	tmode.AsInt=0;
-	tmode.AsFlag.Border=1;
-	doinit=false;
+    memset((void*)&tmode, 0, sizeof(TextInBoxMode_t));
+    tmode.Border=1;
+    doinit=false;
   }
 
   hpOld = (HPEN)SelectObject(hDC, hpTerrainLineBg); 
@@ -60,7 +60,7 @@ void MapWindow::DrawGlideThroughTerrain(HDC hDC, const RECT rc) {
 
 			if (DerivedDrawInfo.FarObstacle_AltArriv <=-50 ||  DerivedDrawInfo.FarObstacle_Dist<5000 ) {
 				_stprintf(hbuf,_T(" %.0f"),ALTITUDEMODIFY*DerivedDrawInfo.FarObstacle_AltArriv);
-				TextInBox(hDC,hbuf,sc.x+NIBLSCALE(15), sc.y, 0, tmode,false); 
+				TextInBox(hDC,hbuf,sc.x+NIBLSCALE(15), sc.y, 0, &tmode,false); 
 				wrotevalue=true;
 			}
 		} // visible far obstacle
@@ -87,7 +87,7 @@ void MapWindow::DrawGlideThroughTerrain(HDC hDC, const RECT rc) {
 					// and there is a significant difference in the numbers, then paint value also for nearest
 					if (  fabs(DerivedDrawInfo.ObstacleAltArriv - DerivedDrawInfo.FarObstacle_AltArriv) >100 ) {
 						_stprintf(hbuf,_T(" %.0f"),ALTITUDEMODIFY*DerivedDrawInfo.ObstacleAltArriv);
-						TextInBox(hDC,hbuf,sc.x+NIBLSCALE(15), sc.y, 0, tmode,false); 
+						TextInBox(hDC,hbuf,sc.x+NIBLSCALE(15), sc.y, 0, &tmode,false); 
 					}
 				}
 			} else {
@@ -99,7 +99,7 @@ void MapWindow::DrawGlideThroughTerrain(HDC hDC, const RECT rc) {
 				 ((DerivedDrawInfo.ObstacleAltArriv<0) && (DerivedDrawInfo.ObstacleDistance<5000)) ) {
 
 					_stprintf(hbuf,_T(" %.0f"),ALTITUDEMODIFY*DerivedDrawInfo.ObstacleAltArriv);
-					TextInBox(hDC,hbuf,sc.x+NIBLSCALE(15), sc.y, 0, tmode,false); 
+					TextInBox(hDC,hbuf,sc.x+NIBLSCALE(15), sc.y, 0, &tmode,false); 
 				}
 			}
 #endif

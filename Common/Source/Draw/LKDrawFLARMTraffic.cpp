@@ -81,9 +81,8 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
 
 //  double dX, dY;
 
-  TextInBoxMode_t displaymode;
-  displaymode.AsInt = 0;
-  displaymode.AsFlag.NoSetFont = 1;
+  TextInBoxMode_t displaymode = {0};
+  displaymode.NoSetFont = 1;
 
   #if 0
   double screenrange = GetApproxScreenRange();
@@ -143,10 +142,10 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
 				_stprintf(lbuffer,_T("%.1f"),LIFTMODIFY*DrawInfo.FLARM_Traffic[i].Average30s);
 		}
 
-		displaymode.AsFlag.Border=1;
+		displaymode.Border=1;
 
 		if (_tcslen(lbuffer)>0)
-		TextInBox(hDC, lbuffer, sc.x+tscaler, sc.y+tscaler, 0, displaymode, false);
+		TextInBox(hDC, lbuffer, sc.x+tscaler, sc.y+tscaler, 0, &displaymode, false);
 
 		// red circle
 		if ((DrawInfo.FLARM_Traffic[i].AlarmLevel>0) && (DrawInfo.FLARM_Traffic[i].AlarmLevel<4)) {
