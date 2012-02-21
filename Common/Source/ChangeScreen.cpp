@@ -29,7 +29,9 @@
 using std::min;
 using std::max;
 
-#if 0 // Experimental work in progress
+//#define CHANGESCREEN 1
+
+#if CHANGESCREEN // Experimental work in progress
 
 //
 // Detect if screen resolution and/or orientation has changed
@@ -48,6 +50,8 @@ bool ScreenHasChanged(void) {
 void ReinitScreen(void) {
 
   RECT WindowSize, rc;
+
+  MapWindow::SuspendDrawingThread();
 
   //
   // Detect here the current screen geometry
@@ -104,6 +108,7 @@ void ReinitScreen(void) {
 //  MapWindow::CloseDrawingThread();
 //  MapWindow::CreateDrawingThread();
 //  SwitchToMapWindow();
+
 
   Reset_All_DoInits(); // this is wrong, we should be less drastic!!
 

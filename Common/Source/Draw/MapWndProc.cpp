@@ -159,6 +159,7 @@ DERIVED_INFO MapWindow::DerivedDrawInfo;
 
 extern void ShowMenu();
 
+//#define CHANGESCREEN 1
 
 int XstartScreen, YstartScreen, XtargetScreen, YtargetScreen;
 
@@ -189,6 +190,28 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
     case WM_ERASEBKGND:
 	return TRUE;
     case WM_SIZE:
+	#if CHANGESCREEN
+	if (!THREADRUNNING) {
+		StartupStore(_T(".......... THREAD NOT RUNNING!\n"));
+
+		ReleaseDC(hWnd, hdcScreen);
+		DeleteDC(hdcDrawWindow);
+		DeleteDC(hDCTemp);
+		DeleteDC(hDCMask);
+		#if NEWSMARTZOOM
+		DeleteDC(hdcQuickDrawWindow);
+		#endif
+	
+		hdcScreen = GetDC(hWnd);
+		hdcDrawWindow = CreateCompatibleDC(hdcScreen);
+		#if NEWSMARTZOOM
+		hdcQuickDrawWindow = CreateCompatibleDC(hdcScreen);
+		#endif
+		hDCTemp = CreateCompatibleDC(hdcDrawWindow);
+		hDCMask = CreateCompatibleDC(hdcDrawWindow);
+
+	}
+	#endif
 
 	if (hDrawBitMap) DeleteObject(hDrawBitMap);
 	hDrawBitMap = CreateCompatibleBitmap (hdcScreen, lparam_X, lparam_Y);
@@ -207,6 +230,14 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 	hQuickDrawBitMap = CreateCompatibleBitmap (hdcScreen, lparam_X, lparam_Y);
 	SelectObject(hdcQuickDrawWindow, (HBITMAP)hQuickDrawBitMap);
 	#endif
+
+	#if CHANGESCREEN
+	if (!THREADRUNNING) {
+		StartupStore(_T(".......... RESUME THREAD\n"));
+		MapWindow::ResumeDrawingThread();
+	}
+	#endif
+
 	break;
 
     case WM_CREATE:

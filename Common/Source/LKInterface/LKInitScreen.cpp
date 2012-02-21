@@ -19,20 +19,15 @@ using std::max;
 // Attention: after InitLKScreen, also InitLKFonts should be called. 
 void InitLKScreen() {
 
-  static bool doinit=true;
   int iWidth=0, iHeight=0;
 
-  // When we change resolution, we dont set defaults
-  if (doinit) {
-	#if (WINDOWSPC>0)
-	iWidth=SCREENWIDTH;
-	iHeight=SCREENHEIGHT;
-	#else
-	iWidth=GetSystemMetrics(SM_CXSCREEN);
-	iHeight=GetSystemMetrics(SM_CYSCREEN);
-	#endif
-	doinit=false;
-  }
+  #if (WINDOWSPC>0)
+  iWidth=SCREENWIDTH;
+  iHeight=SCREENHEIGHT;
+  #else
+  iWidth=GetSystemMetrics(SM_CXSCREEN);
+  iHeight=GetSystemMetrics(SM_CYSCREEN);
+  #endif
 
   ScreenSizeX=iWidth;
   ScreenSizeY=iHeight;
