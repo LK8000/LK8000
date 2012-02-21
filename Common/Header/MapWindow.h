@@ -37,25 +37,28 @@
 #define RESTRICTED	0x40
 #define WAYPOINTFLAG	0x80
 
+#include "RGB.h"
+
+// NOT USED ANYMORE, USE RGB_xxx as color definition
 // Used by MapWindow::TextColor 
 // 5 bits (0-30) . Some colors unused
-#define TEXTBLACK 0
-#define TEXTWHITE 1
-#define TEXTGREEN 2
-#define TEXTRED 3
-#define TEXTBLUE 4
-#define TEXTYELLOW 5
-#define TEXTCYAN 6
-#define TEXTMAGENTA 7
-#define TEXTGREY 8
-#define TEXTORANGE 9
-#define TEXTLIGHTGREEN 10
-#define TEXTLIGHTRED 11
-#define TEXTLIGHTBLUE 12
-#define TEXTLIGHTYELLOW 13
-#define TEXTLIGHTCYAN 14
-#define TEXTLIGHTGREY 15
-#define TEXTLIGHTORANGE 16
+// #define TEXTBLACK 0
+// #define TEXTWHITE 1
+// #define TEXTGREEN 2
+// #define TEXTRED 3
+// #define TEXTBLUE 4
+// #define TEXTYELLOW 5
+// #define TEXTCYAN 6
+// #define TEXTMAGENTA 7
+// #define TEXTGREY 8
+// #define TEXTORANGE 9
+// #define TEXTLIGHTGREEN 10
+// #define TEXTLIGHTRED 11
+// #define TEXTLIGHTBLUE 12
+// #define TEXTLIGHTYELLOW 13
+// #define TEXTLIGHTCYAN 14
+// #define TEXTLIGHTGREY 15
+// #define TEXTLIGHTORANGE 16
 
 // VENTA3 note> probably it would be a good idea to separate static WP data to dynamic values,
 // by moving things like Reachable, AltArival , etc to WPCALC
@@ -128,28 +131,18 @@ typedef struct _SNAIL_POINT
 } SNAIL_POINT;
 
 
-typedef union{
-  unsigned int AsInt;
-  struct{
-    unsigned Border:1;
-    unsigned FillBackground:1;
-    unsigned AlligneRight:1;
-    unsigned Reachable:1;
-    unsigned AlligneCenter:1;
-    unsigned WhiteBorder:1;
-    unsigned WhiteBold:1;
-    unsigned NoSetFont:1;  // VENTA5
-    unsigned Color:5;
-	unsigned SetTextColor:1;	// Set text color in border mode
-  }AsFlag;
+typedef struct {
+    bool Border;
+    bool FillBackground;
+    bool AlligneRight;
+    bool Reachable;
+    bool AlligneCenter;
+    bool WhiteBorder;
+    bool WhiteBold;
+    bool NoSetFont;  // VENTA5
+    bool SetTextColor;  // Set text color in border mode
+    int Color;
 }TextInBoxMode_t;
-  // mode are flags
-  // bit 0 == fill background add border / 1
-  // bit 1 == fill background            / 2
-  // bit 2 == right alligned             / 4
-  // bit 3 == landable TP label          / 8
-  // bit 4 == center alligned
-
 
 
 typedef struct{
@@ -533,9 +526,9 @@ class MapWindow {
 			    const POINT&start, 
 			    const POINT&end ,
 			    const RECT rc);
-  static bool TextInBox(HDC hDC, TCHAR* Value, int x, int y, int size, TextInBoxMode_t Mode, bool noOverlap=false);
+  static bool TextInBox(HDC hDC, TCHAR* Value, int x, int y, int size, TextInBoxMode_t *Mode, bool noOverlap=false);
   static void ToggleFullScreenStart();
-  static void TextColor(HDC hDC, short colorcode);
+  //static void TextColor(HDC hDC, short colorcode);
   static bool WaypointInTask(int ind);
 
  private:

@@ -271,9 +271,11 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 		GetTextExtentPoint(hDC, Value, _tcslen(Value), &TextSize); 
 		GlideBarOffset=max(NIBLSCALE(11),(int)TextSize.cx) - NIBLSCALE(2);
  
-		TextInBoxMode_t TextInBoxMode = {1|8};
-		// boxed numbers are a bit too much on the left, so increase the offset
-		TextInBox(hDC, Value, lkVarioOffset+NIBLSCALE(1), (int)Offset, 0, TextInBoxMode); //@ 091114
+    TextInBoxMode_t TextInBoxMode = {0};
+    TextInBoxMode.Border = true;          //={1|8};
+    TextInBoxMode.Reachable = true;
+    // boxed numbers are a bit too much on the left, so increase the offset
+    TextInBox(hDC, Value, lkVarioOffset+NIBLSCALE(1), (int)Offset, 0, &TextInBoxMode); //@ 091114
 
 	SelectObject(hDC, hbOld);
 	SelectObject(hDC, hpOld);
