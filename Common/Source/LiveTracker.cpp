@@ -8,6 +8,7 @@
 #include <winsock.h>
 #include <stdlib.h>
 #include <string.h>
+#include <cctype>
 
 //Use to log transactions to the startupstore
 //#define LT_DEBUG  1
@@ -588,7 +589,7 @@ static bool SendGPSPointPacket(unsigned int *packet_id, unsigned int *session_id
 static DWORD WINAPI LiveTrackerThread (LPVOID lpvoid)
 {
   int tracker_fsm = 0;
-  livetracker_point_t sendpoint;
+  livetracker_point_t sendpoint = {0};
   bool sendpoint_valid = false;
   bool sendpoint_processed = false;
   bool sendpoint_processed_old = false;
@@ -600,7 +601,7 @@ static DWORD WINAPI LiveTrackerThread (LPVOID lpvoid)
   _t_end = false;
   _t_run = true;
 
-  srand(time(NULL));
+  srand(GetTickCount());
 
   do {
     if (WaitForSingleObject(_hNewDataEvent, 5000) == WAIT_OBJECT_0) ResetEvent(_hNewDataEvent);
