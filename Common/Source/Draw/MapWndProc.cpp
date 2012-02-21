@@ -350,7 +350,7 @@ _buttondown:
                 #endif
 		break;
       }
-      XstartScreen = LOWORD(lParam); YstartScreen = HIWORD(lParam);
+      XstartScreen = lparam_X; YstartScreen = lparam_Y;
       // TODO VNT move Screen2LatLon in LBUTTONUP after making sure we really need Xstart and Ystart
       // so we save precious milliseconds waiting for BUTTONUP GetTickCount
       Screen2LatLon(XstartScreen, YstartScreen, Xstart, Ystart);
@@ -396,8 +396,6 @@ _buttondown:
       dwDownTime=0; // do it once forever
 
       GetClientRect(hWnd,&rc);
-
-      //X = LOWORD(lParam); Y = HIWORD(lParam); 
 
 	gestY=YstartScreen-lparam_Y;
 	gestX=XstartScreen-lparam_X;
