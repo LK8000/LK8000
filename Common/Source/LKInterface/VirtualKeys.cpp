@@ -25,11 +25,6 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 #define VKTIMELONG 1500
 #define DONTDRAWTHEMAP !MapWindow::mode.AnyPan()&&MapSpaceMode!=1
 
-	#if 100228
-	static int AIRCRAFTMENUSIZE=0;
-	#else
-	#define AIRCRAFTMENUSIZE	NIBLSCALE(28)
-	#endif
 	short yup, ydown;
 	static short sizeup;
 	short i, j;
@@ -67,9 +62,6 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 		// same for bottom navboxes: they do not exist in infobox mode
 		s_bottomY=(MapWindow::MapRect.bottom-MapWindow::MapRect.top)-BottomSize-NIBLSCALE(2); // bugfix era 15, troppo 090731
-
-		#define _NOCOMPASSINCLUDE
-		#include "./LKinclude_menusize.cpp"
 
 		longpress_yup=(short)((sizeup-BottomSize-TopSize)/3.7)+MapWindow::MapRect.top+TopSize;
 		longpress_ydown=(short)(MapWindow::MapRect.bottom-BottomSize-((sizeup-BottomSize)/3.7));

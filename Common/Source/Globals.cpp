@@ -614,6 +614,9 @@ void Globals_Init(void) {
   // Coordinate Y of bottombar area valid for click
   BottomBarY=0;
 
+  // Set by InitLKScreen, used in Draw parts
+  AircraftMenuSize=0;
+  CompassMenuSize=0;
 
 
   // ^ ADD NEW GLOBALS up here ^ 

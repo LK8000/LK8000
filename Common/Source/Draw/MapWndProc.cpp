@@ -178,9 +178,11 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
   bool dontdrawthemap=(DONTDRAWTHEMAP);
   bool mapmode8000=(MAPMODE8000);
 
-  // Attention... this is duplicated inside Utils2, I am lazy 
-  // apparently only #include is duplicated, so no problems
-  static int AIRCRAFTMENUSIZE=0, COMPASSMENUSIZE=0;
+  #if 0
+  if (DoInit[MDI_MAPWNDPROC]) {
+	DoInit[MDI_MAPWNDPROC]=false;
+  }
+  #endif
 
   switch (uMsg)
     {
@@ -433,18 +435,13 @@ _buttondown:
           break;
         }
 
-      // Process Active Icons
-	if (DoInit[MDI_MAPWNDPROC]) {
-		#include "./LKinclude_menusize.cpp"
-		DoInit[MDI_MAPWNDPROC]=false;
-	}
 
 	short topicon;
 	if (DrawBottom) topicon=MapRect.bottom-MapRect.top-BottomSize-14; // 100305
 		else
-			topicon=MapRect.bottom-MapRect.top-AIRCRAFTMENUSIZE;
+			topicon=MapRect.bottom-MapRect.top-AircraftMenuSize;
 
-if ( (lparam_X > ((MapRect.right-MapRect.left)- AIRCRAFTMENUSIZE)) &&
+if ( (lparam_X > ((MapRect.right-MapRect.left)- AircraftMenuSize)) &&
    (lparam_Y > topicon) ) {
 
 		// short click on aircraft icon
@@ -485,7 +482,7 @@ goto_menu:
       // end aircraft icon check				
       } 
 	if (mapmode8000) { 
-	if ( (lparam_X <= (MapRect.left + COMPASSMENUSIZE)) && (lparam_Y <= (MapRect.top+COMPASSMENUSIZE)) ) {
+	if ( (lparam_X <= (MapRect.left + CompassMenuSize)) && (lparam_Y <= (MapRect.top+CompassMenuSize)) ) {
 		if (!CustomKeyHandler(CKI_TOPLEFT)) {
 			// Well we better NOT play a click while zoomin in and out, because on slow
 			// devices it will slow down the entire process.
@@ -506,7 +503,7 @@ goto_menu:
 
       if (ISPARAGLIDER) {
 	// Use the compass to pullup UTM informations to paragliders
-	if ( (lparam_X > ((MapRect.right-MapRect.left)- COMPASSMENUSIZE)) && (lparam_Y <= MapRect.top+COMPASSMENUSIZE) ) {
+	if ( (lparam_X > ((MapRect.right-MapRect.left)- CompassMenuSize)) && (lparam_Y <= MapRect.top+CompassMenuSize) ) {
 
 		if ((dwInterval >= DOUBLECLICKINTERVAL) ) {
 
@@ -535,7 +532,7 @@ goto_menu:
 	// else { 
 	// change in 2.3q: we let paragliders use the CK as well
 	{ 
-		if ( (lparam_X > ((MapRect.right-MapRect.left)- COMPASSMENUSIZE)) && (lparam_Y <= MapRect.top+COMPASSMENUSIZE) ) {
+		if ( (lparam_X > ((MapRect.right-MapRect.left)- CompassMenuSize)) && (lparam_Y <= MapRect.top+CompassMenuSize) ) {
 			if (!CustomKeyHandler(CKI_TOPRIGHT)) {
 				#if 0
 				#ifndef DISABLEAUDIO

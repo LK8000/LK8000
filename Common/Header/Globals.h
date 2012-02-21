@@ -444,6 +444,8 @@ GEXTERN int ScreenScale;
 GEXTERN bool ScreenIntScale;
 // Used as a delimiter in MapWnd for clicks on screen.
 GEXTERN int BottomBarY;
+GEXTERN int AircraftMenuSize;
+GEXTERN int CompassMenuSize;
 
 // 091011 Used by TakeoffLanding inside Calculation.cpp - limited values careful
 GEXTERN int time_in_flight;
