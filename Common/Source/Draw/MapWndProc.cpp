@@ -194,40 +194,55 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 	if (!THREADRUNNING) {
 		StartupStore(_T(".......... THREAD NOT RUNNING!\n"));
 
+		LKASSERT(hdcScreen);
 		ReleaseDC(hWnd, hdcScreen);
+		LKASSERT(hdcDrawWindow);
 		DeleteDC(hdcDrawWindow);
+		LKASSERT(hDCTemp);
 		DeleteDC(hDCTemp);
+		LKASSERT(hDCMask);
 		DeleteDC(hDCMask);
 		#if NEWSMARTZOOM
+		LKASSERT(hdcQuickDrawWindow);
 		DeleteDC(hdcQuickDrawWindow);
 		#endif
 	
 		hdcScreen = GetDC(hWnd);
+		LKASSERT(hdcScreen);
+
 		hdcDrawWindow = CreateCompatibleDC(hdcScreen);
+		LKASSERT(hdcDrawWindow);
 		#if NEWSMARTZOOM
 		hdcQuickDrawWindow = CreateCompatibleDC(hdcScreen);
+		LKASSERT(hdcQuickDrawWindow);
 		#endif
 		hDCTemp = CreateCompatibleDC(hdcDrawWindow);
+		LKASSERT(hDCTemp);
 		hDCMask = CreateCompatibleDC(hdcDrawWindow);
+		LKASSERT(hdcDrawWindow);
 
 	}
 	#endif
 
 	if (hDrawBitMap) DeleteObject(hDrawBitMap);
 	hDrawBitMap = CreateCompatibleBitmap (hdcScreen, lparam_X, lparam_Y);
+	LKASSERT(hDrawBitMap);
 	SelectObject(hdcDrawWindow, (HBITMAP)hDrawBitMap);
 
 	if (hDrawBitMapTmp) DeleteObject(hDrawBitMapTmp);
 	hDrawBitMapTmp = CreateCompatibleBitmap (hdcScreen, lparam_X, lparam_Y);
+	LKASSERT(hDrawBitMapTmp);
 	SelectObject(hDCTemp, (HBITMAP)hDrawBitMapTmp);
 
 	if (hMaskBitMap) DeleteObject(hMaskBitMap);
 	hMaskBitMap = CreateBitmap(lparam_X+1, lparam_Y+1, 1, 1, NULL);
+	LKASSERT(hMaskBitMap);
 	SelectObject(hDCMask, (HBITMAP)hMaskBitMap);
 
 	#if NEWSMARTZOOM
 	if (hQuickDrawBitMap) DeleteObject(hQuickDrawBitMap);
 	hQuickDrawBitMap = CreateCompatibleBitmap (hdcScreen, lparam_X, lparam_Y);
+	LKASSERT(hQuickDrawBitMap);
 	SelectObject(hdcQuickDrawWindow, (HBITMAP)hQuickDrawBitMap);
 	#endif
 
@@ -242,38 +257,73 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 
     case WM_CREATE:
 
-      hdcScreen = GetDC(hWnd);
-      hdcDrawWindow = CreateCompatibleDC(hdcScreen);
-      #if NEWSMARTZOOM
-      hdcQuickDrawWindow = CreateCompatibleDC(hdcScreen);
-      #endif
-      hDCTemp = CreateCompatibleDC(hdcDrawWindow);
-      hDCMask = CreateCompatibleDC(hdcDrawWindow);
+	LKASSERT(!hdcScreen); 
+	hdcScreen = GetDC(hWnd);
+	LKASSERT(hdcScreen); 
+
+	LKASSERT(!hdcDrawWindow);
+	hdcDrawWindow = CreateCompatibleDC(hdcScreen);
+	LKASSERT(hdcDrawWindow);
+
+	#if NEWSMARTZOOM
+	LKASSERT(!hdcQuickDrawWindow);
+	hdcQuickDrawWindow = CreateCompatibleDC(hdcScreen);
+	LKASSERT(hdcQuickDrawWindow);
+	#endif
+	LKASSERT(!hDCTemp);
+	hDCTemp = CreateCompatibleDC(hdcDrawWindow);
+	LKASSERT(hDCTemp);
+	LKASSERT(!hDCMask);
+	hDCMask = CreateCompatibleDC(hdcDrawWindow);
+	LKASSERT(hDCMask);
   
-      AlphaBlendInit();
+	AlphaBlendInit();
 
-      // Signal that draw thread can run now
-      Initialised = TRUE;
+	// Signal that draw thread can run now
+	Initialised = TRUE;
 
-      break;
+	break;
+
 
     case WM_DESTROY:
 
-      ReleaseDC(hWnd, hdcScreen);
-      DeleteDC(hdcDrawWindow);
-      DeleteDC(hDCTemp);
-      DeleteDC(hDCMask);
-      DeleteObject(hDrawBitMap);
-      DeleteObject(hMaskBitMap);
-      #if NEWSMARTZOOM
-      DeleteDC(hdcQuickDrawWindow);
-      DeleteObject(hQuickDrawBitMap);
-      #endif
+	if (hdcScreen) ReleaseDC(hWnd, hdcScreen);
 
-      AlphaBlendDestroy();
-      PostQuitMessage (0);
+	if (hdcDrawWindow) {     
+		DeleteDC(hdcDrawWindow);
+		hdcDrawWindow=NULL;
+	}
+	if (hDCTemp) {
+		DeleteDC(hDCTemp);
+		hDCTemp=NULL;
+	}
+	if (hDCMask) {
+		DeleteDC(hDCMask);
+		hDCMask=NULL;
+	}
+	if (hDrawBitMap) {
+		DeleteObject(hDrawBitMap);
+		hDrawBitMap=NULL;
+	}
+	if (hMaskBitMap) {
+		DeleteObject(hMaskBitMap);
+		hMaskBitMap=NULL;
+	}
+	#if NEWSMARTZOOM
+	if (hdcQuickDrawWindow) {
+		DeleteDC(hdcQuickDrawWindow);
+		hdcQuickDrawWindow=NULL;
+	}
+	if (hQuickDrawBitMap) {
+		DeleteObject(hQuickDrawBitMap);
+		hQuickDrawBitMap=NULL;
+	}
+	#endif
 
-      break;
+	AlphaBlendDestroy();
+	PostQuitMessage (0);
+	break;
+
 
     case WM_LBUTTONDBLCLK: 
       //
