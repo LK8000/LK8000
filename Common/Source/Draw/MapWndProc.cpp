@@ -197,12 +197,16 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 		LKASSERT(hdcScreen);
 		#endif
 		ReleaseDC(hWnd, hdcScreen);
+
 		LKASSERT(hdcDrawWindow);
 		DeleteDC(hdcDrawWindow);
+
 		LKASSERT(hDCTemp);
 		DeleteDC(hDCTemp);
+
 		LKASSERT(hDCMask);
 		DeleteDC(hDCMask);
+
 		#if NEWSMARTZOOM
 		LKASSERT(hdcQuickDrawWindow);
 		DeleteDC(hdcQuickDrawWindow);

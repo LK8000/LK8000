@@ -51,7 +51,6 @@ void ReinitScreen(void) {
 
   static int oldSCREENWIDTH=0;
   static int oldSCREENHEIGHT=0;
-  bool forceresize=false;
 
   RECT WindowSize, rc;
 
@@ -68,6 +67,10 @@ void ReinitScreen(void) {
 
   #if 0
   // Force a test resolution, for testing only!
+  // Using always the same resolution will not work when asking for the same resolution again.
+  // TODO.
+  WindowSize.left = 0;
+  WindowSize.top = 0;
   WindowSize.right = 480;	
   WindowSize.bottom = 272;
   // 
@@ -90,17 +93,22 @@ void ReinitScreen(void) {
   }
   #endif
 
-  if (oldSCREENWIDTH!=WindowSize.right && oldSCREENHEIGHT!=WindowSize.bottom) {
+  if (oldSCREENWIDTH!=WindowSize.right || oldSCREENHEIGHT!=WindowSize.bottom) {
+	#if TESTBENCH
 	StartupStore(_T(".... CHANGING RESOLUTION\n"));
+	#endif
 	SCREENWIDTH = WindowSize.right;
 	SCREENHEIGHT= WindowSize.bottom;
 	oldSCREENWIDTH = WindowSize.right;
 	oldSCREENHEIGHT= WindowSize.bottom;
-	forceresize=false;
   } else {
-	StartupStore(_T(".... SIMULATE CHANGE RESOLUTION\n"));
+	// THIS DOES NOT STILL WORK! NO EFFECT.
+	#if TESTBENCH
+	StartupStore(_T(".... CHANGE RESOLUTION, SAME SIZE, WM_SIZE FORCED\n"));
+	#endif
+	SCREENWIDTH = WindowSize.right;
+	SCREENHEIGHT= WindowSize.bottom;
 	SendMessage(hWndMapWindow, WM_SIZE, (WPARAM)SIZE_RESTORED, MAKELPARAM(0,0));
-	forceresize=true;
   }
 
 #if (WINDOWSPC>0)
@@ -110,22 +118,16 @@ void ReinitScreen(void) {
   WindowSize.top = (GetSystemMetrics(SM_CYSCREEN) - WindowSize.bottom) / 2;
 
   // We must consider the command bar size on PC window
-  MoveWindow(hWndMainWindow, WindowSize.left, WindowSize.top, WindowSize.right,WindowSize.bottom, TRUE);
-  MoveWindow(hWndMapWindow, 0, 0, SCREENWIDTH, SCREENHEIGHT, FALSE);
+  MoveWindow(hWndMainWindow, WindowSize.left, WindowSize.top, WindowSize.right, WindowSize.bottom, TRUE);
+  MoveWindow(hWndMapWindow, 0, 0, SCREENWIDTH, SCREENHEIGHT, FALSE); // also TRUE?
 #else
 
   // Still to be tested!
   MoveWindow(hWndMainWindow, WindowSize.left, WindowSize.top, SCREENWIDTH, SCREENHEIGHT, TRUE);
-  MoveWindow(hWndMapWindow, 0, 0, SCREENWIDTH, SCREENHEIGHT, FALSE);
+  MoveWindow(hWndMapWindow, 0, 0, SCREENWIDTH, SCREENHEIGHT, FALSE); 
 
 
 #endif
-
-//  This is not good for fast changes between portrait and landscape mode.
-//  MapWindow::CloseDrawingThread();
-//  MapWindow::CreateDrawingThread();
-//  SwitchToMapWindow();
-
 
   Reset_All_DoInits(); // this is wrong, we should be less drastic!!
 
@@ -155,10 +157,6 @@ void ReinitScreen(void) {
   CloseTerrainRenderer();
   UnlockTerrainDataGraphics();
 
-  if (forceresize) {
-  // just for simulations we send a resize message
-	forceresize=false;
-  }
   return;
 }
 
