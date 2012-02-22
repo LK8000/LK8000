@@ -106,7 +106,7 @@ bool TextInBoxMoveInView(POINT *offset, RECT *brect){
 
 
 bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y, 
-                          int size, TextInBoxMode_t Mode, bool noOverlap) {
+                          int size, TextInBoxMode_t *Mode, bool noOverlap) {
 
   SIZE tsize;
   RECT brect;
@@ -120,6 +120,8 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
     return drawn; // FIX Not drawn really
   }
 
+  if (Mode == NULL) return false;
+
   if (size==0) {
     size = _tcslen(Value);
   }
@@ -129,7 +131,7 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
   hbOld = (HBRUSH)SelectObject(hDC, GetStockObject(WHITE_BRUSH));
   hpOld = (HPEN)SelectObject(hDC,GetStockObject(BLACK_PEN));
 
-  if (Mode.AsFlag.Reachable){
+  if (Mode->Reachable){
     if (Appearance.IndLandable == wpLandableDefault){
       x += 5;  // make space for the green circle
     }else
@@ -139,8 +141,8 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
   }
 
   // landable waypoint label inside white box 
-  if (!Mode.AsFlag.NoSetFont) {  // VENTA5 predefined font from calling function
-    if (Mode.AsFlag.Border){
+  if (!Mode->NoSetFont) {  // VENTA5 predefined font from calling function
+    if (Mode->Border){
       oldFont = (HFONT)SelectObject(hDC, MapWindowBoldFont);
     } else {
       oldFont = (HFONT)SelectObject(hDC, MapWindowFont);
@@ -149,17 +151,17 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
   
   GetTextExtentPoint(hDC, Value, size, &tsize);
 
-  if (Mode.AsFlag.AlligneRight){
+  if (Mode->AlligneRight){
     x -= tsize.cx;
   } else 
-    if (Mode.AsFlag.AlligneCenter){
+    if (Mode->AlligneCenter){
       x -= tsize.cx/2;
       y -= tsize.cy/2;
     }
 
   bool notoverlapping = true;
 
-  if (Mode.AsFlag.Border || Mode.AsFlag.WhiteBorder){
+  if (Mode->Border || Mode->WhiteBorder){
 
     POINT offset;
 
@@ -168,7 +170,7 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
     brect.top = y+((tsize.cy+4)>>3)-2;
     brect.bottom = brect.top+3+tsize.cy-((tsize.cy+4)>>3);
 
-    if (Mode.AsFlag.AlligneRight)
+    if (Mode->AlligneRight)
       x -= 3;
 
     if (TextInBoxMoveInView(&offset, &brect)){
@@ -185,7 +187,7 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
   
     if (!noOverlap || notoverlapping) {
       HPEN oldPen;
-      if (Mode.AsFlag.Border) {
+      if (Mode->Border) {
         oldPen = (HPEN)SelectObject(hDC, hpMapScale);
       } else {
         oldPen = (HPEN)SelectObject(hDC, GetStockObject(WHITE_PEN));
@@ -193,8 +195,7 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
       RoundRect(hDC, brect.left, brect.top, brect.right, brect.bottom, 
                 NIBLSCALE(8), NIBLSCALE(8));
       SelectObject(hDC, oldPen);
-	  //if (Mode.AsFlag.SetTextColor) TextColor(hDC,Mode.AsFlag.Color); else TextColor(hDC, TEXTBLACK); FIX 120212
-	  if (Mode.AsFlag.SetTextColor) SetTextColor(hDC,Mode.AsFlag.Color); else SetTextColor(hDC, TEXTBLACK);
+      if (Mode->SetTextColor) SetTextColor(hDC,Mode->Color); else SetTextColor(hDC, RGB_BLACK);
 #if (WINDOWSPC>0)
       SetBkMode(hDC,TRANSPARENT);
       ExtTextOut(hDC, x, y, 0, NULL, Value, size, NULL);
@@ -205,7 +206,7 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
     }
 
 
-  } else if (Mode.AsFlag.FillBackground) {
+  } else if (Mode->FillBackground) {
 
     POINT offset;
 
@@ -214,7 +215,7 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
     brect.top = y+((tsize.cy+4)>>3);
     brect.bottom = brect.top+tsize.cy-((tsize.cy+4)>>3);
 
-    if (Mode.AsFlag.AlligneRight)
+    if (Mode->AlligneRight)
       x -= 2;
 
     if (TextInBoxMoveInView(&offset, &brect)){
@@ -235,7 +236,7 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
       drawn=true;
     }
 
-  } else if (Mode.AsFlag.WhiteBold) {
+  } else if (Mode->WhiteBold) {
 
     switch (DeclutterMode) {
 	// This is duplicated later on!
@@ -299,10 +300,10 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
 #endif /* WINE */
 
       if (OutlinedTp) {
-	TextColor(hDC,Mode.AsFlag.Color);
-      } else
-	SetTextColor(hDC,RGB_BLACK); 
-
+        SetTextColor(hDC,Mode->Color);
+      } else {
+        SetTextColor(hDC,RGB_BLACK); 
+      }
 #ifdef WINE
       ExtTextOut(hDC, x, y, 0, NULL, Value, size, NULL);
 #else
@@ -356,20 +357,20 @@ bool MapWindow::TextInBox(HDC hDC, TCHAR* Value, int x, int y,
     if (!noOverlap || notoverlapping) {
 #if (WINDOWSPC>0)
       SetBkMode(hDC,TRANSPARENT);
-		TextColor(hDC,Mode.AsFlag.Color);
-      		ExtTextOut(hDC, x, y, 0, NULL, Value, size, NULL);
-		SetTextColor(hDC,RGB_BLACK); 
+      SetTextColor(hDC,Mode->Color);
+      ExtTextOut(hDC, x, y, 0, NULL, Value, size, NULL);
+      SetTextColor(hDC,RGB_BLACK); 
 #else
-		TextColor(hDC,Mode.AsFlag.Color);
-      		ExtTextOut(hDC, x, y, ETO_OPAQUE, NULL, Value, size, NULL);
-		SetTextColor(hDC,RGB_BLACK); 
+      SetTextColor(hDC,Mode->Color);
+      ExtTextOut(hDC, x, y, ETO_OPAQUE, NULL, Value, size, NULL);
+      SetTextColor(hDC,RGB_BLACK); 
 #endif
       drawn=true;
     }
 
   }
  
-  if (!Mode.AsFlag.NoSetFont) SelectObject(hDC, oldFont); // VENTA5
+  if (!Mode->NoSetFont) SelectObject(hDC, oldFont); // VENTA5
   SelectObject(hDC, hbOld);
   SelectObject(hDC,hpOld);
 

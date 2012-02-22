@@ -25,7 +25,7 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
   HFONT oldfont;
   HBRUSH hB;
 
-  TextInBoxMode_t TextDisplayMode;
+  TextInBoxMode_t TextDisplayMode = {0};
   TCHAR Buffer[LKSIZEBUFFERLARGE*2];
 #ifdef DRAWLKSTATUS
   bool dodrawlkstatus=false;
@@ -138,16 +138,16 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 	case MSM_THERMALS:
 		DrawThermalHistory(hdc,rc);
 		break;
-	default:
-		TextDisplayMode.AsInt = 0;
-		TextDisplayMode.AsFlag.Color = TEXTWHITE;
-		TextDisplayMode.AsFlag.NoSetFont = 1; 
-		TextDisplayMode.AsFlag.AlligneCenter = 1;
-		SelectObject(hdc, LK8TargetFont);
-		_stprintf(Buffer,TEXT("MapSpaceMode=%d"),MapSpaceMode);
-		TextInBox(hdc, Buffer, (rc.right-rc.left)/2, NIBLSCALE(50) , 0, TextDisplayMode, false);
-		break;
-	}
+  default:
+    memset((void*)&TextDisplayMode, 0, sizeof(TextDisplayMode));
+    TextDisplayMode.Color = RGB_WHITE;
+    TextDisplayMode.NoSetFont = 1; 
+    TextDisplayMode.AlligneCenter = 1;
+    SelectObject(hdc, LK8TargetFont);
+    _stprintf(Buffer,TEXT("MapSpaceMode=%d"),MapSpaceMode);
+    TextInBox(hdc, Buffer, (rc.right-rc.left)/2, NIBLSCALE(50) , 0, &TextDisplayMode, false);
+    break;
+  }
 #ifdef DRAWLKSTATUS
   // no need to clear dodrawlkstatus, it is already reset at each run
   if (dodrawlkstatus) DrawLKStatus(hdc, rc);

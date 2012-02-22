@@ -10,7 +10,6 @@
 #include "externs.h"
 #include "MapWindow.h"
 
-
 //
 // Called by DrawThread
 //
@@ -75,16 +74,15 @@ void MapWindow::DrawLKAlarms(HDC hDC, const RECT rc) {
 
 	HFONT oldfont=NULL;
 	oldfont=(HFONT)SelectObject(hDC,LK8TargetFont);
-	TextInBoxMode_t TextInBoxMode = {2};
-	TextInBoxMode.AsInt=0;
-	TextInBoxMode.AsFlag.Color = TEXTWHITE;
-	TextInBoxMode.AsFlag.NoSetFont=1;
-	TextInBoxMode.AsFlag.AlligneCenter = 1;
-	TextInBoxMode.AsFlag.WhiteBorder = 1;
-	TextInBoxMode.AsFlag.Border = 1;
+	TextInBoxMode_t TextInBoxMode = {0};
+	TextInBoxMode.Color = RGB_WHITE;
+	TextInBoxMode.NoSetFont=1;
+	TextInBoxMode.AlligneCenter = 1;
+	TextInBoxMode.WhiteBorder = 1;
+	TextInBoxMode.Border = 1;
 
 	// same position for gps warnings: if navwarning, then no alarms. So no overlapping.
-        TextInBox(hDC, textalarm , (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, TextInBoxMode); 
+        TextInBox(hDC, textalarm , (rc.right-rc.left)/2, (rc.bottom-rc.top)/3, 0, &TextInBoxMode); 
 
 	SelectObject(hDC,oldfont);
   }

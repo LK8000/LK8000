@@ -60,24 +60,24 @@ void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Airc
                 default:
                 case awsHidden:
                 case awsBlack:
-                  TextDisplayMode.AsFlag.Color = TEXTBLACK;
+                  TextDisplayMode.Color = RGB_BLACK;
                   break;
                 case awsAmber:
-                  TextDisplayMode.AsFlag.Color = TEXTORANGE;
+                  TextDisplayMode.Color = RGB_ORANGE;
                   break;
                 case awsRed:
-                  TextDisplayMode.AsFlag.Color = TEXTRED;
+                  TextDisplayMode.Color = RGB_RED;
                   break;
               } // sw
-              TextDisplayMode.AsFlag.SetTextColor = 1;
-              TextDisplayMode.AsFlag.AlligneCenter = 1;
+              TextDisplayMode.SetTextColor = 1;
+              TextDisplayMode.AlligneCenter = 1;
               if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
-                  TextDisplayMode.AsFlag.Border = 1;
+                  TextDisplayMode.Border = 1;
               } else {
-                  TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
+                  TextDisplayMode.WhiteBold = 1; // outlined 
               }
 
-              hlabel_draws = TextInBox(hdc, hbuf, sc.x, sc.y+NIBLSCALE(15), 0, TextDisplayMode, true);
+              hlabel_draws = TextInBox(hdc, hbuf, sc.x, sc.y+NIBLSCALE(15), 0, &TextDisplayMode, true);
            }
            
           // Vertical warning point
@@ -94,24 +94,24 @@ void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Airc
                 default:
                 case awsHidden:
                 case awsBlack:
-                  TextDisplayMode.AsFlag.Color = TEXTBLACK;
+                  TextDisplayMode.Color = RGB_BLACK;
                   break;
                 case awsAmber:
-                  TextDisplayMode.AsFlag.Color = TEXTORANGE;
+                  TextDisplayMode.Color = RGB_ORANGE;
                   break;
                 case awsRed:
-                  TextDisplayMode.AsFlag.Color = TEXTRED;
+                  TextDisplayMode.Color = RGB_RED;
                   break;
               } // sw
-              TextDisplayMode.AsFlag.SetTextColor = 1;
-              TextDisplayMode.AsFlag.AlligneCenter = 1;
+              TextDisplayMode.SetTextColor = 1;
+              TextDisplayMode.AlligneCenter = 1;
               if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
-                  TextDisplayMode.AsFlag.Border = 1;
+                  TextDisplayMode.Border = 1;
               } else {
-                  TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
+                  TextDisplayMode.WhiteBold = 1; // outlined 
               }
 
-              vlabel_draws = TextInBox(hdc, hbuf, Orig_Aircraft.x, Orig_Aircraft.y+NIBLSCALE(15), 0, TextDisplayMode, true);
+              vlabel_draws = TextInBox(hdc, hbuf, Orig_Aircraft.x, Orig_Aircraft.y+NIBLSCALE(15), 0, &TextDisplayMode, true);
            }
            if (!label_sequencing_divider) CAirspaceManager::Instance().AirspaceWarningLabelPrinted(**it, hlabel_draws || vlabel_draws);
            

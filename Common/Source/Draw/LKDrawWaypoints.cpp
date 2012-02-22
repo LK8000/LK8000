@@ -18,7 +18,7 @@
 #endif
 
 #include "utils/heapcheck.h"
-
+#include <string.h>
 
 MapWaypointLabel_t MapWaypointLabelList[200]; 
 
@@ -44,7 +44,7 @@ int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 ){
 
 
 void MapWaypointLabelAdd(const TCHAR *Name, const int X, const int Y, 
-			 const TextInBoxMode_t Mode, 
+			 const TextInBoxMode_t *Mode, 
 			 const int AltArivalAGL, const bool inTask, const bool isLandable, const bool isAirport, 
 			 const bool isExcluded,  const int index, const short style){
   MapWaypointLabel_t *E;
@@ -71,7 +71,7 @@ void MapWaypointLabelAdd(const TCHAR *Name, const int X, const int Y,
   _tcscpy(E->Name, Name);
   E->Pos.x = X;
   E->Pos.y = Y;
-  E->Mode = Mode;
+  memcpy((void*)&(E->Mode), Mode, sizeof(TextInBoxMode_t));     // E->Mode = Mode;
   E->AltArivalAGL = AltArivalAGL;
   E->inTask = inTask;
   E->isLandable = isLandable;
@@ -96,7 +96,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
   TCHAR Buffer[LKSIZEBUFFER];
   TCHAR Buffer2[LKSIZEBUFFER];
   TCHAR sAltUnit[LKSIZEBUFFERUNIT];
-  TextInBoxMode_t TextDisplayMode;
+  TextInBoxMode_t TextDisplayMode = {0};
 
   static int resizer[10]={ 20,20,20,3,5,8,10,12,0 };
 
@@ -169,7 +169,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 
 	    intask = WaypointInTask(i);
 	    dowrite = intask; // initially set only for intask
-	    TextDisplayMode.AsInt = 0;
+	    memset((void*)&TextDisplayMode, 0, sizeof(TextDisplayMode));
 
 	    // airports are also landpoints. should be better handled
 	    isairport=((WayPointList[i].Flags & AIRPORT) == AIRPORT);
@@ -190,7 +190,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 
 	      if(WayPointList[i].Reachable){
 
-		TextDisplayMode.AsFlag.Reachable = 1;
+		TextDisplayMode.Reachable = 1;
 
 		if ( isairport )
 		  SelectObject(hDCTemp,hBmpAirportReachable);
@@ -263,8 +263,8 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 	  NiklausWirth:
 
 	    if (intask || (OutlinedTp==(OutlinedTp_t)otAll) ) { 
-	      TextDisplayMode.AsFlag.WhiteBold = 1;
-	      TextDisplayMode.AsFlag.Color=TEXTWHITE; 
+	      TextDisplayMode.WhiteBold = 1;
+	      TextDisplayMode.Color=RGB_WHITE; 
 	    }
 	
 
@@ -284,7 +284,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 	    // here come both turnpoints and landables..
 	    if( intask || irange || dowrite) {  // irange always set when MapScale <=10 
 
-	      bool draw_alt = TextDisplayMode.AsFlag.Reachable && ((DeclutterLabels<MAPLABELS_ONLYTOPO) || intask); // 100711 reachable landing point!
+	      bool draw_alt = TextDisplayMode.Reachable && ((DeclutterLabels<MAPLABELS_ONLYTOPO) || intask); // 100711 reachable landing point!
 
 	      if (excluded==true) draw_alt=false; // exclude close outlandings
 
@@ -320,17 +320,17 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 
 
 		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
-			  TextDisplayMode.AsFlag.Border = 1;
-			  TextDisplayMode.AsFlag.WhiteBold = 0;
+			  TextDisplayMode.Border = 1;
+			  TextDisplayMode.WhiteBold = 0;
 		  } else
-		  	TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
-		  	TextDisplayMode.AsFlag.Color=TEXTWHITE; 
+		  	TextDisplayMode.WhiteBold = 1; // outlined 
+		  	TextDisplayMode.Color=RGB_WHITE; 
 		} else {
 			//wsprintf(Buffer, TEXT("%s"),Buffer2);
 			_tcscpy(Buffer,Buffer2);
 			if (islandable && isairport) {
-				TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
-				TextDisplayMode.AsFlag.Color=TEXTWHITE; 
+				TextDisplayMode.WhiteBold = 1; // outlined 
+				TextDisplayMode.Color=RGB_WHITE; 
 			}
 		}
 				  
@@ -348,16 +348,16 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		  } else
 		  	wsprintf(Buffer, TEXT("%d:%d"), WayPointList[i].Number, (int)(WayPointCalc[i].GR));
 		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
-			  TextDisplayMode.AsFlag.Border = 1;
-			  TextDisplayMode.AsFlag.WhiteBold = 0;
+			  TextDisplayMode.Border = 1;
+			  TextDisplayMode.WhiteBold = 0;
 		  } else
-		  	TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
-	      		TextDisplayMode.AsFlag.Color=TEXTWHITE; 
+		  	TextDisplayMode.WhiteBold = 1; // outlined 
+	      		TextDisplayMode.Color=RGB_WHITE; 
 		} else {
 		  wsprintf(Buffer, TEXT("%d"),WayPointList[i].Number);
 		  if (islandable && isairport) {
-		    TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
-	      		TextDisplayMode.AsFlag.Color=TEXTWHITE; 
+		    TextDisplayMode.WhiteBold = 1; // outlined 
+	      		TextDisplayMode.Color=RGB_WHITE; 
 		  }
 		}
 		break;
@@ -386,19 +386,19 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 				     (int)(WayPointCalc[i].GR)); 
 
 		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
-			  TextDisplayMode.AsFlag.Border = 1;
-			  TextDisplayMode.AsFlag.WhiteBold = 0;
+			  TextDisplayMode.Border = 1;
+			  TextDisplayMode.WhiteBold = 0;
 		  } else
-		  	TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
-	      		TextDisplayMode.AsFlag.Color=TEXTWHITE; 
+		  	TextDisplayMode.WhiteBold = 1; // outlined 
+	      		TextDisplayMode.Color=RGB_WHITE; 
 
 		  }
 		  else {
 		    wsprintf(Buffer, TEXT("%s"),WayPointList[i].Name);
 		    // TODO CHECK THIS, UNTESTED..
                     if (islandable && isairport) {
-		       TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
-	      		TextDisplayMode.AsFlag.Color=TEXTWHITE; 
+		       TextDisplayMode.WhiteBold = 1; // outlined 
+	      		TextDisplayMode.Color=RGB_WHITE; 
 		    }
 		  }
 		}
@@ -423,11 +423,11 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 				   (int)(WayPointCalc[i].GR) );
 
 		  if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
-			  TextDisplayMode.AsFlag.Border = 1;
-			  TextDisplayMode.AsFlag.WhiteBold = 0;
+			  TextDisplayMode.Border = 1;
+			  TextDisplayMode.WhiteBold = 0;
 		  } else
-		  	TextDisplayMode.AsFlag.WhiteBold = 1; // outlined 
-	      	    TextDisplayMode.AsFlag.Color=TEXTWHITE; 
+		  	TextDisplayMode.WhiteBold = 1; // outlined 
+	      	    TextDisplayMode.Color=RGB_WHITE; 
 		}
 		else {
 		  	wsprintf(Buffer, TEXT(" "));
@@ -442,10 +442,10 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 
 	      } // end intask/irange/dowrite
 
-		if (MapWindow::zoom.RealScale()<20 && islandable && dowrite) {
-			TextInBox(hdc, Buffer, WayPointList[i].Screen.x+5, WayPointList[i].Screen.y, 0, TextDisplayMode, true); 
-			dowrite=false; // do not pass it along
-		}
+    if (MapWindow::zoom.RealScale()<20 && islandable && dowrite) {
+      TextInBox(hdc, Buffer, WayPointList[i].Screen.x+5, WayPointList[i].Screen.y, 0, &TextDisplayMode, true); 
+      dowrite=false; // do not pass it along
+    }
 
 		// Do not show takeoff for gliders, check TakeOffWayPoint 
 		if (i==RESWP_TAKEOFF) {
@@ -464,13 +464,13 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 
 
 	      if (dowrite) { 
-		MapWaypointLabelAdd(
-				    Buffer,
-				    WayPointList[i].Screen.x+5,
-				    WayPointList[i].Screen.y,
-				    TextDisplayMode,
-				    (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY),
-				    intask,islandable,isairport,excluded,i,WayPointList[i].Style);
+          MapWaypointLabelAdd(
+                  Buffer,
+                  WayPointList[i].Screen.x+5,
+                  WayPointList[i].Screen.y,
+                  &TextDisplayMode,
+                  (int)(WayPointList[i].AltArivalAGL*ALTITUDEMODIFY),
+                  intask,islandable,isairport,excluded,i,WayPointList[i].Style);
 	      }
 	    } // end if intask
       
@@ -496,7 +496,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
     // otherwise, does comparison
     if ( E->inTask || (E->isLandable && !E->isExcluded) ) { 
 
-	TextInBox(hdc, E->Name, E->Pos.x, E->Pos.y, 0, E->Mode, false); 
+	TextInBox(hdc, E->Name, E->Pos.x, E->Pos.y, 0, &(E->Mode), false); 
 
 	// At low zoom, dont print the bitmap because drawn task would make it look offsetted
 	if(MapWindow::zoom.RealScale() > 2) continue;
@@ -535,7 +535,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
     MapWaypointLabel_t *E = &MapWaypointLabelList[j];
 
     if (!E->inTask && !E->isLandable ) {
-      if ( TextInBox(hdc, E->Name, E->Pos.x, E->Pos.y, 0, E->Mode, true) == true) {
+      if ( TextInBox(hdc, E->Name, E->Pos.x, E->Pos.y, 0, &(E->Mode), true) == true) {
 
 	// If we are at low zoom, use a dot for icons, so we dont clutter the screen
 	if(MapWindow::zoom.RealScale() > 4) {

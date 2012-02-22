@@ -15,24 +15,23 @@ void MapWindow::DrawCpuStats(HDC hdc, RECT rc) {
   if (Appearance.InverseInfoBox == true) return;
 
   TCHAR Buffer[LKSIZEBUFFERLARGE];
-  TextInBoxMode_t TextDisplayMode;
-  TextDisplayMode.AsInt = 0;
-  TextDisplayMode.AsFlag.Color = TEXTWHITE;
-  TextDisplayMode.AsFlag.WhiteBorder = 1; // inside a white circle
-  TextDisplayMode.AsFlag.Border = 1;      // add a black border to the circle
+  TextInBoxMode_t TextDisplayMode = {0};
+  TextDisplayMode.Color = RGB_WHITE;
+  TextDisplayMode.WhiteBorder = 1; // inside a white circle
+  TextDisplayMode.Border = 1;      // add a black border to the circle
 
 #if (WINDOWSPC>0)
   wsprintf(Buffer,_T("CPU Draw=%d Calc=%d us"), Cpu_Draw, Cpu_Calc);
 #else
   wsprintf(Buffer,_T("CPU Draw=%d Calc=%d ms"), Cpu_Draw, Cpu_Calc);
 #endif
-  TextInBox(hdc, Buffer, 000, 200 , 0, TextDisplayMode, false);
+  TextInBox(hdc, Buffer, 000, 200 , 0, &TextDisplayMode, false);
 #if (WINDOWSPC>0)
   wsprintf(Buffer,_T("CPU Inst=%d Port=%d us"), Cpu_Instrument, Cpu_Port);
 #else
   wsprintf(Buffer,_T("CPU Inst=%d Port=%d ms"), Cpu_Instrument, Cpu_Port);
 #endif
-  TextInBox(hdc, Buffer, 000, 240 , 0, TextDisplayMode, false);
+  TextInBox(hdc, Buffer, 000, 240 , 0, &TextDisplayMode, false);
 
   //wsprintf(Buffer,_T("Landsc=%d Geom=%d"), InfoBoxLayout::landscape, InfoBoxLayout::InfoBoxGeometry);
   //TextInBox(hdc, Buffer, 000, 280 , 0, TextDisplayMode, false);
@@ -46,16 +45,15 @@ void MapWindow::DrawCpuStats(HDC hdc, RECT rc) {
 void MapWindow::DrawDebug(HDC hdc, RECT rc) {
 
   TCHAR Buffer[LKSIZEBUFFERLARGE];
-  TextInBoxMode_t TextDisplayMode;
-  TextDisplayMode.AsInt = 0;
-  TextDisplayMode.AsFlag.Color = TEXTWHITE;
-  TextDisplayMode.AsFlag.WhiteBorder = 1; // inside a white circle
-  TextDisplayMode.AsFlag.Border = 1;      // add a black border to the circle
+  TextInBoxMode_t TextDisplayMode = {0};
+  TextDisplayMode.Color = RGB_WHITE;
+  TextDisplayMode.WhiteBorder = 1; // inside a white circle
+  TextDisplayMode.Border = 1;      // add a black border to the circle
 
   wsprintf(Buffer,_T("ModeIndex=%d CURTYPE=%d MSM=%d"), ModeIndex, ModeType[ModeIndex],MapSpaceMode );
-  TextInBox(hdc, Buffer, 000, 200 , 0, TextDisplayMode, false);
+  TextInBox(hdc, Buffer, 000, 200 , 0, &TextDisplayMode, false);
   wsprintf(Buffer,_T("MTableTop=%d ModeTable=%d=MSM"), ModeTableTop[ModeIndex], ModeTable[ModeIndex][ModeType[ModeIndex]] );
-  TextInBox(hdc, Buffer, 000, 240 , 0, TextDisplayMode, false);
+  TextInBox(hdc, Buffer, 000, 240 , 0, &TextDisplayMode, false);
 
 }
 #endif
@@ -66,7 +64,7 @@ void MapWindow::DrawDebug(HDC hdc, RECT rc) {
 // LK Status message
 void MapWindow::DrawLKStatus(HDC hdc, RECT rc) {
 
-  TextInBoxMode_t TextDisplayMode;
+  TextInBoxMode_t TextDisplayMode = {0};
   TCHAR Buffer[LKSIZEBUFFERLARGE];
 
   short bottomlines;
@@ -74,13 +72,12 @@ void MapWindow::DrawLKStatus(HDC hdc, RECT rc) {
   short left=rc.left+NIBLSCALE(5);
   short contenttop=rc.top+NIBLSCALE(50);
 
-  TextDisplayMode.AsInt = 0;
-  TextDisplayMode.AsFlag.Color = TEXTBLACK;
-  TextDisplayMode.AsFlag.NoSetFont = 1; 
-  //TextDisplayMode.AsFlag.AlligneRight = 0;
-  TextDisplayMode.AsFlag.AlligneCenter = 1;
-  TextDisplayMode.AsFlag.WhiteBold = 1;
-  TextDisplayMode.AsFlag.Border = 1;
+  TextDisplayMode.Color = RGB_BLACK;
+  TextDisplayMode.NoSetFont = 1; 
+  //TextDisplayMode.AlligneRight = 0;
+  TextDisplayMode.AlligneCenter = 1;
+  TextDisplayMode.WhiteBold = 1;
+  TextDisplayMode.Border = 1;
   // HFONT oldfont=(HFONT)SelectObject(hdc, LK8PanelBigFont);
 
   switch(ModeIndex) {
@@ -100,7 +97,7 @@ void MapWindow::DrawLKStatus(HDC hdc, RECT rc) {
 		wsprintf(Buffer,TEXT("UNKOWN mode"));
 		break;
   }
-  TextInBox(hdc, Buffer, middlex, 200 , 0, TextDisplayMode, false);
+  TextInBox(hdc, Buffer, middlex, 200 , 0, &TextDisplayMode, false);
 
   //SelectObject(hdc, oldfont);
   return;
