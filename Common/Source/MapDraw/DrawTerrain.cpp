@@ -35,6 +35,7 @@ BYTE tshadow_r, tshadow_g, tshadow_b, tshadow_h;
 BYTE thighlight_r, thighlight_g, thighlight_b, thighlight_h;
 
 
+static COLORRAMP* lastColorRamp = NULL;
 
 void ColorRampLookup(const short h, 
                      BYTE &r, BYTE &g, BYTE &b,
@@ -151,7 +152,9 @@ public:
     int res_x = iround((rc.right-rc.left)*oversampling/dtquant);
     int res_y = iround((rc.bottom-rc.top)*oversampling/dtquant);
 
+    LKASSERT(sbuf==NULL); // we should not have a valid sbuf now!
     sbuf = new CSTScreenBuffer();
+    LKASSERT(sbuf!=NULL);
     sbuf->Create(res_x, res_y, RGB_WHITE);
     ixs = sbuf->GetCorrectedWidth()/oversampling;
     iys = sbuf->GetHeight()/oversampling;
@@ -171,7 +174,9 @@ public:
     colorBuf = (BGRColor*)malloc(256*128*sizeof(BGRColor));
     if (colorBuf==NULL)  {
 	OutOfMemory(__FILE__,__LINE__);
-    } 
+    }
+    // Reset this, so ColorTable will reload colors
+    lastColorRamp = NULL;
 
   }
 
@@ -361,6 +366,7 @@ public:
 
 void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
     // fill the buffer
+  LKASSERT(hBuf!=NULL);
   unsigned short* myhbuf = hBuf;
   #ifdef DEBUG
   unsigned short* hBufTop = hBuf+ixs*iys;
@@ -440,6 +446,7 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 
 void Slope(const int sx, const int sy, const int sz) {
 
+  LKASSERT(hBuf!=NULL);
   const int iepx = (int)epx;
   const unsigned int cixs=ixs;
 
@@ -606,7 +613,6 @@ void Slope(const int sx, const int sy, const int sz) {
 
 
 void ColorTable() {
-  static COLORRAMP* lastColorRamp = NULL;
   if (color_ramp == lastColorRamp) {
 	// no need to update the color table
 	return;
