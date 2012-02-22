@@ -24,6 +24,7 @@
 #include "Message.h"
 
 #include "LKObjects.h"
+#include "Bitmaps.h"
 #include "DoInits.h"
 
 using std::min;
@@ -131,8 +132,8 @@ void ReinitScreen(void) {
 
   Reset_All_DoInits(); // this is wrong, we should be less drastic!!
 
-  InitLKScreen();
-  LKSW_ReloadProfileBitmaps=true;
+//  InitLKScreen();
+//  LKSW_ReloadProfileBitmaps=true;
 
   GetClientRect(hWndMainWindow, &rc);
 #if (WINDOWSPC>0)
@@ -141,6 +142,8 @@ void ReinitScreen(void) {
   rc.top = 0;
   rc.bottom = SCREENHEIGHT;
 #endif
+  InitLKScreen();
+  LKSW_ReloadProfileBitmaps=true;
   LKObjects_Delete();
   LKObjects_Create();
 

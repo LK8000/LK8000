@@ -49,24 +49,14 @@ double MapWindow::LimitMapScale(double value) {
 
 
 
-int MapWindow::GetMapResolutionFactor(void) { // TESTFIX 091017 CHECKFIX
-  static int retglider=NIBLSCALE(30);
-  //static int retpara=IBLSCALE(30);
-  //if (ISPARAGLIDER) return retpara; else return retglider;
-
-  return retglider;
+int MapWindow::GetMapResolutionFactor(void) { 
+  return NIBLSCALE(30);
 }
 
 
-
-
 double MapWindow::StepMapScale(int Step){
-  static int nslow=0;
   if (abs(Step)>=4) {
-    nslow++;
-    //    if (nslow %2 == 0) {
     ScaleCurrent += Step/4;
-    //    }
   } else {
     ScaleCurrent += Step;
   }

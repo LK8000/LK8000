@@ -107,8 +107,12 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 	#endif
         // This is needed to update resolution change
         GetClientRect(hWndMapWindow, &MapRect);
+	FillScaleListForEngineeringUnits();
 	LKUnloadProfileBitmaps();
 	LKLoadProfileBitmaps();
+	LKUnloadFixedBitmaps();
+	LKLoadFixedBitmaps();
+	MapWindow::zoom.Reset();
 	LKSW_ReloadProfileBitmaps=false;
 	first=true; // check it
       }
