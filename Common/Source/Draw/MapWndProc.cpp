@@ -159,7 +159,7 @@ DERIVED_INFO MapWindow::DerivedDrawInfo;
 
 extern void ShowMenu();
 
-//#define CHANGESCREEN 1
+#define CHANGESCREEN 1
 
 int XstartScreen, YstartScreen, XtargetScreen, YtargetScreen;
 
@@ -192,9 +192,10 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
     case WM_SIZE:
 	#if CHANGESCREEN
 	if (!THREADRUNNING) {
+		#if TESTBENCH
 		StartupStore(_T(".......... THREAD NOT RUNNING!\n"));
-
 		LKASSERT(hdcScreen);
+		#endif
 		ReleaseDC(hWnd, hdcScreen);
 		LKASSERT(hdcDrawWindow);
 		DeleteDC(hdcDrawWindow);
@@ -248,7 +249,9 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 
 	#if CHANGESCREEN
 	if (!THREADRUNNING) {
+		#if TESTBENCH
 		StartupStore(_T(".......... RESUME THREAD\n"));
+		#endif
 		MapWindow::ResumeDrawingThread();
 	}
 	#endif

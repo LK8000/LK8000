@@ -155,7 +155,6 @@ public:
     int res_x = iround((rc.right-rc.left)*oversampling/dtquant);
     int res_y = iround((rc.bottom-rc.top)*oversampling/dtquant);
 
-    LKASSERT(sbuf==NULL); // we should not have a valid sbuf now!
     sbuf = new CSTScreenBuffer();
     LKASSERT(sbuf!=NULL);
     sbuf->Create(res_x, res_y, RGB_WHITE);
@@ -666,15 +665,12 @@ TerrainRenderer *trenderer = NULL;
 
 void CloseTerrainRenderer() {
   if (trenderer) {
-    #if TESTBENCH
-    StartupStore(_T(".... CloseTerrainRenderer\n"));
-    #endif
     delete trenderer;
     trenderer=NULL;
   }
   #if TESTBENCH
   else 
-    StartupStore(_T(".... Cannot CloseTerrainRenderer, trenderer null\n"));
+    StartupStore(_T(".... CANNOT CloseTerrainRenderer, trenderer null!!\n"));
   #endif
 }
 

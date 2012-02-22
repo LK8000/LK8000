@@ -29,7 +29,7 @@
 using std::min;
 using std::max;
 
-//#define CHANGESCREEN 1
+#define CHANGESCREEN 1
 
 #if CHANGESCREEN // Experimental work in progress
 
@@ -49,8 +49,13 @@ bool ScreenHasChanged(void) {
 //
 void ReinitScreen(void) {
 
+  static int oldSCREENWIDTH=0;
+  static int oldSCREENHEIGHT=0;
+  bool forceresize=false;
+
   RECT WindowSize, rc;
 
+  // MapWndProc will get a WM_SIZE message and then resume the thread.
   MapWindow::SuspendDrawingThread();
 
   //
@@ -61,30 +66,42 @@ void ReinitScreen(void) {
   WindowSize.right = GetSystemMetrics(SM_CXSCREEN);
   WindowSize.bottom = GetSystemMetrics(SM_CYSCREEN);
 
-  #if 1
+  #if 0
   // Force a test resolution, for testing only!
   WindowSize.right = 480;	
   WindowSize.bottom = 272;
   // 
   #endif
 
-  #if 0
-  // Toggle landcape portrait test only
+  #if 1
   static bool vhflip=true;
   if (vhflip) {
+	WindowSize.left = 0;
+	WindowSize.top = 0;
 	WindowSize.right = 480;
-	WindowSize.bottom = 800;
+	WindowSize.bottom = 272;
 	vhflip=false;
   } else {
+	WindowSize.left = 0;
+	WindowSize.top = 0;
 	WindowSize.right = 800;
 	WindowSize.bottom = 480;
 	vhflip=true;;
   }
   #endif
 
-
-  SCREENWIDTH = WindowSize.right;
-  SCREENHEIGHT= WindowSize.bottom;
+  if (oldSCREENWIDTH!=WindowSize.right && oldSCREENHEIGHT!=WindowSize.bottom) {
+	StartupStore(_T(".... CHANGING RESOLUTION\n"));
+	SCREENWIDTH = WindowSize.right;
+	SCREENHEIGHT= WindowSize.bottom;
+	oldSCREENWIDTH = WindowSize.right;
+	oldSCREENHEIGHT= WindowSize.bottom;
+	forceresize=false;
+  } else {
+	StartupStore(_T(".... SIMULATE CHANGE RESOLUTION\n"));
+	SendMessage(hWndMapWindow, WM_SIZE, (WPARAM)SIZE_RESTORED, MAKELPARAM(0,0));
+	forceresize=true;
+  }
 
 #if (WINDOWSPC>0)
   WindowSize.right = SCREENWIDTH + 2*GetSystemMetrics( SM_CXFIXEDFRAME);
@@ -138,7 +155,10 @@ void ReinitScreen(void) {
   CloseTerrainRenderer();
   UnlockTerrainDataGraphics();
 
-
+  if (forceresize) {
+  // just for simulations we send a resize message
+	forceresize=false;
+  }
   return;
 }
 

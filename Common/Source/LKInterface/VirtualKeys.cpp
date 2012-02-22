@@ -216,7 +216,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			}
 #endif
 
-#if (0)
+#if (1)
 			// Long press in center screen bottom bar
 			if (keytime>=CustomKeyTime) {
 				#ifndef DISABLEAUDIO
