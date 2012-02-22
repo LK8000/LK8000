@@ -92,18 +92,15 @@ BOOL CSTScreenBuffer::CreateBitmap(int nWidth, int nHeight)
   dibInfo.bmiColors[0].rgbReserved = 0;
   
   HDC hDC = ::GetDC(NULL);
-  if (!hDC) FailStore(_T("A001 GetDC")); // 100101
   LKASSERT(hDC);
   BGRColor **pBuffer = &m_pBuffer;
   m_hBitmap = CreateDIBSection(hDC, (const BITMAPINFO*)dibInfo, DIB_RGB_COLORS, (void**)pBuffer, NULL, 0);
   ::ReleaseDC(NULL, hDC);
-  if (!m_hBitmap) FailStore(_T("A002 hBitmap"));
   LKASSERT(m_hBitmap);
-  if (!m_pBuffer) FailStore(_T("A003 pBuffer"));
   LKASSERT(m_pBuffer);
   
   m_pBufferTmp = (BGRColor*)malloc(sizeof(BGRColor)*m_nHeight*m_nCorrectedWidth);
-  if (!m_pBufferTmp) FailStore(_T("A003/B pBuffer"));
+  LKASSERT(m_pBufferTmp);
   
   return TRUE;
 }
@@ -158,7 +155,6 @@ void CSTScreenBuffer::Create(HBITMAP hBitmap)
 
 void CSTScreenBuffer::Create(HDC *pDC, RECT rect)
 {
-  if (!m_pDC) FailStore(_T("A004 pDC"));
   LKASSERT(m_pDC);
 
   CreateBitmap(rect.right-rect.left, rect.bottom-rect.top);
@@ -192,7 +188,6 @@ void CSTScreenBuffer::CreateRGB(void *pData, int nWidth, int nHeight)
 
 BOOL CSTScreenBuffer::Draw(HDC* pDC, POINT ptDest)
 {
-  if (!m_hBitmap) FailStore(_T("A005"));
   LKASSERT(m_hBitmap);
   ReleaseDC();
   
@@ -237,7 +232,6 @@ BOOL CSTScreenBuffer::DrawStretch(HDC* pDC, POINT ptDest,
                                   unsigned int cx, 
                                   unsigned int cy)
 {
-  if (!m_hBitmap) FailStore(_T("A006"));
   LKASSERT(m_hBitmap);
   ReleaseDC();
   
