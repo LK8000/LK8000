@@ -176,8 +176,14 @@ public:
   }
 
   ~TerrainRenderer() {
-    if (hBuf) free(hBuf);
-    if (colorBuf) free(colorBuf);
+    if (hBuf) {
+	free(hBuf);
+	hBuf=NULL;
+    }
+    if (colorBuf) {
+	free(colorBuf);
+	colorBuf=NULL;
+    }
     if (sbuf){
 	delete sbuf;
 	sbuf=NULL;
