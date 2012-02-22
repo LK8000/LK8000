@@ -113,6 +113,9 @@ inline void TerrainShading(const short illum, BYTE &r, BYTE &g, BYTE &b)
 class TerrainRenderer {
 public:
   TerrainRenderer(RECT rc) {
+    #if TESTBENCH
+    StartupStore(_T(".... Init TerrainRenderer\n"));
+    #endif
 
     #if USERASTERCACHE
     if (!RasterTerrain::IsDirectAccess()) {
@@ -181,6 +184,9 @@ public:
   }
 
   ~TerrainRenderer() {
+    #if TESTBENCH
+    StartupStore(_T(".... Deinit TerrainRenderer\n"));
+    #endif
     if (hBuf) {
 	free(hBuf);
 	hBuf=NULL;
@@ -656,13 +662,20 @@ void ColorTable() {
 
 TerrainRenderer *trenderer = NULL;
 
-int Performance = 0;
+//int Performance = 0; REMOVE?
 
 void CloseTerrainRenderer() {
   if (trenderer) {
+    #if TESTBENCH
+    StartupStore(_T(".... CloseTerrainRenderer\n"));
+    #endif
     delete trenderer;
     trenderer=NULL;
   }
+  #if TESTBENCH
+  else 
+    StartupStore(_T(".... Cannot CloseTerrainRenderer, trenderer null\n"));
+  #endif
 }
 
 
@@ -678,6 +691,8 @@ void DrawTerrain( const HDC hdc, const RECT rc,
 
   if (!trenderer) {
     trenderer = new TerrainRenderer(MapWindow::MapRect);
+    LKASSERT(trenderer);
+    if (!trenderer) return;
   }
 
   if (!trenderer->SetMap()) {
