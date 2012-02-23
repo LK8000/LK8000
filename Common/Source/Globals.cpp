@@ -515,6 +515,7 @@ void Globals_Init(void) {
   // EnableExternalTriggerCruise=false; REMOVE
   ExternalTriggerCruise= false;
   ExternalTriggerCircling= false;
+  EnableExternalTriggerCruise = false;
   ForceFinalGlide= false;
   AutoForceFinalGlide= false;
 

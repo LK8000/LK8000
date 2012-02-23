@@ -12,7 +12,7 @@
 #include "Port.h"
 #include "McReady.h"
 #include "devWesterboer.h"
-
+#include "InputEvents.h"
 
 static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 static BOOL PWES1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
@@ -306,6 +306,30 @@ static BOOL PWES1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
     MACCREADY = fTemp;
     iWEST_RxUpdateTime = 5;
   }
+
+  // Get STF switch
+  NMEAParser::ExtractParameter(String,ctemp,2);
+  iTmp = (int)StrToDouble(ctemp,NULL);
+
+  EnableExternalTriggerCruise = true;
+static int  iOldVarioSwitch=0;
+  if(iTmp != iOldVarioSwitch)
+  {
+	iOldVarioSwitch = iTmp;
+    if(iTmp)
+    {
+	  ExternalTriggerCruise = true;
+	  ExternalTriggerCircling = false;
+    }
+    else
+    {
+  	  ExternalTriggerCruise = false;
+	  ExternalTriggerCircling = true;
+    }
+  }
+
+
+
 
   NMEAParser::ExtractParameter(String,ctemp,6);
   iTmp = (int)StrToDouble(ctemp,NULL);

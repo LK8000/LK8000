@@ -161,8 +161,8 @@ _forcereset:
   bool forcecruise = false;
   bool forcecircling = false;
 
-  #if 0 // UNUSED, EnableExternalTriggerCruise not configurable, set to false since ever
-  if (EnableExternalTriggerCruise && !(ReplayLogger::IsEnabled())) {
+  #if 1 // UNUSED, EnableExternalTriggerCruise not configurable, set to false since ever
+  if (EnableExternalTriggerCruise ) {
     if (ExternalTriggerCruise && ExternalTriggerCircling) {
       // this should never happen
       ExternalTriggerCircling = false;
