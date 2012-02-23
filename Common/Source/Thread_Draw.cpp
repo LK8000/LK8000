@@ -9,7 +9,7 @@
 #include "externs.h"
 
 #include <Message.h>
-
+#include "LKInterface.h"
 #include "Bitmaps.h"
 #include "RGB.h"
 
@@ -116,6 +116,9 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 
 	// This will reset the function for the new ScreenScale
 	PolygonRotateShift((POINT*)NULL,0,0,0,DisplayAngle+1);
+
+	// Restart from moving map
+	SetModeIndex(LKMODE_MAP);
 
 	LKSW_ReloadProfileBitmaps=false;
 	first=true; // check it

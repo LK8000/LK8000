@@ -55,6 +55,9 @@ void ReinitScreen(void) {
 
   RECT WindowSize, rc;
 
+  // This is needed to hide any menu currently on, as first thing.
+  InputEvents::setMode(TEXT("default"));
+
   // MapWndProc will get a WM_SIZE message and then resume the thread.
   MapWindow::SuspendDrawingThread();
 
@@ -132,9 +135,6 @@ void ReinitScreen(void) {
 
   Reset_All_DoInits(); // this is wrong, we should be less drastic!!
 
-//  InitLKScreen();
-//  LKSW_ReloadProfileBitmaps=true;
-
   GetClientRect(hWndMainWindow, &rc);
 #if (WINDOWSPC>0)
   rc.left = 0;
@@ -143,6 +143,7 @@ void ReinitScreen(void) {
   rc.bottom = SCREENHEIGHT;
 #endif
   InitLKScreen();
+
   LKSW_ReloadProfileBitmaps=true;
   LKObjects_Delete();
   LKObjects_Create();
