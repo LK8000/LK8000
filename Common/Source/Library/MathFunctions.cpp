@@ -97,7 +97,9 @@ void protateshift(POINT &pin, const double &angle, const int &xs, const int &ys)
 }
 
 
-
+//
+// This function must be reinitialised on resolution change
+//
 void PolygonRotateShift(POINT* poly, const int n, const int xs, const int ys, const double angle) {
   static double lastangle = -1;
   static int cost=1024, sint=0;

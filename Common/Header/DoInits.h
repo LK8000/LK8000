@@ -55,6 +55,7 @@
 	MDI_MAPWPLABELADD,		// resolution change
 	MDI_CHECKLABELBLOCK,		// resolution change
 	MDI_LKPROCESS,			// unit change
+	MDI_COMPASS,			// resolution change
 	MDI_LAST_DOINIT,		
  } MDI_t;
 

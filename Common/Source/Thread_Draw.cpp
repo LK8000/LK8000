@@ -113,6 +113,10 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 	LKUnloadFixedBitmaps();
 	LKLoadFixedBitmaps();
 	MapWindow::zoom.Reset();
+
+	// This will reset the function for the new ScreenScale
+	PolygonRotateShift((POINT*)NULL,0,0,0,DisplayAngle+1);
+
 	LKSW_ReloadProfileBitmaps=false;
 	first=true; // check it
       }

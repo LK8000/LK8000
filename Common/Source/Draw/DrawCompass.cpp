@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-
+#include "DoInits.h"
 
 void MapWindow::DrawCompass(HDC hDC, const RECT rc)
 {
@@ -19,6 +19,11 @@ void MapWindow::DrawCompass(HDC hDC, const RECT rc)
     static int lastRcRight = 0, lastRcTop = 0;
     static POINT Arrow[5] = { {0,-11}, {-5,9}, {0,3}, {5,9}, {0,-11}};
 
+    if (DoInit[MDI_COMPASS]) {
+	lastRcRight=0;
+	lastRcTop=0;
+	DoInit[MDI_COMPASS]=false;
+    }
 
     if (lastDisplayAngle != DisplayAngle || lastRcRight != rc.right || lastRcTop != rc.top){
 
