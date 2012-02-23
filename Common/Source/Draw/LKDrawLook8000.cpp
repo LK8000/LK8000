@@ -1186,13 +1186,17 @@ Drawbottom:
 
 
   if (MapWindow::AlphaBlendSupported() && MapSpaceMode==MSM_MAP && BarOpacity<100) {
-	static bool initablend=true;
-	static HDC hdc2;
-	static HBITMAP bitmapnew;
-	if (initablend) {
+	static HDC hdc2=NULL;
+	static HBITMAP bitmapnew=NULL, bitmapold=NULL;
+	if (DoInit[MDI_LOOKABLEND]) {
+		// drop old object to allow deleteDC correctly
+		if (bitmapold) SelectObject(hdc2,bitmapold);
+		if (bitmapnew) DeleteObject(bitmapnew);
+		if (hdc2) DeleteObject(hdc2);
+
 		hdc2=CreateCompatibleDC(hdc);
 		bitmapnew=CreateCompatibleBitmap(hdc,rc.right,rc.bottom);
-		initablend=false;
+		DoInit[MDI_LOOKABLEND]=false;
 	}
 
 	if (BarOpacity==0) {
@@ -1204,7 +1208,7 @@ Drawbottom:
 		// A good value is 195
 		bs.SourceConstantAlpha=BarOpacity*255/100;
 		bs.AlphaFormat=0;
-		SelectObject(hdc2,bitmapnew); 
+		bitmapold=(HBITMAP)SelectObject(hdc2,bitmapnew); 
 		FillRect(hdc2,&nrc, hB); 
 		MapWindow::AlphaBlendF(hdc,0,rc.bottom-BottomSize,rc.right,BottomSize,hdc2,0,rc.bottom-BottomSize,rc.right,BottomSize,bs);
 		if (BarOpacity>25)
@@ -1213,8 +1217,6 @@ Drawbottom:
 			barTextColor=RGB_BLACK;
 	}
 
-	// We have no un-init function. Todo!
-	// DeleteObject(hdc2); DeleteObject(bitmapnew);
 	
   } else {
 	barTextColor=RGB_WHITE;
