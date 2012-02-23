@@ -542,7 +542,7 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
    if ( _tcscmp(DeviceList[i].Name,_T("LX16xx"))==0)
      isLx16xx=true;
   }
-
+  isLx16xx = false;
   if (isLx16xx)
   {
     // for LX16xx direct communication
@@ -798,8 +798,8 @@ FlarmDeclareSetGet(PDeviceDescriptor_t d, TCHAR *Buffer) {
 BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen, TCHAR errBuffer[])
 {
   BOOL result = TRUE;
-
-  TCHAR Buffer[256];
+#define BUFF_LEN 512
+  TCHAR Buffer[BUFF_LEN];
 
   d->Com->StopRxThread();
   d->Com->SetRxTimeout(500);                     // set RX timeout to 500[ms]
@@ -814,7 +814,7 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
   if (isLx16xx) {
     // for LX16xx direct communication
 	// set it to transfer mode
-    devFormatNMEAString(Buffer, 512, TEXT("PFLX0,COLIBRI") );
+    devFormatNMEAString(Buffer, BUFF_LEN, TEXT("PFLX0,COLIBRI") );
     d->Com->WriteString(Buffer);
     Sleep(100);
   }
@@ -879,17 +879,38 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
   if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
 
   // Reboot flarm to make declaration active, according to specs
-  Sleep(1000);
-  devFormatNMEAString(Buffer, 512, TEXT("PFLAR,0") );
-  d->Com->WriteString(Buffer);
 
+  Sleep(100);
+  devFormatNMEAString(Buffer, BUFF_LEN, TEXT("PFLAR,0") );
+  d->Com->WriteString(Buffer);
+  Sleep(100);
   /***********************************************************/
     if (isLx16xx)
     {
   	  // exit transfer mode
       // and return to normal LX16xx  communication
-      devFormatNMEAString(Buffer, 512, TEXT("PFLX0,LX1600") );
+
+      devFormatNMEAString(Buffer, BUFF_LEN, TEXT("PFLX0,LX1600") );
       d->Com->WriteString(Buffer);
+      unsigned long lOldBR =   d->Com->GetBaudrate();
+
+      /* switch to 4k8 for new Firmware versions of LX1600 */
+      d->Com->SetBaudrate(4800);
+      Sleep(100);
+      d->Com->WriteString(Buffer);
+      Sleep(100);
+      d->Com->WriteString(Buffer);
+      Sleep(100);
+
+      /* return to previous original */
+      d->Com->SetBaudrate(lOldBR);
+      Sleep(100);
+      d->Com->WriteString(Buffer);
+      Sleep(100);
+      d->Com->WriteString(Buffer);
+      Sleep(100);
+
+
     }
     /***********************************************************/
 
