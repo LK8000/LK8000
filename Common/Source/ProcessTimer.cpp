@@ -20,6 +20,8 @@ using std::max;
 
 extern int ConnectionProcessTimer(int itimeout);
 extern bool BOOL2bool(BOOL a);
+extern bool ScreenHasChanged(void);
+extern void ReinitScreen(void);
 
 //
 // This is common to both real and SIM modes, and thus it is running at 2Hz
@@ -53,6 +55,9 @@ void CommonProcessTimer()
   // 1 Hz routines
   if (cp_twohzcounter %2 == 0) {
 	UpdateBatteryInfos();
+	#if TESTBENCH
+	if (ScreenHasChanged()) ReinitScreen();
+	#endif
   }
 
   Message::Render();

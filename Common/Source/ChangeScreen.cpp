@@ -38,15 +38,41 @@ using std::max;
 // Detect if screen resolution and/or orientation has changed
 //
 bool ScreenHasChanged(void) {
+
+  static int oldSCREENWIDTH=0;
+  static int oldSCREENHEIGHT=0;
+  static bool doinit=true;
+  int x=0,y=0;
+
+  if (doinit) {
+	oldSCREENWIDTH=SCREENWIDTH;
+	oldSCREENHEIGHT=SCREENHEIGHT;
+	doinit=false;
 	return false;
+  }
+
+  // On PC, simply check for WIDTH and HEIGHT changed
+  #if (WINDOWSPC>0)
+  x=SCREENWIDTH;
+  y=SCREENHEIGHT;
+  #else
+  x=GetSystemMetrics(SM_CXSCREEN);
+  y=GetSystemMetrics(SM_CYSCREEN);
+  #endif
+  if (x==oldSCREENWIDTH && y==oldSCREENHEIGHT) return false;
+
+  oldSCREENWIDTH=x;
+  oldSCREENHEIGHT=y;
+  StartupStore(_T("... SCREEN RESOLUTION CHANGE DETECTED: %d x %d\n"),x,y);
+  return true;
 }
 
 
-
-// TODO TODO WORK IN PROGRESS
+//
 // Reinit screen upon resolution/orientation change detected
 //
 // Test is possible from VirtualKeys.cpp, activating the customkey at line 229
+// In this case, enable a testbench development option.
 //
 void ReinitScreen(void) {
 
@@ -62,13 +88,24 @@ void ReinitScreen(void) {
   MapWindow::SuspendDrawingThread();
 
   //
-  // Detect here the current screen geometry
+  // Detect the current screen geometry
   //
+  #if (WINDOWSPC>0)
+  // For PC we assume that the desired resolution is in SCREENxx
+  WindowSize.left = 0;
+  WindowSize.top = 0;
+  WindowSize.right = SCREENWIDTH;
+  WindowSize.bottom = SCREENHEIGHT;
+  #else
   WindowSize.left = 0;
   WindowSize.top = 0;
   WindowSize.right = GetSystemMetrics(SM_CXSCREEN);
   WindowSize.bottom = GetSystemMetrics(SM_CYSCREEN);
+  #endif
 
+  // 
+  // ----------- DEVELOPMENT TESTBENCH OPTIONS -------------
+  //
   #if 0
   // Force a test resolution, for testing only!
   // Using always the same resolution will not work when asking for the same resolution again.
@@ -78,7 +115,6 @@ void ReinitScreen(void) {
   WindowSize.right = 480;	
   WindowSize.bottom = 272;
   #endif
-
   #if 0
   // Simulate changin one resolution to another
   static bool vhflip=true;
@@ -96,15 +132,16 @@ void ReinitScreen(void) {
 	vhflip=true;;
   }
   #endif
-
-  #if 1
+  #if 0
   // Simulate Portrait<>Landscape flip/flop
   WindowSize.left = 0;
   WindowSize.top = 0;
   WindowSize.right = SCREENHEIGHT;
   WindowSize.bottom = SCREENWIDTH;
   #endif
-
+  // 
+  // ---------------------------------------------------------
+  //
 
   if (oldSCREENWIDTH!=WindowSize.right || oldSCREENHEIGHT!=WindowSize.bottom) {
 	#if TESTBENCH

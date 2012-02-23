@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 6 , 120204
+# Release 7 , 120223
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -631,7 +631,7 @@ location=9
 mode=Display1
 type=key
 data=11
-label= 
+label=
 event=Null
 location=10
 
@@ -884,8 +884,8 @@ location=9
 mode=Config1
 type=key
 data=11
-label= 
-event=Null
+label=SCREEN\nMODES
+event=Mode PCMODE
 location=10
 
 mode=Config1
@@ -2678,6 +2678,89 @@ event=Null
 location=10
 
 mode=LOGBOOK
+type=key
+data=12
+label=
+event=Null
+location=11
+
+# -------------
+# mode=PCMODE
+# -------------
+
+mode=PCMODE
+type=key
+data=APP1
+label=
+event=Null
+location=1
+
+mode=PCMODE
+type=key
+data=APP2
+label=
+event=Null
+location=2
+
+mode=PCMODE
+type=key
+data=APP3
+label=
+event=Null
+location=3
+
+mode=PCMODE
+type=key
+data=APP4
+label=320 x\n240
+event=Service SS320x240
+location=4
+
+mode=PCMODE
+type=key
+data=6
+label=480 x\n272
+event=Service SS480x272
+location=5
+
+mode=PCMODE
+type=key
+data=7
+label=640 x\n480
+event=Service SS640x480
+location=6
+
+mode=PCMODE
+type=key
+data=8
+label=800 x\n480
+event=Service SS800x480
+location=7
+
+mode=PCMODE
+type=key
+data=9
+label=
+label=896 x\n672
+event=Service SS896x672
+event=Null
+location=8
+
+mode=PCMODE
+type=key
+data=0
+event=Mode default
+label=_@M2011_
+location=9
+
+mode=PCMODE
+type=key
+data=11
+label=Portrait\nLandscape
+event=Service SSINVERT
+location=10
+
+mode=PCMODE
 type=key
 data=12
 label=

@@ -1968,6 +1968,38 @@ void InputEvents::eventService(const TCHAR *misc) {
 	dlgAnalysisShowModal(ANALYSIS_PAGE_NEAR_AIRSPACE);
 	return;
   }
+  if (_tcscmp(misc, TEXT("SS320x240")) == 0) {
+	SCREENWIDTH=320;
+	SCREENHEIGHT=240;
+	return;
+  }
+  if (_tcscmp(misc, TEXT("SS480x272")) == 0) {
+	SCREENWIDTH=480;
+	SCREENHEIGHT=272;
+	return;
+  }
+  if (_tcscmp(misc, TEXT("SS640x480")) == 0) {
+	SCREENWIDTH=640;
+	SCREENHEIGHT=480;
+	return;
+  }
+  if (_tcscmp(misc, TEXT("SS800x480")) == 0) {
+	SCREENWIDTH=800;
+	SCREENHEIGHT=480;
+	return;
+  }
+  if (_tcscmp(misc, TEXT("SS896x672")) == 0) {
+	SCREENWIDTH=896;
+	SCREENHEIGHT=672;
+	return;
+  }
+  if (_tcscmp(misc, TEXT("SSINVERT")) == 0) {
+	if (SCREENWIDTH==896) return;
+	int y=SCREENHEIGHT;
+	SCREENHEIGHT=SCREENWIDTH;
+	SCREENWIDTH=y;
+	return;
+  }
 
   // we should not get here
   DoStatusMessage(_T("Unknown Service: "),misc);
