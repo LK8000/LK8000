@@ -72,15 +72,15 @@ void ReinitScreen(void) {
   #if 0
   // Force a test resolution, for testing only!
   // Using always the same resolution will not work when asking for the same resolution again.
-  // TODO.
+  // dont know why (yet)...
   WindowSize.left = 0;
   WindowSize.top = 0;
   WindowSize.right = 480;	
   WindowSize.bottom = 272;
-  // 
   #endif
 
-  #if 1
+  #if 0
+  // Simulate changin one resolution to another
   static bool vhflip=true;
   if (vhflip) {
 	WindowSize.left = 0;
@@ -96,6 +96,15 @@ void ReinitScreen(void) {
 	vhflip=true;;
   }
   #endif
+
+  #if 1
+  // Simulate Portrait<>Landscape flip/flop
+  WindowSize.left = 0;
+  WindowSize.top = 0;
+  WindowSize.right = SCREENHEIGHT;
+  WindowSize.bottom = SCREENWIDTH;
+  #endif
+
 
   if (oldSCREENWIDTH!=WindowSize.right || oldSCREENHEIGHT!=WindowSize.bottom) {
 	#if TESTBENCH

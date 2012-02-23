@@ -216,18 +216,18 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			}
 #endif
 
-#if (1)
+#if (WINDOWSPC>0)
+#if TESTBENCH
 			// Long press in center screen bottom bar
 			if (keytime>=CustomKeyTime) {
 				#ifndef DISABLEAUDIO
 				if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
 				#endif
-				//Reset_Single_DoInits(MDI_DORANGEWAYPOINTLIST);
-				//Reset_All_DoInits();
 				extern void ReinitScreen(void);
 				ReinitScreen();
 				return 0;
 			}
+#endif
 #endif
 
 			// REAL USAGE, ALWAYS ACTIVATE 
