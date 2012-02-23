@@ -3880,11 +3880,11 @@ bool IsFlarmTargetCNInRange()
  void BallastDump ()
  {
    static double BallastTimeLast = -1;
- 
+
    if (BallastTimerActive) {
          // JMW only update every 5 seconds to stop flooding the devices
      if (GPS_INFO.Time > BallastTimeLast+5) {
-       double BALLAST_last = BALLAST;
+ //      double BALLAST_last = BALLAST;
        double dt = GPS_INFO.Time - BallastTimeLast;
        double percent_per_second = 1.0/max(10, BallastSecsToEmpty);
        BALLAST -= dt*percent_per_second;
@@ -3895,7 +3895,8 @@ bool IsFlarmTargetCNInRange()
          devPutBallast(devA(), BALLAST); // 
          devPutBallast(devB(), BALLAST); //
        }
-       if (fabs(BALLAST-BALLAST_last)>0.01) { // Ulli changed from 5% to 1% because somtimes it stopped at 55%
+  //     if (fabs(BALLAST-BALLAST_last)>0.01) removed the change check, will be send every 5s for long ballast dumps
+       { // Ulli changed from 5% to 1% because sometimes it stopped at 55%
          GlidePolar::SetBallast();
          devPutBallast(devA(), BALLAST);
          devPutBallast(devB(), BALLAST);
