@@ -1342,7 +1342,7 @@ _@M1291_ "Strefa"
 _@M1292_ "Najbliższa strefa"
 _@M1293_ "Sonar WŁ"
 _@M1294_ "Sonar WYŁ"
-_@M1295_ "Z boku"
+_@M1295_ "(widok z boku)"
 
 # LK info page headers, try to use the same or less number of chars here,
 # or test it with different screen reolutions and landscape/portrait mode too!
@@ -1747,7 +1747,7 @@ _@M1777_ "10 sekund"
 _@M1778_ "45 sekund"
 
 # New livetracker configuration
-_@M1779_ "Częstotliwość Live Tracker "
+_@M1779_ "Częstotl. Live Tracker "
 _@M1780_ "Użytkownik"
 _@M1781_ "Hasło"
 _@M1782_ "Serwer LT"
