@@ -2712,28 +2712,28 @@ location=3
 mode=PCMODE
 type=key
 data=APP4
-label=320 x\n240
+label=320 x\n240$(PCONLY)
 event=Service SS320x240
 location=4
 
 mode=PCMODE
 type=key
 data=6
-label=480 x\n272
+label=480 x\n272$(PCONLY)
 event=Service SS480x272
 location=5
 
 mode=PCMODE
 type=key
 data=7
-label=640 x\n480
+label=640 x\n480$(PCONLY)
 event=Service SS640x480
 location=6
 
 mode=PCMODE
 type=key
 data=8
-label=800 x\n480
+label=800 x\n480$(PCONLY)
 event=Service SS800x480
 location=7
 
@@ -2741,7 +2741,7 @@ mode=PCMODE
 type=key
 data=9
 label=
-label=896 x\n672
+label=896 x\n672$(PCONLY)
 event=Service SS896x672
 event=Null
 location=8

@@ -585,6 +585,16 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
 
+  if (_tcsstr(OutBuffer, TEXT("$(PCONLY)"))) {
+    #if (WINDOWSPC>0)
+    ReplaceInString(OutBuffer, TEXT("$(PCONLY)"), TEXT(""), Size);
+    #else
+    _tcscpy(OutBuffer,_T(""));
+    invalid = true;
+    #endif
+    if (--items<=0) goto label_ret;
+  }
+
 label_ret:
 
   return invalid;
