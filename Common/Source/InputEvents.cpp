@@ -1995,6 +1995,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 	return;
   }
 #endif
+extern void RotateScreen(void);
   if (_tcscmp(misc, TEXT("SSINVERT")) == 0) {
 	#if (WINDOWSPC>0)
 	if (SCREENWIDTH==896) return;
@@ -2002,7 +2003,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 	SCREENHEIGHT=SCREENWIDTH;
 	SCREENWIDTH=y;
 	#else
-
+	RotateScreen();
 	#endif
 	return;
   }
