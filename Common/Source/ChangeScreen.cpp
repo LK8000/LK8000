@@ -45,8 +45,13 @@ bool ScreenHasChanged(void) {
   int x=0,y=0;
 
   if (doinit) {
+	#if (WINDOWSPC>0)
 	oldSCREENWIDTH=SCREENWIDTH;
 	oldSCREENHEIGHT=SCREENHEIGHT;
+	#else
+	oldSCREENWIDTH=GetSystemMetrics(SM_CXSCREEN);
+	oldSCREENHEIGHT=GetSystemMetrics(SM_CYSCREEN);
+	#endif
 	doinit=false;
 	return false;
   }
@@ -147,8 +152,10 @@ void ReinitScreen(void) {
 	#if TESTBENCH
 	StartupStore(_T(".... CHANGING RESOLUTION\n"));
 	#endif
+	#if (WINDOWSPC>0)
 	SCREENWIDTH = WindowSize.right;
 	SCREENHEIGHT= WindowSize.bottom;
+	#endif
 	oldSCREENWIDTH = WindowSize.right;
 	oldSCREENHEIGHT= WindowSize.bottom;
   } else {
@@ -156,8 +163,10 @@ void ReinitScreen(void) {
 	#if TESTBENCH
 	StartupStore(_T(".... CHANGE RESOLUTION, SAME SIZE, WM_SIZE FORCED\n"));
 	#endif
+	#if (WINDOWSPC>0)
 	SCREENWIDTH = WindowSize.right;
 	SCREENHEIGHT= WindowSize.bottom;
+	#endif
 	SendMessage(hWndMapWindow, WM_SIZE, (WPARAM)SIZE_RESTORED, MAKELPARAM(0,0));
   }
 
@@ -173,8 +182,8 @@ void ReinitScreen(void) {
 #else
 
   // Still to be tested!
-  MoveWindow(hWndMainWindow, WindowSize.left, WindowSize.top, SCREENWIDTH, SCREENHEIGHT, TRUE);
-  MoveWindow(hWndMapWindow, 0, 0, SCREENWIDTH, SCREENHEIGHT, FALSE); 
+  MoveWindow(hWndMainWindow, WindowSize.left, WindowSize.top, WindowSize.right, WindowSize.bottom, TRUE);
+  MoveWindow(hWndMapWindow, 0, 0, WindowSize.right, WindowSize.bottom, FALSE); 
 
 
 #endif

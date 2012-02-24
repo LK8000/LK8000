@@ -1968,6 +1968,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 	dlgAnalysisShowModal(ANALYSIS_PAGE_NEAR_AIRSPACE);
 	return;
   }
+#if (WINDOWSPC>0)
   if (_tcscmp(misc, TEXT("SS320x240")) == 0) {
 	SCREENWIDTH=320;
 	SCREENHEIGHT=240;
@@ -1993,11 +1994,16 @@ void InputEvents::eventService(const TCHAR *misc) {
 	SCREENHEIGHT=672;
 	return;
   }
+#endif
   if (_tcscmp(misc, TEXT("SSINVERT")) == 0) {
+	#if (WINDOWSPC>0)
 	if (SCREENWIDTH==896) return;
 	int y=SCREENHEIGHT;
 	SCREENHEIGHT=SCREENWIDTH;
 	SCREENWIDTH=y;
+	#else
+
+	#endif
 	return;
   }
 
