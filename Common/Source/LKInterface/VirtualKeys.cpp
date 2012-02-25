@@ -216,8 +216,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 			}
 #endif
 
-#if (WINDOWSPC>0)
-#if TESTBENCH
+#if (0)
 			// Long press in center screen bottom bar
 			if (keytime>=CustomKeyTime) {
 				#ifndef DISABLEAUDIO
@@ -227,7 +226,6 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				ReinitScreen();
 				return 0;
 			}
-#endif
 #endif
 
 			// REAL USAGE, ALWAYS ACTIVATE 
