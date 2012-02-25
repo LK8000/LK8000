@@ -193,7 +193,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 	#if CHANGESCREEN
 	if (!THREADRUNNING) {
 		#if TESTBENCH
-		StartupStore(_T(".......... THREAD NOT RUNNING!\n"));
+		StartupStore(_T("... MapWndProc WM_SIZE detected, DrawThread not running\n"));
 		LKASSERT(hdcScreen);
 		#endif
 		ReleaseDC(hWnd, hdcScreen);
@@ -254,7 +254,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 	#if CHANGESCREEN
 	if (!THREADRUNNING) {
 		#if TESTBENCH
-		StartupStore(_T(".......... RESUME THREAD\n"));
+		StartupStore(_T("... MapWndProc resuming Draw Thread\n"));
 		#endif
 		MapWindow::ResumeDrawingThread();
 	}

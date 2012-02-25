@@ -75,33 +75,6 @@ RECT WINAPI DrawWireRects(LPRECT lprcTo, UINT nMilliSecSpeed)
 #endif 
 
 
-bool RotateScreen() {
-#if (WINDOWSPC>0)
-  return false;
-#else 
-  //
-  // Change the orientation of the screen
-  //
-#if 1
-  DEVMODE DeviceMode;
-    
-  memset(&DeviceMode, 0, sizeof(DeviceMode));
-  DeviceMode.dmSize=sizeof(DeviceMode);
-  DeviceMode.dmFields = DM_DISPLAYORIENTATION;
-  DeviceMode.dmDisplayOrientation = DMDO_90; 
-
-  if (DISP_CHANGE_SUCCESSFUL == 
-      ChangeDisplaySettingsEx(NULL, &DeviceMode, NULL, CDS_RESET, NULL))
-    return true;
-  else
-    return false;
-#else
-  return false;
-#endif
-#endif
-
-}
-
 
 int GetTextWidth(HDC hDC, TCHAR *text) {
   SIZE tsize;

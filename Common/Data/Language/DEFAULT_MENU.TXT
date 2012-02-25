@@ -2691,22 +2691,25 @@ location=11
 mode=PCMODE
 type=key
 data=APP1
-label=
-event=Null
+label=Turn\n90°$(NOTPC)
+event=Service SSINV90
+event=Mode default
 location=1
 
 mode=PCMODE
 type=key
 data=APP2
-label=
-event=Null
+label=Turn\n180°$(NOTPC)
+event=Service SSINV180
+event=Mode default
 location=2
 
 mode=PCMODE
 type=key
 data=APP3
-label=
-event=Null
+label=Turn\nScreen$(PCONLY)
+event=Service SSINVERT
+event=Mode default
 location=3
 
 mode=PCMODE
@@ -2714,6 +2717,7 @@ type=key
 data=APP4
 label=320 x\n240$(PCONLY)
 event=Service SS320x240
+event=Mode default
 location=4
 
 mode=PCMODE
@@ -2721,6 +2725,7 @@ type=key
 data=6
 label=480 x\n272$(PCONLY)
 event=Service SS480x272
+event=Mode default
 location=5
 
 mode=PCMODE
@@ -2728,6 +2733,7 @@ type=key
 data=7
 label=640 x\n480$(PCONLY)
 event=Service SS640x480
+event=Mode default
 location=6
 
 mode=PCMODE
@@ -2735,6 +2741,7 @@ type=key
 data=8
 label=800 x\n480$(PCONLY)
 event=Service SS800x480
+event=Mode default
 location=7
 
 mode=PCMODE
@@ -2743,7 +2750,7 @@ data=9
 label=
 label=896 x\n672$(PCONLY)
 event=Service SS896x672
-event=Null
+event=Mode default
 location=8
 
 mode=PCMODE
@@ -2756,8 +2763,8 @@ location=9
 mode=PCMODE
 type=key
 data=11
-label=Portrait\nLandscape
-event=Service SSINVERT
+label=
+event=Null
 location=10
 
 mode=PCMODE

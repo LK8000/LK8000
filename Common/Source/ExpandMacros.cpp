@@ -594,6 +594,15 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     #endif
     if (--items<=0) goto label_ret;
   }
+  if (_tcsstr(OutBuffer, TEXT("$(NOTPC)"))) {
+    #if (WINDOWSPC>0)
+    _tcscpy(OutBuffer,_T(""));
+    invalid = true;
+    #else
+    ReplaceInString(OutBuffer, TEXT("$(NOTPC)"), TEXT(""), Size);
+    #endif
+    if (--items<=0) goto label_ret;
+  }
 
 label_ret:
 

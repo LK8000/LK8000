@@ -1995,15 +1995,27 @@ void InputEvents::eventService(const TCHAR *misc) {
 	return;
   }
 #endif
-extern void RotateScreen(void);
+extern void RotateScreen(short angle);
   if (_tcscmp(misc, TEXT("SSINVERT")) == 0) {
 	#if (WINDOWSPC>0)
 	if (SCREENWIDTH==896) return;
 	int y=SCREENHEIGHT;
 	SCREENHEIGHT=SCREENWIDTH;
 	SCREENWIDTH=y;
+	#endif
+	return;
+  }
+  if (_tcscmp(misc, TEXT("SSINV90")) == 0) {
+	#if (WINDOWSPC>0)
 	#else
-	RotateScreen();
+	RotateScreen(90);
+	#endif
+	return;
+  }
+  if (_tcscmp(misc, TEXT("SSINV180")) == 0) {
+	#if (WINDOWSPC>0)
+	#else
+	RotateScreen(180);
 	#endif
 	return;
   }

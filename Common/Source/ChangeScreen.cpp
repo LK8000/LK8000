@@ -189,6 +189,7 @@ void ReinitScreen(void) {
 #endif
 
   Reset_All_DoInits(); // this is wrong, we should be less drastic!!
+  DoInit[MDI_DRAWLOOK8000]=false;
 
   GetClientRect(hWndMainWindow, &rc);
 #if (WINDOWSPC>0)
@@ -215,6 +216,10 @@ void ReinitScreen(void) {
   LockTerrainDataGraphics();
   CloseTerrainRenderer();
   UnlockTerrainDataGraphics();
+  DoInit[MDI_DRAWLOOK8000]=true;
+
+  ShowWindow(hWndMainWindow, SW_SHOWNORMAL);
+  BringWindowToTop(hWndMainWindow);
 
   return;
 }

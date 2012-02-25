@@ -587,6 +587,7 @@ SRC_FILES :=\
 	$(SRC)/ProcessTimer.cpp \
 	$(SRC)/Progress.cpp\
 	$(SRC)/Registry.cpp\
+	$(SRC)/RotateScreen.cpp\
 	$(SRC)/Settings.cpp\
 	$(SRC)/Sound.cpp \
 	$(SRC)/StatusFile.cpp \

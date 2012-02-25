@@ -328,7 +328,7 @@ inline unsigned int CombinedDivAndMod(unsigned int &lx) {
   return ox;
 }
 
-bool RotateScreen(void);
+bool RotateScreen(short angle);
 
 int GetTextWidth(HDC hDC, TCHAR *text);
 void ExtTextOutClip(HDC hDC, int x, int y, TCHAR *text, int width);
