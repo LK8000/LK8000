@@ -18,7 +18,6 @@
  * provides basic operations on GPS fixes.
  */
 class CPointGPS : public CPoint3D {
-  static const unsigned MAX_TIME_DELTA = 16 * 3600; // 16h
   unsigned _time;
   
 public:
@@ -47,12 +46,7 @@ typedef std::vector<CPointGPS> CPointGPSArray;
  */
 inline int CPointGPS::TimeDelta(unsigned ref) const
 {
-  int delta = _time - ref;
-  if(delta < 0) {
-    if(delta < -(int)(DAY_SECONDS - MAX_TIME_DELTA))
-      delta += DAY_SECONDS;
-  }
-  return delta;
+  return _time - ref;
 }
 
 
