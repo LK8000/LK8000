@@ -16,7 +16,9 @@ FlarmCalculations::FlarmCalculations(void)
 
 FlarmCalculations::~FlarmCalculations(void)
 {
-  // TODO code: delete on exit
+  for (AverageCalculatorMap::iterator i = map.begin(),
+       end = map.end(); i != end; ++i)
+    delete i->second;
 }
 
 
