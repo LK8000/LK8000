@@ -397,8 +397,8 @@ bool PtInRect(int X,int Y, RECT rcd )
 {
   if( X  > rcd.left   )
     if( X  < rcd.right  )
-      if( Y  > rcd.bottom )
-        if( Y  < rcd.top    )
+      if( Y  < rcd.bottom )
+        if( Y  > rcd.top    )
           return true;
   return false;
 }
@@ -442,32 +442,46 @@ return(result);
 
 
 
+RECT RectIntersect(RECT A, RECT B)
+{
+  RECT Inter;
+  Inter.left    = max( A.left  , B.left);
+  Inter.right   = min( A.right , B.right);
+  Inter.top     = min( A.top   , B.top);
+  Inter.bottom  = max( A.bottom, B.bottom);
+
+return Inter;
+
+}
+
 void RenderSky(HDC hdc, const RECT rc, COLORREF Col1, COLORREF Col2 , int iSteps)
 {
-
-
 RECT rcd;
 int i;
 
-double idy = (double)(rc.top - rc.bottom)/(double)iSteps+0.5f;
+
+double fdy = (double)(rc.top - rc.bottom)/(double)iSteps;
 HPEN   hpHorizon;
 HBRUSH hbHorizon;
 COLORREF Col;
-
+double fTop;
 LKASSERT(iSteps!=0);
 
 /* just take something in order to store the old brush and pen for restoring them */
 HPEN OldPen     = (HPEN)   SelectObject(hdc, GetStockObject(WHITE_PEN));
 HBRUSH OldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(BLACK_BRUSH));
 	rcd = rc;
-	rcd.top = rcd.bottom;
+
+	fTop = (double)rcd.bottom;
 	for(i=0 ; i < iSteps ; i++)
 	{
 	  rcd.bottom  = rcd.top ;
-	  rcd.top     = (long)((double)rcd.bottom + ( idy));
+	  fTop += fdy;
+	  rcd.top     = (long)fTop;
 
 	  Col = MixColors( Col2, Col1,  (double) i / (double) iSteps);
 
+//	  rcd = RectIntersect(rcd,rc);
 	  hpHorizon = (HPEN)CreatePen(PS_SOLID, IBLSCALE(1), Col);
 	  hbHorizon = (HBRUSH)CreateSolidBrush(Col);
 	  SelectObject(hdc, hpHorizon);

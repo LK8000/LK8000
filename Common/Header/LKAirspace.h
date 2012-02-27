@@ -26,7 +26,7 @@
 // the resolution turns to be too inaccurate
 // so tha small (<5km airspaced) (e.g. dangerous areas) will not be shown
 // with AIRSPACE_SCANSIZE_X 64 I tried to make a compromise between resolution and speed on slow devices
-#define AIRSPACE_SCANSIZE_X 80
+#define AIRSPACE_SCANSIZE_X 140
 #define GC_MAX_POLYGON_PTS (2*AIRSPACE_SCANSIZE_X+4)
 #define MAX_NO_SIDE_AS 40
 // Define this, if airspace nearest distance infoboxes will use selected airpsace only
@@ -277,6 +277,8 @@ typedef struct
   int iAreaSize;
   int aiLable;
   int iType;
+  int iMaxBase;
+  int iMinTop;
   BOOL bRectAllowed;
   BOOL bEnabled;
   TCHAR szAS_Name[NAME_SIZE + 1];

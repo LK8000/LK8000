@@ -1823,70 +1823,7 @@ void CAirspaceManager::QnhChangeNotify(const double &newQNH)
   }
 }
 
-#ifdef  RRRR
-void CAirspaceManager::ScanAirspaceLine(double lats[AIRSPACE_SCANSIZE_X], double lons[AIRSPACE_SCANSIZE_X],
-                                        double terrain_heights[AIRSPACE_SCANSIZE_X],
-                                        AirSpaceSideViewSTRUCT airspacetype[AIRSPACE_SCANSIZE_H][AIRSPACE_SCANSIZE_X]) const
-{              
 
-  int i,j;
-  double x1 = lons[0];
-  double dx = lons[AIRSPACE_SCANSIZE_X-1]-x1;
-  double y1 = lats[0];
-  double dy = lats[AIRSPACE_SCANSIZE_X-1]-y1;
-  int iheights[AIRSPACE_SCANSIZE_H];
-
-  int iCnt =0;
-  for (i=0; i<AIRSPACE_SCANSIZE_H; ++i) iheights[i] = (int)heights[i];
-  for (i=0; i<AIRSPACE_SCANSIZE_X; ++i) iterrain_heights[i] = (int)terrain_heights[i];
-
-  rectObj lineRect;
-  bool inside;
-  
-  lineRect.minx = min(x1, x1+dx);
-  lineRect.maxx = max(x1, x1+dx);
-  lineRect.miny = min(y1, y1+dy);
-  lineRect.maxy = max(y1, y1+dy);
-
-  CAirspaceList::const_iterator it;
-  CCriticalSection::CGuard guard(_csairspaces);
-
-  for (it = _airspaces.begin(); it != _airspaces.end(); ++it) {
-	  iCnt++;
-      const rectObj &pbounds = (*it)->Bounds();
-      // ignore if scan line doesn't intersect bounds
-    // if((*it)->Enabled())
-      if (msRectOverlap(&lineRect, &pbounds)) {
-        for (i=0; i<AIRSPACE_SCANSIZE_X; i++) {
-            inside = (*it)->IsHorizontalInside(lons[i], lats[i]);
-                if (inside) {
-                    for (j=0; j<AIRSPACE_SCANSIZE_H; j++) {
-                        int agl = iheights[j] - iterrain_heights[i];
-
-                        if (agl<0) agl=0;
-
-                        if ((*it)->IsAltitudeInside(iheights[j], agl, 0)) {
-                            airspacetype[j][i].iType = (*it)->Type();
-                            if(airspacetype[j][i].szAS_Name != NULL) {
-                              _tcsncpy((wchar_t*)  airspacetype[j][i].szAS_Name,  (wchar_t*)(*it)->Name(), NAME_SIZE-1);
-                              airspacetype[j][i].szAS_Name[NAME_SIZE-1]=0;
-                            }
-                            airspacetype[j][i].iIdx = iCnt;
-                            airspacetype[j][i].bRectAllowed = true ;
-                            airspacetype[j][i].bEnabled = (*it)->Enabled();
-                            if ( ((*it)->Top()->Base == abAGL) ||
-                               ( ((*it)->Base()->Base == abAGL) && ((*it)->Base()->AGL>0) )
-                               ) airspacetype[j][i].bRectAllowed = false ;
-                            airspacetype[j][i].psAS =   (*it);
-                        } // inside height
-                    } // finished scanning height
-                } // inside
-        } // finished scanning range
-      } // if overlaps bounds
-  } // for iterator
-}
-
-#endif
 
 
 int CAirspaceManager::ScanAirspaceLineList(double lats[AIRSPACE_SCANSIZE_X], double lons[AIRSPACE_SCANSIZE_X],
@@ -1931,32 +1868,33 @@ unsigned int iHIdx,iDIdx;
 		    airspacetype[iSelAS].bEnabled = (*it)->Enabled();
 
 			if ( ((*it)->Top()->Base == abAGL) ||
-				 (((*it)->Base()->Base == abAGL)  )
+				 (((*it)->Base()->Base == abAGL) /* && ((*it)->Base()->AGL > 0)*/)
 				   ) airspacetype[iSelAS].bRectAllowed = false ;
 
 		    airspacetype[iSelAS].rc.left   = iDIdx;
 		    airspacetype[iSelAS].rc.right  = iDIdx;
-		    airspacetype[iSelAS].rc.top    = (unsigned int) (*it)->Base()->Altitude;
-		    airspacetype[iSelAS].rc.bottom = (unsigned int) (*it)->Top()->Altitude;
+		    airspacetype[iSelAS].rc.bottom = (unsigned int) (*it)->Base()->Altitude;
+		    airspacetype[iSelAS].rc.top    = (unsigned int) (*it)->Top()->Altitude;
 		    airspacetype[iSelAS].iNoPolyPts=0;
 
-            if( airspacetype[iSelAS].bRectAllowed == false)
+		//    if((*it)->Base()->Base == abAGL)
+		 //     if ((*it)->Base()->AGL < 10)
+		 //       airspacetype[iSelAS].rc.bottom = 0;
+         //   if( airspacetype[iSelAS].bRectAllowed == false)
+              if((*it)->Top()->Base == abAGL)
+    		    airspacetype[iSelAS].rc.top    = (unsigned int) ((*it)->Top()->AGL  + terrain_heights[iDIdx]);
               if((*it)->Base()->Base == abAGL)
-              {
-    		    airspacetype[iSelAS].rc.bottom  = (unsigned int) ((*it)->Top()->AGL + terrain_heights[iDIdx]);
-    		    airspacetype[iSelAS].rc.top     = (unsigned int) ((*it)->Base()->AGL + terrain_heights[iDIdx]);
-              }
+    		    airspacetype[iSelAS].rc.bottom = (unsigned int) ((*it)->Base()->AGL + terrain_heights[iDIdx]);
+
 		  }
 
 		  airspacetype[iSelAS].rc.right  = iDIdx;
+
 		  if(airspacetype[iSelAS].bRectAllowed == false)
 		  {
 	        if( airspacetype[iSelAS].psAS->Base()->Base == abAGL )
 	        {
-	          if(airspacetype[iSelAS].psAS->Base()->AGL>0)
-		        iHIdx = (unsigned int)(airspacetype[iSelAS].psAS->Base()->AGL + terrain_heights[iDIdx]);
-	          else
-	        	iHIdx = 0;
+		      iHIdx = (unsigned int)(airspacetype[iSelAS].psAS->Base()->AGL + terrain_heights[iDIdx]);
 	        }
 		    else
 		 	  iHIdx = (unsigned int)airspacetype[iSelAS].psAS->Base()->Altitude;
@@ -1976,7 +1914,18 @@ unsigned int iHIdx,iDIdx;
              if (bLast)
 			 {
 			   int iN = airspacetype[iSelAS].iNoPolyPts;
-			   int iCnt=airspacetype[iSelAS].iNoPolyPts;;
+			   int iCnt=airspacetype[iSelAS].iNoPolyPts;
+#if BASE_REDUCE
+			   if ((*it)->Base()->AGL < 10)
+			   {
+				  airspacetype[iSelAS].apPolygon[iCnt] = airspacetype[iSelAS].apPolygon[iN-1];
+				  airspacetype[iSelAS].apPolygon[iCnt++].y = 0;
+				  airspacetype[iSelAS].apPolygon[iCnt] = airspacetype[iSelAS].apPolygon[0];
+				  airspacetype[iSelAS].apPolygon[iCnt++].y = 0;
+				  airspacetype[iSelAS].rc.bottom = 0;
+			   }
+			   else
+#endif
 			   for (int iPt = 0 ;iPt < iN; iPt++)
 			   {
 				  airspacetype[iSelAS].apPolygon[iCnt] = airspacetype[iSelAS].apPolygon[iN-iPt-1];
@@ -1985,14 +1934,9 @@ unsigned int iHIdx,iDIdx;
 				  else
 					airspacetype[iSelAS].apPolygon[iCnt].y = (unsigned int) airspacetype[iSelAS].psAS->Top()->Altitude;
 
-				//  if( airspacetype[iSelAS].rc.bottom <  airspacetype[iSelAS].apPolygon[iPt].y  )
-			//		  airspacetype[iSelAS].rc.bottom =  airspacetype[iSelAS].apPolygon[iPt].y;
-				  if( airspacetype[iSelAS].rc.top    >  airspacetype[iSelAS].apPolygon[iPt].y  )
-					  airspacetype[iSelAS].rc.top    =  airspacetype[iSelAS].apPolygon[iPt].y;
-				  if( airspacetype[iSelAS].rc.bottom <  airspacetype[iSelAS].apPolygon[iCnt].y )
-					  airspacetype[iSelAS].rc.bottom =  airspacetype[iSelAS].apPolygon[iCnt].y;
-				//  if( airspacetype[iSelAS].rc.top    >  airspacetype[iSelAS].apPolygon[iCnt].y )
-					//  airspacetype[iSelAS].rc.top    =  airspacetype[iSelAS].apPolygon[iCnt].y;
+				  airspacetype[iSelAS].rc.bottom = min(airspacetype[iSelAS].rc.bottom ,airspacetype[iSelAS].apPolygon[iPt].y);
+				  airspacetype[iSelAS].rc.top    = max( airspacetype[iSelAS].rc.top   ,airspacetype[iSelAS].apPolygon[iPt].y);
+
 				  if(iCnt < GC_MAX_POLYGON_PTS-2)
 					iCnt++;
 				}

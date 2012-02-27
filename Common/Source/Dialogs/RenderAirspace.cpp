@@ -28,8 +28,10 @@ extern COLORREF  Sideview_TextColor;
 
 
 
-void Statistics::RenderAirspace(HDC hdc, const RECT rc) {
+void Statistics::RenderAirspace(HDC hdc, const RECT rci) {
 
+	RECT rc = rci;
+//	rc.bottom = rc.bottom/2;
   double fDist = 50.0*1000; // km
   double aclat, aclon, ach, acb, speed, calc_average30s;
 

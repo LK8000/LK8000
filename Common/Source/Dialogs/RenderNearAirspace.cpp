@@ -39,8 +39,11 @@ extern TCHAR Sideview_szNearAS[];
 
 int CalcSonarDelay (int iNoAs, AirSpaceSideViewSTRUCT asAirspaces[]);
 
-void Statistics::RenderNearAirspace(HDC hdc, const RECT rc)
+void Statistics::RenderNearAirspace(HDC hdc, const RECT rci)
 {
+	RECT rc = rci;
+//	rc.top = (rc.bottom-rc.top)/2;
+
   double range = 50.0*1000; // km
   double GPSlat, GPSlon, GPSalt, GPSbrg, GPSspeed, calc_average30s;
   bool GPSValid;
@@ -433,6 +436,13 @@ if(bValid)
     line[1].y = line[0].y;
     StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
 
+    if(iAS_HorDistance < 0)
+    {
+      line[0].y = CalcHeightCoordinat(  GPSalt - (double)iAS_VertDistance,   rc, &sDia );
+      line[1].y = line[0].y;
+      StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
+    }
+
     bool bLeft = false;
     if( line[0].x < line[1].x)
       bLeft = false;
@@ -461,7 +471,7 @@ if(bValid)
 	/****************************************************************************************************
 	 * draw vertical distance to next airspace
 	 ****************************************************************************************************/
-    line[0].x = CalcDistanceCoordinat(iABS_AS_HorDistance ,  rc, &sDia);
+    line[0].x = CalcDistanceCoordinat( iABS_AS_HorDistance ,  rc, &sDia);
     line[0].y = CalcHeightCoordinat( GPSalt, rc, &sDia );
     line[1].x = line[0].x;
     line[1].y = CalcHeightCoordinat( GPSalt - (double)iAS_VertDistance, rc, &sDia );
