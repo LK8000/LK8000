@@ -10,6 +10,7 @@
 #include "MapWindow.h"
 
 void LKReadLanguageFile(void);
+void LKUnloadMessage();
 
 void SetWindowText_gettext(HWND hDlg, int entry);
 #define gettext	LKGetText

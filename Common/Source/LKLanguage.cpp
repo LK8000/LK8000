@@ -20,6 +20,7 @@
 
 #include "utils/stringext.h"
 #include "utils/heapcheck.h"
+#include "utils/stl_utils.h"
 
 
 // #define DEBUG_GETTEXT	1
@@ -609,4 +610,9 @@ bool LKLoadMessages(bool fillup) {
 
   zzip_fclose(hFile);
   return true;
+}
+
+void LKUnloadMessage(){
+	std::for_each(begin(LKMessages), end(LKMessages), std::ptr_fun(&free));
+	std::fill(begin(LKMessages), end(LKMessages), (wchar_t*)NULL);
 }

@@ -516,6 +516,9 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   LKObjects_Delete();
   LKUnloadProfileBitmaps();
   LKUnloadFixedBitmaps();
+
+  LKUnloadMessage();
+
   #if TESTBENCH
   StartupStore(_T(".... WinMain terminated%s"),NEWLINE);
   #endif
