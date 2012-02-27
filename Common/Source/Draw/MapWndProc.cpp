@@ -382,7 +382,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 			break;
 		}
 		// set a min mouse move to trigger panning
-		if ( (abs(XstartScreen-lparam_X)+abs(YstartScreen-lparam_Y)) > NIBLSCALE(10)) {
+		if ( (abs(XstartScreen-lparam_X)+abs(YstartScreen-lparam_Y)) > (ScreenScale+1)) {
 			Screen2LatLon(lparam_X, lparam_Y, Xlat, Ylat);
 			PanLongitude += (Xstart-Xlat);
 			PanLatitude  += (Ystart-Ylat);
