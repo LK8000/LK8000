@@ -308,7 +308,8 @@ Minimalna wysokość nad poziomem gruntu niezbędna dla ukończenia zadania.
 0 oznacza brak ograniczeń.
 
 @168
-Ta opcja wymaga, aby wysokość nad gruntem podczas kończenia zadania nie była niżej niż 1000m poniżej wysokości startu.
+Ta opcja wymaga, aby maksymalna utrata wysokości pomiędzy startem a metą zadania była nie większa niż 1000m dla zadań dłuższych od 100km lub 1% ich długości w przeciwnym przypadku.
+Większa utrata wysokości może unieważnić twój wyczyn szybowcowy!
 
 @169
 Reguły użyte do optymalnego liczenia punktów zadań OLC:
@@ -761,7 +762,8 @@ Minimalna wysokość nad poziomem gruntu niezbędna dla ukończenia zadania.
 0 oznacza brak ograniczeń.
 
 @494
-Ta opcja wymaga, aby wysokość nad gruntem podczas kończenia zadania nie była niżej niż 1000m poniżej wysokości startu.
+Ta opcja wymaga, aby maksymalna utrata wysokości pomiędzy startem a metą zadania była nie większa niż 1000m dla zadań dłuższych od 100km lub 1% ich długości w przeciwnym przypadku.
+Większa utrata wysokości może unieważnić twój wyczyn szybowcowy!
 
 @495
 Ustawia zadanie jako OLC. Gdy opcja jest włączona, typ startu OLC jest wykrywany automatycznie (najniższy punkt lotu po inicjalnym wznoszeniu).
