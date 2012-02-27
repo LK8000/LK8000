@@ -211,6 +211,7 @@ void ReinitScreen(void) {
   InitialiseFonts(rc);
   InitLKFonts();
   ButtonLabel::SetFont(MapWindowBoldFont);
+  Message::Destroy();
   Message::Initialize(rc); // creates window, sets fonts
 
   LockTerrainDataGraphics();
