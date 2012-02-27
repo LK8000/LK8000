@@ -1019,11 +1019,19 @@ drawOverlay:
 	if (DerivedDrawInfo.AutoMacCready == true) {
 	  SelectObject(hdc, LK8TitleFont);
 
+	HBRUSH ob=NULL;
+	if (LKTextBlack) {
+		ob=(HBRUSH)SelectObject(hdc, LKBrush_White);
+	}
 	  Rectangle(hdc, 
 		rectLeft_AutoMc[ScreenSize],
 	  	rectTop_AutoMc[ScreenSize],
 	  	rectRight_AutoMc[ScreenSize],
 	  	rectBottom_AutoMc[ScreenSize]);
+
+	if (LKTextBlack) {
+		SelectObject(hdc, ob);
+	}
 
 	  TCHAR amcmode[2];
 	  switch(AutoMcMode) {
