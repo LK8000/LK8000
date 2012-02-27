@@ -180,18 +180,21 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 	}
 	Polygon(hDC,GlideBar,6);
 
-#if 0
 	// draw glide bar at mc 0 and X  only for OVT_TASK 101004
 	// we dont have mc0 calc ready for other overtargets, not granted at least
 	if (OvertargetMode == OVT_TASK) {
 		if (Offset0<=0) {
+#if 0
 			if (LandableReachable) {
 				SelectObject(hDC, hpFinalGlideBelowLandable);
 				SelectObject(hDC, GetStockObject(HOLLOW_BRUSH));
 			} else {
+#endif
 				SelectObject(hDC, hpFinalGlideBelow);
 				SelectObject(hDC, GetStockObject(HOLLOW_BRUSH));
+#if 0
 			}
+#endif
 		} else {
 			SelectObject(hDC, hpFinalGlideAbove);
 			SelectObject(hDC, GetStockObject(HOLLOW_BRUSH));
@@ -228,7 +231,6 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 			}
 		}
 	}
-#endif
 
 	// draw boxed value in the center
 		if (OvertargetMode == OVT_TASK ) { //@ 101004
