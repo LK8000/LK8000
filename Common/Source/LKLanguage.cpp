@@ -613,6 +613,5 @@ bool LKLoadMessages(bool fillup) {
 }
 
 void LKUnloadMessage(){
-	std::for_each(begin(LKMessages), end(LKMessages), std::ptr_fun(&free));
-	std::fill(begin(LKMessages), end(LKMessages), (wchar_t*)NULL);
+	std::for_each(begin(LKMessages), end(LKMessages), safe_free());
 }

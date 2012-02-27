@@ -1,3 +1,10 @@
+/*
+   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+   Released under GNU/GPL License v.2
+   See CREDITS.TXT file for authors and copyrights
+
+   $Id$
+*/
 #ifndef stl_utils_h__
 #define stl_utils_h__
 
@@ -26,6 +33,27 @@ struct safe_delete {
 	void operator()(T*& p) {
 		if( p) {
 			delete p;
+			p = 0;
+		}
+	}
+};
+
+struct safe_delete_array {
+	template <typename T>
+	void operator()(T*& p) {
+		if( p) {
+			delete[] p;
+			p = 0;
+		}
+	}
+};
+
+// Use this instead of std::ptr_fun(&free)
+struct safe_free {
+	template <typename T>
+	void operator()(T*& p) {
+		if( p) {
+			free(p);
 			p = 0;
 		}
 	}
