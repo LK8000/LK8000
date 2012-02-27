@@ -1995,7 +1995,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 	return;
   }
 #endif
-extern void RotateScreen(short angle);
+extern bool RotateScreen(short angle);
   if (_tcscmp(misc, TEXT("SSINVERT")) == 0) {
 	#if (WINDOWSPC>0)
 	if (SCREENWIDTH==896) return;
@@ -2738,7 +2738,6 @@ void InputEvents::eventOrientation(const TCHAR *misc){
   }
   MapWindow::SetAutoOrientation(true); // 101008 reset it
 }
-
 
 void SwitchToMapWindow(void)
 {
