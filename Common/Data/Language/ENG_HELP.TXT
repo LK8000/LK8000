@@ -306,7 +306,8 @@ Reference used for start max height rule
 Minimum height above ground while finishing the task.  Set to 0 for no limit.
 
 @168
-If enabled, this option requires the minimum height above ground for finish to be greater than 1000m below the start height.
+If enabled, this option requires maximum loss of height between the start and finish of a task to be not bigger than 1000m for tasks longer than 100km or 1% of the task distance otherwise.
+Larger height loss may invalidate your soaring performance!
 
 @169
 Rules used for calculating optimal points for OnLine Contest.
@@ -752,7 +753,8 @@ Reference used for start max height rule
 Minimum height above ground while finishing the task.  Set to 0 for no limit.
 
 @494
-If enabled, this option requires the minimum height above ground for finish to be greater than 1000m below the start height.
+If enabled, this option requires that the maximum loss of height meassured on the finish line is not bigger than 1000m for tasks longer than 100km or 1% of the task distance otherwise.
+Larger height loss may invalidate your soaring performance!
 
 @495
 Enables OLC tasks.  When enabled, OLC style task start is detected automatically (lowest point of flight after initial climb). 
