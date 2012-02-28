@@ -518,6 +518,10 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   LKUnloadFixedBitmaps();
 
   LKUnloadMessage();
+  InputEvents::UnloadString();
+#if TOPOFASTLABEL
+  MapWindow::FreeSlot();
+#endif
 
   #if TESTBENCH
   StartupStore(_T(".... WinMain terminated%s"),NEWLINE);
