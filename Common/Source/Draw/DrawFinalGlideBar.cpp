@@ -162,18 +162,8 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 	// draw actual glide bar
 
 	if (Offset<=0) {
-		#if 0 // 111108 No more use of LandableReachable
-		if (LandableReachable && (OvertargetMode==OVT_TASK)) { //@ 101004
-			hpOld = (HPEN)SelectObject(hDC, hpFinalGlideBelowLandable);
-			hbOld = (HBRUSH)SelectObject(hDC, hbFinalGlideBelowLandable);
-		} else {
-			hpOld = (HPEN)SelectObject(hDC, hpFinalGlideBelow);
-			hbOld = (HBRUSH)SelectObject(hDC, hbFinalGlideBelow);
-		}
-		#else
 		hpOld = (HPEN)SelectObject(hDC, hpFinalGlideBelow);
 		hbOld = (HBRUSH)SelectObject(hDC, hbFinalGlideBelow);
-		#endif
 	} else {
 		hpOld = (HPEN)SelectObject(hDC, hpFinalGlideAbove);
 		hbOld = (HBRUSH)SelectObject(hDC, hbFinalGlideAbove);
@@ -184,17 +174,8 @@ void MapWindow::DrawFinalGlide(HDC hDC, const RECT rc)
 	// we dont have mc0 calc ready for other overtargets, not granted at least
 	if (OvertargetMode == OVT_TASK) {
 		if (Offset0<=0) {
-#if 0
-			if (LandableReachable) {
-				SelectObject(hDC, hpFinalGlideBelowLandable);
-				SelectObject(hDC, GetStockObject(HOLLOW_BRUSH));
-			} else {
-#endif
-				SelectObject(hDC, hpFinalGlideBelow);
-				SelectObject(hDC, GetStockObject(HOLLOW_BRUSH));
-#if 0
-			}
-#endif
+			SelectObject(hDC, hpFinalGlideBelow);
+			SelectObject(hDC, GetStockObject(HOLLOW_BRUSH));
 		} else {
 			SelectObject(hDC, hpFinalGlideAbove);
 			SelectObject(hDC, GetStockObject(HOLLOW_BRUSH));

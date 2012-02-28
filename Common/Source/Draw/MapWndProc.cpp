@@ -118,7 +118,6 @@ HBRUSH MapWindow::hbCompass;
 HBRUSH MapWindow::hbThermalBand;
 HBRUSH MapWindow::hbBestCruiseTrack;
 HBRUSH MapWindow::hbFinalGlideBelow;
-HBRUSH MapWindow::hbFinalGlideBelowLandable;
 HBRUSH MapWindow::hbFinalGlideAbove;
 HBRUSH MapWindow::hbWind;
 
@@ -135,7 +134,6 @@ HPEN MapWindow::hpThermalBand;
 HPEN MapWindow::hpThermalBandGlider;
 HPEN MapWindow::hpFinalGlideAbove;
 HPEN MapWindow::hpFinalGlideBelow;
-HPEN MapWindow::hpFinalGlideBelowLandable;
 HPEN MapWindow::hpMapScale;
 HPEN MapWindow::hpMapScale2;
 HPEN MapWindow::hpTerrainLine;

@@ -171,7 +171,6 @@ void LKObjects_Create() {
   MapWindow::hpThermalBand = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB(0x40,0x40,0xFF));
   MapWindow::hpThermalBandGlider = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB(0x00,0x00,0x30));
   MapWindow::hpFinalGlideBelow = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB(0xFF,0xA0,0xA0)); // another light red
-  MapWindow::hpFinalGlideBelowLandable = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB(255,196,0));      // another dark yellow
   MapWindow::hpFinalGlideAbove = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB(0xA0,0xFF,0xA0)); // another light green
   MapWindow::hpTerrainLine = (HPEN)CreatePen(PS_DASH, (1), RGB(0x30,0x30,0x30)); // shade
   MapWindow::hpTerrainLineBg = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_LCDDARKGREEN); // perimeter
@@ -188,7 +187,6 @@ void LKObjects_Create() {
   MapWindow::hbBestCruiseTrack=LKBrush_Blue;
   MapWindow::hbFinalGlideBelow=LKBrush_Red;
   MapWindow::hbFinalGlideAbove=LKBrush_Green;
-  MapWindow::hbFinalGlideBelowLandable=LKBrush_Orange;
   MapWindow::hbWind=LKBrush_Grey;
 
 
@@ -268,7 +266,6 @@ void LKObjects_Delete() {
   if (MapWindow::hpThermalBand) DeleteObject((HPEN)MapWindow::hpThermalBand);
   if (MapWindow::hpThermalBandGlider) DeleteObject((HPEN)MapWindow::hpThermalBandGlider);
   if (MapWindow::hpFinalGlideBelow) DeleteObject((HPEN)MapWindow::hpFinalGlideBelow);
-  if (MapWindow::hpFinalGlideBelowLandable) DeleteObject((HPEN)MapWindow::hpFinalGlideBelowLandable);
   if (MapWindow::hpFinalGlideAbove) DeleteObject((HPEN)MapWindow::hpFinalGlideAbove);
   if (MapWindow::hpTerrainLine) DeleteObject((HPEN)MapWindow::hpTerrainLine);
   if (MapWindow::hpTerrainLineBg) DeleteObject((HPEN)MapWindow::hpTerrainLineBg);
