@@ -1253,10 +1253,13 @@ public:
   }
   double GetSpeed(double time) {
     if (Ready()) {
+      LKASSERT( p[2].t != p[1].t );
       double u= (time-p[1].t)/(p[2].t-p[1].t);
       double s0;
       DistanceBearing(p[0].lat, p[0].lon,
                       p[1].lat, p[1].lon, &s0, NULL);
+
+      LKASSERT(p[1].t != p[0].t);
       s0/= (p[1].t-p[0].t);
       double s1;
       DistanceBearing(p[1].lat, p[1].lon,
@@ -1276,6 +1279,7 @@ public:
       return;
     }
     double t=0.98;
+    LKASSERT( p[2].t != p[1].t );
     double u= (time-p[1].t)/(p[2].t-p[1].t);
 
     if (u<0.0) {
