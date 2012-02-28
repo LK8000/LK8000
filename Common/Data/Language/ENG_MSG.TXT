@@ -1752,6 +1752,7 @@ _@M1780_ "User"
 _@M1781_ "Password"
 _@M1782_ "LT Server"
 
+
 ############################################################
 #                  - MENU MESSAGES - 
 #
@@ -1884,5 +1885,6 @@ _@M2119_ "LogBook\nDetails"
 _@M2120_ "Reset\nBook"
 _@M2121_ "LogBook\nList"
 _@M2122_ "SAVE\nSystem"
-
+_@M2123_ "Turn\nScreen"
+_@M2124_ "Screen\nModes"
 # Note for developers: remember LKLanguage MAX_MESSAGE limit (2130)
