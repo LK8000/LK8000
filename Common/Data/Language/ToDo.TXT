@@ -105,4 +105,4 @@ HELP 402 removed some text
 M1779-1782 new Live tracker config options
 H1258 new livetracker help
 M2123 M2124  (menu buttons)
-
+H168 H494 FAI Finish Height
