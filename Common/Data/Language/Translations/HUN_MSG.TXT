@@ -1720,6 +1720,12 @@ _@M1776_ "5 másodperc"
 _@M1777_ "10 másodperc"
 _@M1778_ "45 másodperc"
 
+# New livetracker configuration
+_@M1779_ "Live tracker adatküldés "
+_@M1780_ "Felh."
+_@M1781_ "Jelszó"
+_@M1782_ "LT Szerver"
+
 
 ############################################################
 #                  - MENU MESSAGES - 
@@ -1853,5 +1859,7 @@ _@M2119_ "Repnapló\nrészletek"
 _@M2120_ "Repnapló\ntörlése"
 _@M2121_ "Repnapló\nlista"
 _@M2122_ "Beáll.\nmentése"
+_@M2123_ "Kijelző\nforgat"
+_@M2124_ "Kijelző\nfelbontás"
 
 
