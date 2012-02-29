@@ -1034,14 +1034,17 @@ void SetHome(bool reset)
 {
 
   #if TESTBENCH
-  StartupStore(TEXT(". SetHome%s"),NEWLINE);
+  StartupStore(TEXT(".... SetHome (current=%d), reset=%d%s"),HomeWaypoint,reset,NEWLINE);
   #endif
 
   unsigned int i;
   bool resetalternates=false;
 
   if (reset || !ValidWayPoint(NUMRESWP) || !ValidNotResWayPoint(HomeWaypoint) ) { // BUGFIX 100213 see if really we have wps!
-	    HomeWaypoint = -1;
+	#if TESTBENCH
+	StartupStore(TEXT(".... Home Reset%s"),NEWLINE);
+	#endif
+	HomeWaypoint = -1;
   }
 
   // If one of the alternates is no longer valid, we reset both of them 
@@ -1067,6 +1070,9 @@ void SetHome(bool reset)
 
   if ( ValidNotResWayPoint(AirfieldsHomeWaypoint) ) {
 	HomeWaypoint = AirfieldsHomeWaypoint;
+	#if TESTBENCH
+	StartupStore(TEXT(".... Using AirfieldHomeWaypoint home=%d <%s>%s"),HomeWaypoint,WayPointList[HomeWaypoint].Name,NEWLINE);
+	#endif
   }
   if (!ValidNotResWayPoint(HomeWaypoint)) {
     // search for home in waypoint list, if we don't have a home
@@ -1075,6 +1081,10 @@ void SetHome(bool reset)
 	if( (WayPointList[i].Flags & HOME) == HOME) {
 		if (HomeWaypoint < 0) {
 			HomeWaypoint = i;
+			#if TESTBENCH
+			StartupStore(TEXT(".... Using waypoint file found home=%d <%s>%s"),
+				HomeWaypoint,WayPointList[HomeWaypoint].Name,NEWLINE);
+			#endif
 		}
 	}
     }
@@ -1093,6 +1103,10 @@ void SetHome(bool reset)
 			if( WayPointList[i].Longitude  == WpHome_Lon)
 				if ( _tcscmp(WayPointList[i].Name,WpHome_Name) == 0 ) {
 					HomeWaypoint=i;
+					#if TESTBENCH
+					StartupStore(TEXT(".... Using matched home lat/lon in waypoints, home=%d <%s>%s"),
+						HomeWaypoint,WayPointList[HomeWaypoint].Name,NEWLINE);
+					#endif
 					break;
 				}
 	}

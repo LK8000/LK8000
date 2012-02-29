@@ -13,10 +13,21 @@
 void MSG_NotEnoughMemory(void) {
 
   MessageBoxX(hWndMapWindow,
-    gettext(TEXT("_@M1663_")), // NOT ENOUGH MEMORY
-    gettext(TEXT("_@M1662_")),  // SYSTEM ERROR
+    MsgToken(1663),  // NOT ENOUGH MEMORY
+    MsgToken(1662),  // SYSTEM ERROR
     MB_OK|MB_ICONEXCLAMATION);
 
 }
 
+#if TESTBENCH
+void MSG_ASSERTION(int line, char *filename) {
 
+  TCHAR ames[256];
+
+  _stprintf(ames,_T("Execution failure in file\n%S\nat line %d\n\nLK8000 terminated!"),filename,line);
+  MessageBoxX(hWndMapWindow, ames,
+    _T("CRITICAL ASSERTION FAILURE !"),
+    MB_OK|MB_ICONEXCLAMATION,true);
+
+}
+#endif
