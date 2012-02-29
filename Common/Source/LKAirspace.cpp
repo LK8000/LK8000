@@ -2097,7 +2097,6 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
   CCriticalSection::CGuard guard(_csairspaces);
   CAirspaceList::iterator it;
 
-  if ( _airspaces_near.size() == 0 ) return;
    // We need a valid GPS fix in FLY mode
    if (Basic->NAVWarning && !SIMMODE) return;
   
