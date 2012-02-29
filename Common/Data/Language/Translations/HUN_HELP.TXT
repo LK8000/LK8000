@@ -303,7 +303,8 @@ A maximális start magasság meghatározás milyen bázisponttól történjen.
 A cél minimum földfeletti magassága a feladat befejezésekor. Állítsd nullára ha nincs ilyen határ.
 
 @168
-Ha engedélyezve van, akkor a cél minimum földfeletti magassága maximum a start magassága alatt 1000m-rel lehet.
+Ha engedélyezve van, akkor a cél minimum földfeletti magassága maximum a start magassága alatt 1000m-rel lehet a 100km-nél hoszabb feladatoknál.
+Vagy egyébként a feladat kiírt hosszának maximum 1%-a. Nagyobb magasságveszteség esetén a feladat érvénytelen is lehet!
 
 @169
 Az online verseny optimális ford.pontjainak kiszámításához használt szabály.
@@ -752,7 +753,8 @@ A maximális start magasság meghatározás milyen bázisponttól történjen.
 A minimum földfeletti magasság a feladat befejezésekor. Állítsd nullára ha nincs ilyen határ.
 
 @494
-Ha engedélyezve van, akkor a célban a minimum földfeletti magasságnak nagyobbnak kell lennie a start magassága minusz 1000m-nél.
+Ha engedélyezve van, akkor a célban a starthoz képesti maximális magasságvesztésnek kisebbnek kell lennie 1000m-nél, vagy 100km-nél rövidebb feladat esetén a kiírt táv 1%-nál.
+Nagyobb magasságvesztés érvénytelenítheti a feladatot!
 
 @495
 Engedélyezi az Online Verseny (OLC) feladatokat. Ha engedélyezve van, akkor az OLC tipusú feladatot a program érzékeli (a repülés legalacsonyabb pontja a kezdeti emelkedés után)
@@ -1647,6 +1649,12 @@ Ha bizonytalan vagy benne, inkább hagyd kikapcsolva.
 Mennyire tiszta a repülő. Állítsd 100%-ra ha teljesen, és csökkentsd ahogy a szárny bogarakat szed fel vagy vizes lesz.
 50% jelenti hogy a gép merülősebessége a duplájára nőtt. Ez az az alapérték, amely az Alapbeállítások ablakban megjelenik
 a program indításakor. Alapesetben hagyd 100%-on.
+
+@1258
+[Live tracker adatküldési periódus]
+Kapcsold be (állítsd nagyobb mint 0-ra), ha engedélyezni akarod hogy a program az aktuális poziciódat folyamatosan elküldje a Leonardo live tracker szolgáltatás szerverére (http://www.livetrack24.com).
+Ehhez a készüléknek GPRS/HSDPA adatkapcsolattal és folyamatos TCP/IP kapcsolattal kell rendelkeznie a szerver felé. A program a megadott szervert, felhasználói nevet és
+jelszót fogja használni a belépéshez. A repülőgép tipusa szintén küldésre kerül. Ha nem vagy biztos benne, inkább állítsd be a 0 alapértéket, ami a kikapcsolt állapotot jelenti. 
 
 @9999
 Ezen az elemen nem áll rendelkezésre súgó.
