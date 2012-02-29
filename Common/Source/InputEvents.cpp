@@ -1848,12 +1848,6 @@ void InputEvents::eventService(const TCHAR *misc) {
 	return;
   }
 
-  if (_tcscmp(misc, TEXT("PROFILES")) == 0) {
-
-	dlgProfilesShowModal();
-	return;
-
-  }
 
   if (_tcscmp(misc, TEXT("SHADING")) == 0) {
 	Shading = !Shading;
@@ -2020,6 +2014,18 @@ extern void RotateScreen(short angle);
 	return;
   }
 
+  if (_tcscmp(misc, TEXT("SAVESYS")) == 0) {
+	dlgProfilesShowModal(0);
+	return;
+  }
+  if (_tcscmp(misc, TEXT("SAVEPIL")) == 0) {
+	dlgProfilesShowModal(1);
+	return;
+  }
+  if (_tcscmp(misc, TEXT("SAVEAIR")) == 0) {
+	dlgProfilesShowModal(2);
+	return;
+  }
   // we should not get here
   DoStatusMessage(_T("Unknown Service: "),misc);
 
@@ -2379,7 +2385,7 @@ void InputEvents::eventBeep(const TCHAR *misc) {
 #endif
 }
 
-void SystemConfiguration(void);
+void SystemConfiguration(short mode);
 
 // Setup
 // Activates configuration and setting dialogs
@@ -2395,7 +2401,11 @@ void InputEvents::eventSetup(const TCHAR *misc) {
   } else if (_tcscmp(misc,TEXT("Wind"))==0){
     dlgWindSettingsShowModal();
   } else if (_tcscmp(misc,TEXT("System"))==0){
-    SystemConfiguration();
+    SystemConfiguration(0);
+  } else if (_tcscmp(misc,TEXT("Aircraft"))==0){
+    SystemConfiguration(2);
+  } else if (_tcscmp(misc,TEXT("Pilot"))==0){
+    SystemConfiguration(1);
   } else if (_tcscmp(misc,TEXT("Task"))==0){
     dlgTaskOverviewShowModal();
   } else if (_tcscmp(misc,TEXT("Airspace"))==0){

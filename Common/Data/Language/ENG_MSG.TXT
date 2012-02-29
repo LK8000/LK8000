@@ -1752,6 +1752,10 @@ _@M1780_ "User"
 _@M1781_ "Password"
 _@M1782_ "LT Server"
 
+# configuration SETUP save 
+_@M1783_ "Aircraft Profiles"
+_@M1784_ "Pilot Profiles"
+
 
 ############################################################
 #                  - MENU MESSAGES - 
@@ -1806,7 +1810,8 @@ _@M2042_ "Setup\nBasic"
 _@M2043_ "Setup\nWind"
 _@M2044_ "ActivMap"
 _@M2045_ "Nav by"
-_@M2046_ "SETUP\nSystem"
+#2046 UNUSED
+_@M2046_ ""
 _@M2047_ "Clear\nMarks"
 _@M2048_ "Logger"
 _@M2049_ "Logger\nReplay"
@@ -1884,7 +1889,14 @@ _@M2118_ "LogBook"
 _@M2119_ "LogBook\nDetails"
 _@M2120_ "Reset\nBook"
 _@M2121_ "LogBook\nList"
-_@M2122_ "SAVE\nSystem"
+_@M2122_ "System\nSave"
 _@M2123_ "Turn\nScreen"
 _@M2124_ "Screen\nModes"
-# Note for developers: remember LKLanguage MAX_MESSAGE limit (2130)
+_@M2125_ "Aircraft\nSetup"
+_@M2126_ "Aircraft\nSave"
+_@M2127_ "Pilot\nSetup"
+_@M2128_ "Pilot\nSave"
+_@M2129_ "LK8000\nSetup"
+_@M2130_ "System\nSetup"
+
+# Note for developers: remember LKLanguage MAX_MESSAGE limit (2200)

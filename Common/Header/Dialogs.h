@@ -37,7 +37,7 @@ void dlgBasicSettingsShowModal(void);
 void dlgBrightnessShowModal(void);
 void dlgHelpShowModal(const TCHAR* Caption, const TCHAR* HelpText);
 void dlgChecklistShowModal(short checklistmode);
-void dlgConfigurationShowModal(void);
+void dlgConfigurationShowModal(short mode);
 void dlgVegaDemoShowModal(void);
 bool dlgConfigurationVarioShowModal(void);
 void dlgLoggerReplayShowModal(void);
@@ -69,7 +69,7 @@ void dlgTopologyShowModal(void);
 void dlgCustomKeysShowModal(void);
 void dlgBottomBarShowModal(void);
 void dlgInfoPagesShowModal(void);
-void dlgProfilesShowModal(void);
+void dlgProfilesShowModal(short mode);
 void dlgAirspaceWarningParamsShowModal(void);
 
 #if (WINDOWSPC>0)

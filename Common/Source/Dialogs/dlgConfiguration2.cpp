@@ -15,7 +15,8 @@
 #include "Waypointparser.h"
 
 
-extern int config_page;
+extern short config_page[];
+extern short configMode;
 
 void OnInfoBoxHelp(WindowControl * Sender){
 
@@ -25,7 +26,7 @@ void OnInfoBoxHelp(WindowControl * Sender){
   TCHAR mode[20];
   TCHAR shelp[20];
 
-  switch (config_page) {
+  switch (config_page[configMode]) {
   case 15:
 	// LKTOKEN  _@M835_ = "cruise" 
     _tcscpy(mode,gettext(TEXT("_@M835_")));

@@ -101,8 +101,22 @@ M1775-1778 new Aver Efficiency intervals
 -----------
 After 3.0a changes...
 -----------
+# configuration SETUP save
+_@M1783_ "Aircraft Profiles"
+_@M1784_ "Pilot Profiles"
+_@M2122_ "System\nSave"
+_@M2125_ "Aircraft\nSetup"
+_@M2126_ "Aircraft\nSave"
+_@M2127_ "Pilot\nSetup"
+_@M2128_ "Pilot\nSave"
+_@M2129_ "LK8000\nSetup"
+_@M2130_ "System\nSetup"
+
+
+
 HELP 402 removed some text
 M1779-1782 new Live tracker config options
 H1258 new livetracker help
 M2123 M2124  (menu buttons)
+
 

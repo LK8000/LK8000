@@ -138,7 +138,7 @@ void SettingsLeave() {
 }
 
 
-void SystemConfiguration(void) {
+void SystemConfiguration(short mode) {
   if (!SIMMODE) {
 	if (LockSettingsInFlight && CALCULATED_INFO.Flying) {
 		DoStatusMessage(TEXT("Settings locked in flight"));
@@ -147,7 +147,9 @@ void SystemConfiguration(void) {
   }
 
   SettingsEnter();
-  dlgConfigurationShowModal();
+  dlgConfigurationShowModal(mode);
   SettingsLeave();
 }
+
+
 

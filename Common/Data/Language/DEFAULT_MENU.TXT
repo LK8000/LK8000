@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 7 , 120223
+# Release 7 , 120229
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -930,17 +930,15 @@ location=4
 mode=Config2
 type=key
 data=6
-event=Setup System
-event=Mode default
-label=_@M2046_$(CheckSettingsLockout)
+event=Mode SETUP
+label=_@M2129_
 location=5
 
 mode=Config2
 type=key
 data=7
-event=Service PROFILES
-event=Mode default
-label=_@M2122_
+event=Mode SetupFlarm
+label=$(CheckFLARM)FLARM\n_@M2051_&(OnlyInFly)
 location=6
 
 mode=Config2
@@ -969,9 +967,8 @@ location=9
 mode=Config2
 type=key
 data=11
-event=Service TOTALEN
-event=Mode default
-label=_@M2115_\n$(UseTE)
+event=Null
+label=
 location=10
 
 mode=Config2
@@ -1015,8 +1012,9 @@ location=4
 mode=Config3
 type=key
 data=6
-event=Mode SetupFlarm
-label=$(CheckFLARM)FLARM\n_@M2051_&(OnlyInFly)
+event=Service TOTALEN
+event=Mode default
+label=_@M2115_\n$(UseTE)
 location=5
 
 mode=Config3
@@ -2768,6 +2766,87 @@ event=Null
 location=10
 
 mode=PCMODE
+type=key
+data=12
+label=
+event=Null
+location=11
+
+# -------------
+# mode=SETUP
+# -------------
+
+mode=SETUP
+type=key
+data=APP1
+label=_@M2127_$(CheckSettingsLockout)
+event=Setup Pilot
+location=1
+
+mode=SETUP
+type=key
+data=APP2
+event=Service SAVEPIL
+label=_@M2128_
+location=2
+
+mode=SETUP
+type=key
+data=APP3
+event=Null
+label=
+location=3
+
+mode=SETUP
+type=key
+data=APP4
+event=Mode Config2
+label=_@M2012_
+location=4
+
+mode=SETUP
+type=key
+data=6
+event=Setup System
+label=_@M2130_$(CheckSettingsLockout)
+location=5
+
+mode=SETUP
+type=key
+data=7
+event=Service SAVESYS
+label=_@M2122_
+location=6
+
+mode=SETUP
+type=key
+data=8
+label=_@M2125_$(CheckSettingsLockout)
+event=Setup Aircraft
+location=7
+
+mode=SETUP
+type=key
+data=9
+label=_@M2126_
+event=Service SAVEAIR
+location=8
+
+mode=SETUP
+type=key
+data=0
+event=Mode default
+label=_@M2011_
+location=9
+
+mode=SETUP
+type=key
+data=11
+label=
+event=Null
+location=10
+
+mode=SETUP
 type=key
 data=12
 label=
