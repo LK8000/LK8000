@@ -250,6 +250,13 @@ static void NextPage(int Step){
 		if (config_page[configMode]>=numPages) { config_page[configMode]=0; }
 		if (config_page[configMode]<0) { config_page[configMode]=numPages-1; }
 	}
+	// temporary skip page 7, old aircraft/polar setup
+	if (config_page[configMode]==6) {
+		if (Step>0) 
+			config_page[configMode]=7;
+		else
+			config_page[configMode]=5;
+	}
   } else {
 	config_page[configMode]=0;
   }
@@ -257,13 +264,13 @@ static void NextPage(int Step){
   switch(config_page[configMode]) {
   case 0:
     if (configMode==0) {
-	wf->SetCaption(gettext(TEXT("_@M10_"))); // LKTOKEN  _@M10_ = "1 Site" 
+	wf->SetCaption(MsgToken(10)); // LKTOKEN  _@M10_ = "1 Site" 
     }
     if (configMode==1) {
-	wf->SetCaption(gettext(TEXT("Pilot configuration")));
+	wf->SetCaption(MsgToken(1785)); // pilot configuration
     }
     if (configMode==2) {
-	wf->SetCaption(gettext(TEXT("Aircraft configuration")));
+	wf->SetCaption(MsgToken(1786)); // aircraft configuration
     }
     break;
   case 1:
@@ -3532,7 +3539,7 @@ void dlgConfigurationShowModal(short mode){
 	wConfig4    = ((WndFrame *)wf->FindByName(TEXT("frmTerrain")));
 	wConfig5    = ((WndFrame *)wf->FindByName(TEXT("frmFinalGlide")));
 	wConfig6    = ((WndFrame *)wf->FindByName(TEXT("frmSafety")));
-	wConfig7    = ((WndFrame *)wf->FindByName(TEXT("frmPolar")));
+	wConfig7    = ((WndFrame *)wf->FindByName(TEXT("frmEmpty")));
 	wConfig8    = ((WndFrame *)wf->FindByName(TEXT("frmComm")));
 	wConfig9    = ((WndFrame *)wf->FindByName(TEXT("frmUnits")));
 	wConfig10    = ((WndFrame *)wf->FindByName(TEXT("frmInterface")));

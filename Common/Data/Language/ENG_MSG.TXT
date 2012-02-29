@@ -1755,6 +1755,9 @@ _@M1782_ "LT Server"
 # configuration SETUP save 
 _@M1783_ "Aircraft Profiles"
 _@M1784_ "Pilot Profiles"
+# page names
+_@M1785_ "Pilot configuration"
+_@M1786_ "Aircraft configuration"
 
 
 ############################################################

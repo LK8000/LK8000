@@ -288,35 +288,10 @@
 <DataField name="" DataType="boolean"/>
 </WndProperty>
 </WndFrame>
-<WndFrame Name="frmPolar" X=70 Y=0 Width=-246 Height=222 Font=2>
-<WndProperty Name="prpAircraftCategory" Caption="_@M164_" X=2 Y=-1   Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1205_" >
-<DataField name="" DataType="enum" Min=0 Max=10 Step=1/>
-</WndProperty>
-<WndProperty Name="prpPolarFile" Caption="_@M751_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1208_">
-<DataField name="" DataType="filereader" Min=0 Max=300 Step=1 OnDataAccess="OnPolarFileData"/>
-</WndProperty>
-<WndProperty Name="prpMaxManoeuveringSpeed" Caption="_@M1744_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H150_">
-<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=30 Max=300 Step=1/>
-</WndProperty>
-<WndProperty Name="prpHandicap" Caption="_@M334_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H151_">
-<DataField name="" DataType="double" DisplayFormat="%.0f " EditFormat="%.0f" Min=50 Max=150 Step=1/>
-</WndProperty>
-<WndProperty Name="prpBallastSecsToEmpty" Caption="_@M126_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H152_">
-<DataField name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min=10 Max=900 Step=10/>
-</WndProperty>
-<WndButton Name="cmdAircraftType" Caption="_@M60_" X=2 Y=-1 Width=-246  Height=22 Font=2 />
-<WndButton Name="cmdAircraftRego" Caption="_@M56_" X=2 Y=-1 Width=-246  Height=22 Font=2 />
-<WndButton Name="cmdCompetitionClass" Caption="_@M937_" X=2 Y=-1 Width=-246  Height=22 Font=2 />
-<WndButton Name="cmdCompetitionID" Caption="_@M939_" X=2 Y=-1 Width=-246  Height=22 Font=2 />
-<WndButton Name="cmdPolarSaveAs" Caption="_@M580_" X=2 Y=-1 Width=123  Height=22 Font=2 OnClickNotify="OnAircraftSaveAsClicked"/>
-<WndButton Name="cmdPolarSaveNew" Caption="_@M582_" X=126 Y=-999 Width=123  Height=22 Font=2 OnClickNotify="OnAircraftSaveNewClicked"/>
-<WndProperty Name="prpAircraftFile" Caption="" X=2 Y=-999  Width=0 Height=0 CaptionWidth=0 Font=2 Help="">
-<DataField name="" DataType="filereader" Min=0 Max=200 Step=1/>
-</WndProperty>
+<WndFrame Name="frmEmpty" X=70 Y=0 Width=-246 Height=222 Font=2>
 </WndFrame>
 <WndFrame Name="frmComm" X=70 Y=0 Width=-246 Height=222 Font=2>
 <WndFrame Name="frmComm" Caption="_@M232_" X=0 Y=0 Width=-246 Height=68 Font=2 Border=30>
-
 <WndProperty Name="prpComDevice1" Caption="_@M450_" X=72 Y=1 Width=-173 Height=22 CaptionWidth=80 Font=2 Help="_@H153_">
 <DataField name="" DataType="enum"  Min=0 Max=50 Step=1 OnDataAccess="OnDeviceAData"/>
 </WndProperty>
@@ -513,23 +488,11 @@
 <WndButton Name="cmdTaskRules" Caption="_@M690_" X=70 Y=-997 Width=180  Height=30 Font=2 OnClickNotify="OnTaskRulesClicked" />
 </WndFrame>
 <WndFrame Name="frmLogger" X=70 Y=0 Width=-246 Height=222 Font=2>
-<WndButton Name="cmdPilotName" Caption="_@M525_" X=2 Y=1 Width=-246  Height=35 Font=2 />
-<WndButton Name="cmdPilotSaveAs" Caption="_@M580_" X=2 Y=-1 Width=123  Height=35 Font=2 OnClickNotify="OnPilotSaveAsClicked"/>
-<WndButton Name="cmdPilotSaveNew" Caption="_@M582_" X=126 Y=-999 Width=123  Height=35 Font=2 OnClickNotify="OnPilotSaveNewClicked"/>
-<WndProperty Name="prpLoggerShortName" Caption="_@M611_" X=2 Y=-2 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H207_">
+<WndProperty Name="prpLoggerShortName" Caption="_@M611_" X=2 Y=1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H207_">
 <DataField name="" DataType="boolean"/>
 </WndProperty>
 <WndProperty Name="prpDisableAutoLogger" Caption="_@M113_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H208_">
 <DataField name="" DataType="boolean"/>
-</WndProperty>
-<WndProperty Name="prpLiveTrackerInterval" Caption="_@M1779_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1258_">
-<DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0.0 Max=60.0 Step="1.0" />
-</WndProperty>
-<WndButton Name="cmdLiveTrackersrv" Caption="_@M1782_" X=2 Y=-1 Width=78  Height=25 Font=2 />
-<WndButton Name="cmdLiveTrackerusr" Caption="_@M1780_" X=81 Y=-999 Width=78  Height=25 Font=2 />
-<WndButton Name="cmdLiveTrackerpwd" Caption="_@M1781_" X=160 Y=-999 Width=78  Height=25 Font=2 />
-<WndProperty Name="prpPilotFile" Caption="" X=2 Y=-999  Width=0 Height=0 CaptionWidth=0 Font=2 Help="">
-<DataField name="" DataType="filereader" Min=0 Max=200 Step=1/>
 </WndProperty>
 </WndFrame>
 <WndFrame Name="frmWaypointEdit" X=70 Y=0 Width=-246 Height=222 Font=2>

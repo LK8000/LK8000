@@ -111,8 +111,9 @@ _@M2127_ "Pilot\nSetup"
 _@M2128_ "Pilot\nSave"
 _@M2129_ "LK8000\nSetup"
 _@M2130_ "System\nSetup"
-
-
+# page names
+_@M1785_ "Pilot configuration"
+_@M1786_ "Aircraft configuration"
 
 HELP 402 removed some text
 M1779-1782 new Live tracker config options
