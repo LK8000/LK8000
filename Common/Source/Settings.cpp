@@ -65,7 +65,8 @@ void SettingsLeave() {
   if (TERRAINFILECHANGED) {
 	RasterTerrain::CloseTerrain();
 	RasterTerrain::OpenTerrain();
-	SetHome(WAYPOINTFILECHANGED==TRUE);
+	// NO! We dont reload waypoints on terrain change.
+	// SetHome(WAYPOINTFILECHANGED==TRUE);
 	RasterTerrain::ServiceFullReload(GPS_INFO.Latitude, GPS_INFO.Longitude);
 	MapWindow::ForceVisibilityScan = true;
   }
