@@ -923,18 +923,7 @@ void ReadWayPoints(void)
       _tcscat(szMapFile,TEXT("waypoints.xcw"));
       fp = zzip_fopen(szMapFile, "rt");
       #else
-      // search for cup waypoints inside mapfile LKM
-      TCHAR szFile[MAX_PATH]=_T("\0");
-      _tcscpy(szFile,szMapFile);
-      ExpandLocalPath(szFile);
-      _tcscat(szFile,TEXT("/"));
-      _tcscat(szFile,TEXT("waypoints.cup"));
-      fp = zzip_fopen(szFile, "rt");
       #endif
-      if (fp != NULL) {
-      StartupStore(TEXT("... Waypoint file embedded inside lkm%s"), NEWLINE);
-      StartupStore(TEXT("... lkm: <%s>%s"), szFile,NEWLINE);
-      }
     }
 
     if(fp != NULL)

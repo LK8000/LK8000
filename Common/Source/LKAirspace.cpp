@@ -1733,13 +1733,6 @@ void CAirspaceManager::ReadAirspaces()
     fp  = zzip_fopen(szMapFile, "rt");
     //*/
     #else
-    // search for embedded airspace inside LKM
-    TCHAR  szFile[MAX_PATH] = TEXT("\0");
-    _tcscpy(szFile,szMapFile);
-    ExpandLocalPath(szMapFile);
-    wcscat(szFile,TEXT("/"));
-    wcscat(szFile,TEXT(LKF_AIRSPACES));
-    fp  = zzip_fopen(szFile, "rt");
     #endif
   }
 

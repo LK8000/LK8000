@@ -53,6 +53,9 @@ void SettingsLeave() {
 
   // 101020 LKmaps contain only topology , so no need to force total reload!
   if(MAPFILECHANGED) {
+	#if TESTBENCH
+	StartupStore(_T(".... MAPFILECHANGED from configuration\n"));
+	#endif
 	if (LKTopo==0) {
 		AIRSPACEFILECHANGED = TRUE;
 		AIRFIELDFILECHANGED = TRUE;
@@ -63,6 +66,9 @@ void SettingsLeave() {
   } 
 
   if (TERRAINFILECHANGED) {
+	#if TESTBENCH
+	StartupStore(_T(".... TERRAINFILECHANGED from configuration\n"));
+	#endif
 	RasterTerrain::CloseTerrain();
 	RasterTerrain::OpenTerrain();
 	SetHome(WAYPOINTFILECHANGED==TRUE);
@@ -71,6 +77,9 @@ void SettingsLeave() {
   }
 
   if((WAYPOINTFILECHANGED) || (AIRFIELDFILECHANGED)) {
+	#if TESTBENCH
+	StartupStore(_T(".... WAYPOINT OR AIRFIELD CHANGED from configuration\n"));
+	#endif
 	SaveDefaultTask(); //@ 101020 BUGFIX
 	ClearTask();
 	ReadWayPoints();
@@ -80,6 +89,9 @@ void SettingsLeave() {
 	SetHome(true); // force home reload
 
 	if (WAYPOINTFILECHANGED) {
+		#if TESTBENCH
+		StartupStore(_T(".... WAYPOINTFILECHANGED from configuration\n"));
+		#endif
 		SaveRecentList();
 		LoadRecentList();
 		RangeLandableNumber=0;
@@ -98,12 +110,18 @@ void SettingsLeave() {
   } 
 
   if (TOPOLOGYFILECHANGED) {
+	#if TESTBENCH
+	StartupStore(_T(".... TOPOLOGYFILECHANGED from configuration\n"));
+	#endif
 	CloseTopology();
 	OpenTopology();
 	MapWindow::ForceVisibilityScan = true;
   }
   
   if(AIRSPACEFILECHANGED) {
+	#if TESTBENCH
+	StartupStore(_T(".... AIRSPACEFILECHANGED from configuration\n"));
+	#endif
 	CAirspaceManager::Instance().CloseAirspaces();
 	CAirspaceManager::Instance().ReadAirspaces();
 	CAirspaceManager::Instance().SortAirspaces();
@@ -111,6 +129,9 @@ void SettingsLeave() {
   }  
   
   if (POLARFILECHANGED) {
+	#if TESTBENCH
+	StartupStore(_T(".... POLARFILECHANGED from configuration\n"));
+	#endif
 	CalculateNewPolarCoef();
 	GlidePolar::SetBallast();
   }
