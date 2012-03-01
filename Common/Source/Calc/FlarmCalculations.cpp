@@ -9,6 +9,8 @@
 #include "FlarmCalculations.h"
 
 #include "utils/heapcheck.h"
+#include "utils/stl_utils.h"
+#include <algorithm>
 
 FlarmCalculations::FlarmCalculations(void)
 {
@@ -16,7 +18,7 @@ FlarmCalculations::FlarmCalculations(void)
 
 FlarmCalculations::~FlarmCalculations(void)
 {
-  // TODO code: delete on exit
+	std::for_each(averageCalculatorMap.begin(), averageCalculatorMap.end(), safe_delete());
 }
 
 

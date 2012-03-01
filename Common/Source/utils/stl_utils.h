@@ -36,6 +36,14 @@ struct safe_delete {
 			p = 0;
 		}
 	}
+
+	template <typename K, typename T>
+	void operator()(std::pair<K,T*>& p) {
+		if( p.second ) {
+			delete p.second;
+			p.second = 0;
+		}
+	}
 };
 
 struct safe_delete_array {
