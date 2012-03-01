@@ -310,6 +310,7 @@ void LKLoadProfileBitmaps(void) {
   //
   switch (Appearance.IndLandable) {
 	// WinPilot style
+#ifdef OLD_WINPILOT_BITMAPS
 	case wpLandableDefault:
 		_stprintf(srcfile,_T("%s\\APT1_REACH%s.BMP"),sDir,hires_suffix);
 		hBmpAirportReachable=LKLoadBitmap(srcfile);
@@ -321,7 +322,7 @@ void LKLoadProfileBitmaps(void) {
 		hBmpFieldUnReachable=LKLoadBitmap(srcfile);
 
 		break;
- 
+#endif
 	// LK style 
 	case wpLandableAltA:
 	default:

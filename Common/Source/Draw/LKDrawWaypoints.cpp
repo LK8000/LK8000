@@ -12,6 +12,8 @@
 #include "LKStyle.h"
 #include "Bitmaps.h"
 #include "DoInits.h"
+#include "LKObjects.h"
+
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -31,6 +33,7 @@ bool MapWindow::WaypointInRange(int i) {
   return (zoom.RealScale() <= 10);
 }
 
+void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact);
 
 int _cdecl MapWaypointLabelListCompare(const void *elem1, const void *elem2 ){
 
@@ -143,9 +146,24 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 			}
 		} else continue; // do not draw icons for normal turnpoints here
 	}
+//	  Appearance.IndLandable=wpLandableDefault,
+    if(Appearance.IndLandable == wpLandableDefault ) // WinPilot style
+    {
+      double fScaleFact =MapWindow::zoom.RealScale();
+      if(fScaleFact < 0.1)  fScaleFact = 0.1; // prevent division by zero
 
-	DrawBitmapX(hdc, WayPointList[i].Screen.x-10, WayPointList[i].Screen.y-10, 20,20, hDCTemp,0,0,SRCPAINT,false);
-	DrawBitmapX(hdc, WayPointList[i].Screen.x-10, WayPointList[i].Screen.y-10, 20,20, hDCTemp,20,0,SRCAND,false);
+      fScaleFact = 6.0 /fScaleFact;
+
+      if(fScaleFact > 4.0) fScaleFact = 4.0; // limit to prevent huge airfiel symbols
+      if(fScaleFact < 0.8)   fScaleFact = 0.8;
+
+  	  DrawRunway(hdc,&WayPointList[i],rc, fScaleFact);
+    }
+    else
+    {
+	  DrawBitmapX(hdc, WayPointList[i].Screen.x-10, WayPointList[i].Screen.y-10, 20,20, hDCTemp,0,0,SRCPAINT,false);
+  	  DrawBitmapX(hdc, WayPointList[i].Screen.x-10, WayPointList[i].Screen.y-10, 20,20, hDCTemp,20,0,SRCAND,false);
+    }
 
   } // for all waypoints
 
@@ -640,11 +658,132 @@ turnpoint:
 		    20,20,
 		    hDCTemp,20,0,SRCAND,false);
       }
-
-
     }
   }
 
 } // end DrawWaypoint
+
+
+
+
+
+void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
+{
+int solid= false;
+HPEN    oldPen  ;
+HBRUSH  oldBrush ;
+bool bGlider = false;
+bool bOutland = false;
+bool bRunway = false;
+int l = 8;
+int b = 1;
+
+
+
+if( wp->RunwayLen> 0)
+  l = (int)  ((double)wp->RunwayLen/500.0)+6;
+
+
+
+b = (int)((double) b * fScaleFact)+1;
+l = (int)((double) l * fScaleFact);
+
+if( wp->RunwayLen< 100) /* square if no runway defined */
+{
+  b++;
+  l = b;
+}
+
+POINT Runway
+
+[5] = {
+  { b, l },  // 1
+  {-b, l },  // 2
+  {-b,-l },  // 3
+  { b,-l },  // 4
+  { b,l  }   // 5
+};
+
+
+int iScale =(int) (fScaleFact*2.5);
+POINT WhiteWing [15]  = {
+  { 0 * iScale, 0 * iScale },   // 1
+  { 1 * iScale,-1 * iScale },   // 2
+  { 2 * iScale,-1 * iScale },   // 3
+  { 3 * iScale, 0 * iScale },   // 4
+  { 3 * iScale, 1 * iScale },   // 5
+  { 2 * iScale, 0 * iScale },   // 6
+  { 1 * iScale, 0 * iScale },   // 7
+  { 0 * iScale, 1 * iScale },   // 8
+  {-1 * iScale, 0 * iScale },   // 9
+  {-2 * iScale, 0 * iScale },   // 10
+  {-3 * iScale, 1 * iScale },   // 11
+  {-3 * iScale, 0 * iScale },   // 12
+  {-2 * iScale,-1 * iScale },   // 13
+  {-1 * iScale,-1 * iScale },   // 14
+  { 0 * iScale, 0 * iScale }    // 15
+};
+
+  switch(wp->Style) {
+	case STYLE_AIRFIELDSOLID: solid = true;  bRunway  = true;  bOutland = false;  bGlider  = false;	break;
+	case STYLE_AIRFIELDGRASS: solid = false; bRunway  = true;  bOutland = false;  bGlider  = false;	break;
+	case STYLE_OUTLANDING	: solid = false; bRunway  = true;  bOutland = true;   bGlider  = false;	break;
+	case STYLE_GLIDERSITE	: solid = false; bRunway  = true;  bOutland = false;  bGlider  = true;	break;
+	default: return; break;
+  }
+
+  int Brg =0;
+  if (  DisplayOrientation == TRACKUP )
+	Brg = (int)GPS_INFO.TrackBearing;
+
+    oldPen   = (HPEN) SelectObject(hdc, GetStockObject(BLACK_PEN));
+    oldBrush = (HBRUSH)SelectObject(hdc, LKBrush_Red);
+
+	if( wp->Reachable == TRUE)
+	 oldBrush = (HBRUSH)SelectObject(hdc, LKBrush_Green);
+
+	int iPtSize = 0;
+	if(!bOutland)
+	{
+	  iPtSize =	NIBLSCALE((int)(6.0*fScaleFact));
+	  Circle( hdc, wp->Screen.x, wp->Screen.y, iPtSize,  rc,true, true);
+	}
+
+
+	if(bRunway)
+	  if((wp->RunwayDir >=0) &&   ( wp->RunwayLen> 0))
+	  {
+		if(!bOutland)
+		  if(solid)
+			SelectObject(hdc, LKBrush_Grey );
+		  else
+			SelectObject(hdc, LKBrush_White);
+
+		PolygonRotateShift(Runway, 5,  wp->Screen.x, wp->Screen.y,  wp->RunwayDir-Brg);
+		Polygon(hdc,Runway ,5 );
+	  }
+
+
+	if(fScaleFact >= 0.9)
+	  if(bGlider)
+	  {
+	    PolygonRotateShift(WhiteWing, 15,  wp->Screen.x, wp->Screen.y,  0/*+ wp->RunwayDir-Brg*/);
+	    Polygon(hdc,WhiteWing ,15 );
+	  }
+
+	SelectObject(hdc, oldPen);
+	SelectObject(hdc, oldBrush);
+#ifdef PRINT_FREQUENCY
+	if (MapWindow::zoom.RealScale()<5.4)
+	{
+	  SIZE tsize;
+      SetTextColor(hdc, RGB_BLACK);
+	  HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelSmallFont);
+	  GetTextExtentPoint(hdc, wp->Freq, _tcslen(wp->Freq), &tsize);
+      ExtTextOut(hdc,wp->Screen.x/*-tsize.cx/2*/ ,wp->Screen.y+(15), ETO_OPAQUE, NULL, wp->Freq, _tcslen( wp->Freq), NULL);
+      SelectObject(hdc, hfOld);
+	}
+#endif
+}
 
 
