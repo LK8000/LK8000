@@ -160,11 +160,17 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 		_stprintf(mes,_T("%s"),AircraftType_Config);
 		RawWrite(hDC,mes,6,2, RGB_AMBER, WTMODE_OUTLINED);
 
+		LKASSERT(szPolarFile);
 		extern void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR* ext);
 		LK_wsplitpath(szPolarFile, (WCHAR*) NULL, (WCHAR*) NULL, srcfile, (WCHAR*) NULL);
 
 		_stprintf(mes,_T("%s %s"),gettext(_T("_@M528_")),srcfile);  // polar file
 		RawWrite(hDC,mes,7,2, RGB_AMBER, WTMODE_OUTLINED);
+
+		LKASSERT(startProfileFile);
+		LK_wsplitpath(startProfileFile, (WCHAR*) NULL, (WCHAR*) NULL, srcfile, (WCHAR*) NULL);
+		_stprintf(mes,_T("%s: %s"),MsgToken(1746),srcfile);  
+		RawWrite(hDC,mes,11,1, RGB_ICEWHITE, WTMODE_NORMAL);
 	}
 
 
