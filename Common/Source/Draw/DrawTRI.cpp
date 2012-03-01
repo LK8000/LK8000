@@ -12,6 +12,8 @@
 #include "RGB.h"
 #include "DoInits.h"
 
+
+#ifndef LKCOMPETITION
 //
 // Turn Rate Indicator
 //
@@ -229,5 +231,9 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
   SelectObject(hDC, hpOld);
 }
 
-
-
+#else
+	// LK COMPETITION VERSION HAS NO TRI 
+void MapWindow::DrawTRI(HDC hDC, const RECT rc) {
+	return;
+}
+#endif

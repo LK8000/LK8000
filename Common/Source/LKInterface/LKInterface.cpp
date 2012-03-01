@@ -45,6 +45,9 @@ redo:
 	if (CURTYPE == IM_CONTEST) {
 		if (!UseContestEngine()) goto redo;
 	}
+#ifdef LKCOMPETITION
+	if (CURTYPE == IM_TRI) goto redo;
+#endif
 finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 }
@@ -70,6 +73,9 @@ redo:
 	if (!UseContestEngine()) {
 		if (CURTYPE == IM_CONTEST) goto redo;
 	}
+#ifdef LKCOMPETITION
+	if (CURTYPE == IM_TRI) goto redo;
+#endif
 finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 }
