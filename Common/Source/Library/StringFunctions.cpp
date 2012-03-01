@@ -555,7 +555,7 @@ void LK_wsplitpath(const WCHAR* path, WCHAR* drv, WCHAR* dir, WCHAR* name, WCHAR
 			*drv++ = *path++;
 			*drv++ = *path++;
 			*drv = '\0';
-		}
+		} else path+=2;
 	} else if (drv)
 		*drv = '\0';
 
