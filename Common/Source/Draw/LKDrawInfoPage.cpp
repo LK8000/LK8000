@@ -17,6 +17,7 @@
 #include <wingdi.h>
 #endif
 
+
 #include "utils/heapcheck.h"
 
 void VDrawLine(const HDC&hdc, const RECT rc, int x1, int y1, int x2, int y2, COLORREF col) {
@@ -198,7 +199,11 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 			wsprintf(Buffer,_T("%d.%d %s"),ModeIndex, curtype+1, gettext(TEXT("_@M908_"))); // Custom
 			break;
 		case IM_TRI:
+#ifndef LKCOMPETITION
 			wsprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, gettext(TEXT("_@M909_"))); // Turn
+#else
+			wsprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, gettext(TEXT("_@M1600_"))); // DISABLED
+#endif
 			break;
 		case IM_CONTEST:
 			wsprintf(Buffer,_T("%d.%d %s"), ModeIndex, curtype+1, gettext(TEXT("_@M957_"))); // Contest
@@ -236,7 +241,11 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 			}
 			break;
 		case IM_TRI:
+#ifndef LKCOMPETITION
 			wsprintf(Buffer,gettext(TEXT("_@M913_"))); // Experimental
+#else
+			wsprintf(Buffer,_T("---"));
+#endif
 			break;
 		case IM_CONTEST:
 			wsprintf(Buffer,gettext(TEXT("")));
@@ -829,6 +838,7 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 	//
 label_TRI:
 
+#ifndef LKCOMPETITION
 	VDrawLine(hdc,rc, qcolumn[0],qrow[2],qcolumn[16],qrow[2],RGB_DARKGREEN);
 	DrawTRI(hdc, rc);
 
@@ -905,6 +915,8 @@ label_TRI:
         wsprintf(BufferTitle, gettext(TEXT("_@M915_"))); // NOT FOR IFR USAGE
 	SelectObject(hdc, LK8PanelSmallFont);
 	LKWriteText(hdc, BufferTitle, qcolumn[8],qrow[12], 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_ORANGE, false);
+
+#endif // not in LKCOMPETITION 
 
 	goto label_End;
 	// End of TRI

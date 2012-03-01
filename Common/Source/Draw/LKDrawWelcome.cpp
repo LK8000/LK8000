@@ -12,7 +12,6 @@
 #include "RGB.h"
 
 
-
 void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
 
   SIZE textSize, headerSize;
@@ -52,7 +51,11 @@ void MapWindow::DrawWelcome8000(HDC hdc, RECT rc) {
 
   //SelectObject(hdc, LK8InfoBigFont);
   SelectObject(hdc, LK8TitleFont);
+#ifndef LKCOMPETITION
   _stprintf(Buffer,TEXT("%s v%s.%s"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE));
+#else
+  _stprintf(Buffer,TEXT("%sC v%s.%s COMPETITION"),_T(LKFORK),_T(LKVERSION),_T(LKRELEASE));
+#endif
   if (SIMMODE) _tcscat(Buffer,_T(" (Simulator)"));
   LKWriteText(hdc, Buffer, middlex, contenttop+(textSize.cy*1) , 0, WTMODE_OUTLINED, WTALIGN_CENTER,RGB_AMBERNOREV, false);
 

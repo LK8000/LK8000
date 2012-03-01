@@ -122,7 +122,11 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 		_stprintf(mes,_T("*** %s ***"),gettext(_T("_@M1757_")));
 		RawWrite(hDC,mes,pos,1, RGB_DARKWHITE,WTMODE_NORMAL);
 	} else {
+#ifndef LKCOMPETITION
 		_stprintf(mes,_T("Version %S.%S (%S)"),LKVERSION,LKRELEASE,__DATE__);
+#else
+		_stprintf(mes,_T("V%S.%S COMPETITION"),LKVERSION,LKRELEASE,__DATE__);
+#endif
 		RawWrite(hDC,mes,pos,1, RGB_DARKWHITE,WTMODE_NORMAL);
 	}
   }
@@ -132,7 +136,11 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
 	// FillRect(hDC,&ScreenSizeR, LKBrush_Black); // REMOVE 
 
 	TCHAR mes[100];
+#ifndef LKCOMPETITION
 	_stprintf(mes,_T("%S v%S.%S - %s"),LKFORK,LKVERSION,LKRELEASE,gettext(_T("_@M2054_")));
+#else
+	_stprintf(mes,_T("%SC v%S.%S - %s"),LKFORK,LKVERSION,LKRELEASE,gettext(_T("_@M2054_")));
+#endif
 	RawWrite(hDC,mes,1,1, RGB_LIGHTGREY,WTMODE_NORMAL);
 
 	unsigned long freeram = CheckFreeRam()/1024;
