@@ -638,8 +638,8 @@ location=10
 mode=Display1
 type=key
 data=12
-label= 
-event=Null
+label=Custom\nMenu
+event=Mode MYMODE
 location=11
 
 # -------------
@@ -2851,5 +2851,96 @@ type=key
 data=12
 label=
 event=Null
+location=11
+
+# -------------
+# mode=MYMODE
+# -------------
+
+mode=MYMODE
+type=key
+data=APP1
+label=$(MM1)
+event=Mode default
+event=MyMenu 1
+location=1
+
+mode=MYMODE
+type=key
+data=APP2
+event=Mode default
+event=MyMenu 2
+label=$(MM2)
+location=2
+
+mode=MYMODE
+type=key
+data=APP3
+event=Mode default
+event=MyMenu 3
+label=$(MM3)
+location=3
+
+mode=MYMODE
+type=key
+data=APP4
+event=Mode default
+event=MyMenu 4
+label=$(MM4)
+location=4
+
+mode=MYMODE
+type=key
+data=6
+event=Mode default
+event=MyMenu 5
+label=$(MM5)
+location=5
+
+mode=MYMODE
+type=key
+data=7
+event=Mode default
+event=MyMenu 6
+label=$(MM6)
+location=6
+
+mode=MYMODE
+type=key
+data=8
+label=$(MM7)
+event=Mode default
+event=MyMenu 7
+location=7
+
+mode=MYMODE
+type=key
+data=9
+label=$(MM8)
+event=Mode default
+event=MyMenu 8
+location=8
+
+mode=MYMODE
+type=key
+data=0
+event=Mode default
+label=_@M2011_
+location=9
+
+mode=MYMODE
+type=key
+data=11
+label=
+event=Mode default
+event=MyMenu 10
+location=10
+
+mode=MYMODE
+type=key
+data=12
+label=
+event=Mode default
+event=MyMenu 11
 location=11
 

@@ -1354,11 +1354,10 @@ void InputEvents::eventTimeGates(const TCHAR *misc) {
 	dlgTimeGatesShowModal();
 }
 
-void InputEvents::eventGotoLookup(const TCHAR *misc) {
-  int res = dlgWayPointSelect();
-  if (res != -1){
-    FlyDirectTo(res);
-  };
+void InputEvents::eventMyMenu(const TCHAR *misc) {
+
+StartupStore(_T("... event MyMenu <%s>\n"),misc);
+
 }
 
 

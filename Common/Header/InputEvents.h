@@ -88,7 +88,7 @@ class InputEvents {
   static void eventUserDisplayModeForce(const TCHAR *misc);
   static void eventAirspaceDisplayMode(const TCHAR *misc);
   static void eventAutoLogger(const TCHAR *misc);
-  static void eventGotoLookup(const TCHAR *misc);
+  static void eventMyMenu(const TCHAR *misc);
   static void eventAddWaypoint(const TCHAR *misc);
   static void eventOrientation(const TCHAR *misc);
   static void eventCalcWind(const TCHAR *misc);

@@ -604,6 +604,18 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     if (--items<=0) goto label_ret;
   }
 
+  // We dont replace macro, we do replace the entire label
+  a =_tcsstr(OutBuffer, TEXT("$(MM"));
+  if (a != NULL) {
+	short i;
+	i= *(a+4)-48;
+	// get the label for the custom menu item here
+	// Decide if invalid=true or if no label at all, setting Replace to empty string
+	_stprintf(OutBuffer,_T("Custom\nMenu %d"),i);
+	
+  }
+	
+
 label_ret:
 
   return invalid;
