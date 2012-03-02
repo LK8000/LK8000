@@ -68,3 +68,4 @@ struct safe_free {
 };
 
 #endif // stl_utils_h__
+
