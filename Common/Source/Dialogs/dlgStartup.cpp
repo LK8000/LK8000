@@ -657,7 +657,7 @@ bool dlgStartupShowModal(void){
 	return false;
   }
 
-  return true; // else repeat dialog
+  return RUN_MODE!=RUN_EXIT; // else repeat dialog 
 
 }
 

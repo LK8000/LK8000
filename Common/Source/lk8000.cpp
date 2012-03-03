@@ -92,13 +92,23 @@ int WINAPI WinMain(     HINSTANCE hInstance,
                         LPTSTR    lpCmdLine,
                         int       nCmdShow)
 {
-  MSG msg;
+#if (WINDOWSPC>0)
+#if _DEBUG
+	_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF|_CRTDBG_ALLOC_MEM_DF);
+#endif
+#endif
+
+	MSG msg = {0};
   HACCEL hAccelTable;
   (void)hPrevInstance;
 
   // use mutex to avoid multiple instances of lk8000 be running
-  CreateMutex(NULL,FALSE,_T("LOCK8000"));
-  if (GetLastError() == ERROR_ALREADY_EXISTS) return(0);
+  HANDLE hMutex = CreateMutex(NULL,FALSE,_T("LOCK8000"));
+  if (GetLastError() == ERROR_ALREADY_EXISTS) {
+	  ReleaseMutex(hMutex);
+	  CloseHandle(hMutex);
+	  return(0);
+  }
 
   wsprintf(LK8000_Version,_T("%S v%S.%S "), LKFORK, LKVERSION,LKRELEASE);
   wcscat(LK8000_Version, TEXT(__DATE__));
@@ -261,6 +271,9 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   InitCustomHardware();
 
   PreloadInitialisation(false); // calls dlgStartup
+  if(RUN_MODE == RUN_EXIT) {
+	goto _Shutdown;
+  }
 
   GPS_INFO.NAVWarning = true; // default, no gps at all!
 
@@ -513,17 +526,28 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   } while(1);
   #endif
 
+_Shutdown:
   LKObjects_Delete();
   LKUnloadProfileBitmaps();
   LKUnloadFixedBitmaps();
+
+  LKUnloadMessage();
+  InputEvents::UnloadString();
+#if TOPOFASTLABEL
+  MapWindow::FreeSlot();
+#endif
+
   #if TESTBENCH
   StartupStore(_T(".... WinMain terminated%s"),NEWLINE);
   #endif
 
+  ReleaseMutex(hMutex);
+  CloseHandle(hMutex);
+
 #if (WINDOWSPC>0)
 #if _DEBUG
   _CrtCheckMemory();
-  _CrtDumpMemoryLeaks();
+//  _CrtDumpMemoryLeaks(); generate False positive, use _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF|_CRTDBG_ALLOC_MEM_DF); instead
 #endif
 #endif
 

@@ -172,11 +172,11 @@ class MapWindow {
   private:
     // initial fixed zoom factors - in user distance units, km,mi what is selected!
     // Values are used in dlgConfiguration, to show values in config options
-    static const double SCALE_CRUISE_INIT      = 3.5;
-    static const double SCALE_CIRCLING_INIT    = 0.1;
-    static const double SCALE_PANORAMA_INIT    = 10.0;
-    static const double SCALE_PG_PANORAMA_INIT = 7.5;
-    static const double SCALE_INVALID_INIT     = 50.0;
+    static const double SCALE_CRUISE_INIT;
+    static const double SCALE_CIRCLING_INIT;
+    static const double SCALE_PANORAMA_INIT;
+    static const double SCALE_PG_PANORAMA_INIT;
+    static const double SCALE_INVALID_INIT;
     
     enum TMapScaleType {
       SCALE_CRUISE,             /**< @brief Basic zoom for flight mode used for:
@@ -635,6 +635,9 @@ class MapWindow {
   
 
   #if TOPOFASTLABEL
+public:
+	static void FreeSlot(); 
+private:
   // How many slots in screen, divided by horizontal blocks on vertical positions
   // How many parts of vertical screens we are using. H=480 mean 48 pixel sized slots
   // Each slot should contain MapWindowLogFont Hsize with some margin.

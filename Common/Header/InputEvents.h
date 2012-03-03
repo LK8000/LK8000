@@ -19,6 +19,8 @@ HINSTANCE _loadDLL(TCHAR *name);
 class InputEvents {
  public:
   static void readFile();
+  static void UnloadString();
+
   static int mode2int(const TCHAR *mode, bool create);
   static void setMode(const TCHAR *mode);
   static TCHAR* getMode();
