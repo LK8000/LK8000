@@ -12,9 +12,13 @@
 
 extern void ShowMenu();
 
+unsigned int CustomKeyLabel[(CustomKeyMode_t)ckTOP];
 
 // handle custom keys. Input: key pressed (center, left etc.)
 // Returns true if handled successfully, false if not
+//
+// Passthrough mode for keys>=1000 (custom menu keys)
+//
 bool CustomKeyHandler(const int key) {
 
   int ckeymode;
@@ -24,6 +28,12 @@ bool CustomKeyHandler(const int key) {
   if (doinit) {
 	oldModeIndex=LKMODE_INFOMODE;;
 	doinit=false;
+  }
+
+  if (key>=1000) {
+	ckeymode=key-1000;
+	LKASSERT((ckeymode>=0 && ckeymode<ckTOP));
+	goto passthrough;
   }
 
   switch(key) {
@@ -53,6 +63,8 @@ bool CustomKeyHandler(const int key) {
 		return false;
 		break;
   }
+
+passthrough:
 
   switch(ckeymode) {
 	case ckDisabled:
@@ -331,4 +343,58 @@ bool CustomKeyHandler(const int key) {
   return false;
 
 }
+
+
+void InitCustomKeys(void) {
+
+//
+// Some labels already exist for buttons. Some other are missing.
+// We assign msg tokens in index array, since they are not in order.
+// Order is strictly the one in Enums.h for customkeys
+//
+CustomKeyLabel[0]=2200;		// Disabled  - note: never shown since label not printed at all
+CustomKeyLabel[1]=2201;		// Menu 
+CustomKeyLabel[2]=2202;		// Page Back
+CustomKeyLabel[3]=2203;		// Toggle Map<>current page
+CustomKeyLabel[4]=2204;		// Toggle Map<>Landables
+CustomKeyLabel[5]=2205;		// Landables
+CustomKeyLabel[6]=2206;		// Toggle Map<>Commons
+CustomKeyLabel[7]=2207;		// Commons
+CustomKeyLabel[8]=2208;		// Toggle Map<>Traffic
+CustomKeyLabel[9]=2209;		// "Traffic"
+CustomKeyLabel[10]=2036;	// invert text
+CustomKeyLabel[11]=2071;	// truewind calc
+CustomKeyLabel[12]=2079;	// overlays (on/off missing)
+CustomKeyLabel[13]=2210;	// auto zoom
+CustomKeyLabel[14]=2044;	// ActiveMap On/Off
+CustomKeyLabel[15]=2070;	// Location marker
+CustomKeyLabel[16]=2024;	// Time gates
+CustomKeyLabel[17]=2211;	// Thermal booster
+CustomKeyLabel[18]=2212;	// goto home
+CustomKeyLabel[19]=2213;	// zoom out 20  panorama trigger
+CustomKeyLabel[20]=2214;	// multitarget rotate
+CustomKeyLabel[21]=2025;	// multitarget menu
+CustomKeyLabel[22]=2021;	// team code
+CustomKeyLabel[23]=2215;	// use hbar
+CustomKeyLabel[24]=2042;	// basic setup
+CustomKeyLabel[25]=2216;	// SIM MENU
+CustomKeyLabel[26]=2217;	// airspace analysis
+CustomKeyLabel[27]=2218;	// toggle map Airspace
+CustomKeyLabel[28]=2001;	// zoom in
+CustomKeyLabel[29]=2002;	// zoom out
+CustomKeyLabel[30]=2219;	// zoom in more
+CustomKeyLabel[31]=2220;	// zoom out more
+CustomKeyLabel[32]=2221;	// route optimize
+CustomKeyLabel[33]=966;		// LOCK SCREEN
+CustomKeyLabel[34]=2058;	// Oracle
+CustomKeyLabel[35]=2115;	// TEnergy
+CustomKeyLabel[36]=2063;	// Notepad
+CustomKeyLabel[37]=2223;	// Change+ terrain colors
+CustomKeyLabel[38]=2060;	// Nearest airspace
+CustomKeyLabel[39]=2222;	// OLC analysis
+CustomKeyLabel[40]=2224;	// Change- terrain colors
+CustomKeyLabel[41]=2225;	// free flight
+
+}
+
 

@@ -1356,7 +1356,45 @@ void InputEvents::eventTimeGates(const TCHAR *misc) {
 
 void InputEvents::eventMyMenu(const TCHAR *misc) {
 
-StartupStore(_T("... event MyMenu <%s>\n"),misc);
+  unsigned int i, ckeymode;
+  i=_wtoi(misc);
+  LKASSERT(i>0 && i<9);
+
+  // test mode only!
+  switch(i) {
+	case 1:
+		ckeymode=CustomKeyModeCenter;
+                break;
+        case 2:
+                ckeymode=CustomKeyModeLeft;
+                break;
+        case 3:
+                ckeymode=CustomKeyModeRight;
+                break;
+        case 4:
+                ckeymode=CustomKeyModeAircraftIcon;
+                break;
+        case 5:
+                ckeymode=CustomKeyModeLeftUpCorner;
+                break;
+        case 6:
+                ckeymode=CustomKeyModeRightUpCorner;
+                break;
+        case 7:
+                ckeymode=CustomKeyModeCenterScreen;
+                break;
+	case 8:
+		ckeymode=ckDisabled;
+		break;
+	default:
+		ckeymode=ckDisabled;
+		break;
+  }
+  #if TESTBENCH
+  StartupStore(_T("... event MyMenu <%s> ckey=%d\n"),misc,ckeymode);
+  #endif
+  CustomKeyHandler(ckeymode+1000);
+  return;
 
 }
 

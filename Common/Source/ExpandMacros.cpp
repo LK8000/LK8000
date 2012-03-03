@@ -604,16 +604,54 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     if (--items<=0) goto label_ret;
   }
 
+extern int CustomKeyLabel[];
   // We dont replace macro, we do replace the entire label
   a =_tcsstr(OutBuffer, TEXT("$(MM"));
   if (a != NULL) {
 	short i;
 	i= *(a+4)-48;
+        LKASSERT(i>0 && i<9);
 	// get the label for the custom menu item here
 	// Decide if invalid=true or if no label at all, setting Replace to empty string
-	_stprintf(OutBuffer,_T("Custom\nMenu %d"),i);
-	
-  }
+
+	unsigned int ckeymode;
+	// test mode only
+	switch(i) {
+	        case 1:
+  	              ckeymode=CustomKeyModeCenter;
+  	              break;
+  	      case 2:
+  	              ckeymode=CustomKeyModeLeft;
+  	              break;
+  	      case 3:
+  	              ckeymode=CustomKeyModeRight;
+  	              break;
+  	      case 4:
+  	              ckeymode=CustomKeyModeAircraftIcon;
+  	              break;
+  	      case 5:
+  	              ckeymode=CustomKeyModeLeftUpCorner;
+  	              break;
+  	      case 6:
+  	              ckeymode=CustomKeyModeRightUpCorner;
+  	              break;
+  	      case 7:
+  	              ckeymode=CustomKeyModeCenterScreen;
+  	              break;
+  	      case 8:
+  	      default:
+        	        ckeymode=0;
+        	        break;
+	}
+	LKASSERT(ckeymode>=0 && ckeymode<ckTOP);
+	if (ckeymode==0) {
+		invalid=true;			// non selectable
+		_tcscpy(OutBuffer,_T(""));	// invisible in any case
+	} else {
+		_stprintf(OutBuffer,MsgToken( CustomKeyLabel[ckeymode] ));
+	}
+
+  } // MM
 	
 
 label_ret:
