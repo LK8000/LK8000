@@ -215,7 +215,7 @@ BOOL devInit(LPTSTR CommandLine){
       // remember: Port1 is the port used by device A, port1 may be Com3 or Com1 etc
 	// this is port 1, so index 0 for us. 
       if (!Com->Initialize(COMMPort[PortIndex1], dwSpeed[SpeedIndex1],Bit1Index,0)) {
-	    delete Com;
+	   	delete Com;
 		ComPortStatus[0]=CPS_OPENKO;
         break;
       }
@@ -271,6 +271,7 @@ BOOL devInit(LPTSTR CommandLine){
 
 	// this is port 2, so index 1 for us
       if (!Com->Initialize(COMMPort[PortIndex2], dwSpeed[SpeedIndex2],Bit2Index,1)) { // 100210
+	delete Com;
 	ComPortStatus[1]=CPS_OPENKO;
         break;
       }
