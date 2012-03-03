@@ -492,5 +492,11 @@ bool MapWindow::checkLabelBlock(RECT *rc) {
   return true;
 }
 
+void MapWindow::FreeSlot(){
+	free(slot);
+	slot=NULL;
+	DoInit[MDI_CHECKLABELBLOCK]=true;
+}
+
 #endif
 

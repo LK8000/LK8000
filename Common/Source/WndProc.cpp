@@ -252,8 +252,13 @@ void Shutdown(void) {
   LKSound(_T("LK_DISCONNECT.WAV")); Sleep(500); // real WAV length is 410+ms
   if (!GlobalRunning) { // shutdown on startup clicking on the X
 	StartupStore(_T(". Quick shutdown requested before terminating startup%s"),NEWLINE);
+
+	CloseCalculations();
+
+	CloseGeoid();
+	DeInitCustomHardware();
 	LKRunStartEnd(false);
-	exit(0);
+	return;
   }
   // LKTOKEN _@M1219_ "Shutdown, please wait..."
   CreateProgressDialog(gettext(TEXT("_@M1219_")));

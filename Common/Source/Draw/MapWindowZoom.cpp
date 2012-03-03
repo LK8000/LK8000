@@ -11,6 +11,11 @@
 #include "MapWindow.h"
 
 
+const double MapWindow::Zoom::SCALE_CRUISE_INIT      = 3.5;
+const double MapWindow::Zoom::SCALE_CIRCLING_INIT    = 0.1;
+const double MapWindow::Zoom::SCALE_PANORAMA_INIT    = 10.0;
+const double MapWindow::Zoom::SCALE_PG_PANORAMA_INIT = 7.5;
+const double MapWindow::Zoom::SCALE_INVALID_INIT     = 50.0;
 
 MapWindow::Zoom::Zoom():
   _inited(false),

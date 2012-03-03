@@ -25,6 +25,7 @@
 #include "Parser.h"
 #include "DoInits.h"
 #include "Logger.h"
+#include "utils/stl_utils.h"
 
 using std::min;
 using std::max;
@@ -71,7 +72,7 @@ typedef struct {
 
 static ModeLabelSTRUCT ModeLabel[MAX_MODE][MAX_LABEL];
 static int ModeLabel_count[MAX_MODE];	       // Where are we up to in this mode...
-
+std::list<TCHAR*> LabelGarbage;
 
 #define MAX_GCE_QUEUE 10
 static int GCE_Queue[MAX_GCE_QUEUE];
@@ -266,6 +267,7 @@ void InputEvents::readFile() {
 	    // Only copy this once per object - save string space
 	    if (!new_label) {
 	      new_label = StringMallocParse(d_label);
+		  LabelGarbage.push_back(new_label);
 	    }
 	    LKASSERT(new_label!=NULL);
 	    InputEvents::makeLabel(mode_id, new_label, d_location, event_id);
@@ -347,8 +349,9 @@ void InputEvents::readFile() {
 	  
 	    pt2Event event = findEvent(d_event);
 	    if (event) {
-	      event_id = makeEvent(event, 
-                                   StringMallocParse(d_misc), event_id);
+		  TCHAR* szString = StringMallocParse(d_misc);
+		  LabelGarbage.push_back(szString);
+	      event_id = makeEvent(event, szString, event_id);
 	    }
 	  }
 	}
@@ -373,6 +376,13 @@ void InputEvents::readFile() {
   zzip_fclose(fp);
 }
 
+void InputEvents::UnloadString(){
+	memset(&ModeLabel_count, 0, sizeof(ModeLabel_count));
+	memset(&ModeLabel, 0, sizeof(ModeLabel));
+
+	std::for_each(LabelGarbage.begin(),LabelGarbage.end(), safe_free());
+	LabelGarbage.clear();
+}
 
 int InputEvents::findKey(const TCHAR *data) {
 
@@ -2026,7 +2036,7 @@ void InputEvents::eventService(const TCHAR *misc) {
 	return;
   }
 #endif
-extern void RotateScreen(short angle);
+extern bool RotateScreen(short angle);
   if (_tcscmp(misc, TEXT("SSINVERT")) == 0) {
 	#if (WINDOWSPC>0)
 	if (SCREENWIDTH==896) return;
@@ -2785,7 +2795,6 @@ void InputEvents::eventOrientation(const TCHAR *misc){
   }
   MapWindow::SetAutoOrientation(true); // 101008 reset it
 }
-
 
 void SwitchToMapWindow(void)
 {
