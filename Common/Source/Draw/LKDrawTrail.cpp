@@ -15,7 +15,7 @@ using std::max;
 
 // #define SKIPPOINTS 1		// skip closer points for drawing, causing flashing
 
-//#define TRAIL_DRIFT_FIX 1
+#define TRAIL_DRIFT_FIX 1
 //      Attempts to fix bug that caused trail points to disappear
 //      (more so in stronger winds and when more zoomed in) while
 //      in circling zoom with “trail drift” on.
