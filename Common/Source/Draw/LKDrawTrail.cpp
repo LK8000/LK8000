@@ -15,6 +15,12 @@ using std::max;
 
 // #define SKIPPOINTS 1		// skip closer points for drawing, causing flashing
 
+#define TRAIL_DRIFT_FIX 1
+//      Attempts to fix bug that caused trail points to disappear
+//      (more so in stronger winds and when more zoomed in) while
+//      in circling zoom with “trail drift” on.
+//      by Eric Carden, March 4, 2012
+
 // try not to use colors when over a useless mapscale
 double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 {
@@ -29,6 +35,12 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 
   double traildrift_lat = 0.0;
   double traildrift_lon = 0.0;
+
+  #ifdef TRAIL_DRIFT_FIX
+  double this_lat, this_lon;  // lat & lon of point as it is to be drawn on
+                              // screen (accounts for “trail drift” if
+                              // appropriate)
+  #endif
 
   double trailFirstTime = -1;
 
@@ -192,12 +204,29 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
       continue;
     }
 
+    #ifdef TRAIL_DRIFT_FIX  // calc drifted lat/lon BEFORE determining “visibility”
+    if (trail_is_drifted) {
+      double dt = max(0.0, (display_time - P1.Time) * P1.DriftFactor);
+      this_lat = P1.Latitude + traildrift_lat * dt;
+      this_lon = P1.Longitude + traildrift_lon * dt;
+    } else {                    // lat & lon NOT drifted
+      this_lat = P1.Latitude;
+      this_lon = P1.Longitude;
+    }
+
+    this_visible = ((this_lon > bounds.minx) &&
+                    (this_lon < bounds.maxx) &&
+                    (this_lat > bounds.miny) &&
+                    (this_lat < bounds.maxy));
+    #else
+
     ///////// Determine if this is visible
 
     this_visible =   ((P1.Longitude> bounds.minx) &&
 		     (P1.Longitude< bounds.maxx) &&
 		     (P1.Latitude> bounds.miny) &&
 		     (P1.Latitude< bounds.maxy)) ;
+    #endif
 
     if (!this_visible && !last_visible) {
       last_visible = false;
@@ -211,9 +240,13 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 
     if (trail_is_drifted) {
 
+        #ifndef TRAIL_DRIFT_FIX
+
 	double dt = max(0.0,(display_time-P1.Time)*P1.DriftFactor);
 	double this_lon = P1.Longitude+traildrift_lon*dt;
 	double this_lat = P1.Latitude+traildrift_lat*dt;
+
+        #endif
 
 	#if 1
 	// this is faster since many parameters are const
