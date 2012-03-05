@@ -62,7 +62,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	short i;
 	i= (*(a+4)-48)*10;
 	i+= *(a+5)-48;
-	LKASSERT(i>=0 && i<30);
+	LKASSERT(i>=0 && i<40);
 
 	switch(i) {
 		case 0:	// LOCKMODE
@@ -225,7 +225,194 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			}
 			break;
 
+		case 14:
+			if ( Shading )
+				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2080),MsgToken(491)); // OFF
+			else
+				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2080),MsgToken(894)); // ON
+			break;
  
+		case 15:
+			if (EnableSoundModes)
+				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2055),MsgToken(491)); // OFF
+			else
+				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2055),MsgToken(894)); // ON
+			break;
+
+		case 16:
+			if (ActiveMap)
+				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2044),MsgToken(491)); // OFF
+			else
+				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2044),MsgToken(894)); // ON
+			break;
+
+		case 17:
+			if (Look8000==(Look8000_t)lxcNoOverlay)
+				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2079),MsgToken(491)); // OFF
+			else
+				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2079),MsgToken(894)); // ON
+			break;
+
+		case 18:
+			if (Orbiter)
+				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2065),MsgToken(491)); // OFF
+			else
+				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2065),MsgToken(894)); // ON
+			if (!EnableThermalLocator) invalid = true;
+			break;
+
+		case 19:
+			switch(OnAirSpace) {
+				case 0:
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2029),MsgToken(894)); // ON
+					break;
+				case 1:
+				default:
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2029),MsgToken(491)); // OFF
+					break;
+			}
+			break;
+
+		case 20:
+			if (MapWindow::zoom.AutoZoom() )
+				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2009),MsgToken(418)); 
+			else
+				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2009),MsgToken(897));
+			break;
+
+		case 21:
+			if (EnableTopology)
+				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2027),MsgToken(491)); // OFF
+			else
+				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2027),MsgToken(894)); // ON
+			break;
+
+		case 22:
+			if (EnableTerrain)
+				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2028),MsgToken(491)); // OFF
+			else
+				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2028),MsgToken(894)); // ON
+			break;
+
+		case 23:
+			if (MapWindow::mode.UserForcedMode() == MapWindow::Mode::MODE_FLY_CIRCLING)
+				_stprintf(OutBuffer,_T("DspMode\n_%s_"),MsgToken(2031));
+			else
+				_stprintf(OutBuffer,_T("DspMode\n%s"),MsgToken(2031));
+			break;
+
+		case 24:
+			if (MapWindow::mode.UserForcedMode() == MapWindow::Mode::MODE_FLY_CRUISE)
+				_stprintf(OutBuffer,_T("DspMode\n_%s_"),MsgToken(2032));
+			else
+				_stprintf(OutBuffer,_T("DspMode\n%s"),MsgToken(2032));
+			break;
+		case 25:
+			if (MapWindow::mode.UserForcedMode() == MapWindow::Mode::MODE_FLY_NONE)
+				_stprintf(OutBuffer,_T("DspMode\n_%s_"),MsgToken(2033));
+			else
+				_stprintf(OutBuffer,_T("DspMode\n%s"),MsgToken(2033));
+			break;
+		case 26:
+			if (MapWindow::mode.UserForcedMode() == MapWindow::Mode::MODE_FLY_FINAL_GLIDE)
+				_stprintf(OutBuffer,_T("DspMode\n_%s_"),MsgToken(2034));
+			else
+				_stprintf(OutBuffer,_T("DspMode\n%s"),MsgToken(2034));
+			break;
+
+		case 27: // amcIsBoth
+			if (CALCULATED_INFO.AutoMacCready && AutoMcMode==amcFinalAndClimb)
+				_stprintf(OutBuffer,_T("Auto\n_%s_"),MsgToken(2117));
+			else
+				_stprintf(OutBuffer,_T("Auto\n%s"),MsgToken(2117));
+			break;
+		case 28: // amcIsFinal
+			if (CALCULATED_INFO.AutoMacCready && AutoMcMode==amcFinalGlide)
+				_stprintf(OutBuffer,_T("Auto\n_%s_"),MsgToken(2033));
+			else
+				_stprintf(OutBuffer,_T("Auto\n%s"),MsgToken(2033));
+			break;
+		case 29: // amcIsClimb
+			if (CALCULATED_INFO.AutoMacCready && AutoMcMode==amcAverageClimb)
+				_stprintf(OutBuffer,_T("Auto\n_%s_"),MsgToken(2075));
+			else
+				_stprintf(OutBuffer,_T("Auto\n%s"),MsgToken(2075));
+			break;
+		case 30: // amcIsEquiv
+			if (CALCULATED_INFO.AutoMacCready && AutoMcMode==amcEquivalent)
+				_stprintf(OutBuffer,_T("Auto\n_%s_"),MsgToken(2076));
+			else
+				_stprintf(OutBuffer,_T("Auto\n%s"),MsgToken(2076));
+			break;
+		case 31: // CheckManMc
+			if (CALCULATED_INFO.AutoMacCready)
+				_stprintf(OutBuffer,_T("Mc\n%s"),MsgToken(2077));
+			else
+				_stprintf(OutBuffer,_T("Mc\n_%s_"),MsgToken(2077));
+			break;
+
+		case 32: // AirspaceMode
+			switch(AltitudeMode) {
+				case 0:
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2029),MsgToken(184)); // Clip
+					break;
+				case 1:
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2029),MsgToken(897)); // Auto
+					break;
+				case 2:
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2029),MsgToken(139)); // Below
+					break;
+				case 3:
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2029),MsgToken(359)); // Inside
+					break;
+				case 4:
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2029),MsgToken(75)); // All Off
+					break;
+				case 5:
+				default:
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2029),MsgToken(76)); // All On
+					break;
+			}
+			break;
+
+		case 33: // SnailTrailToggleName
+			switch(TrailActive) {
+				case 0:
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2035),MsgToken(410)); // Long
+					break;
+				case 1:
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2035),MsgToken(612)); // Short
+					break;
+				case 2:
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2035),MsgToken(312)); // Full
+					break;
+				case 3:
+				default:
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2035),MsgToken(491)); // OFF
+					break;
+			}
+			break;
+
+		case 34: // MapLabelsToggleActionName
+			switch(MapWindow::DeclutterLabels) {
+				case MAPLABELS_ALLON:
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2026),MsgToken(1203)); // WPTS
+					break;
+				case MAPLABELS_ONLYWPS:
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2026),MsgToken(1204)); // TOPO
+					break;
+				case MAPLABELS_ONLYTOPO:
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2026),MsgToken(898));
+					break;
+				case MAPLABELS_ALLOFF:
+				default:
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2026),MsgToken(899));
+					break;
+			}
+			break;
+
+
+
 		default:
 			_stprintf(OutBuffer, _T("INVALID\n%d"),i);
 			break;
@@ -310,15 +497,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; 
   }
 
-#if 0 // UNUSED
-  if (_tcsstr(OutBuffer, TEXT("$(CheckNotFlying)"))) {
-    if (CALCULATED_INFO.Flying) {
-      invalid = true;
-    }
-    ReplaceInString(OutBuffer, TEXT("$(CheckNotFlying)"), TEXT(""), Size);
-	if (--items<=0) goto label_ret; // 100517
-  }
-#endif
 
   if (_tcsstr(OutBuffer, TEXT("$(CheckReplay)"))) {
     if (!ReplayLogger::IsEnabled() && GPS_INFO.MovementDetected) {
@@ -371,15 +549,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
 
-#if 0 // UNUSED
-  if (_tcsstr(OutBuffer, TEXT("$(CheckTerrain)"))) {
-    if (!CALCULATED_INFO.TerrainValid) {
-      invalid = true;
-    }
-    ReplaceInString(OutBuffer, TEXT("$(CheckTerrain)"), TEXT(""), Size);
-	if (--items<=0) goto label_ret; // 100517
-  }
-#endif
 
 
   // If it is not SIM mode, it is invalid
@@ -431,85 +600,11 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
 
-  if (_tcsstr(OutBuffer, TEXT("$(SnailTrailToggleName)"))) {
-    switch(TrailActive) {
-    case 0:
-	// LKTOKEN  _@M410_ = "Long" 
-      ReplaceInString(OutBuffer, TEXT("$(SnailTrailToggleName)"), MsgToken(410), Size);
-      break;
-    case 1:
-	// LKTOKEN  _@M612_ = "Short" 
-      ReplaceInString(OutBuffer, TEXT("$(SnailTrailToggleName)"), MsgToken(612), Size);
-      break;
-    case 2:
-	// LKTOKEN  _@M312_ = "Full" 
-      ReplaceInString(OutBuffer, TEXT("$(SnailTrailToggleName)"), MsgToken(312), Size);
-      break;
-    case 3:
-	// LKTOKEN  _@M491_ = "OFF" 
-      ReplaceInString(OutBuffer, TEXT("$(SnailTrailToggleName)"), MsgToken(491), Size);
-      break;
-    }
-	if (--items<=0) goto label_ret; // 100517
-  }
-
-
-  if (_tcsstr(OutBuffer, TEXT("$(AirSpaceToggleName)"))) {
-    switch(OnAirSpace) {
-    case 0:
-      ReplaceInString(OutBuffer, TEXT("$(AirSpaceToggleName)"), MsgToken(894), Size); // ON
-      break;
-    case 1:
-      ReplaceInString(OutBuffer, TEXT("$(AirSpaceToggleName)"), MsgToken(491), Size); // OFF
-      break;
-    }
-	if (--items<=0) goto label_ret; // 100517
-  }
-  if (_tcsstr(OutBuffer, TEXT("$(SHADING)"))) {
-    if ( Shading )
-      ReplaceInString(OutBuffer, TEXT("$(SHADING)"), MsgToken(491), Size); // OFF
-    else
-      ReplaceInString(OutBuffer, TEXT("$(SHADING)"), MsgToken(894), Size); // ON
-	if (--items<=0) goto label_ret;
-  }
-
-  if (_tcsstr(OutBuffer, TEXT("$(EnableSoundModes)"))) {
-    if (EnableSoundModes)
-      ReplaceInString(OutBuffer, TEXT("$(EnableSoundModes)"), MsgToken(491), Size);
-    else
-      ReplaceInString(OutBuffer, TEXT("$(EnableSoundModes)"), MsgToken(894), Size);
-	if (--items<=0) goto label_ret; // 100517
-  }
-
-  if (_tcsstr(OutBuffer, TEXT("$(ActiveMap)"))) {
-    if (ActiveMap)
-      ReplaceInString(OutBuffer, TEXT("$(ActiveMap)"), MsgToken(491), Size);
-    else
-      ReplaceInString(OutBuffer, TEXT("$(ActiveMap)"), MsgToken(894), Size);
-	if (--items<=0) goto label_ret; // 100517
-  }
-
 
   if (_tcsstr(OutBuffer, TEXT("$(NoSmart)"))) {
 	if (DisplayOrientation == NORTHSMART) invalid = true;
 	ReplaceInString(OutBuffer, TEXT("$(NoSmart)"), TEXT(""), Size);
 	if (--items<=0) goto label_ret; // 100517
-  }
-  if (_tcsstr(OutBuffer, TEXT("$(OVERLAY"))) {
-	if (Look8000==(Look8000_t)lxcNoOverlay)
-		ReplaceInString(OutBuffer, TEXT("$(OVERLAY)"), MsgToken(894), Size);
-	else
-		ReplaceInString(OutBuffer, TEXT("$(OVERLAY)"), MsgToken(491), Size);
-	if (--items<=0) goto label_ret; 
-  }
-  if (_tcsstr(OutBuffer, TEXT("$(Orbiter"))) {
-	if (!Orbiter)
-		ReplaceInString(OutBuffer, TEXT("$(Orbiter)"), MsgToken(894), Size);
-	else
-		ReplaceInString(OutBuffer, TEXT("$(Orbiter)"), MsgToken(491), Size);
-
-	if (!EnableThermalLocator) invalid = true;
-	if (--items<=0) goto label_ret; 
   }
 
 
@@ -525,79 +620,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
 
-  CondReplaceInString(MapWindow::zoom.AutoZoom(), OutBuffer, TEXT("$(ZoomAutoToggleActionName)"), MsgToken(418), MsgToken(897), Size);
-  CondReplaceInString(EnableTopology, OutBuffer, TEXT("$(TopologyToggleActionName)"), MsgToken(491), MsgToken(894), Size);
-  CondReplaceInString(EnableTerrain, OutBuffer, TEXT("$(TerrainToggleActionName)"), MsgToken(491), MsgToken(894), Size);
 
-  if (_tcsstr(OutBuffer, TEXT("$(MapLabelsToggleActionName)"))) {
-    switch(MapWindow::DeclutterLabels) {
-    case MAPLABELS_ALLON:
-		// LKTOKEN _@M1203_ "WPTS"
-      ReplaceInString(OutBuffer, TEXT("$(MapLabelsToggleActionName)"), 
-                      MsgToken(1203), Size);
-
-      break;
-    case MAPLABELS_ONLYWPS:
-		// LKTOKEN _@M1204_ "TOPO"
-      ReplaceInString(OutBuffer, TEXT("$(MapLabelsToggleActionName)"), 
-                      MsgToken(1204), Size);
-      break;
-    case MAPLABELS_ONLYTOPO:
-      ReplaceInString(OutBuffer, TEXT("$(MapLabelsToggleActionName)"), 
-                      MsgToken(898), Size);
-      break;
-    case MAPLABELS_ALLOFF:
-      ReplaceInString(OutBuffer, TEXT("$(MapLabelsToggleActionName)"), 
-                      MsgToken(899), Size);
-      break;
-    }
-	if (--items<=0) goto label_ret; // 100517
-  }
-
-  CondReplaceInString(CALCULATED_INFO.AutoMacCready != 0, OutBuffer, TEXT("$(MacCreadyToggleActionName)"), MsgToken(418), MsgToken(897), Size);
-  {
-  MapWindow::Mode::TModeFly userForcedMode = MapWindow::mode.UserForcedMode();
-  CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_CIRCLING, OutBuffer, TEXT("$(DispModeClimbShortIndicator)"), TEXT("_"), TEXT(""), Size);
-  CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_CRUISE, OutBuffer, TEXT("$(DispModeCruiseShortIndicator)"), TEXT("_"), TEXT(""), Size);
-  CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_NONE, OutBuffer, TEXT("$(DispModeAutoShortIndicator)"), TEXT("_"), TEXT(""), Size);
-  CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_FINAL_GLIDE, OutBuffer, TEXT("$(DispModeFinalShortIndicator)"), TEXT("_"), TEXT(""), Size);
-  }
-
-    CondReplaceInString(CALCULATED_INFO.AutoMacCready && AutoMcMode==amcFinalAndClimb, OutBuffer, TEXT("$(amcIsBoth)"), TEXT("_"), TEXT(""), Size);
-    CondReplaceInString(CALCULATED_INFO.AutoMacCready && AutoMcMode==amcFinalGlide, OutBuffer, TEXT("$(amcIsFinal)"), TEXT("_"), TEXT(""), Size);
-    CondReplaceInString(CALCULATED_INFO.AutoMacCready && AutoMcMode==amcAverageClimb, OutBuffer, TEXT("$(amcIsClimb)"), TEXT("_"), TEXT(""), Size);
-    CondReplaceInString(CALCULATED_INFO.AutoMacCready && AutoMcMode==amcEquivalent, OutBuffer, TEXT("$(amcIsEquiv)"), TEXT("_"), TEXT(""), Size);
-    CondReplaceInString(CALCULATED_INFO.AutoMacCready, OutBuffer, TEXT("$(CheckManMc)"), TEXT(""),TEXT("_"), Size);
-
-
-  if (_tcsstr(OutBuffer, TEXT("$(AirspaceMode)"))) {
-    switch(AltitudeMode) {
-    case 0:
-	// LKTOKEN  _@M184_ = "Clip" 
-      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), MsgToken(184), Size);
-      break;
-    case 1:
-      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), MsgToken(897), Size); // Auto
-      break;
-    case 2:
-	// LKTOKEN  _@M139_ = "Below" 
-      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), MsgToken(139), Size);
-      break;
-    case 3:
-	// LKTOKEN  _@M359_ = "Inside" 
-      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), MsgToken(359), Size);
-      break;
-    case 4:
-	// LKTOKEN  _@M75_ = "All OFF" 
-      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), MsgToken(75), Size);
-      break;
-    case 5:
-	// LKTOKEN  _@M76_ = "All ON" 
-      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), MsgToken(76), Size);
-      break;
-    }
-	if (--items<=0) goto label_ret; // 100517
-  }
 
   if (_tcsstr(OutBuffer, TEXT("$(PCONLY)"))) {
     #if (WINDOWSPC>0)
@@ -618,7 +641,9 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     if (--items<=0) goto label_ret;
   }
 
-extern int CustomKeyLabel[];
+
+
+  extern int CustomKeyLabel[];
   // We dont replace macro, we do replace the entire label
   a =_tcsstr(OutBuffer, TEXT("$(MM"));
   if (a != NULL) {
@@ -863,6 +888,173 @@ label_ret:
       break;
     }
 	if (--items<=0) goto label_ret;
+  }
+
+  if (_tcsstr(OutBuffer, TEXT("$(SHADING)"))) {
+    if ( Shading )
+      ReplaceInString(OutBuffer, TEXT("$(SHADING)"), MsgToken(491), Size); // OFF
+    else
+      ReplaceInString(OutBuffer, TEXT("$(SHADING)"), MsgToken(894), Size); // ON
+	if (--items<=0) goto label_ret;
+  }
+
+  if (_tcsstr(OutBuffer, TEXT("$(EnableSoundModes)"))) {
+    if (EnableSoundModes)
+      ReplaceInString(OutBuffer, TEXT("$(EnableSoundModes)"), MsgToken(491), Size);
+    else
+      ReplaceInString(OutBuffer, TEXT("$(EnableSoundModes)"), MsgToken(894), Size);
+	if (--items<=0) goto label_ret; // 100517
+  }
+
+  if (_tcsstr(OutBuffer, TEXT("$(ActiveMap)"))) {
+    if (ActiveMap)
+      ReplaceInString(OutBuffer, TEXT("$(ActiveMap)"), MsgToken(491), Size);
+    else
+      ReplaceInString(OutBuffer, TEXT("$(ActiveMap)"), MsgToken(894), Size);
+	if (--items<=0) goto label_ret; // 100517
+  }
+  if (_tcsstr(OutBuffer, TEXT("$(OVERLAY"))) {
+	if (Look8000==(Look8000_t)lxcNoOverlay)
+		ReplaceInString(OutBuffer, TEXT("$(OVERLAY)"), MsgToken(894), Size);
+	else
+		ReplaceInString(OutBuffer, TEXT("$(OVERLAY)"), MsgToken(491), Size);
+	if (--items<=0) goto label_ret; 
+  }
+  if (_tcsstr(OutBuffer, TEXT("$(Orbiter"))) {
+	if (!Orbiter)
+		ReplaceInString(OutBuffer, TEXT("$(Orbiter)"), MsgToken(894), Size);
+	else
+		ReplaceInString(OutBuffer, TEXT("$(Orbiter)"), MsgToken(491), Size);
+
+	if (!EnableThermalLocator) invalid = true;
+	if (--items<=0) goto label_ret; 
+  }
+  if (_tcsstr(OutBuffer, TEXT("$(AirSpaceToggleName)"))) {
+    switch(OnAirSpace) {
+    case 0:
+      ReplaceInString(OutBuffer, TEXT("$(AirSpaceToggleName)"), MsgToken(894), Size); // ON
+      break;
+    case 1:
+      ReplaceInString(OutBuffer, TEXT("$(AirSpaceToggleName)"), MsgToken(491), Size); // OFF
+      break;
+    }
+	if (--items<=0) goto label_ret; // 100517
+  }
+
+  #if 0 // UNUSED
+  if (_tcsstr(OutBuffer, TEXT("$(CheckNotFlying)"))) {
+    if (CALCULATED_INFO.Flying) {
+      invalid = true;
+    }
+    ReplaceInString(OutBuffer, TEXT("$(CheckNotFlying)"), TEXT(""), Size);
+	if (--items<=0) goto label_ret; // 100517
+  }
+  #endif
+  #if 0 // UNUSED
+  if (_tcsstr(OutBuffer, TEXT("$(CheckTerrain)"))) {
+    if (!CALCULATED_INFO.TerrainValid) {
+      invalid = true;
+    }
+    ReplaceInString(OutBuffer, TEXT("$(CheckTerrain)"), TEXT(""), Size);
+	if (--items<=0) goto label_ret; // 100517
+  }
+  #endif
+
+  CondReplaceInString(MapWindow::zoom.AutoZoom(), OutBuffer, TEXT("$(ZoomAutoToggleActionName)"), MsgToken(418), MsgToken(897), Size);
+  CondReplaceInString(EnableTopology, OutBuffer, TEXT("$(TopologyToggleActionName)"), MsgToken(491), MsgToken(894), Size);
+  CondReplaceInString(EnableTerrain, OutBuffer, TEXT("$(TerrainToggleActionName)"), MsgToken(491), MsgToken(894), Size);
+
+  // UNUSED
+  CondReplaceInString(CALCULATED_INFO.AutoMacCready != 0, OutBuffer, TEXT("$(MacCreadyToggleActionName)"), MsgToken(418), MsgToken(897), Size);
+
+  {
+  MapWindow::Mode::TModeFly userForcedMode = MapWindow::mode.UserForcedMode();
+  CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_CIRCLING, OutBuffer, TEXT("$(DispModeClimbShortIndicator)"), TEXT("_"), TEXT(""), Size);
+  CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_CRUISE, OutBuffer, TEXT("$(DispModeCruiseShortIndicator)"), TEXT("_"), TEXT(""), Size);
+  CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_NONE, OutBuffer, TEXT("$(DispModeAutoShortIndicator)"), TEXT("_"), TEXT(""), Size);
+  CondReplaceInString(userForcedMode == MapWindow::Mode::MODE_FLY_FINAL_GLIDE, OutBuffer, TEXT("$(DispModeFinalShortIndicator)"), TEXT("_"), TEXT(""), Size);
+  }
+
+    CondReplaceInString(CALCULATED_INFO.AutoMacCready && AutoMcMode==amcFinalAndClimb, OutBuffer, TEXT("$(amcIsBoth)"), TEXT("_"), TEXT(""), Size);
+    CondReplaceInString(CALCULATED_INFO.AutoMacCready && AutoMcMode==amcFinalGlide, OutBuffer, TEXT("$(amcIsFinal)"), TEXT("_"), TEXT(""), Size);
+    CondReplaceInString(CALCULATED_INFO.AutoMacCready && AutoMcMode==amcAverageClimb, OutBuffer, TEXT("$(amcIsClimb)"), TEXT("_"), TEXT(""), Size);
+    CondReplaceInString(CALCULATED_INFO.AutoMacCready && AutoMcMode==amcEquivalent, OutBuffer, TEXT("$(amcIsEquiv)"), TEXT("_"), TEXT(""), Size);
+    CondReplaceInString(CALCULATED_INFO.AutoMacCready, OutBuffer, TEXT("$(CheckManMc)"), TEXT(""),TEXT("_"), Size);
+
+  if (_tcsstr(OutBuffer, TEXT("$(AirspaceMode)"))) {
+    switch(AltitudeMode) {
+    case 0:
+	// LKTOKEN  _@M184_ = "Clip" 
+      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), MsgToken(184), Size);
+      break;
+    case 1:
+      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), MsgToken(897), Size); // Auto
+      break;
+    case 2:
+	// LKTOKEN  _@M139_ = "Below" 
+      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), MsgToken(139), Size);
+      break;
+    case 3:
+	// LKTOKEN  _@M359_ = "Inside" 
+      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), MsgToken(359), Size);
+      break;
+    case 4:
+	// LKTOKEN  _@M75_ = "All OFF" 
+      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), MsgToken(75), Size);
+      break;
+    case 5:
+	// LKTOKEN  _@M76_ = "All ON" 
+      ReplaceInString(OutBuffer, TEXT("$(AirspaceMode)"), MsgToken(76), Size);
+      break;
+    }
+	if (--items<=0) goto label_ret; // 100517
+  }
+
+  if (_tcsstr(OutBuffer, TEXT("$(SnailTrailToggleName)"))) {
+    switch(TrailActive) {
+    case 0:
+	// LKTOKEN  _@M410_ = "Long" 
+      ReplaceInString(OutBuffer, TEXT("$(SnailTrailToggleName)"), MsgToken(410), Size);
+      break;
+    case 1:
+	// LKTOKEN  _@M612_ = "Short" 
+      ReplaceInString(OutBuffer, TEXT("$(SnailTrailToggleName)"), MsgToken(612), Size);
+      break;
+    case 2:
+	// LKTOKEN  _@M312_ = "Full" 
+      ReplaceInString(OutBuffer, TEXT("$(SnailTrailToggleName)"), MsgToken(312), Size);
+      break;
+    case 3:
+	// LKTOKEN  _@M491_ = "OFF" 
+      ReplaceInString(OutBuffer, TEXT("$(SnailTrailToggleName)"), MsgToken(491), Size);
+      break;
+    }
+	if (--items<=0) goto label_ret; // 100517
+  }
+
+  if (_tcsstr(OutBuffer, TEXT("$(MapLabelsToggleActionName)"))) {
+    switch(MapWindow::DeclutterLabels) {
+    case MAPLABELS_ALLON:
+		// LKTOKEN _@M1203_ "WPTS"
+      ReplaceInString(OutBuffer, TEXT("$(MapLabelsToggleActionName)"), 
+                      MsgToken(1203), Size);
+
+      break;
+    case MAPLABELS_ONLYWPS:
+		// LKTOKEN _@M1204_ "TOPO"
+      ReplaceInString(OutBuffer, TEXT("$(MapLabelsToggleActionName)"), 
+                      MsgToken(1204), Size);
+      break;
+    case MAPLABELS_ONLYTOPO:
+      ReplaceInString(OutBuffer, TEXT("$(MapLabelsToggleActionName)"), 
+                      MsgToken(898), Size);
+      break;
+    case MAPLABELS_ALLOFF:
+      ReplaceInString(OutBuffer, TEXT("$(MapLabelsToggleActionName)"), 
+                      MsgToken(899), Size);
+      break;
+    }
+	if (--items<=0) goto label_ret; // 100517
   }
 
 #endif

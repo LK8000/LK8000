@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 7 , 120304
+# Release 7 , 120305
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -602,21 +602,24 @@ mode=Display1
 type=key
 data=6
 event=DeclutterLabels toggle
-label=_@M2026_\n$(MapLabelsToggleActionName)
+# label=_@M2026_\n$(MapLabelsToggleActionName)
+label=$(AC34)
 location=5
 
 mode=Display1
 type=key
 data=7
 event=TerrainTopology topology toggle
-label=_@M2027_\n$(TopologyToggleActionName)
+# label=_@M2027_\n$(TopologyToggleActionName)
+label=$(AC21)
 location=6
 
 mode=Display1
 type=key
 data=8
 event=TerrainTopology terrain toggle
-label=_@M2028_\n$(TerrainToggleActionName)
+# label=_@M2028_\n$(TerrainToggleActionName)
+label=$(AC22)
 location=7
 
 mode=Display1
@@ -624,7 +627,8 @@ type=key
 data=9
 event=AirSpace toggle
 event=Mode default
-label=_@M2029_\n$(AirSpaceToggleName)
+# label=_@M2029_\n$(AirSpaceToggleName)
+label=$(AC19)
 location=8
 
 mode=Display1
@@ -684,28 +688,32 @@ mode=Display2
 type=key
 data=6
 event=UserDisplayModeForce forceclimb
-label=DspMode\n$(DispModeClimbShortIndicator)_@M2031_&(DispModeClimbShortIndicator)
+# label=DspMode\n$(DispModeClimbShortIndicator)_@M2031_&(DispModeClimbShortIndicator)
+label=$(AC23)
 location=5
 
 mode=Display2
 type=key
 data=7
 event=UserDisplayModeForce forcecruise
-label=DspMode\n$(DispModeCruiseShortIndicator)_@M2032_&(DispModeCruiseShortIndicator)
+# label=DspMode\n$(DispModeCruiseShortIndicator)_@M2032_&(DispModeCruiseShortIndicator)
+label=$(AC24)
 location=6
 
 mode=Display2
 type=key
 data=8
 event=UserDisplayModeForce forcefinal
-label=DspMode\n$(DispModeFinalShortIndicator)_@M2033_&(DispModeFinalShortIndicator)
+# label=DspMode\n$(DispModeFinalShortIndicator)_@M2033_&(DispModeFinalShortIndicator)
+label=$(AC26)
 location=7
 
 mode=Display2
 type=key
 data=9
 event=UserDisplayModeForce unforce
-label=DspMode\n$(DispModeAutoShortIndicator)_@M2034_&(DispModeAutoShortIndicator)
+# label=DspMode\n$(DispModeAutoShortIndicator)_@M2034_&(DispModeAutoShortIndicator)
+label=$(AC25)
 location=8
 
 mode=Display2
@@ -767,7 +775,8 @@ type=key
 data=6
 event=Zoom auto show
 event=Zoom auto toggle
-label=_@M2009_\n$(ZoomAutoToggleActionName)
+# label=_@M2009_\n$(ZoomAutoToggleActionName)
+label=$(AC20)
 location=5
 
 mode=Display3
@@ -775,7 +784,8 @@ type=key
 data=7
 event=SnailTrail show
 event=SnailTrail toggle
-label=_@M2035_\n$(SnailTrailToggleName)
+# label=_@M2035_\n$(SnailTrailToggleName)
+label=$(AC33)
 location=6
 
 mode=Display3
@@ -872,14 +882,16 @@ data=8
 event=Mode default
 event=ActiveMap show
 event=ActiveMap toggle
-label=_@M2044_\n$(ActiveMap)
+# label=_@M2044_\n$(ActiveMap)
+label=$(AC16)
 location=7
 
 mode=Config1
 type=key
 data=9
 event=AirspaceDisplayMode toggle
-label=_@M2029_\n$(AirspaceMode)
+# label=_@M2029_\n$(AirspaceMode)
+label=$(AC32)
 location=8
 
 mode=Config1
@@ -1059,7 +1071,8 @@ data=0
 event=Sounds show
 event=Sounds toggle
 event=Mode default
-label=_@M2055_\n$(EnableSoundModes)
+# label=_@M2055_\n$(EnableSoundModes)
+label=$(AC15)
 location=9
 
 mode=Config3
@@ -1226,7 +1239,8 @@ type=key
 data=0
 event=Service ORBITER
 event=Mode default
-label=_@M2065_\n$(Orbiter)
+# label=_@M2065_\n$(Orbiter)
+label=$(AC18)
 location=9
 
 mode=Info2
@@ -1341,7 +1355,8 @@ type=key
 data=APP1
 event=MacCready auto final
 event=Mode default
-label=Auto\n$(amcIsFinal)_@M2033_&(amcIsFinal)
+# label=Auto\n$(amcIsFinal)_@M2033_&(amcIsFinal)
+label=$(AC28)
 location=1
 
 mode=MC
@@ -1349,7 +1364,8 @@ type=key
 data=APP2
 event=MacCready auto climb
 event=Mode default
-label=Auto\n$(amcIsClimb)_@M2075_&(amcIsClimb)
+# label=Auto\n$(amcIsClimb)_@M2075_&(amcIsClimb)
+label=$(AC29)
 location=2
 
 mode=MC
@@ -1357,7 +1373,8 @@ type=key
 data=APP3
 event=MacCready auto equiv
 event=Mode default
-label=Auto\n$(amcIsEquiv)_@M2076_&(amcIsEquiv)
+# label=Auto\n$(amcIsEquiv)_@M2076_&(amcIsEquiv)
+label=$(AC30)
 location=3
 
 mode=MC
@@ -1365,7 +1382,8 @@ type=key
 data=APP4
 event=MacCready auto off
 event=Mode default
-label=Mc\n$(CheckManMc)_@M2077_&(CheckManMc)
+# label=Mc\n$(CheckManMc)_@M2077_&(CheckManMc)
+label=$(AC31)
 location=4
 
 mode=MC
@@ -1453,7 +1471,8 @@ type=key
 data=APP4
 event=MacCready auto on
 event=Mode MC
-label=Mc\n$(CheckManMc)_@M2077_&(CheckManMc)
+# label=Mc\n$(CheckManMc)_@M2077_&(CheckManMc)
+label=$(AC31)
 location=4
 
 mode=MMC
@@ -1515,7 +1534,8 @@ type=key
 data=APP1
 event=Mode default
 event=Service OVERLAYS
-label=_@M2079_\n$(OVERLAY)
+# label=_@M2079_\n$(OVERLAY)
+label=$(AC17)
 location=1
 
 mode=ScreenMode
@@ -1536,7 +1556,8 @@ mode=ScreenMode
 type=key
 data=APP4
 event=Service SHADING
-label=_@M2080_\n$(SHADING)
+# label=_@M2080_\n$(SHADING)
+label=$(AC14)
 location=4
 
 mode=ScreenMode
