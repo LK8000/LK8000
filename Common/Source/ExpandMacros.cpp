@@ -39,120 +39,210 @@ static void CondReplaceInString(bool Condition, TCHAR *Buffer,
     ReplaceInString(Buffer, Macro, FalseText, Size);
 }
 
+//
+// TODO CHECK BUFFER SIZE, which is 100 (set in Buttons).
+//
 bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
-  // ToDo, check Buffer Size
-  bool invalid = false;
+
+  TCHAR *a;
   _tcsncpy(OutBuffer, In, Size);
   OutBuffer[Size-1] = '\0';
-  TCHAR *a;
-  short items=1;
 
-  if (_tcsstr(OutBuffer, TEXT("$(")) == NULL) return false;
+  if (_tcsstr(OutBuffer, TEXT("$(")) == NULL) {
+	return false;
+  }
+
+  short items=1;
+  bool invalid = false;
+
+  // Accelerator for entire label replacement- only one macro per label accepted
+  a =_tcsstr(OutBuffer, TEXT("$(AC"));
+  if (a != NULL) {
+	TCHAR tbuf[20];
+	short i;
+	i= (*(a+4)-48)*10;
+	i+= *(a+5)-48;
+	LKASSERT(i>=0 && i<30);
+
+	switch(i) {
+		case 0:	// LOCKMODE
+			_tcscpy(OutBuffer,_T(""));	// default is button invisible
+			if (LockMode(0)) {	// query availability
+				if (LockMode(1)) // query status
+					_tcscpy(OutBuffer,MsgToken(965)); // UNLOCK\nSCREEN
+				else
+					_tcscpy(OutBuffer,MsgToken(966)); // LOCK\nSCREEN
+
+				if (!LockMode(3)) invalid=true; // button not usable
+			}
+			break;
+
+		case 1:	// Pan Supertoggle  PanModeStatus  mode=pan location=8
+			if ( MapWindow::mode.AnyPan() )
+				_stprintf(OutBuffer, _T("%s%s"),MsgToken(2004),MsgToken(491));	// OFF
+			else
+				_stprintf(OutBuffer, _T("%s%s"),MsgToken(2004),MsgToken(894));	// ON
+			break;
+
+		case 2:	// Pan Supertoggle  PanModeStatus  mode=ScreenMode location=8
+			if ( MapWindow::mode.AnyPan() )
+				_stprintf(OutBuffer, _T("%s\n%s"),MsgToken(2082),MsgToken(491));	// OFF
+			else
+				_stprintf(OutBuffer, _T("%s\n%s"),MsgToken(2082),MsgToken(894));	// ON
+			break;
+
+		case 3: // DISABLED
+			_tcscpy(OutBuffer,MsgToken(2023)); // Reserved
+			invalid=true;
+			break;
+
+		case 4: // MacCreadyValue + 2078
+			_stprintf(tbuf,_T("%2.1lf"), iround(LIFTMODIFY*MACCREADY*10)/10.0);
+			_stprintf(OutBuffer, _T("%s\n%s"), MsgToken(2078), tbuf);
+			break;
+
+		case 5:
+			if (CALCULATED_INFO.AutoMacCready)  {
+				switch(AutoMcMode) {
+					case amcFinalGlide:
+						_stprintf(tbuf,_T("%s"), MsgToken(1681));
+						break;
+					case amcAverageClimb:
+						_stprintf(tbuf,_T("%s"), MsgToken(1682));
+						break;
+					case amcEquivalent:
+						_stprintf(tbuf,_T("%s"), MsgToken(1683));
+						break;
+					case amcFinalAndClimb:
+						if (CALCULATED_INFO.FinalGlide)
+							_stprintf(tbuf,_T("%s"), MsgToken(1681));
+						else
+							_stprintf(tbuf,_T("%s"), MsgToken(1682));
+						break;
+					default:
+						// LKTOKEN _@M1202_ "Auto"
+						_stprintf(tbuf,_T("%s"), MsgToken(1202));
+						break;
+				}
+			} else {
+				// LKTOKEN _@M1201_ "Man"
+				_stprintf(tbuf,_T("%s"), MsgToken(1201));
+			}
+			_stprintf(OutBuffer,_T("Mc %s\n%2.1lf"), tbuf,iround(LIFTMODIFY*MACCREADY*10)/10.0);
+
+			break;
+
+		case 6: // WaypointNext
+			invalid = !ValidTaskPoint(ActiveWayPoint+1);
+			if (!ValidTaskPoint(ActiveWayPoint+2))
+				_tcscpy(OutBuffer,MsgToken(801)); // Waypoint Finish
+			else
+				_tcscpy(OutBuffer,MsgToken(802)); // Waypoint Next
+			break;
+
+		case 7: // WaypointPrevious
+
+			if (ActiveWayPoint==1) {
+				invalid = !ValidTaskPoint(ActiveWayPoint-1);
+				_tcscpy(OutBuffer,MsgToken(804)); // Waypoint Start
+			} else if (EnableMultipleStartPoints) {
+				invalid = !ValidTaskPoint(0);
+
+				if (ActiveWayPoint==0)
+					_tcscpy(OutBuffer,_T("StartPnt\nCycle"));
+				else
+					_tcscpy(OutBuffer,MsgToken(803)); // Waypoint Previous
+			} else {
+				invalid = (ActiveWayPoint<=0);
+				_tcscpy(OutBuffer,MsgToken(803)); // Waypoint Previous
+			}
+			break;
+
+		case 8: // RealTask  check for Task reset
+
+			if (! (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1))) {
+				invalid=true;
+			}
+
+			_tcscpy(OutBuffer,MsgToken(2019)); // Task reset
+			break;
+
+		case 9: // TerrainVisible for ChangeBack topology color
+			if (CALCULATED_INFO.TerrainValid && EnableTerrain && !LKVarioBar) {
+				invalid = true;
+			}
+			_tcscpy(OutBuffer,MsgToken(2037)); // Change topo back
+			break;
+
+		case 10: // TOGGLEHBAR HBARAVAILABLE for Toggle HBAR button
+
+			if (!GPS_INFO.BaroAltitudeAvailable) {
+				_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2045),MsgToken(1068)); // Nav by HBAR
+				invalid=true;
+			} else {
+				if (EnableNavBaroAltitude)
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2045),MsgToken(1174)); // Nav by HGPS
+				else
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2045),MsgToken(1068)); // Nav by HBAR
+			}
+			break;
+
+		case 11: // SIM MENU SIMONLY
+			if (SIMMODE)
+				_tcscpy(OutBuffer,MsgToken(2074)); // SIM MENU
+			else
+				_tcscpy(OutBuffer,_T(""));
+			break;
+
+		case 12: // VisualGlideToggleName
+
+			switch(VisualGlide) {
+				case 0:
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2030),MsgToken(894)); // VisualG ON
+					break;
+				case 1:
+					if (ExtendedVisualGlide)
+						_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2030),MsgToken(1205)); // VisualG moving
+					else
+						_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2030),MsgToken(491)); // VisualG OFF
+					break;
+				case 2:
+				default:
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2030),MsgToken(491)); // VisualG OFF
+					break;
+			}
+			break;
+
+		case 13:
+			switch(UseTotalEnergy) {
+				case 0:
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2115),MsgToken(894)); // TE ON
+					break;
+				case 1:
+				default:
+					_stprintf(OutBuffer,_T("%s\n%s"),MsgToken(2115),MsgToken(491)); // TE OFF
+					break;
+			}
+			break;
+
+ 
+		default:
+			_stprintf(OutBuffer, _T("INVALID\n%d"),i);
+			break;
+	}
+	goto label_ret;
+  } // ACcelerator
+	
+  // No accelerator? First check if we have a second macro embedded in string
+
   a =_tcsstr(OutBuffer, TEXT("&("));
   if (a != NULL) {
 	*a=_T('$');
 	items=2;
   }
 
-  if (_tcsstr(OutBuffer, TEXT("$(LOCKMODE"))) {
-	if (LockMode(0)) {	// query availability
-		TCHAR tbuf[10];
-		_tcscpy(tbuf,_T(""));
-		ReplaceInString(OutBuffer, TEXT("$(LOCKMODE)"), tbuf, Size);
-		if (LockMode(1)) // query status
-			_tcscpy(OutBuffer,MsgToken(965)); // UNLOCK\nSCREEN
-		else
-			_tcscpy(OutBuffer,MsgToken(966)); // LOCK\nSCREEN
-		if (!LockMode(3)) invalid=true; // button not usable
-	} else {
-		// This will make the button invisible
-		_tcscpy(OutBuffer,_T(""));
-	}
-	if (--items<=0) goto label_ret;
-  }
+  // Then go for one-by-one match search, slow
 
-  if (_tcsstr(OutBuffer, TEXT("$(MacCreadyValue)"))) { // 091214
-
-	TCHAR tbuf[10];
-	_stprintf(tbuf,_T("%2.1lf"), iround(LIFTMODIFY*MACCREADY*10)/10.0);
-	ReplaceInString(OutBuffer, TEXT("$(MacCreadyValue)"), tbuf, Size);
-	if (--items<=0) goto label_ret; // 100517
-  }
-  if (_tcsstr(OutBuffer, TEXT("$(MacCreadyMode)"))) { // 091214
-
-	TCHAR tbuf[10];
-	if (CALCULATED_INFO.AutoMacCready)  {
-		switch(AutoMcMode) {
-			case amcFinalGlide:
-				_stprintf(tbuf,_T("%s"), MsgToken(1681));
-				break;
-			case amcAverageClimb:
-				_stprintf(tbuf,_T("%s"), MsgToken(1682));
-				break;
-			case amcEquivalent:
-				_stprintf(tbuf,_T("%s"), MsgToken(1683));
-				break;
-			case amcFinalAndClimb:
-				if (CALCULATED_INFO.FinalGlide)
-					_stprintf(tbuf,_T("%s"), MsgToken(1681));
-				else
-					_stprintf(tbuf,_T("%s"), MsgToken(1682));
-				break;
-			default:
-				// LKTOKEN _@M1202_ "Auto"
-				_stprintf(tbuf,_T("%s"), MsgToken(1202));
-				break;
-		}
-	} else
-		// LKTOKEN _@M1201_ "Man"
-		_stprintf(tbuf,_T("%s"), MsgToken(1201));
-	ReplaceInString(OutBuffer, TEXT("$(MacCreadyMode)"), tbuf, Size);
-	if (--items<=0) goto label_ret; // 100517
-  }
-
-    if (_tcsstr(OutBuffer, TEXT("$(WaypointNext)"))) {
-      // Waypoint\nNext
-      invalid = !ValidTaskPoint(ActiveWayPoint+1);
-      CondReplaceInString(!ValidTaskPoint(ActiveWayPoint+2), 
-                          OutBuffer,
-                          TEXT("$(WaypointNext)"), 
-	// LKTOKEN  _@M801_ = "Waypoint\nFinish" 
-                          MsgToken(801), 
-	// LKTOKEN  _@M802_ = "Waypoint\nNext" 
-                          MsgToken(802), Size);
-	if (--items<=0) goto label_ret; // 100517
-      
-    } else
-    if (_tcsstr(OutBuffer, TEXT("$(WaypointPrevious)"))) {
-      if (ActiveWayPoint==1) {
-        invalid = !ValidTaskPoint(ActiveWayPoint-1);
-        ReplaceInString(OutBuffer, TEXT("$(WaypointPrevious)"), 
-	// LKTOKEN  _@M804_ = "Waypoint\nStart" 
-                        MsgToken(804), Size);
-	if (--items<=0) goto label_ret; // 100517
-      } else if (EnableMultipleStartPoints) {
-        invalid = !ValidTaskPoint(0);
-        CondReplaceInString((ActiveWayPoint==0), 
-                            OutBuffer, 
-                            TEXT("$(WaypointPrevious)"), 
-	// LKTOKEN  _@M803_ = "Waypoint\nPrevious" 
-                            TEXT("StartPoint\nCycle"), MsgToken(803), Size);
-	if (--items<=0) goto label_ret; // 100517
-      } else {
-        invalid = (ActiveWayPoint<=0);
-	// LKTOKEN  _@M803_ = "Waypoint\nPrevious" 
-        ReplaceInString(OutBuffer, TEXT("$(WaypointPrevious)"), MsgToken(803), Size); 
-	if (--items<=0) goto label_ret; // 100517
-      }
-    }
-
-  if (_tcsstr(OutBuffer, TEXT("$(RealTask)"))) {
-	if (! (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1))) {
-		invalid=true;
-	}
-	ReplaceInString(OutBuffer, TEXT("$(RealTask)"), TEXT(""), Size);
-	if (--items<=0) goto label_ret; // 100517
-  }
 
 
   if (_tcsstr(OutBuffer, TEXT("$(AdvanceArmed)"))) {
@@ -211,20 +301,24 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; // 100517
   }
 
-  if (_tcsstr(OutBuffer, TEXT("$(CheckFlying)"))) { // 100203
+
+  if (_tcsstr(OutBuffer, TEXT("$(CheckFlying)"))) {
     if (!CALCULATED_INFO.Flying) {
       invalid = true;
     }
     ReplaceInString(OutBuffer, TEXT("$(CheckFlying)"), TEXT(""), Size);
-	if (--items<=0) goto label_ret; // 100517
+	if (--items<=0) goto label_ret; 
   }
-  if (_tcsstr(OutBuffer, TEXT("$(CheckNotFlying)"))) { // 100223
+
+#if 0 // UNUSED
+  if (_tcsstr(OutBuffer, TEXT("$(CheckNotFlying)"))) {
     if (CALCULATED_INFO.Flying) {
       invalid = true;
     }
     ReplaceInString(OutBuffer, TEXT("$(CheckNotFlying)"), TEXT(""), Size);
 	if (--items<=0) goto label_ret; // 100517
   }
+#endif
 
   if (_tcsstr(OutBuffer, TEXT("$(CheckReplay)"))) {
     if (!ReplayLogger::IsEnabled() && GPS_INFO.MovementDetected) {
@@ -276,6 +370,8 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     ReplaceInString(OutBuffer, TEXT("$(CheckFLARM)"), TEXT(""), Size);
 	if (--items<=0) goto label_ret; // 100517
   }
+
+#if 0 // UNUSED
   if (_tcsstr(OutBuffer, TEXT("$(CheckTerrain)"))) {
     if (!CALCULATED_INFO.TerrainValid) {
       invalid = true;
@@ -283,14 +379,8 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     ReplaceInString(OutBuffer, TEXT("$(CheckTerrain)"), TEXT(""), Size);
 	if (--items<=0) goto label_ret; // 100517
   }
+#endif
 
-  if (_tcsstr(OutBuffer, TEXT("$(TerrainVisible)"))) {
-    if (CALCULATED_INFO.TerrainValid && EnableTerrain && !LKVarioBar) {
-      invalid = true;
-    }
-    ReplaceInString(OutBuffer, TEXT("$(TerrainVisible)"), TEXT(""), Size);
-	if (--items<=0) goto label_ret; // 100517
-  }
 
   // If it is not SIM mode, it is invalid
   if (_tcsstr(OutBuffer, TEXT("$(OnlyInSim)"))) {
@@ -307,33 +397,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	ReplaceInString(OutBuffer, TEXT("$(OnlyInFly)"), TEXT(""), Size);
 	if (--items<=0) goto label_ret; // 100517
   }
-  if (_tcsstr(OutBuffer, TEXT("$(DISABLED)"))) {
-	invalid = true;
-	ReplaceInString(OutBuffer, TEXT("$(DISABLED)"), TEXT(""), Size);
-	if (--items<=0) goto label_ret; // 100517
-  }
 
-  if (_tcsstr(OutBuffer, TEXT("$(HBARAVAILABLE)"))) {
-    if (!GPS_INFO.BaroAltitudeAvailable) {
-      invalid = true;
-    }
-    ReplaceInString(OutBuffer, TEXT("$(HBARAVAILABLE)"), TEXT(""), Size);
-	if (--items<=0) goto label_ret; 
-  }
-  if (_tcsstr(OutBuffer, TEXT("$(TOGGLEHBAR)"))) {
-	if (!GPS_INFO.BaroAltitudeAvailable) {
-		// LKTOKEN _@M1068_ "HBAR"
-		ReplaceInString(OutBuffer, TEXT("$(TOGGLEHBAR)"), MsgToken(1068), Size);
-	} else {
-		if (EnableNavBaroAltitude)
-			// LKTOKEN _@M1174_ "HGPS"
-			ReplaceInString(OutBuffer, TEXT("$(TOGGLEHBAR)"), MsgToken(1174), Size);
-		else
-			// LKTOKEN _@M1068_ "HBAR"
-			ReplaceInString(OutBuffer, TEXT("$(TOGGLEHBAR)"), MsgToken(1068), Size);
-	}
-	if (--items<=0) goto label_ret; // 100517
-  }
 
   if (_tcsstr(OutBuffer, TEXT("$(WCSpeed)"))) {
 	TCHAR tbuf[10];
@@ -361,17 +425,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret;
   }
 
-  // This will make the button invisible
-  if (_tcsstr(OutBuffer, TEXT("$(SIMONLY"))) {
-	if (SIMMODE) {
-		TCHAR tbuf[10];
-		_tcscpy(tbuf,_T(""));
-		ReplaceInString(OutBuffer, TEXT("$(SIMONLY)"), tbuf, Size);
-	} else {
-		_tcscpy(OutBuffer,_T(""));
-	}
-	if (--items<=0) goto label_ret;
-  }
 
   if (_tcsstr(OutBuffer, TEXT("$(LoggerActive)"))) {
 	CondReplaceInString(LoggerActive, OutBuffer, TEXT("$(LoggerActive)"), MsgToken(670), MsgToken(657), Size); // Stop Start
@@ -399,39 +452,8 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     }
 	if (--items<=0) goto label_ret; // 100517
   }
-// VENTA3 VisualGlide
-  if (_tcsstr(OutBuffer, TEXT("$(VisualGlideToggleName)"))) {
-    switch(VisualGlide) {
-    case 0:
-      ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), MsgToken(894), Size); // ON
-      break;
-    case 1:
-	if (ExtendedVisualGlide)
-		// LKTOKEN _@M1205_ "Moving"
-		ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), MsgToken(1205), Size);
-	else
-      		ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), MsgToken(491), Size); // OFF
-      break;
-    case 2:
-      ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), MsgToken(491), Size); // OFF
-      break;
-    }
-	if (--items<=0) goto label_ret; // 100517
-  }
 
-  if (_tcsstr(OutBuffer, TEXT("$(UseTE)"))) {
-    switch(UseTotalEnergy) {
-    case 0:
-      ReplaceInString(OutBuffer, TEXT("$(UseTE)"), MsgToken(894), Size); // ON
-      break;
-    case 1:
-      ReplaceInString(OutBuffer, TEXT("$(UseTE)"), MsgToken(491), Size); // OFF
-      break;
-    }
-	if (--items<=0) goto label_ret;
-  }
 
-// VENTA3 AirSpace event
   if (_tcsstr(OutBuffer, TEXT("$(AirSpaceToggleName)"))) {
     switch(OnAirSpace) {
     case 0:
@@ -449,14 +471,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     else
       ReplaceInString(OutBuffer, TEXT("$(SHADING)"), MsgToken(894), Size); // ON
 	if (--items<=0) goto label_ret;
-  }
-
-  if (_tcsstr(OutBuffer, TEXT("$(PanModeStatus)"))) {
-    if ( MapWindow::mode.AnyPan() )
-      ReplaceInString(OutBuffer, TEXT("$(PanModeStatus)"), MsgToken(491), Size); // OFF
-    else
-      ReplaceInString(OutBuffer, TEXT("$(PanModeStatus)"), MsgToken(894), Size); // ON
-	if (--items<=0) goto label_ret; // 100517
   }
 
   if (_tcsstr(OutBuffer, TEXT("$(EnableSoundModes)"))) {
@@ -659,3 +673,196 @@ label_ret:
   return invalid;
 }
 
+//
+// UNUSED MACROS, part of accelerator now
+//
+#if 0
+  if (_tcsstr(OutBuffer, TEXT("$(LOCKMODE"))) {
+	if (LockMode(0)) {	// query availability
+		TCHAR tbuf[10];
+		_tcscpy(tbuf,_T(""));
+		ReplaceInString(OutBuffer, TEXT("$(LOCKMODE)"), tbuf, Size);
+		if (LockMode(1)) // query status
+			_tcscpy(OutBuffer,MsgToken(965)); // UNLOCK\nSCREEN
+		else
+			_tcscpy(OutBuffer,MsgToken(966)); // LOCK\nSCREEN
+		if (!LockMode(3)) invalid=true; // button not usable
+	} else {
+		// This will make the button invisible
+		_tcscpy(OutBuffer,_T(""));
+	}
+	if (--items<=0) goto label_ret;
+  }
+
+
+  if (_tcsstr(OutBuffer, TEXT("$(PanModeStatus)"))) {
+    if ( MapWindow::mode.AnyPan() )
+      ReplaceInString(OutBuffer, TEXT("$(PanModeStatus)"), MsgToken(491), Size); // OFF
+    else
+      ReplaceInString(OutBuffer, TEXT("$(PanModeStatus)"), MsgToken(894), Size); // ON
+	if (--items<=0) goto label_ret; // 100517
+  }
+
+  if (_tcsstr(OutBuffer, TEXT("$(DISABLED)"))) {
+	invalid = true;
+	ReplaceInString(OutBuffer, TEXT("$(DISABLED)"), TEXT(""), Size);
+	if (--items<=0) goto label_ret; // 100517
+  }
+
+  if (_tcsstr(OutBuffer, TEXT("$(MacCreadyValue)"))) { // 091214
+
+	TCHAR tbuf[10];
+	_stprintf(tbuf,_T("%2.1lf"), iround(LIFTMODIFY*MACCREADY*10)/10.0);
+	ReplaceInString(OutBuffer, TEXT("$(MacCreadyValue)"), tbuf, Size);
+	if (--items<=0) goto label_ret; // 100517
+  }
+  if (_tcsstr(OutBuffer, TEXT("$(MacCreadyMode)"))) { // 091214
+
+	TCHAR tbuf[10];
+	if (CALCULATED_INFO.AutoMacCready)  {
+		switch(AutoMcMode) {
+			case amcFinalGlide:
+				_stprintf(tbuf,_T("%s"), MsgToken(1681));
+				break;
+			case amcAverageClimb:
+				_stprintf(tbuf,_T("%s"), MsgToken(1682));
+				break;
+			case amcEquivalent:
+				_stprintf(tbuf,_T("%s"), MsgToken(1683));
+				break;
+			case amcFinalAndClimb:
+				if (CALCULATED_INFO.FinalGlide)
+					_stprintf(tbuf,_T("%s"), MsgToken(1681));
+				else
+					_stprintf(tbuf,_T("%s"), MsgToken(1682));
+				break;
+			default:
+				// LKTOKEN _@M1202_ "Auto"
+				_stprintf(tbuf,_T("%s"), MsgToken(1202));
+				break;
+		}
+	} else
+		// LKTOKEN _@M1201_ "Man"
+		_stprintf(tbuf,_T("%s"), MsgToken(1201));
+	ReplaceInString(OutBuffer, TEXT("$(MacCreadyMode)"), tbuf, Size);
+	if (--items<=0) goto label_ret; // 100517
+  }
+
+    if (_tcsstr(OutBuffer, TEXT("$(WaypointNext)"))) {
+      // Waypoint\nNext
+      invalid = !ValidTaskPoint(ActiveWayPoint+1);
+      CondReplaceInString(!ValidTaskPoint(ActiveWayPoint+2), 
+                          OutBuffer,
+                          TEXT("$(WaypointNext)"), 
+	// LKTOKEN  _@M801_ = "Waypoint\nFinish" 
+                          MsgToken(801), 
+	// LKTOKEN  _@M802_ = "Waypoint\nNext" 
+                          MsgToken(802), Size);
+	if (--items<=0) goto label_ret; // 100517
+      
+    } else
+    if (_tcsstr(OutBuffer, TEXT("$(WaypointPrevious)"))) {
+      if (ActiveWayPoint==1) {
+        invalid = !ValidTaskPoint(ActiveWayPoint-1);
+        ReplaceInString(OutBuffer, TEXT("$(WaypointPrevious)"), 
+	// LKTOKEN  _@M804_ = "Waypoint\nStart" 
+                        MsgToken(804), Size);
+	if (--items<=0) goto label_ret; // 100517
+      } else if (EnableMultipleStartPoints) {
+        invalid = !ValidTaskPoint(0);
+        CondReplaceInString((ActiveWayPoint==0), 
+                            OutBuffer, 
+                            TEXT("$(WaypointPrevious)"), 
+	// LKTOKEN  _@M803_ = "Waypoint\nPrevious" 
+                            TEXT("StartPoint\nCycle"), MsgToken(803), Size);
+	if (--items<=0) goto label_ret; // 100517
+      } else {
+        invalid = (ActiveWayPoint<=0);
+	// LKTOKEN  _@M803_ = "Waypoint\nPrevious" 
+        ReplaceInString(OutBuffer, TEXT("$(WaypointPrevious)"), MsgToken(803), Size); 
+	if (--items<=0) goto label_ret; // 100517
+      }
+    }
+
+  if (_tcsstr(OutBuffer, TEXT("$(RealTask)"))) {
+	if (! (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1))) {
+		invalid=true;
+	}
+	ReplaceInString(OutBuffer, TEXT("$(RealTask)"), TEXT(""), Size);
+	if (--items<=0) goto label_ret; // 100517
+  }
+
+  if (_tcsstr(OutBuffer, TEXT("$(TerrainVisible)"))) {
+    if (CALCULATED_INFO.TerrainValid && EnableTerrain && !LKVarioBar) {
+      invalid = true;
+    }
+    ReplaceInString(OutBuffer, TEXT("$(TerrainVisible)"), TEXT(""), Size);
+	if (--items<=0) goto label_ret; // 100517
+  }
+
+  if (_tcsstr(OutBuffer, TEXT("$(HBARAVAILABLE)"))) {
+    if (!GPS_INFO.BaroAltitudeAvailable) {
+      invalid = true;
+    }
+    ReplaceInString(OutBuffer, TEXT("$(HBARAVAILABLE)"), TEXT(""), Size);
+	if (--items<=0) goto label_ret; 
+  }
+  if (_tcsstr(OutBuffer, TEXT("$(TOGGLEHBAR)"))) {
+	if (!GPS_INFO.BaroAltitudeAvailable) {
+		// LKTOKEN _@M1068_ "HBAR"
+		ReplaceInString(OutBuffer, TEXT("$(TOGGLEHBAR)"), MsgToken(1068), Size);
+	} else {
+		if (EnableNavBaroAltitude)
+			// LKTOKEN _@M1174_ "HGPS"
+			ReplaceInString(OutBuffer, TEXT("$(TOGGLEHBAR)"), MsgToken(1174), Size);
+		else
+			// LKTOKEN _@M1068_ "HBAR"
+			ReplaceInString(OutBuffer, TEXT("$(TOGGLEHBAR)"), MsgToken(1068), Size);
+	}
+	if (--items<=0) goto label_ret; // 100517
+  }
+
+
+  if (_tcsstr(OutBuffer, TEXT("$(SIMONLY"))) {
+	if (SIMMODE) {
+		TCHAR tbuf[10];
+		_tcscpy(tbuf,_T(""));
+		ReplaceInString(OutBuffer, TEXT("$(SIMONLY)"), tbuf, Size);
+	} else {
+		_tcscpy(OutBuffer,_T(""));
+	}
+	if (--items<=0) goto label_ret;
+  }
+
+  if (_tcsstr(OutBuffer, TEXT("$(VisualGlideToggleName)"))) {
+    switch(VisualGlide) {
+    case 0:
+      ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), MsgToken(894), Size); // ON
+      break;
+    case 1:
+	if (ExtendedVisualGlide)
+		// LKTOKEN _@M1205_ "Moving"
+		ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), MsgToken(1205), Size);
+	else
+      		ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), MsgToken(491), Size); // OFF
+      break;
+    case 2:
+      ReplaceInString(OutBuffer, TEXT("$(VisualGlideToggleName)"), MsgToken(491), Size); // OFF
+      break;
+    }
+	if (--items<=0) goto label_ret; // 100517
+  }
+
+  if (_tcsstr(OutBuffer, TEXT("$(UseTE)"))) {
+    switch(UseTotalEnergy) {
+    case 0:
+      ReplaceInString(OutBuffer, TEXT("$(UseTE)"), MsgToken(894), Size); // ON
+      break;
+    case 1:
+      ReplaceInString(OutBuffer, TEXT("$(UseTE)"), MsgToken(491), Size); // OFF
+      break;
+    }
+	if (--items<=0) goto label_ret;
+  }
+
+#endif

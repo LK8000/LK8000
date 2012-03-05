@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 7 , 120229
+# Release 7 , 120304
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -231,7 +231,8 @@ mode=pan
 type=key
 data=9
 event=Pan supertoggle
-label=_@M2004_$(PanModeStatus)
+# label=_@M2004_$(PanModeStatus)
+label=$(AC01)
 location=8
 
 mode=pan
@@ -362,14 +363,16 @@ mode=Nav1
 type=key
 data=8
 event=AdjustWaypoint previous
-label=$(WaypointPrevious)
+# label=$(WaypointPrevious)
+label=$(AC07)
 location=7
 
 mode=Nav1
 type=key
 data=9
 event=AdjustWaypoint next
-label=$(WaypointNext)
+# label=$(WaypointNext)
+label=$(AC06)
 location=8
 
 mode=Nav1
@@ -446,7 +449,8 @@ type=key
 data=8
 event=Mode default
 event=ResetTask
-label=_@M2019_$(RealTask)
+# label=_@M2019_$(RealTask)
+label=$(AC08)
 location=7
 
 mode=Nav2
@@ -514,7 +518,8 @@ mode=Nav3
 type=key
 data=6
 event=Null
-label=_@M2023_$(DISABLED)
+# label=_@M2023_$(DISABLED)
+label=$(AC03)
 location=5
 
 mode=Nav3
@@ -536,13 +541,15 @@ mode=Nav3
 type=key
 data=9
 event=Run ext2
-label=_@M2023_$(DISABLED)
+# label=_@M2023_$(DISABLED)
+label=$(AC03)
 location=8
 
 mode=Nav3
 type=key
 data=0
-label=_@M2023_$(DISABLED)
+# label=_@M2023_$(DISABLED)
+label=$(AC03)
 location=9
 
 mode=Nav3
@@ -625,7 +632,8 @@ type=key
 data=0
 event=VisualGlide toggle
 event=Mode default
-label=_@M2030_\n$(VisualGlideToggleName)
+# label=_@M2030_\n$(VisualGlideToggleName)
+label=$(AC12)
 location=9
 
 mode=Display1
@@ -782,7 +790,8 @@ mode=Display3
 type=key
 data=9
 event=ChangeBack
-label=_@M2037_$(TerrainVisible)
+# label=_@M2037_$(TerrainVisible)
+label=$(AC09)
 location=8
 
 
@@ -816,7 +825,8 @@ type=key
 data=APP1
 event=Service LOCKMODE
 event=Mode default
-label=$(LOCKMODE)
+# label=$(LOCKMODE)
+label=$(AC00)
 location=1
 
 mode=Config1
@@ -878,7 +888,8 @@ data=0
 event=BaroAltitude show
 event=BaroAltitude toggle
 event=Mode default
-label=_@M2045_\n$(TOGGLEHBAR)&(HBARAVAILABLE)
+# label=_@M2045_\n$(TOGGLEHBAR)&(HBARAVAILABLE)
+label=$(AC10)
 location=9
 
 mode=Config1
@@ -1014,7 +1025,8 @@ type=key
 data=6
 event=Service TOTALEN
 event=Mode default
-label=_@M2115_\n$(UseTE)
+# label=_@M2115_\n$(UseTE)
+label=$(AC13)
 location=5
 
 mode=Config3
@@ -1205,7 +1217,8 @@ mode=Info2
 type=key
 data=9
 event=Mode default
-label=_@M2023_$(DISABLED)
+# label=_@M2023_$(DISABLED)
+label=$(AC03)
 location=8
 
 mode=Info2
@@ -1285,7 +1298,8 @@ mode=Menu
 type=key
 data=8
 event=Mode MC
-label=Mc ($(MacCreadyMode))\n&(MacCreadyValue)
+# label=Mc ($(MacCreadyMode))\n&(MacCreadyValue)
+label=$(AC05)
 location=7
 
 mode=Menu
@@ -1314,7 +1328,8 @@ mode=Menu
 type=key
 data=12
 event=Mode SIMMENU
-label=_@M2074_$(SIMONLY)
+# label=_@M2074_$(SIMONLY)
+label=$(AC11)
 location=11
 
 # -------------
@@ -1389,7 +1404,8 @@ mode=MC
 type=key
 data=0
 event=Mode default
-label=_@M2078_\n$(MacCreadyValue)
+# label=_@M2078_\n$(MacCreadyValue)
+label=$(AC04)
 location=9
 
 mode=MC
@@ -1472,7 +1488,8 @@ mode=MMC
 type=key
 data=0
 event=Mode default
-label=_@M2078_\n$(MacCreadyValue)
+# label=_@M2078_\n$(MacCreadyValue)
+label=$(AC04)
 location=9
 
 mode=MMC
@@ -1547,7 +1564,8 @@ mode=ScreenMode
 type=key
 data=9
 event=Pan supertoggle
-label=_@M2082_\n$(PanModeStatus)
+# label=_@M2082_\n$(PanModeStatus)
+label=$(AC02)
 location=8
 
 mode=ScreenMode
@@ -1844,7 +1862,8 @@ location=4
 mode=FlarmStealth
 type=key
 data=6
-label=_@M2023_$(DISABLED)
+# label=_@M2023_$(DISABLED)
+label=$(AC03)
 location=5
 
 mode=FlarmStealth
@@ -1864,13 +1883,15 @@ location=7
 mode=FlarmStealth
 type=key
 data=9
-label=_@M2023_$(DISABLED)
+# label=_@M2023_$(DISABLED)
+label=$(AC03)
 location=8
 
 mode=FlarmStealth
 type=key
 data=0
-label=_@M2023_$(DISABLED)
+# label=_@M2023_$(DISABLED)
+label=$(AC03)
 location=9
 
 mode=FlarmStealth
@@ -1999,7 +2020,8 @@ location=4
 mode=FlarmSig
 type=key
 data=6
-label=Radar\nMode$(DISABLED)
+# label=Radar\nMode$(DISABLED)
+label=$(AC03)
 location=5
 
 mode=FlarmSig
