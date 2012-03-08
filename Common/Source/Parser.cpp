@@ -172,6 +172,7 @@ TCHAR  szDevice[254];
 TCHAR  szMsg[254];
 
     GetBaroDeviceName(DeviceIdx,szDevice);
+    LKASSERT((_tcslen(szStdMsg)+_tcslen(szDevice))<254);
     _stprintf(szMsg,TEXT("%s\r\n"),szStdMsg);
     _tcscat(szMsg,szDevice);
     DoStatusMessage(szMsg);
