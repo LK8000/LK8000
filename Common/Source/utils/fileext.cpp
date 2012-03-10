@@ -25,6 +25,7 @@
 Utf8File::Utf8File()
 : fp(NULL)
 {
+	path[0] = _T('\0');
 } // Utf8File()
 
 
@@ -66,7 +67,7 @@ bool Utf8File::Open(const TCHAR* fileName, Mode ioMode)
       return(false);
   }
 
-  _tcsncat(path, fileName, countof(path));
+  _tcsncpy(path, fileName, countof(path));
 
   fp = _tfopen(fileName, fmode);
 
@@ -92,14 +93,16 @@ bool Utf8File::Open(const TCHAR* fileName, Mode ioMode)
 ///
 bool Utf8File::ReadLn(TCHAR* unicode, int maxChars)
 {
+  bool bRet = false;
+
   if (fp == NULL)
-    return(false);
+    goto Exit;
 
   // in worst case each char can be encoded in 4 bytes
-  char cstr[4 * maxChars];
+  char* cstr = new char[4 * maxChars];
 
   if (fgets(cstr, countof(cstr), fp) == NULL)
-    return(false);
+	  goto Exit;
 
   // strip new-line separators
   size_t len = strlen(cstr);
@@ -117,7 +120,10 @@ bool Utf8File::ReadLn(TCHAR* unicode, int maxChars)
     convErReported = true;
   }
 
-  return(true);
+  bRet = true;
+Exit:
+  delete[] cstr;
+  return bRet;
 } // ReadLn()
 
 
@@ -135,7 +141,7 @@ void Utf8File::WriteLn(const TCHAR* unicode)
   if (unicode != NULL) {
     size_t len = _tcslen(unicode);
     // in worst case each char can be encoded in 4 bytes
-    char cstr[4 * len + 1];
+    char *cstr = new char[4 * len + 1];
 
     // (conversion and file error is ignored now, maybe in future it should
     // throw exception)
@@ -148,6 +154,8 @@ void Utf8File::WriteLn(const TCHAR* unicode)
       StartupStore(_T("Cannot wite to file '%s'%s"), path, NEWLINE);
       writeErReported = true;
     }
+
+	delete[] cstr;
   }
 
   fputc('\n', fp);
