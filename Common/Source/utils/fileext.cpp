@@ -25,6 +25,7 @@
 Utf8File::Utf8File()
 : fp(NULL)
 {
+  path[0] = _T('\0');
 } // Utf8File()
 
 
@@ -66,7 +67,7 @@ bool Utf8File::Open(const TCHAR* fileName, Mode ioMode)
       return(false);
   }
 
-  _tcsncat(path, fileName, countof(path));
+  _tcsncpy(path, fileName, countof(path));
 
   fp = _tfopen(fileName, fmode);
 
