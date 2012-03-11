@@ -643,7 +643,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
 
 
-  extern int CustomKeyLabel[];
+  extern unsigned int CustomKeyLabel[];
   // We dont replace macro, we do replace the entire label
   a =_tcsstr(OutBuffer, TEXT("$(MM"));
   if (a != NULL) {
