@@ -1604,10 +1604,8 @@ It's zoom out to 5km zoom range, and it will keep zoom in as you're approaching 
 After you reach the waypoint the previous Cruise zoom restored. And as soon you reach 5km to the next waypoint the autozoom start working again.
 
 @1220
-[Bottom Bar configuration]
-Enable or disable each bottom bar stripe while rotating navboxes.
-If all bars are disabled, NAV1 is always shown automatically.
-During thermal mode the THR 0 infobar is always shown, also.
+[Bottom Bar Configuration]
+Turn on/off each bottom bar stripe while rotating navboxes.  At least one (not counting TRM0) must be on.  TRM0 can only be seen in thermal mode.
 
 @1221
 [InfoPages rotation configuration]
