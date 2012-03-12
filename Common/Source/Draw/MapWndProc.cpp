@@ -249,6 +249,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 	SelectObject(hdcQuickDrawWindow, (HBITMAP)hQuickDrawBitMap);
 	#endif
 
+/* Moved to ChangeScreen
 	#if CHANGESCREEN
 	if (!THREADRUNNING) {
 		#if TESTBENCH
@@ -257,6 +258,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 		MapWindow::ResumeDrawingThread();
 	}
 	#endif
+*/
 
 	break;
 

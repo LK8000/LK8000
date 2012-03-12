@@ -89,8 +89,13 @@ void ReinitScreen(void) {
   // This is needed to hide any menu currently on, as first thing.
   InputEvents::setMode(TEXT("default"));
 
-  // MapWndProc will get a WM_SIZE message and then resume the thread.
+  #if TESTBENCH
+  StartupStore(_T("... ChangeScreen suspending Draw Thread\n"));
+  #endif
   MapWindow::SuspendDrawingThread();
+
+
+  // MapWndProc will get a WM_SIZE 
 
   //
   // Detect the current screen geometry
@@ -238,6 +243,10 @@ void ReinitScreen(void) {
   Reset_Single_DoInits(MDI_COMPASS);
   Reset_Single_DoInits(MDI_LOOKABLEND);
 
+  #if TESTBENCH
+  StartupStore(_T("... ChangeScreen resuming Draw Thread\n"));
+  #endif
+  MapWindow::ResumeDrawingThread();
 
   ShowWindow(hWndMainWindow, SW_SHOWNORMAL);
   BringWindowToTop(hWndMainWindow);
