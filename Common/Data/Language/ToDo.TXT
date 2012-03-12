@@ -150,3 +150,5 @@ _@M2223_ "Color+\nterrain"
 _@M2224_ "Color-\nterrain"
 _@M2225_ "Free\nFlight"
 
+Changed HELP 1220
+Changed MSG M16
