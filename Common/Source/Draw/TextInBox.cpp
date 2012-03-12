@@ -388,7 +388,7 @@ RECT MapWindow::LabelBlockCoords[SCREENVSLOTS+1][MAXVLABELBLOCKS+1];
 
 // this slots char array is simply loading the slot number. 
 // A nibble should be enough, but no problems to use 8 bits.
-char * MapWindow::slot;
+char * MapWindow::slot=NULL;
 
 //
 // Returns true if label can be printed, not overlapping other labels
@@ -414,6 +414,8 @@ bool MapWindow::checkLabelBlock(RECT *rc) {
 		slotbottom[j]=i;
 	}
 	slotbottom[SCREENVSLOTS-1]=ScreenSizeY;
+
+	if (slot!=NULL) free(slot);
 
 	slot=(char *)malloc((ScreenSizeY+1)*sizeof(char));
         LKASSERT(slot!=NULL);
@@ -492,10 +494,10 @@ bool MapWindow::checkLabelBlock(RECT *rc) {
   return true;
 }
 
+// This is used only on shutdown, to free the malloc. 
 void MapWindow::FreeSlot(){
 	free(slot);
 	slot=NULL;
-	DoInit[MDI_CHECKLABELBLOCK]=true;
 }
 
 #endif

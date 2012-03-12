@@ -28,7 +28,6 @@ void Reset_All_DoInits(void) {
   StartupStore(_T(".... Reset_All_DoInits\n"));
   #endif
 
-  MapWindow::FreeSlot(); // Prevent Memory Leak
   for (int i=MDI_FIRST_DOINIT; i<=MDI_LAST_DOINIT; i++) {
 	DoInit[i]=true;
   }
