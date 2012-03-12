@@ -19,44 +19,44 @@
  typedef enum {
 	MDI_MASTER,			// #1
 	MDI_FIRST_DOINIT,
-	MDI_DORANGEWAYPOINTLIST,
-	MDI_DOCALCULATIONSSLOW,
-	MDI_HEADING,
-	MDI_AVERAGE30S,
-	MDI_DOAUTOQNH,
-	MDI_DOAIRSPACES,	// draw thread
-	MDI_DOCOMMON,		// draw
-	MDI_DOTRAFFIC,		// draw
-	MDI_DETECTFREEFLYING,
-	MDI_MCREADYCACHE,
-	MDI_DOTHERMALHISTORY,	// draw 
-	MDI_BATTERYMANAGER,
-	MDI_EVENTINVERTCOLOR,
-	MDI_GETLOCALPATH,
-	MDI_LKSOUND,
-	MDI_DRAWTRI,
-	MDI_DRAWASPNEAREST,
-	MDI_DRAWCOMMON,
-	MDI_DRAWFLARMTRAFFIC,
-	MDI_DRAWINFOPAGE,
-	MDI_WRITEINFO,
-	MDI_DRAWLOOK8000,
-	MDI_DRAWMAPSPACE,
-	MDI_DRAWNEAREST,
-	MDI_DRAWTARGET,
-	MDI_DRAWTHERMALHISTORY,
-	MDI_DRAWTRAFFIC,
-	MDI_DRAWVARIO,
-	MDI_MAPWNDPROC,
-	MDI_GETOVERTARGETHEADER,	// needed when changing language
-	MDI_PROCESSVIRTUALKEY,		// resolution change
-	MDI_ONPAINTLISTITEM,		// resolution change
-	MDI_DRAWMAPSCALE,		// resolution change
-	MDI_MAPWPLABELADD,		// resolution change
-	MDI_CHECKLABELBLOCK,		// resolution change
+	MDI_DORANGEWAYPOINTLIST,	// wp file change
+	MDI_DOCALCULATIONSSLOW,		// force recalc bestalt, optimizer, validFix check
+	MDI_HEADING,			// time change
+	MDI_AVERAGE30S,			// time change
+	MDI_DOAUTOQNH,			// force qnh search for 10 s
+	MDI_DOAIRSPACES,		// asp file change
+	MDI_DOCOMMON,			// generic reset
+	MDI_DOTRAFFIC,			// FLARM trigger
+	MDI_DETECTFREEFLYING,		// force detect FF 
+	MDI_MCREADYCACHE,		// Reset cache for MC
+	MDI_DOTHERMALHISTORY,		// Reset thermal history storage
+	MDI_BATTERYMANAGER,		// Reset warnings on battery power
+	MDI_EVENTINVERTCOLOR,		// OutlinedTp  , to be checked TODO
+	MDI_GETLOCALPATH,		// system path change!
+	MDI_LKSOUND,			// localpath changed
+	MDI_DRAWTRI,			// screen change
+	MDI_DRAWASPNEAREST,		// screen change, font change
+	MDI_DRAWCOMMON,			// screen change, font change
+	MDI_DRAWFLARMTRAFFIC,		// screen change
+	MDI_DRAWINFOPAGE,		// screen change
+	MDI_WRITEINFO,			// screen change
+	MDI_DRAWLOOK8000,		// screen change, font change
+	MDI_DRAWMAPSPACE,		// screen change
+	MDI_DRAWNEAREST,		// screen change, font change
+	MDI_DRAWTARGET,			// screen change
+	MDI_DRAWTHERMALHISTORY,		// screen change, font change
+	MDI_DRAWTRAFFIC,		// screen change, font change
+	MDI_DRAWVARIO,			// screen change
+	MDI_MAPWNDPROC,			// unused
+	MDI_GETOVERTARGETHEADER,	// language change
+	MDI_PROCESSVIRTUALKEY,		// screen change
+	MDI_ONPAINTLISTITEM,		// screen change, font change
+	MDI_DRAWMAPSCALE,		// screen change
+	MDI_MAPWPLABELADD,		// screen change
+	MDI_CHECKLABELBLOCK,		// screen change
 	MDI_LKPROCESS,			// unit change
-	MDI_COMPASS,			// resolution change
-	MDI_LOOKABLEND,			// resolution change, drawlook ablend
+	MDI_COMPASS,			// screen change
+	MDI_LOOKABLEND,			// screen change, drawlook ablend
 	MDI_LAST_DOINIT,		
  } MDI_t;
 
