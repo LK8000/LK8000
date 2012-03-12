@@ -188,9 +188,6 @@ void ReinitScreen(void) {
 
 #endif
 
-  Reset_All_DoInits(); // this is wrong, we should be less drastic!!
-  DoInit[MDI_DRAWLOOK8000]=false;
-
   GetClientRect(hWndMainWindow, &rc);
 #if (WINDOWSPC>0)
   rc.left = 0;
@@ -217,7 +214,30 @@ void ReinitScreen(void) {
   LockTerrainDataGraphics();
   CloseTerrainRenderer();
   UnlockTerrainDataGraphics();
-  DoInit[MDI_DRAWLOOK8000]=true;
+
+  Reset_Single_DoInits(MDI_DRAWLOOK8000);
+  Reset_Single_DoInits(MDI_DRAWTRI);
+  Reset_Single_DoInits(MDI_DRAWASPNEAREST);
+  Reset_Single_DoInits(MDI_DRAWCOMMON);
+  Reset_Single_DoInits(MDI_DRAWFLARMTRAFFIC);
+  Reset_Single_DoInits(MDI_DRAWINFOPAGE);
+  Reset_Single_DoInits(MDI_WRITEINFO);
+  Reset_Single_DoInits(MDI_DRAWLOOK8000);
+  Reset_Single_DoInits(MDI_DRAWMAPSPACE);
+  Reset_Single_DoInits(MDI_DRAWNEAREST);
+  Reset_Single_DoInits(MDI_DRAWTARGET);
+  Reset_Single_DoInits(MDI_DRAWTHERMALHISTORY);
+  Reset_Single_DoInits(MDI_DRAWTRAFFIC);
+  Reset_Single_DoInits(MDI_DRAWVARIO);
+  Reset_Single_DoInits(MDI_PROCESSVIRTUALKEY);
+  Reset_Single_DoInits(MDI_ONPAINTLISTITEM);
+  Reset_Single_DoInits(MDI_DRAWMAPSCALE);
+  Reset_Single_DoInits(MDI_MAPWPLABELADD);
+  Reset_Single_DoInits(MDI_CHECKLABELBLOCK);
+  Reset_Single_DoInits(MDI_LKPROCESS);
+  Reset_Single_DoInits(MDI_COMPASS);
+  Reset_Single_DoInits(MDI_LOOKABLEND);
+
 
   ShowWindow(hWndMainWindow, SW_SHOWNORMAL);
   BringWindowToTop(hWndMainWindow);

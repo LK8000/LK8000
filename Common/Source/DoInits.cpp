@@ -37,9 +37,6 @@ void Reset_All_DoInits(void) {
 
 
 void Reset_Single_DoInits(int position) {
-  #if TESTBENCH
-  StartupStore(_T(".... Reset_Single_DoInits : %d\n"),position);
-  #endif
 
   if (!Valid_DoInit_Position(position)) {
 	#if TESTBENCH
