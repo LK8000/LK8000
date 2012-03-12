@@ -96,6 +96,16 @@
  #define FASTPAN		1	// bitblt panning 
 
  #define HIRESB			1	// HIRES bitmaps
+
+/* BB_CHANGES makes some Bottom Bar-related changes:
+ * 1. 3/11/2012: If user disables all non-TRM0 bottom bars, then (1) give a
+ *    warning & (2) make it as if the user enabled NAV1.
+ *    adds MSG token 16 (replacing unused one).
+ *    changes HELP token 1220.
+ * Other BB changes are to follow soon in later commits.
+ * Eric Carden, March 11, 2012
+ */
+ #define BB_CHANGES
  
  //#define ASCIILOGBOOK // old logbook format encoded in ASCII (new is UTF8)
 
