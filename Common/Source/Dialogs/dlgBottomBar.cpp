@@ -209,6 +209,19 @@ void dlgBottomBarShowModal(void){
   }
 
   if (changed) {
+
+    #ifdef BB_CHANGES
+    if (!(ConfBB1 || ConfBB2 || ConfBB3 || ConfBB4 || ConfBB5 || 
+        ConfBB6 || ConfBB7 || ConfBB8 || ConfBB9)) {
+      MessageBoxX (hWndMainWindow,
+                   gettext(TEXT("_@M16_")), // can't disable all non-TRM0
+                   TEXT(""), MB_OK);        // bottom bar stripes
+      // Automatically enable NAV1 bottom bar
+      ConfBB1 = true;
+      SetToRegistry(szRegistryConfBB1, (DWORD)(ConfBB1));
+    }
+    #endif // BB_CHANGES
+
     #if OLDPROFILES
     StoreRegistry();
     #endif
@@ -216,6 +229,7 @@ void dlgBottomBarShowModal(void){
     MessageBoxX (hWndMainWindow,
                  gettext(TEXT("_@M1607_")), // bottom bar config saved
                  TEXT(""), MB_OK);
+
   }
 
 
