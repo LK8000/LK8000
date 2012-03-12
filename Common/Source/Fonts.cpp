@@ -232,24 +232,24 @@ void InitialiseFontsHardCoded(RECT rc,
 
 void DeInitialiseFonts(void) {
 
-  DeleteObject(TitleWindowFont);
-  DeleteObject(MapWindowFont);
-  DeleteObject(MapWindowBoldFont);
-  DeleteObject(CDIWindowFont);
-  DeleteObject(MapLabelFont);
-  DeleteObject(StatisticsFont);
+  if (TitleWindowFont)	 DeleteObject(TitleWindowFont);
+  if (MapWindowFont)	 DeleteObject(MapWindowFont);
+  if (MapWindowBoldFont) DeleteObject(MapWindowBoldFont);
+  if (CDIWindowFont)	 DeleteObject(CDIWindowFont);
+  if (MapLabelFont)	 DeleteObject(MapLabelFont);
+  if (StatisticsFont)	 DeleteObject(StatisticsFont);
 
 }
 
 void InitialiseFonts(RECT rc)
 { //this routine must be called only at start/restart b/c there are many pointers to these fonts
 
-  DeleteObject(TitleWindowFont);
-  DeleteObject(MapWindowFont);
-  DeleteObject(MapWindowBoldFont);
-  DeleteObject(CDIWindowFont);
-  DeleteObject(MapLabelFont);
-  DeleteObject(StatisticsFont);
+  if (TitleWindowFont)	 DeleteObject(TitleWindowFont);
+  if (MapWindowFont)	 DeleteObject(MapWindowFont);
+  if (MapWindowBoldFont) DeleteObject(MapWindowBoldFont);
+  if (CDIWindowFont)	 DeleteObject(CDIWindowFont);
+  if (MapLabelFont)	 DeleteObject(MapLabelFont);
+  if (StatisticsFont)	 DeleteObject(StatisticsFont);
 
   LOGFONT hardTitleWindowLogFont;
   LOGFONT hardMapWindowLogFont;
@@ -352,7 +352,7 @@ void propGetFontSettingsFromString(TCHAR *Buffer1, LOGFONT* lplf)
     //FW_BOLD   700
     //FW_HEAVY  900
 
-  ASSERT(lplf != NULL);
+  LKASSERT(lplf != NULL);
   memset ((void *)&lfTmp, 0, sizeof (LOGFONT));
 
   if ((pToken = strtok_r(Buffer, TEXT(","), &pWClast)) == NULL) return;
