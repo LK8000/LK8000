@@ -1,0 +1,4 @@
+* LX8000 polar for: H-206 Hornet
+* MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3, WingArea[m2]
+ 345, 60, 90, -0.64, 150, -1.59, 190, -2.91, 9.8
+
