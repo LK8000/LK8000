@@ -338,6 +338,25 @@ passthrough:
 			LKSW_ForceFreeFlightRestart=true;
 		}
 		return true;
+	case ckCustomMenu1:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		extern void dlgCustomMenuShowModal(void);
+		InputEvents::eventMode(_T("MYMODE"));
+		return true;
+	case ckTaskCalc:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		InputEvents::eventCalculator(NULL);
+		return true;
+	case ckTaskTarget:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		InputEvents::eventSetup(_T("Target"));
+		return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		FailStore(_T("ERR-726 INVALID CUSTOMKEY=%d"),ckeymode);
@@ -398,6 +417,9 @@ CustomKeyLabel[38]=2060;	// Nearest airspace
 CustomKeyLabel[39]=2222;	// OLC analysis
 CustomKeyLabel[40]=2224;	// Change- terrain colors
 CustomKeyLabel[41]=2225;	// free flight
+CustomKeyLabel[42]=2131;	// custom menu
+CustomKeyLabel[43]=2013;	// task calc
+CustomKeyLabel[44]=2020;	// task target
 
 }
 

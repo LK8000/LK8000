@@ -75,6 +75,9 @@ void AddCustomKeyList( DataFieldEnum* dfe) {
     dfe->addEnumText(MsgToken(1740)); // OLC Analysis
     dfe->addEnumText(MsgToken(1774)); // Change- Terrain colors
     dfe->addEnumText(MsgToken(1754)); // free flight
+    dfe->addEnumText(MsgToken(1787)); // custom menu
+    dfe->addEnumText(MsgToken(685));  // Task Calculator
+    dfe->addEnumText(MsgToken(684));  // Target (task..)
 
     dfe->Sort(0);
 

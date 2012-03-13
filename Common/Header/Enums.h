@@ -134,6 +134,9 @@ typedef enum{
 	ckOlcAnalysis,
 	ckTerrainColorsBack,
 	ckForceFreeFlightRestart,
+	ckCustomMenu1,
+	ckTaskCalc,
+	ckTaskTarget,
 	ckTOP,
 } CustomKeyMode_t;
 
