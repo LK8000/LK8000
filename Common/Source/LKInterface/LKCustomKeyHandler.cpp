@@ -320,7 +320,11 @@ bool CustomKeyHandler(const int key) {
 		#ifndef DISABLEAUDIO
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 		#endif
-		LKSW_ForceFreeFlightRestart=true;
+		if (CALCULATED_INFO.Flying == FALSE) {
+			DoStatusMessage(_T("NO TAKEOFF!"));
+		} else {
+			LKSW_ForceFreeFlightRestart=true;
+		}
 		return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));

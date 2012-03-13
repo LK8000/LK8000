@@ -76,7 +76,7 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
 	StartupStore(_T("... Forced FreeFlight Restart!\n"));
 	#endif
 	DoStatusMessage(MsgToken(1452),NULL,false);  // LKTOKEN  _@M1452_ = "Free flight detected"
-	goto backtrue;
+	goto confirmbacktrue;
   }
 
   if (ISPARAGLIDER) {
@@ -216,6 +216,7 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
   #endif
   DoStatusMessage(gettext(TEXT("_@M1452_")),NULL,false);  // LKTOKEN  _@M1452_ = "Free flight detected"
 
+  confirmbacktrue:
   // Always sound
   if (EnableSoundModes) {
 	LKSound(_T("LK_FREEFLIGHT.WAV"));
