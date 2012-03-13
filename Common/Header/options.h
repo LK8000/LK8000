@@ -68,6 +68,11 @@
 				// automatically.
 				// COMMENT BEFORE PUBLIC RELEASE, NO EXCEPTIONS: INTERNAL USE ONLY!
 
+ #define USELKASSERT	1	// Enable LKASSERT checks and diagnostic messages at runtime.
+				// For TESTBENCH and beta versions this should be always ENABLED.
+				// Only in official stable versions it should be disabled.
+
+
  #if TESTBENCH
  #define CPUSTATS		1	// Show cpu stats in inverted text mode inside map mode
  #endif
