@@ -2931,6 +2931,7 @@ mode=MYMODE
 type=key
 data=6
 event=MyMenu 5
+event=Mode default
 label=$(MM5)
 location=5
 
@@ -2938,6 +2939,7 @@ mode=MYMODE
 type=key
 data=7
 event=MyMenu 6
+event=Mode default
 label=$(MM6)
 location=6
 
@@ -2946,6 +2948,7 @@ type=key
 data=8
 label=$(MM7)
 event=MyMenu 7
+event=Mode default
 location=7
 
 mode=MYMODE
@@ -2953,6 +2956,7 @@ type=key
 data=9
 label=$(MM8)
 event=MyMenu 8
+event=Mode default
 location=8
 
 mode=MYMODE
@@ -2967,6 +2971,7 @@ type=key
 data=11
 label=$(MM9)
 event=MyMenu 9
+event=Mode default
 location=10
 
 mode=MYMODE
@@ -2974,5 +2979,6 @@ type=key
 data=12
 label=$(MM0)
 event=MyMenu 10
+event=Mode default
 location=11
 
