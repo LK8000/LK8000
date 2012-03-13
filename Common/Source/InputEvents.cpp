@@ -1368,41 +1368,44 @@ void InputEvents::eventMyMenu(const TCHAR *misc) {
 
   unsigned int i, ckeymode;
   i=_wtoi(misc);
-  LKASSERT(i>0 && i<9);
+  LKASSERT(i>0 && i<11);
 
   // test mode only!
   switch(i) {
 	case 1:
-		ckeymode=CustomKeyModeCenter;
+		ckeymode=CustomMenu1;
                 break;
         case 2:
-                ckeymode=CustomKeyModeLeft;
+                ckeymode=CustomMenu2;
                 break;
         case 3:
-                ckeymode=CustomKeyModeRight;
+                ckeymode=CustomMenu3;
                 break;
         case 4:
-                ckeymode=CustomKeyModeAircraftIcon;
+                ckeymode=CustomMenu4;
                 break;
         case 5:
-                ckeymode=CustomKeyModeLeftUpCorner;
+                ckeymode=CustomMenu5;
                 break;
         case 6:
-                ckeymode=CustomKeyModeRightUpCorner;
+                ckeymode=CustomMenu6;
                 break;
         case 7:
-                ckeymode=CustomKeyModeCenterScreen;
+                ckeymode=CustomMenu7;
                 break;
 	case 8:
-		ckeymode=ckDisabled;
+		ckeymode=CustomMenu8;
+		break;
+	case 9:
+		ckeymode=CustomMenu9;
+		break;
+	case 10:
+		ckeymode=CustomMenu10;
 		break;
 	default:
 		ckeymode=ckDisabled;
 		break;
   }
-  #if TESTBENCH
-  StartupStore(_T("... event MyMenu <%s> ckey=%d\n"),misc,ckeymode);
-  #endif
   CustomKeyHandler(ckeymode+1000);
   return;
 

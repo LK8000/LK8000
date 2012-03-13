@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 7 , 120305
+# Release 7 , 120314
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -573,8 +573,8 @@ location=11
 mode=Display1
 type=key
 data=APP1
-event=Service TERRCOL
-label=_@M2116_
+event=Null
+label=
 location=1
 
 mode=Display1
@@ -650,8 +650,8 @@ location=10
 mode=Display1
 type=key
 data=12
-label=Custom\nMenu
-event=Mode MYMODE
+label=
+event=Null
 location=11
 
 # -------------
@@ -833,10 +833,8 @@ location=11
 mode=Config1
 type=key
 data=APP1
-event=Service LOCKMODE
-event=Mode default
-# label=$(LOCKMODE)
-label=$(AC00)
+event=Null
+label=
 location=1
 
 mode=Config1
@@ -1296,16 +1294,16 @@ location=4
 mode=Menu
 type=key
 data=6
-event=Mode default
-event=MarkLocation
-label=_@M2070_
+event=Mode MYMODE
+label=_@M2131_
 location=5
 
 mode=Menu
 type=key
 data=7
-event=Mode TrueWind
-label=_@M2071_
+event=Mode default
+event=MarkLocation
+label=_@M2070_
 location=6
 
 mode=Menu
@@ -1431,7 +1429,8 @@ type=key
 data=11
 event=MacCready auto both
 event=Mode default
-label=Auto\n$(amcIsBoth)_@M2117_&(amcIsBoth)
+# label=Auto\n$(amcIsBoth)_@M2117_&(amcIsBoth)
+label=$(AC27)
 location=10
 
 mode=MC
@@ -2905,14 +2904,12 @@ type=key
 data=APP1
 label=$(MM1)
 event=MyMenu 1
-event=Mode default
 location=1
 
 mode=MYMODE
 type=key
 data=APP2
 event=MyMenu 2
-event=Mode default
 label=$(MM2)
 location=2
 
@@ -2920,7 +2917,6 @@ mode=MYMODE
 type=key
 data=APP3
 event=MyMenu 3
-event=Mode default
 label=$(MM3)
 location=3
 
@@ -2928,7 +2924,6 @@ mode=MYMODE
 type=key
 data=APP4
 event=MyMenu 4
-event=Mode default
 label=$(MM4)
 location=4
 
@@ -2936,7 +2931,6 @@ mode=MYMODE
 type=key
 data=6
 event=MyMenu 5
-event=Mode default
 label=$(MM5)
 location=5
 
@@ -2944,7 +2938,6 @@ mode=MYMODE
 type=key
 data=7
 event=MyMenu 6
-event=Mode default
 label=$(MM6)
 location=6
 
@@ -2953,7 +2946,6 @@ type=key
 data=8
 label=$(MM7)
 event=MyMenu 7
-event=Mode default
 location=7
 
 mode=MYMODE
@@ -2961,7 +2953,6 @@ type=key
 data=9
 label=$(MM8)
 event=MyMenu 8
-event=Mode default
 location=8
 
 mode=MYMODE
@@ -2974,16 +2965,14 @@ location=9
 mode=MYMODE
 type=key
 data=11
-label=
-event=Mode default
-event=MyMenu 10
+label=$(MM9)
+event=MyMenu 9
 location=10
 
 mode=MYMODE
 type=key
 data=12
-label=
-event=Mode default
-event=MyMenu 11
+label=$(MM0)
+event=MyMenu 10
 location=11
 

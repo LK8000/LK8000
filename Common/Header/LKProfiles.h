@@ -297,6 +297,16 @@ TCHAR szRegistryWayPointFile[]=  TEXT("WPFile");
 TCHAR szRegistryWaypointsOutOfRange[] = TEXT("WaypointsOutOfRange2");
 TCHAR szRegistryWindCalcSpeed[] =          TEXT("WindCalcSpeed");
 TCHAR szRegistryWindCalcTime[] =          TEXT("WindCalcTime");
+TCHAR szRegistryCustomMenu1[] = _T("CustomMenu1");
+TCHAR szRegistryCustomMenu2[] = _T("CustomMenu2");
+TCHAR szRegistryCustomMenu3[] = _T("CustomMenu3");
+TCHAR szRegistryCustomMenu4[] = _T("CustomMenu4");
+TCHAR szRegistryCustomMenu5[] = _T("CustomMenu5");
+TCHAR szRegistryCustomMenu6[] = _T("CustomMenu6");
+TCHAR szRegistryCustomMenu7[] = _T("CustomMenu7");
+TCHAR szRegistryCustomMenu8[] = _T("CustomMenu8");
+TCHAR szRegistryCustomMenu9[] = _T("CustomMenu9");
+TCHAR szRegistryCustomMenu10[] = _T("CustomMenu10");
 //
 //
 //
@@ -513,6 +523,16 @@ extern TCHAR szRegistryWayPointFile[];
 extern TCHAR szRegistryWaypointsOutOfRange[];
 extern TCHAR szRegistryWindCalcSpeed[];
 extern TCHAR szRegistryWindCalcTime[];
+extern TCHAR szRegistryCustomMenu1[];
+extern TCHAR szRegistryCustomMenu2[];
+extern TCHAR szRegistryCustomMenu3[];
+extern TCHAR szRegistryCustomMenu4[];
+extern TCHAR szRegistryCustomMenu5[];
+extern TCHAR szRegistryCustomMenu6[];
+extern TCHAR szRegistryCustomMenu7[];
+extern TCHAR szRegistryCustomMenu8[];
+extern TCHAR szRegistryCustomMenu9[];
+extern TCHAR szRegistryCustomMenu10[];
 //
 //
 #endif

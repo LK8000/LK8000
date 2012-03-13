@@ -13,7 +13,7 @@
 #include "LKMapWindow.h"
 #include "LKProfiles.h"
 
-void AddConfList( DataFieldEnum* dfe);
+extern void AddCustomKeyList( DataFieldEnum* dfe);
 
 static bool changed = false;
 static WndForm *wf=NULL;
@@ -52,7 +52,7 @@ static void setVariables(void) {
   if (wp) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
-	AddConfList(dfe);
+	AddCustomKeyList(dfe);
 	dfe->Set(CustomKeyModeLeftUpCorner);
 	wp->RefreshDisplay();
   }
@@ -60,7 +60,7 @@ static void setVariables(void) {
   if (wp) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
-	AddConfList(dfe);
+	AddCustomKeyList(dfe);
 	dfe->Set(CustomKeyModeRightUpCorner);
 	dfe->Set(CustomKeyModeRightUpCorner);
 	// if (ISPARAGLIDER) wp->SetReadOnly(true); 2.3q also PGs can use it
@@ -72,7 +72,7 @@ static void setVariables(void) {
   if (wp) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
-	AddConfList(dfe);
+	AddCustomKeyList(dfe);
 	dfe->Set(CustomKeyModeCenter);
 	wp->RefreshDisplay();
   }
@@ -81,7 +81,7 @@ static void setVariables(void) {
   if (wp) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
-	AddConfList(dfe);
+	AddCustomKeyList(dfe);
 	dfe->Set(CustomKeyModeCenterScreen);
 	wp->RefreshDisplay();
   }
@@ -90,7 +90,7 @@ static void setVariables(void) {
   if (wp) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
-	AddConfList(dfe);
+	AddCustomKeyList(dfe);
 	dfe->Set(CustomKeyModeLeft);
 	wp->RefreshDisplay();
   }
@@ -98,7 +98,7 @@ static void setVariables(void) {
   if (wp) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
-	AddConfList(dfe);
+	AddCustomKeyList(dfe);
 	dfe->Set(CustomKeyModeRight);
 	wp->RefreshDisplay();
   }
@@ -106,7 +106,7 @@ static void setVariables(void) {
   if (wp) {
 	DataFieldEnum* dfe;
 	dfe = (DataFieldEnum*)wp->GetDataField();
-	AddConfList(dfe);
+	AddCustomKeyList(dfe);
 	dfe->Set(CustomKeyModeAircraftIcon);
 	wp->RefreshDisplay();
   }
@@ -219,78 +219,4 @@ void dlgCustomKeysShowModal(void){
   wf = NULL;
 
 }
-
-
-void AddConfList( DataFieldEnum* dfe) {
-
-	// Careful, order must respect the enum list in lk8000.h CustomKeyMode_t
-
-	// LKTOKEN  _@M239_ = "Disabled" 
-    dfe->addEnumText(gettext(TEXT("_@M239_")));
-	// LKTOKEN  _@M435_ = "Menu" 
-    dfe->addEnumText(gettext(TEXT("_@M435_")));
-	// LKTOKEN  _@M517_ = "Page Back" 
-    dfe->addEnumText(gettext(TEXT("_@M517_")));
-	// LKTOKEN  _@M725_ = "Toggle Map<>current page" 
-    dfe->addEnumText(gettext(TEXT("_@M725_")));
-	// LKTOKEN  _@M723_ = "Toggle Map<>Landables" 
-    dfe->addEnumText(gettext(TEXT("_@M723_")));
-	// LKTOKEN  _@M385_ = "Landables" 
-    dfe->addEnumText(gettext(TEXT("_@M385_")));
-	// LKTOKEN  _@M722_ = "Toggle Map<>Commons" 
-    dfe->addEnumText(gettext(TEXT("_@M722_")));
-	// LKTOKEN  _@M192_ = "Commons" 
-    dfe->addEnumText(gettext(TEXT("_@M192_")));
-	// LKTOKEN  _@M724_ = "Toggle Map<>Traffic" 
-    dfe->addEnumText(gettext(TEXT("_@M724_")));
-	// LKTOKEN  _@M738_ = "Traffic" 
-    dfe->addEnumText(gettext(TEXT("_@M738_")));
-	// LKTOKEN  _@M363_ = "Invert colors" 
-    dfe->addEnumText(gettext(TEXT("_@M363_")));
-    dfe->addEnumText(TEXT("TrueWind"));
-	// LKTOKEN  _@M726_ = "Toggle overlays" 
-    dfe->addEnumText(gettext(TEXT("_@M726_")));
-    dfe->addEnumText(TEXT("AutoZoom On/Off"));
-    dfe->addEnumText(TEXT("ActiveMap On/Off"));
-	// LKTOKEN  _@M426_ = "Mark Location" 
-    dfe->addEnumText(gettext(TEXT("_@M426_")));
-    dfe->addEnumText(TEXT("PG/HG Time Gates"));
-    dfe->addEnumText(TEXT("Thermal Booster"));
-	// LKTOKEN  _@M329_ = "Goto Home" 
-    dfe->addEnumText(gettext(TEXT("_@M329_")));
-	// LKTOKEN  _@M519_ = "Panorama trigger" 
-    dfe->addEnumText(gettext(TEXT("_@M519_")));
-	// LKTOKEN  _@M448_ = "Multitarget rotate" 
-    dfe->addEnumText(gettext(TEXT("_@M448_")));
-	// LKTOKEN  _@M447_ = "Multitarget menu" 
-    dfe->addEnumText(gettext(TEXT("_@M447_")));
-	// LKTOKEN  _@M700_ = "Team code" 
-    dfe->addEnumText(gettext(TEXT("_@M700_")));
-	// LKTOKEN  _@M767_ = "Use HBar on/off" 
-    dfe->addEnumText(gettext(TEXT("_@M767_")));
-	// LKTOKEN  _@M130_ = "Basic Setup menu" 
-    dfe->addEnumText(gettext(TEXT("_@M130_")));
-    dfe->addEnumText(TEXT("SIMulation menu"));
-    dfe->addEnumText(gettext(TEXT("_@M1652_"))); // Airspace Analysis
-    dfe->addEnumText(gettext(TEXT("_@M1653_"))); // toggle map Airspace 
-    dfe->addEnumText(gettext(TEXT("_@M1657_"))); // zoom in
-    dfe->addEnumText(gettext(TEXT("_@M1658_"))); // zoom out
-    dfe->addEnumText(gettext(TEXT("_@M1659_"))); // zoom in more
-    dfe->addEnumText(gettext(TEXT("_@M1660_"))); // zoom out more
-    dfe->addEnumText(gettext(TEXT("_@M1687_"))); // toggle optimize route
-    dfe->addEnumText(gettext(TEXT("_@M1688_"))); // screen lock
-    dfe->addEnumText(gettext(TEXT("_@M1689_"))); // where am I
-    dfe->addEnumText(gettext(TEXT("_@M1666_"))); // Toggle Total Energy
-    dfe->addEnumText(gettext(TEXT("_@M2063_"))); // Nodepad
-    dfe->addEnumText(gettext(TEXT("_@M1693_"))); // Change+ Terrain Colors
-    dfe->addEnumText(gettext(TEXT("_@M871_")));  // Nearest Airspace
-    dfe->addEnumText(gettext(TEXT("_@M1740_"))); // OLC Analysis
-    dfe->addEnumText(gettext(TEXT("_@M1774_"))); // Change- Terrain colors
-    dfe->addEnumText(MsgToken(1754)); // free flight
-
-    dfe->Sort(0);
-
-}
-
-
 

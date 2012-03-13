@@ -68,6 +68,15 @@ void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname
   #endif
   matchedstring=true;
 }
+void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, unsigned short *lookupvalue) {
+  if (_tcscmp(curname,lookupname)) return;
+  *lookupvalue=(unsigned short) wcstol(curvalue, NULL, 10);
+  #if DEBUGPROF
+  StartupStore(_T(".... PREAD curname=<%s> curvalue=<%s> lookupname=<%s> unsigned short=%d\n"),
+  curname,curvalue,lookupname,*lookupvalue);
+  #endif
+  matchedstring=true;
+}
 void SetProfileVariable(const TCHAR *curname, TCHAR *curvalue, TCHAR *lookupname, TCHAR *lookupvalue) {
   if (_tcscmp(curname,lookupname)) return;
   _tcscpy(lookupvalue,curvalue);
@@ -369,6 +378,18 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryCustomKeyModeRightUpCorner,&CustomKeyModeRightUpCorner);
   PREAD(sname,svalue,szRegistryCustomKeyModeRight,&CustomKeyModeRight);
   PREAD(sname,svalue,szRegistryCustomKeyTime,&CustomKeyTime);
+
+  PREAD(sname,svalue,szRegistryCustomMenu1,&CustomMenu1);
+  PREAD(sname,svalue,szRegistryCustomMenu2,&CustomMenu2);
+  PREAD(sname,svalue,szRegistryCustomMenu3,&CustomMenu3);
+  PREAD(sname,svalue,szRegistryCustomMenu4,&CustomMenu4);
+  PREAD(sname,svalue,szRegistryCustomMenu5,&CustomMenu5);
+  PREAD(sname,svalue,szRegistryCustomMenu6,&CustomMenu6);
+  PREAD(sname,svalue,szRegistryCustomMenu7,&CustomMenu7);
+  PREAD(sname,svalue,szRegistryCustomMenu8,&CustomMenu8);
+  PREAD(sname,svalue,szRegistryCustomMenu9,&CustomMenu9);
+  PREAD(sname,svalue,szRegistryCustomMenu10,&CustomMenu10);
+
   PREAD(sname,svalue,szRegistryDebounceTimeout,&debounceTimeout);
   PREAD(sname,svalue,szRegistryDeclutterMode,&DeclutterMode);
   PREAD(sname,svalue,szRegistryDeviceA,&*dwDeviceName1);

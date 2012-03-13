@@ -167,6 +167,16 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryCustomKeyModeRightUpCorner,CustomKeyModeRightUpCorner);
   rprintf(szRegistryCustomKeyModeRight,CustomKeyModeRight);
   rprintf(szRegistryCustomKeyTime,CustomKeyTime);
+  rprintf(szRegistryCustomMenu1,CustomMenu1);
+  rprintf(szRegistryCustomMenu2,CustomMenu2);
+  rprintf(szRegistryCustomMenu3,CustomMenu3);
+  rprintf(szRegistryCustomMenu4,CustomMenu4);
+  rprintf(szRegistryCustomMenu5,CustomMenu5);
+  rprintf(szRegistryCustomMenu6,CustomMenu6);
+  rprintf(szRegistryCustomMenu7,CustomMenu7);
+  rprintf(szRegistryCustomMenu8,CustomMenu8);
+  rprintf(szRegistryCustomMenu9,CustomMenu9);
+  rprintf(szRegistryCustomMenu10,CustomMenu10);
   rprintf(szRegistryDebounceTimeout,debounceTimeout);
   rprintf(szRegistryDeclutterMode,DeclutterMode);
   rprintf(szRegistryDeviceA,dwDeviceName1);
@@ -298,6 +308,7 @@ void LKProfileSave(const TCHAR *szFile)
 	rprintf(szRegistryColour[i],MapWindow::iAirspaceColour[i]);
 	rprintf(szRegistryBrush[i],MapWindow::iAirspaceBrush[i]);
   }
+
 
   /*
   // Anything containing non-ascii chars should be treated like this:

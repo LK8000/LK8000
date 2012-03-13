@@ -30,6 +30,7 @@
 #include "DoInits.h"
 
 extern void UpdateAircraftConfig(void);
+extern void dlgCustomMenuShowModal(void);
 
 static HFONT TempMapWindowFont;
 static HFONT TempMapLabelFont;
@@ -949,6 +950,11 @@ static void OnSetCustomKeysClicked(WindowControl * Sender){
 	(void)Sender;
   dlgCustomKeysShowModal();
 }
+static void OnSetCustomMenuClicked(WindowControl * Sender){
+	(void)Sender;
+  dlgCustomMenuShowModal();
+}
+
 static void OnSetBottomBarClicked(WindowControl * Sender){
 	(void)Sender;
   dlgBottomBarShowModal();
@@ -1531,6 +1537,7 @@ static CallBackTableEntry_t CallBackTable[]={
 
   DeclareCallBackEntry(OnSetTopologyClicked),
   DeclareCallBackEntry(OnSetCustomKeysClicked),
+  DeclareCallBackEntry(OnSetCustomMenuClicked),
   DeclareCallBackEntry(OnSetBottomBarClicked),
   DeclareCallBackEntry(OnSetInfoPagesClicked),
   DeclareCallBackEntry(OnTaskRulesClicked),

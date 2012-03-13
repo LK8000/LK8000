@@ -649,35 +649,43 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
   if (a != NULL) {
 	short i;
 	i= *(a+4)-48;
-        LKASSERT(i>0 && i<9);
+        LKASSERT(i>=0 && i<11);
 	// get the label for the custom menu item here
 	// Decide if invalid=true or if no label at all, setting Replace to empty string
 
 	unsigned int ckeymode;
 	// test mode only
 	switch(i) {
-	        case 1:
-  	              ckeymode=CustomKeyModeCenter;
+	      case 1:
+  	              ckeymode=CustomMenu1;
   	              break;
   	      case 2:
-  	              ckeymode=CustomKeyModeLeft;
+  	              ckeymode=CustomMenu2;
   	              break;
   	      case 3:
-  	              ckeymode=CustomKeyModeRight;
+  	              ckeymode=CustomMenu3;
   	              break;
   	      case 4:
-  	              ckeymode=CustomKeyModeAircraftIcon;
+  	              ckeymode=CustomMenu4;
   	              break;
   	      case 5:
-  	              ckeymode=CustomKeyModeLeftUpCorner;
+  	              ckeymode=CustomMenu5;
   	              break;
   	      case 6:
-  	              ckeymode=CustomKeyModeRightUpCorner;
+  	              ckeymode=CustomMenu6;
   	              break;
   	      case 7:
-  	              ckeymode=CustomKeyModeCenterScreen;
+  	              ckeymode=CustomMenu7;
   	              break;
   	      case 8:
+  	              ckeymode=CustomMenu8;
+  	              break;
+  	      case 9:
+  	              ckeymode=CustomMenu9;
+  	              break;
+  	      case 0:
+  	              ckeymode=CustomMenu10;
+  	              break;
   	      default:
         	        ckeymode=0;
         	        break;
@@ -685,7 +693,9 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	LKASSERT(ckeymode>=0 && ckeymode<ckTOP);
 	if (ckeymode==0) {
 		invalid=true;			// non selectable
-		_tcscpy(OutBuffer,_T(""));	// invisible in any case
+		
+		// _stprintf(OutBuffer,_T("Key\n%d"),i);
+		 _tcscpy(OutBuffer,_T(""));	// make it invisible
 	} else {
 		_stprintf(OutBuffer,MsgToken( CustomKeyLabel[ckeymode] ));
 	}

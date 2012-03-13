@@ -479,6 +479,7 @@ VOLKS	:=\
 
 
 DLGS	:=\
+	$(DLG)/AddCustomKeyList.cpp \
 	$(DLG)/dlgAirspace.cpp \
 	$(DLG)/dlgAirspaceWarningParams.cpp \
 	$(DLG)/dlgAirspaceColours.cpp \
@@ -492,6 +493,7 @@ DLGS	:=\
 	$(DLG)/dlgConfiguration.cpp \
 	$(DLG)/dlgConfiguration2.cpp \
 	$(DLG)/dlgCustomKeys.cpp \
+	$(DLG)/dlgCustomMenu.cpp \
 	$(DLG)/dlgFontEdit.cpp \
 	$(DLG)/dlgHelp.cpp \
 	$(DLG)/dlgInfoPages.cpp \

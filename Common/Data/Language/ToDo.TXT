@@ -152,3 +152,7 @@ _@M2225_ "Free\nFlight"
 
 Changed HELP 1220
 Changed MSG M16
++_@M1787_ "Custom Menu"
++_@M1788_ "Configure Custom Menu"
++_@M2131_ "Custom\nMenu"
+

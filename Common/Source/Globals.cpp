@@ -619,6 +619,8 @@ void Globals_Init(void) {
   AircraftMenuSize=0;
   CompassMenuSize=0;
 
+  extern void Reset_CustomMenu(void);
+  Reset_CustomMenu();
 
   // ^ ADD NEW GLOBALS up here ^ 
   // ---------------------------
@@ -626,4 +628,15 @@ void Globals_Init(void) {
 }
 
 
-
+void Reset_CustomMenu(void) {
+	CustomMenu1  = ckLockScreen;
+	CustomMenu2  = ckTerrainColors;
+	CustomMenu3  = ckTerrainColorsBack;
+	CustomMenu4  = ckDisabled;
+	CustomMenu5  = ckTrueWind;
+	CustomMenu6  = ckDisabled;
+	CustomMenu7  = ckPanorama;
+	CustomMenu8  = ckForceFreeFlightRestart;
+	CustomMenu9  = ckDisabled;
+	CustomMenu10 = ckDisabled;
+}

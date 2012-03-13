@@ -385,6 +385,7 @@
 <DataField name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min=1 Max=120 Step=1/>
 </WndProperty>
 <WndButton Name="cmdSetCustomKeys" Caption="_@M196_" X=70 Y=-997 Width=180  Height=22 Font=2 OnClickNotify="OnSetCustomKeysClicked" />
+<WndButton Name="cmdSetCustomMenu" Caption="_@M1788_" X=70 Y=-998 Width=180  Height=22 Font=2 OnClickNotify="OnSetCustomMenuClicked" />
 <WndButton Name="cmdSetInfoPages" Caption="_@M1603_" X=70 Y=-998 Width=180  Height=22 Font=2 OnClickNotify="OnSetInfoPagesClicked" />
 <WndButton Name="cmdSetBottomBar" Caption="_@M1602_" X=70 Y=-998 Width=180  Height=22 Font=2 OnClickNotify="OnSetBottomBarClicked" />
 </WndFrame>

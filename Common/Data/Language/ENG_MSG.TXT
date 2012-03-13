@@ -1,5 +1,5 @@
 # LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
-# MASTER UPDATED:  110811
+# MASTER UPDATED:  120312
 #
 # This file is loaded on startup and all messages are stored internally.
 # If you are translating these messages, try to respect sizes.
@@ -1758,6 +1758,9 @@ _@M1784_ "Pilot Profiles"
 _@M1785_ "Pilot configuration"
 _@M1786_ "Aircraft configuration"
 
+# Page names in configuration
+_@M1787_ "Custom Menu"
+_@M1788_ "Configure Custom Menu"
 
 ############################################################
 #                  - MENU MESSAGES - 
@@ -1900,6 +1903,7 @@ _@M2127_ "Pilot\nSetup"
 _@M2128_ "Pilot\nSave"
 _@M2129_ "LK8000\nSetup"
 _@M2130_ "System\nSetup"
+_@M2131_ "Custom\nMenu"
 
 # New CustomKey labels for Custom Menu
 _@M2200_ "----"
@@ -1928,5 +1932,6 @@ _@M2222_ "OLC\nAnalys"
 _@M2223_ "Color+\nterrain"
 _@M2224_ "Color-\nterrain"
 _@M2225_ "Free\nFlight"
+# Reserved for custom menus up to 2300!
 
 # Note for developers: remember LKLanguage MAX_MESSAGE limit (2250)
