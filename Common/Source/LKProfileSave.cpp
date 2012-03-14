@@ -240,7 +240,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryMenuTimeout,MenuTimeout_Config);
   rprintf(szRegistryNewMapDeclutter,NewMapDeclutter);
   rprintf(szRegistryOrbiter,Orbiter_Config);
-  rprintf(szRegistryOutlinedTp,OutlinedTp);
+  rprintf(szRegistryOutlinedTp,OutlinedTp_Config);
   rprintf(szRegistryOverColor,OverColor);
   rprintf(szRegistryOverlayClock,OverlayClock);
   rprintf(szRegistryOverlaySize,OverlaySize);

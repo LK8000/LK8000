@@ -180,6 +180,7 @@ GEXTERN short Look8000;
 GEXTERN bool CheckSum;
 GEXTERN bool HideUnits;
 GEXTERN short OutlinedTp;
+GEXTERN short OutlinedTp_Config;
 GEXTERN int  OverColor;
 GEXTERN COLORREF OverColorRef;
 GEXTERN int TpFilter;

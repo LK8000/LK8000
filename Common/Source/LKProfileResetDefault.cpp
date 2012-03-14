@@ -191,7 +191,7 @@ void LKProfileResetDefault(void) {
 
   LKVarioVal = (LKVarioVal_t)vValVarioVario;
 
-  OutlinedTp = (OutlinedTp_t)otLandable;
+  OutlinedTp_Config = (OutlinedTp_t)otLandable;
 
   TpFilter = (TpFilter_t)TfNoLandables;
 

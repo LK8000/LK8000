@@ -480,7 +480,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryNewMapDeclutter,&NewMapDeclutter);
   PREAD(sname,svalue,szRegistryOrbiter,&Orbiter_Config);
-  PREAD(sname,svalue,szRegistryOutlinedTp,&OutlinedTp);
+  PREAD(sname,svalue,szRegistryOutlinedTp,&OutlinedTp_Config);
   PREAD(sname,svalue,szRegistryOverColor,&OverColor);
   PREAD(sname,svalue,szRegistryOverlayClock,&OverlayClock);
   PREAD(sname,svalue,szRegistryOverlaySize,&OverlaySize);

@@ -3012,7 +3012,7 @@ static void setVariables(void) {
 	// LKTOKEN  _@M81_ = "All white" 
     dfe->addEnumText(gettext(TEXT("_@M81_")));
     dfe = (DataFieldEnum*)wp->GetDataField();
-    dfe->Set(OutlinedTp);
+    dfe->Set(OutlinedTp_Config);
     wp->RefreshDisplay();
   }
 
@@ -4828,17 +4828,12 @@ int ival;
 	}
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpOutlinedTp")); // VENTA6
+  wp = (WndProperty*)wf->FindByName(TEXT("prpOutlinedTp"));
   if (wp) {
-    if (OutlinedTp != (OutlinedTp_t)
-	(wp->GetDataField()->GetAsInteger())) {
-      OutlinedTp = (OutlinedTp_t)
-	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryOutlinedTp,
-		    (DWORD)(OutlinedTp));
-      changed = true;
-      requirerestart = true; // 100819
-    }
+	if (OutlinedTp_Config != (OutlinedTp_t) (wp->GetDataField()->GetAsInteger()))  {
+		OutlinedTp_Config = (OutlinedTp_t) (wp->GetDataField()->GetAsInteger());
+		OutlinedTp=OutlinedTp_Config;
+	}
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTpFilter"));

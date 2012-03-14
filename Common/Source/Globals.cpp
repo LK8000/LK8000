@@ -221,7 +221,8 @@ void Globals_Init(void) {
   Look8000=lxcAdvanced;
   HideUnits=false;
   CheckSum=true;
-  OutlinedTp=0;
+  OutlinedTp_Config=0;
+  OutlinedTp=OutlinedTp_Config;
   OverColor=0;
   TpFilter=0;
   MapBox=0;
