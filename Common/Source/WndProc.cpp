@@ -250,11 +250,11 @@ void Shutdown(void) {
   int i;
 
   LKSound(_T("LK_DISCONNECT.WAV")); Sleep(500); // real WAV length is 410+ms
-  if (!GlobalRunning) { // shutdown on startup clicking on the X
+  if (!GlobalRunning) { // shutdown on startup (before sim/fly or clicking on the window X)
+	#if TESTBENCH
 	StartupStore(_T(". Quick shutdown requested before terminating startup%s"),NEWLINE);
-
+	#endif
 	CloseCalculations();
-
 	CloseGeoid();
 	DeInitCustomHardware();
 	LKRunStartEnd(false);

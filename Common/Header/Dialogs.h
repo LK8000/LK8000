@@ -42,7 +42,7 @@ void dlgConfigurationShowModal(short mode);
 void dlgVegaDemoShowModal(void);
 bool dlgConfigurationVarioShowModal(void);
 void dlgLoggerReplayShowModal(void);
-bool dlgStartupShowModal(void);
+short dlgStartupShowModal(void);
 void dlgTaskCalculatorShowModal(void);
 void dlgWindSettingsShowModal(void);
 void dlgStartTaskShowModal(bool *validStart, double Time, double Speed, double Altitude);

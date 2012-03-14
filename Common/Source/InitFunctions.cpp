@@ -78,7 +78,12 @@ void PreloadInitialisation(bool ask) {
   } else {
     // We are in the dialog startup phase
     FullScreen();
-    while (dlgStartupShowModal());
+    short retstartup;
+    do 
+	retstartup=dlgStartupShowModal();
+    while (retstartup>0);
+
+    if (retstartup<0) return;
 
 #if OLDPROFILES
     RestoreRegistry();

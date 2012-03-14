@@ -250,7 +250,11 @@ static CallBackTableEntry_t CallBackTable[]={
 };
 
 
-bool dlgStartupShowModal(void){
+// This function will be recalled as long it returns 1.
+// Returning 0 will indicate proceed with startup
+// Returning -1 will indicate exit program
+
+short dlgStartupShowModal(void){
   WndProperty* wp;
 
   #if TESTBENCH
@@ -270,7 +274,7 @@ bool dlgStartupShowModal(void){
 		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_FLYSIM"));
 	}
 	if (!wf) {
-		return false;
+		return 0;
 	}
   }
 
@@ -283,7 +287,7 @@ bool dlgStartupShowModal(void){
 		LocalPathS(filename, TEXT("dlgDualProfile.xml"));
 		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_DUALPROFILE"));
 	}
-	if (!wf) return false;
+	if (!wf) return 0;
   }
 
   // CHOOSE PROFILE
@@ -295,7 +299,7 @@ bool dlgStartupShowModal(void){
 		LocalPathS(filename, TEXT("dlgStartup.xml"));
 		wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_STARTUP"));
 	}
-	if (!wf) return false;
+	if (!wf) return 0;
   }
 
   wSplash = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmSplash")); 
@@ -505,7 +509,9 @@ bool dlgStartupShowModal(void){
 	_stprintf(mes,_T("%s"),mydir);
 	MessageBoxX(hWndMainWindow, _T("NO LK8000 DIRECTORY\nCheck Installation!"), _T("FATAL ERROR 000"), MB_OK|MB_ICONQUESTION);
 	MessageBoxX(hWndMainWindow, mes, _T("NO LK8000 DIRECTORY"), MB_OK|MB_ICONQUESTION, true);
+	RUN_MODE=RUN_EXIT;
 	Shutdown();
+	goto _exit;
   }
 
   if  (!CheckDataDir()) {
@@ -516,7 +522,9 @@ bool dlgStartupShowModal(void){
 	_stprintf(mes,_T("%s"),mydir);
 	MessageBoxX(hWndMainWindow, _T("NO SYSTEM DIRECTORY\nCheck Installation!"), _T("FATAL ERROR 001"), MB_OK|MB_ICONQUESTION);
 	MessageBoxX(hWndMainWindow, mes, _T("NO SYSTEM DIRECTORY"), MB_OK|MB_ICONQUESTION, true);
+	RUN_MODE=RUN_EXIT;
 	Shutdown();
+	goto _exit;
   }
 
   if  (!CheckLanguageDir()) {
@@ -528,7 +536,9 @@ bool dlgStartupShowModal(void){
 	_stprintf(mes,_T("%s"),mydir);
 	MessageBoxX(hWndMainWindow, _T("LANGUAGE DIRECTORY CHECK FAIL\nCheck Language Install"), _T("FATAL ERROR 002"), MB_OK|MB_ICONQUESTION);
 	MessageBoxX(hWndMainWindow, mes, _T("NO LANGUAGE DIRECTORY"), MB_OK|MB_ICONQUESTION, true);
+	RUN_MODE=RUN_EXIT;
 	Shutdown();
+	goto _exit;
   }
   if  (!CheckLanguageEngMsg()) {
 	TCHAR mydir[MAX_PATH];
@@ -538,7 +548,9 @@ bool dlgStartupShowModal(void){
 	_stprintf(mes,_T("%s/ENG_MSG.TXT"),mydir);
 	MessageBoxX(hWndMainWindow, _T("ENG_MSG.TXT MISSING in LANGUAGE\nCheck Language Install"), _T("FATAL ERROR 012"), MB_OK|MB_ICONQUESTION);
 	MessageBoxX(hWndMainWindow, mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION, true);
+	RUN_MODE=RUN_EXIT;
 	Shutdown();
+	goto _exit;
   }
   if  (!CheckSystemDefaultMenu()) {
 	TCHAR mydir[MAX_PATH];
@@ -548,7 +560,9 @@ bool dlgStartupShowModal(void){
 	_stprintf(mes,_T("%s/DEFAULT_MENU.TXT"),mydir);
 	MessageBoxX(hWndMainWindow, _T("DEFAULT_MENU.TXT MISSING in SYSTEM\nCheck System Install"), _T("FATAL ERROR 022"), MB_OK|MB_ICONQUESTION);
 	MessageBoxX(hWndMainWindow, mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION, true);
+	RUN_MODE=RUN_EXIT;
 	Shutdown();
+	goto _exit;
   }
 
 #if OLDLOGGER
@@ -560,7 +574,9 @@ bool dlgStartupShowModal(void){
 	_stprintf(mes,_T("%s/_GRECORD"),mydir);
 	MessageBoxX(hWndMainWindow, _T("_GRECORD MISSING in SYSTEM\nCheck System Install"), _T("FATAL ERROR 032"), MB_OK|MB_ICONQUESTION);
 	MessageBoxX(hWndMainWindow, mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION, true);
+	RUN_MODE=RUN_EXIT;
 	Shutdown();
+	goto _exit;
   }
 #endif
   if  (!CheckSystemBitmaps()) {
@@ -571,7 +587,9 @@ bool dlgStartupShowModal(void){
 	_stprintf(mes,_T("%s/_BITMAPSH"),mydir);
 	MessageBoxX(hWndMainWindow, _T("_BITMAPSH MISSING in SYSTEM Bitmaps\nCheck System Install"), _T("FATAL ERROR 032"), MB_OK|MB_ICONQUESTION);
 	MessageBoxX(hWndMainWindow, mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION, true);
+	RUN_MODE=RUN_EXIT;
 	Shutdown();
+	goto _exit;
   }
 
   if  (!CheckPolarsDir()) {
@@ -583,7 +601,9 @@ bool dlgStartupShowModal(void){
 	_stprintf(mes,_T("%s"),mydir);
 	MessageBoxX(hWndMainWindow, _T("NO POLARS DIRECTORY\nCheck Install"), _T("FATAL ERROR 003"), MB_OK|MB_ICONQUESTION);
 	MessageBoxX(hWndMainWindow, mes, _T("NO POLARS DIRECTORY"), MB_OK|MB_ICONQUESTION, true);
+	RUN_MODE=RUN_EXIT;
 	Shutdown();
+	goto _exit;
   }
   wf->ShowModal();
 
@@ -648,16 +668,21 @@ bool dlgStartupShowModal(void){
 		RUN_MODE=RUN_WELCOME;
   }
 
-  delete wf;
-
-  wf = NULL;
+_exit:
+  if (wf!=NULL) {
+	delete wf;
+	wf = NULL;
+  }
 
   if (RUN_MODE==RUN_FLY || RUN_MODE==RUN_SIM) {
 	if (EnableSoundModes) LKSound(_T("LK_SLIDE.WAV"));
-	return false;
+	return 0;	// do not repeat dialog
   }
 
-  return RUN_MODE!=RUN_EXIT; // else repeat dialog 
+  if (RUN_MODE==RUN_EXIT)
+	return -1;	// terminate
+  else
+	return 1;	// repeat dialog
 
 }
 
