@@ -152,10 +152,13 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
       double fScaleFact =MapWindow::zoom.RealScale();
       if(fScaleFact < 0.1)  fScaleFact = 0.1; // prevent division by zero
 
-      fScaleFact = 6.0 /fScaleFact;
-
-      if(fScaleFact > 4.0) fScaleFact = 4.0; // limit to prevent huge airfiel symbols
+   //   fScaleFact = 8.0 /fScaleFact;
+      fScaleFact = zoom.DrawScale()/2000;
+ //     if(fScaleFact > 4.0) fScaleFact = 4.0; // limit to prevent huge airfiel symbols
       if(fScaleFact < 0.8)   fScaleFact = 0.8;
+//      double mapScale=Units::ToSysDistance(zoom.Scale()*1.4);	// 1.4 for mapscale symbol size on map screen
+       // zoom.Scale() gives user units, but FormatUserMapScale() needs system distance units
+ //      Units::FormatUserMapScale(NULL, mapScale, Scale, sizeof(Scale)/sizeof(Scale[0]));
 
   	  DrawRunway(hdc,&WayPointList[i],rc, fScaleFact);
     }
@@ -677,16 +680,16 @@ bool bOutland = false;
 bool bRunway = false;
 int l = 8;
 int b = 1;
+int p = 6;
 
-
-
+//fScaleFact/=5;
 if( wp->RunwayLen> 0)
-  l = (int)  ((double)wp->RunwayLen/500.0)+6;
+  l = (int)  (((double)wp->RunwayLen/1000.0)+3);
+
+//NIBLSCALE((int)(6.0*fScaleFact));
 
 
 
-b = (int)((double) b * fScaleFact)+1;
-l = (int)((double) l * fScaleFact);
 
 if( wp->RunwayLen< 100) /* square if no runway defined */
 {
@@ -694,6 +697,12 @@ if( wp->RunwayLen< 100) /* square if no runway defined */
   l = b;
 }
 
+//b = NIBLSCALE(b);
+//l = NIBLSCALE(l);
+//p =	NIBLSCALE(p);
+l *= fScaleFact+1;
+b *= fScaleFact+1;
+p *= fScaleFact+1;
 POINT Runway
 
 [5] = {
@@ -705,7 +714,9 @@ POINT Runway
 };
 
 
-int iScale =(int) (fScaleFact*2.5);
+int iScale =(int) (1);
+// iScale = NIBLSCALE(iScale);
+iScale *= fScaleFact+1;
 POINT WhiteWing [15]  = {
   { 0 * iScale, 0 * iScale },   // 1
   { 1 * iScale,-1 * iScale },   // 2
@@ -742,29 +753,28 @@ POINT WhiteWing [15]  = {
 	if( wp->Reachable == TRUE)
 	 oldBrush = (HBRUSH)SelectObject(hdc, LKBrush_Green);
 
-	int iPtSize = 0;
+
 	if(!bOutland)
 	{
-	  iPtSize =	NIBLSCALE((int)(6.0*fScaleFact));
-	  Circle( hdc, wp->Screen.x, wp->Screen.y, iPtSize,  rc,true, true);
+	  Circle( hdc, wp->Screen.x, wp->Screen.y, p,  rc,true, true);
 	}
-
 
 	if(bRunway)
 	  if((wp->RunwayDir >=0) &&   ( wp->RunwayLen> 0))
 	  {
 		if(!bOutland)
+		{
 		  if(solid)
 			SelectObject(hdc, LKBrush_Grey );
 		  else
 			SelectObject(hdc, LKBrush_White);
-
+		}
 		PolygonRotateShift(Runway, 5,  wp->Screen.x, wp->Screen.y,  wp->RunwayDir-Brg);
 		Polygon(hdc,Runway ,5 );
 	  }
 
 
-	if(fScaleFact >= 0.9)
+	//if(fScaleFact >= 0.9)
 	  if(bGlider)
 	  {
 	    PolygonRotateShift(WhiteWing, 15,  wp->Screen.x, wp->Screen.y,  0/*+ wp->RunwayDir-Brg*/);
