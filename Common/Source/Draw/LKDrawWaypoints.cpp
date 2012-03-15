@@ -152,13 +152,9 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
       double fScaleFact =MapWindow::zoom.RealScale();
       if(fScaleFact < 0.1)  fScaleFact = 0.1; // prevent division by zero
 
-   //   fScaleFact = 8.0 /fScaleFact;
-      fScaleFact = zoom.DrawScale()/2000;
- //     if(fScaleFact > 4.0) fScaleFact = 4.0; // limit to prevent huge airfiel symbols
-      if(fScaleFact < 0.8)   fScaleFact = 0.8;
-//      double mapScale=Units::ToSysDistance(zoom.Scale()*1.4);	// 1.4 for mapscale symbol size on map screen
-       // zoom.Scale() gives user units, but FormatUserMapScale() needs system distance units
- //      Units::FormatUserMapScale(NULL, mapScale, Scale, sizeof(Scale)/sizeof(Scale[0]));
+      fScaleFact = zoom.DrawScale();
+      if(fScaleFact > 6000.0) fScaleFact = 6000.0; // limit to prevent huge airfiel symbols
+      if(fScaleFact < 1600)   fScaleFact = 1600; // limit to prevent tiny airfiel symbols
 
   	  DrawRunway(hdc,&WayPointList[i],rc, fScaleFact);
     }
@@ -678,31 +674,48 @@ HBRUSH  oldBrush ;
 bool bGlider = false;
 bool bOutland = false;
 bool bRunway = false;
-int l = 8;
-int b = 1;
-int p = 6;
-
-//fScaleFact/=5;
-if( wp->RunwayLen> 0)
-  l = (int)  (((double)wp->RunwayLen/1000.0)+3);
-
-//NIBLSCALE((int)(6.0*fScaleFact));
-
-
-
-
-if( wp->RunwayLen< 100) /* square if no runway defined */
+static double rwl = 8;
+static double rwb = 1;
+static double cir = 6;
+int l,p,b;
+fScaleFact /=2000;
+//if (DoInit[MDI_MAPWPVECTORS]) // DoInit does not work correctly here
 {
-  b++;
-  l = b;
+   switch(ScreenSize)
+   {
+     case ss240x320: rwl = 8.0; rwb = 2.0;cir = 4.0; break;
+     case ss240x400: rwl = 8.0; rwb = 2.0;cir = 4.0; break;
+     case ss272x480: rwl = 8.0; rwb = 2.0;cir = 4.0; break;
+     case ss480x640: rwl = 6.0; rwb = 1.0;cir = 5.0; break;
+     case ss480x800: rwl = 6.0; rwb = 1.2;cir = 5.0; break;
+     case sslandscape: rwl = 6.0; rwb = 1.0;cir = 5.0; break;
+     case ss320x240: rwl = 8.0; rwb = 2.0;cir = 4.0; break;
+     case ss400x240: rwl = 7.0; rwb = 1.0;cir = 4.0; break;
+     case ss480x234: rwl = 7.0; rwb = 1.0;cir = 4.0; break;
+     case ss480x272: rwl = 8.0; rwb = 2.0;cir = 4.0; break;
+     case ss640x480: rwl = 6.0; rwb = 1.0;cir = 5.0; break;
+     case ss720x408: rwl = 6.0; rwb = 1.0;cir = 5.0; break;
+     case ss800x480: rwl = 6.0; rwb = 1.2;cir = 5.0; break;
+     case ss896x672: rwl = 6.0; rwb = 1.5;cir = 5.0; break;
+   }
+ //  DoInit[MDI_MAPWPVECTORS]=false;
 }
 
-//b = NIBLSCALE(b);
-//l = NIBLSCALE(l);
-//p =	NIBLSCALE(p);
-l *= fScaleFact+1;
-b *= fScaleFact+1;
-p *= fScaleFact+1;
+
+
+
+if( wp->RunwayLen > 0) /* square if no runway defined */
+  l = (int) (rwl * (1.0+ ((double)wp->RunwayLen/800.0-1.0)/4.0));
+else
+  l = rwb;
+
+
+l = (int)(l * fScaleFact); if(l==0) l=1;
+b = (int)(rwb  * fScaleFact); if(b==0) b=1;
+p = (int)(cir * 2.0 * fScaleFact); if(p==0) p=1;
+int iScale = l/3; if(iScale==0) iScale=1;
+
+
 POINT Runway
 
 [5] = {
@@ -714,9 +727,6 @@ POINT Runway
 };
 
 
-int iScale =(int) (1);
-// iScale = NIBLSCALE(iScale);
-iScale *= fScaleFact+1;
 POINT WhiteWing [15]  = {
   { 0 * iScale, 0 * iScale },   // 1
   { 1 * iScale,-1 * iScale },   // 2
@@ -774,7 +784,7 @@ POINT WhiteWing [15]  = {
 	  }
 
 
-	//if(fScaleFact >= 0.9)
+	if(fScaleFact >= 0.9)
 	  if(bGlider)
 	  {
 	    PolygonRotateShift(WhiteWing, 15,  wp->Screen.x, wp->Screen.y,  0/*+ wp->RunwayDir-Brg*/);
