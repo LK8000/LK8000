@@ -242,6 +242,7 @@ void ReinitScreen(void) {
   Reset_Single_DoInits(MDI_LKPROCESS);
   Reset_Single_DoInits(MDI_COMPASS);
   Reset_Single_DoInits(MDI_LOOKABLEND);
+  Reset_Single_DoInits(MDI_MAPWPVECTORS);
 
   #if TESTBENCH
   StartupStore(_T("... ChangeScreen resuming Draw Thread\n"));
