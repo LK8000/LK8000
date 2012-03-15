@@ -463,7 +463,7 @@ static void UpdateValuesFlight(void) {
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
   if (wp) {
     _stprintf(Temp, TEXT("%.0f %s"), 
-              GPS_INFO.Altitude*ALTITUDEMODIFY, 
+              CALCULATED_INFO.NavAltitude*ALTITUDEMODIFY, 
               Units::GetAltitudeName());
     wp->SetText(Temp);
   }
