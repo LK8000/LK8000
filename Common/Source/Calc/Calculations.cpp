@@ -3960,16 +3960,33 @@ int DetectStartTime(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 //
 void CalculateHeadWind(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
+  static double CrossBearingLast= -1.0;
+  static double WindSpeedLast= -1.0;
+
   if (Basic->NAVWarning) {
 	Calculated->HeadWind  = -999;
 	return;
   }
 
+  double CrossBearing;
+  CrossBearing = AngleLimit360(Calculated->Heading - Calculated->WindBearing);
+
+  #if 1 // vector wind
+  if ((CrossBearing != CrossBearingLast)||(Calculated->WindSpeed != WindSpeedLast)) {
+	Calculated->HeadWind = Calculated->WindSpeed * fastcosine(CrossBearing);
+	// CrossWind = WindSpeed * fastsine(CrossBearing);  UNUSED
+	CrossBearingLast = CrossBearing;
+	WindSpeedLast = Calculated->WindSpeed;
+  }
+  #else
   if (Basic->AirspeedAvailable) {
 	Calculated->HeadWind = Basic->TrueAirspeed - Basic->Speed;
   } else {
+	// for estimated IAS, this is also vector wind
 	Calculated->HeadWind = Calculated->TrueAirspeedEstimated - Basic->Speed;
   }
+  #endif
+  //StartupStore(_T("..... CrossBearing=%f  hdwind=%f windspeed=%f\n"),CrossBearing,Calculated->HeadWind, Calculated->WindSpeed);
 
 }
 
