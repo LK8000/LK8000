@@ -17,6 +17,24 @@
 //
 // Turn Rate Indicator
 //
+void MapWindow::DrawAcceleration(HDC hDC, const RECT rc)
+{
+	double ScaleX= (rc.right - rc.left)/2/5;
+	double ScaleY= (rc.top - rc.bottom)/2/5;
+	double ScaleZ= (rc.top - rc.bottom)/2/20;
+	POINT Pos;
+	Pos.x = (rc.right - rc.left)/2 +(int)( GPS_INFO.AccelY * ScaleX);
+	Pos.y = (rc.bottom   - rc.top)/2+ (int)(GPS_INFO.AccelZ * ScaleY);
+
+	HPEN    oldPen   = (HPEN) SelectObject(hDC, GetStockObject(BLACK_PEN));
+	HBRUSH  oldBrush = (HBRUSH)SelectObject(hDC, LKBrush_Red);
+
+	  Circle( hDC, Pos.x, Pos.y-10, 20+ (int)(ScaleZ*GPS_INFO.AccelX),  rc,true, true);
+
+	SelectObject(hDC, oldBrush);
+	SelectObject(hDC, oldPen);
+}
+
 void MapWindow::DrawTRI(HDC hDC, const RECT rc)
 {
   POINT Start;
@@ -225,10 +243,16 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
 
   LKWriteText(hDC, Buffer, Start.x , bankindy, 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_BLUE, false);
 
-  if (!disabled) MapWindow::RefreshMap();
+ // MapDirty = true;
+  //if (!disabled) MapWindow::RefreshMap();
 
+  MapWindow::RequestFastRefresh();
   SelectObject(hDC, hbOld);
   SelectObject(hDC, hpOld);
+  for (int i=0; i<NUMDEV; i++)
+    if ( _tcscmp(DeviceList[i].Name,_T("LXV7"))==0)
+      DrawAcceleration( hDC,   rc);
+
 }
 
 #else
