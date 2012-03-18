@@ -8,23 +8,25 @@
 //_____________________________________________________________________includes_
 
 #include "externs.h"
-#include "devLX16xx.h"
+#include "devLXV7.h"
 #include "LKInterface.h"
 #include "Parser.h"
+#include "InputEvents.h"
 
-int iLX16xx_RxUpdateTime=0;
-double oldMC = MACCREADY;
-int  MacCreadyUpdateTimeout = 0;
-int  BugsUpdateTimeout = 0;
-int  BallastUpdateTimeout =0;
-int  LX166AltitudeUpdateTimeout =0;
-int  LX16xxAlt=0;
-double fPolar_a=0.0, fPolar_b=0.0, fPolar_c=0.0, fVolume=0.0;
-BOOL bValid = false;
-int LX16xxNMEAddCheckSumStrg( TCHAR szStrg[] );
-BOOL LX16xxPutMacCready(PDeviceDescriptor_t d, double MacCready);
-BOOL LX16xxPutBallast(PDeviceDescriptor_t d, double Ballast);
-BOOL LX16xxPutBugs(PDeviceDescriptor_t d, double Bugs);
+int iLXV7_RxUpdateTime=0;
+double LXV7_oldMC = MACCREADY;
+int  LXV7_MacCreadyUpdateTimeout = 0;
+int  LXV7_BugsUpdateTimeout = 0;
+int  LXV7_BallastUpdateTimeout =0;
+int LXV7_iGPSBaudrate = 0;
+int LXV7_iPDABaudrate = 0;
+
+//double fPolar_a=0.0, fPolar_b=0.0, fPolar_c=0.0, fVolume=0.0;
+BOOL LXV7_bValid = false;
+int LXV7NMEAddCheckSumStrg( TCHAR szStrg[] );
+BOOL LXV7PutMacCready(PDeviceDescriptor_t d, double MacCready);
+BOOL LXV7PutBallast(PDeviceDescriptor_t d, double Ballast);
+BOOL LXV7PutBugs(PDeviceDescriptor_t d, double Bugs);
 
 
 //____________________________________________________________class_definitions_
@@ -36,7 +38,9 @@ BOOL LX16xxPutBugs(PDeviceDescriptor_t d, double Bugs);
 /// @retval false device cannot be registered
 ///
 //static
-bool DevLX16xx::Register()
+
+
+bool DevLXV7::Register()
 {
 
   return(devRegister(GetName(),
@@ -54,13 +58,13 @@ bool DevLX16xx::Register()
 /// @retval false device cannot be installed
 ///
 //static
-BOOL DevLX16xx::Install(PDeviceDescriptor_t d)
+BOOL DevLXV7::Install(PDeviceDescriptor_t d)
 {
   _tcscpy(d->Name, GetName());
   d->ParseNMEA    = ParseNMEA;
-  d->PutMacCready = LX16xxPutMacCready;
-  d->PutBugs      = LX16xxPutBugs; // removed to prevent cirvular updates
-  d->PutBallast   = LX16xxPutBallast;
+  d->PutMacCready = LXV7PutMacCready;
+  d->PutBugs      = LXV7PutBugs; // removed to prevent cirvular updates
+  d->PutBallast   = LXV7PutBallast;
   d->Open         = NULL;
   d->Close        = NULL;
   d->Init         = NULL;
@@ -69,20 +73,80 @@ BOOL DevLX16xx::Install(PDeviceDescriptor_t d)
   d->IsLogger     = NULL;
   d->IsGPSSource  = GetTrue;
   d->IsBaroSource = GetTrue;
-  d->DirectLink   = LX16xxDirectLink;
+  d->DirectLink   = LXV7DirectLink;
+
+
+
   return(true);
 } // Install()
 
 
 
+BOOL DevLXV7::LXV7DirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable)
+{
+TCHAR  szTmp[254];
+#define CHANGE_DELAY 10
+
+if(LXV7_iGPSBaudrate ==0)
+{
+  _stprintf(szTmp, TEXT("$PLXV0,BRGPS,R"));
+  LXV7NMEAddCheckSumStrg(szTmp);
+  d->Com->WriteString(szTmp);
+  Sleep(CHANGE_DELAY);
+  d->Com->WriteString(szTmp);
+  Sleep(CHANGE_DELAY);
+}
+
+
+  if(bLinkEnable)
+  {
+	LockComm();
+	StartupStore(TEXT("enable LX V7 direct Link %s"), NEWLINE);
+	LXV7_iPDABaudrate = d->Com->GetBaudrate();
+
+	_stprintf(szTmp, TEXT("$PLXV0,CONNECTION,W,DIRECT"));
+	LXV7NMEAddCheckSumStrg(szTmp);
+	d->Com->WriteString(szTmp);
+	Sleep(CHANGE_DELAY);
+    if(LXV7_iPDABaudrate != LXV7_iGPSBaudrate)
+    {
+	  d->Com->SetBaudrate(LXV7_iGPSBaudrate);
+	  StartupStore(TEXT("Set Baudrate %i %s"),LXV7_iGPSBaudrate, NEWLINE);
+	  Sleep(CHANGE_DELAY);
+    }
+	Sleep(CHANGE_DELAY);
+  }
+  else
+  {
+	Sleep(CHANGE_DELAY);
+
+    if(LXV7_iPDABaudrate != LXV7_iGPSBaudrate)
+    {
+	  StartupStore(TEXT("Set Baudrate %i %s"),LXV7_iPDABaudrate, NEWLINE);
+	  d->Com->SetBaudrate(LXV7_iPDABaudrate);
+	  Sleep(CHANGE_DELAY);
+    }
+
+	StartupStore(TEXT("Return from V7 link %s"), NEWLINE);
+	_stprintf(szTmp, TEXT("$PLXV0,CONNECTION,W,VSEVEN"));
+	LXV7NMEAddCheckSumStrg(szTmp);
+	d->Com->WriteString(szTmp);
+	Sleep(CHANGE_DELAY);
+	UnlockComm();
+	Sleep(CHANGE_DELAY);
+
+  }
+
+  return true;
+}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// Returns device name (max length is @c DEVNAMESIZE).
 ///
 //static
-const TCHAR* DevLX16xx::GetName()
+const TCHAR* DevLXV7::GetName()
 {
-  return(_T("LX16xx"));
+  return(_T("LXV7"));
 } // GetName()
 //                                 Polar
 //        MC     BAL    BUG%     a      b      c     Volume
@@ -99,7 +163,7 @@ const TCHAR* DevLX16xx::GetName()
 
 
 
-int LX16xxNMEAddCheckSumStrg( TCHAR szStrg[] )
+int LXV7NMEAddCheckSumStrg( TCHAR szStrg[] )
 {
 int i,iCheckSum=0;
 TCHAR  szCheck[254];
@@ -119,133 +183,97 @@ TCHAR  szCheck[254];
 }
 
 
-BOOL DevLX16xx::LX16xxDirectLink(PDeviceDescriptor_t d, BOOL bLinkEnable)
-{
-TCHAR  szTmp[254];
-  if(bLinkEnable)
-  {
-	LockComm();
-	StartupStore(TEXT("enable LX 16xx direct Link %s"), NEWLINE);
-	_stprintf(szTmp, TEXT("$PFLX0,COLIBRI"));
-	LX16xxNMEAddCheckSumStrg(szTmp);
-	d->Com->WriteString(szTmp);
-	Sleep(100);
-  }
-  else
-  {
-	// exit transfer mode
-	// and return to normal LX16xx  communication
-	StartupStore(TEXT("return from LX 16xx link %s"), NEWLINE);
-	_stprintf(szTmp, TEXT("$PFLX0,LX1600"));
-	LX16xxNMEAddCheckSumStrg(szTmp);
-	d->Com->WriteString(szTmp);
-	unsigned long lOldBR =   d->Com->GetBaudrate();
-
-	/* switch to 4k8 for new Firmware versions of LX1600 */
-	d->Com->SetBaudrate(4800);
-	Sleep(100);
-	d->Com->WriteString(szTmp);
-	Sleep(100);
-	d->Com->WriteString(szTmp);
-	Sleep(100);
-
-	/* return to previous original */
-	d->Com->SetBaudrate(lOldBR);
-	Sleep(100);
-	d->Com->WriteString(szTmp);
-	Sleep(100);
-	d->Com->WriteString(szTmp);
-	Sleep(100);
-	UnlockComm();
-  }
-  return true;
-}
-
-
-bool DevLX16xx::SetupLX_Sentence(PDeviceDescriptor_t d)
+bool DevLXV7::SetupLX_Sentence(PDeviceDescriptor_t d)
 {
 TCHAR  szTmp[254];
 
-  _stprintf(szTmp, TEXT("$PFLX0,GPGGA,1,GPRMC,1,LXWP0,1,LXWP1,0,LXWP2,5,LXWP3,17,LXWP4,20,LXWP5,50"));
 
-  LX16xxNMEAddCheckSumStrg(szTmp);
+_stprintf(szTmp, TEXT("$PLXV0,NMEARATE,W,5,1,1,1,1,1,1"));
+  LXV7NMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
 
-  static int oldQNH=0;
-  int iQNH= (int) QNH *1000;
-  if(GPS_INFO.BaroAltitudeAvailable)
-  {
-    if(iQNH != oldQNH)
-    {
-	  oldQNH  = iQNH;
-      _stprintf(szTmp, TEXT("$PFLX3,%i,,,,,,,,,,,,"),(int)((QFEAltitudeOffset-  (double)LX16xxAlt) *TOFEET));
-      LX16xxNMEAddCheckSumStrg(szTmp);
-      LX166AltitudeUpdateTimeout = 5;
-      d->Com->WriteString(szTmp);
-    }
-  }
+
   return true;
+}
+
+long Baudrate(int iIdx)
+{
+//	indexes are following:
+//	enum { br4800=0, br9600, br19200, br38400, br57600,
+//	br115200,br230400,br256000,br460800, br500k, br1M};
+long lBaudrate = -1;
+switch (iIdx)
+{
+  case 0:  lBaudrate = 4800   ; break;
+  case 1:  lBaudrate = 9600   ; break;
+  case 2:  lBaudrate = 19200  ; break;
+  case 3:  lBaudrate = 38400  ; break;
+  case 4:  lBaudrate = 56800  ; break;
+  case 5:  lBaudrate = 115200 ; break;
+  case 6:  lBaudrate = 230400 ; break;
+  case 7:  lBaudrate = 256000 ; break;
+  case 8:  lBaudrate = 460800 ; break;
+  case 9:  lBaudrate = 500000 ; break;
+  case 10: lBaudrate = 1000000; break;
+  default: lBaudrate = -1     ; break;
+}
+return lBaudrate;
 }
 
 
 
-
-BOOL LX16xxPutMacCready(PDeviceDescriptor_t d, double MacCready){
+BOOL LXV7PutMacCready(PDeviceDescriptor_t d, double MacCready){
 TCHAR  szTmp[254];
-if(bValid == false)
+if(LXV7_bValid == false)
   return false;
-if(BUGS <= 0.9)
-  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%3.1f,%4.2f,%4.2f,%4.2f,%d"), MacCready ,(1.0+BALLAST),(1.00-BUGS)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
-else
- _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,0%3.1f,%4.2f,%4.2f,%4.2f,%d"), MacCready ,(1.0+BALLAST),(1.00-BUGS)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
 
-  LX16xxNMEAddCheckSumStrg(szTmp);
+  _stprintf(szTmp, TEXT("$PLXV0,MC,W,%3.1f"), MacCready );
+
+  LXV7NMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
-  MacCreadyUpdateTimeout = 5;
+
+
+  LXV7_MacCreadyUpdateTimeout = 5;
+
+
   return true;
 
 }
 
 
-BOOL LX16xxPutBallast(PDeviceDescriptor_t d, double Ballast){
+BOOL LXV7PutBallast(PDeviceDescriptor_t d, double Ballast){
 TCHAR  szTmp[254];
-if(bValid == false)
+if(LXV7_bValid == false)
   return false;
 
-//int iBal = (int) (Ballast*10.0);
- //Ballast = (double) iBal;
-if(BUGS <= 0.9)
-  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%3.1f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY ,(1.0+Ballast),(1.00-BUGS)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
-else
-  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,0%3.1f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY ,(1.0+Ballast),(1.00-BUGS)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
 
- LX16xxNMEAddCheckSumStrg(szTmp);
+  _stprintf(szTmp, TEXT("$PLXV0,BAL,W,%4.2f"),(1.0+Ballast));
+
+ LXV7NMEAddCheckSumStrg(szTmp);
  d->Com->WriteString(szTmp);
 
- BallastUpdateTimeout =5;
+
+ //DevLXV7::PutGPRMB(d);
+
+ LXV7_BallastUpdateTimeout =10;
  return(TRUE);
 
 }
 
-// ToDo raw 2.5% may cause circular updates due to inaccurate steps
-// can be solved later update from LX to LK works
-BOOL LX16xxPutBugs(PDeviceDescriptor_t d, double Bugs){
+
+BOOL LXV7PutBugs(PDeviceDescriptor_t d, double Bugs){
 TCHAR  szTmp[254];
 
-if(bValid == false)
+if(LXV7_bValid == false)
   return false;
 
 
-    if(Bugs < 0.7)
-      Bugs	= 0.7;
-    if(BUGS <= 0.9)
-	  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,%3.1f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY , (1.0+BALLAST),(1.00-Bugs)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
-    else
-	  _stprintf(szTmp, TEXT("$PFLX2,%3.1f,%4.2f,0%3.1f,%4.2f,%4.2f,%4.2f,%d"), MACCREADY , (1.0+BALLAST),(1.00-Bugs)*100.0,fPolar_a, fPolar_b, fPolar_c,(int) fVolume);
-	LX16xxNMEAddCheckSumStrg(szTmp);
+	  _stprintf(szTmp, TEXT("$PLXV0,BUGS,W,%3.1f"),(1.00-Bugs)*100.0);
+
+	LXV7NMEAddCheckSumStrg(szTmp);
 	d->Com->WriteString(szTmp);
 
-	BugsUpdateTimeout = 5;
+	LXV7_BugsUpdateTimeout = 5;
     return(TRUE);
 
 }
@@ -264,52 +292,90 @@ if(bValid == false)
 /// @retval true if the sentence has been parsed
 ///
 //static
-BOOL DevLX16xx::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
+BOOL DevLXV7::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
 {
   static int i=40;
-
+  TCHAR  szTmp[256];
   if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
   {
-	if(iLX16xx_RxUpdateTime > 0)
+	if(iLXV7_RxUpdateTime > 0)
 	{
-	  iLX16xx_RxUpdateTime--;
+	  iLXV7_RxUpdateTime--;
 	}
 	else
 	{
-	  if(fabs(oldMC - MACCREADY)> 0.005f)
+	  if(fabs(LXV7_oldMC - MACCREADY)> 0.005f)
 	  {
-		LX16xxPutMacCready( d,  MACCREADY);
-		oldMC = MACCREADY;
-		MacCreadyUpdateTimeout = 2;
+		LXV7PutMacCready( d,  MACCREADY);
+		LXV7_oldMC = MACCREADY;
+		LXV7_MacCreadyUpdateTimeout = 2;
       }
 	}
   }
 
-  /* configure LX after 30 GPS positions */
+  /* configure LX after 10 GPS positions */
   if (_tcsncmp(_T("$GPGGA"), sentence, 6) == 0)
   {
-    if(i++ > 10)
+    if(i++ > 4)
     {
       SetupLX_Sentence(d);
 	  i=0;
     }
   }
 
+  static int oldQFEOff =0;
+  static int iOldQNH   =0;
 
-    if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
-      return LXWP0(d, sentence + 7, info);
-    else
-      if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
-        return LXWP1(d, sentence + 7, info);
+
+
+    int iQNH = (int)(QNH*100.0);
+    if(iQNH != iOldQNH)
+    {
+  	iOldQNH = iQNH;
+      _stprintf(szTmp, TEXT("$PLXV0,QNH,W,%i"),(int)iQNH);
+      LXV7NMEAddCheckSumStrg(szTmp);
+      d->Com->WriteString(szTmp);
+    }
+
+    int QFE = (int)QFEAltitudeOffset;
+    if(QFE != oldQFEOff)
+    {
+  	oldQFEOff = QFE;
+      _stprintf(szTmp, TEXT("$PLXV0,ELEVATION,W,%i"),(int)(QFEAltitudeOffset));
+      LXV7NMEAddCheckSumStrg(szTmp);
+  //    d->Com->WriteString(szTmp);
+    }
+    if(LXV7_iGPSBaudrate ==0)
+    {
+      _stprintf(szTmp, TEXT("$PLXV0,BRGPS,R"));
+      LXV7NMEAddCheckSumStrg(szTmp);
+      d->Com->WriteString(szTmp);
+    }
+
+if (_tcsncmp(_T("$PLXVF"), sentence, 6) == 0)
+  return PLXVF(d, sentence + 7, info);
+else
+  if (_tcsncmp(_T("$PLXVS"), sentence, 6) == 0)
+    return PLXVS(d, sentence + 7, info);
+  else
+	if (_tcsncmp(_T("$PLXV0"), sentence, 6) == 0)
+	  return PLXV0(d, sentence + 7, info);
+	else
+      if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
+        return LXWP0(d, sentence + 7, info);
       else
-        if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
-          return LXWP2(d, sentence + 7, info);
+        if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
+          return LXWP1(d, sentence + 7, info);
         else
-          if (_tcsncmp(_T("$LXWP3"), sentence, 6) == 0)
-            return LXWP3(d, sentence + 7, info);
+          if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
+            return LXWP2(d, sentence + 7, info);
           else
-            if (_tcsncmp(_T("$LXWP4"), sentence, 6) == 0)
-              return LXWP4(d, sentence + 7, info);
+            if (_tcsncmp(_T("$LXWP3"), sentence, 6) == 0)
+              return LXWP3(d, sentence + 7, info);
+            else
+              if (_tcsncmp(_T("$LXWP4"), sentence, 6) == 0)
+                return LXWP4(d, sentence + 7, info);
+
   return(false);
 } // ParseNMEA()
 
@@ -324,7 +390,7 @@ BOOL DevLX16xx::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* inf
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX16xx::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLXV7::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
   // $LXWP0,logger_stored, airspeed, airaltitude,
   //   v1[0],v1[1],v1[2],v1[3],v1[4],v1[5], hdg, windspeed*CS<CR><LF>
@@ -340,26 +406,6 @@ bool DevLX16xx::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* i
   // e.g.:
   // $LXWP0,Y,222.3,1665.5,1.71,,,,,,239,174,10.1
 
-  double alt, airspeed;
-
-  if (ParToDouble(sentence, 1, &airspeed))
-  {
-    airspeed /= TOKPH;
-    info->TrueAirspeed = airspeed;
-    info->AirspeedAvailable = TRUE;
-  }
-  if(LX166AltitudeUpdateTimeout >0)
-	  LX166AltitudeUpdateTimeout--;
-  else
-    if (ParToDouble(sentence, 2, &alt))
-    {
-    	LX16xxAlt = (int) alt;
-      info->IndicatedAirspeed = airspeed / AirDensityRatio(alt);
-      UpdateBaroSource( info, LX16xx, AltitudeToQNHAltitude(alt));
-    }
-
-  if (ParToDouble(sentence, 3, &info->Vario))
-    info->VarioAvailable = TRUE;
 
 
  /*
@@ -384,7 +430,7 @@ bool DevLX16xx::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* i
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX16xx::LXWP1(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
+bool DevLXV7::LXWP1(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
 {
   // $LXWP1,serial number,instrument ID, software version, hardware
   //   version,license string,NU*SC<CR><LF>
@@ -412,7 +458,7 @@ bool DevLX16xx::LXWP1(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX16xx::LXWP2(PDeviceDescriptor_t, const TCHAR* sentence, NMEA_INFO*)
+bool DevLXV7::LXWP2(PDeviceDescriptor_t, const TCHAR* sentence, NMEA_INFO*)
 {
   // $LXWP2,mccready,ballast,bugs,polar_a,polar_b,polar_c, audio volume
   //   *CS<CR><LF>
@@ -429,27 +475,27 @@ bool DevLX16xx::LXWP2(PDeviceDescriptor_t, const TCHAR* sentence, NMEA_INFO*)
 
 double fTmp;
 int iTmp;
-if(MacCreadyUpdateTimeout > 0)
+if(LXV7_MacCreadyUpdateTimeout > 0)
 {
-	MacCreadyUpdateTimeout--;
+	LXV7_MacCreadyUpdateTimeout--;
 }
 else
   if (ParToDouble(sentence, 0, &fTmp))
   {
 	iTmp =(int) (fTmp*100.0+0.5f);
 	fTmp = (double)(iTmp)/100.0;
-	bValid = true;
+	LXV7_bValid = true;
 	if(fabs(MACCREADY - fTmp)> 0.001)
 	{
 	  MACCREADY = fTmp;
-	  iLX16xx_RxUpdateTime =5;
+	  iLXV7_RxUpdateTime =5;
 	}
   }
 
 
-if(BallastUpdateTimeout > 0)
+if(LXV7_BallastUpdateTimeout > 0)
 {
-  BallastUpdateTimeout--;
+	LXV7_BallastUpdateTimeout--;
 }
 else
   if (ParToDouble(sentence, 1, &fTmp))
@@ -460,13 +506,13 @@ else
 	if(  fabs(fTmp -BALLAST) >= 0.05)
     {
       BALLAST = fTmp;
-      iLX16xx_RxUpdateTime = 5;
+      iLXV7_RxUpdateTime = 5;
     }
   }
 
-if(BugsUpdateTimeout > 0)
+if(LXV7_BugsUpdateTimeout > 0)
 {
-  BugsUpdateTimeout--;
+  LXV7_BugsUpdateTimeout--;
 }
 else
   if(ParToDouble(sentence, 2, &fTmp))
@@ -476,10 +522,10 @@ else
 	if(  fabs(fTmp -BUGS) >= 0.03)
     {
       BUGS = fTmp;
-      iLX16xx_RxUpdateTime = 5;
+      iLXV7_RxUpdateTime = 5;
     }
   }
-
+/*
   if (ParToDouble(sentence, 3, &fTmp))
     fPolar_a = fTmp;
   if (ParToDouble(sentence, 4, &fTmp))
@@ -490,6 +536,7 @@ else
   {
     fVolume = fTmp;
   }
+*/
   return(true);
 } // LXWP2()
 
@@ -504,7 +551,7 @@ else
 /// @retval true if the sentence has been parsed
 ///
 //static
-bool DevLX16xx::LXWP3(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
+bool DevLXV7::LXWP3(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
 {
   // $LXWP3,altioffset, scmode, variofil, tefilter, televel, varioavg,
   //   variorange, sctab, sclow, scspeed, SmartDiff,
@@ -534,7 +581,7 @@ bool DevLX16xx::LXWP3(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
 } // LXWP3()
 
 
-bool DevLX16xx::PutGPRMB(PDeviceDescriptor_t d)
+bool DevLXV7::PutGPRMB(PDeviceDescriptor_t d)
 {
 
 //RMB - The recommended minimum navigation sentence is sent whenever a route or a goto is active.
@@ -581,7 +628,7 @@ extern WPCALC   *WayPointCalc;
       WayPointCalc->VGR * TOKNOTS);
 
   //  _stprintf(szTmp, TEXT("$GPRMB,A,0.00,L,KLE,UWOE,4917.24,N,12309.57,E,011.3,052.5,000.5,V"));
-  LX16xxNMEAddCheckSumStrg(szTmp);
+  LXV7NMEAddCheckSumStrg(szTmp);
 
   d->Com->WriteString(szTmp);
 
@@ -590,7 +637,7 @@ return(true);
 }
 
 
-bool DevLX16xx::LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+bool DevLXV7::LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
 
 // $LXWP4 Sc, Netto, Relativ, gl.dif, leg speed, leg time, integrator, flight time, battery voltage*CS<CR><LF>
@@ -605,14 +652,192 @@ bool DevLX16xx::LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* i
 // flight time unsigned in seconds
 // battery voltage float (V)
 
-  double Batt;
-
-  if (ParToDouble(sentence, 9, &Batt))
-  {
-	 info->ExtBatt1_Voltage = Batt;
-  }
-
 
   return(true);
 } // LXWP4()
 
+
+
+bool DevLXV7::PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+{
+
+  double alt, airspeed;
+
+
+  if (ParToDouble(sentence, 1, &info->AccelX))
+	if (ParToDouble(sentence, 2, &info->AccelY))
+	  if (ParToDouble(sentence, 3, &info->AccelZ))
+	  {
+		info->AccelerationAvailable = true;
+		info->Gload=info->AccelX;
+		if(info->Gload<info->AccelY)
+		  info->Gload=info->AccelY;
+		if(info->Gload<info->AccelZ)
+		  info->Gload=info->AccelZ;
+	  }
+
+
+  if (ParToDouble(sentence, 5, &airspeed))
+  {
+	airspeed /= TOKPH;
+	info->IndicatedAirspeed = airspeed;
+	info->AirspeedAvailable = TRUE;
+  }
+
+  if (ParToDouble(sentence, 6, &alt))
+  {
+	UpdateBaroSource( info, LXV7, AltitudeToQNHAltitude(alt));
+  }
+
+  if (ParToDouble(sentence, 4, &info->Vario))
+  {
+	info->VarioAvailable = TRUE;
+	TriggerVarioUpdate();
+  }
+
+
+  // Get STF switch
+double fTmp;
+if (ParToDouble(sentence, 7, &fTmp))
+{
+int  iTmp = (int)(fTmp+0.1);
+EnableExternalTriggerCruise = true;
+
+static int  iOldVarioSwitch=0;
+if(iTmp != iOldVarioSwitch)
+{
+  iOldVarioSwitch = iTmp;
+  if(iTmp==1)
+  {
+    ExternalTriggerCruise = true;
+    ExternalTriggerCircling = false;
+  }
+  else
+  {
+    ExternalTriggerCruise = false;
+    ExternalTriggerCircling = true;
+  }
+}
+}
+
+  return(true);
+} // PLXVF()
+
+
+bool DevLXV7::PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+{
+double Batt;
+double OAT;
+  if (ParToDouble(sentence, 0, &OAT))
+	 info->OutsideAirTemperature = OAT;
+
+#ifdef SLOW_DET
+	  // Get STF switch
+  double fTmp;
+  if (ParToDouble(sentence, 1, &fTmp))
+  {
+    int  iTmp = (int)(fTmp+0.1);
+    EnableExternalTriggerCruise = true;
+
+    static int  iOldVarioSwitch=0;
+    if(iTmp != iOldVarioSwitch)
+    {
+	  iOldVarioSwitch = iTmp;
+      if(iTmp==1)
+      {
+	    ExternalTriggerCruise = true;
+	    ExternalTriggerCircling = false;
+      }
+      else
+      {
+        ExternalTriggerCruise = false;
+	    ExternalTriggerCircling = true;
+      }
+    }
+  }
+#endif
+
+  if (ParToDouble(sentence, 2, &Batt))
+	 info->ExtBatt1_Voltage = Batt;
+
+
+  return(true);
+} // PLXVS()
+
+
+
+bool DevLXV7::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
+{
+TCHAR  szTmp1[80], szTmp2[80];
+int iTmp;
+
+
+
+  NMEAParser::ExtractParameter(sentence,szTmp1,1);
+  if  (_tcscmp(szTmp1,_T("W"))!=0)  // no write flag received
+	 return false;
+
+  NMEAParser::ExtractParameter(sentence,szTmp1,0);
+  if  (_tcscmp(szTmp1,_T("BRGPS"))==0)
+  {
+	NMEAParser::ExtractParameter(sentence,szTmp2,2);
+	LXV7_iGPSBaudrate = Baudrate( (int)( (StrToDouble(szTmp2,NULL))+0.1 ) );
+  }
+
+  if (_tcscmp(szTmp1,_T("BRPDA"))==0)
+  {
+	NMEAParser::ExtractParameter(sentence,szTmp2,2);
+	LXV7_iPDABaudrate = Baudrate( (int) StrToDouble(szTmp2,NULL));
+  }
+
+  if (_tcscmp(szTmp1,_T("MC"))==0)
+  {
+	NMEAParser::ExtractParameter(sentence,szTmp2,2);
+	iTmp =(int) StrToDouble(szTmp2,NULL);
+  }
+
+  if (_tcscmp(szTmp1,_T("BAL"))==0)
+  {
+	NMEAParser::ExtractParameter(sentence,szTmp2,2);
+	iTmp = (int) StrToDouble(szTmp2,NULL);
+  }
+
+  if (_tcscmp(szTmp1,_T("BUGS"))==0)
+  {
+	NMEAParser::ExtractParameter(sentence,szTmp2,2);
+	iTmp = (int) StrToDouble(szTmp2,NULL);
+  }
+
+  if (_tcscmp(szTmp1,_T("BUGS"))==0)
+  {
+	NMEAParser::ExtractParameter(sentence,szTmp2,2);
+	iTmp = (int) StrToDouble(szTmp2,NULL);
+  }
+
+
+  if (_tcscmp(szTmp1,_T("VOL"))==0)
+  {
+	NMEAParser::ExtractParameter(sentence,szTmp2,2);
+	iTmp = (int) StrToDouble(szTmp2,NULL);
+  }
+
+  if (_tcscmp(szTmp1,_T("POLAR"))==0)
+  {
+	NMEAParser::ExtractParameter(sentence,szTmp2,2);
+	iTmp = (int) StrToDouble(szTmp2,NULL);
+  }
+
+  if (_tcscmp(szTmp1,_T("CONNECTION"))==0)
+  {
+	NMEAParser::ExtractParameter(sentence,szTmp2,2);
+	iTmp = (int) StrToDouble(szTmp2,NULL);
+  }
+
+  if (_tcscmp(szTmp1,_T("NMEARATE"))==0)
+  {
+	NMEAParser::ExtractParameter(sentence,szTmp2,2);
+	iTmp = (int) StrToDouble(szTmp2,NULL);
+  }
+
+  return(true);
+} // PLXV0()

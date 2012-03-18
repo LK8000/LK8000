@@ -128,6 +128,7 @@ bool DevLX::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 
   if (ParToDouble(sentence, 2, &alt))
   {
+    LKASSERT(AirDensityRatio(alt)!=0);
     info->IndicatedAirspeed = airspeed / AirDensityRatio(alt);
 
     if (d == pDevPrimaryBaroSource)  {

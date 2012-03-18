@@ -460,6 +460,7 @@ DEVS	:=\
 	$(DEV)/devLX.cpp \
 	$(DEV)/devLX16xx.cpp \
 	$(DEV)/devLXNano.cpp \
+	$(DEV)/devLXV7.cpp \
 	$(DEV)/devPosiGraph.cpp \
 	$(DEV)/devVolkslogger.cpp \
 	$(DEV)/devXCOM760.cpp \

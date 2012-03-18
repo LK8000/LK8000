@@ -148,6 +148,7 @@ BOOL devInit(LPTSTR CommandLine){
     DeviceList[i].Name[0] = '\0';
     DeviceList[i].ParseNMEA = NULL;
     DeviceList[i].PutMacCready = NULL;
+    DeviceList[i].DirectLink = NULL;
     DeviceList[i].PutBugs = NULL;
     DeviceList[i].PutBallast = NULL;
     DeviceList[i].Open = NULL;
@@ -405,6 +406,19 @@ BOOL devParseNMEA(int portNum, TCHAR *String, NMEA_INFO *GPS_INFO){
 
 }
 
+BOOL devDirectLink(PDeviceDescriptor_t d,	BOOL bLinkEnable)
+{
+  BOOL result = TRUE;
+
+  if (SIMMODE)
+	return TRUE;
+
+  if (d != NULL && d->DirectLink != NULL)
+	result = d->DirectLink(d, bLinkEnable);
+
+
+  return result;
+}
 
 BOOL devPutMacCready(PDeviceDescriptor_t d, double MacCready)
 {
@@ -535,25 +549,10 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
   _sntprintf(buffer, BUFF_LEN, _T("%s: %s..."), gettext(_T("_@M1400_")), gettext(_T("_@M571_")));
   CreateProgressDialog(buffer);
 
+  /***********************************************************/
+  devDirectLink(d,true);
+  /***********************************************************/
   LockComm();
-
-  /***********************************************************/
-  bool isLx16xx=false;
-  for (int i=0; i<NUMDEV; i++)
-  {
-   if ( _tcscmp(DeviceList[i].Name,_T("LX16xx"))==0)
-     isLx16xx=true;
-  }
-  isLx16xx = false;
-  if (isLx16xx)
-  {
-    // for LX16xx direct communication
-	// set it to transfer mode
-    devFormatNMEAString(buffer, BUFF_LEN, TEXT("PFLX0,COLIBRI") );
-    d->Com->WriteString(buffer);
-    Sleep(100);
-  }
-  /***********************************************************/
 
   if ((d != NULL) && (d->Declare != NULL))
 	result = d->Declare(d, decl, errBufferLen, errBuffer);
@@ -563,21 +562,11 @@ BOOL devDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLe
 	}
   }
 
- /***********************************************************/
-  if (isLx16xx)
-  {
-    // exit transfer mode
-    // and return to normal LX16xx  communication
-    devFormatNMEAString(buffer, BUFF_LEN, TEXT("PFLX0,LX1600") );
-    d->Com->WriteString(buffer);
 
-    // check if back with audio demo
-    devFormatNMEAString(buffer, 512, TEXT("PFLX0,AUDIODEMO") );
-    d->Com->WriteString(buffer);
-  }
-  /***********************************************************/
   UnlockComm();
-  
+  /***********************************************************/
+  devDirectLink(d,false);
+  /***********************************************************/
   CloseProgressDialog();
   
   return result;
@@ -727,10 +716,12 @@ void devWriteNMEAString(PDeviceDescriptor_t d, const TCHAR *text)
 
   devFormatNMEAString(tmp, 512, text);
 
+  devDirectLink(d,true);
   LockComm();
   if (d->Com)
     d->Com->WriteString(tmp);
   UnlockComm();
+  devDirectLink(d,false);
 }
 
 
@@ -802,25 +793,9 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
   BOOL result = TRUE;
 #define BUFF_LEN 512
   TCHAR Buffer[BUFF_LEN];
-
   d->Com->StopRxThread();
   d->Com->SetRxTimeout(500);                     // set RX timeout to 500[ms]
 
-  /***********************************************************/
-  bool isLx16xx=false;
-  for (int i=0; i<NUMDEV; i++)
-  {
-   if ( _tcscmp(DeviceList[i].Name,_T("LX16xx"))==0)
-	 isLx16xx=true;
-  }
-  if (isLx16xx) {
-    // for LX16xx direct communication
-	// set it to transfer mode
-    devFormatNMEAString(Buffer, BUFF_LEN, TEXT("PFLX0,COLIBRI") );
-    d->Com->WriteString(Buffer);
-    Sleep(100);
-  }
-  /***********************************************************/
 
   _stprintf(Buffer,TEXT("PFLAC,S,PILOT,%s"),decl->PilotName);
   if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
@@ -886,38 +861,10 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
   devFormatNMEAString(Buffer, BUFF_LEN, TEXT("PFLAR,0") );
   d->Com->WriteString(Buffer);
   Sleep(100);
-  /***********************************************************/
-    if (isLx16xx)
-    {
-  	  // exit transfer mode
-      // and return to normal LX16xx  communication
-
-      devFormatNMEAString(Buffer, BUFF_LEN, TEXT("PFLX0,LX1600") );
-      d->Com->WriteString(Buffer);
-      unsigned long lOldBR =   d->Com->GetBaudrate();
-
-      /* switch to 4k8 for new Firmware versions of LX1600 */
-      d->Com->SetBaudrate(4800);
-      Sleep(100);
-      d->Com->WriteString(Buffer);
-      Sleep(100);
-      d->Com->WriteString(Buffer);
-      Sleep(100);
-
-      /* return to previous original */
-      d->Com->SetBaudrate(lOldBR);
-      Sleep(100);
-      d->Com->WriteString(Buffer);
-      Sleep(100);
-      d->Com->WriteString(Buffer);
-      Sleep(100);
 
 
-    }
-    /***********************************************************/
 
   d->Com->SetRxTimeout(RXTIMEOUT);                       // clear timeout
   d->Com->StartRxThread();                       // restart RX thread
-
   return result;
 }

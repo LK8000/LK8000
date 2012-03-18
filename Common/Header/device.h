@@ -32,6 +32,8 @@ typedef	struct DeviceDescriptor_t{
   FILE  *fhLogFile;
   ComPort *Com;
   TCHAR	Name[DEVNAMESIZE+1];
+
+  BOOL (*DirectLink)(DeviceDescriptor_t *d, BOOL	bLinkEnable);
   BOOL (*ParseNMEA)(DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *GPS_INFO);
   BOOL (*PutMacCready)(DeviceDescriptor_t	*d,	double McReady);
   BOOL (*PutBugs)(DeviceDescriptor_t *d, double	Bugs);
@@ -91,6 +93,7 @@ BOOL ExpectString(PDeviceDescriptor_t d, const TCHAR *token);
 BOOL devHasBaroSource(void);
 bool devIsDisabled(int devindex);
 
+BOOL devDirectLink(PDeviceDescriptor_t d,	BOOL bLink);
 BOOL devParseNMEA(int portNum, TCHAR *String,	NMEA_INFO	*GPS_INFO);
 BOOL devPutMacCready(PDeviceDescriptor_t d,	double MacCready);
 BOOL devPutBugs(PDeviceDescriptor_t	d, double	Bugs);

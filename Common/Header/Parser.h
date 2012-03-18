@@ -65,6 +65,7 @@ typedef enum {
   LK_EXT1,
   LX,
   LX16xx,
+  LXV7,
   LX_NANO,
   NMEA_OUT,
   POSIGRAPH,
@@ -75,7 +76,7 @@ typedef enum {
   HOLUX,
   TASMAN,
   ROYALTEK3200,
-  FLARM,
+  FLARM
 
 } DEVICE_TYPE;
 
@@ -140,6 +141,7 @@ typedef struct _NMEA_INFO
   double Gload;
   BOOL AccelerationAvailable;
   double AccelX;
+  double AccelY;
   double AccelZ;
   int SatellitesUsed;
   BOOL TemperatureAvailable;

@@ -7,8 +7,8 @@
 */
 //__________________________________________________________compilation_control_
 
-#ifndef __DEVLX16xx_H_
-#define __DEVLX16xx_H_
+#ifndef __DEVLXV7_H_
+#define __DEVLXV7_H_
 
 //_____________________________________________________________________includes_
 
@@ -19,8 +19,10 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /// General LX device (parsing LXWPn sentences).
 ///
-class DevLX16xx : public DevBase
+class DevLXV7 : public DevBase
 {
+
+
   //----------------------------------------------------------------------------
   public:
 
@@ -38,19 +40,26 @@ class DevLX16xx : public DevBase
   protected:
 
     /// Protected only constructor - class should not be instantiated.
-    DevLX16xx() {}
+    DevLXV7() {}
 
     /// Installs device specific handlers.
     static BOOL Install(PDeviceDescriptor_t d);
 
-    static BOOL LX16xxDirectLink(PDeviceDescriptor_t d, BOOL LinkStatus);
-
     /// Parses LXWPn sentences.
     static BOOL ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info);
 
+    static BOOL LXV7DirectLink(PDeviceDescriptor_t d, BOOL LinkStatus);
     /// Returns device name (max length is @c DEVNAMESIZE).
     static const TCHAR* GetName();
 
+    /// Parses PLXVF sentence.
+    static bool PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+
+    /// Parses PLXVS sentence.
+    static bool PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
+
+    /// Parses PLXV0 sentence.
+    static bool PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
     /// Parses LXWP0 sentence.
     static bool LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info);
 
@@ -70,7 +79,7 @@ class DevLX16xx : public DevBase
 
 //______________________________________________________________________________
 
-#endif // __DEVLX16xx_H_
+#endif // __DEVLXV7_H_
 
 
 
