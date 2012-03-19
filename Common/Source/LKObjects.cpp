@@ -48,6 +48,7 @@ void LKObjects_Create() {
   LKBrush_Blue = CreateSolidBrush(COLORREF RGB_BLUE);
   LKBrush_Indigo = CreateSolidBrush(COLORREF RGB_INDIGO);
   LKBrush_LightGrey = CreateSolidBrush(COLORREF RGB_LIGHTGREY);
+  LKBrush_DarkGrey = CreateSolidBrush(RGB(100,100,100));
   LKBrush_LcdGreen = CreateSolidBrush(COLORREF RGB_LCDGREEN);
   LKBrush_LcdDarkGreen = CreateSolidBrush(COLORREF RGB_LCDDARKGREEN);
   LKBrush_Grey = CreateSolidBrush(COLORREF RGB_GREY);
@@ -216,6 +217,7 @@ void LKObjects_Delete() {
   if(LKBrush_Blue) DeleteObject(LKBrush_Blue);
   if(LKBrush_Indigo) DeleteObject(LKBrush_Indigo);
   if(LKBrush_LightGrey) DeleteObject(LKBrush_LightGrey);
+  if(LKBrush_DarkGrey) DeleteObject(LKBrush_DarkGrey);
   if(LKBrush_LcdGreen) DeleteObject(LKBrush_LcdGreen);
   if(LKBrush_LcdDarkGreen) DeleteObject(LKBrush_LcdDarkGreen);
   if(LKBrush_Grey) DeleteObject(LKBrush_Grey);
