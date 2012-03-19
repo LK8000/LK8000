@@ -380,22 +380,14 @@ bool LoadChecklist(short checklistmode) {
 		_tcscat(filename,_T("\\"));
 		_tcscat(filename,_T(LKF_LOGBOOKTXT));
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M1748_")));  // logbook
-    #ifdef ASCIILOGBOOK // old format in ASCII (to be removed after tests)
-    return LoadAsciiChecklist(filename);
-    #else
-    return LoadUtfChecklist(filename);
-    #endif
+   		 return LoadUtfChecklist(filename);
 	// logbook LST
 	case 2:
 		LocalPath(filename, TEXT(LKD_LOGS));
 		_tcscat(filename,_T("\\"));
 		_tcscat(filename,_T(LKF_LOGBOOKLST));
 		_stprintf(NoteModeTitle,_T("%s"),gettext(_T("_@M1748_")));  // logbook
-    #ifdef ASCIILOGBOOK // old format in ASCII (to be removed after tests)
-    return LoadAsciiChecklist(filename);
-    #else
-    return LoadUtfChecklist(filename);
-    #endif
+		return LoadUtfChecklist(filename);
 		break;
   default:
     StartupStore(_T("... Invalid checklist mode (%d)%s"),checklistmode,NEWLINE);
