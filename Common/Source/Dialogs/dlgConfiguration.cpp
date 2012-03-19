@@ -1044,38 +1044,6 @@ static void OnUTCData(DataField *Sender, DataField::DataAccessKind_t Mode){
 
 }
 
-#if 0 // REMOVE
-static void OnPolarFileData(DataField *Sender, DataField::DataAccessKind_t Mode){
-
-  switch(Mode){
-    case DataField::daGet:
-    break;
-    case DataField::daPut:
-    case DataField::daChange:
-    break;
-	default: 
-		StartupStore(_T("........... DBG-907%s"),NEWLINE); // 091105
-		break;
-  }
-
-}
-
-// Probably we can remove this stuff entirely!
-static void OnPilotFileData(DataField *Sender, DataField::DataAccessKind_t Mode){
-
-  switch(Mode){
-    case DataField::daGet:
-    break;
-    case DataField::daPut:
-    case DataField::daChange:
-    break;
-	default: 
-		StartupStore(_T("........... DBG-907%s"),NEWLINE); // 091105
-		break;
-  }
-#endif
-
-
 
 // mode 0: Aircraft
 // mode 1: Pilot
@@ -1115,7 +1083,6 @@ static void OnProfileSaveAs(WindowControl * Sender, short mode) {
 			UpdateAircraftConfig();
 			LKAircraftSave(dfe->GetPathFile());
 		} else {
-			// UpdatePilotConfig(); REMOVE
 			LKPilotSave(dfe->GetPathFile());
 		}
 	// LKTOKEN  _@M535_ = "Profile saved!" 
@@ -1187,7 +1154,6 @@ static void OnProfileSaveNew(WindowControl * Sender, short mode) {
 			UpdateAircraftConfig();
 			LKAircraftSave(file_name);
 		} else {
-			// UpdatePilotConfig(); // REMOVE
 			LKPilotSave(file_name);
 		}
 		dfe->addFile(profile_name, file_name);
@@ -1438,8 +1404,6 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnWaypointDeleteClicked),
   DeclareCallBackEntry(OnWaypointEditClicked),
   DeclareCallBackEntry(OnWaypointSaveClicked),
-
-//  DeclareCallBackEntry(OnPolarFileData), REMOVE
 
   DeclareCallBackEntry(OnDeviceAData),
   DeclareCallBackEntry(OnDeviceBData),
@@ -4015,36 +3979,6 @@ int ival;
     }
   }
 
-/* REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("prpHandicap"));
-  if (wp) {
-    ival  = wp->GetDataField()->GetAsInteger();
-    if (Handicap != ival) {
-      Handicap = ival;
-      changed = true;
-    }
-  }
-*/
-
-/* REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("prpPolarFile"));
-  if (wp) {
-    DataFieldFileReader* dfe;
-    dfe = (DataFieldFileReader*)wp->GetDataField();
-    _tcscpy(temptext, dfe->GetPathFile());
-    if (_tcscmp(temptext,_T(""))==0) {
-	_tcscpy(temptext,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
-    } else
-      ContractLocalPath(temptext);
-
-    if (_tcscmp(temptext,szPolarFile)) {
-      _tcscpy(szPolarFile,temptext);
-      POLARFILECHANGED = true;
-      GlidePolar::SetBallast();
-      changed = true;
-    }
-  }
-*/
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointFile"));
   if (wp) {
@@ -4167,17 +4101,6 @@ int ival;
     }
   }
 
-/* REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("prpBallastSecsToEmpty"));
-  if (wp) {
-    ival = wp->GetDataField()->GetAsInteger();
-    if (BallastSecsToEmpty != ival) {
-      BallastSecsToEmpty = ival;
-      SetToRegistry(szRegistryBallastSecsToEmpty,(DWORD)BallastSecsToEmpty);
-      changed = true;
-    }
-  }
-*/
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWindCalcTime")); // 100113
   if (wp) {
@@ -4189,19 +4112,6 @@ int ival;
 	}
   }
 
-/* REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("prpMaxManoeuveringSpeed"));
-  if (wp) {
-    ival = iround((wp->GetDataField()->GetAsInteger()/SPEEDMODIFY)*1000.0);
-    if ((int)SAFTEYSPEED != (int)iround(ival/1000)) {
-      SAFTEYSPEED = ival;
-      SetToRegistry(szRegistrySafteySpeed,(DWORD)SAFTEYSPEED);
-	SAFTEYSPEED=ival/1000.0;
-      GlidePolar::SetBallast();
-      changed = true;
-    }
-  }
-*/
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpWindCalcSpeed")); // 100112
   if (wp) {
@@ -4277,21 +4187,6 @@ int ival;
     }
   }
 
-/* REMOVE
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAircraftCategory")); // VENTA4
-  if (wp) {
-    if (AircraftCategory != (AircraftCategory_t)
-	(wp->GetDataField()->GetAsInteger())) {
-      AircraftCategory = (AircraftCategory_t)
-	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryAircraftCategory,
-		    (DWORD)(AircraftCategory));
-      changed = true;
-      requirerestart = true;
-	if (ISPARAGLIDER) AATEnabled=TRUE;
-    }
-  }
-*/
 
   #if (0)
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltArrivMode"));
