@@ -28,9 +28,7 @@ BOOL MapWindow::Initialised = FALSE;
 DWORD  MapWindow::dwDrawThreadID;
 HANDLE MapWindow::hDrawThread;
 
-#if FASTPAN
 extern bool PanRefreshed;
-#endif
 
 #ifdef CPUSTATS
 extern void DrawCpuStats(HDC hdc, RECT rc );
@@ -136,7 +134,6 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
       //   RefreshMap()      in drawthread generally
       //
 
-#if FASTPAN
 
 extern int XstartScreen, YstartScreen, XtargetScreen, YtargetScreen;
 extern bool OnFastPanning;
@@ -191,13 +188,6 @@ extern bool OnFastPanning;
 
 	// Now we can clear the flag. If it was off already, no problems.
 	OnFastPanning=false;
-#else
-      if (!MapDirty && !first) {
-	// redraw old screen, must have been a request for fast refresh
-	BitBlt(hdcScreen, 0, 0, MapRect.right-MapRect.left,
-	       MapRect.bottom-MapRect.top, 
-	       hdcDrawWindow, 0, 0, SRCCOPY);
-#endif
 	continue;
 
       } else {
@@ -206,9 +196,7 @@ extern bool OnFastPanning;
 	// Notice: if we were fastpanning, than the map could not be dirty.
 	//
 	MapDirty = false;
-#if FASTPAN
 	PanRefreshed=true; // faster with no checks
-#endif
       } // MapDirty
 
       MapWindow::UpdateInfo(&GPS_INFO, &CALCULATED_INFO);

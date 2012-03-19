@@ -30,10 +30,8 @@ using std::max;
 
 COLORREF taskcolor = RGB_TASKLINECOL; // 091216
 static bool ignorenext=false;
-#if FASTPAN
 static bool MouseWasPanMoving=false;
 bool OnFastPanning=false;
-#endif
 
 MapWindow::Zoom MapWindow::zoom;
 MapWindow::Mode MapWindow::mode;
@@ -146,9 +144,7 @@ HPEN MapWindow::hpVisualGlideLightRed; // VENTA3
 HPEN MapWindow::hpVisualGlideHeavyRed; // VENTA3
 
 bool MapWindow::MapDirty = true;
-#if FASTPAN
 bool PanRefreshed=false;
-#endif
 
 bool MapWindow::ForceVisibilityScan = false;
 
@@ -363,7 +359,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       if (ActiveMap) ignorenext=true;
       break;
 
-#if FASTPAN
     case WM_MOUSEMOVE:
 	// Mouse moving!
 	if (wParam==MK_LBUTTON) {
@@ -420,17 +415,14 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 		} // minimal movement detected
 	} // mouse moved with Lbutton (dragging)
 	break;
-#endif // FASTPAN
 
     case WM_LBUTTONDOWN:
 _buttondown:
       if (LockModeStatus) break;
       dwDownTime = GetTickCount();
-#if FASTPAN
       // When we have buttondown these flags should be set off.
       MouseWasPanMoving=false;
       OnFastPanning=false;
-#endif
       // After calling a menu, on exit as we touch the screen we fall back here
       if (ignorenext) {
                 #ifdef DEBUG_MAPINPUT
@@ -445,16 +437,10 @@ _buttondown:
 
       LKevent=LKEVENT_NONE; // CHECK FIX TODO VENTA10  probably useless 090915
 
-#if FASTPAN
-#else
-     // This is bringing the map in foreground, and request FastRefresh
-     FullScreen();
-#endif
       break;
 
     case WM_LBUTTONUP:
 	if (LockModeStatus) break;
-#if FASTPAN
 	// Mouse released DURING panning, full redraw requested.
 	// Otherwise process virtual keys etc. as usual
 	if (MouseWasPanMoving) {
@@ -465,7 +451,6 @@ _buttondown:
 		dwDownTime=0; // otherwise we shall get a fake click passthrough
 		break;
 	}
-#endif
 	if (ignorenext||dwDownTime==0) { 
                 #ifdef DEBUG_MAPINPUT
 		if (ignorenext && (dwDownTime==0) )
@@ -745,18 +730,7 @@ goto_menu:
       if (dontdrawthemap) break;
 
       Screen2LatLon(lparam_X, lparam_Y, Xlat, Ylat);
-#if FASTPAN 
       if (SIMMODE && (!mode.Is(Mode::MODE_TARGET_PAN) && (distance>NIBLSCALE(36)))) {
-#else
-      if (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN) && (distance>36)) { // TODO FIX should be IBLSCALE 36 instead?
-	PanLongitude += Xstart-Xlat;
-	PanLatitude  += Ystart-Ylat;
-	RefreshMap();
-	// disable picking when in pan mode
-	break; 
-      } 
-      else if (SIMMODE && (!mode.Is(Mode::MODE_TARGET_PAN) && (distance>NIBLSCALE(36)))) {
-#endif
 	// This drag moves the aircraft (changes speed and direction)
 	double newbearing;
 	double oldbearing = GPS_INFO.TrackBearing;
