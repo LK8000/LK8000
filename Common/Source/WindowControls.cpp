@@ -1213,9 +1213,6 @@ static COLORREF bkColor = RGB_WINBACKGROUND; // PETROL
 static COLORREF fgColor = RGB_WINFOREGROUND; // WHITE
 int WindowControl::InstCount=0;
 HBRUSH WindowControl::hBrushDefaultBk=NULL;
-#if FIXGDI
-HBRUSH WindowControl::mhBrushBk=NULL;
-#endif
 HPEN WindowControl::hPenDefaultBorder=NULL;
 HPEN WindowControl::hPenDefaultSelector=NULL;
 
@@ -1310,11 +1307,6 @@ WindowControl::WindowControl(WindowControl *Owner,
 
   mHdc = GetDC(mHWnd);
 
-  #if FIXGDI
-  if (mhBrushBk != hBrushDefaultBk) { //@ 101117
-	DeleteObject(mhBrushBk);
-  }
-  #endif
   mhBrushBk = hBrushDefaultBk;
   mhPenBorder = hPenDefaultBorder;
   mhPenSelector = hPenDefaultSelector;
@@ -1695,21 +1687,6 @@ COLORREF WindowControl::SetForeColor(COLORREF Value){
 
 COLORREF WindowControl::SetBackColor(COLORREF Value){
   COLORREF res = mColorBack;
-  #if FIXGDI
-  if (mColorBack != Value){
-	mColorBack = Value;
-	if (mhBrushBk != hBrushDefaultBk){
-		// JMW possible memory leak if this brush is being used!
-		DeleteObject(mhBrushBk);
-	}
-	mhBrushBk = (HBRUSH)CreateSolidBrush(mColorBack);
-	if (mVisible){
-    	RECT rc = {0,0,0,0};
-    	GetClientRect(mHWnd, &rc);
-    	InvalidateRect(mHWnd,&rc,false);
-	}
-  }
-  #else
   if (mColorBack != Value){
 	mColorBack = Value;
 	if (mhBrushBk != hBrushDefaultBk){
@@ -1724,7 +1701,6 @@ COLORREF WindowControl::SetBackColor(COLORREF Value){
     	InvalidateRect(mHWnd,&rc,false);
 	}
   }
-  #endif
   return(res);
 }
 

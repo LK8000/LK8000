@@ -530,11 +530,7 @@ class WindowControl {
     int  mBorderKind;
     COLORREF mColorBack;
     COLORREF mColorFore;
-    #if FIXGDI
-    static HBRUSH mhBrushBk;
-    #else
     HBRUSH mhBrushBk;
-    #endif
     HPEN mhPenBorder;
     HPEN mhPenSelector;
     RECT mBoundRect;
