@@ -144,7 +144,6 @@ void dlgCustomKeysShowModal(void){
   if (wp) {
 	if (CustomKeyModeLeftUpCorner != (wp->GetDataField()->GetAsInteger())) {
 		CustomKeyModeLeftUpCorner = (wp->GetDataField()->GetAsInteger());
-		SetToRegistry(szRegistryCustomKeyModeLeftUpCorner, (DWORD)(CustomKeyModeLeftUpCorner));
 		changed=true;
 	}
   }
@@ -152,7 +151,6 @@ void dlgCustomKeysShowModal(void){
   if (wp) {
 	if (CustomKeyModeRightUpCorner != (wp->GetDataField()->GetAsInteger())) {
 		CustomKeyModeRightUpCorner = (wp->GetDataField()->GetAsInteger());
-		SetToRegistry(szRegistryCustomKeyModeRightUpCorner, (DWORD)(CustomKeyModeRightUpCorner));
 		changed=true;
 	}
   }
@@ -160,7 +158,6 @@ void dlgCustomKeysShowModal(void){
   if (wp) {
 	if (CustomKeyModeCenter != (wp->GetDataField()->GetAsInteger())) {
 		CustomKeyModeCenter = (wp->GetDataField()->GetAsInteger());
-		SetToRegistry(szRegistryCustomKeyModeCenter, (DWORD)(CustomKeyModeCenter));
 		changed=true;
 	}
   }
@@ -168,7 +165,6 @@ void dlgCustomKeysShowModal(void){
   if (wp) {
 	if (CustomKeyModeCenterScreen != (wp->GetDataField()->GetAsInteger())) {
 		CustomKeyModeCenterScreen = (wp->GetDataField()->GetAsInteger());
-		SetToRegistry(szRegistryCustomKeyModeCenterScreen, (DWORD)(CustomKeyModeCenterScreen));
 		changed=true;
 	}
   }
@@ -176,7 +172,6 @@ void dlgCustomKeysShowModal(void){
   if (wp) {
 	if (CustomKeyTime != wp->GetDataField()->GetAsInteger()) {
 		CustomKeyTime = wp->GetDataField()->GetAsInteger();
-		SetToRegistry(szRegistryCustomKeyTime,CustomKeyTime);
 		changed = true;
 	}
   }
@@ -184,7 +179,6 @@ void dlgCustomKeysShowModal(void){
   if (wp) {
 	if (CustomKeyModeLeft != (wp->GetDataField()->GetAsInteger())) {
 		CustomKeyModeLeft = (wp->GetDataField()->GetAsInteger());
-		SetToRegistry(szRegistryCustomKeyModeLeft, (DWORD)(CustomKeyModeLeft));
 		changed=true;
 	}
   }
@@ -192,7 +186,6 @@ void dlgCustomKeysShowModal(void){
   if (wp) {
 	if (CustomKeyModeRight != (wp->GetDataField()->GetAsInteger())) {
 		CustomKeyModeRight = (wp->GetDataField()->GetAsInteger());
-		SetToRegistry(szRegistryCustomKeyModeRight, (DWORD)(CustomKeyModeRight));
 		changed=true;
 	}
   }
@@ -200,7 +193,6 @@ void dlgCustomKeysShowModal(void){
   if (wp) {
 	if (CustomKeyModeAircraftIcon != (wp->GetDataField()->GetAsInteger())) {
 		CustomKeyModeAircraftIcon = (wp->GetDataField()->GetAsInteger());
-		SetToRegistry(szRegistryCustomKeyModeAircraftIcon, (DWORD)(CustomKeyModeAircraftIcon));
 		changed=true;
 	}
   }

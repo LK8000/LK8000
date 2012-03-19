@@ -137,7 +137,6 @@ bool dlgTaskRules(void){
   if (wp) {
     if (EnableFAIFinishHeight != (wp->GetDataField()->GetAsInteger()>0)) {
       EnableFAIFinishHeight = (wp->GetDataField()->GetAsInteger()>0);
-      SetToRegistry(szRegistryFAIFinishHeight, EnableFAIFinishHeight);
       changed = true;
     }
   }
@@ -146,7 +145,6 @@ bool dlgTaskRules(void){
   if (wp) {
     if (StartHeightRef != wp->GetDataField()->GetAsInteger()) {
       StartHeightRef = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryStartHeightRef, StartHeightRef);
       changed = true;
     }
   }
@@ -156,7 +154,6 @@ bool dlgTaskRules(void){
     ival = iround((wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY)*1000);
     if ((int)FinishMinHeight != ival) {
       FinishMinHeight = ival;
-      SetToRegistry(szRegistryFinishMinHeight,FinishMinHeight);
       changed = true;
     }
   }
@@ -166,7 +163,6 @@ bool dlgTaskRules(void){
     ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY)*1000);
     if ((int)StartMaxHeight != ival) {
       StartMaxHeight = ival;
-      SetToRegistry(szRegistryStartMaxHeight,StartMaxHeight);
       changed = true;
     }
   }
@@ -176,7 +172,6 @@ bool dlgTaskRules(void){
     ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0 ); // 100315
     if ((int)StartMaxHeightMargin != ival) {
       StartMaxHeightMargin = ival;
-      SetToRegistry(szRegistryStartMaxHeightMargin,StartMaxHeightMargin);
       changed = true;
     }
   }
@@ -186,7 +181,6 @@ bool dlgTaskRules(void){
     ival = iround((wp->GetDataField()->GetAsInteger()/SPEEDMODIFY)*1000);
     if ((int)StartMaxSpeed != ival) {
       StartMaxSpeed = ival;
-      SetToRegistry(szRegistryStartMaxSpeed,StartMaxSpeed);
       changed = true;
     }
   }
@@ -196,7 +190,6 @@ bool dlgTaskRules(void){
     ival = iround((wp->GetDataField()->GetAsInteger()/SPEEDMODIFY)*1000.0);
     if ((int)StartMaxSpeedMargin != ival) {
       StartMaxSpeedMargin = ival;
-      SetToRegistry(szRegistryStartMaxSpeedMargin,StartMaxSpeedMargin);
       changed = true;
     }
   }

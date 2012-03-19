@@ -27,7 +27,6 @@ static void OnSetAlt1Clicked(WindowControl * Sender){
   (void)Sender;
   LockTaskData();
   Alternate1 = SelectedWaypoint;
-  SetToRegistry(szRegistryAlternate1, Alternate1);
   RefreshTask();
   UnlockTaskData();
   if (ValidWayPoint(Alternate1))
@@ -40,7 +39,6 @@ static void OnSetAlt2Clicked(WindowControl * Sender){
   (void)Sender;
   LockTaskData();
   Alternate2 = SelectedWaypoint;
-  SetToRegistry(szRegistryAlternate2, Alternate2);
   RefreshTask();
   UnlockTaskData();
   if (ValidWayPoint(Alternate2))

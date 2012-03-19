@@ -25,29 +25,16 @@
 extern bool LockSettingsInFlight;
 extern bool LoggerShortName;
 
-BOOL GetFromRegistry(const TCHAR *szRegValue, DWORD *pPos);
 
-BOOL DelRegistryKey(const TCHAR *szRegistryKey); // VENTA2-ADDON delregistrykey
 #ifdef PNA
-void CleanRegistry(); // VENTA2-ADDON cleanregistrykeyA
-bool SetBacklight(); // VENTA4-ADDON for PNA 
-bool SetSoundVolume(); // VENTA4-ADDON for PNA 
+bool SetBacklight();
+bool SetSoundVolume();
 #endif
 
-HRESULT SetToRegistry(const TCHAR *szRegValue, DWORD Pos);
-HRESULT SetToRegistry(const TCHAR *szRegValue, bool bVal);	// JG
-HRESULT SetToRegistry(const TCHAR *szRegValue, int nVal);	// JG
-BOOL GetRegistryString(const TCHAR *szRegValue, TCHAR *pPos, DWORD dwSize);
 #ifdef PNA
 BOOL GetFontPath(TCHAR *pPos);
 void CreateRecursiveDirectory(TCHAR *fontpath);
 #endif
-HRESULT SetRegistryString(const TCHAR *szRegValue, const TCHAR *Pos);
-void ReadRegistrySettings(void);
-void SetRegistryColour(int i, DWORD c);
-void SetRegistryBrush(int i, DWORD c);
-void SetRegistryAirspaceMode(int i);
-int GetRegistryAirspaceMode(int i);
 void StoreType(int Index,int InfoType);
 void irotate(int &xin, int &yin, const double &angle);
 void irotatescale(int &xin, int &yin, const double &angle, const double &scale,

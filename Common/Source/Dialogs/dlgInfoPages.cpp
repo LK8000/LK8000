@@ -138,7 +138,6 @@ void dlgInfoPagesShowModal(void){
   if (wp) {
 	if (ConfIP11 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP11 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfIP11, (DWORD)(ConfIP11));
 		changed=true;
 	}
   }
@@ -147,7 +146,6 @@ void dlgInfoPagesShowModal(void){
   if (wp) {
 	if (ConfIP12 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP12 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfIP12, (DWORD)(ConfIP12));
 		changed=true;
 	}
   }
@@ -156,7 +154,6 @@ void dlgInfoPagesShowModal(void){
   if (wp) {
 	if (ConfIP13 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP13 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfIP13, (DWORD)(ConfIP13));
 		changed=true;
 	}
   }
@@ -165,7 +162,6 @@ void dlgInfoPagesShowModal(void){
   if (wp) {
 	if (ConfIP14 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP14 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfIP14, (DWORD)(ConfIP14));
 		changed=true;
 	}
   }
@@ -174,7 +170,6 @@ void dlgInfoPagesShowModal(void){
   if (wp) {
 	if (ConfIP15 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP15 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfIP15, (DWORD)(ConfIP15));
 		changed=true;
 	}
   }
@@ -183,7 +178,6 @@ void dlgInfoPagesShowModal(void){
   if (wp) {
 	if (ConfIP16 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP16 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfIP16, (DWORD)(ConfIP16));
 		changed=true;
 	}
   }
@@ -192,7 +186,6 @@ void dlgInfoPagesShowModal(void){
   if (wp) {
 	if (ConfIP21 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP21 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfIP21, (DWORD)(ConfIP21));
 		changed=true;
 	}
   }
@@ -201,7 +194,6 @@ void dlgInfoPagesShowModal(void){
   if (wp) {
 	if (ConfIP22 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP22 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfIP22, (DWORD)(ConfIP22));
 		changed=true;
 	}
   }
@@ -210,7 +202,6 @@ void dlgInfoPagesShowModal(void){
   if (wp) {
 	if (ConfIP23 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP23 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfIP23, (DWORD)(ConfIP23));
 		changed=true;
 	}
   }
@@ -219,7 +210,6 @@ void dlgInfoPagesShowModal(void){
   if (wp) {
 	if (ConfIP24 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP24 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfIP24, (DWORD)(ConfIP24));
 		changed=true;
 	}
   }
@@ -228,7 +218,6 @@ void dlgInfoPagesShowModal(void){
   if (wp) {
 	if (ConfIP31 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP31 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfIP31, (DWORD)(ConfIP31));
 		changed=true;
 	}
   }
@@ -237,7 +226,6 @@ void dlgInfoPagesShowModal(void){
   if (wp) {
 	if (ConfIP32 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP32 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfIP32, (DWORD)(ConfIP32));
 		changed=true;
 	}
   }
@@ -246,7 +234,6 @@ void dlgInfoPagesShowModal(void){
   if (wp) {
 	if (ConfIP33 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfIP33 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfIP33, (DWORD)(ConfIP33));
 		changed=true;
 	}
   }

@@ -309,17 +309,6 @@ void LKProfileSave(const TCHAR *szFile)
   }
 
 
-  /*
-  // Anything containing non-ascii chars should be treated like this:
-  // Unicode UTF8 converted
-  static TCHAR  szMapFile[MAX_PATH] = TEXT("\0");
-  GetRegistryString(szRegistryMapFile, szMapFile, MAX_PATH);
-  ExpandLocalPath(szMapFile);
-  char stmp[256];
-  unicode2utf((TCHAR*) szMapFile, stmp, sizeof(stmp));
-  rprintf("%S=\"%s\"%s", szRegistryMapFile, stmp );
-  */
-
   fprintf(pfp,PNEWLINE); // end of file
   fflush(pfp);
   fclose(pfp);
@@ -424,15 +413,4 @@ void LKPilotSave(const TCHAR *szFile)
   fclose(pfp);
 
 }
-
-
-
-
-
-
-
-// REMOVABLE IN SOURCE CODE ONCE NEWPROFILES ARE PERMANENT
-HRESULT SetToRegistry(const TCHAR *szRegValue, DWORD Pos) {; return 0;};
-HRESULT SetToRegistry(const TCHAR *szRegValue, bool bVal) {; return 0;};
-HRESULT SetToRegistry(const TCHAR *szRegValue, int nVal)  {; return 0;};
 

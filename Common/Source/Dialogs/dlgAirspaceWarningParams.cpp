@@ -135,7 +135,6 @@ void dlgAirspaceWarningParamsShowModal(void){
   if (wp) {
     if (WarningTime != wp->GetDataField()->GetAsInteger()) {
       WarningTime = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryWarningTime,(DWORD)WarningTime);
       changed = true;
     }
   }
@@ -144,8 +143,6 @@ void dlgAirspaceWarningParamsShowModal(void){
   if (wp) {
     if (AcknowledgementTime != wp->GetDataField()->GetAsInteger()*60) {
       AcknowledgementTime = wp->GetDataField()->GetAsInteger()*60;
-      SetToRegistry(szRegistryAcknowledgementTime,
-		    (DWORD)AcknowledgementTime);
       changed = true;
     }
   }
@@ -156,7 +153,6 @@ void dlgAirspaceWarningParamsShowModal(void){
     ival = iround(wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY);
     if (AirspaceWarningVerticalMargin != ival) {
       AirspaceWarningVerticalMargin = ival;
-      SetToRegistry(szRegistryAirspaceWarningVerticalMargin,AirspaceWarningVerticalMargin);
       changed = true;
     }
   }
@@ -165,8 +161,6 @@ void dlgAirspaceWarningParamsShowModal(void){
   if (wp) {
     if (AirspaceWarningDlgTimeout != wp->GetDataField()->GetAsInteger()) {
       AirspaceWarningDlgTimeout = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryAirspaceWarningDlgTimeout,
-		    (DWORD)AirspaceWarningDlgTimeout);
       changed = true;
     }
   }
@@ -175,8 +169,6 @@ void dlgAirspaceWarningParamsShowModal(void){
   if (wp) {
     if (AirspaceWarningMapLabels != wp->GetDataField()->GetAsInteger()) {
       AirspaceWarningMapLabels = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryAirspaceWarningMapLabels,
-            (DWORD)AirspaceWarningMapLabels);
       changed = true;
     }
   }
@@ -185,7 +177,6 @@ void dlgAirspaceWarningParamsShowModal(void){
   if (wp) {
     if (AIRSPACEWARNINGS != wp->GetDataField()->GetAsInteger()) {
       AIRSPACEWARNINGS = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryAirspaceWarning,(DWORD)AIRSPACEWARNINGS);
       changed = true;
     }
   }

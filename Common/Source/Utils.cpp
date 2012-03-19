@@ -14,46 +14,6 @@
 using std::min;
 using std::max;
 
-#if 0
-int propGetScaleList(double *List, size_t Size){
-
-  TCHAR Buffer[128];
-  TCHAR Name[] = TEXT("ScaleList");
-  TCHAR *pWClast, *pToken;
-  int   Idx = 0;
-  double vlast=0;
-  double val;
-
-  ASSERT(List != NULL);
-  ASSERT(Size > 0);
-
-  SetRegistryString(TEXT("ScaleList"),
-   TEXT("0.5,1,2,5,10,20,50,100,150,200,500,1000"));
-
-  if (GetRegistryString(Name, Buffer, sizeof(Buffer)/sizeof(TCHAR)) == 0){
-
-    pToken = strtok_r(Buffer, TEXT(","), &pWClast);
-    
-    while(Idx < (int)Size && pToken != NULL){
-      val = _tcstod(pToken, NULL);
-      if (Idx>0) {
-        List[Idx] = (val+vlast)/2;
-        Idx++;
-      }
-      List[Idx] = val;
-      Idx++;
-      vlast = val;
-      pToken = strtok_r(NULL, TEXT(","), &pWClast);
-    }
-    
-    return(Idx);
-    
-  } else {
-    return(0);
-  }
-  
-}
-#endif
 
 long GetUTCOffset(void) {
   return UTCOffset;

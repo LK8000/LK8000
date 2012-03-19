@@ -225,7 +225,6 @@ static void OnNewHomeClicked(WindowControl * Sender){
   WpHome_Lon=WayPointList[HomeWaypoint].Longitude;
   _tcscpy(WpHome_Name,WayPointList[HomeWaypoint].Name);
 
-  SetToRegistry(szRegistryHomeWaypoint, HomeWaypoint);
   RefreshTask();
   UnlockTaskData();
   wf->SetModalResult(mrOK);
@@ -236,7 +235,6 @@ static void OnSetAlternate1Clicked(WindowControl * Sender){
 	(void)Sender;
   LockTaskData();
   Alternate1 = SelectedWaypoint;
-  SetToRegistry(szRegistryAlternate1, Alternate1);
   RefreshTask();
   UnlockTaskData();
   wf->SetModalResult(mrOK);
@@ -246,7 +244,6 @@ static void OnSetAlternate2Clicked(WindowControl * Sender){
 	(void)Sender;
   LockTaskData();
   Alternate2 = SelectedWaypoint;
-  SetToRegistry(szRegistryAlternate2, Alternate2);
   RefreshTask();
   UnlockTaskData();
   wf->SetModalResult(mrOK);
@@ -257,8 +254,6 @@ static void OnClearAlternatesClicked(WindowControl * Sender){
   LockTaskData();
   Alternate1 = -1;
   Alternate2 = -1;
-  SetToRegistry(szRegistryAlternate1, Alternate1);
-  SetToRegistry(szRegistryAlternate2, Alternate2);
   RefreshTask();
   UnlockTaskData();
   wf->SetModalResult(mrOK);
@@ -268,7 +263,6 @@ static void OnClearAlternatesClicked(WindowControl * Sender){
 static void OnTeamCodeClicked(WindowControl * Sender){
 	(void)Sender;
   TeamCodeRefWaypoint = SelectedWaypoint;
-  SetToRegistry(szRegistryTeamcodeRefWaypoint, TeamCodeRefWaypoint);
   wf->SetModalResult(mrOK);
 }
 

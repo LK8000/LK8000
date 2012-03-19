@@ -121,7 +121,6 @@ void dlgTimeGatesShowModal(void){
   if (wp) {
     if (PGOptimizeRoute != (wp->GetDataField()->GetAsInteger())) {
       PGOptimizeRoute = (wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryPGOptimizeRoute, (DWORD)(PGOptimizeRoute));
       changed = true;
 
       if (ISPARAGLIDER) {
@@ -139,7 +138,6 @@ void dlgTimeGatesShowModal(void){
   if (wp) {
     if ( PGNumberOfGates != wp->GetDataField()->GetAsInteger()) {
       PGNumberOfGates = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryPGNumberOfGates, PGNumberOfGates);
       changed = true;
     }
   }
@@ -147,7 +145,6 @@ void dlgTimeGatesShowModal(void){
   if (wp) {
     if ( PGOpenTimeH != wp->GetDataField()->GetAsInteger()) {
       PGOpenTimeH = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryPGOpenTimeH, PGOpenTimeH);
       changed = true;
     }
   }
@@ -155,7 +152,6 @@ void dlgTimeGatesShowModal(void){
   if (wp) {
     if ( PGOpenTimeM != wp->GetDataField()->GetAsInteger()) {
       PGOpenTimeM = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryPGOpenTimeM, PGOpenTimeM);
       changed = true;
     }
   }
@@ -163,7 +159,6 @@ void dlgTimeGatesShowModal(void){
   if (wp) {
     if ( PGGateIntervalTime != wp->GetDataField()->GetAsInteger()) {
       PGGateIntervalTime = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryPGGateIntervalTime, PGGateIntervalTime);
       changed = true;
     }
   }
@@ -171,7 +166,6 @@ void dlgTimeGatesShowModal(void){
   if (wp) {
     if ( PGStartOut != wp->GetDataField()->GetAsInteger()) {
       PGStartOut = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryPGStartOut, PGStartOut);
       changed = true;
     }
   }

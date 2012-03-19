@@ -4107,7 +4107,6 @@ int ival;
 	ival = wp->GetDataField()->GetAsInteger();
 	if (WindCalcTime != ival) {
 		WindCalcTime = ival;
-		SetToRegistry(szRegistryWindCalcTime,(DWORD)WindCalcTime);
 		changed = true;
 	}
   }
@@ -4118,7 +4117,6 @@ int ival;
 	ival = iround((wp->GetDataField()->GetAsInteger()/SPEEDMODIFY)*1000.0);
 	if ((int)WindCalcSpeed != (int)iround(ival/1000)) {
 		WindCalcSpeed = ival;
-		SetToRegistry(szRegistryWindCalcSpeed,(DWORD)WindCalcSpeed);
 		WindCalcSpeed=ival/1000.0;
 		changed = true;
 	}
@@ -4128,7 +4126,6 @@ int ival;
   if (wp) {
     if (FinishLine != wp->GetDataField()->GetAsInteger()) {
       FinishLine = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryFinishLine,FinishLine);
       changed = true;
       taskchanged = true;
     }
@@ -4139,7 +4136,6 @@ int ival;
     ival = iround(wp->GetDataField()->GetAsFloat()/DISTANCEMODIFY);
     if ((int)FinishRadius != ival) {
       FinishRadius = ival;
-      SetToRegistry(szRegistryFinishRadius,FinishRadius);
       changed = true;
       taskchanged = true;
     }
@@ -4149,7 +4145,6 @@ int ival;
   if (wp) {
     if (StartLine != wp->GetDataField()->GetAsInteger()) {
       StartLine = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryStartLine,StartLine);
       changed = true;
       taskchanged = true;
     }
@@ -4160,7 +4155,6 @@ int ival;
     ival = iround(wp->GetDataField()->GetAsFloat()/DISTANCEMODIFY);
     if ((int)StartRadius != ival) {
       StartRadius = ival;
-      SetToRegistry(szRegistryStartRadius,StartRadius);
       changed = true;
       taskchanged = true;
     }
@@ -4170,7 +4164,6 @@ int ival;
   if (wp) {
     if ((int)SectorType != wp->GetDataField()->GetAsInteger()) {
       SectorType = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryFAISector,SectorType);
       changed = true;
       taskchanged = true;
     }
@@ -4181,7 +4174,6 @@ int ival;
     ival = iround(wp->GetDataField()->GetAsFloat()/DISTANCEMODIFY);
     if ((int)SectorRadius != ival) {
       SectorRadius = ival;
-      SetToRegistry(szRegistrySectorRadius,SectorRadius);
       changed = true;
       taskchanged = true;
     }
@@ -4195,8 +4187,6 @@ int ival;
 	(wp->GetDataField()->GetAsInteger())) {
       AltArrivMode = (AltArrivMode_t)
 	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryAltArrivMode,
-		    (DWORD)(AltArrivMode));
       changed = true;
     }
   }
@@ -4208,8 +4198,6 @@ int ival;
 	(wp->GetDataField()->GetAsInteger())) {
       CheckSum = (CheckSum_t)
 	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryCheckSum,
-		    (DWORD)(CheckSum));
       changed = true;
     }
   }
@@ -4218,7 +4206,6 @@ int ival;
   if (wp) {
     if (IphoneGestures != (IphoneGestures_t) (wp->GetDataField()->GetAsInteger())) {
       IphoneGestures = (IphoneGestures_t) (wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryIphoneGestures, (DWORD)(IphoneGestures));
       changed = true;
     }
   }
@@ -4227,7 +4214,6 @@ int ival;
   if (wp) {
     if (PollingMode != (PollingMode_t) (wp->GetDataField()->GetAsInteger())) {
       PollingMode = (PollingMode_t) (wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryPollingMode, (DWORD)(PollingMode));
       changed = true;
     }
   }
@@ -4238,8 +4224,6 @@ int ival;
 	(wp->GetDataField()->GetAsInteger())) {
       LKVarioBar = (LKVarioBar_t)
 	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryLKVarioBar,
-		    (DWORD)(LKVarioBar));
       changed = true;
     }
   }
@@ -4249,8 +4233,6 @@ int ival;
 	(wp->GetDataField()->GetAsInteger())) {
       LKVarioVal = (LKVarioVal_t)
 	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryLKVarioVal,
-		    (DWORD)(LKVarioVal));
       changed = true;
     }
   }
@@ -4260,8 +4242,6 @@ int ival;
 	(wp->GetDataField()->GetAsInteger())) {
       HideUnits = (HideUnits_t)
 	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryHideUnits,
-		    (DWORD)(HideUnits));
       changed = true;
       requirerestart = true;
     }
@@ -4272,8 +4252,6 @@ int ival;
 	(wp->GetDataField()->GetAsInteger())) {
       DeclutterMode = (DeclutterMode_t)
 	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryDeclutterMode,
-		    (DWORD)(DeclutterMode));
       changed = true;
     }
   }
@@ -4282,7 +4260,6 @@ int ival;
   if (wp) {
     if (ActiveMap_Config != (ActiveMap_t) (wp->GetDataField()->GetAsInteger())) {
       ActiveMap_Config = (ActiveMap_t) (wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryActiveMap, (DWORD)(ActiveMap_Config));
       ActiveMap=ActiveMap_Config;
       changed = true;
     }
@@ -4292,7 +4269,6 @@ int ival;
   if (wp) {
     if (BestWarning != (wp->GetDataField()->GetAsInteger())) {
       BestWarning = (wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryBestWarning, (DWORD)(BestWarning));
       changed = true;
     }
   }
@@ -4300,7 +4276,6 @@ int ival;
   if (wp) {
     if (UseTotalEnergy_Config != (wp->GetDataField()->GetAsInteger())) {
       UseTotalEnergy_Config = (wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryUseTotalEnergy, (DWORD)(UseTotalEnergy_Config));
       UseTotalEnergy=UseTotalEnergy_Config;
       changed = true;
     }
@@ -4309,7 +4284,6 @@ int ival;
   if (wp) {
     if (ThermalBar != (wp->GetDataField()->GetAsInteger())) {
       ThermalBar = (wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryThermalBar, (DWORD)(ThermalBar));
       changed = true;
     }
   }
@@ -4317,7 +4291,6 @@ int ival;
   if (wp) {
     if (OverlayClock != (wp->GetDataField()->GetAsInteger())) {
       OverlayClock = (wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryOverlayClock, (DWORD)(OverlayClock));
       changed = true;
     }
   }
@@ -4325,7 +4298,6 @@ int ival;
   if (wp) {
     if (McOverlay != (wp->GetDataField()->GetAsInteger())) {
       McOverlay = (wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryMcOverlay, (DWORD)(McOverlay));
       changed = true;
     }
   }
@@ -4333,7 +4305,6 @@ int ival;
   if (wp) {
     if (TrackBar != (wp->GetDataField()->GetAsInteger())) {
       TrackBar = (wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryTrackBar, (DWORD)(TrackBar));
       changed = true;
     }
   }
@@ -4341,7 +4312,6 @@ int ival;
   if (wp) {
     if (PGOptimizeRoute != (wp->GetDataField()->GetAsInteger())) {
       PGOptimizeRoute = (wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryPGOptimizeRoute, (DWORD)(PGOptimizeRoute));
       changed = true;
 
       if (ISPARAGLIDER) {
@@ -4370,8 +4340,6 @@ int ival;
 	(wp->GetDataField()->GetAsInteger())) {
       TpFilter = (TpFilter_t)
 	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryTpFilter,
-		    (DWORD)(TpFilter));
       LastDoRangeWaypointListTime=0;
       changed = true;
     }
@@ -4383,8 +4351,6 @@ int ival;
 	(wp->GetDataField()->GetAsInteger())) {
       OverColor = (OverColor_t)
 	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryOverColor,
-		    (DWORD)(OverColor));
       SetOverColorRef();
       changed = true;
     }
@@ -4396,8 +4362,6 @@ int ival;
 	(wp->GetDataField()->GetAsInteger())) {
       MapBox = (MapBox_t)
 	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryMapBox,
-		    (DWORD)(MapBox));
       changed = true;
     }
   }
@@ -4406,8 +4370,6 @@ int ival;
   if (wp) {
     if (OverlaySize != wp->GetDataField()->GetAsInteger() ) {
       OverlaySize = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryOverlaySize,
-		    (DWORD)(OverlaySize));
       changed = true;
       Reset_Single_DoInits(MDI_DRAWLOOK8000);
     }
@@ -4419,8 +4381,6 @@ int ival;
 	(wp->GetDataField()->GetAsInteger())) {
       GlideBarMode = (GlideBarMode_t)
 	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryGlideBarMode,
-		    (DWORD)(GlideBarMode));
       changed = true;
     }
   }
@@ -4431,8 +4391,6 @@ int ival;
 	(wp->GetDataField()->GetAsInteger())) {
       NewMapDeclutter = 
 	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryNewMapDeclutter,
-		    (DWORD)(NewMapDeclutter));
       changed = true;
     }
   }
@@ -4448,7 +4406,6 @@ int ival;
 	} else {
 		sword=(int) GPSAltitudeOffset;
 	}
-	SetToRegistry(szRegistryGpsAltitudeOffset, (DWORD)(sword));
 	changed=true;
     }
 
@@ -4458,7 +4415,6 @@ int ival;
   if (wp) {
 	if (UseGeoidSeparation != (wp->GetDataField()->GetAsInteger())) {
 		UseGeoidSeparation = (wp->GetDataField()->GetAsInteger());
-		SetToRegistry(szRegistryUseGeoidSeparation, (DWORD)(UseGeoidSeparation));
 		changed=true;
 	}
   }
@@ -4467,7 +4423,6 @@ int ival;
   if (wp) {
 	if (PressureHg != (wp->GetDataField()->GetAsInteger())) {
 		PressureHg = (wp->GetDataField()->GetAsInteger());
-		SetToRegistry(szRegistryPressureHg, (DWORD)(PressureHg));
 		changed=true;
 	}
   }
@@ -4478,8 +4433,6 @@ int ival;
 	(wp->GetDataField()->GetAsInteger())) {
       AverEffTime = 
 	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryAverEffTime,
-		    (DWORD)(AverEffTime));
       changed = true;
       InitLDRotary(&rotaryLD);
     }
@@ -4488,7 +4441,6 @@ int ival;
   if (wp) {
     if (BgMapColor_Config != (wp->GetDataField()->GetAsInteger())) {
       BgMapColor_Config = (wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryBgMapColor, (DWORD)(BgMapColor_Config));
       BgMapColor = BgMapColor_Config;
       changed = true;
     }
@@ -4500,8 +4452,6 @@ int ival;
 	(wp->GetDataField()->GetAsInteger())) {
       ArrivalValue = (ArrivalValue_t)
 	(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryArrivalValue,
-		    (DWORD)(ArrivalValue));
       changed = true;
     }
   }
@@ -4565,7 +4515,6 @@ int ival;
   if (wp) {
     DataFieldBoolean * dfb = (DataFieldBoolean*) wp->GetDataField();
     if (dfb) {
-      SetToRegistry(szRegistryUseCustomFonts, dfb->GetAsInteger());  
       UseCustomFonts = dfb->GetAsInteger(); // global var
     }
   }
@@ -4583,7 +4532,6 @@ int ival;
   if (wp) {
     if (Appearance.IndLandable != (IndLandable_t)(wp->GetDataField()->GetAsInteger())) {
       Appearance.IndLandable = (IndLandable_t)(wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryAppIndLandable,(DWORD)(Appearance.IndLandable));
       changed = true;
       requirerestart = true;
     }
@@ -4593,7 +4541,6 @@ int ival;
   if (wp) {
     if ((int)(InverseInfoBox_Config) != wp->GetDataField()->GetAsInteger()) {
       InverseInfoBox_Config = (wp->GetDataField()->GetAsInteger() != 0);
-      SetToRegistry(szRegistryAppInverseInfoBox,InverseInfoBox_Config);
       requirerestart = true;
       Appearance.InverseInfoBox=InverseInfoBox_Config;
       changed = true;
@@ -4605,8 +4552,6 @@ int ival;
     if (MapWindow::GliderScreenPosition != 
 	wp->GetDataField()->GetAsInteger()) {
       MapWindow::GliderScreenPosition = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryGliderScreenPosition,
-		    MapWindow::GliderScreenPosition);
 	MapWindow::GliderScreenPositionY=MapWindow::GliderScreenPosition;
       changed = true;
     }
@@ -4617,7 +4562,6 @@ int ival;
     if ((int)(Appearance.DefaultMapWidth) != 
 	wp->GetDataField()->GetAsInteger()) {
       Appearance.DefaultMapWidth = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryAppDefaultMapWidth,Appearance.DefaultMapWidth);
       requirerestart = true;
       changed = true;
     }
@@ -4627,7 +4571,6 @@ int ival;
   if (wp) {
     if (EnableAutoBacklight != (wp->GetDataField()->GetAsInteger()!=0)) {
       EnableAutoBacklight = (wp->GetDataField()->GetAsInteger() != 0);
-      SetToRegistry(szRegistryAutoBacklight, EnableAutoBacklight);
       changed = true;
     }
   }
@@ -4636,7 +4579,6 @@ int ival;
   if (wp) {
     if (EnableAutoSoundVolume != (wp->GetDataField()->GetAsInteger()!=0)) {
       EnableAutoSoundVolume = (wp->GetDataField()->GetAsInteger() != 0);
-      SetToRegistry(szRegistryAutoSoundVolume, EnableAutoSoundVolume);
       changed = true;
     }
   }
@@ -4647,7 +4589,6 @@ int ival;
     if (iround(TerrainContrast*100/255) != 
 	wp->GetDataField()->GetAsInteger()) {
       TerrainContrast = (short)iround(wp->GetDataField()->GetAsInteger()*255.0/100);
-      SetToRegistry(szRegistryTerrainContrast,TerrainContrast);
       changed = true;
     }
   }
@@ -4657,7 +4598,6 @@ int ival;
     if (iround(TerrainBrightness*100/255) != 
 	wp->GetDataField()->GetAsInteger()) {
       TerrainBrightness = (short)iround(wp->GetDataField()->GetAsInteger()*255.0/100);
-      SetToRegistry(szRegistryTerrainBrightness,TerrainBrightness);
       changed = true;
     }
   }
@@ -4666,7 +4606,6 @@ int ival;
   if (wp) {
     if (TerrainRamp_Config != wp->GetDataField()->GetAsInteger()) {
       TerrainRamp_Config = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryTerrainRamp, TerrainRamp_Config);
       TerrainRamp=TerrainRamp_Config;
       changed = true;
     }
@@ -4679,7 +4618,6 @@ int ival;
       AlarmMaxAltitude1 = ival;
       LKalarms[0].triggervalue=(int)AlarmMaxAltitude1/1000;
       LKalarms[0].triggerscount=0;
-      SetToRegistry(szRegistryAlarmMaxAltitude1,AlarmMaxAltitude1);
       changed = true;
     }
   }
@@ -4690,7 +4628,6 @@ int ival;
       AlarmMaxAltitude2 = ival;
       LKalarms[1].triggervalue=(int)AlarmMaxAltitude2/1000;
       LKalarms[1].triggerscount=0;
-      SetToRegistry(szRegistryAlarmMaxAltitude2,AlarmMaxAltitude2);
       changed = true;
     }
   }
@@ -4701,7 +4638,6 @@ int ival;
       AlarmMaxAltitude3 = ival;
       LKalarms[2].triggervalue=(int)AlarmMaxAltitude3/1000;
       LKalarms[2].triggerscount=0;
-      SetToRegistry(szRegistryAlarmMaxAltitude3,AlarmMaxAltitude3);
       changed = true;
     }
   }
@@ -4710,7 +4646,6 @@ int ival;
   if (wp) {
     if (AutoAdvance_Config != wp->GetDataField()->GetAsInteger()) {
       AutoAdvance_Config = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistryAutoAdvance, AutoAdvance_Config);
       changed = true;
       AutoAdvance=AutoAdvance_Config;
     }
@@ -4721,7 +4656,6 @@ int ival;
     ival = iround(wp->GetDataField()->GetAsInteger());
     if (LoggerTimeStepCruise != ival) {
       LoggerTimeStepCruise = ival;
-      SetToRegistry(szRegistryLoggerTimeStepCruise,LoggerTimeStepCruise);
       changed = true;
     }
   }
@@ -4731,7 +4665,6 @@ int ival;
     ival = iround(wp->GetDataField()->GetAsInteger());
     if (LoggerTimeStepCircling != ival) {
       LoggerTimeStepCircling = ival;
-      SetToRegistry(szRegistryLoggerTimeStepCircling,LoggerTimeStepCircling);
       changed = true;
     }
   }
@@ -4816,7 +4749,6 @@ int ival;
   if (wp) {
     if (MapWindow::SnailWidthScale != wp->GetDataField()->GetAsInteger()) {
       MapWindow::SnailWidthScale = wp->GetDataField()->GetAsInteger();
-      SetToRegistry(szRegistrySnailWidthScale,MapWindow::SnailWidthScale);
       changed = true;
       requirerestart = true;
     }
@@ -4895,7 +4827,6 @@ void UpdateAircraftConfig(void){
         (wp->GetDataField()->GetAsInteger())) {
       AircraftCategory = (AircraftCategory_t)
         (wp->GetDataField()->GetAsInteger());
-      SetToRegistry(szRegistryAircraftCategory, (DWORD)(AircraftCategory));
       changed = true;
       requirerestart = true;
         if (ISPARAGLIDER) AATEnabled=TRUE; // NOT SURE THIS IS NEEDED ANYMORE. 
@@ -4944,7 +4875,6 @@ void UpdateAircraftConfig(void){
     ival = wp->GetDataField()->GetAsInteger();
     if (BallastSecsToEmpty != ival) {
       BallastSecsToEmpty = ival;
-      SetToRegistry(szRegistryBallastSecsToEmpty,(DWORD)BallastSecsToEmpty);
       changed = true;
     }
   }

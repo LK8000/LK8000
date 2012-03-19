@@ -123,7 +123,6 @@ void dlgBottomBarShowModal(void){
   if (wp) {
 	if (ConfBB0 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfBB0 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfBB0, (DWORD)(ConfBB0));
 		changed=true;
 	}
   }
@@ -131,7 +130,6 @@ void dlgBottomBarShowModal(void){
   if (wp) {
 	if (ConfBB1 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfBB1 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfBB1, (DWORD)(ConfBB1));
 		changed=true;
 	}
   }
@@ -140,7 +138,6 @@ void dlgBottomBarShowModal(void){
   if (wp) {
 	if (ConfBB2 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfBB2 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfBB2, (DWORD)(ConfBB2));
 		changed=true;
 	}
   }
@@ -149,7 +146,6 @@ void dlgBottomBarShowModal(void){
   if (wp) {
 	if (ConfBB3 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfBB3 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfBB3, (DWORD)(ConfBB3));
 		changed=true;
 	}
   }
@@ -158,7 +154,6 @@ void dlgBottomBarShowModal(void){
   if (wp) {
 	if (ConfBB4 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfBB4 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfBB4, (DWORD)(ConfBB4));
 		changed=true;
 	}
   }
@@ -167,7 +162,6 @@ void dlgBottomBarShowModal(void){
   if (wp) {
 	if (ConfBB5 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfBB5 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfBB5, (DWORD)(ConfBB5));
 		changed=true;
 	}
   }
@@ -176,7 +170,6 @@ void dlgBottomBarShowModal(void){
   if (wp) {
 	if (ConfBB6 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfBB6 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfBB6, (DWORD)(ConfBB6));
 		changed=true;
 	}
   }
@@ -185,7 +178,6 @@ void dlgBottomBarShowModal(void){
   if (wp) {
 	if (ConfBB7 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfBB7 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfBB7, (DWORD)(ConfBB7));
 		changed=true;
 	}
   }
@@ -194,7 +186,6 @@ void dlgBottomBarShowModal(void){
   if (wp) {
 	if (ConfBB8 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfBB8 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfBB8, (DWORD)(ConfBB8));
 		changed=true;
 	}
   }
@@ -203,7 +194,6 @@ void dlgBottomBarShowModal(void){
   if (wp) {
 	if (ConfBB9 != (wp->GetDataField()->GetAsBoolean())) {
 		ConfBB9 = (wp->GetDataField()->GetAsBoolean());
-		SetToRegistry(szRegistryConfBB9, (DWORD)(ConfBB9));
 		changed=true;
 	}
   }
@@ -217,7 +207,6 @@ void dlgBottomBarShowModal(void){
                    TEXT(""), MB_OK);        // bottom bar stripes
       // Automatically enable NAV1 bottom bar
       ConfBB1 = true;
-      SetToRegistry(szRegistryConfBB1, (DWORD)(ConfBB1));
     }
 
     UpdateConfBB();

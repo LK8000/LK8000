@@ -152,14 +152,12 @@ void dlgWindSettingsShowModal(void){
     if (wp) {
       if (AutoWindMode != wp->GetDataField()->GetAsInteger()) {
 	AutoWindMode = wp->GetDataField()->GetAsInteger();
-	SetToRegistry(szRegistryAutoWind, AutoWindMode);
       }
     }
     wp = (WndProperty*)wf->FindByName(TEXT("prpTrailDrift"));
     if (wp) {
       if (MapWindow::EnableTrailDrift != wp->GetDataField()->GetAsBoolean()) {
         MapWindow::EnableTrailDrift = wp->GetDataField()->GetAsBoolean();
-        // SetToRegistry(szRegistryTrailDrift, MapWindow::EnableTrailDrift);
       }
     }
     
