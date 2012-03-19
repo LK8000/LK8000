@@ -94,8 +94,6 @@
  #define NEWPROFILES		1	// new lk profile system with no windows registry
  // #define OLDPROFILES		1	// old lk profile with registry
 
- // #define OLDLOGGER		1	// old DLL Grecord logging system
-
  //#define NEWSMARTZOOM		1	// stretch bitmap for fast zoom, uncompleted work (almost working)
  //#define USEBIGZOOM		1	// will fast redraw only terrain, with no topology &c.
  #define FASTPAN		1	// bitblt panning 

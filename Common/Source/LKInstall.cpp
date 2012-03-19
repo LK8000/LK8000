@@ -53,10 +53,6 @@ short InstallSystem() {
   }
   _tcscpy(maindir,dstdir);
 
-#if OLDLOGGER
-  _stprintf(tbuf,_T(". InstallSystem: copy DLL from <%s> to <%s>%s"), srcdir, dstdir,NEWLINE);
-  StartupStore(tbuf);
-#endif
 
   // We now test for a single file existing inside the directory, called _DIRECTORYNAME
   // because GetFileAttributes can be very slow or hang if checking a directory. In any case testing a file is 
@@ -110,36 +106,9 @@ short InstallSystem() {
 #endif
 
   if (  failure ) {
-	#if OLDLOGGER
-	StartupStore(_T("------ WARNING: NO DLL install available (and thus NO G-RECORD FOR VALIDATING IGC FILES)%s"),NEWLINE);
-	#endif
 	StartupStore(_T("------ WARNING: NO font will be installed on device (and thus wrong text size displayed)%s"),NEWLINE);
 	return 5; // 091109
   } else {
-#if OLDLOGGER
-#ifdef PPC2002
-	_stprintf(srcfile,TEXT("%s\\GRECORD2002.XCS"),srcdir);
-#endif
-#ifdef PPC2003
-	_stprintf(srcfile,TEXT("%s\\GRECORD2003.XCS"),srcdir);
-#endif
-#ifdef PNA
-	_stprintf(srcfile,TEXT("%s\\GRECORDPNA.XCS"),srcdir);
-#endif
-
-	_stprintf(dstfile,TEXT("%s\\GRecordDll.dll"),dstdir);
-
-	if (  GetFileAttributes(dstfile) != 0xffffffff ) {
-		StartupStore(_T(". GRecordDll.dll already installed in device, very well.%s"),NEWLINE);
-	} else {
-		if (!CopyFile(srcfile,dstfile,TRUE)) {
-			StartupStore(_T("++++++ COULD NOT INSTALL <%s> inside device. BAD!%s"),srcfile,NEWLINE);
-			StartupStore(_T("++++++ Error code was: %ld%s"),GetLastError(),NEWLINE);
-		} else {
-			StartupStore(_T("... GRecordDll.dll installed using <%s>. Great.%s"),srcfile,NEWLINE);
-		}
-	}
-#endif // OLDLOGGER
 
 #ifdef PNA
 	if (GlobalModelType == MODELTYPE_PNA_HP31X) { // 091109
@@ -354,17 +323,6 @@ bool CheckSystemDefaultMenu() {
   return true;
 }
 
-#if OLDLOGGER
-// We only check for general installation of GRecord files
-bool CheckSystemGRecord() {
-  TCHAR srcdir[MAX_PATH];
-  TCHAR srcfile[MAX_PATH];
-  LocalPath(srcdir, _T(LKD_SYSTEM));
-  _stprintf(srcfile,TEXT("%s\\_GRECORD"),srcdir);
-  if (  GetFileAttributes(srcfile) == 0xffffffff ) return false;
-  return true;
-}
-#endif
 
 bool CheckPolarsDir() {
   TCHAR srcdir[MAX_PATH];

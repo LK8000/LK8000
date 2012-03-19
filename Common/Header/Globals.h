@@ -161,7 +161,6 @@ GEXTERN int  CustomKeyModeAircraftIcon;
 GEXTERN int  CustomKeyModeLeftUpCorner;
 GEXTERN int  CustomKeyModeRightUpCorner;
 GEXTERN int  CustomKeyModeCenterScreen;
-GEXTERN bool ResumeSession;
 GEXTERN double QFEAltitudeOffset; // VENTA3
 GEXTERN int OnAirSpace; // VENTA3 toggle DrawAirSpace
 

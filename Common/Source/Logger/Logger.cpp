@@ -27,43 +27,6 @@ using std::max;
  #define LOGGER_MANUFACTURER	"XCS"
 #endif
 
-#if OLDLOGGER
-HINSTANCE GRecordDLLHandle = NULL;
-
-// Procedures for explicitly loaded (optional) GRecord DLL
-typedef int (*GRRECORDGETVERSION)(TCHAR * szOut);
-GRRECORDGETVERSION GRecordGetVersion;
-
-typedef int (*GRECORDINIT)(void);
-GRECORDINIT GRecordInit;
-
-typedef int (*GRECORDGETDIGESTMAXLEN)(void);
-GRECORDGETDIGESTMAXLEN GRecordGetDigestMaxLen;
-
-typedef int (*GRECORDAPPENDRECORDTOBUFFER)(TCHAR * szIn);
-GRECORDAPPENDRECORDTOBUFFER GRecordAppendRecordToBuffer;
-
-typedef int (*GRECORDFINALIZEBUFFER)(void);
-GRECORDFINALIZEBUFFER GRecordFinalizeBuffer;
-
-typedef int (*GRECORDGETDIGEST)(TCHAR * szOut);
-GRECORDGETDIGEST GRecordGetDigest;
-
-typedef int (*GRECORDSETFILENAME)(TCHAR * szIn);
-GRECORDSETFILENAME GRecordSetFileName;
-
-typedef int (*GRECORDLOADFILETOBUFFER)(void);
-GRECORDLOADFILETOBUFFER GRecordLoadFileToBuffer;
-
-typedef int (*GRECORDAPPENDGRECORDTOFILE)(BOOL bValid);
-GRECORDAPPENDGRECORDTOFILE GRecordAppendGRecordToFile;
-
-typedef int (*GRECORDREADGRECORDFROMFILE)(TCHAR szOutput []);
-GRECORDREADGRECORDFROMFILE GRecordReadGRecordFromFile;
-
-typedef int (*GRECORDVERIFYGRECORDINFILE)(void);
-GRECORDVERIFYGRECORDINFILE GRecordVerifyGRecordInFile;
-#endif
 
 extern NMEA_INFO GPS_INFO;
 
@@ -139,13 +102,10 @@ LoggerBuffer_T LoggerBuffer[MAX_LOGGER_BUFFER];
 void StopLogger(void) {
   TCHAR szMessage[(MAX_PATH*2)+1] = TEXT("\0");
   int iLoggerError=0;  // see switch statement for error handler
-#if OLDLOGGER
-#else
   TCHAR sztmplogfile[MAX_PATH+1] = TEXT("\0");
   int retval=0;
 
   _tcscpy(sztmplogfile,szLoggerFileName); // use LOGGER_TMP, unsigned
-#endif
 
   if (LoggerActive) {
     LoggerActive = false;
@@ -157,30 +117,7 @@ void StopLogger(void) {
     if (!SIMMODE && LoggerGActive())
     #endif
 	{
-#if OLDLOGGER
-	  BOOL bFileValid = true;
-	  TCHAR OldGRecordBuff[MAX_IGC_BUFF];
 
-	  TCHAR NewGRecordBuff[MAX_IGC_BUFF];
-#endif
-
-#if OLDLOGGER
-	  GRecordFinalizeBuffer();		// buffer is appended w/ each igc file write
-	  GRecordGetDigest(OldGRecordBuff);	// read record built by individual file writes
-
-	  // now calc from whats in the igc file on disk
-	  GRecordInit();
-	  GRecordSetFileName(szLoggerFileName);
-	  GRecordLoadFileToBuffer();
-	  GRecordFinalizeBuffer();
-	  GRecordGetDigest(NewGRecordBuff);
-
-	  for (unsigned int i = 0; i < 128; i++)
-	    if (OldGRecordBuff[i] != NewGRecordBuff[i] )
-	      bFileValid = false;
-
-	  GRecordAppendGRecordToFile(bFileValid); 
-#else
 	extern int RunSignature();
 	retval = RunSignature();
 	if (retval!=0) {
@@ -221,7 +158,6 @@ void StopLogger(void) {
 		DeleteFile(szLoggerFileName);	// remove old LOGGER_TMP
 		_tcscpy(sztmplogfile,szSLoggerFileName); // use LOGGER_SIG, signed
 	}
-#endif
 
 	} // logger active
 
@@ -229,11 +165,7 @@ void StopLogger(void) {
       const int imMax=3;
       for (imCount=0; imCount < imMax; imCount++) {
         // MoveFile() nonzero==Success
-#if OLDLOGGER
-        if (0 != MoveFile( szLoggerFileName, szFLoggerFileName)) {	// rename LOGGER_TMP
-#else
         if (0 != MoveFile( sztmplogfile, szFLoggerFileName)) {
-#endif
           iLoggerError=0;
           break; // success
         }
@@ -241,11 +173,7 @@ void StopLogger(void) {
       }
       if (imCount == imMax) { // MoveFile() failed all attempts
 
-#if OLDLOGGER
-        if (0 == MoveFile( szLoggerFileName, szFLoggerFileNameRoot)) { // try rename it and leave in root
-#else
         if (0 == MoveFile( sztmplogfile, szFLoggerFileNameRoot)) { // try rename it and leave in root
-#endif
           iLoggerError=1; //Fail.  NoMoveNoRename
         }
         else {
@@ -255,11 +183,7 @@ void StopLogger(void) {
 
     } // logger clearfreespace
     else { // Insufficient disk space.  // MoveFile() nonzero==Success
-#if OLDLOGGER
-      if (0 == MoveFile( szLoggerFileName, szFLoggerFileNameRoot)) { // try rename it and leave in root
-#else
       if (0 == MoveFile( sztmplogfile, szFLoggerFileNameRoot)) { // try rename it and leave in root
-#endif
         iLoggerError=3; //Fail.  Insufficient Disk Space, NoRename
       }
       else {
@@ -274,11 +198,7 @@ void StopLogger(void) {
 
     case 1: // NoMoveNoRename
       _tcsncpy(szMessage,TEXT("--- Logger file not copied.  It is in the root folder of your device and called "),MAX_PATH);
-#if OLDLOGGER
-      _tcsncat(szMessage,szLoggerFileName,MAX_PATH);
-#else
       _tcsncat(szMessage,sztmplogfile,MAX_PATH);
-#endif
 
       MessageBoxX(hWndMapWindow,
 		gettext(szMessage),
@@ -301,11 +221,7 @@ void StopLogger(void) {
 
     case 3: // Insufficient Storage.  NoRename
       _tcsncpy(szMessage,TEXT("++++++ Insuff. storage. Logger file in device's root folder, called "),MAX_PATH);
-#if OLDLOGGER
-      _tcsncat(szMessage,szLoggerFileName,MAX_PATH);
-#else
       _tcsncat(szMessage,sztmplogfile,MAX_PATH);
-#endif
 
       MessageBoxX(hWndMapWindow,
 		gettext(szMessage),
@@ -539,8 +455,6 @@ void StartLogger()
   int i;
   TCHAR path[MAX_PATH+1];
   TCHAR cAsset[3];
-#if OLDLOGGER
-#else
 
   // strAsset is initialized with DUM.
   if (_tcslen(PilotName_Config)>0) {
@@ -559,7 +473,7 @@ void StartLogger()
   strAssetNumber[1]= towupper(strAssetNumber[1]);
   strAssetNumber[2]= towupper(strAssetNumber[2]);
   strAssetNumber[3]= _T('\0');
-#endif
+
   for (i=0; i < 3; i++) { // chars must be legal in file names
     cAsset[i] = IsAlphaNum(strAssetNumber[i]) ? strAssetNumber[i] : _T('A');
   }
@@ -571,31 +485,6 @@ void StartLogger()
   }
   wsprintf(szLoggerFileName, TEXT("%s\\LOGGER_TMP.IGC"), path);
 
-#if OLDLOGGER
-	// Does the file already exist? 
-	if (GetFileAttributes(szLoggerFileName) != 0xffffffff) {
-		StartupStore(_T("------ Existing tmp.IGC found! Attempting recovery..%s"),NEWLINE);
-
-		// TODO check integrity of existing file, and if valid then proceed
-		// else rename tmp.IGC to something useful, before removing!!
-
-		if (0)
-		{
-			// This should be set at startup, getting persistent data...
-			ResumeSession=true; 
-			// disable Grecord here!
-			StartupStore(_T("------ Recovery seems ok, keeping old file and appending on it!%s"),NEWLINE);
-		} else {
-			ResumeSession=false;
-			StartupStore(_T("------ Recovery not possible, renaming old file to LOST%s"),NEWLINE);
-			TCHAR newfile[MAX_PATH+20];
-			wsprintf(newfile, TEXT("%s\\LOST_%02d%02d%02d.IGC"), path, GPS_INFO.Hour, GPS_INFO.Minute, GPS_INFO.Second);
-			CopyFile(szLoggerFileName,newfile,TRUE);
-			StartupStore(_T("------ Deleting old file, and starting logging from scratch%s"),NEWLINE);
-			DeleteFile(szLoggerFileName);
-		}
-	}
-#else
   wsprintf(szSLoggerFileName, TEXT("%s\\LOGGER_SIG.IGC"), path);
   TCHAR newfile[MAX_PATH+20];
   if (GetFileAttributes(szLoggerFileName) != 0xffffffff) {
@@ -610,19 +499,7 @@ void StartLogger()
 	CopyFile(szSLoggerFileName,newfile,TRUE);
 	DeleteFile(szSLoggerFileName);
   }
-#endif
 
-#if OLDLOGGER
-  #if TESTBENCH
-	LinkGRecordDLL();
-	if (LoggerGActive()) GRecordInit();
-  #else
-  if (!SIMMODE) {
-	LinkGRecordDLL();
-	if (LoggerGActive()) GRecordInit();
-  }
-  #endif
-#endif
   
   for(i=1;i<99;i++)
     {
@@ -1757,21 +1634,6 @@ bool IGCWriteRecord(char *szIn)
 		(OVERLAPPED *)NULL);
 
 
-#if OLDLOGGER
-      int iLen = strlen(charbuffer);
-      TCHAR buffer[MAX_IGC_BUFF];
-      for (int i = 0; (i <= iLen) && (i < MAX_IGC_BUFF); i++)
-	buffer[i] = (TCHAR)charbuffer[i];
-      TCHAR *pbuffer = buffer;
-        #if TESTBENCH
-		if (LoggerGActive()) GRecordAppendRecordToBuffer(pbuffer);
-	#else
-	if (!SIMMODE) {
-		if (LoggerGActive()) GRecordAppendRecordToBuffer(pbuffer);
-	}
-	#endif
-#endif
-
       FlushFileBuffers(hFile);
       CloseHandle(hFile);
       bWriting = false;
@@ -1782,161 +1644,9 @@ bool IGCWriteRecord(char *szIn)
 
 }
 
-#if OLDLOGGER
-void LinkGRecordDLL(void)
-{
-  static bool bFirstTime = true;
-  TCHAR szLoadResults [100];
-  TCHAR szGRecordVersion[100];
-    
-  if ((GRecordDLLHandle == NULL) && bFirstTime) // only try to load DLL once per session
-    {
-      bFirstTime=false;
-
-      GRecordDLLHandle = LoadLibrary(TEXT("GRecordDLL.DLL"));
-      if (GRecordDLLHandle != NULL)
-        {
-	  BOOL bLoadOK = true;  // if any pointers don't link, disable entire library
-
-#if (WINDOWSPC<1)
-	  GRecordGetVersion = 
-	    (GRRECORDGETVERSION)
-	    GetProcAddress(GRecordDLLHandle, 
-			   TEXT("GRecordGetVersion"));
-
-	  if (!GRecordGetVersion) // read version for log
-            {
-	      bLoadOK=false;
-	      _tcscpy(szGRecordVersion, TEXT("version unknown"));
-            }
-	  else
-            {                
-	      GRecordGetVersion(szGRecordVersion);
-            }
-
-            
-	  GRecordInit = 
-	    (GRECORDINIT)
-	    GetProcAddress(GRecordDLLHandle, 
-			   TEXT("GRecordInit"));
-
-	  if (!GRecordInit)
-	    bLoadOK=false;
-
-	  GRecordGetDigestMaxLen = 
-	    (GRECORDGETDIGESTMAXLEN)
-	    GetProcAddress(GRecordDLLHandle, 
-			   TEXT("GRecordGetDigestMaxLen"));
-
-	  if (!GRecordGetDigestMaxLen)
-	    bLoadOK=false;
-
-
-	  GRecordAppendRecordToBuffer = 
-	    (GRECORDAPPENDRECORDTOBUFFER)
-	    GetProcAddress(GRecordDLLHandle, 
-			   TEXT("GRecordAppendRecordToBuffer"));
-
-	  if (!GRecordAppendRecordToBuffer)
-	    bLoadOK=false;
-
-
-	  GRecordFinalizeBuffer = 
-	    (GRECORDFINALIZEBUFFER)
-	    GetProcAddress(GRecordDLLHandle, 
-			   TEXT("GRecordFinalizeBuffer"));
-
-	  if (!GRecordFinalizeBuffer)
-	    bLoadOK=false;
-
-
-	  GRecordGetDigest = 
-	    (GRECORDGETDIGEST)
-	    GetProcAddress(GRecordDLLHandle, 
-			   TEXT("GRecordGetDigest"));
-
-	  if (!GRecordGetDigest)
-	    bLoadOK=false;
-
-
-	  GRecordSetFileName = 
-	    (GRECORDSETFILENAME)
-	    GetProcAddress(GRecordDLLHandle, 
-			   TEXT("GRecordSetFileName"));
-
-	  if (!GRecordSetFileName)
-	    bLoadOK=false;
-
-
-	  GRecordLoadFileToBuffer = 
-	    (GRECORDLOADFILETOBUFFER)
-	    GetProcAddress(GRecordDLLHandle, 
-			   TEXT("GRecordLoadFileToBuffer"));
-
-	  if (!GRecordLoadFileToBuffer)
-	    bLoadOK=false;
-
-
-	  GRecordAppendGRecordToFile = 
-	    (GRECORDAPPENDGRECORDTOFILE)
-	    GetProcAddress(GRecordDLLHandle, 
-			   TEXT("GRecordAppendGRecordToFile"));
-
-	  if (!GRecordAppendGRecordToFile)
-	    bLoadOK=false;
-
-
-	  GRecordReadGRecordFromFile = 
-	    (GRECORDREADGRECORDFROMFILE)
-	    GetProcAddress(GRecordDLLHandle, 
-			   TEXT("GRecordReadGRecordFromFile"));
-
-	  if (!GRecordReadGRecordFromFile)
-	    bLoadOK=false;
-
-
-	  GRecordVerifyGRecordInFile = 
-	    (GRECORDVERIFYGRECORDINFILE)
-	    GetProcAddress(GRecordDLLHandle, 
-			   TEXT("GRecordVerifyGRecordInFile"));
-#else
-	  GRecordVerifyGRecordInFile = NULL;
-#endif
-
-	  if (!GRecordVerifyGRecordInFile)
-	    bLoadOK=false;
-
-	  if (!bLoadOK) // all need to link, or disable entire library.
-            {
-	      wsprintf(szLoadResults,TEXT("------ Found GRecordDLL %s but incomplete%s"), szGRecordVersion,NEWLINE);
-	      FreeLibrary(GRecordDLLHandle);
-	      GRecordDLLHandle = NULL;
-            }
-	  else {
-	    wsprintf(szLoadResults,TEXT(". Loaded GRecordDLL %s%s"), szGRecordVersion,NEWLINE);
-	  }
-	}
-      else {
-#if (WINDOWSPC<1)
-	_tcscpy(szLoadResults,TEXT("... Can't load GRecordDLL\r\n"));
-#endif
-      }
-#if (WINDOWSPC<1)
-      StartupStore(szLoadResults);
-#endif
-
-    }
-}
-#endif // OLDLOGGER
 
 bool LoggerGActive()
 {
-#if OLDLOGGER
-  if (GRecordDLLHandle)
-    return true;
-  else
-    return false;
-#else
   #if (WINDOWSPC>0)
     #if TESTBENCH
     return true;	// THIS IS ONLY for checking Grecord new stuff under testbench
@@ -1946,12 +1656,9 @@ bool LoggerGActive()
   #else
   return true;
   #endif
-#endif
 }
 
 
-#if OLDLOGGER
-#else
 //
 //	259	still active, very bad
 //	0	is the only OK that we want!
@@ -2035,4 +1742,3 @@ int RunSignature() {
 
 }
 
-#endif // newlogger

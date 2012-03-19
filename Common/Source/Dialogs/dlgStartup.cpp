@@ -23,9 +23,6 @@ static WndForm *wf=NULL;
 static WndOwnerDrawFrame *wSplash=NULL;
 
 extern bool CheckSystemDefaultMenu(void);
-#if OLDLOGGER
-extern bool CheckSystemGRecord(void);
-#endif
 extern bool CheckLanguageEngMsg(void);
 extern bool CheckSystemBitmaps(void);
 
@@ -565,20 +562,6 @@ short dlgStartupShowModal(void){
 	goto _exit;
   }
 
-#if OLDLOGGER
-  if  (!CheckSystemGRecord()) {
-	TCHAR mydir[MAX_PATH];
-	TCHAR mes[MAX_PATH];
-	StartupStore(_T("... CHECK SYSTEM _GRECORD FAILED!%s"),NEWLINE);
-	LocalPath(mydir,_T(LKD_SYSTEM));
-	_stprintf(mes,_T("%s/_GRECORD"),mydir);
-	MessageBoxX(hWndMainWindow, _T("_GRECORD MISSING in SYSTEM\nCheck System Install"), _T("FATAL ERROR 032"), MB_OK|MB_ICONQUESTION);
-	MessageBoxX(hWndMainWindow, mes, _T("MISSING FILE!"), MB_OK|MB_ICONQUESTION, true);
-	RUN_MODE=RUN_EXIT;
-	Shutdown();
-	goto _exit;
-  }
-#endif
   if  (!CheckSystemBitmaps()) {
 	TCHAR mydir[MAX_PATH];
 	TCHAR mes[MAX_PATH];
