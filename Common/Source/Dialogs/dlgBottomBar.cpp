@@ -210,7 +210,6 @@ void dlgBottomBarShowModal(void){
 
   if (changed) {
 
-    #ifdef BB_CHANGES
     if (!(ConfBB1 || ConfBB2 || ConfBB3 || ConfBB4 || ConfBB5 || 
         ConfBB6 || ConfBB7 || ConfBB8 || ConfBB9)) {
       MessageBoxX (hWndMainWindow,
@@ -220,7 +219,6 @@ void dlgBottomBarShowModal(void){
       ConfBB1 = true;
       SetToRegistry(szRegistryConfBB1, (DWORD)(ConfBB1));
     }
-    #endif // BB_CHANGES
 
     UpdateConfBB();
     MessageBoxX (hWndMainWindow,
