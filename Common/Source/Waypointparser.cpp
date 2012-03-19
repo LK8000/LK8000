@@ -112,19 +112,11 @@ static bool WaypointInTerrainRange(WAYPOINT *List) {
       case wpTerrainBoundsYesAll: 
         WaypointOutOfTerrainRangeDontAskAgain = 1;
         // WaypointsOutOfRange = 1; // this would override user choice in configuration!
-	#if OLDPROFILES
-        SetToRegistry(szRegistryWaypointsOutOfRange, WaypointsOutOfRange);
-        StoreRegistry();
-	#endif
         return true;
       case mrCancle: 
       case wpTerrainBoundsNoAll: 
         WaypointOutOfTerrainRangeDontAskAgain = 2;
         // WaypointsOutOfRange = 2; // this would override user choice in configuration!
-	#if OLDPROFILES
-        SetToRegistry(szRegistryWaypointsOutOfRange, WaypointsOutOfRange);
-        StoreRegistry();
-	#endif
         return false;
       }
       
@@ -897,33 +889,16 @@ void ReadWayPoints(void)
     CloseWayPoints(); // BUGFIX 091104 duplicate waypoints entries
     InitVirtualWaypoints();	// 091103
 
-    #if OLDPROFILES
-    GetRegistryString(szRegistryWayPointFile, szFile1, MAX_PATH);
-    #else
     _tcscpy(szFile1,szWaypointFile);
-    #endif
 
     #ifndef HAVEEXCEPTIONS
-    #if OLDPROFILES
-    SetRegistryString(szRegistryWayPointFile, TEXT("\0"));  
-    #else
     _tcscpy(szWaypointFile,_T(""));
-    #endif
     #endif
       
     if (_tcslen(szFile1)>0) {
       ExpandLocalPath(szFile1);
       fp = zzip_fopen(szFile1, "rt");
     } else {
-      #if OLDPROFILES
-      static TCHAR  szMapFile[MAX_PATH] = TEXT("\0");
-      GetRegistryString(szRegistryMapFile, szMapFile, MAX_PATH);
-      ExpandLocalPath(szMapFile);
-      _tcscat(szMapFile,TEXT("/"));
-      _tcscat(szMapFile,TEXT("waypoints.xcw"));
-      fp = zzip_fopen(szMapFile, "rt");
-      #else
-      #endif
     }
 
     if(fp != NULL)
@@ -935,11 +910,7 @@ void ReadWayPoints(void)
         // read OK, so set the registry to the actual file name
         #ifndef HAVEEXCEPTIONS
         ContractLocalPath(szFile1);
-        #if OLDPROFILES
-        SetRegistryString(szRegistryWayPointFile, szFile1);  
-	#else
 	_tcscpy(szWaypointFile,szFile1);
-	#endif
         #endif
       } else {
       StartupStore(TEXT("--- No waypoint file 1%s"),NEWLINE);
@@ -951,11 +922,7 @@ void ReadWayPoints(void)
 	// LKTOKEN  _@M266_ = "Error" 
                 gettext(TEXT("_@M266_")),
                 MB_OK|MB_ICONSTOP);
-    #if OLDPROFILES
-    SetRegistryString(szRegistryWayPointFile, TEXT("\0"));  
-    #else
     _tcscpy(szWaypointFile,_T(""));
-    #endif
   }
 #endif
 
@@ -968,14 +935,9 @@ void ReadWayPoints(void)
   __try{
 #endif
 
-    #if OLDPROFILES
-    GetRegistryString(szRegistryAdditionalWayPointFile, szFile2, MAX_PATH);
-    SetRegistryString(szRegistryAdditionalWayPointFile, TEXT("\0"));  
-    #else
     // reset to empty until we verified it is existing
     _tcscpy(szFile2,szAdditionalWaypointFile);
     _tcscpy(szAdditionalWaypointFile,_T(""));
-    #endif
 
     if (_tcslen(szFile2)>0){
       ExpandLocalPath(szFile2);
@@ -987,11 +949,7 @@ void ReadWayPoints(void)
         fp = NULL;
         // read OK, so set the registry to the actual file name
         ContractLocalPath(szFile2);
-	#if OLDPROFILES
-        SetRegistryString(szRegistryAdditionalWayPointFile, szFile2);  
-	#else
 	_tcscpy(szAdditionalWaypointFile,szFile2);
-	#endif
       } else {
         StartupStore(TEXT("--- No waypoint file 2%s"),NEWLINE);
       }
@@ -1017,11 +975,7 @@ void ReadWayPoints(void)
 	// LKTOKEN  _@M266_ = "Error" 
                 gettext(TEXT("_@M266_")),
                 MB_OK|MB_ICONSTOP);
-    #if OLDPROFILES
-    SetRegistryString(szRegistryAdditionalWayPointFile, TEXT("\0"));  
-    #else
     _tcscpy(szAdditionalWaypointFile,_T(""));
-    #endif
   }
 #endif
 
@@ -1140,17 +1094,6 @@ void SetHome(bool reset)
 	StartupStore(_T("...... HomeWaypoint NOT SET%s"),NEWLINE);
   }
 
-  #if OLDPROFILES
-  // 
-  // Save the home waypoint number in the resgistry
-  //
-  // VENTA3> this is probably useless, since HomeWayPoint &c were currently 
-  //         just loaded from registry. 
-  SetToRegistry(szRegistryHomeWaypoint,HomeWaypoint);
-  SetToRegistry(szRegistryAlternate1,Alternate1);
-  SetToRegistry(szRegistryAlternate2,Alternate2);
-  SetToRegistry(szRegistryTeamcodeRefWaypoint,TeamCodeRefWaypoint);
-  #endif
 }
 
 // This is slow, careful!
@@ -1557,11 +1500,7 @@ void WaypointWriteFiles(void) {
   TCHAR szFile2[MAX_PATH] = TEXT("\0");
         
   FILE *fp=NULL;
-  #if OLDPROFILES
-  GetRegistryString(szRegistryWayPointFile, szFile1, MAX_PATH);
-  #else
   _tcscpy(szFile1,szWaypointFile);
-  #endif
   ExpandLocalPath(szFile1);
 
   #if 0	// 101214 READ ONLY FILES
@@ -1593,11 +1532,7 @@ void WaypointWriteFiles(void) {
   #if 0 // 101214
   goto_file2:
   #endif
-  #if OLDPROFILES
-  GetRegistryString(szRegistryAdditionalWayPointFile, szFile2, MAX_PATH);
-  #else
   _tcscpy(szFile2,szAdditionalWaypointFile);
-  #endif
   ExpandLocalPath(szFile2);
 
   #if 0 // 101214 READ ONLY FILES

@@ -40,11 +40,7 @@ void OpenTopology() {
 
      // Topology is inside the LKM map file
      TCHAR  szmapFile[MAX_PATH] = TEXT("\0");
-    #if OLDPROFILES
-    GetRegistryString(szRegistryMapFile, szmapFile, MAX_PATH);
-    #else
     _tcscpy(szmapFile,szMapFile);
-    #endif
     if (_tcslen(szmapFile)==0) {
       UnlockTerrainDataGraphics();
       return;

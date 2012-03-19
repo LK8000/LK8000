@@ -14,7 +14,6 @@
 //#include "Parser.h"
 
 
-#if NEWPROFILES
 //
 // Set all default values for configuration.
 // We need to set runtime variables later, that make use of 
@@ -436,4 +435,3 @@ void LKProfileResetDefault(void) {
 }
 
 
-#endif // NEWPROFILES

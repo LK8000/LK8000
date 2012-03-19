@@ -205,15 +205,6 @@ void dlgCustomKeysShowModal(void){
 	}
   }
 
-  #if OLDPROFILES
-  if (changed) {
-    StoreRegistry();
-    MessageBoxX (hWndMainWindow, 
-	// LKTOKEN  _@M207_ = "Custom keys config saved" 
-		 gettext(TEXT("_@M207_")), 
-		 TEXT(""), MB_OK);
-  }
-  #endif
 
   delete wf;
   wf = NULL;

@@ -183,13 +183,6 @@ void dlgTimeGatesShowModal(void){
      if (PGCloseTime>86399) PGCloseTime=86399; // 23:59:59
      ActiveGate=-1;
 
-    #if OLDPROFILES
-    StoreRegistry();
-    MessageBoxX (hWndMainWindow, 
-	// LKTOKEN  _@M168_ = "Changes to configuration saved." 
-		 gettext(TEXT("_@M168_")), 
-		 TEXT(""), MB_OK);
-    #endif
   }
 
 

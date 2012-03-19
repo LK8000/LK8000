@@ -133,15 +133,9 @@ void InputEvents::readFile() {
   //
   // ENGINEERING MODE: SELECTED XCI HAS PRIORITY
   //
-  #if OLDPROFILES
-  GetRegistryString(szRegistryInputFile, szFile1, MAX_PATH);
-  ExpandLocalPath(szFile1);
-  SetRegistryString(szRegistryInputFile, TEXT("\0"));
-  #else
   _tcscpy(szFile1,szInputFile);
   ExpandLocalPath(szFile1);
   _tcscpy(szInputFile,_T("")); // disabled until verified valid
-  #endif
 
   if (_tcslen(szFile1)>0) {
     fp=zzip_fopen(szFile1, "rb");
@@ -367,11 +361,7 @@ void InputEvents::readFile() {
 
   // file was ok, so save it to registry
   ContractLocalPath(szFile1);
-  #if OLDPROFILES
-  SetRegistryString(szRegistryInputFile, szFile1);
-  #else
   _tcscpy(szInputFile,szFile1);
-  #endif
 
   zzip_fclose(fp);
 }
@@ -2390,12 +2380,7 @@ void InputEvents::eventProfileLoad(const TCHAR *misc) {
 	}
 
 	SettingsEnter();
-        #if OLDPROFILES
-	ReadProfile(buffer);
-	WAYPOINTFILECHANGED=true;
-        #else
 	LKProfileLoad(buffer);
-        #endif
 	SettingsLeave();
 	_stprintf(buffer2,_T("Profile \"%s\" loaded"),misc);
 	MessageBoxX(hWndMapWindow, buffer2, _T("Load Profile"), MB_OK|MB_ICONEXCLAMATION);
@@ -2418,11 +2403,7 @@ void InputEvents::eventProfileSave(const TCHAR *misc) {
 	LocalPath(buffer,_T(LKD_CONF)); // 100223
 	_tcscat(buffer,_T("\\"));
 	_tcscat(buffer,misc);
-	#if OLDPROFILES
-	WriteProfile(buffer);
-	#else
 	LKProfileSave(buffer);
-	#endif
 	_stprintf(buffer,_T("%s saved to _Configuration "),misc);
 	MessageBoxX(hWndMapWindow, buffer, _T("Save Profile"), MB_OK|MB_ICONEXCLAMATION);
   }

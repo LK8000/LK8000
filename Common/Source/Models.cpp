@@ -156,17 +156,9 @@ bool SetModelType() {
 
   DWORD Temp=0;
 
-  #if OLDPROFILES
-  TCHAR szRegistryInfoBoxModel[]= TEXT("AppInfoBoxModel");
-  GetFromRegistry(szRegistryInfoBoxModel, &Temp);
-  #else
   Temp=Appearance.InfoBoxModel;
-  #endif
   
   if ( SetModelName(Temp) != true ) {
-	#if OLDPROFILES
-	StartupStore(_T("... SetModelType failed: probably no registry entry%s"), NEWLINE);
-	#endif
 	GlobalModelType=MODELTYPE_PNA_PNA;
 	_tcscpy(GlobalModelName,_T("GENERIC"));
 	return false;

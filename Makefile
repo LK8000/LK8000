@@ -589,7 +589,6 @@ SRC_FILES :=\
 	$(SRC)/Port.cpp \
 	$(SRC)/ProcessTimer.cpp \
 	$(SRC)/Progress.cpp\
-	$(SRC)/Registry.cpp\
 	$(SRC)/RotateScreen.cpp\
 	$(SRC)/Settings.cpp\
 	$(SRC)/Sound.cpp \

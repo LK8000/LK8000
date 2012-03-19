@@ -1710,43 +1710,22 @@ void CAirspaceManager::ReadAirspaces()
   ZZIP_FILE *fp=NULL;
   ZZIP_FILE *fp2=NULL;
 
-  #if OLDPROFILES
-  GetRegistryString(szRegistryAirspaceFile, szFile1, MAX_PATH);
-  GetRegistryString(szRegistryAdditionalAirspaceFile, szFile2, MAX_PATH);
-  #else
   _tcscpy(szFile1,szAirspaceFile);
   _tcscpy(szFile2,szAdditionalAirspaceFile);
-  #endif
   ExpandLocalPath(szFile1);
   ExpandLocalPath(szFile2);
 
   if (_tcslen(szFile1)>0) {
     fp  = zzip_fopen(szFile1, "rt");
   } else {
-    #if OLDPROFILES
-    //* 091206 back on 
-    static TCHAR  szMapFile[MAX_PATH] = TEXT("\0");
-    GetRegistryString(szRegistryMapFile, szMapFile, MAX_PATH);
-    ExpandLocalPath(szMapFile);
-    wcscat(szMapFile,TEXT("/"));
-    wcscat(szMapFile,TEXT(LKF_AIRSPACES)); // 091206
-    fp  = zzip_fopen(szMapFile, "rt");
-    //*/
-    #else
-    #endif
   }
 
   if (_tcslen(szFile2)>0) {
     fp2 = zzip_fopen(szFile2, "rt");
   }
 
-  #if OLDPROFILES
-  SetRegistryString(szRegistryAirspaceFile, TEXT("\0"));
-  SetRegistryString(szRegistryAdditionalAirspaceFile, TEXT("\0"));
-  #else
   _tcscpy(szAirspaceFile,_T(""));
   _tcscpy(szAdditionalAirspaceFile,_T(""));
-  #endif
 
   if (fp != NULL){
     FillAirspacesFromOpenAir(fp);
@@ -1754,11 +1733,7 @@ void CAirspaceManager::ReadAirspaces()
 
     // file 1 was OK, so save it
     ContractLocalPath(szFile1);
-    #if OLDPROFILES
-    SetRegistryString(szRegistryAirspaceFile, szFile1);
-    #else
     _tcscpy(szAirspaceFile,szFile1);
-    #endif
 
     // also read any additional airspace
     if (fp2 != NULL) {
@@ -1767,11 +1742,7 @@ void CAirspaceManager::ReadAirspaces()
       
       // file 2 was OK, so save it
       ContractLocalPath(szFile2);
-      #if OLDPROFILES
-      SetRegistryString(szRegistryAdditionalAirspaceFile, szFile2);
-      #else
       _tcscpy(szAdditionalAirspaceFile,szFile2);
-      #endif
     } else {
       StartupStore(TEXT(". No airspace file 2%s"),NEWLINE);
     }

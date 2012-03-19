@@ -50,19 +50,12 @@ extern void CreateCalculationThread();
 
 
 void PreloadInitialisation(bool ask) {
-  #if OLDPROFILES
-  SetToRegistry(TEXT("LKV"), 3);
-  #endif
   LKLanguageReady=false;
   LKReadLanguageFile();
   FillDataOptions(); // Load infobox list
 
   if (ask) {
     // Load default profile and status file: we are at an early stage
-#if OLDPROFILES
-    RestoreRegistry(); // using startProfileFile
-    ReadRegistrySettings();
-#else
     LKProfileResetDefault();
     LKProfileLoad(startAircraftFile);
     LKProfileLoad(startPilotFile);
@@ -73,7 +66,6 @@ void PreloadInitialisation(bool ask) {
 	LKProfileInitRuntime();
     }
 
-#endif
     StatusFileInit();
   } else {
     // We are in the dialog startup phase
@@ -85,10 +77,6 @@ void PreloadInitialisation(bool ask) {
 
     if (retstartup<0) return;
 
-#if OLDPROFILES
-    RestoreRegistry();
-    ReadRegistrySettings();
-#else
     if (_tcscmp(startProfileFile,_T("PROFILE_RESET"))==0) {
 	StartupStore(_T(". USER ASKED FOR PROFILE FULL RESET!%s"),NEWLINE);
 	DoStatusMessage(gettext(_T("_@M1757_"))); // LK8000 PROFILES RESET
@@ -108,7 +96,6 @@ void PreloadInitialisation(bool ask) {
 	}
 	LKProfileLoad(startProfileFile); // this is calling adjust and InitRuntime itself
     }
-#endif
 
     // LKTOKEN _@M1206_ "Initialising..."
 	CreateProgressDialog(gettext(TEXT("_@M1206_"))); 

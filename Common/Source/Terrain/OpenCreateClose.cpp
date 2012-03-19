@@ -34,11 +34,7 @@ void RasterTerrain::OpenTerrain(void)
 
   TCHAR szFile[MAX_PATH] = _T("\0");
 
-  #if OLDPROFILES
-  GetRegistryString(szRegistryTerrainFile, szFile, MAX_PATH);
-  #else
   _tcscpy(szFile,szTerrainFile);
-  #endif
 
   TCHAR szOrigFile[MAX_PATH] = _T("\0");
   ExpandLocalPath(szFile);
@@ -46,23 +42,14 @@ void RasterTerrain::OpenTerrain(void)
   ContractLocalPath(szOrigFile);
 
   // If no terrain will be found, the registry will be invalid on next run
-  #if OLDPROFILES
-  // This can be removed when we remove registry functions
-  SetRegistryString(szRegistryTerrainFile, TEXT("\0"));
-  #else
   _tcscpy(szTerrainFile,_T(""));
-  #endif
 
 
 #ifdef LKMTERRAIN
   static TCHAR  szMFile[MAX_PATH] = TEXT("\0");
   if (_tcslen(szFile)==0) {
     StartupStore(_T(". NO TERRAIN file configured%s"),NEWLINE);
-    #if OLDPROFILES
-    GetRegistryString(szRegistryMapFile, szMFile, MAX_PATH);
-    #else
     _tcscpy(szMFile,szMapFile);
-    #endif
     ExpandLocalPath(szMFile);
     _tcscpy(szFile,szMFile);
 
@@ -88,11 +75,7 @@ void RasterTerrain::OpenTerrain(void)
   }
 
   if (CreateTerrainMap(szFile)) {
-	#if OLDPROFILES
-	SetRegistryString(szRegistryTerrainFile, szOrigFile);
-	#else
 	_tcscpy(szTerrainFile,szOrigFile);
-	#endif
 	terrain_initialised = true;
 	return;
   } else {
@@ -101,11 +84,7 @@ void RasterTerrain::OpenTerrain(void)
 	StartupStore(_T(". Attempting to use DAT <%s> inside mapfile%s"),szFile,NEWLINE);
 
 	if (CreateTerrainMap(szFile)) {
-		#if OLDPROFILES
-		SetRegistryString(szRegistryTerrainFile, szOrigFile);
-		#else
 		_tcscpy(szTerrainFile,szOrigFile);
-		#endif
 		terrain_initialised = true;
 		return;
 	}
@@ -114,11 +93,7 @@ void RasterTerrain::OpenTerrain(void)
 
   if ( (_tcslen(szFile)>0) && ( _tcsstr(szFile, _T(".DEM")) || _tcsstr(szFile, _T(".dem")) ) ) {
 	if (CreateTerrainMap(szFile)) {
-		#if OLDPROFILES
-		SetRegistryString(szRegistryTerrainFile, szOrigFile);
-		#else
 		_tcscpy(szterrainFile,szOrigFile);
-		#endif
 		terrain_initialised = true;
 		return;
 	} else {

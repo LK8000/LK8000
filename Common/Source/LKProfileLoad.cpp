@@ -12,7 +12,6 @@
 #include "Modeltype.h"
 #include "LKProfiles.h"
 
-#if NEWPROFILES
 
 // #define DEBUGPROF	1
 extern void LKParseProfileString(TCHAR *sname, TCHAR *svalue);
@@ -617,6 +616,3 @@ void ReadPort2Settings(DWORD *PortIndex, DWORD *SpeedIndex, DWORD *Bit1Index) {
 }
 
 
-
-
-#endif // NEWPROFILES

@@ -11,7 +11,6 @@
 #include "McReady.h"
 #include "Modeltype.h"
 
-#if NEWPROFILES
 
 //
 // Init runtime variables using _Config variables
@@ -198,4 +197,3 @@ void LKProfileInitRuntime(void) {
 }
 
 
-#endif // NEWPROFILES

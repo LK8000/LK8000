@@ -190,15 +190,6 @@ void dlgAirspaceWarningParamsShowModal(void){
     }
   }
 
-  #if OLDPROFILES
-  if (changed) {
-    StoreRegistry();
-    MessageBoxX (hWndMainWindow, 
-		  // LKTOKEN  _@M1276_ "Airspace warning parameters saved."
-		 gettext(TEXT("_@M1276_")), 
-		 TEXT(""), MB_OK);
-  }
-  #endif
 
   delete wf;
   wf = NULL;

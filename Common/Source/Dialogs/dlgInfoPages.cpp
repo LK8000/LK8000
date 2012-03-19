@@ -252,9 +252,6 @@ void dlgInfoPagesShowModal(void){
   }
 
   if (changed) {
-    #if OLDPROFILES
-    StoreRegistry();
-    #endif
     UpdateConfIP();
     MessageBoxX (hWndMainWindow,
                  gettext(TEXT("_@M1608_")), // infopages config saved

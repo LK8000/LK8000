@@ -167,11 +167,7 @@ static void UpdateButtons(void) {
   TCHAR val[100];
 
   if (buttonPilotName) {
-    #if OLDPROFILES
-    GetRegistryString(szRegistryPilotName, val, 100);
-    #else
     _tcscpy(val,PilotName_Config);
-    #endif
     if (_tcslen(val)<=0) {
 	// LKTOKEN  _@M7_ = "(blank)" 
       _stprintf(val, gettext(TEXT("_@M7_")));
@@ -181,11 +177,7 @@ static void UpdateButtons(void) {
     buttonPilotName->SetCaption(text);
   }
   if (buttonAircraftType) {
-    #if OLDPROFILES
-    GetRegistryString(szRegistryAircraftType, val, 100);
-    #else
     _tcscpy(val,AircraftType_Config);
-    #endif
     if (_tcslen(val)<=0) {
 	// LKTOKEN  _@M7_ = "(blank)" 
       _stprintf(val, gettext(TEXT("_@M7_")));
@@ -195,11 +187,7 @@ static void UpdateButtons(void) {
     buttonAircraftType->SetCaption(text);
   }
   if (buttonAircraftRego) {
-    #if OLDPROFILES
-    GetRegistryString(szRegistryAircraftRego, val, 100);
-    #else
     _tcscpy(val,AircraftRego_Config);
-    #endif
     if (_tcslen(val)<=0) {
 	// LKTOKEN  _@M7_ = "(blank)" 
       _stprintf(val, gettext(TEXT("_@M7_")));
@@ -209,11 +197,7 @@ static void UpdateButtons(void) {
     buttonAircraftRego->SetCaption(text);
   }
   if (buttonCompetitionClass) {
-    #if OLDPROFILES
-    GetRegistryString(szRegistryCompetitionClass, val, 100);
-    #else
     _tcscpy(val,CompetitionClass_Config);
-    #endif
     if (_tcslen(val)<=0) {
       // LKTOKEN  _@M7_ = "(blank)" 
       _stprintf(val, gettext(TEXT("_@M7_")));
@@ -223,11 +207,7 @@ static void UpdateButtons(void) {
     buttonCompetitionClass->SetCaption(text);
   }
   if (buttonCompetitionID) {
-    #if OLDPROFILES
-    GetRegistryString(szRegistryCompetitionID, val, 100);
-    #else
     _tcscpy(val,CompetitionID_Config);
-    #endif
     if (_tcslen(val)<=0) {
       // LKTOKEN  _@M7_ = "(blank)" 
       _stprintf(val, gettext(TEXT("_@M7_")));
@@ -616,9 +596,6 @@ static void OnLk8000ModeChange(DataField *Sender, DataField::DataAccessKind_t Mo
 		if (Look8000 != (Look8000_t) (wp->GetDataField()->GetAsInteger())) {
 			Look8000 = (Look8000_t) (wp->GetDataField()->GetAsInteger());
 			if (Look8000!=0) { // 091115 do not allow Reserved mode , do not disable LK8000 !
-				#if OLDPROFILES
-				SetToRegistry(szRegistryLook8000, (DWORD)(Look8000));
-				#endif
 				changed = true;
 			} else Look8000=1;
 		}
@@ -772,17 +749,9 @@ static void OnAircraftRegoClicked(WindowControl *Sender) {
 	(void)Sender;
   TCHAR Temp[100];
   if (buttonAircraftRego) {
-    #if OLDPROFILES
-    GetRegistryString(szRegistryAircraftRego,Temp,100);
-    #else
     _tcscpy(Temp,AircraftRego_Config);
-    #endif
     dlgTextEntryShowModal(Temp,100);
-    #if OLDPROFILES
-    SetRegistryString(szRegistryAircraftRego,Temp);
-    #else
     _tcscpy(AircraftRego_Config,Temp);
-    #endif
     changed = true;
   }
   UpdateButtons();
@@ -793,17 +762,9 @@ static void OnAircraftTypeClicked(WindowControl *Sender) {
 	(void)Sender;
   TCHAR Temp[100];
   if (buttonAircraftType) {
-    #if OLDPROFILES
-    GetRegistryString(szRegistryAircraftType,Temp,100);
-    #else
     _tcscpy(Temp,AircraftType_Config);
-    #endif
     dlgTextEntryShowModal(Temp,100);
-    #if OLDPROFILES
-    SetRegistryString(szRegistryAircraftType,Temp);
-    #else
     _tcscpy(AircraftType_Config,Temp);
-    #endif
     changed = true;
   }
   UpdateButtons();
@@ -814,17 +775,9 @@ static void OnPilotNameClicked(WindowControl *Sender) {
 	(void)Sender;
   TCHAR Temp[100];
   if (buttonPilotName) {
-    #if OLDPROFILES
-    GetRegistryString(szRegistryPilotName,Temp,100);
-    #else
     _tcscpy(Temp,PilotName_Config);
-    #endif
     dlgTextEntryShowModal(Temp,100);
-    #if OLDPROFILES
-    SetRegistryString(szRegistryPilotName,Temp);
-    #else
     _tcscpy(PilotName_Config,Temp);
-    #endif
     changed = true;
   }
   UpdateButtons();
@@ -834,15 +787,9 @@ static void OnLiveTrackersrvClicked(WindowControl *Sender) {
   (void)Sender;
   TCHAR Temp[100];
   if (buttonLiveTrackersrv) {
-    #if OLDPROFILES
-    #else
     _tcscpy(Temp,LiveTrackersrv_Config);
-    #endif
     dlgTextEntryShowModal(Temp,100);
-    #if OLDPROFILES
-    #else
     _tcscpy(LiveTrackersrv_Config,Temp);
-    #endif
     changed = true;
   }
   UpdateButtons();
@@ -852,15 +799,9 @@ static void OnLiveTrackerusrClicked(WindowControl *Sender) {
   (void)Sender;
   TCHAR Temp[100];
   if (buttonLiveTrackerusr) {
-    #if OLDPROFILES
-    #else
     _tcscpy(Temp,LiveTrackerusr_Config);
-    #endif
     dlgTextEntryShowModal(Temp,100);
-    #if OLDPROFILES
-    #else
     _tcscpy(LiveTrackerusr_Config,Temp);
-    #endif
     changed = true;
   }
   UpdateButtons();
@@ -870,15 +811,9 @@ static void OnLiveTrackerpwdClicked(WindowControl *Sender) {
   (void)Sender;
   TCHAR Temp[100];
   if (buttonLiveTrackerpwd) {
-    #if OLDPROFILES
-    #else
     _tcscpy(Temp,LiveTrackerpwd_Config);
-    #endif
     dlgTextEntryShowModal(Temp,100);
-    #if OLDPROFILES
-    #else
     _tcscpy(LiveTrackerpwd_Config,Temp);
-    #endif
     changed = true;
   }
   UpdateButtons();
@@ -888,17 +823,9 @@ static void OnCompetitionClassClicked(WindowControl *Sender)
 {
   TCHAR Temp[100];
   if (buttonCompetitionClass) {
-    #if OLDPROFILES
-    GetRegistryString(szRegistryCompetitionClass,Temp,100);
-    #else
     _tcscpy(Temp,CompetitionClass_Config);
-    #endif
     dlgTextEntryShowModal(Temp,100);
-    #if OLDPROFILES
-    SetRegistryString(szRegistryCompetitionClass,Temp);
-    #else
     _tcscpy(CompetitionClass_Config,Temp);
-    #endif
     changed = true;
   }
   UpdateButtons();
@@ -909,17 +836,9 @@ static void OnCompetitionIDClicked(WindowControl *Sender)
 {
   TCHAR Temp[100];
   if (buttonCompetitionID) {
-    #if OLDPROFILES
-    GetRegistryString(szRegistryCompetitionID,Temp,100);
-    #else
     _tcscpy(Temp,CompetitionID_Config);
-    #endif
     dlgTextEntryShowModal(Temp,100);
-    #if OLDPROFILES
-    SetRegistryString(szRegistryCompetitionID,Temp);
-    #else
     _tcscpy(CompetitionID_Config,Temp);
-    #endif
     changed = true;
   }
   UpdateButtons();
@@ -1634,9 +1553,6 @@ static void GetInfoBoxSelector(int item, int mode)
 	InfoType[item] += (itnew<<24);
 	break;
       };
-#if OLDPROFILES
-      StoreType(item,InfoType[item]);
-#endif
     }
   }
 }
@@ -2278,12 +2194,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
   
-  #if OLDPROFILES
-  if(GetFromRegistry(szRegistrySpeedUnitsValue,&SpeedUnit_Config)!=ERROR_SUCCESS) {
-    SetToRegistry(szRegistrySpeedUnitsValue, SpeedUnit_Config);
-    changed = true;
-  } 
-  #endif
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsSpeed"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -2313,12 +2223,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  #if OLDPROFILES
-  if(GetFromRegistry(szRegistryTaskSpeedUnitsValue,&TaskSpeedUnit_Config)!=ERROR_SUCCESS) {
-    SetToRegistry(szRegistryTaskSpeedUnitsValue, TaskSpeedUnit_Config);
-    changed = true;
-  } 
-  #endif
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsTaskSpeed"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -2333,12 +2237,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  #if OLDPROFILES
-  if(GetFromRegistry(szRegistryDistanceUnitsValue,&DistanceUnit_Config)!=ERROR_SUCCESS) {
-    SetToRegistry(szRegistryDistanceUnitsValue, DistanceUnit_Config);
-    changed = true;
-  } 
-  #endif
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsDistance"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -2353,12 +2251,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  #if OLDPROFILES
-  if(GetFromRegistry(szRegistryAltitudeUnitsValue,&AltitudeUnit_Config)!=ERROR_SUCCESS) {
-    SetToRegistry(szRegistryAltitudeUnitsValue, AltitudeUnit_Config);
-    changed = true;
-  } 
-  #endif
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsAltitude"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -2369,12 +2261,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  #if OLDPROFILES
-  if(GetFromRegistry(szRegistryLiftUnitsValue,&LiftUnit_Config)!=ERROR_SUCCESS) {
-    SetToRegistry(szRegistryLiftUnitsValue, LiftUnit_Config);
-    changed = true;
-  } 
-  #endif
   wp = (WndProperty*)wf->FindByName(TEXT("prpUnitsLift"));
   if (wp) {
     DataFieldEnum* dfe;
@@ -2512,9 +2398,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  #if OLDPROFILES
-  GetRegistryString(szRegistryPolarFile, szPolarFile, MAX_PATH);
-  #endif
   if (_tcscmp(szPolarFile,_T(""))==0) 
     _tcscpy(temptext,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
   else
@@ -2530,9 +2413,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  #if OLDPROFILES
-  GetRegistryString(szRegistryAirspaceFile, szAirspaceFile, MAX_PATH);
-  #endif
   _tcscpy(temptext,szAirspaceFile);
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirspaceFile"));
@@ -2545,9 +2425,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  #if OLDPROFILES
-  GetRegistryString(szRegistryAdditionalAirspaceFile, szAdditionalAirspaceFile, MAX_PATH);
-  #endif
   _tcscpy(temptext,szAdditionalAirspaceFile);
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalAirspaceFile"));
@@ -2560,9 +2437,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  #if OLDPROFILES
-  GetRegistryString(szRegistryWayPointFile, szWaypointFile, MAX_PATH);
-  #endif
   _tcscpy(temptext,szWaypointFile);
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointFile"));
@@ -2581,9 +2455,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  #if OLDPROFILES
-  GetRegistryString(szRegistryAdditionalWayPointFile, szAdditionalWaypointFile, MAX_PATH);
-  #endif
   _tcscpy(temptext,szAdditionalWaypointFile);
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpAdditionalWaypointFile"));
@@ -2602,9 +2473,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  #if OLDPROFILES
-  GetRegistryString(szRegistryMapFile, szMapFile, MAX_PATH);
-  #endif
   _tcscpy(temptext,szMapFile);
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpMapFile"));
@@ -2619,9 +2487,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  #if OLDPROFILES
-  GetRegistryString(szRegistryTerrainFile, szTerrainFile, MAX_PATH);
-  #endif
   _tcscpy(temptext,szTerrainFile);
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpTerrainFile"));
@@ -2642,9 +2507,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  #if OLDPROFILES
-  GetRegistryString(szRegistryAirfieldFile, szAirfieldFile, MAX_PATH);
-  #endif
   _tcscpy(temptext,szAirfieldFile);
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpAirfieldFile"));
@@ -2657,9 +2519,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  #if OLDPROFILES
-  GetRegistryString(szRegistryLanguageFile, szLanguageFile, MAX_PATH);
-  #endif
   _tcscpy(temptext,szLanguageFile);
   if (_tcslen(temptext)==0) {
 	_tcscpy(temptext,_T("%LOCAL_PATH%\\\\_Language\\ENGLISH.LNG"));
@@ -2675,9 +2534,6 @@ static void setVariables(void) {
     wp->RefreshDisplay();
   }
 
-  #if OLDPROFILES
-  GetRegistryString(szRegistryInputFile, szInputFile, MAX_PATH);
-  #endif
   _tcscpy(temptext,szInputFile);
   ExpandLocalPath(temptext);
   wp = (WndProperty*)wf->FindByName(TEXT("prpInputFile"));
@@ -3641,9 +3497,6 @@ void dlgConfigurationShowModal(short mode){
 	!= wp->GetDataField()->GetAsBoolean()) {
       DisableAutoLogger = 
 	!(wp->GetDataField()->GetAsBoolean());
-#if OLDPROFILES
-      SetToRegistry(szRegistryDisableAutoLogger, DisableAutoLogger);
-#endif
       changed = true;
     }
   }
@@ -3664,10 +3517,6 @@ void dlgConfigurationShowModal(short mode){
     val = wp->GetDataField()->GetAsFloat()/LIFTMODIFY;
     if (GlidePolar::SafetyMacCready != val) {
       GlidePolar::SafetyMacCready = val;
-#if OLDPROFILES
-      // saved *10 by LKProfileSave
-      SetToRegistry(szRegistrySafetyMacCready, iround(GlidePolar::SafetyMacCready*10));
-#endif
       changed = true;
     }
   }
@@ -3676,9 +3525,6 @@ void dlgConfigurationShowModal(short mode){
   if (wp) {
     if (SetSystemTimeFromGPS != wp->GetDataField()->GetAsBoolean()) {
       SetSystemTimeFromGPS = wp->GetDataField()->GetAsBoolean();
-#if OLDPROFILES
-      SetToRegistry(szRegistrySetSystemTimeFromGPS, SetSystemTimeFromGPS);
-#endif
       changed = true;
     }
   }
@@ -3687,9 +3533,6 @@ void dlgConfigurationShowModal(short mode){
   if (wp) {
     if (EnableTrailDrift_Config != wp->GetDataField()->GetAsBoolean()) {
       EnableTrailDrift_Config = wp->GetDataField()->GetAsBoolean();
-#if OLDPROFILES
-      SetToRegistry(szRegistryTrailDrift, MapWindow::EnableTrailDrift);
-#endif
       changed = true;
       MapWindow::EnableTrailDrift = EnableTrailDrift_Config;
     }
@@ -3699,9 +3542,6 @@ void dlgConfigurationShowModal(short mode){
   if (wp) {
     if (EnableThermalLocator != wp->GetDataField()->GetAsInteger()) {
       EnableThermalLocator = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryThermalLocator, EnableThermalLocator);
-#endif
       changed = true;
     }
   }
@@ -3710,9 +3550,6 @@ void dlgConfigurationShowModal(short mode){
   if (wp) {
     if (TrailActive_Config != wp->GetDataField()->GetAsInteger()) {
       TrailActive_Config = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistrySnailTrail, TrailActive_Config);
-#endif
       changed = true;
       TrailActive = TrailActive_Config;
     }
@@ -3722,9 +3559,6 @@ void dlgConfigurationShowModal(short mode){
   if (wp) {
     if (LKMaxLabels != wp->GetDataField()->GetAsInteger()) {
       LKMaxLabels = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryLKMaxLabels, LKMaxLabels);
-#endif
       changed = true;
     }
   }
@@ -3744,9 +3578,6 @@ void dlgConfigurationShowModal(short mode){
   if (wp) {
     if ( PGCruiseZoom != wp->GetDataField()->GetAsInteger()) {
       PGCruiseZoom = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryPGCruiseZoom, PGCruiseZoom);
-#endif
       changed = true;
       MapWindow::zoom.Reset();
         requirerestart=true;
@@ -3760,9 +3591,6 @@ double dval;
     dval = wp->GetDataField()->GetAsFloat()/DISTANCEMODIFY;
     if (PGAutoZoomThreshold != dval) {
       PGAutoZoomThreshold = dval;
-#if OLDPROFILES
-      SetToRegistry(szRegistryPGAutoZoomThreshold, PGAutoZoomThreshold);
-#endif
       changed = true;
     }
   }
@@ -3771,9 +3599,6 @@ double dval;
   if (wp) {
     if ( PGClimbZoom != wp->GetDataField()->GetAsInteger()) {
       PGClimbZoom = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryPGClimbZoom, PGClimbZoom);
-#endif
       changed = true;
       MapWindow::zoom.Reset();
         requirerestart=true; 
@@ -3784,9 +3609,6 @@ double dval;
   if (wp) {
     if ( AutoOrientScale != wp->GetDataField()->GetAsFloat()) {
       AutoOrientScale = wp->GetDataField()->GetAsFloat();
-#if OLDPROFILES
-      SetToRegistry(szRegistryAutoOrientScale, AutoOrientScale);
-#endif
       changed = true;
     }
   }
@@ -3795,9 +3617,6 @@ double dval;
   if (wp) {
     if ( PGNumberOfGates != wp->GetDataField()->GetAsInteger()) {
       PGNumberOfGates = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryPGNumberOfGates, PGNumberOfGates);
-#endif
       changed = true;
     }
   }
@@ -3805,9 +3624,6 @@ double dval;
   if (wp) {
     if ( PGOpenTimeH != wp->GetDataField()->GetAsInteger()) {
       PGOpenTimeH = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryPGOpenTimeH, PGOpenTimeH);
-#endif
       changed = true;
     }
   }
@@ -3815,9 +3631,6 @@ double dval;
   if (wp) {
     if ( PGOpenTimeM != wp->GetDataField()->GetAsInteger()) {
       PGOpenTimeM = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryPGOpenTimeM, PGOpenTimeM);
-#endif
       changed = true;
     }
   }
@@ -3825,9 +3638,6 @@ double dval;
   if (wp) {
     if ( PGGateIntervalTime != wp->GetDataField()->GetAsInteger()) {
       PGGateIntervalTime = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryPGGateIntervalTime, PGGateIntervalTime);
-#endif
       changed = true;
     }
   }
@@ -3835,9 +3645,6 @@ double dval;
   if (wp) {
     if ( PGStartOut != wp->GetDataField()->GetAsInteger()) {
       PGStartOut = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryPGStartOut, PGStartOut);
-#endif
       changed = true;
     }
   }
@@ -3846,9 +3653,6 @@ double dval;
   if (wp) {
     if (AltitudeMode_Config != wp->GetDataField()->GetAsInteger()) {
       AltitudeMode_Config = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryAltMode, AltitudeMode);
-#endif
       AltitudeMode = AltitudeMode_Config;
       changed = true;
     }
@@ -3858,9 +3662,6 @@ double dval;
   if (wp) {
     if (SafetyAltitudeMode != wp->GetDataField()->GetAsInteger()) {
       SafetyAltitudeMode = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistrySafetyAltitudeMode, SafetyAltitudeMode);
-#endif
       changed = true;
     }
   }
@@ -3870,9 +3671,6 @@ double dval;
     if (LockSettingsInFlight != 
 	wp->GetDataField()->GetAsBoolean()) {
       LockSettingsInFlight = wp->GetDataField()->GetAsBoolean();
-#if OLDPROFILES
-      SetToRegistry(szRegistryLockSettingsInFlight, LockSettingsInFlight);
-#endif
       changed = true;
     }
   }
@@ -3882,9 +3680,6 @@ double dval;
     if (LoggerShortName != 
 	wp->GetDataField()->GetAsBoolean()) {
       LoggerShortName = wp->GetDataField()->GetAsBoolean();
-#if OLDPROFILES
-      SetToRegistry(szRegistryLoggerShort, LoggerShortName);
-#endif
       changed = true;
     }
   }
@@ -3894,9 +3689,6 @@ double dval;
     if ((int)EnableFLARMMap != 
 	wp->GetDataField()->GetAsInteger()) {
       EnableFLARMMap = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryEnableFLARMMap, EnableFLARMMap);
-#endif
       changed = true;
     }
   }
@@ -3905,9 +3697,6 @@ double dval;
   if (wp) {
     if (debounceTimeout != wp->GetDataField()->GetAsInteger()) {
       debounceTimeout = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryDebounceTimeout, debounceTimeout);
-#endif
       changed = true;
     }
   }
@@ -3916,9 +3705,6 @@ double dval;
   if (wp) {
     if (MapWindow::GetAirSpaceFillType() != wp->GetDataField()->GetAsInteger()) {
       MapWindow::SetAirSpaceFillType((MapWindow::EAirspaceFillType)wp->GetDataField()->GetAsInteger());
-#if OLDPROFILES
-      SetToRegistry(szRegistryAirspaceFillType, MapWindow::GetAirSpaceFillType());
-#endif
       changed = true;
     }
   }
@@ -3927,9 +3713,6 @@ double dval;
   if (wp) {
     if (MapWindow::GetAirSpaceOpacity() != wp->GetDataField()->GetAsInteger()*10) {
       MapWindow::SetAirSpaceOpacity(wp->GetDataField()->GetAsInteger() * 10);
-#if OLDPROFILES
-      SetToRegistry(szRegistryAirspaceOpacity, MapWindow::GetAirSpaceOpacity());
-#endif
       changed = true;
     }
   }
@@ -3938,9 +3721,6 @@ double dval;
   if (wp) {
     if (BarOpacity != wp->GetDataField()->GetAsInteger()*5 ) {
 	BarOpacity= wp->GetDataField()->GetAsInteger() * 5;
-#if OLDPROFILES
-      SetToRegistry(szRegistryBarOpacity, BarOpacity);
-#endif
       changed = true;
     }
   }
@@ -3950,9 +3730,6 @@ double dval;
     if (FontRenderer != wp->GetDataField()->GetAsInteger() ) 
     {
 	    FontRenderer = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryFontRenderer, FontRenderer);
-#endif
       requirerestart = true;
       changed = true;
     }
@@ -3962,9 +3739,6 @@ double dval;
   if (wp) {
     if (AirspaceWarningRepeatTime != (wp->GetDataField()->GetAsInteger()*60)) {
       AirspaceWarningRepeatTime = wp->GetDataField()->GetAsInteger()*60;
-#if OLDPROFILES
-      SetToRegistry(szRegistryAirspaceWarningRepeatTime, (DWORD)AirspaceWarningRepeatTime);
-#endif
       changed = true;
     }
   }
@@ -3973,10 +3747,6 @@ double dval;
   if (wp) {
     if (MapWindow::bAirspaceBlackOutline != wp->GetDataField()->GetAsBoolean()) {
       MapWindow::bAirspaceBlackOutline = wp->GetDataField()->GetAsBoolean();
-#if OLDPROFILES
-      SetToRegistry(szRegistryAirspaceBlackOutline,
-		    MapWindow::bAirspaceBlackOutline);
-#endif
       changed = true;
     }
   }
@@ -3986,10 +3756,6 @@ double dval;
     if (AutoZoom_Config != 
 	wp->GetDataField()->GetAsBoolean()) {
       AutoZoom_Config = wp->GetDataField()->GetAsBoolean();
-#if OLDPROFILES
-      SetToRegistry(szRegistryAutoZoom,
-		    MapWindow::zoom.AutoZoom());
-#endif
       changed = true;
       MapWindow::zoom.AutoZoom(AutoZoom_Config);
     }
@@ -4003,12 +3769,6 @@ int ival;
     if ((UTCOffset != ival)||(utcchanged)) {
       UTCOffset = ival;
 
-#if OLDPROFILES
-      // have to do this because registry variables can't be negative!
-      int lival = UTCOffset;
-      if (lival<0) { lival+= 24*3600; }
-      SetToRegistry(szRegistryUTCOffset, lival);
-#endif
       changed = true;
     }
   }
@@ -4018,9 +3778,6 @@ int ival;
     ival = iround(wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY);
     if (ClipAltitude != ival) {
       ClipAltitude = ival;
-#if OLDPROFILES
-      SetToRegistry(szRegistryClipAlt,ClipAltitude);  // fixed 20060430/sgi was szRegistryAltMode
-#endif
       changed = true;
     }
   }
@@ -4030,9 +3787,6 @@ int ival;
     ival = iround(wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY);
     if (AltWarningMargin != ival) {
       AltWarningMargin = ival;
-#if OLDPROFILES
-      SetToRegistry(szRegistryAltMargin,AltWarningMargin);
-#endif
       changed = true;
     }
   }
@@ -4041,9 +3795,6 @@ int ival;
   if (wp) {
     if (WarningTime != wp->GetDataField()->GetAsInteger()) {
       WarningTime = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryWarningTime,(DWORD)WarningTime);
-#endif
       changed = true;
     }
   }
@@ -4052,10 +3803,6 @@ int ival;
   if (wp) {
     if (AcknowledgementTime != wp->GetDataField()->GetAsInteger()) {
       AcknowledgementTime = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryAcknowledgementTime,
-		    (DWORD)AcknowledgementTime);
-#endif
       changed = true;
     }
   }
@@ -4064,9 +3811,6 @@ int ival;
   if (wp) {
     if (DisplayTextType != wp->GetDataField()->GetAsInteger()) {
       DisplayTextType = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryDisplayText,DisplayTextType);
-#endif
       changed = true;
     }
   }
@@ -4075,9 +3819,6 @@ int ival;
   if (wp) {
     if (EnableTerrain_Config != wp->GetDataField()->GetAsBoolean()) {
       EnableTerrain_Config = wp->GetDataField()->GetAsBoolean();
-#if OLDPROFILES
-      SetToRegistry(szRegistryDrawTerrain, EnableTerrain_Config);
-#endif
       changed = true;
       EnableTerrain=EnableTerrain_Config;
     }
@@ -4087,9 +3828,6 @@ int ival;
   if (wp) {
     if (EnableTopology_Config != wp->GetDataField()->GetAsBoolean()) {
       EnableTopology_Config = wp->GetDataField()->GetAsBoolean();
-#if OLDPROFILES
-      SetToRegistry(szRegistryDrawTopology, EnableTopology_Config);
-#endif
       changed = true;
       EnableTopology=EnableTopology_Config;
     }
@@ -4099,9 +3837,6 @@ int ival;
   if (wp) {
     if (MapWindow::zoom.CircleZoom() != wp->GetDataField()->GetAsBoolean()) {
       MapWindow::zoom.CircleZoom(wp->GetDataField()->GetAsBoolean());
-#if OLDPROFILES
-      SetToRegistry(szRegistryCircleZoom, MapWindow::zoom.CircleZoom());
-#endif
       changed = true;
     }
   }
@@ -4110,9 +3845,6 @@ int ival;
   if (wp) {
     if (DisplayOrientation_Config != wp->GetDataField()->GetAsInteger()) {
       DisplayOrientation_Config = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryDisplayUpValue,DisplayOrientation_Config);
-#endif
       DisplayOrientation=DisplayOrientation_Config;
       MapWindow::SetAutoOrientation(true); // reset
       changed = true;
@@ -4123,9 +3855,6 @@ int ival;
   if (wp) {
     if (MenuTimeout_Config != wp->GetDataField()->GetAsInteger()*2) {
       MenuTimeout_Config = wp->GetDataField()->GetAsInteger()*2;
-#if OLDPROFILES
-      SetToRegistry(szRegistryMenuTimeout,MenuTimeout_Config);
-#endif
       changed = true;
     }
   }
@@ -4135,10 +3864,6 @@ int ival;
     ival = iround(wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY);
     if (SAFETYALTITUDEARRIVAL != ival) {
       SAFETYALTITUDEARRIVAL = ival;
-#if OLDPROFILES
-      SetToRegistry(szRegistrySafetyAltitudeArrival,
-		    (DWORD)SAFETYALTITUDEARRIVAL);
-#endif
       changed = true;
     }
   }
@@ -4148,10 +3873,6 @@ int ival;
     ival = iround(wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY);
     if (SAFETYALTITUDETERRAIN != ival) {
       SAFETYALTITUDETERRAIN = ival;
-#if OLDPROFILES
-      SetToRegistry(szRegistrySafetyAltitudeTerrain,
-		    (DWORD)SAFETYALTITUDETERRAIN);
-#endif
       changed = true;
     }
   }
@@ -4160,9 +3881,6 @@ int ival;
   if (wp) {
     if (AutoWindMode_Config != wp->GetDataField()->GetAsInteger()) {
       AutoWindMode_Config = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryAutoWind, AutoWindMode);
-#endif
       AutoWindMode = AutoWindMode_Config;
       changed = true;
     }
@@ -4172,9 +3890,6 @@ int ival;
   if (wp) {
     if (AutoMcMode_Config != wp->GetDataField()->GetAsInteger()) {
       AutoMcMode_Config = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryAutoMcMode, AutoMcMode_Config);
-#endif
 	AutoMcMode=AutoMcMode_Config;
       changed = true;
     }
@@ -4184,9 +3899,6 @@ int ival;
   if (wp) {
     if (WaypointsOutOfRange != wp->GetDataField()->GetAsInteger()) {
       WaypointsOutOfRange = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryWaypointsOutOfRange, WaypointsOutOfRange);
-#endif
       WAYPOINTFILECHANGED= true;
       changed = true;
     }
@@ -4196,9 +3908,6 @@ int ival;
   if (wp) {
     if (AutoForceFinalGlide != wp->GetDataField()->GetAsBoolean()) {
       AutoForceFinalGlide = wp->GetDataField()->GetAsBoolean();
-#if OLDPROFILES
-      SetToRegistry(szRegistryAutoForceFinalGlide, AutoForceFinalGlide);
-#endif
       changed = true;
     }
   }
@@ -4207,9 +3916,6 @@ int ival;
   if (wp) {
     if (EnableNavBaroAltitude_Config != wp->GetDataField()->GetAsBoolean()) {
       EnableNavBaroAltitude_Config = wp->GetDataField()->GetAsBoolean();
-#if OLDPROFILES
-      SetToRegistry(szRegistryEnableNavBaroAltitude, EnableNavBaroAltitude_Config);
-#endif
       changed = true;
       EnableNavBaroAltitude=EnableNavBaroAltitude_Config;
     }
@@ -4219,9 +3925,6 @@ int ival;
   if (wp) {
     if (Orbiter_Config != wp->GetDataField()->GetAsBoolean()) {
       Orbiter_Config = wp->GetDataField()->GetAsBoolean();
-#if OLDPROFILES
-      SetToRegistry(szRegistryOrbiter, Orbiter_Config);
-#endif
       changed = true;
       Orbiter=Orbiter_Config;
     }
@@ -4230,9 +3933,6 @@ int ival;
   if (wp) {
     if (AutoMacCready_Config != wp->GetDataField()->GetAsInteger()) {
       AutoMacCready_Config = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryAutoMcStatus, AutoMacCready_Config);
-#endif
       CALCULATED_INFO.AutoMacCready=AutoMacCready_Config;
       changed = true;
     }
@@ -4241,9 +3941,6 @@ int ival;
   if (wp) {
     if (Shading_Config != wp->GetDataField()->GetAsBoolean()) {
       Shading_Config = wp->GetDataField()->GetAsBoolean();
-#if OLDPROFILES
-      SetToRegistry(szRegistryShading, Shading_Config);
-#endif
       changed = true;
       Shading=Shading_Config;
     }
@@ -4253,9 +3950,6 @@ int ival;
   if (wp) {
     if (FinalGlideTerrain != wp->GetDataField()->GetAsInteger()) {
       FinalGlideTerrain = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryFinalGlideTerrain, FinalGlideTerrain);
-#endif
       changed = true;
     }
   }
@@ -4264,9 +3958,6 @@ int ival;
   if (wp) {
     if ((int)SpeedUnit_Config != wp->GetDataField()->GetAsInteger()) {
       SpeedUnit_Config = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistrySpeedUnitsValue, SpeedUnit_Config);
-#endif
       Units::NotifyUnitChanged();
       requirerestart = true;
       changed = true;
@@ -4278,9 +3969,6 @@ int ival;
     if ((int)Units::CoordinateFormat != wp->GetDataField()->GetAsInteger()) {
       Units::CoordinateFormat = (CoordinateFormats_t)
         wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryLatLonUnits, Units::CoordinateFormat);
-#endif
       Units::NotifyUnitChanged();
       requirerestart = true;
       changed = true;
@@ -4291,9 +3979,6 @@ int ival;
   if (wp) {
     if ((int)TaskSpeedUnit_Config != wp->GetDataField()->GetAsInteger()) {
       TaskSpeedUnit_Config = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryTaskSpeedUnitsValue, TaskSpeedUnit_Config);
-#endif
       Units::NotifyUnitChanged();
       requirerestart = true;
       changed = true;
@@ -4304,9 +3989,6 @@ int ival;
   if (wp) {
     if ((int)DistanceUnit_Config != wp->GetDataField()->GetAsInteger()) {
       DistanceUnit_Config = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryDistanceUnitsValue, DistanceUnit_Config);
-#endif
       Units::NotifyUnitChanged();
       requirerestart = true;
       changed = true;
@@ -4317,9 +3999,6 @@ int ival;
   if (wp) {
     if ((int)LiftUnit_Config != wp->GetDataField()->GetAsInteger()) {
       LiftUnit_Config = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryLiftUnitsValue, LiftUnit_Config);
-#endif
       Units::NotifyUnitChanged();
       requirerestart = true;
       changed = true;
@@ -4330,9 +4009,6 @@ int ival;
   if (wp) {
     if ((int)AltitudeUnit_Config != wp->GetDataField()->GetAsInteger()) {
       AltitudeUnit_Config = wp->GetDataField()->GetAsInteger();
-#if OLDPROFILES
-      SetToRegistry(szRegistryAltitudeUnitsValue, AltitudeUnit_Config);
-#endif
       Units::NotifyUnitChanged();
       changed = true;
       requirerestart = true;
@@ -4345,9 +4021,6 @@ int ival;
     ival  = wp->GetDataField()->GetAsInteger();
     if (Handicap != ival) {
       Handicap = ival;
-#if OLDPROFILES
-      SetToRegistry(szRegistryHandicap, Handicap);
-#endif
       changed = true;
     }
   }
@@ -4365,11 +4038,7 @@ int ival;
       ContractLocalPath(temptext);
 
     if (_tcscmp(temptext,szPolarFile)) {
-      #if OLDPROFILES
-      SetRegistryString(szRegistryPolarFile, temptext);
-      #else
       _tcscpy(szPolarFile,temptext);
-      #endif
       POLARFILECHANGED = true;
       GlidePolar::SetBallast();
       changed = true;
@@ -4384,11 +4053,7 @@ int ival;
     _tcscpy(temptext, dfe->GetPathFile());
     ContractLocalPath(temptext);
     if (_tcscmp(temptext,szWaypointFile)) {
-      #if OLDPROFILES
-      SetRegistryString(szRegistryWayPointFile, temptext);
-      #else
       _tcscpy(szWaypointFile,temptext);
-      #endif
       WAYPOINTFILECHANGED= true;
       changed = true;
     }
@@ -4401,11 +4066,7 @@ int ival;
     _tcscpy(temptext, dfe->GetPathFile());
     ContractLocalPath(temptext);
     if (_tcscmp(temptext,szAdditionalWaypointFile)) {
-      #if OLDPROFILES
-      SetRegistryString(szRegistryAdditionalWayPointFile, temptext);
-      #else
       _tcscpy(szAdditionalWaypointFile,temptext);
-      #endif
       WAYPOINTFILECHANGED= true;
       changed = true;
     }
@@ -4418,11 +4079,7 @@ int ival;
     _tcscpy(temptext, dfe->GetPathFile());
     ContractLocalPath(temptext);
     if (_tcscmp(temptext,szAirspaceFile)) {
-      #if OLDPROFILES
-      SetRegistryString(szRegistryAirspaceFile, temptext);
-      #else
       _tcscpy(szAirspaceFile,temptext);
-      #endif
       AIRSPACEFILECHANGED= true;
       changed = true;
     }
@@ -4435,11 +4092,7 @@ int ival;
     _tcscpy(temptext, dfe->GetPathFile());
     ContractLocalPath(temptext);
     if (_tcscmp(temptext,szAdditionalAirspaceFile)) {
-      #if OLDPROFILES
-      SetRegistryString(szRegistryAdditionalAirspaceFile, temptext);
-      #else
       _tcscpy(szAdditionalAirspaceFile,temptext);
-      #endif
       AIRSPACEFILECHANGED= true;
       changed = true;
     }
@@ -4452,11 +4105,7 @@ int ival;
     _tcscpy(temptext, dfe->GetPathFile());
     ContractLocalPath(temptext);
     if (_tcscmp(temptext,szMapFile)) {
-      #if OLDPROFILES
-      SetRegistryString(szRegistryMapFile, temptext);
-      #else
       _tcscpy(szMapFile,temptext);
-      #endif
       MAPFILECHANGED= true;
       #if LKMTERRAIN
       TERRAINFILECHANGED= true; //for .xcm
@@ -4472,11 +4121,7 @@ int ival;
     _tcscpy(temptext, dfe->GetPathFile());
     ContractLocalPath(temptext);
     if (_tcscmp(temptext,szTerrainFile)) {
-      #if OLDPROFILES
-      SetRegistryString(szRegistryTerrainFile, temptext);
-      #else
       _tcscpy(szTerrainFile,temptext);
-      #endif
       TERRAINFILECHANGED= true;
       changed = true;
     }
@@ -4489,11 +4134,7 @@ int ival;
     _tcscpy(temptext, dfe->GetPathFile());
     ContractLocalPath(temptext);
     if (_tcscmp(temptext,szAirfieldFile)) {
-      #if OLDPROFILES
-      SetRegistryString(szRegistryAirfieldFile, temptext);
-      #else
       _tcscpy(szAirfieldFile,temptext);
-      #endif
       AIRFIELDFILECHANGED= true;
       changed = true;
     }
@@ -4506,11 +4147,7 @@ int ival;
     _tcscpy(temptext, dfe->GetPathFile());
     ContractLocalPath(temptext);
     if (_tcscmp(temptext,szLanguageFile)) {
-      #if OLDPROFILES
-      SetRegistryString(szRegistryLanguageFile, temptext);
-      #else
       _tcscpy(szLanguageFile,temptext);
-      #endif
       requirerestart = true; // restart needed for language load
       // LKReadLanguageFile(); // NO GOOD. MEMORY LEAKS PENDING
       changed = true;
@@ -4524,11 +4161,7 @@ int ival;
     _tcscpy(temptext, dfe->GetPathFile());
     ContractLocalPath(temptext);
     if (_tcscmp(temptext,szInputFile)) {
-      #if OLDPROFILES
-      SetRegistryString(szRegistryInputFile, temptext);
-      #else
       _tcscpy(szInputFile,temptext);
-      #endif
       requirerestart = true;
       changed = true;
     }
@@ -5022,12 +4655,8 @@ int ival;
 	break;
 	
       }
-      #if OLDPROFILES
-      SetToRegistry(szRegistryAppInfoBoxModel, GlobalModelType);
-      #else
       // we set it correctly yo global value , ex. 10001
       Appearance.InfoBoxModel = (InfoBoxModelAppearance_t)GlobalModelType;
-      #endif
       changed = true;
       requirerestart = true;
     }
@@ -5301,13 +4930,6 @@ int ival;
   wp = (WndProperty*)wf->FindByName(TEXT("prpEngineeringMenu")); // VENTA9
   if (wp) EngineeringMenu = wp->GetDataField()->GetAsInteger();
 
-  #ifndef NEWPROFILES
-  if (COMPORTCHANGED) {
-    WritePort1Settings(dwPortIndex1,dwSpeedIndex1, dwBit1Index);
-    WritePort2Settings(dwPortIndex2,dwSpeedIndex2, dwBit2Index);
-  }
-  #endif
-
 
  UpdateAircraftConfig();
 
@@ -5347,10 +4969,6 @@ int ival;
 	PGCloseTime=PGOpenTime+(PGGateIntervalTime*PGNumberOfGates*60);
 	if (PGCloseTime>86399) PGCloseTime=86399; // 23:59:59
 	ActiveGate=-1;
-
-    #if OLDPROFILES
-    StoreRegistry();
-    #endif
 
     if (requirerestart) {
       MessageBoxX (hWndMainWindow, 
@@ -5400,11 +5018,7 @@ void UpdateAircraftConfig(void){
       ContractLocalPath(temptext);
 
     if (_tcscmp(temptext,szPolarFile)) {
-      #if OLDPROFILES
-      SetRegistryString(szRegistryPolarFile, temptext);
-      #else
       _tcscpy(szPolarFile,temptext);
-      #endif
       POLARFILECHANGED = true;
       GlidePolar::SetBallast();
       changed = true;
@@ -5426,9 +5040,6 @@ void UpdateAircraftConfig(void){
     ival  = wp->GetDataField()->GetAsInteger();
     if (Handicap != ival) {
       Handicap = ival;
-#if OLDPROFILES
-      SetToRegistry(szRegistryHandicap, Handicap);
-#endif
       changed = true;
     }
   }

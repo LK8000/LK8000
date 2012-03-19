@@ -47,9 +47,6 @@ static void OnSaveExistingClicked(WindowControl * Sender) {
 		// LKTOKEN  _@M509_ = "Overwrite profile?" 
 		MsgToken(509), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
-		#if OLDPROFILES
-		WriteProfile(dfe->GetPathFile());
-		#else
 
 		switch (profilemode) {
 			case 0:
@@ -64,7 +61,6 @@ static void OnSaveExistingClicked(WindowControl * Sender) {
 			default:
 				return;
 		}
-		#endif
 		// LKTOKEN  _@M535_ = "Profile saved!" 
 		MessageBoxX(hWndMapWindow, MsgToken(535),_T(""), MB_OK|MB_ICONEXCLAMATION);
 		return;
@@ -113,9 +109,6 @@ static void OnSaveNewClicked(WindowControl * Sender) {
 		// LKTOKEN  _@M579_ = "Save ?" 
 		MsgToken(579), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
-		#if OLDPROFILES
-		WriteProfile(file_name);
-		#else
 		switch (profilemode) {
 			case 0:
 				LKProfileSave(file_name);
@@ -129,7 +122,6 @@ static void OnSaveNewClicked(WindowControl * Sender) {
 			default:
 				return;
 		}
-		#endif
 		dfe->addFile(profile_name, file_name);
 
 		MessageBoxX(hWndMapWindow, 
@@ -159,9 +151,6 @@ static void OnSaveNewClicked(WindowControl * Sender) {
 		MsgToken(510), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
 
-			#if OLDPROFILES
-			WriteProfile(file_name);
-			#else
 			switch (profilemode) {
 				case 0:
 					LKProfileSave(file_name);
@@ -175,7 +164,6 @@ static void OnSaveNewClicked(WindowControl * Sender) {
 				default:
 					return;
 			}
-			#endif
 			MessageBoxX(hWndMapWindow, 
 			// LKTOKEN  _@M535_ = "Profile saved!" 
 			MsgToken(535),
@@ -224,12 +212,7 @@ static void OnLoadClicked(WindowControl * Sender){
 		MsgToken(397), 
 		MB_YESNO|MB_ICONQUESTION) == IDYES) {
 		SettingsEnter();
-		#if OLDPROFILE
-		ReadProfile(dfe->GetPathFile());
-		WAYPOINTFILECHANGED=true;
-		#else
 		LKProfileLoad(dfe->GetPathFile());
-		#endif
 		SettingsLeave();
 		MessageBoxX(hWndMapWindow, 
 		// LKTOKEN  _@M534_ = "Profile loaded!" 

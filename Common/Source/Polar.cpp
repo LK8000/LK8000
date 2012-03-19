@@ -113,11 +113,7 @@ bool ReadWinPilotPolar(void) {
     POLARV[2]= 212.72;
     POLARW[2]= -3.4;
 
-    #if OLDPROFILES
-    GetRegistryString(szRegistryPolarFile, szFile, MAX_PATH);
-    #else
     _tcscpy(szFile,szPolarFile);
-    #endif
     if (_tcscmp(szFile,_T(""))==0) {
 	StartupStore(_T("... Empty polar file, using Default%s"),NEWLINE);
 	wcscpy(szFile,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
@@ -229,11 +225,7 @@ bool ReadWinPilotPolar(void) {
         // file was OK, so save it
         if (foundline) {
           ContractLocalPath(szFile);
-	  #if OLDPROFILES
-          SetRegistryString(szRegistryPolarFile, szFile);
-	  #else
 	  _tcscpy(szFile,szPolarFile);
-          #endif
         }
 #ifdef HAVEEXCEPTIONS
       }__finally

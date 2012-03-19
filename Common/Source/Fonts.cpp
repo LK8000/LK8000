@@ -404,7 +404,6 @@ void propGetFontSettingsFromString(TCHAR *Buffer1, LOGFONT* lplf)
 
 void propGetFontSettings(TCHAR *Name, LOGFONT* lplf) {
 
- #if NEWPROFILES
  // Load custom font settings from profile only if relative to
  // configurable fonts, of course.
  if (Name==NULL || lplf==NULL) return;
@@ -416,12 +415,5 @@ void propGetFontSettings(TCHAR *Name, LOGFONT* lplf) {
 	if (_tcslen(FontDesc_MapWindow)>0)
 		propGetFontSettingsFromString(FontDesc_MapWindow, lplf);
  }
- #else
-  TCHAR Buffer[128];
-
-  if (GetRegistryString(Name, Buffer, sizeof(Buffer)/sizeof(TCHAR)) == 0) {
-    propGetFontSettingsFromString(Buffer, lplf);
-  }
- #endif
 }
 

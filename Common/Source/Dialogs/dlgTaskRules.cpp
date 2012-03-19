@@ -201,16 +201,6 @@ bool dlgTaskRules(void){
     }
   }
 
-  #if OLDPROFILES
-  if (changed) {
-    StoreRegistry();
-
-    MessageBoxX (hWndMainWindow, 
-	// LKTOKEN  _@M168_ = "Changes to configuration saved." 
-		 gettext(TEXT("_@M168_")), 
-		 TEXT(""), MB_OK);
-  }
-  #endif
 
   delete wf;
   wf = NULL;

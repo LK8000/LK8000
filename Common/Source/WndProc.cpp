@@ -279,15 +279,11 @@ void Shutdown(void) {
 
   // LKTOKEN _@M1221_ "Shutdown, saving profile..."
   CreateProgressDialog(gettext(TEXT("_@M1221_")));
-  #if OLDPROFILES  
-  StoreRegistry();
-  #else
   extern void LKAircraftSave(const TCHAR *szFile);
   extern void LKPilotSave(const TCHAR *szFile);
   LKPilotSave(defaultPilotFile);
   LKAircraftSave(defaultAircraftFile);
   LKProfileSave(defaultProfileFile);
-  #endif
 
   #if TESTBENCH
   StartupStore(TEXT(". Save_Recent_WP_history%s"),NEWLINE);

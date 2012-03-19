@@ -337,15 +337,6 @@ void dlgTopologyShowModal(void){
 	}
   }
 
-  #if OLDPROFILES
-  if (changed) {
-    StoreRegistry();
-    MessageBoxX (hWndMainWindow, 
-	// LKTOKEN  _@M732_ = "Topology configuration saved." 
-		 gettext(TEXT("_@M732_")), 
-		 TEXT(""), MB_OK);
-  }
-  #endif
 
   delete wf;
   wf = NULL;

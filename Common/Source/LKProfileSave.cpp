@@ -12,7 +12,6 @@
 #include "Modeltype.h"
 
 
-#if NEWPROFILES
 
 #include "LKProfiles.h"
 
@@ -437,4 +436,3 @@ HRESULT SetToRegistry(const TCHAR *szRegValue, DWORD Pos) {; return 0;};
 HRESULT SetToRegistry(const TCHAR *szRegValue, bool bVal) {; return 0;};
 HRESULT SetToRegistry(const TCHAR *szRegValue, int nVal)  {; return 0;};
 
-#endif // NEWPROFILES
