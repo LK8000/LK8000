@@ -729,8 +729,10 @@ bool DevLXV7::PLXVS(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* inf
 double Batt;
 double OAT;
   if (ParToDouble(sentence, 0, &OAT))
+  {
 	 info->OutsideAirTemperature = OAT;
-
+	 info->TemperatureAvailable  = TRUE;
+  }
 #ifdef SLOW_DET
 	  // Get STF switch
   double fTmp;
