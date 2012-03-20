@@ -25,7 +25,6 @@ OnListInfo="OnDetailsListInfo">
 <WndButton Name="cmdAppendInTask" Caption="_@M95_" X=50 Y=48 Width=150  Height=40 Font=2 />
 <WndButton Name="cmdRemoveFromTask" Caption="_@M552_" X=50 Y=92 Width=150  Height=40 Font=2 />
 <WndButton Name="cmdReplace" Caption="_@M555_" X=50 Y=136 Width=150  Height=40 Font=2 />
-<WndButton Name="cmdGoto" Caption="_@M236_" X=50 Y=180 Width=150  Height=40 Font=2 />
 </WndFrame>
 <WndFrame Name="frmSpecial" X=70 Y=0 Width=246 Height=222 Font=2 Visible=0>
 

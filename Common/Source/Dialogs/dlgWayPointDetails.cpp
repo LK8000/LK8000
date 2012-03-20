@@ -164,38 +164,6 @@ static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
 }
 
 
-static void OnGotoClicked(WindowControl * Sender){
-	(void)Sender;
-#if 100125
-  #if 100717
-  GotoWaypoint(SelectedWaypoint);
-  #else
-  // If we are running a real task
-  if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) {
-	if (MessageBoxX(hWndMapWindow,
-	// LKTOKEN  _@M159_ = "CONFIRM goto, ABORTING task?" 
-	gettext(TEXT("_@M159_")),
-	// LKTOKEN  _@M40_ = "A task is running!" 
-	gettext(TEXT("_@M40_")),
-	MB_YESNO|MB_ICONQUESTION) == IDYES) {
-		LockTaskData();
-		FlyDirectTo(SelectedWaypoint);
-		UnlockTaskData();
-	} 
-  } else {
-	LockTaskData();
-	FlyDirectTo(SelectedWaypoint);
-	UnlockTaskData();
-  }
-  #endif
-#else
-  LockTaskData();
-  FlyDirectTo(SelectedWaypoint);
-  UnlockTaskData();
-#endif
-  wf->SetModalResult(mrOK);
-}
-
 static void OnReplaceClicked(WindowControl * Sender){
 	(void)Sender;
   LockTaskData();
@@ -464,14 +432,6 @@ void dlgWayPointDetailsShowModal(void){
   wSpecial->SetVisible(false);
 
   WndButton *wb;
-
-  wb = ((WndButton *)wf->FindByName(TEXT("cmdGoto")));
-  if (wb) 
-    wb->SetOnClickNotify(OnGotoClicked);
-
-  wb = ((WndButton *)wf->FindByName(TEXT("cmdGoto2"))); // VNT FIX TODO duplicate cmds are not allowed in XML
-  if (wb) 						// this is a workaround
-    wb->SetOnClickNotify(OnGotoClicked);
 
   wb = ((WndButton *)wf->FindByName(TEXT("cmdReplace")));
   if (wb)
