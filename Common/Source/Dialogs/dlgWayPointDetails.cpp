@@ -230,36 +230,6 @@ static void OnNewHomeClicked(WindowControl * Sender){
   wf->SetModalResult(mrOK);
 }
 
-// VENTA3
-static void OnSetAlternate1Clicked(WindowControl * Sender){
-	(void)Sender;
-  LockTaskData();
-  Alternate1 = SelectedWaypoint;
-  RefreshTask();
-  UnlockTaskData();
-  wf->SetModalResult(mrOK);
-}
-
-static void OnSetAlternate2Clicked(WindowControl * Sender){
-	(void)Sender;
-  LockTaskData();
-  Alternate2 = SelectedWaypoint;
-  RefreshTask();
-  UnlockTaskData();
-  wf->SetModalResult(mrOK);
-}
-
-static void OnClearAlternatesClicked(WindowControl * Sender){
-	(void)Sender;
-  LockTaskData();
-  Alternate1 = -1;
-  Alternate2 = -1;
-  RefreshTask();
-  UnlockTaskData();
-  wf->SetModalResult(mrOK);
-}
-
-
 static void OnTeamCodeClicked(WindowControl * Sender){
 	(void)Sender;
   TeamCodeRefWaypoint = SelectedWaypoint;
@@ -471,14 +441,14 @@ void dlgWayPointDetailsShowModal(void){
   wSpecial = ((WndFrame *)wf->FindByName(TEXT("frmSpecial")));
   wDetails = (WndListFrame*)wf->FindByName(TEXT("frmDetails"));
 
-  //ASSERT(wInfo!=NULL);
-  //ASSERT(wCommand!=NULL);
-  //ASSERT(wSpecial!=NULL);
-  //ASSERT(wDetails!=NULL);
+  LKASSERT(wInfo!=NULL);
+  LKASSERT(wCommand!=NULL);
+  LKASSERT(wSpecial!=NULL);
+  LKASSERT(wDetails!=NULL);
 
   wDetailsEntry = 
     (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmDetailsEntry"));
-  //ASSERT(wDetailsEntry!=NULL);
+  LKASSERT(wDetailsEntry!=NULL);
   wDetailsEntry->SetCanFocus(true);
 
   nTextLines = TextToLineOffsets(WayPointList[SelectedWaypoint].Details,
@@ -510,25 +480,6 @@ void dlgWayPointDetailsShowModal(void){
   wb = ((WndButton *)wf->FindByName(TEXT("cmdNewHome")));
   if (wb) 
     wb->SetOnClickNotify(OnNewHomeClicked);
-
-  wb = ((WndButton *)wf->FindByName(TEXT("cmdSetAlternate1")));
-  if (wb) 
-    wb->SetOnClickNotify(OnSetAlternate1Clicked);
-
-  wb = ((WndButton *)wf->FindByName(TEXT("cmdSetAlternate1b")));
-  if (wb) 
-    wb->SetOnClickNotify(OnSetAlternate1Clicked);
-
-  wb = ((WndButton *)wf->FindByName(TEXT("cmdSetAlternate2")));
-  if (wb) 
-    wb->SetOnClickNotify(OnSetAlternate2Clicked);
-  wb = ((WndButton *)wf->FindByName(TEXT("cmdSetAlternate2b")));
-  if (wb) 
-    wb->SetOnClickNotify(OnSetAlternate2Clicked);
-
-  wb = ((WndButton *)wf->FindByName(TEXT("cmdClearAlternates")));
-  if (wb) 
-    wb->SetOnClickNotify(OnClearAlternatesClicked);
 
   wb = ((WndButton *)wf->FindByName(TEXT("cmdTeamCode")));
   if (wb) 

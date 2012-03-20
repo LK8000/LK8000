@@ -28,11 +28,8 @@
 </WndFrame>
 <WndFrame Name="frmSpecial" X=0 Y=0 Width=240 Height=240 Font=2 Visible=0>
 
-<WndButton Name="cmdSetAlternate1"   Caption="_@M602_"  X=30 Y=2 Width=190  Height=44 Font=2 />
-<WndButton Name="cmdSetAlternate2"   Caption="_@M603_"  X=30 Y=-998 Width=190  Height=44 Font=2 />
-<WndButton Name="cmdNewHome"         Caption="_@M605_"     X=30 Y=-998 Width=190  Height=44 Font=2 />
-<WndButton Name="cmdTeamCode"        Caption="_@M604_"    X=30 Y=-998 Width=190  Height=44 Font=2 />
-<WndButton Name="cmdClearAlternates"        Caption="_@M177_" X=30 Y=-998 Width=190 Height=44 Font=2 />
+<WndButton Name="cmdNewHome"         Caption="_@M605_"  X=30 Y=2 Width=190  Height=44 Font=2 />
+<WndButton Name="cmdTeamCode"        Caption="_@M604_"  X=30 Y=-998 Width=190  Height=44 Font=2 />
 </WndFrame>
 </WndForm>    
 </PMML>

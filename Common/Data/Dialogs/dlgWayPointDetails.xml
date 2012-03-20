@@ -29,11 +29,8 @@ OnListInfo="OnDetailsListInfo">
 </WndFrame>
 <WndFrame Name="frmSpecial" X=70 Y=0 Width=246 Height=222 Font=2 Visible=0>
 
-<WndButton Name="cmdSetAlternate1"   Caption="_@M602_"  X=50 Y=4 Width=150  Height=40 Font=2 />
-<WndButton Name="cmdSetAlternate2"   Caption="_@M603_"  X=50 Y=48 Width=150  Height=40 Font=2 />
-<WndButton Name="cmdNewHome"         Caption="_@M605_"     X=50 Y=92 Width=150  Height=40 Font=2 />
-<WndButton Name="cmdTeamCode"        Caption="_@M604_"        X=50 Y=136 Width=150  Height=40 Font=2 />
-<WndButton Name="cmdClearAlternates"  Caption="_@M177_"  X=50 Y=180 Width=150  Height=40 Font=2 />
+<WndButton Name="cmdNewHome"         Caption="_@M605_"  X=50 Y=4 Width=150  Height=40 Font=2 />
+<WndButton Name="cmdTeamCode"        Caption="_@M604_"  X=50 Y=-1 Width=150  Height=40 Font=2 />
 </WndFrame>
 </WndForm>    
 </PMML>

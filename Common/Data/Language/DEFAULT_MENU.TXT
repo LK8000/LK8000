@@ -549,7 +549,9 @@ mode=Nav3
 type=key
 data=0
 # label=_@M2023_$(DISABLED)
-label=$(AC03)
+event=Service CLEARALTERNATES
+event=Mode default
+label=_@M2132_
 location=9
 
 mode=Nav3
