@@ -155,4 +155,5 @@ Changed MSG M16
 +_@M1787_ "Custom Menu"
 +_@M1788_ "Configure Custom Menu"
 +_@M2131_ "Custom\nMenu"
+_@M2132_ "Clear\nAltern"
 

@@ -2066,6 +2066,15 @@ extern bool RotateScreen(short angle);
 	dlgProfilesShowModal(2);
 	return;
   }
+  if (_tcscmp(misc, TEXT("CLEARALTERNATES")) == 0) {
+	LockTaskData();
+	Alternate1 = -1;
+	Alternate2 = -1;
+	RefreshTask();
+	UnlockTaskData();
+	DoStatusMessage(MsgToken(177)); // clear alternates
+	return;
+  }
   // we should not get here
   DoStatusMessage(_T("Unknown Service: "),misc);
 
