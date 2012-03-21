@@ -167,8 +167,7 @@ static BOOL LK8EX1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 
 
   // currently unused in LK, but ready for next future
-  // TriggerVarioUpdate();
-  TriggerGPSUpdate();
+  TriggerVarioUpdate();
 
   return TRUE;
 }
