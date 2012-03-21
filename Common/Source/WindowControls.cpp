@@ -4042,6 +4042,8 @@ int WndFrame::OnLButtonDown(WPARAM wParam, LPARAM lParam) {
 	(void)wParam;
 
   if (mIsListItem && GetOwner()!=NULL) {
+
+    LKASSERT(GetHandle()!=NULL);
  
     if (!GetFocused()) {
       SetFocus(GetHandle());  
@@ -4057,6 +4059,7 @@ int WndFrame::OnLButtonDown(WPARAM wParam, LPARAM lParam) {
     WndListFrame* wlf = ((WndListFrame*)GetOwner());
     RECT mRc;
     GetWindowRect(GetHandle(), &mRc);
+    LKASSERT(wlf!=NULL);
     wlf->SelectItemFromScreen(xPos, yPos, &mRc);
   }
   isselect = false;
@@ -4193,8 +4196,10 @@ inline int WndListFrame::GetScrollBarHeight (void)
   int h = GetHeight() - ScrollbarTop;
   if(mListInfo.ItemCount ==0)
     return h-2*ScrollbarWidth;
-  else
+  else {
+    LKASSERT(mListInfo.ItemCount>0);
     return max(ScrollbarWidth,((h-2*ScrollbarWidth)*mListInfo.ItemInViewCount)/mListInfo.ItemCount);
+  }
 }
 
 inline int WndListFrame::GetScrollIndexFromScrollBarTop(int iScrollBarTop)
@@ -4238,6 +4243,7 @@ inline int WndListFrame::GetScrollBarTopFromScrollIndex()
 
 void WndEventButton_OnClickNotify(WindowControl *Sender) {
   WndEventButton *wb = (WndEventButton*)Sender;
+  LKASSERT(wb!=NULL);
   wb->CallEvent();
 }
 
