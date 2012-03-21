@@ -224,7 +224,7 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
 	_DrawLine(hDC, PS_SOLID, NIBLSCALE(4), a1, a2, RGB_BLACK,rc);
 
   SelectObject(hDC, LK8TitleFont);
-  int bankindy=Start.y+radius/2;
+  int bankindy=Start.y-radius/2;
 #ifndef __MINGW32__
   if (beta > 1)
 	_stprintf(Buffer, TEXT("%2.0f\xB0"), beta);
@@ -243,16 +243,17 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
 
   LKWriteText(hDC, Buffer, Start.x , bankindy, 0, WTMODE_NORMAL, WTALIGN_CENTER, RGB_BLUE, false);
 
- // MapDirty = true;
-  //if (!disabled) MapWindow::RefreshMap();
+//  MapDirty = true;
+//  if (!disabled) MapWindow::RefreshMap();
 
-  MapWindow::RequestFastRefresh();
+
   SelectObject(hDC, hbOld);
   SelectObject(hDC, hpOld);
-  for (int i=0; i<NUMDEV; i++)
-    if ( _tcscmp(DeviceList[i].Name,_T("LXV7"))==0)
-      DrawAcceleration( hDC,   rc);
-
+  if(GPS_INFO.AccelerationAvailable)
+  {
+    DrawAcceleration( hDC,   rc);
+    MapWindow::RequestFastRefresh();
+  }
 }
 
 #else
