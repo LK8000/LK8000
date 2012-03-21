@@ -150,8 +150,13 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 
     GetTextExtentPoint(hDC, Scale2, _tcslen(Scale2), &tsize);
     COLORREF mapscalecolor=OverColorRef;
-    if (!CALCULATED_INFO.TerrainValid) 
+
+    if (!CALCULATED_INFO.TerrainValid) {
 	if (terrainwarning>0 && terrainwarning<120) mapscalecolor=RGB_RED;
+    } else {
+	if (mapscalecolor==RGB_SBLACK) mapscalecolor=RGB_WHITE;
+    }
+
 		
     LKWriteText(hDC, Scale2, rc.right-NIBLSCALE(11)-tsize.cx, lineThreeEnd.y+NIBLSCALE(3)+tsize.cy, 
 	0, WTMODE_OUTLINED, WTALIGN_LEFT, mapscalecolor, true); 
