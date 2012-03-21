@@ -60,10 +60,17 @@ static void OnDetailsClicked(WindowControl * Sender){
   wf->SetModalResult(mrOK);
 }
 
+static void OnTaskClicked(WindowControl * Sender){
+  (void)Sender;
+  retStatus=5;
+  wf->SetModalResult(mrOK);
+}
+
 static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnGotoClicked),
   DeclareCallBackEntry(OnSetAlt1Clicked),
   DeclareCallBackEntry(OnSetAlt2Clicked),
+  DeclareCallBackEntry(OnTaskClicked),
   DeclareCallBackEntry(OnCancelClicked),
   DeclareCallBackEntry(NULL)
 };
@@ -76,17 +83,21 @@ short dlgWayQuickShowModal(void){
   char filename[MAX_PATH];
   TCHAR sTmp[128];
 
-  LocalPathS(filename, TEXT("dlgWayQuick.xml"));
-  wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_WAYPOINTQUICK"));
+  if (ScreenLandscape) {
+	LocalPathS(filename, TEXT("dlgWayQuick.xml"));
+	wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_WAYPOINTQUICK"));
+  } else {
+	LocalPathS(filename, TEXT("dlgWayQuick_P.xml"));
+	wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_WAYPOINTQUICK_P"));
+  }
 
   if (!wf) return 0;
-
-  //ASSERT(wf!=NULL);
 
   ((WndButton *)wf->FindByName(TEXT("cmdGoto"))) ->SetOnClickNotify(OnGotoClicked);
   ((WndButton *)wf->FindByName(TEXT("cmdSetAlt1"))) ->SetOnClickNotify(OnSetAlt1Clicked);
   ((WndButton *)wf->FindByName(TEXT("cmdSetAlt2"))) ->SetOnClickNotify(OnSetAlt2Clicked);
   ((WndButton *)wf->FindByName(TEXT("cmdDetails"))) ->SetOnClickNotify(OnDetailsClicked);
+  ((WndButton *)wf->FindByName(TEXT("cmdTask"))) ->SetOnClickNotify(OnTaskClicked);
   ((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetOnClickNotify(OnCancelClicked);
 
   retStatus=0;
@@ -123,7 +134,10 @@ short dlgWayQuickShowModal(void){
 	_stprintf(sTmp, _T(" %s"),WayPointList[SelectedWaypoint].Name);
   }
   wf->SetCaption(sTmp);
-  wf->SetLeft((ScreenSizeX-IBLSCALE(230))/2);
+  if (ScreenLandscape)
+	wf->SetLeft((ScreenSizeX-IBLSCALE(320))/2);
+  else
+	wf->SetLeft((ScreenSizeX-IBLSCALE(240))/2);
 
   wf->ShowModal();
 

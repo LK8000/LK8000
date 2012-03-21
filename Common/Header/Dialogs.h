@@ -52,7 +52,7 @@ void dlgSwitchesShowModal(void);
 void dlgTaskWaypointShowModal(int itemindex, int type, bool addonly=false);
 void dlgTaskOverviewShowModal(void);
 void dlgVoiceShowModal(void);
-void dlgWayPointDetailsShowModal(void);
+void dlgWayPointDetailsShowModal(short mypage);
 short dlgWayQuickShowModal(void);
 void dlgTextEntryShowModal(TCHAR *text, int width=0);
 void dlgTeamCodeShowModal(void);

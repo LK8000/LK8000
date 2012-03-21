@@ -118,6 +118,7 @@ IDR_XML_TASKWAYPOINT    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTaskWaypoint
 IDR_XML_WAYPOINTDETAILS XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWayPointDetails.xml"
 IDR_XML_WAYPOINTSELECT  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWayPointSelect.xml"
 IDR_XML_WAYPOINTQUICK  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWayQuick.xml"
+IDR_XML_WAYPOINTQUICK_P  XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWayQuick_P.xml"
 IDR_XML_WINDSETTINGS    XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgWindSettings.xml"
 IDR_XML_STARTTASK       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgStartTask.xml"
 IDR_XML_TIMEGATES       XMLDIALOG DISCARDABLE   "../Data/Dialogs/dlgTimeGates.xml"

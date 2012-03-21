@@ -244,7 +244,7 @@ static CallBackTableEntry_t CallBackTable[]={
 
 
 
-void dlgWayPointDetailsShowModal(void){
+void dlgWayPointDetailsShowModal(short mypage){
 
   TCHAR sTmp[128];
   double sunsettime;
@@ -457,7 +457,7 @@ void dlgWayPointDetailsShowModal(void){
   if (wb) 
     wb->SetOnClickNotify(OnRemoveFromTaskClicked);
 
-  page = 0;
+  page = mypage;
 
   NextPage(0);
 

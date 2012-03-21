@@ -2800,15 +2800,23 @@ void SwitchToMapWindow(void)
 
 void PopupWaypointDetails()
 {
-  // Quick is returning  0 for cancel or error, 1 for details, 2 for goto, 3 and 4 for alternates
+  // Quick is returning:
+  // 0 for cancel or error
+  // 1 for details
+  // 2 for goto
+  // 3 and 4 for alternates
+  // 5 for task
   short ret= dlgWayQuickShowModal();
   // StartupStore(_T("... Quick ret=%d\n"),ret);
   switch(ret) {
 	case 1:
-		dlgWayPointDetailsShowModal();
+		dlgWayPointDetailsShowModal(0);
 		break;
 	case 2:
 		SetModeType(LKMODE_MAP,MP_MOVING);
+		break;
+	case 5:
+		dlgWayPointDetailsShowModal(2);
 		break;
 	default:
 		break;
