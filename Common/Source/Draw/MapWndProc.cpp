@@ -179,6 +179,10 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
   }
   #endif
 
+  // 120322 To be carefully checks for all situations.. BETA!
+  // CURRENTLY never set. 
+  if (DialogActive) return TRUE;
+
   switch (uMsg)
     {
     case WM_ERASEBKGND:
@@ -923,11 +927,10 @@ goto_menu:
 
       #endif // PNA TRANSCODING
 
-      dwDownTime= 0L;
-
-      InputEvents::processKey(wParam);
-      dwDownTime= 0L;
-      return TRUE; 
+	dwDownTime= 0L; // removable? check
+	InputEvents::processKey(wParam);
+	dwDownTime= 0L;
+	return TRUE; 
     }
 
   return (DefWindowProc (hWnd, uMsg, wParam, lParam));

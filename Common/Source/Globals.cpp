@@ -544,6 +544,7 @@ void Globals_Init(void) {
   TerrainRamp = 0;
 
   extGPSCONNECT = FALSE;
+  DialogActive=false;
 
   PDABatteryPercent = 100;
   PDABatteryTemperature = 0;

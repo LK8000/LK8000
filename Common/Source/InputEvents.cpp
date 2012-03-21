@@ -2806,8 +2806,12 @@ void PopupWaypointDetails()
   // 2 for goto
   // 3 and 4 for alternates
   // 5 for task
+
+  // DialogActive is needed if not full screen!
+  // DialogActive=true;
   short ret= dlgWayQuickShowModal();
-  // StartupStore(_T("... Quick ret=%d\n"),ret);
+  // DialogActive=false;
+
   switch(ret) {
 	case 1:
 		dlgWayPointDetailsShowModal(0);
