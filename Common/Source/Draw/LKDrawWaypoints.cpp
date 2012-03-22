@@ -153,7 +153,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
       if(fScaleFact < 0.1)  fScaleFact = 0.1; // prevent division by zero
 
       fScaleFact = zoom.DrawScale();
-      if(fScaleFact > 6000.0) fScaleFact = 6000.0; // limit to prevent huge airfiel symbols
+      if(fScaleFact > 10000.0) fScaleFact = 10000.0; // limit to prevent huge airfiel symbols
       if(fScaleFact < 1600)   fScaleFact = 1600; // limit to prevent tiny airfiel symbols
 
   	  DrawRunway(hdc,&WayPointList[i],rc, fScaleFact);
@@ -709,14 +709,14 @@ if( wp->RunwayLen > 100) /* square if no runway defined */
 }
 else
 {
-  l = (int)(rwl*0.5);
+  l = (int)( rwl*0.5);
   b = l ;
 }
 
 l = (int)(l * fScaleFact); if(l==0) l=1;
 b = (int)(b * fScaleFact); if(b==0) b=1;
 p = (int)(cir * 2.0 * fScaleFact); if(p==0) p=1;
-int iScale = (int)(fScaleFact*2);if(iScale==0) iScale=1;
+int iScale = (int)(fScaleFact*2.0);if(iScale==0) iScale=1;
 
 
 
@@ -772,7 +772,7 @@ int iScale = (int)(fScaleFact*2);if(iScale==0) iScale=1;
 	if(fScaleFact >= 0.9)
 	  if(bGlider)
 	  {
-	    int iScale = (int)(fScaleFact*2);
+	    int iScale = (int)(fScaleFact*2.0);
 	    if(iScale==0) iScale=1;
 	    POINT WhiteWing [15]  = {
 		  { 0 * iScale, 0 * iScale },   // 1
@@ -797,14 +797,16 @@ int iScale = (int)(fScaleFact*2);if(iScale==0) iScale=1;
 
 	SelectObject(hdc, oldPen);
 	SelectObject(hdc, oldBrush);
+#define	PRINT_FREQUENCY
 #ifdef PRINT_FREQUENCY
+  if(fScaleFact >= 2)
 	if (MapWindow::zoom.RealScale()<5.4)
 	{
 	  SIZE tsize;
       SetTextColor(hdc, RGB_BLACK);
 	  HFONT hfOld = (HFONT)SelectObject(hdc, LK8PanelSmallFont);
 	  GetTextExtentPoint(hdc, wp->Freq, _tcslen(wp->Freq), &tsize);
-      ExtTextOut(hdc,wp->Screen.x/*-tsize.cx/2*/ ,wp->Screen.y+(15), ETO_OPAQUE, NULL, wp->Freq, _tcslen( wp->Freq), NULL);
+      ExtTextOut(hdc,wp->Screen.x-tsize.cx/2 ,wp->Screen.y-tsize.cy/2 , ETO_OPAQUE, NULL, wp->Freq, _tcslen( wp->Freq), NULL);
       SelectObject(hdc, hfOld);
 	}
 #endif
