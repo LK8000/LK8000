@@ -326,7 +326,7 @@ static void OnTaskListEnter(WindowControl * Sender,
 			} else if (isfinish) {
 				dlgTaskWaypointShowModal(ItemIndex, 2, true); // finish waypoint
 			} else {
-				if (AATEnabled) {
+				if (AATEnabled || DoOptimizeRoute()) {
 					// only need to set properties for finish
 					dlgTaskWaypointShowModal(ItemIndex, 1, true); // normal waypoint
 				}

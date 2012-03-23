@@ -99,4 +99,7 @@ Changed HELP 102
 M1775-1778 new Aver Efficiency intervals
 
 
-
+-----------
+After 3.0a changes...
+-----------
+HELP 402 removed some text

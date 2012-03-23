@@ -221,8 +221,12 @@ double FAIFinishHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int twp) {
 
   if (twp==FinalWayPoint) {
     if (EnableFAIFinishHeight && !AATEnabled) {
+      // maximum allowed loss of height in order to conform to FAI rules
+      double maxHeightLoss = min(1000.0,
+                                 (Calculated->TaskDistanceCovered+Calculated->TaskDistanceToGo) * 0.01);
+      
       return max(max(FinishMinHeight/1000.0, safetyaltitudearrival)+ wp_alt, 
-                 Calculated->TaskStartAltitude-1000.0);
+                 Calculated->TaskStartAltitude-maxHeightLoss);
     } else {
       return max(FinishMinHeight/1000.0, safetyaltitudearrival)+wp_alt;
     }
@@ -589,7 +593,10 @@ bool FlightTimes(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static double LastTime = 0;
 
   if ((Basic->Time != 0) && (Basic->Time <= LastTime)) {
-	if ( (LastTime - Basic->Time >30 ) && (!Basic->NAVWarning)) {
+	if ( (LastTime - Basic->Time >30 ) && (!Basic->NAVWarning) && 
+	// replay logger does not consider UTC 00 incrementing by 85000 or whatever the basic time.
+	// Meanwhile, we may also skip the 00 utc because of interpolation. So we consider this.
+	!( ReplayLogger::IsEnabled() && Basic->Time<60)  ) {
 		// Reset statistics.. (probably due to being in IGC replay mode)
 		StartupStore(_T("... Time is in the past! %s%s"), WhatTimeIsIt(),NEWLINE);
 
@@ -3953,16 +3960,33 @@ int DetectStartTime(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 //
 void CalculateHeadWind(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
+  static double CrossBearingLast= -1.0;
+  static double WindSpeedLast= -1.0;
+
   if (Basic->NAVWarning) {
 	Calculated->HeadWind  = -999;
 	return;
   }
 
+  double CrossBearing;
+  CrossBearing = AngleLimit360(Calculated->Heading - Calculated->WindBearing);
+
+  #if 1 // vector wind
+  if ((CrossBearing != CrossBearingLast)||(Calculated->WindSpeed != WindSpeedLast)) {
+	Calculated->HeadWind = Calculated->WindSpeed * fastcosine(CrossBearing);
+	// CrossWind = WindSpeed * fastsine(CrossBearing);  UNUSED
+	CrossBearingLast = CrossBearing;
+	WindSpeedLast = Calculated->WindSpeed;
+  }
+  #else
   if (Basic->AirspeedAvailable) {
 	Calculated->HeadWind = Basic->TrueAirspeed - Basic->Speed;
   } else {
+	// for estimated IAS, this is also vector wind
 	Calculated->HeadWind = Calculated->TrueAirspeedEstimated - Basic->Speed;
   }
+  #endif
+  //StartupStore(_T("..... CrossBearing=%f  hdwind=%f windspeed=%f\n"),CrossBearing,Calculated->HeadWind, Calculated->WindSpeed);
 
 }
 

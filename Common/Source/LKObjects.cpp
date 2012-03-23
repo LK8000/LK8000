@@ -74,8 +74,22 @@ void LKObjects_Create() {
 
   LKPen_Grey_N1 = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(1),RGB_GREY);
   LKPen_Grey_N2 = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(2),RGB_GREY);
-  LKPen_GABRG = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(3),RGB_MAGENTA);
 
+  switch(ScreenSize) {
+	// portrait small screen
+	case ss240x320:
+	case ss240x400:
+	case ss272x480:
+	// landscape small screen
+	case ss320x240:
+	case ss400x240:
+	case ss480x272:
+		LKPen_GABRG = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(5),RGB_MAGENTA);
+		break;
+	default:
+		LKPen_GABRG = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(3),RGB_MAGENTA);
+		break;
+  }
 
 }
 

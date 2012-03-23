@@ -62,7 +62,9 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
     Calculated->FreeFlying=false;
     ffDetected=false;
     lastMaxAltitude=-1000;
-    gndAltitude=GPS_INFO.Altitude;
+    // For winch launches and also for quick taekoffs do not update gndAltitude when the plane
+    // is already moving, probably towed or winched already. Threshold is at 4m/s, = 14kmh
+    if (GPS_INFO.Speed<=4.0) gndAltitude=GPS_INFO.Altitude;
     winchdetected=false;
     wlaunch=0;
     altLoss=FF_TOWING_ALTLOSS;
@@ -76,7 +78,7 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
 	StartupStore(_T("... Forced FreeFlight Restart!\n"));
 	#endif
 	DoStatusMessage(MsgToken(1452),NULL,false);  // LKTOKEN  _@M1452_ = "Free flight detected"
-	goto backtrue;
+	goto confirmbacktrue;
   }
 
   if (ISPARAGLIDER) {
@@ -216,6 +218,7 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
   #endif
   DoStatusMessage(gettext(TEXT("_@M1452_")),NULL,false);  // LKTOKEN  _@M1452_ = "Free flight detected"
 
+  confirmbacktrue:
   // Always sound
   if (EnableSoundModes) {
 	LKSound(_T("LK_FREEFLIGHT.WAV"));
@@ -250,7 +253,9 @@ void ResetFreeFlightStats(DERIVED_INFO *Calculated) {
 
   int i;
 
+  CContestMgr::Instance().Reset(Handicap);
   flightstats.Reset();
+
   Calculated->timeCruising = 0;
   Calculated->timeCircling = 0;
 
@@ -277,7 +282,11 @@ void ResetFreeFlightStats(DERIVED_INFO *Calculated) {
     Calculated->ThermalSources[i].LiftRate= -1.0;
   }
 
-  // MinAltitude is handled separately already taking care of FF
+  // The MaxHeightGain function wait for FF in flight and will update
+  // considering 0 as a no-altitude-set-yet .
+  Calculated->MinAltitude = 0;
+  Calculated->MaxAltitude = 0;
+  Calculated->MaxHeightGain = 0;
 
 
 }

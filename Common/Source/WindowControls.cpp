@@ -1980,6 +1980,13 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 	#if TRACE_WNDPROC
 	StartupStore(_T(".... WNDPROC> DESTROY\n"));
 	#endif
+        // The Close() was missing, and when clicking on X to quit LK, if a dialog was pending it was not
+        // closed correctly: the modal dialog had previously stopped the message loop dispatcher, and
+        // as a result inside the main message loop in lk8000.cpp we were not getting the QUIT message.
+        // So the main thread was left running, as a ghost process. This could happen only on PC, so far,
+        // but was a pending problem for the cases when we have a full window where you can click an X to quit.
+	Close();
+
     break;
 
     case WM_COMMAND:
@@ -2064,6 +2071,7 @@ int WindowControl::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
       */
     break;
 
+    // APPARENTLY THIS IS NEVER CALLED. Missing Close(), handled by Destroy() now
     case WM_QUIT:
     case WM_CLOSE:
       TouchContext=TCX_PROC_CLOSE;
