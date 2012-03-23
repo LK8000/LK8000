@@ -62,7 +62,9 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
     Calculated->FreeFlying=false;
     ffDetected=false;
     lastMaxAltitude=-1000;
-    gndAltitude=GPS_INFO.Altitude;
+    // For winch launches and also for quick taekoffs do not update gndAltitude when the plane
+    // is already moving, probably towed or winched already. Threshold is at 4m/s, = 14kmh
+    if (GPS_INFO.Speed<=4.0) gndAltitude=GPS_INFO.Altitude;
     winchdetected=false;
     wlaunch=0;
     altLoss=FF_TOWING_ALTLOSS;
