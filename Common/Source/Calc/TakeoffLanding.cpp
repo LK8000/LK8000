@@ -45,11 +45,15 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			WayPointList[RESWP_TAKEOFF].Latitude=Basic->Latitude;
 			WayPointList[RESWP_TAKEOFF].Longitude=Basic->Longitude;
 			// use NavAltitude
-			if (Basic->BaroAltitudeAvailable==TRUE) {
-				WayPointList[RESWP_TAKEOFF].Altitude=Basic->BaroAltitude;
-			} else {
+
+			WayPointList[RESWP_TAKEOFF].Altitude=0;
+			WaypointAltitudeFromTerrain(&WayPointList[RESWP_TAKEOFF]);
+			if(WayPointList[RESWP_TAKEOFF].Altitude == 0) {
+				// if no terrain data, use GPS Altitude
+				//RESWP_TAKEOFF.Altitude is used for AutoQNH, don't use baro for this...
 				WayPointList[RESWP_TAKEOFF].Altitude=Basic->Altitude;
 			}
+
 			if (WayPointList[RESWP_TAKEOFF].Altitude==0) WayPointList[RESWP_TAKEOFF].Altitude=0.001; // 100227 BUGFIX?
 			_tcscpy(WayPointList[RESWP_TAKEOFF].Comment,_T("LAST GROUND POSITION"));
 			WayPointList[RESWP_TAKEOFF].Reachable=TRUE;
