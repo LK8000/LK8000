@@ -3805,7 +3805,7 @@ void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		DistanceBearing(Basic->Latitude, Basic->Longitude, 
 			WayPointList[HomeWaypoint].Latitude, WayPointList[HomeWaypoint].Longitude,&hdist,NULL);
 
-		if (hdist <2000) {
+		if( (hdist <2000) && (HomeWaypoint!=RESWP_TAKEOFF) ) {
 			fixaltitude=WayPointList[HomeWaypoint].Altitude;
 			StartupStore(_T(". AutoQNH: setting QNH to HOME waypoint altitude=%.0f m%s"),fixaltitude,NEWLINE);
 		} else {
