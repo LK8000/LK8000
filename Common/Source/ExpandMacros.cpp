@@ -309,15 +309,15 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			break;
 		case 25:
 			if (MapWindow::mode.UserForcedMode() == MapWindow::Mode::MODE_FLY_NONE)
-				_stprintf(OutBuffer,_T("DspMode\n_%s_"),MsgToken(2033));
-			else
-				_stprintf(OutBuffer,_T("DspMode\n%s"),MsgToken(2033));
-			break;
-		case 26:
-			if (MapWindow::mode.UserForcedMode() == MapWindow::Mode::MODE_FLY_FINAL_GLIDE)
 				_stprintf(OutBuffer,_T("DspMode\n_%s_"),MsgToken(2034));
 			else
 				_stprintf(OutBuffer,_T("DspMode\n%s"),MsgToken(2034));
+			break;
+		case 26:
+			if (MapWindow::mode.UserForcedMode() == MapWindow::Mode::MODE_FLY_FINAL_GLIDE)
+				_stprintf(OutBuffer,_T("DspMode\n_%s_"),MsgToken(2033));
+			else
+				_stprintf(OutBuffer,_T("DspMode\n%s"),MsgToken(2033));
 			break;
 
 		case 27: // amcIsBoth
