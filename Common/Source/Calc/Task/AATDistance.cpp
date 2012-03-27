@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "AATDistance.h"
 #include "Task.h"
+#include "CalcTask.h"
 #include "Airspace.h"
 #include "Calculations.h"
 
@@ -16,6 +17,9 @@ using std::min;
 using std::max;
 
 #define DISTANCETHRESHOLD 500
+
+AATDistance aatdistance;
+
 
 extern NMEA_INFO GPS_INFO;
 

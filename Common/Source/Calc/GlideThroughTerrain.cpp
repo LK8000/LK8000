@@ -1,0 +1,122 @@
+/*
+   LK8000 Tactical Flight Computer -  WWW.LK8000.IT
+   Released under GNU/GPL License v.2
+   See CREDITS.TXT file for authors and copyrights
+
+   $Id$
+*/
+
+#include "externs.h"
+#include "RasterTerrain.h"
+#include "McReady.h"
+#include "utils/heapcheck.h"
+
+using std::min;
+using std::max;
+
+
+// no need to use LegToGo and LegBearing, we use the active waypoint instead
+// calculate also arrival altitude on obstacle
+
+void CheckGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
+
+  if (ValidNotResWayPoint(TASKINDEX)) { 
+	double lat, lon;
+	double farlat, farlon;
+	double oldfarlat, oldfarlon, oldfardist;
+	static double oldfarbearing=361;
+	static double oldstartaltitude=-1;
+	double startaltitude;
+	double distance_soarable;
+	bool out_of_range, farout_of_range;
+	double fardistance_soarable;
+	double minaltitude, maxaltitude;
+	double newaltitude;
+	int selwp;
+
+	selwp=TASKINDEX;
+	if ( WayPointCalc[selwp].AltArriv[AltArrivMode]<0 ) {
+		return;
+	}
+
+	distance_soarable = 
+		FinalGlideThroughTerrain(CALCULATED_INFO.WaypointBearing, Basic, Calculated, &lat, &lon, 
+		CALCULATED_INFO.WaypointDistance, &out_of_range, NULL);
+
+	// Calculate obstacles ONLY if we are in glide range, otherwise it is useless 
+	if ((!out_of_range)&&(distance_soarable< CALCULATED_INFO.WaypointDistance)) {
+
+		Calculated->TerrainWarningLatitude = lat;
+		Calculated->TerrainWarningLongitude = lon;
+
+		Calculated->ObstacleDistance = distance_soarable;
+
+		Calculated->ObstacleHeight =  max((short)0, RasterTerrain::GetTerrainHeight(lat,lon));
+		if (Calculated->ObstacleHeight == TERRAIN_INVALID) Calculated->ObstacleHeight=0; //@ 101027 FIX
+
+		// how much height I will loose to get there
+		Calculated->ObstacleAltReqd = GlidePolar::MacCreadyAltitude (MACCREADY, 
+			distance_soarable, 
+			CALCULATED_INFO.WaypointBearing,
+			CALCULATED_INFO.WindSpeed, CALCULATED_INFO.WindBearing,
+			0, 0, true,0);
+
+		// arrival altitude over the obstacle
+		// sometimes it is positive
+		Calculated->ObstacleAltArriv = Calculated->NavAltitude
+			 - Calculated->ObstacleAltReqd
+			 - Calculated->ObstacleHeight
+			 - SAFETYALTITUDETERRAIN;
+
+		// Reminder: we already have a glide range on destination.
+		minaltitude=CALCULATED_INFO.NavAltitude;
+		maxaltitude=minaltitude*2;
+
+		// if no far obstacle will be found, we shall use the first obstacle. 
+		oldfarlat=lat;
+		oldfarlon=lon;
+		oldfardist=distance_soarable;
+		if (oldstartaltitude<0) oldstartaltitude=minaltitude;
+
+		// if bearing has changed for more than 1 deg, we dont use shortcuts
+		if (fabs(oldfarbearing-CALCULATED_INFO.WaypointBearing) >= 1)  {
+			startaltitude=minaltitude;
+			oldfarbearing=CALCULATED_INFO.WaypointBearing;
+		} else {
+			startaltitude=oldstartaltitude-200;
+			if (startaltitude <minaltitude) startaltitude=minaltitude;
+		}
+
+		// need to recalculate, init with first obstacle, forget old far obstacle
+		// new bearing reference
+
+		for ( newaltitude=minaltitude; newaltitude<maxaltitude; newaltitude+=50) {
+
+			fardistance_soarable = FarFinalGlideThroughTerrain( CALCULATED_INFO.WaypointBearing, Basic, Calculated, 
+				&farlat, &farlon, CALCULATED_INFO.WaypointDistance, &farout_of_range, newaltitude, NULL);
+
+			if (fardistance_soarable< CALCULATED_INFO.WaypointDistance) {
+				oldfarlat=farlat;
+				oldfarlon=farlon;
+				oldfardist=fardistance_soarable;
+			} else break;
+		}
+
+		oldstartaltitude=newaltitude;
+		Calculated->FarObstacle_Lat = oldfarlat;
+		Calculated->FarObstacle_Lon = oldfarlon;
+		Calculated->FarObstacle_Dist = oldfardist;
+		// 0-50m positive rounding
+		Calculated->FarObstacle_AltArriv = minaltitude - newaltitude;
+
+
+	} else {
+		Calculated->TerrainWarningLatitude = 0.0;
+		Calculated->TerrainWarningLongitude = 0.0;
+	}
+  } else {
+	Calculated->TerrainWarningLatitude = 0.0;
+	Calculated->TerrainWarningLongitude = 0.0;
+  }
+}
+

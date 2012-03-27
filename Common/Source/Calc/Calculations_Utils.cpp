@@ -9,7 +9,10 @@
 #include "externs.h"
 #include "McReady.h"
 
+using std::min;
+using std::max;
 
+double CRUISE_EFFICIENCY = 1.0;
 
 // AverageLD return 0 if invalid, or 999 if too high...
 // This function will return bestld if too high, and last valid average if invalid because on ground or circling
@@ -178,4 +181,37 @@ bool IsSafetyMacCreadyInUse(const int wpindex) {
   return true;
 }
 
+
+
+int getFinalWaypoint() {
+  int i;
+  i=max(-1,min(MAXTASKPOINTS,ActiveWayPoint));
+
+  i++;
+  LockTaskData();
+  while((i<MAXTASKPOINTS) && (Task[i].Index != -1))
+    {
+      i++;
+    }
+  UnlockTaskData();
+  return i-1;
+}
+
+
+bool ActiveIsFinalWaypoint() {
+  return (ActiveWayPoint == getFinalWaypoint());
+}
+
+
+bool IsFinalWaypoint(void) {
+  bool retval;
+  LockTaskData();
+  if (ValidTaskPoint(ActiveWayPoint) && (Task[ActiveWayPoint+1].Index >= 0)) {
+    retval = false;
+  } else {
+    retval = true;
+  }
+  UnlockTaskData();
+  return retval;
+}
 

@@ -10,6 +10,7 @@ SHP=Common/Source/Topology/shapelib
 TER=Common/Source/Terrain
 NTR=Common/Source/LKInterface
 CLC=Common/Source/Calc
+TSK=Common/Source/Calc/Task
 HDR=Common/Header
 
 BIN=Bin/$(TARGET)
@@ -307,6 +308,7 @@ LKINTER	:=\
 
 DRAW	:=\
 	$(DRW)/CalculateScreen.cpp \
+	$(DRW)/CalculateWaypointReachable.cpp \
 	$(DRW)/DrawAircraft.cpp \
 	$(DRW)/DrawAirSpaces.cpp \
 	$(DRW)/DrawAirspaceLabels.cpp \
@@ -368,20 +370,27 @@ DRAW	:=\
 	$(DRW)/UpdateAndRefresh.cpp \
 
 CALC	:=\
-	$(CLC)/AATDistance.cpp 		\
 	$(CLC)/AddSnailPoint.cpp 		\
+	$(CLC)/AltitudeRequired.cpp \
 	$(CLC)/Atmosphere.cpp 		\
+	$(CLC)/AutoMC.cpp \
+	$(CLC)/AutoQNH.cpp \
+	$(CLC)/AverageClimbRate.cpp \
 	$(CLC)/Azimuth.cpp \
+	$(CLC)/BallastDump.cpp \
 	$(CLC)/BestAlternate.cpp	\
-	$(CLC)/Calculations.cpp \
 	$(CLC)/Calculations2.cpp \
 	$(CLC)/Calculations_Utils.cpp \
-	$(CLC)/CalculateWaypointReachable.cpp \
 	$(CLC)/ClimbAverageCalculator.cpp\
+	$(CLC)/ClimbStats.cpp\
 	$(CLC)/ContestMgr.cpp\
+	$(CLC)/DistanceToHome.cpp\
+	$(CLC)/DistanceToNext.cpp\
 	$(CLC)/DoAirspaces.cpp \
 	$(CLC)/DoAlternates.cpp \
+	$(CLC)/DoCalculations.cpp \
 	$(CLC)/DoCalculationsSlow.cpp \
+	$(CLC)/DoCalculationsVario.cpp \
 	$(CLC)/DoCommon.cpp \
 	$(CLC)/DoLogging.cpp \
 	$(CLC)/DoNearest.cpp \
@@ -391,25 +400,69 @@ CALC	:=\
 	$(CLC)/DoTraffic.cpp \
 	$(CLC)/FarFinalGlideThroughTerrain.cpp\
 	$(CLC)/FinalGlideThroughTerrain.cpp\
+	$(CLC)/Flaps.cpp \
 	$(CLC)/FlarmCalculations.cpp \
+	$(CLC)/FlightTime.cpp\
 	$(CLC)/FreeFlight.cpp \
+	$(CLC)/GlideThroughTerrain.cpp \
+	$(CLC)/Heading.cpp \
+	$(CLC)/HeadWind.cpp \
+	$(CLC)/InitCloseCalculations.cpp \
+	$(CLC)/LastThermalStats.cpp\
+	$(CLC)/LD.cpp\
 	$(CLC)/LDRotaryBuffer.cpp\
 	$(CLC)/MagneticVariation.cpp \
 	$(CLC)/McReady.cpp\
+	$(CLC)/NettoVario.cpp\
 	$(CLC)/Orbiter.cpp \
 	$(CLC)/Pirker.cpp \
+	$(CLC)/PredictNextPosition.cpp \
 	$(CLC)/ResetFlightStats.cpp\
-	$(CLC)/TakeoffLanding.cpp			\
-	$(CLC)/Task.cpp			\
+	$(CLC)/SetWindEstimate.cpp \
+	$(CLC)/SpeedToFly.cpp \
+	$(CLC)/TakeoffLanding.cpp\
 	$(CLC)/TeamCodeCalculation.cpp \
+	$(CLC)/TerrainFootprint.cpp \
+	$(CLC)/TerrainHeight.cpp \
+	$(CLC)/ThermalBand.cpp \
 	$(CLC)/ThermalHistory.cpp \
 	$(CLC)/ThermalLocator.cpp \
+	$(CLC)/TotalEnergy.cpp\
 	$(CLC)/Trace.cpp \
 	$(CLC)/Turning.cpp \
+	$(CLC)/Vario.cpp\
+	$(CLC)/WaypointApproxDistance.cpp \
+	$(CLC)/WaypointArrivalAltitude.cpp \
 	$(CLC)/windanalyser.cpp\
 	$(CLC)/windmeasurementlist.cpp \
 	$(CLC)/windstore.cpp 	\
 	$(CLC)/WindZigZag.cpp 	\
+
+TASK	:=\
+	$(TSK)/AATDistance.cpp \
+	$(TSK)/AATInTurnSector.cpp	\
+	$(TSK)/AATStats.cpp 		\
+	$(TSK)/AATtools.cpp 		\
+	$(TSK)/AnnounceWPSwitch.cpp 	\
+	$(TSK)/CheckFinalGlide.cpp \
+	$(TSK)/CheckInSector.cpp \
+	$(TSK)/CheckStartRestartFinish.cpp \
+	$(TSK)/FAIFinishHeight.cpp \
+	$(TSK)/InFinishSector.cpp \
+	$(TSK)/InSector.cpp \
+	$(TSK)/InStartSector.cpp \
+	$(TSK)/InTurnSector.cpp \
+	$(TSK)/InsideStartHeight.cpp\
+	$(TSK)/ReadyToStartAdvance.cpp \
+	$(TSK)/RefreshTaskStatistics.cpp \
+	$(TSK)/SpeedHeight.cpp\
+	$(TSK)/StartTask.cpp \
+	$(TSK)/Task.cpp	\
+	$(TSK)/TaskAltitudeRequired.cpp\
+	$(TSK)/TaskSpeed.cpp\
+	$(TSK)/TaskStatistic.cpp\
+	$(TSK)/TimeGates.cpp\
+	$(TSK)/Valid.cpp\
 
 TERRAIN	:=\
 	$(TER)/Cache.cpp	\
@@ -608,6 +661,7 @@ SRC_FILES :=\
 	$(LIBRARY) \
 	$(DRAW) \
 	$(CALC) \
+	$(TASK) \
 	$(TERRAIN) \
 	$(TOPOL) \
 	$(MAPDRAW) \

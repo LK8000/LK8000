@@ -538,3 +538,11 @@ double ProjectedDistance(double lon1, double lat1,
   return tmpd;
 }
 
+
+
+void LatLon2Flat(double lon, double lat, int *scx, int *scy) {
+  *scx = (int)(lon*fastcosine(lat)*100);
+  *scy = (int)(lat*100);
+}
+
+

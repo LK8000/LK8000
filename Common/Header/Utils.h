@@ -46,6 +46,8 @@ void frotate(float &xin, float &yin, const float &angle);
 void rotatescale(double &xin, double &yin, const double &angle, const double &scale);
 void frotatescale(float &xin, float &yin, const float &angle, const float &scale);
 int  roundupdivision(int a, int b);
+double LowPassFilter(double y_last, double x_in, double fact);
+
 
 void DistanceBearing(double lat1, double lon1, double lat2, double lon2,
                      double *Distance, double *Bearing);
@@ -97,6 +99,7 @@ void InitSineTable(void);
 bool AngleInRange(double Angle0, double Angle1, double x, bool is_signed=false);
 double AngleLimit180(double theta);
 double AngleLimit360(double theta);
+void LatLon2Flat(double lon, double lat, int *scx, int *scy);
 
 #ifdef __MINGW32__
 #define DEG_TO_INT(x) ((unsigned short)(int)((x)*(65536.0/360.0)))>>4
