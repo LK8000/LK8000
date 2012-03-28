@@ -31,9 +31,9 @@ DWORD CalculationThread (LPVOID lpvoid) {
 
   NMEA_INFO     tmp_GPS_INFO;
   DERIVED_INFO  tmp_CALCULATED_INFO;
-#ifdef CPUSTATS
+  #ifdef CPUSTATS
   FILETIME CreationTime, ExitTime, StartKernelTime, EndKernelTime, StartUserTime, EndUserTime ;
-#endif
+  #endif
   needcalculationsslow = false;
 
   // let's not create a deadlock here, setting the go after another race condition
@@ -52,34 +52,23 @@ DWORD CalculationThread (LPVOID lpvoid) {
     ResetEvent(dataTriggerEvent);
     if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
-#ifdef CPUSTATS
+    #ifdef CPUSTATS
     GetThreadTimes( hCalculationThread, &CreationTime, &ExitTime,&StartKernelTime,&StartUserTime);
-#endif
+    #endif
 
     // make local copy before editing...
     LockFlightData();
-    FLARM_RefreshSlots(&GPS_INFO);
-    memcpy(&tmp_GPS_INFO,&GPS_INFO,sizeof(NMEA_INFO));
-    memcpy(&tmp_CALCULATED_INFO,&CALCULATED_INFO,sizeof(DERIVED_INFO));
-
+      FLARM_RefreshSlots(&GPS_INFO);
+      memcpy(&tmp_GPS_INFO,&GPS_INFO,sizeof(NMEA_INFO));
+      memcpy(&tmp_CALCULATED_INFO,&CALCULATED_INFO,sizeof(DERIVED_INFO));
     UnlockFlightData();
 
-    // Do vario first to reduce audio latency
-    if (GPS_INFO.VarioAvailable) {
-      if (DoCalculationsVario(&tmp_GPS_INFO,&tmp_CALCULATED_INFO)) {
-	        
-      }
-      // assume new vario data has arrived, so infoboxes
-      // need to be redrawn
-      //} 20060511/sgi commented out 
-    } else {
-      // run the function anyway, because this gives audio functions
-      // if no vario connected
-	DoCalculationsVario(&tmp_GPS_INFO,&tmp_CALCULATED_INFO);
+    DoCalculationsVario(&tmp_GPS_INFO,&tmp_CALCULATED_INFO);
+    if (!GPS_INFO.VarioAvailable) {
 	TriggerVarioUpdate(); // emulate vario update
-    }
+    } 
     
-      if(DoCalculations(&tmp_GPS_INFO,&tmp_CALCULATED_INFO)){
+    if(DoCalculations(&tmp_GPS_INFO,&tmp_CALCULATED_INFO)){
         MapWindow::MapDirty = true;
         needcalculationsslow = true;
 
@@ -89,7 +78,7 @@ DWORD CalculationThread (LPVOID lpvoid) {
           MapWindow::mode.Fly(MapWindow::Mode::MODE_FLY_FINAL_GLIDE);
         else
           MapWindow::mode.Fly(MapWindow::Mode::MODE_FLY_CRUISE);
-      }
+    }
         
     if (MapWindow::CLOSETHREAD) break; // drop out on exit
 
@@ -122,13 +111,13 @@ DWORD CalculationThread (LPVOID lpvoid) {
     // this is a nonblocking call, live tracker runs on different thread
      LiveTrackerUpdate(&tmp_GPS_INFO, &tmp_CALCULATED_INFO);
     
-#ifdef CPUSTATS
+    #ifdef CPUSTATS
     if ( (GetThreadTimes( hCalculationThread, &CreationTime, &ExitTime,&EndKernelTime,&EndUserTime)) == 0) {
                Cpu_Calc=9999;
     } else {
                Cpustats(&Cpu_Calc,&StartKernelTime, &EndKernelTime, &StartUserTime, &EndUserTime);
     }
-#endif
+    #endif
   }
   return 0;
 }
@@ -156,7 +145,7 @@ void CreateCalculationThread() {
 	CloseHandle (hCalculationThread); 
 	#endif
   } else {
-	ASSERT(1);
+	LKASSERT(1);
   }
 
 }
