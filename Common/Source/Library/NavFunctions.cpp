@@ -546,3 +546,17 @@ void LatLon2Flat(double lon, double lat, int *scx, int *scy) {
 }
 
 
+
+void CalcIntersection(Coor a1, Coor a2, Coor b1, Coor b2, Coor &Res){
+	Vec A(a1,a2);
+	Vec B(b1,b2);
+
+	double a=A.vecto(Vec(a1,b1))/A.norme(); 
+	double b=A.vecto(Vec(a1,b2))/A.norme(); 
+
+	double newB=B.norme()+(B.norme()*b)/(a-b);
+
+	Res.lat=b1.lat+B.lat*newB/B.norme();
+	Res.lon=b1.lon+B.lon*newB/B.norme();
+}
+

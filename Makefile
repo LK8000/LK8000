@@ -430,6 +430,7 @@ CALC	:=\
 	$(CLC)/TotalEnergy.cpp\
 	$(CLC)/Trace.cpp \
 	$(CLC)/Turning.cpp \
+	$(CLC)/Valid.cpp\
 	$(CLC)/Vario.cpp\
 	$(CLC)/WaypointApproxDistance.cpp \
 	$(CLC)/WaypointArrivalAltitude.cpp \
@@ -439,6 +440,7 @@ CALC	:=\
 	$(CLC)/WindZigZag.cpp 	\
 
 TASK	:=\
+	$(TSK)/AATCalculateIsoLines.cpp \
 	$(TSK)/AATDistance.cpp \
 	$(TSK)/AATInTurnSector.cpp	\
 	$(TSK)/AATStats.cpp 		\
@@ -448,21 +450,25 @@ TASK	:=\
 	$(TSK)/CheckInSector.cpp \
 	$(TSK)/CheckStartRestartFinish.cpp \
 	$(TSK)/FAIFinishHeight.cpp \
+	$(TSK)/FlyDirectTo.cpp \
 	$(TSK)/InFinishSector.cpp \
 	$(TSK)/InSector.cpp \
 	$(TSK)/InStartSector.cpp \
 	$(TSK)/InTurnSector.cpp \
 	$(TSK)/InsideStartHeight.cpp\
+	$(TSK)/OptimizedTargetPos.cpp \
 	$(TSK)/ReadyToStartAdvance.cpp \
 	$(TSK)/RefreshTaskStatistics.cpp \
 	$(TSK)/SpeedHeight.cpp\
 	$(TSK)/StartTask.cpp \
-	$(TSK)/Task.cpp	\
 	$(TSK)/TaskAltitudeRequired.cpp\
 	$(TSK)/TaskSpeed.cpp\
 	$(TSK)/TaskStatistic.cpp\
+	$(TSK)/TaskUtils.cpp\
 	$(TSK)/TimeGates.cpp\
-	$(TSK)/Valid.cpp\
+	$(TSK)/RefreshTask/CalculateAATTaskSectors.cpp\
+	$(TSK)/RefreshTask/CalculateTaskSectors.cpp\
+	$(TSK)/RefreshTask/RefreshTask.cpp\
 
 TERRAIN	:=\
 	$(TER)/Cache.cpp	\
@@ -582,6 +588,14 @@ DLGS	:=\
 	$(DLG)/RenderAirspaceTerrain.cpp\
 	$(DLG)/RenderNearAirspace.cpp\
 	$(DLG)/Sideview.cpp \
+	$(DLG)/Task/AdjustAATTargets.cpp\
+	$(DLG)/Task/InsertWaypoint.cpp\
+	$(DLG)/Task/LoadTaskWaypoints.cpp\
+	$(DLG)/Task/RemoveTaskPoint.cpp\
+	$(DLG)/Task/RemoveWaypoint.cpp\
+	$(DLG)/Task/ReplaceWaypoint.cpp\
+	$(DLG)/Task/RotateStartPoints.cpp\
+	$(DLG)/Task/SwapWaypoint.cpp\
 
 SRC_FILES :=\
 	$(SRC)/AirfieldDetails.cpp \
@@ -625,6 +639,7 @@ SRC_FILES :=\
 	$(SRC)/Logger/DoSignature.cpp 	\
 	$(SRC)/Logger/LogBook.cpp\
 	$(SRC)/Logger/Logger.cpp \
+	$(SRC)/Logger/StartStopLogger.cpp \
 	$(SHP)/mapbits.cpp \
 	$(SHP)/maperror.cpp 	\
 	$(SHP)/mapprimitive.cpp \
@@ -643,6 +658,11 @@ SRC_FILES :=\
 	$(SRC)/ProcessTimer.cpp \
 	$(SRC)/Progress.cpp\
 	$(SRC)/RotateScreen.cpp\
+	$(SRC)/SaveLoadTask/ClearTask.cpp\
+	$(SRC)/SaveLoadTask/DefaultTask.cpp\
+	$(SRC)/SaveLoadTask/LoadNewTask.cpp\
+	$(SRC)/SaveLoadTask/SaveDefaultTask.cpp\
+	$(SRC)/SaveLoadTask/SaveTask.cpp\
 	$(SRC)/Settings.cpp\
 	$(SRC)/Sound.cpp \
 	$(SRC)/StatusFile.cpp \

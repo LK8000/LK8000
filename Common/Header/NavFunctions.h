@@ -1,17 +1,64 @@
-#if !defined(NAVFUNCTIONS)
-#define NAVFUNCTIONS
+#if !defined(NAVFUNCTIONS_H)
+#define NAVFUNCTIONS_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+//#include <math.h> REMOVE
 
-#include <math.h>
+void xXY_to_LL(double Lat_TP, double Lon_TP, double X_int, double Y_int, double *Lat, double *Lon);
+void xLL_to_XY(double Lat_TP, double Lon_TP, double Lat_Pnt, double Lon_Pnt, double *X, double *Y);
+void xXY_Brg_Rng(double X_1, double Y_1, double X_2, double Y_2, double *Bearing, double *Range);
+void xBrg_Rng_XY(double X_RefPos, double Y_RefPos, double Bearing, double Range, double *X, double *Y);
+void xCrs_Spd_to_VxVy(double Crs, double Spd, double *Vx, double *Vy);
+void xVxVy_to_Crs_Spd(double Vx, double Vy, double *Crs, double *Spd);
+void LL_to_BearRange(double Lat_TP, double Long_TP, double Lat_Pnt, double Long_Pnt, 
+			double *Bearing, double *Range);
+void DistanceBearing(double lat1, double lon1, double lat2, double lon2, double *Distance, double *Bearing);
+double DoubleDistance(double lat1, double lon1, double lat2, double lon2, double lat3, double lon3);
+void FindLatitudeLongitude(double Lat, double Lon, double Bearing, double Distance, 
+			double *lat_out, double *lon_out);
 
-	void xXY_to_LL(double Lat_TP, double Lon_TP, double X_int, double Y_int, double *Lat, double *Lon);
-	void xLL_to_XY(double Lat_TP, double Lon_TP, double Lat_Pnt, double Lon_Pnt, double *X, double *Y);
-	void xXY_Brg_Rng(double X_1, double Y_1, double X_2, double Y_2, double *Bearing, double *Range);
-	void xBrg_Rng_XY(double X_RefPos, double Y_RefPos, double Bearing, double Range, double *X, double *Y);
-	void xCrs_Spd_to_VxVy(double Crs, double Spd, double *Vx, double *Vy);
-	void xVxVy_to_Crs_Spd(double Vx, double Vy, double *Crs, double *Spd);
-	void LL_to_BearRange(double Lat_TP, double Long_TP, double Lat_Pnt, double Long_Pnt, double *Bearing, double *Range);
+void IntermediatePoint(double lon1, double lat1,
+                       double lon2, double lat2,
+                       double dthis,
+                       double dtotal,
+                       double *lon3, double *lat3);
+
+double CrossTrackError(double lon1, double lat1,
+                       double lon2, double lat2,
+                       double lon3, double lat3,
+                       double *lon4, double *lat4);
+
+void ScreenClosestPoint(const POINT &p1, const POINT &p2,
+                        const POINT &p3, POINT *p4, int offset);
+
+double ProjectedDistance(double lon1, double lat1,
+                         double lon2, double lat2,
+                         double lon3, double lat3);
+
+void LatLon2Flat(double lon, double lat, int *scx, int *scy);
+
+
+
+struct Coor{
+        double lat,lon;
+        Coor(double _lat,double _lon):lat(_lat),lon(_lon){}
+};
+struct Vec{
+        double lat,lon;
+        Coor a,b;
+        Vec(Coor _a,Coor _b):a(_a),b(_b)
+        {
+                lat=b.lat-a.lat;
+                lon=b.lon-a.lon;
+        }
+        double vecto(Vec other){
+                return (lat*other.lon-lon*other.lat);
+        }
+        double norme(){
+                return sqrt(lat*lat+lon*lon);
+        }
+};
+void CalcIntersection(Coor a1, Coor a2, Coor b1, Coor b2, Coor &Res);
+
+
+
 #endif
