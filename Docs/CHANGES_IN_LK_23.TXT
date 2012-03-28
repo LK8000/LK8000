@@ -2,6 +2,83 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 3.0b 28 march 2012
+
+
+    Polish translation of logbook changed
+
+    MapScale status overlay for ALT1 STA3 etc.. bolder in white, for black overlays only.
+
+    Fix accuracy of freeflight start altitude, depending on ground altitude.
+    Do not update ground altitude when the plane is moving.
+
+    Fix bug in Ka-8 polar file
+
+    Fix bug calculating HeadWind when using real TAS
+
+    Fix minor bug in Info Status page, reported altitude was not considering Baro, if it is available and in use.
+
+
+    More warnings on free flight manual start action
+
+    Fix bug resetting wrong home waypoint on terrain change.
+
+    Fix infoboxes and nearest asp if no nearest asp
+    
+
+    Fix : Enter WayPoints Problem
+    http://www.postfrontal.com/forum/topic.asp?TOPIC_ID=5978&whichpage=1
+
+
+    Russian translation typos.
+
+    Missing stripe on Final Glide Bar fixed
+    
+    Stripe was removed by the commit c09f03f91c941f949cb9cf6cd7521dd75f602741
+    "Fix final glide bar mode flashing orange and red."
+
+    FAI finish height fixed for tasks shorter than 100km.
+
+
+    Fix minor bug not changing AutoMC overlay black box into white when using only dark topology background with no terrain.
+
+
+    Fix minor problem resetting flightstats when replaying an IGC file crossing 00:00 UTC.
+    This is only a workaround, because replay logger is really setting a basic time which is not considering date change.
+
+
+    Fix smoothing problem in PAN mode while panning horizontal or vertical only
+    adapted for 3.0a only
+
+
+    Bigger bearing line for low resolution devices
+
+    Fix bug not showing Efficiency configuration is Config menu 6 on Portrait resolutions
+
+
+    Fix bug not shutting down LK correctly if a dialog window is open.
+    This could be possible only on PC version, where you can click on the X corner to quit a program.
+
+    Fix asp AGLLookup() not returning altitude in some cases
+
+
+    Clear airspace infoboxes if no selected or nearest airspace
+
+    Fix HELP 402 custom right key IS available also for PGs.
+
+    Update ITA translation
+    Polish translation fixed
+
+    Fix FreeFlight start not resetting OLC calculation, and FF restart not resetting mix max height gained.
+
+    Fix small bug keeping circling mode or setting circling mode too often while driving in a car using non-car mode.
+    Really annoying, indeed.
+
+
+
+
+
+
 Version 2.3z becomes 3.0a on February 15th 2012
 ---------------------------------------
 . Fix possible critical bug in Oracle, using non-eng languages
