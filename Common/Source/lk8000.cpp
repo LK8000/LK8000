@@ -86,7 +86,8 @@ bool api_has_SHHandleWMActivate = false;
 bool api_has_SHHandleWMSettingChange = false;
 #endif
 
-
+void CleanupForShutdown(void);
+HANDLE hMutex=NULL;
 
 int WINAPI WinMain(     HINSTANCE hInstance,
                         HINSTANCE hPrevInstance,
@@ -104,7 +105,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   (void)hPrevInstance;
 
   // use mutex to avoid multiple instances of lk8000 be running
-  HANDLE hMutex = CreateMutex(NULL,FALSE,_T("LOCK8000"));
+  hMutex = CreateMutex(NULL,FALSE,_T("LOCK8000"));
   if (GetLastError() == ERROR_ALREADY_EXISTS) {
 	  ReleaseMutex(hMutex);
 	  CloseHandle(hMutex);
@@ -507,34 +508,37 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   #endif
 
 _Shutdown:
+  CleanupForShutdown();
+  #if TESTBENCH
+  StartupStore(_T(".... WinMain terminated%s"),NEWLINE);
+  #endif
+
+  #if (WINDOWSPC>0)
+  #if _DEBUG
+  _CrtCheckMemory();
+  //  _CrtDumpMemoryLeaks(); generate False positive, use _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF|_CRTDBG_ALLOC_MEM_DF); instead
+  #endif
+  #endif
+
+  return msg.wParam;
+}
+
+
+void CleanupForShutdown(void) {
+
   LKObjects_Delete();
   LKUnloadProfileBitmaps();
   LKUnloadFixedBitmaps();
 
   LKUnloadMessage();
   InputEvents::UnloadString();
-#if TOPOFASTLABEL
+  #if TOPOFASTLABEL
   // This is freeing char *slot in TextInBox
   MapWindow::FreeSlot();
-#endif
-
-  #if TESTBENCH
-  StartupStore(_T(".... WinMain terminated%s"),NEWLINE);
   #endif
 
   ReleaseMutex(hMutex);
   CloseHandle(hMutex);
 
-#if (WINDOWSPC>0)
-#if _DEBUG
-  _CrtCheckMemory();
-//  _CrtDumpMemoryLeaks(); generate False positive, use _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF|_CRTDBG_ALLOC_MEM_DF); instead
-#endif
-#endif
-
-  return msg.wParam;
 }
-
-
-
 

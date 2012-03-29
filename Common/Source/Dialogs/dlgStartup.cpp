@@ -79,6 +79,8 @@ static void OnSplashPaint(WindowControl * Sender, HDC hDC){
  TCHAR srcfile[MAX_PATH];
  TCHAR fprefix[20];
 
+ if (RUN_MODE==RUN_SHUTDOWN) return;
+
  if (RUN_MODE==RUN_WELCOME) 
 	_tcscpy(fprefix,_T("LKSTART"));
  else
