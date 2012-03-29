@@ -25,6 +25,7 @@ static WndOwnerDrawFrame *wSplash=NULL;
 extern bool CheckSystemDefaultMenu(void);
 extern bool CheckLanguageEngMsg(void);
 extern bool CheckSystemBitmaps(void);
+void RawWrite(HDC hDC, TCHAR *text, int line, short fsize,COLORREF rgbcolor,int wtmode);
 
 bool fullresetasked=false;
 
@@ -39,6 +40,19 @@ static int OnTimerNotify(WindowControl *Sender)
 	wf->SetModalResult(mrOK);
    }
 
+   #if 0
+   static short i=0;
+   if(i++ % 2 == 0) // called at 2hz, run once per second
+	return 0;
+
+   if (RUN_MODE==RUN_WELCOME) {
+	TCHAR mes[100];
+	_stprintf(mes,_T("Version %S.%S (%S)"),LKVERSION,LKRELEASE,__DATE__);
+	short r,g,b;
+	r=rand()%256; g=rand()%256; b=rand()%256;
+	RawWrite(Sender->GetDeviceContext(),mes,12,1, RGB(r,g,b),WTMODE_NORMAL);
+   }
+   #endif
    return 0;
 }
   
@@ -609,8 +623,10 @@ short dlgStartupShowModal(void){
 
 
   // Standby for a system request to close the application during this phase.
-  // 
   wf->SetTimerNotify(OnTimerNotify);
+  #if 0
+  srand(GetTickCount());
+  #endif
 
   wf->ShowModal();
 
