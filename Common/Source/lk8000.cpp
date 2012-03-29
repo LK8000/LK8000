@@ -255,7 +255,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   InitCustomHardware();
 
   PreloadInitialisation(false); // calls dlgStartup
-  if(RUN_MODE == RUN_EXIT) {
+  if(RUN_MODE == RUN_EXIT || RUN_MODE == RUN_SHUTDOWN) {
 	goto _Shutdown;
   }
 

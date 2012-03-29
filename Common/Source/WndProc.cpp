@@ -254,6 +254,8 @@ void Shutdown(void) {
 	#if TESTBENCH
 	StartupStore(_T(". Quick shutdown requested before terminating startup%s"),NEWLINE);
 	#endif
+	// force exit mode for the case of being in welcome screen: OnTimerNotify will catch it
+	RUN_MODE=RUN_SHUTDOWN;
 	CloseCalculations();
 	CloseGeoid();
 	DeInitCustomHardware();

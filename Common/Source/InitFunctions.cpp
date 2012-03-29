@@ -71,9 +71,9 @@ void PreloadInitialisation(bool ask) {
     // We are in the dialog startup phase
     FullScreen();
     short retstartup;
-    do 
+    do {
 	retstartup=dlgStartupShowModal();
-    while (retstartup>0);
+    } while (retstartup>0);
 
     if (retstartup<0) return;
 

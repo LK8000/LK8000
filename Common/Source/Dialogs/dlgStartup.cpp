@@ -28,6 +28,22 @@ extern bool CheckSystemBitmaps(void);
 
 bool fullresetasked=false;
 
+static int OnTimerNotify(WindowControl *Sender)
+{
+
+   // Do we have a premature shutdown request from system quit?
+   if (RUN_MODE==RUN_SHUTDOWN) {
+	#if TESTBENCH
+	StartupStore(_T("... dlGStartup shutdown requested\n"));
+	#endif
+	wf->SetModalResult(mrOK);
+   }
+
+   return 0;
+}
+  
+
+
 // Syntax  hdc _Text linenumber fontsize 
 // lines are: 0 - 9
 // fsize 0 small 1 normal 2 big
@@ -588,6 +604,12 @@ short dlgStartupShowModal(void){
 	Shutdown();
 	goto _exit;
   }
+
+
+  // Standby for a system request to close the application during this phase.
+  // 
+  wf->SetTimerNotify(OnTimerNotify);
+
   wf->ShowModal();
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpProfile"));
@@ -651,6 +673,7 @@ short dlgStartupShowModal(void){
 		RUN_MODE=RUN_WELCOME;
   }
 
+
 _exit:
   if (wf!=NULL) {
 	delete wf;
@@ -662,7 +685,7 @@ _exit:
 	return 0;	// do not repeat dialog
   }
 
-  if (RUN_MODE==RUN_EXIT)
+  if (RUN_MODE==RUN_EXIT || RUN_MODE==RUN_SHUTDOWN)
 	return -1;	// terminate
   else
 	return 1;	// repeat dialog

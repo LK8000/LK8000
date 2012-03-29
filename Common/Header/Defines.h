@@ -729,6 +729,8 @@
 #define RUN_PROFILE		0x02
 #define RUN_AIRCRAFT		0x03
 #define RUN_PILOT		0x04
+#define RUN_EXIT		0x08
+#define RUN_SHUTDOWN		0x09
 #define RUN_FLY			0x11
 #define RUN_FLY_PRIMARY_UNIT	0x11
 #define RUN_FLY_REPEATER	0x12
@@ -739,7 +741,6 @@
 #define RUN_SIM_SECONDARY_UNIT	0x22
 #define RUN_EXEC		0x04
 #define RUN_PASSIVE		0x21
-#define RUN_EXIT		0x08
 
 #define LKINFOFONT      LK8SmallFont            // was InfoWindowFont
 // km for distance, kmh for speed etc.  in map overlay
