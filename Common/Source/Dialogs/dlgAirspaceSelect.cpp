@@ -599,6 +599,10 @@ static void OnWPSCloseClicked(WindowControl * Sender){
 
 static int OnTimerNotify(WindowControl * Sender) {
   (void)Sender;
+
+  static short i=0;
+  if(i++ % 2 == 0) return 0;
+
   if (DirectionFilterIdx == 1){
     int a;
     a = (lastHeading - iround(CALCULATED_INFO.Heading));

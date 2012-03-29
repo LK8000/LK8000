@@ -120,6 +120,9 @@ static void OnCloseClicked(WindowControl * Sender)
 
 static int OnTimerNotify(WindowControl * Sender) {
   (void)Sender;
+  static short i=0;
+  if(i++ % 2 == 0) return 0;
+
   Update();
   return 0;
 }

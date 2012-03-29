@@ -366,6 +366,10 @@ static void RefreshCalculator(void) {
 static int OnTimerNotify(WindowControl * Sender) {
   (void)Sender;
   double lon, lat;
+
+  static short i=0;
+  if(i++ % 2 == 0) return 0;
+
   if (MapWindow::TargetMoved(lon, lat)) {
     MoveTarget(lon, lat);
   }

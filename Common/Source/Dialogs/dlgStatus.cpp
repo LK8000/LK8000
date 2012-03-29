@@ -687,6 +687,9 @@ static void UpdateValuesTask(void) {
 static int OnTimerNotify(WindowControl * Sender) {
   (void)Sender;
 
+  static short i=0;
+  if(i++ % 2 == 0) return 0;
+
   UpdateValuesSystem();
 
   return 0;
