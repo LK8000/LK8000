@@ -158,5 +158,7 @@ Changed MSG M16
 _@M2132_ "Clear\nAltern"
 _@M1789_ "Delete task file"
 _@M1790_ "No task file to delete"
++_@M1791_ "Arm toggle advance"
++_@M2226_ "Arm\nToggle"
 
 

@@ -137,6 +137,7 @@ typedef enum{
 	ckCustomMenu1,
 	ckTaskCalc,
 	ckTaskTarget,
+	ckArmAdvance,
 	ckTOP,
 } CustomKeyMode_t;
 

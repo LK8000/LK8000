@@ -357,6 +357,14 @@ passthrough:
 		#endif
 		InputEvents::eventSetup(_T("Target"));
 		return true;
+	case ckArmAdvance:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		InputEvents::eventArmAdvance(_T("toggle"));
+		InputEvents::eventArmAdvance(_T("show"));
+		return true;
+		
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		FailStore(_T("ERR-726 INVALID CUSTOMKEY=%d"),ckeymode);
@@ -420,6 +428,7 @@ CustomKeyLabel[41]=2225;	// free flight
 CustomKeyLabel[42]=2131;	// custom menu
 CustomKeyLabel[43]=2013;	// task calc
 CustomKeyLabel[44]=2020;	// task target
+CustomKeyLabel[45]=2226;	// Arm toggle
 
 }
 

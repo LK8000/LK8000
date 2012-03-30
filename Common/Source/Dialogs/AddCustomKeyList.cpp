@@ -78,6 +78,7 @@ void AddCustomKeyList( DataFieldEnum* dfe) {
     dfe->addEnumText(MsgToken(1787)); // custom menu
     dfe->addEnumText(MsgToken(685));  // Task Calculator
     dfe->addEnumText(MsgToken(684));  // Target (task..)
+    dfe->addEnumText(MsgToken(1791)); // Arm toggle advance
 
     dfe->Sort(0);
 
