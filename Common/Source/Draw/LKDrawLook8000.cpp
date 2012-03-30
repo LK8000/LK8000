@@ -1112,8 +1112,13 @@ drawOverlay:
 		}
 
 	} else {
-		if (ISGLIDER) // 101204
-		LKWriteText(hdc, BufferValue, rcx+NIBLSCALE(9), rcy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
+		if (ISGLIDER) {
+			LKWriteText(hdc, BufferValue, rcx+NIBLSCALE(9), rcy-NIBLSCALE(2), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
+			if (!HideUnits) {
+				SelectObject(hdc, LKMAPFONT);  // FIXFONT
+				LKWriteText(hdc, BufferUnit, rcx+TextSize.cx+NIBLSCALE(9),rcy+(TextSize.cy/3), 0, WTMODE_OUTLINED,WTALIGN_LEFT,overcolor, true);
+			}
+		}
 	}
 
 	if (ISPARAGLIDER || LKVarioBar) { // 100213
@@ -1144,7 +1149,15 @@ drawOverlay:
 		}
 	}
 	if (!ISGAAIRCRAFT && !ISCAR) {
-		LKFormatValue(LK_GNDSPEED, false, BufferValue, BufferUnit, BufferTitle);
+		if (ISPARAGLIDER) {
+			LKFormatValue(LK_GNDSPEED, false, BufferValue, BufferUnit, BufferTitle);
+		} else {
+			if (MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
+				LKFormatValue(LK_HNAV, false, BufferValue, BufferUnit, BufferTitle);
+			} else {
+				LKFormatValue(LK_GNDSPEED, false, BufferValue, BufferUnit, BufferTitle);
+			}
+		}
 		SelectObject(hdc, bigFont); 
 		GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &TextSize);
 		rcy+=TextSize.cy;
