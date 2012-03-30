@@ -9,6 +9,7 @@
 <WndButton  Name="cmdCalc"  Caption="_@M160_" X=119 Y=2 Width=60  Height=22 Font=2 OnClickNotify="OnCalcClicked" Tag=4 />
 <WndButton  Name="cmdDeclare" Caption="_@M222_"    X=179 Y=2 Width=60  Height=22 Font=2 OnClickNotify="OnDeclareClicked"/>
 <WndButton  Name="cmdTimegates" Caption="_@M1747_"    X=149 Y=24 Width=90  Height=22 Font=2 OnClickNotify="OnTimegatesClicked"/>
+<WndButton  Name="cmdDelete" Caption="_@M230_" X=149 Y=24 Width=90  Height=22 Font=2 OnClickNotify="OnDeleteClicked"/>
 <WndProperty Name="prpFile" Caption="_@M285_"   X=106 Y=-2  Width=0 Height=0 CaptionWidth=0 Font=2 Help="">
 <DataField name="" DataType="filereader" Min=0 Max=200 Step=1/>
 </WndProperty>

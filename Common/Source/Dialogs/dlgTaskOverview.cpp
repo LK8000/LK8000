@@ -544,6 +544,41 @@ static void OnLoadClicked(WindowControl * Sender, WndListFrame::ListInfo_t *List
 }
 
 
+static void OnDeleteClicked(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
+  (void)ListInfo; (void)Sender;
+
+  TCHAR file_name[MAX_PATH];
+
+  WndProperty* wp;
+  DataFieldFileReader *dfe;
+
+  wp = (WndProperty*)wf->FindByName(TEXT("prpFile"));
+  if (!wp) return;
+
+  HWND hwnd = wp->GetHandle();
+  SendMessage(hwnd,WM_LBUTTONDOWN,0,0);
+  dfe = (DataFieldFileReader*) wp->GetDataField();
+
+  int file_index = dfe->GetAsInteger();
+  if (file_index>0) {
+	_stprintf(file_name, TEXT("%s '%s' ?"), MsgToken(1789), dfe->GetAsString()); // Delete task file?
+	if(MessageBoxX(hWndMapWindow, file_name, _T(" "), MB_YESNO|MB_ICONQUESTION) == IDNO) {
+		return;
+	}
+  } else {
+	MessageBoxX(hWndMapWindow, MsgToken(1790),_T(" "), MB_OK|MB_ICONEXCLAMATION); // No task file to delete
+	return;
+  }
+
+  if (file_index>0) {
+    DeleteFile(dfe->GetPathFile());
+    // Cannot update dfe list, so we force exit.
+    ItemIndex = -1; 
+    wf->SetModalResult(mrOK);
+    return;
+  }
+}
+
 
 
 static void OnAdvancedClicked(WindowControl * Sender, WndListFrame::ListInfo_t *ListInfo){
@@ -562,6 +597,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(OnAdvancedClicked),
   DeclareCallBackEntry(OnSaveClicked),
   DeclareCallBackEntry(OnLoadClicked),
+  DeclareCallBackEntry(OnDeleteClicked),
   DeclareCallBackEntry(OnAnalysisClicked),
   DeclareCallBackEntry(OnTimegatesClicked),
   DeclareCallBackEntry(NULL)
@@ -606,8 +642,9 @@ void dlgTaskOverviewShowModal(void){
 	if (PGOptimizeRoute) AATEnabled=true; // force it on
         EnableMultipleStartPoints=false;
         if (wb) wb->SetVisible(true);
+	wb = (WndButton*)wf->FindByName(TEXT("cmdDelete"));
+	if (wb) wb->SetVisible(false);
   }
-
 
   UpdateCaption();
 

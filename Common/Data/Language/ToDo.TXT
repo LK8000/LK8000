@@ -156,4 +156,7 @@ Changed MSG M16
 +_@M1788_ "Configure Custom Menu"
 +_@M2131_ "Custom\nMenu"
 _@M2132_ "Clear\nAltern"
+_@M1789_ "Delete task file"
+_@M1790_ "No task file to delete"
+
 
