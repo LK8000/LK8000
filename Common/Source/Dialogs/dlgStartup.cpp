@@ -629,6 +629,7 @@ short dlgStartupShowModal(void){
   #endif
 
   wf->ShowModal();
+  if (RUN_MODE==RUN_SHUTDOWN) goto _exit;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpProfile"));
   if (wp) {
