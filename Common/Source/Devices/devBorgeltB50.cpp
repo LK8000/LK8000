@@ -13,17 +13,46 @@
 
 #include "devBorgeltB50.h"
 
+using std::min;
+using std::max;
+BOOL bBaroAvailable = FALSE;
 
 BOOL PBB50(TCHAR *String, NMEA_INFO *GPS_INFO);
 
+extern BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 
 BOOL B50ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
   (void)d;
 
   if(_tcsncmp(TEXT("$PBB50"), String, 6)==0)
+    return PBB50(&String[7], GPS_INFO);
+  else
+    if(_tcsncmp(TEXT("$PGCS"), String, 5)==0)
     {
-      return PBB50(&String[7], GPS_INFO);
+      bBaroAvailable = true;
+      return vl_PGCS1( d, &String[6], GPS_INFO);
     }
+//  if(_tcsstr(String,TEXT("$PGCS,")) == String){
+//    return vl_PGCS1(d, &String[6], GPS_INFO);
+#ifdef GPRMZ__
+    else
+      if(_tcsncmp(TEXT("$GPRMZ"), String, 6)==0)
+      {
+    	TCHAR ctemp[80], *params[5];
+    	int nparams = NMEAParser::ValidateAndExtract(String, ctemp, 80, params, 5);
+    	if (nparams < 1)
+    	  return FALSE;
+
+    	if (d == pDevPrimaryBaroSource)
+    	{
+    	  double altitude = NMEAParser::ParseAltitude(params[1], params[2]);
+    	  UpdateBaroSource( GPS_INFO, GPS_RMZ, AltitudeToQNHAltitude(altitude));
+    	}
+
+    	return TRUE;
+      }
+#endif
+
 
   return FALSE;
 
@@ -41,6 +70,11 @@ BOOL B50IsGPSSource(PDeviceDescriptor_t d){
   return(TRUE); // ? is this true
 }
 
+
+BOOL B50IsBaroSource(PDeviceDescriptor_t d){
+  (void)d;
+  return(bBaroAvailable); // ? is this true
+}
 
 BOOL B50LinkTimeout(PDeviceDescriptor_t d){
   (void)d;
@@ -62,6 +96,9 @@ BOOL b50Install(PDeviceDescriptor_t d){
   d->Declare = NULL;
   d->IsGPSSource = B50IsGPSSource;
 
+
+  d->IsGPSSource  = B50IsGPSSource;
+  d->IsBaroSource = B50IsBaroSource;
   return(TRUE);
 
 }
@@ -84,23 +121,23 @@ Sentence has following format:
 
 $PBB50,AAA,BBB.B,C.C,DDDDD,EE,F.FF,G,HH*CHK crlf
 
- 
+$PBB50,14,-.1,3.3,196,0,1.05,0,1*59
 
-AAA = TAS 0 to 150 knots 
+0 AAA = TAS 0 to 150 knots  14
 
-BBB.B = Vario, -10 to +15 knots, negative sign for sink 
+1 BBB.B = Vario, -10 to +15 knots, negative sign for sink -.1
 
-C.C = Macready 0 to 8.0 knots 
+2 C.C = Macready 0 to 8.0 knots  3.3
 
-DDDDD = IAS squared 0 to 22500 
+3 DDDDD = IAS squared 0 to 22500  196
 
-EE = bugs degradation, 0 = clean to 30 % 
+4 EE = bugs degradation, 0 = clean to 30 %  0
 
-F.FF = Ballast 1.00 to 1.60 
+5 F.FF = Ballast 1.00 to 1.60 1.05
 
-G = 0 in climb, 1 in cruise 
+6 G = 0 in climb, 1 in cruise 0
 
-HH = Outside airtemp in degrees celcius ( may have leading negative sign ) 
+7 HH = Outside airtemp in degrees celcius ( may have leading negative sign ) 1
 
 CHK = standard NMEA checksum 
 
@@ -134,17 +171,22 @@ BOOL PBB50(TCHAR *String, NMEA_INFO *GPS_INFO) {
   /*
 
   JMW disabled bugs/ballast due to problems with test b50
-
+*/
   NMEAParser::ExtractParameter(String,ctemp,4);
-  GPS_INFO->Bugs = 1.0-max(0,min(30,StrToDouble(ctemp,NULL)))/100.0;
-  BUGS = GPS_INFO->Bugs;
-
+ // GPS_INFO->Bugs = StrToDouble(ctemp,NULL);
+ // BUGS = GPS_INFO->Bugs;
+//  StartupStore(TEXT(">>>>>BUGS<<<< %s %f "),ctemp, BUGS);
   // for Borgelt it's % of empty weight,
   // for us, it's % of ballast capacity
   // RMN: Borgelt ballast->XCSoar ballast
 
   NMEAParser::ExtractParameter(String,ctemp,5);
-  double bal = max(1.0,min(1.60,StrToDouble(ctemp,NULL)))-1.0;
+  //double bal = StrToDouble(ctemp,NULL); UNUSED!
+//  BALLAST = GPS_INFO->Ballast = bal;
+  /*************************************************/
+ // StartupStore(TEXT(">NMEA:$PBB50,%s                                    BUG:%d %4.2f:BAL %s%s"),String, (int)BUGS,BALLAST, NEWLINE, NEWLINE);
+  /*************************************************/
+  /*
   if (WEIGHTS[2]>0) {
     GPS_INFO->Ballast = min(1.0, max(0.0,
                                      bal*(WEIGHTS[0]+WEIGHTS[1])/WEIGHTS[2]));
@@ -153,12 +195,15 @@ BOOL PBB50(TCHAR *String, NMEA_INFO *GPS_INFO) {
     GPS_INFO->Ballast = 0;
     BALLAST = 0;
   }
+  */
+  /*
   // w0 pilot weight, w1 glider empty weight, w2 ballast weight
   */
 
   // inclimb/incruise 1=cruise,0=climb, OAT
   NMEAParser::ExtractParameter(String,ctemp,6);
   
+
   #if USESWITCHES
   int climb = lround(StrToDouble(ctemp,NULL));
   GPS_INFO->SwitchState.VarioCircling = (climb==1);
@@ -177,6 +222,12 @@ BOOL PBB50(TCHAR *String, NMEA_INFO *GPS_INFO) {
     ExternalTriggerCruise = false;
   }
   #endif
+  NMEAParser::ExtractParameter(String,ctemp,7);
+//  if()
+  {
+    GPS_INFO->OutsideAirTemperature = StrToDouble(ctemp,NULL);
+    GPS_INFO->TemperatureAvailable = true;
+  }
 
   GPS_INFO->AirspeedAvailable = TRUE;
   GPS_INFO->IndicatedAirspeed = vias;

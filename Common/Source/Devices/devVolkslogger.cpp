@@ -35,7 +35,8 @@ BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   // four characers, hex, barometric altitude
   InternalAltitude = HexStrToDouble(ctemp,NULL);
   double fBaroAltitude =0;
-  if (d == pDevPrimaryBaroSource) {
+//  if (d == pDevPrimaryBaroSource)
+  {
 
     if(InternalAltitude > 60000)
 	fBaroAltitude =
