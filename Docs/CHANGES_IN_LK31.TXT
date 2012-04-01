@@ -1,0 +1,70 @@
+
+LK8000 VERSION 3.1a 120402
+==========================
+
+
+NEW
+
+    New LK icon for all platforms, by Jiri Bergman !
+
+    Add Volkslogger baro support in B50 driver
+    Add support for LX V7
+
+    New customkey: ARM TOGGLE ADVANCE 
+    New customkeys: Task Calculator, Task Target, Custom Menu.
+
+    New task edit button "delete" for deleting task files. 
+    This button is available only when TimeGates are disabled, because they share the same screen location.
+    After removing a task file, dialog is closed and back to moving map.
+    Removing Default.tsk has little effect, because on exit it is always recreated.
+
+    Vector waypoint icons, with radio frequency at high zoom levels
+
+    New config button for screen rotation
+    Rotation working dynamically on PNA/PPC. Two new menu buttons for turn 90 and turn 180.
+    You can switch by 90 and by 180 degrees, during LK runtime.
+    Menu Config 1 , button SCREEN MODES for changing resolution on PC
+    Some resolutions are available for switch, and a common invert for portrait/landscape.
+
+    DrawTRI Turn Rate indicator showing acceleration point
+
+    New NAV 3/3 button Clear Alternates
+    This button is replacing the old Clear Alternates button in waypoint details pages
+
+    New custom menu buttons  in main menu.
+    Up to 10 buttons can be assigned to custom keys actions. 
+    This menu is configurable in system setup page 10.
+
+    LiveTracker support
+
+    New LK8000 Setup menus: System, Aircraft and Pilot Setup/Save buttons separated.
+
+    New polar for H-206 Hornet
+
+CHANGES
+
+    Disable STF switch usage for Westerboer
+
+    Glider mode: while circling display HNAV on left overlay, in place of ground speed.
+    Addded units for average climb  while circling, on left overlay (missing)
+
+    Waypoint selection quick dialog, added TASK button.
+
+    Removed Goto button from Waypoint details dialog
+    Removed Set Alternates and Clear Alternates from Waypoint details dialog.
+
+    Add SYSTEM profile is use, printed on startup profile selection screen.
+
+    Improved sideview. Faster horizontal resolution, better airspace label placement.
+
+FIXES
+
+    Fix bug (workaround only) quick waypoint selection dialog not disabling underlying mapwindow events.
+    It was possible to still call menu, and run another instance of wayquick. On exit, crash.
+
+    Fix bug Waypoint text style in config 11 sometimes changed wrong inside default system configuration.
+    This was happening everytime we were changing overlay colors with a button "Invert Text" and then exit LK.
+
+    Fix bug not showing Efficiency configuration is Config menu 6 on Portrait resolutions
+
+
