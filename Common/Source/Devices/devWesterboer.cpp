@@ -310,7 +310,7 @@ static BOOL PWES1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   // Get STF switch
   NMEAParser::ExtractParameter(String,ctemp,2);
   iTmp = (int)StrToDouble(ctemp,NULL);
-
+#ifdef STF_SWITCH
   EnableExternalTriggerCruise = true;
 static int  iOldVarioSwitch=0;
   if(iTmp != iOldVarioSwitch)
@@ -327,7 +327,7 @@ static int  iOldVarioSwitch=0;
 	  ExternalTriggerCircling = true;
     }
   }
-
+#endif
 
 
 
