@@ -76,8 +76,8 @@ typedef enum {
   HOLUX,
   TASMAN,
   ROYALTEK3200,
-  FLARM
-
+  FLARM,
+  FLYNET
 } DEVICE_TYPE;
 
 #if USESWITCHES
