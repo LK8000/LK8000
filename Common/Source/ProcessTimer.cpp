@@ -55,9 +55,7 @@ void CommonProcessTimer()
   // 1 Hz routines
   if (cp_twohzcounter %2 == 0) {
 	UpdateBatteryInfos();
-	#if TESTBENCH
 	if (ScreenHasChanged()) ReinitScreen();
-	#endif
   }
 
   Message::Render();
