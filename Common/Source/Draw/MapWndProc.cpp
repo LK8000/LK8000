@@ -294,7 +294,10 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 
     case WM_DESTROY:
 
-	if (hdcScreen) ReleaseDC(hWnd, hdcScreen);
+	if (hdcScreen) {
+		ReleaseDC(hWnd, hdcScreen);
+		hdcScreen=NULL;
+	}
 
 	if (hdcDrawWindow) {     
 		DeleteDC(hdcDrawWindow);
