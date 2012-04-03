@@ -20,6 +20,7 @@ bool SetDataOption( int index, UnitGroup_t UnitGroup, TCHAR *Description, TCHAR 
 	if (index>=NUMDATAOPTIONS_MAX) return false;
 
 	tag.UnitGroup = UnitGroup;
+	LKASSERT(gettext(Description)); // if we have Description, we also have Title
 	_tcsncpy(tag.Description, gettext(Description), DESCRIPTION_SIZE); 
 	tag.Description[DESCRIPTION_SIZE] = 0;		// buff allocated to DESCRIPITON_SIZE+1
 	_tcsncpy(tag.Title, gettext(Title), TITLE_SIZE);

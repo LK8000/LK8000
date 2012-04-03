@@ -38,6 +38,7 @@ static void OnAirspacePaintListItem(WindowControl * Sender, HDC hDC){
   (void)Sender;
   if (DrawListIndex < AIRSPACECLASSCOUNT){
     int i = DrawListIndex;
+	LKASSERT(CAirspaceManager::Instance().GetAirspaceTypeText(i));
 	_tcsncpy(label, CAirspaceManager::Instance().GetAirspaceTypeText(i), 39);
 	label[39]=0;
     int w0, w1, w2, x0;

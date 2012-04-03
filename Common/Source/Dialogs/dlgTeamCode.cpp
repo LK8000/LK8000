@@ -73,6 +73,7 @@ static void Update()
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpOwnCode"));
   if (wp) {
+    LKASSERT(CALCULATED_INFO.OwnTeamCode);
     _tcsncpy(Text,CALCULATED_INFO.OwnTeamCode,5);
     Text[5] = '\0';
     wp->SetText(Text);
@@ -90,6 +91,7 @@ static void Update()
 static void OnCodeClicked(WindowControl *Sender) 
 {
   TCHAR newTeammateCode[10];
+  LKASSERT(TeammateCode);
   _tcsncpy(newTeammateCode, TeammateCode, 10);
   dlgTextEntryShowModal(newTeammateCode, 7);
 
@@ -102,6 +104,7 @@ static void OnCodeClicked(WindowControl *Sender)
     newTeammateCode[i]=0;
     i--;
   };
+  LKASSERT(newTeammateCode);
   _tcsncpy(TeammateCode, newTeammateCode, 10);
   if (_tcslen(TeammateCode)>0) {
 	TeammateCodeValid = true;

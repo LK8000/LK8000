@@ -212,6 +212,7 @@ bool AddFlarmLookupItem(int id, TCHAR *name, bool saveFile)
 	{
 	  // create new record
 	  FLARM_Names[NumberOfFLARMNames].ID = id;
+	  LKASSERT(name);
 	  _tcsncpy(FLARM_Names[NumberOfFLARMNames].Name, name,MAXFLARMNAME); // was 20 100322
 	  FLARM_Names[NumberOfFLARMNames].Name[MAXFLARMNAME]=0; // was 20
 	  NumberOfFLARMNames++;
@@ -223,6 +224,7 @@ bool AddFlarmLookupItem(int id, TCHAR *name, bool saveFile)
     {
       // modify existing record
       FLARM_Names[index].ID = id;
+      LKASSERT(name);
       _tcsncpy(FLARM_Names[index].Name, name,MAXFLARMNAME);
       FLARM_Names[index].Name[MAXFLARMNAME]=0;	
       if (saveFile)

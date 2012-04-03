@@ -417,6 +417,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 		} else {
 			// if XY I-ABCD  doesnt fit..
 			if ( (wlen+3)>s_maxnlname) {
+				LKASSERT(LKTraffic[rli].Name);
 				_tcsncpy(Buffer, LKTraffic[rli].Name, s_maxnlname); Buffer[s_maxnlname]='\0';
 			}
 			else {
@@ -430,6 +431,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 					Buffer[s_maxnlname]='\0';
 				} else {
 					// else use only long name
+					LKASSERT(LKTraffic[rli].Name);
 					_tcsncpy(Buffer, LKTraffic[rli].Name, wlen); Buffer[wlen]='\0';
 				}
 			}

@@ -631,8 +631,10 @@ nextinit:
 			GetOvertargetName(buffername);
 			wlen=wcslen(buffername);
  			if (wlen>tlen) {
+				LKASSERT(buffername);
  			 	_tcsncpy(Buffer, buffername, tlen); Buffer[tlen]='\0';
 			} else {
+				LKASSERT(buffername);
  			 	_tcsncpy(Buffer, buffername, wlen); Buffer[wlen]='\0';
 			}
 
@@ -844,8 +846,10 @@ nextinit:
 		GetOvertargetName(buffername);
 		wlen=wcslen(buffername);
 	 	if (wlen>tlen) {
+			LKASSERT(buffername);
 	 	 	_tcsncpy(Buffer, buffername, tlen); Buffer[tlen]='\0';
 		} else {
+			LKASSERT(buffername);
 	 	 	_tcsncpy(Buffer, buffername, wlen); Buffer[wlen]='\0';
 		}
  		ConvToUpper(Buffer);

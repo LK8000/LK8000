@@ -197,9 +197,11 @@ bool DoAirspaces(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
               // sort key not used, iterator goes in right order after std::sort
               LKSortedAirspaces[i] = i;
               // copy name
+              LKASSERT((*it)->Name());
               _tcsncpy(LKAirspaces[i].Name, (*it)->Name(), NAME_SIZE);
               LKAirspaces[i].Name[NAME_SIZE]=0;
               // copy type string (type string comes from centralized type->str conversion function of CAirspaceManager)
+              LKASSERT(CAirspaceManager::Instance().GetAirspaceTypeShortText((*it)->Type()));
               _tcsncpy(LKAirspaces[i].Type, CAirspaceManager::Instance().GetAirspaceTypeShortText((*it)->Type()), 4);
               LKAirspaces[i].Type[4]=0;
 

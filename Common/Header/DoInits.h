@@ -58,6 +58,7 @@
 	MDI_COMPASS,			// screen change
 	MDI_LOOKABLEND,			// screen change, drawlook ablend
 	MDI_MAPWPVECTORS,		// screen change
+	MDI_READLANGUAGEFILE,		// full restart
 	MDI_LAST_DOINIT,		
  } MDI_t;
 

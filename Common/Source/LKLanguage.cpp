@@ -15,6 +15,7 @@
 #include "McReady.h"
 #include "InputEvents.h"
 #include "LKProfiles.h"
+#include "DoInits.h"
 
 #include <ctype.h>
 
@@ -277,13 +278,12 @@ TCHAR *MsgToken(const unsigned int inumber) {
 
 
 void LKReadLanguageFile() {
-  static bool doinit=true;
   static TCHAR oldLang[4];
 
-  if (doinit) {
+  if (DoInit[MDI_READLANGUAGEFILE]) {
 	_tcscpy(LKLangSuffix,_T(""));
 	_tcscpy(oldLang,_T("XXX"));
-	doinit=false;
+	DoInit[MDI_READLANGUAGEFILE]=false;
   }
 
   bool english=false;

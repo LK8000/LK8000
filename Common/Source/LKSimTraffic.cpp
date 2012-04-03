@@ -98,6 +98,7 @@ void SimFlarmTraffic(long ID, double offset)
 	GPS_INFO.FLARM_Traffic[flarm_slot].UpdateNameFlag=false; // clear flag first
 	TCHAR *fname = LookupFLARMDetails(GPS_INFO.FLARM_Traffic[flarm_slot].ID);
 	if (fname) {
+		LKASSERT(fname);
 		_tcsncpy(name,fname,MAXFLARMNAME);
 		name[MAXFLARMNAME]=0;
 

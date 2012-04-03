@@ -189,6 +189,7 @@ static void PrepareData(void){
     AirspaceSelectInfo[index].Distance = distance;
 	AirspaceSelectInfo[index].Direction = bearing;
 
+    LKASSERT((*it)->Name());
     _tcsncpy(sTmp, (*it)->Name(), 4);
     sTmp[4] = '\0';
     _tcsupr(sTmp);
@@ -497,6 +498,7 @@ static void OnFilterType(DataField *Sender,
   }
 
   if (TypeFilterIdx>0) {
+	LKASSERT(CAirspaceManager::Instance().GetAirspaceTypeText(TypeFilterIdx-1));
 	_tcsncpy(sTmp, CAirspaceManager::Instance().GetAirspaceTypeText(TypeFilterIdx-1), sizeof(sTmp)/sizeof(sTmp[0]));
   } else {
 	_tcscpy(sTmp, TEXT("*"));
@@ -539,6 +541,7 @@ static void OnPaintListItem(WindowControl * Sender, HDC hDC){
       sTmp[0] = '\0';
       sTmp[1] = '\0';
       sTmp[2] = '\0';
+	  LKASSERT(CAirspaceManager::Instance().GetAirspaceTypeShortText(AirspaceSelectInfo[i].Type));
 	  _tcsncpy(sTmp, CAirspaceManager::Instance().GetAirspaceTypeShortText(AirspaceSelectInfo[i].Type), 4);
       // left justified
      

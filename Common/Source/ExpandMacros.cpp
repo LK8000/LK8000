@@ -45,6 +45,7 @@ static void CondReplaceInString(bool Condition, TCHAR *Buffer,
 bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
   TCHAR *a;
+  LKASSERT(In);
   _tcsncpy(OutBuffer, In, Size);
   OutBuffer[Size-1] = '\0';
 

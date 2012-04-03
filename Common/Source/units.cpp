@@ -417,6 +417,7 @@ bool Units::FormatUserAltitude(double Altitude, TCHAR *Buffer, size_t size){
     _tcscpy(Buffer, sTmp);
     return(true);
   } else {
+    LKASSERT(sTmp);
     _tcsncpy(Buffer, sTmp, size);
     Buffer[size-1] = '\0';
     return(false);
@@ -444,6 +445,7 @@ bool Units::FormatAlternateUserAltitude(double Altitude, TCHAR *Buffer, size_t s
 	_tcscpy(Buffer, sTmp);
 	return(true);
   } else {
+	LKASSERT(sTmp);
 	_tcsncpy(Buffer, sTmp, size);
 	Buffer[size-1] = '\0';
 	return(false);
@@ -487,6 +489,7 @@ bool Units::FormatUserArrival(double Altitude, TCHAR *Buffer, size_t size){
     _tcscpy(Buffer, sTmp);
     return(true);
   } else {
+    LKASSERT(sTmp);
     _tcsncpy(Buffer, sTmp, size);
     Buffer[size-1] = '\0';
     return(false);
@@ -536,6 +539,7 @@ bool Units::FormatUserDistance(double Distance, TCHAR *Buffer, size_t size){
     _tcscpy(Buffer, sTmp);
     return(true);
   } else {
+    LKASSERT(sTmp);
     _tcsncpy(Buffer, sTmp, size);
     Buffer[size-1] = '\0';
     return(false);
@@ -583,6 +587,7 @@ bool Units::FormatUserMapScale(Units_t *Unit, double Distance, TCHAR *Buffer, si
     _tcscpy(Buffer, sTmp);
     return(true);
   } else {
+    LKASSERT(sTmp);
     _tcsncpy(Buffer, sTmp, size);
     Buffer[size-1] = '\0';
     return(false);

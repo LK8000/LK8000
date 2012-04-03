@@ -1120,6 +1120,7 @@ goto_bearing:
 		// B55  Team Code 091216
 		case LK_TEAM_CODE:
 			if(ValidWayPoint(TeamCodeRefWaypoint)) {
+				LKASSERT(DerivedDrawInfo.OwnTeamCode);
 				_tcsncpy(BufferValue,DerivedDrawInfo.OwnTeamCode,5);
 				BufferValue[5] = '\0';
 				valid=true; // 091221
@@ -1437,12 +1438,14 @@ goto_bearing:
 			{
 				if ( DisplayTextType == DISPLAYFIRSTTHREE)
 				{
+					 LKASSERT(WayPointList[index].Name);
 					 _tcsncpy(BufferTitle,WayPointList[index].Name,3);
 					BufferTitle[3] = '\0';
 				}
 				else if( DisplayTextType == DISPLAYNUMBER) {
 					_stprintf(BufferTitle,TEXT("%d"), WayPointList[index].Number );
 				} else {
+					 LKASSERT(WayPointList[index].Name);
 					_tcsncpy(BufferTitle,WayPointList[index].Name, 12);
 					// BufferTitle[(sizeof(Text)/sizeof(TCHAR))-1] = '\0';
 					if (lktitle)
@@ -1652,12 +1655,14 @@ goto_bearing:
 			{
 				if ( DisplayTextType == DISPLAYFIRSTTHREE)
 				{
+					 LKASSERT(WayPointList[index].Name);
 					 _tcsncpy(BufferTitle,WayPointList[index].Name,3);
 					BufferTitle[3] = '\0';
 				}
 				else if( DisplayTextType == DISPLAYNUMBER) {
 					_stprintf(BufferTitle,TEXT("%d"), WayPointList[index].Number );
 				} else {
+					 LKASSERT(WayPointList[index].Name);
 					_tcsncpy(BufferTitle,WayPointList[index].Name, 12);
 					// BufferTitle[(sizeof(Text)/sizeof(TCHAR))-1] = '\0';
 					if (lktitle)
@@ -2099,12 +2104,14 @@ olc_score:
 			{
 				if ( DisplayTextType == DISPLAYFIRSTTHREE)
 				{
+					 LKASSERT(WayPointList[index].Name);
 					 _tcsncpy(BufferTitle,WayPointList[index].Name,3);
 					BufferTitle[3] = '\0';
 				}
 				else if( DisplayTextType == DISPLAYNUMBER) {
 					_stprintf(BufferTitle,TEXT("%d"), WayPointList[index].Number );
 				} else {
+					 LKASSERT(WayPointList[index].Name);
 					_tcsncpy(BufferTitle,WayPointList[index].Name, 12);
 					// BufferTitle[(sizeof(Text)/sizeof(TCHAR))-1] = '\0';
 					if (lktitle)
@@ -2155,12 +2162,14 @@ olc_score:
 			{
 				if ( DisplayTextType == DISPLAYFIRSTTHREE)
 				{
+					 LKASSERT(WayPointList[index].Name);
 					 _tcsncpy(BufferTitle,WayPointList[index].Name,3);
 					BufferTitle[3] = '\0';
 				}
 				else if( DisplayTextType == DISPLAYNUMBER) {
 					_stprintf(BufferTitle,TEXT("%d"), WayPointList[index].Number );
 				} else {
+					 LKASSERT(WayPointList[index].Name);
 					_tcsncpy(BufferTitle,WayPointList[index].Name, 12);
 					// BufferTitle[(sizeof(Text)/sizeof(TCHAR))-1] = '\0';
 					if (lktitle)

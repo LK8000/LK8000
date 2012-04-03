@@ -214,6 +214,7 @@ static void PrepareData(void){
                     &(WayPointSelectInfo[i].Direction));
     WayPointSelectInfo[i].Distance *= DISTANCEMODIFY;
 
+    LKASSERT(WayPointList[i].Name);
     _tcsncpy(sTmp, WayPointList[i].Name, 4);
     sTmp[4] = '\0';
     _tcsupr(sTmp);
@@ -325,6 +326,7 @@ static void UpdateList(void){
     qsort(WayPointSelectInfo, UpLimit,
         sizeof(WayPointSelectInfo_t), WaypointNameCompare);
 
+    LKASSERT(sNameFilter);
     _tcsncpy(sTmp, sNameFilter, NAMEFILTERLEN);
     sTmp[NAMEFILTERLEN] = '\0';
     _tcsupr(sTmp);
@@ -354,6 +356,7 @@ static void UpdateList(void){
 	// the WayPointSelectInfo list has been sorted by filters, and then sorted by name. 0-UpLimit is the size.
 	// now we create a secondary index pointing to this list
 	for (i=0, matches=0; i<UpLimit; i++) {
+		LKASSERT(WayPointList[WayPointSelectInfo[i].Index].Name);
 		_tcsncpy(wname, WayPointList[WayPointSelectInfo[i].Index].Name, NAME_SIZE);
 		wname[NAME_SIZE]='\0';
     		_tcsupr(wname);
@@ -450,6 +453,7 @@ static void FilterMode(bool direction) {
 static void OnFilterNameButton(WindowControl *Sender) {
 
   TCHAR newNameFilter[NAMEFILTERLEN+1];
+  LKASSERT(sNameFilter);
   _tcsncpy(newNameFilter, sNameFilter, NAMEFILTERLEN);
   newNameFilter[NAMEFILTERLEN] = '\0'; // 100502 FIX
   dlgTextEntryShowModal(newNameFilter, NAMEFILTERLEN);
@@ -463,6 +467,7 @@ static void OnFilterNameButton(WindowControl *Sender) {
 	i--;
   };
 
+  LKASSERT(newNameFilter);
   _tcsncpy(sNameFilter, newNameFilter, NAMEFILTERLEN);
   sNameFilter[NAMEFILTERLEN] = '\0'; // 100502 FIX
 

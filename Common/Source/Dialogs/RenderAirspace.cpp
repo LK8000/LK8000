@@ -295,6 +295,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rci) {
 //HFONT hfOld = (HFONT)SelectObject(hdc, LK8MapFont);
     line[0].x = CalcDistanceCoordinat( wpt_dist, rc, &sDia);
     // Print wpt name next to marker line
+    LKASSERT(WayPointList[overindex].Name);
     _tcsncpy(text, WayPointList[overindex].Name, sizeof(text)/sizeof(text[0]));
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
     int x = line[0].x - tsize.cx - NIBLSCALE(5);

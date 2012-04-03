@@ -187,6 +187,7 @@ SelectObject(hdc, GetStockObject(WHITE_PEN));
 Rectangle(hdc,rcd.left+1,rcd.top,rcd.right,rcd.bottom);
 */
 
+  LKASSERT(Sideview_pHandeled[iSizeIdx].szAS_Name);
   _tcsncpy(text, Sideview_pHandeled[iSizeIdx].szAS_Name,NAME_SIZE-1/* sizeof(text)/sizeof(text[0])*/);
   GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
 
@@ -202,6 +203,7 @@ Rectangle(hdc,rcd.left+1,rcd.top,rcd.right,rcd.bottom);
 	iTextheight = 2*tsize.cy;
   }
 
+  LKASSERT((wchar_t*) CAirspaceManager::Instance().GetAirspaceTypeShortText( Sideview_pHandeled[iSizeIdx].iType));
   _tcsncpy((wchar_t*)text, (wchar_t*) CAirspaceManager::Instance().GetAirspaceTypeShortText( Sideview_pHandeled[iSizeIdx].iType), NAME_SIZE);
   GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
   x = rcd.left + (rcd.right - rcd.left)/2;

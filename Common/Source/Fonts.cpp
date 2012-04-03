@@ -341,6 +341,7 @@ void propGetFontSettingsFromString(TCHAR *Buffer1, LOGFONT* lplf)
 
   TCHAR *pWClast, *pToken;
   LOGFONT lfTmp;
+  LKASSERT(Buffer1);
   _tcsncpy(Buffer, Buffer1, propGetFontSettingsMAX_SIZE);
     // FontDescription of format:
     // typical font entry

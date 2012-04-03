@@ -414,9 +414,11 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 		//
 		wlen=wcslen(LKAirspaces[rli].Name);
 		if (wlen>s_maxnlname) {
+			LKASSERT(LKAirspaces[rli].Name);
 			_tcsncpy(Buffer, LKAirspaces[rli].Name, s_maxnlname); Buffer[s_maxnlname]='\0';
 		}
 		else {
+			LKASSERT(LKAirspaces[rli].Name);
 			_tcsncpy(Buffer, LKAirspaces[rli].Name, wlen); Buffer[wlen]='\0';
 		}
 		ConvToUpper(Buffer);
@@ -428,9 +430,11 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 		//
 		wlen=wcslen(LKAirspaces[rli].Type);
 		if (wlen>LKASP_TYPE_LEN) {
+			LKASSERT(LKAirspaces[rli].Type);
 			_tcsncpy(Buffer, LKAirspaces[rli].Type, LKASP_TYPE_LEN); Buffer[LKASP_TYPE_LEN]='\0';
 		}
 		else {
+			LKASSERT(LKAirspaces[rli].Type);
 			_tcsncpy(Buffer, LKAirspaces[rli].Type, wlen); Buffer[wlen]='\0';
 		}
 		ConvToUpper(Buffer);

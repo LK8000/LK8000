@@ -52,6 +52,7 @@ static void RedrawSampleFont(void)
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontName"));
   if(wp) {
+    LKASSERT(wp->GetDataField()->GetAsString());
     _tcsncpy(NewLogFont.lfFaceName,wp->GetDataField()->GetAsString(), LF_FACESIZE-1); 
   }
   wp = (WndProperty*)wf->FindByName(TEXT("prpFontHeight"));
@@ -261,6 +262,7 @@ void InitGUI(const TCHAR * FontDescription)
   TCHAR sTitlePrefix[]=TEXT("Edit Font: ");
 
   _tcscpy(sTitle, sTitlePrefix);
+  LKASSERT(FontDescription);
   _tcsncpy(sTitle + _tcslen(sTitlePrefix), FontDescription,FONTEDIT_GUI_MAX_TITLE - _tcslen(sTitlePrefix) -1);
 
   wf->SetCaption(sTitle);

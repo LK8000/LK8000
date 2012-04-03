@@ -401,9 +401,11 @@ void MapWindow::DrawThermalHistory(HDC hdc, RECT rc) {
 		wlen=wcslen(CopyThermalHistory[rli].Name);
 
                 if (wlen>s_maxnlname) {
+                        LKASSERT(CopyThermalHistory[rli].Name);
                         _tcsncpy(Buffer, CopyThermalHistory[rli].Name, s_maxnlname); Buffer[s_maxnlname]='\0';
                 }
                 else {
+                        LKASSERT(CopyThermalHistory[rli].Name);
                         _tcsncpy(Buffer, CopyThermalHistory[rli].Name, wlen); Buffer[wlen]='\0';
                 }
 		if (IsThermalMultitarget(rli)) {

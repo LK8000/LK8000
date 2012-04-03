@@ -487,6 +487,7 @@ void DataField::CopyString(TCHAR * szbuffOut, bool bFormatted) {
     if (GetAsString() != NULL) // null leaves iLen=0
     {
       iLen = _tcslen(GetAsString());
+      LKASSERT(GetAsString());
       _tcsncpy(szbuffOut, GetAsString(), min(iLen, ComboPopupITEMMAX-1));
     }
   }
@@ -495,6 +496,7 @@ void DataField::CopyString(TCHAR * szbuffOut, bool bFormatted) {
     if (GetAsDisplayString() != NULL) 
     {
       iLen = _tcslen(GetAsDisplayString());
+      LKASSERT(GetAsDisplayString());
       _tcsncpy(szbuffOut, GetAsDisplayString(), min(iLen, ComboPopupITEMMAX-1));
     }
   }
