@@ -527,6 +527,7 @@ DEVS	:=\
 	$(DEV)/devWesterboer.cpp \
 	$(DEV)/LKHolux.cpp \
 	$(DEV)/LKRoyaltek3200.cpp	\
+	$(DEV)/devFlyNet.cpp
 
 VOLKS	:=\
 	$(DEV)/Volkslogger/dbbconv.cpp \
