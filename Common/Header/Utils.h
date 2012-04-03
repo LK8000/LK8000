@@ -225,7 +225,10 @@ double StaticPressureToAltitude(double ps);
 double AirDensity(double altitude);
 double AirDensityRatio(double altitude);
 
-double HexStrToDouble(TCHAR *Source, TCHAR **Stop); 
+double HexStrToDouble(TCHAR *Source, TCHAR **Stop);
+
+// Fast convert from Hex string To integer
+int HexStrToInt(TCHAR *&Source);
 
 unsigned long CheckFreeRam(void);
 // check maximum allocatable heap block
