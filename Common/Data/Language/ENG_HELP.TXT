@@ -597,8 +597,7 @@ This option defines how waypoints outside the terrain range are handled: the use
 or they can be always included or excluded.
 
 @237
-Working only in Landscape and Full Overlay mode: localtime clock is shown.
-In portrait mode or Half overlay mode, no clock is displayed.
+Working only in Full Overlay mode: localtime clock is shown.
 
 @238
 Size of overlay fonts.

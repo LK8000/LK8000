@@ -79,7 +79,7 @@ void MapWindow::DrawLook8000(HDC hdc,  RECT rc )
 
   static int splitoffset2; // second raw, which really is the first from top!
 
-
+  static unsigned short yClockposition;
 
   // This is going to be the START 1/3  name replacing waypoint name when gates are running
   TCHAR StartGateName[12]; // 100506
@@ -529,6 +529,26 @@ smalloverlays:
 	}
 
 nextinit:
+
+	// Clock overlay position for portrait modes only: unfortunately, clock in this case will be positioned
+	// in different places, depending on screen resolution. If possible, on top right as usual.
+	// Otherwise, after right side overlays, slightly lower than them.
+	switch (ScreenSize) {
+		case ss272x480:
+		case ss480x800:
+		case ss240x400:
+			yClockposition=yrightoffset - ySizeLK8BigFont- (ySizeLK8MediumFont*4);
+			break;
+		case ss480x640:
+			yClockposition=yrightoffset +(ySizeLK8BigFont*4);
+		default:
+			yClockposition=yrightoffset +(ySizeLK8BigFont*3);
+			break;
+	}
+	// ss240x400 Not yet used, because 240x400 is set as ss240x320 temporarily
+	if (ScreenSizeX==240 && ScreenSizeY==400)
+		yClockposition=yrightoffset - ySizeLK8BigFont- (ySizeLK8MediumFont*4);
+
 	// set correct initial bottombar stripe
 	for (ii=BM_FIRST; ii<=BM_LAST;ii++) {
 		if (ConfBB[ii]) break;
@@ -1175,14 +1195,15 @@ drawOverlay:
 
 	LKFormatValue(LK_TIME_LOCALSEC, false, BufferValue, BufferUnit, BufferTitle);
 
-	if ( ScreenSize < (ScreenSize_t)sslandscape ) {
-		// 101005 Do not display CLOCK in portrait mode anymore
-	} else {
-		if (OverlayClock || (ISPARAGLIDER && UseGates()) ) {
-			SelectObject(hdc, LK8TargetFont); 
+	if (OverlayClock || (ISPARAGLIDER && UseGates()) ) {
+		SelectObject(hdc, LK8TargetFont); 
+		if ( ScreenSize < (ScreenSize_t)sslandscape )
+			LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(10),
+				yClockposition,
+				0, WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
+		else // landscape
 			LKWriteText(hdc, BufferValue, rc.right-NIBLSCALE(30),rc.top+NIBLSCALE(1), 0, 
 				WTMODE_OUTLINED,WTALIGN_RIGHT,overcolor, true);
-		}
 	}
 
   }

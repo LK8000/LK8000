@@ -603,7 +603,7 @@ static void OnLk8000ModeChange(DataField *Sender, DataField::DataAccessKind_t Mo
 
 	wp = (WndProperty*)wf->FindByName(TEXT("prpOverlayClock"));
 	if (wp) {
-		if (Look8000==lxcStandard || !ScreenLandscape)  {
+		if (Look8000==lxcStandard)  {
 			wp->SetReadOnly(true);
 			OverlayClock=0;
 		} else {
@@ -2768,7 +2768,7 @@ static void setVariables(void) {
   // These are only the initial startup values
   wp = (WndProperty*)wf->FindByName(TEXT("prpOverlayClock"));
   if (wp) {
-    if (Look8000==lxcStandard || !ScreenLandscape) {
+    if (Look8000==lxcStandard) {
 	OverlayClock=0;	// Disable clock
     	wp->SetReadOnly(true);
     } 

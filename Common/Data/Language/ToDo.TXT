@@ -161,4 +161,8 @@ _@M1790_ "No task file to delete"
 +_@M1791_ "Arm toggle advance"
 +_@M2226_ "Arm\nToggle"
 
+Changed help 237 for clock
+@237
+Working only in Full Overlay mode: localtime clock is shown.
+
 
