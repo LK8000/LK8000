@@ -73,7 +73,7 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     if (Basic->BaroAltitudeAvailable) {
       balt = Basic->BaroAltitude;
     } else {
-      balt = Basic->Altitude;
+      balt = 0;
     }
 
     // 110723 this is not a solution, only a workaround.
