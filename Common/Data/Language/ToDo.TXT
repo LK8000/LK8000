@@ -159,10 +159,21 @@ _@M2132_ "Clear\nAltern"
 _@M1789_ "Delete task file"
 _@M1790_ "No task file to delete"
 +_@M1791_ "Arm toggle advance"
++_@M1792_ "Quick gestures "
 +_@M2226_ "Arm\nToggle"
+
 
 Changed help 237 for clock
 @237
 Working only in Full Overlay mode: localtime clock is shown.
+
+@1260
+[Quick gestures]
+Only for paragliders and hangdliers mode: enable/disable quick gestures.
+By default, quick gestures are enabled. Quick gestures allow the pilot to click
+on right or left nearest/info pages to switch to next/previous like with gestures.
+Using gloves during the flight will require this option be disabled.
+
+
 
 

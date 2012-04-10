@@ -875,6 +875,7 @@ GEXTERN int ICOSTABLE[4096];
 
 GEXTERN short TouchContext;
 GEXTERN bool UseHiresBitmap;
+GEXTERN bool UseUngestures;
 
 
 //

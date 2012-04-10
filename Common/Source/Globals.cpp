@@ -618,6 +618,9 @@ void Globals_Init(void) {
   AircraftMenuSize=0;
   CompassMenuSize=0;
 
+  // Configuration variable for Ungestures
+  UseUngestures=true;	// on by default
+
   extern void Reset_CustomMenu(void);
   Reset_CustomMenu();
 

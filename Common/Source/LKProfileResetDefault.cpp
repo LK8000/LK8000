@@ -426,6 +426,8 @@ void LKProfileResetDefault(void) {
 
   BUGS_Config=1; // 1=100%, 0.5 = 50% .. FLOATS!
 
+  UseUngestures=true;
+
   // This is also reset by global init, but never mind. Done twice.
   extern void Reset_CustomMenu(void);
   Reset_CustomMenu();

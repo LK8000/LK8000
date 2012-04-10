@@ -295,6 +295,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryUTCOffset,UTCOffset);
   rprintf(szRegistryUseCustomFonts,UseCustomFonts);
   rprintf(szRegistryUseGeoidSeparation,UseGeoidSeparation);
+  rprintf(szRegistryUseUngestures,UseUngestures);
   rprintf(szRegistryUseTotalEnergy,UseTotalEnergy_Config);
   rprintf(szRegistryWarningTime,WarningTime);
   rprintf(szRegistryWayPointFile,szWaypointFile);

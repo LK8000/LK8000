@@ -2750,6 +2750,16 @@ static void setVariables(void) {
     dfe->Set(UseTotalEnergy_Config);
     wp->RefreshDisplay();
   }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpUseUngestures"));
+  if (wp) {
+    DataFieldEnum* dfe;
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->addEnumText(gettext(TEXT("_@M239_"))); // disabled
+    dfe->addEnumText(gettext(TEXT("_@M259_"))); // enabled
+    dfe = (DataFieldEnum*)wp->GetDataField();
+    dfe->Set(UseUngestures);
+    wp->RefreshDisplay();
+  }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpThermalBar")); // 091122
   if (wp) {
@@ -4278,6 +4288,13 @@ int ival;
     if (UseTotalEnergy_Config != (wp->GetDataField()->GetAsInteger())) {
       UseTotalEnergy_Config = (wp->GetDataField()->GetAsInteger());
       UseTotalEnergy=UseTotalEnergy_Config;
+      changed = true;
+    }
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpUseUngestures"));
+  if (wp) {
+    if (UseUngestures != (wp->GetDataField()->GetAsInteger())) {
+      UseUngestures = (wp->GetDataField()->GetAsInteger());
       changed = true;
     }
   }

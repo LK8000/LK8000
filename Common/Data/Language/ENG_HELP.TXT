@@ -1,4 +1,4 @@
-# LK8000 ENG_HLP.TXT 110405
+# LK8000 ENG_HLP.TXT 120410
 #
 # A single text line can be max 500 characters long
 # An entire help can be max 1024 characters total
@@ -1673,6 +1673,13 @@ password to login to the server. Aircraft type submitted as well. If unsure, set
 
 @1259
 [Custom Menu]
+
+@1260
+[Quick gestures]
+Only for paragliders and hangdliers mode: enable/disable quick gestures.
+By default, quick gestures are enabled. Quick gestures allow the pilot to click
+on right or left nearest/info pages to switch to next/previous like with gestures.
+Using gloves during the flight will require this option be disabled.
 
 @9999
 No help available on this item!

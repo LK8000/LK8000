@@ -1768,6 +1768,9 @@ _@M1790_ "No task file to delete"
 # Customkey configuration item
 _@M1791_ "Arm toggle advance"
 
+# configuration PG/Hg specials
+_@M1792_ "Quick gestures "
+
 ############################################################
 #                  - MENU MESSAGES - 
 #

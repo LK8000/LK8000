@@ -568,6 +568,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
 
   PREAD(sname,svalue,szRegistryUseCustomFonts,&UseCustomFonts);
   PREAD(sname,svalue,szRegistryUseGeoidSeparation,&UseGeoidSeparation);
+  PREAD(sname,svalue,szRegistryUseUngestures,&UseUngestures);
   PREAD(sname,svalue,szRegistryUseTotalEnergy,&UseTotalEnergy_Config);
   if (matchedstring) return;
   PREAD(sname,svalue,szRegistryWarningTime,&WarningTime);

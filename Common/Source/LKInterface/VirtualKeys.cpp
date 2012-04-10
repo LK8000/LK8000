@@ -429,8 +429,10 @@ gesture_left:
 	// This will dramatically speed up the user interface in turbulence
 	if (dontdrawthemap) {
 		if (Y>longpress_yup && Y<longpress_ydown) {
-			if (X<=s_unxleft)  goto gesture_left;
-			if (X>=s_unxright) goto gesture_right;
+			if (UseUngestures || !ISPARAGLIDER) {
+				if (X<=s_unxleft)  goto gesture_left;
+				if (X>=s_unxright) goto gesture_right;
+			}
 		}
 	}
 
