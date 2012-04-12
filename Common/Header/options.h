@@ -87,6 +87,7 @@
  // #define JP2000		1	// use JPG2000 terrain files .jp2 and jasper library
  #define LKMTERRAIN		1	// allow DEM terrain inside dat and lkm topology files
 
+
  // #define RASTERCACHE		1	// fallback to cached dem if it does not fit in memory entirely. 
 					// Does not work. 
 
@@ -103,7 +104,6 @@
 				// Do not remove, it can be worked out with no problems if we want to
 				// support external switches through NMEA input.
 
-    #define NEWUTM		// New full UTM support INCOMPLETED
     #define DSX			// only an experimental test feature for sms reception
 
    // TopologyWriter for adding topo labels dynamically, previously used for markers

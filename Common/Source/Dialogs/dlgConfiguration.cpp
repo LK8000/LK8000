@@ -2181,9 +2181,7 @@ static void setVariables(void) {
     dfe->addEnumText(TEXT("DDMMSS.ss"));
     dfe->addEnumText(TEXT("DDMM.mmm"));
     dfe->addEnumText(TEXT("DD.dddd"));
-#ifdef NEWUTM
     dfe->addEnumText(TEXT("UTM"));
-#endif
     dfe->Set(Units::CoordinateFormat);
     wp->RefreshDisplay();
   }

@@ -155,6 +155,8 @@ class DataField{
   void SetDetachGUI(bool bDetachGUI) {mDetachGUI=bDetachGUI;}  // allows combolist to iterate all values w/out triggering external events
   bool GetDetachGUI(void) {return mDetachGUI;}
   virtual int CreateComboList(void) {return 0;};
+  virtual int CreateKeyboard(void) {return FALSE;};
+
   ComboList* GetCombo(void) { return &mComboList;}
   virtual int SetFromCombo(int iDataFieldIndex, TCHAR *sValue) {return SetAsInteger(iDataFieldIndex);};
   void CopyString(TCHAR * szStringOut, bool bFormatted);
@@ -450,6 +452,7 @@ class DataFieldFloat:public DataField{
   void Inc(void);
   void Dec(void);
   int CreateComboList(void);
+  int CreateKeyboard(void);
   int SetFromCombo(int iDataFieldIndex, TCHAR *sValue);
 
   bool GetAsBoolean(void);
@@ -992,6 +995,7 @@ class WndProperty:public WindowControl{
     RECT mHitRectDown;
     bool mDownDown;
     bool mUpDown;
+    bool mUseKeyboard;
 
     virtual void Paint(HDC hDC);
     void (*mOnClickUpNotify)(WindowControl * Sender);
@@ -1025,6 +1029,7 @@ class WndProperty:public WindowControl{
     bool SetFocused(bool Value, HWND FromTo);
 
     bool SetReadOnly(bool Value);
+    bool SetUseKeyboard(bool Value);
 
     void RefreshDisplay(void);
 
