@@ -507,16 +507,18 @@ _buttondown:
 		// end dontdrawthemap and inside mapscreen looking for a gesture
 	} 
 
-        if (AATEnabled && mode.Is(Mode::MODE_TARGET_PAN)) {
-          Screen2LatLon(lparam_X, lparam_Y, Xlat, Ylat);
-          LockTaskData();
-          targetMoved = true;
-          targetMovedLat = Ylat;
-          targetMovedLon = Xlat;
-          UnlockTaskData();
-          break;
-        }
-
+        if (mode.Is(Mode::MODE_TARGET_PAN)) {
+		if (AATEnabled) {
+			Screen2LatLon(lparam_X, lparam_Y, Xlat, Ylat);
+			LockTaskData();
+			targetMoved = true;
+			targetMovedLat = Ylat;
+			targetMovedLon = Xlat;
+			UnlockTaskData();
+		}
+		// else we are in simple TARGET dialog, and we must NOT process anything
+		break;
+	}
 
 	short topicon;
 	if (DrawBottom) topicon=MapRect.bottom-MapRect.top-BottomSize-14; // 100305
