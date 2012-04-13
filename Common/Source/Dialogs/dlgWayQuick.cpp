@@ -144,11 +144,7 @@ short dlgWayQuickShowModal(void){
 	((WndButton *)wf->FindByName(TEXT("cmdDetails"))) ->SetLeft(offset);
 	((WndButton *)wf->FindByName(TEXT("cmdTask"))) ->SetLeft(offset+IBLSCALE(160));
 	((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetLeft(offset);
-  } else {
-	offset=(ScreenSizeY-IBLSCALE(320))/2;
-	((WndButton *)wf->FindByName(TEXT("cmdGoto"))) ->SetTop(offset);
-  }
-
+  } 
 
   wf->ShowModal();
 
