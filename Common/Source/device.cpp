@@ -780,11 +780,14 @@ FlarmDeclareSetGet(PDeviceDescriptor_t d, TCHAR *Buffer) {
     d->Com->WriteString(tmp);
 
   Buffer[6]= _T('A');
-  if (!ExpectString(d, Buffer)){
-    return FALSE;
-  } else {
-    return TRUE;
+  for(int i=0; i < 10; i ++) /* try to get expected answer max 10 times*/
+  {
+    if (ExpectString(d, Buffer))
+	  return true;
+    Sleep(50);
   }
+  return false;
+
 };
 
 
