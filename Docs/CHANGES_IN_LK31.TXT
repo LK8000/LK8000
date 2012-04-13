@@ -69,6 +69,60 @@ Aircraft and Pilot configurations have been exported from the old configuration 
 and they are now independent items.
 
 
+LXnav V7 support
+----------------
+
+The LXnav V7 instrument has the ability to be controlled by a PDA. 
+Since the V7 is compatible to the older LX instruments, you can use the common LX drivers (LX, LX16xx).  Thanks to LXnav we developed an additional commandset in oder to fully support the V7.
+In order to use the full functionality of the V7 we recommend to use the LXV7driver, which gives the additional information to LK8000
+-Outside air temperature
+-External battery voltage
+-Status of the Vario/STF switch
+-XYZ accelometer values
+ 
+The values for McReady, Ballast and Bug's (Efficiency) can be entered either be adjusted on the V7 both will have the same values after a few seconds.
+
+One big advantage is, that the Auto McReady function of LK8000 can now adjust the MC value in the V7, so that the MC Value in the V7 is updated automatically.
+Another good example is the automatic ballast dump in Basic settings; once the Ballast dump is activated the changing Wingload is continuously updated automatically until the Ballast dump is stopped
+
+
+To connect a V7 instrument with LK8000 you must select LXV7 as the device in setup (8 Devices) dialog. 
+In order to test the communication change the MC value on the V7 it should be updated in the LK8000 as well. 
+Now open  the "Basic Settings" dialog (Menu Config / Setup Basic)
+Here you can change the "Ballast" and "Efficiency" values which should be changes in the V7 as well. If you press Dump ballast, the values are changed in the V7 at the same time.
+
+Please Note:
+The update will take up to 2 seconds.
+While using Auto MC it is still possible to change the MC values on the V7 for both devices. The value will be changed automatically as soon the Auto MC algorithm changes the current MC value, which may take a while depending on the history and Auto MC settings.
+The status of the STF/Vario switch can be used for changing the circling cruise mode in LK8000. In order to do so you must set the Display mode to DSP auto (Menue Display 2/3 DspMode _Auto_)
+
+Polar coefficients:
+The polar coefficients of the V7 and LK8000 are independent from another. This is intended to prevent to change the instrument polar accidentally and possibly use different polar's at the same time.
+
+Barometric Altitudes:
+The V7 instruments have a pressure sensor and deliver a barometric height. If you use a GPS source with Baro altitude you can decide which one will be used in the V7 setup. Please refer to the V7 manual.
+Accelometer values:
+The values of the V7 XYZ Accelometer values are drawn as a red dot in the Experimental page 1.6. This dot moves like the little ball in a real TRI indicator with additional information's movements: ------Accelerations towards the nose of the plane make the dot smaller.  
+-Accelerations towards the tail of the plane make the dot bigger. 
+-Accelerations towards the top of the aircraft will move the up, the opposite down.
+Please not that this in an experimental feature and may not be used for navigation purposes.
+
+
+
+New airfield symbols since V3.1x
+--------------------------------
+
+With the Version 3.1x we introduced new airfield symbols. In order to enable it goto System Setup Page 11 and set the Appearance style from Alternate to Vector
+The vector airfield symbols have new scalable airfield and outlanding icons with runway direction and type (dark grey = solid, white = grass). 
+
+The runway length is drawn proportional to the real length.
+
+If an airfield is defined as glider site an, it will be marked with "white wings" 
+
+On an appropriate zoom level the radio frequency will be shown as well.
+
+Like before if the runway is reachable with respect to the safety height and wind, the airfield/outlanding is green, otherwise red.
+In order to use this additional information's it must be included in the waypointfile of course. We recommend to use the *.cup file format of SeeYou which is able to support this additional information. If you don't have the additional information's we recommend to use the old Alternate symbols.
 
 
 
