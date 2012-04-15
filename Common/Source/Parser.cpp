@@ -725,7 +725,7 @@ BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   
   // use valid time with invalid fix
   double glltime = StrToDouble(params[4],NULL);
-  if (glltime>0) {
+  if (!RMCAvailable && (glltime>0)) {
 	double ThisTime = TimeModify(glltime, GPS_INFO);
 	if (!TimeHasAdvanced(ThisTime, GPS_INFO)) return FALSE; // 091208
   }
@@ -1058,7 +1058,24 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   // Even with invalid fix, we might still have valid time
   // I assume that 0 is invalid, and I am very sorry for UTC time 00:00 ( missing a second a midnight).
   // is better than risking using 0 as valid, since many gps do not respect any real nmea standard
-  if (ggatime>0) { 
+  //
+  // Update 121215: do not update time with GGA if RMC is found, because at 00UTC only RMC will set the date change!
+  // Remember that we trigger update of calculations when we get GGA.
+  // So what happens if the gps sequence is GGA and then RMC?
+  //    2359UTC:
+  //           GGA , old date, trigger gps calc
+  //           RMC,  old date
+  //    0000UTC:
+  //           GGA, old date even if new date will come for the same quantum,
+  //                ggatime>0, see (*)
+  //                BANG! oldtime from RMC is 2359, new time from GGA is 0, time is in the past!
+  //
+  // If the gps is sending first RMC, this problem does not appear of course.
+  //
+  // (*) IMPORTANT> ggatime at 00UTC will most likely be >0! Because time is in hhmmss.ss  .ss is always >0!!
+  // We check ggatime, rmctime, glltime etc. for 0 because in case of error the gps will send 000000.000 !!
+  //
+  if (!RMCAvailable && (ggatime>0)) { 
 	double ThisTime = TimeModify(ggatime, GPS_INFO);
 
 	if (!TimeHasAdvanced(ThisTime, GPS_INFO))
