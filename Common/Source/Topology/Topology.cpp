@@ -195,7 +195,8 @@ void Topology::initCache()
 
   shpBounds = NULL;
   shps = NULL;
-
+  in_scale_last = false;
+  
   for (int i=0; i<shpfile.numshapes; i++) shpCache[i] = NULL;
 
   switch (cache_mode) {
@@ -393,18 +394,19 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
 
   in_scale = CheckScale();
 
-#ifdef TOPOFASTCACHE
-#else
   if (!in_scale) {
     // not visible, so flush the cache
     // otherwise we waste time on looking up which shapes are in bounds
     flushCache();
     triggerUpdateCache = false;
+    in_scale_last = false;
     return;
   }
-#endif
 
-  if (purgeonly) return;
+  if (purgeonly) {
+    in_scale_last = in_scale;
+    return;
+  }
 
   triggerUpdateCache = false;
 
@@ -422,98 +424,102 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
     // this happens if entire shape is out of range
     // so clear buffer.
     flushCache();
+    in_scale_last = in_scale;
     return;
   }
 
   bool smaller = false;
   bool bigger = false;
+  bool in_scale_again = in_scale && !in_scale_last;
   int shapes_loaded = 0;
   shapes_visible_count = 0;
+  in_scale_last = in_scale;
+  
   switch (cache_mode) {
-	case 0: // Original code plus one special case
-		smaller = (msRectContained(&thebounds, &lastBounds) == MS_TRUE);
-		if (smaller) { //Special case, search inside, we don't need to load additional shapes, just remove
-			shapes_visible_count = 0;
-			for (int i=0; i<shpfile.numshapes; i++) {
-				if (shpCache[i]) {
-					if(msRectOverlap(&(shpCache[i]->shape.bounds), &thebounds) != MS_TRUE) {
-						removeShape(i);
-					} else shapes_visible_count++;
-				}
-			}//for
-		} else { 
-			//In this case we have to run the original algoritm
-			msSHPWhichShapes(&shpfile, thebounds, 0);
-			shapes_visible_count = 0;
-			for (int i=0; i<shpfile.numshapes; i++) {
-				if (msGetBit(shpfile.status, i)) {
-					if (shpCache[i]==NULL) {
-						// shape is now in range, and wasn't before
-						shpCache[i] = addShape(i);
-						shapes_loaded++;
-					}
-					shapes_visible_count++;
-				} else {
-					removeShape(i);
-				}
-			}//for
-		}
-		break;
+    case 0: // Original code plus one special case
+      smaller = (msRectContained(&thebounds, &lastBounds) == MS_TRUE);
+      if (smaller) { //Special case, search inside, we don't need to load additional shapes, just remove
+        shapes_visible_count = 0;
+        for (int i=0; i<shpfile.numshapes; i++) {
+          if (shpCache[i]) {
+            if(msRectOverlap(&(shpCache[i]->shape.bounds), &thebounds) != MS_TRUE) {
+              removeShape(i);
+            } else shapes_visible_count++;
+          }
+        }//for
+      } else { 
+        //In this case we have to run the original algoritm
+        msSHPWhichShapes(&shpfile, thebounds, 0);
+        shapes_visible_count = 0;
+        for (int i=0; i<shpfile.numshapes; i++) {
+          if (msGetBit(shpfile.status, i)) {
+            if (shpCache[i]==NULL) {
+              // shape is now in range, and wasn't before
+              shpCache[i] = addShape(i);
+              shapes_loaded++;
+            }
+            shapes_visible_count++;
+          } else {
+            removeShape(i);
+          }
+        }//for
+      }
+      break;
 
-	case 1:  // Bounds array in memory
-		bigger = (msRectContained(&lastBounds, &thebounds) == MS_TRUE);
-		smaller = (msRectContained(&thebounds, &lastBounds) == MS_TRUE);
-		if (smaller) { //Search inside, we don't need to load additional shapes, just remove
-			for (int i=0; i<shpfile.numshapes; i++) {
-				if (shpCache[i]==NULL) continue;
-				if(msRectOverlap(&shpBounds[i], &thebounds) != MS_TRUE) {
-					removeShape(i);
-				} else shapes_visible_count++;
-			}//for
-		} else 
-		if (bigger) { //We don't need to remove shapes, just load, so skip loaded ones
-			for (int i=0; i<shpfile.numshapes; i++) {
-				if (shpCache[i]) continue;
-				if(msRectOverlap(&shpBounds[i], &thebounds) == MS_TRUE) {
-					// shape is now in range, and wasn't before
-					shpCache[i] = addShape(i);
-					shapes_loaded++;
-				}
-			}//for
-			shapes_visible_count+=shapes_loaded;
-		} else {
-			//Otherwise we have to search the all array
-			for (int i=0; i<shpfile.numshapes; i++) {
-				if(msRectOverlap(&shpBounds[i], &thebounds) == MS_TRUE) {
-					if (shpCache[i]==NULL) {
-						// shape is now in range, and wasn't before
-						shpCache[i] = addShape(i);
-						shapes_loaded++;
-					}
-					shapes_visible_count++;
-				} else {
-					removeShape(i);
-				}
-			}//for
-		}
-		break;
+    case 1:  // Bounds array in memory
+      bigger = (msRectContained(&lastBounds, &thebounds) == MS_TRUE);
+      smaller = (msRectContained(&thebounds, &lastBounds) == MS_TRUE);
+      if (bigger || in_scale_again) { //We don't need to remove shapes, just load, so skip loaded ones
+        for (int i=0; i<shpfile.numshapes; i++) {
+          if (shpCache[i]) continue;
+          if(msRectOverlap(&shpBounds[i], &thebounds) == MS_TRUE) {
+            // shape is now in range, and wasn't before
+            shpCache[i] = addShape(i);
+            shapes_loaded++;
+          }
+        }//for
+        shapes_visible_count+=shapes_loaded;
+      } else
+      if (smaller) { //Search inside, we don't need to load additional shapes, just remove
+        for (int i=0; i<shpfile.numshapes; i++) {
+          if (shpCache[i]==NULL) continue;
+          if(msRectOverlap(&shpBounds[i], &thebounds) != MS_TRUE) {
+            removeShape(i);
+          } else shapes_visible_count++;
+        }//for
+      } else { 
+        //Otherwise we have to search the all array
+        for (int i=0; i<shpfile.numshapes; i++) {
+          if(msRectOverlap(&shpBounds[i], &thebounds) == MS_TRUE) {
+            if (shpCache[i]==NULL) {
+              // shape is now in range, and wasn't before
+              shpCache[i] = addShape(i);
+              shapes_loaded++;
+            }
+            shapes_visible_count++;
+          } else {
+            removeShape(i);
+          }
+        }//for
+      }
+      break;
 
-	case 2: // All shapes in memory	
-		XShape *pshp;
-		shapes_visible_count = 0;
-		for (int i=0; i<shpfile.numshapes; i++) {
-			pshp = shps[i];
-			if(msRectOverlap(&(pshp->shape.bounds), &thebounds) == MS_TRUE) {
-				shpCache[i] = pshp;
-				shapes_visible_count++;
-			} else {
-				shpCache[i] = NULL;
-			}
-		}//for
-		break;
-  }//sw
+    case 2: // All shapes in memory	
+      XShape *pshp;
+      shapes_visible_count = 0;
+      for (int i=0; i<shpfile.numshapes; i++) {
+        pshp = shps[i];
+        if(msRectOverlap(&(pshp->shape.bounds), &thebounds) == MS_TRUE) {
+          shpCache[i] = pshp;
+          shapes_visible_count++;
+        } else {
+          shpCache[i] = NULL;
+        }
+      }//for
+      break;
+    }//sw
 
-	lastBounds = thebounds;
+    lastBounds = thebounds;
 #else
 
   msSHPWhichShapes(&shpfile, thebounds, 0);
@@ -542,13 +548,15 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
 #endif
 
 #ifdef DEBUG_TFC
-  StartupStore(TEXT("   UpdateCache() ends, shps_visible=%d (%dms)%s"),shapes_visible_count,GetTickCount()-starttick,NEWLINE);
+  long free_size = CheckFreeRam();
+  StartupStore(TEXT("   UpdateCache() ends, shps_visible=%d ram=%li (%dms)%s"),shapes_visible_count, free_size, GetTickCount()-starttick,NEWLINE);
 #endif
 }
 
 
 XShape* Topology::addShape(const int i) {
   XShape* theshape = new XShape();
+  LKASSERT(theshape);
   theshape->load(&shpfile,i);
   return theshape;
 }
@@ -800,6 +808,7 @@ void TopologyLabel::setField(int i) {
 XShape* TopologyLabel::addShape(const int i) {
 
   XShapeLabel* theshape = new XShapeLabel();
+  LKASSERT(theshape);
   theshape->load(&shpfile,i);
   theshape->setlabel(msDBFReadStringAttribute( shpfile.hDBF, i, field));
   return theshape;
