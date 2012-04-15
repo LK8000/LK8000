@@ -103,6 +103,7 @@ class Topology {
   XShape **shps;
   rectObj* shpBounds;
   rectObj lastBounds;
+  bool in_scale_last;
 #endif
  
 };
