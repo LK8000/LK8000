@@ -1096,8 +1096,21 @@ int DataFieldFloat::SetFromCombo(int iDataFieldIndex, TCHAR *sValue) {
   return 0;
 }
 
+extern void dlgNumEntryShowModal(TCHAR *text, int width);
+int DataFieldFloat::CreateKeyboard(void){
+	TCHAR szText[20];
+	_tcscpy(szText, GetAsString());
+	dlgNumEntryShowModal(szText,20);
+
+	TCHAR*szStop;
+	SetAsFloat(mStep*((int)(StrToDouble(szText, &szStop)/mStep)));
+
+	return TRUE;
+}
+
+
 int DataFieldFloat::CreateComboList(void) {
-  return CreateComboListStepping();
+	return CreateComboListStepping();
 }
 
 
@@ -2862,6 +2875,8 @@ WndProperty::WndProperty(WindowControl *Parent,
   mDataField = NULL;
   mDialogStyle=false; // this is set by ::SetDataField()
 
+  mUseKeyboard=false;
+
   mhValueFont = GetFont();
   mCaptionWidth = CaptionWidth;
 
@@ -3055,6 +3070,10 @@ void WndProperty::UpdateButtonData(int Value){
 
 }
 
+bool WndProperty::SetUseKeyboard(bool Value) {
+	return mUseKeyboard=Value;
+}
+
 int WndProperty::SetButtonSize(int Value){
   int res = mBitmapSize;
 
@@ -3232,6 +3251,8 @@ int WndProperty::OnKeyDown(WPARAM wParam, LPARAM lParam){
   return(1);
 };
 
+extern BOOL dlgKeyboard(WndProperty* theProperty);
+
 int WndProperty::OnLButtonDown(WPARAM wParam, LPARAM lParam){
   (void)wParam;
   POINT Pos;
@@ -3240,7 +3261,9 @@ int WndProperty::OnLButtonDown(WPARAM wParam, LPARAM lParam){
   {
     if (!GetReadOnly())  // when they click on the label
     {
-      dlgComboPicker(this);
+    	if(!mUseKeyboard || !dlgKeyboard(this)) {
+   	       dlgComboPicker(this);
+    	}
     }
     else 
     {

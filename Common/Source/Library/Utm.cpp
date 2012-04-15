@@ -215,7 +215,6 @@ void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone,
 }
 
 
-/* 091129 we currently do not use inverse conversion from UTM grid to WGS84 - paolo
 
 
 //=======================================================================
@@ -340,6 +339,4 @@ void UtmToLatLonWGS84 (int utmXZone, char utmYZone, double easting,
 	UtmToLatLon (6378137.0, 1 / 298.257223563, utmXZone, utmYZone,
 		easting, northing, lat, lon);
 	}
-
-*/
 

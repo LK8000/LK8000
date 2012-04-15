@@ -146,7 +146,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(NULL)
 };
 
-void dlgTextEntryKeyboardShowModal(TCHAR *text, int width) 
+void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, const TCHAR* szFile, const TCHAR* szResource)
 {
   wf = NULL;
   wGrid = NULL;
@@ -155,22 +155,12 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width)
   }
   max_width = min(MAX_TEXTENTRY, width);
   char filename[MAX_PATH];
-  if (ScreenLandscape) 
-  {
-    LocalPathS(filename, TEXT("frmTextEntry_Keyboard_L.xml"));
+    LocalPathS(filename, szFile);
     wf = dlgLoadFromXML(CallBackTable, 
 			filename, 
 			hWndMainWindow,			  
-			TEXT("IDR_XML_TEXTENTRY_KEYBOARD_L"));
+			szResource);
     if (!wf) return;
-  } else {
-    LocalPathS(filename, TEXT("frmTextEntry_Keyboard.xml"));
-    wf = dlgLoadFromXML(CallBackTable, 
-			filename, 
-			hWndMainWindow,			  
-			TEXT("IDR_XML_TEXTENTRY_KEYBOARD"));
-    if (!wf) return;
-  }
 
   wGrid = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmGrid"));
 
@@ -200,6 +190,29 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width)
 
 void dlgTextEntryShowModal(TCHAR *text, int width)
 {
-      dlgTextEntryKeyboardShowModal(text, width);
+	if (ScreenLandscape)  {
+		dlgTextEntryKeyboardShowModal(text, width, TEXT("frmTextEntry_Keyboard_L.xml"), TEXT("IDR_XML_TEXTENTRY_KEYBOARD_L"));
+	} else {
+		dlgTextEntryKeyboardShowModal(text, width, TEXT("frmTextEntry_Keyboard.xml"), TEXT("IDR_XML_TEXTENTRY_KEYBOARD"));
+	}
 }
 
+void dlgNumEntryShowModal(TCHAR *text, int width)
+{
+	if (ScreenLandscape)  {
+		dlgTextEntryKeyboardShowModal(text, width, TEXT("frmNumEntry_Keyboard_L.xml"), TEXT("IDR_XML_NUMENTRY_KEYBOARD_L"));
+	} else {
+		dlgTextEntryKeyboardShowModal(text, width, TEXT("frmNumEntry_Keyboard.xml"), TEXT("IDR_XML_NUMENTRY_KEYBOARD"));
+	}
+}
+
+BOOL dlgKeyboard(WndProperty* theProperty){
+	DataField* pField = theProperty->GetDataField();
+	if(pField) {
+		if(pField->CreateKeyboard()){
+			theProperty->RefreshDisplay();
+			return TRUE;
+		}
+	}
+	return FALSE;
+}

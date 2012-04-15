@@ -618,6 +618,8 @@ void LoadChildsFromXML(WindowControl *Parent,
       Caption[0] = '\0';
       W->SetReadOnly(ReadOnly != 0);
 
+      W->SetUseKeyboard(StringToIntDflt(childNode.getAttribute(TEXT("keyboard")), 0));
+
       if (childNode.nChildNode(TEXT("DataField")) > 0){
 
         TCHAR DataType[32];
