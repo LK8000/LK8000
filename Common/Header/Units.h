@@ -20,12 +20,8 @@ typedef enum {
   cfDDMMSS=0,
   cfDDMMSSss,
   cfDDMMmmm,
-#ifdef NEWUTM
   cfDDdddd,
   cfUTM
-#else
-  cfDDdddd
-#endif
 }CoordinateFormats_t;
 
 typedef enum {
@@ -42,8 +38,8 @@ typedef enum {
   unFeet,
   unFligthLevel,
   unKelvin,
-  unGradCelcius,                    // K = C° + 273,15
-  unGradFahrenheit                  // K = (°F + 459,67) / 1,8
+  unGradCelcius,                    // K = Cï¿½ + 273,15
+  unGradFahrenheit                  // K = (ï¿½F + 459,67) / 1,8
 }Units_t;
 
 
