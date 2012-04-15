@@ -64,7 +64,7 @@ void FillDataOptions()
 	SetDataOption(12, ugAltitude,       TEXT("_@M1025_"), TEXT("_@M1026_"));
 	// LKTOKEN  _@M1027_ = "Next Alt.Required", _@M1028_ = "NxtAltR"
 	SetDataOption(13, ugAltitude,       TEXT("_@M1027_"), TEXT("_@M1028_"));
-	// LKTOKEN  _@M1029_ = "Next Waypoint", _@M1030_ = "Next"
+	// LKTOKEN  _@M1029_ = "Next Waypoint", _@M1030_ = "Next"  -> Reserved 2
 	SetDataOption(14, ugNone,           TEXT("_@M1029_"), TEXT("_@M1030_"));
 	// LKTOKEN  _@M1031_ = "Task Alt.Arrival", _@M1032_ = "TskArr"
 	SetDataOption(15, ugAltitude,       TEXT("_@M1031_"), TEXT("_@M1032_"));
