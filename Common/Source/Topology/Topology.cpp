@@ -556,6 +556,7 @@ void Topology::updateCache(rectObj thebounds, bool purgeonly) {
 
 XShape* Topology::addShape(const int i) {
   XShape* theshape = new XShape();
+  LKASSERT(theshape);
   theshape->load(&shpfile,i);
   return theshape;
 }
@@ -807,6 +808,7 @@ void TopologyLabel::setField(int i) {
 XShape* TopologyLabel::addShape(const int i) {
 
   XShapeLabel* theshape = new XShapeLabel();
+  LKASSERT(theshape);
   theshape->load(&shpfile,i);
   theshape->setlabel(msDBFReadStringAttribute( shpfile.hDBF, i, field));
   return theshape;
