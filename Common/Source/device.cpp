@@ -780,11 +780,11 @@ FlarmDeclareSetGet(PDeviceDescriptor_t d, TCHAR *Buffer) {
     d->Com->WriteString(tmp);
 
   Buffer[6]= _T('A');
-  for(int i=0; i < 10; i ++) /* try to get expected answer max 10 times*/
+  for(int i=0; i < 50; i ++) /* try to get expected answer max 10 times*/
   {
     if (ExpectString(d, Buffer))
 	  return true;
-    Sleep(50);
+    Sleep(10);
   }
   return false;
 
@@ -804,65 +804,68 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
   if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
 
   _stprintf(Buffer,TEXT("PFLAC,S,GLIDERID,%s"),decl->AircraftRego);
-  if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
+  if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
 
   _stprintf(Buffer,TEXT("PFLAC,S,GLIDERTYPE,%s"),decl->AircraftType);
-  if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
+  if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
   
   _stprintf(Buffer,TEXT("PFLAC,S,COMPID,%s"),decl->CompetitionID);
-  if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
+  if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
   
   _stprintf(Buffer,TEXT("PFLAC,S,COMPCLASS,%s"),decl->CompetitionClass);
-  if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
+  if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
   
   _stprintf(Buffer,TEXT("PFLAC,S,NEWTASK,Task"));
-  if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
+  if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
 
   _stprintf(Buffer,TEXT("PFLAC,S,ADDWP,0000000N,00000000E,TAKEOFF"));
-  if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
+  if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
 
-  for (int i = 0; i < decl->num_waypoints; i++) {
-    int DegLat, DegLon;
-    double MinLat, MinLon;
-    char NoS, EoW;
+  if(result == TRUE)
+    for (int i = 0; i < decl->num_waypoints; i++) {
+      int DegLat, DegLon;
+      double MinLat, MinLon;
+      char NoS, EoW;
 
-    DegLat = (int)decl->waypoint[i]->Latitude;
-    MinLat = decl->waypoint[i]->Latitude - DegLat;
-    NoS = 'N';
-    if((MinLat<0) || ((MinLat-DegLat==0) && (DegLat<0)))
+      DegLat = (int)decl->waypoint[i]->Latitude;
+      MinLat = decl->waypoint[i]->Latitude - DegLat;
+      NoS = 'N';
+      if((MinLat<0) || ((MinLat-DegLat==0) && (DegLat<0)))
       {
-	NoS = 'S';
-	DegLat *= -1; MinLat *= -1;
+	    NoS = 'S';
+	    DegLat *= -1; MinLat *= -1;
       }
-    MinLat *= 60;
-    MinLat *= 1000;
+      MinLat *= 60;
+      MinLat *= 1000;
     
-    DegLon = (int)decl->waypoint[i]->Longitude;
-    MinLon = decl->waypoint[i]->Longitude - DegLon;
-    EoW = 'E';
-    if((MinLon<0) || ((MinLon-DegLon==0) && (DegLon<0)))
+      DegLon = (int)decl->waypoint[i]->Longitude;
+      MinLon = decl->waypoint[i]->Longitude - DegLon;
+      EoW = 'E';
+      if((MinLon<0) || ((MinLon-DegLon==0) && (DegLon<0)))
       {
-	EoW = 'W';
-	DegLon *= -1; MinLon *= -1;
+	    EoW = 'W';
+	    DegLon *= -1; MinLon *= -1;
       }
-    MinLon *=60;
-    MinLon *= 1000;
+      MinLon *=60;
+      MinLon *= 1000;
 
-    _stprintf(Buffer,
+      _stprintf(Buffer,
 	      TEXT("PFLAC,S,ADDWP,%02d%05.0f%c,%03d%05.0f%c,%s"),
 	      DegLat, MinLat, NoS, DegLon, MinLon, EoW, 
 	      decl->waypoint[i]->Name);
-    if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
+      if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
   }
 
   _stprintf(Buffer,TEXT("PFLAC,S,ADDWP,0000000N,00000000E,LANDING"));
-  if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
+  if(result) if (!FlarmDeclareSetGet(d,Buffer)) result = FALSE;
 
   // Reboot flarm to make declaration active, according to specs
 
   Sleep(100);
+
   devFormatNMEAString(Buffer, BUFF_LEN, TEXT("PFLAR,0") );
-  d->Com->WriteString(Buffer);
+  if(result == TRUE)
+    d->Com->WriteString(Buffer);
   Sleep(100);
 
 
