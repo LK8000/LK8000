@@ -20,7 +20,7 @@
 CoordinateFormats_t Units::CoordinateFormat;
 
 #ifndef __MINGW32__
-#define DEG "°"
+#define DEG "ï¿½"
 #else
 #define DEG "Â°"
 #endif
@@ -102,6 +102,30 @@ void Units::LatitudeToDMS(double Latitude,
   }
   *north = (sign==1);
 }
+
+extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);
+
+bool Units::CoordinateToString(double Longitude, double Latitude, TCHAR *Buffer, size_t size) {
+	if(CoordinateFormat == cfUTM) {
+		int utmzone=0;
+		char utmchar=0;
+		double easting=0, northing=0;
+		LatLonToUtmWGS84 ( utmzone, utmchar, easting, northing, Latitude, Longitude );
+		_stprintf(Buffer,_T("UTM %d%c  %.0f  %.0f"), utmzone, utmchar, easting, northing);
+
+		return true;
+	} else {
+		TCHAR sLongitude[16] = {0};
+		TCHAR sLatitude[16] = {0};
+
+		Units::LongitudeToString(Longitude, sLongitude, sizeof(sLongitude)-1);
+		Units::LatitudeToString(Latitude, sLatitude, sizeof(sLatitude)-1);
+
+		_stprintf(Buffer,_T("%s  %s"), sLatitude, sLongitude);
+		return true;
+	}
+}
+
 
 bool Units::LongitudeToString(double Longitude, TCHAR *Buffer, size_t size){
   (void)size;
