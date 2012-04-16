@@ -108,6 +108,8 @@ public:
                             int *ss,
                             bool *north);
 
+  static bool CoordinateToString(double Longitude, double Latitude, TCHAR *Buffer, size_t size);
+
   static bool LongitudeToString(double Longitude, TCHAR *Buffer, size_t size);
   static bool LatitudeToString(double Latitude, TCHAR *Buffer, size_t size);
 

@@ -320,13 +320,12 @@ void dlgWayPointDetailsShowModal(short mypage){
 	wp->SetText(WayPointList[SelectedWaypoint].Comment);
   wp->SetButtonSize(16);
 
-  Units::LongitudeToString(WayPointList[SelectedWaypoint].Longitude, sTmp, sizeof(sTmp)-1);
-  ((WndProperty *)wf->FindByName(TEXT("prpLongitude")))
-    ->SetText(sTmp);
+  Units::CoordinateToString(
+		  WayPointList[SelectedWaypoint].Longitude,
+		  WayPointList[SelectedWaypoint].Latitude,
+		  sTmp, sizeof(sTmp)-1);
 
-  Units::LatitudeToString(WayPointList[SelectedWaypoint].Latitude, sTmp, sizeof(sTmp)-1);
-  ((WndProperty *)wf->FindByName(TEXT("prpLatitude")))
-    ->SetText(sTmp);
+  ((WndProperty *)wf->FindByName(TEXT("prpCoordinate")))->SetText(sTmp);
 
   Units::FormatUserAltitude(WayPointList[SelectedWaypoint].Altitude, sTmp, sizeof(sTmp)-1);
   ((WndProperty *)wf->FindByName(TEXT("prpAltitude")))
