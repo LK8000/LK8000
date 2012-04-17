@@ -15,7 +15,6 @@ using std::min;
 using std::max;
 
 static WndForm *wf=NULL;
-static WndOwnerDrawFrame *wGrid=NULL;
 
 #define MAX_TEXTENTRY 40
 static unsigned int cursor = 0;
@@ -32,7 +31,6 @@ static void UpdateTextboxProp(void)
   }
 }
 
-
 static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam) {
   switch(wParam & 0xffff){
     case VK_LEFT:
@@ -42,11 +40,6 @@ static int FormKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam) {
       edittext[cursor] = 0;
       UpdateTextboxProp();
       return(0);
-      /* JMW this prevents cursor buttons from being used to enter
-    case VK_RETURN:
-      wf->SetModalResult(mrOK);
-      return(0);
-      */
   }
   return(1);
 }
@@ -74,6 +67,7 @@ static void OnDel(WindowControl * Sender)
   }
   UpdateTextboxProp();
 }
+
 static void OnTime(WindowControl * Sender)
 {
   #ifndef DISABLEAUDIO
@@ -88,6 +82,7 @@ static void OnTime(WindowControl * Sender)
   }
   UpdateTextboxProp();
 }
+
 static void OnDate(WindowControl * Sender)
 {
   #ifndef DISABLEAUDIO
@@ -149,7 +144,6 @@ static CallBackTableEntry_t CallBackTable[]={
 void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, const TCHAR* szFile, const TCHAR* szResource)
 {
   wf = NULL;
-  wGrid = NULL;
   if (width==0) {
     width = MAX_TEXTENTRY;
   }
@@ -160,15 +154,10 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, const TCHAR* szFile, 
 			filename, 
 			hWndMainWindow,			  
 			szResource);
-    if (!wf) return;
-
-  wGrid = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmGrid"));
+  if (!wf) return;
 
   cursor = 0;
   ClearText();
-
-  /*edittext[0]= 0;
-    edittext[1]= 0;*/
 
   if (_tcslen(text)>0) {
     _tcsupr(text);
@@ -185,7 +174,7 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, const TCHAR* szFile, 
   _tcsncpy(text, edittext, max_width);
   text[max_width-1]=0;
   delete wf;
-  wf=NULL; //@ 101027
+  wf=NULL;
 }
 
 void dlgTextEntryShowModal(TCHAR *text, int width)

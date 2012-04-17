@@ -19,7 +19,7 @@
 <WndButton   Caption="0"    X="80" Y="192" Width="78"  Height="55" Font="2" OnClickNotify="OnKey"/>
 <WndButton   Caption="."    X="158" Y="192" Width="78"  Height="55" Font="2" OnClickNotify="OnKey"/>
 
-<WndButton   Caption="_@M180_" X="41" Y="246" Width="78"  Height="54" Font="2" OnClickNotify="OnClear"/>
-<WndButton   Caption="Ok"   X="121" Y="246" Width="78"  Height="54" Font="2" OnClickNotify="OnOk"/>
+<WndButton   Caption="_@M180_" X="41" Y="248" Width="78"  Height="54" Font="2" OnClickNotify="OnClear"/>
+<WndButton   Caption="Ok"   X="121" Y="248" Width="78"  Height="54" Font="2" OnClickNotify="OnOk"/>
 </WndForm>
 </PMML>
