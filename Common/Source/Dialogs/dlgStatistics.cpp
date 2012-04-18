@@ -1072,6 +1072,8 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
   ScaleXFromValue(rc, x1);
   ScaleYFromValue(rc, y1);
 
+  if (olcmode) goto olcmode;	 // by Mazuk 18.4.2012
+
   for (i=0; i<MAXTASKPOINTS; i++) {
     if (ValidTaskPoint(i)) {
       nwps++;
@@ -1115,6 +1117,8 @@ void Statistics::RenderTask(HDC hdc, const RECT rc, const bool olcmode)
       }
     }
   }
+
+olcmode:
   for(unsigned i=0; i<trace.size(); i++) {
     lat1 = trace[i].Latitude();
     lon1 = trace[i].Longitude();
