@@ -576,7 +576,7 @@ _buttondown:
 
         if (mode.Is(Mode::MODE_TARGET_PAN)) {
 		if (AATEnabled) {
-			Screen2LatLon(lparam_X, lparam_Y, Xlat, Ylat);
+			Screen2LatLon(X, Y, Xlat, Ylat);
 			LockTaskData();
 			targetMoved = true;
 			targetMovedLat = Ylat;
