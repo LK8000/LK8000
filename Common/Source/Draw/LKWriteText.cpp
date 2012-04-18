@@ -188,12 +188,13 @@ void MapWindow::LKWriteBoxedText(HDC hDC, const TCHAR* wText, int x, int y, int 
   
 	GetTextExtentPoint(hDC, wText, maxsize, &tsize);
 
-	// HBRUSH oldBrush=(HBRUSH)SelectObject(hDC,LKBrush_DarkGreen);
-	Rectangle(hDC, x-tsize.cx-NIBLSCALE(8), y+tsize.cy+NIBLSCALE(2)+1, x, y);
-
-	y += NIBLSCALE(1);
 	switch(align) {
+		case WTALIGN_LEFT:
+			Rectangle(hDC, x+tsize.cx+NIBLSCALE(8), y+tsize.cy+NIBLSCALE(2)+1, x, y);
+			x += NIBLSCALE(4);
+			break;
 		case WTALIGN_RIGHT:
+			Rectangle(hDC, x-tsize.cx-NIBLSCALE(8), y+tsize.cy+NIBLSCALE(2)+1, x, y);
 			x -= (tsize.cx+NIBLSCALE(4));
 			break;
 		case WTALIGN_CENTER:
@@ -201,16 +202,17 @@ void MapWindow::LKWriteBoxedText(HDC hDC, const TCHAR* wText, int x, int y, int 
 			y -= tsize.cy/2;
 			break;
 	}
+	y += NIBLSCALE(1);
 
 	if (INVERTCOLORS)
 		SetTextColor(hDC,RGB_WHITE); 
 	else
 		SetTextColor(hDC,RGB_BLACK); 
+
 	ExtTextOut(hDC, x, y, ETO_OPAQUE, NULL, wText, maxsize, NULL);
 
 	SetTextColor(hDC,RGB_BLACK); 
 	
-	// SelectObject(hDC,oldBrush);
 	return;
 
 }
