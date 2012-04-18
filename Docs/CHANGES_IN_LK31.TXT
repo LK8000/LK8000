@@ -120,35 +120,39 @@ The runway length is drawn proportional to the real length.
 If an airfield is defined as glider site an, it will be marked with "white wings" 
 
 On an appropriate zoom level the radio frequency will be shown as well.
+On higher zoom levels, more information such as ICAO name (if available) will be printed on the map
 
 Like before if the runway is reachable with respect to the safety height and wind, the airfield/outlanding is green, otherwise red.
 In order to use this additional information's it must be included in the waypointfile of course. We recommend to use the *.cup file format of SeeYou which is able to support this additional information. If you don't have the additional information's we recommend to use the old Alternate symbols.
 
 
-LK8000 VERSION 3.1b 1204
+
+LK8000 VERSION 3.1b 120418
 ==========================
 
 NEW
 
-    Support for ASI FlyNet Vario Device
+.   Support for ASI FlyNet Vario Device
 
-    [Quick gestures]
+.   [Quick gestures]
     Only for paragliders and hangdliers mode: enable/disable quick gestures.
     By default, quick gestures are enabled. Quick gestures allow the pilot to click
     on right or left nearest/info pages to switch to next/previous like with gestures.
     Using gloves during the flight will require this option be disabled.
 
-    Support for UTM coordinate system in units (needed by PGs/HGs)
+.   Support for UTM coordinate system in units (needed by PGs/HGs)
 
-    Add Apis2 15m polar
+.   Added  Apis2 15m polar
 
 
 
 CHANGES
 
-    Clock is shown (if enabled) also in portrait mode.
+.   Clock is shown (if enabled) also in portrait mode.
     Some resolutions will display the clock lower after right overlays.
     Most resolutions will display it on top right, as usual.
+
+.   Vector icons for landables will display radio frequency at high zoom levels, and ICAO code at highest
 
 
 
@@ -164,6 +168,9 @@ Allow Flarm task declaration even in multiplexed or serial bus setups
 Fix logger: if no baro pressure available, log 0 for pressure altitude instead of GPS altitude.
 
 AutoQNH fixed not to use TAKEOFF altitude
+
+
+Fix Analysis olcmode should not use task scale, and print at max zoom the current trace.
 
 (minor) Fix Next Waypoint infobox no more available
 
