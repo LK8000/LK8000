@@ -376,9 +376,9 @@ static void GetValues(void) {
   double num=0, mm = 0, ss = 0; // mm,ss are numerators (division) so don't want to lose decimals
 
   if(Units::CoordinateFormat==4) {
-	  int utmXZone;
-	  char utmYZone;
-	  double easting, northing;
+	  int utmXZone=0;
+	  char utmYZone='\0';;
+	  double easting=0, northing=0;
 
       wp = (WndProperty*)wf->FindByName(TEXT("prpUTMzoneX"));
       if (wp) {
