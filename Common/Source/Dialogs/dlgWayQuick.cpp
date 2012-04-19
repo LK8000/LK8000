@@ -125,7 +125,20 @@ short dlgWayQuickShowModal(void){
 	_stprintf(sTmp, _T(" %s"),WayPointList[SelectedWaypoint].Name);
   }
   wf->SetCaption(sTmp);
-  wf->SetLeft((ScreenSizeX-IBLSCALE(230))/2);
+
+  unsigned int offset=0;
+
+  if (ScreenLandscape) {
+	offset=(ScreenSizeX-IBLSCALE(240))/2;
+	((WndButton *)wf->FindByName(TEXT("cmdGoto"))) ->SetLeft(offset);
+	((WndButton *)wf->FindByName(TEXT("cmdSetAlt1"))) ->SetLeft(offset);
+	((WndButton *)wf->FindByName(TEXT("cmdSetAlt2"))) ->SetLeft(offset+IBLSCALE(112));
+	((WndButton *)wf->FindByName(TEXT("cmdDetails"))) ->SetLeft(offset);
+	((WndButton *)wf->FindByName(TEXT("cmdCancel"))) ->SetLeft(offset);
+  } else {
+	//offset=(ScreenSizeY-IBLSCALE(240))/2;
+	//((WndButton *)wf->FindByName(TEXT("cmdGoto"))) ->SetTop(offset);
+  }
 
   wf->ShowModal();
 
