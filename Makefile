@@ -639,6 +639,7 @@ SRC_FILES :=\
 	$(SRC)/LocalPath.cpp\
 	$(SRC)/Locking.cpp\
 	$(SRC)/Logger/DoSignature.cpp 	\
+	$(SRC)/Logger/FlightDataRec.cpp 	\
 	$(SRC)/Logger/LogBook.cpp\
 	$(SRC)/Logger/Logger.cpp \
 	$(SRC)/Logger/StartStopLogger.cpp \
