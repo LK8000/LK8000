@@ -59,7 +59,6 @@
 	MDI_LOOKABLEND,			// screen change, drawlook ablend
 	MDI_MAPWPVECTORS,		// screen change
 	MDI_READLANGUAGEFILE,		// full restart
-	MDI_FLIGHTRECORDER,		// 
 	MDI_LAST_DOINIT,		
  } MDI_t;
 

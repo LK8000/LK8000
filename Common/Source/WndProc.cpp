@@ -342,6 +342,9 @@ void Shutdown(void) {
   CloseTerrainRenderer();
 
   LiveTrackerShutdown();
+
+  extern void CloseFlightDataRecorder(void);
+  CloseFlightDataRecorder();
   
   // Stop COM devices
   #if ALPHADEBUG

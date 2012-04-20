@@ -15,9 +15,8 @@ typedef struct{
 }sFlightDataRec;
 
 
-void InitFDR(void);
-void UpdateFlightRecorder(void);
-void OnExitFlightRecorder(void);
-void OnCheckFDRRanges(void);
+void InitFlightDataRecorder(void);
+void UpdateFlightDataRecorder(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
+void CloseFlightDataRecorder(void);
 
 #endif

@@ -24,6 +24,8 @@ void TriggerRedraws(NMEA_INFO *nmea_info, DERIVED_INFO *derived_info) {
 
 
 extern void Cpustats(int *acc, FILETIME *a, FILETIME *b, FILETIME *c, FILETIME *d);
+  extern bool FlightDataRecorderActive;
+  extern void UpdateFlightDataRecorder(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
 DWORD CalculationThread (LPVOID lpvoid) {
 	(void)lpvoid;
@@ -110,6 +112,9 @@ DWORD CalculationThread (LPVOID lpvoid) {
     // update live tracker with new values
     // this is a nonblocking call, live tracker runs on different thread
      LiveTrackerUpdate(&tmp_GPS_INFO, &tmp_CALCULATED_INFO);
+
+    if (FlightDataRecorderActive) UpdateFlightDataRecorder(&tmp_GPS_INFO,&tmp_CALCULATED_INFO);
+   
     
     #ifdef CPUSTATS
     if ( (GetThreadTimes( hCalculationThread, &CreationTime, &ExitTime,&EndKernelTime,&EndUserTime)) == 0) {

@@ -94,6 +94,7 @@ void MapWindow::RenderMapWindow(RECT rc)
   	DrawFlightMode(hdcDrawWindow, rc);
   	DrawGPSStatus(hdcDrawWindow, rc);
 	DrawLKAlarms(hdcDrawWindow, rc);
+	DrawFDRAlarms(hdcDrawWindow, rc);
 	#if (WINDOWSPC<1)
 	LKBatteryManager();
 	#endif
@@ -133,6 +134,7 @@ void MapWindow::RenderMapWindow(RECT rc)
   #endif
 
   DrawLKAlarms(hdcDrawWindow, rc);
+  DrawFDRAlarms(hdcDrawWindow, rc);
 
   SelectObject(hdcDrawWindow, hfOld);
 

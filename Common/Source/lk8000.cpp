@@ -437,6 +437,9 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
 
   LiveTrackerInit();
 
+  extern void InitFlightDataRecorder(void);
+  InitFlightDataRecorder();
+
   // re-set polar in case devices need the data
   #if TESTBENCH
   StartupStore(TEXT(".... GlidePolar::SetBallast%s"),NEWLINE);

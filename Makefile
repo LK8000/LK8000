@@ -316,11 +316,11 @@ DRAW	:=\
 	$(DRW)/DrawBestCruiseTrack.cpp \
 	$(DRW)/DrawCompass.cpp \
 	$(DRW)/DrawCross.cpp \
-	$(DRW)/DrawGreatCircle.cpp \
 	$(DRW)/DrawFinalGlideBar.cpp \
 	$(DRW)/DrawFlightMode.cpp \
-	$(DRW)/DrawGPSStatus.cpp \
 	$(DRW)/DrawGlideThroughTerrain.cpp \
+	$(DRW)/DrawGPSStatus.cpp \
+	$(DRW)/DrawGreatCircle.cpp \
 	$(DRW)/DrawHeading.cpp \
 	$(DRW)/DrawLKAlarms.cpp \
 	$(DRW)/DrawMapScale.cpp \
@@ -624,6 +624,7 @@ SRC_FILES :=\
 	$(SRC)/InitFunctions.cpp\
 	$(SRC)/InputEvents.cpp 		\
 	$(SRC)/lk8000.cpp\
+	$(SRC)/LiveTracker.cpp \
 	$(SRC)/LKAirspace.cpp	\
 	$(SRC)/LKFonts.cpp		\
 	$(SRC)/LKInstall.cpp 		\
@@ -678,7 +679,6 @@ SRC_FILES :=\
 	$(SRC)/Waypointparser.cpp \
 	$(SRC)/WndProc.cpp\
 	$(SRC)/WindowControls.cpp \
-	$(SRC)/LiveTracker.cpp \
 	\
 	$(LKINTER) \
 	$(LIBRARY) \
