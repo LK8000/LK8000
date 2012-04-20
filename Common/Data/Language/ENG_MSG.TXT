@@ -1915,6 +1915,8 @@ _@M2130_ "System\nSetup"
 _@M2131_ "Custom\nMenu"
 _@M2132_ "Clear\nAltern"
 
+_@M2133_ "Position"
+
 # New CustomKey labels for Custom Menu
 _@M2200_ "----"
 _@M2201_ "Menu"

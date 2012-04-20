@@ -177,5 +177,6 @@ Using gloves during the flight will require this option be disabled.
 Change in ENG_MSG
 _@M1029_ "Next Waypoint" --> _@M1029_ "_Reserved 2"
 
-
+Add : used in Status dialog
+_@M2133_ "Position"
 
