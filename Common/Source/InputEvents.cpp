@@ -1496,6 +1496,10 @@ void InputEvents::eventChangeMultitarget(const TCHAR *misc) {
 	OvertargetMode=OVT_MARK;
   } else if (_tcscmp(misc, TEXT("PASS")) == 0) {
 	OvertargetMode=OVT_PASS;
+  } else if (_tcscmp(misc, TEXT("ROTATE")) == 0) {
+	RotateOvertarget();
+  } else if (_tcscmp(misc, TEXT("MENU")) == 0) {
+	InputEvents::setMode(_T("MTarget"));
   }
 }
 
