@@ -3,14 +3,13 @@
 <WndButton Name="cmdNext"  Caption="&gt;" X=157 Y=2 Width=55  Height=28 Font=3 OnClickNotify="OnNextClicked" Tag=1 />
 <WndButton Name="cmdPrev"  Caption="&lt;" X=82 Y=2 Width=55  Height=28 Font=3 OnClickNotify="OnPrevClicked" Tag=0/>
 <WndButton Name="cmdClose" Caption="_@M186_" X=2 Y=2 Width=60  Height=28 Font=2 Tag=3 />
-<WndFrame Name="frmStatusFlight" X=0 Y=32 Width=230 Height=200 Font=2>
-<WndProperty Name="prpLatitude"  Caption="Latitude"  X=2 Y=-1 Width=235 Height=22 CaptionWidth=120 Font=2 ReadOnly=1 />
-<WndProperty Name="prpLongitude" Caption="Longitude" X=2 Y=-1  Width=235 Height=22 CaptionWidth=120 Font=2 ReadOnly=1 />
-<WndProperty Name="prpAltitude"  Caption="_@M89_"  X=2 Y=-1 Width=235 Height=22 CaptionWidth=120 Font=2 ReadOnly=1 />
-<WndProperty Name="prpMaxHeightGain"  Caption="_@M429_"  X=2 Y=-1 Width=235 Height=22 CaptionWidth=120 Font=2 ReadOnly=1 />
-<WndProperty Name="prpNear"      Caption="_@M456_"      X=2 Y=-1 Width=235 Height=22 CaptionWidth=120 Font=2 ReadOnly=1 />
-<WndProperty Name="prpBearing"   Caption="_@M138_"   X=2 Y=-1 Width=235 Height=22 CaptionWidth=120 Font=2 ReadOnly=1 />
-<WndProperty Name="prpDistance"  Caption="_@M245_"   X=2 Y=-1 Width=235 Height=22 CaptionWidth=120 Font=2 ReadOnly=1 />
+<WndFrame Name="frmStatusFlight" X=0 Y=32 Width=236 Height=200 Font=2>
+<WndProperty Name="prpCoordinate"  Caption="_@M2133_"  X=2 Y=-1 Width=250 Height=22 CaptionWidth=60 Font=2 ReadOnly=1 />
+<WndProperty Name="prpAltitude"  Caption="_@M89_"  X=2 Y=-1 Width=250 Height=22 CaptionWidth=120 Font=2 ReadOnly=1 />
+<WndProperty Name="prpMaxHeightGain"  Caption="_@M429_"  X=2 Y=-1 Width=250 Height=22 CaptionWidth=120 Font=2 ReadOnly=1 />
+<WndProperty Name="prpNear"      Caption="_@M456_"      X=2 Y=-1 Width=250 Height=22 CaptionWidth=120 Font=2 ReadOnly=1 />
+<WndProperty Name="prpBearing"   Caption="_@M138_"   X=2 Y=-1 Width=250 Height=22 CaptionWidth=120 Font=2 ReadOnly=1 />
+<WndProperty Name="prpDistance"  Caption="_@M245_"   X=2 Y=-1 Width=250 Height=22 CaptionWidth=120 Font=2 ReadOnly=1 />
 </WndFrame>
 <WndFrame Name="frmStatusSystem" X=0 Y=32 Width=230 Height=200 Font=2>
 <WndProperty Name="prpGPS"       Caption="_@M319_"       X=2 Y=-1 Width=235 Height=22 CaptionWidth=120 Font=2 ReadOnly=1 />

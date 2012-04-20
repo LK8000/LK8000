@@ -441,20 +441,13 @@ static void UpdateValuesFlight(void) {
   TCHAR Temp[1000];
   double bearing;
   double distance;
-  TCHAR sLongitude[16];
-  TCHAR sLatitude[16];
+  TCHAR sCoordinate[32]={0};
 
-  Units::LongitudeToString(GPS_INFO.Longitude, sLongitude, sizeof(sLongitude)-1);
-  Units::LatitudeToString(GPS_INFO.Latitude, sLatitude, sizeof(sLatitude)-1);
+  Units::CoordinateToString(GPS_INFO.Longitude, GPS_INFO.Latitude, sCoordinate, sizeof(sCoordinate)-1);
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLongitude"));
-  if (wp) {
-    wp->SetText(sLongitude);
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpLatitude"));
-  if (wp) {
-    wp->SetText(sLatitude);
+  wp = (WndProperty *)wf->FindByName(TEXT("prpCoordinate"));
+  if(wp) {
+	  wp->SetText(sCoordinate);
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
