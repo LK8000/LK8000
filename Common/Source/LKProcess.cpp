@@ -2841,6 +2841,12 @@ void MapWindow::LKFormatAltDiff(const int wpindex, const bool wpvirtual, TCHAR *
 void MapWindow::LKUpdateOlc(void)
 {
   static short loop=0;
+  static double nextHB=0;
+
+  // Be sure we are executing not faster than 1Hz!
+  if (LKHearthBeats< nextHB) return; 
+  nextHB=LKHearthBeats+2;
+
   // get one result each second
   CContestMgr::TType type = (CContestMgr::TType)(loop++ % CContestMgr::TYPE_NUM);
   OlcResults[type] = CContestMgr::Instance().Result(type, false);
