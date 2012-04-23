@@ -14,6 +14,24 @@
 
 DWORD MapWindow::timestamp_newdata=0;
 
+//
+// Execution at 1hz inside RenderMapWindow
+//
+void MapWindow::DrawFunctions1HZ(HDC hDC, const RECT rc) {
+
+  static double nextHB=0;
+
+  if (LKHearthBeats < nextHB) return;
+  nextHB=LKHearthBeats+2;	// 2hz to 1hz
+
+  DrawLKAlarms(hDC, rc);
+  DrawFDRAlarms(hDC, rc);
+  #if (WINDOWSPC<1)
+  LKBatteryManager();
+  #endif
+}
+
+
 
 void MapWindow::UpdateTimeStats(bool start) {
   if (start) {
@@ -93,11 +111,7 @@ void MapWindow::RenderMapWindow(RECT rc)
   if (DONTDRAWTHEMAP) {
   	DrawFlightMode(hdcDrawWindow, rc);
   	DrawGPSStatus(hdcDrawWindow, rc);
-	DrawLKAlarms(hdcDrawWindow, rc);
-	DrawFDRAlarms(hdcDrawWindow, rc);
-	#if (WINDOWSPC<1)
-	LKBatteryManager();
-	#endif
+	DrawFunctions1HZ(hdcDrawWindow,rc);
 	return;
   }
   // overlays
@@ -129,12 +143,7 @@ void MapWindow::RenderMapWindow(RECT rc)
 
   DrawGPSStatus(hdcDrawWindow, rc);
 
-  #if (WINDOWSPC<1)
-  LKBatteryManager();
-  #endif
-
-  DrawLKAlarms(hdcDrawWindow, rc);
-  DrawFDRAlarms(hdcDrawWindow, rc);
+  DrawFunctions1HZ(hdcDrawWindow,rc);
 
   SelectObject(hdcDrawWindow, hfOld);
 

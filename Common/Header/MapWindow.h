@@ -495,6 +495,7 @@ class MapWindow {
   static void DrawLKStatus(HDC hdc, const RECT rc);
   static void DrawFlightMode(HDC hdc, const RECT rc);
   static void DrawGPSStatus(HDC hdc, const RECT rc);
+  static void DrawFunctions1HZ(HDC hdc, const RECT rc);
   static void DrawLKAlarms(HDC hdc, const RECT rc);
   static void DrawFDRAlarms(HDC hdc, const RECT rc);
   static double LKDrawTrail(HDC hdc, const POINT Orig, const RECT rc);
