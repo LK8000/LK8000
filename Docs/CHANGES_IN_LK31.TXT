@@ -125,6 +125,24 @@ On higher zoom levels, more information such as ICAO name (if available) will be
 Like before if the runway is reachable with respect to the safety height and wind, the airfield/outlanding is green, otherwise red.
 In order to use this additional information's it must be included in the waypointfile of course. We recommend to use the *.cup file format of SeeYou which is able to support this additional information. If you don't have the additional information's we recommend to use the old Alternate symbols.
 
+LK8000 VERSION 3.1c 1204
+==========================
+
+NEW
+
+. Flight Data Recorder
+
+
+
+
+CHANGES
+
+
+
+FIXES
+
+. Fix 3.1 UTM coordinates in status dialog
+
 
 
 LK8000 VERSION 3.1b 120418
