@@ -604,7 +604,7 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
 
   
   NMEAParser::ExtractParameter(String,ctemp,1);
-  GPS_INFO->ExternalWindAvailalbe = TRUE;
+  GPS_INFO->ExternalWindAvailable = TRUE;
   GPS_INFO->ExternalWindSpeed = (StrToDouble(ctemp,NULL) / 10.0);
   NMEAParser::ExtractParameter(String,ctemp,0);
   GPS_INFO->ExternalWindDirection = StrToDouble(ctemp,NULL);  

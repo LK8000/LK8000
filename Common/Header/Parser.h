@@ -128,7 +128,7 @@ typedef struct _NMEA_INFO
   BOOL BaroAltitudeAvailable;
   DEVICE_TYPE BaroDevice;
   long BaroTime;
-  BOOL ExternalWindAvailalbe;
+  BOOL ExternalWindAvailable;
   double ExternalWindSpeed;
   double ExternalWindDirection;
   BOOL VarioAvailable;

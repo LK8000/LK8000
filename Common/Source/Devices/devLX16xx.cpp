@@ -365,7 +365,7 @@ bool DevLX16xx::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* i
  /*
   if (ParToDouble(sentence, 10, &info->ExternalWindDirection) &&
       ParToDouble(sentence, 11, &info->ExternalWindSpeed))
-    info->ExternalWindAvailalbe = TRUE;
+    info->ExternalWindAvailable = TRUE;
 */
   TriggerVarioUpdate();
 
