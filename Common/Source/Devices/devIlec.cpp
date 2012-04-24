@@ -104,19 +104,35 @@ static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 	NMEAParser::ExtractParameter(String,ctemp,4); // wind speed kph integer
 
 	if (_tcslen(ctemp)!=0) {
-		double wspeed, wconfidence;
-		wspeed = StrToDouble(ctemp,NULL);
-		NMEAParser::ExtractParameter(String,ctemp,5); // confidence  0-100 percentage
-		wconfidence = StrToDouble(ctemp,NULL);
-		// StartupStore(_T(".... WIND from %.0f speed=%.0f kph  confidence=%.0f\n"),wfrom,wspeed,wconfidence);
 
-		SetWindEstimate(wspeed/TOKPH, wfrom,(int)(wconfidence/100)*10);
-                CALCULATED_INFO.WindSpeed=wspeed/TOKPH;
-                CALCULATED_INFO.WindBearing=wfrom;
+		#if 1 // 120424 fix correct wind setting
+
+			double wspeed, wconfidence;
+			wspeed = StrToDouble(ctemp,NULL);
+			NMEAParser::ExtractParameter(String,ctemp,5); // confidence  0-100 percentage
+			wconfidence = StrToDouble(ctemp,NULL);
+
+			GPS_INFO->ExternalWindAvailable = TRUE;
+			if (wconfidence>=1) {
+				GPS_INFO->ExternalWindSpeed = wspeed/TOKPH;
+				GPS_INFO->ExternalWindDirection = wfrom;
+			}
+
+		#else
+
+			double wspeed, wconfidence;
+			wspeed = StrToDouble(ctemp,NULL);
+			NMEAParser::ExtractParameter(String,ctemp,5); // confidence  0-100 percentage
+			wconfidence = StrToDouble(ctemp,NULL);
+			// StartupStore(_T(".... WIND from %.0f speed=%.0f kph  confidence=%.0f\n"),wfrom,wspeed,wconfidence);
+
+			SetWindEstimate(wspeed/TOKPH, wfrom,(int)(wconfidence/100)*10);
+	                CALCULATED_INFO.WindSpeed=wspeed/TOKPH;
+	                CALCULATED_INFO.WindBearing=wfrom;
+		#endif
 
 
-	} 
-		// else StartupStore(_T(".. NO WIND\n"));
+	} else	GPS_INFO->ExternalWindAvailable = FALSE;
 	
 	
 	GPS_INFO->VarioAvailable = TRUE;

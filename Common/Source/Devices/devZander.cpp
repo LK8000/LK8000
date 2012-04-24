@@ -176,10 +176,15 @@ static BOOL PZAN3(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *aGPS_INFO)
 
   if (wind_usable == 'A') {
 
-	//wfrom+=180;
-	//if (wfrom==360) wfrom=0;
-	//if (wfrom>360) wfrom-=360;
 	wspeed/=3.6;
+
+	#if 1 // 120424 fix correct wind setting
+
+	aGPS_INFO->ExternalWindAvailable = TRUE;
+	aGPS_INFO->ExternalWindSpeed = wspeed;
+	aGPS_INFO->ExternalWindDirection = wfrom;
+
+	#else
 
 	// do not update if it has not changed
 	if ( (wspeed!=CALCULATED_INFO.WindSpeed) || (wfrom != CALCULATED_INFO.WindBearing) ) {
@@ -189,6 +194,7 @@ static BOOL PZAN3(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *aGPS_INFO)
 		CALCULATED_INFO.WindBearing=wfrom;
 
 	}
+	#endif
   }
     
   return true;

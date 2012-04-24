@@ -164,6 +164,18 @@ static BOOL cLXWP0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO) {
   NMEAParser::ExtractParameter(String,ctemp,10);
   wfrom=StrToDouble(ctemp,NULL);
 
+  #if 1 // 120424 fix correct wind setting
+
+  wfrom+=180;
+  if (wfrom==360) wfrom=0;
+  if (wfrom>360) wfrom-=360;
+  wspeed/=3.6;
+
+  GPS_INFO->ExternalWindAvailable = TRUE;
+  GPS_INFO->ExternalWindSpeed = wspeed;
+  GPS_INFO->ExternalWindDirection = wfrom;
+
+  #else
   if (wspeed>0) {
 
 	wfrom+=180;
@@ -180,8 +192,8 @@ static BOOL cLXWP0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO) {
 
 	}
   }
+  #endif
 
-  // TriggerVarioUpdate(); 
 
   return TRUE;
 }
