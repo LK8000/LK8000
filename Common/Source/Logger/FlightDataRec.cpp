@@ -211,12 +211,13 @@ void InitFlightDataRecorder(void)
 void UpdateFlightDataRecorder(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   static unsigned int iCallCnt = 0;
+
+  static double nextHB=0;
+  if (LKHearthBeats < nextHB) return;
+  nextHB=LKHearthBeats+2;       // 2hz to 1hz
+
   SYSTEMTIME pda_time;
-  static int oldSec =0;
   GetSystemTime(&pda_time);
-  if(( pda_time.wSecond - oldSec ) == 0)
-	  return;
-  oldSec = pda_time.wSecond ;
 
   int idx=0;
   LKASSERT(iLogDelay<32767);
@@ -226,14 +227,7 @@ void UpdateFlightDataRecorder(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   if (FlightDataRecorderFile==NULL) return;
 
-
-  // xULLI: WHAT ABOUT USING
-  // if(FDR[0].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->ExtBatt1_Voltage);
-  // if(FDR[1].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->ExtBatt2_Voltage);
-  // etc.etc.
-  // 
   // Shutdown will set LogDelay to zero before closing the file descriptor
-
 
   if (iLogDelay!=0) fprintf(FlightDataRecorderFile,"%02d:%02d:%02d ", pda_time.wHour,  pda_time.wMinute,  pda_time.wSecond  );
 
@@ -297,16 +291,10 @@ void UpdateFlightDataRecorder(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 //
 // It is possible to draw directly on the screen, instead of using DoStatusMessage. See DrawLKAlarms.
 //
+// This function is called by DrawFunctions1HZ  once per second max.
+//
 void MapWindow::DrawFDRAlarms(HDC hDC, const RECT rc)
 {
-
- // static unsigned short iCallCnt=0;
-  static int oldSec =0;
-  SYSTEMTIME pda_time;
-  GetSystemTime(&pda_time);
-  if(( pda_time.wSecond - oldSec ) == 0)
-	  return;
-  oldSec = pda_time.wSecond ;
 
   int i;
   TCHAR szTmp[80];
