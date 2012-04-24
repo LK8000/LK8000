@@ -125,6 +125,26 @@ On higher zoom levels, more information such as ICAO name (if available) will be
 Like before if the runway is reachable with respect to the safety height and wind, the airfield/outlanding is green, otherwise red.
 In order to use this additional information's it must be included in the waypointfile of course. We recommend to use the *.cup file format of SeeYou which is able to support this additional information. If you don't have the additional information's we recommend to use the old Alternate symbols.
 
+
+
+Wind calculation made by external instruments requires configuration!
+---------------------------------------------------------------------
+
+If you are using an external instrument such as a Zander, an LX, an Ilec or any other instrument that can provide wind calculation, then you need to configure LK to use this information.
+You can do it permanently inside configuration, menu 5, Auto Wind should be set to "external".
+Or/And you can do it during the flight, Menu, Config, Setup Wind, Auto wind set to external.
+When using external wind, no calculation is performed while circling.
+If for any reason you want to disable external wind during the flight, simply enter Setup Wind menu and change the setting.
+
+If the Auto wind is not configured to "external", the wind calculated externally will be IGNORED.
+
+
+
+
+
+
+
+
 LK8000 VERSION 3.1c 1204
 ==========================
 
@@ -132,11 +152,15 @@ NEW
 
 . Flight Data Recorder
 
-
+. Configuration for using wind precalculated by external instrument
+  In config menu 5 (Glide Computer) Auto Wind  can also be "External"
+  In basic wind setup , the same.
 
 
 CHANGES
 
+. Using external wind from instruments like CAI, LX etc requires setting.
+  See addendum manual.
 
 
 FIXES

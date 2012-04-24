@@ -136,6 +136,8 @@ void dlgWindSettingsShowModal(void){
       dfe->addEnumText(gettext(TEXT("ZigZag")));
 	// LKTOKEN  _@M149_ = "Both" 
       dfe->addEnumText(gettext(TEXT("_@M149_")));
+      dfe->addEnumText(MsgToken(1793)); // External
+
       wp->GetDataField()->Set(AutoWindMode);
       wp->RefreshDisplay();
 

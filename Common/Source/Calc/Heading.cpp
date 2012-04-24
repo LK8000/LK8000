@@ -76,7 +76,7 @@ void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
            Calculated->TrueAirspeedEstimated);
 
     // update zigzag wind
-    if (((AutoWindMode & D_AUTOWIND_ZIGZAG)==D_AUTOWIND_ZIGZAG) 
+    if (  ((AutoWindMode==D_AUTOWIND_ZIGZAG) || (AutoWindMode==D_AUTOWIND_BOTHCIRCZAG))
         && (!ReplayLogger::IsEnabled())) {
       double zz_wind_speed;
       double zz_wind_bearing;

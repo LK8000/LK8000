@@ -233,7 +233,7 @@ _forcereset:
     }
     break;
   case CLIMB:
-    if ((AutoWindMode & D_AUTOWIND_CIRCLING)==D_AUTOWIND_CIRCLING) {
+    if ( (AutoWindMode == D_AUTOWIND_CIRCLING) || (AutoWindMode==D_AUTOWIND_BOTHCIRCZAG) ) {
       LockFlightData();
       windanalyser->slot_newSample(Basic, Calculated);
       UnlockFlightData();
@@ -321,7 +321,7 @@ _forcereset:
   }
   // generate new wind vector if altitude changes or a new
   // estimate is available
-  if (AutoWindMode>0) {
+  if (AutoWindMode>D_AUTOWIND_MANUAL && AutoWindMode <D_AUTOWIND_EXTERNAL) {
     LockFlightData();
     windanalyser->slot_Altitude(Basic, Calculated);
     UnlockFlightData();
@@ -375,7 +375,7 @@ void PercentCircling(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double Ra
 
 void SwitchZoomClimb(NMEA_INFO *Basic, DERIVED_INFO *Calculated, bool isclimb, bool left) {
 
-  if ((AutoWindMode & D_AUTOWIND_CIRCLING)==D_AUTOWIND_CIRCLING) {
+  if ( (AutoWindMode == D_AUTOWIND_CIRCLING) || (AutoWindMode==D_AUTOWIND_BOTHCIRCZAG) ) {
     LockFlightData();
     windanalyser->slot_newFlightMode(Basic, Calculated, left, 0);
     UnlockFlightData();

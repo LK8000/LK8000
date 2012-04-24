@@ -1771,6 +1771,9 @@ _@M1791_ "Arm toggle advance"
 # configuration PG/Hg specials
 _@M1792_ "Quick gestures "
 
+# Wind mode configuration, "External" (from external instrument)
+_@M1793_ "External"
+
 ############################################################
 #                  - MENU MESSAGES - 
 #

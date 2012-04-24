@@ -279,9 +279,11 @@
 #define ANALYSIS_PAGE_NEAR_AIRSPACE 9
 
 
-
-#define D_AUTOWIND_CIRCLING 1
-#define D_AUTOWIND_ZIGZAG 2
+#define D_AUTOWIND_MANUAL	0	// totally manual
+#define D_AUTOWIND_CIRCLING	1	// while circling
+#define D_AUTOWIND_ZIGZAG	2	// while zigzagging with a TAS available
+#define D_AUTOWIND_BOTHCIRCZAG	3	// circling + zigzag
+#define D_AUTOWIND_EXTERNAL	4	// from an external instrument only
 
 
 // WriteText modalities

@@ -180,3 +180,7 @@ _@M1029_ "Next Waypoint" --> _@M1029_ "_Reserved 2"
 Add : used in Status dialog
 _@M2133_ "Position"
 
+# Wind mode configuration, "External" (from external instrument)
+_@M1793_ "External"
+
+HLP 139 and HLP 612:  added [External]   to wind choices!

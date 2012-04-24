@@ -51,6 +51,15 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   // first thing: assign navaltitude!
   EnergyHeightNavAltitude(Basic, Calculated);
+
+  // second thing: if available, get external wind precalculated!
+  if ( (Basic->ExternalWindAvailable==TRUE) && (AutoWindMode==D_AUTOWIND_EXTERNAL)) {
+	if (Basic->ExternalWindSpeed>0 && Basic->ExternalWindSpeed<35) {
+		Calculated->WindSpeed = Basic->ExternalWindSpeed;
+		Calculated->WindBearing = Basic->ExternalWindDirection;
+	}
+  }
+
   Heading(Basic, Calculated);
   DistanceToNext(Basic, Calculated);
   DistanceToHome(Basic, Calculated);

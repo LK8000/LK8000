@@ -180,6 +180,7 @@ the pilot is responsible for setting the wind estimate.
 [Circling] Requires only a GPS source
 [ZigZag] requires an intelligent vario with airspeed output.
 [Both] Use ZigZag and circling.
+[External] Use only wind calculated by external instrument (like CAI, LX, ZANDER etc.)
 
 @140
 This is the INDICATED AIR SPEED to hold in straight flight before asking for TrueWind calculation. 
@@ -884,6 +885,7 @@ When the algorithm is switched off, the pilot is responsible for setting the win
 [Circling] Requires only a GPS source
 [ZigZag] requires an intelligent vario with airspeed output.
 [Both] Use ZigZag and circling.
+[External] Use only wind calculated by external instrument (like CAI, LX, ZANDER etc.)
 
 @613
 Determines whether the snail trail is drifted with the wind when displayed in circling mode.
