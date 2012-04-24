@@ -64,7 +64,7 @@ void InitFlightDataRecorder(void)
   // Reset configuration
   for(i=0 ; i < NO_ENTRYS; i++)
   {
-	FDR[i].abLog = 0 ;FDR[i].fMin =0.0 ; FDR[i].fMax = 0.0;FDR[i].aiCheckInterval = 0; FDR[i].aiWarningCnt= 0;
+	FDR[i].abLog = 0 ;FDR[i].fMin =0.0 ; FDR[i].fMax = 0.0;FDR[i].aiCheckInterval = 0; FDR[i].aiMaxWarnings= 0; FDR[i].iWarningDelay=0;
   }
 
   // Load new configuration
@@ -79,17 +79,17 @@ void InitFlightDataRecorder(void)
 
   for(i= 0 ; i < NO_ENTRYS; i++) {
 	fscanf(fpDataRecConfigFile, "%d %f %f %i %i %120[^\n]", 
-		&FDR[i].abLog ,&FDR[i].fMin , &FDR[i].fMax , &FDR[i].aiCheckInterval, &FDR[i].aiWarningCnt, szTmp );
+		&FDR[i].abLog ,&FDR[i].fMin , &FDR[i].fMax , &FDR[i].aiCheckInterval, &FDR[i].aiMaxWarnings, szTmp );
   }
 
   fclose(fpDataRecConfigFile);
 
 
   i=0;
-  _tcscpy( FDR[i++].szName , _T("External Batt 1"));
-  _tcscpy( FDR[i++].szName , _T("External Batt 2"));
+  _tcscpy( FDR[i++].szName , _T("External Batt. 1"));
+  _tcscpy( FDR[i++].szName , _T("External Batt. 2"));
   _tcscpy( FDR[i++].szName , _T("supply  voltage"));
-  _tcscpy( FDR[i++].szName , _T("Batt %"));
+  _tcscpy( FDR[i++].szName , _T("PDA Batt. %"));
   _tcscpy( FDR[i++].szName , _T("Outside Air Temperature"));
   _tcscpy( FDR[i++].szName , _T("Longitude"));
   _tcscpy( FDR[i++].szName , _T("Latitude"));
@@ -126,9 +126,20 @@ void InitFlightDataRecorder(void)
   	return;
   } 
 
+  SYSTEMTIME pda_time;
+  GetSystemTime(&pda_time);
   // FROM NOW ON, we can write on the file and on LK exit we must close the file.
+  fprintf(FlightDataRecorderFile,"******************************************************************\r");
+  fprintf(FlightDataRecorderFile,"* LK8000 Tactical Flight Computer -  WWW.LK8000.IT\r");
+  fprintf(FlightDataRecorderFile,"*\r");
+  fprintf(FlightDataRecorderFile,"* Flight Data Recorder Output\r");
+  fprintf(FlightDataRecorderFile,"* GNU 2012 by Ulrich Heynen / Paolo Ventafridda\r");
+  fprintf(FlightDataRecorderFile,"*\r");
+  fprintf(FlightDataRecorderFile,"* flight recorded on: %02d:%02d:%04d starting at %02d:%02d:%02d UTC\r", pda_time.wDay,pda_time.wMonth,pda_time.wYear , pda_time.wHour,  pda_time.wMinute,  pda_time.wSecond  );
+  fprintf(FlightDataRecorderFile,"*\r");
+  fprintf(FlightDataRecorderFile,"******************************************************************\r\r");
 
-  fprintf(FlightDataRecorderFile,"Recording interval:%ds \r",iLogDelay);
+  fprintf(FlightDataRecorderFile,"Recording interval:%ds \r\r",iLogDelay);
 
   for( i = 0;  i < NO_ENTRYS; i++)
   {
@@ -143,15 +154,15 @@ void InitFlightDataRecorder(void)
 	unicode2utf(FDR[i].szName, sbuf, sizeof(sbuf));
 	if(FDR[i].aiCheckInterval > 0)
 	{
-		if( FDR[i].aiWarningCnt > 0)
+		if( FDR[i].aiMaxWarnings > 0)
 		{
-			fprintf(FlightDataRecorderFile,"%30s range (%4.2f .. %4.2f) check every %is: max. %i warnings\r", 
-				sbuf,FDR[i].fMin,  FDR[i].fMax,FDR[i].aiCheckInterval,  FDR[i].aiWarningCnt );
+		  fprintf(FlightDataRecorderFile,"%30s range (%4.2f .. %4.2f) warning every %is, max. %i warnings\r",
+				sbuf,FDR[i].fMin,  FDR[i].fMax,FDR[i].aiCheckInterval,  FDR[i].aiMaxWarnings );
 		}
 		else
 		{
-			fprintf(FlightDataRecorderFile,"%30s range (%4.2f .. %4.2f) check every %is: unlimited warnings!\r", 
-				sbuf,FDR[i].fMin,  FDR[i].fMax,FDR[i].aiCheckInterval);
+		  fprintf(FlightDataRecorderFile,"%30s range (%4.2f .. %4.2f) check every %is, unlimited warnings!\r",
+				sbuf,FDR[i].fMin,  FDR[i].fMax,FDR[i].aiMaxWarnings);
 		}
 	}
   }
@@ -200,6 +211,12 @@ void InitFlightDataRecorder(void)
 void UpdateFlightDataRecorder(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   static unsigned int iCallCnt = 0;
+  SYSTEMTIME pda_time;
+  static int oldSec =0;
+  GetSystemTime(&pda_time);
+  if(( pda_time.wSecond - oldSec ) == 0)
+	  return;
+  oldSec = pda_time.wSecond ;
 
   int idx=0;
   LKASSERT(iLogDelay<32767);
@@ -209,71 +226,62 @@ void UpdateFlightDataRecorder(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   if (FlightDataRecorderFile==NULL) return;
 
-  float fValue[NO_ENTRYS];
-
-  fValue[idx++] = Basic->ExtBatt1_Voltage;
-  fValue[idx++] = Basic->ExtBatt2_Voltage;
-  fValue[idx++] = Basic->SupplyBatteryVoltage;
-  fValue[idx++] = PDABatteryPercent;
-  fValue[idx++] = Basic->OutsideAirTemperature;
-  fValue[idx++] = Basic->Latitude;
-  fValue[idx++] = Basic->Longitude;
-  fValue[idx++] = Basic->Altitude;
-  fValue[idx++] = Basic->BaroAltitude;
-  fValue[idx++] = Calculated->AltitudeAGL;
-  fValue[idx++] = Basic->Speed;
-  fValue[idx++] = Basic->IndicatedAirspeed;
-  fValue[idx++] = Basic->TrackBearing;
-  fValue[idx++] = Basic->Vario;
-  fValue[idx++] = Basic->NettoVario;
-
-  fValue[idx++] = Basic->TrueAirspeed ;
-  fValue[idx++] = Basic->AccelX ;
-  fValue[idx++] = Basic->AccelY ;
-  fValue[idx++] = Basic->AccelZ ;
-  fValue[idx++] = Basic->Ballast ;
-  fValue[idx++] = Basic->Bugs ;
-  fValue[idx++] = Basic->MacReady ;
-
-//	fValue[20] = NMEA_INFO.SpeedToFly();
-  int Hour   = Basic->Hour;
-  int Min    = Basic->Minute;
-  int Sec    = Basic->Second;
 
   // xULLI: WHAT ABOUT USING
   // if(FDR[0].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->ExtBatt1_Voltage);
   // if(FDR[1].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->ExtBatt2_Voltage);
   // etc.etc.
   // 
-
   // Shutdown will set LogDelay to zero before closing the file descriptor
-  if (iLogDelay!=0) fprintf(FlightDataRecorderFile,"%02d:%02d:%02d ", Hour,  Min,  Sec  );
 
-  idx=-1;
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  fValue[idx]  );// GPS_INFO.ExtBatt1_Voltage;
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  fValue[idx]  );// GPS_INFO.ExtBatt2_Voltage;
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  fValue[idx]  );// GPS_INFO.SupplyBatteryVoltage;
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %03d " , (int) fValue[idx]  );// GPS_INFO.PDABatteryPercent;
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  fValue[idx]  );// GPS_INFO.OutsideAirTemperature;
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %f ",     fValue[idx]  );// GPS_INFO.Latitude;
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %f ",     fValue[idx]  );// GPS_INFO.Longitude;
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  fValue[idx]  );// GPS_INFO.Altitude;
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  fValue[idx]  );// GPS_INFO.BaroAltitude;
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  fValue[idx]  );// CALCULATED_INFO.AltitudeAGL;
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  fValue[idx]  );// GPS_INFO.Speed;
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  fValue[idx] );// GPS_INFO.IndicatedAirspeed;
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  fValue[idx] );// GPS_INFO.TrackBearing;
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  fValue[idx] );// GPS_INFO.Vario;
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  fValue[idx] );// GPS_INFO.NettoVario;
 
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ", fValue[idx]  );// GPS_INFO.TrueAirspeed
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ", fValue[idx]  );// GPS_INFO.AccelX
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ", fValue[idx]  );// GPS_INFO.AccelY
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ", fValue[idx]  );// GPS_INFO.AccelZ
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ", fValue[idx]  );// GPS_INFO.Ballast
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ", fValue[idx]  );// GPS_INFO.Bugs
-  if(FDR[++idx].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ", fValue[idx]  );// GPS_INFO.MacReady
+  if (iLogDelay!=0) fprintf(FlightDataRecorderFile,"%02d:%02d:%02d ", pda_time.wHour,  pda_time.wMinute,  pda_time.wSecond  );
+
+  idx=0;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->ExtBatt1_Voltage     );// GPS_INFO.ExtBatt1_Voltage;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->ExtBatt2_Voltage     );// GPS_INFO.ExtBatt2_Voltage;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->SupplyBatteryVoltage );// GPS_INFO.SupplyBatteryVoltage;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %03d " , (int)  PDABatteryPercent     );// GPS_INFO.PDABatteryPercent;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->OutsideAirTemperature);// GPS_INFO.OutsideAirTemperature;
+  if(FDR[idx++].abLog > 0)
+  {
+	if (GPS_INFO.NAVWarning)
+	  fprintf(FlightDataRecorderFile," no fix    ");
+	else
+	  fprintf(FlightDataRecorderFile," %f ",     Basic->Latitude  );// GPS_INFO.Latitude;
+  }
+  if(FDR[idx++].abLog > 0)
+  {
+	if (GPS_INFO.NAVWarning)
+	  fprintf(FlightDataRecorderFile," no fix    ");
+	else
+	  fprintf(FlightDataRecorderFile," %f ",     Basic->Longitude );// Longitude;
+
+  }
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Basic->Altitude             );// GPS_INFO.Altitude;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Basic->BaroAltitude         );// GPS_INFO.BaroAltitude;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  CALCULATED_INFO.AltitudeAGL );// CALCULATED_INFO.AltitudeAGL;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  Basic->Speed                );// GPS_INFO.Speed;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  Basic->IndicatedAirspeed    );// GPS_INFO.IndicatedAirspeed;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  Basic->TrackBearing         );// GPS_INFO.TrackBearing;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->Vario                );// GPS_INFO.Vario;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->NettoVario           );// GPS_INFO.NettoVario;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Basic->TrueAirspeed         );// GPS_INFO.TrueAirspeed
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->AccelX               );// GPS_INFO.AccelX
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->AccelY               );// GPS_INFO.AccelY
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->AccelZ               );// GPS_INFO.AccelZ
+#define GLOBAL_MC
+#ifdef GLOBAL_MC
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  BALLAST*100.0               );// GPS_INFO.Ballast
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  BUGS*100.0                  );// GPS_INFO.Bugs
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  MACCREADY                   );// GPS_INFO.MacReady
+#else
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",   Basic->Ballast *100.0      );// GPS_INFO.Ballast
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",   Basic->Bugs *100.0         );// GPS_INFO.Bugs
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",   Basic->MacReady            );// GPS_INFO.MacReady
+#endif
   if (iLogDelay!=0) fprintf(FlightDataRecorderFile,"\r"); /* next line */
+
 
 }
 
@@ -291,13 +299,21 @@ void UpdateFlightDataRecorder(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 //
 void MapWindow::DrawFDRAlarms(HDC hDC, const RECT rc)
 {
-  static unsigned short iCallCnt=0;
+
+ // static unsigned short iCallCnt=0;
+  static int oldSec =0;
+  SYSTEMTIME pda_time;
+  GetSystemTime(&pda_time);
+  if(( pda_time.wSecond - oldSec ) == 0)
+	  return;
+  oldSec = pda_time.wSecond ;
+
   int i;
   TCHAR szTmp[80];
   float fValue[NO_ENTRYS];
 
   // Do not give warnings during the first minute of life
-  if(iCallCnt++ <= 60) return;
+  if(LKHearthBeats <= 150) return;
 
   // Alarms are working only with a valid GPS fix. No navigator, no alarms. 
   // if (GPS_INFO.NAVWarning) return;
@@ -312,8 +328,8 @@ void MapWindow::DrawFDRAlarms(HDC hDC, const RECT rc)
   fValue[i++] = DrawInfo.SupplyBatteryVoltage;
   fValue[i++] = PDABatteryPercent;
   fValue[i++] = DrawInfo.OutsideAirTemperature;
-  fValue[i++] = DrawInfo.Latitude;
-  fValue[i++] = DrawInfo.Longitude;
+  if (GPS_INFO.NAVWarning) fValue[i++] = 0.0; else fValue[i++] = DrawInfo.Latitude;
+  if (GPS_INFO.NAVWarning) fValue[i++] = 0.0; else fValue[i++] = DrawInfo.Longitude;
   fValue[i++] = DrawInfo.Altitude;
   fValue[i++] = DrawInfo.BaroAltitude;
   fValue[i++] = DerivedDrawInfo.AltitudeAGL;
@@ -327,37 +343,53 @@ void MapWindow::DrawFDRAlarms(HDC hDC, const RECT rc)
   fValue[i++] = DrawInfo.AccelX ;
   fValue[i++] = DrawInfo.AccelY ;
   fValue[i++] = DrawInfo.AccelZ ;
-  fValue[i++] = DrawInfo.Ballast ;
-  fValue[i++] = DrawInfo.Bugs ;
-  fValue[i++] = DrawInfo.MacReady ;
 
-  
+#ifdef GLOBAL_MC
+  fValue[i++] = BALLAST*100.0 ;
+  fValue[i++] = BUGS*100.0  ;
+  fValue[i++] = MACCREADY ;
+#else
+  fValue[i++] = DrawInfo.Ballast*100.0;
+  fValue[i++] = DrawInfo.Bugs*100.0;
+  fValue[i++] = DrawInfo.MacReady;
+#endif
   //
   // WARNING> if a value is going up and down the threshold, we should avoid repeating the 
   // message to the pilot. See DrawLKAlarms for an example on how the altitude alarms work
   //
+  // ANSWER ULLI:
+  // we have a different approach, after the first warning, the next check will be after the user defined
+  // delay time. I think this is the best approach since there are also values without "Noise"
   for(i=0 ; i < NO_ENTRYS; i++)
   {
-	if(FDR[i].aiWarningCnt > 0)  // check enabled ? 
-	   if((iCallCnt%FDR[i].aiCheckInterval)==0)	// check every ? sec
-	     if((FDR[i].aiWarningCnt < FDR[i].aiWarningCnt) ||(FDR[i].aiWarningCnt==0)) /* still warnings left? */
-	     {
-		if (fValue[i] < FDR[i].fMin)
-		{
-			_stprintf(szTmp,_T("%s: (%4.2f < %4.2f)"), FDR[i].szName,fValue[i] , FDR[i].fMin);
-			DoStatusMessage(szTmp);
-			FDR[i].aiWarningCnt++;
-		}
+	if(FDR[i].aiCheckInterval > 0)  // check enabled ?
+	{
+//	  if((iCallCnt % (FDR[i].aiCheckInterval))==0)	// check every ? sec
+	  if( FDR[i].iWarningDelay > 0 )
+		FDR[i].iWarningDelay--;
+	  else
+	  {
+	    if((FDR[i].aiWarningCnt < FDR[i].aiMaxWarnings) ||(FDR[i].aiMaxWarnings==0)) /* still warnings left? or all warnings*/
+	    {
+	      if (fValue[i] < FDR[i].fMin)
+	      {
+	         _stprintf(szTmp,_T("%s: (%4.2f < %4.2f)"), FDR[i].szName,fValue[i] , FDR[i].fMin);
+             DoStatusMessage(szTmp);
+			 FDR[i].aiWarningCnt++;
+			 FDR[i].iWarningDelay = FDR[i].aiCheckInterval-1;
+		  }
 
-		if (fValue[i] > FDR[i].fMax)
-		{
-			_stprintf(szTmp,_T("%s: (%4.2 > %4.2f)"), FDR[i].szName,fValue[i] , FDR[i].fMax);
-			DoStatusMessage(szTmp);
-			FDR[i].aiWarningCnt++;
-		}
+		  if (fValue[i] > FDR[i].fMax)
+		  {
+			 _stprintf(szTmp,_T("%s: (%4.2 > %4.2f)"), FDR[i].szName,fValue[i] , FDR[i].fMax);
+			 DoStatusMessage(szTmp);
+			 FDR[i].aiWarningCnt++;
+			 FDR[i].iWarningDelay = FDR[i].aiCheckInterval-1;
+		  }
 	    }
+	  }
+	}
   }
-
 }
 
 
