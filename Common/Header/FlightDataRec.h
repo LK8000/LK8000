@@ -12,6 +12,7 @@ typedef struct{
 	 int aiCheckInterval;
 	 int aiMaxWarnings;
 	 int aiWarningCnt;
+	 int iWarningDelay;
 }sFlightDataRec;
 
 
