@@ -1,0 +1,106 @@
+The Flight Data Recorder
+========================
+
+With version 3.1 LK8000 has a free configurable Flight Data Recorder FDR. The FDR was mainly developed for debugging purposes during development. But it can also be used for some flight data range checks and after flight analysis. 
+The FDR can be configured via a text config file named FlightRecorder.cfg placed in the _Configuration  folder. If this file is not present the FDR is disabled. 
+
+If the FDR is enabled it will write the file FlightRecorder.txt  with the recorded data into the _Logger folder.  This data is arranged a as table with a line for each logging interval. Please note that the Data is not valid before LK8000 has been exited regularly. On a reset or unmoral program termination ( turn off without exit,  power loss, drained battery, crash) all data of the FDR will be lost.
+
+With the FlightRecorder.cfg we can setup the data for the recorder table and also define warnings or range checks for the desired values. 
+The first line of the config file defines the recording interval (in seconds) of the flight recorder. The minimum values is 1s. An interval of 0s disables the flight recorder. Please note that small intervals may produce a lot of data and may slow down the LK8000 performance.
+
+
+The following lines are reserved for a fixed order of value configuration
+Voltage XBatt1                V
+Voltage XBatt2                V
+supply voltage                V  
+PNA Batt level                %        
+Outside Air Temperature      °C 
+Latitude                     	
+Longitude                    
+Altitude                      m    
+BaroAltitude                  m    
+Altitude above ground         m  
+Speed                         km/h
+IndicatedAirspeed             km/h
+TrackBearing                  °
+Vario                         m/s
+NettoVario                    m/s
+TrueAirspeed                  km/h
+Acceleration X                * g
+Acceleration Y                * g
+Acceleration Z                * g
+Ballast                       %
+Bugs                          %
+MacReady                      m/s
+
+Each of this entry has 5 leading numbers:
+a  b    c    d   e   
+1 10.7 15.0 10  10  /* Voltage XBatt1  */
+a 	recording 0=disable 1 = enable
+b  	check interval min. limit
+c  	check interval max. limit
+d 	warning  every d seconds (d=0, disable range check)
+e   	maximum e warnings (e=0, warnings for ever)
+
+In the example the external Battery voltage is recorded in the FlightDataRecorder.txt. 
+The valid range is from 10.7V to 15.0V if the Value is outside that range we get a warning message every 10 seconds. 
+After 10 warnings, the warnings are automatically disabled.
+The warning check will start two minutes after program start in order to prevent annoying warning immediately after program start.
+
+Here is an example of the FlightRecorder.cfg:
+1                  /* recording inteverval       s */   
+1 10.7 15.0 10  5 /* Voltage XBatt1  V  1=recording , min 10,7V ,max 15V max, check every 10 seconds, max 5 warnings*/
+0 11.1 15.0 0   10 /* Voltage XBatt2  V  1=recording , min 11,1V ,max 15V max, 0 = never check, max 10 warnings*/
+0 0.0  0.0  0   10 /* supply voltage            V  */
+1 0.0  0.0  0   10 /* PNA Batt level            %  */       
+1 2.5  35.0 60  10  /* Temperature recording and check every 60s if between 2.5°C .. 35°C otherwiese max 10 warnings */
+1 0.0  0.0  0   10 /* Latitude                     */  
+1 0.0  0.0  0   10 /* Longitude                    */
+1 0.0  0.0  0   10 /* Altitude                m    */
+0 0.0  0.0  0   10 /* BaroAltitude            m    */  
+1 0.0  0.0  0   10 /* Altitude above ground     m  */ 
+1 0.0  0.0  0   10 /* Speed                  km/h  */
+1 0.0  0.0  0   10 /* IndicatedAirspeed            */ 
+0 0.0  0.0  0   10 /* TrackBearing              °  */
+0 0.0  0.0  0   10 /* Vario                   m/s  */
+0 0.0  0.0  0   10 /* NettoVario              m/s  */  
+1 0.0  0.0  0   10 /* TrueAirspeed           km/h  */  
+0 0.0  0.0  0   10 /* Acceleration X           *g  */
+0 0.0  0.0  0   10 /* Acceleration Y           *g  */
+0 0.0  0.0  0   10 /* Acceleration Z           *g  */
+1 0.0  0.0  0   10 /* Ballast                   %  */
+1 0.0  0.0  0   10 /* bUGS                      %  */
+1 0.0  0.0  0   10 /* MacReady                m/s  */  
+
+And the FlightRecorder.txt output:
+
+
+Recording interval:1s 
+               External Batt 1 recording enabled
+                        Batt % recording enabled
+       Outside Air Temperature recording enabled
+                     Longitude recording enabled
+                      Latitude recording enabled
+                      Altitude recording enabled
+                       Alt AGL recording enabled
+                         Speed recording enabled
+             Indcated Airspeed recording enabled
+                  TrueAirspeed recording enabled
+                       Ballast recording enabled
+                          Bugs recording enabled
+                      MacReady recording enabled
+
+               External Batt 1 range (10.70 .. 15.00) warning every 10s, max. 10 warnings
+       Outside Air Temperature range (2.50 .. 35.00) warning every 60s, max. 5 warnings
+
+hh:mm:ss  BAT1  BAT%  OAT   lat        lon        Alt   AGL   AS  IAS   TAS   BAL   BUG   MC  
+10:59:32 12.80  100  9.30  51.690833  6.103883    16     2    0    0     0     0   100  0.00 
+10:59:33 12.80  100  9.30  51.690833  6.103883    16     2    0    0     0     0   100  0.00 
+10:59:34 12.80  100  9.30  51.690833  6.103883    16     2    0    0     0     0   100  0.00 
+10:59:35 12.80  100  9.30  51.690833  6.103883    16     2    0    0     0     0   100  0.00 
+10:59:36 12.80  100  9.30  51.690833  6.103883    16     2    0    0     0     0   100  0.00 
+10:59:37 12.80  100  9.20  51.690833  6.103883    16     2    0    0     0     0   100  0.00 
+10:59:38 12.70  100  9.20  51.690833  6.103883    16     2    0    0     0     0   100  0.00 
+10:59:39 12.70  099  9.20  51.690833  6.103883    16     2    0    0     0     0   100  0.00 
+10:59:40 12.70  099  9.20  51.690833  6.103883    16     2    0    0     0     0   100  0.00  
