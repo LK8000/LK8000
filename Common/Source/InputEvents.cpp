@@ -1531,7 +1531,6 @@ void InputEvents::eventFlightMode(const TCHAR *misc) {
 }
 
 
-
 // Wind
 // Adjusts the wind magnitude and direction
 //     up: increases wind magnitude
@@ -1543,6 +1542,7 @@ void InputEvents::eventFlightMode(const TCHAR *misc) {
 // TODO feature: Increase wind by larger amounts ? Set wind to specific amount ?
 //	(may sound silly - but future may get SMS event that then sets wind)
 void InputEvents::eventWind(const TCHAR *misc) {
+#if KEYPAD_WIND
   if (_tcscmp(misc, TEXT("up")) == 0) {
     WindSpeedProcessing(1);
   }
@@ -1558,8 +1558,8 @@ void InputEvents::eventWind(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("save")) == 0) {
     WindSpeedProcessing(0);
   }
+#endif
 }
-
 
 // SendNMEA
 //  Sends a user-defined NMEA string to an external instrument.
@@ -2867,7 +2867,7 @@ void FullScreen() {
   MapWindow::RequestFastRefresh();
 }
 
-
+#if KEYPAD_WIND
 void	WindDirectionProcessing(int UpDown)
 {
 	
@@ -2921,6 +2921,7 @@ void	WindSpeedProcessing(int UpDown)
 	}
 	return;
 }
+#endif
 
 void	MacCreadyProcessing(int UpDown)
 {
