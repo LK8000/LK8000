@@ -2,6 +2,31 @@
 Changes in LK8000 v2.3
 ======================
 
+Version 3.0c 
+
+
+  Fix bug waypoint goto / details / set alternate pages were leaving menu active.
+    Calling menu icon would pop up menu, and create a possible crash condition.
+
+  Waypoint quick selection is now full screen.
+
+  Fix logger: if no baro pressure available, log 0 for pressure altitude instead of GPS altitude.
+
+  Portrait mode task calculator window resized
+
+  Fix bug in 3.0 not disabling menu and wndproc actions when in MODE_TARGET_PAN
+
+  Fix old bug resetting flight statistics at 00UTC on some GPS devices like HP31x.
+
+  Bugfix TFC memory usage, causing crash with large mapsets
+    http://www.postfrontal.com/forum/topic.asp?TOPIC_ID=6214
+
+  Fix Analysis olcmode should not use task scale, and print at max zoom the current trace.
+    By Mazuk!
+
+
+
+
 Version 3.0b 28 march 2012
 
 
