@@ -33,6 +33,10 @@ void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
   static double rwl = 8;
   static double rwb = 1;
   static double cir = 6;
+  static double scale_drawradio=0;
+  static double scale_bigfont=0;
+  static double scale_fullinfos=0;
+
   int l,p,b;
 
   fScaleFact /=1600;
@@ -55,6 +59,38 @@ void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
      case ss720x408: rwl = 6.0; rwb = 2.5;cir = 5.0; break;
      case ss800x480: rwl = 6.0; rwb = 2.5;cir = 5.0; break;
      case ss896x672: rwl = 6.0; rwb = 2.5;cir = 5.0; break;
+    }
+
+    // All values <=
+    switch(ScreenSize)
+    {
+	case ss480x272:
+		if (ScreenSizeX==854) {
+			scale_drawradio=3.6;
+			scale_bigfont=1.5;
+			scale_fullinfos=1.5;
+
+		} else {
+			scale_drawradio=2.6;
+			scale_bigfont=1.1;
+			scale_fullinfos=0.8;
+		}
+		break;
+	case ss800x480:
+		scale_drawradio=2.6;
+		scale_bigfont=1.5;
+		scale_fullinfos=1.5;
+		break;
+	case ss640x480:
+		scale_drawradio=3.6;
+		scale_bigfont=1.5;
+		scale_fullinfos=1.5;
+		break;
+	default:
+		scale_drawradio=2.6;
+		scale_bigfont=1.5;
+		scale_fullinfos=1.5;
+		break;
     }
     DoInit[MDI_MAPWPVECTORS]=false;
   }
@@ -120,7 +156,7 @@ void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
   } // bRunway
 
 
-  if(fScaleFact >= 0.9)
+  if(fScaleFact >= 0.9) { 
     if(bGlider)
     {
 	    int iScale = (int)(fScaleFact*2.0);
@@ -145,17 +181,17 @@ void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
 	    PolygonRotateShift(WhiteWing, 15,  wp->Screen.x, wp->Screen.y,  0/*+ wp->RunwayDir-Brg*/);
 	    Polygon(hdc,WhiteWing ,15 );
     }
+  }
 
-  //StartupStore(_T(".......fscale=%f *1600=%f realscale = %f\n"), fScaleFact, fScaleFact*1600, MapWindow::zoom.RealScale());
+  // StartupStore(_T(".......fscale=%f *1600=%f realscale = %f\n"), fScaleFact, fScaleFact*1600, MapWindow::zoom.RealScale());
 
-  //if( (fScaleFact >= 2) && (MapWindow::zoom.RealScale()<5.4))
 
-  if( fScaleFact >= 1.6 )
+  if( MapWindow::zoom.RealScale() <= scale_drawradio ) 
   {
 
 	HFONT hfOld;
 
-	if (fScaleFact>=2.9) // 2.0km
+	if (MapWindow::zoom.RealScale() <= scale_bigfont) 
 		hfOld = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
 	else
 		hfOld = (HFONT)SelectObject(hdc, LK8UnitFont);
@@ -174,7 +210,7 @@ void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
 	//
 	// Full infos! 1.5km scale
 	//
-	if (fScaleFact>=3.8) {
+	if (MapWindow::zoom.RealScale() <=scale_fullinfos) { 
 		if ( _tcslen(wp->Code)==4 ) {
 			MapWindow::LKWriteBoxedText(hdc,wp->Code, wp->Screen.x + offset, wp->Screen.y - offset, 0, WTALIGN_LEFT);
 		}
