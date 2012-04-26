@@ -238,21 +238,21 @@ void UpdateFlightDataRecorder(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if (iLogDelay!=0) fprintf(FlightDataRecorderFile,"%02d:%02d:%02d ", pda_time.wHour,  pda_time.wMinute,  pda_time.wSecond  );
 
   idx=0;
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic->ExtBatt1_Voltage     );// GPS_INFO.ExtBatt1_Voltage;
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic->ExtBatt2_Voltage     );// GPS_INFO.ExtBatt2_Voltage;
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic->SupplyBatteryVoltage );// GPS_INFO.SupplyBatteryVoltage;
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %03d " , (int)  PDABatteryPercent     );// GPS_INFO.PDABatteryPercent;
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->OutsideAirTemperature);// GPS_INFO.OutsideAirTemperature;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic->ExtBatt1_Voltage     );
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic->ExtBatt2_Voltage     );
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic->SupplyBatteryVoltage );
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %03d " , (int)  PDABatteryPercent     );
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->OutsideAirTemperature);
   if(FDR[idx++].abLog > 0)
   {
-	if (GPS_INFO.NAVWarning)
+	if (Basic->NAVWarning)
       fprintf(FlightDataRecorderFile," no fix    ");
 	else
 	  fprintf(FlightDataRecorderFile," %f ",     Basic->Latitude  );// GPS_INFO.Latitude;
   }
   if(FDR[idx++].abLog > 0)
   {
-	if (GPS_INFO.NAVWarning)
+	if (Basic->NAVWarning)
 	  fprintf(FlightDataRecorderFile," no fix    ");
 	else
 	  fprintf(FlightDataRecorderFile," %f ",     Basic->Longitude );// Longitude;
@@ -260,7 +260,7 @@ void UpdateFlightDataRecorder(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   }
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Basic->Altitude             );// GPS_INFO.Altitude;
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Basic->BaroAltitude         );// GPS_INFO.BaroAltitude;
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  CALCULATED_INFO.AltitudeAGL );// CALCULATED_INFO.AltitudeAGL;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Calculated->AltitudeAGL );// CALCULATED_INFO.AltitudeAGL;
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  Basic->IndicatedAirspeed *TOKPH  );// GPS_INFO.IndicatedAirspeed;
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Basic->TrueAirspeed *TOKPH  );// GPS_INFO.TrueAirspeed
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  Basic->Speed *TOKPH         );// GPS_INFO.Speed;
@@ -329,8 +329,8 @@ void MapWindow::DrawFDRAlarms(HDC hDC, const RECT rc)
   fValue[i++] = DrawInfo.SupplyBatteryVoltage;
   fValue[i++] = PDABatteryPercent;
   fValue[i++] = DrawInfo.OutsideAirTemperature;
-  if (GPS_INFO.NAVWarning) fValue[i++] = 0.0; else fValue[i++] = DrawInfo.Latitude;
-  if (GPS_INFO.NAVWarning) fValue[i++] = 0.0; else fValue[i++] = DrawInfo.Longitude;
+  if (DrawInfo.NAVWarning) fValue[i++] = 0.0; else fValue[i++] = DrawInfo.Latitude;
+  if (DrawInfo.NAVWarning) fValue[i++] = 0.0; else fValue[i++] = DrawInfo.Longitude;
   fValue[i++] = DrawInfo.Altitude;
   fValue[i++] = DrawInfo.BaroAltitude;
   fValue[i++] = DerivedDrawInfo.AltitudeAGL;
@@ -357,10 +357,8 @@ void MapWindow::DrawFDRAlarms(HDC hDC, const RECT rc)
 
   fValue[i++] = DrawInfo.ExternalWindSpeed * TOKPH;
   fValue[i++] = DrawInfo.ExternalWindDirection ;
-  LockFlightData();
-  fValue[i++] = CALCULATED_INFO.WindSpeed *TOKPH ;
-  fValue[i++] = CALCULATED_INFO.WindBearing ;
-  UnlockFlightData();
+  fValue[i++] = DerivedDrawInfo.WindSpeed *TOKPH ;
+  fValue[i++] = DerivedDrawInfo.WindBearing ;
 
   //
   // WARNING> if a value is going up and down the threshold, we should avoid repeating the 
