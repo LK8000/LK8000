@@ -21,8 +21,9 @@ Longitude
 Altitude                      m    
 BaroAltitude                  m    
 Altitude above ground         m  
-Speed                         km/h
 IndicatedAirspeed             km/h
+True Airspeed                 km/h
+Ground speed                  km/h
 TrackBearing                  °
 Vario                         m/s
 NettoVario                    m/s
@@ -33,6 +34,10 @@ Acceleration Z                * g
 Ballast                       %
 Bugs                          %
 MacReady                      m/s
+external wind speed           km/h 
+external wind direction       °    
+calculated wind speed         km/h
+calculated wind direction     °    
 
 Each of this entry has 5 leading numbers:
 a  b    c    d   e   
@@ -50,28 +55,32 @@ The warning check will start two minutes after program start in order to prevent
 
 Here is an example of the FlightRecorder.cfg:
 1                  /* recording inteverval       s */   
-1 10.7 15.0 10  5 /* Voltage XBatt1  V  1=recording , min 10,7V ,max 15V max, check every 10 seconds, max 5 warnings*/
+1 10.7 15.0 0   10 /* Voltage XBatt1  V  1=recording , min 10,7V ,max 15V max, check every 10 seconds, max 10 warnings*/
 0 11.1 15.0 0   10 /* Voltage XBatt2  V  1=recording , min 11,1V ,max 15V max, 0 = never check, max 10 warnings*/
 0 0.0  0.0  0   10 /* supply voltage            V  */
 1 0.0  0.0  0   10 /* PNA Batt level            %  */       
-1 2.5  35.0 60  10  /* Temperature recording and check every 60s if between 2.5°C .. 35°C otherwiese max 10 warnings */
+1 2.5  35.0 60  5  /* Temperature recording and check every 60s if between 2.5°C .. 35°C otherwiese max 5 warnings */
 1 0.0  0.0  0   10 /* Latitude                     */  
 1 0.0  0.0  0   10 /* Longitude                    */
 1 0.0  0.0  0   10 /* Altitude                m    */
-0 0.0  0.0  0   10 /* BaroAltitude            m    */  
+1 0.0  0.0  0   10 /* BaroAltitude            m    */  
 1 0.0  0.0  0   10 /* Altitude above ground     m  */ 
-1 0.0  0.0  0   10 /* Speed                  km/h  */
-1 0.0  0.0  0   10 /* IndicatedAirspeed            */ 
-0 0.0  0.0  0   10 /* TrackBearing              °  */
-0 0.0  0.0  0   10 /* Vario                   m/s  */
-0 0.0  0.0  0   10 /* NettoVario              m/s  */  
-1 0.0  0.0  0   10 /* TrueAirspeed           km/h  */  
-0 0.0  0.0  0   10 /* Acceleration X           *g  */
-0 0.0  0.0  0   10 /* Acceleration Y           *g  */
-0 0.0  0.0  0   10 /* Acceleration Z           *g  */
+1 0.0  0.0  0   10 /* IndicatedAirspeed      km/h  */ 
+1 95.0 250.0 10  0 /* True airspeed          km/h  */
+1 0.0  0.0  0   10 /* Ground speed           km/h  */ 
+1 0.0  0.0  0   10 /* TrackBearing              °  */
+1 0.0  0.0  0   10 /* Vario                   m/s  */
+1 0.0  0.0  0   10 /* NettoVario              m/s  */  
+1 0.0  0.0  0   10 /* Acceleration X           *g  */
+1 0.0  0.0  0   10 /* Acceleration Y           *g  */
+1 0.0  0.0  0   10 /* Acceleration Z           *g  */
 1 0.0  0.0  0   10 /* Ballast                   %  */
-1 0.0  0.0  0   10 /* bUGS                      %  */
+1 0.0  0.0  0   10 /* Bugs                      %  */
 1 0.0  0.0  0   10 /* MacReady                m/s  */  
+1 0.0  0.0  0   10 /* ext. wind speed         km/h */
+1 0.0  0.0  0   10 /* ext. wind direction       °  */  
+1 0.0  0.0  0   10 /* calculated wind speed   km/h */
+1 0.0  0.0  0   10 /* calculated wind direction °  */  
 
 And the FlightRecorder.txt output:
 
