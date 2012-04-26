@@ -74,13 +74,8 @@ static void OnWindDirectionData(DataField *Sender, DataField::DataAccessKind_t M
   switch(Mode){
 	case DataField::daGet:
 		lastWind = CALCULATED_INFO.WindBearing;
-		#if 101117
-		if (lastWind>=360.0)
+		if (lastWind>=359)
 			lastWind=0;
-		#else
-		if (lastWind < 0.5)
-			lastWind = 360.0;
-		#endif
 		Sender->Set(lastWind);
 		break;
 	case DataField::daPut:
@@ -88,10 +83,8 @@ static void OnWindDirectionData(DataField *Sender, DataField::DataAccessKind_t M
 		break;
 	case DataField::daChange:
 		lastWind = Sender->GetAsFloat();
-		if (lastWind < 0.5)
-			Sender->Set(360.0);
-		if (lastWind > 360.5)
-			Sender->Set(1.0);
+		if (lastWind > 359)
+			Sender->Set(0.0);
 		break;
 	default:
 		break;
