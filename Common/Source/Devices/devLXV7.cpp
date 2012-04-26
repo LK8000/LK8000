@@ -296,6 +296,12 @@ BOOL DevLXV7::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
 {
   static int i=40;
   TCHAR  szTmp[256];
+
+
+  if (!NMEAParser::NMEAChecksum(sentence) || (info == NULL)){
+    return FALSE;
+  }
+
   if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
   {
 	if(iLXV7_RxUpdateTime > 0)
@@ -413,9 +419,9 @@ bool DevLXV7::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* inf
       ParToDouble(sentence, 11, &info->ExternalWindSpeed))
     info->ExternalWindAvailable = TRUE;
 */
-  TriggerVarioUpdate();
+//  TriggerVarioUpdate();
 
-  return(true);
+  return(false);
 } // LXWP0()
 
 
@@ -553,6 +559,9 @@ else
 //static
 bool DevLXV7::LXWP3(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
 {
+
+
+
   // $LXWP3,altioffset, scmode, variofil, tefilter, televel, varioavg,
   //   variorange, sctab, sclow, scspeed, SmartDiff,
   //   GliderName, time offset*CS<CR><LF>
@@ -640,6 +649,7 @@ return(true);
 bool DevLXV7::LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
 
+
 // $LXWP4 Sc, Netto, Relativ, gl.dif, leg speed, leg time, integrator, flight time, battery voltage*CS<CR><LF>
 // Sc  float (m/s)
 // Netto  float (m/s)
@@ -669,24 +679,25 @@ bool DevLXV7::PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* inf
 	  if (ParToDouble(sentence, 3, &info->AccelZ))
 	  {
 		info->AccelerationAvailable = true;
-		info->Gload=info->AccelX;
-		if(info->Gload<info->AccelY)
-		  info->Gload=info->AccelY;
-		if(info->Gload<info->AccelZ)
-		  info->Gload=info->AccelZ;
+		info->Gload =info->AccelX*info->AccelX;
+		info->Gload+=info->AccelY*info->AccelY;
+		info->Gload+=info->AccelZ*info->AccelZ;
+		info->Gload = sqrt(info->Gload);
 	  }
 
 
   if (ParToDouble(sentence, 5, &airspeed))
   {
-	airspeed /= TOKPH;
+//	airspeed = 135.0/TOKPH;
 	info->IndicatedAirspeed = airspeed;
+
 	info->AirspeedAvailable = TRUE;
   }
 
   if (ParToDouble(sentence, 6, &alt))
   {
 	UpdateBaroSource( info, LXV7, AltitudeToQNHAltitude(alt));
+    info->TrueAirspeed =  airspeed * AirDensityRatio(alt);
   }
 
   if (ParToDouble(sentence, 4, &info->Vario))
