@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "FlightDataRec.h"
 
-#define NO_ENTRYS 22
+#define NO_ENTRYS 26
 
 FILE *FlightDataRecorderFile=NULL;
 
@@ -96,20 +96,22 @@ void InitFlightDataRecorder(void)
   _tcscpy( FDR[i++].szName , _T("Altitude"));
   _tcscpy( FDR[i++].szName , _T("Baro Altitude"));
   _tcscpy( FDR[i++].szName , _T("Alt AGL"));
-  _tcscpy( FDR[i++].szName , _T("Speed"));
   _tcscpy( FDR[i++].szName , _T("Indcated Airspeed"));
+  _tcscpy( FDR[i++].szName , _T("True Airspeed"));
+  _tcscpy( FDR[i++].szName , _T("Ground Speed"));
   _tcscpy( FDR[i++].szName , _T("TrackBearing"));
   _tcscpy( FDR[i++].szName , _T("Vario"));
   _tcscpy( FDR[i++].szName , _T("NettoVario"));
 
-  _tcscpy( FDR[i++].szName , _T("TrueAirspeed"));
+
   _tcscpy( FDR[i++].szName , _T("Acceleration X"));
   _tcscpy( FDR[i++].szName , _T("Acceleration Y"));
   _tcscpy( FDR[i++].szName , _T("Acceleration Z"));
   _tcscpy( FDR[i++].szName , _T("Ballast"));
   _tcscpy( FDR[i++].szName , _T("Bugs"));
   _tcscpy( FDR[i++].szName , _T("MacReady"));
-
+  _tcscpy( FDR[i++].szName , _T("Wind speed"));
+  _tcscpy( FDR[i++].szName , _T("Wind direction"));
 
   if(iLogDelay == 0) return;  // Nothing to do
 
@@ -181,19 +183,23 @@ void InitFlightDataRecorder(void)
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," Alt "  );
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," AltB "  );
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile,"  AGL "  );
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile,"  AS "  );
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," IAS "  );
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," BRG " );
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," VAR "  );
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile,"  NET "  );
-
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile,"  TAS "  );
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile,"  GS "  );
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," BRG " );
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile,"  VAR  "  );
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile,"  NET  "  );
+
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile,"  AcX "  );
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile,"  AcY "  );
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile,"  AcZ "  );
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile,"  BAL " );
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile,"  BUG "  );
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile,"  MC  "  );
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," eWnd "  );
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," eWdir"  );
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," cWnd "  );
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," cWdir"  );
 
   fprintf(FlightDataRecorderFile,"\r"  );
 
@@ -232,15 +238,15 @@ void UpdateFlightDataRecorder(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if (iLogDelay!=0) fprintf(FlightDataRecorderFile,"%02d:%02d:%02d ", pda_time.wHour,  pda_time.wMinute,  pda_time.wSecond  );
 
   idx=0;
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->ExtBatt1_Voltage     );// GPS_INFO.ExtBatt1_Voltage;
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->ExtBatt2_Voltage     );// GPS_INFO.ExtBatt2_Voltage;
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->SupplyBatteryVoltage );// GPS_INFO.SupplyBatteryVoltage;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic->ExtBatt1_Voltage     );// GPS_INFO.ExtBatt1_Voltage;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic->ExtBatt2_Voltage     );// GPS_INFO.ExtBatt2_Voltage;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic->SupplyBatteryVoltage );// GPS_INFO.SupplyBatteryVoltage;
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %03d " , (int)  PDABatteryPercent     );// GPS_INFO.PDABatteryPercent;
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->OutsideAirTemperature);// GPS_INFO.OutsideAirTemperature;
   if(FDR[idx++].abLog > 0)
   {
 	if (GPS_INFO.NAVWarning)
-	  fprintf(FlightDataRecorderFile," no fix    ");
+      fprintf(FlightDataRecorderFile," no fix    ");
 	else
 	  fprintf(FlightDataRecorderFile," %f ",     Basic->Latitude  );// GPS_INFO.Latitude;
   }
@@ -255,15 +261,15 @@ void UpdateFlightDataRecorder(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Basic->Altitude             );// GPS_INFO.Altitude;
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Basic->BaroAltitude         );// GPS_INFO.BaroAltitude;
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  CALCULATED_INFO.AltitudeAGL );// CALCULATED_INFO.AltitudeAGL;
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  Basic->Speed                );// GPS_INFO.Speed;
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  Basic->IndicatedAirspeed    );// GPS_INFO.IndicatedAirspeed;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  Basic->IndicatedAirspeed *TOKPH  );// GPS_INFO.IndicatedAirspeed;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Basic->TrueAirspeed *TOKPH  );// GPS_INFO.TrueAirspeed
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  Basic->Speed *TOKPH         );// GPS_INFO.Speed;
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %3.0f ",  Basic->TrackBearing         );// GPS_INFO.TrackBearing;
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->Vario                );// GPS_INFO.Vario;
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->NettoVario           );// GPS_INFO.NettoVario;
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Basic->TrueAirspeed         );// GPS_INFO.TrueAirspeed
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->AccelX               );// GPS_INFO.AccelX
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->AccelY               );// GPS_INFO.AccelY
-  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",  Basic->AccelZ               );// GPS_INFO.AccelZ
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic->Vario                );// GPS_INFO.Vario;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %5.2f ",  Basic->NettoVario           );// GPS_INFO.NettoVario;
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.1f ",  Basic->AccelX               );// GPS_INFO.AccelX
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.1f ",  Basic->AccelY               );// GPS_INFO.AccelY
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.1f ",  Basic->AccelZ               );// GPS_INFO.AccelZ
 #define GLOBAL_MC
 #ifdef GLOBAL_MC
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  BALLAST*100.0               );// GPS_INFO.Ballast
@@ -274,6 +280,13 @@ void UpdateFlightDataRecorder(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",   Basic->Bugs *100.0         );// GPS_INFO.Bugs
   if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.2f ",   Basic->MacReady            );// GPS_INFO.MacReady
 #endif
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Basic->ExternalWindSpeed *TOKPH );// GPS_INFO.Bugs
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Basic->ExternalWindDirection);// GPS_INFO.MacReady
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Calculated->WindSpeed *TOKPH );// GPS_INFO.Bugs
+  if(FDR[idx++].abLog > 0) fprintf(FlightDataRecorderFile," %4.0f ",  Calculated->WindBearing );// GPS_INFO.MacReady
+
+
+
   if (iLogDelay!=0) fprintf(FlightDataRecorderFile,"\r"); /* next line */
 
 
@@ -321,13 +334,13 @@ void MapWindow::DrawFDRAlarms(HDC hDC, const RECT rc)
   fValue[i++] = DrawInfo.Altitude;
   fValue[i++] = DrawInfo.BaroAltitude;
   fValue[i++] = DerivedDrawInfo.AltitudeAGL;
-  fValue[i++] = DrawInfo.Speed;
-  fValue[i++] = DrawInfo.IndicatedAirspeed;
+  fValue[i++] = DrawInfo.IndicatedAirspeed   ;
+  fValue[i++] = DrawInfo.TrueAirspeed *TOKPH;
+  fValue[i++] = DrawInfo.Speed  *TOKPH  ;
+
   fValue[i++] = DrawInfo.TrackBearing;
   fValue[i++] = DrawInfo.Vario;
   fValue[i++] = DrawInfo.NettoVario;
-
-  fValue[i++] = DrawInfo.TrueAirspeed ;
   fValue[i++] = DrawInfo.AccelX ;
   fValue[i++] = DrawInfo.AccelY ;
   fValue[i++] = DrawInfo.AccelZ ;
@@ -341,6 +354,14 @@ void MapWindow::DrawFDRAlarms(HDC hDC, const RECT rc)
   fValue[i++] = DrawInfo.Bugs*100.0;
   fValue[i++] = DrawInfo.MacReady;
 #endif
+
+  fValue[i++] = DrawInfo.ExternalWindSpeed * TOKPH;
+  fValue[i++] = DrawInfo.ExternalWindDirection ;
+  LockFlightData();
+  fValue[i++] = CALCULATED_INFO.WindSpeed *TOKPH ;
+  fValue[i++] = CALCULATED_INFO.WindBearing ;
+  UnlockFlightData();
+
   //
   // WARNING> if a value is going up and down the threshold, we should avoid repeating the 
   // message to the pilot. See DrawLKAlarms for an example on how the altitude alarms work
