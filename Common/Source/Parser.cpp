@@ -37,6 +37,7 @@ static double MixedFormatToDegrees(double mixed);
 static int NAVWarn(TCHAR c);
 void CheckBackTarget(int flarmslot);
 
+// #define DEBUGSEQ	1
 
 NMEAParser nmeaParser1;
 NMEAParser nmeaParser2;
@@ -931,16 +932,26 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 		GPS_INFO->Year = gy;
 		GPS_INFO->Month = gm;
 		GPS_INFO->Day = gd;
+
+force_advance:
 		RMCtime = StrToDouble(params[0],NULL);
 		double ThisTime = TimeModify(RMCtime, GPS_INFO);
 
 		// RMC time has priority on GGA and GLL etc. so if we have it we use it at once
 		if (!TimeHasAdvanced(ThisTime, GPS_INFO)) {
-			//StartupStore(_T("..... RMC time not advanced, skipping \n")); // 31C
+			#if DEBUGSEQ
+			StartupStore(_T("..... RMC time not advanced, skipping \n")); // 31C
+			#endif
 			return FALSE;
 		}
 			
 	}  else {
+		if (devIsCondor(devA())) {
+			StartupStore(_T(".. Condor not sending valid date, using 1.1.2012%s"),NEWLINE);
+			gy=2012; gm=1; gd=1;
+			goto force_advance;
+		}
+
 		if (gpsValid && logbaddate) { // 091115
 			StartupStore(_T("------ NMEAParser:RMC Receiving an invalid or null DATE from GPS%s"),NEWLINE);
 			StartupStore(_T("------ NMEAParser: Date received is y=%d m=%d d=%d%s"),gy,gm,gd,NEWLINE); // 100422
@@ -948,6 +959,9 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 			DoStatusMessage(gettext(TEXT("_@M875_")));
 			logbaddate=false;
 		}
+		gy=2012; gm=2; gd=30;	// an impossible date!
+		goto force_advance;
+		 
 	}
 
   if (gpsValid) { 
@@ -1031,7 +1045,9 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   }
   
   if ( !GGAAvailable || (GGAtime == RMCtime)  )  {
-	// StartupStore(_T("... RMC trigger gps, GGAtime==RMCtime\n")); // 31C
+	#if DEBUGSEQ
+	StartupStore(_T("... RMC trigger gps, GGAtime==RMCtime\n")); // 31C
+	#endif
 	TriggerGPSUpdate(); 
   }
 
@@ -1096,11 +1112,15 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   //
   if ( (!RMCAvailable && (GGAtime>0)) || ((GGAtime>0) && (GGAtime == RMCtime))  ) {  // RMC already came in same time slot
 
-	// StartupStore(_T("... GGA update time = %f RMCtime=%f\n"),GGAtime,RMCtime); // 31C
+	#if DEBUGSEQ
+	StartupStore(_T("... GGA update time = %f RMCtime=%f\n"),GGAtime,RMCtime); // 31C
+	#endif
 	double ThisTime = TimeModify(GGAtime, GPS_INFO);
 
 	if (!TimeHasAdvanced(ThisTime, GPS_INFO)) {
-		// StartupStore(_T(".... GGA time not advanced, skip\n")); // 31C
+		#if DEBUGSEQ
+		StartupStore(_T(".... GGA time not advanced, skip\n")); // 31C
+		#endif
 		return FALSE;
 	}
   }
@@ -1155,7 +1175,9 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 
   // If  no gps fix, at this point we trigger refresh and quit
   if (!gpsValid) { 
-	// StartupStore(_T("........ GGA no gps valid, triggerGPS!\n")); // 31C
+	#if DEBUGSEQ
+	StartupStore(_T("........ GGA no gps valid, triggerGPS!\n")); // 31C
+	#endif
 	TriggerGPSUpdate(); 
 	return FALSE;
   }
@@ -1183,7 +1205,9 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   // GGA will trigger gps if there is no RMC,  
   // or if GGAtime is the same as RMCtime, which means that RMC already came and we are last in the sequence
   if ( !RMCAvailable || (GGAtime == RMCtime)  )  {
-	// StartupStore(_T("... GGA trigger gps, GGAtime==RMCtime\n")); // 31C
+	#if DEBUGSEQ
+	StartupStore(_T("... GGA trigger gps, GGAtime==RMCtime\n")); // 31C
+	#endif
 	TriggerGPSUpdate(); 
   }
   return TRUE;
