@@ -2889,9 +2889,6 @@ void	WindDirectionProcessing(int UpDown)
 	} else if (UpDown == 0) {
           SetWindEstimate(CALCULATED_INFO.WindSpeed,
                           CALCULATED_INFO.WindBearing);
-	  #ifndef NOWINDREGISTRY
-	  SaveWindToRegistry();
-	  #endif
 	}
 	return;
 }
@@ -2915,9 +2912,6 @@ void	WindSpeedProcessing(int UpDown)
 	} else if (UpDown == 0) {
           SetWindEstimate(CALCULATED_INFO.WindSpeed,
                           CALCULATED_INFO.WindBearing);
-	  #ifndef NOWINDREGISTRY
-	  SaveWindToRegistry();
-	  #endif
 	}
 	return;
 }

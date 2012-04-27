@@ -55,8 +55,8 @@ The warning check will start two minutes after program start in order to prevent
 
 Here is an example of the FlightRecorder.cfg:
 1                  /* recording inteverval       s */   
-1 10.7 15.0 0   10 /* Voltage XBatt1  V  1=recording , min 10,7V ,max 15V max, check every 10 seconds, max 10 warnings*/
-0 11.1 15.0 0   10 /* Voltage XBatt2  V  1=recording , min 11,1V ,max 15V max, 0 = never check, max 10 warnings*/
+1 10.7 15.0 10  10 /* Voltage XBatt1  V  1=recording , min 10,7V , max 15V, check every 10 seconds, max 10 warnings*/
+0 11.1 15.0 0   10 /* Voltage XBatt2  V  1=recording , min 11,1V , max 15V, 0 = never check, max 10 warnings*/
 0 0.0  0.0  0   10 /* supply voltage            V  */
 1 0.0  0.0  0   10 /* PNA Batt level            %  */       
 1 2.5  35.0 60  5  /* Temperature recording and check every 60s if between 2.5°C .. 35°C otherwiese max 5 warnings */

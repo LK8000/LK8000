@@ -43,9 +43,6 @@ static void UpdateWind(bool set) {
 static void OnCloseClicked(WindowControl * Sender){
 	(void)Sender;
         UpdateWind(true);
-  #ifndef NOWINDREGISTRY
-  SaveWindToRegistry();
-  #endif
   wf->SetModalResult(mrOK);
 }
 

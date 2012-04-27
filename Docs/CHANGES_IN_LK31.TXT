@@ -145,12 +145,12 @@ If the Auto wind is not configured to "external", the wind calculated externally
 
 
 
-LK8000 VERSION 3.1c 1204
+LK8000 VERSION 3.1c 120427
 ==========================
 
 NEW
 
-. Flight Data Recorder
+. Flight Data Recorder, for flight engineers. See separated docs.
 
 . Configuration for using wind precalculated by external instrument
   In config menu 5 (Glide Computer) Auto Wind  can also be "External"
@@ -165,6 +165,7 @@ CHANGES
 
 FIXES
 
+. Fix critical bug since v2.0 in wind setup dialog, possible crashes!
 . Fix 3.1 UTM coordinates in status dialog
 
 

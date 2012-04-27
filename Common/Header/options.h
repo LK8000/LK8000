@@ -53,8 +53,6 @@
  #define NIBLSCALE(x) (LKIBLSCALE[x])
  #define MAXIBLSCALE	100	// CAREFUL! NIBLSCALE can be used only UP TO MAXIBLSCALE!
 
- #define NOWINDREGISTRY	1	// Configurable: load and save wind from registry
-
  //
  // TEMPORARY FIXES THAT REQUIRE EXTENSIVE TESTING - KEEP #ifdef until expiring date
  // When expire date is reached, unnecessary old stuff can be removed, even if commented
@@ -63,7 +61,7 @@
  #define ALPHADEBUG		1	// DEBUG STARTUPSTORE MESSAGES FOR ALPHA AND BETA VERSIONS
 					// IN FINAL VERSIONS MAY BE DISABLED.. MAYBE.
 
- #define TESTBENCH	1	// THIS IS USING MORE MESSAGES, AND IT IS GOOD FOR DEVELOPMENT VERSIONS
+// #define TESTBENCH	1	// THIS IS USING MORE MESSAGES, AND IT IS GOOD FOR DEVELOPMENT VERSIONS
 				// For example, all dev.vers have CPUSTATS activated by this define, 
 				// automatically.
 				// COMMENT BEFORE PUBLIC RELEASE, NO EXCEPTIONS: INTERNAL USE ONLY!
