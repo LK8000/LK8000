@@ -37,6 +37,7 @@ static double MixedFormatToDegrees(double mixed);
 static int NAVWarn(TCHAR c);
 void CheckBackTarget(int flarmslot);
 
+
 NMEAParser nmeaParser1;
 NMEAParser nmeaParser2;
 
@@ -200,7 +201,10 @@ void NMEAParser::_Reset(void) {
   RMCAvailable = false;
   TASAvailable = false; // 100411
   RMAAltitude = 0;
-  
+ 
+  GGAtime=0;
+  RMCtime=0;
+  GLLtime=0; 
   LastTime = 0;
 }
 
@@ -724,12 +728,12 @@ BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   GPS_INFO->NAVWarning = !gpsValid;
   
   // use valid time with invalid fix
-  double glltime = StrToDouble(params[4],NULL);
-  if (!RMCAvailable && (glltime>0)) {
-	double ThisTime = TimeModify(glltime, GPS_INFO);
-	if (!TimeHasAdvanced(ThisTime, GPS_INFO)) return FALSE; // 091208
+  GLLtime = StrToDouble(params[4],NULL);
+  if (!RMCAvailable &&  !GGAAvailable && (GLLtime>0)) {
+	double ThisTime = TimeModify(GLLtime, GPS_INFO);
+	if (!TimeHasAdvanced(ThisTime, GPS_INFO)) return FALSE; 
   }
-  if (!gpsValid) return FALSE;  // 091108 addon BUGFIX GLL time with no valid signal
+  if (!gpsValid) return FALSE;
   
   double tmplat;
   double tmplon;
@@ -747,7 +751,9 @@ BOOL NMEAParser::GLL(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
     
   }
   return TRUE;
-}
+
+} // END GLL
+
 
 
 BOOL NMEAParser::RMB(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *GPS_INFO)
@@ -774,7 +780,10 @@ BOOL NMEAParser::RMB(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   */
 
   return TRUE;
-}
+
+} // END RMB
+
+
 
 BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *GPS_INFO)
 {
@@ -815,7 +824,11 @@ BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 
   return TRUE;
 
-}
+} // END VTG
+
+
+
+
 
 BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *GPS_INFO)
 {
@@ -876,7 +889,7 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   }
   #endif // PNA
 
-  if (!activeGPS) return TRUE; // 091205 BUGFIX true
+  if (!activeGPS) return TRUE;
 
   // if no valid fix, we dont get speed either!
   if (gpsValid)
@@ -903,9 +916,9 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   // say we are updated every time we get this,
   // so infoboxes get refreshed if GPS connected
   // the RMC sentence marks the start of a new fix, so we force the old data to be saved for calculations
-  if (!GGAAvailable) { 
-	TriggerGPSUpdate();
-  }
+//  if (!GGAAvailable) {  // TO REMOVE
+//	TriggerGPSUpdate();
+//  }
 
 	// Even with no valid position, we let RMC set the time and date if valid
 	long gy, gm, gd;
@@ -920,10 +933,14 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 		GPS_INFO->Year = gy;
 		GPS_INFO->Month = gm;
 		GPS_INFO->Day = gd;
-		double ThisTime = TimeModify(StrToDouble(params[0],NULL), GPS_INFO);
+		RMCtime = StrToDouble(params[0],NULL);
+		double ThisTime = TimeModify(RMCtime, GPS_INFO);
 
-		if (!TimeHasAdvanced(ThisTime, GPS_INFO))
+		// RMC time has priority on GGA and GLL etc. so if we have it we use it at once
+		if (!TimeHasAdvanced(ThisTime, GPS_INFO)) {
+			//StartupStore(_T("..... RMC time not advanced, skipping \n")); // 31C
 			return FALSE;
+		}
 			
 	}  else {
 		if (gpsValid && logbaddate) { // 091115
@@ -934,9 +951,8 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 			logbaddate=false;
 		}
 	}
-//  } // 091108
 
-  if (gpsValid) {   // 091108 BUGFIX set latlon and speed ONLY if valid gpsdata, missing check!
+  if (gpsValid) { 
 	double tmplat;
 	double tmplon;
 
@@ -954,13 +970,11 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 	GPS_INFO->Speed = KNOTSTOMETRESSECONDS * speed;
   
 	if (GPS_INFO->Speed>1.0) {
-		// JMW don't update bearing unless we're moving
 		GPS_INFO->TrackBearing = AngleLimit360(StrToDouble(params[7], NULL));
 	}
   } // gpsvalid 091108
     
-  // Altair doesn't have a battery-backed up realtime clock,
-  // so as soon as we get a fix for the first time, set the
+  // As soon as we get a fix for the first time, set the
   // system clock to the GPS time.
   static bool sysTimeInitialised = false;
   
@@ -990,7 +1004,6 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 
   if (!ReplayLogger::IsEnabled()) {      
 	if(RMZAvailable) {
-		// JMW changed from Altitude to BaroAltitude
 #ifdef GS_OLD_BARO_HANDLING
 		GPS_INFO->BaroAltitudeAvailable = true;
 		GPS_INFO->BaroAltitude = RMZAltitude;
@@ -999,7 +1012,6 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 #endif
 	}
 	else if(RMAAvailable) {
-	// JMW changed from Altitude to BaroAltitude
 #ifdef GS_OLD_BARO_HANDLING
 		GPS_INFO->BaroAltitudeAvailable = true;
 		GPS_INFO->BaroAltitude = RMAAltitude;
@@ -1020,8 +1032,17 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 	}
   }
   
+  if ( !GGAAvailable || (GGAtime == RMCtime)  )  {
+	// StartupStore(_T("... RMC trigger gps, GGAtime==RMCtime\n")); // 31C
+	TriggerGPSUpdate(); 
+  }
+
   return TRUE;
-}
+
+} // END RMC
+
+
+
 
 BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *GPS_INFO)
 {
@@ -1054,7 +1075,7 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   GPS_INFO->SatellitesUsed = nSatellites; // 091208
   GPS_INFO->NAVWarning = !gpsValid; // 091208
 
-  double ggatime=StrToDouble(params[0],NULL);
+  GGAtime=StrToDouble(params[0],NULL);
   // Even with invalid fix, we might still have valid time
   // I assume that 0 is invalid, and I am very sorry for UTC time 00:00 ( missing a second a midnight).
   // is better than risking using 0 as valid, since many gps do not respect any real nmea standard
@@ -1067,20 +1088,23 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   //           RMC,  old date
   //    0000UTC:
   //           GGA, old date even if new date will come for the same quantum,
-  //                ggatime>0, see (*)
+  //                GGAtime>0, see (*)
   //                BANG! oldtime from RMC is 2359, new time from GGA is 0, time is in the past!
   //
   // If the gps is sending first RMC, this problem does not appear of course.
   //
-  // (*) IMPORTANT> ggatime at 00UTC will most likely be >0! Because time is in hhmmss.ss  .ss is always >0!!
-  // We check ggatime, rmctime, glltime etc. for 0 because in case of error the gps will send 000000.000 !!
+  // (*) IMPORTANT> GGAtime at 00UTC will most likely be >0! Because time is in hhmmss.ss  .ss is always >0!!
+  // We check GGAtime, RMCtime, GLLtime etc. for 0 because in case of error the gps will send 000000.000 !!
   //
-  if (!RMCAvailable && (ggatime>0)) { 
-	double ThisTime = TimeModify(ggatime, GPS_INFO);
+  if ( (!RMCAvailable && (GGAtime>0)) || ((GGAtime>0) && (GGAtime == RMCtime))  ) {  // RMC already came in same time slot
 
-	if (!TimeHasAdvanced(ThisTime, GPS_INFO))
+	// StartupStore(_T("... GGA update time = %f RMCtime=%f\n"),GGAtime,RMCtime); // 31C
+	double ThisTime = TimeModify(GGAtime, GPS_INFO);
+
+	if (!TimeHasAdvanced(ThisTime, GPS_INFO)) {
+		// StartupStore(_T(".... GGA time not advanced, skip\n")); // 31C
 		return FALSE;
-
+	}
   }
   if (gpsValid) {
 	double tmplat;
@@ -1130,10 +1154,12 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
       UpdateBaroSource(GPS_INFO,GPS_RMA,   RMAAltitude);
 	}
 #endif
-  if (!gpsValid) { // 091108 addon BUGFIX GCA
-	// in old mode, GGA had priority over RMC for triggering, so this was needed in case of no signal 
-	TriggerGPSUpdate(); // 091205 TESTFIX
-	return FALSE; // 091108 addon BUGFIX GCA
+
+  // If  no gps fix, at this point we trigger refresh and quit
+  if (!gpsValid) { 
+	// StartupStore(_T("........ GGA no gps valid, triggerGPS!\n")); // 31C
+	TriggerGPSUpdate(); 
+	return FALSE;
   }
 
   // "Altitude" should always be GPS Altitude.
@@ -1155,9 +1181,19 @@ BOOL NMEAParser::GGA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 
   // if RMC would be Triggering update, we loose the relative altitude, which is coming AFTER rmc! 
   // This was causing old altitude recorded in new pos fix.
-  TriggerGPSUpdate(); 
+  // 120428:
+  // GGA will trigger gps if there is no RMC,  
+  // or if GGAtime is the same as RMCtime, which means that RMC already came and we are last in the sequence
+  if ( !RMCAvailable || (GGAtime == RMCtime)  )  {
+	// StartupStore(_T("... GGA trigger gps, GGAtime==RMCtime\n")); // 31C
+	TriggerGPSUpdate(); 
+  }
   return TRUE;
-}
+
+} // END GGA
+
+
+
 
 // LK8000 IAS , in m/s*10  example: 346 for 34.6 m/s  which is = 124.56 km/h
 BOOL NMEAParser::PLKAS(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *GPS_INFO)

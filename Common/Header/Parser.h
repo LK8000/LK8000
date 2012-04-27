@@ -219,6 +219,10 @@ class NMEAParser {
   double RMAAltitude;
   double LastTime;
 
+  double GGAtime;
+  double RMCtime;
+  double GLLtime;
+
   bool TimeHasAdvanced(double ThisTime, NMEA_INFO *GPS_INFO);
   static double TimeModify(double FixTime, NMEA_INFO* info);
   static double TimeConvert(double FixTime, NMEA_INFO* info);
