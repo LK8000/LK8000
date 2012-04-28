@@ -6,6 +6,8 @@
    $Id: dlgBottomBar.cpp,v 1.1 2011/12/21 10:29:29 root Exp root $
 */
 
+#define BB_AUTO_ADV // auto-advance BB if active BB gets disabled
+
 #include "externs.h"
 #include "LKProfiles.h"
 #include <aygshell.h>
@@ -17,6 +19,9 @@
 
 #include "Utils.h"
 
+#ifdef BB_AUTO_ADV
+#include "LKInterface.h"
+#endif
 
 static bool changed = false;
 static WndForm *wf=NULL;
@@ -214,6 +219,11 @@ void dlgBottomBarShowModal(void){
                  gettext(TEXT("_@M1607_")), // bottom bar config saved
                  TEXT(""), MB_OK);
 
+    #ifdef BB_AUTO_ADV
+    // If the user just disabled the currently-shown BB stripe, then
+    // automatically advance to the next enabled stripe.
+    if (!ConfBB[BottomMode]) BottomBarChange(true);
+    #endif
   }
 
 
