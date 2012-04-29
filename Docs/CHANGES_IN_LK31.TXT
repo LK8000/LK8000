@@ -145,7 +145,7 @@ If the Auto wind is not configured to "external", the wind calculated externally
 
 
 
-LK8000 VERSION 3.1c 120427
+LK8000 VERSION 3.1c 120428
 ==========================
 
 NEW
@@ -162,12 +162,15 @@ CHANGES
 . Using external wind from instruments like CAI, LX etc requires setting.
   See addendum manual.
 
+. Vector runway radio information customised for resolutions
+
+
 
 FIXES
 
 . Fix critical bug since v2.0 in wind setup dialog, possible crashes!
 . Fix 3.1 UTM coordinates in status dialog
-
+. Fix invalid date received by Condor simulator, not updating gps calculations and not detecting takeoff.
 
 
 LK8000 VERSION 3.1b 120418
