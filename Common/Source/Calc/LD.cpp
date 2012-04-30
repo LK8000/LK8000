@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "utils/heapcheck.h"
 
-extern void InsertLDRotary(ldrotary_s *buf, int distance, int altitude);
+extern void InsertLDRotary(ldrotary_s *buf, int distance, NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void InsertWindRotary(windrotary_s *wbuf, double speed, double track, double altitude);
 
 
@@ -70,7 +70,7 @@ void LD(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
                                 DistanceFlown,
                                 LastAlt - Calculated->NavAltitude, 0.1);
 
-      InsertLDRotary(&rotaryLD,(int)DistanceFlown, (int)Calculated->NavAltitude);
+      InsertLDRotary(&rotaryLD,(int)DistanceFlown, Basic, Calculated);
       InsertWindRotary(&rotaryWind, Basic->Speed, Basic->TrackBearing, Calculated->NavAltitude); // 100103
       if (DistanceFlown >3 && DistanceFlown<300) Calculated->Odometer += DistanceFlown;
 

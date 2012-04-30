@@ -71,13 +71,17 @@ FILE *fp;
   return false; 
 }
 
-void InsertLDRotary(ldrotary_s *buf, int distance, int altitude) {
+
+//
+// Called by LD  in Calc thread
+//
+void InsertLDRotary(ldrotary_s *buf, int distance, NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 static short errs=0;
 #ifdef DEBUG_ROTARY
 char ventabuffer[200];
 FILE *fp;
 #endif
-	if (CALCULATED_INFO.OnGround == TRUE) {
+	if (Calculated->OnGround == TRUE) {
 #ifdef DEBUG_ROTARY
 		sprintf(ventabuffer,"OnGround, ignore LDrotary\r\n");
 		if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
@@ -86,7 +90,7 @@ FILE *fp;
 		return;
 	}
 	
-	if (CALCULATED_INFO.Circling == TRUE) {
+	if (Calculated->Circling == TRUE) {
 #ifdef DEBUG_ROTARY
 		sprintf(ventabuffer,"Circling, ignore LDrotary\r\n");
 		if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
@@ -96,7 +100,6 @@ FILE *fp;
 	}
 
 
-	//CALCULATED_INFO.Odometer += distance;
 	if (distance<3 || distance>150) { // just ignore, no need to reset rotary
 		if (errs>2) {
 #ifdef DEBUG_ROTARY
@@ -111,7 +114,7 @@ FILE *fp;
 		}
 		errs++;
 #ifdef DEBUG_ROTARY
-		sprintf(ventabuffer,"(errs=%d) IGNORE INVALID distance=%d altitude=%d\r\n",errs,distance,altitude);
+		sprintf(ventabuffer,"(errs=%d) IGNORE INVALID distance=%d altitude=%d\r\n",errs,distance,(int)Calculated->NavAltitude);
 		if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
 			    {;fprintf(fp,"%s\n",ventabuffer);fclose(fp);}
 #endif
@@ -136,14 +139,14 @@ FILE *fp;
 	buf->totaldistance+=distance;
 	buf->distance[buf->start]=distance;
 	// insert IAS in the rotary buffer, either real or estimated
-	if (GPS_INFO.AirspeedAvailable) {
-                buf->totalias += (int)GPS_INFO.IndicatedAirspeed;
-                buf->ias[buf->start] = (int)GPS_INFO.IndicatedAirspeed;
+	if (Basic->AirspeedAvailable) {
+                buf->totalias += (int)Basic->IndicatedAirspeed;
+                buf->ias[buf->start] = (int)Basic->IndicatedAirspeed;
 	} else {
-                buf->totalias += (int)CALCULATED_INFO.IndicatedAirspeedEstimated;
-                buf->ias[buf->start] = (int)CALCULATED_INFO.IndicatedAirspeedEstimated;
+                buf->totalias += (int)Calculated->IndicatedAirspeedEstimated;
+                buf->ias[buf->start] = (int)Calculated->IndicatedAirspeedEstimated;
 	}
-	buf->altitude[buf->start]=altitude;
+	buf->altitude[buf->start]=(int)Calculated->NavAltitude;
 #ifdef DEBUG_ROTARY
 	sprintf(ventabuffer,"insert buf[%d/%d], distance=%d totdist=%d\r\n",buf->start, buf->size-1, distance,buf->totaldistance);
 	if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
@@ -168,7 +171,7 @@ double CalculateLDRotary(ldrotary_s *buf, DERIVED_INFO *Calculated ) {
 	double averias;
 	double avertas;
 
-	if ( CALCULATED_INFO.Circling == TRUE || CALCULATED_INFO.OnGround == TRUE) {
+	if ( Calculated->Circling == TRUE || Calculated->OnGround == TRUE) {
 #ifdef DEBUG_ROTARY
 		sprintf(ventabuffer,"Not Calculating, on ground or circling\r\n");
 		if ((fp=fopen("DEBUG.TXT","a"))!= NULL)
