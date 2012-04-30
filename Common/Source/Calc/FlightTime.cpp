@@ -27,11 +27,11 @@ int DetectStartTime(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     if (starttime == -1) {
       // hasn't been started yet
 
-      starttime = (int)GPS_INFO.Time;
+      starttime = (int)Basic->Time;
 
       lastflighttime = -1;
     }
-    return (int)GPS_INFO.Time-starttime;
+    return (int)Basic->Time-starttime;
 
   } else {
 

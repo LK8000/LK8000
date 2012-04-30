@@ -79,11 +79,11 @@ void DoCalculationsSlow(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		if ( DoRangeWaypointList(Basic,Calculated) )
 			LastDoRangeWaypointListTime=Basic->Time;
 
-		if ( !GPS_INFO.NAVWarning ) gotValidFix=true;
+		if ( !Basic->NAVWarning ) gotValidFix=true;
 	} else {
 		// So we should not recalculate, apparently.. But did we ever get a valid fix?
 		if (!gotValidFix) { // nope!
-			if ( !GPS_INFO.NAVWarning ) { // and do we have a valid fix now?
+			if ( !Basic->NAVWarning ) { // and do we have a valid fix now?
 				// YES, so recalculate to update the very first position and avoid waiting for 
 				// 3 minutes until next pass!
 				#if TESTBENCH
