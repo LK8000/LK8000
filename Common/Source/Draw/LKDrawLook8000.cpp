@@ -1066,7 +1066,7 @@ drawOverlay:
 			wcscpy(amcmode,MsgToken(1678));
 			break;
 		case amcFinalAndClimb:
-			if (CALCULATED_INFO.FinalGlide)
+			if (DerivedDrawInfo.FinalGlide)
 				wcscpy(amcmode,MsgToken(1676));
 			else
 				wcscpy(amcmode,MsgToken(1678));

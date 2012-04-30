@@ -194,7 +194,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
   } // doinit
 
   bool ndr;
-  ndr=DoAirspaces(&GPS_INFO,  &CALCULATED_INFO);
+  ndr=DoAirspaces(&DrawInfo, &DerivedDrawInfo);
 
   AspNumpages=roundupdivision(LKNumAirspaces, AspNumraws);
   if (AspNumpages>MAXAIRSPACENUMPAGES) AspNumpages=MAXAIRSPACENUMPAGES;
@@ -219,7 +219,9 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 			// DoStatusMessage(_T("ERR-039 Invalid ASP selection")); 
 			break;
 		}
-		LastDoAirspaces = GPS_INFO.Time+NEARESTONHOLD; 
+		// LastDoAirspaces is NO MORE USED. CAN BE REMOVED ANYTIME. We use multicalc, but maybe
+		// we can combine both approaches for a softer calculation?
+		LastDoAirspaces = DrawInfo.Time+NEARESTONHOLD; 
 		dlgAirspaceDetails( LKAirspaces[i].Pointer );
 		LastDoAirspaces = 0; 
 		LKevent=LKEVENT_NONE; 
@@ -227,11 +229,11 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 		break;
 	case LKEVENT_DOWN:
 		if (++SelectedRaw[curmapspace] >=AspNumraws) SelectedRaw[curmapspace]=0;
-		LastDoAirspaces=GPS_INFO.Time+PAGINGTIMEOUT-1.0; 
+		LastDoAirspaces=DrawInfo.Time+PAGINGTIMEOUT-1.0; 
 		break;
 	case LKEVENT_UP:
 		if (--SelectedRaw[curmapspace] <0) SelectedRaw[curmapspace]=AspNumraws-1;
-		LastDoAirspaces=GPS_INFO.Time+PAGINGTIMEOUT-1.0; 
+		LastDoAirspaces=DrawInfo.Time+PAGINGTIMEOUT-1.0; 
 		break;
 	case LKEVENT_PAGEUP:
 		LKevent=LKEVENT_NONE;
@@ -462,7 +464,7 @@ void MapWindow::DrawAspNearest(HDC hdc, RECT rc) {
 		// AIRSPACE BEARING DIFFERENCE, OR BEARING IF CIRCLING
 		//
 		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-			value = LKAirspaces[rli].Bearing -  GPS_INFO.TrackBearing;
+			value = LKAirspaces[rli].Bearing -  DrawInfo.TrackBearing;
 
 			if (value < -180.0)
 				value += 360.0;

@@ -20,7 +20,7 @@ void MapWindow::DrawLKAlarms(HDC hDC, const RECT rc) {
   short validalarm=-1;
 
   // Alarms are working only with a valid GPS fix. No navigator, no alarms.
-  if (GPS_INFO.NAVWarning) return;
+  if (DrawInfo.NAVWarning) return;
 
   // give priority to the lowest alarm in list
   if (CheckAlarms(2)) validalarm=2;

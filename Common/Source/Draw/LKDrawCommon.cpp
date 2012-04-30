@@ -229,7 +229,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 			break;
 		}
 		SelectedWaypoint=i;
-		LastDoCommon = GPS_INFO.Time+NEARESTONHOLD; //@ 101003
+		LastDoCommon = DrawInfo.Time+NEARESTONHOLD; //@ 101003
 		PopupWaypointDetails();
 		LastDoCommon = 0; //@ 101003
 		// SetModeType(LKMODE_MAP, MP_MOVING); Experimental OFF 101219
@@ -238,12 +238,12 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 		break;
 	case LKEVENT_DOWN:
 		if (++SelectedRaw[curmapspace] >=CommonNumraws) SelectedRaw[curmapspace]=0;
-		LastDoCommon=GPS_INFO.Time+PAGINGTIMEOUT-1.0; //@ 101003
+		LastDoCommon=DrawInfo.Time+PAGINGTIMEOUT-1.0; //@ 101003
 		// Event to be cleared at the end
 		break;
 	case LKEVENT_UP:
 		if (--SelectedRaw[curmapspace] <0) SelectedRaw[curmapspace]=CommonNumraws-1;
-		LastDoCommon=GPS_INFO.Time+PAGINGTIMEOUT-1.0; //@ 101003
+		LastDoCommon=DrawInfo.Time+PAGINGTIMEOUT-1.0; //@ 101003
 		break;
 	case LKEVENT_PAGEUP:
 		LKevent=LKEVENT_NONE;
@@ -421,7 +421,7 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 		// relative bearing
 
 		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-			Value = WayPointCalc[rli].Bearing -  GPS_INFO.TrackBearing;
+			Value = WayPointCalc[rli].Bearing -  DrawInfo.TrackBearing;
 
 			if (Value < -180.0)
 				Value += 360.0;

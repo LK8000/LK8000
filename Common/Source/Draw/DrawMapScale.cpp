@@ -54,7 +54,7 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     _tcscpy(Scale2,TEXT(""));
 
     // warn about missing terrain
-    if (!CALCULATED_INFO.TerrainValid) {
+    if (!DerivedDrawInfo.TerrainValid) {
 	if (terrainwarning < 120) {
 		// LKTOKEN _@M1335_ " TERRAIN?"
 		_tcscat(Scale2, MsgToken(1335));
@@ -151,7 +151,7 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     GetTextExtentPoint(hDC, Scale2, _tcslen(Scale2), &tsize);
     COLORREF mapscalecolor=OverColorRef;
 
-    if (!CALCULATED_INFO.TerrainValid) {
+    if (!DerivedDrawInfo.TerrainValid) {
 	if (terrainwarning>0 && terrainwarning<120) mapscalecolor=RGB_RED;
     } else {
 	if (mapscalecolor==RGB_SBLACK) mapscalecolor=RGB_WHITE;

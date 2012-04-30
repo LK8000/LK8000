@@ -228,7 +228,7 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 			break;
 		}
 		SelectedWaypoint=i;
-		LastDoNearest = GPS_INFO.Time+NEARESTONHOLD; 
+		LastDoNearest = DrawInfo.Time+NEARESTONHOLD; 
 		PopupWaypointDetails();
 		LastDoNearest = 0; 
 		// SetModeType(LKMODE_MAP,MP_MOVING); EXperimental OFF 101219
@@ -237,11 +237,11 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 		break;
 	case LKEVENT_DOWN:
 		if (++SelectedRaw[curmapspace] >=Numraws) SelectedRaw[curmapspace]=0;
-		LastDoNearest=GPS_INFO.Time+PAGINGTIMEOUT-1.0; 
+		LastDoNearest=DrawInfo.Time+PAGINGTIMEOUT-1.0; 
 		break;
 	case LKEVENT_UP:
 		if (--SelectedRaw[curmapspace] <0) SelectedRaw[curmapspace]=Numraws-1;
-		LastDoNearest=GPS_INFO.Time+PAGINGTIMEOUT-1.0; 
+		LastDoNearest=DrawInfo.Time+PAGINGTIMEOUT-1.0; 
 		break;
 	case LKEVENT_PAGEUP:
 		LKevent=LKEVENT_NONE;
@@ -500,7 +500,7 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 
 
 		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-			value = WayPointCalc[rli].Bearing -  GPS_INFO.TrackBearing;
+			value = WayPointCalc[rli].Bearing -  DrawInfo.TrackBearing;
 
 			if (value < -180.0)
 				value += 360.0;

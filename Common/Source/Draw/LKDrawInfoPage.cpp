@@ -154,16 +154,16 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 		if (LKTargetIndex<0 || LKTargetIndex>=MAXTRAFFIC) {
 			ontarget=false;
 		} else {
-			if (GPS_INFO.FLARM_Traffic[LKTargetIndex].ID <=0) {
+			if (DrawInfo.FLARM_Traffic[LKTargetIndex].ID <=0) {
 				ontarget=false;
 			} else {
 				ontarget=true;
-				pTarget=&GPS_INFO.FLARM_Traffic[LKTargetIndex];
+				pTarget=&DrawInfo.FLARM_Traffic[LKTargetIndex];
 			}
 		}
 	}
 
-	if (ontarget) DoTarget(&GPS_INFO, &CALCULATED_INFO);
+	if (ontarget) DoTarget(&DrawInfo, &DerivedDrawInfo);
 
 	switch (LKevent) {
 		case LKEVENT_NONE:
@@ -288,7 +288,7 @@ void MapWindow::DrawInfoPage(HDC hdc,  RECT rc, bool forceinit )
 	if ( (curtype == (IM_TOP+IM_TRF)) || (curtype == (IM_TOP+IM_TARGET)) ) {
 		if (ontarget) {
 			TCHAR tpas[30];
-			Units::TimeToTextDown(tpas,(int)(GPS_INFO.Time - pTarget->Time_Fix));
+			Units::TimeToTextDown(tpas,(int)(DrawInfo.Time - pTarget->Time_Fix));
 
 			switch (pTarget->Status) {
 				case LKT_REAL:

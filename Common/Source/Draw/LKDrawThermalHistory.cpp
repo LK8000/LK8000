@@ -172,7 +172,7 @@ void MapWindow::DrawThermalHistory(HDC hdc, RECT rc) {
   return;
   } // doinit
 
-  DoThermalHistory(&GPS_INFO,  &CALCULATED_INFO);
+  DoThermalHistory(&DrawInfo,  &DerivedDrawInfo);
 
   THistoryNumpages=roundupdivision(LKNumThermals, thistoryNumraws);
   if (THistoryNumpages>MAXTHISTORYNUMPAGES) THistoryNumpages=MAXTHISTORYNUMPAGES;
@@ -204,18 +204,18 @@ void MapWindow::DrawThermalHistory(HDC hdc, RECT rc) {
 		}
 		LKevent=LKEVENT_NONE; 
 		// Do not update while in details mode, max 10m
-		LastDoThermalH=GPS_INFO.Time+600;
+		LastDoThermalH=DrawInfo.Time+600;
 		dlgThermalDetails(i);
 		LastDoThermalH=0;
 		break;
 	case LKEVENT_DOWN:
 		if (++SelectedRaw[curmapspace] >=thistoryNumraws) SelectedRaw[curmapspace]=0;
 		// Reset LastDoThermalH so that it wont be updated while selecting an item
-		LastDoThermalH=GPS_INFO.Time+PAGINGTIMEOUT-1.0;
+		LastDoThermalH=DrawInfo.Time+PAGINGTIMEOUT-1.0;
 		break;
 	case LKEVENT_UP:
 		if (--SelectedRaw[curmapspace] <0) SelectedRaw[curmapspace]=thistoryNumraws-1;
-		LastDoThermalH=GPS_INFO.Time+PAGINGTIMEOUT-1.0;
+		LastDoThermalH=DrawInfo.Time+PAGINGTIMEOUT-1.0;
 		break;
 	case LKEVENT_PAGEUP:
 		LKevent=LKEVENT_NONE;
@@ -424,7 +424,7 @@ void MapWindow::DrawThermalHistory(HDC hdc, RECT rc) {
 		// relative bearing
 
 		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-			value = CopyThermalHistory[rli].Bearing -  GPS_INFO.TrackBearing;
+			value = CopyThermalHistory[rli].Bearing -  DrawInfo.TrackBearing;
 
 			if (value < -180.0)
 				value += 360.0;

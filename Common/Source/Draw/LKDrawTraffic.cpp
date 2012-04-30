@@ -176,7 +176,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
   return;
   } // doinit
 
-  DoTraffic(&GPS_INFO,  &CALCULATED_INFO);
+  DoTraffic(&DrawInfo,  &DerivedDrawInfo);
 
   TrafficNumpages=roundupdivision(LKNumTraffic, TrafficNumraws);
   if (TrafficNumpages>MAXTRAFFICNUMPAGES) TrafficNumpages=MAXTRAFFICNUMPAGES;
@@ -206,18 +206,18 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 		}
 		LKevent=LKEVENT_NONE; 
 		// Do not update Traffic while in details mode, max 10m
-		LastDoTraffic=GPS_INFO.Time+600;
+		LastDoTraffic=DrawInfo.Time+600;
 		dlgLKTrafficDetails(i);
 		LastDoTraffic=0;
 		break;
 	case LKEVENT_DOWN:
 		if (++SelectedRaw[curmapspace] >=TrafficNumraws) SelectedRaw[curmapspace]=0;
 		// Reset LastDoTraffic so that it wont be updated while selecting an item
-		LastDoTraffic=GPS_INFO.Time+PAGINGTIMEOUT-1.0;
+		LastDoTraffic=DrawInfo.Time+PAGINGTIMEOUT-1.0;
 		break;
 	case LKEVENT_UP:
 		if (--SelectedRaw[curmapspace] <0) SelectedRaw[curmapspace]=TrafficNumraws-1;
-		LastDoTraffic=GPS_INFO.Time+PAGINGTIMEOUT-1.0;
+		LastDoTraffic=DrawInfo.Time+PAGINGTIMEOUT-1.0;
 		break;
 	case LKEVENT_PAGEUP:
 		LKevent=LKEVENT_NONE;
@@ -456,7 +456,7 @@ void MapWindow::DrawTraffic(HDC hdc, RECT rc) {
 		// relative bearing
 
 		if (!MapWindow::mode.Is(MapWindow::Mode::MODE_CIRCLING)) {
-			value = LKTraffic[rli].Bearing -  GPS_INFO.TrackBearing;
+			value = LKTraffic[rli].Bearing -  DrawInfo.TrackBearing;
 
 			if (value < -180.0)
 				value += 360.0;

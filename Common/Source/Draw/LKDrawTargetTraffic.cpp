@@ -147,7 +147,7 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
 
   // Check target exists, just for safe
   if (LKTargetIndex>=0 && LKTargetIndex<MAXTRAFFIC) {
-	if (!GPS_INFO.FLARM_Traffic[LKTargetIndex].Locked) {
+	if (!DrawInfo.FLARM_Traffic[LKTargetIndex].Locked) {
 		disabled=true;
 		notraffic=true;
 	}
@@ -157,7 +157,7 @@ void MapWindow::DrawTarget(HDC hDC, const RECT rc, int ttop, int tbottom, int tl
   }
 
   // check visibility +-80 degrees
-  double tangle = LKTraffic[LKTargetIndex].Bearing -  GPS_INFO.TrackBearing;
+  double tangle = LKTraffic[LKTargetIndex].Bearing -  DrawInfo.TrackBearing;
   if (tangle < -180.0) {
 	tangle += 360.0;
   } else {

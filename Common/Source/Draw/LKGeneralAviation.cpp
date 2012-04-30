@@ -179,7 +179,7 @@ void DrawHSI(HDC hdc, POINT Orig, RECT rc )
 	///////////////////
 
 	TCHAR brgText[LKSIZEBUFFERLARGE];
-	int bearing= (int) (GPS_INFO.TrackBearing+0.5);
+	int bearing= (int) (GPS_INFO.TrackBearing+0.5); // should be part of mapwindow class and use DrawInfo!
 	wsprintf(brgText,_T("%03d"),bearing);
 
 	SIZE brgSize;
@@ -217,7 +217,7 @@ void DrawHSI(HDC hdc, POINT Orig, RECT rc )
 	//Offset arc below heading
 	rcy += brgSize.cy +10;
 
-	DrawCompassArc(hdc,Orig.x,rcy,rad,rc,GPS_INFO.TrackBearing);
+	DrawCompassArc(hdc,Orig.x,rcy,rad,rc,GPS_INFO.TrackBearing); // should be DrawInfo
 
 	SetTextColor(hdc,RGB_BLACK);
 	SelectObject(hdc,(HPEN)oldpen);

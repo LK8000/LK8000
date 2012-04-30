@@ -96,10 +96,10 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
   switch (MapSpaceMode) {
 	case MSM_WELCOME:
 #if (1)
-		if (!GPS_INFO.NAVWarning) { 
-		static double firsttime=GPS_INFO.Time;
+		if (!DrawInfo.NAVWarning) { 
+		static double firsttime=DrawInfo.Time;
 		// delayed automatic exit from welcome mode
-		if ( GPS_INFO.Time > (firsttime+1.0) ) {
+		if ( DrawInfo.Time > (firsttime+1.0) ) {
 			SetModeType(LKMODE_MAP,MP_MOVING);
 			LKevent=LKEVENT_NONE;
 			break;

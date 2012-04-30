@@ -15,7 +15,7 @@
 //
 void MapWindow::DrawHeading(HDC hdc, POINT Orig, RECT rc ) {
 
-   if (GPS_INFO.NAVWarning) return; // 100214
+   if (DrawInfo.NAVWarning) return; // 100214
 
    if (zoom.RealScale()>5 || mode.Is(MapWindow::Mode::MODE_CIRCLING)) return;
    POINT p2;
