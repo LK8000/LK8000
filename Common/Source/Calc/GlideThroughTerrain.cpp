@@ -40,11 +40,11 @@ void CheckGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	}
 
 	distance_soarable = 
-		FinalGlideThroughTerrain(CALCULATED_INFO.WaypointBearing, Basic, Calculated, &lat, &lon, 
-		CALCULATED_INFO.WaypointDistance, &out_of_range, NULL);
+		FinalGlideThroughTerrain(Calculated->WaypointBearing, Basic, Calculated, &lat, &lon, 
+		Calculated->WaypointDistance, &out_of_range, NULL);
 
 	// Calculate obstacles ONLY if we are in glide range, otherwise it is useless 
-	if ((!out_of_range)&&(distance_soarable< CALCULATED_INFO.WaypointDistance)) {
+	if ((!out_of_range)&&(distance_soarable< Calculated->WaypointDistance)) {
 
 		Calculated->TerrainWarningLatitude = lat;
 		Calculated->TerrainWarningLongitude = lon;
@@ -57,8 +57,8 @@ void CheckGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		// how much height I will loose to get there
 		Calculated->ObstacleAltReqd = GlidePolar::MacCreadyAltitude (MACCREADY, 
 			distance_soarable, 
-			CALCULATED_INFO.WaypointBearing,
-			CALCULATED_INFO.WindSpeed, CALCULATED_INFO.WindBearing,
+			Calculated->WaypointBearing,
+			Calculated->WindSpeed, Calculated->WindBearing,
 			0, 0, true,0);
 
 		// arrival altitude over the obstacle
@@ -69,7 +69,7 @@ void CheckGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			 - SAFETYALTITUDETERRAIN;
 
 		// Reminder: we already have a glide range on destination.
-		minaltitude=CALCULATED_INFO.NavAltitude;
+		minaltitude=Calculated->NavAltitude;
 		maxaltitude=minaltitude*2;
 
 		// if no far obstacle will be found, we shall use the first obstacle. 
@@ -79,9 +79,9 @@ void CheckGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 		if (oldstartaltitude<0) oldstartaltitude=minaltitude;
 
 		// if bearing has changed for more than 1 deg, we dont use shortcuts
-		if (fabs(oldfarbearing-CALCULATED_INFO.WaypointBearing) >= 1)  {
+		if (fabs(oldfarbearing-Calculated->WaypointBearing) >= 1)  {
 			startaltitude=minaltitude;
-			oldfarbearing=CALCULATED_INFO.WaypointBearing;
+			oldfarbearing=Calculated->WaypointBearing;
 		} else {
 			startaltitude=oldstartaltitude-200;
 			if (startaltitude <minaltitude) startaltitude=minaltitude;
@@ -92,10 +92,10 @@ void CheckGlideThroughTerrain(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
 		for ( newaltitude=minaltitude; newaltitude<maxaltitude; newaltitude+=50) {
 
-			fardistance_soarable = FarFinalGlideThroughTerrain( CALCULATED_INFO.WaypointBearing, Basic, Calculated, 
-				&farlat, &farlon, CALCULATED_INFO.WaypointDistance, &farout_of_range, newaltitude, NULL);
+			fardistance_soarable = FarFinalGlideThroughTerrain( Calculated->WaypointBearing, Basic, Calculated, 
+				&farlat, &farlon, Calculated->WaypointDistance, &farout_of_range, newaltitude, NULL);
 
-			if (fardistance_soarable< CALCULATED_INFO.WaypointDistance) {
+			if (fardistance_soarable< Calculated->WaypointDistance) {
 				oldfarlat=farlat;
 				oldfarlon=farlon;
 				oldfardist=fardistance_soarable;
