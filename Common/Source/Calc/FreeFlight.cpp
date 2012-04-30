@@ -34,7 +34,7 @@
 #define FF_MAXTOWTIME	1200			// 20 minutes
 
 
-bool DetectFreeFlying(DERIVED_INFO *Calculated) {
+bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   static bool   ffDetected=false;
   static int    lastMaxAltitude=-1000;
@@ -64,7 +64,7 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
     lastMaxAltitude=-1000;
     // For winch launches and also for quick taekoffs do not update gndAltitude when the plane
     // is already moving, probably towed or winched already. Threshold is at 4m/s, = 14kmh
-    if (GPS_INFO.Speed<=4.0) gndAltitude=GPS_INFO.Altitude;
+    if (Basic->Speed<=4.0) gndAltitude=Basic->Altitude;
     winchdetected=false;
     wlaunch=0;
     altLoss=FF_TOWING_ALTLOSS;
@@ -104,7 +104,7 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
   // Here we are flying, and the start of free flight must still be detected
 
   // In any case, after this time, force a start. This is to avoid that for any reason, no FF is ever detected.
-  if ((int)GPS_INFO.Time > ( Calculated->TakeOffTime + FF_MAXTOWTIME)) {
+  if ((int)Basic->Time > ( Calculated->TakeOffTime + FF_MAXTOWTIME)) {
     #if DEBUG_DFF
     DoStatusMessage(_T("DFF:  TIMEOUT"));
     #endif
@@ -113,11 +113,11 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
 
  
   // A loss of altitude will trigger FF 
-  lastMaxAltitude = std::max(lastMaxAltitude, (int)GPS_INFO.Altitude);
-  if ((int)GPS_INFO.Altitude <= ( lastMaxAltitude - altLoss)) {
+  lastMaxAltitude = std::max(lastMaxAltitude, (int)Basic->Altitude);
+  if ((int)Basic->Altitude <= ( lastMaxAltitude - altLoss)) {
     #if DEBUG_DFF
-    if ( (winchdetected) || ((GPS_INFO.Altitude - gndAltitude)>=400) 
-      && ((GPS_INFO.Time - Calculated->TakeOffTime) >= 150))
+    if ( (winchdetected) || ((Basic->Altitude - gndAltitude)>=400) 
+      && ((Basic->Time - Calculated->TakeOffTime) >= 150))
       DoStatusMessage(_T("DFF:  ALTITUDE LOSS"));
     #endif
     goto lastcheck;
@@ -172,8 +172,8 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
 
   if (newavervario<=0) {
     #if DEBUG_DFF
-    if ( (winchdetected) || ((GPS_INFO.Altitude - gndAltitude)>=400) 
-      && ((GPS_INFO.Time - Calculated->TakeOffTime) >= 150))
+    if ( (winchdetected) || ((Basic->Altitude - gndAltitude)>=400) 
+      && ((Basic->Time - Calculated->TakeOffTime) >= 150))
       DoStatusMessage(_T("DFF:  VARIO SINK"));
     #endif
     goto lastcheck;
@@ -186,8 +186,8 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
   if ( oldavervario >=4.5 ) {
     #if DEBUG_DFF
     StartupStore(_T("..... oldavervario=%.1f newavervario=%.1f current=%.1f\n"),oldavervario,newavervario,Calculated->Vario);
-    if ( (winchdetected) || ((GPS_INFO.Altitude - gndAltitude)>=400) 
-      && ((GPS_INFO.Time - Calculated->TakeOffTime) >= 150))
+    if ( (winchdetected) || ((Basic->Altitude - gndAltitude)>=400) 
+      && ((Basic->Time - Calculated->TakeOffTime) >= 150))
       DoStatusMessage(_T("DFF:  DELTA VARIO"));
     #endif
     goto lastcheck;
@@ -204,9 +204,9 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
   // until a thermal is found. So no problems. 
 
   if (!winchdetected) {
-    if ( (GPS_INFO.Altitude - gndAltitude)<400)
+    if ( (Basic->Altitude - gndAltitude)<400)
       return false;
-    if ( (GPS_INFO.Time - Calculated->TakeOffTime) < 150)
+    if ( (Basic->Time - Calculated->TakeOffTime) < 150)
       return false;
   }
 
@@ -228,8 +228,8 @@ bool DetectFreeFlying(DERIVED_INFO *Calculated) {
 
   ffDetected=true;
   Calculated->FreeFlying=true;
-  Calculated->FreeFlightStartTime=GPS_INFO.Time;
-  Calculated->FreeFlightStartQNH=GPS_INFO.Altitude;
+  Calculated->FreeFlightStartTime=Basic->Time;
+  Calculated->FreeFlightStartQNH=Basic->Altitude;
   Calculated->FreeFlightStartQFE=gndAltitude;
   ResetFreeFlightStats(Calculated);
   return true;

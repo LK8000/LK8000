@@ -63,7 +63,7 @@ BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   Heading(Basic, Calculated);
   DistanceToNext(Basic, Calculated);
   DistanceToHome(Basic, Calculated);
-  DetectFreeFlying(Calculated);	// check ongoing powerless flight
+  DetectFreeFlying(Basic,Calculated);	// check ongoing powerless flight
   DoLogging(Basic, Calculated);
   Vario(Basic,Calculated);
   TerrainHeight(Basic, Calculated);
