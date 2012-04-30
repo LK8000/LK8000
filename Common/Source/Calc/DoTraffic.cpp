@@ -95,7 +95,7 @@ bool DoTraffic(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 				sortvalue=LKTraffic[i].Bearing;
 				break;
 			}
-			sortvalue=LKTraffic[i].Bearing - GPS_INFO.TrackBearing;
+			sortvalue=LKTraffic[i].Bearing - Basic->TrackBearing;
 			if (sortvalue < -180.0) sortvalue += 360.0;
 			else
 				if (sortvalue > 180.0) sortvalue -= 360.0;

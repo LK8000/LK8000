@@ -221,7 +221,7 @@ bool DoThermalHistory(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 				sortvalue=CopyThermalHistory[i].Bearing;
 				break;
 			}
-			sortvalue=CopyThermalHistory[i].Bearing - GPS_INFO.TrackBearing;
+			sortvalue=CopyThermalHistory[i].Bearing - Basic->TrackBearing;
 			if (sortvalue < -180.0) sortvalue += 360.0;
 			else
 				if (sortvalue > 180.0) sortvalue -= 360.0;

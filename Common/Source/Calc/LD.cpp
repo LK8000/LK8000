@@ -71,7 +71,7 @@ void LD(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
                                 LastAlt - Calculated->NavAltitude, 0.1);
 
       InsertLDRotary(&rotaryLD,(int)DistanceFlown, (int)Calculated->NavAltitude);
-      InsertWindRotary(&rotaryWind, GPS_INFO.Speed,GPS_INFO.TrackBearing, Calculated->NavAltitude); // 100103
+      InsertWindRotary(&rotaryWind, Basic->Speed, Basic->TrackBearing, Calculated->NavAltitude); // 100103
       if (DistanceFlown >3 && DistanceFlown<300) Calculated->Odometer += DistanceFlown;
 
       LastLat = Basic->Latitude;

@@ -176,7 +176,7 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 				wp_value=WayPointCalc[wp_index].Bearing;
 				break;
 			}
-			wp_value = WayPointCalc[wp_index].Bearing -  GPS_INFO.TrackBearing;
+			wp_value = WayPointCalc[wp_index].Bearing -  Basic->TrackBearing;
 			if (wp_value < -180.0) wp_value += 360.0;
 			else
 				if (wp_value > 180.0) wp_value -= 360.0;

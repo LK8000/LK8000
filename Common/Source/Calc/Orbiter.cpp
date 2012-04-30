@@ -16,9 +16,9 @@
 #define LK_TURNRATE		Calculated->TurnRate
 #define LK_HEADING		Calculated->Heading
 #define LK_BANKING		Calculated->BankAngle
-#define LK_MYTRACK		GPS_INFO.TrackBearing
-#define LK_MYLAT		GPS_INFO.Latitude
-#define LK_MYLON		GPS_INFO.Longitude
+#define LK_MYTRACK		Basic->TrackBearing
+#define LK_MYLAT		Basic->Latitude
+#define LK_MYLON		Basic->Longitude
 
 //#define DEBUG_ORBITER	1
 
