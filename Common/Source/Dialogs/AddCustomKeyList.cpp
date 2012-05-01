@@ -81,6 +81,7 @@ void AddCustomKeyList( DataFieldEnum* dfe) {
     dfe->addEnumText(MsgToken(1791)); // Arm toggle advance
     dfe->addEnumTextNoLF(MsgToken(2064)); // Repeat Message
     dfe->addEnumTextNoLF(MsgToken(2015)); // Waypoint lookup
+    dfe->addEnumText(MsgToken(2082)); // PAN
 
     dfe->Sort(0);
 

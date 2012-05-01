@@ -86,6 +86,7 @@ typedef enum{
 	ckArmAdvance,
 	ckMessageRepeat,
 	ckWaypointLookup,
+	ckPan,
 	ckTOP,
 } CustomKeyMode_t;
 
