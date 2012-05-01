@@ -369,6 +369,12 @@ passthrough:
 		InputEvents::eventRepeatStatusMessage(NULL);
                 return true;
 		
+	case ckWaypointLookup:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		InputEvents::eventWaypointDetails(_T("select"));
+		return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		FailStore(_T("ERR-726 INVALID CUSTOMKEY=%d"),ckeymode);
@@ -434,6 +440,7 @@ CustomKeyLabel[43]=2013;	// task calc
 CustomKeyLabel[44]=2020;	// task target
 CustomKeyLabel[45]=2226;	// Arm toggle
 CustomKeyLabel[46]=2064;	// Message Repeat
+CustomKeyLabel[47]=2015;	// Waypoint lookup
 
 }
 

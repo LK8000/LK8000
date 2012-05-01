@@ -85,6 +85,7 @@ typedef enum{
 	ckTaskTarget,
 	ckArmAdvance,
 	ckMessageRepeat,
+	ckWaypointLookup,
 	ckTOP,
 } CustomKeyMode_t;
 
