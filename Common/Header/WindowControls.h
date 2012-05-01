@@ -270,6 +270,7 @@ class DataFieldEnum: public DataField {
   int CreateComboList(void);
 
   void addEnumText(const TCHAR *Text);
+  void addEnumTextNoLF(const TCHAR *Text);
 
   int GetAsInteger(void);
   TCHAR *GetAsString(void);

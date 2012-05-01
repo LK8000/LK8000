@@ -629,6 +629,20 @@ void DataFieldEnum::addEnumText(const TCHAR *Text) {
   }
 }
 
+void DataFieldEnum::addEnumTextNoLF(const TCHAR *Text) {
+  if (nEnums<DFE_MAX_ENUMS-1) {
+    TCHAR *p;
+    mEntries[nEnums].mText = (TCHAR*)malloc((_tcslen(Text)+1)*sizeof(TCHAR));
+    if (mEntries[nEnums].mText == NULL) return;
+    _tcscpy(mEntries[nEnums].mText, Text);
+    p = _tcschr(mEntries[nEnums].mText, _T('\n'));
+    if (p)
+	*p = _T(' ');
+    
+    mEntries[nEnums].index = nEnums;
+    nEnums++;
+  }
+}
 
 TCHAR *DataFieldEnum::GetAsString(void){
   if ((mValue>=0) && (mValue<nEnums)) {
