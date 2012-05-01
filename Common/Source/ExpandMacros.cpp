@@ -13,6 +13,7 @@
 #include "externs.h"
 #include "lk8000.h"
 #include "Logger.h"
+#include "LKInterface.h"
 
 
 static void ReplaceInString(TCHAR *String, TCHAR *ToReplace, 

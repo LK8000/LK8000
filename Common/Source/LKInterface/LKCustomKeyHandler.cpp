@@ -364,6 +364,10 @@ passthrough:
 		InputEvents::eventArmAdvance(_T("toggle"));
 		InputEvents::eventArmAdvance(_T("show"));
 		return true;
+
+	case ckMessageRepeat:
+		InputEvents::eventRepeatStatusMessage(NULL);
+                return true;
 		
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
@@ -429,6 +433,7 @@ CustomKeyLabel[42]=2131;	// custom menu
 CustomKeyLabel[43]=2013;	// task calc
 CustomKeyLabel[44]=2020;	// task target
 CustomKeyLabel[45]=2226;	// Arm toggle
+CustomKeyLabel[46]=2064;	// Message Repeat
 
 }
 

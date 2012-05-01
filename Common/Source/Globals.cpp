@@ -13,6 +13,7 @@
 #include "MapWindow.h"
 #include "LKMapWindow.h"
 #include "Modeltype.h"
+#include "LKInterface.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
