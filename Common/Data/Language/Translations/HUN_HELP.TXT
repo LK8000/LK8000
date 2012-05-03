@@ -182,6 +182,7 @@ Ezzel a beállítással az automatikus szél számítást lehet beállítani.
 [Körözés] Csak GPS adatforrást használ, körözés közben próbálja meghatározni a szélirányt és szélsebességet.
 [ZigZag] Ehhez a GPS-en túl barometrikus sebesség bemenetre is szükség van, pl. intelligens varióra
 [Mindkettő] Mind a körözési, mind a ZigZag algoritmust használja.
+[Külső] Külsőleg csatlakoztatott műszer által számított szél adatok használata (CAI, LX, ZANDER, stb.)
 
 @140
 Ez a sebességmérő által mutatott sebesség, amit tartani kell a TrueWind számítás közben.
@@ -591,8 +592,7 @@ Ez az opció meghatározza, hogy a tereptartományon (térképen) kívüli fordu
 [Kizárva] esetben nem jelennek meg a fordulópont listában.
 
 @237
-Csak a képernyő fekvő tájolásában és a teljes matricák kiválasztásakor dolgozik: a helyi idő megjelenik.
-Álló tájoláskor vagy fél matrica módban az óra nem jelenik meg.
+Csak a teljes matricák kiválasztásakor dolgozik: a helyi idő megjelenik.
 
 @238
 A matricán lévő betűk mérete.
@@ -655,8 +655,6 @@ Lásd a kézikönyvet az összes kattintási kombinációhoz. Az alapértelmezé
 @402
 A jobb felső egyéni gomb a képernyő jobb felső részére történő kattintással érhető el.
 Itt be tudod állítani milyen művelet történjen az egyéni gomb aktiválásakor.
-Ez a gomb nem áll rendelkezére a siklóernyős és sárkányos üzemmódban, mert ez fent van tartva 
-a feladat újraindításához az idő kapuk közben, és az UTM koordináták lekéréséhez vészhelyzetekben. (lásd a kézikönyvet a siklóernyősőknek)
 Lásd a kézikönyvet az összes kattintási kombinációhoz. Az alapértelmezés a 'Nem használt'
 
 @403
@@ -883,6 +881,7 @@ Ezzel a beállítással az automatikus szél számítást lehet beállítani.
 [Körözés] Csak GPS adatforrást használ, körözés közben próbálja meghatározni a szélirányt és szélsebességet.
 [ZigZag] Ehhez a GPS-en túl barometrikus sebesség bemenetre is szükség van, pl. intelligens varióra
 [Mindkettő] Mind a körözési, mind a ZigZag algoritmust használja.
+[Külső] Külsőleg csatlakoztatott műszer által számított szél adatok használata (CAI, LX, ZANDER, stb.)
 
 @613
 Meghatározza hogy a nyomvonal sodródjon-e a széllel körözés módban.
@@ -1592,8 +1591,8 @@ közelíted meg 5km-re, az autozoom újra működni kezd.
 
 @1220
 [Alsó sor beállítása]
-Engedélyezheted vagy tilthatod az alsó sorok megjelenítését. Ha mindengyiket letiltod, akkor a NAV1 fog megjelenni, illetve körözés közben
-a TRM0 automatikusan megjelenik.
+Engedélyezheted vagy tilthatod az egyes alsó sorok megjelenítését. Legalább egynek azonban (a TRM0-n kívül) engedélyezve kell lennie.
+A TRM0 automatikusan jelenik meg körözés közben.
 
 @1221
 [Infólapok beállítása]
@@ -1656,7 +1655,15 @@ Kapcsold be (állítsd nagyobb mint 0-ra), ha engedélyezni akarod hogy a progra
 Ehhez a készüléknek GPRS/HSDPA adatkapcsolattal és folyamatos TCP/IP kapcsolattal kell rendelkeznie a szerver felé. A program a megadott szervert, felhasználói nevet és
 jelszót fogja használni a belépéshez. A repülőgép tipusa szintén küldésre kerül. Ha nem vagy biztos benne, inkább állítsd be a 0 alapértéket, ami a kikapcsolt állapotot jelenti. 
 
+@1259
+[Saját Menü]
+
+@1260
+[Gyors gesztusok]
+Csak Siklóernyő/Sárkány módban engedélyezi vagy tiltja a gyors gesztusok használatát.
+Alapesetben ezek engedélyezve vannak. A gyors gesztusok lehetővé teszik az infó lapok
+közötti gyors váltást a kijelző bal vagy jobb szélére klikkeléssel, mint a gesztusok esetében.
+Repülés közben ha kesztyűt használsz, jobb ha ez tiltva van.
+
 @9999
 Ezen az elemen nem áll rendelkezésre súgó.
-
-
