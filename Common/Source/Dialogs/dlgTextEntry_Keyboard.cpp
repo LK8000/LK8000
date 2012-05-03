@@ -170,7 +170,6 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, const TCHAR* szFile, 
   UpdateTextboxProp();
   wf->SetKeyDownNotify(FormKeyDown);
   wf->ShowModal();
-  LKASSERT(edittext);
   _tcsncpy(text, edittext, max_width);
   text[max_width-1]=0;
   delete wf;

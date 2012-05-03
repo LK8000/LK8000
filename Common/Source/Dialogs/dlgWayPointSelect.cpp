@@ -326,7 +326,6 @@ static void UpdateList(void){
     qsort(WayPointSelectInfo, UpLimit,
         sizeof(WayPointSelectInfo_t), WaypointNameCompare);
 
-    LKASSERT(sNameFilter);
     _tcsncpy(sTmp, sNameFilter, NAMEFILTERLEN);
     sTmp[NAMEFILTERLEN] = '\0';
     _tcsupr(sTmp);
@@ -453,7 +452,7 @@ static void FilterMode(bool direction) {
 static void OnFilterNameButton(WindowControl *Sender) {
 
   TCHAR newNameFilter[NAMEFILTERLEN+1];
-  LKASSERT(sNameFilter);
+
   _tcsncpy(newNameFilter, sNameFilter, NAMEFILTERLEN);
   newNameFilter[NAMEFILTERLEN] = '\0'; // 100502 FIX
   dlgTextEntryShowModal(newNameFilter, NAMEFILTERLEN);
@@ -467,7 +466,6 @@ static void OnFilterNameButton(WindowControl *Sender) {
 	i--;
   };
 
-  LKASSERT(newNameFilter);
   _tcsncpy(sNameFilter, newNameFilter, NAMEFILTERLEN);
   sNameFilter[NAMEFILTERLEN] = '\0'; // 100502 FIX
 

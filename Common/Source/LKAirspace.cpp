@@ -2557,7 +2557,7 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
       }
       break;
   }
-  LKASSERT(intbuf);
+  LKASSERT(buffer);
   _tcsncpy(buffer, intbuf, bufferlen-1);
   buffer[bufferlen-1]=0;
 }
