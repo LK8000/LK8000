@@ -72,12 +72,12 @@ static bool airspace_bearing_sorter( CAirspace *a, CAirspace *b )
     return da<db;
   }
  
-  beardiffa = beara - (int)GPS_INFO.TrackBearing;
+  beardiffa = beara - a->LastTrackBearing();
   if (beardiffa < -180) beardiffa += 360;
     else if (beardiffa > 180) beardiffa -= 360;
   if (beardiffa<0) beardiffa*=-1;
   
-  beardiffb = bearb - (int)GPS_INFO.TrackBearing;
+  beardiffb = bearb - b->LastTrackBearing();
   if (beardiffb < -180) beardiffb += 360;
     else if (beardiffb > 180) beardiffb -= 360;
   if (beardiffb<0) beardiffb*=-1;

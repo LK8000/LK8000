@@ -180,6 +180,7 @@ public:
   int LastCalculatedHDistance() const { return _hdistance; }            // Get last calculated horizontal distance (LKCalculations.cpp / DoAirspaces())
   int LastCalculatedVDistance() const { return _vdistance; }            // Get last calculated vertical distance (LKCalculations.cpp / DoAirspaces())
   int LastCalculatedBearing() const { return _bearing; }                // Get last calculated bearing (LKCalculations.cpp / DoAirspaces())
+  int LastTrackBearing() const { return _lastknowntrackbearing; }       // Get last track bearing (LKCalculations.cpp / DoAirspaces())
 
   AirspaceWarningLevel_t WarningLevel() const { return _warninglevel; }
   void WarningLevel(AirspaceWarningLevel_t userwarningstate) { _warninglevel = userwarningstate; }
@@ -250,6 +251,7 @@ protected:
   static int _lastknownalt;                    // last known alt saved for calculations
   static int _lastknownagl;                    // last known agl saved for calculations
   static int _lastknownheading;                // last known heading saved for calculations
+  static int _lastknowntrackbearing;           // last known track bearing saved for calculations
   static bool _pred_blindtime;                 // disable predicted position based warnings near takeoff
   static CAirspace* _sideview_nearest_instance;         // collect nearest airspace instance for sideview during warning calculations
 };

@@ -91,7 +91,7 @@ static void Update()
 static void OnCodeClicked(WindowControl *Sender) 
 {
   TCHAR newTeammateCode[10];
-  LKASSERT(TeammateCode);
+
   _tcsncpy(newTeammateCode, TeammateCode, 10);
   dlgTextEntryShowModal(newTeammateCode, 7);
 
@@ -104,7 +104,7 @@ static void OnCodeClicked(WindowControl *Sender)
     newTeammateCode[i]=0;
     i--;
   };
-  LKASSERT(newTeammateCode);
+
   _tcsncpy(TeammateCode, newTeammateCode, 10);
   if (_tcslen(TeammateCode)>0) {
 	TeammateCodeValid = true;

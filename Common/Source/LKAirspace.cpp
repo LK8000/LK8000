@@ -77,6 +77,7 @@ CPoint2D CAirspace::_lastknownpos(0,0);                // last known position sa
 int CAirspace::_lastknownalt = 0;                // last known alt saved for calculations
 int CAirspace::_lastknownagl = 0;                // last known agl saved for calculations
 int CAirspace::_lastknownheading = 0;            // last known heading saved for calculations
+int CAirspace::_lastknowntrackbearing = 0;       // last known track bearing saved for calculations
 bool CAirspace::_pred_blindtime = true;               // disable predicted position based warnings near takeoff
 CAirspace* CAirspace::_sideview_nearest_instance = NULL;  // collect nearest airspace instance for sideview during warning calculations
 
@@ -206,6 +207,9 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
 
   // Heading
    _lastknownheading = (int) Calculated->Heading;
+   
+  // Track bearing
+  _lastknowntrackbearing = (int) Basic->TrackBearing;
    
   // Predicted position blind time near takeoff
    _pred_blindtime = false;
@@ -2557,7 +2561,7 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
       }
       break;
   }
-  LKASSERT(intbuf);
+  LKASSERT(buffer);
   _tcsncpy(buffer, intbuf, bufferlen-1);
   buffer[bufferlen-1]=0;
 }

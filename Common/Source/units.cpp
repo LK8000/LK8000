@@ -429,6 +429,8 @@ bool Units::FormatUserAltitude(double Altitude, TCHAR *Buffer, size_t size){
   TCHAR sTmp[32];
   UnitDescriptor_t *pU = &UnitDescriptors[UserAltitudeUnit]; 
 
+  LKASSERT(Buffer);
+
   Altitude = Altitude * pU->ToUserFact; // + pU->ToUserOffset;
 
 //  prec = 4-log10(Altitude);
@@ -441,7 +443,6 @@ bool Units::FormatUserAltitude(double Altitude, TCHAR *Buffer, size_t size){
     _tcscpy(Buffer, sTmp);
     return(true);
   } else {
-    LKASSERT(sTmp);
     _tcsncpy(Buffer, sTmp, size);
     Buffer[size-1] = '\0';
     return(false);
@@ -456,6 +457,8 @@ bool Units::FormatAlternateUserAltitude(double Altitude, TCHAR *Buffer, size_t s
   Units_t useUnit;
   TCHAR sTmp[32];
 
+  LKASSERT(Buffer);
+
   if (UserAltitudeUnit == unMeter)
 	useUnit=unFeet;
   else
@@ -469,7 +472,6 @@ bool Units::FormatAlternateUserAltitude(double Altitude, TCHAR *Buffer, size_t s
 	_tcscpy(Buffer, sTmp);
 	return(true);
   } else {
-	LKASSERT(sTmp);
 	_tcsncpy(Buffer, sTmp, size);
 	Buffer[size-1] = '\0';
 	return(false);
@@ -501,6 +503,8 @@ bool Units::FormatUserArrival(double Altitude, TCHAR *Buffer, size_t size){
   TCHAR sTmp[32];
   UnitDescriptor_t *pU = &UnitDescriptors[UserAltitudeUnit];
 
+  LKASSERT(Buffer);
+
   Altitude = Altitude * pU->ToUserFact; // + pU->ToUserOffset;
 
 //  prec = 4-log10(Altitude);
@@ -513,7 +517,6 @@ bool Units::FormatUserArrival(double Altitude, TCHAR *Buffer, size_t size){
     _tcscpy(Buffer, sTmp);
     return(true);
   } else {
-    LKASSERT(sTmp);
     _tcsncpy(Buffer, sTmp, size);
     Buffer[size-1] = '\0';
     return(false);
@@ -527,6 +530,8 @@ bool Units::FormatUserDistance(double Distance, TCHAR *Buffer, size_t size){
   double value;
   TCHAR sTmp[32];
   UnitDescriptor_t *pU = &UnitDescriptors[UserDistanceUnit];
+
+  LKASSERT(Buffer);
 
   value = Distance * pU->ToUserFact; // + pU->ToUserOffset;
 
@@ -563,7 +568,6 @@ bool Units::FormatUserDistance(double Distance, TCHAR *Buffer, size_t size){
     _tcscpy(Buffer, sTmp);
     return(true);
   } else {
-    LKASSERT(sTmp);
     _tcsncpy(Buffer, sTmp, size);
     Buffer[size-1] = '\0';
     return(false);
@@ -577,6 +581,8 @@ bool Units::FormatUserMapScale(Units_t *Unit, double Distance, TCHAR *Buffer, si
   double value;
   TCHAR sTmp[32];
   UnitDescriptor_t *pU = &UnitDescriptors[UserDistanceUnit];
+
+  LKASSERT(Buffer);
 
   if (Unit != NULL)
     *Unit = UserDistanceUnit;
@@ -611,7 +617,6 @@ bool Units::FormatUserMapScale(Units_t *Unit, double Distance, TCHAR *Buffer, si
     _tcscpy(Buffer, sTmp);
     return(true);
   } else {
-    LKASSERT(sTmp);
     _tcsncpy(Buffer, sTmp, size);
     Buffer[size-1] = '\0';
     return(false);
