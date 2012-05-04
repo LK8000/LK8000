@@ -753,3 +753,43 @@ void unicodetoascii(TCHAR *utext, int utextsize, char *atext) {
 // ////////////////////////////////////////////////////////////////
 
 
+// Implementation of the tcsncpy runtime library function, in the safe way
+// destination buffer size must be larger by 1 than num_of_tchars_to_copy!!! (null terminated string)
+void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const int num_of_tchars_to_copy, int line, char *filename)
+{
+  if (dest == NULL) {
+    // log but silently ignore NULL destination buffer
+    #if USELKASSERT
+    StartupStore(_T("[ASSERT FAILURE (LK_tcsncpy dest)] in %S line %d\n"), filename, line);
+    #endif
+    return;
+  }
+  
+  if (num_of_tchars_to_copy < 1) {
+    // log but silently ignore zero length
+    #if USELKASSERT
+    StartupStore(_T("[ASSERT FAILURE (LK_tcsncpy len)] in %S line %d\n"), filename, line);
+    #endif
+    return;
+  }
+
+  // if source is null we safely ignore it, and give an empty string as result
+  if (src == NULL) {
+    //dest!=NULL and dest length>0 here 
+    dest[0] = '\0';
+    return;
+  }
+  
+  int len = _tcslen(src);
+  if ( len > num_of_tchars_to_copy ) len = num_of_tchars_to_copy;
+  
+  if (len == 0) {
+    dest[0] = '\0';
+    return;
+  }
+  
+  _tcsncpy(dest,src,len);
+  dest[len] = '\0';
+}
+
+

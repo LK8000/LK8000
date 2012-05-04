@@ -1120,9 +1120,7 @@ goto_bearing:
 		// B55  Team Code 091216
 		case LK_TEAM_CODE:
 			if(ValidWayPoint(TeamCodeRefWaypoint)) {
-				LKASSERT(DerivedDrawInfo.OwnTeamCode);
-				_tcsncpy(BufferValue,DerivedDrawInfo.OwnTeamCode,5);
-				BufferValue[5] = '\0';
+				LK_tcsncpy(BufferValue,DerivedDrawInfo.OwnTeamCode,5);
 				valid=true; // 091221
 			} else
 				wsprintf(BufferValue,_T("----"));
@@ -1438,15 +1436,12 @@ goto_bearing:
 			{
 				if ( DisplayTextType == DISPLAYFIRSTTHREE)
 				{
-					 LKASSERT(WayPointList[index].Name);
-					 _tcsncpy(BufferTitle,WayPointList[index].Name,3);
-					BufferTitle[3] = '\0';
+					 LK_tcsncpy(BufferTitle,WayPointList[index].Name,3);
 				}
 				else if( DisplayTextType == DISPLAYNUMBER) {
 					_stprintf(BufferTitle,TEXT("%d"), WayPointList[index].Number );
 				} else {
-					 LKASSERT(WayPointList[index].Name);
-					_tcsncpy(BufferTitle,WayPointList[index].Name, 12);
+					LK_tcsncpy(BufferTitle,WayPointList[index].Name, 12);
 					// BufferTitle[(sizeof(Text)/sizeof(TCHAR))-1] = '\0';
 					if (lktitle)
 						BufferTitle[12] = '\0'; // FIX TUNING
@@ -1655,15 +1650,12 @@ goto_bearing:
 			{
 				if ( DisplayTextType == DISPLAYFIRSTTHREE)
 				{
-					 LKASSERT(WayPointList[index].Name);
-					 _tcsncpy(BufferTitle,WayPointList[index].Name,3);
-					BufferTitle[3] = '\0';
+					 LK_tcsncpy(BufferTitle,WayPointList[index].Name,3);
 				}
 				else if( DisplayTextType == DISPLAYNUMBER) {
 					_stprintf(BufferTitle,TEXT("%d"), WayPointList[index].Number );
 				} else {
-					 LKASSERT(WayPointList[index].Name);
-					_tcsncpy(BufferTitle,WayPointList[index].Name, 12);
+					LK_tcsncpy(BufferTitle,WayPointList[index].Name, 12);
 					// BufferTitle[(sizeof(Text)/sizeof(TCHAR))-1] = '\0';
 					if (lktitle)
 						BufferTitle[12] = '\0'; // FIX TUNING
@@ -2104,15 +2096,12 @@ olc_score:
 			{
 				if ( DisplayTextType == DISPLAYFIRSTTHREE)
 				{
-					 LKASSERT(WayPointList[index].Name);
-					 _tcsncpy(BufferTitle,WayPointList[index].Name,3);
-					BufferTitle[3] = '\0';
+					 LK_tcsncpy(BufferTitle,WayPointList[index].Name,3);
 				}
 				else if( DisplayTextType == DISPLAYNUMBER) {
 					_stprintf(BufferTitle,TEXT("%d"), WayPointList[index].Number );
 				} else {
-					 LKASSERT(WayPointList[index].Name);
-					_tcsncpy(BufferTitle,WayPointList[index].Name, 12);
+					LK_tcsncpy(BufferTitle,WayPointList[index].Name, 12);
 					// BufferTitle[(sizeof(Text)/sizeof(TCHAR))-1] = '\0';
 					if (lktitle)
 						BufferTitle[12] = '\0'; // FIX TUNING
@@ -2162,15 +2151,12 @@ olc_score:
 			{
 				if ( DisplayTextType == DISPLAYFIRSTTHREE)
 				{
-					 LKASSERT(WayPointList[index].Name);
-					 _tcsncpy(BufferTitle,WayPointList[index].Name,3);
-					BufferTitle[3] = '\0';
+					LK_tcsncpy(BufferTitle,WayPointList[index].Name,3);
 				}
 				else if( DisplayTextType == DISPLAYNUMBER) {
 					_stprintf(BufferTitle,TEXT("%d"), WayPointList[index].Number );
 				} else {
-					 LKASSERT(WayPointList[index].Name);
-					_tcsncpy(BufferTitle,WayPointList[index].Name, 12);
+					LK_tcsncpy(BufferTitle,WayPointList[index].Name, 12);
 					// BufferTitle[(sizeof(Text)/sizeof(TCHAR))-1] = '\0';
 					if (lktitle)
 						BufferTitle[12] = '\0'; // FIX TUNING

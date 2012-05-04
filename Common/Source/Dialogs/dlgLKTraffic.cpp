@@ -214,9 +214,7 @@ static void SetValues(int indexid) {
 		_stprintf(buffer,_T("%06x"),LKTraffic[indexid].ID);
 		buffer[MAXFLARMNAME]='\0';
 	} else {
-		LKASSERT(LKTraffic[indexid].Name);
-		_tcsncpy(buffer,LKTraffic[indexid].Name,MAXFLARMNAME);
-		buffer[MAXFLARMNAME]='\0';
+		LK_tcsncpy(buffer,LKTraffic[indexid].Name,MAXFLARMNAME);
 		ConvToUpper(buffer);
 	}
 	//name=Name;
@@ -253,14 +251,10 @@ static void SetValues(int indexid) {
 		if (LKTraffic[indexid].Cn[0] == _T('?')) {
 			_tcscpy(buffer,_T(""));
 		} else {
-			LKASSERT(LKTraffic[indexid].Cn);
-			_tcsncpy(buffer,LKTraffic[indexid].Cn,MAXFLARMCN);
-			buffer[MAXFLARMCN]='\0';
+			LK_tcsncpy(buffer,LKTraffic[indexid].Cn,MAXFLARMCN);
 		}
 	} else {
-		LKASSERT(LKTraffic[indexid].Cn);
-		_tcsncpy(buffer,LKTraffic[indexid].Cn,MAXFLARMCN);
-		buffer[MAXFLARMCN]='\0';
+		LK_tcsncpy(buffer,LKTraffic[indexid].Cn,MAXFLARMCN);
 	}
 	wp->SetText(buffer);
 	wp->RefreshDisplay();

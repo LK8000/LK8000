@@ -99,15 +99,9 @@ BOOL EWDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBufferLen
   d->Com->WriteString(sTmp);
   Sleep(50);
 
-  LKASSERT(decl->PilotName);
-  _tcsncpy(sPilot, decl->PilotName, 12);               // copy and strip fields
-  sPilot[12] = '\0';
-  LKASSERT(decl->AircraftType);
-  _tcsncpy(sGliderType, decl->AircraftType, 8);
-  sGliderType[8] = '\0';
-  LKASSERT(decl->AircraftRego);
-  _tcsncpy(sGliderID, decl->AircraftRego, 8);
-  sGliderID[8] = '\0';
+  LK_tcsncpy(sPilot, decl->PilotName, 12);               // copy and strip fields
+  LK_tcsncpy(sGliderType, decl->AircraftType, 8);
+  LK_tcsncpy(sGliderID, decl->AircraftRego, 8);
  
   // build string (field 4-5 are GPS info, no idea what to write)
   _stprintf(sTmp, TEXT("%-12s%-8s%-8s%-12s%-12s%-6s\r"), 
@@ -210,8 +204,7 @@ BOOL EWDeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp){
     return(FALSE);
   }
 
-  LKASSERT(wp->Name);
-  _tcsncpy(IDString, wp->Name, 6);                // copy at least 6 chars
+  LK_tcsncpy(IDString, wp->Name, 6);                // copy at least 6 chars
 
   while (_tcslen(IDString) < 6)                   // fill up with spaces
     _tcscat(IDString, TEXT(" "));

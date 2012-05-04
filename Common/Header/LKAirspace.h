@@ -151,8 +151,7 @@ public:
   
   // Attributes interface
   // Initialize instance attributes
-  void Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone) 
-      { _tcsncpy(_name, name, NAME_SIZE); _type = type; memcpy(&_base, &base, sizeof(_base)); memcpy(&_top, &top, sizeof(_top)); _flyzone = flyzone;}
+  void Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone);
 
   const TCHAR* Name() const { return _name; }
   const AIRSPACE_ALT* Top() const { return &_top; }

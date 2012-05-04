@@ -161,8 +161,7 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, const TCHAR* szFile, 
 
   if (_tcslen(text)>0) {
     _tcsupr(text);
-    _tcsncpy(edittext, text, max_width-1);
-    edittext[max_width-1]= 0;
+    LK_tcsncpy(edittext, text, max_width-1);
     // position cursor at the end of imported text
     cursor=_tcslen(text); 
   }
@@ -170,9 +169,7 @@ void dlgTextEntryKeyboardShowModal(TCHAR *text, int width, const TCHAR* szFile, 
   UpdateTextboxProp();
   wf->SetKeyDownNotify(FormKeyDown);
   wf->ShowModal();
-  LKASSERT(edittext);
-  _tcsncpy(text, edittext, max_width);
-  text[max_width-1]=0;
+  LK_tcsncpy(text, edittext, max_width-1);
   delete wf;
   wf=NULL;
 }

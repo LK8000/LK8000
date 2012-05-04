@@ -501,9 +501,7 @@ int InputEvents::mode2int(const TCHAR *mode, bool create) {
   
   if (create) {
     // Keep a copy
-    LKASSERT(mode);
-    _tcsncpy(mode_map[mode_map_count], mode, MAX_MODE_STRING);
-    mode_map[mode_map_count][MAX_MODE_STRING-1]='\0'; // BUGFIX 100331 AND 110202
+    LK_tcsncpy(mode_map[mode_map_count], mode, MAX_MODE_STRING-1);
     mode_map_count++;
     return mode_map_count - 1;
   }
@@ -518,9 +516,7 @@ void InputEvents::setMode(const TCHAR *mode) {
   static int lastmode = -1;
   int thismode;
 
-  LKASSERT(mode);
-  _tcsncpy(mode_current, mode, MAX_MODE_STRING);
-  mode_current[MAX_MODE_STRING-1]='\0'; // BUGFIX 100331 AND 110202
+  LK_tcsncpy(mode_current, mode, MAX_MODE_STRING-1);
 
   // Mode must already exist to use it here...
   thismode = mode2int(mode,false);
@@ -2204,8 +2200,8 @@ void InputEvents::eventAutoLogger(const TCHAR *misc) {
 void InputEvents::eventLogger(const TCHAR *misc) {
 
 #if TESTBENCH
-  TCHAR szMessage[MAX_PATH] = TEXT("\0");
-  _tcsncpy(szMessage, TEXT(". eventLogger: "),MAX_PATH);
+  TCHAR szMessage[MAX_PATH+1] = TEXT("\0");
+  LK_tcsncpy(szMessage, TEXT(". eventLogger: "),MAX_PATH);
   _tcsncat(szMessage, misc,MAX_PATH);
   _tcsncat(szMessage,TEXT("\r\n"),MAX_PATH);
   StartupStore(szMessage);

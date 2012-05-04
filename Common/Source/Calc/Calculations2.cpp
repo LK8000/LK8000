@@ -103,8 +103,7 @@ void CalculateOwnTeamCode(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
   //Calculated->TeammateLongitude = FindLongitude(
 
-  wcsncpy(Calculated->OwnTeamCode, code, 5);
-  Calculated->OwnTeamCode[5]='\0'; // BUGFIX 100331
+  LK_tcsncpy(Calculated->OwnTeamCode, code, 5);
 }
 
 

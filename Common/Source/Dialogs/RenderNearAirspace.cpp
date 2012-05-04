@@ -358,7 +358,7 @@ if(bValid)
   {
     SetTextColor(hdc, LIGHTBLUE_COL);
     Units::FormatUserAltitude(calc_altitudeagl, buffer, 7);
-    _tcsncpy(text, gettext(TEXT("_@M1742_")), sizeof(text)/sizeof(text[0])); // AGL:
+    LK_tcsncpy(text, gettext(TEXT("_@M1742_")), sizeof(text)/sizeof(text[0])-1); // AGL:
     _tcscat(text,buffer);
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
     TxYPt.x = CalcDistanceCoordinat(0,  rc, &sDia)- tsize.cx/2;
@@ -378,7 +378,7 @@ if(bValid)
   if((calc_terrainalt-  sDia.fYMin)  > 0)
   {
 	Units::FormatUserAltitude(calc_terrainalt, buffer, 7);
-    _tcsncpy(text, gettext(TEXT("_@M1743_")), sizeof(text)/sizeof(text[0]));   // ELV:
+    LK_tcsncpy(text, gettext(TEXT("_@M1743_")), sizeof(text)/sizeof(text[0])-1);   // ELV:
     _tcscat(text,buffer);
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
     x = CalcDistanceCoordinat(0,  rc, &sDia) - tsize.cx/2;
@@ -450,7 +450,7 @@ if(bValid)
       bLeft = true;
 
     Units::FormatUserDistance(iABS_AS_HorDistance, buffer, 7);
-    _tcsncpy(text, TEXT(" "), sizeof(text)/sizeof(text[0]));
+    LK_tcsncpy(text, TEXT(" "), sizeof(text)/sizeof(text[0])-1);
     _tcscat(text,buffer);
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
 
@@ -478,7 +478,7 @@ if(bValid)
     StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
 
     Units::FormatUserAltitude( (double)abs(iAS_VertDistance), buffer, 7);
-    _tcsncpy(text, TEXT(" "), sizeof(text)/sizeof(text[0]));
+    LK_tcsncpy(text, TEXT(" "), sizeof(text)/sizeof(text[0])-1);
     _tcscat(text,buffer);
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
 

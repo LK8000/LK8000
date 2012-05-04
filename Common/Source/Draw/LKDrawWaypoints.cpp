@@ -321,9 +321,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		if (DisplayTextType == DISPLAYNAME) {
 			_tcscpy(Buffer2,WayPointList[i].Name);
 		} else {
-			LKASSERT(WayPointList[i].Name);
-			_tcsncpy(Buffer2, WayPointList[i].Name, resizer[DisplayTextType]);
-			Buffer2[resizer[DisplayTextType]] = '\0';
+			LK_tcsncpy(Buffer2, WayPointList[i].Name, resizer[DisplayTextType]);
 		}
 		// ConvToUpper(Buffer2); 
 

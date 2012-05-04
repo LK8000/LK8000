@@ -197,7 +197,7 @@ void StopLogger(void) {
       break;
 
     case 1: // NoMoveNoRename
-      _tcsncpy(szMessage,TEXT("--- Logger file not copied.  It is in the root folder of your device and called "),MAX_PATH);
+      LK_tcsncpy(szMessage,TEXT("--- Logger file not copied.  It is in the root folder of your device and called "),MAX_PATH);
       _tcsncat(szMessage,sztmplogfile,MAX_PATH);
 
       MessageBoxX(hWndMapWindow,
@@ -209,7 +209,7 @@ void StopLogger(void) {
       break;
 
     case 2: // NoMoveYesRename
-      _tcsncpy(szMessage,TEXT("--- Logger file not copied.  It is in the root folder of your device"),MAX_PATH);
+      LK_tcsncpy(szMessage,TEXT("--- Logger file not copied.  It is in the root folder of your device"),MAX_PATH);
 
       MessageBoxX(hWndMapWindow,
 		gettext(szMessage),
@@ -220,7 +220,7 @@ void StopLogger(void) {
       break;
 
     case 3: // Insufficient Storage.  NoRename
-      _tcsncpy(szMessage,TEXT("++++++ Insuff. storage. Logger file in device's root folder, called "),MAX_PATH);
+      LK_tcsncpy(szMessage,TEXT("++++++ Insuff. storage. Logger file in device's root folder, called "),MAX_PATH);
       _tcsncat(szMessage,sztmplogfile,MAX_PATH);
 
       MessageBoxX(hWndMapWindow,
@@ -232,7 +232,7 @@ void StopLogger(void) {
       break;
 
     case 4: // Insufficient Storage.  YesRename
-      _tcsncpy(szMessage,TEXT("++++++ Insufficient storage.  Logger file is in the root folder of your device"),MAX_PATH);
+      LK_tcsncpy(szMessage,TEXT("++++++ Insufficient storage.  Logger file is in the root folder of your device"),MAX_PATH);
 
       MessageBoxX(hWndMapWindow,
 		gettext(szMessage),

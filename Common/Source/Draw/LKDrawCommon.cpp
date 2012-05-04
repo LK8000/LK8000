@@ -404,12 +404,10 @@ void MapWindow::DrawCommon(HDC hdc, RECT rc) {
 
 		wlen=wcslen(WayPointList[rli].Name);
 		if (wlen>maxnlname) {
-			LKASSERT(WayPointList[rli].Name);
-			_tcsncpy(Buffer, WayPointList[rli].Name, maxnlname); Buffer[maxnlname]='\0';
+			LK_tcsncpy(Buffer, WayPointList[rli].Name, maxnlname);
 		}
 		else {
-			LKASSERT(WayPointList[rli].Name);
-			_tcsncpy(Buffer, WayPointList[rli].Name, wlen); Buffer[wlen]='\0';
+			LK_tcsncpy(Buffer, WayPointList[rli].Name, wlen);
 		}
 		ConvToUpper(Buffer); // 100213 FIX UPPERCASE DRAWNEAREST
 		_tcscpy(Buffer1[i][curpage],Buffer); 

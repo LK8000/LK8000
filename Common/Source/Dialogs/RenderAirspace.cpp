@@ -295,8 +295,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rci) {
 //HFONT hfOld = (HFONT)SelectObject(hdc, LK8MapFont);
     line[0].x = CalcDistanceCoordinat( wpt_dist, rc, &sDia);
     // Print wpt name next to marker line
-    LKASSERT(WayPointList[overindex].Name);
-    _tcsncpy(text, WayPointList[overindex].Name, sizeof(text)/sizeof(text[0]));
+    LK_tcsncpy(text, WayPointList[overindex].Name, sizeof(text)/sizeof(text[0]) - 1);
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
     int x = line[0].x - tsize.cx - NIBLSCALE(5);
 
@@ -326,7 +325,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rci) {
       Units::FormatUserArrival(wpt_altarriv_mc0, buffer, 7);
       _tcscat(text,buffer);
     } else {
-      _tcsncpy(text, TEXT("---"), sizeof(text)/sizeof(text[0]));
+      LK_tcsncpy(text, TEXT("---"), sizeof(text)/sizeof(text[0]) - 1);
     }
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
     x = line[0].x - tsize.cx - NIBLSCALE(5);
@@ -347,7 +346,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rci) {
       Units::FormatUserArrival(wpt_altarriv, buffer, 7);
       _tcscat(text,buffer);
     } else {
-      _tcsncpy(text, TEXT("---"), sizeof(text)/sizeof(text[0]));
+      LK_tcsncpy(text, TEXT("---"), sizeof(text)/sizeof(text[0]) - 1);
     }
 
     if(  WayPointList[overindex].Reachable) {
@@ -367,7 +366,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rci) {
     if(altarriv  > 0)
     {
   	  Units::FormatUserAltitude(altarriv, buffer, 7);
-      _tcsncpy(text, gettext(TEXT("_@M1742_")), sizeof(text)/sizeof(text[0]));
+      LK_tcsncpy(text, gettext(TEXT("_@M1742_")), sizeof(text)/sizeof(text[0]) - 1);
       _tcscat(text,buffer);
       GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
    //   x = CalcDistanceCoordinat(wpt_dist,  rc) - tsize.cx - NIBLSCALE(5);;
@@ -386,7 +385,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rci) {
     if((calc_terrainalt- hmin) > 0)
     {
   	  Units::FormatUserAltitude(calc_terrainalt, buffer, 7);
-      _tcsncpy(text, gettext(TEXT("_@M1743_")), sizeof(text)/sizeof(text[0]));   // ELV:
+      LK_tcsncpy(text, gettext(TEXT("_@M1743_")), sizeof(text)/sizeof(text[0]) - 1);   // ELV:
       _tcscat(text,buffer);
       GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
       x = CalcDistanceCoordinat(0,  rc, &sDia)- tsize.cx/2;
@@ -403,7 +402,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rci) {
     if((wpt_altitude- hmin) > 0)
     {
   	  Units::FormatUserAltitude(wpt_altitude, buffer, 7);
-      _tcsncpy(text, gettext(TEXT("_@M1743_")), sizeof(text)/sizeof(text[0]));   // ELV:
+      LK_tcsncpy(text, gettext(TEXT("_@M1743_")), sizeof(text)/sizeof(text[0]) - 1);   // ELV:
       _tcscat(text,buffer);
       GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
       x0 = CalcDistanceCoordinat(wpt_dist,  rc, &sDia)- tsize.cx/2;
@@ -434,7 +433,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rci) {
     {
       SetTextColor(hdc, LIGHTBLUE_COL);
       Units::FormatUserAltitude(calc_altitudeagl, buffer, 7);
-      _tcsncpy(text, gettext(TEXT("_@M1742_")), sizeof(text)/sizeof(text[0]));
+      LK_tcsncpy(text, gettext(TEXT("_@M1742_")), sizeof(text)/sizeof(text[0]) - 1);
       _tcscat(text,buffer);
       GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
       x = CalcDistanceCoordinat( 0, rc, &sDia) - tsize.cx/2;
