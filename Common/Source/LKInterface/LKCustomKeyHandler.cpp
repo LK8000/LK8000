@@ -323,7 +323,9 @@ bool CustomKeyHandler(const int key) {
 		if (CALCULATED_INFO.Flying == FALSE) {
 			DoStatusMessage(_T("NO TAKEOFF!"));
 		} else {
-			LKSW_ForceFreeFlightRestart=true;
+			if (MessageBoxX(hWndMapWindow, MsgToken(1754), _T(""), MB_YESNO|MB_ICONQUESTION) == IDYES) {
+				LKSW_ForceFreeFlightRestart=true;
+			}
 		}
 		return true;
 	default:
