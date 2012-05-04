@@ -1790,9 +1790,7 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	GPS_INFO->FLARM_Traffic[flarm_slot].UpdateNameFlag=false; // clear flag first
 	TCHAR *fname = LookupFLARMDetails(GPS_INFO->FLARM_Traffic[flarm_slot].ID);
 	if (fname) {
-		_tcsncpy(name,fname,MAXFLARMNAME);
-		name[MAXFLARMNAME]=0;
-
+		LK_tcsncpy(name,fname,MAXFLARMNAME);
 		//  Now we have the name, so lookup also for the Cn
 		// This will return either real Cn or Name, again
 		TCHAR *cname = LookupFLARMCn(GPS_INFO->FLARM_Traffic[flarm_slot].ID);

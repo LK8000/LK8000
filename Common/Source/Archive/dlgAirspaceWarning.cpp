@@ -212,7 +212,7 @@ static void OnAirspaceListItemPaint(WindowControl * Sender, HDC hDC){
       FocusedIdx = ItemIndex;
     }
 
-	_tcsncpy(sName, airspace_copy.Name(), sizeof(sName)/sizeof(sName[0]));
+	LK_tcsncpy(sName, airspace_copy.Name(), sizeof(sName)/sizeof(sName[0])-1);
     sName[sizeof(sName)/sizeof(sName[0])-1] = '\0';
 	memcpy(&Base, airspace_copy.Base(), sizeof(Base));
 	memcpy(&Top, airspace_copy.Top(), sizeof(Top));
@@ -220,7 +220,7 @@ static void OnAirspaceListItemPaint(WindowControl * Sender, HDC hDC){
 
 	CAirspaceManager::Instance().GetAirspaceAltText(sTop, sizeof(sTop)/sizeof(sTop[0]), &Top); 
 	CAirspaceManager::Instance().GetAirspaceAltText(sBase, sizeof(sBase)/sizeof(sBase[0]), &Base); 
-	_tcsncpy(sType, CAirspaceManager::Instance().GetAirspaceTypeShortText(Type), 4);
+	LK_tcsncpy(sType, CAirspaceManager::Instance().GetAirspaceTypeShortText(Type), 4);
 
 	// Select brush based on warning and ack level
 	hBrushBk = hBrushNormal;

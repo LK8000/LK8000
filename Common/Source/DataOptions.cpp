@@ -20,11 +20,9 @@ bool SetDataOption( int index, UnitGroup_t UnitGroup, TCHAR *Description, TCHAR 
 	if (index>=NUMDATAOPTIONS_MAX) return false;
 
 	tag.UnitGroup = UnitGroup;
-	LKASSERT(gettext(Description)); // if we have Description, we also have Title
-	_tcsncpy(tag.Description, gettext(Description), DESCRIPTION_SIZE); 
-	tag.Description[DESCRIPTION_SIZE] = 0;		// buff allocated to DESCRIPITON_SIZE+1
-	_tcsncpy(tag.Title, gettext(Title), TITLE_SIZE);
-	tag.Title[TITLE_SIZE] = 0;	// buff allocated to TITLE_SIZE+1
+	// if we have Description, we also have Title
+	LK_tcsncpy(tag.Description, gettext(Description), DESCRIPTION_SIZE); 
+	LK_tcsncpy(tag.Title, gettext(Title), TITLE_SIZE);
 
 	memcpy(&Data_Options[index], &tag, sizeof(DATAOPTIONS));
 	if (NumDataOptions<=index) NumDataOptions=index+1; //No. of items = max index+1

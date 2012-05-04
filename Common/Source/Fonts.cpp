@@ -337,12 +337,11 @@ void InitialiseFonts(RECT rc)
 void propGetFontSettingsFromString(TCHAR *Buffer1, LOGFONT* lplf)
 {
 #define propGetFontSettingsMAX_SIZE 128
-  TCHAR Buffer[propGetFontSettingsMAX_SIZE]; // RLD need a buffer (not sz) for strtok_r w/ gcc optimized ARM920
+  TCHAR Buffer[propGetFontSettingsMAX_SIZE+1]; // RLD need a buffer (not sz) for strtok_r w/ gcc optimized ARM920
 
   TCHAR *pWClast, *pToken;
   LOGFONT lfTmp;
-  LKASSERT(Buffer1);
-  _tcsncpy(Buffer, Buffer1, propGetFontSettingsMAX_SIZE);
+  LK_tcsncpy(Buffer, Buffer1, propGetFontSettingsMAX_SIZE);
     // FontDescription of format:
     // typical font entry
     // 26,0,0,0,700,1,0,0,0,0,0,4,2,<fontname>

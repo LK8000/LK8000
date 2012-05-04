@@ -341,15 +341,9 @@ BOOL cai302Declare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffe
     return(FALSE);
   }
 
-  LKASSERT(decl->PilotName);
-  _tcsncpy(PilotName, decl->PilotName, 24);
-  PilotName[24] = '\0';
-  LKASSERT(decl->AircraftType);
-  _tcsncpy(GliderType, decl->AircraftType, 12);
-  GliderType[12] = '\0';
-  LKASSERT(decl->AircraftRego);
-  _tcsncpy(GliderID, decl->AircraftRego, 12);
-  GliderID[12] = '\0';
+  LK_tcsncpy(PilotName, decl->PilotName, 24);
+  LK_tcsncpy(GliderType, decl->AircraftType, 12);
+  LK_tcsncpy(GliderID, decl->AircraftRego, 12);
 
   _stprintf(szTmp, TEXT("O,%-24s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\r"),
     PilotName,
@@ -442,9 +436,7 @@ BOOL cai302DeclAddWayPoint(PDeviceDescriptor_t d, const WAYPOINT *wp){
   if (nDeclErrorCode != 0)
     return(FALSE);
 
-  LKASSERT(wp->Name);
-  _tcsncpy(Name, wp->Name, 12);
-  Name[12] = '\0';
+  LK_tcsncpy(Name, wp->Name, 12);
   
   DegLat = (int)wp->Latitude;
   MinLat = wp->Latitude - DegLat;

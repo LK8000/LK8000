@@ -239,8 +239,7 @@ int InfoBox::SetBorderKind(int Value){
 void InfoBox::SetTitle(TCHAR *Value){
   TCHAR sTmp[TITLESIZE+1];
 
-  _tcsncpy(sTmp, Value, TITLESIZE);
-  sTmp[TITLESIZE] = '\0';
+  LK_tcsncpy(sTmp, Value, TITLESIZE);
 
   _tcsupr(sTmp);
 
@@ -254,8 +253,7 @@ void InfoBox::SetTitle(TCHAR *Value){
 
 void InfoBox::SetValue(TCHAR *Value){
   if (_tcscmp(mValue, Value) != 0){
-    _tcsncpy(mValue, Value, VALUESIZE);
-    mValue[VALUESIZE] = '\0';
+    LK_tcsncpy(mValue, Value, VALUESIZE);
     //JMW    PaintValue();
   }
 }
@@ -274,8 +272,7 @@ void InfoBox::SetColorTop(int value) {
 }
 void InfoBox::SetComment(TCHAR *Value){
   if (_tcscmp(mComment, Value) != 0){
-    _tcsncpy(mComment, Value, COMMENTSIZE);
-    mComment[COMMENTSIZE] = '\0';
+    LK_tcsncpy(mComment, Value, COMMENTSIZE);
     //JMW    PaintComment();
     //JMW    PaintSelector();
   }

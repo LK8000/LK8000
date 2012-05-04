@@ -485,12 +485,10 @@ void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 
 		wlen=wcslen(WayPointList[rli].Name);
 		if (wlen>s_maxnlname) {
-			LKASSERT(WayPointList[rli].Name);
-			_tcsncpy(Buffer, WayPointList[rli].Name, s_maxnlname); Buffer[s_maxnlname]='\0';
+			LK_tcsncpy(Buffer, WayPointList[rli].Name, s_maxnlname);
 		}
 		else {
-			LKASSERT(WayPointList[rli].Name);
-			_tcsncpy(Buffer, WayPointList[rli].Name, wlen); Buffer[wlen]='\0';
+			LK_tcsncpy(Buffer, WayPointList[rli].Name, wlen);
 		}
 		ConvToUpper(Buffer);
 		_tcscpy(Buffer1[i][curpage],Buffer); 

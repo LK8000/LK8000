@@ -67,8 +67,7 @@ bool Utf8File::Open(const TCHAR* fileName, Mode ioMode)
       return(false);
   }
 
-  LKASSERT(fileName);
-  _tcsncpy(path, fileName, countof(path));
+  LK_tcsncpy(path, fileName, countof(path)-1);
 
   fp = _tfopen(fileName, fmode);
 

@@ -651,11 +651,9 @@ nextinit:
 			GetOvertargetName(buffername);
 			wlen=wcslen(buffername);
  			if (wlen>tlen) {
-				LKASSERT(buffername);
- 			 	_tcsncpy(Buffer, buffername, tlen); Buffer[tlen]='\0';
+ 			 	LK_tcsncpy(Buffer, buffername, tlen);
 			} else {
-				LKASSERT(buffername);
- 			 	_tcsncpy(Buffer, buffername, wlen); Buffer[wlen]='\0';
+ 			 	LK_tcsncpy(Buffer, buffername, wlen);
 			}
 
  			 ConvToUpper(Buffer);
@@ -866,11 +864,9 @@ nextinit:
 		GetOvertargetName(buffername);
 		wlen=wcslen(buffername);
 	 	if (wlen>tlen) {
-			LKASSERT(buffername);
-	 	 	_tcsncpy(Buffer, buffername, tlen); Buffer[tlen]='\0';
+	 	 	LK_tcsncpy(Buffer, buffername, tlen);
 		} else {
-			LKASSERT(buffername);
-	 	 	_tcsncpy(Buffer, buffername, wlen); Buffer[wlen]='\0';
+	 	 	LK_tcsncpy(Buffer, buffername, wlen);
 		}
  		ConvToUpper(Buffer);
 		LKWriteText(hdc,Buffer, rcx+NIBLSCALE(2), rcy,0, WTMODE_OUTLINED, WTALIGN_LEFT, overcolor, true);

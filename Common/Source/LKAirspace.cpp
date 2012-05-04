@@ -690,6 +690,16 @@ void CAirspace::ResetWarnings()
   _distances_ready = false;
 }
 
+// Initialize instance attributes
+void CAirspace::Init(const TCHAR *name, const int type, const AIRSPACE_ALT &base, const AIRSPACE_ALT &top, bool flyzone)
+{ 
+  LK_tcsncpy(_name, name, NAME_SIZE); 
+  _type = type;
+  memcpy(&_base, &base, sizeof(_base));
+  memcpy(&_top, &top, sizeof(_top));
+  _flyzone = flyzone;
+}
+
 
 //
 // CAIRSPACE_CIRCLE CLASS
@@ -1139,9 +1149,7 @@ void CAirspaceManager::ReadAltitude(const TCHAR *Text, AIRSPACE_ALT *Alt) const
   TCHAR *pToken;
   bool  fHasUnit=false;
 
-  LKASSERT(Text);
-  _tcsncpy(sTmp, Text, sizeof(sTmp)/sizeof(sTmp[0]));
-  sTmp[sizeof(sTmp)/sizeof(sTmp[0])-1] = '\0';
+  LK_tcsncpy(sTmp, Text, sizeof(sTmp)/sizeof(sTmp[0])-1);
 
   _tcsupr(sTmp);
 
@@ -1544,9 +1552,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
           case _T('N'): //AN - Airspace name
             p++; p++;
             if (parsing_state == 10) {
-	      LKASSERT(p);
-              _tcsncpy(Name, p, NAME_SIZE);
-              Name[NAME_SIZE]='\0';
+              LK_tcsncpy(Name, p, NAME_SIZE);
             }
             break;
             
@@ -1830,9 +1836,7 @@ unsigned int iHIdx,iDIdx;
 		    airspacetype[iSelAS].iType = (*it)->Type();
 		    if(airspacetype[iSelAS].szAS_Name != NULL)
 		    {
-		      LKASSERT((wchar_t*)(*it)->Name());
-		      _tcsncpy((wchar_t*)  airspacetype[iSelAS].szAS_Name,  (wchar_t*)(*it)->Name(), NAME_SIZE-1);
-			  airspacetype[iSelAS].szAS_Name[NAME_SIZE-1]=0;
+		      LK_tcsncpy((wchar_t*)  airspacetype[iSelAS].szAS_Name,  (wchar_t*)(*it)->Name(), NAME_SIZE-1);
 		    }
 		    airspacetype[iSelAS].iIdx = iSelAS;
 		    airspacetype[iSelAS].bRectAllowed = true ;
@@ -2182,9 +2186,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
         // Fill infoboxes - Nearest horizontal
 #ifndef LKAIRSP_INFOBOX_USE_SELECTED 
         if (CAirspace::GetNearestHName() != NULL) {
-          LKASSERT(CAirspace::GetNearestHName());
-          _tcsncpy(NearestAirspaceName, CAirspace::GetNearestHName(), NAME_SIZE);
-          NearestAirspaceName[NAME_SIZE]=0;
+          LK_tcsncpy(NearestAirspaceName, CAirspace::GetNearestHName(), NAME_SIZE);
           NearestAirspaceHDist = CAirspace::GetNearestHDistance();
         } else {
           NearestAirspaceName[0]=0;
@@ -2192,9 +2194,7 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
         }
         // Fill infoboxes - Nearest vertical
         if (CAirspace::GetNearestVName() != NULL) {
-          LKASSERT(CAirspace::GetNearestVName());
-          _tcsncpy(NearestAirspaceVName, CAirspace::GetNearestVName(), NAME_SIZE);
-          NearestAirspaceVName[NAME_SIZE]=0;
+          LK_tcsncpy(NearestAirspaceVName, CAirspace::GetNearestVName(), NAME_SIZE);
           NearestAirspaceVDist = CAirspace::GetNearestVDistance();
         } else {
           NearestAirspaceVName[0]=0;
@@ -2205,25 +2205,17 @@ void CAirspaceManager::AirspaceWarning(NMEA_INFO *Basic, DERIVED_INFO *Calculate
 #ifdef LKAIRSP_INFOBOX_USE_SELECTED 
         if (_selected_airspace != NULL) {
           _selected_airspace->CalculateDistance(NULL,NULL,NULL);
-          LKASSERT(_selected_airspace->Name());
-          _tcsncpy(NearestAirspaceName, _selected_airspace->Name(), NAME_SIZE);
-          NearestAirspaceName[NAME_SIZE]=0;
+          LK_tcsncpy(NearestAirspaceName, _selected_airspace->Name(), NAME_SIZE);
           NearestAirspaceHDist = _selected_airspace->LastCalculatedHDistance();
           
-          LKASSERT( _selected_airspace->Name());
-          _tcsncpy(NearestAirspaceVName, _selected_airspace->Name(), NAME_SIZE);
-          NearestAirspaceVName[NAME_SIZE]=0;
+          LK_tcsncpy(NearestAirspaceVName, _selected_airspace->Name(), NAME_SIZE);
           NearestAirspaceVDist = _selected_airspace->LastCalculatedVDistance();
         } else if (_sideview_nearest != NULL) {
           //use nearest distances, if no selection
-          LKASSERT(_sideview_nearest->Name());
-          _tcsncpy(NearestAirspaceName, _sideview_nearest->Name(), NAME_SIZE);
-          NearestAirspaceName[NAME_SIZE]=0;
+          LK_tcsncpy(NearestAirspaceName, _sideview_nearest->Name(), NAME_SIZE);
           NearestAirspaceHDist = _sideview_nearest->LastCalculatedHDistance();
           
-          LKASSERT(_sideview_nearest->Name());
-          _tcsncpy(NearestAirspaceVName, _sideview_nearest->Name(), NAME_SIZE);
-          NearestAirspaceVName[NAME_SIZE]=0;
+          LK_tcsncpy(NearestAirspaceVName, _sideview_nearest->Name(), NAME_SIZE);
           NearestAirspaceVDist = _sideview_nearest->LastCalculatedVDistance();
         } else {
           NearestAirspaceName[0]=0;
@@ -2561,9 +2553,7 @@ void CAirspaceManager::GetAirspaceAltText(TCHAR *buffer, int bufferlen, const AI
       }
       break;
   }
-  LKASSERT(intbuf);
-  _tcsncpy(buffer, intbuf, bufferlen-1);
-  buffer[bufferlen-1]=0;
+  LK_tcsncpy(buffer, intbuf, bufferlen-1);
 }
 
 

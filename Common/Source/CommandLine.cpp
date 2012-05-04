@@ -47,8 +47,7 @@ void LK8000GetOpts(LPTSTR CommandLine) {
       }
       if (pCe != NULL && pCe-1 > pC){
 
-        _tcsncpy(startProfileFile, pC, pCe-pC);
-        startProfileFile[pCe-pC] = '\0';
+        LK_tcsncpy(startProfileFile, pC, pCe-pC);
       }
     }
 

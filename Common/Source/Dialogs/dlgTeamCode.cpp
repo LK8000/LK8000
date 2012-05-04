@@ -73,9 +73,7 @@ static void Update()
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpOwnCode"));
   if (wp) {
-    LKASSERT(CALCULATED_INFO.OwnTeamCode);
-    _tcsncpy(Text,CALCULATED_INFO.OwnTeamCode,5);
-    Text[5] = '\0';
+    LK_tcsncpy(Text,CALCULATED_INFO.OwnTeamCode,5);
     wp->SetText(Text);
     wp->RefreshDisplay();
   }
@@ -91,8 +89,8 @@ static void Update()
 static void OnCodeClicked(WindowControl *Sender) 
 {
   TCHAR newTeammateCode[10];
-  LKASSERT(TeammateCode);
-  _tcsncpy(newTeammateCode, TeammateCode, 10);
+  
+  LK_tcsncpy(newTeammateCode, TeammateCode, 9);
   dlgTextEntryShowModal(newTeammateCode, 7);
 
   int i= _tcslen(newTeammateCode)-1;
@@ -104,8 +102,7 @@ static void OnCodeClicked(WindowControl *Sender)
     newTeammateCode[i]=0;
     i--;
   };
-  LKASSERT(newTeammateCode);
-  _tcsncpy(TeammateCode, newTeammateCode, 10);
+  LK_tcsncpy(TeammateCode, newTeammateCode, 9);
   if (_tcslen(TeammateCode)>0) {
 	TeammateCodeValid = true;
 	OvertargetMode = OVT_MATE;
@@ -168,11 +165,11 @@ void dlgTeamCodeShowModal(void)
   TCHAR sTmp[32] = { 0 };
   if( WayPointList && ValidWayPoint(TeamCodeRefWaypoint)) {
 	// LKTOKEN _@M1230_ "Team Ref.: "
-	_tcsncpy(sTmp, gettext(TEXT("_@M1230_")), 20);
+	LK_tcsncpy(sTmp, gettext(TEXT("_@M1230_")), 20);
 	_tcsncat(sTmp, WayPointList[TeamCodeRefWaypoint].Name,10);
   } else {
 	// LKTOKEN _@M1231_ "Team code: SET REF!"
-	_tcsncpy(sTmp, gettext(TEXT("_@M1231_")), 30);
+	LK_tcsncpy(sTmp, gettext(TEXT("_@M1231_")), 30);
   }
   wf->SetCaption(sTmp);
 

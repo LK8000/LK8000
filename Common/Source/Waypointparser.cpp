@@ -563,13 +563,7 @@ int ParseWayPointString(TCHAR *String,WAYPOINT *Temp)
   //ExtractParameter(TempString,ctemp,6); // Comment
   // DAT Comment
   if ((pToken = strtok_r(NULL, TEXT("\n\r"), &pWClast)) != NULL){
-    LKASSERT(pToken);
-    _tcsncpy(ctemp, pToken, COMMENT_SIZE); //@ 101102 BUGFIX bad. ctemp was not sized correctly!
-    ctemp[COMMENT_SIZE] = '\0';
-
-    // sgi, move "panic-stripping" of the comment-field after we extract
-    // the zoom factor
-    ctemp[COMMENT_SIZE] = '\0';
+    LK_tcsncpy(ctemp, pToken, COMMENT_SIZE); //@ 101102 BUGFIX bad. ctemp was not sized correctly!
 
     if (_tcslen(ctemp) >0 ) {
 	if (Temp->Comment) {
@@ -2126,9 +2120,7 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
 	return false;
   }
   // i now point to first space after name
-  LKASSERT(&tString[3]);
-  _tcsncpy(tName,&tString[3],j);
-  tName[j]=_T('\0');
+  LK_tcsncpy(tName,&tString[3],j);
   #ifdef COMPEDEBUG
   StartupStore(_T("WP NAME size=%d: <%s>%s"),j,tName,NEWLINE);
   #endif
@@ -2180,9 +2172,7 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
 	#endif
 	return false;
   }
-  LKASSERT(&tString[i]);
-  _tcsncpy(tLatitude,&tString[i],p-i);
-  tLatitude[(p-i)+1]=_T('\0');
+  LK_tcsncpy(tLatitude,&tString[i],p-i);
 
   i=p+1;
   // i points to NS
@@ -2232,9 +2222,7 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
 	#endif
 	return false;
   }
-  LKASSERT(&tString[i]);
-  _tcsncpy(tLongitude,&tString[i],p-i);
-  tLongitude[(p-i)]=_T('\0');
+  LK_tcsncpy(tLongitude,&tString[i],p-i);
 
   i=p+1;
   // i points to EW
@@ -2305,9 +2293,7 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
 	#endif
 	return false;
   }
-  LKASSERT(&tString[i-1]);
-  _tcsncpy(tAltitude,&tString[i-1],p-i);
-  tAltitude[(p-i)]=_T('\0');
+  LK_tcsncpy(tAltitude,&tString[i-1],p-i);
   
   #ifdef COMPEDEBUG
   StartupStore(_T("WP ALTITUDE : <%s>%s"),tAltitude,NEWLINE);
@@ -2337,9 +2323,7 @@ bool ParseCOMPEWayPointString(TCHAR *String,WAYPOINT *Temp)
 	#endif
 	return false;
   } 
-  LKASSERT(&tString[i]);
-  _tcsncpy(tComment,&tString[i],p-i);
-  tComment[(p-i)]=_T('\0');
+  LK_tcsncpy(tComment,&tString[i],p-i);
 
   #ifdef COMPEDEBUG
   StartupStore(_T("WP COMMENT : <%s>%s"),tComment,NEWLINE);

@@ -720,8 +720,7 @@ static void GetFontDescription(TCHAR Description[], TCHAR * prpName, int iMaxLen
   WndProperty * wp;
   wp = (WndProperty*)wf->FindByName(prpName);
   if (wp) {
-    LKASSERT(wp->GetCaption());
-    _tcsncpy(Description, wp->GetCaption(), iMaxLen-1);
+    LK_tcsncpy(Description, wp->GetCaption(), iMaxLen-1);
   }
 }
 
