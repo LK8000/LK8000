@@ -34,6 +34,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	static short s_bottomY=0;
 	static short shortpress_yup, shortpress_ydown;
 	static short longpress_yup, longpress_ydown;
+	static short oldMapSpaceMode=0;
 
 	bool dontdrawthemap=(DONTDRAWTHEMAP);
 
@@ -260,6 +261,16 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 					break;
 				}
 			}
+
+			// 120504 if we are clicking on the already selected sort button, within the same mapspacemode,
+			// then simulate a gesture down to advance to next page, if available.
+			if ( (MapSpaceMode==oldMapSpaceMode) && (SortedMode[MapSpaceMode]==j) ) {
+				vkmode=LKGESTURE_DOWN;
+				goto shortcut_gesture;
+			} else {
+				oldMapSpaceMode=MapSpaceMode; // becomes current
+			}
+
 			switch(MapSpaceMode) {
 				case MSM_LANDABLE:
 				case MSM_AIRPORTS:
@@ -311,6 +322,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	// REAL virtual keys
 	// Emulate real keypresses with wParam
 
+shortcut_gesture:
 	// UP gesture
 	if (vkmode>LKGESTURE_NONE) {
 		// do not handle gestures outside mapspacemode
