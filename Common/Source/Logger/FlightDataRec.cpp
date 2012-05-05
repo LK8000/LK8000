@@ -367,31 +367,51 @@ void MapWindow::DrawFDRAlarms(HDC hDC, const RECT rc)
   // ANSWER ULLI:
   // we have a different approach, after the first warning, the next check will be after the user defined
   // delay time. I think this is the best approach since there are also values without "Noise"
+#define UNDER_WARNED  -100
+#define OVER_WARNED   -101
+#define ARMED            0
+
   for(i=0 ; i < NO_ENTRYS; i++)
   {
-	if(FDR[i].aiCheckInterval > 0)  // check enabled ?
+	if(FDR[i].aiCheckInterval != 0)  // check enabled ?
 	{
-//	  if((iCallCnt % (FDR[i].aiCheckInterval))==0)	// check every ? sec
-	  if( FDR[i].iWarningDelay > 0 )
+	  if( FDR[i].iWarningDelay > ARMED )
 		FDR[i].iWarningDelay--;
 	  else
 	  {
 	    if((FDR[i].aiWarningCnt < FDR[i].aiMaxWarnings) ||(FDR[i].aiMaxWarnings==0)) /* still warnings left? or all warnings*/
 	    {
+
 	      if (fValue[i] < FDR[i].fMin)
 	      {
-	         _stprintf(szTmp,_T("%s: (%4.2f < %4.2f)"), FDR[i].szName,fValue[i] , FDR[i].fMin);
-             DoStatusMessage(szTmp);
-			 FDR[i].aiWarningCnt++;
-			 FDR[i].iWarningDelay = FDR[i].aiCheckInterval-1;
+	    	if( FDR[i].iWarningDelay  == ARMED)
+	    	{
+	          _stprintf(szTmp,_T("%s: (%4.2f < %4.2f)"), FDR[i].szName,fValue[i] , FDR[i].fMin);
+              DoStatusMessage(szTmp);
+			  FDR[i].aiWarningCnt++;
+			  if(FDR[i].aiCheckInterval >0)
+			    FDR[i].iWarningDelay = FDR[i].aiCheckInterval-1;
+			  else
+			    FDR[i].iWarningDelay = UNDER_WARNED ;
+	    	}
+	    	if(FDR[i].iWarningDelay  == OVER_WARNED)
+	    	  FDR[i].iWarningDelay = ARMED;
 		  }
 
 		  if (fValue[i] > FDR[i].fMax)
 		  {
-			 _stprintf(szTmp,_T("%s: (%4.2 > %4.2f)"), FDR[i].szName,fValue[i] , FDR[i].fMax);
-			 DoStatusMessage(szTmp);
-			 FDR[i].aiWarningCnt++;
-			 FDR[i].iWarningDelay = FDR[i].aiCheckInterval-1;
+		    if( FDR[i].iWarningDelay  == ARMED)
+		    {
+			  _stprintf(szTmp,_T("%s: (%4.2f > %4.2f)"), FDR[i].szName,fValue[i] , FDR[i].fMax);
+			  DoStatusMessage(szTmp);
+			  FDR[i].aiWarningCnt++;
+			  if(FDR[i].aiCheckInterval >0)
+			    FDR[i].iWarningDelay = FDR[i].aiCheckInterval-1;
+			  else
+				FDR[i].iWarningDelay = OVER_WARNED ;
+		    }
+	    	if(FDR[i].iWarningDelay  == UNDER_WARNED)
+	    	  FDR[i].iWarningDelay = ARMED;
 		  }
 	    }
 	  }
