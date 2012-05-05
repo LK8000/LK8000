@@ -188,7 +188,7 @@ bool DevLXV7::SetupLX_Sentence(PDeviceDescriptor_t d)
 TCHAR  szTmp[254];
 
 
-_stprintf(szTmp, TEXT("$PLXV0,NMEARATE,W,5,1,1,1,1,1,1"));
+_stprintf(szTmp, TEXT("$PLXV0,NMEARATE,W,5,5,0,0,0,0,0"));
   LXV7NMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
 
@@ -366,6 +366,7 @@ else
   else
 	if (_tcsncmp(_T("$PLXV0"), sentence, 6) == 0)
 	  return PLXV0(d, sentence + 7, info);
+#ifdef OLD_LX_SENTENCES
 	else
       if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
         return LXWP0(d, sentence + 7, info);
@@ -381,7 +382,7 @@ else
             else
               if (_tcsncmp(_T("$LXWP4"), sentence, 6) == 0)
                 return LXWP4(d, sentence + 7, info);
-
+#endif
   return(false);
 } // ParseNMEA()
 
@@ -690,8 +691,8 @@ bool DevLXV7::PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* inf
   {
 //	airspeed = 135.0/TOKPH;
 	info->IndicatedAirspeed = airspeed;
-
 	info->AirspeedAvailable = TRUE;
+
   }
 
   if (ParToDouble(sentence, 6, &alt))
