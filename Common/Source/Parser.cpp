@@ -315,12 +315,13 @@ void NMEAParser::UpdateMonitor(void)
 	StartupStore(_T("... Baro altitude just lost, current status=%d%s"),GPS_INFO.BaroAltitudeAvailable,NEWLINE);
   }
   #endif
-
+#define BARO_UPDATE
+#ifdef BARO_UPDATE
   if((GetBaroTimeNow() - GPS_INFO.BaroTime ) > 5*sec) /* Baro newer than 5sec ?  */
   {
     GPS_INFO.BaroAltitudeAvailable=false;      /* reset Baro device */
     GPS_INFO.BaroDevice           = NONE;
-    return ;
+//    return ;
   }
 
   static DEVICE_TYPE lLastBaroDevice = NONE;
@@ -329,9 +330,16 @@ void NMEAParser::UpdateMonitor(void)
     lLastBaroDevice = GPS_INFO.BaroDevice;
     if(GPS_INFO.BaroDevice != NONE)
       StatusMessageBaro(gettext(TEXT("_@M755_")) , GPS_INFO.BaroDevice );
-    return ;
-  }
+	GPS_INFO.BaroAltitudeAvailable=false;
+	GPS_INFO.AirspeedAvailable=false;
+	GPS_INFO.VarioAvailable=false;
+	GPS_INFO.NettoVarioAvailable=false;
+	GPS_INFO.AccelerationAvailable = false;
+	EnableExternalTriggerCruise = false;
 
+ //   return ;
+  }
+#endif
 
 
 
@@ -353,6 +361,8 @@ void NMEAParser::UpdateMonitor(void)
 		GPS_INFO.AirspeedAvailable=false;
 		GPS_INFO.VarioAvailable=false;
 		GPS_INFO.NettoVarioAvailable=false;
+		GPS_INFO.AccelerationAvailable = false;
+		EnableExternalTriggerCruise = false;
 		lastvalidBaro=false;
 	}
   } else {
@@ -1791,6 +1801,7 @@ BOOL NMEAParser::PFLAA(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 	TCHAR *fname = LookupFLARMDetails(GPS_INFO->FLARM_Traffic[flarm_slot].ID);
 	if (fname) {
 		LK_tcsncpy(name,fname,MAXFLARMNAME);
+
 		//  Now we have the name, so lookup also for the Cn
 		// This will return either real Cn or Name, again
 		TCHAR *cname = LookupFLARMCn(GPS_INFO->FLARM_Traffic[flarm_slot].ID);
