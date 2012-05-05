@@ -181,6 +181,25 @@ void DoNearest(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 			else
 				if (wp_value > 180.0) wp_value -= 360.0;
 			if (wp_value<0) wp_value*=-1;
+
+			// Sort by distance with better bearing accuracy
+			if (wp_value>=90)
+				wp_value=WayPointCalc[wp_index].Distance+4000000;
+			else
+				if (wp_value>=60)
+					wp_value=WayPointCalc[wp_index].Distance+3000000;
+				else
+					if (wp_value>=45)
+						wp_value=WayPointCalc[wp_index].Distance+2000000;
+					else {
+
+						if (wp_value>=20)
+							wp_value=WayPointCalc[wp_index].Distance+1000000;
+						else
+							wp_value=WayPointCalc[wp_index].Distance;
+					}
+
+
 			break;
 		case 3:
 			wp_value=WayPointCalc[wp_index].GR;
