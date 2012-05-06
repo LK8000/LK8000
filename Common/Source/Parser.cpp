@@ -313,12 +313,12 @@ void NMEAParser::UpdateMonitor(void)
 	StartupStore(_T("... Baro altitude just lost, current status=%d%s"),GPS_INFO.BaroAltitudeAvailable,NEWLINE);
   }
   #endif
-
+#define BARO_UPDATE
+#ifdef BARO_UPDATE
   if((GetBaroTimeNow() - GPS_INFO.BaroTime ) > 5*sec) /* Baro newer than 5sec ?  */
   {
     GPS_INFO.BaroAltitudeAvailable=false;      /* reset Baro device */
     GPS_INFO.BaroDevice           = NONE;
-    return ;
   }
 
   static DEVICE_TYPE lLastBaroDevice = NONE;
@@ -327,9 +327,13 @@ void NMEAParser::UpdateMonitor(void)
     lLastBaroDevice = GPS_INFO.BaroDevice;
     if(GPS_INFO.BaroDevice != NONE)
       StatusMessageBaro(gettext(TEXT("_@M755_")) , GPS_INFO.BaroDevice );
-    return ;
+	GPS_INFO.BaroAltitudeAvailable=false;
+	GPS_INFO.AirspeedAvailable=false;
+	GPS_INFO.VarioAvailable=false;
+	GPS_INFO.NettoVarioAvailable=false;
+	GPS_INFO.AccelerationAvailable = false;
   }
-
+#endif
 
 
 
@@ -351,6 +355,7 @@ void NMEAParser::UpdateMonitor(void)
 		GPS_INFO.AirspeedAvailable=false;
 		GPS_INFO.VarioAvailable=false;
 		GPS_INFO.NettoVarioAvailable=false;
+		GPS_INFO.AccelerationAvailable = false;
 		lastvalidBaro=false;
 	}
   } else {
