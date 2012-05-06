@@ -342,11 +342,11 @@ double	GetMacCready(int wpindex, short wpmode);
 extern bool CheckClubVersion(void);
 extern void ClubForbiddenMsg(void);
 
-void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const int num_of_tchars_to_copy, int line, char *filename);      // Safe tcsncpy with proper string termination, and LKASSERTs
+void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const int num_of_tchars_to_copy, const int line = 0, const char *filename = NULL);      // Safe tcsncpy with proper string termination, and LKASSERTs
 #if USELKASSERT
 #define LK_tcsncpy(dest, src, numofchars) {;LK_tcsncpy_internal(dest, src, numofchars, __LINE__, __FILE__);}
 #else
-#define LK_tcsncpy(dest, src, numofchars) {;LK_tcsncpy_internal(dest, src, numofchars, 0, NULL);}
+#define LK_tcsncpy(dest, src, numofchars) LK_tcsncpy_internal(dest, src, numofchars)
 #endif
 
 #endif
