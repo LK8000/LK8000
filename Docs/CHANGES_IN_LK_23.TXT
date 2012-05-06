@@ -4,6 +4,19 @@ Changes in LK8000 v2.3
 
 Version 3.0c 
 
+  Improve direction sorting for Nearest pages 2.x
+    Now sorting is done by both direction and distance.
+
+  Ask confirmation for free flight manual restart through custom key
+
+  Fix invalid date received by Condor simulator, not updating gps calculations and not detecting takeoff.
+    For Condor not sending valid date, we use 1.1.2012.
+    If a Gps is sending an invalid date, we will set 30.2.2012 , impossible date.
+
+  Fix nmea parser sequencing of RMC and GGA .
+
+  Fix critical bug (since v2.0) in Wind setup dialog.
+    Selecting wind direction with no choice for two times, would crash the software at second attempt.
 
   Fix bug waypoint goto / details / set alternate pages were leaving menu active.
     Calling menu icon would pop up menu, and create a possible crash condition.
