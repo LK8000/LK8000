@@ -250,7 +250,8 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		// CLICK ON SORTBOX line at the top, only with no map and only for enabled pages
 		if ( (MapSpaceMode == MSM_LANDABLE || MapSpaceMode==MSM_AIRPORTS || 
 			MapSpaceMode==MSM_NEARTPS || MapSpaceMode==MSM_TRAFFIC ||
-			MapSpaceMode==MSM_AIRSPACES || MapSpaceMode==MSM_THERMALS)
+			MapSpaceMode==MSM_AIRSPACES || MapSpaceMode==MSM_THERMALS ||
+			MapSpaceMode==MSM_COMMON || MapSpaceMode==MSM_RECENT)
 			&& Y<=SortBoxY[MapSpaceMode] ) {
 
 			// only search for 1-3, otherwise it's the fourth (fifth really)
@@ -264,7 +265,8 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 			// 120504 if we are clicking on the already selected sort button, within the same mapspacemode,
 			// then simulate a gesture down to advance to next page, if available.
-			if ( (MapSpaceMode==oldMapSpaceMode) && (SortedMode[MapSpaceMode]==j) ) {
+			if ( (MapSpaceMode==oldMapSpaceMode) && (SortedMode[MapSpaceMode]==j)  ||
+			     (MapSpaceMode==MSM_COMMON) || (MapSpaceMode==MSM_RECENT) ) {
 				vkmode=LKGESTURE_DOWN;
 				goto shortcut_gesture;
 			} else {
