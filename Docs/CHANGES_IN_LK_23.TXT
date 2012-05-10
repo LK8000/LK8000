@@ -4,6 +4,8 @@ Changes in LK8000 v2.3
 
 Version 3.0c 
 
+  Fix eIAS not adopted when IAS disappeared.
+
   Improve direction sorting for Nearest pages 2.x
     Now sorting is done by both direction and distance.
 
