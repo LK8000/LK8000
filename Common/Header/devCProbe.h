@@ -11,6 +11,7 @@
 #include "devBase.h"
 #include "string"
 #include "nmeaistream.h"
+#include "dlgTools.h"
 
 
 class CDevCProbe : public DevBase
@@ -28,6 +29,8 @@ public:
 	static bool Register();
 	static const TCHAR* GetName() { return TEXT("C-Probe"); }
 	static BOOL Open(PDeviceDescriptor_t d, int Port);
+	static BOOL Close (PDeviceDescriptor_t d);
+
 
 private:
 	static BOOL Install(PDeviceDescriptor_t d);
@@ -51,5 +54,32 @@ private:
 	static BOOL SetCompassCalOn( PDeviceDescriptor_t d );
 	static BOOL SetCompassCalOff( PDeviceDescriptor_t d );
 	static BOOL SetCalGyro( PDeviceDescriptor_t d );
+
+	static BOOL m_bCompassCalOn;
+
+	static double m_abs_press;
+	static double m_delta_press;
+
+	static TCHAR m_szVersion[15];
+
+	static CRITICAL_SECTION* m_pCritSec_DeviceData;
+
+	static void LockDeviceData();
+	static void UnlockDeviceData();
+
+// Config
+	static BOOL Config();
+	static void OnCloseClicked(WindowControl * Sender);
+	static void OnCompassCalClicked(WindowControl * Sender);
+	static void OnCalGyroClicked(WindowControl * Sender);
+	static void OnZeroDeltaPressClicked(WindowControl * Sender);
+
+	static int OnTimer(WindowControl * Sender);
+
+	static void Update();
+
+	static CallBackTableEntry_t CallBackTable[];
+	static WndForm *m_wf;
+	static PDeviceDescriptor_t m_pDevice;
 };
 #endif // devCProbe_h__

@@ -137,6 +137,11 @@ Text2Event[65].text = TEXT("Service");
 Text2Event[65].event = &eventService;
 Text2Event[66].text = TEXT("MinimapKey");
 Text2Event[66].event = &eventMinimapKey;
+Text2Event[67].text = TEXT("DevAConfig");
+Text2Event[67].event = &eventDevAConfig;
+Text2Event[68].text = TEXT("DevBConfig");
+Text2Event[68].event = &eventDevBConfig;
+
 
 Text2GCE[0] = TEXT("AIRSPACE_ENTER");
 Text2GCE[1] = TEXT("AIRSPACE_LEAVE");
@@ -294,7 +299,7 @@ Text2NE[127] = TEXT("UNUSED_55");
 Text2NE[128] = TEXT("UNUSED_56");
 Text2NE[129] = TEXT("UNUSED_57");
 Text2NE[130] = TEXT("COUNT");
-Text2Event_count = 67;
+Text2Event_count = 69;
 // Check no array overrun
 //ASSERT(130 <= NE_COUNT);
 // Check no array overrun

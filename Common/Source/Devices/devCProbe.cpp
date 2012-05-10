@@ -11,14 +11,27 @@
 #include "Parser.h"
 #include "Defines.h"
 #include "device.h"
-#include "devCProbe.h"
 
 #include "Enums.h"
 #include "lk8000.h"
 #include "Utils.h"
 
+#include "ContestMgr.h"
+#include "Statistics.h"
+#include "Globals.h"
+#include "devCProbe.h"
+
 #define BARO__CPROBE		7
 extern bool UpdateBaroSource( NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+
+PDeviceDescriptor_t CDevCProbe::m_pDevice=NULL;
+BOOL CDevCProbe::m_bCompassCalOn=FALSE;
+WndForm *CDevCProbe::m_wf=NULL;
+CRITICAL_SECTION* CDevCProbe::m_pCritSec_DeviceData=NULL;
+double CDevCProbe::m_abs_press=0.0;
+double CDevCProbe::m_delta_press=0.0;
+
+TCHAR CDevCProbe::m_szVersion[15]={0};
 
 
 bool CDevCProbe::Register(){
@@ -32,19 +45,36 @@ BOOL CDevCProbe::Install( PDeviceDescriptor_t d ) {
 	d->PutBugs = NULL;
 	d->PutBallast = NULL;
 	d->Open = Open;
-	d->Close = NULL;
+	d->Close = Close;
 	d->Init = NULL;
 	d->LinkTimeout = NULL;
 	d->Declare = NULL;
 	d->IsGPSSource = GetFalse;
 	d->IsBaroSource = GetTrue;
+	d->Config = Config;
 
 	return(TRUE);
 }
 
 BOOL CDevCProbe::Open( PDeviceDescriptor_t d, int Port ) {
+	m_pDevice = d;
+
+	m_pCritSec_DeviceData = new CRITICAL_SECTION;
+	InitializeCriticalSection(m_pCritSec_DeviceData);
+
 	return TRUE;
 }
+
+BOOL CDevCProbe::Close (PDeviceDescriptor_t d) {
+	m_pDevice = NULL;
+
+	DeleteCriticalSection(m_pCritSec_DeviceData);
+	delete m_pCritSec_DeviceData;
+	m_pCritSec_DeviceData = NULL;
+
+	return TRUE;
+}
+
 
 double int16toDouble(int v) {
 	if(v > (1<<15)){
@@ -60,31 +90,78 @@ double int24toDouble(int v) {
 	return v;
 };
 
+void CDevCProbe::LockDeviceData(){
+	if(m_pCritSec_DeviceData) {
+		EnterCriticalSection(m_pCritSec_DeviceData);
+	}
+}
+
+void CDevCProbe::UnlockDeviceData(){
+	if(m_pCritSec_DeviceData) {
+		LeaveCriticalSection(m_pCritSec_DeviceData);
+	}
+}
+
 BOOL CDevCProbe::ParseNMEA( DeviceDescriptor_t *d, TCHAR *String, NMEA_INFO *pINFO ) {
 	wnmeastring wiss(String);
 	TCHAR* strToken = wiss.GetNextString();
 
  	if(_tcscmp(strToken,TEXT("$PCPROBE"))==0) {
- 		strToken = wiss.GetNextString();
-		if (_tcscmp(strToken,TEXT("T"))==0) {
+
+  		strToken = wiss.GetNextString();
+
+  		// this sentence must handled first, also we can't detect end of Compass Calibration.
+		if (_tcscmp(strToken,TEXT("COMPASSCALIBRATION"))==0) {
+			// $PCPROBE,COMPASSCALIBRATION
+			//  The calibration of the accelerometers and of the magnetometers is being performed
+
+			// no other thread modify m_bCompassCal Flag : no lock needed for read in this thread
+			if(!m_bCompassCalOn){
+				LockDeviceData();
+				m_bCompassCalOn=TRUE;
+				UnlockDeviceData();
+			}
+
+			return TRUE;
+		}
+
+		// if we receive sentence other than compass calibration -> compass calibration is finish.
+		// no other thread modify m_bCompassCal Flag : no lock needed for read in this thread
+		if(m_bCompassCalOn) {
+			LockDeviceData();
+			m_bCompassCalOn=FALSE;
+			UnlockDeviceData();
+		}
+
+  		if (_tcscmp(strToken,TEXT("T"))==0) {
 			BOOL bOk = ParseData(wiss, pINFO);
 			if(!pINFO->BaroAltitudeAvailable) {
 				SetBaroOn(d);
 			}
 			return bOk;
 		}
-		if (_tcscmp(strToken,TEXT("COMPASSCALIBRATION"))==0) {
-			// $PCPROBE,COMPASSCALIBRATION
-			//  The calibration of the accelerometers and of the magnetometers is being performed
-			return TRUE;
-		}
 		if (_tcscmp(strToken,TEXT("GYROCALIBRATION"))==0) {
+
+			LockDeviceData();
+	 		m_bCompassCalOn=FALSE;
+			UnlockDeviceData();
+
 			return ParseGyro(wiss, pINFO);
 		}
 		if (_tcscmp(strToken,TEXT("FW"))==0) {
+
+			LockDeviceData();
+	 		m_bCompassCalOn=FALSE;
+			UnlockDeviceData();
+
 			return ParseFW(wiss, pINFO);
 		}
 		if(_tcscmp(strToken,TEXT("NAME"))==0) {
+
+			LockDeviceData();
+	 		m_bCompassCalOn=FALSE;
+			UnlockDeviceData();
+
 			return ParseName(wiss, pINFO);
 		}
  	}
@@ -126,7 +203,7 @@ BOOL CDevCProbe::ParseData( wnmeastring& wiss, NMEA_INFO *pINFO ) {
 
 	if(sin_pitch < 1.0 && sin_pitch > -1.0){
 		pINFO->MagneticCompassAvailable=TRUE;
-		pINFO->Heading = PI + atan2(2*(q1 * q2 + q3 * q0), q3 * q3 - q0 * q0 - q1 * q1 + q2 * q2)*RAD_TO_DEG;
+		pINFO->Heading = (PI + atan2(2*(q1 * q2 + q3 * q0), q3 * q3 - q0 * q0 - q1 * q1 + q2 * q2))*RAD_TO_DEG;
 
 		pINFO->GyroscopeAvailable=TRUE;
 		pINFO->Pitch = asin(sin_pitch)*RAD_TO_DEG;
@@ -176,6 +253,11 @@ BOOL CDevCProbe::ParseData( wnmeastring& wiss, NMEA_INFO *pINFO ) {
 		pINFO->ExtBatt1_Voltage *= -1;
 	}
 
+	LockDeviceData();
+	m_delta_press = delta_press;
+	m_abs_press = abs_press;
+	UnlockDeviceData();
+
 	TriggerVarioUpdate();
 	return TRUE;
 }
@@ -201,10 +283,10 @@ BOOL CDevCProbe::ParseGyro( wnmeastring& wiss, NMEA_INFO *pINFO ) {
 BOOL CDevCProbe::ParseFW( wnmeastring& wiss, NMEA_INFO *pINFO ) {
 	unsigned int Version = HexStrToInt(wiss.GetNextString());
 
-	unsigned int minor = (Version&0x00FF);
-	unsigned int major = (Version&0xFF00) >> 8;
+	LockDeviceData();
+	_stprintf(m_szVersion, TEXT("%u.%u"), ((Version&0xFF00) >> 8), (Version&0x00FF));
+	UnlockDeviceData();
 
-	StartupStore(TEXT("C-Probe Firmware Version : %02ud.%02ud"), major, minor);
 	return TRUE;
 }
 
@@ -269,4 +351,145 @@ BOOL CDevCProbe::SetCompassCalOff( PDeviceDescriptor_t d ){
 BOOL CDevCProbe::SetCalGyro( PDeviceDescriptor_t d ){
 	d->Com->WriteString(TEXT("$PCPILOT,C,CALGYRO\r\n"));
 	return TRUE;
+}
+
+CallBackTableEntry_t CDevCProbe::CallBackTable[]={
+  DeclareCallBackEntry(NULL)
+};
+
+BOOL CDevCProbe::Config(){
+	char filename[MAX_PATH];
+	LocalPathS(filename, TEXT("dlgDevCProbe.xml"));
+	m_wf = dlgLoadFromXML(CallBackTable, filename, hWndMainWindow, TEXT("IDR_XML_DEVCPROBE"));
+
+	((WndButton *)m_wf->FindByName(TEXT("cmdClose")))->SetOnClickNotify(OnCloseClicked);
+	((WndButton *)m_wf->FindByName(TEXT("cmdSetCompassCal")))->SetOnClickNotify(OnCompassCalClicked);
+	((WndButton *)m_wf->FindByName(TEXT("cmdSetCalGyro")))->SetOnClickNotify(OnCalGyroClicked);
+	((WndButton *)m_wf->FindByName(TEXT("cmdZeroDeltaPress")))->SetOnClickNotify(OnZeroDeltaPressClicked);
+
+	GetFirmwareVersion(m_pDevice);
+
+	if(m_wf) {
+		m_wf->SetTimerNotify(OnTimer);
+		m_wf->ShowModal();
+
+		delete m_wf;
+		m_wf=NULL;
+	}
+	return TRUE;
+}
+
+int CDevCProbe::OnTimer(WindowControl * Sender){
+  (void)Sender;
+  Update();
+
+  return 0;
+}
+
+void CDevCProbe::OnCloseClicked(WindowControl * Sender){
+	(void)Sender;
+  m_wf->SetModalResult(mrOK);
+}
+
+void CDevCProbe::OnCompassCalClicked(WindowControl * Sender){
+	(void)Sender;
+	if(m_pDevice) {
+		if(m_bCompassCalOn) {
+			SetCompassCalOff(m_pDevice);
+		} else {
+			SetCompassCalOn(m_pDevice);
+
+			MessageBoxX(m_wf->GetHandle(), LKGetText(TEXT("_@M2136_")), TEXT("C-Probe"), MB_OK, false);
+
+			SetCompassCalOff(m_pDevice);
+		}
+	}
+}
+
+void CDevCProbe::OnCalGyroClicked(WindowControl * Sender) {
+	(void)Sender;
+	if(m_pDevice) {
+		SetCalGyro(m_pDevice);
+	}
+}
+
+void CDevCProbe::OnZeroDeltaPressClicked(WindowControl * Sender) {
+	(void)Sender;
+	if(m_pDevice) {
+		SetZeroDeltaPressure(m_pDevice);
+	}
+}
+
+void CDevCProbe::Update() {
+	TCHAR Temp[50] = {0};
+
+	LockFlightData();
+	NMEA_INFO _INFO = GPS_INFO;
+	UnlockFlightData();
+
+	LockDeviceData();
+	_stprintf(Temp, TEXT("C-Probe - Version: %s"), m_szVersion);
+	UnlockDeviceData();
+
+	m_wf->SetCaption(Temp);
+
+	WndProperty* wp;
+	wp = (WndProperty*)m_wf->FindByName(TEXT("prpPitch"));
+	if(wp){
+		_stprintf(Temp, TEXT("%.2f°"), _INFO.Pitch);
+		wp->SetText(Temp);
+	}
+	wp = (WndProperty*)m_wf->FindByName(TEXT("prpHeading"));
+	if(wp){
+		_stprintf(Temp, TEXT("%.2f°"), _INFO.Heading);
+		wp->SetText(Temp);
+	}
+	wp = (WndProperty*)m_wf->FindByName(TEXT("prpRoll"));
+	if(wp){
+		_stprintf(Temp, TEXT("%.2f°"), _INFO.Roll);
+		wp->SetText(Temp);
+	}
+
+	wp = (WndProperty*)m_wf->FindByName(TEXT("prpGx"));
+	if(wp){
+		_stprintf(Temp, TEXT("%.2f"), _INFO.AccelX);
+		wp->SetText(Temp);
+	}
+	wp = (WndProperty*)m_wf->FindByName(TEXT("prpGy"));
+	if(wp){
+		_stprintf(Temp, TEXT("%.2f"), _INFO.AccelY);
+		wp->SetText(Temp);
+	}
+	wp = (WndProperty*)m_wf->FindByName(TEXT("prpGz"));
+	if(wp){
+		_stprintf(Temp, TEXT("%.2f"), _INFO.AccelZ);
+		wp->SetText(Temp);
+	}
+
+	wp = (WndProperty*)m_wf->FindByName(TEXT("prpTemp"));
+	if(wp){
+		_stprintf(Temp, TEXT("%.2f °C"), _INFO.OutsideAirTemperature);
+		wp->SetText(Temp);
+	}
+	wp = (WndProperty*)m_wf->FindByName(TEXT("prpRh"));
+	if(wp){
+		_stprintf(Temp, TEXT("%.2f %%"), _INFO.RelativeHumidity);
+		wp->SetText(Temp);
+	}
+	wp = (WndProperty*)m_wf->FindByName(TEXT("prpDeltaPress"));
+	if(wp){
+		LockDeviceData();
+		_stprintf(Temp, TEXT("%.2f Pa"), m_delta_press);
+		UnlockDeviceData();
+
+		wp->SetText(Temp);
+	}
+	wp = (WndProperty*)m_wf->FindByName(TEXT("prpAbsPress"));
+	if(wp){
+		LockDeviceData();
+		_stprintf(Temp, TEXT("%.2f hPa"), m_abs_press);
+		UnlockDeviceData();
+
+		wp->SetText(Temp);
+	}
 }

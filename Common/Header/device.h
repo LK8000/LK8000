@@ -54,6 +54,7 @@ typedef	struct DeviceDescriptor_t{
   BOOL (*OnSysTicker)(DeviceDescriptor_t *d);
   BOOL (*PutVoice)(DeviceDescriptor_t *d, TCHAR *Sentence);
   BOOL (*IsCondor)(DeviceDescriptor_t	*d);
+  BOOL (*Config)();
   DeviceDescriptor_t *pDevPipeTo;
 
   int PortNumber;

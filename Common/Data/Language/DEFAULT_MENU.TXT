@@ -1078,15 +1078,15 @@ location=9
 mode=Config3
 type=key
 data=11
-label= 
-event=Null
+label=_@M2134_\n$(DevAConfig) 
+event=DevAConfig
 location=10
 
 mode=Config3
 type=key
 data=12
-label= 
-event=Null
+label=_@M2135_\n$(DevBConfig) 
+event=DevBConfig
 location=11
 
 # -------------

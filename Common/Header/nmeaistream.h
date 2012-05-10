@@ -21,7 +21,7 @@ public:
 	inline wchar_t* GetNextString(){
 		wchar_t* szOut = m_szString;
 		if(*(m_szString)) {
-			for( ;*m_szString != 0 && *m_szString != L','; ++m_szString);
+			for( ;(*m_szString != 0) && (*m_szString != 10) && (*m_szString != L','); ++m_szString);
 			*(m_szString++) = 0;
 		}
 		return szOut;
