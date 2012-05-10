@@ -13,6 +13,7 @@
 
 #include "devDigifly.h"
 
+extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 extern double LowPassFilter(double y_last, double x_in, double fact);
 
@@ -141,9 +142,7 @@ static BOOL PDGFTL1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 		// else continue entering initqnh until somebody changes qnh in either digifly or lk8000
 	}
   }
-  if (d == pDevPrimaryBaroSource) {
-    UpdateBaroSource( GPS_INFO, DIGIFLY,  AltitudeToQNHAltitude(altqne));
-  }
+  UpdateBaroSource( GPS_INFO,0, d,  AltitudeToQNHAltitude(altqne));
 
 
   NMEAParser::ExtractParameter(String,ctemp,2);
@@ -230,10 +229,7 @@ static BOOL PDGFTTL(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 		// else continue entering initqnh until somebody changes qnh in either digifly or lk8000
 	}
   }
-  if (d == pDevPrimaryBaroSource) {
-
-    UpdateBaroSource( GPS_INFO, DIGIFLY,  AltitudeToQNHAltitude(altqne));
-  }
+  UpdateBaroSource( GPS_INFO, 0,d,  AltitudeToQNHAltitude(altqne));
 
   NMEAParser::ExtractParameter(String,ctemp,2);
 #if 1

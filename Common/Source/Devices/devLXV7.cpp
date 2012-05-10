@@ -13,6 +13,8 @@
 #include "Parser.h"
 #include "InputEvents.h"
 
+extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+
 int iLXV7_RxUpdateTime=0;
 double LXV7_oldMC = MACCREADY;
 int  LXV7_MacCreadyUpdateTimeout = 0;
@@ -697,7 +699,7 @@ bool DevLXV7::PLXVF(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* inf
 
   if (ParToDouble(sentence, 6, &alt))
   {
-	UpdateBaroSource( info, LXV7, AltitudeToQNHAltitude(alt));
+	UpdateBaroSource( info, 0, d, AltitudeToQNHAltitude(alt));
     info->TrueAirspeed =  airspeed * AirDensityRatio(alt);
   }
 

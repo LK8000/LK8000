@@ -12,6 +12,8 @@
 #include "LKInterface.h"
 #include "Parser.h"
 
+extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+
 int iLX16xx_RxUpdateTime=0;
 double oldMC = MACCREADY;
 int  MacCreadyUpdateTimeout = 0;
@@ -355,7 +357,7 @@ bool DevLX16xx::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* i
     {
     	LX16xxAlt = (int) alt;
       info->IndicatedAirspeed = airspeed / AirDensityRatio(alt);
-      UpdateBaroSource( info, LX16xx, AltitudeToQNHAltitude(alt));
+      UpdateBaroSource( info, 0,d, AltitudeToQNHAltitude(alt));
     }
 
   if (ParToDouble(sentence, 3, &info->Vario))

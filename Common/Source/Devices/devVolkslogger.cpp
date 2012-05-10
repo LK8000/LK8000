@@ -6,7 +6,6 @@
    $Id$
 */
 
-// adding baro alt sentance parser to support baro source priority  if (d == pDevPrimaryBaroSource){...}
 
 #include "externs.h"
 #include "Utils.h"
@@ -14,6 +13,7 @@
 #include "Port.h"
 
 #include "devVolkslogger.h"
+extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 #include "Volkslogger/vlapi2.h"
 #include "Volkslogger/vlapihlp.h"
@@ -35,8 +35,6 @@ BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   // four characers, hex, barometric altitude
   InternalAltitude = HexStrToDouble(ctemp,NULL);
   double fBaroAltitude =0;
-//  if (d == pDevPrimaryBaroSource)
-  {
 
     if(InternalAltitude > 60000)
 	fBaroAltitude =
@@ -48,8 +46,7 @@ BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
         AltitudeToQNHAltitude(InternalAltitude);  
     // typo corrected 21.04.07
     // Else the altitude is good enough.
-    UpdateBaroSource( GPS_INFO, VOLKSLOGGER,  fBaroAltitude);
-  }
+    UpdateBaroSource( GPS_INFO, 0,d,  fBaroAltitude);
 	
   // ExtractParameter(String,ctemp,3);		
   // four characters, hex, constant.  Value 1371 (dec)
@@ -58,9 +55,6 @@ BOOL vl_PGCS1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   
   if (GPS_INFO->SatellitesUsed <= 0) {
     GPS_INFO->SatellitesUsed = 4; 
-    // just to make XCSoar quit complaining.  VL doesn't tell how many
-    // satellites it uses.  Without this XCSoar won't do wind
-    // measurements.
   }
   
   return FALSE;

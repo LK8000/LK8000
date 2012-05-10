@@ -939,13 +939,9 @@ void InputEvents::eventBaroAltitude(const TCHAR *misc) {
     EnableNavBaroAltitude = false;
   else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (EnableNavBaroAltitude)
-	// LKTOKEN  _@M756_ = "USING BARO ALTITUDE" 
-      {
-	 StatusMessageBaro(gettext(TEXT("_@M756_")) , GPS_INFO.BaroDevice );
-      }
+	DoStatusMessage(MsgToken(756)); // USING BARO ALTITUDE
     else
-	// LKTOKEN  _@M757_ = "USING GPS ALTITUDE" 
-      DoStatusMessage(gettext(TEXT("_@M757_")));  
+	DoStatusMessage(MsgToken(757));	// USING GPS ALTITUDE
   }
 }
 

@@ -18,6 +18,8 @@ static BOOL cLXWP0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 static BOOL cLXWP1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 static BOOL cLXWP2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 
+extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+
 
 static BOOL CondorParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
   (void)d;
@@ -147,10 +149,7 @@ static BOOL cLXWP0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO) {
   GPS_INFO->IndicatedAirspeed = airspeed/AirDensityRatio(alt);
   GPS_INFO->TrueAirspeed = airspeed;
 
-  if (d == pDevPrimaryBaroSource)
-	{
-      UpdateBaroSource( GPS_INFO, CONDOR, AltitudeToQNHAltitude(alt));
-  }
+  UpdateBaroSource( GPS_INFO, 0,d,  AltitudeToQNHAltitude(alt));
 
   NMEAParser::ExtractParameter(String,ctemp,3);
   GPS_INFO->Vario = StrToDouble(ctemp,NULL);

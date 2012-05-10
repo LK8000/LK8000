@@ -20,6 +20,7 @@ BOOL devWesterboerPutMacCready(PDeviceDescriptor_t d, double Mc);
 BOOL devWesterboerPutBallast(PDeviceDescriptor_t d, double Ballast);
 BOOL devWesterboerPutBugs(PDeviceDescriptor_t d, double Bus);
 BOOL devWesterboerPutWingload(PDeviceDescriptor_t d, double fWingload);
+extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 int iReceiveSuppress = 0;
 
@@ -228,9 +229,7 @@ static BOOL PWES0(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 	}
   }
 
-  if (d == pDevPrimaryBaroSource) {
-      UpdateBaroSource( GPS_INFO, WESTERBOER,  AltitudeToQNHAltitude(altqne));
-  }
+  UpdateBaroSource( GPS_INFO, 0,d,  AltitudeToQNHAltitude(altqne));
 
 
   // IAS and TAS

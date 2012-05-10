@@ -13,7 +13,6 @@
 
 // ToDo
 
-// adding baro alt sentance paser to support baro source priority  if (d == pDevPrimaryBaroSource){...}
 
 
 #include "externs.h"
@@ -23,7 +22,7 @@
 
 #include "devPosiGraph.h"
 
-
+extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 static BOOL GPWIN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 
@@ -109,9 +108,7 @@ static BOOL GPWIN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 
   NMEAParser::ExtractParameter(String, ctemp, 2);
 
-  if (d == pDevPrimaryBaroSource){
-    UpdateBaroSource( GPS_INFO, POSIGRAPH,   AltitudeToQNHAltitude(  iround(StrToDouble(ctemp, NULL) / 10)));
-  }
+  UpdateBaroSource( GPS_INFO, 0, d,   AltitudeToQNHAltitude(  iround(StrToDouble(ctemp, NULL) / 10)));
 
   return FALSE;
 

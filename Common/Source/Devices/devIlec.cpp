@@ -13,6 +13,7 @@
 
 #include "devIlec.h"
 
+extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 
@@ -90,10 +91,7 @@ static BOOL PILC(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   if (_tcscmp(ctemp,_T("PDA1"))==0) {
 
 	NMEAParser::ExtractParameter(String,ctemp,1);
-	if (d == pDevPrimaryBaroSource)
-	    {
-	    UpdateBaroSource( GPS_INFO, ILEC, AltitudeToQNHAltitude(StrToDouble(ctemp, NULL)));
-	}
+	UpdateBaroSource( GPS_INFO, 0,d, AltitudeToQNHAltitude(StrToDouble(ctemp, NULL)));
 
 	NMEAParser::ExtractParameter(String,ctemp,2);
 	GPS_INFO->Vario = StrToDouble(ctemp,NULL);

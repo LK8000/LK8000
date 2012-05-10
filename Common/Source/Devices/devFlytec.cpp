@@ -13,6 +13,8 @@
 
 #include "devFlytec.h"
 
+extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+
 
 static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 
@@ -223,10 +225,7 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 
   // HBAR 1013.25
   NMEAParser::ExtractParameter(String,ctemp,11+offset);
-  if (d == pDevPrimaryBaroSource)
-  {
-    UpdateBaroSource( GPS_INFO, FLYTEC, AltitudeToQNHAltitude( StrToDouble(ctemp, NULL)));
-  }
+  UpdateBaroSource( GPS_INFO, 0,d, AltitudeToQNHAltitude( StrToDouble(ctemp, NULL)));
 
   // VARIO
   NMEAParser::ExtractParameter(String,ctemp,12+offset);

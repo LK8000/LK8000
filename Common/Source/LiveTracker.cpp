@@ -40,7 +40,6 @@ static CCriticalSection _t_mutex;       // Mutex
 static bool _t_run = false;             // Thread run
 static bool _t_end = false;             // Thread end
 static PointQueue _t_points;            // Point FIFO
-static DEVICE_TYPE _t_barodevice;       // GPD device ID
 
 // Prototypes
 static bool InitWinsock();
@@ -182,8 +181,6 @@ void LiveTrackerUpdate(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
   
   CCriticalSection::CGuard guard(_t_mutex);
 
-  _t_barodevice = Basic->BaroDevice;
-  
   //Check if sending needed (time interval)
   if (Basic->Time >= logtime) { 
     logtime = (int)Basic->Time + LiveTrackerInterval;
@@ -428,7 +425,6 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id, unsigned int *sessio
   unsigned int vehicle_type = 8;
   char vehicle_name[64];
   int rnd;
-  TCHAR wgps[254];
   
   if (1) {
     CCriticalSection::CGuard guard(_t_mutex);
@@ -474,12 +470,18 @@ static bool SendStartOfTrackPacket(unsigned int *packet_id, unsigned int *sessio
       UrlEncode("PDA", phone, sizeof(phone));
     #endif
     #endif
-    if (SIMMODE) UrlEncode("SIMULATED", gps, sizeof(gps));
+    if (SIMMODE)
+	UrlEncode("SIMULATED", gps, sizeof(gps));
+    else
+	UrlEncode("GENERIC", gps, sizeof(gps));
+/* 
+	What is this for?
       else {
         GetBaroDeviceName(_t_barodevice, wgps); 
         unicode2ascii(wgps, txbuf, sizeof(txbuf));
         UrlEncode(txbuf, gps, sizeof(gps));
       }
+*/
     
     unicode2ascii(AircraftType_Config, txbuf, sizeof(txbuf));
     UrlEncode(txbuf, vehicle_name, sizeof(vehicle_name));

@@ -11,9 +11,11 @@
 #include <device.h>
 #include <Parser.h>
 
+extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+
 static BOOL _PRS(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *_INFO){
 	(void)d;
-	if(UpdateBaroSource(_INFO, FLYNET, StaticPressureToAltitude((HexStrToInt(String)*1.0)))){
+	if(UpdateBaroSource(_INFO, 0, d, StaticPressureToAltitude((HexStrToInt(String)*1.0)))){
 		TriggerVarioUpdate();
 	}
 	return TRUE;

@@ -7,7 +7,6 @@
 */
 
 
-// adding baro alt sentance parser to support baro source priority  if (d == pDevPrimaryBaroSource){...}
 
 #include "externs.h"
 #include "Utils.h"

@@ -13,6 +13,7 @@
 
 #include "devZander.h"
 
+extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 static BOOL PZAN1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *aGPS_INFO);
 static BOOL PZAN2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *aGPS_INFO);
@@ -109,10 +110,7 @@ static BOOL PZAN1(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *aGPS_INFO)
 {
   TCHAR ctemp[80];
   NMEAParser::ExtractParameter(String,ctemp,0);
-  if (d == pDevPrimaryBaroSource)
-	{
-      UpdateBaroSource( aGPS_INFO, ZANDER, AltitudeToQNHAltitude( StrToDouble(ctemp, NULL)));
-  }
+  UpdateBaroSource( aGPS_INFO, 0,d, AltitudeToQNHAltitude( StrToDouble(ctemp, NULL)));
   return TRUE;
 }
 
@@ -131,8 +129,7 @@ static BOOL PZAN2(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *aGPS_INFO)
   aGPS_INFO->Vario = wnet;
 
 
-//  if (aGPS_INFO->BaroAltitudeAvailable)
-  if (aGPS_INFO->BaroDevice == ZANDER)
+  if (aGPS_INFO->BaroAltitudeAvailable)
   {
     vias = vtas/AirDensityRatio(aGPS_INFO->BaroAltitude);
   } else {

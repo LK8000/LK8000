@@ -10,6 +10,8 @@
 #include "externs.h"
 #include "devLX.h"
 
+extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+
 
 //____________________________________________________________class_definitions_
 
@@ -131,9 +133,7 @@ bool DevLX::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
     LKASSERT(AirDensityRatio(alt)!=0);
     info->IndicatedAirspeed = airspeed / AirDensityRatio(alt);
 
-    if (d == pDevPrimaryBaroSource)  {
-      UpdateBaroSource( info, LX,  AltitudeToQNHAltitude(alt));
-    }
+    UpdateBaroSource( info, 0,d,  AltitudeToQNHAltitude(alt));
   }
 
   if (ParToDouble(sentence, 3, &info->Vario))

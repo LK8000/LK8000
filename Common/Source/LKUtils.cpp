@@ -132,17 +132,15 @@ void GotoWaypoint(const int wpnum) {
 
 void ToggleBaroAltitude() {
   if (!GPS_INFO.BaroAltitudeAvailable) {
-	// LKTOKEN  _@M121_ = "BARO ALTITUDE NOT AVAILABLE" 
-	DoStatusMessage(gettext(TEXT("_@M121_")));
+	DoStatusMessage(MsgToken(121)); // BARO ALTITUDE NOT AVAILABLE
 	return;
   }
   EnableNavBaroAltitude=!EnableNavBaroAltitude;
   if (EnableNavBaroAltitude)
-	// LKTOKEN  _@M756_ = "USING BARO ALTITUDE" 
-	DoStatusMessage(gettext(TEXT("_@M756_")));
-  else
-	// LKTOKEN  _@M757_ = "USING GPS ALTITUDE" 
-	DoStatusMessage(gettext(TEXT("_@M757_")));
+	DoStatusMessage(MsgToken(756)); // USING BARO ALTITUDE
+   else
+	DoStatusMessage(MsgToken(757)); // USING GPS ALTITUDE
+
 }
 
 TCHAR * GetSizeSuffix(void) {

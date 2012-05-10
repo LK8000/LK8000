@@ -22,6 +22,9 @@
 
 #include "devCAI302.h"
 
+extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+
+
 using std::min;
 using std::max;
 
@@ -105,7 +108,7 @@ static cai302_Gdata_t cai302_Gdata;
 // Additional sentance for CAI302 support
 static BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 static BOOL cai_PCAIB(TCHAR *String, NMEA_INFO *GPS_INFO);
-static BOOL cai_PCAID(TCHAR *String, NMEA_INFO *GPS_INFO);
+static BOOL cai_PCAID(PDeviceDescriptor_t d,TCHAR *String, NMEA_INFO *GPS_INFO);
 static BOOL cai302Install(PDeviceDescriptor_t d); 
 
 static int  MacCreadyUpdateTimeout = 0;
@@ -124,7 +127,7 @@ BOOL cai302ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
   }
 
   if(_tcsstr(String,TEXT("$PCAID")) == String){
-    return cai_PCAID(&String[7], GPS_INFO);
+    return cai_PCAID(d,&String[7], GPS_INFO);
   }
 
   if(_tcsstr(String,TEXT("!w")) == String){
@@ -557,7 +560,7 @@ $PCAID,<1>,<2>,<3>,<4>*hh<CR><LF>
 *hh Checksum, XOR of all bytes of the sentence after the ‘$’ and before the ‘*’
 */
 
-BOOL cai_PCAID(TCHAR *String, NMEA_INFO *GPS_INFO){
+BOOL cai_PCAID(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
 /*
 	(void)GPS_INFO;
 	(void)String;
@@ -566,7 +569,7 @@ BOOL cai_PCAID(TCHAR *String, NMEA_INFO *GPS_INFO){
 
   NMEAParser::ExtractParameter(String,ctemp,1);
   double ps = StrToDouble(ctemp,NULL);
-  UpdateBaroSource( GPS_INFO , CAI302,  AltitudeToQNHAltitude(ps));
+  UpdateBaroSource( GPS_INFO ,0, d,  AltitudeToQNHAltitude(ps));
 
 
   return TRUE;
@@ -604,10 +607,7 @@ BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
 
   NMEAParser::ExtractParameter(String,ctemp,4);
 
-  if (d == pDevPrimaryBaroSource){
-	UpdateBaroSource( GPS_INFO , CAI302,   AltitudeToQNHAltitude( StrToDouble(ctemp, NULL) - 1000));
-
-  }
+  UpdateBaroSource( GPS_INFO , 0, d,   AltitudeToQNHAltitude( StrToDouble(ctemp, NULL) - 1000));
 
 //  ExtractParameter(String,ctemp,5);
 //  GPS_INFO->QNH = StrToDouble(ctemp, NULL) - 1000;

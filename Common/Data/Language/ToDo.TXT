@@ -184,3 +184,9 @@ _@M2133_ "Position"
 _@M1793_ "External"
 
 HLP 139 and HLP 612:  added [External]   to wind choices!
+
+# Changed, Without "FROM" !!!!!!!!!!!!!!
+_@M120_ "BARO ALTITUDE IS AVAILABLE"
+_@M755_ "USING AVAILABLE BARO ALTITUDE"
+_@M756_ "USING BARO ALTITUDE"
+

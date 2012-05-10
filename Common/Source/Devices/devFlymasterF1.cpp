@@ -13,6 +13,8 @@
 
 #include "devFlymasterF1.h"
 
+extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+
 
 static BOOL VARIO(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 
@@ -99,9 +101,7 @@ static BOOL VARIO(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   TCHAR ctemp[80];
   NMEAParser::ExtractParameter(String,ctemp,0);
   double ps = StrToDouble(ctemp,NULL);
-  if (d == pDevPrimaryBaroSource) {
-    UpdateBaroSource( GPS_INFO, FLYMASTER_F1,  	 (1 - pow(fabs(ps / QNH), 0.190284)) * 44307.69);
-  }
+  UpdateBaroSource( GPS_INFO, 0,d,  	 (1 - pow(fabs(ps / QNH), 0.190284)) * 44307.69);
 
   NMEAParser::ExtractParameter(String,ctemp,1);
   GPS_INFO->Vario = StrToDouble(ctemp,NULL)/10.0;

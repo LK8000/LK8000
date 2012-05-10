@@ -6,7 +6,6 @@
    $Id$
 */
 
-// adding baro alt sentance parser to support baro source priority  if (d == pDevPrimaryBaroSource){...}
 
 #include "externs.h"
 #include "Utils.h"
@@ -15,6 +14,7 @@
 
 #include "devEWMicroRecorder.h"
 
+extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
 
 // Additional sentance for EW support
@@ -67,10 +67,8 @@ BOOL EWMicroRecorderParseNMEA(PDeviceDescriptor_t d,
     return FALSE;
 
   if (!_tcscmp(params[0], TEXT("$PGRMZ")) && nparams >= 3) {
-    if (d == pDevPrimaryBaroSource) {
       double altitude = NMEAParser::ParseAltitude(params[1], params[2]);
-	  UpdateBaroSource( GPS_INFO, EW_MICRO_REC, AltitudeToQNHAltitude(altitude));
-    }
+      UpdateBaroSource( GPS_INFO, 0,d, AltitudeToQNHAltitude(altitude));
 
     return TRUE;
   }

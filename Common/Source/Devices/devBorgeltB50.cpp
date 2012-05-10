@@ -43,11 +43,8 @@ BOOL B50ParseNMEA(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO){
     	if (nparams < 1)
     	  return FALSE;
 
-    	if (d == pDevPrimaryBaroSource)
-    	{
     	  double altitude = NMEAParser::ParseAltitude(params[1], params[2]);
-    	  UpdateBaroSource( GPS_INFO, GPS_RMZ, AltitudeToQNHAltitude(altitude));
-    	}
+    	  UpdateBaroSource( GPS_INFO, BARO__RMZ, d, AltitudeToQNHAltitude(altitude));
 
     	return TRUE;
       }

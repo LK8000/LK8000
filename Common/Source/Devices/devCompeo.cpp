@@ -13,6 +13,8 @@
 
 #include "devCompeo.h"
 
+extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
+
 
 static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
 
@@ -110,10 +112,8 @@ static BOOL VMVABD(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
   GPS_INFO->Altitude = StrToDouble(ctemp,NULL);
 
   NMEAParser::ExtractParameter(String,ctemp,2);
-  if (d == pDevPrimaryBaroSource) {
 
-	 UpdateBaroSource( GPS_INFO, COMPEO, AltitudeToQNHAltitude( StrToDouble(ctemp, NULL)));
-  }
+   UpdateBaroSource( GPS_INFO, 0,d, AltitudeToQNHAltitude( StrToDouble(ctemp, NULL)));
 
   NMEAParser::ExtractParameter(String,ctemp,4);
   GPS_INFO->Vario = StrToDouble(ctemp,NULL);
