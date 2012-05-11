@@ -257,14 +257,11 @@ void NMEAParser::UpdateMonitor(void)
 	nmeaParser1.activeGPS = true;
 	active=1;
   }
- #if 1	// TODO better check if ok
   if (nmeaParser2.activeGPS==true && active==1) {
-	StartupStore(_T("... GPS Update error: port 1 and 2 are active!%s"),NEWLINE);
-	FailStore(_T("... GPS Update error: port 1 and 2 are active!%s"),NEWLINE);
+	StartupStore(_T(".... GPS Update error: port 1 and 2 are active!%s"),NEWLINE);
 	nmeaParser2.activeGPS=false; // force it off
 	active=1; 
   }
- #endif
 
   // wait for some seconds before monitoring, after startup
   if (LKHearthBeats<20) return;
@@ -287,6 +284,12 @@ void NMEAParser::UpdateMonitor(void)
 			invalidBaro=1;
 		}
 	}
+	GPS_INFO.AirspeedAvailable=false;
+	GPS_INFO.VarioAvailable=false;
+	GPS_INFO.NettoVarioAvailable=false;
+	GPS_INFO.AccelerationAvailable = false;
+	EnableExternalTriggerCruise = false;
+	nmeaParser1._Reset();
   } else {
 	// We have hearth beats, is baro available?
 	if ( devIsBaroSource(devA()) || nmeaParser1.RMZAvailable || nmeaParser1.RMAAvailable || nmeaParser1.TASAvailable ) // 100411
@@ -308,6 +311,12 @@ void NMEAParser::UpdateMonitor(void)
 			invalidBaro++;
 		}
 	}
+	GPS_INFO.AirspeedAvailable=false;
+	GPS_INFO.VarioAvailable=false;
+	GPS_INFO.NettoVarioAvailable=false;
+	GPS_INFO.AccelerationAvailable = false;
+	EnableExternalTriggerCruise = false;
+	nmeaParser2._Reset();
   } else {
 	// We have hearth beats, is baro available?
 	if ( devIsBaroSource(devB()) || nmeaParser2.RMZAvailable || nmeaParser2.RMAAvailable || nmeaParser2.TASAvailable   )  // 100411
@@ -340,12 +349,14 @@ void NMEAParser::UpdateMonitor(void)
 			DoStatusMessage(MsgToken(121));
 		}
 		GPS_INFO.BaroAltitudeAvailable=false;
+		// We alse reset these values, just in case we are through a mux
 		GPS_INFO.AirspeedAvailable=false;
 		GPS_INFO.VarioAvailable=false;
 		GPS_INFO.NettoVarioAvailable=false;
 		GPS_INFO.AccelerationAvailable = false;
 		EnableExternalTriggerCruise = false;
-		Reset();
+		nmeaParser1._Reset();
+		nmeaParser2._Reset();
 		lastvalidBaro=false;
 	}
   } else {
