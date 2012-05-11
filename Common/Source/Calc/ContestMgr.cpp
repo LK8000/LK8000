@@ -512,8 +512,14 @@ void CContestMgr::SolveOLCPlus(bool predicted)
  */
 void CContestMgr::Add(const CPointGPSSmart &gps)
 {
+  static CPointGPS lastGps(0, 0, 0, 0);
   static unsigned step = 0;
   const unsigned STEPS_NUM = 7;
+  
+  // filter out GPS fix repeats
+  if(lastGps == *gps)
+    return;
+  lastGps = *gps;
   
   CCriticalSection::CGuard guard(_mainCS);
   {
