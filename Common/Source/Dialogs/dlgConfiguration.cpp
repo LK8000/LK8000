@@ -1587,7 +1587,8 @@ static void setVariables(void) {
 			       TEXT("COM15"),TEXT("COM16"),TEXT("COM17"),TEXT("COM18"),TEXT("COM19"),TEXT("COM20"),
 			       TEXT("COM21"),TEXT("COM22"),TEXT("COM23"),TEXT("COM24"),TEXT("COM25"),TEXT("COM26"),
 			       TEXT("COM27"),TEXT("COM28"),TEXT("COM29"),TEXT("COM30"),TEXT("COM31"),TEXT("COM32"),
-				TEXT("COM0")};
+			       TEXT("COM33"),TEXT("COM34"),TEXT("COM35"),TEXT("COM36"),TEXT("COM37"),TEXT("COM38"),
+			       TEXT("COM39"),TEXT("COM40"), TEXT("COM0")};
 #else
     const TCHAR *COMMPort[] = {TEXT("COM1"),TEXT("COM2"),TEXT("COM3"),TEXT("COM4"),
 			       TEXT("COM5"),TEXT("COM6"),TEXT("COM7"),TEXT("COM8"),
@@ -1606,7 +1607,7 @@ static void setVariables(void) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
 #if (WINDOWSPC>0)
-    for (i=0; i<33; i++) { // 091117
+    for (i=0; i<41; i++) { // 120511
 #else
     for (i=0; i<13; i++) {
 #endif
@@ -1669,7 +1670,7 @@ static void setVariables(void) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
 #if (WINDOWSPC>0)
-    for (i=0; i<33; i++) { // 091117
+    for (i=0; i<41; i++) { // 120511
 #else
     for (i=0; i<13; i++) {
 #endif
