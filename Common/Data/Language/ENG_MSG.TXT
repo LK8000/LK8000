@@ -1774,6 +1774,9 @@ _@M1792_ "Quick gestures "
 # Wind mode configuration, "External" (from external instrument)
 _@M1793_ "External"
 
+# Safety takeoff alarm
+_@M1794_ "Takeoff safety "
+
 ############################################################
 #                  - MENU MESSAGES - 
 #

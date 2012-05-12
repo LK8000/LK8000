@@ -43,6 +43,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static bool   winchdetected=false;
   static short  wlaunch=0;
   static int    altLoss=0;
+  static bool   safeTakeoffDetected=false;
 
   bool forcereset=LKSW_ForceFreeFlightRestart;
 
@@ -54,6 +55,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     altLoss=0;
     ffDetected=false;
     lastMaxAltitude=-1000;
+    safeTakeoffDetected=false;
     DoInit[MDI_DETECTFREEFLYING]=false;
   }
 
@@ -68,6 +70,7 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     winchdetected=false;
     wlaunch=0;
     altLoss=FF_TOWING_ALTLOSS;
+    safeTakeoffDetected=false;
     LKSW_ForceFreeFlightRestart=false;
     return false;
   }
@@ -79,6 +82,19 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	#endif
 	DoStatusMessage(MsgToken(1452),NULL,false);  // LKTOKEN  _@M1452_ = "Free flight detected"
 	goto confirmbacktrue;
+  }
+
+  //  If we have a takeoff alarm, and  it is still pending!
+  //  The AlarmTakeoffSafety is saved multiplied by 1000, so conversion between feet and meters will always be
+  //  accurate and possible with no safety concerns about loosing accuracy on this issue!
+  if ( (AlarmTakeoffSafety>0) && !safeTakeoffDetected ) {
+	// Only if not in SIMMODE, or in SIM but replaying a flight
+	if ( !(SIMMODE && !ReplayLogger::IsEnabled()) ) {
+		if ( (Basic->Altitude - gndAltitude)>=(AlarmTakeoffSafety/1000)) {
+			LKSound(_T("LK_SAFETAKEOFF.WAV"));
+			safeTakeoffDetected=true;
+		}
+	}
   }
 
   if (ISPARAGLIDER) {

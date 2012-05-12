@@ -324,6 +324,8 @@ void LKProfileResetDefault(void) {
 
   AlarmMaxAltitude3 = 0;
 
+  AlarmTakeoffSafety = 0;
+
   FinishMinHeight = 0;
 
   StartHeightRef = 0;

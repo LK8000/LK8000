@@ -3259,6 +3259,12 @@ static void setVariables(void) {
     wp->GetDataField()->SetUnits(Units::GetAltitudeName());
     wp->RefreshDisplay();
   }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmTakeoffSafety"));
+  if (wp) {
+    wp->GetDataField()->SetAsFloat(iround(AlarmTakeoffSafety*ALTITUDEMODIFY/1000));
+    wp->GetDataField()->SetUnits(Units::GetAltitudeName());
+    wp->RefreshDisplay();
+  }
 
 
 
@@ -4656,6 +4662,14 @@ int ival;
       AlarmMaxAltitude3 = ival;
       LKalarms[2].triggervalue=(int)AlarmMaxAltitude3/1000;
       LKalarms[2].triggerscount=0;
+      changed = true;
+    }
+  }
+  wp = (WndProperty*)wf->FindByName(TEXT("prpAlarmTakeoffSafety"));
+  if (wp) {
+    ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY) *1000.0);
+    if ((int)AlarmTakeoffSafety != ival) {
+      AlarmTakeoffSafety = ival;
       changed = true;
     }
   }

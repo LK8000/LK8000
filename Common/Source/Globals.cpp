@@ -474,6 +474,7 @@ void Globals_Init(void) {
   AlarmMaxAltitude1=0;
   AlarmMaxAltitude2=0;
   AlarmMaxAltitude3=0;
+  AlarmTakeoffSafety=0;
 
   WaypointsOutOfRange = 1; // include by default
 

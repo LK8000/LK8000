@@ -276,6 +276,7 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
   PREAD(sname,svalue,szRegistryAlarmMaxAltitude1,&AlarmMaxAltitude1);
   PREAD(sname,svalue,szRegistryAlarmMaxAltitude2,&AlarmMaxAltitude2);
   PREAD(sname,svalue,szRegistryAlarmMaxAltitude3,&AlarmMaxAltitude3);
+  PREAD(sname,svalue,szRegistryAlarmTakeoffSafety,&AlarmTakeoffSafety);
   PREAD(sname,svalue,szRegistryAltMargin,&AltWarningMargin);
   PREAD(sname,svalue,szRegistryAltMode,&AltitudeMode_Config);
   if (matchedstring) return;

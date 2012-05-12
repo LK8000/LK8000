@@ -1683,5 +1683,12 @@ By default, quick gestures are enabled. Quick gestures allow the pilot to click
 on right or left nearest/info pages to switch to next/previous like with gestures.
 Using gloves during the flight will require this option be disabled.
 
+@1261
+[Takeoff safety]
+During the takeoff phase, this alarm will sound when the chosen safety altitude over ground (QFE) is reached once.
+For gliders this is normally the altitude above which it is possible to turn 180 and go back to the airfield, in case towing is aborted.
+Set this value to 0 to disable the alarm. 
+This alarm will be armed again only after landing.
+
 @9999
 No help available on this item!

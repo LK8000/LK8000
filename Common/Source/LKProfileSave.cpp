@@ -101,6 +101,7 @@ void LKProfileSave(const TCHAR *szFile)
   rprintf(szRegistryAlarmMaxAltitude1, AlarmMaxAltitude1); // saved *1000, /1000 when used
   rprintf(szRegistryAlarmMaxAltitude2, AlarmMaxAltitude2);
   rprintf(szRegistryAlarmMaxAltitude3, AlarmMaxAltitude3);
+  rprintf(szRegistryAlarmTakeoffSafety, AlarmTakeoffSafety);
   rprintf(szRegistryAltMargin, AltWarningMargin);
   rprintf(szRegistryAltMode, AltitudeMode_Config);
   rprintf(szRegistryAlternate1, Alternate1); // these are not part of configuration, but saved all the same

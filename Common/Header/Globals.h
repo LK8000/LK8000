@@ -523,6 +523,7 @@ GEXTERN int StartHeightRef;
 GEXTERN DWORD AlarmMaxAltitude1;
 GEXTERN DWORD AlarmMaxAltitude2;
 GEXTERN DWORD AlarmMaxAltitude3;
+GEXTERN DWORD AlarmTakeoffSafety;
 
 // master flight data
 GEXTERN NMEA_INFO GPS_INFO;
