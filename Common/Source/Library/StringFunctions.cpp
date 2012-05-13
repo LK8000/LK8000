@@ -793,3 +793,23 @@ void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const int num_of_tchars_
 }
 
 
+
+TCHAR *WindAngleToText(double angle) {
+
+ // Valid index values: 0 - 16,  17 is for Err
+ static TCHAR *windrose[17]= {TEXT("N"),TEXT("NNE"),TEXT("NE"),TEXT("ENE"),TEXT("E"),TEXT("ESE"),
+			TEXT("SE"),TEXT("SSE"),TEXT("S"),TEXT("SSW"),TEXT("SW"),TEXT("WSW")
+			TEXT("W"),TEXT("WNW"),TEXT("NW"),TEXT("NNW"),TEXT("---")};
+
+ // We need 32 slots of 11.25 degrees for a full 360
+ static unsigned short angleslot[32]={0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,0};
+
+ if (angle<0) return(windrose[32]); // ---
+ if (angle>=360) angle-=360;
+
+ unsigned short direction= (unsigned short)(angle/11.25);
+ LKASSERT(direction<32);
+ return (windrose[angleslot[direction]]);
+
+}
+

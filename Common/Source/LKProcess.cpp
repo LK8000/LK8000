@@ -26,6 +26,7 @@ using std::max;
 #define NULLTIME	"--:--"
 #define INFINVAL	"oo"
 
+TCHAR *WindAngleToText(double angle);
 
 //
 // CAREFUL CAREFUL CAREFUL here:
