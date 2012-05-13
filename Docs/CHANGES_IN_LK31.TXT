@@ -140,8 +140,79 @@ If the Auto wind is not configured to "external", the wind calculated externally
 
 
 
+LK8000 VERSION 3.1d 1205
+==========================
+
+NEW
 
 
+. New customkeys:
+
+   + Repeat message 
+     will repeat on screen the last message issued by LK, if any.
+
+   + Waypoint lookup
+
+   + PAN mode
+
+   + Toggle Wind Rose
+     will change wind direction overlay and infopage from degrees to textual and back.
+     Example:  245/5 becomes WSW/5
+     This customkey by default is assigned also inside custom menu.
+
+   
+. New Ungestures feature: 
+   clicking on the already selected sort button in nearest pages will advance to next page.
+   Example> you select 2.1 page (APTS), there are seven pages and you read APTS 1/7 .
+   The page is sorted by Distance. You click on Direction, the page is sorted by Direction now.
+   You click again on Direction, the page is showing APTS 2/7 : you have advanced to next page like with
+   a gesture down.
+   This ungesture works also in Common and Recent pages, although they cannot be sorted by anything.
+   Any sort place will nevertheless advance to next page, as expected.
+
+.  New engine for multiple sources of barometric altitude, with automatic fallback.
+   Full support also of multiplexers like Westerboer, K6mux etc.
+   The new LK baro altitude driver can handle several concurrent baro altitude sources sending at the 
+   same time their values.
+   Some multiplexers like Westerboer, K6mux, etc. will mix two sources (for example a flarm and an LX) 
+   and send them to LK.
+   The new logic is: if a Flarm is connected, we use its baro altitude (if available: it is 
+   not granted from a multiplexer).
+   If no flarm, we use baro altitude from internal/custom sources like Funtrek, Royaltek, 
+   embedded drivers and devices.
+   Then we can select PriorityBaroSources such as devices themselves: LX, LK8EXT1 etc.
+   And if there is no PriorityBaroSource, we use whatever is available.
+   If a baro source disappears, we use automatically what is available, within a few seconds.
+
+.  New Takeoff safety alarm (configuration menu Alarms).
+   We can now select an altitude over ground at takeoff, above which an alarm will play.
+   For gliders, this is normally the minimal altitude needed to turn 180 degrees and go back 
+   to the airfield in case towing is suddenly a borted.
+   Depending on airfields and conditions, it can be something between 50m and 100m.
+   It can be configured in step of 10m or 10feet, up to 500m or 500feet.
+   When this safe altitude is reached, a soft cabin chime sound is played, 
+   followed by a calm voice saying "safety".
+   Nothing is printed on the screen. This is an aid to pilot to help them concentrate on the 
+   towing phase during this early part of the flight, without continously look at 
+   the altimeter to know if the safety takeoff altitude is reached.
+   By default this alarm is disabled, and can be disabled by setting the altitude to 0.
+   Remember this is a ground altitude (QFE), so if you want to be told when you are 50m above ground, 
+   set 50, simply.
+   The takeoff safety sound will be armed again only after landing, and be automatically 
+   in use again for the next takeoff.
+
+
+CHANGES
+
+. Customkey FreeFlight restart is now asking for a confirmation
+
+. Improve direction sorting for Nearest pages 2.x
+  Now sorting is done by both direction and distance.
+
+
+FIXES
+
+. Fix eIAS not adopted when IAS disappeared.
 
 
 
