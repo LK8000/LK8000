@@ -2249,13 +2249,18 @@ olc_score:
 			if (DerivedDrawInfo.WindSpeed*SPEEDMODIFY>=1) {
 				value = DerivedDrawInfo.WindBearing;
 				valid=true;
-				if (value==360) value=0;
-				if (HideUnits)
-					_stprintf(BufferValue,TEXT("%1.0f/%1.0f"), 
-						value, SPEEDMODIFY*DerivedDrawInfo.WindSpeed );
-				else
-					_stprintf(BufferValue,TEXT("%1.0f")_T(DEG)_T("/%1.0f"), 
-						value, SPEEDMODIFY*DerivedDrawInfo.WindSpeed );
+				if (UseWindRose) {
+					_stprintf(BufferValue,TEXT("%s/%1.0f"), 
+						WindAngleToText(value), SPEEDMODIFY*DerivedDrawInfo.WindSpeed );
+				} else {
+					if (value==360) value=0;
+					if (HideUnits)
+						_stprintf(BufferValue,TEXT("%1.0f/%1.0f"), 
+							value, SPEEDMODIFY*DerivedDrawInfo.WindSpeed );
+					else
+						_stprintf(BufferValue,TEXT("%1.0f")_T(DEG)_T("/%1.0f"), 
+							value, SPEEDMODIFY*DerivedDrawInfo.WindSpeed );
+				}
 			} else {
 				_stprintf(BufferValue,TEXT("--/--"));
 			}

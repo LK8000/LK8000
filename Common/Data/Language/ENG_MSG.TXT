@@ -1951,6 +1951,7 @@ _@M2223_ "Color+\nterrain"
 _@M2224_ "Color-\nterrain"
 _@M2225_ "Free\nFlight"
 _@M2226_ "Arm\nToggle"
+_@M2227_ "Toggle\nWndRose"
 # Reserved for custom menus up to 2300!
 
 # Note for developers: remember LKLanguage MAX_MESSAGE limit (2250)

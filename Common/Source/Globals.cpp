@@ -623,6 +623,9 @@ void Globals_Init(void) {
   // Configuration variable for Ungestures
   UseUngestures=true;	// on by default
 
+  // This is a runtime only variable, by default disabled. Must be enabled by customkey
+  UseWindRose=false;	// use wind rose (ex: NNE) for wind direction, instead of degrees
+
   extern void Reset_CustomMenu(void);
   Reset_CustomMenu();
 
@@ -638,7 +641,7 @@ void Reset_CustomMenu(void) {
 	CustomMenu3  = ckTerrainColorsBack;
 	CustomMenu4  = ckDisabled;
 	CustomMenu5  = ckTrueWind;
-	CustomMenu6  = ckDisabled;
+	CustomMenu6  = ckWindRose;
 	CustomMenu7  = ckPanorama;
 	CustomMenu8  = ckForceFreeFlightRestart;
 	CustomMenu9  = ckDisabled;

@@ -385,6 +385,13 @@ passthrough:
 		InputEvents::eventPan(_T("toggle"));
 		return true;
 
+	case ckWindRose:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		UseWindRose=!UseWindRose;
+		return true;
+
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		FailStore(_T("ERR-726 INVALID CUSTOMKEY=%d"),ckeymode);
@@ -452,6 +459,7 @@ CustomKeyLabel[45]=2226;	// Arm toggle
 CustomKeyLabel[46]=2064;	// Message Repeat
 CustomKeyLabel[47]=2015;	// Waypoint lookup
 CustomKeyLabel[48]=2082;	// PAN
+CustomKeyLabel[49]=2227;	// Toggle windrose
 
 }
 

@@ -798,7 +798,7 @@ TCHAR *WindAngleToText(double angle) {
 
  // Valid index values: 0 - 16,  17 is for Err
  static TCHAR *windrose[17]= {TEXT("N"),TEXT("NNE"),TEXT("NE"),TEXT("ENE"),TEXT("E"),TEXT("ESE"),
-			TEXT("SE"),TEXT("SSE"),TEXT("S"),TEXT("SSW"),TEXT("SW"),TEXT("WSW")
+			TEXT("SE"),TEXT("SSE"),TEXT("S"),TEXT("SSW"),TEXT("SW"),TEXT("WSW"),
 			TEXT("W"),TEXT("WNW"),TEXT("NW"),TEXT("NNW"),TEXT("---")};
 
  // We need 32 slots of 11.25 degrees for a full 360
