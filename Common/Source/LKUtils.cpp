@@ -137,7 +137,7 @@ void ToggleBaroAltitude() {
   }
   EnableNavBaroAltitude=!EnableNavBaroAltitude;
   if (EnableNavBaroAltitude)
-	DoStatusMessage(MsgToken(756)); // USING BARO ALTITUDE
+	DoStatusMessage(MsgToken(1796)); // USING BARO ALTITUDE
    else
 	DoStatusMessage(MsgToken(757)); // USING GPS ALTITUDE
 

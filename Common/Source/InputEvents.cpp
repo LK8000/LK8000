@@ -939,7 +939,7 @@ void InputEvents::eventBaroAltitude(const TCHAR *misc) {
     EnableNavBaroAltitude = false;
   else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (EnableNavBaroAltitude)
-	DoStatusMessage(MsgToken(756)); // USING BARO ALTITUDE
+	DoStatusMessage(MsgToken(1796)); // USING BARO ALTITUDE
     else
 	DoStatusMessage(MsgToken(757));	// USING GPS ALTITUDE
   }

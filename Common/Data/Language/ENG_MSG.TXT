@@ -787,8 +787,9 @@ _@M751_ "Type "
 _@M752_ "Type"
 _@M753_ "UNKNOWN! "
 _@M754_ "UNLOCK"
-_@M755_ "USING AVAILABLE BARO ALTITUDE"
-_@M756_ "USING BARO ALTITUDE"
+# Unused 755 and 756 since  v3.2 
+_@M755_ "USING AVAILABLE BARO ALTITUDE FROM:"
+_@M756_ "USING BARO ALTITUDE FROM:"
 _@M757_ "USING GPS ALTITUDE"
 _@M758_ "UTC Offset "
 _@M759_ "Unable to Change Settings on Port"
@@ -1776,6 +1777,12 @@ _@M1793_ "External"
 
 # Safety takeoff alarm
 _@M1794_ "Takeoff safety "
+
+# Replacing 120, 755 and 756
+_@M1795_ "BARO ALTITUDE IS AVAILABLE"
+_@M1796_ "USING BARO ALTITUDE"
+
+
 
 ############################################################
 #                  - MENU MESSAGES - 

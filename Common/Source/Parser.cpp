@@ -374,9 +374,9 @@ void NMEAParser::UpdateMonitor(void)
 		#endif
 
 		if (EnableNavBaroAltitude) {
-			DoStatusMessage(MsgToken(755)); // USING AVAILABLE BARO ALTITUDE
+			DoStatusMessage(MsgToken(1796)); // USING BARO ALTITUDE
 		} else {
-			DoStatusMessage(MsgToken(120)); // BARO ALTITUDE IS AVAILABLE
+			DoStatusMessage(MsgToken(1795)); // BARO ALTITUDE IS AVAILABLE
 		}
 
 		lastvalidBaro=true;
