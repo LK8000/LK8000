@@ -781,11 +781,10 @@ FlarmDeclareSetGet(PDeviceDescriptor_t d, TCHAR *Buffer) {
     d->Com->WriteString(tmp);
 
   Buffer[6]= _T('A');
-  for(int i=0; i < 50; i ++) /* try to get expected answer max 10 times*/
+  for(int i=0; i < 10; i ++) /* try to get expected answer max 10 times*/
   {
     if (ExpectString(d, Buffer))
 	  return true;
-    Sleep(10);
   }
   return false;
 
@@ -798,7 +797,7 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
 #define BUFF_LEN 512
   TCHAR Buffer[BUFF_LEN];
   d->Com->StopRxThread();
-  d->Com->SetRxTimeout(500);                     // set RX timeout to 500[ms]
+  d->Com->SetRxTimeout(50);                     // set RX timeout to 50[ms]
 
 
   _stprintf(Buffer,TEXT("PFLAC,S,PILOT,%s"),decl->PilotName);
