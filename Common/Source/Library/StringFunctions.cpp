@@ -750,47 +750,47 @@ void unicodetoascii(TCHAR *utext, int utextsize, char *atext) {
 	atext[j]=0;
 
 }
-// ////////////////////////////////////////////////////////////////
 
 
-// Implementation of the tcsncpy runtime library function, in the safe way
-// destination buffer size must be larger by 1 than num_of_tchars_to_copy!!! (null terminated string)
-void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const int num_of_tchars_to_copy, const int line, const char *filename)
+
+#if USELKASSERT
+void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const unsigned int numofchars, const unsigned int sizedest, const int line, const char *filename)
+#else
+void LK_tcsncpy_internal(TCHAR *dest, const TCHAR *src, const unsigned int numofchars)
+#endif
 {
-  if (dest == NULL) {
-    // log but silently ignore NULL destination buffer
-    #if USELKASSERT
-    if (filename) StartupStore(_T("[ASSERT FAILURE (LK_tcsncpy dest)] in %S line %d\n"), filename, line);
-    #endif
-    return;
+
+  #if USELKASSERT
+  if (dest == NULL || sizedest==0) {
+	StartupStore(_T("[ASSERT FAILURE (LK_tcsncpy dest)] in %S line %d, sizedest=%d\n"), filename, line,sizedest);
+	return;
+	//LKASSERT(false); // does not work during startup!
   }
+  // We need space for 0 termination, otherwise we are in trobles
+  // So numofchars must be < than the destination string.
+  // Notice> we cannot check sizeof of a pointer, so anything with an address size instead of an array size 
+  // will be excluded. Better than nothing.
+  if (  sizedest>sizeof(dest) && numofchars >= sizedest ) {
+	StartupStore(_T("[ASSERT FAILURE (LK_tcsncpy dest)] in %S line %d dstsize=%d srcsize=%d\n"), filename, line,sizedest,numofchars);
+	_tcsncpy(dest,src,sizedest-1);
+	dest[sizedest-1] = '\0';
+	return;
+	//LKASSERT(false); 
+  }
+  #endif
   
-  if (num_of_tchars_to_copy < 1) {
-    // log but silently ignore zero length
-    #if USELKASSERT
-    if (filename) StartupStore(_T("[ASSERT FAILURE (LK_tcsncpy len)] in %S line %d\n"), filename, line);
-    #endif
-    return;
+  // if source is null we safely ignore it, and give an empty string as result
+  if (src == NULL || src[0]=='\0') {
+	dest[0] = '\0';
+	return;
   }
 
-  // if source is null we safely ignore it, and give an empty string as result
-  if (src == NULL) {
-    //dest!=NULL and dest length>0 here 
-    dest[0] = '\0';
-    return;
-  }
-  
-  int len = _tcslen(src);
-  if ( len > num_of_tchars_to_copy ) len = num_of_tchars_to_copy;
-  
-  if (len == 0) {
-    dest[0] = '\0';
-    return;
-  }
-  
-  _tcsncpy(dest,src,len);
-  dest[len] = '\0';
+  _tcsncpy(dest,src,numofchars);
+  dest[numofchars]='\0';
+
 }
+
+
 
 
 
