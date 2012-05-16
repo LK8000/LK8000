@@ -452,6 +452,7 @@ bool CAirspace::FinishWarning()
         break;
         
       case aweLeavingFly:
+        if (_pred_blindtime) break;         //Do not count predicted events near takeoff, filters not settled yet
         if ( !(_pos_in_flyzone || _pos_in_acked_nonfly_zone) ) {
               // if current position not in other fly or acked nonfly zone, then leaving this one should be wrong
               _warninglevel = awRed;
@@ -462,6 +463,7 @@ bool CAirspace::FinishWarning()
         break;
         
       case aweEnteringFly:
+        if (_pred_blindtime) break;         //Do not count predicted events near takeoff, filters not settled yet
         // Also preset warnlevel to awYellow, because we entering yellow zone. 
         // but we don't need to generate a warning message right now - force no change in warnlevel
         _hwarninglabel_hide = true;
@@ -511,6 +513,7 @@ bool CAirspace::FinishWarning()
         
       // Events for NON-FLY zones
       case aweMovingOutsideNonfly:
+        if (_pred_blindtime) break;         //Do not count predicted events near takeoff, filters not settled yet
         if ( (_hdistance > (_hdistancemargin + hdistance_histeresis)) ||
              (!IsAltitudeInside(_lastknownalt, _lastknownagl, AirspaceWarningVerticalMargin + vdistance_histeresis))
           ) {
@@ -532,14 +535,17 @@ bool CAirspace::FinishWarning()
         break;
         
       case aweEnteringNonfly:
+        if (_pred_blindtime) break;         //Do not count predicted events near takeoff, filters not settled yet
         _warninglevel = awRed;
         break;
 
       case aweMovingInsideNonfly:
+        if (_pred_blindtime) break;         //Do not count predicted events near takeoff, filters not settled yet
         _warninglevel = awRed;
         break;
         
       case aweLeavingNonFly:
+        if (_pred_blindtime) break;         //Do not count predicted events near takeoff, filters not settled yet
         _warninglevel = awYellow;
         // Do info message on leaving a nonfly zone
         res = true;
