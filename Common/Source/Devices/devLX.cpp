@@ -136,13 +136,16 @@ bool DevLX::LXWP0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
     UpdateBaroSource( info, 0,d,  AltitudeToQNHAltitude(alt));
   }
 
-  if (ParToDouble(sentence, 3, &info->Vario))
+  if (ParToDouble(sentence, 8, &info->Vario)) /* take the last value to be more recent */
     info->VarioAvailable = TRUE;
+
 
   if (ParToDouble(sentence, 10, &info->ExternalWindDirection) &&
       ParToDouble(sentence, 11, &info->ExternalWindSpeed))
+  {
+	info->ExternalWindSpeed /= TOKPH;  /* convert to m/s */
     info->ExternalWindAvailable = TRUE;
-
+  }
   TriggerVarioUpdate();
 
   return(true);
