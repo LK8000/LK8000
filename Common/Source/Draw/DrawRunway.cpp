@@ -118,9 +118,11 @@ void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
 	default: return; break;
   }
 
+/* REMOVE, WRONG: we need to rotate relatively to map orientation!
   int Brg =0;
   if (  DisplayOrientation == TRACKUP )
 	Brg = (int)GPS_INFO.TrackBearing;
+*/
 
   oldPen   = (HPEN) SelectObject(hdc, GetStockObject(BLACK_PEN));
   oldBrush = (HBRUSH)SelectObject(hdc, LKBrush_Red);
@@ -150,7 +152,7 @@ void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
 	    else
 		  SelectObject(hdc, LKBrush_White);
 	}
-	PolygonRotateShift(Runway, 5,  wp->Screen.x, wp->Screen.y,  wp->RunwayDir-Brg);
+	PolygonRotateShift(Runway, 5,  wp->Screen.x, wp->Screen.y,  wp->RunwayDir- (int)MapWindow::GetDisplayAngle());
 	Polygon(hdc,Runway ,5 );
 
   } // bRunway
