@@ -112,18 +112,18 @@ Please not that this in an experimental feature and may not be used for navigati
 New airfield symbols since V3.1x
 --------------------------------
 
-With the Version 3.1x we introduced new airfield symbols. In order to enable it goto System Setup Page 11 and set the Appearance style from Alternate to Vector
+With the Version 3.1x we introduced new airfield symbols. In order to enable it goto System Setup Page 11 and set the Appearance style from Alternate to Vector. This is now the default for LK 3.2.
 The vector airfield symbols have new scalable airfield and outlanding icons with runway direction and type (dark grey = solid, white = grass). 
 
-The runway length is drawn proportional to the real length.
+The runway length is drawn proportional to the real length, and with correct orientation.
 
 If an airfield is defined as glider site an, it will be marked with "white wings" 
 
 On an appropriate zoom level the radio frequency will be shown as well.
-On higher zoom levels, more information such as ICAO name (if available) will be printed on the map
+On higher zoom levels, more information such as ICAO name (if available) and altitude will be printed on the map
 
 Like before if the runway is reachable with respect to the safety height and wind, the airfield/outlanding is green, otherwise red.
-In order to use this additional information's it must be included in the waypointfile of course. We recommend to use the *.cup file format of SeeYou which is able to support this additional information. If you don't have the additional information's we recommend to use the old Alternate symbols.
+In order to use this additional information's it must be included in the waypointfile of course. We recommend to use the *.cup file format of SeeYou which is able to support this additional information. If you don't have the additional information's we recommend to use the old Alternate symbols, which is probably the best choice for paragliders and hanggliders.
 
 
 
@@ -260,12 +260,21 @@ CHANGES
 . Improve direction sorting for Nearest pages 2.x
   Now sorting is done by both direction and distance.
 
+. Vector landables are also showing airfield altitude at high zoom levels
+. Vector landables are now the default, and their configuration is reset to this setting.
+
+. Do not give airspace warnings during first 60 seconds after takeoff.
+
+
+
 
 FIXES
 
 . Fix eIAS not adopted when IAS disappeared.
 . Fix devLX bug in external speed, missing conversion from km/h to m/s
 . Fix flarm declaration timeout
+. Fix 3.1 bug not rotating vector runway relatively to the map orientation.
+  Now replaying takeoffs will correctly show aircraft on the runway!
 
 
 
