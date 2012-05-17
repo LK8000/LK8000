@@ -186,7 +186,13 @@ _@M1793_ "External"
 HLP 139 and HLP 612:  added [External]   to wind choices!
 
 # Changed, Without "FROM" !!!!!!!!!!!!!!
-_@M120_ "BARO ALTITUDE IS AVAILABLE"
-_@M755_ "USING AVAILABLE BARO ALTITUDE"
-_@M756_ "USING BARO ALTITUDE"
+# Obsoleted and unused> 120, 755, 756
+# New:
+_@M1795_ "BARO ALTITUDE IS AVAILABLE"
+_@M1796_ "USING BARO ALTITUDE"
+
+# Replacing 822, Winpilot/Vector with new Vector
+_@M1797_ "Vector"
+
+Changed HELP for 184 
 

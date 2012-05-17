@@ -377,7 +377,8 @@ This determines how long menus will appear on screen if the user does not make a
 Defines the location of the glider drawn on the screen in percent from the bottom.
 
 @184
-Two styles are available: WinPilot style (green and purple circles) or a high visibility style.
+Two styles are available: Vector or Alternate. 
+Vector waypoints will show runway orientation, radio, and other informations.
 
 @185
 Choose how to display values for landable waypoints. With or without a box around, with or without units (meters, feet).

@@ -3045,8 +3045,7 @@ static void setVariables(void) {
   if (wp) {
     DataFieldEnum* dfe;
     dfe = (DataFieldEnum*)wp->GetDataField();
-	// LKTOKEN  _@M822_ = "Winpilot" 
-    dfe->addEnumText(gettext(TEXT("_@M822_")));
+    dfe->addEnumText(MsgToken(1797)); // Vector
 	// LKTOKEN  _@M87_ = "Alternate" 
     dfe->addEnumText(gettext(TEXT("_@M87_")));
     dfe->Set(Appearance.IndLandable);

@@ -857,6 +857,7 @@ _@M818_ "Wind Settings"
 _@M819_ "Wind arrow"
 _@M820_ "Wind at Altitude"
 _@M821_ "Wing load "
+# 822 REMOVED after 3.0, was Winpilot
 _@M822_ "Vector"
 _@M823_ "Working band"
 _@M824_ "Wpt outside terrain "
@@ -1782,6 +1783,8 @@ _@M1794_ "Takeoff safety "
 _@M1795_ "BARO ALTITUDE IS AVAILABLE"
 _@M1796_ "USING BARO ALTITUDE"
 
+# Replacing 822
+_@M1797_ "Vector"
 
 
 ############################################################
