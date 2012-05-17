@@ -535,7 +535,7 @@ void Globals_Init(void) {
   // Only used in MapWindow2, can be de-configured
   Appearance.BestCruiseTrack=ctBestCruiseTrackAltA;
   // Landables style
-  Appearance.IndLandable=wpLandableDefault,
+  Appearance.IndLandable=wpLandableDefault;
   // Black/White inversion
   Appearance.InverseInfoBox=false;
   InverseInfoBox_Config=false;
