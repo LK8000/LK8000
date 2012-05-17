@@ -190,7 +190,7 @@ New Takeoff safety alarm (configuration menu Alarms)
 
 
 
-LK8000 VERSION 3.1d 1205
+LK8000 VERSION 3.1d 120517
 ==========================
 
 NEW

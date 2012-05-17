@@ -84,7 +84,7 @@
 
 #define LKFORK		"LK8000"
 #define LKVERSION	"3"
-#define LKRELEASE	"1d0"
+#define LKRELEASE	"1d"
 
 #define REGKEYNAME	"Software\\COOL\\LK8000"
 #define LKDATADIR	"LK8000"
