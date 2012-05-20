@@ -219,7 +219,7 @@ void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
 
 		if (wp->Altitude >0) {
 			TCHAR tAlt[20];
-			_stprintf(tAlt,_T("%.0f %s"),wp->Altitude,Units::GetUnitName(Units::GetUserAltitudeUnit()));
+			_stprintf(tAlt,_T("%.0f %s"),wp->Altitude*ALTITUDEMODIFY,Units::GetUnitName(Units::GetUserAltitudeUnit()));
 			MapWindow::LKWriteBoxedText(hdc,tAlt, wp->Screen.x + offset, wp->Screen.y + offset, 0, WTALIGN_LEFT);
 		}
 
