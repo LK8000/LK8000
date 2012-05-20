@@ -252,10 +252,22 @@ void NMEAParser::UpdateMonitor(void)
 		active= nmeaParser1.activeGPS ? 1 : 2;
 	}
   } else {
-	// assume device 1 is active
-	nmeaParser2.activeGPS = false;
-	nmeaParser1.activeGPS = true;
-	active=1;
+	// No valid fix on any port. We use the first port with at least some data going through!
+	// This will keep probably at least the time updated since the gps may still be receiving a 
+	// valid time, good for us.
+	if ( (LKHearthBeats-ComPortHB[0])<10 ) active=1;
+	else 
+		if ( (LKHearthBeats-ComPortHB[1])<10 ) active=2;
+		else
+			active=1;	// lets keep waiting for the first port
+
+	if (active==1) {
+		nmeaParser1.activeGPS = true;
+		nmeaParser2.activeGPS = false;
+	} else {
+		nmeaParser1.activeGPS = false;
+		nmeaParser2.activeGPS = true;
+	}
   }
   if (nmeaParser2.activeGPS==true && active==1) {
 	StartupStore(_T(".... GPS Update error: port 1 and 2 are active!%s"),NEWLINE);
