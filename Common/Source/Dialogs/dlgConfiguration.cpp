@@ -4044,13 +4044,11 @@ int ival;
   }
 
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWindCalcSpeed")); // 100112
+  wp = (WndProperty*)wf->FindByName(TEXT("prpWindCalcSpeed"));
   if (wp) {
 	ival = iround((wp->GetDataField()->GetAsInteger()/SPEEDMODIFY)*1000.0);
-	if ((int)WindCalcSpeed != (int)iround(ival/1000)) {
-		WindCalcSpeed = ival;
-		WindCalcSpeed=ival/1000.0;
-	}
+	WindCalcSpeed = ival;
+	WindCalcSpeed=ival/1000.0;
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpTaskFinishLine"));
@@ -4732,8 +4730,8 @@ void UpdateAircraftConfig(void){
 
  wp = (WndProperty*)wf->FindByName(TEXT("prpMaxManoeuveringSpeed"));
   if (wp) {
-    ival = iround((wp->GetDataField()->GetAsInteger()/SPEEDMODIFY)*1000.0);
-    if ((int)SAFTEYSPEED != (int)iround(ival/1000)) {
+    ival = iround((wp->GetDataField()->GetAsFloat()/SPEEDMODIFY)*1000.0);
+    if ((int)(SAFTEYSPEED*1000) != (int)iround(ival)) {
         SAFTEYSPEED=ival/1000.0;
       GlidePolar::SetBallast();
     }
