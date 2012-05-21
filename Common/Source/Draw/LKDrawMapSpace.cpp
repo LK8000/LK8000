@@ -39,10 +39,14 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
 	  else
 		hB=LKBrush_Mlight;
   } else {
-	if (INVERTCOLORS)
-		hB=LKBrush_Mdark;
-	  else
-		hB=LKBrush_Mlight;
+	if (MapSpaceMode==MSM_RADAR) {
+		hB=LKBrush_White;
+	} else {
+		if (INVERTCOLORS)
+			hB=LKBrush_Mdark;
+		  else
+			hB=LKBrush_Mlight;
+	}
   }
   oldfont = (HFONT)SelectObject(hdc, LKINFOFONT); // save font
 
@@ -70,16 +74,20 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 	DoInit[MDI_DRAWMAPSPACE]=false; 
   }
 
-  if (INVERTCOLORS) {
-	_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[2], p[3], RGB_GREEN, rc);
-	_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[4], p[5], RGB_GREEN, rc);
-	_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[6], p[7], RGB_GREEN, rc);
-	_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[0], p[1], RGB_GREEN, rc);
-  } else {
-	_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[2], p[3], RGB_DARKGREEN, rc);
-	_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[4], p[5], RGB_DARKGREEN, rc);
-	_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[6], p[7], RGB_DARKGREEN, rc);
-	_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[0], p[1], RGB_DARKGREEN, rc);
+  // Paint borders in green, but not on white pages
+  // Currently only RADAR is a whitepage
+  if (MapSpaceMode!=MSM_RADAR) {
+	  if (INVERTCOLORS) {
+		_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[2], p[3], RGB_GREEN, rc);
+		_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[4], p[5], RGB_GREEN, rc);
+		_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[6], p[7], RGB_GREEN, rc);
+		_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[0], p[1], RGB_GREEN, rc);
+	  } else {
+		_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[2], p[3], RGB_DARKGREEN, rc);
+		_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[4], p[5], RGB_DARKGREEN, rc);
+		_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[6], p[7], RGB_DARKGREEN, rc);
+		_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[0], p[1], RGB_DARKGREEN, rc);
+	  }
   }
 
 
@@ -137,6 +145,9 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 		break;
 	case MSM_THERMALS:
 		DrawThermalHistory(hdc,rc);
+		break;
+	case MSM_RADAR:
+		LKDrawFlarmRadar(hdc,rc);
 		break;
   default:
     memset((void*)&TextDisplayMode, 0, sizeof(TextDisplayMode));

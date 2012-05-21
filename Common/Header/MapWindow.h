@@ -524,6 +524,7 @@ class MapWindow {
   static void DrawTerrainAbove(HDC hDC, const RECT rc);
   static void LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft);
   static void LKDrawVario(HDC hDC, RECT rc);
+  static void LKDrawFlarmRadar(HDC hDC, RECT rc);
     
   static void DrawSolidLine(const HDC&hdc, 
 			    const POINT&start, 

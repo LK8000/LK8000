@@ -317,6 +317,7 @@ DRAW	:=\
 	$(DRW)/DrawCompass.cpp \
 	$(DRW)/DrawCross.cpp \
 	$(DRW)/DrawFinalGlideBar.cpp \
+	$(DRW)/DrawFlarmRadar.cpp \
 	$(DRW)/DrawFlightMode.cpp \
 	$(DRW)/DrawGlideThroughTerrain.cpp \
 	$(DRW)/DrawGPSStatus.cpp \

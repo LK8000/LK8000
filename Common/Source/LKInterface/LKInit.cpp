@@ -109,6 +109,7 @@ void UpdateConfIP(void) {
   ConfIP[4][0]=true;
   ConfIP[4][1]=true;
   ConfIP[4][2]=true;
+  ConfIP[4][3]=true; // RADAR
   ConfMP[4]=true; // traffic mode
 
   // Check if we have INFOMODE
@@ -219,6 +220,7 @@ void InitModeTable() {
 	ModeTable[LKMODE_TRF][TF_LIST]		=	MSM_TRAFFIC;
 	ModeTable[LKMODE_TRF][IM_TRF]		=	MSM_INFO_TRF;
 	ModeTable[LKMODE_TRF][IM_TARGET]	=	MSM_INFO_TARGET;
+	ModeTable[LKMODE_TRF][IM_RADAR]		=	MSM_RADAR;
 
 	// startup mode
 	ModeIndex=LKMODE_MAP;

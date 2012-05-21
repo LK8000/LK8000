@@ -378,9 +378,10 @@
 #define MSM_INFO_CONTEST	15
 #define MSM_AIRSPACES		16
 #define MSM_THERMALS		17
+#define MSM_RADAR		18
 // turnaround point is TOP (equal to last TRI define), 
 // remember that arrays must count from zero, so MSM_TOP+1
-#define MSM_TOP			17
+#define MSM_TOP			18
 //
 // THIS CONFIGURATION GIVES THE ORDER OF MENUs. ALL ITEMS MUST ALSO BE ADDED INSIDE INITMODETABLE()
 // in Utils2.cpp WHERE each mode is paired with an MSM_xxx item.
@@ -429,7 +430,8 @@
 #define TF_LIST			0
 #define IM_TRF			1
 #define IM_TARGET		2
-#define TF_TOP			2
+#define IM_RADAR		3
+#define TF_TOP			3
 
 //
 // How many sort boxes in nearest pages we can have, on the top line, normally 0-4 plus 1 spare
