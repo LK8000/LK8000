@@ -635,7 +635,7 @@ void ColorTable() {
 			// ColorRampLookup is preparing terrain color to pass to TerrainShading for mixing
 
 			ColorRampLookup(i<<height_scale, r, g, b, color_ramp, NUM_COLOR_RAMP_LEVELS, interp_levels);
-			if (do_shading) TerrainShading(mag, r, g, b);
+			TerrainShading(mag, r, g, b);
 			colorBuf[i+(mag+64)*256] = BGRColor(r,g,b);
 		}
 	}
