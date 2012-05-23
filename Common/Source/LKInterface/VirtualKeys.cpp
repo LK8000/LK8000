@@ -248,11 +248,11 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		// End click on navboxes 
 		} else 
 		// CLICK ON SORTBOX line at the top, only with no map and only for enabled pages
-		if ( (MapSpaceMode == MSM_LANDABLE || MapSpaceMode==MSM_AIRPORTS || 
+		if ( (Y<=SortBoxY[MapSpaceMode]) &&
+			( MapSpaceMode == MSM_LANDABLE || MapSpaceMode==MSM_AIRPORTS || 
 			MapSpaceMode==MSM_NEARTPS || MapSpaceMode==MSM_TRAFFIC ||
 			MapSpaceMode==MSM_AIRSPACES || MapSpaceMode==MSM_THERMALS ||
-			MapSpaceMode==MSM_COMMON || MapSpaceMode==MSM_RECENT)
-			&& Y<=SortBoxY[MapSpaceMode] ) {
+			MapSpaceMode==MSM_COMMON || MapSpaceMode==MSM_RECENT) ) {
 
 			// only search for 1-3, otherwise it's the fourth (fifth really)
 			// we don't use 0 now
