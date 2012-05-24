@@ -392,6 +392,18 @@ passthrough:
 		UseWindRose=!UseWindRose;
 		return true;
 
+	case ckFlarmRadar:
+		#ifndef DISABLEAUDIO
+		//if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		if (ModeIndex==LKMODE_MAP)
+			SetModeType(LKMODE_TRF,IM_RADAR);
+		else
+			SetModeIndex(LKMODE_MAP);
+		MapWindow::RefreshMap();
+		SoundModeIndex();
+
+		return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		FailStore(_T("ERR-726 INVALID CUSTOMKEY=%d"),ckeymode);
@@ -460,6 +472,7 @@ CustomKeyLabel[46]=2064;	// Message Repeat
 CustomKeyLabel[47]=2015;	// Waypoint lookup
 CustomKeyLabel[48]=2082;	// PAN
 CustomKeyLabel[49]=2227;	// Toggle windrose
+CustomKeyLabel[50]=2228;	// Flarm radar
 
 }
 

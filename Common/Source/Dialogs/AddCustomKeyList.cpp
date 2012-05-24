@@ -83,6 +83,7 @@ void AddCustomKeyList( DataFieldEnum* dfe) {
     dfe->addEnumTextNoLF(MsgToken(2015)); // Waypoint lookup
     dfe->addEnumText(MsgToken(2082)); // PAN
     dfe->addEnumTextNoLF(MsgToken(2227)); // Toggle WindRose
+    dfe->addEnumTextNoLF(MsgToken(2228)); // Flarm Radar
 
     dfe->Sort(0);
 
