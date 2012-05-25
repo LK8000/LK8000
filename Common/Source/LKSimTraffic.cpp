@@ -75,6 +75,7 @@ void SimFlarmTraffic(long ID, double offset)
 	GPS_INFO.FLARM_Traffic[flarm_slot].Longitude += (double)(rand()/20000000.0)*(rand()>15000?1:-1);
 	GPS_INFO.FLARM_Traffic[flarm_slot].Altitude += (double)(rand()/2200.0)*(rand()>15000?1:-1);
   }
+  GPS_INFO.FLARM_Traffic[flarm_slot].RelativeAltitude = GPS_INFO.FLARM_Traffic[flarm_slot].Altitude - GPS_INFO.Altitude;
 
   //
   GPS_INFO.FLARM_Traffic[flarm_slot].Average30s = flarmCalculations.Average30s(
