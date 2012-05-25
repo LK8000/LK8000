@@ -48,14 +48,6 @@
 <WndProperty Name="prpAltWarningMargin" Caption="_@M1630_" X=2 Y=-999 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1251_">
 <DataField name="" DataType="double" DisplayFormat="%.0f %s" EditFormat="%.0f" Min=0 Max=20000 Step=10/>
 </WndProperty>
-<!-- Moved to new dlgAirspaceWarningParams - this have to be enabled if LKAIRSPACE is not defined!
-<WndProperty Name="prpWarningTime" Caption="_@M790_"      X=2 Y=-1   Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H112_">
-<DataField name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min=10 Max=1000 Step=5/>
-</WndProperty>
-<WndProperty Name="prpAcknowledgementTime" Caption="_@M52_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H113_">
-<DataField name="" DataType="double" DisplayFormat="%.0f s" EditFormat="%.0f" Min=10 Max=1000 Step=5/>
-</WndProperty>
--->
 <WndProperty Name="prpAirspaceFillType" Caption="_@M940_" X=2 Y=-1 Width=-246 Height=22 CaptionWidth=150 Font=2 Help="_@H1200_">
 <DataField name="" DataType="enum" OnDataAccess="OnAirspaceFillType"/>
 </WndProperty>

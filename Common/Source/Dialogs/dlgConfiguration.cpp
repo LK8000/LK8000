@@ -3722,20 +3722,6 @@ int ival;
     }
   }
 
-  wp = (WndProperty*)wf->FindByName(TEXT("prpWarningTime"));
-  if (wp) {
-    if (WarningTime != wp->GetDataField()->GetAsInteger()) {
-      WarningTime = wp->GetDataField()->GetAsInteger();
-    }
-  }
-
-  wp = (WndProperty*)wf->FindByName(TEXT("prpAcknowledgementTime"));
-  if (wp) {
-    if (AcknowledgementTime != wp->GetDataField()->GetAsInteger()) {
-      AcknowledgementTime = wp->GetDataField()->GetAsInteger();
-    }
-  }
-
   wp = (WndProperty*)wf->FindByName(TEXT("prpWaypointLabels"));
   if (wp) {
     if (DisplayTextType != wp->GetDataField()->GetAsInteger()) {
