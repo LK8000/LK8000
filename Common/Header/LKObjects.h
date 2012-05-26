@@ -49,6 +49,15 @@ OEXTERN	HBRUSH	LKBrush_DarkSlate;
 OEXTERN	HBRUSH	LKBrush_RifleGrey;
 OEXTERN	HBRUSH	LKBrush_LightCyan;
 
+OEXTERN HBRUSH	LKBrush_Vario_neg4 ;
+OEXTERN HBRUSH	LKBrush_Vario_neg3 ;
+OEXTERN HBRUSH	LKBrush_Vario_neg2 ;
+OEXTERN HBRUSH	LKBrush_Vario_neg1 ;
+OEXTERN HBRUSH	LKBrush_Vario_0    ;
+OEXTERN HBRUSH	LKBrush_Vario_pos1 ;
+OEXTERN HBRUSH	LKBrush_Vario_pos2 ;
+OEXTERN HBRUSH	LKBrush_Vario_pos3 ;
+OEXTERN HBRUSH	LKBrush_Vario_pos4 ;
 
 OEXTERN	HPEN	LKPen_Black_N0;
 OEXTERN	HPEN	LKPen_Black_N1;
@@ -71,4 +80,6 @@ OEXTERN	HPEN	LKPen_Grey_N2;
 OEXTERN	HPEN	LKPen_Petrol_C2;
 OEXTERN	HPEN	LKPen_GABRG;
 
+
 #endif
+

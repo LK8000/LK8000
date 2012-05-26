@@ -47,17 +47,6 @@
 
 
 
-
-
-typedef struct
-{
-  double fXMin, fXMax;
-  double fYMin, fYMax;
-  RECT rc;
-} DiagrammStruct;
-
-
-
 void DrawTelescope (HDC hdc, double fAngle, int x, int y);
 void DrawNorthArrow(HDC hdc, double fAngle, int x, int y);
 void DrawWindRoseDirection(HDC hdc, double fAngle, int x, int y);

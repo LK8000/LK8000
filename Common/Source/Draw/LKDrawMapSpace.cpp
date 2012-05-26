@@ -39,14 +39,11 @@ void MapWindow::DrawMapSpace(HDC hdc,  RECT rc ) {
 	  else
 		hB=LKBrush_Mlight;
   } else {
-	if (MapSpaceMode==MSM_RADAR) {
-		hB=LKBrush_White;
-	} else {
-		if (INVERTCOLORS)
-			hB=LKBrush_Mdark;
-		  else
-			hB=LKBrush_Mlight;
-	}
+	if (INVERTCOLORS)
+	  hB=LKBrush_Mdark;
+	else
+	  hB=LKBrush_Mlight;
+
   }
   oldfont = (HFONT)SelectObject(hdc, LKINFOFONT); // save font
 
@@ -76,7 +73,8 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 
   // Paint borders in green, but not on white pages
   // Currently only RADAR is a whitepage
-  if (MapSpaceMode!=MSM_RADAR) {
+//  if (MapSpaceMode!=MSM_RADAR)
+  {
 	  if (INVERTCOLORS) {
 		_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[2], p[3], RGB_GREEN, rc);
 		_DrawLine(hdc, PS_SOLID, NIBLSCALE(1), p[4], p[5], RGB_GREEN, rc);
@@ -100,7 +98,7 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
   // However, this will prevent direct customkey access to pages!
   // Instead, we do it when we call next page from InfoPageChange
   // if (!ConfIP[ModeIndex][CURTYPE]) NextModeType();
-
+RECT frc = rc;
   switch (MapSpaceMode) {
 	case MSM_WELCOME:
 #if (1)
@@ -147,7 +145,10 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 		DrawThermalHistory(hdc,rc);
 		break;
 	case MSM_RADAR:
-		LKDrawFlarmRadar(hdc,rc);
+		frc = rc;
+
+		frc.bottom = frc.bottom - BottomSize - NIBLSCALE(2);
+		LKDrawFlarmRadar(hdc,frc);
 		break;
   default:
     memset((void*)&TextDisplayMode, 0, sizeof(TextDisplayMode));
@@ -165,5 +166,6 @@ ConfIP[LKMODE_NAV][1],ConfIP32);
 #endif
   SelectObject(hdc, oldfont); 
 }
+
 
 

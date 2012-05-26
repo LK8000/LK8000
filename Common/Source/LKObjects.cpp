@@ -20,6 +20,8 @@
 
 #include "RGB.h"
 
+extern COLORREF ChangeBrightness(long Color, double fBrightFact);
+
 
 void LKObjects_Create() {
 
@@ -57,6 +59,15 @@ void LKObjects_Create() {
   LKBrush_LightCyan = CreateSolidBrush(COLORREF RGB_LIGHTCYAN);
   LKBrush_RifleGrey = CreateSolidBrush(COLORREF RGB_RIFLEGREY);
 
+  LKBrush_Vario_neg4 = CreateSolidBrush(ChangeBrightness(RGB_BLUE, 0.4));
+  LKBrush_Vario_neg3 = CreateSolidBrush(ChangeBrightness(RGB_BLUE, 0.6));
+  LKBrush_Vario_neg2 = CreateSolidBrush(ChangeBrightness(RGB_BLUE, 0.8));
+  LKBrush_Vario_neg1 = CreateSolidBrush(ChangeBrightness(RGB_BLUE, 1.0));
+  LKBrush_Vario_0    = CreateSolidBrush(ChangeBrightness(RGB_YELLOW, 0.8));
+  LKBrush_Vario_pos1 = CreateSolidBrush(ChangeBrightness(RGB_GREEN, 0.6));
+  LKBrush_Vario_pos2 = CreateSolidBrush(ChangeBrightness(RGB_GREEN, 0.7));
+  LKBrush_Vario_pos3 = CreateSolidBrush(ChangeBrightness(RGB_GREEN, 0.8));
+  LKBrush_Vario_pos4 = CreateSolidBrush(ChangeBrightness(RGB_GREEN, 1.0));
   // CUSTOM PENS
   LKPen_Black_N0 = (HPEN) CreatePen(PS_SOLID,0,RGB_BLACK);
   LKPen_Black_N1 = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(1),RGB_BLACK);
@@ -80,6 +91,7 @@ void LKObjects_Create() {
 
   LKPen_Grey_N1 = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(1),RGB_GREY);
   LKPen_Grey_N2 = (HPEN) CreatePen(PS_SOLID,NIBLSCALE(2),RGB_GREY);
+
 
   switch(ScreenSize) {
 	// portrait small screen
@@ -226,6 +238,17 @@ void LKObjects_Delete() {
   if(LKBrush_RifleGrey) DeleteObject(LKBrush_RifleGrey);
   if(LKBrush_LightCyan) DeleteObject(LKBrush_LightCyan);
 
+  if(LKBrush_Vario_neg4) DeleteObject(LKBrush_Vario_neg4);
+  if(LKBrush_Vario_neg3) DeleteObject(LKBrush_Vario_neg3);
+  if(LKBrush_Vario_neg2) DeleteObject(LKBrush_Vario_neg2);
+  if(LKBrush_Vario_neg1) DeleteObject(LKBrush_Vario_neg1);
+  if(LKBrush_Vario_0)    DeleteObject(LKBrush_Vario_0);
+  if(LKBrush_Vario_pos1) DeleteObject(LKBrush_Vario_pos1);
+  if(LKBrush_Vario_pos2) DeleteObject(LKBrush_Vario_pos2);
+  if(LKBrush_Vario_pos3) DeleteObject(LKBrush_Vario_pos3);
+  if(LKBrush_Vario_pos4) DeleteObject(LKBrush_Vario_pos4);
+
+
   if(LKPen_Black_N0) DeleteObject(LKPen_Black_N0);
   if(LKPen_Black_N1) DeleteObject(LKPen_Black_N1);
   if(LKPen_Black_N2) DeleteObject(LKPen_Black_N2);
@@ -238,6 +261,7 @@ void LKObjects_Delete() {
   if(LKPen_White_N3) DeleteObject(LKPen_White_N3);
   if(LKPen_White_N4) DeleteObject(LKPen_White_N4);
   if(LKPen_White_N5) DeleteObject(LKPen_White_N5);
+
   if(LKPen_Petrol_C2) DeleteObject(LKPen_Petrol_C2);
   if(LKPen_Green_N1) DeleteObject(LKPen_Green_N1);
   if(LKPen_Red_N1) DeleteObject(LKPen_Red_N1);
@@ -278,6 +302,7 @@ void LKObjects_Delete() {
 
 
 }
+
 
 
 

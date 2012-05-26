@@ -37,6 +37,19 @@
 #define RESTRICTED	0x40
 #define WAYPOINTFLAG	0x80
 
+
+#define TEXT_NO_TEXT        0
+#define TEXT_ABOVE_LEFT     1
+#define TEXT_ABOVE_RIGHT    2
+#define TEXT_ABOVE_CENTER   3
+#define TEXT_UNDER_LEFT     4
+#define TEXT_UNDER_RIGHT    5
+#define TEXT_UNDER_CENTER   6
+#define TEXT_MIDDLE_LEFT    7
+#define TEXT_MIDDLE_RIGHT   8
+#define TEXT_MIDDLE_CENTER  9
+
+
 #include "RGB.h"
 
 // NOT USED ANYMORE, USE RGB_xxx as color definition
@@ -131,6 +144,7 @@ typedef struct _SNAIL_POINT
 } SNAIL_POINT;
 
 
+
 typedef struct {
     bool Border;
     bool FillBackground;
@@ -157,6 +171,15 @@ typedef struct{
   int  index;
   short style;
 }MapWaypointLabel_t;
+
+
+typedef struct
+{
+  double fXMin, fXMax;
+  double fYMin, fYMax;
+  RECT rc;
+} DiagrammStruct;
+
 
 
 class MapWindow {
@@ -437,6 +460,10 @@ class MapWindow {
   static rectObj CalculateScreenBounds(double scale);
   static void ScanVisibility(rectObj *bounds_active);
 
+  static int HeightToY(double fHeight, const RECT rc, DiagrammStruct* psDia);
+  static int DistanceToX(double fDist, const RECT rc,  DiagrammStruct* psDia)  ;
+  static void RenderNearAirspace(HDC hdc, const RECT rci);
+  static void LKDrawFlarmRadar(HDC hdc, const RECT rci);
  private:
   static void CalculateScreenPositions(POINT Orig, RECT rc, 
                                        POINT *Orig_Aircraft);
@@ -498,6 +525,15 @@ class MapWindow {
   static void DrawFunctions1HZ(HDC hdc, const RECT rc);
   static void DrawLKAlarms(HDC hdc, const RECT rc);
   static void DrawFDRAlarms(HDC hdc, const RECT rc);
+
+
+
+  static void DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, double zero, int iTextAling,
+		                COLORREF color, DiagrammStruct *psDia);
+  static void DrawXGrid(HDC hdc, RECT rc, double ticstep,double unit_step, double zero, int iTextAling,
+                        COLORREF color, DiagrammStruct *psDia);
+
+
   static double LKDrawTrail(HDC hdc, const POINT Orig, const RECT rc);
   static void DrawTeammate(HDC hdc, const RECT rc);
   static void DrawOffTrackIndicator(HDC hdc, const RECT rc);
@@ -524,7 +560,7 @@ class MapWindow {
   static void DrawTerrainAbove(HDC hDC, const RECT rc);
   static void LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft);
   static void LKDrawVario(HDC hDC, RECT rc);
-  static void LKDrawFlarmRadar(HDC hDC, RECT rc);
+
     
   static void DrawSolidLine(const HDC&hdc, 
 			    const POINT&start, 
@@ -703,6 +739,6 @@ private:
 void PolygonRotateShift(POINT* poly, int n, int x, int y, 
                         double angle);
 
-extern void DrawDashLine(HDC , INT ,POINT , POINT , COLORREF );
 
 #endif
+
