@@ -912,11 +912,13 @@ goto_menu:
 						break;
 					}
 				}
-				if (!mode.AnyPan()) {
-					// Select airspace on moving map only if they are visible, (and activemap optionally!)
-					if (OnAirSpace && Event_InteriorAirspaceDetails(Xstart, Ystart))
-						break;
 
+				// Select airspace on moving map only if they are visible
+				// 120526 moved out of anypan, buggy because we want airspace selection with priority
+				if (OnAirSpace && Event_InteriorAirspaceDetails(Xstart, Ystart))
+					break;
+
+				if (!mode.AnyPan()) {
 					// match only center screen
 					if (  (abs(X-((rc.left+rc.right)/2)) <NIBLSCALE(100)) && 
 					      (abs(Y-((rc.bottom+rc.top)/2)) <NIBLSCALE(100)) ) {
