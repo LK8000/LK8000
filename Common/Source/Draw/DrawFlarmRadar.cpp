@@ -759,6 +759,10 @@ RECT rcc = rct;
 	    Circle(hdc, x_middle, y_middle, iCircleRadius, rcc, true, false );
 	    fRing = fRing + xtick;
 	  }
+
+	SelectObject(hdc, hDrawBrush);
+	SelectObject(hdc, hDrawPen);
+
 	/***********************************************
 	 * draw north arrow
 	 * To ulli: this has a few problems. First, color of windrose text is wrong and hard to fix being
@@ -766,8 +770,6 @@ RECT rcc = rct;
 	 * But more important, the arrow probably should just show the north.
 	 * Since we are looking at objects in top and sideview, I think it is not important to have a compass at all.
 	 * By now I comment it out .
-	SelectObject(hdc, hDrawBrush);
-	SelectObject(hdc, hDrawPen);
 	DrawNorthArrow( hdc, GPSbrg, rci.right-NIBLSCALE(13), rci.top+NIBLSCALE(13));
 	 ***********************************************/
 
