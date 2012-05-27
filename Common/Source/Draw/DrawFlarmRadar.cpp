@@ -14,6 +14,7 @@
 #include "LKObjects.h"
 #include "DoInits.h"
 #include "MapWindow.h"
+#include "LKMapWindow.h"
 
 int RADAR_TURN = 90 ;            /* radar plane orientation             */
 #define HEIGHT_RANGE (800.0  )    /* max hight ifference above and below */
@@ -426,6 +427,7 @@ static int iCircleSize    = 9;
 static int iRectangleSize = 5;
 static short scaler[5];
 static short tscaler=0;
+static short column0;
 static POINT Arrow[5];
 HPEN   hOrangePen ;
 HPEN   hGreenPen ;
@@ -503,6 +505,8 @@ for(i=0; i < NUMAIRCRAFTPTS; i++)
 }
 */
 
+static short iTurn =0;
+
 switch(LKevent)
 {
   case LKEVENT_UP:
@@ -519,8 +523,7 @@ switch(LKevent)
 	fScaleFact = MAX_DIST_SCALE;
   break;
   case LKEVENT_ENTER:
-	  static int iTurn =0;
-	  iTurn = 	(iTurn+1)%4;
+      iTurn = 	(iTurn+1)%4;
       switch(iTurn)
       {
         case 0: {RADAR_TURN = 90; ASYMETRIC_FACTOR = 0.7 ; SPLITSCREEN_FACTOR = 0.7;} break;
@@ -621,11 +624,16 @@ DiagrammStruct sDia;
 	Arrow[4].x = scaler[0];
 	Arrow[4].y = scaler[1];
 
+	// Stuff for raw 0 mapspace
+	#define HEADRAW       NIBLSCALE(6)
+	SIZE MITextSize;
+	SelectObject(hdc, LK8PanelMediumFont);
+	GetTextExtentPoint(hdc, _T("4.4"), 3, &MITextSize);
+	column0=MITextSize.cx+LEFTLIMITER+NIBLSCALE(5);
 
 
 	DoInit[MDI_FLARMRADAR]=false;
   }
-
 
 
   /****************************************************************************************************
@@ -754,10 +762,15 @@ RECT rcc = rct;
 	  }
 	/***********************************************
 	 * draw north arrow
-	 ***********************************************/
+	 * To ulli: this has a few problems. First, color of windrose text is wrong and hard to fix being
+	 * embedded in the function, second the direction is wrong when iTurn is for 90 degrees.
+	 * But more important, the arrow probably should just show the north.
+	 * Since we are looking at objects in top and sideview, I think it is not important to have a compass at all.
+	 * By now I comment it out .
 	SelectObject(hdc, hDrawBrush);
 	SelectObject(hdc, hDrawPen);
 	DrawNorthArrow( hdc, GPSbrg, rci.right-NIBLSCALE(13), rci.top+NIBLSCALE(13));
+	 ***********************************************/
 
 
 	/***********************************************
@@ -998,6 +1011,16 @@ if(bSideview)
     RenderFlarmPlaneSideview( hdc, rc,0 , 0,RADAR_TURN, &sDia , 0.8);
 }
 
+  //
+  // Draw MapSpace index on top left screen
+  //
+  _stprintf(lbuffer,TEXT("%d.%d"),ModeIndex,CURTYPE+1);
+  SelectObject(hdc, LK8PanelMediumFont);
+  LKWriteText(hdc, lbuffer, LEFTLIMITER, rci.top+TOPLIMITER , 0,  WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+
+  SelectObject(hdc, LK8InfoNormalFont);
+  _stprintf(lbuffer,TEXT("RDR.%d"),iTurn+1);
+  LKWriteText(hdc, lbuffer, column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
 SelectObject(hdc, hfOldFont);
 SelectObject(hdc, hOldPen);
