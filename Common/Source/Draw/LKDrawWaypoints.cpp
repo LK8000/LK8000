@@ -147,7 +147,7 @@ void MapWindow::DrawWaypointsNew(HDC hdc, const RECT rc)
 		} else continue; // do not draw icons for normal turnpoints here
 	}
 //	  Appearance.IndLandable=wpLandableDefault,
-    if(Appearance.IndLandable == wpLandableDefault ) // WinPilot style
+    if(Appearance.IndLandable == wpLandableDefault && !WaypointInTask(i) ) // Vector style
     {
       double fScaleFact =MapWindow::zoom.RealScale();
       if(fScaleFact < 0.1)  fScaleFact = 0.1; // prevent division by zero
