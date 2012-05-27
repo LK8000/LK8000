@@ -446,7 +446,6 @@ COLORREF rgb_targetlinecol = RGB_RED;
  *********************************************************************************/
 
 
-
 if(INVERTCOLORS)
 {
   rgbDrawColor = RGB_GREY;
@@ -630,7 +629,7 @@ DiagrammStruct sDia;
 	SelectObject(hdc, LK8PanelMediumFont);
 	GetTextExtentPoint(hdc, _T("4.4"), 3, &MITextSize);
 	column0=MITextSize.cx+LEFTLIMITER+NIBLSCALE(5);
-
+	SelectObject(hdc, LK8PanelUnitFont);
 
 	DoInit[MDI_FLARMRADAR]=false;
   }
