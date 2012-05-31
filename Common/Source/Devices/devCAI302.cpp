@@ -19,6 +19,7 @@
 #include "Utils.h"
 #include "Parser.h"
 #include "Port.h"
+#include "McReady.h"
 
 #include "devCAI302.h"
 
@@ -102,8 +103,6 @@ typedef struct{
 //static cai302_Wdata_t cai302_Wdata;
 static cai302_OdataNoArgs_t cai302_OdataNoArgs;
 static cai302_OdataPilot_t cai302_OdataPilot;
-static cai302_GdataNoArgs_t cai302_GdataNoArgs;
-static cai302_Gdata_t cai302_Gdata;
 
 // Additional sentance for CAI302 support
 static BOOL cai_w(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO);
@@ -287,7 +286,9 @@ BOOL cai302Declare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffe
   ExpectString(d, TEXT("$$$"));
 
   d->Com->WriteString(TEXT("O\r"));
+  Sleep(500); // some params come up 0 if we don't wait!
   d->Com->Read(&cai302_OdataNoArgs, sizeof(cai302_OdataNoArgs));
+  
   if (!ExpectString(d, TEXT("up>"))){
     nDeclErrorCode = 1;
     return(FALSE);
@@ -309,26 +310,6 @@ BOOL cai302Declare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffe
   swap(cai302_OdataPilot.MinimumSpeedToForceFlightLogging);
   swap(cai302_OdataPilot.UnitWord);
   swap(cai302_OdataPilot.MarginHeight);
-
-  d->Com->WriteString(TEXT("G\r"));
-  d->Com->Read(&cai302_GdataNoArgs, sizeof(cai302_GdataNoArgs));
-  if (!ExpectString(d, TEXT("up>"))){
-    nDeclErrorCode = 1;
-    return(FALSE);
-  }
-
-  d->Com->WriteString(TEXT("G 0\r"));
-  Sleep(1000);
-  d->Com->Read(&cai302_Gdata, cai302_GdataNoArgs.GliderRecordSize + 3);
-  if (!ExpectString(d, TEXT("up>"))){
-    nDeclErrorCode = 1;
-    return(FALSE);
-  }
-
-  swap(cai302_Gdata.WeightInLiters);
-  swap(cai302_Gdata.BallastCapacity);
-  swap(cai302_Gdata.ConfigWord);
-  swap(cai302_Gdata.WingArea);
 
   d->Com->SetRxTimeout(1500);
 
@@ -368,7 +349,6 @@ BOOL cai302Declare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffe
     cai302_OdataPilot.MarginHeight
   );
 
-
   d->Com->WriteString(szTmp);
   if (!ExpectString(d, TEXT("dn>"))){
     nDeclErrorCode = 1;
@@ -376,17 +356,17 @@ BOOL cai302Declare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffe
   }
 
   _stprintf(szTmp, TEXT("G,%-12s,%-12s,%d,%d,%d,%d,%d,%d,%d,%d\r"),
-    GliderType,
-    GliderID,
-    cai302_Gdata.bestLD,
-    cai302_Gdata.BestGlideSpeed,
-    cai302_Gdata.TwoMeterSinkAtSpeed,
-    cai302_Gdata.WeightInLiters,
-    cai302_Gdata.BallastCapacity,
-    0,
-    cai302_Gdata.ConfigWord,
-    cai302_Gdata.WingArea
-  );
+            GliderType,
+            GliderID,
+            (int)GlidePolar::bestld,
+            (int)(GlidePolar::Vbestld * TOKPH),
+            (int)(GlidePolar::FindSpeedForSinkRate(-2.0) * TOKPH),
+            (int)(WEIGHTS[0] + WEIGHTS[1]),
+            (int)WEIGHTS[2],
+            0,
+            1, //cai302_Gdata.ConfigWord,
+            (int)(GlidePolar::WingArea * 1000)
+            );
 
   d->Com->WriteString(szTmp);
   if (!ExpectString(d, TEXT("dn>"))){
