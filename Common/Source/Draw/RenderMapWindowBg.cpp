@@ -297,10 +297,6 @@ fastzoom:
   DrawThermalEstimate(hdc, rc);
   if (OvertargetMode==OVT_THER) DrawThermalEstimateMultitarget(hdc, rc);
  
-  if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) { // 100503
-	DrawTask(hdc, rc, Orig_Aircraft);
-  }
-  
   // draw red cross on glide through terrain marker
   if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid) {
     DrawGlideThroughTerrain(hdc, rc);
@@ -324,6 +320,9 @@ fastzoom:
 		goto QuickRedraw;
 	}
 
+  if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) { // 100503
+	DrawTask(hdc, rc, Orig_Aircraft);
+  }
   DrawTeammate(hdc, rc);
 
   if (extGPSCONNECT) {
