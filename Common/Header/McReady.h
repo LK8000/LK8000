@@ -51,6 +51,7 @@ class GlidePolar {
   static double SinkRate(double a,double b, double c, 
                          double MC, double HW, double V);
   static double FindSpeedForSinkRate(double w);
+  static double FindSpeedForSinkRateAccurate(double w);
   static double SinkRateFast(const double &MC, const int &v);
  private:
   static double _SinkRateFast(const double &MC, const int &v);

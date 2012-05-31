@@ -309,10 +309,25 @@ double GlidePolar::FindSpeedForSinkRate(double w) {
   // find the highest speed that provides a sink rate less than
   // the specified sink rate
   double vbest= Vminsink;
-  for (int v=4; v<iSAFETYSPEED; v++) {
+  for (int v=Vminsink; v<iSAFETYSPEED; v++) {
     double wthis = _SinkRateFast(0, v);
-    if (wthis<w) {
+    if (wthis>w) {
       vbest = v;
+    }
+  }
+  return vbest;
+}
+
+
+double GlidePolar::FindSpeedForSinkRateAccurate(double w) {
+  // find the highest speed that provides a sink rate less than
+  // the specified sink rate
+  double vbest = Vminsink;
+  for (int v=(int)(Vminsink*TOKPH); v<iSAFETYSPEED*TOKPH; v++) {
+    double vms = (double)v/TOKPH;
+    double wthis = SinkRate(polar_a,polar_b,polar_c,0,0,vms);
+    if (wthis>w) {
+      vbest = vms;
     }
   }
   return vbest;
