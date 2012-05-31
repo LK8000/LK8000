@@ -360,7 +360,7 @@ BOOL cai302Declare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffe
             GliderID,
             (int)GlidePolar::bestld,
             (int)(GlidePolar::Vbestld * TOKPH),
-            (int)(GlidePolar::FindSpeedForSinkRate(-2.0) * TOKPH),
+            (int)(GlidePolar::FindSpeedForSinkRateAccurate(-2.0) * TOKPH),
             (int)(WEIGHTS[0] + WEIGHTS[1]),
             (int)WEIGHTS[2],
             0,

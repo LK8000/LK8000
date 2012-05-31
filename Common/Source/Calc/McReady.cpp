@@ -319,6 +319,21 @@ double GlidePolar::FindSpeedForSinkRate(double w) {
 }
 
 
+double GlidePolar::FindSpeedForSinkRateAccurate(double w) {
+  // find the highest speed that provides a sink rate less than
+  // the specified sink rate
+  double vbest = Vminsink;
+  for (int v=(int)(Vminsink*TOKPH); v<iSAFETYSPEED*TOKPH; v++) {
+    double vms = (double)v/TOKPH;
+    double wthis = SinkRate(polar_a,polar_b,polar_c,0,0,vms);
+    if (wthis>w) {
+      vbest = vms;
+    }
+  }
+  return vbest;
+}
+
+
 double GlidePolar::MacCreadyAltitude_heightadjust(double emcready, 
 						  double Distance, 
 						  double Bearing, 
