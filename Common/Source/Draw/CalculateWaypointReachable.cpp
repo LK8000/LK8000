@@ -8,7 +8,9 @@
 
 #include "externs.h"
 #include "McReady.h"
+#include "LKInterface.h"
 
+// #define DEBUGCW 1
 
 bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                                           double LegToGo, double LegBearing) {
@@ -49,14 +51,20 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
   unsigned int scanstart;
   unsigned int scanend;
 
+  #if DEBUGCW
+  unsigned int numwpscanned=0;
+  #endif
+
   LockTaskData();
 
   if (multicalc_slot==0) {
 	scanstart=0; // including this
 	scanend=NumberOfWayPoints; // will be used -1, so up to this excluded value
 
-	//StartupStore(_T("... wps=%d multicalc_slot=0 ignored numslot=%d, full scan %d < %d%s"),NumberOfWayPoints,
-	//	numslots,scanstart,scanend,NEWLINE);
+	#if DEBUGCW
+	StartupStore(_T("... wps=%d multicalc_slot=0 ignored numslot=%d, full scan %d < %d%s"),NumberOfWayPoints,
+		numslots,scanstart,scanend,NEWLINE);
+	#endif
   } else {
 	scanstart=(NumberOfWayPoints/numslots)*(multicalc_slot-1); 
 	if (multicalc_slot==numslots)
@@ -64,13 +72,19 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 	else
 		scanend=scanstart+(NumberOfWayPoints/numslots);
 
-	//StartupStore(_T("... wps=%d multicalc_slot=%d of %d, scan %d < %d%s"),NumberOfWayPoints,
-	//	multicalc_slot, numslots,scanstart,scanend,NEWLINE);
+	#if DEBUGCW
+	StartupStore(_T("... wps=%d multicalc_slot=%d of %d, scan %d < %d%s"),NumberOfWayPoints,
+		multicalc_slot, numslots,scanstart,scanend,NEWLINE);
+	#endif
   }
 
+  int overtarg=GetOvertargetIndex();
+  if (i<0) i=999999;
+
   for(i=scanstart;i<scanend;i++) {
+    // signed Overtgarget -1 becomes a very high number, casted unsigned
     if ( ( ((WayPointCalc[i].AltArriv >=0)||(WayPointList[i].Visible)) && (WayPointCalc[i].IsLandable)) 
-	|| WaypointInTask(i) ) {
+	|| WaypointInTask(i) || (i==(unsigned int)overtarg) ) {
 
 	DistanceBearing(DrawInfo.Latitude, DrawInfo.Longitude, WayPointList[i].Latitude, WayPointList[i].Longitude, 
 		&waypointDistance, &waypointBearing);
@@ -104,6 +118,9 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 	} else {
 		WayPointList[i].Reachable = FALSE;
 	}
+	#if DEBUGCW
+	numwpscanned++;
+	#endif
 
     } // if landable or in task
   } // for all waypoints
@@ -117,6 +134,9 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 	// visible but only at a distance (limit this to 100km radius)
 
 	if(  WayPointCalc[i].IsLandable ) {
+		#if DEBUGCW
+		numwpscanned++;
+		#endif
 
 		DistanceBearing(DrawInfo.Latitude, 
                                 DrawInfo.Longitude, 
@@ -160,6 +180,9 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
    } // for all waypoint
 
   UnlockTaskData(); 
+  #if DEBUGCW
+  StartupStore(_T("...... processed wps: %d\n"),numwpscanned);
+  #endif
 }
 
 
