@@ -17,6 +17,7 @@
 #include <wingdi.h>
 #endif
 
+extern bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic, DERIVED_INFO *Calculated, double LegToGo, double LegBearing);
 
 void MapWindow::DrawNearest(HDC hdc, RECT rc) {
 
@@ -564,8 +565,29 @@ KeepOldValues:
 			rcolor=RGB_WHITE;
   			SelectObject(hdc, LK8InfoBigFont); 
 		}
-		if ((WayPointCalc[rli].VGR == 3 )|| (!WayPointList[rli].Reachable)) 
+
+		// 120601 extend search for tps, missing reachable status
+		// If we are listing tps, and the current tp has a positive arrival altitude,
+		// then check if it is really unreachable because we dont calculate tps for that.
+		// Unless they are in a task, common, alternates, of course.
+		if (curmapspace==MSM_NEARTPS) {
+			if ( WayPointCalc[rli].AltArriv[AltArrivMode]>0) {
+				if (CheckLandableReachableTerrainNew(&DrawInfo, &DerivedDrawInfo, 
+					WayPointCalc[rli].Distance, WayPointCalc[rli].Bearing )) {
+						rcolor=RGB_WHITE;
+				} else {
+					rcolor=RGB_LIGHTRED;
+				}
+			} else {
+				rcolor=RGB_LIGHTRED;
+			}
+		} else  // old stuff as usual
+		if ((WayPointCalc[rli].VGR == 3 )|| (!WayPointList[rli].Reachable)) {
+
 			rcolor=RGB_LIGHTRED;
+		}
+
+
 	} else {
 		rcolor=RGB_GREY;
 	}
