@@ -189,6 +189,62 @@ New Takeoff safety alarm (configuration menu Alarms)
 
 
 
+LK8000 VERSION 3.1e 1206
+==========================
+
+NEW
+
+. Page 4.4 Flarm Radar, see docs.
+
+. Add customkey for Flarm Radar
+  It will toggle between Map and Flarm Radar, and back to Map.
+
+
+CHANGES
+
+
+. Extend Acknowledge time for airspaces from 120 seconds to 720 seconds (12 hours).
+
+. Enhancement for dual feed com ports: if no valid fix on any port, we use the first port with 
+  at least some data going through!
+  This will keep probably at least the time updated since the gps may still be receiving a 
+  valid time, which is good for us.
+
+
+
+FIXES
+
+. Fix 3.1d bug not converting vector altitude to user unit
+
+. Fix TrueWind IAS configuration and Max Speed in aircraft configuration, not keeping some values.
+
+. Fix small bug terrain shading option: changing terrain with shading off would not allow us 
+  to enable shading again.
+
+. Fix airspace selection in pan mode no more working since september 13 2011
+
+. CAI302 task declaration fixed
+
+. Fix vector waypoint overwriting task lines.
+  Task is drawn after waypoints now.
+
+. Fix old bug not calculating terrain reachable (and displaying orange arrival altitude on overlay) 
+  when a turnpoint not landable was assigned as alternate destination.
+
+. Fix Nearest turnpoint page 2.3 not checking correctly terrain reachable, 
+  appearing almost always negative (red)
+
+. Fix old bug in 3.0 wrong upper zone for nearest page: the zone for pulling up cursor selection 
+  of nearest pages was too tight.
+
+. Fix old bug in 3.0 overcalculating reachability for landables. 
+  Even landables with negative arrival altitudes were checked for terrain
+  obstacles, resulting in a abnormal number of calculations (hidden by multicalc optimization).
+  LK performance is greatly improved now, when using a lot of landable waypoints (many thousands).
+
+
+
+
 
 LK8000 VERSION 3.1d 120517
 ==========================
