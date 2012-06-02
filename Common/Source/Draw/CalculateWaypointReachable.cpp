@@ -83,7 +83,7 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 
   for(i=scanstart;i<scanend;i++) {
     // signed Overtgarget -1 becomes a very high number, casted unsigned
-    if ( ( ((WayPointCalc[i].AltArriv >=0)||(WayPointList[i].Visible)) && (WayPointCalc[i].IsLandable)) 
+    if ( ( ((WayPointCalc[i].AltArriv[AltArrivMode] >=0)||(WayPointList[i].Visible)) && (WayPointCalc[i].IsLandable)) 
 	|| WaypointInTask(i) || (i==(unsigned int)overtarg) ) {
 
 	DistanceBearing(DrawInfo.Latitude, DrawInfo.Longitude, WayPointList[i].Latitude, WayPointList[i].Longitude, 
