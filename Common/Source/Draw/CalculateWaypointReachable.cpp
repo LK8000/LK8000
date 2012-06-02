@@ -79,7 +79,7 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
   }
 
   int overtarg=GetOvertargetIndex();
-  if (i<0) i=999999;
+  if (overtarg<0) overtarg=999999;
 
   for(i=scanstart;i<scanend;i++) {
     // signed Overtgarget -1 becomes a very high number, casted unsigned
