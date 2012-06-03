@@ -15,6 +15,7 @@
 #include "DoInits.h"
 #include "MapWindow.h"
 #include "LKMapWindow.h"
+#include "FlarmIdFile.h"
 
 int RADAR_TURN = 90 ;            /* radar plane orientation             */
 #define HEIGHT_RANGE (800.0  )    /* max hight ifference above and below */
@@ -441,6 +442,9 @@ HFONT hfOldFont = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
 COLORREF rgbGridColor = RGB_DARKGREEN;
 COLORREF rgbDrawColor = RGB_GREEN;
 COLORREF rgb_targetlinecol = RGB_RED;
+double fPlaneSize = 1.0;
+double fOwnTopPlaneSize = 1.2;
+double fTopViewPlaneSize = 1.2;
 /*********************************************************************************
  * change colors on inversion
  *********************************************************************************/
@@ -482,27 +486,27 @@ POINT AircraftTop[NUMAIRCRAFTPTS] = {
   {2,-1},
   {15,0},
   {15,2},
-  {1,2},
-  {0,10},
+  {2,2},
+  {1,10},
   {4,11},
   {4,12},
   {-4,12},
   {-4,11},
-  {0,10},
-  {-1,2},
+  {-1,10},
+  {-2,2},
   {-15,2},
   {-15,0},
   {-2,-1},
   {-1,-6}
 };
 
-/*
+
 for(i=0; i < NUMAIRCRAFTPTS; i++)
 {
-  AircraftTop[i].x *= 4;
-  AircraftTop[i].y *= 4;
+  AircraftTop[i].x =  (long)( AircraftTop[i].x * fOwnTopPlaneSize);
+  AircraftTop[i].y =  (long)( AircraftTop[i].y * fOwnTopPlaneSize);
 }
-*/
+
 
 static short iTurn =0;
 
@@ -542,6 +546,7 @@ if(SPLITSCREEN_FACTOR >0.95)
 	bSideview = false;
 
 
+
 double range = 1000; // km
 double GPSlat, GPSlon, GPSalt, GPSbrg  ;
 bool GPSValid;
@@ -579,12 +584,12 @@ DiagrammStruct sDia;
 		case ss640x480:
 			iCircleSize = 9;
 			iRectangleSize = 5;
-			scaler[0]=-1*(NIBLSCALE(4)-2);
-			scaler[1]=NIBLSCALE(5)-2;
-			scaler[2]=-1*(NIBLSCALE(6)-2);
-			scaler[3]=NIBLSCALE(4)-2;
-			scaler[4]=NIBLSCALE(2)-2;
-			tscaler=NIBLSCALE(7)-2;
+			scaler[0]=(short)(-1*(NIBLSCALE(4)-2) * fTopViewPlaneSize);
+			scaler[1]=(short)((NIBLSCALE(5)-2)    * fTopViewPlaneSize);
+			scaler[2]=(short)(-1*(NIBLSCALE(6)-2) * fTopViewPlaneSize);
+			scaler[3]=(short)((NIBLSCALE(4)-2)    * fTopViewPlaneSize);
+			scaler[4]=(short)((NIBLSCALE(2)-2)    * fTopViewPlaneSize);
+			tscaler=(NIBLSCALE(7)-2)    ;
 			break;
 		case ss240x320:
 		case ss272x480:
@@ -595,23 +600,22 @@ DiagrammStruct sDia;
 		case ss400x240:
 			iCircleSize = 7;
 			iRectangleSize = 4;
-			scaler[0]=-1*(NIBLSCALE(8)-2);
-			scaler[1]=NIBLSCALE(10)-2;
-			scaler[2]=-1*(NIBLSCALE(12)-2);
-			scaler[3]=NIBLSCALE(8)-2;
-			scaler[4]=NIBLSCALE(4)-2;
-			tscaler=NIBLSCALE(13)-2;
+			scaler[0]=(short)(-1*(NIBLSCALE(8)-2)  * fTopViewPlaneSize);
+			scaler[1]=(short)((NIBLSCALE(10)-2)    * fTopViewPlaneSize);
+			scaler[2]=(short)(-1*(NIBLSCALE(12)-2) * fTopViewPlaneSize);
+			scaler[3]=(short)((NIBLSCALE(8)-2)     * fTopViewPlaneSize);
+			scaler[4]=(short)((NIBLSCALE(4)-2)     * fTopViewPlaneSize);
+			tscaler=(NIBLSCALE(13)-2)      ;
 			break;
 		default:
-			scaler[0]=-1*NIBLSCALE(4);
-			scaler[1]=NIBLSCALE(5);
-			scaler[2]=-1*NIBLSCALE(6);
-			scaler[3]=NIBLSCALE(4);
-			scaler[4]=NIBLSCALE(2);
-			tscaler=NIBLSCALE(7);
+			scaler[0]=(short)(-1*NIBLSCALE(4) * fTopViewPlaneSize);
+			scaler[1]=(short)(NIBLSCALE(5)    * fTopViewPlaneSize);
+			scaler[2]=(short)(-1*NIBLSCALE(6) * fTopViewPlaneSize);
+			scaler[3]=(short)(NIBLSCALE(4)    * fTopViewPlaneSize);
+			scaler[4]=(short)(NIBLSCALE(2)    * fTopViewPlaneSize);
+			tscaler=NIBLSCALE(7)      ;
 			break;
 	}
-
 	Arrow[0].x = scaler[0];
 	Arrow[0].y = scaler[1];
 	Arrow[1].x = 0;
@@ -783,14 +787,27 @@ RECT rcc = rct;
 		double fx;
 		double fy;
 		double fAlt;
+	//	double fIntegrator;
+		int iColorIdx;
+	} LastPositions;
+#define NO_TRACE_PTS 50
+	typedef struct
+	{
+		double fx;
+		double fy;
+		double fAlt;
 		double fFlarmBearing;
 		int iColorIdx;
+		int iInPtr;
+		int iOutPtr;
+		LastPositions asRingBuf[NO_TRACE_PTS];
 	} sFlarmPositions;
 	sFlarmPositions asFLRAMPos[FLARM_MAX_TRAFFIC];
 
 	int aiSortArray[FLARM_MAX_TRAFFIC];
 	int iTmp;
 	for (i=0; i<FLARM_MAX_TRAFFIC; i++)
+	{
 	  if(DrawInfo.FLARM_Traffic[i].Status != LKT_EMPTY)
 	  {
 		/*************************************************************************
@@ -815,6 +832,8 @@ RECT rcc = rct;
 
 		aiSortArray[nEntrys++] = i;
 	  }
+	}
+
     for (i=0; i < nEntrys; i++)
       for(j=i+1; j < nEntrys; j++)
 		if(asFLRAMPos[aiSortArray[i]].fAlt  > asFLRAMPos[aiSortArray[j]].fAlt )
@@ -861,8 +880,10 @@ for (j=0; j<nEntrys; j++)
 	      bCenter = true;
 		  SelectObject(hdc, hDrawBrush);
 		  SelectObject(hdc, hDrawPen);
+		  SelectObject(hdc,GetStockObject(BLACK_PEN));
 		  PolygonRotateShift(AircraftTop, NUMAIRCRAFTPTS, x_middle, y_middle,RADAR_TURN);
 		  Polygon(hdc,AircraftTop,NUMAIRCRAFTPTS);
+		  SelectObject(hdc, hDrawPen);
 	    }
 	  /*************************************************************************
 	   * calculate climb color
@@ -900,19 +921,28 @@ for (j=0; j<nEntrys; j++)
 	  /*************************************************************************
 	   * draw label
 	   *************************************************************************/
+
+
+
+
 	  wsprintf(lbuffer,_T(""));
 	  if (DrawInfo.FLARM_Traffic[i].Cn && DrawInfo.FLARM_Traffic[i].Cn[0]!=_T('?')) { // 100322
 	  	_tcscat(lbuffer,DrawInfo.FLARM_Traffic[i].Cn);
+
 	  }
 
 	  if (_tcslen(lbuffer) >0)
 		_stprintf(lbuffer,_T("%s:%3.1f"),lbuffer,LIFTMODIFY*DrawInfo.FLARM_Traffic[i].Average30s);
 	  else
 		_stprintf(lbuffer,_T("%3.1f"),LIFTMODIFY*DrawInfo.FLARM_Traffic[i].Average30s);
-
-	  SetBkMode(hdc, TRANSPARENT);
-
+/*
+	  extern FlarmIdFile file;
+	  FlarmId* flarmId = file.GetFlarmIdItem(DrawInfo.FLARM_Traffic[i].ID);
+	  if (flarmId != NULL)
+	    _stprintf(lbuffer,_T("%s\r\n %s"),lbuffer,flarmId->type);
+*/
 	  SIZE tsize;
+	  SetBkMode(hdc, TRANSPARENT);
 	  GetTextExtentPoint(hdc, lbuffer, _tcslen(lbuffer), &tsize);
 	  if (_tcslen(lbuffer)>0)
 		TextInBox(hdc, lbuffer, x+tscaler,  y+tscaler, 0, &displaymode, false);
@@ -926,8 +956,10 @@ if(bCenter == false)
 {
   SelectObject(hdc, hDrawBrush);
   SelectObject(hdc, hDrawPen);
+  SelectObject(hdc,GetStockObject(BLACK_PEN));
   PolygonRotateShift(AircraftTop, NUMAIRCRAFTPTS, x_middle, y_middle,RADAR_TURN);
   Polygon(hdc,AircraftTop,NUMAIRCRAFTPTS);
+  SelectObject(hdc, hDrawPen);
 }
 
 /*************************************************************************
@@ -972,7 +1004,7 @@ if(bSideview)
 		  bCenter = true;
 		  SelectObject(hdc, hDrawBrush);
 		  SelectObject(hdc, hDrawPen);
-		  RenderFlarmPlaneSideview( hdc, rc,0 , 0,RADAR_TURN, &sDia , 0.8);
+		  RenderFlarmPlaneSideview( hdc, rc,0 , 0,RADAR_TURN, &sDia , fPlaneSize);
 		}
 	  /*************************************************************************
 	   * get the climb color
@@ -990,7 +1022,7 @@ if(bSideview)
 			Circle(hdc, x, hy, iCircleSize, rc, true, true );
 			break;
 		default:
-			RenderFlarmPlaneSideview( hdc,   rc, fx,  fFlarmAlt, asFLRAMPos[i].fFlarmBearing , &sDia , 0.8/*1.0 - cos(fDistBearing*DEG_TO_RAD)/4*/);
+			RenderFlarmPlaneSideview( hdc,   rc, fx,  fFlarmAlt, asFLRAMPos[i].fFlarmBearing , &sDia , fPlaneSize/*1.0 - cos(fDistBearing*DEG_TO_RAD)/4*/);
 			break;
 	  }
 	  /*********************************************
@@ -1009,7 +1041,7 @@ if(bSideview)
   SelectObject(hdc, hDrawBrush);
 //  if(bSideview)
   if(!bCenter)
-    RenderFlarmPlaneSideview( hdc, rc,0 , 0,RADAR_TURN, &sDia , 0.8);
+    RenderFlarmPlaneSideview( hdc, rc,0 , 0,RADAR_TURN, &sDia , fPlaneSize);
 }
 
   //
