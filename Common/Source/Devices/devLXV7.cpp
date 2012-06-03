@@ -190,7 +190,7 @@ bool DevLXV7::SetupLX_Sentence(PDeviceDescriptor_t d)
 TCHAR  szTmp[254];
 
 
-_stprintf(szTmp, TEXT("$PLXV0,NMEARATE,W,5,5,0,0,0,0,0"));
+_stprintf(szTmp, TEXT("$PLXV0,NMEARATE,W,2,5,0,0,1,0,0"));
   LXV7NMEAddCheckSumStrg(szTmp);
   d->Com->WriteString(szTmp);
 
@@ -329,17 +329,17 @@ BOOL DevLXV7::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
       SetupLX_Sentence(d);
 	  i=0;
     }
-  }
 
-  static int oldQFEOff =0;
-  static int iOldQNH   =0;
+
+    static int oldQFEOff =0;
+    static int iOldQNH   =0;
 
 
 
     int iQNH = (int)(QNH*100.0);
     if(iQNH != iOldQNH)
     {
-  	iOldQNH = iQNH;
+  	  iOldQNH = iQNH;
       _stprintf(szTmp, TEXT("$PLXV0,QNH,W,%i"),(int)iQNH);
       LXV7NMEAddCheckSumStrg(szTmp);
       d->Com->WriteString(szTmp);
@@ -348,17 +348,18 @@ BOOL DevLXV7::ParseNMEA(PDeviceDescriptor_t d, TCHAR* sentence, NMEA_INFO* info)
     int QFE = (int)QFEAltitudeOffset;
     if(QFE != oldQFEOff)
     {
-  	oldQFEOff = QFE;
+  	  oldQFEOff = QFE;
       _stprintf(szTmp, TEXT("$PLXV0,ELEVATION,W,%i"),(int)(QFEAltitudeOffset));
       LXV7NMEAddCheckSumStrg(szTmp);
   //    d->Com->WriteString(szTmp);
     }
-    if(LXV7_iGPSBaudrate ==0)
-    {
-      _stprintf(szTmp, TEXT("$PLXV0,BRGPS,R"));
-      LXV7NMEAddCheckSumStrg(szTmp);
-      d->Com->WriteString(szTmp);
-    }
+  }
+  if(LXV7_iGPSBaudrate ==0)
+  {
+    _stprintf(szTmp, TEXT("$PLXV0,BRGPS,R"));
+    LXV7NMEAddCheckSumStrg(szTmp);
+    d->Com->WriteString(szTmp);
+  }
 
 if (_tcsncmp(_T("$PLXVF"), sentence, 6) == 0)
   return PLXVF(d, sentence + 7, info);
@@ -368,6 +369,11 @@ else
   else
 	if (_tcsncmp(_T("$PLXV0"), sentence, 6) == 0)
 	  return PLXV0(d, sentence + 7, info);
+	else
+      if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
+        return LXWP2(d, sentence + 7, info);
+
+
 #ifdef OLD_LX_SENTENCES
 	else
       if (_tcsncmp(_T("$LXWP0"), sentence, 6) == 0)
@@ -376,14 +382,11 @@ else
         if (_tcsncmp(_T("$LXWP1"), sentence, 6) == 0)
           return LXWP1(d, sentence + 7, info);
         else
-          if (_tcsncmp(_T("$LXWP2"), sentence, 6) == 0)
-            return LXWP2(d, sentence + 7, info);
+          if (_tcsncmp(_T("$LXWP3"), sentence, 6) == 0)
+            return LXWP3(d, sentence + 7, info);
           else
-            if (_tcsncmp(_T("$LXWP3"), sentence, 6) == 0)
-              return LXWP3(d, sentence + 7, info);
-            else
-              if (_tcsncmp(_T("$LXWP4"), sentence, 6) == 0)
-                return LXWP4(d, sentence + 7, info);
+            if (_tcsncmp(_T("$LXWP4"), sentence, 6) == 0)
+              return LXWP4(d, sentence + 7, info);
 #endif
   return(false);
 } // ParseNMEA()
@@ -593,60 +596,6 @@ bool DevLXV7::LXWP3(PDeviceDescriptor_t, const TCHAR*, NMEA_INFO*)
 } // LXWP3()
 
 
-bool DevLXV7::PutGPRMB(PDeviceDescriptor_t d)
-{
-
-//RMB - The recommended minimum navigation sentence is sent whenever a route or a goto is active.
-//      On some systems it is sent all of the time with null data.
-//      The Arrival alarm flag is similar to the arrival alarm inside the unit and can be decoded to
-//      drive an external alarm.
-//      Note: the use of leading zeros in this message to preserve the character spacing.
-//      This is done, I believe, because some autopilots may depend on exact character spacing.
-//
-//     $GPRMB,A,0.66,L,003,004,4917.24,N,12309.57,W,001.3,052.5,000.5,V*20
-//where:
-//           RMB          Recommended minimum navigation information
-//           A            Data status A = OK, V = Void (warning)
-//           0.66,L       Cross-track error (nautical miles, 9.99 max),
-//                                steer Left to correct (or R = right)
-//           003          Origin waypoint ID
-//           004          Destination waypoint ID
-//           4917.24,N    Destination waypoint latitude 49 deg. 17.24 min. N
-//           12309.57,W   Destination waypoint longitude 123 deg. 09.57 min. W
-//           001.3        Range to destination, nautical miles (999.9 max)
-//           052.5        True bearing to destination
-//           000.5        Velocity towards destination, knots
-//           V            Arrival alarm  A = arrived, V = not arrived
-//           *20          checksum
-
-TCHAR  szTmp[256];
-/*
-extern START_POINT StartPoints[];
-extern TASK_POINT Task[];
-extern TASKSTATS_POINT TaskStats[];
-extern WAYPOINT *WayPointList;
-extern WPCALC   *WayPointCalc;
-*/
-//WayPointCalc->
-  int overindex = GetOvertargetIndex();
-  _stprintf(
-      szTmp,
-      TEXT("$GPRMB,A,0.66,L,EDLG,%6s,%010.5f,N,%010.5f,E,%05.1f,%05.1f,%05.1f,V"),
-
-      WayPointList[overindex].Name,
-      WayPointList[overindex].Latitude * 100,
-      WayPointList[overindex].Longitude * 100,
-      WayPointCalc->Distance * 1000 * TONAUTICALMILES, WayPointCalc->Bearing,
-      WayPointCalc->VGR * TOKNOTS);
-
-  //  _stprintf(szTmp, TEXT("$GPRMB,A,0.00,L,KLE,UWOE,4917.24,N,12309.57,E,011.3,052.5,000.5,V"));
-  LXV7NMEAddCheckSumStrg(szTmp);
-
-  d->Com->WriteString(szTmp);
-
-
-return(true);
-}
 
 
 bool DevLXV7::LXWP4(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
@@ -785,7 +734,7 @@ double OAT;
 bool DevLXV7::PLXV0(PDeviceDescriptor_t d, const TCHAR* sentence, NMEA_INFO* info)
 {
 TCHAR  szTmp1[80], szTmp2[80];
-int iTmp;
+
 
 
 
@@ -798,36 +747,35 @@ int iTmp;
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
 	LXV7_iGPSBaudrate = Baudrate( (int)( (StrToDouble(szTmp2,NULL))+0.1 ) );
+	return true;
   }
 
   if (_tcscmp(szTmp1,_T("BRPDA"))==0)
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
 	LXV7_iPDABaudrate = Baudrate( (int) StrToDouble(szTmp2,NULL));
+	return true;
   }
-
+#ifdef DEBUG_PARAMETERS
   if (_tcscmp(szTmp1,_T("MC"))==0)
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
 	iTmp =(int) StrToDouble(szTmp2,NULL);
+	return true;
   }
 
   if (_tcscmp(szTmp1,_T("BAL"))==0)
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
 	iTmp = (int) StrToDouble(szTmp2,NULL);
+	return true;
   }
 
   if (_tcscmp(szTmp1,_T("BUGS"))==0)
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
 	iTmp = (int) StrToDouble(szTmp2,NULL);
-  }
-
-  if (_tcscmp(szTmp1,_T("BUGS"))==0)
-  {
-	NMEAParser::ExtractParameter(sentence,szTmp2,2);
-	iTmp = (int) StrToDouble(szTmp2,NULL);
+	return true;
   }
 
 
@@ -835,25 +783,29 @@ int iTmp;
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
 	iTmp = (int) StrToDouble(szTmp2,NULL);
+	return true;
   }
 
   if (_tcscmp(szTmp1,_T("POLAR"))==0)
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
 	iTmp = (int) StrToDouble(szTmp2,NULL);
+	return true;
   }
 
   if (_tcscmp(szTmp1,_T("CONNECTION"))==0)
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
 	iTmp = (int) StrToDouble(szTmp2,NULL);
+	return true;
   }
 
   if (_tcscmp(szTmp1,_T("NMEARATE"))==0)
   {
 	NMEAParser::ExtractParameter(sentence,szTmp2,2);
 	iTmp = (int) StrToDouble(szTmp2,NULL);
+	return true;
   }
-
-  return(true);
+#endif
+  return(false);
 } // PLXV0()
