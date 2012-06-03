@@ -1,5 +1,25 @@
 VERSION 3.1 MANUAL ADDENDUM
 ===========================
+FLARM RADAR
+-----------
+The Radar page works similar to the well know Butterfly display and its derivates.
+
+Zoom works like in normal map from 1km..100km
+
+Press on center (enter) will switch between 4 different Radar screens optimized for different screen modes (landscape and portrait)
+
+colors:
+dark blue:         vario < -1,5m/s
+blue:              vario < 0.5m/s
+yellow: -0.5m/s <= vario <= 0.5m/s
+green:             vario > 0.5m/s
+light green:       vario > 1.5m/s
+
+shape:
+arrow:    active Flarm object
+square:   zombie
+dot:      ghost
+
 
 CUSTOM MENU
 -----------
@@ -71,6 +91,8 @@ and they are now independent items.
 
 LXnav V7 support
 ----------------
+IMPORTANT Note: The driver need a V7 firmware 1.98 or higher. It can be found here
+http://www.lxnav.com/download/firmware.html
 
 The LXnav V7 instrument has the ability to be controlled by a PDA. 
 Since the V7 is compatible to the older LX instruments, you can use the common LX drivers (LX, LX16xx).  Thanks to LXnav we developed an additional commandset in oder to fully support the V7.
