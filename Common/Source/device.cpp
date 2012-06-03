@@ -772,20 +772,23 @@ BOOL devPutFreqStandby(PDeviceDescriptor_t d, double Freq)
 static BOOL 
 FlarmDeclareSetGet(PDeviceDescriptor_t d, TCHAR *Buffer) {
   //devWriteNMEAString(d, Buffer);
-
+int j;
   TCHAR tmp[512];
-
+for(j=0; j < 4; j++)
+{
   _sntprintf(tmp, 512, TEXT("$%s\r\n"), Buffer);
 
   if (d->Com)
     d->Com->WriteString(tmp);
 
   Buffer[6]= _T('A');
-  for(int i=0; i < 10; i ++) /* try to get expected answer max 10 times*/
+  for(int i=0; i < 5; i++) /* try to get expected answer max 20 times*/
   {
     if (ExpectString(d, Buffer))
 	  return true;
+    Sleep(20);
   }
+}
   return false;
 
 };
@@ -796,8 +799,10 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
   BOOL result = TRUE;
 #define BUFF_LEN 512
   TCHAR Buffer[BUFF_LEN];
+ for(int i=0; i < 3; i++)
+ {
   d->Com->StopRxThread();
-  d->Com->SetRxTimeout(50);                     // set RX timeout to 50[ms]
+  d->Com->SetRxTimeout(100);                     // set RX timeout to 50[ms]
 
 
   _stprintf(Buffer,TEXT("PFLAC,S,PILOT,%s"),decl->PilotName);
@@ -869,8 +874,11 @@ BOOL FlarmDeclare(PDeviceDescriptor_t d, Declaration_t *decl, unsigned errBuffer
   Sleep(100);
 
 
-
   d->Com->SetRxTimeout(RXTIMEOUT);                       // clear timeout
   d->Com->StartRxThread();                       // restart RX thread
-  return result;
+  if(result == TRUE)
+    return result;
+  Sleep(100);
+}
+ return false; // no success
 }
