@@ -13,7 +13,9 @@
 #include "Bitmaps.h"
 #include "DoInits.h"
 
+#define NO_VARIO_COLORS 9 //  this is also defined in DrawFlarmRadar
 
+extern HBRUSH * variobrush[NO_VARIO_COLORS];
 
 // This is painting traffic icons on the screen.
 void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
@@ -23,6 +25,8 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
   if (!DrawInfo.FLARM_Available) return;
 
   // init scaled coords for traffic icon
+static int	iCircleSize = 7;
+static int	iRectangleSize = 4;
   static short scaler[5];
   static short tscaler=0;
   if (DoInit[MDI_DRAWFLARMTRAFFIC]) {
@@ -33,6 +37,8 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
 		case ss896x672:
 		case ss800x480:
 		case ss640x480:
+			iCircleSize = 9;
+			iRectangleSize = 5;
 			scaler[0]=-1*(NIBLSCALE(4)-2);
 			scaler[1]=NIBLSCALE(5)-2;
 			scaler[2]=-1*(NIBLSCALE(6)-2);
@@ -47,6 +53,8 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
 		case ss720x408:
 		case ss480x234:
 		case ss400x240:
+			iCircleSize = 7;
+			iRectangleSize = 4;
 			scaler[0]=-1*(NIBLSCALE(8)-2);
 			scaler[1]=NIBLSCALE(10)-2;
 			scaler[2]=-1*(NIBLSCALE(12)-2);
@@ -55,6 +63,8 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
 			tscaler=NIBLSCALE(13)-2;
 			break;
 		default:
+			iCircleSize = 7;
+			iRectangleSize = 4;
 			scaler[0]=-1*NIBLSCALE(4);
 			scaler[1]=NIBLSCALE(5);
 			scaler[2]=-1*NIBLSCALE(6);
@@ -89,9 +99,9 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
   double scalefact = screenrange/6000.0; // FIX 100820
   #endif
 
-  HBRUSH redBrush = LKBrush_Red;
-  HBRUSH yellowBrush = LKBrush_Yellow;
-  HBRUSH greenBrush = LKBrush_Green;
+
+
+
   HFONT  oldfont = (HFONT)SelectObject(hDC, LK8MapFont);
 
   for (i=0,painted=0; i<FLARM_MAX_TRAFFIC; i++) {
@@ -174,7 +184,7 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
 		Arrow[3].y = scaler[4];
 		Arrow[4].x = scaler[0];
 		Arrow[4].y = scaler[1];
-
+/*
 		switch (DrawInfo.FLARM_Traffic[i].Status) { // 100321
 			case LKT_GHOST:
 				SelectObject(hDC, yellowBrush);
@@ -186,9 +196,28 @@ void MapWindow::LKDrawFLARMTraffic(HDC hDC, RECT rc, POINT Orig_Aircraft) {
 				SelectObject(hDC, greenBrush);
 				break;
 		}
+*/
+		  /*************************************************************************
+		   * calculate climb color
+		   *************************************************************************/
 
-		PolygonRotateShift(Arrow, 5, sc.x, sc.y, DrawInfo.FLARM_Traffic[i].TrackBearing - DisplayAngle);
-		Polygon(hDC,Arrow,5);
+		  int iVarioIdx = (int)(2*DrawInfo.FLARM_Traffic[i].Average30s  -0.5)+NO_VARIO_COLORS/2;
+		  if(iVarioIdx < 0) iVarioIdx =0;
+		  if(iVarioIdx >= NO_VARIO_COLORS) iVarioIdx =NO_VARIO_COLORS-1;
+		  SelectObject(hDC, *variobrush[iVarioIdx]);
+
+		  switch (DrawInfo.FLARM_Traffic[i].Status) { // 100321
+			case LKT_GHOST:
+				Rectangle(hDC, sc.x-iRectangleSize,  sc.y-iRectangleSize,sc.x+iRectangleSize, sc.y+iRectangleSize);
+				break;
+			case LKT_ZOMBIE:
+				Circle(hDC,  sc.x,  sc.x, iCircleSize, rc, true, true );
+				break;
+			default:
+				PolygonRotateShift(Arrow, 5, sc.x, sc.y, DrawInfo.FLARM_Traffic[i].TrackBearing - DisplayAngle);
+				Polygon(hDC,Arrow,5);
+				break;
+		  }
 
 	}
   }

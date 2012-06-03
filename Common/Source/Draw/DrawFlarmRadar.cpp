@@ -17,6 +17,8 @@
 #include "LKMapWindow.h"
 #include "FlarmIdFile.h"
 
+#define NO_VARIO_COLORS 9 //  this is also defined in LKDrawFLARMTraffic
+
 int RADAR_TURN = 90 ;            /* radar plane orientation             */
 #define HEIGHT_RANGE (800.0  )    /* max hight ifference above and below */
 double ASYMETRIC_FACTOR = 0.7 ;     /* X center displacement               */
@@ -30,7 +32,7 @@ using std::min;
 using std::max;
 
 
-#define NO_VARIO_COLORS 9
+
 
 HBRUSH * variobrush[NO_VARIO_COLORS] = {
 		  &LKBrush_Vario_neg4,
@@ -608,6 +610,8 @@ DiagrammStruct sDia;
 			tscaler=(NIBLSCALE(13)-2)      ;
 			break;
 		default:
+			iCircleSize = 7;
+			iRectangleSize = 4;
 			scaler[0]=(short)(-1*NIBLSCALE(4) * fTopViewPlaneSize);
 			scaler[1]=(short)(NIBLSCALE(5)    * fTopViewPlaneSize);
 			scaler[2]=(short)(-1*NIBLSCALE(6) * fTopViewPlaneSize);
@@ -1060,6 +1064,7 @@ SelectObject(hdc, hOldPen);
 SelectObject(hdc, hOldBrush);
 DeleteObject (hGreenPen);
 DeleteObject (hOrangePen);
+DeleteObject (hWhitePen);
 
 }
 
