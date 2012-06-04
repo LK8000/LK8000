@@ -11,6 +11,7 @@
 #include "LKObjects.h"
 #include "RGB.h"
 #include "DoInits.h"
+#include "Modeltype.h"
 
 extern void LoadSplash(HDC hDC, TCHAR *splashfile);
 
@@ -112,6 +113,13 @@ RECT frc = rc;
 		}
 		}
 #endif
+		if(GlobalModelType==MODELTYPE_PNA_MINIMAP)
+		{
+			SetModeType(LKMODE_MAP,MP_MOVING);
+			LKevent=LKEVENT_NONE;
+			break;
+		}
+
 		DrawWelcome8000(hdc, rc);
 		break;
 	case MSM_LANDABLE:
