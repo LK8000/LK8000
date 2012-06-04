@@ -412,7 +412,7 @@ goto_bearing:
 				_stprintf(BufferTitle, MsgToken(1032));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
+			if ( (ValidTaskPoint(ActiveWayPoint) != false) && DerivedDrawInfo.ValidStart ) {
 				if (DoOptimizeRoute()) index=RESWP_OPTIMIZED;
 				else index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
@@ -434,7 +434,7 @@ goto_bearing:
 				_stprintf(BufferTitle, MsgToken(1034));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
+			if ( (ValidTaskPoint(ActiveWayPoint) != false) && DerivedDrawInfo.ValidStart ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
 					value=ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeRequired;
@@ -921,7 +921,7 @@ goto_bearing:
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
 
-			if ( (ValidTaskPoint(ActiveWayPoint) != false) && (DerivedDrawInfo.TaskTimeToGo< 0.9*ERROR_TIME)) {
+			if ( (ValidTaskPoint(ActiveWayPoint) != false) && DerivedDrawInfo.ValidStart && (DerivedDrawInfo.TaskTimeToGo< 0.9*ERROR_TIME)) {
 				if (DerivedDrawInfo.TaskTimeToGo > 0) {
 					valid=true;
 					Units::TimeToText(BufferValue, (int)DerivedDrawInfo.TaskTimeToGo+DetectCurrentTime());
@@ -1371,7 +1371,7 @@ goto_bearing:
 				_stprintf(BufferTitle, MsgToken(1134));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
+			if ( (ValidTaskPoint(ActiveWayPoint) != false) && DerivedDrawInfo.ValidStart ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
 					// the ValidFinish() seem to return FALSE when is actually valid.
@@ -2276,7 +2276,7 @@ olc_score:
 			else
 				// LKTOKEN  _@M1191_ = "TskArr0"
 				_stprintf(BufferTitle, MsgToken(1191));
-			if ( ValidTaskPoint(ActiveWayPoint) != false ) {
+			if ( (ValidTaskPoint(ActiveWayPoint) != false) && DerivedDrawInfo.ValidStart ) {
 				index = Task[ActiveWayPoint].Index;
 				if (index>=0) {
 					value=ALTITUDEMODIFY*DerivedDrawInfo.TaskAltitudeDifference0;
@@ -2300,7 +2300,7 @@ lkfin_ete:
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[LK_FIN_ETE].Title );
 				// ^^ Notice we use LK_FIN_ETE, NOT LK_LKFIN_ETE which does NOT exist in DataOptions!
 
-			if ( ValidTaskPoint(ActiveWayPoint) ) { // 091222
+			if ( (ValidTaskPoint(ActiveWayPoint) != false) && DerivedDrawInfo.ValidStart ) {
 				if (DerivedDrawInfo.TaskTimeToGo > 0) { 
 					valid=true;
 					if ( Units::TimeToTextDown(BufferValue, (int)DerivedDrawInfo.TaskTimeToGo))
