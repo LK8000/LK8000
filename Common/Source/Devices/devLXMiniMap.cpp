@@ -628,7 +628,7 @@ BOOL DevLXMiniMap::DeclareTaskMinimap(PDeviceDescriptor_t d,
 
     if (status)
     {
-      ShowProgress(l);
+      ShowProgress(decl_send);
       status = status && WriteDecl(d, decl, errBufSize, errBuf);
       status = status && WriteClass(d, lxClass, errBufSize, errBuf);
     }
