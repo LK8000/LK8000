@@ -1,24 +1,49 @@
 VERSION 3.1 MANUAL ADDENDUM
 ===========================
+
 FLARM RADAR
 -----------
-The Radar page works similar to the well know Butterfly display and its derivates.
 
-Zoom works like in normal map from 1km..100km
+The Radar page works similar to the well-known Butterfly displays and it's derivates, but has some more features: 
 
-Press on center (enter) will switch between 4 different Radar screens optimized for different screen modes (landscape and portrait)
+-sideview to the see the vertical distances at a glance
+-colored scheme to see the climb rates at a glance
+-labels and climb rates of “all” FLARM objects
+-different shapes for ghosts and zombies
+-direct "link line" to target object
 
-colors:
+Zoom works like in normal map from 1km..100km, clicking in the upper third of the display zooms the scale, clicking in the lower third unzooms the scale.
+
+Press on center (enter) will switch between 4 different Radar screens (RDR.x), optimized for different screen modes (landscape and portrait):
+
+RDR.1
+Glider position left of center, heading to the right screen position, to see more space in front. (for landscape)
+
+RDR.2
+Glider position center, heading to top of the screen. (for protrait)
+
+RDR.3
+Same as RDR.2 but without the sideview diagram for maximum top view (similar to Butterfly displays)
+
+RDR.4
+glider position center heading to right side of the screen. (for landscape)
+
+
+Colors scheme to indicate the current climb rates (30s integral):
 dark blue:         vario < -1,5m/s
 blue:              vario < 0.5m/s
 yellow: -0.5m/s <= vario <= 0.5m/s
 green:             vario > 0.5m/s
 light green:       vario > 1.5m/s
 
-shape:
+Shapes:
 arrow:    active Flarm object
 square:   zombie
 dot:      ghost
+
+Target:
+If a FLARM target object is selected it will be connected with a straight line between own and the target position.
+
 
 
 CUSTOM MENU
