@@ -155,6 +155,10 @@ int GlobalToBoxType(int i) {
 		case MODELTYPE_PNA_ROYALTEK3200:
 				iTmp=(InfoBoxModelAppearance_t)apImPnaRoyaltek3200;
 				break;
+		case MODELTYPE_PNA_MINIMAP:
+				iTmp=(InfoBoxModelAppearance_t)apImPnaMinimap;
+				break;
+
 		default:
 				iTmp=(InfoBoxModelAppearance_t)apImPnaGeneric;
 	}

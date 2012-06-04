@@ -55,6 +55,10 @@ void SmartGlobalModelType() {
 					GlobalModelType=MODELTYPE_PNA_ROYALTEK3200;
 			}
 		else
+			if ( !_tcscmp(GlobalModelName,_T("MINIMAP"))) {
+				GlobalModelType=MODELTYPE_PNA_MINIMAP;
+			}
+		else
 			_tcscpy(GlobalModelName,_T("UNKNOWN") );
 	} else	
 		_tcscpy(GlobalModelName, _T("UNKNOWN") );
@@ -97,6 +101,9 @@ bool SetModelName(DWORD Temp) {
   case MODELTYPE_PNA_ROYALTEK3200:
     _tcscpy(GlobalModelName,_T("ROYALTEK3200"));
     return true;
+  case MODELTYPE_PNA_MINIMAP:
+     _tcscpy(GlobalModelName,_T("MINIMAP"));
+     return true;
   default:
     _tcscpy(GlobalModelName,_T("UNKNOWN"));
     return false;

@@ -62,7 +62,7 @@ typedef enum{
   bit7E1,
 }BitIndex_t;
 
-// VENTA-ADDON MODEL
+
 typedef enum{
 	apImPnaGeneric=0,
 	apImPnaHp31x,
@@ -73,6 +73,7 @@ typedef enum{
 	apImPnaNavigon,
 	apImPnaFuntrek,
 	apImPnaRoyaltek3200,
+        apImPnaMinimap
 }InfoBoxModelAppearance_t;
 
 typedef enum{
