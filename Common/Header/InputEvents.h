@@ -113,7 +113,7 @@ class InputEvents {
 
   static void showErrors();
 
-#if 1 // LXMINIMAP
+#ifdef LXMINIMAP
   static int getSelectedButtonIndex();
   static void eventMinimapKey(const TCHAR *misc);
   static void eventChangeSorting(const TCHAR *misc);

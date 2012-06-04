@@ -25,7 +25,7 @@
 #include "Parser.h"
 #include "DoInits.h"
 #include "Logger.h"
-#if 1 // LXMINIMAP
+#ifdef LXMINIMAP
 #include "Modeltype.h"
 #endif
 #include "utils/stl_utils.h"
@@ -88,7 +88,7 @@ static int NMEA_Queue[MAX_NMEA_QUEUE];
 // -----------------------------------------------------------------------
 
 bool InitONCE = false;
-#if 1 // LXMINIMAP
+#ifdef LXMINIMAP
 int SelectedButtonIndex=0;
 bool IsMenuShown = false;
 //bool SelectMode = false;
@@ -429,7 +429,7 @@ int InputEvents::findKey(const TCHAR *data) {
     return VK_RETURN;
   else if (_tcscmp(data, TEXT("ESCAPE")) == 0)
     return VK_ESCAPE;
-#if 1 // LXMINIMAP
+#ifdef LXMINIMAP
   else if (_tcscmp(data, TEXT("SPACE")) == 0)
     return VK_SPACE;
 #endif
@@ -530,7 +530,7 @@ void InputEvents::setMode(const TCHAR *mode) {
   static int lastmode = -1;
   int thismode;
 
-#if 1 // LXMINIMAP
+#ifdef LXMINIMAP
  if(GlobalModelType==MODELTYPE_PNA_MINIMAP)
     {
 
@@ -601,7 +601,7 @@ int InputEvents::getModeID() {
 bool InputEvents::processButton(int bindex) {
   if (!(ProgramStarted==psNormalOp)) return false;
 
-  #if 1 // LXMINIMAP
+  #ifdef LXMINIMAP
   SelectedButtonIndex= bindex;
   #endif
   int thismode = getModeID();
@@ -722,7 +722,7 @@ bool InputEvents::processKey(int dWord) {
     for (i = ModeLabel_count[mode]; i >= 0; i--) {
       if ((ModeLabel[mode][i].event == event_id)) {
         bindex = ModeLabel[mode][i].location;
-#if 1 // LXMINIMAP
+#ifdef LXMINIMAP
         SelectedButtonIndex = bindex;
 #endif
         pLabelText = ModeLabel[mode][i].label;
@@ -3111,7 +3111,7 @@ void NextUpDown(int UpDown)
 //       ***************** MINIMAP ONLY ************************
 //
 
-#if 1 // LXMINIMAP ONLY
+#ifdef LXMINIMAP
 
 int InputEvents::getSelectedButtonIndex()
 {
