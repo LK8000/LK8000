@@ -16,8 +16,8 @@
 #include "MapWindow.h"
 #include "LKMapWindow.h"
 #include "FlarmIdFile.h"
+#include "FlarmRadar.h"
 
-#define NO_VARIO_COLORS 9 //  this is also defined in LKDrawFLARMTraffic
 
 int RADAR_TURN = 90 ;            /* radar plane orientation             */
 #define HEIGHT_RANGE (800.0  )    /* max hight ifference above and below */

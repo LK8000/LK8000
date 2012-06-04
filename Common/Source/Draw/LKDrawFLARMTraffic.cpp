@@ -12,8 +12,7 @@
 #include "LKObjects.h"
 #include "Bitmaps.h"
 #include "DoInits.h"
-
-#define NO_VARIO_COLORS 9 //  this is also defined in DrawFlarmRadar
+#include "FlarmRadar.h"
 
 extern HBRUSH * variobrush[NO_VARIO_COLORS];
 
