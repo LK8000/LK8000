@@ -3408,5 +3408,9 @@ void InputEvents::eventMinimapKey(const TCHAR *misc)
 	   }
 
 }
+#else // LXMINIMAP
 
-#endif // MINIMAP
+void InputEvents::eventMinimapKey(const TCHAR *misc) {
+};
+
+#endif // no LXMINIMAP
