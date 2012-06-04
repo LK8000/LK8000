@@ -113,6 +113,13 @@ class InputEvents {
 
   static void showErrors();
 
+#if 1 // LXMINIMAP
+  static int getSelectedButtonIndex();
+  static void eventMinimapKey(const TCHAR *misc);
+  static void eventChangeSorting(const TCHAR *misc);
+  static bool isSelectMode();
+#endif
+
  private:
   static bool processGlideComputer_real(int);
   static bool processNmea_real(int key);

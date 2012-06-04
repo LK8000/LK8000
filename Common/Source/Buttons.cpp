@@ -7,6 +7,9 @@
 */
 #include "externs.h"
 #include "InfoBoxLayout.h"
+#if 1 // LXMINIMAP
+#include "InputEvents.h"
+#endif
 
 using std::min;
 using std::max;
@@ -322,9 +325,19 @@ void ButtonLabel::SetLabelText(int index, const TCHAR *text) {
     bool greyed = ExpandMacros(text, s, sizeof(s)/sizeof(s[0]));
 
     if (greyed) {
+	#if 1 // LXMINIMAP
+        if(InputEvents::getSelectedButtonIndex() == index)
+		SetWindowLong(hWndButtonWindow[index], GWL_USERDATA, 7);
+	else
+	#endif
       SetWindowLong(hWndButtonWindow[index], GWL_USERDATA, 5);
       ButtonDisabled[index]= true;
     } else {
+	#if 1 // LXMINIMAP
+	if(InputEvents::getSelectedButtonIndex() == index)
+		SetWindowLong(hWndButtonWindow[index], GWL_USERDATA, 6);
+	else
+	#endif
       SetWindowLong(hWndButtonWindow[index], GWL_USERDATA, 4);
       ButtonDisabled[index]= false;
     }

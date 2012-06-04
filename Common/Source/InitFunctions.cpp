@@ -31,11 +31,17 @@ using std::max;
 extern HBRUSH hBrushSelected;
 extern HBRUSH hBrushUnselected;
 extern HBRUSH hBrushButton;
+#if 1 // LXMINIMAP
+extern HBRUSH hBrushButtonHasFocus;
+#endif
 extern COLORREF ColorSelected;
 extern COLORREF ColorUnselected;
 extern COLORREF ColorWarning;
 extern COLORREF ColorOK;
 extern COLORREF ColorButton;
+#if 1 // LXMINIMAP
+extern COLORREF ColorButtonHasFocus;
+#endif
 
 
 
@@ -246,6 +252,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   hBrushSelected = (HBRUSH)CreateSolidBrush(ColorSelected);
   hBrushUnselected = (HBRUSH)CreateSolidBrush(ColorUnselected);
   hBrushButton = (HBRUSH)CreateSolidBrush(ColorButton);
+  #if 1 // LXMINIMAP
+  hBrushButtonHasFocus = (HBRUSH)CreateSolidBrush(ColorButtonHasFocus);
+  #endif
 
   GetClientRect(hWndMainWindow, &rc);
 

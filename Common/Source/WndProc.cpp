@@ -22,11 +22,17 @@
 HBRUSH hBrushSelected;
 HBRUSH hBrushUnselected;
 HBRUSH hBrushButton;
+#if 1 // LXMINIMAP
+HBRUSH hBrushButtonHasFocus;
+#endif
 COLORREF ColorSelected = RGB(0xC0,0xC0,0xC0);
 COLORREF ColorUnselected = RGB_WHITE;
 COLORREF ColorWarning = RGB_RED;
 COLORREF ColorOK = RGB_BLUE;
 COLORREF ColorButton = RGB_BUTTONS;  
+#if 1 // LXMINIMAP
+COLORREF ColorButtonHasFocus=RGB_DARKYELLOW2;
+#endif
 
 static int iTimerID= 0;
 
@@ -90,6 +96,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	SetBkColor((HDC)wParam, ColorButton);
         SetTextColor((HDC)wParam, RGB(0x80,0x80,0x80));
 	return (LRESULT)hBrushButton;
+#if 1 // LXMINIMAP
+      case 6:
+        // black on dark yellow
+        SetTextColor((HDC)wParam, RGB_BLACK);
+        SetBkColor((HDC)wParam, ColorButtonHasFocus);
+        return (LRESULT)hBrushButtonHasFocus;
+      case 7:
+        // grey on dark yellow
+        SetTextColor((HDC)wParam, RGB(0x80,0x80,0x80));
+        SetBkColor((HDC)wParam, ColorButtonHasFocus);
+        return (LRESULT)hBrushButtonHasFocus;
+#endif
+
       }
       break;
     case WM_CREATE:
@@ -375,6 +394,9 @@ void Shutdown(void) {
   DeleteObject(hBrushSelected);
   DeleteObject(hBrushUnselected);
   DeleteObject(hBrushButton);
+  #if 1 // LXMINIMAP
+  DeleteObject(hBrushButtonHasFocus);
+  #endif
 
   extern void DeInitialiseFonts(void);
   DeInitialiseFonts();  

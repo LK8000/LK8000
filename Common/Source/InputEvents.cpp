@@ -25,6 +25,9 @@
 #include "Parser.h"
 #include "DoInits.h"
 #include "Logger.h"
+#if 1 // LXMINIMAP
+#include "Modeltype.h"
+#endif
 #include "utils/stl_utils.h"
 
 using std::min;
@@ -85,6 +88,13 @@ static int NMEA_Queue[MAX_NMEA_QUEUE];
 // -----------------------------------------------------------------------
 
 bool InitONCE = false;
+#if 1 // LXMINIMAP
+int SelectedButtonIndex=0;
+bool IsMenuShown = false;
+//bool SelectMode = false;
+
+long LastActiveSelectMode = 0;//GetTickCount()
+#endif
 
 // Mapping text names of events to the real thing
 typedef struct {
@@ -419,6 +429,10 @@ int InputEvents::findKey(const TCHAR *data) {
     return VK_RETURN;
   else if (_tcscmp(data, TEXT("ESCAPE")) == 0)
     return VK_ESCAPE;
+#if 1 // LXMINIMAP
+  else if (_tcscmp(data, TEXT("SPACE")) == 0)
+    return VK_SPACE;
+#endif
 
   else if (_tcslen(data) == 1)
     return towupper(data[0]);
@@ -516,6 +530,22 @@ void InputEvents::setMode(const TCHAR *mode) {
   static int lastmode = -1;
   int thismode;
 
+#if 1 // LXMINIMAP
+ if(GlobalModelType==MODELTYPE_PNA_MINIMAP)
+    {
+
+
+               if(_tcscmp(mode, TEXT("default")) == 0)
+               {
+                       IsMenuShown=false;
+                       SelectedButtonIndex = 1;
+               }
+               else
+                       IsMenuShown=true;
+
+    }
+#endif
+
   LK_tcsncpy(mode_current, mode, MAX_MODE_STRING-1);
 
   // Mode must already exist to use it here...
@@ -571,6 +601,9 @@ int InputEvents::getModeID() {
 bool InputEvents::processButton(int bindex) {
   if (!(ProgramStarted==psNormalOp)) return false;
 
+  #if 1 // LXMINIMAP
+  SelectedButtonIndex= bindex;
+  #endif
   int thismode = getModeID();
 
   int i;
@@ -689,6 +722,9 @@ bool InputEvents::processKey(int dWord) {
     for (i = ModeLabel_count[mode]; i >= 0; i--) {
       if ((ModeLabel[mode][i].event == event_id)) {
         bindex = ModeLabel[mode][i].location;
+#if 1 // LXMINIMAP
+        SelectedButtonIndex = bindex;
+#endif
         pLabelText = ModeLabel[mode][i].label;
 	#if 0 // REMOVE ANIMATION
         if (bindex>0) {
@@ -1534,7 +1570,7 @@ void InputEvents::eventFlightMode(const TCHAR *misc) {
 // TODO feature: Increase wind by larger amounts ? Set wind to specific amount ?
 //	(may sound silly - but future may get SMS event that then sets wind)
 void InputEvents::eventWind(const TCHAR *misc) {
-#if KEYPAD_WIND
+#if KEYPAD_WIND	// LXMINIMAP may use this? TODO Check
   if (_tcscmp(misc, TEXT("up")) == 0) {
     WindSpeedProcessing(1);
   }
@@ -2859,7 +2895,7 @@ void FullScreen() {
   MapWindow::RequestFastRefresh();
 }
 
-#if KEYPAD_WIND
+#if KEYPAD_WIND // LXMINIMAP TODO CHECK IF NEEDED
 void	WindDirectionProcessing(int UpDown)
 {
 	
@@ -3070,3 +3106,307 @@ void NextUpDown(int UpDown)
   UnlockTaskData();
 }
 
+
+//
+//       ***************** MINIMAP ONLY ************************
+//
+
+#if 1 // LXMINIMAP ONLY
+
+int InputEvents::getSelectedButtonIndex()
+{
+	return SelectedButtonIndex;
+}
+
+
+void InputEvents::eventChangeSorting(const TCHAR *misc)
+{
+      int j = SortedMode[MapSpaceMode];
+
+	  if (_tcscmp(misc, TEXT("PREVIOUS")) == 0)
+	  {
+		  	  if(j==0)
+		  		  j = 4;
+		  	  else
+		  		  j--;
+
+	  }
+	  else
+	  {
+		  if(j>=4)
+		    j = 0;
+		  else
+		    j++;
+	  }
+
+	  switch(MapSpaceMode) {
+	  		case MSM_LANDABLE:
+	  		case MSM_AIRPORTS:
+	  		case MSM_NEARTPS:
+	  					SortedMode[MapSpaceMode]=j;
+	  					LKForceDoNearest=true;
+	  					#ifndef DISABLEAUDIO
+	  					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+	  					#endif
+	  					break;
+	  		case MSM_TRAFFIC:
+	  					SortedMode[MapSpaceMode]=j;
+	  					// force immediate resorting
+	  					LastDoTraffic=0;
+	  					#ifndef DISABLEAUDIO
+	  					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+	  					#endif
+	  					break;
+	  		case MSM_AIRSPACES:
+	  					SortedMode[MapSpaceMode]=j;
+	  					LastDoAirspaces=0;
+	  					#ifndef DISABLEAUDIO
+	  					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+	  					#endif
+	  					break;
+
+	  		case MSM_THERMALS:
+	  					SortedMode[MapSpaceMode]=j;
+	  					// force immediate resorting
+	  					LastDoThermalH=0;
+	  					#ifndef DISABLEAUDIO
+	  					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+	  					#endif
+	  					break;
+	  		default:
+	  				//	DoStatusMessage(_T("ERR-022 UNKNOWN MSM in VK"));
+	  					break;
+	  	}
+	  	SelectedPage[MapSpaceMode]=0;
+	  	SelectedRaw[MapSpaceMode]=0;
+	  	MapWindow::RefreshMap();
+
+}
+
+bool InputEvents::isSelectMode()
+{
+	if(GetTickCount()- LastActiveSelectMode < 5000)
+	{
+		 LastActiveSelectMode = GetTickCount();
+		return true;
+	}
+	else return false;
+}
+
+
+void InputEvents::eventMinimapKey(const TCHAR *misc)
+{
+	//MinimapKey
+
+
+	 if (_tcscmp(misc, TEXT("J")) == 0)
+	 {
+		     PlayResource(TEXT("IDR_WAV_CLICK"));
+			 eventZoom(_T("out"));
+	 }
+	 else if (_tcscmp(misc, TEXT("K")) == 0)
+	 {
+		    PlayResource(TEXT("IDR_WAV_CLICK"));
+		 	eventZoom(_T("in"));
+	 }
+	 else if (_tcscmp(misc, TEXT("SELECTMODE")) == 0)
+      {
+		if(isSelectMode())
+		{
+			 LastActiveSelectMode = 0;
+			eventStatusMessage(_T("Select deactive!"));
+		}
+		else if(ModeIndex == 0)
+		{	   PlayResource(TEXT("IDR_WAV_CLICK"));
+			  eventZoom(_T("out"));
+		}
+		else
+		{
+			 LastActiveSelectMode = GetTickCount();
+			 eventStatusMessage(_T("Select active!"));
+		}
+
+
+      }
+	  else if (_tcscmp(misc, TEXT("DOWN")) == 0)
+	  {
+		  if(isSelectMode())
+		  {
+
+			  LKevent=LKEVENT_DOWN;
+			 			 MapWindow::RefreshMap();
+		  }
+		  else if(IsMenuShown)
+		  {
+			  PlayResource(TEXT("IDR_WAV_CLICK"));
+			  short retry = 0;
+			  do
+			  {
+			  switch (SelectedButtonIndex)
+			                {
+			                    case 1:
+			                    case 2:
+			                    case 3: SelectedButtonIndex++; break;
+			                    case 4: SelectedButtonIndex = 9; break;
+			                    case 5: SelectedButtonIndex = 10; break;
+			                    case 6:
+			                    case 7:
+			                    case 8:
+			                    case 9: SelectedButtonIndex--; break;
+			                    case 10:
+			                    case 11:
+			                    case 12: SelectedButtonIndex++; break;
+			                    case 13: SelectedButtonIndex=1; break;
+			                    default:
+			                    	SelectedButtonIndex = 1;
+			                        break;
+			                }
+			  retry++;
+			 }while(ButtonLabel::ButtonVisible[SelectedButtonIndex] == false && retry < NUMBUTTONLABELS);
+
+			          int thismode = getModeID();
+					  drawButtons(thismode);
+					//  MapWindow::RefreshMap();
+		  }
+		  else
+		  {
+			  NextModeIndex();
+			  MapWindow::RefreshMap();
+			  SoundModeIndex();
+		  }
+	  }
+	  else if(_tcscmp(misc, TEXT("UP")) == 0)
+	  {
+		   if(isSelectMode())
+		   {
+			              LKevent=LKEVENT_UP;
+			  			 MapWindow::RefreshMap();
+		   }
+		   else if(IsMenuShown)
+		   {
+			   PlayResource(TEXT("IDR_WAV_CLICK"));
+			 short retry = 0;
+
+			 do
+			 {
+			  switch (SelectedButtonIndex)
+			  {
+			                    case 1: SelectedButtonIndex = 13; break;
+			                    case 2:
+			                    case 3:
+			                    case 4: SelectedButtonIndex--; break;
+			                    case 5:
+			                    case 6:
+			                    case 7:
+			                    case 8: SelectedButtonIndex++; break;
+			                    case 9: SelectedButtonIndex = 4; break;
+			                    case 10: SelectedButtonIndex = 5; break;
+			                    case 11:
+			                    case 12:
+			                    case 13: SelectedButtonIndex--; break;
+			                    default:
+			                    	SelectedButtonIndex = 1;
+			                        break;
+			  }
+			  retry++;
+			 }while(ButtonLabel::ButtonVisible[SelectedButtonIndex] == false && retry < NUMBUTTONLABELS);
+
+
+			  int thismode = getModeID();
+			  drawButtons(thismode);
+		//  MapWindow::RefreshMap();
+		   }
+		   else
+		  {
+		  			  PreviousModeIndex();
+		  			  MapWindow::RefreshMap();
+		  			  SoundModeIndex();
+		  }
+
+	  }
+	  else if(_tcscmp(misc, TEXT("LEFT")) == 0)
+	  {
+
+		 if( isSelectMode())
+		 {
+			 eventChangeSorting(_T("PREVIOUS"));
+		 }
+		 else if(ModeIndex == 0) //tukaj preverjam kateri mode je	in ce je pravi potem menjavam poglede
+		  	{
+
+			  	BottomBarChange(false);
+			  	MapWindow::RefreshMap();
+			  	PlayResource(TEXT("IDR_WAV_BTONE2"));
+
+		  	}
+		  	else
+		  	{
+		  		ProcessVirtualKey(100, 100,0 , LKGESTURE_LEFT);
+		  	}
+	   }
+	  else if(_tcscmp(misc, TEXT("RIGHT")) == 0)
+	   {
+
+		    if( isSelectMode())
+		    {
+		 			 eventChangeSorting(_T("NEXT"));
+		    }
+		    else if(ModeIndex == 0) //tukaj preverjam kateri mode je	in ce je pravi potem menjavam poglede
+		  	{
+			    BottomBarChange(true);
+		  		MapWindow::RefreshMap();
+		  		PlayResource(TEXT("IDR_WAV_BTONE2"));
+		  	}
+		  	else
+		  	{
+		  	ProcessVirtualKey(100, 100,0 , LKGESTURE_RIGHT);
+		  	}
+	   }
+	  else if(_tcscmp(misc, TEXT("RETURN")) == 0)
+	   {
+		 if(isSelectMode())
+		 {
+			 LKevent=LKEVENT_ENTER;
+			 MapWindow::RefreshMap();
+		 }
+		 else if(IsMenuShown)
+     	  {
+			   PlayResource(TEXT("IDR_WAV_CLICK"));
+		  int thismode = getModeID();
+
+		   int i;
+		   int bindex = SelectedButtonIndex;
+		   // Note - reverse order - last one wins
+		   for (i = ModeLabel_count[thismode]; i >= 0; i--) {
+		 	if ((ModeLabel[thismode][i].location == bindex) ) {
+
+		 		int lastMode = thismode;
+		 		// JMW need a debounce method here..
+
+		 		if (!ButtonLabel::ButtonDisabled[bindex]) {
+
+
+		 			processGo(ModeLabel[thismode][i].event);
+		 		}
+
+		 		// update button text, macro may change the label
+		 		if ((lastMode == getModeID()) && (ModeLabel[thismode][i].label != NULL) && (ButtonLabel::ButtonVisible[bindex])){
+		 			drawButtons(thismode);
+		 		}
+		 		break;
+		 	}
+
+		   }
+     	  }
+		  else
+		  {
+			  PlayResource(TEXT("IDR_WAV_CLICK"));
+			  eventZoom(_T("in"));
+
+		  }
+
+	   }
+
+}
+
+#endif // MINIMAP
