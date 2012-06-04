@@ -33,6 +33,7 @@
 #include "devVolkslogger.h"
 #include "devEWMicroRecorder.h"
 #include "devLX.h"
+#include "devLXMiniMap.h"
 #include "devLX16xx.h"
 #include "devLXV7.h"
 #include "devLXNano.h"
@@ -403,6 +404,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   vlRegister();
   ewMicroRecorderRegister();
   DevLX::Register();
+  DevLXMiniMap::Register();
   DevLX16xx::Register();
   DevLXV7::Register();
   DevLXNano::Register();

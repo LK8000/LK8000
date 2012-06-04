@@ -520,6 +520,7 @@ DEVS	:=\
 	$(DEV)/devLKext1.cpp \
 	$(DEV)/devLX.cpp \
 	$(DEV)/devLX16xx.cpp \
+	$(DEV)/devLXMiniMap.cpp \
 	$(DEV)/devLXNano.cpp \
 	$(DEV)/devLXV7.cpp \
 	$(DEV)/devPosiGraph.cpp \
