@@ -45,7 +45,7 @@ typedef struct
 } LastPositions;
 
 
-#define NO_TRACE_PTS 150
+#define NO_TRACE_PTS 60 // 1 minute
 typedef struct
 {
 	double fx;
