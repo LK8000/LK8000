@@ -772,23 +772,22 @@ BOOL devPutFreqStandby(PDeviceDescriptor_t d, double Freq)
 static BOOL 
 FlarmDeclareSetGet(PDeviceDescriptor_t d, TCHAR *Buffer) {
   //devWriteNMEAString(d, Buffer);
-int j;
+
   TCHAR tmp[512];
-for(j=0; j < 4; j++)
-{
+
   _sntprintf(tmp, 512, TEXT("$%s\r\n"), Buffer);
 
   if (d->Com)
     d->Com->WriteString(tmp);
 
   Buffer[6]= _T('A');
-  for(int i=0; i < 5; i++) /* try to get expected answer max 20 times*/
+  for(int i=0; i < 20; i++) /* try to get expected answer max 20 times*/
   {
     if (ExpectString(d, Buffer))
 	  return true;
     Sleep(20);
   }
-}
+
   return false;
 
 };
