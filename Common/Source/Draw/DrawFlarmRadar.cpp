@@ -45,7 +45,7 @@ typedef struct
 } LastPositions;
 
 
-#define NO_TRACE_PTS 60 // 1 minute
+#define NO_TRACE_PTS 60
 typedef struct
 {
 	double fx;
@@ -73,17 +73,7 @@ HBRUSH * variobrush[NO_VARIO_COLORS] = {
 		  &LKBrush_Vario_pos4
 };
 
-COLORREF  variocol[NO_VARIO_COLORS] = {
-		 ChangeBrightness(RGB_BLUE, 0.4),
-		 ChangeBrightness(RGB_BLUE, 0.6),
-		 ChangeBrightness(RGB_BLUE, 0.8),
-		 ChangeBrightness(RGB_BLUE, 1.0),
-		 ChangeBrightness(RGB_YELLOW, 0.8),
-		 ChangeBrightness(RGB_GREEN, 0.6),
-		 ChangeBrightness(RGB_GREEN, 0.7),
-		 ChangeBrightness(RGB_GREEN, 0.8),
-		 ChangeBrightness(RGB_GREEN, 1.0)
-};
+
 void FormatTicText(TCHAR *text, const double val, const double step) {
   if (step<1.0) {
     _stprintf(text, TEXT("%.1f"), val);
@@ -881,19 +871,22 @@ RECT rcc = rct;
         /**************************************
          * Fill trace buffer
          **************************************/
-#define FLARM_TRACES
-#ifdef FLARM_TRACES
-		asFLRAMPos[i].asRingBuf[asFLRAMPos[i].iLastPtr].fLat = fLat;
-		asFLRAMPos[i].asRingBuf[asFLRAMPos[i].iLastPtr].fLon = fLon;
-		asFLRAMPos[i].asRingBuf[asFLRAMPos[i].iLastPtr].fAlt = DrawInfo.FLARM_Traffic[i].Altitude;
-		asFLRAMPos[i].asRingBuf[asFLRAMPos[i].iLastPtr].iColorIdx = asFLRAMPos[i].iColorIdx;
-		asFLRAMPos[i].iLastPtr++;
-		if(asFLRAMPos[i].iLastPtr > NO_TRACE_PTS)
-		{
-		  asFLRAMPos[i].iLastPtr=0;
-		  asFLRAMPos[i].bBuffFull = true;
-		}
-#endif
+	    static int iTrcCnt = 0;
+	    if(DrawInfo.FLARM_Traffic[i].Average30s > -0.5)
+	    if (iTrcCnt++ >= 2)
+	    {
+	      iTrcCnt = 0;
+		  asFLRAMPos[i].asRingBuf[asFLRAMPos[i].iLastPtr].fLat = fLat;
+		  asFLRAMPos[i].asRingBuf[asFLRAMPos[i].iLastPtr].fLon = fLon;
+		  asFLRAMPos[i].asRingBuf[asFLRAMPos[i].iLastPtr].fAlt = DrawInfo.FLARM_Traffic[i].Altitude;
+		  asFLRAMPos[i].asRingBuf[asFLRAMPos[i].iLastPtr].iColorIdx = asFLRAMPos[i].iColorIdx;
+		  asFLRAMPos[i].iLastPtr++;
+		  if(asFLRAMPos[i].iLastPtr > NO_TRACE_PTS)
+		  {
+		    asFLRAMPos[i].iLastPtr=0;
+		    asFLRAMPos[i].bBuffFull = true;
+		  }
+	    }
 		aiSortArray[nEntrys++] = i;
 	  }
 
@@ -969,13 +962,9 @@ for (j=0; j<nEntrys; j++)
 	  switch (DrawInfo.FLARM_Traffic[i].Status) { // 100321
 		case LKT_GHOST:
 			Rectangle(hdc,x-iRectangleSize, y-iRectangleSize,x+iRectangleSize, y+iRectangleSize);
-		//	asFLRAMPos[i].bBuffFull= 0;
-		//	asFLRAMPos[i].iLastPtr = 0;
 			break;
 		case LKT_ZOMBIE:
 			Circle(hdc, x, y, iCircleSize, rct, true, true );
-		//	asFLRAMPos[i].bBuffFull= 0;
-		//	asFLRAMPos[i].iLastPtr = 0;
 			break;
 		default:
 			POINT Triangle[5] = {Arrow[0],Arrow[1],Arrow[2],Arrow[3],Arrow[4]};
@@ -1153,32 +1142,18 @@ double GPSlat = DrawInfo.Latitude;
 double GPSlon = DrawInfo.Longitude;
 //double GPSalt = DrawInfo.Altitude;
 double GPSbrg = DrawInfo.TrackBearing;
-
 double fDistBearing;
 double fFlarmDist;
-double fFlarmBearing;
-double fx,fy;
-//double fAlt;
-COLORREF BgCol;
-POINT line[2]= {{0,0},{0,0}};
 
-int i, iCnt=0;
+//double fAlt;
+POINT Pnt;
+int i;
 int iTo= asFLRAMPos[iFlarmIdx].iLastPtr;
 int iIdx = 0;
-#define FADE_CNT 20
-double fBrithness = 1.0;
-if(iTo > (NO_TRACE_PTS-FADE_CNT) )
-  fBrithness =0.05;
-
-if(INVERTCOLORS)
-	BgCol = RGB_BLACK;
-else
-	BgCol = RGB_WHITE;
 
 
 if( asFLRAMPos[iFlarmIdx].bBuffFull)
 {
-  fBrithness = 0.0;
   iTo  = NO_TRACE_PTS;
   iIdx = asFLRAMPos[iFlarmIdx].iLastPtr;
   if(iIdx++ >=NO_TRACE_PTS)
@@ -1186,50 +1161,28 @@ if( asFLRAMPos[iFlarmIdx].bBuffFull)
 }
 
 HPEN oldPen =	(HPEN)SelectObject(hDC, GetStockObject(NULL_PEN));
-iCnt =0;
-for(i= 0; i < iTo; i++)
-{
-  iCnt++;
-  LL_to_BearRange( GPSlat, GPSlon, asFLRAMPos[iFlarmIdx].asRingBuf[iIdx].fLat ,asFLRAMPos[iFlarmIdx].asRingBuf[iIdx].fLon, &fDistBearing, &fFlarmDist);
 
-  fDistBearing = ( fDistBearing - GPSbrg + RADAR_TURN);
-  fFlarmBearing= (fFlarmBearing - GPSbrg + RADAR_TURN);
-  fx = fFlarmDist * sin(fDistBearing*DEG_TO_RAD);
-  fy = fFlarmDist * cos(fDistBearing*DEG_TO_RAD);
+	for(i= 0; i < iTo; i++)
+	{
+	  LL_to_BearRange( GPSlat, GPSlon, asFLRAMPos[iFlarmIdx].asRingBuf[iIdx].fLat ,asFLRAMPos[iFlarmIdx].asRingBuf[iIdx].fLon, &fDistBearing, &fFlarmDist);
+	  fDistBearing = ( fDistBearing - GPSbrg + RADAR_TURN);
 
-  line[1].x  = DistanceToX(fx, pDia->rc, pDia);
-  line[1].y  = HeightToY  (fy, pDia->rc, pDia);
- // fAlt = asFLRAMPos[iFlarmIdx].asRingBuf[iIdx].fAlt;
+	  Pnt.x  = DistanceToX(fFlarmDist * sin(fDistBearing*DEG_TO_RAD), pDia->rc, pDia);
+	  Pnt.y  = HeightToY  (fFlarmDist * cos(fDistBearing*DEG_TO_RAD), pDia->rc, pDia);
+	 // fAlt = asFLRAMPos[iFlarmIdx].asRingBuf[iIdx].fAlt;
 
-
-  if(i > 0)
-	if(PtInRect(line[0], pDia->rc ))
-	  if(PtInRect(line[1], pDia->rc ))
-	  {
-#ifndef LINE_TRACE
-		SelectObject(hDC, *variobrush[asFLRAMPos[iFlarmIdx].asRingBuf[iIdx].iColorIdx]);
-		Circle(hDC, line[0].x, line[0].y, 5,  pDia->rc, true, true );
-
-
-#else
-		color = variocol[ asFLRAMPos[iFlarmIdx].asRingBuf[iIdx].iColorIdx];
-#ifdef FADE_CNT
-		if(fBrithness <1.0)
+	  if(i > 0)
+		if(PtInRect(Pnt, pDia->rc ))
 		{
-		  fBrithness += 1.0/(double)FADE_CNT;;
-		  color = MixColors( color, BgCol, fBrithness );
+		  SelectObject(hDC, *variobrush[asFLRAMPos[iFlarmIdx].asRingBuf[iIdx].iColorIdx]);
+		  Circle(hDC, Pnt.x, Pnt.y, 5,  pDia->rc, true, true );
 		}
-#endif
-	    DrawDashLine(hDC,5, line[0], line[1],color, pDia->rc);
-#endif
-	  }
 
-  line[0]= line[1];
-  if(iIdx++ >=NO_TRACE_PTS)
-    iIdx = 0;
+	  if(iIdx++ >=NO_TRACE_PTS)
+		iIdx = 0;
 
-}
- SelectObject(hDC, (HPEN) oldPen);
+	}
+SelectObject(hDC, (HPEN) oldPen);
 
 return 0;
 }
