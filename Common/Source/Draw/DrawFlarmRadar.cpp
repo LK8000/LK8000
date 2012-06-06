@@ -596,7 +596,7 @@ DiagrammStruct sDia;
 
 
 bool bTrace = !DerivedDrawInfo.Circling;
-bTrace =TRUE;
+bTrace =false; // REMOVE WHEN FIXED. 
   GPSlat = DrawInfo.Latitude;
   GPSlon = DrawInfo.Longitude;
   GPSalt = DrawInfo.Altitude;
