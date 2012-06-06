@@ -19,19 +19,46 @@
 #include "FlarmRadar.h"
 
 
+
 int RADAR_TURN = 90 ;            /* radar plane orientation             */
 #define HEIGHT_RANGE (800.0  )    /* max hight ifference above and below */
 double ASYMETRIC_FACTOR = 0.7 ;     /* X center displacement               */
 double SPLITSCREEN_FACTOR = 0.7 ;   /* % of top view window                */
-#define MIN_DIST_SCALE  0.25       /* minimum radar distance              */
+#define MIN_DIST_SCALE  0.1       /* minimum radar distance              */
 #define MAX_DIST_SCALE 25.0       /* maximum radar distance              */
 
+
+int DrawFlarmObjectTrace(HDC hDC, DiagrammStruct* Dia, int iFlarmIdx);
 //#define COLORLIST
 
 using std::min;
 using std::max;
 
+static int nEntrys=0;
+typedef struct
+{
+	double fLat;
+	double fLon;
+	double fAlt;
+//	double fIntegrator;
+	int iColorIdx;
+} LastPositions;
 
+
+#define NO_TRACE_PTS 150
+typedef struct
+{
+	double fx;
+	double fy;
+	double fAlt;
+	double fFlarmBearing;
+	int iColorIdx;
+	bool bBuffFull;
+	int iLastPtr;
+	TCHAR szGliderType[20];
+	LastPositions asRingBuf[NO_TRACE_PTS];
+} sFlarmPositions;
+static sFlarmPositions asFLRAMPos[FLARM_MAX_TRAFFIC];
 
 
 HBRUSH * variobrush[NO_VARIO_COLORS] = {
@@ -46,7 +73,17 @@ HBRUSH * variobrush[NO_VARIO_COLORS] = {
 		  &LKBrush_Vario_pos4
 };
 
-
+COLORREF  variocol[NO_VARIO_COLORS] = {
+		 ChangeBrightness(RGB_BLUE, 0.4),
+		 ChangeBrightness(RGB_BLUE, 0.6),
+		 ChangeBrightness(RGB_BLUE, 0.8),
+		 ChangeBrightness(RGB_BLUE, 1.0),
+		 ChangeBrightness(RGB_YELLOW, 0.8),
+		 ChangeBrightness(RGB_GREEN, 0.6),
+		 ChangeBrightness(RGB_GREEN, 0.7),
+		 ChangeBrightness(RGB_GREEN, 0.8),
+		 ChangeBrightness(RGB_GREEN, 1.0)
+};
 void FormatTicText(TCHAR *text, const double val, const double step) {
   if (step<1.0) {
     _stprintf(text, TEXT("%.1f"), val);
@@ -416,7 +453,15 @@ void RenderFlarmPlaneSideview(HDC hdc, const RECT rc,double fDist, double fAltit
 
 } //else !asp_heading_task
 
-
+void ResetTraces(void)
+{
+int i;
+  for(i=0; i < FLARM_MAX_TRAFFIC; i++)
+  {
+	asFLRAMPos[i].iLastPtr = 0;
+	asFLRAMPos[i].bBuffFull = false;
+  }
+}
 
 void MapWindow::LKDrawFlarmRadar(HDC hdc, const RECT rci)
 {
@@ -440,6 +485,7 @@ HBRUSH hOldBrush;
 HPEN   hDrawPen ;
 HBRUSH hDrawBrush;
 bool bSideview = true;
+
 HFONT hfOldFont = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
 COLORREF rgbGridColor = RGB_DARKGREEN;
 COLORREF rgbDrawColor = RGB_GREEN;
@@ -480,6 +526,7 @@ else
 SetTextColor(hdc, rgbDrawColor);
 hOldPen   = (HPEN)SelectObject(hdc, hDrawPen);
 hOldBrush = (HBRUSH)SelectObject(hdc, hDrawBrush);
+
 
 
 #define NUMAIRCRAFTPTS 16
@@ -532,8 +579,8 @@ switch(LKevent)
       switch(iTurn)
       {
         case 0: {RADAR_TURN = 90; ASYMETRIC_FACTOR = 0.7 ; SPLITSCREEN_FACTOR = 0.7;} break;
-        case 2: {RADAR_TURN = 0; ASYMETRIC_FACTOR = 0.5  ; SPLITSCREEN_FACTOR = 1.0;} break;
-        case 1: {RADAR_TURN = 0; ASYMETRIC_FACTOR = 0.5 ; SPLITSCREEN_FACTOR = 0.7;} break;
+        case 1: {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; SPLITSCREEN_FACTOR = 0.7;} break;
+        case 2: {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; SPLITSCREEN_FACTOR = 1.0;} break;
         case 3: {RADAR_TURN = 90; ASYMETRIC_FACTOR = 0.5 ; SPLITSCREEN_FACTOR = 0.7;} break;
       }
   break;
@@ -558,7 +605,8 @@ double fx,fy;
 DiagrammStruct sDia;
 
 
-
+bool bTrace = !DerivedDrawInfo.Circling;
+bTrace =TRUE;
   GPSlat = DrawInfo.Latitude;
   GPSlon = DrawInfo.Longitude;
   GPSalt = DrawInfo.Altitude;
@@ -575,9 +623,17 @@ DiagrammStruct sDia;
   fMaxHeight = GPSalt;
   fMinHeight = GPSalt;
 
+static bool bFirstCall = false;
+	if (bFirstCall == false)
+	{
+		ResetTraces();
+		bFirstCall = true;
+	}
+
 
   if (DoInit[MDI_FLARMRADAR]) {
 	  fScaleFact =5.0;
+	  ResetTraces();
 	  switch (ScreenSize) {
 		case ss480x640:
 		case ss480x800:
@@ -771,48 +827,23 @@ RECT rcc = rct;
 	SelectObject(hdc, hDrawBrush);
 	SelectObject(hdc, hDrawPen);
 
-	/***********************************************
-	 * draw north arrow
-	 * To ulli: this has a few problems. First, color of windrose text is wrong and hard to fix being
-	 * embedded in the function, second the direction is wrong when iTurn is for 90 degrees.
-	 * But more important, the arrow probably should just show the north.
-	 * Since we are looking at objects in top and sideview, I think it is not important to have a compass at all.
-	 * By now I comment it out .
-	DrawNorthArrow( hdc, GPSbrg, rci.right-NIBLSCALE(13), rci.top+NIBLSCALE(13));
-	 ***********************************************/
-
 
 	/***********************************************
 	 * sort indexes for altitude
 	 ***********************************************/
-	int nEntrys=0;
-	typedef struct
-	{
-		double fx;
-		double fy;
-		double fAlt;
-	//	double fIntegrator;
-		int iColorIdx;
-	} LastPositions;
-#define NO_TRACE_PTS 50
-	typedef struct
-	{
-		double fx;
-		double fy;
-		double fAlt;
-		double fFlarmBearing;
-		int iColorIdx;
-		int iInPtr;
-		int iOutPtr;
-		LastPositions asRingBuf[NO_TRACE_PTS];
-	} sFlarmPositions;
-	sFlarmPositions asFLRAMPos[FLARM_MAX_TRAFFIC];
+	  nEntrys=0;
 
-	int aiSortArray[FLARM_MAX_TRAFFIC];
+	 int aiSortArray[FLARM_MAX_TRAFFIC];
+
 	int iTmp;
 	for (i=0; i<FLARM_MAX_TRAFFIC; i++)
 	{
-	  if(DrawInfo.FLARM_Traffic[i].Status != LKT_EMPTY)
+	  if(DrawInfo.FLARM_Traffic[i].Status == LKT_EMPTY)
+	  {
+		asFLRAMPos[i].bBuffFull= false;
+		asFLRAMPos[i].iLastPtr = 0;
+	  }
+	  else
 	  {
 		/*************************************************************************
 		 * calculate positions
@@ -834,8 +865,38 @@ RECT rcc = rct;
 		asFLRAMPos[i].iColorIdx = max( asFLRAMPos[i].iColorIdx, 0);
 		asFLRAMPos[i].iColorIdx = min( asFLRAMPos[i].iColorIdx, NO_VARIO_COLORS-1);
 
+		extern FlarmIdFile file; // in Utils
+
+		wsprintf(asFLRAMPos[i].szGliderType,_T(""));
+		FlarmId* flarmId = file.GetFlarmIdItem(DrawInfo.FLARM_Traffic[i].ID);
+
+
+		if(flarmId!= NULL)
+		  _tcscat(asFLRAMPos[i].szGliderType,flarmId->type);
+
+	  	int iCnt= 19;
+	    while ((asFLRAMPos[i].szGliderType[iCnt] ==_T(' ')) && (iCnt > 0))
+		  asFLRAMPos[i].szGliderType[iCnt--]= 0;
+
+        /**************************************
+         * Fill trace buffer
+         **************************************/
+#define FLARM_TRACES
+#ifdef FLARM_TRACES
+		asFLRAMPos[i].asRingBuf[asFLRAMPos[i].iLastPtr].fLat = fLat;
+		asFLRAMPos[i].asRingBuf[asFLRAMPos[i].iLastPtr].fLon = fLon;
+		asFLRAMPos[i].asRingBuf[asFLRAMPos[i].iLastPtr].fAlt = DrawInfo.FLARM_Traffic[i].Altitude;
+		asFLRAMPos[i].asRingBuf[asFLRAMPos[i].iLastPtr].iColorIdx = asFLRAMPos[i].iColorIdx;
+		asFLRAMPos[i].iLastPtr++;
+		if(asFLRAMPos[i].iLastPtr > NO_TRACE_PTS)
+		{
+		  asFLRAMPos[i].iLastPtr=0;
+		  asFLRAMPos[i].bBuffFull = true;
+		}
+#endif
 		aiSortArray[nEntrys++] = i;
 	  }
+
 	}
 
     for (i=0; i < nEntrys; i++)
@@ -867,6 +928,9 @@ for (j=0; j<nEntrys; j++)
 	TextInBoxMode_t displaymode = {1};
 	displaymode.NoSetFont = 1;
 	displaymode.Border=1;
+
+    if(bTrace)
+	    DrawFlarmObjectTrace(hdc, &sTopDia, i);
 
     if(fx > sTopDia.fXMin )  /* sing sight ? */
     if(fx < sTopDia.fXMax )
@@ -905,14 +969,31 @@ for (j=0; j<nEntrys; j++)
 	  switch (DrawInfo.FLARM_Traffic[i].Status) { // 100321
 		case LKT_GHOST:
 			Rectangle(hdc,x-iRectangleSize, y-iRectangleSize,x+iRectangleSize, y+iRectangleSize);
+		//	asFLRAMPos[i].bBuffFull= 0;
+		//	asFLRAMPos[i].iLastPtr = 0;
 			break;
 		case LKT_ZOMBIE:
 			Circle(hdc, x, y, iCircleSize, rct, true, true );
+		//	asFLRAMPos[i].bBuffFull= 0;
+		//	asFLRAMPos[i].iLastPtr = 0;
 			break;
 		default:
 			POINT Triangle[5] = {Arrow[0],Arrow[1],Arrow[2],Arrow[3],Arrow[4]};
 			PolygonRotateShift(Triangle, 5, x, y, AngleLimit360( asFLRAMPos[i].fFlarmBearing ));
 			Polygon(hdc,Triangle,5);
+
+		    /*************************************************************************
+		     * draw label
+		     *************************************************************************/
+		    wsprintf(lbuffer,_T(""));
+			_stprintf(lbuffer,_T("%3.1f"),LIFTMODIFY*DrawInfo.FLARM_Traffic[i].Average30s);
+
+		    SIZE tsize;
+		    SetBkMode(hdc, TRANSPARENT);
+		    GetTextExtentPoint(hdc, lbuffer, _tcslen(lbuffer), &tsize);
+		    if (_tcslen(lbuffer)>0)
+			  TextInBox(hdc, lbuffer, x+tscaler,  y+tscaler, 0, &displaymode, false);
+
 			break;
 	  }
 	  /*********************************************
@@ -922,34 +1003,6 @@ for (j=0; j<nEntrys; j++)
 	  {
 		DrawDashLine(hdc, 4, (POINT){x_middle, y_middle},(POINT){ x, y} ,rgb_targetlinecol, rct );
 	  }
-	  /*************************************************************************
-	   * draw label
-	   *************************************************************************/
-
-
-
-
-	  wsprintf(lbuffer,_T(""));
-	  if (DrawInfo.FLARM_Traffic[i].Cn && DrawInfo.FLARM_Traffic[i].Cn[0]!=_T('?')) { // 100322
-	  	_tcscat(lbuffer,DrawInfo.FLARM_Traffic[i].Cn);
-
-	  }
-
-	  if (_tcslen(lbuffer) >0)
-		_stprintf(lbuffer,_T("%s:%3.1f"),lbuffer,LIFTMODIFY*DrawInfo.FLARM_Traffic[i].Average30s);
-	  else
-		_stprintf(lbuffer,_T("%3.1f"),LIFTMODIFY*DrawInfo.FLARM_Traffic[i].Average30s);
-/*
-	  extern FlarmIdFile file;
-	  FlarmId* flarmId = file.GetFlarmIdItem(DrawInfo.FLARM_Traffic[i].ID);
-	  if (flarmId != NULL)
-	    _stprintf(lbuffer,_T("%s\r\n %s"),lbuffer,flarmId->type);
-*/
-	  SIZE tsize;
-	  SetBkMode(hdc, TRANSPARENT);
-	  GetTextExtentPoint(hdc, lbuffer, _tcslen(lbuffer), &tsize);
-	  if (_tcslen(lbuffer)>0)
-		TextInBox(hdc, lbuffer, x+tscaler,  y+tscaler, 0, &displaymode, false);
 	}
   }
 }
@@ -1029,6 +1082,20 @@ if(bSideview)
 			RenderFlarmPlaneSideview( hdc,   rc, fx,  fFlarmAlt, asFLRAMPos[i].fFlarmBearing , &sDia , fPlaneSize/*1.0 - cos(fDistBearing*DEG_TO_RAD)/4*/);
 			break;
 	  }
+	  wsprintf(lbuffer,_T(""));
+	  if (DrawInfo.FLARM_Traffic[i].Cn && DrawInfo.FLARM_Traffic[i].Cn[0]!=_T('?')) { // 100322
+	  	_tcscat(lbuffer,  asFLRAMPos[i].szGliderType);
+	  	_tcscat(lbuffer,_T(": "));
+	  	_tcscat(lbuffer,DrawInfo.FLARM_Traffic[i].Cn);
+	  }
+
+
+	  SIZE tsize;
+	  SetBkMode(hdc, TRANSPARENT);
+	  GetTextExtentPoint(hdc, lbuffer,  _tcslen(lbuffer), &tsize);
+	  if (_tcslen(lbuffer)>0)
+		TextInBox(hdc, lbuffer, x+tscaler,  hy+tscaler, 0, &displaymode, false);
+
 	  /*********************************************
 	   * draw lines to target if target selected
 	   */
@@ -1043,7 +1110,7 @@ if(bSideview)
    * draw own plane position
    *************************************************************************/
   SelectObject(hdc, hDrawBrush);
-//  if(bSideview)
+
   if(!bCenter)
     RenderFlarmPlaneSideview( hdc, rc,0 , 0,RADAR_TURN, &sDia , fPlaneSize);
 }
@@ -1069,3 +1136,100 @@ DeleteObject (hWhitePen);
 }
 
 
+bool PtInRect(POINT p0, RECT rcd )
+{
+  if( p0.x  > rcd.left   )
+    if( p0.x  < rcd.right  )
+      if( p0.y  < rcd.bottom )
+        if( p0.y > rcd.top    )
+          return true;
+  return false;
+}
+
+
+int MapWindow::DrawFlarmObjectTrace(HDC hDC, DiagrammStruct* pDia, int iFlarmIdx)
+{
+double GPSlat = DrawInfo.Latitude;
+double GPSlon = DrawInfo.Longitude;
+//double GPSalt = DrawInfo.Altitude;
+double GPSbrg = DrawInfo.TrackBearing;
+
+double fDistBearing;
+double fFlarmDist;
+double fFlarmBearing;
+double fx,fy;
+//double fAlt;
+COLORREF BgCol;
+POINT line[2]= {{0,0},{0,0}};
+
+int i, iCnt=0;
+int iTo= asFLRAMPos[iFlarmIdx].iLastPtr;
+int iIdx = 0;
+#define FADE_CNT 20
+double fBrithness = 1.0;
+if(iTo > (NO_TRACE_PTS-FADE_CNT) )
+  fBrithness =0.05;
+
+if(INVERTCOLORS)
+	BgCol = RGB_BLACK;
+else
+	BgCol = RGB_WHITE;
+
+
+if( asFLRAMPos[iFlarmIdx].bBuffFull)
+{
+  fBrithness = 0.0;
+  iTo  = NO_TRACE_PTS;
+  iIdx = asFLRAMPos[iFlarmIdx].iLastPtr;
+  if(iIdx++ >=NO_TRACE_PTS)
+    iIdx = 0;
+}
+
+HPEN oldPen =	(HPEN)SelectObject(hDC, GetStockObject(NULL_PEN));
+iCnt =0;
+for(i= 0; i < iTo; i++)
+{
+  iCnt++;
+  LL_to_BearRange( GPSlat, GPSlon, asFLRAMPos[iFlarmIdx].asRingBuf[iIdx].fLat ,asFLRAMPos[iFlarmIdx].asRingBuf[iIdx].fLon, &fDistBearing, &fFlarmDist);
+
+  fDistBearing = ( fDistBearing - GPSbrg + RADAR_TURN);
+  fFlarmBearing= (fFlarmBearing - GPSbrg + RADAR_TURN);
+  fx = fFlarmDist * sin(fDistBearing*DEG_TO_RAD);
+  fy = fFlarmDist * cos(fDistBearing*DEG_TO_RAD);
+
+  line[1].x  = DistanceToX(fx, pDia->rc, pDia);
+  line[1].y  = HeightToY  (fy, pDia->rc, pDia);
+ // fAlt = asFLRAMPos[iFlarmIdx].asRingBuf[iIdx].fAlt;
+
+
+  if(i > 0)
+	if(PtInRect(line[0], pDia->rc ))
+	  if(PtInRect(line[1], pDia->rc ))
+	  {
+#ifndef LINE_TRACE
+		SelectObject(hDC, *variobrush[asFLRAMPos[iFlarmIdx].asRingBuf[iIdx].iColorIdx]);
+		Circle(hDC, line[0].x, line[0].y, 5,  pDia->rc, true, true );
+
+
+#else
+		color = variocol[ asFLRAMPos[iFlarmIdx].asRingBuf[iIdx].iColorIdx];
+#ifdef FADE_CNT
+		if(fBrithness <1.0)
+		{
+		  fBrithness += 1.0/(double)FADE_CNT;;
+		  color = MixColors( color, BgCol, fBrithness );
+		}
+#endif
+	    DrawDashLine(hDC,5, line[0], line[1],color, pDia->rc);
+#endif
+	  }
+
+  line[0]= line[1];
+  if(iIdx++ >=NO_TRACE_PTS)
+    iIdx = 0;
+
+}
+ SelectObject(hDC, (HPEN) oldPen);
+
+return 0;
+}
