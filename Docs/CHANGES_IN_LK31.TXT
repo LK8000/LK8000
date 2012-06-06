@@ -246,6 +246,7 @@ NEW
 . Add customkey for Flarm Radar
   It will toggle between Map and Flarm Radar, and back to Map.
 
+. Preliminar full support for LX MiniMap
 
 CHANGES
 
@@ -256,6 +257,8 @@ CHANGES
   at least some data going through!
   This will keep probably at least the time updated since the gps may still be receiving a 
   valid time, which is good for us.
+
+. Flarm objects on map are now using the same color schemes of flarm radar
 
 
 
@@ -289,6 +292,11 @@ FIXES
   obstacles, resulting in a abnormal number of calculations (hidden by multicalc optimization).
   LK performance is greatly improved now, when using a lot of landable waypoints (many thousands).
 
+. Fix infobox values for task (arrival, ETE, eta, etc) should display --- when task was not started yet.
+
+. Fix bug resetting FlarmNet counter on startup
+
+. Fix Flarm declaration: in case of an error it could happen to define twice a waypoint.
 
 
 
