@@ -115,10 +115,11 @@ class InputEvents {
 
 #ifdef LXMINIMAP
   static int getSelectedButtonIndex();
-  static void eventMinimapKey(const TCHAR *misc);
   static void eventChangeSorting(const TCHAR *misc);
   static bool isSelectMode();
 #endif
+  // This must be public in any case
+  static void eventMinimapKey(const TCHAR *misc);
 
  private:
   static bool processGlideComputer_real(int);
