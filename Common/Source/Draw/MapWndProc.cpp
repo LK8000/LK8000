@@ -755,7 +755,8 @@ goto_menu:
 		else
 		  GPS_INFO.Speed = min(100.0,max(minspeed,distance/3));
 	} 
-	GPS_INFO.TrackBearing = newbearing;
+	GPS_INFO.TrackBearing = (int)newbearing;
+	if (GPS_INFO.TrackBearing==360) GPS_INFO.TrackBearing=0;
 	TriggerGPSUpdate();
       
 	break;
