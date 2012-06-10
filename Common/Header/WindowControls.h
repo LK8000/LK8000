@@ -16,6 +16,8 @@
 #include <tchar.h>
 #define IsEmptyString(x)        ((x==NULL) || (x[0]=='\0'))
 
+#define MAXSETCAPTION 254	// max chars in SetCaption, autolimited
+
 #define BORDERTOP    (1<<bkTop)
 #define BORDERRIGHT  (1<<bkRight)
 #define BORDERBOTTOM (1<<bkBottom)
@@ -564,7 +566,7 @@ class WindowControl {
 
     HWND mHWnd;
     bool mCanFocus;
-    TCHAR mCaption[254];
+    TCHAR mCaption[MAXSETCAPTION+1]; // +1 just for safety!
     bool mDontPaintSelector;
 
     WindowControl *mClients[50];

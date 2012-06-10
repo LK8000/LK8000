@@ -1578,7 +1578,7 @@ void WindowControl::SetCaption(const TCHAR *Value){
   }
 
   if (_tcscmp(mCaption, Value) != 0) {
-	_tcscpy(mCaption, Value);
+	LK_tcsncpy(mCaption, Value,MAXSETCAPTION); // destination already sized MAXSETCAPTION+1
 	InvalidateRect(GetHandle(), GetBoundRect(), false);
 	UpdateWindow(GetHandle());
   }
@@ -2498,7 +2498,7 @@ void WndForm::SetCaption(const TCHAR *Value) {
   }
 
   if (_tcscmp(mCaption, Value) != 0) {
-	_tcscpy(mCaption, Value);
+	LK_tcsncpy(mCaption, Value,MAXSETCAPTION); // destination already sized MAXSETCAPTION+1
 	InvalidateRect(GetHandle(), &mTitleRect, false);
 	UpdateWindow(GetHandle());
   }
@@ -3611,7 +3611,7 @@ void WndFrame::SetCaption(const TCHAR *Value){
   }
 
   if (_tcscmp(mCaption, Value) != 0){
-    _tcscpy(mCaption, Value);  // todo size check
+    LK_tcsncpy(mCaption, Value,MAXSETCAPTION); // destination already sized MAXSETCAPTION+1
     InvalidateRect(GetHandle(), GetBoundRect(), false);
     UpdateWindow(GetHandle());
 
