@@ -2516,6 +2516,7 @@ static void setVariables(void) {
     dfe->addEnumText(TEXT("Navigon"));
     dfe->addEnumText(TEXT("Holux FunTrek GM-130"));
     dfe->addEnumText(TEXT("Medion S3747 / Royaltek BV-3200"));
+    dfe->addEnumText(TEXT("LX MiniMap"));
 
     dfe->Set(GlobalToBoxType(GlobalModelType));
     wp->RefreshDisplay();
@@ -4384,6 +4385,9 @@ int ival;
 	break;
       case apImPnaRoyaltek3200:
 	GlobalModelType = MODELTYPE_PNA_ROYALTEK3200;
+	break;
+      case apImPnaMinimap:
+	GlobalModelType = MODELTYPE_PNA_MINIMAP;
 	break;
       default:
 	GlobalModelType = MODELTYPE_UNKNOWN; // Can't happen, troubles ..

@@ -935,6 +935,131 @@ goto_menu:
 
       #endif // PNA TRANSCODING
 
+	//
+	// LX MINIMAP II HARDWARE KEYS
+	// From left to right, top mode, we find:
+	//   NAME     LABEL
+	//    A		rotary knob "set"
+	//    B		button Menu
+	//    C		button Zoom ent
+	//    D		button Zoom sel
+	//    E		rotary knob Esc
+	// 
+	// THIS IS AN ALTERNATE LXMINIMAP USAGE, will not work for official release
+	#ifndef LXMINIMAP
+	// if (1) {
+	if ( GlobalModelType == MODELTYPE_PNA_MINIMAP ) {
+		switch(wParam) {
+
+			// Button A is generating a C
+			case 67:
+				if ( !MapWindow::mode.AnyPan()&&MapSpaceMode!=1) { // dontdrawthemap
+					if (MapSpaceMode<=MSM_MAP) {
+						return TRUE;
+					}
+					#ifndef DISABLEAUDIO
+					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+					#endif
+					LKevent=LKEVENT_ENTER;
+					MapWindow::RefreshMap();
+					return TRUE;
+				} else {
+					if (CustomKeyHandler(CKI_CENTERSCREEN)) {
+						#ifndef DISABLEAUDIO
+						if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+						#endif
+					}
+					// MapWindow::RefreshMap();
+					return TRUE;
+				}
+				break;
+			// Button B is generating alternate codes 68 and 27
+			// we use both as a single one
+			case 68:
+			case 27:
+				if (CustomKeyHandler(CKI_BOTTOMLEFT)) {
+					#ifndef DISABLEAUDIO
+					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+					#endif
+					// MapWindow::RefreshMap();
+					return TRUE;
+				}
+				// else transcode here
+				break;
+			// Button C is generating a RETURN
+			case 13:
+				if (CustomKeyHandler(CKI_BOTTOMCENTER)) {
+					#ifndef DISABLEAUDIO
+					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+					#endif
+					// MapWindow::RefreshMap();
+					return TRUE;
+				}
+				// else transcode here
+				break;
+			// Button D is generating a SPACE
+			case 32:
+				if (CustomKeyHandler(CKI_BOTTOMRIGHT)) {
+					#ifndef DISABLEAUDIO
+					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+					#endif
+					// MapWindow::RefreshMap();
+					return TRUE;
+				}
+				// else transcode here
+				break;
+
+			// Rotary knob A is generating a 38 (turn left) and 40 (turn right)
+			case 38:
+				if ( !MapWindow::mode.AnyPan()&&MapSpaceMode!=1) { // dontdrawthemap
+					if (MapSpaceMode<=MSM_MAP) {
+						return TRUE;
+					}
+					#ifndef DISABLEAUDIO
+					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+					#endif
+					LKevent=LKEVENT_UP;
+					MapWindow::RefreshMap();
+				} else {
+					MapWindow::zoom.EventScaleZoom(-1);
+				}
+				return TRUE;
+				break;
+
+			case 40:
+				if ( !MapWindow::mode.AnyPan()&&MapSpaceMode!=1) { // dontdrawthemap
+					if (MapSpaceMode<=MSM_MAP) {
+						return TRUE;
+					}
+					#ifndef DISABLEAUDIO
+					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+					#endif
+					LKevent=LKEVENT_DOWN;
+					MapWindow::RefreshMap();
+				} else {
+					MapWindow::zoom.EventScaleZoom(1);
+				}
+				return TRUE;
+				break;
+
+			// Rotary knob E is generating a 37 (turn left) and 39 (turn right)
+			case 37:
+				PreviousModeIndex();
+				MapWindow::RefreshMap();
+				SoundModeIndex();
+				return TRUE;
+			case 39:
+				NextModeIndex();
+				MapWindow::RefreshMap();
+				SoundModeIndex();
+				return TRUE;
+
+			default:
+				break;
+                }
+	}
+	#endif // not LXMINIMAP
+
 	dwDownTime= 0L; // removable? check
 	InputEvents::processKey(wParam);
 	dwDownTime= 0L;
