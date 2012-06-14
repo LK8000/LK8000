@@ -462,9 +462,9 @@ class MapWindow {
 
   static int HeightToY(double fHeight, const RECT rc, DiagrammStruct* psDia);
   static int DistanceToX(double fDist, const RECT rc,  DiagrammStruct* psDia)  ;
-  static void RenderNearAirspace(HDC hdc, const RECT rci);
+
   static void LKDrawFlarmRadar(HDC hdc, const RECT rci);
-  static int DrawFlarmObjectTrace(HDC hDC, DiagrammStruct* Dia, int iFlarmIdx);
+  static int DrawFlarmObjectTrace(HDC hDC,double fZoom, DiagrammStruct* Dia, int iFlarmIdx);
  private:
   static void CalculateScreenPositions(POINT Orig, RECT rc, 
                                        POINT *Orig_Aircraft);
