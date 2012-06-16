@@ -185,6 +185,7 @@ Parametr ten umożliwia włączenie i wyłączenie algorytmu automatycznie estym
 [Krążenie] Estymacja parametrów wiatru podczas krążenia w kominie. Wymaga tylko sygnału GPS.
 [ZigZag] Wymaga podłączenia inteligentnego wariometru udostępniającego na swoim wyjściu prędkość statku powietrznego.
 [Oba] Używa "ZigZag" i "Krążenie".
+[Zewnętrzny] Używaj tylko obliczeń wiatru dokonanych przez urządzenia zewnętrzne (CAI, LX, ZANDER itp).
 
 @140
 Określa prędkość przyrządową (IAS - Indicated Air Speed), którą należy utrzymywać przed rozpoczęciem obliczania TrueWind.
@@ -372,7 +373,8 @@ Ta opcja określa jak długo widoczne na ekranie będzie menu, jeśli użytkowni
 Określa położenie symbolu statku powietrznego na ekranie w procentach od jego dołu.
 
 @184
-LK8000 udostępnia 2 style ikon lądowisk: styl WinPilot (zielone i purpurowe koła) oraz styl alternatywny (o wysokiej widzialności).
+LK8000 udostępnia 2 style ikon lądowisk: Wektorowe oraz Alternatywne.
+Styl wektorowy rysuje orientację pasa startowego, radio i inne informacje.
 
 @185
 Umożliwia wybór jak mają być wyświetlane lądowiska: z lub bez białej ramki, oraz z lub bez jednostek (metry, stopy).
@@ -606,8 +608,7 @@ Określa jak traktowane są PZ poza zasięgiem terenu:
 [Wyklucz] PZ poza zasięgiem terenu nie będą używane.
 
 @237
-W trybie poziomym i przy włączonej pełnej nakładce parametr ten określa, czy zegar ma być pokazywany w prawym górnym rogu ekranu.
-W trybie pionowym, lub przy podstawowej nakładce, zegar nigdy nie będzie pokazywany.
+Tylko przy włączonej pełnej nakładce parametr ten określa, czy zegar ma być pokazywany na ekranie.
 
 @238
 Wielkość czcionek nakładki.
@@ -895,6 +896,7 @@ Parametr ten umożliwia włączenie i wyłączenie algorytmu automatycznie estym
 [Krążenie] Estymacja parametrów wiatru podczas krążenia w kominie. Wymaga tylko sygnału GPS.
 [ZigZag] Wymaga podłączenia inteligentnego wariometru udostępniającego na swoim wyjściu prędkość statku powietrznego.
 [Oba] Używa "ZigZag" i "Krążenie".
+[Zewnętrzny] Używaj tylko obliczeń wiatru dokonanych przez urządzenia zewnętrzne (CAI, LX, ZANDER itp).
 
 @613
 Określa czy w trybie krążenia ślad statku powietrznego dryfuje z wiatrem.
@@ -1594,8 +1596,7 @@ Po osiągnięciu PZ, poprzedni zoom dla trybu lotu zostanie przywrócony. Autozo
 
 @1220
 [Konfiguracja Dolnego Paska]
-Włącza lub wyłącza poszczególne dolne paski tak, że nie będą one prezentowane podczas przewijania pasków.
-Jeśli wszystkie paski są wyłączone, NAW1 będzie pokazywany automatycznie.
+Włącza lub wyłącza poszczególne dolne paski tak, że nie będą one prezentowane podczas przewijania pasków. Co najmniej jeden z nich (nie licząc KOM0) musi być włączony.
 Podczas krążenia w kominie zawsze będzie się pokazywał pasek KOM0.
 
 @1221
@@ -1665,6 +1666,22 @@ Parametr powinien być włączony (>0), jeśli chcesz uruchomić wysyłanie swoj
 Wymaga to abonamentu GPRS/HSDPA, oraz aktywnej internetowej sesji TCP/IP do systemu śledzenia. W celu zalogowania się na serwer LK używa podanej nazwy serwera, loginu i hasła.
 Typ statku powietrznego też jest logowany.
 Jeśli nie jesteś pewien do czego ten parametr służy to lepiej ustaw domyślną wartość 0.
+
+@1259
+[Menu Użytkownika]
+
+@1260
+[Szybkie gesty]
+Dziala tylko w trybie paralotni i lotni. Włącza/wyłącza szybkie gesty.
+Domyślnie gesty są włączone. Pozwalają one pilotowi na klikanie po prawej lub lewej stronie okien informacyjnych w celu ich szybkiego przełącznia.
+Używanie rękawic w czasie lotu może wymagać wyłącznia tej opcji.
+
+@1261
+[Bezpieczny start]
+Podczas fazy startu LK uruchomi sygnał, gdy ustawiona wysokość nad gruntem (QFE) zostanie po raz pierwszy osiągnięta.
+Dla szybowców jest to normalnie wysokość z której, w przypadku przerwanego ciągu, możliwy będzie zwrot o 180 stopni i powrót na lotnisko.
+Ustawić na 0 w celu wyłączenia alarmu.
+Alarm uzbroi się ponownie tylko po lądowaniu.
 
 @9999
 Pomoc dla tego elementu nie jest dostępna!

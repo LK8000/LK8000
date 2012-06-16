@@ -26,8 +26,7 @@ _@M12_ "11 Wygląd"
 _@M13_ "12 Czcionki"
 _@M14_ "13 Nakładki Mapy "
 _@M15_ "14 Zadanie"
-# UNUSED M16
-_@M16_ "15 Reguły zadania"
+_@M16_ "Przynajmniej jeden (nie licząc KOM0) musi być włączony. Włączanie NAW1."
 _@M17_ "15 sekund"
 _@M18_ "16 InfoBox Przelot"
 _@M19_ "17 InfoBox Krążenie"
@@ -324,7 +323,7 @@ _@M305_ "Odtwórz lot"
 _@M306_ "Czas lotu"
 _@M307_ "Wolny"
 _@M308_ "Częst"
-_@M309_ "Kod przyjaciela"
+_@M309_ "Kod"
 # 310 REMOVED after v2.3
 _@M310_ "Strzałka"
 _@M311_ "Pełna nakładka"
@@ -786,6 +785,7 @@ _@M751_ "Typ "
 _@M752_ "Typ"
 _@M753_ "NIEZNANY! "
 _@M754_ "ODBLOKUJ"
+# Unused 755 and 756 since  v3.2 
 _@M755_ "UŻYWAM DOSTĘPNEJ WYSOKOŚCI BARO Z:"
 _@M756_ "UŻYWAM WYSOKOŚCI BARO Z:"
 _@M757_ "UŻYWAM WYSOKOŚCI GPS"
@@ -855,7 +855,8 @@ _@M818_ "Ustawienia Wiatru"
 _@M819_ "Wskaźnik wiatru"
 _@M820_ "Wiatr na wysokości"
 _@M821_ "Obc. skrzyd. "
-_@M822_ "Winpilot"
+# 822 REMOVED after 3.0, was Winpilot
+_@M822_ "Wector"
 _@M823_ "Pasmo rob."
 _@M824_ "PZ poza terenem "
 _@M825_ "Żółty"
@@ -1047,7 +1048,7 @@ _@M1025_ "Next Alt.Arrival"
 _@M1026_ "NxtArr"
 _@M1027_ "Next Alt.Required"
 _@M1028_ "NxtAltR"
-_@M1029_ "Next Waypoint"
+_@M1029_ "_Reserved 2"
 _@M1030_ "Next"
 _@M1031_ "Task Alt.Arrival"
 _@M1032_ "TskArr"
@@ -1752,6 +1753,40 @@ _@M1780_ "Użytkownik"
 _@M1781_ "Hasło"
 _@M1782_ "Serwer LT"
 
+# configuration SETUP save 
+_@M1783_ "Profile St. Pow."
+_@M1784_ "Profile Pilotów"
+# page names
+_@M1785_ "Konfiguracja Pilota"
+_@M1786_ "Konfiguracja Statku Powietrznego"
+
+# Page names in configuration
+_@M1787_ "Menu Użytkownika"
+_@M1788_ "Konfiguruj Menu Użytk."
+
+_@M1789_ "Usuń plik zadania"
+_@M1790_ "Brak pliku zadania do usunięcia"
+
+# Customkey configuration item
+_@M1791_ "Przełącz uzbrojenie PZ"
+
+# configuration PG/Hg specials
+_@M1792_ "Szybkie gesty "
+
+# Wind mode configuration, "External" (from external instrument)
+_@M1793_ "Zewnętrzny"
+
+# Safety takeoff alarm
+_@M1794_ "Bezpieczny start "
+
+# Replacing 120, 755 and 756
+_@M1795_ "WYSOKOŚĆ BARO DOSTĘPNA"
+_@M1796_ "UŻYWAM WYSOKOŚCI BARO"
+
+# Replacing 822
+_@M1797_ "Wektor"
+
+
 ############################################################
 #                  - MENU MESSAGES - 
 #
@@ -1773,7 +1808,7 @@ _@M2010_ "Naw\n1/3"
 _@M2011_ "Anuluj"
 _@M2012_ "Powrót"
 _@M2013_ "Kalkulat.\nZadania"
-_@M2014_ "Uzbrój PZ\n"
+_@M2014_ "Uzbrój\n"
 _@M2015_ "Lista\nPZ"
 _@M2016_ "Naw\n2/3"
 _@M2017_ "Edycja\nZadania"
@@ -1805,7 +1840,8 @@ _@M2042_ "Ustaw.\nPodst."
 _@M2043_ "Ustaw\nWiatr"
 _@M2044_ "Akt. Map."
 _@M2045_ "Wysok."
-_@M2046_ "USTAW.\nSystem."
+#2046 UNUSED
+_@M2046_ ""
 _@M2047_ "Usuń\nMiejsca"
 _@M2048_ "Loger"
 _@M2049_ "Odtwórz\nLog"
@@ -1873,7 +1909,7 @@ _@M2110_ "2>\nAltern. 2"
 _@M2111_ "D>\nDom"
 _@M2112_ "Prędk."
 _@M2113_ "Wys."
-_@M2114_ "Zakręt"
+_@M2114_ "PZ"
 # better not to translate this TE button!
 _@M2115_ "TEnergy"
 _@M2116_ "Zmień\nTeren"
@@ -1883,6 +1919,50 @@ _@M2118_ "Chrono"
 _@M2119_ "Chrono\nDetale"
 _@M2120_ "Wyczyść\nChrono"
 _@M2121_ "Chrono\nLista"
-_@M2122_ "ZAPISZ\nSystem."
+_@M2122_ "Zapisz\nSystem."
+_@M2123_ "Obróć\nEkran"
+_@M2124_ "Tryby\nEkranu"
+_@M2125_ "Ustaw.\nSt. Pow."
+_@M2126_ "Zapisz\nSt. Pow."
+_@M2127_ "Ustaw.\nPilota"
+_@M2128_ "Zapisz\nPilota"
+_@M2129_ "Ustaw.\nLK8000"
+_@M2130_ "Ustaw.\nSystem."
+_@M2131_ "Menu\nUżytk."
+_@M2132_ "Usuń\nAltern."
 
-# Note for developers: remember LKLanguage MAX_MESSAGE limit
+_@M2133_ "Pozycja"
+
+# New CustomKey labels for Custom Menu
+_@M2200_ "----"
+_@M2201_ "Menu"
+_@M2202_ "Poprz.\nStrona"
+_@M2203_ "Przeł.\nMapę"
+_@M2204_ "Przeł.\nLądow."
+_@M2205_ "Lądow\niska"
+_@M2206_ "Przeł.\nWspólne"
+_@M2207_ "Wspólne"
+_@M2208_ "Przełącz\nRuch"
+_@M2209_ "Ruch"
+_@M2210_ "Auto\nZoom"
+_@M2211_ "Odgłos\nKrążen."
+_@M2212_ "Leć do\nDomu"
+_@M2213_ "Panor.\nZoom"
+_@M2214_ "Przeł.\nCel"
+_@M2215_ "Używaj\nHBAR"
+_@M2216_ "MENU\nSYM"
+_@M2217_ "Analiza\nStref"
+_@M2218_ "Przeł.\nStrefy"
+_@M2219_ "Zoom\n++"
+_@M2220_ "Zoom\n--"
+_@M2221_ "Optym.\nTrasy"
+_@M2222_ "Analiza\nOLC"
+_@M2223_ "Kolor+\nterenu"
+_@M2224_ "Kolor-\nterenu"
+_@M2225_ "Lot\nSwobod."
+_@M2226_ "Przeł.\nUzbroj."
+_@M2227_ "Przeł.\nWsWiatr"
+_@M2228_ "FLARM\nRadar"
+# Reserved for custom menus up to 2300!
+
+# Note for developers: remember LKLanguage MAX_MESSAGE limit (2250)
