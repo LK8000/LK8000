@@ -15,6 +15,11 @@
 #include "AirfieldDetails.h"
 #include <zzip/lib.h>
 
+// Allow a non-landable waypoint to be designated as the home
+// waypoint in the waypoint notes file.  HG/PG pilots usually
+// can't land back at the takeoff position but might like to
+// start there when in simulator mode.
+#define NOLAND_HOME_WP
 
 ZZIP_FILE* zAirfieldDetails = NULL;
 
@@ -69,12 +74,20 @@ void LookupAirfieldDetail(TCHAR *Name, TCHAR *Details) {
   TCHAR NameD[100];
   TCHAR TmpName[100];
 
+#ifndef NOLAND_HOME_WP
   bool isHome, isPreferred;
+#else
+  bool isHome, isPreferred, isLandable;
+#endif
 
   if (!WayPointList) return;
 
   for(i=NUMRESWP;i<(int)NumberOfWayPoints;i++) {
+
+    #ifndef NOLAND_HOME_WP
       if (((WayPointList[i].Flags & AIRPORT) == AIRPORT) || ((WayPointList[i].Flags & LANDPOINT) == LANDPOINT)) { 
+    #endif
+
 	_tcscpy(UName, WayPointList[i].Name);
 
 	CharUpper(UName); // WP name
@@ -87,15 +100,30 @@ void LookupAirfieldDetail(TCHAR *Name, TCHAR *Details) {
 
 	isHome=false;
 	isPreferred=false;
+    #ifdef NOLAND_HOME_WP
+      isLandable = (((WayPointList[i].Flags & AIRPORT) == AIRPORT) || 
+                   ((WayPointList[i].Flags & LANDPOINT) == LANDPOINT));
+    #endif
 
 	_stprintf(TmpName,TEXT("%s=HOME"),UName);
 	if ( (_tcscmp(Name, TmpName)==0) )  isHome=true;
+
+  #ifdef NOLAND_HOME_WP
+  // Only bother checking whether it's preferred if it's landable.
+  if (isLandable) {
+  #endif
 	_stprintf(TmpName,TEXT("%s=PREF"),UName);
 	if ( (_tcscmp(Name, TmpName)==0) )  isPreferred=true;
 	_stprintf(TmpName,TEXT("%s=PREFERRED"),UName);
 	if ( (_tcscmp(Name, TmpName)==0) )  isPreferred=true;
+  #ifdef NOLAND_HOME_WP
+  }
+  #endif
 
 	if ( isHome==true ) {
+    #ifdef NOLAND_HOME_WP
+    if (isLandable)
+    #endif
 	  WayPointCalc[i].Preferred = true;
 	  HomeWaypoint = i;
 	  AirfieldsHomeWaypoint = i; // make it survive a reset..
@@ -120,7 +148,11 @@ void LookupAirfieldDetail(TCHAR *Name, TCHAR *Details) {
 	    } 
 	    return;
 	  }
+
+    #ifndef NOLAND_HOME_WP // end of "if airport or landpoint" block
       }
+    #endif
+
     }
 }
 
