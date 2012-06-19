@@ -7,6 +7,7 @@
 
   LK8000 Project Copyrights (c) by:
 
+	Eric Carden
 	Oren Cohen
 	Ulli Heynen
 	Bruno de Lacheisserie
