@@ -21,6 +21,8 @@
 #include "Globals.h"
 #include "devCProbe.h"
 
+#include <stdint.h>
+
 #define BARO__CPROBE		7
 extern bool UpdateBaroSource( NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 
@@ -77,10 +79,7 @@ BOOL CDevCProbe::Close (PDeviceDescriptor_t d) {
 
 
 double int16toDouble(int v) {
-	if(v > (1<<15)){
-		v = -((1<<16)-v-1);
-	}
-	return v;
+	return (double)(int16_t)v;
 };
 
 double int24toDouble(int v) {
