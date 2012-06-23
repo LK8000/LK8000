@@ -75,7 +75,7 @@ DWORD ComPort::ReadThread()
 
 	#if (WINDOWSPC>0) || NEWCOMM // 091206
 	// PC version does BUSY WAIT
-	Sleep(2);  // ToDo rewrite the whole driver to use overlaped IO on W2K or higher
+	Sleep(50);  // ToDo rewrite the whole driver to use overlaped IO on W2K or higher
 	#else
 	if (PollingMode)  
 		Sleep(100);
@@ -111,7 +111,7 @@ DWORD ComPort::ReadThread()
 				dwBytesTransferred = 0;
 			}
 
-			Sleep(2); // JMW20070515: give port some time to
+			Sleep(50); // JMW20070515: give port some time to
 			// fill... prevents ReadFile from causing the
 			// thread to take up too much CPU
 			#ifdef CPUSTATS
