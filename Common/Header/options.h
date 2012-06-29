@@ -92,9 +92,9 @@
  //#define NEWSMARTZOOM		1	// stretch bitmap for fast zoom, uncompleted work (almost working)
  //#define USEBIGZOOM		1	// will fast redraw only terrain, with no topology &c.
 
-#define TOW_CRUISE // keep climb mode from engaging while on tow (unless turning steeply
-                   // enough to warrant detection of the start of free flight)
-                   // Eric Carden, 6/28/12
+ //#define TOW_CRUISE // keep climb mode from engaging while on tow (unless turning steeply
+                      // enough to warrant detection of the start of free flight)
+                      // Eric Carden, 6/28/12
 
 
 /*
