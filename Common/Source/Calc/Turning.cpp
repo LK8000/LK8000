@@ -32,6 +32,7 @@ extern void ThermalBand(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 #define CLIMB 2
 #define WAITCRUISE 3
 
+
 extern WindAnalyser *windanalyser;
 extern ThermalLocator thermallocator;
 
@@ -198,7 +199,17 @@ _forcereset:
       // WE CANNOT do this, because we also may need Circling mode to detect FF!!
       // if( (Calculated->FreeFlying && ((Basic->Time  - StartTime) > CruiseClimbSwitch))|| forcecircling) {
        if( (!ISCAR && !ISGAAIRCRAFT && ((Basic->Time  - StartTime) > CruiseClimbSwitch))|| forcecircling) { 
-        Calculated->Circling = TRUE;
+
+         #ifdef TOW_CRUISE
+         // If free flight (FF) hasn’t yet been detected, then we may
+         // still be on tow.  The following prevents climb mode from
+         // engaging due to normal on-aerotow turns.
+
+         if (!Calculated->FreeFlying && (fabs(Calculated->TurnRate) < 12))
+           break;
+         #endif
+
+       Calculated->Circling = TRUE;
         // JMW Transition to climb
         MODE = CLIMB;
 	// Probably a replay flight, with fast forward with no cruise init

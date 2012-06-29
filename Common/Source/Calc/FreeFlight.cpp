@@ -34,6 +34,7 @@
 #define FF_MAXTOWTIME	1200			// 20 minutes
 
 
+
 bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 
   static bool   ffDetected=false;
@@ -139,10 +140,29 @@ bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     goto lastcheck;
   }
 
+#ifdef TOW_CRUISE
+  // If circling, we assume that we're in free flight and use the
+  // start-of-circling time and position.  Turning.cpp makes sure
+  // we aren't circling while on tow by imposing a 12 deg/sec turn
+  // rate limit for on-tow turning.
+#else
   // If circling we assume that we are in free flight already, using the start of circling time and position.
   // But we must be sure that we are not circling.. while towed. A 12 deg/sec turn rate will make it quite sure.
   // Of course nobody can circle while winchlaunched, so in this case FF is immediately detected.
+#endif
+
+#ifdef TOW_CRUISE
+  // The 12 deg/sec check is now done in Turning.cpp, so there's no
+  // need to do it here, too.  Doing it here, too, could allow the
+  // possibility of climb mode engaging without FF detection, if the
+  // climb rate goes above 12 deg/sec for just a split second.
+  //if (Calculated->Circling && (winchdetected ||
+  //   (fabs(Calculated->TurnRate) >= 12))) {
+
+  if (Calculated->Circling) {
+#else
   if (Calculated->Circling && ( winchdetected || ( fabs(Calculated->TurnRate) >=12 ) ) ) {
+#endif
 
     if (UseContestEngine()) {
       CContestMgr::Instance().Add(new CPointGPS(static_cast<unsigned>(Calculated->ClimbStartTime),
