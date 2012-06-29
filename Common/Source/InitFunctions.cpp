@@ -227,6 +227,15 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   WindowSize.bottom = SCREENHEIGHT 
     + 2*GetSystemMetrics( SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
   WindowSize.top = (GetSystemMetrics(SM_CYSCREEN) - WindowSize.bottom) / 2;
+  /*
+  //
+  // Custom setup for positioning the window , ready to be used
+  //
+  WindowSize.top=768;	// top and left corner coords
+  WindowSize.left=1024;
+  WindowSize.right = SCREENWIDTH + 2*GetSystemMetrics( SM_CXFIXEDFRAME);
+  WindowSize.bottom = SCREENHEIGHT + 2*GetSystemMetrics( SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
+  */
 #endif
 
   if (!goInstallSystem) Sleep(50); // 091119
