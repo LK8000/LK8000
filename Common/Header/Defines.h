@@ -831,6 +831,8 @@
 #define INVERTCOLORS  (Appearance.InverseInfoBox)
 #define TASKINDEX       Task[ActiveWayPoint].Index
 
+// For debugging and trace tests
+#define IMHERE	StartupStore(_T(">>> %s:%u\n"), _T(__FILE__), __LINE__);
 
 
 
