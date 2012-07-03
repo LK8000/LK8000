@@ -22,6 +22,7 @@
 FlarmCalculations flarmCalculations;
 
 #include "utils/heapcheck.h"
+#include "devCProbe.h"
 
 #ifdef __MINGW32__
 #ifndef max
@@ -67,8 +68,9 @@ NMEAParser nmeaParser2;
 #define BARO__GM130		4
 #define BARO__ROYALTEK3200	5
 #define BARO__TASMAN		6
-#define BARO__CUSTOMTO		6
-#define BARO__END		7	// marking the limit
+//#define BARO__CPROBE		7
+#define BARO__CUSTOMTO		7
+#define BARO__END		8	// marking the limit
 
 bool UpdateBaroSource( NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt)
 {

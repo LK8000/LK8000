@@ -643,7 +643,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 
 
 
-  extern unsigned int CustomKeyLabel[];
   // We dont replace macro, we do replace the entire label
   a =_tcsstr(OutBuffer, TEXT("$(MM"));
   if (a != NULL) {
@@ -697,7 +696,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 		// _stprintf(OutBuffer,_T("Key\n%d"),i);
 		 _tcscpy(OutBuffer,_T(""));	// make it invisible
 	} else {
-		_stprintf(OutBuffer,MsgToken( CustomKeyLabel[ckeymode] ));
+		_stprintf(OutBuffer,MsgToken( CustomKeyLabel[ckeymode].Label ));
 	}
 
   } // MM

@@ -168,6 +168,11 @@ void MapWindow::DrawTRI(HDC hDC, const RECT rc)
 	hbBlack = LKBrush_Black;
   	beta = DerivedDrawInfo.BankAngle;
   }
+
+  if(GPS_INFO.GyroscopeAvailable){
+	  beta = GPS_INFO.Roll;
+  }
+
   hpWhite = LKPen_White_N1;
   hbWhite = LKBrush_White;
   hpBorder = LKPen_Grey_N2;

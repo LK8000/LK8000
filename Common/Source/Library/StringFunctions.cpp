@@ -186,7 +186,7 @@ BOOL ReadStringX(FILE *fp, int Max, TCHAR *String){
 }
 
 
-int HexStrToInt(TCHAR *&Source){
+int HexStrToInt(TCHAR *Source){
 
 	static const size_t digit_table_symbol_count = 256;
 	static const unsigned char digit_table[digit_table_symbol_count] = {
@@ -249,7 +249,7 @@ double StrToDouble(TCHAR *Source, TCHAR **Stop)
 
   StringLength = _tcslen(Source);
 
-  while(((Source[index] == ' ')||(Source[index]=='+')||(Source[index]==9)) 
+  while(((Source[index] == ' ')||(Source[index]=='+')||(Source[index]==9))
         && (index<StringLength))
     // JMW added skip for tab stop
     // JMW added skip for "+"

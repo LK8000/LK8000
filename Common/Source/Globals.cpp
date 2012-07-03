@@ -406,7 +406,8 @@ void Globals_Init(void) {
   Cpu_Draw=0;
   Cpu_Calc=0;
   Cpu_Instrument=0;
-  Cpu_Port=0;
+  Cpu_PortA=0;
+  Cpu_PortB=0;
   Cpu_Aver=0;
   #endif
 

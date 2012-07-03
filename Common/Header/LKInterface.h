@@ -89,8 +89,17 @@ typedef enum{
 	ckPan,
 	ckWindRose,
 	ckFlarmRadar,
+	ckDeviceA,
+	ckDeviceB,
 	ckTOP,
 } CustomKeyMode_t;
+
+struct CustomKeyLabel_t {
+	unsigned int Label;
+	unsigned int Name;
+};
+
+extern  CustomKeyLabel_t CustomKeyLabel[];
 
 
 #endif // LK8000_LKINTERFACE_H

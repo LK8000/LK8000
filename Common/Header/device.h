@@ -9,7 +9,7 @@
 
 #define DEVNAMESIZE  32
 #define	NUMDEV		 2
-#define	NUMREGDEV	 27 // Max number of registered devices
+#define	NUMREGDEV	 29 // Max number of registered devices
 
 #define	devA()	    (&DeviceList[0])
 #define	devB()	    (&DeviceList[1])
@@ -54,6 +54,7 @@ typedef	struct DeviceDescriptor_t{
   BOOL (*OnSysTicker)(DeviceDescriptor_t *d);
   BOOL (*PutVoice)(DeviceDescriptor_t *d, TCHAR *Sentence);
   BOOL (*IsCondor)(DeviceDescriptor_t	*d);
+  BOOL (*Config)();
   DeviceDescriptor_t *pDevPipeTo;
 
   int PortNumber;

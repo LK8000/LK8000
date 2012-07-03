@@ -1953,7 +1953,7 @@ bool ParseCUPWayPointString(TCHAR *String,WAYPOINT *Temp)
   StartupStore(_T("   CUP ELEVATION=<%f>%s"),Temp->Altitude,NEWLINE);
   #endif
   if (Temp->Altitude == -9999){
-	return false;
+	  Temp->Altitude=0;
   }
 
 
