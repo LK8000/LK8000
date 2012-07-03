@@ -199,3 +199,13 @@ Changed HELP for 184
 device Menu
 _@M2134_ "devA"
 _@M2135_ "devB"
+
+missing Virtual Key Name
+_@M2137_ "TrueWind"
+_@M2138_ "AutoZoom On/Off"
+_@M2139_ "ActiveMap On/Off"
+_@M2140_ "PG/HG Time Gates"
+_@M2141_ "Thermal Booster"
+_@M2142_ "Simulation menu"
+_@M2143_ "Device A Config"
+_@M2144_ "Device B Config"

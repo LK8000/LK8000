@@ -14,7 +14,7 @@
 #include "lk8000.h"
 #include "Logger.h"
 #include "LKInterface.h"
-#include "device.h"
+
 
 static void ReplaceInString(TCHAR *String, TCHAR *ToReplace, 
                             TCHAR *ReplaceWith, size_t Size){
@@ -641,20 +641,8 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
     if (--items<=0) goto label_ret;
   }
 
-  if (_tcsstr(OutBuffer, TEXT("$(DevAConfig)"))) {
-	if (!devA()->Config) invalid = true;
-	ReplaceInString(OutBuffer, TEXT("$(DevAConfig)"), TEXT(""), Size);
-	if (--items<=0) goto label_ret;
-  }
-  if (_tcsstr(OutBuffer, TEXT("$(DevBConfig)"))) {
- 	if (!devB()->Config) invalid = true;
- 	ReplaceInString(OutBuffer, TEXT("$(DevBConfig)"), TEXT(""), Size);
- 	if (--items<=0) goto label_ret;
-   }
 
 
-
-  extern unsigned int CustomKeyLabel[];
   // We dont replace macro, we do replace the entire label
   a =_tcsstr(OutBuffer, TEXT("$(MM"));
   if (a != NULL) {
@@ -708,7 +696,7 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 		// _stprintf(OutBuffer,_T("Key\n%d"),i);
 		 _tcscpy(OutBuffer,_T(""));	// make it invisible
 	} else {
-		_stprintf(OutBuffer,MsgToken( CustomKeyLabel[ckeymode] ));
+		_stprintf(OutBuffer,MsgToken( CustomKeyLabel[ckeymode].Label ));
 	}
 
   } // MM

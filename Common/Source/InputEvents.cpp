@@ -3414,15 +3414,3 @@ void InputEvents::eventMinimapKey(const TCHAR *misc) {
 };
 
 #endif // no LXMINIMAP
-
-void InputEvents::eventDevAConfig(const TCHAR *misc){
-	if(devA() && devA()->Config) {
-		devA()->Config();
-	}
-}
-
-void InputEvents::eventDevBConfig(const TCHAR *misc){
-	if(devB() && devB()->Config) {
-		devB()->Config();
-	}
-}
