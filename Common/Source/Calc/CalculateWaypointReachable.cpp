@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "McReady.h"
-
+#include "LKInterface.h"
 
 bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                                           double LegToGo, double LegBearing) {
@@ -68,9 +68,12 @@ void MapWindow::LKCalculateWaypointReachable(short multicalc_slot, short numslot
 	//	multicalc_slot, numslots,scanstart,scanend,NEWLINE);
   }
 
+  int overtarg=GetOvertargetIndex();
+  if (i<0) i=999999;
+
   for(i=scanstart;i<scanend;i++) {
     if ( ( ((WayPointCalc[i].AltArriv[AltArrivMode] >=0)||(WayPointList[i].Visible)) && (WayPointCalc[i].IsLandable)) 
-	|| WaypointInTask(i) ) {
+	|| WaypointInTask(i) || (i==(unsigned int)overtarg) ) {
 
 	DistanceBearing(DrawInfo.Latitude, DrawInfo.Longitude, WayPointList[i].Latitude, WayPointList[i].Longitude, 
 		&waypointDistance, &waypointBearing);
