@@ -37,8 +37,8 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 	static short s_sizeright=0, s_xright=0, s_xleft=0, s_unxright=0, s_unxleft=0;
 	static short s_bottomY=0;
-	static short shortpress_yup, shortpress_ydown;
-	static short longpress_yup, longpress_ydown;
+	short shortpress_yup, shortpress_ydown;
+	short longpress_yup, longpress_ydown;
 
 	bool dontdrawthemap=(DONTDRAWTHEMAP);
 
@@ -71,14 +71,17 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		#define _NOCOMPASSINCLUDE
 		#include "./LKinclude_menusize.cpp"
 
-		longpress_yup=(short)((sizeup-BottomSize-TopSize)/3.7)+MapWindow::MapRect.top+TopSize;
-		longpress_ydown=(short)(MapWindow::MapRect.bottom-BottomSize-((sizeup-BottomSize)/3.7));
-		shortpress_yup=(short)((sizeup-BottomSize-TopSize)/2.7)+MapWindow::MapRect.top+TopSize;
-		shortpress_ydown=(short)(MapWindow::MapRect.bottom-BottomSize-((sizeup-BottomSize)/2.7));
-
 		DoInit[MDI_PROCESSVIRTUALKEY]=false;
 	}
-	
+
+	// 120602 fix
+	// TopSize is dynamically assigned by DrawNearest,DrawCommon, DrawXX etc. so we cannot make static yups
+	//
+	longpress_yup=(short)((sizeup-BottomSize-TopSize)/3.7)+MapWindow::MapRect.top+TopSize;
+	longpress_ydown=(short)(MapWindow::MapRect.bottom-BottomSize-((sizeup-BottomSize)/3.7));
+	shortpress_yup=(short)((sizeup-BottomSize-TopSize)/2.7)+MapWindow::MapRect.top+TopSize;
+	shortpress_ydown=(short)(MapWindow::MapRect.bottom-BottomSize-((sizeup-BottomSize)/2.7));
+
 	// do not consider navboxes, they are processed separately
 	// These are coordinates for up down center VKs
 	// yup and ydown are used normally on nearest page item selection, but also for real VK
