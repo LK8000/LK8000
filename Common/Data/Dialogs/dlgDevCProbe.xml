@@ -1,0 +1,23 @@
+<PMML>
+<WndForm Type="Dialog" X=0 Y=0 Width=240 Height=240 Caption="C-Probe" PopUp=1 Font=2 >
+
+<WndButton Name="cmdClose"          Caption="_@M186_"     X=2 Y=1  Width=60  Height=28 Font=2 Tag=3 />
+<WndButton Name="cmdZeroDeltaPress" Caption="Zero IAS"    X=2 Y=-1 Width=60  Height=28 Font=2 Tag=3 />
+<WndButton Name="cmdSetCompassCal"  Caption="Cal Compass" X=2 Y=-1 Width=60  Height=36 Font=2 Tag=3 />
+<WndButton Name="cmdSetCalGyro"     Caption="Cal Gyro"    X=2 Y=-1 Width=60  Height=28 Font=2 Tag=3 />
+
+<WndProperty Name="prpPitch"   Caption="Pitch"   X=64 Y=1  Width=175 Height=22 CaptionWidth=67 Font=2 ReadOnly=1 />
+<WndProperty Name="prpHeading" Caption="Heading" X=64 Y=-1 Width=175 Height=22 CaptionWidth=67 Font=2 ReadOnly=1 />
+<WndProperty Name="prpRoll"    Caption="Roll"    X=64 Y=-1 Width=175 Height=22 CaptionWidth=67 Font=2 ReadOnly=1 />
+
+<WndProperty Name="prpGx"   Caption="Gx" X=64 Y=-1 Width=175 Height=22 CaptionWidth=67 Font=2 ReadOnly=1 />
+<WndProperty Name="prpGy"   Caption="Gy" X=64 Y=-1 Width=175 Height=22 CaptionWidth=67 Font=2 ReadOnly=1 />
+<WndProperty Name="prpGz"   Caption="Gz" X=64 Y=-1 Width=175 Height=22 CaptionWidth=67 Font=2 ReadOnly=1 />
+
+<WndProperty Name="prpTemp"       Caption="Temp"        X=64 Y=-1 Width=175 Height=22 CaptionWidth=67 Font=2 ReadOnly=1 />
+<WndProperty Name="prpRh"         Caption="Rh"          X=64 Y=-1 Width=175 Height=22 CaptionWidth=67 Font=2 ReadOnly=1 />
+<WndProperty Name="prpDeltaPress" Caption="Delta Press" X=64 Y=-1 Width=175 Height=22 CaptionWidth=67 Font=2 ReadOnly=1 />
+<WndProperty Name="prpAbsPress"   Caption="Abs Press"   X=64 Y=-1 Width=175 Height=22 CaptionWidth=67 Font=2 ReadOnly=1 />
+
+</WndForm> 
+</PMML>

@@ -28,9 +28,9 @@ void MapWindow::DrawCpuStats(HDC hdc, RECT rc) {
 #endif
   TextInBox(hdc, Buffer, 000, 200 , 0, &TextDisplayMode, false);
 #if (WINDOWSPC>0)
-  wsprintf(Buffer,_T("CPU Inst=%d Port=%d us"), Cpu_Instrument, Cpu_Port);
+  wsprintf(Buffer,_T("CPU Inst=%d PortA=%d PortB=%d us"), Cpu_Instrument, Cpu_PortA, Cpu_PortB);
 #else
-  wsprintf(Buffer,_T("CPU Inst=%d Port=%d ms"), Cpu_Instrument, Cpu_Port);
+  wsprintf(Buffer,_T("CPU Inst=%d PortA=%d PortB=%d ms"), Cpu_Instrument, Cpu_PortA, Cpu_PortB);
 #endif
   TextInBox(hdc, Buffer, 000, 240 , 0, &TextDisplayMode, false);
 

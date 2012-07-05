@@ -404,6 +404,16 @@ passthrough:
 		SoundModeIndex();
 
 		return true;
+	case ckDeviceA:
+		if(devA() && devA()->Config) {
+			devA()->Config();
+		}
+		return true;
+	case ckDeviceB:
+		if(devB() && devB()->Config) {
+			devB()->Config();
+		}
+		return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		FailStore(_T("ERR-726 INVALID CUSTOMKEY=%d"),ckeymode);
@@ -473,7 +483,8 @@ CustomKeyLabel[47]=2015;	// Waypoint lookup
 CustomKeyLabel[48]=2082;	// PAN
 CustomKeyLabel[49]=2227;	// Toggle windrose
 CustomKeyLabel[50]=2228;	// Flarm radar
-
+CustomKeyLabel[51]=2143;	// Device A Config
+CustomKeyLabel[52]=2144;	// Device B Config
 }
 
 

@@ -182,7 +182,7 @@ BOOL ReadStringX(FILE *fp, int Max, TCHAR *String){
 }
 
 
-int HexStrToInt(TCHAR *&Source){
+int HexStrToInt(TCHAR *Source){
 
 	static const size_t digit_table_symbol_count = 256;
 	static const unsigned char digit_table[digit_table_symbol_count] = {

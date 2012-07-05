@@ -84,6 +84,8 @@ void AddCustomKeyList( DataFieldEnum* dfe) {
     dfe->addEnumText(MsgToken(2082)); // PAN
     dfe->addEnumTextNoLF(MsgToken(2227)); // Toggle WindRose
     dfe->addEnumTextNoLF(MsgToken(2228)); // Flarm Radar
+    dfe->addEnumTextNoLF(MsgToken(2143)); // Device A
+    dfe->addEnumTextNoLF(MsgToken(2144)); // Device B
 
     dfe->Sort(0);
 

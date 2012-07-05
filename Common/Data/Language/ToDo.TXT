@@ -196,3 +196,9 @@ _@M1797_ "Vector"
 
 Changed HELP for 184 
 
+device Menu
+_@M2134_ "devA"
+_@M2135_ "devB"
+
+_@M2143_ "Device A Config"
+_@M2144_ "Device B Config"

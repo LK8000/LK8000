@@ -57,6 +57,7 @@
 
 #include "LKObjects.h"
 #include "Bitmaps.h"
+#include "devCProbe.h"
 
 using std::min;
 using std::max;
@@ -421,6 +422,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   LK8EX1Register();
   WesterboerRegister();
   FlyNetRegister();
+  CDevCProbe::Register();
 
 // WINDOWSPC _SIM_ devInit called twice missing devA name
 // on PC nonSIM we cannot use devInit here! Generic device is used until next port reset!

@@ -115,9 +115,12 @@ DWORD ComPort::ReadThread()
 			// thread to take up too much CPU
 			#ifdef CPUSTATS
 			if ( (GetThreadTimes( hReadThread, &CreationTime, &ExitTime,&EndKernelTime,&EndUserTime)) == 0) {
-				Cpu_Port=9999;
+				if(sportnumber==0)
+					Cpu_PortA=9999;
+				else
+					Cpu_PortB=9999;
 			} else {
-				Cpustats(&Cpu_Port,&StartKernelTime, &EndKernelTime, &StartUserTime, &EndUserTime);
+				Cpustats((sportnumber==0)?&Cpu_PortA:&Cpu_PortB,&StartKernelTime, &EndKernelTime, &StartUserTime, &EndUserTime);
 			}
 			#endif
 		  

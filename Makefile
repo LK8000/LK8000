@@ -18,8 +18,15 @@ BIN=Bin/$(TARGET)
 # enable/disable heap checking (dmalloc.h libdmalloc.a must be in ../dmalloc)
 DMALLOC=n
 
+ifeq ($(DEBUG),y)
+OPTIMIZE := -O0
+OPTIMIZE += -g
+else
+OPTIMIZE := -O2
+endif
+
 PROFILE		:=
-OPTIMIZE	:=-O2
+#OPTIMIZE	:=-O2
 #OPTIMIZE	:=-O3 -funroll-all-loops
 CONFIG_PPC2002	:=n
 CONFIG_PPC2003	:=n
@@ -536,7 +543,8 @@ DEVS	:=\
 	$(DEV)/devWesterboer.cpp \
 	$(DEV)/LKHolux.cpp \
 	$(DEV)/LKRoyaltek3200.cpp	\
-	$(DEV)/devFlyNet.cpp
+	$(DEV)/devFlyNet.cpp \
+	$(DEV)/devCProbe.cpp 
 
 VOLKS	:=\
 	$(DEV)/Volkslogger/dbbconv.cpp \
@@ -812,8 +820,10 @@ LK8000-$(TARGET).exe: LK8000-$(TARGET)-ns.exe
 	@$(NQ)echo "  STRIP   $@"
 	$(Q)$(STRIP) $< -o $@
 	$(Q)$(SIZE) $@
+ifeq ($(DEBUG),y)
+else
 	$(RM) LK8000-$(TARGET)-ns.exe
-
+endif
 LK8000-$(TARGET)-ns.exe: $(OBJS)
 	@$(NQ)echo "  LINK    $@"
 	$(Q)$(CC) $(LDFLAGS) $(TARGET_ARCH) $^ $(LOADLIBES) $(LDLIBS) -o $@
