@@ -92,4 +92,13 @@ double AirDensityRatio(double altitude) {
   return rho_rat;
 }
 
+// Air Density(kg/m3) from relative humidity(%), temperature(°C) and absolute pressure(Pa)
+double AirDensity( double hr, double temp, double abs_press ) {
+	return (1/(287.06*(temp+273.15)))*(abs_press - 230.617 * hr * exp((17.5043*temp)/(241.2+temp)));
+}
 
+// Air Speed from air density, humidity, temperature and absolute pressure
+double TrueAirSpeed( double delta_press, double hr, double temp, double abs_press ) {
+	double rho = AirDensity(hr,temp,abs_press);
+	return sqrt(2*delta_press)/rho;
+}

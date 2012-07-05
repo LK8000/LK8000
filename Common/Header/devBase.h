@@ -43,6 +43,10 @@ class DevBase
       cap_speed    = (1l << dfSpeed),
       cap_vario    = (1l << dfVario),
       cap_logger   = (1l << dfLogger),
+	  cap_wind     = (1l << dfWind),
+	  cap_nmeaout  = (1l << dfNmeaOut),
+	  cap_voice    = (1l << dfVoice),
+	  cap_radio    = (1l << dfRadio)
     }; // Capability
 
     /// message type in declaration progress dialog

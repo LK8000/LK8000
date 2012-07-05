@@ -210,17 +210,20 @@ int LookupFLARMDetails(TCHAR *cn);
 bool AddFlarmLookupItem(int id, TCHAR *name, bool saveFile);
 int LookupSecondaryFLARMId(int id);
 
+double QNHAltitudeToStaticPressure(double alt);
 double FindQNH(double alt_raw, double alt_known);
 double AltitudeToQNHAltitude(double alt);
 double AltitudeToQNEAltitude(double alt);
 double StaticPressureToAltitude(double ps);
 double AirDensity(double altitude);
 double AirDensityRatio(double altitude);
+double AirDensity(double hr, double temp, double absp);
+double TrueAirSpeed( double delta_press, double hr, double temp, double abs_press );
 
 double HexStrToDouble(TCHAR *Source, TCHAR **Stop);
 
 // Fast convert from Hex string To integer
-int HexStrToInt(TCHAR *&Source);
+int HexStrToInt(TCHAR *Source);
 
 unsigned long CheckFreeRam(void);
 // check maximum allocatable heap block

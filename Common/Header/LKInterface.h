@@ -89,6 +89,8 @@ typedef enum{
 	ckPan,
 	ckWindRose,
 	ckFlarmRadar,
+	ckDeviceA,
+	ckDeviceB,
 	ckTOP,
 } CustomKeyMode_t;
 

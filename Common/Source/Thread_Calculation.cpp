@@ -66,8 +66,8 @@ DWORD CalculationThread (LPVOID lpvoid) {
     UnlockFlightData();
 
     DoCalculationsVario(&tmp_GPS_INFO,&tmp_CALCULATED_INFO);
-    if (!GPS_INFO.VarioAvailable) {
-	TriggerVarioUpdate(); // emulate vario update
+    if (!tmp_GPS_INFO.VarioAvailable) {
+    	TriggerVarioUpdate(); // emulate vario update
     } 
     
     if(DoCalculations(&tmp_GPS_INFO,&tmp_CALCULATED_INFO)){
