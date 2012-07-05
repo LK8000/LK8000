@@ -23,7 +23,6 @@ void BottomSounds();
 int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 #define VKTIMELONG 1500
-#define DONTDRAWTHEMAP !MapWindow::mode.AnyPan()&&MapSpaceMode!=1
 
 	short yup, ydown;
 	static short sizeup;

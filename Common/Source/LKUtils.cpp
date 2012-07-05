@@ -12,7 +12,6 @@
 #include "LKHolux.h"
 #endif
 #include "utils/stringext.h"
-#include "utils/heapcheck.h"
 
 extern TCHAR LastTaskFileName[MAX_PATH];
 

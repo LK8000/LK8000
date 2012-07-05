@@ -7,10 +7,8 @@
 */
 
 #include "externs.h"
-#include "MapWindow.h"
 #include "LKMapWindow.h"
 #include "LKObjects.h"
-#include "LKAirspace.h"
 #include "RGB.h"
 #include "DoInits.h"
 

@@ -9,8 +9,6 @@
 #include "externs.h"
 #include "LKInterface.h"
 
-using std::min;
-using std::max;
 
 
 //

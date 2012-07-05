@@ -8,15 +8,9 @@
 
 #include "externs.h"
 #include "Logger.h"
-#include "Port.h"
 #include "InputEvents.h"
-#include "Parser.h"
 #include "LKProfiles.h"
 
-#include "utils/heapcheck.h"
-
-using std::min;
-using std::max;
 
 // Once done with all validations we can switch to XK8 code
 // #define USEXK8	1

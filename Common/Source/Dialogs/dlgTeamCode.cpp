@@ -7,8 +7,6 @@
 */
 
 #include "externs.h"
-#include "Utils.h"
-#include "dlgTools.h"
 #include "InfoBoxLayout.h"
 
 static WndForm *wf=NULL;
@@ -16,7 +14,6 @@ static WndForm *wf=NULL;
 
 #include "TeamCodeCalculation.h"
 
-#include "utils/heapcheck.h"
 
 static void Update() 
 {

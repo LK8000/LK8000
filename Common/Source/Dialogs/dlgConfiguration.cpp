@@ -10,18 +10,15 @@
 #include "externs.h"
 #include <aygshell.h>
 
-#include "MapWindow.h"
 #include "Terrain.h"
 #include "Process.h"
 
 #include "WindowControls.h"
 #include "McReady.h"
-#include "dlgTools.h"
 
 #include "Modeltype.h"
 
 #include "McReady.h"
-#include "Utils.h"
 #include "InfoBoxLayout.h"
 #include "Waypointparser.h"
 #include "LKMapWindow.h"

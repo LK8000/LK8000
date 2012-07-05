@@ -9,7 +9,6 @@
 #include "externs.h"
 #include "Waypointparser.h"
 #include "LKStyle.h"
-#include "MapWindow.h"
 #include "LKProfiles.h"
 #include "resource.h"
 

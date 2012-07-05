@@ -23,12 +23,8 @@
 
 #include "externs.h"
 
-#include "Calculations.h"
-#include "Utils.h"
 #include "windanalyser.h"
 
-using std::min;
-using std::max;
 
 /*
   About Windanalysation

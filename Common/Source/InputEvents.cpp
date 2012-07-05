@@ -17,12 +17,10 @@
 
 #include "InfoBoxLayout.h"
 #include "Process.h"
-#include "Units.h"
 #include "Atmosphere.h"
 #include "Waypointparser.h"
 #include "Message.h"
 #include "AATDistance.h"
-#include "Parser.h"
 #include "DoInits.h"
 #include "Logger.h"
 #ifdef LXMINIMAP
@@ -30,8 +28,6 @@
 #endif
 #include "utils/stl_utils.h"
 
-using std::min;
-using std::max;
 
 // Sensible maximums 
 #define MAX_MODE 100

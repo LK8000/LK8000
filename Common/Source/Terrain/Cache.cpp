@@ -17,8 +17,6 @@
 #endif
 
 
-using std::min;
-using std::max;
 
 
 short RasterMapCache::_GetFieldAtXY(unsigned int lx,

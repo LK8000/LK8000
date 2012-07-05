@@ -13,14 +13,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include <windows.h>
-#include <shlobj.h>
-#include <math.h>
-#include "Task.h"
-#include "options.h"
-#include "LKAirspace.h"
-#include <zzip/lib.h>
-
 
 extern bool LockSettingsInFlight;
 extern bool LoggerShortName;

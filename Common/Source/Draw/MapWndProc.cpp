@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "LKInterface.h"
-#include "MapWindow.h"
 #include "McReady.h"
 #include "InputEvents.h"
 #include "Modeltype.h"
@@ -16,16 +15,11 @@
 #include "RGB.h"
 #include "DoInits.h"
 
-using std::min;
-using std::max;
-
 
 #ifdef DEBUG
 #define DEBUG_VIRTUALKEYS
 #endif
 
-#define DONTDRAWTHEMAP !mode.AnyPan()&&MapSpaceMode!=MSM_MAP
-#define MAPMODE8000    !mode.AnyPan()&&MapSpaceMode==MSM_MAP
 
 
 COLORREF taskcolor = RGB_TASKLINECOL; // 091216

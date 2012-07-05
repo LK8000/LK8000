@@ -12,8 +12,6 @@
 #include "STScreenBuffer.h"
 #include "RGB.h"
 
-using std::min;
-using std::max;
 
 
 

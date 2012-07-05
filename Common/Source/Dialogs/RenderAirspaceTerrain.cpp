@@ -8,12 +8,9 @@
 
 #include "externs.h"
 #include "RasterTerrain.h"
-#include "LKAirspace.h"
 #include "RGB.h"
 #include "Sideview.h"
 
-using std::min;
-using std::max;
 
 #define RGB_ROYAL_BLUE  RGB(18,32,139)
 #define RGB_STEEL_BLUE  RGB(70,130,180)

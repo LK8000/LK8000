@@ -11,9 +11,6 @@
 #include "RasterTerrain.h"
 
 
-using std::min;
-using std::max;
-
 
 // Final glide through terrain and footprint calculations
 

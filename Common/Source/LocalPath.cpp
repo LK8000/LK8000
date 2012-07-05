@@ -8,6 +8,7 @@
 
 #include "externs.h"
 #include "DoInits.h"
+#include <shlobj.h>
 
 extern TCHAR *gmfcurrentpath();
 

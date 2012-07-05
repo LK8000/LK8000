@@ -11,8 +11,6 @@
 #include "RGB.h"
 #include "Modeltype.h"
 
-using std::min;
-using std::max;
 
 
 long GetUTCOffset(void) {

@@ -8,12 +8,9 @@
 
 #include "externs.h"
 #include "InputEvents.h"
-#include "dlgTools.h"
 #include "InfoBoxLayout.h"
 #include "Waypointparser.h"
 
-#include "utils/heapcheck.h"
-#include "Units.h"
 
 
 extern void LatLonToUtmWGS84 (int& utmXZone, char& utmYZone, double& easting, double& northing, double lat, double lon);

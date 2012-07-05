@@ -12,10 +12,7 @@
 #include "RasterTerrain.h"
 #include "DoInits.h"
 
-#include "utils/heapcheck.h"
 
-using std::min;
-using std::max;
 
 
 extern double SpeedHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated);

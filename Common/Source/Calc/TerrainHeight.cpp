@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "RasterTerrain.h"
-#include "utils/heapcheck.h"
 
 
 void TerrainHeight(NMEA_INFO *Basic, DERIVED_INFO *Calculated)

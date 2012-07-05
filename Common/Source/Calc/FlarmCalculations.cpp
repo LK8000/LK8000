@@ -8,7 +8,6 @@
 #include "options.h"
 #include "FlarmCalculations.h"
 
-#include "utils/heapcheck.h"
 #include "utils/stl_utils.h"
 #include <algorithm>
 

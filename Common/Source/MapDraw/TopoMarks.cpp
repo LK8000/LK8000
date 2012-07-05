@@ -24,8 +24,6 @@
 #include "Waypointparser.h"
 #include "RGB.h"
 
-using std::min;
-using std::max;
 
 
 TopologyWriter *topo_marks = NULL;

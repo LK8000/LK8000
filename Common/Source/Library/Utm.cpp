@@ -26,10 +26,8 @@
 
 // I have cleaned it up on Nov 29th 2009 - Paolo Ventafridda
 
-#include "StdAfx.h"
 #include <math.h>
 
-#include "utils/heapcheck.h"
 
 // Some constants used by these functions.
 

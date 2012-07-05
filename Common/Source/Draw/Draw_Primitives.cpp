@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include "MapWindow.h"
 #include "Topology.h"
 
 

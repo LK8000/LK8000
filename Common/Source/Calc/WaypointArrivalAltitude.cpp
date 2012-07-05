@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "McReady.h"
-#include "utils/heapcheck.h"
 
 
 // This is also called by DoNearest and it is overwriting AltitudeRequired 

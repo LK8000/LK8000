@@ -9,7 +9,6 @@
 #include "externs.h"
 #include "McReady.h"
 #include "Atmosphere.h"
-#include "dlgTools.h"
 #include "InfoBoxLayout.h"
 
 

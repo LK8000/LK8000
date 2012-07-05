@@ -9,9 +9,6 @@
 #include "externs.h"
 #include "Waypointparser.h"
 
-#include "dlgTools.h"
-
-#include "utils/heapcheck.h"
 
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;

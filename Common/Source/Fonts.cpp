@@ -5,8 +5,6 @@
 
    $Id$
 */
-#include "StdAfx.h"
-#include "wcecompat/ts_string.h"
 #include "externs.h"
 #include "LKProfiles.h"
 

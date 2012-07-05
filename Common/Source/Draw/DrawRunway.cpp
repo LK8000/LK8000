@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "LKStyle.h"
-#include "MapWindow.h"
 #include "DoInits.h"
 #include "LKObjects.h"
 
@@ -17,7 +16,6 @@
 #include <wingdi.h>
 #endif
 
-#include "utils/heapcheck.h"
 #include <string.h>
 
 

@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "LKInterface.h"
-#include "MapWindow.h"
 #include "LKMapWindow.h"
 #include "RGB.h"
 #include "DoInits.h"
@@ -17,8 +16,6 @@
 #include <wingdi.h>
 #endif
 
-
-#include "utils/heapcheck.h"
 
 void VDrawLine(const HDC&hdc, const RECT rc, int x1, int y1, int x2, int y2, COLORREF col) {
   POINT p0,p1;

@@ -8,13 +8,6 @@
 
 #include "externs.h"
 
-#ifdef __MINGW32__
-#ifndef max
-#define max(x, y)   (x > y ? x : y)
-#define min(x, y)   (x < y ? x : y)
-#endif
-#endif
-
 void LK8000GetOpts(LPTSTR CommandLine) {
   (void)CommandLine;
 

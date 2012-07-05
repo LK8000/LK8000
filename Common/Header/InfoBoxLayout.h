@@ -1,8 +1,6 @@
 #ifndef INFOBOXLAYOUT_H
 #define INFOBOXLAYOUT_H
 
-#include "StdAfx.h"
-#include "Sizes.h"
 
 
 class ButtonLabel {

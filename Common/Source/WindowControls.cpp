@@ -8,9 +8,7 @@
 
 #include "externs.h"
 #include "Message.h"
-#include "MapWindow.h"
 #include "InfoBoxLayout.h"
-#include "Utils.h"
 #include "LKObjects.h"
 #include "Bitmaps.h"
 #include "RGB.h"
@@ -23,15 +21,12 @@
 #endif
 #endif
 
-#include "utils/heapcheck.h"
 
 #define ISCALE ScreenScale
 
 #define DEFAULTBORDERPENWIDTH 1*ISCALE
 #define SELECTORWIDTH         4*ISCALE
 
-using std::min;
-using std::max;
 
 HDC sHdc;
 HDC  GetTempDeviceContext(void){return(sHdc);};

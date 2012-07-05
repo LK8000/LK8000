@@ -8,10 +8,7 @@
 
 #include "externs.h"
 #include "McReady.h"
-#include "utils/heapcheck.h"
 
-using std::min;
-using std::max;
 
  void BallastDump ()
  {

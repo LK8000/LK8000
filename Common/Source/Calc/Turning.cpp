@@ -12,10 +12,6 @@
 #include "Atmosphere.h"
 #include "ThermalLocator.h"
 
-#include "utils/heapcheck.h"
-
-using std::min;
-using std::max;
 
 extern void PercentCircling(NMEA_INFO *Basic, DERIVED_INFO *Calculated,const double Rate);
 extern double LowPassFilter(double y_last, double x_in, double fact);

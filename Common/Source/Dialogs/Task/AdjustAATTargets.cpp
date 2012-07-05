@@ -9,9 +9,6 @@
 #include "externs.h"
 #include "Logger.h"
 
-using std::min;
-using std::max;
-
 
 
 double AdjustAATTargets(double desired) {

@@ -7,12 +7,8 @@
 */
 
 #include "externs.h"
-#include "Utils.h"
-#include "dlgTools.h"
 #include "InfoBoxLayout.h"
 
-using std::min;
-using std::max;
 
 static WndForm *wf=NULL;
 

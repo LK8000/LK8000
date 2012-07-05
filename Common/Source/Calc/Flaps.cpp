@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "McReady.h"
-#include "utils/heapcheck.h"
 
 void Flaps(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {	

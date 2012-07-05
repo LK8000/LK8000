@@ -9,10 +9,7 @@
 #include "externs.h"
 #include "ThermalLocator.h"
 #include "RasterTerrain.h"
-#include "Utils.h"
 
-using std::min;
-using std::max;
 
 #define SFACT 111195
 

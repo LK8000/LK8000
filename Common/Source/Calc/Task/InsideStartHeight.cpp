@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include "utils/heapcheck.h"
 
 
 

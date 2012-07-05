@@ -8,9 +8,7 @@
 
 #include "externs.h"
 #include "resource.h"
-#include "MapWindow.h"
 #include "LKMapWindow.h"
-#include "Utils.h"
 
 #define STATIC_BITMAPS
 #include "Bitmaps.h"

@@ -6,16 +6,12 @@
    $Id$
 */
 
-#include "StdAfx.h"
 #include "externs.h"
 #include "Logger.h"
 #include "InputEvents.h"
 #include "Waypointparser.h"
 
-using std::min;
-using std::max;
 
-#include "utils/heapcheck.h"
 
 
 extern DERIVED_INFO Finish_Derived_Info;

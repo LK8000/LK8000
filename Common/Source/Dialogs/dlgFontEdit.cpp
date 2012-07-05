@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include "Utils.h"
 #include "LKProfiles.h"
 
 extern void InitializeOneFont (HFONT * theFont, 

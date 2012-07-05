@@ -7,18 +7,11 @@
 */
 
 #include "externs.h"
-#include "Utils.h"
 #include "FlarmIdFile.h" 
 
 // Warning, this is initialising class, loading flarmnet IDs before anything else in the LK is even started..
 FlarmIdFile file; 
 
-#ifdef __MINGW32__
-#ifndef max
-#define max(x, y)   (x > y ? x : y)
-#define min(x, y)   (x < y ? x : y)
-#endif
-#endif
 
 int NumberOfFLARMNames = 0;
 

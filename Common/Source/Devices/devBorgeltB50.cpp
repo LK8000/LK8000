@@ -7,14 +7,9 @@
 */
 
 #include "externs.h"
-#include "Utils.h"
-#include "Parser.h"
-#include "Port.h"
 
 #include "devBorgeltB50.h"
 
-using std::min;
-using std::max;
 BOOL bBaroAvailable = FALSE;
 
 BOOL PBB50(TCHAR *String, NMEA_INFO *GPS_INFO);

@@ -10,7 +10,6 @@
 #include "externs.h"
 #include "devLXV7.h"
 #include "LKInterface.h"
-#include "Parser.h"
 #include "InputEvents.h"
 
 extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);

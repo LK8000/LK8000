@@ -8,6 +8,8 @@
 
 #include "externs.h"
 #include "Modeltype.h"
+#include <shlobj.h>
+
 
 #ifdef PNA
 #include "LKHolux.h"

@@ -7,26 +7,23 @@
 */
 
 #include "externs.h"
-#include "MapWindow.h"
 #include "LKMapWindow.h"
 #include "LKStyle.h"
 #include "Bitmaps.h"
 #include "DoInits.h"
 #include "LKObjects.h"
+#include "RGB.h"
 
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
 #endif
 
-#include "utils/heapcheck.h"
 #include <string.h>
 
 MapWaypointLabel_t MapWaypointLabelList[200]; 
 
 int MapWaypointLabelListCount=0;
-
-#define WPCIRCLESIZE        2 // check also duplicate in TextInBox!
 
 
 bool MapWindow::WaypointInRange(int i) {

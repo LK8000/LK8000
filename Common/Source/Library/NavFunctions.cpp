@@ -8,15 +8,6 @@
 
 #include "externs.h"
 #include "NavFunctions.h"
-#include "Utils.h"
-
-
-#ifdef __MINGW32__
-#ifndef max
-#define max(x, y)   (x > y ? x : y)
-#define min(x, y)   (x < y ? x : y)
-#endif
-#endif
 
 
 

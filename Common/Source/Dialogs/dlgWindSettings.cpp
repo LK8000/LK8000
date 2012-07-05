@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include "dlgTools.h"
 #include "LKProfiles.h"
 
 extern HWND   hWndMainWindow;

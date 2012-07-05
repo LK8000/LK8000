@@ -16,10 +16,6 @@
 
 #include "wcecompat/ts_string.h"
 
-#include "utils/heapcheck.h"
-
-using std::min;
-using std::max;
 
 
 void RasterMapRaw::SetFieldRounding(double xr, double yr) {

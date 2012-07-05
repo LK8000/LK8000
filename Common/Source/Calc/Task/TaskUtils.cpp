@@ -8,8 +8,6 @@
 
 #include "externs.h"
 
-using std::min;
-using std::max;
 
 bool TaskModified = false;
 bool TargetModified = false;

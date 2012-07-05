@@ -16,9 +16,6 @@
 
 
 
-using std::min;
-using std::max;
-
 
 RasterMap* RasterTerrain::TerrainMap = NULL;
 

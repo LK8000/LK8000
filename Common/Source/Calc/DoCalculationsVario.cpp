@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include "utils/heapcheck.h"
 
 extern void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void SpeedToFly(NMEA_INFO *Basic, DERIVED_INFO *Calculated);

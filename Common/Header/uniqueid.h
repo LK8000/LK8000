@@ -21,7 +21,6 @@ Revision History:
 extern "C" {
 #endif
 
-#include <windows.h>
 #include <winioctl.h>
 
 typedef struct _DEVICE_ID {

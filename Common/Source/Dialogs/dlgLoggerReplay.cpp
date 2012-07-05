@@ -9,7 +9,6 @@
 #include "externs.h"
 
 #include "Logger.h"
-#include "dlgTools.h"
 
 
 extern HWND   hWndMainWindow;

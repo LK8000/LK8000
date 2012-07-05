@@ -8,10 +8,6 @@
 
 #include "externs.h"
 
-using std::min;
-using std::max;
-
-
 
 void MapWindow::DrawThermalBand(HDC hDC, const RECT rc)
 {

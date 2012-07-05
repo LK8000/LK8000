@@ -9,17 +9,13 @@
 #include "externs.h"
 #include "InfoBoxLayout.h"
 #include "McReady.h"
-#include "dlgTools.h"
 #include "Atmosphere.h"
 #include "RasterTerrain.h"
 #include "LKInterface.h"
-#include "LKAirspace.h"
 #include "RGB.h"
 #include "Sideview.h"
 
 
-using std::min;
-using std::max;
 
 double Statistics::yscale;
 double Statistics::xscale;

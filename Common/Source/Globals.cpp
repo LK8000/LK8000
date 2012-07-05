@@ -10,7 +10,6 @@
 #include "externs.h"
 #define STATIC_PGLOBALS
 #include "LKProfiles.h"
-#include "MapWindow.h"
 #include "LKMapWindow.h"
 #include "Modeltype.h"
 #include "LKInterface.h"

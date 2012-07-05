@@ -9,8 +9,6 @@
 #if !defined(AFX_MAPWINDOW_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
 #define AFX_MAPWINDOW_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_
 
-#include "Airspace.h"
-
 #define NORTHSMART 5
 #define NORTHTRACK 4
 #define TRACKCIRCLE 3
@@ -49,29 +47,6 @@
 #define TEXT_MIDDLE_RIGHT   8
 #define TEXT_MIDDLE_CENTER  9
 
-
-#include "RGB.h"
-
-// NOT USED ANYMORE, USE RGB_xxx as color definition
-// Used by MapWindow::TextColor 
-// 5 bits (0-30) . Some colors unused
-// #define TEXTBLACK 0
-// #define TEXTWHITE 1
-// #define TEXTGREEN 2
-// #define TEXTRED 3
-// #define TEXTBLUE 4
-// #define TEXTYELLOW 5
-// #define TEXTCYAN 6
-// #define TEXTMAGENTA 7
-// #define TEXTGREY 8
-// #define TEXTORANGE 9
-// #define TEXTLIGHTGREEN 10
-// #define TEXTLIGHTRED 11
-// #define TEXTLIGHTBLUE 12
-// #define TEXTLIGHTYELLOW 13
-// #define TEXTLIGHTCYAN 14
-// #define TEXTLIGHTGREY 15
-// #define TEXTLIGHTORANGE 16
 
 // VENTA3 note> probably it would be a good idea to separate static WP data to dynamic values,
 // by moving things like Reachable, AltArival , etc to WPCALC

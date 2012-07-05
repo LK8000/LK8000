@@ -9,13 +9,8 @@
 #include "externs.h"
 #include <aygshell.h>
 
-#include "dlgTools.h"
 #include "InfoBoxLayout.h"
-#include "MapWindow.h"
 
-
-using std::min;
-using std::max;
 
 static WndForm *wf=NULL;
 static WndListFrame *wStartPointList=NULL;

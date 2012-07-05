@@ -817,6 +817,10 @@
 #define TCX_BUTTON_DOUBLECLICK  13
 
 
+//
+// TextInBox and LKDrawWaypoint
+#define WPCIRCLESIZE        2 
+
 
 //
 // SHORTCUTS
@@ -830,6 +834,12 @@
 #define CURTYPE ModeType[ModeIndex]
 #define INVERTCOLORS  (Appearance.InverseInfoBox)
 #define TASKINDEX       Task[ActiveWayPoint].Index
+
+#define DONTDRAWTHEMAP !MapWindow::mode.AnyPan()&&MapSpaceMode!=MSM_MAP
+#define MAPMODE8000    !MapWindow::mode.AnyPan()&&MapSpaceMode==MSM_MAP
+#define QUICKDRAW (FastZoom || MapWindow::zoom.BigZoom())
+
+
 
 // For debugging and trace tests
 #define IMHERE	StartupStore(_T(">>> %s:%u\n"), _T(__FILE__), __LINE__);

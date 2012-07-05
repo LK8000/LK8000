@@ -9,10 +9,7 @@
 #include "externs.h"
 #include "AATDistance.h"
 
-#include "utils/heapcheck.h"
 
-using std::min;
-using std::max;
 
 extern double CRUISE_EFFICIENCY;
 extern AATDistance aatdistance;

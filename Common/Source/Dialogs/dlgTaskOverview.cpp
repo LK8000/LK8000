@@ -11,12 +11,9 @@
 
 #include "Logger.h"
 #include "McReady.h"
-#include "dlgTools.h"
 #include "InfoBoxLayout.h"
 #include "LKMapWindow.h"
 
-using std::min;
-using std::max;
 
 static WndForm *wf=NULL;
 static WndFrame *wfAdvanced=NULL;

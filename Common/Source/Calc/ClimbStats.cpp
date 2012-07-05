@@ -8,10 +8,7 @@
 
 #include "externs.h"
 #include "DoInits.h"
-#include "utils/heapcheck.h"
 
-using std::min;
-using std::max;
 
 #ifdef NEWCLIMBAV
 ClimbAverageCalculator climbAverageCalculator;

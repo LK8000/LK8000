@@ -10,8 +10,6 @@
 #include "Logger.h"
 
 
-using std::min;
-using std::max;
 extern void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 
 int FastLogNum = 0; // number of points to log at high rate

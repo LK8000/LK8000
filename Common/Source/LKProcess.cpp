@@ -7,18 +7,13 @@
 */
 
 #include "externs.h"
-#include "MapWindow.h"
 #include "McReady.h"
 #include "InputEvents.h"
 #include "InfoBoxLayout.h"
 #include "Logger.h"
 #include "Process.h"
-#include "Task.h"
 #include "DoInits.h"
 
-#include "utils/heapcheck.h"
-using std::min;
-using std::max;
 
 // #define NULLSHORT	"--" 
 #define NULLMEDIUM	"---"

@@ -9,8 +9,6 @@
 #include "externs.h"
 #include "Logger.h"
 
-using std::min;
-using std::max;
 
 extern void ResetTaskWaypoint(int j);
 

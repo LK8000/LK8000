@@ -22,6 +22,11 @@
  #include "mingw32compat/StdAfx.h"
 #endif
 
+#include <malloc.h>
+#include <tchar.h>
+#include <windows.h>
+
+
 // options first, then all dependencies
 #include "options.h"
 #include "Sizes.h"
@@ -30,15 +35,23 @@
 #include "Units.h"
 #include "lk8000.h"
 
+#include "StdAfx.h"
+#include "Parser.h"
+#include "Calculations.h"
 #include "Statistics.h"
+#include "LKAirspace.h"
+#include "Airspace.h"
+#include "MapWindow.h"
+#include "Utils.h"
 #include "Dialogs.h"
 #include "ContestMgr.h"
+#include "Port.h"
 #include "device.h"
-
+#include "Task.h"
 #include "Globals.h"
 
 // Include header for heap allocation checking
-#include "utils/heapcheck.h"
+// #include "utils/heapcheck.h"
 
 // Include assert for LK testbench
 #include "LKAssert.h"
@@ -59,6 +72,13 @@ extern bool		CheckRegistryProfile();
 extern void		ConvToUpper( TCHAR *);
 extern bool		Debounce(int debouncetime);
 extern bool		Debounce();
+
+//
+// Various
+//
+using std::min;
+using std::max;
+
 
 #endif
 

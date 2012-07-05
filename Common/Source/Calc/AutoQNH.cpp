@@ -11,7 +11,6 @@
 #include "Logger.h"
 #include "Waypointparser.h"
 
-#include "utils/heapcheck.h"
 
 void DoAutoQNH(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   static int done_autoqnh = 0;

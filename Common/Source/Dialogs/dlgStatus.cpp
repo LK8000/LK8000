@@ -13,16 +13,10 @@
 #include "Process.h"
 
 
-using std::min;
-using std::max;
-
 extern BOOL extGPSCONNECT;
 extern NMEAParser nmeaParser1;
 extern NMEAParser nmeaParser2;
 
-#include "dlgTools.h"
-
-#include "utils/heapcheck.h"
 
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;

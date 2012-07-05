@@ -6,10 +6,8 @@
    $Id$
 */
 
-#include <devFlyNet.h>
 #include <externs.h>
-#include <device.h>
-#include <Parser.h>
+#include <devFlyNet.h>
 
 extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
 

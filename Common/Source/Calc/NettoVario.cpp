@@ -9,10 +9,7 @@
 #include "externs.h"
 #include "Logger.h"
 #include "McReady.h"
-#include "utils/heapcheck.h"
 
-using std::min;
-using std::max;
 
 void NettoVario(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 

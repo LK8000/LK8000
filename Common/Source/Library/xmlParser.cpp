@@ -44,18 +44,12 @@
  * 
  ****************************************************************************
  */
-#if defined(WIN32) || defined(UNDER_CE)
-#include <windows.h> // to have IsTextUnicode, MultiByteToWideChar, WideCharToMultiByte
-                     // to handle unicode files
-#endif
 #include "externs.h"
 #include <memory.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "xmlParser.h"
-//#include "compatibility.h"
-//#include "StdAfx.h"
 
 
 

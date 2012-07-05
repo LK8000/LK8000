@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include "dlgTools.h"
 
 static WndForm *wf=NULL;
 extern void WhereAmI(void);

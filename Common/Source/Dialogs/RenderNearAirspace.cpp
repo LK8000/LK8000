@@ -7,7 +7,6 @@
 */
 #include "externs.h"
 #include "RasterTerrain.h"
-#include "LKAirspace.h"
 #include "RGB.h"
 #include "Sideview.h"
 
@@ -20,8 +19,6 @@
 #define GC_VERTICAL_DELAY_FACT      25.0f
 
 
-using std::min;
-using std::max;
 
 bool   bNearAirspace_CheckAllAirspaces =false;
 

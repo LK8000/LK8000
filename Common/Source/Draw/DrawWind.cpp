@@ -7,11 +7,6 @@
 */
 
 #include "externs.h"
-#include "MapWindow.h"
-
-using std::min;
-using std::max;
-
 
 
 void MapWindow::DrawWindAtAircraft2(HDC hdc, const POINT Orig, const RECT rc) {

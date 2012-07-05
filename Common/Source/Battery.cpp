@@ -12,7 +12,6 @@
 #include "LKHolux.h"
 #endif
 
-#include "utils/heapcheck.h"
 #include "DoInits.h"
 
 

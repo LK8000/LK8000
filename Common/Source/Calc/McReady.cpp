@@ -10,8 +10,6 @@
 #include "McReady.h"
 #include "DoInits.h"
 
-using std::min;
-using std::max;
 
 double GlidePolar::polar_a;
 double GlidePolar::polar_b;

@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include "MapWindow.h"
 #include "LKMapWindow.h"
 #include "RGB.h"
 #include "DoInits.h"

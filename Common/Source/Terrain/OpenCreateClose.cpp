@@ -19,9 +19,6 @@
 // #define LKMTERRAIN	1	// load terrain DEM also from topology maps, NOT in LKMAPS
 
 
-using std::min;
-using std::max;
-
 
 bool RasterTerrain::terrain_initialised = false;
 

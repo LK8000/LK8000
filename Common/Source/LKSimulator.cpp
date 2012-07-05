@@ -7,12 +7,9 @@
 */
 
 #include "externs.h"
-#include "MapWindow.h"
-#include "Calculations.h"
 #include "Calculations2.h"
 #include "LKMapWindow.h"
 
-#include "Utils.h"
 #include "McReady.h"
 
 

@@ -1,7 +1,6 @@
 #if !defined(NAVFUNCTIONS_H)
 #define NAVFUNCTIONS_H
 
-//#include <math.h> REMOVE
 
 void xXY_to_LL(double Lat_TP, double Lon_TP, double X_int, double Y_int, double *Lat, double *Lon);
 void xLL_to_XY(double Lat_TP, double Lon_TP, double Lat_Pnt, double Lon_Pnt, double *X, double *Y);

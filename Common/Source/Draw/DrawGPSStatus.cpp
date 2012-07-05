@@ -7,7 +7,7 @@
 */
 
 #include "externs.h"
-#include "MapWindow.h"
+#include "RGB.h"
 
 //
 // This will draw both GPS and LOCK SCREEN status

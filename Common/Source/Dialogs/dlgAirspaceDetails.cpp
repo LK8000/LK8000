@@ -8,14 +8,11 @@
 
 #include "externs.h"
 #include <aygshell.h>
-#include "dlgTools.h"
 #include "InfoBoxLayout.h"
 #include "InputEvents.h"
 #include "Airspace.h"
 #include "AirspaceWarning.h"
-#include "LKAirspace.h"
 
-#include "utils/heapcheck.h"
 
 static CAirspace *airspace = NULL;
 static CAirspace airspace_copy;

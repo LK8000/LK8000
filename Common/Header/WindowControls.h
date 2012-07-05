@@ -9,11 +9,6 @@
 #if !defined(__WINDOWSCONTROL_H)
 #define __WINDOWSCONTROL_H
 
-#include <malloc.h>
-#include "Units.h"
-#include "lk8000.h"
-#include "Utils.h"
-#include <tchar.h>
 #define IsEmptyString(x)        ((x==NULL) || (x[0]=='\0'))
 
 #define MAXSETCAPTION 254	// max chars in SetCaption, autolimited

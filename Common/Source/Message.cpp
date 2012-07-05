@@ -8,12 +8,9 @@
 
 #include "externs.h"
 #include "Message.h"
-#include "MapWindow.h"
 #include "InfoBoxLayout.h"
 
 
-using std::min;
-using std::max;
 
 /*
 

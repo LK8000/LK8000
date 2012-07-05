@@ -9,8 +9,6 @@
 #include "externs.h"
 #include "McReady.h"
 
-using std::min;
-using std::max;
 
 double CRUISE_EFFICIENCY = 1.0;
 

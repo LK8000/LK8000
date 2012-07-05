@@ -10,7 +10,6 @@
 #include "Process.h"
 #include "Logger.h"
 #include "utils/fileext.h"
-#include "utils/heapcheck.h"
 
 //
 // Called by Calculations at landing detection (not flying anymore)

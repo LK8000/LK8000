@@ -2,8 +2,6 @@
 #define RASTERTERRAIN_H
 
 #include "StdAfx.h"
-#include "Utils.h"
-#include "Sizes.h"
 #include <zzip/lib.h>
 #include "jasper/RasterTile.h"
 

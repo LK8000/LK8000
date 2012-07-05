@@ -7,13 +7,10 @@
 */
 
 #include "externs.h"
-#include "utils/heapcheck.h"
 
 double	PirkerAnalysis(NMEA_INFO *Basic, DERIVED_INFO *Calculated, const double this_bearing, const double GlideSlope);
 bool	ActiveIsFinalWaypoint();
 
-using std::min;
-using std::max;
 
 void DoAutoMacCready(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {

@@ -4,11 +4,12 @@
    See CREDITS.TXT file for authors and copyrights
 */
 
-#include "LiveTracker.h"
 #include <winsock.h>
 #include <stdlib.h>
 #include <string.h>
 #include <cctype>
+#include "externs.h"
+#include "LiveTracker.h"
 
 //Use to log transactions to the startupstore
 //#define LT_DEBUG  1

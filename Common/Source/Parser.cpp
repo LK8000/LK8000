@@ -8,9 +8,7 @@
 */
 
 #include "externs.h"
-#include "Utils.h"
 #include "Logger.h"
-#include "Parser.h"
 #include "Geoid.h"
 
 #ifdef PNA
@@ -21,14 +19,6 @@
 #include "FlarmCalculations.h"
 FlarmCalculations flarmCalculations;
 
-#include "utils/heapcheck.h"
-
-#ifdef __MINGW32__
-#ifndef max
-#define max(x, y)   (x > y ? x : y)
-#define min(x, y)   (x < y ? x : y)
-#endif
-#endif
 
 static double EastOrWest(double in, TCHAR EoW);
 static double NorthOrSouth(double in, TCHAR NoS);

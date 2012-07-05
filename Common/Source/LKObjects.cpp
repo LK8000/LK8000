@@ -9,7 +9,6 @@
 //  Create common shared graphic objects, from MapWindow
 
 #include "externs.h"
-#include "Utils.h"
 #if (WINDOWSPC>0)
 #include <wingdi.h>
 #endif

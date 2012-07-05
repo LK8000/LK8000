@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "CalcTask.h"
-#include "utils/heapcheck.h"
 
 
 void RefreshTaskStatistics(void) {

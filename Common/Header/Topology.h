@@ -11,7 +11,6 @@
 
 #include "StdAfx.h"
 #include "mapshape.h"
-#include "MapWindow.h"
 
 
 class XShape {

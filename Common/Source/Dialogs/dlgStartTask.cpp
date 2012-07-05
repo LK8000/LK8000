@@ -9,7 +9,6 @@
 
 #include "externs.h"
 #include "Process.h"
-#include "dlgTools.h"
 
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;

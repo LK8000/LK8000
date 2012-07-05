@@ -24,8 +24,6 @@
 #include "Bitmaps.h"
 #include "LKObjects.h"
 
-using std::min;
-using std::max;
 
 
 extern HBRUSH hBrushSelected;

@@ -8,9 +8,6 @@
 
 
 #include "externs.h"
-#include "Utils.h"
-#include "Parser.h"
-#include "Port.h"
 
 #include "devVolkslogger.h"
 extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PDeviceDescriptor_t d, const double fAlt);
@@ -18,8 +15,6 @@ extern bool UpdateBaroSource(NMEA_INFO* GPS_INFO, const short parserid, const PD
 #include "Volkslogger/vlapi2.h"
 #include "Volkslogger/vlapihlp.h"
 
-using std::min;
-using std::max;
 
 // RMN: Volkslogger
 // Source data:

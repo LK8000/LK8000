@@ -5,9 +5,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include <windows.h>
-#include "LKAirspace.h"
-#include "MapWindow.h"
+#include "dlgTools.h"
 
 void LKReadLanguageFile(void);
 void LKUnloadMessage();
@@ -26,7 +24,6 @@ void StopHourglassCursor();
 extern void DoStatusMessage(const TCHAR* text, const TCHAR* data = NULL, const bool playsound = true);
 
 
-#include "dlgTools.h"
 
 bool dlgAirspaceWarningShowDlg(bool force);
 // int dlgWayPointSelect(void);

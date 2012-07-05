@@ -9,7 +9,6 @@
 #include "externs.h"
 #include "CalcTask.h"
 #include "AATDistance.h"
-#include "utils/heapcheck.h"
 
 extern AATDistance aatdistance;
 

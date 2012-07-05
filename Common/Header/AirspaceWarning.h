@@ -9,7 +9,6 @@
 #ifndef AIRSPACE_WARNING_H
 #define AIRSPACE_WARNING_H
 
-#include "Calculations.h"
 
 extern int LKAirspaceDistance(NMEA_INFO *Basic, DERIVED_INFO *Calculated, 
                                 bool Predicted, const CAirspace *airspace,

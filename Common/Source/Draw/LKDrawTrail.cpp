@@ -10,9 +10,6 @@
 #include "externs.h"
 
 
-using std::min;
-using std::max;
-
 // #define SKIPPOINTS 1		// skip closer points for drawing, causing flashing
 
 #define TRAIL_DRIFT_FIX 1

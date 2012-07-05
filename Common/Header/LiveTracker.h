@@ -7,7 +7,6 @@
 #ifndef LIVETRACKER_H
 #define LIVETRACKER_H
 
-#include "externs.h"
 
 // Init Live Tracker services
 void LiveTrackerInit();

@@ -5,8 +5,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include <windows.h>
-#include "Sizes.h"
 
 #define CIRCLE 0
 #define SECTOR 1

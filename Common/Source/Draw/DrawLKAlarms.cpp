@@ -8,7 +8,7 @@
 
 
 #include "externs.h"
-#include "MapWindow.h"
+#include "RGB.h"
 
 //
 // Called by DrawThread

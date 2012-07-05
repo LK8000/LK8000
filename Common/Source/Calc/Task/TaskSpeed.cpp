@@ -9,10 +9,6 @@
 #include "externs.h"
 #include "CalcTask.h"
 #include "McReady.h"
-#include "utils/heapcheck.h"
-
-using std::min;
-using std::max;
 
 
 

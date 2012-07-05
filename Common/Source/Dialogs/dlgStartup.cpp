@@ -7,9 +7,7 @@
 */
 
 #include "externs.h"
-#include "dlgTools.h"
 #include "InfoBoxLayout.h"
-#include "MapWindow.h"
 #include "RGB.h"
 #include "resource.h"
 #include "LKObjects.h"

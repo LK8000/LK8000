@@ -8,7 +8,6 @@
 
 
 #include "externs.h"
-#include "MapWindow.h"
 
 
 const double MapWindow::Zoom::SCALE_CRUISE_INIT      = 3.5;

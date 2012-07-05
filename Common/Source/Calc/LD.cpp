@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include "utils/heapcheck.h"
 
 extern void InsertLDRotary(ldrotary_s *buf, int distance, NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void InsertWindRotary(windrotary_s *wbuf, double speed, double track, double altitude);

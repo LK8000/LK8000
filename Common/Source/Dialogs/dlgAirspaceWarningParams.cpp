@@ -10,8 +10,6 @@
 #include "LKProfiles.h"
 #include <aygshell.h>
 
-#include "dlgTools.h"
-#include "Utils.h"
 
 static bool changed = false;
 static WndForm *wf=NULL;

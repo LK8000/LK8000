@@ -7,7 +7,6 @@
 
 #include <windows.h>
 
-#include "MapWindow.h"
 
 #define wpTerrainBoundsYes    100
 #define wpTerrainBoundsYesAll 101

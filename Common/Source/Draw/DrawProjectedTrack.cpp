@@ -8,9 +8,6 @@
 
 #include "externs.h"
 
-using std::min;
-using std::max;
-
 
 
 void MapWindow::DrawProjectedTrack(HDC hdc, const RECT rc, const POINT Orig) {

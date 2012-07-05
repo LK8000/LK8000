@@ -5,13 +5,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "StdAfx.h"
-#include "Sizes.h"
-#include "mapshape.h"
-
 
 #include "CriticalSection.h"
-#include "Calculations.h"
 #include "Point2D.h"
 
 #include <tchar.h>

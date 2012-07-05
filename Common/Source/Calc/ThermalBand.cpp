@@ -7,10 +7,7 @@
 */
 
 #include "externs.h"
-#include "utils/heapcheck.h"
 
-using std::min;
-using std::max;
 
 void ThermalBand(NMEA_INFO *Basic, DERIVED_INFO *Calculated) 
 {

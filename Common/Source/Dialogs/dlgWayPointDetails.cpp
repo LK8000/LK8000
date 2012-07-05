@@ -11,11 +11,8 @@
 #include <aygshell.h>
 
 #include "McReady.h"
-#include "dlgTools.h"
 #include "InfoBoxLayout.h"
 #include "LKProfiles.h"
-
-#include "Units.h"
 
 
 extern void DrawJPG(HDC hdc, RECT rc);

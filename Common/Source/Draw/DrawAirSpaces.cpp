@@ -11,9 +11,6 @@
 #include "Bitmaps.h"
 #include "RGB.h"
 
-#include "LKAirspace.h"
-using std::min;
-using std::max;
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>

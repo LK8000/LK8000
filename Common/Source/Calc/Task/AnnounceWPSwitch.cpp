@@ -10,7 +10,6 @@
 #include "InputEvents.h"
 #include "AATDistance.h"
 #include "CalcTask.h"
-#include "utils/heapcheck.h"
 
 
 extern int FastLogNum; // number of points to log at high rate

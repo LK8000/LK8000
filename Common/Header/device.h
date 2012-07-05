@@ -2,10 +2,6 @@
 #ifndef	DEVICE_H
 #define	DEVICE_H
  
-#include <windows.h>
-#include "Sizes.h"
-#include "Port.h"
-#include "MapWindow.h"
 
 #define DEVNAMESIZE  32
 #define	NUMDEV		 2

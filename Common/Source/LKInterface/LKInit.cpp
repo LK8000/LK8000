@@ -15,8 +15,6 @@
 #include "LKRoyaltek3200.h"
 #endif
 
-using std::min;
-using std::max;
 
 extern void ResetNearestTopology();
 extern void InitCustomKeys();

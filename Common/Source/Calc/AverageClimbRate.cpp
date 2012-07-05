@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include "utils/heapcheck.h"
 
 void AverageClimbRate(NMEA_INFO *Basic, DERIVED_INFO *Calculated) 
 {

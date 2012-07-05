@@ -7,14 +7,9 @@
 */
 
 #include "externs.h"
-#include "Utils.h"
-#include "MapWindow.h"
 #include "McReady.h"
 
 
-
-using std::min;
-using std::max;
 
 ///////////
 

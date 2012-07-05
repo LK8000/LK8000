@@ -6,12 +6,7 @@
    $Id$
 */
 
-#include "StdAfx.h"
-#include "wcecompat/ts_string.h"
-#include "options.h"
-#include "Defines.h"
 #include "externs.h"
-#include "lk8000.h"
 #include "Logger.h"
 #include "LKInterface.h"
 

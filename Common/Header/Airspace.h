@@ -5,10 +5,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "StdAfx.h"
-#include "Sizes.h"
-#include "mapshape.h"
-
 #define OTHER                           0
 #define RESTRICT                        1
 #define PROHIBITED                      2

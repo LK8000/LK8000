@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include "Port.h"
 
 
 extern void ComPort_StatusMessage(UINT type, const TCHAR *caption, const TCHAR *fmt, ...);

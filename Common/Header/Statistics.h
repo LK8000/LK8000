@@ -13,9 +13,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include <windows.h>
 #include "leastsqs.h"
-#include "Task.h"
 
 
 

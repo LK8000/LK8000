@@ -11,9 +11,6 @@
 #include "Sideview.h"
 
 
-using std::min;
-using std::max;
-
 
 void DrawTelescope(HDC hdc, double fAngle, int x, int y)
 {

@@ -7,13 +7,11 @@
 */
 #include "externs.h"
 #include "RasterTerrain.h"
-#include "LKAirspace.h"
 #include "RGB.h"
 #include "Sideview.h"
 #include "NavFunctions.h"
 #include "LKObjects.h"
 #include "DoInits.h"
-#include "MapWindow.h"
 #include "LKMapWindow.h"
 #include "FlarmIdFile.h"
 #include "FlarmRadar.h"

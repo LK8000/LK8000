@@ -9,9 +9,6 @@
 #ifndef AATDISTANCE_H
 #define AATDISTANCE_H
 
-#include "StdAfx.h"
-#include "Calculations.h"
-#include "Utils.h"
 
 #define MAXNUM_AATDISTANCE 50
 

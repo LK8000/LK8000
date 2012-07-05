@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "windanalyser.h"
-#include "utils/heapcheck.h"
 
 extern WindAnalyser *windanalyser;
 

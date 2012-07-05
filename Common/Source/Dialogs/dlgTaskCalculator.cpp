@@ -8,14 +8,8 @@
 #include "externs.h"
 #include "McReady.h"
 
-#include "dlgTools.h"
-#include "Port.h"
 #include "Calculations2.h"
-#include "Dialogs.h"
 
-#include "utils/heapcheck.h"
-using std::min;
-using std::max;
 
 extern HWND   hWndMainWindow;
 static WndForm *wf=NULL;

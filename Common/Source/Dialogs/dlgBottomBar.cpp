@@ -10,12 +10,10 @@
 #include "LKProfiles.h"
 #include <aygshell.h>
 
-#include "dlgTools.h"
 
 #include "Terrain.h"
 #include "LKMapWindow.h"
 
-#include "Utils.h"
 
 #include "LKInterface.h"
 

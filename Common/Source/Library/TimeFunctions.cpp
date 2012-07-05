@@ -8,8 +8,6 @@
 
 #include "externs.h"
 
-using std::min;
-using std::max;
 
 
 int TimeLocal(int localtime) {

@@ -9,10 +9,6 @@
 #include "externs.h"
 #include "RasterTerrain.h"
 #include "McReady.h"
-#include "utils/heapcheck.h"
-
-using std::min;
-using std::max;
 
 
 // no need to use LegToGo and LegBearing, we use the active waypoint instead

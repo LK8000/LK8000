@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "Logger.h"
-#include "utils/heapcheck.h"
 
 
 // It is called GPSVario but it is really a vario using best altitude available.. baro if possible

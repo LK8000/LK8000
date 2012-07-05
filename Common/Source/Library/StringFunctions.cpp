@@ -7,9 +7,6 @@
 */
 
 #include "externs.h"
-#include "Utils.h"
-
-
 
 #ifdef __MINGW32__
 #ifndef max
@@ -17,7 +14,6 @@
 #define min(x, y)   (x < y ? x : y)
 #endif
 #endif
-
 
 
 

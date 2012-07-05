@@ -8,10 +8,7 @@
 
 #include "externs.h"
 #include "Logger.h"
-#include "utils/heapcheck.h"
 
-using std::min;
-using std::max;
 
 extern void ResetFlightStats(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated);

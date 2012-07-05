@@ -8,7 +8,6 @@
 
 #include "ClimbAverageCalculator.h"
 
-#include "utils/heapcheck.h"
 
 ClimbAverageCalculator::ClimbAverageCalculator(void)
 {

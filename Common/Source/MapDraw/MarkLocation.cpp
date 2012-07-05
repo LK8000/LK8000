@@ -10,8 +10,6 @@
 #include "Process.h"
 #include "Waypointparser.h"
 
-using std::min;
-using std::max;
 
 extern void LatitudeToCUPString(double Latitude, TCHAR *Buffer);
 extern void LongitudeToCUPString(double Latitude, TCHAR *Buffer);

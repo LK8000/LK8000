@@ -10,7 +10,6 @@
 #include "Calculations2.h"
 #include "McReady.h"
 
-#include "utils/heapcheck.h"
 
 extern void Vario(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void LD(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
@@ -43,7 +42,6 @@ extern void CalculateOrbiter(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern void CalculateHeadWind(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 extern bool TargetDialogOpen;
 
-#define MAPMODE8000    !MapWindow::mode.AnyPan()&&MapSpaceMode==MSM_MAP
 
 
 BOOL DoCalculations(NMEA_INFO *Basic, DERIVED_INFO *Calculated)

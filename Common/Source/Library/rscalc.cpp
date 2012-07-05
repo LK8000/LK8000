@@ -10,7 +10,6 @@
 #define AIR_REFRACTION 34.0/60.0 // athmospheric refraction degrees //
 
 #include <windows.h>
-#include "Utils.h"
 
 
 class SunEphemeris {

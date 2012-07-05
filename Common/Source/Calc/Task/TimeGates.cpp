@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "Process.h"
-#include "utils/heapcheck.h"
 
 
 // ALL TIME VALUES ARE IN SECONDS! 

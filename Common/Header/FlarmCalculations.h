@@ -2,7 +2,6 @@
 #define FLARMCALCULATIONS_H
 
 #include <map>
-#include "Parser.h"
 #include "ClimbAverageCalculator.h"
 
 class FlarmCalculations

@@ -7,12 +7,8 @@
 */
 
 #include "externs.h"
-#include "MapWindow.h"
 #include "RGB.h"
 
-
-using std::min;
-using std::max;
 
 
 

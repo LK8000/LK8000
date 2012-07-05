@@ -7,10 +7,7 @@
 */
 
 #include "externs.h"
-#include "utils/heapcheck.h"
 
-//using std::min;
-//using std::max;
 int CalculateWaypointApproxDistance(int scx_aircraft, int scy_aircraft,
                                     int i) {
 

@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include "MapWindow.h"
 
 
 // RETURNS Longitude, Latitude!

@@ -1,8 +1,6 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
-#include "StdAfx.h"
-#include "lk8000.h"
 
 #define MAXMESSAGES 20
 

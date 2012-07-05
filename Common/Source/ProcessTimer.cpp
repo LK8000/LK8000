@@ -11,11 +11,6 @@
 #include "Message.h"
 #include "InputEvents.h"
 
-using std::min;
-using std::max;
-
-
-#include "utils/heapcheck.h"
 #include "winbase.h"
 
 extern int ConnectionProcessTimer(int itimeout);

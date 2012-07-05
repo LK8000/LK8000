@@ -13,9 +13,6 @@
 #include "NavFunctions.h" 
 
 
-using std::min;
-using std::max;
-
 
 
 double MacCreadyTimeLimit(NMEA_INFO *Basic, DERIVED_INFO *Calculated,

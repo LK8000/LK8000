@@ -13,8 +13,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "Parser.h"
-#include <windows.h>
 #include "mapshape.h"
 
 #define NUMTHERMALBUCKETS 10

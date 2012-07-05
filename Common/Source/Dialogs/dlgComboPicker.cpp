@@ -9,7 +9,6 @@
 #include "externs.h"
 #include "InputEvents.h"
 #include "WindowControls.h"
-#include "dlgTools.h"
 #include "InfoBoxLayout.h"
 
 

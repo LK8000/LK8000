@@ -7,11 +7,8 @@
 */
 
 #include "externs.h"
-#include "Calculations.h"
 #include "Process.h"
-#include "Utils.h"
 #include "McReady.h"
-#include "MapWindow.h"
 #include "RasterTerrain.h"
 #include "Calculations2.h"
 #include "Message.h"

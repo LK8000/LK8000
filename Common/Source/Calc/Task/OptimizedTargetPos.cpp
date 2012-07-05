@@ -11,8 +11,6 @@
 #include "Waypointparser.h"
 #include "NavFunctions.h"
 
-using std::min;
-using std::max;
 
 extern AATDistance aatdistance;
 

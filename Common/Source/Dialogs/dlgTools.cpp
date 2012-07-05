@@ -10,10 +10,8 @@
 #include <limits.h>
 
 #include "WindowControls.h"
-#include "dlgTools.h"
 #include "xmlParser.h"
 #include "InfoBoxLayout.h"
-#include "Dialogs.h"
 #include "RGB.h"
 
 

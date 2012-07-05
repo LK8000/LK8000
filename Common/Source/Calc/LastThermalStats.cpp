@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "ThermalLocator.h"
-#include "utils/heapcheck.h"
 
 #define THERMAL_TIME_MIN 45.0
 ThermalLocator thermallocator;

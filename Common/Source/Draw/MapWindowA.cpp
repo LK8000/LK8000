@@ -8,9 +8,7 @@
 
 #include "externs.h"
 
-#include "MapWindow.h"
 #include "Terrain.h"
-#include "LKAirspace.h"
 #include "RGB.h"
 
 

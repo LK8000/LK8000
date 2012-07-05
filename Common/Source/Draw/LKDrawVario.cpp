@@ -8,7 +8,6 @@
 
 
 #include "externs.h"
-#include "MapWindow.h"
 #include "LKObjects.h"
 #include "DoInits.h"
 

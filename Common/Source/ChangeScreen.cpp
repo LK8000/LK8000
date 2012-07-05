@@ -27,8 +27,6 @@
 #include "Bitmaps.h"
 #include "DoInits.h"
 
-using std::min;
-using std::max;
 
 #define CHANGESCREEN 1
 

@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "McReady.h"
-#include "utils/heapcheck.h"
 
 extern double CRUISE_EFFICIENCY;
 

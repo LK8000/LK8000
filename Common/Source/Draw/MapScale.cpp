@@ -7,11 +7,6 @@
 */
 
 #include "externs.h"
-#include "MapWindow.h"
-
-using std::min;
-using std::max;
-
 
 
 

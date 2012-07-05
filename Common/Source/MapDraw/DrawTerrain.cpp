@@ -21,12 +21,9 @@
 #define NUMRAMPS        14
 #include "./ColorRamps.h"
 
-using std::min;
-using std::max;
 
 unsigned short minalt=9999;
 
-#define QUICKDRAW (FastZoom || MapWindow::zoom.BigZoom())
 extern bool FastZoom;
 
 Topology* TopoStore[MAXTOPOLOGY];

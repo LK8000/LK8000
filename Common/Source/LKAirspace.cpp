@@ -16,8 +16,6 @@
 #include <Point2D.h>
 #include "md5.h"
 
-using std::min;
-using std::max;
 
 static const int k_nAreaCount = 14;
 static const TCHAR* k_strAreaStart[k_nAreaCount] = {

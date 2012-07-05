@@ -8,7 +8,6 @@
 
 #include "externs.h"
 #include "InputEvents.h"
-#include "dlgTools.h"
 #include "InfoBoxLayout.h"
 
 

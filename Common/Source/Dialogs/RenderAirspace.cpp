@@ -9,7 +9,6 @@
 #include "externs.h"
 #include "InfoBoxLayout.h"
 #include "McReady.h"
-#include "dlgTools.h"
 #include "Atmosphere.h"
 #include "RasterTerrain.h"
 #include "LKInterface.h"
@@ -18,8 +17,6 @@
 #include "Sideview.h"
 
 
-using std::min;
-using std::max;
 
 extern int Sideview_asp_heading_task;
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];

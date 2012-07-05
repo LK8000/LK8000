@@ -7,10 +7,8 @@
 */
 
 #include "externs.h"
-#include "Utils.h"
 #include "McReady.h"
 #include "Modeltype.h"
-#include "Calculations.h"
 #include "LKInterface.h"
 
 

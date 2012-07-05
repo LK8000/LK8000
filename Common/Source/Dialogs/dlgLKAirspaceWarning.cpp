@@ -11,11 +11,7 @@
 
 #include "InfoBoxLayout.h"
 #include "InputEvents.h"
-#include "MapWindow.h"
 
-#include "dlgTools.h"
-#include "CriticalSection.h"
-#include "LKAirspace.h"
 #include "RGB.h"
 
 extern HWND   hWndMainWindow;

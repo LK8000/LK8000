@@ -1,6 +1,5 @@
 #ifndef CALCULATIONS2_H
 #define CALCULATIONS2_H
-#include "Calculations.h"
 
 void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated);
 bool DetectFreeFlying(NMEA_INFO *Basic, DERIVED_INFO *Calculated);

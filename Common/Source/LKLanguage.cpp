@@ -9,7 +9,6 @@
 #include "externs.h"
 #include "InfoBoxLayout.h"
 #include "Logger.h"
-#include "Parser.h"
 #include "WaveThread.h"
 #include "Message.h"
 #include "McReady.h"
@@ -20,7 +19,6 @@
 #include <ctype.h>
 
 #include "utils/stringext.h"
-#include "utils/heapcheck.h"
 #include "utils/stl_utils.h"
 
 

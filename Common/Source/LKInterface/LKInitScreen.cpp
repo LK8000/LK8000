@@ -9,8 +9,6 @@
 #include "externs.h"
 #include "LKInterface.h"
 
-using std::min;
-using std::max;
 
 
 // InitLKScreen can be called anytime, and should be called upon screen changed from portrait to landscape,

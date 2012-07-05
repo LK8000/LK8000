@@ -10,10 +10,6 @@
 #include "DoInits.h"
 #include "Logger.h"
 #include "WindZigZag.h"
-#include "utils/heapcheck.h"
-
-using std::min;
-using std::max;
 
 
 void Heading(NMEA_INFO *Basic, DERIVED_INFO *Calculated)

@@ -11,8 +11,6 @@
 #include "InputEvents.h"
 #endif
 
-using std::min;
-using std::max;
 
 HWND ButtonLabel::hWndButtonWindow[NUMBUTTONLABELS];
 bool ButtonLabel::ButtonVisible[NUMBUTTONLABELS];

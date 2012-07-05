@@ -8,12 +8,8 @@
 
 #include "externs.h"
 #include "LKInterface.h"
-#include "MapWindow.h"
 #include "AATDistance.h"
 #include "RGB.h"
-
-using std::min;
-using std::max;
 
 
 extern COLORREF taskcolor;

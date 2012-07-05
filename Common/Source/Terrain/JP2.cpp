@@ -18,12 +18,7 @@
 #include "jasper/jasper.h"
 #include "jasper/jpc_rtc.h"
 
-#include "wcecompat/ts_string.h"
 
-#include "utils/heapcheck.h"
-
-using std::min;
-using std::max;
 
 
 void RasterMapJPG2000::SetFieldRounding(double xr, double yr) {

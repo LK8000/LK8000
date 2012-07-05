@@ -7,16 +7,11 @@
 */
 
 #include "externs.h"
-#include "MapWindow.h"
 #include <Message.h>
 #include "Terrain.h"
 #include "RasterTerrain.h"
 #include "LKGeneralAviation.h"
 
-#define DONTDRAWTHEMAP !mode.AnyPan()&&MapSpaceMode!=MSM_MAP
-#define MAPMODE8000    !mode.AnyPan()&&MapSpaceMode==MSM_MAP
-
-#define QUICKDRAW (FastZoom || zoom.BigZoom())
 
 #if NEWSMARTZOOM
 // We do smart zoom only with real map painted, and in quickdraw mode

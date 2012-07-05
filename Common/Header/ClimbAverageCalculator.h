@@ -2,7 +2,6 @@
 #define CLIMBAVERAGECALCULATOR_H
 
 #include <map>
-#include "Parser.h"
 
 class ClimbAverageCalculator
 {

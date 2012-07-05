@@ -8,7 +8,6 @@
 
 
 #include "externs.h"
-#include "MapWindow.h"
 
 
 MapWindow::Mode::Mode():

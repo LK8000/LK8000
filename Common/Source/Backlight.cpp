@@ -14,9 +14,6 @@
 #include "LKRoyaltek3200.h"
 #endif
 
-#include "utils/heapcheck.h"
-using std::min;
-using std::max;
 
 #ifdef PNA 	
 /* 

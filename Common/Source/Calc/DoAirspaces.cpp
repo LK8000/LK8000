@@ -9,8 +9,6 @@
 #include "externs.h"
 #include "DoInits.h"
 
-using std::min;
-using std::max;
 
 
 // Comparer to sort airspaces based on distance

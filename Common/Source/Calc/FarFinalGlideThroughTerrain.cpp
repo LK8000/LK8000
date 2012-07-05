@@ -12,9 +12,6 @@
 #include "Process.h"
 
 
-using std::min;
-using std::max;
-
 
 
 double FarFinalGlideThroughTerrain(const double this_bearing, 

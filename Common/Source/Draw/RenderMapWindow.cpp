@@ -7,9 +7,6 @@
 */
 
 #include "externs.h"
-#include "MapWindow.h"
-
-#define DONTDRAWTHEMAP !mode.AnyPan()&&MapSpaceMode!=MSM_MAP
 
 
 DWORD MapWindow::timestamp_newdata=0;
@@ -39,7 +36,6 @@ void MapWindow::UpdateTimeStats(bool start) {
   }
 }
 
-#define QUICKDRAW (FastZoom || zoom.BigZoom())
 bool FastZoom;
 
 //

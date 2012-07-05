@@ -7,7 +7,6 @@
 */
 
 #include "externs.h"
-#include "utils/heapcheck.h"
 
 void DistanceToHome(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   int home_waypoint = HomeWaypoint;

@@ -11,7 +11,6 @@
 /////////////////////////////
 
 #include "externs.h"
-#include "Utils.h"
 #include "LKObjects.h"
 #include "RGB.h"
 

@@ -24,19 +24,6 @@
 #if defined(STATIC_GLOBALS)
   #define GEXTERN 
 
-  #include "Sizes.h"
-  #include "lk8000.h"
-  #include "Parser.h"
-  #include "Calculations.h"
-  #include "MapWindow.h"
-  #include "Task.h"
-  #include "Statistics.h"
-  #include "Dialogs.h"
-  #include "ContestMgr.h"
-  #include "device.h"
-  #include "Enums.h"
-
-
   #define GEXTTRUE       = true
   #define GEXTFALSE      = false
   #define GEXTNULL       = NULL

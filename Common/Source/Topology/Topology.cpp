@@ -10,8 +10,6 @@
 #include <ctype.h> // needed for Wine
 #include "Topology.h"
 
-using std::min;
-using std::max;
 
 
 XShape::XShape() {

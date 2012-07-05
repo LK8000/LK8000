@@ -7,13 +7,9 @@
 */
 
 #include "externs.h"
-#include "Parser.h"
-#include "Calculations.h"
 #include "Atmosphere.h"
 #include "RasterTerrain.h"
 
-using std::min;
-using std::max;
 
 unsigned short CuSonde::last_level=0;
 double CuSonde::thermalHeight = 0;
