@@ -76,7 +76,7 @@ int CAirspace::_lastknownalt = 0;                // last known alt saved for cal
 int CAirspace::_lastknownagl = 0;                // last known agl saved for calculations
 int CAirspace::_lastknownheading = 0;            // last known heading saved for calculations
 int CAirspace::_lastknowntrackbearing = 0;       // last known track bearing saved for calculations
-bool CAirspace::_pred_blindtime = true;               // disable predicted position based warnings near takeoff
+bool CAirspace::_pred_blindtime = true;               // disable predicted position based warnings near takeoff, and other conditions
 CAirspace* CAirspace::_sideview_nearest_instance = NULL;  // collect nearest airspace instance for sideview during warning calculations
 
 //
@@ -211,7 +211,9 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
    
   // Predicted position blind time near takeoff
    _pred_blindtime = false;
-   if ((Calculated->Flying!=TRUE)  || ((Basic->Time - Calculated->TakeOffTime) < 60)) _pred_blindtime = true;
+   if ((Calculated->Flying!=TRUE)  || ((!SIMMODE)&&((Basic->Time - Calculated->TakeOffTime) < 60))) _pred_blindtime = true;
+   // When we are inside dlgConfiguration, NO AIRSPACE WARNINGS!
+   if (MenuActive) _pred_blindtime = true;
 }
 
 // Step2: first pass on all airspace instances
