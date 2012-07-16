@@ -161,7 +161,7 @@ bool ReadWinPilotPolar(void) {
 		}
 		
 
-		if (POLARV[0]==0 || POLARW[0]==0 || POLARV[1]==0 || POLARW[1]==0 || POLARV[2]==0 || POLARW[2]==0) {
+		if (ww[0]<=0 || POLARV[0]==0 || POLARW[0]==0 || POLARV[1]==0 || POLARW[1]==0 || POLARV[2]==0 || POLARW[2]==0) {
 			// StartupStore(_T("... WARNING found invalid Polar line, skipping%s"),NEWLINE);
 			continue; // read another line searching for polar
 		} else {
