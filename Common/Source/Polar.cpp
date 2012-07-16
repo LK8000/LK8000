@@ -85,6 +85,7 @@ void PolarWinPilot2XCSoar(double POLARV[3], double POLARW[3], double ww[2]) {
 }
 
 
+
 bool ReadWinPilotPolar(void) {
 
   TCHAR	szFile[MAX_PATH] = TEXT("\0");
@@ -97,31 +98,27 @@ bool ReadWinPilotPolar(void) {
   double ww[2];
   bool foundline = false;
 
-#ifdef HAVEEXCEPTIONS
-  __try{
-#endif
-
-    // LS3 values, overwritten by loaded values
-    // *LS-3  WinPilot POLAR file: MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3
-    // 403, 101, 115.03, -0.86, 174.04, -1.76, 212.72,	-3.4
-    ww[0]= 403.0; // 383
-    ww[1]= 101.0; // 121
-    POLARV[0]= 115.03;
-    POLARW[0]= -0.86;
-    POLARV[1]= 174.04;
-    POLARW[1]= -1.76;
-    POLARV[2]= 212.72;
-    POLARW[2]= -3.4;
+  // STD.CIRRUS values, overwritten by loaded values
+  // MassDryGross[kg], MaxWaterBallast[liters], Speed1[km/h], Sink1[m/s], Speed2, Sink2, Speed3, Sink3
+  // 337, 80, 93.23, -0.74, 149.17, -1.71, 205.1, -4.2, 10.04
+  ww[0]= 337;
+  ww[1]= 80;
+  POLARV[0]= 93.23;
+  POLARW[0]= -0.74;
+  POLARV[1]= 149.17;
+  POLARW[1]= -1.71;
+  POLARV[2]= 205.1;
+  POLARW[2]= -4.2;
 
     #if OLDPROFILES
     GetRegistryString(szRegistryPolarFile, szFile, MAX_PATH);
     #else
-    _tcscpy(szFile,szPolarFile);
+  _tcscpy(szFile,szPolarFile);
     #endif
-    if (_tcscmp(szFile,_T(""))==0) {
+  if (_tcscmp(szFile,_T(""))==0) {
 	StartupStore(_T("... Empty polar file, using Default%s"),NEWLINE);
 	wcscpy(szFile,_T("%LOCAL_PATH%\\\\_Polars\\Default.plr"));
-    }
+  }
 
     ExpandLocalPath(szFile);
     StartupStore(_T(". Loading polar file <%s>%s"),szFile,NEWLINE);
@@ -129,9 +126,6 @@ bool ReadWinPilotPolar(void) {
     hFile = CreateFile(szFile,GENERIC_READ,0,(LPSECURITY_ATTRIBUTES)NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
 
     if (hFile != INVALID_HANDLE_VALUE ){
-#ifdef HAVEEXCEPTIONS
-      __try{
-#endif
 
         while(ReadString(hFile,READLINE_LENGTH,TempString) && (!foundline)){
 
@@ -168,12 +162,19 @@ bool ReadWinPilotPolar(void) {
 			// StartupStore(_T(". Polar file has wing area=%f%s"),GlidePolar::WingArea,NEWLINE);
 		} else {
 	      		GlidePolar::WingArea = 0.0;
-			StartupStore(_T("... WARNING Polar file has NO wing area%s"),NEWLINE);
 		}
 		
-              PolarWinPilot2XCSoar(POLARV, POLARW, ww);
 
-              foundline = true;
+		if (ww[0]==0 || POLARV[0]==0 || POLARW[0]==0 || POLARV[1]==0 || POLARW[1]==0 || POLARV[2]==0 || POLARW[2]==0) {
+			// StartupStore(_T("... WARNING found invalid Polar line, skipping%s"),NEWLINE);
+			continue; // read another line searching for polar
+		} else {
+			foundline = true;
+			PolarWinPilot2XCSoar(POLARV, POLARW, ww);
+			if (GlidePolar::WingArea == 0) {
+				StartupStore(_T("... WARNING Polar file has NO wing area%s"),NEWLINE);
+			}
+		}
             }
         }
 
@@ -226,30 +227,34 @@ bool ReadWinPilotPolar(void) {
 	   break;
 	} while(ReadString(hFile,READLINE_LENGTH,TempString));
 
-        // file was OK, so save it
-        if (foundline) {
-          ContractLocalPath(szFile);
-	  #if OLDPROFILES
-          SetRegistryString(szRegistryPolarFile, szFile);
-	  #else
-	  _tcscpy(szFile,szPolarFile);
-          #endif
-        }
-#ifdef HAVEEXCEPTIONS
-      }__finally
-#endif
       {
-        CloseHandle (hFile);
+	CloseHandle (hFile);
+	if (foundline) {
+		ContractLocalPath(szFile);
+	  	#if OLDPROFILES
+		SetRegistryString(szRegistryPolarFile, szFile);
+		#else
+		_tcscpy(szFile,szPolarFile);
+		#endif
+	} else {
+		StartupStore(_T("... INVALID POLAR FILE! POLAR RESET TO DEFAULT: Std.Cirrus\n"));
+		ww[0]= 337;
+		ww[1]= 80;
+		POLARV[0]= 93.23;
+		POLARW[0]= -0.74;
+		POLARV[1]= 149.17;
+		POLARW[1]= -1.71;
+		POLARV[2]= 205.1;
+		POLARW[2]= -4.2;
+              	GlidePolar::WingArea = 10.04;
+		PolarWinPilot2XCSoar(POLARV, POLARW, ww);
+		wcscpy(szPolarFile,_T("%LOCAL_PATH%\\\\_Polars\\Std Cirrus.plr"));
+	} // !foundline
       }
     } 
     else {
 	StartupStore(_T("... Polar file <%s> not found!%s"),szFile,NEWLINE);
     }
-#ifdef HAVEEXCEPTIONS
-  }__except(EXCEPTION_EXECUTE_HANDLER){
-    foundline = false;
-  }
-#endif
   return(foundline);
 
 }
