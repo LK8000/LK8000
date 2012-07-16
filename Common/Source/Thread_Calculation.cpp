@@ -65,7 +65,7 @@ DWORD CalculationThread (LPVOID lpvoid) {
     UnlockFlightData();
 
     // Do vario first to reduce audio latency
-    if (GPS_INFO.VarioAvailable) {
+    if (tmp_GPS_INFO.VarioAvailable) {
       if (DoCalculationsVario(&tmp_GPS_INFO,&tmp_CALCULATED_INFO)) {
 	        
       }
