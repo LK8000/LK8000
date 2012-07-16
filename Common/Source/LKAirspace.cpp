@@ -209,7 +209,9 @@ void CAirspace::StartWarningCalculation(NMEA_INFO *Basic, DERIVED_INFO *Calculat
    
   // Predicted position blind time near takeoff
    _pred_blindtime = false;
-   if ((Calculated->Flying!=TRUE)  || ((Basic->Time - Calculated->TakeOffTime) < 60)) _pred_blindtime = true;
+   if ((Calculated->Flying!=TRUE)  || ((!SIMMODE)&&((Basic->Time - Calculated->TakeOffTime) < 60))) _pred_blindtime = true;
+   // When we are inside dlgConfiguration, NO AIRSPACE WARNINGS!
+   if (MenuActive) _pred_blindtime = true;
 }
 
 // Step2: first pass on all airspace instances
