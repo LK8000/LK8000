@@ -1435,7 +1435,7 @@ void CAirspaceManager::FillAirspacesFromOpenAir(ZZIP_FILE *fp)
 {
   TCHAR    *Comment;
   int        nSize;
-  TCHAR Text[READLINE_LENGTH];
+  TCHAR Text[READLINE_LENGTH+1];
   TCHAR sTmp[READLINE_LENGTH+100];
   TCHAR *p;
   int linecount=0;
