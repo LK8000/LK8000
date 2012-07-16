@@ -48,7 +48,7 @@ Version 3.0d
   Fix LK8ext1 device to prevent the slowdown of the application if more than one NMEA frame / second
   was sent. This is particularly affecting GT VArio.
 
-
+  Fix bug that caused trail points to disappear in circling zoom with trail drift on.
 
 
 Version 3.0c  
