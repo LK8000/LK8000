@@ -8,7 +8,12 @@
 
 #include "externs.h"
 
-void LK8000GetOpts(LPTSTR CommandLine) {
+#ifndef UNDER_CE
+void LK8000GetOpts(LPSTR CommandLine)
+#else
+void LK8000GetOpts(LPWSTR CommandLine)
+#endif
+{
   (void)CommandLine;
 
 #if (WINDOWSPC>0) 

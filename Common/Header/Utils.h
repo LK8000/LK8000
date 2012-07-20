@@ -178,7 +178,11 @@ long GetUTCOffset(void);
 int TextToLineOffsets(TCHAR* text, int* LineOffsets, int maxLines);
 void RestoreRegistry(void);
 void StoreRegistry(void);
-void LK8000GetOpts(LPTSTR CommandLine);
+#ifndef UNDER_CE
+void LK8000GetOpts(LPSTR CommandLine);
+#else
+void LK8000GetOpts(LPWSTR CommandLine);
+#endif
 
 #if TOPOFASTLABEL
 bool CheckRectOverlap(const RECT *rc1, const RECT *rc2);

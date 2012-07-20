@@ -8,6 +8,8 @@
 #ifndef stl_utils_h__
 #define stl_utils_h__
 
+#include <cstddef>
+
 template<typename T, size_t N>
 T* begin(T (&array)[N]) {
 	return &array[0];

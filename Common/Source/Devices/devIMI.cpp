@@ -14,6 +14,13 @@
 #include "devIMI.h"
 #include "utils/stringext.h"
 
+#ifndef PACKED
+#ifdef __GNUC__
+#define PACKED __attribute__((packed))
+#else
+#error 'PACKED' not defined
+#endif
+#endif
 
 
 /* *********************** C O N S T A N T S ************************** */

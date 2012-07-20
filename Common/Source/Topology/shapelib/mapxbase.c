@@ -36,6 +36,7 @@
 #include "maperror.h"
 #endif
 #include <ctype.h>
+#include <stdlib.h>
 
 #include "utils/heapcheck.h"
 
