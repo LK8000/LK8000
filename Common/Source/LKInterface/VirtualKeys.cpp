@@ -267,7 +267,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 			// 120504 if we are clicking on the already selected sort button, within the same mapspacemode,
 			// then simulate a gesture down to advance to next page, if available.
-			if ( (MapSpaceMode==oldMapSpaceMode) && (SortedMode[MapSpaceMode]==j)  ||
+			if ( (MapSpaceMode==oldMapSpaceMode && SortedMode[MapSpaceMode]==j)  ||
 			     (MapSpaceMode==MSM_COMMON) || (MapSpaceMode==MSM_RECENT) ) {
 				vkmode=LKGESTURE_DOWN;
 				goto shortcut_gesture;
