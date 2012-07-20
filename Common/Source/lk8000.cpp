@@ -94,7 +94,11 @@ HANDLE hMutex=NULL;
 
 int WINAPI WinMain(     HINSTANCE hInstance,
                         HINSTANCE hPrevInstance,
-                        LPTSTR    lpCmdLine,
+#ifdef _WIN32_WCE
+                        LPWSTR    lpCmdLine,
+#else
+                        LPSTR     lpCmdLine,
+#endif
                         int       nCmdShow)
 {
 #if (WINDOWSPC>0)
@@ -104,7 +108,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 #endif
 
 	MSG msg = {0};
-  HACCEL hAccelTable;
   (void)hPrevInstance;
 
   // use mutex to avoid multiple instances of lk8000 be running
@@ -211,7 +214,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   _tcscpy(startPilotFile, defaultPilotFile);
 
 
-  LK8000GetOpts(lpCmdLine);
+  LK8000GetOpts();
 
   InitCommonControls();
   InitSineTable();
@@ -222,8 +225,6 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 	StartupStore(_T("++++++ InitInstance failed, program terminated!%s"),NEWLINE);
 	return FALSE;
     }
-
-  hAccelTable = LoadAccelerators(hInstance, (LPCTSTR)IDC_XCSOAR);
 
   #ifdef HAVE_ACTIVATE_INFO
   SHSetAppKeyWndAssoc(VK_APP1, hWndMainWindow);
@@ -496,20 +497,16 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
   BOOL bRet;
   while ( (bRet = GetMessage(&msg, NULL, 0, 0)) != 0) {
 	LKASSERT(bRet!=-1);
-	if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)) {
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
+	TranslateMessage(&msg);
+	DispatchMessage(&msg);
   }
   #else
   // This is an alternate approach.
   bool bQuit=false;
   do {
 	while ( PeekMessage(&msg, NULL, 0, 0,PM_REMOVE)) {
-		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)) {
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
 		if (msg.message == WM_QUIT) bQuit=true;
 	}
 	if (bQuit) break;

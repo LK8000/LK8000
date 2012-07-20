@@ -80,15 +80,6 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
 #endif //_WIN32
 
-//
-// Accelerator
-//
-
-IDC_XCSOAR ACCELERATORS DISCARDABLE 
-BEGIN
-    "Q",            IDOK,                   VIRTKEY, CONTROL, NOINVERT
-END
-
 
 
 //
