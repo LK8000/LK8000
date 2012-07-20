@@ -598,7 +598,6 @@ if(SPLITSCREEN_FACTOR >0.95)
 
 double range = 1000; // km
 double GPSlat, GPSlon, GPSalt, GPSbrg  ;
-bool GPSValid;
 double fMaxHeight  ;
 double fMinHeight  ;
 double fx,fy;
@@ -610,7 +609,6 @@ DiagrammStruct sDia;
   GPSlon = DrawInfo.Longitude;
   GPSalt = DrawInfo.Altitude;
   GPSbrg = DrawInfo.TrackBearing;
-  GPSValid = !DrawInfo.NAVWarning;
     
   if (DrawInfo.BaroAltitudeAvailable && EnableNavBaroAltitude) {
    	DerivedDrawInfo.NavAltitude = DrawInfo.BaroAltitude;

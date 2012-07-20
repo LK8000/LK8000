@@ -30,7 +30,7 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rci) {
 	RECT rc = rci;
 //	rc.bottom = rc.bottom/2;
   double fDist = 50.0*1000; // km
-  double aclat, aclon, ach, acb, speed, calc_average30s;
+  double aclat, aclon, acb, speed, calc_average30s;
 
   double wpt_brg;
   double wpt_dist;
@@ -67,7 +67,6 @@ void Statistics::RenderAirspace(HDC hdc, const RECT rci) {
     fMC0 = GlidePolar::SafetyMacCready;
     aclat = GPS_INFO.Latitude;
     aclon = GPS_INFO.Longitude;
-    ach   = GPS_INFO.Altitude;
     acb    = GPS_INFO.TrackBearing;
     GPSbrg = GPS_INFO.TrackBearing;
     speed = GPS_INFO.Speed;

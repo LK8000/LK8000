@@ -4291,17 +4291,10 @@ int ival;
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpGPSAltitudeOffset")); 
   if (wp) {
-    ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY)*1000.0);  
-    if ( ((int)GPSAltitudeOffset) != ival ) {
-	GPSAltitudeOffset = ival;
-	int sword;
-	if (GPSAltitudeOffset<0) {
-		sword=(int) ( (GPSAltitudeOffset*(-1)) +9999999);
-	} else {
-		sword=(int) GPSAltitudeOffset;
-	}
+    ival = iround( (wp->GetDataField()->GetAsInteger()/ALTITUDEMODIFY)*1000.0);
+    if(((int) GPSAltitudeOffset) != ival) {
+      GPSAltitudeOffset = ival;
     }
-
   }
 
   wp = (WndProperty*)wf->FindByName(TEXT("prpUseGeoidSeparation"));
