@@ -8,9 +8,7 @@
 
 #include "externs.h"
 
-void LK8000GetOpts(LPTSTR CommandLine) {
-  (void)CommandLine;
-
+void LK8000GetOpts() {
 #if (WINDOWSPC>0) 
   SCREENWIDTH=800;
   SCREENHEIGHT=480;
