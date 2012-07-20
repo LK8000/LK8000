@@ -23,6 +23,7 @@
 #include <zzip/format.h>
 #include <zzip/fetch.h>
 #include <zzip/__debug.h>
+#include <windef.h>
 
 #include "utils/stringext.h"
 

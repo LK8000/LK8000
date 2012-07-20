@@ -42,12 +42,11 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rci)
 //	rc.top = (rc.bottom-rc.top)/2;
 
   double range = 50.0*1000; // km
-  double GPSlat, GPSlon, GPSalt, GPSbrg, GPSspeed, calc_average30s;
+  double GPSlat, GPSlon, GPSalt, GPSbrg;
   bool GPSValid;
   double calc_terrainalt;
   double calc_altitudeagl;
  // double alt;
-  int calc_circling;
   TCHAR text[80];
   TCHAR buffer[80];
 
@@ -67,14 +66,12 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rci)
   POINT TxXPt;
   SIZE tsize;
   COLORREF GREEN_COL     = RGB_GREEN;
-  COLORREF RED_COL       = RGB_LIGHTORANGE;
   COLORREF BLUE_COL      = RGB_BLUE;
   COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
 
   if(INVERTCOLORS)
   {
     GREEN_COL     = ChangeBrightness(GREEN_COL     , 0.6);
-    RED_COL       = ChangeBrightness(RGB_RED       , 0.6);;
     BLUE_COL      = ChangeBrightness(BLUE_COL      , 0.6);;
     LIGHTBLUE_COL = ChangeBrightness(LIGHTBLUE_COL , 0.4);;
   }
@@ -84,12 +81,9 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rci)
     GPSlon = GPS_INFO.Longitude;
     GPSalt = GPS_INFO.Altitude;
     GPSbrg = GPS_INFO.TrackBearing;
-    GPSspeed = GPS_INFO.Speed;
     GPSValid = !GPS_INFO.NAVWarning;
-    calc_circling    = CALCULATED_INFO.Circling;
     calc_terrainalt  = CALCULATED_INFO.TerrainAlt;
     calc_altitudeagl = CALCULATED_INFO.AltitudeAGL;
-    calc_average30s  = CALCULATED_INFO.Average30s;
     
     if (GPS_INFO.BaroAltitudeAvailable && EnableNavBaroAltitude) {
       CALCULATED_INFO.NavAltitude = GPS_INFO.BaroAltitude;
@@ -99,7 +93,6 @@ void Statistics::RenderNearAirspace(HDC hdc, const RECT rci)
     GPSalt =  CALCULATED_INFO.NavAltitude;
   }
   UnlockFlightData();
-calc_circling = false;
   bValid = false;
   iAS_HorDistance = 5000;
   iAS_Bearing     = (int)GPSbrg;
@@ -175,12 +168,6 @@ calc_circling = false;
 
   if(bValid)
   {
-	double fDist;
-	if(  calc_circling  > 0)
-	  fDist = (double)(iABS_AS_HorDistance/1000+1) * 1500.0f;   // zoom fix
-	else
-	  fDist = (double)(iABS_AS_HorDistance) * 1.5;
-
 	sDia.fXMin = min(-2500.0 , iABS_AS_HorDistance * 1.5 );
 	sDia.fXMax = max( 2500.0 , iABS_AS_HorDistance * 1.5 );
 

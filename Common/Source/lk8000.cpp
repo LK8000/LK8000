@@ -92,10 +92,17 @@ bool api_has_SHHandleWMSettingChange = false;
 void CleanupForShutdown(void);
 HANDLE hMutex=NULL;
 
+#ifndef UNDER_CE
 int WINAPI WinMain(     HINSTANCE hInstance,
                         HINSTANCE hPrevInstance,
-                        LPTSTR    lpCmdLine,
+                        LPSTR     lpCmdLine,
                         int       nCmdShow)
+#else
+int WINAPI WinMain(     HINSTANCE hInstance,
+                        HINSTANCE hPrevInstance,
+                        LPWSTR     lpCmdLine,
+                        int       nCmdShow)
+#endif
 {
 #if (WINDOWSPC>0)
 #if _DEBUG

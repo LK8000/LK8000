@@ -3,6 +3,7 @@
 // Be careful that dependencies will not work for objects!!
 //
 #include "resource.h"
+#include "windows.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 //
