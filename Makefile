@@ -20,7 +20,7 @@ DMALLOC=n
 
 ifeq ($(DEBUG),y)
 OPTIMIZE := -O0
-OPTIMIZE += -g
+OPTIMIZE += -g3 -gdwarf-2
 else
 OPTIMIZE := -O2
 endif
@@ -213,7 +213,7 @@ CPPFLAGS	+= -DCECORE -DPNA
 endif
 
 ifeq ($(CONFIG_PC),y)
-CPPFLAGS	+= -D_WINDOWS -D_MBCS -DWIN32 -DCECORE -DUNDER_CE=300 $(UNICODE)
+CPPFLAGS	+= -D_WINDOWS -D_MBCS -DWIN32 -DCECORE $(UNICODE)
   ifeq ($(CONFIG_WINE),y)
 CPPFLAGS	+= -D__MINGW32__
 # -mno-cygwin
