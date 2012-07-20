@@ -94,7 +94,11 @@ HANDLE hMutex=NULL;
 
 int WINAPI WinMain(     HINSTANCE hInstance,
                         HINSTANCE hPrevInstance,
-                        LPTSTR    lpCmdLine,
+#ifdef _WIN32_WCE
+                        LPWSTR    lpCmdLine,
+#else
+                        LPSTR     lpCmdLine,
+#endif
                         int       nCmdShow)
 {
 #if (WINDOWSPC>0)
