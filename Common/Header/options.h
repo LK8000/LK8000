@@ -96,6 +96,11 @@
                       // enough to warrant detection of the start of free flight)
                       // Eric Carden, 6/28/12
 
+ // Modify best cruise track calculation to assume goal arrival
+ // altitude of safety altitude (not current flight altitude).
+ // Eric Carden, April 21, 2012
+ // #define BCT_ALT_FIX
+
 
 /*
  * Incomplete work, or stuff that never got into production versions but still interesting
@@ -116,9 +121,5 @@
 
 #include "Debug.h"	// DEBUG OPTIONS FOR EVERYONE, depending also on TESTBENCH
 
-// Modify best cruise track calculation to assume goal arrival
-// altitude of safety altitude (not current flight altitude).
-// Eric Carden, April 21, 2012
-#define BCT_ALT_FIX
 
 #endif
