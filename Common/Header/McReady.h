@@ -18,7 +18,12 @@ class GlidePolar {
 				  const bool isFinalGlide, 
                                   double *timetogo, 
                                   double AltitudeAboveTarget=1.0e6,
+                                #ifdef BCT_ALT_FIX
+                                  double cruise_efficiency=1.0,
+                                  double TaskAltDiff=-1.0e6);
+                                #else
 				  double cruise_efficiency=1.0);
+                                #endif
 
   static void SetBallast();
   static double GetAUW();
@@ -64,7 +69,12 @@ class GlidePolar {
                                            double *VMacCready, 
                                            const bool isFinalGlide, 
                                            double *timetogo,
+                                         #ifdef BCT_ALT_FIX
+                                           const double cruise_efficiency,
+                                           const double TaskAltDiff);
+                                         #else
 					   const double cruise_efficiency);
+                                         #endif
 
   static double MacCreadyAltitude_heightadjust(double MCREADY, 
                                                double Distance, 
@@ -76,7 +86,12 @@ class GlidePolar {
                                                const bool isFinalGlide, 
                                                double *timetogo,
                                                const double AltitudeAboveTarget,
+                                             #ifdef BCT_ALT_FIX
+                                               const double cruise_efficiency,
+                                               const double TaskAltDiff);
+                                             #else
 					       const double cruise_efficiency);
+                                             #endif
 
 };
 

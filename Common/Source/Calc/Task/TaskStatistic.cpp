@@ -305,6 +305,11 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 		LegBearing = AATCloseBearing(Basic, Calculated);
 	}
   }
+  
+#ifdef BCT_ALT_FIX
+  // Don't calculate BCT yet.  LegAltitude will be used to calculate
+  // task altitude difference, which will then be used to calculate BCT.
+#endif
 
   double LegAltitude = 
     GlidePolar::MacCreadyAltitude(this_maccready, 
@@ -312,7 +317,11 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                                   LegBearing, 
                                   Calculated->WindSpeed, 
                                   Calculated->WindBearing,
+                                #ifdef BCT_ALT_FIX
+                                  0,
+                                #else
                                   &(Calculated->BestCruiseTrack),
+                                #endif
                                   &(Calculated->VMacCready),
 
 				  // (Calculated->FinalGlide==1),
@@ -333,12 +342,14 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
                                   &LegTime0, 1.0e6, CRUISE_EFFICIENCY
                                   );
 
+#ifndef BCT_ALT_FIX
   // fix problem of blue arrow wrong in task sector
   if (StartBestCruiseTrack>=0)  // use it only if assigned, workaround
 	if (Calculated->IsInSector && (ActiveWayPoint==0)) {
 		// set best cruise track to first leg bearing when in start sector
 		Calculated->BestCruiseTrack = StartBestCruiseTrack;
 	} 
+#endif
 
   // JMW TODO accuracy: Use safetymc where appropriate
 
@@ -352,7 +363,9 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   Calculated->TaskDistanceToGo += LegToGo;
   Calculated->TaskTimeToGo += Calculated->LegTimeToGo;
 
+#ifndef BCT_ALT_FIX
   height_above_finish-= LegAltitude;
+#endif
 
   if (calc_turning_now) {
     Calculated->TaskTimeToGoTurningNow += 
@@ -377,6 +390,34 @@ void TaskStatistics(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
 	Calculated->LKTaskETE = Calculated->TaskDistanceToGo/Calculated->TaskSpeedAchieved;
   else
 	Calculated->LKTaskETE=0;
+
+#ifdef BCT_ALT_FIX
+  // This MCA call's only purpose is to update BestCruiseTrack (BCT).
+  // It must occur after TaskAltitudeDifference (TAD) is updated,
+  // since BCT depends on TAD.
+
+  GlidePolar::MacCreadyAltitude(this_maccready,
+                                LegToGo,
+                                LegBearing,
+                                Calculated->WindSpeed,
+                                Calculated->WindBearing,
+                                &(Calculated->BestCruiseTrack),
+                                0,
+                                true,
+                                0,
+                                height_above_finish,
+                                CRUISE_EFFICIENCY,
+                                Calculated->TaskAltitudeDifference);
+
+  // fix problem of blue arrow wrong in task sector
+  if (StartBestCruiseTrack>=0)  // use it only if assigned, workaround
+    if (Calculated->IsInSector && (ActiveWayPoint==0)) {
+      // set best cruise track to first leg bearing when in start sector
+      Calculated->BestCruiseTrack = StartBestCruiseTrack;
+    } 
+
+  height_above_finish-= LegAltitude;
+#endif
 
   CheckGlideThroughTerrain(Basic, Calculated);
   

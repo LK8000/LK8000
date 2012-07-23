@@ -116,4 +116,9 @@
 
 #include "Debug.h"	// DEBUG OPTIONS FOR EVERYONE, depending also on TESTBENCH
 
+// Modify best cruise track calculation to assume goal arrival
+// altitude of safety altitude (not current flight altitude).
+// Eric Carden, April 21, 2012
+#define BCT_ALT_FIX
+
 #endif
