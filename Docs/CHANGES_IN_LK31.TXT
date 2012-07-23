@@ -236,6 +236,60 @@ New Takeoff safety alarm (configuration menu Alarms)
 
 
 
+LK8000 VERSION 3.1f0 
+==========================
+
+NEW
+
+. Lx MiniMap alternate hardware key handling, and fix missing selection of modeltype
+  Using customkeys bottom bar for hardware buttons: selecting (pressing) Minimap hardware buttons
+  will result in using the customkeys assigned to the bottom bar. This is working only if the
+  original MiniMap software version is not used,  by now.
+
+. Flarm objects traces: traffic is shown displaying recent traces in color.
+
+. NEW SUPPORT FOR COMPASS C-PROBE
+
+  Add Compass C-Probe device
+       -Alt Baro
+       -IAS - TAS
+       -3D Accelerometer
+       -Air Temp
+       -Relative humidity
+       -3D Gyros
+       -Magnetic compass
+
+    Add Device specific Status and Config Dialog For C-Probe
+        you need Add "Device X Config" Kustom key in Custom menu for Calibrate C-Probe Device
+
+    Gyro is used in TRI if available
+
+
+
+CHANGES
+
+
+
+
+
+FIXES
+
+. Fix airspace critical loading bug on startup, crashing LK if a spurious line longer than 254 characters was found.
+
+. It is possible to set a non-landable home WP via WP notes file
+
+. Fix bug not handling a bad polar file been loaded.
+    The polar was incorrectly loaded only from the first non-commented line, and if this was invalid it was nevertheless kept as valid.
+    Result was a 0,0,0,0,0 polar of course.
+    We now manage incorrect lines, and we enforce check for valid polar been loaded.
+    In case of problems, the situation is reverted to Std Cirrus and a message is given to the user.
+    Previously, no message was given in case of bad polar loaded.
+
+. Accept Cup Waypoint with invalid altitude
+
+
+
+
 LK8000 VERSION 3.1e 120607
 ==========================
 
