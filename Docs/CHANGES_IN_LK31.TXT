@@ -288,6 +288,31 @@ FIXES
 . Accept Cup Waypoint with invalid altitude
 
 
+. Bug fix in task start/finish lines
+  A pilot using xcsoar software a few days ago reported a problem with the task startline not being accurate at the borders.
+  It seems that the error depends on the fact that, as the pilot explains, the start line is not 90 degrees exactly to the target point.
+  We assume the same can happen with the finish line.
+    
+  In case the start/finish lines are very big, like 20km long, and the first target point is far away, over 50km, then the error can be measured in some dozens meters.
+    With shorter start/finish lines, the error is relatively smaller, and become unnoticable.
+    This problem in fact has been in both softwares for 8 years, and nobody could discover.
+    
+    The condition to discover the problem, in fact, is to cross the line at the borders, which is a "borderline" condition intrinsecally.
+    It is risky in any case, because the GPS on LK (or xcsoar) cannot be hold valid in case the position fix is wrong by a few meters, resulting in a no-start or a no-finish.
+    
+    Anyway, we now reduce a bit the length of these lines, depending on their sizes and distance to next turnpoint.
+    This is not fixing the calculation problem, but it is nevertheless granting 4 times more marging than a calculation fix, assuming that the pilot that wants to cross the lines at their borders can have a gps which can be even a dozen meters wrong, while turning for example.
+    
+    Here are some examples computed automatically by LK to make some margins on the borders, depending on the line size and distance to next turnpoint:
+    
+    LINE LEN  DISTANCE TO NEXT         CORRECTION ON LINE LEN
+    2 km        25km		      8 m
+    10 km       20km                     33 m
+    10 km       60km                     99 m
+    
+    Which means that if you have a 20km start line (10km on each side of the start point), in that case it will be shortened by 99m on each border for your safety. A glider flying at 120kmh will make 33 meters every second, and the gps is always 1 second late.
+    For this reason LK will be conservative on the borders, for those that need to cross start of finish risking in any case a false start/arrive.
+
 
 
 LK8000 VERSION 3.1e 120607
