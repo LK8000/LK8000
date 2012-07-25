@@ -796,6 +796,11 @@ goto_menu:
 					return TRUE; 
 				}
 			} else {
+
+				#if 0
+				//
+				// 120725 We are now using a button to reposition in sim mode - TODO REMOVE
+				//
 				if (SIMMODE) {
 					if (mode.AnyPan()) {
 						// match only center screen
@@ -823,6 +828,7 @@ goto_menu:
 						break;
 					}
 				}
+				#endif
 
 				// Select airspace on moving map only if they are visible
 				// 120526 moved out of anypan, buggy because we want airspace selection with priority

@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 7 , 120328
+# Release 8 , 120725
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -241,6 +241,14 @@ data=0
 event=Mode default
 label=_@M2005_
 location=9
+
+mode=pan
+type=key
+data=11
+event=Service PANREPOS
+label=$(AC35)
+location=10
+
 
 #
 # These are the hardware keys pressed anytime

@@ -513,7 +513,6 @@ class MapWindow {
   static double LKDrawTrail(HDC hdc, const POINT Orig, const RECT rc);
   static void DrawTeammate(HDC hdc, const RECT rc);
   static void DrawOffTrackIndicator(HDC hdc, const RECT rc);
-  static void DrawProjectedTrack(HDC hdc, const RECT rc, const POINT Orig);
   static void DrawStartSector(HDC hdc, const RECT rc, POINT &Start,
                               POINT &End, int Index);
   static void DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft);

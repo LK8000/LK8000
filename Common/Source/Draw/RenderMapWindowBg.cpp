@@ -321,7 +321,6 @@ fastzoom:
   DrawTeammate(hdc, rc);
 
   if (extGPSCONNECT) {
-    DrawProjectedTrack(hdc, rc, Orig_Aircraft);
     DrawBestCruiseTrack(hdc, Orig_Aircraft);
     DrawBearing(hdc, rc);
   }

@@ -2101,6 +2101,14 @@ extern bool RotateScreen(short angle);
 	DoStatusMessage(MsgToken(177)); // clear alternates
 	return;
   }
+  if (_tcscmp(misc, TEXT("PANREPOS")) == 0) {
+	if (!SIMMODE) return;
+	GPS_INFO.Latitude=MapWindow::GetPanLatitude();
+	GPS_INFO.Longitude=MapWindow::GetPanLongitude();
+	LastDoRangeWaypointListTime=0; // force DoRange
+	return;
+  }
+
   // we should not get here
   DoStatusMessage(_T("Unknown Service: "),misc);
 

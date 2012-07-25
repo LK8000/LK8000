@@ -406,7 +406,12 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 			}
 			break;
 
-
+		case 35: // SIM PAN MODE REPOSITION, PANREPOS
+			if (SIMMODE)
+				_tcscpy(OutBuffer,MsgToken(2133)); // Position
+			else
+				_tcscpy(OutBuffer,_T(""));
+			break;
 
 		default:
 			_stprintf(OutBuffer, _T("INVALID\n%d"),i);
