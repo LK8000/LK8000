@@ -44,9 +44,6 @@ void CalculateTaskSectors(void)
 
   for(i=0;i<=MAXTASKPOINTS-1;i++)
     {
-
-      double error_factor=0;
-
       if((Task[i].Index >=0))
 	{
 	  if ((Task[i+1].Index >=0)||(i==MAXTASKPOINTS-1)) {
@@ -57,18 +54,10 @@ void CalculateTaskSectors(void)
 		if (StartLine==2) {
 		  SectorAngle = 45+90;
 		} else {
-		  error_factor=Task[i+1].Leg/60000.0;
 		  SectorAngle = 90;
 		}
-		SectorSize = StartRadius - (error_factor*(StartRadius/100));
+		SectorSize = StartRadius;
 		SectorBearing = Task[i].OutBound;
-
-		#if 0
-		if (error_factor>0) {
-			StartupStore(_T("..... START Leg=%f ef=%f  Radius=%d correction=%f\n"),Task[i+1].Leg,error_factor,(int)StartRadius, error_factor*(StartRadius/100));
-		}
-		#endif
-
 	      }
 	    else
 	      {
@@ -86,17 +75,11 @@ void CalculateTaskSectors(void)
 	    if (FinishLine==2) {
 	      SectorAngle = 45;
 	    } else {
-	      error_factor=Task[i].Leg/60000.0;
 	      SectorAngle = 90;
 	    }
-	    SectorSize = FinishRadius - (error_factor*(FinishRadius/100));
+	    SectorSize = FinishRadius;
 	    SectorBearing = Task[i].InBound;
 
-		#if 0
-		if (error_factor>0) {
-			StartupStore(_T("..... FINISH Leg=%f ef=%f  Radius=%d correction=%f\n"),Task[i].Leg,error_factor,(int)FinishRadius, error_factor*(FinishRadius/100));
-		}
-		#endif
 	  }
 
           FindLatitudeLongitude(WayPointList[Task[i].Index].Latitude,
