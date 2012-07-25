@@ -248,7 +248,7 @@ NEW
 
 . Flarm objects traces: traffic is shown displaying recent traces in color.
 
-. NEW SUPPORT FOR COMPASS C-PROBE
+. NEW SUPPORT FOR COMPASS C-PROBE by Bruno!
 
   Add Compass C-Probe device
        -Alt Baro
@@ -263,6 +263,18 @@ NEW
         you need Add "Device X Config" Kustom key in Custom menu for Calibrate C-Probe Device
 
     Gyro is used in TRI if available
+
+
+. New "Position" button in SIM mode PAN mode.
+
+  To reposition the aircraft in sim pan mode, simply change position by dragging the moving map, 
+  and when the center cross is where you want to position the aircraft, click on the "Position" 
+  new button on left top screen.
+  The old behaviour was to long click on the moving map, but it was not working fine on PNAs, 
+  and it was inaccurate.
+  Now that we have a smooth scrolling, it is better to use a button.
+
+
 
 
 
@@ -298,6 +310,7 @@ FIXES
 . Fix problem in replay logger while dealing with position fixes in the IGC file having the same timestamp.
   It was causing an assertion failure.
 
+. Fix strange dash line appearing in AAT task mode, removed.
     
 
 LK8000 VERSION 3.1e 120607
