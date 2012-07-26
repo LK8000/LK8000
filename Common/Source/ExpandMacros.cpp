@@ -482,6 +482,26 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
         invalid = true;
       }
       // TODO bug: no need to arm finish
+    case 4:
+      if (ActiveWayPoint>0) {
+        if (ValidTaskPoint(ActiveWayPoint+1)) {
+          CondReplaceInString(AdvanceArmed, OutBuffer, TEXT("$(AdvanceArmed)"), 
+	// LKTOKEN  _@M161_ = "Cancel" 
+                              MsgToken(161), 
+	// LKTOKEN  _@M678_ = "TURN" 
+				MsgToken(678), Size);
+        } else {
+          ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), 
+	// LKTOKEN  _@M8_ = "(finish)" 
+                          MsgToken(8), Size);
+          invalid = true;
+        }
+      }
+      else {
+        ReplaceInString(OutBuffer, TEXT("$(AdvanceArmed)"), MsgToken(893), Size); // (auto)
+        invalid = true;
+      }
+      break;
     default:
       break;
     }
