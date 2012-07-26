@@ -38,6 +38,7 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     }
 
     TCHAR Scale[80];
+    TCHAR Scale1[80];
     TCHAR Scale2[80];
     TCHAR TEMP[20];
     COLORREF origcolor = SetTextColor(hDC, OverColorRef);
@@ -52,6 +53,7 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     SelectObject(hDC, hpOld);
 
     _tcscpy(Scale2,TEXT(""));
+
 
     // warn about missing terrain
     if (!DerivedDrawInfo.TerrainValid) {
@@ -139,9 +141,17 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
     }
 
     _tcscpy(Scale,TEXT(""));
+    _tcscpy(Scale1,TEXT(""));
+    if (SIMMODE && (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN)) ) {
+	TCHAR sCoordinate[32]={0};
+	Units::CoordinateToString(GetPanLongitude(), GetPanLatitude(), sCoordinate, sizeof(sCoordinate)-1);
+	_tcscat(Scale, sCoordinate);
+	_tcscat(Scale, _T(" "));
+    }
     double mapScale=Units::ToSysDistance(zoom.Scale()*1.4);	// 1.4 for mapscale symbol size on map screen
     // zoom.Scale() gives user units, but FormatUserMapScale() needs system distance units
-    Units::FormatUserMapScale(NULL, mapScale, Scale, sizeof(Scale)/sizeof(Scale[0]));
+    Units::FormatUserMapScale(NULL, mapScale, Scale1, sizeof(Scale1)/sizeof(Scale1[0]));
+    _tcscat(Scale,Scale1);
 
     SIZE tsize;
 
