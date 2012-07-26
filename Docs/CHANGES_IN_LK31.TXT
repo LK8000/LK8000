@@ -275,6 +275,7 @@ NEW
   Now that we have a smooth scrolling, it is better to use a button.
 
 
+. Geo coordinates are shown on screen near to map scale, when using PAN mode in SIM mode.
 
 
 
