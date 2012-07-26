@@ -451,6 +451,7 @@ Determines how waypoints are advanced when flying the task.
 [Auto] Waypoint automatically advances as soon as glider intercepts waypoint (cylinder,sector or line) including Start.
 [Arm] User must manually Arm every waypoint before it will advance (including the Start). This option is RECOMMENDED for AAT tasks!
 [Arm start] User must manually Arm the Start waypoint before the task will start. All other waypoints automatically advance.
+[Arm TPs] User must manually Arm each turnpoint, but Start waypoint will be advanced automatically.
 
 @201
 Type of the start.
@@ -810,6 +811,7 @@ Determines how waypoints are advanced through the task.
 [Auto] Fully automatic task waypoint advancing
 [Arm] Automatic task waypoint advancing needs to be armed each waypoint
 [Arm start] Automatic task waypoint advancing needs to be armed for the start
+[Arm TPs] User must manually Arm each turnpoint, but Start waypoint will be advanced automatically.
 
 @508
 Type of the AAT observation area:

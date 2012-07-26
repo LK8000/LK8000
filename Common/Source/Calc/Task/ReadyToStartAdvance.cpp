@@ -11,17 +11,18 @@
 
 
 
-#define AUTOADVANCE_MANUAL 0
-#define AUTOADVANCE_AUTO 1
-#define AUTOADVANCE_ARM 2
+#define AUTOADVANCE_MANUAL   0
+#define AUTOADVANCE_AUTO     1
+#define AUTOADVANCE_ARM      2
 #define AUTOADVANCE_ARMSTART 3
+#define AUTOADVANCE_ARMTPS   4
 
 bool ReadyToStart(DERIVED_INFO *Calculated) {
   if (!Calculated->Flying) {
     return false;
   }
   if (!ValidGate()) return false; // 100509
-  if (AutoAdvance== AUTOADVANCE_AUTO) {  
+  if (AutoAdvance== AUTOADVANCE_AUTO || AutoAdvance== AUTOADVANCE_ARMTPS) {  
     return true;
   }
   if ((AutoAdvance== AUTOADVANCE_ARM) || (AutoAdvance==AUTOADVANCE_ARMSTART)) {
@@ -73,6 +74,21 @@ bool ReadyToAdvance(DERIVED_INFO *Calculated, bool reset=true, bool restart=fals
       // JMW fixed 20070528
       if (ActiveWayPoint>0) {
         if (reset) AdvanceArmed = false;
+        return true;
+      }
+    }
+  }
+  if (AutoAdvance== AUTOADVANCE_ARMTPS) { 
+    if ((ActiveWayPoint == 0) || restart) {
+      if (reset)
+        AdvanceArmed = false;
+      return true;
+    }
+    else {
+      if (!AdvanceArmed) {
+        say_ready = true;
+      } else if (reset) { 
+        AdvanceArmed = false; 
         return true;
       }
     }

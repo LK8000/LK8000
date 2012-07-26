@@ -1275,6 +1275,21 @@ void InputEvents::eventArmAdvance(const TCHAR *misc) {
         DoStatusMessage(gettext(TEXT("_@M103_")));
       }
       break;    
+    case 4:
+      if (ActiveWayPoint==0) { // past start (but can re-start)
+	// LKTOKEN  _@M103_ = "Auto Advance: Automatic" 
+        DoStatusMessage(gettext(TEXT("_@M103_")));
+      }
+      else {
+        if (AdvanceArmed) {
+	// LKTOKEN  _@M102_ = "Auto Advance: ARMED" 
+          DoStatusMessage(gettext(TEXT("_@M102_")));
+        } else {
+	// LKTOKEN  _@M104_ = "Auto Advance: DISARMED" 
+          DoStatusMessage(gettext(TEXT("_@M104_")));
+        }
+      }
+      break;    
     default:
       break;
     }
