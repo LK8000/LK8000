@@ -4,10 +4,19 @@ Changes in LK8000 v2.3
 
 Version 3.0d
 
+. Fix problem in replay logger while dealing with position fixes in the IGC file having the same timestamp.
+  It was causing an assertion failure.
 
-  Fix airspace critical loading bug on startup, crashing LK if a spurious line longer than 254 characters was found
+. The strange dashed line in AAT task appearing in wrong place has been removed.
 
-  Fix bug not handling a bad polar file been loaded.
+. Bug fix in task start/finish lines
+  There was a problem with big start and finish lines, which could potentially lead to false start/finish
+  if the pilot was trying to cross the line at the very far away border.
+
+. Fix airspace critical loading bug on startup, crashing LK if a spurious line longer than 
+  254 characters was found
+
+. Fix bug not handling a bad polar file been loaded.
     The polar was incorrectly loaded only from the first non-commented line, and if this was invalid 
     it was nevertheless kept as valid.
     Result was a 0,0,0,0,0 polar of course.
@@ -15,40 +24,41 @@ Version 3.0d
     In case of problems, the situation is reverted to Std Cirrus and a message is given to the user.
     Previously, no message was given in case of bad polar loaded.
 
-
-  Fix bug showing airspace warnings also while using configuration menu.
+. Fix bug showing airspace warnings also while using configuration menu.
     Allow airspace warnings even below 60seconds after takeoff if using SIM mode.
-    In sim mode we might be using pan mode to check for situations quickly, and the missing warning was misleading.
+    In sim mode we might be using pan mode to check for situations quickly, 
+    and the missing warning was misleading.
 
+. Fix small bug terrain shading option: changing terrain with shading off would not allow us 
+  to enable shading again.
 
-  Fix small bug terrain shading option: changing terrain with shading off would not allow us to enable shading again.
+. Extend Acknowledge time for airspaces from 120 seconds to 720 seconds (12 hours).
 
+. Fix airspace selection in pan mode no more working since september 13 2011.
 
-  Extend Acknowledge time for airspaces from 120 seconds to 720 seconds (12 hours).
+. Fix Nearest turnpoint page 2.3 not checking correctly terrain reachable, appearing almost always 
+  negative (red)
 
+. Fix old bug not calculating terrain reachable (and displaying orange arrival altitude on overlay) 
+  when a turnpoint not landable was assigned as alternate destination.
 
-  Fix airspace selection in pan mode no more working since september 13 2011.
+. Fix old bug in 3.0 wrong upper zone for nearest page: the zone for pulling up cursor selection of 
+  nearest pages was too tight.
 
-  Fix Nearest turnpoint page 2.3 not checking correctly terrain reachable, appearing almost always negative (red)
+. Fix old bug in 3.0 overcalculating reachability for landables. Even landables with negative arrival 
+  altitudes were checked for terrain obstacles, resulting in a abnormal number of calculations 
+  (hidden by multicalc optimization).
+  LK performance is greatly improved now, when using a lot of landable waypoints (many thousands).
 
-  Fix old bug not calculating terrain reachable (and displaying orange arrival altitude on overlay) when a turnpoint not landable was assigned
-    as alternate destination.
+. Fix infobox values for task (arrival, ETE, eta, etc) should display --- when task was not started yet.
 
+. Fix bug resetting FlarmNet counter on startup
 
-  Fix old bug in 3.0 wrong upper zone for nearest page: the zone for pulling up cursor selection of nearest pages was too tight.
-
-  Fix old bug in 3.0 overcalculating reachability for landables. Even landables with negative arrival altitudes were checked for terrain obstacles, 
-  resulting in a abnormal number of calculations (hidden by multicalc optimization).
-   LK performance is greatly improved now, when using a lot of landable waypoints (many thousands).
-
-  Fix infobox values for task (arrival, ETE, eta, etc) should display --- when task was not started yet.
-
-  Fix bug resetting FlarmNet counter on startup
-
-  Fix LK8ext1 device to prevent the slowdown of the application if more than one NMEA frame / second
+. Fix LK8ext1 device to prevent the slowdown of the application if more than one NMEA frame / second
   was sent. This is particularly affecting GT VArio.
 
-  Fix bug that caused trail points to disappear in circling zoom with trail drift on.
+. Fix bug that caused trail points to disappear in circling zoom with trail drift on.
+
 
 
 Version 3.0c  
