@@ -321,7 +321,6 @@ DRAW	:=\
 	$(DRW)/DrawHeading.cpp \
 	$(DRW)/DrawLKAlarms.cpp \
 	$(DRW)/DrawMapScale.cpp \
-	$(DRW)/DrawProjectedTrack.cpp \
 	$(DRW)/DrawStartSector.cpp \
 	$(DRW)/DrawTRI.cpp \
 	$(DRW)/DrawTask.cpp \
