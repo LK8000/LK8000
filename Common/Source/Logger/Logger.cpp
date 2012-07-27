@@ -1287,6 +1287,9 @@ public:
     return (num==4);
   }
   double GetSpeed(double time) {
+  if (p[1].t == p[0].t ) return 0.0;
+  if (p[2].t == p[1].t ) return 0.0;
+
     if (Ready()) {
       double u= (time-p[1].t)/(p[2].t-p[1].t);
       double s0;
