@@ -202,3 +202,7 @@ _@M2135_ "devB"
 
 _@M2143_ "Device A Config"
 _@M2144_ "Device B Config"
+
+# Arm TPs for AAT tasks
+_@M1798_ "Arm TPs"
+Changed HELP 200 and 507

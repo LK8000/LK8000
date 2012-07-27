@@ -142,6 +142,8 @@ static void SetValues(bool first=false) {
       dfe->addEnumText(gettext(TEXT("_@M97_")));
 	// LKTOKEN  _@M96_ = "Arm start" 
       dfe->addEnumText(gettext(TEXT("_@M96_")));
+	// LKTOKEN  _@M1798_ = "Arm TPs" 
+      dfe->addEnumText(gettext(TEXT("_@M1798_")));
     }
     dfe->Set(AutoAdvance);
     wp->RefreshDisplay();

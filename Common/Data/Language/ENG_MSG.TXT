@@ -1786,6 +1786,8 @@ _@M1796_ "USING BARO ALTITUDE"
 # Replacing 822
 _@M1797_ "Vector"
 
+_@M1798_ "Arm TPs"
+
 
 ############################################################
 #                  - MENU MESSAGES - 
