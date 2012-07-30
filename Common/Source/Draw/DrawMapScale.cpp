@@ -10,6 +10,7 @@
 #include "Logger.h"
 #include "RGB.h"
 #include "DoInits.h"
+#include "RasterTerrain.h"
 
 
 void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/, 
@@ -146,7 +147,9 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 	TCHAR sCoordinate[32]={0};
 	Units::CoordinateToString(GetPanLongitude(), GetPanLatitude(), sCoordinate, sizeof(sCoordinate)-1);
 	_tcscat(Scale, sCoordinate);
-	_tcscat(Scale, _T(" "));
+	_stprintf(Scale1, _T(" %d%s "),RasterTerrain::GetTerrainHeight(GetPanLatitude(), GetPanLongitude()),
+		Units::GetUnitName(Units::GetUserAltitudeUnit()));
+	_tcscat(Scale, Scale1);
     }
     double mapScale=Units::ToSysDistance(zoom.Scale()*1.4);	// 1.4 for mapscale symbol size on map screen
     // zoom.Scale() gives user units, but FormatUserMapScale() needs system distance units
