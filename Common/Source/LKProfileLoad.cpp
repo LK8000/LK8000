@@ -594,6 +594,8 @@ void LKParseProfileString(TCHAR *sname, TCHAR *svalue) {
 	if (matchedstring) return;
   }
 
+  PREAD(sname, svalue, szRegistryUseWindRose, &UseWindRose);
+
   return;
 
 }
