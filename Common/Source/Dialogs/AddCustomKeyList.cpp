@@ -86,6 +86,7 @@ void AddCustomKeyList( DataFieldEnum* dfe) {
     dfe->addEnumTextNoLF(MsgToken(2228)); // Flarm Radar
     dfe->addEnumTextNoLF(MsgToken(2143)); // Device A
     dfe->addEnumTextNoLF(MsgToken(2144)); // Device B
+    dfe->addEnumTextNoLF(MsgToken(2229)); // ResetOdometer
 
     dfe->Sort(0);
 

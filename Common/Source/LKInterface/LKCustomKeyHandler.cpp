@@ -414,6 +414,16 @@ passthrough:
 			devB()->Config();
 		}
 		return true;
+	case ckResetOdometer:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		if (MessageBoxX(hWndMapWindow, MsgToken(2229), _T(""), MB_YESNO|MB_ICONQUESTION) == IDYES) {
+			LKSW_ResetOdometer=true;
+		}
+		return true;
+
+		return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
 		FailStore(_T("ERR-726 INVALID CUSTOMKEY=%d"),ckeymode);
@@ -485,6 +495,7 @@ CustomKeyLabel[49]=2227;	// Toggle windrose
 CustomKeyLabel[50]=2228;	// Flarm radar
 CustomKeyLabel[51]=2143;	// Device A Config
 CustomKeyLabel[52]=2144;	// Device B Config
+CustomKeyLabel[53]=2229;	// Reset Odometer
 }
 
 

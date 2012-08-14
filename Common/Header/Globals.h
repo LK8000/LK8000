@@ -885,6 +885,8 @@ GEXTERN bool LKSW_ForceNearestTopologyCalculation GEXTFALSE;
 // Force freeflight restart for motorgliders
 GEXTERN bool LKSW_ForceFreeFlightRestart GEXTFALSE;
 
+// Reset Odometer, by Calc thread
+GEXTERN bool LKSW_ResetOdometer GEXTFALSE;
 
 #endif
 

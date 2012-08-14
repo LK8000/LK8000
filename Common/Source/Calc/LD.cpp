@@ -76,6 +76,14 @@ void LD(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
       else
          if (DistanceFlown >3 && DistanceFlown<300) Calculated->Odometer += DistanceFlown;
 
+      if (LKSW_ResetOdometer) {
+		Calculated->Odometer = 0;
+		#if TESTBENCH
+		StartupStore(_T("... Odometer RESET by request\n"));
+		#endif
+		LKSW_ResetOdometer=false;
+      }
+
       LastLat = Basic->Latitude;
       LastLon = Basic->Longitude;
       LastAlt = Calculated->NavAltitude;

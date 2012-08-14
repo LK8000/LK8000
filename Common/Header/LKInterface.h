@@ -91,6 +91,7 @@ typedef enum{
 	ckFlarmRadar,
 	ckDeviceA,
 	ckDeviceB,
+	ckResetOdometer,
 	ckTOP,
 } CustomKeyMode_t;
 
