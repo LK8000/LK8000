@@ -135,13 +135,13 @@ void MapWindow::Zoom::Reset()
   switch(AircraftCategory) {
   case umGlider:
   case umGAaircraft:
-  case umCar:
     _modeScale[SCALE_CRUISE]   = SCALE_CRUISE_INIT;
     _modeScale[SCALE_CIRCLING] = SCALE_CIRCLING_INIT;
     _modeScale[SCALE_PANORAMA] = SCALE_PANORAMA_INIT;
     break;
     
   case umParaglider:
+  case umCar:
     _modeScale[SCALE_CRUISE]   = GetPgCruiseZoomInitValue(PGCruiseZoom);
     _modeScale[SCALE_CIRCLING] = GetPgClimbZoomInitValue(PGClimbZoom);
     _modeScale[SCALE_PANORAMA] = SCALE_PG_PANORAMA_INIT;

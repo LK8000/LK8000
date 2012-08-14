@@ -54,6 +54,8 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   // prevent bad fixes from being logged or added to OLC store
   static double Longitude_last = 10;
   static double Latitude_last = 10;
+  static double Longitude_snailed = 10;
+  static double Latitude_snailed = 10;
   double distance;
 
   DistanceBearing(Basic->Latitude, Basic->Longitude, 
@@ -62,7 +64,11 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   Latitude_last = Basic->Latitude;
   Longitude_last = Basic->Longitude;
 
-  if (distance>200.0) {
+  // Do not log or add a snail point if in a single second we made more than 300m. (1000kmh)
+  // This should allow loggin and snail logging also while using LK on a liner for fun.
+  // This filter is necessary for managing wrong position fixes by the gps
+  // Until 3.1f it was set to 200m
+  if (distance>300.0) {
     return;
   }
 
@@ -116,6 +122,27 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
     }
   }
 
+  // 120812 For car/trekking mode, log snailpoint only if at least 5m were made in the dtSnail time
+  if (ISCAR) {
+
+	// if 5 seconds have passed.. (no circling mode in car mode)
+	if ( (Basic->Time - SnailLastTime) >= dtSnail) {
+		DistanceBearing(Basic->Latitude, Basic->Longitude, Latitude_snailed, Longitude_snailed, &distance, NULL);
+		// and distance made is at least 5m (moving average 3.6kmh)
+		if (distance>5) {
+			AddSnailPoint(Basic, Calculated);
+			SnailLastTime += dtSnail;
+			if (SnailLastTime< Basic->Time-dtSnail) {
+				SnailLastTime = Basic->Time-dtSnail;
+			}
+			Latitude_snailed = Basic->Latitude;
+			Longitude_snailed = Basic->Longitude;
+		}
+	}
+	// else do not log, and do not update snailtime, so we shall be here every second until at least 10m are made
+	goto _afteriscar;
+  }
+
   if (Basic->Time - SnailLastTime >= dtSnail) {
     AddSnailPoint(Basic, Calculated);
     SnailLastTime += dtSnail;
@@ -123,6 +150,8 @@ void DoLogging(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
       SnailLastTime = Basic->Time-dtSnail;
     }
   }
+
+_afteriscar:
 
   if (Calculated->Flying) {
     if (Basic->Time - StatsLastTime >= dtStats) {

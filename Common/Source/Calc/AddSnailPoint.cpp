@@ -15,7 +15,8 @@
 //
 void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 {
-  if (!Calculated->Flying) return;
+  // In CAR mode, we call this function when at least 5m were made in 5 seconds
+  if (!Calculated->Flying && !ISCAR) return;
 
   SnailTrail[SnailNext].Latitude = (float)(Basic->Latitude);
   SnailTrail[SnailNext].Longitude = (float)(Basic->Longitude);
@@ -35,11 +36,11 @@ void AddSnailPoint(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 	SnailTrail[SnailNext].Vario = (float)(Calculated->NettoVario) ;
   }
 #else
-  // paragliders use Vario and not NettoVario
-  if ( AircraftCategory != (AircraftCategory_t)umParaglider ) 
-	SnailTrail[SnailNext].Vario = (float)(Calculated->NettoVario) ;
-  else
+  // paragliders and car/trekking use Vario and not NettoVario
+  if (ISPARAGLIDER || ISCAR)
 	SnailTrail[SnailNext].Vario = (float)(Calculated->Vario) ;
+  else
+	SnailTrail[SnailNext].Vario = (float)(Calculated->NettoVario) ;
 #endif
 
   SnailTrail[SnailNext].Colour = -1; // need to have colour calculated

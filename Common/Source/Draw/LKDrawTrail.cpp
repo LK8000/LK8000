@@ -293,7 +293,20 @@ double MapWindow::LKDrawTrail( HDC hdc, const POINT Orig, const RECT rc)
 	const float useval=fabs(P1.Vario);
 	#endif
 
-	
+
+	if (ISCAR) {
+		// vario values for CAR mode are 5 times more sensibles
+		if (useval <=0.1 ) {; usecol=1; goto go_setcolor; }
+		if (useval <=0.2 ) {; usecol=2; goto go_setcolor; }
+		if (useval <=0.3 ) {; usecol=3; goto go_setcolor; }
+		if (useval <=0.4 ) {; usecol=4; goto go_setcolor; }
+		if (useval <=0.6 ) {; usecol=5; goto go_setcolor; }
+		if (useval <=0.8 ) {; usecol=6; goto go_setcolor; }
+		usecol=7; // 7th : 1ms and up
+		goto go_setcolor;
+	}
+
+	// Normal NON-CAR mode
 	if ( useval <0.1 ) {
 		P1.Colour=7;
 		goto go_selcolor;
