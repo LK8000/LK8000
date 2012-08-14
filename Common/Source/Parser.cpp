@@ -845,7 +845,7 @@ BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 
 	GPS_INFO->Speed = KNOTSTOMETRESSECONDS * speed;
   
-	if (GPS_INFO->Speed>1.0) {
+	if (GPS_INFO->Speed>0) {
 		GPS_INFO->TrackBearing = AngleLimit360(StrToDouble(params[0], NULL));
 	}
   }
@@ -1007,7 +1007,7 @@ force_advance:
   
 	GPS_INFO->Speed = KNOTSTOMETRESSECONDS * speed;
   
-	if (GPS_INFO->Speed>1.0) {
+	if (GPS_INFO->Speed>0) {
 		GPS_INFO->TrackBearing = AngleLimit360(StrToDouble(params[7], NULL));
 	}
   } // gpsvalid 091108
