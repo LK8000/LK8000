@@ -672,6 +672,7 @@ double MixedFormatToDegrees(double mixed)
 //
 double NMEAParser::TimeModify(double FixTime, NMEA_INFO* GPS_INFO)
 {
+  static  int day_difference=0, previous_months_day_difference=0;
   double hours, mins,secs;
   
   hours = FixTime / 10000;
@@ -687,18 +688,29 @@ double NMEAParser::TimeModify(double FixTime, NMEA_INFO* GPS_INFO)
   FixTime = secs + (GPS_INFO->Minute*60) + (GPS_INFO->Hour*3600);
 
   if ((StartDay== -1) && (GPS_INFO->Day != 0)) {
+    StartupStore(_T(". First GPS DATE: %d-%d-%d%s"), GPS_INFO->Year, GPS_INFO->Month, GPS_INFO->Day,NEWLINE);
     StartDay = GPS_INFO->Day;
+    day_difference=0;
+    previous_months_day_difference=0;
   }
   if (StartDay != -1) {
     if (GPS_INFO->Day < StartDay) {
-      // detect change of month (e.g. day=1, startday=31)
-      StartDay = GPS_INFO->Day-1;
+      // detect change of month (e.g. day=1, startday=26)
+      previous_months_day_difference=day_difference+1;
+      day_difference=0;
+      StartDay = GPS_INFO->Day;
+      StartupStore(_T(". Change GPS DATE to NEW MONTH: %d-%d-%d  (%d days running)%s"), 
+	GPS_INFO->Year, GPS_INFO->Month, GPS_INFO->Day,previous_months_day_difference,NEWLINE);
     }
-    int day_difference = GPS_INFO->Day-StartDay;
-    if (day_difference>0) {
+    if ( (GPS_INFO->Day-StartDay)!=day_difference) {
+      StartupStore(_T(". Change GPS DATE: %d-%d-%d%s"), GPS_INFO->Year, GPS_INFO->Month, GPS_INFO->Day,NEWLINE);
+    }
+
+    day_difference = GPS_INFO->Day-StartDay;
+    if ((day_difference+previous_months_day_difference)>0) {
       // Add seconds to fix time so time doesn't wrap around when
       // going past midnight in UTC
-      FixTime += day_difference * 86400;
+      FixTime += (day_difference+previous_months_day_difference) * 86400;
     }
   }
   return FixTime;
