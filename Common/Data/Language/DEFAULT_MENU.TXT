@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 8 , 120725
+# Release 9 , 120819
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -985,7 +985,7 @@ type=key
 data=9
 event=Setup Replay
 event=Mode default
-label=$(OnlyInSim)_@M2049_&(CheckReplay)
+label=$(OnlyInSim)_@M2049_
 location=8
 
 mode=Config2

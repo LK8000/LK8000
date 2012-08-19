@@ -125,7 +125,6 @@ typedef struct _NMEA_INFO
   #if USESWITCHES
   SWITCH_INFO SwitchState;
   #endif
-  BOOL MovementDetected;
 
   double StallRatio;
 

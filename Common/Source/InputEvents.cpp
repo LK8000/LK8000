@@ -2500,9 +2500,7 @@ void InputEvents::eventSetup(const TCHAR *misc) {
   } else if (_tcscmp(misc,TEXT("Airspace"))==0){
     dlgAirspaceShowModal(false);
   } else if (_tcscmp(misc,TEXT("Replay"))==0){
-    if (!GPS_INFO.MovementDetected) {     
       dlgLoggerReplayShowModal();
-    }
 #if USESWITCHES
   } else if (_tcscmp(misc,TEXT("Switches"))==0){
     dlgSwitchesShowModal();

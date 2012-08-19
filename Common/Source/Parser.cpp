@@ -842,13 +842,11 @@ BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 	speed = StrToDouble(params[4], NULL);
 	// speed is in knots, 2 = 3.7kmh
 	if (speed>2.0) {
-		GPS_INFO->MovementDetected = TRUE;
 		if (ReplayLogger::IsEnabled()) {
 			// stop logger replay if aircraft is actually moving.
 			ReplayLogger::Stop();
 		}
 	} else {
-		GPS_INFO->MovementDetected = FALSE;
 		if (ReplayLogger::IsEnabled()) {
 			// block actual GPS signal if not moving and a log is being replayed
 			return TRUE;
@@ -929,21 +927,8 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   // if no valid fix, we dont get speed either!
   if (gpsValid)
   {
-	speed = StrToDouble(params[6], NULL);
 	// speed is in knots, 2 = 3.7kmh
-	if (speed>2.0) {
-		GPS_INFO->MovementDetected = TRUE;
-		if (ReplayLogger::IsEnabled()) {
-			// stop logger replay if aircraft is actually moving.
-			ReplayLogger::Stop();
-		}
-	} else {
-		GPS_INFO->MovementDetected = FALSE;
-		if (ReplayLogger::IsEnabled()) {
-			// block actual GPS signal if not moving and a log is being replayed
-			return TRUE;
-		}
-	}
+	speed = StrToDouble(params[6], NULL);
   }
   
   GPS_INFO->NAVWarning = !gpsValid;

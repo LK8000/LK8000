@@ -517,14 +517,6 @@ bool ExpandMacros(const TCHAR *In, TCHAR *OutBuffer, size_t Size){
 	if (--items<=0) goto label_ret; 
   }
 
-
-  if (_tcsstr(OutBuffer, TEXT("$(CheckReplay)"))) {
-    if (!ReplayLogger::IsEnabled() && GPS_INFO.MovementDetected) {
-      invalid = true;
-    } 
-    ReplaceInString(OutBuffer, TEXT("$(CheckReplay)"), TEXT(""), Size);
-	if (--items<=0) goto label_ret; // 100517
-  }
   if (_tcsstr(OutBuffer, TEXT("$(NotInReplay)"))) {
     if (ReplayLogger::IsEnabled()) {
       invalid = true;
