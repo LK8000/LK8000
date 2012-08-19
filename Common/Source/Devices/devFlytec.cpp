@@ -200,9 +200,13 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 
   // TIME
   // ignoring 00:00.00
-  // And no UTC, since this is local time already.
+  // We need to manage UTC time
   NMEAParser::ExtractParameter(String,ctemp,0+offset);
   double fixTime = StrToDouble(ctemp,NULL);
+
+  static  int day_difference=0, previous_months_day_difference=0;
+  static int startday=-1;
+
   if (fixTime>0 && GPS_INFO->SatellitesUsed>0) {
 	double hours, mins,secs;
 	hours = fixTime / 10000;
@@ -212,6 +216,37 @@ static BOOL FLYSEN(PDeviceDescriptor_t d, TCHAR *String, NMEA_INFO *GPS_INFO)
 	GPS_INFO->Minute = (int)mins;
 	secs = fixTime - (GPS_INFO->Hour*10000) - (GPS_INFO->Minute*100);
 	GPS_INFO->Second = (int)secs;
+
+        fixTime = secs + (GPS_INFO->Minute*60) + (GPS_INFO->Hour*3600);
+
+        if ((startday== -1) && (GPS_INFO->Day != 0)) {
+	   if (offset)
+              StartupStore(_T(". FLYSEN First GPS DATE: %d-%d-%d%s"), GPS_INFO->Year, GPS_INFO->Month, GPS_INFO->Day,NEWLINE);
+	   else
+              StartupStore(_T(". FLYSEN No Date, using PNA GPS DATE: %d-%d-%d%s"), GPS_INFO->Year, GPS_INFO->Month, GPS_INFO->Day,NEWLINE);
+           startday = GPS_INFO->Day;
+           day_difference=0;
+           previous_months_day_difference=0;
+        }
+        if (startday != -1) {
+           if (GPS_INFO->Day < startday) {
+              // detect change of month (e.g. day=1, startday=26)
+              previous_months_day_difference=day_difference+1;
+              day_difference=0;
+              startday = GPS_INFO->Day;
+              StartupStore(_T(". FLYSEN Change GPS DATE to NEW MONTH: %d-%d-%d  (%d days running)%s"),
+              GPS_INFO->Year, GPS_INFO->Month, GPS_INFO->Day,previous_months_day_difference,NEWLINE);
+           }
+           if ( (GPS_INFO->Day-startday)!=day_difference) {
+              StartupStore(_T(". FLYSEN Change GPS DATE: %d-%d-%d%s"), GPS_INFO->Year, GPS_INFO->Month, GPS_INFO->Day,NEWLINE);
+           }
+
+           day_difference = GPS_INFO->Day-startday;
+           if ((day_difference+previous_months_day_difference)>0) {
+              fixTime += (day_difference+previous_months_day_difference) * 86400;
+           }
+        }
+	GPS_INFO->Time = fixTime;
   }
 
 
