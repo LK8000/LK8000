@@ -242,6 +242,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 			// normally, we fall down here.
 			// If CustomKeyHandler returned false, back as well here (nothing configured in custom).
+			if (MapSpaceMode==MSM_WELCOME)  SetModeType(LKMODE_MAP, MP_MOVING);
 			NextModeIndex();
 			MapWindow::RefreshMap();
 			SoundModeIndex();
