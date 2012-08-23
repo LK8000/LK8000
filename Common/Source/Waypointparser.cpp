@@ -1305,18 +1305,6 @@ void WriteWayPointFileWayPoint(FILE *fp, WAYPOINT* wpt) {
 	WaypointLongitudeToString(wpt->Longitude, longitude);
 	WaypointFlagsToString(wpt->Flags, flags);
  
-	#if 0 
-	_stprintf(comment, wpt->Comment);
-	for (int j=0; j<(int)_tcslen(comment); j++) {
-		if (comment[j]==_T('\r')) {
-			comment[j] = 0;
-		}
-		if (comment[j]==_T('\n')) {
-			comment[j] = 0;
-		}
-	}
-	#endif
-
 	if (wpt->Comment!=NULL)
 		_tcscpy(comment,wpt->Comment);
 	else
@@ -1497,18 +1485,9 @@ void WaypointWriteFiles(void) {
   _tcscpy(szFile1,szWaypointFile);
   ExpandLocalPath(szFile1);
 
-  #if 0	// 101214 READ ONLY FILES
-  if (WpFileType[1] == LKW_COMPE) goto goto_file2; // 100212
-  #endif
-
   if (_tcslen(szFile1)>0) {
     fp = _tfopen(szFile1, TEXT("wb"));
   } else {
-
-	/* 091206
-	LocalPath(szFile1);
-	_tcscat(szFile1,TEXT("\\waypoints1.dat"));
-	*/
 
 	LocalPath(szFile1,_T(LKD_WAYPOINTS));
 	_tcscat(szFile1,_T("\\")); _tcscat(szFile1,_T(LKF_WAYPOINTS1)); // 091206
@@ -1523,15 +1502,9 @@ void WaypointWriteFiles(void) {
     fclose(fp);
     fp = NULL;
   } 
-  #if 0 // 101214
-  goto_file2:
-  #endif
   _tcscpy(szFile2,szAdditionalWaypointFile);
   ExpandLocalPath(szFile2);
 
-  #if 0 // 101214 READ ONLY FILES
-  if (WpFileType[2] == LKW_COMPE) goto goto_endwrite; // 100212
-  #endif
   if (_tcslen(szFile2)>0) {
     fp = _tfopen(szFile2, TEXT("wb"));
   } else {
@@ -1553,9 +1526,6 @@ void WaypointWriteFiles(void) {
     fclose(fp);
     fp = NULL;
   }
-  #if 0
-  goto_endwrite:
-  #endif
   UnlockTaskData();
 }
 
