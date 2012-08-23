@@ -74,7 +74,6 @@ void TriggerVarioUpdate()
 // Possible undebounced triggers could be issued> to check in WindowControls and many parts.
 // No complaints so far, but this should be fixed. Otherwise the debounceTimeout was UNUSED
 // and the simple Debounce(void) call was always true!!
-#if 1 // new debounce corrected
 static DWORD fpsTimeLast= 0;
 
 bool Debounce(void) {
@@ -100,25 +99,6 @@ bool Debounce(int dtime) {
     return false;
   }
 }
-
-#else // REMOVE
-bool Debounce() {
-	return Debounce(debounceTimeout);
-}
-
-bool Debounce(int dtime) {
-  static DWORD fpsTimeLast= 0;
-  DWORD fpsTimeThis = ::GetTickCount();
-  DWORD dT = fpsTimeThis-fpsTimeLast;
-
-  if (dT>(unsigned int)dtime) {
-    fpsTimeLast = fpsTimeThis;
-    return true;
-  } else {
-    return false;
-  }
-}
-#endif // old debounce to REMOVE
 
 //
 // Let's get rid of BOOOOls soon!!!

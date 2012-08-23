@@ -46,11 +46,6 @@ void StartTask(NMEA_INFO *Basic, DERIVED_INFO *Calculated,
   Calculated->timeCruising = 0;
   Calculated->TotalHeightClimb = 0;
 
-//  // reset max height gain stuff on task start REMOVE REMOVE we dont reset anymore on task start or restart
-//  Calculated->MaxHeightGain = 0; // REMOVE
-//  Calculated->MinAltitude = 0;   // REMOVE
-//  Calculated->MaxAltitude = 0;   // REMOVE
-
   if (do_announce) {
     AnnounceWayPointSwitch(Calculated, do_advance);
   } else {

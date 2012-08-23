@@ -788,7 +788,6 @@ void Topology::Paint(HDC hdc, RECT rc) {
 
 
 
-//TopologyLabel::TopologyLabel(const TCHAR* shpname, COLORREF thecolor, int field1):Topology(shpname, thecolor)  REMOVE
 TopologyLabel::TopologyLabel(const TCHAR* shpname, int field1):Topology(shpname) 
 {
   setField(max(0,field1)); 

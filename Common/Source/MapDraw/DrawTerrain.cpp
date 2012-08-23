@@ -658,7 +658,6 @@ void ColorTable() {
 
 TerrainRenderer *trenderer = NULL;
 
-//int Performance = 0; REMOVE?
 
 void CloseTerrainRenderer() {
   if (trenderer) {

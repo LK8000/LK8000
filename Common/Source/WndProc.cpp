@@ -160,9 +160,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
 
     case WM_SETFOCUS:
-      if (ProgramStarted > psInitInProgress) {
-	// TODO REMOVE
-      }
       break;
     case WM_KEYUP:
       break;

@@ -232,7 +232,6 @@ BOOL CSTScreenBuffer::DrawStretch(HDC* pDC, RECT rcDest)
   return DrawStretch(pDC, ptDest, cx, cy);
 }
 
-#include "InfoBoxLayout.h"
 
 BOOL CSTScreenBuffer::DrawStretch(HDC* pDC, POINT ptDest, 
                                   unsigned int cx, 

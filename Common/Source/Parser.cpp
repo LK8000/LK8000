@@ -887,14 +887,9 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   #ifdef PNA
   if (DeviceIsGM130) {
 
-	#if 1
 	double ps = GM130BarPressure();
 	RMZAltitude = (1 - pow(fabs(ps / QNH),  0.190284)) * 44307.69;
 	// StartupStore(_T("....... Pressure=%.0f QNH=%.2f Altitude=%.1f\n"),ps,QNH,RMZAltitude);
-	#else
-	RMZAltitude = GM130BarAltitude();
-	RMZAltitude = AltitudeToQNHAltitude(RMZAltitude);
-	#endif
 
 	RMZAvailable = TRUE;
 
@@ -936,9 +931,6 @@ BOOL NMEAParser::RMC(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   // say we are updated every time we get this,
   // so infoboxes get refreshed if GPS connected
   // the RMC sentence marks the start of a new fix, so we force the old data to be saved for calculations
-//  if (!GGAAvailable) {  // TO REMOVE
-//	TriggerGPSUpdate();
-//  }
 
 	// Even with no valid position, we let RMC set the time and date if valid
 	long gy, gm, gd;
@@ -1044,9 +1036,6 @@ force_advance:
 	else if(RMAAvailable) {
 	     UpdateBaroSource(GPS_INFO, BARO__RMA, NULL,  RMAAltitude);
 	}
-	#ifdef PNA
-
-	#endif
   }
   if (!GGAAvailable) {
 	// update SatInUse, some GPS receiver dont emmit GGA sentance
@@ -1243,18 +1232,6 @@ BOOL NMEAParser::RMZ(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
   RMZAltitude = AltitudeToQNHAltitude(RMZAltitude);
   RMZAvailable = TRUE;
   LastRMZHB=LKHearthBeats; // this is common to both ports!
-
-  #if 0 // REMOVE
-  // 120510 Normally the altitude will be assigned by RMC or GGA triggers.
-  //
-  // if no device declared to have baro, we can use RMZ even if not activeGPS
-  // OR if the declared device failed to provide baro!! 
-  if (!devHasBaroSource() || !GPS_INFO->BaroAltitudeAvailable) {
-    if (!ReplayLogger::IsEnabled()) {      
-      UpdateBaroSource(GPS_INFO, BARO__RMZ_LONE, NULL,   RMZAltitude);
-    }
-  }
-  #endif
 
   return FALSE;
 }
