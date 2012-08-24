@@ -1446,8 +1446,6 @@ Drawbottom:
 		BufferTitle[7]='\0';
 		break;
 	case BM_SYS:
-		// TODO MAKE IT in LKPROCESS
-		#if 100221
   		showunit=true;
   			wsprintf(BufferUnit, TEXT(""));
 			if (SIMMODE) {
@@ -1475,23 +1473,6 @@ Drawbottom:
 						wsprintf(BufferTitle, TEXT("%s:?"), MsgToken(1199));
 				}
 			}
-
-		#else
-		Value=DrawInfo.SatellitesUsed;
-		if (Value<1 || Value>30) {
-			wsprintf(BufferValue,TEXT("---"));
- 			//TextDisplayMode.AsFlag.Color = TEXTRED;
-		}
-		else {
-		//	if (Value<3)
- 		//		TextDisplayMode.AsFlag.Color = TEXTYELLOW;
-  			sprintf(text,"%d",(int)Value);
-			wsprintf(BufferValue, TEXT("%S"),text);
-		}
-  		showunit=false;
-		// LKTOKEN _@M1199_ "Sat"
-  		wsprintf(BufferTitle, MsgToken(1199));
-		#endif
 		break;
 	case BM_CUS2:
 		index=GetInfoboxIndex(3,MapWindow::Mode::MODE_FLY_CRUISE);
