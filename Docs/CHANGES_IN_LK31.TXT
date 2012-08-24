@@ -234,6 +234,43 @@ New Takeoff safety alarm (configuration menu Alarms)
    in use again for the next takeoff.
 
 
+LK8000 VERSION 3.1g 120825
+==========================
+
+NEW
+
+.  New custom key "Reset odometer" , needed while trekking
+
+.  Car mode enhanced for Trekking mode
+   Correct logging of snail trail.
+   Snail trail using Vario and not NettoVario to show colors.
+   In Car/Trekking mode, a snail point is recorded every 5 seconds, as soon as at least 5 meters have been made in distance.
+   Odometer will account for any distance, even 1 m .
+   Zoom levels of maps are the same of paragliders: zoom up to 10m scale, instead of max 100m.
+   This preliminar setup was tested in the alps while trekking with a Medion S3747, outperforming Garmins!
+
+.  Add altitude value for pan mode sim mode: beside lat/long, also alttiude of terrain is displayed, releative to center screen.
+
+.   Arm TPs support added
+
+
+FIXES
+
+
+.  Fix bug not showing correctly SYS6 status of satellites relative to device A or B: even is using B, A was shown.
+
+.  Fix small bug showing welcome page with wrong background in FLY mode if flipping pages before long click on center screen, on startup.
+
+.  Fix 3.0 bug not managing correctly FLYTEC FLYSEN time, not advancing.
+   We also fix the UTC time incorrectly managed as local time.
+   And we also manage date change, and month change.
+
+.  Fix very old bug not considering day advanced through a new month.
+   Only a single day was considered, and this was creating problems to people not switching off the gps for many days.
+
+.  Fix bug not setting track bearing when speed below 1 knot. Not it is enough to have >0 .
+
+
 
 
 LK8000 VERSION 3.1f 120726
