@@ -293,6 +293,7 @@ void NMEAParser::UpdateMonitor(void)
 	GPS_INFO.AccelerationAvailable = false;
 	EnableExternalTriggerCruise = false;
 	nmeaParser1._Reset();
+	nmeaParser1.activeGPS=false;
   } else {
 	// We have hearth beats, is baro available?
 	if ( devIsBaroSource(devA()) || nmeaParser1.RMZAvailable || nmeaParser1.RMAAvailable || nmeaParser1.TASAvailable ) // 100411
@@ -320,6 +321,7 @@ void NMEAParser::UpdateMonitor(void)
 	GPS_INFO.AccelerationAvailable = false;
 	EnableExternalTriggerCruise = false;
 	nmeaParser2._Reset();
+	nmeaParser2.activeGPS=false;
   } else {
 	// We have hearth beats, is baro available?
 	if ( devIsBaroSource(devB()) || nmeaParser2.RMZAvailable || nmeaParser2.RMAAvailable || nmeaParser2.TASAvailable   )  // 100411
@@ -360,6 +362,7 @@ void NMEAParser::UpdateMonitor(void)
 		EnableExternalTriggerCruise = false;
 		nmeaParser1._Reset();
 		nmeaParser2._Reset();
+		// 120824 Check this situation better> Reset is setting activeGPS true for both devices!
 		lastvalidBaro=false;
 	}
   } else {
