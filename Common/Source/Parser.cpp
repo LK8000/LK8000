@@ -31,6 +31,7 @@ void CheckBackTarget(int flarmslot);
 // #define DEBUGBARO	1
 
 static double LastRMZHB=0;	 // common to both devA and devB.
+static double trackbearingminspeed=0; // minimal speed to use gps bearing
 
 NMEAParser nmeaParser1;
 NMEAParser nmeaParser2;
@@ -412,6 +413,12 @@ void NMEAParser::UpdateMonitor(void)
 	nmeaParser1.RMZAvailable = FALSE;
 	nmeaParser2.RMZAvailable = FALSE;
   }
+
+  // Set some fine tuning parameters here, dependint on device/situation/mode
+  if (ISCAR)
+	trackbearingminspeed=0; // trekking mode/car mode, min speed >0
+  else
+	trackbearingminspeed=1; // flymode,  min speed >1 knot
 
   // Following diagnostics only
   if (active == lastactive) return;
@@ -858,7 +865,8 @@ BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 
 	GPS_INFO->Speed = KNOTSTOMETRESSECONDS * speed;
   
-	if (GPS_INFO->Speed>0) {
+	if (ISCAR)
+	if (GPS_INFO->Speed>trackbearingminspeed) {
 		GPS_INFO->TrackBearing = AngleLimit360(StrToDouble(params[0], NULL));
 	}
   }
@@ -999,7 +1007,7 @@ force_advance:
   
 	GPS_INFO->Speed = KNOTSTOMETRESSECONDS * speed;
   
-	if (GPS_INFO->Speed>0) {
+	if (GPS_INFO->Speed>trackbearingminspeed) {
 		GPS_INFO->TrackBearing = AngleLimit360(StrToDouble(params[7], NULL));
 	}
   } // gpsvalid 091108
