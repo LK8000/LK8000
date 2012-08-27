@@ -23,7 +23,7 @@
 
 int  iTraceDotSize = 5;
 int RADAR_TURN = 90 ;            /* radar plane orientation             */
-#define HEIGHT_RANGE (800.0  )    /* max hight ifference above and below */
+#define HEIGHT_RANGE (1000.0  )    /* max hight ifference above and below in meters */
 double ASYMETRIC_FACTOR = 0.7 ;     /* X center displacement               */
 double SPLITSCREEN_FACTOR = 0.7 ;   /* % of top view window                */
 int bTrace = 1;
@@ -755,11 +755,14 @@ static bool bFirstCall = false;
   sDia.fYMin = max(-GPSalt, -HEIGHT_RANGE);
   sDia.fYMax =HEIGHT_RANGE;
 
-  double fScale = 1000;
-  if((sDia.fYMax-sDia.fYMin) < 800)
+  double fScale = 1000;// *fScaleFact;
+//  int iNo = (int)fScale /500.0;
+//  fScale = (double) iNo*500.0;
+  if((sDia.fYMax-sDia.fYMin) > 4000)
 	fScale = 400.0f;
   else
 	fScale = 600.0f;
+
   if (Units::GetUserInvAltitudeUnit() == unFeet)
 	  fScale /= 2;
 
@@ -805,10 +808,10 @@ RECT rcc = rct;
 	if(sDia.fXMax ==sDia.fXMin)
 	  sDia.fXMax= sDia.fXMin+1.0;
 	LKASSERT( sDia.fXMax !=sDia.fXMin )
-	double fCScale =(double)( rct.right-rct.left)/(sDia.fXMax-sDia.fXMin );
+	double fCScale =(double)( rct.right-rct.left)/((sDia.fXMax-sDia.fXMin ));
 	for ( i = 0; i < (sDia.fXMax /xtick); i++)
 	{
-	  iCircleRadius =(int) (fRing* fCScale);
+	  iCircleRadius =(int) (fRing* fCScale / (DISTANCEMODIFY*1000.0f));
 	  Circle(hdc, x_middle, y_middle, iCircleRadius, rcc, true, false );
 	  fRing = fRing + xtick;
 	}
@@ -819,7 +822,7 @@ RECT rcc = rct;
 	if((sDia.fXMax /xtick)  < 3)
 	  for ( i = 0; i < (sDia.fXMax /xtick); i++)
 	  {
-	    iCircleRadius = (int) (fRing * fCScale);
+	    iCircleRadius = (int) (fRing * fCScale / (DISTANCEMODIFY*1000.0f));
 	    Circle(hdc, x_middle, y_middle, iCircleRadius, rcc, true, false );
 	    fRing = fRing + xtick;
 	  }
