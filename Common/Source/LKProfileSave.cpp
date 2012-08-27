@@ -310,6 +310,8 @@ void LKProfileSave(const TCHAR *szFile)
   }
 
 
+  rprintf(szRegistryUseWindRose,UseWindRose);
+
   fprintf(pfp,PNEWLINE); // end of file
   fflush(pfp);
   fclose(pfp);

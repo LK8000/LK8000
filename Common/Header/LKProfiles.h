@@ -309,6 +309,8 @@ TCHAR szRegistryCustomMenu7[] = _T("CustomMenu7");
 TCHAR szRegistryCustomMenu8[] = _T("CustomMenu8");
 TCHAR szRegistryCustomMenu9[] = _T("CustomMenu9");
 TCHAR szRegistryCustomMenu10[] = _T("CustomMenu10");
+
+TCHAR szRegistryUseWindRose[] = _T("UseWindRose");
 //
 //
 //
@@ -537,6 +539,9 @@ extern TCHAR szRegistryCustomMenu7[];
 extern TCHAR szRegistryCustomMenu8[];
 extern TCHAR szRegistryCustomMenu9[];
 extern TCHAR szRegistryCustomMenu10[];
+
+extern TCHAR szRegistryUseWindRose[];
+
 //
 //
 #endif
