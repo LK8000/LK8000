@@ -256,7 +256,7 @@ BOOL CDevCProbe::ParseGyro( wnmeastring& wiss, NMEA_INFO *pINFO ) {
 	unsigned int n = HexStrToInt(wiss.GetNextString());
 	unsigned int m = HexStrToInt(wiss.GetNextString());
 
-	StartupStore(TEXT("Gyro Calibration : %03ud/%03ud"), n, m);
+	StartupStore(TEXT("Gyro Calibration : %03ud/%03ud\n"), n, m);
 
 	return TRUE;
 }
