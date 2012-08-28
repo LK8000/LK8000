@@ -865,8 +865,7 @@ BOOL NMEAParser::VTG(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO *G
 
 	GPS_INFO->Speed = KNOTSTOMETRESSECONDS * speed;
   
-	if (ISCAR)
-	if (GPS_INFO->Speed>trackbearingminspeed) {
+	if (ISCAR && GPS_INFO->Speed>trackbearingminspeed) {
 		GPS_INFO->TrackBearing = AngleLimit360(StrToDouble(params[0], NULL));
 	}
   }
