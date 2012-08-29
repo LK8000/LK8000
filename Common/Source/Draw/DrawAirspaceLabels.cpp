@@ -71,7 +71,10 @@ void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Airc
               if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
                   TextDisplayMode.Border = 1;
               } else {
-                  TextDisplayMode.WhiteBold = 1; // outlined 
+		  if (TextDisplayMode.Color==RGB_BLACK)
+                     TextDisplayMode.WhiteBold = 0; // no black outline for black background..
+                  else
+                     TextDisplayMode.WhiteBold = 1; // outlined  
               }
 
               hlabel_draws = TextInBox(hdc, hbuf, sc.x, sc.y+NIBLSCALE(15), 0, &TextDisplayMode, true);
@@ -105,7 +108,10 @@ void MapWindow::DrawAirspaceLabels(HDC hdc, const RECT rc, const POINT Orig_Airc
               if ( (MapBox == (MapBox_t)mbBoxed) || (MapBox == (MapBox_t)mbBoxedNoUnit)) {
                   TextDisplayMode.Border = 1;
               } else {
-                  TextDisplayMode.WhiteBold = 1; // outlined 
+		  if (TextDisplayMode.Color==RGB_BLACK)
+                     TextDisplayMode.WhiteBold = 0; // no black outline for black background..
+                  else
+                     TextDisplayMode.WhiteBold = 1; // outlined  
               }
 
               vlabel_draws = TextInBox(hdc, hbuf, Orig_Aircraft.x, Orig_Aircraft.y+NIBLSCALE(15), 0, &TextDisplayMode, true);
