@@ -71,10 +71,11 @@ void LD(NMEA_INFO *Basic, DERIVED_INFO *Calculated)
 
       InsertLDRotary(&rotaryLD,(int)DistanceFlown, Basic, Calculated);
       InsertWindRotary(&rotaryWind, Basic->Speed, Basic->TrackBearing, Calculated->NavAltitude); // 100103
-      if (ISCAR)
+      if (ISCAR) {
          if (DistanceFlown<300) Calculated->Odometer += DistanceFlown;
-      else
+      } else {
          if (DistanceFlown >3 && DistanceFlown<300) Calculated->Odometer += DistanceFlown;
+      }
 
       if (LKSW_ResetOdometer) {
 		Calculated->Odometer = 0;
