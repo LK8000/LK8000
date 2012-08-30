@@ -190,6 +190,9 @@ static void OnNewHomeClicked(WindowControl * Sender){
   WpHome_Lon=WayPointList[HomeWaypoint].Longitude;
   _tcscpy(WpHome_Name,WayPointList[HomeWaypoint].Name);
 
+  #if TESTBENCH
+  StartupStore(_T("... Home set to wp.%d by dlgWayPointDetails\n"),HomeWaypoint);
+  #endif
   RefreshTask();
   UnlockTaskData();
   wf->SetModalResult(mrOK);

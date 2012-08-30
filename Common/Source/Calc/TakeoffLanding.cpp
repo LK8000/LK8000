@@ -54,7 +54,7 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 			_tcscpy(WayPointList[RESWP_TAKEOFF].Comment,_T("LAST GROUND POSITION"));
 			WayPointList[RESWP_TAKEOFF].Reachable=TRUE;
 			WayPointList[RESWP_TAKEOFF].Visible=TRUE;
-			if ( (!ValidWayPoint(HomeWaypoint)) || ISPARAGLIDER ) {
+			if ( (!ValidWayPoint(HomeWaypoint)) || (ISPARAGLIDER && !SIMMODE) ) {
 				HomeWaypoint=RESWP_TAKEOFF;
 				TakeOffWayPoint=true;
 			}
