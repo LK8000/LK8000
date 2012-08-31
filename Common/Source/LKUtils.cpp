@@ -270,13 +270,16 @@ int GetWaypointFileFormatType(const wchar_t* wfilename) {
 
 //
 // Master Time Reset
+//
 // This function is called when a valid GPS time (or a time taken from an IGC replay log)
-// is verified to be gone back in time, or more than 2 hours have passed since last GPS
-// fix was received.
-// This is normally happening when the device was switched off and back on some time later.
-// What we might do, is disable logging, resetting some functions etc.
-// But this is happening also after switching ON a PNA with no time battery, and thus a full reset.
+// is verified to be gone back in time.
+// This was normally happening when the device was switched off and back on some time later, until 3.1f.
+// Now the time in LK is advancing also considering the date through a full year, so it is unlikely to happen after a valid fix.
+//
+// But this can also happen  after switching ON a PNA with no time battery, and thus a full reset.
 // Time is appearing as 1/1/2000 12:00am , some times. So we only log the event.
+//
+// What we might do, is disable logging, resetting some functions etc.
 //
 void MasterTimeReset(void) {
 
