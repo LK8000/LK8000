@@ -381,14 +381,23 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 
   const int cost = ifastcosine(DisplayAngle);
   const int sint = ifastsine(DisplayAngle);
+
+  const double ac2 = sint*InvDrawScale;
+  const double ac3 = cost*InvDrawScale;
+
   #if USERASTERCACHE
   #else
   const RECT crect_visible = rect_visible;
   #endif
   minalt=9999;
   for (int y = Y0; y<Y1; y+= dtquant) {
-	int ycost = y*cost;
-	int ysint = y*sint;
+	//int ycost = y*cost;  // REMOVE COMMENTED LINES AFTER DECEMBER 2012
+	//int ysint = y*sint;
+	//1: double ac1= PanLatitude- ycost*InvDrawScale;
+	//2: double ac1= PanLatitude- y*cost*InvDrawScale;
+	double ac1= PanLatitude- y*ac3;
+	double cc1= y * ac2;
+
 	for (int x = X0; x<X1; x+= dtquant, myhbuf++) {
 		#if USERASTERCACHE
 		if ((x>= rect_visible.left) &&
@@ -405,8 +414,22 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 			ASSERT(myhbuf<hBufTop);
 			#endif
 
-			double Y = PanLatitude - (ycost+x*sint)*InvDrawScale;
-			double X = PanLongitude + (x*cost-ysint)*invfastcosine(Y)*InvDrawScale;
+			//1: double Y = PanLatitude - (ycost+x*sint)*InvDrawScale;
+			//2: double Y = PanLatitude - (ycost*InvDrawScale) - (x*sint*InvDrawScale)
+			double Y = ac1 - x*ac2;
+
+			//1: sums=2    mult=3
+			//1: double X = PanLongitude + (x*cost-ysint)*invfastcosine(Y)*InvDrawScale;
+			//2: double X = PanLongitude + (x*cost)*invfastcosine(Y)*InvDrawScale - ysint*invfastcosine(Y)*InvDrawScale;
+			//3: double X = PanLongitude + x*invfastcosine(Y)*cost*InvDrawScale - y*invfastcosine(Y)*sint*InvDrawScale;
+			//4: double X = PanLongitude + x*invfastcosine(Y)*ac3 - y*invfastcosine(Y)*ac2;
+			//   int bc1=invfastcosine(Y);
+			//5: double X = PanLongitude + x*bc1*ac3 - y*bc1*ac2;
+			//6: double X = PanLongitude + x*bc1*ac3 - cc1*bc1;
+			//7: double X = PanLongitude + bc1*(x*ac3) - bc1*(cc1);
+			//8: double X = PanLongitude + bc1* (x*ac3 - cc1);
+			double X = PanLongitude + ( invfastcosine(Y) * ((x*ac3)-cc1) );
+			
 
 			// this is setting to 0 any negative terrain value and can be a problem for dutch people
 			// myhbuf cannot load negative values!
