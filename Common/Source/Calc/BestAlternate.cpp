@@ -128,13 +128,8 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 	sortedArrivalAltitude[i] = 0;
   }
 
-  bool found_reachable_airport = false;
 
   for (int scan_airports_slot=0; scan_airports_slot<2; scan_airports_slot++) {
-
-	if (found_reachable_airport ) { 
-		continue; // don't bother filling the rest of the list
-	}
 
 	for (i=0; i<MAXBEST*2; i++) {
 		if (sortApproxIndex[i]<0) { // ignore invalid points
@@ -153,20 +148,11 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 		WayPointCalc[sortApproxIndex[i]].AltArriv[AltArrivMode] = arrival_altitude; 
 		// This is holding the real arrival value
 
-		/* 
-	 	 * We can't use degraded polar here, but we can't accept an
-		 * arrival 1m over safety.  That is 2m away from being
-		 * unreachable! So we higher this value to 100m.
-		 */
-		// arrival_altitude -= ALTERNATE_OVERSAFETY;  // UNUSED in 2.3h
-
 		if (scan_airports_slot==0) {
 			if (arrival_altitude<0) {
 				// in first scan, this airport is unreachable, so ignore it.
 				continue;
-			} else 
-				// this airport is reachable
-				found_reachable_airport = true;
+			} 
 		}
 
 		// see if this fits into slot
@@ -175,7 +161,7 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 				// closer than this one
 				||(sortedLandableIndex[k]== -1))
 				// or this one isn't filled
-				&&(sortedLandableIndex[k]!= i))  // and not replacing with same
+				&&(sortedLandableIndex[k]!= sortApproxIndex[i]))  // and not replacing with same
 			{
 				double wp_distance, wp_bearing;
 				DistanceBearing(Basic->Latitude , Basic->Longitude ,
@@ -385,7 +371,8 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 		if ( curbestoutlanding >= 0 ) {
 			#ifdef DEBUG_BESTALTERNATE
 			wsprintf(ventabuffer,TEXT("--> no bestalternate, choosing outlanding <%s> with gr=%d"), 
-			WayPointList[curbestoutlanding].Name, (int)curbestgr );
+			WayPointList[curbestoutlanding].Name, 
+			(int)WayPointCalc[curbestoutlanding].GR);
 			if ((fp=_tfopen(_T("DEBUG.TXT"),_T("a")))!= NULL)
 			{;fprintf(fp,"%S\n",ventabuffer);fclose(fp);}
 			// DoStatusMessage(ventabuffer);
@@ -562,6 +549,13 @@ void AlertBestAlternate(short soundmode) {
   static double LastAlertTime=0;
 
   if (!BestWarning || !CALCULATED_INFO.Flying) return; // 091125
+
+  if (GPS_INFO.Time < (LastAlertTime-60) ) {
+	#if TESTBENCH
+	StartupStore(_T("... AlertBestAlternate back in time, reset last warning time\n"));
+	#endif
+	LastAlertTime=GPS_INFO.Time;
+  }
 
   if ( GPS_INFO.Time > LastAlertTime + 120.0 ) { 
 	if (EnableSoundModes) {
