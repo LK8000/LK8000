@@ -92,6 +92,17 @@ bool api_has_SHHandleWMSettingChange = false;
 void CleanupForShutdown(void);
 HANDLE hMutex=NULL;
 
+//
+// WINMAIN RETURNS CODE ARE:
+//
+// -1	for init instance error
+// -2	for mutex error return
+// 
+//  111 for normal program termination with automatic relaunch, if using lkrun
+//  222 for normal program termination, with request to quit lkrun if running
+// 
+//  259 is reserved by OS (STILL_ACTIVE) status
+
 #ifndef UNDER_CE
 int WINAPI WinMain(     HINSTANCE hInstance,
                         HINSTANCE hPrevInstance,
@@ -113,14 +124,14 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 	MSG msg = {0};
   HACCEL hAccelTable;
   (void)hPrevInstance;
-
   // use mutex to avoid multiple instances of lk8000 be running
   hMutex = CreateMutex(NULL,FALSE,_T("LOCK8000"));
   if (GetLastError() == ERROR_ALREADY_EXISTS) {
 	  ReleaseMutex(hMutex);
 	  CloseHandle(hMutex);
-	  return(0);
+	  return(-2);
   }
+  bool realexitforced=false;
 
   wsprintf(LK8000_Version,_T("%S v%S.%S "), LKFORK, LKVERSION,LKRELEASE);
   wcscat(LK8000_Version, TEXT(__DATE__));
@@ -170,6 +181,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   
   bool datadir;
   datadir=CheckDataDir();
+
   if (!datadir) {
 	// we cannot call startupstore, no place to store log!
 	WarningHomeDir=true;
@@ -227,7 +239,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
   if (!InitInstance (hInstance, nCmdShow))
     {
 	StartupStore(_T("++++++ InitInstance failed, program terminated!%s"),NEWLINE);
-	return FALSE;
+	return -1;
     }
 
   hAccelTable = LoadAccelerators(hInstance, (LPCTSTR)IDC_XCSOAR);
@@ -267,6 +279,7 @@ int WINAPI WinMain(     HINSTANCE hInstance,
 
   PreloadInitialisation(false); // calls dlgStartup
   if(RUN_MODE == RUN_EXIT || RUN_MODE == RUN_SHUTDOWN) {
+	realexitforced=true;
 	goto _Shutdown;
   }
 
@@ -526,7 +539,7 @@ CreateProgressDialog(gettext(TEXT("_@M1207_")));
 _Shutdown:
   CleanupForShutdown();
   #if TESTBENCH
-  StartupStore(_T(".... WinMain terminated%s"),NEWLINE);
+  StartupStore(_T(".... WinMain terminated, wParamreturn code=%d realexitforced=%d%s"),msg.wParam,realexitforced,NEWLINE);
   #endif
 
   #if (WINDOWSPC>0)
@@ -536,7 +549,8 @@ _Shutdown:
   #endif
   #endif
 
-  return msg.wParam;
+  if (realexitforced) return 222;
+  else return 111;
 }
 
 
