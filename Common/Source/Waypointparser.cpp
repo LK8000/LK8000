@@ -1104,7 +1104,11 @@ int FindNearestWayPoint(double X, double Y, double MaxRange,
     }
   NearestDistance = MaxRange;
 
-    for(i=NUMRESWP;i<NumberOfWayPoints;i++) {
+    for(i=RESWP_FIRST_MARKER;i<NumberOfWayPoints;i++) {
+
+      // Consider only valid markers
+      if ( (i<NUMRESWP)  &&  (WayPointCalc[i].WpType!=WPT_TURNPOINT) ) continue;
+
       DistanceBearing(Y,X,
                       WayPointList[i].Latitude, 
                       WayPointList[i].Longitude, &Dist, NULL);
