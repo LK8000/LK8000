@@ -920,6 +920,7 @@ void InputEvents::eventMarkLocation(const TCHAR *misc) {
 	#if USETOPOMARKS
 	reset_marks = true;
 	#endif
+	LockFlightData();
 	for (short i=RESWP_FIRST_MARKER; i<=RESWP_LAST_MARKER; i++) {
         	WayPointList[i].Latitude=RESWP_INVALIDNUMBER;
         	WayPointList[i].Longitude=RESWP_INVALIDNUMBER;
@@ -928,19 +929,31 @@ void InputEvents::eventMarkLocation(const TCHAR *misc) {
 	        WayPointList[i].FarVisible=FALSE;
 	        WayPointCalc[i].WpType = WPT_UNKNOWN;
 	}
-  } else {
-	#ifndef DISABLEAUDIO
-	if (EnableSoundModes) LKSound(TEXT("DROPMARKER.WAV"));
-	#endif
+	UnlockFlightData();
+	return;
+  } 
 
-	LockFlightData();
+  #ifndef DISABLEAUDIO
+  if (EnableSoundModes) LKSound(TEXT("DROPMARKER.WAV"));
+  #endif
+
+  LockFlightData();
+
+  if (_tcscmp(misc, TEXT("pan")) == 0) {
+	// the altitude for the virtual waypoint is the same we have now, so we can see how many meters we need to glide there.
+	// Alternative, use terrain altitude in the new pan location, with:
+	// RasterTerrain::GetTerrainHeight(GetPanLatitude(), GetPanLongitude())
+	MarkLocation(MapWindow::GetPanLongitude(), MapWindow::GetPanLatitude(), CALCULATED_INFO.NavAltitude );
+  } else {
 	#if USETOPOMARKS
 	MarkLocation(GPS_INFO.Longitude, GPS_INFO.Latitude);
 	#else
 	MarkLocation(GPS_INFO.Longitude, GPS_INFO.Latitude, CALCULATED_INFO.NavAltitude );
 	#endif
-	UnlockFlightData();
   }
+
+  UnlockFlightData();
+
 }
 
 void InputEvents::eventSounds(const TCHAR *misc) {

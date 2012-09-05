@@ -38,9 +38,9 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 	DoInit[MDI_DRAWMAPSCALE]=false;
     }
 
-    TCHAR Scale[80];
-    TCHAR Scale1[80];
-    TCHAR Scale2[80];
+    TCHAR Scale[200];
+    TCHAR Scale1[200];
+    TCHAR Scale2[200];
     TCHAR TEMP[20];
     COLORREF origcolor = SetTextColor(hDC, OverColorRef);
 
@@ -55,6 +55,18 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 
     _tcscpy(Scale2,TEXT(""));
 
+    bool inpanmode= (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN));
+
+    if (inpanmode) {
+	double pandistance, panbearing;
+	DistanceBearing(GPS_INFO.Latitude,GPS_INFO.Longitude,GetPanLatitude(),GetPanLongitude(),&pandistance,&panbearing);
+	_stprintf(Scale2, _T(" %.1f%s %.0f%s "), pandistance*DISTANCEMODIFY, Units::GetDistanceName(), panbearing,_T(DEG) );
+	goto _skip1;
+    }
+
+    //
+    // This stuff is not painted while panning, to save space on screen
+    //
 
     // warn about missing terrain
     if (!DerivedDrawInfo.TerrainValid) {
@@ -79,6 +91,13 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 		// LKTOKEN _@M1337_ " AZM"
       _tcscat(Scale2, MsgToken(1337));
     }
+
+_skip1:
+
+    //
+    // Back painting stuff even in PAN mode
+    //
+
     if (mode.AnyPan()) {
 		// LKTOKEN _@M1338_ " PAN"
       _tcscat(Scale2, MsgToken(1338));
@@ -131,6 +150,8 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 	}
     }
 
+    if (inpanmode) goto _skip2;
+
     if (ReplayLogger::IsEnabled()) {
 		// LKTOKEN _@M1350_ " REPLAY"
       _tcscat(Scale2, MsgToken(1350));
@@ -141,15 +162,23 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
       _tcscat(Scale2, TEMP);
     }
 
+_skip2:
+
     _tcscpy(Scale,TEXT(""));
     _tcscpy(Scale1,TEXT(""));
-    if (SIMMODE && (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN)) ) {
+
+    //if (SIMMODE && (!mode.Is(Mode::MODE_TARGET_PAN) && mode.Is(Mode::MODE_PAN)) ) {
+    if (inpanmode) {
+
 	TCHAR sCoordinate[32]={0};
 	Units::CoordinateToString(GetPanLongitude(), GetPanLatitude(), sCoordinate, sizeof(sCoordinate)-1);
 	_tcscat(Scale, sCoordinate);
-	_stprintf(Scale1, _T(" %d%s "),RasterTerrain::GetTerrainHeight(GetPanLatitude(), GetPanLongitude()),
+	// Paint terrain altitude only if valid terrain!
+	if (DerivedDrawInfo.TerrainValid) {
+	   _stprintf(Scale1, _T(" %d%s "),RasterTerrain::GetTerrainHeight(GetPanLatitude(), GetPanLongitude()),
 		Units::GetUnitName(Units::GetUserAltitudeUnit()));
-	_tcscat(Scale, Scale1);
+	   _tcscat(Scale, Scale1);
+	}
     }
     double mapScale=Units::ToSysDistance(zoom.Scale()*1.4);	// 1.4 for mapscale symbol size on map screen
     // zoom.Scale() gives user units, but FormatUserMapScale() needs system distance units

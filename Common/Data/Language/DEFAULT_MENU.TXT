@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 9 , 120819
+# Release 9 , 120905
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -205,6 +205,13 @@ data=RIGHT
 event=Pan right
 
 ### Soft buttons 
+
+mode=pan
+type=key
+data=APP1
+event=MarkLocation pan
+label=_@M2070_
+location=1
 
 mode=pan
 type=key
