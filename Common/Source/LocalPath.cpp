@@ -180,10 +180,13 @@ TCHAR * gmfpathname ()
   TCHAR  *p; 
   
   if (GetModuleFileName(NULL, gmfpathname_buffer, MAXPATHBASENAME) <= 0) {
-    return(_T("\\ERROR_01\\") );
+    _tcscpy(gmfpathname_buffer,_T("\\ERROR_01\\"));
+    goto _out;
   }
+
   if (gmfpathname_buffer[0] != '\\' ) {
-    return(_T("\\ERROR_02\\"));
+    _tcscpy(gmfpathname_buffer,_T("\\ERROR_02\\"));
+    goto _out;
   }
   gmfpathname_buffer[MAXPATHBASENAME-1] = '\0';	// truncate for safety
   
@@ -191,10 +194,12 @@ TCHAR * gmfpathname ()
     if ( *p == '\\' ) break;	// search for the very first "\"
   
   if ( *p == '\0') {
-    return(_T("\\ERROR_03\\"));
+    _tcscpy(gmfpathname_buffer,_T("\\ERROR_03\\"));
+    goto _out;
   }
   *++p = '\0';
-  
+
+_out:  
   return (TCHAR *) gmfpathname_buffer;
 }
 
@@ -208,10 +213,16 @@ TCHAR * gmfbasename ()
   TCHAR *p, *lp;
   
   if (GetModuleFileName(NULL, gmfbasename_buffer, MAXPATHBASENAME) <= 0) {
-    return(_T("ERROR_04") );
+    _tcscpy(gmfbasename_buffer,_T("ERROR_04.EXE"));
+    lp=gmfbasename_buffer;
+    goto _out;
   }
+  gmfbasename_buffer[MAXPATHBASENAME-1]='\0';
+
   if (gmfbasename_buffer[0] != '\\' ) {
-    return(_T("ERROR_05"));
+    _tcscpy(gmfbasename_buffer,_T("ERROR_05.EXE"));
+    lp=gmfbasename_buffer;
+    goto _out;
   }
   for (p=gmfbasename_buffer+1, lp=NULL; *p != '\0'; p++)
     {
@@ -220,6 +231,7 @@ TCHAR * gmfbasename ()
 	continue;
       }
     }
+_out:
   return  lp;
 }
 
@@ -232,8 +244,11 @@ TCHAR * gmfcurrentpath ()
   TCHAR *p, *lp;
   
   if (GetModuleFileName(NULL, gmfbasename_buffer, MAXPATHBASENAME) <= 0) {
-    return(_T("ERROR_04") );
+    _tcscpy(gmfbasename_buffer,_T("\\ERROR_04"));
+    goto _out;
   }
+  gmfbasename_buffer[MAXPATHBASENAME-1]='\0';
+
   for (p=gmfbasename_buffer+1, lp=NULL; *p != '\0'; p++)
     {
       if ( *p == '\\' ) {
@@ -242,9 +257,12 @@ TCHAR * gmfcurrentpath ()
       }
     }
 
-  *lp=_T('\0');
-  *--lp=_T('\0'); // also remove trailing backslash
-  return  gmfbasename_buffer;
+  if (lp!=NULL) {
+	*lp=_T('\0');
+	*--lp=_T('\0'); // also remove trailing backslash
+  }
+_out:
+  return (TCHAR *) gmfbasename_buffer;
 }
 
 
@@ -261,10 +279,12 @@ int GetGlobalModelName ()
   
   _tcscpy(GlobalModelName, _T(""));
   
-  if (GetModuleFileName(NULL, modelname_buffer, MAXPATHBASENAME) <= 0) {
+  if (GetModuleFileName(NULL, modelname_buffer, MAXPATHBASENAME-1) <= 0) {
     StartupStore(TEXT("++++++ CRITIC- GetGlobalFileName returned NULL%s"),NEWLINE); // 091119
     return 0;
   }
+  modelname_buffer[MAXPATHBASENAME-1]='\0';
+
   if (modelname_buffer[0] != '\\' ) {
     StartupStore(TEXT("++++++ CRITIC- GetGlobalFileName starting without a leading backslash%s"),NEWLINE); // 091119
     return 0;
@@ -276,7 +296,9 @@ int GetGlobalModelName ()
 	continue;
       }
     } // assuming \sd\path\LK8000_pna.exe  we are now at \LK8000..
-  
+ 
+  if (lp == NULL ) return 0;
+ 
   for (p=lp, np=NULL; *p != '\0'; p++)
     {
       if (*p == '_' ) {
