@@ -1,4 +1,4 @@
-VERSION 3.1 MANUAL ADDENDUM
+VERSION 3.1 MANUAL ADDENDUM (NOT UPDATED TO THE LATEST 3.1h version yet!)
 ===========================
 
 FLARM RADAR
@@ -232,6 +232,73 @@ New Takeoff safety alarm (configuration menu Alarms)
    set 50, simply.
    The takeoff safety sound will be armed again only after landing, and be automatically 
    in use again for the next takeoff.
+
+
+LK8000 VERSION 3.1h 120906
+==========================
+
+NEW
+
+.   New location marking in PAN mode, and fix small problems on pan mode display overlay.
+    In PAN mode, both in SIM and in FLY mode, near to the zoom scale indicator are painted :
+    - latitude/longitude/altitude
+    - distance to current position, bearing to current position
+    This will give the pilot more informations about the pan position he is using.
+    A new button is available in pan mode: location marker.
+    It is the same "location marker" available to create a marker while flying, 
+    but in this case it will create the marker in the cross center pa n position.
+    The marker is then available for selection as a waypoint, can be inserted in a task as 
+    an intermediate waypoint, can be used as an alternate destination, etc.
+    The marker altitude in this case is set to the same altitude of the aircraft at the time of marker creation.
+    (A new DEFAULT_MENU.TXT must be updated in _SYSTEM)
+
+
+. Support for the new LKRUN v1.0 PNA shell
+  LKRUN.EXE is an executable inside LK8000 folder, in the same place of LK8000-PNA.EXE.
+  Running LKRUN.EXE will make LK8000-PNA.EXE run as well. 
+  Upon exit, LK will restart automatically.
+  If you Exit from the startup screen, you exit LKRUN and the loop is over.
+  In case of software crash, LK will be restarted automatically for max. 10 times.
+  
+
+. Save "Toggle WndRose" state at Shutdown and Load at Startup....
+
+
+
+CHANGES
+
+.  Allow saving a task that is using virtual waypoints. This is needed because it is now possible 
+   to insert a virtual waypoint during the flight in pan mode.
+
+.  Allow Find NearestWaypoint button to select also markers.
+   Only valid markers of course.
+   So it is possible to pan, create a virtual waypoint, and select it for a goto.
+
+. Accelerate terrain drawing a bit, 10ms gain on a 400mhz cpu
+
+
+FIXES
+
+
+. Fix possible startup bug that on some systems may crash LK (only on startup!).
+
+. Fix bug not loading FlarmId in a random condition.
+
+. Fix bug not setting Home waypoint for paragliders in SIM mode.
+  This was happening only in SIM mode when the paraglider was not flying, and on ground.
+
+. Fix bug in 3.1g odometer calculated only for car mode..
+
+. Fix small bug drawing airspace labels, when using black background color we were using 
+  also black outline color, resulting in a blurred text effect. 
+  This was happening only when using configuration interface setting as "unboxed" for text.
+
+. Fix 3.1g glitch accepting track bearing changes for fly mode even with impossibly low speed
+
+. Fix bug in Flarm Radar not drawing circles scaled correctly when using nautical or statute units.
+
+
+
 
 
 LK8000 VERSION 3.1g 120825
