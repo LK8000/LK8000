@@ -48,7 +48,7 @@ void SaveTask(TCHAR *szFileName)
 	int i;
 
 	for(i=0;i<MAXTASKPOINTS;i++) {
-		if (ValidNotResWayPoint(Task[i].Index)) {
+		if (ValidWayPoint(Task[i].Index)) {
 			WriteFile(hFile,&WayPointList[Task[i].Index],
 			sizeof(WAYPOINT), &dwBytesWritten, (OVERLAPPED*)NULL);
 		} else {
@@ -59,7 +59,7 @@ void SaveTask(TCHAR *szFileName)
 	}
 
 	for(i=0;i<MAXSTARTPOINTS;i++) {
-		if (ValidNotResWayPoint(StartPoints[i].Index)) { // 091223
+		if (ValidWayPoint(StartPoints[i].Index)) { // 091223
 			WriteFile(hFile,&WayPointList[StartPoints[i].Index], sizeof(WAYPOINT), &dwBytesWritten, (OVERLAPPED*)NULL);
 		} else {
 			// dummy data..
