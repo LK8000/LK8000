@@ -568,8 +568,9 @@ void StartLogger()
 	}
   } // end while
 
-  StartupStore(_T(". Logger Started %s%s"),WhatTimeIsIt(),NEWLINE);
-  StartupStore(_T(". Log file is <%s>%s"),szFLoggerFileName,NEWLINE);
+  StartupStore(_T(". Logger Started %s%s. Log file is <%s>%s"),
+	WhatTimeIsIt(),NEWLINE);
+	szFLoggerFileName,NEWLINE);
 
 
   return;
@@ -1542,7 +1543,7 @@ bool LoggerClearFreeSpace(void) {
   }
   if (kbfree>=LOGGER_MINFREESTORAGE) {
     #if TESTBENCH
-    StartupStore(TEXT(". LoggerFreeSpace returned: true%s"),NEWLINE);
+    StartupStore(TEXT("... LoggerFreeSpace returned: true%s"),NEWLINE);
     #endif
     return true;
   } else {
@@ -1642,20 +1643,20 @@ int RunSignature() {
   TCHAR homedir[MAX_PATH];
   TCHAR path[MAX_PATH];
 
-  LocalPath(path,_T(LKD_SYSTEM));
+  LocalPath(path,_T(LKD_LOGGER));
   #if (WINDOWSPC>0)
-  _tcscat(path,_T("\\GRECORD_PC.LK8"));
+  _tcscat(path,_T("\\LKRECORD_PC.LK8"));
   #endif
 
   // CAREFUL!!! PNA is ALSO PPC2003!!
   #ifdef PNA
-  _tcscat(path,_T("\\GRECORD_PNA.LK8"));
+  _tcscat(path,_T("\\LKRECORD_PNA.LK8"));
   #else
     #ifdef PPC2002
-    _tcscat(path,_T("\\GRECORD_2002.LK8"));
+    _tcscat(path,_T("\\LKRECORD_2002.LK8"));
     #endif
     #ifdef PPC2003
-    _tcscat(path,_T("\\GRECORD_2003.LK8"));
+    _tcscat(path,_T("\\LKRECORD_2003.LK8"));
     #endif
   #endif 
 
