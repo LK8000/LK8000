@@ -569,8 +569,7 @@ void StartLogger()
   } // end while
 
   StartupStore(_T(". Logger Started %s%s. Log file is <%s>%s"),
-	WhatTimeIsIt(),NEWLINE);
-	szFLoggerFileName,NEWLINE);
+	WhatTimeIsIt(),NEWLINE, szFLoggerFileName,NEWLINE);
 
 
   return;
@@ -1643,7 +1642,7 @@ int RunSignature() {
   TCHAR homedir[MAX_PATH];
   TCHAR path[MAX_PATH];
 
-  LocalPath(path,_T(LKD_LOGGER));
+  LocalPath(path,_T(LKD_LOGS));
   #if (WINDOWSPC>0)
   _tcscat(path,_T("\\LKRECORD_PC.LK8"));
   #endif
