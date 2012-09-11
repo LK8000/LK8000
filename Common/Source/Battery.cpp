@@ -87,7 +87,8 @@ void UpdateBatteryInfos(void) {
 }
 
 
-extern bool GiveBatteryWarnings(int numwarn);
+static int  numwarn=0;
+extern bool GiveBatteryWarnings(void);
 
 void LKBatteryManager() {
 
@@ -95,7 +96,6 @@ void LKBatteryManager() {
   static bool warn33=true, warn50=true, warn100=true;
   static double last_time=0, init_time=0;
   static int last_percent=0, last_status=0;
-  static int numwarn=0;
 
 
   if (invalid) return;
@@ -158,17 +158,17 @@ void LKBatteryManager() {
   if (PDABatteryStatus!=AC_LINE_UNKNOWN) {
 	if (last_status != PDABatteryStatus) {
 		if (PDABatteryStatus==AC_LINE_OFFLINE) {
-			if (GiveBatteryWarnings(++numwarn))
+			if (GiveBatteryWarnings())
 	// LKTOKEN  _@M514_ = "POWER SUPPLY OFF" 
 			DoStatusMessage(gettext(TEXT("_@M514_")));
 		} else {
 			if (PDABatteryStatus==AC_LINE_ONLINE) {
-				if (GiveBatteryWarnings(++numwarn))
+				if (GiveBatteryWarnings())
 	// LKTOKEN  _@M515_ = "POWER SUPPLY ON" 
 				DoStatusMessage(gettext(TEXT("_@M515_")));
 			} else {
 				if (PDABatteryStatus==AC_LINE_BACKUP_POWER) {
-					if (GiveBatteryWarnings(++numwarn))
+					if (GiveBatteryWarnings())
 	// LKTOKEN  _@M119_ = "BACKUP POWER SUPPLY ON" 
 					DoStatusMessage(gettext(TEXT("_@M119_")));
 				}
@@ -190,7 +190,7 @@ void LKBatteryManager() {
 	if (!recharging) {
 		recharging=true;
 		if (PDABatteryFlag==BATTERY_FLAG_CHARGING || PDABatteryStatus==AC_LINE_ONLINE) {
-			if (GiveBatteryWarnings(++numwarn))
+			if (GiveBatteryWarnings())
 	// LKTOKEN  _@M124_ = "BATTERY IS RECHARGING" 
 			DoStatusMessage(gettext(TEXT("_@M124_")));
 		}
@@ -201,7 +201,7 @@ void LKBatteryManager() {
   // if battery is same level, do nothing except when 100% during recharge
   if (last_percent == PDABatteryPercent) {
 	if (recharging && (PDABatteryPercent==100) && warn100) {
-		if (GiveBatteryWarnings(++numwarn))
+		if (GiveBatteryWarnings())
 	// LKTOKEN  _@M123_ = "BATTERY 100% CHARGED" 
 		DoStatusMessage(gettext(TEXT("_@M123_")));
 		warn100=false;
@@ -272,19 +272,33 @@ void LKBatteryManager() {
 
 // returns true if no problems with too many warnings
 #define MAXBATTWARN   15
-bool GiveBatteryWarnings(int numwarn)
+bool GiveBatteryWarnings(void)
 {
   static bool toomany=false;
+  static double last_time=0;
+
+  // If last warning was issued more than 60 minutes ago, reset toomany.
+  if (GPS_INFO.Time>(last_time+3600)) {
+	#if TESTBENCH
+	if (last_time>0 && numwarn>0) 
+		StartupStore(_T("... GiveBatteryWarnings resetting at %s\n"),WhatTimeIsIt(),NEWLINE);
+	#endif
+	toomany=false;
+	numwarn=0;
+  }
 
   if (toomany) return false;
+
+  numwarn++;
 
   if (numwarn>MAXBATTWARN) {
 	// LKTOKEN _@M1357_ "BATTERY WARNINGS DISABLED"
 	DoStatusMessage(gettext(TEXT("_@M1357_")));
-	StartupStore(_T("... Too many battery warnings, disabling Battery Manager%s"),NEWLINE);
+	StartupStore(_T("... Too many battery warnings, disabling Battery Manager at %s%s"),WhatTimeIsIt(),NEWLINE);
 	toomany=true;
 	return false;
   }
+  last_time=GPS_INFO.Time;
   return true;
 }
 

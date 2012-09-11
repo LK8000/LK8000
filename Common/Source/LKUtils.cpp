@@ -313,6 +313,9 @@ void MasterTimeReset(void) {
   DoStatusMessage(_T("MASTER TIME RESET")); // no translation please
   #endif
 
+  // Future possible handlings of this exception:
+  // . Battery manager
+
   // Remember to lock anything needed to be locked
 
 }
