@@ -27,7 +27,7 @@
 #include "Modeltype.h"
 #endif
 #include "utils/stl_utils.h"
-
+#include "RasterTerrain.h"
 
 // Sensible maximums 
 #define MAX_MODE 100
@@ -940,10 +940,9 @@ void InputEvents::eventMarkLocation(const TCHAR *misc) {
   LockFlightData();
 
   if (_tcscmp(misc, TEXT("pan")) == 0) {
-	// the altitude for the virtual waypoint is the same we have now, so we can see how many meters we need to glide there.
-	// Alternative, use terrain altitude in the new pan location, with:
-	// RasterTerrain::GetTerrainHeight(GetPanLatitude(), GetPanLongitude())
-	MarkLocation(MapWindow::GetPanLongitude(), MapWindow::GetPanLatitude(), CALCULATED_INFO.NavAltitude );
+	short th= RasterTerrain::GetTerrainHeight(MapWindow::GetPanLatitude(), MapWindow::GetPanLongitude());
+	if (th==TERRAIN_INVALID) th=0;
+	MarkLocation(MapWindow::GetPanLongitude(), MapWindow::GetPanLatitude(), th );
   } else {
 	#if USETOPOMARKS
 	MarkLocation(GPS_INFO.Longitude, GPS_INFO.Latitude);
