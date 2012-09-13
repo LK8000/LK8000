@@ -338,6 +338,7 @@ DRAW	:=\
 	$(DRW)/DrawHeading.cpp \
 	$(DRW)/DrawLKAlarms.cpp \
 	$(DRW)/DrawMapScale.cpp \
+	$(DRW)/DrawMultimap_Asp.cpp \
 	$(DRW)/DrawRunway.cpp \
 	$(DRW)/DrawStartSector.cpp \
 	$(DRW)/DrawTRI.cpp \

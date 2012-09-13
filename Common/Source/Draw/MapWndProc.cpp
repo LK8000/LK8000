@@ -772,6 +772,28 @@ goto_menu:
 					yup=ytmp+MapWindow::MapRect.top;
 					ydown=MapWindow::MapRect.bottom-BottomSize-ytmp;
 
+					// 
+					// 120912 Process ungesture left and right on the moving map
+					// THE SAME AS IN: PROCESS_VIRTUALKEY
+					//
+					int s_sizeright=MapWindow::MapRect.right-MapWindow::MapRect.left;
+					// used by ungesture fast click on infopages
+					int s_unxleft=(s_sizeright/2)-(s_sizeright/3);
+					int s_unxright=(s_sizeright/2)+(s_sizeright/3);
+
+					if (UseUngestures || !ISPARAGLIDER) {
+						if (lparam_X<=s_unxleft) {
+							PreviousModeType();
+							MapWindow::RefreshMap();
+							return TRUE;
+						}
+						if (lparam_X>=s_unxright) {
+							NextModeType();
+							MapWindow::RefreshMap();
+							return TRUE;
+						}
+					}
+
 					if (lparam_Y<yup) {
 						// pg UP = zoom in
 						wParam = 0x26;

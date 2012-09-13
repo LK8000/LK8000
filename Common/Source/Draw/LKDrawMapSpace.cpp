@@ -14,6 +14,7 @@
 #include "Modeltype.h"
 
 extern void LoadSplash(HDC hDC, TCHAR *splashfile);
+extern void LKDrawMultimap_Asp(HDC hdc,RECT rc);
 
 //
 // Called by LKDrawLook8000, this is what happens when there is no map to be drawn:
@@ -121,6 +122,9 @@ RECT frc = rc;
 		}
 
 		DrawWelcome8000(hdc, rc);
+		break;
+	case MSM_MAPASP:
+		LKDrawMultimap_Asp(hdc,rc);
 		break;
 	case MSM_LANDABLE:
 	case MSM_NEARTPS:

@@ -82,6 +82,7 @@ void UpdateConfIP(void) {
   // MAP MODE always available
   ConfIP[0][0]=true; 
   ConfIP[0][1]=true; 
+  ConfIP[0][2]=true; 
   ConfMP[0]=true; // map mode
 
   // LKMODE_INFOMODE is 1
@@ -198,6 +199,7 @@ void InitModeTable() {
 	// this table is for submenus, order is not important
 	ModeTable[LKMODE_MAP][MP_WELCOME]	=	MSM_WELCOME;
 	ModeTable[LKMODE_MAP][MP_MOVING]	=	MSM_MAP;
+	ModeTable[LKMODE_MAP][MP_MAPASP]	=	MSM_MAPASP;
 
 	ModeTable[LKMODE_WP][WP_AIRPORTS]	=	MSM_AIRPORTS;
 	ModeTable[LKMODE_WP][WP_LANDABLE]	=	MSM_LANDABLE;

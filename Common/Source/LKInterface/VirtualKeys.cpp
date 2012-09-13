@@ -16,7 +16,9 @@
 #include "DoInits.h"
 
 void BottomSounds();
+extern bool IsMultiMap();
 
+long VKtime=0;
 
 // vkmode 0=normal 1=gesture up 2=gesture down
 // however we consider a down as up, and viceversa
@@ -36,6 +38,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	static short oldMapSpaceMode=0;
 
 	bool dontdrawthemap=(DONTDRAWTHEMAP);
+	VKtime=keytime;
 
 	#ifdef DEBUG_PROCVK
 	TCHAR buf[100];
@@ -368,6 +371,11 @@ shortcut_gesture:
 		switch(vkmode) {
 			// SCROLL DOWN
 			case LKGESTURE_DOWN:
+				if (dontdrawthemap && IsMultiMap()) {
+					LKevent=LKEVENT_PAGEDOWN;
+					MapWindow::RefreshMap();
+					return 0;
+				}
 				// careful, selectedpage starts from 0
 				if (++SelectedPage[MapSpaceMode] >=numpages) {
 					#ifndef DISABLEAUDIO
@@ -384,6 +392,11 @@ shortcut_gesture:
 				return 0;
 			// SCROLL UP
 			case LKGESTURE_UP:
+				if (dontdrawthemap && IsMultiMap()) {
+					LKevent=LKEVENT_PAGEUP;
+					MapWindow::RefreshMap();
+					return 0;
+				}
 				if (--SelectedPage[MapSpaceMode] <0) {
 					#ifndef DISABLEAUDIO
 					if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
@@ -441,6 +454,15 @@ gesture_left:
 		return 0;
 	}
 
+	if (dontdrawthemap && IsMultiMap()) {
+		//if (keytime>=AIRSPACECLICK) {
+		if (keytime>=(VKSHORTCLICK*4)) {
+			LKevent=LKEVENT_LONGCLICK;
+			MapWindow::RefreshMap();
+			return 0;
+		}
+	}
+
 	// UNGESTURES: 
 	// No need to use gestures if clicking on right or left center border screen
 	// This will dramatically speed up the user interface in turbulence
@@ -453,6 +475,7 @@ gesture_left:
 		}
 	}
 
+
 	if (Y<yup) {
 		// we are processing up/down in mapspacemode i.e. browsing waypoints on the page
 		if (dontdrawthemap) {
@@ -463,7 +486,6 @@ gesture_left:
 			#ifndef DISABLEAUDIO
 	        	if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 			#endif
-			//if (--SelectedRaw[MapSpaceMode] <0) SelectedRaw[MapSpaceMode]=Numraws-1;
 			LKevent=LKEVENT_UP;
 			MapWindow::RefreshMap();
 			// DoStatusMessage(_T("DBG-032-B event up used here"));
@@ -483,7 +505,6 @@ gesture_left:
 			#ifndef DISABLEAUDIO
 	        	if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 			#endif
-			//if (++SelectedRaw[MapSpaceMode] >=Numraws) SelectedRaw[MapSpaceMode]=0;
 			LKevent=LKEVENT_DOWN;
 			MapWindow::RefreshMap();
 			return 0;
@@ -518,7 +539,7 @@ gesture_left:
 		// return 27; virtual ESC 
 	} else {
 		// If in mapspacemode process ENTER 
-		if ( (keytime>=(VKSHORTCLICK*2)) && dontdrawthemap) {
+		if ( (keytime>=(VKSHORTCLICK*2)) && dontdrawthemap && !IsMultiMap()) {
 			#ifndef DISABLEAUDIO
 			if (EnableSoundModes) LKSound(_T("LK_BELL.WAV"));
 			#endif
@@ -534,6 +555,12 @@ gesture_left:
 		}
 */
 
+		//
+		// Here we are when short clicking in the center area, not an up and not a down.. a center.
+		// We do nothing.
+		//
+
+
 		if (SIMMODE) {
 			if ( MapWindow::mode.AnyPan() && ISPARAGLIDER) return 99; // 091221 return impossible value
 			else return 0;
@@ -547,4 +574,10 @@ gesture_left:
 
 
 
+bool IsMultiMap() {
+  if (MapSpaceMode>=MSM_MULTIMAP_START && MapSpaceMode<=MSM_MULTIMAP_END)
+	return true;
+  else
+	return false;
+}
 

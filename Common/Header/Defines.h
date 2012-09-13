@@ -379,9 +379,12 @@
 #define MSM_AIRSPACES		16
 #define MSM_THERMALS		17
 #define MSM_RADAR		18
-// turnaround point is TOP (equal to last TRI define), 
+#define MSM_MULTIMAP_START	19 // first multimap page
+#define MSM_MAPASP		19
+#define MSM_MULTIMAP_END	19 // last multimap page
+// turnaround point is TOP 
 // remember that arrays must count from zero, so MSM_TOP+1
-#define MSM_TOP			18
+#define MSM_TOP			19
 //
 // THIS CONFIGURATION GIVES THE ORDER OF MENUs. ALL ITEMS MUST ALSO BE ADDED INSIDE INITMODETABLE()
 // in Utils2.cpp WHERE each mode is paired with an MSM_xxx item.
@@ -398,7 +401,8 @@
 //
 #define MP_WELCOME		0
 #define MP_MOVING		1
-#define MP_TOP			1
+#define MP_MAPASP		2
+#define MP_TOP			2
 //
 // WP mode
 //
@@ -449,6 +453,9 @@
 //
 #define LKEVENT_NEWRUN		9
 #define LKEVENT_NEWPAGE		10
+#define LKEVENT_SHORTCLICK	11
+#define LKEVENT_LONGCLICK	12
+
 // Virtual Keys Gestures
 // Detected in MapWindow and passed to ProcessVirtualKey in Utils2
 #define LKGESTURE_NONE		0
