@@ -7,6 +7,9 @@
 */
 
 #include "externs.h"
+#ifdef GTL2
+#include "Waypointparser.h"
+#endif
 
 
 /*
@@ -14,6 +17,18 @@
  * Colors VGR are used by DrawNearest &c.
  */
 void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint) {
+
+  #ifdef GTL2
+  // If flying an AAT and working on the RESWP_OPTIMIZED waypoint, then use
+  // this "optimized" waypoint to store data for the AAT virtual waypoint.
+
+  if ((AltWaypoint == RESWP_OPTIMIZED) && 
+    (!ISPARAGLIDER || (AATEnabled && !DoOptimizeRoute()))) {
+    WayPointList[AltWaypoint].Latitude  = Task[ActiveWayPoint].AATTargetLat;
+    WayPointList[AltWaypoint].Longitude = Task[ActiveWayPoint].AATTargetLon;
+    WaypointAltitudeFromTerrain(&WayPointList[AltWaypoint]);
+  }
+  #endif
 
   // handle virtual wps as alternates
   if (AltWaypoint<=RESWP_END) {
@@ -36,7 +51,7 @@ void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint) {
   // We need to calculate arrival also for BestAlternate, since the last "reachable" could be
   // even 60 seconds old and things may have changed drastically
   *altwp_arrival = CalculateWaypointArrivalAltitude(Basic, Calculated, AltWaypoint);
-
+  
   WayPointCalc[AltWaypoint].VGR = GetVisualGlideRatio(*altwp_arrival, *altwp_gr);
 } 
 

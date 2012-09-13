@@ -216,7 +216,12 @@ fastzoom:
 	}
     if (!QUICKDRAW) {
     	// shaded terrain unreachable, aka glide amoeba
+        #ifdef GTL2
+    	if (((FinalGlideTerrain == 2) || (FinalGlideTerrain == 4)) && 
+            DerivedDrawInfo.TerrainValid) {
+        #else
     	if ((FinalGlideTerrain==2) && DerivedDrawInfo.TerrainValid) {
+        #endif
     	  DrawTerrainAbove(hdc, rc);
     	}
     }

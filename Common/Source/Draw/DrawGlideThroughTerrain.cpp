@@ -9,6 +9,11 @@
 #include "externs.h"
 #include "Bitmaps.h"
 #include <string.h>
+#ifdef GTL2
+#include "RGB.h"
+
+extern void ClearGTL2(void);
+#endif
 
 //
 // Glide through terrain will paint a cross over the first and last obstacle to
@@ -31,21 +36,76 @@ void MapWindow::DrawGlideThroughTerrain(HDC hDC, const RECT rc) {
     doinit=false;
   }
 
+  #ifdef GTL2
+  bool ValidTP = ValidTaskPoint(ActiveWayPoint);
+
+  // draw glide terrain line around next WP
+  bool DrawGTL2 = ValidTP && (FinalGlideTerrain > 2);
+  static bool LastDrewGTL2 = false;
+
+  if (DrawGTL2) {
+    int wp_index = (DoOptimizeRoute() || ACTIVE_WP_IS_AAT_AREA) ? 
+                   RESWP_OPTIMIZED : TASKINDEX;
+
+    double alt_arriv = WayPointCalc[wp_index].AltArriv[AltArrivMode];
+    
+    // Calculate arrival altitude at the next waypoint relative to
+    // the "terrain height" safety setting.
+
+    if (CheckSafetyAltitudeApplies(wp_index))
+      alt_arriv += SAFETYALTITUDEARRIVAL; // AGL
+    alt_arriv -= SAFETYALTITUDETERRAIN;   // rel. to "terrain height"
+
+    if (alt_arriv <= 0) DrawGTL2 = false;
+  }
+  
+  if (LastDrewGTL2 != DrawGTL2) {
+    LastDrewGTL2 = DrawGTL2;
+    if (!DrawGTL2) ClearGTL2(); // clear next-WP glide terrain line
+  }
+  #endif
+
   hpOld = (HPEN)SelectObject(hDC, hpTerrainLineBg); 
 
+  #ifdef GTL2
+  // Draw the wide, solid part of the glide terrain line.
+  #else
   // draw a dashed perimetral line first
+  #endif
   _Polyline(hDC,Groundline,NUMTERRAINSWEEPS+1, rc);
 
   // draw perimeter if selected and during a flight
+  #ifdef GTL2
+  if (((FinalGlideTerrain == 1) || (FinalGlideTerrain == 3)) || 
+     ((!EnableTerrain || !DerivedDrawInfo.Flying) && FinalGlideTerrain)) { 
+  #else
   if ((FinalGlideTerrain==1) || ((!EnableTerrain || !DerivedDrawInfo.Flying) && (FinalGlideTerrain==2))) { 
+  #endif
 	SelectObject(hDC,hpTerrainLine);
 	_Polyline(hDC,Groundline,NUMTERRAINSWEEPS+1, rc);
   }
+  
+  #ifdef GTL2  
+  // draw glide terrain line around next waypoint
+  if (DrawGTL2) {
+    // Draw a solid white line.
+    SelectObject(hDC, hpTerrainLine2Bg);
+    _Polyline(hDC, Groundline2, NUMTERRAINSWEEPS+1, rc);
+
+    // Draw a dashed red line.
+    DrawDashPoly(hDC, NIBLSCALE(2), RGB_RED, Groundline2,
+                 NUMTERRAINSWEEPS+1, rc);
+  }
+  #endif
 
   // draw red cross obstacles only if destination looks reachable!
   // only if using OVT_TASK of course!
 
+  #ifdef GTL2
+  if ((OvertargetMode == OVT_TASK) && DerivedDrawInfo.Flying && ValidTP)
+  #else
   if ( (OvertargetMode==OVT_TASK) && DerivedDrawInfo.Flying && ValidTaskPoint(ActiveWayPoint))
+  #endif
   if (WayPointCalc[TASKINDEX].AltArriv[AltArrivMode] >0) { 
 
 	POINT sc;

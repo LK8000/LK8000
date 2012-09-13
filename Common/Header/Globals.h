@@ -41,6 +41,10 @@
   extern void Globals_Init(void);
 #endif
 
+#ifdef GTL2
+GEXTERN pointObj GlideFootPrint2[NUMTERRAINSWEEPS+1];
+#endif
+
 GEXTERN bool MenuActive GEXTFALSE;
 GEXTERN HANDLE dataTriggerEvent;
 

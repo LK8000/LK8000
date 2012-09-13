@@ -82,6 +82,9 @@ HPEN MapWindow::hSnailPens[NUMSNAILCOLORS];
 COLORREF MapWindow::hSnailColours[NUMSNAILCOLORS];
 
 POINT MapWindow::Groundline[NUMTERRAINSWEEPS+1];
+#ifdef GTL2
+POINT MapWindow::Groundline2[NUMTERRAINSWEEPS+1];
+#endif
 
 // 16 is number of airspace types
 int      MapWindow::iAirspaceBrush[AIRSPACECLASSCOUNT] = {2,0,0,0,3,3,3,3,0,3,2,3,3,3,3,3};
@@ -130,6 +133,9 @@ HPEN MapWindow::hpMapScale;
 HPEN MapWindow::hpMapScale2;
 HPEN MapWindow::hpTerrainLine;
 HPEN MapWindow::hpTerrainLineBg;
+#ifdef GTL2
+HPEN MapWindow::hpTerrainLine2Bg;
+#endif
 HPEN MapWindow::hpStartFinishThick;
 HPEN MapWindow::hpStartFinishThin;
 HPEN MapWindow::hpVisualGlideLightBlack; // VENTA3

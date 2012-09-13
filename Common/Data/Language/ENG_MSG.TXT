@@ -1,4 +1,4 @@
-# LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
+﻿# LK8000 ENGLISH MESSAGES - ENG_MSG.TXT
 # MASTER UPDATED:  120312
 #
 # This file is loaded on startup and all messages are stored internally.
@@ -107,13 +107,17 @@ _@M91_ "Always use safety MC"
 _@M92_ "Amber"
 _@M93_ "Analysis"
 # 94 REMOVED after v2.3
-_@M94_ "Animation"
+# _@M94_ "Animation"
+# 94 reused for next-WP glide terrain line
+_@M94_ "Line+NextWP"
 _@M95_ "Append to task"
 _@M96_ "Arm start"
 _@M97_ "Arm"
 _@M98_ "ArrivalAltitude"
 # 99 REMOVED after v2.3
-_@M99_ "Arrow head"
+#_@M99_ "Arrow head"
+# 99 reused for next-WP glide terrain line
+_@M99_ "Shade+NextWP"
 _@M100_ "Ask"
 _@M101_ "Assigned task time"
 _@M102_ "Auto Advance: ARMED"
@@ -343,7 +347,7 @@ _@M322_ "Geoid Altitude "
 _@M323_ "Ghost "
 _@M324_ "Glide Bar indicator "
 _@M325_ "Glide Polar"
-_@M326_ "Glide terrain line "
+_@M326_ "Glide Terrain Line "
 _@M327_ "Glider position "
 _@M328_ "Glider"
 _@M329_ "Goto Home"

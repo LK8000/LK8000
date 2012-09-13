@@ -18,7 +18,13 @@ bool CheckLandableReachableTerrainNew(NMEA_INFO *Basic, DERIVED_INFO *Calculated
   double lat, lon;
   bool out_of_range;
 
+#ifdef GTL2
+  double distance_soarable = FinalGlideThroughTerrain(LegBearing, Basic->Latitude,
+                                                      Basic->Longitude, Calculated->NavAltitude,
+                                                      Calculated, &lat, &lon,
+#else
   double distance_soarable = FinalGlideThroughTerrain(LegBearing, Basic, Calculated, &lat, &lon,
+#endif
                                                       LegToGo, &out_of_range, NULL);
 
   if ((out_of_range)||(distance_soarable> LegToGo)) {
