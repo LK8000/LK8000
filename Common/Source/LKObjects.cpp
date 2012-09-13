@@ -186,6 +186,9 @@ void LKObjects_Create() {
   MapWindow::hpFinalGlideAbove = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(1), RGB(0xA0,0xFF,0xA0)); // another light green
   MapWindow::hpTerrainLine = (HPEN)CreatePen(PS_DASH, (1), RGB(0x30,0x30,0x30)); // shade
   MapWindow::hpTerrainLineBg = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_LCDDARKGREEN); // perimeter
+#ifdef GTL2
+  MapWindow::hpTerrainLine2Bg = (HPEN)CreatePen(PS_SOLID, NIBLSCALE(2), RGB_WHITE);
+#endif
   MapWindow::hpVisualGlideLightBlack = (HPEN)CreatePen(PS_DASH, (1), RGB_BLACK);
   MapWindow::hpVisualGlideHeavyBlack = (HPEN)CreatePen(PS_DASH, (2), RGB_BLACK);
   MapWindow::hpVisualGlideLightRed = (HPEN)CreatePen(PS_DASH, (1), RGB_RED);
@@ -294,6 +297,9 @@ void LKObjects_Delete() {
   if (MapWindow::hpFinalGlideAbove) DeleteObject((HPEN)MapWindow::hpFinalGlideAbove);
   if (MapWindow::hpTerrainLine) DeleteObject((HPEN)MapWindow::hpTerrainLine);
   if (MapWindow::hpTerrainLineBg) DeleteObject((HPEN)MapWindow::hpTerrainLineBg);
+#ifdef GTL2
+  if (MapWindow::hpTerrainLine2Bg) DeleteObject((HPEN)MapWindow::hpTerrainLine2Bg);
+#endif
   if (MapWindow::hpVisualGlideLightBlack) DeleteObject((HPEN)MapWindow::hpVisualGlideLightBlack);
   if (MapWindow::hpVisualGlideHeavyBlack) DeleteObject((HPEN)MapWindow::hpVisualGlideHeavyBlack);
   if (MapWindow::hpVisualGlideLightRed) DeleteObject((HPEN)MapWindow::hpVisualGlideLightRed);

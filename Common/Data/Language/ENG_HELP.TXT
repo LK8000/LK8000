@@ -416,14 +416,14 @@ Draw overlay values on moving map.
 [Full mode] will add also left overlays values and the clock, if enabled. See the manual.
 
 @194
-This determines whether the the glide terrain range is calculated and drawn as a line on the map area:
-[OFF] Disables display
+This determines whether the glide range is shown on the map:
+[OFF] Not shown
 [Line] Draws a dashed line at the glide range
-[Shade] Shades terrain outside glide range
-When glide terrain is shown, a RED CROSS will appear if the current destination is reachable in terms of glide ratio, but unreachable because of an obstacle. 
-The obstacle is indicated together with a boxed value, which is the altitude you need to gain to pass the obstacle. 
-This altitude takes into account the terrain safety margin you have configured in safety menu.
-NOTICE: Glide terrain SHADE is shown ONLY during flight. When on ground, it is NOT displayed.
+[Shade] Shades terrain outside glide range (only during flight, not when on ground)
+[...+NextWP] Also shows glide range from active waypoint (WP) given current predicted arrival altitude at WP
+With any choice but "OFF", a red "X" will appear if the current destination is reachable in terms of glide ratio, but unreachable because of an obstacle.
+By the red "X" is shown the altitude you must gain to clear the obstacle.
+This altitude takes into account the terrain safety margin configured in safety menu.
 
 # 195 UNUSED SINCE 2.4
 @195

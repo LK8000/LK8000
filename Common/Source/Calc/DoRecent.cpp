@@ -8,7 +8,9 @@
 
 #include "externs.h"
 
+#ifndef GTL2
 extern void DoAlternates(NMEA_INFO *Basic, DERIVED_INFO *Calculated, int AltWaypoint);
+#endif
 
 
 // Load and save the recent list

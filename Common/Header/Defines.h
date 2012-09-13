@@ -840,6 +840,10 @@
 #define CURTYPE ModeType[ModeIndex]
 #define INVERTCOLORS  (Appearance.InverseInfoBox)
 #define TASKINDEX       Task[ActiveWayPoint].Index
+#ifdef GTL2
+#define ACTIVE_WP_IS_AAT_AREA (AATEnabled && (ActiveWayPoint > 0) \
+                              && ValidTaskPoint(ActiveWayPoint + 1))
+#endif
 
 #define DONTDRAWTHEMAP !MapWindow::mode.AnyPan()&&MapSpaceMode!=MSM_MAP
 #define MAPMODE8000    !MapWindow::mode.AnyPan()&&MapSpaceMode==MSM_MAP

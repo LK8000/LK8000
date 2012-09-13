@@ -381,6 +381,12 @@ class MapWindow {
   static void DrawDashLine(HDC , const int , const POINT , const POINT , 
 			   const COLORREF , 
 			   const RECT rc);
+
+  #ifdef GTL2
+  static void DrawDashPoly(HDC hdc, const int width, const COLORREF color,
+                           POINT* pt, const int npoints, const RECT rc);
+  #endif
+
   /* Not used
   static void DrawDotLine(HDC, const POINT , const POINT , const COLORREF , 
 			  const RECT rc);
@@ -609,6 +615,9 @@ class MapWindow {
   static      HPEN hpMapScale2;
   static      HPEN hpTerrainLine;
   static      HPEN hpTerrainLineBg;
+#ifdef GTL2
+  static      HPEN hpTerrainLine2Bg; // for next-WP glide terrain line
+#endif
   static      HPEN hpVisualGlideLightRed; // VENTA3
   static      HPEN hpVisualGlideHeavyRed; // 
   static      HPEN hpVisualGlideLightBlack; // VENTA3
@@ -704,6 +713,9 @@ private:
   static void CalculateOrientationNormal(void);
 
   static POINT Groundline[NUMTERRAINSWEEPS+1];
+#ifdef GTL2
+  static POINT Groundline2[NUMTERRAINSWEEPS+1];
+#endif
 
   static bool targetMoved;
   static double targetMovedLat;

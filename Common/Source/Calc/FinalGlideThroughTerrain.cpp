@@ -16,7 +16,13 @@
 
 
 double FinalGlideThroughTerrain(const double this_bearing, 
+                              #ifdef GTL2
+                                const double start_lat,
+                                const double start_lon,
+                                const double start_alt,
+                              #else
 				NMEA_INFO *Basic, 
+                              #endif
                                 DERIVED_INFO *Calculated,
                                 double *retlat, double *retlon,
                                 const double max_range,
@@ -28,8 +34,10 @@ double FinalGlideThroughTerrain(const double this_bearing,
 						Calculated->WindSpeed, 
 						Calculated->WindBearing, 
 						0, 0, true, 0);
+#ifndef GTL2
   const double start_lat = Basic->Latitude;
   const double start_lon = Basic->Longitude;
+#endif
   double safetyterrain;
 
   if (retlat && retlon) {
@@ -38,12 +46,20 @@ double FinalGlideThroughTerrain(const double this_bearing,
   }
   *out_of_range = false;
 
+#ifdef GTL2
+  if ((irange <= 0.0) || (start_alt <= 0)) {
+#else
   if ((irange<=0.0)||(Calculated->NavAltitude<=0)) {
+#endif
     // can't make progress in this direction at the current windspeed/mc
     return 0;
   }
 
+#ifdef GTL2
+  const double glide_max_range = start_alt / irange;
+#else
   const double glide_max_range = Calculated->NavAltitude/irange;
+#endif
 
   safetyterrain=SAFETYALTITUDETERRAIN <= 0 ? 1 : SAFETYALTITUDETERRAIN;
 
@@ -74,7 +90,11 @@ double FinalGlideThroughTerrain(const double this_bearing,
   lat = last_lat = start_lat;
   lon = last_lon = start_lon;
 
+#ifdef GTL2
+  altitude = start_alt;
+#else
   altitude = Calculated->NavAltitude;
+#endif
   h =  max((short)0, RasterTerrain::GetTerrainHeight(lat, lon)); 
   if (h==TERRAIN_INVALID) h=0; // @ 101027 FIX
   dh = altitude - h - safetyterrain; 
@@ -98,7 +118,11 @@ double FinalGlideThroughTerrain(const double this_bearing,
     f_scale *= max_range/glide_max_range;
   }
 
+#ifdef GTL2
+  double delta_alt = -f_scale * start_alt;
+#else
   double delta_alt = -f_scale*Calculated->NavAltitude;
+#endif
 
   dlat *= f_scale;
   dlon *= f_scale;

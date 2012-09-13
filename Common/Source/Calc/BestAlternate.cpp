@@ -173,7 +173,12 @@ void SearchBestAlternate(NMEA_INFO *Basic,
 				WayPointCalc[sortApproxIndex[i]].Bearing = wp_bearing;
             
 				bool out_of_range;
+			#ifdef GTL2
+				double distance_soarable = FinalGlideThroughTerrain(wp_bearing, Basic->Latitude,
+					Basic->Longitude, Calculated->NavAltitude, Calculated,
+			#else
 				double distance_soarable = FinalGlideThroughTerrain(wp_bearing, Basic, Calculated,
+			#endif
 					NULL, NULL, wp_distance, &out_of_range, NULL);
             
 				if ((distance_soarable>= wp_distance)||(arrival_altitude<0)) {

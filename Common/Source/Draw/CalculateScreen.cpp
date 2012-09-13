@@ -315,6 +315,11 @@ void MapWindow::CalculateScreenPositionsGroundline(void) {
   if (FinalGlideTerrain) {
     LatLon2Screen(DerivedDrawInfo.GlideFootPrint,
 		  Groundline, NUMTERRAINSWEEPS+1, 1);
+    #ifdef GTL2
+    if (FinalGlideTerrain > 2) // show next-WP line
+      LatLon2Screen(GlideFootPrint2,
+                    Groundline2, NUMTERRAINSWEEPS+1, 1);
+    #endif
   }
 }
 

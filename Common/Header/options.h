@@ -95,6 +95,10 @@
  //#define TOW_CRUISE // keep climb mode from engaging while on tow (unless turning steeply
                       // enough to warrant detection of the start of free flight)
                       // Eric Carden, 6/28/12
+#define GTL2 // Draws a glide terrain line around the next (active) task waypoint.
+             // Includes addition of MSG tokens "Line+NextWP" & "Shade+NextWP"
+             // and change in HELP message 194 (for "Glide Terrain Line" setting).
+             // Eric Carden, September 13, 2012
 
  // Modify best cruise track calculation to assume goal arrival
  // altitude of safety altitude (not current flight altitude).
