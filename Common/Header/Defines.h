@@ -452,9 +452,8 @@
 #define LKEVENT_DOWN		5
 //
 #define LKEVENT_NEWRUN		9
-#define LKEVENT_NEWPAGE		10
-#define LKEVENT_SHORTCLICK	11
-#define LKEVENT_LONGCLICK	12
+#define LKEVENT_NEWPAGE		10	// this is for both up and now, out of multimap 
+#define LKEVENT_LONGCLICK	11
 
 // Virtual Keys Gestures
 // Detected in MapWindow and passed to ProcessVirtualKey in Utils2
