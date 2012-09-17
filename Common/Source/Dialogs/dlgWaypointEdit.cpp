@@ -503,7 +503,7 @@ static void GetValues(void) {
   
   wp = (WndProperty*)wf->FindByName(TEXT("prpAltitude"));
   if (wp) {
-    ss = wp->GetDataField()->GetAsInteger();
+    ss = wp->GetDataField()->GetAsFloat();
     if (ss==0) {
       WaypointAltitudeFromTerrain(global_wpt);
     } else {
