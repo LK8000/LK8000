@@ -75,7 +75,7 @@ void MarkLocation(const double lon, const double lat, const double altitude)
 	}
 
 	sprintf(message,"MK%s%02d,LK8000,,%s,%s,%d.0m,1,,,,Created on %02d-%02d-%04d at h%s near: %s\r\n",
-		marktime,GPS_INFO.Second,slat,slon, iround((int)CALCULATED_INFO.NavAltitude),
+		marktime,GPS_INFO.Second,slat,slon, iround((int)altitude),
 		GPS_INFO.Day,GPS_INFO.Month,GPS_INFO.Year, marktime, snear );
 
 	fwrite(message,strlen(message),1,stream);
@@ -87,7 +87,7 @@ extern int GetVirtualWaypointMarkerSlot(void);
 
 	WayPointList[j].Latitude=lat;
 	WayPointList[j].Longitude=lon;
-	WayPointList[j].Altitude=CALCULATED_INFO.NavAltitude;
+	WayPointList[j].Altitude=altitude;
 	WayPointList[j].Visible=TRUE;
 	WayPointList[j].FarVisible=TRUE;
 
