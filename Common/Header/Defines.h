@@ -837,7 +837,9 @@
 
 #define CURTYPE ModeType[ModeIndex]
 // CURMODE is the MSM_xxx page, independent from Type, any place. Example: check if we are in MSM_TRAFFIC
-#define CURMODE ModeTable[ModeIndex][CURTYPE]
+// Both are good:
+// #define CURMODE ModeTable[ModeIndex][CURTYPE]
+#define CURMODE MapSpaceMode
 #define INVERTCOLORS  (Appearance.InverseInfoBox)
 #define TASKINDEX       Task[ActiveWayPoint].Index
 #ifdef GTL2
