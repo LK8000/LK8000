@@ -636,14 +636,14 @@ void Globals_Init(void) {
 
 
 void Reset_CustomMenu(void) {
-	CustomMenu1  = ckLockScreen;
-	CustomMenu2  = ckTerrainColors;
-	CustomMenu3  = ckTerrainColorsBack;
-	CustomMenu4  = ckDisabled;
-	CustomMenu5  = ckTrueWind;
+	CustomMenu1  = ckLockScreen;			// Landscape: 1st on top right
+	CustomMenu2  = ckForceFreeFlightRestart;
+	CustomMenu3  = ckForceLanding;
+	CustomMenu4  = ckResetOdometer;
+	CustomMenu5  = ckTrueWind;			// Landscape: 1st on the bottom left
 	CustomMenu6  = ckWindRose;
 	CustomMenu7  = ckPanorama;
-	CustomMenu8  = ckForceFreeFlightRestart;
-	CustomMenu9  = ckDisabled;
+	CustomMenu8  = ckDisabled;
+	CustomMenu9  = ckDisabled;			// Landscape> 1st top left
 	CustomMenu10 = ckDisabled;
 }
