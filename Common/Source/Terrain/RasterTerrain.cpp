@@ -109,18 +109,18 @@ void RasterMap::SetFieldRounding(double xr, double yr) {
 
 // JMW rounding further reduces data as required to speed up terrain
 // display on low zoom levels
-short RasterMap::GetField(const double &Lattitude, 
-                          const double &Longditude)
+short RasterMap::GetField(const double &Latitude, 
+                          const double &Longitude)
 {
   if(isMapLoaded()) {
     if (DirectFine) {
-      return _GetFieldAtXY((int)(Longditude*fXroundingFine)-xlleft,
-                           xlltop- (int)(Lattitude*fYroundingFine));
+      return _GetFieldAtXY((int)(Longitude*fXroundingFine)-xlleft,
+                           xlltop- (int)(Latitude*fYroundingFine));
     } else {
       unsigned int ix = 
-        Real2Int((Longditude-TerrainInfo.Left)*fXrounding)*Xrounding;
+        Real2Int((Longitude-TerrainInfo.Left)*fXrounding)*Xrounding;
       unsigned int iy = 
-        Real2Int((TerrainInfo.Top-Lattitude)*fYrounding)*Yrounding;
+        Real2Int((TerrainInfo.Top-Latitude)*fYrounding)*Yrounding;
       
       return _GetFieldAtXY(ix<<8, iy<<8);
     }
