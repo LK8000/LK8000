@@ -166,7 +166,11 @@ goto_bearing:
 				_stprintf(BufferTitle, MsgToken(1010));
 			else
 				_stprintf(BufferTitle, TEXT("%s"), Data_Options[lkindex].Title );
-			value=DerivedDrawInfo.LD;
+
+			if (DerivedDrawInfo.Flying)
+				value=DerivedDrawInfo.LD;
+			else
+				value=0;
 			if (value <-99 ||  value >=ALTERNATE_MAXVALIDGR ) {
 				strcpy(text,INFINVAL);
 				valid=true;
