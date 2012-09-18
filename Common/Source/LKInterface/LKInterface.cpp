@@ -42,11 +42,11 @@ redo:
 
 	if (!ConfIP[ModeIndex][CURTYPE]) goto redo;
 
-	if (CURTYPE == IM_CONTEST) {
+	if (CURMODE == MSM_INFO_CONTEST) {
 		if (!UseContestEngine()) goto redo;
 	}
 #ifdef LKCOMPETITION
-	if (CURTYPE == IM_TRI) goto redo;
+	if (CURMODE == MSM_INFO_TRI) goto redo;
 #endif
 	if (CURMODE == MSM_WELCOME) goto redo;
 finish:
@@ -72,10 +72,10 @@ redo:
 	if (!ConfIP[ModeIndex][CURTYPE]) goto redo;
 
 	if (!UseContestEngine()) {
-		if (CURTYPE == IM_CONTEST) goto redo;
+		if (CURMODE == MSM_INFO_CONTEST) goto redo;
 	}
 #ifdef LKCOMPETITION
-	if (CURTYPE == IM_TRI) goto redo;
+	if (CURMODE == MSM_INFO_TRI) goto redo;
 #endif
 	if (CURMODE == MSM_WELCOME) goto redo;
 finish:
