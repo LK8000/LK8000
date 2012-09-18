@@ -48,7 +48,7 @@ redo:
 #ifdef LKCOMPETITION
 	if (CURTYPE == IM_TRI) goto redo;
 #endif
-	if (CURTYPE == MP_WELCOME) goto redo;
+	if (CURMODE == MSM_WELCOME) goto redo;
 finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 }
@@ -77,7 +77,7 @@ redo:
 #ifdef LKCOMPETITION
 	if (CURTYPE == IM_TRI) goto redo;
 #endif
-	if (CURTYPE == MP_WELCOME) goto redo;
+	if (CURMODE == MSM_WELCOME) goto redo;
 finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 }
