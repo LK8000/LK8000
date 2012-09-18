@@ -117,10 +117,15 @@ short RasterMap::GetField(const double &Latitude,
       return _GetFieldAtXY((int)(Longitude*fXroundingFine)-xlleft,
                            xlltop- (int)(Latitude*fYroundingFine));
     } else {
+	#if (WINDOWSPC>0)
       unsigned int ix = 
         Real2Int((Longitude-TerrainInfo.Left)*fXrounding)*Xrounding;
       unsigned int iy = 
         Real2Int((TerrainInfo.Top-Latitude)*fYrounding)*Yrounding;
+	#else
+      unsigned int ix = ((int)((Longitude-TerrainInfo.Left)*fXrounding)) *Xrounding;
+      unsigned int iy = ((int)((TerrainInfo.Top-Latitude)*fYrounding))*Yrounding;
+	#endif
       
       return _GetFieldAtXY(ix<<8, iy<<8);
     }
