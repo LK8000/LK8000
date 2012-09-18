@@ -892,5 +892,8 @@ GEXTERN bool LKSW_ForceFreeFlightRestart GEXTFALSE;
 // Reset Odometer, by Calc thread
 GEXTERN bool LKSW_ResetOdometer GEXTFALSE;
 
+// Force landing if we are stationary, or below 3kmh, otherwise ignore
+GEXTERN bool LKSW_ForceLanding GEXTFALSE;
+
 #endif
 

@@ -1791,7 +1791,7 @@ _@M1796_ "USING BARO ALTITUDE"
 _@M1797_ "Vector"
 
 _@M1798_ "Arm TPs"
-
+_@M1799_ "Stop moving!"
 
 ############################################################
 #                  - MENU MESSAGES - 
@@ -1977,6 +1977,7 @@ _@M2226_ "Arm\nToggle"
 _@M2227_ "Toggle\nWndRose"
 _@M2228_ "FLARM\nRadar"
 _@M2229_ "Reset\nOdomet"
+_@M2230_ "Force\nLanded"
 # Reserved for custom menus up to 2300!
 
 # Note for developers: remember LKLanguage MAX_MESSAGE limit (2250)

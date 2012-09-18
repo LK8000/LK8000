@@ -568,8 +568,8 @@ void StartLogger()
 	}
   } // end while
 
-  StartupStore(_T(". Logger Started %s%s. Log file is <%s>%s"),
-	WhatTimeIsIt(),NEWLINE, szFLoggerFileName,NEWLINE);
+  StartupStore(_T(". Logger Started %s  File <%s>%s"),
+	WhatTimeIsIt(), szFLoggerFileName,NEWLINE);
 
 
   return;

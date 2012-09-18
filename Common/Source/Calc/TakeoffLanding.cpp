@@ -98,6 +98,13 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
   }
 
   if (!Calculated->Flying) {
+	// Check for an abnormal status
+	if (LKSW_ForceLanding) {
+		LKSW_ForceLanding=FALSE;
+		#if TESTBENCH
+		StartupStore(_T("... Not flying, but ForceLanding request found! Cleared.\n"));
+		#endif
+	}
 	// detect takeoff
 	if (time_in_flight>10) {
 		InputEvents::processGlideComputer(GCE_TAKEOFF);
@@ -145,6 +152,14 @@ void TakeoffLanding(NMEA_INFO *Basic, DERIVED_INFO *Calculated) {
 	}
   } else {
 	// detect landing
+	if (LKSW_ForceLanding) {
+		#if TESTBENCH
+		StartupStore(_T("... Force Landing detected\n"));
+		#endif
+		time_in_flight=0;
+		LKSW_ForceLanding=FALSE;
+	}
+
 	if (time_in_flight==0 && !ISCAR) { 
 		// have been stationary for a minute
 		InputEvents::processGlideComputer(GCE_LANDING);

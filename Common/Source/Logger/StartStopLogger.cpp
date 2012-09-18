@@ -101,7 +101,7 @@ void guiStopLogger(bool noAsk) {
 	if ( (ISPARAGLIDER) && CALCULATED_INFO.Flying && 
 		((GPS_INFO.Speed <= TakeOffSpeedThreshold) || GPS_INFO.NAVWarning) ) {
 			// force landing event from TakeoffLanding
-			time_in_flight=0;
+			LKSW_ForceLanding=true;
 			StartupStore(_T(". Logger stopped manually, landing is forced%s"),NEWLINE);
 	}
 		

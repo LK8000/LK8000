@@ -214,4 +214,7 @@ Changed HELP 200 and 507
 ATTENTION:
 - _@M94_ & _@M99_ ..  new [...+NextWP] glide terrain line options, update them!
 
+_@M2230_ "Force\nLanded"
+_@M1799_ "Stop moving!"
+
 

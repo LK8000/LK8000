@@ -333,7 +333,7 @@ passthrough:
 		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 		#endif
 		if (CALCULATED_INFO.Flying == FALSE) {
-			DoStatusMessage(_T("NO TAKEOFF!"));
+			DoStatusMessage(MsgToken(922)); // NOT FLYING
 		} else {
 			if (MessageBoxX(hWndMapWindow, MsgToken(1754), _T(""), MB_YESNO|MB_ICONQUESTION) == IDYES) {
 				LKSW_ForceFreeFlightRestart=true;
@@ -422,7 +422,21 @@ passthrough:
 			LKSW_ResetOdometer=true;
 		}
 		return true;
-
+	case ckForceLanding:
+		#ifndef DISABLEAUDIO
+		if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+		#endif
+		if ( CALCULATED_INFO.Flying == FALSE ) {
+			DoStatusMessage(MsgToken(922)); // NOT FLYING
+		} else {
+			if ( (GPS_INFO.Speed > TakeOffSpeedThreshold) && (!GPS_INFO.NAVWarning) ) {
+				DoStatusMessage(MsgToken(1799)); // STOP MOVING!
+			} else {
+				if (MessageBoxX(hWndMapWindow, MsgToken(2230), _T(""), MB_YESNO|MB_ICONQUESTION) == IDYES) {
+					LKSW_ForceLanding=true;
+				}
+			}
+		}
 		return true;
 	default:
 		DoStatusMessage(_T("ERR-726 INVALID CUSTOMKEY"));
@@ -496,6 +510,7 @@ CustomKeyLabel[50]=2228;	// Flarm radar
 CustomKeyLabel[51]=2143;	// Device A Config
 CustomKeyLabel[52]=2144;	// Device B Config
 CustomKeyLabel[53]=2229;	// Reset Odometer
+CustomKeyLabel[54]=2230;	// Force landing
 }
 
 
