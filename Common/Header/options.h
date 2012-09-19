@@ -89,8 +89,9 @@
  // #define RASTERCACHE		1	// fallback to cached dem if it does not fit in memory entirely. 
 					// Does not work. 
 
- //#define NEWSMARTZOOM		1	// stretch bitmap for fast zoom, uncompleted work (almost working)
- //#define USEBIGZOOM		1	// will fast redraw only terrain, with no topology &c.
+// #define NEWSMARTZOOM		1	// stretch bitmap for fast zoom, uncompleted work (almost working)
+					// Needs USEBIGZOOM
+// #define USEBIGZOOM		1	// will fast redraw only terrain, with no topology &c.
 
  //#define TOW_CRUISE // keep climb mode from engaging while on tow (unless turning steeply
                       // enough to warrant detection of the start of free flight)
