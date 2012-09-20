@@ -9,6 +9,8 @@
 #if !defined(AFX_MAPWINDOW_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_)
 #define AFX_MAPWINDOW_H__695AAC30_F401_4CFF_9BD9_FE62A2A2D0D2__INCLUDED_
 
+#include "Airspace.h"
+
 #define NORTHSMART 5
 #define NORTHTRACK 4
 #define TRACKCIRCLE 3
@@ -47,6 +49,29 @@
 #define TEXT_MIDDLE_RIGHT   8
 #define TEXT_MIDDLE_CENTER  9
 
+
+#include "RGB.h"
+
+// NOT USED ANYMORE, USE RGB_xxx as color definition
+// Used by MapWindow::TextColor 
+// 5 bits (0-30) . Some colors unused
+// #define TEXTBLACK 0
+// #define TEXTWHITE 1
+// #define TEXTGREEN 2
+// #define TEXTRED 3
+// #define TEXTBLUE 4
+// #define TEXTYELLOW 5
+// #define TEXTCYAN 6
+// #define TEXTMAGENTA 7
+// #define TEXTGREY 8
+// #define TEXTORANGE 9
+// #define TEXTLIGHTGREEN 10
+// #define TEXTLIGHTRED 11
+// #define TEXTLIGHTBLUE 12
+// #define TEXTLIGHTYELLOW 13
+// #define TEXTLIGHTCYAN 14
+// #define TEXTLIGHTGREY 15
+// #define TEXTLIGHTORANGE 16
 
 // VENTA3 note> probably it would be a good idea to separate static WP data to dynamic values,
 // by moving things like Reachable, AltArival , etc to WPCALC
@@ -192,7 +217,6 @@ class MapWindow {
     };
     
     friend class MapWindow;
-    
     bool _inited;                                 /**< @brief Object inited flag */
     bool _autoZoom;                               /**< @brief Stores information if AutoZoom is enabled */
     bool _circleZoom;                             /**< @brief Stores information if CirclingZoom is enabled */
@@ -201,7 +225,6 @@ class MapWindow {
     double _realscale;                            /**< @brief Current map scale /1000 / DISTANCEMODIFY */
     double _modeScale[SCALE_NUM];                 /**< @brief Requested scale for each of scale types */
     double *_requestedScale;                      /**< @brief Requested scale for current scale type */
-    
     // performance related members
     double _scaleOverDistanceModify;
     double _resScaleOverDistanceModify;
@@ -441,13 +464,15 @@ class MapWindow {
   static rectObj CalculateScreenBounds(double scale);
   static void ScanVisibility(rectObj *bounds_active);
 
-  static int HeightToY(double fHeight, const RECT rc, DiagrammStruct* psDia);
-  static int DistanceToX(double fDist, const RECT rc,  DiagrammStruct* psDia)  ;
-
+  static int HeightToY(double fHeight,  DiagrammStruct* psDia);
+  static int DistanceToX(double fDist,  DiagrammStruct* psDia)  ;
+  static void RenderNearAirspace(HDC hdc, const RECT rci);
+  static int AirspaceTopView(HDC hdc,   DiagrammStruct* pDia, double iAS_Bearing, double wpt_brg);
+  static void RenderAirspace(HDC hdc, const RECT rc);
   static void LKDrawFlarmRadar(HDC hdc, const RECT rci);
   static void LKDrawMultimap_Example(HDC hdc, const RECT rci);
   static void LKDrawMultimap_Asp(HDC hdc, const RECT rci);
-  static int DrawFlarmObjectTrace(HDC hDC,double fZoom, DiagrammStruct* Dia, int iFlarmIdx);
+  static int DrawFlarmObjectTrace(HDC hDC,double fZoom, DiagrammStruct* Dia);
  private:
   static void CalculateScreenPositions(POINT Orig, RECT rc, 
                                        POINT *Orig_Aircraft);
@@ -521,6 +546,7 @@ class MapWindow {
   static double LKDrawTrail(HDC hdc, const POINT Orig, const RECT rc);
   static void DrawTeammate(HDC hdc, const RECT rc);
   static void DrawOffTrackIndicator(HDC hdc, const RECT rc);
+  static void DrawProjectedTrack(HDC hdc, const RECT rc, const POINT Orig);
   static void DrawStartSector(HDC hdc, const RECT rc, POINT &Start,
                               POINT &End, int Index);
   static void DrawTask(HDC hdc, RECT rc, const POINT &Orig_Aircraft);

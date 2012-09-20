@@ -103,7 +103,7 @@ class Statistics {
 
   ///
     
-    static void RenderAirspace(HDC hdc, const RECT rc);
+
     static void RenderBarograph(HDC hdc, const RECT rc);
     static void RenderClimb(HDC hdc, const RECT rc);
     static void RenderGlidePolar(HDC hdc, const RECT rc);

@@ -16,7 +16,11 @@
 #include "FlarmIdFile.h"
 #include "FlarmRadar.h"
 
-#define NO_TRACE_PTS 250
+#define SIZE0 0.0
+#define SIZE1 0.3
+#define SIZE2 0.5
+#define SIZE3 0.7
+
 #define IM_NO_TRACE       0
 #define ALL_TRACE         1
 #define IM_POS_TRACE_ONLY 2
@@ -25,11 +29,11 @@ int  iTraceDotSize = 5;
 int RADAR_TURN = 90 ;            /* radar plane orientation             */
 #define HEIGHT_RANGE (1000.0  )    /* max hight ifference above and below in meters */
 double ASYMETRIC_FACTOR = 0.7 ;     /* X center displacement               */
-double SPLITSCREEN_FACTOR = 0.7 ;   /* % of top view window                */
+double SPLITSCREEN_FACTOR = SIZE3 ;   /* % of top view window                */
 int bTrace = 1;
 #define MIN_DIST_SCALE  0.1       /* minimum radar distance              */
 #define MAX_DIST_SCALE 25.0       /* maximum radar distance              */
-#define GC_TIME_SKIP 4
+
 
 int DrawFlarmObjectTrace(HDC hDC, DiagrammStruct* Dia, int iFlarmIdx);
 //#define COLORLIST
@@ -38,15 +42,6 @@ using std::min;
 using std::max;
 
 static int nEntrys=0;
-typedef struct
-{
-	double fLat;
-	double fLon;
-	double fAlt;
-//	double fIntegrator;
-	int iColorIdx;
-} LastPositions;
-
 
 
 typedef struct
@@ -56,13 +51,16 @@ typedef struct
 	double fAlt;
 	double fFlarmBearing;
 	int iColorIdx;
-	bool bBuffFull;
-	int iLastPtr;
+//	bool bBuffFull;
+//	int iLastPtr;
 	TCHAR szGliderType[20];
-	LastPositions asRingBuf[NO_TRACE_PTS];
+//	LastPositions asRingBuf[NO_TRACE_PTS];
 } sFlarmPositions;
 static sFlarmPositions asFLRAMPos[FLARM_MAX_TRAFFIC+1];
 
+extern LastPositions asRingBuf[];
+extern int iLastPtr;
+extern bool bBuffFull;
 
 HBRUSH * variobrush[NO_VARIO_COLORS] = {
 		  &LKBrush_Vario_neg4,
@@ -281,9 +279,9 @@ void MapWindow::DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
 }
 
 
-int MapWindow::HeightToY(double fHeight, const RECT rc, DiagrammStruct* psDia)
+int MapWindow::HeightToY(double fHeight, DiagrammStruct* psDia)
 {
-  int y0 = rc.bottom;
+  int y0 = psDia->rc.bottom;
 
 //  fMaxAltToday = 3300;
 //  double hmin = max(0.0, alt-2300);
@@ -292,19 +290,19 @@ int MapWindow::HeightToY(double fHeight, const RECT rc, DiagrammStruct* psDia)
   double hmax = psDia->fYMax;
   if (hmax==hmin) hmax++; // RECOVER DIVISION BY ZERO!
   double gfh = (fHeight-hmin)/(hmax-hmin);
-  int yPos = (int)(gfh*(rc.top-rc.bottom)+y0)-1;
-  if(yPos < rc.top) yPos = rc.top-1;
-  if(yPos > rc.bottom) yPos = rc.bottom+1;
+  int yPos = (int)(gfh*(psDia->rc.top-psDia->rc.bottom)+y0)-1;
+  if(yPos < psDia->rc.top) yPos = psDia->rc.top-1;
+  if(yPos > psDia->rc.bottom) yPos = psDia->rc.bottom+1;
   return yPos;
 //  fHeigh
 }
 
-int MapWindow::DistanceToX(double fDist, const RECT rc,  DiagrammStruct* psDia)
+int MapWindow::DistanceToX(double fDist,   DiagrammStruct* psDia)
 {
 
 if ( psDia->fXMax == psDia->fXMin) psDia->fXMax++; // RECOVER DIVISION BY ZERO!
-double xscale =   (double) (rc.right - rc.left)/(psDia->fXMax - psDia->fXMin);
-int	xPos = (int)((fDist- psDia->fXMin)*xscale)+rc.left ;
+double xscale =   (double) (psDia->rc.right - psDia->rc.left)/(psDia->fXMax - psDia->fXMin);
+int	xPos = (int)((fDist- psDia->fXMin)*xscale)+psDia->rc.left ;
   return xPos;
 
 }
@@ -409,8 +407,8 @@ void RenderFlarmPlaneSideview(HDC hdc, const RECT rc,double fDist, double fAltit
 
   };
  // int MapWindow::DistanceToX(double fDist, const RECT rc,  DiagrammStruct* psDia)
-  Start.x =  MapWindow::DistanceToX(fDist,  rc, psDia);
-  Start.y =  MapWindow::HeightToY(fAltitude,  rc, psDia);
+  Start.x =  MapWindow::DistanceToX(fDist,  psDia);
+  Start.y =  MapWindow::HeightToY(fAltitude,  psDia);
 
 
 
@@ -448,12 +446,13 @@ void RenderFlarmPlaneSideview(HDC hdc, const RECT rc,double fDist, double fAltit
 
 void ResetTraces(void)
 {
+/*
 int i;
   for(i=0; i <= FLARM_MAX_TRAFFIC; i++)
   {
 	asFLRAMPos[i].iLastPtr = 0;
 	asFLRAMPos[i].bBuffFull = false;
-  }
+  }*/
 }
 
 
@@ -568,20 +567,23 @@ switch(LKevent)
 		bTrace++;
 		bTrace %= 3;
   break;
+
   case LKEVENT_PAGEUP:
-//	fScaleFact = MIN_DIST_SCALE;
+	if(SPLITSCREEN_FACTOR == SIZE1) SPLITSCREEN_FACTOR = SIZE0;
+	if(SPLITSCREEN_FACTOR == SIZE2) SPLITSCREEN_FACTOR = SIZE1;
+	if(SPLITSCREEN_FACTOR == SIZE3) SPLITSCREEN_FACTOR = SIZE2;
   break;
   case LKEVENT_PAGEDOWN:
-//	fScaleFact = MAX_DIST_SCALE;
+	if(SPLITSCREEN_FACTOR == SIZE2) SPLITSCREEN_FACTOR = SIZE3;
+	if(SPLITSCREEN_FACTOR == SIZE1) SPLITSCREEN_FACTOR = SIZE2;
+	if(SPLITSCREEN_FACTOR == SIZE0) SPLITSCREEN_FACTOR = SIZE1;
   break;
   case LKEVENT_ENTER:
-      iTurn = 	(iTurn+1)%4;
+      iTurn = 	(iTurn+1)%2;
       switch(iTurn)
       {
-        case 0: {RADAR_TURN = 90; ASYMETRIC_FACTOR = 0.7 ; SPLITSCREEN_FACTOR = 0.7;} break;
-        case 1: {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; SPLITSCREEN_FACTOR = 0.7;} break;
-        case 2: {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; SPLITSCREEN_FACTOR = 1.0;} break;
-        case 3: {RADAR_TURN = 90; ASYMETRIC_FACTOR = 0.5 ; SPLITSCREEN_FACTOR = 0.7;} break;
+        case 0: {RADAR_TURN = 90; ASYMETRIC_FACTOR = 0.7 ; } break;
+        case 1: {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; } break;
       }
   break;
   default:
@@ -728,7 +730,9 @@ static bool bFirstCall = false;
   if (range>250.0*1000.0) xtick = 50.0;
   if (range>500.0*1000.0) xtick = 100.0;
 
-
+  iTraceDotSize = (int)(100000/range)+2;
+  if(iTraceDotSize > 5)
+	  iTraceDotSize = 5;
   if(xtick == 0.0) xtick = 1.0;
   LKASSERT(!xtick == 0.0)
 
@@ -763,6 +767,7 @@ static bool bFirstCall = false;
   else
 	fScale = 600.0f;
 
+
   if (Units::GetUserInvAltitudeUnit() == unFeet)
 	  fScale /= 2;
 
@@ -791,8 +796,8 @@ sTopDia.fXMax = sDia.fXMax;
 sTopDia.fYMin = -(sDia.fXMax-sDia.fXMin)/2 * fRatio;
 sTopDia.fYMax =  (sDia.fXMax-sDia.fXMin)/2 * fRatio;
 
- int x_middle = DistanceToX  (0, rct, &sTopDia); // (rct.right-rct.left)/2;
- int y_middle = HeightToY    (0, rct, &sTopDia);//(rct.bottom-rct.top)/2;
+ int x_middle = DistanceToX  (0, &sTopDia); // (rct.right-rct.left)/2;
+ int y_middle = HeightToY    (0, &sTopDia);//(rct.bottom-rct.top)/2;
 
 
 /*******************************************************
@@ -845,7 +850,7 @@ RECT rcc = rct;
 	 * own trace data
 	 **********************************************/
 	static int iCntr = 0;
-	if (iCntr++ >= GC_TIME_SKIP)
+	if (iCntr++ > GC_TRACE_TIME_SKIP)
     {
 	  double Vario;
 	  iCntr = 0;
@@ -858,15 +863,15 @@ RECT rcc = rct;
 	  iColorIdx = max( iColorIdx, 0);
 	  iColorIdx = min( iColorIdx, NO_VARIO_COLORS-1);
 
-	  i = asFLRAMPos[FLARM_MAX_TRAFFIC].iLastPtr;
-      asFLRAMPos[FLARM_MAX_TRAFFIC].asRingBuf[i].fLat = GPSlat;
-      asFLRAMPos[FLARM_MAX_TRAFFIC].asRingBuf[i].fLon = GPSlon;
-      asFLRAMPos[FLARM_MAX_TRAFFIC].asRingBuf[i].iColorIdx = iColorIdx;
-      asFLRAMPos[FLARM_MAX_TRAFFIC].iLastPtr++;
-      if(asFLRAMPos[FLARM_MAX_TRAFFIC].iLastPtr >= NO_TRACE_PTS)
+	  i = iLastPtr;
+      asRingBuf[i].fLat = GPSlat;
+      asRingBuf[i].fLon = GPSlon;
+      asRingBuf[i].iColorIdx = iColorIdx;
+      iLastPtr++;
+      if(iLastPtr >= NO_TRACE_PTS)
       {
-        asFLRAMPos[FLARM_MAX_TRAFFIC].iLastPtr=0;
-        asFLRAMPos[FLARM_MAX_TRAFFIC].bBuffFull = true;
+        iLastPtr=0;
+        bBuffFull = true;
       }
     } // if
 	/**********************************************
@@ -876,8 +881,8 @@ RECT rcc = rct;
 	{
 	  if (DrawInfo.FLARM_Traffic[i].Status == LKT_EMPTY)
 	  {
-		asFLRAMPos[i].bBuffFull= false;
-		asFLRAMPos[i].iLastPtr = 0;
+	//	bBuffFull= false;
+	//	iLastPtr = 0;
 	  }
 	  else
 	  {
@@ -897,7 +902,7 @@ RECT rcc = rct;
 		asFLRAMPos[i].fy = fFlarmDist * cos(fDistBearing*DEG_TO_RAD);
 		asFLRAMPos[i].fAlt = fFlarmAlt;
 
-		asFLRAMPos[i].iColorIdx = (int)(2*DrawInfo.FLARM_Traffic[i].Average30s-0.5)+NO_VARIO_COLORS/2;
+		asFLRAMPos[i].iColorIdx = (int)(2*DrawInfo.FLARM_Traffic[i].Average30s    -0.5)+NO_VARIO_COLORS/2;
 		asFLRAMPos[i].iColorIdx = max( asFLRAMPos[i].iColorIdx, 0);
 		asFLRAMPos[i].iColorIdx = min( asFLRAMPos[i].iColorIdx, NO_VARIO_COLORS-1);
 
@@ -914,37 +919,7 @@ RECT rcc = rct;
 	    while ((asFLRAMPos[i].szGliderType[iCnt] ==_T(' ')) && (iCnt > 0))
 		  asFLRAMPos[i].szGliderType[iCnt--]= 0;
 
-        /**************************************
-         * Fill trace buffer
-         **************************************/
-	    switch(DrawInfo.FLARM_Traffic[i].Status )
-	    {
-	      case LKT_EMPTY:
-		  {
-			asFLRAMPos[i].bBuffFull= false;
-			asFLRAMPos[i].iLastPtr = 0;
-		  }
-		  break;
-          default:
-          {
-        	 static int iCnt = 0;
-	      // if(DrawInfo.FLARM_Traffic[i].Average30s > -1.5)
-        	if (iCnt++ >= GC_TIME_SKIP)
-	        {
-        	  iCnt = 0;
-		      asFLRAMPos[i].asRingBuf[asFLRAMPos[i].iLastPtr].fLat = fLat;
-		      asFLRAMPos[i].asRingBuf[asFLRAMPos[i].iLastPtr].fLon = fLon;
-		      asFLRAMPos[i].asRingBuf[asFLRAMPos[i].iLastPtr].iColorIdx = asFLRAMPos[i].iColorIdx;
-		      asFLRAMPos[i].iLastPtr++;
-		      if(asFLRAMPos[i].iLastPtr >= NO_TRACE_PTS)
-		      {
-		        asFLRAMPos[i].iLastPtr=0;
-		        asFLRAMPos[i].bBuffFull = true;
-		      }
-	        } // if
-          } // default
-          break;
-	    } // switch
+
 		aiSortArray[nEntrys++] = i;
 	  }
 
@@ -959,13 +934,22 @@ RECT rcc = rct;
 		  aiSortArray[j] = iTmp;
 		}
 
+/***********************************************
+ * draw traces
+ ***********************************************/
+    int iNoDos =0;
+    unsigned long lStartTime = GetTickCount();
+    if(bTrace)
+    //   if((iNoDos < NO_DOT_LIMIT) || (DrawInfo.FLARM_Traffic[i].Locked))
+    if(	 ((GetTickCount()- lStartTime ) < 350))
+        iNoDos =  DrawFlarmObjectTrace(hdc, fScaleFact,&sTopDia);
 
 /***********************************************
  * FLARM object loop
  ***********************************************/
 bool bCenter = false;
-int iNoDos =0;
-unsigned long lStartTime = GetTickCount();
+
+
 for (j=0; j<nEntrys; j++)
 {
   i = aiSortArray[j];
@@ -976,17 +960,12 @@ for (j=0; j<nEntrys; j++)
 	fx = asFLRAMPos[i].fx;
 	fy = asFLRAMPos[i].fy;
 	fFlarmAlt = asFLRAMPos[i].fAlt;
-	int x  = DistanceToX(fx, rct, &sTopDia);
-	int y  = HeightToY  (fy, rct, &sTopDia);
+	int x  = DistanceToX(fx,  &sTopDia);
+	int y  = HeightToY  (fy,  &sTopDia);
 	TextInBoxMode_t displaymode = {1};
 	displaymode.NoSetFont = 1;
 	displaymode.Border=1;
 
-
-    if(bTrace)
-   //   if((iNoDos < NO_DOT_LIMIT) || (DrawInfo.FLARM_Traffic[i].Locked))
-    if(	 ((GetTickCount()- lStartTime ) < 350)|| (DrawInfo.FLARM_Traffic[i].Locked))
-	    iNoDos +=  DrawFlarmObjectTrace(hdc, fScaleFact,&sTopDia, i);
 
     if(fx > sTopDia.fXMin )  /* sing sight ? */
     if(fx < sTopDia.fXMax )
@@ -1002,8 +981,6 @@ for (j=0; j<nEntrys; j++)
 	    if(fFlarmAlt > 0 )
 	    {
 	      bCenter = true;
-	      if(bTrace)
-		    iNoDos +=  DrawFlarmObjectTrace(hdc, fScaleFact,&sTopDia, FLARM_MAX_TRAFFIC);
 		  SelectObject(hdc, hDrawBrush);
 		  SelectObject(hdc, hDrawPen);
 		  SelectObject(hdc,GetStockObject(BLACK_PEN));
@@ -1064,10 +1041,12 @@ for (j=0; j<nEntrys; j++)
 /***********************************************
  * draw center aircraft if highest (was never drawn)
  ***********************************************/
+
+
 if(bCenter == false)
 {
-  if(bTrace)
-    iNoDos +=  DrawFlarmObjectTrace(hdc, fScaleFact,&sTopDia, FLARM_MAX_TRAFFIC);
+//  if(bTrace)
+//    iNoDos +=  DrawFlarmObjectTrace(hdc, fScaleFact,&sTopDia, FLARM_MAX_TRAFFIC);
   SelectObject(hdc, hDrawBrush);
   SelectObject(hdc, hDrawPen);
   SelectObject(hdc,GetStockObject(BLACK_PEN));
@@ -1102,8 +1081,8 @@ if(bSideview)
 	fx = asFLRAMPos[i].fx;
 	fy = asFLRAMPos[i].fy;
 	fFlarmAlt = asFLRAMPos[i].fAlt;
-	int x  = DistanceToX(fx, rct, &sTopDia);
-	int hy = HeightToY  (fFlarmAlt, rc, &sDia);
+	int x  = DistanceToX(fx, &sTopDia);
+	int hy = HeightToY  (fFlarmAlt, &sDia);
 	TextInBoxMode_t displaymode = {1};
 	displaymode.NoSetFont = 1;
 	displaymode.Border=1;
@@ -1158,7 +1137,7 @@ if(bSideview)
 	   */
 	  if(DrawInfo.FLARM_Traffic[i].Locked)
 	  {
-		int  h0 = HeightToY(GPSlat,rc,&sDia);
+		int  h0 = HeightToY(GPSlat,&sDia);
 		DrawDashLine(hdc, 4, (POINT){x_middle,       h0},(POINT){ x, hy} ,rgb_targetlinecol, rc );
 	  }
 	}
@@ -1195,7 +1174,7 @@ DeleteObject (hWhitePen);
 
 
 
-int MapWindow::DrawFlarmObjectTrace(HDC hDC, double fZoom,DiagrammStruct* pDia, int iFlarmIdx)
+int MapWindow::DrawFlarmObjectTrace(HDC hDC, double fZoom,DiagrammStruct* pDia)
 {
 double GPSlat = DrawInfo.Latitude;
 double GPSlon = DrawInfo.Longitude;
@@ -1207,35 +1186,36 @@ double fFlarmDist;
 //double fAlt;
 POINT Pnt;
 int i;
-int iTo= asFLRAMPos[iFlarmIdx].iLastPtr;
-int iIdx = 0;
+int iTo= iLastPtr;
+int iIdx = iLastPtr;
 int iCnt = 0;
 if(fZoom  < 0.05)
  return 0;
 
-if( asFLRAMPos[iFlarmIdx].bBuffFull)
+if( bBuffFull)
 {
   iTo  = NO_TRACE_PTS;
-  iIdx = asFLRAMPos[iFlarmIdx].iLastPtr;
-  if(iIdx++ >=NO_TRACE_PTS)
-    iIdx = 0;
 }
 HBRUSH *pOldBrush =NULL;
 HPEN oldPen =	(HPEN)SelectObject(hDC, GetStockObject(NULL_PEN));
 
 
 
-int iStep =(int)  (fZoom *3.0 / (double)GC_TIME_SKIP);
+int iStep =(int)  (fZoom *3.0 / (double)GC_TRACE_TIME_SKIP);
 if (iStep < 1)
   iStep = 1;
+iStep = 1;
+unsigned long lStartTime = GetTickCount();
+
+
 	for(i= 0; i < iTo; i=i+iStep)
 	{
-      LL_to_BearRange( GPSlat, GPSlon, asFLRAMPos[iFlarmIdx].asRingBuf[iIdx].fLat ,asFLRAMPos[iFlarmIdx].asRingBuf[iIdx].fLon, &fDistBearing, &fFlarmDist);
+      LL_to_BearRange( GPSlat, GPSlon, asRingBuf[iIdx].fLat ,asRingBuf[iIdx].fLon, &fDistBearing, &fFlarmDist);
 
 	  fDistBearing = ( fDistBearing - GPSbrg + RADAR_TURN);
 
-	  Pnt.x  = DistanceToX(fFlarmDist * sin(fDistBearing*DEG_TO_RAD), pDia->rc, pDia);
-	  Pnt.y  = HeightToY  (fFlarmDist * cos(fDistBearing*DEG_TO_RAD), pDia->rc, pDia);
+	  Pnt.x  = DistanceToX(fFlarmDist * sin(fDistBearing*DEG_TO_RAD), pDia);
+	  Pnt.y  = HeightToY  (fFlarmDist * cos(fDistBearing*DEG_TO_RAD), pDia);
 
 	//	if(PtInRect(Pnt, pDia->rc ))
 
@@ -1244,23 +1224,24 @@ if (iStep < 1)
 		  if( Pnt.y  < pDia->rc.bottom )
 		    if( Pnt.y > pDia->rc.top    )
 		    {
-		      if((bTrace == IM_POS_TRACE_ONLY) && (asFLRAMPos[iFlarmIdx].asRingBuf[iIdx].iColorIdx <(NO_VARIO_COLORS/2)))
+		      if((bTrace == IM_POS_TRACE_ONLY) && (asRingBuf[iIdx].iColorIdx <(NO_VARIO_COLORS/2)))
 		    	; // do nothing (skip drawing if neg vario)!!
 		      else
 		      {
-		        if(variobrush[asFLRAMPos[iFlarmIdx].asRingBuf[iIdx].iColorIdx]!= pOldBrush)
+		        if(variobrush[asRingBuf[iIdx].iColorIdx]!= pOldBrush)
 		        {
-			      pOldBrush  = variobrush[asFLRAMPos[iFlarmIdx].asRingBuf[iIdx].iColorIdx];
+			      pOldBrush  = variobrush[asRingBuf[iIdx].iColorIdx];
 		          SelectObject(hDC, *pOldBrush);
 		        }
 		        Rectangle(hDC,Pnt.x-iTraceDotSize, Pnt.y-iTraceDotSize,Pnt.x+iTraceDotSize, Pnt.y+iTraceDotSize);
 		        iCnt++;
 		      }
 		    }
-	  iIdx+=iStep ;
-	  if(iIdx >=NO_TRACE_PTS)
-		iIdx -= NO_TRACE_PTS;
-
+	  iIdx-=iStep ;
+	  if(iIdx < 0)
+		iIdx += NO_TRACE_PTS;
+	  if(	 ((GetTickCount()- lStartTime ) > 350))
+		i=0;
 	}
 SelectObject(hDC, (HPEN) oldPen);
 

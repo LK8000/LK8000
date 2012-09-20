@@ -8,9 +8,12 @@
 
 #include "externs.h"
 #include "RasterTerrain.h"
+#include "LKAirspace.h"
 #include "RGB.h"
 #include "Sideview.h"
 
+using std::min;
+using std::max;
 
 #define RGB_ROYAL_BLUE  RGB(18,32,139)
 #define RGB_STEEL_BLUE  RGB(70,130,180)
@@ -21,8 +24,10 @@ extern int Sideview_iNoHandeldSpaces;
 
 
 
-void RenderAirspaceTerrain(HDC hdc, const RECT rc,double PosLat, double PosLon,  double brg,  DiagrammStruct* psDiag )
+void RenderAirspaceTerrain(HDC hdc, double PosLat, double PosLon,  double brg,  DiagrammStruct* psDiag )
 {
+RECT rc	= psDiag->rc;
+rc.bottom +=BORDER_Y;
 double range =psDiag->fXMax - psDiag->fXMin; // km
 double hmax = psDiag->fYMax;
 double lat, lon;
@@ -92,8 +97,8 @@ int i,j;
 	Sideview_pHandeled[i].rc.left   = iround((Sideview_pHandeled[i].rc.left  )*dx)+x0 -FRAMEWIDTH/2;
 	Sideview_pHandeled[i].rc.right  = iround((Sideview_pHandeled[i].rc.right+1)*dx)+x0+ FRAMEWIDTH/2;
 
-	Sideview_pHandeled[i].rc.bottom  = CalcHeightCoordinat((double)  Sideview_pHandeled[i].rc.bottom,  rc, psDiag);//+FRAMEWIDTH/2;
-	Sideview_pHandeled[i].rc.top     = CalcHeightCoordinat((double)  Sideview_pHandeled[i].rc.top,     rc, psDiag)-FRAMEWIDTH/2;
+	Sideview_pHandeled[i].rc.bottom  = CalcHeightCoordinat((double)  Sideview_pHandeled[i].rc.bottom,  psDiag);//+FRAMEWIDTH/2;
+	Sideview_pHandeled[i].rc.top     = CalcHeightCoordinat((double)  Sideview_pHandeled[i].rc.top,     psDiag)-FRAMEWIDTH/2;
 
 	Sideview_pHandeled[i].iMaxBase  = Sideview_pHandeled[i].rc.bottom ;
 	Sideview_pHandeled[i].iMinTop   = Sideview_pHandeled[i].rc.top ;
@@ -103,7 +108,7 @@ int i,j;
       for(j =0 ; j < iN  ; j++)
       {
         Sideview_pHandeled[i].apPolygon[j].x = iround(Sideview_pHandeled[i].apPolygon[j].x * dx)+x0;
-        Sideview_pHandeled[i].apPolygon[j].y = CalcHeightCoordinat((double)   Sideview_pHandeled[i].apPolygon[j].y,  rc, psDiag);
+        Sideview_pHandeled[i].apPolygon[j].y = CalcHeightCoordinat((double)   Sideview_pHandeled[i].apPolygon[j].y, psDiag);
         if(j != iN-1)
         {
           if(( j < iN /2) )
@@ -264,7 +269,7 @@ if(1==0)
   // draw sea
   if(psDiag->fYMin < GC_SEA_LEVEL_TOLERANCE)
   {
-	RECT sea= {rc.left,rc.bottom,rc.right,rc.bottom-BORDER_Y};
+	RECT sea= {rc.left,rc.bottom - BORDER_Y,rc.right,rc.bottom-2*BORDER_Y};
 	RenderSky( hdc,   sea, RGB_STEEL_BLUE, RGB_ROYAL_BLUE  , 7);
 	iBottom-=BORDER_Y;
 
@@ -280,14 +285,14 @@ if(1==0)
   SelectObject(hdc, hpHorizonGround);
   for (j=0; j< AIRSPACE_SCANSIZE_X; j++) { // scan range
 	apTerrainPolygon[j].x = iround(j*dx)+x0;
-	apTerrainPolygon[j].y = CalcHeightCoordinat(d_h[j],  rc, psDiag)+2;
+	apTerrainPolygon[j].y = CalcHeightCoordinat(d_h[j], psDiag)+2;
 
   }
   apTerrainPolygon[AIRSPACE_SCANSIZE_X].x = iround(AIRSPACE_SCANSIZE_X*dx)+x0;; // x0;
-  apTerrainPolygon[AIRSPACE_SCANSIZE_X].y = iBottom;
+  apTerrainPolygon[AIRSPACE_SCANSIZE_X].y = CalcHeightCoordinat(0, psDiag)+2 ;//iBottom;
 
   apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].x = iround(0*dx)+x0;  //iround(j*dx)+x0;
-  apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].y = iBottom;
+  apTerrainPolygon[AIRSPACE_SCANSIZE_X+1].y =  CalcHeightCoordinat(0, psDiag)+2 ;//iBottom;
   Polygon(hdc, apTerrainPolygon, AIRSPACE_SCANSIZE_X+2);
 
 

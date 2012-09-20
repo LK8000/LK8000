@@ -10,7 +10,7 @@
 #include "externs.h"
 #include "Logger.h"
 #include "Geoid.h"
-
+#include "FLARMRadar.h"
 #ifdef PNA
 #include "LKHolux.h"
 #include "LKRoyaltek3200.h"
@@ -18,6 +18,12 @@
 
 #include "FlarmCalculations.h"
 FlarmCalculations flarmCalculations;
+
+
+LastPositions asRingBuf[NO_TRACE_PTS];
+int iLastPtr=0;
+bool bBuffFull;
+
 
 
 static double EastOrWest(double in, TCHAR EoW);
@@ -1339,11 +1345,14 @@ BOOL NMEAParser::PTAS1(TCHAR *String, TCHAR **params, size_t nparams, NMEA_INFO 
 }
 
 
+
 void FLARM_RefreshSlots(NMEA_INFO *GPS_INFO) {
   int i;
   double passed;
   if (GPS_INFO->FLARM_Available) {
-
+static int iTraceSpaceCnt = 0;
+if(iTraceSpaceCnt++ > GC_TRACE_TIME_SKIP)
+  iTraceSpaceCnt =0;
 	#ifdef DEBUG_LKT
 	StartupStore(_T("... [CALC thread] RefreshSlots\n"));
 	#endif
@@ -1420,7 +1429,26 @@ void FLARM_RefreshSlots(NMEA_INFO *GPS_INFO) {
 
 			// Then it is real traffic
 			GPS_INFO->FLARM_Traffic[i].Status = LKT_REAL; // 100325 BUGFIX missing
+            if(iTraceSpaceCnt == 0)
+            {
 
+		      asRingBuf[iLastPtr].fLat = GPS_INFO->FLARM_Traffic[i].Latitude;
+		      asRingBuf[iLastPtr].fLon = GPS_INFO->FLARM_Traffic[i].Longitude;
+
+		      double Vario = GPS_INFO->FLARM_Traffic[i].Average30s;
+			  int iColorIdx = (int)(2*Vario  -0.5)+NO_VARIO_COLORS/2;
+			  iColorIdx = max( iColorIdx, 0);
+			  iColorIdx = min( iColorIdx, NO_VARIO_COLORS-1);
+
+
+		      asRingBuf[iLastPtr].iColorIdx = iColorIdx;
+		      iLastPtr++;
+		      if(iLastPtr >= NO_TRACE_PTS)
+		      {
+		        iLastPtr=0;
+		        bBuffFull = true;
+		      }
+            }
 			/*
 			} else {
 				if (GPS_INFO->FLARM_Traffic[i].AlarmLevel>0) {
