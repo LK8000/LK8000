@@ -51,6 +51,9 @@ redo:
 	if (CURMODE == MSM_WELCOME) goto redo;
 finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
+	// 120919 If we have just selected MSM_MAP, request a fast refresh. Probably from a multimap.
+	// Not sure it is really needed. Just in case, this is the right place to do it.
+	// if (MapSpaceMode == MSM_MAP) MapWindow::RefreshMap();
 }
 
 
@@ -80,6 +83,9 @@ redo:
 	if (CURMODE == MSM_WELCOME) goto redo;
 finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
+	// 120919 If we have just selected MSM_MAP, request a fast refresh. Probably from a multimap.
+	// Not sure it is really needed. Just in case, this is the right place to do it.
+	// if (MapSpaceMode == MSM_MAP) MapWindow::RefreshMap();
 }
 
 
