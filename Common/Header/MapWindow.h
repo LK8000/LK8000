@@ -472,6 +472,7 @@ class MapWindow {
   static void LKDrawFlarmRadar(HDC hdc, const RECT rci);
   static void LKDrawMultimap_Example(HDC hdc, const RECT rci);
   static void LKDrawMultimap_Asp(HDC hdc, const RECT rci);
+  static void LKDrawMultimap_Radar(HDC hdc, const RECT rci);
   static int DrawFlarmObjectTrace(HDC hDC,double fZoom, DiagrammStruct* Dia);
  private:
   static void CalculateScreenPositions(POINT Orig, RECT rc, 

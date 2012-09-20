@@ -61,6 +61,7 @@
 	MDI_READLANGUAGEFILE,		// full restart
 	MDI_FLARMRADAR,			// screen change
 	MDI_MAPASP,			// screen change?
+	MDI_MAPRADAR,			// screen change?
 	MDI_LAST_DOINIT,		
  } MDI_t;
 

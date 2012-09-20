@@ -393,6 +393,7 @@ passthrough:
 		return true;
 
 	case ckFlarmRadar:
+/* Customkey FlarmRadar: THIS IS DISABLED TEMPORARILY while working on the multimap version
 		#ifndef DISABLEAUDIO
 		//if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
 		#endif
@@ -402,7 +403,7 @@ passthrough:
 			SetModeIndex(LKMODE_MAP);
 		MapWindow::RefreshMap();
 		SoundModeIndex();
-
+*/
 		return true;
 	case ckDeviceA:
 		if(devA() && devA()->Config) {

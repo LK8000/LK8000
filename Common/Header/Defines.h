@@ -400,7 +400,8 @@
 #define MP_WELCOME		0
 #define MP_MOVING		1
 #define MP_MAPASP		2
-#define MP_TOP			2
+#define MP_RADAR		3
+#define MP_TOP			3
 //
 // WP mode
 //
@@ -432,8 +433,7 @@
 #define TF_LIST			0
 #define IM_TRF			1
 #define IM_TARGET		2
-#define IM_RADAR		3
-#define TF_TOP			3
+#define TF_TOP			2
 
 //
 // How many sort boxes in nearest pages we can have, on the top line, normally 0-4 plus 1 spare
