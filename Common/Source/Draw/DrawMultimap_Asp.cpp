@@ -11,7 +11,7 @@
 #include "LKObjects.h"
 #include "RGB.h"
 #include "DoInits.h"
-#include "sideView.h"
+#include "Sideview.h"
 #include "Message.h"
 #include "LKInterface.h"
 

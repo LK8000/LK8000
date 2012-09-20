@@ -10,7 +10,7 @@
 #include "externs.h"
 #include "Logger.h"
 #include "Geoid.h"
-#include "FLARMRadar.h"
+#include "FlarmRadar.h"
 #ifdef PNA
 #include "LKHolux.h"
 #include "LKRoyaltek3200.h"
