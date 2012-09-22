@@ -159,14 +159,7 @@ RECT frc = rc;
 	case MSM_THERMALS:
 		DrawThermalHistory(hdc,rc);
 		break;
-/* ULLI: this was the old RADAR linkage, see if you need something to be moved up for LKDrawMultimap_Radar
-	case MSM_RADAR:
-		frc = rc;
 
-		frc.bottom = frc.bottom - BottomSize - NIBLSCALE(2);
-		LKDrawFlarmRadar(hdc,frc);
-		break;
-*/
   default:
     memset((void*)&TextDisplayMode, 0, sizeof(TextDisplayMode));
     TextDisplayMode.Color = RGB_WHITE;

@@ -38,8 +38,6 @@ void MapWindow::LKDrawMultimap_Radar(HDC hdc, const RECT rc)
   // Duration of key is inside long VKtime, in milliseconds.
   //
 
-  LKWriteBoxedText(hdc, _T("MULTIMAP PAGE EXAMPLE"), 1, 1 , 0, WTALIGN_LEFT);
-
 
   TCHAR ttext[100];
   
@@ -94,6 +92,7 @@ void MapWindow::LKDrawMultimap_Radar(HDC hdc, const RECT rc)
 		break;
   }
 
+#ifdef INFOWRITE_KEY
   LKWriteBoxedText(hdc, ttext, 1, 50 , 0, WTALIGN_LEFT);
 
   //
@@ -104,6 +103,12 @@ void MapWindow::LKDrawMultimap_Radar(HDC hdc, const RECT rc)
 	LKWriteBoxedText(hdc, ttext, 1, 100 , 0, WTALIGN_LEFT);
   }
 
+#endif
+
+  	RECT frc = rc;
+
+    frc.bottom = frc.bottom - BottomSize - NIBLSCALE(2);
+  	LKDrawFlarmRadar(hdc,frc);
 
   // After using the event, WE MUST CLEAR IT, otherwise it will survive for next run.
   // This can be good for something, though, like automatic redo of last action.

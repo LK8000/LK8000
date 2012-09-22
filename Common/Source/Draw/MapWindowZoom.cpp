@@ -370,7 +370,7 @@ void MapWindow::Zoom::UpdateMapScale()
 void MapWindow::Zoom::ModifyMapScale()
 {
   // limit zoomed in so doesn't reach silly levels
-//  *_requestedScale = LimitMapScale(*_requestedScale); // FIX VENTA remove limit
+  // *_requestedScale = LimitMapScale(*_requestedScale); // FIX VENTA remove limit
   /************************************************************
    //  *_requestedScale = LimitMapScale(*_requestedScale); // FIX VENTA remove limit
    * Ulli -> Paolo, needed to remove that line for  correct spltscreen scaling

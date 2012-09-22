@@ -17,9 +17,9 @@
 #include "FlarmRadar.h"
 
 #define SIZE0 0.0
-#define SIZE1 0.3
-#define SIZE2 0.5
-#define SIZE3 0.7
+#define SIZE1 0.5
+#define SIZE2 0.75
+#define SIZE3 1.0
 
 #define IM_NO_TRACE       0
 #define ALL_TRACE         1
@@ -29,7 +29,7 @@ int  iTraceDotSize = 5;
 int RADAR_TURN = 90 ;            /* radar plane orientation             */
 #define HEIGHT_RANGE (1000.0  )    /* max hight ifference above and below in meters */
 double ASYMETRIC_FACTOR = 0.7 ;     /* X center displacement               */
-double SPLITSCREEN_FACTOR = SIZE3 ;   /* % of top view window                */
+double SPLITSCREEN_FACTOR = SIZE2 ;   /* % of top view window                */
 int bTrace = 1;
 #define MIN_DIST_SCALE  0.1       /* minimum radar distance              */
 #define MAX_DIST_SCALE 25.0       /* maximum radar distance              */
@@ -563,20 +563,20 @@ switch(LKevent)
     fScaleFact *= 1.5;
   break;
 
-  case LKEVENT_NEWPAGE:
+  case LKEVENT_LONGCLICK:
 		bTrace++;
 		bTrace %= 3;
   break;
 
   case LKEVENT_PAGEUP:
-	if(SPLITSCREEN_FACTOR == SIZE1) SPLITSCREEN_FACTOR = SIZE0;
+//	if(SPLITSCREEN_FACTOR == SIZE1) SPLITSCREEN_FACTOR = SIZE0;
 	if(SPLITSCREEN_FACTOR == SIZE2) SPLITSCREEN_FACTOR = SIZE1;
 	if(SPLITSCREEN_FACTOR == SIZE3) SPLITSCREEN_FACTOR = SIZE2;
   break;
   case LKEVENT_PAGEDOWN:
 	if(SPLITSCREEN_FACTOR == SIZE2) SPLITSCREEN_FACTOR = SIZE3;
 	if(SPLITSCREEN_FACTOR == SIZE1) SPLITSCREEN_FACTOR = SIZE2;
-	if(SPLITSCREEN_FACTOR == SIZE0) SPLITSCREEN_FACTOR = SIZE1;
+//	if(SPLITSCREEN_FACTOR == SIZE0) SPLITSCREEN_FACTOR = SIZE1;
   break;
   case LKEVENT_ENTER:
       iTurn = 	(iTurn+1)%2;
@@ -596,7 +596,7 @@ fScaleFact = min (fScaleFact, MAX_DIST_SCALE);/* check ranges */
 if(SPLITSCREEN_FACTOR >0.95)
 	bSideview = false;
 
-
+BOOL bLandscape = true;
 
 double range = 1000; // km
 double GPSlat, GPSlon, GPSalt, GPSbrg  ;
@@ -639,6 +639,8 @@ static bool bFirstCall = false;
 		case ss896x672:
 		case ss800x480:
 		case ss640x480:
+			bLandscape = true;
+
 			iCircleSize = 9;
 			iTraceDotSize = 5;
 			iRectangleSize = 7;
@@ -665,8 +667,12 @@ static bool bFirstCall = false;
 			scaler[3]=(short)((NIBLSCALE(8)-2)     * fTopViewPlaneSize);
 			scaler[4]=(short)((NIBLSCALE(4)-2)     * fTopViewPlaneSize);
 			tscaler=(NIBLSCALE(13)-2)      ;
+			bLandscape = false;
+
 			break;
 		default:
+			bLandscape = true;
+
 			iCircleSize = 7;
 			iTraceDotSize = 3;
 			iRectangleSize = 5;
@@ -697,8 +703,34 @@ static bool bFirstCall = false;
 	column0=MITextSize.cx+LEFTLIMITER+NIBLSCALE(5);
 	SelectObject(hdc, LK8PanelUnitFont);
 
+
 	DoInit[MDI_FLARMRADAR]=false;
   }
+
+
+  switch (ScreenSize) {
+	case ss480x640:
+	case ss480x800:
+	case ss272x480:
+	case ss240x320:
+		bLandscape = false;
+	break;
+	case ss896x672:
+	case ss800x480:
+	case ss640x480:
+	case ss320x240:
+	case ss480x272:
+	case ss720x408:
+	case ss480x234:
+	case ss400x240:
+	default:
+	  bLandscape = true;
+	break;
+}
+if(   bLandscape)
+  {RADAR_TURN = 90; ASYMETRIC_FACTOR = 0.7 ; }
+else
+  {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; };
 
 
   /****************************************************************************************************
@@ -1154,12 +1186,13 @@ if(bSideview)
   //
   // Draw MapSpace index on top left screen
   //
+/*
   _stprintf(lbuffer,TEXT("%d.%d"),ModeIndex,CURTYPE+1);
   SelectObject(hdc, LK8PanelMediumFont);
   LKWriteText(hdc, lbuffer, LEFTLIMITER, rci.top+TOPLIMITER , 0,  WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
-
+*/
   SelectObject(hdc, LK8InfoNormalFont);
-  _stprintf(lbuffer,TEXT("RDR.%d"),iTurn+1);
+  _stprintf(lbuffer,TEXT("RDR.%d"),bTrace);
   LKWriteText(hdc, lbuffer, column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
 SelectObject(hdc, hfOldFont);

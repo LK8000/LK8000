@@ -101,6 +101,7 @@ rci.bottom -= BottomSize;
 	//
 	// USABLE EVENTS
 	// 
+
 	case LKEVENT_NEWRUN:
 		// CALLED ON ENTRY: when we select this page coming from another mapspace
 		_tcscpy(ttext,_T("Event = NEW RUN"));
@@ -109,14 +110,12 @@ rci.bottom -= BottomSize;
 	case LKEVENT_UP:
 		// click on upper part of screen, excluding center
 		_tcscpy(ttext,_T("Event = UP"));
-	//	IncSideviewPage();
-		fZOOMScale /= 1.3;
+		fZOOMScale /= ZOOMFACTOR;
 		break;
 	case LKEVENT_DOWN:
 		// click on lower part of screen,  excluding center
 		_tcscpy(ttext,_T("Event = DOWN"));
-	//	 DecSideviewPage();
-		fZOOMScale *= 1.3;
+		fZOOMScale *= ZOOMFACTOR;
 		break;
 	case LKEVENT_LONGCLICK:
 		 for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
@@ -135,41 +134,19 @@ rci.bottom -= BottomSize;
 		 if(bFound==false)
 		 {
 		  IncSideviewPage();
-			fZOOMScale = 1.0;
-		/*
-		  if(Sideview_asp_heading_task== 2)
-		  {
-			if(Sonar_IsEnabled)
-			{
-			  Sonar_IsEnabled = false;
-			  wsprintf(mbuf,_T("Sonar: %s"), gettext(TEXT("_@M959_"))); // OFF
-			}
-			else
-			{
-			  Sonar_IsEnabled = true;
-			  wsprintf(mbuf,_T("Sonar: %s"), gettext(TEXT("_@M958_"))); // ON
-			}
-			Message::Lock(); // 091211
-			Message::AddMessage(500, 3, mbuf);
-			Message::Unlock();
-		  }
-		  */
+		  fZOOMScale = 1.0;
 		}
 		break;
 	case LKEVENT_PAGEUP:
-		_tcscpy(ttext,_T("Event = PAGE UP"));
 		if(iSplit == SIZE1) iSplit = SIZE0;
 		if(iSplit == SIZE2) iSplit = SIZE1;
 		if(iSplit == SIZE3) iSplit = SIZE2;
-	//	IncSideviewPage();
 		break;
 	case LKEVENT_PAGEDOWN:
 		if(iSplit == SIZE2) iSplit = SIZE3;
 		if(iSplit == SIZE1) iSplit = SIZE2;
 		if(iSplit == SIZE0) iSplit = SIZE1;
 
-		_tcscpy(ttext,_T("Event = PAGE DOWN"));
-	//	 DecSideviewPage();
 		break;
 
 	//
@@ -195,7 +172,12 @@ rci.bottom -= BottomSize;
 		_tcscpy(ttext,_T("Event = unknown"));
 		break;
   }
-
+/*
+  if(fZOOMScale > 10.0)
+	 fZOOMScale = 10.0;
+  if(fZOOMScale < 0.1)
+	 fZOOMScale = 0.1;
+*/
   static int oldSplit=SIZE1;
   if(oldSplit != iSplit)
   {

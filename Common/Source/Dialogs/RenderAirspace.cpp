@@ -207,6 +207,15 @@ bool bInvCol = INVERTCOLORS;
 
   double hmin = max(0.0, CALCULATED_INFO.NavAltitude-2300);
   double hmax = max(MAXALTTODAY, CALCULATED_INFO.NavAltitude+1000);
+
+  if(fZOOMScale != 1.0)
+  {
+    if( (fDist *fZOOMScale) > 750000)
+	  fZOOMScale /= ZOOMFACTOR;
+
+    if((fDist *fZOOMScale) < 5000)
+	  fZOOMScale *= ZOOMFACTOR;
+  }
   fDist *=fZOOMScale;
   DiagrammStruct sDia;
   sDia.fXMin =-5000.0f;
