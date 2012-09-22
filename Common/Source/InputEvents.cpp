@@ -1188,10 +1188,10 @@ void InputEvents::eventPan(const TCHAR *misc) {
   else if (_tcscmp(misc, TEXT("off")) == 0) 
     MapWindow::Event_Pan(0);
 
- else if (_tcscmp(misc, TEXT("up")) == 0)
-			MapWindow::zoom.EventScaleZoom(1);
-else if (_tcscmp(misc, TEXT("down")) == 0)
-			MapWindow::zoom.EventScaleZoom(-1); // fixed v58
+  else if (_tcscmp(misc, TEXT("up")) == 0)
+    MapWindow::zoom.EventScaleZoom(1);
+  else if (_tcscmp(misc, TEXT("down")) == 0)
+    MapWindow::zoom.EventScaleZoom(-1); // fixed v58
   else if (_tcscmp(misc, TEXT("left")) == 0)
     MapWindow::Event_PanCursor(1,0);
   else if (_tcscmp(misc, TEXT("right")) == 0)
