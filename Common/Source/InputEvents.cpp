@@ -1174,10 +1174,12 @@ void InputEvents::eventZoom(const TCHAR* misc) {
 //	on	Turn pan on
 //	off	Turn pan off
 //      supertoggle Toggles pan and fullscreen
-//	up	Pan up
-//	down	Pan down
+//	up	Zoom in
+//	down	Zoom out
 //	left	Pan left
 //	right	Pan right
+//	moveup	Pan up
+//	movedown	Pan down
 void InputEvents::eventPan(const TCHAR *misc) {
   if (_tcscmp(misc, TEXT("toggle")) == 0)
     MapWindow::Event_Pan(-1);
@@ -1196,6 +1198,10 @@ void InputEvents::eventPan(const TCHAR *misc) {
     MapWindow::Event_PanCursor(1,0);
   else if (_tcscmp(misc, TEXT("right")) == 0)
     MapWindow::Event_PanCursor(-1,0);
+  else if (_tcscmp(misc, TEXT("moveup")) == 0)
+    MapWindow::Event_PanCursor(0,1);
+  else if (_tcscmp(misc, TEXT("movedown")) == 0)
+    MapWindow::Event_PanCursor(0,-1);
   else if (_tcscmp(misc, TEXT("show")) == 0) {
     if (MapWindow::mode.AnyPan())
       DoStatusMessage(gettext(TEXT("_@M858_"))); // Pan mode ON
