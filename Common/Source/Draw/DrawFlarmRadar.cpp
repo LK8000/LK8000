@@ -16,6 +16,8 @@
 #include "FlarmIdFile.h"
 #include "FlarmRadar.h"
 
+extern int XstartScreen, YstartScreen;
+
 #define SIZE0 0.0
 #define SIZE1 0.5
 #define SIZE2 0.75
@@ -291,7 +293,7 @@ int MapWindow::HeightToY(double fHeight, DiagrammStruct* psDia)
   if (hmax==hmin) hmax++; // RECOVER DIVISION BY ZERO!
   double gfh = (fHeight-hmin)/(hmax-hmin);
   int yPos = (int)(gfh*(psDia->rc.top-psDia->rc.bottom)+y0)-1;
-  if(yPos < psDia->rc.top) yPos = psDia->rc.top-1;
+//  if(yPos < psDia->rc.top) yPos = psDia->rc.top-1;
   if(yPos > psDia->rc.bottom) yPos = psDia->rc.bottom+1;
   return yPos;
 //  fHeigh
@@ -487,6 +489,7 @@ COLORREF rgb_targetlinecol = RGB_RED;
 double fPlaneSize = 1.0;
 double fOwnTopPlaneSize = 1.0;
 double fTopViewPlaneSize = 1.0;
+static int aiSortArray[FLARM_MAX_TRAFFIC];
 /*********************************************************************************
  * change colors on inversion
  *********************************************************************************/
@@ -553,43 +556,6 @@ for(i=0; i < NUMAIRCRAFTPTS; i++)
 
 static short iTurn =0;
 
-
-switch(LKevent)
-{
-  case LKEVENT_UP:
-    fScaleFact /= 1.5;
-  break;
-  case LKEVENT_DOWN:
-    fScaleFact *= 1.5;
-  break;
-
-  case LKEVENT_LONGCLICK:
-		bTrace++;
-		bTrace %= 3;
-  break;
-
-  case LKEVENT_PAGEUP:
-//	if(SPLITSCREEN_FACTOR == SIZE1) SPLITSCREEN_FACTOR = SIZE0;
-	if(SPLITSCREEN_FACTOR == SIZE2) SPLITSCREEN_FACTOR = SIZE1;
-	if(SPLITSCREEN_FACTOR == SIZE3) SPLITSCREEN_FACTOR = SIZE2;
-  break;
-  case LKEVENT_PAGEDOWN:
-	if(SPLITSCREEN_FACTOR == SIZE2) SPLITSCREEN_FACTOR = SIZE3;
-	if(SPLITSCREEN_FACTOR == SIZE1) SPLITSCREEN_FACTOR = SIZE2;
-//	if(SPLITSCREEN_FACTOR == SIZE0) SPLITSCREEN_FACTOR = SIZE1;
-  break;
-  case LKEVENT_ENTER:
-      iTurn = 	(iTurn+1)%2;
-      switch(iTurn)
-      {
-        case 0: {RADAR_TURN = 90; ASYMETRIC_FACTOR = 0.7 ; } break;
-        case 1: {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; } break;
-      }
-  break;
-  default:
-  break;
-}
-LKevent=LKEVENT_NONE; /* remove event from list */
 fScaleFact = max (fScaleFact, MIN_DIST_SCALE); /* check ranges */
 fScaleFact = min (fScaleFact, MAX_DIST_SCALE);/* check ranges */
 
@@ -604,8 +570,66 @@ double fMaxHeight  ;
 double fMinHeight  ;
 double fx,fy;
 DiagrammStruct sDia;
+static RECT PositionTopView[FLARM_MAX_TRAFFIC];
 
 
+/****************************************************************/
+
+BOOL bFound = false;
+switch(LKevent)
+{
+  case LKEVENT_UP:
+    fScaleFact /= 1.5;
+  break;
+  case LKEVENT_DOWN:
+    fScaleFact *= 1.5;
+  break;
+
+  case LKEVENT_LONGCLICK:
+	    for (i=0; i < nEntrys; i++)
+	    {
+	    	if( PtInRect(XstartScreen,YstartScreen, PositionTopView[aiSortArray[i]])  )
+	    	{
+	    	  for (j = 0; j < FLARM_MAX_TRAFFIC; j++ )
+	    		if(DrawInfo.FLARM_Traffic[aiSortArray[i]].ID == LKTraffic[j].ID)
+	    		{
+
+	    	      dlgLKTrafficDetails( j);
+	    		}
+
+	    	  bFound = true;
+	    	}
+	    }
+	    if(!bFound)
+	    {
+		  bTrace++;
+		  bTrace %= 3;
+	    }
+  break;
+
+  case LKEVENT_PAGEUP:
+//	if(SPLITSCREEN_FACTOR == SIZE1) SPLITSCREEN_FACTOR = SIZE0;
+	  if(SPLITSCREEN_FACTOR == SIZE2) SPLITSCREEN_FACTOR = SIZE1;
+	  if(SPLITSCREEN_FACTOR == SIZE3) SPLITSCREEN_FACTOR = SIZE2;
+  break;
+  case LKEVENT_PAGEDOWN:
+	  if(SPLITSCREEN_FACTOR == SIZE2) SPLITSCREEN_FACTOR = SIZE3;
+	  if(SPLITSCREEN_FACTOR == SIZE1) SPLITSCREEN_FACTOR = SIZE2;
+//	if(SPLITSCREEN_FACTOR == SIZE0) SPLITSCREEN_FACTOR = SIZE1;
+  break;
+  case LKEVENT_ENTER:
+      iTurn = 	(iTurn+1)%2;
+      switch(iTurn)
+      {
+        case 0: {RADAR_TURN = 90; ASYMETRIC_FACTOR = 0.7 ; } break;
+        case 1: {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; } break;
+      }
+  break;
+  default:
+  break;
+}
+LKevent=LKEVENT_NONE; /* remove event from list */
+/****************************************************************/
 
   GPSlat = DrawInfo.Latitude;
   GPSlon = DrawInfo.Longitude;
@@ -852,6 +876,7 @@ RECT rcc = rct;
 	  Circle(hdc, x_middle, y_middle, iCircleRadius, rcc, true, false );
 	  fRing = fRing + xtick;
 	}
+
 	Rectangle(hdc,rct.left , rct.bottom ,rct.right, rct.top);
 
 	SelectObject(hdc, hOrangePen);
@@ -873,7 +898,7 @@ RECT rcc = rct;
 	 ***********************************************/
 	  nEntrys=0;
 
-	 int aiSortArray[FLARM_MAX_TRAFFIC];
+
 
   // if(DrawInfo.FLARM_Traffic[i].Average30s > -1.5)
 
@@ -933,7 +958,6 @@ RECT rcc = rct;
 		asFLRAMPos[i].fx = fFlarmDist * sin(fDistBearing*DEG_TO_RAD);
 		asFLRAMPos[i].fy = fFlarmDist * cos(fDistBearing*DEG_TO_RAD);
 		asFLRAMPos[i].fAlt = fFlarmAlt;
-
 		asFLRAMPos[i].iColorIdx = (int)(2*DrawInfo.FLARM_Traffic[i].Average30s    -0.5)+NO_VARIO_COLORS/2;
 		asFLRAMPos[i].iColorIdx = max( asFLRAMPos[i].iColorIdx, 0);
 		asFLRAMPos[i].iColorIdx = min( asFLRAMPos[i].iColorIdx, NO_VARIO_COLORS-1);
@@ -994,15 +1018,19 @@ for (j=0; j<nEntrys; j++)
 	fFlarmAlt = asFLRAMPos[i].fAlt;
 	int x  = DistanceToX(fx,  &sTopDia);
 	int y  = HeightToY  (fy,  &sTopDia);
+	PositionTopView[i].left   = x - 20;
+	PositionTopView[i].right  = x + 20;
+	PositionTopView[i].top    = y - 10;
+	PositionTopView[i].bottom = y + 10;
 	TextInBoxMode_t displaymode = {1};
 	displaymode.NoSetFont = 1;
 	displaymode.Border=1;
 
 
-    if(fx > sTopDia.fXMin )  /* sing sight ? */
-    if(fx < sTopDia.fXMax )
-    if(fy < sTopDia.fYMax )
-	if(fy > sTopDia.fYMin )
+//    if(fx > sTopDia.fXMin )  /* sing sight ? */
+//    if(fx < sTopDia.fXMax )
+//    if(fy < sTopDia.fYMax )
+//	if(fy > sTopDia.fYMin )
 	if(fFlarmAlt < sDia.fYMax )
 	if(fFlarmAlt > sDia.fYMin )
 	{
@@ -1194,6 +1222,10 @@ if(bSideview)
   SelectObject(hdc, LK8InfoNormalFont);
   _stprintf(lbuffer,TEXT("RDR.%d"),bTrace);
   LKWriteText(hdc, lbuffer, column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+
+
+
+
 
 SelectObject(hdc, hfOldFont);
 SelectObject(hdc, hOldPen);

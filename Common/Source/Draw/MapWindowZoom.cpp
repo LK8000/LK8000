@@ -17,6 +17,7 @@ const double MapWindow::Zoom::SCALE_PG_PANORAMA_INIT = 7.5;
 const double MapWindow::Zoom::SCALE_INVALID_INIT     = 50.0;
 
 MapWindow::Zoom::Zoom():
+  _bMapScale (true),
   _inited(false),
   _autoZoom(false), _circleZoom(true), _bigZoom(false),
   _scale(0), _realscale(0),  _requestedScale(&_modeScale[SCALE_CRUISE]),
@@ -367,10 +368,14 @@ void MapWindow::Zoom::UpdateMapScale()
 /** 
  * @brief Recalculates zoom parameters
  */
+
+
+
 void MapWindow::Zoom::ModifyMapScale()
 {
   // limit zoomed in so doesn't reach silly levels
-  *_requestedScale = LimitMapScale(*_requestedScale); // FIX VENTA remove limit
+  if(_bMapScale)
+    *_requestedScale = LimitMapScale(*_requestedScale); // FIX VENTA remove limit
   _scaleOverDistanceModify = *_requestedScale / DISTANCEMODIFY;
   LKASSERT(_scaleOverDistanceModify!=0);
   _resScaleOverDistanceModify = GetMapResolutionFactor() / _scaleOverDistanceModify;

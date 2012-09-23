@@ -217,6 +217,7 @@ class MapWindow {
     };
     
     friend class MapWindow;
+    bool  _bMapScale;
     bool _inited;                                 /**< @brief Object inited flag */
     bool _autoZoom;                               /**< @brief Stores information if AutoZoom is enabled */
     bool _circleZoom;                             /**< @brief Stores information if CirclingZoom is enabled */
@@ -230,7 +231,7 @@ class MapWindow {
     double _resScaleOverDistanceModify;
     double _drawScale;
     double _invDrawScale;
-    
+
     double RequestedScale() const        { return *_requestedScale; }
     void RequestedScale(double value)    { *_requestedScale = value; }
     void CalculateTargetPanZoom();
@@ -243,6 +244,7 @@ class MapWindow {
     double GetPgCruiseZoomInitValue(int parameter_number) const;
 
   public:
+
     Zoom();
     void Reset();
     
@@ -263,7 +265,7 @@ class MapWindow {
     void EventAutoZoom(int vswitch);
     void EventSetZoom(double value);
     void EventScaleZoom(int vswitch);
-    
+    void SetLimitMapScale(BOOL bOnOff)    {  	_bMapScale =	bOnOff; };
     void UpdateMapScale();
     void ModifyMapScale();
 

@@ -61,7 +61,7 @@ bool bInvCol = INVERTCOLORS;
   COLORREF RED_COL       = RGB_LIGHTORANGE;
   COLORREF BLUE_COL      = RGB_BLUE;
   COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
-
+  zoom.SetLimitMapScale(false);
   /****************************************************************/
 
 //  SelectObject(hdc, LK8InfoNormalFont);
@@ -556,6 +556,7 @@ double fOldScale  =  zoom.Scale();
   DrawNorthArrow     ( hdc, GPSbrg          , rct.right - NIBLSCALE(13),  rct.top   + NIBLSCALE(13));
   RenderBearingDiff( hdc, wpt_brg,  &sDia );
   SelectObject(hdc,hfOld/* Sender->GetFont()*/);
+  zoom.SetLimitMapScale(true);
 }
 
 
