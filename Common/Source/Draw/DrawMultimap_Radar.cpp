@@ -24,7 +24,7 @@ void MapWindow::LKDrawMultimap_Radar(HDC hdc, const RECT rc)
 	// init statics here and then clear init to false
 	DoInit[MDI_MAPASP]=false;
   }
-
+#ifdef INFOWRITE_KEY
   // 
   // X,Y coordinates of last clicked point on screen
   // These coordinates are related to any point clicked, even for a page flip, for bottom bar etc.
@@ -92,7 +92,7 @@ void MapWindow::LKDrawMultimap_Radar(HDC hdc, const RECT rc)
 		break;
   }
 
-#ifdef INFOWRITE_KEY
+
   LKWriteBoxedText(hdc, ttext, 1, 50 , 0, WTALIGN_LEFT);
 
   //
