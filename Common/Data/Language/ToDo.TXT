@@ -217,4 +217,11 @@ ATTENTION:
 _@M2230_ "Force\nLanded"
 _@M1799_ "Stop moving!"
 
+-_@M1290_ "Showing towards heading"
++_@M1290_ "Heading"
+
+_@M2231_ "no trace"
++_@M2232_ "climb trace"
++_@M2233_ "climb/sink trace"
+
 
