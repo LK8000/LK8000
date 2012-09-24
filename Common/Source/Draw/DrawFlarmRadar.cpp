@@ -18,6 +18,7 @@
 
 extern int XstartScreen, YstartScreen;
 
+
 #define SIZE0 0.0
 #define SIZE1 0.5
 #define SIZE2 0.75
@@ -293,7 +294,7 @@ int MapWindow::HeightToY(double fHeight, DiagrammStruct* psDia)
   if (hmax==hmin) hmax++; // RECOVER DIVISION BY ZERO!
   double gfh = (fHeight-hmin)/(hmax-hmin);
   int yPos = (int)(gfh*(psDia->rc.top-psDia->rc.bottom)+y0)-1;
-//  if(yPos < psDia->rc.top) yPos = psDia->rc.top-1;
+  if(yPos < psDia->rc.top) yPos = psDia->rc.top-1;
   if(yPos > psDia->rc.bottom) yPos = psDia->rc.bottom+1;
   return yPos;
 //  fHeigh
@@ -355,7 +356,7 @@ void RenderFlarmPlaneSideview(HDC hdc, const RECT rc,double fDist, double fAltit
   int DIA = (BODY + PROFIL);
 
   /* both wings */
-  POINT AircraftWing
+   POINT AircraftWing
   [13] = {
       {(int)(fCos * BODY              ) ,  -DIA},     // 1
       {(int)(fCos * (int)( FACT*BODY) ), -PROFIL},    // 2
@@ -373,7 +374,7 @@ void RenderFlarmPlaneSideview(HDC hdc, const RECT rc,double fDist, double fAltit
   };
 
 
-  POINT AircraftWingL
+    POINT AircraftWingL
   [7] = {
 
       {(int)(0 * -BODY                ),  DIA       },    // 1
@@ -386,7 +387,7 @@ void RenderFlarmPlaneSideview(HDC hdc, const RECT rc,double fDist, double fAltit
   };
 
 
-  POINT AircraftWingR
+   POINT AircraftWingR
   [7] = {
       {(int)(0 * BODY                 ) ,  -DIA    },   // 1
       {(int)(fCos * (int)( FACT*BODY) ) , -PROFIL  },   // 2
@@ -399,7 +400,7 @@ void RenderFlarmPlaneSideview(HDC hdc, const RECT rc,double fDist, double fAltit
 
 
 
-  POINT AircraftTail
+   POINT AircraftTail
   [5] = {
       {(int)(fCos *  TAIL - fSin*TUBE), -FINH},            // 1
       {(int)(fCos *  TAIL - fSin*TUBE), -FINH +PROFIL},    // 2
@@ -411,6 +412,7 @@ void RenderFlarmPlaneSideview(HDC hdc, const RECT rc,double fDist, double fAltit
  // int MapWindow::DistanceToX(double fDist, const RECT rc,  DiagrammStruct* psDia)
   Start.x =  MapWindow::DistanceToX(fDist,  psDia);
   Start.y =  MapWindow::HeightToY(fAltitude,  psDia);
+
 
 
 
@@ -462,16 +464,24 @@ void MapWindow::LKDrawFlarmRadar(HDC hdc, const RECT rci)
 {
 RECT rc  = rci; /* rectangle for sideview */
 RECT rct = rc;  /* rectangle for topview */
-rct.bottom = (long)((rc.bottom-rc.top  )*SPLITSCREEN_FACTOR); /* 2/3 for topview */
-rc.top     = rct.bottom;
+
 int i,j;
 static double fScaleFact = 5.0;
 static int iCircleSize    = 9;
 static int iRectangleSize = 5;
 static short scaler[5];
 static short tscaler=0;
-static short column0;
 static POINT Arrow[5];
+static RECT PositionTopView[FLARM_MAX_TRAFFIC];
+static RECT PositionSideView[FLARM_MAX_TRAFFIC];
+static RECT OwnPosTopView;
+static RECT OwnPosSideView;
+static RECT UpperLeft;
+UpperLeft.left  = 0;
+UpperLeft.right =(long)  ((double)(rci.right-rci.left)*0.2);
+UpperLeft.top   = 0;
+UpperLeft.bottom=(long) ((double)(rci.bottom-rci.top)*0.1);
+int iTouchAreaSize = 15;
 HPEN   hOrangePen ;
 HPEN   hGreenPen ;
 HPEN   hWhitePen ;
@@ -480,7 +490,7 @@ HBRUSH hOldBrush;
 HPEN   hDrawPen ;
 HBRUSH hDrawBrush;
 bool bSideview = true;
-
+static int iTurn =0;
 
 HFONT hfOldFont = (HFONT)SelectObject(hdc, LK8PanelUnitFont);
 COLORREF rgbGridColor = RGB_DARKGREEN;
@@ -490,6 +500,80 @@ double fPlaneSize = 1.0;
 double fOwnTopPlaneSize = 1.0;
 double fTopViewPlaneSize = 1.0;
 static int aiSortArray[FLARM_MAX_TRAFFIC];
+
+
+
+/****************************************************************/
+
+BOOL bFound = false;
+switch(LKevent)
+{
+  case LKEVENT_UP:
+    fScaleFact /= ZOOMFACTOR;
+  break;
+  case LKEVENT_DOWN:
+    fScaleFact *= ZOOMFACTOR;
+  break;
+
+  case LKEVENT_LONGCLICK:
+	if( PtInRect(XstartScreen,YstartScreen, OwnPosSideView)||
+	    PtInRect(XstartScreen,YstartScreen, OwnPosTopView  ) )
+	{
+	  iTurn = 	(iTurn+1)%2;
+	  switch(iTurn)
+	  {
+	 	case 0: {RADAR_TURN = 90; ASYMETRIC_FACTOR = 0.7 ; } break;
+	   	case 1: {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; } break;
+	  }
+	}
+	else
+      if( PtInRect(XstartScreen,YstartScreen, UpperLeft))
+      {
+	    bTrace++;
+	    bTrace %= 3;
+      }
+      else
+      {
+	    for (i=0; i < nEntrys; i++)
+		{
+		  if( PtInRect(XstartScreen,YstartScreen, PositionTopView[aiSortArray[i]])||
+		      PtInRect(XstartScreen,YstartScreen, PositionSideView[aiSortArray[i]]) )
+		  {
+		    for (j = 0; j < FLARM_MAX_TRAFFIC; j++ )
+			  if(DrawInfo.FLARM_Traffic[aiSortArray[i]].ID == LKTraffic[j].ID)
+			  {
+			    dlgLKTrafficDetails( j);
+			  }
+			    bFound = true;
+			  }
+		  }
+        }
+  break;
+
+  case LKEVENT_PAGEUP:
+//	if(SPLITSCREEN_FACTOR == SIZE1) SPLITSCREEN_FACTOR = SIZE0;
+	  if(SPLITSCREEN_FACTOR == SIZE2) SPLITSCREEN_FACTOR = SIZE1;
+	  if(SPLITSCREEN_FACTOR == SIZE3) SPLITSCREEN_FACTOR = SIZE2;
+  break;
+  case LKEVENT_PAGEDOWN:
+	  if(SPLITSCREEN_FACTOR == SIZE2) SPLITSCREEN_FACTOR = SIZE3;
+	  if(SPLITSCREEN_FACTOR == SIZE1) SPLITSCREEN_FACTOR = SIZE2;
+//	if(SPLITSCREEN_FACTOR == SIZE0) SPLITSCREEN_FACTOR = SIZE1;
+  break;
+  case LKEVENT_ENTER:
+
+  break;
+  default:
+  break;
+}
+LKevent=LKEVENT_NONE; /* remove event from list */
+if(SPLITSCREEN_FACTOR >0.95)
+	bSideview = false;
+
+rct.bottom = (long)((rc.bottom-rc.top  )*SPLITSCREEN_FACTOR); /* 2/3 for topview */
+rc.top     = rct.bottom;
+/****************************************************************/
+
 /*********************************************************************************
  * change colors on inversion
  *********************************************************************************/
@@ -525,7 +609,6 @@ hOldPen   = (HPEN)SelectObject(hdc, hDrawPen);
 hOldBrush = (HBRUSH)SelectObject(hdc, hDrawBrush);
 
 
-
 #define NUMAIRCRAFTPTS 16
 POINT AircraftTop[NUMAIRCRAFTPTS] = {
   { 1,-6},
@@ -554,13 +637,12 @@ for(i=0; i < NUMAIRCRAFTPTS; i++)
 }
 
 
-static short iTurn =0;
+
 
 fScaleFact = max (fScaleFact, MIN_DIST_SCALE); /* check ranges */
 fScaleFact = min (fScaleFact, MAX_DIST_SCALE);/* check ranges */
 
-if(SPLITSCREEN_FACTOR >0.95)
-	bSideview = false;
+
 
 BOOL bLandscape = true;
 
@@ -570,72 +652,15 @@ double fMaxHeight  ;
 double fMinHeight  ;
 double fx,fy;
 DiagrammStruct sDia;
-static RECT PositionTopView[FLARM_MAX_TRAFFIC];
 
 
-/****************************************************************/
 
-BOOL bFound = false;
-switch(LKevent)
-{
-  case LKEVENT_UP:
-    fScaleFact /= 1.5;
-  break;
-  case LKEVENT_DOWN:
-    fScaleFact *= 1.5;
-  break;
-
-  case LKEVENT_LONGCLICK:
-	    for (i=0; i < nEntrys; i++)
-	    {
-	    	if( PtInRect(XstartScreen,YstartScreen, PositionTopView[aiSortArray[i]])  )
-	    	{
-	    	  for (j = 0; j < FLARM_MAX_TRAFFIC; j++ )
-	    		if(DrawInfo.FLARM_Traffic[aiSortArray[i]].ID == LKTraffic[j].ID)
-	    		{
-
-	    	      dlgLKTrafficDetails( j);
-	    		}
-
-	    	  bFound = true;
-	    	}
-	    }
-	    if(!bFound)
-	    {
-		  bTrace++;
-		  bTrace %= 3;
-	    }
-  break;
-
-  case LKEVENT_PAGEUP:
-//	if(SPLITSCREEN_FACTOR == SIZE1) SPLITSCREEN_FACTOR = SIZE0;
-	  if(SPLITSCREEN_FACTOR == SIZE2) SPLITSCREEN_FACTOR = SIZE1;
-	  if(SPLITSCREEN_FACTOR == SIZE3) SPLITSCREEN_FACTOR = SIZE2;
-  break;
-  case LKEVENT_PAGEDOWN:
-	  if(SPLITSCREEN_FACTOR == SIZE2) SPLITSCREEN_FACTOR = SIZE3;
-	  if(SPLITSCREEN_FACTOR == SIZE1) SPLITSCREEN_FACTOR = SIZE2;
-//	if(SPLITSCREEN_FACTOR == SIZE0) SPLITSCREEN_FACTOR = SIZE1;
-  break;
-  case LKEVENT_ENTER:
-      iTurn = 	(iTurn+1)%2;
-      switch(iTurn)
-      {
-        case 0: {RADAR_TURN = 90; ASYMETRIC_FACTOR = 0.7 ; } break;
-        case 1: {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; } break;
-      }
-  break;
-  default:
-  break;
-}
-LKevent=LKEVENT_NONE; /* remove event from list */
-/****************************************************************/
 
   GPSlat = DrawInfo.Latitude;
   GPSlon = DrawInfo.Longitude;
   GPSalt = DrawInfo.Altitude;
   GPSbrg = DrawInfo.TrackBearing;
-    
+  DoTraffic(&GPS_INFO,&CALCULATED_INFO);
   if (DrawInfo.BaroAltitudeAvailable && EnableNavBaroAltitude) {
    	DerivedDrawInfo.NavAltitude = DrawInfo.BaroAltitude;
   } else {
@@ -651,10 +676,12 @@ static bool bFirstCall = false;
 	{
 		ResetTraces();
 		bFirstCall = true;
+
 	}
 
 
   if (DoInit[MDI_FLARMRADAR]) {
+
 	  fScaleFact =5.0;
 	  ResetTraces();
 	  switch (ScreenSize) {
@@ -720,41 +747,48 @@ static bool bFirstCall = false;
 	Arrow[4].y = scaler[1];
 
 	// Stuff for raw 0 mapspace
+	/*
 	#define HEADRAW       NIBLSCALE(6)
+
 	SIZE MITextSize;
 	SelectObject(hdc, LK8PanelMediumFont);
 	GetTextExtentPoint(hdc, _T("4.4"), 3, &MITextSize);
 	column0=MITextSize.cx+LEFTLIMITER+NIBLSCALE(5);
 	SelectObject(hdc, LK8PanelUnitFont);
+*/
+
+	  switch (ScreenSize) {
+		case ss480x640:
+		case ss480x800:
+		case ss272x480:
+		case ss240x320:
+			bLandscape = false;
+		break;
+		case ss896x672:
+		case ss800x480:
+		case ss640x480:
+		case ss320x240:
+		case ss480x272:
+		case ss720x408:
+		case ss480x234:
+		case ss400x240:
+		default:
+		  bLandscape = true;
+		break;
+	}
+
+
+	if(   bLandscape)
+	  {RADAR_TURN = 90; ASYMETRIC_FACTOR = 0.7 ; }
+	else
+	  {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; };
+
 
 
 	DoInit[MDI_FLARMRADAR]=false;
   }
 
 
-  switch (ScreenSize) {
-	case ss480x640:
-	case ss480x800:
-	case ss272x480:
-	case ss240x320:
-		bLandscape = false;
-	break;
-	case ss896x672:
-	case ss800x480:
-	case ss640x480:
-	case ss320x240:
-	case ss480x272:
-	case ss720x408:
-	case ss480x234:
-	case ss400x240:
-	default:
-	  bLandscape = true;
-	break;
-}
-if(   bLandscape)
-  {RADAR_TURN = 90; ASYMETRIC_FACTOR = 0.7 ; }
-else
-  {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; };
 
 
   /****************************************************************************************************
@@ -854,6 +888,10 @@ sTopDia.fYMax =  (sDia.fXMax-sDia.fXMin)/2 * fRatio;
 
  int x_middle = DistanceToX  (0, &sTopDia); // (rct.right-rct.left)/2;
  int y_middle = HeightToY    (0, &sTopDia);//(rct.bottom-rct.top)/2;
+ OwnPosTopView.left   = x_middle-iTouchAreaSize;
+ OwnPosTopView.right  = x_middle+iTouchAreaSize;
+ OwnPosTopView.top    = y_middle-iTouchAreaSize;
+ OwnPosTopView.bottom = y_middle+iTouchAreaSize;
 
 
 /*******************************************************
@@ -876,6 +914,7 @@ RECT rcc = rct;
 	  Circle(hdc, x_middle, y_middle, iCircleRadius, rcc, true, false );
 	  fRing = fRing + xtick;
 	}
+
 
 	Rectangle(hdc,rct.left , rct.bottom ,rct.right, rct.top);
 
@@ -1018,10 +1057,10 @@ for (j=0; j<nEntrys; j++)
 	fFlarmAlt = asFLRAMPos[i].fAlt;
 	int x  = DistanceToX(fx,  &sTopDia);
 	int y  = HeightToY  (fy,  &sTopDia);
-	PositionTopView[i].left   = x - 20;
-	PositionTopView[i].right  = x + 20;
-	PositionTopView[i].top    = y - 10;
-	PositionTopView[i].bottom = y + 10;
+	PositionTopView[i].left   = x - iTouchAreaSize;
+	PositionTopView[i].right  = x + iTouchAreaSize;
+	PositionTopView[i].top    = y - iTouchAreaSize;
+	PositionTopView[i].bottom = y + iTouchAreaSize;
 	TextInBoxMode_t displaymode = {1};
 	displaymode.NoSetFont = 1;
 	displaymode.Border=1;
@@ -1105,8 +1144,6 @@ for (j=0; j<nEntrys; j++)
 
 if(bCenter == false)
 {
-//  if(bTrace)
-//    iNoDos +=  DrawFlarmObjectTrace(hdc, fScaleFact,&sTopDia, FLARM_MAX_TRAFFIC);
   SelectObject(hdc, hDrawBrush);
   SelectObject(hdc, hDrawPen);
   SelectObject(hdc,GetStockObject(BLACK_PEN));
@@ -1114,6 +1151,7 @@ if(bCenter == false)
   Polygon(hdc,AircraftTop,NUMAIRCRAFTPTS);
   SelectObject(hdc, hDrawPen);
 }
+
 
 /*************************************************************************
  * sideview
@@ -1131,6 +1169,18 @@ for (i=0; i < nEntrys; i++)
  ***********************************************/
 if(bSideview)
 {
+  /***********************************************/
+	/*
+	   HPEN hpGreen   = (HPEN)  CreatePen(PS_SOLID, IBLSCALE(1), RGB_BLACK);
+	   HPEN oldPen = (HPEN) SelectObject(hdc, hpGreen);
+	  HBRUSH oldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(BLACK_BRUSH));
+	     Rectangle(hdc,rc.left , rc.bottom ,rc.right, rc.top);
+	   SelectObject(hdc, oldPen);
+	   SelectObject(hdc, oldBrush);
+
+	   DeleteObject(hpGreen);
+*/
+
   bCenter = false;
   for (j=0; j<nEntrys; j++)
   {
@@ -1143,11 +1193,15 @@ if(bSideview)
 	fFlarmAlt = asFLRAMPos[i].fAlt;
 	int x  = DistanceToX(fx, &sTopDia);
 	int hy = HeightToY  (fFlarmAlt, &sDia);
+	PositionSideView[i].left   = x  - iTouchAreaSize;
+	PositionSideView[i].right  = x  + iTouchAreaSize;
+	PositionSideView[i].top    = hy - iTouchAreaSize;
+	PositionSideView[i].bottom = hy + iTouchAreaSize;
 	TextInBoxMode_t displaymode = {1};
 	displaymode.NoSetFont = 1;
 	displaymode.Border=1;
-    if(fx > sTopDia.fXMin )  /* sing sight ? */
-    if(fx < sTopDia.fXMax )
+  //  if(fx > sTopDia.fXMin )  /* in sight ? */
+  //  if(fx < sTopDia.fXMax )
 	if(fFlarmAlt < sDia.fYMax )
 	if(fFlarmAlt > sDia.fYMin )
 	{
@@ -1197,7 +1251,7 @@ if(bSideview)
 	   */
 	  if(DrawInfo.FLARM_Traffic[i].Locked)
 	  {
-		int  h0 = HeightToY(GPSlat,&sDia);
+		int  h0 = HeightToY(0,&sDia);
 		DrawDashLine(hdc, 4, (POINT){x_middle,       h0},(POINT){ x, hy} ,rgb_targetlinecol, rc );
 	  }
 	}
@@ -1206,24 +1260,25 @@ if(bSideview)
    * draw own plane position
    *************************************************************************/
   SelectObject(hdc, hDrawBrush);
+  OwnPosSideView.left   = x_middle-iTouchAreaSize;
+  OwnPosSideView.right  = x_middle+iTouchAreaSize;
+  OwnPosSideView.top    = HeightToY(0,&sDia)-iTouchAreaSize;
+  OwnPosSideView.bottom = HeightToY(0,&sDia)+iTouchAreaSize;
 
   if(!bCenter)
     RenderFlarmPlaneSideview( hdc, rc,0 , 0,RADAR_TURN, &sDia , fPlaneSize);
 }
 
-  //
-  // Draw MapSpace index on top left screen
-  //
-/*
-  _stprintf(lbuffer,TEXT("%d.%d"),ModeIndex,CURTYPE+1);
-  SelectObject(hdc, LK8PanelMediumFont);
-  LKWriteText(hdc, lbuffer, LEFTLIMITER, rci.top+TOPLIMITER , 0,  WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
-*/
+
   SelectObject(hdc, LK8InfoNormalFont);
-  _stprintf(lbuffer,TEXT("RDR.%d"),bTrace);
-  LKWriteText(hdc, lbuffer, column0, HEADRAW-NIBLSCALE(1) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
-
-
+  switch(bTrace)
+  {
+    default:
+    case 0: _stprintf(lbuffer,TEXT("RDR %s"), gettext(TEXT("_@M2231_"))) ; break; //  _@M2231_ "no trace"
+    case 1: _stprintf(lbuffer,TEXT("RDR %s"), gettext(TEXT("_@M2233_"))); break; //  _@M2233_ "climb/sink trace"
+    case 2: _stprintf(lbuffer,TEXT("RDR %s"), gettext(TEXT("_@M2232_"))); break; //  _@M2232_ "climb trace"
+  }
+  LKWriteText(hdc, lbuffer, 10 /*column0*/, NIBLSCALE(5) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
 
 
 

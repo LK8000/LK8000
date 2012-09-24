@@ -114,6 +114,7 @@ SelectObject(hdc, oldBPen);
 
 void DrawNorthArrow(HDC hdc, double fAngle, int x, int y)
 {
+BOOL bInvCol = true ; //INVERTCOLORS
   // Draw north arrow
   POINT Arrow[5] = { {0,-11}, {-5,9}, {0,3}, {5,9}, {0,-11}};
   DrawWindRoseDirection( hdc, AngleLimit360( fAngle ),  x,  y + NIBLSCALE(18));
@@ -122,13 +123,13 @@ void DrawNorthArrow(HDC hdc, double fAngle, int x, int y)
   HPEN	oldBPen ;
   HBRUSH oldBrush ;
   oldBPen= (HPEN) SelectObject(hdc, GetStockObject(WHITE_PEN));
-  if(INVERTCOLORS)
+  if(bInvCol)
 	  oldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(BLACK_BRUSH));
   else
 	  oldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(WHITE_BRUSH));
   Polygon(hdc,Arrow,5);
 
-  if(INVERTCOLORS)
+  if(bInvCol)
 	SelectObject(hdc, GetStockObject(WHITE_PEN));
   else
 	SelectObject(hdc, GetStockObject(BLACK_PEN));
@@ -143,6 +144,7 @@ void DrawNorthArrow(HDC hdc, double fAngle, int x, int y)
 
 void DrawWindRoseDirection(HDC hdc, double fAngle, int x, int y)
 {
+BOOL bInvCol = true ; //INVERTCOLORS
 TCHAR text[80];
 SIZE tsize;
 #define DEG_RES 45
@@ -172,7 +174,7 @@ switch (iHead)
 };
 
 SetBkMode(hdc, TRANSPARENT);
- if(INVERTCOLORS)
+ if(bInvCol)
    SetTextColor(hdc, RGB_BLACK);
  else
    SetTextColor(hdc, RGB_WHITE);
@@ -249,7 +251,7 @@ RECT rc	= psDia->rc;
 // draw aircraft
 void RenderPlaneSideview(HDC hdc, double fDist, double fAltitude,double brg, DiagrammStruct* psDia )
 {
-
+BOOL bInvCol = true ; //INVERTCOLORS
 RECT rc =	psDia->rc;
   #define NO_AP_PTS 17
   int deg = DEG_TO_INT(AngleLimit360(brg));
@@ -346,7 +348,7 @@ RECT rc =	psDia->rc;
   HBRUSH oldBrush;
   HPEN   oldPen;
 /*
-  if(INVERTCOLORS)
+  if(bInvCol)
   {
     oldPen   = (HPEN)SelectObject(hdc, GetStockObject(WHITE_PEN));
     oldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(BLACK_BRUSH));
@@ -622,9 +624,15 @@ double fFact = 1.0 ;
    DrawAircraft(hdc, Orig_Aircraft);
    DrawDashLine(hdc,3, line[0], line[1],  Sideview_TextColor, rct);
 
-   line[0].y = rct.bottom-3;
-   line[1].y = line[0].y;
-   DrawDashLine(hdc,3, line[0], line[1],  Sideview_TextColor, rct);
+
+   HPEN hpGreen = (HPEN) CreatePen(PS_SOLID, IBLSCALE(1), RGB_BLACK);
+   HPEN oldPen  = (HPEN) SelectObject(hdc, hpGreen);
+   SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+   Rectangle(hdc,rct.left-1 , rct.bottom ,rct.right+2, rct.top);
+  //   Rectangle(hdc,rc.left , rc.bottom ,rc.right, rc.top-1);
+   SelectObject(hdc, oldPen);
+   DeleteObject(hpGreen);
+
 
    MapRect = oldRec;
    MapWindow::zoom.RequestedScale(fOldScale);

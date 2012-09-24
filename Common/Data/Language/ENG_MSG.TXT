@@ -1344,7 +1344,7 @@ _@M1286_ "ArSpcV"
 _@M1287_ "Heading"
 _@M1288_ "Showing towards next waypoint"
 _@M1289_ "Next WP"
-_@M1290_ "Showing towards heading"
+_@M1290_ "Heading"
 _@M1291_ "Near AS"
 _@M1292_ "Nearest airspace"
 _@M1293_ "Sonar ON"
@@ -1978,6 +1978,10 @@ _@M2227_ "Toggle\nWndRose"
 _@M2228_ "FLARM\nRadar"
 _@M2229_ "Reset\nOdomet"
 _@M2230_ "Force\nLanded"
+
+_@M2231_ "no trace"
+_@M2232_ "climb trace"
+_@M2233_ "climb/sink trace"
 # Reserved for custom menus up to 2300!
 
 # Note for developers: remember LKLanguage MAX_MESSAGE limit (2250)

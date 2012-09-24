@@ -218,7 +218,7 @@ rci.bottom -= BottomSize;
  	ExtTextOut(hdc,20, 5, ETO_OPAQUE, NULL, szTxt, _tcslen(szTxt), NULL);
  	SetBkMode(hdc, TRANSPARENT);
     SelectObject(hdc, hfOld);
-//   SonarNotify();
+   SonarNotify();
 
   // After using the event, WE MUST CLEAR IT, otherwise it will survive for next run.
   // This can be good for something, though, like automatic redo of last action.

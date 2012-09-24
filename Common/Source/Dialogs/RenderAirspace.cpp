@@ -35,7 +35,7 @@ void MapWindow::RenderAirspace(HDC hdc, const RECT rci) {
 
 	RECT rc  = rci; /* rectangle for sideview */
 //	rc.bottom += 4;
-bool bInvCol = INVERTCOLORS;
+bool bInvCol = true; //INVERTCOLORS;
 
 
 //	rc.bottom = rc.bottom/2;
@@ -74,6 +74,7 @@ bool bInvCol = INVERTCOLORS;
   HPEN OldPen      = (HPEN)   SelectObject(hdc, hpHorizon);
   HBRUSH OldBrush  = (HBRUSH) SelectObject(hdc, hbHorizon);
 
+
   Rectangle(hdc,rci.left,rci.top,rci.right,rci.bottom);
 
   SelectObject(hdc, OldPen);
@@ -81,7 +82,7 @@ bool bInvCol = INVERTCOLORS;
   DeleteObject(hpHorizon);
   DeleteObject(hbHorizon);
 
-  if(INVERTCOLORS)
+  if(bInvCol)
   {
   //  SetBackColor(SKY_HORIZON_COL);
     Sideview_TextColor = INV_GROUND_TEXT_COLOUR;
@@ -513,7 +514,7 @@ double fOldScale  =  zoom.Scale();
 //SelectObject(hdc, hfOld);
   } // if Sideview_asp_heading_task
 
-  //        _stprintf(text, TEXT("Mc %3.1f: "),wpt_brg);
+;
   
 
   if (!Sideview_asp_heading_task)
@@ -555,6 +556,17 @@ double fOldScale  =  zoom.Scale();
 
   DrawNorthArrow     ( hdc, GPSbrg          , rct.right - NIBLSCALE(13),  rct.top   + NIBLSCALE(13));
   RenderBearingDiff( hdc, wpt_brg,  &sDia );
+
+
+/*
+  HPEN hpGreen   = (HPEN)  CreatePen(PS_SOLID, IBLSCALE(1), RGB_BLACK);
+  HPEN oldPen = (HPEN) SelectObject(hdc, hpGreen);
+  SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+    Rectangle(hdc,rct.left , rct.bottom-1 ,rct.right, rct.top);
+    Rectangle(hdc,rc.left , rc.bottom ,rc.right, rc.top-1);
+  SelectObject(hdc, oldPen);
+  DeleteObject(hpGreen);
+*/
   SelectObject(hdc,hfOld/* Sender->GetFont()*/);
   zoom.SetLimitMapScale(true);
 }

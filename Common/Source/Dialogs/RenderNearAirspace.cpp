@@ -196,9 +196,9 @@ HFONT	 hfOldFnt = (HFONT)SelectObject(hdc,LK8PanelUnitFont/* Sender->GetFont()*/
   COLORREF RED_COL       = RGB_LIGHTORANGE;
   COLORREF BLUE_COL      = RGB_BLUE;
   COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
+  BOOL bInvCol = true; //INVERTCOLORS
 
-
-  if(INVERTCOLORS)
+  if(bInvCol)
   {
     GREEN_COL     = ChangeBrightness(GREEN_COL     , 0.6);
     RED_COL       = ChangeBrightness(RGB_RED       , 0.6);;
@@ -424,7 +424,7 @@ if(bValid)
   if (range>250.0*1000.0) xtick = 50.0;
   if (range>500.0*1000.0) xtick = 100.0;
 
-  if(INVERTCOLORS)
+  if(bInvCol)
   {
     SelectObject(hdc, GetStockObject(BLACK_PEN));
     SelectObject(hdc, GetStockObject(BLACK_BRUSH));
@@ -436,7 +436,7 @@ if(bValid)
   }
 
   SetTextColor(hdc, GROUND_TEXT_COLOUR);
-  if(INVERTCOLORS)
+  if(bInvCol)
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
 	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
 
@@ -457,7 +457,7 @@ if(bValid)
 Statistics::DrawYGrid(hdc, rc, fScale/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, fScale, true);
 
 
-  if(!INVERTCOLORS)
+  if(!bInvCol)
     SetBkMode(hdc, OPAQUE);
 
   /****************************************************************************************************
@@ -502,7 +502,7 @@ Statistics::DrawYGrid(hdc, rc, fScale/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, fS
    * draw side elements
    ****************************************************************************************************/
   SetTextColor(hdc, Sideview_TextColor);
- // if(!INVERTCOLORS)
+ // if(!bInvCol)
   SetBkMode(hdc, OPAQUE);
   HFONT hfOld2 = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
 
@@ -514,7 +514,7 @@ Statistics::DrawYGrid(hdc, rc, fScale/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, fS
 
   SelectObject(hdc, hfOld);
   SetTextColor(hdc, GROUND_TEXT_COLOUR);
-  if(INVERTCOLORS)
+  if(bInvCol)
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
 	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
 
@@ -613,7 +613,7 @@ Statistics::DrawYGrid(hdc, rc, fScale/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, fS
 
   SetBkMode(hdc, TRANSPARENT);
   SetTextColor(hdc, GROUND_TEXT_COLOUR);
-  if(INVERTCOLORS)
+  if(bInvCol)
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
 	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
 
