@@ -11,7 +11,7 @@
 #include "InputEvents.h"
 
 extern void ShowMenu();
-
+extern void MultiMapSound();
 
 void SetModeType(short modeindex, short modetype) {
 
@@ -51,6 +51,8 @@ redo:
 	if (CURMODE == MSM_WELCOME) goto redo;
 finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
+	if (ModeIndex==LKMODE_MAP) MultiMapSound();
+
 	// 120919 If we have just selected MSM_MAP, request a fast refresh. Probably from a multimap.
 	// Not sure it is really needed. Just in case, this is the right place to do it.
 	// if (MapSpaceMode == MSM_MAP) MapWindow::RefreshMap();
@@ -83,6 +85,8 @@ redo:
 	if (CURMODE == MSM_WELCOME) goto redo;
 finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
+	if (ModeIndex==LKMODE_MAP) MultiMapSound();
+
 	// 120919 If we have just selected MSM_MAP, request a fast refresh. Probably from a multimap.
 	// Not sure it is really needed. Just in case, this is the right place to do it.
 	// if (MapSpaceMode == MSM_MAP) MapWindow::RefreshMap();
@@ -354,4 +358,29 @@ ipc_previous:
 
 
 
+void MultiMapSound() {
+#ifndef DISABLEAUDIO
+	if (EnableSoundModes) {
+		switch(CURTYPE) {
+			case 1: // MP_MOVING
+				PlayResource(TEXT("IDR_WAV_MM0"));
+				break;
+			case 2: // MAPASP
+				PlayResource(TEXT("IDR_WAV_MM1"));
+				break;
+			case 3: // MP_RADAR
+				PlayResource(TEXT("IDR_WAV_MM2"));
+				break;
+			case 4:
+				PlayResource(TEXT("IDR_WAV_MM3"));
+				break;
+			case 5:
+				PlayResource(TEXT("IDR_WAV_MM4"));
+				break;
+			default:
+				break;
+		}
+	}
+#endif
+}
 

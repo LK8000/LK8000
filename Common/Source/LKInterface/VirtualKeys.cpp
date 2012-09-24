@@ -17,6 +17,7 @@
 
 void BottomSounds();
 extern bool IsMultiMap();
+extern void MultiMapSound();
 
 long VKtime=0;
 
@@ -25,7 +26,6 @@ long VKtime=0;
 int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 #define VKTIMELONG 1500
-
 	short yup, ydown;
 	static short sizeup;
 	short i, j;
@@ -422,10 +422,17 @@ gesture_right:
 				MapWindow::RefreshMap();
 				#ifndef DISABLEAUDIO
 				if (EnableSoundModes) {
-					if (CURTYPE == 0)
-						PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
-					else
-						PlayResource(TEXT("IDR_WAV_CLICK"));
+					// Notice: MultiMap has its own sounds. We come here when switching pages, but with
+					// an exception: from moving map we generate currently a direct NextModeType from
+					// MapWndProc, and thus we dont get ProcessVirtualKeys for that single case.	
+					// We should not be playing a CLICK sound while we are playing the MM tone, or
+					// it wont come up !
+					if (ModeIndex!=LKMODE_MAP) {
+						if (CURTYPE == 0)
+							PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
+						else
+							PlayResource(TEXT("IDR_WAV_CLICK"));
+					}
 				}
 				#endif
 				return 0;
@@ -438,10 +445,12 @@ gesture_left:
 				MapWindow::RefreshMap();
 				#ifndef DISABLEAUDIO
 				if (EnableSoundModes) {
-					if (CURTYPE == 0)
-						PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
-					else
-						PlayResource(TEXT("IDR_WAV_CLICK"));
+					if (ModeIndex!=LKMODE_MAP) {
+						if (CURTYPE == 0)
+							PlayResource(TEXT("IDR_WAV_HIGHCLICK"));
+						else
+							PlayResource(TEXT("IDR_WAV_CLICK"));
+					}
 				}
 				#endif
 				return 0;
