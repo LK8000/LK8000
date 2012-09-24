@@ -126,7 +126,7 @@ RECT frc = rc;
 	case MSM_MAPASP:
 		LKDrawMultimap_Asp(hdc,rc);
 		break;
-	case MSM_RADAR:
+	case MSM_MAPRADAR:
 		LKDrawMultimap_Radar(hdc,rc);
 		break;
 	case MSM_LANDABLE:

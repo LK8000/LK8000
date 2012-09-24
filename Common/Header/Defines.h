@@ -378,7 +378,7 @@
 #define MSM_INFO_CONTEST	15
 #define MSM_AIRSPACES		16
 #define MSM_THERMALS		17
-#define MSM_RADAR		18	// this is multimapped
+#define MSM_MAPRADAR		18	// this is multimapped
 #define MSM_MAPASP		19	// this is multimapped
 // turnaround point is TOP 
 // remember that arrays must count from zero, so MSM_TOP+1
