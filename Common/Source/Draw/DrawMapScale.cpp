@@ -175,7 +175,7 @@ _skip2:
 	_tcscat(Scale, sCoordinate);
 	// Paint terrain altitude only if valid terrain!
 	if (DerivedDrawInfo.TerrainValid) {
-	   _stprintf(Scale1, _T(" %d%s "),ALTITUDEMODIFY*RasterTerrain::GetTerrainHeight(GetPanLatitude(), GetPanLongitude()),
+	   _stprintf(Scale1, _T(" %.0f%s "),ALTITUDEMODIFY*RasterTerrain::GetTerrainHeight(GetPanLatitude(), GetPanLongitude()),
 		Units::GetUnitName(Units::GetUserAltitudeUnit()));
 	   _tcscat(Scale, Scale1);
 	}
