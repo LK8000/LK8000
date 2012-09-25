@@ -52,7 +52,11 @@ redo:
 finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 	if (ModeIndex==LKMODE_MAP) MultiMapSound();
-
+	// Multimaps can change zoom, and when we are back to moving map we may have missing topology items
+	if (MapSpaceMode==MSM_MAP) {
+		MapWindow::ForceVisibilityScan=true;
+		MapWindow::RefreshMap();
+	}
 	// 120919 If we have just selected MSM_MAP, request a fast refresh. Probably from a multimap.
 	// Not sure it is really needed. Just in case, this is the right place to do it.
 	// if (MapSpaceMode == MSM_MAP) MapWindow::RefreshMap();
@@ -86,6 +90,10 @@ redo:
 finish:
 	SelectMapSpace( ModeTable[ModeIndex][CURTYPE] );
 	if (ModeIndex==LKMODE_MAP) MultiMapSound();
+	if (MapSpaceMode==MSM_MAP) {
+		MapWindow::ForceVisibilityScan=true;
+		MapWindow::RefreshMap();
+	}
 
 	// 120919 If we have just selected MSM_MAP, request a fast refresh. Probably from a multimap.
 	// Not sure it is really needed. Just in case, this is the right place to do it.
