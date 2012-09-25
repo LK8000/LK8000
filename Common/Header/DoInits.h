@@ -62,6 +62,7 @@
 	MDI_FLARMRADAR,			// screen change
 	MDI_MAPASP,			// screen change?
 	MDI_MAPRADAR,			// screen change?
+	MDI_MAPTEST,			// testing purposes
 	MDI_LAST_DOINIT,		
  } MDI_t;
 

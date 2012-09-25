@@ -129,6 +129,9 @@ RECT frc = rc;
 	case MSM_MAPRADAR:
 		LKDrawMultimap_Radar(hdc,rc);
 		break;
+	case MSM_MAPTEST:
+		LKDrawMultimap_Test(hdc,rc);
+		break;
 	case MSM_LANDABLE:
 	case MSM_NEARTPS:
 	case MSM_AIRPORTS:

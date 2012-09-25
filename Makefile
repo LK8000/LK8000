@@ -340,6 +340,7 @@ DRAW	:=\
 	$(DRW)/DrawMapScale.cpp \
 	$(DRW)/DrawMultimap_Asp.cpp \
 	$(DRW)/DrawMultimap_Radar.cpp \
+	$(DRW)/DrawMultimap_Test.cpp \
 	$(DRW)/DrawRunway.cpp \
 	$(DRW)/DrawStartSector.cpp \
 	$(DRW)/DrawTRI.cpp \
