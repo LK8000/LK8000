@@ -810,7 +810,7 @@ goto_menu:
 					int s_unxleft=(s_sizeright/2)-(s_sizeright/3);
 					int s_unxright=(s_sizeright/2)+(s_sizeright/3);
 
-					if (UseUngestures || !ISPARAGLIDER) {
+					if (!mode.AnyPan() && (UseUngestures || !ISPARAGLIDER)) {
 						if (lparam_X<=s_unxleft) {
 							PreviousModeType();
 							MapWindow::RefreshMap();
