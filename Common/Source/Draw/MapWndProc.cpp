@@ -20,7 +20,7 @@
 #define DEBUG_VIRTUALKEYS
 #endif
 
-
+extern bool IsMultiMap();
 
 COLORREF taskcolor = RGB_TASKLINECOL; // 091216
 static bool ignorenext=false;
@@ -565,8 +565,31 @@ goto_menu:
 
       // end aircraft icon check				
       } 
+
+	// MultiMap specials, we use same geometry of MSM_MAP
+	if (!MapWindow::mode.AnyPan() && IsMultiMap() ) {
+		if ( (lparam_X <= (MapRect.left + CompassMenuSize)) && (lparam_Y <= (MapRect.top+CompassMenuSize)) ) {
+			#ifndef DISABLEAUDIO
+         		 if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+			#endif
+			LKevent=LKEVENT_TOPLEFT;
+			MapWindow::RefreshMap();
+			return TRUE;
+		}
+		if ( (lparam_X > ((MapRect.right-MapRect.left)- CompassMenuSize)) && (lparam_Y <= MapRect.top+CompassMenuSize) ) {
+			#ifndef DISABLEAUDIO
+         		 if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
+			#endif
+			LKevent=LKEVENT_TOPRIGHT;
+			MapWindow::RefreshMap();
+			return TRUE;
+		}
+	}
+
+	// Otherwise not in multimap, proceed with normal checks
 	if (mapmode8000) { 
 	if ( (lparam_X <= (MapRect.left + CompassMenuSize)) && (lparam_Y <= (MapRect.top+CompassMenuSize)) ) {
+		
 		if (!CustomKeyHandler(CKI_TOPLEFT)) {
 			// Well we better NOT play a click while zoomin in and out, because on slow
 			// devices it will slow down the entire process.

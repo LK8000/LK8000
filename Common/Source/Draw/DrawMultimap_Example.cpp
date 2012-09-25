@@ -68,6 +68,13 @@ void MapWindow::LKDrawMultimap_Example(HDC hdc, const RECT rc)
 	case LKEVENT_PAGEDOWN:
 		_tcscpy(ttext,_T("Event = PAGE DOWN"));
 		break;
+	case LKEVENT_TOPLEFT:
+	_tcscpy(ttext,_T("Event = TOP LEFT"));
+	break;
+	case LKEVENT_TOPRIGHT:
+	_tcscpy(ttext,_T("Event = TOP RIGHT"));
+	break;
+
 
 
 	//

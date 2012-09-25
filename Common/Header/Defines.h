@@ -450,6 +450,8 @@
 #define LKEVENT_PAGEDOWN	3
 #define LKEVENT_UP		4
 #define LKEVENT_DOWN		5
+#define LKEVENT_TOPLEFT		6
+#define LKEVENT_TOPRIGHT	7
 //
 #define LKEVENT_NEWRUN		9
 #define LKEVENT_NEWPAGE		10	// this is for both up and now, out of multimap 
