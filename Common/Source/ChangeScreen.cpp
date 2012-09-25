@@ -241,6 +241,8 @@ void ReinitScreen(void) {
   Reset_Single_DoInits(MDI_COMPASS);
   Reset_Single_DoInits(MDI_LOOKABLEND);
   Reset_Single_DoInits(MDI_MAPWPVECTORS);
+  Reset_Single_DoInits(MDI_MAPASP);
+  Reset_Single_DoInits(MDI_MAPRADAR);
 
   #if TESTBENCH
   StartupStore(_T("... ChangeScreen resuming Draw Thread\n"));
