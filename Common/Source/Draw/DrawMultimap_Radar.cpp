@@ -22,7 +22,7 @@ void MapWindow::LKDrawMultimap_Radar(HDC hdc, const RECT rc)
 
   if (DoInit[MDI_MAPRADAR]) {
 	// init statics here and then clear init to false
-	DoInit[MDI_MAPASP]=false;
+	DoInit[MDI_MAPRADAR]=false;
   }
 #ifdef INFOWRITE_KEY
   // 
