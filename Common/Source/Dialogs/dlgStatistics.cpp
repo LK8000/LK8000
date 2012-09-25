@@ -700,8 +700,10 @@ void Statistics::RenderBarograph(HDC hdc, const RECT rc)
 
 #if  (WINDOWSPC > 0)
   if(INVERTCOLORS)
-	RenderSky( hdc,   rc, SKY_HORIZON_COL , SKY_SPACE_COL, GC_NO_COLOR_STEPS );
+#else
+  if(ISCAR && INVERTCOLORS)
 #endif
+	RenderSky( hdc,   rc, SKY_HORIZON_COL , SKY_SPACE_COL, GC_NO_COLOR_STEPS );
 
   for(int j=1;j<MAXTASKPOINTS;j++) {
     if (ValidTaskPoint(j) && (flightstats.LegStartTime[j]>=0)) {

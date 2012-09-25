@@ -35,8 +35,10 @@ int i,j;
 
 #if (WINDOWSPC>0)
   if(INVERTCOLORS)
-    RenderSky( hdc, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
+#else
+  if(ISCAR && INVERTCOLORS)
 #endif
+    RenderSky( hdc, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
 
   FindLatitudeLongitude(PosLat, PosLon, brg  , psDiag->fXMin , &lat, &lon);
   POINT apTerrainPolygon[AIRSPACE_SCANSIZE_X+4];
