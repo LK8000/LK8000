@@ -117,6 +117,12 @@ rci.bottom -= BottomSize;
 		_tcscpy(ttext,_T("Event = DOWN"));
 		fZOOMScale *= ZOOMFACTOR;
 		break;
+	case LKEVENT_TOPLEFT:
+	  IncSideviewPage();
+	  fZOOMScale = 1.0;
+	break;
+	case LKEVENT_TOPRIGHT:
+	break;
 	case LKEVENT_LONGCLICK:
 		 for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
 		 {
@@ -131,11 +137,6 @@ rci.bottom -= BottomSize;
 		   }
 		 }
 
-		 if(bFound==false)
-		 {
-		  IncSideviewPage();
-		  fZOOMScale = 1.0;
-		}
 		break;
 	case LKEVENT_PAGEUP:
 		if(iSplit == SIZE1) iSplit = SIZE0;
@@ -215,7 +216,8 @@ rci.bottom -= BottomSize;
 
 
 	SetBkMode(hdc, OPAQUE);
- 	ExtTextOut(hdc,20, 5, ETO_OPAQUE, NULL, szTxt, _tcslen(szTxt), NULL);
+    LKWriteText(hdc, szTxt, 10 /*column0*/, NIBLSCALE(5) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+//	ExtTextOut(hdc,10 , NIBLSCALE(5) , ETO_OPAQUE, NULL, szTxt, _tcslen(szTxt), NULL);
  	SetBkMode(hdc, TRANSPARENT);
     SelectObject(hdc, hfOld);
    SonarNotify();

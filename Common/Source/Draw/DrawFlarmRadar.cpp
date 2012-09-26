@@ -514,7 +514,14 @@ switch(LKevent)
   case LKEVENT_DOWN:
     fScaleFact *= ZOOMFACTOR;
   break;
-
+  case LKEVENT_TOPLEFT:
+  {
+    bTrace++;
+    bTrace %= 3;
+  }
+  break;
+  case LKEVENT_TOPRIGHT:
+  break;
   case LKEVENT_LONGCLICK:
 	if( PtInRect(XstartScreen,YstartScreen, OwnPosSideView)||
 	    PtInRect(XstartScreen,YstartScreen, OwnPosTopView  ) )
@@ -527,12 +534,6 @@ switch(LKevent)
 	  }
 	}
 	else
-      if( PtInRect(XstartScreen,YstartScreen, UpperLeft))
-      {
-	    bTrace++;
-	    bTrace %= 3;
-      }
-      else
       {
 	    for (i=0; i < nEntrys; i++)
 		{
