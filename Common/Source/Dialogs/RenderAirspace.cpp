@@ -370,6 +370,22 @@ double fOldScale  =  zoom.Scale();
     int y = rc.top + 3*tsize.cy;
 
     SetTextColor(hdc, Sideview_TextColor);
+
+//	HFONT oldfont=NULL;
+//	oldfont=(HFONT)SelectObject(hdc,LK8TargetFont);
+	TextInBoxMode_t TextInBoxMode = {0};
+	TextInBoxMode.Color = RGB_WHITE;
+	TextInBoxMode.NoSetFont=1;
+	TextInBoxMode.AlligneCenter = 0;
+	TextInBoxMode.AlligneRight = 1;
+	TextInBoxMode.WhiteBorder = 1;
+	TextInBoxMode.Border = 1;
+
+	// same position for gps warnings: if navwarning, then no alarms. So no overlapping.
+    //    TextInBox(hdc, text ,line[0].x, y, 0, &TextInBoxMode);
+
+//	SelectObject(hdc,oldfont);
+
     ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
 
     // Print wpt distance

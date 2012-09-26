@@ -299,7 +299,14 @@ calc_circling = false;
   sDia.fXMin = -5000.0;
   sDia.fXMax =  5000.0;
   /* even when invalid the horizontal distance is calculated correctly */
+  if(fZOOMScale != 1.0)
+  {
+    if( (iABS_AS_HorDistance *fZOOMScale) > 750000)
+	  fZOOMScale /= ZOOMFACTOR;
 
+    if((iABS_AS_HorDistance *fZOOMScale) < 5000)
+	  fZOOMScale *= ZOOMFACTOR;
+  }
   double fScaleDist = iABS_AS_HorDistance *fZOOMScale;
   if(bValid)
   {

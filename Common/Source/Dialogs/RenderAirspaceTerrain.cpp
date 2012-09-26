@@ -32,12 +32,13 @@ double range =psDiag->fXMax - psDiag->fXMin; // km
 double hmax = psDiag->fYMax;
 double lat, lon;
 int i,j;
-
+/*
 #if (WINDOWSPC>0)
   if(INVERTCOLORS)
 #else
   if(ISCAR && INVERTCOLORS)
 #endif
+*/
     RenderSky( hdc, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
 
   FindLatitudeLongitude(PosLat, PosLon, brg  , psDiag->fXMin , &lat, &lon);

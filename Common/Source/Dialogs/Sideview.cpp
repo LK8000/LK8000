@@ -251,7 +251,7 @@ RECT rc	= psDia->rc;
 // draw aircraft
 void RenderPlaneSideview(HDC hdc, double fDist, double fAltitude,double brg, DiagrammStruct* psDia )
 {
-BOOL bInvCol = true ; //INVERTCOLORS
+//BOOL bInvCol = true ; //INVERTCOLORS
 RECT rc =	psDia->rc;
   #define NO_AP_PTS 17
   int deg = DEG_TO_INT(AngleLimit360(brg));
@@ -557,7 +557,7 @@ HBRUSH OldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(BLACK_BRUSH));
 int MapWindow::AirspaceTopView(HDC hdc, DiagrammStruct* pDia , double fAS_Bearing, double fWP_Bearing)
 {
 //fAS_Bearing+=1.0;
-RECT oldRec = MapRect;
+//RECT oldRec = MapRect;
 double fOldScale  =  zoom.Scale();
 RECT rct = pDia->rc;
 
@@ -634,7 +634,7 @@ double fFact = 1.0 ;
    DeleteObject(hpGreen);
 
 
-   MapRect = oldRec;
+ //  MapRect = oldRec;
    MapWindow::zoom.RequestedScale(fOldScale);
    EnableThermalLocator = iOldLocator;
 

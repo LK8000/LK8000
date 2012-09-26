@@ -22,7 +22,7 @@
 #define SIZE3 70
 
 extern int XstartScreen, YstartScreen;
-extern long VKtime;
+//extern long VKtime;
 extern int Sideview_asp_heading_task;
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 extern int   Sideview_iNoHandeldSpaces;
@@ -55,6 +55,7 @@ static unsigned long lSonarCnt = 0;
    lSonarCnt++;
 
    if(Sideview_asp_heading_task== 2)
+   {
      if((iSonarLevel >=0) && (iSonarLevel < 10))
       if( lSonarCnt > (unsigned)sSonarLevel[iSonarLevel].iSoundDelay)
 		{
@@ -62,7 +63,7 @@ static unsigned long lSonarCnt = 0;
                   // StartupStore(_T("... level=%d PLAY <%s>\n"),iSonarLevel,&sSonarLevel[iSonarLevel].szSoundFilename);
 		  LKSound((TCHAR*) &(sSonarLevel[iSonarLevel].szSoundFilename));
 		}
-
+    }
   return 0;
 }
 
@@ -73,7 +74,6 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 static int iSplit = SIZE1;
 int k;
 bool bFound = false;
-TCHAR mbuf[150];
 RECT rci = rc;
 rci.bottom -= BottomSize;
   if (DoInit[MDI_MAPASP]) {
@@ -122,6 +122,15 @@ rci.bottom -= BottomSize;
 	  fZOOMScale = 1.0;
 	break;
 	case LKEVENT_TOPRIGHT:
+	  if(Sideview_asp_heading_task== 2)
+	  {
+	    Sonar_IsEnabled = !Sonar_IsEnabled;
+	    /*
+	    if(Sonar_IsEnabled)
+		  Message::AddMessage(200, 1, gettext(TEXT("_@M1293_")));//  _@M1294_ "Sonar On"
+	    else
+	       Message::AddMessage(200, 1, gettext(TEXT("_@M1294_")));//  _@M1294_ "Sonar Off"*/
+	  }
 	break;
 	case LKEVENT_LONGCLICK:
 		 for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
@@ -195,32 +204,48 @@ rci.bottom -= BottomSize;
    switch(GetSideviewPage())
    {
      case 0:
-       _stprintf(szTxt, TEXT("%s"), gettext(TEXT("_@M1290_")));
+       _stprintf(szTxt, TEXT("ASP %s"), gettext(TEXT("_@M1290_"))); // _@M1290_ "ASP:"
      break;
      case 1:
        if (overindex>=0)
        {
          GetOvertargetName(szOvtname);
-         _stprintf(szTxt, TEXT("%s: %s"), gettext(TEXT("_@M1289_")), szOvtname);             //_@M1289_ "Next WP"
+         _stprintf(szTxt, TEXT("ASP %s"), szOvtname);
        }
        else
-         _stprintf(szTxt, TEXT("%s: %s"), gettext(TEXT("_@M1288_")), gettext(TEXT("_@M479_")));                    //_@M1288_ "Showing towards next waypoint"  _@M479_ "None"
+         _stprintf(szTxt, TEXT("ASP %s"),  gettext(TEXT("_@M479_")));                    //_@M1288_ "Showing towards next waypoint"  _@M479_ "None"
      break;
      case 2:
-       _stprintf(szTxt, TEXT("%s: %s"),gettext(TEXT("_@M1291_")), Sideview_szNearAS );       //_@M1291_ "Near AS"      //"Showing nearest airspace"
+       _stprintf(szTxt, TEXT("ASP %s"), Sideview_szNearAS );       //_@M1291_ "Near AS"      //"Showing nearest airspace"
      break;
    }
 
    HFONT hfOld = (HFONT)SelectObject(hdc, LK8InfoSmallFont);
-
-
-
-	SetBkMode(hdc, OPAQUE);
-    LKWriteText(hdc, szTxt, 10 /*column0*/, NIBLSCALE(5) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+//	SetBkMode(hdc, OPAQUE);
+//  LKWriteText(hdc, szTxt, 30 /*column0*/, NIBLSCALE(5) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_DARKGREY, false);
 //	ExtTextOut(hdc,10 , NIBLSCALE(5) , ETO_OPAQUE, NULL, szTxt, _tcslen(szTxt), NULL);
- 	SetBkMode(hdc, TRANSPARENT);
+// 	SetBkMode(hdc, TRANSPARENT);
+
+	TextInBoxMode_t TextInBoxMode = {0};
+	TextInBoxMode.AlligneRight = 0;
+	TextInBoxMode.Color = RGB_WHITE;
+	TextInBoxMode.NoSetFont=1;
+	TextInBoxMode.WhiteBorder = 1;
+	TextInBoxMode.Border = 1;
+	TextInBox(hdc, szTxt,30, (rc.top)+10, 0, &TextInBoxMode); // _@M1294_ "Sonar On"
+	TextInBoxMode.AlligneRight = 1;
+	if(Sideview_asp_heading_task== 2)
+	{
+	  if(Sonar_IsEnabled)
+		TextInBox(hdc, gettext(_T("_@M1293_")) , (rc.right)-40, (rc.top)+10, 0, &TextInBoxMode); // _@M1294_ "Sonar On"
+	  else
+	    TextInBox(hdc, gettext(_T("_@M1294_")), (rc.right)-40, (rc.top)+10, 0, &TextInBoxMode); // _@M1294_ "Sonar Off"
+	}
+	SonarNotify();
     SelectObject(hdc, hfOld);
-   SonarNotify();
+
+
+
 
   // After using the event, WE MUST CLEAR IT, otherwise it will survive for next run.
   // This can be good for something, though, like automatic redo of last action.
