@@ -159,24 +159,34 @@ int XstartScreen, YstartScreen, XtargetScreen, YtargetScreen;
 LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
                                         LPARAM lParam)
 {
+
+  //
+  // Values to be remembered
+  //
   static double Xstart, Ystart;
-  int gestX, gestY, gestDir=LKGESTURE_NONE, gestDist=-1;
-  double Xlat, Ylat;
-  double distance;
-
-  int lparam_X = (int) LOWORD(lParam);
-  int lparam_Y = (int) HIWORD(lParam);
-  
   static DWORD dwDownTime= 0L, dwUpTime= 0L, dwInterval= 0L;
+  static double Xlat, Ylat;
+  static double distance;
 
+  //
+  // Not needed to be static for remembering old values. Only for speedup.
+  //
+  static int lparam_X;
+  static int lparam_Y;
+  static int gestX, gestY, gestDir, gestDist;
   static bool dontdrawthemap;
   static bool mapmode8000;
 
-  #if 0
+
   if (DoInit[MDI_MAPWNDPROC]) {
 	DoInit[MDI_MAPWNDPROC]=false;
   }
-  #endif
+
+  //
+  // service values for this run, the minimum necessary
+  //
+  lparam_X = (int) LOWORD(lParam);
+  lparam_Y = (int) HIWORD(lParam);
 
   #if 0
   // 120322 To be carefully checks for all situations.. BETA!
@@ -479,6 +489,8 @@ _buttondown:
       dwUpTime = GetTickCount(); 
       dwInterval=dwUpTime-dwDownTime;
       dwDownTime=0; // do it once forever
+
+	gestDir=LKGESTURE_NONE; gestDist=-1;
 
       GetClientRect(hWnd,&rc);
 
