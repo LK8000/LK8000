@@ -153,7 +153,6 @@ DERIVED_INFO MapWindow::DerivedDrawInfo;
 
 extern void ShowMenu();
 
-#define CHANGESCREEN 1
 
 int XstartScreen, YstartScreen, XtargetScreen, YtargetScreen;
 
@@ -188,7 +187,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
     case WM_ERASEBKGND:
 	return TRUE;
     case WM_SIZE:
-	#if CHANGESCREEN
 	if (!THREADRUNNING) {
 		#if TESTBENCH
 		StartupStore(_T("... MapWndProc WM_SIZE detected, DrawThread not running\n"));
@@ -225,7 +223,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
 		LKASSERT(hdcDrawWindow);
 
 	}
-	#endif
 
 	if (hDrawBitMap) DeleteObject(hDrawBitMap);
 	hDrawBitMap = CreateCompatibleBitmap (hdcScreen, lparam_X, lparam_Y);

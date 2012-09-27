@@ -28,9 +28,6 @@
 #include "DoInits.h"
 
 
-#define CHANGESCREEN 1
-
-#if CHANGESCREEN // Experimental work in progress
 
 //
 // Detect if screen resolution and/or orientation has changed
@@ -256,4 +253,3 @@ void ReinitScreen(void) {
 }
 
 
-#endif // experimental only
