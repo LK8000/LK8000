@@ -169,8 +169,8 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
   
   static DWORD dwDownTime= 0L, dwUpTime= 0L, dwInterval= 0L;
 
-  bool dontdrawthemap=(DONTDRAWTHEMAP);
-  bool mapmode8000=(MAPMODE8000);
+  static bool dontdrawthemap;
+  static bool mapmode8000;
 
   #if 0
   if (DoInit[MDI_MAPWNDPROC]) {
@@ -356,7 +356,7 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
       // Careful! If you ignorenext, any event timed as double click of course will be affected.
       // and this means also fast clicking on bottombar!!
       // so first lets see if we are in lk8000 text screens.. 
-      if (dontdrawthemap || (mapmode8000 && (YstartScreen >=BottomBarY))) {  
+      if (DONTDRAWTHEMAP || (MAPMODE8000 && (YstartScreen >=BottomBarY))) {  
 		// do not ignore next, let buttonup get the signal
 		break;
       }
@@ -469,6 +469,12 @@ _buttondown:
 		ignorenext=false;
 		break;
 	}
+
+	// we save these flags for the entire processing, just in case they change
+	// while processing a virtual key for example, and also for acceleration.
+	dontdrawthemap=(DONTDRAWTHEMAP);
+	mapmode8000=(MAPMODE8000);
+
       RECT rc;
       dwUpTime = GetTickCount(); 
       dwInterval=dwUpTime-dwDownTime;
