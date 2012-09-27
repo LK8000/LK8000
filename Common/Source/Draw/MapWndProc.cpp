@@ -178,9 +178,11 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,
   }
   #endif
 
+  #if 0
   // 120322 To be carefully checks for all situations.. BETA!
   // CURRENTLY never set. 
   if (DialogActive) return TRUE;
+  #endif
 
   switch (uMsg)
     {
