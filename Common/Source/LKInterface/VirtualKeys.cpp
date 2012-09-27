@@ -27,11 +27,16 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 #define VKTIMELONG 1500
 	short yup, ydown;
-	static short sizeup;
 	short i, j;
 	short numpages=0;
 
-	static short s_xright=0, s_xleft=0, s_unxright=0, s_unxleft=0;
+	static short s_xright=0, s_xleft=0;
+
+	// future common globals
+	static short X_Right=0, X_Left=0;
+	static short Y_BottomBar;
+
+
 	static short s_bottomY=0;
 	short shortpress_yup, shortpress_ydown;
 	short longpress_yup, longpress_ydown;
@@ -50,15 +55,15 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 	if (DoInit[MDI_PROCESSVIRTUALKEY]) {
 
-		sizeup=ScreenSizeY;
+		Y_BottomBar=ScreenSizeY-BottomSize;
 
 		// calculate left and right starting from center
 		s_xleft=(ScreenSizeX/2)-(ScreenSizeX/6);
 		s_xright=(ScreenSizeX/2)+(ScreenSizeX/6);
 
 		// used by ungesture fast click on infopages
-		s_unxleft=(ScreenSizeX/2)-(ScreenSizeX/3);
-		s_unxright=(ScreenSizeX/2)+(ScreenSizeX/3);
+		X_Left=(ScreenSizeX/2)-(ScreenSizeX/3);
+		X_Right=(ScreenSizeX/2)+(ScreenSizeX/3);
 
 		// same for bottom navboxes: they do not exist in infobox mode
 		s_bottomY=ScreenSizeY-BottomSize-NIBLSCALE(2);
@@ -69,10 +74,10 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	// 120602 fix
 	// TopSize is dynamically assigned by DrawNearest,Drawcommon, DrawXX etc. so we cannot make static yups
 	//
-	longpress_yup=(short)((sizeup-BottomSize-TopSize)/3.7)+TopSize;
-	longpress_ydown=(short)(ScreenSizeY-BottomSize-((sizeup-BottomSize)/3.7));
-	shortpress_yup=(short)((sizeup-BottomSize-TopSize)/2.7)+TopSize;
-	shortpress_ydown=(short)(ScreenSizeY-BottomSize-((sizeup-BottomSize)/2.7));
+	longpress_yup=(short)((ScreenSizeY-BottomSize-TopSize)/3.7)+TopSize;
+	longpress_ydown=(short)(ScreenSizeY-BottomSize-((ScreenSizeY-BottomSize)/3.7));
+	shortpress_yup=(short)((ScreenSizeY-BottomSize-TopSize)/2.7)+TopSize;
+	shortpress_ydown=(short)(ScreenSizeY-BottomSize-((ScreenSizeY-BottomSize)/2.7));
 	
 	// do not consider navboxes, they are processed separately
 	// These are coordinates for up down center VKs
@@ -117,7 +122,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 					if (CustomKeyHandler(CKI_BOTTOMRIGHT)) return 0;
 				}
 				#ifdef DEBUG_PROCVK
-				wsprintf(buf,_T("RIGHT in limit=%d"),sizeup-BottomSize-NIBLSCALE(20));
+				wsprintf(buf,_T("RIGHT in limit=%d"),ScreenSizeY-BottomSize-NIBLSCALE(20));
 				DoStatusMessage(buf);
 				#endif
 				BottomBarChange(true); // advance
@@ -132,7 +137,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				}
 
 				#ifdef DEBUG_PROCVK
-				wsprintf(buf,_T("LEFT in limit=%d"),sizeup-BottomSize-NIBLSCALE(20));
+				wsprintf(buf,_T("LEFT in limit=%d"),ScreenSizeY-BottomSize-NIBLSCALE(20));
 				DoStatusMessage(buf);
 				#endif
 				BottomBarChange(false); // backwards
@@ -141,7 +146,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				return 0;
 			}
 			#ifdef DEBUG_PROCVK
-			wsprintf(buf,_T("CENTER in limit=%d"),sizeup-BottomSize-NIBLSCALE(20));
+			wsprintf(buf,_T("CENTER in limit=%d"),ScreenSizeY-BottomSize-NIBLSCALE(20));
 			DoStatusMessage(buf);
 			#endif
 
@@ -475,8 +480,8 @@ gesture_left:
 	if (dontdrawthemap) {
 		if (Y>longpress_yup && Y<longpress_ydown) {
 			if (UseUngestures || !ISPARAGLIDER) {
-				if (X<=s_unxleft)  goto gesture_left;
-				if (X>=s_unxright) goto gesture_right;
+				if (X<=X_Left)  goto gesture_left;
+				if (X>=X_Right) goto gesture_right;
 			}
 		}
 	}
