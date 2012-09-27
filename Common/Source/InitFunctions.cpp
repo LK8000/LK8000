@@ -23,7 +23,7 @@
 
 #include "Bitmaps.h"
 #include "LKObjects.h"
-
+#include "DoInits.h"
 
 
 extern HBRUSH hBrushSelected;
@@ -304,6 +304,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   ShowWindow(hWndMainWindow, nCmdShow);
 
   UpdateWindow(hWndMainWindow);
+
+  // Since MapWndProc is doing static inits, we want them to be recalculated at the end of 
+  // initializations, since some values in use might have been not available yet, for example BottomSize.
+  Reset_Single_DoInits(MDI_MAPWNDPROC);
     
   return TRUE;
 }

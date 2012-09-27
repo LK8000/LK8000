@@ -8,7 +8,7 @@
 
 #include "externs.h"
 #include "LKInterface.h"
-
+#include "DoInits.h"
 
 
 // InitLKScreen can be called anytime, and should be called upon screen changed from portrait to landscape,
