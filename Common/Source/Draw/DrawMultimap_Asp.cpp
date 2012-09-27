@@ -220,12 +220,13 @@ rci.bottom -= BottomSize;
      break;
    }
 
-   HFONT hfOld = (HFONT)SelectObject(hdc, LK8InfoSmallFont);
-//	SetBkMode(hdc, OPAQUE);
-//  LKWriteText(hdc, szTxt, 30 /*column0*/, NIBLSCALE(5) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_DARKGREY, false);
-//	ExtTextOut(hdc,10 , NIBLSCALE(5) , ETO_OPAQUE, NULL, szTxt, _tcslen(szTxt), NULL);
-// 	SetBkMode(hdc, TRANSPARENT);
-
+  HFONT hfOld = (HFONT)SelectObject(hdc, LK8InfoSmallFont);
+#ifndef TXT_IN_BOX_MM
+  SetBkMode(hdc, OPAQUE);
+  LKWriteText(hdc, szTxt, 30 /*column0*/, NIBLSCALE(5) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_DARKGREY, false);
+  ExtTextOut(hdc,10 , NIBLSCALE(5) , ETO_OPAQUE, NULL, szTxt, _tcslen(szTxt), NULL);
+  SetBkMode(hdc, TRANSPARENT);
+#else
 	TextInBoxMode_t TextInBoxMode = {0};
 	TextInBoxMode.AlligneRight = 0;
 	TextInBoxMode.Color = RGB_WHITE;
@@ -241,6 +242,7 @@ rci.bottom -= BottomSize;
 	  else
 	    TextInBox(hdc, gettext(_T("_@M1294_")), (rc.right)-40, (rc.top)+10, 0, &TextInBoxMode); // _@M1294_ "Sonar Off"
 	}
+#endif
 	SonarNotify();
     SelectObject(hdc, hfOld);
 
