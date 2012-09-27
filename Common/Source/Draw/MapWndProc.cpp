@@ -185,7 +185,6 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
   //
   // Candidates to be simplified, or to be made globals
   //
-  static RECT rc;
   static short Y_BottomBar;		  // this is different from BottomBarY
   static POINT P_HalfScreen;
   static POINT P_Doubleclick_bottomright; // squared area for screen lock doubleclick, normally on right bottombar
@@ -208,27 +207,25 @@ LRESULT CALLBACK MapWindow::MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPA
   //
   if (DoInit[MDI_MAPWNDPROC]) {
 
-	GetClientRect(hWnd,&rc);
-
-	Y_BottomBar=(rc.bottom-BottomSize);
-	P_HalfScreen.y=(rc.bottom+rc.top)/2;
-	P_HalfScreen.x=(rc.left+rc.right)/2;
-	P_Doubleclick_bottomright.x=rc.right-BottomSize-NIBLSCALE(15);
-	P_Doubleclick_bottomright.y=rc.bottom-rc.top-BottomSize-NIBLSCALE(15);
+	Y_BottomBar=ScreenSizeY-BottomSize;
+	P_HalfScreen.y=ScreenSizeY/2;
+	P_HalfScreen.x=ScreenSizeX/2;
+	P_Doubleclick_bottomright.x=ScreenSizeX-BottomSize-NIBLSCALE(15);
+	P_Doubleclick_bottomright.y=ScreenSizeY-BottomSize-NIBLSCALE(15);
 
 	// These were all using MapRect
-	P_MenuIcon_DrawBottom.y=rc.bottom-rc.top-BottomSize-14;
-	P_MenuIcon_noDrawBottom.y=rc.bottom-rc.top-AircraftMenuSize;
-	P_MenuIcon_DrawBottom.x=(rc.right-rc.left)- AircraftMenuSize;
+	P_MenuIcon_DrawBottom.y=Y_BottomBar-14;
+	P_MenuIcon_noDrawBottom.y=ScreenSizeY-AircraftMenuSize;
+	P_MenuIcon_DrawBottom.x=ScreenSizeX-AircraftMenuSize;
 	P_MenuIcon_noDrawBottom.x=P_MenuIcon_DrawBottom.x;
-	P_UngestureLeft.x=rc.left+CompassMenuSize;
-	P_UngestureLeft.y=rc.top+CompassMenuSize;
-	P_UngestureRight.x=(rc.right-rc.left)-CompassMenuSize;
-	P_UngestureRight.y=rc.top+CompassMenuSize;
-	Y_Up=(rc.bottom-BottomSize)/2;
-	Y_Down=rc.bottom-BottomSize - Y_Up;
-	X_Left=(rc.right/2) - (rc.right/3);
-	X_Right=(rc.right/2) + (rc.right/3);
+	P_UngestureLeft.x=CompassMenuSize;
+	P_UngestureLeft.y=CompassMenuSize;
+	P_UngestureRight.x=ScreenSizeX-CompassMenuSize;
+	P_UngestureRight.y=CompassMenuSize;
+	Y_Up=Y_BottomBar/2;
+	Y_Down=Y_BottomBar - Y_Up;
+	X_Left=(ScreenSizeX/2) - (ScreenSizeX/3);
+	X_Right=(ScreenSizeX/2) + (ScreenSizeX/3);
 
 	DoInit[MDI_MAPWNDPROC]=false;
   }
