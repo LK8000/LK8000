@@ -37,9 +37,10 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	static short Y_BottomBar;
 
 
-	static short s_bottomY=0;
 	short shortpress_yup, shortpress_ydown;
 	short longpress_yup, longpress_ydown;
+
+	static short s_bottomY=0;
 	static short oldMapSpaceMode=0;
 
 	bool dontdrawthemap=(DONTDRAWTHEMAP);
@@ -66,7 +67,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		X_Right=(ScreenSizeX/2)+(ScreenSizeX/3);
 
 		// same for bottom navboxes: they do not exist in infobox mode
-		s_bottomY=ScreenSizeY-BottomSize-NIBLSCALE(2);
+		s_bottomY=Y_BottomBar-NIBLSCALE(2);
 
 		DoInit[MDI_PROCESSVIRTUALKEY]=false;
 	}
@@ -74,10 +75,10 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	// 120602 fix
 	// TopSize is dynamically assigned by DrawNearest,Drawcommon, DrawXX etc. so we cannot make static yups
 	//
-	longpress_yup=(short)((ScreenSizeY-BottomSize-TopSize)/3.7)+TopSize;
-	longpress_ydown=(short)(ScreenSizeY-BottomSize-((ScreenSizeY-BottomSize)/3.7));
-	shortpress_yup=(short)((ScreenSizeY-BottomSize-TopSize)/2.7)+TopSize;
-	shortpress_ydown=(short)(ScreenSizeY-BottomSize-((ScreenSizeY-BottomSize)/2.7));
+	longpress_yup=(short)((Y_BottomBar-TopSize)/3.7)+TopSize;
+	longpress_ydown=(short)(Y_BottomBar-(Y_BottomBar/3.7));
+	shortpress_yup=(short)((Y_BottomBar-TopSize)/2.7)+TopSize;
+	shortpress_ydown=(short)(Y_BottomBar-(Y_BottomBar/2.7));
 	
 	// do not consider navboxes, they are processed separately
 	// These are coordinates for up down center VKs
@@ -122,7 +123,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 					if (CustomKeyHandler(CKI_BOTTOMRIGHT)) return 0;
 				}
 				#ifdef DEBUG_PROCVK
-				wsprintf(buf,_T("RIGHT in limit=%d"),ScreenSizeY-BottomSize-NIBLSCALE(20));
+				wsprintf(buf,_T("RIGHT in limit=%d"),Y_BottomBar-NIBLSCALE(20));
 				DoStatusMessage(buf);
 				#endif
 				BottomBarChange(true); // advance
@@ -137,7 +138,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				}
 
 				#ifdef DEBUG_PROCVK
-				wsprintf(buf,_T("LEFT in limit=%d"),ScreenSizeY-BottomSize-NIBLSCALE(20));
+				wsprintf(buf,_T("LEFT in limit=%d"),Y_BottomBar-NIBLSCALE(20));
 				DoStatusMessage(buf);
 				#endif
 				BottomBarChange(false); // backwards
@@ -146,7 +147,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 				return 0;
 			}
 			#ifdef DEBUG_PROCVK
-			wsprintf(buf,_T("CENTER in limit=%d"),ScreenSizeY-BottomSize-NIBLSCALE(20));
+			wsprintf(buf,_T("CENTER in limit=%d"),Y_BottomBar-NIBLSCALE(20));
 			DoStatusMessage(buf);
 			#endif
 
