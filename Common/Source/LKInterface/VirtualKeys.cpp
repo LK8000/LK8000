@@ -31,7 +31,7 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	short i, j;
 	short numpages=0;
 
-	static short s_sizeright=0, s_xright=0, s_xleft=0, s_unxright=0, s_unxleft=0;
+	static short s_xright=0, s_xleft=0, s_unxright=0, s_unxleft=0;
 	static short s_bottomY=0;
 	short shortpress_yup, shortpress_ydown;
 	short longpress_yup, longpress_ydown;
@@ -42,29 +42,26 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 
 	#ifdef DEBUG_PROCVK
 	TCHAR buf[100];
-	wsprintf(buf,_T("R=%d,%d,%d,%d, X=%d Y=%d kt=%ld"),MapWindow::MapRect.left, MapWindow::MapRect.top, 
-	MapWindow::MapRect.right, MapWindow::MapRect.bottom,X,Y,keytime);
+	wsprintf(buf,_T("R=%d,%d,%d,%d, X=%d Y=%d kt=%ld"),0, 0, 
+	ScreenSizeX, ScreenSizeY,X,Y,keytime);
 	DoStatusMessage(buf);
 	#endif
 
 
 	if (DoInit[MDI_PROCESSVIRTUALKEY]) {
 
-		sizeup=MapWindow::MapRect.bottom-MapWindow::MapRect.top;
-
-		// bottomline does not exist when infoboxes are painted, so we can make it static
-		s_sizeright=MapWindow::MapRect.right-MapWindow::MapRect.left;
+		sizeup=ScreenSizeY;
 
 		// calculate left and right starting from center
-		s_xleft=(s_sizeright/2)-(s_sizeright/6);
-		s_xright=(s_sizeright/2)+(s_sizeright/6);
+		s_xleft=(ScreenSizeX/2)-(ScreenSizeX/6);
+		s_xright=(ScreenSizeX/2)+(ScreenSizeX/6);
 
 		// used by ungesture fast click on infopages
-		s_unxleft=(s_sizeright/2)-(s_sizeright/3);
-		s_unxright=(s_sizeright/2)+(s_sizeright/3);
+		s_unxleft=(ScreenSizeX/2)-(ScreenSizeX/3);
+		s_unxright=(ScreenSizeX/2)+(ScreenSizeX/3);
 
 		// same for bottom navboxes: they do not exist in infobox mode
-		s_bottomY=(MapWindow::MapRect.bottom-MapWindow::MapRect.top)-BottomSize-NIBLSCALE(2); // bugfix era 15, troppo 090731
+		s_bottomY=ScreenSizeY-BottomSize-NIBLSCALE(2);
 
 		DoInit[MDI_PROCESSVIRTUALKEY]=false;
 	}
@@ -72,10 +69,10 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 	// 120602 fix
 	// TopSize is dynamically assigned by DrawNearest,Drawcommon, DrawXX etc. so we cannot make static yups
 	//
-	longpress_yup=(short)((sizeup-BottomSize-TopSize)/3.7)+MapWindow::MapRect.top+TopSize;
-	longpress_ydown=(short)(MapWindow::MapRect.bottom-BottomSize-((sizeup-BottomSize)/3.7));
-	shortpress_yup=(short)((sizeup-BottomSize-TopSize)/2.7)+MapWindow::MapRect.top+TopSize;
-	shortpress_ydown=(short)(MapWindow::MapRect.bottom-BottomSize-((sizeup-BottomSize)/2.7));
+	longpress_yup=(short)((sizeup-BottomSize-TopSize)/3.7)+TopSize;
+	longpress_ydown=(short)(ScreenSizeY-BottomSize-((sizeup-BottomSize)/3.7));
+	shortpress_yup=(short)((sizeup-BottomSize-TopSize)/2.7)+TopSize;
+	shortpress_ydown=(short)(ScreenSizeY-BottomSize-((sizeup-BottomSize)/2.7));
 	
 	// do not consider navboxes, they are processed separately
 	// These are coordinates for up down center VKs
@@ -94,8 +91,8 @@ int ProcessVirtualKey(int X, int Y, long keytime, short vkmode) {
 		}
 	} else {
 		// This could happen only in Ibox mode. We should never fall here.
-		yup=(short)((MapWindow::MapRect.bottom-MapWindow::MapRect.top)/2.7)+MapWindow::MapRect.top;
-		ydown=(short)(MapWindow::MapRect.bottom-((MapWindow::MapRect.bottom-MapWindow::MapRect.top)/2.7));
+		yup=(short)(ScreenSizeY/2.7);
+		ydown=(short)(ScreenSizeY-(ScreenSizeY/2.7));
 		#if TESTBENCH
 		StartupStore(_T("...... DrawBottom FALSE in virtual key processing!\n"));
 		#endif
