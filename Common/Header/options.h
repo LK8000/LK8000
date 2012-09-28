@@ -102,7 +102,8 @@
 
 // Dynamic screen resizing. If NOT using alphablending for bottom bar, or using 100% opacity,
 // then terrain and generally the moving map will not be drawn under the bottombar.
-// On 480x272 this is saving around 12% CPU.
+// On 480x272 this is saving around 12% CPU. This is also needed to allow DrawTerrain choosing any
+// screen portion, on demand.
 #define DYNASCREEN		1	
 
 

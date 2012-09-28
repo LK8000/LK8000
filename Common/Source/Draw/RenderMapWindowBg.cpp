@@ -44,9 +44,9 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
   #endif
 
   #if DYNASCREEN
-  if ((MapWindow::AlphaBlendSupported() && BarOpacity<100) || mode.AnyPan())
+  if ((MapWindow::AlphaBlendSupported() && BarOpacity<100) || mode.AnyPan()) {
 	UseRect=MapRect;
-  else {
+  } else {
 	  UseRect.top=0;
 	  UseRect.bottom=ScreenSizeY-BottomSize;
 	  UseRect.left=0;

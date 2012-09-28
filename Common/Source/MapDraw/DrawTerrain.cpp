@@ -113,7 +113,7 @@ class TerrainRenderer {
 public:
   TerrainRenderer(RECT rc) {
     #if TESTBENCH
-    StartupStore(_T(".... Init TerrainRenderer area (%d,%d) (%d,%d)\n"),rc.top,rc.left,rc.bottom,rc.right);
+    StartupStore(_T(".... Init TerrainRenderer area (%d,%d) (%d,%d)\n"),rc.left,rc.top,rc.right,rc.bottom);
     #endif
 
     #if USERASTERCACHE
@@ -740,13 +740,16 @@ void DrawTerrain( const HDC hdc, const RECT rc,
   }
 
 #if DYNASCREEN
-  static short oldsizeY;
+  static RECT oldrc;
 #endif
 _redo:
 
   if (!trenderer) {
 #if DYNASCREEN
-    oldsizeY=rc.bottom;
+    oldrc.left=rc.left;
+    oldrc.right=rc.right;
+    oldrc.top=rc.top;
+    oldrc.bottom=rc.bottom;
 #endif
     trenderer = new TerrainRenderer(rc);
     LKASSERT(trenderer);
@@ -756,12 +759,14 @@ _redo:
 #if DYNASCREEN
   // Resolution has changed, probably PAN mode on with bottombar full opaque
   // We paint full screen, so we resize it.
-  if (LKSW_ResetTerrainRenderer || (rc.bottom != oldsizeY)) {
+  if (LKSW_ResetTerrainRenderer || (rc.bottom != oldrc.bottom) || (rc.right != oldrc.right)
+	|| (rc.left != oldrc.left) || (rc.top != oldrc.top) ) {
 	#if TESTBENCH
 	if (LKSW_ResetTerrainRenderer) {
 		StartupStore(_T("... SWITCH forced for TerrainRenderer Reset\n"));
 	} else {
-		StartupStore(_T("... Change vertical resolution from %d to %d\n"),oldsizeY,rc.bottom);
+		StartupStore(_T("... Change vertical resolution from %d,%d,%d,%d  to %d,%d,%d,%d\n"),
+			rc.top,rc.bottom,rc.left,rc.right, oldrc.top, oldrc.bottom, oldrc.left,oldrc.right);
 	}
 	#endif
 	LKSW_ResetTerrainRenderer=false; // in any case
