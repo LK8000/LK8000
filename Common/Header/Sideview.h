@@ -15,7 +15,7 @@
 
 #include <windows.h>
 
-#define BORDER_X 24
+#define BORDER_X 0 //24
 #define BORDER_Y 19
 
 

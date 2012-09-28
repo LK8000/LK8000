@@ -10,7 +10,8 @@
 #include "RGB.h"
 #include "MapWindow.h"
 #include "Sideview.h"
-
+#include "LKInterface.h"
+#include "Terrain.h"
 extern double fSplitFact;
 extern COLORREF  Sideview_TextColor;
 
@@ -195,6 +196,8 @@ RECT rc	= psDia->rc;
   TCHAR BufferValue[LKSIZEBUFFERVALUE];
   TCHAR BufferUnit[LKSIZEBUFFERUNIT];
   TCHAR BufferTitle[LKSIZEBUFFERTITLE];
+  TCHAR szOvtname[80];
+  GetOvertargetName(szOvtname);
 
   bool ret = false;
   // Borrowed from LKDrawLook8000.cpp
@@ -237,13 +240,20 @@ RECT rc	= psDia->rc;
   }
 
 
+  SIZE tsize;
+  int x = (rc.right + rc.left)/2;
+  int y = rc.top+35;
+
   if (ret) {
-    SIZE tsize;
     SelectObject(hdc, LK8MediumFont);
     GetTextExtentPoint(hdc, BufferValue, _tcslen(BufferValue), &tsize);
+    y = rc.top;
+    ExtTextOut(hdc, x- tsize.cx/2, y, ETO_OPAQUE, NULL, BufferValue, _tcslen(BufferValue), NULL);
 
-    ExtTextOut(hdc, (rc.left + rc.right - tsize.cx)/2, rc.top, ETO_OPAQUE, NULL, BufferValue, _tcslen(BufferValue), NULL);
-
+	y += tsize.cy-5;
+	SelectObject(hdc, LK8PanelUnitFont);
+	GetTextExtentPoint(hdc, szOvtname, _tcslen(szOvtname), &tsize);
+	ExtTextOut(hdc, x-tsize.cx/2, y, ETO_OPAQUE, NULL, szOvtname, _tcslen(szOvtname), NULL);
   }
 }
 
@@ -556,8 +566,8 @@ HBRUSH OldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(BLACK_BRUSH));
 
 int MapWindow::AirspaceTopView(HDC hdc, DiagrammStruct* pDia , double fAS_Bearing, double fWP_Bearing)
 {
-//fAS_Bearing+=1.0;
-//RECT oldRec = MapRect;
+//fAS_Bearing+=3.0;
+
 double fOldScale  =  zoom.Scale();
 RECT rct = pDia->rc;
 
@@ -609,9 +619,36 @@ double fFact = 1.0 ;
 
    CalculateScreenPositions( Orig,  rct, &Orig_Aircraft);
    CalculateScreenPositionsAirspace();
+
+
+   /*
+    asp_fill_border_only        = 0,  // airspace drawing using no filling
+    asp_fill_patterns_full      = 1,  // airspace drawing using patterns
+    asp_fill_patterns_borders   = 2,  // airspace drawing using patterns, borders
+    asp_fill_ablend_full        = 3,  // airspace drawing using alpha blend
+    asp_fill_ablend_borders     = 4,  // airspace drawing using alpha blend, borders
+    */
+ //  SetAirSpaceFillType(asp_fill_patterns_borders);
+
+
+
+   // set alpha blended airspace opacity (0..100)
+//  SetAirSpaceOpacity(20) ;
+
+	double sunelevation = 40.0;
+	double sunazimuth=GetAzimuth();
+   if ((EnableTerrain && (DerivedDrawInfo.TerrainValid)
+       )
+ 	)
+     DrawTerrain(hdc, rct, sunazimuth, sunelevation);
+
+ //  if (EnableTopology) {
+ //    DrawTopology(hdc, rct);
+ //  }
    DrawAirSpace( hdc, rct);
-  // DrawAirspaceLabels( hdc,   rct, Orig_Aircraft);
-   //  DrawMapSpace( hdc,   rct);
+   //LKDrawTrail(hdc, Orig_Aircraft, rct);
+   DrawAirspaceLabels( hdc,   rct, Orig_Aircraft);
+
   /****************************************************************************************************
    * draw vertical line
    ****************************************************************************************************/
@@ -629,12 +666,11 @@ double fFact = 1.0 ;
    HPEN oldPen  = (HPEN) SelectObject(hdc, hpGreen);
    SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
    Rectangle(hdc,rct.left-1 , rct.bottom ,rct.right+2, rct.top);
-  //   Rectangle(hdc,rc.left , rc.bottom ,rc.right, rc.top-1);
    SelectObject(hdc, oldPen);
    DeleteObject(hpGreen);
 
 
- //  MapRect = oldRec;
+
    MapWindow::zoom.RequestedScale(fOldScale);
    EnableThermalLocator = iOldLocator;
 

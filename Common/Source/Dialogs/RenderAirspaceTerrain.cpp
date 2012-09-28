@@ -39,6 +39,7 @@ int i,j;
   if(ISCAR && INVERTCOLORS)
 #endif
 */
+if (EnableTerrain )
     RenderSky( hdc, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
 
   FindLatitudeLongitude(PosLat, PosLon, brg  , psDiag->fXMin , &lat, &lon);
