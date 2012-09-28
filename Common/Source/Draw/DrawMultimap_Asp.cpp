@@ -221,28 +221,17 @@ rci.bottom -= BottomSize;
    }
 
   HFONT hfOld = (HFONT)SelectObject(hdc, LK8InfoSmallFont);
-#ifndef TXT_IN_BOX_MM
-  SetBkMode(hdc, OPAQUE);
-  LKWriteText(hdc, szTxt, 30 /*column0*/, NIBLSCALE(5) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_DARKGREY, false);
-  ExtTextOut(hdc,10 , NIBLSCALE(5) , ETO_OPAQUE, NULL, szTxt, _tcslen(szTxt), NULL);
-  SetBkMode(hdc, TRANSPARENT);
-#else
-	TextInBoxMode_t TextInBoxMode = {0};
-	TextInBoxMode.AlligneRight = 0;
-	TextInBoxMode.Color = RGB_WHITE;
-	TextInBoxMode.NoSetFont=1;
-	TextInBoxMode.WhiteBorder = 1;
-	TextInBoxMode.Border = 1;
-	TextInBox(hdc, szTxt,30, (rc.top)+10, 0, &TextInBoxMode); // _@M1294_ "Sonar On"
-	TextInBoxMode.AlligneRight = 1;
+
+    SetBkMode(hdc, OPAQUE);
+    LKWriteText(hdc, szTxt, 30 /*column0*/, NIBLSCALE(5) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_DARKGREY, false);
 	if(Sideview_asp_heading_task== 2)
 	{
 	  if(Sonar_IsEnabled)
-		TextInBox(hdc, gettext(_T("_@M1293_")) , (rc.right)-40, (rc.top)+10, 0, &TextInBoxMode); // _@M1294_ "Sonar On"
+	    LKWriteText(hdc, gettext(_T("_@M1293_")),  (rc.right)-40, NIBLSCALE(5) , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_DARKGREY, false); // _@M1294_ "Sonar On"
 	  else
-	    TextInBox(hdc, gettext(_T("_@M1294_")), (rc.right)-40, (rc.top)+10, 0, &TextInBoxMode); // _@M1294_ "Sonar Off"
+ 	    LKWriteText(hdc, gettext(_T("_@M1294_")),  (rc.right)-40, NIBLSCALE(5) , 0, WTMODE_NORMAL, WTALIGN_RIGHT, RGB_DARKGREY, false); // _@M1294_ "Sonar Off"
 	}
-#endif
+    SetBkMode(hdc, TRANSPARENT);
 	SonarNotify();
     SelectObject(hdc, hfOld);
 
