@@ -895,5 +895,8 @@ GEXTERN bool LKSW_ResetOdometer GEXTFALSE;
 // Force landing if we are stationary, or below 3kmh, otherwise ignore
 GEXTERN bool LKSW_ForceLanding GEXTFALSE;
 
+// Close and reopen TerrainRenderer, to quickly use a new screen resolution
+GEXTERN bool LKSW_ResetTerrainRenderer GEXTFALSE;
+
 #endif
 

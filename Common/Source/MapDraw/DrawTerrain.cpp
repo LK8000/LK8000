@@ -113,7 +113,7 @@ class TerrainRenderer {
 public:
   TerrainRenderer(RECT rc) {
     #if TESTBENCH
-    StartupStore(_T(".... Init TerrainRenderer\n"));
+    StartupStore(_T(".... Init TerrainRenderer area (%d,%d) (%d,%d)\n"),rc.top,rc.left,rc.bottom,rc.right);
     #endif
 
     #if USERASTERCACHE
@@ -741,8 +741,8 @@ void DrawTerrain( const HDC hdc, const RECT rc,
 
 #if DYNASCREEN
   static short oldsizeY;
-_redo:
 #endif
+_redo:
 
   if (!trenderer) {
 #if DYNASCREEN
@@ -756,8 +756,24 @@ _redo:
 #if DYNASCREEN
   // Resolution has changed, probably PAN mode on with bottombar full opaque
   // We paint full screen, so we resize it.
-  if (rc.bottom != oldsizeY) {
-	StartupStore(_T("... Change vertical resolution from %d to %d\n"),oldsizeY,rc.bottom);
+  if (LKSW_ResetTerrainRenderer || (rc.bottom != oldsizeY)) {
+	#if TESTBENCH
+	if (LKSW_ResetTerrainRenderer) {
+		StartupStore(_T("... SWITCH forced for TerrainRenderer Reset\n"));
+	} else {
+		StartupStore(_T("... Change vertical resolution from %d to %d\n"),oldsizeY,rc.bottom);
+	}
+	#endif
+	LKSW_ResetTerrainRenderer=false; // in any case
+	CloseTerrainRenderer();
+	goto _redo;
+  }
+#else
+  if (LKSW_ResetTerrainRenderer) {
+	#if TESTBENCH
+	StartupStore(_T("... SWITCH forced for TerrainRenderer Reset\n"));
+	#endif
+	LKSW_ResetTerrainRenderer=false;
 	CloseTerrainRenderer();
 	goto _redo;
   }
