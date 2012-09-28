@@ -12,6 +12,8 @@
 #include "STScreenBuffer.h"
 #include "RGB.h"
 
+// #define TDEBUG 1
+
 #if RASTERCACHE
 #define USERASTERCACHE 1
 #endif
@@ -355,10 +357,19 @@ public:
     }
 
     POINT orig = MapWindow::GetOrigScreen();
+
+    #if DYNASCREEN
+    extern RECT UseRect;
+    rect_visible.left = max((long)UseRect.left, (long)(UseRect.left-(long)epx*dtquant))-orig.x;
+    rect_visible.right = min((long)UseRect.right, (long)(UseRect.right+(long)epx*dtquant))-orig.x;
+    rect_visible.top = max((long)UseRect.top, (long)(UseRect.top-(long)epx*dtquant))-orig.y;
+    rect_visible.bottom = min((long)UseRect.bottom, (long)(UseRect.bottom+(long)epx*dtquant))-orig.y;
+    #else
     rect_visible.left = max((long)MapWindow::MapRect.left, (long)(MapWindow::MapRect.left-(long)epx*dtquant))-orig.x;
     rect_visible.right = min((long)MapWindow::MapRect.right, (long)(MapWindow::MapRect.right+(long)epx*dtquant))-orig.x;
     rect_visible.top = max((long)MapWindow::MapRect.top, (long)(MapWindow::MapRect.top-(long)epx*dtquant))-orig.y;
     rect_visible.bottom = min((long)MapWindow::MapRect.bottom, (long)(MapWindow::MapRect.bottom+(long)epx*dtquant))-orig.y;
+    #endif
 
     FillHeightBuffer(X0-orig.x, Y0-orig.y, X1-orig.x, Y1-orig.y);
 
@@ -370,8 +381,10 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
     // fill the buffer
   LKASSERT(hBuf!=NULL);
   unsigned short* myhbuf = hBuf;
-  #ifdef DEBUG
+  #if TDEBUG
+  #if (WINDOWSPC>0)
   unsigned short* hBufTop = hBuf+ixs*iys;
+  #endif
   #endif
 
   const double PanLatitude =  MapWindow::GetPanLatitude();
@@ -410,8 +423,10 @@ void FillHeightBuffer(const int X0, const int Y0, const int X1, const int Y1) {
 			(y>= crect_visible.top) &&
 			(y<= crect_visible.bottom)) {
 		#endif
-			#ifdef DEBUG
-			ASSERT(myhbuf<hBufTop);
+			#if TDEBUG
+			#if (WINDOWSPC>0)
+			LKASSERT(myhbuf<hBufTop);
+			#endif
 			#endif
 
 			//1: double Y = PanLatitude - (ycost+x*sint)*InvDrawScale;
@@ -490,8 +505,10 @@ void Slope(const int sx, const int sy, const int sz) {
 
   unsigned short h;
 
-  #ifdef DEBUG
+  #if TDEBUG
+  #if (WINDOWSPC>0)
   unsigned short* hBufTop = hBuf+cixs*ciys;
+  #endif
   #endif
 
   for (unsigned int y = 0; y< iys; y++) {
@@ -519,8 +536,10 @@ void Slope(const int sx, const int sy, const int sz) {
 
 	for (unsigned int x = 0 ; x<cixs; x++, thBuf++, imageBuf++) {
 
-		#ifdef DEBUG
-		ASSERT(thBuf< hBufTop);
+		#if TDEBUG
+		#if (WINDOWSPC>0)
+		LKASSERT(thBuf< hBufTop);
+		#endif
 		#endif
 
 		// FIX here Netherland dutch terrain problem
@@ -542,54 +561,70 @@ void Slope(const int sx, const int sy, const int sz) {
 				if (x<ixsright) {
 					p20= iepx;
 					p22= *(thBuf+iepx);
-					#ifdef DEBUG
-					ASSERT(thBuf+iepx< hBufTop);
+					#if TDEBUG
+					#if (WINDOWSPC>0)
+					LKASSERT(thBuf+iepx< hBufTop);
+					#endif
 					#endif
 				} else {
 					int itss_x = cixs-x-2;
 					p20= itss_x;
 					p22= *(thBuf+itss_x);
-					#ifdef DEBUG
-					ASSERT(thBuf+itss_x< hBufTop);
-					ASSERT(thBuf+itss_x>= hBuf);
+					#if TDEBUG
+					#if (WINDOWSPC>0)
+					LKASSERT(thBuf+itss_x< hBufTop);
+					LKASSERT(thBuf+itss_x>= hBuf);
+					#endif
 					#endif
 				} 
             
 				if (x >= (unsigned int)iepx) {
 					p20+= iepx;
 					p22-= *(thBuf-iepx);
-					#ifdef DEBUG
-					ASSERT(thBuf-iepx>= hBuf); 
+					#if TDEBUG
+					#if (WINDOWSPC>0)
+					LKASSERT(thBuf-iepx>= hBuf); 
+					#endif
 					#endif
 				} else {
 					p20+= x;
 					p22-= *(thBuf-x);
-					#ifdef DEBUG
-					ASSERT(thBuf-x>= hBuf);
+					#if TDEBUG
+					#if (WINDOWSPC>0)
+					LKASSERT(thBuf-x>= hBuf);
+					#endif
 					#endif
 				}
             
 				if (ybottom) {
 					p32 = *(thBuf+ixsepx);
-					#ifdef DEBUG
-					ASSERT(thBuf+ixsepx<hBufTop);
+					#if TDEBUG
+					#if (WINDOWSPC>0)
+					LKASSERT(thBuf+ixsepx<hBufTop);
+					#endif
 					#endif
 				} else {
 					p32 = *(thBuf+itss_y_ixs);
-					#ifdef DEBUG
-					ASSERT(thBuf+itss_y_ixs<hBufTop);
+					#if TDEBUG
+					#if (WINDOWSPC>0)
+					LKASSERT(thBuf+itss_y_ixs<hBufTop);
+					#endif
 					#endif
 				}
 
 				if (ytop) {
 					p32 -= *(thBuf-yixs);
-					#ifdef DEBUG
-					ASSERT(thBuf-yixs>=hBuf);
+					#if TDEBUG
+					#if (WINDOWSPC>0)
+					LKASSERT(thBuf-yixs>=hBuf);
+					#endif
 					#endif
 				} else {
 					p32 -= *(thBuf-ixsepx);
-					#ifdef DEBUG
-					ASSERT(thBuf-ixsepx>=hBuf);
+					#if TDEBUG
+					#if (WINDOWSPC>0)
+					LKASSERT(thBuf-ixsepx>=hBuf);
+					#endif
 					#endif
 				}
             
@@ -704,11 +739,29 @@ void DrawTerrain( const HDC hdc, const RECT rc,
     return;
   }
 
+#if DYNASCREEN
+  static short oldsizeY;
+_redo:
+#endif
+
   if (!trenderer) {
-    trenderer = new TerrainRenderer(MapWindow::MapRect);
+#if DYNASCREEN
+    oldsizeY=rc.bottom;
+#endif
+    trenderer = new TerrainRenderer(rc);
     LKASSERT(trenderer);
     if (!trenderer) return;
   }
+
+#if DYNASCREEN
+  // Resolution has changed, probably PAN mode on with bottombar full opaque
+  // We paint full screen, so we resize it.
+  if (rc.bottom != oldsizeY) {
+	StartupStore(_T("... Change vertical resolution from %d to %d\n"),oldsizeY,rc.bottom);
+	CloseTerrainRenderer();
+	goto _redo;
+  }
+#endif
 
   if (!trenderer->SetMap()) {
     return;
@@ -745,7 +798,11 @@ void DrawTerrain( const HDC hdc, const RECT rc,
   trenderer->Slope(sx, sy, sz); 
  
   // step 5: draw
+#if DYNASCREEN
+  trenderer->Draw(hdc, rc);
+#else
   trenderer->Draw(hdc, MapWindow::MapRect);
+#endif
 
 }
 

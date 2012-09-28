@@ -86,12 +86,6 @@
  #define LKMTERRAIN		1	// allow DEM terrain inside dat and lkm topology files
 
 
- // #define RASTERCACHE		1	// fallback to cached dem if it does not fit in memory entirely. 
-					// Does not work. 
-
-// #define NEWSMARTZOOM		1	// stretch bitmap for fast zoom, uncompleted work (almost working)
-					// Needs USEBIGZOOM
-// #define USEBIGZOOM		1	// will fast redraw only terrain, with no topology &c.
 
  //#define TOW_CRUISE // keep climb mode from engaging while on tow (unless turning steeply
                       // enough to warrant detection of the start of free flight)
@@ -106,20 +100,36 @@
  // Eric Carden, April 21, 2012
  // #define BCT_ALT_FIX
 
+// Dynamic screen resizing. If NOT using alphablending for bottom bar, or using 100% opacity,
+// then terrain and generally the moving map will not be drawn under the bottombar.
+// On 480x272 this is saving around 12% CPU.
+#define DYNASCREEN		1	
+
+
+
+
+
 
 /*
  * Incomplete work, or stuff that never got into production versions but still interesting
  *
 
-    #define USESWITCHES	1	// External device switch support / to be completed because unused
+// #define RASTERCACHE		1	// fallback to cached dem if it does not fit in memory entirely. 
+					// Does not work. 
+
+// #define NEWSMARTZOOM		1	// stretch bitmap for fast zoom, uncompleted work (almost working)
+					// Needs USEBIGZOOM
+// #define USEBIGZOOM		1	// will fast redraw only terrain, with no topology &c.
+
+// #define USESWITCHES	1	// External device switch support / to be completed because unused
 				// Do not remove, it can be worked out with no problems if we want to
 				// support external switches through NMEA input.
 
-    #define DSX			// only an experimental test feature for sms reception
+// #define DSX			// only an experimental test feature for sms reception
 
-   // TopologyWriter for adding topo labels dynamically, previously used for markers
-   // May be sill used for custom user's topology, so let's keep it for a while.
-   #define USETOPOMARKS	1	
+// TopologyWriter for adding topo labels dynamically, previously used for markers
+// May be sill used for custom user's topology, so let's keep it for a while.
+// #define USETOPOMARKS	1	
 
  *
  */
