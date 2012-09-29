@@ -11,7 +11,7 @@
 #include "LKObjects.h"
 #include "RGB.h"
 #include "DoInits.h"
-
+#include "Terrain.h"
 extern int XstartScreen, YstartScreen;
 extern long VKtime;
 
@@ -37,6 +37,44 @@ void MapWindow::LKDrawMultimap_Test(HDC hdc, const RECT rc)
   //
   // Duration of key is inside long VKtime, in milliseconds.
   //
+
+
+  //
+  // Draw a boxed terrain/topology  example
+  // --------------------------------------
+  //
+
+  RECT rct=rc;		// desired area is 400x180, topleft is (20,30)
+  rct.top=20;
+  rct.bottom=rct.top+180;
+  rct.left=30;
+  rct.right=rct.left+400;
+
+  MapWindow::ChangeDrawRect(rct);	// set new area for terrain and topology
+  PanLatitude  = GPS_INFO.Latitude;
+  PanLongitude = GPS_INFO.Longitude;
+
+  // Current position  is in center map
+  POINT Orig = { (rct.right-rct.left)/2,(rct.bottom-rct.top)/2};
+  POINT Orig_Aircraft= {0,0};
+
+  //zoom.ModifyMapScale();
+  //zoom.UpdateMapScale();
+
+  CalculateScreenPositions( Orig,  rct, &Orig_Aircraft);
+  CalculateScreenPositionsAirspace();
+
+  double sunelevation = 40.0;
+  double sunazimuth=GetAzimuth();
+  if (EnableTerrain && DerivedDrawInfo.TerrainValid) {
+	DrawTerrain(hdc, rct, sunazimuth, sunelevation);
+  }
+
+  ResetLabelDeclutter();	// this is needed to reset at each run the declutter, for topology and waypoints!
+
+  DrawTopology(hdc, rct);
+  DrawAirSpace(hdc, rct);
+  DrawWaypointsNew(hdc,rct);
 
   LKWriteBoxedText(hdc, _T("MULTIMAP PAGE EXAMPLE"), 1, 1 , 0, WTALIGN_LEFT);
 
