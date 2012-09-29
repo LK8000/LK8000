@@ -70,10 +70,15 @@ void MapWindow::LKDrawMultimap_Test(HDC hdc, const RECT rc)
 	DrawTerrain(hdc, rct, sunazimuth, sunelevation);
   }
 
-  ResetLabelDeclutter();	// this is needed to reset at each run the declutter, for topology and waypoints!
+  ResetLabelDeclutter();	// This is needed to reset at each run the declutter, for topology and waypoints!
+  // SaturateLabelDeclutter();	// Use this to force no labels be printed, from now on.
 
   DrawTopology(hdc, rct);
   DrawAirSpace(hdc, rct);
+
+  // ResetLabelDeclutter();	// If you saturated labels for topology, now you can reset the declutter to allow
+				// printing only waypoints, 
+
   DrawWaypointsNew(hdc,rct);
 
   LKWriteBoxedText(hdc, _T("MULTIMAP PAGE EXAMPLE"), 1, 1 , 0, WTALIGN_LEFT);

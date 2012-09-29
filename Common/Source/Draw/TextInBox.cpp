@@ -512,3 +512,10 @@ void MapWindow::ResetLabelDeclutter(void) {
 }
 
 
+//
+// This will force temporarily no labels to be printed, by saturating the declutter.
+// A dirty trick.
+//
+void MapWindow::SaturateLabelDeclutter(void) {
+  for (short nvi=0; nvi<SCREENVSLOTS; nvi++) nVLabelBlocks[nvi]=MAXVLABELBLOCKS;
+}

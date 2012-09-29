@@ -734,6 +734,7 @@ private:
   static bool checkLabelBlock(RECT rc);
   #endif
   static void ResetLabelDeclutter(void);
+  static void SaturateLabelDeclutter(void);
   static bool RenderTimeAvailable();
   static int SnailWidthScale; 
   static bool TargetMoved(double &longitude, double &latitude);
