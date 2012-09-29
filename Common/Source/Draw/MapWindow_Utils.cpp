@@ -20,8 +20,8 @@ bool MapWindow::WaypointInTask(int ind) {
 
 
 double MapWindow::GetApproxScreenRange() {
-  return (zoom.Scale() * max(MapRect.right-MapRect.left,
-                         MapRect.bottom-MapRect.top))
+  return (zoom.Scale() * max(DrawRect.right-DrawRect.left,
+                         DrawRect.bottom-DrawRect.top))
     *1000.0/GetMapResolutionFactor();
 }
 
@@ -57,13 +57,13 @@ bool MapWindow::PointVisible(const double &lon, const double &lat) {
 
 bool MapWindow::PointVisible(const POINT &P)
 {
-  if(( P.x >= MapRect.left ) 
+  if(( P.x >= DrawRect.left ) 
      &&
-     ( P.x <= MapRect.right ) 
+     ( P.x <= DrawRect.right ) 
      &&
-     ( P.y >= MapRect.top  ) 
+     ( P.y >= DrawRect.top  ) 
      &&
-     ( P.y <= MapRect.bottom  ) 
+     ( P.y <= DrawRect.bottom  ) 
      )
     return TRUE;
   else

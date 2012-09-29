@@ -17,7 +17,6 @@
 #include <wingdi.h>
 #endif
 
-
 BOOL MapWindow::CLOSETHREAD = FALSE;
 BOOL MapWindow::THREADRUNNING = TRUE;
 BOOL MapWindow::THREADEXIT = FALSE;
@@ -49,11 +48,11 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
   //  THREADRUNNING = FALSE;
   THREADEXIT = FALSE;
 
-  // Reset for topology labels decluttering engine occurs also in another place here!
-//  extern void ResetLabelDeclutter(void);
+  // Reset common topology and waypoint label declutter, first init. Done also in other places.
   ResetLabelDeclutter();
 
   GetClientRect(hWndMapWindow, &MapRect);
+  DrawRect=MapRect;	// Default draw area is full screen, no opacity
 
   UpdateTimeStats(true);
 
@@ -101,6 +100,7 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 	#endif
         // This is needed to update resolution change
         GetClientRect(hWndMapWindow, &MapRect);
+	DrawRect=MapRect;
 	FillScaleListForEngineeringUnits();
 	LKUnloadProfileBitmaps();
 	LKLoadProfileBitmaps();
@@ -117,6 +117,8 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
 	LKSW_ReloadProfileBitmaps=false;
 	first=true; // check it
       }
+
+
 
 #ifdef CPUSTATS
 	GetThreadTimes( hDrawThread, &CreationTime, &ExitTime,&StartKernelTime,&StartUserTime);
@@ -290,4 +292,33 @@ void MapWindow::CloseDrawingThread(void)
   #endif
 }
 
+//
+// Change resolution of terrain,topology,airspace
+// 
+bool MapWindow::ChangeDrawRect(const RECT rectarea)
+{
+ // static RECT oldrect={0,0,0,0};
+  DrawRect=rectarea;
+  return true;
+}
+
+
+#if 0
+// This is for exhaustive testing of Renderterrain init/deinit.
+void TestChangeRect(void) {
+
+  static unsigned short flipper=2;
+  static bool testflip=false;
+  RECT testRect={0,0,460,200};
+  if (--flipper==0) {
+	if (testflip)
+		MapWindow::ChangeDrawRect(MapWindow::MapRect);
+  	else
+		MapWindow::ChangeDrawRect(testRect);
+	testflip=!testflip;
+	flipper=2;
+	MapWindow::RefreshMap();
+  }
+}
+#endif
 

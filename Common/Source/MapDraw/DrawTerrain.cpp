@@ -112,7 +112,7 @@ inline void TerrainShading(const short illum, BYTE &r, BYTE &g, BYTE &b)
 class TerrainRenderer {
 public:
   TerrainRenderer(RECT rc) {
-    #if TESTBENCH
+    #if (WINDOWSPC>0) && TESTBENCH
     StartupStore(_T(".... Init TerrainRenderer area (%d,%d) (%d,%d)\n"),rc.left,rc.top,rc.right,rc.bottom);
     #endif
 
@@ -166,7 +166,7 @@ public:
 	StartupStore(_T("------ TerrainRenderer: malloc(%d) failed!%s"),sizeof(unsigned short)*ixs*iys, NEWLINE);
 	OutOfMemory(__FILE__,__LINE__);
     } 
-    #if TESTBENCH
+    #if (WINDOWSPC>0) && TESTBENCH
     else {
 	StartupStore(_T(". TerrainRenderer: malloc(%d) ok%s"),sizeof(unsigned short)*ixs*iys, NEWLINE);
     }
@@ -182,7 +182,7 @@ public:
   }
 
   ~TerrainRenderer() {
-    #if TESTBENCH
+    #if (WINDOWSPC>0) && TESTBENCH
     StartupStore(_T(".... Deinit TerrainRenderer\n"));
     #endif
     if (hBuf) {
@@ -358,12 +358,12 @@ public:
 
     POINT orig = MapWindow::GetOrigScreen();
 
-    #if DYNASCREEN
-    extern RECT UseRect;
-    rect_visible.left = max((long)UseRect.left, (long)(UseRect.left-(long)epx*dtquant))-orig.x;
-    rect_visible.right = min((long)UseRect.right, (long)(UseRect.right+(long)epx*dtquant))-orig.x;
-    rect_visible.top = max((long)UseRect.top, (long)(UseRect.top-(long)epx*dtquant))-orig.y;
-    rect_visible.bottom = min((long)UseRect.bottom, (long)(UseRect.bottom+(long)epx*dtquant))-orig.y;
+    #if 0
+    //#if DYNASCREEN
+    rect_visible.left = max((long)MapWindow::DrawRect.left, (long)(MapWindow::DrawRect.left-(long)epx*dtquant))-orig.x;
+    rect_visible.right = min((long)MapWindow::DrawRect.right, (long)(MapWindow::DrawRect.right+(long)epx*dtquant))-orig.x;
+    rect_visible.top = max((long)MapWindow::DrawRect.top, (long)(MapWindow::DrawRect.top-(long)epx*dtquant))-orig.y;
+    rect_visible.bottom = min((long)MapWindow::DrawRect.bottom, (long)(MapWindow::DrawRect.bottom+(long)epx*dtquant))-orig.y;
     #else
     rect_visible.left = max((long)MapWindow::MapRect.left, (long)(MapWindow::MapRect.left-(long)epx*dtquant))-orig.x;
     rect_visible.right = min((long)MapWindow::MapRect.right, (long)(MapWindow::MapRect.right+(long)epx*dtquant))-orig.x;
@@ -746,10 +746,7 @@ _redo:
 
   if (!trenderer) {
 #if DYNASCREEN
-    oldrc.left=rc.left;
-    oldrc.right=rc.right;
-    oldrc.top=rc.top;
-    oldrc.bottom=rc.bottom;
+    oldrc=rc;
 #endif
     trenderer = new TerrainRenderer(rc);
     LKASSERT(trenderer);
@@ -761,12 +758,12 @@ _redo:
   // We paint full screen, so we resize it.
   if (LKSW_ResetTerrainRenderer || (rc.bottom != oldrc.bottom) || (rc.right != oldrc.right)
 	|| (rc.left != oldrc.left) || (rc.top != oldrc.top) ) {
-	#if TESTBENCH
+    	#if (WINDOWSPC>0) && TESTBENCH
 	if (LKSW_ResetTerrainRenderer) {
 		StartupStore(_T("... SWITCH forced for TerrainRenderer Reset\n"));
 	} else {
 		StartupStore(_T("... Change vertical resolution from %d,%d,%d,%d  to %d,%d,%d,%d\n"),
-			rc.top,rc.bottom,rc.left,rc.right, oldrc.top, oldrc.bottom, oldrc.left,oldrc.right);
+			oldrc.left,oldrc.top,oldrc.right,oldrc.bottom, rc.left, rc.top, rc.right,rc.bottom);
 	}
 	#endif
 	LKSW_ResetTerrainRenderer=false; // in any case
@@ -775,7 +772,7 @@ _redo:
   }
 #else
   if (LKSW_ResetTerrainRenderer) {
-	#if TESTBENCH
+    	#if (WINDOWSPC>0) && TESTBENCH
 	StartupStore(_T("... SWITCH forced for TerrainRenderer Reset\n"));
 	#endif
 	LKSW_ResetTerrainRenderer=false;

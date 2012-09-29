@@ -885,20 +885,28 @@ bool XShapeLabel::renderSpecial(HDC hDC, int x, int y, bool retval) {
 	RECT brect;
 	GetTextExtentPoint(hDC, Temp, size, &tsize);
 
+	// shift label from center point of shape
+	x+= NIBLSCALE(2); 
+	y+= NIBLSCALE(2);
+	brect.left = x-NIBLSCALE(3);
+	brect.right = brect.left+tsize.cx+NIBLSCALE(3);
+	brect.top = y-NIBLSCALE(3);
+	brect.bottom = brect.top+tsize.cy+NIBLSCALE(3);
+
 	if ( DeclutterMode != (DeclutterMode_t)dmDisabled ) {
-		// shift label from center point of shape
-		x+= NIBLSCALE(2); 
-		y+= NIBLSCALE(2);
-		brect.left = x-NIBLSCALE(3);
-		brect.right = brect.left+tsize.cx+NIBLSCALE(3);
-		brect.top = y-NIBLSCALE(3);
-		brect.bottom = brect.top+tsize.cy+NIBLSCALE(3);
 		#if TOPOFASTLABEL
 		if (!MapWindow::checkLabelBlock(&brect)) return false;
 		#else
 		if (!MapWindow::checkLabelBlock(brect)) return false;
 		#endif
 	}
+
+	// Do not print outside boundaries of Draw area
+	if (brect.bottom>=MapWindow::DrawRect.bottom ||
+		brect.top<=MapWindow::DrawRect.top ||
+		brect.left<=MapWindow::DrawRect.left ||
+		brect.right>=MapWindow::DrawRect.right) return false;
+
 	SetTextColor(hDC, RGB(0,50,50)); // PETROL too light at 66
     
 	ExtTextOut(hDC, x, y, 0, NULL, Temp, size, NULL);

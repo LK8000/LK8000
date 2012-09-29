@@ -21,7 +21,6 @@
 #endif
 
 extern bool FastZoom;
-RECT UseRect;
 
 void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
 				  const POINT &Orig,
@@ -43,17 +42,20 @@ void MapWindow::RenderMapWindowBg(HDC hdc, const RECT rc,
   static double delta_drawscale=1.0;
   #endif
 
+  #if 0 
+  extern void TestChangeRect();
+  TestChangeRect();
+  #endif
+
   #if DYNASCREEN
   if ((MapWindow::AlphaBlendSupported() && BarOpacity<100) || mode.AnyPan()) {
-	UseRect=MapRect;
+	MapWindow::ChangeDrawRect(MapRect);
   } else {
-	  UseRect.top=0;
-	  UseRect.bottom=ScreenSizeY-BottomSize;
-	  UseRect.left=0;
-	  UseRect.right=ScreenSizeX;
+	RECT newRect={0,0,ScreenSizeX,ScreenSizeY-BottomSize};
+	MapWindow::ChangeDrawRect(newRect);
   }
   #else
-  UseRect=MapRect;
+  MapWindow::ChangeDrawRect(MapRect);
   #endif
 
   // If we have a BigZoom request, we serve it immediately without calculating anything
@@ -222,7 +224,7 @@ fastzoom:
 		SelectObject(hdcDrawWindow, hfOld);
 		goto QuickRedraw;
 	}
-    DrawTerrain(hdc, UseRect, sunazimuth, sunelevation);
+    DrawTerrain(hdc, DrawRect, sunazimuth, sunelevation);
  	if (DONTDRAWTHEMAP) {
 		UnlockTerrainDataGraphics();
 		SelectObject(hdcDrawWindow, hfOld);
@@ -236,7 +238,7 @@ fastzoom:
         #else
     	if ((FinalGlideTerrain==2) && DerivedDrawInfo.TerrainValid) {
         #endif
-    	  DrawTerrainAbove(hdc, UseRect);
+    	  DrawTerrainAbove(hdc, DrawRect);
     	}
     }
     UnlockTerrainDataGraphics();
@@ -258,7 +260,7 @@ fastzoom:
   }
 
   if (EnableTopology) {
-    DrawTopology(hdc, UseRect);
+    DrawTopology(hdc, DrawRect);
   }
   #if 0
   StartupStore(_T("... Experimental1=%.0f\n"),Experimental1);
@@ -272,7 +274,7 @@ fastzoom:
   ResetLabelDeclutter();
   
   if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) { // 100503
-	DrawTaskAAT(hdc, UseRect);
+	DrawTaskAAT(hdc, DrawRect);
   }
 
   
@@ -296,7 +298,7 @@ fastzoom:
   
   if(TrailActive) {
 	// NEED REWRITING
-	LKDrawTrail(hdc, Orig_Aircraft, UseRect);
+	LKDrawTrail(hdc, Orig_Aircraft, DrawRect);
   }
 
  	if (DONTDRAWTHEMAP) { // 100319
@@ -304,12 +306,12 @@ fastzoom:
 		goto QuickRedraw;
 	}
 
-  DrawThermalEstimate(hdc, UseRect);
-  if (OvertargetMode==OVT_THER) DrawThermalEstimateMultitarget(hdc, UseRect);
+  DrawThermalEstimate(hdc, DrawRect);
+  if (OvertargetMode==OVT_THER) DrawThermalEstimateMultitarget(hdc, DrawRect);
  
   // draw red cross on glide through terrain marker
   if (FinalGlideTerrain && DerivedDrawInfo.TerrainValid) {
-    DrawGlideThroughTerrain(hdc, UseRect);
+    DrawGlideThroughTerrain(hdc, DrawRect);
   }
   
  	if (DONTDRAWTHEMAP) { // 100319
@@ -318,31 +320,31 @@ fastzoom:
 	}
   if ((OnAirSpace > 0) && AirspaceWarningMapLabels)
   {
-	DrawAirspaceLabels(hdc, UseRect, Orig_Aircraft);
+	DrawAirspaceLabels(hdc, DrawRect, Orig_Aircraft);
 	if (DONTDRAWTHEMAP) { // 100319
 		SelectObject(hdcDrawWindow, hfOld);
 		goto QuickRedraw;
 	}
   }
-  DrawWaypointsNew(hdc,UseRect);
+  DrawWaypointsNew(hdc,DrawRect);
  	if (DONTDRAWTHEMAP) { // 100319
 		SelectObject(hdcDrawWindow, hfOld);
 		goto QuickRedraw;
 	}
 
   if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) { // 100503
-	DrawTask(hdc, UseRect, Orig_Aircraft);
+	DrawTask(hdc, DrawRect, Orig_Aircraft);
   }
   DrawTeammate(hdc, rc);
 
   if (extGPSCONNECT) {
     DrawBestCruiseTrack(hdc, Orig_Aircraft);
-    DrawBearing(hdc, UseRect);
+    DrawBearing(hdc, DrawRect);
   }
 
   // draw wind vector at aircraft
   if (!mode.AnyPan()) {
-    DrawWindAtAircraft2(hdc, Orig_Aircraft, UseRect);
+    DrawWindAtAircraft2(hdc, Orig_Aircraft, DrawRect);
   } else if (mode.Is(Mode::MODE_TARGET_PAN)) {
     DrawWindAtAircraft2(hdc, Orig, rc);
   }
@@ -367,7 +369,7 @@ fastzoom:
 	}
 
   // Draw traffic and other specifix LK gauges
-  	LKDrawFLARMTraffic(hdc, UseRect, Orig_Aircraft);
+  	LKDrawFLARMTraffic(hdc, DrawRect, Orig_Aircraft);
 
   if (!mode.AnyPan()) {
     // REMINDER TODO let it be configurable for not circling also, as before
@@ -386,7 +388,7 @@ fastzoom:
   }
 
   if (!mode.AnyPan()) {
-	if (TrackBar) DrawHeading(hdc, Orig, UseRect); 
+	if (TrackBar) DrawHeading(hdc, Orig, DrawRect); 
   }
 
   #if USETOPOMARKS
@@ -394,7 +396,7 @@ fastzoom:
   DrawMarks(hdc, rc);
   #endif
 
-  if (ISGAAIRCRAFT) DrawHSI(hdc,Orig,UseRect); 
+  if (ISGAAIRCRAFT) DrawHSI(hdc,Orig,DrawRect); 
 
 #ifdef CPUSTATS
   DrawCpuStats(hdc,rc);

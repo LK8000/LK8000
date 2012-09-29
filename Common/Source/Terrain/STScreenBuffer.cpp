@@ -44,14 +44,14 @@ CSTScreenBuffer::CSTScreenBuffer()
 	  m_hBitmap(NULL),
 	  m_pDC(NULL)
 {
-#if TESTBENCH
+#if (WINDOWSPC>0) && TESTBENCH
 StartupStore(_T(".... Init CSTScreenBuffer\n"));
 #endif
 }
 
 CSTScreenBuffer::~CSTScreenBuffer()
 {
-	#if TESTBENCH
+	#if (WINDOWSPC>0) && TESTBENCH
 	StartupStore(_T(".... Deinit CSTScreenBuffer\n"));
 	#endif
 	if (m_hBitmap!=NULL) {

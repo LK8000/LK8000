@@ -39,7 +39,8 @@ int MapWindow::ScaleCurrent;
 
 POINT MapWindow::Orig_Screen;
 
-RECT MapWindow::MapRect;
+RECT MapWindow::MapRect;	// the entire screen area in use
+RECT MapWindow::DrawRect;	// the portion of MapRect for drawing terrain, topology etc. (the map)
 
 HBITMAP MapWindow::hDrawBitMap = NULL;
 HBITMAP MapWindow::hDrawBitMapTmp = NULL;

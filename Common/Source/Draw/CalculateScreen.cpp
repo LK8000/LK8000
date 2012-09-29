@@ -30,17 +30,17 @@ rectObj MapWindow::CalculateScreenBounds(double scale) {
     
     int dx, dy;
     unsigned int maxsc=0;
-    dx = screen_center.x-MapRect.right;
-    dy = screen_center.y-MapRect.top;
+    dx = screen_center.x-DrawRect.right;
+    dy = screen_center.y-DrawRect.top;
     maxsc = max(maxsc, isqrt4(dx*dx+dy*dy));
-    dx = screen_center.x-MapRect.left;
-    dy = screen_center.y-MapRect.top;
+    dx = screen_center.x-DrawRect.left;
+    dy = screen_center.y-DrawRect.top;
     maxsc = max(maxsc, isqrt4(dx*dx+dy*dy));
-    dx = screen_center.x-MapRect.left;
-    dy = screen_center.y-MapRect.bottom;
+    dx = screen_center.x-DrawRect.left;
+    dy = screen_center.y-DrawRect.bottom;
     maxsc = max(maxsc, isqrt4(dx*dx+dy*dy));
-    dx = screen_center.x-MapRect.right;
-    dy = screen_center.y-MapRect.bottom;
+    dx = screen_center.x-DrawRect.right;
+    dy = screen_center.y-DrawRect.bottom;
     maxsc = max(maxsc, isqrt4(dx*dx+dy*dy));
     
     for (int i=0; i<10; i++) {
@@ -62,26 +62,26 @@ rectObj MapWindow::CalculateScreenBounds(double scale) {
     int x, y;
     double X, Y;
     
-    x = MapRect.left; 
-    y = MapRect.top; 
+    x = DrawRect.left; 
+    y = DrawRect.top; 
     Screen2LatLon(x, y, X, Y);
     xmin = X; xmax = X;
     ymin = Y; ymax = Y;
 
-    x = MapRect.right; 
-    y = MapRect.top; 
+    x = DrawRect.right; 
+    y = DrawRect.top; 
     Screen2LatLon(x, y, X, Y);
     xmin = min(xmin, X); xmax = max(xmax, X);
     ymin = min(ymin, Y); ymax = max(ymax, Y);
   
-    x = MapRect.right; 
-    y = MapRect.bottom; 
+    x = DrawRect.right; 
+    y = DrawRect.bottom; 
     Screen2LatLon(x, y, X, Y);
     xmin = min(xmin, X); xmax = max(xmax, X);
     ymin = min(ymin, Y); ymax = max(ymax, Y);
   
-    x = MapRect.left; 
-    y = MapRect.bottom; 
+    x = DrawRect.left; 
+    y = DrawRect.bottom; 
     Screen2LatLon(x, y, X, Y);
     xmin = min(xmin, X); xmax = max(xmax, X);
     ymin = min(ymin, Y); ymax = max(ymax, Y);

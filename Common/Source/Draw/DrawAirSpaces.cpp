@@ -26,7 +26,7 @@ void MapWindow::ClearAirSpace(bool fill) {
   SetBkColor(hDCTemp, whitecolor);	  
   SelectObject(hDCTemp, GetStockObject(WHITE_PEN));
   SelectObject(hDCTemp, GetStockObject(WHITE_BRUSH));
-  Rectangle(hDCTemp,MapRect.left,MapRect.top,MapRect.right,MapRect.bottom);
+  Rectangle(hDCTemp,DrawRect.left,DrawRect.top,DrawRect.right,DrawRect.bottom);
   if (fill) {
     SelectObject(hDCTemp, GetStockObject(WHITE_PEN));
   }

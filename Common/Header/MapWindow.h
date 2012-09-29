@@ -388,7 +388,8 @@ class MapWindow {
   static Zoom zoom;
   static Mode mode;
 
-  static RECT MapRect;
+  static RECT MapRect;			// See explanation in MapWndProc
+  static RECT DrawRect;
   static bool ForceVisibilityScan;
 
   static bool MapDirty;
@@ -453,6 +454,7 @@ class MapWindow {
   static LRESULT CALLBACK MapWndProc (HWND hWnd, UINT uMsg, WPARAM wParam,LPARAM lParam);
 
   static bool IsMapFullScreen();
+  static bool ChangeDrawRect(const RECT rectarea);
 
   // input events or reused code
   static void Event_Pan(int vswitch);
