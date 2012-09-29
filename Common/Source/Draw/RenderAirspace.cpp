@@ -119,8 +119,17 @@ bool bInvCol = true; //INVERTCOLORS;
     aclat = GPS_INFO.Latitude;
     aclon = GPS_INFO.Longitude;
     ach   = GPS_INFO.Altitude;
+
+    acb    = GPS_INFO.TrackBearing;
+
+//    LL_to_BearRange(aclat, aclon,  WayPointList[GetOvertargetIndex()].Latitude,   WayPointList[GetOvertargetIndex()].Longitude  ,&acb, &wpt_dist);
+
+
+    GPSbrg = acb;
+
     acb    = GPS_INFO.TrackBearing;
     GPSbrg = GPS_INFO.TrackBearing;
+//    DrawInfo
     speed = GPS_INFO.Speed;
 
     calc_average30s = CALCULATED_INFO.Average30s;
@@ -156,7 +165,7 @@ bool bInvCol = true; //INVERTCOLORS;
       double wptlat = WayPointList[overindex].Latitude;
       DistanceBearing(aclat, aclon, wptlat, wptlon, &wpt_dist, &acb);
 
-      wpt_brg = AngleLimit360(wpt_brg - acb +90);
+      wpt_brg = AngleLimit360(wpt_brg - acb +90.0);
       fDist = max(5.0*1000.0, wpt_dist*1.15);   // 20% more distance to show, minimum 5km
       wpt_altarriv     = WayPointCalc[overindex].AltArriv[ALTA_MC ];
       wpt_altarriv_mc0 = WayPointCalc[overindex].AltArriv[ALTA_MC0];
@@ -266,6 +275,16 @@ double fOldScale  =  zoom.Scale();
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
 	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
 
+  if(fSplitFact > 0.0)
+  {
+  	sDia.rc = rct;
+    if (Sideview_asp_heading_task == 0)
+  	  MapWindow::AirspaceTopView(hdc, &sDia, GPSbrg, 90.0 );
+
+    if (Sideview_asp_heading_task == 1)
+  	  MapWindow::AirspaceTopView(hdc, &sDia, acb, wpt_brg );
+  	sDia.rc = rc;
+  }
 
   Statistics::DrawXGrid(hdc, rci, xtick/DISTANCEMODIFY, 0,  STYLE_THINDASHPAPER, xtick, true);
   SetTextColor(hdc, Sideview_TextColor);
@@ -534,7 +553,7 @@ double fOldScale  =  zoom.Scale();
   
 
   if (!Sideview_asp_heading_task)
-    wpt_brg =90;
+    wpt_brg =90.0;
   RenderPlaneSideview( hdc,  0.0f, CALCULATED_INFO.NavAltitude,wpt_brg, &sDia );
   HFONT hfOld2 = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
   SetTextColor(hdc, Sideview_TextColor);
@@ -557,32 +576,14 @@ double fOldScale  =  zoom.Scale();
   SelectObject(hdc,hfOld/* Sender->GetFont()*/);
 
   if(fSplitFact > 0.0)
-  {
   	sDia.rc = rct;
-
-
-    if (Sideview_asp_heading_task == 0)
-  	  MapWindow::AirspaceTopView(hdc, &sDia, GPSbrg, 90.0 );
-
-    if (Sideview_asp_heading_task == 1)
-  	  MapWindow::AirspaceTopView(hdc, &sDia, acb, wpt_brg );
-  }
 
   hfOld = (HFONT)SelectObject(hdc,LK8InfoNormalFont/* Sender->GetFont()*/);
 
   DrawNorthArrow     ( hdc, GPSbrg          , rct.right - NIBLSCALE(13),  rct.top   + NIBLSCALE(13));
-  RenderBearingDiff( hdc, wpt_brg,  &sDia );
+//  RenderBearingDiff( hdc, wpt_brg,  &sDia );
 
 
-/*
-  HPEN hpGreen   = (HPEN)  CreatePen(PS_SOLID, IBLSCALE(1), RGB_BLACK);
-  HPEN oldPen = (HPEN) SelectObject(hdc, hpGreen);
-  SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-    Rectangle(hdc,rct.left , rct.bottom-1 ,rct.right, rct.top);
-    Rectangle(hdc,rc.left , rc.bottom ,rc.right, rc.top-1);
-  SelectObject(hdc, oldPen);
-  DeleteObject(hpGreen);
-*/
   SelectObject(hdc,hfOld/* Sender->GetFont()*/);
   zoom.SetLimitMapScale(true);
 }

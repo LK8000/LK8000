@@ -521,17 +521,14 @@ switch(LKevent)
   }
   break;
   case LKEVENT_TOPRIGHT:
+	  iTurn = 	(iTurn+1)%2;
+
   break;
   case LKEVENT_LONGCLICK:
 	if( PtInRect(XstartScreen,YstartScreen, OwnPosSideView)||
 	    PtInRect(XstartScreen,YstartScreen, OwnPosTopView  ) )
 	{
 	  iTurn = 	(iTurn+1)%2;
-	  switch(iTurn)
-	  {
-	 	case 0: {RADAR_TURN = 90; ASYMETRIC_FACTOR = 0.7 ; } break;
-	   	case 1: {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; } break;
-	  }
 	}
 	else
       {
@@ -571,6 +568,11 @@ LKevent=LKEVENT_NONE; /* remove event from list */
 if(SPLITSCREEN_FACTOR >0.95)
 	bSideview = false;
 
+switch(iTurn)
+{
+	case 0: {RADAR_TURN = 90; ASYMETRIC_FACTOR = 0.7 ; } break;
+ 	case 1: {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; } break;
+}
 rct.bottom = (long)((rc.bottom-rc.top  )*SPLITSCREEN_FACTOR); /* 2/3 for topview */
 rc.top     = rct.bottom;
 /****************************************************************/
@@ -1170,17 +1172,6 @@ for (i=0; i < nEntrys; i++)
  ***********************************************/
 if(bSideview)
 {
-  /***********************************************/
-	/*
-	   HPEN hpGreen   = (HPEN)  CreatePen(PS_SOLID, IBLSCALE(1), RGB_BLACK);
-	   HPEN oldPen = (HPEN) SelectObject(hdc, hpGreen);
-	  HBRUSH oldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(BLACK_BRUSH));
-	     Rectangle(hdc,rc.left , rc.bottom ,rc.right, rc.top);
-	   SelectObject(hdc, oldPen);
-	   SelectObject(hdc, oldBrush);
-
-	   DeleteObject(hpGreen);
-*/
 
   bCenter = false;
   for (j=0; j<nEntrys; j++)
@@ -1279,7 +1270,16 @@ if(bSideview)
     case 1: _stprintf(lbuffer,TEXT("RDR %s"), gettext(TEXT("_@M2233_"))); break; //  _@M2233_ "climb/sink trace"
     case 2: _stprintf(lbuffer,TEXT("RDR %s"), gettext(TEXT("_@M2232_"))); break; //  _@M2232_ "climb trace"
   }
-  LKWriteText(hdc, lbuffer, 30 /*column0*/, NIBLSCALE(5) , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_LIGHTGREEN, false);
+  LKWriteText(hdc, lbuffer, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_DARKGREY, false);
+//  LKWriteText(hdc, szTxt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, rgbTextColor, false);
+
+  switch(iTurn)
+  {
+    default:
+    case 0: _stprintf(lbuffer,TEXT("%s"), gettext(TEXT("_@M2234_"))) ; break; //      _@M2234_ "Head Up"
+    case 1: _stprintf(lbuffer,TEXT("%s"), gettext(TEXT("_@M2235_"))); break; //      _@M2235_ "Head Right"
+  }
+  LKWriteText(hdc, lbuffer, rci.right-RIGHTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_DARKGREY, false);
 
 
 

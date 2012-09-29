@@ -563,14 +563,15 @@ HBRUSH OldBrush = (HBRUSH) SelectObject(hdc, GetStockObject(BLACK_BRUSH));
 
 
 
-
+GEXTERN bool ActiveMap;
 int MapWindow::AirspaceTopView(HDC hdc, DiagrammStruct* pDia , double fAS_Bearing, double fWP_Bearing)
 {
 //fAS_Bearing+=3.0;
 
 double fOldScale  =  zoom.Scale();
 RECT rct = pDia->rc;
-
+bool OldAM = ActiveMap;
+ActiveMap = true ;
 
 double fFact = 1.0 ;
 
@@ -621,30 +622,17 @@ double fFact = 1.0 ;
    CalculateScreenPositionsAirspace();
 
 
-   /*
-    asp_fill_border_only        = 0,  // airspace drawing using no filling
-    asp_fill_patterns_full      = 1,  // airspace drawing using patterns
-    asp_fill_patterns_borders   = 2,  // airspace drawing using patterns, borders
-    asp_fill_ablend_full        = 3,  // airspace drawing using alpha blend
-    asp_fill_ablend_borders     = 4,  // airspace drawing using alpha blend, borders
-    */
- //  SetAirSpaceFillType(asp_fill_patterns_borders);
-
-
-
-   // set alpha blended airspace opacity (0..100)
-//  SetAirSpaceOpacity(20) ;
-
 	double sunelevation = 40.0;
 	double sunazimuth=GetAzimuth();
    if ((EnableTerrain && (DerivedDrawInfo.TerrainValid)
        )
  	)
      DrawTerrain(hdc, rct, sunazimuth, sunelevation);
+  RECT rc_red = rct;
+   rc_red.bottom -= 3;
+   DrawTopology  (hdc, rc_red);
 
- //  if (EnableTopology) {
- //    DrawTopology(hdc, rct);
- //  }
+
    DrawAirSpace( hdc, rct);
    //LKDrawTrail(hdc, Orig_Aircraft, rct);
    DrawAirspaceLabels( hdc,   rct, Orig_Aircraft);
@@ -673,6 +661,6 @@ double fFact = 1.0 ;
 
    MapWindow::zoom.RequestedScale(fOldScale);
    EnableThermalLocator = iOldLocator;
-
+   ActiveMap = OldAM ;
  return 0;
 }

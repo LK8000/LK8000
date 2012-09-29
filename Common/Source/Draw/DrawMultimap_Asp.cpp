@@ -227,13 +227,15 @@ rci.bottom -= BottomSize;
   HFONT hfOld = (HFONT)SelectObject(hdc, LK8InfoSmallFont);
 
  //   SetBkMode(hdc, OPAQUE);
-    LKWriteText(hdc, szTxt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, rgbTextColor, false);
+
+//	LKWriteText(hDC, tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTYELLOW, false);
+  LKWriteText(hdc, szTxt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, rgbTextColor, false);
 	if(Sideview_asp_heading_task== 2)
 	{
 	  if(Sonar_IsEnabled)
-	    LKWriteText(hdc, gettext(_T("_@M1293_")),  (rc.right)-40, rci.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rgbTextColor, false); // _@M1294_ "Sonar On"
+	    LKWriteText(hdc, gettext(_T("_@M1293_")),  (rc.right)-40, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, rgbTextColor, false); // _@M1294_ "Sonar On"
 	  else
- 	    LKWriteText(hdc, gettext(_T("_@M1294_")),  (rc.right)-40, rci.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_RIGHT, rgbTextColor, false); // _@M1294_ "Sonar Off"
+ 	    LKWriteText(hdc, gettext(_T("_@M1294_")),  (rc.right)-40, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, rgbTextColor, false); // _@M1294_ "Sonar Off"
 	}
 //    SetBkMode(hdc, TRANSPARENT);
 	SonarNotify();

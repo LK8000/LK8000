@@ -638,7 +638,7 @@ Statistics::DrawYGrid(hdc, rc, fScale/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, fS
 
   hfOldFnt = (HFONT)SelectObject(hdc,LK8InfoNormalFont/* Sender->GetFont()*/);
   DrawNorthArrow     ( hdc, GPSbrg          , rct.right - NIBLSCALE(13),  rct.top  + NIBLSCALE(13));
-  RenderBearingDiff  ( hdc, wpt_brg,  &sDia );
+//  RenderBearingDiff  ( hdc, wpt_brg,  &sDia );
   SelectObject(hdc,hfOldFnt/* Sender->GetFont()*/);
 }
 

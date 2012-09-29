@@ -1982,6 +1982,9 @@ _@M2230_ "Force\nLanded"
 _@M2231_ "no trace"
 _@M2232_ "climb trace"
 _@M2233_ "climb/sink trace"
+_@M2234_ "Head Up"
+_@M2235_ "Head Right"
+
 # Reserved for custom menus up to 2300!
 
 # Note for developers: remember LKLanguage MAX_MESSAGE limit (2250)
