@@ -609,6 +609,8 @@ double fFact = 1.0 ;
   int iOldLocator = EnableThermalLocator;
   EnableThermalLocator =0;
 
+  MapWindow::ChangeDrawRect(rct);       // set new area for terrain and topology
+
   zoom.ModifyMapScale();
   zoom.RequestedScale((pDia->fXMax -pDia->fXMin)  * fFact *  (DISTANCEMODIFY)/10.0f);
 
@@ -624,10 +626,10 @@ double fFact = 1.0 ;
 
 	double sunelevation = 40.0;
 	double sunazimuth=GetAzimuth();
-   if ((EnableTerrain && (DerivedDrawInfo.TerrainValid)
-       )
- 	)
+   if ((EnableTerrain && (DerivedDrawInfo.TerrainValid) ) )
      DrawTerrain(hdc, rct, sunazimuth, sunelevation);
+
+  SaturateLabelDeclutter();  // Do not print topology labels
   RECT rc_red = rct;
    rc_red.bottom -= 3;
    DrawTopology  (hdc, rc_red);
