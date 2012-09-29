@@ -269,11 +269,7 @@ fastzoom:
 
   // Topology labels are printed first, using OLD wps positions from previous run!
   // Reset for topology labels decluttering engine occurs also in another place here!
-
-  nLabelBlocks = 0;
-  #if TOPOFASTLABEL
-  for (short nvi=0; nvi<SCREENVSLOTS; nvi++) nVLabelBlocks[nvi]=0;
-  #endif
+  ResetLabelDeclutter();
   
   if (ValidTaskPoint(ActiveWayPoint) && ValidTaskPoint(1)) { // 100503
 	DrawTaskAAT(hdc, UseRect);

@@ -500,3 +500,15 @@ void MapWindow::FreeSlot(){
 
 #endif
 
+//
+// Called by Thread_Draw, for init
+// Called by RenderMapWindowBg at runtime
+//
+void MapWindow::ResetLabelDeclutter(void) {
+  nLabelBlocks = 0;
+  #if TOPOFASTLABEL
+  for (short nvi=0; nvi<SCREENVSLOTS; nvi++) nVLabelBlocks[nvi]=0;
+  #endif
+}
+
+

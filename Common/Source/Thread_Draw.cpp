@@ -50,10 +50,8 @@ DWORD MapWindow::DrawThread (LPVOID lpvoid)
   THREADEXIT = FALSE;
 
   // Reset for topology labels decluttering engine occurs also in another place here!
-  nLabelBlocks = 0;
-  #if TOPOFASTLABEL
-  for (short nvi=0; nvi<SCREENVSLOTS; nvi++) nVLabelBlocks[nvi]=0;
-  #endif
+//  extern void ResetLabelDeclutter(void);
+  ResetLabelDeclutter();
 
   GetClientRect(hWndMapWindow, &MapRect);
 
