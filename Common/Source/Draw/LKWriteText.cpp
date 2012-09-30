@@ -198,8 +198,13 @@ void MapWindow::LKWriteBoxedText(HDC hDC, const TCHAR* wText, int x, int y, int 
 			x -= (tsize.cx+NIBLSCALE(4));
 			break;
 		case WTALIGN_CENTER:
-			x -= (tsize.cx/2 +NIBLSCALE(4));
-			y -= tsize.cy/2;
+			Rectangle(hDC, 
+				x-(tsize.cx/2)-NIBLSCALE(4), 
+				y-(tsize.cy/2)-NIBLSCALE(1)-1,
+				x+(tsize.cx/2)+NIBLSCALE(4), 
+				y+(tsize.cy/2)+NIBLSCALE(1)+1);
+			x -= (tsize.cx/2);
+			y -= ((tsize.cy/2)+NIBLSCALE(1));
 			break;
 	}
 	y += NIBLSCALE(1);
