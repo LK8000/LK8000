@@ -111,13 +111,16 @@ rci.bottom -= BottomSize;
 		// click on upper part of screen, excluding center
 		_tcscpy(ttext,_T("Event = UP"));
 		fZOOMScale /= ZOOMFACTOR;
+	        if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_CLICK"));
 		break;
 	case LKEVENT_DOWN:
 		// click on lower part of screen,  excluding center
 		_tcscpy(ttext,_T("Event = DOWN"));
 		fZOOMScale *= ZOOMFACTOR;
+	        if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_CLICK"));
 		break;
 	case LKEVENT_TOPLEFT:
+	  if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_CLICK"));
 	  IncSideviewPage();
 	  fZOOMScale = 1.0;
 	break;
@@ -125,11 +128,12 @@ rci.bottom -= BottomSize;
 	  if(Sideview_asp_heading_task== 2)
 	  {
 	    Sonar_IsEnabled = !Sonar_IsEnabled;
-	    /*
-	    if(Sonar_IsEnabled)
-		  Message::AddMessage(200, 1, gettext(TEXT("_@M1293_")));//  _@M1294_ "Sonar On"
-	    else
-	       Message::AddMessage(200, 1, gettext(TEXT("_@M1294_")));//  _@M1294_ "Sonar Off"*/
+	    if (EnableSoundModes) {
+	    	if (Sonar_IsEnabled)
+			LKSound(TEXT("LK_TONEUP.WAV"));
+		else
+			LKSound(TEXT("LK_TONEDOWN.WAV"));
+	    }
 	  }
 	break;
 	case LKEVENT_LONGCLICK:
@@ -159,24 +163,6 @@ rci.bottom -= BottomSize;
 
 		break;
 
-	//
-	// THESE EVENTS ARE NOT AVAILABLE IN MULTIMAPS!
-	//	
-	case LKEVENT_ENTER:
-		// click longer on center, like to confirm a selection
-		_tcscpy(ttext,_T("Event = ENTER"));
-		break;
-	case LKEVENT_NEWPAGE:
-		// swipe gesture up/down produces NEW PAGE in this case
-		_tcscpy(ttext,_T("Event = NEW PAGE"));
-		break;
-	case LKEVENT_NONE:
-		// Normally no event.
-		_tcscpy(ttext,_T("Event = NONE"));
-		break;
-	//
-
-
 	default:
 		// THIS SHOULD NEVER HAPPEN, but always CHECK FOR IT!
 		_tcscpy(ttext,_T("Event = unknown"));
@@ -199,24 +185,24 @@ rci.bottom -= BottomSize;
    RenderAirspace( hdc,   rci);
 
    TCHAR szTxt[80];
-   TCHAR szOvtname[80];
-   int overindex=GetOvertargetIndex();
    switch(GetSideviewPage())
    {
      case 0:
-       _stprintf(szTxt, TEXT("ASP %s"), gettext(TEXT("_@M1290_"))); // _@M1290_ "ASP:"
+       //_stprintf(szTxt, TEXT("ASP.1 %s"), gettext(TEXT("_@M1290_"))); // _@M1290_ "HEADING"
+       _stprintf(szTxt, TEXT("A.1 HEADING"));
      break;
      case 1:
-       if (overindex>=0)
+       if (GetOvertargetIndex()>=0)
        {
+	 TCHAR szOvtname[80];
          GetOvertargetName(szOvtname);
-         _stprintf(szTxt, TEXT("ASP %s"), szOvtname);
+         _stprintf(szTxt, TEXT("A.2 %s"), szOvtname);
        }
        else
-         _stprintf(szTxt, TEXT("ASP %s"),  gettext(TEXT("_@M479_")));                    //_@M1288_ "Showing towards next waypoint"  _@M479_ "None"
+         _stprintf(szTxt, TEXT("A.2 %s"),  MsgToken(479));                    // "None"
      break;
      case 2:
-       _stprintf(szTxt, TEXT("ASP %s"), Sideview_szNearAS );       //_@M1291_ "Near AS"      //"Showing nearest airspace"
+       _stprintf(szTxt, TEXT("A.3 %s"), Sideview_szNearAS );       //_@M1291_ "Near AS"      //"Showing nearest airspace"
      break;
    }
 
@@ -224,18 +210,22 @@ rci.bottom -= BottomSize;
  //  if(INVERTCOLORS)
 //     rgbTextColor =  RGB_LIGHTGREEN;
 
-  HFONT hfOld = (HFONT)SelectObject(hdc, LK8InfoSmallFont);
+  //HFONT hfOld = (HFONT)SelectObject(hdc, LK8InfoSmallFont);
+  HFONT hfOld = (HFONT)SelectObject(hdc, MapWindowFont);
 
  //   SetBkMode(hdc, OPAQUE);
 
 //	LKWriteText(hDC, tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTYELLOW, false);
-  LKWriteText(hdc, szTxt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, rgbTextColor, false);
+  //LKWriteText(hdc, szTxt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, rgbTextColor, true);
+  LKWriteText(hdc, szTxt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_WHITE, true);
 	if(Sideview_asp_heading_task== 2)
 	{
 	  if(Sonar_IsEnabled)
-	    LKWriteText(hdc, gettext(_T("_@M1293_")),  (rc.right)-40, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, rgbTextColor, false); // _@M1294_ "Sonar On"
+	    //LKWriteText(hdc, gettext(_T("_@M1293_")),  (rc.right)-40, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_GREEN, true); // _@M1294_ "Sonar On"
+	    LKWriteText(hdc, _T("SONAR"),  (rc.right)-40, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_GREEN, true);
 	  else
- 	    LKWriteText(hdc, gettext(_T("_@M1294_")),  (rc.right)-40, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, rgbTextColor, false); // _@M1294_ "Sonar Off"
+ 	    //LKWriteText(hdc, gettext(_T("_@M1294_")),  (rc.right)-40, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_WHITE, true); // _@M1294_ "Sonar Off"
+ 	    LKWriteText(hdc, _T("SONAR"),  (rc.right)-40, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_AMBER, true); 
 	}
 //    SetBkMode(hdc, TRANSPARENT);
 	SonarNotify();

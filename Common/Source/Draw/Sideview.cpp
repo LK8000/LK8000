@@ -624,16 +624,18 @@ double fFact = 1.0 ;
    CalculateScreenPositionsAirspace();
 
 
-	double sunelevation = 40.0;
-	double sunazimuth=GetAzimuth();
-   if ((EnableTerrain && (DerivedDrawInfo.TerrainValid) ) )
-     DrawTerrain(hdc, rct, sunazimuth, sunelevation);
+  double sunelevation = 40.0;
+  double sunazimuth=GetAzimuth();
 
-  SaturateLabelDeclutter();  // Do not print topology labels
-  RECT rc_red = rct;
-   rc_red.bottom -= 3;
-   DrawTopology  (hdc, rc_red);
+  if (EnableTerrain && DerivedDrawInfo.TerrainValid )
+	DrawTerrain(hdc, rct, sunazimuth, sunelevation);
 
+  if (EnableTopology) {
+	SaturateLabelDeclutter();  // Do not print topology labels
+	RECT rc_red = rct;
+	rc_red.bottom -= 3;
+	DrawTopology  (hdc, rc_red);
+  }
 
    DrawAirSpace( hdc, rct);
    //LKDrawTrail(hdc, Orig_Aircraft, rct);
