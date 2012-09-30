@@ -94,14 +94,9 @@ rci.bottom -= BottomSize;
   // Duration of key is inside long VKtime, in milliseconds.
   //
 
-   //  LKWriteBoxedText(hdc, _T("MULTIMAP ASP EXAMPLE"), 1, 1 , 0, WTALIGN_LEFT);
   TCHAR ttext[100];
   
   switch(LKevent) {
-	//
-	// USABLE EVENTS
-	// 
-
 	case LKEVENT_NEWRUN:
 		// CALLED ON ENTRY: when we select this page coming from another mapspace
 		_tcscpy(ttext,_T("Event = NEW RUN"));
@@ -120,22 +115,22 @@ rci.bottom -= BottomSize;
 	        if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_CLICK"));
 		break;
 	case LKEVENT_TOPLEFT:
-	  if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_CLICK"));
-	  IncSideviewPage();
-	  fZOOMScale = 1.0;
-	break;
+		if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_CLICK"));
+		IncSideviewPage();
+		fZOOMScale = 1.0;
+		break;
 	case LKEVENT_TOPRIGHT:
-	  if(Sideview_asp_heading_task== 2)
-	  {
-	    Sonar_IsEnabled = !Sonar_IsEnabled;
-	    if (EnableSoundModes) {
-	    	if (Sonar_IsEnabled)
-			LKSound(TEXT("LK_TONEUP.WAV"));
-		else
-			LKSound(TEXT("LK_TONEDOWN.WAV"));
-	    }
-	  }
-	break;
+		if(Sideview_asp_heading_task == 2)
+		{
+			Sonar_IsEnabled = !Sonar_IsEnabled;
+			if (EnableSoundModes) {
+				if (Sonar_IsEnabled)
+					LKSound(TEXT("LK_TONEUP.WAV"));
+				else
+					LKSound(TEXT("LK_TONEDOWN.WAV"));
+			}
+		}
+		break;
 	case LKEVENT_LONGCLICK:
 		 for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
 		 {
@@ -164,7 +159,6 @@ rci.bottom -= BottomSize;
 		break;
 
 	default:
-		// THIS SHOULD NEVER HAPPEN, but always CHECK FOR IT!
 		_tcscpy(ttext,_T("Event = unknown"));
 		break;
   }
@@ -182,65 +176,88 @@ rci.bottom -= BottomSize;
   }
 
 
-   RenderAirspace( hdc,   rci);
+  RenderAirspace( hdc,   rci);
 
-   TCHAR szTxt[80];
-   switch(GetSideviewPage())
-   {
-     case 0:
-       //_stprintf(szTxt, TEXT("ASP.1 %s"), gettext(TEXT("_@M1290_"))); // _@M1290_ "HEADING"
-       _stprintf(szTxt, TEXT("A.1 HEADING"));
-     break;
-     case 1:
-       if (GetOvertargetIndex()>=0)
-       {
-	 TCHAR szOvtname[80];
-         GetOvertargetName(szOvtname);
-         _stprintf(szTxt, TEXT("A.2 %s"), szOvtname);
-       }
-       else
-         _stprintf(szTxt, TEXT("A.2 %s"),  MsgToken(479));                    // "None"
-     break;
-     case 2:
-       _stprintf(szTxt, TEXT("A.3 %s"), Sideview_szNearAS );       //_@M1291_ "Near AS"      //"Showing nearest airspace"
-     break;
-   }
+  TCHAR topleft_txt[10];
+  TCHAR topcenter_txt[80];
+  switch(GetSideviewPage())
+  {
+	case 0:
+		// No need to print "Heading". It is obvious.
+		// _stprintf(topcenter_txt, TEXT("%s"), MsgToken(1290));
+		_tcscpy(topcenter_txt,_T("HEADING"));
+		_stprintf(topleft_txt, TEXT("ASP 1/3"));
+		break;
 
-   COLORREF rgbTextColor = RGB_DARKGREY ;
- //  if(INVERTCOLORS)
-//     rgbTextColor =  RGB_LIGHTGREEN;
+	case 1:
+		if (GetOvertargetIndex()>=0)
+		{
+			TCHAR szOvtname[80];
+			GetOvertargetName(szOvtname);
+			_stprintf(topcenter_txt, TEXT("%s"), szOvtname);
+			_stprintf(topleft_txt, TEXT("ASP 2/3"));
+		}
+		else
+		{
+			_stprintf(topcenter_txt, TEXT("---"));
+		}
+		break;
 
-  //HFONT hfOld = (HFONT)SelectObject(hdc, LK8InfoSmallFont);
+	case 2:
+		_stprintf(topcenter_txt, TEXT("%s"), Sideview_szNearAS );
+		_stprintf(topleft_txt, TEXT("ASP 3/3"));
+		break;
+	default:
+		break;
+  } 
+
+
+
+  //SetBkMode(hdc, OPAQUE);
+
+
   HFONT hfOld = (HFONT)SelectObject(hdc, MapWindowFont);
+  LKWriteText(hdc, topleft_txt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_WHITE, true);
 
- //   SetBkMode(hdc, OPAQUE);
 
-//	LKWriteText(hDC, tbear, ncenterx,ncentery, 0, WTMODE_OUTLINED, WTALIGN_CENTER, RGB_LIGHTYELLOW, false);
-  //LKWriteText(hdc, szTxt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, rgbTextColor, true);
-  LKWriteText(hdc, szTxt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_WHITE, true);
-	if(Sideview_asp_heading_task== 2)
-	{
-	  if(Sonar_IsEnabled)
-	    //LKWriteText(hdc, gettext(_T("_@M1293_")),  (rc.right)-40, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_GREEN, true); // _@M1294_ "Sonar On"
+  //SelectObject(hdc, LK8InfoSmallFont);
+  //LKWriteText(hdc, topcenter_txt, rci.right/3, rci.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, true);
+
+  SelectObject(hdc, LK8UnitFont);
+  if (INVERTCOLORS)
+	SelectObject(hdc,LKBrush_Petrol);
+  else
+	SelectObject(hdc,LKBrush_LightCyan);
+
+  extern double fSplitFact;
+  SIZE textSize;
+  int midsplit=(long)((double)(rci.bottom-rci.top)*fSplitFact);
+  GetTextExtentPoint(hdc, _T("Y"), 1, &textSize);
+  //if (fSplitFact >10) 
+	midsplit-=textSize.cy/2;
+
+  //MapWindow::LKWriteBoxedText(hdc,topcenter_txt, rc.right/3, rci.top+TOPLIMITER, 0, WTALIGN_LEFT); // top
+  MapWindow::LKWriteBoxedText(hdc,topcenter_txt, rc.right/3, midsplit, 0, WTALIGN_LEFT);
+
+
+
+  if(Sideview_asp_heading_task== 2)
+  {
+	SelectObject(hdc, MapWindowFont);
+	if(Sonar_IsEnabled)
 	    LKWriteText(hdc, _T("SONAR"),  (rc.right)-40, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_GREEN, true);
 	  else
- 	    //LKWriteText(hdc, gettext(_T("_@M1294_")),  (rc.right)-40, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_WHITE, true); // _@M1294_ "Sonar Off"
  	    LKWriteText(hdc, _T("SONAR"),  (rc.right)-40, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_AMBER, true); 
-	}
-//    SetBkMode(hdc, TRANSPARENT);
-	SonarNotify();
-    SelectObject(hdc, hfOld);
+  }
+
+  // No need to use 1293 and 1294 tokens
 
 
+  //SetBkMode(hdc, TRANSPARENT);
 
-
-  // After using the event, WE MUST CLEAR IT, otherwise it will survive for next run.
-  // This can be good for something, though, like automatic redo of last action.
-  // You can also clear this event at the end of this function, to know during execution which was
-  // the key pressed, but remember to clear it.
+  SonarNotify();
+  SelectObject(hdc, hfOld);
   LKevent=LKEVENT_NONE;
-
-
 
 }
 
