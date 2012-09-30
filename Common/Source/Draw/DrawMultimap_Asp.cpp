@@ -223,7 +223,6 @@ rci.bottom -= BottomSize;
   //SelectObject(hdc, LK8InfoSmallFont);
   //LKWriteText(hdc, topcenter_txt, rci.right/3, rci.top+TOPLIMITER , 0, WTMODE_NORMAL, WTALIGN_LEFT, RGB_BLACK, true);
 
-  SelectObject(hdc, LK8UnitFont);
   if (INVERTCOLORS)
 	SelectObject(hdc,LKBrush_Petrol);
   else
@@ -232,13 +231,15 @@ rci.bottom -= BottomSize;
   extern double fSplitFact;
   SIZE textSize;
   int midsplit=(long)((double)(rci.bottom-rci.top)*fSplitFact);
+  SelectObject(hdc, LK8UnitFont);
   GetTextExtentPoint(hdc, _T("Y"), 1, &textSize);
-  //if (fSplitFact >10) 
-	midsplit-=textSize.cy/2;
+  // move the label on top view when the topview window is big enough
+  if (fSplitFact >0.5)
+	midsplit-=textSize.cy;
+  if (fSplitFact <0.5)
+	midsplit+=textSize.cy;
 
-  //MapWindow::LKWriteBoxedText(hdc,topcenter_txt, rc.right/3, rci.top+TOPLIMITER, 0, WTALIGN_LEFT); // top
-  MapWindow::LKWriteBoxedText(hdc,topcenter_txt, rc.right/3, midsplit, 0, WTALIGN_LEFT);
-
+  MapWindow::LKWriteBoxedText(hdc,topcenter_txt, rc.right/3, midsplit, 0, WTALIGN_CENTER);
 
 
   if(Sideview_asp_heading_task== 2)
