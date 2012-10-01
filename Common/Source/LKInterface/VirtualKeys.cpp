@@ -587,7 +587,7 @@ gesture_left:
 
 
 bool IsMultiMap() {
-  if (MapSpaceMode==MSM_MAPASP || MapSpaceMode==MSM_MAPRADAR || MapSpaceMode==MSM_MAPTEST)
+  if (MapSpaceMode==MSM_MAPASP || MapSpaceMode==MSM_MAPTRK || MapSpaceMode==MSM_MAPWPT || MapSpaceMode==MSM_MAPRADAR || MapSpaceMode==MSM_MAPTEST)
 	return true;
   else
 	return false;

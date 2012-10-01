@@ -18,7 +18,7 @@
 #define BORDER_X 0 //24
 #define BORDER_Y 19
 
-#define OFFSET_SETP 500.0
+//#define OFFSET_SETP 500.0
 
 #define  MSL_SEA_DRAW
 #define GC_SEA_LEVEL_TOLERANCE       100
