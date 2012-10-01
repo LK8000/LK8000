@@ -12,13 +12,14 @@
 #include "RGB.h"
 #include "DoInits.h"
 #include "Modeltype.h"
+#include "Sideview.h"
 
 extern void LoadSplash(HDC hDC, TCHAR *splashfile);
 extern void LKDrawMultimap_Asp(HDC hdc,RECT rc);
 
 //
-// Called by LKDrawLook8000, this is what happens when there is no map to be drawn:
-// we paint infopages, nearest, tri, etc.etc.
+// Called by LKDrawLook8000, this is what happens when we change mapspace mode, advancing through types.
+// We paint infopages, nearest, tri, etc.etc.
 // Normally there is plenty of cpu available because the map is not even calculated.
 // This is why we bring to the Draw thread, in the nearest pages case, also calculations.
 //
@@ -123,7 +124,16 @@ RECT frc = rc;
 
 		DrawWelcome8000(hdc, rc);
 		break;
+	case MSM_MAPTRK:
+		SetSideviewPage(0);
+		LKDrawMultimap_Asp(hdc,rc);
+		break;
+	case MSM_MAPWPT:
+		SetSideviewPage(1);
+		LKDrawMultimap_Asp(hdc,rc);
+		break;
 	case MSM_MAPASP:
+		SetSideviewPage(2);
 		LKDrawMultimap_Asp(hdc,rc);
 		break;
 	case MSM_MAPRADAR:

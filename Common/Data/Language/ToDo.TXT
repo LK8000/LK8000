@@ -224,4 +224,5 @@ _@M2231_ "no trace"
 +_@M2232_ "climb trace"
 +_@M2233_ "climb/sink trace"
 
+M1293 SONAR   
 

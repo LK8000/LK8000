@@ -1347,7 +1347,7 @@ _@M1289_ "Next WP"
 _@M1290_ "Heading"
 _@M1291_ "Near AS"
 _@M1292_ "Nearest airspace"
-_@M1293_ "Sonar ON"
+_@M1293_ "SONAR"
 _@M1294_ "Sonar OFF"
 _@M1295_ "Sideview"
 

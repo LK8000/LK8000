@@ -92,7 +92,6 @@ rci.bottom -= BottomSize;
   //
 
    //  LKWriteBoxedText(hdc, _T("MULTIMAP ASP EXAMPLE"), 1, 1 , 0, WTALIGN_LEFT);
-  TCHAR ttext[100];
   
   switch(LKevent) {
 	//
@@ -101,15 +100,12 @@ rci.bottom -= BottomSize;
 
 	case LKEVENT_NEWRUN:
 		// CALLED ON ENTRY: when we select this page coming from another mapspace
-		_tcscpy(ttext,_T("Event = NEW RUN"));
 		fZOOMScale = 1.0;
 		break;
 
 	case LKEVENT_TOPLEFT:
-	  if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_CLICK"));
-	  IncSideviewPage();
-	  fZOOMScale = 1.0;
 	break;
+
 	case LKEVENT_TOPRIGHT:
 	  if(Sideview_asp_heading_task== 2)
 	  {
@@ -142,7 +138,6 @@ rci.bottom -= BottomSize;
 
 	default:
 		// THIS SHOULD NEVER HAPPEN, but always CHECK FOR IT!
-		_tcscpy(ttext,_T("Event = unknown"));
 		break;
   }
 /*
@@ -151,7 +146,6 @@ rci.bottom -= BottomSize;
   if(fZOOMScale < 0.1)
 	 fZOOMScale = 0.1;
 */
-  static int oldSplit=SIZE1;
 
 
   RenderAirspace( hdc,   rci);
@@ -164,7 +158,7 @@ rci.bottom -= BottomSize;
 		// No need to print "Heading". It is obvious.
 		// _stprintf(topcenter_txt, TEXT("%s"), MsgToken(1290));
 		_tcscpy(topcenter_txt,_T("HEADING"));
-		_stprintf(topleft_txt, TEXT("ASP 1/3"));
+		_stprintf(topleft_txt, TEXT("M1: TRK"));
 		break;
 
 	case 1:
@@ -173,7 +167,7 @@ rci.bottom -= BottomSize;
 			TCHAR szOvtname[80];
 			GetOvertargetName(szOvtname);
 			_stprintf(topcenter_txt, TEXT("%s"), szOvtname);
-			_stprintf(topleft_txt, TEXT("ASP 2/3"));
+			_stprintf(topleft_txt, TEXT("M2: WPT"));
 		}
 		else
 		{
@@ -183,7 +177,7 @@ rci.bottom -= BottomSize;
 
 	case 2:
 		_stprintf(topcenter_txt, TEXT("%s"), Sideview_szNearAS );
-		_stprintf(topleft_txt, TEXT("ASP 3/3"));
+		_stprintf(topleft_txt, TEXT("M3: ASP"));
 		break;
 	default:
 		break;
@@ -224,12 +218,11 @@ rci.bottom -= BottomSize;
   {
 	SelectObject(hdc, MapWindowFont);
 	if(Sonar_IsEnabled)
-	    LKWriteText(hdc, _T("SONAR"),  (rc.right)-40, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_GREEN, true);
+	    LKWriteText(hdc, MsgToken(1293),  (rc.right)-40, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_GREEN, true);
 	  else
- 	    LKWriteText(hdc, _T("SONAR"),  (rc.right)-40, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_AMBER, true); 
+ 	    LKWriteText(hdc, MsgToken(1293),  (rc.right)-40, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_AMBER, true); 
   }
 
-  // No need to use 1293 and 1294 tokens
 
 
   //SetBkMode(hdc, TRANSPARENT);

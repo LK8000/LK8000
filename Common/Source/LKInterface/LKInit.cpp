@@ -82,12 +82,14 @@ void UpdateConfIP(void) {
   // MAP MODE always available
   ConfIP[0][0]=true; 	// welcome
   ConfIP[0][1]=true; 	// moving map
-  ConfIP[0][2]=true; 	// multimap asp
-  ConfIP[0][3]=true; 	// multimap radar
+  ConfIP[0][2]=true; 	// multimap trk
+  ConfIP[0][3]=true; 	// multimap wpt
+  ConfIP[0][4]=true; 	// multimap asp
+  ConfIP[0][5]=true; 	// multimap radar
 #if TESTBENCH
-  ConfIP[0][4]=true; 	// multimap test page
+  ConfIP[0][6]=true; 	// multimap test page
 #else
-  ConfIP[0][4]=false; 	// multimap test page
+  ConfIP[0][6]=false; 	// multimap test page
 #endif
   ConfMP[0]=true; // map mode
 
@@ -204,6 +206,8 @@ void InitModeTable() {
 	// this table is for submenus, order is not important
 	ModeTable[LKMODE_MAP][MP_WELCOME]	=	MSM_WELCOME;
 	ModeTable[LKMODE_MAP][MP_MOVING]	=	MSM_MAP;
+	ModeTable[LKMODE_MAP][MP_MAPTRK]	=	MSM_MAPTRK;
+	ModeTable[LKMODE_MAP][MP_MAPWPT]	=	MSM_MAPWPT;
 	ModeTable[LKMODE_MAP][MP_MAPASP]	=	MSM_MAPASP;
 	ModeTable[LKMODE_MAP][MP_RADAR]		=	MSM_MAPRADAR;
 	ModeTable[LKMODE_MAP][MP_TEST]		=	MSM_MAPTEST;
@@ -232,7 +236,11 @@ void InitModeTable() {
 	ModeIndex=LKMODE_MAP;
 	// startup values for each mode. we shall update these defaults using current profile settings
 	// for ConfIP real values. 
+	#if TESTBENCH
+	ModeType[LKMODE_MAP]	=	MP_MOVING;
+	#else
 	ModeType[LKMODE_MAP]	=	MP_WELCOME;
+	#endif
 	ModeType[LKMODE_INFOMODE]=	IM_CRUISE;
 	ModeType[LKMODE_WP]	=	WP_AIRPORTS;
 	ModeType[LKMODE_NAV]	=	NV_COMMONS;

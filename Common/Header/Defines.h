@@ -379,11 +379,13 @@
 #define MSM_AIRSPACES		16
 #define MSM_THERMALS		17
 #define MSM_MAPRADAR		18	// this is multimapped
-#define MSM_MAPASP		19	// this is multimapped
-#define MSM_MAPTEST		20	// multimapped, for testing purposes
+#define MSM_MAPTRK		19	// this is multimapped
+#define MSM_MAPWPT		20	// this is multimapped
+#define MSM_MAPASP		21	// this is multimapped
+#define MSM_MAPTEST		22	// multimapped, for testing purposes
 // turnaround point is TOP 
 // remember that arrays must count from zero, so MSM_TOP+1
-#define MSM_TOP			20
+#define MSM_TOP			22
 //
 // THIS CONFIGURATION GIVES THE ORDER OF MENUs. ALL ITEMS MUST ALSO BE ADDED INSIDE INITMODETABLE()
 // in Utils2.cpp WHERE each mode is paired with an MSM_xxx item.
@@ -400,10 +402,12 @@
 //
 #define MP_WELCOME		0
 #define MP_MOVING		1
-#define MP_MAPASP		2
-#define MP_RADAR		3
-#define MP_TEST			4
-#define MP_TOP			4
+#define MP_MAPTRK		2
+#define MP_MAPWPT		3
+#define MP_MAPASP		4
+#define MP_RADAR		5
+#define MP_TEST			6
+#define MP_TOP			6
 //
 // WP mode
 //
