@@ -22,10 +22,11 @@ double fSplitFact = 0.30;
 double fOffset = 0.0;
 using std::min;
 using std::max;
-
+int k;
 double fZOOMScale = 1.0;
 extern int Sideview_asp_heading_task;
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
+extern int   Sideview_iNoHandeldSpaces;
 extern int XstartScreen, YstartScreen;
 extern COLORREF  Sideview_TextColor;
  double fHeigtScaleFact;
@@ -95,6 +96,9 @@ static int iSplit = SIZE1;
   rc.top     = (long)((double)(rci.bottom-rci.top  )*fSplitFact);
   rct.bottom = rc.top ;
 
+  RECT sel_rect_top	= rct; 	sel_rect_top.right = NIBLSCALE(55);
+  RECT sel_rect_side = rc;  sel_rect_side.right = NIBLSCALE(55);
+
   if(bInvCol)
   {
   //  SetBackColor(SKY_HORIZON_COL);
@@ -107,6 +111,11 @@ static int iSplit = SIZE1;
 
   /****************************************************************/
 	  switch(LKevent) {
+		case LKEVENT_NEWRUN:
+			// CALLED ON ENTRY: when we select this page coming from another mapspace
+			fZOOMScale = 1.0;
+			fHeigtScaleFact = 1.0;
+		break;
 		case LKEVENT_UP:
 			// click on upper part of screen, excluding center
 			if(bHeightScale)
@@ -126,10 +135,25 @@ static int iSplit = SIZE1;
 			break;
 
 		case LKEVENT_LONGCLICK:
-			 if (PtInRect(XstartScreen, YstartScreen,rc ))
+			 if (PtInRect(XstartScreen, YstartScreen,sel_rect_side ))
 			   bHeightScale = true;
 			 else
-			   bHeightScale = false;
+			   if (PtInRect(XstartScreen, YstartScreen,sel_rect_top ))
+			     bHeightScale = false;
+			   else
+				 for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
+				 {
+				   if( Sideview_pHandeled[k].psAS != NULL)
+				   {
+					 if (PtInRect(XstartScreen,YstartScreen,Sideview_pHandeled[k].rc ))
+					 {
+					   if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
+					   dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
+				//	   bFound = true;
+				//	   LKevent=LKEVENT_NONE;
+					 }
+				   }
+				 }
 	     break;
 
 		case LKEVENT_PAGEUP:

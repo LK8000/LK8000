@@ -21,7 +21,7 @@ extern int XstartScreen, YstartScreen;
 //extern long VKtime;
 extern int Sideview_asp_heading_task;
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
-extern int   Sideview_iNoHandeldSpaces;
+
 extern long  iSonarLevel;
 extern bool Sonar_IsEnabled;
 extern AirSpaceSonarLevelStruct sSonarLevel[];
@@ -66,11 +66,8 @@ static unsigned long lSonarCnt = 0;
 
 void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 {
-//#define TEXT_BOX
 
 
-int k;
-bool bFound = false;
 RECT rci = rc;
 rci.bottom -= BottomSize;
   if (DoInit[MDI_MAPASP]) {
@@ -78,30 +75,13 @@ rci.bottom -= BottomSize;
 	DoInit[MDI_MAPASP]=false;
   }
 
-  // 
-  // X,Y coordinates of last clicked point on screen
-  // These coordinates are related to any point clicked, even for a page flip, for bottom bar etc.
-  // In some cases, you will read old coordinates because for example after clicking in the center of 
-  // bottom bar, the page changed out of multimap and entered nearest pages.  
-  // 
-  int X=XstartScreen;
-  int Y=YstartScreen;
 
-  //
-  // Duration of key is inside long VKtime, in milliseconds.
-  //
-
-   //  LKWriteBoxedText(hdc, _T("MULTIMAP ASP EXAMPLE"), 1, 1 , 0, WTALIGN_LEFT);
-  
   switch(LKevent) {
 	//
 	// USABLE EVENTS
 	// 
 
-	case LKEVENT_NEWRUN:
-		// CALLED ON ENTRY: when we select this page coming from another mapspace
-		fZOOMScale = 1.0;
-		break;
+
 
 	case LKEVENT_TOPLEFT:
 	break;
@@ -118,34 +98,12 @@ rci.bottom -= BottomSize;
 	    }
 	  }
 	break;
-	case LKEVENT_LONGCLICK:
-
-		 for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
-		 {
-		   if( Sideview_pHandeled[k].psAS != NULL)
-		   {
-			 if (PtInRect(X,Y,Sideview_pHandeled[k].rc ))
-			 {
-			   if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
-			   dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
-			   bFound = true;
-			   LKevent=LKEVENT_NONE;
-			 }
-		   }
-		 }
-
-		break;
 
 	default:
 		// THIS SHOULD NEVER HAPPEN, but always CHECK FOR IT!
 		break;
   }
-/*
-  if(fZOOMScale > 10.0)
-	 fZOOMScale = 10.0;
-  if(fZOOMScale < 0.1)
-	 fZOOMScale = 0.1;
-*/
+
 
 
   RenderAirspace( hdc,   rci);

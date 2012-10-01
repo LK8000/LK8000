@@ -172,9 +172,11 @@ rct.bottom = rc.top ;
 HFONT	 hfOldFnt = (HFONT)SelectObject(hdc,LK8PanelUnitFont/* Sender->GetFont()*/);
 static int iSplit = 30;
 
-
+int  k;
 static double fZOOMScale= 1.0;
 static double fHeigtScaleFact = 1.0;
+RECT sel_rect_top	= rct; 	sel_rect_top.right = NIBLSCALE(55);
+RECT sel_rect_side = rc;  sel_rect_side.right = NIBLSCALE(55);
 
   double range = 50.0*1000; // km
   double GPSlat, GPSlon, GPSalt, GPSbrg, GPSspeed, calc_average30s;
@@ -212,6 +214,11 @@ static  bool bHeightScale = false;
 
   /****************************************************************/
 	  switch(LKevent) {
+		case LKEVENT_NEWRUN:
+			// CALLED ON ENTRY: when we select this page coming from another mapspace
+			fZOOMScale = 1.0;
+			fHeigtScaleFact = 1.0;
+		break;
 		case LKEVENT_UP:
 			// click on upper part of screen, excluding center
 			if(bHeightScale)
@@ -231,11 +238,27 @@ static  bool bHeightScale = false;
 			break;
 
 		case LKEVENT_LONGCLICK:
-			 if (PtInRect(XstartScreen, YstartScreen,rc ))
+			 if (PtInRect(XstartScreen, YstartScreen,sel_rect_side ))
 			   bHeightScale = true;
 			 else
-			   bHeightScale = false;
+			   if (PtInRect(XstartScreen, YstartScreen,sel_rect_top ))
+			     bHeightScale = false;
+			   else
+				 for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
+				 {
+				   if( Sideview_pHandeled[k].psAS != NULL)
+				   {
+					 if (PtInRect(XstartScreen,YstartScreen,Sideview_pHandeled[k].rc ))
+					 {
+					   if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
+					   dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
+				//	   bFound = true;
+				//	   LKevent=LKEVENT_NONE;
+					 }
+				   }
+				 }
 	     break;
+
 
 		case LKEVENT_PAGEUP:
 #ifdef OFFSET_SETP
@@ -619,9 +642,18 @@ if(bValid)
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
 	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
 
-//  DrawXLabel(hdc, rc, TEXT("D"));
+  switch (Units::GetUserDistanceUnit())
+  {
+	case unKiloMeter:     Statistics::DrawXLabel(hdc, rc, TEXT("km")); break;
+	case unNauticalMiles: Statistics::DrawXLabel(hdc, rc, TEXT("nM")); break;
+	case unStatuteMiles:  Statistics::DrawXLabel(hdc, rc, TEXT("sM")); break;
+	default: break;
+  }
   SetTextColor(hdc, Sideview_TextColor);
-//  DrawYLabel(hdc, rc, TEXT("h"));
+  if(Units::GetUserAltitudeUnit() == unFeet)
+    Statistics::DrawYLabel(hdc, rc, TEXT("ft"));
+  else
+	Statistics::DrawYLabel(hdc, rc, TEXT("m"));
 //  SetBkMode(hdc, OPAQUE);
 
   /****************************************************************************************************/
@@ -741,7 +773,7 @@ if(bValid)
 	  if(bHeightScale)
 	    Rectangle(hdc,rc.left,rc.top,rc.right,rc.bottom);
 	  else
-	    Rectangle(hdc,rct.left,rct.top,rct.right,rct.bottom);
+	    Rectangle(hdc,rci.left,rci.top,rci.right,rci.bottom);
 	  SelectObject(hdc, OldBrush);
 	  SelectObject(hdc, OldPen);
 	  DeleteObject(pFrame);
