@@ -19,10 +19,10 @@
 extern int XstartScreen, YstartScreen;
 
 
-#define SIZE0 0.0
-#define SIZE1 0.5
-#define SIZE2 0.75
-#define SIZE3 1.0
+#define F_SIZE0 0.0
+#define F_SIZE1 0.5
+#define F_SIZE2 0.75
+#define F_SIZE3 1.0
 
 #define IM_NO_TRACE       0
 #define ALL_TRACE         1
@@ -32,7 +32,7 @@ int  iTraceDotSize = 5;
 int RADAR_TURN = 90 ;            /* radar plane orientation             */
 #define HEIGHT_RANGE (1000.0  )    /* max hight ifference above and below in meters */
 double ASYMETRIC_FACTOR = 0.7 ;     /* X center displacement               */
-double SPLITSCREEN_FACTOR = SIZE2 ;   /* % of top view window                */
+double SPLITSCREEN_FACTOR = F_SIZE2 ;   /* % of top view window                */
 int bTrace = 1;
 #define MIN_DIST_SCALE  0.1       /* minimum radar distance              */
 #define MAX_DIST_SCALE 25.0       /* maximum radar distance              */
@@ -549,14 +549,14 @@ switch(LKevent)
   break;
 
   case LKEVENT_PAGEUP:
-//	if(SPLITSCREEN_FACTOR == SIZE1) SPLITSCREEN_FACTOR = SIZE0;
-	  if(SPLITSCREEN_FACTOR == SIZE2) SPLITSCREEN_FACTOR = SIZE1;
-	  if(SPLITSCREEN_FACTOR == SIZE3) SPLITSCREEN_FACTOR = SIZE2;
+//	if(SPLITSCREEN_FACTOR == F_SIZE1) SPLITSCREEN_FACTOR = F_SIZE0;
+	  if(SPLITSCREEN_FACTOR == F_SIZE2) SPLITSCREEN_FACTOR = F_SIZE1;
+	  if(SPLITSCREEN_FACTOR == F_SIZE3) SPLITSCREEN_FACTOR = F_SIZE2;
   break;
   case LKEVENT_PAGEDOWN:
-	  if(SPLITSCREEN_FACTOR == SIZE2) SPLITSCREEN_FACTOR = SIZE3;
-	  if(SPLITSCREEN_FACTOR == SIZE1) SPLITSCREEN_FACTOR = SIZE2;
-//	if(SPLITSCREEN_FACTOR == SIZE0) SPLITSCREEN_FACTOR = SIZE1;
+	  if(SPLITSCREEN_FACTOR == F_SIZE2) SPLITSCREEN_FACTOR = F_SIZE3;
+	  if(SPLITSCREEN_FACTOR == F_SIZE1) SPLITSCREEN_FACTOR = F_SIZE2;
+//	if(SPLITSCREEN_FACTOR == F_SIZE0) SPLITSCREEN_FACTOR = F_SIZE1;
   break;
   case LKEVENT_ENTER:
 

@@ -19,29 +19,38 @@
 
 
 double fSplitFact = 0.30;
-
+double fOffset = 0.0;
 using std::min;
 using std::max;
 
 double fZOOMScale = 1.0;
 extern int Sideview_asp_heading_task;
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
-
+extern int XstartScreen, YstartScreen;
 extern COLORREF  Sideview_TextColor;
+ double fHeigtScaleFact;
 
 
 
 void MapWindow::RenderAirspace(HDC hdc, const RECT rci) {
-
+static bool bHeightScale = false;
 	RECT rc  = rci; /* rectangle for sideview */
 //	rc.bottom += 4;
-bool bInvCol = true; //INVERTCOLORS;
+	  zoom.SetLimitMapScale(false);
+	  /****************************************************************/
+	  if (Sideview_asp_heading_task == 2)
+		return  RenderNearAirspace( hdc,   rci);
+	  /****************************************************************/
 
+
+bool bInvCol = true; //INVERTCOLORS;
+static double fHeigtScaleFact = 1.0;
+static int iSplit = SIZE1;
 
 //	rc.bottom = rc.bottom/2;
   double fDist = 50.0*1000; // kmbottom
   double aclat, aclon, ach, acb, speed, calc_average30s;
-
+  double GPSbrg=0;
   double wpt_brg;
   double wpt_dist;
   double wpt_altarriv;
@@ -61,8 +70,8 @@ bool bInvCol = true; //INVERTCOLORS;
   COLORREF RED_COL       = RGB_LIGHTORANGE;
   COLORREF BLUE_COL      = RGB_BLUE;
   COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
-  zoom.SetLimitMapScale(false);
-  /****************************************************************/
+
+
 
 //  SelectObject(hdc, LK8InfoNormalFont);
   COLORREF col =  RGB_BLACK;
@@ -75,12 +84,16 @@ bool bInvCol = true; //INVERTCOLORS;
   HBRUSH OldBrush  = (HBRUSH) SelectObject(hdc, hbHorizon);
 
 
-  Rectangle(hdc,rci.left,rci.top,rci.right,rci.bottom);
+//  Rectangle(hdc,rci.left,rci.top,rci.right,rci.bottom);
 
   SelectObject(hdc, OldPen);
   SelectObject(hdc, OldBrush);
   DeleteObject(hpHorizon);
   DeleteObject(hbHorizon);
+
+  RECT rct = rc; /* rectangle for topview */
+  rc.top     = (long)((double)(rci.bottom-rci.top  )*fSplitFact);
+  rct.bottom = rc.top ;
 
   if(bInvCol)
   {
@@ -93,19 +106,100 @@ bool bInvCol = true; //INVERTCOLORS;
   SetTextColor(hdc, Sideview_TextColor);
 
   /****************************************************************/
-  double GPSbrg=0;
-  if (Sideview_asp_heading_task == 2)
-	return  RenderNearAirspace( hdc,   rc);
+	  switch(LKevent) {
+		case LKEVENT_UP:
+			// click on upper part of screen, excluding center
+			if(bHeightScale)
+			  fHeigtScaleFact /= ZOOMFACTOR;
+			else
+			  fZOOMScale /= ZOOMFACTOR;
+		    if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_CLICK"));
+			break;
+
+		case LKEVENT_DOWN:
+			// click on lower part of screen,  excluding center
+			if(bHeightScale)
+			  fHeigtScaleFact *= ZOOMFACTOR;
+			else
+		  	  fZOOMScale *= ZOOMFACTOR;
+		    if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_CLICK"));
+			break;
+
+		case LKEVENT_LONGCLICK:
+			 if (PtInRect(XstartScreen, YstartScreen,rc ))
+			   bHeightScale = true;
+			 else
+			   bHeightScale = false;
+	     break;
+
+		case LKEVENT_PAGEUP:
+#ifdef OFFSET_SETP
+			if(bHeightScale)
+			  fOffset -= OFFSET_SETP;
+			else
+#endif
+			{
+			  if(iSplit == SIZE1) iSplit = SIZE0;
+			  if(iSplit == SIZE2) iSplit = SIZE1;
+			  if(iSplit == SIZE3) iSplit = SIZE2;
+			}
+		break;
+		case LKEVENT_PAGEDOWN:
+#ifdef OFFSET_SETP
+			if(bHeightScale)
+			  fOffset += OFFSET_SETP;
+			else
+#endif
+			{
+			  if(iSplit == SIZE2) iSplit = SIZE3;
+			  if(iSplit == SIZE1) iSplit = SIZE2;
+			  if(iSplit == SIZE0) iSplit = SIZE1;
+			}
+		break;
+
+	  }
+	  LKevent=LKEVENT_NONE;
+
+static int oldSplit = 0;
+	  if(oldSplit != iSplit)
+	  {
+		oldSplit=iSplit;
+		SetSplitScreenSize(iSplit);
+		rc.top     = (long)((double)(rci.bottom-rci.top  )*fSplitFact);
+		rct.bottom = rc.top ;
+
+	  }
 
 
-	RECT rct = rc; /* rectangle for topview */
-	rc.top     = (long)((double)(rc.bottom-rc.top  )*fSplitFact);
-	rct.bottom = rc.top ;
+	  double hmin = max(0.0, CALCULATED_INFO.NavAltitude-2300);
+	  double hmax = max(MAXALTTODAY, CALCULATED_INFO.NavAltitude+1000);
+#ifdef OFFSET_SETP
+	  if((hmax + fOffset) > 12000.0)
+		fOffset -= OFFSET_SETP;
+	  if((hmin + fOffset) < 0.0)
+		fOffset += OFFSET_SETP;
+
+	  hmin +=  fOffset;
+	  hmax +=  fOffset;
+#endif
+
+	  if( (hmax *  fHeigtScaleFact) > 15000.0)
+		fHeigtScaleFact /= ZOOMFACTOR;
+
+	  if( (hmax *  fHeigtScaleFact) < 200.0)
+		fHeigtScaleFact *= ZOOMFACTOR;
+
+	  hmax *=  fHeigtScaleFact;
 
 
 
-//  if (Sideview_asp_heading_task == 3)
-//	return MapWindow::LKDrawFlarmRadar( hdc,   rc);
+
+
+
+
+
+
+
   if(bInvCol)
   {
     GREEN_COL     = ChangeBrightness(GREEN_COL     , 0.6);
@@ -122,7 +216,7 @@ bool bInvCol = true; //INVERTCOLORS;
 
     acb    = GPS_INFO.TrackBearing;
 
-//    LL_to_BearRange(aclat, aclon,  WayPointList[GetOvertargetIndex()].Latitude,   WayPointList[GetOvertargetIndex()].Longitude  ,&acb, &wpt_dist);
+
 
 
     GPSbrg = acb;
@@ -215,8 +309,6 @@ bool bInvCol = true; //INVERTCOLORS;
   }
   
 
-  double hmin = max(0.0, CALCULATED_INFO.NavAltitude-2300);
-  double hmax = max(MAXALTTODAY, CALCULATED_INFO.NavAltitude+1000);
 
   if(fZOOMScale != 1.0)
   {
@@ -234,14 +326,11 @@ bool bInvCol = true; //INVERTCOLORS;
   sDia.fXMax = fDist;
   sDia.fYMin = hmin;
   sDia.fYMax = hmax;
+
   sDia.rc = rc;
   RenderAirspaceTerrain( hdc, aclat, aclon,  acb, ( DiagrammStruct*) &sDia );
 
 
-/*
-  zoom.RequestedScale((sDia.fXMax -sDia.fXMin)* (DISTANCEMODIFY/10.0f));
-double fOldScale  =  zoom.Scale();
-*/
   Statistics::ResetScale();
   Statistics::ScaleXFromValue(rc, sDia.fXMin);
   Statistics::ScaleXFromValue(rc, sDia.fXMax);
@@ -288,14 +377,25 @@ double fOldScale  =  zoom.Scale();
 
   Statistics::DrawXGrid(hdc, rci, xtick/DISTANCEMODIFY, 0,  STYLE_THINDASHPAPER, xtick, true);
   SetTextColor(hdc, Sideview_TextColor);
-  if(Units::GetUserInvAltitudeUnit() == unFeet)
-	Statistics::DrawYGrid(hdc, rc, 500.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 500.0, true);
-  else
-	Statistics::DrawYGrid(hdc, rc, 1000.0/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER, 1000.0, true);
+
+  double fHeight = sDia.fYMax - sDia.fYMin;
+  double  ytick = 10.0;
+  if (fHeight >100.0) ytick = 100.0;
+  if (fHeight >1000.0) ytick = 500.0;
+  if (fHeight >2000.0) ytick = 1000.0;
+  if (fHeight >4000.0) ytick = 2000.0;
+
+
+  if(Units::GetUserAltitudeUnit() == unFeet)
+	 ytick = ytick * 4.0;
+
+	Statistics::DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER,ytick, true);
 
   POINT line[4];
 
   // draw target symbolic line
+
+
   int iWpPos =  CalcDistanceCoordinat( wpt_dist,  &sDia);
   if (Sideview_asp_heading_task > 0)
   {
@@ -335,6 +435,7 @@ double fOldScale  =  zoom.Scale();
       Statistics::StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
     }
   }
+
 
   // Draw estimated gliding line (blue)
  // if (speed>10.0)
@@ -557,22 +658,30 @@ double fOldScale  =  zoom.Scale();
   RenderPlaneSideview( hdc,  0.0f, CALCULATED_INFO.NavAltitude,wpt_brg, &sDia );
   HFONT hfOld2 = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
   SetTextColor(hdc, Sideview_TextColor);
-  SetBkMode(hdc, OPAQUE);
 
-//  SetTextColor(hdc, RGB_BLACK);
-  DrawTelescope      ( hdc, acb-90.0, rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(58));
   SelectObject(hdc, hfOld2);
   SelectObject(hdc, hfOld);
 
   SetTextColor(hdc, GROUND_TEXT_COLOUR);
+
   if(bInvCol)
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
 	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
 
-  Statistics::DrawXLabel(hdc, rc, TEXT("D"));
+  switch (Units::GetUserDistanceUnit())
+  {
+	case unKiloMeter:     Statistics::DrawXLabel(hdc, rc, TEXT("km")); break;
+	case unNauticalMiles: Statistics::DrawXLabel(hdc, rc, TEXT("nM")); break;
+	case unStatuteMiles:  Statistics::DrawXLabel(hdc, rc, TEXT("sM")); break;
+	default: break;
+  }
   SetTextColor(hdc, Sideview_TextColor);
-  Statistics::DrawYLabel(hdc, rc, TEXT("h"));
 
+
+  if(Units::GetUserAltitudeUnit() == unFeet)
+    Statistics::DrawYLabel(hdc, rc, TEXT("ft"));
+  else
+	Statistics::DrawYLabel(hdc, rc, TEXT("m"));
   SelectObject(hdc,hfOld/* Sender->GetFont()*/);
 
   if(fSplitFact > 0.0)
@@ -580,9 +689,23 @@ double fOldScale  =  zoom.Scale();
 
   hfOld = (HFONT)SelectObject(hdc,LK8InfoNormalFont/* Sender->GetFont()*/);
 
-  DrawNorthArrow     ( hdc, GPSbrg          , rct.right - NIBLSCALE(13),  rct.top   + NIBLSCALE(13));
+// DrawTelescope      ( hdc, acb-90.0, rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(58));
+  DrawNorthArrow     ( hdc,/* GPSbrg*/      acb-90.0     , rct.right - NIBLSCALE(13),  rct.top   + NIBLSCALE(13));
 //  RenderBearingDiff( hdc, wpt_brg,  &sDia );
 
+
+  {
+	  HPEN pFrame   = (HPEN)  CreatePen(PS_SOLID, IBLSCALE(2), RGB_GREEN);
+	  HPEN OldPen      = (HPEN)   SelectObject(hdc, pFrame);
+	  HBRUSH OldBrush   = (HBRUSH) SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+	  if(bHeightScale)
+	    Rectangle(hdc,rc.left,rc.top,rc.right,rc.bottom);
+	  else
+	    Rectangle(hdc,rci.left,rci.top,rci.right,rci.bottom);
+	  SelectObject(hdc, OldBrush);
+	  SelectObject(hdc, OldPen);
+	  DeleteObject(pFrame);
+  }
 
   SelectObject(hdc,hfOld/* Sender->GetFont()*/);
   zoom.SetLimitMapScale(true);

@@ -18,6 +18,7 @@
 #define BORDER_X 0 //24
 #define BORDER_Y 19
 
+#define OFFSET_SETP 500.0
 
 #define  MSL_SEA_DRAW
 #define GC_SEA_LEVEL_TOLERANCE       100
@@ -25,6 +26,12 @@
 //#define SHOW_YELLO_RED_WARNING
 #define NEAR_AS_ZOOM_1000FT
 #define NEAR_AS_ZOOM_1000M
+
+
+#define SIZE0 0
+#define SIZE1 30
+#define SIZE2 50
+#define SIZE3 70
 
 #define MAXPAGE 8
 #define ZOOMFACTOR 1.3

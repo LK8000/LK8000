@@ -16,10 +16,6 @@
 #include "LKInterface.h"
 
 
-#define SIZE0 0
-#define SIZE1 30
-#define SIZE2 50
-#define SIZE3 70
 
 extern int XstartScreen, YstartScreen;
 //extern long VKtime;
@@ -71,7 +67,8 @@ static unsigned long lSonarCnt = 0;
 void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 {
 //#define TEXT_BOX
-static int iSplit = SIZE1;
+
+
 int k;
 bool bFound = false;
 RECT rci = rc;
@@ -94,44 +91,39 @@ rci.bottom -= BottomSize;
   // Duration of key is inside long VKtime, in milliseconds.
   //
 
+   //  LKWriteBoxedText(hdc, _T("MULTIMAP ASP EXAMPLE"), 1, 1 , 0, WTALIGN_LEFT);
   TCHAR ttext[100];
   
   switch(LKevent) {
+	//
+	// USABLE EVENTS
+	// 
+
 	case LKEVENT_NEWRUN:
 		// CALLED ON ENTRY: when we select this page coming from another mapspace
 		_tcscpy(ttext,_T("Event = NEW RUN"));
 		fZOOMScale = 1.0;
 		break;
-	case LKEVENT_UP:
-		// click on upper part of screen, excluding center
-		_tcscpy(ttext,_T("Event = UP"));
-		fZOOMScale /= ZOOMFACTOR;
-	        if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_CLICK"));
-		break;
-	case LKEVENT_DOWN:
-		// click on lower part of screen,  excluding center
-		_tcscpy(ttext,_T("Event = DOWN"));
-		fZOOMScale *= ZOOMFACTOR;
-	        if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_CLICK"));
-		break;
+
 	case LKEVENT_TOPLEFT:
-		if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_CLICK"));
-		IncSideviewPage();
-		fZOOMScale = 1.0;
-		break;
+	  if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_CLICK"));
+	  IncSideviewPage();
+	  fZOOMScale = 1.0;
+	break;
 	case LKEVENT_TOPRIGHT:
-		if(Sideview_asp_heading_task == 2)
-		{
-			Sonar_IsEnabled = !Sonar_IsEnabled;
-			if (EnableSoundModes) {
-				if (Sonar_IsEnabled)
-					LKSound(TEXT("LK_TONEUP.WAV"));
-				else
-					LKSound(TEXT("LK_TONEDOWN.WAV"));
-			}
-		}
-		break;
+	  if(Sideview_asp_heading_task== 2)
+	  {
+	    Sonar_IsEnabled = !Sonar_IsEnabled;
+	    if (EnableSoundModes) {
+	    	if (Sonar_IsEnabled)
+			LKSound(TEXT("LK_TONEUP.WAV"));
+		else
+			LKSound(TEXT("LK_TONEDOWN.WAV"));
+	    }
+	  }
+	break;
 	case LKEVENT_LONGCLICK:
+
 		 for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
 		 {
 		   if( Sideview_pHandeled[k].psAS != NULL)
@@ -141,24 +133,15 @@ rci.bottom -= BottomSize;
 			   if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
 			   dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
 			   bFound = true;
+			   LKevent=LKEVENT_NONE;
 			 }
 		   }
 		 }
 
 		break;
-	case LKEVENT_PAGEUP:
-		if(iSplit == SIZE1) iSplit = SIZE0;
-		if(iSplit == SIZE2) iSplit = SIZE1;
-		if(iSplit == SIZE3) iSplit = SIZE2;
-		break;
-	case LKEVENT_PAGEDOWN:
-		if(iSplit == SIZE2) iSplit = SIZE3;
-		if(iSplit == SIZE1) iSplit = SIZE2;
-		if(iSplit == SIZE0) iSplit = SIZE1;
-
-		break;
 
 	default:
+		// THIS SHOULD NEVER HAPPEN, but always CHECK FOR IT!
 		_tcscpy(ttext,_T("Event = unknown"));
 		break;
   }
@@ -169,11 +152,6 @@ rci.bottom -= BottomSize;
 	 fZOOMScale = 0.1;
 */
   static int oldSplit=SIZE1;
-  if(oldSplit != iSplit)
-  {
-	oldSplit=iSplit;
-	SetSplitScreenSize(oldSplit);
-  }
 
 
   RenderAirspace( hdc,   rci);
@@ -259,6 +237,8 @@ rci.bottom -= BottomSize;
   SonarNotify();
   SelectObject(hdc, hfOld);
   LKevent=LKEVENT_NONE;
+
+
 
 }
 

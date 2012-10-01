@@ -118,7 +118,7 @@ void DrawNorthArrow(HDC hdc, double fAngle, int x, int y)
 BOOL bInvCol = true ; //INVERTCOLORS
   // Draw north arrow
   POINT Arrow[5] = { {0,-11}, {-5,9}, {0,3}, {5,9}, {0,-11}};
-  DrawWindRoseDirection( hdc, AngleLimit360( fAngle ),  x,  y + NIBLSCALE(18));
+//  DrawWindRoseDirection( hdc, AngleLimit360( fAngle ),  x,  y + NIBLSCALE(18));
   PolygonRotateShift(Arrow, 5, x, y, AngleLimit360( -fAngle));
 
   HPEN	oldBPen ;
@@ -572,7 +572,8 @@ double fOldScale  =  zoom.Scale();
 RECT rct = pDia->rc;
 bool OldAM = ActiveMap;
 ActiveMap = true ;
-
+if(zoom.AutoZoom())
+  zoom.AutoZoom(false);
 double fFact = 1.0 ;
 
 	switch(ScreenSize) {
