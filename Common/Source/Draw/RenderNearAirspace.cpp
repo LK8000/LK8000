@@ -563,13 +563,16 @@ if(bValid)
     SelectObject(hdc, GetStockObject(WHITE_BRUSH));
   }
 
-  SetTextColor(hdc, GROUND_TEXT_COLOUR);
+  COLORREF txtCol = GROUND_TEXT_COLOUR;
   if(bInvCol)
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
-	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
+    	txtCol = INV_GROUND_TEXT_COLOUR;
+  SetBkMode(hdc, TRANSPARENT);
+  SetTextColor(hdc, txtCol);
+  _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserDistanceUnit()));
+  DrawXGrid(hdc, rci, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, RGB_BLACK,  &sDia,text);
 
- // DrawXGrid(hdc, rc, xtick/DISTANCEMODIFY, 0, STYLE_THINDASHPAPER, xtick, true);
-  DrawXGrid(hdc, rci, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_CENTER, RGB_BLACK,  &sDia);
+
   SetTextColor(hdc, Sideview_TextColor);
 
   double  ytick = 10.0;
@@ -581,7 +584,10 @@ if(bValid)
   if(Units::GetUserAltitudeUnit() == unFeet)
 	 ytick = ytick * 4.0;
 
- DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_MIDDLE_RIGHT ,RGB_BLACK,  &sDia);
+
+
+  _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserAltitudeUnit()));
+  DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,Sideview_TextColor,  &sDia, text);
 
 
   if(!bInvCol)
@@ -645,19 +651,7 @@ if(bValid)
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
 	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
 
-  switch (Units::GetUserDistanceUnit())
-  {
-	case unKiloMeter:     Statistics::DrawXLabel(hdc, rc, TEXT("km")); break;
-	case unNauticalMiles: Statistics::DrawXLabel(hdc, rc, TEXT("nM")); break;
-	case unStatuteMiles:  Statistics::DrawXLabel(hdc, rc, TEXT("sM")); break;
-	default: break;
-  }
-  SetTextColor(hdc, Sideview_TextColor);
-  if(Units::GetUserAltitudeUnit() == unFeet)
-    Statistics::DrawYLabel(hdc, rc, TEXT("ft"));
-  else
-	Statistics::DrawYLabel(hdc, rc, TEXT("m"));
-//  SetBkMode(hdc, OPAQUE);
+
 
   /****************************************************************************************************/
   /****************************************************************************************************/
@@ -747,15 +741,7 @@ if(bValid)
   RenderPlaneSideview( hdc, 0.0 , GPSalt,wpt_brg, &sDia );
 
 
-  SetBkMode(hdc, TRANSPARENT);
-  SetTextColor(hdc, GROUND_TEXT_COLOUR);
-  if(bInvCol)
-    if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
-	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
 
-  Statistics::DrawXLabel(hdc, rc, TEXT("D"));
-  SetTextColor(hdc, Sideview_TextColor);
-  Statistics::DrawYLabel(hdc, rc, TEXT("h"));
 
 
   SelectObject(hdc,hfOldFnt/* Sender->GetFont()*/);
@@ -774,14 +760,14 @@ if(bValid)
 	  HPEN OldPen      = (HPEN)   SelectObject(hdc, pFrame);
 	  HBRUSH OldBrush   = (HBRUSH) SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
 	  if(bHeightScale)
-	    Rectangle(hdc,rc.left,rc.top,rc.right,rc.bottom);
+	    Rectangle(hdc,rc.left+1,rc.top,rc.right,rc.bottom);
 	  else
-	    Rectangle(hdc,rci.left,rci.top,rci.right,rci.bottom);
+	    Rectangle(hdc,rci.left+1,rci.top+1,rci.right,rci.bottom);
 	  SelectObject(hdc, OldBrush);
 	  SelectObject(hdc, OldPen);
 	  DeleteObject(pFrame);
   }
-
+  SetBkMode(hdc, TRANSPARENT);
   SelectObject(hdc,hfOldFnt/* Sender->GetFont()*/);
 }
 

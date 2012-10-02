@@ -544,9 +544,9 @@ class MapWindow {
 
 
   static void DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, double zero, int iTextAling,
-		                COLORREF color, DiagrammStruct *psDia);
+		                COLORREF color, DiagrammStruct *psDia, const TCHAR *pLable=NULL);
   static void DrawXGrid(HDC hdc, RECT rc, double ticstep,double unit_step, double zero, int iTextAling,
-                        COLORREF color, DiagrammStruct *psDia);
+                        COLORREF color, DiagrammStruct *psDia,  const TCHAR *pLable=NULL);
 
 
   static double LKDrawTrail(HDC hdc, const POINT Orig, const RECT rc);

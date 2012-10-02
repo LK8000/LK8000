@@ -254,17 +254,12 @@ static int oldSplit = 0;
 
     calc_average30s = CALCULATED_INFO.Average30s;
 
-#if 0 // REMOVE
-//
-// THIS IS BAD! NavAltitude is already assigned, and made by the CALC thread.
-//
+// TODO FIX CHECK  use NavAltitude instead, no need to use alt
     if (GPS_INFO.BaroAltitudeAvailable && EnableNavBaroAltitude) {
       CALCULATED_INFO.NavAltitude = GPS_INFO.BaroAltitude;
     } else {
       CALCULATED_INFO.NavAltitude = GPS_INFO.Altitude;
     }
-#endif
-
     calc_terrainalt = CALCULATED_INFO.TerrainAlt;
     calc_altitudeagl = CALCULATED_INFO.AltitudeAGL;
   }
@@ -362,12 +357,6 @@ static int oldSplit = 0;
   RenderAirspaceTerrain( hdc, aclat, aclon,  acb, ( DiagrammStruct*) &sDia );
 
 
-  Statistics::ResetScale();
-  Statistics::ScaleXFromValue(rc, sDia.fXMin);
-  Statistics::ScaleXFromValue(rc, sDia.fXMax);
-  Statistics::ScaleYFromValue(rc, sDia.fYMin);
-  Statistics::ScaleYFromValue(rc, sDia.fYMax);
-
   int x0 = CalcDistanceCoordinat( 0,  &sDia);
   int y0 = CalcHeightCoordinat  ( 0,  &sDia);
 
@@ -406,7 +395,9 @@ static int oldSplit = 0;
   	sDia.rc = rc;
   }
 
-  Statistics::DrawXGrid(hdc, rci, xtick/DISTANCEMODIFY, 0,  STYLE_THINDASHPAPER, xtick, true);
+
+  _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserDistanceUnit()));
+  DrawXGrid(hdc, rci, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, Sideview_TextColor,  &sDia,text);
   SetTextColor(hdc, Sideview_TextColor);
 
   double fHeight = sDia.fYMax - sDia.fYMin;
@@ -420,8 +411,8 @@ static int oldSplit = 0;
   if(Units::GetUserAltitudeUnit() == unFeet)
 	 ytick = ytick * 4.0;
 
-	Statistics::DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY, 0, STYLE_THINDASHPAPER,ytick, true);
-
+  _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserAltitudeUnit()));
+  DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,Sideview_TextColor,  &sDia, text);
   POINT line[4];
 
   // draw target symbolic line
@@ -699,20 +690,6 @@ static int oldSplit = 0;
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
 	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
 
-  switch (Units::GetUserDistanceUnit())
-  {
-	case unKiloMeter:     Statistics::DrawXLabel(hdc, rc, TEXT("km")); break;
-	case unNauticalMiles: Statistics::DrawXLabel(hdc, rc, TEXT("nM")); break;
-	case unStatuteMiles:  Statistics::DrawXLabel(hdc, rc, TEXT("sM")); break;
-	default: break;
-  }
-  SetTextColor(hdc, Sideview_TextColor);
-
-
-  if(Units::GetUserAltitudeUnit() == unFeet)
-    Statistics::DrawYLabel(hdc, rc, TEXT("ft"));
-  else
-	Statistics::DrawYLabel(hdc, rc, TEXT("m"));
   SelectObject(hdc,hfOld/* Sender->GetFont()*/);
 
   if(fSplitFact > 0.0)
@@ -730,9 +707,9 @@ static int oldSplit = 0;
 	  HPEN OldPen      = (HPEN)   SelectObject(hdc, pFrame);
 	  HBRUSH OldBrush   = (HBRUSH) SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
 	  if(bHeightScale)
-	    Rectangle(hdc,rc.left,rc.top,rc.right,rc.bottom);
+	    Rectangle(hdc,rc.left+1,rc.top,rc.right,rc.bottom);
 	  else
-	    Rectangle(hdc,rci.left,rci.top,rci.right,rci.bottom);
+	    Rectangle(hdc,rci.left+1,rci.top+1,rci.right,rci.bottom);
 	  SelectObject(hdc, OldBrush);
 	  SelectObject(hdc, OldPen);
 	  DeleteObject(pFrame);

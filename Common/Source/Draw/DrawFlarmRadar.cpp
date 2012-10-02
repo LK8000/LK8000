@@ -94,20 +94,20 @@ typedef enum{
 } TextAlign;
 
 void MapWindow::DrawXGrid(HDC hdc, RECT rc, double ticstep,double unit_step, double zero, int iTextAling,
-                           COLORREF color, DiagrammStruct *psDia) {
+                           COLORREF color, DiagrammStruct *psDia, const TCHAR *pLable) {
 
   POINT line[2];
   SIZE tsize;
 
-  int xoff, yoff;
+  int xoff=0, yoff=0;
   double xval;
   if (psDia->fXMax == psDia->fXMin)
     psDia->fXMax++;
   double xscale = (rc.right-rc.left) / (psDia->fXMax-psDia->fXMin);
-  int xmin, ymin, xmax, ymax;
+  int xmin=0, ymin=0, xmax=0, ymax=0;
   double x_max = psDia->fXMax;
   double x_min = psDia->fXMin;
-
+  TCHAR unit_text[MAX_PATH];
   for (xval=zero; xval<= x_max; xval+= ticstep) {
 
     xmin = (int)((xval-x_min)*xscale)+rc.left;
@@ -124,8 +124,10 @@ void MapWindow::DrawXGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
 
 	if (iTextAling>TEXT_NO_TEXT)
 	{
-	   TCHAR unit_text[MAX_PATH];
+
 	   FormatTicText(unit_text, xval*unit_step/ticstep, unit_step);
+
+
 	   GetTextExtentPoint(hdc, unit_text, _tcslen(unit_text), &tsize);
 	   switch(iTextAling)
 	   {
@@ -144,6 +146,9 @@ void MapWindow::DrawXGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
 	   ExtTextOut(hdc, xmin+xoff, ymax+yoff,
 	   ETO_OPAQUE, NULL, unit_text, _tcslen(unit_text), NULL);
 
+	   if(pLable != NULL)
+		if((xval+ticstep) > x_max)
+		  ExtTextOut(hdc, xmin, ymax+yoff, ETO_OPAQUE, NULL, pLable, _tcslen(pLable), NULL);
 	}
 
   }
@@ -184,6 +189,11 @@ void MapWindow::DrawXGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
 
        ExtTextOut(hdc, xmin+xoff, ymax+yoff,
   	   ETO_OPAQUE, NULL, unit_text, _tcslen(unit_text), NULL);
+       /*
+	   if(pLable != NULL)
+		if(xval < 0)
+		  if((xval-ticstep) < x_min)
+		    ExtTextOut(hdc, xmin, ymax+yoff, ETO_OPAQUE, NULL, pLable, _tcslen(pLable), NULL);*/
     }
 
 
@@ -192,17 +202,17 @@ void MapWindow::DrawXGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
 }
 
 void MapWindow::DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, double zero, int iTextAling,
-		 COLORREF color, DiagrammStruct *psDia) {
-
+		 COLORREF color, DiagrammStruct *psDia,  const TCHAR *pUnit) {
   POINT line[2];
   SIZE tsize;
+
  int  xoff =0  , yoff=0;
 
   double yval;
   double y_max = psDia->fYMax;
   double y_min = psDia->fYMin;
 
-  int xmin, ymin, xmax, ymax;
+  int xmin=0, ymin=0, xmax=0, ymax=0;
   if (psDia->fYMax == psDia->fYMin)
     psDia->fYMax++;
   double yscale = (rc.bottom - rc.top) / (psDia->fYMax-psDia->fYMin);
@@ -225,6 +235,9 @@ void MapWindow::DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
     {
 	  TCHAR unit_text[MAX_PATH];
 	  FormatTicText(unit_text, yval*unit_step/ticstep, unit_step);
+	  if(pUnit != NULL)
+		if(yval+ticstep >y_max)
+	    _stprintf (unit_text,TEXT("%s%s"), unit_text,pUnit);
 	  GetTextExtentPoint(hdc, unit_text, _tcslen(unit_text), &tsize);
 	  switch(iTextAling)
 	  {
@@ -243,6 +256,7 @@ void MapWindow::DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
 	  ETO_OPAQUE, NULL, unit_text, _tcslen(unit_text), NULL);
     }
   }
+
 
   for (yval=zero; yval>= y_min; yval-= ticstep)
   {
@@ -279,6 +293,7 @@ void MapWindow::DrawYGrid(HDC hdc, RECT rc, double ticstep,double unit_step, dou
 		         ETO_OPAQUE, NULL, unit_text, _tcslen(unit_text), NULL);
     }
   }
+
 }
 
 
@@ -441,23 +456,9 @@ void RenderFlarmPlaneSideview(HDC hdc, const RECT rc,double fDist, double fAltit
   if((brg < 90)|| (brg > 270)) {
     Polygon(hdc,AircraftTail  ,5 );
   }
-
-
-
-
-
 } //else !asp_heading_task
 
-void ResetTraces(void)
-{
-/*
-int i;
-  for(i=0; i <= FLARM_MAX_TRAFFIC; i++)
-  {
-	asFLRAMPos[i].iLastPtr = 0;
-	asFLRAMPos[i].bBuffFull = false;
-  }*/
-}
+
 
 
 void MapWindow::LKDrawFlarmRadar(HDC hdc, const RECT rci)
@@ -473,6 +474,7 @@ static int iRectangleSize = 5;
 static short scaler[5];
 static short tscaler=0;
 static POINT Arrow[5];
+TCHAR text[80];
 static RECT PositionTopView[FLARM_MAX_TRAFFIC];
 static RECT PositionSideView[FLARM_MAX_TRAFFIC];
 static RECT OwnPosTopView;
@@ -513,7 +515,7 @@ switch(LKevent)
 {
   case LKEVENT_NEWRUN:
 	// CALLED ON ENTRY: when we select this page coming from another mapspace
-	fHeigtScaleFact = 1.0;
+//	fHeigtScaleFact = 1.0;
   break;
   case LKEVENT_UP:
 	if(bHeightScale)
@@ -700,19 +702,12 @@ DiagrammStruct sDia;
   fMaxHeight = GPSalt;
   fMinHeight = GPSalt;
 
-static bool bFirstCall = false;
-	if (bFirstCall == false)
-	{
-		ResetTraces();
-		bFirstCall = true;
-
-	}
 
 
   if (DoInit[MDI_FLARMRADAR]) {
 
 	  fScaleFact =5.0;
-	  ResetTraces();
+
 	  switch (ScreenSize) {
 		case ss480x640:
 		case ss480x800:
@@ -857,7 +852,9 @@ static bool bFirstCall = false;
 
   RECT rc34 = rc;
   rc34.top += (rct.top-rct.bottom)/2;
-  DrawXGrid(hdc, rc34, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_RIGHT, rgbGridColor,  &sDia);
+
+  _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserDistanceUnit()));
+  DrawXGrid(hdc, rc34, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, rgbGridColor,  &sDia, text);
 
   /*********************************************************************************
    * Draw Y Grid
@@ -888,21 +885,23 @@ static bool bFirstCall = false;
   sDia.fYMax =HEIGHT_RANGE* fHeigtScaleFact;
 
 
-double scl = 1.0;
-  double  ytick = 50.0;
+
+  double  ytick = 10.0;
   double  fHeight = (sDia.fYMax-sDia.fYMin);
-  if (fHeight >100.0) ytick = 200.0* scl;
-  if (fHeight >1000.0) ytick = 500.0* scl;
-  if (fHeight >2000.0) ytick = 1000.0* scl;
-  if (fHeight >4000.0) ytick = 2000.0* scl;
+  if (fHeight >50.0) ytick = 50.0;
+  if (fHeight >100.0) ytick = 100.0;
+  if (fHeight >500.0) ytick = 200.0;
+  if (fHeight >1000.0) ytick = 500.0;
+  if (fHeight >2000.0) ytick = 1000.0;
+  if (fHeight >4000.0) ytick = 2000.0;
   if(Units::GetUserAltitudeUnit() == unFeet)
 	 ytick = ytick * 4.0;
 
-
-
   if(bSideview)
-    DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_ABOVE_RIGHT ,rgbGridColor,  &sDia);
-
+  {
+	_stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserAltitudeUnit()));
+    DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,rgbGridColor,  &sDia, text);
+  }
 
   /****************************************************************************************************
    * draw side elements
@@ -1109,8 +1108,8 @@ for (j=0; j<nEntrys; j++)
 //    if(fx < sTopDia.fXMax )
 //    if(fy < sTopDia.fYMax )
 //	if(fy > sTopDia.fYMin )
-	if(fFlarmAlt < sDia.fYMax )
-	if(fFlarmAlt > sDia.fYMin )
+//	if(fFlarmAlt < sDia.fYMax )
+//	if(fFlarmAlt > sDia.fYMin )
 	{
 	  /***********************************************
 	   * draw center aircraft if first time above
