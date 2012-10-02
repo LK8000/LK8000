@@ -28,6 +28,7 @@
 #endif
 #include "utils/stl_utils.h"
 #include "RasterTerrain.h"
+#include "Multimap.h"
 
 // Sensible maximums 
 #define MAX_MODE 100
@@ -2139,6 +2140,23 @@ extern bool RotateScreen(short angle);
 	GPS_INFO.Latitude=MapWindow::GetPanLatitude();
 	GPS_INFO.Longitude=MapWindow::GetPanLongitude();
 	LastDoRangeWaypointListTime=0; // force DoRange
+	return;
+  }
+
+  if (_tcscmp(misc, TEXT("MMTERRAIN")) == 0) {
+	ToggleMultimapTerrain();
+	return;
+  }
+  if (_tcscmp(misc, TEXT("MMAIRSPACE")) == 0) {
+	ToggleMultimapAirspace();
+	return;
+  }
+  if (_tcscmp(misc, TEXT("MMTOPOLOGY")) == 0) {
+	ToggleMultimapTopology();
+	return;
+  }
+  if (_tcscmp(misc, TEXT("MMWAYPOINTS")) == 0) {
+	ToggleMultimapWaypoints();
 	return;
   }
 

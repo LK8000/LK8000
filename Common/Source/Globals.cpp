@@ -13,6 +13,7 @@
 #include "LKMapWindow.h"
 #include "Modeltype.h"
 #include "LKInterface.h"
+#include "Multimap.h"
 
 #if (WINDOWSPC>0)
 #include <wingdi.h>
@@ -629,6 +630,8 @@ void Globals_Init(void) {
   extern void Reset_CustomMenu(void);
   Reset_CustomMenu();
 
+  Reset_Multimap_Flags();
+
   // ^ ADD NEW GLOBALS up here ^ 
   // ---------------------------
 
@@ -647,3 +650,4 @@ void Reset_CustomMenu(void) {
 	CustomMenu9  = ckDisabled;			// Landscape> 1st top left
 	CustomMenu10 = ckDisabled;
 }
+

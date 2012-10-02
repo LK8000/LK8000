@@ -673,6 +673,7 @@ SRC_FILES :=\
 	$(SRC)/Message.cpp \
 	$(SRC)/MessageLog.cpp	\
 	$(SRC)/Models.cpp\
+	$(SRC)/Multimap.cpp\
 	$(SRC)/Oracle.cpp\
 	$(SRC)/Parser.cpp\
 	$(SRC)/Polar.cpp		\

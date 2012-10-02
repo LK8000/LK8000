@@ -14,10 +14,9 @@
 #include "LKRoyaltek3200.h"
 #endif
 #include "DoInits.h"
+#include "Multimap.h"
 
 void BottomSounds();
-extern bool IsMultiMap();
-extern void MultiMapSound();
 
 long VKtime=0;
 
@@ -584,12 +583,4 @@ gesture_left:
 	return 0;
 }
 
-
-
-bool IsMultiMap() {
-  if (MapSpaceMode==MSM_MAPASP || MapSpaceMode==MSM_MAPTRK || MapSpaceMode==MSM_MAPWPT || MapSpaceMode==MSM_MAPRADAR || MapSpaceMode==MSM_MAPTEST)
-	return true;
-  else
-	return false;
-}
 

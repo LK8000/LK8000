@@ -871,6 +871,12 @@ GEXTERN bool UseHiresBitmap;
 GEXTERN bool UseUngestures;
 GEXTERN bool UseWindRose;
 
+// Multimap stuff
+GEXTERN bool Multimap_Flags_Terrain[MP_TOP+1];
+GEXTERN bool Multimap_Flags_Topology[MP_TOP+1];
+GEXTERN bool Multimap_Flags_Airspace[MP_TOP+1];
+GEXTERN bool Multimap_Flags_Waypoints[MP_TOP+1];
+
 //
 // ---------------------------------------------------------------------------
 // SWITCHES: switch them on, and something happens. Thread safe.

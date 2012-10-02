@@ -1,6 +1,6 @@
 ﻿#CLEAR
 # DEFAULT_MENU.TXT for LK8000 by Paolo Ventafridda
-# Release 9 , 120905
+# Release 9 , 121002
 #
 # USERS SHOULD NOT CHANGE THIS FILE.
 # THEY CAN INSTEAD COPY IT TO CONFIGURATION DIRECTORY
@@ -3003,3 +3003,83 @@ event=MyMenu 10
 event=Mode default
 location=11
 
+# -------------
+# mode=MMCONF
+# -------------
+
+mode=MMCONF
+type=key
+data=APP1
+event=Null
+label=
+location=1
+
+mode=MMCONF
+type=key
+data=APP2
+event=Null
+label=
+location=2
+
+mode=MMCONF
+type=key
+data=APP3
+event=Null
+label=
+location=3
+
+mode=MMCONF
+type=key
+data=APP4
+event=Null
+label=
+location=4
+
+mode=MMCONF
+type=key
+data=6
+event=Service MMWAYPOINTS
+label=_@M2232_
+location=5
+
+mode=MMCONF
+type=key
+data=7
+event=Service MMTOPOLOGY
+label=_@M2027_
+location=6
+
+mode=MMCONF
+type=key
+data=8
+event=Service MMTERRAIN
+label=_@M2028_
+location=7
+
+mode=MMCONF
+type=key
+data=9
+event=Service MMAIRSPACE
+label=_@M2029_
+location=8
+
+mode=MMCONF
+type=key
+data=0
+event=Mode default
+label=_@M2011_
+location=9
+
+mode=MMCONF
+type=key
+data=11
+label=
+event=Null
+location=10
+
+mode=MMCONF
+type=key
+data=12
+label=
+event=Null
+location=11

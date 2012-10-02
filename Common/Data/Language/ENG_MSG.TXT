@@ -1793,6 +1793,12 @@ _@M1797_ "Vector"
 _@M1798_ "Arm TPs"
 _@M1799_ "Stop moving!"
 
+_@M1800_ "no trace"
+_@M1801_ "climb trace"
+_@M1802_ "climb/sink trace"
+_@M1803_ "Head Up"
+_@M1804_ "Head Right"
+
 ############################################################
 #                  - MENU MESSAGES - 
 #
@@ -1978,12 +1984,6 @@ _@M2227_ "Toggle\nWndRose"
 _@M2228_ "FLARM\nRadar"
 _@M2229_ "Reset\nOdomet"
 _@M2230_ "Force\nLanded"
-
-_@M2231_ "no trace"
-_@M2232_ "climb trace"
-_@M2233_ "climb/sink trace"
-_@M2234_ "Head Up"
-_@M2235_ "Head Right"
 
 # Reserved for custom menus up to 2300!
 

@@ -14,7 +14,7 @@
 #include "Sideview.h"
 #include "Message.h"
 #include "LKInterface.h"
-
+#include "InputEvents.h"
 
 
 extern int XstartScreen, YstartScreen;
@@ -84,6 +84,8 @@ rci.bottom -= BottomSize;
 
 
 	case LKEVENT_TOPLEFT:
+		InputEvents::setMode(_T("MMCONF"));
+		break;
 	break;
 
 	case LKEVENT_TOPRIGHT:

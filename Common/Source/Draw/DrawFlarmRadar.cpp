@@ -1266,9 +1266,9 @@ if(bSideview)
   switch(bTrace)
   {
     default:
-    case 0: _stprintf(lbuffer,TEXT("RDR %s"), gettext(TEXT("_@M2231_"))) ; break; //  _@M2231_ "no trace"
-    case 1: _stprintf(lbuffer,TEXT("RDR %s"), gettext(TEXT("_@M2233_"))); break; //  _@M2233_ "climb/sink trace"
-    case 2: _stprintf(lbuffer,TEXT("RDR %s"), gettext(TEXT("_@M2232_"))); break; //  _@M2232_ "climb trace"
+    case 0: _stprintf(lbuffer,TEXT("RDR %s"), gettext(TEXT("_@M1800_"))) ; break; //   "no trace"
+    case 1: _stprintf(lbuffer,TEXT("RDR %s"), gettext(TEXT("_@M1802_"))); break; //  climb/sink trace"
+    case 2: _stprintf(lbuffer,TEXT("RDR %s"), gettext(TEXT("_@M1801_"))); break; //  "climb trace"
   }
   LKWriteText(hdc, lbuffer, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, RGB_DARKGREY, false);
 //  LKWriteText(hdc, szTxt, LEFTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_LEFT, rgbTextColor, false);
@@ -1276,8 +1276,8 @@ if(bSideview)
   switch(iTurn)
   {
     default:
-    case 0: _stprintf(lbuffer,TEXT("%s"), gettext(TEXT("_@M2234_"))) ; break; //      _@M2234_ "Head Up"
-    case 1: _stprintf(lbuffer,TEXT("%s"), gettext(TEXT("_@M2235_"))); break; //      _@M2235_ "Head Right"
+    case 0: _stprintf(lbuffer,TEXT("%s"), gettext(TEXT("_@M1803_"))) ; break; //     "Head Up"
+    case 1: _stprintf(lbuffer,TEXT("%s"), gettext(TEXT("_@M1804_"))); break; //      Head Right"
   }
   LKWriteText(hdc, lbuffer, rci.right-RIGHTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_DARKGREY, false);
 
