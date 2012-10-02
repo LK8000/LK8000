@@ -370,6 +370,7 @@ DRAW	:=\
 	$(DRW)/LKDrawWelcome.cpp \
 	$(DRW)/LKGeneralAviation.cpp \
 	$(DRW)/LKMessages.cpp \
+	$(DRW)/LKProcess.cpp \
 	$(DRW)/LKWriteText.cpp \
 	$(DRW)/LoadSplash.cpp\
 	$(DRW)/MapScale.cpp \
@@ -648,7 +649,6 @@ SRC_FILES :=\
 	$(SRC)/LKInstall.cpp 		\
 	$(SRC)/LKLanguage.cpp		\
 	$(SRC)/LKObjects.cpp \
-	$(SRC)/LKProcess.cpp \
 	$(SRC)/LKProfileInitRuntime.cpp\
 	$(SRC)/LKProfileLoad.cpp\
 	$(SRC)/LKProfileResetDefault.cpp\
