@@ -12,6 +12,8 @@
 #include "Sideview.h"
 #include "LKInterface.h"
 #include "Terrain.h"
+#include "Multimap.h"
+
 extern double fSplitFact;
 extern COLORREF  Sideview_TextColor;
 
@@ -624,23 +626,28 @@ double fFact = 1.0 ;
    CalculateScreenPositions( Orig,  rct, &Orig_Aircraft);
    CalculateScreenPositionsAirspace();
 
+  if (IsMultimapTerrain() &&  DerivedDrawInfo.TerrainValid )
+	DrawTerrain(hdc, rct, GetAzimuth(), 40.0);
 
-  double sunelevation = 40.0;
-  double sunazimuth=GetAzimuth();
+  ResetLabelDeclutter();
 
-  if (EnableTerrain && DerivedDrawInfo.TerrainValid )
-	DrawTerrain(hdc, rct, sunazimuth, sunelevation);
-
-  if (EnableTopology) {
-	SaturateLabelDeclutter();  // Do not print topology labels
+  if (IsMultimapTopology()) {
+	// Do not print topology labels, to be used with another config later!
+	// SaturateLabelDeclutter();
 	RECT rc_red = rct;
 	rc_red.bottom -= 3;
 	DrawTopology  (hdc, rc_red);
   }
 
-   DrawAirSpace( hdc, rct);
-   //LKDrawTrail(hdc, Orig_Aircraft, rct);
-   DrawAirspaceLabels( hdc,   rct, Orig_Aircraft);
+  if (IsMultimapAirspace()) {
+	DrawAirSpace( hdc, rct);
+	DrawAirspaceLabels( hdc,   rct, Orig_Aircraft);
+  }
+
+  if (IsMultimapWaypoints()) {
+	DrawWaypointsNew(hdc,DrawRect);
+  }
+
 
   /****************************************************************************************************
    * draw vertical line

@@ -15,7 +15,7 @@
 #include "Message.h"
 #include "LKInterface.h"
 #include "InputEvents.h"
-
+#include "Multimap.h"
 
 extern int XstartScreen, YstartScreen;
 //extern long VKtime;
@@ -68,8 +68,9 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 {
 
 
-RECT rci = rc;
-rci.bottom -= BottomSize;
+  RECT rci = rc;
+  rci.bottom -= BottomSize;
+
   if (DoInit[MDI_MAPASP]) {
 	// init statics here and then clear init to false
 	DoInit[MDI_MAPASP]=false;
@@ -80,8 +81,6 @@ rci.bottom -= BottomSize;
 	//
 	// USABLE EVENTS
 	// 
-
-
 
 	case LKEVENT_TOPLEFT:
 		InputEvents::setMode(_T("MMCONF"));
@@ -107,11 +106,14 @@ rci.bottom -= BottomSize;
   }
 
 
-
+  //
+  // This is doing all rendering, including terrain and topology, which is not good.
+  //
   RenderAirspace( hdc,   rci);
 
   TCHAR topleft_txt[10];
   TCHAR topcenter_txt[80];
+
   switch(GetSideviewPage())
   {
 	case 0:

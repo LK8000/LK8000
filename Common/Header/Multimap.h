@@ -19,6 +19,11 @@ void ToggleMultimapAirspace(void);
 void ToggleMultimapTopology(void);
 void ToggleMultimapWaypoints(void);
 
+bool IsMultimapTerrain(void);
+bool IsMultimapAirspace(void);
+bool IsMultimapTopology(void);
+bool IsMultimapWaypoints(void);
+
 void Reset_Multimap_Flags(void);
 
 #endif

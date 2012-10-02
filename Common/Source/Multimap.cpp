@@ -46,28 +46,55 @@ short Get_Current_Multimap_Type() {
   return MP_MOVING;
 }
 
+bool IsMultimapTerrain(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  return Multimap_Flags_Terrain[i];
+}
+
+bool IsMultimapTopology(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  return Multimap_Flags_Topology[i];
+}
+
+bool IsMultimapAirspace(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  return Multimap_Flags_Airspace[i];
+}
+
+bool IsMultimapWaypoints(void) {
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  return Multimap_Flags_Waypoints[i];
+}
+
 
 
 void ToggleMultimapTerrain(void) {
-
   short i=Get_Current_Multimap_Type();
   LKASSERT( (i>=0) && (i<(MP_TOP+1)));
   Multimap_Flags_Terrain[i]=!Multimap_Flags_Terrain[i];
 }
 
 void ToggleMultimapTopology(void) {
-
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  Multimap_Flags_Topology[i]=!Multimap_Flags_Topology[i];
 }
 
 void ToggleMultimapAirspace(void) {
-
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  Multimap_Flags_Airspace[i]=!Multimap_Flags_Airspace[i];
 }
 
 void ToggleMultimapWaypoints(void) {
-
+  short i=Get_Current_Multimap_Type();
+  LKASSERT( (i>=0) && (i<(MP_TOP+1)));
+  Multimap_Flags_Waypoints[i]=!Multimap_Flags_Waypoints[i];
 }
-
-
 
 void Reset_Multimap_Flags(void) {
   short i;
