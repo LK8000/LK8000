@@ -199,7 +199,7 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
 	unsigned int offset = p + NIBLSCALE(1) ;
 
 	if ( _tcslen(wp->Freq)>0 ) {
-		MapWindow::LKWriteBoxedText(hdc,wp->Freq, wp->Screen.x - offset, wp->Screen.y -offset, 0, WTALIGN_RIGHT);
+		MapWindow::LKWriteBoxedText(hdc,&DrawRect,wp->Freq, wp->Screen.x - offset, wp->Screen.y -offset, 0, WTALIGN_RIGHT);
 	}
 
 	//
@@ -207,13 +207,13 @@ void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
 	//
 	if (MapWindow::zoom.RealScale() <=scale_fullinfos) { 
 		if ( _tcslen(wp->Code)==4 ) {
-			MapWindow::LKWriteBoxedText(hdc,wp->Code, wp->Screen.x + offset, wp->Screen.y - offset, 0, WTALIGN_LEFT);
+			MapWindow::LKWriteBoxedText(hdc,&DrawRect,wp->Code, wp->Screen.x + offset, wp->Screen.y - offset, 0, WTALIGN_LEFT);
 		}
 
 		if (wp->Altitude >0) {
 			TCHAR tAlt[20];
 			_stprintf(tAlt,_T("%.0f %s"),wp->Altitude*ALTITUDEMODIFY,Units::GetUnitName(Units::GetUserAltitudeUnit()));
-			MapWindow::LKWriteBoxedText(hdc,tAlt, wp->Screen.x + offset, wp->Screen.y + offset, 0, WTALIGN_LEFT);
+			MapWindow::LKWriteBoxedText(hdc,&DrawRect,tAlt, wp->Screen.x + offset, wp->Screen.y + offset, 0, WTALIGN_LEFT);
 		}
 
 	}

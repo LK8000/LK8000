@@ -852,7 +852,7 @@ nextinit:
 				SelectObject(hdc, LK8SmallFont); 
 				_stprintf(BufferValue,_T(" + %.0f %s "),SAFETYALTITUDEARRIVAL*ALTITUDEMODIFY,
 				Units::GetUnitName(Units::GetUserAltitudeUnit()));
-				LKWriteBoxedText(hdc, BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
+				LKWriteBoxedText(hdc, &DrawRect,BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
 			}
 		}
 
@@ -945,7 +945,7 @@ nextinit:
 			// LKWriteBoxedText(hdc, gettext(1694), rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
 			_stprintf(BufferValue,_T(" + %.0f %s "),SAFETYALTITUDEARRIVAL*ALTITUDEMODIFY,
 			Units::GetUnitName(Units::GetUserAltitudeUnit()));
-			LKWriteBoxedText(hdc, BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
+			LKWriteBoxedText(hdc, &DrawRect,BufferValue, rcx,rcy+(TextSize.cy*2)-TextSize.cy/6, 0, WTALIGN_RIGHT);
 
 		}
 	} // end no UseGates()
@@ -1032,7 +1032,7 @@ drawOverlay:
 		SelectObject(hdc, LK8SmallFont); 
 		_stprintf(BufferValue,_T(" %.1f %s "),GlidePolar::SafetyMacCready*LIFTMODIFY,
 		Units::GetUnitName(Units::GetUserVerticalSpeedUnit()));
-		LKWriteBoxedText(hdc, BufferValue, rcx,smacOffset, 0, WTALIGN_RIGHT);
+		LKWriteBoxedText(hdc, &DrawRect,BufferValue, rcx,smacOffset, 0, WTALIGN_RIGHT);
 	}
 
 	if (DerivedDrawInfo.AutoMacCready == true) {

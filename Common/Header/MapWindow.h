@@ -447,7 +447,7 @@ class MapWindow {
   static void SuspendDrawingThread(void);
   static void ResumeDrawingThread(void);
   static void LKWriteText(HDC hDC, const TCHAR* wText, int x, int y, int maxsize, const bool mode, const short align, COLORREF rgb_tex, bool invertable);
-  static void LKWriteBoxedText(HDC hDC, const TCHAR* wText, int x, int y, int maxsize, const short align );
+  static void LKWriteBoxedText(HDC hDC, RECT *clipRect, const TCHAR* wText, int x, int y, int maxsize, const short align );
   static bool LKFormatValue(const short fvindex, const bool longtitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle);
   static void LKFormatBrgDiff(const int wpindex, const bool wpvirtual, TCHAR *BufferValue, TCHAR *BufferUnit);
 

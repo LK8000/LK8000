@@ -176,12 +176,15 @@ void MapWindow::LKWriteText(HDC hDC, const TCHAR* wText, int x, int y,
 
 }
 
-
-
 //
-// Box black, text white, or inverted
+// Box black, text white, or inverted.
+// Clip region is normally MapRect for forcing writing on any part of the screen.
+// Or DrawRect for the current terrain area.
+// Or, of course, anything else.
+// A note about DrawRect: in main moving map, DrawRect is the part of screen excluding BottomBar, 
+// when the bottom bar is opaque. So choose carefully.
 //
-void MapWindow::LKWriteBoxedText(HDC hDC, const TCHAR* wText, int x, int y, int maxsize, const short align ) {
+void MapWindow::LKWriteBoxedText(HDC hDC, RECT *clipRect, const TCHAR* wText, int x, int y, int maxsize, const short align ) {
 
 	SIZE tsize;
 	if (maxsize==0) maxsize=_tcslen(wText);
@@ -191,25 +194,28 @@ void MapWindow::LKWriteBoxedText(HDC hDC, const TCHAR* wText, int x, int y, int 
 	switch(align) {
 		case WTALIGN_LEFT:
 			vy=y+tsize.cy+NIBLSCALE(2)+1;
-			if (vy>=DrawRect.bottom) return;
+			if (vy>=clipRect->bottom) return;
 			Rectangle(hDC, x+tsize.cx+NIBLSCALE(8), vy, x, y);
 			x += NIBLSCALE(4);
 			break;
 		case WTALIGN_RIGHT:
 			vy=y+tsize.cy+NIBLSCALE(2)+1;
-			if (vy>=DrawRect.bottom) return;
+			if (vy>=clipRect->bottom) return;
 			Rectangle(hDC, x-tsize.cx-NIBLSCALE(8), vy, x, y);
 			x -= (tsize.cx+NIBLSCALE(4));
 			break;
 		case WTALIGN_CENTER:
 			vy=y+(tsize.cy/2)+NIBLSCALE(1)+1;
-			if (vy>=DrawRect.bottom) return;
+			if (vy>=clipRect->bottom) return;
 			Rectangle(hDC, 
 				x-(tsize.cx/2)-NIBLSCALE(4), 
 				y-(tsize.cy/2)-NIBLSCALE(1)-1,
 				x+(tsize.cx/2)+NIBLSCALE(4), 
 				vy);
 			x -= (tsize.cx/2);
+			// just a trick to avoid calculating:
+			// y -= ((tsize.cy/2)+NIBLSCALE(1));
+			y -= (vy-y);
 			break;
 	}
 	y += NIBLSCALE(1);

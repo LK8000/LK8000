@@ -173,7 +173,7 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
   if (fSplitFact <0.5)
 	midsplit+=textSize.cy;
 
-  MapWindow::LKWriteBoxedText(hdc,topcenter_txt, rc.right/3, midsplit, 0, WTALIGN_CENTER);
+  MapWindow::LKWriteBoxedText(hdc,&MapRect,topcenter_txt, rc.right/3, midsplit, 0, WTALIGN_CENTER);
 
 
   if(Sideview_asp_heading_task== 2)
