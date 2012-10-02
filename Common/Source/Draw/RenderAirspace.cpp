@@ -86,7 +86,7 @@ static int iSplit = SIZE1;
 
 
 //  Rectangle(hdc,rci.left,rci.top,rci.right,rci.bottom);
-
+  bool bFound = false;
   SelectObject(hdc, OldPen);
   SelectObject(hdc, OldBrush);
   DeleteObject(hpHorizon);
@@ -96,8 +96,8 @@ static int iSplit = SIZE1;
   rc.top     = (long)((double)(rci.bottom-rci.top  )*fSplitFact);
   rct.bottom = rc.top ;
 
-  RECT sel_rect_top	= rct; 	sel_rect_top.right = NIBLSCALE(55);
-  RECT sel_rect_side = rc;  sel_rect_side.right = NIBLSCALE(55);
+  RECT sel_rect_top	= rct; 	//sel_rect_top.right = NIBLSCALE(55);
+  RECT sel_rect_side = rc;  //sel_rect_side.right = NIBLSCALE(55);
 
   if(bInvCol)
   {
@@ -135,12 +135,6 @@ static int iSplit = SIZE1;
 			break;
 
 		case LKEVENT_LONGCLICK:
-			 if (PtInRect(XstartScreen, YstartScreen,sel_rect_side ))
-			   bHeightScale = true;
-			 else
-			   if (PtInRect(XstartScreen, YstartScreen,sel_rect_top ))
-			     bHeightScale = false;
-			   else
 				 for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
 				 {
 				   if( Sideview_pHandeled[k].psAS != NULL)
@@ -149,10 +143,18 @@ static int iSplit = SIZE1;
 					 {
 					   if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
 					   dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
-				//	   bFound = true;
+					   bFound = true;
 				//	   LKevent=LKEVENT_NONE;
 					 }
 				   }
+				 }
+				// if(!bFound)
+				 {
+				   if (PtInRect(XstartScreen, YstartScreen,sel_rect_side ))
+				     bHeightScale = true;
+
+				   if (PtInRect(XstartScreen, YstartScreen,sel_rect_top ))
+				     bHeightScale = false;
 				 }
 	     break;
 

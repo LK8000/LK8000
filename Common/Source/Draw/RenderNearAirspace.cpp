@@ -59,6 +59,7 @@ int iAltitudeAGL;
 int i;
 bool bAS_Inside = false;
 bool bOK = false;
+
 int iTreadLevel;
 CAirspace SelectedAS;
 CAirspace *Sel_AS_Ptr = NULL;
@@ -175,8 +176,8 @@ static int iSplit = 30;
 int  k;
 static double fZOOMScale= 1.0;
 static double fHeigtScaleFact = 1.0;
-RECT sel_rect_top	= rct; 	sel_rect_top.right = NIBLSCALE(55);
-RECT sel_rect_side = rc;  sel_rect_side.right = NIBLSCALE(55);
+RECT sel_rect_top	= rct; 	//sel_rect_top.right = NIBLSCALE(55);
+RECT sel_rect_side = rc; // sel_rect_side.right = NIBLSCALE(55);
 
   double range = 50.0*1000; // km
   double GPSlat, GPSlon, GPSalt, GPSbrg, GPSspeed, calc_average30s;
@@ -191,7 +192,7 @@ RECT sel_rect_side = rc;  sel_rect_side.right = NIBLSCALE(55);
 
   CAirspace near_airspace;
   CAirspace *found = NULL;
-
+  bool bFound = false;
   DiagrammStruct sDia;
   bool bAS_Inside=false;
   int iAS_Bearing=0;
@@ -238,12 +239,6 @@ static  bool bHeightScale = false;
 			break;
 
 		case LKEVENT_LONGCLICK:
-			 if (PtInRect(XstartScreen, YstartScreen,sel_rect_side ))
-			   bHeightScale = true;
-			 else
-			   if (PtInRect(XstartScreen, YstartScreen,sel_rect_top ))
-			     bHeightScale = false;
-			   else
 				 for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
 				 {
 				   if( Sideview_pHandeled[k].psAS != NULL)
@@ -252,10 +247,18 @@ static  bool bHeightScale = false;
 					 {
 					   if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
 					   dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
-				//	   bFound = true;
+					   bFound = true;
 				//	   LKevent=LKEVENT_NONE;
 					 }
 				   }
+				 }
+				 if(!bFound)
+				 {
+				   if (PtInRect(XstartScreen, YstartScreen,sel_rect_side ))
+				     bHeightScale = true;
+
+				   if (PtInRect(XstartScreen, YstartScreen,sel_rect_top ))
+				     bHeightScale = false;
 				 }
 	     break;
 

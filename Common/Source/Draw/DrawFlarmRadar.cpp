@@ -464,7 +464,8 @@ void MapWindow::LKDrawFlarmRadar(HDC hdc, const RECT rci)
 {
 RECT rc  = rci; /* rectangle for sideview */
 RECT rct = rc;  /* rectangle for topview */
-
+rct.bottom = (long)((rc.bottom-rc.top  )*SPLITSCREEN_FACTOR); /* 2/3 for topview */
+rc.top     = rct.bottom;
 int i,j;
 static double fScaleFact = 5.0;
 static int iCircleSize    = 9;
@@ -501,6 +502,8 @@ double fOwnTopPlaneSize = 1.0;
 double fTopViewPlaneSize = 1.0;
 static int aiSortArray[FLARM_MAX_TRAFFIC];
 
+static bool bHeightScale = true;
+static double fHeigtScaleFact = 1.0f;
 
 
 /****************************************************************/
@@ -508,11 +511,21 @@ static int aiSortArray[FLARM_MAX_TRAFFIC];
 BOOL bFound = false;
 switch(LKevent)
 {
+  case LKEVENT_NEWRUN:
+	// CALLED ON ENTRY: when we select this page coming from another mapspace
+	fHeigtScaleFact = 1.0;
+  break;
   case LKEVENT_UP:
-    fScaleFact /= ZOOMFACTOR;
+	if(bHeightScale)
+	  fHeigtScaleFact /= ZOOMFACTOR;
+	else
+      fScaleFact /= ZOOMFACTOR;
   break;
   case LKEVENT_DOWN:
-    fScaleFact *= ZOOMFACTOR;
+	if(bHeightScale)
+	  fHeigtScaleFact *= ZOOMFACTOR;
+	else
+      fScaleFact *= ZOOMFACTOR;
   break;
   case LKEVENT_TOPLEFT:
   {
@@ -525,13 +538,18 @@ switch(LKevent)
 
   break;
   case LKEVENT_LONGCLICK:
+	if( PtInRect(XstartScreen,YstartScreen, rct))
+		bHeightScale	= false;
+	if( PtInRect(XstartScreen,YstartScreen, rc))
+		bHeightScale	= true;
+
 	if( PtInRect(XstartScreen,YstartScreen, OwnPosSideView)||
 	    PtInRect(XstartScreen,YstartScreen, OwnPosTopView  ) )
 	{
 	  iTurn = 	(iTurn+1)%2;
 	}
 	else
-      {
+
 	    for (i=0; i < nEntrys; i++)
 		{
 		  if( PtInRect(XstartScreen,YstartScreen, PositionTopView[aiSortArray[i]])||
@@ -545,7 +563,7 @@ switch(LKevent)
 			    bFound = true;
 			  }
 		  }
-        }
+
   break;
 
   case LKEVENT_PAGEUP:
@@ -573,8 +591,16 @@ switch(iTurn)
 	case 0: {RADAR_TURN = 90; ASYMETRIC_FACTOR = 0.7 ; } break;
  	case 1: {RADAR_TURN = 0 ; ASYMETRIC_FACTOR = 0.5 ; } break;
 }
-rct.bottom = (long)((rc.bottom-rc.top  )*SPLITSCREEN_FACTOR); /* 2/3 for topview */
-rc.top     = rct.bottom;
+
+static double oldSplit = 0;
+  if(oldSplit != SPLITSCREEN_FACTOR)
+  {
+	oldSplit=SPLITSCREEN_FACTOR;
+//	SetSplitScreenSize(SPLITSCREEN_FACTOR);
+	rc.top     = (long)((double)(rci.bottom-rci.top  )*SPLITSCREEN_FACTOR);
+	rct.bottom = rc.top ;
+  }
+
 /****************************************************************/
 
 /*********************************************************************************
@@ -590,7 +616,7 @@ if(INVERTCOLORS)
   hDrawPen   = (HPEN)  GetStockObject( WHITE_PEN );
   hDrawBrush = (HBRUSH)GetStockObject( WHITE_BRUSH) ;
   hOrangePen = (HPEN)CreatePen(PS_SOLID, 2,RGB_ORANGE);
-  hGreenPen  = (HPEN)CreatePen(PS_SOLID, 2,RGB_GREEN);
+  hGreenPen  = (HPEN)CreatePen(PS_SOLID, 2,RGB_BLUE);
   hWhitePen  = (HPEN)CreatePen(PS_SOLID, 1,RGB_WHITE);
 
 }
@@ -602,7 +628,7 @@ else
   hDrawPen   = (HPEN)  GetStockObject( BLACK_PEN );
   hDrawBrush = (HBRUSH)GetStockObject( BLACK_BRUSH) ;
   hOrangePen = (HPEN)CreatePen(PS_SOLID, 2,RGB_LIGHTORANGE);
-  hGreenPen  = (HPEN)CreatePen(PS_SOLID, 2,RGB_DARKGREEN);
+  hGreenPen  = (HPEN)CreatePen(PS_SOLID, 2,RGB_DARKBLUE);
   hWhitePen  = (HPEN)CreatePen(PS_SOLID, 1,RGB_BLACK);
 
 }
@@ -849,23 +875,33 @@ static bool bFirstCall = false;
     }
 
 
-  sDia.fYMin = max(-GPSalt, -HEIGHT_RANGE);
-  sDia.fYMax =HEIGHT_RANGE;
 
-  double fScale = 1000;// *fScaleFact;
-//  int iNo = (int)fScale /500.0;
-//  fScale = (double) iNo*500.0;
-  if((sDia.fYMax-sDia.fYMin) > 4000)
-	fScale = 400.0f;
-  else
-	fScale = 600.0f;
+  if(HEIGHT_RANGE* fHeigtScaleFact > 4000.0 )
+	  fHeigtScaleFact /=ZOOMFACTOR;
+
+  if(HEIGHT_RANGE* fHeigtScaleFact < 100.0 )
+	  fHeigtScaleFact *=ZOOMFACTOR;
 
 
-  if (Units::GetUserInvAltitudeUnit() == unFeet)
-	  fScale /= 2;
+  sDia.fYMin *= fHeigtScaleFact;
+  sDia.fYMin = max(-GPSalt, -HEIGHT_RANGE*fHeigtScaleFact);
+  sDia.fYMax =HEIGHT_RANGE* fHeigtScaleFact;
+
+
+double scl = 1.0;
+  double  ytick = 50.0;
+  double  fHeight = (sDia.fYMax-sDia.fYMin);
+  if (fHeight >100.0) ytick = 200.0* scl;
+  if (fHeight >1000.0) ytick = 500.0* scl;
+  if (fHeight >2000.0) ytick = 1000.0* scl;
+  if (fHeight >4000.0) ytick = 2000.0* scl;
+  if(Units::GetUserAltitudeUnit() == unFeet)
+	 ytick = ytick * 4.0;
+
+
 
   if(bSideview)
-    DrawYGrid(hdc, rc, fScale/ALTITUDEMODIFY,fScale, 0,TEXT_ABOVE_RIGHT ,rgbGridColor,  &sDia);
+    DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_ABOVE_RIGHT ,rgbGridColor,  &sDia);
 
 
   /****************************************************************************************************
@@ -1281,6 +1317,17 @@ if(bSideview)
   }
   LKWriteText(hdc, lbuffer, rci.right-RIGHTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_DARKGREY, false);
 
+  HPEN pFrame   = (HPEN)  CreatePen(PS_SOLID, IBLSCALE(2), RGB_GREEN);
+  HPEN OldPen      = (HPEN)   SelectObject(hdc, pFrame);
+  HBRUSH OldBrush   = (HBRUSH) SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+
+  if(bHeightScale)
+	Rectangle(hdc,rc.left+1,rc.top,rc.right,rc.bottom);
+  else
+	Rectangle(hdc,rci.left+1,rci.top+1,rci.right,rci.bottom);
+  SelectObject(hdc, OldBrush);
+  SelectObject(hdc, OldPen);
+  DeleteObject(pFrame);
 
 
 SelectObject(hdc, hfOldFont);
@@ -1364,6 +1411,8 @@ unsigned long lStartTime = GetTickCount();
 	  if(	 ((GetTickCount()- lStartTime ) > 350))
 		i=0;
 	}
+
+
 SelectObject(hDC, (HPEN) oldPen);
 
 return iCnt;
