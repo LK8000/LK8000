@@ -197,8 +197,8 @@ static int oldSplit = 0;
 	  }
 
 
-	  double hmin = max(0.0, CALCULATED_INFO.NavAltitude-2300);
-	  double hmax = max(MAXALTTODAY, CALCULATED_INFO.NavAltitude+1000);
+	  double hmin = max(0.0, DerivedDrawInfo.NavAltitude-2300);
+	  double hmax = max(MAXALTTODAY, DerivedDrawInfo.NavAltitude+1000);
 #ifdef OFFSET_SETP
 	  if((hmax + fOffset) > 12000.0)
 		fOffset -= OFFSET_SETP;
@@ -236,25 +236,25 @@ static int oldSplit = 0;
   LockFlightData();
   {
     fMC0 = GlidePolar::SafetyMacCready;
-    aclat = GPS_INFO.Latitude;
-    aclon = GPS_INFO.Longitude;
-    ach   = GPS_INFO.Altitude;
+    aclat = DrawInfo.Latitude;
+    aclon = DrawInfo.Longitude;
+    ach   = DrawInfo.Altitude;
 
-    acb    = GPS_INFO.TrackBearing;
+    acb    = DrawInfo.TrackBearing;
 
 
 
 
     GPSbrg = acb;
 
-    acb    = GPS_INFO.TrackBearing;
-    GPSbrg = GPS_INFO.TrackBearing;
+    acb    = DrawInfo.TrackBearing;
+    GPSbrg = DrawInfo.TrackBearing;
 //    DrawInfo
-    speed = GPS_INFO.Speed;
+    speed = DrawInfo.Speed;
 
-    calc_average30s = CALCULATED_INFO.Average30s;
-    calc_terrainalt = CALCULATED_INFO.TerrainAlt;
-    calc_altitudeagl = CALCULATED_INFO.AltitudeAGL;
+    calc_average30s = DerivedDrawInfo.Average30s;
+    calc_terrainalt = DerivedDrawInfo.TerrainAlt;
+    calc_altitudeagl = DerivedDrawInfo.AltitudeAGL;
   }
   UnlockFlightData();
 
@@ -288,28 +288,28 @@ static int oldSplit = 0;
 
 
       LockFlightData();
-      wpt_altarriv_mc0 =   CALCULATED_INFO.NavAltitude -
+      wpt_altarriv_mc0 =   DerivedDrawInfo.NavAltitude -
         GlidePolar::MacCreadyAltitude( fMC0,
                                        wpt_dist,
                                        acb,
-                                       CALCULATED_INFO.WindSpeed,
-                                       CALCULATED_INFO.WindBearing,
+                                       DerivedDrawInfo.WindSpeed,
+                                       DerivedDrawInfo.WindBearing,
                                        0, 0, true,
                                        0)  - WayPointList[overindex].Altitude;
       if (IsSafetyAltitudeInUse(overindex)) wpt_altarriv_mc0 -= SAFETYALTITUDEARRIVAL;
 
-      wpt_altarriv =   CALCULATED_INFO.NavAltitude -
+      wpt_altarriv =   DerivedDrawInfo.NavAltitude -
         GlidePolar::MacCreadyAltitude( MACCREADY,
                                        wpt_dist,
                                        acb,
-                                       CALCULATED_INFO.WindSpeed,
-                                       CALCULATED_INFO.WindBearing,
+                                       DerivedDrawInfo.WindSpeed,
+                                       DerivedDrawInfo.WindBearing,
                                        0, 0, true,
                                        0)  - WayPointList[overindex].Altitude;
 
      
-      if ( (CALCULATED_INFO.NavAltitude-wpt_altarriv+wpt_altitude)!=0)
-      	fLD = (int) wpt_dist / (CALCULATED_INFO.NavAltitude-wpt_altarriv+wpt_altitude);
+      if ( (DerivedDrawInfo.NavAltitude-wpt_altarriv+wpt_altitude)!=0)
+      	fLD = (int) wpt_dist / (DerivedDrawInfo.NavAltitude-wpt_altarriv+wpt_altitude);
       else
 	fLD=999;
 
@@ -463,7 +463,7 @@ static int oldSplit = 0;
         altarriv = wpt_altarriv_mc0 + wpt_altitude;
         if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
         line[0].x = CalcDistanceCoordinat( 0, &sDia);
-        line[0].y = CalcHeightCoordinatOutbound  ( CALCULATED_INFO.NavAltitude, &sDia );
+        line[0].y = CalcHeightCoordinatOutbound  ( DerivedDrawInfo.NavAltitude, &sDia );
         line[1].x = CalcDistanceCoordinat( wpt_dist, &sDia);
         line[1].y = CalcHeightCoordinatOutbound( altarriv ,  &sDia );
         Statistics::StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
@@ -471,7 +471,7 @@ static int oldSplit = 0;
       altarriv = wpt_altarriv + wpt_altitude;
       if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
       line[0].x = CalcDistanceCoordinat( 0, &sDia);
-      line[0].y = CalcHeightCoordinatOutbound( CALCULATED_INFO.NavAltitude, &sDia );
+      line[0].y = CalcHeightCoordinatOutbound( DerivedDrawInfo.NavAltitude, &sDia );
       line[1].x = CalcDistanceCoordinat( wpt_dist, &sDia);
       line[1].y = CalcHeightCoordinatOutbound( altarriv ,  &sDia );
       Statistics::StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
@@ -479,9 +479,9 @@ static int oldSplit = 0;
       double t = fDist/(speed!=0?speed:1);
 
       line[0].x = CalcDistanceCoordinat( 0, &sDia);
-      line[0].y = CalcHeightCoordinat  ( CALCULATED_INFO.NavAltitude, &sDia);
+      line[0].y = CalcHeightCoordinat  ( DerivedDrawInfo.NavAltitude, &sDia);
       line[1].x = rc.right;
-      line[1].y = CalcHeightCoordinat  ( CALCULATED_INFO.NavAltitude+calc_average30s*t, &sDia);
+      line[1].y = CalcHeightCoordinat  ( DerivedDrawInfo.NavAltitude+calc_average30s*t, &sDia);
       Statistics::StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
     }
   }
@@ -641,7 +641,7 @@ static int oldSplit = 0;
       GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
       SetTextColor(hdc, BLUE_COL);
       x = CalcDistanceCoordinat(wpt_dist/2, &sDia)- tsize.cx/2;
-      y = CalcHeightCoordinat( (CALCULATED_INFO.NavAltitude + altarriv)/2 + wpt_altitude , &sDia ) + tsize.cy;
+      y = CalcHeightCoordinat( (DerivedDrawInfo.NavAltitude + altarriv)/2 + wpt_altitude , &sDia ) + tsize.cy;
       ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
     }
 
@@ -670,7 +670,7 @@ static int oldSplit = 0;
 
   if (!Sideview_asp_heading_task)
     wpt_brg =90.0;
-  RenderPlaneSideview( hdc,  0.0f, CALCULATED_INFO.NavAltitude,wpt_brg, &sDia );
+  RenderPlaneSideview( hdc,  0.0f, DerivedDrawInfo.NavAltitude,wpt_brg, &sDia );
   HFONT hfOld2 = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
   SetTextColor(hdc, Sideview_TextColor);
 

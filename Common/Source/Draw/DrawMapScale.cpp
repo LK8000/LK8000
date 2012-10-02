@@ -59,7 +59,7 @@ void MapWindow::DrawMapScale(HDC hDC, const RECT rc /* the Map Rect*/,
 
     if (inpanmode) {
 	double pandistance, panbearing;
-	DistanceBearing(GPS_INFO.Latitude,GPS_INFO.Longitude,GetPanLatitude(),GetPanLongitude(),&pandistance,&panbearing);
+	DistanceBearing(DrawInfo.Latitude,DrawInfo.Longitude,GetPanLatitude(),GetPanLongitude(),&pandistance,&panbearing);
 	_stprintf(Scale2, _T(" %.1f%s %.0f%s "), pandistance*DISTANCEMODIFY, Units::GetDistanceName(), panbearing,_T(DEG) );
 	goto _skip1;
     }

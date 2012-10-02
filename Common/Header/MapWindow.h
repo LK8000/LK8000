@@ -517,6 +517,12 @@ class MapWindow {
   static void DrawInfoPage(HDC hdc, const RECT rc, const bool forceinit);
   static void DrawTraffic(HDC hdc, const RECT rc);
   static void DrawThermalHistory(HDC hdc, const RECT rc);
+  static int DrawCompassArc(HDC hdc, long x, long y, int radius, RECT rc, double bearing);
+  static void DrawHSI(HDC hdc, POINT Orig, RECT rc );
+
+
+
+
   static void WriteInfo(HDC hdc, bool *showunit, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle,
                                 short *columnvalue, short *columntitle, short *row1, short *row2, short *row3);
   // static bool LKFormatValue(const short fvindex, const bool longtitle, TCHAR *BufferValue, TCHAR *BufferUnit, TCHAR *BufferTitle);

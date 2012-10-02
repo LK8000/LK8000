@@ -51,8 +51,8 @@ void MapWindow::LKDrawMultimap_Test(HDC hdc, const RECT rc)
   rct.right=rct.left+400;
 
   MapWindow::ChangeDrawRect(rct);	// set new area for terrain and topology
-  PanLatitude  = GPS_INFO.Latitude;
-  PanLongitude = GPS_INFO.Longitude;
+  PanLatitude  = DrawInfo.Latitude;
+  PanLongitude = DrawInfo.Longitude;
 
   // Current position  is in center map
   POINT Orig = { (rct.right-rct.left)/2,(rct.bottom-rct.top)/2};

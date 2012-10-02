@@ -36,7 +36,7 @@ void drawOutlineText(HDC hdc,int x,int y,const TCHAR * textBuffer,COLORREF color
 
 
 ////////////////////////////////////////////////////////////////////////////////////
-int DrawCompassArc(HDC hdc, long x, long y, int radius, RECT rc,
+int MapWindow::DrawCompassArc(HDC hdc, long x, long y, int radius, RECT rc,
 	    double bearing)
 
 {
@@ -146,7 +146,7 @@ int DrawCompassArc(HDC hdc, long x, long y, int radius, RECT rc,
 
 
 ////////////////////////////////////////////////////////////////////////////////////
-void DrawHSI(HDC hdc, POINT Orig, RECT rc )
+void MapWindow::DrawHSI(HDC hdc, POINT Orig, RECT rc )
 {
 	HFONT oldfont;
 	HPEN oldpen;
@@ -178,7 +178,7 @@ void DrawHSI(HDC hdc, POINT Orig, RECT rc )
 	///////////////////
 
 	TCHAR brgText[LKSIZEBUFFERLARGE];
-	int bearing= (int) (GPS_INFO.TrackBearing+0.5); // should be part of mapwindow class and use DrawInfo!
+	int bearing= (int) (DrawInfo.TrackBearing+0.5);
 	wsprintf(brgText,_T("%03d"),bearing);
 
 	SIZE brgSize;
@@ -216,7 +216,7 @@ void DrawHSI(HDC hdc, POINT Orig, RECT rc )
 	//Offset arc below heading
 	rcy += brgSize.cy +10;
 
-	DrawCompassArc(hdc,Orig.x,rcy,rad,rc,GPS_INFO.TrackBearing); // should be DrawInfo
+	DrawCompassArc(hdc,Orig.x,rcy,rad,rc,DrawInfo.TrackBearing);
 
 	SetTextColor(hdc,RGB_BLACK);
 	SelectObject(hdc,(HPEN)oldpen);

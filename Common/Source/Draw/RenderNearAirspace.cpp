@@ -41,7 +41,7 @@ extern bool Sonar_IsEnabled;
 extern TCHAR Sideview_szNearAS[];
 
 
-int CalcSonarDelay (int iNoAs, AirSpaceSideViewSTRUCT asAirspaces[]);
+int CalcSonarDelay (int iNoAs, AirSpaceSideViewSTRUCT asAirspaces[], int a1, int a2);
 
 
 
@@ -49,13 +49,11 @@ int CalcSonarDelay (int iNoAs, AirSpaceSideViewSTRUCT asAirspaces[]);
 /*********************************************************************
  * calc the sonar delay time
  *********************************************************************/
-int CalcSonarDelay (int iNoAs, AirSpaceSideViewSTRUCT asAirspaces[])
+int CalcSonarDelay (int iNoAs, AirSpaceSideViewSTRUCT asAirspaces[], int iAltitudeAGL, int iAltitude)
 {
 int iAS_HorDist;
 int iAS_VertDist;
 int iAS_Bearing;
-int iAltitude;
-int iAltitudeAGL;
 int i;
 bool bAS_Inside = false;
 bool bOK = false;
@@ -68,12 +66,6 @@ int	iH_Level = 1000;
 int	iV_Level = 1000;
 int	divider=1;
 
-LockFlightData();
-{
-  iAltitudeAGL = (int)CALCULATED_INFO.AltitudeAGL;
-  iAltitude = (int)CALCULATED_INFO.NavAltitude;
-}
-UnlockFlightData();
 
 	if (ISPARAGLIDER) divider=2;
 
@@ -311,17 +303,17 @@ static int oldSplit = 0;
   }
   LockFlightData();
   {
-    GPSlat = GPS_INFO.Latitude;
-    GPSlon = GPS_INFO.Longitude;
-    GPSalt = GPS_INFO.Altitude;
-    GPSbrg = GPS_INFO.TrackBearing;
-    GPSspeed = GPS_INFO.Speed;
-    GPSValid = !GPS_INFO.NAVWarning;
-    calc_circling    = CALCULATED_INFO.Circling;
-    calc_terrainalt  = CALCULATED_INFO.TerrainAlt;
-    calc_altitudeagl = CALCULATED_INFO.AltitudeAGL;
-    calc_average30s  = CALCULATED_INFO.Average30s;
-    GPSalt =  CALCULATED_INFO.NavAltitude;
+    GPSlat = DrawInfo.Latitude;
+    GPSlon = DrawInfo.Longitude;
+    GPSalt = DrawInfo.Altitude;
+    GPSbrg = DrawInfo.TrackBearing;
+    GPSspeed = DrawInfo.Speed;
+    GPSValid = !DrawInfo.NAVWarning;
+    calc_circling    = DerivedDrawInfo.Circling;
+    calc_terrainalt  = DerivedDrawInfo.TerrainAlt;
+    calc_altitudeagl = DerivedDrawInfo.AltitudeAGL;
+    calc_average30s  = DerivedDrawInfo.Average30s;
+    GPSalt =  DerivedDrawInfo.NavAltitude;
   }
   UnlockFlightData();
 calc_circling = false;
@@ -378,16 +370,16 @@ calc_circling = false;
 	    #if TESTBENCH
 	    if(1)
 	    #else
-	    if(CALCULATED_INFO.FreeFlying)
+	    if(DerivedDrawInfo.FreeFlying)
 	    #endif
 	    {
 	      if(bNearAirspace_CheckAllAirspaces)
-	        iSonarLevel = CalcSonarDelay(Sideview_iNoHandeldSpaces, Sideview_pHandeled);
+	        iSonarLevel = CalcSonarDelay(Sideview_iNoHandeldSpaces, Sideview_pHandeled, (int)DerivedDrawInfo.AltitudeAGL, (int)DerivedDrawInfo.NavAltitude );
 	      else
 	      {
 	    	AirSpaceSideViewSTRUCT Tmp;
 	    	Tmp.psAS =  &near_airspace;
-    	    iSonarLevel = CalcSonarDelay( 1, &Tmp);
+    	    iSonarLevel = CalcSonarDelay( 1, &Tmp, (int)DerivedDrawInfo.AltitudeAGL, (int)DerivedDrawInfo.NavAltitude);
 	      }
 	    }
       }

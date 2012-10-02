@@ -604,8 +604,8 @@ double fFact = 1.0 ;
 
 
 
-   PanLatitude  = GPS_INFO.Latitude;
-   PanLongitude = GPS_INFO.Longitude;
+   PanLatitude  = DrawInfo.Latitude;
+   PanLongitude = DrawInfo.Longitude;
    DisplayAngle = AngleLimit360(fAS_Bearing  +270.0);
    DisplayAircraftAngle = AngleLimit360(fWP_Bearing);
 

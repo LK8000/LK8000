@@ -1557,13 +1557,13 @@ goto_bearing:
 			_stprintf(BufferTitle, MsgToken(1148));
 			// Cant use NavAltitude, because FL should use Baro if available, despite
 			// user settings.
-			if (GPS_INFO.BaroAltitudeAvailable)
+			if (DrawInfo.BaroAltitudeAvailable)
 				value=(TOFEET*(AltitudeToQNEAltitude(DrawInfo.BaroAltitude)))/100.0;
 			else
 				value=(TOFEET*(AltitudeToQNEAltitude(DrawInfo.Altitude)))/100.0;
 
 			#if 0
-	if (GPS_INFO.BaroAltitudeAvailable) {
+	if (DrawInfo.BaroAltitudeAvailable) {
 	StartupStore(_T(".... FL BARO: GPSAlt=%.0f BaroAlt=%.0f QNH=%.2f QNEAlt=%.0f FLAlt=%.0f FL=%d\n"),
 		DrawInfo.Altitude,DrawInfo.BaroAltitude,QNH, 
 		AltitudeToQNEAltitude(DrawInfo.BaroAltitude),
