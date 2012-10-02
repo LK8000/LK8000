@@ -187,24 +187,29 @@ void MapWindow::LKWriteBoxedText(HDC hDC, const TCHAR* wText, int x, int y, int 
 	if (maxsize==0) maxsize=_tcslen(wText);
   
 	GetTextExtentPoint(hDC, wText, maxsize, &tsize);
-
+	short vy;
 	switch(align) {
 		case WTALIGN_LEFT:
-			Rectangle(hDC, x+tsize.cx+NIBLSCALE(8), y+tsize.cy+NIBLSCALE(2)+1, x, y);
+			vy=y+tsize.cy+NIBLSCALE(2)+1;
+			if (vy>=DrawRect.bottom) return;
+			Rectangle(hDC, x+tsize.cx+NIBLSCALE(8), vy, x, y);
 			x += NIBLSCALE(4);
 			break;
 		case WTALIGN_RIGHT:
-			Rectangle(hDC, x-tsize.cx-NIBLSCALE(8), y+tsize.cy+NIBLSCALE(2)+1, x, y);
+			vy=y+tsize.cy+NIBLSCALE(2)+1;
+			if (vy>=DrawRect.bottom) return;
+			Rectangle(hDC, x-tsize.cx-NIBLSCALE(8), vy, x, y);
 			x -= (tsize.cx+NIBLSCALE(4));
 			break;
 		case WTALIGN_CENTER:
+			vy=y+(tsize.cy/2)+NIBLSCALE(1)+1;
+			if (vy>=DrawRect.bottom) return;
 			Rectangle(hDC, 
 				x-(tsize.cx/2)-NIBLSCALE(4), 
 				y-(tsize.cy/2)-NIBLSCALE(1)-1,
 				x+(tsize.cx/2)+NIBLSCALE(4), 
-				y+(tsize.cy/2)+NIBLSCALE(1)+1);
+				vy);
 			x -= (tsize.cx/2);
-			y -= ((tsize.cy/2)+NIBLSCALE(1));
 			break;
 	}
 	y += NIBLSCALE(1);

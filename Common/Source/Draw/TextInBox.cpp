@@ -10,8 +10,7 @@
 #include "RGB.h"
 #include "DoInits.h"
 
-// This is not needed reallt
-//#define CLIP_TEXT	1
+#define CLIP_TEXT	1
 
 bool TextInBoxMoveInView(POINT *offset, RECT *brect){
 

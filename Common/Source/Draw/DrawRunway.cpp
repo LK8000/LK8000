@@ -20,7 +20,7 @@
 
 
 
-void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
+void MapWindow::DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
 {
   int solid= false;
   HPEN    oldPen  ;
@@ -92,6 +92,7 @@ void DrawRunway(HDC hdc,WAYPOINT* wp, RECT rc, double fScaleFact)
     }
     DoInit[MDI_MAPWPVECTORS]=false;
   }
+
 
   if( wp->RunwayLen > 100) /* square if no runway defined */
   {
