@@ -254,13 +254,17 @@ static int oldSplit = 0;
 
     calc_average30s = CALCULATED_INFO.Average30s;
 
-// TODO FIX CHECK  use NavAltitude instead, no need to use alt
-// BUG BUG FIX IT!
+#if 0 // REMOVE
+//
+// THIS IS BAD! NavAltitude is already assigned, and made by the CALC thread.
+//
     if (GPS_INFO.BaroAltitudeAvailable && EnableNavBaroAltitude) {
       CALCULATED_INFO.NavAltitude = GPS_INFO.BaroAltitude;
     } else {
       CALCULATED_INFO.NavAltitude = GPS_INFO.Altitude;
     }
+#endif
+
     calc_terrainalt = CALCULATED_INFO.TerrainAlt;
     calc_altitudeagl = CALCULATED_INFO.AltitudeAGL;
   }
