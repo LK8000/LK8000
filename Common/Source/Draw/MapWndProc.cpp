@@ -819,6 +819,9 @@ goto_menu:
       Screen2LatLon(lparam_X, lparam_Y, Xlat, Ylat);
       if (SIMMODE && (!mode.Is(Mode::MODE_TARGET_PAN) && (distance>NIBLSCALE(36)))) {
 	// This drag moves the aircraft (changes speed and direction)
+	//
+	// Notice: Parser is not active because there is no real gps. We can use GPS_INFO.
+	//
 	double newbearing;
 	double oldbearing = DrawInfo.TrackBearing;
 	double minspeed = 1.1*GlidePolar::Vminsink;
@@ -826,15 +829,15 @@ goto_menu:
 	if ((fabs(AngleLimit180(newbearing-oldbearing))<30) || (DrawInfo.Speed<minspeed)) {
 		// sink we shall be sinking, lets raise the altitude when using old simulator interface
 		if ( (DerivedDrawInfo.TerrainValid) && ( DerivedDrawInfo.AltitudeAGL <0 ))
-			DrawInfo.Altitude=DerivedDrawInfo.TerrainAlt;
-		DrawInfo.Altitude+=200;
+			GPS_INFO.Altitude=DerivedDrawInfo.TerrainAlt;
+		GPS_INFO.Altitude+=200;
 		if (ISPARAGLIDER)
-		  DrawInfo.Speed = min(16.0,max(minspeed,distance/9));
+		  GPS_INFO.Speed = min(16.0,max(minspeed,distance/9));
 		else
-		  DrawInfo.Speed = min(100.0,max(minspeed,distance/3));
+		  GPS_INFO.Speed = min(100.0,max(minspeed,distance/3));
 	} 
-	DrawInfo.TrackBearing = (int)newbearing;
-	if (DrawInfo.TrackBearing==360) DrawInfo.TrackBearing=0;
+	GPS_INFO.TrackBearing = (int)newbearing;
+	if (GPS_INFO.TrackBearing==360) GPS_INFO.TrackBearing=0;
 	TriggerGPSUpdate();
       
 	break;
