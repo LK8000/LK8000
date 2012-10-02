@@ -253,13 +253,6 @@ static int oldSplit = 0;
     speed = GPS_INFO.Speed;
 
     calc_average30s = CALCULATED_INFO.Average30s;
-
-// TODO FIX CHECK  use NavAltitude instead, no need to use alt
-    if (GPS_INFO.BaroAltitudeAvailable && EnableNavBaroAltitude) {
-      CALCULATED_INFO.NavAltitude = GPS_INFO.BaroAltitude;
-    } else {
-      CALCULATED_INFO.NavAltitude = GPS_INFO.Altitude;
-    }
     calc_terrainalt = CALCULATED_INFO.TerrainAlt;
     calc_altitudeagl = CALCULATED_INFO.AltitudeAGL;
   }

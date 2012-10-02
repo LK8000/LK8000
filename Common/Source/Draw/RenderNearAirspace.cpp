@@ -321,12 +321,6 @@ static int oldSplit = 0;
     calc_terrainalt  = CALCULATED_INFO.TerrainAlt;
     calc_altitudeagl = CALCULATED_INFO.AltitudeAGL;
     calc_average30s  = CALCULATED_INFO.Average30s;
-    
-    if (GPS_INFO.BaroAltitudeAvailable && EnableNavBaroAltitude) {
-      CALCULATED_INFO.NavAltitude = GPS_INFO.BaroAltitude;
-    } else {
-      CALCULATED_INFO.NavAltitude = GPS_INFO.Altitude;
-    }
     GPSalt =  CALCULATED_INFO.NavAltitude;
   }
   UnlockFlightData();
