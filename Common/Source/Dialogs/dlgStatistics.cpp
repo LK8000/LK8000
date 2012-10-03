@@ -308,7 +308,7 @@ void Statistics::DrawYLabel(HDC hdc, const RECT rc, const TCHAR *text) {
   HFONT hfOld = (HFONT)SelectObject(hdc, MapLabelFont);
   GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
   int x = max(2,(int)rc.left-(int)tsize.cx);
-  int y = rc.top+NIBLSCALE (10);
+  int y = rc.top;
   if(INVERTCOLORS)
     SelectObject(hdc, GetStockObject(BLACK_PEN));
 
@@ -1505,9 +1505,19 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
 
   RECT  rcgfx;
   HFONT hfOld;
-
+COLORREF Sideview_TextColor;
   CopyRect(&rcgfx, Sender->GetBoundRect());
   hfOld = (HFONT)SelectObject(hDC,LK8PanelUnitFont/* Sender->GetFont()*/);
+
+    if(INVERTCOLORS)
+    {
+      Sender->SetBackColor(SKY_HORIZON_COL);
+      Sideview_TextColor = INV_GROUND_TEXT_COLOUR;
+    }
+    else
+      Sideview_TextColor = RGB_WHITE;
+
+    SetTextColor(hDC, Sideview_TextColor);
 
   SetBkMode(hDC, TRANSPARENT);
   SetTextColor(hDC, Sender->GetForeColor());
