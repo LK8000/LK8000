@@ -326,9 +326,6 @@ int	xPos = (int)((fDist- psDia->fXMin)*xscale)+psDia->rc.left ;
 }
 
 
-extern COLORREF Sideview_TextColor;
-
-
 
 // draw Flarm aircraft
 void RenderFlarmPlaneSideview(HDC hdc, const RECT rc,double fDist, double fAltitude,double brg, DiagrammStruct* psDia ,double fScale )
@@ -507,6 +504,13 @@ static int aiSortArray[FLARM_MAX_TRAFFIC];
 static bool bHeightScale = true;
 static double fHeigtScaleFact = 1.0f;
 
+bool bInvCol = false;
+/****************************************************************
+ * white background
+ ****************************************************************/
+
+SelectObject(hdc,LKBrush_White);
+Rectangle(hdc,rci.left , rci.bottom ,rci.right, rci.top);
 
 /****************************************************************/
 
@@ -610,7 +614,7 @@ static double oldSplit = 0;
  *********************************************************************************/
 
 
-if(INVERTCOLORS)
+if(bInvCol)
 {
   rgbDrawColor = RGB_GREY;
   rgbGridColor = RGB_GREY;
@@ -829,7 +833,7 @@ DiagrammStruct sDia;
    * draw sky
    *******************************************************/
   #if (WINDOWSPC>0)
-      if(!INVERTCOLORS)
+      if(!bInvCol)
         RenderSky( hdc, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
   #endif
 

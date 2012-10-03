@@ -196,7 +196,9 @@ void DrawSelectionFrame(HDC hdc, RECT rci)
   HPEN pFrame   = (HPEN)  CreatePen(PS_SOLID, IBLSCALE(2), RGB_GREEN);
   HPEN OldPen      = (HPEN)   SelectObject(hdc, pFrame);
   HBRUSH OldBrush   = (HBRUSH) SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-  Rectangle(hdc,rci.left+1,rci.top+1,rci.right,rci.bottom);
+  if(rci.top <= 1)
+	rci.top++;
+  Rectangle(hdc,rci.left+1,rci.top,rci.right,rci.bottom);
   SelectObject(hdc, OldBrush);
   SelectObject(hdc, OldPen);
   DeleteObject(pFrame);

@@ -171,17 +171,17 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
   if (fSplitFact <0.5)
 	midsplit+=textSize.cy;
 
-  MapWindow::LKWriteBoxedText(hdc,&MapRect,topcenter_txt, rc.right/3, midsplit, 0, WTALIGN_CENTER);
 
 
 
   if(GetSideviewPage()== IM_NEAR_AS)
   {
+	MapWindow::LKWriteBoxedText(hdc,&MapRect,topcenter_txt, rc.right/3, midsplit, 0, WTALIGN_CENTER);
 	SelectObject(hdc, MapWindowFont);
 	if(Sonar_IsEnabled)
-	    LKWriteText(hdc, MsgToken(1293),  (rc.right)-40, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_GREEN, true);
+	    LKWriteText(hdc, MsgToken(1293),  (rc.right), rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_GREEN, true);
 	  else
- 	    LKWriteText(hdc, MsgToken(1293),  (rc.right)-40, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_AMBER, true); 
+ 	    LKWriteText(hdc, MsgToken(1293),  (rc.right), rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_AMBER, true);
   }
 
 

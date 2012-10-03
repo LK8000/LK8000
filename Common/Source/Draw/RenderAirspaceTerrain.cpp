@@ -12,6 +12,7 @@
 #include "RGB.h"
 #include "Sideview.h"
 
+
 using std::min;
 using std::max;
 
@@ -181,11 +182,6 @@ int i,j;
   rcd.top    = max(rcd.top    ,rc.top);
 
 
-/*
-SelectObject(hdc, GetStockObject(WHITE_PEN));
-Rectangle(hdc,rcd.left+1,rcd.top,rcd.right,rcd.bottom);
-*/
-
   LK_tcsncpy(text, Sideview_pHandeled[iSizeIdx].szAS_Name,NAME_SIZE-1/* sizeof(text)/sizeof(text[0])*/);
   GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
 
@@ -210,43 +206,6 @@ Rectangle(hdc,rcd.left+1,rcd.top,rcd.right,rcd.bottom);
 	ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
   }
 }
-
-if(1==0)
-  for (int m=0 ; m < Sideview_iNoHandeldSpaces; m++)
-  {
-
-	int iSizeIdx =  iSizeLookupTable[m];
-	int  type = Sideview_pHandeled[iSizeIdx].iType;
-	RECT rcd  = Sideview_pHandeled[iSizeIdx].rc;
-	//	NULL_BRUSH
-	SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-	double fFrameColFact = 1.0;
-	if(INVERTCOLORS)
-	  fFrameColFact = 0.8;
-	else
-	  fFrameColFact = 1.2;
-	long lDisabledColor = ChangeBrightness( MapWindow::GetAirspaceColourByClass(type), fFrameColFact);
-
-	HPEN Newpen = (HPEN)CreatePen(PS_SOLID, 3, lDisabledColor);
-	HPEN Oldpen = (HPEN)SelectObject(hdc, Newpen);
-
-	if(Sideview_pHandeled[iSizeIdx].bRectAllowed == true)
-	  Rectangle(hdc,rcd.left+LINE_DIFF ,rcd.top - LINE_DIFF,rcd.right-LINE_DIFF,rcd.bottom+LINE_DIFF-1);
-	else
-	{
-	  Polygon(hdc,Sideview_pHandeled[iSizeIdx].apPolygon ,Sideview_pHandeled[iSizeIdx].iNoPolyPts );
-	}
-
-#if TESTBENCH > 0
-	SelectObject(hdc, GetStockObject(BLACK_PEN));
-	Rectangle(hdc,rcd.left+1,rcd.top,rcd.right,rcd.bottom);
-#endif
-	SelectObject(hdc, Oldpen);
-	DeleteObject (Newpen);
-
-  }
-
-
   /*************************************************************
    * draw ground
    *************************************************************/

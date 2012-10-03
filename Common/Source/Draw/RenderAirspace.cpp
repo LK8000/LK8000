@@ -16,6 +16,7 @@
 #include "LKAirspace.h"
 #include "RGB.h"
 #include "Sideview.h"
+#include "LKObjects.h"
 
 extern	 int Sideview_iNoHandeldSpaces;
 extern	 AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
@@ -48,30 +49,30 @@ RECT rc  = rci; /* rectangle for sideview */
 bool bInvCol = true; //INVERTCOLORS;
 static double fHeigtScaleFact = 1.0;
 static int iSplit = SIZE1;
-  double fDist = 50.0*1000; // kmbottom
-  double aclat, aclon, ach, acb, speed, calc_average30s;
-  double GPSbrg=0;
-  double wpt_brg;
-  double wpt_dist;
-  double wpt_altarriv;
-  double wpt_altitude;
-  double wpt_altarriv_mc0;
-  double calc_terrainalt;
-  double calc_altitudeagl;
-  double fMC0 = 0.0f;
-  int overindex=-1;
-  bool show_mc0= true;
-  double fLD;
-  SIZE tsize;
-  TCHAR text[80];
-  TCHAR buffer[80];
-  BOOL bDrawRightSide =false;
-  COLORREF GREEN_COL     = RGB_GREEN;
-  COLORREF RED_COL       = RGB_LIGHTORANGE;
-  COLORREF BLUE_COL      = RGB_BLUE;
-  COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
+double fDist = 50.0*1000; // kmbottom
+double aclat, aclon, ach, acb, speed, calc_average30s;
+double GPSbrg=0;
+double wpt_brg;
+double wpt_dist;
+double wpt_altarriv;
+double wpt_altitude;
+double wpt_altarriv_mc0;
+double calc_terrainalt;
+double calc_altitudeagl;
+double fMC0 = 0.0f;
+int overindex=-1;
+bool show_mc0= true;
+double fLD;
+SIZE tsize;
+TCHAR text[80];
+TCHAR buffer[80];
+BOOL bDrawRightSide =false;
+COLORREF GREEN_COL     = RGB_GREEN;
+COLORREF RED_COL       = RGB_LIGHTORANGE;
+COLORREF BLUE_COL      = RGB_BLUE;
+COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
+COLORREF col           =  RGB_BLACK;
 
-  COLORREF col =  RGB_BLACK;
   if(bInvCol)
 	col =  RGB_WHITE;
 
@@ -459,6 +460,12 @@ static int oldSplit = 0;
       line[0].y = CalcHeightCoordinat  ( DerivedDrawInfo.NavAltitude, &sDia);
       line[1].x = rc.right;
       line[1].y = CalcHeightCoordinat  ( DerivedDrawInfo.NavAltitude+calc_average30s*t, &sDia);
+      /***********************************************************************************
+       * ToDo: here is the glidingslope for the heading view
+       * for gliders it does not make sense to point upwards but for GA it may make sense
+       ***********************************************************************************/
+      if ( line[1].y  < line[0].y )
+    	  line[1].y  = line[0].y;
       DrawDashLine(hdc,3, line[0], line[1],  RGB_BLUE, rc);
     }
   }
@@ -473,7 +480,9 @@ static int oldSplit = 0;
 //HFONT hfOld = (HFONT)SelectObject(hdc, LK8MapFont);
     line[0].x = CalcDistanceCoordinat( wpt_dist,  &sDia);
     // Print wpt name next to marker line
-    LK_tcsncpy(text, WayPointList[overindex].Name, sizeof(text)/sizeof(text[0]) - 1);
+
+    GetOvertargetName(text);
+
     GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
     int x = line[0].x - tsize.cx - NIBLSCALE(5);
 
@@ -483,22 +492,14 @@ static int oldSplit = 0;
 
     SetTextColor(hdc, Sideview_TextColor);
 
-//	HFONT oldfont=NULL;
-//	oldfont=(HFONT)SelectObject(hdc,LK8TargetFont);
-	TextInBoxMode_t TextInBoxMode = {0};
-	TextInBoxMode.Color = RGB_WHITE;
-	TextInBoxMode.NoSetFont=1;
-	TextInBoxMode.AlligneCenter = 0;
-	TextInBoxMode.AlligneRight = 1;
-	TextInBoxMode.WhiteBorder = 1;
-	TextInBoxMode.Border = 1;
-
-	// same position for gps warnings: if navwarning, then no alarms. So no overlapping.
-    //    TextInBox(hdc, text ,line[0].x, y, 0, &TextInBoxMode);
-
-//	SelectObject(hdc,oldfont);
-
-    ExtTextOut(hdc, x, y, ETO_OPAQUE, NULL, text, _tcslen(text), NULL);
+    /**************************************************
+     * draw waypoint target
+     **************************************************/
+	if (INVERTCOLORS)
+	  SelectObject(hdc,LKBrush_Petrol);
+	else
+	  SelectObject(hdc,LKBrush_LightCyan);
+	MapWindow::LKWriteBoxedText(hdc,&MapRect,text,  line[0].x, y-3, 0, WTALIGN_CENTER);
 
     // Print wpt distance
     Units::FormatUserDistance(wpt_dist, text, 7);
@@ -666,14 +667,14 @@ static int oldSplit = 0;
   hfOld = (HFONT)SelectObject(hdc,LK8InfoNormalFont/* Sender->GetFont()*/);
 
 // DrawTelescope      ( hdc, acb-90.0, rc.right - NIBLSCALE(13),  rc.top   + NIBLSCALE(58));
-  DrawNorthArrow     ( hdc,/* GPSbrg*/      acb-90.0     , rct.right - NIBLSCALE(13),  rct.top   + NIBLSCALE(13));
+  DrawNorthArrow     ( hdc,/* GPSbrg*/      acb-90.0     , rct.right - NIBLSCALE(13),  rct.top   + NIBLSCALE(28));
 //  RenderBearingDiff( hdc, wpt_brg,  &sDia );
 
   /****************************************************************************************************
    * draw selection frame
    ****************************************************************************************************/
 	if(bHeightScale)
-	   DrawSelectionFrame(hdc,  rc);
+	  DrawSelectionFrame(hdc,  rc);
 	else
 	  DrawSelectionFrame(hdc,  rci);
 

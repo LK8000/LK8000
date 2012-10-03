@@ -167,8 +167,6 @@ static int iSplit = 30;
 int  k;
 static double fZOOMScale= 1.0;
 static double fHeigtScaleFact = 1.0;
-RECT sel_rect_top	= rct; 	//sel_rect_top.right = NIBLSCALE(55);
-RECT sel_rect_side = rc; // sel_rect_side.right = NIBLSCALE(55);
 
   double range = 50.0*1000; // km
   double GPSlat, GPSlon, GPSalt, GPSbrg, GPSspeed, calc_average30s;
@@ -243,12 +241,12 @@ static  bool bHeightScale = false;
 					 }
 				   }
 				 }
-				 if(!bFound)
+				// if(!bFound)
 				 {
-				   if (PtInRect(XstartScreen, YstartScreen,sel_rect_side ))
+				   if (PtInRect(XstartScreen, YstartScreen,rc ))
 				     bHeightScale = true;
 
-				   if (PtInRect(XstartScreen, YstartScreen,sel_rect_top ))
+				   if (PtInRect(XstartScreen, YstartScreen,rct ))
 				     bHeightScale = false;
 				 }
 	     break;
@@ -495,6 +493,19 @@ if(bValid)
   sDia.fYMax *= fHeigtScaleFact;
 }
 
+
+/****************************************************************************************************
+ * draw topview first
+ ****************************************************************************************************/
+
+  if(fSplitFact > 0.0)
+  {
+
+    sDia.rc = rct;
+    sDia.rc.bottom-=2;
+    AirspaceTopView(hdc, &sDia, (double) iAS_Bearing, (double) wpt_brg);
+  }
+
   /****************************************************************************************************
    * draw airspace and terrain elements
    ****************************************************************************************************/
@@ -722,15 +733,9 @@ if(bValid)
   RenderPlaneSideview( hdc, 0.0 , GPSalt,wpt_brg, &sDia );
 
 
-  SelectObject(hdc,hfOldFnt/* Sender->GetFont()*/);
-  if(fSplitFact > 0.0)
-  {
-    sDia.rc = rct;
-    AirspaceTopView(hdc, &sDia, (double) iAS_Bearing, (double) wpt_brg);
-  }
 
   hfOldFnt = (HFONT)SelectObject(hdc,LK8InfoNormalFont/* Sender->GetFont()*/);
-  DrawNorthArrow     ( hdc, iAS_Bearing-90        , rct.right - NIBLSCALE(13),  rct.top  + NIBLSCALE(13));
+  DrawNorthArrow     ( hdc, iAS_Bearing-90        , rct.right - NIBLSCALE(13),  rct.top  + NIBLSCALE(28));
 
 
   /****************************************************************************************************
@@ -741,7 +746,7 @@ if(bValid)
   else
 	DrawSelectionFrame(hdc,  rci);
 
-
+  SelectObject(hdc,hfOldFnt/* Sender->GetFont()*/);
   SetBkMode(hdc, TRANSPARENT);
   SelectObject(hdc,hfOldFnt/* Sender->GetFont()*/);
 }
