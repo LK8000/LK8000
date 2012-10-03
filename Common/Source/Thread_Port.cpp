@@ -171,9 +171,9 @@ BOOL ComPort::StopRxThread()
   }
   if (!fRxThreadTerminated) {
 	TerminateThread(hReadThread, 0);
-  } else {
-	CloseHandle(hReadThread);
-  }
+  } 
+  ::WaitForSingleObject(hReadThread, 5000);
+  CloseHandle(hReadThread);
 #else
   Flush();
 
