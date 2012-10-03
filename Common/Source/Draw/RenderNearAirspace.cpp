@@ -31,7 +31,7 @@ extern COLORREF  Sideview_TextColor;
 extern AirSpaceSonarLevelStruct sSonarLevel[10];
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 extern int Sideview_iNoHandeldSpaces;
-
+extern bool Sonar_IsEnabled;
 extern int XstartScreen, YstartScreen;
 
 TCHAR Sideview_szNearAS[80];
@@ -362,7 +362,7 @@ calc_circling = false;
 
   iSonarLevel = -1;
   if(bValid)
-  //  if(Sonar_IsEnabled)
+    if(Sonar_IsEnabled)
       if(GPSValid) {
 	    #if TESTBENCH
 	    if(1)
@@ -421,22 +421,23 @@ calc_circling = false;
 
 
 #define RND_FACT 10.0
-   int iTmp =  (int) (sDia.fXMax / RND_FACT);
-   sDia.fXMax = iTmp * RND_FACT;
+ //  int iTmp =  (int) (sDia.fXMax / RND_FACT);
+  // sDia.fXMax = iTmp * RND_FACT;
 
-   iTmp =  (int) (sDia.fXMin / RND_FACT);
-   sDia.fXMin = iTmp * RND_FACT;
+  // iTmp =  (int) (sDia.fXMin / RND_FACT);
+  // sDia.fXMin = iTmp * RND_FACT;
 
 
-   if( ( sDia.fXMax  *fZOOMScale*2.0) > 100000)
+   if( ( sDia.fXMax  *fZOOMScale) > 100000)
 	  fZOOMScale /= ZOOMFACTOR;
 
-   if(( sDia.fXMax *fZOOMScale*2.0) < 2000)
+   if(( sDia.fXMax *fZOOMScale) < 2000)
    {
 	  fZOOMScale *= ZOOMFACTOR;
    }
+
    sDia.fXMax = sDia.fXMax *fZOOMScale;
-   sDia.fXMin -= sDia.fXMax;
+   sDia.fXMin = -sDia.fXMax /5;
  //  if(( sDia.fXMax ) < 5000)
  //    sDia.fXMin -= sDia.fXMax;
 
@@ -502,7 +503,7 @@ if(bValid)
   {
 
     sDia.rc = rct;
-    sDia.rc.bottom-=2;
+    sDia.rc.bottom-=1;
     AirspaceTopView(hdc, &sDia, (double) iAS_Bearing, (double) wpt_brg);
   }
 
