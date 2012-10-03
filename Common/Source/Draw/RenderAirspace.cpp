@@ -17,6 +17,8 @@
 #include "RGB.h"
 #include "Sideview.h"
 
+extern	 int Sideview_iNoHandeldSpaces;
+extern	 AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 
 double fSplitFact = 0.30;
 double fOffset = 0.0;
@@ -24,31 +26,28 @@ using std::min;
 using std::max;
 int k;
 double fZOOMScale = 1.0;
-extern int Sideview_asp_heading_task;
-extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
-extern int   Sideview_iNoHandeldSpaces;
+
 extern int XstartScreen, YstartScreen;
 extern COLORREF  Sideview_TextColor;
- double fHeigtScaleFact;
+double fHeigtScaleFact;
 
-
+#define IM_NEAR_AS 2
+#define IM_NEXT_WP 1
+#define IM_HEADING 0
 
 void MapWindow::RenderAirspace(HDC hdc, const RECT rci) {
+  zoom.SetLimitMapScale(false);
+  /****************************************************************/
+  if (GetSideviewPage() == IM_NEAR_AS)
+	return  RenderNearAirspace( hdc,   rci);
+  /****************************************************************/
+
+
 static bool bHeightScale = false;
-	RECT rc  = rci; /* rectangle for sideview */
-//	rc.bottom += 4;
-	  zoom.SetLimitMapScale(false);
-	  /****************************************************************/
-	  if (Sideview_asp_heading_task == 2)
-		return  RenderNearAirspace( hdc,   rci);
-	  /****************************************************************/
-
-
+RECT rc  = rci; /* rectangle for sideview */
 bool bInvCol = true; //INVERTCOLORS;
 static double fHeigtScaleFact = 1.0;
 static int iSplit = SIZE1;
-
-//	rc.bottom = rc.bottom/2;
   double fDist = 50.0*1000; // kmbottom
   double aclat, aclon, ach, acb, speed, calc_average30s;
   double GPSbrg=0;
@@ -72,9 +71,6 @@ static int iSplit = SIZE1;
   COLORREF BLUE_COL      = RGB_BLUE;
   COLORREF LIGHTBLUE_COL = RGB_LIGHTBLUE;
 
-
-
-//  SelectObject(hdc, LK8InfoNormalFont);
   COLORREF col =  RGB_BLACK;
   if(bInvCol)
 	col =  RGB_WHITE;
@@ -85,7 +81,6 @@ static int iSplit = SIZE1;
   HBRUSH OldBrush  = (HBRUSH) SelectObject(hdc, hbHorizon);
 
 
-//  Rectangle(hdc,rci.left,rci.top,rci.right,rci.bottom);
   bool bFound = false;
   SelectObject(hdc, OldPen);
   SelectObject(hdc, OldBrush);
@@ -96,14 +91,9 @@ static int iSplit = SIZE1;
   rc.top     = (long)((double)(rci.bottom-rci.top  )*fSplitFact);
   rct.bottom = rc.top ;
 
-  RECT sel_rect_top	= rct; 	//sel_rect_top.right = NIBLSCALE(55);
-  RECT sel_rect_side = rc;  //sel_rect_side.right = NIBLSCALE(55);
 
   if(bInvCol)
-  {
-  //  SetBackColor(SKY_HORIZON_COL);
     Sideview_TextColor = INV_GROUND_TEXT_COLOUR;
-  }
   else
     Sideview_TextColor = RGB_WHITE;
 
@@ -135,27 +125,23 @@ static int iSplit = SIZE1;
 			break;
 
 		case LKEVENT_LONGCLICK:
-				 for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
+		     for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
+			 {
+			   if( Sideview_pHandeled[k].psAS != NULL)
+			   {
+				 if (PtInRect(XstartScreen,YstartScreen,Sideview_pHandeled[k].rc ))
 				 {
-				   if( Sideview_pHandeled[k].psAS != NULL)
-				   {
-					 if (PtInRect(XstartScreen,YstartScreen,Sideview_pHandeled[k].rc ))
-					 {
-					   if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
-					   dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
-					   bFound = true;
-				//	   LKevent=LKEVENT_NONE;
-					 }
-				   }
+				   if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
+				   dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
+				   bFound = true;
+			//	   LKevent=LKEVENT_NONE;
 				 }
-				// if(!bFound)
-				 {
-				   if (PtInRect(XstartScreen, YstartScreen,sel_rect_side ))
-				     bHeightScale = true;
-
-				   if (PtInRect(XstartScreen, YstartScreen,sel_rect_top ))
-				     bHeightScale = false;
-				 }
+			   }
+			 }
+			 if (PtInRect(XstartScreen, YstartScreen,rc ))
+			   bHeightScale = true;
+			 if (PtInRect(XstartScreen, YstartScreen,rct ))
+			   bHeightScale = false;
 	     break;
 
 		case LKEVENT_PAGEUP:
@@ -193,7 +179,6 @@ static int oldSplit = 0;
 		SetSplitScreenSize(iSplit);
 		rc.top     = (long)((double)(rci.bottom-rci.top  )*fSplitFact);
 		rct.bottom = rc.top ;
-
 	  }
 
 
@@ -218,14 +203,6 @@ static int oldSplit = 0;
 	  hmax *=  fHeigtScaleFact;
 
 
-
-
-
-
-
-
-
-
   if(bInvCol)
   {
     GREEN_COL     = ChangeBrightness(GREEN_COL     , 0.6);
@@ -239,17 +216,11 @@ static int oldSplit = 0;
     aclat = DrawInfo.Latitude;
     aclon = DrawInfo.Longitude;
     ach   = DrawInfo.Altitude;
-
     acb    = DrawInfo.TrackBearing;
-
-
-
-
     GPSbrg = acb;
 
     acb    = DrawInfo.TrackBearing;
     GPSbrg = DrawInfo.TrackBearing;
-//    DrawInfo
     speed = DrawInfo.Speed;
 
     calc_average30s = DerivedDrawInfo.Average30s;
@@ -268,8 +239,7 @@ static int oldSplit = 0;
   fMC0 = 0.0;
   fLD  = 0.0;
 
-
-  if (Sideview_asp_heading_task)
+  if (GetSideviewPage()==IM_NEXT_WP )
   {
     // Show towards target
     if (overindex>=0)
@@ -377,17 +347,24 @@ static int oldSplit = 0;
     if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
 	  SetTextColor(hdc, INV_GROUND_TEXT_COLOUR);
 
+
   if(fSplitFact > 0.0)
   {
   	sDia.rc = rct;
-    if (Sideview_asp_heading_task == 0)
+    if (GetSideviewPage() == IM_HEADING)
   	  MapWindow::AirspaceTopView(hdc, &sDia, GPSbrg, 90.0 );
 
-    if (Sideview_asp_heading_task == 1)
+    if (GetSideviewPage() == IM_NEXT_WP)
   	  MapWindow::AirspaceTopView(hdc, &sDia, acb, wpt_brg );
   	sDia.rc = rc;
   }
-
+  SelectObject(hdc, LK8PanelUnitFont);
+  COLORREF txtCol = GROUND_TEXT_COLOUR;
+  if(bInvCol)
+    if(sDia.fYMin > GC_SEA_LEVEL_TOLERANCE)
+    	txtCol = INV_GROUND_TEXT_COLOUR;
+  SetBkMode(hdc, TRANSPARENT);
+  SetTextColor(hdc, txtCol);
 
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserDistanceUnit()));
   DrawXGrid(hdc, rci, xtick/DISTANCEMODIFY, xtick, 0,TEXT_ABOVE_LEFT, Sideview_TextColor,  &sDia,text);
@@ -412,7 +389,7 @@ static int oldSplit = 0;
 
 
   int iWpPos =  CalcDistanceCoordinat( wpt_dist,  &sDia);
-  if (Sideview_asp_heading_task > 0)
+  if (GetSideviewPage() == IM_NEXT_WP)
   {
     if(WayPointCalc[overindex].IsLandable == 0)
     {
@@ -421,7 +398,7 @@ static int oldSplit = 0;
       line[0].y = y0;
       line[1].x = line[0].x;
       line[1].y = rc.top;
-      Statistics::StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
+      DrawDashLine(hdc,4, line[0], line[1],  RGB_GREY, rc);
     }
     else
     {
@@ -430,8 +407,7 @@ static int oldSplit = 0;
       line[0].y = CalcHeightCoordinat( wpt_altitude, &sDia);
       line[1].x = line[0].x;
       line[1].y = CalcHeightCoordinat( SAFETYALTITUDEARRIVAL+wpt_altitude,  &sDia );
-      Statistics::StyleLine(hdc, line[0], line[1], STYLE_ORANGETHICK, rc);
-
+      DrawLine(hdc, line[0], line[1],  rc, PS_SOLID,  (5), RGB_ORANGE);
       float fArrHight = 0.0f;
       if(wpt_altarriv > 0.0f)
       {
@@ -440,14 +416,14 @@ static int oldSplit = 0;
         line[0].y = CalcHeightCoordinat( SAFETYALTITUDEARRIVAL+wpt_altitude,  &sDia );
         line[1].x = line[0].x;
         line[1].y = CalcHeightCoordinat( SAFETYALTITUDEARRIVAL+wpt_altitude+fArrHight, &sDia );
-        Statistics::StyleLine(hdc, line[0], line[1], STYLE_GREENTHICK, rc);
+        DrawLine(hdc, line[0], line[1],  rc, PS_SOLID,  4, RGB_GREEN);
       }
       // Mark wpt with a vertical marker line
       line[0].x = iWpPos;
       line[0].y = CalcHeightCoordinat( SAFETYALTITUDEARRIVAL+wpt_altitude+fArrHight,  &sDia );
       line[1].x = line[0].x;
       line[1].y = rc.top;
-      Statistics::StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
+      DrawDashLine(hdc,4, line[0], line[1],  RGB_GREY, rc);
     }
   }
 
@@ -455,26 +431,27 @@ static int oldSplit = 0;
   // Draw estimated gliding line (blue)
  // if (speed>10.0)
   {
-    if (Sideview_asp_heading_task > 0) {
+    if (GetSideviewPage()== IM_NEXT_WP) {
       double altarriv;
+
       // Draw estimated gliding line MC=0 (green)
       if( show_mc0 )
       {
         altarriv = wpt_altarriv_mc0 + wpt_altitude;
         if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
         line[0].x = CalcDistanceCoordinat( 0, &sDia);
-        line[0].y = CalcHeightCoordinatOutbound  ( DerivedDrawInfo.NavAltitude, &sDia );
+        line[0].y = CalcHeightCoordinat ( DerivedDrawInfo.NavAltitude, &sDia );
         line[1].x = CalcDistanceCoordinat( wpt_dist, &sDia);
         line[1].y = CalcHeightCoordinatOutbound( altarriv ,  &sDia );
-        Statistics::StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
+        DrawDashLine(hdc,3, line[0], line[1],  RGB_BLUE, rc);
       }
       altarriv = wpt_altarriv + wpt_altitude;
       if (IsSafetyAltitudeInUse(overindex)) altarriv += SAFETYALTITUDEARRIVAL;
       line[0].x = CalcDistanceCoordinat( 0, &sDia);
-      line[0].y = CalcHeightCoordinatOutbound( DerivedDrawInfo.NavAltitude, &sDia );
+      line[0].y = CalcHeightCoordinat( DerivedDrawInfo.NavAltitude, &sDia );
       line[1].x = CalcDistanceCoordinat( wpt_dist, &sDia);
       line[1].y = CalcHeightCoordinatOutbound( altarriv ,  &sDia );
-      Statistics::StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
+      DrawDashLine(hdc,3, line[0], line[1],  RGB_BLUE, rc);
     } else {
       double t = fDist/(speed!=0?speed:1);
 
@@ -482,7 +459,7 @@ static int oldSplit = 0;
       line[0].y = CalcHeightCoordinat  ( DerivedDrawInfo.NavAltitude, &sDia);
       line[1].x = rc.right;
       line[1].y = CalcHeightCoordinat  ( DerivedDrawInfo.NavAltitude+calc_average30s*t, &sDia);
-      Statistics::StyleLine(hdc, line[0], line[1], STYLE_BLUETHIN, rc);
+      DrawDashLine(hdc,3, line[0], line[1],  RGB_BLUE, rc);
     }
   }
 
@@ -492,7 +469,7 @@ static int oldSplit = 0;
 
 
   //Draw wpt info texts
-  if (Sideview_asp_heading_task > 0) {
+  if (GetSideviewPage() == IM_NEXT_WP) {
 //HFONT hfOld = (HFONT)SelectObject(hdc, LK8MapFont);
     line[0].x = CalcDistanceCoordinat( wpt_dist,  &sDia);
     // Print wpt name next to marker line
@@ -665,10 +642,8 @@ static int oldSplit = 0;
 //SelectObject(hdc, hfOld);
   } // if Sideview_asp_heading_task
 
-;
-  
 
-  if (!Sideview_asp_heading_task)
+  if (GetSideviewPage()== IM_HEADING)
     wpt_brg =90.0;
   RenderPlaneSideview( hdc,  0.0f, DerivedDrawInfo.NavAltitude,wpt_brg, &sDia );
   HFONT hfOld2 = (HFONT)SelectObject(hdc, LK8InfoNormalFont);
@@ -694,19 +669,13 @@ static int oldSplit = 0;
   DrawNorthArrow     ( hdc,/* GPSbrg*/      acb-90.0     , rct.right - NIBLSCALE(13),  rct.top   + NIBLSCALE(13));
 //  RenderBearingDiff( hdc, wpt_brg,  &sDia );
 
-
-  {
-	  HPEN pFrame   = (HPEN)  CreatePen(PS_SOLID, IBLSCALE(2), RGB_GREEN);
-	  HPEN OldPen      = (HPEN)   SelectObject(hdc, pFrame);
-	  HBRUSH OldBrush   = (HBRUSH) SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-	  if(bHeightScale)
-	    Rectangle(hdc,rc.left+1,rc.top,rc.right,rc.bottom);
-	  else
-	    Rectangle(hdc,rci.left+1,rci.top+1,rci.right,rci.bottom);
-	  SelectObject(hdc, OldBrush);
-	  SelectObject(hdc, OldPen);
-	  DeleteObject(pFrame);
-  }
+  /****************************************************************************************************
+   * draw selection frame
+   ****************************************************************************************************/
+	if(bHeightScale)
+	   DrawSelectionFrame(hdc,  rc);
+	else
+	  DrawSelectionFrame(hdc,  rci);
 
   SelectObject(hdc,hfOld/* Sender->GetFont()*/);
   zoom.SetLimitMapScale(true);

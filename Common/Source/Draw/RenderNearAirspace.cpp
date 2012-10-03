@@ -24,21 +24,20 @@
 using std::min;
 using std::max;
 
-bool   bNearAirspace_CheckAllAirspaces =false;
 
 extern double fSplitFact;
 extern double fOffset;
-
+extern COLORREF  Sideview_TextColor;
 extern AirSpaceSonarLevelStruct sSonarLevel[10];
 extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
-
 extern int Sideview_iNoHandeldSpaces;
-extern COLORREF Sideview_TextColor;
 
 extern int XstartScreen, YstartScreen;
-extern long iSonarLevel;
-extern bool Sonar_IsEnabled;
-extern TCHAR Sideview_szNearAS[];
+
+TCHAR Sideview_szNearAS[80];
+int iSonarLevel=0;
+//bool Sonar_IsEnabled = true;
+bool bNearAirspace_CheckAllAirspaces =false;
 
 
 int CalcSonarDelay (int iNoAs, AirSpaceSideViewSTRUCT asAirspaces[], int a1, int a2);
@@ -365,7 +364,7 @@ calc_circling = false;
 
   iSonarLevel = -1;
   if(bValid)
-    if(Sonar_IsEnabled)
+  //  if(Sonar_IsEnabled)
       if(GPSValid) {
 	    #if TESTBENCH
 	    if(1)
@@ -570,15 +569,12 @@ if(bValid)
   if(Units::GetUserAltitudeUnit() == unFeet)
 	 ytick = ytick * 4.0;
 
-
-
   _stprintf(text, TEXT("%s"),Units::GetUnitName(Units::GetUserAltitudeUnit()));
   DrawYGrid(hdc, rc, ytick/ALTITUDEMODIFY,ytick, 0,TEXT_UNDER_RIGHT ,Sideview_TextColor,  &sDia, text);
 
 
   if(!bInvCol)
     SetBkMode(hdc, OPAQUE);
-
   /****************************************************************************************************
    * draw AGL
    ****************************************************************************************************/
@@ -660,13 +656,12 @@ if(bValid)
     line[0].y = CalcHeightCoordinat(  GPSalt,  &sDia );
     line[1].x = CalcDistanceCoordinat(iABS_AS_HorDistance, &sDia);
     line[1].y = line[0].y;
- //   StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
     DrawDashLine(hdc,THICK_LINE, line[0], line[1],  Sideview_TextColor, rc);
     if(iAS_HorDistance < 0)
     {
       line[0].y = CalcHeightCoordinat(  GPSalt - (double)iAS_VertDistance, &sDia );
       line[1].y = line[0].y;
-   //   StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
+
       DrawDashLine(hdc,THICK_LINE, line[0], line[1],  Sideview_TextColor, rc);
     }
 
@@ -702,7 +697,7 @@ if(bValid)
     line[0].y = CalcHeightCoordinat( GPSalt, &sDia );
     line[1].x = line[0].x;
     line[1].y = CalcHeightCoordinat( GPSalt - (double)iAS_VertDistance, &sDia );
-  //  StyleLine(hdc, line[0], line[1], STYLE_WHITETHICK, rc);
+
     DrawDashLine(hdc,THICK_LINE, line[0], line[1],  Sideview_TextColor, rc);
     Units::FormatUserAltitude( (double)abs(iAS_VertDistance), buffer, 7);
     LK_tcsncpy(text, TEXT(" "), sizeof(text)/sizeof(text[0])-1);
@@ -727,9 +722,6 @@ if(bValid)
   RenderPlaneSideview( hdc, 0.0 , GPSalt,wpt_brg, &sDia );
 
 
-
-
-
   SelectObject(hdc,hfOldFnt/* Sender->GetFont()*/);
   if(fSplitFact > 0.0)
   {
@@ -738,21 +730,18 @@ if(bValid)
   }
 
   hfOldFnt = (HFONT)SelectObject(hdc,LK8InfoNormalFont/* Sender->GetFont()*/);
-  DrawNorthArrow     ( hdc, /*GPSbrg */ iAS_Bearing-90        , rct.right - NIBLSCALE(13),  rct.top  + NIBLSCALE(13));
-//  RenderBearingDiff  ( hdc, wpt_brg,  &sDia );
+  DrawNorthArrow     ( hdc, iAS_Bearing-90        , rct.right - NIBLSCALE(13),  rct.top  + NIBLSCALE(13));
 
-  {
-	  HPEN pFrame   = (HPEN)  CreatePen(PS_SOLID, IBLSCALE(2), RGB_GREEN);
-	  HPEN OldPen      = (HPEN)   SelectObject(hdc, pFrame);
-	  HBRUSH OldBrush   = (HBRUSH) SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-	  if(bHeightScale)
-	    Rectangle(hdc,rc.left+1,rc.top,rc.right,rc.bottom);
-	  else
-	    Rectangle(hdc,rci.left+1,rci.top+1,rci.right,rci.bottom);
-	  SelectObject(hdc, OldBrush);
-	  SelectObject(hdc, OldPen);
-	  DeleteObject(pFrame);
-  }
+
+  /****************************************************************************************************
+   * draw selection frame
+   ****************************************************************************************************/
+  if(bHeightScale)
+	DrawSelectionFrame(hdc,  rc);
+  else
+	DrawSelectionFrame(hdc,  rci);
+
+
   SetBkMode(hdc, TRANSPARENT);
   SelectObject(hdc,hfOldFnt/* Sender->GetFont()*/);
 }

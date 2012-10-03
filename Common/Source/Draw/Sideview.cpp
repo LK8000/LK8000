@@ -21,7 +21,10 @@ COLORREF  Sideview_TextColor = RGB_WHITE;
 using std::min;
 using std::max;
 
- int Sideview_asp_heading_task=0;
+int Sideview_asp_heading_task=0;
+int Sideview_iNoHandeldSpaces=0;
+AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
+
 
 int SetSplitScreenSize(int iPercent)
 {
@@ -188,7 +191,16 @@ ExtTextOut(hdc,  x-tsize.cx/2,  y-tsize.cy/2 , ETO_OPAQUE, NULL, text, _tcslen(t
 return;
 }
 
-
+void DrawSelectionFrame(HDC hdc, RECT rci)
+{
+  HPEN pFrame   = (HPEN)  CreatePen(PS_SOLID, IBLSCALE(2), RGB_GREEN);
+  HPEN OldPen      = (HPEN)   SelectObject(hdc, pFrame);
+  HBRUSH OldBrush   = (HBRUSH) SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+  Rectangle(hdc,rci.left+1,rci.top+1,rci.right,rci.bottom);
+  SelectObject(hdc, OldBrush);
+  SelectObject(hdc, OldPen);
+  DeleteObject(pFrame);
+}
 
 
 void RenderBearingDiff(HDC hdc,double brg, DiagrammStruct* psDia )

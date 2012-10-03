@@ -569,14 +569,14 @@ switch(LKevent)
   break;
 
   case LKEVENT_PAGEUP:
-//	if(SPLITSCREEN_FACTOR == F_SIZE1) SPLITSCREEN_FACTOR = F_SIZE0;
+  	  if(SPLITSCREEN_FACTOR == F_SIZE1) SPLITSCREEN_FACTOR = F_SIZE0;
 	  if(SPLITSCREEN_FACTOR == F_SIZE2) SPLITSCREEN_FACTOR = F_SIZE1;
 	  if(SPLITSCREEN_FACTOR == F_SIZE3) SPLITSCREEN_FACTOR = F_SIZE2;
   break;
   case LKEVENT_PAGEDOWN:
 	  if(SPLITSCREEN_FACTOR == F_SIZE2) SPLITSCREEN_FACTOR = F_SIZE3;
 	  if(SPLITSCREEN_FACTOR == F_SIZE1) SPLITSCREEN_FACTOR = F_SIZE2;
-//	if(SPLITSCREEN_FACTOR == F_SIZE0) SPLITSCREEN_FACTOR = F_SIZE1;
+	  if(SPLITSCREEN_FACTOR == F_SIZE0) SPLITSCREEN_FACTOR = F_SIZE1;
   break;
   case LKEVENT_ENTER:
 
@@ -1316,17 +1316,11 @@ if(bSideview)
   }
   LKWriteText(hdc, lbuffer, rci.right-RIGHTLIMITER, rci.top+TOPLIMITER , 0, WTMODE_OUTLINED, WTALIGN_RIGHT, RGB_DARKGREY, false);
 
-  HPEN pFrame   = (HPEN)  CreatePen(PS_SOLID, IBLSCALE(2), RGB_GREEN);
-  HPEN OldPen      = (HPEN)   SelectObject(hdc, pFrame);
-  HBRUSH OldBrush   = (HBRUSH) SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
 
   if(bHeightScale)
-	Rectangle(hdc,rc.left+1,rc.top,rc.right,rc.bottom);
+    DrawSelectionFrame(hdc,  rc);
   else
-	Rectangle(hdc,rci.left+1,rci.top+1,rci.right,rci.bottom);
-  SelectObject(hdc, OldBrush);
-  SelectObject(hdc, OldPen);
-  DeleteObject(pFrame);
+	DrawSelectionFrame(hdc,  rci);
 
 
 SelectObject(hdc, hfOldFont);

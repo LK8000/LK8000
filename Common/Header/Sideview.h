@@ -28,6 +28,10 @@
 #define NEAR_AS_ZOOM_1000M
 
 
+#define IM_NEAR_AS 2
+#define IM_NEXT_WP 1
+#define IM_HEADING 0
+
 #define SIZE0 0
 #define SIZE1 30
 #define SIZE2 50
@@ -58,17 +62,6 @@
 
 #define NO_SIDEVIEW_PAGES 3
 
-  enum {
-    STYLE_BLUETHIN,
-    STYLE_REDTHICK,
-    STYLE_ORANGETHICK,
-    STYLE_GREENTHICK,
-    STYLE_GREENMEDIUM,
-    STYLE_DASHGREEN,
-    STYLE_MEDIUMBLACK,
-    STYLE_THINDASHPAPER,
-    STYLE_WHITETHICK
-  };
 
 
 int SetSplitScreenSize(int);
@@ -77,6 +70,7 @@ int DecSideviewPage(void);
 int GetSideviewPage (void);
 int SetSideviewPage (int i);
 
+void DrawSelectionFrame(HDC hdc, RECT rc);
 void DrawTelescope (HDC hdc, double fAngle, int x, int y);
 void DrawNorthArrow(HDC hdc, double fAngle, int x, int y);
 void DrawWindRoseDirection(HDC hdc, double fAngle, int x, int y);

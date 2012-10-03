@@ -32,13 +32,7 @@ double range =psDiag->fXMax - psDiag->fXMin; // km
 double hmax = psDiag->fYMax;
 double lat, lon;
 int i,j;
-/*
-#if (WINDOWSPC>0)
-  if(INVERTCOLORS)
-#else
-  if(ISCAR && INVERTCOLORS)
-#endif
-*/
+
 if (EnableTerrain )
     RenderSky( hdc, rc, SKY_HORIZON_COL , SKY_SPACE_COL , GC_NO_COLOR_STEPS);
 
@@ -47,7 +41,6 @@ if (EnableTerrain )
   double d_lat[AIRSPACE_SCANSIZE_X];
   double d_lon[AIRSPACE_SCANSIZE_X];
   double d_h[AIRSPACE_SCANSIZE_X];
-//  double dfi = 1.0/(AIRSPACE_SCANSIZE_H-1);
   double dfj = 1.0/(AIRSPACE_SCANSIZE_X-1);
 
 

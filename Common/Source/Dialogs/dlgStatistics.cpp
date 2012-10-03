@@ -29,28 +29,6 @@ bool   Statistics::unscaled_y;
 
 static HPEN penThinSignal = NULL;
 
-#define USESONAR 1
-#ifdef USESONAR
-#define SONAR_TEST
-#endif
-
-// These are globals, should start with Uppercase, and being non-static (local to this file)
-// they should have a Sideview_ remembering us what are they used for. Otherwise use a class,
-// which is exactly the same.
-
-AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
-int   Sideview_iNoHandeldSpaces=0;
-extern int   Sideview_asp_heading_task ;
-long  iSonarLevel = 0;
-
-#if USESONAR
-bool  Sonar_IsEnabled = true;
-#else
-bool  Sonar_IsEnabled = false;
-#endif
-TCHAR Sideview_szNearAS[80];
-
-extern COLORREF  Sideview_TextColor;
 
 
 void Statistics::ResetScale() {
@@ -330,7 +308,7 @@ void Statistics::DrawYLabel(HDC hdc, const RECT rc, const TCHAR *text) {
   HFONT hfOld = (HFONT)SelectObject(hdc, MapLabelFont);
   GetTextExtentPoint(hdc, text, _tcslen(text), &tsize);
   int x = max(2,(int)rc.left-(int)tsize.cx);
-  int y = rc.top;
+  int y = rc.top+NIBLSCALE (10);
   if(INVERTCOLORS)
     SelectObject(hdc, GetStockObject(BLACK_PEN));
 
@@ -1534,15 +1512,6 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
   SetBkMode(hDC, TRANSPARENT);
   SetTextColor(hDC, Sender->GetForeColor());
 
-  if(INVERTCOLORS)
-  {
-    Sender->SetBackColor(SKY_HORIZON_COL);
-    Sideview_TextColor = INV_GROUND_TEXT_COLOUR;
-  }
-  else
-    Sideview_TextColor = RGB_WHITE;
-
-  SetTextColor(hDC, Sideview_TextColor);
 
   switch (page) {
   case ANALYSIS_PAGE_BAROGRAPH:
@@ -1578,24 +1547,6 @@ static void OnAnalysisPaint(WindowControl * Sender, HDC hDC){
     UnlockTaskData();
     break;
 
-#ifdef DDDDD
-  case ANALYSIS_PAGE_AIRSPACE:
-#if USESONAR
-    if(Sideview_asp_heading_task !=2)
-      SetCalcCaption(gettext(TEXT("_@M888_"))); // Warnings
-    else
-    {
-      if(Sonar_IsEnabled)
-        SetCalcCaption(gettext(TEXT("_@M1294_"))); //  _@M1294_ "Sonar Off"
-      else
-        SetCalcCaption(gettext(TEXT("_@M1293_"))); //  _@M1293_ "Sonar On"
-    }
-#else
-      SetCalcCaption(gettext(TEXT("_@M888_"))); // Warnings
-#endif
-      MapWindow::RenderAirspace(hDC, rcgfx);
-    break;
-#endif
 
   case ANALYSIS_PAGE_TASK_SPEED:
     SetCalcCaption(gettext(TEXT("_@M886_"))); // Task calc
@@ -1910,79 +1861,7 @@ static void Update(void){
     }
 
     break;
-  case ANALYSIS_PAGE_AIRSPACE:
-	switch (Sideview_asp_heading_task )
-	{
-	case 1:
-	   _stprintf(sTmp, TEXT("%s: %s %s"),
-	  // LKTOKEN  _@M93_ = "Analysis"
-	                gettext(TEXT("_@M93_")),
-	  //_@M1289_ "Next WP"
-	                gettext(TEXT("_@M1289_")),
-	  // LKTOKEN   _@M1295_ "Sideview"
-	                gettext(TEXT("_@M1295_"))
-	   );
-	break;
-	case 2:
-      _stprintf(sTmp, TEXT("%s: %s %s"),
-	  // LKTOKEN  _@M93_ = "Analysis"
-              gettext(TEXT("_@M93_")),
-	  // LKTOKEN  _@M1292_ = "Nearest Airspace"
-              gettext(TEXT("_@M1292_")),
-              // LKTOKEN   _@M1295_ "Sideview"
-              gettext(TEXT("_@M1295_"))
-              );
-    break;
-	default:
-	case 0:
-      _stprintf(sTmp, TEXT("%s: %s %s"),
-	  // LKTOKEN  _@M93_ = "Analysis"
-              gettext(TEXT("_@M93_")),
-              //_@M1287_ "Heading"
-              gettext(TEXT("_@M1287_")),
-              // LKTOKEN   _@M1295_ "Sideview"
-              gettext(TEXT("_@M1295_"))
-              );
-     break;
-	}
 
-    wf->SetCaption(sTmp);
-    WndButton *wb = (WndButton *)wf->FindByName(TEXT("cmdAspBear"));
-    int overindex = GetOvertargetIndex();
-    TCHAR ovtname[LKSIZEBUFFERLARGE];
-    if(wb) {
-      wb->SetVisible(true);
-
-      switch (Sideview_asp_heading_task)
-      {
-        case 0:
-          wb->SetCaption(gettext(TEXT("_@M1289_")));                               //_@M1289_ "Next WP"
-          wInfo->SetCaption(gettext(TEXT("_@M1290_")));                            //_@M1290_ "Showing towards heading"
-        break;
-        case 1:
-          wb->SetCaption(gettext(TEXT("_@M1291_")));                               //_@M1291_ "Near AS"
-          if (overindex>=0)
-          {
-            GetOvertargetName(ovtname);
-            _stprintf(sTmp, TEXT("%s: %s"), gettext(TEXT("_@M1288_")), ovtname);                //_@M1288_ "Showing towards next waypoint"
-            wInfo->SetCaption(sTmp);
-          }
-          else
-          {
-            _stprintf(sTmp, TEXT("%s: %s"), gettext(TEXT("_@M1288_")), gettext(TEXT("_@M479_")));                    //_@M1288_ "Showing towards next waypoint"  _@M479_ "None"
-            wInfo->SetCaption(sTmp);
-          }
-
-        break;
-        case 2:
-          wb->SetCaption(gettext(TEXT("_@M1287_")));                               //_@M1287_ "Heading"                              //_@M1287_ "Heading"
-          _stprintf(sTmp, TEXT("%s"), Sideview_szNearAS );                  //"Showing nearest airspace"
-          wInfo->SetCaption(sTmp);//
-
-        break;
-      }
-    }
-    break;
   }
 
   wGrid->SetVisible(page<MAXPAGE+1);
@@ -2104,23 +1983,13 @@ static void OnCalcClicked(WindowControl * Sender,
       contestType = CContestMgr::TYPE_OLC_CLASSIC;
     }
   }
-  if (page==ANALYSIS_PAGE_AIRSPACE) {
-	#if USESONAR
-	  if(Sideview_asp_heading_task != 2)
-	    dlgAirspaceWarningParamsShowModal();
-	  else
-		Sonar_IsEnabled = !Sonar_IsEnabled;
-	#else
-	    dlgAirspaceWarningParamsShowModal();
-	#endif
-  }
+
   Update();
 }
 
 static void OnAspBearClicked(WindowControl * Sender){
   (void)Sender;
-//  Sideview_asp_heading_task++;
-//  Sideview_asp_heading_task %=3;
+
     Update();
 }
 
@@ -2134,123 +2003,7 @@ static CallBackTableEntry_t CallBackTable[]={
   DeclareCallBackEntry(NULL)
 };
 
-#ifdef RRRRR
-static int OnTimerNotify(WindowControl *Sender)
-{
-  static short i=0;
 
-
-static unsigned long lSonarCnt = 0;
-
-   lSonarCnt++;
-
-   if(Sideview_asp_heading_task== 2)
-     if((iSonarLevel >=0) && (iSonarLevel < 10))
-      if( lSonarCnt > (unsigned)sSonarLevel[iSonarLevel].iSoundDelay)
-		{
-		  lSonarCnt = 0;
-                  // StartupStore(_T("... level=%d PLAY <%s>\n"),iSonarLevel,&sSonarLevel[iSonarLevel].szSoundFilename);
-		  LKSound((TCHAR*) &(sSonarLevel[iSonarLevel].szSoundFilename));
-		}
-
-
-  if(i++ % 2 == 0) // run once per second
-    return 0;
-
-  Update();
-  return 0;
-}
-#endif
-
-
-
-#define ms  (1)
-#define sec (1000*ms)
-#define mnt (60*sec)
-#define hr  (60*mnt)
-#define day (24*hr)
-long GetTimeMs(void)
-{
-  SYSTEMTIME sysTime;
-  long lTime=0;
-
-  ::GetSystemTime(&sysTime);
-  lTime =   sysTime.wHour         * hr +
-	        sysTime.wMinute       * mnt+
-	        sysTime.wSecond       * sec+
-	        sysTime.wMilliseconds * ms   ;
-
-  return lTime;
-}
-
-static int TouchKeyDown(WindowControl * Sender, WPARAM wParam, LPARAM lParam){
-        (void)lParam;
-        (void)wParam;
-
- int X = LOWORD(lParam);
- int Y = HIWORD(lParam);
- int k;
-/*
- static unsigned long LastClick =0;
- static int iLast_X =0;
- static int iLast_Y =0;
-unsigned long ulTimeNow = GetTimeMs();
-if(ulTimeNow - LastClick > 1000*ms)
-{
-	LastClick = ulTimeNow;
-	return 0;
-}
-
- if(ulTimeNow - LastClick > 400*ms)
- {
-  if(abs(Y-iLast_Y) < 50)
-   if(abs(X-iLast_X) < 50)
-   {
-   if (X<180) return 1;
-   if (TouchContext< TCX_PROC_UP) {
-     #ifndef DISABLEAUDIO
-     if (EnableSoundModes) PlayResource(TEXT("IDR_WAV_CLICK"));
-     #endif
-     NextPage(+1);
-     return 0;
-   }
-  }
- }
-
- iLast_X = X;
- iLast_Y = Y;
- LastClick = ulTimeNow;
-*/
-
-
-#define ULLI_ASPSELECTION
-#ifdef ULLI_ASPSELECTION
-
-
-if(page ==ANALYSIS_PAGE_AIRSPACE)
-{
-  if (TouchContext ==  TCX_PROC_UP)
-  {
-	 for (k=0 ; k <= Sideview_iNoHandeldSpaces; k++)
-	 {
-	   if( Sideview_pHandeled[k].psAS != NULL)
-	   {
-		 if (PtInRect(X,Y,Sideview_pHandeled[k].rc ))
-		 {
-	       if (EnableSoundModes)PlayResource(TEXT("IDR_WAV_BTONE4"));
-           dlgAirspaceDetails(Sideview_pHandeled[k].psAS);       // dlgA
-		 }
-	   }
-	 }
-   }
-
-
-}
-#endif // ULLI
-
-
- return 1;
-}
 
 
 
@@ -2262,15 +2015,6 @@ if(page ==ANALYSIS_PAGE_AIRSPACE)
 
 void dlgAnalysisShowModal(int inpage){
 static bool entered = false;
-
-
-if(inpage == ANALYSIS_PAGE_NEAR_AIRSPACE)
-{
-  inpage = ANALYSIS_PAGE_AIRSPACE;
-  Sideview_asp_heading_task = 2;
-  page = ANALYSIS_PAGE_AIRSPACE;
- // Update();
-}
 
 
 
@@ -2306,7 +2050,7 @@ if (entered == true) /* prevent re entrance */
 	COL = ChangeBrightness(COL,0.7);
   penThinSignal = CreatePen(PS_SOLID, IBLSCALE(2) , COL);
 
-  wf->SetLButtonUpNotify(TouchKeyDown);
+
   wf->SetKeyDownNotify(FormKeyDown);
 
   wGrid = (WndOwnerDrawFrame*)wf->FindByName(TEXT("frmGrid"));

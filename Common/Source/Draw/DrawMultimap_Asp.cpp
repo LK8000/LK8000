@@ -18,12 +18,9 @@
 #include "Multimap.h"
 
 extern int XstartScreen, YstartScreen;
-//extern long VKtime;
-extern int Sideview_asp_heading_task;
-extern AirSpaceSideViewSTRUCT Sideview_pHandeled[MAX_NO_SIDE_AS];
 
 extern long  iSonarLevel;
-extern bool Sonar_IsEnabled;
+ bool Sonar_IsEnabled;
 extern AirSpaceSonarLevelStruct sSonarLevel[];
 extern TCHAR Sideview_szNearAS[];
 extern double fZOOMScale;
@@ -50,7 +47,7 @@ static unsigned long lSonarCnt = 0;
 
    lSonarCnt++;
 
-   if(Sideview_asp_heading_task== 2)
+   if(GetSideviewPage()== IM_NEAR_AS)
    {
      if((iSonarLevel >=0) && (iSonarLevel < 10))
       if( lSonarCnt > (unsigned)sSonarLevel[iSonarLevel].iSoundDelay)
@@ -88,7 +85,7 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 	break;
 
 	case LKEVENT_TOPRIGHT:
-	  if(Sideview_asp_heading_task== 2)
+	  if(GetSideviewPage()== IM_NEAR_AS)
 	  {
 	    Sonar_IsEnabled = !Sonar_IsEnabled;
 	    if (EnableSoundModes) {
@@ -114,16 +111,17 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
   TCHAR topleft_txt[10];
   TCHAR topcenter_txt[80];
 
+
   switch(GetSideviewPage())
   {
-	case 0:
+	case IM_HEADING:
 		// No need to print "Heading". It is obvious.
 		// _stprintf(topcenter_txt, TEXT("%s"), MsgToken(1290));
 		_tcscpy(topcenter_txt,_T("HEADING"));
 		_stprintf(topleft_txt, TEXT("M1: TRK"));
 		break;
 
-	case 1:
+	case IM_NEXT_WP:
 		if (GetOvertargetIndex()>=0)
 		{
 			TCHAR szOvtname[80];
@@ -137,7 +135,7 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
 		}
 		break;
 
-	case 2:
+	case IM_NEAR_AS:
 		_stprintf(topcenter_txt, TEXT("%s"), Sideview_szNearAS );
 		_stprintf(topleft_txt, TEXT("M3: ASP"));
 		break;
@@ -176,7 +174,8 @@ void MapWindow::LKDrawMultimap_Asp(HDC hdc, const RECT rc)
   MapWindow::LKWriteBoxedText(hdc,&MapRect,topcenter_txt, rc.right/3, midsplit, 0, WTALIGN_CENTER);
 
 
-  if(Sideview_asp_heading_task== 2)
+
+  if(GetSideviewPage()== IM_NEAR_AS)
   {
 	SelectObject(hdc, MapWindowFont);
 	if(Sonar_IsEnabled)
