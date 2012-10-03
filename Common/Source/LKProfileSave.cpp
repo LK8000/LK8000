@@ -312,6 +312,25 @@ void LKProfileSave(const TCHAR *szFile)
 
   rprintf(szRegistryUseWindRose,UseWindRose);
 
+  //
+  // Multimaps added 121003
+  //
+  rprintf(szRegistryMultiTerr1,Multimap_Flags_Terrain[MP_MAPTRK]);
+  rprintf(szRegistryMultiTerr2,Multimap_Flags_Terrain[MP_MAPWPT]);
+  rprintf(szRegistryMultiTerr3,Multimap_Flags_Terrain[MP_MAPASP]);
+
+  rprintf(szRegistryMultiTopo1,Multimap_Flags_Topology[MP_MAPTRK]);
+  rprintf(szRegistryMultiTopo2,Multimap_Flags_Topology[MP_MAPWPT]);
+  rprintf(szRegistryMultiTopo3,Multimap_Flags_Topology[MP_MAPASP]);
+
+  rprintf(szRegistryMultiAsp1,Multimap_Flags_Airspace[MP_MAPTRK]);
+  rprintf(szRegistryMultiAsp2,Multimap_Flags_Airspace[MP_MAPWPT]);
+  rprintf(szRegistryMultiAsp3,Multimap_Flags_Airspace[MP_MAPASP]);
+
+  rprintf(szRegistryMultiWpt1,Multimap_Flags_Waypoints[MP_MAPTRK]);
+  rprintf(szRegistryMultiWpt2,Multimap_Flags_Waypoints[MP_MAPWPT]);
+  rprintf(szRegistryMultiWpt3,Multimap_Flags_Waypoints[MP_MAPASP]);
+
   fprintf(pfp,PNEWLINE); // end of file
   fflush(pfp);
   fclose(pfp);

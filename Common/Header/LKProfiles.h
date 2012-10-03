@@ -309,8 +309,20 @@ TCHAR szRegistryCustomMenu7[] = _T("CustomMenu7");
 TCHAR szRegistryCustomMenu8[] = _T("CustomMenu8");
 TCHAR szRegistryCustomMenu9[] = _T("CustomMenu9");
 TCHAR szRegistryCustomMenu10[] = _T("CustomMenu10");
-
 TCHAR szRegistryUseWindRose[] = _T("UseWindRose");
+TCHAR szRegistryMultiTerr1[] = _T("MultimapTerrain1");
+TCHAR szRegistryMultiTerr2[] = _T("MultimapTerrain2");
+TCHAR szRegistryMultiTerr3[] = _T("MultimapTerrain3");
+TCHAR szRegistryMultiTopo1[] = _T("MultimapTopology1");
+TCHAR szRegistryMultiTopo2[] = _T("MultimapTopology2");
+TCHAR szRegistryMultiTopo3[] = _T("MultimapTopology3");
+TCHAR szRegistryMultiAsp1[] = _T("MultimapAirspace1");
+TCHAR szRegistryMultiAsp2[] = _T("MultimapAirspace2");
+TCHAR szRegistryMultiAsp3[] = _T("MultimapAirspace3");
+TCHAR szRegistryMultiWpt1[] = _T("MultimapWpt1");
+TCHAR szRegistryMultiWpt2[] = _T("MultimapWpt2");
+TCHAR szRegistryMultiWpt3[] = _T("MultimapWpt3");
+
 //
 //
 //
@@ -539,8 +551,19 @@ extern TCHAR szRegistryCustomMenu7[];
 extern TCHAR szRegistryCustomMenu8[];
 extern TCHAR szRegistryCustomMenu9[];
 extern TCHAR szRegistryCustomMenu10[];
-
 extern TCHAR szRegistryUseWindRose[];
+extern TCHAR szRegistryMultiTerr1[];
+extern TCHAR szRegistryMultiTerr2[];
+extern TCHAR szRegistryMultiTerr3[];
+extern TCHAR szRegistryMultiTopo1[];
+extern TCHAR szRegistryMultiTopo2[];
+extern TCHAR szRegistryMultiTopo3[];
+extern TCHAR szRegistryMultiAsp1[];
+extern TCHAR szRegistryMultiAsp2[];
+extern TCHAR szRegistryMultiAsp3[];
+extern TCHAR szRegistryMultiWpt1[];
+extern TCHAR szRegistryMultiWpt2[];
+extern TCHAR szRegistryMultiWpt3[];
 
 //
 //

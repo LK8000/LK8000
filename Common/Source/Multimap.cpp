@@ -96,6 +96,11 @@ void ToggleMultimapWaypoints(void) {
   Multimap_Flags_Waypoints[i]=!Multimap_Flags_Waypoints[i];
 }
 
+
+
+//
+// Default flags for multimaps, used at init and at reset config
+//
 void Reset_Multimap_Flags(void) {
   short i;
   for (i=0; i<=MP_TOP; i++) {
