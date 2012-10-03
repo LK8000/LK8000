@@ -638,8 +638,22 @@ double fFact = 1.0 ;
    CalculateScreenPositions( Orig,  rct, &Orig_Aircraft);
    CalculateScreenPositionsAirspace();
 
-  if (IsMultimapTerrain() &&  DerivedDrawInfo.TerrainValid )
+  if (IsMultimapTerrain() &&  DerivedDrawInfo.TerrainValid ) {
+        LKTextBlack=false;
+        BlackScreen=false;
 	DrawTerrain(hdc, rct, GetAzimuth(), 40.0);
+  } else {
+	// We fill up the background wity chosen empty map color
+
+	// display border and fill background..
+        SelectObject(hdc, hInvBackgroundBrush[BgMapColor]);
+        SelectObject(hdc, GetStockObject(WHITE_PEN));
+        Rectangle(hdc,rct.left,rct.top,rct.right,rct.bottom);
+        // We force LK painting black values on screen depending on the background color in use
+        // blackscreen would force everything to be painted white, instead
+        LKTextBlack=BgMapColorTextBlack[BgMapColor];
+        if (BgMapColor>6 ) BlackScreen=true; else BlackScreen=false;
+  } 
 
   ResetLabelDeclutter();
 
